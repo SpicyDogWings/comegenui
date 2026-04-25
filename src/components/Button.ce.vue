@@ -25,11 +25,11 @@ const props = defineProps({
           props.color === 'primary' && props.variant === 'solid',
       },
       {
-        'bg-primary-100 text-primary hover:bg-primary-200 active:bg-primary-300':
+        'bg-primary-50 text-primary hover:bg-primary-100 active:bg-primary-200':
           props.color === 'primary' && props.variant === 'soft',
       },
       {
-        'bg-primary-100 text-primary border-solid border-1 border-primary-300 hover:bg-primary-200 active:bg-primary-300':
+        'bg-primary-50 text-primary border-solid border-1 border-primary-300 hover:bg-primary-100 active:bg-primary-200':
           props.color === 'primary' && props.variant === 'subtle',
       },
       {
@@ -45,11 +45,11 @@ const props = defineProps({
           props.color === 'neutral' && props.variant === 'solid',
       },
       {
-        'bg-charcoal-100 text-charcoal-800 hover:bg-charcoal-200 active:bg-charcoal-300':
+        'bg-charcoal-50 text-charcoal-800 hover:bg-charcoal-100 active:bg-charcoal-200':
           props.color === 'neutral' && props.variant === 'soft',
       },
       {
-        'bg-charcoal-100 text-charcoal-800 border-solid border-1 border-charcoal-300 hover:bg-charcoal-200 active:bg-charcoal-300':
+        'bg-charcoal-50 text-charcoal-800 border-solid border-1 border-charcoal-300 hover:bg-charcoal-100 active:bg-charcoal-200':
           props.color === 'neutral' && props.variant === 'subtle',
       },
       {
@@ -65,11 +65,11 @@ const props = defineProps({
           props.color === 'success' && props.variant === 'solid',
       },
       {
-        'bg-success-100 text-success-600 hover:bg-success-200 active:bg-success-300':
+        'bg-success-50 text-success-600 hover:bg-success-100 active:bg-success-200':
           props.color === 'success' && props.variant === 'soft',
       },
       {
-        'bg-success-100 text-success-600 border-solid border-1 border-success-300 hover:bg-success-200 active:bg-success-300':
+        'bg-success-50 text-success-600 border-solid border-1 border-success-300 hover:bg-success-100 active:bg-success-200':
           props.color === 'success' && props.variant === 'subtle',
       },
       {
@@ -85,11 +85,11 @@ const props = defineProps({
           props.color === 'warning' && props.variant === 'solid',
       },
       {
-        'bg-warning-100 text-warning-500 hover:bg-warning-200 active:bg-warning-300':
+        'bg-warning-50 text-warning-500 hover:bg-warning-100 active:bg-warning-200':
           props.color === 'warning' && props.variant === 'soft',
       },
       {
-        'bg-warning-100 text-warning-500 border-solid border-1 border-warning-200 hover:bg-warning-200 active:bg-warning-300':
+        'bg-warning-50 text-warning-500 border-solid border-1 border-warning-300 hover:bg-warning-100 active:bg-warning-200':
           props.color === 'warning' && props.variant === 'subtle',
       },
       {
@@ -105,11 +105,11 @@ const props = defineProps({
           props.color === 'danger' && props.variant === 'solid',
       },
       {
-        'bg-danger-100 text-danger hover:bg-danger-200 active:bg-danger-300':
+        'bg-danger-50 text-danger hover:bg-danger-100 active:bg-danger-200':
           props.color === 'danger' && props.variant === 'soft',
       },
       {
-        'bg-danger-100 text-danger border-solid border-1 border-danger-300 hover:bg-danger-200 active:bg-danger-300':
+        'bg-danger-50 text-danger border-solid border-1 border-danger-300 hover:bg-danger-100 active:bg-danger-200':
           props.color === 'danger' && props.variant === 'subtle',
       },
       {
