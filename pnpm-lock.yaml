@@ -12,12 +12,18 @@ importers:
         specifier: ^3.5.32
         version: 3.5.33(typescript@6.0.3)
     devDependencies:
+      '@iconify-json/lucide':
+        specifier: ^1.2.103
+        version: 1.2.103
       '@tsconfig/node24':
         specifier: ^24.0.4
         version: 24.0.4
       '@types/node':
         specifier: ^24.12.2
         version: 24.12.2
+      '@unocss/preset-icons':
+        specifier: ^66.6.8
+        version: 66.6.8
       '@unocss/preset-mini':
         specifier: ^66.6.8
         version: 66.6.8
@@ -199,6 +205,9 @@ packages:
 
   '@emnapi/wasi-threads@1.2.1':
     resolution: {integrity: sha512-uTII7OYF+/Mes/MrcIOYp5yOtSMLBWSIoLPpcgwipoiKbli6k322tcoFsxoIIxPDqW01SQGAgko4EzZi2BNv2w==}
+
+  '@iconify-json/lucide@1.2.103':
+    resolution: {integrity: sha512-A5WdDll62RPxYs1yeYa9b2mV1Vs+lK/wX0wYKR+xVnhwsfPGLBwo6qfyoAQLo7AaP7oHlkw3gnHdOCERegbwTA==}
 
   '@iconify/types@2.0.0':
     resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
@@ -1440,6 +1449,10 @@ snapshots:
     dependencies:
       tslib: 2.8.1
     optional: true
+
+  '@iconify-json/lucide@1.2.103':
+    dependencies:
+      '@iconify/types': 2.0.0
 
   '@iconify/types@2.0.0': {}
 

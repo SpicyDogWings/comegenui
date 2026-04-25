@@ -1,11 +1,11 @@
-import { defineConfig, presetMini } from "unocss";
+import { defineConfig, presetMini, presetIcons } from "unocss";
 
 // url de los colores
 // https://www.tints.dev/palette/v1:cHJpbWFyeXwxRjk0RDF8NTAwfHB8MHwwfDB8MTAwfGF-Y2hhcmNvYWx8MzY0NTRGfDgwMHxwfDB8MHwwfDEwMHxhfmRhbmdlcnxEMTFGMkN8NjAwfHB8MHwwfDB8MTAwfGF-d2FybmluZ3xFQkE3MTN8MzAwfHB8MHwwfDB8MTAwfG1-c3VjY2Vzc3wxOEIwNDV8NDAwfHB8MHwwfDB8MTAwfG0
 // https://unocss.dev/interactive/
 
 export default defineConfig({
-  presets: [presetMini()],
+  presets: [presetMini(), presetIcons()],
   rules: [["rounded-cu", { "border-radius": "8px" }]],
   theme: {
     colors: {

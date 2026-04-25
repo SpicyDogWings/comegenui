@@ -15,8 +15,10 @@
     "vue": "^3.5.32"
   },
   "devDependencies": {
+    "@iconify-json/lucide": "^1.2.103",
     "@tsconfig/node24": "^24.0.4",
     "@types/node": "^24.12.2",
+    "@unocss/preset-icons": "^66.6.8",
     "@unocss/preset-mini": "^66.6.8",
     "@vitejs/plugin-vue": "^6.0.6",
     "@vue/tsconfig": "^0.9.1",

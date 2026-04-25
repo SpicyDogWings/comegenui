@@ -48,7 +48,7 @@ const buttonClasses = computed(() => [
       props.color === "primary" && props.variant === "link",
   },
   {
-    "bg-charcoal-800 text-charcoal-100 hover:bg-charcoal-900 active:bg-charcoal-950":
+    "bg-charcoal text-charcoal-50 hover:bg-charcoal-900 active:bg-charcoal-950":
       props.color === "neutral" && props.variant === "solid",
   },
   {
@@ -149,7 +149,7 @@ const buttonClasses = computed(() => [
 <template>
   <a v-if="props.to" :href="props.to">
     <button
-      class="py-2 px-4 rounded-cu border-none font-sans font-medium hover:cursor-pointer"
+      class="py-2 px-4 rounded-cu border-none font-sans font-medium hover:cursor-pointer flex justify-center items-center gap-2"
       :class="buttonClasses"
     >
       <slot></slot>
@@ -157,9 +157,10 @@ const buttonClasses = computed(() => [
   </a>
   <button
     v-else
-    class="py-2 px-4 rounded-cu border-none font-sans font-medium hover:cursor-pointer"
+    class="py-2 px-4 rounded-cu border-none font-sans font-medium hover:cursor-pointer flex justify-center items-center gap-2"
     :class="buttonClasses"
   >
+    <div class="i-lucide-a-arrow-down"></div>
     <slot></slot>
   </button>
 </template>
