@@ -11,7 +11,7 @@ const props = defineProps({
     type: String,
     required: false,
     default: "solid",
-    validator: (value: string) => ["solid", "outlined", "soft"].includes(value),
+    validator: (value: string) => ["solid", "outlined", "soft", "ghost"].includes(value),
   },
 });
 </script>
@@ -23,6 +23,10 @@ const props = defineProps({
       {
         'bg-transparent border-solid border-2 border-charcoal text-charcoal':
           !props.color && props.variant === 'outlined',
+      },
+      {
+        'bg-transparent text-charcoal hover:bg-charcoal-50 active:bg-charcoal-100':
+          !props.color && props.variant === 'ghost',
       },
       {
         'bg-primary text-primary-50 hover:bg-primary-600 active:bg-primary-700':
@@ -37,6 +41,10 @@ const props = defineProps({
           props.color === 'primary' && props.variant === 'outlined',
       },
       {
+        'bg-transparent text-primary hover:bg-primary-50 active:bg-primary-100':
+          props.color === 'primary' && props.variant === 'ghost',
+      },
+      {
         'bg-charcoal-800 text-charcoal-100 hover:bg-charcoal-900 active:bg-charcoal-950':
           props.color === 'neutral' && props.variant === 'solid',
       },
@@ -47,6 +55,10 @@ const props = defineProps({
       {
         'bg-transparent border-solid border-2 border-charcoal-800 text-charcoal-800':
           props.color === 'neutral' && props.variant === 'outlined',
+      },
+      {
+        'bg-transparent text-charcoal-800 hover:bg-charcoal-50 active:bg-charcoal-100':
+          props.color === 'neutral' && props.variant === 'ghost',
       },
       {
         'bg-success text-success-50 hover:bg-success-500 active:bg-success-600':
@@ -61,6 +73,10 @@ const props = defineProps({
           props.color === 'success' && props.variant === 'outlined',
       },
       {
+        'bg-transparent text-success-600 hover:bg-success-50 active:bg-success-100':
+          props.color === 'success' && props.variant === 'ghost',
+      },
+      {
         'bg-warning text-warning-50 hover:bg-warning-400 active:bg-warning-500':
           props.color === 'warning' && props.variant === 'solid',
       },
@@ -73,6 +89,10 @@ const props = defineProps({
           props.color === 'warning' && props.variant === 'outlined',
       },
       {
+        'bg-transparent text-warning-500 hover:bg-warning-50 active:bg-warning-100':
+          props.color === 'warning' && props.variant === 'ghost',
+      },
+      {
         'bg-danger text-danger-50 hover:bg-danger-700 active:bg-danger-800':
           props.color === 'danger' && props.variant === 'solid',
       },
@@ -83,6 +103,10 @@ const props = defineProps({
       {
         'bg-transparent border-solid border-2 border-danger text-danger':
           props.color === 'danger' && props.variant === 'outlined',
+      },
+      {
+        'bg-transparent text-danger hover:bg-danger-50 active:bg-danger-100':
+          props.color === 'danger' && props.variant === 'ghost',
       },
     ]"
   >
