@@ -14,7 +14,7 @@ const props = defineProps({
 
 <template>
   <button
-    class="py-2 px-4 rounded-cu border-none hover:cursor-pointer"
+    class="py-2 px-4 rounded-cu border-none font-sans font-bold hover:cursor-pointer"
     :class="[
       { 'bg-charcoal-50 text-charcoal hover:bg-charcoal-100 active:bg-charcoal-200': props.color === '' },
       { 'bg-primary text-primary-50 hover:bg-primary-600 active:bg-primary-700': props.color === 'primary' },

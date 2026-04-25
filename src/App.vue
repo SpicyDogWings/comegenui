@@ -4,13 +4,11 @@ import Button from "./components/Button.ce.vue";
 
 <template>
   <div class="w-screen h-screen flex justify-center items-center gap-1">
-    <Button>Hola</Button>
-    <Button color="primary">Hola</Button>
-    <Button color="neutral">Hola</Button>
-    <Button color="success">Hola</Button>
-    <Button color="warning">Hola</Button>
-    <Button color="danger">Hola</Button>
+    <Button>Normal</Button>
+    <Button color="primary">Priamry</Button>
+    <Button color="neutral">Neutral</Button>
+    <Button color="success">Success</Button>
+    <Button color="warning">Warning</Button>
+    <Button color="danger">Danger</Button>
   </div>
 </template>
-
-<style scoped></style>
