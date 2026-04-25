@@ -160,7 +160,6 @@ const buttonClasses = computed(() => [
     class="py-2 px-4 rounded-cu border-none font-sans font-medium hover:cursor-pointer flex justify-center items-center gap-2"
     :class="buttonClasses"
   >
-    <div class="i-lucide-a-arrow-down"></div>
     <slot></slot>
   </button>
 </template>
