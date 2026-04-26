@@ -12,33 +12,19 @@ const props = defineProps({
     required: false,
     default: () => [],
   },
-  hoverable: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
-  bordered: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
 });
 
 const tableClasses = computed(() => [
   "w-full",
   "border-collapse",
-  props.bordered ? "border border-charcoal-200 rounded-cu" : "",
-  props.hoverable ? "[&_tr:hover]:bg-charcoal-50" : "",
 ]);
 
 const thClasses = computed(() => [
   "text-left p-3 font-medium text-charcoal-600",
-  props.bordered ? "border-b border-charcoal-200" : "",
 ]);
 
 const tdClasses = computed(() => [
   "p-3 text-charcoal-800",
-  props.bordered ? "border-b border-charcoal-100" : "",
 ]);
 </script>
 
