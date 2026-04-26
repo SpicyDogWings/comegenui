@@ -2,6 +2,6 @@ import { defineCustomElement } from "vue";
 import Table from "./Table.ce.vue";
 
 const comegenTable = defineCustomElement(Table);
-customElements.define("cu-badge", comegenTable);
+customElements.define("cu-table", comegenTable);
 
 export default comegenTable;

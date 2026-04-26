@@ -5,37 +5,27 @@
     <link rel="icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite App</title>
-    <script src="dist/Button.iife.js"></script>
-    <script src="dist/Badge.iife.js"></script>
+    <script src="dist/CuTable.iife.js"></script>
   </head>
   <body>
-    <cu-button color="neutral" variant="solid">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-      >
-        <!-- Icon from Lucide by Lucide Contributors - https://github.com/lucide-icons/lucide/blob/main/LICENSE -->
-        <path
-          fill="none"
-          stroke="currentColor"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="m14 12l4 4l4-4m-4 4V7M2 16l4.039-9.69a.5.5 0 0 1 .923 0L11 16m-7.696-3h6.392"
-        />
-      </svg>
-      Normal
-    </cu-button>
-    <cu-button color="primary" variant="solid"
-      >Priamry</cu-button
-    >
-    <br><br>
-    <cu-badge color="primary" variant="solid">Badge Solid</cu-badge>
-    <cu-badge color="primary" variant="soft">Badge Soft</cu-badge>
-    <cu-badge color="success" variant="solid">Success</cu-badge>
-    <cu-badge color="danger" variant="outlined">Danger</cu-badge>
-    <cu-badge color="warning" variant="ghost">Warning</cu-badge>
+    <cu-table id="posts-table" style="max-width: 800px; max-height: 400px; overflow: auto;"></cu-table>
+    <script>
+      const table = document.getElementById('posts-table');
+      table.columns = [
+        { key: "id", label: "#ID" },
+        { key: "userId", label: "User" },
+        { key: "title", label: "Title" },
+        { key: "body", label: "Body" },
+      ];
+
+      fetch("https://jsonplaceholder.typicode.com/posts")
+        .then(response => response.json())
+        .then(data => {
+          table.data = data;
+        })
+        .catch(error => {
+          console.error("Error fetching posts:", error);
+        });
+    </script>
   </body>
 </html>
