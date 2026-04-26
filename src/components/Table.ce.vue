@@ -2,13 +2,22 @@
 import { computed } from "vue";
 import Badge from "./Badge.ce.vue";
 
+interface BadgeConfig {
+  value: string;
+  color?: string;
+  variant?: string;
+}
+
+interface Column {
+  key: string;
+  label?: string;
+  cell?: (row: Record<string, any>) => string | string[];
+  badges?: (row: Record<string, any>) => BadgeConfig[];
+}
+
 const props = defineProps({
   columns: {
-    type: Array as () => { 
-      key: string; 
-      label?: string; 
-      badges?: boolean | { color?: string; variant?: string } 
-    }[],
+    type: Array as () => Column[],
     required: false,
     default: () => [],
   },
@@ -24,18 +33,22 @@ const props = defineProps({
   },
 });
 
-const getBadgeProps = (col: { badges?: boolean | { color?: string; variant?: string } }) => {
-  if (!col.badges) return null;
-  if (col.badges === true) return { color: "primary", variant: "solid" };
-  return { color: "primary", variant: "solid", ...col.badges };
+const getCellValue = (row: Record<string, any>, col: Column): string | string[] => {
+  if (typeof col.cell === 'function') {
+    return col.cell(row);
+  }
+  return row[col.key];
 };
 
-const isBadgeColumn = (col: { badges?: boolean | { color?: string; variant?: string } }) => {
-  return !!col.badges;
+const getCellBadges = (row: Record<string, any>, col: Column): BadgeConfig[] => {
+  if (typeof col.badges === 'function') {
+    return col.badges(row).filter(b => b?.value != null);
+  }
+  return [];
 };
 
-const getBadgeValues = (value: any) => {
-  return Array.isArray(value) ? value : [value];
+const hasBadges = (col: Column): boolean => {
+  return typeof col.badges === 'function';
 };
 </script>
 
@@ -68,18 +81,19 @@ const getBadgeValues = (value: any) => {
               :column="col"
               :index="rowIndex"
             >
-              <template v-if="isBadgeColumn(col)">
+              <template v-if="hasBadges(col)">
                 <Badge
-                  v-for="(badgeValue, idx) in getBadgeValues(row[col.key])"
+                  v-for="(badge, idx) in getCellBadges(row, col)"
                   :key="idx"
-                  v-bind="getBadgeProps(col)"
+                  :color="badge.color"
+                  :variant="badge.variant"
                   class="mr-1"
                 >
-                  {{ badgeValue }}
+                  {{ badge.value }}
                 </Badge>
               </template>
               <template v-else>
-                {{ row[col.key] }}
+                {{ getCellValue(row, col) }}
               </template>
             </slot>
           </td>
