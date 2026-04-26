@@ -7,11 +7,24 @@
     <title>Vite App</title>
     <script src="dist/CuTable.iife.js"></script>
     <script src="dist/CuBadge.iife.js"></script>
+    <script src="dist/CuButton.iife.js"></script>
   </head>
   <body>
     <cu-table id="posts-table" style="max-width: 800px; max-height: 400px; overflow: auto;"></cu-table>
     <script>
       const table = document.getElementById('posts-table');
+
+      // Funciones fuera de columns
+      function editPost(id, title) {
+        alert(`Editar post ${id}: ${title}`);
+      }
+
+      function deletePost(id, title) {
+        if (confirm(`¿Eliminar post ${id}: "${title}"?`)) {
+          console.log("Eliminando post:", id);
+        }
+      }
+
       table.columns = [
         { key: "id", label: "#ID" },
         { key: "userId", label: "User" },
@@ -23,13 +36,47 @@
             value: row.userId === 1 ? "Propietario" : "Invitado",
             color: row.userId === 1 ? "primary" : "neutral",
             variant: "solid"
-          },
-          {
-            value: row.id === 1 ? "Primera" : "Otras",
-            color: row.userId === 1 ? "success" : "neutral",
-            variant: "solid"
           }]
         },
+        {
+          key: "status",
+          label: "Status",
+          badges: (row) => [{
+            value: row.id % 2 === 0 ? "Published" : "Draft",
+            color: row.id % 2 === 0 ? "success" : "warning"
+          }]
+        },
+        {
+          key: "fullName",
+          label: "Nombre Completo",
+          cell: (row) => `User #${row.userId}`
+        },
+        {
+          key: "tags",
+          label: "Tags",
+          badges: (row) => [
+            { value: "Post" },
+            { value: row.id % 3 === 0 ? "Featured" : null }
+          ].filter(b => b.value != null)
+        },
+        {
+          key: "actions",
+          label: "Acciones",
+          buttons: (row) => [
+            {
+              label: "Editar",
+              color: "primary",
+              variant: "solid",
+              onClick: () => editPost(row.id, row.title)
+            },
+            {
+              label: "Eliminar",
+              color: "danger",
+              variant: "soft",
+              onClick: () => deletePost(row.id, row.title)
+            }
+          ]
+        }
       ];
 
       fetch("https://jsonplaceholder.typicode.com/posts")

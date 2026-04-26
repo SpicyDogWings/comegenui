@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import Badge from "./Badge.ce.vue";
+import Button from "./Button.ce.vue";
 
 interface BadgeConfig {
   value: string;
@@ -8,11 +9,19 @@ interface BadgeConfig {
   variant?: string;
 }
 
+interface ButtonConfig {
+  label: string;
+  color?: string;
+  variant?: string;
+  onClick?: () => void;
+}
+
 interface Column {
   key: string;
   label?: string;
   cell?: (row: Record<string, any>) => string | string[];
   badges?: (row: Record<string, any>) => BadgeConfig[];
+  buttons?: (row: Record<string, any>) => ButtonConfig[];
 }
 
 const props = defineProps({
@@ -55,6 +64,20 @@ const getCellBadges = (
 
 const hasBadges = (col: Column): boolean => {
   return typeof col.badges === "function";
+};
+
+const getCellButtons = (
+  row: Record<string, any>,
+  col: Column,
+): ButtonConfig[] => {
+  if (typeof col.buttons === "function") {
+    return col.buttons(row).filter((b) => b?.label != null);
+  }
+  return [];
+};
+
+const hasButtons = (col: Column): boolean => {
+  return typeof col.buttons === "function";
 };
 </script>
 
@@ -101,6 +124,19 @@ const hasBadges = (col: Column): boolean => {
                   >
                     {{ badge.value }}
                   </Badge>
+                </div>
+              </template>
+              <template v-else-if="hasButtons(col)">
+                <div class="flex justify-content items-center gap-1">
+                  <Button
+                    v-for="(btn, idx) in getCellButtons(row, col)"
+                    :key="idx"
+                    :color="btn.color"
+                    :variant="btn.variant"
+                    @click="btn.onClick?.()"
+                  >
+                    {{ btn.label }}
+                  </Button>
                 </div>
               </template>
               <template v-else>
