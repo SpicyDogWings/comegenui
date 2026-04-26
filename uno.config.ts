@@ -6,6 +6,16 @@ import { defineConfig, presetMini, presetIcons } from "unocss";
 
 export default defineConfig({
   presets: [presetMini(), presetIcons()],
+  variants: [
+    (matcher) => {
+      if (!matcher.startsWith("last:")) return matcher;
+      const className = matcher.slice(5);
+      return {
+        matcher: className,
+        selector: (s) => `${s}:last-child`,
+      };
+    },
+  ],
   rules: [
     ["rounded-cu", { "border-radius": "8px" }],
     ["border-collapse", { "border-collapse": "collapse" }],
