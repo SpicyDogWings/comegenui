@@ -5,105 +5,30 @@
     <link rel="icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite App</title>
-    <script src="dist/CuTable.iife.js"></script>
-    <script src="dist/CuBadge.iife.js"></script>
-    <script src="dist/CuButton.iife.js"></script>
     <script src="dist/CuInput.iife.js"></script>
   </head>
   <body>
-    <div style="padding: 20px; max-width: 500px; margin: 0 auto 20px;">
-      <h2>Input Examples</h2>
+    <div style="padding: 20px; max-width: 500px; margin: 0 auto;">
+      <h2>Input Example</h2>
       <cu-input
-        id="name-input"
-        placeholder="Nombre completo"
+        id="my-input"
+        placeholder="Escribe algo..."
         color="primary"
         variant="outlined"
       ></cu-input>
       <br><br>
-      
-      <cu-input
-        id="password-input"
-        placeholder="Contraseña"
-        type="password"
-        color="neutral"
-        variant="subtle"
-      ></cu-input>
-      <br><br>
-      
-      <cu-input
-        id="email-input"
-        placeholder="Email"
-        type="email"
-        color="success"
-        variant="soft"
-      ></cu-input>
-      <br><br>
-      <div id="input-preview" style="padding: 10px; background: #f5f5f5; border-radius: 8px;">
-        <strong>Valores actuales:</strong><br>
-        <span id="values"></span>
+      <div id="display" style="padding: 10px; background: #f5f5f5; border-radius: 8px;">
+        <strong>Valor actual:</strong> <span id="value">-</span>
       </div>
     </div>
     
-    <cu-table id="posts-table" style="max-width: 800px; max-height: 400px; overflow: auto; margin: 0 auto;"></cu-table>
     <script>
-      // Capturar eventos de los inputs
-      document.getElementById('name-input').addEventListener('input', (e) => updatePreview());
-      document.getElementById('password-input').addEventListener('input', (e) => updatePreview());
-      document.getElementById('email-input').addEventListener('input', (e) => updatePreview());
+      const input = document.getElementById('my-input');
+      const display = document.getElementById('value');
       
-      function updatePreview() {
-        const name = document.getElementById('name-input').value;
-        const password = document.getElementById('password-input').value;
-        const email = document.getElementById('email-input').value;
-        document.getElementById('values').textContent = 
-          `Nombre: ${name || '-'}, Contraseña: ${password ? '******' : '-'}, Email: ${email || '-'}`;
-      }
-      
-      const table = document.getElementById('posts-table');
-
-      // Funciones fuera de columns
-      function editPost(id, title) {
-        alert(`Editar post ${id}: ${title}`);
-      }
-
-      function deletePost(id, title) {
-        if (confirm(`¿Eliminar post ${id}: "${title}"?`)) {
-          console.log("Eliminando post:", id);
-        }
-      }
-
-      table.columns = [
-        { key: "id", label: "#ID" },
-        { key: "userId", label: "User" },
-        { key: "title", label: "Title" },
-        {
-          key: "actions",
-          label: "Acciones",
-          buttons: (row) => [
-            {
-              label: "Editar",
-              color: "primary",
-              variant: "solid",
-              onClick: () => editPost(row.id, row.title)
-            },
-            {
-              label: "Eliminar",
-              color: "danger",
-              variant: "soft",
-              onClick: () => deletePost(row.id, row.title)
-            }
-          ]
-        }
-      ];
-
-      fetch("https://jsonplaceholder.typicode.com/posts")
-        .then(response => response.json())
-        .then(posts => {
-          table.data = posts;
-        })
-        .catch(error => {
-          console.error("Error fetching posts:", error);
-        });
+      input.addEventListener('input', (e) => {
+        display.textContent = e.target.value || '-';
+      });
     </script>
   </body>
 </html>

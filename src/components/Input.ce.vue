@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, getCurrentInstance } from "vue";
+import { computed } from "vue";
 
 const props = defineProps({
   color: {
@@ -27,14 +27,7 @@ const props = defineProps({
     type: String,
     required: false,
   },
-  modelValue: {
-    type: [String, Number],
-    required: false,
-    default: "",
-  },
 });
-
-const emit = defineEmits(["update:modelValue"]);
 
 const inputClasses = computed(() => [
   "w-full",
@@ -151,27 +144,13 @@ const inputClasses = computed(() => [
   },
 ]);
 
-const handleInput = (e: Event) => {
-  const target = e.target as HTMLInputElement;
-  emit("update:modelValue", target.value);
-  // Emitir evento input nativo desde el custom element
-  const customElement = (e.target as HTMLElement).getRootNode()?.host as HTMLElement;
-  if (customElement) {
-    customElement.dispatchEvent(new CustomEvent('input', {
-      bubbles: true,
-      composed: true
-    }));
-  }
-};
 </script>
 
 <template>
   <input
     :type="props.type"
-    :value="props.modelValue"
     :placeholder="props.placeholder"
-    @input="handleInput"
-    class="flex justify-center items-center gap-2 focus:outline-none focus:ring-2 focus:ring-primary-300"
+    class="w-full focus:outline-none focus:ring-2 focus:ring-primary-300"
     :class="inputClasses"
   />
 </template>
