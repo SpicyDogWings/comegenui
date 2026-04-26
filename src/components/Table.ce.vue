@@ -33,22 +33,28 @@ const props = defineProps({
   },
 });
 
-const getCellValue = (row: Record<string, any>, col: Column): string | string[] => {
-  if (typeof col.cell === 'function') {
+const getCellValue = (
+  row: Record<string, any>,
+  col: Column,
+): string | string[] => {
+  if (typeof col.cell === "function") {
     return col.cell(row);
   }
   return row[col.key];
 };
 
-const getCellBadges = (row: Record<string, any>, col: Column): BadgeConfig[] => {
-  if (typeof col.badges === 'function') {
-    return col.badges(row).filter(b => b?.value != null);
+const getCellBadges = (
+  row: Record<string, any>,
+  col: Column,
+): BadgeConfig[] => {
+  if (typeof col.badges === "function") {
+    return col.badges(row).filter((b) => b?.value != null);
   }
   return [];
 };
 
 const hasBadges = (col: Column): boolean => {
-  return typeof col.badges === 'function';
+  return typeof col.badges === "function";
 };
 </script>
 
@@ -69,7 +75,11 @@ const hasBadges = (col: Column): boolean => {
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(row, rowIndex) in data" :key="rowIndex" class="border-b-solid border-b-1 border-charcoal-200 last:border-b-none">
+        <tr
+          v-for="(row, rowIndex) in data"
+          :key="rowIndex"
+          class="border-b-solid border-b-1 border-charcoal-200 last:border-b-none"
+        >
           <td
             v-for="col in columns"
             :key="col.key"
@@ -82,15 +92,16 @@ const hasBadges = (col: Column): boolean => {
               :index="rowIndex"
             >
               <template v-if="hasBadges(col)">
-                <Badge
-                  v-for="(badge, idx) in getCellBadges(row, col)"
-                  :key="idx"
-                  :color="badge.color"
-                  :variant="badge.variant"
-                  class="mr-1"
-                >
-                  {{ badge.value }}
-                </Badge>
+                <div class="flex justify-content items-center gap-1">
+                  <Badge
+                    v-for="(badge, idx) in getCellBadges(row, col)"
+                    :key="idx"
+                    :color="badge.color"
+                    :variant="badge.variant"
+                  >
+                    {{ badge.value }}
+                  </Badge>
+                </div>
               </template>
               <template v-else>
                 {{ getCellValue(row, col) }}
@@ -99,7 +110,10 @@ const hasBadges = (col: Column): boolean => {
           </td>
         </tr>
         <tr v-if="data.length === 0">
-          <td :colspan="columns.length" class="p-6 text-center text-charcoal-500 italic">
+          <td
+            :colspan="columns.length"
+            class="p-6 text-center text-charcoal-500 italic"
+          >
             <slot name="empty">{{ empty || "No hay datos que mostrar" }}</slot>
           </td>
         </tr>
