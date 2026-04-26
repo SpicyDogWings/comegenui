@@ -1,16 +1,37 @@
 <script setup lang="ts">
-import Button from "./components/Button.ce.vue";
-import Badge from "./components/Badge.ce.vue";
+import { ref, onMounted } from "vue";
+import Table from "./components/Table.ce.vue";
+
+const posts = ref([]);
+const loading = ref(true);
+const error = ref(null);
+
+const columns = [
+  { key: "id", label: "ID" },
+  { key: "userId", label: "User" },
+  { key: "title", label: "Title" },
+  { key: "body", label: "Body" },
+];
+
+onMounted(async () => {
+  try {
+    const response = await fetch("https://jsonplaceholder.typicode.com/posts");
+    if (!response.ok) throw new Error("Failed to fetch");
+    posts.value = await response.json();
+  } catch (e) {
+    error.value = e.message;
+  } finally {
+    loading.value = false;
+  }
+});
 </script>
 
 <template>
   <div
-    class="w-screen h-screen flex flex-col justify-center items-center gap-4"
+    class="w-screen h-screen flex flex-col justify-center items-center gap-4 p-6"
   >
-    <div class="flex gap-1">
-      <Badge color="primary" variant="solid">
-        Terminal
-      </Badge>
+    <div class="w-1/2 h-1/2 flex gap-1">
+      <Table :columns="columns" :data="posts" bordered hoverable />
     </div>
   </div>
 </template>
