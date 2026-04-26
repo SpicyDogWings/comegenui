@@ -6,7 +6,10 @@ import { defineConfig, presetMini, presetIcons } from "unocss";
 
 export default defineConfig({
   presets: [presetMini(), presetIcons()],
-  rules: [["rounded-cu", { "border-radius": "8px" }]],
+  rules: [
+    ["rounded-cu", { "border-radius": "8px" }],
+    ["border-collapse", { "border-collapse": "collapse" }],
+  ],
   theme: {
     colors: {
       primary: {

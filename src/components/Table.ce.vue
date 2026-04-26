@@ -13,27 +13,18 @@ const props = defineProps({
     default: () => [],
   },
 });
-
-const tableClasses = computed(() => [
-  "w-full",
-  "border-collapse",
-]);
-
-const thClasses = computed(() => [
-  "text-left p-3 font-medium text-charcoal-600",
-]);
-
-const tdClasses = computed(() => [
-  "p-3 text-charcoal-800",
-]);
 </script>
 
 <template>
   <div class="overflow-x-auto w-full">
-    <table :class="tableClasses">
+    <table class="w-full border-collapse">
       <thead>
         <tr>
-          <th v-for="col in columns" :key="col.key" :class="thClasses">
+          <th
+            v-for="col in columns"
+            :key="col.key"
+            class="text-left p-3 font-sans font-medium text-primary-50 sticky top-0 bg-primary-600 z-10"
+          >
             <slot :name="`header-${col.key}`" :column="col">
               {{ col.label || col.key }}
             </slot>
@@ -41,21 +32,33 @@ const tdClasses = computed(() => [
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(row, rowIndex) in data" :key="rowIndex">
-          <td v-for="col in columns" :key="col.key" :class="tdClasses">
-            <slot :name="`cell-${col.key}`" :row="row" :column="col" :index="rowIndex">
+        <tr v-for="(row, rowIndex) in data" :key="rowIndex" class="border-b-solid border-b-1 border-charcoal-200">
+          <td
+            v-for="col in columns"
+            :key="col.key"
+            class="p-3 font-sans text-charcoal-800"
+          >
+            <slot
+              :name="`cell-${col.key}`"
+              :row="row"
+              :column="col"
+              :index="rowIndex"
+            >
               {{ row[col.key] }}
             </slot>
           </td>
         </tr>
       </tbody>
     </table>
-    <div v-if="data.length === 0" class="w-full p-6 text-center text-charcoal-500 italic">
+    <div
+      v-if="data.length === 0"
+      class="w-full p-6 text-center text-charcoal-500 italic"
+    >
       <slot name="empty">No data available</slot>
     </div>
   </div>
 </template>
 
 <style>
-@unocss-placeholder
+@unocss-placeholder;
 </style>
