@@ -1,7 +1,12 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, onMounted, getCurrentInstance, ref, watch } from "vue";
 
 const props = defineProps({
+  value: {
+    type: [String, Number],
+    required: false,
+    default: "",
+  },
   color: {
     type: String,
     required: false,
@@ -27,6 +32,35 @@ const props = defineProps({
     type: String,
     required: false,
   },
+});
+
+const emit = defineEmits(["update:value"]);
+const inputRef = ref<HTMLInputElement | null>(null);
+
+// Sincronizar cambios externos con el input interno
+watch(
+  () => props.value,
+  (newVal) => {
+    if (inputRef.value) {
+      inputRef.value.value = String(newVal);
+    }
+  },
+  { immediate: true }
+);
+
+// Exponer value como propiedad nativa del custom element
+onMounted(() => {
+  const instance = getCurrentInstance();
+  const el = instance?.proxy?.$el as HTMLElement;
+  
+  if (el && !('value' in el)) {
+    Object.defineProperty(el, 'value', {
+      get: () => props.value,
+      set: (v: string | number) => emit('update:value', v),
+      configurable: true,
+      enumerable: true
+    });
+  }
 });
 
 const inputClasses = computed(() => [
@@ -143,13 +177,15 @@ const inputClasses = computed(() => [
       props.color === "danger" && props.variant === "ghost",
   },
 ]);
-
 </script>
 
 <template>
   <input
+    ref="inputRef"
     :type="props.type"
     :placeholder="props.placeholder"
+    :value="props.value"
+    @input="(e) => emit('update:value', (e.target as HTMLInputElement).value)"
     class="w-full focus:outline-none focus:ring-2 focus:ring-primary-300"
     :class="inputClasses"
   />

@@ -26,9 +26,13 @@
       const input = document.getElementById('my-input');
       const display = document.getElementById('value');
       
-      input.addEventListener('input', (e) => {
-        display.textContent = e.target.value || '-';
+      // Escuchar evento update:value del custom element
+      input.addEventListener('update:value', (e) => {
+        display.textContent = e.detail || '-';
       });
+      
+      // O acceder directamente a input.value (gracias al getter/setter)
+      // display.textContent = input.value || '-';
     </script>
   </body>
 </html>
