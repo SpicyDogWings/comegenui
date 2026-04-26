@@ -14,15 +14,9 @@ const columns = [
 ];
 
 onMounted(async () => {
-  try {
     const response = await fetch("https://jsonplaceholder.typicode.com/posts");
     if (!response.ok) throw new Error("Failed to fetch");
     posts.value = await response.json();
-  } catch (e) {
-    error.value = e.message;
-  } finally {
-    loading.value = false;
-  }
 });
 </script>
 
@@ -31,7 +25,7 @@ onMounted(async () => {
     class="w-screen h-screen flex flex-col justify-center items-center gap-4 p-6"
   >
     <div class="w-1/2 h-1/2 flex gap-1">
-      <Table :columns="columns" :data="posts" bordered hoverable />
+      <Table :columns="columns" :data="posts" />
     </div>
   </div>
 </template>

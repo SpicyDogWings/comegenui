@@ -32,7 +32,7 @@ const props = defineProps({
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(row, rowIndex) in data" :key="rowIndex" class="border-b-solid border-b-1 border-charcoal-200">
+        <tr v-for="(row, rowIndex) in data" :key="rowIndex" class="border-b-solid border-b-1 border-charcoal-200 last:border-b-none">
           <td
             v-for="col in columns"
             :key="col.key"
