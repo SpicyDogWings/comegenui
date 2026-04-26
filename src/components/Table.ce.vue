@@ -12,6 +12,11 @@ const props = defineProps({
     required: false,
     default: () => [],
   },
+  empty: {
+    type: String,
+    required: false,
+    default: "",
+  },
 });
 </script>
 
@@ -48,14 +53,13 @@ const props = defineProps({
             </slot>
           </td>
         </tr>
+        <tr v-if="data.length === 0">
+          <td :colspan="columns.length" class="p-6 text-center text-charcoal-500 italic">
+            <slot name="empty">{{ empty || "No hay datos que mostrar" }}</slot>
+          </td>
+        </tr>
       </tbody>
     </table>
-    <div
-      v-if="data.length === 0"
-      class="w-full p-6 text-center text-charcoal-500 italic"
-    >
-      <slot name="empty">No data available</slot>
-    </div>
   </div>
 </template>
 
