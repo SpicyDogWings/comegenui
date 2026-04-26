@@ -1,9 +1,14 @@
 <script setup lang="ts">
 import { computed } from "vue";
+import Badge from "./Badge.ce.vue";
 
 const props = defineProps({
   columns: {
-    type: Array as () => { key: string; label?: string }[],
+    type: Array as () => { 
+      key: string; 
+      label?: string; 
+      badges?: boolean | { color?: string; variant?: string } 
+    }[],
     required: false,
     default: () => [],
   },
@@ -18,6 +23,20 @@ const props = defineProps({
     default: "",
   },
 });
+
+const getBadgeProps = (col: { badges?: boolean | { color?: string; variant?: string } }) => {
+  if (!col.badges) return null;
+  if (col.badges === true) return { color: "primary", variant: "solid" };
+  return { color: "primary", variant: "solid", ...col.badges };
+};
+
+const isBadgeColumn = (col: { badges?: boolean | { color?: string; variant?: string } }) => {
+  return !!col.badges;
+};
+
+const getBadgeValues = (value: any) => {
+  return Array.isArray(value) ? value : [value];
+};
 </script>
 
 <template>
@@ -49,7 +68,19 @@ const props = defineProps({
               :column="col"
               :index="rowIndex"
             >
-              {{ row[col.key] }}
+              <template v-if="isBadgeColumn(col)">
+                <Badge
+                  v-for="(badgeValue, idx) in getBadgeValues(row[col.key])"
+                  :key="idx"
+                  v-bind="getBadgeProps(col)"
+                  class="mr-1"
+                >
+                  {{ badgeValue }}
+                </Badge>
+              </template>
+              <template v-else>
+                {{ row[col.key] }}
+              </template>
             </slot>
           </td>
         </tr>
