@@ -3,6 +3,7 @@ import { computed, ref } from "vue";
 import Badge from "./Badge.ce.vue";
 import Button from "./Button.ce.vue";
 import Input from "./Input.ce.vue";
+import Pagination from "./Pagination.ce.vue";
 
 interface BadgeConfig {
   value: string;
@@ -56,14 +57,30 @@ const props = defineProps({
     required: false,
     default: () => [],
   },
+  pagination: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
+  itemsPerPage: {
+    type: Number,
+    required: false,
+    default: 10,
+  },
 });
 
 const searchQuery = ref("");
-const emit = defineEmits(["update:search"]);
+const currentPage = ref(1);
+const emit = defineEmits(["update:search", "update:currentPage"]);
 
 const handleSearchUpdate = (value: string) => {
   searchQuery.value = value;
   emit("update:search", value);
+};
+
+const handlePageChange = (page: number) => {
+  currentPage.value = page;
+  emit("update:currentPage", page);
 };
 
 const tableColumns = computed(() => {
@@ -97,6 +114,19 @@ const filteredData = computed(() => {
       return false;
     });
   });
+});
+
+const paginatedData = computed(() => {
+  if (!props.pagination) return filteredData.value;
+  const start = (currentPage.value - 1) * props.itemsPerPage;
+  const end = start + props.itemsPerPage;
+  return filteredData.value.slice(start, end);
+});
+
+const totalItems = computed(() => filteredData.value.length);
+
+const totalPages = computed(() => {
+  return Math.ceil(totalItems.value / props.itemsPerPage);
 });
 
 const getCellValue = (row: Record<string, any>, col: Column): string | string[] => {
@@ -156,7 +186,7 @@ const hasButtons = (col: Column): boolean => {
         </thead>
         <tbody>
           <tr
-            v-for="(row, rowIndex) in filteredData"
+            v-for="(row, rowIndex) in paginatedData"
             :key="rowIndex"
             class="hover:bg-charcoal-50 transition-colors border-charcoal-100 border-b-1 border-b-solid last:border-b-0"
           >
@@ -190,7 +220,7 @@ const hasButtons = (col: Column): boolean => {
             </td>
           </tr>
 
-          <tr v-if="filteredData.length === 0">
+          <tr v-if="paginatedData.length === 0">
             <td
               :colspan="tableColumns.length"
               class="p-8 text-center text-charcoal-500 italic font-sans"
@@ -201,6 +231,16 @@ const hasButtons = (col: Column): boolean => {
         </tbody>
       </table>
     </div>
+    <Pagination
+      v-if="pagination"
+      :current-page="currentPage"
+      :total-pages="totalPages"
+      :total-items="totalItems"
+      :items-per-page="itemsPerPage"
+      :show-page-size="true"
+      @update:current-page="handlePageChange"
+      @update:items-per-page="(size) => ((itemsPerPage = size), (currentPage = 1))"
+    />
   </div>
 </template>
 

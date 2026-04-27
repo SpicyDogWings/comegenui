@@ -55,7 +55,6 @@ const columns = [
         :total-pages="totalPages"
         :total-items="posts.length"
         :items-per-page="itemsPerPage"
-        :show-page-size="true"
         @update:current-page="currentPage = $event"
         @update:items-per-page="itemsPerPage = $event"
       />
