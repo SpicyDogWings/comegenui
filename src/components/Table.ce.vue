@@ -15,6 +15,8 @@ interface ButtonConfig {
   label: string;
   color?: string;
   variant?: string;
+  to?: string;
+  target?: string;
   onClick?: () => void;
 }
 
@@ -238,6 +240,8 @@ const hasButtons = (col: Column): boolean => {
                     :key="idx"
                     :color="btn.color"
                     :variant="btn.variant"
+                    :to="btn.to"
+                    :target="btn.target"
                     @click="btn.onClick?.()"
                   >
                     {{ btn.label }}

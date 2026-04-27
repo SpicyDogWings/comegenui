@@ -20,6 +20,12 @@ const props = defineProps({
     type: String,
     required: false,
   },
+  target: {
+    type: String,
+    required: false,
+    default: "",
+    validator: (value: string) => ["_self", "_blank", "_parent", "_top"].includes(value),
+  },
   disabled: {
     type: Boolean,
     required: false,
@@ -155,7 +161,12 @@ const buttonClasses = computed(() => [
 </script>
 
 <template>
-  <a v-if="props.to && !props.disabled" :href="props.to">
+  <a
+    v-if="props.to && !props.disabled"
+    :href="props.to"
+    :target="props.target"
+    :class="[props.variant === 'link' ? '' : 'decoration-0']"
+  >
     <button
       class="py-2 px-4 rounded-cu border-none font-sans font-medium hover:cursor-pointer flex justify-center items-center gap-2"
       :class="buttonClasses"
@@ -164,7 +175,12 @@ const buttonClasses = computed(() => [
       <slot></slot>
     </button>
   </a>
-  <a v-else-if="props.to && props.disabled" :href="props.to" class="pointer-events-none">
+  <a
+    v-else-if="props.to && props.disabled"
+    :href="props.to"
+    :target="props.target"
+    class="pointer-events-none"
+  >
     <button
       class="py-2 px-4 rounded-cu border-none font-sans font-medium hover:cursor-pointer flex justify-center items-center gap-2 box-border"
       :class="buttonClasses"
