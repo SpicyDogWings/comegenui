@@ -76,17 +76,19 @@ const tableColumns = computed(() => {
   return [];
 });
 
+const effectiveSearchFields = computed(() => {
+  return props.searchFields.length > 0 ? props.searchFields : tableColumns.value.map((c) => c.key);
+});
+
 const filteredData = computed(() => {
   if (!searchQuery.value || !props.searchEnabled) {
     return props.data;
   }
 
   const query = searchQuery.value.toLowerCase();
-  const fields =
-    props.searchFields.length > 0 ? props.searchFields : tableColumns.value.map((c) => c.key);
 
   return props.data.filter((row) => {
-    return fields.some((key) => {
+    return effectiveSearchFields.value.some((key) => {
       const value = row[key];
       if (typeof value === "string") {
         return value.toLowerCase().includes(query);

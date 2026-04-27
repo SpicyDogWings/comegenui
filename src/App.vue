@@ -43,11 +43,10 @@ const columns = [
 
     <div class="max-w-4xl">
       <Table
-
         :data="users"
         :searchEnabled="true"
         searchPlaceholder="Buscar usuarios..."
-        :searchFields="['name', 'email', 'status', 'role']"
+        :searchFields="['name']"
         empty="No se encontraron usuarios"
         style="max-height: 15rem"
       />
