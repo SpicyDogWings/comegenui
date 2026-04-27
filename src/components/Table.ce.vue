@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import Badge from "./Badge.ce.vue";
 import Button from "./Button.ce.vue";
+import Input from "./Input.ce.vue";
 
 interface BadgeConfig {
   value: string;
@@ -40,22 +41,35 @@ const props = defineProps({
     required: false,
     default: "",
   },
+  searchPlaceholder: {
+    type: String,
+    required: false,
+    default: "Buscar...",
+  },
+  showSearch: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 });
 
-const getCellValue = (
-  row: Record<string, any>,
-  col: Column,
-): string | string[] => {
+const searchQuery = ref("");
+
+const emit = defineEmits(["update:search"]);
+
+const handleSearchUpdate = (value: string) => {
+  searchQuery.value = value;
+  emit("update:search", value);
+};
+
+const getCellValue = (row: Record<string, any>, col: Column): string | string[] => {
   if (typeof col.cell === "function") {
     return col.cell(row);
   }
   return row[col.key];
 };
 
-const getCellBadges = (
-  row: Record<string, any>,
-  col: Column,
-): BadgeConfig[] => {
+const getCellBadges = (row: Record<string, any>, col: Column): BadgeConfig[] => {
   if (typeof col.badges === "function") {
     return col.badges(row).filter((b) => b?.value != null);
   }
@@ -66,10 +80,7 @@ const hasBadges = (col: Column): boolean => {
   return typeof col.badges === "function";
 };
 
-const getCellButtons = (
-  row: Record<string, any>,
-  col: Column,
-): ButtonConfig[] => {
+const getCellButtons = (row: Record<string, any>, col: Column): ButtonConfig[] => {
   if (typeof col.buttons === "function") {
     return col.buttons(row).filter((b) => b?.label != null);
   }
@@ -83,6 +94,14 @@ const hasButtons = (col: Column): boolean => {
 
 <template>
   <div class="overflow-x-auto w-full">
+    <div v-if="showSearch" class="mb-3 w-full">
+      <Input
+        :placeholder="searchPlaceholder"
+        :model-value="searchQuery"
+        @update:modelValue="handleSearchUpdate"
+        class="w-full"
+      />
+    </div>
     <table class="w-full border-collapse">
       <thead>
         <tr>
@@ -103,17 +122,8 @@ const hasButtons = (col: Column): boolean => {
           :key="rowIndex"
           class="border-b-solid border-b-1 border-charcoal-200 last:border-b-none"
         >
-          <td
-            v-for="col in columns"
-            :key="col.key"
-            class="p-3 font-sans text-charcoal-800"
-          >
-            <slot
-              :name="`cell-${col.key}`"
-              :row="row"
-              :column="col"
-              :index="rowIndex"
-            >
+          <td v-for="col in columns" :key="col.key" class="p-3 font-sans text-charcoal-800">
+            <slot :name="`cell-${col.key}`" :row="row" :column="col" :index="rowIndex">
               <template v-if="hasBadges(col)">
                 <div class="flex justify-content items-center gap-1">
                   <Badge
@@ -146,10 +156,7 @@ const hasButtons = (col: Column): boolean => {
           </td>
         </tr>
         <tr v-if="data.length === 0">
-          <td
-            :colspan="columns.length"
-            class="p-6 text-center text-charcoal-500 italic"
-          >
+          <td :colspan="columns.length" class="p-6 text-center text-charcoal-500 italic">
             <slot name="empty">{{ empty || "No hay datos que mostrar" }}</slot>
           </td>
         </tr>
