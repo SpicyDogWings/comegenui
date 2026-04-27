@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { computed, onMounted, getCurrentInstance, ref, watch } from "vue";
+import { computed, ref } from "vue";
+
+const inputValue = ref();
 
 const props = defineProps({
-  value: {
-    type: [String, Number],
-    required: false,
-    default: "",
+  startValue: {
+    type: String,
+    required: false
   },
   color: {
     type: String,
@@ -34,35 +35,6 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["update:value"]);
-const inputRef = ref<HTMLInputElement | null>(null);
-
-// Sincronizar cambios externos con el input interno
-watch(
-  () => props.value,
-  (newVal) => {
-    if (inputRef.value) {
-      inputRef.value.value = String(newVal);
-    }
-  },
-  { immediate: true }
-);
-
-// Exponer value como propiedad nativa del custom element
-onMounted(() => {
-  const instance = getCurrentInstance();
-  const el = instance?.proxy?.$el as HTMLElement;
-  
-  if (el && !('value' in el)) {
-    Object.defineProperty(el, 'value', {
-      get: () => props.value,
-      set: (v: string | number) => emit('update:value', v),
-      configurable: true,
-      enumerable: true
-    });
-  }
-});
-
 const inputClasses = computed(() => [
   "w-full",
   "py-2",
@@ -71,7 +43,6 @@ const inputClasses = computed(() => [
   "font-sans",
   "border-none",
   "placeholder:text-charcoal-400",
-  // Primary
   {
     "bg-primary text-primary-50 border-solid border-2 border-primary":
       props.color === "primary" && props.variant === "solid",
@@ -92,7 +63,6 @@ const inputClasses = computed(() => [
     "bg-transparent text-primary hover:bg-primary-50":
       props.color === "primary" && props.variant === "ghost",
   },
-  // Neutral
   {
     "bg-charcoal text-charcoal-50 border-solid border-2 border-charcoal":
       props.color === "neutral" && props.variant === "solid",
@@ -113,7 +83,6 @@ const inputClasses = computed(() => [
     "bg-transparent text-charcoal-800 hover:bg-charcoal-50":
       props.color === "neutral" && props.variant === "ghost",
   },
-  // Success
   {
     "bg-success text-success-50 border-solid border-2 border-success":
       props.color === "success" && props.variant === "solid",
@@ -134,7 +103,6 @@ const inputClasses = computed(() => [
     "bg-transparent text-success-600 hover:bg-success-50":
       props.color === "success" && props.variant === "ghost",
   },
-  // Warning
   {
     "bg-warning text-warning-50 border-solid border-2 border-warning":
       props.color === "warning" && props.variant === "solid",
@@ -155,7 +123,6 @@ const inputClasses = computed(() => [
     "bg-transparent text-warning-500 hover:bg-warning-50":
       props.color === "warning" && props.variant === "ghost",
   },
-  // Danger
   {
     "bg-danger text-danger-50 border-solid border-2 border-danger":
       props.color === "danger" && props.variant === "solid",
@@ -177,15 +144,26 @@ const inputClasses = computed(() => [
       props.color === "danger" && props.variant === "ghost",
   },
 ]);
+
+const get = () => {
+  return inputValue.value;
+}
+
+const set = (value: string | number) => {
+  inputValue.value = value;
+}
+
+defineExpose({
+  get,
+  set
+});
 </script>
 
 <template>
   <input
-    ref="inputRef"
     :type="props.type"
     :placeholder="props.placeholder"
-    :value="props.value"
-    @input="(e) => emit('update:value', (e.target as HTMLInputElement).value)"
+    v-model="inputValue"
     class="w-full focus:outline-none focus:ring-2 focus:ring-primary-300"
     :class="inputClasses"
   />

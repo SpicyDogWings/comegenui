@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite App</title>
     <script src="dist/CuInput.iife.js"></script>
+    <script src="dist/CuButton.iife.js"></script>
   </head>
   <body>
     <div style="padding: 20px; max-width: 500px; margin: 0 auto;">
@@ -16,23 +17,27 @@
         color="primary"
         variant="outlined"
       ></cu-input>
+      <cu-button id="click">Reset</cu-button>
       <br><br>
       <div id="display" style="padding: 10px; background: #f5f5f5; border-radius: 8px;">
         <strong>Valor actual:</strong> <span id="value">-</span>
       </div>
     </div>
-    
+
     <script>
       const input = document.getElementById('my-input');
       const display = document.getElementById('value');
-      
-      // Escuchar evento update:value del custom element
-      input.addEventListener('update:value', (e) => {
-        display.textContent = e.detail || '-';
+      const button = document.getElementById('click');
+      input.addEventListener('input', (e) => {
+        display.textContent = input.get();
       });
-      
-      // O acceder directamente a input.value (gracias al getter/setter)
-      // display.textContent = input.value || '-';
+      input.addEventListener('cahnge', (e) => {
+        display.textContent = input.get();
+      });
+      button.addEventListener("click", () => {
+        input.set("");
+        display.textContent = input.get();
+      });
     </script>
   </body>
 </html>
