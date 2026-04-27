@@ -100,13 +100,13 @@ const selectClasses = [
 <template>
   <div
     v-if="totalPages > 1 || showPageSize"
-    class="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 gap-3"
+    class="w-full flex flex-wrap items-center justify-between p-3 gap-3 box-border"
   >
-    <div class="flex items-center gap-2 text-sm text-charcoal-600 font-sans">
-      <span>Mostrando {{ startItem }} - {{ endItem }} de {{ totalItems }}</span>
-    </div>
+    <span class="hidden md:inline text-sm text-charcoal-600 font-sans">
+      Mostrando {{ startItem }} - {{ endItem }} de {{ totalItems }}
+    </span>
 
-    <div class="flex items-center gap-2">
+    <div class="flex flex-wrap items-center justify-center gap-2">
       <div v-if="showPageSize" class="flex items-center gap-2">
         <span class="text-sm text-charcoal-600 font-sans">Por página:</span>
         <select

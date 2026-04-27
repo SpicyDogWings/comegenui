@@ -4,11 +4,12 @@
     <meta charset="UTF-8" />
     <link rel="icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tabla con Búsqueda - Ejemplo</title>
+    <title>Tabla con Búsqueda y Paginación - Ejemplo</title>
     <script src="dist/vendor/vue-runtime.iife.js"></script>
     <script src="dist/CuInput.iife.js"></script>
     <script src="dist/CuButton.iife.js"></script>
     <script src="dist/CuBadge.iife.js"></script>
+    <script src="dist/CuPagination.iife.js"></script>
     <script src="dist/CuTable.iife.js"></script>
   </head>
   <body>
@@ -18,8 +19,10 @@
         id="posts-table"
         search-enabled="true"
         search-placeholder="Buscar posts..."
+        pagination="true"
+        items-per-page="10"
         empty="No se encontraron posts"
-        style="max-height: 400px; margin-top: 20px"
+        style="max-height: 400px; margin-top: 20px; width: 100%"
       ></cu-table>
       <div id="loading" style="padding: 10px; text-align: center; display: none">
         Cargando datos...
