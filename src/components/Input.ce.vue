@@ -33,6 +33,16 @@ const props = defineProps({
     type: String,
     required: false,
   },
+  disabled: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
+  readOnly: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 });
 
 const inputClasses = computed(() => [
@@ -160,6 +170,8 @@ defineExpose({
     :placeholder="props.placeholder"
     v-model="inputValue"
     :class="inputClasses"
+    :disabled="props.disabled"
+    :readonly="props.readOnly"
   />
 </template>
 
