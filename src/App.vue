@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { computed, onMounted, ref } from "vue";
 import Table from "./components/Table.ce.vue";
+import Pagination from "./components/Pagination.ce.vue";
 
 interface User {
   id: number;
@@ -9,31 +11,28 @@ interface User {
   role: string;
 }
 
-const users: User[] = [
-  { id: 1, name: "Juan Pérez", email: "juan@ejemplo.com", status: "active", role: "admin" },
-  { id: 2, name: "María García", email: "maria@ejemplo.com", status: "inactive", role: "user" },
-  { id: 3, name: "Carlos Ruiz", email: "carlos@ejemplo.com", status: "active", role: "editor" },
-  { id: 4, name: "Ana López", email: "ana@ejemplo.com", status: "pending", role: "user" },
-  { id: 5, name: "Luis Martínez", email: "luis@ejemplo.com", status: "active", role: "user" },
-];
+const posts = ref<User[]>([]);
+const currentPage = ref(1);
+const itemsPerPage = ref(10);
+
+onMounted(async () => {
+  const response = await fetch("https://jsonplaceholder.typicode.com/posts");
+  posts.value = await response.json();
+});
+
+const paginatedData = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+  return posts.value.slice(start, end);
+});
+
+const totalPages = computed(() => {
+  return Math.ceil(posts.value.length / itemsPerPage.value);
+});
 
 const columns = [
   { key: "id", label: "ID" },
-  { key: "name", label: "Nombre" },
-  { key: "email", label: "Email" },
-  {
-    key: "status",
-    label: "Estado",
-    badges: (row: User) => [
-      {
-        value: row.status,
-        color:
-          row.status === "active" ? "success" : row.status === "inactive" ? "danger" : "warning",
-        variant: "subtle",
-      },
-    ],
-  },
-  { key: "role", label: "Rol" },
+  { key: "title", label: "Título" },
 ];
 </script>
 
@@ -43,12 +42,22 @@ const columns = [
 
     <div class="max-w-4xl">
       <Table
-        :data="users"
+        :columns="columns"
+        :data="paginatedData"
         :searchEnabled="true"
-        searchPlaceholder="Buscar usuarios..."
-        :searchFields="['name']"
-        empty="No se encontraron usuarios"
+        searchPlaceholder="Buscar posts..."
+        :searchFields="['title']"
+        empty="No se encontraron posts"
         style="max-height: 15rem"
+      />
+      <Pagination
+        :current-page="currentPage"
+        :total-pages="totalPages"
+        :total-items="posts.length"
+        :items-per-page="itemsPerPage"
+        :show-page-size="true"
+        @update:current-page="currentPage = $event"
+        @update:items-per-page="itemsPerPage = $event"
       />
     </div>
   </div>

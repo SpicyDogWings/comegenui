@@ -193,7 +193,7 @@ const hasButtons = (col: Column): boolean => {
           <tr v-if="filteredData.length === 0">
             <td
               :colspan="tableColumns.length"
-              class="p-8 text-center text-charcoal-500 italic bg-white"
+              class="p-8 text-center text-charcoal-500 italic font-sans"
             >
               <slot name="empty">{{ empty || "No hay datos que mostrar" }}</slot>
             </td>
