@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import Badge from "./Badge.ce.vue";
 import Button from "./Button.ce.vue";
 import Input from "./Input.ce.vue";
@@ -67,20 +67,45 @@ const props = defineProps({
     required: false,
     default: 10,
   },
+  showPageSize: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
+  pageSizeOptions: {
+    type: Array as () => number[],
+    required: false,
+    default: () => [5, 10, 20, 50],
+  },
 });
 
 const searchQuery = ref("");
 const currentPage = ref(1);
-const emit = defineEmits(["update:search", "update:currentPage"]);
+const itemsPerPage = ref(props.itemsPerPage);
+const emit = defineEmits(["update:search", "update:currentPage", "update:itemsPerPage"]);
+
+watch(
+  () => props.itemsPerPage,
+  (val) => {
+    itemsPerPage.value = val;
+  },
+);
 
 const handleSearchUpdate = (value: string) => {
   searchQuery.value = value;
+  currentPage.value = 1;
   emit("update:search", value);
 };
 
 const handlePageChange = (page: number) => {
   currentPage.value = page;
   emit("update:currentPage", page);
+};
+
+const handlePageSizeChange = (size: number) => {
+  itemsPerPage.value = size;
+  currentPage.value = 1;
+  emit("update:itemsPerPage", size);
 };
 
 const tableColumns = computed(() => {
@@ -116,17 +141,21 @@ const filteredData = computed(() => {
   });
 });
 
-const paginatedData = computed(() => {
-  if (!props.pagination) return filteredData.value;
-  const start = (currentPage.value - 1) * props.itemsPerPage;
-  const end = start + props.itemsPerPage;
+const displayData = computed(() => {
+  if (!props.pagination || searchQuery.value) return filteredData.value;
+  const start = (currentPage.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
   return filteredData.value.slice(start, end);
 });
 
 const totalItems = computed(() => filteredData.value.length);
 
 const totalPages = computed(() => {
-  return Math.ceil(totalItems.value / props.itemsPerPage);
+  return Math.ceil(totalItems.value / itemsPerPage.value);
+});
+
+const showPaginationControl = computed(() => {
+  return props.pagination && !searchQuery.value;
 });
 
 const getCellValue = (row: Record<string, any>, col: Column): string | string[] => {
@@ -169,7 +198,7 @@ const hasButtons = (col: Column): boolean => {
         color="neutral"
       />
     </div>
-    <div class="overflow-auto rounded-md">
+    <div class="overflow-auto rounded-sm">
       <table class="w-full border-collapse">
         <thead>
           <tr>
@@ -186,7 +215,7 @@ const hasButtons = (col: Column): boolean => {
         </thead>
         <tbody>
           <tr
-            v-for="(row, rowIndex) in paginatedData"
+            v-for="(row, rowIndex) in displayData"
             :key="rowIndex"
             class="hover:bg-charcoal-50 transition-colors border-charcoal-100 border-b-1 border-b-solid last:border-b-0"
           >
@@ -220,7 +249,7 @@ const hasButtons = (col: Column): boolean => {
             </td>
           </tr>
 
-          <tr v-if="paginatedData.length === 0">
+          <tr v-if="displayData.length === 0">
             <td
               :colspan="tableColumns.length"
               class="p-8 text-center text-charcoal-500 italic font-sans"
@@ -232,14 +261,15 @@ const hasButtons = (col: Column): boolean => {
       </table>
     </div>
     <Pagination
-      v-if="pagination"
+      v-if="showPaginationControl"
       :current-page="currentPage"
       :total-pages="totalPages"
       :total-items="totalItems"
       :items-per-page="itemsPerPage"
-      :show-page-size="true"
+      :show-page-size="props.showPageSize"
+      :page-size-options="props.pageSizeOptions"
       @update:current-page="handlePageChange"
-      @update:items-per-page="(size) => ((itemsPerPage = size), (currentPage = 1))"
+      @update:items-per-page="handlePageSizeChange"
     />
   </div>
 </template>
