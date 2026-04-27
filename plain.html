@@ -14,11 +14,10 @@
       <cu-input
         id="my-input"
         placeholder="Escribe algo..."
-        color="primary"
-        variant="outlined"
+        color="success"
+        variant="soft"
       ></cu-input>
       <cu-button id="click">Reset</cu-button>
-      <br><br>
       <div id="display" style="padding: 10px; background: #f5f5f5; border-radius: 8px;">
         <strong>Valor actual:</strong> <span id="value">-</span>
       </div>
@@ -35,7 +34,7 @@
         display.textContent = input.get();
       });
       button.addEventListener("click", () => {
-        input.set("");
+        input.reset();
         display.textContent = input.get();
       });
     </script>

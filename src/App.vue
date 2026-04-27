@@ -1,31 +1,48 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import Table from "./components/Table.ce.vue";
+import Input from "./components/Input.ce.vue";
 
-const posts = ref([]);
-const loading = ref(true);
-const error = ref(null);
-
-const columns = [
-  { key: "id", label: "ID" },
-  { key: "userId", label: "User" },
-  { key: "title", label: "Title" },
-  { key: "body", label: "Body" },
+const inputConfigs = [
+  // Primary
+  { color: "primary", variant: "outlined", placeholder: "Primary Outlined" },
+  { color: "primary", variant: "soft", placeholder: "Primary Soft" },
+  { color: "primary", variant: "ghost", placeholder: "Primary Ghost" },
+  { color: "primary", variant: "subtle", placeholder: "Primary Subtle" },
+  // Neutral
+  { color: "neutral", variant: "outlined", placeholder: "Neutral Outlined" },
+  { color: "neutral", variant: "soft", placeholder: "Neutral Soft" },
+  { color: "neutral", variant: "ghost", placeholder: "Neutral Ghost" },
+  { color: "neutral", variant: "subtle", placeholder: "Neutral Subtle" },
+  // Success
+  { color: "success", variant: "outlined", placeholder: "Success Outlined" },
+  { color: "success", variant: "soft", placeholder: "Success Soft" },
+  { color: "success", variant: "ghost", placeholder: "Success Ghost" },
+  { color: "success", variant: "subtle", placeholder: "Success Subtle" },
+  // Warning
+  { color: "warning", variant: "outlined", placeholder: "Warning Outlined" },
+  { color: "warning", variant: "soft", placeholder: "Warning Soft" },
+  { color: "warning", variant: "ghost", placeholder: "Warning Ghost" },
+  { color: "warning", variant: "subtle", placeholder: "Warning Subtle" },
+  // Danger
+  { color: "danger", variant: "outlined", placeholder: "Danger Outlined" },
+  { color: "danger", variant: "soft", placeholder: "Danger Soft" },
+  { color: "danger", variant: "ghost", placeholder: "Danger Ghost" },
+  { color: "danger", variant: "subtle", placeholder: "Danger Subtle" },
 ];
-
-onMounted(async () => {
-    const response = await fetch("https://jsonplaceholder.typicode.com/posts");
-    if (!response.ok) throw new Error("Failed to fetch");
-    posts.value = await response.json();
-});
 </script>
 
 <template>
-  <div
-    class="w-screen h-screen flex flex-col justify-center items-center gap-4 p-6"
-  >
-    <div class="w-1/2 h-1/2 flex gap-1">
-      <Table :columns="columns" :data="posts" />
+  <div class="w-screen h-screen flex flex-col gap-8 p-6">
+    <h1 class="text-2xl font-bold">Inputs - Todas las combinaciones</h1>
+    
+    <div class="flex flex-wrap gap-4">
+      <Input
+        v-for="(config, index) in inputConfigs"
+        :key="index"
+        :color="config.color"
+        :variant="config.variant"
+        :placeholder="config.placeholder"
+        class="w-64"
+      />
     </div>
   </div>
 </template>

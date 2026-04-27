@@ -20,7 +20,7 @@ const props = defineProps({
     required: false,
     default: "outlined",
     validator: (value: string) =>
-      ["solid", "outlined", "soft", "ghost", "subtle"].includes(value),
+      ["outlined", "soft", "ghost", "subtle"].includes(value),
   },
   type: {
     type: String,
@@ -44,10 +44,6 @@ const inputClasses = computed(() => [
   "border-none",
   "placeholder:text-charcoal-400",
   {
-    "bg-primary text-primary-50 border-solid border-2 border-primary":
-      props.color === "primary" && props.variant === "solid",
-  },
-  {
     "bg-primary-50 text-primary border-solid border-1 border-primary-300":
       props.color === "primary" && props.variant === "subtle",
   },
@@ -62,10 +58,6 @@ const inputClasses = computed(() => [
   {
     "bg-transparent text-primary hover:bg-primary-50":
       props.color === "primary" && props.variant === "ghost",
-  },
-  {
-    "bg-charcoal text-charcoal-50 border-solid border-2 border-charcoal":
-      props.color === "neutral" && props.variant === "solid",
   },
   {
     "bg-charcoal-50 text-charcoal-800 border-solid border-1 border-charcoal-300":
@@ -84,10 +76,6 @@ const inputClasses = computed(() => [
       props.color === "neutral" && props.variant === "ghost",
   },
   {
-    "bg-success text-success-50 border-solid border-2 border-success":
-      props.color === "success" && props.variant === "solid",
-  },
-  {
     "bg-success-50 text-success-600 border-solid border-1 border-success-300":
       props.color === "success" && props.variant === "subtle",
   },
@@ -104,10 +92,6 @@ const inputClasses = computed(() => [
       props.color === "success" && props.variant === "ghost",
   },
   {
-    "bg-warning text-warning-50 border-solid border-2 border-warning":
-      props.color === "warning" && props.variant === "solid",
-  },
-  {
     "bg-warning-50 text-warning-500 border-solid border-1 border-warning-300":
       props.color === "warning" && props.variant === "subtle",
   },
@@ -122,10 +106,6 @@ const inputClasses = computed(() => [
   {
     "bg-transparent text-warning-500 hover:bg-warning-50":
       props.color === "warning" && props.variant === "ghost",
-  },
-  {
-    "bg-danger text-danger-50 border-solid border-2 border-danger":
-      props.color === "danger" && props.variant === "solid",
   },
   {
     "bg-danger-50 text-danger border-solid border-1 border-danger-300":
@@ -153,9 +133,14 @@ const set = (value: string | number) => {
   inputValue.value = value;
 }
 
+const reset = () => {
+  inputValue.value = "";
+};
+
 defineExpose({
   get,
-  set
+  set,
+  reset
 });
 </script>
 
