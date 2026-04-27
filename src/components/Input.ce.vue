@@ -57,6 +57,9 @@ const inputClasses = computed(() => [
   "focus:outline-none",
   "focus:ring-2",
   {
+    "cursor-not-allowed opacity-70": props.disabled,
+  },
+  {
     "focus:ring-primary-300": props.color === "primary",
     "focus:ring-charcoal-300": props.color === "neutral",
     "focus:ring-success-300": props.color === "success",
