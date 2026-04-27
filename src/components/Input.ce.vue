@@ -43,6 +43,15 @@ const inputClasses = computed(() => [
   "font-sans",
   "border-none",
   "placeholder:text-charcoal-400",
+  "focus:outline-none",
+  "focus:ring-2",
+  {
+    "focus:ring-primary-300": props.color === "primary",
+    "focus:ring-charcoal-300": props.color === "neutral",
+    "focus:ring-success-300": props.color === "success",
+    "focus:ring-warning-300": props.color === "warning",
+    "focus:ring-danger-300": props.color === "danger",
+  },
   {
     "bg-primary-50 text-primary border-solid border-1 border-primary-300":
       props.color === "primary" && props.variant === "subtle",
@@ -149,7 +158,6 @@ defineExpose({
     :type="props.type"
     :placeholder="props.placeholder"
     v-model="inputValue"
-    class="w-full focus:outline-none focus:ring-2 focus:ring-primary-300"
     :class="inputClasses"
   />
 </template>
