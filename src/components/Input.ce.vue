@@ -43,6 +43,7 @@ const inputClasses = computed(() => [
   "font-sans",
   "border-none",
   "placeholder:text-charcoal-400",
+  "text-neutral-800",
   "focus:outline-none",
   "focus:ring-2",
   {
@@ -53,83 +54,83 @@ const inputClasses = computed(() => [
     "focus:ring-danger-300": props.color === "danger",
   },
   {
-    "bg-primary-50 text-primary border-solid border-1 border-primary-300":
+    "bg-primary-50 border-solid border-1 border-primary-300":
       props.color === "primary" && props.variant === "subtle",
   },
   {
-    "bg-transparent border-solid border-2 border-primary text-primary":
+    "bg-transparent border-solid border-2 border-primary":
       props.color === "primary" && props.variant === "outlined",
   },
   {
-    "bg-primary-50 text-primary hover:bg-primary-100":
+    "bg-primary-50 hover:bg-primary-100":
       props.color === "primary" && props.variant === "soft",
   },
   {
-    "bg-transparent text-primary hover:bg-primary-50":
+    "bg-transparent hover:bg-primary-50":
       props.color === "primary" && props.variant === "ghost",
   },
   {
-    "bg-charcoal-50 text-charcoal-800 border-solid border-1 border-charcoal-300":
+    "bg-charcoal-50 border-solid border-1 border-charcoal-300":
       props.color === "neutral" && props.variant === "subtle",
   },
   {
-    "bg-transparent border-solid border-2 border-charcoal-800 text-charcoal-800":
+    "bg-transparent border-solid border-2 border-charcoal-800":
       props.color === "neutral" && props.variant === "outlined",
   },
   {
-    "bg-charcoal-50 text-charcoal-800 hover:bg-charcoal-100":
+    "bg-charcoal-50 hover:bg-charcoal-100":
       props.color === "neutral" && props.variant === "soft",
   },
   {
-    "bg-transparent text-charcoal-800 hover:bg-charcoal-50":
+    "bg-transparent hover:bg-charcoal-50":
       props.color === "neutral" && props.variant === "ghost",
   },
   {
-    "bg-success-50 text-success-600 border-solid border-1 border-success-300":
+    "bg-success-50 border-solid border-1 border-success-300":
       props.color === "success" && props.variant === "subtle",
   },
   {
-    "bg-transparent border-solid border-2 border-success text-success":
+    "bg-transparent border-solid border-2 border-success":
       props.color === "success" && props.variant === "outlined",
   },
   {
-    "bg-success-50 text-success-600 hover:bg-success-100":
+    "bg-success-50 hover:bg-success-100":
       props.color === "success" && props.variant === "soft",
   },
   {
-    "bg-transparent text-success-600 hover:bg-success-50":
+    "bg-transparent hover:bg-success-50":
       props.color === "success" && props.variant === "ghost",
   },
   {
-    "bg-warning-50 text-warning-500 border-solid border-1 border-warning-300":
+    "bg-warning-50 border-solid border-1 border-warning-300":
       props.color === "warning" && props.variant === "subtle",
   },
   {
-    "bg-transparent border-solid border-2 border-warning text-warning":
+    "bg-transparent border-solid border-2 border-warning":
       props.color === "warning" && props.variant === "outlined",
   },
   {
-    "bg-warning-50 text-warning-500 hover:bg-warning-100":
+    "bg-warning-50 hover:bg-warning-100":
       props.color === "warning" && props.variant === "soft",
   },
   {
-    "bg-transparent text-warning-500 hover:bg-warning-50":
+    "bg-transparent hover:bg-warning-50":
       props.color === "warning" && props.variant === "ghost",
   },
   {
-    "bg-danger-50 text-danger border-solid border-1 border-danger-300":
+    "bg-danger-50 border-solid border-1 border-danger-300":
       props.color === "danger" && props.variant === "subtle",
   },
   {
-    "bg-transparent border-solid border-2 border-danger text-danger":
+    "bg-transparent border-solid border-2 border-danger":
       props.color === "danger" && props.variant === "outlined",
   },
   {
-    "bg-danger-50 text-danger hover:bg-danger-100":
+    "bg-danger-50 hover:bg-danger-100":
       props.color === "danger" && props.variant === "soft",
   },
   {
-    "bg-transparent text-danger hover:bg-danger-50":
+    "bg-transparent hover:bg-danger-50":
       props.color === "danger" && props.variant === "ghost",
   },
 ]);
