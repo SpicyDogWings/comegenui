@@ -76,19 +76,17 @@ const tableColumns = computed(() => {
   return [];
 });
 
-const effectiveSearchFields = computed(() => {
-  return props.searchFields.length > 0 ? props.searchFields : tableColumns.value.map((c) => c.key);
-});
-
 const filteredData = computed(() => {
   if (!searchQuery.value || !props.searchEnabled) {
     return props.data;
   }
 
   const query = searchQuery.value.toLowerCase();
+  const fields =
+    props.searchFields.length > 0 ? props.searchFields : tableColumns.value.map((c) => c.key);
 
   return props.data.filter((row) => {
-    return effectiveSearchFields.value.some((key) => {
+    return fields.some((key) => {
       const value = row[key];
       if (typeof value === "string") {
         return value.toLowerCase().includes(query);
@@ -132,8 +130,8 @@ const hasButtons = (col: Column): boolean => {
 </script>
 
 <template>
-  <div class="flex flex-col overflow-hidden rounded-lg">
-    <div v-if="searchEnabled" class="p-3 border-b-1 border-b-solid border-charcoal-100">
+  <div class="flex flex-col overflow-hidden">
+    <div v-if="searchEnabled" class="p-3">
       <Input
         :placeholder="searchPlaceholder"
         :model-value="searchQuery"
@@ -141,7 +139,7 @@ const hasButtons = (col: Column): boolean => {
         color="neutral"
       />
     </div>
-    <div class="overflow-auto">
+    <div class="overflow-auto rounded-md">
       <table class="w-full border-collapse">
         <thead>
           <tr>
