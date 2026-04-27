@@ -6,7 +6,7 @@ const inputValue = ref();
 const props = defineProps({
   startValue: {
     type: String,
-    required: false
+    required: false,
   },
   color: {
     type: String,
@@ -19,8 +19,7 @@ const props = defineProps({
     type: String,
     required: false,
     default: "outlined",
-    validator: (value: string) =>
-      ["outlined", "soft", "ghost", "subtle"].includes(value),
+    validator: (value: string) => ["outlined", "soft", "ghost", "subtle"].includes(value),
   },
   type: {
     type: String,
@@ -46,7 +45,6 @@ const props = defineProps({
 });
 
 const inputClasses = computed(() => [
-  "w-full",
   "py-2",
   "px-3",
   "rounded-cu",
@@ -75,12 +73,10 @@ const inputClasses = computed(() => [
       props.color === "primary" && props.variant === "outlined",
   },
   {
-    "bg-primary-50 hover:bg-primary-100":
-      props.color === "primary" && props.variant === "soft",
+    "bg-primary-50 hover:bg-primary-100": props.color === "primary" && props.variant === "soft",
   },
   {
-    "bg-transparent hover:bg-primary-50":
-      props.color === "primary" && props.variant === "ghost",
+    "bg-transparent hover:bg-primary-50": props.color === "primary" && props.variant === "ghost",
   },
   {
     "bg-charcoal-50 border-solid border-1 border-charcoal-300":
@@ -91,12 +87,10 @@ const inputClasses = computed(() => [
       props.color === "neutral" && props.variant === "outlined",
   },
   {
-    "bg-charcoal-50 hover:bg-charcoal-100":
-      props.color === "neutral" && props.variant === "soft",
+    "bg-charcoal-50 hover:bg-charcoal-100": props.color === "neutral" && props.variant === "soft",
   },
   {
-    "bg-transparent hover:bg-charcoal-50":
-      props.color === "neutral" && props.variant === "ghost",
+    "bg-transparent hover:bg-charcoal-50": props.color === "neutral" && props.variant === "ghost",
   },
   {
     "bg-success-50 border-solid border-1 border-success-300":
@@ -107,12 +101,10 @@ const inputClasses = computed(() => [
       props.color === "success" && props.variant === "outlined",
   },
   {
-    "bg-success-50 hover:bg-success-100":
-      props.color === "success" && props.variant === "soft",
+    "bg-success-50 hover:bg-success-100": props.color === "success" && props.variant === "soft",
   },
   {
-    "bg-transparent hover:bg-success-50":
-      props.color === "success" && props.variant === "ghost",
+    "bg-transparent hover:bg-success-50": props.color === "success" && props.variant === "ghost",
   },
   {
     "bg-warning-50 border-solid border-1 border-warning-300":
@@ -123,12 +115,10 @@ const inputClasses = computed(() => [
       props.color === "warning" && props.variant === "outlined",
   },
   {
-    "bg-warning-50 hover:bg-warning-100":
-      props.color === "warning" && props.variant === "soft",
+    "bg-warning-50 hover:bg-warning-100": props.color === "warning" && props.variant === "soft",
   },
   {
-    "bg-transparent hover:bg-warning-50":
-      props.color === "warning" && props.variant === "ghost",
+    "bg-transparent hover:bg-warning-50": props.color === "warning" && props.variant === "ghost",
   },
   {
     "bg-danger-50 border-solid border-1 border-danger-300":
@@ -139,22 +129,20 @@ const inputClasses = computed(() => [
       props.color === "danger" && props.variant === "outlined",
   },
   {
-    "bg-danger-50 hover:bg-danger-100":
-      props.color === "danger" && props.variant === "soft",
+    "bg-danger-50 hover:bg-danger-100": props.color === "danger" && props.variant === "soft",
   },
   {
-    "bg-transparent hover:bg-danger-50":
-      props.color === "danger" && props.variant === "ghost",
+    "bg-transparent hover:bg-danger-50": props.color === "danger" && props.variant === "ghost",
   },
 ]);
 
 const get = () => {
   return inputValue.value;
-}
+};
 
 const set = (value: string | number) => {
   inputValue.value = value;
-}
+};
 
 const reset = () => {
   inputValue.value = "";
@@ -163,7 +151,7 @@ const reset = () => {
 defineExpose({
   get,
   set,
-  reset
+  reset,
 });
 </script>
 
@@ -175,6 +163,7 @@ defineExpose({
     :class="inputClasses"
     :disabled="props.disabled"
     :readonly="props.readOnly"
+    class="box-border"
   />
 </template>
 

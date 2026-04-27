@@ -166,7 +166,7 @@ const buttonClasses = computed(() => [
   </a>
   <a v-else-if="props.to && props.disabled" :href="props.to" class="pointer-events-none">
     <button
-      class="py-2 px-4 rounded-cu border-none font-sans font-medium hover:cursor-pointer flex justify-center items-center gap-2"
+      class="py-2 px-4 rounded-cu border-none font-sans font-medium hover:cursor-pointer flex justify-center items-center gap-2 box-border"
       :class="buttonClasses"
       disabled
     >
@@ -175,7 +175,7 @@ const buttonClasses = computed(() => [
   </a>
   <button
     v-else
-    class="py-2 px-4 rounded-cu border-none font-sans font-medium hover:cursor-pointer flex justify-center items-center gap-2"
+    class="py-2 px-4 rounded-cu border-none font-sans font-medium hover:cursor-pointer flex justify-center items-center gap-2 box-border"
     :class="buttonClasses"
     :disabled="props.disabled"
   >

@@ -60,8 +60,7 @@ const columns = [
 <template>
   <div class="w-screen h-screen p-6">
     <h1 class="text-2xl font-bold mb-6">Tabla con Input de Búsqueda</h1>
-
-    <div class="max-w-4xl">
+    <div class="max-w-1/2 box">
       <Table
         :columns="columns"
         :data="filteredUsers"

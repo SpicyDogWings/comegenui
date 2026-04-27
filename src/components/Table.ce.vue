@@ -93,16 +93,19 @@ const hasButtons = (col: Column): boolean => {
 </script>
 
 <template>
-  <div class="overflow-x-auto w-full">
-    <div v-if="showSearch" class="mb-3 w-full">
+  <div class="overflow-x-auto w-full flex flex-col justify-center items-start box-border">
+    <div class="w-full mb-3">
       <Input
+        v-if="showSearch"
         :placeholder="searchPlaceholder"
         :model-value="searchQuery"
         @update:modelValue="handleSearchUpdate"
+        color="neutral"
+        variant="outlined"
         class="w-full"
       />
     </div>
-    <table class="w-full border-collapse">
+    <table class="w-full border-collapse box-border">
       <thead>
         <tr>
           <th
@@ -167,4 +170,10 @@ const hasButtons = (col: Column): boolean => {
 
 <style>
 @unocss-placeholder;
+</style>
+
+<style>
+* {
+  box-sizing: border-box;
+}
 </style>
