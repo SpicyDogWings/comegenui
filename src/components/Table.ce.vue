@@ -93,7 +93,7 @@ const hasButtons = (col: Column): boolean => {
 </script>
 
 <template>
-  <div class="overflow-x-auto w-full flex flex-col justify-center items-start box-border">
+  <div class="w-full flex flex-col justify-center items-start box-border">
     <div class="w-full mb-3">
       <Input
         v-if="showSearch"
@@ -101,70 +101,69 @@ const hasButtons = (col: Column): boolean => {
         :model-value="searchQuery"
         @update:modelValue="handleSearchUpdate"
         color="neutral"
-        variant="outlined"
-        class="w-full"
+        class="w-full mb-2"
       />
-    </div>
-    <table class="w-full border-collapse box-border">
-      <thead>
-        <tr>
-          <th
-            v-for="col in columns"
-            :key="col.key"
-            class="text-left p-3 font-sans font-medium text-primary-50 sticky top-0 bg-primary-600 z-10"
+      <table class="overflow-x-auto w-full border-collapse box-border">
+        <thead>
+          <tr>
+            <th
+              v-for="col in columns"
+              :key="col.key"
+              class="text-left p-3 font-sans font-medium text-primary-50 sticky top-0 bg-primary-600 z-10"
+            >
+              <slot :name="`header-${col.key}`" :column="col">
+                {{ col.label || col.key }}
+              </slot>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="(row, rowIndex) in data"
+            :key="rowIndex"
+            class="border-b-solid border-b-1 border-charcoal-200 last:border-b-none"
           >
-            <slot :name="`header-${col.key}`" :column="col">
-              {{ col.label || col.key }}
-            </slot>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          v-for="(row, rowIndex) in data"
-          :key="rowIndex"
-          class="border-b-solid border-b-1 border-charcoal-200 last:border-b-none"
-        >
-          <td v-for="col in columns" :key="col.key" class="p-3 font-sans text-charcoal-800">
-            <slot :name="`cell-${col.key}`" :row="row" :column="col" :index="rowIndex">
-              <template v-if="hasBadges(col)">
-                <div class="flex justify-content items-center gap-1">
-                  <Badge
-                    v-for="(badge, idx) in getCellBadges(row, col)"
-                    :key="idx"
-                    :color="badge.color"
-                    :variant="badge.variant"
-                  >
-                    {{ badge.value }}
-                  </Badge>
-                </div>
-              </template>
-              <template v-else-if="hasButtons(col)">
-                <div class="flex justify-content items-center gap-1">
-                  <Button
-                    v-for="(btn, idx) in getCellButtons(row, col)"
-                    :key="idx"
-                    :color="btn.color"
-                    :variant="btn.variant"
-                    @click="btn.onClick?.()"
-                  >
-                    {{ btn.label }}
-                  </Button>
-                </div>
-              </template>
-              <template v-else>
-                {{ getCellValue(row, col) }}
-              </template>
-            </slot>
-          </td>
-        </tr>
-        <tr v-if="data.length === 0">
-          <td :colspan="columns.length" class="p-6 text-center text-charcoal-500 italic">
-            <slot name="empty">{{ empty || "No hay datos que mostrar" }}</slot>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+            <td v-for="col in columns" :key="col.key" class="p-3 font-sans text-charcoal-800">
+              <slot :name="`cell-${col.key}`" :row="row" :column="col" :index="rowIndex">
+                <template v-if="hasBadges(col)">
+                  <div class="flex justify-content items-center gap-1">
+                    <Badge
+                      v-for="(badge, idx) in getCellBadges(row, col)"
+                      :key="idx"
+                      :color="badge.color"
+                      :variant="badge.variant"
+                    >
+                      {{ badge.value }}
+                    </Badge>
+                  </div>
+                </template>
+                <template v-else-if="hasButtons(col)">
+                  <div class="flex justify-content items-center gap-1">
+                    <Button
+                      v-for="(btn, idx) in getCellButtons(row, col)"
+                      :key="idx"
+                      :color="btn.color"
+                      :variant="btn.variant"
+                      @click="btn.onClick?.()"
+                    >
+                      {{ btn.label }}
+                    </Button>
+                  </div>
+                </template>
+                <template v-else>
+                  {{ getCellValue(row, col) }}
+                </template>
+              </slot>
+            </td>
+          </tr>
+          <tr v-if="data.length === 0">
+            <td :colspan="columns.length" class="p-6 text-center text-charcoal-500 italic">
+              <slot name="empty">{{ empty || "No hay datos que mostrar" }}</slot>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 

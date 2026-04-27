@@ -18,8 +18,8 @@ const props = defineProps({
   variant: {
     type: String,
     required: false,
-    default: "outlined",
-    validator: (value: string) => ["outlined", "soft", "ghost", "subtle"].includes(value),
+    default: "none",
+    validator: (value: string) => ["outlined", "soft", "ghost", "subtle", "none"].includes(value),
   },
   type: {
     type: String,
@@ -133,6 +133,9 @@ const inputClasses = computed(() => [
   },
   {
     "bg-transparent hover:bg-danger-50": props.color === "danger" && props.variant === "ghost",
+  },
+  {
+    "bg-transparent border-solid border-1 border-charcoal-100": props.variant === "none",
   },
 ]);
 
