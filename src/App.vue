@@ -43,7 +43,7 @@ const columns = [
 
     <div class="max-w-4xl">
       <Table
-        :columns="columns"
+
         :data="users"
         :searchEnabled="true"
         searchPlaceholder="Buscar usuarios..."

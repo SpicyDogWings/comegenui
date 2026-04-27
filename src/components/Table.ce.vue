@@ -66,13 +66,25 @@ const handleSearchUpdate = (value: string) => {
   emit("update:search", value);
 };
 
+const tableColumns = computed(() => {
+  if (props.columns.length > 0) {
+    return props.columns;
+  }
+  if (props.data.length > 0 && props.data[0]) {
+    return Object.keys(props.data[0]).map((key) => ({ key, label: key }));
+  }
+  return [];
+});
+
 const filteredData = computed(() => {
   if (!searchQuery.value || !props.searchEnabled) {
     return props.data;
   }
+
   const query = searchQuery.value.toLowerCase();
   const fields =
-    props.searchFields.length > 0 ? props.searchFields : props.columns.map((c) => c.key);
+    props.searchFields.length > 0 ? props.searchFields : tableColumns.value.map((c) => c.key);
+
   return props.data.filter((row) => {
     return fields.some((key) => {
       const value = row[key];
@@ -125,7 +137,6 @@ const hasButtons = (col: Column): boolean => {
         :model-value="searchQuery"
         @update:modelValue="handleSearchUpdate"
         color="neutral"
-        class="w-full"
       />
     </div>
     <div class="overflow-auto">
@@ -133,9 +144,9 @@ const hasButtons = (col: Column): boolean => {
         <thead>
           <tr>
             <th
-              v-for="col in columns"
+              v-for="col in tableColumns"
               :key="col.key"
-              class="text-left p-2 px-3 font-sans font-medium text-primary-50 sticky top-0 bg-primary-600 z-20"
+              class="text-left p-3 font-sans font-medium text-primary-50 sticky top-0 bg-primary-600 z-20"
             >
               <slot :name="`header-${col.key}`" :column="col">
                 {{ col.label || col.key }}
@@ -149,7 +160,7 @@ const hasButtons = (col: Column): boolean => {
             :key="rowIndex"
             class="hover:bg-charcoal-50 transition-colors border-charcoal-100 border-b-1 border-b-solid last:border-b-0"
           >
-            <td v-for="col in columns" :key="col.key" class="p-2 px-3 font-sans text-charcoal-800">
+            <td v-for="col in tableColumns" :key="col.key" class="p-3 font-sans text-charcoal-800">
               <slot :name="`cell-${col.key}`" :row="row" :column="col" :index="rowIndex">
                 <div v-if="hasBadges(col)" class="flex items-center gap-1">
                   <Badge
@@ -180,7 +191,10 @@ const hasButtons = (col: Column): boolean => {
           </tr>
 
           <tr v-if="filteredData.length === 0">
-            <td :colspan="columns.length" class="p-8 text-center text-charcoal-500 italic bg-white">
+            <td
+              :colspan="tableColumns.length"
+              class="p-8 text-center text-charcoal-500 italic bg-white"
+            >
               <slot name="empty">{{ empty || "No hay datos que mostrar" }}</slot>
             </td>
           </tr>
@@ -192,9 +206,4 @@ const hasButtons = (col: Column): boolean => {
 
 <style>
 @unocss-placeholder;
-
-/* Fix para asegurar que los bordes del sticky no desaparezcan en algunos navegadores */
-th {
-  background-clip: padding-box;
-}
 </style>
