@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
+import Button from "./Button.ce.vue";
 
 const props = defineProps({
   currentPage: {
@@ -77,6 +78,23 @@ const visiblePages = computed(() => {
 
   return pages;
 });
+
+const selectClasses = [
+  "py-1",
+  "px-2",
+  "rounded-cu",
+  "font-sans",
+  "border-none",
+  "text-charcoal-800",
+  "bg-charcoal-50",
+  "hover:bg-charcoal-100",
+  "focus:outline-none",
+  "focus:ring-2",
+  "focus:ring-primary-300",
+  "border-solid",
+  "border-1",
+  "border-charcoal-300",
+];
 </script>
 
 <template>
@@ -85,7 +103,7 @@ const visiblePages = computed(() => {
     class="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 gap-3"
   >
     <div class="flex items-center gap-2 text-sm text-charcoal-600 font-sans">
-      <span> Mostrando {{ startItem }} - {{ endItem }} de {{ totalItems }} </span>
+      <span>Mostrando {{ startItem }} - {{ endItem }} de {{ totalItems }}</span>
     </div>
 
     <div class="flex items-center gap-2">
@@ -94,7 +112,7 @@ const visiblePages = computed(() => {
         <select
           :value="itemsPerPage"
           @change="(e) => handlePageSizeChange(Number((e.target as HTMLSelectElement).value))"
-          class="px-2 py-1 rounded border border-charcoal-200 text-sm font-sans bg-white text-charcoal-800 focus:outline-none focus:border-primary-500"
+          :class="selectClasses"
         >
           <option v-for="opt in pageSizeOptions" :key="opt" :value="opt">
             {{ opt }}
@@ -103,36 +121,37 @@ const visiblePages = computed(() => {
       </div>
 
       <div class="flex items-center gap-1">
-        <button
+        <Button
           @click="handlePageChange(currentPage - 1)"
           :disabled="currentPage === 1"
-          class="px-3 py-1 rounded border border-charcoal-200 text-charcoal-600 hover:bg-charcoal-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-sans"
+          color="neutral"
+          variant="soft"
         >
           Anterior
-        </button>
+        </Button>
 
         <template v-for="(page, idx) in visiblePages" :key="idx">
-          <span v-if="page === '...'" class="px-2 text-charcoal-500 text-sm font-sans">...</span>
-          <button
+          <span v-if="page === '...'" class="py-1 px-2 text-charcoal-500 text-sm font-sans"
+            >...</span
+          >
+          <Button
             v-else
             @click="handlePageChange(Number(page))"
-            :class="{
-              'bg-primary-600 text-primary-50 border-primary-600': currentPage === page,
-              'border-charcoal-200 text-charcoal-600 hover:bg-charcoal-50': currentPage !== page,
-            }"
-            class="px-3 py-1 rounded border transition-colors text-sm font-sans min-w-8"
+            :color="currentPage === page ? 'primary' : 'neutral'"
+            :variant="currentPage === page ? 'solid' : 'ghost'"
           >
             {{ page }}
-          </button>
+          </Button>
         </template>
 
-        <button
+        <Button
           @click="handlePageChange(currentPage + 1)"
           :disabled="currentPage === totalPages"
-          class="px-3 py-1 rounded border border-charcoal-200 text-charcoal-600 hover:bg-charcoal-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-sans"
+          color="neutral"
+          variant="soft"
         >
           Siguiente
-        </button>
+        </Button>
       </div>
     </div>
   </div>
