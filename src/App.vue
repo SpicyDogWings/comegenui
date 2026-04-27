@@ -40,13 +40,14 @@ const columns = [
 <template>
   <div class="w-screen h-screen p-6">
     <h1 class="text-2xl font-bold mb-6">Tabla con Input de Búsqueda</h1>
-    <div class="max-w-1/2">
+
+    <div class="max-w-4xl">
       <Table
         :columns="columns"
         :data="users"
-        :showSearch="true"
+        :searchEnabled="true"
         searchPlaceholder="Buscar usuarios..."
-        :filterKeys="['name', 'email', 'status', 'role']"
+        :searchFields="['name', 'email', 'status', 'role']"
         empty="No se encontraron usuarios"
         style="max-height: 15rem"
       />

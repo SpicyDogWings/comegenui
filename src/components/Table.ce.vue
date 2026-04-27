@@ -46,12 +46,12 @@ const props = defineProps({
     required: false,
     default: "Buscar...",
   },
-  showSearch: {
+  searchEnabled: {
     type: Boolean,
     required: false,
     default: false,
   },
-  filterKeys: {
+  searchFields: {
     type: Array as () => string[],
     required: false,
     default: () => [],
@@ -61,23 +61,20 @@ const props = defineProps({
 const searchQuery = ref("");
 const emit = defineEmits(["update:search"]);
 
-const handleSearchUpdate = (e: any) => {
-  // Asumiendo que tu componente Input emite el valor o usas un input nativo
-  const value = e?.target?.value ?? e;
+const handleSearchUpdate = (value: string) => {
   searchQuery.value = value;
   emit("update:search", value);
 };
 
 const filteredData = computed(() => {
-  if (!searchQuery.value || !props.showSearch) {
+  if (!searchQuery.value || !props.searchEnabled) {
     return props.data;
   }
-
   const query = searchQuery.value.toLowerCase();
-  const keys = props.filterKeys.length > 0 ? props.filterKeys : props.columns.map((c) => c.key);
-
+  const fields =
+    props.searchFields.length > 0 ? props.searchFields : props.columns.map((c) => c.key);
   return props.data.filter((row) => {
-    return keys.some((key) => {
+    return fields.some((key) => {
       const value = row[key];
       if (typeof value === "string") {
         return value.toLowerCase().includes(query);
@@ -122,8 +119,14 @@ const hasButtons = (col: Column): boolean => {
 
 <template>
   <div class="flex flex-col overflow-hidden rounded-lg">
-    <div v-if="showSearch" class="p-3 border-b-1 border-b-solid border-charcoal-100">
-      <Input :placeholder="searchPlaceholder" :value="searchQuery" @input="handleSearchUpdate" />
+    <div v-if="searchEnabled" class="p-3 border-b-1 border-b-solid border-charcoal-100">
+      <Input
+        :placeholder="searchPlaceholder"
+        :model-value="searchQuery"
+        @update:modelValue="handleSearchUpdate"
+        color="neutral"
+        class="w-full"
+      />
     </div>
     <div class="overflow-auto">
       <table class="w-full border-collapse">
