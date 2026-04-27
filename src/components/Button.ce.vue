@@ -20,9 +20,17 @@ const props = defineProps({
     type: String,
     required: false,
   },
+  disabled: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 });
 
 const buttonClasses = computed(() => [
+  {
+    "cursor-not-allowed opacity-70 pointer-events-none": props.disabled,
+  },
   {
     "bg-primary text-primary-50 hover:bg-primary-600 active:bg-primary-700":
       props.color === "primary" && props.variant === "solid",
@@ -147,10 +155,20 @@ const buttonClasses = computed(() => [
 </script>
 
 <template>
-  <a v-if="props.to" :href="props.to">
+  <a v-if="props.to && !props.disabled" :href="props.to">
     <button
       class="py-2 px-4 rounded-cu border-none font-sans font-medium hover:cursor-pointer flex justify-center items-center gap-2"
       :class="buttonClasses"
+      :disabled="props.disabled"
+    >
+      <slot></slot>
+    </button>
+  </a>
+  <a v-else-if="props.to && props.disabled" :href="props.to" class="pointer-events-none">
+    <button
+      class="py-2 px-4 rounded-cu border-none font-sans font-medium hover:cursor-pointer flex justify-center items-center gap-2"
+      :class="buttonClasses"
+      disabled
     >
       <slot></slot>
     </button>
@@ -159,6 +177,7 @@ const buttonClasses = computed(() => [
     v-else
     class="py-2 px-4 rounded-cu border-none font-sans font-medium hover:cursor-pointer flex justify-center items-center gap-2"
     :class="buttonClasses"
+    :disabled="props.disabled"
   >
     <slot></slot>
   </button>
