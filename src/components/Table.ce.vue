@@ -137,6 +137,12 @@ const getData = (filterFn?: (item: Record<string, any>) => boolean): Record<stri
   }
   return data;
 };
+const getRow = (index: number): Record<string, any> | undefined => {
+  if (index >= 0 && index < localData.length) {
+    return { ...localData[index] };
+  }
+  return undefined;
+};
 const tableColumns = computed(() => {
   if (props.columns.length > 0) {
     return props.columns;
@@ -241,7 +247,7 @@ watch(
   { immediate: true, deep: true },
 );
 
-defineExpose({ updateRow, getData });
+defineExpose({ updateRow, getData, getRow });
 </script>
 
 <template>
