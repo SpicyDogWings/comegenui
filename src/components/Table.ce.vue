@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, ref, reactive, watch } from "vue";
 import Badge from "./Badge.ce.vue";
 import Button from "./Button.ce.vue";
 import Input from "./Input.ce.vue";
@@ -91,6 +91,28 @@ const currentPage = ref(1);
 const itemsPerPage = ref(props.itemsPerPage);
 const emit = defineEmits(["update:search", "update:currentPage", "update:itemsPerPage"]);
 
+// Copia reactiva de data para detectar mutations internas
+const localData = reactive<Record<string, any>[]>([]);
+
+// Sincroniza con prop data
+watch(
+  () => props.data,
+  (newData) => {
+    Object.assign(localData, newData);
+  },
+  { immediate: true, deep: true },
+);
+
+// Función para actualizar un registro sin re-renderizar todo
+const updateRow = (index: number, newData: Record<string, any>) => {
+  if (index >= 0 && index < localData.length) {
+    Object.assign(localData[index], newData);
+  }
+};
+
+// Expoone la función
+defineExpose({ updateRow });
+
 watch(
   () => props.itemsPerPage,
   (val) => {
@@ -127,22 +149,22 @@ const tableColumns = computed(() => {
   if (props.columns.length > 0) {
     return props.columns;
   }
-  if (props.data.length > 0 && props.data[0]) {
-    return Object.keys(props.data[0]).map((key) => ({ key, label: key }));
+  if (localData.length > 0 && localData[0]) {
+    return Object.keys(localData[0]).map((key) => ({ key, label: key }));
   }
   return [];
 });
 
 const filteredData = computed(() => {
   if (!searchQuery.value || !props.searchEnabled) {
-    return props.data;
+    return localData;
   }
 
   const query = searchQuery.value.toLowerCase();
   const fields =
     props.searchFields.length > 0 ? props.searchFields : tableColumns.value.map((c) => c.key);
 
-  return props.data.filter((row) => {
+  return localData.filter((row) => {
     return fields.some((key) => {
       const value = row[key];
       if (typeof value === "string") {

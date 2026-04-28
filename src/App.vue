@@ -9,12 +9,16 @@ onMounted(async () => {
   posts.value = await response.json();
 });
 
-const searchQuery = ref("ratione ex tenetur perferendis");
+const tableRef = ref();
 
 const columns = [
   { key: "id", label: "ID" },
   { key: "title", label: "Título" },
 ];
+
+const updateFirstPost = () => {
+  tableRef.value?.updateRow(0, { title: "Título actualizado en " + new Date().toLocaleTimeString() });
+};
 </script>
 
 <template>
@@ -23,7 +27,7 @@ const columns = [
 
     <div class="max-w-4xl">
       <Table
-        :searchValue="searchQuery"
+        ref="tableRef"
         :columns="columns"
         :data="posts"
         :pagination="true"
@@ -34,6 +38,12 @@ const columns = [
         empty="No se encontraron posts"
         style="max-height: 25rem"
       />
+      <button
+        @click="updateFirstPost"
+        class="mt-4 p-2 bg-primary-600 text-white rounded"
+      >
+        Actualizar primer post
+      </button>
     </div>
   </div>
 </template>
