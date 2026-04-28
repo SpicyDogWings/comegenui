@@ -3,13 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tabla con Posts</title>
+    <title>Tabla con Posts y Textarea</title>
     <script src="dist/vendor/vue-runtime.iife.js"></script>
     <script src="dist/CuTable.iife.js"></script>
     <script src="dist/CuInput.iife.js"></script>
     <script src="dist/CuPagination.iife.js"></script>
     <script src="dist/CuButton.iife.js"></script>
     <script src="dist/CuBadge.iife.js"></script>
+    <script src="dist/CuTextarea.iife.js"></script>
     <style>
       body {
         padding: 20px;
@@ -21,13 +22,22 @@
   </head>
   <body>
     <h1>Posts de JSONPlaceholder</h1>
+
     <cu-table
       id="posts-table"
       pagination="true"
       items-per-page="10"
       empty="Cargando..."
-      style="margin-top: 20px;"
+      style="margin-top: 20px; margin-bottom: 20px;"
     ></cu-table>
+
+    <h2>Ejemplo de Textarea</h2>
+    <cu-textarea
+      id="my-textarea"
+      placeholder="Escribe aquí..."
+      no-resize
+      style="width: 100%; margin-top: 10px;"
+    ></cu-textarea>
 
     <script>
       const table = document.getElementById("posts-table");
