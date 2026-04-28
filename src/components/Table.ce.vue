@@ -3,6 +3,7 @@ import { computed, ref, reactive, watch, nextTick } from "vue";
 import Badge from "./Badge.ce.vue";
 import Button from "./Button.ce.vue";
 import Input from "./Input.ce.vue";
+import Textarea from "./Textarea.ce.vue";
 import Pagination from "./Pagination.ce.vue";
 
 interface BadgeConfig {
@@ -27,6 +28,7 @@ interface Column {
   badges?: (row: Record<string, any>, index: number) => BadgeConfig[];
   buttons?: (row: Record<string, any>, index: number) => ButtonConfig[];
   editable?: boolean | RegExp;
+  inputType?: 'input' | 'textarea';
 }
 
 const props = defineProps({
@@ -92,7 +94,7 @@ const currentPage = ref(1);
 const itemsPerPage = ref(props.itemsPerPage);
 const emit = defineEmits(["update:search", "update:currentPage", "update:itemsPerPage"]);
 const localData = reactive<Record<string, any>[]>([]);
-const editableInput = ref<InstanceType<typeof Input> | null>(null);
+const editableInput = ref<InstanceType<typeof Input> | InstanceType<typeof Textarea> | null>(null);
 
 const editingCell = ref<{row: Record<string, any>, colKey: string} | null>(null);
 const editValue = ref<string>('');
@@ -143,12 +145,12 @@ const getRow = (index: number): Record<string, any> | undefined => {
   }
   return undefined;
 };
-const tableColumns = computed(() => {
+const tableColumns = computed<Column[]>(() => {
   if (props.columns.length > 0) {
     return props.columns;
   }
   if (localData.length > 0 && localData[0]) {
-    return Object.keys(localData[0]).map((key) => ({ key, label: key }));
+    return Object.keys(localData[0]).map((key) => ({ key, label: key, editable: false }));
   }
   return [];
 });
@@ -288,14 +290,15 @@ defineExpose({ updateRow, getData, getRow });
                 @dblclick="startEditing(row, col)"
               >
                 <template v-if="editingCell?.row === row && editingCell?.colKey === col.key">
-                  <Input
+                  <component
+                    :is="col.inputType === 'textarea' ? Textarea : Input"
                     ref="editableInput"
                     v-model="editValue"
                     @blur="saveEdit(row, col)"
                     @keyup.escape="cancelEdit"
                     @keyup.enter="saveEdit(row, col)"
+                    noResize
                     class="w-full"
-                    color="neutral"
                   />
                 </template>
                 <slot v-else :name="`cell-${col.key}`" :row="row" :column="col" :index="getRowIndex(row)">
