@@ -23,7 +23,7 @@ const props = defineProps({
   target: {
     type: String,
     required: false,
-    default: "",
+    default: "_self",
     validator: (value: string) => ["_self", "_blank", "_parent", "_top"].includes(value),
   },
   disabled: {

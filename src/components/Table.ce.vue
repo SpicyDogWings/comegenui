@@ -217,7 +217,7 @@ const hasButtons = (col: Column): boolean => {
         </thead>
         <tbody>
           <tr
-            v-for="(row, rowIndex) in displayData"
+            v-for="(row, rowIndex) in displayData"  
             :key="rowIndex"
             class="hover:bg-charcoal-50 transition-colors border-charcoal-100 border-b-1 border-b-solid last:border-b-0"
           >
