@@ -26,6 +26,7 @@ interface Column {
   cell?: (row: Record<string, any>) => string | string[];
   badges?: (row: Record<string, any>, index: number) => BadgeConfig[];
   buttons?: (row: Record<string, any>, index: number) => ButtonConfig[];
+  editable?: boolean | RegExp;
 }
 
 const props = defineProps({
@@ -106,6 +107,37 @@ watch(
 // Función para obtener el índice de una fila en localData
 const getRowIndex = (row: Record<string, any>): number => {
   return localData.indexOf(row);
+};
+
+// Estado para edición de celdas
+const editingCell = ref<{row: Record<string, any>, colKey: string} | null>(null);
+const editValue = ref<string>('');
+
+// Función para iniciar la edición de una celda
+const startEditing = (row: Record<string, any>, col: Column) => {
+  editingCell.value = { row, colKey: col.key };
+  editValue.value = String(row[col.key]);
+};
+
+// Función para guardar la edición
+const saveEdit = (row: Record<string, any>, col: Column) => {
+  if (!editingCell.value) return;
+
+  // Validar si es regex
+  if (col.editable instanceof RegExp && !col.editable.test(editValue.value)) {
+    cancelEdit();
+    return;
+  }
+
+  const index = getRowIndex(row);
+  updateRow(index, { [col.key]: editValue.value });
+  cancelEdit();
+};
+
+// Función para cancelar la edición
+const cancelEdit = () => {
+  editingCell.value = null;
+  editValue.value = '';
 };
 
 // Función para actualizar un registro sin re-renderizar todo
@@ -266,37 +298,58 @@ const hasButtons = (col: Column): boolean => {
         </thead>
         <tbody>
           <tr
-            v-for="(row, rowIndex) in displayData"  
+            v-for="(row, rowIndex) in displayData"
             :key="rowIndex"
             class="hover:bg-charcoal-50 transition-colors border-charcoal-100 border-b-1 border-b-solid last:border-b-0"
           >
             <td v-for="col in tableColumns" :key="col.key" class="p-3 font-sans text-charcoal-800">
-              <slot :name="`cell-${col.key}`" :row="row" :column="col" :index="getRowIndex(row)">
-                <div v-if="hasBadges(col)" class="flex items-center gap-1">
-                  <Badge
-                    v-for="(badge, idx) in getCellBadges(row, col, getRowIndex(row))"
-                    :key="idx"
-                    :color="badge.color"
-                    :variant="badge.variant"
-                  >
-                    {{ badge.value }}
-                  </Badge>
-                </div>
-                <div v-else-if="hasButtons(col)" class="flex items-center gap-1">
-                  <Button
-                    v-for="(btn, idx) in getCellButtons(row, col, getRowIndex(row))"
-                    :key="idx"
-                    :color="btn.color"
-                    :variant="btn.variant"
-                    :to="btn.to"
-                    :target="btn.target"
-                    @click="btn.onClick?.()"
-                  >
-                    {{ btn.label }}
-                  </Button>
-                </div>
-                <span v-else>{{ getCellValue(row, col) }}</span>
-              </slot>
+              <div
+                v-if="col.editable"
+                class="cursor-pointer"
+                @dblclick="startEditing(row, col)"
+              >
+                <template v-if="editingCell?.row === row && editingCell?.colKey === col.key">
+                  <Input
+                    v-model="editValue"
+                    @blur="saveEdit(row, col)"
+                    @keyup.escape="cancelEdit"
+                    @keyup.enter="saveEdit(row, col)"
+                    class="w-full"
+                    color="neutral"
+                  />
+                </template>
+                <slot v-else :name="`cell-${col.key}`" :row="row" :column="col" :index="getRowIndex(row)">
+                  {{ getCellValue(row, col) }}
+                </slot>
+              </div>
+              <div v-else>
+                <slot :name="`cell-${col.key}`" :row="row" :column="col" :index="getRowIndex(row)">
+                  <div v-if="hasBadges(col)" class="flex items-center gap-1">
+                    <Badge
+                      v-for="(badge, idx) in getCellBadges(row, col, getRowIndex(row))"
+                      :key="idx"
+                      :color="badge.color"
+                      :variant="badge.variant"
+                    >
+                      {{ badge.value }}
+                    </Badge>
+                  </div>
+                  <div v-else-if="hasButtons(col)" class="flex items-center gap-1">
+                    <Button
+                      v-for="(btn, idx) in getCellButtons(row, col, getRowIndex(row))"
+                      :key="idx"
+                      :color="btn.color"
+                      :variant="btn.variant"
+                      :to="btn.to"
+                      :target="btn.target"
+                      @click="btn.onClick?.()"
+                    >
+                      {{ btn.label }}
+                    </Button>
+                  </div>
+                  <span v-else>{{ getCellValue(row, col) }}</span>
+                </slot>
+              </div>
             </td>
           </tr>
           <tr v-if="displayData.length === 0">

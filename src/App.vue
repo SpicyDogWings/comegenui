@@ -17,7 +17,12 @@ const tableRef = ref();
 
 const columns = [
   { key: "id", label: "ID" },
-  { key: "title", label: "Título" },
+  { key: "title", label: "Título", editable: true },
+  {
+    key: "body",
+    label: "Contenido",
+    editable: true
+  },
   {
     key: "status",
     label: "Estado",
