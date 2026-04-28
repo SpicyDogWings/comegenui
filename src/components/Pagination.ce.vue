@@ -74,7 +74,6 @@ const visiblePages = computed(() => {
       if (current > 3) pages.push("...");
     }
 
-    // Siempre 3 páginas en el medio
     let midStart = current - 1;
     let midEnd = current + 1;
 
@@ -86,7 +85,6 @@ const visiblePages = computed(() => {
       midEnd = Math.min(total, midEnd);
     }
 
-    // Ajustar para garantizar 3 páginas
     if (midEnd - midStart < 2) {
       if (midStart === (props.showFirstAndLast ? 2 : 1)) {
         midEnd = midStart + 2;

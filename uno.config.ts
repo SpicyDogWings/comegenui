@@ -17,7 +17,7 @@ export default defineConfig({
     },
   ],
   rules: [
-    ["rounded-cu", { "border-radius": "8px" }],
+    ["rounded-cu", { "border-radius": "4px" }],
     ["border-collapse", { "border-collapse": "collapse" }],
   ],
   theme: {

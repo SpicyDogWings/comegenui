@@ -200,7 +200,7 @@ const hasButtons = (col: Column): boolean => {
         color="neutral"
       />
     </div>
-    <div class="overflow-auto rounded-sm">
+    <div class="overflow-auto rounded-cu">
       <table class="w-full border-collapse">
         <thead>
           <tr>
