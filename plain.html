@@ -54,8 +54,8 @@
           table.data = posts;
           table.columns = [
             { key: "id", label: "ID" },
-            { key: "title", label: "Título", editable: true },
-            { key: "body", label: "Contenido" }
+            { key: "title", label: "Título", editable: true, singleClick: true },
+            { key: "body", label: "Contenido", editable: true, inputType: "textarea" }
           ];
         })
         .catch((error) => {

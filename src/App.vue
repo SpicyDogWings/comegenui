@@ -29,11 +29,5 @@ const columns = [
       :items-per-page="10"
       class="mb-6"
     />
-
-    <h2 class="text-xl font-semibold mb-4">Ejemplo de Textarea</h2>
-    <Textarea
-      v-model="textareaValue"
-      placeholder="Escribe aquí..."
-    />
   </div>
 </template>
