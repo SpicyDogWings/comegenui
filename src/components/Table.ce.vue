@@ -29,6 +29,7 @@ interface Column {
   buttons?: (row: Record<string, any>, index: number) => ButtonConfig[];
   editable?: boolean | RegExp;
   inputType?: 'input' | 'textarea';
+  singleClick?: boolean;
 }
 
 const props = defineProps({
@@ -287,7 +288,8 @@ defineExpose({ updateRow, getData, getRow });
               <div
                 v-if="col.editable"
                 class="cursor-pointer"
-                @dblclick="startEditing(row, col)"
+                @click="col.singleClick ? startEditing(row, col) : undefined"
+                @dblclick="!col.singleClick ? startEditing(row, col) : undefined"
               >
                 <template v-if="editingCell?.row === row && editingCell?.colKey === col.key">
                   <component

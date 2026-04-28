@@ -13,7 +13,7 @@ onMounted(async () => {
 
 const columns = [
   { key: "id", label: "ID" },
-  { key: "title", label: "Título", editable: true },
+  { key: "title", label: "Título", editable: true, singleClick: true },
   { key: "body", label: "Contenido", editable: true, inputType: "textarea" },
 ];
 </script>
