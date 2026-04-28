@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, reactive, watch } from "vue";
+import { computed, ref, reactive, watch, nextTick } from "vue";
 import Badge from "./Badge.ce.vue";
 import Button from "./Button.ce.vue";
 import Input from "./Input.ce.vue";
@@ -91,63 +91,45 @@ const searchQuery = ref("");
 const currentPage = ref(1);
 const itemsPerPage = ref(props.itemsPerPage);
 const emit = defineEmits(["update:search", "update:currentPage", "update:itemsPerPage"]);
-
-// Copia reactiva de data para detectar mutations internas
 const localData = reactive<Record<string, any>[]>([]);
+const editableInput = ref<InstanceType<typeof Input> | null>(null);
 
-// Sincroniza con prop data
-watch(
-  () => props.data,
-  (newData) => {
-    Object.assign(localData, newData);
-  },
-  { immediate: true, deep: true },
-);
-
-// Función para obtener el índice de una fila en localData
-const getRowIndex = (row: Record<string, any>): number => {
-  return localData.indexOf(row);
-};
-
-// Estado para edición de celdas
 const editingCell = ref<{row: Record<string, any>, colKey: string} | null>(null);
 const editValue = ref<string>('');
-
-// Función para iniciar la edición de una celda
-const startEditing = (row: Record<string, any>, col: Column) => {
-  editingCell.value = { row, colKey: col.key };
-  editValue.value = String(row[col.key]);
+const startEditing = async (row: Record<string, any>, col: Column) => {
+    editingCell.value = { row, colKey: col.key };
+    editValue.value = String(row[col.key]);
+    await nextTick();
+    // 1. Verificamos si es un array (comportamiento de v-for)
+    const inputEl = Array.isArray(editableInput.value)
+    ? editableInput.value[0]
+    : editableInput.value;
+    // 2. Ejecutamos el focus
+    inputEl?.focus?.();
 };
-
-// Función para guardar la edición
 const saveEdit = (row: Record<string, any>, col: Column) => {
   if (!editingCell.value) return;
-
-  // Validar si es regex
   if (col.editable instanceof RegExp && !col.editable.test(editValue.value)) {
     cancelEdit();
     return;
   }
-
   const index = getRowIndex(row);
   updateRow(index, { [col.key]: editValue.value });
   cancelEdit();
 };
-
-// Función para cancelar la edición
 const cancelEdit = () => {
   editingCell.value = null;
   editValue.value = '';
 };
 
-// Función para actualizar un registro sin re-renderizar todo
+const getRowIndex = (row: Record<string, any>): number => {
+  return localData.indexOf(row);
+};
 const updateRow = (index: number, newData: Record<string, any>) => {
   if (index >= 0 && index < localData.length && localData[index]) {
     Object.assign(localData[index], newData);
   }
 };
-
-// Función para obtener todos los datos reactivos
 const getData = (filterFn?: (item: Record<string, any>) => boolean): Record<string, any>[] => {
   let data = localData.map((item) => ({ ...item }));
   if (filterFn) {
@@ -155,42 +137,6 @@ const getData = (filterFn?: (item: Record<string, any>) => boolean): Record<stri
   }
   return data;
 };
-
-// Expoone la función
-defineExpose({ updateRow, getData });
-
-watch(
-  () => props.itemsPerPage,
-  (val) => {
-    itemsPerPage.value = val;
-  },
-);
-
-watch(
-  () => props.searchValue,
-  (val) => {
-    searchQuery.value = val;
-  },
-  { immediate: true },
-);
-
-const handleSearchUpdate = (value: string) => {
-  searchQuery.value = value;
-  currentPage.value = 1;
-  emit("update:search", value);
-};
-
-const handlePageChange = (page: number) => {
-  currentPage.value = page;
-  emit("update:currentPage", page);
-};
-
-const handlePageSizeChange = (size: number) => {
-  itemsPerPage.value = size;
-  currentPage.value = 1;
-  emit("update:itemsPerPage", size);
-};
-
 const tableColumns = computed(() => {
   if (props.columns.length > 0) {
     return props.columns;
@@ -200,16 +146,18 @@ const tableColumns = computed(() => {
   }
   return [];
 });
-
+const handleSearchUpdate = (value: string) => {
+  searchQuery.value = value;
+  currentPage.value = 1;
+  emit("update:search", value);
+};
 const filteredData = computed(() => {
   if (!searchQuery.value || !props.searchEnabled) {
     return localData;
   }
-
   const query = searchQuery.value.toLowerCase();
   const fields =
     props.searchFields.length > 0 ? props.searchFields : tableColumns.value.map((c) => c.key);
-
   return localData.filter((row) => {
     return fields.some((key) => {
       const value = row[key];
@@ -230,16 +178,22 @@ const displayData = computed(() => {
   const end = start + itemsPerPage.value;
   return filteredData.value.slice(start, end);
 });
-
 const totalItems = computed(() => filteredData.value.length);
-
 const totalPages = computed(() => {
   return Math.ceil(totalItems.value / itemsPerPage.value);
 });
-
 const showPaginationControl = computed(() => {
   return props.pagination && !searchQuery.value;
 });
+const handlePageChange = (page: number) => {
+  currentPage.value = page;
+  emit("update:currentPage", page);
+};
+const handlePageSizeChange = (size: number) => {
+  itemsPerPage.value = size;
+  currentPage.value = 1;
+  emit("update:itemsPerPage", size);
+};
 
 const getCellValue = (row: Record<string, any>, col: Column): string | string[] => {
   if (typeof col.cell === "function") {
@@ -247,28 +201,47 @@ const getCellValue = (row: Record<string, any>, col: Column): string | string[] 
   }
   return row[col.key];
 };
-
 const getCellBadges = (row: Record<string, any>, col: Column, index: number): BadgeConfig[] => {
   if (typeof col.badges === "function") {
     return col.badges(row, index).filter((b) => b?.value != null);
   }
   return [];
 };
-
 const hasBadges = (col: Column): boolean => {
   return typeof col.badges === "function";
 };
-
 const getCellButtons = (row: Record<string, any>, col: Column, index: number): ButtonConfig[] => {
   if (typeof col.buttons === "function") {
     return col.buttons(row, index).filter((b) => b?.label != null);
   }
   return [];
 };
-
 const hasButtons = (col: Column): boolean => {
   return typeof col.buttons === "function";
 };
+
+watch(
+  () => props.itemsPerPage,
+  (val) => {
+    itemsPerPage.value = val;
+  },
+);
+watch(
+  () => props.searchValue,
+  (val) => {
+    searchQuery.value = val;
+  },
+  { immediate: true },
+);
+watch(
+  () => props.data,
+  (newData) => {
+    Object.assign(localData, newData);
+  },
+  { immediate: true, deep: true },
+);
+
+defineExpose({ updateRow, getData });
 </script>
 
 <template>
@@ -310,6 +283,7 @@ const hasButtons = (col: Column): boolean => {
               >
                 <template v-if="editingCell?.row === row && editingCell?.colKey === col.key">
                   <Input
+                    ref="editableInput"
                     v-model="editValue"
                     @blur="saveEdit(row, col)"
                     @keyup.escape="cancelEdit"

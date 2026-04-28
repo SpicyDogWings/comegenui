@@ -2,153 +2,56 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tabla con Búsqueda y Paginación - Ejemplo</title>
+    <title>Tabla con Posts</title>
     <script src="dist/vendor/vue-runtime.iife.js"></script>
+    <script src="dist/CuTable.iife.js"></script>
     <script src="dist/CuInput.iife.js"></script>
+    <script src="dist/CuPagination.iife.js"></script>
     <script src="dist/CuButton.iife.js"></script>
     <script src="dist/CuBadge.iife.js"></script>
-    <script src="dist/CuPagination.iife.js"></script>
-    <script src="dist/CuTable.iife.js"></script>
+    <style>
+      body {
+        padding: 20px;
+        max-width: 1000px;
+        margin: 0 auto;
+        font-family: Arial, sans-serif;
+      }
+    </style>
   </head>
   <body>
-    <div style="padding: 20px; max-width: 1000px; margin: 0 auto">
-      <h1>Tabla de Posts - JSONPlaceholder</h1>
-      <input id="search-input" type="text" placeholder="Buscar posts..." style="padding: 8px; width: 100%; max-width: 400px; margin-top: 20px; margin-bottom: 10px;" />
-      <cu-table
-        id="posts-table"
-        search-enabled="true"
-        pagination="true"
-        items-per-page="10"
-        empty="No se encontraron posts"
-        style="max-height: 400px; margin-top: 20px; width: 100%"
-      ></cu-table>
-      <div id="loading" style="padding: 10px; text-align: center; display: none">
-        Cargando datos...
-      </div>
-    </div>  
+    <h1>Posts de JSONPlaceholder</h1>
+    <cu-table
+      id="posts-table"
+      pagination="true"
+      items-per-page="10"
+      empty="Cargando..."
+      style="margin-top: 20px;"
+    ></cu-table>
 
     <script>
       const table = document.getElementById("posts-table");
-      const loading = document.getElementById("loading");
-      const searchInput = document.getElementById("search-input");
-
-      const tableColumns = [
-        { key: "id", label: "ID" },
-        { key: "title", label: "Título" },
-        { key: "body", label: "Contenido" },
-        {
-          key: "status",
-          label: "Estado",
-          badges: (row) => [
-            {
-              value: row.active ? "Activo" : "Inactivo",
-              color: row.active ? "success" : "danger",
-              variant: "subtle",
-            },
-          ],
-        },
-        {
-          key: "actions",
-          label: "Acciones",
-          buttons: (row, index) => [
-            {
-              label: row.active ? "Desactivar" : "Activar",
-              color: row.active ? "danger" : "success",
-              onClick: () => {
-                row.active = !row.active;
-                table.updateRow(index, { active: row.active });
-              },
-            },
-          ],
-        },
-        {
-          key: "userId",
-          label: "User ID",
-          badges: (row) => [
-            {
-              value: String(row.userId),
-              color: "primary",
-              variant: "subtle",
-            },
-          ],
-        },
-      ];
-
-      loading.style.display = "block";
-
-      if (searchInput && table) {
-        searchInput.addEventListener("input", (e) => {
-          table.searchValue = e.target.value;
-        });
-      }
+      const loading = document.createElement("div");
+      loading.textContent = "Cargando...";
+      loading.style.padding = "10px";
+      loading.style.textAlign = "center";
+      table.parentNode.insertBefore(loading, table);
 
       fetch("https://jsonplaceholder.typicode.com/posts")
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Error al cargar datos");
-          }
-          return response.json();
-        })
+        .then((response) => response.json())
         .then((posts) => {
-          if (table) {
-            table.data = posts.map((post) => ({
-              ...post,
-              active: Math.random() > 0.5,
-            }));
-            table.columns = tableColumns;
-            table.searchValue = "ratione ex tenetur perferendis";
-            if (searchInput) searchInput.value = "ratione ex tenetur perferendis";
-          }
+          loading.remove();
+          table.data = posts;
+          table.columns = [
+            { key: "id", label: "ID" },
+            { key: "title", label: "Título", editable: true },
+            { key: "body", label: "Contenido" }
+          ];
         })
         .catch((error) => {
           console.error("Error:", error);
-          if (table) {
-            table.data = [];
-            table.empty = "Error al cargar los posts";
-          }
-        })
-        .finally(() => {
-          loading.style.display = "none";
+          loading.textContent = "Error al cargar posts";
         });
-
-      // Botones para log de datos
-      const logAllData = () => {
-        const allData = table.getData();
-        console.log("Todos los datos:", allData);
-      };
-
-      const logActiveData = () => {
-        const activeData = table.getData((item) => item.active);
-        console.log("Datos activos:", activeData);
-      };
-
-      const logInactiveData = () => {
-        const inactiveData = table.getData((item) => !item.active);
-        console.log("Datos inactivos:", inactiveData);
-      };
-
-      // Agregar botones al DOM
-      const buttonsContainer = document.createElement("div");
-      buttonsContainer.style.marginTop = "10px";
-      buttonsContainer.innerHTML = `
-        <button onclick="logAllData()" style="padding: 8px 16px; background-color: #6b7280; color: white; border: none; border-radius: 4px; margin-right: 8px; cursor: pointer;">
-          Log de todos los datos
-        </button>
-        <button onclick="logActiveData()" style="padding: 8px 16px; background-color: #10b981; color: white; border: none; border-radius: 4px; margin-right: 8px; cursor: pointer;">
-          Log de datos activos
-        </button>
-        <button onclick="logInactiveData()" style="padding: 8px 16px; background-color: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer;">
-          Log de datos inactivos
-        </button>
-      `;
-      document.body.appendChild(buttonsContainer);
-
-      // Exponer funciones globales para que los botones puedan llamarlas
-      window.logAllData = logAllData;
-      window.logActiveData = logActiveData;
-      window.logInactiveData = logInactiveData;
     </script>
   </body>
 </html>
