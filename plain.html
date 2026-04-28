@@ -39,6 +39,31 @@
         { key: "title", label: "Título" },
         { key: "body", label: "Contenido" },
         {
+          key: "status",
+          label: "Estado",
+          badges: (row) => [
+            {
+              value: row.active ? "Activo" : "Inactivo",
+              color: row.active ? "success" : "danger",
+              variant: "subtle",
+            },
+          ],
+        },
+        {
+          key: "actions",
+          label: "Acciones",
+          buttons: (row, index) => [
+            {
+              label: row.active ? "Desactivar" : "Activar",
+              color: row.active ? "danger" : "success",
+              onClick: () => {
+                row.active = !row.active;
+                table.updateRow(index, { active: row.active });
+              },
+            },
+          ],
+        },
+        {
           key: "userId",
           label: "User ID",
           badges: (row) => [
@@ -68,7 +93,10 @@
         })
         .then((posts) => {
           if (table) {
-            table.data = posts;
+            table.data = posts.map((post) => ({
+              ...post,
+              active: Math.random() > 0.5,
+            }));
             table.columns = tableColumns;
             table.searchValue = "ratione ex tenetur perferendis";
             if (searchInput) searchInput.value = "ratione ex tenetur perferendis";
