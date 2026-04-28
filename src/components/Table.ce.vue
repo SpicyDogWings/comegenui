@@ -24,8 +24,8 @@ interface Column {
   key: string;
   label?: string;
   cell?: (row: Record<string, any>) => string | string[];
-  badges?: (row: Record<string, any>) => BadgeConfig[];
-  buttons?: (row: Record<string, any>) => ButtonConfig[];
+  badges?: (row: Record<string, any>, index: number) => BadgeConfig[];
+  buttons?: (row: Record<string, any>, index: number) => ButtonConfig[];
 }
 
 const props = defineProps({
@@ -105,7 +105,7 @@ watch(
 
 // Función para actualizar un registro sin re-renderizar todo
 const updateRow = (index: number, newData: Record<string, any>) => {
-  if (index >= 0 && index < localData.length) {
+  if (index >= 0 && index < localData.length && localData[index]) {
     Object.assign(localData[index], newData);
   }
 };
@@ -202,9 +202,9 @@ const getCellValue = (row: Record<string, any>, col: Column): string | string[] 
   return row[col.key];
 };
 
-const getCellBadges = (row: Record<string, any>, col: Column): BadgeConfig[] => {
+const getCellBadges = (row: Record<string, any>, col: Column, index: number): BadgeConfig[] => {
   if (typeof col.badges === "function") {
-    return col.badges(row).filter((b) => b?.value != null);
+    return col.badges(row, index).filter((b) => b?.value != null);
   }
   return [];
 };
@@ -213,9 +213,9 @@ const hasBadges = (col: Column): boolean => {
   return typeof col.badges === "function";
 };
 
-const getCellButtons = (row: Record<string, any>, col: Column): ButtonConfig[] => {
+const getCellButtons = (row: Record<string, any>, col: Column, index: number): ButtonConfig[] => {
   if (typeof col.buttons === "function") {
-    return col.buttons(row).filter((b) => b?.label != null);
+    return col.buttons(row, index).filter((b) => b?.label != null);
   }
   return [];
 };
@@ -260,7 +260,7 @@ const hasButtons = (col: Column): boolean => {
               <slot :name="`cell-${col.key}`" :row="row" :column="col" :index="rowIndex">
                 <div v-if="hasBadges(col)" class="flex items-center gap-1">
                   <Badge
-                    v-for="(badge, idx) in getCellBadges(row, col)"
+                    v-for="(badge, idx) in getCellBadges(row, col, rowIndex)"
                     :key="idx"
                     :color="badge.color"
                     :variant="badge.variant"
@@ -270,7 +270,7 @@ const hasButtons = (col: Column): boolean => {
                 </div>
                 <div v-else-if="hasButtons(col)" class="flex items-center gap-1">
                   <Button
-                    v-for="(btn, idx) in getCellButtons(row, col)"
+                    v-for="(btn, idx) in getCellButtons(row, col, rowIndex)"
                     :key="idx"
                     :color="btn.color"
                     :variant="btn.variant"

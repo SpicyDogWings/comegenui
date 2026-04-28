@@ -6,7 +6,11 @@ const posts = ref<any[]>([]);
 
 onMounted(async () => {
   const response = await fetch("https://jsonplaceholder.typicode.com/posts");
-  posts.value = await response.json();
+  posts.value = (await response.json()).map((post) => ({
+    ...post,
+    active: Math.random() > 0.5, // Estado aleatorio
+    priority: Math.random() > 0.7 ? "Alta" : "Normal", // Prioridad aleatoria
+  }));
 });
 
 const tableRef = ref();
@@ -14,6 +18,31 @@ const tableRef = ref();
 const columns = [
   { key: "id", label: "ID" },
   { key: "title", label: "Título" },
+  {
+    key: "status",
+    label: "Estado",
+    badges: (row) => [
+      {
+        value: row.active ? "Activo" : "Inactivo",
+        color: row.active ? "success" : "danger",
+        variant: "subtle"
+      },
+    ],
+  },
+  {
+    key: "actions",
+    label: "Acciones",
+    buttons: (row, index) => [
+      {
+        label: row.active ? "Desactivar" : "Activar",
+        color: row.active ? "danger" : "success",
+        onClick: () => {
+          row.active = !row.active;
+          tableRef.value?.updateRow(index, { active: row.active });
+        },
+      },
+    ],
+  },
 ];
 
 const updateFirstPost = () => {
