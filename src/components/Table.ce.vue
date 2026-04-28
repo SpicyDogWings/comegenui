@@ -233,7 +233,6 @@ const hasButtons = (col: Column): boolean => {
                     {{ badge.value }}
                   </Badge>
                 </div>
-
                 <div v-else-if="hasButtons(col)" class="flex items-center gap-1">
                   <Button
                     v-for="(btn, idx) in getCellButtons(row, col)"
@@ -247,12 +246,10 @@ const hasButtons = (col: Column): boolean => {
                     {{ btn.label }}
                   </Button>
                 </div>
-
                 <span v-else>{{ getCellValue(row, col) }}</span>
               </slot>
             </td>
           </tr>
-
           <tr v-if="displayData.length === 0">
             <td
               :colspan="tableColumns.length"

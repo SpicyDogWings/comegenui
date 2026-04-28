@@ -33,6 +33,11 @@ const props = defineProps({
     required: false,
     default: () => [5, 10, 20, 50],
   },
+  showFirstAndLast: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 });
 
 const emit = defineEmits(["update:currentPage", "update:itemsPerPage"]);
@@ -64,16 +69,38 @@ const visiblePages = computed(() => {
   if (total <= 7) {
     for (let i = 1; i <= total; i++) pages.push(i);
   } else {
-    pages.push(1);
-    if (current > 3) pages.push("...");
+    if (props.showFirstAndLast) {
+      pages.push(1);
+      if (current > 3) pages.push("...");
+    }
 
-    const start = Math.max(2, current - 1);
-    const end = Math.min(total - 1, current + 1);
+    // Siempre 3 páginas en el medio
+    let midStart = current - 1;
+    let midEnd = current + 1;
 
-    for (let i = start; i <= end; i++) pages.push(i);
+    if (props.showFirstAndLast) {
+      midStart = Math.max(2, midStart);
+      midEnd = Math.min(total - 1, midEnd);
+    } else {
+      midStart = Math.max(1, midStart);
+      midEnd = Math.min(total, midEnd);
+    }
 
-    if (current < total - 2) pages.push("...");
-    if (total > 1) pages.push(total);
+    // Ajustar para garantizar 3 páginas
+    if (midEnd - midStart < 2) {
+      if (midStart === (props.showFirstAndLast ? 2 : 1)) {
+        midEnd = midStart + 2;
+      } else {
+        midStart = midEnd - 2;
+      }
+    }
+
+    for (let i = midStart; i <= midEnd; i++) pages.push(i);
+
+    if (props.showFirstAndLast) {
+      if (current < total - 2) pages.push("...");
+      pages.push(total);
+    }
   }
 
   return pages;
