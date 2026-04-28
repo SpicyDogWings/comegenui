@@ -48,6 +48,21 @@ const columns = [
 const updateFirstPost = () => {
   tableRef.value?.updateRow(0, { title: "Título actualizado en " + new Date().toLocaleTimeString() });
 };
+
+const logData = () => {
+  const currentData = tableRef.value?.getData();
+  console.log("Todos los datos:", currentData);
+};
+
+const logActiveData = () => {
+  const activeData = tableRef.value?.getData((item) => item.active);
+  console.log("Datos activos:", activeData);
+};
+
+const logInactiveData = () => {
+  const inactiveData = tableRef.value?.getData((item) => !item.active);
+  console.log("Datos inactivos:", inactiveData);
+};
 </script>
 
 <template>
@@ -72,6 +87,24 @@ const updateFirstPost = () => {
         class="mt-4 p-2 bg-primary-600 text-white rounded"
       >
         Actualizar primer post
+      </button>
+      <button
+        @click="logData"
+        class="mt-4 ml-2 p-2 bg-neutral-600 text-white rounded"
+      >
+        Log de todos los datos
+      </button>
+      <button
+        @click="logActiveData"
+        class="mt-4 ml-2 p-2 bg-success-600 text-white rounded"
+      >
+        Log de datos activos
+      </button>
+      <button
+        @click="logInactiveData"
+        class="mt-4 ml-2 p-2 bg-danger-600 text-white rounded"
+      >
+        Log de datos inactivos
       </button>
     </div>
   </div>

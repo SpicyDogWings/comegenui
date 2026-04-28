@@ -112,6 +112,43 @@
         .finally(() => {
           loading.style.display = "none";
         });
+
+      // Botones para log de datos
+      const logAllData = () => {
+        const allData = table.getData();
+        console.log("Todos los datos:", allData);
+      };
+
+      const logActiveData = () => {
+        const activeData = table.getData((item) => item.active);
+        console.log("Datos activos:", activeData);
+      };
+
+      const logInactiveData = () => {
+        const inactiveData = table.getData((item) => !item.active);
+        console.log("Datos inactivos:", inactiveData);
+      };
+
+      // Agregar botones al DOM
+      const buttonsContainer = document.createElement("div");
+      buttonsContainer.style.marginTop = "10px";
+      buttonsContainer.innerHTML = `
+        <button onclick="logAllData()" style="padding: 8px 16px; background-color: #6b7280; color: white; border: none; border-radius: 4px; margin-right: 8px; cursor: pointer;">
+          Log de todos los datos
+        </button>
+        <button onclick="logActiveData()" style="padding: 8px 16px; background-color: #10b981; color: white; border: none; border-radius: 4px; margin-right: 8px; cursor: pointer;">
+          Log de datos activos
+        </button>
+        <button onclick="logInactiveData()" style="padding: 8px 16px; background-color: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer;">
+          Log de datos inactivos
+        </button>
+      `;
+      document.body.appendChild(buttonsContainer);
+
+      // Exponer funciones globales para que los botones puedan llamarlas
+      window.logAllData = logAllData;
+      window.logActiveData = logActiveData;
+      window.logInactiveData = logInactiveData;
     </script>
   </body>
 </html>

@@ -103,6 +103,11 @@ watch(
   { immediate: true, deep: true },
 );
 
+// Función para obtener el índice de una fila en localData
+const getRowIndex = (row: Record<string, any>): number => {
+  return localData.indexOf(row);
+};
+
 // Función para actualizar un registro sin re-renderizar todo
 const updateRow = (index: number, newData: Record<string, any>) => {
   if (index >= 0 && index < localData.length && localData[index]) {
@@ -110,8 +115,17 @@ const updateRow = (index: number, newData: Record<string, any>) => {
   }
 };
 
+// Función para obtener todos los datos reactivos
+const getData = (filterFn?: (item: Record<string, any>) => boolean): Record<string, any>[] => {
+  let data = localData.map((item) => ({ ...item }));
+  if (filterFn) {
+    data = data.filter(filterFn);
+  }
+  return data;
+};
+
 // Expoone la función
-defineExpose({ updateRow });
+defineExpose({ updateRow, getData });
 
 watch(
   () => props.itemsPerPage,
@@ -257,10 +271,10 @@ const hasButtons = (col: Column): boolean => {
             class="hover:bg-charcoal-50 transition-colors border-charcoal-100 border-b-1 border-b-solid last:border-b-0"
           >
             <td v-for="col in tableColumns" :key="col.key" class="p-3 font-sans text-charcoal-800">
-              <slot :name="`cell-${col.key}`" :row="row" :column="col" :index="rowIndex">
+              <slot :name="`cell-${col.key}`" :row="row" :column="col" :index="getRowIndex(row)">
                 <div v-if="hasBadges(col)" class="flex items-center gap-1">
                   <Badge
-                    v-for="(badge, idx) in getCellBadges(row, col, rowIndex)"
+                    v-for="(badge, idx) in getCellBadges(row, col, getRowIndex(row))"
                     :key="idx"
                     :color="badge.color"
                     :variant="badge.variant"
@@ -270,7 +284,7 @@ const hasButtons = (col: Column): boolean => {
                 </div>
                 <div v-else-if="hasButtons(col)" class="flex items-center gap-1">
                   <Button
-                    v-for="(btn, idx) in getCellButtons(row, col, rowIndex)"
+                    v-for="(btn, idx) in getCellButtons(row, col, getRowIndex(row))"
                     :key="idx"
                     :color="btn.color"
                     :variant="btn.variant"
