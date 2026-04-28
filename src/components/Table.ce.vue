@@ -19,6 +19,7 @@ interface ButtonConfig {
   to?: string;
   target?: string;
   onClick?: () => void;
+  html?: boolean;
 }
 
 interface Column {
@@ -329,7 +330,8 @@ defineExpose({ updateRow, getData, getRow });
                       :target="btn.target"
                       @click="btn.onClick?.()"
                     >
-                      {{ btn.label }}
+                      <span class="flex items-center justify-center gap-2" v-if="btn.html" v-html="btn.label" />
+                      <span v-else>{{ btn.label }}</span>
                     </Button>
                   </div>
                   <span v-else>{{ getCellValue(row, col) }}</span>
