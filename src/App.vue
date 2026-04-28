@@ -21,7 +21,7 @@ const columns = [
 <template>
   <div class="p-6">
     <h1 class="text-2xl font-bold mb-6">Posts de JSONPlaceholder</h1>
-    
+
     <Table
       :data="posts"
       :columns="columns"
@@ -34,9 +34,6 @@ const columns = [
     <Textarea
       v-model="textareaValue"
       placeholder="Escribe aquí..."
-      :rows="5"
-      color="neutral"
-      variant="outlined"
     />
   </div>
 </template>
