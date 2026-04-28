@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
-
-const inputValue = ref();
+import { computed, ref, watch } from "vue";
 
 const props = defineProps({
+  modelValue: {
+    type: String,
+    required: false,
+    default: "",
+  },
   startValue: {
     type: String,
     required: false,
@@ -43,6 +46,17 @@ const props = defineProps({
     default: false,
   },
 });
+
+const inputValue = ref(props.modelValue || props.startValue);
+const emit = defineEmits(["update:modelValue"]);
+
+watch(
+  () => props.modelValue,
+  (val) => {
+    inputValue.value = val;
+  },
+  { immediate: true },
+);
 
 const inputClasses = computed(() => [
   "py-2",
@@ -162,7 +176,8 @@ defineExpose({
   <input
     :type="props.type"
     :placeholder="props.placeholder"
-    v-model="inputValue"
+    :value="inputValue"
+    @input="(e) => { inputValue = (e.target as HTMLInputElement).value; emit('update:modelValue', inputValue); }"
     :class="inputClasses"
     :disabled="props.disabled"
     :readonly="props.readOnly"

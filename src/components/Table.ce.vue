@@ -59,6 +59,11 @@ const props = defineProps({
     required: false,
     default: () => [],
   },
+  searchValue: {
+    type: String,
+    required: false,
+    default: "",
+  },
   pagination: {
     type: Boolean,
     required: false,
@@ -91,6 +96,14 @@ watch(
   (val) => {
     itemsPerPage.value = val;
   },
+);
+
+watch(
+  () => props.searchValue,
+  (val) => {
+    searchQuery.value = val;
+  },
+  { immediate: true },
 );
 
 const handleSearchUpdate = (value: string) => {

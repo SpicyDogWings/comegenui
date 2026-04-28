@@ -9,6 +9,8 @@ onMounted(async () => {
   posts.value = await response.json();
 });
 
+const searchQuery = ref("ratione ex tenetur perferendis");
+
 const columns = [
   { key: "id", label: "ID" },
   { key: "title", label: "Título" },
@@ -21,6 +23,7 @@ const columns = [
 
     <div class="max-w-4xl">
       <Table
+        :searchValue="searchQuery"
         :columns="columns"
         :data="posts"
         :pagination="true"
