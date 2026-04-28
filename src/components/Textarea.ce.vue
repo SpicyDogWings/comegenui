@@ -45,6 +45,11 @@ const props = defineProps({
         required: false,
         default: 3,
     },
+    noResize: {
+        type: Boolean,
+        required: false,
+        default: true,
+    },
 });
 
 const textareaValue = ref(props.modelValue || props.startValue);
@@ -62,7 +67,9 @@ const textareaClasses = computed(() => [
     "text-neutral-800",
     "focus:outline-none",
     "focus:ring-2",
-    "resize-none",
+    {
+        "resize-none": props.noResize,
+    },
     {
         "cursor-not-allowed opacity-70": props.disabled,
     },
