@@ -75,6 +75,7 @@ const inputClasses = computed(() => [
     "text-neutral-800",
     "focus:outline-none",
     "focus:ring-2",
+    "w-full",
     {
         "cursor-not-allowed opacity-70": props.disabled,
     },

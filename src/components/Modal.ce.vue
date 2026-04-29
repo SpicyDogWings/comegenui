@@ -25,6 +25,12 @@ const props = defineProps({
     default: "md",
     validator: (value: string) => ["sm", "md", "lg", "xl", "full"].includes(value),
   },
+  height: {
+    type: String,
+    required: false,
+    default: "auto",
+    validator: (value: string) => ["auto", "sm", "md", "lg", "xl", "full"].includes(value),
+  },
 });
 
 const emit = defineEmits(["close", "opened", "closed"]);
@@ -42,11 +48,7 @@ function toggle() {
 
 
 const keys = useMagicKeys({ target: window });
-
-// Solo cerrar con Escape si NO es persistente
 whenever(() => keys.Escape?.value, () => !props.persistent && isOpen.value && close());
-
-// Solo cerrar con backdrop si NO es persistente
 function handleBackdropClick(event: MouseEvent) {
   if (!props.persistent && event.target === event.currentTarget) {
     close();
@@ -72,13 +74,20 @@ const overlayClasses = computed(() => [
 
 const modalClasses = computed(() => [
   "bg-charcoal-50 rounded-cu shadow-xl outline-none",
-  "max-h-[90vh] overflow-auto w-full",
+  "w-full flex flex-col overflow-x-hidden",
   {
+    /* Width */
     "max-w-sm": props.size === "sm",
     "max-w-md": props.size === "md",
     "max-w-lg": props.size === "lg",
     "max-w-xl": props.size === "xl",
     "max-w-[90vw]": props.size === "full",
+    /* Height */
+    "max-h-[90vh]": props.height === "full" || props.height === "auto",
+    "max-h-[200px]": props.height === "sm",
+    "max-h-[300px]": props.height === "md",
+    "max-h-[400px]": props.height === "lg",
+    "max-h-[500px]": props.height === "xl",
   },
 ]);
 </script>
@@ -122,8 +131,10 @@ const modalClasses = computed(() => [
         </p>
       </header>
 
-      <main class="p-4">
-        <slot></slot>
+      <main class="p-4 flex-1 min-h-0 overflow-y-auto">
+        <div class="w-full overflow-x-hidden">
+          <slot></slot>
+        </div>
       </main>
 
       <footer class="p-4">
