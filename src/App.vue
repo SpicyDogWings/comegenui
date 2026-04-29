@@ -72,9 +72,9 @@ function closePersistentModal() {
     <!-- Modal Básico -->
     <Modal v-model="isModalOpen" title="Modal Básico" size="md" color="neutral">
       <p class="mb-4 text-charcoal-700">{{ modalMessage }}</p>
-      
+
       <template #footer>
-        <Button color="neutral" variant="outlined" @click="isModalOpen = false">
+        <Button color="neutral" @click="isModalOpen = false">
           Cancelar
         </Button>
         <Button color="primary" variant="solid" @click="isModalOpen = false">
@@ -91,7 +91,7 @@ function closePersistentModal() {
       <p class="mb-4 text-charcoal-600">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore.
       </p>
-      
+
       <template #footer>
         <Button color="primary" variant="ghost" @click="isPrimaryModalOpen = false">
           Cerrar
@@ -100,10 +100,10 @@ function closePersistentModal() {
     </Modal>
 
     <!-- Modal Persistente -->
-    <Modal 
-      v-model="isPersistentModalOpen" 
-      title="Modal Persistente" 
-      size="md" 
+    <Modal
+      v-model="isPersistentModalOpen"
+      title="Modal Persistente"
+      size="md"
       color="danger"
       :persistent="true"
       :closable="false"
@@ -112,7 +112,7 @@ function closePersistentModal() {
       <p class="mb-4 text-charcoal-600 text-sm">
         Este modal no se cierra con el backdrop o ESC. Usa el botón para cerrarlo.
       </p>
-      
+
       <template #footer>
         <Button color="danger" variant="solid" @click="closePersistentModal">
           Entendido
@@ -130,13 +130,13 @@ function closePersistentModal() {
           class="mb-4"
         />
       </div>
-      
+
       <template #header>
         <div class="flex items-center gap-2">
           <span class="text-2xl">📋</span>
         </div>
       </template>
-      
+
       <template #footer>
         <Button color="warning" variant="outlined" @click="isFullModalOpen = false">
           Salir

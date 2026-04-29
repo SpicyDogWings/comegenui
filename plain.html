@@ -3,65 +3,62 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tabla con Posts y Textarea</title>
+    <title>Demo Modal</title>
     <script src="dist/vendor/vue-runtime.iife.js"></script>
-    <script src="dist/CuTable.iife.js"></script>
-    <script src="dist/CuInput.iife.js"></script>
-    <script src="dist/CuPagination.iife.js"></script>
-    <script src="dist/CuButton.iife.js"></script>
-    <script src="dist/CuBadge.iife.js"></script>
-    <script src="dist/CuTextarea.iife.js"></script>
+    <script src="dist/CuModal.umd.js"></script>
+    <script src="dist/CuButton.umd.js"></script>
     <style>
       body {
         padding: 20px;
-        max-width: 1000px;
-        margin: 0 auto;
         font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
       }
     </style>
   </head>
   <body>
-    <h1>Posts de JSONPlaceholder</h1>
+    <div>
+      <cu-button id="open-modal-btn" color="primary" variant="solid">
+        Abrir Modal
+      </cu-button>
 
-    <cu-table
-      id="posts-table"
-      pagination="true"
-      items-per-page="10"
-      empty="Cargando..."
-      style="margin-top: 20px; margin-bottom: 20px;"
-    ></cu-table>
-
-    <h2>Ejemplo de Textarea</h2>
-    <cu-textarea
-      id="my-textarea"
-      placeholder="Escribe aquí..."
-      no-resize
-      style="width: 100%; margin-top: 10px;"
-    ></cu-textarea>
+      <cu-modal id="example-modal" title="Modal de Ejemplo" description="Este es un modal con contenido dinámico" color="primary" size="md">
+        <p style="margin-bottom: 16px;">Contenido del modal: Este modal muestra información adicional.</p>
+        
+        <cu-button id="close-from-inside" color="neutral" variant="outlined">
+          Cerrar desde dentro
+        </cu-button>
+      </cu-modal>
+    </div>
 
     <script>
-      const table = document.getElementById("posts-table");
-      const loading = document.createElement("div");
-      loading.textContent = "Cargando...";
-      loading.style.padding = "10px";
-      loading.style.textAlign = "center";
-      table.parentNode.insertBefore(loading, table);
+      const modal = document.getElementById("example-modal");
+      const openBtn = document.getElementById("open-modal-btn");
+      const closeFromInside = document.getElementById("close-from-inside");
 
-      fetch("https://jsonplaceholder.typicode.com/posts")
-        .then((response) => response.json())
-        .then((posts) => {
-          loading.remove();
-          table.data = posts;
-          table.columns = [
-            { key: "id", label: "ID" },
-            { key: "title", label: "Título", editable: true, singleClick: true },
-            { key: "body", label: "Contenido", editable: true, inputType: "textarea" }
-          ];
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-          loading.textContent = "Error al cargar posts";
-        });
+      openBtn.addEventListener("click", () => {
+        modal.modelValue = true;
+      });
+
+      closeFromInside.addEventListener("click", () => {
+        modal.modelValue = false;
+      });
+      
+      // Sync modelValue from update:modelValue event
+      modal.addEventListener("update:modelValue", (e) => {
+        modal.modelValue = e.detail[0];
+      });
+
+      modal.addEventListener("close", () => {
+        console.log("Modal closed");
+      });
+
+      modal.addEventListener("opened", () => {
+        console.log("Modal opened");
+      });
     </script>
   </body>
 </html>

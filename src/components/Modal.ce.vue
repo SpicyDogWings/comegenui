@@ -12,6 +12,11 @@ const props = defineProps({
     required: false,
     default: "",
   },
+  description: {
+    type: String,
+    required: false,
+    default: "",
+  },
   size: {
     type: String,
     required: false,
@@ -39,29 +44,24 @@ const props = defineProps({
 
 const emit = defineEmits(["update:modelValue", "close", "opened", "closed"]);
 
-const modalRef = ref<HTMLElement | null>(null);
+// Internal state that syncs with prop
 const isOpen = ref(props.modelValue);
 
-// Sync with v-model
+// Watch external changes (from v-model binding)
 watch(
   () => props.modelValue,
   (newVal) => {
     isOpen.value = newVal;
-    if (newVal) {
-      emit("opened");
-    } else {
-      emit("closed");
-    }
+    emit(newVal ? "opened" : "closed");
   }
 );
 
+// Watch internal changes and emit
 watch(
   isOpen,
   (newVal) => {
     emit("update:modelValue", newVal);
-    if (!newVal) {
-      emit("close");
-    }
+    if (!newVal) emit("close");
   }
 );
 
@@ -92,7 +92,7 @@ const modalClasses = computed(() => [
 ]);
 
 const headerClasses = computed(() => [
-  "p-4 border-b border-charcoal-200 flex justify-between items-center",
+  "p-4 border-b border-charcoal-200 relative",
   {
     "border-primary-200": props.color === "primary",
     "border-charcoal-300": props.color === "neutral",
@@ -128,6 +128,21 @@ const titleColor = computed(() => {
   }
 });
 
+const descriptionColor = computed(() => {
+  switch (props.color) {
+    case "primary":
+      return "text-primary-500";
+    case "success":
+      return "text-success-500";
+    case "warning":
+      return "text-warning-500";
+    case "danger":
+      return "text-danger-500";
+    default:
+      return "text-charcoal-600";
+  }
+});
+
 function close() {
   if (!props.persistent) {
     isOpen.value = false;
@@ -135,7 +150,7 @@ function close() {
 }
 
 function handleBackdropClick(event: MouseEvent) {
-  if (props.closable && event.target === modalRef.value?.parentElement) {
+  if (props.closable && event.target === (event.currentTarget as HTMLElement)) {
     close();
   }
 }
@@ -149,47 +164,52 @@ function handleKeydown(event: KeyboardEvent) {
 
 <template>
   <div
-      v-if="isOpen"
-      ref="modalRef"
-      :class="overlayClasses"
-      @click="handleBackdropClick"
-      @keydown.esc="handleKeydown"
-      tabindex="-1"
-      role="dialog"
-      aria-modal="true"
-      :aria-labelledby="title ? 'modal-title' : undefined"
-    >
-      <div :class="modalClasses">
-        <header v-if="$slots.header || title || closable" :class="headerClasses">
-          <h2
-            v-if="title"
-            id="modal-title"
-            :class="['font-bold text-lg font-sans', titleColor]"
-          >
-            {{ title }}
-          </h2>
-          <div class="flex-1"></div>
-          <slot name="header"></slot>
-          <Button
-            v-if="closable"
-            color="neutral"
-            variant="ghost"
-            @click="close"
-            class="p-1 h-auto w-auto"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-          </Button>
-        </header>
+    v-if="isOpen"
+    @click="handleBackdropClick"
+    @keydown.esc="handleKeydown"
+    tabindex="-1"
+    role="dialog"
+    aria-modal="true"
+    :aria-labelledby="title ? 'modal-title' : undefined"
+    :class="overlayClasses"
+  >
+    <div :class="modalClasses">
+      <header v-if="title || description || closable" :class="headerClasses">
+        <Button
+          v-if="closable"
+          color="neutral"
+          variant="ghost"
+          @click="close"
+          class="absolute top-4 right-4 p-1 h-auto w-auto"
+          aria-label="Cerrar modal"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </Button>
+        <slot name="header"></slot>
+        <h2
+          v-if="title"
+          id="modal-title"
+          :class="['font-bold text-lg font-sans', titleColor]"
+        >
+          {{ title }}
+        </h2>
+        <p
+          v-if="description"
+          :class="['text-sm font-sans mt-1', descriptionColor]"
+        >
+          {{ description }}
+        </p>
+      </header>
 
-        <main class="p-4">
-          <slot></slot>
-        </main>
+      <main class="p-4">
+        <slot></slot>
+      </main>
 
-        <footer v-if="$slots.footer" :class="footerClasses">
-          <slot name="footer"></slot>
-        </footer>
-      </div>
+      <footer v-if="$slots.footer" :class="footerClasses">
+        <slot name="footer"></slot>
+      </footer>
     </div>
+  </div>
 </template>
 
 <style>
