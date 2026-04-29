@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Demo Modal</title>
+    <title>Demo Modal Persistente</title>
     <script src="dist/vendor/vue-runtime.iife.js"></script>
     <script src="dist/CuModal.umd.js"></script>
     <script src="dist/CuButton.umd.js"></script>
@@ -16,48 +16,52 @@
         align-items: center;
         min-height: 100vh;
         margin: 0;
+        background: #f5f5f5;
       }
     </style>
   </head>
   <body>
     <div>
-      <cu-button id="open-modal-btn" color="primary" variant="solid">
-        Abrir Modal
+      <cu-button id="open-modal-btn" color="danger" variant="solid">
+        Abrir Modal Persistente
       </cu-button>
 
-      <cu-modal id="example-modal" title="Modal de Ejemplo" description="Este es un modal con contenido dinámico" color="primary" size="md">
-        <p style="margin-bottom: 16px;">Contenido del modal: Este modal muestra información adicional.</p>
+      <cu-modal 
+        id="persistent-modal" 
+        title="Modal Persistente" 
+        size="md" 
+        color="danger"
+        persistent="true"
+        closable="false"
+      >
+        <p style="margin-bottom: 16px;">Este modal no se cierra con el backdrop o con ESC.</p>
+        <p style="margin-bottom: 16px; color: #666; font-size: 14px;">Usa el botón para cerrarlo.</p>
         
-        <cu-button id="close-from-inside" color="neutral" variant="outlined">
-          Cerrar desde dentro
+        <cu-button id="close-persistent" color="danger" variant="solid" slot="footer">
+          Entendido
         </cu-button>
       </cu-modal>
     </div>
 
     <script>
-      const modal = document.getElementById("example-modal");
+      const modal = document.getElementById("persistent-modal");
       const openBtn = document.getElementById("open-modal-btn");
-      const closeFromInside = document.getElementById("close-from-inside");
+      const closeBtn = document.getElementById("close-persistent");
 
       openBtn.addEventListener("click", () => {
         modal.modelValue = true;
       });
 
-      closeFromInside.addEventListener("click", () => {
+      closeBtn.addEventListener("click", () => {
         modal.modelValue = false;
-      });
-      
-      // Sync modelValue from update:modelValue event
-      modal.addEventListener("update:modelValue", (e) => {
-        modal.modelValue = e.detail[0];
-      });
-
-      modal.addEventListener("close", () => {
-        console.log("Modal closed");
       });
 
       modal.addEventListener("opened", () => {
         console.log("Modal opened");
+      });
+
+      modal.addEventListener("closed", () => {
+        console.log("Modal closed");
       });
     </script>
   </body>
