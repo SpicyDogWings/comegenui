@@ -66,7 +66,7 @@ const buttonClasses = computed(() => [
       props.color === "neutral" && props.variant === "solid",
   },
   {
-    "bg-charcoal-50 text-charcoal-800 hover:bg-charcoal-100 active:bg-charcoal-200":
+    "bg-charcoal-100 text-charcoal-800 hover:bg-charcoal-200 active:bg-charcoal-300":
       props.color === "neutral" && props.variant === "soft",
   },
   {
@@ -78,7 +78,7 @@ const buttonClasses = computed(() => [
       props.color === "neutral" && props.variant === "outlined",
   },
   {
-    "bg-transparent text-charcoal-800 hover:bg-charcoal-50 active:bg-charcoal-100":
+    "bg-transparent text-charcoal-800 hover:bg-charcoal-100 active:bg-charcoal-200":
       props.color === "neutral" && props.variant === "ghost",
   },
   {

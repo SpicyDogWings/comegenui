@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, computed } from "vue";
+import Button from "./Button.ce.vue";
 
 const props = defineProps({
   modelValue: {
@@ -40,7 +41,6 @@ const emit = defineEmits(["update:modelValue", "close", "opened", "closed"]);
 
 const modalRef = ref<HTMLElement | null>(null);
 const isOpen = ref(props.modelValue);
-const hasTransitionedIn = ref(false);
 
 // Sync with v-model
 watch(
@@ -49,7 +49,6 @@ watch(
     isOpen.value = newVal;
     if (newVal) {
       emit("opened");
-      hasTransitionedIn.value = false;
     } else {
       emit("closed");
     }
@@ -68,14 +67,14 @@ watch(
 
 const overlayClasses = computed(() => [
   "fixed inset-0 z-50 flex items-center justify-center p-4",
-  "bg-black/30 backdrop-blur-sm transition-opacity duration-200",
-  { "opacity-0": !isOpen.value },
+  "bg-black/30 backdrop-blur-sm",
+  { "opacity-0 pointer-events-none": !isOpen.value },
   { "opacity-100": isOpen.value },
 ]);
 
 const modalClasses = computed(() => [
   "bg-charcoal-50 rounded-cu shadow-xl border-collapse",
-  "max-h-[90vh] overflow-auto transition-all duration-200",
+  "max-h-[90vh] overflow-auto",
   {
     "w-full max-w-sm": props.size === "sm",
     "w-full max-w-md": props.size === "md",
@@ -90,8 +89,6 @@ const modalClasses = computed(() => [
     "border-2 border-warning": props.color === "warning",
     "border-2 border-danger": props.color === "danger",
   },
-  { "scale-95 opacity-0": !isOpen.value },
-  { "scale-100 opacity-100": isOpen.value },
 ]);
 
 const headerClasses = computed(() => [
@@ -148,17 +145,10 @@ function handleKeydown(event: KeyboardEvent) {
     close();
   }
 }
-
-function handleTransitionEnd() {
-  if (isOpen.value) {
-    hasTransitionedIn.value = true;
-  }
-}
 </script>
 
 <template>
-  <Transition name="modal-fade">
-    <div
+  <div
       v-if="isOpen"
       ref="modalRef"
       :class="overlayClasses"
@@ -169,10 +159,7 @@ function handleTransitionEnd() {
       aria-modal="true"
       :aria-labelledby="title ? 'modal-title' : undefined"
     >
-      <div
-        :class="modalClasses"
-        @transitionend="handleTransitionEnd"
-      >
+      <div :class="modalClasses">
         <header v-if="$slots.header || title || closable" :class="headerClasses">
           <h2
             v-if="title"
@@ -183,43 +170,28 @@ function handleTransitionEnd() {
           </h2>
           <div class="flex-1"></div>
           <slot name="header"></slot>
-          <button
+          <Button
             v-if="closable"
+            color="neutral"
+            variant="ghost"
             @click="close"
-            class="p-1 rounded-cu hover:bg-charcoal-100 text-charcoal-600 hover:text-charcoal-800 text-2xl leading-none"
-            aria-label="Cerrar modal"
+            class="p-1 h-auto w-auto"
           >
-            &times;
-          </button>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+          </Button>
         </header>
-        
+
         <main class="p-4">
           <slot></slot>
         </main>
-        
+
         <footer v-if="$slots.footer" :class="footerClasses">
           <slot name="footer"></slot>
         </footer>
       </div>
     </div>
-  </Transition>
 </template>
 
 <style>
 @unocss-placeholder;
-
-.modal-fade-enter-active,
-.modal-fade-leave-active {
-  transition: opacity 0.2s ease;
-}
-
-.modal-fade-enter-from,
-.modal-fade-leave-to {
-  opacity: 0;
-}
-
-.modal-fade-enter-to,
-.modal-fade-leave-from {
-  opacity: 1;
-}
 </style>
