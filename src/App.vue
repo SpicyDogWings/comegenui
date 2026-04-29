@@ -1,26 +1,13 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
 import Modal from "./components/Modal.ce.vue";
 import Button from "./components/Button.ce.vue";
-import Table from "./components/Table.ce.vue";
 
-const posts = ref<any[]>([]);
 const isModalOpen = ref(false);
 const isPrimaryModalOpen = ref(false);
 const isPersistentModalOpen = ref(false);
 const isFullModalOpen = ref(false);
 const modalMessage = ref("");
-
-onMounted(async () => {
-  const response = await fetch("https://jsonplaceholder.typicode.com/posts");
-  posts.value = await response.json();
-});
-
-const columns = [
-  { key: "id", label: "ID" },
-  { key: "title", label: "Título" },
-  { key: "body", label: "Contenido" },
-];
 
 function openModal() {
   isModalOpen.value = true;
@@ -47,55 +34,35 @@ function closePersistentModal() {
 </script>
 
 <template>
-  <div class="p-6 min-h-screen bg-charcoal-50">
-    <h1 class="text-2xl font-bold mb-6 text-charcoal-800">Demo de Modal</h1>
+  <div class="p-6">
+    <h1 class="text-2xl font-bold mb-6">ComegenUI - Modal Examples</h1>
 
-    <div class="flex flex-wrap gap-4 mb-4">
-      <Button color="neutral" variant="soft">Soft Neutral</Button>
-      <Button color="neutral" variant="ghost">Ghost Neutral</Button>
-    </div>
-    <div class="flex flex-wrap gap-4 mb-8">
-      <Button color="primary" variant="solid" @click="openModal">
-        Modal Básico
-      </Button>
-      <Button color="success" variant="solid" @click="openPrimaryModal">
-        Modal Primario
-      </Button>
-      <Button color="danger" variant="solid" @click="openPersistentModal">
-        Modal Persistente
-      </Button>
-      <Button color="warning" variant="solid" @click="openFullModal">
-        Modal Completo
-      </Button>
+    <div class="flex gap-4 mb-6 flex-wrap">
+      <Button @click="openModal" color="primary">Abrir Modal Básico</Button>
+      <Button @click="openPrimaryModal" color="primary">Abrir Modal Primary</Button>
+      <Button @click="openPersistentModal" color="warning">Abrir Modal Persistente</Button>
+      <Button @click="openFullModal" color="success">Abrir Modal Full</Button>
     </div>
 
     <!-- Modal Básico -->
-    <Modal v-model="isModalOpen" title="Modal Básico" size="md" color="neutral">
-      <p class="mb-4 text-charcoal-700">{{ modalMessage }}</p>
-
+    <Modal v-model="isModalOpen" title="Modal Básico" description="Un modal estándar con acciones.">
+      <p class="mb-4">{{ modalMessage }}</p>
       <template #footer>
-        <Button color="neutral" @click="isModalOpen = false">
-          Cancelar
-        </Button>
-        <Button color="primary" variant="solid" @click="isModalOpen = false">
-          Aceptar
-        </Button>
+        <Button color="neutral" @click="isModalOpen = false">Cancelar</Button>
+        <Button color="primary" @click="isModalOpen = false">Aceptar</Button>
       </template>
     </Modal>
 
-    <!-- Modal Primario -->
-    <Modal v-model="isPrimaryModalOpen" title="Modal Primario" size="lg" color="primary">
-      <p class="mb-4 text-charcoal-700">
-        Este modal tiene el tema primario. Puedes personalizar el color, tamaño y contenido.
-      </p>
-      <p class="mb-4 text-charcoal-600">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore.
-      </p>
-
+    <!-- Modal Primary -->
+    <Modal
+      v-model="isPrimaryModalOpen"
+      title="Modal Primary"
+      color="primary"
+      description="Modal con tema primary."
+    >
+      <p class="mb-4">Contenido con estilo primary.</p>
       <template #footer>
-        <Button color="primary" variant="ghost" @click="isPrimaryModalOpen = false">
-          Cerrar
-        </Button>
+        <Button color="neutral" @click="isPrimaryModalOpen = false">Cerrar</Button>
       </template>
     </Modal>
 
@@ -103,44 +70,27 @@ function closePersistentModal() {
     <Modal
       v-model="isPersistentModalOpen"
       title="Modal Persistente"
-      size="md"
-      color="danger"
+      color="warning"
+      description="No se cierra con clic fuera o ESC."
       :persistent="true"
-      :closable="false"
     >
-      <p class="mb-4 text-charcoal-700">{{ modalMessage }}</p>
-      <p class="mb-4 text-charcoal-600 text-sm">
-        Este modal no se cierra con el backdrop o ESC. Usa el botón para cerrarlo.
-      </p>
-
+      <p class="mb-4">{{ modalMessage }}</p>
       <template #footer>
-        <Button color="danger" variant="solid" @click="closePersistentModal">
-          Entendido
-        </Button>
+        <Button color="warning" @click="closePersistentModal">Cerrar Manual</Button>
       </template>
     </Modal>
 
     <!-- Modal Full -->
-    <Modal v-model="isFullModalOpen" title="Modal Completo" size="full" color="warning">
-      <div class="p-4">
-        <p class="mb-4 text-charcoal-700">{{ modalMessage }}</p>
-        <Table
-          :data="posts.slice(0, 5)"
-          :columns="columns"
-          class="mb-4"
-        />
-      </div>
-
-      <template #header>
-        <div class="flex items-center gap-2">
-          <span class="text-2xl">📋</span>
-        </div>
-      </template>
-
+    <Modal
+      v-model="isFullModalOpen"
+      title="Modal Full Screen"
+      color="success"
+      size="full"
+      description="Ocupa toda la pantalla."
+    >
+      <p class="mb-4">{{ modalMessage }}</p>
       <template #footer>
-        <Button color="warning" variant="outlined" @click="isFullModalOpen = false">
-          Salir
-        </Button>
+        <Button color="neutral" @click="isFullModalOpen = false">Cerrar</Button>
       </template>
     </Modal>
   </div>

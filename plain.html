@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Demo Modal Persistente</title>
+    <title>ComegenUI - Modal Examples</title>
     <script src="dist/vendor/vue-runtime.iife.js"></script>
     <script src="dist/CuModal.umd.js"></script>
     <script src="dist/CuButton.umd.js"></script>
@@ -18,50 +18,174 @@
         margin: 0;
         background: #f5f5f5;
       }
+      .container {
+        width: 100%;
+        max-width: 800px;
+      }
+      .btn-group {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+      }
+      cu-button {
+        padding: 10px 20px;
+      }
+      p {
+        margin: 0 0 16px 0;
+        line-height: 1.5;
+      }
+      .description {
+        color: #666;
+        font-size: 14px;
+        margin-bottom: 16px;
+      }
     </style>
   </head>
   <body>
-    <div>
-      <cu-button id="open-modal-btn" color="danger" variant="solid">
-        Abrir Modal Persistente
-      </cu-button>
+    <div class="container">
+      <h1 style="margin-bottom: 20px; text-align: center;">ComegenUI - Modal Examples</h1>
+      
+      <div class="btn-group">
+        <cu-button id="open-basic" color="primary" variant="solid">
+          Abrir Modal Básico
+        </cu-button>
+        <cu-button id="open-primary" color="primary" variant="solid">
+          Abrir Modal Primary
+        </cu-button>
+        <cu-button id="open-persistent" color="warning" variant="solid">
+          Abrir Modal Persistente
+        </cu-button>
+        <cu-button id="open-full" color="success" variant="solid">
+          Abrir Modal Full
+        </cu-button>
+      </div>
 
-      <cu-modal 
-        id="persistent-modal" 
-        title="Modal Persistente" 
-        size="md" 
-        color="danger"
-        persistent="true"
-        closable="false"
+      <!-- Modal Básico -->
+      <cu-modal id="basic-modal" title="Modal Básico" description="Un modal estándar con acciones.">
+        <p>Este es un modal básico con botones dentro.</p>
+        <cu-button color="neutral" variant="ghost" slot="footer" id="close-basic">
+          Cancelar
+        </cu-button>
+        <cu-button color="primary" variant="solid" slot="footer" id="accept-basic">
+          Aceptar
+        </cu-button>
+      </cu-modal>
+
+      <!-- Modal Primary -->
+      <cu-modal
+        id="primary-modal"
+        title="Modal Primary"
+        color="primary"
+        description="Modal con tema primary."
       >
-        <p style="margin-bottom: 16px;">Este modal no se cierra con el backdrop o con ESC.</p>
-        <p style="margin-bottom: 16px; color: #666; font-size: 14px;">Usa el botón para cerrarlo.</p>
-        
-        <cu-button id="close-persistent" color="danger" variant="solid" slot="footer">
-          Entendido
+        <p>Contenido con estilo primary.</p>
+        <cu-button color="neutral" variant="ghost" slot="footer" id="close-primary">
+          Cerrar
+        </cu-button>
+      </cu-modal>
+
+      <!-- Modal Persistente -->
+      <cu-modal
+        id="persistent-modal"
+        title="Modal Persistente"
+        color="warning"
+        description="No se cierra con clic fuera o ESC."
+        persistent="true"
+      >
+        <p>Modal persistente. No se cierra haciendo clic fuera o con ESC.</p>
+        <p class="description">Usa el botón para cerrarlo.</p>
+        <cu-button color="warning" variant="solid" slot="footer" id="close-persistent">
+          Cerrar Manual
+        </cu-button>
+      </cu-modal>
+
+      <!-- Modal Full -->
+      <cu-modal
+        id="full-modal"
+        title="Modal Full Screen"
+        color="success"
+        size="full"
+        description="Ocupa toda la pantalla."
+      >
+        <p>Modal a pantalla completa.</p>
+        <cu-button color="neutral" variant="ghost" slot="footer" id="close-full">
+          Cerrar
         </cu-button>
       </cu-modal>
     </div>
 
     <script>
-      const modal = document.getElementById("persistent-modal");
-      const openBtn = document.getElementById("open-modal-btn");
-      const closeBtn = document.getElementById("close-persistent");
+      // Modal Básico
+      const basicModal = document.getElementById("basic-modal");
+      const openBasicBtn = document.getElementById("open-basic");
+      const closeBasicBtn = document.getElementById("close-basic");
+      const acceptBasicBtn = document.getElementById("accept-basic");
 
-      openBtn.addEventListener("click", () => {
-        modal.modelValue = true;
+      openBasicBtn.addEventListener("click", () => {
+        basicModal.modelValue = true;
+      });
+      closeBasicBtn.addEventListener("click", () => {
+        basicModal.modelValue = false;
+      });
+      acceptBasicBtn.addEventListener("click", () => {
+        basicModal.modelValue = false;
       });
 
-      closeBtn.addEventListener("click", () => {
-        modal.modelValue = false;
+      // Modal Primary
+      const primaryModal = document.getElementById("primary-modal");
+      const openPrimaryBtn = document.getElementById("open-primary");
+      const closePrimaryBtn = document.getElementById("close-primary");
+
+      openPrimaryBtn.addEventListener("click", () => {
+        primaryModal.modelValue = true;
+      });
+      closePrimaryBtn.addEventListener("click", () => {
+        primaryModal.modelValue = false;
       });
 
-      modal.addEventListener("opened", () => {
-        console.log("Modal opened");
+      // Modal Persistente
+      const persistentModal = document.getElementById("persistent-modal");
+      const openPersistentBtn = document.getElementById("open-persistent");
+      const closePersistentBtn = document.getElementById("close-persistent");
+
+      openPersistentBtn.addEventListener("click", () => {
+        persistentModal.modelValue = true;
+      });
+      closePersistentBtn.addEventListener("click", () => {
+        persistentModal.modelValue = false;
       });
 
-      modal.addEventListener("closed", () => {
-        console.log("Modal closed");
+      // Modal Full
+      const fullModal = document.getElementById("full-modal");
+      const openFullBtn = document.getElementById("open-full");
+      const closeFullBtn = document.getElementById("close-full");
+
+      openFullBtn.addEventListener("click", () => {
+        fullModal.modelValue = true;
+      });
+      closeFullBtn.addEventListener("click", () => {
+        fullModal.modelValue = false;
+      });
+
+      // Sync modelValue for all modals
+      [basicModal, primaryModal, persistentModal, fullModal].forEach(modal => {
+        modal.addEventListener("update:modelValue", (e) => {
+          modal.modelValue = e.detail[0];
+        });
+      });
+
+      // Event listeners for logging
+      [basicModal, primaryModal, persistentModal, fullModal].forEach(modal => {
+        modal.addEventListener("opened", () => {
+          console.log(`${modal.id} opened`);
+        });
+        modal.addEventListener("closed", () => {
+          console.log(`${modal.id} closed`);
+        });
+        modal.addEventListener("close", () => {
+          console.log(`${modal.id} close event`);
+        });
       });
     </script>
   </body>

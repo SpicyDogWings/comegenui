@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, computed } from "vue";
+import { ref, watch, computed, onMounted, onUnmounted, nextTick } from "vue";
 import Button from "./Button.ce.vue";
 
 const props = defineProps({
@@ -44,8 +44,16 @@ const props = defineProps({
 
 const emit = defineEmits(["update:modelValue", "close", "opened", "closed"]);
 
+const modalRef = ref<HTMLElement | null>(null);
+
 // Internal state that syncs with prop
 const isOpen = ref(props.modelValue);
+
+function focusModal() {
+  nextTick(() => {
+    modalRef.value?.focus();
+  });
+}
 
 // Watch external changes (from v-model binding)
 watch(
@@ -53,6 +61,7 @@ watch(
   (newVal) => {
     isOpen.value = newVal;
     emit(newVal ? "opened" : "closed");
+    if (newVal) focusModal();
   }
 );
 
@@ -73,7 +82,7 @@ const overlayClasses = computed(() => [
 ]);
 
 const modalClasses = computed(() => [
-  "bg-charcoal-50 rounded-cu shadow-xl border-collapse",
+  "bg-charcoal-50 rounded-cu shadow-xl outline-none",
   "max-h-[90vh] overflow-auto",
   {
     "w-full max-w-sm": props.size === "sm",
@@ -156,24 +165,31 @@ function handleBackdropClick(event: MouseEvent) {
 }
 
 function handleKeydown(event: KeyboardEvent) {
-  if (props.closable && event.key === "Escape") {
+  if (props.closable && event.key === "Escape" && isOpen.value) {
     close();
   }
 }
+
+onMounted(() => window.addEventListener("keydown", handleKeydown));
+onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
 </script>
 
 <template>
   <div
     v-if="isOpen"
     @click="handleBackdropClick"
-    @keydown.esc="handleKeydown"
     tabindex="-1"
-    role="dialog"
-    aria-modal="true"
-    :aria-labelledby="title ? 'modal-title' : undefined"
     :class="overlayClasses"
   >
-    <div :class="modalClasses">
+    <div
+      :class="modalClasses"
+      ref="modalRef"
+      role="dialog"
+      aria-modal="true"
+      :aria-labelledby="title ? 'modal-title' : undefined"
+      :aria-describedby="description ? 'modal-description' : undefined"
+      tabindex="-1"
+    >
       <header v-if="title || description || closable" :class="headerClasses">
         <Button
           v-if="closable"
@@ -195,6 +211,7 @@ function handleKeydown(event: KeyboardEvent) {
         </h2>
         <p
           v-if="description"
+          id="modal-description"
           :class="['text-sm font-sans mt-1', descriptionColor]"
         >
           {{ description }}
