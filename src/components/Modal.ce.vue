@@ -14,6 +14,11 @@ const props = defineProps({
     required: false,
     default: "",
   },
+  persistent: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 });
 
 const emit = defineEmits(["close", "opened", "closed"]);
@@ -31,9 +36,13 @@ function toggle() {
 
 
 const keys = useMagicKeys({ target: window });
-whenever(() => keys.Escape?.value, () => isOpen.value && close());
+
+// Solo cerrar con Escape si NO es persistente
+whenever(() => keys.Escape?.value, () => !props.persistent && isOpen.value && close());
+
+// Solo cerrar con backdrop si NO es persistente
 function handleBackdropClick(event: MouseEvent) {
-  if (event.target === event.currentTarget) {
+  if (!props.persistent && event.target === event.currentTarget) {
     close();
   }
 }
@@ -75,6 +84,7 @@ const modalClasses = computed(() => [
     <div :class="modalClasses">
       <header class="p-4 relative">
         <Button
+          v-if="!props.persistent"
           color="neutral"
           variant="ghost"
           @click="close"

@@ -1,70 +1,90 @@
 <!doctype html>
 <html lang="es">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Modal Básico - ComegenUI</title>
-        <script src="dist/vendor/vue-runtime.iife.js"></script>
-        <script src="dist/CuModal.umd.js"></script>
-        <script src="dist/CuButton.umd.js"></script>
-        <style>
-            body {
-                padding: 20px;
-                font-family: Arial, sans-serif;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                min-height: 100vh;
-                margin: 0;
-                background: #f5f5f5;
-            }
-            .footer {
-                display: flex;
-                justify-content: flex-end;
-                align-items: center;
-                gap: 1rem;
-            }
-            p {
-                margin: 0;
-                line-height: 1.5;
-            }
-        </style>
-    </head>
-    <body>
-        <div>
-            <cu-button id="open-modal" color="primary" variant="solid">
-                Abrir Modal
-            </cu-button>
-            <cu-modal id="basic-modal" title="Modal Básico">
-                <p>Contenido</p>
-                <div slot="footer" class="footer">
-                    <cu-button
-                        id="close-modal"
-                        slot="footer"
-                        color="neutral"
-                        variant="ghost"
-                        >Cancelar</cu-button
-                    >
-                    <cu-button
-                        id="accept-modal"
-                        slot="footer"
-                        color="primary"
-                        variant="solid"
-                        >Aceptar</cu-button
-                    >
-                </div>
-            </cu-modal>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Modal Examples - ComegenUI</title>
+    <script src="dist/vendor/vue-runtime.iife.js"></script>
+    <script src="dist/CuModal.umd.js"></script>
+    <script src="dist/CuButton.umd.js"></script>
+    <style>
+      body {
+        padding: 20px;
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        background: #f5f5f5;
+      }
+      .btn-group {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+      .footer {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 1rem;
+      }
+      p {
+        margin: 0;
+        line-height: 1.5;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <div class="btn-group">
+        <cu-button id="open-basic" color="primary" variant="solid">
+          Modal Normal
+        </cu-button>
+        <cu-button id="open-persistent" color="danger" variant="solid">
+          Modal Persistente
+        </cu-button>
+      </div>
+
+      <!-- Modal Normal -->
+      <cu-modal id="basic-modal" title="Modal Básico">
+        <p>Contenido del modal normal (se cierra con Escape, clic fuera o X).</p>
+        <div slot="footer" class="footer">
+          <cu-button id="close-basic" color="neutral" variant="ghost">Cancelar</cu-button>
+          <cu-button id="accept-basic" color="primary" variant="solid">Aceptar</cu-button>
         </div>
+      </cu-modal>
 
-        <script>
-            const modal = document.getElementById("basic-modal");
-            const openBtn = document.getElementById("open-modal");
-            const closeBtn = document.getElementById("close-modal");
-            const acceptBtn = document.getElementById("accept-modal");
+      <!-- Modal Persistente -->
+      <cu-modal id="persistent-modal" title="Modal Persistente" persistent>
+        <p><strong>No se puede cerrar</strong> con Escape, clic fuera o el botón X. 
+           Solo con el botón de abajo.</p>
+        <div slot="footer" class="footer">
+          <cu-button id="close-persistent" color="danger" variant="solid">
+            Cerrar (único método)
+          </cu-button>
+        </div>
+      </cu-modal>
+    </div>
 
-            openBtn.addEventListener("click", () => modal.open());
-            closeBtn.addEventListener("click", () => modal.close());
-            acceptBtn.addEventListener("click", () => modal.close());
-        </script>
-    </body>
+    <script>
+      // Modal Normal
+      const basicModal = document.getElementById("basic-modal");
+      const openBasicBtn = document.getElementById("open-basic");
+      const closeBasicBtn = document.getElementById("close-basic");
+      const acceptBasicBtn = document.getElementById("accept-basic");
+
+      openBasicBtn.addEventListener("click", () => basicModal.open());
+      closeBasicBtn.addEventListener("click", () => basicModal.close());
+      acceptBasicBtn.addEventListener("click", () => basicModal.close());
+
+      // Modal Persistente
+      const persistentModal = document.getElementById("persistent-modal");
+      const openPersistentBtn = document.getElementById("open-persistent");
+      const closePersistentBtn = document.getElementById("close-persistent");
+
+      openPersistentBtn.addEventListener("click", () => persistentModal.open());
+      closePersistentBtn.addEventListener("click", () => persistentModal.close());
+    </script>
+  </body>
 </html>
