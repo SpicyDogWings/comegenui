@@ -1,62 +1,70 @@
 <!doctype html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Modal Básico - ComegenUI</title>
-    <script src="dist/vendor/vue-runtime.iife.js"></script>
-    <script src="dist/CuModal.umd.js"></script>
-    <script src="dist/CuButton.umd.js"></script>
-    <style>
-      body {
-        padding: 20px;
-        font-family: Arial, sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        margin: 0;
-        background: #f5f5f5;
-      }
-      .footer-slot {
-        display: flex;
-        justify-content: flex-end;
-        gap: 8px;
-      }
-      p {
-        margin: 0;
-        line-height: 1.5;
-      }
-    </style>
-  </head>
-  <body>
-    <div>
-      <cu-button id="open-modal" color="primary" variant="solid">
-        Abrir Modal
-      </cu-button>
-
-      <cu-modal id="basic-modal" title="Modal Básico" description="Un modal simple.">
-        <p> Contenido del modal.</p>
-        <div slot="footer" class="footer-slot">
-          <cu-button id="close-modal" color="neutral" variant="ghost">
-            Cancelar
-          </cu-button>
-          <cu-button id="accept-modal" color="primary" variant="solid">
-            Aceptar
-          </cu-button>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Modal Básico - ComegenUI</title>
+        <script src="dist/vendor/vue-runtime.iife.js"></script>
+        <script src="dist/CuModal.umd.js"></script>
+        <script src="dist/CuButton.umd.js"></script>
+        <style>
+            body {
+                padding: 20px;
+                font-family: Arial, sans-serif;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                margin: 0;
+                background: #f5f5f5;
+            }
+            .footer {
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+                gap: 1rem;
+            }
+            p {
+                margin: 0;
+                line-height: 1.5;
+            }
+        </style>
+    </head>
+    <body>
+        <div>
+            <cu-button id="open-modal" color="primary" variant="solid">
+                Abrir Modal
+            </cu-button>
+            <cu-modal id="basic-modal" title="Modal Básico">
+                <p>Contenido</p>
+                <div slot="footer" class="footer">
+                    <cu-button
+                        id="close-modal"
+                        slot="footer"
+                        color="neutral"
+                        variant="ghost"
+                        >Cancelar</cu-button
+                    >
+                    <cu-button
+                        id="accept-modal"
+                        slot="footer"
+                        color="primary"
+                        variant="solid"
+                        >Aceptar</cu-button
+                    >
+                </div>
+            </cu-modal>
         </div>
-      </cu-modal>
-    </div>
 
-    <script>
-      const modal = document.getElementById("basic-modal");
-      const openBtn = document.getElementById("open-modal");
-      const closeBtn = document.getElementById("close-modal");
-      const acceptBtn = document.getElementById("accept-modal");
+        <script>
+            const modal = document.getElementById("basic-modal");
+            const openBtn = document.getElementById("open-modal");
+            const closeBtn = document.getElementById("close-modal");
+            const acceptBtn = document.getElementById("accept-modal");
 
-      openBtn.addEventListener("click", () => modal.open());
-      closeBtn.addEventListener("click", () => modal.close());
-      acceptBtn.addEventListener("click", () => modal.close());
-    </script>
-  </body>
+            openBtn.addEventListener("click", () => modal.open());
+            closeBtn.addEventListener("click", () => modal.close());
+            acceptBtn.addEventListener("click", () => modal.close());
+        </script>
+    </body>
 </html>

@@ -59,14 +59,6 @@ const modalClasses = computed(() => [
   "bg-charcoal-50 rounded-cu shadow-xl outline-none",
   "max-h-[90vh] overflow-auto max-w-md w-full",
 ]);
-
-const headerClasses = computed(() => [
-  "p-4 border-b border-charcoal-200 relative",
-]);
-
-const footerClasses = computed(() => [
-  "p-4 border-t border-charcoal-200 flex justify-end items-center gap-3",
-]);
 </script>
 
 <template>
@@ -81,7 +73,7 @@ const footerClasses = computed(() => [
     :class="overlayClasses"
   >
     <div :class="modalClasses">
-      <header :class="headerClasses">
+      <header class="p-4 relative">
         <Button
           color="neutral"
           variant="ghost"
@@ -111,7 +103,7 @@ const footerClasses = computed(() => [
         <slot></slot>
       </main>
 
-      <footer v-if="$slots.footer" :class="footerClasses">
+      <footer class="p-4">
         <slot name="footer"></slot>
       </footer>
     </div>
