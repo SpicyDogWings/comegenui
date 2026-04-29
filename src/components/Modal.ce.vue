@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, computed, defineExpose } from "vue";
+import { ref, watch, computed } from "vue";
 import { useMagicKeys, whenever } from "@vueuse/core";
 import Button from "./Button.ce.vue";
 
@@ -18,38 +18,31 @@ const props = defineProps({
 
 const emit = defineEmits(["close", "opened", "closed"]);
 
-// Estado interno
 const isOpen = ref(false);
-
-// Métodos públicos
 function open() {
   isOpen.value = true;
 }
-
 function close() {
   isOpen.value = false;
 }
-
 function toggle() {
   isOpen.value = !isOpen.value;
 }
 
-// Eventos
-watch(isOpen, (newVal) => {
-  emit(newVal ? "opened" : "closed");
-  if (!newVal) emit("close");
-});
 
-// Cerrar con Escape
 const keys = useMagicKeys({ target: window });
 whenever(() => keys.Escape?.value, () => isOpen.value && close());
-
 function handleBackdropClick(event: MouseEvent) {
   if (event.target === event.currentTarget) {
     close();
   }
 }
-// Exponer métodos para plain HTML
+
+watch(isOpen, (newVal) => {
+  emit(newVal ? "opened" : "closed");
+  if (!newVal) emit("close");
+});
+
 defineExpose({
   open,
   close,
