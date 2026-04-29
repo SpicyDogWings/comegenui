@@ -54,14 +54,12 @@ const isOpen = ref(props.modelValue);
 // Para web components: obtener el host element y mover slots al footer
 function moveFooterSlots() {
   nextTick(() => {
-    // Obtener el host element (el <cu-modal> mismo)
     const instance = getCurrentInstance();
     const hostEl = instance?.vnode.el as HTMLElement | null;
     const container = modalRef.value;
     
     if (!hostEl || !container) return;
 
-    // Buscar nodos con slot="footer" en el host
     const footerNodes = Array.from(hostEl.children).filter(
       (child) => child.getAttribute('slot') === 'footer'
     );

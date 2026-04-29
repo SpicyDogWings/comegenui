@@ -45,10 +45,13 @@
   <body>
     <div class="container">
       <h1 style="margin-bottom: 20px; text-align: center;">ComegenUI - Modal Examples</h1>
-      
+
       <div class="btn-group">
         <cu-button id="open-basic" color="primary" variant="solid">
           Abrir Modal Básico
+        </cu-button>
+        <cu-button id="open basic div" color="primary" variant="outline">
+          Abrir Modal con &lt;div slot&gt;
         </cu-button>
         <cu-button id="open-primary" color="primary" variant="solid">
           Abrir Modal Primary
@@ -70,6 +73,19 @@
         <cu-button color="primary" variant="solid" slot="footer" id="accept-basic">
           Aceptar
         </cu-button>
+      </cu-modal>
+
+      <!-- Modal con <div slot> -->
+      <cu-modal id="div-slot-modal" title="Modal con &lt;div slot&gt;" description="Prueba usando div con slot footer.">
+        <p>Modal de prueba con div slot.</p>
+        <div slot="footer">
+          <cu-button color="neutral" variant="ghost" id="close-div">
+            Cancelar
+          </cu-button>
+          <cu-button color="primary" variant="solid" id="accept-div">
+            Aceptar
+          </cu-button>
+        </div>
       </cu-modal>
 
       <!-- Modal Primary -->
@@ -132,6 +148,22 @@
         basicModal.modelValue = false;
       });
 
+      // Modal con <div slot>
+      const divSlotModal = document.getElementById("div-slot-modal");
+      const openDivBtn = document.getElementById("open basic div");
+      const closeDivBtn = document.getElementById("close-div");
+      const acceptDivBtn = document.getElementById("accept-div");
+
+      openDivBtn.addEventListener("click", () => {
+        divSlotModal.modelValue = true;
+      });
+      closeDivBtn.addEventListener("click", () => {
+        divSlotModal.modelValue = false;
+      });
+      acceptDivBtn.addEventListener("click", () => {
+        divSlotModal.modelValue = false;
+      });
+
       // Modal Primary
       const primaryModal = document.getElementById("primary-modal");
       const openPrimaryBtn = document.getElementById("open-primary");
@@ -169,14 +201,14 @@
       });
 
       // Sync modelValue for all modals
-      [basicModal, primaryModal, persistentModal, fullModal].forEach(modal => {
+      [basicModal, divSlotModal, primaryModal, persistentModal, fullModal].forEach(modal => {
         modal.addEventListener("update:modelValue", (e) => {
           modal.modelValue = e.detail[0];
         });
       });
 
       // Event listeners for logging
-      [basicModal, primaryModal, persistentModal, fullModal].forEach(modal => {
+      [basicModal, divSlotModal, primaryModal, persistentModal, fullModal].forEach(modal => {
         modal.addEventListener("opened", () => {
           console.log(`${modal.id} opened`);
         });
