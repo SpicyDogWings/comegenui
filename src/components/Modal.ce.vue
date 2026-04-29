@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, computed, onMounted, onUnmounted, nextTick } from "vue";
+import { ref, watch, computed, onMounted, onUnmounted, nextTick, getCurrentInstance } from "vue";
 import Button from "./Button.ce.vue";
 
 const props = defineProps({
@@ -45,9 +45,37 @@ const props = defineProps({
 const emit = defineEmits(["update:modelValue", "close", "opened", "closed"]);
 
 const modalRef = ref<HTMLElement | null>(null);
+const footerSlotRef = ref<HTMLElement | null>(null);
+const movedFooterNodes = ref<HTMLElement[]>([]);
 
 // Internal state that syncs with prop
 const isOpen = ref(props.modelValue);
+
+// Para web components: obtener el host element y mover slots al footer
+function moveFooterSlots() {
+  nextTick(() => {
+    // Obtener el host element (el <cu-modal> mismo)
+    const instance = getCurrentInstance();
+    const hostEl = instance?.vnode.el as HTMLElement | null;
+    const container = modalRef.value;
+    
+    if (!hostEl || !container) return;
+
+    // Buscar nodos con slot="footer" en el host
+    const footerNodes = Array.from(hostEl.children).filter(
+      (child) => child.getAttribute('slot') === 'footer'
+    );
+    
+    const footerElement = footerSlotRef.value;
+    if (footerElement && footerNodes.length > 0) {
+      footerNodes.forEach(node => {
+        hostEl.removeChild(node);
+        footerElement.appendChild(node);
+        movedFooterNodes.value.push(node);
+      });
+    }
+  });
+}
 
 function focusModal() {
   nextTick(() => {
@@ -61,7 +89,10 @@ watch(
   (newVal) => {
     isOpen.value = newVal;
     emit(newVal ? "opened" : "closed");
-    if (newVal) focusModal();
+    if (newVal) {
+      focusModal();
+      moveFooterSlots();
+    }
   }
 );
 
@@ -73,6 +104,20 @@ watch(
     if (!newVal) emit("close");
   }
 );
+
+// Devolver nodos al host cuando se cierra
+watch(() => isOpen.value, (newVal) => {
+  if (!newVal && movedFooterNodes.value.length > 0) {
+    const instance = getCurrentInstance();
+    const hostEl = instance?.vnode.el as HTMLElement | null;
+    if (hostEl) {
+      movedFooterNodes.value.forEach(node => {
+        hostEl.appendChild(node);
+      });
+      movedFooterNodes.value = [];
+    }
+  }
+});
 
 const overlayClasses = computed(() => [
   "fixed inset-0 z-50 flex items-center justify-center p-4",
@@ -222,7 +267,7 @@ onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
         <slot></slot>
       </main>
 
-      <footer v-if="$slots.footer" :class="footerClasses">
+      <footer v-show="$slots.footer || footerSlotRef?.children.length" :class="footerClasses" ref="footerSlotRef">
         <slot name="footer"></slot>
       </footer>
     </div>
