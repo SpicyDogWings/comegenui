@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, watch } from "vue";
+import { ref, watch, computed, defineExpose } from "vue";
 import { useMagicKeys, whenever } from "@vueuse/core";
 import Button from "./Button.ce.vue";
 
@@ -16,50 +16,64 @@ const props = defineProps({
   },
 });
 
-
 const emit = defineEmits(["close", "opened", "closed"]);
 
-const keys = useMagicKeys({ target: window });
+// Estado interno
+const isOpen = ref(false);
 
-const modelValue = defineModel<boolean>();
-const isOpen = computed({
-  get: () => modelValue.value,
-  set: (val) => modelValue.value = val,
-});
+// Métodos públicos
+function open() {
+  isOpen.value = true;
+}
 
 function close() {
   isOpen.value = false;
 }
+
+function toggle() {
+  isOpen.value = !isOpen.value;
+}
+
+// Eventos
+watch(isOpen, (newVal) => {
+  emit(newVal ? "opened" : "closed");
+  if (!newVal) emit("close");
+});
+
+// Cerrar con Escape
+const keys = useMagicKeys({ target: window });
+whenever(() => keys.Escape?.value, () => isOpen.value && close());
+
 function handleBackdropClick(event: MouseEvent) {
   if (event.target === event.currentTarget) {
     close();
   }
 }
-
+// Exponer métodos para plain HTML
+defineExpose({
+  open,
+  close,
+  toggle,
+  get isOpen() { return isOpen.value },
+});
 
 const overlayClasses = computed(() => [
   "fixed inset-0 z-50 flex items-center justify-center p-4",
   "bg-black/30 backdrop-blur-sm",
 ]);
+
 const modalClasses = computed(() => [
   "bg-charcoal-50 rounded-cu shadow-xl outline-none",
   "max-h-[90vh] overflow-auto max-w-md w-full",
 ]);
+
 const headerClasses = computed(() => [
   "p-4 border-b border-charcoal-200 relative",
 ]);
+
 const footerClasses = computed(() => [
   "p-4 border-t border-charcoal-200 flex justify-end items-center gap-3",
 ]);
-
-watch(
-  isOpen,
-  (newVal) => {
-    emit(newVal ? "opened" : "closed");
-    if (!newVal) emit("close");
-  }
-);
-whenever(() => keys.Escape?.value, () => modelValue.value && close());
 </script>
 
 <template>
