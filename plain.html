@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Modal Examples - ComegenUI</title>
+    <title>Modal Sizes - ComegenUI</title>
     <script src="dist/vendor/vue-runtime.iife.js"></script>
     <script src="dist/CuModal.umd.js"></script>
     <script src="dist/CuButton.umd.js"></script>
@@ -22,6 +22,7 @@
         display: flex;
         gap: 12px;
         margin-bottom: 20px;
+        flex-wrap: wrap;
       }
       .footer {
         display: flex;
@@ -38,53 +39,89 @@
   <body>
     <div>
       <div class="btn-group">
-        <cu-button id="open-basic" color="primary" variant="solid">
-          Modal Normal
-        </cu-button>
-        <cu-button id="open-persistent" color="danger" variant="solid">
-          Modal Persistente
-        </cu-button>
+        <cu-button id="open-sm" color="primary" variant="solid">SM</cu-button>
+        <cu-button id="open-md" color="primary" variant="solid">MD</cu-button>
+        <cu-button id="open-lg" color="primary" variant="solid">LG</cu-button>
+        <cu-button id="open-xl" color="primary" variant="solid">XL</cu-button>
+        <cu-button id="open-full" color="primary" variant="solid">FULL</cu-button>
       </div>
 
-      <!-- Modal Normal -->
-      <cu-modal id="basic-modal" title="Modal Básico">
-        <p>Contenido del modal normal (se cierra con Escape, clic fuera o X).</p>
+      <!-- Modal SM -->
+      <cu-modal id="sm-modal" title="Small" size="sm">
+        <p>Modal Small (max-w-sm)</p>
         <div slot="footer" class="footer">
-          <cu-button id="close-basic" color="neutral" variant="ghost">Cancelar</cu-button>
-          <cu-button id="accept-basic" color="primary" variant="solid">Aceptar</cu-button>
+          <cu-button id="close-sm" color="neutral" variant="ghost">Cerrar</cu-button>
         </div>
       </cu-modal>
 
-      <!-- Modal Persistente -->
-      <cu-modal id="persistent-modal" title="Modal Persistente" persistent>
-        <p><strong>No se puede cerrar</strong> con Escape, clic fuera o el botón X. 
-           Solo con el botón de abajo.</p>
+      <!-- Modal MD -->
+      <cu-modal id="md-modal" title="Medium" size="md">
+        <p>Modal Medium (max-w-md) - por defecto</p>
         <div slot="footer" class="footer">
-          <cu-button id="close-persistent" color="danger" variant="solid">
-            Cerrar (único método)
-          </cu-button>
+          <cu-button id="close-md" color="neutral" variant="ghost">Cerrar</cu-button>
+        </div>
+      </cu-modal>
+
+      <!-- Modal LG -->
+      <cu-modal id="lg-modal" title="Large" size="lg">
+        <p>Modal Large (max-w-lg)</p>
+        <div slot="footer" class="footer">
+          <cu-button id="close-lg" color="neutral" variant="ghost">Cerrar</cu-button>
+        </div>
+      </cu-modal>
+
+      <!-- Modal XL -->
+      <cu-modal id="xl-modal" title="Extra Large" size="xl">
+        <p>Modal XL (max-w-xl)</p>
+        <div slot="footer" class="footer">
+          <cu-button id="close-xl" color="neutral" variant="ghost">Cerrar</cu-button>
+        </div>
+      </cu-modal>
+
+      <!-- Modal FULL -->
+      <cu-modal id="full-modal" title="Full Screen" size="full">
+        <p>Modal Full (max-w-[90vw])</p>
+        <div slot="footer" class="footer">
+          <cu-button id="close-full" color="danger" variant="solid">Cerrar</cu-button>
         </div>
       </cu-modal>
     </div>
 
     <script>
-      // Modal Normal
-      const basicModal = document.getElementById("basic-modal");
-      const openBasicBtn = document.getElementById("open-basic");
-      const closeBasicBtn = document.getElementById("close-basic");
-      const acceptBasicBtn = document.getElementById("accept-basic");
+      // Modal SM
+      const smModal = document.getElementById("sm-modal");
+      const openSmBtn = document.getElementById("open-sm");
+      const closeSmBtn = document.getElementById("close-sm");
+      openSmBtn.addEventListener("click", () => smModal.open());
+      closeSmBtn.addEventListener("click", () => smModal.close());
 
-      openBasicBtn.addEventListener("click", () => basicModal.open());
-      closeBasicBtn.addEventListener("click", () => basicModal.close());
-      acceptBasicBtn.addEventListener("click", () => basicModal.close());
+      // Modal MD
+      const mdModal = document.getElementById("md-modal");
+      const openMdBtn = document.getElementById("open-md");
+      const closeMdBtn = document.getElementById("close-md");
+      openMdBtn.addEventListener("click", () => mdModal.open());
+      closeMdBtn.addEventListener("click", () => mdModal.close());
 
-      // Modal Persistente
-      const persistentModal = document.getElementById("persistent-modal");
-      const openPersistentBtn = document.getElementById("open-persistent");
-      const closePersistentBtn = document.getElementById("close-persistent");
+      // Modal LG
+      const lgModal = document.getElementById("lg-modal");
+      const openLgBtn = document.getElementById("open-lg");
+      const closeLgBtn = document.getElementById("close-lg");
+      openLgBtn.addEventListener("click", () => lgModal.open());
+      closeLgBtn.addEventListener("click", () => lgModal.close());
 
-      openPersistentBtn.addEventListener("click", () => persistentModal.open());
-      closePersistentBtn.addEventListener("click", () => persistentModal.close());
+      // Modal XL
+      const xlModal = document.getElementById("xl-modal");
+      const openXlBtn = document.getElementById("open-xl");
+      const closeXlBtn = document.getElementById("close-xl");
+      openXlBtn.addEventListener("click", () => xlModal.open());
+      closeXlBtn.addEventListener("click", () => xlModal.close());
+
+      // Modal FULL
+      const fullModal = document.getElementById("full-modal");
+      const openFullBtn = document.getElementById("open-full");
+      const closeFullBtn = document.getElementById("close-full");
+      openFullBtn.addEventListener("click", () => fullModal.open());
+      closeFullBtn.addEventListener("click", () => fullModal.close());
     </script>
   </body>
 </html>

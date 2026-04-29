@@ -19,6 +19,12 @@ const props = defineProps({
     required: false,
     default: false,
   },
+  size: {
+    type: String,
+    required: false,
+    default: "md",
+    validator: (value: string) => ["sm", "md", "lg", "xl", "full"].includes(value),
+  },
 });
 
 const emit = defineEmits(["close", "opened", "closed"]);
@@ -66,7 +72,14 @@ const overlayClasses = computed(() => [
 
 const modalClasses = computed(() => [
   "bg-charcoal-50 rounded-cu shadow-xl outline-none",
-  "max-h-[90vh] overflow-auto max-w-md w-full",
+  "max-h-[90vh] overflow-auto w-full",
+  {
+    "max-w-sm": props.size === "sm",
+    "max-w-md": props.size === "md",
+    "max-w-lg": props.size === "lg",
+    "max-w-xl": props.size === "xl",
+    "max-w-[90vw]": props.size === "full",
+  },
 ]);
 </script>
 
