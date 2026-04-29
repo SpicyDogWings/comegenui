@@ -32,7 +32,7 @@ async function runBuilds() {
           entry: resolve(__dirname, file),
           name: name,
           fileName: (format) => `${name}.${format}.js`,
-          formats: ["umd", "iife"],
+          formats: ["umd"],
         },
         minify: false,
         rollupOptions: {

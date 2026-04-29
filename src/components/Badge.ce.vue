@@ -124,7 +124,7 @@ const badgeClasses = computed(() => [
 
 <template>
   <span
-    class="py-1 px-2 rounded-cu border-none font-sans font-medium flex justify-center items-center gap-2 box-border"
+    class="py-0.5 px-1 rounded-cu border-none font-sans font-medium font-size-3 flex justify-center items-center gap-2 box-border"
     :class="badgeClasses"
   >
     <slot></slot>
