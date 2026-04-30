@@ -246,7 +246,7 @@ watch(
 watch(
   () => props.data,
   (newData) => {
-    Object.assign(localData, newData);
+    localData.splice(0, localData.length, ...newData);
   },
   { immediate: true, deep: true },
 );

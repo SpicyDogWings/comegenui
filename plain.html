@@ -3,88 +3,73 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Modal con Formulario - ComegenUI</title>
+    <title>CuTable - Limpiar datos</title>
     <script src="dist/vendor/vue-runtime.iife.js"></script>
-    <script src="dist/CuModal.umd.js"></script>
+    <script src="dist/CuTable.umd.js"></script>
     <script src="dist/CuButton.umd.js"></script>
-    <script src="dist/CuInput.umd.js"></script>
     <style>
       body {
-        padding: 20px;
+        padding: 0;
+        margin: 0;
         font-family: Arial, sans-serif;
+        background: #f5f5f5;
+        min-height: 100vh;
         display: flex;
         justify-content: center;
         align-items: center;
-        min-height: 100vh;
-        margin: 0;
-        background: #f5f5f5;
       }
-      .footer {
+      .container {
+        max-width: 800px;
+        width: 100%;
+        padding: 20px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      }
+      .actions {
         display: flex;
-        justify-content: flex-end;
-        align-items: center;
         gap: 1rem;
-      }
-      /* Estilos del formulario */
-      * {
-        box-sizing: border-box;
-      }
-      .form-group {
-        width: 100%;
-        display: block;
         margin-bottom: 1rem;
-        max-width: 100%;
-        padding: 0.5rem;
-      }
-      .form-group label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: 500;
-        font-size: 14px;
-        color: #374151;
-      }
-      .form-group cu-input {
-          display: block;
-        width: 100%;
-        max-width: 100%;
+        justify-content: center;
       }
     </style>
   </head>
   <body>
-    <div>
-      <cu-button id="open-form" color="primary" variant="solid">
-        Abrir Formulario
-      </cu-button>
-
-      <cu-modal id="form-modal" title="Formulario de Contacto" size="md" height="lg">
-        <div class="form-group">
-          <label>Nombre completo:</label>
-          <cu-input id="form-name" placeholder="Juan Pérez" name="name"/>
-        </div>
-        <div slot="footer" class="footer">
-          <cu-button id="form-cancel" color="neutral" variant="ghost">Cancelar</cu-button>
-          <cu-button id="form-submit" color="success" variant="solid">Enviar</cu-button>
-        </div>
-      </cu-modal>
+    <div class="container">
+      <div class="actions">
+        <cu-button id="load-btn" color="primary" variant="solid">Cargar Datos</cu-button>
+        <cu-button id="clear-btn" color="danger" variant="solid">Limpiar Tabla</cu-button>
+      </div>
+      <cu-table id="data-table"></cu-table>
     </div>
 
     <script>
-      const formModal = document.getElementById("form-modal");
-      const openFormBtn = document.getElementById("open-form");
-      const formCancelBtn = document.getElementById("form-cancel");
-      const formSubmitBtn = document.getElementById("form-submit");
+      const dataTable = document.getElementById("data-table");
+      const loadBtn = document.getElementById("load-btn");
+      const clearBtn = document.getElementById("clear-btn");
 
-      openFormBtn.addEventListener("click", () => formModal.open());
+      const columns = [
+        { key: "id", label: "ID" },
+        { key: "name", label: "Nombre" },
+        { key: "email", label: "Correo" }
+      ];
 
-      formCancelBtn.addEventListener("click", () => {
-        formModal.close();
-        console.log("Acción: CANCELAR");
+      const initialData = [
+        { id: 1, name: "Juan Pérez", email: "juan@example.com" },
+        { id: 2, name: "Ana García", email: "ana@example.com" },
+        { id: 3, name: "Carlos López", email: "carlos@example.com" },
+        { id: 4, name: "María Rodríguez", email: "maria@example.com" }
+      ];
+
+      loadBtn.addEventListener("click", () => {
+        dataTable.columns = columns;
+        dataTable.data = initialData;
       });
 
-      formSubmitBtn.addEventListener("click", () => {
-        const value = document.getElementById("form-name").get();
-        formModal.close();
-        console.log("Valor del input:", value);
+      clearBtn.addEventListener("click", () => {
+        // Limpiar tabla: setear data con []
+        dataTable.data = [];
+        console.log("Tabla limpiada");
       });
     </script>
   </body>
