@@ -79,6 +79,57 @@ Obtiene una fila específica por índice.
 const row = table.getRow(0);
 ```
 
+### `removeRow(index)`
+
+Elimina una fila por su índice. Devuelve `true` si la eliminación fue exitosa, `false` si el índice no es válido.
+
+```javascript
+// Eliminar la primera fila
+const success = table.removeRow(0);
+if (success) {
+  console.log('Fila eliminada');
+}
+
+// Eliminar la última fila
+const lastIndex = table.getData().length - 1;
+if (lastIndex >= 0) {
+  table.removeRow(lastIndex);
+}
+```
+
+### `addRow(newItem)`
+
+Añade una nueva fila al final de la tabla. El objeto debe tener la misma estructura (mismas claves) que los datos existentes. Devuelve `true` si la fila fue añadida, `false` si la estructura no coincide.
+
+```javascript
+const newItem = { id: 5, name: 'Nuevo Usuario', email: 'nuevo@test.com' };
+const success = table.addRow(newItem);
+if (success) {
+  console.log('Fila añadida');
+} else {
+  console.error('Error: estructura de datos no válida');
+}
+```
+
+### `pushData(items)`
+
+Añade múltiples filas a la tabla. Todos los objetos deben tener la misma estructura (mismas claves) que los datos existentes. Devuelve `true` si todas las filas fueron añadidas, `false` si alguna estructura no coincide.
+
+```javascript
+const newItems = [
+  { id: 6, name: 'Pedro Martínez', email: 'pedro@test.com' },
+  { id: 7, name: 'Laura Hernández', email: 'laura@test.com' }
+];
+const success = table.pushData(newItems);
+if (success) {
+  console.log('Filas añadidas');
+} else {
+  console.error('Error: alguna fila tiene estructura no válida');
+}
+```
+
+> **Nota sobre validación:** Si la tabla está vacía (no hay datos), `addRow` y `pushData` añadirán los elementos sin validación de estructura. Una vez hay datos en la tabla, todos los nuevos elementos deben coincidir con las claves del primer elemento.
+
 ## Estructura de Columnas
 
 Cada columna es un objeto con las siguientes propiedades:

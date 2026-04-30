@@ -147,6 +147,54 @@ const getRow = (index: number): Record<string, any> | undefined => {
   }
   return undefined;
 };
+const removeRow = (index: number): boolean => {
+  if (index >= 0 && index < localData.length) {
+    localData.splice(index, 1);
+    return true;
+  }
+  return false;
+};
+const addRow = (newItem: Record<string, any>): boolean => {
+  if (localData.length === 0) {
+    localData.push({ ...newItem });
+    return true;
+  }
+  const firstRow = localData[0];
+  if (!firstRow) {
+    localData.push({ ...newItem });
+    return true;
+  }
+  const firstRowKeys = Object.keys(firstRow);
+  const newItemKeys = Object.keys(newItem);
+  const isValid = firstRowKeys.every((key) => newItemKeys.includes(key));
+  if (isValid) {
+    localData.push({ ...newItem });
+    return true;
+  }
+  return false;
+};
+const pushData = (items: Record<string, any>[]): boolean => {
+  if (localData.length === 0) {
+    localData.push(...items.map((item) => ({ ...item })));
+    return true;
+  }
+  const firstRow = localData[0];
+  if (!firstRow) {
+    localData.push(...items.map((item) => ({ ...item })));
+    return true;
+  }
+  const firstRowKeys = Object.keys(firstRow);
+  const allValid = items.every((item) => {
+    const itemKeys = Object.keys(item);
+    return firstRowKeys.every((key) => itemKeys.includes(key));
+  });
+  if (allValid) {
+    localData.push(...items.map((item) => ({ ...item })));
+    return true;
+  }
+  return false;
+};
+
 const tableColumns = computed<Column[]>(() => {
   if (props.columns.length > 0) {
     return props.columns;
@@ -251,7 +299,7 @@ watch(
   { immediate: true, deep: true },
 );
 
-defineExpose({ updateRow, getData, getRow });
+defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
 </script>
 
 <template>
