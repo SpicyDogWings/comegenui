@@ -68,7 +68,7 @@ defineExpose({
 });
 
 const overlayClasses = computed(() => [
-  "fixed inset-0 z-50 flex items-center justify-center p-4",
+  "fixed inset-0 flex items-center justify-center p-4",
   "bg-black/30 backdrop-blur-sm",
 ]);
 
@@ -98,6 +98,7 @@ const modalClasses = computed(() => [
     @click="handleBackdropClick"
     tabindex="-1"
     role="dialog"
+    class="z-1000"
     aria-modal="true"
     :aria-labelledby="title ? 'modal-title' : undefined"
     :aria-describedby="description ? 'modal-description' : undefined"
