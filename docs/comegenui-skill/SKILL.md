@@ -66,6 +66,7 @@ Los componentes se exportan como archivos UMD que pueden ser cargados directamen
 
 | Componente | Descripcion | Custom Element |
 |------------|-------------|----------------|
+| [Alert](components/Alert.md) | Mensaje de alerta con iconos, colores y botón de cierre | `<cu-alert>` |
 | [Badge](components/Badge.md) | Insignia/etiqueta para mostrar status o categorias | `<cu-badge>` |
 | [Button](components/Button.md) | Boton interactivo con multiples estilos | `<cu-button>` |
 | [Input](components/Input.md) | Campo de texto de entrada | `<cu-input>` |
@@ -110,6 +111,7 @@ Para ver la documentacion especifica de un proyecto, consulte [Proyectos](proyec
 <script src="./dist/vendor/vue-runtime.iife.js"></script>
 
 <!-- Importar todos los componentes -->
+<script src="./dist/cuAlert.umd.js"></script>
 <script src="./dist/cuBadge.umd.js"></script>
 <script src="./dist/cuButton.umd.js"></script>
 <script src="./dist/cuInput.umd.js"></script>
