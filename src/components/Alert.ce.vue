@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 import Button from "./Button.ce.vue";
 
 const props = defineProps({
@@ -26,12 +26,38 @@ const props = defineProps({
     type: String,
     required: false,
   },
+  show: {
+    type: Boolean,
+    required: false,
+    default: true,
+  },
 });
 
-const emit = defineEmits(["close"]);
+const emit = defineEmits(["close", "open", "update:show"]);
 
-function handleClose() {
+const internalShow = ref(props.show);
+
+watch(() => props.show, (val) => {
+  internalShow.value = val;
+});
+
+watch(internalShow, (val) => {
+  emit("update:show", val);
+});
+
+function open() {
+  internalShow.value = true;
+  emit("open");
+}
+
+function close() {
+  internalShow.value = false;
   emit("close");
+}
+
+function toggle() {
+  internalShow.value = !internalShow.value;
+  emit(internalShow.value ? "open" : "close");
 }
 
 const alertColorClasses = computed(() => [
@@ -87,11 +113,16 @@ const alertColorClasses = computed(() => [
   },
 ]);
 
-
+defineExpose({
+  open,
+  close,
+  toggle,
+  get isOpen() { return internalShow.value },
+});
 </script>
 
 <template>
-  <div class="p-5 rounded-cu font-sans flex flex-wrap justify-start items-start" role="alert" :class="alertColorClasses">
+  <div v-show="internalShow" class="p-5 rounded-cu font-sans flex flex-wrap justify-start items-start" role="alert" :class="alertColorClasses">
     <div class="w-full flex justify-between items-center">
       <div class="flex justify-center items-center gap-3">
         <slot name="icon"></slot>
@@ -99,12 +130,15 @@ const alertColorClasses = computed(() => [
       </div>
       <Button
         v-if="props.close"
-        @click="handleClose"
+        @click="close"
         :color="props.color"
         variant="ghost"
         aria-label="Cerrar alerta"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" > <path d="M18 6 6 18" /> <path d="m6 6 12 12" /> </svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 6 6 18"/>
+          <path d="m6 6 12 12"/>
+        </svg>
       </Button>
     </div>
     <div class="w-full">

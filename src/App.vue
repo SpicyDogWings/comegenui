@@ -1,45 +1,27 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import Modal from "./components/Modal.ce.vue";
 import Button from "./components/Button.ce.vue";
 import Alert from "./components/Alert.ce.vue";
 
-const smModalRef = ref<InstanceType<typeof Modal> | null>(null);
-const mdModalRef = ref<InstanceType<typeof Modal> | null>(null);
-const lgModalRef = ref<InstanceType<typeof Modal> | null>(null);
-const xlModalRef = ref<InstanceType<typeof Modal> | null>(null);
-const fullModalRef = ref<InstanceType<typeof Modal> | null>(null);
-
-const showAlert = ref(true);
-const showSuccessAlert = ref(true);
-const showWarningAlert = ref(true);
+const successAlertRef = ref<InstanceType<typeof Alert> | null>(null);
+const warningAlertRef = ref<InstanceType<typeof Alert> | null>(null);
+const dangerAlertRef = ref<InstanceType<typeof Alert> | null>(null);
 </script>
 
 <template>
   <div class="p-6">
-    <h1 class="text-2xl font-bold mb-6">Modal Sizes</h1>
-
-    <div class="flex gap-4 mb-6 flex-wrap">
-      <Button @click="smModalRef?.open()" color="primary">SM</Button>
-      <Button @click="mdModalRef?.open()" color="primary">MD</Button>
-      <Button @click="lgModalRef?.open()" color="primary">LG</Button>
-      <Button @click="xlModalRef?.open()" color="primary">XL</Button>
-      <Button @click="fullModalRef?.open()" color="primary">FULL</Button>
-    </div>
+    <h1 class="text-2xl font-bold mb-6">Alert Examples</h1>
 
     <!-- Alert Examples -->
     <div class="mb-8">
-      <h2 class="text-xl font-bold mb-4">Alert Examples</h2>
-      
       <div class="flex flex-col gap-4">
         <!-- Success Alert with icon and close button -->
         <Alert
-          v-if="showSuccessAlert"
+          ref="successAlertRef"
           title="Éxito"
           color="success"
           variant="soft"
           close
-          @close="showSuccessAlert = false"
         >
           <template #icon>
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -52,12 +34,11 @@ const showWarningAlert = ref(true);
 
         <!-- Warning Alert with icon -->
         <Alert
-          v-if="showWarningAlert"
+          ref="warningAlertRef"
           title="Advertencia"
           color="warning"
           variant="subtle"
           close
-          @close="showWarningAlert = false"
         >
           <template #icon>
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -71,70 +52,35 @@ const showWarningAlert = ref(true);
 
         <!-- Danger Alert without icon -->
         <Alert
-          v-if="showAlert"
+          ref="dangerAlertRef"
           title="Error"
           color="danger"
           variant="outlined"
           close
-          @close="showAlert = false"
         >
           <p class="text-sm">Algo salió mal. Intente de nuevo.</p>
         </Alert>
 
-        <!-- Toggle Buttons -->
+        <!-- Control Buttons -->
         <div class="flex gap-2 mt-4">
-          <Button @click="showAlert = !showAlert" color="danger" variant="ghost">
-            {{ showAlert ? 'Ocultar' : 'Mostrar' }} Error
+          <Button @click="dangerAlertRef?.toggle()" color="danger" variant="ghost">
+            {{ dangerAlertRef?.isOpen ? 'Ocultar' : 'Mostrar' }} Error
           </Button>
-          <Button @click="showSuccessAlert = !showSuccessAlert" color="success" variant="ghost">
-            {{ showSuccessAlert ? 'Ocultar' : 'Mostrar' }} Éxito
+          <Button @click="successAlertRef?.toggle()" color="success" variant="ghost">
+            {{ successAlertRef?.isOpen ? 'Ocultar' : 'Mostrar' }} Éxito
           </Button>
-          <Button @click="showWarningAlert = !showWarningAlert" color="warning" variant="ghost">
-            {{ showWarningAlert ? 'Ocultar' : 'Mostrar' }} Advertencia
+          <Button @click="warningAlertRef?.toggle()" color="warning" variant="ghost">
+            {{ warningAlertRef?.isOpen ? 'Ocultar' : 'Mostrar' }} Advertencia
+          </Button>
+          <Button @click="successAlertRef?.open()" color="primary" variant="ghost">
+            Abrir Éxito
+          </Button>
+          <Button @click="successAlertRef?.close()" color="danger" variant="ghost">
+            Cerrar Éxito
           </Button>
         </div>
       </div>
     </div>
-
-    <!-- SM -->
-    <Modal ref="smModalRef" title="Small" size="sm">
-      <p class="mb-4">Modal Small (max-w-sm)</p>
-      <template #footer>
-        <Button @click="smModalRef?.close()">Cerrar</Button>
-      </template>
-    </Modal>
-
-    <!-- MD -->
-    <Modal ref="mdModalRef" title="Medium" size="md">
-      <p class="mb-4">Modal Medium (max-w-md) - por defecto</p>
-      <template #footer>
-        <Button @click="mdModalRef?.close()">Cerrar</Button>
-      </template>
-    </Modal>
-
-    <!-- LG -->
-    <Modal ref="lgModalRef" title="Large" size="lg">
-      <p class="mb-4">Modal Large (max-w-lg)</p>
-      <template #footer>
-        <Button @click="lgModalRef?.close()">Cerrar</Button>
-      </template>
-    </Modal>
-
-    <!-- XL -->
-    <Modal ref="xlModalRef" title="Extra Large" size="xl">
-      <p class="mb-4">Modal XL (max-w-xl)</p>
-      <template #footer>
-        <Button @click="xlModalRef?.close()">Cerrar</Button>
-      </template>
-    </Modal>
-
-    <!-- FULL -->
-    <Modal ref="fullModalRef" title="Full Screen" size="full">
-      <p class="mb-4">Modal Full (max-w-[90vw])</p>
-      <template #footer>
-        <Button @click="fullModalRef?.close()">Cerrar</Button>
-      </template>
-    </Modal>
   </div>
 </template>
 
