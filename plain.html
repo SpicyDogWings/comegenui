@@ -3,11 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CuTable - Métodos de modificación</title>
+    <title>CuAlert - Ejemplos</title>
     <script src="dist/vendor/vue-runtime.iife.js"></script>
-    <script src="dist/CuTable.umd.js"></script>
-    <script src="dist/CuButton.umd.js"></script>
     <script src="dist/CuAlert.umd.js"></script>
+    <script src="dist/CuButton.umd.js"></script>
     <style>
       body {
         padding: 0;
@@ -27,14 +26,6 @@
         background: white;
         border-radius: 8px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        margin-bottom: 20px;
-      }
-      .actions {
-        display: flex;
-        gap: 1rem;
-        margin-bottom: 1rem;
-        flex-wrap: wrap;
-        justify-content: center;
       }
       .info {
         background: #e3f2fd;
@@ -47,42 +38,22 @@
       .info strong {
         color: #1976d2;
       }
-      .alert-container {
-        max-width: 800px;
-        width: 100%;
-        padding: 20px;
-        background: white;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      .alert-controls {
         display: flex;
-        flex-direction: column;
-        gap: 16px;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 16px;
       }
     </style>
   </head>
   <body>
     <div class="container">
       <div class="info">
-        <strong>Ejemplo:</strong> Métodos para modificar datos de la tabla (addRow, removeRow, pushData)
-      </div>
-      <div class="actions">
-        <cu-button id="load-btn" color="primary" variant="solid">Cargar Datos</cu-button>
-        <cu-button id="clear-btn" color="danger" variant="solid">Limpiar Tabla</cu-button>
-        <cu-button id="add-btn" color="success" variant="solid">Añadir Fila</cu-button>
-        <cu-button id="remove-btn" color="warning" variant="solid">Eliminar Última</cu-button>
-        <cu-button id="push-btn" color="info" variant="solid">Añadir Múltiples</cu-button>
-      </div>
-      <cu-table id="data-table"></cu-table>
-    </div>
-
-    <!-- Alert Examples -->
-    <div class="alert-container">
-      <div class="info">
-        <strong>Ejemplo:</strong> Componente Alert con diferentes colores y variantes
+        <strong>Ejemplo:</strong> Componente Alert con control interno de visibilidad
       </div>
       
       <!-- Success Alert -->
-      <cu-alert title="Éxito" color="success" variant="soft" close id="success-alert">
+      <cu-alert id="success-alert" title="Éxito" color="success" variant="soft" close>
         <svg slot="icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
           <path d="m9 12 2 2 4-4"/>
@@ -91,7 +62,7 @@
       </cu-alert>
 
       <!-- Warning Alert -->
-      <cu-alert title="Advertencia" color="warning" variant="subtle" close id="warning-alert">
+      <cu-alert id="warning-alert" title="Advertencia" color="warning" variant="subtle" close>
         <svg slot="icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
           <path d="M12 9v4"/>
@@ -101,7 +72,7 @@
       </cu-alert>
 
       <!-- Danger Alert -->
-      <cu-alert title="Error" color="danger" variant="outlined" close id="danger-alert">
+      <cu-alert id="danger-alert" title="Error" color="danger" variant="outlined" close>
         <svg slot="icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="10"/>
           <line x1="12" y1="8" x2="12" y2="12"/>
@@ -111,108 +82,82 @@
       </cu-alert>
 
       <!-- Primary Alert without icon -->
-      <cu-alert title="Información" color="primary" variant="ghost" close id="primary-alert">
+      <cu-alert id="primary-alert" title="Información" color="primary" variant="ghost" close>
         <p style="margin: 0; font-size: 14px; color: inherit;">Este es un mensaje informativo sin icono.</p>
       </cu-alert>
+
+      <!-- Control Buttons -->
+      <div class="alert-controls">
+        <cu-button id="toggle-success" color="success" variant="ghost">Toggle Éxito</cu-button>
+        <cu-button id="toggle-warning" color="warning" variant="ghost">Toggle Advertencia</cu-button>
+        <cu-button id="toggle-danger" color="danger" variant="ghost">Toggle Error</cu-button>
+        <cu-button id="toggle-primary" color="primary" variant="ghost">Toggle Info</cu-button>
+        <cu-button id="open-all" color="primary" variant="solid">Abrir Todos</cu-button>
+        <cu-button id="close-all" color="danger" variant="solid">Cerrar Todos</cu-button>
+      </div>
     </div>
 
     <script>
-      const dataTable = document.getElementById("data-table");
-      const loadBtn = document.getElementById("load-btn");
-      const clearBtn = document.getElementById("clear-btn");
-      const addBtn = document.getElementById("add-btn");
-      const removeBtn = document.getElementById("remove-btn");
-      const pushBtn = document.getElementById("push-btn");
-
       // Alert elements
       const successAlert = document.getElementById("success-alert");
       const warningAlert = document.getElementById("warning-alert");
       const dangerAlert = document.getElementById("danger-alert");
       const primaryAlert = document.getElementById("primary-alert");
 
-      const columns = [
-        { key: "id", label: "ID" },
-        { key: "name", label: "Nombre" },
-        { key: "email", label: "Correo" }
-      ];
-
-      const initialData = [
-        { id: 1, name: "Juan Pérez", email: "juan@example.com" },
-        { id: 2, name: "Ana García", email: "ana@example.com" },
-        { id: 3, name: "Carlos López", email: "carlos@example.com" },
-        { id: 4, name: "María Rodríguez", email: "maria@example.com" }
-      ];
+      // Control buttons
+      const toggleSuccessBtn = document.getElementById("toggle-success");
+      const toggleWarningBtn = document.getElementById("toggle-warning");
+      const toggleDangerBtn = document.getElementById("toggle-danger");
+      const togglePrimaryBtn = document.getElementById("toggle-primary");
+      const openAllBtn = document.getElementById("open-all");
+      const closeAllBtn = document.getElementById("close-all");
 
       // Alert event listeners
       successAlert.addEventListener("close", () => {
         console.log("Alerta de éxito cerrada");
-        successAlert.style.display = "none";
       });
 
       warningAlert.addEventListener("close", () => {
         console.log("Alerta de advertencia cerrada");
-        warningAlert.style.display = "none";
       });
 
       dangerAlert.addEventListener("close", () => {
         console.log("Alerta de error cerrada");
-        dangerAlert.style.display = "none";
       });
 
       primaryAlert.addEventListener("close", () => {
         console.log("Alerta informativa cerrada");
-        primaryAlert.style.display = "none";
       });
 
-      // Cargar datos iniciales
-      loadBtn.addEventListener("click", () => {
-        dataTable.columns = columns;
-        dataTable.data = initialData;
-        console.log("Datos cargados:", initialData);
+      // Control button handlers
+      toggleSuccessBtn.addEventListener("click", () => {
+        successAlert.toggle();
       });
 
-      // Limpiar tabla
-      clearBtn.addEventListener("click", () => {
-        dataTable.data = [];
-        console.log("Tabla limpiada");
+      toggleWarningBtn.addEventListener("click", () => {
+        warningAlert.toggle();
       });
 
-      // Añadir una fila nueva (valida estructura automáticamente)
-      addBtn.addEventListener("click", () => {
-        const newRow = { id: 5, name: "Nuevo Usuario", email: "nuevo@test.com" };
-        const success = dataTable.addRow(newRow);
-        if (success) {
-          console.log("Fila añadida:", newRow);
-        } else {
-          console.error("Error: La fila no tiene la estructura correcta");
-        }
+      toggleDangerBtn.addEventListener("click", () => {
+        dangerAlert.toggle();
       });
 
-      // Eliminar la última fila
-      removeBtn.addEventListener("click", () => {
-        const lastIndex = dataTable.getData().length - 1;
-        if (lastIndex >= 0) {
-          const success = dataTable.removeRow(lastIndex);
-          if (success) {
-            console.log("Fila eliminada en índice:", lastIndex);
-          }
-        } else {
-          console.log("No hay filas para eliminar");
-        }
+      togglePrimaryBtn.addEventListener("click", () => {
+        primaryAlert.toggle();
       });
 
-      // Añadir múltiples filas a la vez
-      pushBtn.addEventListener("click", () => {
-        const newRows = [
-          { id: 6, name: " Pedro Martínez", email: "pedro@example.com" },
-          { id: 7, name: "Laura Hernández", email: "laura@example.com" }
-        ];
-        const success = dataTable.pushData(newRows);
-        if (success) {
-          console.log("Filas añadidas:", newRows);
-        } else {
-          console.error("Error: Las filas no tienen la estructura correcta");
-        }
+      openAllBtn.addEventListener("click", () => {
+        successAlert.open();
+        warningAlert.open();
+        dangerAlert.open();
+        primaryAlert.open();
+      });
+
+      closeAllBtn.addEventListener("click", () => {
+        successAlert.close();
+        warningAlert.close();
+        dangerAlert.close();
+        primaryAlert.close();
       });
     </script>
   </body>
