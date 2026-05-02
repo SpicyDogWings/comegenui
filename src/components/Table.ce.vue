@@ -101,9 +101,11 @@ const editableInput = ref<InstanceType<typeof Input> | InstanceType<typeof Texta
 
 const editingCell = ref<{row: Record<string, any>, colKey: string} | null>(null);
 const editValue = ref<string>('');
+const editValidationState = ref<{row: Record<string, any>, colKey: string, success: boolean} | null>(null);
 const startEditing = async (row: Record<string, any>, col: Column) => {
     editingCell.value = { row, colKey: col.key };
     editValue.value = row[col.key] != null ? String(row[col.key]) : "";
+    editValidationState.value = null;
     await nextTick();
     // 1. Verificamos si es un array (comportamiento de v-for)
     const inputEl = Array.isArray(editableInput.value)
@@ -115,20 +117,26 @@ const startEditing = async (row: Record<string, any>, col: Column) => {
 const saveEdit = (row: Record<string, any>, col: Column) => {
   if (!editingCell.value) return;
   
+  let isValid = true;
+  
   // Validate with RegExp if editable is a RegExp
   if (col.editable instanceof RegExp && !col.editable.test(editValue.value)) {
-    cancelEdit();
-    return;
+    isValid = false;
+  }
+  // Validate with custom validator function if present
+  else if (col.validator && !col.validator(editValue.value, row)) {
+    isValid = false;
   }
   
-  // Validate with custom validator function if present
-  if (col.validator && !col.validator(editValue.value, row)) {
+  if (!isValid) {
+    editValidationState.value = { row, colKey: col.key, success: false };
     cancelEdit();
     return;
   }
   
   const index = getRowIndex(row);
   updateRow(index, { [col.key]: editValue.value });
+  editValidationState.value = { row, colKey: col.key, success: true };
   cancelEdit();
 };
 const cancelEdit = () => {
@@ -295,6 +303,16 @@ watch(
   },
 );
 watch(
+  () => editValidationState.value,
+  (newState) => {
+    if (newState) {
+      setTimeout(() => {
+        editValidationState.value = null;
+      }, 2000);
+    }
+  },
+);
+watch(
   () => props.searchValue,
   (val) => {
     searchQuery.value = val;
@@ -364,7 +382,10 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
                 </template>
                 <slot v-else :name="`cell-${col.key}`" :row="row" :column="col" :index="getRowIndex(row)">
                   <span class="flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil" :class="{
+      'text-red-500': editValidationState?.row === row && editValidationState?.colKey === col.key && !editValidationState.success,
+      'text-green-500': editValidationState?.row === row && editValidationState?.colKey === col.key && editValidationState.success
+    }"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>
                     {{ getCellValue(row, col) }}
                   </span>
                 </slot>
