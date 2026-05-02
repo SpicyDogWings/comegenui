@@ -707,7 +707,7 @@ Personalizar el header de una columna:
 
 ### Slot: `cell-{key}`
 
-Personalizar el contenido de una celda:
+Personalizar el contenido de una celda para casos avanzados:
 
 ```html
 <cu-table :data="data" :columns="columns">
@@ -729,6 +729,8 @@ function getStatusColor(status) {
 }
 </script>
 ```
+
+> **Nota:** Para mostrar badges en celdas, la forma recomendada es usar la propiedad [`badges`](#columna-badges-mostrar-badges) de la columna. Usa el slot `cell-{key}` solo cuando necesites un control total sobre el renderizado de la celda.
 
 ---
 

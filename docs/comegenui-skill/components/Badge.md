@@ -208,6 +208,8 @@ Todas las variantes para el color primary:
 
 ### Badge en tablas (uso dentro de Table.ce.vue)
 
+Para mostrar badges en una tabla, usa la propiedad `badges` de la columna (no `cell`):
+
 ```html
 <cu-table
   :data="[
@@ -216,20 +218,22 @@ Todas las variantes para el color primary:
     { name: 'Producto C', status: 'out', stock: 0 }
   ]"
   :columns="[
-    { key: 'name', title: 'Nombre' },
+    { key: 'name', label: 'Nombre' },
     { 
       key: 'status', 
-      title: 'Estado',
-      cell: (row) => {
+      label: 'Estado',
+      badges: (row) => {
         const colors = { active: 'success', low: 'warning', out: 'danger' };
         const labels = { active: 'Activo', low: 'Bajo', out: 'Agotado' };
-        return `<cu-badge color="${colors[row.status]}" variant="soft">${labels[row.status]}</cu-badge>`;
+        return [{ value: labels[row.status], color: colors[row.status], variant: 'soft' }];
       }
     },
-    { key: 'stock', title: 'Stock' }
+    { key: 'stock', label: 'Stock' }
   ]"
-></cu-table>
+/>
 ```
+
+> **Nota:** La propiedad `badges` recibe una función que devuelve un array de objetos `BadgeConfig` con `value`, `color` y `variant`. Esta es la forma recomendada en lugar de usar HTML en `cell`.
 
 ### Badge con classes personalizadas
 
