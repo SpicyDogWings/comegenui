@@ -28,7 +28,7 @@ interface Column {
   cell?: (row: Record<string, any>) => string | string[];
   badges?: (row: Record<string, any>, index: number) => BadgeConfig[];
   buttons?: (row: Record<string, any>, index: number) => ButtonConfig[];
-  editable?: boolean | RegExp;
+  editable?: boolean | RegExp | ((value: string) => boolean);
   inputType?: 'input' | 'textarea';
   singleClick?: boolean;
 }
@@ -113,9 +113,14 @@ const startEditing = async (row: Record<string, any>, col: Column) => {
 };
 const saveEdit = (row: Record<string, any>, col: Column) => {
   if (!editingCell.value) return;
-  if (col.editable instanceof RegExp && !col.editable.test(editValue.value)) {
-    cancelEdit();
-    return;
+  if (col.editable) {
+    const isValid = typeof col.editable === 'function'
+      ? (col.editable as (value: string) => boolean)(editValue.value)
+      : (col.editable instanceof RegExp && col.editable.test(editValue.value));
+    if (!isValid) {
+      cancelEdit();
+      return;
+    }
   }
   const index = getRowIndex(row);
   updateRow(index, { [col.key]: editValue.value });
