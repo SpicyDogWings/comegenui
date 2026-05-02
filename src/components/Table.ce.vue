@@ -28,7 +28,14 @@ interface Column {
   cell?: (row: Record<string, any>) => string | string[];
   badges?: (row: Record<string, any>, index: number) => BadgeConfig[];
   buttons?: (row: Record<string, any>, index: number) => ButtonConfig[];
+<<<<<<< HEAD
   editable?: boolean | RegExp | ((value: string) => boolean);
+||||||| f9f5597
+  editable?: boolean | RegExp;
+=======
+  editable?: boolean | RegExp;
+  validator?: (value: string, row: Record<string, any>) => boolean;
+>>>>>>> components/table
   inputType?: 'input' | 'textarea';
   singleClick?: boolean;
 }
@@ -113,6 +120,7 @@ const startEditing = async (row: Record<string, any>, col: Column) => {
 };
 const saveEdit = (row: Record<string, any>, col: Column) => {
   if (!editingCell.value) return;
+<<<<<<< HEAD
   if (col.editable) {
     const isValid = typeof col.editable === 'function'
       ? (col.editable as (value: string) => boolean)(editValue.value)
@@ -121,7 +129,25 @@ const saveEdit = (row: Record<string, any>, col: Column) => {
       cancelEdit();
       return;
     }
+||||||| f9f5597
+  if (col.editable instanceof RegExp && !col.editable.test(editValue.value)) {
+    cancelEdit();
+    return;
+=======
+  
+  // Validate with RegExp if editable is a RegExp
+  if (col.editable instanceof RegExp && !col.editable.test(editValue.value)) {
+    cancelEdit();
+    return;
+>>>>>>> components/table
   }
+  
+  // Validate with custom validator function if present
+  if (col.validator && !col.validator(editValue.value, row)) {
+    cancelEdit();
+    return;
+  }
+  
   const index = getRowIndex(row);
   updateRow(index, { [col.key]: editValue.value });
   cancelEdit();
