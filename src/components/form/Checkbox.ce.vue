@@ -61,20 +61,20 @@ const boxClasses = computed(() => [
   "duration-200",
   // === PRIMARY - outlined ===
   {
-    "border-2 border-primary bg-transparent":
+    "border-2 border-solid border-primary-500 bg-transparent":
       props.color === "primary" && props.variant === "outlined" && !checked.value,
   },
   {
-    "border-2 border-primary bg-primary":
+    "border-2 border-solid border-primary-500 bg-primary-500":
       props.color === "primary" && props.variant === "outlined" && checked.value,
   },
   // === PRIMARY - soft ===
   {
-    "border-2 border-primary bg-primary bg-opacity-10":
+    "border-2 border-solid border-primary-500 bg-primary bg-opacity-10":
       props.color === "primary" && props.variant === "soft" && !checked.value,
   },
   {
-    "border-2 border-primary bg-primary":
+    "border-2 border-solid border-primary-500 bg-primary-500":
       props.color === "primary" && props.variant === "soft" && checked.value,
   },
   // === PRIMARY - subtle ===
@@ -83,34 +83,34 @@ const boxClasses = computed(() => [
       props.color === "primary" && props.variant === "subtle" && !checked.value,
   },
   {
-    "border-2 border-solid border-1 border-primary-300 bg-primary":
+    "border-2 border-solid border-1 border-primary-300 bg-primary-500":
       props.color === "primary" && props.variant === "subtle" && checked.value,
   },
   // === PRIMARY - ghost ===
   {
-    "border-2 border-transparent bg-transparent hover:bg-primary hover:bg-opacity-10":
+    "border-2 border-solid border-transparent bg-transparent hover:bg-primary hover:bg-opacity-10":
       props.color === "primary" && props.variant === "ghost" && !checked.value,
   },
   {
-    "border-2 border-transparent bg-primary":
+    "border-2 border-solid border-transparent bg-primary-500":
       props.color === "primary" && props.variant === "ghost" && checked.value,
   },
   // === NEUTRAL - outlined ===
   {
-    "border-2 border-charcoal-800 bg-transparent":
+    "border-2 border-solid border-charcoal-500 bg-transparent":
       props.color === "neutral" && props.variant === "outlined" && !checked.value,
   },
   {
-    "border-2 border-charcoal-800 bg-charcoal-800":
+    "border-2 border-solid border-charcoal-500 bg-charcoal-500":
       props.color === "neutral" && props.variant === "outlined" && checked.value,
   },
   // === NEUTRAL - soft ===
   {
-    "border-2 border-charcoal-800 bg-charcoal bg-opacity-10":
+    "border-2 border-solid border-charcoal-500 bg-charcoal bg-opacity-10":
       props.color === "neutral" && props.variant === "soft" && !checked.value,
   },
   {
-    "border-2 border-charcoal-800 bg-charcoal-800":
+    "border-2 border-solid border-charcoal-500 bg-charcoal-500":
       props.color === "neutral" && props.variant === "soft" && checked.value,
   },
   // === NEUTRAL - subtle ===
@@ -119,34 +119,34 @@ const boxClasses = computed(() => [
       props.color === "neutral" && props.variant === "subtle" && !checked.value,
   },
   {
-    "border-2 border-solid border-1 border-charcoal-300 bg-charcoal-800":
+    "border-2 border-solid border-1 border-charcoal-300 bg-charcoal-500":
       props.color === "neutral" && props.variant === "subtle" && checked.value,
   },
   // === NEUTRAL - ghost ===
   {
-    "border-2 border-transparent hover:bg-charcoal hover:bg-opacity-10":
+    "border-2 border-solid border-transparent hover:bg-charcoal hover:bg-opacity-10":
       props.color === "neutral" && props.variant === "ghost" && !checked.value,
   },
   {
-    "border-2 border-transparent bg-charcoal-800":
+    "border-2 border-solid border-transparent bg-charcoal-500":
       props.color === "neutral" && props.variant === "ghost" && checked.value,
   },
   // === SUCCESS - outlined ===
   {
-    "border-2 border-success bg-transparent":
+    "border-2 border-solid border-success-500 bg-transparent":
       props.color === "success" && props.variant === "outlined" && !checked.value,
   },
   {
-    "border-2 border-success bg-success":
+    "border-2 border-solid border-success-500 bg-success-500":
       props.color === "success" && props.variant === "outlined" && checked.value,
   },
   // === SUCCESS - soft ===
   {
-    "border-2 border-success bg-success bg-opacity-10":
+    "border-2 border-solid border-success-500 bg-success bg-opacity-10":
       props.color === "success" && props.variant === "soft" && !checked.value,
   },
   {
-    "border-2 border-success bg-success":
+    "border-2 border-solid border-success-500 bg-success-500":
       props.color === "success" && props.variant === "soft" && checked.value,
   },
   // === SUCCESS - subtle ===
@@ -155,43 +155,43 @@ const boxClasses = computed(() => [
       props.color === "success" && props.variant === "subtle" && !checked.value,
   },
   {
-    "border-2 border-solid border-1 border-success-300 bg-success":
+    "border-2 border-solid border-1 border-success-300 bg-success-500":
       props.color === "success" && props.variant === "subtle" && checked.value,
   },
   // === SUCCESS - ghost ===
   {
-    "border-2 border-transparent hover:bg-success hover:bg-opacity-10":
+    "border-2 border-solid border-transparent hover:bg-success hover:bg-opacity-10":
       props.color === "success" && props.variant === "ghost" && !checked.value,
   },
   {
-    "border-2 border-transparent bg-success":
+    "border-2 border-solid border-transparent bg-success-500":
       props.color === "success" && props.variant === "ghost" && checked.value,
   },
   // === WARNING - outlined ===
   {
-    "border-2 border-warning bg-transparent":
+    "border-2 border-solid border-warning-500 bg-transparent":
       props.color === "warning" && props.variant === "outlined" && !checked.value,
   },
   {
-    "border-2 border-warning bg-warning":
+    "border-2 border-solid border-warning-500 bg-warning-500":
       props.color === "warning" && props.variant === "outlined" && checked.value,
   },
   // === DANGER - outlined ===
   {
-    "border-2 border-danger bg-transparent":
+    "border-2 border-solid border-danger-500 bg-transparent":
       props.color === "danger" && props.variant === "outlined" && !checked.value,
   },
   {
-    "border-2 border-danger bg-danger":
+    "border-2 border-solid border-danger-500 bg-danger-500":
       props.color === "danger" && props.variant === "outlined" && checked.value,
   },
   // === DANGER - soft ===
   {
-    "border-2 border-danger bg-danger bg-opacity-10":
+    "border-2 border-solid border-danger-500 bg-danger bg-opacity-10":
       props.color === "danger" && props.variant === "soft" && !checked.value,
   },
   {
-    "border-2 border-danger bg-danger":
+    "border-2 border-solid border-danger-500 bg-danger-500":
       props.color === "danger" && props.variant === "soft" && checked.value,
   },
   // === DANGER - subtle ===
@@ -200,16 +200,16 @@ const boxClasses = computed(() => [
       props.color === "danger" && props.variant === "subtle" && !checked.value,
   },
   {
-    "border-2 border-solid border-1 border-danger-300 bg-danger":
+    "border-2 border-solid border-1 border-danger-300 bg-danger-500":
       props.color === "danger" && props.variant === "subtle" && checked.value,
   },
   // === DANGER - ghost ===
   {
-    "border-2 border-transparent bg-transparent hover:bg-danger hover:bg-opacity-10":
+    "border-2 border-solid border-transparent bg-transparent hover:bg-danger hover:bg-opacity-10":
       props.color === "danger" && props.variant === "ghost" && !checked.value,
   },
   {
-    "border-2 border-transparent bg-danger":
+    "border-2 border-solid border-transparent bg-danger-500":
       props.color === "danger" && props.variant === "ghost" && checked.value,
   },
 ]);
