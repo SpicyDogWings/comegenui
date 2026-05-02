@@ -44,6 +44,9 @@ const buttonClasses = computed(() => [
     "bg-transparent": props.variant === "ghost",
   },
   {
+    "bg-transparent hover:underline hover:decoration-solid hover:decoration-2": props.variant === "link",
+  },
+  {
     "bg-primary text-primary-50 hover:bg-primary-600 active:bg-primary-700":
       props.color === "primary" && props.variant === "solid",
   },
@@ -64,7 +67,7 @@ const buttonClasses = computed(() => [
       props.color === "primary" && props.variant === "ghost",
   },
   {
-    "bg-transparent text-primary hover:underline hover:decoration-solid hover:decoration-2":
+    "text-primary":
       props.color === "primary" && props.variant === "link",
   },
   {
@@ -88,7 +91,7 @@ const buttonClasses = computed(() => [
       props.color === "neutral" && props.variant === "ghost",
   },
   {
-    "bg-transparent text-charcoal-800 hover:underline hover:decoration-solid hover:decoration-2":
+    "text-charcoal-800":
       props.color === "neutral" && props.variant === "link",
   },
   {
@@ -112,7 +115,7 @@ const buttonClasses = computed(() => [
       props.color === "success" && props.variant === "ghost",
   },
   {
-    "bg-transparent text-success-600 hover:underline hover:decoration-solid hover:decoration-2":
+    "text-success-600":
       props.color === "success" && props.variant === "link",
   },
   {
@@ -136,7 +139,7 @@ const buttonClasses = computed(() => [
       props.color === "warning" && props.variant === "ghost",
   },
   {
-    "bg-transparent text-warning-500 hover:underline hover:decoration-solid hover:decoration-2":
+    "text-warning-500":
       props.color === "warning" && props.variant === "link",
   },
   {
@@ -160,7 +163,7 @@ const buttonClasses = computed(() => [
       props.color === "danger" && props.variant === "ghost",
   },
   {
-    "bg-transparent text-danger hover:underline hover:decoration-solid hover:decoration-2":
+    "text-danger":
       props.color === "danger" && props.variant === "link",
   },
 ]);
