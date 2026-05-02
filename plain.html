@@ -525,13 +525,12 @@
     <!-- ============ MODAL ============ -->
     <div class="section">
       <h2>🪟 Modal Component</h2>
-      <p>El fondo usa: <span class="code">bg-charcoal bg-opacity-10</span></p>
+      <p>El fondo usa: <span class="code">bg-charcoal-50</span> (fondo sólido claro)</p>
       
       <button onclick="modal.open()">Abrir Modal</button>
       <cu-modal id="modal" title="Demo de Modal" persistent="false">
-        <p>Este modal tiene un fondo con opacidad.</p>
-        <p>Antes: <span class="code">bg-charcoal-50</span></p>
-        <p>Ahora: <span class="code">bg-charcoal bg-opacity-10</span></p>
+        <p>Este modal tiene un fondo sólido (charcoal-50).</p>
+        <p><strong>Nota:</strong> El modal es una excepción. No usa bg-opacity porque necesita un fondo sólido para el contenido.</p>
         <div slot="footer">
           <cu-button onclick="modal.close()">Cerrar</cu-button>
         </div>

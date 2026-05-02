@@ -73,7 +73,7 @@ const overlayClasses = computed(() => [
 ]);
 
 const modalClasses = computed(() => [
-  "bg-charcoal bg-opacity-10 rounded-cu shadow-xl outline-none",
+  "bg-charcoal-50 rounded-cu shadow-xl outline-none",
   "w-full flex flex-col overflow-x-hidden",
   {
     /* Width */
