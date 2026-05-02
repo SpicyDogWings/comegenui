@@ -3,162 +3,28 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CuAlert - Ejemplos</title>
+    <title>CuTable - Fruits with Editable Count</title>
     <script src="dist/vendor/vue-runtime.iife.js"></script>
-    <script src="dist/CuAlert.umd.js"></script>
-    <script src="dist/CuButton.umd.js"></script>
-    <style>
-      body {
-        padding: 0;
-        margin: 0;
-        font-family: Arial, sans-serif;
-        background: #f5f5f5;
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 20px;
-      }
-      .container {
-        max-width: 800px;
-        width: 100%;
-        padding: 20px;
-        background: white;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      }
-      .info {
-        background: #e3f2fd;
-        padding: 12px;
-        border-radius: 6px;
-        margin-bottom: 1rem;
-        font-size: 14px;
-        text-align: center;
-      }
-      .info strong {
-        color: #1976d2;
-      }
-      .alert-controls {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        margin-top: 16px;
-      }
-    </style>
+    <script src="dist/CuTable.umd.js"></script>
+    <script src="dist/CuInput.umd.js"></script>
   </head>
   <body>
-    <div class="container">
-      <div class="info">
-        <strong>Ejemplo:</strong> Componente Alert con control interno de visibilidad
-      </div>
-      
-      <!-- Success Alert -->
-      <cu-alert id="success-alert" title="Éxito" color="success" variant="soft" close>
-        <svg slot="icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
-          <path d="m9 12 2 2 4-4"/>
-        </svg>
-        <p style="margin: 0; font-size: 14px; color: inherit;">La operación se completó correctamente.</p>
-      </cu-alert>
-
-      <!-- Warning Alert -->
-      <cu-alert id="warning-alert" title="Advertencia" color="warning" variant="subtle" close>
-        <svg slot="icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
-          <path d="M12 9v4"/>
-          <path d="M12 17h.01"/>
-        </svg>
-        <p style="margin: 0; font-size: 14px; color: inherit;">Tenga cuidado con esta acción.</p>
-      </cu-alert>
-
-      <!-- Danger Alert -->
-      <cu-alert id="danger-alert" title="Error" color="danger" variant="outlined" close>
-        <svg slot="icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"/>
-          <line x1="12" y1="8" x2="12" y2="12"/>
-          <line x1="12" y1="16" x2="12.01" y2="16"/>
-        </svg>
-        <p style="margin: 0; font-size: 14px; color: inherit;">Algo salió mal. Intente de nuevo.</p>
-      </cu-alert>
-
-      <!-- Primary Alert without icon -->
-      <cu-alert id="primary-alert" title="Información" color="primary" variant="ghost" close>
-        <p style="margin: 0; font-size: 14px; color: inherit;">Este es un mensaje informativo sin icono.</p>
-      </cu-alert>
-
-      <!-- Control Buttons -->
-      <div class="alert-controls">
-        <cu-button id="toggle-success" color="success" variant="ghost">Toggle Éxito</cu-button>
-        <cu-button id="toggle-warning" color="warning" variant="ghost">Toggle Advertencia</cu-button>
-        <cu-button id="toggle-danger" color="danger" variant="ghost">Toggle Error</cu-button>
-        <cu-button id="toggle-primary" color="primary" variant="ghost">Toggle Info</cu-button>
-        <cu-button id="open-all" color="primary" variant="solid">Abrir Todos</cu-button>
-        <cu-button id="close-all" color="danger" variant="solid">Cerrar Todos</cu-button>
-      </div>
-    </div>
+    <cu-table id="myTable"></cu-table>
 
     <script>
-      // Alert elements
-      const successAlert = document.getElementById("success-alert");
-      const warningAlert = document.getElementById("warning-alert");
-      const dangerAlert = document.getElementById("danger-alert");
-      const primaryAlert = document.getElementById("primary-alert");
+      const table = document.getElementById('myTable');
 
-      // Control buttons
-      const toggleSuccessBtn = document.getElementById("toggle-success");
-      const toggleWarningBtn = document.getElementById("toggle-warning");
-      const toggleDangerBtn = document.getElementById("toggle-danger");
-      const togglePrimaryBtn = document.getElementById("toggle-primary");
-      const openAllBtn = document.getElementById("open-all");
-      const closeAllBtn = document.getElementById("close-all");
+      table.data = [
+        { name: 'Manzana', stock: 100, count: 10 },
+        { name: 'Banana', stock: 50, count: 5 },
+        { name: 'Naranja', stock: 75, count: 15 }
+      ];
 
-      // Alert event listeners
-      successAlert.addEventListener("close", () => {
-        console.log("Alerta de éxito cerrada");
-      });
-
-      warningAlert.addEventListener("close", () => {
-        console.log("Alerta de advertencia cerrada");
-      });
-
-      dangerAlert.addEventListener("close", () => {
-        console.log("Alerta de error cerrada");
-      });
-
-      primaryAlert.addEventListener("close", () => {
-        console.log("Alerta informativa cerrada");
-      });
-
-      // Control button handlers
-      toggleSuccessBtn.addEventListener("click", () => {
-        successAlert.toggle();
-      });
-
-      toggleWarningBtn.addEventListener("click", () => {
-        warningAlert.toggle();
-      });
-
-      toggleDangerBtn.addEventListener("click", () => {
-        dangerAlert.toggle();
-      });
-
-      togglePrimaryBtn.addEventListener("click", () => {
-        primaryAlert.toggle();
-      });
-
-      openAllBtn.addEventListener("click", () => {
-        successAlert.open();
-        warningAlert.open();
-        dangerAlert.open();
-        primaryAlert.open();
-      });
-
-      closeAllBtn.addEventListener("click", () => {
-        successAlert.close();
-        warningAlert.close();
-        dangerAlert.close();
-        primaryAlert.close();
-      });
+      table.columns = [
+        { key: 'name', label: 'Name' },
+        { key: 'stock', label: 'Stock' },
+        { key: 'count', label: 'Count', editable: true }
+      ];
     </script>
   </body>
 </html>
