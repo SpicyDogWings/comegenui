@@ -57,7 +57,7 @@ const resetData = () => {
       <span class="text-red-500 font-medium">RED</span> on validation failure.
     </p>
 
-    <div class="bg-charcoal bg-opacity-10 rounded-cu p-4 mb-6">
+    <div class="bg-charcoal-50 rounded-cu p-4 mb-6">
       <h2 class="text-lg font-semibold mb-3">Validation Rules:</h2>
       <ul class="list-disc list-inside space-y-1 text-sm text-charcoal-700">
         <li><strong>Fruit:</strong> Must be at least 3 characters (validator function)</li>
@@ -78,7 +78,7 @@ const resetData = () => {
     <div class="mb-4">
       <button 
         @click="resetData"
-        class="px-4 py-2 bg-primary text-white rounded-cu hover:bg-primary-600 transition-colors font-sans"
+        class="px-4 py-2 bg-primary-500 text-white rounded-cu hover:bg-primary-600 transition-colors font-sans"
       >
         Reset Data
       </button>
@@ -92,7 +92,7 @@ const resetData = () => {
       :pagination="false"
     />
 
-    <div class="mt-8 bg-charcoal bg-opacity-10 rounded-cu p-4">
+    <div class="mt-8 bg-charcoal-50 rounded-cu p-4">
       <h2 class="text-lg font-semibold mb-3">Try These:</h2>
       <ul class="list-disc list-inside space-y-2 text-sm text-charcoal-700">
         <li>
