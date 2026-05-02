@@ -1,12 +1,18 @@
 # Modal - Componente de Diálogo Modal
 
-**`<cu-modal>`** es un componente de diálogo modal accesible con soporte para tamaños personalizables, control de altura, manejo de teclado y slots para contenido flexible.
+**`<cu-modal>`** es un componente de diálogo modal accesible con soporte para tamaños personalizables, control de altura, manejo de teclado, cierres automáticos y slots para contenido flexible.
 
 ## Importación
 
 ```html
 <script src="../dist/vendor/vue-runtime.iife.js"></script>
-<script src="../dist/CuModal.umd.js"></script>
+<script src="../dist/cuModal.umd.js"></script>
+```
+
+**Nota:** Este componente usa internamente `<cu-button>`, por lo que también necesitas importar el componente Button:
+
+```html
+<script src="../dist/cuButton.umd.js"></script>
 ```
 
 ## Uso Básico
@@ -28,230 +34,492 @@ const modal = document.getElementById('modal');
 
 ## Props
 
-| Prop | Tipo | Default | Descripción |
-|------|------|---------|-------------|
-| `title` | String | `""` | Título del modal. Se muestra en el header |
-| `description` | String | `""` | Descripción opcional. Se muestra debajo del título |
-| `persistent` | Boolean | `false` | Si es `true`, el modal no se cierra al hacer clic en el backdrop o presionar Escape |
-| `size` | String | `"md"` | Ancho máximo del modal. Opciones: `sm`, `md`, `lg`, `xl`, `full` |
-| `height` | String | `"auto"` | Altura máxima del modal. Opciones: `auto`, `sm`, `md`, `lg`, `xl`, `full` |
+| Prop | Tipo | Default | Valores válidos | Descripción |
+|------|------|---------|----------------|-------------|
+| `title` | String | `""` | - | Título del modal. Se muestra en el header |
+| `description` | String | `""` | - | Descripción opcional. Se muestra debajo del título en el header |
+| `persistent` | Boolean | `false` | `true`/`false` | Si es `true`, el modal no se cierra al hacer clic en el backdrop o presionar Escape |
+| `size` | String | `"md"` | `sm`, `md`, `lg`, `xl`, `full` | Ancho máximo del modal |
+| `height` | String | `"auto"` | `auto`, `sm`, `md`, `lg`, `xl`, `full` | Altura máxima del modal |
 
-### Tamaños (size)
+### Tamaños (size) - Ancho
 
-| Valor | Clase CSS | Descripción |
-|-------|-----------|-------------|
-| `sm` | `max-w-sm` | Modal pequeño |
-| `md` | `max-w-md` | Modal mediano (por defecto) |
-| `lg` | `max-w-lg` | Modal grande |
-| `xl` | `max-w-xl` | Modal extra grande |
-| `full` | `max-w-[90vw]` | Modal ancho completo (90% del viewport) |
+| Valor | Clase CSS | Descripción | Ancho aproximado |
+|-------|-----------|-------------|-----------------|
+| `sm` | `max-w-sm` | Modal pequeño | ~24rem (384px) |
+| `md` | `max-w-md` | Modal mediano (por defecto) | ~28rem (448px) |
+| `lg` | `max-w-lg` | Modal grande | ~32rem (512px) |
+| `xl` | `max-w-xl` | Modal extra grande | ~36rem (576px) |
+| `full` | `max-w-[90vw]` | Modal ancho completo | 90% del viewport |
 
-### Alturas (height)
+### Alturas (height) - Altura máxima
 
-| Valor | Clase CSS | Descripción |
-|-------|-----------|-------------|
-| `auto` | `max-h-[90vh]` | Altura automática (hasta 90% del viewport) |
-| `sm` | `max-h-[200px]` | 200px de altura máxima |
-| `md` | `max-h-[300px]` | 300px de altura máxima |
-| `lg` | `max-h-[400px]` | 400px de altura máxima |
-| `xl` | `max-h-[500px]` | 500px de altura máxima |
-| `full` | `max-h-[90vh]` | 90% del viewport height |
+| Valor | Clase CSS | Descripción | Altura aproximada |
+|-------|-----------|-------------|------------------|
+| `auto` | `max-h-[90vh]` | Altura automática | Hasta 90% del viewport |
+| `sm` | `max-h-[200px]` | Altura pequeña | 200px |
+| `md` | `max-h-[300px]` | Altura mediana | 300px |
+| `lg` | `max-h-[400px]` | Altura grande | 400px |
+| `xl` | `max-h-[500px]` | Altura extra grande | 500px |
+| `full` | `max-h-[90vh]` | Altura completa | 90% del viewport |
 
-## Uso en Vue (SFC)
+## Events
 
-```vue
-<script setup>
-import { ref } from 'vue';
-import Modal from './components/Modal.ce.vue';
-
-const modalRef = ref(null);
-
-function openModal() {
-  modalRef.value?.open();
-}
-</script>
-
-<template>
-  <button @click="openModal">Abrir Modal</button>
-  
-  <Modal ref="modalRef" title="Mi Modal">
-    <p>Contenido del modal.</p>
-    <template #footer>
-      <cu-button @click="modalRef?.close()">Cerrar</cu-button>
-    </template>
-  </Modal>
-</template>
-```
-
-## Uso en HTML Plano
-
-```html
-<cu-button id="open-btn">Abrir Modal</cu-button>
-
-<cu-modal id="my-modal" title="Confirmación" size="md" height="auto">
-  <p>¿Estás seguro de que quieres continuar?</p>
-  <div slot="footer">
-    <cu-button color="neutral" onclick="cancel()">Cancelar</cu-button>
-    <cu-button color="primary" onclick="confirm()">Confirmar</cu-button>
-  </div>
-</cu-modal>
-
-<script>
-const modal = document.getElementById('my-modal');
-const openBtn = document.getElementById('open-btn');
-
-openBtn.addEventListener('click', () => modal.open());
-
-function cancel() {
-  modal.close();
-  console.log('Acción cancelada');
-}
-
-function confirm() {
-  modal.close();
-  console.log('Acción confirmada');
-}
-</script>
-```
+| Evento | Descripción |
+|--------|-------------|
+| `opened` | Se emite cuando el modal se ha abierto completamente |
+| `closed` | Se emite cuando el modal se ha cerrado completamente |
+| `close` | Se emite cuando se solicita cerrar el modal (antes de la animación de cierre) |
 
 ## Slots
 
-### Slot por defecto (contenido principal)
-
-```html
-<cu-modal title="Mi Modal">
-  <!-- Contenido principal -->
-  <p>Este es el contenido principal del modal.</p>
-  <div>Puedes poner cualquier HTML aquí.</div>
-</cu-modal>
-```
-
-### Slot footer
-
-El slot `footer` se usa para botones de acción. En HTML plano, usa `slot="footer"`:
-
-```html
-<cu-modal title="Mi Modal">
-  <p>Contenido del modal</p>
-  <div slot="footer">
-    <cu-button onclick=" handling()">Acción</cu-button>
-  </div>
-</cu-modal>
-```
-
-En Vue SFC, usa `<template #footer>`:
-
-```vue
-<Modal title="Mi Modal">
-  <p>Contenido del modal</p>
-  <template #footer>
-    <cu-button @click="close()">Cerrar</cu-button>
-  </template>
-</Modal>
-```
+| Nombre | Descripción |
+|--------|-------------|
+| `default` | Contenido principal del modal (cuerpo) |
+| `footer` | Contenido del footer (normalmente botones de acción) |
 
 ## Métodos Expuestos
 
 El componente expone métodos para control programático:
 
-### `open()`
+| Método | Argumentos | Retorno | Descripción |
+|--------|------------|---------|-------------|
+| `open()` | - | `void` | Abre el modal |
+| `close()` | - | `void` | Cierra el modal |
+| `toggle()` | - | `void` | Alterna entre abierto y cerrado |
+| `isOpen` (getter) | - | `boolean` | Obtiene el estado actual (abierto/cerrado) |
 
-Abre el modal.
+## Ejemplos por Propiedad
 
-```javascript
-const modal = document.getElementById('my-modal');
-modal.open();
-```
+### Propiedad: `title`
 
-### `close()`
-
-Cierra el modal.
-
-```javascript
-const modal = document.getElementById('my-modal');
-modal.close();
-```
-
-### `toggle()`
-
-Alterna entre abierto y cerrado.
-
-```javascript
-const modal = document.getElementById('my-modal');
-modal.toggle(); // Abre si está cerrado, cierra si está abierto
-```
-
-### `isOpen` (getter)
-
-Obtiene el estado actual del modal.
-
-```javascript
-const modal = document.getElementById('my-modal');
-console.log(modal.isOpen); // true o false
-```
-
-## Eventos
-
-### Evento `opened`
-
-Se emite cuando el modal se abre.
+Título del modal mostrado en el header:
 
 ```html
+<cu-button onclick="openModal()">Abrir</cu-button>
+
+<cu-modal id="title-modal" title="Este es el título">
+  <p>Contenido del modal con título.</p>
+  <div slot="footer">
+    <cu-button onclick="closeModal()">Cerrar</cu-button>
+  </div>
+</cu-modal>
+
+<script>
+const modal = document.getElementById('title-modal');
+function openModal() { modal.open(); }
+function closeModal() { modal.close(); }
+</script>
+```
+
+### Propiedad: `description`
+
+Descripción opcional mostrada debajo del título:
+
+```html
+<cu-button onclick="openModal()">Abrir</cu-button>
+
+<cu-modal 
+  id="desc-modal" 
+  title="Título del Modal"
+  description="Esta es una descripción detallada del propósito del modal."
+>
+  <p>Contenido del modal.</p>
+  <div slot="footer">
+    <cu-button onclick="closeModal()">Cerrar</cu-button>
+  </div>
+</cu-modal>
+
+<script>
+const modal = document.getElementById('desc-modal');
+function openModal() { modal.open(); }
+function closeModal() { modal.close(); }
+</script>
+```
+
+### Propiedad: `persistent`
+
+Modal que no se cierra con Escape o clic fuera:
+
+```html
+<cu-button onclick="openModal()">Abrir Modal Persistente</cu-button>
+
+<cu-modal id="persistent-modal" title="Importante" persistent>
+  <p>Este modal no se cerrará al presionar Escape o hacer clic fuera.</p>
+  <p>Debes usar el botón de cerrar o el botón Cerrar.</p>
+  <div slot="footer">
+    <cu-button onclick="closeModal()">Cerrar</cu-button>
+  </div>
+</cu-modal>
+
+<script>
+const modal = document.getElementById('persistent-modal');
+function openModal() { modal.open(); }
+function closeModal() { modal.close(); }
+</script>
+```
+
+### Propiedad: `size`
+
+Todas las opciones de tamaño (ancho):
+
+```html
+<div class="flex gap-2 flex-wrap mb-4">
+  <cu-button onclick="openSize('sm')">Tamaño SM</cu-button>
+  <cu-button onclick="openSize('md')">Tamaño MD</cu-button>
+  <cu-button onclick="openSize('lg')">Tamaño LG</cu-button>
+  <cu-button onclick="openSize('xl')">Tamaño XL</cu-button>
+  <cu-button onclick="openSize('full')">Tamaño FULL</cu-button>
+</div>
+
+<cu-modal id="size-modal" title="Modal de Tamaño" size="md">
+  <p>Este modal muestra el tamaño seleccionado.</p>
+  <div slot="footer">
+    <cu-button onclick="closeModal()">Cerrar</cu-button>
+  </div>
+</cu-modal>
+
+<script>
+const modal = document.getElementById('size-modal');
+
+function openSize(size) {
+  modal.setAttribute('size', size);
+  modal.open();
+}
+
+function closeModal() {
+  modal.close();
+}
+</script>
+```
+
+### Propiedad: `height`
+
+Todas las opciones de altura:
+
+```html
+<div class="flex gap-2 flex-wrap mb-4">
+  <cu-button onclick="openHeight('auto')">Altura AUTO</cu-button>
+  <cu-button onclick="openHeight('sm')">Altura SM</cu-button>
+  <cu-button onclick="openHeight('md')">Altura MD</cu-button>
+  <cu-button onclick="openHeight('lg')">Altura LG</cu-button>
+  <cu-button onclick="openHeight('xl')">Altura XL</cu-button>
+  <cu-button onclick="openHeight('full')">Altura FULL</cu-button>
+</div>
+
+<cu-modal id="height-modal" title="Modal de Altura" height="auto">
+  <div class="space-y-2">
+    <p>Contenido con altura controlada.</p>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+    <p>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+    <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco.</p>
+    <p>Duis aute irure dolor in reprehenderit in voluptate velit esse.</p>
+  </div>
+  <div slot="footer">
+    <cu-button onclick="closeModal()">Cerrar</cu-button>
+  </div>
+</cu-modal>
+
+<script>
+const modal = document.getElementById('height-modal');
+
+function openHeight(height) {
+  modal.setAttribute('height', height);
+  modal.open();
+}
+
+function closeModal() {
+  modal.close();
+}
+</script>
+```
+
+## Ejemplos por Método
+
+### Método: `open()`
+
+Abrir el modal programáticamente:
+
+```html
+<cu-button onclick="openModal()">Abrir Modal</cu-button>
+
+<cu-modal id="modal" title="Mi Modal">
+  <p>Contenido del modal.</p>
+  <div slot="footer">
+    <cu-button onclick="closeModal()">Cerrar</cu-button>
+  </div>
+</cu-modal>
+
+<script>
+const modal = document.getElementById('modal');
+
+function openModal() {
+  modal.open();
+}
+
+function closeModal() {
+  modal.close();
+}
+</script>
+```
+
+### Método: `close()`
+
+Cerrar el modal programáticamente:
+
+```html
+<cu-button onclick="openModal()">Abrir Modal</cu-button>
+
+<cu-modal id="modal" title="Mi Modal">
+  <p>Haz clic en el botón de abajo para cerrar.</p>
+  <div slot="footer">
+    <cu-button onclick="closeModal()">Cerrar Modal</cu-button>
+  </div>
+</cu-modal>
+
+<script>
+const modal = document.getElementById('modal');
+
+function openModal() {
+  modal.open();
+}
+
+function closeModal() {
+  modal.close();
+}
+</script>
+```
+
+### Método: `toggle()`
+
+Alternar entre abierto y cerrado:
+
+```html
+<cu-button onclick="toggleModal()">Alternar Modal</cu-button>
+
+<cu-modal id="modal" title="Modal Togleable">
+  <p>Este modal se alterna con el botón.</p>
+  <div slot="footer">
+    <cu-button onclick="toggleModal()">Alternar</cu-button>
+  </div>
+</cu-modal>
+
+<script>
+const modal = document.getElementById('modal');
+
+function toggleModal() {
+  modal.toggle();
+}
+</script>
+```
+
+### Método: `isOpen` (getter)
+
+Verificar si el modal está abierto:
+
+```html
+<cu-button onclick="checkStatus()">Verificar Estado</cu-button>
+<cu-button onclick="toggleModal()">Alternar</cu-button>
+
+<cu-modal id="modal" title="Mi Modal">
+  <p>Contenido del modal.</p>
+  <div slot="footer">
+    <cu-button onclick="toggleModal()">Cerrar</cu-button>
+  </div>
+</cu-modal>
+
+<script>
+const modal = document.getElementById('modal');
+
+function toggleModal() {
+  modal.toggle();
+}
+
+function checkStatus() {
+  const isOpen = modal.isOpen;
+  alert(`El modal está ${isOpen ? 'abierto' : 'cerrado'}`);
+}
+</script>
+```
+
+## Ejemplos por Evento
+
+### Evento: `opened`
+
+Se ejecuta cuando el modal se abre:
+
+```html
+<cu-button onclick="openModal()">Abrir Modal</cu-button>
+
 <cu-modal id="modal" @opened="handleOpened">
-  <p>Contenido</p>
+  <p>Contenido del modal.</p>
+  <div slot="footer">
+    <cu-button onclick="closeModal()">Cerrar</cu-button>
+  </div>
 </cu-modal>
 
 <script>
+const modal = document.getElementById('modal');
+
+function openModal() {
+  modal.open();
+}
+
+function closeModal() {
+  modal.close();
+}
+
 function handleOpened() {
-  console.log('Modal abierto');
+  console.log('Modal abierto!');
+  // Puedes enfocar un elemento aquí
 }
 </script>
 ```
 
-### Evento `closed`
+### Evento: `closed`
 
-Se emite cuando el modal se cierra.
+Se ejecuta cuando el modal se cierra:
 
 ```html
+<cu-button onclick="openModal()">Abrir Modal</cu-button>
+
 <cu-modal id="modal" @closed="handleClosed">
-  <p>Contenido</p>
+  <p>Contenido del modal.</p>
+  <div slot="footer">
+    <cu-button onclick="closeModal()">Cerrar</cu-button>
+  </div>
 </cu-modal>
 
 <script>
+const modal = document.getElementById('modal');
+
+function openModal() {
+  modal.open();
+}
+
+function closeModal() {
+  modal.close();
+}
+
 function handleClosed() {
-  console.log('Modal cerrado');
+  console.log('Modal cerrado!');
+  // Puedes limpiar formularios o resetear estados aquí
 }
 </script>
 ```
 
-### Evento `close`
+### Evento: `close`
 
-Se emite cuando se solicita cerrar el modal (antes de cerrarse).
+Se ejecuta cuando se solicita cerrar el modal (antes de cerrarse):
 
 ```html
+<cu-button onclick="openModal()">Abrir Modal</cu-button>
+
 <cu-modal id="modal" @close="handleClose">
-  <p>Contenido</p>
+  <p>Contenido del modal.</p>
+  <div slot="footer">
+    <cu-button onclick="closeModal()">Cerrar</cu-button>
+  </div>
 </cu-modal>
 
 <script>
+const modal = document.getElementById('modal');
+
+function openModal() {
+  modal.open();
+}
+
+function closeModal() {
+  modal.close();
+}
+
 function handleClose() {
-  console.log('Solicitud de cierre');
+  console.log('Solicitud de cierre recibida');
+  // Puedes mostrar un diálogo de confirmación aquí
 }
 </script>
 ```
 
-## Casos de Uso
+## Ejemplos por Slot
+
+### Slot: `default` (contenido principal)
+
+Contenido principal del modal:
+
+```html
+<cu-button onclick="openModal()">Abrir</cu-button>
+
+<cu-modal id="modal" title="Contenido Personalizado">
+  <div class="space-y-4">
+    <p>Este es el contenido principal del modal.</p>
+    <p>Puedes poner cualquier HTML aquí.</p>
+    <div class="bg-primary-50 p-4 rounded">
+      <p>Incluso componentes anidados.</p>
+    </div>
+  </div>
+  <div slot="footer">
+    <cu-button onclick="closeModal()">Cerrar</cu-button>
+  </div>
+</cu-modal>
+
+<script>
+const modal = document.getElementById('modal');
+function openModal() { modal.open(); }
+function closeModal() { modal.close(); }
+</script>
+```
+
+### Slot: `footer`
+
+Área para botones de acción:
+
+```html
+<cu-button onclick="openModal()">Abrir</cu-button>
+
+<cu-modal id="modal" title="Con Footer">
+  <p>Contenido del modal.</p>
+  <div slot="footer" class="flex justify-end gap-2">
+    <cu-button color="neutral" variant="ghost" onclick="closeModal()">
+      Cancelar
+    </cu-button>
+    <cu-button color="primary" onclick="confirmAction()">
+      Confirmar
+    </cu-button>
+  </div>
+</cu-modal>
+
+<script>
+const modal = document.getElementById('modal');
+
+function openModal() { modal.open(); }
+function closeModal() { modal.close(); }
+
+function confirmAction() {
+  console.log('Acción confirmada');
+  modal.close();
+}
+</script>
+```
+
+## Casos de Uso Combinados
 
 ### Modal de confirmación
 
 ```html
-<cu-button onclick="showConfirm()">Eliminar</cu-button>
+<cu-button color="danger" onclick="showConfirm()">Eliminar</cu-button>
 
 <cu-modal id="confirm-modal" title="Confirmar Eliminación" size="sm">
   <p>¿Estás seguro de que quieres eliminar este elemento?</p>
-  <div slot="footer">
-    <cu-button color="neutral" onclick="cancelDelete()">Cancelar</cu-button>
-    <cu-button color="danger" onclick="confirmDelete()">Eliminar</cu-button>
+  <p class="text-sm text-charcoal-500 mt-2">
+    Esta acción no se puede deshacer.
+  </p>
+  <div slot="footer" class="flex justify-end gap-2">
+    <cu-button color="neutral" variant="outlined" onclick="cancelDelete()">
+      Cancelar
+    </cu-button>
+    <cu-button color="danger" onclick="confirmDelete()">
+      Sí, Eliminar
+    </cu-button>
   </div>
 </cu-modal>
 
@@ -264,12 +532,13 @@ function showConfirm() {
 
 function cancelDelete() {
   modal.close();
+  console.log('Eliminación cancelada');
 }
 
 function confirmDelete() {
   modal.close();
-  // Lógica de eliminación aquí
   console.log('Elemento eliminado');
+  // Lógica de eliminación aquí
 }
 </script>
 ```
@@ -281,13 +550,29 @@ function confirmDelete() {
 
 <cu-modal id="form-modal" title="Formulario de Contacto" size="md" height="lg">
   <div class="flex flex-col gap-4">
-    <cu-input id="name" placeholder="Nombre completo" />
-    <cu-input id="email" type="email" placeholder="Correo electrónico" />
-    <cu-textarea id="message" placeholder="Mensaje" rows="3" />
+    <div>
+      <label class="block mb-2 text-sm font-medium">Nombre completo</label>
+      <cu-input id="name" placeholder="Juan Pérez" />
+    </div>
+    
+    <div>
+      <label class="block mb-2 text-sm font-medium">Correo electrónico</label>
+      <cu-input id="email" type="email" placeholder="juan@ejemplo.com" />
+    </div>
+    
+    <div>
+      <label class="block mb-2 text-sm font-medium">Teléfono</label>
+      <cu-input id="phone" type="tel" placeholder="+1234567890" />
+    </div>
   </div>
-  <div slot="footer">
-    <cu-button color="neutral" onclick="closeForm()">Cancelar</cu-button>
-    <cu-button color="success" onclick="submitForm()">Enviar</cu-button>
+  
+  <div slot="footer" class="flex justify-end gap-2">
+    <cu-button color="neutral" variant="ghost" onclick="closeForm()">
+      Cancelar
+    </cu-button>
+    <cu-button color="success" onclick="submitForm()">
+      Guardar Contacto
+    </cu-button>
   </div>
 </cu-modal>
 
@@ -303,11 +588,11 @@ function closeForm() {
 }
 
 function submitForm() {
-  // Usar .get() para obtener valores de CuInput y CuTextarea
+  // Usar .get() para obtener valores de CuInput
   const data = {
     name: document.getElementById('name').get(),
     email: document.getElementById('email').get(),
-    message: document.getElementById('message').get()
+    phone: document.getElementById('phone').get()
   };
   console.log('Formulario enviado:', data);
   formModal.close();
@@ -327,10 +612,18 @@ function submitForm() {
 
     <label class="text-sm font-medium">Correo electrónico</label>
     <cu-input id="contact-email" type="email" placeholder="juan@ejemplo.com" />
+
+    <label class="text-sm font-medium">Mensaje</label>
+    <cu-textarea id="contact-message" placeholder="Tu mensaje..." rows="3" />
   </div>
+  
   <div slot="footer" class="flex justify-end gap-2">
-    <cu-button color="neutral" variant="ghost" onclick="closeContactForm()">Cancelar</cu-button>
-    <cu-button color="primary" onclick="submitContactForm()">Enviar</cu-button>
+    <cu-button color="neutral" variant="ghost" onclick="closeContactForm()">
+      Cancelar
+    </cu-button>
+    <cu-button color="primary" onclick="submitContactForm()">
+      Enviar
+    </cu-button>
   </div>
 </cu-modal>
 
@@ -346,136 +639,207 @@ function closeContactForm() {
 }
 
 function submitContactForm() {
-  // Obtener valores usando .get() expuesto por CuInput
+  // Obtener valores usando .get() expuesto por CuInput y CuTextarea
   const formData = {
     name: document.getElementById('contact-name').get(),
-    email: document.getElementById('contact-email').get()
+    email: document.getElementById('contact-email').get(),
+    message: document.getElementById('contact-message').get()
   };
   console.log('Datos del formulario:', formData);
+  
+  // Limpiar formulario
+  document.getElementById('contact-name').reset();
+  document.getElementById('contact-email').reset();
+  document.getElementById('contact-message').reset();
+  
   contactModal.close();
 }
 </script>
 ```
 
-### Modal persistente (no se cierra con Escape o clic fuera)
+### Modal con tabla
 
 ```html
-<cu-button onclick="openPersistent()">Abrir Modal Persistente</cu-button>
+<cu-button onclick="openTableModal()">Ver Datos</cu-button>
 
-<cu-modal id="persistent-modal" title="Importante" persistent>
-  <p>Este modal no se cerrará al presionar Escape o hacer clic fuera.</p>
-  <p>Debes usar el botón de cerrar.</p>
+<cu-modal id="table-modal" title="Lista de Usuarios" size="xl" height="full">
+  <cu-table
+    :data="users"
+    :columns="columns"
+  />
   <div slot="footer">
-    <cu-button onclick="closePersistent()">Cerrar</cu-button>
+    <cu-button color="neutral" onclick="closeTableModal()">
+      Cerrar
+    </cu-button>
   </div>
 </cu-modal>
 
 <script>
-const modal = document.getElementById('persistent-modal');
+const tableModal = document.getElementById('table-modal');
 
-function openPersistent() {
-  modal.open();
+const users = [
+  { id: 1, name: 'Juan Pérez', email: 'juan@ejemplo.com', role: 'Admin' },
+  { id: 2, name: 'María García', email: 'maria@ejemplo.com', role: 'User' },
+  { id: 3, name: 'Carlos López', email: 'carlos@ejemplo.com', role: 'Editor' }
+];
+
+const columns = [
+  { key: 'id', title: 'ID' },
+  { key: 'name', title: 'Nombre' },
+  { key: 'email', title: 'Correo' },
+  { key: 'role', title: 'Rol' }
+];
+
+function openTableModal() {
+  tableModal.open();
 }
 
-function closePersistent() {
-  modal.close();
+function closeTableModal() {
+  tableModal.close();
 }
 </script>
 ```
 
-### Modal con todas las opciones de tamaño
+### Modal anidado (abrir otro modal dentro)
 
 ```html
-<div class="flex gap-2 flex-wrap">
-  <cu-button onclick="openSize('sm')">SM</cu-button>
-  <cu-button onclick="openSize('md')">MD</cu-button>
-  <cu-button onclick="openSize('lg')">LG</cu-button>
-  <cu-button onclick="openSize('xl')">XL</cu-button>
-  <cu-button onclick="openSize('full')">FULL</cu-button>
-</div>
+<cu-button onclick="openFirstModal()">Abrir Primer Modal</cu-button>
 
-<cu-modal id="size-modal" title="Modal de Tamaño">
-  <p>Este modal muestra el tamaño seleccionado.</p>
+<cu-modal id="first-modal" title="Primer Modal" size="md">
+  <p>Este es el primer modal.</p>
+  <p>Puedes abrir un segundo modal desde aquí.</p>
+  <cu-button onclick="openSecondModal()">Abrir Segundo Modal</cu-button>
+  
   <div slot="footer">
-    <cu-button onclick="closeSize()">Cerrar</cu-button>
+    <cu-button color="neutral" onclick="closeFirstModal()">Cerrar</cu-button>
+  </div>
+</cu-modal>
+
+<cu-modal id="second-modal" title="Segundo Modal" size="sm">
+  <p>Este es el segundo modal.</p>
+  <p>Se abre sobre el primero.</p>
+  
+  <div slot="footer">
+    <cu-button color="neutral" onclick="closeSecondModal()">Cerrar</cu-button>
   </div>
 </cu-modal>
 
 <script>
-const modal = document.getElementById('size-modal');
+const firstModal = document.getElementById('first-modal');
+const secondModal = document.getElementById('second-modal');
 
-function openSize(size) {
-  modal.setAttribute('size', size);
-  modal.open();
+function openFirstModal() {
+  firstModal.open();
 }
 
-function closeSize() {
-  modal.close();
+function closeFirstModal() {
+  firstModal.close();
+}
+
+function openSecondModal() {
+  secondModal.open();
+}
+
+function closeSecondModal() {
+  secondModal.close();
 }
 </script>
 ```
 
-### Modal con todas las opciones de altura
+### Modal con imagen
 
 ```html
-<div class="flex gap-2 flex-wrap">
-  <cu-button onclick="openHeight('sm')">Altura SM</cu-button>
-  <cu-button onclick="openHeight('md')">Altura MD</cu-button>
-  <cu-button onclick="openHeight('lg')">Altura LG</cu-button>
-  <cu-button onclick="openHeight('xl')">Altura XL</cu-button>
-  <cu-button onclick="openHeight('full')">Altura FULL</cu-button>
-</div>
+<cu-button onclick="openImageModal()">Ver Imagen</cu-button>
 
-<cu-modal id="height-modal" title="Modal de Altura" height="auto">
-  <div class="space-y-2">
-    <p>Contenido con altura controlada.</p>
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-    <p>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-  </div>
+<cu-modal id="image-modal" title="Imagen" size="lg">
+  <img 
+    src="https://via.placeholder.com/800x600"
+    alt="Imagen de ejemplo"
+    class="w-full h-auto rounded"
+  />
+  <p class="mt-4 text-center text-charcoal-500">
+    Descripción de la imagen
+  </p>
   <div slot="footer">
-    <cu-button onclick="closeHeight()">Cerrar</cu-button>
+    <cu-button color="neutral" onclick="closeImageModal()">Cerrar</cu-button>
   </div>
 </cu-modal>
 
 <script>
-const modal = document.getElementById('height-modal');
+const imageModal = document.getElementById('image-modal');
 
-function openHeight(height) {
-  modal.setAttribute('height', height);
-  modal.open();
+function openImageModal() {
+  imageModal.open();
 }
 
-function closeHeight() {
-  modal.close();
+function closeImageModal() {
+  imageModal.close();
 }
 </script>
 ```
 
-### Modal con descripción
+### Modal con pestañas
 
 ```html
-<cu-button onclick="openWithDesc()">Abrir con Descripción</cu-button>
+<cu-button onclick="openTabsModal()">Abrir Modal con Pestañas</cu-button>
 
-<cu-modal 
-  id="desc-modal"
-  title="Título del Modal"
-  description="Esta es una descripción detallada del propósito del modal."
->
-  <p>Contenido del modal.</p>
+<cu-modal id="tabs-modal" title="Configuración" size="lg">
+  <div class="flex border-b border-charcoal-200 mb-4">
+    <button 
+      onclick="switchTab('profile')" 
+      class="px-4 py-2 font-medium"
+      :class="activeTab === 'profile' ? 'border-b-2 border-primary text-primary' : 'text-charcoal-500'"
+    >
+      Perfil
+    </button>
+    <button 
+      onclick="switchTab('settings')" 
+      class="px-4 py-2 font-medium"
+      :class="activeTab === 'settings' ? 'border-b-2 border-primary text-primary' : 'text-charcoal-500'"
+    >
+      Configuración
+    </button>
+    <button 
+      onclick="switchTab('notifications')" 
+      class="px-4 py-2 font-medium"
+      :class="activeTab === 'notifications' ? 'border-b-2 border-primary text-primary' : 'text-charcoal-500'"
+    >
+      Notificaciones
+    </button>
+  </div>
+  
+  <div id="tab-content" class="p-2">
+    <div v-if="activeTab === 'profile'" class="space-y-2">
+      <p>Contenido de Perfil</p>
+    </div>
+    <div v-if="activeTab === 'settings'" class="space-y-2">
+      <p>Contenido de Configuración</p>
+    </div>
+    <div v-if="activeTab === 'notifications'" class="space-y-2">
+      <p>Contenido de Notificaciones</p>
+    </div>
+  </div>
+  
   <div slot="footer">
-    <cu-button onclick="closeDesc()">Cerrar</cu-button>
+    <cu-button color="neutral" onclick="closeTabsModal()">Cerrar</cu-button>
   </div>
 </cu-modal>
 
 <script>
-const modal = document.getElementById('desc-modal');
+const tabsModal = document.getElementById('tabs-modal');
+let activeTab = 'profile';
 
-function openWithDesc() {
-  modal.open();
+function openTabsModal() {
+  tabsModal.open();
 }
 
-function closeDesc() {
-  modal.close();
+function closeTabsModal() {
+  tabsModal.close();
+}
+
+function switchTab(tab) {
+  activeTab = tab;
+  // Re-renderizar contenido (en Vue reactivo, esto se actualiza automáticamente)
 }
 </script>
 ```
@@ -488,8 +852,10 @@ function closeDesc() {
 <cu-modal id="no-header-modal" title="">
   <h2 class="text-xl font-bold mb-4">Título personalizado</h2>
   <p>Contenido del modal sin el header predeterminado.</p>
+  <p>Puedes crear tu propio header o no usarlo.</p>
+  
   <div slot="footer">
-    <cu-button onclick="closeNoHeader()">Cerrar</cu-button>
+    <cu-button color="neutral" onclick="closeNoHeader()">Cerrar</cu-button>
   </div>
 </cu-modal>
 
@@ -506,6 +872,55 @@ function closeNoHeader() {
 </script>
 ```
 
+### Modal con eventos completos
+
+```html
+<cu-button onclick="openEventModal()">Abrir Modal</cu-button>
+
+<cu-modal 
+  id="event-modal" 
+  title="Eventos del Modal"
+  @opened="handleOpened"
+  @closed="handleClosed"
+  @close="handleClose"
+>
+  <p>Contenido del modal.</p>
+  <p class="text-sm text-charcoal-500">
+    Abre la consola para ver los eventos.
+  </p>
+  
+  <div slot="footer">
+    <cu-button color="neutral" onclick="closeEventModal()">Cerrar</cu-button>
+  </div>
+</cu-modal>
+
+<script>
+const modal = document.getElementById('event-modal');
+
+function openEventModal() {
+  console.log('Abriendo modal...');
+  modal.open();
+}
+
+function closeEventModal() {
+  console.log('Cerrando modal...');
+  modal.close();
+}
+
+function handleOpened() {
+  console.log('Evento: opened - Modal abierto completamente');
+}
+
+function handleClosed() {
+  console.log('Evento: closed - Modal cerrado completamente');
+}
+
+function handleClose() {
+  console.log('Evento: close - Solicitud de cierre recibida');
+}
+</script>
+```
+
 ## Comportamiento del Teclado
 
 - **Escape**: Cierra el modal (a menos que `persistent` sea `true`)
@@ -517,26 +932,59 @@ El componente incluye automáticamente:
 
 - `role="dialog"` para lectores de pantalla
 - `aria-modal="true"` para indicar que es un diálogo modal
-- `aria-labelledby` apuntando al título
+- `aria-labelledby` apuntando al título (si existe)
 - `aria-describedby` apuntando a la descripción (si existe)
 - Manejo de foco cuando se abre/cierra
-- Cierre con la tecla Escape
+- Cierre con la tecla Escape (a menos que sea persistente)
+- Click fuera cierra el modal (a menos que sea persistente)
 
-## Estilos CSS
-
-Para personalizar el modal globalmente:
+## Personalización CSS
 
 ```css
-cu-modal {
-  --uno-bg: #ffffff;
-  --uno-border-radius: 0.5rem;
+/* Personalizar background del modal */
+cu-modal .overlay {
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
 }
 
-cu-modal .overlay {
-  --uno-bg-opacity: 0.5;
-  --uno-backdrop-blur: 4px;
+/* Personalizar border-radius del modal */
+cu-modal div[role="dialog"] {
+  --uno-border-radius: 0.75rem;
+}
+
+/* Personalizar sombra */
+cu-modal div[role="dialog"] {
+  --uno-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Personalizar padding */
+cu-modal div[role="dialog"] header {
+  padding: 1rem;
+}
+
+/* Personalizar z-index */
+cu-modal {
+  --uno-z-index: 1000;
+}
+
+/* Personalizar colores del header */
+cu-modal div[role="dialog"] h2 {
+  color: #1f2937;
+}
+
+cu-modal div[role="dialog"] p {
+  color: #6b7280;
 }
 ```
+
+## Notas Técnicas
+
+- El modal se renderiza en el DOM aunque esté cerrado (usando `v-show`), lo que permite mantener el estado de los componentes hijos.
+- El modal usa `z-1000` para asegurarse de que aparezca sobre otros elementos.
+- El backdrop (overlay) tiene `bg-black/30 backdrop-blur-sm` para un efecto de oscurecimiento y blur.
+- Cuando `persistent` es `true`, ni el clic en el backdrop ni la tecla Escape cerrarán el modal.
+- El botón de cierre (X) solo aparece si `persistent` es `false`.
+- El modal es scrollable internamente si el contenido excede la altura máxima.
 
 ## Componentes Relacionados
 
@@ -545,3 +993,4 @@ cu-modal .overlay {
 - [Textarea](Textarea.md) - Para áreas de texto en formularios
 - [Badge](Badge.md) - Para mostrar status dentro del modal
 - [Table](Table.md) - Para mostrar datos en formato de tabla dentro del modal
+- [Alert](Alert.md) - Para mostrar mensajes de alerta dentro del modal
