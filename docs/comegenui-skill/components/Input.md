@@ -67,9 +67,9 @@ let username = "user123";
 </script>
 ```
 
-Uso manual con update:modelValue:
+Uso manual con update:modelValue (en Vue SFC):
 
-```html
+```vue
 <cu-input 
   :modelValue="email" 
   @update:modelValue="email = $event"
@@ -78,6 +78,20 @@ Uso manual con update:modelValue:
 
 <script>
 let email = "";
+</script>
+```
+
+En HTML plano, usa el método `get()` y eventos nativos:
+
+```html
+<cu-input id="myInput" placeholder="Correo electrónico" />
+
+<script>
+const input = document.getElementById('myInput');
+input.addEventListener('input', (e) => {
+  const value = input.get();
+  console.log('Valor:', value);
+});
 </script>
 ```
 
@@ -255,9 +269,9 @@ function focusInput() {
 
 ### Evento: `update:modelValue`
 
-Manejar cambios en el valor:
+Manejar cambios en el valor (en Vue SFC):
 
-```html
+```vue
 <cu-input 
   placeholder="Escribe aquí"
   @update:modelValue="handleChange"
@@ -268,6 +282,19 @@ function handleChange(newValue) {
   console.log('Nuevo valor:', newValue);
   // Validar, guardar, etc.
 }
+</script>
+```
+
+En HTML plano, usa el evento nativo `input`:
+
+```html
+<cu-input id="myInput" placeholder="Escribe aquí" />
+
+<script>
+const input = document.getElementById('myInput');
+input.addEventListener('update:modelValue', (e) => {
+  console.log('Nuevo valor:', e.detail);
+});
 </script>
 ```
 
@@ -522,11 +549,15 @@ function validateForm() {
   id="limitedInput"
   placeholder="Máximo 50 caracteres"
   maxlength="50"
-  @update:modelValue="checkLength"
 />
 <p id="charCount" class="text-sm text-charcoal-500 mt-1">0/50 caracteres</p>
 
 <script>
+const input = document.getElementById('limitedInput');
+input.addEventListener('update:modelValue', (e) => {
+  checkLength(e.detail);
+});
+
 function checkLength(value) {
   const count = value.length;
   const max = 50;
@@ -560,11 +591,15 @@ document.addEventListener('DOMContentLoaded', function() {
   type="tel"
   placeholder="XXX-XXX-XXXX"
   maxlength="12"
-  @update:modelValue="formatPhone"
 />
 
 <script>
 let rawValue = '';
+const phoneInput = document.getElementById('phoneInput');
+
+phoneInput.addEventListener('update:modelValue', (e) => {
+  formatPhone(e.detail);
+});
 
 function formatPhone(value) {
   // Remover caracteres no numéricos
@@ -580,10 +615,9 @@ function formatPhone(value) {
     formatted += numbers[i];
   }
   
-  const input = document.getElementById('phoneInput');
   // Evitar bucle infinito
   if (value !== formatted) {
-    setTimeout(() => input.set(formatted), 0);
+    setTimeout(() => phoneInput.set(formatted), 0);
   }
 }
 </script>

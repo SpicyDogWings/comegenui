@@ -65,9 +65,9 @@ let message = "Hola Mundo";
 </script>
 ```
 
-Uso manual con update:modelValue:
+Uso manual con update:modelValue (en Vue SFC):
 
-```html
+```vue
 <cu-textarea 
   :modelValue="message" 
   @update:modelValue="message = $event"
@@ -77,6 +77,20 @@ Uso manual con update:modelValue:
 
 <script>
 let message = "";
+</script>
+```
+
+En HTML plano, usa el método `get()` y eventos nativos:
+
+```html
+<cu-textarea id="myTextarea" placeholder="Escribe aquí" rows="4" />
+
+<script>
+const textarea = document.getElementById('myTextarea');
+textarea.addEventListener('input', (e) => {
+  const value = textarea.get();
+  console.log('Valor:', value);
+});
 </script>
 ```
 
@@ -267,9 +281,9 @@ function focusTextarea() {
 
 ### Evento: `update:modelValue`
 
-Manejar cambios en el valor:
+Manejar cambios en el valor (en Vue SFC):
 
-```html
+```vue
 <cu-textarea 
   placeholder="Escribe aquí"
   rows="4"
@@ -281,6 +295,19 @@ function handleChange(newValue) {
   console.log('Nuevo valor:', newValue);
   // Validar, guardar, etc.
 }
+</script>
+```
+
+En HTML plano, usa el evento nativo `input`:
+
+```html
+<cu-textarea id="myTextarea" placeholder="Escribe aquí" rows="4" />
+
+<script>
+const textarea = document.getElementById('myTextarea');
+textarea.addEventListener('update:modelValue', (e) => {
+  console.log('Nuevo valor:', e.detail);
+});
 </script>
 ```
 
@@ -467,11 +494,15 @@ function submitForm() {
   id="limitedTextarea"
   placeholder="Escribe aquí (máx 200 caracteres)"
   rows="4"
-  @update:modelValue="checkLength"
 />
 <p id="charCount" class="text-sm text-charcoal-500 mt-1">0/200 caracteres</p>
 
 <script>
+const textarea = document.getElementById('limitedTextarea');
+textarea.addEventListener('update:modelValue', (e) => {
+  checkLength(e.detail);
+});
+
 function checkLength(value) {
   const count = value.length;
   const max = 200;
