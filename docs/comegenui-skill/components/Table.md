@@ -141,14 +141,8 @@ Cada columna es un objeto con las siguientes propiedades:
 | `cell` | Function | Función personalizada para renderizar el contenido de la celda |
 | `badges` | Function | Función que devuelve un array de [BadgeConfig](#badgeconfig) para mostrar badges |
 | `buttons` | Function | Función que devuelve un array de [ButtonConfig](#buttonconfig) para mostrar botones |
-<<<<<<< HEAD
-| `editable` | Boolean/RegExp/Function | Permite editar la celda. Si es RegExp, valida el valor. Si es Function, recibe el valor y debe devolver `true` para aceptar o `false` para rechazar |
-||||||| f9f5597
-| `editable` | Boolean/RegExp | Permite editar la celda. Si es RegExp, valida el valor |
-=======
-| `editable` | Boolean/RegExp | Permite editar la celda. Si es RegExp, valida el valor |
-| `validator` | Function | Función de validación personalizada: `(value: string, row: object) => boolean`. Si devuelve `false`, la edición se cancela |
->>>>>>> components/table
+| `editable` | Boolean/RegExp | Permite editar la celda. Si es RegExp, valida el formato del valor |
+| `validator` | Function | `(value: string, row: object) => boolean` - Validación personalizada con acceso al row completo |
 | `inputType` | String | Tipo de input para edición (`'input'` o `'textarea'`) |
 | `singleClick` | Boolean | `false` | Habilitar edición con un solo clic (por defecto es doble clic) |
 
@@ -470,90 +464,112 @@ const columns = [
 ];
 ```
 
-<<<<<<< HEAD
-### Ejemplo 5: Validación con función callback
+### Validación con `validator`
 
-Puedes pasar una función que reciba el valor editado y devuelva `true` para aceptar o `false` para rechazar:
-
-```javascript
-const columns = [
-  {
-    key: 'email',
-    label: 'Correo Electrónico',
-    editable: (value) => {
-      // Validación personalizada
-      return value.includes('@') && value.includes('.');
-    }
-  },
-  {
-    key: 'age',
-    label: 'Edad',
-    editable: (value) => {
-      const age = parseInt(value);
-      return !isNaN(age) && age >= 18 && age <= 120;
-    }
-  }
-];
-```
-
-> **Nota:** La función callback recibe el valor editado (string) y debe devolver un booleano. Si devuelve `false`, la edición se cancela y el valor no se guarda.
-||||||| f9f5597
-=======
-### Ejemplo 5: Validación personalizada con `validator`
-
-Usa `validator` para validar el valor de la celda basado en el contexto completo de la fila:
+La propiedad `validator` permite validación personalizada basada en el valor ingresado y el contexto completo de la fila. A diferencia de `editable: RegExp` que solo valida formato, `validator` recibe el valor Y la fila completa.
 
 ```javascript
 const columns = [
-  {
-    key: 'name',
-    label: 'Producto',
-    editable: true
-  },
-  {
-    key: 'stock',
-    label: 'Stock',
-    editable: true
-  },
   {
     key: 'count',
     label: 'Cantidad',
     editable: true,
     validator: (value, row) => {
       const num = parseInt(value, 10);
-      // Validar que count es un número válido y no excede el stock
       return !isNaN(num) && num >= 0 && num <= row.stock;
     }
   }
 ];
 ```
 
-La función `validator` recibe dos parámetros:
-- `value`: El nuevo valor ingresado (siempre es string)
+**Firma:** `(value: string, row: Record<string, any>) => boolean`
+
+- `value`: El valor ingresado por el usuario (siempre es string)
 - `row`: El objeto completo de la fila siendo editada
+- **Retorna `true`** para aceptar el valor, **`false`** para cancelar la edición
 
-Si la función devuelve `false`, la edición se cancela y el valor no se guarda.
+> **⚠️ Orden de validación:** Si `editable` es un RegExp, primero se valida con ese RegExp, luego con `validator`. Si cualquiera falla, la edición se cancela.
 
-### Ejemplo 6: Validación con expresiones regulares Y validator
+---
 
-Puedes combinar `editable` con RegExp para validación de formato y `validator` para validación lógica:
+## 📌 Observaciones Importantes
+
+### Sobre `cell` y valores por defecto
+
+La función `cell` **solo afecta el renderizado**, no el valor real del dato. Esto tiene implicaciones:
+
+❌ **Problema:** Si usas `cell: () => 0` (valor estático), la celda siempre mostrará `0` aunque el dato haya cambiado al editar.
+
+✅ **Solución:** Usa una función **dinámica** que lea el valor actual:
 
 ```javascript
 const columns = [
   {
-    key: 'email',
-    label: 'Correo',
-    editable: /^[^@]+@[^@]+\.[^@]+$/,  // Validar formato de email
-    validator: (value, row) => {
-      // Validar que el dominio coincide con el de la empresa
-      return value.endsWith('@empresa.com');
-    }
+    key: 'count',
+    label: 'Cantidad',
+    editable: true,
+    cell: (row) => row.count ?? 0  // ✅ Lee el valor actual o usa 0
   }
 ];
 ```
 
-> **Nota:** El orden de validación es: primero se valida el RegExp (si `editable` es un RegExp), luego se ejecuta el `validator`. Si cualquiera falla, la edición se cancela.
->>>>>>> components/table
+### Sobre edición de campos no existentes
+
+Cuando un campo **no existe en los datos iniciales** pero la columna es editable:
+
+- **Valor inicial:** El input mostrará vacío (`""`) en lugar de `"undefined"`
+- **Al guardar:** El campo se añadirá al objeto con el valor editado
+
+Ejemplo con campo dinámico:
+
+```javascript
+const columns = [
+  {
+    key: 'notes',      // ✅ Este campo no existe en los datos iniciales
+    label: 'Notas',
+    editable: true,
+    cell: (row) => row.notes ?? ''  // Muestra vacío si no existe
+  }
+];
+
+// Datos iniciales: [{ id: 1, name: 'Producto' }]
+// Tras editar 'notes': [{ id: 1, name: 'Producto', notes: 'Mi nota' }]
+```
+
+### Ejemplo completo: Campo dinámico con `cell` + `validator`
+
+```javascript
+const table = document.getElementById('order-table');
+
+table.data = [
+  { id: 1, name: 'Apple', stock: 100 },
+  { id: 2, name: 'Banana', stock: 50 }
+];
+
+table.columns = [
+  { key: 'name', label: 'Producto' },
+  { key: 'stock', label: 'Stock' },
+  {
+    key: 'quantity',
+    label: 'Cantidad',
+    editable: true,
+    // cell dinámica: muestra el valor actual o 0 si no existe
+    cell: (row) => row.quantity ?? 0,
+    // validator: no permite exceder el stock
+    validator: (value, row) => {
+      const num = parseInt(value, 10);
+      return !isNaN(num) && num >= 0 && num <= row.stock;
+    }
+  }
+];
+
+// Al editar quantity de Apple a 50:
+// - cell muestra 50 (no 0, porque lee row.quantity)
+// - validator valida que 50 <= 100 (stock) ✅
+// El objeto resulta: { id: 1, name: 'Apple', stock: 100, quantity: 50 }
+```
+
+---
 
 ## Búsqueda
 
