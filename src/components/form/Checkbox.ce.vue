@@ -40,25 +40,11 @@ const props = defineProps({
 const emit = defineEmits(["update:modelValue", "change"]);
 const checked = ref(props.modelValue || props.checked);
 
-const checkboxClasses = computed(() => [
-  "flex",
-  "items-center",
-  "gap-2",
-  "cursor-pointer",
-  {
-    "cursor-not-allowed opacity-70": props.disabled,
-  },
-]);
-
+const checkboxClasses = computed(() => ({
+  "cursor-not-allowed opacity-70": props.disabled,
+}));
 const boxClasses = computed(() => [
-  "w-5",
-  "h-5",
-  "rounded-cu",
-  "flex",
-  "items-center",
-  "justify-center",
-  "transition-all",
-  "duration-200",
+  // Color & variant classes (conditional)
   // === PRIMARY - outlined ===
   {
     "border-2 border-solid border-primary-500 bg-transparent":
@@ -278,7 +264,7 @@ defineExpose({
 </script>
 
 <template>
-  <label :class="checkboxClasses">
+  <label class="flex items-center gap-2 cursor-pointer" :class="checkboxClasses">
     <input
       type="checkbox"
       :checked="checked"
@@ -286,7 +272,7 @@ defineExpose({
       :disabled="props.disabled"
       class="absolute opacity-0 w-0 h-0"
     />
-    <div class="relative" :class="boxClasses">
+    <div class="relative w-3.5 h-3.5 rounded-cu flex items-center justify-center transition-all duration-200" :class="boxClasses">
       <svg
         v-if="checked"
         xmlns="http://www.w3.org/2000/svg"
