@@ -2,8 +2,8 @@
 import { computed, ref, reactive, watch, nextTick } from "vue";
 import Badge from "./Badge.ce.vue";
 import Button from "./Button.ce.vue";
-import Input from "./Input.ce.vue";
-import Textarea from "./Textarea.ce.vue";
+import Input from "./form/Input.ce.vue";
+import Textarea from "./form/Textarea.ce.vue";
 import Pagination from "./Pagination.ce.vue";
 
 interface BadgeConfig {
