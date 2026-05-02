@@ -40,7 +40,6 @@ const internalShow = ref(props.show);
 watch(() => props.show, (val) => {
   internalShow.value = val;
 });
-
 watch(internalShow, (val) => {
   emit("update:show", val);
 });
@@ -49,67 +48,77 @@ function open() {
   internalShow.value = true;
   emit("open");
 }
-
 function close() {
   internalShow.value = false;
   emit("close");
 }
-
 function toggle() {
   internalShow.value = !internalShow.value;
   emit(internalShow.value ? "open" : "close");
 }
 
 const alertColorClasses = computed(() => [
+  /* Regla general para outlined */
+  {
+    "bg-transparent border-solid border-2": props.variant === "outlined",
+  },
+  /* Regla general para ghost */
+  {
+    "bg-transparent": props.variant === "ghost",
+  },
+  /* Regla general para subtle */
+  {
+    "bg-opacity-10 border-solid border-1": props.variant === "subtle",
+  },
   /* Primary */
   {
     "bg-primary text-primary-50": props.color === "primary" && props.variant === "solid",
     "bg-primary bg-opacity-10 text-primary": props.color === "primary" && props.variant === "soft",
-    "bg-primary bg-opacity-10 text-primary border-solid border-1 border-primary-300":
+    "bg-primary text-primary border-primary-300":
       props.color === "primary" && props.variant === "subtle",
-    "bg-transparent border-solid border-2 border-primary text-primary":
+    "border-primary text-primary":
       props.color === "primary" && props.variant === "outlined",
-    "bg-transparent text-primary": props.color === "primary" && props.variant === "ghost",
+    "text-primary": props.color === "primary" && props.variant === "ghost",
   },
   /* Neutral */
   {
     "bg-charcoal text-charcoal-50": props.color === "neutral" && props.variant === "solid",
     "bg-charcoal bg-opacity-10 text-charcoal-800": props.color === "neutral" && props.variant === "soft",
-    "bg-charcoal bg-opacity-10 text-charcoal-800 border-solid border-1 border-charcoal-300":
+    "bg-charcoal text-charcoal-800 border-charcoal-300":
       props.color === "neutral" && props.variant === "subtle",
-    "bg-transparent border-solid border-2 border-charcoal-800 text-charcoal-800":
+    "border-charcoal-800 text-charcoal-800":
       props.color === "neutral" && props.variant === "outlined",
-    "bg-transparent text-charcoal-800": props.color === "neutral" && props.variant === "ghost",
+    "text-charcoal-800": props.color === "neutral" && props.variant === "ghost",
   },
   /* Success */
   {
     "bg-success text-success-50": props.color === "success" && props.variant === "solid",
     "bg-success bg-opacity-10 text-success-600": props.color === "success" && props.variant === "soft",
-    "bg-success bg-opacity-10 text-success-600 border-solid border-1 border-success-300":
+    "bg-success text-success-600 border-success-300":
       props.color === "success" && props.variant === "subtle",
-    "bg-transparent border-solid border-2 border-success text-success":
+    "border-success text-success":
       props.color === "success" && props.variant === "outlined",
-    "bg-transparent text-success-600": props.color === "success" && props.variant === "ghost",
+    "text-success-600": props.color === "success" && props.variant === "ghost",
   },
   /* Warning */
   {
     "bg-warning text-warning-50": props.color === "warning" && props.variant === "solid",
     "bg-warning bg-opacity-10 text-warning-500": props.color === "warning" && props.variant === "soft",
-    "bg-warning bg-opacity-10 text-warning-500 border-solid border-1 border-warning-300":
+    "bg-warning text-warning-500 border-warning-300":
       props.color === "warning" && props.variant === "subtle",
-    "bg-transparent border-solid border-2 border-warning text-warning":
+    "border-warning text-warning":
       props.color === "warning" && props.variant === "outlined",
-    "bg-transparent text-warning-500": props.color === "warning" && props.variant === "ghost",
+    "text-warning-500": props.color === "warning" && props.variant === "ghost",
   },
   /* Danger */
   {
     "bg-danger text-danger-50": props.color === "danger" && props.variant === "solid",
     "bg-danger bg-opacity-10 text-danger": props.color === "danger" && props.variant === "soft",
-    "bg-danger bg-opacity-10 text-danger border-solid border-1 border-danger-300":
+    "bg-danger text-danger border-danger-300":
       props.color === "danger" && props.variant === "subtle",
-    "bg-transparent border-solid border-2 border-danger text-danger":
+    "border-danger text-danger":
       props.color === "danger" && props.variant === "outlined",
-    "bg-transparent text-danger": props.color === "danger" && props.variant === "ghost",
+    "text-danger": props.color === "danger" && props.variant === "ghost",
   },
 ]);
 
