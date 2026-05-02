@@ -3,10 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Button & Alert Demo</title>
+    <title>Input Demo</title>
     <script src="dist/vendor/vue-runtime.iife.js"></script>
-    <script src="dist/CuButton.umd.js"></script>
-    <script src="dist/CuAlert.umd.js"></script>
+    <script src="dist/CuInput.umd.js"></script>
     <style>
       :root {
         --bg-primary: oklch(0.634 0.133 238.39);
@@ -15,7 +14,7 @@
         --bg-warning: oklch(0.774 0.158 78.6);
         --bg-danger: oklch(0.554 0.209 24.77);
       }
-
+      
       body {
         font-family: Arial, sans-serif;
         padding: 20px;
@@ -24,25 +23,25 @@
         background: #f8f9fa;
         color: #2c3e50;
       }
-
+      
       h1 {
         text-align: center;
         color: #2c3e50;
         margin-bottom: 30px;
       }
-
+      
       h2 {
         color: #2c3e50;
         margin-top: 30px;
         padding-bottom: 10px;
         border-bottom: 2px solid #e2e8f0;
       }
-
+      
       h3 {
         color: #4a5568;
         margin-top: 20px;
       }
-
+      
       .section {
         background: white;
         padding: 25px;
@@ -50,18 +49,18 @@
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
       }
-
+      
       .demo-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
         gap: 15px;
         margin: 15px 0;
       }
-
-      .demo-grid button, .demo-grid cu-alert {
+      
+      .demo-grid cu-input {
         width: 100%;
       }
-
+      
       .code {
         background: #e2e8f0;
         padding: 2px 6px;
@@ -72,114 +71,51 @@
     </style>
   </head>
   <body>
-    <h1>Button & Alert Demo</h1>
-
+    <h1>Input Demo</h1>
+    
     <div class="section">
-      <h2>🔘 Button</h2>
-      <p>Variantes: <span class="code">solid</span>, <span class="code">outlined</span>, <span class="code">soft</span>, <span class="code">ghost</span>, <span class="code">subtle</span>, <span class="code">link</span></p>
-
-      <h3>Solid</h3>
-      <div class="demo-grid">
-        <cu-button color="primary" variant="solid">Primary</cu-button>
-        <cu-button color="neutral" variant="solid">Neutral</cu-button>
-        <cu-button color="success" variant="solid">Success</cu-button>
-        <cu-button color="warning" variant="solid">Warning</cu-button>
-        <cu-button color="danger" variant="solid">Danger</cu-button>
-      </div>
-
+      <h2>⌨️ Input</h2>
+      <p>Variantes: <span class="code">outlined</span>, <span class="code">soft</span>, <span class="code">ghost</span>, <span class="code">subtle</span>, <span class="code">none</span></p>
+      
       <h3>Outlined</h3>
       <div class="demo-grid">
-        <cu-button color="primary" variant="outlined">Primary</cu-button>
-        <cu-button color="neutral" variant="outlined">Neutral</cu-button>
-        <cu-button color="success" variant="outlined">Success</cu-button>
-        <cu-button color="warning" variant="outlined">Warning</cu-button>
-        <cu-button color="danger" variant="outlined">Danger</cu-button>
+        <cu-input color="primary" variant="outlined" placeholder="Primary"></cu-input>
+        <cu-input color="neutral" variant="outlined" placeholder="Neutral"></cu-input>
+        <cu-input color="success" variant="outlined" placeholder="Success"></cu-input>
+        <cu-input color="warning" variant="outlined" placeholder="Warning"></cu-input>
+        <cu-input color="danger" variant="outlined" placeholder="Danger"></cu-input>
       </div>
 
       <h3>Soft</h3>
       <div class="demo-grid">
-        <cu-button color="primary" variant="soft">Primary</cu-button>
-        <cu-button color="neutral" variant="soft">Neutral</cu-button>
-        <cu-button color="success" variant="soft">Success</cu-button>
-        <cu-button color="warning" variant="soft">Warning</cu-button>
-        <cu-button color="danger" variant="soft">Danger</cu-button>
+        <cu-input color="primary" variant="soft" placeholder="Primary"></cu-input>
+        <cu-input color="neutral" variant="soft" placeholder="Neutral"></cu-input>
+        <cu-input color="success" variant="soft" placeholder="Success"></cu-input>
+        <cu-input color="warning" variant="soft" placeholder="Warning"></cu-input>
+        <cu-input color="danger" variant="soft" placeholder="Danger"></cu-input>
       </div>
 
       <h3>Ghost</h3>
       <div class="demo-grid">
-        <cu-button color="primary" variant="ghost">Primary</cu-button>
-        <cu-button color="neutral" variant="ghost">Neutral</cu-button>
-        <cu-button color="success" variant="ghost">Success</cu-button>
-        <cu-button color="warning" variant="ghost">Warning</cu-button>
-        <cu-button color="danger" variant="ghost">Danger</cu-button>
+        <cu-input color="primary" variant="ghost" placeholder="Primary"></cu-input>
+        <cu-input color="neutral" variant="ghost" placeholder="Neutral"></cu-input>
+        <cu-input color="success" variant="ghost" placeholder="Success"></cu-input>
+        <cu-input color="warning" variant="ghost" placeholder="Warning"></cu-input>
+        <cu-input color="danger" variant="ghost" placeholder="Danger"></cu-input>
       </div>
 
       <h3>Subtle</h3>
       <div class="demo-grid">
-        <cu-button color="primary" variant="subtle">Primary</cu-button>
-        <cu-button color="neutral" variant="subtle">Neutral</cu-button>
-        <cu-button color="success" variant="subtle">Success</cu-button>
-        <cu-button color="warning" variant="subtle">Warning</cu-button>
-        <cu-button color="danger" variant="subtle">Danger</cu-button>
+        <cu-input color="primary" variant="subtle" placeholder="Primary"></cu-input>
+        <cu-input color="neutral" variant="subtle" placeholder="Neutral"></cu-input>
+        <cu-input color="success" variant="subtle" placeholder="Success"></cu-input>
+        <cu-input color="warning" variant="subtle" placeholder="Warning"></cu-input>
+        <cu-input color="danger" variant="subtle" placeholder="Danger"></cu-input>
       </div>
 
-      <h3>Link</h3>
+      <h3>None</h3>
       <div class="demo-grid">
-        <cu-button color="primary" variant="link">Primary</cu-button>
-        <cu-button color="neutral" variant="link">Neutral</cu-button>
-        <cu-button color="success" variant="link">Success</cu-button>
-        <cu-button color="warning" variant="link">Warning</cu-button>
-        <cu-button color="danger" variant="link">Danger</cu-button>
-      </div>
-    </div>
-
-    <div class="section">
-      <h2>🔔 Alert</h2>
-      <p>Variantes: <span class="code">solid</span>, <span class="code">outlined</span>, <span class="code">soft</span>, <span class="code">ghost</span>, <span class="code">subtle</span></p>
-
-      <h3>Solid</h3>
-      <div class="demo-grid">
-        <cu-alert color="primary" variant="solid" title="Primary">Alert text</cu-alert>
-        <cu-alert color="neutral" variant="solid" title="Neutral">Alert text</cu-alert>
-        <cu-alert color="success" variant="solid" title="Success">Alert text</cu-alert>
-        <cu-alert color="warning" variant="solid" title="Warning">Alert text</cu-alert>
-        <cu-alert color="danger" variant="solid" title="Danger">Alert text</cu-alert>
-      </div>
-
-      <h3>Outlined</h3>
-      <div class="demo-grid">
-        <cu-alert color="primary" variant="outlined" title="Primary">Alert text</cu-alert>
-        <cu-alert color="neutral" variant="outlined" title="Neutral">Alert text</cu-alert>
-        <cu-alert color="success" variant="outlined" title="Success">Alert text</cu-alert>
-        <cu-alert color="warning" variant="outlined" title="Warning">Alert text</cu-alert>
-        <cu-alert color="danger" variant="outlined" title="Danger">Alert text</cu-alert>
-      </div>
-
-      <h3>Soft</h3>
-      <div class="demo-grid">
-        <cu-alert color="primary" variant="soft" title="Primary">Alert text</cu-alert>
-        <cu-alert color="neutral" variant="soft" title="Neutral">Alert text</cu-alert>
-        <cu-alert color="success" variant="soft" title="Success">Alert text</cu-alert>
-        <cu-alert color="warning" variant="soft" title="Warning">Alert text</cu-alert>
-        <cu-alert color="danger" variant="soft" title="Danger">Alert text</cu-alert>
-      </div>
-
-      <h3>Ghost</h3>
-      <div class="demo-grid">
-        <cu-alert color="primary" variant="ghost" title="Primary">Alert text</cu-alert>
-        <cu-alert color="neutral" variant="ghost" title="Neutral">Alert text</cu-alert>
-        <cu-alert color="success" variant="ghost" title="Success">Alert text</cu-alert>
-        <cu-alert color="warning" variant="ghost" title="Warning">Alert text</cu-alert>
-        <cu-alert color="danger" variant="ghost" title="Danger">Alert text</cu-alert>
-      </div>
-
-      <h3>Subtle</h3>
-      <div class="demo-grid">
-        <cu-alert color="primary" variant="subtle" title="Primary">Alert text</cu-alert>
-        <cu-alert color="neutral" variant="subtle" title="Neutral">Alert text</cu-alert>
-        <cu-alert color="success" variant="subtle" title="Success">Alert text</cu-alert>
-        <cu-alert color="warning" variant="subtle" title="Warning">Alert text</cu-alert>
-        <cu-alert color="danger" variant="subtle" title="Danger">Alert text</cu-alert>
+        <cu-input variant="none" placeholder="None"></cu-input>
       </div>
     </div>
   </body>
