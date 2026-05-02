@@ -1,0 +1,285 @@
+<script setup lang="ts">
+import { computed, ref, watch } from "vue";
+
+const props = defineProps({
+  modelValue: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
+  checked: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
+  color: {
+    type: String,
+    required: false,
+    default: "primary",
+    validator: (value: string) =>
+      ["primary", "neutral", "success", "warning", "danger"].includes(value),
+  },
+  variant: {
+    type: String,
+    required: false,
+    default: "outlined",
+    validator: (value: string) =>
+      ["outlined", "soft", "ghost", "subtle", "none"].includes(value),
+  },
+  disabled: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
+  label: {
+    type: String,
+    required: false,
+  },
+});
+
+const emit = defineEmits(["update:modelValue", "change"]);
+const checked = ref(props.modelValue || props.checked);
+
+const checkboxClasses = computed(() => [
+  "flex",
+  "items-center",
+  "gap-2",
+  "cursor-pointer",
+  {
+    "cursor-not-allowed opacity-70": props.disabled,
+  },
+]);
+
+const boxClasses = computed(() => [
+  "w-5",
+  "h-5",
+  "rounded-cu",
+  "flex",
+  "items-center",
+  "justify-center",
+  "transition-all",
+  "duration-200",
+  // === PRIMARY - outlined ===
+  {
+    "border-2 border-primary bg-transparent":
+      props.color === "primary" && props.variant === "outlined" && !checked.value,
+  },
+  {
+    "border-2 border-primary bg-primary":
+      props.color === "primary" && props.variant === "outlined" && checked.value,
+  },
+  // === PRIMARY - soft ===
+  {
+    "border-2 border-primary bg-primary bg-opacity-10":
+      props.color === "primary" && props.variant === "soft" && !checked.value,
+  },
+  {
+    "border-2 border-primary bg-primary":
+      props.color === "primary" && props.variant === "soft" && checked.value,
+  },
+  // === PRIMARY - subtle ===
+  {
+    "border-2 border-solid border-1 border-primary-300 bg-primary bg-opacity-10":
+      props.color === "primary" && props.variant === "subtle" && !checked.value,
+  },
+  {
+    "border-2 border-solid border-1 border-primary-300 bg-primary":
+      props.color === "primary" && props.variant === "subtle" && checked.value,
+  },
+  // === PRIMARY - ghost ===
+  {
+    "border-2 border-transparent bg-transparent hover:bg-primary hover:bg-opacity-10":
+      props.color === "primary" && props.variant === "ghost" && !checked.value,
+  },
+  {
+    "border-2 border-transparent bg-primary":
+      props.color === "primary" && props.variant === "ghost" && checked.value,
+  },
+  // === NEUTRAL - outlined ===
+  {
+    "border-2 border-charcoal-800 bg-transparent":
+      props.color === "neutral" && props.variant === "outlined" && !checked.value,
+  },
+  {
+    "border-2 border-charcoal-800 bg-charcoal-800":
+      props.color === "neutral" && props.variant === "outlined" && checked.value,
+  },
+  // === NEUTRAL - soft ===
+  {
+    "border-2 border-charcoal-800 bg-charcoal bg-opacity-10":
+      props.color === "neutral" && props.variant === "soft" && !checked.value,
+  },
+  {
+    "border-2 border-charcoal-800 bg-charcoal-800":
+      props.color === "neutral" && props.variant === "soft" && checked.value,
+  },
+  // === NEUTRAL - subtle ===
+  {
+    "border-2 border-solid border-1 border-charcoal-300 bg-charcoal bg-opacity-10":
+      props.color === "neutral" && props.variant === "subtle" && !checked.value,
+  },
+  {
+    "border-2 border-solid border-1 border-charcoal-300 bg-charcoal-800":
+      props.color === "neutral" && props.variant === "subtle" && checked.value,
+  },
+  // === NEUTRAL - ghost ===
+  {
+    "border-2 border-transparent hover:bg-charcoal hover:bg-opacity-10":
+      props.color === "neutral" && props.variant === "ghost" && !checked.value,
+  },
+  {
+    "border-2 border-transparent bg-charcoal-800":
+      props.color === "neutral" && props.variant === "ghost" && checked.value,
+  },
+  // === SUCCESS - outlined ===
+  {
+    "border-2 border-success bg-transparent":
+      props.color === "success" && props.variant === "outlined" && !checked.value,
+  },
+  {
+    "border-2 border-success bg-success":
+      props.color === "success" && props.variant === "outlined" && checked.value,
+  },
+  // === SUCCESS - soft ===
+  {
+    "border-2 border-success bg-success bg-opacity-10":
+      props.color === "success" && props.variant === "soft" && !checked.value,
+  },
+  {
+    "border-2 border-success bg-success":
+      props.color === "success" && props.variant === "soft" && checked.value,
+  },
+  // === SUCCESS - subtle ===
+  {
+    "border-2 border-solid border-1 border-success-300 bg-success bg-opacity-10":
+      props.color === "success" && props.variant === "subtle" && !checked.value,
+  },
+  {
+    "border-2 border-solid border-1 border-success-300 bg-success":
+      props.color === "success" && props.variant === "subtle" && checked.value,
+  },
+  // === SUCCESS - ghost ===
+  {
+    "border-2 border-transparent hover:bg-success hover:bg-opacity-10":
+      props.color === "success" && props.variant === "ghost" && !checked.value,
+  },
+  {
+    "border-2 border-transparent bg-success":
+      props.color === "success" && props.variant === "ghost" && checked.value,
+  },
+  // === WARNING - outlined ===
+  {
+    "border-2 border-warning bg-transparent":
+      props.color === "warning" && props.variant === "outlined" && !checked.value,
+  },
+  {
+    "border-2 border-warning bg-warning":
+      props.color === "warning" && props.variant === "outlined" && checked.value,
+  },
+  // === DANGER - outlined ===
+  {
+    "border-2 border-danger bg-transparent":
+      props.color === "danger" && props.variant === "outlined" && !checked.value,
+  },
+  {
+    "border-2 border-danger bg-danger":
+      props.color === "danger" && props.variant === "outlined" && checked.value,
+  },
+  // === DANGER - soft ===
+  {
+    "border-2 border-danger bg-danger bg-opacity-10":
+      props.color === "danger" && props.variant === "soft" && !checked.value,
+  },
+  {
+    "border-2 border-danger bg-danger":
+      props.color === "danger" && props.variant === "soft" && checked.value,
+  },
+  // === DANGER - subtle ===
+  {
+    "border-2 border-solid border-1 border-danger-300 bg-danger bg-opacity-10":
+      props.color === "danger" && props.variant === "subtle" && !checked.value,
+  },
+  {
+    "border-2 border-solid border-1 border-danger-300 bg-danger":
+      props.color === "danger" && props.variant === "subtle" && checked.value,
+  },
+  // === DANGER - ghost ===
+  {
+    "border-2 border-transparent bg-transparent hover:bg-danger hover:bg-opacity-10":
+      props.color === "danger" && props.variant === "ghost" && !checked.value,
+  },
+  {
+    "border-2 border-transparent bg-danger":
+      props.color === "danger" && props.variant === "ghost" && checked.value,
+  },
+]);
+
+const handleClick = () => {
+  if (props.disabled) return;
+  checked.value = !checked.value;
+  emit("update:modelValue", checked.value);
+  emit("change", { target: { checked: checked.value } });
+};
+
+watch(
+  () => props.modelValue,
+  (val) => {
+    checked.value = val;
+  },
+);
+
+watch(
+  () => props.checked,
+  (val) => {
+    checked.value = val;
+  },
+);
+
+defineExpose({
+  get: () => checked.value,
+  set: (value: boolean) => {
+    checked.value = value;
+    emit("update:modelValue", value);
+    emit("change", { target: { checked: value } });
+  },
+  reset: () => {
+    checked.value = false;
+    emit("update:modelValue", false);
+    emit("change", { target: { checked: false } });
+  },
+});
+</script>
+
+<template>
+  <label :class="checkboxClasses">
+    <input
+      type="checkbox"
+      :checked="checked"
+      @change="(e) => { checked = (e.target as HTMLInputElement).checked; emit('update:modelValue', checked); emit('change', e); }"
+      :disabled="props.disabled"
+      class="absolute opacity-0 w-0 h-0"
+    />
+    <div class="relative" :class="boxClasses">
+      <svg
+        v-if="checked"
+        xmlns="http://www.w3.org/2000/svg"
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="3"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="text-white"
+      >
+        <path d="M20 6L9 17l-5-5" />
+      </svg>
+    </div>
+    <span v-if="props.label" class="text-sm text-charcoal-800">{{ props.label }}</span>
+  </label>
+</template>
+
+<style>
+@unocss-placeholder;
+</style>
