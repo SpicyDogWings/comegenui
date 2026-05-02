@@ -351,13 +351,14 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
             :key="rowIndex"
             class="hover:bg-charcoal-50 transition-colors border-charcoal-100 border-b-1 border-b-solid last:border-b-0"
           >
-            <td v-for="col in tableColumns" :key="col.key" class="p-3 font-sans text-charcoal-800">
-              <div
-                v-if="col.editable"
-                class="cursor-pointer"
-                @click="col.singleClick ? startEditing(row, col) : undefined"
-                @dblclick="!col.singleClick ? startEditing(row, col) : undefined"
-              >
+            <td
+              v-for="col in tableColumns" 
+              :key="col.key" 
+              class="p-3 font-sans text-charcoal-800"
+              @click="col.editable && col.singleClick ? startEditing(row, col) : undefined"
+              @dblclick="col.editable && !col.singleClick ? startEditing(row, col) : undefined"
+            >
+              <div v-if="col.editable" class="cursor-pointer">
                 <template v-if="editingCell?.row === row && editingCell?.colKey === col.key">
                   <component
                     :is="col.inputType === 'textarea' ? Textarea : Input"
