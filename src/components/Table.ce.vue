@@ -349,7 +349,7 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
           <tr
             v-for="(row, rowIndex) in displayData"
             :key="rowIndex"
-            class="hover:bg-charcoal-50 transition-colors border-charcoal-100 border-b-1 border-b-solid last:border-b-0"
+            class="hover:bg-charcoal hover:bg-opacity-10 transition-colors border-charcoal-100 border-b-1 border-b-solid last:border-b-0"
           >
             <td
               v-for="col in tableColumns" 

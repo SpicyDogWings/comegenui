@@ -453,7 +453,7 @@ Contenido principal del modal:
   <div class="space-y-4">
     <p>Este es el contenido principal del modal.</p>
     <p>Puedes poner cualquier HTML aquí.</p>
-    <div class="bg-primary-50 p-4 rounded">
+    <div class="bg-primary bg-opacity-10 p-4 rounded">
       <p>Incluso componentes anidados.</p>
     </div>
   </div>
