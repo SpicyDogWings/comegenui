@@ -42,6 +42,7 @@ async function runBuilds() {
             globals: {
               vue: "Vue",
             },
+            manualChunks: undefined,
           },
         },
       },
