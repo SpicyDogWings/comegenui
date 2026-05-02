@@ -141,7 +141,7 @@ Cada columna es un objeto con las siguientes propiedades:
 | `cell` | Function | Función personalizada para renderizar el contenido de la celda |
 | `badges` | Function | Función que devuelve un array de [BadgeConfig](#badgeconfig) para mostrar badges |
 | `buttons` | Function | Función que devuelve un array de [ButtonConfig](#buttonconfig) para mostrar botones |
-| `editable` | Boolean/RegExp | Permite editar la celda. Si es RegExp, valida el valor |
+| `editable` | Boolean/RegExp/Function | Permite editar la celda. Si es RegExp, valida el valor. Si es Function, recibe el valor y debe devolver `true` para aceptar o `false` para rechazar |
 | `inputType` | String | Tipo de input para edición (`'input'` o `'textarea'`) |
 | `singleClick` | Boolean | `false` | Habilitar edición con un solo clic (por defecto es doble clic) |
 
@@ -462,6 +462,33 @@ const columns = [
   }
 ];
 ```
+
+### Ejemplo 5: Validación con función callback
+
+Puedes pasar una función que reciba el valor editado y devuelva `true` para aceptar o `false` para rechazar:
+
+```javascript
+const columns = [
+  {
+    key: 'email',
+    label: 'Correo Electrónico',
+    editable: (value) => {
+      // Validación personalizada
+      return value.includes('@') && value.includes('.');
+    }
+  },
+  {
+    key: 'age',
+    label: 'Edad',
+    editable: (value) => {
+      const age = parseInt(value);
+      return !isNaN(age) && age >= 18 && age <= 120;
+    }
+  }
+];
+```
+
+> **Nota:** La función callback recibe el valor editado (string) y debe devolver un booleano. Si devuelve `false`, la edición se cancela y el valor no se guarda.
 
 ## Búsqueda
 
