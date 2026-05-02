@@ -3,9 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Badge Demo</title>
+    <title>Checkbox Demo</title>
     <script src="dist/vendor/vue-runtime.iife.js"></script>
-    <script src="dist/CuBadge.umd.js"></script>
+    <script src="dist/CuCheckbox.umd.js"></script>
     <style>
       :root {
         --bg-primary: oklch(0.634 0.133 238.39);
@@ -57,9 +57,8 @@
         margin: 15px 0;
       }
       
-      .demo-grid cu-badge {
+      .demo-grid cu-checkbox {
         width: 100%;
-        justify-content: center;
       }
       
       .code {
@@ -72,55 +71,60 @@
     </style>
   </head>
   <body>
-    <h1>Badge Demo</h1>
+    <h1>Checkbox Demo</h1>
     
     <div class="section">
-      <h2>🏷️ Badge</h2>
-      <p>Variantes: <span class="code">solid</span>, <span class="code">outlined</span>, <span class="code">soft</span>, <span class="code">ghost</span>, <span class="code">subtle</span></p>
+      <h2>☑️ Checkbox</h2>
+      <p>Variantes: <span class="code">outlined</span>, <span class="code">soft</span>, <span class="code">ghost</span>, <span class="code">subtle</span>, <span class="code">none</span></p>
       
-      <h3>Solid</h3>
-      <div class="demo-grid">
-        <cu-badge color="primary" variant="solid">Primary</cu-badge>
-        <cu-badge color="neutral" variant="solid">Neutral</cu-badge>
-        <cu-badge color="success" variant="solid">Success</cu-badge>
-        <cu-badge color="warning" variant="solid">Warning</cu-badge>
-        <cu-badge color="danger" variant="solid">Danger</cu-badge>
-      </div>
-
       <h3>Outlined</h3>
       <div class="demo-grid">
-        <cu-badge color="primary" variant="outlined">Primary</cu-badge>
-        <cu-badge color="neutral" variant="outlined">Neutral</cu-badge>
-        <cu-badge color="success" variant="outlined">Success</cu-badge>
-        <cu-badge color="warning" variant="outlined">Warning</cu-badge>
-        <cu-badge color="danger" variant="outlined">Danger</cu-badge>
+        <cu-checkbox color="primary" variant="outlined" label="Primary"></cu-checkbox>
+        <cu-checkbox color="neutral" variant="outlined" label="Neutral"></cu-checkbox>
+        <cu-checkbox color="success" variant="outlined" label="Success"></cu-checkbox>
+        <cu-checkbox color="warning" variant="outlined" label="Warning"></cu-checkbox>
+        <cu-checkbox color="danger" variant="outlined" label="Danger"></cu-checkbox>
       </div>
 
       <h3>Soft</h3>
       <div class="demo-grid">
-        <cu-badge color="primary" variant="soft">Primary</cu-badge>
-        <cu-badge color="neutral" variant="soft">Neutral</cu-badge>
-        <cu-badge color="success" variant="soft">Success</cu-badge>
-        <cu-badge color="warning" variant="soft">Warning</cu-badge>
-        <cu-badge color="danger" variant="soft">Danger</cu-badge>
+        <cu-checkbox color="primary" variant="soft" label="Primary"></cu-checkbox>
+        <cu-checkbox color="neutral" variant="soft" label="Neutral"></cu-checkbox>
+        <cu-checkbox color="success" variant="soft" label="Success"></cu-checkbox>
+        <cu-checkbox color="warning" variant="soft" label="Warning"></cu-checkbox>
+        <cu-checkbox color="danger" variant="soft" label="Danger"></cu-checkbox>
       </div>
 
       <h3>Ghost</h3>
       <div class="demo-grid">
-        <cu-badge color="primary" variant="ghost">Primary</cu-badge>
-        <cu-badge color="neutral" variant="ghost">Neutral</cu-badge>
-        <cu-badge color="success" variant="ghost">Success</cu-badge>
-        <cu-badge color="warning" variant="ghost">Warning</cu-badge>
-        <cu-badge color="danger" variant="ghost">Danger</cu-badge>
+        <cu-checkbox color="primary" variant="ghost" label="Primary"></cu-checkbox>
+        <cu-checkbox color="neutral" variant="ghost" label="Neutral"></cu-checkbox>
+        <cu-checkbox color="success" variant="ghost" label="Success"></cu-checkbox>
+        <cu-checkbox color="warning" variant="ghost" label="Warning"></cu-checkbox>
+        <cu-checkbox color="danger" variant="ghost" label="Danger"></cu-checkbox>
       </div>
 
       <h3>Subtle</h3>
       <div class="demo-grid">
-        <cu-badge color="primary" variant="subtle">Primary</cu-badge>
-        <cu-badge color="neutral" variant="subtle">Neutral</cu-badge>
-        <cu-badge color="success" variant="subtle">Success</cu-badge>
-        <cu-badge color="warning" variant="subtle">Warning</cu-badge>
-        <cu-badge color="danger" variant="subtle">Danger</cu-badge>
+        <cu-checkbox color="primary" variant="subtle" label="Primary"></cu-checkbox>
+        <cu-checkbox color="neutral" variant="subtle" label="Neutral"></cu-checkbox>
+        <cu-checkbox color="success" variant="subtle" label="Success"></cu-checkbox>
+        <cu-checkbox color="warning" variant="subtle" label="Warning"></cu-checkbox>
+        <cu-checkbox color="danger" variant="subtle" label="Danger"></cu-checkbox>
+      </div>
+
+      <h3>None</h3>
+      <div class="demo-grid">
+        <cu-checkbox variant="none" label="None"></cu-checkbox>
+      </div>
+      
+      <h3>Estados</h3>
+      <div class="demo-grid">
+        <cu-checkbox color="primary" label="Checked" checked></cu-checkbox>
+        <cu-checkbox color="primary" label="Disabled" disabled></cu-checkbox>
+        <cu-checkbox color="primary" label="Disabled + Checked" checked disabled></cu-checkbox>
+        <cu-checkbox color="primary" variant="outlined" label="Outlined Checked" checked></cu-checkbox>
+        <cu-checkbox color="primary" variant="soft" label="Soft Checked" checked></cu-checkbox>
       </div>
     </div>
   </body>

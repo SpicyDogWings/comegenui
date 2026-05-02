@@ -46,191 +46,203 @@ const checkboxClasses = computed(() => ({
     "cursor-not-allowed opacity-70": props.disabled,
 }));
 const boxClasses = computed(() => [
+    /* Regla general para outlined */
     {
-        "border-2 border-solid bg-transparent":
-            props.variant === "outlined"
+        "border-2 border-solid bg-transparent": props.variant === "outlined",
+    },
+    /* Regla general para subtle */
+    {
+        "border-2 border-solid border-1": props.variant === "subtle",
+    },
+    /* Regla general para ghost */
+    {
+        "border-2 border-solid border-transparent": props.variant === "ghost",
+    },
+    /* Regla general para soft */
+    {
+        "border-2 border-solid": props.variant === "soft",
     },
 
     {
-        "border-2 border-solid border-primary-500 bg-primary bg-opacity-10":
+        "border-primary-500 bg-primary bg-opacity-10":
             props.color === "primary" &&
             props.variant === "soft" &&
             !checked.value,
     },
     {
-        "border-2 border-solid border-primary-500 bg-primary-500":
+        "border-primary-500 bg-primary-500":
             props.color === "primary" &&
             props.variant === "soft" &&
             checked.value,
     },
     {
-        "border-2 border-solid border-1 border-primary-300 bg-primary bg-opacity-10":
+        "border-primary-300 bg-primary bg-opacity-10":
             props.color === "primary" &&
             props.variant === "subtle" &&
             !checked.value,
     },
     {
-        "border-2 border-solid border-1 border-primary-300 bg-primary-500":
+        "border-primary-300 bg-primary-500":
             props.color === "primary" &&
             props.variant === "subtle" &&
             checked.value,
     },
     {
-        "border-2 border-solid border-transparent bg-transparent hover:bg-primary hover:bg-opacity-10":
+        "bg-transparent hover:bg-primary hover:bg-opacity-10":
             props.color === "primary" &&
             props.variant === "ghost" &&
             !checked.value,
     },
     {
-        "border-2 border-solid border-transparent bg-primary-500":
+        "bg-primary-500":
             props.color === "primary" &&
-            props.variant === "ghost" &&
-            checked.value,
-    },
-
-    {
-        "border-2 border-solid border-charcoal-500 bg-charcoal bg-opacity-10":
-            props.color === "neutral" &&
-            props.variant === "soft" &&
-            !checked.value,
-    },
-    {
-        "border-2 border-solid border-charcoal-500 bg-charcoal-500":
-            props.color === "neutral" &&
-            props.variant === "soft" &&
-            checked.value,
-    },
-    {
-        "border-2 border-solid border-1 border-charcoal-300 bg-charcoal bg-opacity-10":
-            props.color === "neutral" &&
-            props.variant === "subtle" &&
-            !checked.value,
-    },
-    {
-        "border-2 border-solid border-1 border-charcoal-300 bg-charcoal-500":
-            props.color === "neutral" &&
-            props.variant === "subtle" &&
-            checked.value,
-    },
-    {
-        "border-2 border-solid border-transparent hover:bg-charcoal hover:bg-opacity-10":
-            props.color === "neutral" &&
-            props.variant === "ghost" &&
-            !checked.value,
-    },
-    {
-        "border-2 border-solid border-transparent bg-charcoal-500":
-            props.color === "neutral" &&
             props.variant === "ghost" &&
             checked.value,
     },
 
     {
-        "border-2 border-solid border-success-500 bg-success bg-opacity-10":
+        "border-charcoal-500 bg-charcoal bg-opacity-10":
+            props.color === "neutral" &&
+            props.variant === "soft" &&
+            !checked.value,
+    },
+    {
+        "border-charcoal-500 bg-charcoal-500":
+            props.color === "neutral" &&
+            props.variant === "soft" &&
+            checked.value,
+    },
+    {
+        "border-charcoal-300 bg-charcoal bg-opacity-10":
+            props.color === "neutral" &&
+            props.variant === "subtle" &&
+            !checked.value,
+    },
+    {
+        "border-charcoal-300 bg-charcoal-500":
+            props.color === "neutral" &&
+            props.variant === "subtle" &&
+            checked.value,
+    },
+    {
+        "bg-transparent hover:bg-charcoal hover:bg-opacity-10":
+            props.color === "neutral" &&
+            props.variant === "ghost" &&
+            !checked.value,
+    },
+    {
+        "bg-charcoal-500":
+            props.color === "neutral" &&
+            props.variant === "ghost" &&
+            checked.value,
+    },
+
+    {
+        "border-success-500 bg-success bg-opacity-10":
             props.color === "success" &&
             props.variant === "soft" &&
             !checked.value,
     },
     {
-        "border-2 border-solid border-success-500 bg-success-500":
+        "border-success-500 bg-success-500":
             props.color === "success" &&
             props.variant === "soft" &&
             checked.value,
     },
     {
-        "border-2 border-solid border-1 border-success-300 bg-success bg-opacity-10":
+        "border-success-300 bg-success bg-opacity-10":
             props.color === "success" &&
             props.variant === "subtle" &&
             !checked.value,
     },
     {
-        "border-2 border-solid border-1 border-success-300 bg-success-500":
+        "border-success-300 bg-success-500":
             props.color === "success" &&
             props.variant === "subtle" &&
             checked.value,
     },
     {
-        "border-2 border-solid border-transparent hover:bg-success hover:bg-opacity-10":
+        "hover:bg-success hover:bg-opacity-10":
             props.color === "success" &&
             props.variant === "ghost" &&
             !checked.value,
     },
     {
-        "border-2 border-solid border-transparent bg-success-500":
+        "bg-success-500":
             props.color === "success" &&
             props.variant === "ghost" &&
             checked.value,
     },
 
     {
-        "border-2 border-solid border-warning-500 bg-warning bg-opacity-10":
+        "border-warning-500 bg-warning bg-opacity-10":
             props.color === "warning" &&
             props.variant === "soft" &&
             !checked.value,
     },
     {
-        "border-2 border-solid border-warning-500 bg-warning-500":
+        "border-warning-500 bg-warning-500":
             props.color === "warning" &&
             props.variant === "soft" &&
             checked.value,
     },
     {
-        "border-2 border-solid border-1 border-warning-300 bg-warning bg-opacity-10":
+        "border-warning-300 bg-warning bg-opacity-10":
             props.color === "warning" &&
             props.variant === "subtle" &&
             !checked.value,
     },
     {
-        "border-2 border-solid border-1 border-warning-300 bg-warning-500":
+        "border-warning-300 bg-warning-500":
             props.color === "warning" &&
             props.variant === "subtle" &&
             checked.value,
     },
     {
-        "border-2 border-solid border-transparent bg-transparent hover:bg-warning hover:bg-opacity-10":
+        "bg-transparent hover:bg-warning hover:bg-opacity-10":
             props.color === "warning" &&
             props.variant === "ghost" &&
             !checked.value,
     },
     {
-        "border-2 border-solid border-transparent bg-warning-500":
+        "bg-warning-500":
             props.color === "warning" &&
             props.variant === "ghost" &&
             checked.value,
     },
 
     {
-        "border-2 border-solid border-danger-500 bg-danger bg-opacity-10":
+        "border-danger-500 bg-danger bg-opacity-10":
             props.color === "danger" &&
             props.variant === "soft" &&
             !checked.value,
     },
     {
-        "border-2 border-solid border-danger-500 bg-danger-500":
+        "border-danger-500 bg-danger-500":
             props.color === "danger" &&
             props.variant === "soft" &&
             checked.value,
     },
     {
-        "border-2 border-solid border-1 border-danger-300 bg-danger bg-opacity-10":
+        "border-danger-300 bg-danger bg-opacity-10":
             props.color === "danger" &&
             props.variant === "subtle" &&
             !checked.value,
     },
     {
-        "border-2 border-solid border-1 border-danger-300 bg-danger-500":
+        "border-danger-300 bg-danger-500":
             props.color === "danger" &&
             props.variant === "subtle" &&
             checked.value,
     },
     {
-        "border-2 border-solid border-transparent bg-transparent hover:bg-danger hover:bg-opacity-10":
+        "bg-transparent hover:bg-danger hover:bg-opacity-10":
             props.color === "danger" &&
             props.variant === "ghost" &&
             !checked.value,
     },
     {
-        "border-2 border-solid border-transparent bg-danger-500":
+        "bg-danger-500":
             props.color === "danger" &&
             props.variant === "ghost" &&
             checked.value,
