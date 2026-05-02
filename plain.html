@@ -35,6 +35,8 @@
           key: 'count',
           label: 'Count',
           editable: true,
+          singleClick: true,
+          cell: (r) => r.count ?? 0,
           validator: (value, row) => {
             const num = parseInt(value, 10);
             const stock = row.stock;
