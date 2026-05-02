@@ -29,6 +29,7 @@ interface Column {
   badges?: (row: Record<string, any>, index: number) => BadgeConfig[];
   buttons?: (row: Record<string, any>, index: number) => ButtonConfig[];
   editable?: boolean | RegExp;
+  validator?: (value: string, row: Record<string, any>) => boolean;
   inputType?: 'input' | 'textarea';
   singleClick?: boolean;
 }
@@ -113,10 +114,19 @@ const startEditing = async (row: Record<string, any>, col: Column) => {
 };
 const saveEdit = (row: Record<string, any>, col: Column) => {
   if (!editingCell.value) return;
+  
+  // Validate with RegExp if editable is a RegExp
   if (col.editable instanceof RegExp && !col.editable.test(editValue.value)) {
     cancelEdit();
     return;
   }
+  
+  // Validate with custom validator function if present
+  if (col.validator && !col.validator(editValue.value, row)) {
+    cancelEdit();
+    return;
+  }
+  
   const index = getRowIndex(row);
   updateRow(index, { [col.key]: editValue.value });
   cancelEdit();

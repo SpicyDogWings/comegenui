@@ -3,27 +3,44 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CuTable - Fruits with Editable Count</title>
+    <title>CuTable - Row-Aware Validator</title>
     <script src="dist/vendor/vue-runtime.iife.js"></script>
     <script src="dist/CuTable.umd.js"></script>
     <script src="dist/CuInput.umd.js"></script>
+    <style>
+      body { font-family: Arial, sans-serif; padding: 20px; }
+      cu-table { margin: 0 auto; max-width: 700px; }
+      h1 { text-align: center; color: #333; }
+      .info { background: #e3f2fd; padding: 10px; margin: 10px 0; border-radius: 4px; text-align: center; }
+    </style>
   </head>
   <body>
+    <h1>CuTable - Row-Aware Validator</h1>
+    <div class="info">Double-click to edit. <strong>Count</strong> cannot exceed <strong>Stock</strong>.</div>
     <cu-table id="myTable"></cu-table>
 
     <script>
       const table = document.getElementById('myTable');
 
       table.data = [
-        { name: 'Manzana', stock: 100, count: 10 },
+        { name: 'Apple', stock: 100, count: 10 },
         { name: 'Banana', stock: 50, count: 5 },
-        { name: 'Naranja', stock: 75, count: 15 }
+        { name: 'Orange', stock: 75, count: 15 }
       ];
 
       table.columns = [
-        { key: 'name', label: 'Name' },
-        { key: 'stock', label: 'Stock' },
-        { key: 'count', label: 'Count', editable: true }
+        { key: 'name', label: 'Fruit' },
+        { key: 'stock', label: 'Stock'},
+        {
+          key: 'count',
+          label: 'Count',
+          editable: true,
+          validator: (value, row) => {
+            const num = parseInt(value, 10);
+            const stock = row.stock;
+            return !isNaN(num) && num >= 0 && num <= stock;
+          }
+        }
       ];
     </script>
   </body>
