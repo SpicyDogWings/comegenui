@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CuTable - Validation Feedback Demo</title>
+    <title>CuTable - Fruits Store Demo</title>
     <script src="dist/vendor/vue-runtime.iife.js"></script>
     <script src="dist/CuTable.umd.js"></script>
     <script src="dist/CuInput.umd.js"></script>
@@ -43,10 +43,16 @@
       }
       button:hover { background: #1976d2; }
       cu-table { margin: 20px 0; }
+      code { 
+        background: #f5f5f5; 
+        padding: 2px 4px; 
+        border-radius: 3px;
+        font-family: monospace;
+      }
     </style>
   </head>
   <body>
-    <h1>CuTable - Edit Validation Feedback</h1>
+    <h1>CuTable - Fruits Store Demo</h1>
     
     <div class="info">
       <strong>Single-click to edit.</strong> The pencil icon turns 
@@ -58,15 +64,34 @@
 
     <button onclick="resetData()">Reset Data</button>
 
+    <div class="info">
+      <h2>Validation Rules:</h2>
+      <ul>
+        <li><strong>Fruit:</strong> Must be at least 3 characters (validator function)</li>
+        <li><strong>Stock:</strong> Only numbers allowed (RegExp: <code>/^\d+$/</code>)</li>
+        <li><strong>Send:</strong> 
+          <ul>
+            <li><strong>RegExp:</strong> Only numbers (<code>/^\d+$/</code>)</li>
+            <li><strong>Validator:</strong> Must be <code>&lt;= Stock</code> (uses row data)</li>
+          </ul>
+        </li>
+        <li><strong>ID:</strong> Not editable</li>
+      </ul>
+      <p style="margin-top: 10px; font-size: 14px;">
+        <strong>Note:</strong> Send column uses <strong>BOTH</strong> RegExp + Validator together.
+      </p>
+    </div>
+
     <div class="try">
       <h2>Try These:</h2>
       <ul>
-        <li><strong>Valid:</strong> Change "Apple" to "Pear" → <span class="success">Green ✓</span></li>
-        <li><strong>Invalid:</strong> Change "Apple" to "A" (too short, min 3 chars) → <span class="danger">Red ✗</span></li>
-        <li><strong>Valid:</strong> Change stock "100" to "200" → <span class="success">Green ✓</span></li>
-        <li><strong>Invalid:</strong> Change stock "100" to "one hundred" (numbers only) → <span class="danger">Red ✗</span></li>
-        <li><strong>Valid:</strong> Change email to "test@domain.com" → <span class="success">Green ✓</span></li>
-        <li><strong>Invalid:</strong> Change email to "not-an-email" → <span class="danger">Red ✗</span></li>
+        <li><strong>Valid Send:</strong> Change Apple's Send to "80" (&lt;= 100 stock) &rarr; <span class="success">Green ✓</span></li>
+        <li><strong>Invalid Send (exceeds stock):</strong> Change Apple's Send to "150" (&gt; 100 stock) &rarr; <span class="danger">Red ✗</span></li>
+        <li><strong>Invalid Send (not a number):</strong> Change Apple's Send to "fifty" &rarr; <span class="danger">Red ✗</span> (fails RegExp)</li>
+        <li><strong>Valid Fruit:</strong> Change "Apple" to "Pear" &rarr; <span class="success">Green ✓</span></li>
+        <li><strong>Invalid Fruit:</strong> Change "Apple" to "A" (too short) &rarr; <span class="danger">Red ✗</span></li>
+        <li><strong>Valid Stock:</strong> Change stock to "200" &rarr; <span class="success">Green ✓</span></li>
+        <li><strong>Invalid Stock:</strong> Change stock to "one hundred" &rarr; <span class="danger">Red ✗</span></li>
       </ul>
     </div>
 
@@ -75,17 +100,17 @@
 
       function initData() {
         table.data = [
-          { id: 1, name: 'Apple', stock: 100, email: 'apple@fruits.com' },
-          { id: 2, name: 'Banana', stock: 50, email: 'banana@fruits.com' },
-          { id: 3, name: 'Orange', stock: 75, email: 'orange@fruits.com' }
+          { id: 1, fruit: 'Apple', stock: 100, send: 50 },
+          { id: 2, fruit: 'Banana', stock: 50, send: 30 },
+          { id: 3, fruit: 'Orange', stock: 75, send: 20 }
         ];
       }
 
       table.columns = [
         { key: 'id', label: 'ID', editable: false },
         { 
-          key: 'name', 
-          label: 'Product',
+          key: 'fruit', 
+          label: 'Fruit',
           editable: true,
           singleClick: true,
           validator: (value) => value.length >= 3
@@ -93,15 +118,19 @@
         { 
           key: 'stock', 
           label: 'Stock',
-          editable: /^\d+$/,
+          editable: /^\d+$/, // Only numbers
           singleClick: true
         },
         { 
-          key: 'email', 
-          label: 'Email',
-          editable: true,
-          singleClick: true,
-          validator: (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+          key: 'send', 
+          label: 'Send', 
+          editable: /^\d+$/, // Only numbers (RegExp)
+          validator: (value, row) => {
+            const num = parseInt(value, 10);
+            const stock = row.stock;
+            return !isNaN(num) && num >= 0 && num <= stock;
+          },
+          singleClick: true
         }
       ];
 

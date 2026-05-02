@@ -124,7 +124,7 @@ const saveEdit = (row: Record<string, any>, col: Column) => {
     isValid = false;
   }
   // Validate with custom validator function if present
-  else if (col.validator && !col.validator(editValue.value, row)) {
+  if (isValid && col.validator && !col.validator(editValue.value, row)) {
     isValid = false;
   }
   
