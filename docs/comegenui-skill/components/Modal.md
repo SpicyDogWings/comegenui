@@ -786,36 +786,36 @@ function closeImageModal() {
 <cu-modal id="tabs-modal" title="Configuración" size="lg">
   <div class="flex border-b border-charcoal-200 mb-4">
     <button 
+      id="tab-btn-profile"
       onclick="switchTab('profile')" 
-      class="px-4 py-2 font-medium"
-      :class="activeTab === 'profile' ? 'border-b-2 border-primary text-primary' : 'text-charcoal-500'"
+      class="px-4 py-2 font-medium text-charcoal-500 tab-btn"
     >
       Perfil
     </button>
     <button 
+      id="tab-btn-settings"
       onclick="switchTab('settings')" 
-      class="px-4 py-2 font-medium"
-      :class="activeTab === 'settings' ? 'border-b-2 border-primary text-primary' : 'text-charcoal-500'"
+      class="px-4 py-2 font-medium text-charcoal-500 tab-btn"
     >
       Configuración
     </button>
     <button 
+      id="tab-btn-notifications"
       onclick="switchTab('notifications')" 
-      class="px-4 py-2 font-medium"
-      :class="activeTab === 'notifications' ? 'border-b-2 border-primary text-primary' : 'text-charcoal-500'"
+      class="px-4 py-2 font-medium text-charcoal-500 tab-btn"
     >
       Notificaciones
     </button>
   </div>
   
   <div id="tab-content" class="p-2">
-    <div v-if="activeTab === 'profile'" class="space-y-2">
+    <div id="tab-profile" class="space-y-2">
       <p>Contenido de Perfil</p>
     </div>
-    <div v-if="activeTab === 'settings'" class="space-y-2">
+    <div id="tab-settings" class="space-y-2" style="display: none;">
       <p>Contenido de Configuración</p>
     </div>
-    <div v-if="activeTab === 'notifications'" class="space-y-2">
+    <div id="tab-notifications" class="space-y-2" style="display: none;">
       <p>Contenido de Notificaciones</p>
     </div>
   </div>
@@ -839,9 +839,27 @@ function closeTabsModal() {
 
 function switchTab(tab) {
   activeTab = tab;
-  // Re-renderizar contenido (en Vue reactivo, esto se actualiza automáticamente)
+  
+  // Actualizar clases de botones
+  document.getElementById('tab-btn-profile').className = 'px-4 py-2 font-medium text-charcoal-500 tab-btn';
+  document.getElementById('tab-btn-settings').className = 'px-4 py-2 font-medium text-charcoal-500 tab-btn';
+  document.getElementById('tab-btn-notifications').className = 'px-4 py-2 font-medium text-charcoal-500 tab-btn';
+  document.getElementById(`tab-btn-${tab}`).className = 'px-4 py-2 font-medium border-b-2 border-primary text-primary tab-btn';
+  
+  // Ocultar todas las pestañas
+  document.getElementById('tab-profile').style.display = 'none';
+  document.getElementById('tab-settings').style.display = 'none';
+  document.getElementById('tab-notifications').style.display = 'none';
+  // Mostrar la pestaña seleccionada
+  document.getElementById(`tab-${tab}`).style.display = 'block';
 }
 </script>
+
+<style>
+.tab-btn {
+  border-bottom: 2px solid transparent;
+}
+</style>
 ```
 
 ### Modal sin header

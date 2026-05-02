@@ -139,13 +139,18 @@ Desactiva el botón (no se puede hacer clic):
     Enlace Desactivado
   </cu-button>
   
-  <cu-button color="primary" variant="solid" :disabled="isLoading">
+  <cu-button id="loading-btn" color="primary" variant="solid" disabled>
     Guardando...
   </cu-button>
 </div>
 
 <script>
 let isLoading = false;
+const loadingBtn = document.getElementById('loading-btn');
+
+// Para actualizar disabled dinámicamente en HTML plano:
+// loadingBtn.disabled = true;  // Deshabilitar
+// loadingBtn.removeAttribute('disabled');  // Habilitar
 </script>
 ```
 
@@ -414,24 +419,29 @@ function updateButtons() {
 
 ```html
 <cu-button 
+  id="submit-btn"
   color="primary" 
   variant="solid"
-  :disabled="isLoading"
   onclick="submitForm()"
 >
-  <span v-if="!isLoading">Enviar</span>
-  <span v-else>Enviando...</span>
+  <span id="btn-text">Enviar</span>
 </cu-button>
 
 <script>
 let isLoading = false;
+const submitBtn = document.getElementById('submit-btn');
+const btnText = document.getElementById('btn-text');
 
 function submitForm() {
   isLoading = true;
+  submitBtn.disabled = true;
+  btnText.textContent = 'Enviando...';
   
   // Simular envío
   setTimeout(() => {
     isLoading = false;
+    submitBtn.disabled = false;
+    btnText.textContent = 'Enviar';
     alert('Formulario enviado');
   }, 2000);
 }

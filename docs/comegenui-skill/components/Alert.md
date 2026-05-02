@@ -150,14 +150,16 @@ Alerta sin botón de cierre:
 Controlar visibilidad inicial:
 
 ```html
-<cu-alert id="alert1" title="Visible" color="success" :show="true">
+<cu-alert id="alert1" title="Visible" color="success" show>
   Esta alerta es visible al cargar.
 </cu-alert>
 
-<cu-alert id="alert2" title="Oculta" color="info" :show="false">
+<cu-alert id="alert2" title="Oculta" color="info" show="false">
   Esta alerta está oculta al cargar.
 </cu-alert>
 ```
+
+> **Nota:** En HTML plano, usa el atributo `show` (sin `:`). Para actualizar dinámicamente: `alert.show = true;`
 
 ## Ejemplos por Método
 
@@ -293,9 +295,9 @@ alert.addEventListener('open', () => {
 
 ### Evento: `update:show`
 
-Sincronización bidireccional con v-model estilo:
+Sincronización bidireccional con v-model estilo (en Vue SFC):
 
-```html
+```vue
 <cu-alert 
   id="myAlert" 
   title="Notificación" 
@@ -312,6 +314,28 @@ let isVisible = true;
 // Cambiar visibilidad desde código
 function toggleVisibility() {
   isVisible = !isVisible;
+}
+</script>
+```
+
+Para HTML plano, usa eventos JavaScript:
+
+```html
+<cu-alert id="myAlert" title="Notificación" color="warning" show="true">
+  Esta alerta sincroniza su visibilidad.
+</cu-alert>
+
+<script>
+const alert = document.getElementById('myAlert');
+
+// Escuchar cambios
+alert.addEventListener('update:show', (e) => {
+  console.log('show cambió a:', e.detail);
+});
+
+// Cambiar visibilidad desde código
+function toggleVisibility() {
+  alert.show = !alert.show;
 }
 </script>
 ```
@@ -511,7 +535,7 @@ function extendSession() {
     <cu-input id="password" type="password" placeholder="••••••••" />
   </div>
   
-  <cu-alert id="errorAlert" title="Error" color="danger" variant="soft" close :show="false">
+  <cu-alert id="errorAlert" title="Error" color="danger" variant="soft" close show="false">
     <span slot="icon">✗</span>
     <p>Correo o contraseña incorrectos. Por favor, inténtalo de nuevo.</p>
   </cu-alert>
@@ -547,7 +571,7 @@ function handleSubmit(e) {
   Realizar Acción
 </cu-button>
 
-<cu-alert id="successAlert" title="Éxito" color="success" variant="soft" close :show="false">
+<cu-alert id="successAlert" title="Éxito" color="success" variant="soft" close show="false">
   <span slot="icon">✓</span>
   <p>La acción se completó correctamente.</p>
 </cu-alert>

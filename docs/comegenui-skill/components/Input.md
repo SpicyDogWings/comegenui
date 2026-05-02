@@ -224,7 +224,7 @@ function setNumber() {
 Limpiar el input:
 
 ```html
-<cu-input id="myInput" value="Texto a borrar" />
+<cu-input id="myInput" startValue="Texto a borrar" />
 <button onclick="resetInput()">Limpiar</button>
 
 <script>

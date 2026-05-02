@@ -236,7 +236,7 @@ function setNumber() {
 Limpiar el textarea:
 
 ```html
-<cu-textarea id="myTextarea" value="Texto a borrar" rows="4" />
+<cu-textarea id="myTextarea" startValue="Texto a borrar" rows="4" />
 <button onclick="resetTextarea()">Limpiar</button>
 
 <script>
