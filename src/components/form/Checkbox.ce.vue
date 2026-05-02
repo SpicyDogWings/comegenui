@@ -176,6 +176,33 @@ const boxClasses = computed(() => [
     "border-2 border-solid border-warning-500 bg-warning-500":
       props.color === "warning" && props.variant === "outlined" && checked.value,
   },
+  // === WARNING - soft ===
+  {
+    "border-2 border-solid border-warning-500 bg-warning bg-opacity-10":
+      props.color === "warning" && props.variant === "soft" && !checked.value,
+  },
+  {
+    "border-2 border-solid border-warning-500 bg-warning-500":
+      props.color === "warning" && props.variant === "soft" && checked.value,
+  },
+  // === WARNING - subtle ===
+  {
+    "border-2 border-solid border-1 border-warning-300 bg-warning bg-opacity-10":
+      props.color === "warning" && props.variant === "subtle" && !checked.value,
+  },
+  {
+    "border-2 border-solid border-1 border-warning-300 bg-warning-500":
+      props.color === "warning" && props.variant === "subtle" && checked.value,
+  },
+  // === WARNING - ghost ===
+  {
+    "border-2 border-solid border-transparent bg-transparent hover:bg-warning hover:bg-opacity-10":
+      props.color === "warning" && props.variant === "ghost" && !checked.value,
+  },
+  {
+    "border-2 border-solid border-transparent bg-warning-500":
+      props.color === "warning" && props.variant === "ghost" && checked.value,
+  },
   // === DANGER - outlined ===
   {
     "border-2 border-solid border-danger-500 bg-transparent":
