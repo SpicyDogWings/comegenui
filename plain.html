@@ -3,47 +3,113 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CuTable - Row-Aware Validator</title>
+    <title>CuTable - Validation Feedback Demo</title>
     <script src="dist/vendor/vue-runtime.iife.js"></script>
     <script src="dist/CuTable.umd.js"></script>
     <script src="dist/CuInput.umd.js"></script>
     <style>
-      body { font-family: Arial, sans-serif; padding: 20px; }
-      cu-table { margin: 0 auto; max-width: 700px; }
+      body { 
+        font-family: Arial, sans-serif; 
+        padding: 20px; 
+        max-width: 900px; 
+        margin: 0 auto;
+      }
       h1 { text-align: center; color: #333; }
-      .info { background: #e3f2fd; padding: 10px; margin: 10px 0; border-radius: 4px; text-align: center; }
+      h2 { color: #444; margin-top: 20px; }
+      .info { 
+        background: #e3f2fd; 
+        padding: 15px; 
+        margin: 15px 0; 
+        border-radius: 4px; 
+        border-left: 4px solid #2196f3;
+      }
+      .try { 
+        background: #f5f5f5; 
+        padding: 15px; 
+        border-radius: 4px;
+        margin: 15px 0;
+      }
+      .try li { margin: 8px 0; }
+      .success { color: #4caf50; font-weight: bold; }
+      .danger { color: #f44336; font-weight: bold; }
+      button { 
+        padding: 10px 20px; 
+        background: #2196f3; 
+        color: white; 
+        border: none; 
+        border-radius: 4px; 
+        cursor: pointer;
+        font-size: 14px;
+      }
+      button:hover { background: #1976d2; }
+      cu-table { margin: 20px 0; }
     </style>
   </head>
   <body>
-    <h1>CuTable - Row-Aware Validator</h1>
-    <div class="info">Double-click to edit. <strong>Count</strong> cannot exceed <strong>Stock</strong>.</div>
+    <h1>CuTable - Edit Validation Feedback</h1>
+    
+    <div class="info">
+      <strong>Single-click to edit.</strong> The pencil icon turns 
+      <span class="success">GREEN</span> on valid edit or 
+      <span class="danger">RED</span> on validation failure.
+    </div>
+
     <cu-table id="myTable"></cu-table>
+
+    <button onclick="resetData()">Reset Data</button>
+
+    <div class="try">
+      <h2>Try These:</h2>
+      <ul>
+        <li><strong>Valid:</strong> Change "Apple" to "Pear" → <span class="success">Green ✓</span></li>
+        <li><strong>Invalid:</strong> Change "Apple" to "A" (too short, min 3 chars) → <span class="danger">Red ✗</span></li>
+        <li><strong>Valid:</strong> Change stock "100" to "200" → <span class="success">Green ✓</span></li>
+        <li><strong>Invalid:</strong> Change stock "100" to "one hundred" (numbers only) → <span class="danger">Red ✗</span></li>
+        <li><strong>Valid:</strong> Change email to "test@domain.com" → <span class="success">Green ✓</span></li>
+        <li><strong>Invalid:</strong> Change email to "not-an-email" → <span class="danger">Red ✗</span></li>
+      </ul>
+    </div>
 
     <script>
       const table = document.getElementById('myTable');
 
-      table.data = [
-        { name: 'Apple', stock: 100 },
-        { name: 'Banana', stock: 50 },
-        { name: 'Orange', stock: 75 }
-      ];
+      function initData() {
+        table.data = [
+          { id: 1, name: 'Apple', stock: 100, email: 'apple@fruits.com' },
+          { id: 2, name: 'Banana', stock: 50, email: 'banana@fruits.com' },
+          { id: 3, name: 'Orange', stock: 75, email: 'orange@fruits.com' }
+        ];
+      }
 
       table.columns = [
-        { key: 'name', label: 'Fruit' },
-        { key: 'stock', label: 'Stock'},
-        {
-          key: 'count',
-          label: 'Count',
+        { key: 'id', label: 'ID', editable: false },
+        { 
+          key: 'name', 
+          label: 'Product',
           editable: true,
           singleClick: true,
-          cell: (r) => r.count ?? 0,
-          validator: (value, row) => {
-            const num = parseInt(value, 10);
-            const stock = row.stock;
-            return !isNaN(num) && num >= 0 && num <= stock;
-          }
+          validator: (value) => value.length >= 3
+        },
+        { 
+          key: 'stock', 
+          label: 'Stock',
+          editable: /^\d+$/,
+          singleClick: true
+        },
+        { 
+          key: 'email', 
+          label: 'Email',
+          editable: true,
+          singleClick: true,
+          validator: (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
         }
       ];
+
+      initData();
+
+      function resetData() {
+        initData();
+      }
     </script>
   </body>
 </html>
