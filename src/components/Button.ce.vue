@@ -38,6 +38,12 @@ const buttonClasses = computed(() => [
     "cursor-not-allowed opacity-70 pointer-events-none": props.disabled,
   },
   {
+    "bg-transparent border-solid border-2": props.variant === "outlined",
+  },
+  {
+    "bg-transparent": props.variant === "ghost",
+  },
+  {
     "bg-primary text-primary-50 hover:bg-primary-600 active:bg-primary-700":
       props.color === "primary" && props.variant === "solid",
   },
@@ -50,11 +56,11 @@ const buttonClasses = computed(() => [
       props.color === "primary" && props.variant === "subtle",
   },
   {
-    "bg-transparent border-solid border-2 border-primary text-primary":
+    "border-primary text-primary":
       props.color === "primary" && props.variant === "outlined",
   },
   {
-    "bg-transparent text-primary hover:bg-primary hover:bg-opacity-10 active:bg-primary active:bg-opacity-20":
+    "text-primary hover:bg-primary hover:bg-opacity-10 active:bg-primary active:bg-opacity-20":
       props.color === "primary" && props.variant === "ghost",
   },
   {
@@ -74,11 +80,11 @@ const buttonClasses = computed(() => [
       props.color === "neutral" && props.variant === "subtle",
   },
   {
-    "bg-transparent border-solid border-2 border-charcoal-800 text-charcoal-800":
+    "border-charcoal-800 text-charcoal-800":
       props.color === "neutral" && props.variant === "outlined",
   },
   {
-    "bg-transparent text-charcoal-800 hover:bg-charcoal hover:bg-opacity-20 active:bg-charcoal active:bg-opacity-30":
+    "text-charcoal-800 hover:bg-charcoal hover:bg-opacity-20 active:bg-charcoal active:bg-opacity-30":
       props.color === "neutral" && props.variant === "ghost",
   },
   {
@@ -98,11 +104,11 @@ const buttonClasses = computed(() => [
       props.color === "success" && props.variant === "subtle",
   },
   {
-    "bg-transparent border-solid border-2 border-success text-success":
+    "border-success text-success":
       props.color === "success" && props.variant === "outlined",
   },
   {
-    "bg-transparent text-success-600 hover:bg-success hover:bg-opacity-10 active:bg-success active:bg-opacity-20":
+    "text-success-600 hover:bg-success hover:bg-opacity-10 active:bg-success active:bg-opacity-20":
       props.color === "success" && props.variant === "ghost",
   },
   {
@@ -122,11 +128,11 @@ const buttonClasses = computed(() => [
       props.color === "warning" && props.variant === "subtle",
   },
   {
-    "bg-transparent border-solid border-2 border-warning text-warning":
+    "border-warning text-warning":
       props.color === "warning" && props.variant === "outlined",
   },
   {
-    "bg-transparent text-warning-500 hover:bg-warning hover:bg-opacity-10 active:bg-warning active:bg-opacity-20":
+    "text-warning-500 hover:bg-warning hover:bg-opacity-10 active:bg-warning active:bg-opacity-20":
       props.color === "warning" && props.variant === "ghost",
   },
   {
@@ -146,11 +152,11 @@ const buttonClasses = computed(() => [
       props.color === "danger" && props.variant === "subtle",
   },
   {
-    "bg-transparent border-solid border-2 border-danger text-danger":
+    "border-danger text-danger":
       props.color === "danger" && props.variant === "outlined",
   },
   {
-    "bg-transparent text-danger hover:bg-danger hover:bg-opacity-10 active:bg-danger active:bg-opacity-20":
+    "text-danger hover:bg-danger hover:bg-opacity-10 active:bg-danger active:bg-opacity-20":
       props.color === "danger" && props.variant === "ghost",
   },
   {
