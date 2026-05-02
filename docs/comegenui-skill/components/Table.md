@@ -1,6 +1,6 @@
 # Table - Componente de Tabla de Datos
 
-**`<cu-table>`** es un componente de tabla avanzado con soporte para búsqueda, paginación, celdas editables, badges y botones de acción.
+**`<cu-table>`** es un componente de tabla avanzado con soporte para búsqueda, paginación, celdas editables, badges, botones de acción, validación y renderizado personalizado. Es el componente más completo para visualización y manipulación de datos tabulares.
 
 ## Importación
 
@@ -27,126 +27,68 @@
 
 ## Props
 
-| Prop | Tipo | Default | Descripción |
-|------|------|---------|-------------|
-| `data` | Array | `[]` | Array de objetos con los datos a mostrar |
-| `columns` | Array | `[]` | Configuración de columnas. Si no se entrega, se extraen del primer objeto de data |
-| `empty` | String | `"No hay datos que mostrar"` | Mensaje a mostrar cuando no hay datos |
-| `searchPlaceholder` | String | `"Buscar..."` | Placeholder del campo de búsqueda |
-| `searchEnabled` | Boolean | `false` | Habilitar campo de búsqueda |
-| `searchFields` | Array | `[]` | Campos por los que buscar. Si está vacío, busca en todas las columnas |
-| `searchValue` | String | `""` | Valor inicial del campo de búsqueda |
-| `pagination` | Boolean | `false` | Habilitar paginación |
-| `itemsPerPage` | Number | `10` | Items por página |
-| `showPageSize` | Boolean | `false` | Mostrar selector de items por página en la paginación |
-| `pageSizeOptions` | Array | `[5, 10, 20, 50]` | Opciones para el selector de items por página |
+| Prop | Tipo | Default | Valores válidos | Descripción |
+|------|------|---------|----------------|-------------|
+| `data` | Array | `[]` | Array de objetos | Array de objetos con los datos a mostrar |
+| `columns` | Array | `[]` | Array de [Column](#estructura-de-columnas) | Configuración de columnas. Si está vacío, se extraen del primer objeto de data |
+| `empty` | String | `"No hay datos que mostrar"` | - | Mensaje a mostrar cuando no hay datos |
+| `searchPlaceholder` | String | `"Buscar..."` | - | Placeholder del campo de búsqueda |
+| `searchEnabled` | Boolean | `false` | `true`/`false` | Habilitar campo de búsqueda |
+| `searchFields` | Array | `[]` | Array de strings (claves de columnas) | Campos por los que buscar. Si está vacío, busca en todas las columnas |
+| `searchValue` | String | `""` | - | Valor inicial del campo de búsqueda |
+| `pagination` | Boolean | `false` | `true`/`false` | Habilitar paginación |
+| `itemsPerPage` | Number | `10` | >= 1 | Items por página |
+| `showPageSize` | Boolean | `false` | `true`/`false` | Mostrar selector de items por página en la paginación |
+| `pageSizeOptions` | Array | `[5, 10, 20, 50]` | Array de números | Opciones para el selector de items por página |
 
 ## Events
 
-| Evento | Descripción |
-|--------|-------------|
-| `update:search` | Se emite cuando cambia el valor de búsqueda |
-| `update:currentPage` | Se emite cuando cambia la página |
-| `update:itemsPerPage` | Se emite cuando cambia el número de items por página |
+| Evento | Argumento | Descripción |
+|--------|-----------|-------------|
+| `update:search` | `string` (valor de búsqueda) | Se emite cuando cambia el valor de búsqueda |
+| `update:currentPage` | `number` (número de página) | Se emite cuando cambia la página |
+| `update:itemsPerPage` | `number` (nuevo tamaño) | Se emite cuando cambia el número de items por página |
+
+## Slots
+
+| Nombre | Descripción | Props disponibles |
+|--------|-------------|-------------------|
+| `empty` | Contenido a mostrar cuando no hay datos | - |
+| `header-{key}` | Personaliza el header de una columna específica | `{ column }` |
+| `cell-{key}` | Personaliza el contenido de una celda para una columna específica | `{ row, column, index }` |
 
 ## Métodos Expuestos
 
-El componente expone métodos para manipular los datos:
+El componente expone métodos para manipular los datos programáticamente:
 
-### `updateRow(index, newData)`
-
-Actualiza una fila específica.
-
-```javascript
-const table = document.querySelector('cu-table');
-table.updateRow(0, { name: 'Nuevo nombre' });
-```
-
-### `getData(filterFn?)`
-
-Obtiene los datos de la tabla, opcionalmente filtrados.
-
-```javascript
-const allData = table.getData();
-const filteredData = table.getData(item => item.active);
-```
-
-### `getRow(index)`
-
-Obtiene una fila específica por índice.
-
-```javascript
-const row = table.getRow(0);
-```
-
-### `removeRow(index)`
-
-Elimina una fila por su índice. Devuelve `true` si la eliminación fue exitosa, `false` si el índice no es válido.
-
-```javascript
-// Eliminar la primera fila
-const success = table.removeRow(0);
-if (success) {
-  console.log('Fila eliminada');
-}
-
-// Eliminar la última fila
-const lastIndex = table.getData().length - 1;
-if (lastIndex >= 0) {
-  table.removeRow(lastIndex);
-}
-```
-
-### `addRow(newItem)`
-
-Añade una nueva fila al final de la tabla. El objeto debe tener la misma estructura (mismas claves) que los datos existentes. Devuelve `true` si la fila fue añadida, `false` si la estructura no coincide.
-
-```javascript
-const newItem = { id: 5, name: 'Nuevo Usuario', email: 'nuevo@test.com' };
-const success = table.addRow(newItem);
-if (success) {
-  console.log('Fila añadida');
-} else {
-  console.error('Error: estructura de datos no válida');
-}
-```
-
-### `pushData(items)`
-
-Añade múltiples filas a la tabla. Todos los objetos deben tener la misma estructura (mismas claves) que los datos existentes. Devuelve `true` si todas las filas fueron añadidas, `false` si alguna estructura no coincide.
-
-```javascript
-const newItems = [
-  { id: 6, name: 'Pedro Martínez', email: 'pedro@test.com' },
-  { id: 7, name: 'Laura Hernández', email: 'laura@test.com' }
-];
-const success = table.pushData(newItems);
-if (success) {
-  console.log('Filas añadidas');
-} else {
-  console.error('Error: alguna fila tiene estructura no válida');
-}
-```
-
-> **Nota sobre validación:** Si la tabla está vacía (no hay datos), `addRow` y `pushData` añadirán los elementos sin validación de estructura. Una vez hay datos en la tabla, todos los nuevos elementos deben coincidir con las claves del primer elemento.
+| Método | Argumentos | Retorno | Descripción |
+|--------|------------|---------|-------------|
+| `updateRow(index, newData)` | `number`, `object` | `void` | Actualiza una fila específica |
+| `getData(filterFn?)` | `function?` (opcional) | `Array` | Obtiene los datos de la tabla, opcionalmente filtrados |
+| `getRow(index)` | `number` | `object \| undefined` | Obtiene una fila específica por índice |
+| `removeRow(index)` | `number` | `boolean` | Elimina una fila por su índice. Devuelve `true` si fue exitosa |
+| `addRow(newItem)` | `object` | `boolean` | Añade una nueva fila. Devuelve `true` si la estructura coincide |
+| `pushData(items)` | `Array` | `boolean` | Añade múltiples filas. Devuelve `true` si todas las estructuras coinciden |
 
 ## Estructura de Columnas
 
 Cada columna es un objeto con las siguientes propiedades:
 
-| Prop | Tipo | Descripción |
-|------|------|-------------|
-| `key` | String | Clave del campo en el objeto de datos (obligatorio) |
-| `label` | String | Etiqueta a mostrar en el header |
-| `cell` | Function | Función personalizada para renderizar el contenido de la celda |
-| `badges` | Function | Función que devuelve un array de [BadgeConfig](#badgeconfig) para mostrar badges |
-| `buttons` | Function | Función que devuelve un array de [ButtonConfig](#buttonconfig) para mostrar botones |
-| `editable` | Boolean/RegExp | Permite editar la celda. Si es RegExp, valida el formato del valor |
-| `validator` | Function | `(value: string, row: object) => boolean` - Validación personalizada con acceso al row completo |
-| `inputType` | String | Tipo de input para edición (`'input'` o `'textarea'`) |
+| Prop | Tipo | Default | Descripción |
+|------|------|---------|-------------|
+| `key` | String | - | **Obligatorio**. Clave del campo en el objeto de datos |
+| `label` | String | `key` | Etiqueta a mostrar en el header |
+| `cell` | Function | - | Función personalizada: `(row) => string \| string[]` para renderizar el contenido |
+| `badges` | Function | - | Función: `(row, index) => BadgeConfig[]` para mostrar badges |
+| `buttons` | Function | - | Función: `(row, index) => ButtonConfig[]` para mostrar botones |
+| `editable` | Boolean/RegExp | `false` | Permite editar la celda. Si es RegExp, valida el formato |
+| `validator` | Function | - | `(value: string, row: object) => boolean` - Validación personalizada |
+| `inputType` | String | `'input'` | Tipo de input para edición: `'input'` o `'textarea'` |
 | `singleClick` | Boolean | `false` | Habilitar edición con un solo clic (por defecto es doble clic) |
 
-### BadgeConfig
+### Interfaces de Configuración
+
+#### BadgeConfig
 
 ```typescript
 interface BadgeConfig {
@@ -156,7 +98,7 @@ interface BadgeConfig {
 }
 ```
 
-### ButtonConfig
+#### ButtonConfig
 
 ```typescript
 interface ButtonConfig {
@@ -170,11 +112,631 @@ interface ButtonConfig {
 }
 ```
 
-## Función `cell:` para Columnas
+---
+
+## Ejemplos por Propiedad
+
+### Propiedad: `data`
+
+Datos a mostrar en la tabla:
+
+```html
+<cu-table 
+  :data="[
+    { id: 1, name: 'Juan', age: 25 },
+    { id: 2, name: 'María', age: 30 },
+    { id: 3, name: 'Carlos', age: 22 }
+  ]"
+/>
+```
+
+### Propiedad: `columns`
+
+Definición de columnas:
+
+```html
+<cu-table 
+  :data="users"
+  :columns="[
+    { key: 'id', label: 'ID' },
+    { key: 'name', label: 'Nombre' },
+    { key: 'age', label: 'Edad' }
+  ]"
+/>
+
+<script>
+const users = [
+  { id: 1, name: 'Juan', age: 25 },
+  { id: 2, name: 'María', age: 30 }
+];
+</script>
+```
+
+### Propiedad: `empty`
+
+Mensaje personalizado cuando no hay datos:
+
+```html
+<cu-table :data="[]" :columns="columns" empty="No hay usuarios registrados" />
+```
+
+### Propiedad: `searchPlaceholder`
+
+Placeholder del campo de búsqueda:
+
+```html
+<cu-table 
+  :data="data" 
+  :columns="columns"
+  :search-enabled="true"
+  search-placeholder="Buscar por nombre o email..."
+/>
+```
+
+### Propiedad: `searchEnabled`
+
+Habilitar búsqueda:
+
+```html
+<cu-table 
+  :data="data" 
+  :columns="columns"
+  :search-enabled="true"
+/>
+```
+
+### Propiedad: `searchFields`
+
+Campos específicos para buscar:
+
+```html
+<cu-table 
+  :data="data" 
+  :columns="columns"
+  :search-enabled="true"
+  :search-fields="['name', 'email']"
+/>
+```
+
+### Propiedad: `searchValue`
+
+Valor inicial de búsqueda:
+
+```html
+<cu-table 
+  :data="data" 
+  :columns="columns"
+  :search-enabled="true"
+  search-value="Juan"
+/>
+```
+
+### Propiedad: `pagination`
+
+Habilitar paginación:
+
+```html
+<cu-table 
+  :data="data" 
+  :columns="columns"
+  :pagination="true"
+/>
+```
+
+### Propiedad: `itemsPerPage`
+
+Número de items por página:
+
+```html
+<cu-table 
+  :data="data" 
+  :columns="columns"
+  :pagination="true"
+  :items-per-page="20"
+/>
+```
+
+### Propiedad: `showPageSize`
+
+Mostrar selector de tamaño de página:
+
+```html
+<cu-table 
+  :data="data" 
+  :columns="columns"
+  :pagination="true"
+  :show-page-size="true"
+/>
+```
+
+### Propiedad: `pageSizeOptions`
+
+Opciones para el selector de tamaño:
+
+```html
+<cu-table 
+  :data="data" 
+  :columns="columns"
+  :pagination="true"
+  :show-page-size="true"
+  :page-size-options="[5, 15, 30, 100]"
+/>
+```
+
+---
+
+## Ejemplos por Evento
+
+### Evento: `update:search`
+
+Manejar cambios en la búsqueda:
+
+```html
+<cu-table 
+  :data="data" 
+  :columns="columns"
+  :search-enabled="true"
+  @update:search="handleSearch"
+/>
+
+<script>
+function handleSearch(value) {
+  console.log('Buscando:', value);
+  // Puedes filtrar datos manualmente o enviar a API
+}
+</script>
+```
+
+### Evento: `update:currentPage`
+
+Manejar cambios de página:
+
+```html
+<cu-table 
+  :data="data" 
+  :columns="columns"
+  :pagination="true"
+  @update:current-page="handlePageChange"
+/>
+
+<script>
+function handlePageChange(page) {
+  console.log('Página:', page);
+  // Cargar datos para la página
+}
+</script>
+```
+
+### Evento: `update:itemsPerPage`
+
+Manejar cambios en el tamaño de página:
+
+```html
+<cu-table 
+  :data="data" 
+  :columns="columns"
+  :pagination="true"
+  :show-page-size="true"
+  @update:items-per-page="handlePageSizeChange"
+/>
+
+<script>
+function handlePageSizeChange(size) {
+  console.log('Tamaño de página:', size);
+  // Recalcular paginación
+}
+</script>
+```
+
+---
+
+## Ejemplos por Método
+
+### Método: `updateRow(index, newData)`
+
+Actualizar una fila específica:
+
+```html
+<cu-table id="myTable" :data="data" :columns="columns" />
+<cu-button onclick="updateFirstRow()">Actualizar Primera Fila</cu-button>
+
+<script>
+const table = document.getElementById('myTable');
+
+function updateFirstRow() {
+  table.updateRow(0, { name: 'Nuevo Nombre', age: 30 });
+}
+</script>
+```
+
+### Método: `getData(filterFn?)`
+
+Obtener todos los datos:
+
+```html
+<cu-table id="myTable" :data="data" :columns="columns" />
+<cu-button onclick="getAllData()">Obtener Datos</cu-button>
+
+<script>
+const table = document.getElementById('myTable');
+
+function getAllData() {
+  const allData = table.getData();
+  console.log('Todos los datos:', allData);
+  
+  // Con filtro
+  const activeOnly = table.getData(item => item.active);
+  console.log('Datos activos:', activeOnly);
+}
+</script>
+```
+
+### Método: `getRow(index)`
+
+Obtener una fila específica:
+
+```html
+<cu-table id="myTable" :data="data" :columns="columns" />
+<cu-button onclick="getFirstRow()">Obtener Primera Fila</cu-button>
+
+<script>
+const table = document.getElementById('myTable');
+
+function getFirstRow() {
+  const row = table.getRow(0);
+  console.log('Primera fila:', row);
+}
+</script>
+```
+
+### Método: `removeRow(index)`
+
+Eliminar una fila:
+
+```html
+<cu-table id="myTable" :data="data" :columns="columns" />
+<cu-button onclick="removeFirstRow()">Eliminar Primera Fila</cu-button>
+
+<script>
+const table = document.getElementById('myTable');
+
+function removeFirstRow() {
+  const success = table.removeRow(0);
+  if (success) {
+    console.log('Fila eliminada');
+  } else {
+    console.log('Índice inválido');
+  }
+}
+</script>
+```
+
+### Método: `addRow(newItem)`
+
+Añadir una nueva fila:
+
+```html
+<cu-table id="myTable" :data="data" :columns="columns" />
+<cu-button onclick="addNewRow()">Añadir Fila</cu-button>
+
+<script>
+const table = document.getElementById('myTable');
+
+function addNewRow() {
+  const newItem = { id: 4, name: 'Ana', age: 28 };
+  const success = table.addRow(newItem);
+  if (success) {
+    console.log('Fila añadida');
+  } else {
+    console.log('Error: estructura no válida');
+  }
+}
+</script>
+```
+
+### Método: `pushData(items)`
+
+Añadir múltiples filas:
+
+```html
+<cu-table id="myTable" :data="data" :columns="columns" />
+<cu-button onclick="addMultipleRows()">Añadir Múltiples Filas</cu-button>
+
+<script>
+const table = document.getElementById('myTable');
+
+function addMultipleRows() {
+  const newItems = [
+    { id: 4, name: 'Ana', age: 28 },
+    { id: 5, name: 'Pedro', age: 35 }
+  ];
+  const success = table.pushData(newItems);
+  if (success) {
+    console.log('Filas añadidas');
+  } else {
+    console.log('Error: alguna fila tiene estructura no válida');
+  }
+}
+</script>
+```
+
+---
+
+## Ejemplos por Estructura de Columnas
+
+### Columna: `key` y `label`
+
+Columnas básicas:
+
+```html
+<cu-table 
+  :data="data"
+  :columns="[
+    { key: 'id', label: 'ID' },
+    { key: 'name', label: 'Nombre Completo' },
+    { key: 'email', label: 'Correo Electrónico' }
+  ]"
+/>
+```
+
+### Columna: `cell` (función personalizada)
+
+Personalizar cómo se muestra el contenido:
+
+```html
+<cu-table 
+  :data="data"
+  :columns="[
+    { key: 'id', label: 'ID', cell: (row) => `#${row.id}` },
+    { key: 'price', label: 'Precio', cell: (row) => `$${row.price.toFixed(2)}` },
+    { 
+      key: 'active', 
+      label: 'Estado', 
+      cell: (row) => row.active ? '✓ Activo' : '✗ Inactivo' 
+    }
+  ]"
+/>
+```
+
+### Columna: `badges` (mostrar badges)
+
+Mostrar badges en una celda:
+
+```html
+<cu-table 
+  :data="data"
+  :columns="[
+    {
+      key: 'status',
+      label: 'Estado',
+      badges: (row) => [
+        { value: row.status, color: getStatusColor(row.status) }
+      ]
+    }
+  ]"
+/>
+
+<script>
+function getStatusColor(status) {
+  const colors = {
+    active: 'success',
+    pending: 'warning',
+    inactive: 'danger'
+  };
+  return colors[status] || 'neutral';
+}
+</script>
+```
+
+### Columna: `buttons` (botones de acción)
+
+Añadir botones a una celda:
+
+```html
+<cu-table 
+  :data="data"
+  :columns="[
+    {
+      key: 'actions',
+      label: 'Acciones',
+      buttons: (row) => [
+        {
+          label: 'Editar',
+          color: 'primary',
+          variant: 'ghost',
+          onClick: () => editRow(row)
+        },
+        {
+          label: 'Eliminar',
+          color: 'danger',
+          variant: 'ghost',
+          onClick: () => deleteRow(row)
+        }
+      ]
+    }
+  ]"
+/>
+
+<script>
+function editRow(row) {
+  console.log('Editando:', row);
+}
+
+function deleteRow(row) {
+  console.log('Eliminando:', row);
+}
+</script>
+```
+
+### Columna: `editable` (celda editable)
+
+Habilitar edición en una celda:
+
+```html
+<cu-table 
+  :data="data"
+  :columns="[
+    { key: 'id', label: 'ID' },
+    { key: 'name', label: 'Nombre', editable: true },
+    { key: 'email', label: 'Email', editable: true }
+  ]"
+/>
+```
+
+### Columna: `editable` con RegExp (validación de formato)
+
+Validación de formato al editar:
+
+```html
+<cu-table 
+  :data="data"
+  :columns="[
+    { key: 'name', label: 'Nombre', editable: true },
+    { 
+      key: 'email', 
+      label: 'Email', 
+      editable: /^[^@]+@[^@]+\.[^@]+$/,  // Validar formato de email
+      inputType: 'input'
+    },
+    { 
+      key: 'age', 
+      label: 'Edad', 
+      editable: /^\d+$/,  // Solo números
+      inputType: 'input'
+    }
+  ]"
+/>
+```
+
+### Columna: `validator` (validación personalizada)
+
+Validación personalizada con acceso al row completo:
+
+```html
+<cu-table 
+  :data="data"
+  :columns="[
+    {
+      key: 'quantity',
+      label: 'Cantidad',
+      editable: true,
+      validator: (value, row) => {
+        const num = parseInt(value, 10);
+        return !isNaN(num) && num >= 0 && num <= row.stock;
+      }
+    }
+  ]"
+/>
+```
+
+**Firma:** `(value: string, row: Record<string, any>) => boolean`
+- `value`: El valor ingresado por el usuario (siempre es string)
+- `row`: El objeto completo de la fila siendo editada
+- **Retorna `true`** para aceptar el valor, **`false`** para cancelar la edición
+
+> **⚠️ Orden de validación:** Si `editable` es un RegExp, primero se valida con ese RegExp, luego con `validator`. Si cualquiera falla, la edición se cancela.
+
+### Columna: `inputType` (tipo de input para edición)
+
+Elegir entre input o textarea:
+
+```html
+<cu-table 
+  :data="data"
+  :columns="[
+    { key: 'name', label: 'Nombre', editable: true, inputType: 'input' },
+    { key: 'description', label: 'Descripción', editable: true, inputType: 'textarea' }
+  ]"
+/>
+```
+
+### Columna: `singleClick` (edición con un clic)
+
+Habilitar edición con un solo clic:
+
+```html
+<cu-table 
+  :data="data"
+  :columns="[
+    { key: 'name', label: 'Nombre', editable: true, singleClick: true }
+  ]"
+/>
+```
+
+---
+
+## Ejemplos por Slot
+
+### Slot: `empty`
+
+Personalizar el mensaje cuando no hay datos:
+
+```html
+<cu-table :data="[]" :columns="columns">
+  <template #empty>
+    <div class="text-center p-8">
+      <p class="text-lg">No se encontraron resultados</p>
+      <cu-button color="primary" onclick="loadData()" class="mt-4">
+        Recargar Datos
+      </cu-button>
+    </div>
+  </template>
+</cu-table>
+
+<script>
+function loadData() {
+  console.log('Cargando datos...');
+}
+</script>
+```
+
+### Slot: `header-{key}`
+
+Personalizar el header de una columna:
+
+```html
+<cu-table :data="data" :columns="columns">
+  <template #header-name="{ column }">
+    <div class="flex items-center gap-2">
+      <span>Nombre</span>
+      <span>ℹ️</span>
+    </div>
+  </template>
+</cu-table>
+```
+
+### Slot: `cell-{key}`
+
+Personalizar el contenido de una celda:
+
+```html
+<cu-table :data="data" :columns="columns">
+  <template #cell-status="{ row, column, index }">
+    <cu-badge :color="getStatusColor(row.status)">
+      {{ row.status }}
+    </cu-badge>
+  </template>
+</cu-table>
+
+<script>
+function getStatusColor(status) {
+  const colors = {
+    active: 'success',
+    pending: 'warning',
+    inactive: 'danger'
+  };
+  return colors[status] || 'neutral';
+}
+</script>
+```
+
+---
+
+## Función `cell` para Columnas
 
 La función `cell` permite personalizar cómo se muestra el contenido de una celda.
 
-### Ejemplo 1: Formatear valores
+### Ejemplo 1: Formatear valores numéricos
 
 ```javascript
 const columns = [
@@ -186,7 +748,7 @@ const columns = [
 ];
 ```
 
-### Ejemplo 2: Mostrar múltiples valores
+### Ejemplo 2: Combinar múltiples valores
 
 ```javascript
 const columns = [
@@ -198,7 +760,7 @@ const columns = [
 ];
 ```
 
-### Ejemplo 3: Condicional
+### Ejemplo 3: Valor condicional
 
 ```javascript
 const columns = [
@@ -222,9 +784,21 @@ const columns = [
 ];
 ```
 
-## Función `badges:` para Columnas
+### Ejemplo 5: **⚠️ IMPORTANTE** - cell dinámica
 
-La función `badges` permite mostrar múltiples badges en una celda.
+La función `cell` **solo afecta el renderizado**, no el valor real del dato. Usa una función dinámica que lea el valor actual:
+
+```javascript
+// ❌ MAL: valor estático
+cell: () => 0  // Siempre mostrará 0 aunque el dato cambie
+
+// ✅ BIEN: función dinámica
+cell: (row) => row.count ?? 0  // Lee el valor actual
+```
+
+---
+
+## Función `badges` para Columnas
 
 ### Ejemplo 1: Badge de status único
 
@@ -283,9 +857,9 @@ const columns = [
 ];
 ```
 
-## Función `buttons:` para Columnas
+---
 
-La función `buttons` permite mostrar botones de acción en una celda.
+## Función `buttons` para Columnas
 
 ### Ejemplo 1: Botones de acciones básicas
 
@@ -322,7 +896,7 @@ function deleteRow(row) {
 }
 ```
 
-### Ejemplo 2: Botones con iconos
+### Ejemplo 2: Botones con iconos (HTML)
 
 ```javascript
 const columns = [
@@ -409,9 +983,9 @@ const columns = [
 ];
 ```
 
-## Celdas Editables
+---
 
-Las celdas pueden ser editables configuran`do la propiedad `editable` en la columna.
+## Celdas Editables
 
 ### Ejemplo 1: Edición básica
 
@@ -447,80 +1021,16 @@ const columns = [
     label: 'Descripción',
     editable: true,
     inputType: 'textarea',
-    singleClick: true  // Edaditar con un solo clic
+    singleClick: true  // Editar con un solo clic
   }
 ];
 ```
 
-### Ejemplo 4: edición condicional
-
-```javascript
-const columns = [
-  {
-    key: 'name',
-    label: 'Nombre',
-    editable: (row) => row.canEdit  // Solo editable si el dato tiene permisos
-  }
-];
-```
-
-### Validación con `validator`
-
-La propiedad `validator` permite validación personalizada basada en el valor ingresado y el contexto completo de la fila. A diferencia de `editable: RegExp` que solo valida formato, `validator` recibe el valor Y la fila completa.
-
-```javascript
-const columns = [
-  {
-    key: 'count',
-    label: 'Cantidad',
-    editable: true,
-    validator: (value, row) => {
-      const num = parseInt(value, 10);
-      return !isNaN(num) && num >= 0 && num <= row.stock;
-    }
-  }
-];
-```
-
-**Firma:** `(value: string, row: Record<string, any>) => boolean`
-
-- `value`: El valor ingresado por el usuario (siempre es string)
-- `row`: El objeto completo de la fila siendo editada
-- **Retorna `true`** para aceptar el valor, **`false`** para cancelar la edición
-
-> **⚠️ Orden de validación:** Si `editable` es un RegExp, primero se valida con ese RegExp, luego con `validator`. Si cualquiera falla, la edición se cancela.
-
----
-
-## 📌 Observaciones Importantes
-
-### Sobre `cell` y valores por defecto
-
-La función `cell` **solo afecta el renderizado**, no el valor real del dato. Esto tiene implicaciones:
-
-❌ **Problema:** Si usas `cell: () => 0` (valor estático), la celda siempre mostrará `0` aunque el dato haya cambiado al editar.
-
-✅ **Solución:** Usa una función **dinámica** que lea el valor actual:
-
-```javascript
-const columns = [
-  {
-    key: 'count',
-    label: 'Cantidad',
-    editable: true,
-    cell: (row) => row.count ?? 0  // ✅ Lee el valor actual o usa 0
-  }
-];
-```
-
-### Sobre edición de campos no existentes
+### Ejemplo 4: Campo dinámico (no existe en datos iniciales)
 
 Cuando un campo **no existe en los datos iniciales** pero la columna es editable:
-
-- **Valor inicial:** El input mostrará vacío (`""`) en lugar de `"undefined"`
+- **Valor inicial:** El input muestra vacío (`""`) en lugar de `"undefined"`
 - **Al guardar:** El campo se añadirá al objeto con el valor editado
-
-Ejemplo con campo dinámico:
 
 ```javascript
 const columns = [
@@ -535,6 +1045,45 @@ const columns = [
 // Datos iniciales: [{ id: 1, name: 'Producto' }]
 // Tras editar 'notes': [{ id: 1, name: 'Producto', notes: 'Mi nota' }]
 ```
+
+### Ejemplo 5: Validación personalizada con `validator`
+
+```javascript
+const columns = [
+  {
+    key: 'count',
+    label: 'Cantidad',
+    editable: true,
+    cell: (row) => row.count ?? 0,  // ✅ Dinámica
+    validator: (value, row) => {
+      const num = parseInt(value, 10);
+      return !isNaN(num) && num >= 0 && num <= row.stock;
+    }
+  }
+];
+```
+
+---
+
+## 📌 Observaciones Importantes
+
+### Sobre `cell` y valores por defecto
+
+La función `cell` **solo afecta el renderizado**, no el valor real del dato:
+
+```javascript
+// ❌ PROBLEMA: valor estático
+cell: () => 0  // Siempre mostrará 0 aunque el dato haya cambiado al editar
+
+// ✅ SOLUCIÓN: función dinámica
+cell: (row) => row.count ?? 0  // ✅ Lee el valor actual o usa 0
+```
+
+### Sobre edición de campos no existentes
+
+Cuando un campo **no existe en los datos iniciales** pero la columna es editable:
+- **Valor inicial:** El input muestra vacío (`""`) en lugar de `"undefined"` (gracias a `row[col.key] != null ? String(row[col.key]) : ""`)
+- **Al guardar:** El campo se añadirá al objeto con el valor editado
 
 ### Ejemplo completo: Campo dinámico con `cell` + `validator`
 
@@ -573,8 +1122,6 @@ table.columns = [
 
 ## Búsqueda
 
-El componente soporta búsqueda en múltiples campos.
-
 ### Ejemplo 1: Búsqueda básica
 
 ```html
@@ -586,11 +1133,8 @@ El componente soporta búsqueda en múltiples campos.
 />
 
 <script>
-const searchValue = '';
-
 function handleSearch(value) {
-  searchValue = value;
-  // Filtrar datos manualmente si es necesario
+  console.log('Buscando:', value);
 }
 </script>
 ```
@@ -613,9 +1157,11 @@ function handleSearch(value) {
   :data="data" 
   :columns="columns"
   :search-enabled="true"
-  :search-value="initialSearchValue"
+  search-value="Juan"
 />
 ```
+
+---
 
 ## Paginación
 
@@ -633,7 +1179,6 @@ function handleSearch(value) {
 <script>
 function handlePageChange(page) {
   console.log('Cambiando a página:', page);
-  // Cargar datos para la página
 }
 </script>
 ```
@@ -659,57 +1204,9 @@ function handlePageSizeChange(size) {
 </script>
 ```
 
-## Slots
+---
 
-El componente soporta varios slots para personalización:
-
-### Slot `empty`
-
-Personaliza el mensaje cuando no hay datos:
-
-```html
-<cu-table :data="[]" :columns="columns">
-  <template #empty>
-    <div class="text-center p-8">
-      <p>No se encontraron resultados</p>
-      <cu-button color="primary" onclick="loadData()">
-        Recargar
-      </cu-button>
-    </div>
-  </template>
-</cu-table>
-```
-
-### Slot `header-{key}`
-
-Personaliza el header de una columna:
-
-```html
-<cu-table :data="data" :columns="columns">
-  <template #header-name="{ column }">
-    <div class="flex items-center gap-2">
-      <span>Nombre</span>
-      <span>ℹ️</span>
-    </div>
-  </template>
-</cu-table>
-```
-
-### Slot `cell-{key}`
-
-Personaliza el contenido de una celda para una columna específica:
-
-```html
-<cu-table :data="data" :columns="columns">
-  <template #cell-status="{ row, column, index }">
-    <cu-badge :color="getStatusColor(row.status)">
-      {{ row.status }}
-    </cu-badge>
-  </template>
-</cu-table>
-```
-
-## Ejemplos Complejos
+## Casos de Uso Combinados
 
 ### Ejemplo 1: Tabla con todas las características
 
@@ -734,7 +1231,7 @@ const columns = [
   {
     key: 'email',
     label: 'Correo',
-    editable: /^[^@]+@[^@]+\.[^@]+$/,
+    editable: /^[^@]+@[^@]+\.[^@]+$/,  // Validar formato de email
     inputType: 'input'
   },
   {
@@ -792,6 +1289,7 @@ function deleteRow(row) {
 </script>
 
 <cu-table 
+  id="full-table"
   :data="data" 
   :columns="columns"
   :search-enabled="true"
@@ -835,27 +1333,160 @@ loadData();
 />
 ```
 
+### Ejemplo 3: Tabla con limpieza de datos
+
+```html
+<cu-table id="clearable-table" :data="data" :columns="columns" />
+<cu-button onclick="clearTable()">Limpiar Tabla</cu-button>
+
+<script>
+const table = document.getElementById('clearable-table');
+
+function clearTable() {
+  // Opción 1: Asignar array vacío
+  table.data = [];
+  
+  // Opción 2: Remover todas las filas
+  // while (table.getData().length > 0) {
+  //   table.removeRow(0);
+  // }
+}
+</script>
+```
+
+### Ejemplo 4: Tabla editable con guardado masivo
+
+```javascript
+const data = [
+  { id: 1, name: 'Producto A', stock: 100, quantity: 0 },
+  { id: 2, name: 'Producto B', stock: 50, quantity: 0 }
+];
+
+const columns = [
+  { key: 'id', label: 'ID' },
+  { key: 'name', label: 'Producto' },
+  { key: 'stock', label: 'Stock' },
+  {
+    key: 'quantity',
+    label: 'Cantidad',
+    editable: true,
+    cell: (row) => row.quantity ?? 0,
+    validator: (value, row) => {
+      const num = parseInt(value, 10);
+      return !isNaN(num) && num >= 0 && num <= row.stock;
+    }
+  }
+];
+
+function saveAll() {
+  const allData = table.getData();
+  console.log('Datos a guardar:', allData);
+  // Enviar a API
+}
+
+function addNewProduct() {
+  const newProduct = { id: 0, name: 'Nuevo', stock: 0, quantity: 0 };
+  table.addRow(newProduct);
+}
+</script>
+
+<cu-table id="editable-table" :data="data" :columns="columns" />
+<div class="flex gap-2 mt-4">
+  <cu-button color="primary" onclick="saveAll()">Guardar Todo</cu-button>
+  <cu-button color="success" onclick="addNewProduct()">Añadir Producto</cu-button>
+</div>
+```
+
+### Ejemplo 5: Tabla con badges y botones combinados
+
+```javascript
+const data = [
+  { id: 1, name: 'Tarea 1', status: 'pending', priority: 'high' },
+  { id: 2, name: 'Tarea 2', status: 'active', priority: 'medium' },
+  { id: 3, name: 'Tarea 3', status: 'completed', priority: 'low' }
+];
+
+const columns = [
+  { key: 'id', label: 'ID' },
+  { key: 'name', label: 'Nombre', editable: true },
+  {
+    key: 'status',
+    label: 'Estado',
+    badges: (row) => [
+      { value: row.status, color: getStatusColor(row.status) }
+    ]
+  },
+  {
+    key: 'priority',
+    label: 'Prioridad',
+    badges: (row) => [
+      { value: row.priority, color: getPriorityColor(row.priority) }
+    ]
+  },
+  {
+    key: 'actions',
+    label: 'Acciones',
+    buttons: (row) => [
+      {
+        label: 'Aprobar',
+        color: 'success',
+        variant: 'ghost',
+        onClick: () => approveTask(row)
+      }
+    ]
+  }
+];
+
+function getStatusColor(status) {
+  return { pending: 'warning', active: 'primary', completed: 'success' }[status] || 'neutral';
+}
+
+function getPriorityColor(priority) {
+  return { high: 'danger', medium: 'warning', low: 'success' }[priority] || 'neutral';
+}
+
+function approveTask(row) {
+  row.status = 'completed';
+  table.updateRow(table.getData().indexOf(row), row);
+}
+</script>
+
+<cu-table :data="data" :columns="columns" />
+```
+
+---
+
 ## Estilos CSS
 
 ```css
+/* Personalizar border-radius de la tabla */
 cu-table {
   --uno-border-radius: 0.375rem;
+}
+
+/* Personalizar color de borde */
+cu-table table {
   --uno-border-color: #e5e7eb;
 }
 
-cu-table table {
-  --uno-border-spacing: 0;
-}
-
+/* Personalizar header de la tabla */
 cu-table th {
   --uno-bg: #374151;
   --uno-text-color: #f9fafb;
 }
 
+/* Personalizar hover de filas */
 cu-table tbody tr:hover {
   --uno-bg: #f3f4f6;
 }
+
+/* Personalizar pagination */
+cu-table cu-pagination {
+  margin-top: 1rem;
+}
 ```
+
+---
 
 ## Componentes Relacionados
 
@@ -864,3 +1495,5 @@ cu-table tbody tr:hover {
 - [Input](Input.md) - Usado para celdas editables
 - [Textarea](Textarea.md) - Usado para celdas editables de texto largo
 - [Pagination](Pagination.md) - Usado para la paginación
+- [Modal](Modal.md) - Para mostrar tablas dentro de modales
+- [Alert](Alert.md) - Para mostrar mensajes de alerta relacionados con la tabla
