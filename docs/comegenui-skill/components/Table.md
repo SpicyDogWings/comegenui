@@ -142,6 +142,7 @@ Cada columna es un objeto con las siguientes propiedades:
 | `badges` | Function | Función que devuelve un array de [BadgeConfig](#badgeconfig) para mostrar badges |
 | `buttons` | Function | Función que devuelve un array de [ButtonConfig](#buttonconfig) para mostrar botones |
 | `editable` | Boolean/RegExp | Permite editar la celda. Si es RegExp, valida el valor |
+| `validator` | Function | Función de validación personalizada: `(value: string, row: object) => boolean`. Si devuelve `false`, la edición se cancela |
 | `inputType` | String | Tipo de input para edición (`'input'` o `'textarea'`) |
 | `singleClick` | Boolean | `false` | Habilitar edición con un solo clic (por defecto es doble clic) |
 
@@ -462,6 +463,61 @@ const columns = [
   }
 ];
 ```
+
+### Ejemplo 5: Validación personalizada con `validator`
+
+Usa `validator` para validar el valor de la celda basado en el contexto completo de la fila:
+
+```javascript
+const columns = [
+  {
+    key: 'name',
+    label: 'Producto',
+    editable: true
+  },
+  {
+    key: 'stock',
+    label: 'Stock',
+    editable: true
+  },
+  {
+    key: 'count',
+    label: 'Cantidad',
+    editable: true,
+    validator: (value, row) => {
+      const num = parseInt(value, 10);
+      // Validar que count es un número válido y no excede el stock
+      return !isNaN(num) && num >= 0 && num <= row.stock;
+    }
+  }
+];
+```
+
+La función `validator` recibe dos parámetros:
+- `value`: El nuevo valor ingresado (siempre es string)
+- `row`: El objeto completo de la fila siendo editada
+
+Si la función devuelve `false`, la edición se cancela y el valor no se guarda.
+
+### Ejemplo 6: Validación con expresiones regulares Y validator
+
+Puedes combinar `editable` con RegExp para validación de formato y `validator` para validación lógica:
+
+```javascript
+const columns = [
+  {
+    key: 'email',
+    label: 'Correo',
+    editable: /^[^@]+@[^@]+\.[^@]+$/,  // Validar formato de email
+    validator: (value, row) => {
+      // Validar que el dominio coincide con el de la empresa
+      return value.endsWith('@empresa.com');
+    }
+  }
+];
+```
+
+> **Nota:** El orden de validación es: primero se valida el RegExp (si `editable` es un RegExp), luego se ejecuta el `validator`. Si cualquiera falla, la edición se cancela.
 
 ## Búsqueda
 
