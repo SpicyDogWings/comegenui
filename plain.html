@@ -3,9 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Input Demo</title>
+    <title>Textarea Demo</title>
     <script src="dist/vendor/vue-runtime.iife.js"></script>
-    <script src="dist/CuInput.umd.js"></script>
+    <script src="dist/CuTextarea.umd.js"></script>
     <style>
       :root {
         --bg-primary: oklch(0.634 0.133 238.39);
@@ -57,7 +57,7 @@
         margin: 15px 0;
       }
       
-      .demo-grid cu-input {
+      .demo-grid cu-textarea {
         width: 100%;
       }
       
@@ -71,51 +71,51 @@
     </style>
   </head>
   <body>
-    <h1>Input Demo</h1>
+    <h1>Textarea Demo</h1>
     
     <div class="section">
-      <h2>⌨️ Input</h2>
+      <h2>📝 Textarea</h2>
       <p>Variantes: <span class="code">outlined</span>, <span class="code">soft</span>, <span class="code">ghost</span>, <span class="code">subtle</span>, <span class="code">none</span></p>
       
       <h3>Outlined</h3>
       <div class="demo-grid">
-        <cu-input color="primary" variant="outlined" placeholder="Primary"></cu-input>
-        <cu-input color="neutral" variant="outlined" placeholder="Neutral"></cu-input>
-        <cu-input color="success" variant="outlined" placeholder="Success"></cu-input>
-        <cu-input color="warning" variant="outlined" placeholder="Warning"></cu-input>
-        <cu-input color="danger" variant="outlined" placeholder="Danger"></cu-input>
+        <cu-textarea color="primary" variant="outlined" placeholder="Primary"></cu-textarea>
+        <cu-textarea color="neutral" variant="outlined" placeholder="Neutral"></cu-textarea>
+        <cu-textarea color="success" variant="outlined" placeholder="Success"></cu-textarea>
+        <cu-textarea color="warning" variant="outlined" placeholder="Warning"></cu-textarea>
+        <cu-textarea color="danger" variant="outlined" placeholder="Danger"></cu-textarea>
       </div>
 
       <h3>Soft</h3>
       <div class="demo-grid">
-        <cu-input color="primary" variant="soft" placeholder="Primary"></cu-input>
-        <cu-input color="neutral" variant="soft" placeholder="Neutral"></cu-input>
-        <cu-input color="success" variant="soft" placeholder="Success"></cu-input>
-        <cu-input color="warning" variant="soft" placeholder="Warning"></cu-input>
-        <cu-input color="danger" variant="soft" placeholder="Danger"></cu-input>
+        <cu-textarea color="primary" variant="soft" placeholder="Primary"></cu-textarea>
+        <cu-textarea color="neutral" variant="soft" placeholder="Neutral"></cu-textarea>
+        <cu-textarea color="success" variant="soft" placeholder="Success"></cu-textarea>
+        <cu-textarea color="warning" variant="soft" placeholder="Warning"></cu-textarea>
+        <cu-textarea color="danger" variant="soft" placeholder="Danger"></cu-textarea>
       </div>
 
       <h3>Ghost</h3>
       <div class="demo-grid">
-        <cu-input color="primary" variant="ghost" placeholder="Primary"></cu-input>
-        <cu-input color="neutral" variant="ghost" placeholder="Neutral"></cu-input>
-        <cu-input color="success" variant="ghost" placeholder="Success"></cu-input>
-        <cu-input color="warning" variant="ghost" placeholder="Warning"></cu-input>
-        <cu-input color="danger" variant="ghost" placeholder="Danger"></cu-input>
+        <cu-textarea color="primary" variant="ghost" placeholder="Primary"></cu-textarea>
+        <cu-textarea color="neutral" variant="ghost" placeholder="Neutral"></cu-textarea>
+        <cu-textarea color="success" variant="ghost" placeholder="Success"></cu-textarea>
+        <cu-textarea color="warning" variant="ghost" placeholder="Warning"></cu-textarea>
+        <cu-textarea color="danger" variant="ghost" placeholder="Danger"></cu-textarea>
       </div>
 
       <h3>Subtle</h3>
       <div class="demo-grid">
-        <cu-input color="primary" variant="subtle" placeholder="Primary"></cu-input>
-        <cu-input color="neutral" variant="subtle" placeholder="Neutral"></cu-input>
-        <cu-input color="success" variant="subtle" placeholder="Success"></cu-input>
-        <cu-input color="warning" variant="subtle" placeholder="Warning"></cu-input>
-        <cu-input color="danger" variant="subtle" placeholder="Danger"></cu-input>
+        <cu-textarea color="primary" variant="subtle" placeholder="Primary"></cu-textarea>
+        <cu-textarea color="neutral" variant="subtle" placeholder="Neutral"></cu-textarea>
+        <cu-textarea color="success" variant="subtle" placeholder="Success"></cu-textarea>
+        <cu-textarea color="warning" variant="subtle" placeholder="Warning"></cu-textarea>
+        <cu-textarea color="danger" variant="subtle" placeholder="Danger"></cu-textarea>
       </div>
 
       <h3>None</h3>
       <div class="demo-grid">
-        <cu-input variant="none" placeholder="None"></cu-input>
+        <cu-textarea variant="none" placeholder="None"></cu-textarea>
       </div>
     </div>
   </body>

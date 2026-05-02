@@ -80,84 +80,100 @@ const textareaClasses = computed(() => [
         "focus:ring-warning-300": props.color === "warning",
         "focus:ring-danger-300": props.color === "danger",
     },
+    /* Regla general para subtle */
     {
-        "bg-primary bg-opacity-10 border-solid border-1 border-primary-300":
+        "bg-opacity-10 border-solid border-1": props.variant === "subtle",
+    },
+    /* Regla general para outlined */
+    {
+        "bg-transparent border-solid border-2": props.variant === "outlined",
+    },
+    /* Regla general para soft */
+    {
+        "bg-opacity-10 hover:bg-opacity-20": props.variant === "soft",
+    },
+    /* Regla general para ghost */
+    {
+        "bg-transparent hover:bg-opacity-10": props.variant === "ghost",
+    },
+    {
+        "bg-primary border-primary-300":
             props.color === "primary" && props.variant === "subtle",
     },
     {
-        "bg-transparent border-solid border-2 border-primary":
+        "border-primary":
             props.color === "primary" && props.variant === "outlined",
     },
     {
-        "bg-primary bg-opacity-10 hover:bg-primary hover:bg-opacity-20":
+        "bg-primary":
             props.color === "primary" && props.variant === "soft",
     },
     {
-        "bg-transparent hover:bg-primary hover:bg-opacity-10":
+        "hover:bg-primary":
             props.color === "primary" && props.variant === "ghost",
     },
     {
-        "bg-charcoal bg-opacity-10 border-solid border-1 border-charcoal-300":
+        "bg-charcoal border-charcoal-300":
             props.color === "neutral" && props.variant === "subtle",
     },
     {
-        "bg-transparent border-solid border-2 border-charcoal-800":
+        "border-charcoal-800":
             props.color === "neutral" && props.variant === "outlined",
     },
     {
-        "bg-charcoal bg-opacity-10 hover:bg-charcoal hover:bg-opacity-20":
+        "bg-charcoal":
             props.color === "neutral" && props.variant === "soft",
     },
     {
-        "bg-transparent hover:bg-charcoal hover:bg-opacity-10":
+        "hover:bg-charcoal":
             props.color === "neutral" && props.variant === "ghost",
     },
     {
-        "bg-success bg-opacity-10 border-solid border-1 border-success-300":
+        "bg-success border-success-300":
             props.color === "success" && props.variant === "subtle",
     },
     {
-        "bg-transparent border-solid border-2 border-success":
+        "border-success":
             props.color === "success" && props.variant === "outlined",
     },
     {
-        "bg-success bg-opacity-10 hover:bg-success hover:bg-opacity-20":
+        "bg-success":
             props.color === "success" && props.variant === "soft",
     },
     {
-        "bg-transparent hover:bg-success hover:bg-opacity-10":
+        "hover:bg-success":
             props.color === "success" && props.variant === "ghost",
     },
     {
-        "bg-warning bg-opacity-10 border-solid border-1 border-warning-300":
+        "bg-warning border-warning-300":
             props.color === "warning" && props.variant === "subtle",
     },
     {
-        "bg-transparent border-solid border-2 border-warning":
+        "border-warning":
             props.color === "warning" && props.variant === "outlined",
     },
     {
-        "bg-warning bg-opacity-10 hover:bg-warning hover:bg-opacity-20":
+        "bg-warning":
             props.color === "warning" && props.variant === "soft",
     },
     {
-        "bg-transparent hover:bg-warning hover:bg-opacity-10":
+        "hover:bg-warning":
             props.color === "warning" && props.variant === "ghost",
     },
     {
-        "bg-danger bg-opacity-10 border-solid border-1 border-danger-300":
+        "bg-danger border-danger-300":
             props.color === "danger" && props.variant === "subtle",
     },
     {
-        "bg-transparent border-solid border-2 border-danger":
+        "border-danger":
             props.color === "danger" && props.variant === "outlined",
     },
     {
-        "bg-danger bg-opacity-10 hover:bg-danger hover:bg-opacity-20":
+        "bg-danger":
             props.color === "danger" && props.variant === "soft",
     },
     {
-        "bg-transparent hover:bg-danger hover:bg-opacity-10":
+        "hover:bg-danger":
             props.color === "danger" && props.variant === "ghost",
     },
     {
