@@ -47,6 +47,9 @@ const buttonClasses = computed(() => [
     "bg-transparent hover:underline hover:decoration-solid hover:decoration-2": props.variant === "link",
   },
   {
+    "bg-opacity-10 border-solid border-1 hover:bg-opacity-20 active:bg-opacity-30": props.variant === "subtle",
+  },
+  {
     "bg-primary text-primary-50 hover:bg-primary-600 active:bg-primary-700":
       props.color === "primary" && props.variant === "solid",
   },
@@ -55,7 +58,7 @@ const buttonClasses = computed(() => [
       props.color === "primary" && props.variant === "soft",
   },
   {
-    "bg-primary bg-opacity-10 text-primary border-solid border-1 border-primary-300 hover:bg-primary hover:bg-opacity-20 active:bg-primary active:bg-opacity-30":
+    "bg-primary text-primary border-primary-300 hover:bg-primary active:bg-primary":
       props.color === "primary" && props.variant === "subtle",
   },
   {
@@ -79,7 +82,7 @@ const buttonClasses = computed(() => [
       props.color === "neutral" && props.variant === "soft",
   },
   {
-    "bg-charcoal bg-opacity-10 text-charcoal-800 border-solid border-1 border-charcoal-300 hover:bg-charcoal hover:bg-opacity-20 active:bg-charcoal active:bg-opacity-30":
+    "bg-charcoal text-charcoal-800 border-charcoal-300 hover:bg-charcoal active:bg-charcoal":
       props.color === "neutral" && props.variant === "subtle",
   },
   {
@@ -103,7 +106,7 @@ const buttonClasses = computed(() => [
       props.color === "success" && props.variant === "soft",
   },
   {
-    "bg-success bg-opacity-10 text-success-600 border-solid border-1 border-success-300 hover:bg-success hover:bg-opacity-20 active:bg-success active:bg-opacity-30":
+    "bg-success text-success-600 border-success-300 hover:bg-success active:bg-success":
       props.color === "success" && props.variant === "subtle",
   },
   {
@@ -127,7 +130,7 @@ const buttonClasses = computed(() => [
       props.color === "warning" && props.variant === "soft",
   },
   {
-    "bg-warning bg-opacity-10 text-warning-500 border-solid border-1 border-warning-300 hover:bg-warning hover:bg-opacity-20 active:bg-warning active:bg-opacity-30":
+    "bg-warning text-warning-500 border-warning-300 hover:bg-warning active:bg-warning":
       props.color === "warning" && props.variant === "subtle",
   },
   {
@@ -151,7 +154,7 @@ const buttonClasses = computed(() => [
       props.color === "danger" && props.variant === "soft",
   },
   {
-    "bg-danger bg-opacity-10 text-danger border-solid border-1 border-danger-300 hover:bg-danger hover:bg-opacity-20 active:bg-danger active:bg-opacity-30":
+    "bg-danger text-danger border-danger-300 hover:bg-danger active:bg-danger":
       props.color === "danger" && props.variant === "subtle",
   },
   {
