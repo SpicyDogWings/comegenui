@@ -125,7 +125,7 @@ defineExpose({
 <template>
   <div v-show="internalShow" class="p-5 rounded-cu font-sans flex flex-wrap justify-start items-start" role="alert" :class="alertColorClasses">
     <div class="w-full flex justify-between items-center">
-      <div class="flex justify-center items-center gap-3">
+      <div class="flex justify-center items-center gap-2">
         <slot name="icon"></slot>
         <h3 v-if="props.title" class="font-bold m-0">{{ props.title }}</h3>
       </div>

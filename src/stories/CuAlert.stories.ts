@@ -31,7 +31,7 @@ const meta: Meta<typeof CuAlert> = {
     },
   },
   args: {
-    color: "primary",
+    color: "neutral",
     variant: "soft",
     title: "Alert Title",
     close: false,
@@ -119,7 +119,7 @@ export const AllCombinations: Story = {
     template: `
       <div class="flex flex-col gap-4">
         <div v-for="variant in variants" :key="variant" class="flex flex-col gap-2">
-          <h3 class="text-sm font-medium text-charcoal-700">{{ variant }}</h3>
+          <h3 class="text-sm font-medium text-charcoal-700 font-sans">{{ variant }}</h3>
           <div class="flex gap-2 flex-wrap">
             <CuAlert v-for="color in colors" :key="color" :variant="variant" :color="color" class="w-48">
               {{ color }}
@@ -141,5 +141,48 @@ export const WithClose: Story = {
     components: { CuAlert },
     setup: () => ({ args }),
     template: "<CuAlert v-bind='args'>Click close to dismiss.</CuAlert>",
+  }),
+};
+
+// 7. With icon
+export const WithIcon: Story = {
+  args: {
+    color: "primary",
+    variant: "soft",
+    title: "Alert with Icon",
+  },
+  render: (args) => ({
+    components: { CuAlert },
+    setup: () => ({ args }),
+    template: `
+      <CuAlert v-bind='args'>
+        <template #icon>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-alert-icon lucide-circle-alert"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+        </template>
+        This is an alert with an icon.
+      </CuAlert>
+    `,
+  }),
+};
+
+// 8. With icon and close
+export const Full: Story = {
+  args: {
+    color: "warning",
+    variant: "soft",
+    title: "Warning",
+    close: true,
+  },
+  render: (args) => ({
+    components: { CuAlert },
+    setup: () => ({ args }),
+    template: `
+      <CuAlert v-bind='args'>
+        <template #icon>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-alert-icon lucide-circle-alert"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+        </template>
+        This is a warning alert with icon and close button.
+      </CuAlert>
+    `,
   }),
 };
