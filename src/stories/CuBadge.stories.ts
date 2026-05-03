@@ -1,5 +1,4 @@
 import CuBadge from "../components/Badge.ce.vue";
-import "./Badge.css";
 
 import type { Meta, StoryObj } from "@storybook/vue3";
 

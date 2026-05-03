@@ -1,5 +1,4 @@
 import CuTable from "../components/Table.ce.vue";
-import "./Table.css";
 
 import type { Meta, StoryObj } from "@storybook/vue3";
 

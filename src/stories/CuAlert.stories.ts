@@ -1,5 +1,4 @@
 import CuAlert from "../components/Alert.ce.vue";
-import "./Alert.css";
 
 import type { Meta, StoryObj } from "@storybook/vue3";
 

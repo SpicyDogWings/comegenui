@@ -1,5 +1,4 @@
 import CuModal from "../components/Modal.ce.vue";
-import "./Modal.css";
 
 import type { Meta, StoryObj } from "@storybook/vue3";
 

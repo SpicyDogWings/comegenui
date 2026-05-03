@@ -1,5 +1,4 @@
 import CuButton from "../components/Button.ce.vue";
-import "./Button.css";
 
 import type { Meta, StoryObj } from "@storybook/vue3";
 
