@@ -73,7 +73,7 @@ export const ColorStates: Story = {
 };
 
 // 4. Variant in primary
-export const Variant: Story = {
+export const VariantInPrimary: Story = {
   render: () => ({
     components: { CuBadge },
     setup: () => {
@@ -91,7 +91,7 @@ export const Variant: Story = {
 };
 
 // 5. All combinations
-export const Combinations: Story = {
+export const AllCombinations: Story = {
   render: () => ({
     components: { CuBadge },
     setup: () => {
@@ -114,7 +114,7 @@ export const Combinations: Story = {
   }),
 };
 
-// 6. With icon
+// 6. With Icon
 export const Icon: Story = {
   args: {
     color: "primary",

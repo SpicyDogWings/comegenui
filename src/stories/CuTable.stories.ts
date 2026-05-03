@@ -205,8 +205,8 @@ export const WithButtons: Story = {
   }),
 };
 
-// 6. Editable
-export const Editable: Story = {
+// 6. With Editable
+export const WithEditable: Story = {
   render: () => ({
     components: { CuTable },
     setup: () => {

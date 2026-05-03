@@ -127,8 +127,8 @@ export const Combinations: Story = {
   }),
 };
 
-// 6. Types
-export const Types: Story = {
+// 6. With Types
+export const WithTypes: Story = {
   render: () => ({
     components: { CuInput },
     setup: () => {

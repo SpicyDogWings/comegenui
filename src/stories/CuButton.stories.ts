@@ -141,8 +141,8 @@ export const Combinations: Story = {
   }),
 };
 
-// 7. Disabled
-export const Disabled: Story = {
+// 7. With Disabled
+export const WithDisabled: Story = {
   args: {
     disabled: true,
     color: "primary",
@@ -155,8 +155,8 @@ export const Disabled: Story = {
   }),
 };
 
-// 8. Link with target
-export const Link: Story = {
+// 8. With Link
+export const WithLink: Story = {
   args: {
     variant: "link",
     to: "https://example.com",
@@ -169,7 +169,7 @@ export const Link: Story = {
   }),
 };
 
-// 9. Slots with icon
+// 9. With Icon
 export const Icon: Story = {
   args: {
     color: "primary",

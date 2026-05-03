@@ -44,10 +44,11 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const Primary: Story = {
+// 1. Default
+export const Default: Story = {
   args: {
-    title: "Primary Modal",
-    description: "This is a primary modal dialog",
+    title: "Modal Title",
+    description: "This is a default modal dialog",
   },
   render: (args) => ({
     components: { CuModal },
@@ -68,6 +69,7 @@ export const Primary: Story = {
   }),
 };
 
+// 2. Sizes
 export const Sizes: Story = {
   render: () => ({
     components: { CuModal },
@@ -93,11 +95,38 @@ export const Sizes: Story = {
   }),
 };
 
-export const Persistent: Story = {
+// 3. With Close
+export const WithClose: Story = {
   args: {
-    persistent: true,
+    title: "Modal with Close",
+    description: "Click outside to close",
+    persistent: false,
+  },
+  render: (args) => ({
+    components: { CuModal },
+    setup: () => {
+      const modalRef = ref(null);
+      return { args, modalRef };
+    },
+    template: `
+      <div>
+        <CuModal v-bind='args' ref="modalRef">
+          <template #trigger>
+            <button @click="modalRef?.open()" class="bg-primary text-white px-4 py-2 rounded">Open Modal</button>
+          </template>
+          This modal can be closed by clicking outside.
+        </CuModal>
+      </div>
+    `,
+  }),
+};
+
+// 4. With Persistent
+export const WithPersistent: Story = {
+  args: {
     title: "Persistent Modal",
     description: "Cannot be closed by clicking outside",
+    persistent: true,
   },
   render: (args) => ({
     components: { CuModal },

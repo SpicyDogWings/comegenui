@@ -127,8 +127,8 @@ export const Combinations: Story = {
   }),
 };
 
-// 6. Disabled
-export const Disabled: Story = {
+// 6. With Disabled
+export const WithDisabled: Story = {
   args: {
     disabled: true,
     checked: true,
