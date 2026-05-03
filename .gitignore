@@ -40,3 +40,6 @@ __screenshots__/
 
 # scripts
 scripts/config
+
+*storybook.log
+storybook-static
