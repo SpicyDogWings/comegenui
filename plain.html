@@ -106,18 +106,6 @@
         margin: 10px 0;
       }
       
-      .code-block .tag { color: #f687b3; }
-      .code-block .attr { color: #63b3ed; }
-      .code-block .val { color: #68d391; }
-      
-      .label-text {
-        display: block;
-        font-size: 14px;
-        font-weight: 500;
-        color: #4a5568;
-        margin-bottom: 6px;
-      }
-      
       .description {
         color: #718096;
         font-size: 14px;
@@ -139,24 +127,22 @@
     <div class="section">
       <h2>🎯 ¿Cómo funciona?</h2>
       <p class="description">
-        El componente <span class="code">cu-label</span> envuelve inputs y al hacer click en cualquier parte del label, 
-        automáticamente enfoca el primer <span class="code">cu-input</span> o <span class="code">input</span> que encuentre dentro.
+        El componente <span class="code">cu-label</span> renderiza el texto del label internamente 
+        y al hacer click en cualquier parte del label, automáticamente enfoca el primer 
+        <span class="code">cu-input</span> o <span class="code">input</span> que encuentre dentro.
       </p>
       <p class="description">
-        <strong>Prueba:</strong> Haz click en el texto "Nombre de usuario" o en cualquier área del label para ver cómo el input recibe el foco.
+        <strong>Prueba:</strong> Haz click en "Nombre de usuario" o en cualquier área del label para ver cómo el input recibe el foco.
       </p>
       
       <div class="demo-item">
-        <cu-label>
-          <span class="label-text">Nombre de usuario</span>
+        <cu-label label="Nombre de usuario">
           <cu-input placeholder="Escribe tu nombre..." color="neutral" variant="none"></cu-input>
         </cu-label>
       </div>
       
       <div class="code-block">
-        &lt;cu-label&gt;
-        <br>
-        &nbsp;&nbsp;&lt;span class="label-text"&gt;Nombre de usuario&lt;/span&gt;
+        &lt;cu-label label="Nombre de usuario"&gt;
         <br>
         &nbsp;&nbsp;&lt;cu-input placeholder="Escribe tu nombre..." /&gt;
         <br>
@@ -172,43 +158,37 @@
       
       <div class="demo-grid">
         <div class="demo-item">
-          <cu-label>
-            <span class="label-text">Nombre *</span>
+          <cu-label label="Nombre *">
             <cu-input placeholder="Juan" color="primary" variant="outlined"></cu-input>
           </cu-label>
         </div>
         
         <div class="demo-item">
-          <cu-label>
-            <span class="label-text">Apellido *</span>
+          <cu-label label="Apellido *">
             <cu-input placeholder="Pérez" color="primary" variant="outlined"></cu-input>
           </cu-label>
         </div>
         
         <div class="demo-item">
-          <cu-label>
-            <span class="label-text">Email *</span>
+          <cu-label label="Email *">
             <cu-input placeholder="juan@example.com" type="email" color="success" variant="soft"></cu-input>
           </cu-label>
         </div>
         
         <div class="demo-item">
-          <cu-label>
-            <span class="label-text">Teléfono</span>
+          <cu-label label="Teléfono">
             <cu-input placeholder="+52 123 456 7890" type="tel" color="neutral" variant="ghost"></cu-input>
           </cu-label>
         </div>
         
         <div class="demo-item">
-          <cu-label>
-            <span class="label-text">Contraseña</span>
+          <cu-label label="Contraseña">
             <cu-input placeholder="••••••••" type="password" color="warning" variant="subtle"></cu-input>
           </cu-label>
         </div>
         
         <div class="demo-item">
-          <cu-label>
-            <span class="label-text">Confirmar Contraseña</span>
+          <cu-label label="Confirmar Contraseña">
             <cu-input placeholder="••••••••" type="password" color="danger" variant="none"></cu-input>
           </cu-label>
         </div>
@@ -223,8 +203,7 @@
       
       <div class="demo-row">
         <div class="demo-item flex-1">
-          <cu-label>
-            <span class="label-text">Búsqueda con Icono</span>
+          <cu-label label="Búsqueda con Icono">
             <div style="position: relative;">
               <span style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #a0aec0;">🔍</span>
               <cu-input placeholder="Buscar..." style="padding-left: 36px;" color="primary" variant="outlined"></cu-input>
@@ -233,8 +212,7 @@
         </div>
         
         <div class="demo-item flex-1">
-          <cu-label>
-            <span class="label-text">Campo con Wrapper</span>
+          <cu-label label="Campo con Wrapper">
             <div style="border: 1px solid #e2e8f0; border-radius: 6px; padding: 4px;">
               <cu-input placeholder="Dentro de un div" color="neutral" variant="none"></cu-input>
             </div>
@@ -251,48 +229,39 @@
       
       <h3>Primary</h3>
       <div class="demo-row">
-        <cu-label>
-          <span class="label-text">Outlined</span>
+        <cu-label label="Outlined">
           <cu-input placeholder="Primary Outlined" color="primary" variant="outlined"></cu-input>
         </cu-label>
-        <cu-label>
-          <span class="label-text">Soft</span>
+        <cu-label label="Soft">
           <cu-input placeholder="Primary Soft" color="primary" variant="soft"></cu-input>
         </cu-label>
-        <cu-label>
-          <span class="label-text">Ghost</span>
+        <cu-label label="Ghost">
           <cu-input placeholder="Primary Ghost" color="primary" variant="ghost"></cu-input>
         </cu-label>
-        <cu-label>
-          <span class="label-text">Subtle</span>
+        <cu-label label="Subtle">
           <cu-input placeholder="Primary Subtle" color="primary" variant="subtle"></cu-input>
         </cu-label>
       </div>
       
       <h3>Success</h3>
       <div class="demo-row">
-        <cu-label>
-          <span class="label-text">Success Outlined</span>
+        <cu-label label="Success Outlined">
           <cu-input placeholder="Success" color="success" variant="outlined"></cu-input>
         </cu-label>
-        <cu-label>
-          <span class="label-text">Success Soft</span>
+        <cu-label label="Success Soft">
           <cu-input placeholder="Success" color="success" variant="soft"></cu-input>
         </cu-label>
-        <cu-label>
-          <span class="label-text">Success Ghost</span>
+        <cu-label label="Success Ghost">
           <cu-input placeholder="Success" color="success" variant="ghost"></cu-input>
         </cu-label>
       </div>
       
       <h3>Warning & Danger</h3>
       <div class="demo-row">
-        <cu-label>
-          <span class="label-text">Warning</span>
+        <cu-label label="Warning">
           <cu-input placeholder="Warning field" color="warning" variant="outlined"></cu-input>
         </cu-label>
-        <cu-label>
-          <span class="label-text">Danger</span>
+        <cu-label label="Danger">
           <cu-input placeholder="Danger field" color="danger" variant="outlined"></cu-input>
         </cu-label>
       </div>
@@ -306,38 +275,32 @@
       
       <div class="demo-grid">
         <div class="demo-item">
-          <cu-label>
-            <span class="label-text">Text</span>
+          <cu-label label="Text">
             <cu-input type="text" placeholder="Texto normal"></cu-input>
           </cu-label>
         </div>
         <div class="demo-item">
-          <cu-label>
-            <span class="label-text">Email</span>
+          <cu-label label="Email">
             <cu-input type="email" placeholder="correo@ejemplo.com"></cu-input>
           </cu-label>
         </div>
         <div class="demo-item">
-          <cu-label>
-            <span class="label-text">Password</span>
+          <cu-label label="Password">
             <cu-input type="password" placeholder="••••••••"></cu-input>
           </cu-label>
         </div>
         <div class="demo-item">
-          <cu-label>
-            <span class="label-text">Number</span>
+          <cu-label label="Number">
             <cu-input type="number" placeholder="123"></cu-input>
           </cu-label>
         </div>
         <div class="demo-item">
-          <cu-label>
-            <span class="label-text">Tel</span>
+          <cu-label label="Tel">
             <cu-input type="tel" placeholder="+1 234 567 890"></cu-input>
           </cu-label>
         </div>
         <div class="demo-item">
-          <cu-label>
-            <span class="label-text">URL</span>
+          <cu-label label="URL">
             <cu-input type="url" placeholder="https://ejemplo.com"></cu-input>
           </cu-label>
         </div>
@@ -356,8 +319,7 @@
           <p style="text-align: center; font-size: 13px; color: #718096; margin-bottom: 15px;">
             Haz click en "Nombre" o alrededor del input
           </p>
-          <cu-label>
-            <span class="label-text">Nombre</span>
+          <cu-label label="Nombre">
             <cu-input placeholder="Fácil de enfocar" color="success" variant="soft"></cu-input>
           </cu-label>
         </div>
@@ -383,8 +345,7 @@
         Usa CSS para personalizar el layout interno del label.
       </p>
       <div class="demo-item">
-        <cu-label style="display: flex; align-items: center; gap: 12px;">
-          <span class="label-text" style="flex: 0 0 120px;">Código Postal:</span>
+        <cu-label label="Código Postal:" style="display: flex; align-items: center; gap: 12px;">
           <cu-input placeholder="00000" style="flex: 1;" color="primary" variant="outlined"></cu-input>
           <cu-button color="primary" variant="solid" style="flex: 0 0 auto;">Buscar</cu-button>
         </cu-label>
@@ -395,8 +356,7 @@
         Cuando hay varios inputs, el label enfoca el primero que encuentra.
       </p>
       <div class="demo-item">
-        <cu-label>
-          <span class="label-text">Rango de Fechas</span>
+        <cu-label label="Rango de Fechas">
           <div style="display: flex; gap: 10px;">
             <cu-input placeholder="Desde" type="date" style="flex: 1;" color="neutral" variant="outlined"></cu-input>
             <span style="align-self: center; color: #718096;">hasta</span>
@@ -410,8 +370,7 @@
         El label también funciona con inputs HTML nativos, no solo con CuInput.
       </p>
       <div class="demo-item">
-        <cu-label>
-          <span class="label-text">Input Nativo</span>
+        <cu-label label="Input Nativo">
           <input type="text" placeholder="HTML input nativo" 
                  style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; font-family: inherit; font-size: 14px;">
         </cu-label>
