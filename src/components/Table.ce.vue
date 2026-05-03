@@ -90,11 +90,6 @@ const props = defineProps({
     required: false,
     default: () => [5, 10, 20, 50],
   },
-  tableMaxHeight: {
-    type: String,
-    required: false,
-    default: "",
-  },
 });
 
 const searchQuery = ref("");
@@ -329,7 +324,7 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
         color="neutral"
       />
     </div>
-    <div class="overflow-auto rounded-cu" :style="{ maxHeight: props.tableMaxHeight }">
+    <div class="overflow-auto rounded-cu">
       <table class="w-full border-collapse">
         <thead>
           <tr>

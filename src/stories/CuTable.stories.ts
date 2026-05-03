@@ -231,12 +231,7 @@ export const WithEditable: Story = {
 
 // 7. With Scroll
 export const WithScroll: Story = {
-  args: {
-    pagination: true,
-    itemsPerPage: 10,
-    tableMaxHeight: "250px",
-  },
-  render: (args) => ({
+  render: () => ({
     components: { CuTable },
     setup: () => {
       const columns = [
@@ -255,10 +250,12 @@ export const WithScroll: Story = {
         city: ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix'][i % 5],
         country: ['USA', 'Canada', 'UK', 'Australia', 'Germany'][i % 5],
       }));
-      return { args, columns, data };
+      return { columns, data };
     },
     template: `
-      <CuTable v-bind='args' :columns="columns" :data="data" />
+      <div class="h-64 overflow-auto border border-charcoal-200 rounded-cu">
+        <CuTable :columns="columns" :data="data" pagination :items-per-page="10" />
+      </div>
     `,
   }),
 };
