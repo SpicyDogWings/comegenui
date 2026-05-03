@@ -23,6 +23,7 @@ const colors = ["primary", "neutral", "success", "warning", "danger"] as const;
           <Checkbox
             :variant="variant"
             :color="color"
+            :checked="true"
             :label="`${variant}-${color}`"
           />
         </div>
@@ -38,7 +39,7 @@ const colors = ["primary", "neutral", "success", "warning", "danger"] as const;
         </div>
         <div>
           <h3 class="text-sm font-medium mb-2">Unchecked (primary / outlined)</h3>
-          <Checkbox variant="outlined" color="primary" :checked="false" label="Unchecked" />
+          <Checkbox variant="outlined" color="primary" :checked="true" label="Unchecked" />
         </div>
         <div>
           <h3 class="text-sm font-medium mb-2">Disabled (checked)</h3>
@@ -46,12 +47,12 @@ const colors = ["primary", "neutral", "success", "warning", "danger"] as const;
         </div>
         <div>
           <h3 class="text-sm font-medium mb-2">Disabled (unchecked)</h3>
-          <Checkbox variant="outlined" color="primary" :checked="false" :disabled="true" label="Disabled unchecked" />
+          <Checkbox variant="outlined" color="primary" :checked="true" :disabled="true" label="Disabled unchecked" />
         </div>
         <div>
           <h3 class="text-sm font-medium mb-2">All variants (primary)</h3>
           <div class="space-y-2">
-            <Checkbox v-for="v in variants" :key="v" :variant="v" color="primary" :label="v" />
+            <Checkbox v-for="v in variants" :key="v" :variant="v" color="primary" :checked="true" :label="v" />
           </div>
         </div>
       </div>

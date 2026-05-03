@@ -45,9 +45,24 @@ const checked = ref(props.modelValue || props.checked);
 const checkboxClasses = computed(() => ({
     "cursor-not-allowed opacity-70": props.disabled,
 }));
+
+const checkIconClasses = computed(() => {
+    const isChecked = checked.value;
+    const isOutlinedOrNone = props.variant === "outlined" || props.variant === "none";
+    const lightColors = ["warning", "danger"];
+    
+    if (isChecked && isOutlinedOrNone && lightColors.includes(props.color)) {
+        return "text-charcoal-900";
+    }
+    return "text-white";
+});
+
 const boxClasses = computed(() => [
     {
-        "bg-transparent border-solid border-2": props.variant === "outlined",
+        "border-solid border-2": props.variant === "outlined",
+    },
+    {
+        "bg-transparent": props.variant === "outlined" && !checked.value,
     },
     /* Regla general para subtle */
     {
@@ -373,7 +388,7 @@ defineExpose({
                 stroke-width="3"
                 stroke-linecap="round"
                 stroke-linejoin="round"
-                class="text-white"
+                :class="checkIconClasses"
             >
                 <path d="M20 6L9 17l-5-5" />
             </svg>
