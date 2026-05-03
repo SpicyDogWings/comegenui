@@ -1,4 +1,6 @@
 import type { StorybookConfig } from '@storybook/vue3-vite';
+import { mergeConfig } from 'vite';
+import UnoCSS from 'unocss/vite';
 
 const config: StorybookConfig = {
   "stories": [
@@ -12,6 +14,11 @@ const config: StorybookConfig = {
     "@storybook/addon-docs",
     "@storybook/addon-onboarding"
   ],
-  "framework": "@storybook/vue3-vite"
+  "framework": "@storybook/vue3-vite",
+  async viteFinal(config) {
+    return mergeConfig(config, {
+      plugins: [UnoCSS()],
+    });
+  },
 };
 export default config;
