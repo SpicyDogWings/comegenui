@@ -229,7 +229,38 @@ export const WithEditable: Story = {
   }),
 };
 
-// 7. All features
+// 7. With Scroll
+export const WithScroll: Story = {
+  render: () => ({
+    components: { CuTable },
+    setup: () => {
+      const columns = [
+        { key: "id", label: "ID", editable: false },
+        { key: "name", label: "Name" },
+        { key: "email", label: "Email" },
+        { key: "phone", label: "Phone" },
+        { key: "city", label: "City" },
+        { key: "country", label: "Country" },
+      ];
+      const data = Array.from({ length: 50 }, (_, i) => ({
+        id: i + 1,
+        name: `User ${i + 1}`,
+        email: `user${i + 1}@example.com`,
+        phone: `+1-555-01${String(i + 1).padStart(2, '0')}`,
+        city: ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix'][i % 5],
+        country: ['USA', 'Canada', 'UK', 'Australia', 'Germany'][i % 5],
+      }));
+      return { columns, data };
+    },
+    template: `
+      <div class="h-64 overflow-auto border border-charcoal-200 rounded-cu">
+        <CuTable :columns="columns" :data="data" pagination :items-per-page="10" />
+      </div>
+    `,
+  }),
+};
+
+// 8. All features
 export const AllFeatures: Story = {
   args: {
     searchEnabled: true,
