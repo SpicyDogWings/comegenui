@@ -39,12 +39,12 @@ const meta: Meta<typeof CuPagination> = {
   },
   args: {
     currentPage: 1,
-    totalPages: 10,
-    totalItems: 100,
+    totalPages: 1,
+    totalItems: 0,
     itemsPerPage: 10,
     showPageSize: false,
     pageSizeOptions: [5, 10, 20, 50],
-    showFirstAndLast: true,
+    showFirstAndLast: false,
   },
 };
 
@@ -52,10 +52,81 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const Primary: Story = {
+// 1. Default
+export const Default: Story = {
+  args: {
+    currentPage: 1,
+    totalPages: 5,
+    totalItems: 50,
+    itemsPerPage: 10,
+    showPageSize: false,
+    showFirstAndLast: false,
+  },
+  render: (args) => ({
+    components: { CuPagination },
+    setup: () => {
+      const currentPage = ref(args.currentPage);
+      return { args, currentPage };
+    },
+    template: "<CuPagination v-bind='args' v-model:currentPage='currentPage' />",
+  }),
+};
+
+// 2. Basic pagination
+export const Basic: Story = {
   args: {
     currentPage: 1,
     totalPages: 10,
+    totalItems: 100,
+    showPageSize: false,
+    showFirstAndLast: false,
+  },
+  render: (args) => ({
+    components: { CuPagination },
+    setup: () => {
+      const currentPage = ref(args.currentPage);
+      return { args, currentPage };
+    },
+    template: "<CuPagination v-bind='args' v-model:currentPage='currentPage' />",
+  }),
+};
+
+// 3. With page size selector
+export const WithPageSize: Story = {
+  args: {
+    currentPage: 1,
+    totalPages: 10,
+    totalItems: 100,
+    itemsPerPage: 10,
+    showPageSize: true,
+    pageSizeOptions: [5, 10, 20, 50],
+    showFirstAndLast: false,
+  },
+  render: (args) => ({
+    components: { CuPagination },
+    setup: () => {
+      const currentPage = ref(args.currentPage);
+      const itemsPerPage = ref(args.itemsPerPage);
+      return { args, currentPage, itemsPerPage };
+    },
+    template: `
+      <CuPagination 
+        v-bind='args' 
+        v-model:currentPage='currentPage'
+        v-model:itemsPerPage='itemsPerPage'
+      />
+    `,
+  }),
+};
+
+// 4. Many pages with first and last
+export const ManyPages: Story = {
+  args: {
+    currentPage: 5,
+    totalPages: 20,
+    totalItems: 200,
+    itemsPerPage: 10,
+    showPageSize: false,
     showFirstAndLast: true,
   },
   render: (args) => ({
@@ -68,14 +139,15 @@ export const Primary: Story = {
   }),
 };
 
-export const WithPageSize: Story = {
+// 5. With page size and many pages
+export const WithPageSizeAndManyPages: Story = {
   args: {
-    currentPage: 1,
-    totalPages: 10,
-    totalItems: 100,
+    currentPage: 5,
+    totalPages: 20,
+    totalItems: 200,
     itemsPerPage: 10,
     showPageSize: true,
-    pageSizeOptions: [5, 10, 20, 50],
+    pageSizeOptions: [5, 10, 20, 50, 100],
     showFirstAndLast: true,
   },
   render: (args) => ({
@@ -95,18 +167,30 @@ export const WithPageSize: Story = {
   }),
 };
 
-export const ManyPages: Story = {
+// 6. Custom page size options
+export const CustomPageSizeOptions: Story = {
   args: {
-    currentPage: 5,
-    totalPages: 20,
+    currentPage: 1,
+    totalPages: 15,
+    totalItems: 150,
+    itemsPerPage: 10,
+    showPageSize: true,
+    pageSizeOptions: [3, 6, 9, 12, 15],
     showFirstAndLast: true,
   },
   render: (args) => ({
     components: { CuPagination },
     setup: () => {
       const currentPage = ref(args.currentPage);
-      return { args, currentPage };
+      const itemsPerPage = ref(args.itemsPerPage);
+      return { args, currentPage, itemsPerPage };
     },
-    template: "<CuPagination v-bind='args' v-model:currentPage='currentPage' />",
+    template: `
+      <CuPagination 
+        v-bind='args' 
+        v-model:currentPage='currentPage'
+        v-model:itemsPerPage='itemsPerPage'
+      />
+    `,
   }),
 };
