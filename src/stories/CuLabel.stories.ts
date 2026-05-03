@@ -1,4 +1,4 @@
-import CuLabel from "../components/Label.ce.vue";
+import CuLabel from "../components/form/Label.ce.vue";
 import CuInput from "../components/form/Input.ce.vue";
 import CuButton from "../components/Button.ce.vue";
 
