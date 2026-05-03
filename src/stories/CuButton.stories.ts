@@ -56,7 +56,7 @@ export const Default: Story = {
 };
 
 // 2. Primary
-export const PrimaryButton: Story = {
+export const Primary: Story = {
   args: {
     color: "primary",
     variant: "solid",
@@ -118,7 +118,7 @@ export const Variant: Story = {
 };
 
 // 6. All combinations
-export const AllCombinations: Story = {
+export const Combinations: Story = {
   render: () => ({
     components: { CuButton },
     setup: () => {
