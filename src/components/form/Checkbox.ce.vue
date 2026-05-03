@@ -59,7 +59,7 @@ const boxClasses = computed(() => [
     },
     /* Regla general para soft */
     {
-        "border-2 border-solid": props.variant === "soft",
+        "w-4 h-4": props.variant === "soft",
     },
     /* Reglas para outlined (por color) */
     /* Outlined - unchecked */
@@ -96,17 +96,36 @@ const boxClasses = computed(() => [
     },
     /* Regla para none */
     {
-        "bg-transparent border-solid border-1 border-charcoal-100": props.variant === "none",
+        "border-solid border-1 border-charcoal-100": props.variant === "none",
+    },
+    {
+        "bg-transparent": props.variant === "none" && !checked.value,
+    },
+    /* None - checked */
+    {
+        "bg-primary-500": props.color === "primary" && props.variant === "none" && checked.value,
+    },
+    {
+        "bg-charcoal-500": props.color === "neutral" && props.variant === "none" && checked.value,
+    },
+    {
+        "bg-success-500": props.color === "success" && props.variant === "none" && checked.value,
+    },
+    {
+        "bg-warning-500": props.color === "warning" && props.variant === "none" && checked.value,
+    },
+    {
+        "bg-danger-500": props.color === "danger" && props.variant === "none" && checked.value,
     },
 
     {
-        "border-2 border-solid border-primary-500 bg-primary bg-opacity-10":
+        "bg-primary bg-opacity-10":
             props.color === "primary" &&
             props.variant === "soft" &&
             !checked.value,
     },
     {
-        "border-2 border-solid border-primary-500 bg-primary-500":
+        "bg-primary-500":
             props.color === "primary" &&
             props.variant === "soft" &&
             checked.value,
@@ -137,13 +156,13 @@ const boxClasses = computed(() => [
     },
 
     {
-        "border-2 border-solid border-charcoal-500 bg-charcoal bg-opacity-10":
+        "bg-charcoal bg-opacity-10":
             props.color === "neutral" &&
             props.variant === "soft" &&
             !checked.value,
     },
     {
-        "border-2 border-solid border-charcoal-500 bg-charcoal-500":
+        "bg-charcoal-500":
             props.color === "neutral" &&
             props.variant === "soft" &&
             checked.value,
@@ -174,13 +193,13 @@ const boxClasses = computed(() => [
     },
 
     {
-        "border-2 border-solid border-success-500 bg-success bg-opacity-10":
+        "bg-success bg-opacity-10":
             props.color === "success" &&
             props.variant === "soft" &&
             !checked.value,
     },
     {
-        "border-2 border-solid border-success-500 bg-success-500":
+        "bg-success-500":
             props.color === "success" &&
             props.variant === "soft" &&
             checked.value,
@@ -211,13 +230,13 @@ const boxClasses = computed(() => [
     },
 
     {
-        "border-2 border-solid border-warning-500 bg-warning bg-opacity-10":
+        "bg-warning bg-opacity-10":
             props.color === "warning" &&
             props.variant === "soft" &&
             !checked.value,
     },
     {
-        "border-2 border-solid border-warning-500 bg-warning-500":
+        "bg-warning-500":
             props.color === "warning" &&
             props.variant === "soft" &&
             checked.value,
@@ -248,13 +267,13 @@ const boxClasses = computed(() => [
     },
 
     {
-        "border-2 border-solid border-danger-500 bg-danger bg-opacity-10":
+        "bg-danger bg-opacity-10":
             props.color === "danger" &&
             props.variant === "soft" &&
             !checked.value,
     },
     {
-        "border-2 border-solid border-danger-500 bg-danger-500":
+        "bg-danger-500":
             props.color === "danger" &&
             props.variant === "soft" &&
             checked.value,
@@ -346,8 +365,8 @@ defineExpose({
             <svg
                 v-if="checked"
                 xmlns="http://www.w3.org/2000/svg"
-                width="14"
-                height="14"
+                :width="props.variant === 'soft' ? 16 : 14"
+                :height="props.variant === 'soft' ? 16 : 14"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
