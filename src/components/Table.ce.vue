@@ -90,6 +90,11 @@ const props = defineProps({
     required: false,
     default: () => [5, 10, 20, 50],
   },
+  tableMaxHeight: {
+    type: String,
+    required: false,
+    default: "",
+  },
 });
 
 const searchQuery = ref("");
@@ -315,7 +320,7 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
 </script>
 
 <template>
-  <div class="flex flex-col overflow-hidden">
+  <div class="flex flex-col overflow-hidden max-w-full">
     <div v-if="searchEnabled" class="p-3">
       <Input
         :placeholder="searchPlaceholder"
@@ -324,7 +329,7 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
         color="neutral"
       />
     </div>
-    <div class="overflow-auto rounded-cu">
+    <div class="overflow-auto rounded-cu" :style="{ maxHeight: props.tableMaxHeight }">
       <table class="w-full border-collapse">
         <thead>
           <tr>

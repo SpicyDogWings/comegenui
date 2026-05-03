@@ -231,31 +231,30 @@ export const WithEditable: Story = {
 
 // 7. With Scroll
 export const WithScroll: Story = {
-  render: () => ({
+  args: {
+    pagination: true,
+    itemsPerPage: 10,
+    tableMaxHeight: "300px",
+  },
+  render: (args) => ({
     components: { CuTable },
     setup: () => {
       const columns = [
         { key: "id", label: "ID", editable: false },
         { key: "name", label: "Name" },
         { key: "email", label: "Email" },
-        { key: "phone", label: "Phone" },
-        { key: "city", label: "City" },
-        { key: "country", label: "Country" },
+        { key: "status", label: "Status" },
       ];
       const data = Array.from({ length: 50 }, (_, i) => ({
         id: i + 1,
         name: `User ${i + 1}`,
         email: `user${i + 1}@example.com`,
-        phone: `+1-555-01${String(i + 1).padStart(2, '0')}`,
-        city: ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix'][i % 5],
-        country: ['USA', 'Canada', 'UK', 'Australia', 'Germany'][i % 5],
+        status: ['Active', 'Inactive', 'Pending'][i % 3],
       }));
-      return { columns, data };
+      return { args, columns, data };
     },
     template: `
-      <div class="h-64 overflow-auto border border-charcoal-200 rounded-cu">
-        <CuTable :columns="columns" :data="data" pagination :items-per-page="10" />
-      </div>
+      <CuTable v-bind='args' :columns="columns" :data="data" />
     `,
   }),
 };
@@ -268,6 +267,7 @@ export const AllFeatures: Story = {
     itemsPerPage: 5,
     showPageSize: true,
     pageSizeOptions: [5, 10, 20],
+    tableMaxHeight: "400px",
     searchPlaceholder: "Search all features...",
     empty: "No matching records found",
   },
