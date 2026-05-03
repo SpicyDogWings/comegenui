@@ -197,15 +197,15 @@ export const WithColorVariantsMatrix: Story = {
     },
     template: `
       <div class="flex flex-col gap-4">
-        <CuLabel v-for="color in colors" :key="color" class="flex flex-col gap-2">
-          <span class="font-sans text-charcoal-800 font-medium">{{ color }}</span>
+        <div v-for="color in colors" :key="color" class="flex flex-col gap-2">
+          <h3 class="font-sans text-charcoal-800 font-medium">{{ color }}</h3>
           <div class="flex flex-wrap gap-2">
             <CuLabel v-for="variant in variants" :key="variant" class="flex flex-col gap-1 w-36">
               <span class="font-sans text-charcoal-600 text-xs">{{ variant }}</span>
               <CuInput :color="color" :variant="variant" placeholder="" class="w-full" />
             </CuLabel>
           </div>
-        </CuLabel>
+        </div>
       </div>
     `,
   }),
