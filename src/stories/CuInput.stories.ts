@@ -1,0 +1,99 @@
+import CuInput from "../components/form/Input.ce.vue";
+import "./Input.css";
+
+import type { Meta, StoryObj } from "@storybook/vue3";
+
+const meta: Meta<typeof CuInput> = {
+  title: "Components/Input",
+  component: CuInput,
+  tags: ["autodocs"],
+  argTypes: {
+    color: {
+      control: "select",
+      options: ["primary", "neutral", "success", "warning", "danger"],
+      description: "The color theme of the input",
+    },
+    variant: {
+      control: "select",
+      options: ["outlined", "soft", "ghost", "subtle", "none"],
+      description: "The visual variant of the input",
+    },
+    type: {
+      control: "select",
+      options: ["text", "password", "email", "number", "tel", "url", "search"],
+      description: "The input type",
+    },
+    placeholder: {
+      control: "text",
+      description: "Placeholder text",
+    },
+    disabled: {
+      control: "boolean",
+      description: "Whether the input is disabled",
+    },
+    modelValue: {
+      control: "text",
+      description: "v-model binding",
+    },
+  },
+  args: {
+    color: "neutral",
+    variant: "outlined",
+    type: "text",
+    placeholder: "Enter text...",
+    disabled: false,
+  },
+};
+
+export default meta;
+
+type Story = StoryObj<typeof meta>;
+
+export const Primary: Story = {
+  args: {
+    color: "primary",
+    variant: "outlined",
+    placeholder: "Primary Input",
+  },
+  render: (args) => ({
+    components: { CuInput },
+    setup: () => ({ args }),
+    template: "<CuInput v-bind='args' class='w-64' />",
+  }),
+};
+
+export const AllVariants: Story = {
+  render: () => ({
+    components: { CuInput },
+    setup: () => {
+      const variants = ["outlined", "soft", "ghost", "subtle", "none"] as const;
+      const colors = ["primary", "neutral", "success", "warning", "danger"] as const;
+      return { variants, colors };
+    },
+    template: `
+      <div class="flex flex-col gap-4">
+        <div v-for="variant in variants" :key="variant" class="flex flex-col gap-2">
+          <h3 class="text-sm font-medium text-charcoal-700">{{ variant }}</h3>
+          <div class="flex gap-2 flex-wrap">
+            <CuInput v-for="color in colors" :key="color" :variant="variant" :color="color" placeholder="Input" class="w-48" />
+          </div>
+        </div>
+      </div>
+    `,
+  }),
+};
+
+export const Types: Story = {
+  render: () => ({
+    components: { CuInput },
+    setup: () => {
+      const types = ["text", "password", "email", "number"] as const;
+      return { types };
+    },
+    template: `
+      <div class="flex flex-col gap-4">
+        <CuInput v-for="type in types" :key="type" :type="type" :placeholder="type" class="w-64" />
+      </div>
+    `,
+  }),
+};
