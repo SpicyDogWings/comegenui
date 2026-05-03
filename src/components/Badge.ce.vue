@@ -19,19 +19,15 @@ const props = defineProps({
 });
 
 const badgeClasses = computed(() => [
-  /* Regla general para soft */
   {
     "bg-opacity-10": props.variant === "soft",
   },
-  /* Regla general para subtle */
   {
     "bg-opacity-10 border-solid border-1": props.variant === "subtle",
   },
-  /* Regla general para outlined */
   {
     "bg-transparent border-solid border-2": props.variant === "outlined",
   },
-  /* Regla general para ghost */
   {
     "bg-transparent hover:bg-opacity-10": props.variant === "ghost",
   },

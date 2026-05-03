@@ -107,11 +107,9 @@ const startEditing = async (row: Record<string, any>, col: Column) => {
     editValue.value = row[col.key] != null ? String(row[col.key]) : "";
     editValidationState.value = null;
     await nextTick();
-    // 1. Verificamos si es un array (comportamiento de v-for)
     const inputEl = Array.isArray(editableInput.value)
     ? editableInput.value[0]
     : editableInput.value;
-    // 2. Ejecutamos el focus
     inputEl?.focus?.();
 };
 const saveEdit = (row: Record<string, any>, col: Column) => {
@@ -119,11 +117,9 @@ const saveEdit = (row: Record<string, any>, col: Column) => {
   
   let isValid = true;
   
-  // Validate with RegExp if editable is a RegExp
   if (col.editable instanceof RegExp && !col.editable.test(editValue.value)) {
     isValid = false;
   }
-  // Validate with custom validator function if present
   if (isValid && col.validator && !col.validator(editValue.value, row)) {
     isValid = false;
   }

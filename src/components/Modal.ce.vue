@@ -76,13 +76,11 @@ const modalClasses = computed(() => [
   "bg-charcoal-50 rounded-cu shadow-xl outline-none",
   "w-full flex flex-col overflow-x-hidden",
   {
-    /* Width */
     "max-w-sm": props.size === "sm",
     "max-w-md": props.size === "md",
     "max-w-lg": props.size === "lg",
     "max-w-xl": props.size === "xl",
     "max-w-[90vw]": props.size === "full",
-    /* Height */
     "max-h-[90vh]": props.height === "full" || props.height === "auto",
     "max-h-[200px]": props.height === "sm",
     "max-h-[300px]": props.height === "md",

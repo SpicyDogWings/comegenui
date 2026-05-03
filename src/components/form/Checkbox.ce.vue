@@ -46,30 +46,22 @@ const checkboxClasses = computed(() => ({
     "cursor-not-allowed opacity-70": props.disabled,
 }));
 
-
-
 const boxClasses = computed(() => [
-    /* Regla general para outlined */
     {
         "border-solid border-2": props.variant === "outlined",
     },
     {
         "bg-transparent": props.variant === "outlined" && !checked.value,
     },
-    /* Regla general para subtle */
     {
         "border-2 border-solid border-1": props.variant === "subtle",
     },
-    /* Regla general para ghost */
     {
         "border-2 border-solid border-transparent": props.variant === "ghost",
     },
-    /* Regla general para soft */
     {
         "w-4 h-4": props.variant === "soft",
     },
-    /* Reglas para outlined (por color) */
-    /* Outlined - unchecked */
     {
         "border-primary": props.color === "primary" && props.variant === "outlined" && !checked.value,
     },
@@ -85,7 +77,6 @@ const boxClasses = computed(() => [
     {
         "border-danger": props.color === "danger" && props.variant === "outlined" && !checked.value,
     },
-    /* Outlined - checked */
     {
         "bg-primary-500 border-primary": props.color === "primary" && props.variant === "outlined" && checked.value,
     },
@@ -101,14 +92,12 @@ const boxClasses = computed(() => [
     {
         "bg-danger-500 border-danger": props.color === "danger" && props.variant === "outlined" && checked.value,
     },
-    /* Regla para none */
     {
         "border-solid border-1 border-charcoal-100": props.variant === "none",
     },
     {
         "bg-transparent": props.variant === "none" && !checked.value,
     },
-    /* None - checked */
     {
         "bg-primary-500": props.color === "primary" && props.variant === "none" && checked.value,
     },
@@ -324,7 +313,6 @@ watch(
         checked.value = val;
     },
 );
-
 watch(
     () => props.checked,
     (val) => {

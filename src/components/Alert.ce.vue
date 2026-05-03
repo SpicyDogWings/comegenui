@@ -58,19 +58,15 @@ function toggle() {
 }
 
 const alertColorClasses = computed(() => [
-  /* Regla general para outlined */
   {
     "bg-transparent border-solid border-2": props.variant === "outlined",
   },
-  /* Regla general para ghost */
   {
     "bg-transparent": props.variant === "ghost",
   },
-  /* Regla general para subtle */
   {
     "bg-opacity-10 border-solid border-1": props.variant === "subtle",
   },
-  /* Primary */
   {
     "bg-primary text-primary-50": props.color === "primary" && props.variant === "solid",
     "bg-primary bg-opacity-10 text-primary": props.color === "primary" && props.variant === "soft",
@@ -80,7 +76,6 @@ const alertColorClasses = computed(() => [
       props.color === "primary" && props.variant === "outlined",
     "text-primary": props.color === "primary" && props.variant === "ghost",
   },
-  /* Neutral */
   {
     "bg-charcoal text-charcoal-50": props.color === "neutral" && props.variant === "solid",
     "bg-charcoal bg-opacity-10 text-charcoal-800": props.color === "neutral" && props.variant === "soft",
@@ -90,7 +85,6 @@ const alertColorClasses = computed(() => [
       props.color === "neutral" && props.variant === "outlined",
     "text-charcoal-800": props.color === "neutral" && props.variant === "ghost",
   },
-  /* Success */
   {
     "bg-success text-success-50": props.color === "success" && props.variant === "solid",
     "bg-success bg-opacity-10 text-success-600": props.color === "success" && props.variant === "soft",
@@ -100,7 +94,6 @@ const alertColorClasses = computed(() => [
       props.color === "success" && props.variant === "outlined",
     "text-success-600": props.color === "success" && props.variant === "ghost",
   },
-  /* Warning */
   {
     "bg-warning text-warning-50": props.color === "warning" && props.variant === "solid",
     "bg-warning bg-opacity-10 text-warning-500": props.color === "warning" && props.variant === "soft",
@@ -110,7 +103,6 @@ const alertColorClasses = computed(() => [
       props.color === "warning" && props.variant === "outlined",
     "text-warning-500": props.color === "warning" && props.variant === "ghost",
   },
-  /* Danger */
   {
     "bg-danger text-danger-50": props.color === "danger" && props.variant === "solid",
     "bg-danger bg-opacity-10 text-danger": props.color === "danger" && props.variant === "soft",
