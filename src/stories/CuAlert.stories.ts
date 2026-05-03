@@ -43,6 +43,21 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
+// 1. Default
+export const Default: Story = {
+  args: {
+    color: "neutral",
+    variant: "soft",
+    title: "Alert Title",
+  },
+  render: (args) => ({
+    components: { CuAlert },
+    setup: () => ({ args }),
+    template: "<CuAlert v-bind='args'>This is a default alert message.</CuAlert>",
+  }),
+};
+
+// 2. Primary
 export const Primary: Story = {
   args: {
     color: "primary",
@@ -56,7 +71,44 @@ export const Primary: Story = {
   }),
 };
 
-export const AllVariants: Story = {
+// 3. Color states
+export const ColorStates: Story = {
+  render: () => ({
+    components: { CuAlert },
+    setup: () => {
+      const states = ["success", "warning", "danger"] as const;
+      return { states };
+    },
+    template: `
+      <div class="flex flex-col gap-4">
+        <CuAlert v-for="state in states" :key="state" :color="state" variant="soft" :title="state + ' Alert'" class="w-64">
+          This is a {{ state }} alert message.
+        </CuAlert>
+      </div>
+    `,
+  }),
+};
+
+// 4. Variant in primary
+export const VariantInPrimary: Story = {
+  render: () => ({
+    components: { CuAlert },
+    setup: () => {
+      const variants = ["solid", "outlined", "soft", "ghost", "subtle"] as const;
+      return { variants };
+    },
+    template: `
+      <div class="flex flex-col gap-4">
+        <CuAlert v-for="variant in variants" :key="variant" color="primary" :variant="variant" :title="variant" class="w-64">
+          Primary alert with {{ variant }} variant
+        </CuAlert>
+      </div>
+    `,
+  }),
+};
+
+// 5. All combinations
+export const AllCombinations: Story = {
   render: () => ({
     components: { CuAlert },
     setup: () => {
@@ -79,6 +131,7 @@ export const AllVariants: Story = {
   }),
 };
 
+// 6. With close
 export const WithClose: Story = {
   args: {
     close: true,
