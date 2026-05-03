@@ -245,7 +245,7 @@ const filteredData = computed(() => {
 });
 
 const displayData = computed(() => {
-  if (!props.pagination || searchQuery.value) return filteredData.value;
+  if (!props.pagination) return filteredData.value;
   const start = (currentPage.value - 1) * itemsPerPage.value;
   const end = start + itemsPerPage.value;
   return filteredData.value.slice(start, end);
@@ -254,9 +254,7 @@ const totalItems = computed(() => filteredData.value.length);
 const totalPages = computed(() => {
   return Math.ceil(totalItems.value / itemsPerPage.value);
 });
-const showPaginationControl = computed(() => {
-  return props.pagination && !searchQuery.value;
-});
+const showPaginationControl = computed(() => props.pagination);
 const handlePageChange = (page: number) => {
   currentPage.value = page;
   emit("update:currentPage", page);
