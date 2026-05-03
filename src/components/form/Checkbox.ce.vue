@@ -47,8 +47,56 @@ const checkboxClasses = computed(() => ({
 }));
 const boxClasses = computed(() => [
     {
-        "border-2 border-solid bg-transparent":
-            props.variant === "outlined"
+        "bg-transparent border-solid border-2": props.variant === "outlined",
+    },
+    /* Regla general para subtle */
+    {
+        "border-2 border-solid border-1": props.variant === "subtle",
+    },
+    /* Regla general para ghost */
+    {
+        "border-2 border-solid border-transparent": props.variant === "ghost",
+    },
+    /* Regla general para soft */
+    {
+        "border-2 border-solid": props.variant === "soft",
+    },
+    /* Reglas para outlined (por color) */
+    /* Outlined - unchecked */
+    {
+        "border-primary": props.color === "primary" && props.variant === "outlined" && !checked.value,
+    },
+    {
+        "border-charcoal-800": props.color === "neutral" && props.variant === "outlined" && !checked.value,
+    },
+    {
+        "border-success": props.color === "success" && props.variant === "outlined" && !checked.value,
+    },
+    {
+        "border-warning": props.color === "warning" && props.variant === "outlined" && !checked.value,
+    },
+    {
+        "border-danger": props.color === "danger" && props.variant === "outlined" && !checked.value,
+    },
+    /* Outlined - checked */
+    {
+        "bg-primary-500 border-primary": props.color === "primary" && props.variant === "outlined" && checked.value,
+    },
+    {
+        "bg-charcoal-500 border-charcoal-800": props.color === "neutral" && props.variant === "outlined" && checked.value,
+    },
+    {
+        "bg-success-500 border-success": props.color === "success" && props.variant === "outlined" && checked.value,
+    },
+    {
+        "bg-warning-500 border-warning": props.color === "warning" && props.variant === "outlined" && checked.value,
+    },
+    {
+        "bg-danger-500 border-danger": props.color === "danger" && props.variant === "outlined" && checked.value,
+    },
+    /* Regla para none */
+    {
+        "bg-transparent border-solid border-1 border-charcoal-100": props.variant === "none",
     },
 
     {
