@@ -373,9 +373,7 @@ defineExpose({
                 <path d="M20 6L9 17l-5-5" />
             </svg>
         </div>
-        <span v-if="props.label" class="text-sm text-charcoal-800">{{
-            props.label
-        }}</span>
+        <span v-if="props.label" class="text-sm text-charcoal-800 font-sans">{{ props.label }}</span>
     </label>
 </template>
 
