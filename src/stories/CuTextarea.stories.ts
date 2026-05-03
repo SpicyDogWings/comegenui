@@ -87,8 +87,8 @@ export const ColorStates: Story = {
   }),
 };
 
-// 4. Variant in primary
-export const Variant: Story = {
+// 4. Variant In Primary
+export const VariantInPrimary: Story = {
   render: () => ({
     components: { CuTextarea },
     setup: () => {
@@ -103,8 +103,8 @@ export const Variant: Story = {
   }),
 };
 
-// 5. All combinations
-export const Combinations: Story = {
+// 5. All Combinations
+export const AllCombinations: Story = {
   render: () => ({
     components: { CuTextarea },
     setup: () => {

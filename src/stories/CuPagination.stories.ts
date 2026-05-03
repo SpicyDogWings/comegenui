@@ -100,8 +100,8 @@ export const WithPageSize: Story = {
   }),
 };
 
-// 3. Many Pages
-export const ManyPages: Story = {
+// 3. With Many Pages
+export const WithManyPages: Story = {
   args: {
     currentPage: 5,
     totalPages: 20,
@@ -148,8 +148,8 @@ export const WithPageSizeAndManyPages: Story = {
   }),
 };
 
-// 5. Custom Page Sizes
-export const CustomPageSizes: Story = {
+// 5. With Custom Page Sizes
+export const WithCustomPageSizes: Story = {
   args: {
     currentPage: 1,
     totalPages: 15,

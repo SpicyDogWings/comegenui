@@ -68,8 +68,8 @@ export const Primary: Story = {
   }),
 };
 
-// 3. Neutral
-export const Neutral: Story = {
+// 3. With Neutral
+export const WithNeutral: Story = {
   args: {
     color: "neutral",
     variant: "solid",
@@ -99,8 +99,8 @@ export const ColorStates: Story = {
   }),
 };
 
-// 5. Variant in primary
-export const Variant: Story = {
+// 5. Variant In Primary
+export const VariantInPrimary: Story = {
   render: () => ({
     components: { CuButton },
     setup: () => {
@@ -117,8 +117,8 @@ export const Variant: Story = {
   }),
 };
 
-// 6. All combinations
-export const Combinations: Story = {
+// 6. All Combinations
+export const AllCombinations: Story = {
   render: () => ({
     components: { CuButton },
     setup: () => {
@@ -170,7 +170,7 @@ export const WithLink: Story = {
 };
 
 // 9. With Icon
-export const Icon: Story = {
+export const WithIcon: Story = {
   args: {
     color: "primary",
     variant: "solid",

@@ -165,8 +165,8 @@ export const WithIcon: Story = {
   }),
 };
 
-// 8. With icon and close
-export const Full: Story = {
+// 8. With Icon And Close
+export const WithIconAndClose: Story = {
   args: {
     color: "warning",
     variant: "soft",

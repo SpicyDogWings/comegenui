@@ -115,7 +115,7 @@ export const AllCombinations: Story = {
 };
 
 // 6. With Icon
-export const Icon: Story = {
+export const WithIcon: Story = {
   args: {
     color: "primary",
     variant: "solid",

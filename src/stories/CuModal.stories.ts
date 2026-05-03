@@ -69,8 +69,8 @@ export const Default: Story = {
   }),
 };
 
-// 2. Sizes
-export const Sizes: Story = {
+// 2. With Sizes
+export const WithSizes: Story = {
   render: () => ({
     components: { CuModal },
     setup: () => {
