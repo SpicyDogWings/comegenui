@@ -33,7 +33,7 @@ const meta: Meta<typeof CuInput> = {
   },
   args: {
     color: "neutral",
-    variant: "outlined",
+    variant: "none",
     type: "text",
     placeholder: "Enter text...",
     disabled: false,
@@ -44,6 +44,22 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
+// 1. Default
+export const Default: Story = {
+  args: {
+    color: "neutral",
+    variant: "none",
+    type: "text",
+    placeholder: "Enter text...",
+  },
+  render: (args) => ({
+    components: { CuInput },
+    setup: () => ({ args }),
+    template: "<CuInput v-bind='args' class='w-64' />",
+  }),
+};
+
+// 2. Primary
 export const Primary: Story = {
   args: {
     color: "primary",
@@ -57,7 +73,40 @@ export const Primary: Story = {
   }),
 };
 
-export const AllVariants: Story = {
+// 3. Color states
+export const ColorStates: Story = {
+  render: () => ({
+    components: { CuInput },
+    setup: () => {
+      const states = ["success", "warning", "danger"] as const;
+      return { states };
+    },
+    template: `
+      <div class="flex flex-col gap-4">
+        <CuInput v-for="state in states" :key="state" :color="state" variant="outlined" :placeholder="state" class="w-64" />
+      </div>
+    `,
+  }),
+};
+
+// 4. Variant in primary
+export const Variant: Story = {
+  render: () => ({
+    components: { CuInput },
+    setup: () => {
+      const variants = ["outlined", "soft", "ghost", "subtle", "none"] as const;
+      return { variants };
+    },
+    template: `
+      <div class="flex flex-col gap-4">
+        <CuInput v-for="variant in variants" :key="variant" color="primary" :variant="variant" placeholder="Primary" class="w-64" />
+      </div>
+    `,
+  }),
+};
+
+// 5. All combinations
+export const Combinations: Story = {
   render: () => ({
     components: { CuInput },
     setup: () => {
@@ -68,7 +117,7 @@ export const AllVariants: Story = {
     template: `
       <div class="flex flex-col gap-4">
         <div v-for="variant in variants" :key="variant" class="flex flex-col gap-2">
-          <h3 class="text-sm font-medium text-charcoal-700">{{ variant }}</h3>
+          <h3 class="text-sm font-medium text-charcoal-700 font-sans">{{ variant }}</h3>
           <div class="flex gap-2 flex-wrap">
             <CuInput v-for="color in colors" :key="color" :variant="variant" :color="color" placeholder="Input" class="w-48" />
           </div>
@@ -78,6 +127,7 @@ export const AllVariants: Story = {
   }),
 };
 
+// 6. Types
 export const Types: Story = {
   render: () => ({
     components: { CuInput },

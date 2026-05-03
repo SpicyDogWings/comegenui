@@ -32,7 +32,7 @@ const meta: Meta<typeof CuTextarea> = {
   },
   args: {
     color: "neutral",
-    variant: "outlined",
+    variant: "none",
     placeholder: "Enter text...",
     disabled: false,
     readOnly: false,
@@ -43,6 +43,21 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
+// 1. Default
+export const Default: Story = {
+  args: {
+    color: "neutral",
+    variant: "none",
+    placeholder: "Enter text...",
+  },
+  render: (args) => ({
+    components: { CuTextarea },
+    setup: () => ({ args }),
+    template: "<CuTextarea v-bind='args' class='w-64 h-24' />",
+  }),
+};
+
+// 2. Primary
 export const Primary: Story = {
   args: {
     color: "primary",
@@ -52,11 +67,44 @@ export const Primary: Story = {
   render: (args) => ({
     components: { CuTextarea },
     setup: () => ({ args }),
-    template: "<CuTextarea v-bind='args' class='w-64' />",
+    template: "<CuTextarea v-bind='args' class='w-64 h-24' />",
   }),
 };
 
-export const AllVariants: Story = {
+// 3. Color states
+export const ColorStates: Story = {
+  render: () => ({
+    components: { CuTextarea },
+    setup: () => {
+      const states = ["success", "warning", "danger"] as const;
+      return { states };
+    },
+    template: `
+      <div class="flex flex-col gap-4">
+        <CuTextarea v-for="state in states" :key="state" :color="state" variant="outlined" :placeholder="state" class="w-64 h-24" />
+      </div>
+    `,
+  }),
+};
+
+// 4. Variant in primary
+export const Variant: Story = {
+  render: () => ({
+    components: { CuTextarea },
+    setup: () => {
+      const variants = ["outlined", "soft", "ghost", "subtle", "none"] as const;
+      return { variants };
+    },
+    template: `
+      <div class="flex flex-col gap-4">
+        <CuTextarea v-for="variant in variants" :key="variant" color="primary" :variant="variant" placeholder="Primary" class="w-64 h-24" />
+      </div>
+    `,
+  }),
+};
+
+// 5. All combinations
+export const Combinations: Story = {
   render: () => ({
     components: { CuTextarea },
     setup: () => {
@@ -67,7 +115,7 @@ export const AllVariants: Story = {
     template: `
       <div class="flex flex-col gap-4">
         <div v-for="variant in variants" :key="variant" class="flex flex-col gap-2">
-          <h3 class="text-sm font-medium text-charcoal-700">{{ variant }}</h3>
+          <h3 class="text-sm font-medium text-charcoal-700 font-sans">{{ variant }}</h3>
           <div class="flex gap-2 flex-wrap">
             <CuTextarea v-for="color in colors" :key="color" :variant="variant" :color="color" placeholder="Textarea" class="w-48 h-24" />
           </div>
