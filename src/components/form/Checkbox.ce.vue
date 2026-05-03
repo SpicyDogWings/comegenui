@@ -45,10 +45,16 @@ const checked = ref(props.modelValue || props.checked);
 const checkboxClasses = computed(() => ({
     "cursor-not-allowed opacity-70": props.disabled,
 }));
+
+
+
 const boxClasses = computed(() => [
     /* Regla general para outlined */
     {
-        "border-2 border-solid bg-transparent": props.variant === "outlined",
+        "border-solid border-2": props.variant === "outlined",
+    },
+    {
+        "bg-transparent": props.variant === "outlined" && !checked.value,
     },
     /* Regla general para subtle */
     {
@@ -60,17 +66,73 @@ const boxClasses = computed(() => [
     },
     /* Regla general para soft */
     {
-        "border-2 border-solid": props.variant === "soft",
+        "w-4 h-4": props.variant === "soft",
+    },
+    /* Reglas para outlined (por color) */
+    /* Outlined - unchecked */
+    {
+        "border-primary": props.color === "primary" && props.variant === "outlined" && !checked.value,
+    },
+    {
+        "border-charcoal-800": props.color === "neutral" && props.variant === "outlined" && !checked.value,
+    },
+    {
+        "border-success": props.color === "success" && props.variant === "outlined" && !checked.value,
+    },
+    {
+        "border-warning": props.color === "warning" && props.variant === "outlined" && !checked.value,
+    },
+    {
+        "border-danger": props.color === "danger" && props.variant === "outlined" && !checked.value,
+    },
+    /* Outlined - checked */
+    {
+        "bg-primary-500 border-primary": props.color === "primary" && props.variant === "outlined" && checked.value,
+    },
+    {
+        "bg-charcoal-500 border-charcoal-800": props.color === "neutral" && props.variant === "outlined" && checked.value,
+    },
+    {
+        "bg-success-500 border-success": props.color === "success" && props.variant === "outlined" && checked.value,
+    },
+    {
+        "bg-warning-500 border-warning": props.color === "warning" && props.variant === "outlined" && checked.value,
+    },
+    {
+        "bg-danger-500 border-danger": props.color === "danger" && props.variant === "outlined" && checked.value,
+    },
+    /* Regla para none */
+    {
+        "border-solid border-1 border-charcoal-100": props.variant === "none",
+    },
+    {
+        "bg-transparent": props.variant === "none" && !checked.value,
+    },
+    /* None - checked */
+    {
+        "bg-primary-500": props.color === "primary" && props.variant === "none" && checked.value,
+    },
+    {
+        "bg-charcoal-500": props.color === "neutral" && props.variant === "none" && checked.value,
+    },
+    {
+        "bg-success-500": props.color === "success" && props.variant === "none" && checked.value,
+    },
+    {
+        "bg-warning-500": props.color === "warning" && props.variant === "none" && checked.value,
+    },
+    {
+        "bg-danger-500": props.color === "danger" && props.variant === "none" && checked.value,
     },
 
     {
-        "border-primary-500 bg-primary bg-opacity-10":
+        "bg-primary bg-opacity-10":
             props.color === "primary" &&
             props.variant === "soft" &&
             !checked.value,
     },
     {
-        "border-primary-500 bg-primary-500":
+        "bg-primary-500":
             props.color === "primary" &&
             props.variant === "soft" &&
             checked.value,
@@ -101,13 +163,13 @@ const boxClasses = computed(() => [
     },
 
     {
-        "border-charcoal-500 bg-charcoal bg-opacity-10":
+        "bg-charcoal bg-opacity-10":
             props.color === "neutral" &&
             props.variant === "soft" &&
             !checked.value,
     },
     {
-        "border-charcoal-500 bg-charcoal-500":
+        "bg-charcoal-500":
             props.color === "neutral" &&
             props.variant === "soft" &&
             checked.value,
@@ -138,13 +200,13 @@ const boxClasses = computed(() => [
     },
 
     {
-        "border-success-500 bg-success bg-opacity-10":
+        "bg-success bg-opacity-10":
             props.color === "success" &&
             props.variant === "soft" &&
             !checked.value,
     },
     {
-        "border-success-500 bg-success-500":
+        "bg-success-500":
             props.color === "success" &&
             props.variant === "soft" &&
             checked.value,
@@ -175,13 +237,13 @@ const boxClasses = computed(() => [
     },
 
     {
-        "border-warning-500 bg-warning bg-opacity-10":
+        "bg-warning bg-opacity-10":
             props.color === "warning" &&
             props.variant === "soft" &&
             !checked.value,
     },
     {
-        "border-warning-500 bg-warning-500":
+        "bg-warning-500":
             props.color === "warning" &&
             props.variant === "soft" &&
             checked.value,
@@ -212,13 +274,13 @@ const boxClasses = computed(() => [
     },
 
     {
-        "border-danger-500 bg-danger bg-opacity-10":
+        "bg-danger bg-opacity-10":
             props.color === "danger" &&
             props.variant === "soft" &&
             !checked.value,
     },
     {
-        "border-danger-500 bg-danger-500":
+        "bg-danger-500":
             props.color === "danger" &&
             props.variant === "soft" &&
             checked.value,
@@ -310,15 +372,15 @@ defineExpose({
             <svg
                 v-if="checked"
                 xmlns="http://www.w3.org/2000/svg"
-                width="14"
-                height="14"
+                :width="props.variant === 'soft' ? 16 : 14"
+                :height="props.variant === 'soft' ? 16 : 14"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
                 stroke-width="3"
                 stroke-linecap="round"
                 stroke-linejoin="round"
-                class="text-white"
+                class="text-charcoal-50"
             >
                 <path d="M20 6L9 17l-5-5" />
             </svg>
