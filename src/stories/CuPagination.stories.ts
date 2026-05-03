@@ -1,4 +1,5 @@
 import CuPagination from "../components/Pagination.ce.vue";
+import { ref } from "vue";
 
 import type { Meta, StoryObj } from "@storybook/vue3";
 
