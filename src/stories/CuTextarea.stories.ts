@@ -1,5 +1,4 @@
 import CuTextarea from "../components/form/Textarea.ce.vue";
-import "./Textarea.css";
 
 import type { Meta, StoryObj } from "@storybook/vue3";
 

@@ -1,5 +1,4 @@
 import CuInput from "../components/form/Input.ce.vue";
-import "./Input.css";
 
 import type { Meta, StoryObj } from "@storybook/vue3";
 

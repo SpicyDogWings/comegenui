@@ -1,5 +1,4 @@
 import CuCheckbox from "../components/form/Checkbox.ce.vue";
-import "./Checkbox.css";
 
 import type { Meta, StoryObj } from "@storybook/vue3";
 
