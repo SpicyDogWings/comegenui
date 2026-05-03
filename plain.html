@@ -3,9 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Checkbox Demo</title>
+    <title>Label + Input Demo</title>
     <script src="dist/vendor/vue-runtime.iife.js"></script>
-    <script src="dist/CuCheckbox.umd.js"></script>
+    <script src="dist/CuLabel.umd.js"></script>
+    <script src="dist/CuInput.umd.js"></script>
+    <script src="dist/CuButton.umd.js"></script>
     <style>
       :root {
         --bg-primary: oklch(0.634 0.133 238.39);
@@ -16,7 +18,7 @@
       }
       
       body {
-        font-family: Arial, sans-serif;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
         padding: 20px;
         max-width: 1200px;
         margin: 0 auto;
@@ -52,13 +54,37 @@
       
       .demo-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 15px;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
         margin: 15px 0;
       }
       
-      .demo-grid cu-checkbox {
+      .demo-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin: 15px 0;
+      }
+      
+      .demo-item {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 6px;
+        border: 1px solid #e2e8f0;
+      }
+      
+      cu-label {
+        display: block;
+        margin: 10px 0;
+      }
+      
+      cu-input {
         width: 100%;
+      }
+      
+      cu-button {
+        margin-right: 10px;
+        margin-bottom: 10px;
       }
       
       .code {
@@ -68,64 +94,336 @@
         font-family: monospace;
         font-size: 13px;
       }
+      
+      .code-block {
+        background: #2d3748;
+        color: #e2e8f0;
+        padding: 12px 16px;
+        border-radius: 6px;
+        font-family: monospace;
+        font-size: 13px;
+        overflow-x: auto;
+        margin: 10px 0;
+      }
+      
+      .code-block .tag { color: #f687b3; }
+      .code-block .attr { color: #63b3ed; }
+      .code-block .val { color: #68d391; }
+      
+      .label-text {
+        display: block;
+        font-size: 14px;
+        font-weight: 500;
+        color: #4a5568;
+        margin-bottom: 6px;
+      }
+      
+      .description {
+        color: #718096;
+        font-size: 14px;
+        margin: 5px 0 15px 0;
+      }
+      
+      .highlight {
+        background: linear-gradient(120deg, #84cc16 0%, #84cc16 100%);
+        background-repeat: no-repeat;
+        background-size: 100% 4px;
+        background-position: 0 100%;
+        padding-bottom: 4px;
+      }
     </style>
   </head>
   <body>
-    <h1>Checkbox Demo</h1>
+    <h1>CuLabel Demo - Click to Focus</h1>
     
     <div class="section">
-      <h2>☑️ Checkbox</h2>
-      <p>Variantes: <span class="code">outlined</span>, <span class="code">soft</span>, <span class="code">ghost</span>, <span class="code">subtle</span>, <span class="code">none</span></p>
+      <h2>🎯 ¿Cómo funciona?</h2>
+      <p class="description">
+        El componente <span class="code">cu-label</span> envuelve inputs y al hacer click en cualquier parte del label, 
+        automáticamente enfoca el primer <span class="code">cu-input</span> o <span class="code">input</span> que encuentre dentro.
+      </p>
+      <p class="description">
+        <strong>Prueba:</strong> Haz click en el texto "Nombre de usuario" o en cualquier área del label para ver cómo el input recibe el foco.
+      </p>
       
-      <h3>Outlined</h3>
-      <div class="demo-grid">
-        <cu-checkbox color="primary" variant="outlined" label="Primary"></cu-checkbox>
-        <cu-checkbox color="neutral" variant="outlined" label="Neutral"></cu-checkbox>
-        <cu-checkbox color="success" variant="outlined" label="Success"></cu-checkbox>
-        <cu-checkbox color="warning" variant="outlined" label="Warning"></cu-checkbox>
-        <cu-checkbox color="danger" variant="outlined" label="Danger"></cu-checkbox>
-      </div>
-
-      <h3>Soft</h3>
-      <div class="demo-grid">
-        <cu-checkbox color="primary" variant="soft" label="Primary"></cu-checkbox>
-        <cu-checkbox color="neutral" variant="soft" label="Neutral"></cu-checkbox>
-        <cu-checkbox color="success" variant="soft" label="Success"></cu-checkbox>
-        <cu-checkbox color="warning" variant="soft" label="Warning"></cu-checkbox>
-        <cu-checkbox color="danger" variant="soft" label="Danger"></cu-checkbox>
-      </div>
-
-      <h3>Ghost</h3>
-      <div class="demo-grid">
-        <cu-checkbox color="primary" variant="ghost" label="Primary"></cu-checkbox>
-        <cu-checkbox color="neutral" variant="ghost" label="Neutral"></cu-checkbox>
-        <cu-checkbox color="success" variant="ghost" label="Success"></cu-checkbox>
-        <cu-checkbox color="warning" variant="ghost" label="Warning"></cu-checkbox>
-        <cu-checkbox color="danger" variant="ghost" label="Danger"></cu-checkbox>
-      </div>
-
-      <h3>Subtle</h3>
-      <div class="demo-grid">
-        <cu-checkbox color="primary" variant="subtle" label="Primary"></cu-checkbox>
-        <cu-checkbox color="neutral" variant="subtle" label="Neutral"></cu-checkbox>
-        <cu-checkbox color="success" variant="subtle" label="Success"></cu-checkbox>
-        <cu-checkbox color="warning" variant="subtle" label="Warning"></cu-checkbox>
-        <cu-checkbox color="danger" variant="subtle" label="Danger"></cu-checkbox>
-      </div>
-
-      <h3>None</h3>
-      <div class="demo-grid">
-        <cu-checkbox variant="none" label="None"></cu-checkbox>
+      <div class="demo-item">
+        <cu-label>
+          <span class="label-text">Nombre de usuario</span>
+          <cu-input placeholder="Escribe tu nombre..." color="neutral" variant="none"></cu-input>
+        </cu-label>
       </div>
       
-      <h3>Estados</h3>
-      <div class="demo-grid">
-        <cu-checkbox color="primary" label="Checked" checked></cu-checkbox>
-        <cu-checkbox color="primary" label="Disabled" disabled></cu-checkbox>
-        <cu-checkbox color="primary" label="Disabled + Checked" checked disabled></cu-checkbox>
-        <cu-checkbox color="primary" variant="outlined" label="Outlined Checked" checked></cu-checkbox>
-        <cu-checkbox color="primary" variant="soft" label="Soft Checked" checked></cu-checkbox>
+      <div class="code-block">
+        &lt;cu-label&gt;
+        <br>
+        &nbsp;&nbsp;&lt;span class="label-text"&gt;Nombre de usuario&lt;/span&gt;
+        <br>
+        &nbsp;&nbsp;&lt;cu-input placeholder="Escribe tu nombre..." /&gt;
+        <br>
+        &lt;/cu-label&gt;
       </div>
+    </div>
+    
+    <div class="section">
+      <h2>📋 Formulario Completo</h2>
+      <p class="description">
+        Ejemplo de formulario con múltiples campos usando <span class="code">cu-label</span>.
+      </p>
+      
+      <div class="demo-grid">
+        <div class="demo-item">
+          <cu-label>
+            <span class="label-text">Nombre *</span>
+            <cu-input placeholder="Juan" color="primary" variant="outlined"></cu-input>
+          </cu-label>
+        </div>
+        
+        <div class="demo-item">
+          <cu-label>
+            <span class="label-text">Apellido *</span>
+            <cu-input placeholder="Pérez" color="primary" variant="outlined"></cu-input>
+          </cu-label>
+        </div>
+        
+        <div class="demo-item">
+          <cu-label>
+            <span class="label-text">Email *</span>
+            <cu-input placeholder="juan@example.com" type="email" color="success" variant="soft"></cu-input>
+          </cu-label>
+        </div>
+        
+        <div class="demo-item">
+          <cu-label>
+            <span class="label-text">Teléfono</span>
+            <cu-input placeholder="+52 123 456 7890" type="tel" color="neutral" variant="ghost"></cu-input>
+          </cu-label>
+        </div>
+        
+        <div class="demo-item">
+          <cu-label>
+            <span class="label-text">Contraseña</span>
+            <cu-input placeholder="••••••••" type="password" color="warning" variant="subtle"></cu-input>
+          </cu-label>
+        </div>
+        
+        <div class="demo-item">
+          <cu-label>
+            <span class="label-text">Confirmar Contraseña</span>
+            <cu-input placeholder="••••••••" type="password" color="danger" variant="none"></cu-input>
+          </cu-label>
+        </div>
+      </div>
+    </div>
+    
+    <div class="section">
+      <h2>🔍 Nested Elements</h2>
+      <p class="description">
+        El label funciona incluso cuando el input está dentro de contenedores anidados.
+      </p>
+      
+      <div class="demo-row">
+        <div class="demo-item flex-1">
+          <cu-label>
+            <span class="label-text">Búsqueda con Icono</span>
+            <div style="position: relative;">
+              <span style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #a0aec0;">🔍</span>
+              <cu-input placeholder="Buscar..." style="padding-left: 36px;" color="primary" variant="outlined"></cu-input>
+            </div>
+          </cu-label>
+        </div>
+        
+        <div class="demo-item flex-1">
+          <cu-label>
+            <span class="label-text">Campo con Wrapper</span>
+            <div style="border: 1px solid #e2e8f0; border-radius: 6px; padding: 4px;">
+              <cu-input placeholder="Dentro de un div" color="neutral" variant="none"></cu-input>
+            </div>
+          </cu-label>
+        </div>
+      </div>
+    </div>
+    
+    <div class="section">
+      <h2>🎨 Variantes y Colores</h2>
+      <p class="description">
+        Combina diferentes variantes y colores de inputs dentro del label.
+      </p>
+      
+      <h3>Primary</h3>
+      <div class="demo-row">
+        <cu-label>
+          <span class="label-text">Outlined</span>
+          <cu-input placeholder="Primary Outlined" color="primary" variant="outlined"></cu-input>
+        </cu-label>
+        <cu-label>
+          <span class="label-text">Soft</span>
+          <cu-input placeholder="Primary Soft" color="primary" variant="soft"></cu-input>
+        </cu-label>
+        <cu-label>
+          <span class="label-text">Ghost</span>
+          <cu-input placeholder="Primary Ghost" color="primary" variant="ghost"></cu-input>
+        </cu-label>
+        <cu-label>
+          <span class="label-text">Subtle</span>
+          <cu-input placeholder="Primary Subtle" color="primary" variant="subtle"></cu-input>
+        </cu-label>
+      </div>
+      
+      <h3>Success</h3>
+      <div class="demo-row">
+        <cu-label>
+          <span class="label-text">Success Outlined</span>
+          <cu-input placeholder="Success" color="success" variant="outlined"></cu-input>
+        </cu-label>
+        <cu-label>
+          <span class="label-text">Success Soft</span>
+          <cu-input placeholder="Success" color="success" variant="soft"></cu-input>
+        </cu-label>
+        <cu-label>
+          <span class="label-text">Success Ghost</span>
+          <cu-input placeholder="Success" color="success" variant="ghost"></cu-input>
+        </cu-label>
+      </div>
+      
+      <h3>Warning & Danger</h3>
+      <div class="demo-row">
+        <cu-label>
+          <span class="label-text">Warning</span>
+          <cu-input placeholder="Warning field" color="warning" variant="outlined"></cu-input>
+        </cu-label>
+        <cu-label>
+          <span class="label-text">Danger</span>
+          <cu-input placeholder="Danger field" color="danger" variant="outlined"></cu-input>
+        </cu-label>
+      </div>
+    </div>
+    
+    <div class="section">
+      <h2>📝 Tipos de Input</h2>
+      <p class="description">
+        El label funciona con todos los tipos de input: text, email, password, number, tel, url, search.
+      </p>
+      
+      <div class="demo-grid">
+        <div class="demo-item">
+          <cu-label>
+            <span class="label-text">Text</span>
+            <cu-input type="text" placeholder="Texto normal"></cu-input>
+          </cu-label>
+        </div>
+        <div class="demo-item">
+          <cu-label>
+            <span class="label-text">Email</span>
+            <cu-input type="email" placeholder="correo@ejemplo.com"></cu-input>
+          </cu-label>
+        </div>
+        <div class="demo-item">
+          <cu-label>
+            <span class="label-text">Password</span>
+            <cu-input type="password" placeholder="••••••••"></cu-input>
+          </cu-label>
+        </div>
+        <div class="demo-item">
+          <cu-label>
+            <span class="label-text">Number</span>
+            <cu-input type="number" placeholder="123"></cu-input>
+          </cu-label>
+        </div>
+        <div class="demo-item">
+          <cu-label>
+            <span class="label-text">Tel</span>
+            <cu-input type="tel" placeholder="+1 234 567 890"></cu-input>
+          </cu-label>
+        </div>
+        <div class="demo-item">
+          <cu-label>
+            <span class="label-text">URL</span>
+            <cu-input type="url" placeholder="https://ejemplo.com"></cu-input>
+          </cu-label>
+        </div>
+      </div>
+    </div>
+    
+    <div class="section">
+      <h2>⚡ Comparación: Con vs Sin Label</h2>
+      <p class="description">
+        Observa la diferencia de usabilidad entre usar el label y no usarlo.
+      </p>
+      
+      <div class="demo-row">
+        <div class="demo-item flex-1">
+          <h3 style="margin-top: 0; text-align: center;">✅ Con CuLabel</h3>
+          <p style="text-align: center; font-size: 13px; color: #718096; margin-bottom: 15px;">
+            Haz click en "Nombre" o alrededor del input
+          </p>
+          <cu-label>
+            <span class="label-text">Nombre</span>
+            <cu-input placeholder="Fácil de enfocar" color="success" variant="soft"></cu-input>
+          </cu-label>
+        </div>
+        
+        <div class="demo-item flex-1">
+          <h3 style="margin-top: 0; text-align: center;">❌ Sin CuLabel</h3>
+          <p style="text-align: center; font-size: 13px; color: #718096; margin-bottom: 15px;">
+            Solo puedes enfocar haciendo click directamente en el input
+          </p>
+          <div>
+            <span class="label-text">Nombre</span>
+            <cu-input placeholder="Difícil de enfocar" color="danger" variant="soft"></cu-input>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="section">
+      <h2>💡 Casos de Uso Avanzados</h2>
+      
+      <h3>Label como Contenedor Flex</h3>
+      <p class="description">
+        Usa CSS para personalizar el layout interno del label.
+      </p>
+      <div class="demo-item">
+        <cu-label style="display: flex; align-items: center; gap: 12px;">
+          <span class="label-text" style="flex: 0 0 120px;">Código Postal:</span>
+          <cu-input placeholder="00000" style="flex: 1;" color="primary" variant="outlined"></cu-input>
+          <cu-button color="primary" variant="solid" style="flex: 0 0 auto;">Buscar</cu-button>
+        </cu-label>
+      </div>
+      
+      <h3>Múltiples Inputs (se enfoca el primero)</h3>
+      <p class="description">
+        Cuando hay varios inputs, el label enfoca el primero que encuentra.
+      </p>
+      <div class="demo-item">
+        <cu-label>
+          <span class="label-text">Rango de Fechas</span>
+          <div style="display: flex; gap: 10px;">
+            <cu-input placeholder="Desde" type="date" style="flex: 1;" color="neutral" variant="outlined"></cu-input>
+            <span style="align-self: center; color: #718096;">hasta</span>
+            <cu-input placeholder="Hasta" type="date" style="flex: 1;" color="neutral" variant="outlined"></cu-input>
+          </div>
+        </cu-label>
+      </div>
+      
+      <h3>Input Nativo HTML</h3>
+      <p class="description">
+        El label también funciona con inputs HTML nativos, no solo con CuInput.
+      </p>
+      <div class="demo-item">
+        <cu-label>
+          <span class="label-text">Input Nativo</span>
+          <input type="text" placeholder="HTML input nativo" 
+                 style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; font-family: inherit; font-size: 14px;">
+        </cu-label>
+      </div>
+    </div>
+    
+    <div class="section" style="text-align: center; padding: 40px 25px;">
+      <h2 style="margin-bottom: 10px;">✨ ¡Listo!</h2>
+      <p class="description" style="margin: 0; max-width: 600px; margin-left: auto; margin-right: auto;">
+        El componente <span class="code">cu-label</span> mejora la accesibilidad y usabilidad de tus formularios, 
+        haciendo que los inputs sean más fáciles de enfocar para los usuarios.
+      </p>
     </div>
   </body>
 </html>
