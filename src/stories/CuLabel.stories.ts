@@ -23,7 +23,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-// 1. Default
 export const Default: Story = {
   render: (args) => ({
     components: { CuLabel, CuInput },
@@ -37,7 +36,6 @@ export const Default: Story = {
   }),
 };
 
-// 2. WithInput
 export const WithInput: Story = {
   render: () => ({
     components: { CuLabel, CuInput },
@@ -51,7 +49,6 @@ export const WithInput: Story = {
   }),
 };
 
-// 3. WithNestedWrapper
 export const WithNestedWrapper: Story = {
   render: () => ({
     components: { CuLabel, CuInput },
@@ -67,7 +64,6 @@ export const WithNestedWrapper: Story = {
   }),
 };
 
-// 4. WithMultipleInputs
 export const WithMultipleInputs: Story = {
   render: () => ({
     components: { CuLabel, CuInput },
@@ -87,7 +83,6 @@ export const WithMultipleInputs: Story = {
   }),
 };
 
-// 5. WithIcon
 export const WithIcon: Story = {
   render: () => ({
     components: { CuLabel, CuInput },
@@ -104,7 +99,6 @@ export const WithIcon: Story = {
   }),
 };
 
-// 6. WithAllInputTypes
 export const WithAllInputTypes: Story = {
   render: () => ({
     components: { CuLabel, CuInput },
@@ -130,7 +124,6 @@ export const WithAllInputTypes: Story = {
   }),
 };
 
-// 7. WithNativeInput
 export const WithNativeInput: Story = {
   render: () => ({
     components: { CuLabel },
@@ -148,7 +141,6 @@ export const WithNativeInput: Story = {
   }),
 };
 
-// 8. WithAllVariants
 export const WithAllVariants: Story = {
   render: () => ({
     components: { CuLabel, CuInput },
@@ -167,7 +159,6 @@ export const WithAllVariants: Story = {
   }),
 };
 
-// 9. WithAllColors
 export const WithAllColors: Story = {
   render: () => ({
     components: { CuLabel, CuInput },
@@ -186,7 +177,6 @@ export const WithAllColors: Story = {
   }),
 };
 
-// 10. WithColorVariantsMatrix
 export const WithColorVariantsMatrix: Story = {
   render: () => ({
     components: { CuLabel, CuInput },
@@ -211,7 +201,6 @@ export const WithColorVariantsMatrix: Story = {
   }),
 };
 
-// 11. WithFlexContainer
 export const WithFlexContainer: Story = {
   render: () => ({
     components: { CuLabel, CuInput, CuButton },
@@ -226,7 +215,6 @@ export const WithFlexContainer: Story = {
   }),
 };
 
-// 12. WithMultipleInputsFirstFocus
 export const WithMultipleInputsFirstFocus: Story = {
   render: () => ({
     components: { CuLabel, CuInput },
@@ -244,7 +232,6 @@ export const WithMultipleInputsFirstFocus: Story = {
   }),
 };
 
-// 13. FormExample
 export const FormExample: Story = {
   render: () => ({
     components: { CuLabel, CuInput },
@@ -276,7 +263,6 @@ export const FormExample: Story = {
   }),
 };
 
-// 14. WithWrapperBorder
 export const WithWrapperBorder: Story = {
   render: () => ({
     components: { CuLabel, CuInput },
