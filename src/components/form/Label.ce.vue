@@ -34,7 +34,7 @@ const handleClick = (e: Event) => {
     @click="handleClick"
     class="cursor-pointer inline-block font-sans flex flex-col gap-2"
   >
-    <span v-if="props.label" class="font-sans text-charcoal-800">{{ props.label }}</span>
+    <span class="font-sans text-charcoal-800">{{ props.label }}</span>
     <slot></slot>
   </label>
 </template>
