@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
+import { darken, lighten, getContrast, toHex } from 'color2k';
 
 const props = defineProps({
   color: {
@@ -7,6 +8,13 @@ const props = defineProps({
     required: false,
     default: "#2c2c2c",
     validator: (value: string) => /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/i.test(value),
+  },
+  colorMode: {
+    type: String,
+    required: false,
+    default: "light",
+    validator: (value: string) =>
+      ["dark", "light"].includes(value),
   },
   variant: {
     type: String,
@@ -32,59 +40,43 @@ const props = defineProps({
   },
 });
 
-const buttonClasses = computed(() => [
-  {
-    "cursor-not-allowed opacity-70 pointer-events-none": props.disabled,
-  },
-  {
-    "bg-transparent border-solid border-2": props.variant === "outlined",
-  },
-  {
-    "bg-transparent": props.variant === "ghost",
-  },
-  {
-    "bg-transparent hover:underline hover:decoration-solid hover:decoration-2": props.variant === "link",
-  },
-  {
-    "bg-opacity-10 border-solid border-1 hover:bg-opacity-20 active:bg-opacity-30": props.variant === "subtle",
-  },
-
-]);
+const fgClass = computed(() => {
+  console.group("foreground");
+  let fgColor = toHex(lighten(props.color, 0.7));
+  console.log(getContrast(fgColor, props.color));
+  console.log(getContrast(fgColor, props.color) < 4)
+  if (getContrast(fgColor, props.color) < 3) fgColor = toHex(darken(props.color, 0.7));
+  console.log(props.color);
+  console.log(fgColor);
+  console.log(`text-[${fgColor}]`);
+  console.log(getContrast(fgColor, props.color));
+  console.groupEnd();
+  return fgColor;
+});
+const fgColorValue = computed(() => toHex(lighten(props.color, 0.3)));
 </script>
 
 <template>
   <a
-    v-if="props.to && !props.disabled"
+    v-if="props.to"
     :href="props.to"
     :target="props.target"
     :class="[props.variant === 'link' ? '' : 'decoration-0']"
   >
     <button
       class="py-2 px-4 rounded-cu border-none font-sans font-medium hover:cursor-pointer flex justify-center items-center gap-2"
-      :class="buttonClasses"
       :disabled="props.disabled"
-    >
-      <slot></slot>
-    </button>
-  </a>
-  <a
-    v-else-if="props.to && props.disabled"
-    :href="props.to"
-    :target="props.target"
-    class="pointer-events-none"
-  >
-    <button
-      class="py-2 px-4 rounded-cu border-none font-sans font-medium hover:cursor-pointer flex justify-center items-center gap-2 box-border"
-      :class="buttonClasses"
-      disabled
     >
       <slot></slot>
     </button>
   </a>
   <button
     v-else
-    class="py-2 px-4 rounded-cu border-none font-sans font-medium hover:cursor-pointer flex justify-center items-center gap-2 box-border"
-    :class="buttonClasses"
+    class="bg-[var(--btn-bg)] text-[var(--btn-fg)] py-2 px-4 rounded-cu border-none font-sans font-medium hover:cursor-pointer flex justify-center items-center gap-2 box-border"
+      :style="{
+        '--btn-bg': props.color,
+        '--btn-fg': fgClass
+      }"
     :disabled="props.disabled"
   >
     <slot></slot>
