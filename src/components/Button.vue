@@ -5,9 +5,8 @@ const props = defineProps({
   color: {
     type: String,
     required: false,
-    default: "neutral",
-    validator: (value: string) =>
-      ["primary", "neutral", "success", "warning", "danger"].includes(value),
+    default: "#2c2c2c",
+    validator: (value: string) => /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/i.test(value),
   },
   variant: {
     type: String,
