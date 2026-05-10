@@ -62,7 +62,6 @@ export const Default: Story = {
 // 2. Solid
 export const Solid: Story = {
   args: {
-    color: "#3b82f6",
     variant: "solid",
   },
   render: (args) => ({
@@ -75,7 +74,6 @@ export const Solid: Story = {
 // 3. Outlined
 export const Outlined: Story = {
   args: {
-    color: "#3b82f6",
     variant: "outlined",
   },
   render: (args) => ({
@@ -88,7 +86,6 @@ export const Outlined: Story = {
 // 4. Soft
 export const Soft: Story = {
   args: {
-    color: "#3b82f6",
     variant: "soft",
   },
   render: (args) => ({
@@ -101,7 +98,6 @@ export const Soft: Story = {
 // 5. Subtle
 export const Subtle: Story = {
   args: {
-    color: "#3b82f6",
     variant: "subtle",
   },
   render: (args) => ({
@@ -114,7 +110,6 @@ export const Subtle: Story = {
 // 6. Ghost
 export const Ghost: Story = {
   args: {
-    color: "#3b82f6",
     variant: "ghost",
   },
   render: (args) => ({
@@ -127,7 +122,6 @@ export const Ghost: Story = {
 // 7. Link
 export const Link: Story = {
   args: {
-    color: "#3b82f6",
     variant: "link",
     to: "https://example.com",
     target: "_blank",
@@ -178,7 +172,6 @@ export const ColorShowcase: Story = {
 // 10. High Contrast
 export const HighContrast: Story = {
   args: {
-    color: "#3b82f6",
     variant: "solid",
     hightContrast: true,
   },
@@ -192,7 +185,6 @@ export const HighContrast: Story = {
 // 11. Disabled
 export const Disabled: Story = {
   args: {
-    color: "#3b82f6",
     variant: "solid",
     disabled: true,
   },
