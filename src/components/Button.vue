@@ -9,6 +9,11 @@ const props = defineProps({
     default: "#2c2c2c",
     validator: (value: string) => /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/i.test(value),
   },
+  hightContrast: {
+    type: Boolean,
+    required: false,
+    default: false
+  },
   colorMode: {
     type: String,
     required: false,
@@ -41,16 +46,8 @@ const props = defineProps({
 });
 
 const fgClass = computed(() => {
-  console.group("foreground");
-  let fgColor = toHex(lighten(props.color, 0.7));
-  console.log(getContrast(fgColor, props.color));
-  console.log(getContrast(fgColor, props.color) < 4)
-  if (getContrast(fgColor, props.color) < 3) fgColor = toHex(darken(props.color, 0.7));
-  console.log(props.color);
-  console.log(fgColor);
-  console.log(`text-[${fgColor}]`);
-  console.log(getContrast(fgColor, props.color));
-  console.groupEnd();
+  let fgColor = toHex(lighten(props.color, 0.6));
+  if (getContrast(fgColor, props.color) < 3 && props.hightContrast) fgColor = toHex(darken(props.color, 0.5));
   return fgColor;
 });
 const fgColorValue = computed(() => toHex(lighten(props.color, 0.3)));
