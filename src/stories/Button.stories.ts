@@ -133,43 +133,7 @@ export const Link: Story = {
   }),
 };
 
-// 7.5. Link Decoration Showcase
-export const LinkDecorationShowcase: Story = {
-  render: () => ({
-    components: { Button },
-    setup: () => {
-      const colors = ["#ef4444", "#3b82f6", "#10b981", "#f59e0b"] as const;
-      return { colors };
-    },
-    template: `
-      <div class="flex gap-4 flex-wrap items-center p-4">
-        <Button v-for="color in colors" :key="color" :color="color" variant="link" to="#">
-          Hover me ({{ color }})
-        </Button>
-      </div>
-    `,
-  }),
-};
-
-// 8. Variant Showcase
-export const VariantShowcase: Story = {
-  render: () => ({
-    components: { Button },
-    setup: () => {
-      const variants = ["solid", "outlined", "soft", "ghost", "subtle", "link"] as const;
-      return { variants };
-    },
-    template: `
-      <div class="flex gap-2 flex-wrap">
-        <Button v-for="variant in variants" :key="variant" color="#3b82f6" :variant="variant">
-          {{ variant }}
-        </Button>
-      </div>
-    `,
-  }),
-};
-
-// 9. Color Showcase
+// 8. Color Showcase
 export const ColorShowcase: Story = {
   render: () => ({
     components: { Button },
@@ -187,7 +151,7 @@ export const ColorShowcase: Story = {
   }),
 };
 
-// 10. High Contrast
+// 9. High Contrast
 export const HighContrast: Story = {
   args: {
     variant: "solid",
@@ -200,15 +164,38 @@ export const HighContrast: Story = {
   }),
 };
 
-// 11. Disabled
-export const Disabled: Story = {
-  args: {
-    variant: "solid",
-    disabled: true,
-  },
-  render: (args) => ({
+// 10. Variant Showcase
+export const VariantShowcase: Story = {
+  render: () => ({
     components: { Button },
-    setup: () => ({ args }),
-    template: "<Button v-bind='args'>Disabled</Button>",
+    setup: () => {
+      const variants = ["solid", "outlined", "soft", "ghost", "subtle", "link"] as const;
+      return { variants };
+    },
+    template: `
+      <div class="flex gap-2 flex-wrap">
+        <Button v-for="variant in variants" :key="variant" color="#3b82f6" :variant="variant">
+          {{ variant }}
+        </Button>
+      </div>
+    `,
+  }),
+};
+
+// 11. All Variants Disabled
+export const AllVariantsDisabled: Story = {
+  render: () => ({
+    components: { Button },
+    setup: () => {
+      const variants = ["solid", "outlined", "soft", "ghost", "subtle"] as const;
+      return { variants };
+    },
+    template: `
+      <div class="flex gap-2 flex-wrap">
+        <Button v-for="variant in variants" :key="variant" color="#3b82f6" :variant="variant" disabled>
+          {{ variant }} (disabled)
+        </Button>
+      </div>
+    `,
   }),
 };
