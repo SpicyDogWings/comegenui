@@ -4,7 +4,7 @@ import Button from "./components/Button.vue";
 
 <template>
   <div class="min-h-screen flex items-center justify-center">
-    <Button color="#0A7C6E">Click me</Button>
+    <Button variant="solid" color="#0A7C6E">Click me</Button>
   </div>
 </template>
 

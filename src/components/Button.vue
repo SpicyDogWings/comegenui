@@ -1,25 +1,26 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { darken, lighten, getContrast, toHex } from 'color2k';
+import { darken, lighten, getContrast, toHex } from "color2k";
+import { getFgClass } from "../utils/palette";
 
 const props = defineProps({
   color: {
     type: String,
     required: false,
     default: "#2c2c2c",
-    validator: (value: string) => /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/i.test(value),
+    validator: (value: string) =>
+      /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/i.test(value),
   },
   hightContrast: {
     type: Boolean,
     required: false,
-    default: false
+    default: false,
   },
   colorMode: {
     type: String,
     required: false,
     default: "light",
-    validator: (value: string) =>
-      ["dark", "light"].includes(value),
+    validator: (value: string) => ["dark", "light"].includes(value),
   },
   variant: {
     type: String,
@@ -36,7 +37,8 @@ const props = defineProps({
     type: String,
     required: false,
     default: "_self",
-    validator: (value: string) => ["_self", "_blank", "_parent", "_top"].includes(value),
+    validator: (value: string) =>
+      ["_self", "_blank", "_parent", "_top"].includes(value),
   },
   disabled: {
     type: Boolean,
@@ -45,12 +47,24 @@ const props = defineProps({
   },
 });
 
-const fgClass = computed(() => {
-  let fgColor = toHex(lighten(props.color, 0.6));
-  if (getContrast(fgColor, props.color) < 3 && props.hightContrast) fgColor = toHex(darken(props.color, 0.5));
-  return fgColor;
+const bgClass = computed(() => {
+  const bgClass = {
+    main: props.color,
+    hover: "",
+    active: "",
+  };
+  bgClass.hover = darken(props.color, 0.1);
+  bgClass.active = darken(props.color, 0.2);
+  if (getContrast(toHex(darken(props.color, 0.1)), bgClass.main) < 1)
+    bgClass.hover = lighten(bgClass.main, 0.1);
+  if (getContrast(toHex(darken(props.color, 0.2)), bgClass.main) < 2)
+    bgClass.active = lighten(bgClass.main, 0.2);
+  return bgClass;
 });
-const fgColorValue = computed(() => toHex(lighten(props.color, 0.3)));
+
+const fgClass = computed(() => {
+  return getFgClass(props.color, props.hightContrast);
+});
 </script>
 
 <template>
@@ -61,7 +75,7 @@ const fgColorValue = computed(() => toHex(lighten(props.color, 0.3)));
     :class="[props.variant === 'link' ? '' : 'decoration-0']"
   >
     <button
-      class="py-2 px-4 rounded-cu border-none font-sans font-medium hover:cursor-pointer flex justify-center items-center gap-2"
+      class="py-2 px-4 rounded-cu border-none text-[var(--btn-fg)] font-sans font-medium bg-[var(--btn-bg)] hover:cursor-pointer flex justify-center items-center gap-2 box-border"
       :disabled="props.disabled"
     >
       <slot></slot>
@@ -69,11 +83,16 @@ const fgColorValue = computed(() => toHex(lighten(props.color, 0.3)));
   </a>
   <button
     v-else
-    class="bg-[var(--btn-bg)] text-[var(--btn-fg)] py-2 px-4 rounded-cu border-none font-sans font-medium hover:cursor-pointer flex justify-center items-center gap-2 box-border"
-      :style="{
-        '--btn-bg': props.color,
-        '--btn-fg': fgClass
-      }"
+    class="py-2 px-4 rounded-cu border-none text-[var(--btn-fg)] font-sans font-medium bg-[var(--btn-bg)] hover:cursor-pointer flex justify-center items-center gap-2 box-border"
+    :class="{
+      'hover:bg-[var(--btn-bg-hover)] active:bg-[var(--btn-bg-active)]': variant === 'solid'
+    }"
+    :style="{
+      '--btn-fg': fgClass,
+      '--btn-bg': bgClass.main,
+      '--btn-bg-hover': bgClass.hover,
+      '--btn-bg-active': bgClass.active,
+    }"
     :disabled="props.disabled"
   >
     <slot></slot>
