@@ -3,8 +3,9 @@ import { lighten, darken, toHex, getContrast, transparentize } from "color2k";
 const getBgClasses = (color: string, variant: string, hightContrast: boolean) => {
   const isGhostOrOutlined = ["ghost", "outlined"].includes(variant);
   const isSoftOrSubtle = ["soft", "subtle"].includes(variant);
+  const isLink = variant === "link";
   let main = color;
-  if (isGhostOrOutlined) main = transparentize(color, 1);
+  if (isGhostOrOutlined || isLink) main = transparentize(color, 1);
   if (isSoftOrSubtle) main = transparentize(color, 0.8);
   let hover = darken(color, 0.1);
   let active = darken(color, 0.2);
@@ -15,6 +16,10 @@ const getBgClasses = (color: string, variant: string, hightContrast: boolean) =>
   if (isGhostOrOutlined) {
     hover = transparentize(color, 0.9);
     active = transparentize(color, 0.8);
+  }
+  if (isLink) {
+    hover = transparentize(color, 1);
+    active = transparentize(color, 1);
   }
   if (isSoftOrSubtle) {
     hover = transparentize(color, 0.7);
@@ -27,7 +32,7 @@ const getFgClasses = (color: string, variant: string, hightContrast: boolean) =>
   let main = toHex(lighten(color, 0.6));
   const contrast = getContrast(main, color);
   if (contrast < 3) main = toHex(darken(color, hightContrast ? 0.7 : 0.5));
-  if (["ghost", "outlined", "soft", "subtle"].includes(variant)) main = color;
+  if (["ghost", "outlined", "soft", "subtle", "link"].includes(variant)) main = color;
   let border = "";
   if (variant === "subtle") border = transparentize(color, 0.7);
   return { main, border };

@@ -133,6 +133,24 @@ export const Link: Story = {
   }),
 };
 
+// 7.5. Link Decoration Showcase
+export const LinkDecorationShowcase: Story = {
+  render: () => ({
+    components: { Button },
+    setup: () => {
+      const colors = ["#ef4444", "#3b82f6", "#10b981", "#f59e0b"] as const;
+      return { colors };
+    },
+    template: `
+      <div class="flex gap-4 flex-wrap items-center p-4">
+        <Button v-for="color in colors" :key="color" :color="color" variant="link" to="#">
+          Hover me ({{ color }})
+        </Button>
+      </div>
+    `,
+  }),
+};
+
 // 8. Variant Showcase
 export const VariantShowcase: Story = {
   render: () => ({

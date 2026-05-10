@@ -49,10 +49,16 @@ const fgClass = computed(() => getFgClasses(props.color, props.variant, props.hi
     v-if="props.to"
     :href="props.to"
     :target="props.target"
-    :class="[props.variant === 'link' ? '' : 'decoration-0']"
+    :class="{
+      'decoration-0': props.variant !== 'link',
+      'visited:text-[var(--btn-fg)]': props.variant === 'link',
+    }"
   >
     <button
       class="py-2 px-4 rounded-cu border-none text-[var(--btn-fg)] font-sans font-medium bg-[var(--btn-bg)] hover:cursor-pointer flex justify-center items-center gap-2 box-border"
+      :class="{
+        'hover:underline hover:decoration-solid hover:decoration-2': props.variant === 'link',
+      }"
       :disabled="props.disabled"
     >
       <slot></slot>
@@ -63,6 +69,7 @@ const fgClass = computed(() => getFgClasses(props.color, props.variant, props.hi
     class="py-2 px-4 rounded-cu border-none text-[var(--btn-fg)] font-sans font-medium bg-[var(--btn-bg)] hover:bg-[var(--btn-bg-hover)] active:bg-[var(--btn-bg-active)] hover:cursor-pointer flex justify-center items-center gap-2 box-border"
     :class="{
       'border-1 border-solid border-[var(--btn-bd)]': props.variant === 'outlined' || props.variant === 'subtle',
+      'hover:underline hover:decoration-solid hover:decoration-2': props.variant === 'link',
     }"
     :style="{
       '--btn-fg': fgClass.main,
