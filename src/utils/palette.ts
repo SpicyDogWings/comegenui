@@ -31,7 +31,7 @@ const getBgClasses = (color: string, variant: string, hightContrast: boolean) =>
 const getFgClasses = (color: string, variant: string, hightContrast: boolean) => {
   let main = toHex(lighten(color, 0.6));
   const contrast = getContrast(main, color);
-  if (contrast < 3) main = toHex(darken(color, hightContrast ? 0.7 : 0.5));
+  if (hightContrast ? contrast < 3 : contrast < 2) main = toHex(darken(color, hightContrast ? 0.7 : 0.5));
   if (["ghost", "outlined", "soft", "subtle", "link"].includes(variant)) main = color;
   let border = "";
   if (variant === "subtle") border = transparentize(color, 0.7);
