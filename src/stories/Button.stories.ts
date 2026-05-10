@@ -192,7 +192,7 @@ export const AllVariantsDisabled: Story = {
     },
     template: `
       <div class="flex gap-2 flex-wrap">
-        <Button v-for="variant in variants" :key="variant" color="#3b82f6" :variant="variant" :to="variant === 'link' ? '#' : undefined" disabled>
+        <Button v-for="variant in variants" :key="variant" :variant="variant" :to="variant === 'link' ? '#' : undefined" disabled>
           {{ variant }} (disabled)
         </Button>
       </div>

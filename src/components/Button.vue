@@ -52,13 +52,17 @@ const fgClass = computed(() => getFgClasses(props.color, props.variant, props.hi
     :class="{
       'decoration-0': props.variant !== 'link',
       'visited:text-[var(--btn-fg)]': props.variant === 'link',
+      'cursor-not-allowed opacity-70': props.disabled,
+
     }"
   >
     <button
-      class="py-2 px-4 rounded-cu border-none text-[var(--btn-fg)] font-sans font-medium bg-[var(--btn-bg)] hover:cursor-pointer flex justify-center items-center gap-2 box-border"
+      class="py-2 px-4 rounded-cu border-none text-[var(--btn-fg)] font-sans font-medium bg-[var(--btn-bg)] flex justify-center items-center gap-2 box-border"
       :class="{
         'hover:underline hover:decoration-solid hover:decoration-2': props.variant === 'link',
         'cursor-not-allowed opacity-70': props.disabled,
+        'active:bg-[var(--btn-bg-active)] hover:cursor-pointer': !props.disabled,
+
       }"
       :disabled="props.disabled"
     >
@@ -67,11 +71,12 @@ const fgClass = computed(() => getFgClasses(props.color, props.variant, props.hi
   </a>
   <button
     v-else
-    class="py-2 px-4 rounded-cu border-none text-[var(--btn-fg)] font-sans font-medium bg-[var(--btn-bg)] hover:bg-[var(--btn-bg-hover)] active:bg-[var(--btn-bg-active)] hover:cursor-pointer flex justify-center items-center gap-2 box-border"
+    class="py-2 px-4 rounded-cu border-none text-[var(--btn-fg)] font-sans font-medium bg-[var(--btn-bg)] flex justify-center items-center gap-2 box-border"
     :class="{
       'border-1 border-solid border-[var(--btn-bd)]': props.variant === 'outlined' || props.variant === 'subtle',
       'hover:underline hover:decoration-solid hover:decoration-2': props.variant === 'link',
       'cursor-not-allowed opacity-70': props.disabled,
+      'hover:bg-[var(--btn-bg-hover)] active:bg-[var(--btn-bg-active)] hover:cursor-pointer': !props.disabled,
     }"
     :style="{
       '--btn-fg': fgClass.main,
