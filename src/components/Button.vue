@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { darken, lighten, getContrast, toHex, transparentize } from "color2k";
-import { getFgClass } from "../utils/palette";
+import { getBgClasses, getFgClasses } from "../utils/palette";
 
 const props = defineProps({
   color: {
@@ -41,38 +40,8 @@ const props = defineProps({
   },
 });
 
-const bgClass = computed(() => {
-  let main = props.color;
-  if (["ghost", "outlined"].includes(props.variant)) main = transparentize(props.color, 1);
-  if (["soft", "subtle"].includes(props.variant)) main = transparentize(props.color, 0.8);
-  let hover = darken(props.color, 0.1);
-  let active = darken(props.color, 0.2);
-  if (getContrast(toHex(darken(props.color, 0.1)), main) < 1)
-    hover = lighten(main, 0.1);
-  if (getContrast(toHex(darken(props.color, 0.2)), main) < 2)
-    active = lighten(main, 0.1);
-  if (getContrast(toHex(darken(props.color, 0.2)), main) < 2 && props.hightContrast)
-    active = lighten(main, 0.2);
-  if (["ghost", "outlined"].includes(props.variant)) hover = transparentize(props.color, 0.9);
-  if (["ghost", "outlined"].includes(props.variant)) active = transparentize(props.color, 0.8);
-  if (["soft", "subtle"].includes(props.variant)) hover = transparentize(props.color, 0.7);
-  if (["soft", "subtle"].includes(props.variant)) active = transparentize(props.color, 0.6);
-  return { main, hover, active };
-});
-
-const fgClass = computed(() => {
-  let main = toHex(lighten(props.color, 0.6));
-  let border = "";
-  if (getContrast(main, props.color) < 3 && props.hightContrast) {
-    main = toHex(darken(props.color, 0.7));
-  } else if (getContrast(main, props.color) < 3) {
-    main = toHex(darken(props.color, 0.5));
-  }
-  if (["ghost", "outlined"].includes(props.variant)) main = props.color;
-  if (["soft", "subtle"].includes(props.variant)) main = props.color;
-  if (["subtle"].includes(props.variant)) border = transparentize(props.color, 0.7);
-  return { main, border };
-});
+const bgClass = computed(() => getBgClasses(props.color, props.variant, props.hightContrast));
+const fgClass = computed(() => getFgClasses(props.color, props.variant, props.hightContrast));
 </script>
 
 <template>
