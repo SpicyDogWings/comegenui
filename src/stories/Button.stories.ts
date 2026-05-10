@@ -187,12 +187,12 @@ export const AllVariantsDisabled: Story = {
   render: () => ({
     components: { Button },
     setup: () => {
-      const variants = ["solid", "outlined", "soft", "ghost", "subtle"] as const;
+      const variants = ["solid", "outlined", "soft", "ghost", "subtle", "link"] as const;
       return { variants };
     },
     template: `
       <div class="flex gap-2 flex-wrap">
-        <Button v-for="variant in variants" :key="variant" color="#3b82f6" :variant="variant" disabled>
+        <Button v-for="variant in variants" :key="variant" color="#3b82f6" :variant="variant" :to="variant === 'link' ? '#' : undefined" disabled>
           {{ variant }} (disabled)
         </Button>
       </div>
