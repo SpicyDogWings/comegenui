@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { darken, lighten, getContrast, toHex } from "color2k";
+import { darken, lighten, getContrast, toHex, transparentize } from "color2k";
 import { getFgClass } from "../utils/palette";
 
 const props = defineProps({
@@ -15,12 +15,6 @@ const props = defineProps({
     type: Boolean,
     required: false,
     default: false,
-  },
-  colorMode: {
-    type: String,
-    required: false,
-    default: "light",
-    validator: (value: string) => ["dark", "light"].includes(value),
   },
   variant: {
     type: String,
@@ -48,22 +42,36 @@ const props = defineProps({
 });
 
 const bgClass = computed(() => {
-  const bgClass = {
-    main: props.color,
-    hover: "",
-    active: "",
-  };
-  bgClass.hover = darken(props.color, 0.1);
-  bgClass.active = darken(props.color, 0.2);
-  if (getContrast(toHex(darken(props.color, 0.1)), bgClass.main) < 1)
-    bgClass.hover = lighten(bgClass.main, 0.1);
-  if (getContrast(toHex(darken(props.color, 0.2)), bgClass.main) < 2)
-    bgClass.active = lighten(bgClass.main, 0.2);
-  return bgClass;
+  let main = props.color;
+  if (["ghost", "outlined"].includes(props.variant)) main = transparentize(props.color, 1);
+  if (["soft", "subtle"].includes(props.variant)) main = transparentize(props.color, 0.8);
+  let hover = darken(props.color, 0.1);
+  let active = darken(props.color, 0.2);
+  if (getContrast(toHex(darken(props.color, 0.1)), main) < 1)
+    hover = lighten(main, 0.1);
+  if (getContrast(toHex(darken(props.color, 0.2)), main) < 2)
+    active = lighten(main, 0.1);
+  if (getContrast(toHex(darken(props.color, 0.2)), main) < 2 && props.hightContrast)
+    active = lighten(main, 0.2);
+  if (["ghost", "outlined"].includes(props.variant)) hover = transparentize(props.color, 0.9);
+  if (["ghost", "outlined"].includes(props.variant)) active = transparentize(props.color, 0.8);
+  if (["soft", "subtle"].includes(props.variant)) hover = transparentize(props.color, 0.7);
+  if (["soft", "subtle"].includes(props.variant)) active = transparentize(props.color, 0.6);
+  return { main, hover, active };
 });
 
 const fgClass = computed(() => {
-  return getFgClass(props.color, props.hightContrast);
+  let main = toHex(lighten(props.color, 0.6));
+  let border = "";
+  if (getContrast(main, props.color) < 3 && props.hightContrast) {
+    main = toHex(darken(props.color, 0.7));
+  } else if (getContrast(main, props.color) < 3) {
+    main = toHex(darken(props.color, 0.5));
+  }
+  if (["ghost", "outlined"].includes(props.variant)) main = props.color;
+  if (["soft", "subtle"].includes(props.variant)) main = props.color;
+  if (["subtle"].includes(props.variant)) border = transparentize(props.color, 0.7);
+  return { main, border };
 });
 </script>
 
@@ -83,15 +91,16 @@ const fgClass = computed(() => {
   </a>
   <button
     v-else
-    class="py-2 px-4 rounded-cu border-none text-[var(--btn-fg)] font-sans font-medium bg-[var(--btn-bg)] hover:cursor-pointer flex justify-center items-center gap-2 box-border"
+    class="py-2 px-4 rounded-cu border-none text-[var(--btn-fg)] font-sans font-medium bg-[var(--btn-bg)] hover:bg-[var(--btn-bg-hover)] active:bg-[var(--btn-bg-active)] hover:cursor-pointer flex justify-center items-center gap-2 box-border"
     :class="{
-      'hover:bg-[var(--btn-bg-hover)] active:bg-[var(--btn-bg-active)]': variant === 'solid'
+      'border-1 border-solid border-[var(--btn-bd)]': props.variant === 'outlined' || props.variant === 'subtle',
     }"
     :style="{
-      '--btn-fg': fgClass,
+      '--btn-fg': fgClass.main,
       '--btn-bg': bgClass.main,
       '--btn-bg-hover': bgClass.hover,
       '--btn-bg-active': bgClass.active,
+      '--btn-bd': fgClass.border,
     }"
     :disabled="props.disabled"
   >
