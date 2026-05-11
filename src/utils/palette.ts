@@ -38,4 +38,12 @@ const getFgClasses = (color: string, variant: string, hightContrast: boolean) =>
   return { main, border };
 };
 
+export const colorMap = {
+  primary: "#3b82f6",
+  neutral: "#2c2c2c",
+  success: "#22c55e",
+  warning: "#f59e0b",
+  danger: "#ef4444",
+};
+
 export { getBgClasses, getFgClasses };
