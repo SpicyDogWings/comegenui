@@ -18,9 +18,9 @@ const props = defineProps({
   variant: {
     type: String,
     required: false,
-    default: "ghost",
+    default: "solid",
     validator: (value: string) =>
-      ["solid", "outlined", "soft", "ghost", "subtle"].includes(value),
+      ["solid", "outlined", "soft", "subtle"].includes(value),
   },
 });
 
@@ -40,7 +40,6 @@ const fgClass = computed(() =>
       'bg-opacity-10 border-solid border-1': props.variant === 'subtle',
       'border-[var(--btn-bd)]': props.variant === 'subtle' || props.variant === 'outlined',
       'bg-transparent border-solid border-2': props.variant === 'outlined',
-      'bg-transparent hover:bg-opacity-10': props.variant === 'ghost',
     }"
     :style="{
       '--btn-fg': fgClass.main,

@@ -21,7 +21,7 @@ const props = defineProps({
     required: false,
     default: "soft",
     validator: (value: string) =>
-      ["solid", "outlined", "soft", "ghost", "subtle"].includes(value),
+      ["solid", "outlined", "soft", "subtle"].includes(value),
   },
   title: {
     type: String,
