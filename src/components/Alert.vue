@@ -81,7 +81,6 @@ defineExpose({
 <template>
   <div v-show="internalShow" class="p-5 rounded-cu font-sans flex flex-wrap justify-start items-start text-[var(--btn-fg)] bg-[var(--btn-bg)]" role="alert"
     :class="{
-      'hover:bg-[var(--btn-bg-hover)]': props.variant === 'soft' || props.variant === 'ghost',
       'bg-opacity-10': props.variant === 'soft',
       'bg-opacity-10 border-solid border-1': props.variant === 'subtle',
       'border-[var(--btn-bd)]': props.variant === 'subtle' || props.variant === 'outlined',
