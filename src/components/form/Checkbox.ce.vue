@@ -24,7 +24,7 @@ const props = defineProps({
   variant: {
     type: String,
     required: false,
-    default: "none",
+    default: "ghost",
     validator: (value: string) =>
       ["outlined", "soft", "ghost", "subtle", "none"].includes(value),
   },

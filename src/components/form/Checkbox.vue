@@ -101,7 +101,7 @@ defineExpose({
       :class="{
         'border-solid border-2 border-[var(--btn-bd)] bg-transparent': props.variant === 'outlined' && !checked,
         'border-solid border-2 border-[var(--btn-bd)]': props.variant === 'outlined' && checked,
-        'border-2 border-solid border-1 border-[var(--btn-bd)] bg-opacity-10': props.variant === 'subtle' && !checked,
+        'border-2 border-solid border-[var(--btn-bd)] bg-opacity-10': props.variant === 'subtle' && !checked,
         'border-2 border-solid border-[var(--btn-bd)]': props.variant === 'subtle' && checked,
         'bg-opacity-10 hover:bg-opacity-20': props.variant === 'ghost' && !checked,
         'w-4 h-4 bg-opacity-10': props.variant === 'soft' && !checked,
