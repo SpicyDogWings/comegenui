@@ -110,10 +110,9 @@ defineExpose({
     :class="{
       'focus:ring-[var(--btn-bd)]': true,
       'cursor-not-allowed opacity-70': props.disabled,
-      'bg-opacity-10 border-solid border-1 border-[var(--btn-bd)]': props.variant === 'subtle',
+      'border-solid border-1 border-[var(--btn-bd)]': props.variant === 'subtle',
       'bg-transparent border-solid border-2 border-[var(--btn-bd)]': props.variant === 'outlined',
-      'bg-opacity-10 hover:bg-opacity-20': props.variant === 'soft',
-      'bg-transparent hover:bg-opacity-10': props.variant === 'ghost',
+      'hover:bg-[var(--btn-bg-hover)]': props.variant === 'soft' || props.variant === 'ghost',
       'bg-transparent border-solid border-1 border-charcoal-100': props.variant === 'none',
     }"
     :style="{

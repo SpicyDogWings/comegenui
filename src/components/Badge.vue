@@ -36,6 +36,7 @@ const fgClass = computed(() =>
   <span
     class="py-0.5 px-2 w-fit rounded-cu border-none font-sans font-medium font-size-3 flex justify-center items-center gap-2 box-border text-[var(--btn-fg)] bg-[var(--btn-bg)]"
     :class="{
+      'hover:bg-[var(--btn-bg-hover)]': props.variant === 'soft' || props.variant === 'ghost',
       'bg-opacity-10': props.variant === 'soft',
       'bg-opacity-10 border-solid border-1': props.variant === 'subtle',
       'border-[var(--btn-bd)]': props.variant === 'subtle' || props.variant === 'outlined',
