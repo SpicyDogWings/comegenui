@@ -1,10 +1,10 @@
-import CuBadge from "../components/Badge.ce.vue";
+import cubadge from "../components/Badge.ce.vue";
 
 import type { Meta, StoryObj } from "@storybook/vue3";
 
-const meta: Meta<typeof CuBadge> = {
+const meta: Meta<typeof cubadge> = {
   title: "Components/Badge",
-  component: CuBadge,
+  component: cubadge,
   tags: ["autodocs"],
   argTypes: {
     color: {
@@ -14,13 +14,13 @@ const meta: Meta<typeof CuBadge> = {
     },
     variant: {
       control: "select",
-      options: ["solid", "outlined", "soft", "ghost", "subtle"],
+      options: ["solid", "outlined", "soft", "subtle"],
       description: "The visual variant of the badge",
     },
   },
   args: {
     color: "neutral",
-    variant: "ghost",
+    variant: "solid",
   },
 };
 
@@ -32,12 +32,12 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     color: "neutral",
-    variant: "ghost",
+    variant: "solid",
   },
   render: (args) => ({
-    components: { CuBadge },
+    components: { cubadge },
     setup: () => ({ args }),
-    template: "<CuBadge v-bind='args'>Badge</CuBadge>",
+    template: "<cubadge v-bind='args'>Badge</cubadge>",
   }),
 };
 
@@ -45,28 +45,28 @@ export const Default: Story = {
 export const Primary: Story = {
   args: {
     color: "primary",
-    variant: "ghost",
+    variant: "solid",
   },
   render: (args) => ({
-    components: { CuBadge },
+    components: { cubadge },
     setup: () => ({ args }),
-    template: "<CuBadge v-bind='args'>Primary</CuBadge>",
+    template: "<cubadge v-bind='args'>Primary</cubadge>",
   }),
 };
 
 // 3. Color states
 export const ColorStates: Story = {
   render: () => ({
-    components: { CuBadge },
+    components: { cubadge },
     setup: () => {
       const states = ["success", "warning", "danger"] as const;
       return { states };
     },
     template: `
       <div class="flex gap-2">
-        <CuBadge v-for="state in states" :key="state" :color="state" variant="solid">
+        <cubadge v-for="state in states" :key="state" :color="state" variant="solid">
           {{ state }}
-        </CuBadge>
+        </cubadge>
       </div>
     `,
   }),
@@ -75,16 +75,16 @@ export const ColorStates: Story = {
 // 4. Variant in primary
 export const VariantInPrimary: Story = {
   render: () => ({
-    components: { CuBadge },
+    components: { cubadge },
     setup: () => {
-      const variants = ["solid", "outlined", "soft", "ghost", "subtle"] as const;
+      const variants = ["solid", "outlined", "soft", "subtle"] as const;
       return { variants };
     },
     template: `
       <div class="flex gap-2 flex-wrap">
-        <CuBadge v-for="variant in variants" :key="variant" color="primary" :variant="variant">
+        <cubadge v-for="variant in variants" :key="variant" color="primary" :variant="variant">
           {{ variant }}
-        </CuBadge>
+        </cubadge>
       </div>
     `,
   }),
@@ -93,9 +93,9 @@ export const VariantInPrimary: Story = {
 // 5. All combinations
 export const AllCombinations: Story = {
   render: () => ({
-    components: { CuBadge },
+    components: { cubadge },
     setup: () => {
-      const variants = ["solid", "outlined", "soft", "ghost", "subtle"] as const;
+      const variants = ["solid", "outlined", "soft", "subtle"] as const;
       const colors = ["primary", "neutral", "success", "warning", "danger"] as const;
       return { variants, colors };
     },
@@ -104,9 +104,9 @@ export const AllCombinations: Story = {
         <div v-for="variant in variants" :key="variant" class="flex flex-col gap-2">
           <h3 class="text-sm font-medium text-charcoal-700 font-sans">{{ variant }}</h3>
           <div class="flex gap-2 flex-wrap">
-            <CuBadge v-for="color in colors" :key="color" :variant="variant" :color="color">
+            <cubadge v-for="color in colors" :key="color" :variant="variant" :color="color">
               {{ color }}
-            </CuBadge>
+            </cubadge>
           </div>
         </div>
       </div>
@@ -121,13 +121,13 @@ export const WithIcon: Story = {
     variant: "solid",
   },
   render: (args) => ({
-    components: { CuBadge },
+    components: { cubadge },
     setup: () => ({ args }),
     template: `
-      <CuBadge v-bind='args'>
+      <cubadge v-bind='args'>
         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
         Star
-      </CuBadge>
+      </cubadge>
     `,
   }),
 };
