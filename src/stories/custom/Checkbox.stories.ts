@@ -1,4 +1,4 @@
-import CuCheckbox from "../components/form/Checkbox.ce.vue";
+import CuCheckbox from "../../components/form/Checkbox.ce.vue";
 
 import type { Meta, StoryObj } from "@storybook/vue3";
 
@@ -31,8 +31,8 @@ const meta: Meta<typeof CuCheckbox> = {
     },
   },
   args: {
-    color: "primary",
-    variant: "outlined",
+    color: "neutral",
+    variant: "ghost",
     checked: false,
     disabled: false,
     label: "Checkbox",
@@ -46,7 +46,7 @@ type Story = StoryObj<typeof meta>;
 // 1. Default
 export const Default: Story = {
   args: {
-    color: "primary",
+    color: "neutral",
     variant: "none",
     checked: false,
     label: "Checkbox",
@@ -62,7 +62,7 @@ export const Default: Story = {
 export const Primary: Story = {
   args: {
     color: "primary",
-    variant: "outlined",
+    variant: "soft",
     checked: true,
     label: "Primary Checkbox",
   },
@@ -78,12 +78,12 @@ export const ColorStates: Story = {
   render: () => ({
     components: { CuCheckbox },
     setup: () => {
-      const states = ["success", "warning", "danger"] as const;
+      const states = ["primary", "success", "warning", "danger"] as const;
       return { states };
     },
     template: `
       <div class="flex gap-4 flex-wrap">
-        <CuCheckbox v-for="state in states" :key="state" :color="state" variant="outlined" :checked="true" :label="state" />
+        <CuCheckbox v-for="state in states" :key="state" :color="state" variant="ghost" :checked="true" :label="state" />
       </div>
     `,
   }),
@@ -94,7 +94,7 @@ export const VariantInPrimary: Story = {
   render: () => ({
     components: { CuCheckbox },
     setup: () => {
-      const variants = ["outlined", "soft", "ghost", "subtle", "none"] as const;
+      const variants = ["ghost", "outlined", "soft", "subtle", "none"] as const;
       return { variants };
     },
     template: `
@@ -110,7 +110,7 @@ export const AllCombinations: Story = {
   render: () => ({
     components: { CuCheckbox },
     setup: () => {
-      const variants = ["outlined", "soft", "ghost", "subtle", "none"] as const;
+      const variants = ["ghost", "outlined", "soft", "subtle", "none"] as const;
       const colors = ["primary", "neutral", "success", "warning", "danger"] as const;
       return { variants, colors };
     },

@@ -3,7 +3,7 @@ import cubadge from "../../components/Badge.ce.vue";
 import type { Meta, StoryObj } from "@storybook/vue3";
 
 const meta: Meta<typeof cubadge> = {
-  title: "Components/Custom/Badge",
+  title: "Custom Elements/Badge",
   component: cubadge,
   tags: ["autodocs"],
   argTypes: {

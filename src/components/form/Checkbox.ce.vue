@@ -17,14 +17,14 @@ const props = defineProps({
   color: {
     type: String,
     required: false,
-    default: "primary",
+    default: "neutral",
     validator: (value: string) =>
       ["primary", "neutral", "success", "warning", "danger"].includes(value),
   },
   variant: {
     type: String,
     required: false,
-    default: "outlined",
+    default: "none",
     validator: (value: string) =>
       ["outlined", "soft", "ghost", "subtle", "none"].includes(value),
   },
@@ -36,6 +36,11 @@ const props = defineProps({
   label: {
     type: String,
     required: false,
+  },
+  hightContrast: {
+    type: Boolean,
+    required: false,
+    default: false,
   },
 });
 

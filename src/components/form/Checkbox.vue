@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
+import { getBgClasses, getFgClasses } from "../../utils/palette";
 
 const props = defineProps({
   modelValue: {
@@ -15,14 +16,14 @@ const props = defineProps({
   color: {
     type: String,
     required: false,
-    default: "#3b82f6",
+    default: "#2c2c2c",
     validator: (value: string) =>
       /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/i.test(value),
   },
   variant: {
     type: String,
     required: false,
-    default: "outlined",
+    default: "ghost",
     validator: (value: string) =>
       ["outlined", "soft", "ghost", "subtle", "none"].includes(value),
   },
@@ -35,87 +36,22 @@ const props = defineProps({
     type: String,
     required: false,
   },
+  hightContrast: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 });
 
 const emit = defineEmits(["update:modelValue", "change"]);
 const checked = ref(props.modelValue || props.checked);
 
-const checkboxClasses = computed(() => ({
-  "cursor-not-allowed opacity-70": props.disabled,
-}));
-
-const boxClasses = computed(() => [
-  {
-    "border-solid border-2": props.variant === "outlined",
-  },
-  {
-    "bg-transparent": props.variant === "outlined" && !checked.value,
-  },
-  {
-    "border-2 border-solid border-1": props.variant === "subtle",
-  },
-  {
-    "border-2 border-solid border-transparent": props.variant === "ghost",
-  },
-  {
-    "w-4 h-4": props.variant === "soft",
-  },
-  {
-    "border-solid border-1 border-charcoal-100": props.variant === "none",
-  },
-  {
-    "bg-transparent": props.variant === "none" && !checked.value,
-  },
-  {
-    "bg-[var(--checkbox-bg)] border-[var(--checkbox-bg)]":
-      props.variant === "outlined" && checked.value,
-  },
-  {
-    "bg-[var(--checkbox-bg)] border-[var(--checkbox-bg)]":
-      props.variant === "subtle" && checked.value,
-  },
-  {
-    "bg-[var(--checkbox-bg)]":
-      props.variant === "soft" && checked.value,
-  },
-  {
-    "border-[var(--checkbox-bd)] bg-[var(--checkbox-bg)]":
-      props.variant === "ghost" && checked.value,
-  },
-  {
-    "bg-[var(--checkbox-bg)]":
-      props.variant === "none" && checked.value,
-  },
-  {
-    "bg-[var(--checkbox-bg)] bg-opacity-10":
-      props.variant === "soft" && !checked.value,
-  },
-  {
-    "border-[var(--checkbox-bd)] bg-[var(--checkbox-bg)] bg-opacity-10":
-      props.variant === "subtle" && !checked.value,
-  },
-  {
-    "bg-transparent hover:bg-[var(--checkbox-bg)] hover:bg-opacity-10":
-      props.variant === "ghost" && !checked.value,
-  },
-]);
-
-const fgColor = computed(() => {
-  const c = props.color;
-  if (c === "#2c2c2c") return "#ffffff";
-  if (c === "#3b82f6") return "#ffffff";
-  if (c === "#22c55e") return "#ffffff";
-  if (c === "#f59e0b") return "#ffffff";
-  if (c === "#ef4444") return "#ffffff";
-  return c;
-});
-
-const handleClick = () => {
-  if (props.disabled) return;
-  checked.value = !checked.value;
-  emit("update:modelValue", checked.value);
-  emit("change", { target: { checked: checked.value } });
-};
+const bgClass = computed(() =>
+  getBgClasses(props.color, props.variant, props.hightContrast),
+);
+const fgClass = computed(() =>
+  getFgClasses(props.color, props.variant, props.hightContrast),
+);
 
 watch(
   () => props.modelValue,
@@ -146,10 +82,7 @@ defineExpose({
 </script>
 
 <template>
-  <label
-    class="flex items-center gap-2 cursor-pointer"
-    :class="checkboxClasses"
-  >
+  <label class="flex items-center gap-2 cursor-pointer box-border w-fit" :class="{ 'pointer-events-none': props.disabled }">
     <input
       type="checkbox"
       :checked="checked"
@@ -161,15 +94,28 @@ defineExpose({
         }
       "
       :disabled="props.disabled"
-      class="absolute opacity-0 w-0 h-0"
+      class="absolute opacity-0 w-0 h-0 box-border"
     />
     <div
-      class="relative w-3.5 h-3.5 rounded-cu flex items-center justify-center transition-all duration-200"
-      :class="boxClasses"
+      class="relative w-3.5 h-3.5 rounded-cu flex items-center justify-center transition-all duration-200 text-[var(--btn-fg)] bg-[var(--btn-bg)] box-border"
+      :class="{
+        'border-solid border-2 border-[var(--btn-bd)] bg-transparent': props.variant === 'outlined' && !checked,
+        'border-solid border-2 border-[var(--btn-bd)]': props.variant === 'outlined' && checked,
+        'border-2 border-solid border-1 border-[var(--btn-bd)] bg-opacity-10': props.variant === 'subtle' && !checked,
+        'border-2 border-solid border-[var(--btn-bd)]': props.variant === 'subtle' && checked,
+        'bg-opacity-10 hover:bg-opacity-20': props.variant === 'ghost' && !checked,
+        'w-4 h-4 bg-opacity-10': props.variant === 'soft' && !checked,
+        'w-4 h-4': props.variant === 'soft' && checked,
+        'border-solid border-1 border-charcoal-100 bg-transparent': props.variant === 'none' && !checked,
+        'border-solid border-1 border-[var(--btn-bd)]': props.variant === 'none' && checked,
+        'cursor-not-allowed opacity-70': props.disabled,
+      }"
       :style="{
-        '--checkbox-bg': props.color,
-        '--checkbox-bd': props.color,
-        '--checkbox-fg': fgColor,
+        '--btn-fg': fgClass.main,
+        '--btn-bg': bgClass.main,
+        '--btn-bg-hover': bgClass.hover,
+        '--btn-bg-active': bgClass.active,
+        '--btn-bd': fgClass.border,
       }"
     >
       <svg
@@ -183,7 +129,7 @@ defineExpose({
         stroke-width="3"
         stroke-linecap="round"
         stroke-linejoin="round"
-        class="text-[var(--checkbox-fg)]"
+        class="text-[var(--btn-fg)]"
       >
         <path d="M20 6L9 17l-5-5" />
       </svg>

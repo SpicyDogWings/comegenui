@@ -3,7 +3,7 @@ import Checkbox from "../components/form/Checkbox.vue";
 import type { Meta, StoryObj } from "@storybook/vue3";
 
 const meta: Meta<typeof Checkbox> = {
-  title: "Components/Checkbox",
+  title: "Components/Form/Checkbox",
   component: Checkbox,
   tags: ["autodocs"],
   argTypes: {
@@ -34,8 +34,8 @@ const meta: Meta<typeof Checkbox> = {
     },
   },
   args: {
-    color: "#3b82f6",
-    variant: "outlined",
+    color: "#2c2c2c",
+    variant: "ghost",
     disabled: false,
     label: "Checkbox",
     modelValue: false,
@@ -49,8 +49,8 @@ type Story = StoryObj<typeof meta>;
 // 1. Default
 export const Default: Story = {
   args: {
-    color: "#3b82f6",
-    variant: "outlined",
+    color: "#2c2c2c",
+    variant: "none",
     label: "Default Checkbox",
   },
   render: (args) => ({
@@ -170,14 +170,14 @@ export const ColorShowcase: Story = {
   render: () => ({
     components: { Checkbox },
     setup: () => {
-      const colors = ["#ef4444", "#3b82f6", "#10b981", "#f59e0b", "#8b5cf6", "#2c2c2c"] as const;
+      const colors = ["#ef4444", "#3b82f6", "#22c55e", "#f59e0b", "#2c2c2c"] as const;
       return { colors };
     },
     template: `
       <div class="flex flex-col gap-4">
         <div v-for="color in colors" :key="color" class="flex items-center gap-4">
-          <Checkbox :color="color" variant="outlined" />
-          <Checkbox :color="color" variant="outlined" :modelValue="true" />
+          <Checkbox :color="color" variant="ghost" />
+          <Checkbox :color="color" variant="ghost" :modelValue="true" />
           <Checkbox :color="color" variant="soft" />
           <Checkbox :color="color" variant="soft" :modelValue="true" />
           <span class="text-sm w-20">{{ color }}</span>
@@ -192,14 +192,14 @@ export const VariantShowcase: Story = {
   render: () => ({
     components: { Checkbox },
     setup: () => {
-      const variants = ["outlined", "soft", "ghost", "subtle", "none"] as const;
+      const variants = ["ghost", "outlined", "soft", "subtle", "none"] as const;
       return { variants };
     },
     template: `
       <div class="flex flex-col gap-4">
         <div v-for="variant in variants" :key="variant" class="flex items-center gap-4">
-          <Checkbox color="#3b82f6" :variant="variant" />
-          <Checkbox color="#3b82f6" :variant="variant" :modelValue="true" />
+          <Checkbox color="#2c2c2c" :variant="variant" />
+          <Checkbox color="#2c2c2c" :variant="variant" :modelValue="true" />
           <span class="text-sm w-20">{{ variant }}</span>
         </div>
       </div>
@@ -211,10 +211,11 @@ export const VariantShowcase: Story = {
 export const WithoutLabel: Story = {
   args: {
     label: "",
+    variant: "none"
   },
   render: (args) => ({
     components: { Checkbox },
     setup: () => ({ args }),
-    template: "<Checkbox v-bind='args' />",
+    template: "<Checkbox v-bind='args' :modelValue='true' />",
   }),
 };

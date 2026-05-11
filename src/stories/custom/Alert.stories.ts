@@ -3,7 +3,7 @@ import cualert from "../../components/Alert.ce.vue";
 import type { Meta, StoryObj } from "@storybook/vue3";
 
 const meta: Meta<typeof cualert> = {
-  title: "Components/Custom/Alert",
+  title: "Custom Elements/Alert",
   component: cualert,
   tags: ["autodocs"],
   argTypes: {
