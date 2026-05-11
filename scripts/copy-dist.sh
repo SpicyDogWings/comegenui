@@ -10,7 +10,7 @@ PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 source "$SCRIPT_DIR/btk.sh"
 
 # Cargar configuración
-CONFIG_FILE="$SCRIPT_DIR/config"
+CONFIG_FILE="$SCRIPT_DIR/configs/deployment"
 
 if [ ! -f "$CONFIG_FILE" ]; then
     log_error "Archivo de configuración no encontrado: %s" "$CONFIG_FILE"

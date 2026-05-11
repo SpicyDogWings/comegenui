@@ -1,0 +1,6 @@
+# GitLab API Configuration
+# Copy this file to gitlab and update with your credentials
+
+PRIVATE_TOKEN="your-gitlab-private-token"
+BASE_URL="https://gitlab.com/api/v4"
+PROJECT_ID="your-project-id"
