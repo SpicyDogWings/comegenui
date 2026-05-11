@@ -1,10 +1,10 @@
-import CuAlert from "../components/Alert.ce.vue";
+import cualert from "../../components/Alert.ce.vue";
 
 import type { Meta, StoryObj } from "@storybook/vue3";
 
-const meta: Meta<typeof CuAlert> = {
-  title: "Components/Alert",
-  component: CuAlert,
+const meta: Meta<typeof cualert> = {
+  title: "Custom Elements/Alert",
+  component: cualert,
   tags: ["autodocs"],
   argTypes: {
     color: {
@@ -14,7 +14,7 @@ const meta: Meta<typeof CuAlert> = {
     },
     variant: {
       control: "select",
-      options: ["solid", "outlined", "soft", "ghost", "subtle"],
+      options: ["solid", "outlined", "soft", "subtle"],
       description: "The visual variant of the alert",
     },
     title: {
@@ -51,9 +51,9 @@ export const Default: Story = {
     title: "Alert Title",
   },
   render: (args) => ({
-    components: { CuAlert },
+    components: { cualert },
     setup: () => ({ args }),
-    template: "<CuAlert v-bind='args'>This is a default alert message.</CuAlert>",
+    template: "<cualert v-bind='args'>This is a default alert message.</cualert>",
   }),
 };
 
@@ -61,29 +61,29 @@ export const Default: Story = {
 export const Primary: Story = {
   args: {
     color: "primary",
-    variant: "soft",
+    variant: "solid",
     title: "Primary Alert",
   },
   render: (args) => ({
-    components: { CuAlert },
+    components: { cualert },
     setup: () => ({ args }),
-    template: "<CuAlert v-bind='args'>This is a primary alert message.</CuAlert>",
+    template: "<cualert v-bind='args'>This is a primary alert message.</cualert>",
   }),
 };
 
 // 3. Color states
 export const ColorStates: Story = {
   render: () => ({
-    components: { CuAlert },
+    components: { cualert },
     setup: () => {
       const states = ["success", "warning", "danger"] as const;
       return { states };
     },
     template: `
       <div class="flex flex-col gap-4">
-        <CuAlert v-for="state in states" :key="state" :color="state" variant="soft" :title="state + ' Alert'" class="w-64">
+        <cualert v-for="state in states" :key="state" :color="state" variant="solid" :title="state + ' Alert'" class="w-64">
           This is a {{ state }} alert message.
-        </CuAlert>
+        </cualert>
       </div>
     `,
   }),
@@ -92,16 +92,16 @@ export const ColorStates: Story = {
 // 4. Variant in primary
 export const VariantInPrimary: Story = {
   render: () => ({
-    components: { CuAlert },
+    components: { cualert },
     setup: () => {
-      const variants = ["solid", "outlined", "soft", "ghost", "subtle"] as const;
+      const variants = ["solid", "outlined", "soft", "subtle"] as const;
       return { variants };
     },
     template: `
       <div class="flex flex-col gap-4">
-        <CuAlert v-for="variant in variants" :key="variant" color="primary" :variant="variant" :title="variant" class="w-64">
+        <cualert v-for="variant in variants" :key="variant" color="primary" :variant="variant" :title="variant" class="w-64">
           Primary alert with {{ variant }} variant
-        </CuAlert>
+        </cualert>
       </div>
     `,
   }),
@@ -110,9 +110,9 @@ export const VariantInPrimary: Story = {
 // 5. All combinations
 export const AllCombinations: Story = {
   render: () => ({
-    components: { CuAlert },
+    components: { cualert },
     setup: () => {
-      const variants = ["solid", "outlined", "soft", "ghost", "subtle"] as const;
+      const variants = ["solid", "outlined", "soft", "subtle"] as const;
       const colors = ["primary", "neutral", "success", "warning", "danger"] as const;
       return { variants, colors };
     },
@@ -121,9 +121,9 @@ export const AllCombinations: Story = {
         <div v-for="variant in variants" :key="variant" class="flex flex-col gap-2">
           <h3 class="text-sm font-medium text-charcoal-700 font-sans">{{ variant }}</h3>
           <div class="flex gap-2 flex-wrap">
-            <CuAlert v-for="color in colors" :key="color" :variant="variant" :color="color" class="w-48">
+            <cualert v-for="color in colors" :key="color" :variant="variant" :color="color" class="w-48">
               {{ color }}
-            </CuAlert>
+            </cualert>
           </div>
         </div>
       </div>
@@ -138,9 +138,9 @@ export const WithClose: Story = {
     title: "Dismissible Alert",
   },
   render: (args) => ({
-    components: { CuAlert },
+    components: { cualert },
     setup: () => ({ args }),
-    template: "<CuAlert v-bind='args'>Click close to dismiss.</CuAlert>",
+    template: "<cualert v-bind='args'>Click close to dismiss.</cualert>",
   }),
 };
 
@@ -148,19 +148,19 @@ export const WithClose: Story = {
 export const WithIcon: Story = {
   args: {
     color: "primary",
-    variant: "soft",
+    variant: "solid",
     title: "Alert with Icon",
   },
   render: (args) => ({
-    components: { CuAlert },
+    components: { cualert },
     setup: () => ({ args }),
     template: `
-      <CuAlert v-bind='args'>
+      <cualert v-bind='args'>
         <template #icon>
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-alert-icon lucide-circle-alert"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
         </template>
         This is an alert with an icon.
-      </CuAlert>
+      </cualert>
     `,
   }),
 };
@@ -174,15 +174,15 @@ export const WithIconAndClose: Story = {
     close: true,
   },
   render: (args) => ({
-    components: { CuAlert },
+    components: { cualert },
     setup: () => ({ args }),
     template: `
-      <CuAlert v-bind='args'>
+      <cualert v-bind='args'>
         <template #icon>
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-alert-icon lucide-circle-alert"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
         </template>
         This is a warning alert with icon and close button.
-      </CuAlert>
+      </cualert>
     `,
   }),
 };

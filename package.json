@@ -15,38 +15,39 @@
   },
   "dependencies": {
     "@vueuse/core": "^14.2.1",
+    "color2k": "^2.0.3",
     "vue": "^3.5.32"
   },
   "devDependencies": {
+    "@chromatic-com/storybook": "^5.1.2",
     "@iconify-json/lucide": "^1.2.103",
+    "@storybook/addon-a11y": "^10.3.6",
+    "@storybook/addon-docs": "^10.3.6",
+    "@storybook/addon-onboarding": "^10.3.6",
+    "@storybook/addon-vitest": "^10.3.6",
+    "@storybook/vue3-vite": "^10.3.6",
     "@tsconfig/node24": "^24.0.4",
     "@types/node": "^24.12.2",
     "@unocss/preset-icons": "^66.6.8",
     "@unocss/preset-mini": "^66.6.8",
     "@vitejs/plugin-vue": "^6.0.6",
+    "@vitest/browser-playwright": "^4.1.5",
+    "@vitest/coverage-v8": "^4.1.5",
     "@vue/tsconfig": "^0.9.1",
     "fast-glob": "^3.3.3",
     "npm-run-all2": "^8.0.4",
+    "playwright": "^1.59.1",
     "rollup-plugin-visualizer": "^7.0.1",
+    "storybook": "^10.3.6",
     "typescript": "~6.0.0",
     "unocss": "^66.6.8",
     "vite": "^8.0.8",
     "vite-plugin-vue-devtools": "^8.1.1",
-    "vue-tsc": "^3.2.6",
-    "storybook": "^10.3.6",
-    "@storybook/vue3-vite": "^10.3.6",
-    "@chromatic-com/storybook": "^5.1.2",
-    "@storybook/addon-vitest": "^10.3.6",
-    "@storybook/addon-a11y": "^10.3.6",
-    "@storybook/addon-docs": "^10.3.6",
-    "@storybook/addon-onboarding": "^10.3.6",
     "vitest": "^4.1.5",
-    "playwright": "^1.59.1",
-    "@vitest/browser-playwright": "^4.1.5",
-    "@vitest/coverage-v8": "^4.1.5"
+    "vue-tsc": "^3.2.6"
   },
   "engines": {
     "node": "^20.19.0 || >=22.12.0"
   },
-  "packageManager": "pnpm@10.33.2+sha512.a90faf6feeab71ad6c6e57f94e0fe1a12f5dcc22cd754db40ae9593eb6a3e0b6b12e3540218bb37ae083404b1f2ce6db2a4121e979829b4aff94b99f49da1cf8"
+  "packageManager": "pnpm@11.0.9+sha512.34ce82e6780233cf9cad8685029a8f81d2e06196c5a9bad98879f7424940c6817c4e4524fb7d38b8553ceed48b9758b8ebaf1abd3600c232c4c8cf7366086f38"
 }

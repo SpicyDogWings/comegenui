@@ -1,9 +1,9 @@
-import CuButton from "../components/Button.ce.vue";
+import CuButton from "../../components/Button.ce.vue";
 
 import type { Meta, StoryObj } from "@storybook/vue3";
 
 const meta: Meta<typeof CuButton> = {
-  title: "Components/Button",
+  title: "Custom Elements/Button",
   component: CuButton,
   tags: ["autodocs"],
   argTypes: {
