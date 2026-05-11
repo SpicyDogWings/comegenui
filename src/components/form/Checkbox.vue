@@ -99,7 +99,7 @@ defineExpose({
     <div
       class="relative w-3.5 h-3.5 rounded-cu flex items-center justify-center transition-all duration-200 text-[var(--btn-fg)] bg-[var(--btn-bg)] box-border"
       :class="{
-        'border-solid border-2 border-[var(--btn-bd)] bg-transparent': props.variant === 'outlined' && !checked,
+        'border-solid border-2 border-[var(--btn-bd)] bg-transparent hover:bg-opacity-10': props.variant === 'outlined' && !checked,
         'border-solid border-2 border-[var(--btn-bd)]': props.variant === 'outlined' && checked,
         'border-2 border-solid border-[var(--btn-bd)] bg-opacity-10': props.variant === 'subtle' && !checked,
         'border-2 border-solid border-[var(--btn-bd)]': props.variant === 'subtle' && checked,

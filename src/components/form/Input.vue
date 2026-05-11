@@ -111,7 +111,7 @@ defineExpose({
       'focus:ring-[var(--btn-bd)]': true,
       'cursor-not-allowed opacity-70': props.disabled,
       'border-solid border-1 border-[var(--btn-bd)]': props.variant === 'subtle',
-      'bg-transparent border-solid border-2 border-[var(--btn-bd)]': props.variant === 'outlined',
+      'bg-transparent border-solid border-2 border-[var(--btn-bd)] hover:bg-[var(--btn-bg-hover)]': props.variant === 'outlined',
       'hover:bg-[var(--btn-bg-hover)]': props.variant === 'soft' || props.variant === 'ghost',
       'bg-transparent border-solid border-1 border-charcoal-100': props.variant === 'none',
     }"
