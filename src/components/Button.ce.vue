@@ -41,7 +41,7 @@ const props = defineProps({
   },
 });
 
-const hexColor = computed(() => colorMap[props.color] || props.color);
+const hexColor = computed(() => colorMap[props.color as keyof typeof colorMap] || props.color);
 </script>
 
 <template>
