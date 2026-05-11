@@ -85,7 +85,6 @@ defineExpose({
       'bg-opacity-10 border-solid border-1': props.variant === 'subtle',
       'border-[var(--btn-bd)]': props.variant === 'subtle' || props.variant === 'outlined',
       'bg-transparent border-solid border-2': props.variant === 'outlined',
-      'bg-transparent': props.variant === 'ghost',
     }"
     :style="{
       '--btn-fg': fgClass.main,
@@ -106,7 +105,7 @@ defineExpose({
         :color="props.color"
         variant="ghost"
         aria-label="Cerrar alerta"
-        class="px-2 -translate-x-4 -translate-y-4"
+        class="px-2 translate-x-4 -translate-y-4"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"> <path d="M18 6 6 18"/> <path d="m6 6 12 12"/> </svg>
       </Button>

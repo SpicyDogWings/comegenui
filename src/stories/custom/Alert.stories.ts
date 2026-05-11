@@ -1,9 +1,9 @@
-import cualert from "../components/Alert.ce.vue";
+import cualert from "../../components/Alert.ce.vue";
 
 import type { Meta, StoryObj } from "@storybook/vue3";
 
 const meta: Meta<typeof cualert> = {
-  title: "Components/Alert",
+  title: "Components/Custom/Alert",
   component: cualert,
   tags: ["autodocs"],
   argTypes: {
@@ -32,7 +32,7 @@ const meta: Meta<typeof cualert> = {
   },
   args: {
     color: "neutral",
-    variant: "solid",
+    variant: "soft",
     title: "Alert Title",
     close: false,
     show: true,
@@ -47,7 +47,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     color: "neutral",
-    variant: "solid",
+    variant: "soft",
     title: "Alert Title",
   },
   render: (args) => ({
@@ -169,7 +169,7 @@ export const WithIcon: Story = {
 export const WithIconAndClose: Story = {
   args: {
     color: "warning",
-    variant: "solid",
+    variant: "soft",
     title: "Warning",
     close: true,
   },

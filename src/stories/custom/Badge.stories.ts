@@ -1,9 +1,9 @@
-import cubadge from "../components/Badge.ce.vue";
+import cubadge from "../../components/Badge.ce.vue";
 
 import type { Meta, StoryObj } from "@storybook/vue3";
 
 const meta: Meta<typeof cubadge> = {
-  title: "Components/Badge",
+  title: "Components/Custom/Badge",
   component: cubadge,
   tags: ["autodocs"],
   argTypes: {
