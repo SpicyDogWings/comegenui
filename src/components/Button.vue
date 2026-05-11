@@ -56,7 +56,7 @@ const fgClass = computed(() =>
     :class="{
       'decoration-0': props.variant !== 'link',
       'visited:text-[var(--btn-fg)]': props.variant === 'link',
-      'cursor-not-allowed opacity-70': props.disabled,
+      'cursor-not-allowed opacity-70 pointer-events-none': props.disabled,
     }"
     :style="{
       '--btn-fg': fgClass.main,
