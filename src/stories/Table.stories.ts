@@ -1,13 +1,22 @@
-import CuTable from "../components/Table.ce.vue";
+import Table from "../components/Table.vue";
 import { ref } from "vue";
 
 import type { Meta, StoryObj } from "@storybook/vue3";
 
-const meta: Meta<typeof CuTable> = {
+const meta: Meta<typeof Table> = {
   title: "Components/Table",
-  component: CuTable,
+  component: Table,
   tags: ["autodocs"],
   argTypes: {
+    color: {
+      control: "color",
+      description: "Table button color in hex format",
+    },
+    variant: {
+      control: "select",
+      options: ["solid", "outlined", "soft", "ghost", "subtle"],
+      description: "Table button variant",
+    },
     columns: {
       control: "object",
       description: "Table columns configuration",
@@ -44,8 +53,14 @@ const meta: Meta<typeof CuTable> = {
       control: "object",
       description: "Available page size options",
     },
+    tableMaxHeight: {
+      control: "text",
+      description: "Maximum height of the table",
+    },
   },
   args: {
+    color: "#2c2c2c",
+    variant: "ghost",
     searchEnabled: false,
     pagination: false,
     itemsPerPage: 10,
@@ -63,7 +78,7 @@ type Story = StoryObj<typeof meta>;
 // 1. Default
 export const Default: Story = {
   render: () => ({
-    components: { CuTable },
+    components: { Table },
     setup: () => {
       const columns = [
         { key: "id", label: "ID" },
@@ -81,7 +96,7 @@ export const Default: Story = {
       return { columns, data };
     },
     template: `
-      <CuTable :columns="columns" :data="data" />
+      <Table :columns="columns" :data="data" />
     `,
   }),
 };
@@ -89,11 +104,13 @@ export const Default: Story = {
 // 2. With search
 export const WithSearch: Story = {
   args: {
+    color: "#2c2c2c",
+    variant: "ghost",
     searchEnabled: true,
     searchPlaceholder: "Search users...",
   },
   render: (args) => ({
-    components: { CuTable },
+    components: { Table },
     setup: () => {
       const columns = [
         { key: "id", label: "ID" },
@@ -111,7 +128,7 @@ export const WithSearch: Story = {
       return { args, columns, data };
     },
     template: `
-      <CuTable v-bind='args' :columns="columns" :data="data" />
+      <Table v-bind='args' :columns="columns" :data="data" />
     `,
   }),
 };
@@ -119,11 +136,13 @@ export const WithSearch: Story = {
 // 3. With pagination
 export const WithPagination: Story = {
   args: {
+    color: "#2c2c2c",
+    variant: "soft",
     pagination: true,
     itemsPerPage: 5,
   },
   render: (args) => ({
-    components: { CuTable },
+    components: { Table },
     setup: () => {
       const columns = [
         { key: "id", label: "ID" },
@@ -136,15 +155,19 @@ export const WithPagination: Story = {
       return { args, columns, data };
     },
     template: `
-      <CuTable v-bind='args' :columns="columns" :data="data" />
+      <Table v-bind='args' :columns="columns" :data="data" />
     `,
   }),
 };
 
 // 4. With badges
 export const WithBadges: Story = {
+  args: {
+    color: "#2c2c2c",
+    variant: "ghost",
+  },
   render: () => ({
-    components: { CuTable },
+    components: { Table },
     setup: () => {
       const columns = [
         { key: "id", label: "ID" },
@@ -152,10 +175,10 @@ export const WithBadges: Story = {
         {
           key: "status",
           label: "Status",
-          badges: (row) => [
+          badges: (row: any, index: number) => [
             {
               value: row.status,
-              color: row.status === "Active" ? "success" : row.status === "Pending" ? "warning" : "danger",
+              color: row.status === "Active" ? "#22c55e" : row.status === "Pending" ? "#f59e0b" : "#ef4444",
               variant: "soft",
             },
           ],
@@ -170,15 +193,19 @@ export const WithBadges: Story = {
       return { columns, data };
     },
     template: `
-      <CuTable :columns="columns" :data="data" />
+      <Table :color="args.color" :variant="args.variant" :columns="columns" :data="data" />
     `,
   }),
 };
 
 // 5. With buttons
 export const WithButtons: Story = {
+  args: {
+    color: "#2c2c2c",
+    variant: "ghost",
+  },
   render: () => ({
-    components: { CuTable },
+    components: { Table },
     setup: () => {
       const columns = [
         { key: "id", label: "ID" },
@@ -187,8 +214,8 @@ export const WithButtons: Story = {
           key: "actions",
           label: "Actions",
           buttons: () => [
-            { label: "Edit", color: "primary", variant: "ghost" },
-            { label: "Delete", color: "danger", variant: "ghost" },
+            { label: "Edit", color: "#3b82f6", variant: "ghost" },
+            { label: "Delete", color: "#ef4444", variant: "ghost" },
           ],
         },
       ];
@@ -200,15 +227,19 @@ export const WithButtons: Story = {
       return { columns, data };
     },
     template: `
-      <CuTable :columns="columns" :data="data" />
+      <Table :color="args.color" :variant="args.variant" :columns="columns" :data="data" />
     `,
   }),
 };
 
 // 6. With Editable
 export const WithEditable: Story = {
+  args: {
+    color: "#2c2c2c",
+    variant: "ghost",
+  },
   render: () => ({
-    components: { CuTable },
+    components: { Table },
     setup: () => {
       const tableRef = ref(null);
       const columns = [
@@ -224,7 +255,7 @@ export const WithEditable: Story = {
       return { columns, data, tableRef };
     },
     template: `
-      <CuTable ref="tableRef" :columns="columns" :data="data" />
+      <Table ref="tableRef" :color="args.color" :variant="args.variant" :columns="columns" :data="data" />
     `,
   }),
 };
@@ -232,12 +263,14 @@ export const WithEditable: Story = {
 // 7. With Scroll
 export const WithScroll: Story = {
   args: {
+    color: "#2c2c2c",
+    variant: "ghost",
     pagination: true,
     itemsPerPage: 10,
     tableMaxHeight: "300px",
   },
   render: (args) => ({
-    components: { CuTable },
+    components: { Table },
     setup: () => {
       const columns = [
         { key: "id", label: "ID", editable: false },
@@ -254,7 +287,7 @@ export const WithScroll: Story = {
       return { args, columns, data };
     },
     template: `
-      <CuTable v-bind='args' :columns="columns" :data="data" />
+      <Table v-bind='args' :columns="columns" :data="data" />
     `,
   }),
 };
@@ -262,6 +295,8 @@ export const WithScroll: Story = {
 // 8. All features
 export const AllFeatures: Story = {
   args: {
+    color: "#2c2c2c",
+    variant: "soft",
     searchEnabled: true,
     pagination: true,
     itemsPerPage: 5,
@@ -272,7 +307,7 @@ export const AllFeatures: Story = {
     empty: "No matching records found",
   },
   render: (args) => ({
-    components: { CuTable },
+    components: { Table },
     setup: () => {
       const columns = [
         { key: "id", label: "ID", editable: false },
@@ -280,10 +315,10 @@ export const AllFeatures: Story = {
         {
           key: "status",
           label: "Status",
-          badges: (row) => [
+          badges: (row: any) => [
             {
               value: row.status,
-              color: row.status === "Active" ? "success" : row.status === "Pending" ? "warning" : "danger",
+              color: row.status === "Active" ? "#22c55e" : row.status === "Pending" ? "#f59e0b" : "#ef4444",
               variant: "soft",
             },
           ],
@@ -292,8 +327,8 @@ export const AllFeatures: Story = {
           key: "actions",
           label: "Actions",
           buttons: () => [
-            { label: "View", color: "primary", variant: "ghost" },
-            { label: "Edit", color: "neutral", variant: "ghost" },
+            { label: "View", color: "#3b82f6", variant: "ghost" },
+            { label: "Edit", color: "#2c2c2c", variant: "ghost" },
           ],
           editable: false,
         },
@@ -306,7 +341,63 @@ export const AllFeatures: Story = {
       return { args, columns, data };
     },
     template: `
-      <CuTable v-bind='args' :columns="columns" :data="data" />
+      <Table v-bind='args' :columns="columns" :data="data" />
+    `,
+  }),
+};
+
+// 9. Color Showcase
+export const ColorShowcase: Story = {
+  render: () => ({
+    components: { Table },
+    setup: () => {
+      const colors = [
+        { name: "Primary", value: "#3b82f6" },
+        { name: "Neutral", value: "#2c2c2c" },
+        { name: "Success", value: "#22c55e" },
+        { name: "Warning", value: "#f59e0b" },
+        { name: "Danger", value: "#ef4444" },
+      ];
+      const columns = [
+        { key: "name", label: "Color" },
+        { key: "value", label: "Hex Value" },
+      ];
+      return { colors, columns };
+    },
+    template: `
+      <div class="space-y-4">
+        <div v-for="color in colors" :key="color.value" class="border rounded-cu p-4">
+          <h3 class="font-sans font-bold mb-2">{{ color.name }}</h3>
+          <Table :color="color.value" :variant="'soft'" :columns="columns" :data="[color]" />
+        </div>
+      </div>
+    `,
+  }),
+};
+
+// 10. Variant Showcase
+export const VariantShowcase: Story = {
+  render: () => ({
+    components: { Table },
+    setup: () => {
+      const variants = ["solid", "outlined", "soft", "ghost", "subtle"];
+      const columns = [
+        { key: "id", label: "ID" },
+        { key: "name", label: "Name" },
+      ];
+      const data = [
+        { id: 1, name: "Item 1" },
+        { id: 2, name: "Item 2" },
+      ];
+      return { variants, columns, data };
+    },
+    template: `
+      <div class="space-y-4">
+        <div v-for="variant in variants" :key="variant" class="border rounded-cu p-4">
+          <h3 class="font-sans font-bold mb-2">{{ variant }}</h3>
+          <Table :color="'#2c2c2c'" :variant="variant" :columns="columns" :data="data" />
+        </div>
+      </div>
     `,
   }),
 };
