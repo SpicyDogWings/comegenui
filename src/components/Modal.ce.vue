@@ -21,8 +21,8 @@ const props = defineProps({
   size: {
     type: String,
     required: false,
-    default: "md",
-    validator: (value: string) => ["sm", "md", "lg", "xl", "full"].includes(value),
+    default: "auto",
+    validator: (value: string) => ["auto", "sm", "md", "lg", "xl", "full"].includes(value),
   },
   height: {
     type: String,

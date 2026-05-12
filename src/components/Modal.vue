@@ -22,7 +22,7 @@ const props = defineProps({
   size: {
     type: String,
     required: false,
-    default: "md",
+    default: "auto",
     validator: (value: string) => ["sm", "md", "lg", "xl", "full"].includes(value),
   },
   height: {
@@ -79,12 +79,14 @@ const modalClasses = computed(() => [
     "max-w-md": props.size === "md",
     "max-w-lg": props.size === "lg",
     "max-w-xl": props.size === "xl",
+    "max-w-[50vw]": props.size === "auto",
     "max-w-[90vw]": props.size === "full",
-    "max-h-[90vh]": props.height === "full" || props.height === "auto",
     "max-h-sm": props.height === "sm",
     "max-h-md": props.height === "md",
     "max-h-lg": props.height === "lg",
     "max-h-xl": props.height === "xl",
+    "max-h-[90vh]": props.height === "full",
+    "max-h-[50vh]": props.height === "auto",
   },
 ]);
 </script>
