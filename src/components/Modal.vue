@@ -73,7 +73,7 @@ const overlayClasses = computed(() => [
 
 const modalClasses = computed(() => [
   "bg-charcoal-50 rounded-cu shadow-xl outline-none",
-  "w-full flex flex-col overflow-x-hidden",
+  "w-full h-full flex flex-col overflow-x-hidden",
   {
     "max-w-sm": props.size === "sm",
     "max-w-md": props.size === "md",
@@ -81,10 +81,10 @@ const modalClasses = computed(() => [
     "max-w-xl": props.size === "xl",
     "max-w-[90vw]": props.size === "full",
     "max-h-[90vh]": props.height === "full" || props.height === "auto",
-    "max-h-[200px]": props.height === "sm",
-    "max-h-[300px]": props.height === "md",
-    "max-h-[400px]": props.height === "lg",
-    "max-h-[500px]": props.height === "xl",
+    "max-h-sm": props.height === "sm",
+    "max-h-md": props.height === "md",
+    "max-h-lg": props.height === "lg",
+    "max-h-xl": props.height === "xl",
   },
 ]);
 </script>
