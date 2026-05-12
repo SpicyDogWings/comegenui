@@ -15,7 +15,7 @@ const meta: Meta<typeof CuTable> = {
     },
     variant: {
       control: "select",
-      options: ["solid", "outlined", "soft", "ghost", "subtle"],
+      options: ["solid", "soft", "ghost"],
       description: "Table button variant",
     },
     columns: {
@@ -375,7 +375,7 @@ export const AllCombinations: Story = {
   render: () => ({
     components: { CuTable },
     setup: () => {
-      const variants = ["solid", "outlined", "soft", "ghost", "subtle"] as const;
+      const variants = ["solid", "soft", "ghost"] as const;
       const colors = ["primary", "neutral", "success", "warning", "danger"] as const;
       const columns = [
         { key: "id", label: "ID" },

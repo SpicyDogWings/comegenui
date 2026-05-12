@@ -14,7 +14,7 @@ const meta: Meta<typeof Table> = {
     },
     variant: {
       control: "select",
-      options: ["solid", "outlined", "soft", "ghost", "subtle"],
+      options: ["solid", "soft", "ghost"],
       description: "Table button variant",
     },
     columns: {
@@ -390,7 +390,7 @@ export const VariantShowcase: Story = {
   render: () => ({
     components: { Table },
     setup: () => {
-      const variants = ["solid", "outlined", "soft", "ghost", "subtle"] as const;
+      const variants = ["solid", "soft", "ghost"] as const;
       const columns = [
         { key: "id", label: "ID" },
         { key: "name", label: "Name" },

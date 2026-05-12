@@ -44,7 +44,7 @@ const props = defineProps({
     required: false,
     default: "ghost",
     validator: (value: string) =>
-      ["solid", "outlined", "soft", "ghost", "subtle"].includes(value),
+      ["solid", "soft", "ghost"].includes(value),
   },
   columns: {
     type: Array as () => Column[],

@@ -48,7 +48,7 @@ const props = defineProps({
     required: false,
     default: "ghost",
     validator: (value: string) =>
-      ["solid", "outlined", "soft", "ghost", "subtle"].includes(value),
+      ["solid", "soft", "ghost"].includes(value),
   },
   columns: {
     type: Array as () => Column[],
@@ -382,14 +382,11 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
               class="text-left p-3 font-sans font-medium sticky top-0 z-20 text-[var(--table-fg)] bg-[var(--table-bg)]"
               :class="{
                 'bg-opacity-10': props.variant === 'soft',
-                'bg-opacity-10 border-solid border-b-1': props.variant === 'subtle',
-                'border-[var(--table-bd)]': props.variant === 'subtle' || props.variant === 'outlined',
-                'bg-transparent border-solid border-b-2': props.variant === 'outlined',
+                'bg-white': props.variant === 'ghost'
               }"
               :style="{
                 '--table-fg': fgClass.main,
                 '--table-bg': bgClass.main,
-                '--table-bd': fgClass.border,
               }"
             >
               <slot :name="`header-${col.key}`" :column="col">
