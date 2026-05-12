@@ -5,6 +5,7 @@ import Button from "./Button.vue";
 import Input from "./form/Input.vue";
 import Textarea from "./form/Textarea.vue";
 import Pagination from "./Pagination.vue";
+import { getBgClasses, getFgClasses } from "../utils/palette";
 
 interface BadgeConfig {
   value: string;
@@ -237,6 +238,13 @@ const pushData = (items: Record<string, any>[]): boolean => {
   return false;
 };
 
+const headerBg = computed(() =>
+  getBgClasses(props.color, "solid", false).main,
+);
+const headerFg = computed(() =>
+  getFgClasses(props.color, "solid", false).main,
+);
+
 const tableColumns = computed<Column[]>(() => {
   if (props.columns.length > 0) {
     return props.columns;
@@ -371,7 +379,11 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
             <th
               v-for="col in tableColumns"
               :key="col.key"
-              class="text-left p-3 font-sans font-medium text-primary-50 sticky top-0 bg-primary-600 z-20"
+              class="text-left p-3 font-sans font-medium sticky top-0 z-20"
+              :style="{
+                color: headerFg,
+                backgroundColor: headerBg,
+              }"
             >
               <slot :name="`header-${col.key}`" :column="col">
                 {{ col.label || col.key }}

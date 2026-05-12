@@ -10,7 +10,7 @@ const meta: Meta<typeof Table> = {
   argTypes: {
     color: {
       control: "color",
-      description: "Table button color in hex format",
+      description: "The hex color of the table (e.g., #2c2c2c)",
     },
     variant: {
       control: "select",
@@ -36,6 +36,14 @@ const meta: Meta<typeof Table> = {
     searchEnabled: {
       control: "boolean",
       description: "Whether search is enabled",
+    },
+    searchFields: {
+      control: "object",
+      description: "Fields to search in",
+    },
+    searchValue: {
+      control: "text",
+      description: "Current search value",
     },
     pagination: {
       control: "boolean",
@@ -77,7 +85,11 @@ type Story = StoryObj<typeof meta>;
 
 // 1. Default
 export const Default: Story = {
-  render: () => ({
+  args: {
+    color: "#2c2c2c",
+    variant: "ghost",
+  },
+  render: (args) => ({
     components: { Table },
     setup: () => {
       const columns = [
@@ -93,15 +105,15 @@ export const Default: Story = {
         { id: 4, name: "Alice Brown", email: "alice@example.com", status: "Pending" },
         { id: 5, name: "Charlie Davis", email: "charlie@example.com", status: "Active" },
       ];
-      return { columns, data };
+      return { args, columns, data };
     },
     template: `
-      <Table :columns="columns" :data="data" />
+      <Table v-bind='args' :columns="columns" :data="data" />
     `,
   }),
 };
 
-// 2. With search
+// 2. With Search
 export const WithSearch: Story = {
   args: {
     color: "#2c2c2c",
@@ -133,7 +145,7 @@ export const WithSearch: Story = {
   }),
 };
 
-// 3. With pagination
+// 3. With Pagination
 export const WithPagination: Story = {
   args: {
     color: "#2c2c2c",
@@ -160,9 +172,13 @@ export const WithPagination: Story = {
   }),
 };
 
-// 4. With badges
+// 4. With Badges
 export const WithBadges: Story = {
-  render: () => ({
+  args: {
+    color: "#2c2c2c",
+    variant: "ghost",
+  },
+  render: (args) => ({
     components: { Table },
     setup: () => {
       const columns = [
@@ -186,17 +202,21 @@ export const WithBadges: Story = {
         { id: 3, name: "User 3", status: "Pending" },
         { id: 4, name: "User 4", status: "Active" },
       ];
-      return { columns, data };
+      return { args, columns, data };
     },
     template: `
-      <Table :columns="columns" :data="data" />
+      <Table v-bind='args' :columns="columns" :data="data" />
     `,
   }),
 };
 
-// 5. With buttons
+// 5. With Buttons
 export const WithButtons: Story = {
-  render: () => ({
+  args: {
+    color: "#2c2c2c",
+    variant: "ghost",
+  },
+  render: (args) => ({
     components: { Table },
     setup: () => {
       const columns = [
@@ -216,17 +236,21 @@ export const WithButtons: Story = {
         { id: 2, name: "Item 2" },
         { id: 3, name: "Item 3" },
       ];
-      return { columns, data };
+      return { args, columns, data };
     },
     template: `
-      <Table :columns="columns" :data="data" />
+      <Table v-bind='args' :columns="columns" :data="data" />
     `,
   }),
 };
 
 // 6. With Editable
 export const WithEditable: Story = {
-  render: () => ({
+  args: {
+    color: "#2c2c2c",
+    variant: "ghost",
+  },
+  render: (args) => ({
     components: { Table },
     setup: () => {
       const tableRef = ref(null);
@@ -240,10 +264,10 @@ export const WithEditable: Story = {
         { id: 2, name: "Jane", age: "30" },
         { id: 3, name: "Bob", age: "22" },
       ];
-      return { columns, data, tableRef };
+      return { args, columns, data, tableRef };
     },
     template: `
-      <Table ref="tableRef" :columns="columns" :data="data" />
+      <Table v-bind='args' ref="tableRef" :columns="columns" :data="data" />
     `,
   }),
 };
@@ -280,7 +304,7 @@ export const WithScroll: Story = {
   }),
 };
 
-// 8. All features
+// 8. All Features
 export const AllFeatures: Story = {
   args: {
     color: "#2c2c2c",
