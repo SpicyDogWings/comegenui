@@ -1,9 +1,9 @@
-import Table from "../components/Table.vue";
+import Table from "../../../../components/data/Table.vue";
 
 import type { Meta, StoryObj } from "@storybook/vue3";
 
 const meta: Meta<typeof Table> = {
-  title: "Components/Table/Simplified",
+  title: "Components/Data/Table/Simple",
   component: Table,
   tags: ["autodocs"],
   argTypes: {

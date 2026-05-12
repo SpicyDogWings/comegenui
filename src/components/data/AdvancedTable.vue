@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import Table from "./Table.vue";
-import Pagination from "./Pagination.vue";
-import { usePagination } from "../composables/usePagination";
+import Pagination from "../Pagination.vue";
+import { usePagination } from "../../composables/usePagination";
 
 interface Column {
   key: string;

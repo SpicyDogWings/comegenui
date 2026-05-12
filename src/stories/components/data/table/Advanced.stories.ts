@@ -1,9 +1,9 @@
-import AdvancedTable from "../components/AdvancedTable.vue";
+import AdvancedTable from "../../../../components/data/AdvancedTable.vue";
 
 import type { Meta, StoryObj } from "@storybook/vue3";
 
 const meta: Meta<typeof AdvancedTable> = {
-  title: "Components/AdvancedTable",
+  title: "Components/Data/Table/Advanced",
   component: AdvancedTable,
   tags: ["autodocs"],
   argTypes: {

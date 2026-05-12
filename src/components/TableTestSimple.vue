@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import Table from './Table.vue';
+import Table from './data/Table.vue';
 
 // Test data
 const columns = [

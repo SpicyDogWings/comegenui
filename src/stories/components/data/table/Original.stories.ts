@@ -1,11 +1,11 @@
-import Table from "../components/Table.vue";
-import Badge from "../components/Badge.vue";
-import Button from "../components/Button.vue";
+import Table from "../../../../components/data/Table.vue";
+import Badge from "../../../../components/Badge.vue";
+import Button from "../../../../components/Button.vue";
 
 import type { Meta, StoryObj } from "@storybook/vue3";
 
 const meta: Meta<typeof Table> = {
-  title: "Components/Table",
+  title: "Components/Data/Table/Original",
   component: Table,
   tags: ["autodocs"],
   argTypes: {

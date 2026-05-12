@@ -1,13 +1,13 @@
-import TableNative from "../components/TableNative.vue";
-import Badge from "../components/Badge.vue";
-import Button from "../components/Button.vue";
-import Input from "../components/form/Input.vue";
+import TableNative from "../../../../components/TableNative.vue";
+import Badge from "../../../../components/Badge.vue";
+import Button from "../../../../components/Button.vue";
+import Input from "../../../../components/form/Input.vue";
 import { ref } from "vue";
 
 import type { Meta, StoryObj } from "@storybook/vue3";
 
 const meta: Meta<typeof TableNative> = {
-  title: "Native/TableNative",
+  title: "Components/Data/Table/Native",
   component: TableNative,
   tags: ["autodocs"],
   argTypes: {

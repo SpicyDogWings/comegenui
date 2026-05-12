@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import AdvancedTable from "./AdvancedTable.vue";
+import AdvancedTable from "./data/AdvancedTable.vue";
 
 // Sample data
 const sampleData = ref([
