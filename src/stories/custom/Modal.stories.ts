@@ -1,13 +1,13 @@
-import CuModal from "../components/Modal.ce.vue";
-import CuButton from "../components/Button.ce.vue";
-import CuInput from "../components/form/Input.ce.vue";
-import CuTable from "../components/Table.ce.vue";
+import CuModal from "../../components/Modal.ce.vue";
+import CuButton from "../../components/Button.ce.vue";
+import CuInput from "../../components/form/Input.ce.vue";
+import CuTable from "../../components/Table.ce.vue";
 import { ref } from "vue";
 
 import type { Meta, StoryObj } from "@storybook/vue3";
 
 const meta: Meta<typeof CuModal> = {
-  title: "Components/Modal",
+  title: "Custom Elements/Modal",
   component: CuModal,
   tags: ["autodocs"],
   argTypes: {
