@@ -25,7 +25,7 @@ const meta: Meta<typeof CuModal> = {
     },
     size: {
       control: "select",
-      options: ["sm", "md", "lg", "xl", "full"],
+      options: ["auto", "sm", "md", "lg", "xl", "full"],
       description: "The width size of the modal",
     },
     height: {
@@ -38,7 +38,7 @@ const meta: Meta<typeof CuModal> = {
     title: "Modal Title",
     description: "This is a modal dialog",
     persistent: false,
-    size: "md",
+    size: "auto",
     height: "auto",
   },
 };
@@ -102,7 +102,7 @@ export const WithSizes: Story = {
   render: () => ({
     components: { CuModal, CuButton },
     setup: () => {
-      const sizes = ["sm", "md", "lg", "xl", "full"] as const;
+      const sizes = ["auto", "sm", "md", "lg", "xl", "full"] as const;
       const modalRefs = ref<any[]>([]);
       return { sizes, modalRefs };
     },

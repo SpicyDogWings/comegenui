@@ -24,7 +24,7 @@ const meta: Meta<typeof Modal> = {
     },
     size: {
       control: "select",
-      options: ["sm", "md", "lg", "xl", "full"],
+      options: ["auto", "sm", "md", "lg", "xl", "full"],
       description: "The width size of the modal",
     },
     height: {
@@ -37,7 +37,7 @@ const meta: Meta<typeof Modal> = {
     title: "Modal Title",
     description: "This is a modal dialog",
     persistent: false,
-    size: "md",
+    size: "auto",
     height: "auto",
   },
 };
@@ -101,7 +101,7 @@ export const WithSizes: Story = {
   render: () => ({
     components: { Modal, Button },
     setup: () => {
-      const sizes = ["sm", "md", "lg", "xl", "full"] as const;
+      const sizes = ["auto", "sm", "md", "lg", "xl", "full"] as const;
       const modalRefs = ref<(InstanceType<typeof Modal> | null)[]>([]);
       return { sizes, modalRefs };
     },

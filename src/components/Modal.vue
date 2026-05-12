@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, computed } from "vue";
+import { ref, watch } from "vue";
 import { useMagicKeys, whenever } from "@vueuse/core";
 import Button from "./Button.vue";
 
@@ -23,7 +23,7 @@ const props = defineProps({
     type: String,
     required: false,
     default: "auto",
-    validator: (value: string) => ["sm", "md", "lg", "xl", "full"].includes(value),
+    validator: (value: string) => ["auto", "sm", "md", "lg", "xl", "full"].includes(value),
   },
   height: {
     type: String,
@@ -66,29 +66,6 @@ defineExpose({
   get isOpen() { return isOpen.value },
 });
 
-const overlayClasses = computed(() => [
-  "fixed inset-0 flex items-center justify-center p-4",
-  "bg-black/30 backdrop-blur-sm",
-]);
-
-const modalClasses = computed(() => [
-  "bg-charcoal-50 rounded-cu shadow-xl outline-none",
-  "w-full h-full flex flex-col overflow-x-hidden",
-  {
-    "max-w-sm": props.size === "sm",
-    "max-w-md": props.size === "md",
-    "max-w-lg": props.size === "lg",
-    "max-w-xl": props.size === "xl",
-    "max-w-[50vw]": props.size === "auto",
-    "max-w-[90vw]": props.size === "full",
-    "max-h-sm": props.height === "sm",
-    "max-h-md": props.height === "md",
-    "max-h-lg": props.height === "lg",
-    "max-h-xl": props.height === "xl",
-    "max-h-[90vh]": props.height === "full",
-    "max-h-[50vh]": props.height === "auto",
-  },
-]);
 </script>
 
 <template>
@@ -97,13 +74,25 @@ const modalClasses = computed(() => [
     @click="handleBackdropClick"
     tabindex="-1"
     role="dialog"
-    class="z-1000"
+    class="z-1000 fixed inset-0 flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm"
     aria-modal="true"
     :aria-labelledby="title ? 'modal-title' : undefined"
     :aria-describedby="description ? 'modal-description' : undefined"
-    :class="overlayClasses"
   >
-    <div :class="modalClasses">
+    <div class="bg-charcoal-50 rounded-cu shadow-xl outline-none w-full flex flex-col overflow-x-hidden" :class="{
+      'max-w-[50vw]': size === 'auto',
+      'max-w-sm': size === 'sm',
+      'max-w-md': size === 'md',
+      'max-w-lg': size === 'lg',
+      'max-w-xl': size === 'xl',
+      'max-w-[90vw]': size === 'full',
+      'max-h-[50vh]': height === 'auto',
+      'max-h-sm': height === 'sm',
+      'max-h-md': height === 'md',
+      'max-h-lg': height === 'lg',
+      'max-h-xl': height === 'xl',
+      'max-h-[90vh]': height === 'full',
+    }">
       <header class="p-4 relative">
         <Button
           v-if="!props.persistent"
