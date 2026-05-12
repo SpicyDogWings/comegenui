@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import Table from "./Table.vue";
+import Table from "./OldTable.vue";
+import Badge from "./Badge.vue";
+import Button from "./Button.vue";
 import { colorMap } from "../utils/palette";
 
 interface BadgeConfig {
@@ -186,8 +188,51 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
     @update:current-page="emit('update:currentPage', $event)"
     @update:items-per-page="emit('update:itemsPerPage', $event)"
   >
-    <template v-for="(_, name) in $slots" :key="name" v-slot:[name]>
-      <slot :name="name" />
+    <!-- Header slots -->
+    <template #header="{ column }">
+      <slot name="header" :column="column">
+        <slot :name="`header-${column.key}`" :column="column">
+          {{ column.label || column.key }}
+        </slot>
+      </slot>
+    </template>
+
+    <!-- Cell slots -->
+    <template #cell="{ row, column, index }">
+      <slot name="cell" :row="row" :column="column" :index="index">
+        <slot :name="`cell-${column.key}`" :row="row" :column="column" :index="index">
+          <span v-if="column.badges">
+            <Badge
+              v-for="(badge, idx) in column.badges(row, index)"
+              :key="idx"
+              :color="badge.color"
+              :variant="badge.variant"
+            >
+              {{ badge.value }}
+            </Badge>
+          </span>
+          <span v-else-if="column.buttons">
+            <Button
+              v-for="(btn, idx) in column.buttons(row, index)"
+              :key="idx"
+              :color="btn.color"
+              :variant="btn.variant"
+              :to="btn.to"
+              :target="btn.target"
+              @click="btn.onClick?.()"
+            >
+              <span v-if="btn.html" v-html="btn.label" />
+              <span v-else>{{ btn.label }}</span>
+            </Button>
+          </span>
+          <span v-else>{{ column.cell ? column.cell(row) : row[column.key] }}</span>
+        </slot>
+      </slot>
+    </template>
+
+    <!-- Empty slot -->
+    <template #empty>
+      <slot name="empty">{{ props.empty || "No hay datos que mostrar" }}</slot>
     </template>
   </Table>
 </template>

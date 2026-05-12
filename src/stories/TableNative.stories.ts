@@ -76,10 +76,6 @@ const meta: Meta<typeof TableNative> = {
       control: "boolean",
       description: "Whether rows are hoverable",
     },
-    bordered: {
-      control: "boolean",
-      description: "Whether table has borders",
-    },
   },
   args: {
     color: "#2c2c2c",
@@ -93,7 +89,6 @@ const meta: Meta<typeof TableNative> = {
     searchPlaceholder: "Buscar...",
     stickyHeader: true,
     hoverable: true,
-    bordered: false,
   },
 };
 
@@ -499,33 +494,7 @@ export const VariantShowcase: Story = {
   }),
 };
 
-// 13. Bordered
-export const Bordered: Story = {
-  args: {
-    color: "#2c2c2c",
-    variant: "ghost",
-    bordered: true,
-  },
-  render: (args) => ({
-    components: { TableNative },
-    setup: () => {
-      const columns = [
-        { key: "id", label: "ID" },
-        { key: "name", label: "Name" },
-      ];
-      const data = [
-        { id: 1, name: "Item 1" },
-        { id: 2, name: "Item 2" },
-      ];
-      return { args, columns, data };
-    },
-    template: `
-      <TableNative v-bind='args' :columns="columns" :data="data" />
-    `,
-  }),
-};
-
-// 14. With Column Alignment
+// 13. With Column Alignment
 export const WithAlignment: Story = {
   args: {
     color: "#2c2c2c",

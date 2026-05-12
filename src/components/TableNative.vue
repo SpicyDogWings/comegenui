@@ -106,11 +106,6 @@ const props = defineProps({
     required: false,
     default: true,
   },
-  bordered: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
 });
 
 const emit = defineEmits([
@@ -333,7 +328,7 @@ const handlePageChange = (page: number) => {
 const handlePageSizeChange = (size: number) => {
   itemsPerPage.value = size;
   currentPage.value = 1;
-  emit("update:items-per-page", size);
+  emit("update:itemsPerPage", size);
 };
 
 const handleRowClick = (row: Record<string, any>, index: number, event: MouseEvent) => {
@@ -416,7 +411,7 @@ defineExpose({
       <table class="w-full border-collapse">
         <!-- Header -->
         <thead>
-          <tr :class="{ 'border-b-1 border-solid border-charcoal-200': bordered }">
+          <tr>
             <th
               v-for="col in tableColumns"
               :key="col.key"
@@ -440,11 +435,8 @@ defineExpose({
           <tr
             v-for="(row, rowIndex) in displayData"
             :key="rowIndex"
-            :class="{
-              'hover:bg-charcoal hover:bg-opacity-10 transition-colors': hoverable,
-              'border-b-1 border-solid border-charcoal-100 last:border-b-0': !bordered,
-              'border-1 border-solid border-charcoal-200': bordered,
-            }"
+            class="border-b-1 border-b-solid border-charcoal-100"
+            :class="{ 'hover:bg-charcoal hover:bg-opacity-10 transition-colors': hoverable }"
             @click="handleRowClick(row, rowIndex, $event)"
             @dblclick="handleRowDblClick(row, rowIndex, $event)"
           >
