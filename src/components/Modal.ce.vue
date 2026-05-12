@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
-import { useMagicKeys, whenever } from "@vueuse/core";
+import { ref } from "vue";
 import Modal from "./Modal.vue";
 
 const props = defineProps({
