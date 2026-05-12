@@ -16,7 +16,7 @@ const props = defineProps({
     required: false,
     default: "soft",
     validator: (value: string) =>
-      ["solid", "outlined", "soft", "ghost", "subtle"].includes(value),
+      ["outlined", "soft", "ghost", "subtle"].includes(value),
   },
   currentPage: {
     type: Number,

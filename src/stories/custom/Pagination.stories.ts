@@ -15,7 +15,7 @@ const meta: Meta<typeof CuPagination> = {
     },
     variant: {
       control: "select",
-      options: ["solid", "outlined", "soft", "ghost", "subtle"],
+      options: ["outlined", "soft", "ghost", "subtle"],
       description: "The visual variant for pagination buttons",
     },
     currentPage: {
@@ -220,7 +220,7 @@ export const VariantShowcase: Story = {
   render: () => ({
     components: { CuPagination },
     setup: () => {
-      const variants = ["solid", "outlined", "soft", "ghost", "subtle"] as const;
+      const variants = ["outlined", "soft", "ghost", "subtle"] as const;
       const currentPages = Array(variants.length).fill(1);
       return { variants, currentPages };
     },
@@ -237,7 +237,7 @@ export const AllCombinations: Story = {
   render: () => ({
     components: { CuPagination },
     setup: () => {
-      const variants = ["solid", "outlined", "soft", "ghost", "subtle"] as const;
+      const variants = ["outlined", "soft", "ghost", "subtle"] as const;
       const colors = ["primary", "neutral", "success", "warning", "danger"] as const;
       return { variants, colors };
     },
