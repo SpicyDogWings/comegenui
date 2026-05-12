@@ -1,9 +1,8 @@
-import CuCheckbox from "../../components/form/Checkbox.ce.vue";
-
+import CuCheckbox from "../../../components/form/Checkbox.ce.vue";
 import type { Meta, StoryObj } from "@storybook/vue3";
 
 const meta: Meta<typeof CuCheckbox> = {
-  title: "Custom Elements/Checkbox",
+  title: "Custom Elements/Form/Checkbox",
   component: CuCheckbox,
   tags: ["autodocs"],
   argTypes: {

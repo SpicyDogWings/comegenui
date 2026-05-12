@@ -97,17 +97,15 @@ defineExpose({
       class="absolute opacity-0 w-0 h-0 box-border"
     />
     <div
-      class="relative w-3.5 h-3.5 rounded-cu flex items-center justify-center transition-all duration-200 text-[var(--btn-fg)] bg-[var(--btn-bg)] box-border"
+      class="relative w-3.5 h-3.5 rounded-cu flex items-center justify-center transition-all duration-200 text-[var(--btn-fg)] box-border"
       :class="{
         'border-solid border-2 border-[var(--btn-bd)] bg-transparent hover:bg-opacity-10': props.variant === 'outlined' && !checked,
         'border-solid border-2 border-[var(--btn-bd)]': props.variant === 'outlined' && checked,
         'border-2 border-solid border-[var(--btn-bd)] bg-opacity-10': props.variant === 'subtle' && !checked,
         'border-2 border-solid border-[var(--btn-bd)]': props.variant === 'subtle' && checked,
         'bg-opacity-10 hover:bg-opacity-20': props.variant === 'ghost' && !checked,
-        'w-4 h-4 bg-opacity-10 hover:bg-opacity-20': props.variant === 'soft' && !checked,
-        'w-4 h-4': props.variant === 'soft' && checked,
-        'border-solid border-1 border-charcoal-100 bg-transparent': props.variant === 'none' && !checked,
-        'border-solid border-1 border-[var(--btn-bd)]': props.variant === 'none' && checked,
+        'w-4 h-4 bg-[var(--btn-bg)] bg-opacity-10 hover:bg-opacity-20': props.variant === 'soft',
+        'border-solid border-1 border-charcoal-100': props.variant === 'none',
         'cursor-not-allowed opacity-70': props.disabled,
       }"
       :style="{
