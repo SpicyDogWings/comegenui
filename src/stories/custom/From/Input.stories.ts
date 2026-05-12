@@ -1,9 +1,9 @@
-import CuInput from "../../components/form/Input.ce.vue";
+import CuInput from "../../../components/form/Input.ce.vue";
 
 import type { Meta, StoryObj } from "@storybook/vue3";
 
 const meta: Meta<typeof CuInput> = {
-  title: "Custom Elements/Input",
+  title: "Custom Elements/Form/Input",
   component: CuInput,
   tags: ["autodocs"],
   argTypes: {

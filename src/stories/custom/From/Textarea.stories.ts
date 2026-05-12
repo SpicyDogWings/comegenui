@@ -1,9 +1,8 @@
-import CuTextarea from "../components/form/Textarea.ce.vue";
-
+import CuTextarea from "../../../components/form/Textarea.ce.vue";
 import type { Meta, StoryObj } from "@storybook/vue3";
 
 const meta: Meta<typeof CuTextarea> = {
-  title: "Custom Elements/Textarea",
+  title: "Custom Elements/Form/Textarea",
   component: CuTextarea,
   tags: ["autodocs"],
   argTypes: {
