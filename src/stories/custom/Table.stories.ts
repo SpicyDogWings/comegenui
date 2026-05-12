@@ -348,36 +348,7 @@ export const ColorShowcase: Story = {
   render: () => ({
     components: { CuTable },
     setup: () => {
-      const colors = [
-        { name: "Primary", value: "primary" },
-        { name: "Neutral", value: "neutral" },
-        { name: "Success", value: "success" },
-        { name: "Warning", value: "warning" },
-        { name: "Danger", value: "danger" },
-      ];
-      const columns = [
-        { key: "name", label: "Color" },
-        { key: "value", label: "Color Name" },
-      ];
-      return { colors, columns };
-    },
-    template: `
-      <div class="space-y-4">
-        <div v-for="color in colors" :key="color.value" class="border rounded-cu p-4">
-          <h3 class="font-sans font-bold mb-2">{{ color.name }}</h3>
-          <CuTable :color="color.value" :variant="'soft'" :columns="columns" :data="[color]" />
-        </div>
-      </div>
-    `,
-  }),
-};
-
-// 10. Variant Showcase
-export const VariantShowcase: Story = {
-  render: () => ({
-    components: { CuTable },
-    setup: () => {
-      const variants = ["solid", "outlined", "soft", "ghost", "subtle"];
+      const colors = ["primary", "neutral", "success", "warning", "danger"] as const;
       const columns = [
         { key: "id", label: "ID" },
         { key: "name", label: "Name" },
@@ -386,13 +357,46 @@ export const VariantShowcase: Story = {
         { id: 1, name: "Item 1" },
         { id: 2, name: "Item 2" },
       ];
-      return { variants, columns, data };
+      return { colors, columns, data };
     },
     template: `
-      <div class="space-y-4">
-        <div v-for="variant in variants" :key="variant" class="border rounded-cu p-4">
-          <h3 class="font-sans font-bold mb-2">{{ variant }}</h3>
-          <CuTable :color="'neutral'" :variant="variant" :columns="columns" :data="data" />
+      <div class="flex gap-4 flex-wrap">
+        <div v-for="color in colors" :key="color" class="border rounded-cu p-4">
+          <h3 class="font-sans font-bold mb-2">{{ color }}</h3>
+          <CuTable :color="color" :variant="'soft'" :columns="columns" :data="data" />
+        </div>
+      </div>
+    `,
+  }),
+};
+
+// 10. All Combinations
+export const AllCombinations: Story = {
+  render: () => ({
+    components: { CuTable },
+    setup: () => {
+      const variants = ["solid", "outlined", "soft", "ghost", "subtle"] as const;
+      const colors = ["primary", "neutral", "success", "warning", "danger"] as const;
+      const columns = [
+        { key: "id", label: "ID" },
+        { key: "name", label: "Name" },
+      ];
+      const data = [
+        { id: 1, name: "Item 1" },
+        { id: 2, name: "Item 2" },
+      ];
+      return { variants, colors, columns, data };
+    },
+    template: `
+      <div class="flex flex-col gap-4">
+        <div v-for="variant in variants" :key="variant" class="flex flex-col gap-2">
+          <h3 class="text-sm font-medium text-charcoal-700 font-sans">{{ variant }}</h3>
+          <div class="flex gap-2 flex-wrap">
+            <div v-for="color in colors" :key="color" class="border rounded-cu p-2">
+              <h4 class="text-xs font-medium text-charcoal-600 font-sans mb-1">{{ color }}</h4>
+              <CuTable :color="color" :variant="variant" :columns="columns" :data="data" />
+            </div>
+          </div>
         </div>
       </div>
     `,

@@ -363,24 +363,22 @@ export const ColorShowcase: Story = {
   render: () => ({
     components: { Table },
     setup: () => {
-      const colors = [
-        { name: "Primary", value: "#3b82f6" },
-        { name: "Neutral", value: "#2c2c2c" },
-        { name: "Success", value: "#22c55e" },
-        { name: "Warning", value: "#f59e0b" },
-        { name: "Danger", value: "#ef4444" },
-      ];
+      const colors = ["#ef4444", "#3b82f6", "#10b981", "#f59e0b", "#8b5cf6", "#2c2c2c"] as const;
       const columns = [
-        { key: "name", label: "Color" },
-        { key: "value", label: "Hex Value" },
+        { key: "id", label: "ID" },
+        { key: "name", label: "Name" },
       ];
-      return { colors, columns };
+      const data = [
+        { id: 1, name: "Item 1" },
+        { id: 2, name: "Item 2" },
+      ];
+      return { colors, columns, data };
     },
     template: `
-      <div class="space-y-4">
-        <div v-for="color in colors" :key="color.value" class="border rounded-cu p-4">
-          <h3 class="font-sans font-bold mb-2">{{ color.name }}</h3>
-          <Table :color="color.value" :variant="'soft'" :columns="columns" :data="[color]" />
+      <div class="flex gap-2 flex-wrap">
+        <div v-for="color in colors" :key="color" class="border rounded-cu p-4">
+          <h3 class="font-sans font-bold mb-2">{{ color }}</h3>
+          <Table :color="color" :variant="'solid'" :columns="columns" :data="data" />
         </div>
       </div>
     `,
@@ -392,7 +390,7 @@ export const VariantShowcase: Story = {
   render: () => ({
     components: { Table },
     setup: () => {
-      const variants = ["solid", "outlined", "soft", "ghost", "subtle"];
+      const variants = ["solid", "outlined", "soft", "ghost", "subtle"] as const;
       const columns = [
         { key: "id", label: "ID" },
         { key: "name", label: "Name" },
@@ -404,7 +402,7 @@ export const VariantShowcase: Story = {
       return { variants, columns, data };
     },
     template: `
-      <div class="space-y-4">
+      <div class="flex gap-2 flex-wrap">
         <div v-for="variant in variants" :key="variant" class="border rounded-cu p-4">
           <h3 class="font-sans font-bold mb-2">{{ variant }}</h3>
           <Table :color="'#2c2c2c'" :variant="variant" :columns="columns" :data="data" />
