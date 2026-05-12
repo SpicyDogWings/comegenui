@@ -162,10 +162,6 @@ export const WithPagination: Story = {
 
 // 4. With badges
 export const WithBadges: Story = {
-  args: {
-    color: "#2c2c2c",
-    variant: "ghost",
-  },
   render: () => ({
     components: { Table },
     setup: () => {
@@ -193,17 +189,13 @@ export const WithBadges: Story = {
       return { columns, data };
     },
     template: `
-      <Table :color="args.color" :variant="args.variant" :columns="columns" :data="data" />
+      <Table :columns="columns" :data="data" />
     `,
   }),
 };
 
 // 5. With buttons
 export const WithButtons: Story = {
-  args: {
-    color: "#2c2c2c",
-    variant: "ghost",
-  },
   render: () => ({
     components: { Table },
     setup: () => {
@@ -227,17 +219,13 @@ export const WithButtons: Story = {
       return { columns, data };
     },
     template: `
-      <Table :color="args.color" :variant="args.variant" :columns="columns" :data="data" />
+      <Table :columns="columns" :data="data" />
     `,
   }),
 };
 
 // 6. With Editable
 export const WithEditable: Story = {
-  args: {
-    color: "#2c2c2c",
-    variant: "ghost",
-  },
   render: () => ({
     components: { Table },
     setup: () => {
@@ -255,7 +243,7 @@ export const WithEditable: Story = {
       return { columns, data, tableRef };
     },
     template: `
-      <Table ref="tableRef" :color="args.color" :variant="args.variant" :columns="columns" :data="data" />
+      <Table ref="tableRef" :columns="columns" :data="data" />
     `,
   }),
 };

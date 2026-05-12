@@ -112,6 +112,30 @@ const emit = defineEmits(["update:search", "update:currentPage", "update:itemsPe
 
 const hexColor = computed(() => colorMap[props.color as keyof typeof colorMap] || props.color);
 
+// Transform columns to map color names to hex for badges and buttons
+const transformedColumns = computed(() => {
+  return props.columns.map((col) => {
+    const transformedCol = { ...col };
+    if (col.badges) {
+      transformedCol.badges = (row: Record<string, any>, index: number) => {
+        return col.badges!(row, index).map((badge) => ({
+          ...badge,
+          color: badge.color ? colorMap[badge.color as keyof typeof colorMap] || badge.color : undefined,
+        }));
+      };
+    }
+    if (col.buttons) {
+      transformedCol.buttons = (row: Record<string, any>, index: number) => {
+        return col.buttons!(row, index).map((btn) => ({
+          ...btn,
+          color: btn.color ? colorMap[btn.color as keyof typeof colorMap] || btn.color : undefined,
+        }));
+      };
+    }
+    return transformedCol;
+  });
+});
+
 function updateRow(index: number, newData: Record<string, any>) {
   return tableRef.value?.updateRow(index, newData);
 }
@@ -146,7 +170,7 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
     ref="tableRef"
     :color="hexColor"
     :variant="props.variant"
-    :columns="props.columns"
+    :columns="transformedColumns"
     :data="props.data"
     :empty="props.empty"
     :search-placeholder="props.searchPlaceholder"
