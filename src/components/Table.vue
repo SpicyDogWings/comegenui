@@ -238,11 +238,11 @@ const pushData = (items: Record<string, any>[]): boolean => {
   return false;
 };
 
-const headerBg = computed(() =>
-  getBgClasses(props.color, "solid", false).main,
+const bgClass = computed(() =>
+  getBgClasses(props.color, props.variant, false),
 );
-const headerFg = computed(() =>
-  getFgClasses(props.color, "solid", false).main,
+const fgClass = computed(() =>
+  getFgClasses(props.color, props.variant, false),
 );
 
 const tableColumns = computed<Column[]>(() => {
@@ -379,10 +379,17 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
             <th
               v-for="col in tableColumns"
               :key="col.key"
-              class="text-left p-3 font-sans font-medium sticky top-0 z-20"
+              class="text-left p-3 font-sans font-medium sticky top-0 z-20 text-[var(--table-fg)] bg-[var(--table-bg)]"
+              :class="{
+                'bg-opacity-10': props.variant === 'soft',
+                'bg-opacity-10 border-solid border-b-1': props.variant === 'subtle',
+                'border-[var(--table-bd)]': props.variant === 'subtle' || props.variant === 'outlined',
+                'bg-transparent border-solid border-b-2': props.variant === 'outlined',
+              }"
               :style="{
-                color: headerFg,
-                backgroundColor: headerBg,
+                '--table-fg': fgClass.main,
+                '--table-bg': bgClass.main,
+                '--table-bd': fgClass.border,
               }"
             >
               <slot :name="`header-${col.key}`" :column="col">
