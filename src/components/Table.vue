@@ -382,11 +382,11 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
               class="text-left p-3 font-sans font-medium sticky top-0 z-20 text-[var(--table-fg)] bg-[var(--table-bg)]"
               :class="{
                 'bg-opacity-10': props.variant === 'soft',
-                'bg-white': props.variant === 'ghost'
               }"
               :style="{
                 '--table-fg': fgClass.main,
                 '--table-bg': bgClass.main,
+                'backdrop-filter': props.variant === 'soft' || props.variant === 'ghost' ? 'blur(8px)' : 'none',
               }"
             >
               <slot :name="`header-${col.key}`" :column="col">
