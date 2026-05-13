@@ -44,8 +44,24 @@ const meta: Meta<typeof AdvancedTable> = {
       options: ["outlined", "soft", "ghost", "subtle"],
       description: "Table variant",
     },
+    searchEnabled: {
+      control: "boolean",
+      description: "Enable search functionality",
+    },
+    searchPlaceholder: {
+      control: "text",
+      description: "Search input placeholder",
+    },
+    searchFields: {
+      control: "object",
+      description: "Specific fields to search in (empty for all fields)",
+    },
+    searchValue: {
+      control: "text",
+      description: "Search query (v-model)",
+    },
   },
-  args: {
+   args: {
     empty: "No hay datos que mostrar",
     pagination: true,
     itemsPerPage: 5,
@@ -53,12 +69,16 @@ const meta: Meta<typeof AdvancedTable> = {
     pageSizeOptions: [5, 10, 20, 50],
     color: "#2c2c2c",
     variant: "soft",
-  },
+    searchEnabled: false,
+    searchPlaceholder: "Buscar...",
+    searchFields: [],
+    searchValue: "",
+   },
 };
 
 export default meta;
 
-type Story = StoryObj<typeof AdvancedTable>;
+type Story = StoryObj<typeof meta>;
 
 // Sample data for stories
 const sampleData = [
@@ -216,6 +236,68 @@ export const LargeDataset: Story = {
     },
     template: `
       <AdvancedTable v-bind='args' :columns="columns" :data="data" :items-per-page="10" :show-page-size="true" />
+    `,
+  }),
+};
+
+// 9. With Search Functionality
+export const WithSearch: Story = {
+  args: {
+    searchEnabled: true,
+    pagination: true,
+    itemsPerPage: 5,
+  },
+  render: (args) => ({
+    components: { AdvancedTable },
+    setup: () => ({ args, columns, data: sampleData }),
+    template: `
+      <AdvancedTable v-bind='args' :columns="columns" :data="data" />
+    `,
+  }),
+};
+
+// 10. With Search and Specific Fields
+export const WithSearchSpecificFields: Story = {
+  args: {
+    searchEnabled: true,
+    searchFields: ["name", "email"],
+    searchPlaceholder: "Search in name or email...",
+    pagination: true,
+    itemsPerPage: 5,
+  },
+  render: (args) => ({
+    components: { AdvancedTable },
+    setup: () => ({ args, columns, data: sampleData }),
+    template: `
+      <AdvancedTable v-bind='args' :columns="columns" :data="data" />
+    `,
+  }),
+};
+
+// 11. With Custom Search Slot
+export const WithCustomSearch: Story = {
+  args: {
+    searchEnabled: true,
+    pagination: true,
+    itemsPerPage: 5,
+  },
+  render: (args) => ({
+    components: { AdvancedTable },
+    setup: () => ({ args, columns, data: sampleData }),
+    template: `
+      <AdvancedTable v-bind='args' :columns="columns" :data="data">
+        <template #search="{ query, update }">
+          <div class="p-3 bg-primary-50 rounded-cu">
+            <Input
+              placeholder="Custom search..."
+              :model-value="query"
+              @update:modelValue="update"
+              color="#2563eb"
+              variant="soft"
+            />
+          </div>
+        </template>
+      </AdvancedTable>
     `,
   }),
 };

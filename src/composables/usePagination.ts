@@ -1,4 +1,4 @@
-import { computed, ref, watch } from "vue";
+import { computed, ref, watch, type Ref, unref } from "vue";
 
 interface UsePaginationOptions {
   initialPage?: number;
@@ -7,13 +7,13 @@ interface UsePaginationOptions {
   pageSizeOptions?: number[];
 }
 
-export function usePagination(data: any[], options: UsePaginationOptions = {}) {
+export function usePagination(data: any[] | Ref<any[]>, options: UsePaginationOptions = {}) {
   // State
   const currentPage = ref(options.initialPage || 1);
   const itemsPerPage = ref(options.initialItemsPerPage || 10);
   
   // Computed properties
-  const filteredData = computed(() => data);
+  const filteredData = computed(() => unref(data));
   
   const displayData = computed(() => {
     const start = (currentPage.value - 1) * itemsPerPage.value;

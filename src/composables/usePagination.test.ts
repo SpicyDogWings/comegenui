@@ -1,4 +1,5 @@
 import { usePagination } from "./usePagination";
+import { computed, ref } from "vue";
 
 describe("usePagination", () => {
   const testData = [
@@ -105,5 +106,33 @@ describe("usePagination", () => {
     expect(pagination.totalPages.value).toBe(1);
     expect(pagination.showPaginationControl.value).toBe(false);
     expect(pagination.displayData.value.length).toBe(3);
+  });
+
+  test("should work with computed ref data", () => {
+    const filteredData = computed(() => testData.filter(item => item.id <= 6));
+    const pagination = usePagination(filteredData, { initialItemsPerPage: 3 });
+
+    expect(pagination.totalItems.value).toBe(6);
+    expect(pagination.totalPages.value).toBe(2);
+    expect(pagination.displayData.value.length).toBe(3);
+    expect(pagination.displayData.value[0].id).toBe(1);
+
+    pagination.setCurrentPage(2);
+    expect(pagination.displayData.value.length).toBe(3);
+    expect(pagination.displayData.value[0].id).toBe(4);
+  });
+
+  test("should work with ref data", () => {
+    const dataRef = ref(testData.slice(0, 5));
+    const pagination = usePagination(dataRef, { initialItemsPerPage: 2 });
+
+    expect(pagination.totalItems.value).toBe(5);
+    expect(pagination.totalPages.value).toBe(3);
+    expect(pagination.displayData.value.length).toBe(2);
+
+    // Update the ref and check if pagination updates
+    dataRef.value = testData.slice(0, 8);
+    expect(pagination.totalItems.value).toBe(8);
+    expect(pagination.totalPages.value).toBe(4);
   });
 });

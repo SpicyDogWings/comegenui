@@ -2,7 +2,9 @@
 import { computed, ref, watch } from "vue";
 import Table from "./Table.vue";
 import Pagination from "../Pagination.vue";
+import Input from "../form/Input.vue";
 import { usePagination } from "../../composables/usePagination";
+import { useSearch } from "../../composables/useSearch";
 
 interface Column {
   key: string;
@@ -64,18 +66,50 @@ const props = defineProps({
     validator: (value: string) =>
       ["outlined", "soft", "ghost", "subtle"].includes(value),
   },
+  // Search props
+  searchEnabled: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
+  searchPlaceholder: {
+    type: String,
+    required: false,
+    default: "Buscar...",
+  },
+  searchFields: {
+    type: Array as () => string[],
+    required: false,
+    default: () => [],
+  },
+  searchValue: {
+    type: String,
+    required: false,
+    default: "",
+  },
 });
 
 const emit = defineEmits([
   "update:currentPage",
   "update:itemsPerPage",
+  "update:search",
   "row-click",
   "row-dblclick",
   "cell-click",
 ]);
 
-// Use pagination composable
-const pagination = usePagination(props.data, {
+// Search ref
+const searchQuery = ref("");
+
+// Use search composable
+const { filteredData: searchedData } = useSearch(props.data, {
+  searchQuery,
+  searchFields: props.searchFields,
+  caseSensitive: false,
+});
+
+// Use pagination composable with searched data
+const pagination = usePagination(searchedData, {
   initialPage: 1,
   initialItemsPerPage: props.itemsPerPage,
   showPageSize: props.showPageSize,
@@ -91,6 +125,26 @@ watch(
     }
   }
 );
+
+// Watch for external search value changes
+watch(
+  () => props.searchValue,
+  (newVal) => {
+    searchQuery.value = newVal;
+  },
+  { immediate: true }
+);
+
+// Watch for search query changes and reset pagination
+watch(searchQuery, (newVal) => {
+  emit("update:search", newVal);
+  pagination.setCurrentPage(1); // Reset to first page when search changes
+});
+
+// Handle search updates
+const handleSearchUpdate = (value: string) => {
+  searchQuery.value = value;
+};
 
 // Handle pagination events
 const handlePageChange = (page: number) => {
@@ -126,6 +180,19 @@ const handleCellClick = (row: Record<string, any>, col: Column, index: number, e
 
 <template>
   <div class="flex flex-col overflow-hidden max-w-full">
+    <!-- Search Input -->
+    <div v-if="props.searchEnabled" class="p-3">
+      <slot name="search" :query="searchQuery" :update="handleSearchUpdate">
+        <Input
+          :placeholder="props.searchPlaceholder"
+          :model-value="searchQuery"
+          @update:modelValue="handleSearchUpdate"
+          :color="props.color"
+          :variant="props.variant"
+        />
+      </slot>
+    </div>
+    
     <!-- Table Component -->
     <Table v-bind="tableProps">
       <!-- Pass through all slots from parent -->

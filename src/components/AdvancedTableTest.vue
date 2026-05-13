@@ -31,6 +31,9 @@ const columns = [
 const currentPage = ref(1);
 const itemsPerPage = ref(5);
 
+// Search state
+const searchQuery = ref("");
+
 // Event handlers
 const handleRowClick = (payload: any) => {
   console.log("Row clicked:", payload.row.name);
@@ -48,6 +51,11 @@ const handlePageChange = (page: number) => {
 const handleItemsPerPageChange = (size: number) => {
   itemsPerPage.value = size;
   console.log("Items per page changed to:", size);
+};
+
+const handleSearchUpdate = (query: string) => {
+  searchQuery.value = query;
+  console.log("Search query:", query);
 };
 </script>
 
@@ -107,13 +115,42 @@ const handleItemsPerPageChange = (size: number) => {
         </AdvancedTable>
       </div>
 
-      <!-- AdvancedTable without pagination -->
+-- AdvancedTable without pagination --
       <div class="bg-white p-4 rounded-cu shadow-sm">
         <h2 class="text-lg font-semibold mb-3">Without Pagination</h2>
         <AdvancedTable
           :columns="columns"
           :data="sampleData.slice(0, 5)"
           :pagination="false"
+        />
+      </div>
+      
+      -- AdvancedTable with Search --
+      <div class="bg-white p-4 rounded-cu shadow-sm">
+        <h2 class="text-lg font-semibold mb-3">With Search Functionality</h2>
+        <AdvancedTable
+          :columns="columns"
+          :data="sampleData"
+          :pagination="true"
+          :items-per-page="5"
+          :search-enabled="true"
+          :search-placeholder="'Buscar empleados...'"
+          @update:search="handleSearchUpdate"
+        />
+        <p class="mt-2 text-sm text-charcoal-500">Current search: {{ searchQuery || 'None' }}</p>
+      </div>
+      
+      -- AdvancedTable with Search and Specific Fields --
+      <div class="bg-white p-4 rounded-cu shadow-sm">
+        <h2 class="text-lg font-semibold mb-3">Search in Name & Role Only</h2>
+        <AdvancedTable
+          :columns="columns"
+          :data="sampleData"
+          :pagination="true"
+          :items-per-page="3"
+          :search-enabled="true"
+          :search-fields="['name', 'role']"
+          :search-placeholder="'Search in name or role...'"
         />
       </div>
     </div>
