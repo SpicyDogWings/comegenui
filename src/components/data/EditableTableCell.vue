@@ -136,8 +136,8 @@ const validationClass = computed(() => {
 <template>
   <div
     class="cursor-pointer"
-    @click="column.singleClick ? startEditing() : undefined"
-    @dblclick="!column.singleClick ? startEditing() : undefined"
+    @click="column.singleClick !== false && startEditing()"
+    @dblclick="column.singleClick === false && startEditing()"
   >
     <!-- Edit Mode -->
     <template v-if="isEditing">
@@ -149,7 +149,7 @@ const validationClass = computed(() => {
         @keydown="handleKeyDown"
         noResize
         class="w-full"
-        :color="color"
+        :color="validationState.error ? '#ff0000' : color"
         :variant="variant"
       />
       <Input
@@ -159,7 +159,7 @@ const validationClass = computed(() => {
         @blur="saveEdit"
         @keydown="handleKeyDown"
         class="w-full"
-        :color="color"
+        :color="validationState.error ? '#ff0000' : color"
         :variant="variant"
       />
     </template>
