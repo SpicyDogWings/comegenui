@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import Table from "./OldTable.vue";
+import Table from "./data/AdvancedTable.vue";
 import Badge from "./Badge.vue";
 import Button from "./Button.vue";
 import { colorMap } from "../utils/palette";

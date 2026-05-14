@@ -105,6 +105,19 @@ const columns = [
   { key: "role", label: "Role" },
 ];
 
+// Shared data for data manipulation stories
+const dataManipulationColumns = [
+  { key: 'id', label: 'ID' },
+  { key: 'name', label: 'Name', editable: true },
+  { key: 'age', label: 'Age' },
+];
+
+const dataManipulationData = [
+  { id: 1, name: 'Alice', age: 30 },
+  { id: 2, name: 'Bob', age: 25 },
+  { id: 3, name: 'Charlie', age: 35 },
+];
+
 // 1. Basic Pagination
 export const BasicPagination: Story = {
   render: (args) => ({

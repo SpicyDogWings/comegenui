@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, ref, watch, toRef } from "vue";
 import Table from "./Table.vue";
 import Pagination from "../Pagination.vue";
 import Input from "../form/Input.vue";
 import EditableTableCell from "./EditableTableCell.vue";
 import { usePagination } from "../../composables/usePagination";
 import { useSearch } from "../../composables/useSearch";
+import { useTableData } from "../../composables/useTableData";
 
 interface Column {
   key: string;
@@ -117,6 +118,10 @@ const { filteredData: searchedData } = useSearch(props.data, {
   caseSensitive: false,
 });
 
+// Use table data composable
+const { data: localData, updateRow, getData, getRow, removeRow, addRow, pushData } = 
+  useTableData(toRef(() => props.data));
+
 // Use pagination composable with searched data
 const pagination = usePagination(searchedData, {
   initialPage: 1,
@@ -169,7 +174,7 @@ const handlePageSizeChange = (size: number) => {
 // Table props to pass through
 const tableProps = computed(() => ({
   columns: props.columns,
-  data: pagination.displayData.value,
+  data: localData.value,
   empty: props.empty,
 }));
 
@@ -185,6 +190,9 @@ const handleRowDblClick = (row: Record<string, any>, index: number, event: Mouse
 const handleCellClick = (row: Record<string, any>, col: Column, index: number, event: MouseEvent) => {
   emit("cell-click", { row, col, index, event });
 };
+
+// Expose data manipulation methods
+defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
 </script>
 
 <template>
