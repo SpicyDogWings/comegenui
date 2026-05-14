@@ -35,16 +35,16 @@ async function runBuilds() {
           formats: ["umd"],
         },
         minify: false,
-        rollupOptions: {
-          external: ["vue"],
-          output: {
-            inlineDynamicImports: true,
-            globals: {
-              vue: "Vue",
-            },
-            manualChunks: undefined,
-          },
-        },
+        //rollupOptions: {
+        //  external: ["vue"],
+        //  output: {
+        //    inlineDynamicImports: true,
+        //    globals: {
+        //      vue: "Vue",
+        //    },
+        //    manualChunks: undefined,
+        //  },
+        //},
       },
     });
   }
