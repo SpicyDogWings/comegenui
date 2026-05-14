@@ -3,6 +3,7 @@ import { computed, ref, watch } from "vue";
 import Table from "./Table.vue";
 import Pagination from "../Pagination.vue";
 import Input from "../form/Input.vue";
+import EditableTableCell from "./EditableTableCell.vue";
 import { usePagination } from "../../composables/usePagination";
 import { useSearch } from "../../composables/useSearch";
 
@@ -11,6 +12,11 @@ interface Column {
   label?: string;
   width?: string;
   align?: "left" | "center" | "right";
+  // Editable properties
+  editable?: boolean | RegExp;
+  inputType?: "input" | "textarea";
+  validator?: (value: string, row: Record<string, any>) => boolean;
+  singleClick?: boolean;
 }
 
 const props = defineProps({
@@ -96,6 +102,9 @@ const emit = defineEmits([
   "row-click",
   "row-dblclick",
   "cell-click",
+  "edit-start",
+  "edit-save",
+  "edit-cancel",
 ]);
 
 // Search ref
@@ -198,6 +207,22 @@ const handleCellClick = (row: Record<string, any>, col: Column, index: number, e
       <!-- Pass through all slots from parent -->
       <template v-for="(_, slotName) in $slots" v-slot:[slotName]="slotProps">
         <slot :name="slotName" v-bind="slotProps"></slot>
+      </template>
+      
+      <!-- Editable cells -->
+      <template v-for="col in props.columns" v-slot:[`cell-${col.key}`]="{ row, value }">
+        <EditableTableCell
+          v-if="col.editable"
+          :value="value"
+          :row="row"
+          :column="col"
+          :color="props.color"
+          :variant="props.variant"
+          @edit-start="(e) => emit('edit-start', e)"
+          @edit-save="(e) => emit('edit-save', e)"
+          @edit-cancel="(e) => emit('edit-cancel', e)"
+        />
+        <span v-else>{{ value }}</span>
       </template>
     </Table>
 

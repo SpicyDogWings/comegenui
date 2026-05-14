@@ -1,3 +1,4 @@
+import { ref } from "vue";
 import AdvancedTable from "../../../../components/data/AdvancedTable.vue";
 
 import type { Meta, StoryObj } from "@storybook/vue3";
@@ -298,6 +299,252 @@ export const WithCustomSearch: Story = {
           </div>
         </template>
       </AdvancedTable>
+    `,
+  }),
+};
+
+// 12. Default Editable
+export const DefaultEditable: Story = {
+  render: (args) => ({
+    components: { AdvancedTable },
+    setup: () => {
+      const editableData = ref([
+        { id: 1, name: "John", age: "25", notes: "Developer" },
+        { id: 2, name: "Jane", age: "30", notes: "Designer" },
+        { id: 3, name: "Bob", age: "35", notes: "Manager" },
+      ]);
+      
+      const editableColumns = [
+        { key: "id", label: "ID", editable: false },
+        { key: "name", label: "Name", editable: true },
+        { key: "age", label: "Age", editable: true },
+        { key: "notes", label: "Notes", editable: true, inputType: "textarea" },
+      ];
+      
+      const handleSave = ({ row, column, value }) => {
+        row[column.key] = value;
+      };
+      
+      return { args, data: editableData, columns: editableColumns, handleSave };
+    },
+    template: `
+      <AdvancedTable
+        v-bind='args'
+        :columns="columns"
+        :data="data"
+        @edit-save="handleSave"
+      />
+    `,
+  }),
+};
+
+// 13. Mixed Columns (Some Editable, Some Read-Only)
+export const MixedColumns: Story = {
+  render: (args) => ({
+    components: { AdvancedTable },
+    setup: () => {
+      const mixedData = ref([
+        { id: 1, name: "Alice", role: "Developer", department: "Engineering" },
+        { id: 2, name: "Bob", role: "Designer", department: "Design" },
+        { id: 3, name: "Charlie", role: "Manager", department: "Operations" },
+      ]);
+      
+      const mixedColumns = [
+        { key: "id", label: "ID", editable: false },
+        { key: "name", label: "Name", editable: true },
+        { key: "role", label: "Role", editable: false },
+        { key: "department", label: "Department", editable: true },
+      ];
+      
+      const handleSave = ({ row, column, value }) => {
+        row[column.key] = value;
+      };
+      
+      return { args, data: mixedData, columns: mixedColumns, handleSave };
+    },
+    template: `
+      <AdvancedTable
+        v-bind='args'
+        :columns="columns"
+        :data="data"
+        @edit-save="handleSave"
+      />
+    `,
+  }),
+};
+
+// 14. With Validation
+export const WithValidation: Story = {
+  render: (args) => ({
+    components: { AdvancedTable },
+    setup: () => {
+      const validationData = ref([
+        { id: 1, name: "John", age: "25", email: "john@example.com" },
+        { id: 2, name: "Jane", age: "30", email: "jane@example.com" },
+        { id: 3, name: "Bob", age: "invalid", email: "bob@example.com" },
+      ]);
+      
+      const validationColumns = [
+        { key: "id", label: "ID", editable: false },
+        { key: "name", label: "Name", editable: true },
+        { key: "age", label: "Age", editable: true, validator: (v) => !isNaN(Number(v)) },
+        { key: "email", label: "Email", editable: true, validator: (v) => /^[^@]+@[^@]+\.[^@]+$/.test(v) },
+      ];
+      
+      const handleSave = ({ row, column, value }) => {
+        row[column.key] = value;
+      };
+      
+      return { args, data: validationData, columns: validationColumns, handleSave };
+    },
+    template: `
+      <AdvancedTable
+        v-bind='args'
+        :columns="columns"
+        :data="data"
+        @edit-save="handleSave"
+      />
+    `,
+  }),
+};
+
+// 15. Double Click to Edit
+export const DoubleClickEdit: Story = {
+  render: (args) => ({
+    components: { AdvancedTable },
+    setup: () => {
+      const doubleClickData = ref([
+        { id: 1, name: "Alice", role: "Developer" },
+        { id: 2, name: "Bob", role: "Designer" },
+        { id: 3, name: "Charlie", role: "Manager" },
+      ]);
+      
+      const doubleClickColumns = [
+        { key: "id", label: "ID", editable: false },
+        { key: "name", label: "Name", editable: true, singleClick: false },
+        { key: "role", label: "Role", editable: true, singleClick: false },
+      ];
+      
+      const handleSave = ({ row, column, value }) => {
+        row[column.key] = value;
+      };
+      
+      return { args, data: doubleClickData, columns: doubleClickColumns, handleSave };
+    },
+    template: `
+      <AdvancedTable
+        v-bind='args'
+        :columns="columns"
+        :data="data"
+        @edit-save="handleSave"
+      />
+    `,
+  }),
+};
+
+// 16. Textarea Type
+export const TextareaType: Story = {
+  render: (args) => ({
+    components: { AdvancedTable },
+    setup: () => {
+      const textareaData = ref([
+        { id: 1, name: "John", description: "Short description" },
+        { id: 2, name: "Jane", description: "This is a longer description that should use a textarea for better editing experience." },
+        { id: 3, name: "Bob", description: "Another example with multiple lines\nLine 2\nLine 3" },
+      ]);
+      
+      const textareaColumns = [
+        { key: "id", label: "ID", editable: false },
+        { key: "name", label: "Name", editable: true },
+        { key: "description", label: "Description", editable: true, inputType: "textarea" },
+      ];
+      
+      const handleSave = ({ row, column, value }) => {
+        row[column.key] = value;
+      };
+      
+      return { args, data: textareaData, columns: textareaColumns, handleSave };
+    },
+    template: `
+      <AdvancedTable
+        v-bind='args'
+        :columns="columns"
+        :data="data"
+        @edit-save="handleSave"
+      />
+    `,
+  }),
+};
+
+// 17. Validation Feedback
+export const ValidationFeedback: Story = {
+  render: (args) => ({
+    components: { AdvancedTable },
+    setup: () => {
+      const feedbackData = ref([
+        { id: 1, name: "John", age: "25" },
+        { id: 2, name: "Jane", age: "30" },
+        { id: 3, name: "Bob", age: "invalid" },
+      ]);
+      
+      const feedbackColumns = [
+        { key: "id", label: "ID", editable: false },
+        { key: "name", label: "Name", editable: true },
+        { key: "age", label: "Age", editable: true, validator: (v) => !isNaN(Number(v)) },
+      ];
+      
+      const handleSave = ({ row, column, value }) => {
+        row[column.key] = value;
+      };
+      
+      return { args, data: feedbackData, columns: feedbackColumns, handleSave };
+    },
+    template: `
+      <AdvancedTable
+        v-bind='args'
+        :columns="columns"
+        :data="data"
+        @edit-save="handleSave"
+      />
+    `,
+  }),
+};
+
+// 18. All Features Combined
+export const AllFeatures: Story = {
+  render: (args) => ({
+    components: { AdvancedTable },
+    setup: () => {
+      const allFeaturesData = ref([
+        { id: 1, name: "John Doe", age: "25", email: "john@example.com", notes: "Developer" },
+        { id: 2, name: "Jane Smith", age: "30", email: "jane@example.com", notes: "Designer" },
+        { id: 3, name: "Bob Johnson", age: "35", email: "bob@example.com", notes: "Manager" },
+        { id: 4, name: "Alice Williams", age: "28", email: "alice@example.com", notes: "QA Engineer" },
+        { id: 5, name: "Charlie Brown", age: "32", email: "charlie@example.com", notes: "DevOps" },
+      ]);
+      
+      const allFeaturesColumns = [
+        { key: "id", label: "ID", editable: false },
+        { key: "name", label: "Name", editable: true },
+        { key: "age", label: "Age", editable: true, validator: (v) => !isNaN(Number(v)) },
+        { key: "email", label: "Email", editable: true, validator: (v) => /^[^@]+@[^@]+\.[^@]+$/.test(v) },
+        { key: "notes", label: "Notes", editable: true, inputType: "textarea" },
+      ];
+      
+      const handleSave = ({ row, column, value }) => {
+        row[column.key] = value;
+      };
+      
+      return { args, data: allFeaturesData, columns: allFeaturesColumns, handleSave };
+    },
+    template: `
+      <AdvancedTable
+        v-bind='{...args, searchEnabled: true, pagination: true}'
+        :columns="columns"
+        :data="data"
+        :items-per-page="5"
+        @edit-save="handleSave"
+      />
     `,
   }),
 };
