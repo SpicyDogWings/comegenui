@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, nextTick, watch } from "vue";
+
 import Input from "../form/Input.vue";
 import Textarea from "../form/Textarea.vue";
 
@@ -52,6 +53,7 @@ const validationState = ref<{ success: boolean; error: string | null }>({
   success: false,
   error: null,
 });
+const inputRef = ref<InstanceType<typeof Input | typeof Textarea> | null>(null);
 
 // Initialize edit value
 watch(
@@ -68,6 +70,8 @@ const startEditing = async () => {
   validationState.value = { success: false, error: null };
   emit("edit-start", { row: props.row, column: props.column });
   await nextTick();
+  // NEW: Autofocus
+  inputRef.value?.focus?.();
 };
 
 const saveEdit = () => {
@@ -139,6 +143,7 @@ const validationClass = computed(() => {
     <template v-if="isEditing">
       <Textarea
         v-if="column.inputType === 'textarea'"
+        ref="inputRef"
         v-model="editValue"
         @blur="saveEdit"
         @keydown="handleKeyDown"
@@ -149,6 +154,7 @@ const validationClass = computed(() => {
       />
       <Input
         v-else
+        ref="inputRef"
         v-model="editValue"
         @blur="saveEdit"
         @keydown="handleKeyDown"
