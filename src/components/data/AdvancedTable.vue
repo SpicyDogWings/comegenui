@@ -94,6 +94,12 @@ const props = defineProps({
     required: false,
     default: "",
   },
+  // Table max height prop
+  tableMaxHeight: {
+    type: String,
+    required: false,
+    default: "",
+  },
 });
 
 const emit = defineEmits([
@@ -176,6 +182,7 @@ const tableProps = computed(() => ({
   columns: props.columns,
   data: localData.value,
   empty: props.empty,
+  maxHeight: props.tableMaxHeight,
 }));
 
 // Handle row events
@@ -230,7 +237,6 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
           @edit-save="(e) => emit('edit-save', e)"
           @edit-cancel="(e) => emit('edit-cancel', e)"
         />
-        <span v-else>{{ value }}</span>
       </template>
     </Table>
 

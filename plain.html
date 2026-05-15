@@ -3,11 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Label + Input Demo</title>
-    <script src="dist/vendor/vue-runtime.iife.js"></script>
-    <script src="dist/CuLabel.umd.js"></script>
-    <script src="dist/CuInput.umd.js"></script>
+    <title>CuTable Custom Element Demo</title>
+    
+    <!-- Load UMD builds -->
+    <script src="dist/CuTable.umd.js"></script>
     <script src="dist/CuButton.umd.js"></script>
+    <script src="dist/CuInput.umd.js"></script>
+    <script src="dist/CuBadge.umd.js"></script>
+    <script src="dist/CuPagination.umd.js"></script>
+    
     <style>
       :root {
         --bg-primary: oklch(0.634 0.133 238.39);
@@ -20,7 +24,7 @@
       body {
         font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
         padding: 20px;
-        max-width: 1200px;
+        max-width: 1400px;
         margin: 0 auto;
         background: #f8f9fa;
         color: #2c3e50;
@@ -73,15 +77,6 @@
         border: 1px solid #e2e8f0;
       }
       
-      cu-label {
-        display: block;
-        margin: 10px 0;
-      }
-      
-      cu-input {
-        width: 100%;
-      }
-      
       cu-button {
         margin-right: 10px;
         margin-bottom: 10px;
@@ -119,270 +114,439 @@
         background-position: 0 100%;
         padding-bottom: 4px;
       }
+      
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 20px;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+      }
+      
+      .output {
+        background: #2d3748;
+        color: #e2e8f0;
+        padding: 15px;
+        border-radius: 6px;
+        font-family: monospace;
+        font-size: 13px;
+        margin: 15px 0;
+        max-height: 200px;
+        overflow-y: auto;
+      }
     </style>
   </head>
   <body>
-    <h1>CuLabel Demo - Click to Focus</h1>
+    <h1>CuTable Custom Element Demo</h1>
     
+    <!-- Basic Table Section -->
     <div class="section">
-      <h2>🎯 ¿Cómo funciona?</h2>
-      <p class="description">
-        El componente <span class="code">cu-label</span> renderiza el texto del label internamente 
-        y al hacer click en cualquier parte del label, automáticamente enfoca el primer 
-        <span class="code">cu-input</span> o <span class="code">input</span> que encuentre dentro.
-      </p>
-      <p class="description">
-        <strong>Prueba:</strong> Haz click en "Nombre de usuario" o en cualquier área del label para ver cómo el input recibe el foco.
-      </p>
+      <h2>1. Tabla Básica</h2>
+      <p class="description">Tabla simple con datos estáticos sin paginación ni búsqueda.</p>
       
-      <div class="demo-item">
-        <cu-label label="Nombre de usuario">
-          <cu-input placeholder="Escribe tu nombre..." color="neutral" variant="none"></cu-input>
-        </cu-label>
-      </div>
-      
-      <div class="code-block">
-        &lt;cu-label label="Nombre de usuario"&gt;
-        <br>
-        &nbsp;&nbsp;&lt;cu-input placeholder="Escribe tu nombre..." /&gt;
-        <br>
-        &lt;/cu-label&gt;
-      </div>
+      <cu-table 
+        id="basicTable"
+        color="primary"
+        variant="solid"
+        :columns='[
+          { key: "id", label: "ID", sortable: true, editable: false },
+          { key: "title", label: "Título", sortable: true, editable: false },
+          { key: "completed", label: "Completado", sortable: true, editable: false, formatter: (value) => value ? "Sí" : "No" }
+        ]'
+        empty="Cargando datos..."
+        pagination="true"
+        items-per-page="5"
+      ></cu-table>
     </div>
     
+    <!-- Pagination Section -->
     <div class="section">
-      <h2>📋 Formulario Completo</h2>
-      <p class="description">
-        Ejemplo de formulario con múltiples campos usando <span class="code">cu-label</span>.
-      </p>
+      <h2>2. Tabla con Paginación</h2>
+      <p class="description">Tabla con paginación habilitada y selector de tamaño de página.</p>
       
-      <div class="demo-grid">
-        <div class="demo-item">
-          <cu-label label="Nombre *">
-            <cu-input placeholder="Juan" color="primary" variant="outlined"></cu-input>
-          </cu-label>
-        </div>
-        
-        <div class="demo-item">
-          <cu-label label="Apellido *">
-            <cu-input placeholder="Pérez" color="primary" variant="outlined"></cu-input>
-          </cu-label>
-        </div>
-        
-        <div class="demo-item">
-          <cu-label label="Email *">
-            <cu-input placeholder="juan@example.com" type="email" color="success" variant="soft"></cu-input>
-          </cu-label>
-        </div>
-        
-        <div class="demo-item">
-          <cu-label label="Teléfono">
-            <cu-input placeholder="+52 123 456 7890" type="tel" color="neutral" variant="ghost"></cu-input>
-          </cu-label>
-        </div>
-        
-        <div class="demo-item">
-          <cu-label label="Contraseña">
-            <cu-input placeholder="••••••••" type="password" color="warning" variant="subtle"></cu-input>
-          </cu-label>
-        </div>
-        
-        <div class="demo-item">
-          <cu-label label="Confirmar Contraseña">
-            <cu-input placeholder="••••••••" type="password" color="danger" variant="none"></cu-input>
-          </cu-label>
-        </div>
-      </div>
+      <cu-table 
+        id="paginationTable"
+        color="primary"
+        variant="solid"
+        :columns='[
+          { key: "id", label: "ID", sortable: true },
+          { key: "title", label: "Título", sortable: true },
+          { key: "completed", label: "Completado", sortable: true, formatter: (value) => value ? "Sí" : "No" }
+        ]'
+        empty="Cargando datos..."
+        pagination="true"
+        items-per-page="5"
+        show-page-size="true"
+        page-size-options='[5, 10, 20]'
+      ></cu-table>
     </div>
     
+    <!-- Search Section -->
     <div class="section">
-      <h2>🔍 Nested Elements</h2>
-      <p class="description">
-        El label funciona incluso cuando el input está dentro de contenedores anidados.
-      </p>
+      <h2>3. Tabla con Búsqueda</h2>
+      <p class="description">Tabla con funcionalidad de búsqueda en todos los campos.</p>
       
-      <div class="demo-row">
-        <div class="demo-item flex-1">
-          <cu-label label="Búsqueda con Icono">
-            <div style="position: relative;">
-              <span style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #a0aec0;">🔍</span>
-              <cu-input placeholder="Buscar..." style="padding-left: 36px;" color="primary" variant="outlined"></cu-input>
-            </div>
-          </cu-label>
-        </div>
+      <cu-table 
+        id="searchTable"
+        color="primary"
+        variant="solid"
+        :columns='[
+          { key: "id", label: "ID", sortable: true },
+          { key: "title", label: "Título", sortable: true },
+          { key: "completed", label: "Completado", sortable: true, formatter: (value) => value ? "Sí" : "No" }
+        ]'
+        empty="Cargando datos..."
+        search-enabled="true"
+        search-placeholder="Buscar..."
+        pagination="true"
+        items-per-page="5"
+      ></cu-table>
+    </div>
+    
+    <!-- Editable Section -->
+    <div class="section">
+      <h2>4. Tabla Editable</h2>
+      <p class="description">Tabla con celdas editables. Haz doble clic en una celda editable para modificarla.</p>
+      
+      <div class="output" id="editOutput">
+        // Eventos de edición aparecerán aquí
+      </div>
+      
+      <cu-table 
+        id="editableTable"
+        color="primary"
+        variant="solid"
+        :columns='[
+          { key: "id", label: "ID", sortable: true, editable: false },
+          { key: "title", label: "Título", sortable: true, editable: true },
+          { key: "completed", label: "Completado", sortable: true, editable: true, formatter: (value) => value ? "Sí" : "No" }
+        ]'
+        empty="Cargando datos..."
+        @edit-save="handleEditSave"
+        pagination="true"
+        items-per-page="5"
+      ></cu-table>
+    </div>
+    
+    <!-- Buttons Section -->
+    <div class="section">
+      <h2>5. Tabla con Botones</h2>
+      <p class="description">Tabla con botones en celdas usando el componente cu-button.</p>
+      
+      <div class="output" id="buttonsOutput">
+        // Eventos de botones aparecerán aquí
+      </div>
+      
+      <cu-table 
+        id="buttonsTable"
+        color="primary"
+        variant="solid"
+        :columns='[
+          { key: "id", label: "ID", sortable: true },
+          { key: "title", label: "Título", sortable: true },
+          { key: "completed", label: "Completado", sortable: true, formatter: (value) => value ? "Sí" : "No" },
+          {
+            key: "actions",
+            label: "Acciones",
+            buttons: (row, index) => [
+              {
+                label: "Editar",
+                color: "primary",
+                variant: "soft",
+                onClick: () => editRow(index)
+              },
+              {
+                label: "Eliminar",
+                color: "danger",
+                variant: "soft",
+                onClick: () => deleteRow(index)
+              }
+            ]
+          }
+        ]'
+        empty="Cargando datos..."
+        pagination="true"
+        items-per-page="5"
+      ></cu-table>
+    </div>
+    
+    <!-- Badges Section -->
+    <div class="section">
+      <h2>6. Tabla con Badges</h2>
+      <p class="description">Tabla con badges en celdas usando el componente cu-badge.</p>
+      
+      <cu-table 
+        id="badgesTable"
+        color="primary"
+        variant="solid"
+        :columns='[
+          { key: "id", label: "ID", sortable: true },
+          { key: "title", label: "Título", sortable: true },
+          {
+            key: "completed",
+            label: "Estado",
+            badges: (row) => [
+              {
+                value: row.completed ? "Completado" : "Pendiente",
+                color: row.completed ? "success" : "warning",
+                variant: "soft"
+              }
+            ]
+          }
+        ]'
+        empty="Cargando datos..."
+        pagination="true"
+        items-per-page="5"
+      ></cu-table>
+    </div>
+    
+    <!-- Complete Demo Section -->
+    <div class="section">
+      <h2>7. Demo Completo (Todas las Características)</h2>
+      <p class="description">Tabla que combina todas las características: paginación, búsqueda, edición, botones y badges.</p>
+      
+      <div class="controls">
+        <cu-button id="addRowBtn" color="success" variant="solid">Agregar Fila</cu-button>
+        <cu-button id="removeRowBtn" color="danger" variant="solid">Eliminar Fila</cu-button>
+        <cu-button id="updateRowBtn" color="primary" variant="solid">Actualizar Fila</cu-button>
+        <cu-button id="getDataBtn" color="neutral" variant="outlined">Obtener Datos</cu-button>
+        <cu-button id="getRowBtn" color="neutral" variant="outlined">Obtener Fila 2</cu-button>
+        <cu-button id="pushDataBtn" color="warning" variant="solid">Reemplazar Datos</cu-button>
+      </div>
+      
+      <div class="output" id="completeOutput">
+        // Resultados de las operaciones aparecerán aquí
+      </div>
+      
+      <cu-table 
+        id="completeTable"
+        color="primary"
+        variant="solid"
+        :columns='[
+          { key: "id", label: "ID", sortable: true, editable: false },
+          { key: "name", label: "Nombre", sortable: true, editable: true },
+          { key: "email", label: "Email", sortable: true, editable: true },
+          { key: "age", label: "Edad", sortable: true, editable: true },
+          { key: "role", label: "Rol", sortable: true, editable: true },
+          {
+            key: "status",
+            label: "Estado",
+            badges: (row) => [
+              {
+                value: row.status,
+                color: row.status === "Active" ? "success" : row.status === "Pending" ? "warning" : "danger",
+                variant: "soft"
+              }
+            ]
+          },
+          {
+            key: "actions",
+            label: "Acciones",
+            buttons: (row, index) => [
+              {
+                label: "Editar",
+                color: "primary",
+                variant: "soft",
+                onClick: () => editCompleteRow(index)
+              },
+              {
+                label: "Eliminar",
+                color: "danger",
+                variant: "soft",
+                onClick: () => deleteCompleteRow(index)
+              }
+            ]
+          }
+        ]'
+        :data="sampleUsers"
+        empty="No hay datos que mostrar"
+        pagination="true"
+        items-per-page="5"
+        show-page-size="true"
+        page-size-options='[5, 10, 20, 50]'
+        search-enabled="true"
+        search-placeholder="Buscar en la tabla..."
+        table-max-height="500px"
+        @edit-save="handleCompleteEditSave"
+      ></cu-table>
+    </div>
+    
+    <script>
+      // Sample data for complete demo
+      const sampleUsers = [
+        { id: 1, name: "John Doe", email: "john@example.com", age: 28, role: "Developer", status: "Active" },
+        { id: 2, name: "Jane Smith", email: "jane@example.com", age: 32, role: "Designer", status: "Active" },
+        { id: 3, name: "Bob Johnson", email: "bob@example.com", age: 45, role: "Manager", status: "Inactive" },
+        { id: 4, name: "Alice Brown", email: "alice@example.com", age: 24, role: "Intern", status: "Pending" },
+        { id: 5, name: "Charlie Wilson", email: "charlie@example.com", age: 38, role: "CTO", status: "Active" },
+        { id: 6, name: "Diana Miller", email: "diana@example.com", age: 29, role: "Developer", status: "Active" },
+        { id: 7, name: "Ethan Davis", email: "ethan@example.com", age: 31, role: "Designer", status: "Inactive" },
+        { id: 8, name: "Fiona Garcia", email: "fiona@example.com", age: 27, role: "Developer", status: "Active" },
+      ];
+      
+      // Fetch data from JSONPlaceholder
+      let todosData = [];
+      
+      async function fetchTodos() {
+        try {
+          const response = await fetch('https://jsonplaceholder.typicode.com/todos/');
+          todosData = await response.json();
+          
+          console.log('Data loaded:', todosData);
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+      }
+      
+      // Function to update all tables with TODO data
+      function updateAllTables() {
+        const tables = [
+          'basicTable',
+          'paginationTable', 
+          'searchTable',
+          'editableTable',
+          'buttonsTable',
+          'badgesTable'
+        ];
         
-        <div class="demo-item flex-1">
-          <cu-label label="Campo con Wrapper">
-            <div style="border: 1px solid #e2e8f0; border-radius: 6px; padding: 4px;">
-              <cu-input placeholder="Dentro de un div" color="neutral" variant="none"></cu-input>
-            </div>
-          </cu-label>
-        </div>
-      </div>
-    </div>
-    
-    <div class="section">
-      <h2>🎨 Variantes y Colores</h2>
-      <p class="description">
-        Combina diferentes variantes y colores de inputs dentro del label.
-      </p>
+        tables.forEach(id => {
+          const table = document.getElementById(id);
+          if (table && todosData.length > 0) {
+            // Use the pushData method to set data
+            table.pushData([...todosData]);
+          }
+        });
+      }
       
-      <h3>Primary</h3>
-      <div class="demo-row">
-        <cu-label label="Outlined">
-          <cu-input placeholder="Primary Outlined" color="primary" variant="outlined"></cu-input>
-        </cu-label>
-        <cu-label label="Soft">
-          <cu-input placeholder="Primary Soft" color="primary" variant="soft"></cu-input>
-        </cu-label>
-        <cu-label label="Ghost">
-          <cu-input placeholder="Primary Ghost" color="primary" variant="ghost"></cu-input>
-        </cu-label>
-        <cu-label label="Subtle">
-          <cu-input placeholder="Primary Subtle" color="primary" variant="subtle"></cu-input>
-        </cu-label>
-      </div>
-      
-      <h3>Success</h3>
-      <div class="demo-row">
-        <cu-label label="Success Outlined">
-          <cu-input placeholder="Success" color="success" variant="outlined"></cu-input>
-        </cu-label>
-        <cu-label label="Success Soft">
-          <cu-input placeholder="Success" color="success" variant="soft"></cu-input>
-        </cu-label>
-        <cu-label label="Success Ghost">
-          <cu-input placeholder="Success" color="success" variant="ghost"></cu-input>
-        </cu-label>
-      </div>
-      
-      <h3>Warning & Danger</h3>
-      <div class="demo-row">
-        <cu-label label="Warning">
-          <cu-input placeholder="Warning field" color="warning" variant="outlined"></cu-input>
-        </cu-label>
-        <cu-label label="Danger">
-          <cu-input placeholder="Danger field" color="danger" variant="outlined"></cu-input>
-        </cu-label>
-      </div>
-    </div>
-    
-    <div class="section">
-      <h2>📝 Tipos de Input</h2>
-      <p class="description">
-        El label funciona con todos los tipos de input: text, email, password, number, tel, url, search.
-      </p>
-      
-      <div class="demo-grid">
-        <div class="demo-item">
-          <cu-label label="Text">
-            <cu-input type="text" placeholder="Texto normal"></cu-input>
-          </cu-label>
-        </div>
-        <div class="demo-item">
-          <cu-label label="Email">
-            <cu-input type="email" placeholder="correo@ejemplo.com"></cu-input>
-          </cu-label>
-        </div>
-        <div class="demo-item">
-          <cu-label label="Password">
-            <cu-input type="password" placeholder="••••••••"></cu-input>
-          </cu-label>
-        </div>
-        <div class="demo-item">
-          <cu-label label="Number">
-            <cu-input type="number" placeholder="123"></cu-input>
-          </cu-label>
-        </div>
-        <div class="demo-item">
-          <cu-label label="Tel">
-            <cu-input type="tel" placeholder="+1 234 567 890"></cu-input>
-          </cu-label>
-        </div>
-        <div class="demo-item">
-          <cu-label label="URL">
-            <cu-input type="url" placeholder="https://ejemplo.com"></cu-input>
-          </cu-label>
-        </div>
-      </div>
-    </div>
-    
-    <div class="section">
-      <h2>⚡ Comparación: Con vs Sin Label</h2>
-      <p class="description">
-        Observa la diferencia de usabilidad entre usar el label y no usarlo.
-      </p>
-      
-      <div class="demo-row">
-        <div class="demo-item flex-1">
-          <h3 style="margin-top: 0; text-align: center;">✅ Con CuLabel</h3>
-          <p style="text-align: center; font-size: 13px; color: #718096; margin-bottom: 15px;">
-            Haz click en "Nombre" o alrededor del input
-          </p>
-          <cu-label label="Nombre">
-            <cu-input placeholder="Fácil de enfocar" color="success" variant="soft"></cu-input>
-          </cu-label>
-        </div>
+      // Call fetch on page load and set data when available
+      document.addEventListener('DOMContentLoaded', function() {
+        fetchTodos();
         
-        <div class="demo-item flex-1">
-          <h3 style="margin-top: 0; text-align: center;">❌ Sin CuLabel</h3>
-          <p style="text-align: center; font-size: 13px; color: #718096; margin-bottom: 15px;">
-            Solo puedes enfocar haciendo click directamente en el input
-          </p>
-          <div>
-            <span class="label-text">Nombre</span>
-            <cu-input placeholder="Difícil de enfocar" color="danger" variant="soft"></cu-input>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <div class="section">
-      <h2>💡 Casos de Uso Avanzados</h2>
+        // Check if tables are already initialized
+        const checkTablesInterval = setInterval(function() {
+          if (todosData.length > 0) {
+            const basicTable = document.getElementById('basicTable');
+            if (basicTable && typeof basicTable.pushData === 'function') {
+              updateAllTables();
+              clearInterval(checkTablesInterval);
+            }
+          }
+        }, 100);
+        
+        // Also set up a mutation observer as fallback
+        const observer = new MutationObserver(function(mutations) {
+          if (todosData.length > 0) {
+            const basicTable = document.getElementById('basicTable');
+            if (basicTable && typeof basicTable.pushData === 'function') {
+              updateAllTables();
+              observer.disconnect();
+            }
+          }
+        });
+        
+        observer.observe(document.body, { childList: true, subtree: true });
+        
+        // Timeout fallback
+        setTimeout(function() {
+          clearInterval(checkTablesInterval);
+          observer.disconnect();
+        }, 5000);
+      });
       
-      <h3>Label como Contenedor Flex</h3>
-      <p class="description">
-        Usa CSS para personalizar el layout interno del label.
-      </p>
-      <div class="demo-item">
-        <cu-label label="Código Postal:" style="display: flex; align-items: center; gap: 12px;">
-          <cu-input placeholder="00000" style="flex: 1;" color="primary" variant="outlined"></cu-input>
-          <cu-button color="primary" variant="solid" style="flex: 0 0 auto;">Buscar</cu-button>
-        </cu-label>
-      </div>
+      // Edit event handler
+      function handleEditSave(event) {
+        const output = document.getElementById('editOutput');
+        const row = event.detail.row;
+        const column = event.detail.column;
+        const newValue = event.detail.newValue;
+        
+        output.textContent = `Editado: fila ${row.id}, columna ${column.key}, nuevo valor: "${newValue}"`;
+        console.log('Edit event:', event.detail);
+      }
       
-      <h3>Múltiples Inputs (se enfoca el primero)</h3>
-      <p class="description">
-        Cuando hay varios inputs, el label enfoca el primero que encuentra.
-      </p>
-      <div class="demo-item">
-        <cu-label label="Rango de Fechas">
-          <div style="display: flex; gap: 10px;">
-            <cu-input placeholder="Desde" type="date" style="flex: 1;" color="neutral" variant="outlined"></cu-input>
-            <span style="align-self: center; color: #718096;">hasta</span>
-            <cu-input placeholder="Hasta" type="date" style="flex: 1;" color="neutral" variant="outlined"></cu-input>
-          </div>
-        </cu-label>
-      </div>
+      // Button event handlers
+      function editRow(index) {
+        const output = document.getElementById('buttonsOutput');
+        output.textContent = `Editando fila ${index + 1}`;
+        console.log('Edit row:', index);
+      }
       
-      <h3>Input Nativo HTML</h3>
-      <p class="description">
-        El label también funciona con inputs HTML nativos, no solo con CuInput.
-      </p>
-      <div class="demo-item">
-        <cu-label label="Input Nativo">
-          <input type="text" placeholder="HTML input nativo" 
-                 style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; font-family: inherit; font-size: 14px;">
-        </cu-label>
-      </div>
-    </div>
-    
-    <div class="section" style="text-align: center; padding: 40px 25px;">
-      <h2 style="margin-bottom: 10px;">✨ ¡Listo!</h2>
-      <p class="description" style="margin: 0; max-width: 600px; margin-left: auto; margin-right: auto;">
-        El componente <span class="code">cu-label</span> mejora la accesibilidad y usabilidad de tus formularios, 
-        haciendo que los inputs sean más fáciles de enfocar para los usuarios.
-      </p>
-    </div>
+      function deleteRow(index) {
+        const output = document.getElementById('buttonsOutput');
+        output.textContent = `Eliminando fila ${index + 1}`;
+        console.log('Delete row:', index);
+      }
+      
+      // Complete table event handlers
+      function handleCompleteEditSave(event) {
+        const output = document.getElementById('completeOutput');
+        const row = event.detail.row;
+        const column = event.detail.column;
+        const newValue = event.detail.newValue;
+        
+        output.textContent = `Editado: fila ${row.id}, columna ${column.key}, nuevo valor: "${newValue}"`;
+        console.log('Complete edit event:', event.detail);
+      }
+      
+      function editCompleteRow(index) {
+        const output = document.getElementById('completeOutput');
+        output.textContent = `Editando fila ${index + 1}`;
+        console.log('Edit complete row:', index);
+      }
+      
+      function deleteCompleteRow(index) {
+        const output = document.getElementById('completeOutput');
+        output.textContent = `Eliminando fila ${index + 1}`;
+        console.log('Delete complete row:', index);
+      }
+      
+      // DOMContentLoaded event for buttons
+      document.addEventListener('DOMContentLoaded', function() {
+        // Add event listeners for control buttons
+        document.getElementById('addRowBtn').addEventListener('click', function() {
+          const table = document.getElementById('completeTable');
+          const newRow = { id: sampleUsers.length + 1, name: 'Nuevo Usuario', email: 'nuevo@example.com', age: 30, role: 'Developer', status: 'Active' };
+          table.addRow(newRow);
+          document.getElementById('completeOutput').textContent = 'Fila agregada';
+        });
+        
+        document.getElementById('removeRowBtn').addEventListener('click', function() {
+          const table = document.getElementById('completeTable');
+          table.removeRow(0);
+          document.getElementById('completeOutput').textContent = 'Fila eliminada';
+        });
+        
+        document.getElementById('updateRowBtn').addEventListener('click', function() {
+          const table = document.getElementById('completeTable');
+          table.updateRow(0, { name: 'Usuario Actualizado', email: 'actualizado@example.com' });
+          document.getElementById('completeOutput').textContent = 'Fila actualizada';
+        });
+        
+        document.getElementById('getDataBtn').addEventListener('click', function() {
+          const table = document.getElementById('completeTable');
+          const data = table.getData();
+          document.getElementById('completeOutput').textContent = JSON.stringify(data, null, 2);
+        });
+        
+        document.getElementById('getRowBtn').addEventListener('click', function() {
+          const table = document.getElementById('completeTable');
+          const row = table.getRow(1);
+          document.getElementById('completeOutput').textContent = JSON.stringify(row, null, 2);
+        });
+        
+        document.getElementById('pushDataBtn').addEventListener('click', function() {
+          const table = document.getElementById('completeTable');
+          const newData = [
+            { id: 1, name: "Usuario 1", email: "user1@example.com", age: 25, role: "Developer", status: "Active" },
+            { id: 2, name: "Usuario 2", email: "user2@example.com", age: 30, role: "Designer", status: "Pending" }
+          ];
+          table.pushData(newData);
+          document.getElementById('completeOutput').textContent = 'Datos reemplazados';
+        });
+      });
+    </script>
   </body>
 </html>
