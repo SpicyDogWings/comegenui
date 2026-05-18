@@ -8,13 +8,14 @@ const meta: Meta<typeof CuTable> = {
   tags: ["autodocs"],
   argTypes: {
     color: {
-      control: "color",
-      description: "Table color in hex format (e.g., #2c2c2c)",
+      control: "select",
+      options: ["primary", "neutral", "success", "warning", "danger"],
+      description: "Table color (primary, neutral, success, warning, danger)",
     },
     variant: {
       control: "select",
-      options: ["solid", "soft", "ghost"],
-      description: "Table variant (solid maps to outlined)",
+      options: ["solid", "outlined", "soft", "ghost", "subtle", "link"],
+      description: "Table variant",
     },
     columns: {
       control: "object",
@@ -66,7 +67,7 @@ const meta: Meta<typeof CuTable> = {
     },
   },
   args: {
-    color: "#2c2c2c",
+    color: "neutral",
     variant: "ghost",
     empty: "No hay datos que mostrar",
     pagination: true,
@@ -196,23 +197,23 @@ export const ColorVariants: Story = {
       <div style="display: flex; flex-direction: column; gap: 20px;">
         <div>
           <h3>Primary</h3>
-          <CuTable v-bind="{ ...args, color: '#3b82f6' }" />
+          <CuTable v-bind="{ ...args, color: 'primary' }" />
         </div>
         <div>
           <h3>Neutral</h3>
-          <CuTable v-bind="{ ...args, color: '#2c2c2c' }" />
+          <CuTable v-bind="{ ...args, color: 'neutral' }" />
         </div>
         <div>
           <h3>Success</h3>
-          <CuTable v-bind="{ ...args, color: '#22c55e' }" />
+          <CuTable v-bind="{ ...args, color: 'success' }" />
         </div>
         <div>
           <h3>Warning</h3>
-          <CuTable v-bind="{ ...args, color: '#f59e0b' }" />
+          <CuTable v-bind="{ ...args, color: 'warning' }" />
         </div>
         <div>
           <h3>Danger</h3>
-          <CuTable v-bind="{ ...args, color: '#ef4444' }" />
+          <CuTable v-bind="{ ...args, color: 'danger' }" />
         </div>
       </div>
     `,
@@ -298,17 +299,18 @@ export const DefaultEditable: Story = {
     components: { CuTable },
     setup: () => {
       const myData = ref([...sampleData.slice(0, 5)]);
+      const editableColumns = columns.map(col => col.key === "name" ? { ...col, editable: true } : col);
       
       const handleSave = ({ row, column, value }) => {
         row[column.key] = value;
       };
       
-      return { args, myData, handleSave };
+      return { args, myData, editableColumns, handleSave };
     },
     template: `
       <CuTable 
         v-bind="args" 
-        :columns="columns.map(col => col.key === 'name' ? { ...col, editable: true } : col)" 
+        :columns="editableColumns" 
         :data="myData" 
         @edit-save="handleSave"
       />
