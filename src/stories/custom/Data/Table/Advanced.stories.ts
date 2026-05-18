@@ -8,9 +8,8 @@ const meta: Meta<typeof CuTable> = {
   tags: ["autodocs"],
   argTypes: {
     color: {
-      control: "select",
-      options: ["primary", "neutral", "success", "warning", "danger"],
-      description: "Table color name (maps to hex)",
+      control: "color",
+      description: "Table color in hex format (e.g., #2c2c2c)",
     },
     variant: {
       control: "select",
@@ -67,7 +66,7 @@ const meta: Meta<typeof CuTable> = {
     },
   },
   args: {
-    color: "neutral",
+    color: "#2c2c2c",
     variant: "ghost",
     empty: "No hay datos que mostrar",
     pagination: true,
@@ -197,23 +196,23 @@ export const ColorVariants: Story = {
       <div style="display: flex; flex-direction: column; gap: 20px;">
         <div>
           <h3>Primary</h3>
-          <CuTable v-bind="{ ...args, color: 'primary' }" />
+          <CuTable v-bind="{ ...args, color: '#3b82f6' }" />
         </div>
         <div>
           <h3>Neutral</h3>
-          <CuTable v-bind="{ ...args, color: 'neutral' }" />
+          <CuTable v-bind="{ ...args, color: '#2c2c2c' }" />
         </div>
         <div>
           <h3>Success</h3>
-          <CuTable v-bind="{ ...args, color: 'success' }" />
+          <CuTable v-bind="{ ...args, color: '#22c55e' }" />
         </div>
         <div>
           <h3>Warning</h3>
-          <CuTable v-bind="{ ...args, color: 'warning' }" />
+          <CuTable v-bind="{ ...args, color: '#f59e0b' }" />
         </div>
         <div>
           <h3>Danger</h3>
-          <CuTable v-bind="{ ...args, color: 'danger' }" />
+          <CuTable v-bind="{ ...args, color: '#ef4444' }" />
         </div>
       </div>
     `,

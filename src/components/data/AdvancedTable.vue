@@ -7,6 +7,7 @@ import EditableTableCell from "./EditableTableCell.vue";
 import { usePagination } from "../../composables/usePagination";
 import { useSearch } from "../../composables/useSearch";
 import { useTableData } from "../../composables/useTableData";
+import { getBgClasses, getFgClasses } from "../../utils/palette";
 
 // Add validation state map
 const validationStates = new Map<string, { success: boolean; error: string | null }>();
@@ -84,7 +85,7 @@ const props = defineProps({
     required: false,
     default: "soft",
     validator: (value: string) =>
-      ["outlined", "soft", "ghost", "subtle"].includes(value),
+      ["outlined", "soft", "ghost", "subtle", "solid"].includes(value),
   },
   // Search props
   searchEnabled: {
@@ -200,6 +201,10 @@ const tableProps = computed(() => ({
   variant: props.variant,
 }));
 
+// Color classes using palette utilities
+const bgClass = computed(() => getBgClasses(props.color, props.variant, false));
+const fgClass = computed(() => getFgClasses(props.color, props.variant, false));
+
 // Handle row events
 const handleRowClick = (row: Record<string, any>, index: number, event: MouseEvent) => {
   emit("row-click", { row, index, event });
@@ -218,7 +223,13 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
 </script>
 
 <template>
-  <div class="flex flex-col overflow-hidden max-w-full">
+  <div class="flex flex-col overflow-hidden max-w-full" :style="{
+    '--table-bg': bgClass.main,
+    '--table-fg': fgClass.main,
+    '--table-bg-hover': bgClass.hover,
+    '--table-bg-active': bgClass.active,
+    '--table-bd': fgClass.border,
+  }">
     <!-- Search Input -->
     <div v-if="props.searchEnabled" class="p-3">
       <slot name="search" :query="searchQuery" :update="handleSearchUpdate">

@@ -112,8 +112,8 @@ defineExpose({
   >
     <!-- Header slots -->
     <template #header="{ column }">
-      <slot name="header" :column="column">
-        <slot :name="`header-${column.key}`" :column="column">
+      <slot name="header" :column="column" :color="props.color" :variant="props.variant">
+        <slot :name="`header-${column.key}`" :column="column" :color="props.color" :variant="props.variant">
           {{ column.label || column.key }}
         </slot>
       </slot>

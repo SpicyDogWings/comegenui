@@ -69,8 +69,13 @@ const getCellValue = (row: Record<string, any>, col: Column): string => {
                 'bg-white': false,
               }"
               :width="col.width"
+              :style="{
+                'background-color': props.variant === 'solid' ? bgClasses.main : (props.variant === 'soft' ? 'transparent' : 'var(--table-bg)'),
+                'color': props.variant === 'solid' ? 'white' : 'var(--table-fg)',
+                'border-color': 'var(--table-bd)',
+              }"
             >
-              <slot :name="`header-${col.key}`" :column="col">
+              <slot :name="`header-${col.key}`" :column="col" :color="props.color" :variant="props.variant">
                 {{ col.label || col.key }}
               </slot>
             </th>
