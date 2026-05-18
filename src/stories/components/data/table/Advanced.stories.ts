@@ -334,7 +334,7 @@ export const DefaultEditable: Story = {
         { key: "notes", label: "Notes", editable: true, inputType: "textarea" },
       ];
       
-      const handleSave = ({ row, column, value }) => {
+      const handleSave = ({ row, column, value }: { row: any, column: any, value: string }) => {
         row[column.key] = value;
       };
       
@@ -369,7 +369,7 @@ export const MixedColumns: Story = {
         { key: "department", label: "Department", editable: true },
       ];
       
-      const handleSave = ({ row, column, value }) => {
+      const handleSave = ({ row, column, value }: { row: any, column: any, value: string }) => {
         row[column.key] = value;
       };
       
@@ -400,11 +400,11 @@ export const WithValidation: Story = {
       const validationColumns = [
         { key: "id", label: "ID", editable: false },
         { key: "name", label: "Name", editable: true },
-        { key: "age", label: "Age", editable: true, validator: (v) => !isNaN(Number(v)) },
-        { key: "email", label: "Email", editable: true, validator: (v) => /^[^@]+@[^@]+\.[^@]+$/.test(v) },
+        { key: "age", label: "Age", editable: true, validator: (v: string) => !isNaN(Number(v)) },
+        { key: "email", label: "Email", editable: true, validator: (v: string) => /^[^@]+@[^@]+\.[^@]+$/.test(v) },
       ];
       
-      const handleSave = ({ row, column, value }) => {
+      const handleSave = ({ row, column, value }: { row: any, column: any, value: string }) => {
         row[column.key] = value;
       };
       
@@ -438,7 +438,7 @@ export const DoubleClickEdit: Story = {
         { key: "role", label: "Role", editable: true, singleClick: false },
       ];
       
-      const handleSave = ({ row, column, value }) => {
+      const handleSave = ({ row, column, value }: { row: any, column: any, value: string }) => {
         row[column.key] = value;
       };
       
@@ -472,7 +472,7 @@ export const TextareaType: Story = {
         { key: "description", label: "Description", editable: true, inputType: "textarea" },
       ];
       
-      const handleSave = ({ row, column, value }) => {
+      const handleSave = ({ row, column, value }: { row: any, column: any, value: string }) => {
         row[column.key] = value;
       };
       
@@ -503,10 +503,10 @@ export const ValidationFeedback: Story = {
       const feedbackColumns = [
         { key: "id", label: "ID", editable: false },
         { key: "name", label: "Name", editable: true },
-        { key: "age", label: "Age", editable: true, validator: (v) => !isNaN(Number(v)) },
+        { key: "age", label: "Age", editable: true, validator: (v: string) => !isNaN(Number(v)) },
       ];
       
-      const handleSave = ({ row, column, value }) => {
+      const handleSave = ({ row, column, value }: { row: any, column: any, value: string }) => {
         row[column.key] = value;
       };
       
@@ -523,7 +523,71 @@ export const ValidationFeedback: Story = {
   }),
 };
 
-// 18. All Features Combined
+// 18. Pagination Validation Bug Fix Demo
+// This story demonstrates the fix for the pagination validation bug
+// where validation state was incorrectly preserved across pagination changes
+export const PaginationValidationFix: Story = {
+  render: (args) => ({
+    components: { AdvancedTable },
+    setup: () => {
+      const paginationData = ref([
+        { id: 1, name: "John Doe", age: "25", email: "john@example.com" },
+        { id: 2, name: "Jane Smith", age: "30", email: "jane@example.com" },
+        { id: 3, name: "Bob Johnson", age: "35", email: "bob@example.com" },
+        { id: 4, name: "Alice Williams", age: "28", email: "alice@example.com" },
+        { id: 5, name: "Charlie Brown", age: "32", email: "charlie@example.com" },
+        { id: 6, name: "Diana Prince", age: "29", email: "diana@example.com" },
+        { id: 7, name: "Clark Kent", age: "35", email: "clark@example.com" },
+        { id: 8, name: "Bruce Wayne", age: "40", email: "bruce@example.com" },
+        { id: 9, name: "Peter Parker", age: "23", email: "peter@example.com" },
+        { id: 10, name: "Tony Stark", age: "48", email: "tony@example.com" },
+      ]);
+      
+      const paginationColumns = [
+        { key: "id", label: "ID", editable: false, width: "60px" },
+        { key: "name", label: "Name", editable: true },
+        { key: "age", label: "Age", editable: true, validator: (v: string) => !isNaN(Number(v)) },
+        { key: "email", label: "Email", editable: true, validator: (v: string) => /^[^@]+@[^@]+\.[^@]+$/.test(v) },
+      ];
+      
+      const handleSave = ({ row, column, value }: { row: any, column: any, value: string }) => {
+        row[column.key] = value;
+        console.log(`Saved ${column.key}: ${value} for row ${row.id}`);
+      };
+      
+      return { 
+        args, 
+        data: paginationData, 
+        columns: paginationColumns, 
+        handleSave 
+      };
+    },
+    template: `
+      <div>
+        <h3 class="text-lg font-semibold mb-4">Pagination + Validation Bug Fix Demo</h3>
+        <p class="text-sm text-gray-600 mb-4">
+          This demonstrates the fix for the pagination validation bug. Try this:
+        </p>
+        <ol class="text-sm text-gray-600 mb-4 list-decimal list-inside">
+          <li>Edit a cell on page 1 (e.g., change age to an invalid value like "abc")</li>
+          <li>See the validation error (red text)</li>
+          <li>Go to page 2</li>
+          <li>Go back to page 1</li>
+          <li>The validation state should be preserved for the correct row</li>
+        </ol>
+        <AdvancedTable
+          v-bind='{...args, searchEnabled: true, pagination: true}'
+          :columns="columns"
+          :data="data"
+          :items-per-page="5"
+          @edit-save="handleSave"
+        />
+      </div>
+    `,
+  }),
+};
+
+// 19. All Features Combined
 export const AllFeatures: Story = {
   render: (args) => ({
     components: { AdvancedTable },
@@ -539,12 +603,12 @@ export const AllFeatures: Story = {
       const allFeaturesColumns = [
         { key: "id", label: "ID", editable: false },
         { key: "name", label: "Name", editable: true },
-        { key: "age", label: "Age", editable: true, validator: (v) => !isNaN(Number(v)) },
-        { key: "email", label: "Email", editable: true, validator: (v) => /^[^@]+@[^@]+\.[^@]+$/.test(v) },
+        { key: "age", label: "Age", editable: true, validator: (v: string) => !isNaN(Number(v)) },
+        { key: "email", label: "Email", editable: true, validator: (v: string) => /^[^@]+@[^@]+\.[^@]+$/.test(v) },
         { key: "notes", label: "Notes", editable: true, inputType: "textarea" },
       ];
       
-      const handleSave = ({ row, column, value }) => {
+      const handleSave = ({ row, column, value }: { row: any, column: any, value: string }) => {
         row[column.key] = value;
       };
       
@@ -561,3 +625,5 @@ export const AllFeatures: Story = {
     `,
   }),
 };
+
+
