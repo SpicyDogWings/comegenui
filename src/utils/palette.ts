@@ -1,4 +1,5 @@
 import { lighten, darken, toHex, getContrast, transparentize } from "color2k";
+import { theme } from "../config/theme";
 
 const getBgClasses = (color: string, variant: string, hightContrast: boolean) => {
   const isGhostOrOutlined = ["ghost", "outlined"].includes(variant);
@@ -39,11 +40,11 @@ const getFgClasses = (color: string, variant: string, hightContrast: boolean) =>
 };
 
 export const colorMap = {
-  primary: "#3b82f6",
-  neutral: "#2c2c2c",
-  success: "#22c55e",
-  warning: "#f59e0b",
-  danger: "#ef4444",
+  primary: theme.colors.primary,
+  neutral: theme.colors.neutral,
+  success: theme.colors.success,
+  warning: theme.colors.warning,
+  danger: theme.colors.danger,
 };
 
 export { getBgClasses, getFgClasses };

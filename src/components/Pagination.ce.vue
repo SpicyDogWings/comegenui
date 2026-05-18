@@ -1,8 +1,23 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import Button from "./Button.ce.vue";
+import Pagination from "./Pagination.vue";
+import { colorMap } from "../utils/palette";
 
 const props = defineProps({
+  color: {
+    type: String,
+    required: false,
+    default: "neutral",
+    validator: (value: string) =>
+      ["primary", "neutral", "success", "warning", "danger"].includes(value),
+  },
+  variant: {
+    type: String,
+    required: false,
+    default: "soft",
+    validator: (value: string) =>
+      ["outlined", "soft", "ghost", "subtle"].includes(value),
+  },
   currentPage: {
     type: Number,
     required: false,
@@ -42,144 +57,23 @@ const props = defineProps({
 
 const emit = defineEmits(["update:currentPage", "update:itemsPerPage"]);
 
-const handlePageChange = (page: number) => {
-  if (page >= 1 && page <= props.totalPages) {
-    emit("update:currentPage", page);
-  }
-};
-
-const handlePageSizeChange = (size: number) => {
-  emit("update:itemsPerPage", size);
-  emit("update:currentPage", 1);
-};
-
-const startItem = computed(() => {
-  return props.totalItems === 0 ? 0 : (props.currentPage - 1) * props.itemsPerPage + 1;
-});
-
-const endItem = computed(() => {
-  return Math.min(props.currentPage * props.itemsPerPage, props.totalItems);
-});
-
-const visiblePages = computed(() => {
-  const pages: (number | string)[] = [];
-  const total = props.totalPages;
-  let current = props.currentPage;
-
-  if (total <= 7) {
-    for (let i = 1; i <= total; i++) pages.push(i);
-  } else {
-    if (props.showFirstAndLast) {
-      pages.push(1);
-      if (current > 3) pages.push("...");
-    }
-
-    let midStart = current - 1;
-    let midEnd = current + 1;
-
-    if (props.showFirstAndLast) {
-      midStart = Math.max(2, midStart);
-      midEnd = Math.min(total - 1, midEnd);
-    } else {
-      midStart = Math.max(1, midStart);
-      midEnd = Math.min(total, midEnd);
-    }
-
-    if (midEnd - midStart < 2) {
-      if (midStart === (props.showFirstAndLast ? 2 : 1)) {
-        midEnd = midStart + 2;
-      } else {
-        midStart = midEnd - 2;
-      }
-    }
-
-    for (let i = midStart; i <= midEnd; i++) pages.push(i);
-
-    if (props.showFirstAndLast) {
-      if (current < total - 2) pages.push("...");
-      pages.push(total);
-    }
-  }
-
-  return pages;
-});
-
-const selectClasses = [
-  "py-1",
-  "px-2",
-  "rounded-cu",
-  "font-sans",
-  "border-none",
-  "text-charcoal-800",
-  "bg-charcoal bg-opacity-10",
-  "hover:bg-charcoal hover:bg-opacity-20",
-  "focus:outline-none",
-  "focus:ring-2",
-  "focus:ring-primary-300",
-  "border-solid",
-  "border-1",
-  "border-charcoal-300",
-];
+const hexColor = computed(() => colorMap[props.color as keyof typeof colorMap] || props.color);
 </script>
 
 <template>
-  <div
-    v-if="totalPages > 1 || showPageSize"
-    class="w-full flex flex-wrap items-center justify-between p-3 gap-3 box-border"
-  >
-    <span class="hidden md:inline text-sm text-charcoal-600 font-sans">
-      Mostrando {{ startItem }} - {{ endItem }} de {{ totalItems }}
-    </span>
-
-    <div class="flex flex-wrap items-center justify-center gap-2">
-      <div v-if="showPageSize" class="flex items-center gap-2">
-        <span class="text-sm text-charcoal-600 font-sans">Por página:</span>
-        <select
-          :value="itemsPerPage"
-          @change="(e) => handlePageSizeChange(Number((e.target as HTMLSelectElement).value))"
-          :class="selectClasses"
-        >
-          <option v-for="opt in pageSizeOptions" :key="opt" :value="opt">
-            {{ opt }}
-          </option>
-        </select>
-      </div>
-
-      <div class="flex items-center gap-1">
-        <Button
-          @click="handlePageChange(currentPage - 1)"
-          :disabled="currentPage === 1"
-          color="neutral"
-          variant="soft"
-        >
-          Anterior
-        </Button>
-
-        <template v-for="(page, idx) in visiblePages" :key="idx">
-          <span v-if="page === '...'" class="py-1 px-2 text-charcoal-500 text-sm font-sans"
-            >...</span
-          >
-          <Button
-            v-else
-            @click="handlePageChange(Number(page))"
-            :color="currentPage === page ? 'primary' : 'neutral'"
-            :variant="currentPage === page ? 'solid' : 'ghost'"
-          >
-            {{ page }}
-          </Button>
-        </template>
-
-        <Button
-          @click="handlePageChange(currentPage + 1)"
-          :disabled="currentPage === totalPages"
-          color="neutral"
-          variant="soft"
-        >
-          Siguiente
-        </Button>
-      </div>
-    </div>
-  </div>
+  <Pagination
+    :color="hexColor"
+    :variant="props.variant"
+    :currentPage="props.currentPage"
+    :totalPages="props.totalPages"
+    :totalItems="props.totalItems"
+    :itemsPerPage="props.itemsPerPage"
+    :showPageSize="props.showPageSize"
+    :pageSizeOptions="props.pageSizeOptions"
+    :showFirstAndLast="props.showFirstAndLast"
+    @update:currentPage="emit('update:currentPage', $event)"
+    @update:itemsPerPage="emit('update:itemsPerPage', $event)"
+  />
 </template>
 
 <style>

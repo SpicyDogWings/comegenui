@@ -5,18 +5,19 @@ import fg from "fast-glob";
 import { resolve, basename, extname, dirname } from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
+import pkg from "archiver";
+const { create } = pkg;
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const files = fg.sync("./src/components/**/*.ts");
+const packageJson = JSON.parse(fs.readFileSync(resolve(__dirname, "package.json"), "utf-8"));
 
 async function runBuilds() {
-  console.log("📦 Preparando Vue Core...");
-  const vendorDir = resolve(__dirname, "dist/vendor");
-  if (!fs.existsSync(vendorDir)) fs.mkdirSync(vendorDir, { recursive: true });
-  fs.copyFileSync(
-    resolve(__dirname, "node_modules/vue/dist/vue.runtime.global.prod.js"),
-    resolve(vendorDir, "vue-runtime.iife.js"),
-  );
+  console.log("🧹 Limpiando directorio dist...");
+  if (fs.existsSync(resolve(__dirname, "dist"))) {
+    fs.rmSync(resolve(__dirname, "dist"), { recursive: true, force: true });
+  }
+  fs.mkdirSync(resolve(__dirname, "dist"), { recursive: true });
 
   console.log(`🚀 Iniciando exportación de ${files.length} componentes...`);
   for (const file of files) {
@@ -35,20 +36,46 @@ async function runBuilds() {
           formats: ["umd"],
         },
         minify: false,
-        rollupOptions: {
-          external: ["vue"],
-          output: {
-            inlineDynamicImports: true,
-            globals: {
-              vue: "Vue",
-            },
-            manualChunks: undefined,
-          },
-        },
+        //rollupOptions: {
+        //  external: ["vue"],
+        //  output: {
+        //    inlineDynamicImports: true,
+        //    globals: {
+        //      vue: "Vue",
+        //    },
+        //    manualChunks: undefined,
+        //  },
+        //},
       },
     });
   }
   console.log("\n✅ ¡Todos los componentes exportados en /dist!");
 }
 
+async function createZip(version: string) {
+  console.log("📦 Creando zip con solo archivos UMD...");
+  const output = fs.createWriteStream(resolve(__dirname, `dist/canary-ui-${version}.zip`));
+  const archive = create("zip", { zlib: { level: 9 } });
+
+  output.on("close", () => {
+    console.log(`✅ Zip creado: canary-ui-${version}.zip (${archive.pointer()} bytes)`);
+  });
+
+  archive.on("error", (err) => {
+    throw err;
+  });
+
+  archive.pipe(output);
+  
+  // Agregar solo archivos UMD
+  const umdFiles = fs.readdirSync(resolve(__dirname, "dist")).filter(f => f.endsWith(".umd.js"));
+  for (const file of umdFiles) {
+    archive.file(resolve(__dirname, "dist", file), { name: file });
+  }
+  
+  await archive.finalize();
+}
+
+const version = process.argv[2] || packageJson.version;
 await runBuilds();
+await createZip(version);
