@@ -269,7 +269,7 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
           :column="col"
           :index="index"
           :color="props.color"
-          :variant="props.variant"
+          :variant="inputVariant"
           :validation="validationStates.get(getCellKey(index, col.key)) || { success: false, error: null }"
           @edit-start="(e) => {
             const displayIndex = e.index;
