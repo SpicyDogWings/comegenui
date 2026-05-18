@@ -11,9 +11,14 @@ import { useTableData } from "../../composables/useTableData";
 // Add validation state map
 const validationStates = new Map<string, { success: boolean; error: string | null }>();
 
+const getOriginalIndex = (displayIndex: number): number => {
+  const displayRow = pagination.displayData.value[displayIndex];
+  return localData.value.findIndex(row => row === displayRow);
+};
+
 const getCellKey = (rowIndex: number, colKey: string): string => {
-  const globalIndex = (pagination.currentPage.value - 1) * pagination.itemsPerPage.value + rowIndex;
-  return `${globalIndex}-${colKey}`;
+  const originalIndex = getOriginalIndex(rowIndex);
+  return `${originalIndex}-${colKey}`;
 };
 
 interface Column {
@@ -246,20 +251,24 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
           :variant="props.variant"
           :validation="validationStates.get(getCellKey(index, col.key)) || { success: false, error: null }"
           @edit-start="(e) => {
-            const globalIndex = (pagination.currentPage.value - 1) * pagination.itemsPerPage.value + e.index;
-            emit('edit-start', { ...e, index: globalIndex });
+            const displayIndex = e.index;
+            const originalIndex = getOriginalIndex(displayIndex);
+            emit('edit-start', { ...e, index: originalIndex });
           }"
           @edit-save="(e) => {
-            const globalIndex = (pagination.currentPage.value - 1) * pagination.itemsPerPage.value + e.index;
-            const cellKey = getCellKey(e.index, e.column.key);
+            const displayIndex = e.index;
+            const originalIndex = getOriginalIndex(displayIndex);
+            const cellKey = getCellKey(displayIndex, e.column.key);
             validationStates.set(cellKey, { success: true, error: null });
-            updateRow(globalIndex, { [e.column.key]: e.value });
-            emit('edit-save', { ...e, index: globalIndex });
+            updateRow(originalIndex, { [e.column.key]: e.value });
+            emit('edit-save', { ...e, index: originalIndex });
           }"
           @edit-cancel="(e) => {
-            const cellKey = getCellKey(e.index, e.column.key);
+            const displayIndex = e.index;
+            const originalIndex = getOriginalIndex(displayIndex);
+            const cellKey = getCellKey(displayIndex, e.column.key);
             validationStates.set(cellKey, { success: false, error: null });
-            emit('edit-cancel', { ...e, index: globalIndex });
+            emit('edit-cancel', { ...e, index: originalIndex });
           }"
         />
       </template>
