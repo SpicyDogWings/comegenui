@@ -205,6 +205,11 @@ const tableProps = computed(() => ({
 const bgClass = computed(() => getBgClasses(props.color, props.variant, false));
 const fgClass = computed(() => getFgClasses(props.color, props.variant, false));
 
+// Map table variant to input variant (Input doesn't support "solid")
+const inputVariant = computed(() => {
+  return props.variant === 'solid' ? 'soft' : props.variant;
+});
+
 // Handle row events
 const handleRowClick = (row: Record<string, any>, index: number, event: MouseEvent) => {
   emit("row-click", { row, index, event });
@@ -238,7 +243,7 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
           :model-value="searchQuery"
           @update:modelValue="handleSearchUpdate"
           :color="props.color"
-          :variant="props.variant"
+          :variant="inputVariant"
         />
       </slot>
     </div>
