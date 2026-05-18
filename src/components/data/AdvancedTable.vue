@@ -210,6 +210,11 @@ const inputVariant = computed(() => {
   return props.variant === 'solid' ? 'soft' : props.variant;
 });
 
+// Map table variant to pagination variant (Pagination doesn't support "solid")
+const paginationVariant = computed(() => {
+  return props.variant === 'solid' ? 'soft' : props.variant;
+});
+
 // Handle row events
 const handleRowClick = (row: Record<string, any>, index: number, event: MouseEvent) => {
   emit("row-click", { row, index, event });
@@ -294,7 +299,7 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
     <div v-if="props.pagination && pagination.showPaginationControl.value" class="mt-4">
       <Pagination
         :color="props.color"
-        :variant="props.variant"
+        :variant="paginationVariant"
         :current-page="pagination.currentPage.value"
         :total-pages="pagination.totalPages.value"
         :total-items="pagination.totalItems.value"

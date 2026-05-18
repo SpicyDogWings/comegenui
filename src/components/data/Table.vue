@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { getBgClasses } from "../../utils/palette";
+import { transparentize } from "color2k";
 
 interface Column {
   key: string;
@@ -38,6 +39,15 @@ const props = defineProps({
 });
 
 const bgClasses = computed(() => getBgClasses(props.color, props.variant, false));
+
+// For solid variant, use a softer hover effect for rows
+const rowHoverBg = computed(() => {
+  if (props.variant === 'solid') {
+    // Use a semi-transparent version of the color for softer hover
+    return transparentize(props.color, 0.9);
+  }
+  return bgClasses.value.hover;
+});
 
 const tableColumns = computed<Column[]>(() => {
   if (props.columns.length > 0) {
@@ -86,7 +96,7 @@ const getCellValue = (row: Record<string, any>, col: Column): string => {
             v-for="(row, rowIndex) in props.data"
             :key="rowIndex"
             class="border-b-1 border-b-solid border-charcoal-100 hover:bg-[var(--row-hover-bg)] transition-colors"
-            :style="{ '--row-hover-bg': bgClasses.hover }"
+            :style="{ '--row-hover-bg': rowHoverBg }"
           >
             <slot
               name="template"
