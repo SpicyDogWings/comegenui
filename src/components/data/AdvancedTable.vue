@@ -240,15 +240,20 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
           :color="props.color"
           :variant="props.variant"
           :validation="validationStates.get(row) || { success: false, error: null }"
-          @edit-start="(e) => emit('edit-start', e)"
+          @edit-start="(e) => {
+            const globalIndex = (pagination.currentPage.value - 1) * pagination.itemsPerPage.value + e.index;
+            emit('edit-start', { ...e, index: globalIndex });
+          }"
           @edit-save="(e) => {
+            const globalIndex = (pagination.currentPage.value - 1) * pagination.itemsPerPage.value + e.index;
             validationStates.set(e.row, { success: true, error: null });
-            updateRow(e.index, { [e.column.key]: e.value });
-            emit('edit-save', e);
+            updateRow(globalIndex, { [e.column.key]: e.value });
+            emit('edit-save', { ...e, index: globalIndex });
           }"
           @edit-cancel="(e) => {
+            const globalIndex = (pagination.currentPage.value - 1) * pagination.itemsPerPage.value + e.index;
             validationStates.set(e.row, { success: false, error: null });
-            emit('edit-cancel', e);
+            emit('edit-cancel', { ...e, index: globalIndex });
           }"
         />
       </template>
