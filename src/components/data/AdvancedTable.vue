@@ -8,6 +8,9 @@ import { usePagination } from "../../composables/usePagination";
 import { useSearch } from "../../composables/useSearch";
 import { useTableData } from "../../composables/useTableData";
 
+// Add validation state map
+const validationStates = new Map<Record<string, any>, { success: boolean; error: string | null }>();
+
 interface Column {
   key: string;
   label?: string;
@@ -124,7 +127,7 @@ const { data: localData, updateRow, getData, getRow, removeRow, addRow, pushData
 // Use search composable
 const { filteredData: searchedData } = useSearch(localData, {
   searchQuery,
-  searchFields: props.searchFields,
+  searchFields: Array.isArray(props.searchFields) ? props.searchFields : [],
   caseSensitive: false,
 });
 
@@ -236,9 +239,17 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
           :index="index"
           :color="props.color"
           :variant="props.variant"
+          :validation="validationStates.get(row) || { success: false, error: null }"
           @edit-start="(e) => emit('edit-start', e)"
-          @edit-save="(e) => { emit('edit-save', e); updateRow(e.index, { ...row, [col.key]: e.value }); }"
-          @edit-cancel="(e) => emit('edit-cancel', e)"
+          @edit-save="(e) => {
+            validationStates.set(e.row, { success: true, error: null });
+            updateRow(e.index, { [e.column.key]: e.value });
+            emit('edit-save', e);
+          }"
+          @edit-cancel="(e) => {
+            validationStates.set(e.row, { success: false, error: null });
+            emit('edit-cancel', e);
+          }"
         />
       </template>
     </Table>

@@ -24,6 +24,10 @@
       pagination
       items-per-page="5"
       show-page-size
+      search-enabled
+      search-placeholder="Buscar tareas..."
+      search-fields='["title"]'
+      table-max-height="400px"
     ></cu-table>
 
     <script>
@@ -44,6 +48,11 @@
           editable: true,
           inputType: "input",
           validator: (value) => !isNaN(value) && (value === "true" || value === "false")
+        },
+        { 
+          key: "userId", 
+          label: "Usuario ID", 
+          sortable: true
         }
       ];
 
@@ -56,6 +65,11 @@
         
         table.columns = columns;
         table.data = data.slice(0, 50);
+
+        // Add event listeners for search changes
+        table.addEventListener('update:search', (event) => {
+          console.log('Search query changed to:', event.detail);
+        });
 
         // Add event listeners for pagination changes
         table.addEventListener('update:currentPage', (event) => {
@@ -78,17 +92,6 @@
         table.addEventListener('edit-cancel', (event) => {
           console.log('Edit cancelled on row:', event.detail);
         });
-
-        // Example of using data manipulation methods
-        setTimeout(() => {
-          // Add a new row after 3 seconds
-          table.addRow({ id: 999, title: "New task", completed: false });
-          
-          // Update a row after 5 seconds
-          setTimeout(() => {
-            table.updateRow(0, { title: "Updated task" });
-          }, 2000);
-        }, 3000);
       }
 
       document.addEventListener('DOMContentLoaded', init);

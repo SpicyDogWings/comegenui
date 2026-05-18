@@ -40,10 +40,20 @@ export function useSearch(data: any[] | Ref<any[]>, options: UseSearchOptions) {
     const query = caseSensitive ? searchQuery.value : searchQuery.value.toLowerCase();
     
     return unrefedData.filter((item) => {
+      // Ensure item is an object and has keys
+      if (typeof item !== 'object' || item === null) {
+        return false;
+      }
+      
       // Determine which fields to search
-      const fieldsToSearch = searchFields.length > 0 
+      const fieldsToSearch = searchFields && searchFields.length > 0 
         ? searchFields 
         : Object.keys(item);
+
+      // Ensure fieldsToSearch is an array
+      if (!Array.isArray(fieldsToSearch)) {
+        return false;
+      }
 
       return fieldsToSearch.some((key) => {
         const value = item[key];

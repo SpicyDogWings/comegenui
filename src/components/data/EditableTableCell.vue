@@ -42,6 +42,11 @@ const props = defineProps({
     required: false,
     default: "ghost",
   },
+  validation: {
+    type: Object as () => { success: boolean; error: string | null },
+    required: true,
+    default: () => ({ success: false, error: null })
+  }
 });
 
 const emit = defineEmits([
@@ -53,10 +58,6 @@ const emit = defineEmits([
 // State
 const isEditing = ref(false);
 const editValue = ref<string>("");
-const validationState = ref<{ success: boolean; error: string | null }>({
-  success: false,
-  error: null,
-});
 const inputRef = ref<InstanceType<typeof Input | typeof Textarea> | null>(null);
 
 // Initialize edit value
@@ -71,7 +72,6 @@ watch(
 // Methods
 const startEditing = async () => {
   isEditing.value = true;
-  validationState.value = { success: false, error: null };
   emit("edit-start", { row: props.row, column: props.column, index: props.index });
   await nextTick();
   // NEW: Autofocus
@@ -93,11 +93,9 @@ const saveEdit = () => {
   }
 
   if (!isValid) {
-    validationState.value = { success: false, error: "Invalid value" };
     return;
   }
 
-  validationState.value = { success: true, error: null };
   emit("edit-save", { 
     row: props.row, 
     column: props.column, 
@@ -108,7 +106,6 @@ const saveEdit = () => {
 };
 
 const cancelEdit = () => {
-  validationState.value = { success: false, error: null };
   emit("edit-cancel", { row: props.row, column: props.column, index: props.index });
   isEditing.value = false;
 };
@@ -128,10 +125,10 @@ const displayValue = computed(() => {
 });
 
 const validationClass = computed(() => {
-  if (!validationState.value.success && validationState.value.error) {
+  if (!props.validation.success && props.validation.error) {
     return "text-red-500";
   }
-  if (validationState.value.success) {
+  if (props.validation.success) {
     return "text-green-500";
   }
   return "";
@@ -154,7 +151,7 @@ const validationClass = computed(() => {
         @keydown="handleKeyDown"
         noResize
         class="w-full"
-        :color="validationState.error ? '#ff0000' : color"
+        :color="props.validation.error ? '#ff0000' : color"
         :variant="variant"
       />
       <Input
@@ -164,7 +161,7 @@ const validationClass = computed(() => {
         @blur="saveEdit"
         @keydown="handleKeyDown"
         class="w-full"
-        :color="validationState.error ? '#ff0000' : color"
+        :color="props.validation.error ? '#ff0000' : color"
         :variant="variant"
       />
     </template>
