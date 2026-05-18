@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import Table from "./data/AdvancedTable.vue";
+import { colorMap } from "../utils/palette";
 
 interface Column {
   key: string;
@@ -52,12 +53,16 @@ const props = defineProps({
   color: {
     type: String,
     required: false,
-    default: "#2c2c2c",
+    default: "neutral",
+    validator: (value: string) =>
+      ["primary", "neutral", "success", "warning", "danger"].includes(value),
   },
   variant: {
     type: String,
     required: false,
     default: "soft",
+    validator: (value: string) =>
+      ["solid", "outlined", "soft", "ghost", "subtle", "link"].includes(value),
   },
   searchEnabled: { type: Boolean, required: false, default: false },
   searchPlaceholder: { type: String, required: false, default: "Buscar..." },
@@ -73,6 +78,8 @@ const emit = defineEmits([
   "edit-save", 
   "edit-cancel"
 ]);
+
+const hexColor = computed(() => colorMap[props.color as keyof typeof colorMap] || props.color);
 
 const tableRef = ref<InstanceType<typeof Table> | null>(null);
 
@@ -97,7 +104,7 @@ defineExpose({
     :items-per-page="props.itemsPerPage"
     :show-page-size="props.showPageSize"
     :page-size-options="props.pageSizeOptions"
-    :color="props.color"
+    :color="hexColor"
     :variant="props.variant"
     :search-enabled="props.searchEnabled"
     :search-placeholder="props.searchPlaceholder"
