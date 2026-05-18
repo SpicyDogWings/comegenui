@@ -9,7 +9,12 @@ import { useSearch } from "../../composables/useSearch";
 import { useTableData } from "../../composables/useTableData";
 
 // Add validation state map
-const validationStates = new Map<Record<string, any>, { success: boolean; error: string | null }>();
+const validationStates = new Map<string, { success: boolean; error: string | null }>();
+
+const getCellKey = (rowIndex: number, colKey: string): string => {
+  const globalIndex = (pagination.currentPage.value - 1) * pagination.itemsPerPage.value + rowIndex;
+  return `${globalIndex}-${colKey}`;
+};
 
 interface Column {
   key: string;
@@ -239,20 +244,21 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
           :index="index"
           :color="props.color"
           :variant="props.variant"
-          :validation="validationStates.get(row) || { success: false, error: null }"
+          :validation="validationStates.get(getCellKey(index, col.key)) || { success: false, error: null }"
           @edit-start="(e) => {
             const globalIndex = (pagination.currentPage.value - 1) * pagination.itemsPerPage.value + e.index;
             emit('edit-start', { ...e, index: globalIndex });
           }"
           @edit-save="(e) => {
             const globalIndex = (pagination.currentPage.value - 1) * pagination.itemsPerPage.value + e.index;
-            validationStates.set(e.row, { success: true, error: null });
+            const cellKey = getCellKey(e.index, e.column.key);
+            validationStates.set(cellKey, { success: true, error: null });
             updateRow(globalIndex, { [e.column.key]: e.value });
             emit('edit-save', { ...e, index: globalIndex });
           }"
           @edit-cancel="(e) => {
-            const globalIndex = (pagination.currentPage.value - 1) * pagination.itemsPerPage.value + e.index;
-            validationStates.set(e.row, { success: false, error: null });
+            const cellKey = getCellKey(e.index, e.column.key);
+            validationStates.set(cellKey, { success: false, error: null });
             emit('edit-cancel', { ...e, index: globalIndex });
           }"
         />
