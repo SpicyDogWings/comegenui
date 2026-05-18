@@ -28,6 +28,10 @@ const props = defineProps({
     type: Object as () => Column,
     required: true,
   },
+  index: {
+    type: Number,
+    required: true,
+  },
   color: {
     type: String,
     required: false,
@@ -68,7 +72,7 @@ watch(
 const startEditing = async () => {
   isEditing.value = true;
   validationState.value = { success: false, error: null };
-  emit("edit-start", { row: props.row, column: props.column });
+  emit("edit-start", { row: props.row, column: props.column, index: props.index });
   await nextTick();
   // NEW: Autofocus
   inputRef.value?.focus?.();
@@ -97,14 +101,15 @@ const saveEdit = () => {
   emit("edit-save", { 
     row: props.row, 
     column: props.column, 
-    value: editValue.value 
+    value: editValue.value,
+    index: props.index
   });
   isEditing.value = false;
 };
 
 const cancelEdit = () => {
   validationState.value = { success: false, error: null };
-  emit("edit-cancel", { row: props.row, column: props.column });
+  emit("edit-cancel", { row: props.row, column: props.column, index: props.index });
   isEditing.value = false;
 };
 

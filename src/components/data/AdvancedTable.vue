@@ -117,16 +117,16 @@ const emit = defineEmits([
 // Search ref
 const searchQuery = ref("");
 
+// Use table data composable
+const { data: localData, updateRow, getData, getRow, removeRow, addRow, pushData } = 
+  useTableData(toRef(() => props.data));
+
 // Use search composable
-const { filteredData: searchedData } = useSearch(props.data, {
+const { filteredData: searchedData } = useSearch(localData, {
   searchQuery,
   searchFields: props.searchFields,
   caseSensitive: false,
 });
-
-// Use table data composable
-const { data: localData, updateRow, getData, getRow, removeRow, addRow, pushData } = 
-  useTableData(toRef(() => props.data));
 
 // Use pagination composable with searched data
 const pagination = usePagination(searchedData, {
@@ -180,9 +180,11 @@ const handlePageSizeChange = (size: number) => {
 // Table props to pass through
 const tableProps = computed(() => ({
   columns: props.columns,
-  data: localData.value,
+  data: pagination.displayData.value,
   empty: props.empty,
   maxHeight: props.tableMaxHeight,
+  color: props.color,
+  variant: props.variant,
 }));
 
 // Handle row events
@@ -225,16 +227,17 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
       </template>
       
       <!-- Editable cells -->
-      <template v-for="col in props.columns" v-slot:[`cell-${col.key}`]="{ row, value }">
+      <template v-for="col in props.columns" v-slot:[`cell-${col.key}`]="{ row, value, index }">
         <EditableTableCell
           v-if="col.editable"
           :value="value"
           :row="row"
           :column="col"
+          :index="index"
           :color="props.color"
           :variant="props.variant"
           @edit-start="(e) => emit('edit-start', e)"
-          @edit-save="(e) => emit('edit-save', e)"
+          @edit-save="(e) => { emit('edit-save', e); updateRow(e.index, { ...row, [col.key]: e.value }); }"
           @edit-cancel="(e) => emit('edit-cancel', e)"
         />
       </template>

@@ -1,4 +1,4 @@
-import { computed, type Ref } from "vue";
+import { computed, type Ref, unref } from "vue";
 
 /**
  * Search options interface
@@ -27,18 +27,19 @@ interface UseSearchOptions {
  * @param options - Search configuration options
  * @returns Filtered data based on search query
  */
-export function useSearch(data: any[], options: UseSearchOptions) {
+export function useSearch(data: any[] | Ref<any[]>, options: UseSearchOptions) {
   const { searchQuery, searchFields = [], caseSensitive = false } = options;
 
   const filteredData = computed(() => {
+    const unrefedData = unref(data);
     // If no search query, return all data
     if (!searchQuery.value.trim()) {
-      return data;
+      return unrefedData;
     }
 
     const query = caseSensitive ? searchQuery.value : searchQuery.value.toLowerCase();
     
-    return data.filter((item) => {
+    return unrefedData.filter((item) => {
       // Determine which fields to search
       const fieldsToSearch = searchFields.length > 0 
         ? searchFields 

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
+import { getBgClasses } from "../../utils/palette";
 
 interface Column {
   key: string;
@@ -24,7 +25,19 @@ const props = defineProps({
     required: false,
     default: "No hay datos que mostrar",
   },
+  color: {
+    type: String,
+    required: false,
+    default: "#2c2c2c",
+  },
+  variant: {
+    type: String,
+    required: false,
+    default: "soft",
+  },
 });
+
+const bgClasses = computed(() => getBgClasses(props.color, props.variant, false));
 
 const tableColumns = computed<Column[]>(() => {
   if (props.columns.length > 0) {
@@ -67,7 +80,8 @@ const getCellValue = (row: Record<string, any>, col: Column): string => {
           <tr
             v-for="(row, rowIndex) in props.data"
             :key="rowIndex"
-            class="border-b-1 border-b-solid border-charcoal-100 hover:bg-charcoal hover:bg-opacity-10 transition-colors"
+            class="border-b-1 border-b-solid border-charcoal-100 hover:bg-[var(--row-hover-bg)] transition-colors"
+            :style="{ '--row-hover-bg': bgClasses.hover }"
           >
             <slot
               name="template"

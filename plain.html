@@ -3,550 +3,95 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CuTable Custom Element Demo</title>
-    
-    <!-- Load UMD builds -->
+    <title>CuTable Demo</title>
     <script src="dist/CuTable.umd.js"></script>
-    <script src="dist/CuButton.umd.js"></script>
-    <script src="dist/CuInput.umd.js"></script>
-    <script src="dist/CuBadge.umd.js"></script>
-    <script src="dist/CuPagination.umd.js"></script>
-    
     <style>
-      :root {
-        --bg-primary: oklch(0.634 0.133 238.39);
-        --bg-charcoal: oklch(0.381 0.026 237.53);
-        --bg-success: oklch(0.662 0.189 147.14);
-        --bg-warning: oklch(0.774 0.158 78.6);
-        --bg-danger: oklch(0.554 0.209 24.77);
-      }
-      
       body {
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+        font-family: system-ui;
         padding: 20px;
         max-width: 1400px;
         margin: 0 auto;
-        background: #f8f9fa;
-        color: #2c3e50;
-      }
-      
-      h1 {
-        text-align: center;
-        color: #2c3e50;
-        margin-bottom: 30px;
-      }
-      
-      h2 {
-        color: #2c3e50;
-        margin-top: 30px;
-        padding-bottom: 10px;
-        border-bottom: 2px solid #e2e8f0;
-      }
-      
-      h3 {
-        color: #4a5568;
-        margin-top: 20px;
-      }
-      
-      .section {
-        background: white;
-        padding: 25px;
-        margin: 20px 0;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-      }
-      
-      .demo-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 20px;
-        margin: 15px 0;
-      }
-      
-      .demo-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 20px;
-        margin: 15px 0;
-      }
-      
-      .demo-item {
-        background: #f8f9fa;
-        padding: 20px;
-        border-radius: 6px;
-        border: 1px solid #e2e8f0;
-      }
-      
-      cu-button {
-        margin-right: 10px;
-        margin-bottom: 10px;
-      }
-      
-      .code {
-        background: #e2e8f0;
-        padding: 2px 6px;
-        border-radius: 3px;
-        font-family: monospace;
-        font-size: 13px;
-      }
-      
-      .code-block {
-        background: #2d3748;
-        color: #e2e8f0;
-        padding: 12px 16px;
-        border-radius: 6px;
-        font-family: monospace;
-        font-size: 13px;
-        overflow-x: auto;
-        margin: 10px 0;
-      }
-      
-      .description {
-        color: #718096;
-        font-size: 14px;
-        margin: 5px 0 15px 0;
-      }
-      
-      .highlight {
-        background: linear-gradient(120deg, #84cc16 0%, #84cc16 100%);
-        background-repeat: no-repeat;
-        background-size: 100% 4px;
-        background-position: 0 100%;
-        padding-bottom: 4px;
-      }
-      
-      .controls {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-bottom: 20px;
-        padding: 15px;
-        background: #f8f9fa;
-        border-radius: 8px;
-        border: 1px solid #e2e8f0;
-      }
-      
-      .output {
-        background: #2d3748;
-        color: #e2e8f0;
-        padding: 15px;
-        border-radius: 6px;
-        font-family: monospace;
-        font-size: 13px;
-        margin: 15px 0;
-        max-height: 200px;
-        overflow-y: auto;
       }
     </style>
   </head>
   <body>
-    <h1>CuTable Custom Element Demo</h1>
-    
-    <!-- Basic Table Section -->
-    <div class="section">
-      <h2>1. Tabla Básica</h2>
-      <p class="description">Tabla simple con datos estáticos sin paginación ni búsqueda.</p>
-      
-      <cu-table 
-        id="basicTable"
-        color="primary"
-        variant="solid"
-        :columns='[
-          { key: "id", label: "ID", sortable: true, editable: false },
-          { key: "title", label: "Título", sortable: true, editable: false },
-          { key: "completed", label: "Completado", sortable: true, editable: false, formatter: (value) => value ? "Sí" : "No" }
-        ]'
-        empty="Cargando datos..."
-        pagination="true"
-        items-per-page="5"
-      ></cu-table>
-    </div>
-    
-    <!-- Pagination Section -->
-    <div class="section">
-      <h2>2. Tabla con Paginación</h2>
-      <p class="description">Tabla con paginación habilitada y selector de tamaño de página.</p>
-      
-      <cu-table 
-        id="paginationTable"
-        color="primary"
-        variant="solid"
-        :columns='[
-          { key: "id", label: "ID", sortable: true },
-          { key: "title", label: "Título", sortable: true },
-          { key: "completed", label: "Completado", sortable: true, formatter: (value) => value ? "Sí" : "No" }
-        ]'
-        empty="Cargando datos..."
-        pagination="true"
-        items-per-page="5"
-        show-page-size="true"
-        page-size-options='[5, 10, 20]'
-      ></cu-table>
-    </div>
-    
-    <!-- Search Section -->
-    <div class="section">
-      <h2>3. Tabla con Búsqueda</h2>
-      <p class="description">Tabla con funcionalidad de búsqueda en todos los campos.</p>
-      
-      <cu-table 
-        id="searchTable"
-        color="primary"
-        variant="solid"
-        :columns='[
-          { key: "id", label: "ID", sortable: true },
-          { key: "title", label: "Título", sortable: true },
-          { key: "completed", label: "Completado", sortable: true, formatter: (value) => value ? "Sí" : "No" }
-        ]'
-        empty="Cargando datos..."
-        search-enabled="true"
-        search-placeholder="Buscar..."
-        pagination="true"
-        items-per-page="5"
-      ></cu-table>
-    </div>
-    
-    <!-- Editable Section -->
-    <div class="section">
-      <h2>4. Tabla Editable</h2>
-      <p class="description">Tabla con celdas editables. Haz doble clic en una celda editable para modificarla.</p>
-      
-      <div class="output" id="editOutput">
-        // Eventos de edición aparecerán aquí
-      </div>
-      
-      <cu-table 
-        id="editableTable"
-        color="primary"
-        variant="solid"
-        :columns='[
-          { key: "id", label: "ID", sortable: true, editable: false },
-          { key: "title", label: "Título", sortable: true, editable: true },
-          { key: "completed", label: "Completado", sortable: true, editable: true, formatter: (value) => value ? "Sí" : "No" }
-        ]'
-        empty="Cargando datos..."
-        @edit-save="handleEditSave"
-        pagination="true"
-        items-per-page="5"
-      ></cu-table>
-    </div>
-    
-    <!-- Buttons Section -->
-    <div class="section">
-      <h2>5. Tabla con Botones</h2>
-      <p class="description">Tabla con botones en celdas usando el componente cu-button.</p>
-      
-      <div class="output" id="buttonsOutput">
-        // Eventos de botones aparecerán aquí
-      </div>
-      
-      <cu-table 
-        id="buttonsTable"
-        color="primary"
-        variant="solid"
-        :columns='[
-          { key: "id", label: "ID", sortable: true },
-          { key: "title", label: "Título", sortable: true },
-          { key: "completed", label: "Completado", sortable: true, formatter: (value) => value ? "Sí" : "No" },
-          {
-            key: "actions",
-            label: "Acciones",
-            buttons: (row, index) => [
-              {
-                label: "Editar",
-                color: "primary",
-                variant: "soft",
-                onClick: () => editRow(index)
-              },
-              {
-                label: "Eliminar",
-                color: "danger",
-                variant: "soft",
-                onClick: () => deleteRow(index)
-              }
-            ]
-          }
-        ]'
-        empty="Cargando datos..."
-        pagination="true"
-        items-per-page="5"
-      ></cu-table>
-    </div>
-    
-    <!-- Badges Section -->
-    <div class="section">
-      <h2>6. Tabla con Badges</h2>
-      <p class="description">Tabla con badges en celdas usando el componente cu-badge.</p>
-      
-      <cu-table 
-        id="badgesTable"
-        color="primary"
-        variant="solid"
-        :columns='[
-          { key: "id", label: "ID", sortable: true },
-          { key: "title", label: "Título", sortable: true },
-          {
-            key: "completed",
-            label: "Estado",
-            badges: (row) => [
-              {
-                value: row.completed ? "Completado" : "Pendiente",
-                color: row.completed ? "success" : "warning",
-                variant: "soft"
-              }
-            ]
-          }
-        ]'
-        empty="Cargando datos..."
-        pagination="true"
-        items-per-page="5"
-      ></cu-table>
-    </div>
-    
-    <!-- Complete Demo Section -->
-    <div class="section">
-      <h2>7. Demo Completo (Todas las Características)</h2>
-      <p class="description">Tabla que combina todas las características: paginación, búsqueda, edición, botones y badges.</p>
-      
-      <div class="controls">
-        <cu-button id="addRowBtn" color="success" variant="solid">Agregar Fila</cu-button>
-        <cu-button id="removeRowBtn" color="danger" variant="solid">Eliminar Fila</cu-button>
-        <cu-button id="updateRowBtn" color="primary" variant="solid">Actualizar Fila</cu-button>
-        <cu-button id="getDataBtn" color="neutral" variant="outlined">Obtener Datos</cu-button>
-        <cu-button id="getRowBtn" color="neutral" variant="outlined">Obtener Fila 2</cu-button>
-        <cu-button id="pushDataBtn" color="warning" variant="solid">Reemplazar Datos</cu-button>
-      </div>
-      
-      <div class="output" id="completeOutput">
-        // Resultados de las operaciones aparecerán aquí
-      </div>
-      
-      <cu-table 
-        id="completeTable"
-        color="primary"
-        variant="solid"
-        :columns='[
-          { key: "id", label: "ID", sortable: true, editable: false },
-          { key: "name", label: "Nombre", sortable: true, editable: true },
-          { key: "email", label: "Email", sortable: true, editable: true },
-          { key: "age", label: "Edad", sortable: true, editable: true },
-          { key: "role", label: "Rol", sortable: true, editable: true },
-          {
-            key: "status",
-            label: "Estado",
-            badges: (row) => [
-              {
-                value: row.status,
-                color: row.status === "Active" ? "success" : row.status === "Pending" ? "warning" : "danger",
-                variant: "soft"
-              }
-            ]
-          },
-          {
-            key: "actions",
-            label: "Acciones",
-            buttons: (row, index) => [
-              {
-                label: "Editar",
-                color: "primary",
-                variant: "soft",
-                onClick: () => editCompleteRow(index)
-              },
-              {
-                label: "Eliminar",
-                color: "danger",
-                variant: "soft",
-                onClick: () => deleteCompleteRow(index)
-              }
-            ]
-          }
-        ]'
-        :data="sampleUsers"
-        empty="No hay datos que mostrar"
-        pagination="true"
-        items-per-page="5"
-        show-page-size="true"
-        page-size-options='[5, 10, 20, 50]'
-        search-enabled="true"
-        search-placeholder="Buscar en la tabla..."
-        table-max-height="500px"
-        @edit-save="handleCompleteEditSave"
-      ></cu-table>
-    </div>
-    
+    <h1>CuTable Demo</h1>
+    <cu-table
+      id="myTable"
+      color="#2c2c2c"
+      variant="soft"
+      empty="Cargando datos..."
+      pagination
+      items-per-page="5"
+      show-page-size
+    ></cu-table>
+
     <script>
-      // Sample data for complete demo
-      const sampleUsers = [
-        { id: 1, name: "John Doe", email: "john@example.com", age: 28, role: "Developer", status: "Active" },
-        { id: 2, name: "Jane Smith", email: "jane@example.com", age: 32, role: "Designer", status: "Active" },
-        { id: 3, name: "Bob Johnson", email: "bob@example.com", age: 45, role: "Manager", status: "Inactive" },
-        { id: 4, name: "Alice Brown", email: "alice@example.com", age: 24, role: "Intern", status: "Pending" },
-        { id: 5, name: "Charlie Wilson", email: "charlie@example.com", age: 38, role: "CTO", status: "Active" },
-        { id: 6, name: "Diana Miller", email: "diana@example.com", age: 29, role: "Developer", status: "Active" },
-        { id: 7, name: "Ethan Davis", email: "ethan@example.com", age: 31, role: "Designer", status: "Inactive" },
-        { id: 8, name: "Fiona Garcia", email: "fiona@example.com", age: 27, role: "Developer", status: "Active" },
-      ];
-      
-      // Fetch data from JSONPlaceholder
-      let todosData = [];
-      
-      async function fetchTodos() {
-        try {
-          const response = await fetch('https://jsonplaceholder.typicode.com/todos/');
-          todosData = await response.json();
-          
-          console.log('Data loaded:', todosData);
-        } catch (error) {
-          console.error('Error fetching data:', error);
+      const columns = [
+        { key: "id", label: "ID", sortable: true },
+        { 
+          key: "title", 
+          label: "Título", 
+          sortable: true,
+          editable: true,
+          inputType: "input",
+          validator: (value) => value.trim().length > 0
+        },
+        { 
+          key: "completed", 
+          label: "Completado", 
+          sortable: true,
+          editable: true,
+          inputType: "input",
+          validator: (value) => !isNaN(value) && (value === "true" || value === "false")
         }
-      }
-      
-      // Function to update all tables with TODO data
-      function updateAllTables() {
-        const tables = [
-          'basicTable',
-          'paginationTable', 
-          'searchTable',
-          'editableTable',
-          'buttonsTable',
-          'badgesTable'
-        ];
+      ];
+
+      async function init() {
+        await customElements.whenDefined('cu-table');
+        const table = document.getElementById('myTable');
         
-        tables.forEach(id => {
-          const table = document.getElementById(id);
-          if (table && todosData.length > 0) {
-            // Use the pushData method to set data
-            table.pushData([...todosData]);
-          }
+        const response = await fetch('https://jsonplaceholder.typicode.com/todos/');
+        const data = await response.json();
+        
+        table.columns = columns;
+        table.data = data.slice(0, 50);
+
+        // Add event listeners for pagination changes
+        table.addEventListener('update:currentPage', (event) => {
+          console.log('Current page changed to:', event.detail);
         });
-      }
-      
-      // Call fetch on page load and set data when available
-      document.addEventListener('DOMContentLoaded', function() {
-        fetchTodos();
-        
-        // Check if tables are already initialized
-        const checkTablesInterval = setInterval(function() {
-          if (todosData.length > 0) {
-            const basicTable = document.getElementById('basicTable');
-            if (basicTable && typeof basicTable.pushData === 'function') {
-              updateAllTables();
-              clearInterval(checkTablesInterval);
-            }
-          }
-        }, 100);
-        
-        // Also set up a mutation observer as fallback
-        const observer = new MutationObserver(function(mutations) {
-          if (todosData.length > 0) {
-            const basicTable = document.getElementById('basicTable');
-            if (basicTable && typeof basicTable.pushData === 'function') {
-              updateAllTables();
-              observer.disconnect();
-            }
-          }
+
+        table.addEventListener('update:itemsPerPage', (event) => {
+          console.log('Items per page changed to:', event.detail);
         });
-        
-        observer.observe(document.body, { childList: true, subtree: true });
-        
-        // Timeout fallback
-        setTimeout(function() {
-          clearInterval(checkTablesInterval);
-          observer.disconnect();
-        }, 5000);
-      });
-      
-      // Edit event handler
-      function handleEditSave(event) {
-        const output = document.getElementById('editOutput');
-        const row = event.detail.row;
-        const column = event.detail.column;
-        const newValue = event.detail.newValue;
-        
-        output.textContent = `Editado: fila ${row.id}, columna ${column.key}, nuevo valor: "${newValue}"`;
-        console.log('Edit event:', event.detail);
-      }
-      
-      // Button event handlers
-      function editRow(index) {
-        const output = document.getElementById('buttonsOutput');
-        output.textContent = `Editando fila ${index + 1}`;
-        console.log('Edit row:', index);
-      }
-      
-      function deleteRow(index) {
-        const output = document.getElementById('buttonsOutput');
-        output.textContent = `Eliminando fila ${index + 1}`;
-        console.log('Delete row:', index);
-      }
-      
-      // Complete table event handlers
-      function handleCompleteEditSave(event) {
-        const output = document.getElementById('completeOutput');
-        const row = event.detail.row;
-        const column = event.detail.column;
-        const newValue = event.detail.newValue;
-        
-        output.textContent = `Editado: fila ${row.id}, columna ${column.key}, nuevo valor: "${newValue}"`;
-        console.log('Complete edit event:', event.detail);
-      }
-      
-      function editCompleteRow(index) {
-        const output = document.getElementById('completeOutput');
-        output.textContent = `Editando fila ${index + 1}`;
-        console.log('Edit complete row:', index);
-      }
-      
-      function deleteCompleteRow(index) {
-        const output = document.getElementById('completeOutput');
-        output.textContent = `Eliminando fila ${index + 1}`;
-        console.log('Delete complete row:', index);
-      }
-      
-      // DOMContentLoaded event for buttons
-      document.addEventListener('DOMContentLoaded', function() {
-        // Add event listeners for control buttons
-        document.getElementById('addRowBtn').addEventListener('click', function() {
-          const table = document.getElementById('completeTable');
-          const newRow = { id: sampleUsers.length + 1, name: 'Nuevo Usuario', email: 'nuevo@example.com', age: 30, role: 'Developer', status: 'Active' };
-          table.addRow(newRow);
-          document.getElementById('completeOutput').textContent = 'Fila agregada';
+
+        // Add event listeners for edit events
+        table.addEventListener('edit-start', (event) => {
+          console.log('Edit started on row:', event.detail);
         });
-        
-        document.getElementById('removeRowBtn').addEventListener('click', function() {
-          const table = document.getElementById('completeTable');
-          table.removeRow(0);
-          document.getElementById('completeOutput').textContent = 'Fila eliminada';
+
+        table.addEventListener('edit-save', (event) => {
+          console.log('Edit saved:', event.detail);
         });
-        
-        document.getElementById('updateRowBtn').addEventListener('click', function() {
-          const table = document.getElementById('completeTable');
-          table.updateRow(0, { name: 'Usuario Actualizado', email: 'actualizado@example.com' });
-          document.getElementById('completeOutput').textContent = 'Fila actualizada';
+
+        table.addEventListener('edit-cancel', (event) => {
+          console.log('Edit cancelled on row:', event.detail);
         });
-        
-        document.getElementById('getDataBtn').addEventListener('click', function() {
-          const table = document.getElementById('completeTable');
-          const data = table.getData();
-          document.getElementById('completeOutput').textContent = JSON.stringify(data, null, 2);
-        });
-        
-        document.getElementById('getRowBtn').addEventListener('click', function() {
-          const table = document.getElementById('completeTable');
-          const row = table.getRow(1);
-          document.getElementById('completeOutput').textContent = JSON.stringify(row, null, 2);
-        });
-        
-        document.getElementById('pushDataBtn').addEventListener('click', function() {
-          const table = document.getElementById('completeTable');
-          const newData = [
-            { id: 1, name: "Usuario 1", email: "user1@example.com", age: 25, role: "Developer", status: "Active" },
-            { id: 2, name: "Usuario 2", email: "user2@example.com", age: 30, role: "Designer", status: "Pending" }
-          ];
-          table.pushData(newData);
-          document.getElementById('completeOutput').textContent = 'Datos reemplazados';
-        });
-      });
+
+        // Example of using data manipulation methods
+        setTimeout(() => {
+          // Add a new row after 3 seconds
+          table.addRow({ id: 999, title: "New task", completed: false });
+          
+          // Update a row after 5 seconds
+          setTimeout(() => {
+            table.updateRow(0, { title: "Updated task" });
+          }, 2000);
+        }, 3000);
+      }
+
+      document.addEventListener('DOMContentLoaded', init);
     </script>
   </body>
 </html>

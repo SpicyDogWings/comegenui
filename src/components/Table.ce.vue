@@ -1,53 +1,19 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { ref } from "vue";
 import Table from "./data/AdvancedTable.vue";
-import Badge from "./Badge.vue";
-import Button from "./Button.vue";
-import { colorMap } from "../utils/palette";
-
-interface BadgeConfig {
-  value: string;
-  color?: string;
-  variant?: string;
-}
-
-interface ButtonConfig {
-  label: string;
-  color?: string;
-  variant?: string;
-  to?: string;
-  target?: string;
-  onClick?: () => void;
-  html?: boolean;
-}
 
 interface Column {
   key: string;
   label?: string;
   cell?: (row: Record<string, any>) => string | string[];
-  badges?: (row: Record<string, any>, index: number) => BadgeConfig[];
-  buttons?: (row: Record<string, any>, index: number) => ButtonConfig[];
+  // Editable properties
   editable?: boolean | RegExp;
+  inputType?: "input" | "textarea";
   validator?: (value: string, row: Record<string, any>) => boolean;
-  inputType?: 'input' | 'textarea';
   singleClick?: boolean;
 }
 
 const props = defineProps({
-  color: {
-    type: String,
-    required: false,
-    default: "neutral",
-    validator: (value: string) =>
-      ["primary", "neutral", "success", "warning", "danger"].includes(value),
-  },
-  variant: {
-    type: String,
-    required: false,
-    default: "ghost",
-    validator: (value: string) =>
-      ["solid", "soft", "ghost"].includes(value),
-  },
   columns: {
     type: Array as () => Column[],
     required: false,
@@ -59,26 +25,6 @@ const props = defineProps({
     default: () => [],
   },
   empty: {
-    type: String,
-    required: false,
-    default: "",
-  },
-  searchPlaceholder: {
-    type: String,
-    required: false,
-    default: "Buscar...",
-  },
-  searchEnabled: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
-  searchFields: {
-    type: Array as () => string[],
-    required: false,
-    default: () => [],
-  },
-  searchValue: {
     type: String,
     required: false,
     default: "",
@@ -103,90 +49,66 @@ const props = defineProps({
     required: false,
     default: () => [5, 10, 20, 50],
   },
-  tableMaxHeight: {
+  color: {
     type: String,
     required: false,
-    default: "",
+    default: "#2c2c2c",
   },
+  variant: {
+    type: String,
+    required: false,
+    default: "soft",
+  },
+  searchEnabled: { type: Boolean, required: false, default: false },
+  searchPlaceholder: { type: String, required: false, default: "Buscar..." },
+  searchFields: { type: Array as () => string[], required: false, default: () => [] },
+  searchValue: { type: String, required: false, default: "" },
 });
 
-const emit = defineEmits(["update:search", "update:currentPage", "update:itemsPerPage"]);
-
-const hexColor = computed(() => colorMap[props.color as keyof typeof colorMap] || props.color);
-
-// Transform columns to map color names to hex for badges and buttons
-const transformedColumns = computed(() => {
-  return props.columns.map((col) => {
-    const transformedCol = { ...col };
-    if (col.badges) {
-      transformedCol.badges = (row: Record<string, any>, index: number) => {
-        return col.badges!(row, index).map((badge) => ({
-          ...badge,
-          color: badge.color ? colorMap[badge.color as keyof typeof colorMap] || badge.color : undefined,
-        }));
-      };
-    }
-    if (col.buttons) {
-      transformedCol.buttons = (row: Record<string, any>, index: number) => {
-        return col.buttons!(row, index).map((btn) => ({
-          ...btn,
-          color: btn.color ? colorMap[btn.color as keyof typeof colorMap] || btn.color : undefined,
-        }));
-      };
-    }
-    return transformedCol;
-  });
-});
-
-function updateRow(index: number, newData: Record<string, any>) {
-  return tableRef.value?.updateRow(index, newData);
-}
-
-function getData(filterFn?: (item: Record<string, any>) => boolean) {
-  return tableRef.value?.getData(filterFn);
-}
-
-function getRow(index: number) {
-  return tableRef.value?.getRow(index);
-}
-
-function removeRow(index: number) {
-  return tableRef.value?.removeRow(index);
-}
-
-function addRow(newItem: Record<string, any>) {
-  return tableRef.value?.addRow(newItem);
-}
-
-function pushData(items: Record<string, any>[]) {
-  return tableRef.value?.pushData(items);
-}
+const emit = defineEmits([
+  "update:currentPage", 
+  "update:itemsPerPage",
+  "update:search",
+  "edit-start",
+  "edit-save", 
+  "edit-cancel"
+]);
 
 const tableRef = ref<InstanceType<typeof Table> | null>(null);
 
-defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
+// Expose data manipulation methods from AdvancedTable
+defineExpose({
+  updateRow: (rowIndex: number, newData: Record<string, any>) => tableRef.value?.updateRow(rowIndex, newData),
+  getData: () => tableRef.value?.getData(),
+  getRow: (rowIndex: number) => tableRef.value?.getRow(rowIndex),
+  removeRow: (rowIndex: number) => tableRef.value?.removeRow(rowIndex),
+  addRow: (newRow: Record<string, any>) => tableRef.value?.addRow(newRow),
+  pushData: (newData: Record<string, any>[]) => tableRef.value?.pushData(newData),
+});
 </script>
 
 <template>
   <Table
     ref="tableRef"
-    :color="hexColor"
-    :variant="props.variant"
-    :columns="transformedColumns"
+    :columns="props.columns"
     :data="props.data"
     :empty="props.empty"
-    :search-placeholder="props.searchPlaceholder"
-    :search-enabled="props.searchEnabled"
-    :search-fields="props.searchFields"
-    :search-value="props.searchValue"
     :pagination="props.pagination"
     :items-per-page="props.itemsPerPage"
     :show-page-size="props.showPageSize"
     :page-size-options="props.pageSizeOptions"
-    :table-max-height="props.tableMaxHeight"
-    @update:search="emit('update:search', $event)"
+    :color="props.color"
+    :variant="props.variant"
+    :search-enabled="props.searchEnabled"
+    :search-placeholder="props.searchPlaceholder"
+    :search-fields="props.searchFields"
+    :search-value="props.searchValue"
     @update:current-page="emit('update:currentPage', $event)"
     @update:items-per-page="emit('update:itemsPerPage', $event)"
+    @update:search="emit('update:search', $event)"
+    @edit-start="emit('edit-start', $event)"
+    @edit-save="emit('edit-save', $event)"
+    @edit-cancel="emit('edit-cancel', $event)"
   >
     <!-- Header slots -->
     <template #header="{ column }">
@@ -197,38 +119,7 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
       </slot>
     </template>
 
-    <!-- Cell slots -->
-    <template #cell="{ row, column, index }">
-      <slot name="cell" :row="row" :column="column" :index="index">
-        <slot :name="`cell-${column.key}`" :row="row" :column="column" :index="index">
-          <span v-if="column.badges">
-            <Badge
-              v-for="(badge, idx) in column.badges(row, index)"
-              :key="idx"
-              :color="badge.color"
-              :variant="badge.variant"
-            >
-              {{ badge.value }}
-            </Badge>
-          </span>
-          <span v-else-if="column.buttons">
-            <Button
-              v-for="(btn, idx) in column.buttons(row, index)"
-              :key="idx"
-              :color="btn.color"
-              :variant="btn.variant"
-              :to="btn.to"
-              :target="btn.target"
-              @click="btn.onClick?.()"
-            >
-              <span v-if="btn.html" v-html="btn.label" />
-              <span v-else>{{ btn.label }}</span>
-            </Button>
-          </span>
-          <span v-else>{{ column.cell ? column.cell(row) : row[column.key] }}</span>
-        </slot>
-      </slot>
-    </template>
+
 
     <!-- Empty slot -->
     <template #empty>
