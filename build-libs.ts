@@ -50,6 +50,21 @@ async function runBuilds() {
     });
   }
   console.log("\n✅ ¡Todos los componentes exportados en /dist!");
+
+  // Copy README-BUILD.md to dist directory
+  console.log("📄 Copiando README-BUILD.md a /dist...");
+  const readmeSource = resolve(__dirname, "README-BUILD.md");
+  const readmeDest = resolve(__dirname, "dist", "README-BUILD.md");
+  
+  if (fs.existsSync(readmeSource)) {
+    let readmeContent = fs.readFileSync(readmeSource, "utf-8");
+    // Replace version field with actual version
+    readmeContent = readmeContent.replace(/version:\s*$/m, `version: ${version}`);
+    fs.writeFileSync(readmeDest, readmeContent);
+    console.log("✅ README-BUILD.md copiado y versión actualizada");
+  } else {
+    console.warn("⚠️  README-BUILD.md no encontrado, saltando...");
+  }
 }
 
 async function createZip(version: string) {
@@ -71,6 +86,12 @@ async function createZip(version: string) {
   const umdFiles = fs.readdirSync(resolve(__dirname, "dist")).filter(f => f.endsWith(".umd.js"));
   for (const file of umdFiles) {
     archive.file(resolve(__dirname, "dist", file), { name: file });
+  }
+
+  // Agregar README-BUILD.md si existe
+  const readmeInDist = resolve(__dirname, "dist", "README-BUILD.md");
+  if (fs.existsSync(readmeInDist)) {
+    archive.file(readmeInDist, { name: "README-BUILD.md" });
   }
 
   await archive.finalize();
