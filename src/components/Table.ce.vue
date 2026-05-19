@@ -3,6 +3,19 @@ import { ref, computed } from "vue";
 import Table from "./data/AdvancedTable.vue";
 import { colorMap } from "../utils/palette";
 
+interface BadgeConfig {
+  value: string;
+  color?: string;
+  variant?: string;
+}
+
+interface ButtonConfig {
+  label: string;
+  onClick: (row: Record<string, any>) => void;
+  color?: string;
+  variant?: string;
+}
+
 interface Column {
   key: string;
   label?: string;
@@ -12,6 +25,9 @@ interface Column {
   inputType?: "input" | "textarea";
   validator?: (value: string, row: Record<string, any>) => boolean;
   singleClick?: boolean;
+  // Badge and Button properties
+  badges?: (row: Record<string, any>) => BadgeConfig[];
+  buttons?: (row: Record<string, any>) => ButtonConfig[];
 }
 
 const props = defineProps({

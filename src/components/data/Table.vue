@@ -3,11 +3,27 @@ import { computed } from "vue";
 import { getBgClasses } from "../../utils/palette";
 import { transparentize } from "color2k";
 
+interface BadgeConfig {
+  value: string;
+  color?: string;
+  variant?: string;
+}
+
+interface ButtonConfig {
+  label: string;
+  onClick: (row: Record<string, any>) => void;
+  color?: string;
+  variant?: string;
+}
+
 interface Column {
   key: string;
   label?: string;
   width?: string;
   align?: "left" | "center" | "right";
+  // Badge and Button properties
+  badges?: (row: Record<string, any>) => BadgeConfig[];
+  buttons?: (row: Record<string, any>) => ButtonConfig[];
 }
 
 const props = defineProps({
