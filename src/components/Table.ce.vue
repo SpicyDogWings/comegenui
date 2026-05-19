@@ -11,7 +11,9 @@ interface BadgeConfig {
 
 interface ButtonConfig {
   label: string;
-  onClick: (row: Record<string, any>) => void;
+  onClick?: (row: Record<string, any>) => void;
+  to?: string;
+  target?: string;
   color?: string;
   variant?: string;
 }

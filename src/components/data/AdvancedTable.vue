@@ -47,7 +47,9 @@ interface BadgeConfig {
 
 interface ButtonConfig {
   label: string;
-  onClick: (row: Record<string, any>) => void;
+  onClick?: (row: Record<string, any>) => void;
+  to?: string;
+  target?: string;
   color?: string;
   variant?: string;
 }
@@ -315,9 +317,13 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
               :key="`button-${index}-${col.key}-${buttonIndex}`"
               :color="button.color || props.color"
               :variant="button.variant || props.variant"
+              :to="button.to"
+              :target="button.target"
               @click="(e) => {
-                e.stopPropagation();
-                button.onClick(row);
+                if (button.onClick) {
+                  e.stopPropagation();
+                  button.onClick(row);
+                }
               }"
             >
               {{ button.label }}
