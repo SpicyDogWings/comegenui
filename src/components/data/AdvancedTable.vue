@@ -4,10 +4,12 @@ import Table from "./Table.vue";
 import Pagination from "../Pagination.vue";
 import Input from "../form/Input.vue";
 import EditableTableCell from "./EditableTableCell.vue";
+import Button from "../Button.vue";
+import Badge from "../Badge.vue";
 import { usePagination } from "../../composables/usePagination";
 import { useSearch } from "../../composables/useSearch";
 import { useTableData } from "../../composables/useTableData";
-import { getBgClasses, getFgClasses } from "../../utils/palette";
+import { getBgClasses, getFgClasses, colorMap } from "../../utils/palette";
 
 // Add validation state map
 const validationStates = new Map<string, { success: boolean; error: string | null }>();
@@ -250,6 +252,14 @@ const paginationVariant = computed(() => {
   return props.variant === 'solid' ? 'soft' : props.variant;
 });
 
+// Convert color names to hex values for Button and Badge components
+const getHexColor = (color: string): string => {
+  if (color && colorMap[color as keyof typeof colorMap]) {
+    return colorMap[color as keyof typeof colorMap];
+  }
+  return color;
+};
+
 // Handle row events
 const handleRowClick = (row: Record<string, any>, index: number, event: MouseEvent) => {
   emit("row-click", { row, index, event });
@@ -297,74 +307,72 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
       
       <!-- Editable cells -->
       <template v-for="col in props.columns" v-slot:[`cell-${col.key}`]="{ row, value, index }">
-        <div class="flex items-center gap-2">
-          <!-- Render badges if column has badge configuration -->
-          <template v-if="hasBadges(col)">
-            <cu-badge
-              v-for="(badge, badgeIndex) in getCellBadges(col, row)"
-              :key="`badge-${index}-${col.key}-${badgeIndex}`"
-              :color="badge.color || props.color"
-              :variant="badge.variant || props.variant"
-            >
-              {{ badge.value }}
-            </cu-badge>
-          </template>
-          
-          <!-- Render buttons if column has button configuration -->
-          <template v-if="hasButtons(col)">
-            <cu-button
-              v-for="(button, buttonIndex) in getCellButtons(col, row)"
-              :key="`button-${index}-${col.key}-${buttonIndex}`"
-              :color="button.color || props.color"
-              :variant="button.variant || props.variant"
-              :to="button.to"
-              :target="button.target"
-              @click="(e) => {
-                if (button.onClick) {
-                  e.stopPropagation();
-                  button.onClick(row);
-                }
-              }"
-            >
-              {{ button.label }}
-            </cu-button>
-          </template>
-          
-          <!-- Render editable cell if column is editable -->
-          <EditableTableCell
-            v-if="col.editable"
-            :value="value"
-            :row="row"
-            :column="col"
-            :index="index"
-            :color="props.color"
-            :variant="inputVariant"
-            :validation="validationStates.get(getCellKey(index, col.key)) || { success: false, error: null }"
-            @edit-start="(e) => {
-              const displayIndex = e.index;
-              const originalIndex = getOriginalIndex(displayIndex);
-              emit('edit-start', { ...e, index: originalIndex });
+        <!-- Buttons only - no cell value -->
+        <div v-if="hasButtons(col)" class="flex items-center gap-2">
+          <Button
+            v-for="(button, buttonIndex) in getCellButtons(col, row)"
+            :key="`button-${index}-${col.key}-${buttonIndex}`"
+            :color="getHexColor(button.color || props.color)"
+            :variant="button.variant || props.variant"
+            :to="button.to"
+            :target="button.target"
+            @click="(e) => {
+              if (button.onClick) {
+                e.stopPropagation();
+                button.onClick(row);
+              }
             }"
-            @edit-save="(e) => {
-              const displayIndex = e.index;
-              const originalIndex = getOriginalIndex(displayIndex);
-              const cellKey = getCellKey(displayIndex, e.column.key);
-              validationStates.set(cellKey, { success: true, error: null });
-              updateRow(originalIndex, { [e.column.key]: e.value });
-              emit('edit-save', { ...e, index: originalIndex });
-            }"
-            @edit-cancel="(e) => {
-              const displayIndex = e.index;
-              const originalIndex = getOriginalIndex(displayIndex);
-              const cellKey = getCellKey(displayIndex, e.column.key);
-              validationStates.set(cellKey, { success: false, error: null });
-              emit('edit-cancel', { ...e, index: originalIndex });
-            }"
-          />
-          
-          <!-- Render regular cell value if no special rendering -->
-          <span v-else>{{ value }}</span>
+          >
+            {{ button.label }}
+          </Button>
         </div>
+        
+        <!-- Badges only - no cell value -->
+        <div v-else-if="hasBadges(col)" class="flex items-center gap-2">
+          <Badge
+            v-for="(badge, badgeIndex) in getCellBadges(col, row)"
+            :key="`badge-${index}-${col.key}-${badgeIndex}`"
+            :color="getHexColor(badge.color || props.color)"
+            :variant="badge.variant || props.variant"
+          >
+            {{ badge.value }}
+          </Badge>
+        </div>
+        
+        <!-- Editable cell -->
+        <EditableTableCell
+          v-else-if="col.editable"
+          :value="value"
+          :row="row"
+          :column="col"
+          :index="index"
+          :color="props.color"
+          :variant="inputVariant"
+          :validation="validationStates.get(getCellKey(index, col.key)) || { success: false, error: null }"
+          @edit-start="(e) => {
+            const displayIndex = e.index;
+            const originalIndex = getOriginalIndex(displayIndex);
+            emit('edit-start', { ...e, index: originalIndex });
+          }"
+          @edit-save="(e) => {
+            const displayIndex = e.index;
+            const originalIndex = getOriginalIndex(displayIndex);
+            const cellKey = getCellKey(displayIndex, e.column.key);
+            validationStates.set(cellKey, { success: true, error: null });
+            updateRow(originalIndex, { [e.column.key]: e.value });
+            emit('edit-save', { ...e, index: originalIndex });
+          }"
+          @edit-cancel="(e) => {
+            const displayIndex = e.index;
+            const originalIndex = getOriginalIndex(displayIndex);
+            const cellKey = getCellKey(displayIndex, e.column.key);
+            validationStates.set(cellKey, { success: false, error: null });
+            emit('edit-cancel', { ...e, index: originalIndex });
+          }"
+        />
+        
+        <!-- Regular cell value only -->
+        <span v-else>{{ value }}</span>
       </template>
     </Table>
 
