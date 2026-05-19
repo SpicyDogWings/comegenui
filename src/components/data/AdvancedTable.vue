@@ -33,6 +33,17 @@ const hasButtons = (col: Column): boolean => {
   return !!col.buttons;
 };
 
+const hasCellFunction = (col: Column): boolean => {
+  return typeof col.cell === 'function';
+};
+
+const getCellValue = (col: Column, row: Record<string, any>): string | string[] => {
+  if (hasCellFunction(col)) {
+    return col.cell!(row);
+  }
+  return row[col.key];
+};
+
 const getCellBadges = (col: Column, row: Record<string, any>): BadgeConfig[] => {
   return col.badges ? col.badges(row) : [];
 };
@@ -61,6 +72,8 @@ interface Column {
   label?: string;
   width?: string;
   align?: "left" | "center" | "right";
+  // Custom cell rendering
+  cell?: (row: Record<string, any>) => string | string[];
   // Editable properties
   editable?: boolean | RegExp;
   inputType?: "input" | "textarea";
@@ -371,6 +384,8 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
           }"
         />
         
+        <!-- Custom cell rendering -->
+        <span v-else-if="hasCellFunction(col)">{{ getCellValue(col, row) }}</span>
         <!-- Regular cell value only -->
         <span v-else>{{ value }}</span>
       </template>
