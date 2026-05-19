@@ -54,11 +54,11 @@ async function runBuilds() {
 
 async function createZip(version: string) {
   console.log("📦 Creando zip con solo archivos UMD...");
-  const output = fs.createWriteStream(resolve(__dirname, `dist/canary-ui-${version}.zip`));
+  const output = fs.createWriteStream(resolve(__dirname, `dist/comegenui.zip`));
   const archive = create("zip", { zlib: { level: 9 } });
 
   output.on("close", () => {
-    console.log(`✅ Zip creado: canary-ui-${version}.zip (${archive.pointer()} bytes)`);
+    console.log(`✅ Zip creado: comegenui.zip (${archive.pointer()} bytes)`);
   });
 
   archive.on("error", (err) => {
@@ -66,13 +66,13 @@ async function createZip(version: string) {
   });
 
   archive.pipe(output);
-  
+
   // Agregar solo archivos UMD
   const umdFiles = fs.readdirSync(resolve(__dirname, "dist")).filter(f => f.endsWith(".umd.js"));
   for (const file of umdFiles) {
     archive.file(resolve(__dirname, "dist", file), { name: file });
   }
-  
+
   await archive.finalize();
 }
 
