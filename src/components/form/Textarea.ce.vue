@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import Textarea from "./Textarea.vue";
 import { colorMap } from "../../utils/palette";
 
@@ -53,10 +53,18 @@ const props = defineProps({
 });
 
 const hexColor = computed(() => colorMap[props.color as keyof typeof colorMap] || props.color);
+const textareaRef = ref<InstanceType<typeof Textarea> | null>(null);
+
+defineExpose({
+  get: () => textareaRef.value?.get(),
+  set: (value: string | number) => textareaRef.value?.set(value),
+  reset: () => textareaRef.value?.reset(),
+  focus: () => textareaRef.value?.focus(),
+});
 </script>
 
 <template>
-  <Textarea v-bind="{ ...props, color: hexColor }" />
+  <Textarea ref="textareaRef" v-bind="{ ...props, color: hexColor }" />
 </template>
 
 <style>
