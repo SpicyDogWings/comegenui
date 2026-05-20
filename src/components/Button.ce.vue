@@ -52,7 +52,7 @@ const hexColor = computed(() => colorMap[props.color as keyof typeof colorMap] |
     :target="props.target"
     :disabled="props.disabled"
     :hightContrast="props.hightContrast"
-    class="box-border"
+    class="box-border w-fit"
   >
     <slot></slot>
   </Button>
