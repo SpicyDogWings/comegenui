@@ -61,6 +61,7 @@ const fgClass = computed(() =>
     :style="{
       '--btn-fg': fgClass.main,
     }"
+    class="box-border"
   >
     <button
       class="py-2 px-4 rounded-cu border-none text-[var(--btn-fg)] font-sans font-medium bg-[var(--btn-bg)] flex justify-center items-center gap-2 box-border"
