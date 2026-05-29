@@ -1,9 +1,14 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import Checkbox from "./Checkbox.vue";
+import Select from "./Select.vue";
 import { getColorMap } from "../../utils/palette";
 import { getHostTheme } from "../../utils/getHostTheme";
 import { isValidTheme } from "../../config/theme";
+
+interface SelectOption {
+  value: string;
+  label: string;
+}
 
 const props = defineProps({
   theme: {
@@ -13,14 +18,14 @@ const props = defineProps({
     validator: isValidTheme,
   },
   modelValue: {
-    type: Boolean,
+    type: String,
     required: false,
-    default: false,
+    default: "",
   },
-  checked: {
-    type: Boolean,
+  options: {
+    type: Array as () => SelectOption[],
     required: false,
-    default: false,
+    default: () => [],
   },
   color: {
     type: String,
@@ -36,14 +41,14 @@ const props = defineProps({
     validator: (value: string) =>
       ["outlined", "soft", "ghost", "subtle", "none"].includes(value),
   },
+  placeholder: {
+    type: String,
+    required: false,
+  },
   disabled: {
     type: Boolean,
     required: false,
     default: false,
-  },
-  label: {
-    type: String,
-    required: false,
   },
   hightContrast: {
     type: Boolean,
@@ -58,18 +63,21 @@ const hexColor = computed(() => {
   return map[props.color as keyof typeof map] || props.color;
 });
 
-const checkboxRef = ref<InstanceType<typeof Checkbox> | null>(null);
+const selectRef = ref<InstanceType<typeof Select> | null>(null);
 
 defineExpose({
-  get: () => checkboxRef.value?.get(),
-  set: (value: boolean) => checkboxRef.value?.set(value),
-  reset: () => checkboxRef.value?.reset(),
-  focus: () => checkboxRef.value?.focus(),
+  get: () => selectRef.value?.get(),
+  set: (value: string) => selectRef.value?.set(value),
+  reset: () => selectRef.value?.reset(),
+  focus: () => selectRef.value?.focus(),
 });
 </script>
 
 <template>
-  <Checkbox ref="checkboxRef" v-bind="{ ...props, color: hexColor }" />
+  <Select
+    ref="selectRef"
+    v-bind="{ ...props, color: hexColor }"
+  />
 </template>
 
 <style>
