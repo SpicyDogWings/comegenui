@@ -1,4 +1,4 @@
-import Input from "../components/form/Input.vue";
+import Input from "../../components/form/Input.vue";
 
 import type { Meta, StoryObj } from "@storybook/vue3";
 

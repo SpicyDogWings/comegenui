@@ -1,4 +1,4 @@
-import Textarea from "../components/form/Textarea.vue";
+import Textarea from "../../components/form/Textarea.vue";
 
 import type { Meta, StoryObj } from "@storybook/vue3";
 
