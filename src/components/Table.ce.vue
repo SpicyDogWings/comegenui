@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import Table from "./data/AdvancedTable.vue";
-import { colorMap } from "../utils/palette";
+import { getColorMap } from "../utils/palette";
+import { getHostTheme } from "../utils/getHostTheme";
+import { isValidTheme } from "../config/theme";
 
 interface BadgeConfig {
   value: string;
@@ -33,6 +35,12 @@ interface Column {
 }
 
 const props = defineProps({
+  theme: {
+    type: String,
+    required: false,
+    default: "",
+    validator: isValidTheme,
+  },
   columns: {
     type: Array as () => Column[],
     required: false,
@@ -97,7 +105,11 @@ const emit = defineEmits([
   "edit-cancel"
 ]);
 
-const hexColor = computed(() => colorMap[props.color as keyof typeof colorMap] || props.color);
+const effectiveTheme = computed(() => props.theme || getHostTheme());
+const hexColor = computed(() => {
+  const map = getColorMap(effectiveTheme.value as "light" | "dark");
+  return map[props.color as keyof typeof map] || props.color;
+});
 
 const tableRef = ref<InstanceType<typeof Table> | null>(null);
 

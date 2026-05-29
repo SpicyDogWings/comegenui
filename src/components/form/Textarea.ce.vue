@@ -1,9 +1,17 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import Textarea from "./Textarea.vue";
-import { colorMap } from "../../utils/palette";
+import { getColorMap } from "../../utils/palette";
+import { getHostTheme } from "../../utils/getHostTheme";
+import { isValidTheme } from "../../config/theme";
 
 const props = defineProps({
+  theme: {
+    type: String,
+    required: false,
+    default: "",
+    validator: isValidTheme,
+  },
   modelValue: {
     type: String,
     required: false,
@@ -52,7 +60,11 @@ const props = defineProps({
   },
 });
 
-const hexColor = computed(() => colorMap[props.color as keyof typeof colorMap] || props.color);
+const effectiveTheme = computed(() => props.theme || getHostTheme());
+const hexColor = computed(() => {
+  const map = getColorMap(effectiveTheme.value as "light" | "dark");
+  return map[props.color as keyof typeof map] || props.color;
+});
 const textareaRef = ref<InstanceType<typeof Textarea> | null>(null);
 
 defineExpose({

@@ -1,3 +1,0 @@
-# Configuración de entorno - Ruta de destino para deployment
-# Modifica esta línea con la ruta donde quieres copiar el directorio dist/
-DESTINATION_PATH="/ruta/manualmente/ingresada/aqui"
