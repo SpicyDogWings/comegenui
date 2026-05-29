@@ -1,5 +1,6 @@
 import Label from "../../components/Label.vue";
 import Input from "../../components/form/Input.vue";
+import Textarea from "../../components/form/Textarea.vue";
 
 import type { Meta, StoryObj } from "@storybook/vue3";
 
@@ -262,6 +263,42 @@ export const NoLabelText: Story = {
     template: `
       <Label v-bind="args">
         <Input id="slot-only-input" placeholder="Label text is hidden" class="w-64" color="#2c2c2c" variant="none" />
+      </Label>
+    `,
+  }),
+};
+
+// 13. With Textarea
+export const WithTextarea: Story = {
+  args: {
+    label: "Descripción",
+    for: "textarea-desc",
+  },
+  render: (args) => ({
+    components: { Label, Textarea },
+    setup: () => ({ args }),
+    template: `
+      <Label v-bind="args">
+        <Textarea id="textarea-desc" placeholder="Escribe una descripción..." rows="4" class="w-64" color="#2c2c2c" variant="none" />
+      </Label>
+    `,
+  }),
+};
+
+// 14. With Textarea Wrapped
+export const WithTextareaWrapped: Story = {
+  args: {
+    label: "Comentarios",
+    for: "textarea-coments",
+  },
+  render: (args) => ({
+    components: { Label, Textarea },
+    setup: () => ({ args }),
+    template: `
+      <Label v-bind="args">
+        <div class="border border-charcoal-200 rounded-cu p-1">
+          <Textarea id="textarea-coments" placeholder="Comentarios..." rows="3" class="w-64" color="#2c2c2c" variant="none" />
+        </div>
       </Label>
     `,
   }),
