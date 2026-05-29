@@ -105,7 +105,7 @@ defineExpose({
           emit('update:modelValue', selectedValue);
         }
       "
-      class="py-2 px-3 pr-8 rounded-cu font-sans border-none text-[var(--btn-fg)] focus:outline-none focus:ring-2 w-full bg-[var(--btn-bg)] box-border appearance-none cursor-pointer"
+      class="py-2 px-3 pr-8 rounded-cu font-sans border-none text-[var(--btn-fg)] focus:outline-none focus:ring-2 w-full bg-[var(--btn-bg)] box-border appearance-none cursor-pointer transition-transform duration-150 active:scale-99"
       :class="{
         'focus:ring-[var(--btn-bd)]': true,
         'cursor-not-allowed opacity-70': props.disabled,
