@@ -1,6 +1,7 @@
 import Label from "../../components/Label.vue";
 import Input from "../../components/form/Input.vue";
 import Textarea from "../../components/form/Textarea.vue";
+import Checkbox from "../../components/form/Checkbox.vue";
 
 import type { Meta, StoryObj } from "@storybook/vue3";
 
@@ -299,6 +300,23 @@ export const WithTextareaWrapped: Story = {
         <div class="border border-charcoal-200 rounded-cu p-1">
           <Textarea id="textarea-coments" placeholder="Comentarios..." rows="3" class="w-64" color="#2c2c2c" variant="none" />
         </div>
+      </Label>
+    `,
+  }),
+};
+
+// 15. With Checkbox
+export const WithCheckbox: Story = {
+  args: {
+    label: "Acepto los términos",
+    for: "checkbox-terms",
+  },
+  render: (args) => ({
+    components: { Label, Checkbox },
+    setup: () => ({ args }),
+    template: `
+      <Label v-bind="args">
+        <Checkbox id="checkbox-terms" color="#3b82f6" variant="soft" />
       </Label>
     `,
   }),
