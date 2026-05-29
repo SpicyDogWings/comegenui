@@ -31,11 +31,10 @@ const handleClick = () => {
 
 <template>
   <label
-    @click="handleClick"
     :style="{ '--label-fg': props.color }"
-    class="cursor-pointer inline-block font-sans flex flex-col gap-2 text-[var(--label-fg)]"
+    class="inline-block font-sans flex flex-col gap-2 text-[var(--label-fg)]"
   >
-    <span v-if="props.label" class="font-sans">{{ props.label }}</span>
+    <span v-if="props.label" @click="handleClick" class="font-sans w-fit cursor-pointer">{{ props.label }}</span>
     <slot></slot>
   </label>
 </template>

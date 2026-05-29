@@ -16,6 +16,7 @@ Librería de componentes UI como Custom Elements nativos, construidos con Vue 3 
   - [`<cu-input>`](#cu-input)
   - [`<cu-checkbox>`](#cu-checkbox)
   - [`<cu-textarea>`](#cu-textarea)
+  - [`<cu-select>`](#cu-select)
   - [`<cu-label>`](#cu-label)
   - [`<cu-modal>`](#cu-modal)
   - [`<cu-pagination>`](#cu-pagination)
@@ -36,6 +37,7 @@ Cada componente es un archivo **UMD** independiente. Incluye solo los que necesi
 <script src="ruta/CuInput.umd.js"></script>
 <script src="ruta/CuCheckbox.umd.js"></script>
 <script src="ruta/CuTextarea.umd.js"></script>
+<script src="ruta/CuSelect.umd.js"></script>
 <script src="ruta/CuLabel.umd.js"></script>
 <script src="ruta/CuModal.umd.js"></script>
 <script src="ruta/CuPagination.umd.js"></script>
@@ -54,6 +56,7 @@ Cada script registra automáticamente su Custom Element. No necesitas instalar V
 | `CuInput.umd.js` | `<cu-input>` | Input de texto |
 | `CuCheckbox.umd.js` | `<cu-checkbox>` | Checkbox |
 | `CuTextarea.umd.js` | `<cu-textarea>` | Textarea |
+| `CuSelect.umd.js` | `<cu-select>` | Selector |
 | `CuLabel.umd.js` | `<cu-label>` | Label |
 | `CuModal.umd.js` | `<cu-modal>` | Modal |
 | `CuPagination.umd.js` | `<cu-pagination>` | Paginación |
@@ -397,6 +400,52 @@ Checkbox personalizado con label.
   console.log(ta.get());
 </script>
 ```
+
+---
+
+### `<cu-select>`
+
+Selector de opciones con soporte de color, variante e ícono chevron.
+
+#### Props
+
+| Prop | Tipo | Default | Descripción |
+|------|------|---------|-------------|
+| `theme` | `string` | `""` | Tema |
+| `color` | `string` | `"neutral"` | Color semántico |
+| `variant` | `string` | `"ghost"` | `outlined`, `soft`, `ghost`, `subtle`, `none` |
+| `placeholder` | `string` | — | Placeholder |
+| `disabled` | `boolean` | `false` | Deshabilitado |
+| `options` | `array` | `[]` | Opciones `[{ value, label }]` |
+| `modelValue` | `string` | `""` | Valor seleccionado |
+| `hightContrast` | `boolean` | `false` | Alto contraste |
+
+#### Métodos expuestos
+
+| Método | Descripción |
+|--------|-------------|
+| `.get()` | Devuelve el valor seleccionado |
+| `.set(value)` | Asigna un valor |
+| `.reset()` | Limpia la selección |
+| `.focus()` | Enfoca el select |
+
+#### Uso
+
+```html
+<cu-select id="miSelect" placeholder="Seleccione una opción" color="primary" variant="outlined"></cu-select>
+
+<script>
+  const select = document.getElementById('miSelect');
+  select.options = [
+    { value: 'doc', label: 'Documento' },
+    { value: 'pdf', label: 'PDF' },
+  ];
+  select.set('pdf');
+  console.log(select.get()); // "pdf"
+</script>
+```
+
+> **Nota:** Los `options` se pasan como propiedad DOM (no atributo) porque es un array.
 
 ---
 
@@ -759,6 +808,7 @@ Cada archivo UMD incluye el runtime de Vue 3 (no externalizado):
 | CuInput | ~190 kB | ~47 kB |
 | CuCheckbox | ~186 kB | ~46 kB |
 | CuTextarea | ~185 kB | ~45 kB |
+| CuSelect | ~188 kB | ~46 kB |
 | CuLabel | ~167 kB | ~40 kB |
 | CuModal | ~204 kB | ~50 kB |
 | CuPagination | ~197 kB | ~48 kB |

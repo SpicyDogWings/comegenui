@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import Input from "./Input.vue";
 import { getColorMap } from "../../utils/palette";
 import { getHostTheme } from "../../utils/getHostTheme";
@@ -68,10 +68,19 @@ const hexColor = computed(() => {
   const map = getColorMap(effectiveTheme.value as "light" | "dark");
   return map[props.color as keyof typeof map] || props.color;
 });
+
+const inputRef = ref<InstanceType<typeof Input> | null>(null);
+
+defineExpose({
+  get: () => inputRef.value?.get(),
+  set: (value: string | number) => inputRef.value?.set(value),
+  reset: () => inputRef.value?.reset(),
+  focus: () => inputRef.value?.focus(),
+});
 </script>
 
 <template>
-  <Input v-bind="{ ...props, color: hexColor }" />
+  <Input ref="inputRef" v-bind="{ ...props, color: hexColor }" />
 </template>
 
 <style>

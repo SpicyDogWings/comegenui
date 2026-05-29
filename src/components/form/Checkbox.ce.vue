@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import Checkbox from "./Checkbox.vue";
 import { getColorMap } from "../../utils/palette";
 import { getHostTheme } from "../../utils/getHostTheme";
@@ -57,10 +57,19 @@ const hexColor = computed(() => {
   const map = getColorMap(effectiveTheme.value as "light" | "dark");
   return map[props.color as keyof typeof map] || props.color;
 });
+
+const checkboxRef = ref<InstanceType<typeof Checkbox> | null>(null);
+
+defineExpose({
+  get: () => checkboxRef.value?.get(),
+  set: (value: boolean) => checkboxRef.value?.set(value),
+  reset: () => checkboxRef.value?.reset(),
+  focus: () => checkboxRef.value?.focus(),
+});
 </script>
 
 <template>
-  <Checkbox v-bind="{ ...props, color: hexColor }" />
+  <Checkbox ref="checkboxRef" v-bind="{ ...props, color: hexColor }" />
 </template>
 
 <style>
