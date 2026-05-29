@@ -64,12 +64,12 @@ const fgClass = computed(() =>
     class="box-border"
   >
     <button
-      class="py-2 px-4 rounded-cu border-none text-[var(--btn-fg)] font-sans font-medium bg-[var(--btn-bg)] flex justify-center items-center gap-2 box-border"
+      class="py-2 px-4 rounded-cu border-none text-[var(--btn-fg)] font-sans font-medium bg-[var(--btn-bg)] flex justify-center items-center gap-2 box-border transition-transform duration-150"
       :class="{
         'hover:underline hover:decoration-solid hover:decoration-2 visited:text-[var(--btn-fg)]':
           props.variant === 'link',
         'cursor-not-allowed opacity-70': props.disabled,
-        'active:bg-[var(--btn-bg-active)] hover:cursor-pointer':
+        'active:bg-[var(--btn-bg-active)] active:scale-95 hover:cursor-pointer':
           !props.disabled,
       }"
       :style="{
@@ -86,14 +86,14 @@ const fgClass = computed(() =>
   </a>
   <button
     v-else
-    class="py-2 px-4 rounded-cu border-none text-[var(--btn-fg)] font-sans font-medium bg-[var(--btn-bg)] flex justify-center items-center gap-2 box-border"
+    class="py-2 px-4 rounded-cu border-none text-[var(--btn-fg)] font-sans font-medium bg-[var(--btn-bg)] flex justify-center items-center gap-2 box-border transition-transform duration-150"
     :class="{
       'border-1 border-solid border-[var(--btn-bd)]':
         props.variant === 'outlined' || props.variant === 'subtle',
       'hover:underline hover:decoration-solid hover:decoration-2':
         props.variant === 'link',
       'cursor-not-allowed opacity-70': props.disabled,
-      'hover:bg-[var(--btn-bg-hover)] active:bg-[var(--btn-bg-active)] hover:cursor-pointer':
+      'hover:bg-[var(--btn-bg-hover)] active:bg-[var(--btn-bg-active)] active:scale-95 hover:cursor-pointer':
         !props.disabled,
     }"
     :style="{
