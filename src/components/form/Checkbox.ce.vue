@@ -1,9 +1,17 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import Checkbox from "./Checkbox.vue";
-import { colorMap } from "../../utils/palette";
+import { getColorMap } from "../../utils/palette";
+import { getHostTheme } from "../../utils/getHostTheme";
+import { isValidTheme } from "../../config/theme";
 
 const props = defineProps({
+  theme: {
+    type: String,
+    required: false,
+    default: "",
+    validator: isValidTheme,
+  },
   modelValue: {
     type: Boolean,
     required: false,
@@ -44,7 +52,11 @@ const props = defineProps({
   },
 });
 
-const hexColor = computed(() => colorMap[props.color as keyof typeof colorMap] || props.color);
+const effectiveTheme = computed(() => props.theme || getHostTheme());
+const hexColor = computed(() => {
+  const map = getColorMap(effectiveTheme.value as "light" | "dark");
+  return map[props.color as keyof typeof map] || props.color;
+});
 </script>
 
 <template>
