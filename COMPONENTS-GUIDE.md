@@ -17,6 +17,7 @@ Librería de componentes UI como Custom Elements nativos, construidos con Vue 3 
   - [`<cu-checkbox>`](#cu-checkbox)
   - [`<cu-textarea>`](#cu-textarea)
   - [`<cu-select>`](#cu-select)
+  - [`<cu-switch>`](#cu-switch)
   - [`<cu-label>`](#cu-label)
   - [`<cu-modal>`](#cu-modal)
   - [`<cu-pagination>`](#cu-pagination)
@@ -38,6 +39,7 @@ Cada componente es un archivo **UMD** independiente. Incluye solo los que necesi
 <script src="ruta/CuCheckbox.umd.js"></script>
 <script src="ruta/CuTextarea.umd.js"></script>
 <script src="ruta/CuSelect.umd.js"></script>
+<script src="ruta/CuSwitch.umd.js"></script>
 <script src="ruta/CuLabel.umd.js"></script>
 <script src="ruta/CuModal.umd.js"></script>
 <script src="ruta/CuPagination.umd.js"></script>
@@ -57,6 +59,7 @@ Cada script registra automáticamente su Custom Element. No necesitas instalar V
 | `CuCheckbox.umd.js` | `<cu-checkbox>` | Checkbox |
 | `CuTextarea.umd.js` | `<cu-textarea>` | Textarea |
 | `CuSelect.umd.js` | `<cu-select>` | Selector |
+| `CuSwitch.umd.js` | `<cu-switch>` | Switch/Toggle |
 | `CuLabel.umd.js` | `<cu-label>` | Label |
 | `CuModal.umd.js` | `<cu-modal>` | Modal |
 | `CuPagination.umd.js` | `<cu-pagination>` | Paginación |
@@ -449,6 +452,55 @@ Selector de opciones con soporte de color, variante e ícono chevron.
 
 ---
 
+### `<cu-switch>`
+
+Toggle switch con soporte de color, tamaños y animación.
+
+#### Props
+
+| Prop | Tipo | Default | Descripción |
+|------|------|---------|-------------|
+| `theme` | `string` | `""` | Tema |
+| `color` | `string` | `"neutral"` | Color semántico |
+| `size` | `string` | `"md"` | `sm`, `md` |
+| `disabled` | `boolean` | `false` | Deshabilitado |
+| `modelValue` | `boolean` | `false` | Estado del toggle (v-model) |
+| `checked` | `boolean` | `false` | Estado alternativo |
+| `hightContrast` | `boolean` | `false` | Alto contraste |
+
+#### Eventos
+
+| Evento | Payload | Descripción |
+|--------|---------|-------------|
+| `update:modelValue` | `boolean` | Para v-model |
+| `change` | `boolean` | Cuando cambia el estado |
+
+#### Métodos expuestos
+
+| Método | Descripción |
+|--------|-------------|
+| `.get()` | Devuelve el estado actual |
+| `.set(value)` | Asigna un estado |
+| `.reset()` | Pone en `false` |
+| `.focus()` | Enfoca el switch |
+
+#### Uso
+
+```html
+<cu-switch id="miSwitch" color="primary" size="md"></cu-switch>
+
+<script>
+  const sw = document.getElementById('miSwitch');
+  sw.set(true);
+  console.log(sw.get()); // true
+  sw.reset();
+</script>
+```
+
+> **Tamaños:** `sm` (32×20px) y `md` (48×32px).
+
+---
+
 ### `<cu-label>`
 
 Label semántico con auto-foco. Al hacer clic, busca un input hijo y lo enfoca.
@@ -809,6 +861,7 @@ Cada archivo UMD incluye el runtime de Vue 3 (no externalizado):
 | CuCheckbox | ~186 kB | ~46 kB |
 | CuTextarea | ~185 kB | ~45 kB |
 | CuSelect | ~188 kB | ~46 kB |
+| CuSwitch | ~186 kB | ~45 kB |
 | CuLabel | ~167 kB | ~40 kB |
 | CuModal | ~204 kB | ~50 kB |
 | CuPagination | ~197 kB | ~48 kB |
