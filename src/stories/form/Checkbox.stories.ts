@@ -1,4 +1,4 @@
-import Checkbox from "../components/form/Checkbox.vue";
+import Checkbox from "../../components/form/Checkbox.vue";
 
 import type { Meta, StoryObj } from "@storybook/vue3";
 

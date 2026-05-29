@@ -1,49 +1,57 @@
 <script setup lang="ts">
+import { computed } from "vue";
+import Label from "./Label.vue";
+import { getColorMap } from "../utils/palette";
+import { getHostTheme } from "../utils/getHostTheme";
+import { isValidTheme } from "../config/theme";
+
 const props = defineProps({
+  theme: {
+    type: String,
+    required: false,
+    default: "",
+    validator: isValidTheme,
+  },
+  for: {
+    type: String,
+    required: false,
+    default: "",
+  },
   label: {
     type: String,
     required: false,
     default: "",
   },
+  color: {
+    type: String,
+    required: false,
+    default: "neutral",
+    validator: (value: string) =>
+      ["primary", "neutral", "success", "warning", "danger"].includes(value),
+  },
+  hightContrast: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 });
 
-const handleClick = (e: Event) => {
-  const target = e.currentTarget as HTMLElement;
-  const host = target.getRootNode()?.host as HTMLElement | null;
-
-  if (!host) return;
-
-  const allChildren = Array.from(host.children);
-
-  for (const child of allChildren) {
-    let input: HTMLElement | null = null;
-
-    if (child.tagName === "CU-INPUT" || child.tagName === "INPUT") {
-      input = child;
-    } else {
-      input = child.querySelector("cu-input, input");
-    }
-
-    if (input) {
-      if (typeof (input as any).focus === "function") {
-        (input as any).focus();
-        return;
-      }
-      input.focus();
-      return;
-    }
-  }
-};
+const effectiveTheme = computed(() => props.theme || getHostTheme());
+const hexColor = computed(() => {
+  const map = getColorMap(effectiveTheme.value as "light" | "dark");
+  return map[props.color as keyof typeof map] || props.color;
+});
 </script>
 
 <template>
-  <label
-    @click="handleClick"
-    class="cursor-pointer inline-block font-sans flex flex-col gap-2"
+  <Label
+    :for="props.for"
+    :label="props.label"
+    :color="hexColor"
+    :hightContrast="props.hightContrast"
   >
-    <span v-if="props.label" class="font-sans text-charcoal-800">{{ props.label }}</span>
     <slot></slot>
-  </label>
+  </Label>
 </template>
 
 <style>

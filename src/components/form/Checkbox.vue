@@ -45,6 +45,7 @@ const props = defineProps({
 
 const emit = defineEmits(["update:modelValue", "change"]);
 const checked = ref(props.modelValue || props.checked);
+const inputRef = ref<HTMLInputElement | null>(null);
 
 const bgClass = computed(() =>
   getBgClasses(props.color, props.variant, props.hightContrast),
@@ -78,12 +79,14 @@ defineExpose({
     emit("update:modelValue", false);
     emit("change", { target: { checked: false } });
   },
+  focus: () => inputRef.value?.focus(),
 });
 </script>
 
 <template>
   <label class="flex items-center gap-2 cursor-pointer box-border w-fit" :class="{ 'pointer-events-none': props.disabled }">
     <input
+      ref="inputRef"
       type="checkbox"
       :checked="checked"
       @change="
