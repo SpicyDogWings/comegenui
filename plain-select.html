@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="es">    
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CuSelect Demo</title>
+    <script src="dist/CuSelect.umd.js"></script>
+    <style>
+      body {
+        font-family: system-ui;
+        padding: 20px;
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+      
+      .demo-section {
+        margin-bottom: 30px;
+        padding: 20px;
+        border: 1px solid #eee;
+        border-radius: 8px;
+      }
+      
+      h2 {
+        color: #333;
+        margin-top: 0;
+      }
+      
+      .controls {
+        margin: 15px 0;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      
+      button {
+        padding: 8px 16px;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      
+      button:hover {
+        background: #0056b3;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>CuSelect Demo</h1>
+    
+    <div class="demo-section">
+      <h2>Basic Select</h2>
+      <cu-select
+        id="basicSelect"
+        placeholder="Seleccione una opción"
+      ></cu-select>
+      
+      <div class="controls">
+        <button onclick="getBasicValue()">Get Value</button>
+        <button onclick="setBasicValue()">Set Value</button>
+        <button onclick="resetBasic()">Reset</button>
+        <button onclick="focusBasic()">Focus</button>
+      </div>
+      <p id="basicOutput"></p>
+    </div>
+
+    <div class="demo-section">
+      <h2>Select with Color Variants</h2>
+      <cu-select
+        id="primarySelect"
+        placeholder="Primary variant"
+        color="#007bff"
+        variant="outlined"
+      ></cu-select>
+      
+      <cu-select
+        id="successSelect"
+        placeholder="Success variant"
+        color="#28a745"
+        variant="soft"
+        style="margin-top: 10px;"
+      ></cu-select>
+      
+      <cu-select
+        id="warningSelect"
+        placeholder="Warning variant"
+        color="#ffc107"
+        variant="ghost"
+        style="margin-top: 10px;"
+      ></cu-select>
+    </div>
+
+    <div class="demo-section">
+      <h2>Disabled Select</h2>
+      <cu-select
+        id="disabledSelect"
+        placeholder="This select is disabled"
+        disabled
+      ></cu-select>
+    </div>
+
+    <div class="demo-section">
+      <h2>All Variants</h2>
+      <cu-select id="variantGhost" placeholder="ghost" variant="ghost" style="margin-bottom: 10px;"></cu-select>
+      <br/>
+      <cu-select id="variantOutlined" placeholder="outlined" variant="outlined" style="margin-bottom: 10px;"></cu-select>
+      <br/>
+      <cu-select id="variantSoft" placeholder="soft" variant="soft" style="margin-bottom: 10px;"></cu-select>
+      <br/>
+      <cu-select id="variantSubtle" placeholder="subtle" variant="subtle" style="margin-bottom: 10px;"></cu-select>
+      <br/>
+      <cu-select id="variantNone" placeholder="none" variant="none"></cu-select>
+    </div>
+
+    <div class="demo-section">
+      <h2>All Colors</h2>
+      <cu-select id="colorPrimary" placeholder="primary" color="#007bff" style="margin-bottom: 10px;"></cu-select>
+      <br/>
+      <cu-select id="colorNeutral" placeholder="neutral" color="#2c2c2c" style="margin-bottom: 10px;"></cu-select>
+      <br/>
+      <cu-select id="colorSuccess" placeholder="success" color="#28a745" style="margin-bottom: 10px;"></cu-select>
+      <br/>
+      <cu-select id="colorWarning" placeholder="warning" color="#ffc107" style="margin-bottom: 10px;"></cu-select>
+      <br/>
+      <cu-select id="colorDanger" placeholder="danger" color="#dc3545"></cu-select>
+    </div>
+
+    <script>
+      const sampleOptions = [
+        { value: "doc", label: "Documento" },
+        { value: "pdf", label: "PDF" },
+        { value: "img", label: "Imagen" },
+        { value: "xls", label: "Excel" },
+      ];
+
+      async function init() {
+        await customElements.whenDefined('cu-select');
+        console.log('CuSelect component loaded and ready');
+
+        // Set options as DOM properties (arrays can't be set as attributes)
+        document.getElementById('basicSelect').options = sampleOptions;
+        document.getElementById('primarySelect').options = sampleOptions;
+        document.getElementById('successSelect').options = sampleOptions;
+        document.getElementById('warningSelect').options = sampleOptions;
+        document.getElementById('disabledSelect').options = sampleOptions;
+        document.getElementById('variantGhost').options = sampleOptions;
+        document.getElementById('variantOutlined').options = sampleOptions;
+        document.getElementById('variantSoft').options = sampleOptions;
+        document.getElementById('variantSubtle').options = sampleOptions;
+        document.getElementById('variantNone').options = sampleOptions;
+        document.getElementById('colorPrimary').options = sampleOptions;
+        document.getElementById('colorNeutral').options = sampleOptions;
+        document.getElementById('colorSuccess').options = sampleOptions;
+        document.getElementById('colorWarning').options = sampleOptions;
+        document.getElementById('colorDanger').options = sampleOptions;
+      }
+
+      function getBasicValue() {
+        const select = document.getElementById('basicSelect');
+        const value = select.get();
+        document.getElementById('basicOutput').textContent = 'Current value: ' + value;
+        console.log('Select value:', value);
+      }
+
+      function setBasicValue() {
+        const select = document.getElementById('basicSelect');
+        select.set('pdf');
+        document.getElementById('basicOutput').textContent = 'Value set to: pdf';
+      }
+
+      function resetBasic() {
+        const select = document.getElementById('basicSelect');
+        select.reset();
+        document.getElementById('basicOutput').textContent = 'Select has been reset';
+      }
+
+      function focusBasic() {
+        const select = document.getElementById('basicSelect');
+        select.focus();
+        document.getElementById('basicOutput').textContent = 'Select is now focused';
+      }
+
+      document.addEventListener('DOMContentLoaded', init);
+    </script>
+  </body>
+</html>
