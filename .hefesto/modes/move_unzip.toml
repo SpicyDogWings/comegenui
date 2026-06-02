@@ -1,5 +1,5 @@
 name = "Move and Unzip"
-config_file = "move_unzip_values.toml"
+config_file = "move_unzip_values.cfg"
 
 [[sections]]
 name = "Configuration"
@@ -23,3 +23,7 @@ confirm = true
 name = "Move and Unzip"
 command = "rm -rf ${destination_path} && mkdir -p ${destination_path} && mv ${source_zip} ${destination_path} && unzip ${destination_path}/$(basename ${source_zip}) -d ${destination_path}"
 confirm = true
+
+[[actions]]
+name = "Storybook Dev"
+command = "pnpm run storybook"

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, type PropType } from "vue";
 import { getBgClasses, getFgClasses } from "../utils/palette";
 
 const props = defineProps({
@@ -33,6 +33,11 @@ const props = defineProps({
     validator: (value: string) =>
       ["_self", "_blank", "_parent", "_top"].includes(value),
   },
+  type: {
+    type: String as PropType<'button' | 'submit' | 'reset'>,
+    required: false,
+    default: 'button',
+  },
   disabled: {
     type: Boolean,
     required: false,
@@ -64,6 +69,7 @@ const fgClass = computed(() =>
     class="box-border"
   >
     <button
+      :type="props.type"
       class="py-2 px-4 rounded-cu border-none text-[var(--btn-fg)] font-sans font-medium bg-[var(--btn-bg)] flex justify-center items-center gap-2 box-border transition-transform duration-150"
       :class="{
         'hover:underline hover:decoration-solid hover:decoration-2 visited:text-[var(--btn-fg)]':
@@ -86,6 +92,7 @@ const fgClass = computed(() =>
   </a>
   <button
     v-else
+    :type="props.type"
     class="py-2 px-4 rounded-cu border-none text-[var(--btn-fg)] font-sans font-medium bg-[var(--btn-bg)] flex justify-center items-center gap-2 box-border transition-transform duration-150"
     :class="{
       'border-1 border-solid border-[var(--btn-bd)]':
