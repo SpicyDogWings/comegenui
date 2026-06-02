@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CuTextarea Demo</title>
-    <script src="dist/CuTextarea.umd.js"></script>
+    <title>Modal Demo</title>
+    <script src="dist/CuModal.umd.js"></script>
     <style>
       body {
         font-family: system-ui;
@@ -47,112 +47,42 @@
     </style>
   </head>
   <body>
-    <h1>CuTextarea Demo</h1>
+    <h1>Modal Demo</h1>
     
     <div class="demo-section">
-      <h2>Basic Textarea</h2>
-      <cu-textarea
-        id="basicTextarea"
-        placeholder="Type something here..."
-        rows="4"
-      ></cu-textarea>
+      <h2>Modal with Footer</h2>
+      <cu-modal id="myModal" title="My Modal" description="This is a modal with a footer">
+        <div>This is the main content of the modal.</div>
+        <div slot="footer">
+          <button onclick="closeModal()">Cancel</button>
+          <button onclick="handleAction()">Action</button>
+        </div>
+      </cu-modal>
       
       <div class="controls">
-        <button onclick="getBasicValue()">Get Value</button>
-        <button onclick="setBasicValue()">Set Value</button>
-        <button onclick="resetBasic()">Reset</button>
-        <button onclick="focusBasic()">Focus</button>
+        <button onclick="openModal()">Open Modal</button>
       </div>
-      <p id="basicOutput"></p>
-    </div>
-
-    <div class="demo-section">
-      <h2>Textarea with Color Variants</h2>
-      <cu-textarea
-        id="primaryTextarea"
-        placeholder="Primary variant"
-        color="#007bff"
-        variant="outlined"
-        rows="3"
-      ></cu-textarea>
-      
-      <cu-textarea
-        id="successTextarea"
-        placeholder="Success variant"
-        color="#28a745"
-        variant="soft"
-        rows="3"
-        style="margin-top: 10px;"
-      ></cu-textarea>
-      
-      <cu-textarea
-        id="warningTextarea"
-        placeholder="Warning variant"
-        color="#ffc107"
-        variant="ghost"
-        rows="3"
-        style="margin-top: 10px;"
-      ></cu-textarea>
-    </div>
-
-    <div class="demo-section">
-      <h2>Disabled and Readonly Textareas</h2>
-      <cu-textarea
-        id="disabledTextarea"
-        placeholder="This textarea is disabled"
-        disabled
-        rows="3"
-      ></cu-textarea>
-      
-      <cu-textarea
-        id="readonlyTextarea"
-        placeholder="This textarea is readonly"
-        read-only
-        value="You can't edit this content"
-        rows="3"
-        style="margin-top: 10px;"
-      ></cu-textarea>
-    </div>
-
-    <div class="demo-section">
-      <h2>No Resize Textarea</h2>
-      <cu-textarea
-        id="noResizeTextarea"
-        placeholder="This textarea cannot be resized"
-        no-resize
-        rows="3"
-      ></cu-textarea>
     </div>
 
     <script>
       async function init() {
-        await customElements.whenDefined('cu-textarea');
-        console.log('CuTextarea component loaded and ready');
+        await customElements.whenDefined('cu-modal');
+        console.log('Modal component loaded and ready');
       }
 
-      function getBasicValue() {
-        const textarea = document.getElementById('basicTextarea');
-        const value = textarea.get();
-        document.getElementById('basicOutput').textContent = 'Current value: ' + value;
-        console.log('Textarea value:', value);
+      function openModal() {
+        const modal = document.getElementById('myModal');
+        modal.open();
       }
 
-      function setBasicValue() {
-        const textarea = document.getElementById('basicTextarea');
-        textarea.set('This value was set programmatically!');
-        document.getElementById('basicOutput').textContent = 'Value has been set';
+      function closeModal() {
+        const modal = document.getElementById('myModal');
+        modal.close();
       }
 
-      function resetBasic() {
-        const textarea = document.getElementById('basicTextarea');
-        textarea.reset();
-        document.getElementById('basicOutput').textContent = 'Textarea has been reset';
-      }
-
-      function focusBasic() {
-        const textarea = document.getElementById('basicTextarea');
-        textarea.focus();
-        document.getElementById('basicOutput').textContent = 'Textarea is now focused';
+      function handleAction() {
+        alert('Action button clicked!');
+        closeModal();
       }
 
       document.addEventListener('DOMContentLoaded', init);
