@@ -65,6 +65,7 @@ interface ButtonConfig {
   target?: string;
   color?: string;
   variant?: string;
+  disabled?: boolean;
 }
 
 interface Column {
@@ -329,6 +330,7 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
             :variant="button.variant || props.variant"
             :to="button.to"
             :target="button.target"
+            :disabled="button.disabled"
             @click="(e) => {
               if (button.onClick) {
                 e.stopPropagation();

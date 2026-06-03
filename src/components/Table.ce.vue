@@ -18,6 +18,7 @@ interface ButtonConfig {
   target?: string;
   color?: string;
   variant?: string;
+  disabled?: boolean;
 }
 
 interface Column {
