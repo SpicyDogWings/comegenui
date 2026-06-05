@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, type Component } from "vue";
 import Table from "./data/AdvancedTable.vue";
 import { getColorMap } from "../utils/palette";
 import { getHostTheme } from "../utils/getHostTheme";
@@ -13,6 +13,7 @@ interface BadgeConfig {
 
 interface ButtonConfig {
   label: string;
+  icon?: string | Component;
   onClick?: (row: Record<string, any>) => void;
   to?: string;
   target?: string;

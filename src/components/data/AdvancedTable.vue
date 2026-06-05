@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch, toRef } from "vue";
+import { computed, ref, watch, toRef, type Component } from "vue";
 import Table from "./Table.vue";
 import Pagination from "../Pagination.vue";
 import Input from "../form/Input.vue";
@@ -60,6 +60,7 @@ interface BadgeConfig {
 
 interface ButtonConfig {
   label: string;
+  icon?: string | Component;
   onClick?: (row: Record<string, any>) => void;
   to?: string;
   target?: string;
@@ -338,7 +339,9 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
               }
             }"
           >
-            {{ button.label }}
+            <component :is="button.icon" v-if="typeof button.icon === 'object'" class="transform translate-y-0.5" />
+            <span v-else-if="button.icon" v-html="button.icon" class="transform translate-y-0.5"></span>
+            <span>{{ button.label }}</span>
           </Button>
         </div>
         
