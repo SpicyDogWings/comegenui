@@ -59,7 +59,7 @@ interface BadgeConfig {
 }
 
 interface ButtonConfig {
-  label: string;
+  label?: string;
   icon?: string | Component;
   onClick?: (row: Record<string, any>) => void;
   to?: string;
@@ -246,7 +246,7 @@ const handlePageSizeChange = (size: number) => {
 // Table props to pass through
 const tableProps = computed(() => ({
   columns: props.columns,
-  data: pagination.displayData.value,
+  data: props.pagination ? pagination.displayData.value : searchedData.value,
   empty: props.empty,
   maxHeight: props.tableMaxHeight,
   color: props.color,
@@ -341,7 +341,7 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
           >
             <component :is="button.icon" v-if="typeof button.icon === 'object'" class="transform translate-y-0.5" />
             <span v-else-if="button.icon" v-html="button.icon" class="transform translate-y-0.5"></span>
-            <span>{{ button.label }}</span>
+            <span v-if="button.label">{{ button.label }}</span>
           </Button>
         </div>
         

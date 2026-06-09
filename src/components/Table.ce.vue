@@ -12,7 +12,7 @@ interface BadgeConfig {
 }
 
 interface ButtonConfig {
-  label: string;
+  label?: string;
   icon?: string | Component;
   onClick?: (row: Record<string, any>) => void;
   to?: string;
