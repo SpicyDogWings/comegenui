@@ -97,6 +97,7 @@ const props = defineProps({
   searchPlaceholder: { type: String, required: false, default: "Buscar..." },
   searchFields: { type: Array as () => string[], required: false, default: () => [] },
   searchValue: { type: String, required: false, default: "" },
+  filters: { type: Object as () => Record<string, any>, required: false, default: () => ({}) },
 });
 
 const effectiveTheme = computed(() => props.theme || getHostTheme());
@@ -148,6 +149,7 @@ defineExpose({
     :search-placeholder="props.searchPlaceholder"
     :search-fields="props.searchFields"
     :search-value="props.searchValue"
+    :filters="props.filters"
     @update:current-page="ceEmit('update:currentPage', $event)"
     @update:items-per-page="ceEmit('update:itemsPerPage', $event)"
     @update:search="ceEmit('update:search', $event)"

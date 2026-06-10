@@ -174,6 +174,11 @@ const props = defineProps({
     required: false,
     default: "",
   },
+  filters: {
+    type: Object as () => Record<string, any>,
+    required: false,
+    default: () => ({}),
+  },
 });
 
 const emit = defineEmits([
@@ -208,8 +213,23 @@ const { filteredData: searchedData } = useSearch(localData, {
   columns: computed(() => props.columns),
 });
 
-// Use pagination composable with searched data
-const pagination = usePagination(searchedData, {
+// Apply column filters on top of searched data
+const filteredData = computed(() => {
+  const data = searchedData.value;
+  const filters = props.filters;
+  if (!filters || Object.keys(filters).length === 0) return data;
+  return data.filter((row) =>
+    Object.entries(filters).every(([key, filter]) => {
+      const val = row[key];
+      if (typeof filter === "function") return filter(val, row);
+      if (Array.isArray(filter)) return filter.includes(val);
+      return val === filter;
+    })
+  );
+});
+
+// Use pagination composable with filtered data
+const pagination = usePagination(filteredData, {
   initialPage: 1,
   initialItemsPerPage: props.itemsPerPage,
   showPageSize: props.showPageSize,
@@ -260,7 +280,7 @@ const handlePageSizeChange = (size: number) => {
 // Table props to pass through
 const tableProps = computed(() => ({
   columns: props.columns,
-  data: props.pagination ? pagination.displayData.value : searchedData.value,
+  data: props.pagination ? pagination.displayData.value : filteredData.value,
   empty: props.empty,
   maxHeight: props.tableMaxHeight,
   color: props.color,
