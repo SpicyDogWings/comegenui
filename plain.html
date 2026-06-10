@@ -1,88 +1,156 @@
 <!doctype html>
-<html lang="es">    
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Modal Demo</title>
-    <script src="dist/CuModal.umd.js"></script>
+    <title>Table Demo — Edición con Select</title>
+    <script src="dist/CuTable.umd.js"></script>
     <style>
       body {
         font-family: system-ui;
         padding: 20px;
-        max-width: 1400px;
+        max-width: 1200px;
         margin: 0 auto;
       }
-      
+
       .demo-section {
         margin-bottom: 30px;
         padding: 20px;
         border: 1px solid #eee;
         border-radius: 8px;
       }
-      
-      h2 {
+
+      h1 {
         color: #333;
-        margin-top: 0;
       }
-      
-      .controls {
+
+      .instructions {
         margin: 15px 0;
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
+        padding: 12px 16px;
+        background: #f5f5f5;
+        border-radius: 6px;
+        font-size: 14px;
+        color: #555;
       }
-      
-      button {
-        padding: 8px 16px;
-        background: #007bff;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-      }
-      
-      button:hover {
-        background: #0056b3;
+
+      .log {
+        margin-top: 15px;
+        padding: 12px 16px;
+        background: #1a1a2e;
+        border-radius: 6px;
+        font-family: monospace;
+        font-size: 13px;
+        color: #0f0;
+        min-height: 40px;
+        white-space: pre-wrap;
       }
     </style>
   </head>
   <body>
-    <h1>Modal Demo</h1>
-    
+    <h1>Tabla con edición tipo select</h1>
+
     <div class="demo-section">
-      <h2>Modal with Footer</h2>
-      <cu-modal id="myModal" title="My Modal" description="This is a modal with a footer">
-        <div>This is the main content of the modal.</div>
-        <div slot="footer">
-          <button onclick="closeModal()">Cancel</button>
-          <button onclick="handleAction()">Action</button>
-        </div>
-      </cu-modal>
-      
-      <div class="controls">
-        <button onclick="openModal()">Open Modal</button>
+      <div class="instructions">
+        Hacé <strong>doble click</strong> en las celdas de las columnas <em>Rol</em> o <em>Categoría</em> para editarlas con un select.
+        La columna <em>Nombre</em> se edita con input de texto.
+        Las opciones de <em>Categoría</em> cambian según el rol seleccionado.
       </div>
+
+      <cu-table
+        id="miTabla"
+        color="primary"
+        variant="soft"
+        search-enabled
+        pagination
+        items-per-page="5"
+      ></cu-table>
+
+      <div class="log" id="log">// Eventos de edición...</div>
     </div>
 
     <script>
       async function init() {
-        await customElements.whenDefined('cu-modal');
-        console.log('Modal component loaded and ready');
-      }
+        await customElements.whenDefined('cu-table');
 
-      function openModal() {
-        const modal = document.getElementById('myModal');
-        modal.open();
-      }
+        const tabla = document.getElementById('miTabla');
+        const log = document.getElementById('log');
 
-      function closeModal() {
-        const modal = document.getElementById('myModal');
-        modal.close();
-      }
+        function logEvent(msg) {
+          log.textContent += '\n' + msg;
+          log.scrollTop = log.scrollHeight;
+        }
 
-      function handleAction() {
-        alert('Action button clicked!');
-        closeModal();
+        tabla.columns = [
+          { key: 'nombre', label: 'Nombre', editable: true },
+          {
+            key: 'rol',
+            label: 'Rol',
+            editable: true,
+            inputType: 'select',
+            singleClick: true,
+            selectOptions: [
+              { value: 'admin', label: 'Administrador' },
+              { value: 'editor', label: 'Editor' },
+              { value: 'viewer', label: 'Visor' },
+              { value: 'guest', label: 'Invitado' },
+            ],
+          },
+          {
+            key: 'categoria',
+            label: 'Categoría',
+            editable: true,
+            inputType: 'select',
+            selectOptions: (row) => {
+              if (row.rol === 'admin') {
+                return [
+                  { value: 'estrat', label: 'Estratégico' },
+                  { value: 'tactico', label: 'Táctico' },
+                  { value: 'operativo', label: 'Operativo' },
+                ];
+              }
+              if (row.rol === 'editor') {
+                return [
+                  { value: 'contenido', label: 'Contenido' },
+                  { value: 'diseno', label: 'Diseño' },
+                ];
+              }
+              return [
+                { value: 'general', label: 'General' },
+              ];
+            },
+          },
+          {
+            key: 'estado',
+            label: 'Estado',
+            badges: (row) => [{
+              value: row.estado,
+              color: row.estado === 'Activo' ? 'success' : 'warning',
+              variant: 'soft',
+            }],
+          },
+        ];
+
+        tabla.data = [
+          { nombre: 'Juan Pérez', rol: 'admin', categoria: 'estrat', estado: 'Activo' },
+          { nombre: 'María García', rol: 'editor', categoria: 'contenido', estado: 'Activo' },
+          { nombre: 'Carlos López', rol: 'viewer', categoria: 'general', estado: 'Inactivo' },
+          { nombre: 'Ana Martínez', rol: 'admin', categoria: 'tactico', estado: 'Activo' },
+          { nombre: 'Pedro Sánchez', rol: 'guest', categoria: 'general', estado: 'Inactivo' },
+        ];
+
+        tabla.addEventListener('edit-start', (e) => {
+          logEvent(`✏️ Editando: ${e.detail.column.label} — fila ${e.detail.index}`);
+        });
+
+        tabla.addEventListener('edit-save', (e) => {
+          logEvent(`💾 Guardado: ${e.detail.column.label} = "${e.detail.value}" (fila ${e.detail.index})`);
+        });
+
+        tabla.addEventListener('edit-cancel', (e) => {
+          logEvent(`❌ Cancelado: ${e.detail.column.label} (fila ${e.detail.index})`);
+        });
+
+        logEvent('✅ Tabla lista. Hacé doble click en una celda para editar.');
       }
 
       document.addEventListener('DOMContentLoaded', init);

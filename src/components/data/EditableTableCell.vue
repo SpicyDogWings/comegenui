@@ -3,13 +3,20 @@ import { ref, computed, nextTick, watch } from "vue";
 
 import Input from "../form/Input.vue";
 import Textarea from "../form/Textarea.vue";
+import Select from "../form/Select.vue";
+
+interface SelectOption {
+  value: string;
+  label: string;
+}
 
 interface Column {
   key: string;
   label?: string;
   editable?: boolean | RegExp;
   validator?: (value: string, row: Record<string, any>) => boolean;
-  inputType?: "input" | "textarea";
+  inputType?: "input" | "textarea" | "select";
+  selectOptions?: SelectOption[] | ((row: Record<string, any>) => SelectOption[]);
   singleClick?: boolean;
   width?: string;
   align?: "left" | "center" | "right";
@@ -58,7 +65,7 @@ const emit = defineEmits([
 // State
 const isEditing = ref(false);
 const editValue = ref<string>("");
-const inputRef = ref<InstanceType<typeof Input | typeof Textarea> | null>(null);
+const inputRef = ref<InstanceType<typeof Input | typeof Textarea | typeof Select> | null>(null);
 
 // Initialize edit value
 watch(
@@ -121,6 +128,11 @@ const handleKeyDown = (event: KeyboardEvent) => {
 
 // Computed
 const displayValue = computed(() => {
+  if (props.column.inputType === 'select') {
+    const options = resolvedOptions.value;
+    const option = options.find(o => o.value === props.value);
+    return option ? option.label : String(props.value);
+  }
   return props.value != null ? String(props.value) : "";
 });
 
@@ -132,6 +144,13 @@ const validationClass = computed(() => {
     return "text-green-500";
   }
   return "";
+});
+
+const resolvedOptions = computed(() => {
+  if (typeof props.column.selectOptions === "function") {
+    return props.column.selectOptions(props.row);
+  }
+  return props.column.selectOptions || [];
 });
 </script>
 
@@ -150,6 +169,16 @@ const validationClass = computed(() => {
         @blur="saveEdit"
         @keydown="handleKeyDown"
         noResize
+        class="w-full"
+        :color="props.validation.error ? '#ff0000' : color"
+        :variant="variant"
+      />
+      <Select
+        v-else-if="column.inputType === 'select'"
+        ref="inputRef"
+        v-model="editValue"
+        :options="resolvedOptions"
+        @update:model-value="saveEdit"
         class="w-full"
         :color="props.validation.error ? '#ff0000' : color"
         :variant="variant"

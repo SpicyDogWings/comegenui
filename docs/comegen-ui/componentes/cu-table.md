@@ -33,7 +33,8 @@ interface Column {
   label?: string;
   cell?: (row) => string | string[];
   editable?: boolean | RegExp;
-  inputType?: 'input' | 'textarea';
+  inputType?: 'input' | 'textarea' | 'select';
+  selectOptions?: { value: string; label: string }[] | ((row) => { value: string; label: string }[]);
   validator?: (value, row) => boolean;
   singleClick?: boolean;
   badges?: (row) => BadgeConfig[];
@@ -218,4 +219,52 @@ Los botones aceptan SVG en su contenido. Usá `stroke="currentColor"` para que e
     { nombre: 'Proyecto Beta', estado: 'Pendiente' },
   ];
 </script>
+```
+
+## Edición con select
+
+Usá `inputType: 'select'` y `selectOptions` para que una columna editable renderice un `<select>` al hacer doble click:
+
+```html
+<cu-table id="tablaSelect" color="primary" variant="soft"></cu-table>
+
+<script>
+  const ts = document.getElementById('tablaSelect');
+  ts.columns = [
+    { key: 'nombre', label: 'Nombre', editable: true },
+    {
+      key: 'rol',
+      label: 'Rol',
+      editable: true,
+      inputType: 'select',
+      selectOptions: [
+        { value: 'admin', label: 'Administrador' },
+        { value: 'editor', label: 'Editor' },
+        { value: 'viewer', label: 'Visor' },
+      ],
+    },
+  ];
+  ts.data = [
+    { nombre: 'Juan Pérez', rol: 'admin' },
+    { nombre: 'María García', rol: 'editor' },
+  ];
+
+  ts.addEventListener('edit-save', (e) => {
+    console.log('Cambio:', e.detail);
+  });
+</script>
+```
+
+`selectOptions` también puede ser una función que recibe la fila y devuelve opciones dinámicas:
+
+```js
+{
+  key: 'categoria',
+  label: 'Categoría',
+  editable: true,
+  inputType: 'select',
+  selectOptions: (row) => row.rol === 'admin'
+    ? [{ value: 'a', label: 'Categoría A' }, { value: 'b', label: 'Categoría B' }]
+    : [{ value: 'a', label: 'Categoría A' }],
+}
 ```

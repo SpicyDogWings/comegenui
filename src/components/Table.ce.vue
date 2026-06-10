@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, type Component } from "vue";
+import { ref, computed, getCurrentInstance, type Component } from "vue";
 import Table from "./data/AdvancedTable.vue";
 import { getColorMap } from "../utils/palette";
 import { getHostTheme } from "../utils/getHostTheme";
@@ -28,7 +28,8 @@ interface Column {
   cell?: (row: Record<string, any>) => string | string[];
   // Editable properties
   editable?: boolean | RegExp;
-  inputType?: "input" | "textarea";
+  inputType?: "input" | "textarea" | "select";
+  selectOptions?: { value: string; label: string }[] | ((row: Record<string, any>) => { value: string; label: string }[]);
   validator?: (value: string, row: Record<string, any>) => boolean;
   singleClick?: boolean;
   // Badge and Button properties
@@ -98,15 +99,6 @@ const props = defineProps({
   searchValue: { type: String, required: false, default: "" },
 });
 
-const emit = defineEmits([
-  "update:currentPage", 
-  "update:itemsPerPage",
-  "update:search",
-  "edit-start",
-  "edit-save", 
-  "edit-cancel"
-]);
-
 const effectiveTheme = computed(() => props.theme || getHostTheme());
 const hexColor = computed(() => {
   const map = getColorMap(effectiveTheme.value as "light" | "dark");
@@ -114,6 +106,19 @@ const hexColor = computed(() => {
 });
 
 const tableRef = ref<InstanceType<typeof Table> | null>(null);
+const instance = getCurrentInstance();
+
+function ceEmit(event: string, payload: unknown) {
+  const el = instance?.vnode.el as HTMLElement | null;
+  const host = el?.getRootNode()?.host || el;
+  if (host) {
+    host.dispatchEvent(new CustomEvent(event, {
+      detail: payload,
+      bubbles: true,
+      composed: true,
+    }));
+  }
+}
 
 // Expose data manipulation methods from AdvancedTable
 defineExpose({
@@ -142,12 +147,12 @@ defineExpose({
     :search-placeholder="props.searchPlaceholder"
     :search-fields="props.searchFields"
     :search-value="props.searchValue"
-    @update:current-page="emit('update:currentPage', $event)"
-    @update:items-per-page="emit('update:itemsPerPage', $event)"
-    @update:search="emit('update:search', $event)"
-    @edit-start="emit('edit-start', $event)"
-    @edit-save="emit('edit-save', $event)"
-    @edit-cancel="emit('edit-cancel', $event)"
+    @update:current-page="ceEmit('update:currentPage', $event)"
+    @update:items-per-page="ceEmit('update:itemsPerPage', $event)"
+    @update:search="ceEmit('update:search', $event)"
+    @edit-start="ceEmit('edit-start', $event)"
+    @edit-save="ceEmit('edit-save', $event)"
+    @edit-cancel="ceEmit('edit-cancel', $event)"
   >
     <!-- Header slots -->
     <template #header="{ column }">

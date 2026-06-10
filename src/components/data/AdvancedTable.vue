@@ -78,7 +78,8 @@ interface Column {
   cell?: (row: Record<string, any>) => string | string[];
   // Editable properties
   editable?: boolean | RegExp;
-  inputType?: "input" | "textarea";
+  inputType?: "input" | "textarea" | "select";
+  selectOptions?: { value: string; label: string }[] | ((row: Record<string, any>) => { value: string; label: string }[]);
   validator?: (value: string, row: Record<string, any>) => boolean;
   singleClick?: boolean;
   // Badge and Button properties
