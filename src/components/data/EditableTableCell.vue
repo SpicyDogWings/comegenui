@@ -64,6 +64,7 @@ const emit = defineEmits([
 
 // State
 const isEditing = ref(false);
+const saving = ref(false);
 const editValue = ref<string>("");
 const inputRef = ref<InstanceType<typeof Input | typeof Textarea | typeof Select> | null>(null);
 
@@ -78,6 +79,7 @@ watch(
 
 // Methods
 const startEditing = async () => {
+  if (saving.value) return;
   isEditing.value = true;
   emit("edit-start", { row: props.row, column: props.column, index: props.index });
   await nextTick();
@@ -103,6 +105,7 @@ const saveEdit = () => {
     return;
   }
 
+  saving.value = true;
   emit("edit-save", { 
     row: props.row, 
     column: props.column, 
@@ -110,6 +113,7 @@ const saveEdit = () => {
     index: props.index
   });
   isEditing.value = false;
+  nextTick(() => { saving.value = false; });
 };
 
 const cancelEdit = () => {
@@ -176,9 +180,9 @@ const resolvedOptions = computed(() => {
       <Select
         v-else-if="column.inputType === 'select'"
         ref="inputRef"
-        v-model="editValue"
+        :model-value="editValue"
         :options="resolvedOptions"
-        @update:model-value="saveEdit"
+        @update:model-value="(val) => { editValue = val; saveEdit(); }"
         class="w-full"
         :color="props.validation.error ? '#ff0000' : color"
         :variant="variant"
