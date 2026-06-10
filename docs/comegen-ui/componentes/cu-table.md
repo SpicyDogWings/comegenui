@@ -223,7 +223,7 @@ Los botones aceptan SVG en su contenido. Usá `stroke="currentColor"` para que e
 
 ## Edición con select
 
-Usá `inputType: 'select'` y `selectOptions` para que una columna editable renderice un `<select>` al hacer doble click:
+Usá `inputType: 'select'` y `selectOptions` para que una columna editable renderice un `<select>` al hacer doble click. En modo vista se muestra la `label` de la opción seleccionada (no el `value`).
 
 ```html
 <cu-table id="tablaSelect" color="primary" variant="soft"></cu-table>

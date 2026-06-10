@@ -141,6 +141,7 @@ defineExpose({
     :items-per-page="props.itemsPerPage"
     :show-page-size="props.showPageSize"
     :page-size-options="props.pageSizeOptions"
+    :theme="effectiveTheme"
     :color="hexColor"
     :variant="props.variant"
     :search-enabled="props.searchEnabled"

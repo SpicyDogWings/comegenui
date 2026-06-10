@@ -9,7 +9,8 @@ import Badge from "../Badge.vue";
 import { usePagination } from "../../composables/usePagination";
 import { useSearch } from "../../composables/useSearch";
 import { useTableData } from "../../composables/useTableData";
-import { getBgClasses, getFgClasses, colorMap } from "../../utils/palette";
+import { getBgClasses, getFgClasses, getColorMap } from "../../utils/palette";
+import { isValidTheme } from "../../config/theme";
 
 // Add validation state map
 const validationStates = new Map<string, { success: boolean; error: string | null }>();
@@ -88,6 +89,12 @@ interface Column {
 }
 
 const props = defineProps({
+  theme: {
+    type: String,
+    required: false,
+    default: "light",
+    validator: (value: string) => isValidTheme(value),
+  },
   // Table props - pass through to Table.vue
   columns: {
     type: Array as () => Column[],
@@ -270,8 +277,9 @@ const paginationVariant = computed(() => {
 
 // Convert color names to hex values for Button and Badge components
 const getHexColor = (color: string): string => {
-  if (color && colorMap[color as keyof typeof colorMap]) {
-    return colorMap[color as keyof typeof colorMap];
+  const themeMap = getColorMap(props.theme as any);
+  if (color && themeMap[color as keyof typeof themeMap]) {
+    return themeMap[color as keyof typeof themeMap];
   }
   return color;
 };
