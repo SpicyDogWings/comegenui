@@ -69,6 +69,10 @@
         items-per-page="5"
       ></cu-table>
 
+      <div class="controls" style="margin-top: -10px; margin-bottom: 10px;">
+        <button onclick="toggleLoading()">Toggle Loading</button>
+      </div>
+
       <div class="log" id="log">// Eventos de edición...</div>
     </div>
 
@@ -155,6 +159,8 @@
           tabla.data.push({ nombre: 'María García', rol: '3', categoria: '31', estado: 'Activo' });
         }, 100);
 
+        window.tabla = tabla;
+
         tabla.addEventListener('edit-start', (e) => {
           logEvent(`✏️ Editando: ${e.detail.column.label} — fila ${e.detail.index}`);
         });
@@ -168,6 +174,12 @@
         });
 
         logEvent('✅ Tabla lista. Hacé doble click en una celda para editar.');
+      }
+
+      function toggleLoading() {
+        const t = window.tabla;
+        if (!t) return;
+        t.loading = !t.loading;
       }
 
       document.addEventListener('DOMContentLoaded', init);

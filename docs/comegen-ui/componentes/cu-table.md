@@ -25,6 +25,7 @@ Tabla avanzada con búsqueda, edición inline, paginación, badges y botones por
 | `search-fields` | `array` | `[]` | Columnas en las que buscar (vacío = todas) |
 | `search-value` | `string` | `""` | Valor de búsqueda inicial |
 | `filters` | `object` | `{}` | Filtros por columna: `{ estado: "Activo", tipo: ["1","3"] }` |
+| `loading` | `boolean` | `false` | Muestra una barra de carga animada en el tope de la tabla |
 
 > **`search-fields` como atributo HTML:** Vue CE no parsea JSON automáticamente. Si lo pasás como atributo HTML, usá siempre `search-fields='["campo1","campo2"]'`. Cuando lo seteás por JS, pasá un array real: `tabla.searchFields = ["nombre", "tipo"]`.
 
@@ -253,6 +254,25 @@ tabla.searchFields = ['nombre', 'tipo'];
 ```
 
 Probá buscar: `"certificado"`, `"matricula"` (sin acento), `"hoja"`, `"grado"` — todas funcionan.
+
+---
+
+## Estado de carga
+
+Cuando `loading` es `true`, se muestra una barra delgada animada en el tope de la tabla:
+
+```html
+<cu-table id="miTabla" search-enabled pagination :loading="true"></cu-table>
+<!-- o por JS -->
+<script>
+  const t = document.getElementById('miTabla');
+  t.loading = true;   // muestra la barra
+  // ... después de cargar datos
+  t.loading = false;  // oculta la barra
+</script>
+```
+
+La barra usa el color de texto de la tabla (`fgClasses.main`) y un ciclo de 3s.
 
 ---
 

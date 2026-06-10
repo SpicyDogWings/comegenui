@@ -50,6 +50,11 @@ const props = defineProps({
     required: false,
     default: "",
   },
+  loading: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 });
 
 const emit = defineEmits<{
@@ -84,7 +89,17 @@ const getCellValue = (row: Record<string, any>, col: Column): string => {
 </script>
 
 <template>
-  <div class="flex flex-col overflow-hidden max-w-full">
+  <div class="flex flex-col overflow-hidden max-w-full relative" :style="{ '--loader-color': fgClasses.main }">
+    <div
+      v-if="loading"
+      class="absolute top-0 left-0 right-0 z-30 overflow-hidden"
+      style="height: 3px;"
+    >
+      <div
+        class="absolute top-0 h-full"
+        style="width: 60%; background: linear-gradient(90deg, transparent 0%, var(--loader-color) 50%, transparent 100%); animation: cu-loader 3s ease-in-out infinite;"
+      />
+    </div>
     <div class="overflow-auto rounded-cu">
       <table class="w-full border-collapse">
         <thead>
@@ -125,7 +140,7 @@ const getCellValue = (row: Record<string, any>, col: Column): string => {
             </th>
           </tr>
         </thead>
-        <tbody>
+        <tbody :class="{ 'opacity-40 pointer-events-none': props.loading }">
           <tr
             v-for="(row, rowIndex) in props.data"
             :key="rowIndex"
@@ -179,4 +194,12 @@ const getCellValue = (row: Record<string, any>, col: Column): string => {
 
 <style>
 @unocss-placeholder;
+</style>
+
+<style>
+@keyframes cu-loader {
+  0% { left: -100%; }
+  50% { left: 0%; }
+  100% { left: 100%; }
+}
 </style>

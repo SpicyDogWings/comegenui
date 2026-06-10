@@ -98,6 +98,7 @@ const props = defineProps({
   searchFields: { type: Array as () => string[], required: false, default: () => [] },
   searchValue: { type: String, required: false, default: "" },
   filters: { type: Object as () => Record<string, any>, required: false, default: () => ({}) },
+  loading: { type: Boolean, required: false, default: false },
 });
 
 const effectiveTheme = computed(() => props.theme || getHostTheme());
@@ -150,6 +151,7 @@ defineExpose({
     :search-fields="props.searchFields"
     :search-value="props.searchValue"
     :filters="props.filters"
+    :loading="props.loading"
     @update:current-page="ceEmit('update:currentPage', $event)"
     @update:items-per-page="ceEmit('update:itemsPerPage', $event)"
     @update:search="ceEmit('update:search', $event)"

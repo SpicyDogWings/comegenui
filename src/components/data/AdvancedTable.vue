@@ -180,6 +180,11 @@ const props = defineProps({
     required: false,
     default: () => ({}),
   },
+  loading: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 });
 
 const emit = defineEmits([
@@ -336,6 +341,7 @@ const tableProps = computed(() => ({
   variant: props.variant,
   sortBy: sortBy.value,
   sortDir: sortDir.value,
+  loading: props.loading,
 }));
 
 // Color classes using palette utilities
