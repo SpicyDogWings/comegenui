@@ -55,7 +55,9 @@
         La columna <em>Nombre</em> se edita con input de texto.
         Las opciones de <em>Categoría</em> cambian según el rol seleccionado.
         <br><br>
-        <strong>Búsqueda:</strong> probá <em>"Administrador"</em>, <em>"Estratégico"</em> o <em>"matricula"</em> — busca por la label. Notá que <em>"matricula"</em> (sin acento) NO encuentra <em>"Matrícula"</em> (con acento).
+        <strong>Búsqueda:</strong> probá <em>"Administrador"</em>, <em>"Estratégico"</em> o <em>"matricula"</em> — busca por la label (sin acentos también).
+        <br><br>
+        <strong>Orden:</strong> click en <em>Nombre</em> o <em>Estado</em> para ordenar ascendente/descendente.
       </div>
 
       <cu-table
@@ -83,7 +85,7 @@
         }
 
         tabla.columns = [
-          { key: 'nombre', label: 'Nombre', editable: true },
+          { key: 'nombre', label: 'Nombre', editable: true, sortable: 'string' },
           {
             key: 'rol',
             label: 'Rol',
@@ -124,6 +126,7 @@
           {
             key: 'estado',
             label: 'Estado',
+            sortable: 'string',
             badges: (row) => [{
               value: row.estado,
               color: row.estado === 'Activo' ? 'success' : 'warning',

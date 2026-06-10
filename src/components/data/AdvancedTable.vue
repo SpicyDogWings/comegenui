@@ -83,6 +83,7 @@ interface Column {
   selectOptions?: { value: string; label: string }[] | ((row: Record<string, any>) => { value: string; label: string }[]);
   validator?: (value: string, row: Record<string, any>) => boolean;
   singleClick?: boolean;
+  sortable?: boolean | "string" | "number" | "boolean";
   // Badge and Button properties
   badges?: (row: Record<string, any>) => BadgeConfig[];
   buttons?: (row: Record<string, any>) => ButtonConfig[];
@@ -228,8 +229,56 @@ const filteredData = computed(() => {
   );
 });
 
-// Use pagination composable with filtered data
-const pagination = usePagination(filteredData, {
+// Sort state
+const sortBy = ref("");
+const sortDir = ref<"" | "asc" | "desc">("");
+
+function handleSort(key: string) {
+  if (sortBy.value !== key) {
+    sortBy.value = key;
+    sortDir.value = "asc";
+  } else if (sortDir.value === "asc") {
+    sortDir.value = "desc";
+  } else {
+    sortBy.value = "";
+    sortDir.value = "";
+  }
+}
+
+function detectSortType(col: Column): "string" | "number" | "boolean" {
+  if (col.sortable === "string" || col.sortable === "number" || col.sortable === "boolean") return col.sortable;
+  const first = filteredData.value[0];
+  if (first) {
+    const val = first[col.key];
+    if (typeof val === "number") return "number";
+    if (typeof val === "boolean") return "boolean";
+  }
+  return "string";
+}
+
+const sortedData = computed(() => {
+  const data = filteredData.value;
+  if (!sortBy.value || !sortDir.value) return data;
+  const col = props.columns.find((c) => c.key === sortBy.value);
+  if (!col?.sortable) return data;
+  const type = detectSortType(col);
+  const sorted = [...data].sort((a, b) => {
+    const va = a[sortBy.value];
+    const vb = b[sortBy.value];
+    let cmp = 0;
+    if (type === "number") cmp = (Number(va) || 0) - (Number(vb) || 0);
+    else if (type === "boolean") cmp = (va === vb) ? 0 : va ? -1 : 1;
+    else cmp = String(va ?? "").localeCompare(String(vb ?? ""), "es");
+    return sortDir.value === "desc" ? -cmp : cmp;
+  });
+  return sorted;
+});
+
+// Watch sort changes to reset page
+watch([sortBy, sortDir], () => pagination.setCurrentPage(1));
+
+// Use pagination composable with sorted data
+const pagination = usePagination(sortedData, {
   initialPage: 1,
   initialItemsPerPage: props.itemsPerPage,
   showPageSize: props.showPageSize,
@@ -285,6 +334,8 @@ const tableProps = computed(() => ({
   maxHeight: props.tableMaxHeight,
   color: props.color,
   variant: props.variant,
+  sortBy: sortBy.value,
+  sortDir: sortDir.value,
 }));
 
 // Color classes using palette utilities
@@ -349,7 +400,7 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
     </div>
     
     <!-- Table Component -->
-    <Table v-bind="tableProps">
+    <Table v-bind="tableProps" @sort-change="handleSort">
       <!-- Pass through all slots from parent -->
       <template v-for="(_, slotName) in $slots" v-slot:[slotName]="slotProps">
         <slot :name="slotName" v-bind="slotProps"></slot>

@@ -24,6 +24,7 @@ Tabla avanzada con búsqueda, edición inline, paginación, badges y botones por
 | `search-placeholder` | `string` | `"Buscar..."` | Placeholder del buscador |
 | `search-fields` | `array` | `[]` | Columnas en las que buscar (vacío = todas) |
 | `search-value` | `string` | `""` | Valor de búsqueda inicial |
+| `filters` | `object` | `{}` | Filtros por columna: `{ estado: "Activo", tipo: ["1","3"] }` |
 
 > **`search-fields` como atributo HTML:** Vue CE no parsea JSON automáticamente. Si lo pasás como atributo HTML, usá siempre `search-fields='["campo1","campo2"]'`. Cuando lo seteás por JS, pasá un array real: `tabla.searchFields = ["nombre", "tipo"]`.
 
@@ -255,6 +256,49 @@ Probá buscar: `"certificado"`, `"matricula"` (sin acento), `"hoja"`, `"grado"` 
 
 ---
 
+## Filtros por columna
+
+Además del buscador textual, podés aplicar filtros por columna con la prop `filters`. Los filtros se combinan con la búsqueda (AND):
+
+```js
+tabla.filters = {
+  estado: 'Activo',            // match exacto
+  tipo: ['1', '3'],            // match contra cualquier valor del array
+  nombre: (val, row) => val.length > 5,  // función custom
+};
+```
+
+```html
+<cu-table id="tablaFiltros" search-enabled pagination></cu-table>
+
+<script>
+  const t = document.getElementById('tablaFiltros');
+  t.columns = [
+    { key: 'nombre', label: 'Nombre' },
+    { key: 'estado', label: 'Estado' },
+  ];
+  t.data = [
+    { nombre: 'Juan Pérez', estado: 'Activo' },
+    { nombre: 'María García', estado: 'Inactivo' },
+  ];
+
+  // Mostrar solo activos
+  t.filters = { estado: 'Activo' };
+
+  // También funciona combinado con búsqueda textual
+  // t.filters = { estado: 'Activo' }
+  // escribir "Juan" en el buscador → solo activos que contengan "Juan"
+</script>
+```
+
+Los filtros se agregan al pipeline después de la búsqueda y antes del ordenamiento:
+
+```
+data → search → filters → sort → pagination
+```
+
+---
+
 ## Edición con select
 
 Usá `inputType: 'select'` y `selectOptions` para que una columna editable renderice un `<select>` al hacer clic. En modo vista se muestra la **label** de la opción seleccionada, no el value.
@@ -408,6 +452,54 @@ tabla.addEventListener('edit-save', (e) => {
   // Marcar la fila como editada (aparece el botón guardar)
   tabla.updateRow(e.detail.index, { editado: true });
 });
+```
+
+---
+
+## Ordenamiento por columna
+
+Cualquier columna puede ser ordenable agregando `sortable` a su definición:
+
+```js
+{ key: 'nombre', label: 'Nombre', sortable: 'string' }
+{ key: 'edad', label: 'Edad', sortable: 'number' }
+{ key: 'activo', label: 'Activo', sortable: 'boolean' }
+{ key: 'ciudad', label: 'Ciudad', sortable: true }  // auto-detecta
+```
+
+### Tipos soportados
+
+| Valor | Comportamiento |
+|-------|---------------|
+| `'string'` | Orden alfabético (`localeCompare`, español) |
+| `'number'` | Orden numérico |
+| `'boolean'` | `false` primero, `true` después |
+| `true` | Auto-detecta por el tipo del primer valor en los datos |
+
+### Comportamiento
+
+- Hacé click en el header de una columna ordenable.
+- Ciclo: `↕` (sin orden) → `▲` (ascendente) → `▼` (descendente) → `↕` (sin orden).
+- El ordenamiento se aplica sobre los datos ya filtrados por búsqueda y filtros.
+- Al cambiar el orden, la paginación vuelve a la página 1.
+
+```html
+<cu-table id="tablaOrdenable" search-enabled pagination></cu-table>
+
+<script>
+  const t = document.getElementById('tablaOrdenable');
+  t.columns = [
+    { key: 'nombre', label: 'Nombre', sortable: 'string' },
+    { key: 'edad', label: 'Edad', sortable: 'number' },
+    { key: 'activo', label: 'Activo', sortable: 'boolean' },
+    { key: 'tipo', label: 'Tipo', editable: true, inputType: 'select' },
+  ];
+  t.data = [
+    { nombre: 'Ana', edad: 30, activo: true, tipo: '1' },
+    { nombre: 'Carlos', edad: 25, activo: false, tipo: '2' },
+    { nombre: 'Beatriz', edad: 35, activo: true, tipo: '1' },
+  ];
+</script>
 ```
 
 ---
