@@ -195,11 +195,17 @@ const searchQuery = ref("");
 const { data: localData, updateRow, getData, getRow, removeRow, addRow, pushData } = 
   useTableData(toRef(() => props.data));
 
-// Use search composable
+const normalizedSearchFields = computed(() => {
+  const raw = props.searchFields;
+  if (Array.isArray(raw)) return raw;
+  if (typeof raw === "string") try { return JSON.parse(raw); } catch { return []; }
+  return [];
+});
+
 const { filteredData: searchedData } = useSearch(localData, {
   searchQuery,
-  searchFields: Array.isArray(props.searchFields) ? props.searchFields : [],
-  caseSensitive: false,
+  searchFields: normalizedSearchFields,
+  columns: computed(() => props.columns),
 });
 
 // Use pagination composable with searched data

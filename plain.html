@@ -51,9 +51,11 @@
 
     <div class="demo-section">
       <div class="instructions">
-        Hacé <strong>doble click</strong> en las celdas de las columnas <em>Rol</em> o <em>Categoría</em> para editarlas con un select.
+        Hacé <strong>doble click</strong> en las celdas de <em>Rol</em> o <em>Categoría</em> para editarlas con un select.
         La columna <em>Nombre</em> se edita con input de texto.
         Las opciones de <em>Categoría</em> cambian según el rol seleccionado.
+        <br><br>
+        <strong>Búsqueda:</strong> probá <em>"Administrador"</em>, <em>"Estratégico"</em> o <em>"matricula"</em> — busca por la label. Notá que <em>"matricula"</em> (sin acento) NO encuentra <em>"Matrícula"</em> (con acento).
       </div>
 
       <cu-table
@@ -89,10 +91,10 @@
             inputType: 'select',
             singleClick: true,
             selectOptions: [
-              { value: 'admin', label: 'Administrador' },
-              { value: 'editor', label: 'Editor' },
-              { value: 'viewer', label: 'Visor' },
-              { value: 'guest', label: 'Invitado' },
+              { value: '1', label: 'Administrador' },
+              { value: '2', label: 'Editor' },
+              { value: '3', label: 'Visor' },
+              { value: '4', label: 'Invitado' },
             ],
           },
           {
@@ -101,21 +103,21 @@
             editable: true,
             inputType: 'select',
             selectOptions: (row) => {
-              if (row.rol === 'admin') {
+              if (row.rol === '1') {
                 return [
-                  { value: 'estrat', label: 'Estratégico' },
-                  { value: 'tactico', label: 'Táctico' },
-                  { value: 'operativo', label: 'Operativo' },
+                  { value: '10', label: 'Estratégico' },
+                  { value: '11', label: 'Táctico' },
+                  { value: '12', label: 'Operativo' },
                 ];
               }
-              if (row.rol === 'editor') {
+              if (row.rol === '2') {
                 return [
-                  { value: 'contenido', label: 'Contenido' },
-                  { value: 'diseno', label: 'Diseño' },
+                  { value: '20', label: 'Contenido' },
+                  { value: '21', label: 'Diseño' },
                 ];
               }
               return [
-                { value: 'general', label: 'General' },
+                { value: '30', label: 'General' },
               ];
             },
           },
@@ -131,12 +133,24 @@
         ];
 
         tabla.data = [
-          { nombre: 'Juan Pérez', rol: 'admin', categoria: 'estrat', estado: 'Activo' },
-          { nombre: 'María García', rol: 'editor', categoria: 'contenido', estado: 'Activo' },
-          { nombre: 'Carlos López', rol: 'viewer', categoria: 'general', estado: 'Inactivo' },
-          { nombre: 'Ana Martínez', rol: 'admin', categoria: 'tactico', estado: 'Activo' },
-          { nombre: 'Pedro Sánchez', rol: 'guest', categoria: 'general', estado: 'Inactivo' },
+          { nombre: 'Juan Pérez', rol: '1', categoria: '10', estado: 'Activo' },
+          { nombre: 'Hoja de Matrícula', rol: '3', categoria: '30', estado: 'Activo' },
+          { nombre: 'Carlos López', rol: '3', categoria: '30', estado: 'Inactivo' },
+          { nombre: 'Ana Martínez', rol: '1', categoria: '11', estado: 'Activo' },
+          { nombre: 'Pedro Sánchez', rol: '4', categoria: '30', estado: 'Inactivo' },
         ];
+
+        // Agregar opción extra para "tipo" que contenga "matrícula"
+        setTimeout(() => {
+          const col = tabla.columns.find(c => c.key === 'categoria');
+          if (col) {
+            const existing = typeof col.selectOptions === 'function' ? col.selectOptions({ rol: '3' }) : col.selectOptions;
+            if (!existing.find(o => o.value === '31')) {
+              existing.push({ value: '31', label: 'Por Matrícula' });
+            }
+          }
+          tabla.data.push({ nombre: 'María García', rol: '3', categoria: '31', estado: 'Activo' });
+        }, 100);
 
         tabla.addEventListener('edit-start', (e) => {
           logEvent(`✏️ Editando: ${e.detail.column.label} — fila ${e.detail.index}`);
