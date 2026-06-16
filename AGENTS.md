@@ -11,6 +11,8 @@ src/components/
 └── MiComponente.ts       # defineCustomElement + registro
 ```
 
+Un componente puede ser solo `.vue` si es interno (sin CE público), como `Dropdown.vue` (motor genérico).
+
 ### Responsabilidades
 
 **`MiComponente.vue`** — El componente real
@@ -19,6 +21,7 @@ src/components/
 - Contiene toda la lógica de negocio, template, y estilos
 - No sabe nada de Custom Elements ni temas
 - Espera `color` como hex string (`#1774A4`)
+- **Usa sintaxis Vue `#nombre` para slots** (ej: `<template #toggle>`)
 
 **`MiComponente.ce.vue`** — Wrapper para Custom Element
 - Importa `MiComponente.vue`
@@ -26,23 +29,34 @@ src/components/
 - Resuelve el tema activo via `getHostTheme()` y convierte colores a hex con `getColorMap()`
 - Pasa props explícitamente al `.vue` (NO usar `v-bind="{...props}"`)
 - Forwardea slots y eventos nativos de Custom Elements
+- **Usa `slot="nombre"` (HTML nativo) en vez de `#nombre` (Vue)**, porque los CE wrappers se renderizan en shadow DOM y deben usar la sintaxis de Custom Elements para proyectar slots
 - Expone métodos via `defineExpose` delegando al ref interno
 
 **`MiComponente.ts`** — Punto de entrada para el build
 - `defineCustomElement(MiComponente.ce.vue)`
 - `customElements.define("cu-mi-componente", ...)`
 
-### Ejemplo: Dropdown
+### Ejemplo: DropdownMenu
 
 ```
-Dropdown.ts          → defineCustomElement, register "cu-dropdown"
-Dropdown.ce.vue      → import Dropdown from "./Dropdown.vue"
-                        props: theme, color (semántico), variant, label, items
-                        computed: hexColor (getColorMap + getHostTheme)
-                        template: <Dropdown :color="hexColor" :items="items" ...>
-Dropdown.vue          → import Button from "./Button.vue"
-                        props: color (hex), variant, items: DropdownItem[]
-                        toda la lógica: open/close/toggle, onClickOutside, items rendering
+Dropdown.vue           → Motor genérico (toggle + panel + posicionamiento + click-outside)
+                          Props: color (hex), variant, label, placement, offset, menuBg
+                          Slots: #toggle (con slot props: toggle, isOpen), #default (panel)
+                          Sin items, sin iconos, sin divisores.
+                          NO tiene .ts ni .ce — es Vue interno.
+
+DropdownMenu.vue       → Menú con items (usa Dropdown.vue)
+                          Props: mismos que Dropdown + items (DropdownItem[])
+                          Slots: forwardea #toggle (con slot props), #default (fallback)
+                          NO tiene .ts ni .ce.
+
+DropdownMenu.ce.vue    → Wrapper CE del menú
+                          Importa DropdownMenu.vue
+                          Props: theme, color (semántico), variant, label, items, etc.
+                          Template: <DropdownMenu :color="hexColor" :items="resolvedItems" ...>
+                          Slot forwarding con slot="nombre" (HTML), no #nombre (Vue)
+
+DropdownMenu.ts        → defineCustomElement("cu-dropdown-menu", DropdownMenu.ce.vue)
 ```
 
 ### Build
@@ -58,3 +72,4 @@ Dropdown.vue          → import Button from "./Button.vue"
 3. Los `.vue` aceptan colores en hex, los `.ce.vue` convierten de nombre semántico a hex
 4. Los `.ts` son siempre 3 líneas: import, define, export
 5. No usar `v-bind="{...props}"` en `.ce.vue` — pasar props explícitamente (como hace Table.ce.vue)
+6. **Slots:** los `.vue` usan `#nombre` (sintaxis Vue), los `.ce.vue` usan `slot="nombre"` (HTML nativo)

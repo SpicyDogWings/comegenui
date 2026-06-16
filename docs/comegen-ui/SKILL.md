@@ -66,7 +66,8 @@ Cada `<script>` registra automáticamente su Custom Element. Los componentes est
 | `CuModal.umd.js` | `<cu-modal>` | Modal |
 | `CuPagination.umd.js` | `<cu-pagination>` | Paginación |
 | `CuTable.umd.js` | `<cu-table>` | Tabla avanzada |
-| `CuDropdown.umd.js` | `<cu-dropdown>` | Dropdown |
+| `CuDropdownMenu.umd.js` | `<cu-dropdown-menu>` | Menú desplegable |
+| `CuDropdown.umd.js` | `<cu-dropdown>` | Dropdown (obsoleto) |
 
 ### Esperar a que los Custom Elements estén listos
 
@@ -148,7 +149,7 @@ Cada componente que usa color acepta dos props clave:
 
 ### Variantes disponibles por componente
 
-| Variante | Button | Alert | Badge | Input | Checkbox | Textarea | Pagination | Table | Dropdown |
+| Variante | Button | Alert | Badge | Input | Checkbox | Textarea | Pagination | Table | DropdownMenu |
 |----------|--------|-------|-------|-------|----------|----------|------------|-------|----------|
 | `solid` | ✓ | ✓ | ✓ | — | — | — | — | ✓ | ✓ |
 | `outlined` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
@@ -233,7 +234,7 @@ Cada archivo UMD incluye el runtime de Vue 3 (no externalizado):
 | CuModal | ~204 kB | ~50 kB |
 | CuPagination | ~197 kB | ~48 kB |
 | CuTable | ~256 kB | ~57 kB |
-| CuDropdown | ~200 kB | ~48 kB |
+| CuDropdownMenu | ~204 kB | ~49 kB |
 
 ### Compatibilidad
 
@@ -258,4 +259,4 @@ Cada archivo UMD incluye el runtime de Vue 3 (no externalizado):
 - [\<cu-modal\>](componentes/cu-modal.md) — Modal
 - [\<cu-pagination\>](componentes/cu-pagination.md) — Paginación
 - [\<cu-table\>](componentes/cu-table.md) — Tabla avanzada
-- [\<cu-dropdown\>](componentes/cu-dropdown.md) — Dropdown
+- [\<cu-dropdown-menu\>](componentes/cu-dropdown-menu.md) — Menú desplegable con items

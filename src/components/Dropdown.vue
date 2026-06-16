@@ -2,18 +2,6 @@
 import { ref, onMounted, onUnmounted } from "vue";
 import Button from "./Button.vue";
 
-interface DropdownItem {
-  label?: string;
-  icon?: string;
-  href?: string;
-  onClick?: () => void;
-  color?: string;
-  variant?: string;
-  disabled?: boolean;
-  divider?: boolean;
-  target?: string;
-}
-
 const props = defineProps({
   color: { type: String, required: false, default: "#2c2c2c" },
   hightContrast: { type: Boolean, required: false, default: false },
@@ -23,7 +11,6 @@ const props = defineProps({
   placement: { type: String, required: false, default: "bottom-start" },
   offset: { type: Number, required: false, default: 4 },
   menuBg: { type: String, required: false, default: "#ffffff" },
-  items: { type: Array as () => DropdownItem[], required: false, default: () => [] },
 });
 
 const emit = defineEmits(["open", "close"]);
@@ -69,26 +56,22 @@ function toggle() {
   else open();
 }
 
-function handleItemClick(item: DropdownItem) {
-  if (item.disabled || item.divider) return;
-  if (item.onClick) item.onClick();
-  close();
-}
-
 defineExpose({ open, close, toggle, get isOpen() { return isOpen.value } });
 </script>
 
 <template>
   <div ref="dropdownRef" class="relative inline-block box-border">
-    <Button
-      :color="color"
-      :variant="variant"
-      :disabled="disabled"
-      :hight-contrast="hightContrast"
-      @click="toggle"
-    >
-      {{ label || "Dropdown" }}
-    </Button>
+    <slot name="toggle" :toggle="toggle" :isOpen="isOpen">
+      <Button
+        :color="color"
+        :variant="variant"
+        :disabled="disabled"
+        :hight-contrast="hightContrast"
+        @click="toggle"
+      >
+        {{ label || "Dropdown" }}
+      </Button>
+    </slot>
 
     <div
       v-if="isOpen"
@@ -102,26 +85,7 @@ defineExpose({ open, close, toggle, get isOpen() { return isOpen.value } });
       }"
       role="menu"
     >
-      <template v-if="items && items.length > 0">
-        <template v-for="(item, i) in items" :key="i">
-          <hr v-if="item.divider" class="my-1 w-[90%] mx-auto border-0 border-t border-t-neutral-50" />
-          <Button
-            v-else
-            :color="item.color || color"
-            :variant="item.variant || 'ghost'"
-            :to="item.href"
-            :target="item.target"
-            :disabled="item.disabled"
-            :hight-contrast="hightContrast"
-            style="width:100%;justify-content:flex-start"
-            @click="handleItemClick(item)"
-          >
-            <span v-if="item.icon" v-html="item.icon" class="transform translate-y-0.5"></span>
-            <span v-if="item.label">{{ item.label }}</span>
-          </Button>
-        </template>
-      </template>
-      <slot v-else></slot>
+      <slot></slot>
     </div>
   </div>
 </template>

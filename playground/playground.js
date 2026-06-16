@@ -36,7 +36,7 @@ if (stored) {
 
 // --- Dropdown events ---
 const dd = document.getElementById('ddMain');
-dd.addEventListener('open', () => logEvent('Dropdown abierto'));
-dd.addEventListener('close', () => logEvent('Dropdown cerrado'));
+dd.addEventListener('open', () => logEvent('Menú abierto'));
+dd.addEventListener('close', () => logEvent('Menú cerrado'));
 
 logEvent('Playground listo');

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import Dropdown from "./Dropdown.vue";
+import DropdownMenu from "./DropdownMenu.vue";
 import { getColorMap } from "../utils/palette";
 import { getHostTheme } from "../utils/getHostTheme";
 import { isValidTheme } from "../config/theme";
@@ -38,7 +38,7 @@ const resolvedItems = computed(() =>
   })),
 );
 
-const dropdownRef = ref<InstanceType<typeof Dropdown> | null>(null);
+const dropdownRef = ref<InstanceType<typeof DropdownMenu> | null>(null);
 
 defineExpose({
   open: () => dropdownRef.value?.open(),
@@ -49,7 +49,7 @@ defineExpose({
 </script>
 
 <template>
-  <Dropdown
+  <DropdownMenu
     ref="dropdownRef"
     :color="hexColor"
     :variant="props.variant"
@@ -63,8 +63,11 @@ defineExpose({
     @open="emit('open')"
     @close="emit('close')"
   >
+    <div slot="toggle">
+      <slot name="toggle"></slot>
+    </div>
     <slot></slot>
-  </Dropdown>
+  </DropdownMenu>
 </template>
 
 <style>
