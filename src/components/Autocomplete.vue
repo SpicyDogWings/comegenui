@@ -28,11 +28,18 @@ const searchText = ref("");
 
 const filteredItems = computed(() => {
   const q = searchText.value.toLowerCase().trim();
-  if (!q) return [];
+  if (!q) return props.items;
   return props.items.filter((item) =>
     item.label.toLowerCase().includes(q),
   );
 });
+
+function onFocus() {
+  if (props.disabled || props.minChars > 0) return;
+  if (filteredItems.value.length > 0) {
+    dropdownRef.value?.open();
+  }
+}
 
 function onInput() {
   if (!inputRef.value) return;
@@ -84,6 +91,7 @@ defineExpose({ get, set, focus, get isOpen() { return dropdownRef.value?.isOpen 
         style="width:100%"
         @update:model-value="onInput"
         @input="onInput"
+        @focus="onFocus"
       />
     </template>
     <template #default>
