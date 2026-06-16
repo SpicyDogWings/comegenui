@@ -91,6 +91,7 @@ defineExpose({
     placement="bottom-start"
     :offset="4"
     :menu-bg="menuBg"
+    style="width:100%"
   >
     <template #toggle>
       <Input
