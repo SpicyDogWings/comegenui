@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import Dropdown from "./Dropdown.vue";
 import Input from "./form/Input.vue";
 import Button from "./Button.vue";
@@ -26,11 +26,19 @@ const dropdownRef = ref<InstanceType<typeof Dropdown> | null>(null);
 const inputRef = ref<InstanceType<typeof Input> | null>(null);
 const searchText = ref("");
 
+const filteredItems = computed(() => {
+  const q = searchText.value.toLowerCase().trim();
+  if (!q) return [];
+  return props.items.filter((item) =>
+    item.label.toLowerCase().includes(q),
+  );
+});
+
 function onInput() {
   if (!inputRef.value) return;
   searchText.value = inputRef.value.get();
 
-  if (searchText.value.length < props.minChars) {
+  if (searchText.value.length < props.minChars || filteredItems.value.length === 0) {
     dropdownRef.value?.close();
     return;
   }
@@ -79,9 +87,9 @@ defineExpose({ get, set, focus, get isOpen() { return dropdownRef.value?.isOpen 
       />
     </template>
     <template #default>
-      <div v-if="items && items.length > 0" class="max-h-[240px] overflow-y-auto">
+      <div v-if="filteredItems.length > 0" class="max-h-[240px] overflow-y-auto">
         <Button
-          v-for="(item, i) in items"
+          v-for="(item, i) in filteredItems"
           :key="i"
           color="#888"
           variant="ghost"
