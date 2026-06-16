@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, getCurrentInstance } from "vue";
 import Autocomplete from "./Autocomplete.vue";
 import { getColorMap } from "../utils/palette";
 import { getHostTheme } from "../utils/getHostTheme";
@@ -15,8 +15,6 @@ const props = defineProps({
   items: { type: Array, required: false, default: () => [] },
 });
 
-const emit = defineEmits(["select"]);
-
 const effectiveTheme = computed(() => props.theme || getHostTheme());
 const hexColor = computed(() => {
   const map = getColorMap(effectiveTheme.value as "light" | "dark");
@@ -28,12 +26,26 @@ const surfaceBg = computed(() =>
 );
 
 const autocompleteRef = ref<InstanceType<typeof Autocomplete> | null>(null);
+const instance = getCurrentInstance();
+
+function ceEmit(event: string, payload: unknown) {
+  const el = instance?.vnode.el as HTMLElement | null;
+  const host = el?.getRootNode()?.host || el;
+  if (host) {
+    host.dispatchEvent(new CustomEvent(event, {
+      detail: payload,
+      bubbles: true,
+      composed: true,
+    }));
+  }
+}
 
 defineExpose({
   get: () => autocompleteRef.value?.get(),
   set: (val: string) => autocompleteRef.value?.set(val),
   focus: () => autocompleteRef.value?.focus(),
   get isOpen() { return autocompleteRef.value?.isOpen || false },
+  get selectedItem() { return autocompleteRef.value?.selectedItem || null },
 });
 </script>
 
@@ -47,7 +59,7 @@ defineExpose({
     :min-chars="props.minChars"
     :items="props.items"
     :menu-bg="surfaceBg"
-    @select="emit('select', $event)"
+    @select="ceEmit('select', $event)"
   />
 </template>
 

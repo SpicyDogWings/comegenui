@@ -25,12 +25,14 @@ const emit = defineEmits(["select"]);
 const dropdownRef = ref<InstanceType<typeof Dropdown> | null>(null);
 const inputRef = ref<InstanceType<typeof Input> | null>(null);
 const searchText = ref("");
+const selectedItem = ref<AutocompleteItem | null>(null);
 
 const filteredItems = computed(() => {
   const q = searchText.value.toLowerCase().trim();
   if (!q) return props.items;
   return props.items.filter((item) =>
-    item.label.toLowerCase().includes(q),
+    item.label.toLowerCase().includes(q) ||
+    (item.value && item.value.toLowerCase().includes(q)),
   );
 });
 
@@ -56,6 +58,7 @@ function onInput() {
 function onItemClick(item: AutocompleteItem) {
   searchText.value = item.value || item.label;
   if (inputRef.value) inputRef.value.set(searchText.value);
+  selectedItem.value = item;
   emit("select", item);
   dropdownRef.value?.close();
 }
@@ -67,7 +70,13 @@ function set(val: string) {
 }
 function focus() { inputRef.value?.focus(); }
 
-defineExpose({ get, set, focus, get isOpen() { return dropdownRef.value?.isOpen || false } });
+defineExpose({
+  get,
+  set,
+  focus,
+  get isOpen() { return dropdownRef.value?.isOpen || false },
+  get selectedItem() { return selectedItem.value },
+});
 </script>
 
 <template>
