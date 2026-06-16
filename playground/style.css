@@ -104,21 +104,7 @@ body.dark {
   opacity: .7;
 }
 
-.autocomplete-wrap {
-  position: relative;
-  width: 100%;
-}
 
-.autocomplete-wrap cu-input {
-  width: 100%;
-}
-
-.autocomplete-wrap cu-dropdown-menu {
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
-  z-index: 10;
-}
 
 /* ── Log ── */
 .log-box {
