@@ -78,7 +78,7 @@ interface Column {
   // Custom cell rendering
   cell?: (row: Record<string, any>) => string | string[];
   // Editable properties
-  editable?: boolean | RegExp;
+  editable?: boolean | RegExp | ((row: Record<string, any>) => boolean);
   inputType?: "input" | "textarea" | "select";
   selectOptions?: { value: string; label: string }[] | ((row: Record<string, any>) => { value: string; label: string }[]);
   validator?: (value: string, row: Record<string, any>) => boolean;

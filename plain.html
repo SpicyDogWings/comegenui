@@ -57,6 +57,8 @@
         <br><br>
         <strong>Búsqueda:</strong> probá <em>"Administrador"</em>, <em>"Estratégico"</em> o <em>"matricula"</em> — busca por la label (sin acentos también).
         <br><br>
+        <strong>Edición por fila:</strong> <em>Nombre</em> solo es editable si <em>Estado</em> es <em>"Activo"</em> (probá click en "Carlos López" — no se puede editar).
+        <br><br>
         <strong>Orden:</strong> click en <em>Nombre</em> o <em>Estado</em> para ordenar ascendente/descendente.
       </div>
 
@@ -89,7 +91,12 @@
         }
 
         tabla.columns = [
-          { key: 'nombre', label: 'Nombre', editable: true, sortable: 'string' },
+          {
+            key: 'nombre',
+            label: 'Nombre',
+            editable: (row) => row.estado === 'Activo',
+            sortable: 'string',
+          },
           {
             key: 'rol',
             label: 'Rol',

@@ -13,7 +13,7 @@ interface SelectOption {
 interface Column {
   key: string;
   label?: string;
-  editable?: boolean | RegExp;
+  editable?: boolean | RegExp | ((row: Record<string, any>) => boolean);
   validator?: (value: string, row: Record<string, any>) => boolean;
   inputType?: "input" | "textarea" | "select";
   selectOptions?: SelectOption[] | ((row: Record<string, any>) => SelectOption[]);
@@ -79,7 +79,7 @@ watch(
 
 // Methods
 const startEditing = async () => {
-  if (saving.value) return;
+  if (saving.value || !canEdit.value) return;
   isEditing.value = true;
   emit("edit-start", { row: props.row, column: props.column, index: props.index });
   await nextTick();
@@ -156,13 +156,18 @@ const resolvedOptions = computed(() => {
   }
   return props.column.selectOptions || [];
 });
+
+const canEdit = computed(() => {
+  if (typeof props.column.editable === "function") return props.column.editable(props.row);
+  return true;
+});
 </script>
 
 <template>
   <div
     class="cursor-pointer"
-    @click="column.singleClick !== false && startEditing()"
-    @dblclick="column.singleClick === false && startEditing()"
+    @click="column.singleClick !== false && canEdit && startEditing()"
+    @dblclick="column.singleClick === false && canEdit && startEditing()"
   >
     <!-- Edit Mode -->
     <template v-if="isEditing">
@@ -201,7 +206,7 @@ const resolvedOptions = computed(() => {
     
     <!-- View Mode -->
     <template v-else>
-      <span class="flex items-center gap-2">
+      <span class="flex items-center gap-2" :class="{ 'opacity-40': !canEdit }">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="16"
