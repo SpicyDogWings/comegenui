@@ -6,53 +6,15 @@ import { getHostTheme } from "../utils/getHostTheme";
 import { isValidTheme } from "../config/theme";
 
 const props = defineProps({
-  theme: {
-    type: String,
-    required: false,
-    default: "",
-    validator: isValidTheme,
-  },
-  color: {
-    type: String,
-    required: false,
-    default: "neutral",
-    validator: (value: string) =>
-      ["primary", "neutral", "success", "warning", "danger"].includes(value),
-  },
-  variant: {
-    type: String,
-    required: false,
-    default: "ghost",
-    validator: (value: string) =>
-      ["solid", "outlined", "soft", "ghost", "subtle"].includes(value),
-  },
-  disabled: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
-  hightContrast: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
-  label: {
-    type: String,
-    required: false,
-    default: "",
-  },
-  placement: {
-    type: String,
-    required: false,
-    default: "bottom-start",
-    validator: (value: string) =>
-      ["bottom-start", "bottom-end", "top-start", "top-end"].includes(value),
-  },
-  offset: {
-    type: Number,
-    required: false,
-    default: 4,
-  },
+  theme: { type: String, required: false, default: "", validator: isValidTheme },
+  color: { type: String, required: false, default: "neutral" },
+  variant: { type: String, required: false, default: "ghost" },
+  disabled: { type: Boolean, required: false, default: false },
+  hightContrast: { type: Boolean, required: false, default: false },
+  label: { type: String, required: false, default: "" },
+  placement: { type: String, required: false, default: "bottom-start" },
+  offset: { type: Number, required: false, default: 4 },
+  items: { type: Array, required: false, default: () => [] },
 });
 
 const emit = defineEmits(["open", "close"]);
@@ -62,6 +24,19 @@ const hexColor = computed(() => {
   const map = getColorMap(effectiveTheme.value as "light" | "dark");
   return map[props.color as keyof typeof map] || props.color;
 });
+
+const surfaceBg = computed(() =>
+  effectiveTheme.value === "dark" ? "#1e1e2e" : "#ffffff",
+);
+
+const themeMap = computed(() => getColorMap(effectiveTheme.value as "light" | "dark"));
+
+const resolvedItems = computed(() =>
+  (props.items || []).map((item: any) => ({
+    ...item,
+    color: item.color ? (themeMap.value[item.color as keyof typeof themeMap.value] || item.color) : undefined,
+  })),
+);
 
 const dropdownRef = ref<InstanceType<typeof Dropdown> | null>(null);
 
@@ -76,13 +51,18 @@ defineExpose({
 <template>
   <Dropdown
     ref="dropdownRef"
-    v-bind="{ ...props, color: hexColor }"
+    :color="hexColor"
+    :variant="props.variant"
+    :disabled="props.disabled"
+    :hight-contrast="props.hightContrast"
+    :label="props.label"
+    :placement="props.placement"
+    :offset="props.offset"
+    :menu-bg="surfaceBg"
+    :items="resolvedItems"
     @open="emit('open')"
     @close="emit('close')"
   >
-    <template #toggle>
-      <slot name="toggle"></slot>
-    </template>
     <slot></slot>
   </Dropdown>
 </template>

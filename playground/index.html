@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Playground — ComegenUI</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="../dist/CuDropdown.umd.js?t=5"></script>
+  </head>
+  <body>
+    <!-- Top Bar -->
+    <div class="topbar">
+      <h1 style="font-size:16px;font-weight:600">Playground</h1>
+      <div class="topbar-actions">
+        <button class="topbar-btn" id="btnTheme" title="Toggle theme">🌙</button>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main">
+      <div class="card">
+        <h2>CuDropdown</h2>
+        <cu-dropdown id="ddMain" label="Abrir menú" color="primary" variant="soft" placement="bottom-start"></cu-dropdown>
+        <div class="log-box" id="log">// Eventos</div>
+      </div>
+    </div>
+
+    <script src="playground.js"></script>
+    <script src="example.js"></script>
+  </body>
+</html>
