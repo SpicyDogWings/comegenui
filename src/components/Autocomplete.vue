@@ -15,7 +15,7 @@ const props = defineProps({
   hightContrast: { type: Boolean, required: false, default: false },
   disabled: { type: Boolean, required: false, default: false },
   placeholder: { type: String, required: false, default: "" },
-  minChars: { type: Number, required: false, default: 3 },
+  minChars: { type: Number, required: false, default: 0 },
   items: { type: Array as () => AutocompleteItem[], required: false, default: () => [] },
   menuBg: { type: String, required: false, default: "#ffffff" },
 });
