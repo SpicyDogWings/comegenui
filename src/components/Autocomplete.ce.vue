@@ -8,7 +8,22 @@ import { isValidTheme } from "../config/theme";
 const props = defineProps({
   theme: { type: String, required: false, default: "", validator: isValidTheme },
   color: { type: String, required: false, default: "neutral" },
+  variant: {
+    type: String,
+    required: false,
+    default: "outlined",
+    validator: (value: string) =>
+      ["outlined", "soft", "ghost", "subtle", "none"].includes(value),
+  },
+  type: {
+    type: String,
+    required: false,
+    default: "text",
+    validator: (value: string) =>
+      ["text", "password", "email", "number", "tel", "url", "search"].includes(value),
+  },
   disabled: { type: Boolean, required: false, default: false },
+  readOnly: { type: Boolean, required: false, default: false },
   hightContrast: { type: Boolean, required: false, default: false },
   placeholder: { type: String, required: false, default: "" },
   minChars: { type: Number, required: false, default: 0 },
@@ -53,7 +68,10 @@ defineExpose({
   <Autocomplete
     ref="autocompleteRef"
     :color="hexColor"
+    :variant="props.variant"
+    :type="props.type"
     :disabled="props.disabled"
+    :read-only="props.readOnly"
     :hight-contrast="props.hightContrast"
     :placeholder="props.placeholder"
     :min-chars="props.minChars"

@@ -12,9 +12,12 @@ Campo de búsqueda con sugerencias en menú desplegable. Filtra los items en viv
 |------|------|---------|-------------|
 | `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` |
 | `color` | `string` | `"neutral"` | Color semántico |
+| `variant` | `string` | `"outlined"` | `outlined`, `soft`, `ghost`, `subtle`, `none` |
+| `type` | `string` | `"text"` | `text`, `password`, `email`, `number`, `tel`, `url`, `search` |
 | `placeholder` | `string` | `""` | Placeholder del input |
 | `min-chars` | `number` | `0` | Caracteres mínimos para abrir el menú |
 | `disabled` | `boolean` | `false` | Deshabilitado |
+| `readonly` | `boolean` | `false` | Solo lectura |
 | `items` | `array` | `[]` | Items del menú (ver abajo) |
 
 ## Items

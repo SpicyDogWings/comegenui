@@ -14,7 +14,10 @@ const props = defineProps({
   color: { type: String, required: false, default: "#2c2c2c" },
   hightContrast: { type: Boolean, required: false, default: false },
   disabled: { type: Boolean, required: false, default: false },
+  readOnly: { type: Boolean, required: false, default: false },
   placeholder: { type: String, required: false, default: "" },
+  variant: { type: String, required: false, default: "outlined" },
+  type: { type: String, required: false, default: "text" },
   minChars: { type: Number, required: false, default: 0 },
   items: { type: Array as () => AutocompleteItem[], required: false, default: () => [] },
   menuBg: { type: String, required: false, default: "#ffffff" },
@@ -95,8 +98,11 @@ defineExpose({
         :model-value="searchText"
         :placeholder="placeholder"
         :disabled="disabled"
-        color="#888"
-        variant="outlined"
+        :read-only="readOnly"
+        :color="color"
+        :variant="variant"
+        :type="type"
+        :hight-contrast="hightContrast"
         style="width:100%"
         @update:model-value="onInput"
         @input="onInput"
