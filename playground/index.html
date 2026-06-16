@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Playground — ComegenUI</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="../dist/CuAutocomplete.umd.js?t=1"></script>
+
+    <!--
+      ═══════════════════════════════════════════
+      PLAYGROUND — ComegenUI
+
+      Archivos BASE (NO modificar):
+        index.html      → estructura base
+        playground.js   → theme toggle, log, init
+        style.css       → estilos
+
+      ✅ EDITABLE:
+        example.js      → acá podés experimentar
+      ═══════════════════════════════════════════
+    -->
+  </head>
+  <body>
+    <div class="topbar">
+      <h1 style="font-size:16px;font-weight:600">Playground</h1>
+      <div class="topbar-actions">
+        <button class="topbar-btn" id="btnTheme" title="Toggle theme">🌙</button>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="card">
+        <h2>Autocomplete</h2>
+
+        <cu-autocomplete id="ac" placeholder="Buscá un rol..." color="primary"></cu-autocomplete>
+
+        <div class="log-box" id="log">// Eventos</div>
+      </div>
+    </div>
+
+    <script src="playground.js"></script>
+    <script src="example.js"></script>
+  </body>
+</html>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch, toRef } from "vue";
+import { computed, ref, watch, toRef, type Component } from "vue";
 import Table from "./Table.vue";
 import Pagination from "../Pagination.vue";
 import Input from "../form/Input.vue";
@@ -9,7 +9,8 @@ import Badge from "../Badge.vue";
 import { usePagination } from "../../composables/usePagination";
 import { useSearch } from "../../composables/useSearch";
 import { useTableData } from "../../composables/useTableData";
-import { getBgClasses, getFgClasses, colorMap } from "../../utils/palette";
+import { getBgClasses, getFgClasses, getColorMap } from "../../utils/palette";
+import { isValidTheme } from "../../config/theme";
 
 // Add validation state map
 const validationStates = new Map<string, { success: boolean; error: string | null }>();
@@ -59,12 +60,14 @@ interface BadgeConfig {
 }
 
 interface ButtonConfig {
-  label: string;
+  label?: string;
+  icon?: string | Component;
   onClick?: (row: Record<string, any>) => void;
   to?: string;
   target?: string;
   color?: string;
   variant?: string;
+  disabled?: boolean;
 }
 
 interface Column {
@@ -75,16 +78,24 @@ interface Column {
   // Custom cell rendering
   cell?: (row: Record<string, any>) => string | string[];
   // Editable properties
-  editable?: boolean | RegExp;
-  inputType?: "input" | "textarea";
+  editable?: boolean | RegExp | ((row: Record<string, any>) => boolean);
+  inputType?: "input" | "textarea" | "select";
+  selectOptions?: { value: string; label: string }[] | ((row: Record<string, any>) => { value: string; label: string }[]);
   validator?: (value: string, row: Record<string, any>) => boolean;
   singleClick?: boolean;
+  sortable?: boolean | "string" | "number" | "boolean";
   // Badge and Button properties
   badges?: (row: Record<string, any>) => BadgeConfig[];
   buttons?: (row: Record<string, any>) => ButtonConfig[];
 }
 
 const props = defineProps({
+  theme: {
+    type: String,
+    required: false,
+    default: "light",
+    validator: (value: string) => isValidTheme(value),
+  },
   // Table props - pass through to Table.vue
   columns: {
     type: Array as () => Column[],
@@ -164,6 +175,16 @@ const props = defineProps({
     required: false,
     default: "",
   },
+  filters: {
+    type: Object as () => Record<string, any>,
+    required: false,
+    default: () => ({}),
+  },
+  loading: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 });
 
 const emit = defineEmits([
@@ -185,15 +206,84 @@ const searchQuery = ref("");
 const { data: localData, updateRow, getData, getRow, removeRow, addRow, pushData } = 
   useTableData(toRef(() => props.data));
 
-// Use search composable
-const { filteredData: searchedData } = useSearch(localData, {
-  searchQuery,
-  searchFields: Array.isArray(props.searchFields) ? props.searchFields : [],
-  caseSensitive: false,
+const normalizedSearchFields = computed(() => {
+  const raw = props.searchFields;
+  if (Array.isArray(raw)) return raw;
+  if (typeof raw === "string") try { return JSON.parse(raw); } catch { return []; }
+  return [];
 });
 
-// Use pagination composable with searched data
-const pagination = usePagination(searchedData, {
+const { filteredData: searchedData } = useSearch(localData, {
+  searchQuery,
+  searchFields: normalizedSearchFields,
+  columns: computed(() => props.columns),
+});
+
+// Apply column filters on top of searched data
+const filteredData = computed(() => {
+  const data = searchedData.value;
+  const filters = props.filters;
+  if (!filters || Object.keys(filters).length === 0) return data;
+  return data.filter((row) =>
+    Object.entries(filters).every(([key, filter]) => {
+      const val = row[key];
+      if (typeof filter === "function") return filter(val, row);
+      if (Array.isArray(filter)) return filter.includes(val);
+      return val === filter;
+    })
+  );
+});
+
+// Sort state
+const sortBy = ref("");
+const sortDir = ref<"" | "asc" | "desc">("");
+
+function handleSort(key: string) {
+  if (sortBy.value !== key) {
+    sortBy.value = key;
+    sortDir.value = "asc";
+  } else if (sortDir.value === "asc") {
+    sortDir.value = "desc";
+  } else {
+    sortBy.value = "";
+    sortDir.value = "";
+  }
+}
+
+function detectSortType(col: Column): "string" | "number" | "boolean" {
+  if (col.sortable === "string" || col.sortable === "number" || col.sortable === "boolean") return col.sortable;
+  const first = filteredData.value[0];
+  if (first) {
+    const val = first[col.key];
+    if (typeof val === "number") return "number";
+    if (typeof val === "boolean") return "boolean";
+  }
+  return "string";
+}
+
+const sortedData = computed(() => {
+  const data = filteredData.value;
+  if (!sortBy.value || !sortDir.value) return data;
+  const col = props.columns.find((c) => c.key === sortBy.value);
+  if (!col?.sortable) return data;
+  const type = detectSortType(col);
+  const sorted = [...data].sort((a, b) => {
+    const va = a[sortBy.value];
+    const vb = b[sortBy.value];
+    let cmp = 0;
+    if (type === "number") cmp = (Number(va) || 0) - (Number(vb) || 0);
+    else if (type === "boolean") cmp = (va === vb) ? 0 : va ? -1 : 1;
+    else cmp = String(va ?? "").localeCompare(String(vb ?? ""), "es");
+    return sortDir.value === "desc" ? -cmp : cmp;
+  });
+  return sorted;
+});
+
+// Watch sort changes to reset page
+watch([sortBy, sortDir], () => pagination.setCurrentPage(1));
+
+// Use pagination composable with sorted data
+const pagination = usePagination(sortedData, {
   initialPage: 1,
   initialItemsPerPage: props.itemsPerPage,
   showPageSize: props.showPageSize,
@@ -244,11 +334,14 @@ const handlePageSizeChange = (size: number) => {
 // Table props to pass through
 const tableProps = computed(() => ({
   columns: props.columns,
-  data: pagination.displayData.value,
+  data: props.pagination ? pagination.displayData.value : filteredData.value,
   empty: props.empty,
   maxHeight: props.tableMaxHeight,
   color: props.color,
   variant: props.variant,
+  sortBy: sortBy.value,
+  sortDir: sortDir.value,
+  loading: props.loading,
 }));
 
 // Color classes using palette utilities
@@ -267,8 +360,9 @@ const paginationVariant = computed(() => {
 
 // Convert color names to hex values for Button and Badge components
 const getHexColor = (color: string): string => {
-  if (color && colorMap[color as keyof typeof colorMap]) {
-    return colorMap[color as keyof typeof colorMap];
+  const themeMap = getColorMap(props.theme as any);
+  if (color && themeMap[color as keyof typeof themeMap]) {
+    return themeMap[color as keyof typeof themeMap];
   }
   return color;
 };
@@ -312,7 +406,7 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
     </div>
     
     <!-- Table Component -->
-    <Table v-bind="tableProps">
+    <Table v-bind="tableProps" @sort-change="handleSort">
       <!-- Pass through all slots from parent -->
       <template v-for="(_, slotName) in $slots" v-slot:[slotName]="slotProps">
         <slot :name="slotName" v-bind="slotProps"></slot>
@@ -329,6 +423,7 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
             :variant="button.variant || props.variant"
             :to="button.to"
             :target="button.target"
+            :disabled="button.disabled"
             @click="(e) => {
               if (button.onClick) {
                 e.stopPropagation();
@@ -336,7 +431,9 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
               }
             }"
           >
-            {{ button.label }}
+            <component :is="button.icon" v-if="typeof button.icon === 'object'" class="transform translate-y-0.5" />
+            <span v-else-if="button.icon" v-html="button.icon" class="transform translate-y-0.5"></span>
+            <span v-if="button.label">{{ button.label }}</span>
           </Button>
         </div>
         

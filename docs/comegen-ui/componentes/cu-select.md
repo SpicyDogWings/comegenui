@@ -1,0 +1,72 @@
+# `<cu-select>`
+
+Selector de opciones con soporte de color, variante e ícono chevron.
+
+[← Volver](../SKILL.md)
+
+---
+
+## Props
+
+| Prop | Tipo | Default | Descripción |
+|------|------|---------|-------------|
+| `theme` | `string` | `""` | Tema |
+| `color` | `string` | `"neutral"` | Color semántico |
+| `variant` | `string` | `"ghost"` | `outlined`, `soft`, `ghost`, `subtle`, `none` |
+| `placeholder` | `string` | — | Placeholder |
+| `disabled` | `boolean` | `false` | Deshabilitado |
+| `options` | `array` | `[]` | Opciones `[{ value, label }]` |
+| `modelValue` | `string` | `""` | Valor seleccionado |
+| `hightContrast` | `boolean` | `false` | Alto contraste |
+
+## Métodos expuestos
+
+| Método | Descripción |
+|--------|-------------|
+| `.get()` | Devuelve el valor seleccionado |
+| `.set(value)` | Asigna un valor |
+| `.reset()` | Limpia la selección |
+| `.focus()` | Enfoca el select |
+
+## Eventos
+
+| Evento | Payload | Descripción |
+|--------|---------|-------------|
+| `update:modelValue` | `string` | Cambio de valor seleccionado |
+
+## Uso en HTML plano
+
+```html
+<script src="dist/CuSelect.umd.js"></script>
+
+<cu-select id="miSelect" placeholder="Seleccione una opción" color="primary" variant="outlined"></cu-select>
+
+<script>
+  const select = document.getElementById('miSelect');
+  select.options = [
+    { value: 'doc', label: 'Documento' },
+    { value: 'pdf', label: 'PDF' },
+  ];
+  select.set('pdf');
+  console.log(select.get()); // "pdf"
+</script>
+```
+
+> **Nota:** `options` se pasa como propiedad DOM (no atributo) porque es un array.
+
+## Escuchar cambios
+
+```html
+<cu-select id="selector"></cu-select>
+
+<script>
+  const sel = document.getElementById('selector');
+  sel.options = [
+    { value: 'op1', label: 'Opción 1' },
+    { value: 'op2', label: 'Opción 2' },
+  ];
+  sel.addEventListener('change', (e) => {
+    console.log('Seleccionado:', sel.get());
+  });
+</script>
+```

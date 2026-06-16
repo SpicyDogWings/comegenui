@@ -1,110 +1,57 @@
-import { computed, type Ref, unref } from "vue";
+import { computed, type Ref, type MaybeRef, unref } from "vue";
 
-/**
- * Search options interface
- */
-interface UseSearchOptions {
-  /**
-   * The search query (reactive reference)
-   */
-  searchQuery: Ref<string>;
-  
-  /**
-   * Specific fields to search in. If empty, searches all fields.
-   */
-  searchFields?: string[];
-  
-  /**
-   * Whether search should be case sensitive (default: false)
-   */
-  caseSensitive?: boolean;
+interface Column {
+  key: string;
+  inputType?: "input" | "textarea" | "select";
+  selectOptions?: { value: string; label: string }[] | ((row: any) => { value: string; label: string }[]);
 }
 
-/**
- * Simple search composable for filtering data
- * 
- * @param data - The data array to search through
- * @param options - Search configuration options
- * @returns Filtered data based on search query
- */
+interface UseSearchOptions {
+  searchQuery: Ref<string>;
+  searchFields?: MaybeRef<string[]>;
+  caseSensitive?: boolean;
+  columns?: MaybeRef<Column[]>;
+}
+
+const normalize = (s: string) =>
+  s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
 export function useSearch(data: any[] | Ref<any[]>, options: UseSearchOptions) {
-  const { searchQuery, searchFields = [], caseSensitive = false } = options;
+  const { searchQuery, caseSensitive = false } = options;
 
   const filteredData = computed(() => {
     const unrefedData = unref(data);
-    // If no search query, return all data
-    if (!searchQuery.value.trim()) {
-      return unrefedData;
-    }
+    const query = searchQuery.value.trim();
+    if (!query) return unrefedData;
 
-    const query = caseSensitive ? searchQuery.value : searchQuery.value.toLowerCase();
-    
+    const normalizedQuery = normalize(query);
+    const fields = unref(options.searchFields) || [];
+    const columns = unref(options.columns) || [];
+
     return unrefedData.filter((item) => {
-      // Ensure item is an object and has keys
-      if (typeof item !== 'object' || item === null) {
-        return false;
-      }
-      
-      // Determine which fields to search
-      const fieldsToSearch = searchFields && searchFields.length > 0 
-        ? searchFields 
-        : Object.keys(item);
+      if (typeof item !== "object" || item === null) return false;
 
-      // Ensure fieldsToSearch is an array
-      if (!Array.isArray(fieldsToSearch)) {
-        return false;
-      }
+      const keys = fields.length > 0 ? fields : Object.keys(item);
 
-      return fieldsToSearch.some((key) => {
-        const value = item[key];
-        
-        // Handle different data types
-        if (value == null) {
-          return false;
+      return keys.some((key) => {
+        const raw = item[key];
+        if (raw == null) return false;
+
+        const col = columns.find((c) => c.key === key);
+        if (col?.inputType === "select") {
+          const opts = typeof col.selectOptions === "function"
+            ? col.selectOptions(item)
+            : col.selectOptions || [];
+          const opt = opts.find((o: any) => o.value === raw);
+          if (opt) return normalize(opt.label).includes(normalizedQuery);
         }
 
-        if (typeof value === "string") {
-          const target = caseSensitive ? value : value.toLowerCase();
-          return target.includes(query);
-        }
-
-        if (typeof value === "number") {
-          const target = String(value);
-          return caseSensitive 
-            ? target.includes(query) 
-            : target.toLowerCase().includes(query);
-        }
-
-        if (typeof value === "boolean") {
-          const target = String(value);
-          return caseSensitive 
-            ? target.includes(query) 
-            : target.toLowerCase().includes(query);
-        }
-
-        // For other types (objects, arrays), convert to string
-        if (typeof value === "object") {
-          const target = JSON.stringify(value);
-          return caseSensitive 
-            ? target.includes(query) 
-            : target.toLowerCase().includes(query);
-        }
-
-        // Fallback: convert to string
-        const target = String(value);
-        return caseSensitive 
-          ? target.includes(query) 
-          : target.toLowerCase().includes(query);
+        return normalize(String(raw)).includes(normalizedQuery);
       });
     });
   });
 
-  return {
-    filteredData,
-  };
+  return { filteredData };
 }
 
-/**
- * Type for the search result
- */
 export type UseSearchResult = ReturnType<typeof useSearch>;

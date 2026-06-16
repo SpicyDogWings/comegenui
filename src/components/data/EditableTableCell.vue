@@ -3,13 +3,20 @@ import { ref, computed, nextTick, watch } from "vue";
 
 import Input from "../form/Input.vue";
 import Textarea from "../form/Textarea.vue";
+import Select from "../form/Select.vue";
+
+interface SelectOption {
+  value: string;
+  label: string;
+}
 
 interface Column {
   key: string;
   label?: string;
-  editable?: boolean | RegExp;
+  editable?: boolean | RegExp | ((row: Record<string, any>) => boolean);
   validator?: (value: string, row: Record<string, any>) => boolean;
-  inputType?: "input" | "textarea";
+  inputType?: "input" | "textarea" | "select";
+  selectOptions?: SelectOption[] | ((row: Record<string, any>) => SelectOption[]);
   singleClick?: boolean;
   width?: string;
   align?: "left" | "center" | "right";
@@ -57,8 +64,9 @@ const emit = defineEmits([
 
 // State
 const isEditing = ref(false);
+const saving = ref(false);
 const editValue = ref<string>("");
-const inputRef = ref<InstanceType<typeof Input | typeof Textarea> | null>(null);
+const inputRef = ref<InstanceType<typeof Input | typeof Textarea | typeof Select> | null>(null);
 
 // Initialize edit value
 watch(
@@ -71,6 +79,7 @@ watch(
 
 // Methods
 const startEditing = async () => {
+  if (saving.value || !canEdit.value) return;
   isEditing.value = true;
   emit("edit-start", { row: props.row, column: props.column, index: props.index });
   await nextTick();
@@ -96,6 +105,7 @@ const saveEdit = () => {
     return;
   }
 
+  saving.value = true;
   emit("edit-save", { 
     row: props.row, 
     column: props.column, 
@@ -103,6 +113,7 @@ const saveEdit = () => {
     index: props.index
   });
   isEditing.value = false;
+  nextTick(() => { saving.value = false; });
 };
 
 const cancelEdit = () => {
@@ -121,6 +132,11 @@ const handleKeyDown = (event: KeyboardEvent) => {
 
 // Computed
 const displayValue = computed(() => {
+  if (props.column.inputType === 'select') {
+    const options = resolvedOptions.value;
+    const option = options.find(o => o.value === props.value);
+    return option ? option.label : String(props.value);
+  }
   return props.value != null ? String(props.value) : "";
 });
 
@@ -133,13 +149,25 @@ const validationClass = computed(() => {
   }
   return "";
 });
+
+const resolvedOptions = computed(() => {
+  if (typeof props.column.selectOptions === "function") {
+    return props.column.selectOptions(props.row);
+  }
+  return props.column.selectOptions || [];
+});
+
+const canEdit = computed(() => {
+  if (typeof props.column.editable === "function") return props.column.editable(props.row);
+  return true;
+});
 </script>
 
 <template>
   <div
     class="cursor-pointer"
-    @click="column.singleClick !== false && startEditing()"
-    @dblclick="column.singleClick === false && startEditing()"
+    @click="column.singleClick !== false && canEdit && startEditing()"
+    @dblclick="column.singleClick === false && canEdit && startEditing()"
   >
     <!-- Edit Mode -->
     <template v-if="isEditing">
@@ -150,6 +178,16 @@ const validationClass = computed(() => {
         @blur="saveEdit"
         @keydown="handleKeyDown"
         noResize
+        class="w-full"
+        :color="props.validation.error ? '#ff0000' : color"
+        :variant="variant"
+      />
+      <Select
+        v-else-if="column.inputType === 'select'"
+        ref="inputRef"
+        :model-value="editValue"
+        :options="resolvedOptions"
+        @update:model-value="(val) => { editValue = val; saveEdit(); }"
         class="w-full"
         :color="props.validation.error ? '#ff0000' : color"
         :variant="variant"
@@ -168,7 +206,7 @@ const validationClass = computed(() => {
     
     <!-- View Mode -->
     <template v-else>
-      <span class="flex items-center gap-2">
+      <span class="flex items-center gap-2" :class="{ 'opacity-40': !canEdit }">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="16"

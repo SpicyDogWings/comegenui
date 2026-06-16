@@ -1,27 +1,15 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { getBgClasses } from "../../utils/palette";
+import { getBgClasses, getFgClasses } from "../../utils/palette";
 import { transparentize } from "color2k";
-
-interface BadgeConfig {
-  value: string;
-  color?: string;
-  variant?: string;
-}
-
-interface ButtonConfig {
-  label: string;
-  onClick: (row: Record<string, any>) => void;
-  color?: string;
-  variant?: string;
-}
+import Button from "../Button.vue";
 
 interface Column {
   key: string;
   label?: string;
   width?: string;
   align?: "left" | "center" | "right";
-  // Badge and Button properties
+  sortable?: boolean | "string" | "number" | "boolean";
   badges?: (row: Record<string, any>) => BadgeConfig[];
   buttons?: (row: Record<string, any>) => ButtonConfig[];
 }
@@ -52,9 +40,29 @@ const props = defineProps({
     required: false,
     default: "soft",
   },
+  sortBy: {
+    type: String,
+    required: false,
+    default: "",
+  },
+  sortDir: {
+    type: String as () => "" | "asc" | "desc",
+    required: false,
+    default: "",
+  },
+  loading: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 });
 
+const emit = defineEmits<{
+  (e: "sort-change", key: string): void;
+}>();
+
 const bgClasses = computed(() => getBgClasses(props.color, props.variant, false));
+const fgClasses = computed(() => getFgClasses(props.color, props.variant, false));
 
 // For solid variant, use a softer hover effect for rows
 const rowHoverBg = computed(() => {
@@ -81,7 +89,17 @@ const getCellValue = (row: Record<string, any>, col: Column): string => {
 </script>
 
 <template>
-  <div class="flex flex-col overflow-hidden max-w-full">
+  <div class="flex flex-col overflow-hidden max-w-full relative" :style="{ '--loader-color': fgClasses.main }">
+    <div
+      v-if="loading"
+      class="absolute top-0 left-0 right-0 z-30 overflow-hidden"
+      style="height: 3px;"
+    >
+      <div
+        class="absolute top-0 h-full"
+        style="width: 60%; background: linear-gradient(90deg, transparent 0%, var(--loader-color) 50%, transparent 100%); animation: cu-loader 3s ease-in-out infinite;"
+      />
+    </div>
     <div class="overflow-auto rounded-cu">
       <table class="w-full border-collapse">
         <thead>
@@ -89,11 +107,7 @@ const getCellValue = (row: Record<string, any>, col: Column): string => {
             <th
               v-for="col in tableColumns"
               :key="col.key"
-              class="text-left p-3 font-sans font-medium sticky top-0 z-20"
-              :class="{
-                'bg-opacity-10': false,
-                'bg-white': false,
-              }"
+              class="text-left p-3 font-sans font-medium sticky top-0 z-20 select-none"
               :width="col.width"
               :style="{
                 'background-color': props.variant === 'solid' ? bgClasses.main : (props.variant === 'soft' ? 'transparent' : 'var(--table-bg)'),
@@ -102,12 +116,31 @@ const getCellValue = (row: Record<string, any>, col: Column): string => {
               }"
             >
               <slot :name="`header-${col.key}`" :column="col" :color="props.color" :variant="props.variant">
-                {{ col.label || col.key }}
+                <span class="inline-flex items-center gap-1">
+                  <Button
+                    v-if="col.sortable"
+                    :color="fgClasses.main"
+                    variant="ghost"
+                    class="!p-0 !w-6 !h-6 !min-w-0"
+                    @click.stop="emit('sort-change', col.key)"
+                  >
+                    <template v-if="props.sortBy === col.key && props.sortDir === 'asc'">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6L12 2L16 6"/><path d="M12 2V22"/></svg>
+                    </template>
+                    <template v-else-if="props.sortBy === col.key && props.sortDir === 'desc'">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 18L12 22L16 18"/><path d="M12 2V22"/></svg>
+                    </template>
+                    <template v-else>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="m8 18 4 4 4-4"/><path d="m8 6 4-4 4 4"/></svg>
+                    </template>
+                  </Button>
+                  {{ col.label || col.key }}
+                </span>
               </slot>
             </th>
           </tr>
         </thead>
-        <tbody>
+        <tbody :class="{ 'opacity-40 pointer-events-none': props.loading }">
           <tr
             v-for="(row, rowIndex) in props.data"
             :key="rowIndex"
@@ -161,4 +194,12 @@ const getCellValue = (row: Record<string, any>, col: Column): string => {
 
 <style>
 @unocss-placeholder;
+</style>
+
+<style>
+@keyframes cu-loader {
+  0% { left: -100%; }
+  50% { left: 0%; }
+  100% { left: 100%; }
+}
 </style>

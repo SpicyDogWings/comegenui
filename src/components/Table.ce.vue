@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, getCurrentInstance, type Component } from "vue";
 import Table from "./data/AdvancedTable.vue";
 import { getColorMap } from "../utils/palette";
 import { getHostTheme } from "../utils/getHostTheme";
@@ -12,12 +12,14 @@ interface BadgeConfig {
 }
 
 interface ButtonConfig {
-  label: string;
+  label?: string;
+  icon?: string | Component;
   onClick?: (row: Record<string, any>) => void;
   to?: string;
   target?: string;
   color?: string;
   variant?: string;
+  disabled?: boolean;
 }
 
 interface Column {
@@ -25,8 +27,9 @@ interface Column {
   label?: string;
   cell?: (row: Record<string, any>) => string | string[];
   // Editable properties
-  editable?: boolean | RegExp;
-  inputType?: "input" | "textarea";
+  editable?: boolean | RegExp | ((row: Record<string, any>) => boolean);
+  inputType?: "input" | "textarea" | "select";
+  selectOptions?: { value: string; label: string }[] | ((row: Record<string, any>) => { value: string; label: string }[]);
   validator?: (value: string, row: Record<string, any>) => boolean;
   singleClick?: boolean;
   // Badge and Button properties
@@ -94,16 +97,9 @@ const props = defineProps({
   searchPlaceholder: { type: String, required: false, default: "Buscar..." },
   searchFields: { type: Array as () => string[], required: false, default: () => [] },
   searchValue: { type: String, required: false, default: "" },
+  filters: { type: Object as () => Record<string, any>, required: false, default: () => ({}) },
+  loading: { type: Boolean, required: false, default: false },
 });
-
-const emit = defineEmits([
-  "update:currentPage", 
-  "update:itemsPerPage",
-  "update:search",
-  "edit-start",
-  "edit-save", 
-  "edit-cancel"
-]);
 
 const effectiveTheme = computed(() => props.theme || getHostTheme());
 const hexColor = computed(() => {
@@ -112,6 +108,19 @@ const hexColor = computed(() => {
 });
 
 const tableRef = ref<InstanceType<typeof Table> | null>(null);
+const instance = getCurrentInstance();
+
+function ceEmit(event: string, payload: unknown) {
+  const el = instance?.vnode.el as HTMLElement | null;
+  const host = el?.getRootNode()?.host || el;
+  if (host) {
+    host.dispatchEvent(new CustomEvent(event, {
+      detail: payload,
+      bubbles: true,
+      composed: true,
+    }));
+  }
+}
 
 // Expose data manipulation methods from AdvancedTable
 defineExpose({
@@ -134,18 +143,21 @@ defineExpose({
     :items-per-page="props.itemsPerPage"
     :show-page-size="props.showPageSize"
     :page-size-options="props.pageSizeOptions"
+    :theme="effectiveTheme"
     :color="hexColor"
     :variant="props.variant"
     :search-enabled="props.searchEnabled"
     :search-placeholder="props.searchPlaceholder"
     :search-fields="props.searchFields"
     :search-value="props.searchValue"
-    @update:current-page="emit('update:currentPage', $event)"
-    @update:items-per-page="emit('update:itemsPerPage', $event)"
-    @update:search="emit('update:search', $event)"
-    @edit-start="emit('edit-start', $event)"
-    @edit-save="emit('edit-save', $event)"
-    @edit-cancel="emit('edit-cancel', $event)"
+    :filters="props.filters"
+    :loading="props.loading"
+    @update:current-page="ceEmit('update:currentPage', $event)"
+    @update:items-per-page="ceEmit('update:itemsPerPage', $event)"
+    @update:search="ceEmit('update:search', $event)"
+    @edit-start="ceEmit('edit-start', $event)"
+    @edit-save="ceEmit('edit-save', $event)"
+    @edit-cancel="ceEmit('edit-cancel', $event)"
   >
     <!-- Header slots -->
     <template #header="{ column }">
