@@ -34,9 +34,4 @@ if (stored) {
   setTheme(true);
 }
 
-// --- Dropdown events ---
-const dd = document.getElementById('ddMain');
-dd.addEventListener('open', () => logEvent('Menú abierto'));
-dd.addEventListener('close', () => logEvent('Menú cerrado'));
-
 logEvent('Playground listo');

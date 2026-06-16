@@ -6,9 +6,23 @@
     <title>Playground — ComegenUI</title>
     <link rel="stylesheet" href="style.css" />
     <script src="../dist/CuDropdownMenu.umd.js?t=1"></script>
+    <script src="../dist/CuInput.umd.js?t=1"></script>
+
+    <!--
+      ═══════════════════════════════════════════
+      PLAYGROUND — ComegenUI
+
+      Archivos BASE (NO modificar):
+        index.html      → estructura base
+        playground.js   → theme toggle, log, init
+        style.css       → estilos
+
+      ✅ EDITABLE:
+        example.js      → acá podés experimentar
+      ═══════════════════════════════════════════
+    -->
   </head>
   <body>
-    <!-- Top Bar -->
     <div class="topbar">
       <h1 style="font-size:16px;font-weight:600">Playground</h1>
       <div class="topbar-actions">
@@ -16,11 +30,17 @@
       </div>
     </div>
 
-    <!-- Main Content -->
     <div class="main">
       <div class="card">
-        <h2>CuDropdown</h2>
-        <cu-dropdown-menu id="ddMain" label="Abrir menú" color="primary" variant="soft" placement="bottom-start"></cu-dropdown-menu>
+        <h2>Autocomplete</h2>
+
+        <div class="autocomplete-wrap">
+          <cu-input id="searchInput" placeholder="Escribí al menos 3 caracteres..." color="primary" variant="outlined"></cu-input>
+          <cu-dropdown-menu id="ddSuggest" placement="bottom-start">
+            <span slot="toggle" style="display:none"></span>
+          </cu-dropdown-menu>
+        </div>
+
         <div class="log-box" id="log">// Eventos</div>
       </div>
     </div>
