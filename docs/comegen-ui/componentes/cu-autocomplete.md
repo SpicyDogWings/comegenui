@@ -37,6 +37,7 @@ La búsqueda se hace sobre `label` y `value` (cuando existe).
 | Evento | Payload | Descripción |
 |--------|---------|-------------|
 | `select` | `{ label, value?, icon? }` | Item seleccionado |
+| `input` *(nativo)* | `InputEvent` del `<input>` interno | Se emite al escribir. Atraviesa el Shadow DOM automáticamente — no necesita `ceEmit`. |
 
 ## Métodos expuestos
 
