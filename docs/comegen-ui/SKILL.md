@@ -66,8 +66,8 @@ Cada `<script>` registra automáticamente su Custom Element. Los componentes est
 | `CuModal.umd.js` | `<cu-modal>` | Modal |
 | `CuPagination.umd.js` | `<cu-pagination>` | Paginación |
 | `CuTable.umd.js` | `<cu-table>` | Tabla avanzada |
+| `CuAutocomplete.umd.js` | `<cu-autocomplete>` | Autocompletado con búsqueda |
 | `CuDropdownMenu.umd.js` | `<cu-dropdown-menu>` | Menú desplegable |
-| `CuDropdown.umd.js` | `<cu-dropdown>` | Dropdown (obsoleto) |
 
 ### Esperar a que los Custom Elements estén listos
 
@@ -234,6 +234,7 @@ Cada archivo UMD incluye el runtime de Vue 3 (no externalizado):
 | CuModal | ~204 kB | ~50 kB |
 | CuPagination | ~197 kB | ~48 kB |
 | CuTable | ~256 kB | ~57 kB |
+| CuAutocomplete | ~214 kB | ~51 kB |
 | CuDropdownMenu | ~204 kB | ~49 kB |
 
 ### Compatibilidad
@@ -259,4 +260,5 @@ Cada archivo UMD incluye el runtime de Vue 3 (no externalizado):
 - [\<cu-modal\>](componentes/cu-modal.md) — Modal
 - [\<cu-pagination\>](componentes/cu-pagination.md) — Paginación
 - [\<cu-table\>](componentes/cu-table.md) — Tabla avanzada
+- [\<cu-autocomplete\>](componentes/cu-autocomplete.md) — Autocompletado con búsqueda
 - [\<cu-dropdown-menu\>](componentes/cu-dropdown-menu.md) — Menú desplegable con items
