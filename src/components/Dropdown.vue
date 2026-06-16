@@ -76,7 +76,7 @@ defineExpose({ open, close, toggle, get isOpen() { return isOpen.value } });
     <div
       v-if="isOpen"
       :style="{ '--menu-bg': menuBg, '--offset': offset + 'px' }"
-      class="absolute z-1000 min-w-[200px] max-w-[80vw] rounded-cu p-2 font-sans shadow-xl bg-[var(--menu-bg)]"
+      class="absolute z-1000 w-full min-w-[200px] max-w-[80vw] rounded-cu p-2 font-sans shadow-xl bg-[var(--menu-bg)]"
       :class="{
         'top-full left-0 mt-[var(--offset)]': placement === 'bottom-start',
         'top-full right-0 mt-[var(--offset)]': placement === 'bottom-end',
