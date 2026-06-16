@@ -149,15 +149,15 @@ Cada componente que usa color acepta dos props clave:
 
 ### Variantes disponibles por componente
 
-| Variante | Button | Alert | Badge | Input | Checkbox | Textarea | Pagination | Table | DropdownMenu |
-|----------|--------|-------|-------|-------|----------|----------|------------|-------|----------|
-| `solid` | ✓ | ✓ | ✓ | — | — | — | — | ✓ | ✓ |
-| `outlined` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `soft` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `ghost` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `subtle` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `link` | ✓ | — | — | — | — | — | — | ✓ | — |
-| `none` | — | — | — | ✓ | ✓ | ✓ | — | — | — |
+| Variante | Button | Alert | Badge | Input | Checkbox | Textarea | Pagination | Table | DropdownMenu | Autocomplete |
+|----------|--------|-------|-------|-------|----------|----------|------------|-------|----------|-------------|
+| `solid` | ✓ | ✓ | ✓ | — | — | — | — | ✓ | ✓ | — |
+| `outlined` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `soft` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `ghost` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `subtle` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `link` | ✓ | — | — | — | — | — | — | ✓ | — | — |
+| `none` | — | — | — | ✓ | ✓ | ✓ | — | — | — | ✓ |
 
 ---
 
