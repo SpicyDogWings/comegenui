@@ -10,6 +10,8 @@ Librería de componentes UI como Custom Elements nativos, construidos con Vue 3 
 
 Cada componente se distribuye como un archivo **UMD** independiente que se auto-registra como Custom Element al cargarse. No necesitas Vue ni ninguna dependencia.
 
+> **Importante:** Toda la documentación asume consumo vía UMD (HTML plano + `<script>`). Las props se pasan como atributos HTML o propiedades DOM, los eventos con `addEventListener`, y los arrays/objetos se asignan por JS. No se documentan detalles internos de Vue.
+
 ---
 
 ## Índice
@@ -64,6 +66,7 @@ Cada `<script>` registra automáticamente su Custom Element. Los componentes est
 | `CuModal.umd.js` | `<cu-modal>` | Modal |
 | `CuPagination.umd.js` | `<cu-pagination>` | Paginación |
 | `CuTable.umd.js` | `<cu-table>` | Tabla avanzada |
+| `CuDropdown.umd.js` | `<cu-dropdown>` | Dropdown |
 
 ### Esperar a que los Custom Elements estén listos
 
@@ -126,7 +129,7 @@ Si se especifica `theme`, tiene prioridad sobre `data-theme`. Si se omite, hered
 
 | Color | `light` | `dark` | `sigacadv2` |
 |-------|---------|--------|-------------|
-| `primary` | `#1774A4` | `#38bdf8` | `#003366` |
+| `primary` | `#1774A4` | `#38bdf8` | `#0037FF` |
 | `neutral` | `#2c2c2c` | `#e5e5e5` | `#1a1a1a` |
 | `success` | `#22c55e` | `#4ade80` | `#28a745` |
 | `warning` | `#f59e0b` | `#fbbf24` | `#ffc107` |
@@ -145,15 +148,15 @@ Cada componente que usa color acepta dos props clave:
 
 ### Variantes disponibles por componente
 
-| Variante | Button | Alert | Badge | Input | Checkbox | Textarea | Pagination | Table |
-|----------|--------|-------|-------|-------|----------|----------|------------|-------|
-| `solid` | ✓ | ✓ | ✓ | — | — | — | — | ✓ |
-| `outlined` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `soft` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `ghost` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `subtle` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `link` | ✓ | — | — | — | — | — | — | ✓ |
-| `none` | — | — | — | ✓ | ✓ | ✓ | — | — |
+| Variante | Button | Alert | Badge | Input | Checkbox | Textarea | Pagination | Table | Dropdown |
+|----------|--------|-------|-------|-------|----------|----------|------------|-------|----------|
+| `solid` | ✓ | ✓ | ✓ | — | — | — | — | ✓ | ✓ |
+| `outlined` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `soft` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `ghost` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `subtle` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `link` | ✓ | — | — | — | — | — | — | ✓ | — |
+| `none` | — | — | — | ✓ | ✓ | ✓ | — | — | — |
 
 ---
 
@@ -230,6 +233,7 @@ Cada archivo UMD incluye el runtime de Vue 3 (no externalizado):
 | CuModal | ~204 kB | ~50 kB |
 | CuPagination | ~197 kB | ~48 kB |
 | CuTable | ~256 kB | ~57 kB |
+| CuDropdown | ~200 kB | ~48 kB |
 
 ### Compatibilidad
 
@@ -254,3 +258,4 @@ Cada archivo UMD incluye el runtime de Vue 3 (no externalizado):
 - [\<cu-modal\>](componentes/cu-modal.md) — Modal
 - [\<cu-pagination\>](componentes/cu-pagination.md) — Paginación
 - [\<cu-table\>](componentes/cu-table.md) — Tabla avanzada
+- [\<cu-dropdown\>](componentes/cu-dropdown.md) — Dropdown

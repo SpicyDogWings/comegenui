@@ -22,6 +22,7 @@ Librería de componentes UI como Custom Elements nativos, construidos con Vue 3 
   - [`<cu-modal>`](#cu-modal)
   - [`<cu-pagination>`](#cu-pagination)
   - [`<cu-table>`](#cu-table)
+  - [`<cu-dropdown>`](#cu-dropdown)
 - [Notas Técnicas](#notas-técnicas)
 
 ---
@@ -44,6 +45,7 @@ Cada componente es un archivo **UMD** independiente. Incluye solo los que necesi
 <script src="ruta/CuModal.umd.js"></script>
 <script src="ruta/CuPagination.umd.js"></script>
 <script src="ruta/CuTable.umd.js"></script>
+<script src="ruta/CuDropdown.umd.js"></script>
 ```
 
 Cada script registra automáticamente su Custom Element. No necesitas instalar Vue ni ninguna dependencia.
@@ -64,6 +66,7 @@ Cada script registra automáticamente su Custom Element. No necesitas instalar V
 | `CuModal.umd.js` | `<cu-modal>` | Modal |
 | `CuPagination.umd.js` | `<cu-pagination>` | Paginación |
 | `CuTable.umd.js` | `<cu-table>` | Tabla avanzada |
+| `CuDropdown.umd.js` | `<cu-dropdown>` | Dropdown |
 
 ---
 
@@ -111,15 +114,15 @@ Cada componente que usa color acepta dos props clave:
 
 ### Variantes disponibles por componente
 
-| Variante | Button | Alert | Badge | Input | Checkbox | Textarea | Pagination | Table |
-|----------|--------|-------|-------|-------|----------|----------|------------|-------|
-| `solid` | ✓ | ✓ | ✓ | — | — | — | — | ✓ |
-| `outlined` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `soft` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `ghost` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `subtle` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `link` | ✓ | — | — | — | — | — | — | ✓ |
-| `none` | — | — | — | ✓ | ✓ | ✓ | — | — |
+| Variante | Button | Alert | Badge | Input | Checkbox | Textarea | Pagination | Table | Dropdown |
+|----------|--------|-------|-------|-------|----------|----------|------------|-------|----------|
+| `solid` | ✓ | ✓ | ✓ | — | — | — | — | ✓ | ✓ |
+| `outlined` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `soft` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `ghost` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `subtle` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `link` | ✓ | — | — | — | — | — | — | ✓ | — |
+| `none` | — | — | — | ✓ | ✓ | ✓ | — | — | — |
 
 ---
 
@@ -210,9 +213,9 @@ Alerta que puede abrirse, cerrarse y mostrarse con animación.
 </cu-alert>
 
 <cu-alert color="danger" variant="outlined" id="miAlerta">
-  <template #icon>
+  <span slot="icon">
     <svg><!-- icono personalizado --></svg>
-  </template>
+  </span>
   Ha ocurrido un error.
 </cu-alert>
 
@@ -574,14 +577,14 @@ Modal/diálogo modal con backdrop, animación, y slots para footer.
 ```html
 <cu-modal title="Confirmar eliminación" description="¿Estás seguro?" id="modalConfirm">
   <p>Esta acción no se puede deshacer.</p>
-  <template #footer>
+  <div slot="footer">
     <cu-button color="danger" variant="solid" onclick="document.getElementById('modalConfirm').close()">
       Eliminar
     </cu-button>
     <cu-button variant="ghost" onclick="document.getElementById('modalConfirm').close()">
       Cancelar
     </cu-button>
-  </template>
+  </div>
 </cu-modal>
 
 <button onclick="document.getElementById('modalConfirm').open()">Abrir modal</button>
@@ -817,6 +820,109 @@ interface ButtonConfig {
 
 ---
 
+### `<cu-dropdown>`
+
+Menú desplegable con toggle, posicionamiento y slots.
+
+#### Props
+
+| Prop | Tipo | Default | Descripción |
+|------|------|---------|-------------|
+| `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` |
+| `color` | `string` | `"neutral"` | Color semántico |
+| `variant` | `string` | `"ghost"` | `solid`, `outlined`, `soft`, `ghost`, `subtle` |
+| `disabled` | `boolean` | `false` | Deshabilitado |
+| `hightContrast` | `boolean` | `false` | Alto contraste |
+| `label` | `string` | `""` | Texto del toggle |
+| `placement` | `string` | `"bottom-start"` | `bottom-start`, `bottom-end`, `top-start`, `top-end` |
+| `offset` | `number` | `4` | Gap entre toggle y menú (px) |
+
+#### Eventos
+
+| Evento | Payload | Descripción |
+|--------|---------|-------------|
+| `open` | — | Se abre el menú |
+| `close` | — | Se cierra el menú |
+
+#### Slots
+
+| Slot | Descripción |
+|------|-------------|
+| `default` | Contenido del menú desplegable |
+| `toggle` | Reemplaza el botón toggle por defecto |
+
+> **Importante:** Los slots en Custom Elements usan el atributo `slot="nombre"` en HTML plano. No uses `#nombre` (es sintaxis de Vue, no funciona con UMD).
+
+#### Métodos expuestos
+
+| Método | Descripción |
+|--------|-------------|
+| `.open()` | Abre el menú |
+| `.close()` | Cierra el menú |
+| `.toggle()` | Alterna visibilidad |
+| `.isOpen` (getter) | Estado actual (`boolean`) |
+
+#### Uso
+
+```html
+<cu-dropdown label="Acciones" color="primary" variant="soft">
+  <a href="/editar">Editar</a>
+  <a href="/duplicar">Duplicar</a>
+  <hr />
+  <a href="/eliminar">Eliminar</a>
+</cu-dropdown>
+
+<cu-dropdown id="ddOpciones" color="danger" variant="outlined" placement="bottom-end">
+  <button onclick="alert('Opción 1')">Opción 1</button>
+  <button onclick="alert('Opción 2')">Opción 2</button>
+</cu-dropdown>
+
+<script>
+  document.getElementById('ddOpciones').addEventListener('open', () => {
+    console.log('Dropdown abierto');
+  });
+  document.getElementById('ddOpciones').addEventListener('close', () => {
+    console.log('Dropdown cerrado');
+  });
+</script>
+```
+
+#### Toggle personalizado
+
+Reemplaza el botón por defecto usando `slot="toggle"`:
+
+```html
+<cu-dropdown id="ddCustom">
+  <button slot="toggle" onclick="document.getElementById('ddCustom').toggle()"
+          style="background:#3b82f6;color:white;border:none;border-radius:4px;padding:6px 12px;cursor:pointer">
+    ☰ Menú
+  </button>
+  <a href="/perfil">Perfil</a>
+  <a href="/config">Configuración</a>
+  <a href="/logout">Cerrar sesión</a>
+</cu-dropdown>
+```
+
+> **Nota:** Al usar un toggle personalizado, debes controlar la apertura/cierre manualmente, por ejemplo con `document.getElementById('id').toggle()`.
+
+#### Control programático
+
+```html
+<cu-dropdown id="ddAPI" label="Dropdown programático">
+  <button onclick="console.log('Acción ejecutada')">Acción</button>
+</cu-dropdown>
+
+<script>
+  const dd = document.getElementById('ddAPI');
+  dd.open();                // Abre el menú
+  dd.close();               // Cierra el menú
+  dd.toggle();              // Alterna visibilidad
+  console.log(dd.isOpen);   // true | false
+</script>
+```
+
+---
+
 ## Notas Técnicas
 
 ### Eventos en Custom Elements
@@ -866,6 +972,7 @@ Cada archivo UMD incluye el runtime de Vue 3 (no externalizado):
 | CuModal | ~204 kB | ~50 kB |
 | CuPagination | ~197 kB | ~48 kB |
 | CuTable | ~256 kB | ~57 kB |
+| CuDropdown | ~200 kB | ~48 kB |
 
 ### Compatibilidad
 

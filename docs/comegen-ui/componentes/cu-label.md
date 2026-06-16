@@ -5,12 +5,15 @@ Label semántico con auto-foco. Al hacer clic, busca un input hijo y lo enfoca.
 [← Volver](../SKILL.md)
 
 ---
-
 ## Props
 
 | Prop | Tipo | Default | Descripción |
 |------|------|---------|-------------|
+| `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` |
+| `for` | `string` | `""` | ID del elemento a enfocar al hacer clic |
 | `label` | `string` | `""` | Texto del label |
+| `color` | `string` | `"neutral"` | Color semántico (`primary`, `neutral`, `success`, `warning`, `danger`) |
+| `hightContrast` | `boolean` | `false` | Alto contraste |
 
 ## Slots
 

@@ -47,7 +47,7 @@ Modal/diálogo con backdrop, animación y slots para footer.
 
 <cu-modal title="Confirmar eliminación" description="¿Estás seguro?" id="modalConfirm">
   <p>Esta acción no se puede deshacer.</p>
-  <template #footer>
+  <div slot="footer">
     <cu-button color="danger" variant="solid"
       onclick="document.getElementById('modalConfirm').close()">
       Eliminar
@@ -56,7 +56,7 @@ Modal/diálogo con backdrop, animación y slots para footer.
       onclick="document.getElementById('modalConfirm').close()">
       Cancelar
     </cu-button>
-  </template>
+  </div>
 </cu-modal>
 
 <button onclick="document.getElementById('modalConfirm').open()">

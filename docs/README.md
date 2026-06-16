@@ -26,6 +26,7 @@ Si solo quieres **usar los componentes** en tu proyecto (HTML plano, React, Vue,
 | `<cu-modal>` | [Ver docs](comegen-ui/componentes/cu-modal.md) |
 | `<cu-pagination>` | [Ver docs](comegen-ui/componentes/cu-pagination.md) |
 | `<cu-table>` | [Ver docs](comegen-ui/componentes/cu-table.md) |
+| `<cu-dropdown>` | [Ver docs](comegen-ui/componentes/cu-dropdown.md) |
 
 ---
 

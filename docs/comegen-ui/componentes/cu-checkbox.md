@@ -33,6 +33,7 @@ Checkbox personalizado con label.
 | `.get()` | Devuelve el estado (`boolean`) |
 | `.set(value)` | Asigna estado |
 | `.reset()` | Pone en `false` |
+| `.focus()` | Enfoca el checkbox |
 
 ## Uso en HTML plano
 

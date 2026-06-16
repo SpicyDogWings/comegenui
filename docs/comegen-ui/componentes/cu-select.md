@@ -28,6 +28,12 @@ Selector de opciones con soporte de color, variante e ícono chevron.
 | `.reset()` | Limpia la selección |
 | `.focus()` | Enfoca el select |
 
+## Eventos
+
+| Evento | Payload | Descripción |
+|--------|---------|-------------|
+| `update:modelValue` | `string` | Cambio de valor seleccionado |
+
 ## Uso en HTML plano
 
 ```html

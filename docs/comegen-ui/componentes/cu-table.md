@@ -27,7 +27,7 @@ Tabla avanzada con búsqueda, edición inline, paginación, badges y botones por
 | `filters` | `object` | `{}` | Filtros por columna: `{ estado: "Activo", tipo: ["1","3"] }` |
 | `loading` | `boolean` | `false` | Muestra una barra de carga animada en el tope de la tabla |
 
-> **`search-fields` como atributo HTML:** Vue CE no parsea JSON automáticamente. Si lo pasás como atributo HTML, usá siempre `search-fields='["campo1","campo2"]'`. Cuando lo seteás por JS, pasá un array real: `tabla.searchFields = ["nombre", "tipo"]`.
+> **`search-fields` como atributo HTML:** Los atributos se reciben como strings. Pasá siempre `search-fields='["campo1","campo2"]'` (JSON válido). Cuando lo seteés por JS, usá un array real: `tabla.searchFields = ["nombre", "tipo"]`.
 
 ---
 
@@ -38,7 +38,7 @@ interface Column {
   key: string;
   label?: string;
   cell?: (row) => string | string[];
-  editable?: boolean | RegExp;
+  editable?: boolean | RegExp | ((row) => boolean);
   inputType?: 'input' | 'textarea' | 'select';
   selectOptions?: { value: string; label: string }[] | ((row) => { value: string; label: string }[]);
   validator?: (value, row) => boolean;
@@ -55,7 +55,7 @@ interface BadgeConfig {
 
 interface ButtonConfig {
   label?: string;
-  icon?: string | Component;
+  icon?: string;  // SVG inline
   onClick?: (row) => void;
   to?: string;
   target?: string;
@@ -85,13 +85,15 @@ interface ButtonConfig {
 
 ## Slots
 
+Usá `<element slot="nombre">` para proyectar contenido:
+
 | Slot | Bindings | Descripción |
 |------|----------|-------------|
-| `#header` | `{ column, color, variant }` | Personaliza el header completo |
-| `#header-{key}` | `{ column, color, variant }` | Header de una columna específica |
-| `#cell-{key}` | `{ row, column, index, value }` | Celda de una columna específica |
-| `#empty` | — | Contenido cuando no hay datos |
-| `#search` | `{ query, update }` | Personaliza el input de búsqueda |
+| `header` | `{ column, color, variant }` | Personaliza el header completo |
+| `header-{key}` | `{ column, color, variant }` | Header de una columna específica |
+| `cell-{key}` | `{ row, column, index, value }` | Celda de una columna específica |
+| `empty` | — | Contenido cuando no hay datos |
+| `search` | `{ query, update }` | Personaliza el input de búsqueda |
 
 ---
 
@@ -188,13 +190,10 @@ En este ejemplo, buscar `"notas"` o `"certificado"` encuentra la fila de Juan P�
 
 ### search-fields desde HTML
 
-Vue CE pasa los atributos como strings. Usá formato JSON con comillas dobles internas:
+Los atributos se reciben como strings. Usá formato JSON con comillas dobles internas:
 
 ```html
 <!-- ✅ Correcto -->
-<cu-table search-enabled search-fields='["nombre","tipo"]'></cu-table>
-
-<!-- ❌ No funciona (Vue CE no parsea JSON automáticamente como array) -->
 <cu-table search-enabled search-fields='["nombre","tipo"]'></cu-table>
 ```
 
@@ -262,7 +261,7 @@ Probá buscar: `"certificado"`, `"matricula"` (sin acento), `"hoja"`, `"grado"` 
 Cuando `loading` es `true`, se muestra una barra delgada animada en el tope de la tabla:
 
 ```html
-<cu-table id="miTabla" search-enabled pagination :loading="true"></cu-table>
+<cu-table id="miTabla" search-enabled pagination loading></cu-table>
 <!-- o por JS -->
 <script>
   const t = document.getElementById('miTabla');
@@ -316,6 +315,50 @@ Los filtros se agregan al pipeline después de la búsqueda y antes del ordenami
 ```
 data → search → filters → sort → pagination
 ```
+
+---
+
+## Edición condicional por fila
+
+`editable` también acepta una función que recibe la fila y devuelve `true`/`false`. Útil para bloquear edición según el estado de la fila:
+
+```js
+{
+  key: 'nombre',
+  label: 'Nombre',
+  editable: (row) => row.estado === 'Activo',  // solo editable si está activo
+}
+```
+
+```html
+<cu-table id="tablaCondicional" search-enabled pagination></cu-table>
+
+<script>
+  const t = document.getElementById('tablaCondicional');
+  t.columns = [
+    {
+      key: 'nombre',
+      label: 'Nombre',
+      editable: (row) => row.estado === 'Activo',
+    },
+    {
+      key: 'estado',
+      label: 'Estado',
+      badges: (row) => [{
+        value: row.estado,
+        color: row.estado === 'Activo' ? 'success' : 'warning',
+        variant: 'soft',
+      }],
+    },
+  ];
+  t.data = [
+    { nombre: 'Juan Pérez', estado: 'Activo' },    // editable
+    { nombre: 'Carlos López', estado: 'Inactivo' }, // NO editable
+  ];
+</script>
+```
+
+Sigue siendo compatible con `boolean` y `RegExp` como antes.
 
 ---
 

@@ -51,9 +51,9 @@ Alerta que puede abrirse, cerrarse y mostrarse con animación.
 </cu-alert>
 
 <cu-alert color="danger" variant="outlined" id="miAlerta">
-  <template #icon>
+  <span slot="icon">
     <svg><!-- icono --></svg>
-  </template>
+  </span>
   Ha ocurrido un error.
 </cu-alert>
 

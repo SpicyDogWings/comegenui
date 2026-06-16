@@ -20,6 +20,7 @@
 | `noResize` | `boolean` | `false` | Deshabilita redimensionar |
 | `modelValue` | `string` | `""` | Valor controlado |
 | `startValue` | `string` | — | Valor inicial |
+| `hightContrast` | `boolean` | `false` | Alto contraste |
 
 ## Eventos
 
