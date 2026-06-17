@@ -39,14 +39,46 @@ interface Column {
   label?: string;
   cell?: (row) => string | string[];
   editable?: boolean | RegExp | ((row) => boolean);
-  inputType?: 'input' | 'textarea' | 'select';
-  selectOptions?: { value: string; label: string }[] | ((row) => { value: string; label: string }[]);
+  inputType?: 'input' | 'textarea' | 'select' | 'autocomplete';
   validator?: (value, row) => boolean;
   singleClick?: boolean;
+  color?: string;              // Color hex para el editable (cualquier tipo)
+  variant?: string;            // Variante para el editable (cualquier tipo)
   badges?: (row) => BadgeConfig[];
   buttons?: (row) => ButtonConfig[];
-}
 
+  // Props específicas por inputType:
+  select?: {
+    options: { value: string; label: string; disabled?: boolean; color?: string; variant?: string }[];
+    color?: string;            // Color del Select (sobrescribe column.color)
+    variant?: string;          // Variante del Select
+    placement?: string;        // bottom-start, bottom-end, top-start, top-end
+    placeholderWrap?: boolean;
+  };
+  autocomplete?: {
+    items: { label: string; value?: string; icon?: string }[];
+    minChars?: number;
+    color?: string;
+    variant?: string;
+  };
+  textarea?: {
+    rows?: number;
+    noResize?: boolean;
+    color?: string;
+    variant?: string;
+  };
+  input?: {
+    type?: string;             // text, password, email, number, etc.
+    startValue?: string;
+    color?: string;
+    variant?: string;
+  };
+
+  // ⚠️ Deprecated (usar select.options en su lugar):
+  selectOptions?: ...;
+  // ⚠️ Deprecated (usar autocomplete.items en su lugar):
+  autocompleteItems?: ...;
+}
 interface BadgeConfig {
   value: string;
   color?: string;

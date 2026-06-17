@@ -12,17 +12,58 @@ interface AutocompleteItem {
   icon?: string;
 }
 
+interface SelectOption {
+  value: string;
+  label: string;
+  disabled?: boolean;
+  color?: string;
+  variant?: string;
+}
+
 interface Column {
   key: string;
   label?: string;
   editable?: boolean | RegExp | ((row: Record<string, any>) => boolean);
   validator?: (value: string, row: Record<string, any>) => boolean;
   inputType?: "input" | "textarea" | "select" | "autocomplete";
-  selectOptions?: SelectOption[] | ((row: Record<string, any>) => SelectOption[]);
-  autocompleteItems?: AutocompleteItem[] | ((row: Record<string, any>) => AutocompleteItem[]);
   singleClick?: boolean;
   width?: string;
   align?: "left" | "center" | "right";
+
+  // Shorthands (aplican a cualquier tipo):
+  color?: string;
+  variant?: string;
+
+  // Props específicas por tipo (priority sobre shorthands):
+  select?: {
+    options: SelectOption[];
+    color?: string;
+    variant?: string;
+    placement?: string;
+    placeholderWrap?: boolean;
+  };
+  autocomplete?: {
+    items: AutocompleteItem[];
+    minChars?: number;
+    color?: string;
+    variant?: string;
+  };
+  textarea?: {
+    rows?: number;
+    noResize?: boolean;
+    color?: string;
+    variant?: string;
+  };
+  input?: {
+    type?: string;
+    startValue?: string;
+    color?: string;
+    variant?: string;
+  };
+
+  // Legacy (deprecated, compatibilidad):
+  selectOptions?: SelectOption[] | ((row: Record<string, any>) => SelectOption[]);
+  autocompleteItems?: AutocompleteItem[] | ((row: Record<string, any>) => AutocompleteItem[]);
 }
 
 const props = defineProps({
@@ -160,17 +201,38 @@ const validationClass = computed(() => {
 });
 
 const resolvedOptions = computed(() => {
-  if (typeof props.column.selectOptions === "function") {
-    return props.column.selectOptions(props.row);
-  }
-  return props.column.selectOptions || [];
+  const col = props.column;
+  if (col.select?.options) return col.select.options;
+  if (typeof col.selectOptions === "function") return col.selectOptions(props.row);
+  return col.selectOptions || [];
 });
 
 const resolvedAutocompleteItems = computed(() => {
-  if (typeof props.column.autocompleteItems === "function") {
-    return props.column.autocompleteItems(props.row);
-  }
-  return props.column.autocompleteItems || [];
+  const col = props.column;
+  if (col.autocomplete?.items) return col.autocomplete.items;
+  if (typeof col.autocompleteItems === "function") return col.autocompleteItems(props.row);
+  return col.autocompleteItems || [];
+});
+
+const elementColor = computed(() => {
+  const col = props.column;
+  if (props.validation.error) return "#ff0000";
+  if (col.inputType === "select" && col.select?.color) return col.select.color;
+  if (col.inputType === "autocomplete" && col.autocomplete?.color) return col.autocomplete.color;
+  if (col.inputType === "textarea" && col.textarea?.color) return col.textarea.color;
+  if (col.inputType === "input" && col.input?.color) return col.input.color;
+  if (col.color) return col.color;
+  return props.color;
+});
+
+const elementVariant = computed(() => {
+  const col = props.column;
+  if (col.inputType === "select" && col.select?.variant) return col.select.variant;
+  if (col.inputType === "autocomplete" && col.autocomplete?.variant) return col.autocomplete.variant;
+  if (col.inputType === "textarea" && col.textarea?.variant) return col.textarea.variant;
+  if (col.inputType === "input" && col.input?.variant) return col.input.variant;
+  if (col.variant) return col.variant;
+  return props.variant;
 });
 
 const canEdit = computed(() => {
@@ -193,43 +255,49 @@ const canEdit = computed(() => {
         v-model="editValue"
         @blur="saveEdit"
         @keydown="handleKeyDown"
-        noResize
+        :no-resize="column.textarea?.noResize !== false"
+        :rows="column.textarea?.rows ?? 3"
         class="w-full"
-        :color="props.validation.error ? '#ff0000' : color"
-        :variant="variant"
+        :color="elementColor"
+        :variant="elementVariant"
       />
       <Select
         v-else-if="column.inputType === 'select'"
         ref="inputRef"
         :model-value="editValue"
         :options="resolvedOptions"
+        :placement="column.select?.placement"
+        :placeholder-wrap="column.select?.placeholderWrap"
         @update:model-value="(val) => { editValue = val; saveEdit(); }"
         @select="(opt) => { editValue = opt.value; saveEdit(); }"
         @blur="saveEdit"
         class="w-full"
-        :color="props.validation.error ? '#ff0000' : color"
-        :variant="variant"
+        :color="elementColor"
+        :variant="elementVariant"
       />
       <Autocomplete
         v-else-if="column.inputType === 'autocomplete'"
         ref="inputRef"
         v-model="editValue"
         :items="resolvedAutocompleteItems"
+        :min-chars="column.autocomplete?.minChars ?? 0"
         @blur="saveEdit"
         @select="(item) => { if (item.value) editValue = item.value; saveEdit(); }"
         class="w-full"
-        :color="props.validation.error ? '#ff0000' : color"
-        :variant="variant"
+        :color="elementColor"
+        :variant="elementVariant"
       />
       <Input
         v-else
         ref="inputRef"
         v-model="editValue"
+        :type="column.input?.type || 'text'"
+        :start-value="column.input?.startValue"
         @blur="saveEdit"
         @keydown="handleKeyDown"
         class="w-full"
-        :color="props.validation.error ? '#ff0000' : color"
-        :variant="variant"
+        :color="elementColor"
+        :variant="elementVariant"
       />
     </template>
     

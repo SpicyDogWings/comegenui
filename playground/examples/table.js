@@ -29,7 +29,10 @@ tabla.columns = [
     editable: true,
     singleClick: true,
     inputType: 'autocomplete',
-    autocompleteItems: departamentos,
+    autocomplete: {
+      items: departamentos,
+      color: '#1774A4',
+    },
   },
   {
     key: 'rol',
@@ -37,7 +40,11 @@ tabla.columns = [
     editable: true,
     singleClick: true,
     inputType: 'select',
-    selectOptions: roles,
+    select: {
+      options: roles,
+      color: '#22c55e',
+      placement: 'bottom-end',
+    },
   },
   {
     key: 'estado',

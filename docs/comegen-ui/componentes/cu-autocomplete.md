@@ -12,11 +12,13 @@ Campo de búsqueda con sugerencias en menú desplegable. Filtra los items en viv
 |------|------|---------|-------------|
 | `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` |
 | `color` | `string` | `"neutral"` | Color semántico |
-| `variant` | `string` | `"outlined"` | `outlined`, `soft`, `ghost`, `subtle`, `none` |
+| `variant` | `string` | `"none"` | `outlined`, `soft`, `ghost`, `subtle`, `none` |
 | `type` | `string` | `"text"` | `text`, `password`, `email`, `number`, `tel`, `url`, `search` |
 | `placeholder` | `string` | `""` | Placeholder del input |
 | `min-chars` | `number` | `0` | Caracteres mínimos para abrir el menú |
-| `placement` | `string` | `"bottom-start"` | `bottom-start`, `bottom-end`, `top-start`, `top-end` |
+| `position` | `string` | `"bottom"` | `bottom`, `top` |
+| `align` | `string` | `"start"` | `start`, `center`, `end` |
+| `placement` | `string` | `""` | Compatibilidad: `bottom-start`, etc. (si se usa, anula position+align) |
 | `disabled` | `boolean` | `false` | Deshabilitado |
 | `readonly` | `boolean` | `false` | Solo lectura |
 | `items` | `array` | `[]` | Items del menú (ver abajo) |
@@ -38,6 +40,8 @@ La búsqueda se hace sobre `label` y `value` (cuando existe).
 | Evento | Payload | Descripción |
 |--------|---------|-------------|
 | `select` | `{ label, value?, icon? }` | Item seleccionado |
+| `update:modelValue` | `string` | Cambio de valor (emitido al seleccionar) |
+| `blur` | — | Perdió el foco (útil en celdas editables) |
 | `input` *(nativo)* | `InputEvent` del `<input>` interno | Se emite al escribir. Atraviesa el Shadow DOM automáticamente — no necesita `ceEmit`. |
 
 ## Métodos expuestos
