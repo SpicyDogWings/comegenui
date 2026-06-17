@@ -14,6 +14,7 @@ const props = defineProps({
   variant: { type: String, required: false, default: "none" },
   disabled: { type: Boolean, required: false, default: false },
   placeholder: { type: String, required: false, default: "" },
+  placeholderWrap: { type: Boolean, required: false, default: false },
   options: { type: Array as () => SelectOption[], required: false, default: () => [] },
   menuBg: { type: String, required: false, default: "#ffffff" },
 });
@@ -68,7 +69,12 @@ defineExpose({
         class="box-border"
         @click="toggle"
       >
-        <span>{{ selectedLabel }}</span>
+        <span
+          :class="{
+            'whitespace-nowrap overflow-hidden text-ellipsis min-w-0': !placeholderWrap,
+            'whitespace-normal': placeholderWrap,
+          }"
+        >{{ selectedLabel }}</span>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="16"

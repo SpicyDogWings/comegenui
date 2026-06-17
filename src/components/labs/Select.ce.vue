@@ -23,6 +23,7 @@ const props = defineProps({
       ["solid", "outlined", "soft", "ghost", "subtle", "link", "none"].includes(value),
   },
   placeholder: { type: String, required: false },
+  placeholderWrap: { type: Boolean, required: false, default: false },
   disabled: { type: Boolean, required: false, default: false },
   hightContrast: { type: Boolean, required: false, default: false },
 });
@@ -78,6 +79,7 @@ defineExpose({
     :disabled="props.disabled"
     :hight-contrast="props.hightContrast"
     :placeholder="props.placeholder"
+    :placeholder-wrap="props.placeholderWrap"
     :model-value="innerValue"
     :options="props.options"
     :menu-bg="getColorMap(effectiveTheme as ThemeName).surface"
