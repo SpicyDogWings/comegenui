@@ -43,8 +43,6 @@ interface Column {
   selectOptions?: { value: string; label: string }[] | ((row) => { value: string; label: string }[]);
   validator?: (value, row) => boolean;
   singleClick?: boolean;
-  color?: string;           // Color hex del elemento editable (input/select/textarea)
-  editableElement?: Record<string, any>;  // Props extra para el elemento editable
   badges?: (row) => BadgeConfig[];
   buttons?: (row) => ButtonConfig[];
 }
@@ -66,10 +64,6 @@ interface ButtonConfig {
   disabled?: boolean;
 }
 ```
-
-> **`color`:** Color hex para el componente editable de la columna (Input, Textarea o cuando `inputType: 'select'`). Si se omite, hereda el `color` de la tabla.
->
-> **`editableElement`:** Objeto con props adicionales que se pasan directamente al componente editable. Útil para pasar `variant`, `placeholderWrap`, `placement`, etc. Ej: `{ variant: 'outlined', color: '#ff0000' }`.
 
 ---
 
@@ -412,8 +406,6 @@ Usá `inputType: 'select'` y `selectOptions` para que una columna editable rende
     : [{ value: 'a', label: 'Categoría A' }],
 }
 ```
-
-> **Color del select editable:** Podés cambiar el color del Select (y de cualquier elemento editable) con `color` en la columna: `{ key: 'rol', color: '#1774A4', ... }`. También podés pasar props extra con `editableElement`: `{ editableElement: { variant: 'outlined', color: '#1774A4' } }`.
 
 ---
 

@@ -20,7 +20,6 @@ tabla.columns = [
     singleClick: true,
     inputType: 'select',
     selectOptions: roles,
-    color: '#1774A4',
   },
   {
     key: 'estado',
