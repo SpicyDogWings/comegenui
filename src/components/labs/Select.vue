@@ -124,7 +124,6 @@ defineExpose({
           :color="opt.color || color"
           :variant="opt.variant || (opt.value === selectedValue ? 'soft' : 'ghost')"
           :class="{
-            'font-semibold': opt.value === selectedValue,
             'opacity-50 cursor-not-allowed': opt.disabled,
           }"
           :disabled="opt.disabled"
