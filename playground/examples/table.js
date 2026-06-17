@@ -31,7 +31,7 @@ tabla.columns = [
     inputType: 'autocomplete',
     autocomplete: {
       items: departamentos,
-      color: '#1774A4',
+      color: (row) => row.depto === 'Sistemas' ? '#1774A4' : '#2c2c2c',
     },
   },
   {
@@ -42,7 +42,7 @@ tabla.columns = [
     inputType: 'select',
     select: {
       options: roles,
-      color: '#22c55e',
+      color: (row) => row.estado === 'Activo' ? '#22c55e' : '#f59e0b',
       placement: 'bottom-end',
     },
   },

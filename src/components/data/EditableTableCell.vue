@@ -202,35 +202,53 @@ const validationClass = computed(() => {
 
 const resolvedOptions = computed(() => {
   const col = props.column;
-  if (col.select?.options) return col.select.options;
+  const opts = col.select?.options;
+  if (typeof opts === "function") return opts(props.row);
+  if (opts) return opts;
   if (typeof col.selectOptions === "function") return col.selectOptions(props.row);
   return col.selectOptions || [];
 });
 
 const resolvedAutocompleteItems = computed(() => {
   const col = props.column;
-  if (col.autocomplete?.items) return col.autocomplete.items;
+  const items = col.autocomplete?.items;
+  if (typeof items === "function") return items(props.row);
+  if (items) return items;
   if (typeof col.autocompleteItems === "function") return col.autocompleteItems(props.row);
   return col.autocompleteItems || [];
 });
 
+function resolveProp<T>(val: T | ((row: Record<string, any>) => T) | undefined, row: Record<string, any>): T | undefined {
+  return typeof val === "function" ? (val as any)(row) : val;
+}
+
 const elementColor = computed(() => {
   const col = props.column;
   if (props.validation.error) return "#ff0000";
-  if (col.inputType === "select" && col.select?.color) return col.select.color;
-  if (col.inputType === "autocomplete" && col.autocomplete?.color) return col.autocomplete.color;
-  if (col.inputType === "textarea" && col.textarea?.color) return col.textarea.color;
-  if (col.inputType === "input" && col.input?.color) return col.input.color;
+  const c = resolveProp(
+    col.inputType === "select" ? col.select?.color
+      : col.inputType === "autocomplete" ? col.autocomplete?.color
+      : col.inputType === "textarea" ? col.textarea?.color
+      : col.inputType === "input" ? col.input?.color
+      : undefined,
+    props.row
+  );
+  if (c) return c;
   if (col.color) return col.color;
   return props.color;
 });
 
 const elementVariant = computed(() => {
   const col = props.column;
-  if (col.inputType === "select" && col.select?.variant) return col.select.variant;
-  if (col.inputType === "autocomplete" && col.autocomplete?.variant) return col.autocomplete.variant;
-  if (col.inputType === "textarea" && col.textarea?.variant) return col.textarea.variant;
-  if (col.inputType === "input" && col.input?.variant) return col.input.variant;
+  const v = resolveProp(
+    col.inputType === "select" ? col.select?.variant
+      : col.inputType === "autocomplete" ? col.autocomplete?.variant
+      : col.inputType === "textarea" ? col.textarea?.variant
+      : col.inputType === "input" ? col.input?.variant
+      : undefined,
+    props.row
+  );
+  if (v) return v;
   if (col.variant) return col.variant;
   return props.variant;
 });
