@@ -8,6 +8,9 @@ import Select from "../labs/Select.vue";
 interface SelectOption {
   value: string;
   label: string;
+  disabled?: boolean;
+  color?: string;
+  variant?: string;
 }
 
 interface Column {

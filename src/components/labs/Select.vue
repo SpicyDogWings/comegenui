@@ -6,6 +6,9 @@ import Button from "../Button.vue";
 interface SelectOption {
   value: string;
   label: string;
+  disabled?: boolean;
+  color?: string;
+  variant?: string;
 }
 
 const props = defineProps({
@@ -38,6 +41,7 @@ watch(() => props.modelValue, (val) => {
 }, { immediate: true });
 
 function onSelect(option: SelectOption) {
+  if (option.disabled) return;
   selectedValue.value = option.value;
   emit("update:modelValue", option.value);
   emit("select", option);
@@ -117,8 +121,10 @@ defineExpose({
         <Button
           v-for="(opt, i) in options"
           :key="i"
-          :color="opt.value === selectedValue ? color : '#888'"
-          :variant="opt.value === selectedValue ? 'soft' : 'ghost'"
+          :color="opt.color || (opt.value === selectedValue ? color : '#888')"
+          :variant="opt.variant || (opt.value === selectedValue ? 'soft' : 'ghost')"
+          :disabled="opt.disabled"
+          :class="{ 'opacity-50 cursor-not-allowed': opt.disabled }"
           style="width:100%;justify-content:flex-start"
           @click="onSelect(opt)"
         >

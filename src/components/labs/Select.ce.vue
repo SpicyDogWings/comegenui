@@ -8,6 +8,9 @@ import { isValidTheme, type ThemeName } from "../../config/theme";
 interface SelectOption {
   value: string;
   label: string;
+  disabled?: boolean;
+  color?: string;
+  variant?: string;
 }
 
 const props = defineProps({
@@ -36,6 +39,15 @@ const hexColor = computed(() => {
   const map = getColorMap(effectiveTheme.value as ThemeName);
   return map[props.color as keyof typeof map] || props.color;
 });
+
+const themeMap = computed(() => getColorMap(effectiveTheme.value as ThemeName));
+
+const resolvedOptions = computed(() =>
+  (props.options || []).map((opt: any) => ({
+    ...opt,
+    color: opt.color ? (themeMap.value[opt.color as keyof typeof themeMap.value] || opt.color) : undefined,
+  })),
+);
 
 const selectRef = ref<InstanceType<typeof Select> | null>(null);
 const instance = getCurrentInstance();
@@ -87,7 +99,7 @@ defineExpose({
     :align="props.align"
     :placement="props.placement"
     :model-value="innerValue"
-    :options="props.options"
+    :options="resolvedOptions"
     :menu-bg="getColorMap(effectiveTheme as ThemeName).surface"
     @select="ceEmit('select', $event)"
     @close="ceEmit('close', $event)"
