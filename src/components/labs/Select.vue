@@ -121,10 +121,13 @@ defineExpose({
         <Button
           v-for="(opt, i) in options"
           :key="i"
-          :color="opt.color || (opt.value === selectedValue ? color : '#888')"
+          :color="opt.color || color"
           :variant="opt.variant || (opt.value === selectedValue ? 'soft' : 'ghost')"
+          :class="{
+            'font-semibold': opt.value === selectedValue,
+            'opacity-50 cursor-not-allowed': opt.disabled,
+          }"
           :disabled="opt.disabled"
-          :class="{ 'opacity-50 cursor-not-allowed': opt.disabled }"
           style="width:100%;justify-content:flex-start"
           @click="onSelect(opt)"
         >

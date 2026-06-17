@@ -20,6 +20,7 @@ interface Column {
   validator?: (value: string, row: Record<string, any>) => boolean;
   inputType?: "input" | "textarea" | "select";
   selectOptions?: SelectOption[] | ((row: Record<string, any>) => SelectOption[]);
+  color?: string;
   singleClick?: boolean;
   width?: string;
   align?: "left" | "center" | "right";
@@ -183,7 +184,7 @@ const canEdit = computed(() => {
         @keydown="handleKeyDown"
         noResize
         class="w-full"
-        :color="props.validation.error ? '#ff0000' : color"
+        :color="props.column.color || (props.validation.error ? '#ff0000' : color)"
         :variant="variant"
       />
       <Select
@@ -195,7 +196,7 @@ const canEdit = computed(() => {
         @select="(opt) => { editValue = opt.value; saveEdit(); }"
         @blur="saveEdit"
         class="w-full"
-        :color="props.validation.error ? '#ff0000' : color"
+        :color="props.column.color || (props.validation.error ? '#ff0000' : color)"
         :variant="variant"
       />
       <Input
@@ -205,7 +206,7 @@ const canEdit = computed(() => {
         @blur="saveEdit"
         @keydown="handleKeyDown"
         class="w-full"
-        :color="props.validation.error ? '#ff0000' : color"
+        :color="props.column.color || (props.validation.error ? '#ff0000' : color)"
         :variant="variant"
       />
     </template>

@@ -17,7 +17,7 @@ const props = defineProps({
   theme: { type: String, required: false, default: "", validator: isValidTheme },
   modelValue: { type: String, required: false, default: "" },
   options: { type: Array as () => SelectOption[], required: false, default: () => [] },
-  color: { type: String, required: false, default: "neutral" },
+  color: { type: String, required: false, default: "primary" },
   variant: {
     type: String,
     required: false,
