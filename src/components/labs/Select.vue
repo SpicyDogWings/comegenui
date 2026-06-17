@@ -15,6 +15,7 @@ const props = defineProps({
   disabled: { type: Boolean, required: false, default: false },
   placeholder: { type: String, required: false, default: "" },
   placeholderWrap: { type: Boolean, required: false, default: false },
+  placement: { type: String, required: false, default: "bottom-start" },
   options: { type: Array as () => SelectOption[], required: false, default: () => [] },
   menuBg: { type: String, required: false, default: "#ffffff" },
 });
@@ -54,7 +55,7 @@ defineExpose({
     :color="color"
     :disabled="disabled"
     :hight-contrast="hightContrast"
-    placement="bottom-start"
+    :placement="placement"
     :offset="4"
     :menu-bg="menuBg"
     style="width:100%"

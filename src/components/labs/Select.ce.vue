@@ -24,6 +24,7 @@ const props = defineProps({
   },
   placeholder: { type: String, required: false },
   placeholderWrap: { type: Boolean, required: false, default: false },
+  placement: { type: String, required: false, default: "bottom-start" },
   disabled: { type: Boolean, required: false, default: false },
   hightContrast: { type: Boolean, required: false, default: false },
 });
@@ -80,6 +81,7 @@ defineExpose({
     :hight-contrast="props.hightContrast"
     :placeholder="props.placeholder"
     :placeholder-wrap="props.placeholderWrap"
+    :placement="props.placement"
     :model-value="innerValue"
     :options="props.options"
     :menu-bg="getColorMap(effectiveTheme as ThemeName).surface"
