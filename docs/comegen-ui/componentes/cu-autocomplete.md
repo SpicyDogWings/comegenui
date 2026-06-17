@@ -16,6 +16,7 @@ Campo de búsqueda con sugerencias en menú desplegable. Filtra los items en viv
 | `type` | `string` | `"text"` | `text`, `password`, `email`, `number`, `tel`, `url`, `search` |
 | `placeholder` | `string` | `""` | Placeholder del input |
 | `min-chars` | `number` | `0` | Caracteres mínimos para abrir el menú |
+| `placement` | `string` | `"bottom-start"` | `bottom-start`, `bottom-end`, `top-start`, `top-end` |
 | `disabled` | `boolean` | `false` | Deshabilitado |
 | `readonly` | `boolean` | `false` | Solo lectura |
 | `items` | `array` | `[]` | Items del menú (ver abajo) |

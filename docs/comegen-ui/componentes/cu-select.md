@@ -14,6 +14,8 @@ Selector de opciones con soporte de color, variante e ícono chevron.
 | `color` | `string` | `"neutral"` | Color semántico |
 | `variant` | `string` | `"none"` | `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` |
 | `placeholder` | `string` | — | Placeholder |
+| `placeholder-wrap` | `boolean` | `false` | Si `true`, el texto del label wrappea; si `false`, se trunca con `...` |
+| `placement` | `string` | `"bottom-start"` | `bottom-start`, `bottom-end`, `top-start`, `top-end` |
 | `disabled` | `boolean` | `false` | Deshabilitado |
 | `options` | `array` | `[]` | Opciones `[{ value, label }]` |
 | `modelValue` | `string` | `""` | Valor seleccionado |
