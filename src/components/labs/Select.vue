@@ -11,7 +11,7 @@ interface SelectOption {
 const props = defineProps({
   color: { type: String, required: false, default: "#2c2c2c" },
   hightContrast: { type: Boolean, required: false, default: false },
-  variant: { type: String, required: false, default: "soft" },
+  variant: { type: String, required: false, default: "none" },
   disabled: { type: Boolean, required: false, default: false },
   placeholder: { type: String, required: false, default: "" },
   options: { type: Array as () => SelectOption[], required: false, default: () => [] },

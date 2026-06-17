@@ -18,9 +18,9 @@ const props = defineProps({
   variant: {
     type: String,
     required: false,
-    default: "soft",
+    default: "none",
     validator: (value: string) =>
-      ["solid", "outlined", "soft", "ghost", "subtle", "link"].includes(value),
+      ["solid", "outlined", "soft", "ghost", "subtle", "link", "none"].includes(value),
   },
   placeholder: { type: String, required: false },
   disabled: { type: Boolean, required: false, default: false },
