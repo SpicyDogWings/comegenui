@@ -12,7 +12,9 @@ const props = defineProps({
   disabled: { type: Boolean, required: false, default: false },
   hightContrast: { type: Boolean, required: false, default: false },
   label: { type: String, required: false, default: "" },
-  placement: { type: String, required: false, default: "bottom-start" },
+  position: { type: String, required: false, default: "bottom" },
+  align: { type: String, required: false, default: "start" },
+  placement: { type: String, required: false, default: "" },
   offset: { type: Number, required: false, default: 4 },
   items: { type: Array, required: false, default: () => [] },
 });
@@ -52,6 +54,8 @@ defineExpose({
     :disabled="props.disabled"
     :hight-contrast="props.hightContrast"
     :label="props.label"
+    :position="props.position"
+    :align="props.align"
     :placement="props.placement"
     :offset="props.offset"
     :menu-bg="themeMap.surface"

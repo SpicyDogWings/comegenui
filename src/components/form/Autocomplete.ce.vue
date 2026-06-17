@@ -27,7 +27,9 @@ const props = defineProps({
   hightContrast: { type: Boolean, required: false, default: false },
   placeholder: { type: String, required: false, default: "" },
   minChars: { type: Number, required: false, default: 0 },
-  placement: { type: String, required: false, default: "bottom-start" },
+  position: { type: String, required: false, default: "bottom" },
+  align: { type: String, required: false, default: "start" },
+  placement: { type: String, required: false, default: "" },
   items: { type: Array, required: false, default: () => [] },
 });
 
@@ -72,6 +74,8 @@ defineExpose({
     :hight-contrast="props.hightContrast"
     :placeholder="props.placeholder"
     :min-chars="props.minChars"
+    :position="props.position"
+    :align="props.align"
     :placement="props.placement"
     :items="props.items"
     :menu-bg="getColorMap(effectiveTheme as ThemeName).surface"

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, defineModel, onMounted, onUnmounted } from "vue";
+import { ref, computed, defineModel, onMounted, onUnmounted } from "vue";
 import Button from "./Button.vue";
 
 const props = defineProps({
@@ -9,9 +9,14 @@ const props = defineProps({
   disabled: { type: Boolean, required: false, default: false },
   label: { type: String, required: false, default: "" },
   placement: { type: String, required: false, default: "bottom-start" },
+  position: { type: String, required: false, default: "" },
+  align: { type: String, required: false, default: "" },
   offset: { type: Number, required: false, default: 4 },
   menuBg: { type: String, required: false, default: "#ffffff" },
 });
+
+const effectivePosition = computed(() => props.position || props.placement.split("-")[0] || "bottom");
+const effectiveAlign = computed(() => props.align || props.placement.split("-")[1] || "start");
 
 const selectedValue = defineModel<string>({ default: "" });
 
@@ -84,10 +89,13 @@ defineExpose({ open, close, toggle, get, set, reset, get isOpen() { return isOpe
       :style="{ '--menu-bg': menuBg, '--offset': offset + 'px' }"
       class="absolute z-1000 w-full min-w-[200px] max-w-[80vw] rounded-cu p-2 font-sans shadow-xl bg-[var(--menu-bg)]"
       :class="{
-        'top-full left-0 mt-[var(--offset)]': placement === 'bottom-start',
-        'top-full right-0 mt-[var(--offset)]': placement === 'bottom-end',
-        'bottom-full left-0 mb-[var(--offset)]': placement === 'top-start',
-        'bottom-full right-0 mb-[var(--offset)]': placement === 'top-end',
+        'top-full': effectivePosition === 'bottom',
+        'bottom-full': effectivePosition === 'top',
+        'left-0': effectiveAlign === 'start',
+        'right-0': effectiveAlign === 'end',
+        'left-1/2 -translate-x-1/2': effectiveAlign === 'center',
+        'mt-[var(--offset)]': effectivePosition === 'bottom',
+        'mb-[var(--offset)]': effectivePosition === 'top',
       }"
       role="menu"
     >

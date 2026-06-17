@@ -21,7 +21,9 @@ const props = defineProps({
   minChars: { type: Number, required: false, default: 0 },
   items: { type: Array as () => AutocompleteItem[], required: false, default: () => [] },
   menuBg: { type: String, required: false, default: "#ffffff" },
-  placement: { type: String, required: false, default: "bottom-start" },
+  position: { type: String, required: false, default: "bottom" },
+  align: { type: String, required: false, default: "start" },
+  placement: { type: String, required: false, default: "" },
 });
 
 const emit = defineEmits(["select"]);
@@ -89,6 +91,8 @@ defineExpose({
     :color="color"
     :disabled="disabled"
     :hight-contrast="hightContrast"
+    :position="position"
+    :align="align"
     :placement="placement"
     :offset="4"
     :menu-bg="menuBg"
