@@ -3,7 +3,7 @@ import { ref, computed, nextTick, watch } from "vue";
 
 import Input from "../form/Input.vue";
 import Textarea from "../form/Textarea.vue";
-import Select from "../archived/SelectNative.vue";
+import Select from "../labs/Select.vue";
 
 interface SelectOption {
   value: string;

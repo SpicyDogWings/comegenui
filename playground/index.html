@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Playground — ComegenUI</title>
     <link rel="stylesheet" href="style.css" />
-    <script src="../dist/CuSelect.umd.js?t=1"></script>
+    <script src="../dist/CuTable.umd.js?t=1"></script>
 
     <!--
       ═══════════════════════════════════════════
@@ -34,14 +34,18 @@
     </div>
 
     <div class="main">
-      <div class="card" style="max-width: 500px">
-        <h2>Select custom (con Dropdown)</h2>
+      <div class="card" style="max-width: 800px">
+        <h2>Tabla con edición inline + Select custom</h2>
+        <p style="font-size:14px;opacity:.6;margin-bottom:16px">Hacé clic en una celda para editar. Las celdas "Rol" usan el nuevo Select.</p>
 
-        <cu-select
-          id="miSelect"
-          placeholder="Elegí un rol..."
+        <cu-table
+          id="tabla"
+          search-enabled="true"
+          search-placeholder="Buscar..."
+          pagination
+          items-per-page="8"
           style="width:100%"
-        ></cu-select>
+        ></cu-table>
 
         <div class="log-box" id="log">// Eventos</div>
       </div>
