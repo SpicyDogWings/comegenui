@@ -110,6 +110,7 @@ const emit = defineEmits([
 const isEditing = ref(false);
 const saving = ref(false);
 const editValue = ref<string>("");
+const localError = ref<string | null>(null);
 const inputRef = ref<InstanceType<typeof Input | typeof Textarea | typeof Select | typeof Autocomplete> | null>(null);
 
 // Initialize edit value
@@ -117,6 +118,7 @@ watch(
   () => props.value,
   (newVal) => {
     editValue.value = newVal != null ? String(newVal) : "";
+    localError.value = null;
   },
   { immediate: true }
 );
@@ -139,16 +141,20 @@ const saveEdit = () => {
   // Validate against regex if editable is a RegExp
   if (props.column.editable instanceof RegExp && !props.column.editable.test(value)) {
     isValid = false;
+    localError.value = "Formato inválido";
   }
 
   // Validate using custom validator if provided
   if (isValid && props.column.validator && !props.column.validator(value, props.row)) {
     isValid = false;
+    localError.value = "Validación falló";
   }
 
   if (!isValid) {
     return;
   }
+
+  localError.value = null;
 
   saving.value = true;
   emit("edit-save", { 
@@ -162,6 +168,7 @@ const saveEdit = () => {
 };
 
 const cancelEdit = () => {
+  localError.value = null;
   emit("edit-cancel", { row: props.row, column: props.column, index: props.index });
   isEditing.value = false;
 };
@@ -224,7 +231,7 @@ function resolveProp<T>(val: T | ((row: Record<string, any>) => T) | undefined, 
 
 const elementColor = computed(() => {
   const col = props.column;
-  if (props.validation.error) return "#ff0000";
+  if (localError.value || props.validation.error) return "#ff0000";
   const c = resolveProp(
     col.inputType === "select" ? col.select?.color
       : col.inputType === "autocomplete" ? col.autocomplete?.color

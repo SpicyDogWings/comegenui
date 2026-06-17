@@ -8,6 +8,7 @@ const roles = [
   { value: 'editor', label: 'Editor' },
   { value: 'visor', label: 'Visor' },
   { value: 'invitado', label: 'Invitado' },
+  { value: 'supervisor', label: 'Supervisor', disabled: true },
 ];
 
 const departamentos = [
@@ -18,11 +19,11 @@ const departamentos = [
   { label: 'Marketing' },
   { label: 'Legal' },
   { label: 'Operaciones' },
-  { label: 'Dirección' },
+  { label: 'Dirección', disabled: true },
 ];
 
 tabla.columns = [
-  { key: 'nombre', label: 'Nombre', editable: true, singleClick: true },
+  { key: 'nombre', label: 'Nombre', editable: true, singleClick: true, validator: (val) => val.length >= 3 },
   {
     key: 'depto',
     label: 'Departamento',

@@ -134,8 +134,10 @@ defineExpose({
           :key="i"
           color="#888"
           variant="ghost"
+          :disabled="item.disabled"
+          :class="{ 'opacity-50 cursor-not-allowed': item.disabled }"
           style="width:100%;justify-content:flex-start"
-          @click="onItemClick(item)"
+          @click="item.disabled ? undefined : onItemClick(item)"
         >
           <span v-if="item.icon" v-html="item.icon" class="transform translate-y-0.5" style="opacity:.6"></span>
           <span v-if="item.label">{{ item.label }}</span>
