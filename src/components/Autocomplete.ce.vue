@@ -3,7 +3,7 @@ import { computed, ref, getCurrentInstance } from "vue";
 import Autocomplete from "./Autocomplete.vue";
 import { getColorMap } from "../utils/palette";
 import { getHostTheme } from "../utils/getHostTheme";
-import { isValidTheme } from "../config/theme";
+import { isValidTheme, type ThemeName } from "../config/theme";
 
 const props = defineProps({
   theme: { type: String, required: false, default: "", validator: isValidTheme },
@@ -35,10 +35,6 @@ const hexColor = computed(() => {
   const map = getColorMap(effectiveTheme.value as "light" | "dark");
   return map[props.color as keyof typeof map] || props.color;
 });
-
-const surfaceBg = computed(() =>
-  effectiveTheme.value === "dark" ? "#1e1e2e" : "#ffffff",
-);
 
 const autocompleteRef = ref<InstanceType<typeof Autocomplete> | null>(null);
 const instance = getCurrentInstance();
@@ -76,7 +72,7 @@ defineExpose({
     :placeholder="props.placeholder"
     :min-chars="props.minChars"
     :items="props.items"
-    :menu-bg="surfaceBg"
+    :menu-bg="getColorMap(effectiveTheme as ThemeName).surface"
     @select="ceEmit('select', $event)"
   />
 </template>
