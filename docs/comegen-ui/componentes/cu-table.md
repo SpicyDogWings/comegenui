@@ -578,3 +578,36 @@ Cualquier columna puede ser ordenable agregando `sortable` a su definición:
 - **Iconos SVG:** Usá `stroke="currentColor"` para que hereden el color del botón.
 - **Columnas select en modo vista:** Muestran la label, no el value guardado.
 - **`edit-save`:** La tabla ya actualizó `row[key] = value` antes de emitir el evento.
+
+---
+
+## Sticky Header
+
+Cuando la tabla tiene un `max-height` (o está dentro de un contenedor con altura fija), los headers se vuelven `position: sticky` para mantenerse visibles al scrollear.
+
+Para variants que no sean `solid`, el header tiene `backdrop-filter: blur(8px)` que difumina el contenido scrolleado detrás, manteniendo la legibilidad sin perder el estilo semi-transparente.
+
+```html
+<cu-table
+  id="miTabla"
+  search-enabled
+  search-placeholder="Buscar..."
+  style="max-height: 400px; width: 100%;"
+></cu-table>
+
+<script>
+  const t = document.getElementById('miTabla');
+  t.columns = [
+    { key: 'codigo', label: 'Código' },
+    { key: 'nombre', label: 'Nombre' },
+    { key: 'categoria', label: 'Categoría' },
+    { key: 'stock', label: 'Stock', align: 'center' },
+  ];
+  t.data = Array.from({ length: 50 }, (_, i) => ({
+    codigo: `P-${String(i + 1).padStart(3, '0')}`,
+    nombre: `Producto ${i + 1}`,
+    categoria: ['Electrónica', 'Oficina', 'Audio'][i % 3],
+    stock: Math.floor(Math.random() * 50),
+  }));
+</script>
+```

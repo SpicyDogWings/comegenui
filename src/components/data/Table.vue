@@ -110,7 +110,8 @@ const getCellValue = (row: Record<string, any>, col: Column): string => {
               class="text-left p-3 font-sans font-medium sticky top-0 z-20 select-none"
               :width="col.width"
               :style="{
-                'background-color': props.variant === 'solid' ? bgClasses.main : (props.variant === 'soft' ? 'transparent' : 'var(--table-bg)'),
+                'background-color': props.variant === 'solid' ? bgClasses.main : 'var(--table-bg)',
+                'backdrop-filter': props.variant !== 'solid' ? 'blur(8px)' : 'none',
                 'color': props.variant === 'solid' ? 'white' : 'var(--table-fg)',
                 'border-color': 'var(--table-bd)',
               }"

@@ -1,23 +1,27 @@
 <!doctype html>
-<html lang="es">
+<html lang="es" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Playground — ComegenUI</title>
     <link rel="stylesheet" href="style.css" />
-    <script src="../dist/CuAutocomplete.umd.js?t=1"></script>
+    <script src="../dist/CuTable.umd.js?t=1"></script>
 
     <!--
       ═══════════════════════════════════════════
       PLAYGROUND — ComegenUI
 
+      🎯 La carta (`.card`) DENTRO de <main> es la ZONA EDITABLE.
+          Cada ejemplo reemplaza TODO el contenido de la carta.
+          No acumular — borrar lo anterior y poner lo nuevo.
+
       Archivos BASE (NO modificar):
-        index.html      → estructura base
+        index.html      → estructura base (solo se toca la carta)
         playground.js   → theme toggle, log, init
         style.css       → estilos
 
       ✅ EDITABLE:
-        example.js      → acá podés experimentar
+        example.js      → acá va la lógica JS de cada ejemplo
       ═══════════════════════════════════════════
     -->
   </head>
@@ -30,12 +34,14 @@
     </div>
 
     <div class="main">
-      <div class="card">
-        <h2>Autocomplete</h2>
-
-        <cu-autocomplete id="ac" placeholder="Buscá un rol..." color="primary"></cu-autocomplete>
-
-        <div class="log-box" id="log">// Eventos</div>
+      <div class="card" style="max-width: 800px">
+        <h2>Tabla con scroll (sticky header + blur)</h2>
+        <cu-table
+          id="tabla"
+          search-enabled="true"
+          search-placeholder="Buscar..."
+          style="max-height: 400px; width: 100%;"
+        ></cu-table>
       </div>
     </div>
 

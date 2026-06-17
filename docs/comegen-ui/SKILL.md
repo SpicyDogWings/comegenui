@@ -126,6 +126,14 @@ Tres temas integrados: `light` (default), `dark`, `sigacadv2`.
 
 Si se especifica `theme`, tiene prioridad sobre `data-theme`. Si se omite, hereda del `<html>`.
 
+### Auto-detección
+
+Si no hay `data-theme` en el documento ni `theme` en el componente, se detecta automáticamente `prefers-color-scheme` del OS. Prioridad completa:
+
+```
+theme prop (componente) → data-theme (<html>) → prefers-color-scheme (OS)
+```
+
 ### Colores de cada tema
 
 | Color | `light` | `dark` | `sigacadv2` |
@@ -135,6 +143,19 @@ Si se especifica `theme`, tiene prioridad sobre `data-theme`. Si se omite, hered
 | `success` | `#22c55e` | `#4ade80` | `#28a745` |
 | `warning` | `#f59e0b` | `#fbbf24` | `#ffc107` |
 | `danger` | `#ef4444` | `#f87171` | `#dc3545` |
+| `surface` | `#ffffff` | `#1e1e2e` | `#111827` |
+
+> `surface` es el color de fondo de paneles emergentes (dropdowns, popups de autocomplete, etc.).
+
+### Temas custom
+
+Para agregar un tema nuevo:
+
+1. Editar `src/config/theme.ts` — agregar entrada en el objeto `themes` con los 6 colores (`primary`, `neutral`, `success`, `warning`, `danger`, `surface`).
+2. Rebuild: `npx vite build --config build-libs.ts`.
+3. Usar: `<html data-theme="mi-tema">` o `<cu-button theme="mi-tema">`.
+
+El nuevo tema se auto-registra. No requiere configuración adicional.
 
 ---
 
