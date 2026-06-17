@@ -88,6 +88,7 @@ const startEditing = async () => {
 };
 
 const saveEdit = () => {
+  if (saving.value) return;
   let isValid = true;
   const value = editValue.value;
 
@@ -188,6 +189,8 @@ const canEdit = computed(() => {
         :model-value="editValue"
         :options="resolvedOptions"
         @update:model-value="(val) => { editValue = val; saveEdit(); }"
+        @select="(opt) => { editValue = opt.value; saveEdit(); }"
+        @blur="saveEdit"
         class="w-full"
         :color="props.validation.error ? '#ff0000' : color"
         :variant="variant"

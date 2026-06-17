@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, defineModel } from "vue";
+import { ref, computed, watch } from "vue";
 import Dropdown from "../Dropdown.vue";
 import Button from "../Button.vue";
 
@@ -18,21 +18,28 @@ const props = defineProps({
   position: { type: String, required: false, default: "bottom" },
   align: { type: String, required: false, default: "start" },
   placement: { type: String, required: false, default: "" },
+  modelValue: { type: String, required: false, default: "" },
   options: { type: Array as () => SelectOption[], required: false, default: () => [] },
   menuBg: { type: String, required: false, default: "#ffffff" },
 });
 
-const emit = defineEmits(["select"]);
-const selectedValue = defineModel<string>({ default: "" });
+const emit = defineEmits(["update:modelValue", "select", "close", "blur"]);
+const selectedValue = ref(props.modelValue);
 const dropdownRef = ref<InstanceType<typeof Dropdown> | null>(null);
+const selectRoot = ref<HTMLElement | null>(null);
 
 const selectedLabel = computed(() => {
   const opt = props.options.find(o => o.value === selectedValue.value);
   return opt ? opt.label : props.placeholder || "Seleccionar...";
 });
 
+watch(() => props.modelValue, (val) => {
+  selectedValue.value = val;
+}, { immediate: true });
+
 function onSelect(option: SelectOption) {
   selectedValue.value = option.value;
+  emit("update:modelValue", option.value);
   emit("select", option);
   dropdownRef.value?.close();
 }
@@ -40,7 +47,13 @@ function onSelect(option: SelectOption) {
 function get() { return selectedValue.value; }
 function set(value: string) { selectedValue.value = value; }
 function reset() { selectedValue.value = ""; }
-function focus() { }
+function focus() { selectRoot.value?.focus(); }
+
+function onFocusOut(e: FocusEvent) {
+  if (!selectRoot.value?.contains(e.relatedTarget as Node)) {
+    emit("blur");
+  }
+}
 
 defineExpose({
   get, set, reset, focus,
@@ -52,7 +65,8 @@ defineExpose({
 </script>
 
 <template>
-  <Dropdown
+  <div ref="selectRoot" tabindex="-1" @focusout="onFocusOut">
+    <Dropdown
     ref="dropdownRef"
     :color="color"
     :disabled="disabled"
@@ -63,6 +77,7 @@ defineExpose({
     :offset="4"
     :menu-bg="menuBg"
     style="width:100%"
+    @close="emit('close')"
   >
     <template #toggle="{ toggle, isOpen }">
       <Button
@@ -114,7 +129,8 @@ defineExpose({
         Sin opciones
       </div>
     </template>
-  </Dropdown>
+    </Dropdown>
+  </div>
 </template>
 
 <style>

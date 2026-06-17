@@ -90,6 +90,8 @@ defineExpose({
     :options="props.options"
     :menu-bg="getColorMap(effectiveTheme as ThemeName).surface"
     @select="ceEmit('select', $event)"
+    @close="ceEmit('close', $event)"
+    @blur="ceEmit('blur', $event)"
   />
 </template>
 
