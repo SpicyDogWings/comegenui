@@ -20,7 +20,7 @@ const props = defineProps({
     required: false,
     default: "ghost",
     validator: (value: string) =>
-      ["solid", "outlined", "soft", "ghost", "subtle", "link"].includes(value),
+      ["solid", "outlined", "soft", "ghost", "subtle", "link", "none"].includes(value),
   },
   to: {
     type: String,
@@ -96,7 +96,7 @@ const fgClass = computed(() =>
     class="py-2 px-4 rounded-cu border-none text-[var(--btn-fg)] font-sans font-medium bg-[var(--btn-bg)] flex justify-center items-center gap-2 box-border transition-transform duration-150"
     :class="{
       'border-1 border-solid border-[var(--btn-bd)]':
-        props.variant === 'outlined' || props.variant === 'subtle',
+        props.variant === 'outlined' || props.variant === 'subtle' || props.variant === 'none',
       'hover:underline hover:decoration-solid hover:decoration-2':
         props.variant === 'link',
       'cursor-not-allowed opacity-70': props.disabled,

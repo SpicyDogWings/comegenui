@@ -88,7 +88,7 @@ defineExpose({
       'border-solid border-1 border-[var(--btn-bd)]': props.variant === 'subtle',
       'bg-transparent border-solid border-2 border-[var(--btn-bd)] hover:bg-[var(--btn-bg-hover)]': props.variant === 'outlined',
       'hover:bg-[var(--btn-bg-hover)]': props.variant === 'soft' || props.variant === 'ghost',
-      'bg-transparent border-solid border-1 border-charcoal-100': props.variant === 'none',
+      'bg-transparent border-solid border-1 border-[var(--btn-bd)]': props.variant === 'none',
     }"
     :style="{
       '--btn-fg': fgClass.main,

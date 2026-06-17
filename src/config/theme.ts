@@ -13,7 +13,7 @@ export const themes = {
     success: '#4ade80',
     warning: '#fbbf24',
     danger: '#f87171',
-    surface: '#1e1e2e',
+    surface: '#1a1a1a',
   },
   sigacadv2: {
     primary: '#0037FF',
