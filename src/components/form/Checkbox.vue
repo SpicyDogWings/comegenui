@@ -1,18 +1,10 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, ref, defineModel } from "vue";
 import { getBgClasses, getFgClasses } from "../../utils/palette";
 
+const checked = defineModel<boolean>({ default: false });
+
 const props = defineProps({
-  modelValue: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
-  checked: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
   color: {
     type: String,
     required: false,
@@ -43,8 +35,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["update:modelValue", "change"]);
-const checked = ref(props.modelValue || props.checked);
+const emit = defineEmits(["change"]);
 const inputRef = ref<HTMLInputElement | null>(null);
 
 const bgClass = computed(() =>
@@ -54,29 +45,14 @@ const fgClass = computed(() =>
   getFgClasses(props.color, props.variant, props.hightContrast),
 );
 
-watch(
-  () => props.modelValue,
-  (val) => {
-    checked.value = val;
-  },
-);
-watch(
-  () => props.checked,
-  (val) => {
-    checked.value = val;
-  },
-);
-
 defineExpose({
   get: () => checked.value,
   set: (value: boolean) => {
     checked.value = value;
-    emit("update:modelValue", value);
     emit("change", { target: { checked: value } });
   },
   reset: () => {
     checked.value = false;
-    emit("update:modelValue", false);
     emit("change", { target: { checked: false } });
   },
   focus: () => inputRef.value?.focus(),
@@ -89,13 +65,7 @@ defineExpose({
       ref="inputRef"
       type="checkbox"
       :checked="checked"
-      @change="
-        (e) => {
-          checked = (e.target as HTMLInputElement).checked;
-          emit('update:modelValue', checked);
-          emit('change', e);
-        }
-      "
+      @change="(e) => { checked = (e.target as HTMLInputElement).checked; emit('change', e); }"
       :disabled="props.disabled"
       class="absolute opacity-0 w-0 h-0 box-border"
     />

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, getCurrentInstance } from "vue";
 import Checkbox from "./Checkbox.vue";
 import { getColorMap } from "../../utils/palette";
 import { getHostTheme } from "../../utils/getHostTheme";
@@ -13,11 +13,6 @@ const props = defineProps({
     validator: isValidTheme,
   },
   modelValue: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
-  checked: {
     type: Boolean,
     required: false,
     default: false,
@@ -58,7 +53,21 @@ const hexColor = computed(() => {
   return map[props.color as keyof typeof map] || props.color;
 });
 
+const innerValue = ref(props.modelValue);
 const checkboxRef = ref<InstanceType<typeof Checkbox> | null>(null);
+const instance = getCurrentInstance();
+
+function ceEmit(event: string, payload: unknown) {
+  const el = instance?.vnode.el as HTMLElement | null;
+  const host = el?.getRootNode()?.host || el;
+  if (host) {
+    host.dispatchEvent(new CustomEvent(event, {
+      detail: payload,
+      bubbles: true,
+      composed: true,
+    }));
+  }
+}
 
 defineExpose({
   get: () => checkboxRef.value?.get(),
@@ -69,7 +78,17 @@ defineExpose({
 </script>
 
 <template>
-  <Checkbox ref="checkboxRef" v-bind="{ ...props, color: hexColor }" />
+  <Checkbox
+    ref="checkboxRef"
+    :color="hexColor"
+    :variant="props.variant"
+    :disabled="props.disabled"
+    :label="props.label"
+    :hight-contrast="props.hightContrast"
+    :model-value="innerValue"
+    @update:model-value="(val: boolean) => { innerValue.value = val; ceEmit('update:modelValue', val); }"
+    @change="ceEmit('change', $event)"
+  />
 </template>
 
 <style>

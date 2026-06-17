@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, getCurrentInstance } from "vue";
 import Input from "./Input.vue";
 import { getColorMap } from "../../utils/palette";
 import { getHostTheme } from "../../utils/getHostTheme";
@@ -69,7 +69,21 @@ const hexColor = computed(() => {
   return map[props.color as keyof typeof map] || props.color;
 });
 
+const innerValue = ref(props.modelValue);
 const inputRef = ref<InstanceType<typeof Input> | null>(null);
+const instance = getCurrentInstance();
+
+function ceEmit(event: string, payload: unknown) {
+  const el = instance?.vnode.el as HTMLElement | null;
+  const host = el?.getRootNode()?.host || el;
+  if (host) {
+    host.dispatchEvent(new CustomEvent(event, {
+      detail: payload,
+      bubbles: true,
+      composed: true,
+    }));
+  }
+}
 
 defineExpose({
   get: () => inputRef.value?.get(),
@@ -80,7 +94,19 @@ defineExpose({
 </script>
 
 <template>
-  <Input ref="inputRef" v-bind="{ ...props, color: hexColor }" />
+  <Input
+    ref="inputRef"
+    :color="hexColor"
+    :variant="props.variant"
+    :type="props.type"
+    :placeholder="props.placeholder"
+    :disabled="props.disabled"
+    :read-only="props.readOnly"
+    :hight-contrast="props.hightContrast"
+    :start-value="props.startValue"
+    :model-value="innerValue"
+    @update:model-value="(val: string) => { innerValue.value = val; ceEmit('update:modelValue', val); }"
+  />
 </template>
 
 <style>

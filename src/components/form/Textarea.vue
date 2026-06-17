@@ -1,13 +1,10 @@
 <script setup lang="ts">
-import { computed, ref, watch, useTemplateRef } from "vue";
+import { computed, defineModel, useTemplateRef } from "vue";
 import { getBgClasses, getFgClasses } from "../../utils/palette";
 
+const value = defineModel<string>({ default: "" });
+
 const props = defineProps({
-  modelValue: {
-    type: String,
-    required: false,
-    default: "",
-  },
   startValue: {
     type: String,
     required: false,
@@ -50,9 +47,6 @@ const props = defineProps({
   },
 });
 
-const textareaValue = ref(props.modelValue || props.startValue);
-const emit = defineEmits(["update:modelValue"]);
-
 const textareaRef = useTemplateRef("textarea");
 
 const bgClass = computed(() =>
@@ -62,49 +56,20 @@ const fgClass = computed(() =>
   getFgClasses(props.color, props.variant, false),
 );
 
-const get = () => {
-  return textareaValue.value;
-};
+const get = () => value.value;
+const set = (newValue: string | number) => { value.value = String(newValue); };
+const reset = () => { value.value = ""; };
+const focus = () => { textareaRef.value?.focus(); };
 
-const set = (value: string | number) => {
-  textareaValue.value = String(value);
-};
-
-const reset = () => {
-  textareaValue.value = "";
-};
-
-const focus = () => {
-  textareaRef.value?.focus();
-};
-
-watch(
-  () => props.modelValue,
-  (val) => {
-    textareaValue.value = val;
-  },
-  { immediate: true },
-);
-
-defineExpose({
-  get,
-  set,
-  reset,
-  focus,
-});
+defineExpose({ get, set, reset, focus });
 </script>
 
 <template>
   <textarea
     ref="textarea"
     :placeholder="props.placeholder"
-    :value="textareaValue"
-    @input="
-      (e) => {
-        textareaValue = (e.target as HTMLTextAreaElement).value;
-        emit('update:modelValue', textareaValue);
-      }
-    "
+    :value="value"
+    @input="value = ($event.target as HTMLTextAreaElement).value"
     class="py-2 px-3 rounded-cu font-sans border-none text-[var(--btn-fg)] focus:outline-none focus:ring-2 w-full bg-[var(--btn-bg)] box-border ph-op-100"
     :class="{
       'focus:ring-[var(--btn-bd)]': true,

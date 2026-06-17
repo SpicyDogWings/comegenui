@@ -1,19 +1,11 @@
 <script setup lang="ts">
-import { computed, ref, watch, useTemplateRef } from "vue";
+import { computed, defineModel, useTemplateRef } from "vue";
 import { getBgClasses, getFgClasses } from "../../utils/palette";
 import { useFocus } from "@vueuse/core";
 
+const checked = defineModel<boolean>({ default: false });
+
 const props = defineProps({
-  modelValue: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
-  checked: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
   color: {
     type: String,
     required: false,
@@ -39,8 +31,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["update:modelValue", "change"]);
-const checked = ref(props.modelValue || props.checked);
+const emit = defineEmits(["change"]);
 const inputRef = useTemplateRef("input");
 const { focused: inputFocus } = useFocus(inputRef);
 
@@ -54,34 +45,18 @@ const fgClass = computed(() =>
 const toggle = () => {
   if (props.disabled) return;
   checked.value = !checked.value;
-  emit("update:modelValue", checked.value);
   emit("change", checked.value);
 };
 
 const get = () => checked.value;
 const set = (value: boolean) => {
   checked.value = value;
-  emit("update:modelValue", value);
   emit("change", value);
 };
 const reset = () => {
   checked.value = false;
-  emit("update:modelValue", false);
   emit("change", false);
 };
-
-watch(
-  () => props.modelValue,
-  (val) => {
-    checked.value = val;
-  },
-);
-watch(
-  () => props.checked,
-  (val) => {
-    checked.value = val;
-  },
-);
 
 defineExpose({
   get,
