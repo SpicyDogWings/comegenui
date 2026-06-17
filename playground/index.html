@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang="es" data-theme="light">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Playground — ComegenUI</title>
     <link rel="stylesheet" href="style.css" />
-    <script src="../dist/CuTable.umd.js?t=1"></script>
+    <script src="../dist/CuSelect.umd.js?t=1"></script>
 
     <!--
       ═══════════════════════════════════════════
@@ -34,14 +34,18 @@
     </div>
 
     <div class="main">
-      <div class="card" style="max-width: 800px">
-        <h2>Tabla con scroll (sticky header + blur)</h2>
-        <cu-table
-          id="tabla"
-          search-enabled="true"
-          search-placeholder="Buscar..."
-          style="max-height: 400px; width: 100%;"
-        ></cu-table>
+      <div class="card" style="max-width: 500px">
+        <h2>Select custom (con Dropdown)</h2>
+
+        <cu-select
+          id="miSelect"
+          placeholder="Elegí un rol..."
+          color="primary"
+          variant="outlined"
+          style="width:100%"
+        ></cu-select>
+
+        <div class="log-box" id="log">// Eventos</div>
       </div>
     </div>
 
