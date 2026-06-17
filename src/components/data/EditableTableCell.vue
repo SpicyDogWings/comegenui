@@ -4,13 +4,12 @@ import { ref, computed, nextTick, watch } from "vue";
 import Input from "../form/Input.vue";
 import Textarea from "../form/Textarea.vue";
 import Select from "../labs/Select.vue";
+import Autocomplete from "../form/Autocomplete.vue";
 
-interface SelectOption {
-  value: string;
+interface AutocompleteItem {
   label: string;
-  disabled?: boolean;
-  color?: string;
-  variant?: string;
+  value?: string;
+  icon?: string;
 }
 
 interface Column {
@@ -18,8 +17,9 @@ interface Column {
   label?: string;
   editable?: boolean | RegExp | ((row: Record<string, any>) => boolean);
   validator?: (value: string, row: Record<string, any>) => boolean;
-  inputType?: "input" | "textarea" | "select";
+  inputType?: "input" | "textarea" | "select" | "autocomplete";
   selectOptions?: SelectOption[] | ((row: Record<string, any>) => SelectOption[]);
+  autocompleteItems?: AutocompleteItem[] | ((row: Record<string, any>) => AutocompleteItem[]);
   singleClick?: boolean;
   width?: string;
   align?: "left" | "center" | "right";
@@ -69,7 +69,7 @@ const emit = defineEmits([
 const isEditing = ref(false);
 const saving = ref(false);
 const editValue = ref<string>("");
-const inputRef = ref<InstanceType<typeof Input | typeof Textarea | typeof Select> | null>(null);
+const inputRef = ref<InstanceType<typeof Input | typeof Textarea | typeof Select | typeof Autocomplete> | null>(null);
 
 // Initialize edit value
 watch(
@@ -141,6 +141,11 @@ const displayValue = computed(() => {
     const option = options.find(o => o.value === props.value);
     return option ? option.label : String(props.value);
   }
+  if (props.column.inputType === 'autocomplete') {
+    const items = resolvedAutocompleteItems.value;
+    const item = items.find(i => (i.value || i.label) === props.value);
+    return item ? item.label : String(props.value);
+  }
   return props.value != null ? String(props.value) : "";
 });
 
@@ -159,6 +164,13 @@ const resolvedOptions = computed(() => {
     return props.column.selectOptions(props.row);
   }
   return props.column.selectOptions || [];
+});
+
+const resolvedAutocompleteItems = computed(() => {
+  if (typeof props.column.autocompleteItems === "function") {
+    return props.column.autocompleteItems(props.row);
+  }
+  return props.column.autocompleteItems || [];
 });
 
 const canEdit = computed(() => {
@@ -194,6 +206,17 @@ const canEdit = computed(() => {
         @update:model-value="(val) => { editValue = val; saveEdit(); }"
         @select="(opt) => { editValue = opt.value; saveEdit(); }"
         @blur="saveEdit"
+        class="w-full"
+        :color="props.validation.error ? '#ff0000' : color"
+        :variant="variant"
+      />
+      <Autocomplete
+        v-else-if="column.inputType === 'autocomplete'"
+        ref="inputRef"
+        v-model="editValue"
+        :items="resolvedAutocompleteItems"
+        @blur="saveEdit"
+        @select="(item) => { if (item.value) editValue = item.value; saveEdit(); }"
         class="w-full"
         :color="props.validation.error ? '#ff0000' : color"
         :variant="variant"

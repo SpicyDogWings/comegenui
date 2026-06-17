@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, watch, defineModel } from "vue";
 import Dropdown from "../Dropdown.vue";
 import Input from "./Input.vue";
 import Button from "../Button.vue";
@@ -26,12 +26,18 @@ const props = defineProps({
   placement: { type: String, required: false, default: "" },
 });
 
-const emit = defineEmits(["select"]);
+const emit = defineEmits(["select", "blur"]);
+const searchValue = defineModel<string>({ default: "" });
 
 const dropdownRef = ref<InstanceType<typeof Dropdown> | null>(null);
 const inputRef = ref<InstanceType<typeof Input> | null>(null);
-const searchText = ref("");
+const rootRef = ref<HTMLElement | null>(null);
+const searchText = ref(searchValue.value);
 const selectedItem = ref<AutocompleteItem | null>(null);
+
+watch(() => searchValue.value, (val) => {
+  searchText.value = val;
+}, { immediate: true });
 
 const filteredItems = computed(() => {
   const q = searchText.value.toLowerCase().trim();
@@ -62,31 +68,39 @@ function onInput() {
 }
 
 function onItemClick(item: AutocompleteItem) {
-  searchText.value = item.value || item.label;
-  if (inputRef.value) inputRef.value.set(searchText.value);
+  const val = item.value || item.label;
+  searchText.value = val;
+  searchValue.value = val;
   selectedItem.value = item;
   emit("select", item);
   dropdownRef.value?.close();
 }
 
-function get() { return searchText.value; }
+function onFocusOut(e: FocusEvent) {
+  if (!rootRef.value?.contains(e.relatedTarget as Node)) {
+    emit("blur");
+  }
+}
+
+function get() { return searchValue.value; }
 function set(val: string) {
+  searchValue.value = val;
   searchText.value = val;
   if (inputRef.value) inputRef.value.set(val);
 }
+function reset() { searchValue.value = ""; searchText.value = ""; }
 function focus() { inputRef.value?.focus(); }
 
 defineExpose({
-  get,
-  set,
-  focus,
+  get, set, reset, focus,
   get isOpen() { return dropdownRef.value?.isOpen || false },
   get selectedItem() { return selectedItem.value },
 });
 </script>
 
 <template>
-  <Dropdown
+  <div ref="rootRef" tabindex="-1" @focusout="onFocusOut">
+    <Dropdown
     ref="dropdownRef"
     :color="color"
     :disabled="disabled"
@@ -130,7 +144,8 @@ defineExpose({
         </Button>
       </div>
     </template>
-  </Dropdown>
+    </Dropdown>
+  </div>
 </template>
 
 <style>

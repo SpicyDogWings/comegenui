@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, getCurrentInstance } from "vue";
+import { computed, ref, watch, getCurrentInstance } from "vue";
 import Autocomplete from "./Autocomplete.vue";
 import { getColorMap } from "../../utils/palette";
 import { getHostTheme } from "../../utils/getHostTheme";
@@ -31,6 +31,7 @@ const props = defineProps({
   align: { type: String, required: false, default: "start" },
   placement: { type: String, required: false, default: "" },
   items: { type: Array, required: false, default: () => [] },
+  modelValue: { type: String, required: false, default: "" },
 });
 
 const effectiveTheme = computed(() => props.theme || getHostTheme());
@@ -41,6 +42,18 @@ const hexColor = computed(() => {
 
 const autocompleteRef = ref<InstanceType<typeof Autocomplete> | null>(null);
 const instance = getCurrentInstance();
+const innerValue = ref(props.modelValue);
+
+watch(() => props.modelValue, (val) => {
+  innerValue.value = val;
+});
+
+watch(() => autocompleteRef.value?.get(), (val) => {
+  if (val !== undefined && val !== null && val !== innerValue.value) {
+    innerValue.value = val;
+    ceEmit("update:modelValue", val);
+  }
+});
 
 function ceEmit(event: string, payload: unknown) {
   const el = instance?.vnode.el as HTMLElement | null;
@@ -79,7 +92,9 @@ defineExpose({
     :placement="props.placement"
     :items="props.items"
     :menu-bg="getColorMap(effectiveTheme as ThemeName).surface"
+    :model-value="innerValue"
     @select="ceEmit('select', $event)"
+    @blur="ceEmit('blur', $event)"
   />
 </template>
 
