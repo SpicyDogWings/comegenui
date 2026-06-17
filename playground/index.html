@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Playground — ComegenUI</title>
     <link rel="stylesheet" href="style.css" />
-    <script src="../dist/CuTable.umd.js?t=1"></script>
+    <script src="../dist/CuAutocomplete.umd.js?t=1"></script>
+    <!-- <script src="../dist/CuTable.umd.js?t=1"></script> -->
 
     <!--
       ═══════════════════════════════════════════
@@ -34,18 +35,15 @@
     </div>
 
     <div class="main">
-      <div class="card" style="max-width: 800px">
-        <h2>Tabla con edición inline + Select custom</h2>
-        <p style="font-size:14px;opacity:.6;margin-bottom:16px">Hacé clic en una celda "Rol" para editar con el nuevo Select.</p>
+      <div class="card" style="max-width: 500px">
+        <h2>Autocomplete (defineModel + blur)</h2>
 
-        <cu-table
-          id="tabla"
-          search-enabled="true"
-          search-placeholder="Buscar..."
-          pagination
-          items-per-page="8"
+        <cu-autocomplete
+          id="miAc"
+          placeholder="Buscá un rol..."
+          color="primary"
           style="width:100%"
-        ></cu-table>
+        ></cu-autocomplete>
 
         <div class="log-box" id="log">// Eventos</div>
       </div>

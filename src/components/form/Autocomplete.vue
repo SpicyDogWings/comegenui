@@ -16,7 +16,7 @@ const props = defineProps({
   disabled: { type: Boolean, required: false, default: false },
   readOnly: { type: Boolean, required: false, default: false },
   placeholder: { type: String, required: false, default: "" },
-  variant: { type: String, required: false, default: "outlined" },
+  variant: { type: String, required: false, default: "none" },
   type: { type: String, required: false, default: "text" },
   minChars: { type: Number, required: false, default: 0 },
   items: { type: Array as () => AutocompleteItem[], required: false, default: () => [] },
@@ -55,9 +55,8 @@ function onFocus() {
   }
 }
 
-function onInput() {
-  if (!inputRef.value) return;
-  searchText.value = inputRef.value.get();
+function onInput(val: string) {
+  searchText.value = val;
 
   if (searchText.value.length < props.minChars || filteredItems.value.length === 0) {
     dropdownRef.value?.close();
@@ -125,7 +124,6 @@ defineExpose({
         :hight-contrast="hightContrast"
         style="width:100%"
         @update:model-value="onInput"
-        @input="onInput"
         @focus="onFocus"
       />
     </template>
