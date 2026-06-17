@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, getCurrentInstance } from "vue";
+import { computed, ref, watch, getCurrentInstance } from "vue";
 import Input from "./Input.vue";
 import { getColorMap } from "../../utils/palette";
 import { getHostTheme } from "../../utils/getHostTheme";
@@ -73,6 +73,17 @@ const innerValue = ref(props.modelValue);
 const inputRef = ref<InstanceType<typeof Input> | null>(null);
 const instance = getCurrentInstance();
 
+watch(() => props.modelValue, (val) => {
+  innerValue.value = val;
+});
+
+watch(() => inputRef.value?.get(), (val) => {
+  if (val !== undefined && val !== null && val !== innerValue.value) {
+    innerValue.value = val;
+    ceEmit("update:modelValue", val);
+  }
+});
+
 function ceEmit(event: string, payload: unknown) {
   const el = instance?.vnode.el as HTMLElement | null;
   const host = el?.getRootNode()?.host || el;
@@ -105,7 +116,6 @@ defineExpose({
     :hight-contrast="props.hightContrast"
     :start-value="props.startValue"
     :model-value="innerValue"
-    @update:model-value="(val: string) => { innerValue.value = val; ceEmit('update:modelValue', val); }"
   />
 </template>
 

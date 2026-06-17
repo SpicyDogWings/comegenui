@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, getCurrentInstance } from "vue";
+import { computed, ref, watch, getCurrentInstance } from "vue";
 import Textarea from "./Textarea.vue";
 import { getColorMap } from "../../utils/palette";
 import { getHostTheme } from "../../utils/getHostTheme";
@@ -70,6 +70,17 @@ const innerValue = ref(props.modelValue);
 const textareaRef = ref<InstanceType<typeof Textarea> | null>(null);
 const instance = getCurrentInstance();
 
+watch(() => props.modelValue, (val) => {
+  innerValue.value = val;
+});
+
+watch(() => textareaRef.value?.get(), (val) => {
+  if (val !== undefined && val !== null && val !== innerValue.value) {
+    innerValue.value = val;
+    ceEmit("update:modelValue", val);
+  }
+});
+
 function ceEmit(event: string, payload: unknown) {
   const el = instance?.vnode.el as HTMLElement | null;
   const host = el?.getRootNode()?.host || el;
@@ -102,7 +113,6 @@ defineExpose({
     :no-resize="props.noResize"
     :start-value="props.startValue"
     :model-value="innerValue"
-    @update:model-value="(val: string) => { innerValue.value = val; ceEmit('update:modelValue', val); }"
   />
 </template>
 
