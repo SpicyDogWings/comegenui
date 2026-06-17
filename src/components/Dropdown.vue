@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, defineModel, onMounted, onUnmounted } from "vue";
 import Button from "./Button.vue";
 
 const props = defineProps({
@@ -12,6 +12,8 @@ const props = defineProps({
   offset: { type: Number, required: false, default: 4 },
   menuBg: { type: String, required: false, default: "#ffffff" },
 });
+
+const selectedValue = defineModel<string>({ default: "" });
 
 const emit = defineEmits(["open", "close"]);
 const isOpen = ref(false);
@@ -56,7 +58,11 @@ function toggle() {
   else open();
 }
 
-defineExpose({ open, close, toggle, get isOpen() { return isOpen.value } });
+function get() { return selectedValue.value; }
+function set(val: string) { selectedValue.value = val; }
+function reset() { selectedValue.value = ""; }
+
+defineExpose({ open, close, toggle, get, set, reset, get isOpen() { return isOpen.value } });
 </script>
 
 <template>
