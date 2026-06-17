@@ -1,5 +1,5 @@
 import { ref } from "vue";
-import CuTable from "../../../../components/Table.ce.vue";
+import CuTable from "../../../../components/data/Table.ce.vue";
 import type { Meta, StoryObj } from "@storybook/vue3";
 
 const meta: Meta<typeof CuTable> = {
