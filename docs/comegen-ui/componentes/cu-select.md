@@ -12,7 +12,7 @@ Selector de opciones con soporte de color, variante e ícono chevron.
 |------|------|---------|-------------|
 | `theme` | `string` | `""` | Tema |
 | `color` | `string` | `"neutral"` | Color semántico |
-| `variant` | `string` | `"ghost"` | `outlined`, `soft`, `ghost`, `subtle`, `none` |
+| `variant` | `string` | `"none"` | `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` |
 | `placeholder` | `string` | — | Placeholder |
 | `disabled` | `boolean` | `false` | Deshabilitado |
 | `options` | `array` | `[]` | Opciones `[{ value, label }]` |
@@ -27,6 +27,7 @@ Selector de opciones con soporte de color, variante e ícono chevron.
 | `.set(value)` | Asigna un valor |
 | `.reset()` | Limpia la selección |
 | `.focus()` | Enfoca el select |
+| `.selectedItem` | Objeto `{ value, label }` de la opción seleccionada o `null` |
 
 ## Eventos
 

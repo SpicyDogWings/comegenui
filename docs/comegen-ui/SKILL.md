@@ -143,7 +143,7 @@ theme prop (componente) → data-theme (<html>) → prefers-color-scheme (OS)
 | `success` | `#22c55e` | `#4ade80` | `#28a745` |
 | `warning` | `#f59e0b` | `#fbbf24` | `#ffc107` |
 | `danger` | `#ef4444` | `#f87171` | `#dc3545` |
-| `surface` | `#ffffff` | `#1e1e2e` | `#111827` |
+| `surface` | `#ffffff` | `#1a1a1a` | `#111827` |
 
 > `surface` es el color de fondo de paneles emergentes (dropdowns, popups de autocomplete, etc.).
 
@@ -170,15 +170,15 @@ Cada componente que usa color acepta dos props clave:
 
 ### Variantes disponibles por componente
 
-| Variante | Button | Alert | Badge | Input | Checkbox | Textarea | Pagination | Table | DropdownMenu | Autocomplete |
-|----------|--------|-------|-------|-------|----------|----------|------------|-------|----------|-------------|
-| `solid` | ✓ | ✓ | ✓ | — | — | — | — | ✓ | ✓ | — |
-| `outlined` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `soft` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `ghost` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `subtle` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `link` | ✓ | — | — | — | — | — | — | ✓ | — | — |
-| `none` | — | — | — | ✓ | ✓ | ✓ | — | — | — | ✓ |
+| Variante | Button | Alert | Badge | Input | Checkbox | Textarea | Pagination | Table | DropdownMenu | Autocomplete | Select |
+|----------|--------|-------|-------|-------|----------|----------|------------|-------|----------|-------------|--------|
+| `solid` | ✓ | ✓ | ✓ | — | — | — | — | ✓ | ✓ | — | ✓ |
+| `outlined` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `soft` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `ghost` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `subtle` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `link` | ✓ | — | — | — | — | — | — | ✓ | — | — | ✓ |
+| `none` | ✓ | — | — | ✓ | ✓ | ✓ | — | — | — | ✓ | ✓ |
 
 ---
 
