@@ -6,7 +6,7 @@
     <title>Playground — ComegenUI</title>
     <link rel="stylesheet" href="style.css" />
     <script src="../dist/CuAutocomplete.umd.js?t=1"></script>
-    <!-- <script src="../dist/CuTable.umd.js?t=1"></script> -->
+    <script src="../dist/CuTable.umd.js?t=1"></script>
 
     <!--
       ═══════════════════════════════════════════
@@ -35,8 +35,8 @@
     </div>
 
     <div class="main">
-      <div class="card" style="max-width: 500px">
-        <h2>Autocomplete (defineModel + blur)</h2>
+      <div class="card" style="max-width: 800px">
+        <h2>Autocomplete (standalone)</h2>
 
         <cu-autocomplete
           id="miAc"
@@ -45,11 +45,24 @@
           style="width:100%"
         ></cu-autocomplete>
 
+        <h2 style="margin-top:32px">Tabla con Select + Autocomplete editable</h2>
+        <p style="font-size:14px;opacity:.6;margin-bottom:16px">Clic en "Departamento" (autocomplete) o "Rol" (select).</p>
+
+        <cu-table
+          id="tabla"
+          search-enabled
+          search-placeholder="Buscar..."
+          pagination
+          items-per-page="8"
+          style="width:100%"
+        ></cu-table>
+
         <div class="log-box" id="log">// Eventos</div>
       </div>
     </div>
 
     <script src="playground.js"></script>
     <script src="example.js"></script>
+    <script src="examples/table.js"></script>
   </body>
 </html>
