@@ -396,9 +396,13 @@ Sigue siendo compatible con `boolean` y `RegExp` como antes.
 
 ## Edición con select
 
-Usá `inputType: 'select'` y `selectOptions` para que una columna editable renderice un `<select>` al hacer clic. En modo vista se muestra la **label** de la opción seleccionada, no el value.
+Usá `inputType: 'select'` y `selectOptions` (o `select.options`) para que una columna editable renderice un **Select** al hacer clic. En modo vista se muestra la **label** de la opción seleccionada, no el value.
+
+### Con API legacy:
 
 ```html
+<script src="dist/CuTable.umd.js"></script>
+
 <cu-table id="tablaSelect" color="primary" variant="soft"></cu-table>
 
 <script>
@@ -423,6 +427,32 @@ Usá `inputType: 'select'` y `selectOptions` para que una columna editable rende
     { nombre: 'María García', rol: '2' },
   ];
 </script>
+```
+
+### Con API nueva (`select.options`):
+
+```js
+ts.columns = [
+  { key: 'nombre', label: 'Nombre', editable: true },
+  {
+    key: 'rol',
+    label: 'Rol',
+    editable: true,
+    inputType: 'select',
+    singleClick: true,
+    // Nueva API:
+    select: {
+      options: [
+        { value: '1', label: 'Administrador' },
+        { value: '2', label: 'Editor' },
+        { value: '3', label: 'Visor' },
+      ],
+      color: '#1774A4',     // Color del Select (opcional)
+      variant: 'outlined',   // Variante (opcional)
+      placement: 'bottom-end', // Posición del dropdown (opcional)
+    },
+  },
+];
 ```
 
 `selectOptions` también puede ser una función que recibe la fila y devuelve opciones dinámicas:
