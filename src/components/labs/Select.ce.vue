@@ -35,6 +35,7 @@ const hexColor = computed(() => {
 
 const selectRef = ref<InstanceType<typeof Select> | null>(null);
 const instance = getCurrentInstance();
+const innerValue = ref(props.modelValue);
 
 function ceEmit(event: string, payload: unknown) {
   const el = instance?.vnode.el as HTMLElement | null;
@@ -66,11 +67,11 @@ defineExpose({
     :disabled="props.disabled"
     :hight-contrast="props.hightContrast"
     :placeholder="props.placeholder"
-    :model-value="props.modelValue"
+    :model-value="innerValue"
     :options="props.options"
     :menu-bg="getColorMap(effectiveTheme as ThemeName).surface"
     @select="ceEmit('select', $event)"
-    @update:model-value="ceEmit('update:modelValue', $event)"
+    @update:model-value="(val: string) => { innerValue.value = val; ceEmit('update:modelValue', val); }"
   />
 </template>
 

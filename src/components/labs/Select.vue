@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, defineModel } from "vue";
+import { ref, computed, watch } from "vue";
 import Dropdown from "../Dropdown.vue";
 import Button from "../Button.vue";
 
@@ -14,12 +14,13 @@ const props = defineProps({
   variant: { type: String, required: false, default: "ghost" },
   disabled: { type: Boolean, required: false, default: false },
   placeholder: { type: String, required: false, default: "" },
+  modelValue: { type: String, required: false, default: "" },
   options: { type: Array as () => SelectOption[], required: false, default: () => [] },
   menuBg: { type: String, required: false, default: "#ffffff" },
 });
 
-const emit = defineEmits(["select"]);
-const selectedValue = defineModel<string>({ default: "" });
+const emit = defineEmits(["update:modelValue", "select"]);
+const selectedValue = ref(props.modelValue);
 const dropdownRef = ref<InstanceType<typeof Dropdown> | null>(null);
 
 const selectedLabel = computed(() => {
@@ -27,8 +28,13 @@ const selectedLabel = computed(() => {
   return opt ? opt.label : props.placeholder || "Seleccionar...";
 });
 
+watch(() => props.modelValue, (val) => {
+  selectedValue.value = val;
+}, { immediate: true });
+
 function onSelect(option: SelectOption) {
   selectedValue.value = option.value;
+  emit("update:modelValue", option.value);
   emit("select", option);
   dropdownRef.value?.close();
 }
