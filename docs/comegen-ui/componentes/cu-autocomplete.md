@@ -32,8 +32,9 @@ Cada item del array `items` puede tener:
 | `label` | `string` | — | Texto que se muestra y se busca |
 | `value` | `string` | `label` | Valor que se asigna al input al seleccionar |
 | `icon` | `string` | — | SVG string completo (`<svg>...</svg>`) |
+| `disabled` | `boolean` | `false` | Opción deshabilitada (no clickeable, atenuada) |
 
-La búsqueda se hace sobre `label` y `value` (cuando existe).
+La búsqueda se hace sobre `label` y `value` (cuando existe). Las opciones con `disabled: true` se ven atenuadas y no responden al click.
 
 ## Eventos
 

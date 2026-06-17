@@ -56,7 +56,7 @@ interface Column {
     placeholderWrap?: boolean;
   };
   autocomplete?: {
-    items: { label: string; value?: string; icon?: string }[];
+    items: { label: string; value?: string; icon?: string; disabled?: boolean }[];
     minChars?: number;
     color?: string;
     variant?: string;
