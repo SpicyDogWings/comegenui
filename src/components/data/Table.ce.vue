@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref, computed, getCurrentInstance, type Component } from "vue";
-import Table from "./data/AdvancedTable.vue";
-import { getColorMap } from "../utils/palette";
-import { getHostTheme } from "../utils/getHostTheme";
-import { isValidTheme } from "../config/theme";
+import Table from "./AdvancedTable.vue";
+import { getColorMap } from "../../utils/palette";
+import { getHostTheme } from "../../utils/getHostTheme";
+import { isValidTheme } from "../../config/theme";
 
 interface BadgeConfig {
   value: string;

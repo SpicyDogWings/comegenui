@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import Dropdown from "./Dropdown.vue";
-import Input from "./form/Input.vue";
-import Button from "./Button.vue";
+import Dropdown from "../Dropdown.vue";
+import Input from "./Input.vue";
+import Button from "../Button.vue";
 
 interface AutocompleteItem {
   label: string;

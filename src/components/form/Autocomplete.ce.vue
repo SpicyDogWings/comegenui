@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, ref, getCurrentInstance } from "vue";
 import Autocomplete from "./Autocomplete.vue";
-import { getColorMap } from "../utils/palette";
-import { getHostTheme } from "../utils/getHostTheme";
-import { isValidTheme, type ThemeName } from "../config/theme";
+import { getColorMap } from "../../utils/palette";
+import { getHostTheme } from "../../utils/getHostTheme";
+import { isValidTheme, type ThemeName } from "../../config/theme";
 
 const props = defineProps({
   theme: { type: String, required: false, default: "", validator: isValidTheme },
