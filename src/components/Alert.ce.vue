@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, getCurrentInstance } from "vue";
 import Alert from "./Alert.vue";
 import { getColorMap } from "../utils/palette";
 import { getHostTheme } from "../utils/getHostTheme";
@@ -52,11 +52,33 @@ const hexColor = computed(() => {
   const map = getColorMap(effectiveTheme.value as "light" | "dark");
   return map[props.color as keyof typeof map] || props.color;
 });
+
+const instance = getCurrentInstance();
+
+function ceEmit(event: string, payload: unknown) {
+  const el = instance?.vnode.el as HTMLElement | null;
+  const host = el?.getRootNode()?.host || el;
+  if (host) {
+    host.dispatchEvent(new CustomEvent(event, {
+      detail: payload,
+      bubbles: true,
+      composed: true,
+    }));
+  }
+}
 </script>
 
 <template>
   <Alert
-    v-bind="{ ...props, color: hexColor }"
+    :color="hexColor"
+    :variant="props.variant"
+    :close="props.close"
+    :title="props.title"
+    :show="props.show"
+    :hight-contrast="props.hightContrast"
+    @close="ceEmit('close', $event)"
+    @open="ceEmit('open', $event)"
+    @update:show="ceEmit('update:show', $event)"
   >
     <template #icon>
       <slot name="icon"></slot>

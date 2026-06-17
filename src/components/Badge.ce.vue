@@ -41,7 +41,11 @@ const hexColor = computed(() => {
 </script>
 
 <template>
-  <Badge v-bind="{ ...props, color: hexColor }">
+  <Badge
+    :color="hexColor"
+    :variant="props.variant"
+    :hight-contrast="props.hightContrast"
+  >
     <slot></slot>
   </Badge>
 </template>
