@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Playground — ComegenUI</title>
     <link rel="stylesheet" href="style.css" />
-    <script src="../dist/CuInput.umd.js?t=1"></script>
+    <script src="../dist/CuAlert.umd.js?t=1"></script>
+    <script src="../dist/CuBadge.umd.js?t=1"></script>
 
     <!--
       ═══════════════════════════════════════════
@@ -35,23 +36,33 @@
 
     <div class="main">
       <div class="card" style="max-width: 500px">
-        <h2>Input (defineModel + watch pattern)</h2>
+        <h2>Alert + Badge (props explícitas)</h2>
 
-        <cu-input
-          id="miInput"
-          placeholder="Escribí algo..."
+        <cu-alert
+          id="miAlert"
           color="primary"
-          style="width:100%"
-        ></cu-input>
+          title="Alerta primaria"
+          close
+        ></cu-alert>
 
-        <div style="margin-top:16px">
-          <cu-input
-            id="miInput2"
-            placeholder="Modo ghost"
-            color="neutral"
-            variant="ghost"
-            style="width:100%"
-          ></cu-input>
+        <div style="margin-top:12px">
+          <cu-alert
+            color="success"
+            title="Operación exitosa"
+          ></cu-alert>
+        </div>
+
+        <div style="margin-top:12px">
+          <cu-alert
+            color="danger"
+            title="Error"
+          >Algo salió mal</cu-alert>
+        </div>
+
+        <div style="margin-top:24px">
+          <cu-badge color="primary" variant="soft">Nuevo</cu-badge>
+          <cu-badge color="success" variant="soft" style="margin-left:8px">Activo</cu-badge>
+          <cu-badge color="danger" variant="solid" style="margin-left:8px">Offline</cu-badge>
         </div>
 
         <div class="log-box" id="log">// Eventos</div>

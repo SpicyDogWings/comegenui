@@ -1,7 +1,11 @@
 // example.js — ✅ EDITABLE, experimentá acá
 
-// ── Input ──
-const inp = document.getElementById('miInput');
-inp.addEventListener('update:modelValue', (e) => {
-  logEvent(`Input 1: "${e.detail}"`);
+// ── Alert ──
+const al = document.getElementById('miAlert');
+al.addEventListener('close', () => {
+  logEvent('Alert cerrado');
+});
+
+al.addEventListener('update:show', (e) => {
+  logEvent(`Alert show: ${e.detail}`);
 });
