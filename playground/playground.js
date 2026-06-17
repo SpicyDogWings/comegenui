@@ -17,8 +17,13 @@ let dark = false;
 
 function setTheme(isDark) {
   dark = isDark;
-  if (isDark) document.body.classList.add('dark');
-  else document.body.classList.remove('dark');
+  if (isDark) {
+    document.body.classList.add('dark');
+    document.documentElement.setAttribute('data-theme', 'dark');
+  } else {
+    document.body.classList.remove('dark');
+    document.documentElement.removeAttribute('data-theme');
+  }
   btnTheme.textContent = isDark ? '☀️' : '🌙';
 }
 

@@ -2,10 +2,15 @@ import { ref } from "vue";
 
 const currentTheme = ref("light");
 
+function getSystemTheme(): string {
+  if (typeof window === "undefined") return "light";
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
 function findThemeInDocument(): string {
   const themed = document.querySelector("[data-theme]");
   if (themed) return themed.getAttribute("data-theme") || "light";
-  return "light";
+  return getSystemTheme();
 }
 
 if (typeof document !== "undefined") {
@@ -19,6 +24,12 @@ if (typeof document !== "undefined") {
     attributes: true,
     subtree: true,
     attributeFilter: ["data-theme"],
+  });
+
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    if (!document.querySelector("[data-theme]")) {
+      currentTheme.value = getSystemTheme();
+    }
   });
 }
 

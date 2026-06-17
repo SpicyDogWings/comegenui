@@ -5,6 +5,7 @@ export const themes = {
     success: '#22c55e',
     warning: '#f59e0b',
     danger: '#ef4444',
+    surface: '#ffffff',
   },
   dark: {
     primary: '#38bdf8',
@@ -12,6 +13,7 @@ export const themes = {
     success: '#4ade80',
     warning: '#fbbf24',
     danger: '#f87171',
+    surface: '#1e1e2e',
   },
   sigacadv2: {
     primary: '#0037FF',
@@ -19,6 +21,7 @@ export const themes = {
     success: '#28a745',
     warning: '#ffc107',
     danger: '#dc3545',
+    surface: '#111827',
   },
 };
 
