@@ -27,4 +27,6 @@ pan spin -l -t "Moviendo $(basename "$SOURCE_ZIP")..." -- mv "$SOURCE_ZIP" "$DES
 pan log info "Descomprimiendo..."
 pan spin -l -t "Descomprimiendo..." -- unzip "$DESTINATION_PATH/$(basename "$SOURCE_ZIP")" -d "$DESTINATION_PATH"
 
-pan log info " Operación completada: $(basename "$SOURCE_ZIP") → $DESTINATION_PATH"
+pan spin -l -t "Eliminando $(basename "$SOURCE_ZIP")..." -- rm "$DESTINATION_PATH/$(basename "$SOURCE_ZIP")"
+
+pan log info "Operación completada: $(basename "$SOURCE_ZIP") → $DESTINATION_PATH (zip eliminado)"
