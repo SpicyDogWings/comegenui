@@ -9,7 +9,12 @@ import pkg from "archiver";
 const { create } = pkg;
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const files = fg.sync("./src/components/**/*.ts");
+const files = fg.sync("./src/components/**/*.ts", {
+  ignore: [
+    "./src/components/archived/**",
+    "./src/components/**/index.ts",
+  ],
+});
 const packageJson = JSON.parse(fs.readFileSync(resolve(__dirname, "package.json"), "utf-8"));
 
 async function runBuilds() {
