@@ -13,7 +13,7 @@ Selector de opciones con color, variante, ícono chevron, opciones deshabilitada
 | `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
 | `modelValue` | `string` | `""` | Valor seleccionado |
 | `options` | `array` | `[]` | Opciones del select (ver abajo). Se asigna como propiedad JS |
-| `color` | `string` | `"primary"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `variant` | `string` | `"none"` | `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` |
 | `placeholder` | `string` | — | Texto mostrado cuando no hay selección |
 | `placeholderWrap` | `boolean` | `false` | Si `true`, el texto wrappea; si `false`, se trunca con `...` (atributo HTML: `placeholder-wrap`) |

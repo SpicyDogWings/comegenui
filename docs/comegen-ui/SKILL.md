@@ -68,7 +68,7 @@ Cada `<script>` registra automáticamente su Custom Element. Los componentes est
 | `CuTable.umd.js` | `<cu-table>` | Tabla avanzada |
 | `CuTextarea.umd.js` | `<cu-textarea>` | Textarea |
 
-> **Nota sobre el código fuente:** Internamente, los `.ce.vue` viven en `src/components/` (raíz, `form/`, `data/`, `labs/`). El `<cu-select>` se compila desde `src/components/labs/Select.ts` pero se distribuye como cualquier otro componente. No hay un tag `cu-select-native` documentado como oficial.
+> **Nota sobre el código fuente:** Internamente, los `.ce.vue` viven en `src/components/` (raíz, `form/`, `data/`). El `<cu-select>` se compila desde `src/components/form/Select.ts`. No hay un tag `cu-select-native` documentado como oficial.
 
 ### Esperar a que los Custom Elements estén listos
 
@@ -175,15 +175,15 @@ Cada componente que usa color acepta dos props clave:
 
 Refleja los validadores reales de cada `.ce.vue`. `—` significa que la variante no es aceptada por ese componente.
 
-| Variante | Button | Alert | Badge | Input | Checkbox | Textarea | Pagination | Table | DropdownMenu | Autocomplete | Select |
-|----------|--------|-------|-------|-------|----------|----------|------------|-------|--------------|--------------|--------|
-| `solid` | ✓ | ✓ | ✓ | — | — | — | — | ✓ | ✓ | — | ✓ |
-| `outlined` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `soft` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `ghost` | ✓ | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `subtle` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `link` | ✓ | — | — | — | — | — | — | ✓ | ✓ | — | ✓ |
-| `none` | — | — | — | ✓ | ✓ | ✓ | — | — | — | ✓ | ✓ |
+| Variante | Button | Alert | Badge | Input | Checkbox | Textarea | Pagination | Table | DropdownMenu | Autocomplete | Select | Modal |
+|----------|--------|-------|-------|-------|----------|----------|------------|-------|--------------|--------------|--------|-------|
+| `solid` | ✓ | ✓ | ✓ | — | — | — | — | ✓ | ✓ | — | ✓ | ✓ |
+| `outlined` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `soft` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `ghost` | ✓ | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `subtle` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `link` | ✓ | — | — | — | — | — | — | ✓ | ✓ | — | ✓ | ✓ |
+| `none` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 
 **Default de `variant` por componente:**
 
@@ -191,11 +191,12 @@ Refleja los validadores reales de cada `.ce.vue`. `—` significa que la variant
 |------------|---------|
 | `<cu-alert>` | `soft` |
 | `<cu-autocomplete>` | `none` |
-| `<cu-badge>` | `ghost` |
-| `<cu-button>` | `ghost` |
+| `<cu-badge>` | `soft` |
+| `<cu-button>` | `none` |
 | `<cu-checkbox>` | `none` |
-| `<cu-dropdown-menu>` | `ghost` |
+| `<cu-dropdown-menu>` | `none` |
 | `<cu-input>` | `none` |
+| `<cu-modal>` | `ghost` |
 | `<cu-pagination>` | `soft` |
 | `<cu-select>` | `none` |
 | `<cu-table>` | `soft` |

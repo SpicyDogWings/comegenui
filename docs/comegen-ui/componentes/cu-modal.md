@@ -10,13 +10,15 @@ Modal/diálogo con backdrop, animación, soporte para `size`/`height` y slot `fo
 
 | Prop | Tipo | Default | Descripción |
 |------|------|---------|-------------|
+| `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
+| `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `variant` | `string` | `"ghost"` | `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` |
+| `hightContrast` | `boolean` | `false` | Modo de alto contraste para el texto |
 | `title` | `string` | `""` | Título del modal (se muestra en la cabecera) |
 | `description` | `string` | `""` | Descripción bajo el título (texto secundario) |
 | `persistent` | `boolean` | `false` | Si es `true`, no se cierra con click en el backdrop ni con `Escape` |
 | `size` | `string` | `"auto"` | Ancho del modal: `auto`, `sm`, `md`, `lg`, `xl`, `full` |
 | `height` | `string` | `"auto"` | Alto del modal: `auto`, `sm`, `md`, `lg`, `xl`, `full` |
-
-> El modal **no tiene** prop `color` ni `variant`. El estilo visual se controla con `size` y `height`.
 
 ## Eventos
 

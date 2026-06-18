@@ -12,7 +12,7 @@ Botón con soporte de color, variante, link y estados. Si se define `to`, se ren
 |------|------|---------|-------------|
 | `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
 | `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `string` | `"ghost"` | `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link` |
+| `variant` | `string` | `"none"` | `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` |
 | `disabled` | `boolean` | `false` | Estado deshabilitado |
 | `hightContrast` | `boolean` | `false` | Modo de alto contraste para el texto |
 | `to` | `string` | — | Si se especifica, el botón se renderiza como `<a>` |

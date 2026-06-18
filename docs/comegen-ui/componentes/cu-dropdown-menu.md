@@ -12,7 +12,7 @@ Menú desplegable con items declarativos (label, ícono, color, divisor, link). 
 |------|------|---------|-------------|
 | `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
 | `color` | `string` | `"neutral"` | Color semántico del toggle: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `string` | `"ghost"` | Variante del toggle: `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link` |
+| `variant` | `string` | `"none"` | Variante del toggle: `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` |
 | `disabled` | `boolean` | `false` | Deshabilita el toggle |
 | `hightContrast` | `boolean` | `false` | Modo de alto contraste |
 | `label` | `string` | `""` | Texto del toggle (se ignora si se provee slot `toggle`) |
@@ -20,6 +20,7 @@ Menú desplegable con items declarativos (label, ícono, color, divisor, link). 
 | `align` | `string` | `"start"` | Alineación del panel: `start`, `center`, `end` |
 | `placement` | `string` | `""` | Shorthand combinado (`bottom-start`, `bottom-end`, `top-start`, `top-end`). Si se define, sobrescribe `position` y `align` |
 | `offset` | `number` | `4` | Separación en píxeles entre el toggle y el panel |
+| `fixed` | `boolean` | `false` | Si es `true`, el panel usa `position: fixed` en vez de absoluto |
 | `items` | `array` | `[]` | Lista de items (ver abajo). Se asigna como propiedad JS, no como atributo HTML |
 
 ### Items

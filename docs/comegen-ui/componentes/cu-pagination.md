@@ -12,7 +12,7 @@ Paginación numérica con soporte para selector de tamaño de página y botones 
 |------|------|---------|-------------|
 | `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
 | `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `string` | `"soft"` | `outlined`, `soft`, `ghost`, `subtle` |
+| `variant` | `string` | `"soft"` | `outlined`, `soft`, `ghost`, `subtle`, `none` |
 | `currentPage` | `number` | `1` | Página actual (atributo HTML: `current-page`) |
 | `totalPages` | `number` | `1` | Total de páginas (atributo HTML: `total-pages`) |
 | `totalItems` | `number` | `0` | Total de items, útil para mostrar "X–Y de Z" (atributo HTML: `total-items`) |
@@ -20,6 +20,7 @@ Paginación numérica con soporte para selector de tamaño de página y botones 
 | `showPageSize` | `boolean` | `false` | Muestra el selector de tamaño de página (atributo HTML: `show-page-size`) |
 | `pageSizeOptions` | `array` | `[5, 10, 20, 50]` | Opciones del selector (atributo HTML: `page-size-options`) |
 | `showFirstAndLast` | `boolean` | `false` | Muestra botones "primera" y "última" página (atributo HTML: `show-first-and-last`) |
+| `hightContrast` | `boolean` | `false` | Modo de alto contraste |
 
 > **Atributos en HTML:** Todas las props se convierten a kebab-case. Ej.: `current-page`, `items-per-page`, `page-size-options`, `show-page-size`, `show-first-and-last`.
 

@@ -12,7 +12,7 @@ Alerta con color semántico, título opcional y botón de cerrar. Puede controla
 |------|------|---------|-------------|
 | `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
 | `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `string` | `"soft"` | `solid`, `outlined`, `soft`, `subtle` |
+| `variant` | `string` | `"soft"` | `solid`, `outlined`, `soft`, `subtle`, `none` |
 | `close` | `boolean` | `false` | Muestra el botón de cerrar (X) |
 | `title` | `string` | — | Título visible en la cabecera |
 | `show` | `boolean` | `true` | Controla visibilidad. Cambiar este atributo emite `update:show` |

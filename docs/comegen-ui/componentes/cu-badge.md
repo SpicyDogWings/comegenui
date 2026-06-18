@@ -12,7 +12,7 @@ Etiqueta o badge pequeño para estados, categorías o metadata. Componente de pr
 |------|------|---------|-------------|
 | `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
 | `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `string` | `"ghost"` | `solid`, `outlined`, `soft`, `ghost`, `subtle` |
+| `variant` | `string` | `"soft"` | `solid`, `outlined`, `soft`, `ghost`, `subtle`, `none` |
 | `hightContrast` | `boolean` | `false` | Modo de alto contraste para el texto |
 
 ## Slots

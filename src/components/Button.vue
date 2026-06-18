@@ -74,6 +74,7 @@ const fgClass = computed(() =>
       :class="{
         'hover:underline hover:decoration-solid hover:decoration-2 visited:text-[var(--btn-fg)]':
           props.variant === 'link',
+        'border-solid border-1 border-[var(--btn-bd)]': props.variant === 'none',
         'cursor-not-allowed opacity-70': props.disabled,
         'active:bg-[var(--btn-bg-active)] active:scale-95 hover:cursor-pointer':
           !props.disabled,
@@ -97,6 +98,7 @@ const fgClass = computed(() =>
       :class="{
         'hover:underline hover:decoration-solid hover:decoration-2 visited:text-[var(--btn-fg)]':
           props.variant === 'link',
+        'border-solid border-1 border-[var(--btn-bd)]': props.variant === 'none',
         'cursor-not-allowed opacity-70': props.disabled,
         'active:bg-[var(--btn-bg-active)] active:scale-95 hover:cursor-pointer':
           !props.disabled,
