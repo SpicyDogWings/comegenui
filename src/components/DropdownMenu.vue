@@ -26,6 +26,7 @@ const props = defineProps({
   placement: { type: String, required: false, default: "" },
   offset: { type: Number, required: false, default: 4 },
   menuBg: { type: String, required: false, default: "#ffffff" },
+  fixed: { type: Boolean, required: false, default: false },
   items: { type: Array as () => DropdownItem[], required: false, default: () => [] },
 });
 
@@ -58,6 +59,7 @@ defineExpose({
     :align="align"
     :placement="placement"
     :offset="offset"
+    :fixed="fixed"
     :menu-bg="menuBg"
     @open="emit('open')"
     @close="emit('close')"

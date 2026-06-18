@@ -501,6 +501,7 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
             :color="getHexColor(props.color)"
             variant="ghost"
             placement="bottom-end"
+            fixed
             :menu-bg="getColorMap(props.theme as any).surface"
             :items="props.actions.map(a => ({ ...a, color: a.color ? getHexColor(a.color) : undefined, onClick: () => a.onClick?.(row) }))"
             @click.stop
