@@ -1,6 +1,6 @@
 # `<cu-pagination>`
 
-Paginación para tablas o listas.
+Paginación numérica con soporte para selector de tamaño de página y botones de primera/última. Pensado para usarse dentro de tablas o listas.
 
 [← Volver](../SKILL.md)
 
@@ -10,23 +10,39 @@ Paginación para tablas o listas.
 
 | Prop | Tipo | Default | Descripción |
 |------|------|---------|-------------|
-| `theme` | `string` | `""` | Tema |
-| `color` | `string` | `"neutral"` | Color semántico |
+| `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
+| `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `variant` | `string` | `"soft"` | `outlined`, `soft`, `ghost`, `subtle` |
-| `current-page` | `number` | `1` | Página actual |
-| `total-pages` | `number` | `1` | Total de páginas |
-| `total-items` | `number` | `0` | Total de items |
-| `items-per-page` | `number` | `10` | Items por página |
-| `show-page-size` | `boolean` | `false` | Muestra selector de items por página |
-| `page-size-options` | `array` | `[5,10,20,50]` | Opciones del selector |
-| `show-first-and-last` | `boolean` | `false` | Muestra botones de primera/última página |
+| `currentPage` | `number` | `1` | Página actual (atributo HTML: `current-page`) |
+| `totalPages` | `number` | `1` | Total de páginas (atributo HTML: `total-pages`) |
+| `totalItems` | `number` | `0` | Total de items, útil para mostrar "X–Y de Z" (atributo HTML: `total-items`) |
+| `itemsPerPage` | `number` | `10` | Items por página (atributo HTML: `items-per-page`) |
+| `showPageSize` | `boolean` | `false` | Muestra el selector de tamaño de página (atributo HTML: `show-page-size`) |
+| `pageSizeOptions` | `array` | `[5, 10, 20, 50]` | Opciones del selector (atributo HTML: `page-size-options`) |
+| `showFirstAndLast` | `boolean` | `false` | Muestra botones "primera" y "última" página (atributo HTML: `show-first-and-last`) |
+
+> **Atributos en HTML:** Todas las props se convierten a kebab-case. Ej.: `current-page`, `items-per-page`, `page-size-options`, `show-page-size`, `show-first-and-last`.
+
+> **`pageSizeOptions`:** se asigna como propiedad JS (`pagination.pageSizeOptions = [10, 25, 50]`). Como atributo HTML no se soporta (es un array).
 
 ## Eventos
 
-| Evento | Payload | Descripción |
-|--------|---------|-------------|
-| `update:currentPage` | `number` | Cambio de página |
-| `update:itemsPerPage` | `number` | Cambio de items por página |
+| Evento | Payload (`e.detail`) | Descripción |
+|--------|----------------------|-------------|
+| `update:currentPage` | `number` | Se emite cuando cambia la página actual |
+| `update:itemsPerPage` | `number` | Se emite cuando cambia el tamaño de página |
+
+> Los eventos custom se escuchan con `addEventListener` y el payload está en `e.detail`.
+
+## Slots
+
+Ninguno.
+
+## Métodos
+
+No expone métodos. El control se hace via props y eventos.
+
+---
 
 ## Uso en HTML plano
 
@@ -44,13 +60,40 @@ Paginación para tablas o listas.
 ></cu-pagination>
 
 <script>
-  document.getElementById('paginacion').addEventListener('update:currentPage', (e) => {
+  // Cambiar opciones del selector dinámicamente
+  const p = document.getElementById('paginacion');
+  p.pageSizeOptions = [10, 25, 50, 100];
+
+  p.addEventListener('update:currentPage', (e) => {
     console.log('Página:', e.detail);
   });
-  document.getElementById('paginacion').addEventListener('update:itemsPerPage', (e) => {
+  p.addEventListener('update:itemsPerPage', (e) => {
     console.log('Items por página:', e.detail);
   });
 </script>
 ```
 
-> **Nota:** Los eventos de Custom Elements usan `e.detail` para acceder al payload.
+## Ejemplo con todos los controles
+
+```html
+<cu-pagination
+  current-page="1"
+  total-pages="20"
+  total-items="195"
+  items-per-page="10"
+  show-page-size
+  show-first-and-last
+  color="primary"
+  variant="outlined"
+></cu-pagination>
+```
+
+## Atributos booleanos en HTML
+
+```html
+<cu-pagination
+  show-page-size
+  show-first-and-last
+  total-pages="5"
+></cu-pagination>
+```

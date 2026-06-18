@@ -1,6 +1,6 @@
 # `<cu-textarea>`
 
-Área de texto multilínea.
+Área de texto multilínea con color, variante, control de filas y opción de deshabilitar el redimensionado.
 
 [← Volver](../SKILL.md)
 
@@ -10,33 +10,42 @@
 
 | Prop | Tipo | Default | Descripción |
 |------|------|---------|-------------|
-| `theme` | `string` | `""` | Tema |
-| `color` | `string` | `"neutral"` | Color semántico |
-| `variant` | `string` | `"none"` | `outlined`, `soft`, `ghost`, `subtle`, `none` |
-| `placeholder` | `string` | — | Placeholder |
-| `disabled` | `boolean` | `false` | Deshabilitado |
-| `readOnly` | `boolean` | `false` | Solo lectura |
-| `rows` | `number` | `3` | Número de filas |
-| `noResize` | `boolean` | `false` | Deshabilita redimensionar |
+| `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
 | `modelValue` | `string` | `""` | Valor controlado |
-| `startValue` | `string` | — | Valor inicial |
-| `hightContrast` | `boolean` | `false` | Alto contraste |
+| `startValue` | `string` | — | Valor inicial usado por `.reset()` |
+| `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `variant` | `string` | `"none"` | `outlined`, `soft`, `ghost`, `subtle`, `none` |
+| `placeholder` | `string` | — | Placeholder del textarea |
+| `disabled` | `boolean` | `false` | Estado deshabilitado |
+| `readOnly` | `boolean` | `false` | Solo lectura (en HTML se usa como `readonly`) |
+| `rows` | `number` | `3` | Cantidad de filas visibles |
+| `noResize` | `boolean` | `false` | Desactiva el redimensionado manual (atributo HTML: `no-resize`) |
+| `hightContrast` | `boolean` | `false` | Modo de alto contraste para el texto |
+
+> **Atributos en HTML:** `readOnly` → `readonly`, `noResize` → `no-resize`.
 
 ## Eventos
 
-| Evento | Payload | Descripción |
-|--------|---------|-------------|
-| `change` | `Event` | Cambio nativo |
-| `input` | `Event` | Input nativo |
+| Evento | Payload (`e.detail`) | Descripción |
+|--------|----------------------|-------------|
+| `update:modelValue` | `string` | Se emite en cada cambio de valor |
+
+> Los eventos nativos del DOM (`input`, `change`, `focus`, `blur`) **burbujean automáticamente** al host desde el Shadow DOM. No se re-emiten como eventos custom.
+
+## Slots
+
+Ninguno.
 
 ## Métodos expuestos
 
 | Método | Descripción |
 |--------|-------------|
-| `.get()` | Devuelve el valor actual |
+| `.get()` | Devuelve el valor actual (`string`) |
 | `.set(value)` | Asigna un valor |
-| `.reset()` | Limpia el valor |
+| `.reset()` | Vuelve al `startValue` (o `""` si no se definió) |
 | `.focus()` | Enfoca el textarea |
+
+---
 
 ## Uso en HTML plano
 
@@ -52,3 +61,31 @@
   console.log(ta.get());
 </script>
 ```
+
+## Escuchar cambios
+
+```html
+<cu-textarea id="bio" placeholder="Biografía"></cu-textarea>
+
+<script>
+  document.getElementById('bio').addEventListener('update:modelValue', (e) => {
+    console.log('Bio:', e.detail);
+  });
+</script>
+```
+
+## Reset
+
+```html
+<cu-textarea id="notas" start-value="Plantilla inicial">Plantilla inicial</cu-textarea>
+
+<button onclick="document.getElementById('notas').reset()">Restaurar plantilla</button>
+```
+
+## Deshabilitar redimensionado
+
+```html
+<cu-textarea no-resize placeholder="Tamaño fijo" rows="4"></cu-textarea>
+```
+
+Útil cuando querés controlar el alto de forma externa (con CSS o de manera responsiva).

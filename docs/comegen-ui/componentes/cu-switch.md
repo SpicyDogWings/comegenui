@@ -1,6 +1,6 @@
 # `<cu-switch>`
 
-Toggle switch con soporte de color, tamaños y animación.
+Toggle switch con color semántico y dos tamaños. Controlable via `modelValue` o métodos `get`/`set`.
 
 [← Volver](../SKILL.md)
 
@@ -10,29 +10,36 @@ Toggle switch con soporte de color, tamaños y animación.
 
 | Prop | Tipo | Default | Descripción |
 |------|------|---------|-------------|
-| `theme` | `string` | `""` | Tema |
-| `color` | `string` | `"neutral"` | Color semántico |
-| `size` | `string` | `"md"` | `sm`, `md` |
-| `disabled` | `boolean` | `false` | Deshabilitado |
-| `modelValue` | `boolean` | `false` | Estado del toggle |
-| `checked` | `boolean` | `false` | Estado alternativo |
-| `hightContrast` | `boolean` | `false` | Alto contraste |
+| `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
+| `modelValue` | `boolean` | `false` | Estado del toggle (controlado) |
+| `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `size` | `string` | `"md"` | Tamaño del switch: `sm`, `md` |
+| `disabled` | `boolean` | `false` | Estado deshabilitado |
+| `hightContrast` | `boolean` | `false` | Modo de alto contraste para el texto |
+
+> El Custom Element **no expone** una prop `checked` separada. El control se hace únicamente con `modelValue`. Tampoco tiene prop `variant`; el tamaño se controla con `size`.
 
 ## Eventos
 
-| Evento | Payload | Descripción |
-|--------|---------|-------------|
-| `update:modelValue` | `boolean` | Cambio de valor |
-| `change` | `boolean` | Cuando cambia el estado |
+| Evento | Payload (`e.detail`) | Descripción |
+|--------|----------------------|-------------|
+| `update:modelValue` | `boolean` | Se emite cuando cambia el estado |
+| `change` | `boolean` | Se emite en cada cambio (payload directo = boolean) |
+
+## Slots
+
+Ninguno.
 
 ## Métodos expuestos
 
 | Método | Descripción |
 |--------|-------------|
-| `.get()` | Devuelve el estado actual |
-| `.set(value)` | Asigna un estado |
-| `.reset()` | Pone en `false` |
+| `.get()` | Devuelve el estado actual (`boolean`) |
+| `.set(value)` | Asigna el estado |
+| `.reset()` | Pone el estado en `false` |
 | `.focus()` | Enfoca el switch |
+
+---
 
 ## Uso en HTML plano
 
@@ -61,12 +68,32 @@ Toggle switch con soporte de color, tamaños y animación.
 
 ## Escuchar cambios
 
+Hay dos formas equivalentes:
+
 ```html
 <cu-switch id="toggle"></cu-switch>
 
 <script>
-  document.getElementById('toggle').addEventListener('change', (e) => {
-    console.log('Toggle:', e.detail);
+  const sw = document.getElementById('toggle');
+
+  // update:modelValue (convención Vue)
+  sw.addEventListener('update:modelValue', (e) => {
+    console.log('Estado:', e.detail);
+  });
+
+  // change (payload = boolean)
+  sw.addEventListener('change', (e) => {
+    console.log('Toggle a:', e.detail);
   });
 </script>
+```
+
+## Uso con label
+
+El switch no incluye label propio. Combinalo con `<cu-label>` para tener un área clickeable extendida:
+
+```html
+<cu-label label="Notificaciones activas">
+  <cu-switch id="notif" color="primary"></cu-switch>
+</cu-label>
 ```
