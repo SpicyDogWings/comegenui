@@ -1,138 +1,143 @@
 <script setup lang="ts">
-import { computed, ref, watch, useTemplateRef } from "vue";
-import { getBgClasses, getFgClasses } from "../../utils/palette";
-import { useFocus } from "@vueuse/core";
+import { ref, computed, watch } from "vue";
+import Dropdown from "../Dropdown.vue";
+import Button from "../Button.vue";
 
 interface SelectOption {
   value: string;
   label: string;
+  disabled?: boolean;
+  color?: string;
+  variant?: string;
 }
 
 const props = defineProps({
-  modelValue: {
-    type: String,
-    required: false,
-    default: "",
-  },
-  options: {
-    type: Array as () => SelectOption[],
-    required: false,
-    default: () => [],
-  },
-  color: {
-    type: String,
-    required: false,
-    default: "#2c2c2c",
-    validator: (value: string) =>
-      /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/i.test(value),
-  },
-  variant: {
-    type: String,
-    required: false,
-    default: "ghost",
-    validator: (value: string) =>
-      ["outlined", "soft", "ghost", "subtle", "none"].includes(value),
-  },
-  placeholder: {
-    type: String,
-    required: false,
-  },
-  disabled: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
-  hightContrast: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
+  color: { type: String, required: false, default: "#2c2c2c" },
+  hightContrast: { type: Boolean, required: false, default: false },
+  variant: { type: String, required: false, default: "none" },
+  disabled: { type: Boolean, required: false, default: false },
+  placeholder: { type: String, required: false, default: "" },
+  placeholderWrap: { type: Boolean, required: false, default: false },
+  position: { type: String, required: false, default: "bottom" },
+  align: { type: String, required: false, default: "start" },
+  placement: { type: String, required: false, default: "" },
+  modelValue: { type: String, required: false, default: "" },
+  options: { type: Array as () => SelectOption[], required: false, default: () => [] },
+  menuBg: { type: String, required: false, default: "#ffffff" },
 });
 
-const emit = defineEmits(["update:modelValue"]);
+const emit = defineEmits(["update:modelValue", "select", "close", "blur"]);
 const selectedValue = ref(props.modelValue);
-const selectRef = useTemplateRef("select");
-const { focused: selectFocus } = useFocus(selectRef);
+const dropdownRef = ref<InstanceType<typeof Dropdown> | null>(null);
+const selectRoot = ref<HTMLElement | null>(null);
 
-const bgClass = computed(() =>
-  getBgClasses(props.color, props.variant, props.hightContrast),
-);
-const fgClass = computed(() =>
-  getFgClasses(props.color, props.variant, props.hightContrast),
-);
+const selectedLabel = computed(() => {
+  const opt = props.options.find(o => o.value === selectedValue.value);
+  return opt ? opt.label : props.placeholder || "Seleccionar...";
+});
 
-const get = () => selectedValue.value;
-const set = (value: string) => {
-  selectedValue.value = value;
-};
-const reset = () => {
-  selectedValue.value = "";
-};
+watch(() => props.modelValue, (val) => {
+  selectedValue.value = val;
+}, { immediate: true });
 
-watch(
-  () => props.modelValue,
-  (val) => {
-    selectedValue.value = val;
-  },
-  { immediate: true },
-);
+function onSelect(option: SelectOption) {
+  if (option.disabled) return;
+  selectedValue.value = option.value;
+  emit("update:modelValue", option.value);
+  emit("select", option);
+  dropdownRef.value?.close();
+}
+
+function get() { return selectedValue.value; }
+function set(value: string) { selectedValue.value = value; }
+function reset() { selectedValue.value = ""; }
+function focus() { selectRoot.value?.focus(); }
+
+function onFocusOut(e: FocusEvent) {
+  if (!selectRoot.value?.contains(e.relatedTarget as Node)) {
+    emit("blur");
+  }
+}
 
 defineExpose({
-  get,
-  set,
-  reset,
-  focus: () => (selectFocus.value = true),
+  get, set, reset, focus,
+  get isOpen() { return dropdownRef.value?.isOpen || false },
+  get selectedItem() {
+    return props.options.find(o => o.value === selectedValue.value) || null;
+  },
 });
 </script>
 
 <template>
-  <div
-    class="relative w-full"
-    :style="{
-      '--btn-fg': fgClass.main,
-      '--btn-bg': bgClass.main,
-      '--btn-bg-hover': bgClass.hover,
-      '--btn-bg-active': bgClass.active,
-      '--btn-bd': fgClass.border,
-    }"
+  <div ref="selectRoot" tabindex="-1" @focusout="onFocusOut">
+    <Dropdown
+    ref="dropdownRef"
+    :color="color"
+    :disabled="disabled"
+    :hight-contrast="hightContrast"
+    :position="position"
+    :align="align"
+    :placement="placement"
+    :offset="4"
+    :menu-bg="menuBg"
+    style="width:100%"
+    @close="emit('close')"
   >
-    <select
-      ref="select"
-      :value="selectedValue"
-      @change="
-        (e) => {
-          selectedValue = (e.target as HTMLSelectElement).value;
-          emit('update:modelValue', selectedValue);
-        }
-      "
-      class="py-2 px-3 pr-8 rounded-cu font-sans border-none text-[var(--btn-fg)] focus:outline-none focus:ring-2 w-full bg-[var(--btn-bg)] box-border appearance-none cursor-pointer transition-transform duration-150 active:scale-99"
-      :class="{
-        'focus:ring-[var(--btn-bd)]': true,
-        'cursor-not-allowed opacity-70': props.disabled,
-        'border-solid border-1 border-[var(--btn-bd)]': props.variant === 'subtle',
-        'bg-transparent border-solid border-2 border-[var(--btn-bd)] hover:bg-[var(--btn-bg-hover)]': props.variant === 'outlined',
-        'hover:bg-[var(--btn-bg-hover)]': props.variant === 'soft' || props.variant === 'ghost',
-        'bg-transparent border-solid border-1 border-charcoal-100': props.variant === 'none',
-      }"
-      :disabled="props.disabled"
-    >
-      <option v-if="props.placeholder" value="" disabled :selected="!selectedValue" class="text-charcoal-800 bg-white">
-        {{ props.placeholder }}
-      </option>
-      <option
-        v-for="option in props.options"
-        :key="option.value"
-        :value="option.value"
-        class="text-charcoal-800 bg-white"
+    <template #toggle="{ toggle, isOpen }">
+      <Button
+        :color="color"
+        :variant="variant"
+        :disabled="disabled"
+        :hight-contrast="hightContrast"
+        style="width:100%;justify-content:space-between"
+        class="box-border"
+        @click="toggle"
       >
-        {{ option.label }}
-      </option>
-    </select>
-    <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none text-[var(--btn-fg)]">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="m6 9l6 6l6-6"/>
-      </svg>
-    </div>
+        <span
+          :class="{
+            'whitespace-nowrap overflow-hidden text-ellipsis min-w-0': !placeholderWrap,
+            'whitespace-normal': placeholderWrap,
+          }"
+        >{{ selectedLabel }}</span>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          :class="{ 'rotate-180': isOpen }"
+          class="transition-transform duration-200 shrink-0"
+        >
+          <path d="m6 9 6 6 6-6"/>
+        </svg>
+      </Button>
+    </template>
+    <template #default>
+      <div v-if="options.length > 0" class="max-h-[240px] overflow-y-auto">
+        <Button
+          v-for="(opt, i) in options"
+          :key="i"
+          :color="opt.color || color"
+          :variant="opt.variant || (opt.value === selectedValue ? 'soft' : 'ghost')"
+          :class="{
+            'opacity-50 cursor-not-allowed': opt.disabled,
+          }"
+          :disabled="opt.disabled"
+          style="width:100%;justify-content:flex-start"
+          @click="onSelect(opt)"
+        >
+          {{ opt.label }}
+        </Button>
+      </div>
+      <div v-else class="p-3 font-sans text-sm opacity-60 text-center">
+        Sin opciones
+      </div>
+    </template>
+    </Dropdown>
   </div>
 </template>
 

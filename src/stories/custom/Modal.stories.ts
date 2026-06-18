@@ -1,7 +1,7 @@
 import CuModal from "../../components/Modal.ce.vue";
 import CuButton from "../../components/Button.ce.vue";
 import CuInput from "../../components/form/Input.ce.vue";
-import CuTable from "../../components/Table.ce.vue";
+import CuTable from "../../components/data/Table.ce.vue";
 import { ref } from "vue";
 
 import type { Meta, StoryObj } from "@storybook/vue3";

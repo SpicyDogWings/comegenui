@@ -7,13 +7,28 @@ import { isValidTheme, type ThemeName } from "../config/theme";
 
 const props = defineProps({
   theme: { type: String, required: false, default: "", validator: isValidTheme },
-  color: { type: String, required: false, default: "neutral" },
-  variant: { type: String, required: false, default: "ghost" },
+  color: {
+    type: String,
+    required: false,
+    default: "neutral",
+    validator: (value: string) =>
+      ["primary", "neutral", "success", "warning", "danger"].includes(value),
+  },
+  variant: {
+    type: String,
+    required: false,
+    default: "none",
+    validator: (value: string) =>
+      ["solid", "outlined", "soft", "ghost", "subtle", "link", "none"].includes(value),
+  },
   disabled: { type: Boolean, required: false, default: false },
   hightContrast: { type: Boolean, required: false, default: false },
   label: { type: String, required: false, default: "" },
-  placement: { type: String, required: false, default: "bottom-start" },
+  position: { type: String, required: false, default: "bottom" },
+  align: { type: String, required: false, default: "start" },
+  placement: { type: String, required: false, default: "" },
   offset: { type: Number, required: false, default: 4 },
+  fixed: { type: Boolean, required: false, default: false },
   items: { type: Array, required: false, default: () => [] },
 });
 
@@ -52,7 +67,10 @@ defineExpose({
     :disabled="props.disabled"
     :hight-contrast="props.hightContrast"
     :label="props.label"
+    :position="props.position"
+    :align="props.align"
     :placement="props.placement"
+    :fixed="props.fixed"
     :offset="props.offset"
     :menu-bg="themeMap.surface"
     :items="resolvedItems"

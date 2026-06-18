@@ -6,7 +6,7 @@ const getBgClasses = (color: string, variant: string, hightContrast: boolean) =>
   const isSoftOrSubtle = ["soft", "subtle"].includes(variant);
   const isLink = variant === "link";
   let main = color;
-  if (isGhostOrOutlined || isLink) main = transparentize(color, 1);
+  if (isGhostOrOutlined || isLink || variant === "none") main = transparentize(color, 1);
   if (isSoftOrSubtle) main = transparentize(color, 0.9);
   let hover = darken(color, 0.1);
   let active = darken(color, 0.2);
@@ -14,7 +14,7 @@ const getBgClasses = (color: string, variant: string, hightContrast: boolean) =>
   if (hoverContrast < 1) hover = lighten(main, 0.1);
   const activeContrast = getContrast(toHex(darken(color, 0.2)), main);
   if (activeContrast < 2) active = lighten(main, hightContrast ? 0.2 : 0.1);
-  if (isGhostOrOutlined) {
+  if (isGhostOrOutlined || variant === "none") {
     hover = transparentize(color, 0.9);
     active = transparentize(color, 0.8);
   }
@@ -35,7 +35,7 @@ const getFgClasses = (color: string, variant: string, hightContrast: boolean) =>
   if (hightContrast ? contrast < 3 : contrast < 2) main = toHex(darken(color, hightContrast ? 0.7 : 0.5));
   if (["ghost", "outlined", "soft", "subtle", "link", "none"].includes(variant)) main = color;
   let border = "";
-  if (variant === "subtle") border = transparentize(color, 0.7);
+  if (variant === "subtle" || variant === "none") border = transparentize(color, 0.7);
   return { main, border };
 };
 

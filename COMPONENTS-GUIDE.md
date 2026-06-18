@@ -22,7 +22,7 @@ Librería de componentes UI como Custom Elements nativos, construidos con Vue 3 
   - [`<cu-modal>`](#cu-modal)
   - [`<cu-pagination>`](#cu-pagination)
   - [`<cu-table>`](#cu-table)
-  - [`<cu-dropdown>`](#cu-dropdown)
+  - [`<cu-dropdown-menu>`](#cu-dropdown-menu)
 - [Notas Técnicas](#notas-técnicas)
 
 ---
@@ -45,7 +45,7 @@ Cada componente es un archivo **UMD** independiente. Incluye solo los que necesi
 <script src="ruta/CuModal.umd.js"></script>
 <script src="ruta/CuPagination.umd.js"></script>
 <script src="ruta/CuTable.umd.js"></script>
-<script src="ruta/CuDropdown.umd.js"></script>
+<script src="ruta/CuDropdownMenu.umd.js"></script>
 ```
 
 Cada script registra automáticamente su Custom Element. No necesitas instalar Vue ni ninguna dependencia.
@@ -66,7 +66,7 @@ Cada script registra automáticamente su Custom Element. No necesitas instalar V
 | `CuModal.umd.js` | `<cu-modal>` | Modal |
 | `CuPagination.umd.js` | `<cu-pagination>` | Paginación |
 | `CuTable.umd.js` | `<cu-table>` | Tabla avanzada |
-| `CuDropdown.umd.js` | `<cu-dropdown>` | Dropdown |
+| `CuDropdownMenu.umd.js` | `<cu-dropdown-menu>` | Menú desplegable |
 
 ---
 
@@ -91,15 +91,24 @@ Tres temas integrados: `light` (default), `dark`, `sigacadv2`.
 
 Si se especifica `theme`, tiene prioridad sobre `data-theme`. Si se omite, hereda del `<html>`.
 
+### Auto-detección
+
+Si no hay `data-theme` en el documento ni `theme` en el componente, se detecta automáticamente `prefers-color-scheme` del OS. Prioridad completa:
+
+```
+theme prop (componente) → data-theme (<html>) → prefers-color-scheme (OS)
+```
+
 Colores de cada tema:
 
 | Color | `light` | `dark` | `sigacadv2` |
 |-------|---------|--------|-------------|
-| `primary` | `#1774A4` | `#38bdf8` | `#003366` |
+| `primary` | `#1774A4` | `#38bdf8` | `#0037FF` |
 | `neutral` | `#2c2c2c` | `#e5e5e5` | `#1a1a1a` |
 | `success` | `#22c55e` | `#4ade80` | `#28a745` |
 | `warning` | `#f59e0b` | `#fbbf24` | `#ffc107` |
 | `danger` | `#ef4444` | `#f87171` | `#dc3545` |
+| `surface` | `#ffffff` | `#1a1a1a` | `#111827` |
 
 ---
 
@@ -114,15 +123,15 @@ Cada componente que usa color acepta dos props clave:
 
 ### Variantes disponibles por componente
 
-| Variante | Button | Alert | Badge | Input | Checkbox | Textarea | Pagination | Table | Dropdown |
-|----------|--------|-------|-------|-------|----------|----------|------------|-------|----------|
-| `solid` | ✓ | ✓ | ✓ | — | — | — | — | ✓ | ✓ |
-| `outlined` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `soft` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `ghost` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `subtle` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `link` | ✓ | — | — | — | — | — | — | ✓ | — |
-| `none` | — | — | — | ✓ | ✓ | ✓ | — | — | — |
+| Variante | Button | Alert | Badge | Input | Checkbox | Textarea | Pagination | Table | DropdownMenu | Select |
+|----------|--------|-------|-------|-------|----------|----------|------------|-------|----------|--------|
+| `solid` | ✓ | ✓ | ✓ | — | — | — | — | ✓ | ✓ | ✓ |
+| `outlined` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `soft` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `ghost` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `subtle` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `link` | ✓ | — | — | — | — | — | — | ✓ | — | ✓ |
+| `none` | ✓ | — | — | ✓ | ✓ | ✓ | — | — | — | ✓ |
 
 ---
 
@@ -269,7 +278,7 @@ Campo de texto con soporte de color y variantes.
 |------|------|---------|-------------|
 | `theme` | `string` | `""` | Tema |
 | `color` | `string` | `"neutral"` | Color semántico |
-| `variant` | `string` | `"ghost"` | `outlined`, `soft`, `ghost`, `subtle`, `none` |
+| `variant` | `string` | `"none"` | `outlined`, `soft`, `ghost`, `subtle`, `none` |
 | `type` | `string` | `"text"` | `text`, `password`, `email`, `number`, `tel`, `url`, `search` |
 | `placeholder` | `string` | — | Placeholder |
 | `disabled` | `boolean` | `false` | Deshabilitado |
@@ -321,10 +330,9 @@ Checkbox personalizado con label.
 |------|------|---------|-------------|
 | `theme` | `string` | `""` | Tema |
 | `color` | `string` | `"neutral"` | Color semántico |
-| `variant` | `string` | `"ghost"` | `outlined`, `soft`, `ghost`, `subtle`, `none` |
+| `variant` | `string` | `"none"` | `outlined`, `soft`, `ghost`, `subtle`, `none` |
 | `disabled` | `boolean` | `false` | Deshabilitado |
 | `modelValue` | `boolean` | `false` | Valor controlado |
-| `checked` | `boolean` | `false` | Checkeado |
 | `label` | `string` | — | Texto junto al checkbox |
 | `hightContrast` | `boolean` | `false` | Alto contraste |
 
@@ -419,7 +427,7 @@ Selector de opciones con soporte de color, variante e ícono chevron.
 |------|------|---------|-------------|
 | `theme` | `string` | `""` | Tema |
 | `color` | `string` | `"neutral"` | Color semántico |
-| `variant` | `string` | `"ghost"` | `outlined`, `soft`, `ghost`, `subtle`, `none` |
+| `variant` | `string` | `"none"` | `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` |
 | `placeholder` | `string` | — | Placeholder |
 | `disabled` | `boolean` | `false` | Deshabilitado |
 | `options` | `array` | `[]` | Opciones `[{ value, label }]` |
@@ -434,6 +442,7 @@ Selector de opciones con soporte de color, variante e ícono chevron.
 | `.set(value)` | Asigna un valor |
 | `.reset()` | Limpia la selección |
 | `.focus()` | Enfoca el select |
+| `.selectedItem` | Objeto `{ value, label }` de la opción seleccionada o `null` |
 
 #### Uso
 
@@ -820,7 +829,7 @@ interface ButtonConfig {
 
 ---
 
-### `<cu-dropdown>`
+### `<cu-dropdown-menu>`
 
 Menú desplegable con toggle, posicionamiento y slots.
 
@@ -865,17 +874,17 @@ Menú desplegable con toggle, posicionamiento y slots.
 #### Uso
 
 ```html
-<cu-dropdown label="Acciones" color="primary" variant="soft">
+<cu-dropdown-menu label="Acciones" color="primary" variant="soft">
   <a href="/editar">Editar</a>
   <a href="/duplicar">Duplicar</a>
   <hr />
   <a href="/eliminar">Eliminar</a>
-</cu-dropdown>
+</cu-dropdown-menu>
 
-<cu-dropdown id="ddOpciones" color="danger" variant="outlined" placement="bottom-end">
+<cu-dropdown-menu id="ddOpciones" color="danger" variant="outlined" placement="bottom-end">
   <button onclick="alert('Opción 1')">Opción 1</button>
   <button onclick="alert('Opción 2')">Opción 2</button>
-</cu-dropdown>
+</cu-dropdown-menu>
 
 <script>
   document.getElementById('ddOpciones').addEventListener('open', () => {
@@ -892,7 +901,7 @@ Menú desplegable con toggle, posicionamiento y slots.
 Reemplaza el botón por defecto usando `slot="toggle"`:
 
 ```html
-<cu-dropdown id="ddCustom">
+<cu-dropdown-menu id="ddCustom">
   <button slot="toggle" onclick="document.getElementById('ddCustom').toggle()"
           style="background:#3b82f6;color:white;border:none;border-radius:4px;padding:6px 12px;cursor:pointer">
     ☰ Menú
@@ -900,7 +909,7 @@ Reemplaza el botón por defecto usando `slot="toggle"`:
   <a href="/perfil">Perfil</a>
   <a href="/config">Configuración</a>
   <a href="/logout">Cerrar sesión</a>
-</cu-dropdown>
+</cu-dropdown-menu>
 ```
 
 > **Nota:** Al usar un toggle personalizado, debes controlar la apertura/cierre manualmente, por ejemplo con `document.getElementById('id').toggle()`.
@@ -908,9 +917,9 @@ Reemplaza el botón por defecto usando `slot="toggle"`:
 #### Control programático
 
 ```html
-<cu-dropdown id="ddAPI" label="Dropdown programático">
+<cu-dropdown-menu id="ddAPI" label="Dropdown programático">
   <button onclick="console.log('Acción ejecutada')">Acción</button>
-</cu-dropdown>
+</cu-dropdown-menu>
 
 <script>
   const dd = document.getElementById('ddAPI');
@@ -972,7 +981,8 @@ Cada archivo UMD incluye el runtime de Vue 3 (no externalizado):
 | CuModal | ~204 kB | ~50 kB |
 | CuPagination | ~197 kB | ~48 kB |
 | CuTable | ~256 kB | ~57 kB |
-| CuDropdown | ~200 kB | ~48 kB |
+| CuDropdownMenu | ~204 kB | ~49 kB |
+| CuAutocomplete | ~214 kB | ~51 kB |
 
 ### Compatibilidad
 

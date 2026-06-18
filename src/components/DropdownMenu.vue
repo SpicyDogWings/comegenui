@@ -21,9 +21,12 @@ const props = defineProps({
   variant: { type: String, required: false, default: "ghost" },
   disabled: { type: Boolean, required: false, default: false },
   label: { type: String, required: false, default: "" },
-  placement: { type: String, required: false, default: "bottom-start" },
+  position: { type: String, required: false, default: "bottom" },
+  align: { type: String, required: false, default: "start" },
+  placement: { type: String, required: false, default: "" },
   offset: { type: Number, required: false, default: 4 },
   menuBg: { type: String, required: false, default: "#ffffff" },
+  fixed: { type: Boolean, required: false, default: false },
   items: { type: Array as () => DropdownItem[], required: false, default: () => [] },
 });
 
@@ -52,8 +55,11 @@ defineExpose({
     :disabled="disabled"
     :hight-contrast="hightContrast"
     :label="label"
+    :position="position"
+    :align="align"
     :placement="placement"
     :offset="offset"
+    :fixed="fixed"
     :menu-bg="menuBg"
     @open="emit('open')"
     @close="emit('close')"

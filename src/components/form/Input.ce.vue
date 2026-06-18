@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch, getCurrentInstance } from "vue";
 import Input from "./Input.vue";
 import { getColorMap } from "../../utils/palette";
 import { getHostTheme } from "../../utils/getHostTheme";
@@ -31,7 +31,7 @@ const props = defineProps({
   variant: {
     type: String,
     required: false,
-    default: "ghost",
+    default: "none",
     validator: (value: string) =>
       ["outlined", "soft", "ghost", "subtle", "none"].includes(value),
   },
@@ -69,7 +69,32 @@ const hexColor = computed(() => {
   return map[props.color as keyof typeof map] || props.color;
 });
 
+const innerValue = ref(props.modelValue);
 const inputRef = ref<InstanceType<typeof Input> | null>(null);
+const instance = getCurrentInstance();
+
+watch(() => props.modelValue, (val) => {
+  innerValue.value = val;
+});
+
+watch(() => inputRef.value?.get(), (val) => {
+  if (val !== undefined && val !== null && val !== innerValue.value) {
+    innerValue.value = val;
+    ceEmit("update:modelValue", val);
+  }
+});
+
+function ceEmit(event: string, payload: unknown) {
+  const el = instance?.vnode.el as HTMLElement | null;
+  const host = el?.getRootNode()?.host || el;
+  if (host) {
+    host.dispatchEvent(new CustomEvent(event, {
+      detail: payload,
+      bubbles: true,
+      composed: true,
+    }));
+  }
+}
 
 defineExpose({
   get: () => inputRef.value?.get(),
@@ -80,7 +105,18 @@ defineExpose({
 </script>
 
 <template>
-  <Input ref="inputRef" v-bind="{ ...props, color: hexColor }" />
+  <Input
+    ref="inputRef"
+    :color="hexColor"
+    :variant="props.variant"
+    :type="props.type"
+    :placeholder="props.placeholder"
+    :disabled="props.disabled"
+    :read-only="props.readOnly"
+    :hight-contrast="props.hightContrast"
+    :start-value="props.startValue"
+    :model-value="innerValue"
+  />
 </template>
 
 <style>

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
-import Dropdown from "./Dropdown.vue";
-import Input from "./form/Input.vue";
-import Button from "./Button.vue";
+import { ref, computed, watch, defineModel } from "vue";
+import Dropdown from "../Dropdown.vue";
+import Input from "./Input.vue";
+import Button from "../Button.vue";
 
 interface AutocompleteItem {
   label: string;
@@ -16,19 +16,28 @@ const props = defineProps({
   disabled: { type: Boolean, required: false, default: false },
   readOnly: { type: Boolean, required: false, default: false },
   placeholder: { type: String, required: false, default: "" },
-  variant: { type: String, required: false, default: "outlined" },
+  variant: { type: String, required: false, default: "none" },
   type: { type: String, required: false, default: "text" },
   minChars: { type: Number, required: false, default: 0 },
   items: { type: Array as () => AutocompleteItem[], required: false, default: () => [] },
   menuBg: { type: String, required: false, default: "#ffffff" },
+  position: { type: String, required: false, default: "bottom" },
+  align: { type: String, required: false, default: "start" },
+  placement: { type: String, required: false, default: "" },
 });
 
-const emit = defineEmits(["select"]);
+const emit = defineEmits(["select", "blur"]);
+const searchValue = defineModel<string>({ default: "" });
 
 const dropdownRef = ref<InstanceType<typeof Dropdown> | null>(null);
 const inputRef = ref<InstanceType<typeof Input> | null>(null);
-const searchText = ref("");
+const rootRef = ref<HTMLElement | null>(null);
+const searchText = ref(searchValue.value);
 const selectedItem = ref<AutocompleteItem | null>(null);
+
+watch(() => searchValue.value, (val) => {
+  searchText.value = val;
+}, { immediate: true });
 
 const filteredItems = computed(() => {
   const q = searchText.value.toLowerCase().trim();
@@ -46,9 +55,8 @@ function onFocus() {
   }
 }
 
-function onInput() {
-  if (!inputRef.value) return;
-  searchText.value = inputRef.value.get();
+function onInput(val: string) {
+  searchText.value = val;
 
   if (searchText.value.length < props.minChars || filteredItems.value.length === 0) {
     dropdownRef.value?.close();
@@ -59,36 +67,46 @@ function onInput() {
 }
 
 function onItemClick(item: AutocompleteItem) {
-  searchText.value = item.value || item.label;
-  if (inputRef.value) inputRef.value.set(searchText.value);
+  const val = item.value || item.label;
+  searchText.value = val;
+  searchValue.value = val;
   selectedItem.value = item;
   emit("select", item);
   dropdownRef.value?.close();
 }
 
-function get() { return searchText.value; }
+function onFocusOut(e: FocusEvent) {
+  if (!rootRef.value?.contains(e.relatedTarget as Node)) {
+    emit("blur");
+  }
+}
+
+function get() { return searchValue.value; }
 function set(val: string) {
+  searchValue.value = val;
   searchText.value = val;
   if (inputRef.value) inputRef.value.set(val);
 }
+function reset() { searchValue.value = ""; searchText.value = ""; }
 function focus() { inputRef.value?.focus(); }
 
 defineExpose({
-  get,
-  set,
-  focus,
+  get, set, reset, focus,
   get isOpen() { return dropdownRef.value?.isOpen || false },
   get selectedItem() { return selectedItem.value },
 });
 </script>
 
 <template>
-  <Dropdown
+  <div ref="rootRef" tabindex="-1" @focusout="onFocusOut">
+    <Dropdown
     ref="dropdownRef"
     :color="color"
     :disabled="disabled"
     :hight-contrast="hightContrast"
-    placement="bottom-start"
+    :position="position"
+    :align="align"
+    :placement="placement"
     :offset="4"
     :menu-bg="menuBg"
     style="width:100%"
@@ -106,7 +124,6 @@ defineExpose({
         :hight-contrast="hightContrast"
         style="width:100%"
         @update:model-value="onInput"
-        @input="onInput"
         @focus="onFocus"
       />
     </template>
@@ -117,15 +134,18 @@ defineExpose({
           :key="i"
           color="#888"
           variant="ghost"
+          :disabled="item.disabled"
+          :class="{ 'opacity-50 cursor-not-allowed': item.disabled }"
           style="width:100%;justify-content:flex-start"
-          @click="onItemClick(item)"
+          @click="item.disabled ? undefined : onItemClick(item)"
         >
           <span v-if="item.icon" v-html="item.icon" class="transform translate-y-0.5" style="opacity:.6"></span>
           <span v-if="item.label">{{ item.label }}</span>
         </Button>
       </div>
     </template>
-  </Dropdown>
+    </Dropdown>
+  </div>
 </template>
 
 <style>

@@ -6,4 +6,4 @@ SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 SOURCE_ZIP="/home/unancode/Documentos/canary/comegenUI/dist/comegenui.zip"
-DESTINATION_PATH="/home/unancode/Documentos/releases/finanzas/views/comegenuiv2"
+DESTINATION_PATH="/home/unancode/Documentos/releases/finanzas/views/libs/comegenuiv2"

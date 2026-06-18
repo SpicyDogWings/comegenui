@@ -1,0 +1,85 @@
+# Documentación de ComegenUI
+
+Bienvenido a la documentación del proyecto **ComegenUI 2.0** (librería de Web Components construida con Vue 3).
+
+---
+
+## ¿Qué necesitás?
+
+### Solo quiero **usar** los componentes
+
+Si querés consumir los componentes en tu proyecto (HTML plano, React, Vue, etc.):
+
+- **[Guía de uso de ComegenUI](comegen-ui/SKILL.md)** — instalación, temas, variantes, API de cada componente.
+- **[Documentación por componente](comegen-ui/componentes/)** — referencia detallada de la API.
+
+### Quiero **contribuir / desarrollar**
+
+Si vas a modificar o agregar componentes a la librería:
+
+- **[DEV.md](DEV.md)** — guía práctica de desarrollo (setup, crear componentes, playground, build).
+- **[Skill `desarrollar-comegen-ui`](desarrollar-comegen-ui/SKILL.md)** — guía detallada (para agentes y contribuidores).
+- **[Skill `documentar-comegen-ui`](documentar-comegen-ui/SKILL.md)** — cómo documentar componentes.
+
+### Quiero ver el **estado del proyecto**
+
+- **[Notas de auditoría](notes/)** — problemas pendientes y decisiones técnicas.
+
+---
+
+## Componentes disponibles
+
+| Componente | Documentación |
+|------------|---------------|
+| `<cu-alert>` | [Ver docs](comegen-ui/componentes/cu-alert.md) |
+| `<cu-autocomplete>` | [Ver docs](comegen-ui/componentes/cu-autocomplete.md) |
+| `<cu-badge>` | [Ver docs](comegen-ui/componentes/cu-badge.md) |
+| `<cu-button>` | [Ver docs](comegen-ui/componentes/cu-button.md) |
+| `<cu-checkbox>` | [Ver docs](comegen-ui/componentes/cu-checkbox.md) |
+| `<cu-dropdown-menu>` | [Ver docs](comegen-ui/componentes/cu-dropdown-menu.md) |
+| `<cu-input>` | [Ver docs](comegen-ui/componentes/cu-input.md) |
+| `<cu-label>` | [Ver docs](comegen-ui/componentes/cu-label.md) |
+| `<cu-modal>` | [Ver docs](comegen-ui/componentes/cu-modal.md) |
+| `<cu-pagination>` | [Ver docs](comegen-ui/componentes/cu-pagination.md) |
+| `<cu-select>` | [Ver docs](comegen-ui/componentes/cu-select.md) |
+| `<cu-switch>` | [Ver docs](comegen-ui/componentes/cu-switch.md) |
+| `<cu-table>` | [Ver docs](comegen-ui/componentes/cu-table.md) |
+| `<cu-textarea>` | [Ver docs](comegen-ui/componentes/cu-textarea.md) |
+
+---
+
+## Recursos rápidos
+
+| Recurso | Descripción |
+|---------|-------------|
+| [DEV.md](DEV.md) | Guía práctica para desarrollar y contribuir |
+| [Playground](../playground/) | HTML estático para experimentar con los UMD |
+| [Storybook](../.storybook/) | Exploración visual de componentes (`pnpm storybook`) |
+| [Build config](../build-libs.ts) | Pipeline que genera los UMD |
+| [Temas](../src/config/theme.ts) | Configuración de temas (`light`, `dark`, `sigacadv2`) |
+
+---
+
+## Estructura de la documentación
+
+```
+docs/
+├── DOCS.md                          ← este archivo
+├── DEV.md                           ← guía de desarrollo
+├── comegen-ui/                      ← documentación de uso (para usuarios finales)
+│   ├── SKILL.md
+│   └── componentes/
+├── desarrollar-comegen-ui/          ← skill de desarrollo (para contribuidores)
+│   ├── SKILL.md
+│   ├── arquitectura.md
+│   ├── crear-componente.md
+│   ├── ...
+├── documentar-comegen-ui/           ← skill de documentación (para quien documenta)
+│   ├── SKILL.md
+│   ├── arquitectura.md
+│   ├── ...
+└── notes/                           ← notas internas de auditoría
+    ├── 00-README.md
+    ├── 01-build-glob.md
+    ├── ...
+```

@@ -1,6 +1,6 @@
 # `<cu-table>`
 
-Tabla avanzada con búsqueda, edición inline, paginación, badges y botones por celda.
+Tabla avanzada con búsqueda, paginación, edición inline, ordenamiento, badges y botones por celda. Pensada para reemplazar tablas HTML estáticas en apps con UMD.
 
 [← Volver](../SKILL.md)
 
@@ -10,53 +10,62 @@ Tabla avanzada con búsqueda, edición inline, paginación, badges y botones por
 
 | Prop | Tipo | Default | Descripción |
 |------|------|---------|-------------|
-| `theme` | `string` | `""` | Tema |
-| `color` | `string` | `"neutral"` | Color semántico |
-| `variant` | `string` | `"soft"` | `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link` |
-| `columns` | `array` | `[]` | Configuración de columnas (ver abajo) |
-| `data` | `array` | `[]` | Datos de la tabla |
-| `empty` | `string` | `""` | Texto cuando no hay datos |
-| `pagination` | `boolean` | `false` | Habilita paginación |
-| `items-per-page` | `number` | `10` | Items por página |
-| `show-page-size` | `boolean` | `false` | Selector de items por página |
-| `page-size-options` | `array` | `[5,10,20,50]` | Opciones del selector |
-| `search-enabled` | `boolean` | `false` | Habilita búsqueda |
-| `search-placeholder` | `string` | `"Buscar..."` | Placeholder del buscador |
-| `search-fields` | `array` | `[]` | Columnas en las que buscar (vacío = todas) |
-| `search-value` | `string` | `""` | Valor de búsqueda inicial |
-| `filters` | `object` | `{}` | Filtros por columna: `{ estado: "Activo", tipo: ["1","3"] }` |
-| `loading` | `boolean` | `false` | Muestra una barra de carga animada en el tope de la tabla |
+| `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
+| `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `variant` | `string` | `"soft"` | `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` |
+| `columns` | `array` | `[]` | Definición de columnas (ver [Interfaz de columna](#interfaz-de-columna)). Se asigna como propiedad JS |
+| `data` | `array` | `[]` | Filas de la tabla. Se asigna como propiedad JS |
+| `empty` | `string` | `""` | Texto a mostrar cuando no hay datos. Si se omite, usa `"No hay datos que mostrar"` |
+| `pagination` | `boolean` | `false` | Habilita paginación interna |
+| `itemsPerPage` | `number` | `10` | Tamaño de página (atributo HTML: `items-per-page`) |
+| `showPageSize` | `boolean` | `false` | Muestra selector de items por página (atributo HTML: `show-page-size`) |
+| `pageSizeOptions` | `array` | `[5, 10, 20, 50]` | Opciones del selector (atributo HTML: `page-size-options`). Se asigna como propiedad JS |
+| `searchEnabled` | `boolean` | `false` | Habilita barra de búsqueda (atributo HTML: `search-enabled`) |
+| `searchPlaceholder` | `string` | `"Buscar..."` | Placeholder del input de búsqueda (atributo HTML: `search-placeholder`) |
+| `searchFields` | `array` | `[]` | Columnas donde buscar (atributo HTML: `search-fields`). Vacío = todas |
+| `searchValue` | `string` | `""` | Valor controlado del buscador (atributo HTML: `search-value`) |
+| `filters` | `object` | `{}` | Filtros por columna. Se asigna como propiedad JS |
+| `loading` | `boolean` | `false` | Muestra una barra de carga animada en el tope |
+| `actions` | `array` | `[]` | Acciones de fila (botón "..." al final de cada fila). Se asigna como propiedad JS |
 
-> **`search-fields` como atributo HTML:** Los atributos se reciben como strings. Pasá siempre `search-fields='["campo1","campo2"]'` (JSON válido). Cuando lo seteés por JS, usá un array real: `tabla.searchFields = ["nombre", "tipo"]`.
+> **Pipeline interno:** `data → search → filters → sort → pagination`. El ordenamiento y la paginación operan sobre los datos ya filtrados.
+
+> **`search-fields` como atributo HTML:** Es el único caso donde podés pasar un array como atributo. Usá JSON válido:
+> ```html
+> <cu-table search-fields='["nombre","tipo"]'></cu-table>
+> ```
+> Equivalente por JS: `tabla.searchFields = ["nombre", "tipo"]`.
 
 ---
 
 ## Interfaz de columna
 
+Esta es la interface declarada en el `.ce.vue`. **La prop `columns` se pasa tal cual al componente interno `AdvancedTable.vue`**, que acepta además los campos `width`, `align` y `sortable` (ver [Campos extendidos](#campos-extendidos-forwarded)).
+
 ```ts
 interface Column {
-  key: string;
-  label?: string;
-  cell?: (row) => string | string[];
-  editable?: boolean | RegExp | ((row) => boolean);
-  inputType?: 'input' | 'textarea' | 'select';
-  selectOptions?: { value: string; label: string }[] | ((row) => { value: string; label: string }[]);
-  validator?: (value, row) => boolean;
-  singleClick?: boolean;
-  badges?: (row) => BadgeConfig[];
-  buttons?: (row) => ButtonConfig[];
+  key: string;                                                       // Identificador de la columna
+  label?: string;                                                   // Texto del header
+  cell?: (row: Record<string, any>) => string | string[];            // Render custom de la celda
+  editable?: boolean | RegExp | ((row: Record<string, any>) => boolean);  // Editable: bool, regex validator, o función condicional
+  inputType?: "input" | "textarea" | "select";                       // Tipo de editor
+  selectOptions?: { value: string; label: string }[] | ((row: Record<string, any>) => { value: string; label: string }[]);  // Opciones del select
+  validator?: (value: string, row: Record<string, any>) => boolean;  // Validador custom
+  singleClick?: boolean;                                             // Si true, edita con un click (default: doble click)
+  badges?: (row: Record<string, any>) => BadgeConfig[];              // Badges por celda
+  buttons?: (row: Record<string, any>) => ButtonConfig[];            // Botones por celda
 }
 
 interface BadgeConfig {
   value: string;
-  color?: string;
-  variant?: string;
+  color?: string;   // Color semántico
+  variant?: string; // Variante
 }
 
 interface ButtonConfig {
   label?: string;
-  icon?: string;  // SVG inline
-  onClick?: (row) => void;
+  icon?: string;                                                       // SVG inline completo
+  onClick?: (row: Record<string, any>) => void;
   to?: string;
   target?: string;
   color?: string;
@@ -65,35 +74,74 @@ interface ButtonConfig {
 }
 ```
 
+### Acciones de fila (`actions`)
+
+Es un array de `ButtonConfig`. Cuando se asigna, la tabla agrega automáticamente una columna al final con un dropdown "..." que muestra las acciones. El `onClick` recibe la fila completa.
+
+```ts
+tabla.actions = [
+  { label: 'Editar',   color: 'primary', variant: 'ghost', onClick: (row) => editar(row) },
+  { label: 'Eliminar', color: 'danger',  variant: 'ghost', onClick: (row) => eliminar(row) },
+];
+```
+
+---
+
+## Campos extendidos (forwarded)
+
+Como `columns` se pasa sin filtrar al `AdvancedTable.vue` interno, podés usar estos campos adicionales. **No están tipados en el `.ce.vue`** pero funcionan porque se reenvían tal cual:
+
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
+| `width` | `string` | Ancho de la columna (CSS, ej. `"120px"`, `"20%"`) |
+| `align` | `"left" \| "center" \| "right"` | Alineación del contenido |
+| `sortable` | `boolean \| "string" \| "number" \| "boolean"` | Habilita ordenamiento. Ver [Ordenamiento](#ordenamiento) |
+
 ---
 
 ## Eventos
 
-| Evento | Payload | Descripción |
-|--------|---------|-------------|
-| `update:currentPage` | `number` | Cambio de página |
-| `update:itemsPerPage` | `number` | Cambio de items por página |
-| `update:search` | `string` | Cambio en la búsqueda |
+| Evento | Payload (`e.detail`) | Descripción |
+|--------|----------------------|-------------|
+| `update:currentPage` | `number` | Cambio de página (tras búsqueda, filtro, sort o click) |
+| `update:itemsPerPage` | `number` | Cambio del tamaño de página |
+| `update:search` | `string` | Cambio en la query de búsqueda |
 | `edit-start` | `{ row, column, index }` | Inicia edición de celda |
-| `edit-save` | `{ row, column, value, index }` | Guarda edición |
-| `edit-cancel` | `{ row, column, index }` | Cancela edición |
-| `row-click` | `{ row, index, event }` | Click en fila |
-| `row-dblclick` | `{ row, index, event }` | Doble click en fila |
-| `cell-click` | `{ row, col, index, event }` | Click en celda |
+| `edit-save` | `{ row, column, value, index }` | Celda editada y guardada. La tabla ya actualizó `row[key]` antes de emitir |
+| `edit-cancel` | `{ row, column, index }` | Edición cancelada |
+
+> El Custom Element **no re-emite** los eventos `row-click`, `row-dblclick` ni `cell-click` (existen internamente pero no atraviesan el wrapper). Si necesitás reaccionar a clicks en filas, agregá un `ButtonConfig` o `BadgeConfig` a la columna correspondiente.
 
 ---
 
 ## Slots
 
-Usá `<element slot="nombre">` para proyectar contenido:
-
 | Slot | Bindings | Descripción |
 |------|----------|-------------|
-| `header` | `{ column, color, variant }` | Personaliza el header completo |
-| `header-{key}` | `{ column, color, variant }` | Header de una columna específica |
-| `cell-{key}` | `{ row, column, index, value }` | Celda de una columna específica |
-| `empty` | — | Contenido cuando no hay datos |
-| `search` | `{ query, update }` | Personaliza el input de búsqueda |
+| `header` | `{ column, color, variant }` | Personaliza el header completo (todas las columnas) |
+| `header-{key}` | `{ column, color, variant }` | Header de una columna específica (key dinámico) |
+| `empty` | — | Contenido cuando no hay datos (override del texto `empty`) |
+
+> **Importante:** Los slots `cell-{key}` y `search` que aparecen en algunos ejemplos **no están expuestos** por el `<cu-table>` (el `.ce.vue` no los reenvía). Solo `header`, `header-{key}` y `empty`.
+
+### Ejemplo de slot header
+
+```html
+<cu-table id="miTabla">
+  <span slot="header-rol" style="color: var(--primary)">ROL</span>
+</cu-table>
+```
+
+### Ejemplo de slot empty
+
+```html
+<cu-table id="miTabla">
+  <div slot="empty" style="padding: 24px; text-align: center;">
+    <p>No hay datos para mostrar.</p>
+    <cu-button color="primary" variant="soft">Crear registro</cu-button>
+  </div>
+</cu-table>
+```
 
 ---
 
@@ -101,12 +149,12 @@ Usá `<element slot="nombre">` para proyectar contenido:
 
 | Método | Descripción |
 |--------|-------------|
-| `.updateRow(index, newData)` | Actualiza una fila por índice (mergea el objeto) |
+| `.updateRow(index, newData)` | Actualiza una fila por índice. Hace **merge** del objeto, no reemplazo total |
 | `.getData()` | Devuelve copia de todos los datos |
 | `.getRow(index)` | Devuelve copia de una fila |
-| `.removeRow(index)` | Elimina una fila |
-| `.addRow(newRow)` | Agrega una fila |
-| `.pushData(items[])` | Agrega múltiples filas |
+| `.removeRow(index)` | Elimina una fila por índice |
+| `.addRow(newRow)` | Agrega una fila al final |
+| `.pushData(items[])` | Agrega múltiples filas al final |
 
 ---
 
@@ -141,29 +189,35 @@ Usá `<element slot="nombre">` para proyectar contenido:
 
 ---
 
-## Búsqueda en la tabla
+## Búsqueda
 
 ### Comportamiento general
 
-- Sin `search-fields` busca en **todas** las claves del objeto `row`.
-- Con `search-fields` busca solo en las columnas indicadas.
-- La búsqueda es **case-insensitive** y **acento-insensitive** (buscar `"matricula"` encuentra `"Matrícula"`).
+- **Sin `search-fields`:** busca en **todas** las claves del objeto `row`.
+- **Con `search-fields`:** busca solo en las columnas indicadas.
+- Búsqueda **case-insensitive** y **acento-insensitive** (`"matricula"` encuentra `"Matrícula"`).
 
-### Columnas normales (texto, input)
-
-Busca directamente sobre el valor guardado:
+### Como atributo HTML
 
 ```html
-<cu-table search-enabled search-fields='["nombre","email"]'></cu-table>
+<cu-table
+  search-enabled
+  search-placeholder="Buscar..."
+  search-fields='["nombre","email"]'
+></cu-table>
 ```
 
-### Columnas `inputType: 'select'`
+### Como propiedad JS
 
-La búsqueda resuelve el valor guardado (ID numérico) a su **label** usando `selectOptions` y busca sobre la label. Si el campo guarda `"1"` pero la label es `"Certificado de notas"`, buscar `"certificado"` o `"notas"` lo encuentra.
-
-```html
-<cu-table search-enabled></cu-table>
+```js
+const t = document.getElementById('miTabla');
+t.searchFields = ['nombre', 'email'];
+t.searchEnabled = true;
 ```
+
+### Búsqueda sobre columnas `select`
+
+Las columnas con `inputType: 'select'` se buscan por la **label** de la opción, no por el `value` guardado:
 
 ```js
 tabla.columns = [
@@ -171,7 +225,6 @@ tabla.columns = [
   {
     key: 'tipo',
     label: 'Tipo',
-    editable: true,
     inputType: 'select',
     selectOptions: [
       { value: '1', label: 'Certificado de notas' },
@@ -179,110 +232,21 @@ tabla.columns = [
     ],
   },
 ];
-
 tabla.data = [
-  { nombre: 'Juan Pérez', tipo: '1' },
-  { nombre: 'María García', tipo: '2' },
+  { nombre: 'Juan', tipo: '1' },  // buscar "notas" lo encuentra
 ];
 ```
-
-En este ejemplo, buscar `"notas"` o `"certificado"` encuentra la fila de Juan Pérez aunque el valor guardado sea `"1"`. Buscar `"grado"` encuentra a María García.
-
-### search-fields desde HTML
-
-Los atributos se reciben como strings. Usá formato JSON con comillas dobles internas:
-
-```html
-<!-- ✅ Correcto -->
-<cu-table search-enabled search-fields='["nombre","tipo"]'></cu-table>
-```
-
-Si preferís setearlo por JS:
-
-```js
-tabla.searchFields = ['nombre', 'tipo'];
-```
-
-### Ejemplo completo con búsqueda y select
-
-```html
-<cu-table
-  id="tablaBusqueda"
-  color="primary"
-  variant="soft"
-  search-enabled
-  search-placeholder="Buscar archivo..."
-  search-fields='["nombre","tipo"]'
-  pagination
-  items-per-page="10"
-  empty="No hay resultados"
-></cu-table>
-
-<script>
-  const t = document.getElementById('tablaBusqueda');
-  t.columns = [
-    { key: 'nombre', label: 'Nombre', editable: true, singleClick: true },
-    {
-      key: 'tipo',
-      label: 'Tipo',
-      editable: true,
-      inputType: 'select',
-      singleClick: true,
-      selectOptions: [
-        { value: '1', label: 'Certificado de notas' },
-        { value: '2', label: 'Acta de grado' },
-        { value: '3', label: 'Hoja de matrícula' },
-      ],
-    },
-    {
-      key: 'estado',
-      label: 'Estado',
-      badges: (row) => [{
-        value: row.estado,
-        color: row.estado === 'Activo' ? 'success' : 'warning',
-        variant: 'soft',
-      }],
-    },
-  ];
-  t.data = [
-    { nombre: 'Juan Pérez', tipo: '1', estado: 'Activo' },
-    { nombre: 'María García', tipo: '2', estado: 'Activo' },
-    { nombre: 'Carlos López', tipo: '3', estado: 'Inactivo' },
-  ];
-</script>
-```
-
-Probá buscar: `"certificado"`, `"matricula"` (sin acento), `"hoja"`, `"grado"` — todas funcionan.
-
----
-
-## Estado de carga
-
-Cuando `loading` es `true`, se muestra una barra delgada animada en el tope de la tabla:
-
-```html
-<cu-table id="miTabla" search-enabled pagination loading></cu-table>
-<!-- o por JS -->
-<script>
-  const t = document.getElementById('miTabla');
-  t.loading = true;   // muestra la barra
-  // ... después de cargar datos
-  t.loading = false;  // oculta la barra
-</script>
-```
-
-La barra usa el color de texto de la tabla (`fgClasses.main`) y un ciclo de 3s.
 
 ---
 
 ## Filtros por columna
 
-Además del buscador textual, podés aplicar filtros por columna con la prop `filters`. Los filtros se combinan con la búsqueda (AND):
+Además del buscador, podés aplicar filtros exactos con la prop `filters`. Se combinan con la búsqueda (AND) y se aplican antes del ordenamiento:
 
 ```js
 tabla.filters = {
-  estado: 'Activo',            // match exacto
-  tipo: ['1', '3'],            // match contra cualquier valor del array
+  estado: 'Activo',                  // match exacto
+  tipo: ['1', '3'],                  // match contra cualquier valor del array
   nombre: (val, row) => val.length > 5,  // función custom
 };
 ```
@@ -303,24 +267,40 @@ tabla.filters = {
 
   // Mostrar solo activos
   t.filters = { estado: 'Activo' };
-
-  // También funciona combinado con búsqueda textual
-  // t.filters = { estado: 'Activo' }
-  // escribir "Juan" en el buscador → solo activos que contengan "Juan"
 </script>
 ```
 
-Los filtros se agregan al pipeline después de la búsqueda y antes del ordenamiento:
-
-```
-data → search → filters → sort → pagination
-```
+Pipeline: `data → search → filters → sort → pagination`.
 
 ---
 
-## Edición condicional por fila
+## Ordenamiento
 
-`editable` también acepta una función que recibe la fila y devuelve `true`/`false`. Útil para bloquear edición según el estado de la fila:
+Agregá `sortable` a la definición de la columna. Hacé click en el header para ciclar: `↕` → `▲` (asc) → `▼` (desc) → `↕`.
+
+```js
+tabla.columns = [
+  { key: 'nombre', label: 'Nombre', sortable: 'string' },
+  { key: 'edad',   label: 'Edad',   sortable: 'number' },
+  { key: 'activo', label: 'Activo', sortable: 'boolean' },
+  { key: 'ciudad', label: 'Ciudad', sortable: true },  // auto-detecta
+];
+```
+
+| Valor de `sortable` | Comportamiento |
+|--------------------|----------------|
+| `'string'` | Orden alfabético (`localeCompare`, español) |
+| `'number'` | Orden numérico |
+| `'boolean'` | `false` primero, `true` después |
+| `true` | Auto-detecta según el tipo del primer valor |
+
+> **Nota:** `sortable` es un campo extendido (no está en la interface de `Column` del `.ce.vue`). Funciona porque se reenvía al `AdvancedTable.vue` interno.
+
+---
+
+## Edición condicional
+
+`editable` también acepta una función que decide según la fila:
 
 ```js
 {
@@ -330,70 +310,43 @@ data → search → filters → sort → pagination
 }
 ```
 
-```html
-<cu-table id="tablaCondicional" search-enabled pagination></cu-table>
+También acepta `RegExp` para validar al guardar:
 
-<script>
-  const t = document.getElementById('tablaCondicional');
-  t.columns = [
-    {
-      key: 'nombre',
-      label: 'Nombre',
-      editable: (row) => row.estado === 'Activo',
-    },
-    {
-      key: 'estado',
-      label: 'Estado',
-      badges: (row) => [{
-        value: row.estado,
-        color: row.estado === 'Activo' ? 'success' : 'warning',
-        variant: 'soft',
-      }],
-    },
-  ];
-  t.data = [
-    { nombre: 'Juan Pérez', estado: 'Activo' },    // editable
-    { nombre: 'Carlos López', estado: 'Inactivo' }, // NO editable
-  ];
-</script>
+```js
+{
+  key: 'email',
+  label: 'Correo',
+  editable: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+}
 ```
 
-Sigue siendo compatible con `boolean` y `RegExp` como antes.
+> Con `singleClick: true` la celda entra en modo edición con un solo click (default: doble click).
 
 ---
 
 ## Edición con select
 
-Usá `inputType: 'select'` y `selectOptions` para que una columna editable renderice un `<select>` al hacer clic. En modo vista se muestra la **label** de la opción seleccionada, no el value.
+`inputType: 'select'` + `selectOptions` para que la celda editable renderice un `<cu-select>`. En modo vista se muestra la **label**, no el `value`.
 
-```html
-<cu-table id="tablaSelect" color="primary" variant="soft"></cu-table>
-
-<script>
-  const ts = document.getElementById('tablaSelect');
-  ts.columns = [
-    { key: 'nombre', label: 'Nombre', editable: true },
-    {
-      key: 'rol',
-      label: 'Rol',
-      editable: true,
-      inputType: 'select',
-      singleClick: true,
-      selectOptions: [
-        { value: '1', label: 'Administrador' },
-        { value: '2', label: 'Editor' },
-        { value: '3', label: 'Visor' },
-      ],
-    },
-  ];
-  ts.data = [
-    { nombre: 'Juan Pérez', rol: '1' },
-    { nombre: 'María García', rol: '2' },
-  ];
-</script>
+```js
+tabla.columns = [
+  { key: 'nombre', label: 'Nombre', editable: true },
+  {
+    key: 'rol',
+    label: 'Rol',
+    editable: true,
+    inputType: 'select',
+    singleClick: true,
+    selectOptions: [
+      { value: '1', label: 'Administrador' },
+      { value: '2', label: 'Editor' },
+      { value: '3', label: 'Visor' },
+    ],
+  },
+];
 ```
 
-`selectOptions` también puede ser una función que recibe la fila y devuelve opciones dinámicas:
+`selectOptions` también puede ser una función para opciones dinámicas:
 
 ```js
 {
@@ -409,46 +362,23 @@ Usá `inputType: 'select'` y `selectOptions` para que una columna editable rende
 
 ---
 
-## Uso con iconos SVG en botones
+## Badges y botones por celda
 
-Los botones aceptan SVG en su contenido mediante la propiedad `icon`. Usá `stroke="currentColor"` para que el icono herede el color:
+### Badges dinámicos
 
-```html
-<cu-table id="tablaIconos" color="primary" variant="soft"></cu-table>
-
-<script>
-  const ti = document.getElementById('tablaIconos');
-  ti.columns = [
-    { key: 'nombre', label: 'Nombre' },
-    {
-      key: 'acciones',
-      label: '',
-      buttons: (row) => [
-        {
-          icon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>`,
-          color: 'primary',
-          variant: 'ghost',
-          onClick: (r) => console.log('Editar', r),
-        },
-        {
-          icon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`,
-          color: 'danger',
-          variant: 'ghost',
-          onClick: (r) => console.log('Eliminar', r),
-        },
-      ],
-    },
-  ];
-  ti.data = [
-    { nombre: 'Proyecto Alpha', estado: 'Activo' },
-    { nombre: 'Proyecto Beta', estado: 'Pendiente' },
-  ];
-</script>
+```js
+{
+  key: 'estado',
+  label: 'Estado',
+  badges: (row) => [{
+    value: row.estado,
+    color: row.estado === 'Activo' ? 'success' : 'warning',
+    variant: 'soft',
+  }],
+}
 ```
 
----
-
-## Botones condicionales por estado de la fila
+### Botones condicionales
 
 ```js
 {
@@ -456,60 +386,92 @@ Los botones aceptan SVG en su contenido mediante la propiedad `icon`. Usá `stro
   label: '',
   buttons: (row) => {
     const btns = [];
-
     if (row.editado) {
       btns.push({
-        icon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/></svg>`,
+        icon: '<svg ...></svg>',
         color: 'primary',
         variant: 'solid',
         onClick: (r) => guardarCambios(r),
       });
     }
-
     btns.push({
       icon: row.activo
-        ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>`
-        : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg>`,
+        ? '<svg ... check ...></svg>'
+        : '<svg ... plus ...></svg>',
       color: row.activo ? 'success' : 'neutral',
       variant: 'soft',
       onClick: (r) => toggleActivo(r),
     });
-
     btns.push({
-      icon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`,
+      icon: '<svg ... trash ...></svg>',
       color: 'danger',
       variant: 'soft',
       onClick: (r) => eliminar(r),
     });
-
     return btns;
   },
 }
 ```
 
+> Los iconos SVG deben usar `stroke="currentColor"` para que hereden el color del botón.
+
 ---
 
-## Patrón: edición inline con guardado
+## Acciones de fila (botón "..." al final)
+
+Más simple que definir una columna `buttons` para cada fila: pasá un array en `actions` y la tabla agrega automáticamente una columna al final con un dropdown.
+
+```js
+tabla.actions = [
+  {
+    label: 'Editar',
+    color: 'primary',
+    variant: 'ghost',
+    onClick: (row) => editar(row),
+  },
+  {
+    label: 'Duplicar',
+    color: 'neutral',
+    variant: 'ghost',
+    onClick: (row) => duplicar(row),
+  },
+  { divider: true },
+  {
+    label: 'Eliminar',
+    color: 'danger',
+    variant: 'ghost',
+    onClick: (row) => eliminar(row),
+  },
+];
+```
+
+> Items con `divider: true` renderizan una línea divisoria. Cada `onClick` recibe la fila completa.
+
+---
+
+## Estado de carga
+
+Cuando `loading` es `true`, se muestra una barra delgada animada en el tope de la tabla:
+
+```js
+const t = document.getElementById('miTabla');
+t.loading = true;   // mostrar
+// ...fetch...
+t.loading = false;  // ocultar
+```
+
+---
+
+## Patrón: edición con marca de "editado"
 
 ```js
 tabla.columns = [
   { key: 'nombre', label: 'Nombre', editable: true, singleClick: true },
-  {
-    key: 'tipo',
-    label: 'Tipo',
-    editable: true,
-    inputType: 'select',
-    singleClick: true,
-    selectOptions: [
-      { value: '1', label: 'Documento' },
-      { value: '2', label: 'Expediente' },
-    ],
-  },
+  { key: 'tipo', label: 'Tipo', editable: true, inputType: 'select', singleClick: true,
+    selectOptions: [{ value: '1', label: 'Documento' }, { value: '2', label: 'Expediente' }] },
 ];
 
-tabla.data = [
-  { id: 1, nombre: 'Acta', tipo: '1', editado: false },
-];
+tabla.data = [{ id: 1, nombre: 'Acta', tipo: '1', editado: false }];
 
 tabla.addEventListener('edit-save', (e) => {
   // Marcar la fila como editada (aparece el botón guardar)
@@ -517,64 +479,19 @@ tabla.addEventListener('edit-save', (e) => {
 });
 ```
 
+`updateRow` hace merge, así que solo actualiza `editado` sin pisar el resto.
+
 ---
 
-## Ordenamiento por columna
+## Sticky header
 
-Cualquier columna puede ser ordenable agregando `sortable` a su definición:
-
-```js
-{ key: 'nombre', label: 'Nombre', sortable: 'string' }
-{ key: 'edad', label: 'Edad', sortable: 'number' }
-{ key: 'activo', label: 'Activo', sortable: 'boolean' }
-{ key: 'ciudad', label: 'Ciudad', sortable: true }  // auto-detecta
-```
-
-### Tipos soportados
-
-| Valor | Comportamiento |
-|-------|---------------|
-| `'string'` | Orden alfabético (`localeCompare`, español) |
-| `'number'` | Orden numérico |
-| `'boolean'` | `false` primero, `true` después |
-| `true` | Auto-detecta por el tipo del primer valor en los datos |
-
-### Comportamiento
-
-- Hacé click en el header de una columna ordenable.
-- Ciclo: `↕` (sin orden) → `▲` (ascendente) → `▼` (descendente) → `↕` (sin orden).
-- El ordenamiento se aplica sobre los datos ya filtrados por búsqueda y filtros.
-- Al cambiar el orden, la paginación vuelve a la página 1.
+Si el contenedor padre tiene `max-height` definido, los headers se vuelven `position: sticky`. En variantes distintas de `solid` se aplica `backdrop-filter: blur(8px)` para mantener la legibilidad.
 
 ```html
-<cu-table id="tablaOrdenable" search-enabled pagination></cu-table>
-
-<script>
-  const t = document.getElementById('tablaOrdenable');
-  t.columns = [
-    { key: 'nombre', label: 'Nombre', sortable: 'string' },
-    { key: 'edad', label: 'Edad', sortable: 'number' },
-    { key: 'activo', label: 'Activo', sortable: 'boolean' },
-    { key: 'tipo', label: 'Tipo', editable: true, inputType: 'select' },
-  ];
-  t.data = [
-    { nombre: 'Ana', edad: 30, activo: true, tipo: '1' },
-    { nombre: 'Carlos', edad: 25, activo: false, tipo: '2' },
-    { nombre: 'Beatriz', edad: 35, activo: true, tipo: '1' },
-  ];
-</script>
+<cu-table
+  id="miTabla"
+  search-enabled
+  search-placeholder="Buscar..."
+  style="max-height: 400px; width: 100%;"
+></cu-table>
 ```
-
----
-
-## Notas importantes
-
-- **`search-fields` desde HTML:** Usá siempre formato JSON con comillas dobles internas y comillas simples externas: `search-fields='["campo1","campo2"]'`. Alternativamente, setéalo por JS: `tabla.searchFields = ["campo1", "campo2"]`.
-- **Búsqueda sin `search-fields`:** Busca en TODAS las claves del objeto `row`. Si tenés columnas con `inputType: 'select'`, busca por la label.
-- **Búsqueda con `search-fields`:** Busca solo en los campos indicados. Si algún campo es `inputType: 'select'`, busca por la label.
-- **Acentos:** La búsqueda es acento-insensitive. `"matricula"` encuentra `"Matrícula"`, `"certificado"` encuentra `"Certificado"`.
-- **`singleClick: true`:** Permite editar la celda con un solo clic (por defecto requiere doble clic).
-- **`updateRow`:** Hace merge del objeto, no reemplaza toda la fila. Útil para campos como `editado`.
-- **Iconos SVG:** Usá `stroke="currentColor"` para que hereden el color del botón.
-- **Columnas select en modo vista:** Muestran la label, no el value guardado.
-- **`edit-save`:** La tabla ya actualizó `row[key] = value` antes de emitir el evento.

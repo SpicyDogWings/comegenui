@@ -6,6 +6,7 @@ import Input from "../form/Input.vue";
 import EditableTableCell from "./EditableTableCell.vue";
 import Button from "../Button.vue";
 import Badge from "../Badge.vue";
+import DropdownMenu from "../DropdownMenu.vue";
 import { usePagination } from "../../composables/usePagination";
 import { useSearch } from "../../composables/useSearch";
 import { useTableData } from "../../composables/useTableData";
@@ -146,7 +147,7 @@ const props = defineProps({
     required: false,
     default: "soft",
     validator: (value: string) =>
-      ["outlined", "soft", "ghost", "subtle", "solid"].includes(value),
+      ["outlined", "soft", "ghost", "subtle", "solid", "link", "none"].includes(value),
   },
   // Search props
   searchEnabled: {
@@ -181,6 +182,16 @@ const props = defineProps({
     default: () => ({}),
   },
   loading: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
+  actions: {
+    type: Array as () => ButtonConfig[],
+    required: false,
+    default: () => [],
+  },
+  hightContrast: {
     type: Boolean,
     required: false,
     default: false,
@@ -332,8 +343,14 @@ const handlePageSizeChange = (size: number) => {
 };
 
 // Table props to pass through
+const augmentedColumns = computed(() =>
+  props.actions?.length
+    ? [...props.columns, { key: '__actions__', label: '', width: '1%', align: 'center' as const, sortable: false }]
+    : props.columns
+);
+
 const tableProps = computed(() => ({
-  columns: props.columns,
+  columns: augmentedColumns.value,
   data: props.pagination ? pagination.displayData.value : filteredData.value,
   empty: props.empty,
   maxHeight: props.tableMaxHeight,
@@ -345,8 +362,8 @@ const tableProps = computed(() => ({
 }));
 
 // Color classes using palette utilities
-const bgClass = computed(() => getBgClasses(props.color, props.variant, false));
-const fgClass = computed(() => getFgClasses(props.color, props.variant, false));
+const bgClass = computed(() => getBgClasses(props.color, props.variant, props.hightContrast));
+const fgClass = computed(() => getFgClasses(props.color, props.variant, props.hightContrast));
 
 // Map table variant to input variant (Input doesn't support "solid")
 const inputVariant = computed(() => {
@@ -413,7 +430,7 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
       </template>
       
       <!-- Editable cells -->
-      <template v-for="col in props.columns" v-slot:[`cell-${col.key}`]="{ row, value, index }">
+      <template v-for="col in augmentedColumns" v-slot:[`cell-${col.key}`]="{ row, value, index }">
         <!-- Buttons only - no cell value -->
         <div v-if="hasButtons(col)" class="flex items-center gap-2">
           <Button
@@ -483,6 +500,34 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
         
         <!-- Custom cell rendering -->
         <span v-else-if="hasCellFunction(col)">{{ getCellValue(col, row) }}</span>
+        <!-- Actions dropdown -->
+        <div v-else-if="col.key === '__actions__' && props.actions?.length" class="flex items-center justify-center">
+          <DropdownMenu
+            :color="getHexColor(props.color)"
+            variant="ghost"
+            placement="bottom-end"
+            fixed
+            :menu-bg="getColorMap(props.theme as any).surface"
+            :items="props.actions.map(a => ({ ...a, color: a.color ? getHexColor(a.color) : undefined, onClick: () => a.onClick?.(row) }))"
+            @click.stop
+          >
+            <template #toggle="{ toggle }">
+              <Button
+                color="#888"
+                variant="ghost"
+                @click="toggle"
+                style="padding:2px 6px;min-width:0;height:28px"
+                class="box-border"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <circle cx="12" cy="5" r="1.5"/>
+                  <circle cx="12" cy="12" r="1.5"/>
+                  <circle cx="12" cy="19" r="1.5"/>
+                </svg>
+              </Button>
+            </template>
+          </DropdownMenu>
+        </div>
         <!-- Regular cell value only -->
         <span v-else>{{ value }}</span>
       </template>

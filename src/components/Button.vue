@@ -20,7 +20,7 @@ const props = defineProps({
     required: false,
     default: "ghost",
     validator: (value: string) =>
-      ["solid", "outlined", "soft", "ghost", "subtle", "link"].includes(value),
+      ["solid", "outlined", "soft", "ghost", "subtle", "link", "none"].includes(value),
   },
   to: {
     type: String,
@@ -74,6 +74,7 @@ const fgClass = computed(() =>
       :class="{
         'hover:underline hover:decoration-solid hover:decoration-2 visited:text-[var(--btn-fg)]':
           props.variant === 'link',
+        'border-solid border-1 border-[var(--btn-bd)]': props.variant === 'none',
         'cursor-not-allowed opacity-70': props.disabled,
         'active:bg-[var(--btn-bg-active)] active:scale-95 hover:cursor-pointer':
           !props.disabled,
@@ -93,16 +94,15 @@ const fgClass = computed(() =>
   <button
     v-else
     :type="props.type"
-    class="py-2 px-4 rounded-cu border-none text-[var(--btn-fg)] font-sans font-medium bg-[var(--btn-bg)] flex justify-center items-center gap-2 box-border transition-transform duration-150"
-    :class="{
-      'border-1 border-solid border-[var(--btn-bd)]':
-        props.variant === 'outlined' || props.variant === 'subtle',
-      'hover:underline hover:decoration-solid hover:decoration-2':
-        props.variant === 'link',
-      'cursor-not-allowed opacity-70': props.disabled,
-      'hover:bg-[var(--btn-bg-hover)] active:bg-[var(--btn-bg-active)] active:scale-95 hover:cursor-pointer':
-        !props.disabled,
-    }"
+      class="py-2 px-4 rounded-cu border-none text-[var(--btn-fg)] font-sans font-medium bg-[var(--btn-bg)] flex justify-center items-center gap-2 box-border transition-transform duration-150"
+      :class="{
+        'hover:underline hover:decoration-solid hover:decoration-2 visited:text-[var(--btn-fg)]':
+          props.variant === 'link',
+        'border-solid border-1 border-[var(--btn-bd)]': props.variant === 'none',
+        'cursor-not-allowed opacity-70': props.disabled,
+        'active:bg-[var(--btn-bg-active)] active:scale-95 hover:cursor-pointer':
+          !props.disabled,
+      }"
     :style="{
       '--btn-fg': fgClass.main,
       '--btn-bg': bgClass.main,

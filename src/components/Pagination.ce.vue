@@ -24,7 +24,7 @@ const props = defineProps({
     required: false,
     default: "soft",
     validator: (value: string) =>
-      ["outlined", "soft", "ghost", "subtle"].includes(value),
+      ["outlined", "soft", "ghost", "subtle", "none"].includes(value),
   },
   currentPage: {
     type: Number,
@@ -61,6 +61,11 @@ const props = defineProps({
     required: false,
     default: false,
   },
+  hightContrast: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 });
 
 const emit = defineEmits(["update:currentPage", "update:itemsPerPage"]);
@@ -83,6 +88,7 @@ const hexColor = computed(() => {
     :showPageSize="props.showPageSize"
     :pageSizeOptions="props.pageSizeOptions"
     :showFirstAndLast="props.showFirstAndLast"
+    :hight-contrast="props.hightContrast"
     @update:currentPage="emit('update:currentPage', $event)"
     @update:itemsPerPage="emit('update:itemsPerPage', $event)"
   />

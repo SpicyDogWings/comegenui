@@ -1,7 +1,6 @@
 ---
 name: comegen-ui
 description: Guía de uso de los componentes de ComegenUI 2.0 como Web Components (Custom Elements) consumibles desde HTML plano con UMD
-disable-model-invocation: false
 ---
 
 # ComegenUI — Web Components
@@ -10,7 +9,7 @@ Librería de componentes UI como Custom Elements nativos, construidos con Vue 3 
 
 Cada componente se distribuye como un archivo **UMD** independiente que se auto-registra como Custom Element al cargarse. No necesitas Vue ni ninguna dependencia.
 
-> **Importante:** Toda la documentación asume consumo vía UMD (HTML plano + `<script>`). Las props se pasan como atributos HTML o propiedades DOM, los eventos con `addEventListener`, y los arrays/objetos se asignan por JS. No se documentan detalles internos de Vue.
+> **Importante:** Toda la documentación describe la API expuesta por cada `.ce.vue` (la que se compila a UMD). Las props se pasan como atributos HTML o propiedades DOM, los eventos custom con `addEventListener`, y los arrays/objetos se asignan por JS. No se documentan detalles internos de Vue.
 
 ---
 
@@ -54,20 +53,22 @@ Cada `<script>` registra automáticamente su Custom Element. Los componentes est
 
 | Archivo (en `dist/`) | Tag | Componente |
 |----------------------|-----|------------|
-| `CuButton.umd.js` | `<cu-button>` | Botón |
 | `CuAlert.umd.js` | `<cu-alert>` | Alerta |
+| `CuAutocomplete.umd.js` | `<cu-autocomplete>` | Autocompletado con búsqueda |
 | `CuBadge.umd.js` | `<cu-badge>` | Badge |
-| `CuInput.umd.js` | `<cu-input>` | Input de texto |
+| `CuButton.umd.js` | `<cu-button>` | Botón |
 | `CuCheckbox.umd.js` | `<cu-checkbox>` | Checkbox |
-| `CuTextarea.umd.js` | `<cu-textarea>` | Textarea |
-| `CuSelect.umd.js` | `<cu-select>` | Selector |
-| `CuSwitch.umd.js` | `<cu-switch>` | Switch/Toggle |
+| `CuDropdownMenu.umd.js` | `<cu-dropdown-menu>` | Menú desplegable |
+| `CuInput.umd.js` | `<cu-input>` | Input de texto |
 | `CuLabel.umd.js` | `<cu-label>` | Label |
 | `CuModal.umd.js` | `<cu-modal>` | Modal |
 | `CuPagination.umd.js` | `<cu-pagination>` | Paginación |
+| `CuSelect.umd.js` | `<cu-select>` | Selector |
+| `CuSwitch.umd.js` | `<cu-switch>` | Switch/Toggle |
 | `CuTable.umd.js` | `<cu-table>` | Tabla avanzada |
-| `CuAutocomplete.umd.js` | `<cu-autocomplete>` | Autocompletado con búsqueda |
-| `CuDropdownMenu.umd.js` | `<cu-dropdown-menu>` | Menú desplegable |
+| `CuTextarea.umd.js` | `<cu-textarea>` | Textarea |
+
+> **Nota sobre el código fuente:** Internamente, los `.ce.vue` viven en `src/components/` (raíz, `form/`, `data/`). El `<cu-select>` se compila desde `src/components/form/Select.ts`. No hay un tag `cu-select-native` documentado como oficial.
 
 ### Esperar a que los Custom Elements estén listos
 
@@ -126,6 +127,14 @@ Tres temas integrados: `light` (default), `dark`, `sigacadv2`.
 
 Si se especifica `theme`, tiene prioridad sobre `data-theme`. Si se omite, hereda del `<html>`.
 
+### Auto-detección
+
+Si no hay `data-theme` en el documento ni `theme` en el componente, se detecta automáticamente `prefers-color-scheme` del OS. Prioridad completa:
+
+```
+theme prop (componente) → data-theme (<html>) → prefers-color-scheme (OS)
+```
+
 ### Colores de cada tema
 
 | Color | `light` | `dark` | `sigacadv2` |
@@ -135,6 +144,19 @@ Si se especifica `theme`, tiene prioridad sobre `data-theme`. Si se omite, hered
 | `success` | `#22c55e` | `#4ade80` | `#28a745` |
 | `warning` | `#f59e0b` | `#fbbf24` | `#ffc107` |
 | `danger` | `#ef4444` | `#f87171` | `#dc3545` |
+| `surface` | `#ffffff` | `#1a1a1a` | `#111827` |
+
+> `surface` es el color de fondo de paneles emergentes (dropdowns, popups de autocomplete, etc.).
+
+### Temas custom
+
+Para agregar un tema nuevo:
+
+1. Editar `src/config/theme.ts` — agregar entrada en el objeto `themes` con los 6 colores (`primary`, `neutral`, `success`, `warning`, `danger`, `surface`).
+2. Rebuild: `npx vite build --config build-libs.ts`.
+3. Usar: `<html data-theme="mi-tema">` o `<cu-button theme="mi-tema">`.
+
+El nuevo tema se auto-registra. No requiere configuración adicional.
 
 ---
 
@@ -144,20 +166,41 @@ Cada componente que usa color acepta dos props clave:
 
 | Prop | Valores | Default | Descripción |
 |------|---------|---------|-------------|
-| `color` | `primary`, `neutral`, `success`, `warning`, `danger` | Componente | Color semántico |
+| `color` | `primary`, `neutral`, `success`, `warning`, `danger` | Varía | Color semántico (se traduce a hex según el tema activo) |
 | `variant` | Varía por componente | Varía | Estilo visual |
+
+> **Hex literal como `color`:** Si pasás un hex (`#1774A4`), se respeta tal cual. Sirve para casos donde querés ignorar el sistema de temas en un componente puntual.
 
 ### Variantes disponibles por componente
 
-| Variante | Button | Alert | Badge | Input | Checkbox | Textarea | Pagination | Table | DropdownMenu | Autocomplete |
-|----------|--------|-------|-------|-------|----------|----------|------------|-------|----------|-------------|
-| `solid` | ✓ | ✓ | ✓ | — | — | — | — | ✓ | ✓ | — |
-| `outlined` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `soft` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `ghost` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `subtle` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `link` | ✓ | — | — | — | — | — | — | ✓ | — | — |
-| `none` | — | — | — | ✓ | ✓ | ✓ | — | — | — | ✓ |
+Refleja los validadores reales de cada `.ce.vue`. `—` significa que la variante no es aceptada por ese componente.
+
+| Variante | Button | Alert | Badge | Input | Checkbox | Textarea | Pagination | Table | DropdownMenu | Autocomplete | Select | Modal |
+|----------|--------|-------|-------|-------|----------|----------|------------|-------|--------------|--------------|--------|-------|
+| `solid` | ✓ | ✓ | ✓ | — | — | — | — | ✓ | ✓ | — | ✓ | ✓ |
+| `outlined` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `soft` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `ghost` | ✓ | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `subtle` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `link` | ✓ | — | — | — | — | — | — | ✓ | ✓ | — | ✓ | ✓ |
+| `none` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+
+**Default de `variant` por componente:**
+
+| Componente | Default |
+|------------|---------|
+| `<cu-alert>` | `soft` |
+| `<cu-autocomplete>` | `none` |
+| `<cu-badge>` | `soft` |
+| `<cu-button>` | `none` |
+| `<cu-checkbox>` | `none` |
+| `<cu-dropdown-menu>` | `none` |
+| `<cu-input>` | `none` |
+| `<cu-modal>` | `ghost` |
+| `<cu-pagination>` | `soft` |
+| `<cu-select>` | `none` |
+| `<cu-table>` | `soft` |
+| `<cu-textarea>` | `none` |
 
 ---
 
@@ -165,13 +208,15 @@ Cada componente que usa color acepta dos props clave:
 
 ### Eventos en Custom Elements
 
-Los eventos emitidos por los componentes se reciben con `addEventListener`. El payload está en `event.detail`:
+Los eventos custom emitidos por los componentes se reciben con `addEventListener`. El payload está en `event.detail`:
 
 ```js
 element.addEventListener('edit-save', (e) => {
   console.log(e.detail); // { row, column, value, index }
 });
 ```
+
+Los eventos nativos del DOM (`click`, `input`, `change`, `focus`, `blur`) **burbujean automáticamente** desde el Shadow DOM al elemento host, por lo que se pueden escuchar con `addEventListener` sobre el host sin configuración adicional. Los Custom Elements **no re-emiten** `input`/`change` salvo que la doc del componente lo indique explícitamente.
 
 ### Atributos booleanos
 
@@ -183,6 +228,13 @@ En HTML plano, los booleanos se usan sin valor o con el nombre del atributo:
 <cu-table pagination search-enabled>...</cu-table>
 ```
 
+En JavaScript se asignan como boolean:
+
+```js
+boton.disabled = true;
+tabla.searchEnabled = true;
+```
+
 ### Atributos numéricos
 
 ```html
@@ -191,7 +243,7 @@ En HTML plano, los booleanos se usan sin valor o con el nombre del atributo:
 
 ### Arrays y objetos (props complejas)
 
-Arrays y objetos se asignan vía JavaScript como propiedades DOM, no como atributos HTML:
+Arrays y objetos **se asignan vía JavaScript como propiedades DOM**, no como atributos HTML. Los atributos se reciben como `string` y los validadores/parsers internos los pueden rechazar.
 
 ```html
 <cu-select id="miSelect"></cu-select>
@@ -216,7 +268,19 @@ Arrays y objetos se asignan vía JavaScript como propiedades DOM, no como atribu
 </script>
 ```
 
-### Tamaños de los bundles
+> **Excepción — `search-fields` en `<cu-table>`:** Es el único caso donde podés pasar un array como atributo HTML, en formato JSON. Ver [`cu-table.md`](componentes/cu-table.md) para los detalles.
+
+### camelCase vs kebab-case en HTML
+
+Las props de Vue se declaran en `camelCase` (`hightContrast`, `readOnly`, `itemsPerPage`, `modelValue`). En HTML se convierten a `kebab-case` con guion medio. En JavaScript podés usar cualquiera de las dos formas sobre la propiedad DOM, pero `camelCase` es la forma canónica.
+
+```html
+<cu-input read-only placeholder="..."></cu-input>
+<cu-pagination items-per-page="20"></cu-pagination>
+<cu-table search-enabled search-placeholder="Buscar..."></cu-table>
+```
+
+### Tamaño de los bundles
 
 Cada archivo UMD incluye el runtime de Vue 3 (no externalizado):
 
@@ -248,17 +312,17 @@ Cada archivo UMD incluye el runtime de Vue 3 (no externalizado):
 
 ## Componentes
 
-- [\<cu-button\>](componentes/cu-button.md) — Botón
 - [\<cu-alert\>](componentes/cu-alert.md) — Alerta
+- [\<cu-autocomplete\>](componentes/cu-autocomplete.md) — Autocompletado con búsqueda
 - [\<cu-badge\>](componentes/cu-badge.md) — Badge
-- [\<cu-input\>](componentes/cu-input.md) — Input de texto
+- [\<cu-button\>](componentes/cu-button.md) — Botón
 - [\<cu-checkbox\>](componentes/cu-checkbox.md) — Checkbox
-- [\<cu-textarea\>](componentes/cu-textarea.md) — Textarea
-- [\<cu-select\>](componentes/cu-select.md) — Selector
-- [\<cu-switch\>](componentes/cu-switch.md) — Switch/Toggle
+- [\<cu-dropdown-menu\>](componentes/cu-dropdown-menu.md) — Menú desplegable con items
+- [\<cu-input\>](componentes/cu-input.md) — Input de texto
 - [\<cu-label\>](componentes/cu-label.md) — Label
 - [\<cu-modal\>](componentes/cu-modal.md) — Modal
 - [\<cu-pagination\>](componentes/cu-pagination.md) — Paginación
+- [\<cu-select\>](componentes/cu-select.md) — Selector
+- [\<cu-switch\>](componentes/cu-switch.md) — Switch/Toggle
 - [\<cu-table\>](componentes/cu-table.md) — Tabla avanzada
-- [\<cu-autocomplete\>](componentes/cu-autocomplete.md) — Autocompletado con búsqueda
-- [\<cu-dropdown-menu\>](componentes/cu-dropdown-menu.md) — Menú desplegable con items
+- [\<cu-textarea\>](componentes/cu-textarea.md) — Textarea

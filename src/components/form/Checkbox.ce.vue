@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch, getCurrentInstance } from "vue";
 import Checkbox from "./Checkbox.vue";
 import { getColorMap } from "../../utils/palette";
 import { getHostTheme } from "../../utils/getHostTheme";
@@ -17,11 +17,6 @@ const props = defineProps({
     required: false,
     default: false,
   },
-  checked: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
   color: {
     type: String,
     required: false,
@@ -32,7 +27,7 @@ const props = defineProps({
   variant: {
     type: String,
     required: false,
-    default: "ghost",
+    default: "none",
     validator: (value: string) =>
       ["outlined", "soft", "ghost", "subtle", "none"].includes(value),
   },
@@ -58,7 +53,32 @@ const hexColor = computed(() => {
   return map[props.color as keyof typeof map] || props.color;
 });
 
+const innerValue = ref(props.modelValue);
 const checkboxRef = ref<InstanceType<typeof Checkbox> | null>(null);
+const instance = getCurrentInstance();
+
+watch(() => props.modelValue, (val) => {
+  innerValue.value = val;
+});
+
+watch(() => checkboxRef.value?.get(), (val) => {
+  if (val !== undefined && val !== null && val !== innerValue.value) {
+    innerValue.value = val;
+    ceEmit("update:modelValue", val);
+  }
+});
+
+function ceEmit(event: string, payload: unknown) {
+  const el = instance?.vnode.el as HTMLElement | null;
+  const host = el?.getRootNode()?.host || el;
+  if (host) {
+    host.dispatchEvent(new CustomEvent(event, {
+      detail: payload,
+      bubbles: true,
+      composed: true,
+    }));
+  }
+}
 
 defineExpose({
   get: () => checkboxRef.value?.get(),
@@ -69,7 +89,16 @@ defineExpose({
 </script>
 
 <template>
-  <Checkbox ref="checkboxRef" v-bind="{ ...props, color: hexColor }" />
+  <Checkbox
+    ref="checkboxRef"
+    :color="hexColor"
+    :variant="props.variant"
+    :disabled="props.disabled"
+    :label="props.label"
+    :hight-contrast="props.hightContrast"
+    :model-value="innerValue"
+    @change="ceEmit('change', $event)"
+  />
 </template>
 
 <style>

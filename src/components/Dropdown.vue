@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, computed, defineModel, onMounted, onUnmounted } from "vue";
 import Button from "./Button.vue";
 
 const props = defineProps({
@@ -9,9 +9,27 @@ const props = defineProps({
   disabled: { type: Boolean, required: false, default: false },
   label: { type: String, required: false, default: "" },
   placement: { type: String, required: false, default: "bottom-start" },
+  position: { type: String, required: false, default: "" },
+  align: { type: String, required: false, default: "" },
   offset: { type: Number, required: false, default: 4 },
   menuBg: { type: String, required: false, default: "#ffffff" },
+  fixed: { type: Boolean, required: false, default: false },
 });
+
+const effectivePosition = computed(() => props.position || props.placement.split("-")[0] || "bottom");
+const effectiveAlign = computed(() => props.align || props.placement.split("-")[1] || "start");
+
+const panelPos = ref({ top: "0px", left: "0px" });
+
+const panelStyle = computed(() => {
+  const base: Record<string, string> = { "--menu-bg": props.menuBg };
+  if (props.fixed) {
+    return { ...base, position: "fixed", top: panelPos.value.top, left: panelPos.value.left, zIndex: "10000" };
+  }
+  return { ...base, "--offset": `${props.offset}px` };
+});
+
+const selectedValue = defineModel<string>({ default: "" });
 
 const emit = defineEmits(["open", "close"]);
 const isOpen = ref(false);
@@ -43,6 +61,14 @@ onUnmounted(() => {
 
 function open() {
   if (props.disabled) return;
+  if (props.fixed && dropdownRef.value) {
+    const r = dropdownRef.value.getBoundingClientRect();
+    const t = effectivePosition.value === "bottom" ? r.bottom + props.offset : r.top - props.offset;
+    const l = effectiveAlign.value === "start" ? r.left
+      : effectiveAlign.value === "end" ? r.right - 200
+      : r.left + r.width / 2 - 100;
+    panelPos.value = { top: `${t}px`, left: `${Math.max(0, l)}px` };
+  }
   isOpen.value = true;
   emit("open");
 }
@@ -56,7 +82,11 @@ function toggle() {
   else open();
 }
 
-defineExpose({ open, close, toggle, get isOpen() { return isOpen.value } });
+function get() { return selectedValue.value; }
+function set(val: string) { selectedValue.value = val; }
+function reset() { selectedValue.value = ""; }
+
+defineExpose({ open, close, toggle, get, set, reset, get isOpen() { return isOpen.value } });
 </script>
 
 <template>
@@ -75,14 +105,20 @@ defineExpose({ open, close, toggle, get isOpen() { return isOpen.value } });
 
     <div
       v-if="isOpen"
-      :style="{ '--menu-bg': menuBg, '--offset': offset + 'px' }"
-      class="absolute z-1000 w-full min-w-[200px] max-w-[80vw] rounded-cu p-2 font-sans shadow-xl bg-[var(--menu-bg)]"
-      :class="{
-        'top-full left-0 mt-[var(--offset)]': placement === 'bottom-start',
-        'top-full right-0 mt-[var(--offset)]': placement === 'bottom-end',
-        'bottom-full left-0 mb-[var(--offset)]': placement === 'top-start',
-        'bottom-full right-0 mb-[var(--offset)]': placement === 'top-end',
-      }"
+      :style="panelStyle"
+      :class="[
+        'z-1000 min-w-[200px] max-w-[80vw] rounded-cu p-2 font-sans shadow-xl bg-[var(--menu-bg)]',
+        props.fixed ? '' : 'absolute w-full',
+        {
+          'top-full': !props.fixed && effectivePosition === 'bottom',
+          'bottom-full': !props.fixed && effectivePosition === 'top',
+          'left-0': !props.fixed && effectiveAlign === 'start',
+          'right-0': !props.fixed && effectiveAlign === 'end',
+          'left-1/2 -translate-x-1/2': !props.fixed && effectiveAlign === 'center',
+          'mt-[var(--offset)]': !props.fixed && effectivePosition === 'bottom',
+          'mb-[var(--offset)]': !props.fixed && effectivePosition === 'top',
+        },
+      ]"
       role="menu"
     >
       <slot></slot>

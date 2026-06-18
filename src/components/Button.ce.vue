@@ -22,9 +22,9 @@ const props = defineProps({
   variant: {
     type: String,
     required: false,
-    default: "ghost",
+    default: "none",
     validator: (value: string) =>
-      ["solid", "outlined", "soft", "ghost", "subtle", "link"].includes(value),
+      ["solid", "outlined", "soft", "ghost", "subtle", "link", "none"].includes(value),
   },
   to: {
     type: String,

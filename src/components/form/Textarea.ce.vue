@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch, getCurrentInstance } from "vue";
 import Textarea from "./Textarea.vue";
 import { getColorMap } from "../../utils/palette";
 import { getHostTheme } from "../../utils/getHostTheme";
@@ -58,6 +58,11 @@ const props = defineProps({
     required: false,
     default: false,
   },
+  hightContrast: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 });
 
 const effectiveTheme = computed(() => props.theme || getHostTheme());
@@ -65,7 +70,33 @@ const hexColor = computed(() => {
   const map = getColorMap(effectiveTheme.value as "light" | "dark");
   return map[props.color as keyof typeof map] || props.color;
 });
+
+const innerValue = ref(props.modelValue);
 const textareaRef = ref<InstanceType<typeof Textarea> | null>(null);
+const instance = getCurrentInstance();
+
+watch(() => props.modelValue, (val) => {
+  innerValue.value = val;
+});
+
+watch(() => textareaRef.value?.get(), (val) => {
+  if (val !== undefined && val !== null && val !== innerValue.value) {
+    innerValue.value = val;
+    ceEmit("update:modelValue", val);
+  }
+});
+
+function ceEmit(event: string, payload: unknown) {
+  const el = instance?.vnode.el as HTMLElement | null;
+  const host = el?.getRootNode()?.host || el;
+  if (host) {
+    host.dispatchEvent(new CustomEvent(event, {
+      detail: payload,
+      bubbles: true,
+      composed: true,
+    }));
+  }
+}
 
 defineExpose({
   get: () => textareaRef.value?.get(),
@@ -76,7 +107,19 @@ defineExpose({
 </script>
 
 <template>
-  <Textarea ref="textareaRef" v-bind="{ ...props, color: hexColor }" />
+  <Textarea
+    ref="textareaRef"
+    :color="hexColor"
+    :variant="props.variant"
+    :placeholder="props.placeholder"
+    :disabled="props.disabled"
+    :read-only="props.readOnly"
+    :rows="props.rows"
+    :no-resize="props.noResize"
+    :start-value="props.startValue"
+    :model-value="innerValue"
+    :hight-contrast="props.hightContrast"
+  />
 </template>
 
 <style>

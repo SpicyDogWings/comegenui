@@ -22,7 +22,7 @@ function setTheme(isDark) {
     document.documentElement.setAttribute('data-theme', 'dark');
   } else {
     document.body.classList.remove('dark');
-    document.documentElement.removeAttribute('data-theme');
+    document.documentElement.setAttribute('data-theme', 'light');
   }
   btnTheme.textContent = isDark ? '☀️' : '🌙';
 }

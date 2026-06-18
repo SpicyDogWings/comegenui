@@ -1,32 +1,22 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch, getCurrentInstance } from "vue";
 import Select from "./Select.vue";
 import { getColorMap } from "../../utils/palette";
 import { getHostTheme } from "../../utils/getHostTheme";
-import { isValidTheme } from "../../config/theme";
+import { isValidTheme, type ThemeName } from "../../config/theme";
 
 interface SelectOption {
   value: string;
   label: string;
+  disabled?: boolean;
+  color?: string;
+  variant?: string;
 }
 
 const props = defineProps({
-  theme: {
-    type: String,
-    required: false,
-    default: "",
-    validator: isValidTheme,
-  },
-  modelValue: {
-    type: String,
-    required: false,
-    default: "",
-  },
-  options: {
-    type: Array as () => SelectOption[],
-    required: false,
-    default: () => [],
-  },
+  theme: { type: String, required: false, default: "", validator: isValidTheme },
+  modelValue: { type: String, required: false, default: "" },
+  options: { type: Array as () => SelectOption[], required: false, default: () => [] },
   color: {
     type: String,
     required: false,
@@ -37,46 +27,89 @@ const props = defineProps({
   variant: {
     type: String,
     required: false,
-    default: "ghost",
+    default: "none",
     validator: (value: string) =>
-      ["outlined", "soft", "ghost", "subtle", "none"].includes(value),
+      ["solid", "outlined", "soft", "ghost", "subtle", "link", "none"].includes(value),
   },
-  placeholder: {
-    type: String,
-    required: false,
-  },
-  disabled: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
-  hightContrast: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
+  placeholder: { type: String, required: false },
+  placeholderWrap: { type: Boolean, required: false, default: false },
+  position: { type: String, required: false, default: "bottom" },
+  align: { type: String, required: false, default: "start" },
+  placement: { type: String, required: false, default: "" },
+  disabled: { type: Boolean, required: false, default: false },
+  hightContrast: { type: Boolean, required: false, default: false },
 });
 
 const effectiveTheme = computed(() => props.theme || getHostTheme());
 const hexColor = computed(() => {
-  const map = getColorMap(effectiveTheme.value as "light" | "dark");
+  const map = getColorMap(effectiveTheme.value as ThemeName);
   return map[props.color as keyof typeof map] || props.color;
 });
 
+const themeMap = computed(() => getColorMap(effectiveTheme.value as ThemeName));
+
+const resolvedOptions = computed(() =>
+  (props.options || []).map((opt: any) => ({
+    ...opt,
+    color: opt.color ? (themeMap.value[opt.color as keyof typeof themeMap.value] || opt.color) : undefined,
+  })),
+);
+
 const selectRef = ref<InstanceType<typeof Select> | null>(null);
+const instance = getCurrentInstance();
+const innerValue = ref(props.modelValue);
+
+watch(() => props.modelValue, (val) => {
+  innerValue.value = val;
+});
+
+watch(() => selectRef.value?.get(), (val) => {
+  if (val !== undefined && val !== null && val !== innerValue.value) {
+    innerValue.value = val;
+    ceEmit("update:modelValue", val);
+  }
+});
+
+function ceEmit(event: string, payload: unknown) {
+  const el = instance?.vnode.el as HTMLElement | null;
+  const host = el?.getRootNode()?.host || el;
+  if (host) {
+    host.dispatchEvent(new CustomEvent(event, {
+      detail: payload,
+      bubbles: true,
+      composed: true,
+    }));
+  }
+}
 
 defineExpose({
   get: () => selectRef.value?.get(),
-  set: (value: string) => selectRef.value?.set(value),
+  set: (val: string) => selectRef.value?.set(val),
   reset: () => selectRef.value?.reset(),
   focus: () => selectRef.value?.focus(),
+  get isOpen() { return selectRef.value?.isOpen || false },
+  get selectedItem() { return selectRef.value?.selectedItem || null },
 });
 </script>
 
 <template>
   <Select
     ref="selectRef"
-    v-bind="{ ...props, color: hexColor }"
+    :color="hexColor"
+    :variant="props.variant"
+    :disabled="props.disabled"
+    :hight-contrast="props.hightContrast"
+    :placeholder="props.placeholder"
+    :placeholder-wrap="props.placeholderWrap"
+    :position="props.position"
+    :align="props.align"
+    :placement="props.placement"
+    :model-value="innerValue"
+    :options="resolvedOptions"
+    :menu-bg="getColorMap(effectiveTheme as ThemeName).surface"
+    @select="ceEmit('select', $event)"
+    @close="ceEmit('close', $event)"
+    @blur="ceEmit('blur', $event)"
   />
 </template>
 

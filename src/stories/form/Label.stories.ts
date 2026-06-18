@@ -1,4 +1,4 @@
-import Label from "../../components/Label.vue";
+import Label from "../../components/form/Label.vue";
 import Input from "../../components/form/Input.vue";
 import Textarea from "../../components/form/Textarea.vue";
 import Checkbox from "../../components/form/Checkbox.vue";

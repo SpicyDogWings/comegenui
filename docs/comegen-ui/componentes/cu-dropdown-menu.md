@@ -1,6 +1,6 @@
 # `<cu-dropdown-menu>`
 
-Menú desplegable con items declarativos, iconos SVG, divisores y colores semánticos.
+Menú desplegable con items declarativos (label, ícono, color, divisor, link). El toggle se puede reemplazar con un slot, y el panel se puede llenar via `items` o con slot por defecto.
 
 [← Volver](../SKILL.md)
 
@@ -10,37 +10,48 @@ Menú desplegable con items declarativos, iconos SVG, divisores y colores semán
 
 | Prop | Tipo | Default | Descripción |
 |------|------|---------|-------------|
-| `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` |
-| `color` | `string` | `"neutral"` | Color semántico del toggle |
-| `variant` | `string` | `"ghost"` | `solid`, `outlined`, `soft`, `ghost`, `subtle` |
-| `disabled` | `boolean` | `false` | Deshabilitado |
-| `label` | `string` | `""` | Texto del toggle |
-| `placement` | `string` | `"bottom-start"` | `bottom-start`, `bottom-end`, `top-start`, `top-end` |
-| `offset` | `number` | `4` | Gap entre toggle y menú (px) |
-| `items` | `array` | `[]` | Items del menú (ver abajo) |
+| `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
+| `color` | `string` | `"neutral"` | Color semántico del toggle: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `variant` | `string` | `"none"` | Variante del toggle: `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` |
+| `disabled` | `boolean` | `false` | Deshabilita el toggle |
+| `hightContrast` | `boolean` | `false` | Modo de alto contraste |
+| `label` | `string` | `""` | Texto del toggle (se ignora si se provee slot `toggle`) |
+| `position` | `string` | `"bottom"` | Posición preferida del panel: `bottom`, `top` |
+| `align` | `string` | `"start"` | Alineación del panel: `start`, `center`, `end` |
+| `placement` | `string` | `""` | Shorthand combinado (`bottom-start`, `bottom-end`, `top-start`, `top-end`). Si se define, sobrescribe `position` y `align` |
+| `offset` | `number` | `4` | Separación en píxeles entre el toggle y el panel |
+| `fixed` | `boolean` | `false` | Si es `true`, el panel usa `position: fixed` en vez de absoluto |
+| `items` | `array` | `[]` | Lista de items (ver abajo). Se asigna como propiedad JS, no como atributo HTML |
 
-## Items
+### Items
 
 Cada item del array `items` puede tener:
 
 | Campo | Tipo | Default | Descripción |
 |-------|------|---------|-------------|
-| `label` | `string` | `""` | Texto del item |
-| `icon` | `string` | — | SVG string completo (`<svg>...</svg>`) |
+| `label` | `string` | `""` | Texto visible del item |
+| `icon` | `string` | — | SVG completo inline (`<svg>...</svg>`) |
 | `onClick` | `function` | — | Callback al hacer clic |
 | `color` | `string` | hereda del toggle | Color semántico del item |
-| `variant` | `string` | `"ghost"` | Variante del botón |
-| `disabled` | `boolean` | `false` | Item deshabilitado |
-| `divider` | `boolean` | `false` | Renderiza una línea divisoria |
-| `href` | `string` | — | Convierte el item en un link |
-| `target` | `string` | `"_self"` | Target del link |
+| `variant` | `string` | `"ghost"` | Variante del item |
+| `disabled` | `boolean` | `false` | Item deshabilitado (no clickeable, atenuado) |
+| `divider` | `boolean` | `false` | Si es `true`, renderiza una línea divisoria en vez de un item |
+| `href` | `string` | — | Convierte el item en un link (`<a>`) |
+| `target` | `string` | `"_self"` | Target del link cuando hay `href` |
 
 ## Eventos
 
-| Evento | Payload | Descripción |
-|--------|---------|-------------|
-| `open` | — | Se abre el menú |
-| `close` | — | Se cierra el menú |
+| Evento | Payload (`e.detail`) | Descripción |
+|--------|----------------------|-------------|
+| `open` | — | Se emite cuando se abre el menú |
+| `close` | — | Se emite cuando se cierra el menú |
+
+## Slots
+
+| Slot | Descripción |
+|------|-------------|
+| `toggle` | Reemplaza el botón toggle (sintaxis HTML `slot="toggle"`) |
+| `default` | Contenido del panel. Se usa solo si `items` está vacío o no se provee |
 
 ## Métodos expuestos
 
@@ -51,6 +62,8 @@ Cada item del array `items` puede tener:
 | `.toggle()` | Alterna visibilidad |
 | `.isOpen` (getter) | Estado actual (`boolean`) |
 
+---
+
 ## Uso en HTML plano
 
 ```html
@@ -59,23 +72,21 @@ Cada item del array `items` puede tener:
 <cu-dropdown-menu id="dd" label="Acciones" color="primary" variant="soft"></cu-dropdown-menu>
 
 <script>
-  const pencil = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.168 16.931a.5.5 0 0 0-.131.237l-.8 2.685a.5.5 0 0 0 .61.61l2.685-.8a.5.5 0 0 0 .237-.13z"/><path d="M17.25 3.75 20.25 6.75"/></svg>';
-  const copy = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>';
-  const download = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>';
-  const trash = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>';
+  const pencil = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>';
+  const copy = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>';
+  const trash = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>';
 
   const dd = document.getElementById('dd');
   dd.items = [
     { label: 'Editar', icon: pencil, onClick: () => console.log('edit') },
     { label: 'Duplicar', icon: copy, onClick: () => console.log('dup') },
-    { label: 'Exportar', icon: download, onClick: () => console.log('export') },
     { divider: true },
     { label: 'Eliminar', icon: trash, color: 'danger', onClick: () => console.log('del') },
   ];
 </script>
 ```
 
-Los items se asignan como propiedad JS (array de objetos). No se pasan como atributo HTML.
+> **Importante:** `items` se asigna como propiedad JS (`dd.items = [...]`), no como atributo HTML.
 
 ## Items con link
 
@@ -89,7 +100,7 @@ dd.items = [
 
 ## Toggle personalizado
 
-Reemplaza el botón toggle usando `slot="toggle"`:
+Reemplaza el botón toggle con un slot HTML nativo:
 
 ```html
 <cu-dropdown-menu id="ddCustom" color="primary">
@@ -101,6 +112,31 @@ Reemplaza el botón toggle usando `slot="toggle"`:
 </cu-dropdown-menu>
 ```
 
+## Contenido libre en el panel (sin `items`)
+
+Si pasás contenido en el slot por defecto, el panel ignora `items` y muestra lo que definas:
+
+```html
+<cu-dropdown-menu id="ddLibre" label="Opciones">
+  <div style="padding: 12px; min-width: 200px;">
+    <p style="margin: 0 0 8px;">Contenido arbitrario</p>
+    <a href="/logout">Cerrar sesión</a>
+  </div>
+</cu-dropdown-menu>
+```
+
+## Posicionamiento
+
+El dropdown usa tres props combinables:
+
+- `position` + `align`: separados (`bottom` + `start`)
+- `placement`: shorthand (`bottom-start`)
+
+```html
+<cu-dropdown-menu label="Arriba" placement="top-end"></cu-dropdown-menu>
+<cu-dropdown-menu label="Alineado" position="bottom" align="end" offset="8"></cu-dropdown-menu>
+```
+
 ## Control programático
 
 ```html
@@ -109,9 +145,12 @@ Reemplaza el botón toggle usando `slot="toggle"`:
 <script>
   const dd = document.getElementById('ddAPI');
   dd.items = [ /* ... */ ];
-  dd.open();                // Abre el menú
-  dd.close();               // Cierra el menú
-  dd.toggle();              // Alterna visibilidad
-  console.log(dd.isOpen);   // true | false
+  dd.open();
+  dd.close();
+  dd.toggle();
+  console.log(dd.isOpen);
+
+  dd.addEventListener('open', () => console.log('abierto'));
+  dd.addEventListener('close', () => console.log('cerrado'));
 </script>
 ```
