@@ -6,6 +6,7 @@ import Input from "../form/Input.vue";
 import EditableTableCell from "./EditableTableCell.vue";
 import Button from "../Button.vue";
 import Badge from "../Badge.vue";
+import DropdownMenu from "../DropdownMenu.vue";
 import { usePagination } from "../../composables/usePagination";
 import { useSearch } from "../../composables/useSearch";
 import { useTableData } from "../../composables/useTableData";
@@ -185,6 +186,11 @@ const props = defineProps({
     required: false,
     default: false,
   },
+  actions: {
+    type: Array as () => ButtonConfig[],
+    required: false,
+    default: () => [],
+  },
 });
 
 const emit = defineEmits([
@@ -333,7 +339,9 @@ const handlePageSizeChange = (size: number) => {
 
 // Table props to pass through
 const tableProps = computed(() => ({
-  columns: props.columns,
+  columns: props.actions?.length
+    ? [...props.columns, { key: '__actions__', label: '', width: '1%', align: 'center' as const, sortable: false }]
+    : props.columns,
   data: props.pagination ? pagination.displayData.value : filteredData.value,
   empty: props.empty,
   maxHeight: props.tableMaxHeight,
@@ -483,6 +491,33 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
         
         <!-- Custom cell rendering -->
         <span v-else-if="hasCellFunction(col)">{{ getCellValue(col, row) }}</span>
+        <!-- Actions dropdown -->
+        <div v-else-if="col.key === '__actions__' && props.actions?.length" class="flex items-center justify-center">
+          <DropdownMenu
+            :color="getHexColor(props.color)"
+            variant="ghost"
+            placement="bottom-end"
+            :menu-bg="getColorMap(props.theme as any).surface"
+            :items="props.actions.map(a => ({ ...a, onClick: () => a.onClick?.(row) }))"
+            @click.stop
+          >
+            <template #toggle="{ toggle }">
+              <Button
+                color="#888"
+                variant="ghost"
+                @click="toggle"
+                style="padding:2px 6px;min-width:0;height:28px"
+                class="box-border"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <circle cx="12" cy="5" r="1.5"/>
+                  <circle cx="12" cy="12" r="1.5"/>
+                  <circle cx="12" cy="19" r="1.5"/>
+                </svg>
+              </Button>
+            </template>
+          </DropdownMenu>
+        </div>
         <!-- Regular cell value only -->
         <span v-else>{{ value }}</span>
       </template>
