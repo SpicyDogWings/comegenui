@@ -1,88 +1,85 @@
 # Documentación de ComegenUI
 
-Bienvenido a la documentación del proyecto **ComegenUI 2.0**.
+Bienvenido a la documentación del proyecto **ComegenUI 2.0** (librería de Web Components construida con Vue 3).
 
 ---
 
-## Para usuarios de los componentes
+## ¿Qué necesitás?
 
-Si solo quieres **usar los componentes** en tu proyecto (HTML plano, React, Vue, etc.):
+### Solo quiero **usar** los componentes
 
-- [Guía de uso de ComegenUI](comegen-ui/SKILL.md) — Instalación, temas, variantes, API de componentes
+Si querés consumir los componentes en tu proyecto (HTML plano, React, Vue, etc.):
 
-### Componentes
+- **[Guía de uso de ComegenUI](comegen-ui/SKILL.md)** — instalación, temas, variantes, API de cada componente.
+- **[Documentación por componente](comegen-ui/componentes/)** — referencia detallada de la API.
+
+### Quiero **contribuir / desarrollar**
+
+Si vas a modificar o agregar componentes a la librería:
+
+- **[DEV.md](DEV.md)** — guía práctica de desarrollo (setup, crear componentes, playground, build).
+- **[Skill `desarrollar-comegen-ui`](desarrollar-comegen-ui/SKILL.md)** — guía detallada (para agentes y contribuidores).
+- **[Skill `documentar-comegen-ui`](documentar-comegen-ui/SKILL.md)** — cómo documentar componentes.
+
+### Quiero ver el **estado del proyecto**
+
+- **[Notas de auditoría](notes/)** — problemas pendientes y decisiones técnicas.
+
+---
+
+## Componentes disponibles
 
 | Componente | Documentación |
 |------------|---------------|
-| `<cu-button>` | [Ver docs](comegen-ui/componentes/cu-button.md) |
 | `<cu-alert>` | [Ver docs](comegen-ui/componentes/cu-alert.md) |
+| `<cu-autocomplete>` | [Ver docs](comegen-ui/componentes/cu-autocomplete.md) |
 | `<cu-badge>` | [Ver docs](comegen-ui/componentes/cu-badge.md) |
-| `<cu-input>` | [Ver docs](comegen-ui/componentes/cu-input.md) |
+| `<cu-button>` | [Ver docs](comegen-ui/componentes/cu-button.md) |
 | `<cu-checkbox>` | [Ver docs](comegen-ui/componentes/cu-checkbox.md) |
-| `<cu-textarea>` | [Ver docs](comegen-ui/componentes/cu-textarea.md) |
-| `<cu-select>` | [Ver docs](comegen-ui/componentes/cu-select.md) |
-| `<cu-switch>` | [Ver docs](comegen-ui/componentes/cu-switch.md) |
+| `<cu-dropdown-menu>` | [Ver docs](comegen-ui/componentes/cu-dropdown-menu.md) |
+| `<cu-input>` | [Ver docs](comegen-ui/componentes/cu-input.md) |
 | `<cu-label>` | [Ver docs](comegen-ui/componentes/cu-label.md) |
 | `<cu-modal>` | [Ver docs](comegen-ui/componentes/cu-modal.md) |
 | `<cu-pagination>` | [Ver docs](comegen-ui/componentes/cu-pagination.md) |
+| `<cu-select>` | [Ver docs](comegen-ui/componentes/cu-select.md) |
+| `<cu-switch>` | [Ver docs](comegen-ui/componentes/cu-switch.md) |
 | `<cu-table>` | [Ver docs](comegen-ui/componentes/cu-table.md) |
-| `<cu-dropdown>` | [Ver docs](comegen-ui/componentes/cu-dropdown.md) |
+| `<cu-textarea>` | [Ver docs](comegen-ui/componentes/cu-textarea.md) |
 
 ---
 
-## Build y desarrollo del proyecto
+## Recursos rápidos
 
-Para **contribuir o modificar** la librería:
-
-### Scripts disponibles
-
-| Script | Descripción |
-|--------|-------------|
-| `pnpm dev` | Servidor de desarrollo Vite |
-| `pnpm build` | Build completo (type-check + build Vue) |
-| `pnpm build:lib` | Genera los archivos UMD en `dist/` |
-| `pnpm build:lib -- X.Y.Z` | Build UMD con versión específica |
-| `pnpm storybook` | Storybook en http://localhost:6006 |
-| `pnpm type-check` | TypeScript check |
-
-### Build de librería (`build:lib`)
-
-Ejecuta `build-libs.ts` que:
-
-1. Limpia `dist/`
-2. Compila cada componente individualmente con Vite en formato UMD
-3. Copia `README-BUILD.md` a `dist/`
-4. Genera un `comegenui.zip` con todos los `.umd.js`
-
-```bash
-pnpm build:lib
-```
-
-### Temas personalizados
-
-Para agregar un tema nuevo, edita `src/config/theme.ts`:
-
-```ts
-export const themes = {
-  miTema: {
-    primary: '#ff6600',
-    neutral: '#333333',
-    success: '#00cc66',
-    warning: '#ffcc00',
-    danger: '#ff3333',
-  },
-};
-```
-
-Luego reconstruye con `pnpm build:lib`. El tema se detecta automáticamente vía `data-theme="miTema"`.
-
-### Versiones
-
-Los archivos UMD generados están en `dist/` e incluyen un `README-BUILD.md` con la versión. El zip `comegenui.zip` contiene solo los UMD + README para distribución.
+| Recurso | Descripción |
+|---------|-------------|
+| [DEV.md](DEV.md) | Guía práctica para desarrollar y contribuir |
+| [Playground](../playground/) | HTML estático para experimentar con los UMD |
+| [Storybook](../.storybook/) | Exploración visual de componentes (`pnpm storybook`) |
+| [Build config](../build-libs.ts) | Pipeline que genera los UMD |
+| [Temas](../src/config/theme.ts) | Configuración de temas (`light`, `dark`, `sigacadv2`) |
 
 ---
 
-## Recursos
+## Estructura de la documentación
 
-- [README-BUILD.md](../README-BUILD.md) — Documentación técnica incluida en la build
-- [Storybook](.storybook/) — Exploración visual de componentes (dev)
+```
+docs/
+├── DOCS.md                          ← este archivo
+├── DEV.md                           ← guía de desarrollo
+├── comegen-ui/                      ← documentación de uso (para usuarios finales)
+│   ├── SKILL.md
+│   └── componentes/
+├── desarrollar-comegen-ui/          ← skill de desarrollo (para contribuidores)
+│   ├── SKILL.md
+│   ├── arquitectura.md
+│   ├── crear-componente.md
+│   ├── ...
+├── documentar-comegen-ui/           ← skill de documentación (para quien documenta)
+│   ├── SKILL.md
+│   ├── arquitectura.md
+│   ├── ...
+└── notes/                           ← notas internas de auditoría
+    ├── 00-README.md
+    ├── 01-build-glob.md
+    ├── ...
+```
