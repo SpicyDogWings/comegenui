@@ -338,10 +338,14 @@ const handlePageSizeChange = (size: number) => {
 };
 
 // Table props to pass through
-const tableProps = computed(() => ({
-  columns: props.actions?.length
+const augmentedColumns = computed(() =>
+  props.actions?.length
     ? [...props.columns, { key: '__actions__', label: '', width: '1%', align: 'center' as const, sortable: false }]
-    : props.columns,
+    : props.columns
+);
+
+const tableProps = computed(() => ({
+  columns: augmentedColumns.value,
   data: props.pagination ? pagination.displayData.value : filteredData.value,
   empty: props.empty,
   maxHeight: props.tableMaxHeight,
@@ -421,7 +425,7 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
       </template>
       
       <!-- Editable cells -->
-      <template v-for="col in props.columns" v-slot:[`cell-${col.key}`]="{ row, value, index }">
+      <template v-for="col in augmentedColumns" v-slot:[`cell-${col.key}`]="{ row, value, index }">
         <!-- Buttons only - no cell value -->
         <div v-if="hasButtons(col)" class="flex items-center gap-2">
           <Button
@@ -498,7 +502,7 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
             variant="ghost"
             placement="bottom-end"
             :menu-bg="getColorMap(props.theme as any).surface"
-            :items="props.actions.map(a => ({ ...a, onClick: () => a.onClick?.(row) }))"
+            :items="props.actions.map(a => ({ ...a, color: a.color ? getHexColor(a.color) : undefined, onClick: () => a.onClick?.(row) }))"
             @click.stop
           >
             <template #toggle="{ toggle }">
