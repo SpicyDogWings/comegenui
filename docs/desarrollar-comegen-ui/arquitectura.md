@@ -64,10 +64,12 @@ No todos los componentes viven en la raíz:
 | `src/components/` (raíz) | Componentes que no son de formulario ni datos | Sí |
 | `src/components/form/` | Componentes de formulario (inputs, controles) | Sí |
 | `src/components/data/` | Componentes de datos (tablas) | Sí |
-| `src/components/labs/` | Componentes en experimentación | **Sí** (a pesar del nombre) |
+| `src/components/labs/` | Componentes en experimentación | **Sí** (a pesar del nombre). **Puede estar vacía** si no hay componentes experimentales activos. |
 | `src/components/archived/` | Componentes retirados | **Sí** (ver [`docs/notes/01-build-glob.md`](../../notes/01-build-glob.md)) |
 
 > **Importante:** el `build-libs.ts` usa `fast-glob("./src/components/**/*.ts")` sin filtros. **Todo** se compila. Si querés excluir algo, hay que cambiar el patrón (ver nota 01).
+
+> **Sobre `labs/`:** la carpeta es para componentes **experimentales** (en desarrollo, validación, prueba de concepto). **Puede existir vacía** cuando no hay componentes en experimentación, e incluso **puede no existir** si nunca se usó. No es un sandbox aislado: los componentes que viven acá compilan y se distribuyen igual que los de `form/` o `data/`. Una vez que un componente se considera estable, conviene moverlo a su carpeta final (`form/`, `data/` o raíz) y borrarlo de `labs/`.
 
 ## Ejemplo: cadena de wrappers
 

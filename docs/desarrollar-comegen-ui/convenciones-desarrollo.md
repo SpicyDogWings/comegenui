@@ -147,7 +147,7 @@ Ver [arquitectura.md](arquitectura.md#ubicaciones). Reglas rápidas:
 - `src/components/` (raíz): botones, alerts, modals, badges, dropdowns, pagination.
 - `src/components/form/`: inputs, checkboxes, switches, textareas, selects, labels, autocomplete.
 - `src/components/data/`: tablas.
-- `src/components/labs/`: experimentales. **Compilan**, no es sandbox.
+- `src/components/labs/`: experimentales. **Compilan**, no es sandbox. La carpeta **puede estar vacía** (o no existir) si no hay componentes en experimentación.
 - `src/components/archived/`: retirados. **Compilan**, ver [`docs/notes/01-build-glob.md`](../../notes/01-build-glob.md).
 
 ## Composición

@@ -83,7 +83,7 @@ comegenui/
 │   │   ├── Button.vue / .ce.vue / .ts
 │   │   ├── form/                ← inputs, controles
 │   │   ├── data/                ← tablas
-│   │   ├── labs/                ← experimentales (sí compilan)
+│   │   ├── labs/                ← experimentales (sí compilan; puede estar vacía)
 │   │   └── archived/            ← retirados (sí compilan — ver docs/notes/)
 │   ├── composables/             ← usePagination, useSearch, useTableData
 │   ├── config/                  ← theme.ts
