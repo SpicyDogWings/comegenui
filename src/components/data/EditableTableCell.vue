@@ -3,7 +3,7 @@ import { ref, computed, nextTick, watch } from "vue";
 
 import Input from "../form/Input.vue";
 import Textarea from "../form/Textarea.vue";
-import Select from "../labs/Select.vue";
+import Select from "../form/Select.vue";
 import Autocomplete from "../form/Autocomplete.vue";
 
 interface AutocompleteItem {

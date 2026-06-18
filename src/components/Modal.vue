@@ -1,9 +1,31 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { useMagicKeys, whenever } from "@vueuse/core";
+import { getColorMap } from "../utils/palette";
+import { getHostTheme } from "../utils/getHostTheme";
+import { isValidTheme } from "../config/theme";
 import Button from "./Button.vue";
 
 const props = defineProps({
+  theme: {
+    type: String,
+    required: false,
+    default: "",
+    validator: isValidTheme,
+  },
+  color: {
+    type: String,
+    required: false,
+    default: "#2c2c2c",
+    validator: (value: string) => /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/i.test(value),
+  },
+  variant: {
+    type: String,
+    required: false,
+    default: "ghost",
+    validator: (value: string) =>
+      ["solid", "outlined", "soft", "ghost", "subtle", "link", "none"].includes(value),
+  },
   title: {
     type: String,
     required: false,
@@ -31,6 +53,17 @@ const props = defineProps({
     default: "auto",
     validator: (value: string) => ["auto", "sm", "md", "lg", "xl", "full"].includes(value),
   },
+  hightContrast: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
+});
+
+const effectiveTheme = computed(() => props.theme || getHostTheme());
+const hexColor = computed(() => {
+  const map = getColorMap(effectiveTheme.value as "light" | "dark");
+  return map[props.color as keyof typeof map] || props.color;
 });
 
 const emit = defineEmits(["close", "opened", "closed"]);
@@ -96,8 +129,9 @@ defineExpose({
       <header class="p-4 relative">
         <Button
           v-if="!props.persistent"
-          color="#2c2c2c"
-          variant="ghost"
+          :color="hexColor"
+          :variant="props.variant"
+          :hight-contrast="props.hightContrast"
           @click="close"
           class="absolute top-4 right-4 p-1 h-auto w-auto"
           aria-label="Cerrar modal"

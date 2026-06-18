@@ -45,15 +45,20 @@ const props = defineProps({
     required: false,
     default: false,
   },
+  hightContrast: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 });
 
 const textareaRef = useTemplateRef("textarea");
 
 const bgClass = computed(() =>
-  getBgClasses(props.color, props.variant, false),
+  getBgClasses(props.color, props.variant, props.hightContrast),
 );
 const fgClass = computed(() =>
-  getFgClasses(props.color, props.variant, false),
+  getFgClasses(props.color, props.variant, props.hightContrast),
 );
 
 const get = () => value.value;

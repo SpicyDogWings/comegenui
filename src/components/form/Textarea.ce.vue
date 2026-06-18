@@ -58,6 +58,11 @@ const props = defineProps({
     required: false,
     default: false,
   },
+  hightContrast: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 });
 
 const effectiveTheme = computed(() => props.theme || getHostTheme());
@@ -113,6 +118,7 @@ defineExpose({
     :no-resize="props.noResize"
     :start-value="props.startValue"
     :model-value="innerValue"
+    :hight-contrast="props.hightContrast"
   />
 </template>
 

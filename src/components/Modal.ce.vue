@@ -1,8 +1,31 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import Modal from "./Modal.vue";
+import { getColorMap } from "../utils/palette";
+import { getHostTheme } from "../utils/getHostTheme";
+import { isValidTheme } from "../config/theme";
 
 const props = defineProps({
+  theme: {
+    type: String,
+    required: false,
+    default: "",
+    validator: isValidTheme,
+  },
+  color: {
+    type: String,
+    required: false,
+    default: "neutral",
+    validator: (value: string) =>
+      ["primary", "neutral", "success", "warning", "danger"].includes(value),
+  },
+  variant: {
+    type: String,
+    required: false,
+    default: "ghost",
+    validator: (value: string) =>
+      ["solid", "outlined", "soft", "ghost", "subtle", "link", "none"].includes(value),
+  },
   title: {
     type: String,
     required: false,
@@ -30,9 +53,20 @@ const props = defineProps({
     default: "auto",
     validator: (value: string) => ["auto", "sm", "md", "lg", "xl", "full"].includes(value),
   },
+  hightContrast: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 });
 
 const emit = defineEmits(["close", "opened", "closed"]);
+
+const effectiveTheme = computed(() => props.theme || getHostTheme());
+const hexColor = computed(() => {
+  const map = getColorMap(effectiveTheme.value as "light" | "dark");
+  return map[props.color as keyof typeof map] || props.color;
+});
 
 const modalRef = ref<InstanceType<typeof Modal> | null>(null);
 
@@ -57,11 +91,15 @@ defineExpose({
 <template>
   <Modal
     ref="modalRef"
+    :theme="effectiveTheme"
+    :color="hexColor"
+    :variant="props.variant"
     :title="props.title"
     :description="props.description"
     :persistent="props.persistent"
     :size="props.size"
     :height="props.height"
+    :hight-contrast="props.hightContrast"
     @close="emit('close')"
     @opened="emit('opened')"
     @closed="emit('closed')"

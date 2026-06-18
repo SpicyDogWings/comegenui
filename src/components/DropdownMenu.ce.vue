@@ -7,8 +7,20 @@ import { isValidTheme, type ThemeName } from "../config/theme";
 
 const props = defineProps({
   theme: { type: String, required: false, default: "", validator: isValidTheme },
-  color: { type: String, required: false, default: "neutral" },
-  variant: { type: String, required: false, default: "ghost" },
+  color: {
+    type: String,
+    required: false,
+    default: "neutral",
+    validator: (value: string) =>
+      ["primary", "neutral", "success", "warning", "danger"].includes(value),
+  },
+  variant: {
+    type: String,
+    required: false,
+    default: "none",
+    validator: (value: string) =>
+      ["solid", "outlined", "soft", "ghost", "subtle", "link", "none"].includes(value),
+  },
   disabled: { type: Boolean, required: false, default: false },
   hightContrast: { type: Boolean, required: false, default: false },
   label: { type: String, required: false, default: "" },

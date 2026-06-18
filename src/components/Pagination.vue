@@ -16,7 +16,7 @@ const props = defineProps({
     required: false,
     default: "soft",
     validator: (value: string) =>
-      ["outlined", "soft", "ghost", "subtle"].includes(value),
+      ["outlined", "soft", "ghost", "subtle", "none"].includes(value),
   },
   currentPage: {
     type: Number,
@@ -53,13 +53,18 @@ const props = defineProps({
     required: false,
     default: false,
   },
+  hightContrast: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 });
 
 const bgClass = computed(() =>
-  getBgClasses(props.color, props.variant, false),
+  getBgClasses(props.color, props.variant, props.hightContrast),
 );
 const fgClass = computed(() =>
-  getFgClasses(props.color, props.variant, false),
+  getFgClasses(props.color, props.variant, props.hightContrast),
 );
 
 const emit = defineEmits(["update:currentPage", "update:itemsPerPage"]);

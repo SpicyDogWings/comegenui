@@ -147,7 +147,7 @@ const props = defineProps({
     required: false,
     default: "soft",
     validator: (value: string) =>
-      ["outlined", "soft", "ghost", "subtle", "solid"].includes(value),
+      ["outlined", "soft", "ghost", "subtle", "solid", "link", "none"].includes(value),
   },
   // Search props
   searchEnabled: {
@@ -190,6 +190,11 @@ const props = defineProps({
     type: Array as () => ButtonConfig[],
     required: false,
     default: () => [],
+  },
+  hightContrast: {
+    type: Boolean,
+    required: false,
+    default: false,
   },
 });
 
@@ -357,8 +362,8 @@ const tableProps = computed(() => ({
 }));
 
 // Color classes using palette utilities
-const bgClass = computed(() => getBgClasses(props.color, props.variant, false));
-const fgClass = computed(() => getFgClasses(props.color, props.variant, false));
+const bgClass = computed(() => getBgClasses(props.color, props.variant, props.hightContrast));
+const fgClass = computed(() => getFgClasses(props.color, props.variant, props.hightContrast));
 
 // Map table variant to input variant (Input doesn't support "solid")
 const inputVariant = computed(() => {

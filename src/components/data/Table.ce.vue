@@ -91,7 +91,7 @@ const props = defineProps({
     required: false,
     default: "soft",
     validator: (value: string) =>
-      ["solid", "outlined", "soft", "ghost", "subtle", "link"].includes(value),
+      ["solid", "outlined", "soft", "ghost", "subtle", "link", "none"].includes(value),
   },
   searchEnabled: { type: Boolean, required: false, default: false },
   searchPlaceholder: { type: String, required: false, default: "Buscar..." },
@@ -100,6 +100,7 @@ const props = defineProps({
   filters: { type: Object as () => Record<string, any>, required: false, default: () => ({}) },
   loading: { type: Boolean, required: false, default: false },
   actions: { type: Array, required: false, default: () => [] },
+  hightContrast: { type: Boolean, required: false, default: false },
 });
 
 const effectiveTheme = computed(() => props.theme || getHostTheme());
@@ -154,6 +155,7 @@ defineExpose({
     :filters="props.filters"
     :loading="props.loading"
     :actions="props.actions"
+    :hight-contrast="props.hightContrast"
     @update:current-page="ceEmit('update:currentPage', $event)"
     @update:items-per-page="ceEmit('update:itemsPerPage', $event)"
     @update:search="ceEmit('update:search', $event)"
