@@ -21,7 +21,7 @@ export const themes = {
     success: '#28a745',
     warning: '#ffc107',
     danger: '#dc3545',
-    surface: '#111827',
+    surface: '#f5f5f5',
   },
 };
 
