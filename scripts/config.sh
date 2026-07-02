@@ -19,6 +19,10 @@ while true; do
   VAR_NAME="${SELECTED##*/}"
 
   case "$VAR_NAME" in
+    PM)
+      pm=$(pan choose -t "Package Manager" npm pnpm bun deno) || continue
+      NEW_VALUE="$pm"
+      ;;
     SOURCE_ZIP)
       NEW_VALUE=$(pan file "$(dirname "${!VAR_NAME:-.}")") || continue
       ;;
