@@ -9,7 +9,7 @@ pan confirm -t "Build Library" -m "¿Compilar la librería ComegenUI?" -y "Compi
   exit 0
 }
 
-pan spin -l -t "Compilando librería..." -a dots -- pnpm build:lib
+pan spin -l -t "Compilando librería..." -a dots -- $PM run build:lib
 
 if [ $? -eq 0 ]; then
   pan log info "Librería compilada correctamente"

@@ -1,7 +1,8 @@
-Library/Build
-Library/Move and Unzip
-Storybook Dev
+󱉟 Library/󰣪 Build
+󱉟 Library/󰆾 Move and Unzip
 
-Configuración
+󰒓 Configuración/󰞷 Administrador de paquetes
+󰒓 Configuración/󱁉 Source Zip Path
+󰒓 Configuración/󰉋 Destination Path
 
-Salir
+ Salir

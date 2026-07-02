@@ -84,7 +84,7 @@ defineExpose({
   open,
   close,
   toggle,
-  get isOpen() { return modalRef.value?.isOpen || false },
+  isOpen: () => modalRef.value?.isOpen || false,
 });
 </script>
 

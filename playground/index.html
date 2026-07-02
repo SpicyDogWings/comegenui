@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Playground — ComegenUI</title>
     <link rel="stylesheet" href="style.css" />
-    <script src="../dist/CuTable.umd.js?t=1"></script>
+    <script src="../dist/CuSelect.umd.js?t=1"></script>
 
     <!--
       ═══════════════════════════════════════════
@@ -35,23 +35,23 @@
 
     <div class="main">
       <div class="card" style="max-width: 800px">
-        <h2>Tabla con Select + Autocomplete editable</h2>
-        <p style="font-size:14px;opacity:.6;margin-bottom:16px">Clic en "Departamento" (autocomplete) o "Rol" (select).</p>
+        <h2>Select — probando temas</h2>
 
-        <cu-table
-          id="tabla"
-          search-enabled
-          search-placeholder="Buscar..."
-          pagination
-          items-per-page="8"
-          style="width:100%"
-        ></cu-table>
+        <div data-theme="light">
+          <cu-select id="selLight" placeholder="Light"></cu-select>
+        </div>
+        <div data-theme="dark">
+          <cu-select id="selDark" placeholder="Dark" color="primary"></cu-select>
+        </div>
+        <div data-theme="sigacadv2">
+          <cu-select id="selSIGACAD" placeholder="Sigacad v2" variant="soft"></cu-select>
+        </div>
 
         <div class="log-box" id="log">// Eventos</div>
       </div>
     </div>
 
     <script src="playground.js"></script>
-    <script src="examples/table.js"></script>
+    <script src="examples/select.js"></script>
   </body>
 </html>

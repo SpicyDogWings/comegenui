@@ -73,3 +73,4 @@ DropdownMenu.ts        → defineCustomElement("cu-dropdown-menu", DropdownMenu.
 4. Los `.ts` son siempre 3 líneas: import, define, export
 5. No usar `v-bind="{...props}"` en `.ce.vue` — pasar props explícitamente (como hace Table.ce.vue)
 6. **Slots:** los `.vue` usan `#nombre` (sintaxis Vue), los `.ce.vue` usan `slot="nombre"` (HTML nativo)
+7. **`defineExpose` en `.ce.vue`:** siempre usar arrow functions (`isOpen: () => ...`), **nunca** getters (`get isOpen() { ... }`). Los getters no se serializan correctamente al exponer el CE. Ver commit `a4e5d70` en Autocomplete.ce.vue como referencia.

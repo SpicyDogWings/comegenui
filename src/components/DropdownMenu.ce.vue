@@ -55,7 +55,7 @@ defineExpose({
   open: () => dropdownRef.value?.open(),
   close: () => dropdownRef.value?.close(),
   toggle: () => dropdownRef.value?.toggle(),
-  get isOpen() { return dropdownRef.value?.isOpen || false },
+  isOpen: () => dropdownRef.value?.isOpen || false,
 });
 </script>
 

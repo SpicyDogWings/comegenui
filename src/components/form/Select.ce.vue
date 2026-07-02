@@ -87,8 +87,8 @@ defineExpose({
   set: (val: string) => selectRef.value?.set(val),
   reset: () => selectRef.value?.reset(),
   focus: () => selectRef.value?.focus(),
-  get isOpen() { return selectRef.value?.isOpen || false },
-  get selectedItem() { return selectRef.value?.selectedItem || null },
+  isOpen: () => selectRef.value?.isOpen || false,
+  selectedItem: () => selectRef.value?.selectedItem || null,
 });
 </script>
 
