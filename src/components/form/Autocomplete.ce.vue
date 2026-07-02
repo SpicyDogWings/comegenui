@@ -77,8 +77,8 @@ defineExpose({
   get: () => autocompleteRef.value?.get(),
   set: (val: string) => autocompleteRef.value?.set(val),
   focus: () => autocompleteRef.value?.focus(),
-  get isOpen() { return autocompleteRef.value?.isOpen || false },
-  get selectedItem() { return autocompleteRef.value?.selectedItem || null },
+  isOpen: () => autocompleteRef.value?.isOpen || false,
+  selectedItem: () => autocompleteRef.value?.selectedItem || null,
 });
 </script>
 
