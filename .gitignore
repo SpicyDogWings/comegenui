@@ -43,3 +43,6 @@ scripts/config
 
 *storybook.log
 storybook-static
+
+# Pesonal
+.octo
