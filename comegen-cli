@@ -1,0 +1,61 @@
+#!/bin/bash
+
+# Dependencias
+for cmd in pan node; do
+  if ! command -v $cmd &> /dev/null; then
+    echo "$cmd no esta intalado"
+    exit 1
+  fi
+done
+
+# Constantes
+PROJECT_PATH="$(pwd)"
+MENU_PATH="$(mktemp /tmp/comegen_menu.XXXXXX)"
+MENU_ENTRY="$(mktemp /tmp/comegen_entry.XXXXXX)"
+PROJECT_NAME="$(basename $(pwd))"
+CONFIG_PACKAGE_MANAGER="npm"
+
+trap 'rm -f "$MENU_PATH"' EXIT
+
+# Iconos
+I_MACHINE="󱄔"
+I_TIMES=""
+
+# Funs
+## builds
+_build_menu() {
+  cat > "$MENU_PATH" <<EOF
+$I_MACHINE Build libreria
+$I_TIMES Close
+EOF
+}
+
+# Inicio
+_build_menu
+
+pan log info "Inicio"
+while true; do
+  pan menu -t "ComegenUI Cli Tool" "$MENU_PATH" > "$MENU_ENTRY" 2>/dev/null
+  read -r ENTRY < "$MENU_ENTRY"
+  case "$ENTRY" in
+    "$I_MACHINE Build libreria")
+      pan log info "Build de la librería iniciado"
+      pan spin -t "Buildeando al librería" -c "$CONFIG_PACKAGE_MANAGER run build:lib"
+      pan log info "Hecho"
+      ;;
+    "$I_TIMES Close")
+      pan log info "Saliendo del script"
+      break
+      ;;
+    *)
+      pan log error "Opcion no reconocida"
+      break
+      ;;
+  esac
+done
+
+
+
+
+
+
