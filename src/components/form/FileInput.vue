@@ -62,6 +62,7 @@ const props = defineProps({
 const fileInputRef = useTemplateRef<HTMLInputElement>("fileInput");
 const containerRef = useTemplateRef("container");
 const { focused: containerFocus } = useFocus(containerRef);
+const isDragOver = ref(false);
 
 const bgClass = computed(() =>
   getBgClasses(props.color, props.variant, props.hightContrast),
@@ -100,6 +101,25 @@ function removeFile() {
   if (fileInputRef.value) fileInputRef.value.value = "";
 }
 
+function onDragOver(e: DragEvent) {
+  if (props.disabled || props.readOnly) return;
+  e.preventDefault();
+  isDragOver.value = true;
+}
+
+function onDragLeave(e: DragEvent) {
+  e.preventDefault();
+  isDragOver.value = false;
+}
+
+function onDrop(e: DragEvent) {
+  e.preventDefault();
+  isDragOver.value = false;
+  if (props.disabled || props.readOnly) return;
+  const file = e.dataTransfer?.files?.[0];
+  if (file && isValidFile(file)) value.value = file;
+}
+
 function trigger() {
   if (props.disabled || props.readOnly) return;
   fileInputRef.value?.click();
@@ -123,7 +143,8 @@ defineExpose({ get, set, reset, focus, trigger });
     :class="{
       'cursor-not-allowed opacity-70 ph-op-50': props.disabled,
       'bg-[var(--btn-bg)]': true,
-      'hover:bg-[var(--btn-bg-hover)]': !props.disabled,
+      '!border-[var(--btn-fg)] bg-[var(--btn-bg-hover)]': isDragOver,
+      'hover:bg-[var(--btn-bg-hover)]': !props.disabled && !isDragOver,
       'bg-transparent border-solid border-1 border-[var(--btn-bd)]': props.variant === 'none',
       'bg-transparent border-solid border-2 border-[var(--btn-bd)] hover:bg-[var(--btn-bg-hover)]': props.variant === 'outlined',
       'hover:bg-[var(--btn-bg-hover)]': props.variant === 'soft' || props.variant === 'ghost',
@@ -136,9 +157,12 @@ defineExpose({ get, set, reset, focus, trigger });
       '--btn-bg-active': bgClass.active,
       '--btn-bd': fgClass.border || fgClass.main,
     }"
-    @click="value ? handleFileClick() : trigger()"
-    @keydown.enter="value ? handleFileClick() : trigger()"
-    @keydown.space.prevent="value ? handleFileClick() : trigger()"
+    @click="trigger"
+    @dragover="onDragOver"
+    @dragleave="onDragLeave"
+    @drop="onDrop"
+    @keydown.enter="trigger"
+    @keydown.space.prevent="trigger"
     tabindex="0"
     role="button"
     :aria-disabled="props.disabled"
