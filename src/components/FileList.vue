@@ -24,6 +24,11 @@ const props = defineProps({
     required: false,
     default: false,
   },
+  maxHeight: {
+    type: String,
+    required: false,
+    default: "",
+  },
   hightContrast: {
     type: Boolean,
     required: false,
@@ -67,7 +72,7 @@ const fileList = computed(() => {
 </script>
 
 <template>
-  <div v-if="fileList.length > 0" class="text-start w-full">
+  <div v-if="fileList.length > 0" class="text-start w-full" :style="{ maxHeight: props.maxHeight || undefined, overflowY: props.maxHeight ? 'auto' : 'visible' }">
     <div
       v-for="(file, i) in fileList"
       :key="i"

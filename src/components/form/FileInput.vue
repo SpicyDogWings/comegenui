@@ -59,6 +59,11 @@ const props = defineProps({
     required: false,
     default: 0,
   },
+  maxHeight: {
+    type: String,
+    required: false,
+    default: "",
+  },
   hightContrast: {
     type: Boolean,
     required: false,
@@ -328,6 +333,7 @@ defineExpose({ get, set, reset, focus, trigger });
       :files="value"
       :color="props.color"
       :disabled="props.disabled"
+      :max-height="props.maxHeight"
       :hight-contrast="props.hightContrast"
       @remove="removeFile"
       @select="handleFileClick"
