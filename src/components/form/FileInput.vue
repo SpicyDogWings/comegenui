@@ -266,7 +266,7 @@ defineExpose({ get, set, reset, focus, trigger });
 <template>
   <div
     ref="dropZone"
-    class="relative flex flex-col items-center justify-center gap-3 py-10 px-8 rounded-cu border-4 border-dashed cursor-pointer transition-all duration-200 min-h-[160px] font-sans select-none text-[var(--btn-fg)] focus:outline-none focus:ring-2 focus:ring-[var(--btn-bd)]"
+    class="relative flex flex-col gap-3 py-10 px-8 rounded-cu border-4 border-dashed cursor-pointer transition-all duration-200 min-h-[160px] font-sans select-none text-[var(--btn-fg)] focus:outline-none focus:ring-2 focus:ring-[var(--btn-bd)]"
     :class="{
       'cursor-not-allowed opacity-70 ph-op-50': props.disabled,
       'bg-[var(--btn-bg-hover)] !border-[var(--btn-fg)]': isDragOver,
@@ -274,6 +274,7 @@ defineExpose({ get, set, reset, focus, trigger });
       'hover:bg-[var(--btn-bg-hover)] hover:border-[var(--btn-fg)]': !props.disabled && !isDragOver,
       'bg-transparent border-none': props.variant === 'ghost',
       'bg-transparent': props.variant === 'none' || props.variant === 'outlined',
+      'items-center justify-center': fileList.length === 0,
       'items-start justify-start': fileList.length > 0,
     }"
     :style="{
