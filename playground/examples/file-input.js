@@ -21,6 +21,14 @@ fiMultiple.addEventListener('file-change', (e) => {
 
 const fiDisabled = document.getElementById('fiDisabled');
 
+const fiDirectory = document.getElementById('fiDirectory');
+fiDirectory.addEventListener('file-change', (e) => {
+  const files = e.detail;
+  if (files && Array.isArray(files)) {
+    logEvent(`Carpeta: ${files.length} archivos extraídos`);
+  }
+});
+
 const fiSoft = document.getElementById('fiSoft');
 fiSoft.addEventListener('file-change', (e) => {
   const files = e.detail;
