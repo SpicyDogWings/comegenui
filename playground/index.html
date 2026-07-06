@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Playground — ComegenUI</title>
     <link rel="stylesheet" href="style.css" />
-    <script src="../dist/CuSelect.umd.js?t=1"></script>
+    <script src="../dist/CuFileInput.umd.js?t=1"></script>
 
     <!--
       ═══════════════════════════════════════════
@@ -35,23 +35,28 @@
 
     <div class="main">
       <div class="card" style="max-width: 800px">
-        <h2>Select — probando temas</h2>
+        <h2>FileInput</h2>
 
-        <div data-theme="light">
-          <cu-select id="selLight" placeholder="Light"></cu-select>
-        </div>
-        <div data-theme="dark">
-          <cu-select id="selDark" placeholder="Dark" color="primary"></cu-select>
-        </div>
-        <div data-theme="sigacadv2">
-          <cu-select id="selSIGACAD" placeholder="Sigacad v2" variant="soft"></cu-select>
-        </div>
+        <h3 style="font-size:14px;font-weight:500;margin:12px 0 6px">Básico (neutral, none)</h3>
+        <cu-file-input id="fiBasic" placeholder="Arrastra un archivo o hace clic"></cu-file-input>
+
+        <h3 style="font-size:14px;font-weight:500;margin:12px 0 6px">Múltiple + accept (primary, outlined)</h3>
+        <cu-file-input id="fiMultiple" color="primary" variant="outlined" multiple accept="image/*" placeholder="Imágenes (múltiples)"></cu-file-input>
+
+        <h3 style="font-size:14px;font-weight:500;margin:12px 0 6px">Deshabilitado</h3>
+        <cu-file-input id="fiDisabled" disabled placeholder="Deshabilitado"></cu-file-input>
+
+        <h3 style="font-size:14px;font-weight:500;margin:12px 0 6px">Con variante soft (success)</h3>
+        <cu-file-input id="fiSoft" color="success" variant="soft" placeholder="Soft success"></cu-file-input>
+
+        <h3 style="font-size:14px;font-weight:500;margin:12px 0 6px">Max 1MB (danger, ghost)</h3>
+        <cu-file-input id="fiMaxSize" color="danger" variant="ghost" accept=".pdf,.doc,.docx" max-size="1048576" placeholder="PDF/DOC — máx 1MB"></cu-file-input>
 
         <div class="log-box" id="log">// Eventos</div>
       </div>
     </div>
 
     <script src="playground.js"></script>
-    <script src="examples/select.js"></script>
+    <script src="examples/file-input.js"></script>
   </body>
 </html>
