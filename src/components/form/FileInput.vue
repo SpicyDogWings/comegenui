@@ -48,12 +48,19 @@ const props = defineProps({
     type: Number,
     required: false,
   },
+  directory: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
   hightContrast: {
     type: Boolean,
     required: false,
     default: false,
   },
 });
+
+const effectiveMultiple = computed(() => props.multiple || props.directory);
 
 const isDragOver = ref(false);
 const dropZoneRef = useTemplateRef("dropZone");
@@ -81,17 +88,68 @@ function formatSize(bytes: number): string {
   return `${(bytes / Math.pow(1024, i)).toFixed(i === 0 ? 0 : 1)} ${units[i]}`;
 }
 
+function matchesAccept(file: File): boolean {
+  if (!props.accept) return true;
+  const patterns = props.accept.split(",").map((s) => s.trim());
+  return patterns.some((pattern) => {
+    if (pattern.startsWith(".")) {
+      return file.name.toLowerCase().endsWith(pattern.toLowerCase());
+    }
+    if (pattern.endsWith("/*")) {
+      return file.type.startsWith(pattern.slice(0, -1));
+    }
+    return file.type === pattern;
+  });
+}
+
 function isValidFile(file: File): boolean {
   if (file.size === 0 && !file.type) return false;
   if (props.maxSize && file.size > props.maxSize) return false;
+  if (!matchesAccept(file)) return false;
   return true;
+}
+
+function readDirectory(entry: FileSystemDirectoryEntry): Promise<File[]> {
+  return new Promise((resolve, reject) => {
+    const reader = entry.createReader();
+    const allEntries: FileSystemEntry[] = [];
+
+    function readBatch() {
+      reader.readEntries((entries) => {
+        if (entries.length === 0) {
+          resolve(processEntries(allEntries));
+        } else {
+          allEntries.push(...entries);
+          readBatch();
+        }
+      }, reject);
+    }
+
+    readBatch();
+  });
+}
+
+async function processEntries(entries: FileSystemEntry[]): Promise<File[]> {
+  const files: File[] = [];
+  for (const entry of entries) {
+    if (entry.isFile) {
+      const file = await new Promise<File>((resolve) =>
+        (entry as FileSystemFileEntry).file(resolve),
+      );
+      files.push(file);
+    } else if (entry.isDirectory) {
+      const subFiles = await readDirectory(entry as FileSystemDirectoryEntry);
+      files.push(...subFiles);
+    }
+  }
+  return files;
 }
 
 function setFiles(files: File[]) {
   if (props.disabled || props.readOnly) return;
   const validFiles = files.filter(isValidFile);
   if (validFiles.length === 0) return;
-  if (props.multiple) {
+  if (effectiveMultiple.value) {
     value.value = validFiles;
   } else {
     value.value = validFiles[0];
@@ -116,22 +174,40 @@ function onDragLeave(e: DragEvent) {
   isDragOver.value = false;
 }
 
-function onDrop(e: DragEvent) {
+async function onDrop(e: DragEvent) {
   e.preventDefault();
   isDragOver.value = false;
   if (props.disabled || props.readOnly) return;
 
   const items = e.dataTransfer?.items;
   if (items) {
-    const files: File[] = [];
+    const allFiles: File[] = [];
+    const promises: Promise<void>[] = [];
+
     for (let i = 0; i < items.length; i++) {
       const entry = items[i]?.webkitGetAsEntry?.();
-      if (entry?.isFile) {
+
+      if (!entry) {
         const file = items[i].getAsFile();
-        if (file) files.push(file);
+        if (file) allFiles.push(file);
+      } else if (entry.isFile) {
+        promises.push(new Promise((resolve) => {
+          (entry as FileSystemFileEntry).file((f) => {
+            allFiles.push(f);
+            resolve();
+          });
+        }));
+      } else if (entry.isDirectory && props.directory) {
+        promises.push(
+          readDirectory(entry as FileSystemDirectoryEntry).then((files) => {
+            allFiles.push(...files);
+          }),
+        );
       }
     }
-    if (files.length > 0) setFiles(files);
+
+    await Promise.all(promises);
+    if (allFiles.length > 0) setFiles(allFiles);
   }
 }
 
@@ -183,7 +259,8 @@ defineExpose({ get, set, reset, focus, trigger });
       ref="fileInput"
       type="file"
       :accept="props.accept"
-      :multiple="props.multiple"
+      :multiple="effectiveMultiple"
+      :webkitdirectory="props.directory || undefined"
       class="hidden"
       @change="handleFileSelect"
     />
