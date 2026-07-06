@@ -33,6 +33,7 @@ const props = defineProps({
 
 const emit = defineEmits<{
   remove: [index: number];
+  select: [index: number];
 }>();
 
 const fgClass = computed(() =>
@@ -66,12 +67,12 @@ const fileList = computed(() => {
 </script>
 
 <template>
-  <div v-if="fileList.length > 0" class="text-start w-full max-w-xs mx-auto">
+  <div v-if="fileList.length > 0" class="text-start w-full">
     <div
       v-for="(file, i) in fileList"
       :key="i"
-      class="flex items-center gap-2 px-3 py-1.5 text-sm rounded-cu"
-      :class="{ 'bg-[var(--btn-bg-hover)]': i % 2 === 0 }"
+      class="flex items-center gap-2 px-3 py-1.5 text-sm rounded-cu hover:bg-[var(--btn-bg-hover)] transition-colors duration-150 cursor-pointer"
+      @click.stop="emit('select', i)"
       :style="{
         '--btn-fg': fgClass.main,
         '--btn-bg-hover': bgClass.hover,

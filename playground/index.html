@@ -35,25 +35,9 @@
 
     <div class="main">
       <div class="card" style="max-width: 800px">
-        <h2>FileInput</h2>
+        <h2>FileInput — directorio</h2>
 
-        <h3 style="font-size:14px;font-weight:500;margin:12px 0 6px">Básico (neutral, none)</h3>
-        <cu-file-input id="fiBasic" placeholder="Arrastra un archivo o hace clic"></cu-file-input>
-
-        <h3 style="font-size:14px;font-weight:500;margin:12px 0 6px">Múltiple + accept (primary, outlined)</h3>
-        <cu-file-input id="fiMultiple" color="primary" variant="outlined" multiple accept="image/*" placeholder="Imágenes (múltiples)"></cu-file-input>
-
-        <h3 style="font-size:14px;font-weight:500;margin:12px 0 6px">Modo carpeta (warning, subtle)</h3>
-        <cu-file-input id="fiDirectory" color="warning" variant="subtle" directory max-depth="0" placeholder="Solo archivos directos de la carpeta"></cu-file-input>
-
-        <h3 style="font-size:14px;font-weight:500;margin:12px 0 6px">Deshabilitado</h3>
-        <cu-file-input id="fiDisabled" disabled placeholder="Deshabilitado"></cu-file-input>
-
-        <h3 style="font-size:14px;font-weight:500;margin:12px 0 6px">Con variante soft (success)</h3>
-        <cu-file-input id="fiSoft" color="success" variant="soft" placeholder="Soft success"></cu-file-input>
-
-        <h3 style="font-size:14px;font-weight:500;margin:12px 0 6px">Max 1MB (danger, ghost)</h3>
-        <cu-file-input id="fiMaxSize" color="danger" variant="ghost" accept=".pdf,.doc,.docx" max-size="1048576" placeholder="PDF/DOC — máx 1MB"></cu-file-input>
+        <cu-file-input id="fiDir" directory max-depth="0" placeholder="Selecciona o arrastra una carpeta"></cu-file-input>
 
         <div class="log-box" id="log">// Eventos</div>
       </div>

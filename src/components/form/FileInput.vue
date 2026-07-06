@@ -165,11 +165,20 @@ function setFiles(files: File[]) {
   }
 }
 
-function handleFileSelect(event: Event) {
+function handleInputChange(event: Event) {
   const input = event.target as HTMLInputElement;
   if (input.files && input.files.length > 0) {
     setFiles(Array.from(input.files));
   }
+}
+
+function handleFileClick(index: number) {
+  const files = fileList.value;
+  const file = files[index];
+  if (!file) return;
+  const url = URL.createObjectURL(file);
+  window.open(url, "_blank");
+  setTimeout(() => URL.revokeObjectURL(url), 10000);
 }
 
 function onDragOver(e: DragEvent) {
@@ -286,7 +295,7 @@ defineExpose({ get, set, reset, focus, trigger });
       :multiple="effectiveMultiple"
       :webkitdirectory="props.directory || undefined"
       class="hidden"
-      @change="handleFileSelect"
+      @change="handleInputChange"
     />
 
     <svg
@@ -321,6 +330,7 @@ defineExpose({ get, set, reset, focus, trigger });
       :disabled="props.disabled"
       :hight-contrast="props.hightContrast"
       @remove="removeFile"
+      @select="handleFileClick"
     />
   </div>
 </template>
