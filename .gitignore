@@ -44,5 +44,9 @@ scripts/config
 *storybook.log
 storybook-static
 
+# agents
+.agents
+.opencode
+
 # Pesonal
 .octo
