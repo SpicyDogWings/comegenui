@@ -54,7 +54,7 @@ const props = defineProps({
     required: false,
     default: false,
   },
-  maxDepth: {
+  directoryDeep: {
     type: Number,
     required: false,
     default: 0,
@@ -155,11 +155,11 @@ async function processEntries(entries: FileSystemEntry[], depth: number): Promis
 function setFiles(files: File[]) {
   if (props.disabled || props.readOnly) return;
   let validFiles = files.filter(isValidFile);
-  if (props.directory && props.maxDepth >= 0) {
+  if (props.directory && props.directoryDeep >= 0) {
     validFiles = validFiles.filter((f) => {
       if (!f.webkitRelativePath) return true;
       const subdirLevels = f.webkitRelativePath.split("/").length - 2;
-      return subdirLevels <= props.maxDepth;
+      return subdirLevels <= props.directoryDeep;
     });
   }
   if (validFiles.length === 0) return;
@@ -222,7 +222,7 @@ async function onDrop(e: DragEvent) {
         }));
       } else if (entry.isDirectory && props.directory) {
         promises.push(
-          readDirectory(entry as FileSystemDirectoryEntry, props.maxDepth).then((files) => {
+          readDirectory(entry as FileSystemDirectoryEntry, props.directoryDeep).then((files) => {
             allFiles.push(...files);
           }),
         );
