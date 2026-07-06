@@ -3,6 +3,7 @@ import { computed, ref, watch, onUnmounted, useTemplateRef } from "vue";
 import { getBgClasses, getFgClasses } from "../../utils/palette";
 import { useFocus } from "@vueuse/core";
 import Button from "../Button.vue";
+import { getFileIconSvg, formatFileSize } from "../../utils/fileIcons";
 
 const value = defineModel<File | null>({ default: null });
 
@@ -68,13 +69,6 @@ const bgClass = computed(() =>
 const fgClass = computed(() =>
   getFgClasses(props.color, props.variant, props.hightContrast),
 );
-
-function formatSize(bytes: number): string {
-  if (bytes === 0) return "0 B";
-  const units = ["B", "KB", "MB", "GB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(1024));
-  return `${(bytes / Math.pow(1024, i)).toFixed(i === 0 ? 0 : 1)} ${units[i]}`;
-}
 
 function matchesAccept(file: File): boolean {
   if (!props.accept) return true;
@@ -177,8 +171,10 @@ defineExpose({ get, set, reset, focus, trigger });
 
     <span v-if="!value" class="flex-1 truncate opacity-60 text-[var(--btn-fg)]">{{ props.placeholder }}</span>
 
+    <span v-if="value" v-html="getFileIconSvg(value, 16)" class="shrink-0"></span>
+
     <Button
-      v-else
+      v-if="value"
       :to="fileUrl"
       target="_blank"
       :color="props.color"
@@ -189,7 +185,7 @@ defineExpose({ get, set, reset, focus, trigger });
       {{ value.name }}
     </Button>
 
-    <span v-if="value" class="shrink-0 opacity-80 text-xs whitespace-nowrap text-[var(--btn-fg)]">{{ formatSize(value.size) }}</span>
+    <span v-if="value" class="shrink-0 opacity-80 text-xs whitespace-nowrap text-[var(--btn-fg)]">{{ formatFileSize(value.size) }}</span>
 
     <Button
       v-if="value && !props.disabled"
