@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch, getCurrentInstance } from "vue";
-import FileInput from "./FileInput.vue";
+import FileInputZone from "./FileInputZone.vue";
 import { getColorMap } from "../../utils/palette";
 import { getHostTheme } from "../../utils/getHostTheme";
 import { isValidTheme } from "../../config/theme";
@@ -49,9 +49,29 @@ const props = defineProps({
     type: String,
     required: false,
   },
+  multiple: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
   maxSize: {
     type: Number,
     required: false,
+  },
+  directory: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
+  directoryDeep: {
+    type: Number,
+    required: false,
+    default: 0,
+  },
+  maxHeight: {
+    type: String,
+    required: false,
+    default: "",
   },
   hightContrast: {
     type: Boolean,
@@ -67,7 +87,7 @@ const hexColor = computed(() => {
 });
 
 const innerValue = ref(props.modelValue);
-const fileInputRef = ref<InstanceType<typeof FileInput> | null>(null);
+const fileInputRef = ref<InstanceType<typeof FileInputZone> | null>(null);
 const instance = getCurrentInstance();
 
 watch(() => props.modelValue, (val) => {
@@ -96,7 +116,7 @@ function ceEmit(event: string, payload: unknown) {
 
 defineExpose({
   get: () => fileInputRef.value?.get(),
-  set: (value: File | null) => fileInputRef.value?.set(value),
+  set: (value: File | File[] | null) => fileInputRef.value?.set(value),
   reset: () => fileInputRef.value?.reset(),
   focus: () => fileInputRef.value?.focus(),
   trigger: () => fileInputRef.value?.trigger(),
@@ -104,7 +124,7 @@ defineExpose({
 </script>
 
 <template>
-  <FileInput
+  <FileInputZone
     ref="fileInputRef"
     :color="hexColor"
     :variant="props.variant"
@@ -112,7 +132,11 @@ defineExpose({
     :disabled="props.disabled"
     :read-only="props.readOnly"
     :accept="props.accept"
+    :multiple="props.multiple"
     :max-size="props.maxSize"
+    :directory="props.directory"
+    :directory-deep="props.directoryDeep"
+    :max-height="props.maxHeight"
     :hight-contrast="props.hightContrast"
     :model-value="innerValue"
   />
