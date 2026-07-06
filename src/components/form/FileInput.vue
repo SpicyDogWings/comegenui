@@ -243,7 +243,7 @@ defineExpose({ get, set, reset, focus, trigger });
 <template>
   <div
     ref="dropZone"
-    class="relative flex flex-col items-center justify-center gap-3 py-10 px-6 rounded-cu border-2 border-dashed cursor-pointer transition-all duration-200 min-h-[160px] font-sans select-none focus:outline-none focus:ring-2 focus:ring-[var(--btn-bd)]"
+    class="relative flex flex-col items-center justify-center gap-3 py-10 px-8 rounded-cu border-4 border-dashed cursor-pointer transition-all duration-200 min-h-[160px] font-sans select-none text-[var(--btn-fg)] focus:outline-none focus:ring-2 focus:ring-[var(--btn-bd)]"
     :class="{
       'cursor-not-allowed opacity-70 ph-op-50': props.disabled,
       'bg-[var(--btn-bg-hover)] !border-[var(--btn-fg)]': isDragOver,
@@ -256,7 +256,7 @@ defineExpose({ get, set, reset, focus, trigger });
       '--btn-bg': bgClass.main,
       '--btn-bg-hover': bgClass.hover,
       '--btn-bg-active': bgClass.active,
-      '--btn-bd': fgClass.border,
+      '--btn-bd': fgClass.border || fgClass.main,
     }"
     @dragover="onDragOver"
     @dragleave="onDragLeave"
