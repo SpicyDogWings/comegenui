@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, useTemplateRef } from "vue";
 import { getBgClasses, getFgClasses } from "../../utils/palette";
+import { useFocus } from "@vueuse/core";
 
 const value = defineModel<File | File[] | null>({ default: null });
 
@@ -55,8 +56,9 @@ const props = defineProps({
 });
 
 const isDragOver = ref(false);
-const fileInputRef = useTemplateRef<HTMLInputElement>("fileInput");
 const dropZoneRef = useTemplateRef("dropZone");
+const { focused: dropFocus } = useFocus(dropZoneRef);
+const fileInputRef = useTemplateRef<HTMLInputElement>("fileInput");
 
 const bgClass = computed(() =>
   getBgClasses(props.color, props.variant, props.hightContrast),
@@ -80,15 +82,14 @@ function formatSize(bytes: number): string {
 }
 
 function isValidFile(file: File): boolean {
-  if (props.maxSize && file.size > props.maxSize) {
-    return false;
-  }
+  if (file.size === 0 && !file.type) return false;
+  if (props.maxSize && file.size > props.maxSize) return false;
   return true;
 }
 
-function setFiles(files: FileList) {
+function setFiles(files: File[]) {
   if (props.disabled || props.readOnly) return;
-  const validFiles = Array.from(files).filter(isValidFile);
+  const validFiles = files.filter(isValidFile);
   if (validFiles.length === 0) return;
   if (props.multiple) {
     value.value = validFiles;
@@ -100,7 +101,7 @@ function setFiles(files: FileList) {
 function handleFileSelect(event: Event) {
   const input = event.target as HTMLInputElement;
   if (input.files && input.files.length > 0) {
-    setFiles(input.files);
+    setFiles(Array.from(input.files));
   }
 }
 
@@ -118,8 +119,19 @@ function onDragLeave(e: DragEvent) {
 function onDrop(e: DragEvent) {
   e.preventDefault();
   isDragOver.value = false;
-  if (e.dataTransfer?.files && e.dataTransfer.files.length > 0) {
-    setFiles(e.dataTransfer.files);
+  if (props.disabled || props.readOnly) return;
+
+  const items = e.dataTransfer?.items;
+  if (items) {
+    const files: File[] = [];
+    for (let i = 0; i < items.length; i++) {
+      const entry = items[i]?.webkitGetAsEntry?.();
+      if (entry?.isFile) {
+        const file = items[i].getAsFile();
+        if (file) files.push(file);
+      }
+    }
+    if (files.length > 0) setFiles(files);
   }
 }
 
@@ -134,7 +146,7 @@ const reset = () => {
   value.value = null;
   if (fileInputRef.value) fileInputRef.value.value = "";
 };
-const focus = () => fileInputRef.value?.focus();
+const focus = () => { dropFocus.value = true; };
 
 defineExpose({ get, set, reset, focus, trigger });
 </script>
@@ -142,7 +154,7 @@ defineExpose({ get, set, reset, focus, trigger });
 <template>
   <div
     ref="dropZone"
-    class="relative flex flex-col items-center justify-center gap-3 py-10 px-6 rounded-cu border-2 border-dashed cursor-pointer transition-all duration-200 min-h-[160px] font-sans select-none"
+    class="relative flex flex-col items-center justify-center gap-3 py-10 px-6 rounded-cu border-2 border-dashed cursor-pointer transition-all duration-200 min-h-[160px] font-sans select-none focus:outline-none focus:ring-2 focus:ring-[var(--btn-bd)]"
     :class="{
       'cursor-not-allowed opacity-70 ph-op-50': props.disabled,
       'bg-[var(--btn-bg-hover)] !border-[var(--btn-fg)]': isDragOver,
@@ -177,20 +189,21 @@ defineExpose({ get, set, reset, focus, trigger });
     />
 
     <svg
+      v-if="fileList.length === 0"
       xmlns="http://www.w3.org/2000/svg"
       width="40"
       height="40"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      stroke-width="1.5"
+      stroke-width="2"
       stroke-linecap="round"
       stroke-linejoin="round"
       class="text-[var(--btn-fg)] opacity-60 shrink-0"
     >
+      <path d="M12 3v12" />
+      <path d="m17 8-5-5-5 5" />
       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-      <polyline points="17 8 12 3 7 8" />
-      <line x1="12" y1="3" x2="12" y2="15" />
     </svg>
 
     <div v-if="fileList.length === 0" class="text-center">
@@ -204,10 +217,25 @@ defineExpose({ get, set, reset, focus, trigger });
       <div
         v-for="(file, i) in fileList"
         :key="i"
-        class="flex items-center justify-between gap-2 px-3 py-1.5 text-sm text-[var(--btn-fg)] rounded-cu"
+        class="flex items-center gap-2 px-3 py-1.5 text-sm text-[var(--btn-fg)] rounded-cu"
         :class="{ 'bg-[var(--btn-bg-hover)]': i % 2 === 0 }"
       >
-        <span class="truncate font-medium">{{ file.name }}</span>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="shrink-0 opacity-60"
+        >
+          <path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z" />
+          <path d="M14 2v5a1 1 0 0 0 1 1h5" />
+        </svg>
+        <span class="truncate font-medium flex-1 min-w-0">{{ file.name }}</span>
         <span class="shrink-0 opacity-60 text-xs whitespace-nowrap">{{ formatSize(file.size) }}</span>
       </div>
     </div>
