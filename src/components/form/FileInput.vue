@@ -139,23 +139,23 @@ defineExpose({ get, set, reset, focus, trigger });
 <template>
   <div
     ref="container"
-    class="flex items-center gap-2 py-2 px-3 rounded-cu font-sans text-sm cursor-pointer transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[var(--btn-bd)]"
+    class="flex items-center gap-2 py-2 px-3 rounded-cu font-sans border-none text-sm cursor-pointer transition-all duration-200 focus:outline-none focus:ring-2 w-full bg-[var(--btn-bg)] box-border text-[var(--btn-fg)]"
     :class="{
+      'focus:ring-[var(--btn-bd)]': true,
       'cursor-not-allowed opacity-70 ph-op-50': props.disabled,
-      'bg-[var(--btn-bg)]': true,
       '!border-[var(--btn-fg)] bg-[var(--btn-bg-hover)]': isDragOver,
       'hover:bg-[var(--btn-bg-hover)]': !props.disabled && !isDragOver,
       'bg-transparent border-solid border-1 border-[var(--btn-bd)]': props.variant === 'none',
       'bg-transparent border-solid border-2 border-[var(--btn-bd)] hover:bg-[var(--btn-bg-hover)]': props.variant === 'outlined',
       'hover:bg-[var(--btn-bg-hover)]': props.variant === 'soft' || props.variant === 'ghost',
-      'bg-transparent border-solid border-1 border-[var(--btn-bd)]': props.variant === 'subtle',
+      'border-solid border-1 border-[var(--btn-bd)]': props.variant === 'subtle',
     }"
     :style="{
       '--btn-fg': fgClass.main,
       '--btn-bg': bgClass.main,
       '--btn-bg-hover': bgClass.hover,
       '--btn-bg-active': bgClass.active,
-      '--btn-bd': fgClass.border || fgClass.main,
+      '--btn-bd': fgClass.border,
     }"
     @click="trigger"
     @dragover="onDragOver"
