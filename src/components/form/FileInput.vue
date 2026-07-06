@@ -249,7 +249,8 @@ defineExpose({ get, set, reset, focus, trigger });
       'bg-[var(--btn-bg-hover)] !border-[var(--btn-fg)]': isDragOver,
       'bg-[var(--btn-bg)] border-[var(--btn-bd)]': !isDragOver,
       'hover:bg-[var(--btn-bg-hover)] hover:border-[var(--btn-fg)]': !props.disabled && !isDragOver,
-      'bg-transparent': props.variant === 'none' || props.variant === 'ghost' || props.variant === 'outlined',
+      'bg-transparent border-none': props.variant === 'ghost',
+      'bg-transparent': props.variant === 'none' || props.variant === 'outlined',
     }"
     :style="{
       '--btn-fg': fgClass.main,
