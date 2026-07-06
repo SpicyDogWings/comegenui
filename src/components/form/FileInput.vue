@@ -54,6 +54,11 @@ const props = defineProps({
     required: false,
     default: false,
   },
+  maxDepth: {
+    type: Number,
+    required: false,
+    default: 0,
+  },
   hightContrast: {
     type: Boolean,
     required: false,
@@ -103,7 +108,7 @@ function isValidFile(file: File): boolean {
   return true;
 }
 
-function readDirectory(entry: FileSystemDirectoryEntry): Promise<File[]> {
+function readDirectory(entry: FileSystemDirectoryEntry, depth: number): Promise<File[]> {
   return new Promise((resolve, reject) => {
     const reader = entry.createReader();
     const allEntries: FileSystemEntry[] = [];
@@ -111,7 +116,7 @@ function readDirectory(entry: FileSystemDirectoryEntry): Promise<File[]> {
     function readBatch() {
       reader.readEntries((entries) => {
         if (entries.length === 0) {
-          resolve(processEntries(allEntries));
+          resolve(processEntries(allEntries, depth));
         } else {
           allEntries.push(...entries);
           readBatch();
@@ -123,7 +128,7 @@ function readDirectory(entry: FileSystemDirectoryEntry): Promise<File[]> {
   });
 }
 
-async function processEntries(entries: FileSystemEntry[]): Promise<File[]> {
+async function processEntries(entries: FileSystemEntry[], depth: number): Promise<File[]> {
   const files: File[] = [];
   for (const entry of entries) {
     if (entry.isFile) {
@@ -132,8 +137,11 @@ async function processEntries(entries: FileSystemEntry[]): Promise<File[]> {
       );
       files.push(file);
     } else if (entry.isDirectory) {
-      const subFiles = await readDirectory(entry as FileSystemDirectoryEntry);
-      files.push(...subFiles);
+      if (depth < 0 || depth > 0) {
+        const next = depth < 0 ? -1 : depth - 1;
+        const subFiles = await readDirectory(entry as FileSystemDirectoryEntry, next);
+        files.push(...subFiles);
+      }
     }
   }
   return files;
@@ -141,7 +149,14 @@ async function processEntries(entries: FileSystemEntry[]): Promise<File[]> {
 
 function setFiles(files: File[]) {
   if (props.disabled || props.readOnly) return;
-  const validFiles = files.filter(isValidFile);
+  let validFiles = files.filter(isValidFile);
+  if (props.directory && props.maxDepth >= 0) {
+    validFiles = validFiles.filter((f) => {
+      if (!f.webkitRelativePath) return true;
+      const subdirLevels = f.webkitRelativePath.split("/").length - 2;
+      return subdirLevels <= props.maxDepth;
+    });
+  }
   if (validFiles.length === 0) return;
   if (effectiveMultiple.value) {
     value.value = validFiles;
@@ -193,7 +208,7 @@ async function onDrop(e: DragEvent) {
         }));
       } else if (entry.isDirectory && props.directory) {
         promises.push(
-          readDirectory(entry as FileSystemDirectoryEntry).then((files) => {
+          readDirectory(entry as FileSystemDirectoryEntry, props.maxDepth).then((files) => {
             allFiles.push(...files);
           }),
         );

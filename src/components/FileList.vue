@@ -79,12 +79,12 @@ const fileList = computed(() => {
     >
       <span v-html="getFileIcon(file)"></span>
       <span class="truncate font-medium flex-1 min-w-0 text-[var(--btn-fg)]">{{ file.name }}</span>
-      <span class="shrink-0 opacity-60 text-xs whitespace-nowrap text-[var(--btn-fg)]">{{ formatSize(file.size) }}</span>
+      <span class="shrink-0 opacity-80 text-xs whitespace-nowrap text-[var(--btn-fg)]">{{ formatSize(file.size) }}</span>
       <Button
         v-if="!props.disabled"
         :color="props.color"
         variant="ghost"
-        class="!p-0.5 !min-w-0 !h-auto !gap-0 shrink-0 opacity-50 hover:opacity-100"
+        class="!p-0.5 !min-w-0 !h-auto !gap-0 shrink-0 opacity-70 hover:opacity-100"
         @click.stop="emit('remove', i)"
       >
         <svg

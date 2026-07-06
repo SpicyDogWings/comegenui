@@ -63,6 +63,11 @@ const props = defineProps({
     required: false,
     default: false,
   },
+  maxDepth: {
+    type: Number,
+    required: false,
+    default: 0,
+  },
   hightContrast: {
     type: Boolean,
     required: false,
@@ -125,6 +130,7 @@ defineExpose({
     :multiple="props.multiple"
     :max-size="props.maxSize"
     :directory="props.directory"
+    :max-depth="props.maxDepth"
     :hight-contrast="props.hightContrast"
     :model-value="innerValue"
   />
