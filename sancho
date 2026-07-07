@@ -49,7 +49,7 @@ recent_paths() {
   case "$RECENT_OR_NEW" in
     "$I_RECENT Recientes")
       readarray -t OPTIONS < <(grep -v "^[[:space:]]*$" "$RECENT_PATHS_FILE_TARGET")
-      PROJECT_TO_COPY_PATH=$(pan filter "${OPTIONS[@]}")
+      PROJECT_TO_COPY_PATH=$(pan filter -t "Path recientes" "${OPTIONS[@]}")
       if [[ -z "$PROJECT_TO_COPY_PATH" ]]; then
         pan log error "Path no seleccionado"
         if pan confirm -t "El path esta vacio" -m "No se reconoce el path, acción cancelada. Deseas volver a menu principal?" -y "Volver" -n "Salir"; then
