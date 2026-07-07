@@ -40,18 +40,15 @@ $I_TIMES Close
 EOF
 }
 
-_build_y_copiar() {
-  local SECCION_HEADER="$HEADER_TITLE > $I_COPY Copiar lib"
-  local PROJECT_TO_COPY_PATH
+recent_paths() {
   local RECENT_OR_NEW
+  local INIT_PATH="$ROOT_PATH"
+  local RECENT_PATHS_FILE_TARGET="$RECENT_PATHS_FILE"
   local SELECTED
-  pan log info "Build de la librería iniciado"
-  pan spin -t "Buildeando la librería" -c "$CONFIG_PACKAGE_MANAGER run build:lib"
-  pan log info "Build hecho"
-  RECENT_OR_NEW=$(pan choose -t "$SECCION_HEADER > Path" "$I_RECENT Recientes" "$I_FOLDER Nuevo path")
+  RECENT_OR_NEW=$(pan choose -t "$1 > Path" "$I_RECENT Recientes" "$I_FOLDER Nuevo path")
   case "$RECENT_OR_NEW" in
     "$I_RECENT Recientes")
-      readarray -t OPTIONS < <(grep -v "^[[:space:]]*$" "$RECENT_PATHS_FILE")
+      readarray -t OPTIONS < <(grep -v "^[[:space:]]*$" "$RECENT_PATHS_FILE_TARGET")
       PROJECT_TO_COPY_PATH=$(pan filter "${OPTIONS[@]}")
       if [[ -z "$PROJECT_TO_COPY_PATH" ]]; then
         pan log error "Path no seleccionado"
@@ -61,11 +58,10 @@ _build_y_copiar() {
           exit 0
         fi
       fi
-      echo "$PROJECT_TO_COPY_PATH" >> "$RECENT_PATHS_FILE"
       SELECTED="$PROJECT_TO_COPY_PATH"
       ;;
     "$I_FOLDER Nuevo path")
-      PROJECT_TO_COPY_PATH=$(pan file -d "$ROOT_PATH")
+      PROJECT_TO_COPY_PATH=$(pan file -d "$INIT_PATH")
       if [[ -z $PROJECT_TO_COPY_PATH ]]; then
         pan log error "Path no seleccionado"
         if pan confirm -t "El path esta vacio" -m "No se reconoce el path, acción cancelada. Deseas volver a menu principal?" -y "Volver" -n "Salir"; then
@@ -74,12 +70,20 @@ _build_y_copiar() {
           exit 0
         fi
       fi
-      echo "$PROJECT_TO_COPY_PATH" >> "$RECENT_PATHS_FILE"
+      echo "$PROJECT_TO_COPY_PATH" >> "$RECENT_PATHS_FILE_TARGET"
       SELECTED="$PROJECT_TO_COPY_PATH"
       ;;
   esac
+  echo "$SELECTED"
+}
+
+_build_y_copiar() {
+  local SECCION_HEADER="$HEADER_TITLE > $I_COPY Copiar lib"
+  local SELECTED
+  SELECTED="$(recent_paths "$SECCION_HEADER")"
   pan log info "Extrayendo la librería"
   pan spin -c "unzip $BUILD_PATH -d $SELECTED"
+  pan log info "Extracción hecha"
 }
 
 # Inicio
