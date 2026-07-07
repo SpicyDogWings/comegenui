@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Dependencias
-for cmd in pan node; do
+for cmd in pan node unzip; do
   if ! command -v $cmd &> /dev/null; then
     echo "$cmd no esta intalado"
     exit 1
@@ -11,35 +11,75 @@ done
 # Constantes
 ROOT_PATH="$HOME"
 PROJECT_PATH="$(pwd)"
+BUILD_FILE="comegenui.zip"
+BUILD_PATH="$PROJECT_PATH/dist/$BUILD_FILE"
 MENU_PATH="$(mktemp /tmp/comegen_menu.XXXXXX)"
 MENU_ENTRY="$(mktemp /tmp/comegen_entry.XXXXXX)"
 PROJECT_NAME="$(basename $(pwd))"
 CONFIG_PACKAGE_MANAGER="npm"
+RECENT_PATHS="$HOME/.local/share/sancho/comegenui" && mkdir -p "$RECENT_PATHS"
+RECENT_PATHS_FILE="$RECENT_PATHS/recent-paths.list" && touch "$RECENT_PATHS_FILE"
+HEADER_TITLE="ComegenUI Cli Tool"
 
 trap 'rm -f "$MENU_PATH"' EXIT
 
 # Iconos
 I_MACHINE="󱄔"
 I_TIMES=""
+I_RECENT=""
+I_FOLDER=""
+I_COPY=""
 
 # Funs
 ## builds
 build_menu() {
   cat > "$MENU_PATH" <<EOF
 $I_MACHINE Build libreria
-$I_MACHINE Copiar libreria en proyecto
+$I_COPY Copiar libreria en proyecto
 $I_TIMES Close
 EOF
 }
 
 _build_y_copiar() {
-  local PROJECT_PATH
+  local SECCION_HEADER="$HEADER_TITLE > $I_COPY Copiar lib"
+  local PROJECT_TO_COPY_PATH
+  local RECENT_OR_NEW
+  local SELECTED
   pan log info "Build de la librería iniciado"
-  pan log debug "Saltando build temporalmente"
-  #pan spin -t "Buildeando la librería" -c "$CONFIG_PACKAGE_MANAGER run build:lib"
-  PROJECT_PATH=$(pan file -d "$ROOT_PATH")
-  pan log info "$PROJECT_PATH"
+  pan spin -t "Buildeando la librería" -c "$CONFIG_PACKAGE_MANAGER run build:lib"
   pan log info "Build hecho"
+  RECENT_OR_NEW=$(pan choose -t "$SECCION_HEADER > Path" "$I_RECENT Recientes" "$I_FOLDER Nuevo path")
+  case "$RECENT_OR_NEW" in
+    "$I_RECENT Recientes")
+      readarray -t OPTIONS < <(grep -v "^[[:space:]]*$" "$RECENT_PATHS_FILE")
+      PROJECT_TO_COPY_PATH=$(pan filter "${OPTIONS[@]}")
+      if [[ -z "$PROJECT_TO_COPY_PATH" ]]; then
+        pan log error "Path no seleccionado"
+        if pan confirm -t "El path esta vacio" -m "No se reconoce el path, acción cancelada. Deseas volver a menu principal?" -y "Volver" -n "Salir"; then
+          return 1
+        else
+          exit 0
+        fi
+      fi
+      echo "$PROJECT_TO_COPY_PATH" >> "$RECENT_PATHS_FILE"
+      SELECTED="$PROJECT_TO_COPY_PATH"
+      ;;
+    "$I_FOLDER Nuevo path")
+      PROJECT_TO_COPY_PATH=$(pan file -d "$ROOT_PATH")
+      if [[ -z $PROJECT_TO_COPY_PATH ]]; then
+        pan log error "Path no seleccionado"
+        if pan confirm -t "El path esta vacio" -m "No se reconoce el path, acción cancelada. Deseas volver a menu principal?" -y "Volver" -n "Salir"; then
+          return 1
+        else
+          exit 0
+        fi
+      fi
+      echo "$PROJECT_TO_COPY_PATH" >> "$RECENT_PATHS_FILE"
+      SELECTED="$PROJECT_TO_COPY_PATH"
+      ;;
+  esac
+  pan log info "Extrayendo la librería"
+  pan spin -c "unzip $BUILD_PATH -d $SELECTED"
 }
 
 # Inicio
@@ -47,7 +87,7 @@ build_menu
 
 pan log info "Inicio"
 while true; do
-  pan menu -t "ComegenUI Cli Tool" "$MENU_PATH" > "$MENU_ENTRY" 2>/dev/null
+  pan menu -t "$HEADER_TITLE" "$MENU_PATH" > "$MENU_ENTRY" 2>/dev/null
   read -r ENTRY < "$MENU_ENTRY"
   case "$ENTRY" in
     "$I_MACHINE Build libreria")
@@ -55,10 +95,9 @@ while true; do
       pan spin -t "Buildeando la librería" -c "$CONFIG_PACKAGE_MANAGER run build:lib"
       pan log info "Build hecho"
       ;;
-    "$I_MACHINE Copiar libreria en proyecto")
+    "$I_COPY Copiar libreria en proyecto")
       pan log info "Copiando la librería en un proyecto externo"
       _build_y_copiar
-      break
       ;;
     "$I_TIMES Close")
       pan log info "Saliendo del script"
