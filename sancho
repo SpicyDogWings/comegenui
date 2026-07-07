@@ -9,6 +9,7 @@ for cmd in pan node; do
 done
 
 # Constantes
+ROOT_PATH="$HOME"
 PROJECT_PATH="$(pwd)"
 MENU_PATH="$(mktemp /tmp/comegen_menu.XXXXXX)"
 MENU_ENTRY="$(mktemp /tmp/comegen_entry.XXXXXX)"
@@ -23,15 +24,26 @@ I_TIMES=""
 
 # Funs
 ## builds
-_build_menu() {
+build_menu() {
   cat > "$MENU_PATH" <<EOF
 $I_MACHINE Build libreria
+$I_MACHINE Copiar libreria en proyecto
 $I_TIMES Close
 EOF
 }
 
+_build_y_copiar() {
+  local PROJECT_PATH
+  pan log info "Build de la librería iniciado"
+  pan log debug "Saltando build temporalmente"
+  #pan spin -t "Buildeando la librería" -c "$CONFIG_PACKAGE_MANAGER run build:lib"
+  PROJECT_PATH=$(pan file -d "$ROOT_PATH")
+  pan log info "$PROJECT_PATH"
+  pan log info "Build hecho"
+}
+
 # Inicio
-_build_menu
+build_menu
 
 pan log info "Inicio"
 while true; do
@@ -40,8 +52,13 @@ while true; do
   case "$ENTRY" in
     "$I_MACHINE Build libreria")
       pan log info "Build de la librería iniciado"
-      pan spin -t "Buildeando al librería" -c "$CONFIG_PACKAGE_MANAGER run build:lib"
-      pan log info "Hecho"
+      pan spin -t "Buildeando la librería" -c "$CONFIG_PACKAGE_MANAGER run build:lib"
+      pan log info "Build hecho"
+      ;;
+    "$I_MACHINE Copiar libreria en proyecto")
+      pan log info "Copiando la librería en un proyecto externo"
+      _build_y_copiar
+      break
       ;;
     "$I_TIMES Close")
       pan log info "Saliendo del script"
