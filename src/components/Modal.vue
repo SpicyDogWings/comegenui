@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import { useMagicKeys, whenever } from "@vueuse/core";
-import { getColorMap } from "../utils/palette";
+import { getBgClasses, getFgClasses, getColorMap } from "../utils/palette";
 import { getHostTheme } from "../utils/getHostTheme";
 import { isValidTheme } from "../config/theme";
 import Button from "./Button.vue";
@@ -65,6 +65,8 @@ const hexColor = computed(() => {
   const map = getColorMap(effectiveTheme.value as "light" | "dark");
   return map[props.color as keyof typeof map] || props.color;
 });
+const bgClass = computed(() => getBgClasses(hexColor.value, props.variant, props.hightContrast));
+const fgClass = computed(() => getFgClasses(hexColor.value, props.variant, props.hightContrast));
 
 const emit = defineEmits(["close", "opened", "closed"]);
 
@@ -125,6 +127,9 @@ defineExpose({
       'max-h-lg': height === 'lg',
       'max-h-xl': height === 'xl',
       'max-h-[90vh]': height === 'full',
+    }" :style="{
+      '--btn-fg': fgClass.main,
+      '--btn-bd': fgClass.border,
     }">
       <header class="p-4 relative">
         <Button
@@ -141,7 +146,7 @@ defineExpose({
         <h2
           v-if="title"
           id="modal-title"
-          class="font-bold text-lg font-sans text-charcoal-800"
+          class="font-bold text-lg font-sans text-[var(--btn-fg)]"
         >
           {{ title }}
         </h2>
