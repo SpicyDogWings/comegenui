@@ -82,7 +82,7 @@ _build_y_copiar() {
   local SELECTED
   SELECTED="$(recent_paths "$SECCION_HEADER")"
   pan log info "Extrayendo la librería"
-  pan spin -c "unzip $BUILD_PATH -d $SELECTED"
+  pan spin -c "unzip -o $BUILD_PATH -d $SELECTED"
   pan log info "Extracción hecha"
 }
 
