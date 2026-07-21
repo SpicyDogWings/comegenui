@@ -1,0 +1,131 @@
+#!/bin/bash
+
+for cmd in pan node unzip; do
+  if ! command -v $cmd &> /dev/null; then
+    echo "$cmd no esta intalado"
+    exit 1
+  fi
+done
+
+ROOT_PATH="$HOME"
+PROJECT_PATH="$(pwd)"
+BUILD_FILE="comegenui.zip"
+BUILD_PATH="$PROJECT_PATH/dist/$BUILD_FILE"
+MENU_PATH="$(mktemp /tmp/comegen_menu.XXXXXX)"
+MENU_ENTRY="$(mktemp /tmp/comegen_entry.XXXXXX)"
+PROJECT_NAME="$(basename $(pwd))"
+CONFIG_PACKAGE_MANAGER="npm"
+RECENT_PATHS="$HOME/.local/share/obrera/comegenui" && mkdir -p "$RECENT_PATHS"
+RECENT_PATHS_FILE="$RECENT_PATHS/recent-paths.list" && touch "$RECENT_PATHS_FILE"
+HEADER_TITLE="ComegenUI Cli Tool"
+
+trap 'rm -f "$MENU_PATH" "$MENU_ENTRY"' EXIT
+
+I_MACHINE="󱄔"
+I_TIMES=""
+I_RECENT=""
+I_FOLDER=""
+I_COPY=""
+
+build_menu() {
+  cat > "$MENU_PATH" <<EOF
+$I_MACHINE Build libreria
+$I_COPY Copiar libreria en proyecto
+$I_TIMES Close
+EOF
+}
+
+recent_paths() {
+  local RECENT_OR_NEW
+  local INIT_PATH="$ROOT_PATH"
+  local RECENT_PATHS_FILE_TARGET="$RECENT_PATHS_FILE"
+  local SELECTED
+  RECENT_OR_NEW=$(pan choose -t "$1 > Path" "$I_RECENT Recientes" "$I_FOLDER Nuevo path") || return 1
+  case "$RECENT_OR_NEW" in
+    "$I_RECENT Recientes")
+      pan log debug >&2 "Leyendo archivo: $RECENT_PATHS_FILE_TARGET"
+      pan log debug >&2 "Contenido: $(cat "$RECENT_PATHS_FILE_TARGET" 2>/dev/null || echo 'NO_EXISTE')"
+      readarray -t OPTIONS < <(grep -v "^[[:space:]]*$" "$RECENT_PATHS_FILE_TARGET")
+      pan log debug >&2 "Cantidad de options: ${#OPTIONS[@]}"
+      if [[ ${#OPTIONS[@]} -gt 0 ]]; then
+        pan log debug >&2 "Primer option: '${OPTIONS[0]}'"
+      fi
+      if [[ ${#OPTIONS[@]} -eq 0 ]]; then
+        pan log error >&2 "No hay paths recientes"
+        return 1
+      fi
+      PROJECT_TO_COPY_PATH=$(pan filter -t "Path recientes" "${OPTIONS[@]}" 2>/dev/null) || return 1
+      if [[ -z "$PROJECT_TO_COPY_PATH" ]]; then
+        pan log error >&2 "Path no seleccionado"
+        if pan confirm -t "El path esta vacio" -m "No se reconoce el path, accion cancelada. Deseas volver a menu principal?" -y "Volver" -n "Salir"; then
+          return 1
+        else
+          exit 0
+        fi
+      fi
+      SELECTED="$PROJECT_TO_COPY_PATH"
+      ;;
+    "$I_FOLDER Nuevo path")
+      PROJECT_TO_COPY_PATH=$(pan file -d "$INIT_PATH") || return 1
+      if [[ -z $PROJECT_TO_COPY_PATH ]]; then
+        pan log error >&2 "Path no seleccionado"
+        if pan confirm -t "El path esta vacio" -m "No se reconoce el path, accion cancelada. Deseas volver a menu principal?" -y "Volver" -n "Salir"; then
+          return 1
+        else
+          exit 0
+        fi
+      fi
+      echo "$PROJECT_TO_COPY_PATH" >> "$RECENT_PATHS_FILE_TARGET"
+      SELECTED="$PROJECT_TO_COPY_PATH"
+      ;;
+  esac
+  echo "$SELECTED"
+}
+
+_build_y_copiar() {
+  local SECCION_HEADER="$HEADER_TITLE > $I_COPY Copiar lib"
+  local SELECTED
+  SELECTED="$(recent_paths "$SECCION_HEADER")" || return 1
+  pan log info >&2 "Extrayendo la libreria"
+  pan spin -l -t "Extrayendo" -c "unzip -o $BUILD_PATH -d $SELECTED" || {
+    pan log error >&2 "Error al extraer la libreria"
+    return 1
+  }
+  pan log info >&2 "Extraccion hecha"
+}
+
+build_menu
+
+pan log info >&2 "Inicio"
+while true; do
+  pan menu -t "$HEADER_TITLE" "$MENU_PATH" > "$MENU_ENTRY" 2>/dev/null
+  EC=$?
+  sed -i $'s/\x1b\\[[0-9;]*[a-zA-Z]//g' "$MENU_ENTRY" 2>/dev/null || true
+  [ $EC -ne 0 ] && break
+
+  read -r ENTRY < "$MENU_ENTRY"
+  ENTRY="${ENTRY//$'\r'}"
+
+  case "$ENTRY" in
+    "$I_MACHINE Build libreria")
+      pan log info >&2 "Build de la libreria iniciado"
+      pan spin -t "Buildeando la libreria" -c "$CONFIG_PACKAGE_MANAGER run build:lib" || {
+        pan log error >&2 "Error en el build"
+        continue
+      }
+      pan log info >&2 "Build hecho"
+      ;;
+    "$I_COPY Copiar libreria en proyecto")
+      pan log info >&2 "Copiando la libreria en un proyecto externo"
+      _build_y_copiar || continue
+      ;;
+    "$I_TIMES Close")
+      pan log info >&2 "Saliendo del script"
+      break
+      ;;
+    *)
+      pan log error >&2 "Opcion no reconocida"
+      continue
+      ;;
+  esac
+done
