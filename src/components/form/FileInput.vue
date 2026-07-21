@@ -71,6 +71,26 @@ const fgClass = computed(() =>
   getFgClasses(props.color, props.variant, props.hightContrast),
 );
 
+function formatAcceptList(accept: string): string {
+  if (!accept) return '';
+  return accept
+    .split(',')
+    .map(s => s.trim())
+    .filter(Boolean)
+    .map(p => {
+      if (p === 'image/*') return 'Imagen';
+      if (p === 'application/*') return 'Documento';
+      if (p === 'video/*') return 'Video';
+      if (p === 'audio/*') return 'Audio';
+      if (p.startsWith('.')) return p.slice(1).toUpperCase();
+      return p.split('/').pop()?.replace('*', '').toUpperCase() || p;
+    })
+    .join(', ');
+}
+
+const formatosStr = computed(() => formatAcceptList(props.accept));
+const maxSizeStr = computed(() => (props.maxSize ? formatFileSize(props.maxSize) : ''));
+
 function matchesAccept(file: File): boolean {
   if (!props.accept) return true;
   const patterns = props.accept.split(",").map((s) => s.trim());
@@ -192,22 +212,21 @@ defineExpose({ get, set, reset, focus, trigger });
       <path d="m17 8-5-5-5 5" />
       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
     </svg>
-
-    <span v-if="!value" class="flex-1 truncate opacity-60 text-[var(--btn-fg)]">{{ props.placeholder }}</span>
+    <span v-if="!value" class="flex-1 truncate opacity-60 text-[var(--btn-fg)]">{{ props.placeholder }}<template v-if="formatosStr">&nbsp;— {{ formatosStr }}</template><template v-if="maxSizeStr">&nbsp;(máx {{ maxSizeStr }})</template></span>
 
     <span v-if="value" v-html="getFileIconSvg(value, 16)" class="shrink-0"></span>
 
-    <Button
-      v-if="value"
-      :to="fileUrl"
-      target="_blank"
-      :color="props.color"
-      variant="link"
-      class="!p-0 !h-auto !min-w-0 flex-1 truncate font-medium justify-start"
-      @click.stop
-    >
-      {{ value.name }}
-    </Button>
+    <div v-if="value" class="flex-1 truncate min-w-0" @click="trigger">
+      <a
+        :href="fileUrl"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="font-medium text-[var(--btn-fg)] no-underline hover:underline transition-all cursor-pointer"
+        @click.stop
+      >
+        {{ value.name }}
+      </a>
+    </div>
 
     <span v-if="value" class="shrink-0 opacity-80 text-xs whitespace-nowrap text-[var(--btn-fg)]">{{ formatFileSize(value.size) }}</span>
 
