@@ -76,7 +76,7 @@ const fgClass = computed(() =>
           props.variant === 'link',
         'border-solid border-1 border-[var(--btn-bd)]': props.variant === 'none',
         'cursor-not-allowed opacity-70': props.disabled,
-        'active:bg-[var(--btn-bg-active)] active:scale-95 hover:cursor-pointer':
+        'hover:bg-[var(--btn-bg-hover)] active:bg-[var(--btn-bg-active)] active:scale-95 hover:cursor-pointer':
           !props.disabled,
       }"
       :style="{
@@ -100,7 +100,7 @@ const fgClass = computed(() =>
           props.variant === 'link',
         'border-solid border-1 border-[var(--btn-bd)]': props.variant === 'none',
         'cursor-not-allowed opacity-70': props.disabled,
-        'active:bg-[var(--btn-bg-active)] active:scale-95 hover:cursor-pointer':
+        'hover:bg-[var(--btn-bg-hover)] active:bg-[var(--btn-bg-active)] active:scale-95 hover:cursor-pointer':
           !props.disabled,
       }"
     :style="{
