@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import LucideChevronRight from '../icons/LucideChevronRight.vue'
 
 const props = defineProps<{
   label: string
@@ -13,7 +14,7 @@ function onEnter(el: Element) {
   const el_ = el as HTMLElement
   el_.style.height = '0'
   el_.style.overflow = 'hidden'
-  el_.offsetHeight // force reflow
+  el_.offsetHeight
   el_.style.height = el_.scrollHeight + 'px'
   el_.addEventListener('transitionend', () => {
     el_.style.height = ''
@@ -31,7 +32,7 @@ function onLeave(el: Element) {
   const el_ = el as HTMLElement
   el_.style.height = el_.scrollHeight + 'px'
   el_.style.overflow = 'hidden'
-  el_.offsetHeight // force reflow
+  el_.offsetHeight
   el_.style.height = '0'
 }
 
@@ -45,7 +46,7 @@ function onAfterLeave(el: Element) {
 <template>
   <div class="cu-collapse">
     <button class="cu-collapse-trigger" @click="isOpen = !isOpen">
-      <span class="cu-collapse-chevron" :class="{ 'is-open': isOpen }">›</span>
+      <LucideChevronRight class="cu-collapse-chevron" :class="{ 'is-open': isOpen }" :width="14" :height="14" />
       {{ label }}
     </button>
     <Transition
@@ -90,7 +91,6 @@ function onAfterLeave(el: Element) {
 
 .cu-collapse-chevron {
   transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  font-size: 0.75rem;
 }
 
 .cu-collapse-chevron.is-open {
