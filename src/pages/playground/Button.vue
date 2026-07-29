@@ -6,7 +6,7 @@ import Button from "@/components/buttons/Button.vue";
 <template>
     <PlaygroundLayout title="Button">
         <div class="playground-buttons">
-            <Button>Button</Button>
+            <Button color="primary">Button</Button>
         </div>
     </PlaygroundLayout>
 </template>

@@ -1,7 +1,5 @@
 .theme-custom {
-
-
-    --cu-color-primary: #0000ff;
+    --cu-color-primary: #10B981;
     --cu-color-primary-hover: #0ea572;
     --cu-color-primary-active: #12c990;
     --cu-color-primary-ghost-hover: #10b9811a;
@@ -13,7 +11,6 @@
     --cu-color-primary-subtle-hover: #10b98133;
     --cu-color-primary-subtle-active: #10b9814d;
     --cu-color-primary-subtle-border: rgba(16, 185, 129, 0.5);
-
     --cu-color-secondary: #8B5CF6;
     --cu-color-secondary-hover: #7c4eed;
     --cu-color-secondary-active: #9b7af8;
@@ -26,7 +23,6 @@
     --cu-color-secondary-subtle-hover: #8b5cf633;
     --cu-color-secondary-subtle-active: #8b5cf64d;
     --cu-color-secondary-subtle-border: rgba(139, 92, 246, 0.5);
-
     --cu-color-neutral: #1a1a1a;
     --cu-color-neutral-hover: #000000;
     --cu-color-neutral-active: #333333;
@@ -39,7 +35,6 @@
     --cu-color-neutral-subtle-hover: #1a1a1a33;
     --cu-color-neutral-subtle-active: #1a1a1a4d;
     --cu-color-neutral-subtle-border: rgba(26, 26, 26, 0.5);
-
     --cu-color-success: #22c55e;
     --cu-color-success-hover: #1a9948;
     --cu-color-success-active: #3bde77;
@@ -52,7 +47,6 @@
     --cu-color-success-subtle-hover: #22c55e33;
     --cu-color-success-subtle-active: #22c55e4d;
     --cu-color-success-subtle-border: rgba(34, 197, 94, 0.5);
-
     --cu-color-warning: #f59e0b;
     --cu-color-warning-hover: #c47f08;
     --cu-color-warning-active: #f7b23b;
@@ -65,7 +59,6 @@
     --cu-color-warning-subtle-hover: #f59e0b33;
     --cu-color-warning-subtle-active: #f59e0b4d;
     --cu-color-warning-subtle-border: rgba(245, 158, 11, 0.5);
-
     --cu-color-danger: #ef4444;
     --cu-color-danger-hover: #eb1414;
     --cu-color-danger-active: #f37272;
