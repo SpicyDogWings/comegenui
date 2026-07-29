@@ -31,9 +31,8 @@ const activeId = computed(() => {
       :key="item.id"
       :to="`#${item.id}`"
       :color="color"
-      variant="subtle"
+      :variant="activeId === item.id ? 'soft' : 'ghost'"
       class="cu-outline-btn"
-      :class="{ 'is-active': activeId === item.id }"
     >
       {{ item.label }}
     </Button>
