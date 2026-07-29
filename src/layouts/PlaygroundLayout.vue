@@ -82,5 +82,6 @@ const navItems = [
   justify-content: center;
   align-items: center;
   overflow: auto;
+  padding: 3rem;
 }
 </style>
