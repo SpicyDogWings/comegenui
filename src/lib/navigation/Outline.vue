@@ -11,10 +11,8 @@ export interface OutlineItem {
 const props = withDefaults(defineProps<{
   items: OutlineItem[]
   color?: 'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'
-  border?: boolean
 }>(), {
   color: 'neutral',
-  border: true,
 })
 
 const route = useRoute()
@@ -33,9 +31,9 @@ const activeId = computed(() => {
       :key="item.id"
       :to="`#${item.id}`"
       :color="color"
-      variant="ghost"
+      variant="subtle"
       class="cu-outline-btn"
-      :class="{ 'is-active': activeId === item.id, 'cu-outline-btn--border': border }"
+      :class="{ 'is-active': activeId === item.id }"
     >
       {{ item.label }}
     </Button>
@@ -53,13 +51,5 @@ const activeId = computed(() => {
 .cu-outline-btn {
   justify-content: flex-start;
   text-align: left;
-}
-
-.cu-outline-btn--border {
-  border-left: var(--cu-border-thin) solid var(--cu-border-color);
-}
-
-.cu-outline-btn.cu-outline-btn--border.is-active {
-  border-left-color: var(--cu-color-primary);
 }
 </style>
