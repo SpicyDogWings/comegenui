@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router'
+import Collapse from '../collapse/Collapse.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -17,22 +18,51 @@ function flattenRoutes(routes: any[], parentPath = ''): Array<{ label: string; p
   })
 }
 
+function groupByFolder(routes: Array<{ label: string; path: string }>) {
+  const groups: Record<string, Array<{ label: string; path: string }>> = {}
+  for (const item of routes) {
+    const parts = item.path.replace('/playground/', '').split('/')
+    const folder = parts.length > 1 ? parts[0] : ''
+    if (!groups[folder]) groups[folder] = []
+    groups[folder].push(item)
+  }
+  return groups
+}
+
 const playgroundRoutes = flattenRoutes(
-  router.getRoutes().find(r => r.path === '/playground')?.children || []
+  router.getRoutes().find(r => r.path === '/playground')?.children || [],
+  '/playground'
 )
+
+const grouped = groupByFolder(playgroundRoutes)
 </script>
 
 <template>
   <nav class="cu-navbar">
-    <router-link
-      v-for="item in playgroundRoutes"
-      :key="item.path"
-      :to="item.path"
-      class="cu-navbar-link"
-      :class="{ 'is-active': route.path === item.path }"
-    >
-      {{ item.label }}
-    </router-link>
+    <template v-for="(items, folder) in grouped" :key="folder">
+      <Collapse v-if="folder" :label="folder" :defaultOpen="true">
+        <router-link
+          v-for="item in items"
+          :key="item.path"
+          :to="item.path"
+          class="cu-navbar-link"
+          :class="{ 'is-active': route.path === item.path }"
+        >
+          {{ item.label }}
+        </router-link>
+      </Collapse>
+      <template v-else>
+        <router-link
+          v-for="item in items"
+          :key="item.path"
+          :to="item.path"
+          class="cu-navbar-link"
+          :class="{ 'is-active': route.path === item.path }"
+        >
+          {{ item.label }}
+        </router-link>
+      </template>
+    </template>
   </nav>
 </template>
 
@@ -44,7 +74,7 @@ const playgroundRoutes = flattenRoutes(
 }
 
 .cu-navbar-link {
-  padding: 0.5rem 0.75rem;
+  padding: 0.375rem 0.75rem;
   border-radius: var(--cu-radius-md);
   text-decoration: none;
   color: var(--cu-color-neutral);
