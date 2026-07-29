@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
 import Collapse from '../collapse/Collapse.vue'
+import Button from '@/components/buttons/Button.vue'
 
 export interface NavItem {
   label: string
@@ -19,24 +20,26 @@ const route = useRoute()
   <nav class="cu-navbar">
     <template v-for="item in items" :key="item.path">
       <Collapse v-if="item.children?.length" :label="item.label" :defaultOpen="true">
-        <router-link
+        <Button
           v-for="child in item.children"
           :key="child.path"
           :to="child.path"
-          class="cu-navbar-link"
-          :class="{ 'is-active': route.path === child.path }"
+          color="primary"
+          :variant="route.path === child.path ? 'soft' : 'ghost'"
+          class="cu-navbar-btn"
         >
           {{ child.label }}
-        </router-link>
+        </Button>
       </Collapse>
-      <router-link
+      <Button
         v-else
         :to="item.path"
-        class="cu-navbar-link"
-        :class="{ 'is-active': route.path === item.path }"
+        color="primary"
+        :variant="route.path === item.path ? 'soft' : 'ghost'"
+        class="cu-navbar-btn"
       >
         {{ item.label }}
-      </router-link>
+      </Button>
     </template>
   </nav>
 </template>
@@ -45,25 +48,12 @@ const route = useRoute()
 .cu-navbar {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  padding: 0.25rem;
+  gap: var(--cu-space-2xs);
+  padding: var(--cu-space-2xs);
 }
 
-.cu-navbar-link {
-  padding: 0.375rem 0.75rem;
-  border-radius: var(--cu-radius-md);
-  text-decoration: none;
-  color: var(--cu-color-neutral);
-  font-size: var(--cu-font-size-sm);
-  transition: background-color 0.15s;
-}
-
-.cu-navbar-link:hover {
-  background-color: var(--cu-color-primary-subtle-hover);
-}
-
-.cu-navbar-link.is-active {
-  background-color: var(--cu-color-primary-soft);
-  font-weight: var(--cu-font-weight-medium);
+.cu-navbar-btn {
+  justify-content: flex-start;
+  text-align: left;
 }
 </style>
