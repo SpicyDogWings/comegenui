@@ -88,6 +88,7 @@ import Button from "@/components/buttons/Button.vue";
     flex-wrap: wrap;
     gap: 0.75rem;
     align-items: center;
+    justify-content: flex-start;
 }
 
 .playground-row--center {
