@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
+import Button from '@/components/buttons/Button.vue'
 
 export interface OutlineItem {
   label: string
@@ -46,15 +47,17 @@ onUnmounted(() => {
 
 <template>
   <nav class="cu-outline">
-    <a
+    <Button
       v-for="item in items"
       :key="item.id"
-      :href="`#${item.id}`"
-      class="cu-outline-link"
+      :to="`#${item.id}`"
+      color="neutral"
+      variant="ghost"
+      class="cu-outline-btn"
       :class="{ 'is-active': activeId === item.id }"
     >
       {{ item.label }}
-    </a>
+    </Button>
   </nav>
 </template>
 
@@ -66,25 +69,13 @@ onUnmounted(() => {
   padding: 0.25rem;
 }
 
-.cu-outline-link {
-  padding: 0.375rem 0.75rem;
-  border-radius: var(--cu-radius-md);
-  text-decoration: none;
-  color: var(--cu-color-neutral);
-  font-size: var(--cu-font-size-sm);
-  transition: all 0.15s ease;
+.cu-outline-btn {
+  justify-content: flex-start;
+  text-align: left;
   border-left: 2px solid transparent;
 }
 
-.cu-outline-link:hover {
-  background-color: var(--cu-color-primary-subtle-hover);
-  color: var(--cu-color-primary);
-}
-
-.cu-outline-link.is-active {
-  background-color: var(--cu-color-primary-soft);
-  color: var(--cu-color-primary);
-  font-weight: var(--cu-font-weight-medium);
+.cu-outline-btn.is-active {
   border-left-color: var(--cu-color-primary);
 }
 </style>
