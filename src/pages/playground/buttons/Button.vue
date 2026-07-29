@@ -17,7 +17,7 @@ const outlineItems = [
     <PlaygroundLayout title="Button">
         <div class="playground-buttons">
             <aside class="playground-outline">
-                <Outline :items="outlineItems" container=".playground-box" />
+                <Outline :items="outlineItems" />
             </aside>
 
             <div class="playground-content">
