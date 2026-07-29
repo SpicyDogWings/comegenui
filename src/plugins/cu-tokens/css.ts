@@ -1,5 +1,5 @@
 import { darken, toHex, lighten, transparentize } from 'color2k'
-import { DEFAULTS } from './defaults'
+import { DEFAULTS, DEFAULT_COLORS, extractColors, extractShared } from './defaults'
 
 let styleEl: HTMLStyleElement | null = null
 
@@ -125,11 +125,29 @@ export function inject(css: string) {
 
 // Standalone init for UMD builds
 export function initTokens(customConfig?: any) {
-  const { themes: customThemes, ...customShared } = customConfig || {}
-  const { themes: defaultThemes, ...defaultShared } = DEFAULTS
+  const config = customConfig || {}
 
-  const shared = Object.keys(customShared).length ? customShared : defaultShared
-  const themes = customThemes || defaultThemes
+  let themes: Record<string, any> = {}
+  let shared: any = {}
+
+  if (config.themes && typeof config.themes === 'object') {
+    // Multi-theme process
+    const { themes: configThemes, ...configRest } = config
+    const mergedShared = { ...DEFAULTS, ...configRest }
+    shared = extractShared(mergedShared)
+    const defaultColors = extractColors(DEFAULTS)
+
+    for (const [name, tokens] of Object.entries(configThemes) as [string, any][]) {
+      const themeColors = tokens.colors || tokens
+      themes[name] = { colors: { ...defaultColors, ...themeColors } }
+    }
+  } else {
+    // Single theme process
+    const merged = { ...DEFAULTS, ...config }
+    const colors = extractColors(merged)
+    shared = extractShared(merged)
+    themes['light'] = { colors }
+  }
 
   const css = generateThemesCSS(themes, shared)
   inject(css)

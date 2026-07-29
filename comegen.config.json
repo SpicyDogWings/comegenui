@@ -1,20 +1,16 @@
 {
   "themes": {
     "light": {
-      "colors": {
-        "primary": "#E73F1E",
-        "secondary": "#6366f1",
-        "neutral": "#1a1a1a",
-        "success": "#22c55e",
-        "warning": "#f59e0b",
-        "danger": "#ef4444",
-        "surface": "#eeeeee"
-      }
+      "primary": "#E73F1E",
+      "secondary": "#6366f1",
+      "neutral": "#1a1a1a",
+      "success": "#22c55e",
+      "warning": "#f59e0b",
+      "danger": "#ef4444",
+      "surface": "#eeeeee"
     },
     "dark": {
-      "colors": {
-        "surface": "#1a1a1a"
-      }
+      "surface": "#1a1a1a"
     }
   },
   "typography": {

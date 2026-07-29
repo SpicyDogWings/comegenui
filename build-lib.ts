@@ -7,9 +7,8 @@ import fs from 'fs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
-// Reuse plugin's CSS generation
 const { generateThemesCSS, generateThemeCSS } = await import('./src/plugins/cu-tokens/css')
-const { DEFAULTS } = await import('./src/plugins/cu-tokens/defaults')
+const { DEFAULTS, DEFAULT_COLORS, DEFAULT_DARK_COLORS, extractColors, extractShared } = await import('./src/plugins/cu-tokens/defaults')
 
 const configPath = resolve(__dirname, 'comegen.config.json')
 
@@ -18,23 +17,34 @@ try {
   config = JSON.parse(fs.readFileSync(configPath, 'utf-8'))
 } catch {
   console.log('⚠️  comegen.config.json no encontrado, usando defaults')
-  config = DEFAULTS
+  config = {}
 }
 
-// Extract themes and shared from config
-const { themes: configThemes, ...configShared } = config
+let themes: Record<string, any> = {}
+let shared: any = {}
 
-// Merge shared with defaults
-const shared = { ...DEFAULTS, ...configShared }
+if (config.themes && typeof config.themes === 'object') {
+  // Multi-theme process
+  const { themes: configThemes, ...configRest } = config
 
-// Build themes: each theme merges with shared
-const themes: Record<string, any> = {}
-if (configThemes && typeof configThemes === 'object') {
-  for (const [name, tokens] of Object.entries(configThemes)) {
-    themes[name] = { ...shared, ...tokens }
+  // Shared tokens: defaults + config overrides (no colors)
+  const mergedShared = { ...DEFAULTS, ...configRest }
+  shared = extractShared(mergedShared)
+
+  // Default colors for fallback
+  const defaultColors = extractColors(DEFAULTS)
+
+  // Each theme: default colors + theme overrides
+  for (const [name, tokens] of Object.entries(configThemes) as [string, any][]) {
+    const themeColors = tokens.colors || tokens
+    themes[name] = { colors: { ...defaultColors, ...themeColors } }
   }
 } else {
-  themes['light'] = shared
+  // Single theme process
+  const merged = { ...DEFAULTS, ...config }
+  const colors = extractColors(merged)
+  shared = extractShared(merged)
+  themes['light'] = { colors }
 }
 
 async function buildLabs() {
@@ -77,14 +87,12 @@ async function buildLabs() {
 
   console.log('🎨 Generating CSS files...')
 
-  // themes.css in css/ subfolder
   const cssDir = resolve(outDir, 'css')
   fs.mkdirSync(cssDir, { recursive: true })
 
   const themesCSS = generateThemesCSS(themes, shared)
   fs.writeFileSync(resolve(cssDir, 'themes.css'), themesCSS)
 
-  // One file per theme in css/ subfolder
   for (const [name, tokens] of Object.entries(themes)) {
     const themeCSS = generateThemeCSS(name, tokens, shared)
     fs.writeFileSync(resolve(cssDir, `${name}.css`), themeCSS)

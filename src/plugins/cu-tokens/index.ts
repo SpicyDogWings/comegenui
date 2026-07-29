@@ -1,6 +1,5 @@
 import { ref, type App } from 'vue'
-import { DEFAULTS } from './defaults'
-import { deepMerge } from './merge'
+import { DEFAULTS, DEFAULT_COLORS, extractColors, extractShared } from './defaults'
 import { generateThemesCSS, inject } from './css'
 
 const theme = ref('light')
@@ -30,32 +29,42 @@ async function init() {
   try {
     const res = await fetch('/comegen.config.json')
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
-    const custom = await res.json()
+    const config = await res.json()
 
-    // Extract themes from config, rest is shared
-    const { themes: customThemes, ...customShared } = custom
+    if (config.themes && typeof config.themes === 'object') {
+      // Multi-theme process
+      const { themes: configThemes, ...configRest } = config
 
-    // Merge shared tokens with defaults
-    shared.value = deepMerge(DEFAULTS, customShared)
+      // Shared tokens: defaults + config overrides (no colors)
+      const mergedShared = { ...DEFAULTS, ...configRest }
+      shared.value = extractShared(mergedShared)
 
-    // Build themes: each theme merges with shared defaults
-    if (customThemes && typeof customThemes === 'object') {
-      for (const [name, tokens] of Object.entries(customThemes)) {
-        themes.value[name] = deepMerge(shared.value, tokens)
+      // Default colors for fallback
+      const defaultColors = extractColors(DEFAULTS)
+
+      // Each theme: default colors + theme overrides
+      for (const [name, tokens] of Object.entries(configThemes) as [string, any][]) {
+        const themeColors = tokens.colors || tokens
+        themes.value[name] = { colors: { ...defaultColors, ...themeColors } }
       }
-      themeNames.value = Object.keys(customThemes)
+      themeNames.value = Object.keys(configThemes)
     } else {
-      // No themes defined, use shared as the only theme
-      themes.value['light'] = shared.value
+      // Single theme process
+      const merged = { ...DEFAULTS, ...config }
+      const colors = extractColors(merged)
+      shared.value = extractShared(merged)
+      themes.value['light'] = { colors }
       themeNames.value = ['light']
     }
 
   } catch {
     console.warn('[Comegen] comegen.config.json no encontrado, usando defaults')
-    const { themes: defaultThemes, ...defaultShared } = DEFAULTS
-    shared.value = defaultShared
-    themes.value = defaultThemes
-    themeNames.value = Object.keys(defaultThemes)
+    shared.value = extractShared(DEFAULTS)
+    themes.value = {
+      light: { colors: { ...DEFAULT_COLORS } },
+      dark: { colors: { ...DEFAULT_COLORS, ...DEFAULT_DARK_COLORS } }
+    }
+    themeNames.value = ['light', 'dark']
   } finally {
     loaded.value = true
     theme.value = detectTheme()

@@ -1,28 +1,25 @@
+export const DEFAULT_COLORS = {
+  primary: '#E73F1E',
+  secondary: '#6366f1',
+  neutral: '#1a1a1a',
+  success: '#22c55e',
+  warning: '#f59e0b',
+  danger: '#ef4444',
+  surface: '#eeeeee'
+}
+
+export const DEFAULT_DARK_COLORS = {
+  primary: '#38bdf8',
+  secondary: '#818cf8',
+  neutral: '#e5e5e5',
+  success: '#4ade80',
+  warning: '#fbbf24',
+  danger: '#f87171',
+  surface: '#1a1a1a'
+}
+
 export const DEFAULTS = {
-  themes: {
-    light: {
-      colors: {
-        primary: '#E73F1E',
-        secondary: '#6366f1',
-        neutral: '#1a1a1a',
-        success: '#22c55e',
-        warning: '#f59e0b',
-        danger: '#ef4444',
-        surface: '#eeeeee'
-      }
-    },
-    dark: {
-      colors: {
-        primary: '#38bdf8',
-        secondary: '#818cf8',
-        neutral: '#e5e5e5',
-        success: '#4ade80',
-        warning: '#fbbf24',
-        danger: '#f87171',
-        surface: '#1a1a1a'
-      }
-    }
-  },
+  ...DEFAULT_COLORS,
   typography: {
     fontFamily: {
       sans: 'Inter, system-ui, sans-serif',
@@ -84,4 +81,19 @@ export const DEFAULTS = {
       focus: '#1774A4'
     }
   }
+}
+
+const COLOR_KEYS = Object.keys(DEFAULT_COLORS)
+
+export function extractColors(obj: any) {
+  const colors: Record<string, string> = {}
+  for (const key of COLOR_KEYS) {
+    if (obj[key] !== undefined) colors[key] = obj[key]
+  }
+  return colors
+}
+
+export function extractShared(obj: any) {
+  const { primary, secondary, neutral, success, warning, danger, surface, ...rest } = obj
+  return rest
 }
