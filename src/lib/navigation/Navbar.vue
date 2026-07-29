@@ -25,7 +25,7 @@ const route = useRoute()
           :key="child.path"
           :to="child.path"
           color="primary"
-          :variant="route.path === child.path ? 'soft' : 'ghost'"
+          :variant="route.path === child.path ? 'soft' : 'none'"
         >
           {{ child.label }}
         </Button>
@@ -34,7 +34,7 @@ const route = useRoute()
         v-else
         :to="item.path"
         color="primary"
-        :variant="route.path === item.path ? 'soft' : 'ghost'"
+        :variant="route.path === item.path ? 'soft' : 'none'"
       >
         {{ item.label }}
       </Button>
