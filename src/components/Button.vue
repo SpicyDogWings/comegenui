@@ -1,20 +1,7 @@
 <script setup lang="ts">
-import { computed, type PropType } from "vue";
-import { getBgClasses, getFgClasses } from "../utils/palette";
+import { type PropType } from "vue";
 
 const props = defineProps({
-  color: {
-    type: String,
-    required: false,
-    default: "#2c2c2c",
-    validator: (value: string) =>
-      /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/i.test(value),
-  },
-  hightContrast: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
   variant: {
     type: String,
     required: false,
@@ -44,13 +31,6 @@ const props = defineProps({
     default: false,
   },
 });
-
-const bgClass = computed(() =>
-  getBgClasses(props.color, props.variant, props.hightContrast),
-);
-const fgClass = computed(() =>
-  getFgClasses(props.color, props.variant, props.hightContrast),
-);
 </script>
 
 <template>
@@ -59,33 +39,17 @@ const fgClass = computed(() =>
     :href="props.to"
     :target="props.target"
     :class="{
-      'decoration-0': props.variant !== 'link',
-      'visited:text-[var(--btn-fg)]': props.variant === 'link',
-      'cursor-not-allowed opacity-70 pointer-events-none': props.disabled,
+      'cu-button--disabled': props.disabled,
     }"
-    :style="{
-      '--btn-fg': fgClass.main,
-    }"
-    class="box-border"
+    class="cu-button-link"
   >
     <button
       :type="props.type"
-      class="py-2 px-4 rounded-cu border-none text-[var(--btn-fg)] font-sans font-medium bg-[var(--btn-bg)] flex justify-center items-center gap-2 box-border transition-transform duration-150"
-      :class="{
-        'hover:underline hover:decoration-solid hover:decoration-2 visited:text-[var(--btn-fg)]':
-          props.variant === 'link',
-        'border-solid border-1 border-[var(--btn-bd)]': props.variant === 'none',
-        'cursor-not-allowed opacity-70': props.disabled,
-        'hover:bg-[var(--btn-bg-hover)] active:bg-[var(--btn-bg-active)] active:scale-95 hover:cursor-pointer':
-          !props.disabled,
-      }"
-      :style="{
-        '--btn-fg': fgClass.main,
-        '--btn-bg': bgClass.main,
-        '--btn-bg-hover': bgClass.hover,
-        '--btn-bg-active': bgClass.active,
-        '--btn-bd': fgClass.border,
-      }"
+      :class="[
+        'cu-button',
+        `cu-button--${props.variant}`,
+        { 'cu-button--disabled': props.disabled }
+      ]"
       :disabled="props.disabled"
     >
       <slot></slot>
@@ -94,22 +58,11 @@ const fgClass = computed(() =>
   <button
     v-else
     :type="props.type"
-      class="py-2 px-4 rounded-cu border-none text-[var(--btn-fg)] font-sans font-medium bg-[var(--btn-bg)] flex justify-center items-center gap-2 box-border transition-transform duration-150"
-      :class="{
-        'hover:underline hover:decoration-solid hover:decoration-2 visited:text-[var(--btn-fg)]':
-          props.variant === 'link',
-        'border-solid border-1 border-[var(--btn-bd)]': props.variant === 'none',
-        'cursor-not-allowed opacity-70': props.disabled,
-        'hover:bg-[var(--btn-bg-hover)] active:bg-[var(--btn-bg-active)] active:scale-95 hover:cursor-pointer':
-          !props.disabled,
-      }"
-    :style="{
-      '--btn-fg': fgClass.main,
-      '--btn-bg': bgClass.main,
-      '--btn-bg-hover': bgClass.hover,
-      '--btn-bg-active': bgClass.active,
-      '--btn-bd': fgClass.border,
-    }"
+    :class="[
+      'cu-button',
+      `cu-button--${props.variant}`,
+      { 'cu-button--disabled': props.disabled }
+    ]"
     :disabled="props.disabled"
   >
     <slot></slot>
@@ -117,5 +70,124 @@ const fgClass = computed(() =>
 </template>
 
 <style>
-@unocss-placeholder;
+.cu-button {
+  font-family: var(--cu-font-sans);
+  font-size: var(--cu-font-size-sm);
+  font-weight: var(--cu-font-weight-medium);
+  padding: var(--cu-space-md) var(--cu-space-lg);
+  border-radius: var(--cu-radius-md);
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cu-space-xs);
+  box-sizing: border-box;
+  transition: all 150ms ease;
+}
+
+.cu-button:active:not(.cu-button--disabled) {
+  transform: scale(0.97);
+}
+
+.cu-button--disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  /*pointer-events: none;*/
+}
+
+/* solid */
+.cu-button--solid {
+  background-color: var(--cu-color-primary);
+  color: var(--cu-color-surface);
+}
+.cu-button--solid:hover:not(.cu-button--disabled) {
+  background-color: var(--cu-color-primary-hover);
+}
+.cu-button--solid:active:not(.cu-button--disabled) {
+  background-color: var(--cu-color-primary-active);
+}
+
+/* ghost */
+.cu-button--ghost {
+  background-color: transparent;
+  color: var(--cu-color-primary);
+}
+.cu-button--ghost:hover:not(.cu-button--disabled) {
+  background-color: var(--cu-color-primary-ghost-hover);
+}
+.cu-button--ghost:active:not(.cu-button--disabled) {
+  background-color: var(--cu-color-primary-ghost-active);
+}
+
+/* soft */
+.cu-button--soft {
+  background-color: var(--cu-color-primary-soft);
+  color: var(--cu-color-primary);
+}
+.cu-button--soft:hover:not(.cu-button--disabled) {
+  background-color: var(--cu-color-primary-soft-hover);
+}
+.cu-button--soft:active:not(.cu-button--disabled) {
+  background-color: var(--cu-color-primary-soft-active);
+}
+
+/* subtle */
+.cu-button--subtle {
+  background-color: var(--cu-color-primary-subtle);
+  color: var(--cu-color-primary);
+  border: var(--cu-border-thin) solid var(--cu-color-primary-subtle-border);
+}
+.cu-button--subtle:hover:not(.cu-button--disabled) {
+  background-color: var(--cu-color-primary-subtle-hover);
+}
+.cu-button--subtle:active:not(.cu-button--disabled) {
+  background-color: var(--cu-color-primary-subtle-active);
+}
+
+/* outlined */
+.cu-button--outlined {
+  background-color: transparent;
+  color: var(--cu-color-primary);
+  border: var(--cu-border-thin) solid var(--cu-color-primary);
+}
+.cu-button--outlined:hover:not(.cu-button--disabled) {
+  background-color: var(--cu-color-primary-ghost-hover);
+}
+.cu-button--outlined:active:not(.cu-button--disabled) {
+  background-color: var(--cu-color-primary-ghost-active);
+}
+
+/* link */
+.cu-button--link {
+  background-color: transparent;
+  color: var(--cu-color-primary);
+  padding: 0;
+  box-shadow: none;
+  text-decoration: underline;
+  text-underline-offset: var(--cu-space-2xs);
+}
+.cu-button--link:hover:not(.cu-button--disabled) {
+  text-decoration-thickness: 2px;
+}
+
+/* none */
+.cu-button--none {
+  background-color: var(--cu-color-neutral);
+  color: var(--cu-color-surface);
+}
+.cu-button--none:hover:not(.cu-button--disabled) {
+  background-color: var(--cu-color-neutral-hover);
+}
+.cu-button--none:active:not(.cu-button--disabled) {
+  background-color: var(--cu-color-neutral-active);
+}
+
+/* link wrapper */
+.cu-button-link {
+  text-decoration: none;
+}
+.cu-button-link:hover {
+  text-decoration: underline;
+  text-underline-offset: var(--cu-space-2xs);
+}
 </style>
