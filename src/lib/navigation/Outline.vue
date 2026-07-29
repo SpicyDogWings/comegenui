@@ -15,9 +15,18 @@ const activeId = ref<string>('')
 
 function scrollTo(id: string) {
   const el = document.getElementById(id)
-  if (el) {
-    el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  if (!el) return
+
+  if (props.container) {
+    const scrollEl = document.querySelector(props.container)
+    if (scrollEl) {
+      const elTop = el.offsetTop - scrollEl.offsetTop
+      scrollEl.scrollTo({ top: elTop, behavior: 'smooth' })
+      return
+    }
   }
+
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 
 let observer: IntersectionObserver | null = null
