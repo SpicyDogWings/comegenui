@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import ToggleColorSheme from '@/components/buttons/ToggleColorSheme.vue'
 import Navbar from '@/lib/navigation/Navbar.vue'
+import Outline from '@/lib/navigation/Outline.vue'
+import type { OutlineItem } from '@/lib/navigation/Outline.vue'
 
 defineProps<{
   title?: string
+  outlineItems?: OutlineItem[]
 }>()
 
 const navItems = [
@@ -34,6 +37,7 @@ const navItems = [
         <Navbar :items="navItems" />
       </aside>
       <div class="playground-box">
+        <Outline v-if="outlineItems" :items="outlineItems" class="playground-outline" />
         <slot />
       </div>
     </div>
@@ -79,9 +83,17 @@ const navItems = [
 .playground-box {
   flex: 1;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  gap: 2rem;
+  justify-content: flex-start;
+  align-items: flex-start;
   overflow: auto;
   padding: 3rem;
+}
+
+.playground-outline {
+  position: sticky;
+  top: 2rem;
+  min-width: 180px;
+  flex-shrink: 0;
 }
 </style>
