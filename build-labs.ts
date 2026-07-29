@@ -77,20 +77,22 @@ async function buildLabs() {
 
   console.log('🎨 Generating CSS files...')
 
-  // themes.css: :root (first theme) + [data-theme] for each theme
-  const themesCSS = generateThemesCSS(themes, shared)
-  fs.writeFileSync(resolve(outDir, 'themes.css'), themesCSS)
-
-  // One file per theme in css/ subfolder
+  // themes.css in css/ subfolder
   const cssDir = resolve(outDir, 'css')
   fs.mkdirSync(cssDir, { recursive: true })
+
+  const themesCSS = generateThemesCSS(themes, shared)
+  fs.writeFileSync(resolve(cssDir, 'themes.css'), themesCSS)
+
+  // One file per theme in css/ subfolder
   for (const [name, tokens] of Object.entries(themes)) {
     const themeCSS = generateThemeCSS(name, tokens, shared)
     fs.writeFileSync(resolve(cssDir, `${name}.css`), themeCSS)
   }
 
   console.log(`\n✅ Build complete! Output: dist/labs/`)
-  console.log(`   - themes.css (${Object.keys(themes).length + 1} rules)`)
+  console.log(`   - button-labs.umd.js`)
+  console.log(`   - css/themes.css (${Object.keys(themes).length + 1} rules)`)
   for (const name of Object.keys(themes)) {
     console.log(`   - css/${name}.css`)
   }
