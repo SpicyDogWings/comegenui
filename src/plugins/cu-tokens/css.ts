@@ -5,8 +5,7 @@ import { deepMerge } from './merge'
 let styleEl: HTMLStyleElement | null = null
 
 function colorVar(name: string, value: string) {
-  return `
-    --cu-color-${name}: ${value};
+  return `--cu-color-${name}: ${value};
     --cu-color-${name}-hover: ${toHex(darken(value, 0.1))};
     --cu-color-${name}-active: ${toHex(lighten(value, 0.1))};
     --cu-color-${name}-ghost-hover: ${toHex(transparentize(value, 0.9))};
@@ -21,8 +20,7 @@ function colorVar(name: string, value: string) {
 }
 
 function colorsBlock(colors: any) {
-  return `
-    ${colorVar('primary', colors.primary)}
+  return `${colorVar('primary', colors.primary)}
     ${colorVar('secondary', colors.secondary)}
     ${colorVar('neutral', colors.neutral)}
     ${colorVar('success', colors.success)}
@@ -32,8 +30,7 @@ function colorsBlock(colors: any) {
 }
 
 function sharedBlock(shared: any) {
-  return `
-    /* Typography */
+  return `/* Typography */
     --cu-font-sans: ${shared.typography.fontFamily.sans};
     --cu-font-mono: ${shared.typography.fontFamily.mono};
     --cu-font-size-xs: ${shared.typography.fontSize.xs};
@@ -98,13 +95,13 @@ export function generateCSS(themes: Record<string, any>, firstTheme: string) {
   // First theme goes in :root
   const first = themes[firstTheme]
   if (first) {
-    css += `:root {\n  ${themeBlock(first)}\n}`
+    css += `:root {\n${themeBlock(first)}\n}`
   }
 
   // Remaining themes get [data-theme="name"]
   for (const [name, tokens] of Object.entries(themes)) {
     if (name === firstTheme) continue
-    css += `\n\n[data-theme="${name}"] {\n  ${themeBlock(tokens)}\n}`
+    css += `\n\n[data-theme="${name}"] {\n${themeBlock(tokens)}\n}`
   }
 
   return css
