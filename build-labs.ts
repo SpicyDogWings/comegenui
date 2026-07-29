@@ -46,7 +46,7 @@ async function buildLabs() {
   fs.mkdirSync(outDir, { recursive: true })
 
   const files = fg.sync('./src/lib/**/*.ts', {
-    ignore: ['./src/lib/**/index.ts'],
+    ignore: ['./src/lib/**/index.ts', './src/lib/tokens.ts'],
   })
 
   console.log(`🚀 Building ${files.length} component(s)...`)
