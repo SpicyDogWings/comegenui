@@ -1,11 +1,12 @@
 export const DEFAULTS = {
   colors: {
-    primary: '#1774A4',
-    neutral: '#2c2c2c',
+    primary: '#E73F1E',
+    secondary: '#6366f1',
+    neutral: '#6b7280',
     success: '#22c55e',
     warning: '#f59e0b',
     danger: '#ef4444',
-    surface: '#ffffff'
+    surface: '#eeeeee'
   },
   typography: {
     fontFamily: {
@@ -36,10 +37,11 @@ export const DEFAULTS = {
     '2xs': '2px',
     xs: '4px',
     sm: '8px',
-    md: '16px',
-    lg: '24px',
-    xl: '32px',
-    '2xl': '48px'
+    md: '12px',
+    lg: '16px',
+    xl: '24px',
+    '2xl': '32px',
+    '3xl': '48px'
   },
   borderRadius: {
     none: '0',

@@ -18,65 +18,94 @@ function colorVar(name: string, value: string) {
     --cu-color-${name}-subtle-border: ${transparentize(value, 0.5)};`
 }
 
-export function generateCSS(tokens: any) {
-  const t = tokens
-  return `:root {
-    /* Colors */
-    ${colorVar('primary', t.colors.primary)}
-    ${colorVar('neutral', t.colors.neutral)}
-    ${colorVar('success', t.colors.success)}
-    ${colorVar('warning', t.colors.warning)}
-    ${colorVar('danger', t.colors.danger)}
-    --cu-color-surface: ${t.colors.surface};
+function colorsBlock(colors: any) {
+  return `
+    ${colorVar('primary', colors.primary)}
+    ${colorVar('secondary', colors.secondary)}
+    ${colorVar('neutral', colors.neutral)}
+    ${colorVar('success', colors.success)}
+    ${colorVar('warning', colors.warning)}
+    ${colorVar('danger', colors.danger)}
+    --cu-color-surface: ${colors.surface};`
+}
 
+function sharedBlock(shared: any) {
+  return `
     /* Typography */
-    --cu-font-sans: ${t.typography.fontFamily.sans};
-    --cu-font-mono: ${t.typography.fontFamily.mono};
-    --cu-font-size-xs: ${t.typography.fontSize.xs};
-    --cu-font-size-sm: ${t.typography.fontSize.sm};
-    --cu-font-size-md: ${t.typography.fontSize.md};
-    --cu-font-size-lg: ${t.typography.fontSize.lg};
-    --cu-font-size-xl: ${t.typography.fontSize.xl};
-    --cu-font-size-2xl: ${t.typography.fontSize['2xl']};
-    --cu-font-weight-normal: ${t.typography.fontWeight.normal};
-    --cu-font-weight-medium: ${t.typography.fontWeight.medium};
-    --cu-font-weight-semibold: ${t.typography.fontWeight.semibold};
-    --cu-font-weight-bold: ${t.typography.fontWeight.bold};
-    --cu-line-height-tight: ${t.typography.lineHeight.tight};
-    --cu-line-height-normal: ${t.typography.lineHeight.normal};
-    --cu-line-height-relaxed: ${t.typography.lineHeight.relaxed};
+    --cu-font-sans: ${shared.typography.fontFamily.sans};
+    --cu-font-mono: ${shared.typography.fontFamily.mono};
+    --cu-font-size-xs: ${shared.typography.fontSize.xs};
+    --cu-font-size-sm: ${shared.typography.fontSize.sm};
+    --cu-font-size-md: ${shared.typography.fontSize.md};
+    --cu-font-size-lg: ${shared.typography.fontSize.lg};
+    --cu-font-size-xl: ${shared.typography.fontSize.xl};
+    --cu-font-size-2xl: ${shared.typography.fontSize['2xl']};
+    --cu-font-weight-normal: ${shared.typography.fontWeight.normal};
+    --cu-font-weight-medium: ${shared.typography.fontWeight.medium};
+    --cu-font-weight-semibold: ${shared.typography.fontWeight.semibold};
+    --cu-font-weight-bold: ${shared.typography.fontWeight.bold};
+    --cu-line-height-tight: ${shared.typography.lineHeight.tight};
+    --cu-line-height-normal: ${shared.typography.lineHeight.normal};
+    --cu-line-height-relaxed: ${shared.typography.lineHeight.relaxed};
 
     /* Spacing */
-    --cu-space-2xs: ${t.spacing['2xs']};
-    --cu-space-xs: ${t.spacing.xs};
-    --cu-space-sm: ${t.spacing.sm};
-    --cu-space-md: ${t.spacing.md};
-    --cu-space-lg: ${t.spacing.lg};
-    --cu-space-xl: ${t.spacing.xl};
-    --cu-space-2xl: ${t.spacing['2xl']};
+    --cu-space-2xs: ${shared.spacing['2xs']};
+    --cu-space-xs: ${shared.spacing.xs};
+    --cu-space-sm: ${shared.spacing.sm};
+    --cu-space-md: ${shared.spacing.md};
+    --cu-space-lg: ${shared.spacing.lg};
+    --cu-space-xl: ${shared.spacing.xl};
+    --cu-space-2xl: ${shared.spacing['2xl']};
+    --cu-space-3xl: ${shared.spacing['3xl']};
 
     /* Border Radius */
-    --cu-radius-none: ${t.borderRadius.none};
-    --cu-radius-sm: ${t.borderRadius.sm};
-    --cu-radius-md: ${t.borderRadius.md};
-    --cu-radius-lg: ${t.borderRadius.lg};
-    --cu-radius-full: ${t.borderRadius.full};
+    --cu-radius-none: ${shared.borderRadius.none};
+    --cu-radius-sm: ${shared.borderRadius.sm};
+    --cu-radius-md: ${shared.borderRadius.md};
+    --cu-radius-lg: ${shared.borderRadius.lg};
+    --cu-radius-full: ${shared.borderRadius.full};
 
     /* Shadows */
-    --cu-shadow-sm: ${t.shadows.sm};
-    --cu-shadow-md: ${t.shadows.md};
-    --cu-shadow-lg: ${t.shadows.lg};
-    --cu-shadow-xl: ${t.shadows.xl};
+    --cu-shadow-sm: ${shared.shadows.sm};
+    --cu-shadow-md: ${shared.shadows.md};
+    --cu-shadow-lg: ${shared.shadows.lg};
+    --cu-shadow-xl: ${shared.shadows.xl};
 
     /* Borders */
-    --cu-border-none: ${t.borders.width.none};
-    --cu-border-thin: ${t.borders.width.thin};
-    --cu-border-medium: ${t.borders.width.medium};
-    --cu-border-thick: ${t.borders.width.thick};
-    --cu-border-color: ${t.borders.color.default};
-    --cu-border-color-strong: ${t.borders.color.strong};
-    --cu-border-color-focus: ${t.borders.color.focus};
-  }`
+    --cu-border-none: ${shared.borders.width.none};
+    --cu-border-thin: ${shared.borders.width.thin};
+    --cu-border-medium: ${shared.borders.width.medium};
+    --cu-border-thick: ${shared.borders.width.thick};
+    --cu-border-color: ${shared.borders.color.default};
+    --cu-border-color-strong: ${shared.borders.color.strong};
+    --cu-border-color-focus: ${shared.borders.color.focus};`
+}
+
+function themeBlock(tokens: any) {
+  let block = ''
+  if (tokens.colors) block += colorsBlock(tokens.colors)
+  if (tokens.typography || tokens.spacing || tokens.borderRadius || tokens.shadows || tokens.borders) {
+    block += sharedBlock(tokens)
+  }
+  return block
+}
+
+export function generateCSS(themes: Record<string, any>, firstTheme: string) {
+  let css = ''
+
+  // First theme goes in :root
+  const first = themes[firstTheme]
+  if (first) {
+    css += `:root {\n  ${themeBlock(first)}\n}`
+  }
+
+  // Remaining themes get [data-theme="name"]
+  for (const [name, tokens] of Object.entries(themes)) {
+    if (name === firstTheme) continue
+    css += `\n\n[data-theme="${name}"] {\n  ${themeBlock(tokens)}\n}`
+  }
+
+  return css
 }
 
 export function inject(css: string) {

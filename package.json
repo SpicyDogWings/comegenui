@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "build-only": "vite build",
     "build:lib": "node build-libs.ts",
+    "build:button-labs": "node build-button-labs.ts",
     "type-check": "vue-tsc --build",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"

@@ -1,7 +1,12 @@
 <script setup lang="ts">
-import { type PropType } from "vue";
+import { computed, type PropType } from "vue";
 
 const props = defineProps({
+  color: {
+    type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
+    required: false,
+    default: "neutral",
+  },
   variant: {
     type: String,
     required: false,
@@ -31,6 +36,21 @@ const props = defineProps({
     default: false,
   },
 });
+
+const colorStyles = computed(() => ({
+  '--btn-bg': `var(--cu-color-${props.color})`,
+  '--btn-bg-hover': `var(--cu-color-${props.color}-hover)`,
+  '--btn-bg-active': `var(--cu-color-${props.color}-active)`,
+  '--btn-ghost-hover': `var(--cu-color-${props.color}-ghost-hover)`,
+  '--btn-ghost-active': `var(--cu-color-${props.color}-ghost-active)`,
+  '--btn-soft': `var(--cu-color-${props.color}-soft)`,
+  '--btn-soft-hover': `var(--cu-color-${props.color}-soft-hover)`,
+  '--btn-soft-active': `var(--cu-color-${props.color}-soft-active)`,
+  '--btn-subtle': `var(--cu-color-${props.color}-subtle)`,
+  '--btn-subtle-hover': `var(--cu-color-${props.color}-subtle-hover)`,
+  '--btn-subtle-active': `var(--cu-color-${props.color}-subtle-active)`,
+  '--btn-subtle-border': `var(--cu-color-${props.color}-subtle-border)`,
+}))
 </script>
 
 <template>
@@ -50,6 +70,7 @@ const props = defineProps({
         `cu-button--${props.variant}`,
         { 'cu-button--disabled': props.disabled }
       ]"
+      :style="colorStyles"
       :disabled="props.disabled"
     >
       <slot></slot>
@@ -63,6 +84,7 @@ const props = defineProps({
       `cu-button--${props.variant}`,
       { 'cu-button--disabled': props.disabled }
     ]"
+    :style="colorStyles"
     :disabled="props.disabled"
   >
     <slot></slot>
@@ -92,75 +114,74 @@ const props = defineProps({
 .cu-button--disabled {
   opacity: 0.7;
   cursor: not-allowed;
-  /*pointer-events: none;*/
 }
 
 /* solid */
 .cu-button--solid {
-  background-color: var(--cu-color-primary);
+  background-color: var(--btn-bg);
   color: var(--cu-color-surface);
 }
 .cu-button--solid:hover:not(.cu-button--disabled) {
-  background-color: var(--cu-color-primary-hover);
+  background-color: var(--btn-bg-hover);
 }
 .cu-button--solid:active:not(.cu-button--disabled) {
-  background-color: var(--cu-color-primary-active);
+  background-color: var(--btn-bg-active);
 }
 
 /* ghost */
 .cu-button--ghost {
   background-color: transparent;
-  color: var(--cu-color-primary);
+  color: var(--btn-bg);
 }
 .cu-button--ghost:hover:not(.cu-button--disabled) {
-  background-color: var(--cu-color-primary-ghost-hover);
+  background-color: var(--btn-ghost-hover);
 }
 .cu-button--ghost:active:not(.cu-button--disabled) {
-  background-color: var(--cu-color-primary-ghost-active);
+  background-color: var(--btn-ghost-active);
 }
 
 /* soft */
 .cu-button--soft {
-  background-color: var(--cu-color-primary-soft);
-  color: var(--cu-color-primary);
+  background-color: var(--btn-soft);
+  color: var(--btn-bg);
 }
 .cu-button--soft:hover:not(.cu-button--disabled) {
-  background-color: var(--cu-color-primary-soft-hover);
+  background-color: var(--btn-soft-hover);
 }
 .cu-button--soft:active:not(.cu-button--disabled) {
-  background-color: var(--cu-color-primary-soft-active);
+  background-color: var(--btn-soft-active);
 }
 
 /* subtle */
 .cu-button--subtle {
-  background-color: var(--cu-color-primary-subtle);
-  color: var(--cu-color-primary);
-  border: var(--cu-border-thin) solid var(--cu-color-primary-subtle-border);
+  background-color: var(--btn-subtle);
+  color: var(--btn-bg);
+  border: var(--cu-border-thin) solid var(--btn-subtle-border);
 }
 .cu-button--subtle:hover:not(.cu-button--disabled) {
-  background-color: var(--cu-color-primary-subtle-hover);
+  background-color: var(--btn-subtle-hover);
 }
 .cu-button--subtle:active:not(.cu-button--disabled) {
-  background-color: var(--cu-color-primary-subtle-active);
+  background-color: var(--btn-subtle-active);
 }
 
 /* outlined */
 .cu-button--outlined {
   background-color: transparent;
-  color: var(--cu-color-primary);
-  border: var(--cu-border-thin) solid var(--cu-color-primary);
+  color: var(--btn-bg);
+  border: var(--cu-border-thin) solid var(--btn-bg);
 }
 .cu-button--outlined:hover:not(.cu-button--disabled) {
-  background-color: var(--cu-color-primary-ghost-hover);
+  background-color: var(--btn-ghost-hover);
 }
 .cu-button--outlined:active:not(.cu-button--disabled) {
-  background-color: var(--cu-color-primary-ghost-active);
+  background-color: var(--btn-ghost-active);
 }
 
 /* link */
 .cu-button--link {
   background-color: transparent;
-  color: var(--cu-color-primary);
+  color: var(--btn-bg);
   padding: 0;
   box-shadow: none;
   text-decoration: underline;
@@ -172,14 +193,14 @@ const props = defineProps({
 
 /* none */
 .cu-button--none {
-  background-color: var(--cu-color-neutral);
+  background-color: var(--btn-bg);
   color: var(--cu-color-surface);
 }
 .cu-button--none:hover:not(.cu-button--disabled) {
-  background-color: var(--cu-color-neutral-hover);
+  background-color: var(--btn-bg-hover);
 }
 .cu-button--none:active:not(.cu-button--disabled) {
-  background-color: var(--cu-color-neutral-active);
+  background-color: var(--btn-bg-active);
 }
 
 /* link wrapper */
@@ -189,5 +210,14 @@ const props = defineProps({
 .cu-button-link:hover {
   text-decoration: underline;
   text-underline-offset: var(--cu-space-2xs);
+}
+.cu-button-link.cu-button--disabled {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* icon-only */
+.cu-button--icon-only {
+  padding: var(--cu-space-sm);
 }
 </style>

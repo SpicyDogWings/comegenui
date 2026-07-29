@@ -3,9 +3,7 @@ import Input from "./components/form/Input.vue";
 </script>
 
 <template>
-    <AppLayout>
-        <router-view/>
-    </AppLayout>
+    <router-view/>
 </template>
 
 <style>

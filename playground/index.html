@@ -1,72 +1,41 @@
 <!doctype html>
-<html lang="es">
+<html lang="es" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Playground — ComegenUI</title>
+    <title>Button Labs — Playground</title>
     <link rel="stylesheet" href="style.css" />
-    <script src="../dist/CuFileInput.umd.js?t=1"></script>
-    <script src="../dist/CuFileInputZone.umd.js?t=1"></script>
-
-    <!--
-      ═══════════════════════════════════════════
-      PLAYGROUND — ComegenUI
-
-      🎯 La carta (`.card`) DENTRO de <main> es la ZONA EDITABLE.
-          Cada ejemplo reemplaza TODO el contenido de la carta.
-          No acumular — borrar lo anterior y poner lo nuevo.
-
-      Archivos BASE (NO modificar):
-        index.html      → estructura base (solo se toca la carta)
-        playground.js   → theme toggle, log, init
-        style.css       → estilos
-
-      ✅ EDITABLE:
-        example.js      → acá va la lógica JS de cada ejemplo
-      ═══════════════════════════════════════════
-    -->
+    <script src="../dist/button-labs/button-labs.umd.js"></script>
   </head>
   <body>
     <div class="topbar">
-      <h1 style="font-size:16px;font-weight:600">Playground</h1>
+      <h1 style="font-size:16px;font-weight:600">Button Labs</h1>
       <div class="topbar-actions">
         <button class="topbar-btn" id="btnTheme" title="Toggle theme">🌙</button>
       </div>
     </div>
 
     <div class="main">
-      <div class="card" style="max-width: 800px">
-        <h2>FileInput — variantes × colores</h2>
+      <div class="card">
+        <h2>Button — variantes × colores</h2>
         <table style="width:100%;border-collapse:collapse;font-size:13px">
           <thead>
             <tr>
               <th style="padding:6px 8px;text-align:left;opacity:.6">variant \ color</th>
               <th style="padding:6px 8px;text-align:left;opacity:.6">primary</th>
+              <th style="padding:6px 8px;text-align:left;opacity:.6">secondary</th>
               <th style="padding:6px 8px;text-align:left;opacity:.6">neutral</th>
               <th style="padding:6px 8px;text-align:left;opacity:.6">success</th>
               <th style="padding:6px 8px;text-align:left;opacity:.6">warning</th>
               <th style="padding:6px 8px;text-align:left;opacity:.6">danger</th>
             </tr>
           </thead>
-          <tbody>
-            <tr><td style="padding:4px 8px;opacity:.6">none</td><td style="padding:4px 4px"><cu-file-input color="primary" variant="none" placeholder="Seleccionar..."></cu-file-input></td><td style="padding:4px 4px"><cu-file-input color="neutral" variant="none" placeholder="Seleccionar..."></cu-file-input></td><td style="padding:4px 4px"><cu-file-input color="success" variant="none" placeholder="Seleccionar..."></cu-file-input></td><td style="padding:4px 4px"><cu-file-input color="warning" variant="none" placeholder="Seleccionar..."></cu-file-input></td><td style="padding:4px 4px"><cu-file-input color="danger" variant="none" placeholder="Seleccionar..."></cu-file-input></td></tr>
-            <tr><td style="padding:4px 8px;opacity:.6">outlined</td><td style="padding:4px 4px"><cu-file-input color="primary" variant="outlined" placeholder="Seleccionar..."></cu-file-input></td><td style="padding:4px 4px"><cu-file-input color="neutral" variant="outlined" placeholder="Seleccionar..."></cu-file-input></td><td style="padding:4px 4px"><cu-file-input color="success" variant="outlined" placeholder="Seleccionar..."></cu-file-input></td><td style="padding:4px 4px"><cu-file-input color="warning" variant="outlined" placeholder="Seleccionar..."></cu-file-input></td><td style="padding:4px 4px"><cu-file-input color="danger" variant="outlined" placeholder="Seleccionar..."></cu-file-input></td></tr>
-            <tr><td style="padding:4px 8px;opacity:.6">soft</td><td style="padding:4px 4px"><cu-file-input color="primary" variant="soft" placeholder="Seleccionar..."></cu-file-input></td><td style="padding:4px 4px"><cu-file-input color="neutral" variant="soft" placeholder="Seleccionar..."></cu-file-input></td><td style="padding:4px 4px"><cu-file-input color="success" variant="soft" placeholder="Seleccionar..."></cu-file-input></td><td style="padding:4px 4px"><cu-file-input color="warning" variant="soft" placeholder="Seleccionar..."></cu-file-input></td><td style="padding:4px 4px"><cu-file-input color="danger" variant="soft" placeholder="Seleccionar..."></cu-file-input></td></tr>
-            <tr><td style="padding:4px 8px;opacity:.6">ghost</td><td style="padding:4px 4px"><cu-file-input color="primary" variant="ghost" placeholder="Seleccionar..."></cu-file-input></td><td style="padding:4px 4px"><cu-file-input color="neutral" variant="ghost" placeholder="Seleccionar..."></cu-file-input></td><td style="padding:4px 4px"><cu-file-input color="success" variant="ghost" placeholder="Seleccionar..."></cu-file-input></td><td style="padding:4px 4px"><cu-file-input color="warning" variant="ghost" placeholder="Seleccionar..."></cu-file-input></td><td style="padding:4px 4px"><cu-file-input color="danger" variant="ghost" placeholder="Seleccionar..."></cu-file-input></td></tr>
-            <tr><td style="padding:4px 8px;opacity:.6">subtle</td><td style="padding:4px 4px"><cu-file-input color="primary" variant="subtle" placeholder="Seleccionar..."></cu-file-input></td><td style="padding:4px 4px"><cu-file-input color="neutral" variant="subtle" placeholder="Seleccionar..."></cu-file-input></td><td style="padding:4px 4px"><cu-file-input color="success" variant="subtle" placeholder="Seleccionar..."></cu-file-input></td><td style="padding:4px 4px"><cu-file-input color="warning" variant="subtle" placeholder="Seleccionar..."></cu-file-input></td><td style="padding:4px 4px"><cu-file-input color="danger" variant="subtle" placeholder="Seleccionar..."></cu-file-input></td></tr>
-          </tbody>
+          <tbody id="button-grid"></tbody>
         </table>
-
-        <hr style="width:100%;border:none;border-top:1px solid var(--border, #eee);margin:8px 0">
-
-        <h2>FileInputZone — directorio</h2>
-        <cu-file-input-zone id="fiDir" directory directory-deep="0" max-height="200px" placeholder="Selecciona o arrastra una carpeta"></cu-file-input-zone>
-
-        <div class="log-box" id="log">// Eventos</div>
       </div>
     </div>
 
     <script src="playground.js"></script>
-    <script src="examples/file-input.js"></script>
+    <script src="examples/button-labs.js"></script>
   </body>
 </html>
