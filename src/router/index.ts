@@ -8,10 +8,22 @@ const router = createRouter({
       name: "Playground",
       children: [
         {
-          path: "button",
-          name: "Button playground",
-          component: () => import("@/pages/playground/Button.vue")
-        }
+          path: "buttons",
+          name: "Buttons playground",
+          children: [
+            {
+              path: "button",
+              name: "Button playground",
+              component: () => import("@/pages/playground/buttons/Button.vue")
+            },
+            {
+              path: "toggle-color-scheme",
+              name: "ToggleColorScheme playground",
+              component: () => import("@/pages/playground/buttons/ToggleColorScheme.vue")
+            }
+          ]
+        },
+
       ]
     }
   ]

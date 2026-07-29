@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import ToggleColorSheme from '@/components/buttons/ToggleColorSheme.vue'
+import Navbar from '@/lib/navigation/Navbar.vue'
 
 defineProps<{
   title?: string
@@ -13,8 +14,8 @@ defineProps<{
       <ToggleColorSheme />
     </div>
     <div class="playground-body">
-      <aside v-if="$slots.sidebar" class="playground-sidebar">
-        <slot name="sidebar" />
+      <aside class="playground-sidebar">
+        <Navbar />
       </aside>
       <div class="playground-box">
         <slot />

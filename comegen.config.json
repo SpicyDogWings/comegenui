@@ -10,7 +10,8 @@
       "surface": "#eeeeee"
     },
     "dark": {
-      "surface": "#1a1a1a"
+      "neutral": "#e5e5e5",
+      "surface": "#1c1c1c"
     }
   },
   "typography": {
