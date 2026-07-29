@@ -81,16 +81,18 @@ async function buildLabs() {
   const themesCSS = generateThemesCSS(themes, shared)
   fs.writeFileSync(resolve(outDir, 'themes.css'), themesCSS)
 
-  // One file per theme
+  // One file per theme in css/ subfolder
+  const cssDir = resolve(outDir, 'css')
+  fs.mkdirSync(cssDir, { recursive: true })
   for (const [name, tokens] of Object.entries(themes)) {
     const themeCSS = generateThemeCSS(name, tokens, shared)
-    fs.writeFileSync(resolve(outDir, `${name}.css`), themeCSS)
+    fs.writeFileSync(resolve(cssDir, `${name}.css`), themeCSS)
   }
 
   console.log(`\n✅ Build complete! Output: dist/labs/`)
   console.log(`   - themes.css (${Object.keys(themes).length + 1} rules)`)
   for (const name of Object.keys(themes)) {
-    console.log(`   - ${name}.css`)
+    console.log(`   - css/${name}.css`)
   }
 }
 
