@@ -5,41 +5,52 @@
 const variants = ['solid', 'ghost', 'soft', 'subtle', 'outlined', 'link']
 const colors = ['primary', 'secondary', 'neutral', 'success', 'warning', 'danger']
 
-const grid = document.getElementById('button-grid')
+function createButtonGrid(containerId) {
+  const container = document.getElementById(containerId)
+  const table = document.createElement('table')
+  table.style.cssText = 'width:100%;border-collapse:collapse;font-size:13px'
 
-variants.forEach(variant => {
-  const tr = document.createElement('tr')
+  // Header
+  const thead = document.createElement('thead')
+  const headerRow = document.createElement('tr')
+  const thVariant = document.createElement('th')
+  thVariant.style.cssText = 'padding:6px 8px;text-align:left;opacity:.6'
+  thVariant.textContent = 'variant \\ color'
+  headerRow.appendChild(thVariant)
 
-  // Variant label
-  const tdLabel = document.createElement('td')
-  tdLabel.style.cssText = 'padding:4px 8px;opacity:.6'
-  tdLabel.textContent = variant
-  tr.appendChild(tdLabel)
-
-  // Color buttons
   colors.forEach(color => {
-    const td = document.createElement('td')
-    td.style.cssText = 'padding:4px 4px'
-    td.innerHTML = `<cu-button color="${color}" variant="${variant}">${variant}</cu-button>`
-    tr.appendChild(td)
+    const th = document.createElement('th')
+    th.style.cssText = 'padding:6px 8px;text-align:left;opacity:.6'
+    th.textContent = color
+    headerRow.appendChild(th)
   })
+  thead.appendChild(headerRow)
+  table.appendChild(thead)
 
-  grid.appendChild(tr)
-})
+  // Body
+  const tbody = document.createElement('tbody')
+  variants.forEach(variant => {
+    const tr = document.createElement('tr')
+    const tdLabel = document.createElement('td')
+    tdLabel.style.cssText = 'padding:4px 8px;opacity:.6'
+    tdLabel.textContent = variant
+    tr.appendChild(tdLabel)
 
-// Disabled row
-const trDisabled = document.createElement('tr')
-const tdDisabledLabel = document.createElement('td')
-tdDisabledLabel.style.cssText = 'padding:4px 8px;opacity:.6'
-tdDisabledLabel.textContent = 'disabled'
-trDisabled.appendChild(tdDisabledLabel)
+    colors.forEach(color => {
+      const td = document.createElement('td')
+      td.style.cssText = 'padding:4px 4px'
+      td.innerHTML = `<cu-button color="${color}" variant="${variant}">${variant}</cu-button>`
+      tr.appendChild(td)
+    })
+    tbody.appendChild(tr)
+  })
+  table.appendChild(tbody)
 
-colors.forEach(color => {
-  const td = document.createElement('td')
-  td.style.cssText = 'padding:4px 4px'
-  td.innerHTML = `<cu-button color="${color}" variant="solid" disabled>disabled</cu-button>`
-  trDisabled.appendChild(td)
-})
-grid.appendChild(trDisabled)
+  container.appendChild(table)
+}
 
-// Button Labs loaded
+// Default config (uses built-in defaults)
+createButtonGrid('default-buttons')
+
+// Custom config (uses CSS variable overrides)
+createButtonGrid('custom-buttons')
