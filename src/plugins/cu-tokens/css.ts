@@ -1,4 +1,6 @@
 import { darken, toHex, lighten, transparentize } from 'color2k'
+import { DEFAULTS } from './defaults'
+import { deepMerge } from './merge'
 
 let styleEl: HTMLStyleElement | null = null
 
@@ -115,4 +117,14 @@ export function inject(css: string) {
     document.head.appendChild(styleEl)
   }
   styleEl.textContent = css
+}
+
+// Standalone init for UMD builds
+export function initTokens(customConfig?: any) {
+  const config = customConfig
+    ? deepMerge(DEFAULTS, customConfig)
+    : DEFAULTS
+
+  const css = generateCSS({ light: config }, 'light')
+  inject(css)
 }
