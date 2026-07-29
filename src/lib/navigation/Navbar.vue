@@ -24,8 +24,8 @@ const route = useRoute()
           v-for="child in item.children"
           :key="child.path"
           :to="child.path"
-          color="primary"
-          :variant="route.path === child.path ? 'soft' : 'none'"
+          :color="route.path === child.path ? 'primary' : undefined"
+          :variant="route.path === child.path ? 'soft' : undefined"
         >
           {{ child.label }}
         </Button>
@@ -33,8 +33,8 @@ const route = useRoute()
       <Button
         v-else
         :to="item.path"
-        color="primary"
-        :variant="route.path === item.path ? 'soft' : 'none'"
+        :color="route.path === item.path ? 'primary' : undefined"
+        :variant="route.path === item.path ? 'soft' : undefined"
       >
         {{ item.label }}
       </Button>
