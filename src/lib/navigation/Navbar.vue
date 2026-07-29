@@ -26,7 +26,6 @@ const route = useRoute()
           :to="child.path"
           color="primary"
           :variant="route.path === child.path ? 'soft' : 'ghost'"
-          class="cu-navbar-btn"
         >
           {{ child.label }}
         </Button>
@@ -36,7 +35,6 @@ const route = useRoute()
         :to="item.path"
         color="primary"
         :variant="route.path === item.path ? 'soft' : 'ghost'"
-        class="cu-navbar-btn"
       >
         {{ item.label }}
       </Button>
@@ -52,7 +50,7 @@ const route = useRoute()
   padding: var(--cu-space-2xs);
 }
 
-.cu-navbar-btn {
+.cu-navbar :deep(.cu-button) {
   justify-content: flex-start;
   text-align: left;
   padding: var(--cu-space-xs) var(--cu-space-sm);
