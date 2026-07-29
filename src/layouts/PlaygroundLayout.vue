@@ -5,6 +5,16 @@ import Navbar from '@/lib/navigation/Navbar.vue'
 defineProps<{
   title?: string
 }>()
+
+const navItems = [
+  {
+    label: 'Buttons',
+    children: [
+      { label: 'Button', path: '/playground/buttons/button' },
+      { label: 'ToggleColorScheme', path: '/playground/buttons/toggle-color-scheme' },
+    ]
+  },
+]
 </script>
 
 <template>
@@ -15,7 +25,7 @@ defineProps<{
     </div>
     <div class="playground-body">
       <aside class="playground-sidebar">
-        <Navbar />
+        <Navbar :items="navItems" />
       </aside>
       <div class="playground-box">
         <slot />
