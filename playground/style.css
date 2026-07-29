@@ -97,32 +97,3 @@ body.dark {
   font-weight: 500;
   opacity: .7;
 }
-
-/* ── Custom Theme ── */
-.theme-custom {
-  --cu-color-primary: #10B981;
-  --cu-color-primary-hover: #0ea572;
-  --cu-color-primary-active: #12c990;
-  --cu-color-primary-ghost-hover: rgba(16, 185, 129, 0.1);
-  --cu-color-primary-ghost-active: rgba(16, 185, 129, 0.2);
-  --cu-color-primary-soft: rgba(16, 185, 129, 0.15);
-  --cu-color-primary-soft-hover: rgba(16, 185, 129, 0.25);
-  --cu-color-primary-soft-active: rgba(16, 185, 129, 0.35);
-  --cu-color-primary-subtle: rgba(16, 185, 129, 0.1);
-  --cu-color-primary-subtle-hover: rgba(16, 185, 129, 0.2);
-  --cu-color-primary-subtle-active: rgba(16, 185, 129, 0.3);
-  --cu-color-primary-subtle-border: rgba(16, 185, 129, 0.5);
-
-  --cu-color-secondary: #8B5CF6;
-  --cu-color-secondary-hover: #7c4eed;
-  --cu-color-secondary-active: #9b7af8;
-  --cu-color-secondary-ghost-hover: rgba(139, 92, 246, 0.1);
-  --cu-color-secondary-ghost-active: rgba(139, 92, 246, 0.2);
-  --cu-color-secondary-soft: rgba(139, 92, 246, 0.15);
-  --cu-color-secondary-soft-hover: rgba(139, 92, 246, 0.25);
-  --cu-color-secondary-soft-active: rgba(139, 92, 246, 0.35);
-  --cu-color-secondary-subtle: rgba(139, 92, 246, 0.1);
-  --cu-color-secondary-subtle-hover: rgba(139, 92, 246, 0.2);
-  --cu-color-secondary-subtle-active: rgba(139, 92, 246, 0.3);
-  --cu-color-secondary-subtle-border: rgba(139, 92, 246, 0.5);
-}
