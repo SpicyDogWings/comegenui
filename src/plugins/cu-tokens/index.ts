@@ -1,11 +1,12 @@
 import { ref, type App } from 'vue'
 import { DEFAULTS } from './defaults'
 import { deepMerge } from './merge'
-import { generateCSS, inject } from './css'
+import { generateThemesCSS, inject } from './css'
 
 const theme = ref('light')
 const loaded = ref(false)
 const themes = ref<Record<string, any>>({})
+const shared = ref<any>({})
 const themeNames = ref<string[]>([])
 
 function detectTheme(): string {
@@ -22,8 +23,7 @@ function applyTheme(value: string) {
 }
 
 function regenerateCSS() {
-  const firstTheme = themeNames.value[0] || 'light'
-  inject(generateCSS(themes.value, firstTheme))
+  inject(generateThemesCSS(themes.value, shared.value))
 }
 
 async function init() {
@@ -32,28 +32,30 @@ async function init() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
     const custom = await res.json()
 
-    // Extract themes from config
-    const { themes: customThemes, ...sharedConfig } = custom
+    // Extract themes from config, rest is shared
+    const { themes: customThemes, ...customShared } = custom
 
     // Merge shared tokens with defaults
-    const shared = deepMerge(DEFAULTS, sharedConfig)
+    shared.value = deepMerge(DEFAULTS, customShared)
 
     // Build themes: each theme merges with shared defaults
     if (customThemes && typeof customThemes === 'object') {
       for (const [name, tokens] of Object.entries(customThemes)) {
-        themes.value[name] = deepMerge(shared, tokens)
+        themes.value[name] = deepMerge(shared.value, tokens)
       }
       themeNames.value = Object.keys(customThemes)
     } else {
       // No themes defined, use shared as the only theme
-      themes.value['light'] = shared
+      themes.value['light'] = shared.value
       themeNames.value = ['light']
     }
 
   } catch {
     console.warn('[Comegen] comegen.config.json no encontrado, usando defaults')
-    themes.value['light'] = DEFAULTS
-    themeNames.value = ['light']
+    const { themes: defaultThemes, ...defaultShared } = DEFAULTS
+    shared.value = defaultShared
+    themes.value = defaultThemes
+    themeNames.value = Object.keys(defaultThemes)
   } finally {
     loaded.value = true
     theme.value = detectTheme()

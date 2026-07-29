@@ -1,12 +1,27 @@
 export const DEFAULTS = {
-  colors: {
-    primary: '#E73F1E',
-    secondary: '#6366f1',
-    neutral: '#6b7280',
-    success: '#22c55e',
-    warning: '#f59e0b',
-    danger: '#ef4444',
-    surface: '#eeeeee'
+  themes: {
+    light: {
+      colors: {
+        primary: '#E73F1E',
+        secondary: '#6366f1',
+        neutral: '#1a1a1a',
+        success: '#22c55e',
+        warning: '#f59e0b',
+        danger: '#ef4444',
+        surface: '#eeeeee'
+      }
+    },
+    dark: {
+      colors: {
+        primary: '#38bdf8',
+        secondary: '#818cf8',
+        neutral: '#e5e5e5',
+        success: '#4ade80',
+        warning: '#fbbf24',
+        danger: '#f87171',
+        surface: '#1a1a1a'
+      }
+    }
   },
   typography: {
     fontFamily: {

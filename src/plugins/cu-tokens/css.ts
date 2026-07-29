@@ -1,6 +1,5 @@
 import { darken, toHex, lighten, transparentize } from 'color2k'
 import { DEFAULTS } from './defaults'
-import { deepMerge } from './merge'
 
 let styleEl: HTMLStyleElement | null = null
 
@@ -83,28 +82,36 @@ function sharedBlock(shared: any) {
 function themeBlock(tokens: any) {
   let block = ''
   if (tokens.colors) block += colorsBlock(tokens.colors)
-  if (tokens.typography || tokens.spacing || tokens.borderRadius || tokens.shadows || tokens.borders) {
-    block += sharedBlock(tokens)
-  }
+  block += sharedBlock(tokens)
   return block
 }
 
-export function generateCSS(themes: Record<string, any>, firstTheme: string) {
+// Generate themes.css: :root (first theme) + [data-theme] for each theme
+export function generateThemesCSS(themes: Record<string, any>, shared: any) {
+  const names = Object.keys(themes)
+  const first = names[0]
+
   let css = ''
 
-  // First theme goes in :root
-  const first = themes[firstTheme]
+  // :root = first theme (default)
   if (first) {
-    css += `:root {\n${themeBlock(first)}\n}`
+    const merged = { ...shared, colors: themes[first].colors }
+    css += `:root {\n${themeBlock(merged)}\n}`
   }
 
-  // Remaining themes get [data-theme="name"]
+  // [data-theme] for each theme
   for (const [name, tokens] of Object.entries(themes)) {
-    if (name === firstTheme) continue
-    css += `\n\n[data-theme="${name}"] {\n${themeBlock(tokens)}\n}`
+    const merged = { ...shared, colors: tokens.colors }
+    css += `\n\n[data-theme="${name}"] {\n${themeBlock(merged)}\n}`
   }
 
   return css
+}
+
+// Generate single theme CSS: [data-theme="{name}"] with all variables
+export function generateThemeCSS(name: string, tokens: any, shared: any) {
+  const merged = { ...shared, colors: tokens.colors }
+  return `[data-theme="${name}"] {\n${themeBlock(merged)}\n}`
 }
 
 export function inject(css: string) {
@@ -118,10 +125,12 @@ export function inject(css: string) {
 
 // Standalone init for UMD builds
 export function initTokens(customConfig?: any) {
-  const config = customConfig
-    ? deepMerge(DEFAULTS, customConfig)
-    : DEFAULTS
+  const { themes: customThemes, ...customShared } = customConfig || {}
+  const { themes: defaultThemes, ...defaultShared } = DEFAULTS
 
-  const css = generateCSS({ light: config }, 'light')
+  const shared = Object.keys(customShared).length ? customShared : defaultShared
+  const themes = customThemes || defaultThemes
+
+  const css = generateThemesCSS(themes, shared)
   inject(css)
 }

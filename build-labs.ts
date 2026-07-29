@@ -8,14 +8,33 @@ import fs from 'fs'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
 // Reuse plugin's CSS generation
-const { generateCSS } = await import('./src/plugins/cu-tokens/css')
+const { generateThemesCSS, generateThemeCSS } = await import('./src/plugins/cu-tokens/css')
+const { DEFAULTS } = await import('./src/plugins/cu-tokens/defaults')
 
 const configPath = resolve(__dirname, 'comegen.config.json')
-const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'))
 
-const themes = {
-  light: config.themes.light,
-  dark: config.themes.dark,
+let config: any
+try {
+  config = JSON.parse(fs.readFileSync(configPath, 'utf-8'))
+} catch {
+  console.log('⚠️  comegen.config.json no encontrado, usando defaults')
+  config = DEFAULTS
+}
+
+// Extract themes and shared from config
+const { themes: configThemes, ...configShared } = config
+
+// Merge shared with defaults
+const shared = { ...DEFAULTS, ...configShared }
+
+// Build themes: each theme merges with shared
+const themes: Record<string, any> = {}
+if (configThemes && typeof configThemes === 'object') {
+  for (const [name, tokens] of Object.entries(configThemes)) {
+    themes[name] = { ...shared, ...tokens }
+  }
+} else {
+  themes['light'] = shared
 }
 
 async function buildLabs() {
@@ -56,11 +75,23 @@ async function buildLabs() {
     })
   }
 
-  console.log('🎨 Generating cu-tokens.css...')
-  const css = generateCSS(themes, 'light')
-  fs.writeFileSync(resolve(outDir, 'cu-tokens.css'), css)
+  console.log('🎨 Generating CSS files...')
+
+  // themes.css: :root (first theme) + [data-theme] for each theme
+  const themesCSS = generateThemesCSS(themes, shared)
+  fs.writeFileSync(resolve(outDir, 'themes.css'), themesCSS)
+
+  // One file per theme
+  for (const [name, tokens] of Object.entries(themes)) {
+    const themeCSS = generateThemeCSS(name, tokens, shared)
+    fs.writeFileSync(resolve(outDir, `${name}.css`), themeCSS)
+  }
 
   console.log(`\n✅ Build complete! Output: dist/labs/`)
+  console.log(`   - themes.css (${Object.keys(themes).length + 1} rules)`)
+  for (const name of Object.keys(themes)) {
+    console.log(`   - ${name}.css`)
+  }
 }
 
 buildLabs()
