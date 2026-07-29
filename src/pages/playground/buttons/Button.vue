@@ -16,6 +16,8 @@ import Button from "@/components/buttons/Button.vue";
                 <Button color="primary" variant="link">Link</Button>
             </div>
 
+            <hr class="playground-separator" />
+
             <h2>Colors</h2>
             <div class="playground-row">
                 <Button color="primary">Primary</Button>
@@ -25,6 +27,8 @@ import Button from "@/components/buttons/Button.vue";
                 <Button color="warning">Warning</Button>
                 <Button color="danger">Danger</Button>
             </div>
+
+            <hr class="playground-separator" />
 
             <h2>Disabled</h2>
             <div class="playground-row">
@@ -36,12 +40,16 @@ import Button from "@/components/buttons/Button.vue";
                 <Button color="danger" disabled>Danger</Button>
             </div>
 
+            <hr class="playground-separator" />
+
             <h2>Sizes</h2>
             <div class="playground-row playground-row--center">
                 <Button color="primary" class="playground-btn-sm">Small</Button>
                 <Button color="primary">Medium</Button>
                 <Button color="primary" class="playground-btn-lg">Large</Button>
             </div>
+
+            <hr class="playground-separator" />
 
             <h2>With Icon</h2>
             <div class="playground-row">
@@ -58,6 +66,8 @@ import Button from "@/components/buttons/Button.vue";
                     Delete
                 </Button>
             </div>
+
+            <hr class="playground-separator" />
 
             <h2>As Link</h2>
             <div class="playground-row">
@@ -88,7 +98,7 @@ import Button from "@/components/buttons/Button.vue";
     flex-wrap: wrap;
     gap: 0.75rem;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
 }
 
 .playground-row--center {
@@ -103,5 +113,11 @@ import Button from "@/components/buttons/Button.vue";
 .playground-btn-lg {
     font-size: var(--cu-font-size-lg) !important;
     padding: var(--cu-space-lg) var(--cu-space-xl) !important;
+}
+
+.playground-separator {
+    border: none;
+    border-top: 1px solid var(--cu-border-color);
+    margin: 0;
 }
 </style>
