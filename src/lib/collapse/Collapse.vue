@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import LucideChevronRight from '../icons/LucideChevronRight.vue'
+import LucideChevronRight from '@/components/icons/LucideChevronRight.vue'
 
 const props = defineProps<{
   label: string
@@ -100,7 +100,8 @@ function onAfterLeave(el: Element) {
 .cu-collapse-content {
   display: flex;
   flex-direction: column;
-  padding-left: 0.75rem;
+  gap: 0.25rem;
+  padding: 0.25rem 0 0.25rem 0.75rem;
   transition: height 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 </style>

@@ -70,7 +70,8 @@ const grouped = groupByFolder(playgroundRoutes)
 .cu-navbar {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.5rem;
+  padding: 0.25rem;
 }
 
 .cu-navbar-link {
