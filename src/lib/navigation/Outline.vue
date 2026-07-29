@@ -30,7 +30,7 @@ const activeId = computed(() => {
       v-for="item in items"
       :key="item.id"
       :to="`#${item.id}`"
-      :color="color"
+      :color="activeId === item.id ? 'primary' : color"
       :variant="activeId === item.id ? 'soft' : 'ghost'"
       class="cu-outline-btn"
     >
