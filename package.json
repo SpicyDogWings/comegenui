@@ -8,8 +8,8 @@
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "build-only": "vite build",
-    "build:lib": "node build-libs.ts",
-    "build:labs": "pnpm exec tsx build-labs.ts",
+    "build:lib": "pnpm exec tsx build-lib.ts",
+    "build:labs": " build-labs.ts",
     "type-check": "vue-tsc --build",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"

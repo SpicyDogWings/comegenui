@@ -13,12 +13,6 @@
     },
     "dark": {
       "colors": {
-        "primary": "#38bdf8",
-        "secondary": "#818cf8",
-        "neutral": "#e5e5e5",
-        "success": "#4ade80",
-        "warning": "#fbbf24",
-        "danger": "#f87171",
         "surface": "#1a1a1a"
       }
     }
