@@ -4,13 +4,22 @@ import { useRoute, useRouter } from 'vue-router'
 const route = useRoute()
 const router = useRouter()
 
-const playgroundRoutes = router.getRoutes()
-  .find(r => r.path === '/playground')
-  ?.children
-  .map(r => ({
-    label: r.name?.toString().replace(' playground', '') || r.path,
-    path: `/playground/${r.path}`,
-  })) || []
+function flattenRoutes(routes: any[], parentPath = ''): Array<{ label: string; path: string }> {
+  return routes.flatMap(r => {
+    const fullPath = `${parentPath}/${r.path}`
+    if (r.children?.length) {
+      return flattenRoutes(r.children, fullPath)
+    }
+    return [{
+      label: r.name?.toString().replace(' playground', '') || r.path,
+      path: fullPath,
+    }]
+  })
+}
+
+const playgroundRoutes = flattenRoutes(
+  router.getRoutes().find(r => r.path === '/playground')?.children || []
+)
 </script>
 
 <template>
