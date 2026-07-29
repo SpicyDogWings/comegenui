@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, computed } from 'vue'
+import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import Button from '@/components/buttons/Button.vue'
 
@@ -8,9 +8,14 @@ export interface OutlineItem {
   id: string
 }
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   items: OutlineItem[]
-}>()
+  color?: 'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'
+  border?: boolean
+}>(), {
+  color: 'neutral',
+  border: true,
+})
 
 const route = useRoute()
 
@@ -27,10 +32,10 @@ const activeId = computed(() => {
       v-for="item in items"
       :key="item.id"
       :to="`#${item.id}`"
-      color="neutral"
+      :color="color"
       variant="ghost"
       class="cu-outline-btn"
-      :class="{ 'is-active': activeId === item.id }"
+      :class="{ 'is-active': activeId === item.id, 'cu-outline-btn--border': border }"
     >
       {{ item.label }}
     </Button>
@@ -41,17 +46,20 @@ const activeId = computed(() => {
 .cu-outline {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
-  padding: 0.25rem;
+  gap: var(--cu-space-2xs);
+  padding: var(--cu-space-2xs);
 }
 
 .cu-outline-btn {
   justify-content: flex-start;
   text-align: left;
-  border-left: 2px solid transparent;
 }
 
-.cu-outline-btn.is-active {
+.cu-outline-btn--border {
+  border-left: var(--cu-border-thin) solid var(--cu-border-color);
+}
+
+.cu-outline-btn.cu-outline-btn--border.is-active {
   border-left-color: var(--cu-color-primary);
 }
 </style>
