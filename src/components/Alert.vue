@@ -1,20 +1,11 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
-import { getBgClasses, getFgClasses } from "../utils/palette";
-import Button from "./Button.vue";
+import { computed, ref, watch, type PropType } from "vue";
 
 const props = defineProps({
   color: {
-    type: String,
+    type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     required: false,
-    default: "#2c2c2c",
-    validator: (value: string) =>
-      /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/i.test(value),
-  },
-  hightContrast: {
-    type: Boolean,
-    required: false,
-    default: false,
+    default: "neutral",
   },
   variant: {
     type: String,
@@ -50,12 +41,20 @@ watch(internalShow, (val) => {
   emit("update:show", val);
 });
 
-const bgClass = computed(() =>
-  getBgClasses(props.color, props.variant, props.hightContrast),
-);
-const fgClass = computed(() =>
-  getFgClasses(props.color, props.variant, props.hightContrast),
-);
+const colorStyles = computed(() => ({
+  '--alert-bg': `var(--cu-color-${props.color})`,
+  '--alert-bg-hover': `var(--cu-color-${props.color}-hover)`,
+  '--alert-bg-active': `var(--cu-color-${props.color}-active)`,
+  '--alert-ghost-hover': `var(--cu-color-${props.color}-ghost-hover)`,
+  '--alert-ghost-active': `var(--cu-color-${props.color}-ghost-active)`,
+  '--alert-soft': `var(--cu-color-${props.color}-soft)`,
+  '--alert-soft-hover': `var(--cu-color-${props.color}-soft-hover)`,
+  '--alert-soft-active': `var(--cu-color-${props.color}-soft-active)`,
+  '--alert-subtle': `var(--cu-color-${props.color}-subtle)`,
+  '--alert-subtle-hover': `var(--cu-color-${props.color}-subtle-hover)`,
+  '--alert-subtle-active': `var(--cu-color-${props.color}-subtle-active)`,
+  '--alert-subtle-border': `var(--cu-color-${props.color}-subtle-border)`,
+}))
 
 function open() {
   internalShow.value = true;
@@ -74,48 +73,120 @@ defineExpose({
   open,
   close,
   toggle,
-  get isOpen() { return internalShow.value },
+  isOpen: () => internalShow.value,
 });
 </script>
 
 <template>
-  <div v-show="internalShow" class="p-5 rounded-cu font-sans flex flex-wrap justify-start items-start text-[var(--btn-fg)] bg-[var(--btn-bg)]" role="alert"
-    :class="{
-      'bg-opacity-10': props.variant === 'soft',
-      'bg-opacity-10 border-solid border-1': props.variant === 'subtle',
-      'border-[var(--btn-bd)]': props.variant === 'subtle' || props.variant === 'outlined',
-      'bg-transparent border-solid border-2': props.variant === 'outlined',
-    }"
-    :style="{
-      '--btn-fg': fgClass.main,
-      '--btn-bg': bgClass.main,
-      '--btn-bg-hover': bgClass.hover,
-      '--btn-bg-active': bgClass.active,
-      '--btn-bd': fgClass.border,
-    }"
+  <div
+    v-show="internalShow"
+    :class="['cu-alert', `cu-alert--${props.variant}`]"
+    :style="colorStyles"
+    role="alert"
   >
-    <div class="w-full flex justify-between items-center">
-      <div class="flex justify-center items-center gap-2">
-        <slot name="icon"></slot>
-        <h3 v-if="props.title" class="font-bold m-0 text-[var(--btn-fg)]">{{ props.title }}</h3>
+    <div class="cu-alert-header">
+      <div class="cu-alert-title">
+        <slot name="icon" />
+        <h3 v-if="props.title" class="cu-alert-title-text">{{ props.title }}</h3>
       </div>
-      <Button
+      <button
         v-if="props.close"
         @click="close"
-        :color="props.color"
-        variant="ghost"
+        class="cu-alert-close"
         aria-label="Cerrar alerta"
-        class="px-2 translate-x-4 -translate-y-4"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"> <path d="M18 6 6 18"/> <path d="m6 6 12 12"/> </svg>
-      </Button>
+      </button>
     </div>
-    <div class="w-full text-[var(--btn-fg)]">
-      <slot></slot>
+    <div class="cu-alert-content">
+      <slot />
     </div>
   </div>
 </template>
 
 <style>
-@unocss-placeholder;
+.cu-alert {
+  font-family: var(--cu-font-sans);
+  font-size: var(--cu-font-size-sm);
+  padding: var(--cu-space-md) var(--cu-space-lg);
+  border-radius: var(--cu-radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--cu-space-sm);
+  box-sizing: border-box;
+}
+
+/* solid */
+.cu-alert--solid {
+  background-color: var(--alert-bg);
+  color: var(--cu-color-surface);
+}
+
+/* ghost */
+.cu-alert--ghost {
+  background-color: transparent;
+  color: var(--alert-bg);
+}
+
+/* soft */
+.cu-alert--soft {
+  background-color: var(--alert-soft);
+  color: var(--alert-bg);
+}
+
+/* subtle */
+.cu-alert--subtle {
+  background-color: var(--alert-subtle);
+  color: var(--alert-bg);
+  border: var(--cu-border-thin) solid var(--alert-subtle-border);
+}
+
+/* outlined */
+.cu-alert--outlined {
+  background-color: transparent;
+  color: var(--alert-bg);
+  border: var(--cu-border-thin) solid var(--alert-bg);
+}
+
+.cu-alert-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cu-alert-title {
+  display: flex;
+  align-items: center;
+  gap: var(--cu-space-xs);
+}
+
+.cu-alert-title-text {
+  font-weight: var(--cu-font-weight-bold);
+  margin: 0;
+}
+
+.cu-alert-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  padding: var(--cu-space-2xs);
+  border-radius: var(--cu-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 150ms ease;
+}
+
+.cu-alert-close:hover {
+  background-color: var(--alert-ghost-hover);
+}
+
+.cu-alert-close:active {
+  background-color: var(--alert-ghost-active);
+}
+
+.cu-alert-content {
+  color: inherit;
+}
 </style>

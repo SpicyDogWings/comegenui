@@ -14,6 +14,12 @@ const navItems = [
       { label: 'ToggleColorScheme', path: '/playground/buttons/toggle-color-scheme' },
     ]
   },
+  {
+    label: 'Components',
+    children: [
+      { label: 'Alert', path: '/playground/components/alert' },
+    ]
+  },
 ]
 </script>
 

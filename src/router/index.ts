@@ -23,7 +23,17 @@ const router = createRouter({
             }
           ]
         },
-
+        {
+          path: "components",
+          name: "Components playground",
+          children: [
+            {
+              path: "alert",
+              name: "Alert playground",
+              component: () => import("@/pages/playground/components/Alert.vue")
+            }
+          ]
+        },
       ]
     }
   ]

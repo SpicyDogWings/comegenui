@@ -1,0 +1,110 @@
+<script setup lang="ts">
+import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
+import Alert from "@/components/Alert.vue";
+import { ref } from "vue";
+
+const showAlert = ref(true);
+</script>
+
+<template>
+    <PlaygroundLayout title="Alert">
+        <div class="playground-alert">
+            <h2>Variants</h2>
+            <div class="playground-alert-row">
+                <Alert title="Solid" color="primary" variant="solid">
+                    This is a solid alert.
+                </Alert>
+                <Alert title="Soft" color="primary" variant="soft">
+                    This is a soft alert.
+                </Alert>
+                <Alert title="Ghost" color="primary" variant="ghost">
+                    This is a ghost alert.
+                </Alert>
+                <Alert title="Subtle" color="primary" variant="subtle">
+                    This is a subtle alert.
+                </Alert>
+                <Alert title="Outlined" color="primary" variant="outlined">
+                    This is an outlined alert.
+                </Alert>
+            </div>
+
+            <h2>Colors</h2>
+            <div class="playground-alert-row">
+                <Alert title="Primary" color="primary">Primary alert</Alert>
+                <Alert title="Secondary" color="secondary">Secondary alert</Alert>
+                <Alert title="Neutral" color="neutral">Neutral alert</Alert>
+                <Alert title="Success" color="success">Success alert</Alert>
+                <Alert title="Warning" color="warning">Warning alert</Alert>
+                <Alert title="Danger" color="danger">Danger alert</Alert>
+            </div>
+
+            <h2>With Close</h2>
+            <div class="playground-alert-row">
+                <Alert title="Closeable" color="primary" close>
+                    Click the X to close this alert.
+                </Alert>
+            </div>
+
+            <h2>v-model:show</h2>
+            <div class="playground-alert-row">
+                <button @click="showAlert = !showAlert" class="playground-alert-toggle">
+                    Toggle Alert ({{ showAlert ? 'visible' : 'hidden' }})
+                </button>
+                <Alert v-model:show="showAlert" title="Toggleable" color="success" close>
+                    This alert is controlled via v-model:show.
+                </Alert>
+            </div>
+
+            <h2>With Icon</h2>
+            <div class="playground-alert-row">
+                <Alert title="Info" color="primary" variant="soft">
+                    <template #icon>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                    </template>
+                    This alert has an icon in the title.
+                </Alert>
+            </div>
+        </div>
+    </PlaygroundLayout>
+</template>
+
+<style scoped>
+.playground-alert {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 2rem;
+    width: 100%;
+    max-width: 800px;
+}
+
+.playground-alert h2 {
+    font-size: var(--cu-font-size-lg);
+    font-weight: var(--cu-font-weight-semibold);
+    margin: 0;
+    color: var(--cu-color-neutral);
+}
+
+.playground-alert-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.playground-alert-toggle {
+    align-self: flex-start;
+    padding: var(--cu-space-sm) var(--cu-space-md);
+    background-color: var(--cu-color-neutral-soft);
+    color: var(--cu-color-neutral);
+    border: none;
+    border-radius: var(--cu-radius-md);
+    cursor: pointer;
+    font-family: var(--cu-font-sans);
+    font-size: var(--cu-font-size-sm);
+    transition: background-color 150ms ease;
+}
+
+.playground-alert-toggle:hover {
+    background-color: var(--cu-color-neutral-soft-hover);
+}
+</style>
