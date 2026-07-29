@@ -55,5 +55,6 @@ const route = useRoute()
 .cu-navbar-btn {
   justify-content: flex-start;
   text-align: left;
+  padding: var(--cu-space-xs) var(--cu-space-sm);
 }
 </style>
