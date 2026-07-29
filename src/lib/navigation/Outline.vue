@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, watch, onMounted, computed } from 'vue'
+import { useRoute } from 'vue-router'
 import Button from '@/components/buttons/Button.vue'
 
 export interface OutlineItem {
@@ -9,39 +10,14 @@ export interface OutlineItem {
 
 const props = defineProps<{
   items: OutlineItem[]
-  container?: string
 }>()
 
-const activeId = ref<string>('')
+const route = useRoute()
 
-let observer: IntersectionObserver | null = null
-
-onMounted(() => {
-  const root = props.container ? document.querySelector(props.container) : null
-
-  observer = new IntersectionObserver(
-    (entries) => {
-      for (const entry of entries) {
-        if (entry.isIntersecting) {
-          activeId.value = entry.target.id
-        }
-      }
-    },
-    {
-      root: root,
-      rootMargin: '-20% 0px -60% 0px',
-      threshold: 0,
-    }
-  )
-
-  for (const item of props.items) {
-    const el = document.getElementById(item.id)
-    if (el) observer.observe(el)
-  }
-})
-
-onUnmounted(() => {
-  observer?.disconnect()
+const activeId = computed(() => {
+  const hash = route.hash.replace('#', '')
+  if (hash && props.items.some(i => i.id === hash)) return hash
+  return props.items[0]?.id ?? ''
 })
 </script>
 
