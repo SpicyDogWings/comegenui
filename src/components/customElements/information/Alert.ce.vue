@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, getCurrentInstance, type PropType } from "vue";
-import Alert from "../information/Alert.vue";
+import Alert from "../../information/Alert.vue";
 
 const props = defineProps({
   color: {

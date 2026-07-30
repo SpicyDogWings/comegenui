@@ -81,4 +81,9 @@ const badgeStyles = computed(() => ({
   color: var(--badge-text);
   border-color: var(--badge-bg);
 }
+
+/* dark theme override */
+[data-theme="dark"] .cu-badge--solid {
+  color: var(--badge-bg);
+}
 </style>
