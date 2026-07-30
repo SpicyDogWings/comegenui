@@ -43,6 +43,7 @@ watch(internalShow, (val) => {
 
 const colorStyles = computed(() => ({
   '--alert-bg': `var(--cu-color-${props.color})`,
+  '--alert-text': `var(--cu-color-${props.color}-text)`,
   '--alert-bg-hover': `var(--cu-color-${props.color}-hover)`,
   '--alert-bg-active': `var(--cu-color-${props.color}-active)`,
   '--alert-ghost-hover': `var(--cu-color-${props.color}-ghost-hover)`,
@@ -128,26 +129,26 @@ defineExpose({
 /* ghost */
 .cu-alert--ghost {
   background-color: transparent;
-  color: var(--alert-bg);
+  color: var(--alert-text);
 }
 
 /* soft */
 .cu-alert--soft {
   background-color: var(--alert-soft);
-  color: var(--alert-bg);
+  color: var(--alert-text);
 }
 
 /* subtle */
 .cu-alert--subtle {
   background-color: var(--alert-subtle);
-  color: var(--alert-bg);
+  color: var(--alert-text);
   border: var(--cu-border-thin) solid var(--alert-subtle-border);
 }
 
 /* outlined */
 .cu-alert--outlined {
   background-color: transparent;
-  color: var(--alert-bg);
+  color: var(--alert-text);
   border: var(--cu-border-thin) solid var(--alert-bg);
 }
 
