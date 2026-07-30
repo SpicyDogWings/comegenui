@@ -46,7 +46,7 @@ function onAfterLeave(el: Element) {
 
 <template>
   <div class="cu-collapse">
-    <Button class="cu-collapse-trigger" variant="none" color="neutral" @click="isOpen = !isOpen">
+    <Button class="cu-collapse-trigger" @click="isOpen = !isOpen">
       <LucideChevronRight class="cu-collapse-chevron" :class="{ 'is-open': isOpen }" :width="14" :height="14" />
       {{ label }}
     </Button>

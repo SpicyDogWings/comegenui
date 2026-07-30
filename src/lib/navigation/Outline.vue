@@ -8,12 +8,10 @@ export interface OutlineItem {
   id: string
 }
 
-const props = withDefaults(defineProps<{
+const props = defineProps<{
+  title?: string
   items: OutlineItem[]
-  color?: 'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'
-}>(), {
-  color: 'neutral',
-})
+}>()
 
 const route = useRoute()
 
@@ -26,12 +24,13 @@ const activeId = computed(() => {
 
 <template>
   <nav class="cu-outline">
+    <h4 v-if="title" class="cu-outline-title">{{ title }}</h4>
     <Button
       v-for="item in items"
       :key="item.id"
       :to="`#${item.id}`"
-      :color="activeId === item.id ? 'primary' : color"
-      :variant="activeId === item.id ? 'soft' : 'ghost'"
+      :color="activeId === item.id ? 'primary' : undefined"
+      :variant="activeId === item.id ? 'soft' : undefined"
       class="cu-outline-btn"
     >
       {{ item.label }}
@@ -45,6 +44,16 @@ const activeId = computed(() => {
   flex-direction: column;
   gap: var(--cu-space-2xs);
   padding: var(--cu-space-2xs);
+}
+
+.cu-outline-title {
+  font-size: var(--cu-font-size-xs);
+  font-weight: var(--cu-font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--cu-color-neutral);
+  padding: var(--cu-space-xs) var(--cu-space-sm);
+  margin: 0;
 }
 
 .cu-outline-btn {
