@@ -121,6 +121,9 @@ defineExpose({
   background-color: var(--alert-bg);
   color: var(--cu-color-surface);
 }
+.cu-alert--solid .cu-alert-title-text {
+  color: var(--cu-color-surface);
+}
 
 /* ghost */
 .cu-alert--ghost {
