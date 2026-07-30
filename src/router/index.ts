@@ -68,6 +68,11 @@ const router = createRouter({
               path: "file-input-zone",
               name: "FileInputZone playground",
               component: () => import("@/pages/playground/form/FileInputZone.vue")
+            },
+            {
+              path: "checkbox",
+              name: "Checkbox playground",
+              component: () => import("@/pages/playground/form/Checkbox.vue")
             }
           ]
         },

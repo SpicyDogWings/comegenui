@@ -34,6 +34,7 @@ const navItems = [
     label: 'Form',
     children: [
       { label: 'Switch', path: '/playground/form/switch' },
+      { label: 'Checkbox', path: '/playground/form/checkbox' },
       { label: 'FileInput', path: '/playground/form/file-input' },
       { label: 'FileInputZone', path: '/playground/form/file-input-zone' },
     ]
