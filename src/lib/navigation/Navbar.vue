@@ -55,4 +55,8 @@ const route = useRoute()
   text-align: left;
   padding: var(--cu-space-sm) var(--cu-space-md);
 }
+
+.cu-navbar :deep(.cu-collapse-content) {
+  margin-top: var(--cu-space-xs);
+}
 </style>
