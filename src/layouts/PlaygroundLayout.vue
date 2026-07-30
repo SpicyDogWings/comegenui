@@ -18,10 +18,10 @@ const navItems = [
     ]
   },
   {
-    label: 'Components',
+    label: 'Information',
     children: [
-      { label: 'Alert', path: '/playground/components/alert' },
-      { label: 'Badge', path: '/playground/components/badge' },
+      { label: 'Alert', path: '/playground/information/alert' },
+      { label: 'Badge', path: '/playground/information/badge' },
     ]
   },
   {

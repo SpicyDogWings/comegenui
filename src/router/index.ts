@@ -24,8 +24,8 @@ const router = createRouter({
           ]
         },
         {
-          path: "components",
-          name: "Components playground",
+          path: "information",
+          name: "Information playground",
           children: [
             {
               path: "alert",
