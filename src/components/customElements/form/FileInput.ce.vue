@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref, getCurrentInstance, type PropType } from "vue";
 import FileInput from "../../form/FileInput.vue";
+import { initTokens } from "@/plugins/cu-tokens/css";
+
+initTokens();
 
 const props = defineProps({
   modelValue: { type: Object as PropType<File | null>, default: null },

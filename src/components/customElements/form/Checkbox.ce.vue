@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref, getCurrentInstance, type PropType } from "vue";
 import Checkbox from "../../form/Checkbox.vue";
+import { initTokens } from "@/plugins/cu-tokens/css";
+
+initTokens();
 
 const props = defineProps({
   modelValue: { type: Boolean, default: false },

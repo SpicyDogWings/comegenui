@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref, getCurrentInstance, type PropType } from "vue";
 import Modal from "../../overlay/Modal.vue";
+import { initTokens } from "@/plugins/cu-tokens/css";
+
+initTokens();
 
 const props = defineProps({
   color: {
