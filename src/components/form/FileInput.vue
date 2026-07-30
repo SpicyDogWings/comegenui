@@ -19,6 +19,12 @@ const props = defineProps({
     required: false,
     default: "neutral",
   },
+  variant: {
+    type: String,
+    required: false,
+    default: "outlined",
+    validator: (value: string) => ["outlined", "soft", "ghost", "subtle"].includes(value),
+  },
   placeholder: {
     type: String,
     required: false,
@@ -51,7 +57,9 @@ const isDragOver = ref(false);
 
 const inputStyles = computed(() => ({
   '--input-bg': `var(--cu-color-${props.color})`,
-  '--input-bg-hover': `var(--cu-color-${props.color}-hover)`,
+  '--input-soft': `var(--cu-color-${props.color}-soft)`,
+  '--input-ghost-hover': `var(--cu-color-${props.color}-ghost-hover)`,
+  '--input-soft-hover': `var(--cu-color-${props.color}-soft-hover)`,
   '--input-text': `var(--cu-color-${props.color}-text)`,
 }));
 
@@ -144,11 +152,14 @@ defineExpose({ get, set, reset, focus, trigger });
   <div
     ref="container"
     class="cu-file-input"
-    :class="{
-      'cu-file-input--disabled': props.disabled,
-      'cu-file-input--drag-over': isDragOver,
-      'cu-file-input--has-file': !!value,
-    }"
+    :class="[
+      `cu-file-input--${props.variant}`,
+      {
+        'cu-file-input--disabled': props.disabled,
+        'cu-file-input--drag-over': isDragOver,
+        'cu-file-input--has-file': !!value,
+      }
+    ]"
     :style="inputStyles"
     @click="trigger"
     @dragover="onDragOver"
@@ -241,24 +252,59 @@ defineExpose({ get, set, reset, focus, trigger });
   border-radius: var(--cu-radius-md);
   font-family: var(--cu-font-sans);
   font-size: var(--cu-font-size-sm);
-  border: var(--cu-border-thin) solid var(--cu-border-color);
   cursor: pointer;
   transition: all 200ms ease;
   width: 100%;
   box-sizing: border-box;
-  background-color: var(--cu-color-surface);
   color: var(--input-text);
+}
+
+/* outlined (default) */
+.cu-file-input--outlined {
+  border: var(--cu-border-thin) solid var(--cu-border-color);
+  background-color: var(--cu-color-surface);
+}
+
+.cu-file-input--outlined:hover:not(.cu-file-input--disabled) {
+  border-color: var(--input-bg);
+  background-color: var(--input-ghost-hover);
+}
+
+/* soft */
+.cu-file-input--soft {
+  border: var(--cu-border-thin) solid transparent;
+  background-color: var(--input-soft);
+}
+
+.cu-file-input--soft:hover:not(.cu-file-input--disabled) {
+  background-color: var(--input-soft-hover);
+}
+
+/* ghost */
+.cu-file-input--ghost {
+  border: var(--cu-border-thin) solid transparent;
+  background-color: transparent;
+}
+
+.cu-file-input--ghost:hover:not(.cu-file-input--disabled) {
+  background-color: var(--input-ghost-hover);
+}
+
+/* subtle */
+.cu-file-input--subtle {
+  border: var(--cu-border-thin) solid var(--cu-border-color);
+  background-color: transparent;
+}
+
+.cu-file-input--subtle:hover:not(.cu-file-input--disabled) {
+  border-color: var(--input-bg);
+  background-color: var(--input-ghost-hover);
 }
 
 .cu-file-input:focus {
   outline: none;
   border-color: var(--input-bg);
   box-shadow: 0 0 0 2px var(--input-bg);
-}
-
-.cu-file-input:hover:not(.cu-file-input--disabled) {
-  border-color: var(--input-bg);
-  background-color: var(--input-bg-hover);
 }
 
 .cu-file-input--disabled {
@@ -269,7 +315,7 @@ defineExpose({ get, set, reset, focus, trigger });
 
 .cu-file-input--drag-over {
   border-color: var(--input-bg);
-  background-color: var(--input-bg-hover);
+  background-color: var(--input-ghost-hover);
 }
 
 .cu-file-input-hidden {
