@@ -9,8 +9,7 @@ done
 
 ROOT_PATH="$HOME"
 PROJECT_PATH="$(pwd)"
-BUILD_FILE="comegenui.zip"
-BUILD_PATH="$PROJECT_PATH/dist/$BUILD_FILE"
+BUILD_PATH="$(ls $PROJECT_PATH/dist/comegenui*.zip 2>/dev/null | head -1)"
 MENU_PATH="$(mktemp /tmp/comegen_menu.XXXXXX)"
 MENU_ENTRY="$(mktemp /tmp/comegen_entry.XXXXXX)"
 PROJECT_NAME="$(basename $(pwd))"
