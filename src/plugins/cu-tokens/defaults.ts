@@ -56,6 +56,7 @@ export const DEFAULTS = {
     '3xl': '48px'
   },
   borderRadius: {
+    default: '8px',
     none: '0',
     sm: '4px',
     md: '8px',

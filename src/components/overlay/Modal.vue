@@ -174,7 +174,7 @@ defineExpose({
 .cu-modal {
   background-color: var(--cu-color-surface);
   color: var(--cu-color-neutral);
-  border-radius: var(--cu-radius-lg);
+  border-radius: var(--cu-radius);
   box-shadow: var(--cu-shadow-xl);
   padding: var(--cu-space-md);
   width: 100%;
