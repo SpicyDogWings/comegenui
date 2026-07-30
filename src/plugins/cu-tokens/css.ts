@@ -66,10 +66,11 @@ function sharedBlock(shared: any) {
     --cu-radius-full: ${shared.borderRadius.full};
 
     /* Shadows */
-    --cu-shadow-sm: ${shared.shadows.sm};
-    --cu-shadow-md: ${shared.shadows.md};
-    --cu-shadow-lg: ${shared.shadows.lg};
-    --cu-shadow-xl: ${shared.shadows.xl};
+    --cu-shadow-color: ${shared.shadows.color};
+    --cu-shadow-sm: ${shared.shadows.sm} var(--cu-shadow-color, ${shared.shadows.color});
+    --cu-shadow-md: ${shared.shadows.md} var(--cu-shadow-color, ${shared.shadows.color});
+    --cu-shadow-lg: ${shared.shadows.lg} var(--cu-shadow-color, ${shared.shadows.color});
+    --cu-shadow-xl: ${shared.shadows.xl} var(--cu-shadow-color, ${shared.shadows.color});
 
     /* Borders */
     --cu-border-none: ${shared.borders.width.none};
