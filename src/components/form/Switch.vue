@@ -1,17 +1,14 @@
 <script setup lang="ts">
-import { computed, defineModel, useTemplateRef } from "vue";
-import { getBgClasses, getFgClasses } from "../../utils/palette";
+import { computed, defineModel, useTemplateRef, type PropType } from "vue";
 import { useFocus } from "@vueuse/core";
 
 const checked = defineModel<boolean>({ default: false });
 
 const props = defineProps({
   color: {
-    type: String,
+    type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     required: false,
-    default: "#2c2c2c",
-    validator: (value: string) =>
-      /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/i.test(value),
+    default: "neutral",
   },
   size: {
     type: String,
@@ -24,23 +21,17 @@ const props = defineProps({
     required: false,
     default: false,
   },
-  hightContrast: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
 });
 
 const emit = defineEmits(["change"]);
 const inputRef = useTemplateRef("input");
 const { focused: inputFocus } = useFocus(inputRef);
 
-const bgClass = computed(() =>
-  getBgClasses(props.color, "solid", props.hightContrast),
-);
-const fgClass = computed(() =>
-  getFgClasses(props.color, "solid", props.hightContrast),
-);
+const switchStyles = computed(() => ({
+  '--switch-bg': `var(--cu-color-${props.color})`,
+  '--switch-bg-hover': `var(--cu-color-${props.color}-hover)`,
+  '--switch-bg-active': `var(--cu-color-${props.color}-active)`,
+}));
 
 const toggle = () => {
   if (props.disabled) return;
@@ -69,41 +60,96 @@ defineExpose({
 <template>
   <div
     @click="toggle"
-    class="relative inline-flex items-center rounded-full transition-all duration-150 cursor-pointer box-border"
+    class="cu-switch"
     :class="{
-      'w-12 h-8': props.size === 'md',
-      'w-8 h-5': props.size === 'sm',
-      'opacity-70 cursor-not-allowed pointer-events-none': props.disabled,
-      'bg-[var(--btn-bg)]': checked,
-      'bg-charcoal-300': !checked,
+      [`cu-switch--${props.size}`]: true,
+      'cu-switch--disabled': props.disabled,
+      'cu-switch--checked': checked,
     }"
-    :style="{
-      '--btn-bg': bgClass.main,
-      '--btn-fg': fgClass.main,
-    }"
+    :style="switchStyles"
     role="switch"
     :aria-checked="checked"
   >
-    <span
-      class="absolute rounded-full transition-all duration-150 shadow-sm bg-white"
-      :class="{
-        'left-1 top-1 w-6 h-6': props.size === 'md',
-        'left-0.5 top-0.5 w-4 h-4': props.size === 'sm',
-        'translate-x-4': checked && props.size === 'md',
-        'translate-x-3': checked && props.size === 'sm',
-        'translate-x-0': !checked,
-      }"
-    />
+    <span class="cu-switch-thumb" />
     <input
       ref="input"
       type="checkbox"
       :checked="checked"
-      class="absolute opacity-0 w-0 h-0"
+      class="cu-switch-input"
       :disabled="props.disabled"
     />
   </div>
 </template>
 
 <style>
-@unocss-placeholder;
+.cu-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--cu-radius-full);
+  cursor: pointer;
+  transition: all 150ms ease;
+  box-sizing: border-box;
+}
+
+.cu-switch--md {
+  width: 48px;
+  height: 32px;
+}
+
+.cu-switch--sm {
+  width: 32px;
+  height: 20px;
+}
+
+.cu-switch--checked {
+  background-color: var(--switch-bg);
+}
+
+.cu-switch:not(.cu-switch--checked) {
+  background-color: var(--cu-color-neutral-soft);
+}
+
+.cu-switch--disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.cu-switch-thumb {
+  position: absolute;
+  border-radius: var(--cu-radius-full);
+  background-color: var(--cu-color-surface);
+  box-shadow: var(--cu-shadow-sm);
+  transition: all 150ms ease;
+}
+
+.cu-switch--md .cu-switch-thumb {
+  width: 24px;
+  height: 24px;
+  top: 4px;
+  left: 4px;
+}
+
+.cu-switch--sm .cu-switch-thumb {
+  width: 16px;
+  height: 16px;
+  top: 2px;
+  left: 2px;
+}
+
+.cu-switch--checked.cu-switch--md .cu-switch-thumb {
+  transform: translateX(16px);
+}
+
+.cu-switch--checked.cu-switch--sm .cu-switch-thumb {
+  transform: translateX(12px);
+}
+
+.cu-switch-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
 </style>

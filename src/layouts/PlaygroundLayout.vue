@@ -30,6 +30,14 @@ const navItems = [
       { label: 'Modal', path: '/playground/overlay/modal' },
     ]
   },
+  {
+    label: 'Form',
+    children: [
+      { label: 'Switch', path: '/playground/form/switch' },
+      { label: 'FileInput', path: '/playground/form/file-input' },
+      { label: 'FileInputZone', path: '/playground/form/file-input-zone' },
+    ]
+  },
 ]
 </script>
 

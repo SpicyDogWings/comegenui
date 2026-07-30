@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, ref, watch, onUnmounted, useTemplateRef, type PropType } from "vue";
+import { computed, ref, watch, onUnmounted, useTemplateRef } from "vue";
+import { getBgClasses, getFgClasses } from "../../utils/palette";
 import { useFocus } from "@vueuse/core";
-import Button from "../buttons/Button.vue";
+import Button from "../Button.vue";
 import { getFileIconSvg, formatFileSize } from "../../utils/fileIcons";
 
 const value = defineModel<File | null>({ default: null });
@@ -15,9 +16,18 @@ onUnmounted(() => { if (fileUrl.value) URL.revokeObjectURL(fileUrl.value); });
 
 const props = defineProps({
   color: {
-    type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
+    type: String,
     required: false,
-    default: "neutral",
+    default: "#2c2c2c",
+    validator: (value: string) =>
+      /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/i.test(value),
+  },
+  variant: {
+    type: String,
+    required: false,
+    default: "none",
+    validator: (value: string) =>
+      ["outlined", "soft", "ghost", "subtle", "none"].includes(value),
   },
   placeholder: {
     type: String,
@@ -42,6 +52,11 @@ const props = defineProps({
     type: Number,
     required: false,
   },
+  hightContrast: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 });
 
 const fileInputRef = useTemplateRef<HTMLInputElement>("fileInput");
@@ -49,11 +64,12 @@ const containerRef = useTemplateRef("container");
 const { focused: containerFocus } = useFocus(containerRef);
 const isDragOver = ref(false);
 
-const inputStyles = computed(() => ({
-  '--input-bg': `var(--cu-color-${props.color})`,
-  '--input-bg-hover': `var(--cu-color-${props.color}-hover)`,
-  '--input-text': `var(--cu-color-${props.color}-text)`,
-}));
+const bgClass = computed(() =>
+  getBgClasses(props.color, props.variant, props.hightContrast),
+);
+const fgClass = computed(() =>
+  getFgClasses(props.color, props.variant, props.hightContrast),
+);
 
 function formatAcceptList(accept: string): string {
   if (!accept) return '';
@@ -143,13 +159,24 @@ defineExpose({ get, set, reset, focus, trigger });
 <template>
   <div
     ref="container"
-    class="cu-file-input"
+    class="flex items-center gap-2 py-2 px-3 rounded-cu font-sans border-none text-sm cursor-pointer transition-all duration-200 focus:outline-none focus:ring-2 w-full bg-[var(--btn-bg)] box-border text-[var(--btn-fg)]"
     :class="{
-      'cu-file-input--disabled': props.disabled,
-      'cu-file-input--drag-over': isDragOver,
-      'cu-file-input--has-file': !!value,
+      'focus:ring-[var(--btn-bd)]': true,
+      'cursor-not-allowed opacity-70 ph-op-50': props.disabled,
+      '!border-[var(--btn-fg)] bg-[var(--btn-bg-hover)]': isDragOver,
+      'hover:bg-[var(--btn-bg-hover)]': !props.disabled && !isDragOver,
+      'bg-transparent border-solid border-1 border-[var(--btn-bd)]': props.variant === 'none',
+      'bg-transparent border-solid border-2 border-[var(--btn-bd)] hover:bg-[var(--btn-bg-hover)]': props.variant === 'outlined',
+      'hover:bg-[var(--btn-bg-hover)]': props.variant === 'soft' || props.variant === 'ghost',
+      'border-solid border-1 border-[var(--btn-bd)]': props.variant === 'subtle',
     }"
-    :style="inputStyles"
+    :style="{
+      '--btn-fg': fgClass.main,
+      '--btn-bg': bgClass.main,
+      '--btn-bg-hover': bgClass.hover,
+      '--btn-bg-active': bgClass.active,
+      '--btn-bd': fgClass.border,
+    }"
     @click="trigger"
     @dragover="onDragOver"
     @dragleave="onDragLeave"
@@ -164,7 +191,7 @@ defineExpose({ get, set, reset, focus, trigger });
       ref="fileInput"
       type="file"
       :accept="props.accept"
-      class="cu-file-input-hidden"
+      class="hidden"
       @change="handleInputChange"
     />
 
@@ -179,39 +206,35 @@ defineExpose({ get, set, reset, focus, trigger });
       stroke-width="2"
       stroke-linecap="round"
       stroke-linejoin="round"
-      class="cu-file-input-icon"
+      class="shrink-0 opacity-60 text-[var(--btn-fg)]"
     >
       <path d="M12 3v12" />
       <path d="m17 8-5-5-5 5" />
       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
     </svg>
-    <span v-if="!value" class="cu-file-input-placeholder">
-      {{ props.placeholder }}
-      <template v-if="formatosStr">&nbsp;— {{ formatosStr }}</template>
-      <template v-if="maxSizeStr">&nbsp;(máx {{ maxSizeStr }})</template>
-    </span>
+    <span v-if="!value" class="flex-1 truncate opacity-60 text-[var(--btn-fg)]">{{ props.placeholder }}<template v-if="formatosStr">&nbsp;— {{ formatosStr }}</template><template v-if="maxSizeStr">&nbsp;(máx {{ maxSizeStr }})</template></span>
 
-    <span v-if="value" v-html="getFileIconSvg(value, 16)" class="cu-file-input-icon"></span>
+    <span v-if="value" v-html="getFileIconSvg(value, 16)" class="shrink-0"></span>
 
-    <div v-if="value" class="cu-file-input-name" @click="trigger">
+    <div v-if="value" class="flex-1 truncate min-w-0" @click="trigger">
       <a
         :href="fileUrl"
         target="_blank"
         rel="noopener noreferrer"
-        class="cu-file-input-link"
+        class="font-medium text-[var(--btn-fg)] no-underline hover:underline transition-all cursor-pointer"
         @click.stop
       >
         {{ value.name }}
       </a>
     </div>
 
-    <span v-if="value" class="cu-file-input-size">{{ formatFileSize(value.size) }}</span>
+    <span v-if="value" class="shrink-0 opacity-80 text-xs whitespace-nowrap text-[var(--btn-fg)]">{{ formatFileSize(value.size) }}</span>
 
     <Button
       v-if="value && !props.disabled"
-      :color="color"
+      :color="props.color"
       variant="ghost"
-      class="cu-file-input-remove"
+      class="!p-0.5 !min-w-0 !h-auto !gap-0 shrink-0 opacity-70 hover:opacity-100"
       @click.stop="removeFile"
     >
       <svg
@@ -233,94 +256,5 @@ defineExpose({ get, set, reset, focus, trigger });
 </template>
 
 <style>
-.cu-file-input {
-  display: flex;
-  align-items: center;
-  gap: var(--cu-space-sm);
-  padding: var(--cu-space-sm) var(--cu-space-md);
-  border-radius: var(--cu-radius-md);
-  font-family: var(--cu-font-sans);
-  font-size: var(--cu-font-size-sm);
-  border: var(--cu-border-thin) solid var(--cu-border-color);
-  cursor: pointer;
-  transition: all 200ms ease;
-  width: 100%;
-  box-sizing: border-box;
-  background-color: var(--cu-color-surface);
-  color: var(--input-text);
-}
-
-.cu-file-input:focus {
-  outline: none;
-  border-color: var(--input-bg);
-  box-shadow: 0 0 0 2px var(--input-bg);
-}
-
-.cu-file-input:hover:not(.cu-file-input--disabled) {
-  border-color: var(--input-bg);
-}
-
-.cu-file-input--disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-  pointer-events: none;
-}
-
-.cu-file-input--drag-over {
-  border-color: var(--input-bg);
-  background-color: var(--input-bg-hover);
-}
-
-.cu-file-input-hidden {
-  display: none;
-}
-
-.cu-file-input-icon {
-  flex-shrink: 0;
-  opacity: 0.6;
-  color: var(--input-text);
-}
-
-.cu-file-input-placeholder {
-  flex: 1;
-  opacity: 0.6;
-  color: var(--input-text);
-}
-
-.cu-file-input-name {
-  flex: 1;
-  min-width: 0;
-}
-
-.cu-file-input-link {
-  font-weight: var(--cu-font-weight-medium);
-  color: var(--input-text);
-  text-decoration: none;
-  transition: text-decoration 150ms ease;
-}
-
-.cu-file-input-link:hover {
-  text-decoration: underline;
-}
-
-.cu-file-input-size {
-  flex-shrink: 0;
-  opacity: 0.8;
-  font-size: var(--cu-font-size-xs);
-  white-space: nowrap;
-  color: var(--input-text);
-}
-
-.cu-file-input-remove {
-  padding: var(--cu-space-2xs) !important;
-  min-width: 0 !important;
-  height: auto !important;
-  gap: 0 !important;
-  flex-shrink: 0;
-  opacity: 0.7;
-}
-
-.cu-file-input-remove:hover {
-  opacity: 1;
-}
+@unocss-placeholder;
 </style>
