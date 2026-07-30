@@ -177,7 +177,10 @@ defineExpose({
 .cu-modal[data-height="md"] { max-height: var(--cu-modal-height-md, 40vh); }
 .cu-modal[data-height="lg"] { max-height: var(--cu-modal-height-lg, 50vh); }
 .cu-modal[data-height="xl"] { max-height: var(--cu-modal-height-xl, 60vh); }
-.cu-modal[data-height="full"] { max-height: var(--cu-modal-height-full, 90vh); }
+.cu-modal[data-height="full"] {
+  max-height: var(--cu-modal-height-full, 90vh);
+  height: var(--cu-modal-height-full, 90vh);
+}
 
 .cu-modal-header {
   display: flex;
