@@ -5,7 +5,9 @@ import Button from "@/components/buttons/Button.vue";
 import { ref } from "vue";
 
 const defaultModalRef = ref<InstanceType<typeof Modal> | null>(null);
+const defaultFooterModalRef = ref<InstanceType<typeof Modal> | null>(null);
 const persistentModalRef = ref<InstanceType<typeof Modal> | null>(null);
+const persistentDefaultFooterModalRef = ref<InstanceType<typeof Modal> | null>(null);
 const colorModalRefs = ref<(InstanceType<typeof Modal> | null)[]>([]);
 const sizeModalRefs = ref<(InstanceType<typeof Modal> | null)[]>([]);
 const heightModalRefs = ref<(InstanceType<typeof Modal> | null)[]>([]);
@@ -44,11 +46,13 @@ function updateProgrammaticState() {
 
 const outlineItems = [
   { label: 'Default', id: 'default' },
+  { label: 'Default Footer', id: 'default-footer' },
   { label: 'Colors', id: 'colors' },
   { label: 'With Icon', id: 'icons' },
   { label: 'Sizes', id: 'sizes' },
   { label: 'Heights', id: 'heights' },
   { label: 'Persistent', id: 'persistent' },
+  { label: 'Persistent Default Footer', id: 'persistent-default-footer' },
   { label: 'Programmatic', id: 'programmatic' },
 ];
 </script>
@@ -72,6 +76,21 @@ const outlineItems = [
                 <Button @click="defaultModalRef?.close()" color="primary" variant="solid">Confirm</Button>
               </div>
             </template>
+          </Modal>
+        </div>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <!-- Default Footer -->
+      <section id="default-footer" class="playground-modal-section">
+        <h2>Default Footer</h2>
+        <div class="playground-modal-row">
+          <Button @click="defaultFooterModalRef?.open()" color="primary" variant="solid">
+            Open Modal (no footer slot)
+          </Button>
+          <Modal ref="defaultFooterModalRef" title="Default Footer" description="No footer slot provided, so a 'Cerrar' button is shown.">
+            <p>This modal doesn't have a custom footer slot. The default "Cerrar" button is shown automatically.</p>
           </Modal>
         </div>
       </section>
@@ -202,14 +221,36 @@ const outlineItems = [
         <h2>Persistent</h2>
         <div class="playground-modal-row">
           <Button @click="persistentModalRef?.open()" color="warning" variant="solid">
-            Open Persistent Modal
+            Open Persistent Modal (custom footer)
           </Button>
           <Modal ref="persistentModalRef" title="Persistent Modal" persistent description="Cannot be closed by clicking outside or pressing Escape.">
             <p>Try clicking the backdrop or pressing Escape — it won't close.</p>
-            <p>You must use the button below to close this modal.</p>
             <template #footer>
               <Button @click="persistentModalRef?.close()" color="warning" variant="solid">Got it</Button>
             </template>
+          </Modal>
+        </div>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <!-- Persistent Default Footer -->
+      <section id="persistent-default-footer" class="playground-modal-section">
+        <h2>Persistent Default Footer</h2>
+        <div class="playground-modal-row">
+          <Button @click="persistentDefaultFooterModalRef?.open()" color="danger" variant="solid">
+            Open Persistent Modal (default footer)
+          </Button>
+          <Modal
+            ref="persistentDefaultFooterModalRef"
+            title="Delete Item"
+            persistent
+            color="danger"
+            description="This action cannot be undone."
+            @cancel="console.log('cancel')"
+            @accept="console.log('accept')"
+          >
+            <p>Are you sure you want to delete this item?</p>
           </Modal>
         </div>
       </section>
