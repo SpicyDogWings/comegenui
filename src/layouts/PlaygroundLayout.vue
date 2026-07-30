@@ -21,6 +21,7 @@ const navItems = [
     label: 'Components',
     children: [
       { label: 'Alert', path: '/playground/components/alert' },
+      { label: 'Badge', path: '/playground/components/badge' },
     ]
   },
 ]

@@ -1,58 +1,84 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import { getBgClasses, getFgClasses } from "../utils/palette";
+import { computed, type PropType } from "vue";
 
 const props = defineProps({
   color: {
-    type: String,
+    type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     required: false,
-    default: "#2c2c2c",
-    validator: (value: string) =>
-      /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/i.test(value),
-  },
-  hightContrast: {
-    type: Boolean,
-    required: false,
-    default: false,
+    default: "neutral",
   },
   variant: {
     type: String,
     required: false,
-    default: "solid",
+    default: "soft",
     validator: (value: string) =>
-      ["solid", "outlined", "soft", "subtle"].includes(value),
+      ["solid", "outlined", "soft", "subtle", "ghost"].includes(value),
   },
 });
 
-const bgClass = computed(() =>
-  getBgClasses(props.color, props.variant, props.hightContrast),
-);
-const fgClass = computed(() =>
-  getFgClasses(props.color, props.variant, props.hightContrast),
-);
+const badgeStyles = computed(() => ({
+  '--badge-bg': `var(--cu-color-${props.color})`,
+  '--badge-text': `var(--cu-color-${props.color}-text)`,
+  '--badge-soft': `var(--cu-color-${props.color}-soft)`,
+  '--badge-soft-hover': `var(--cu-color-${props.color}-soft-hover)`,
+  '--badge-ghost-hover': `var(--cu-color-${props.color}-ghost-hover)`,
+  '--badge-subtle': `var(--cu-color-${props.color}-subtle)`,
+  '--badge-subtle-border': `var(--cu-color-${props.color}-subtle-border)`,
+}));
 </script>
 
 <template>
-  <span
-    class="py-0.5 px-2 w-fit rounded-cu border-none font-sans font-medium font-size-3 flex justify-center items-center gap-2 box-border text-[var(--btn-fg)] bg-[var(--btn-bg)]"
-    :class="{
-      'bg-opacity-10': props.variant === 'soft',
-      'bg-opacity-10 border-solid border-1': props.variant === 'subtle',
-      'border-[var(--btn-bd)]': props.variant === 'subtle' || props.variant === 'outlined',
-      'bg-transparent border-solid border-2': props.variant === 'outlined',
-    }"
-    :style="{
-      '--btn-fg': fgClass.main,
-      '--btn-bg': bgClass.main,
-      '--btn-bg-hover': bgClass.hover,
-      '--btn-bg-active': bgClass.active,
-      '--btn-bd': fgClass.border,
-    }"
-  >
-    <slot></slot>
+  <span :class="['cu-badge', `cu-badge--${props.variant}`]" :style="badgeStyles">
+    <slot />
   </span>
 </template>
 
 <style>
-@unocss-placeholder;
+.cu-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--cu-space-xs);
+  padding: var(--cu-space-2xs) var(--cu-space-sm);
+  border-radius: var(--cu-radius-full);
+  font-family: var(--cu-font-sans);
+  font-size: var(--cu-font-size-xs);
+  font-weight: var(--cu-font-weight-medium);
+  line-height: var(--cu-line-height-tight);
+  white-space: nowrap;
+  box-sizing: border-box;
+  border: var(--cu-border-thin) solid transparent;
+}
+
+/* solid */
+.cu-badge--solid {
+  background-color: var(--badge-bg);
+  color: var(--cu-color-surface);
+}
+
+/* soft */
+.cu-badge--soft {
+  background-color: var(--badge-soft);
+  color: var(--badge-text);
+}
+
+/* ghost */
+.cu-badge--ghost {
+  background-color: transparent;
+  color: var(--badge-text);
+}
+
+/* subtle */
+.cu-badge--subtle {
+  background-color: var(--badge-subtle);
+  color: var(--badge-text);
+  border-color: var(--badge-subtle-border);
+}
+
+/* outlined */
+.cu-badge--outlined {
+  background-color: transparent;
+  color: var(--badge-text);
+  border-color: var(--badge-bg);
+}
 </style>
