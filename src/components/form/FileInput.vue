@@ -258,6 +258,7 @@ defineExpose({ get, set, reset, focus, trigger });
 
 .cu-file-input:hover:not(.cu-file-input--disabled) {
   border-color: var(--input-bg);
+  background-color: var(--input-bg-hover);
 }
 
 .cu-file-input--disabled {

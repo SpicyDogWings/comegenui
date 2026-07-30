@@ -110,6 +110,14 @@ defineExpose({
   background-color: var(--cu-color-neutral-soft);
 }
 
+.cu-switch:hover:not(.cu-switch--disabled) {
+  background-color: var(--switch-bg-hover);
+}
+
+.cu-switch:not(.cu-switch--checked):hover:not(.cu-switch--disabled) {
+  background-color: var(--cu-color-neutral-soft-hover);
+}
+
 .cu-switch--disabled {
   opacity: 0.7;
   cursor: not-allowed;
