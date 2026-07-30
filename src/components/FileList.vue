@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import Button from "./Button.vue";
+import Button from "./buttons/Button.vue";
 import { getBgClasses, getFgClasses } from "../utils/palette";
 import { getFileIconSvg, formatFileSize } from "../utils/fileIcons";
 
