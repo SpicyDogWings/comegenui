@@ -25,16 +25,18 @@ const activeId = computed(() => {
 <template>
   <nav class="cu-outline">
     <h4 v-if="title" class="cu-outline-title">{{ title }}</h4>
-    <Button
-      v-for="item in items"
-      :key="item.id"
-      :to="`#${item.id}`"
-      :color="activeId === item.id ? 'primary' : undefined"
-      :variant="activeId === item.id ? 'soft' : undefined"
-      class="cu-outline-btn"
-    >
-      {{ item.label }}
-    </Button>
+    <div class="cu-outline-items">
+      <Button
+        v-for="item in items"
+        :key="item.id"
+        :to="`#${item.id}`"
+        :color="activeId === item.id ? 'primary' : undefined"
+        :variant="activeId === item.id ? 'soft' : undefined"
+        class="cu-outline-btn"
+      >
+        {{ item.label }}
+      </Button>
+    </div>
   </nav>
 </template>
 
@@ -53,7 +55,14 @@ const activeId = computed(() => {
   letter-spacing: 0.05em;
   color: var(--cu-color-neutral);
   padding: var(--cu-space-xs) var(--cu-space-sm);
-  margin: 0 0 var(--cu-space-xs) 0;
+  margin: 0;
+}
+
+.cu-outline-items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cu-space-2xs);
+  margin-top: var(--cu-space-xs);
 }
 
 .cu-outline-btn {
