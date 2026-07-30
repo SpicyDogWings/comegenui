@@ -163,6 +163,7 @@ defineExpose({
 .cu-alert-title-text {
   font-weight: var(--cu-font-weight-bold);
   margin: 0;
+  color: inherit;
 }
 
 .cu-alert-close {
