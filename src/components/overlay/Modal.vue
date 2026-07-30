@@ -137,7 +137,7 @@ defineExpose({
   </div>
 </template>
 
-<style scoped>
+<style>
 .cu-modal-backdrop {
   z-index: 1000;
   position: fixed;
