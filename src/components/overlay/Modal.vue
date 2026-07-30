@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch, type PropType } from "vue";
+import { computed, ref, watch, useSlots, type PropType } from "vue";
 import { useMagicKeys, whenever } from "@vueuse/core";
 import Button from "../buttons/Button.vue";
 
@@ -38,9 +38,12 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["close", "opened", "closed"]);
+const emit = defineEmits(["close", "opened", "closed", "cancel", "accept"]);
 
+const slots = useSlots();
 const isOpen = ref(false);
+
+const hasFooter = computed(() => !!slots.footer?.());
 
 const colorStyles = computed(() => ({
   '--modal-color': `var(--cu-color-${props.color})`,
@@ -54,6 +57,14 @@ function close() {
 }
 function toggle() {
   isOpen.value = !isOpen.value;
+}
+function handleCancel() {
+  emit("cancel");
+  close();
+}
+function handleAccept() {
+  emit("accept");
+  close();
 }
 
 const keys = useMagicKeys({ target: window });
@@ -131,7 +142,17 @@ defineExpose({
       </main>
 
       <footer class="cu-modal-footer">
-        <slot name="footer"></slot>
+        <slot name="footer">
+          <div v-if="!hasFooter" class="cu-modal-footer-default">
+            <template v-if="persistent">
+              <Button color="neutral" variant="ghost" @click="handleCancel">Cancelar</Button>
+              <Button :color="color" variant="solid" @click="handleAccept">Aceptar</Button>
+            </template>
+            <template v-else>
+              <Button :color="color" variant="ghost" @click="close">Cerrar</Button>
+            </template>
+          </div>
+        </slot>
       </footer>
     </div>
   </div>
@@ -241,5 +262,11 @@ defineExpose({
 .cu-modal-footer {
   padding: var(--cu-space-lg);
   border-top: var(--cu-border-thin) solid var(--cu-border-color);
+}
+
+.cu-modal-footer-default {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--cu-space-sm);
 }
 </style>
