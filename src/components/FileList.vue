@@ -96,7 +96,7 @@ const fileList = computed(() => {
   gap: var(--cu-space-sm);
   padding: var(--cu-space-xs) var(--cu-space-md);
   font-size: var(--cu-font-size-sm);
-  border-radius: var(--cu-radius-md);
+  border-radius: var(--cu-radius);
   cursor: pointer;
   transition: background-color 150ms ease;
 }

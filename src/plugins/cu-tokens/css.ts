@@ -58,6 +58,7 @@ function sharedBlock(shared: any) {
     --cu-space-3xl: ${shared.spacing['3xl']};
 
     /* Border Radius */
+    --cu-radius: ${shared.borderRadius.md};
     --cu-radius-none: ${shared.borderRadius.none};
     --cu-radius-sm: ${shared.borderRadius.sm};
     --cu-radius-md: ${shared.borderRadius.md};

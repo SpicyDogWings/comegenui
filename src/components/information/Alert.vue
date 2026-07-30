@@ -110,7 +110,7 @@ defineExpose({
   font-family: var(--cu-font-sans);
   font-size: var(--cu-font-size-sm);
   padding: var(--cu-space-md) var(--cu-space-lg);
-  border-radius: var(--cu-radius-md);
+  border-radius: var(--cu-radius);
   display: flex;
   flex-direction: column;
   gap: var(--cu-space-sm);

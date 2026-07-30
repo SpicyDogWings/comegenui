@@ -249,7 +249,7 @@ defineExpose({ get, set, reset, focus, trigger });
   align-items: center;
   gap: var(--cu-space-sm);
   padding: var(--cu-space-sm) var(--cu-space-md);
-  border-radius: var(--cu-radius-md);
+  border-radius: var(--cu-radius);
   font-family: var(--cu-font-sans);
   font-size: var(--cu-font-size-sm);
   cursor: pointer;

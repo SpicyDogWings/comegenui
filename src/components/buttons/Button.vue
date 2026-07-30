@@ -97,7 +97,7 @@ const colorStyles = computed(() => ({
   font-size: var(--cu-font-size-sm);
   font-weight: var(--cu-font-weight-medium);
   padding: var(--cu-space-md) var(--cu-space-lg);
-  border-radius: var(--cu-radius-md);
+  border-radius: var(--cu-radius);
   border: none;
   cursor: pointer;
   display: inline-flex;

@@ -322,7 +322,7 @@ defineExpose({ get, set, reset, focus, trigger });
   flex-direction: column;
   gap: var(--cu-space-md);
   padding: var(--cu-space-xl) var(--cu-space-2xl);
-  border-radius: var(--cu-radius-md);
+  border-radius: var(--cu-radius);
   border: var(--cu-border-thick) dashed var(--cu-border-color);
   cursor: pointer;
   transition: all 200ms ease;
