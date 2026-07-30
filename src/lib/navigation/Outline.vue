@@ -53,7 +53,7 @@ const activeId = computed(() => {
   letter-spacing: 0.05em;
   color: var(--cu-color-neutral);
   padding: var(--cu-space-xs) var(--cu-space-sm);
-  margin: 0;
+  margin: 0 0 var(--cu-space-xs) 0;
 }
 
 .cu-outline-btn {
