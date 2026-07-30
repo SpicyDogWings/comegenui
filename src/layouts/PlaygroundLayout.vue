@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import ToggleColorSheme from '@/components/buttons/ToggleColorSheme.vue'
-import Navbar from '@/lib/navigation/Navbar.vue'
-import Outline from '@/lib/navigation/Outline.vue'
-import type { OutlineItem } from '@/lib/navigation/Outline.vue'
+import Navbar from '@/components/lab/collapse/navigation/Navbar.vue'
+import Outline from '@/components/lab/collapse/navigation/Outline.vue'
+import type { OutlineItem } from '@/components/lab/collapse/navigation/Outline.vue'
 
 defineProps<{
   title?: string

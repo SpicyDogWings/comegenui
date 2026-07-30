@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import Collapse from '../collapse/Collapse.vue'
+import Collapse from '../Collapse.vue'
 import Button from '@/components/buttons/Button.vue'
 
 export interface NavItem {
