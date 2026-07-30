@@ -5,7 +5,7 @@ let styleEl: HTMLStyleElement | null = null
 
 function colorVar(name: string, value: string) {
   return `--cu-color-${name}: ${value};
-    --cu-color-${name}-text: ${toHex(darken(value, 0.35))};
+    --cu-color-${name}-text: ${toHex(darken(value, 0.25))};
     --cu-color-${name}-hover: ${toHex(darken(value, 0.1))};
     --cu-color-${name}-active: ${toHex(lighten(value, 0.1))};
     --cu-color-${name}-ghost-hover: ${toHex(transparentize(value, 0.9))};

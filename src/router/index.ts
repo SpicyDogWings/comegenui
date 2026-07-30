@@ -30,7 +30,7 @@ const router = createRouter({
             {
               path: "alert",
               name: "Alert playground",
-              component: () => import("@/pages/playground/components/Alert.vue")
+              component: () => import("@/pages/playground/information/Alert.vue")
             }
           ]
         },

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
-import Alert from "@/components/Alert.vue";
+import Alert from "@/components/information/Alert.vue";
 import Button from "@/components/buttons/Button.vue";
 import { ref } from "vue";
 
