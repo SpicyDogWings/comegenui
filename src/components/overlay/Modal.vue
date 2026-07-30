@@ -165,10 +165,10 @@ defineExpose({
 
 /* size */
 .cu-modal[data-size="auto"] { max-width: 50vw; }
-.cu-modal[data-size="sm"] { max-width: var(--cu-space-3xl); }
+.cu-modal[data-size="sm"] { max-width: 24rem; }
 .cu-modal[data-size="md"] { max-width: 28rem; }
 .cu-modal[data-size="lg"] { max-width: 32rem; }
-.cu-modal[data-size="xl"] { max-width: 48rem; }
+.cu-modal[data-size="xl"] { max-width: 36rem; }
 .cu-modal[data-size="full"] { max-width: 90vw; }
 
 /* height */
