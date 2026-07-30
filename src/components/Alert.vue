@@ -87,7 +87,7 @@ defineExpose({
     <div class="cu-alert-header">
       <div class="cu-alert-title">
         <slot name="icon" />
-        <h3 v-if="props.title" class="cu-alert-title-text">{{ props.title }}</h3>
+        <span v-if="props.title" class="cu-alert-title-text">{{ props.title }}</span>
       </div>
       <button
         v-if="props.close"
@@ -164,6 +164,7 @@ defineExpose({
 }
 
 .cu-alert-title-text {
+  font-size: var(--cu-font-size-base);
   font-weight: var(--cu-font-weight-bold);
   margin: 0;
   color: inherit;
