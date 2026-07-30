@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch, type PropType } from "vue";
 import { useMagicKeys, whenever } from "@vueuse/core";
-import Button from "./buttons/Button.vue";
+import Button from "../buttons/Button.vue";
 
 const props = defineProps({
   color: {
@@ -137,7 +137,7 @@ defineExpose({
   </div>
 </template>
 
-<style>
+<style scoped>
 .cu-modal-backdrop {
   z-index: 1000;
   position: fixed;

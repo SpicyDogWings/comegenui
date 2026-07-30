@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
-import Modal from "@/components/Modal.vue";
+import Modal from "@/components/overlay/Modal.vue";
 import Button from "@/components/buttons/Button.vue";
 import { ref } from "vue";
 
