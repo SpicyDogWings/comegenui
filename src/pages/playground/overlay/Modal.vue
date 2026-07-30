@@ -68,14 +68,8 @@ const outlineItems = [
           <Button @click="defaultModalRef?.open()" color="primary" variant="solid">
             Open Modal
           </Button>
-          <Modal ref="defaultModalRef" title="Default Modal" description="This is a default modal dialog.">
-            <p>Modal content goes here. You can put any content inside the default slot.</p>
-            <template #footer>
-              <div class="playground-modal-footer-actions">
-                <Button @click="defaultModalRef?.close()" color="neutral" variant="ghost">Cancel</Button>
-                <Button @click="defaultModalRef?.close()" color="primary" variant="solid">Confirm</Button>
-              </div>
-            </template>
+          <Modal ref="defaultModalRef" title="Default Modal" description="This is a default modal with neutral color.">
+            <p>Modal content goes here. The title color is neutral by default.</p>
           </Modal>
         </div>
       </section>
