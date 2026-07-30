@@ -39,6 +39,17 @@ const router = createRouter({
             }
           ]
         },
+        {
+          path: "overlay",
+          name: "Overlay playground",
+          children: [
+            {
+              path: "modal",
+              name: "Modal playground",
+              component: () => import("@/pages/playground/overlay/Modal.vue")
+            }
+          ]
+        },
       ]
     }
   ]

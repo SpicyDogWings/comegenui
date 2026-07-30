@@ -24,6 +24,12 @@ const navItems = [
       { label: 'Badge', path: '/playground/components/badge' },
     ]
   },
+  {
+    label: 'Overlay',
+    children: [
+      { label: 'Modal', path: '/playground/overlay/modal' },
+    ]
+  },
 ]
 </script>
 

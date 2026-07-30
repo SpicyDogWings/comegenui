@@ -1,30 +1,13 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, ref, watch, type PropType } from "vue";
 import { useMagicKeys, whenever } from "@vueuse/core";
-import { getBgClasses, getFgClasses, getColorMap } from "../utils/palette";
-import { getHostTheme } from "../utils/getHostTheme";
-import { isValidTheme } from "../config/theme";
-import Button from "./Button.vue";
+import Button from "./buttons/Button.vue";
 
 const props = defineProps({
-  theme: {
-    type: String,
-    required: false,
-    default: "",
-    validator: isValidTheme,
-  },
   color: {
-    type: String,
+    type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     required: false,
-    default: "#2c2c2c",
-    validator: (value: string) => /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/i.test(value),
-  },
-  variant: {
-    type: String,
-    required: false,
-    default: "ghost",
-    validator: (value: string) =>
-      ["solid", "outlined", "soft", "ghost", "subtle", "link", "none"].includes(value),
+    default: "neutral",
   },
   title: {
     type: String,
@@ -53,24 +36,16 @@ const props = defineProps({
     default: "auto",
     validator: (value: string) => ["auto", "sm", "md", "lg", "xl", "full"].includes(value),
   },
-  hightContrast: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
 });
-
-const effectiveTheme = computed(() => props.theme || getHostTheme());
-const hexColor = computed(() => {
-  const map = getColorMap(effectiveTheme.value as "light" | "dark");
-  return map[props.color as keyof typeof map] || props.color;
-});
-const bgClass = computed(() => getBgClasses(hexColor.value, props.variant, props.hightContrast));
-const fgClass = computed(() => getFgClasses(hexColor.value, props.variant, props.hightContrast));
 
 const emit = defineEmits(["close", "opened", "closed"]);
 
 const isOpen = ref(false);
+
+const colorStyles = computed(() => ({
+  '--modal-color': `var(--cu-color-${props.color})`,
+}));
+
 function open() {
   isOpen.value = true;
 }
@@ -83,6 +58,7 @@ function toggle() {
 
 const keys = useMagicKeys({ target: window });
 whenever(() => keys.Escape?.value, () => !props.persistent && isOpen.value && close());
+
 function handleBackdropClick(event: MouseEvent) {
   if (!props.persistent && event.target === event.currentTarget) {
     close();
@@ -98,9 +74,8 @@ defineExpose({
   open,
   close,
   toggle,
-  get isOpen() { return isOpen.value },
+  isOpen: () => isOpen.value,
 });
-
 </script>
 
 <template>
@@ -109,63 +84,53 @@ defineExpose({
     @click="handleBackdropClick"
     tabindex="-1"
     role="dialog"
-    class="z-1000 fixed inset-0 flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm"
+    class="cu-modal-backdrop"
     aria-modal="true"
     :aria-labelledby="title ? 'modal-title' : undefined"
     :aria-describedby="description ? 'modal-description' : undefined"
   >
-    <div class="bg-charcoal-50 rounded-cu shadow-xl outline-none w-full flex flex-col overflow-x-hidden" :class="{
-      'max-w-[50vw]': size === 'auto',
-      'max-w-sm': size === 'sm',
-      'max-w-md': size === 'md',
-      'max-w-lg': size === 'lg',
-      'max-w-xl': size === 'xl',
-      'max-w-[90vw]': size === 'full',
-      'max-h-[50vh]': height === 'auto',
-      'max-h-sm': height === 'sm',
-      'max-h-md': height === 'md',
-      'max-h-lg': height === 'lg',
-      'max-h-xl': height === 'xl',
-      'max-h-[90vh]': height === 'full',
-    }" :style="{
-      '--btn-fg': fgClass.main,
-      '--btn-bd': fgClass.border,
-    }">
-      <header class="p-4 relative">
+    <div
+      class="cu-modal"
+      :style="colorStyles"
+      :data-size="size"
+      :data-height="height"
+    >
+      <header class="cu-modal-header">
+        <div class="cu-modal-header-text">
+          <div v-if="title" class="cu-modal-title-row">
+            <slot name="icon" />
+            <h2
+              id="modal-title"
+              class="cu-modal-title"
+            >
+              {{ title }}
+            </h2>
+          </div>
+          <p
+            v-if="description"
+            id="modal-description"
+            class="cu-modal-description"
+          >
+            {{ description }}
+          </p>
+        </div>
         <Button
-          v-if="!props.persistent"
-          :color="hexColor"
-          :variant="props.variant"
-          :hight-contrast="props.hightContrast"
+          v-if="!persistent"
+          :color="color"
+          variant="ghost"
           @click="close"
-          class="absolute top-4 right-4 p-1 h-auto w-auto"
+          class="cu-modal-close"
           aria-label="Cerrar modal"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
         </Button>
-        <h2
-          v-if="title"
-          id="modal-title"
-          class="font-bold text-lg font-sans text-[var(--btn-fg)]"
-        >
-          {{ title }}
-        </h2>
-        <p
-          v-if="description"
-          id="modal-description"
-          class="text-sm font-sans mt-1 text-charcoal-600"
-        >
-          {{ description }}
-        </p>
       </header>
 
-      <main class="p-4 flex-1 min-h-0 overflow-y-auto">
-        <div class="w-full overflow-x-hidden">
-          <slot></slot>
-        </div>
+      <main class="cu-modal-body">
+        <slot></slot>
       </main>
 
-      <footer class="p-4">
+      <footer class="cu-modal-footer">
         <slot name="footer"></slot>
       </footer>
     </div>
@@ -173,5 +138,104 @@ defineExpose({
 </template>
 
 <style>
-@unocss-placeholder;
+.cu-modal-backdrop {
+  z-index: 1000;
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--cu-space-md);
+  background-color: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(4px);
+}
+
+.cu-modal {
+  background-color: var(--cu-color-surface);
+  color: var(--cu-color-neutral);
+  border-radius: var(--cu-radius-lg);
+  box-shadow: var(--cu-shadow-xl);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+/* size */
+.cu-modal[data-size="auto"] { max-width: 50vw; }
+.cu-modal[data-size="sm"] { max-width: var(--cu-space-3xl); }
+.cu-modal[data-size="md"] { max-width: 28rem; }
+.cu-modal[data-size="lg"] { max-width: 32rem; }
+.cu-modal[data-size="xl"] { max-width: 48rem; }
+.cu-modal[data-size="full"] { max-width: 90vw; }
+
+/* height */
+.cu-modal[data-height="auto"] { max-height: 50vh; }
+.cu-modal[data-height="sm"] { max-height: var(--cu-space-3xl); }
+.cu-modal[data-height="md"] { max-height: 28rem; }
+.cu-modal[data-height="lg"] { max-height: 32rem; }
+.cu-modal[data-height="xl"] { max-height: 48rem; }
+.cu-modal[data-height="full"] { max-height: 90vh; }
+
+.cu-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: var(--cu-space-lg);
+  gap: var(--cu-space-md);
+}
+
+.cu-modal-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cu-space-2xs);
+  min-width: 0;
+}
+
+.cu-modal-title-row {
+  display: flex;
+  align-items: center;
+  gap: var(--cu-space-sm);
+}
+
+.cu-modal-title {
+  font-family: var(--cu-font-sans);
+  font-size: var(--cu-font-size-lg);
+  font-weight: var(--cu-font-weight-bold);
+  margin: 0;
+  color: var(--modal-color);
+}
+
+.cu-modal-description {
+  font-family: var(--cu-font-sans);
+  font-size: var(--cu-font-size-sm);
+  margin: 0;
+  color: var(--cu-color-neutral);
+  opacity: 0.7;
+}
+
+.cu-modal-close {
+  flex-shrink: 0;
+  padding: var(--cu-space-sm) !important;
+  height: auto !important;
+  width: auto !important;
+}
+
+.cu-modal-body {
+  padding: 0 var(--cu-space-lg) var(--cu-space-lg);
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.cu-modal-body > * {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.cu-modal-footer {
+  padding: var(--cu-space-lg);
+  border-top: var(--cu-border-thin) solid var(--cu-border-color);
+}
 </style>
