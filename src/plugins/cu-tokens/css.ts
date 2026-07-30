@@ -77,7 +77,21 @@ function sharedBlock(shared: any) {
     --cu-border-thick: ${shared.borders.width.thick};
     --cu-border-color: ${shared.borders.color.default};
     --cu-border-color-strong: ${shared.borders.color.strong};
-    --cu-border-color-focus: ${shared.borders.color.focus};`
+    --cu-border-color-focus: ${shared.borders.color.focus};
+
+    /* Modal */
+    --cu-modal-size-sm: ${shared.modal.size.sm};
+    --cu-modal-size-md: ${shared.modal.size.md};
+    --cu-modal-size-lg: ${shared.modal.size.lg};
+    --cu-modal-size-xl: ${shared.modal.size.xl};
+    --cu-modal-size-auto: ${shared.modal.size.auto};
+    --cu-modal-size-full: ${shared.modal.size.full};
+    --cu-modal-height-sm: ${shared.modal.height.sm};
+    --cu-modal-height-md: ${shared.modal.height.md};
+    --cu-modal-height-lg: ${shared.modal.height.lg};
+    --cu-modal-height-xl: ${shared.modal.height.xl};
+    --cu-modal-height-auto: ${shared.modal.height.auto};
+    --cu-modal-height-full: ${shared.modal.height.full};`
 }
 
 function themeBlock(tokens: any) {

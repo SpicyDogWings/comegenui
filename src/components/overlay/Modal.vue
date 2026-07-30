@@ -164,20 +164,20 @@ defineExpose({
 }
 
 /* size */
-.cu-modal[data-size="auto"] { max-width: 50vw; }
-.cu-modal[data-size="sm"] { max-width: 24rem; }
-.cu-modal[data-size="md"] { max-width: 28rem; }
-.cu-modal[data-size="lg"] { max-width: 32rem; }
-.cu-modal[data-size="xl"] { max-width: 36rem; }
-.cu-modal[data-size="full"] { max-width: 90vw; }
+.cu-modal[data-size="auto"] { max-width: var(--cu-modal-size-auto); }
+.cu-modal[data-size="sm"] { max-width: var(--cu-modal-size-sm); }
+.cu-modal[data-size="md"] { max-width: var(--cu-modal-size-md); }
+.cu-modal[data-size="lg"] { max-width: var(--cu-modal-size-lg); }
+.cu-modal[data-size="xl"] { max-width: var(--cu-modal-size-xl); }
+.cu-modal[data-size="full"] { max-width: var(--cu-modal-size-full); }
 
 /* height */
-.cu-modal[data-height="auto"] { max-height: 50vh; }
-.cu-modal[data-height="sm"] { max-height: var(--cu-space-3xl); }
-.cu-modal[data-height="md"] { max-height: 28rem; }
-.cu-modal[data-height="lg"] { max-height: 32rem; }
-.cu-modal[data-height="xl"] { max-height: 48rem; }
-.cu-modal[data-height="full"] { max-height: 90vh; }
+.cu-modal[data-height="auto"] { max-height: var(--cu-modal-height-auto); }
+.cu-modal[data-height="sm"] { max-height: var(--cu-modal-height-sm); }
+.cu-modal[data-height="md"] { max-height: var(--cu-modal-height-md); }
+.cu-modal[data-height="lg"] { max-height: var(--cu-modal-height-lg); }
+.cu-modal[data-height="xl"] { max-height: var(--cu-modal-height-xl); }
+.cu-modal[data-height="full"] { max-height: var(--cu-modal-height-full); }
 
 .cu-modal-header {
   display: flex;

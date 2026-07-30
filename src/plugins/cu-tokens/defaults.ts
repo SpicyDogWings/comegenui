@@ -80,6 +80,24 @@ export const DEFAULTS = {
       strong: '#6b7280',
       focus: '#1774A4'
     }
+  },
+  modal: {
+    size: {
+      sm: '25vw',
+      md: '30vw',
+      lg: '35vw',
+      xl: '40vw',
+      auto: '50vw',
+      full: '90vw'
+    },
+    height: {
+      sm: '30vh',
+      md: '40vh',
+      lg: '50vh',
+      xl: '60vh',
+      auto: '50vh',
+      full: '90vh'
+    }
   }
 }
 

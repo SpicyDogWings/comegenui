@@ -120,4 +120,18 @@
     --cu-border-color: #d1d5db;
     --cu-border-color-strong: #6b7280;
     --cu-border-color-focus: #1774A4;
+
+    /* Modal */
+    --cu-modal-size-sm: 25vw;
+    --cu-modal-size-md: 30vw;
+    --cu-modal-size-lg: 35vw;
+    --cu-modal-size-xl: 40vw;
+    --cu-modal-size-auto: 50vw;
+    --cu-modal-size-full: 90vw;
+    --cu-modal-height-sm: 30vh;
+    --cu-modal-height-md: 40vh;
+    --cu-modal-height-lg: 50vh;
+    --cu-modal-height-xl: 60vh;
+    --cu-modal-height-auto: 50vh;
+    --cu-modal-height-full: 90vh;
 }
