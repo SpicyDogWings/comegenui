@@ -8,34 +8,78 @@ const router = createRouter({
       name: "Playground",
       children: [
         {
-          path: "buttons",
-          name: "Buttons playground",
+          path: "theme-builder",
+          name: "Theme Builder",
+          component: () => import("@/pages/playground/ThemeBuilder.vue")
+        },
+        {
+          path: "components",
+          name: "Components playground",
           children: [
             {
               path: "button",
               name: "Button playground",
-              component: () => import("@/pages/playground/buttons/Button.vue")
+              component: () => import("@/pages/playground/components/Button.vue")
             },
             {
               path: "toggle-color-scheme",
               name: "ToggleColorScheme playground",
-              component: () => import("@/pages/playground/buttons/ToggleColorScheme.vue")
-            }
-          ]
-        },
-        {
-          path: "information",
-          name: "Information playground",
-          children: [
+              component: () => import("@/pages/playground/components/ToggleColorScheme.vue")
+            },
             {
               path: "alert",
               name: "Alert playground",
-              component: () => import("@/pages/playground/information/Alert.vue")
+              component: () => import("@/pages/playground/components/Alert.vue")
             },
             {
               path: "badge",
               name: "Badge playground",
-              component: () => import("@/pages/playground/information/Badge.vue")
+              component: () => import("@/pages/playground/components/Badge.vue")
+            },
+            {
+              path: "modal",
+              name: "Modal playground",
+              component: () => import("@/pages/playground/components/Modal.vue")
+            },
+            {
+              path: "switch",
+              name: "Switch playground",
+              component: () => import("@/pages/playground/components/Switch.vue")
+            },
+            {
+              path: "checkbox",
+              name: "Checkbox playground",
+              component: () => import("@/pages/playground/components/Checkbox.vue")
+            },
+            {
+              path: "input",
+              name: "Input playground",
+              component: () => import("@/pages/playground/components/Input.vue")
+            },
+            {
+              path: "textarea",
+              name: "Textarea playground",
+              component: () => import("@/pages/playground/components/Textarea.vue")
+            },
+            {
+              path: "select",
+              name: "Select playground",
+              component: () => import("@/pages/playground/components/Select.vue")
+            },
+            {
+              path: "autocomplete",
+              name: "Autocomplete playground",
+              component: () => import("@/pages/playground/components/Autocomplete.vue")
+            },
+            {
+              path: "file-input",
+              name: "FileInput playground",
+              component: () => import("@/pages/playground/components/FileInput.vue")
+            },
+            {
+              path: "file-input-zone",
+              name: "FileInputZone playground",
+              component: () => import("@/pages/playground/components/FileInputZone.vue")
             },
             {
               path: "dropdown",
@@ -51,69 +95,22 @@ const router = createRouter({
               path: "pagination",
               name: "Pagination playground",
               component: () => import("@/pages/playground/components/Pagination.vue")
-            }
-          ]
-        },
-        {
-          path: "data",
-          name: "Data playground",
-          children: [
+            },
             {
               path: "table",
               name: "Table playground",
-              component: () => import("@/pages/playground/data/Table.vue")
+              component: () => import("@/pages/playground/components/Table.vue")
             },
             {
               path: "advanced-table",
               name: "AdvancedTable playground",
-              component: () => import("@/pages/playground/data/AdvancedTable.vue")
-            }
-          ]
-        },
-        {
-          path: "form",
-          name: "Form playground",
-          children: [
-            {
-              path: "input",
-              name: "Input playground",
-              component: () => import("@/pages/playground/form/Input.vue")
+              component: () => import("@/pages/playground/components/AdvancedTable.vue")
             },
             {
-              path: "textarea",
-              name: "Textarea playground",
-              component: () => import("@/pages/playground/form/Textarea.vue")
+              path: "label",
+              name: "Label playground",
+              component: () => import("@/pages/playground/components/Label.vue")
             },
-            {
-              path: "select",
-              name: "Select playground",
-              component: () => import("@/pages/playground/form/Select.vue")
-            },
-            {
-              path: "autocomplete",
-              name: "Autocomplete playground",
-              component: () => import("@/pages/playground/form/Autocomplete.vue")
-            },
-            {
-              path: "switch",
-              name: "Switch playground",
-              component: () => import("@/pages/playground/form/Switch.vue")
-            },
-            {
-              path: "file-input",
-              name: "FileInput playground",
-              component: () => import("@/pages/playground/form/FileInput.vue")
-            },
-            {
-              path: "file-input-zone",
-              name: "FileInputZone playground",
-              component: () => import("@/pages/playground/form/FileInputZone.vue")
-            },
-            {
-              path: "checkbox",
-              name: "Checkbox playground",
-              component: () => import("@/pages/playground/form/Checkbox.vue")
-            }
           ]
         },
       ]

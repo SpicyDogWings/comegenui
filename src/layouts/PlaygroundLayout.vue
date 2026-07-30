@@ -11,56 +11,33 @@ defineProps<{
 
 const navItems = [
   {
-    label: 'Buttons',
+    label: 'Theme Builder',
     children: [
-      { label: 'Button', path: '/playground/buttons/button' },
-      { label: 'ToggleColorScheme', path: '/playground/buttons/toggle-color-scheme' },
-    ]
-  },
-  {
-    label: 'Information',
-    children: [
-      { label: 'Alert', path: '/playground/information/alert' },
-      { label: 'Badge', path: '/playground/information/badge' },
+      { label: 'Editor', path: '/playground/theme-builder' },
     ]
   },
   {
     label: 'Components',
     children: [
+      { label: 'Button', path: '/playground/components/button' },
+      { label: 'ToggleColorScheme', path: '/playground/components/toggle-color-scheme' },
+      { label: 'Alert', path: '/playground/components/alert' },
+      { label: 'Badge', path: '/playground/components/badge' },
+      { label: 'Modal', path: '/playground/components/modal' },
+      { label: 'Switch', path: '/playground/components/switch' },
+      { label: 'Checkbox', path: '/playground/components/checkbox' },
+      { label: 'Input', path: '/playground/components/input' },
+      { label: 'Textarea', path: '/playground/components/textarea' },
+      { label: 'Select', path: '/playground/components/select' },
+      { label: 'Autocomplete', path: '/playground/components/autocomplete' },
+      { label: 'FileInput', path: '/playground/components/file-input' },
+      { label: 'FileInputZone', path: '/playground/components/file-input-zone' },
       { label: 'Dropdown', path: '/playground/components/dropdown' },
       { label: 'DropdownMenu', path: '/playground/components/dropdown-menu' },
       { label: 'Pagination', path: '/playground/components/pagination' },
-    ]
-  },
-  {
-    label: 'Data',
-    children: [
-      { label: 'Table', path: '/playground/data/table' },
-      { label: 'AdvancedTable', path: '/playground/data/advanced-table' },
-    ]
-  },
-  {
-    label: 'Form',
-    children: [
-      { label: 'Input', path: '/playground/form/input' },
-      { label: 'Textarea', path: '/playground/form/textarea' },
-      { label: 'Select', path: '/playground/form/select' },
-      { label: 'Autocomplete', path: '/playground/form/autocomplete' },
-    ]
-  },
-  {
-    label: 'Overlay',
-    children: [
-      { label: 'Modal', path: '/playground/overlay/modal' },
-    ]
-  },
-  {
-    label: 'Form',
-    children: [
-      { label: 'Switch', path: '/playground/form/switch' },
-      { label: 'Checkbox', path: '/playground/form/checkbox' },
-      { label: 'FileInput', path: '/playground/form/file-input' },
-      { label: 'FileInputZone', path: '/playground/form/file-input-zone' },
+      { label: 'Table', path: '/playground/components/table' },
+      { label: 'AdvancedTable', path: '/playground/components/advanced-table' },
+      { label: 'Label', path: '/playground/components/label' },
     ]
   },
 ]

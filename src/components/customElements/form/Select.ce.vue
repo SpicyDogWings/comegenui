@@ -30,6 +30,7 @@ const props = defineProps({
   align: { type: String, required: false, default: "start" },
   placement: { type: String, required: false, default: "" },
   disabled: { type: Boolean, required: false, default: false },
+  fixed: { type: Boolean, required: false, default: false },
   hightContrast: { type: Boolean, required: false, default: false },
 });
 
@@ -89,6 +90,7 @@ defineExpose({
     :position="props.position"
     :align="props.align"
     :placement="props.placement"
+    :fixed="props.fixed"
     :model-value="innerValue"
     :options="resolvedOptions"
     @select="ceEmit('select', $event)"
