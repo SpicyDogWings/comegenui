@@ -4,15 +4,9 @@ import ToggleColorSheme from "@/components/buttons/ToggleColorSheme.vue";
 </script>
 
 <template>
-    <PlaygroundLayout title="ToggleColorScheme">
-        <div class="playground-row">
-            <ToggleColorSheme />
-        </div>
-    </PlaygroundLayout>
+  <PlaygroundLayout title="ToggleColorScheme">
+    <div class="playground-content playground-row--center">
+      <ToggleColorSheme />
+    </div>
+  </PlaygroundLayout>
 </template>
-
-<style scoped>
-.playground-row {
-    text-align: center;
-}
-</style>

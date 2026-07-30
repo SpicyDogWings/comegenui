@@ -25,6 +25,30 @@ const navItems = [
     ]
   },
   {
+    label: 'Components',
+    children: [
+      { label: 'Dropdown', path: '/playground/components/dropdown' },
+      { label: 'DropdownMenu', path: '/playground/components/dropdown-menu' },
+      { label: 'Pagination', path: '/playground/components/pagination' },
+    ]
+  },
+  {
+    label: 'Data',
+    children: [
+      { label: 'Table', path: '/playground/data/table' },
+      { label: 'AdvancedTable', path: '/playground/data/advanced-table' },
+    ]
+  },
+  {
+    label: 'Form',
+    children: [
+      { label: 'Input', path: '/playground/form/input' },
+      { label: 'Textarea', path: '/playground/form/textarea' },
+      { label: 'Select', path: '/playground/form/select' },
+      { label: 'Autocomplete', path: '/playground/form/autocomplete' },
+    ]
+  },
+  {
     label: 'Overlay',
     children: [
       { label: 'Modal', path: '/playground/overlay/modal' },
@@ -111,5 +135,95 @@ const navItems = [
   top: 2rem;
   min-width: 180px;
   flex-shrink: 0;
+}
+</style>
+
+<style>
+/* Shared playground utility classes */
+.playground-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.playground-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.playground-content h2 {
+  font-size: var(--cu-font-size-lg);
+  font-weight: var(--cu-font-weight-semibold);
+  margin: 0;
+  color: var(--cu-color-neutral);
+}
+
+.playground-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.playground-row--center {
+  justify-content: center;
+}
+
+.playground-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.playground-separator {
+  border: none;
+  border-top: 1px solid var(--cu-border-color);
+  margin: 0;
+}
+
+.playground-code {
+  font-family: var(--cu-font-mono);
+  font-size: var(--cu-font-size-sm);
+  opacity: 0.7;
+  margin: 0;
+}
+
+.playground-btn-sm {
+  font-size: var(--cu-font-size-xs) !important;
+  padding: var(--cu-space-xs) var(--cu-space-sm) !important;
+}
+
+.playground-btn-lg {
+  font-size: var(--cu-font-size-lg) !important;
+  padding: var(--cu-space-lg) var(--cu-space-xl) !important;
+}
+
+.playground-badge-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--cu-font-size-sm);
+}
+
+.playground-badge-table th,
+.playground-badge-table td {
+  padding: var(--cu-space-sm) var(--cu-space-md);
+  text-align: left;
+}
+
+.playground-badge-table th {
+  font-weight: var(--cu-font-weight-medium);
+  opacity: 0.6;
+  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);
+}
+
+.playground-badge-table td {
+  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);
+}
+
+.playground-badge-label {
+  opacity: 0.6;
+  font-weight: var(--cu-font-weight-medium);
 }
 </style>

@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
-import Button from "./buttons/Button.vue";
-import Select from "./form/Select.vue";
+import { computed } from "vue";
+import { getBgClasses, getFgClasses } from "../utils/palette";
+import Button from "./Button.vue";
 
 const props = defineProps({
   color: {
     type: String,
     required: false,
-    default: "neutral",
+    default: "#2c2c2c",
+    validator: (value: string) =>
+      /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/i.test(value),
   },
   variant: {
     type: String,
@@ -51,20 +53,21 @@ const props = defineProps({
     required: false,
     default: false,
   },
-
+  hightContrast: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 });
+
+const bgClass = computed(() =>
+  getBgClasses(props.color, props.variant, props.hightContrast),
+);
+const fgClass = computed(() =>
+  getFgClasses(props.color, props.variant, props.hightContrast),
+);
 
 const emit = defineEmits(["update:currentPage", "update:itemsPerPage"]);
-
-const pageSizeValue = ref(String(props.itemsPerPage));
-
-watch(() => props.itemsPerPage, (val) => {
-  pageSizeValue.value = String(val);
-});
-
-const pageSizeOptionsFormatted = computed(() =>
-  props.pageSizeOptions.map(opt => ({ value: String(opt), label: String(opt) }))
-);
 
 const handlePageChange = (page: number) => {
   if (page >= 1 && page <= props.totalPages) {
@@ -72,9 +75,8 @@ const handlePageChange = (page: number) => {
   }
 };
 
-const handlePageSizeChange = (val: string) => {
-  pageSizeValue.value = val;
-  emit("update:itemsPerPage", Number(val));
+const handlePageSizeChange = (size: number) => {
+  emit("update:itemsPerPage", size);
   emit("update:currentPage", 1);
 };
 
@@ -133,25 +135,27 @@ const visiblePages = computed(() => {
 <template>
   <div
     v-if="totalPages > 1 || showPageSize"
-    class="cu-pagination"
+    class="w-full flex flex-wrap items-center justify-between p-3 gap-3 box-border"
   >
-    <span class="cu-pagination-info">
+    <span class="hidden md:inline text-sm text-charcoal-600 font-sans">
       Mostrando {{ startItem }} - {{ endItem }} de {{ totalItems }}
     </span>
 
-    <div class="cu-pagination-controls">
-      <div v-if="showPageSize" class="cu-pagination-page-size">
-        <span class="cu-pagination-label">Por página:</span>
-        <Select
-          :model-value="pageSizeValue"
-          :options="pageSizeOptionsFormatted"
-          :color="props.color"
-          style="width: 80px"
-          @select="(opt) => handlePageSizeChange(opt.value)"
-        />
+    <div class="flex flex-wrap items-center justify-center gap-2">
+      <div v-if="showPageSize" class="flex items-center gap-2">
+        <span class="text-sm text-charcoal-600 font-sans">Por página:</span>
+        <select
+          :value="itemsPerPage"
+          @change="(e) => handlePageSizeChange(Number((e.target as HTMLSelectElement).value))"
+          class="py-1 px-2 rounded-cu font-sans border-none text-charcoal-800 bg-charcoal bg-opacity-10 hover:bg-charcoal hover:bg-opacity-20 focus:outline-none focus:ring-2 focus:ring-primary-300 border-solid border-1 border-charcoal-300"
+        >
+          <option v-for="opt in pageSizeOptions" :key="opt" :value="opt">
+            {{ opt }}
+          </option>
+        </select>
       </div>
 
-      <div class="cu-pagination-pages">
+      <div class="flex items-center gap-1">
         <Button
           @click="handlePageChange(currentPage - 1)"
           :disabled="currentPage === 1"
@@ -162,7 +166,9 @@ const visiblePages = computed(() => {
         </Button>
 
         <template v-for="(page, idx) in visiblePages" :key="idx">
-          <span v-if="page === '...'" class="cu-pagination-ellipsis">...</span>
+          <span v-if="page === '...'" class="py-1 px-2 text-charcoal-500 text-sm font-sans"
+            >...</span
+          >
           <Button
             v-else
             @click="handlePageChange(Number(page))"
@@ -186,62 +192,6 @@ const visiblePages = computed(() => {
   </div>
 </template>
 
-<style scoped>
-.cu-pagination {
-  width: 100%;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--cu-space-md);
-  gap: var(--cu-space-md);
-  box-sizing: border-box;
-}
-
-.cu-pagination-info {
-  display: none;
-  font-size: var(--cu-font-size-sm);
-  color: var(--cu-color-neutral-text);
-  font-family: var(--cu-font-sans);
-}
-
-@media (min-width: 768px) {
-  .cu-pagination-info {
-    display: inline;
-  }
-}
-
-.cu-pagination-controls {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: var(--cu-space-sm);
-}
-
-.cu-pagination-page-size {
-  display: flex;
-  align-items: center;
-  gap: var(--cu-space-sm);
-}
-
-.cu-pagination-label {
-  font-size: var(--cu-font-size-sm);
-  color: var(--cu-color-neutral-text);
-  font-family: var(--cu-font-sans);
-}
-
-.cu-pagination-pages {
-  display: flex;
-  align-items: center;
-  gap: var(--cu-space-xs);
-}
-
-.cu-pagination-ellipsis {
-  padding: var(--cu-space-xs) var(--cu-space-sm);
-  color: var(--cu-color-neutral-text);
-  opacity: 0.5;
-  font-size: var(--cu-font-size-sm);
-  font-family: var(--cu-font-sans);
-}
+<style>
+@unocss-placeholder;
 </style>

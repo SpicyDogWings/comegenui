@@ -4,17 +4,14 @@ import Table from "./Table.vue";
 import Pagination from "../Pagination.vue";
 import Input from "../form/Input.vue";
 import EditableTableCell from "./EditableTableCell.vue";
-import Button from "../Button.vue";
-import Badge from "../Badge.vue";
+import Button from "../buttons/Button.vue";
+import Badge from "../information/Badge.vue";
 import DropdownMenu from "../DropdownMenu.vue";
 import { usePagination } from "../../composables/usePagination";
 import { useSearch } from "../../composables/useSearch";
 import { useTableData } from "../../composables/useTableData";
-import { getBgClasses, getFgClasses, getColorMap } from "../../utils/palette";
-import { isValidTheme } from "../../config/theme";
 
-// Add validation state map
-const validationStates = new Map<string, { success: boolean; error: string | null }>();
+const validationStates = ref<Record<string, { success: boolean; error: string | null }>>({});
 
 const getOriginalIndex = (displayIndex: number): number => {
   const displayRow = pagination.displayData.value[displayIndex];
@@ -26,23 +23,12 @@ const getCellKey = (rowIndex: number, colKey: string): string => {
   return `${originalIndex}-${colKey}`;
 };
 
-// Helper functions for badges and buttons
-const hasBadges = (col: Column): boolean => {
-  return !!col.badges;
-};
-
-const hasButtons = (col: Column): boolean => {
-  return !!col.buttons;
-};
-
-const hasCellFunction = (col: Column): boolean => {
-  return typeof col.cell === 'function';
-};
+const hasBadges = (col: Column): boolean => !!col.badges;
+const hasButtons = (col: Column): boolean => !!col.buttons;
+const hasCellFunction = (col: Column): boolean => typeof col.cell === 'function';
 
 const getCellValue = (col: Column, row: Record<string, any>): string | string[] => {
-  if (hasCellFunction(col)) {
-    return col.cell!(row);
-  }
+  if (hasCellFunction(col)) return col.cell!(row);
   return row[col.key];
 };
 
@@ -76,145 +62,59 @@ interface Column {
   label?: string;
   width?: string;
   align?: "left" | "center" | "right";
-  // Custom cell rendering
   cell?: (row: Record<string, any>) => string | string[];
-  // Editable properties
   editable?: boolean | RegExp | ((row: Record<string, any>) => boolean);
   inputType?: "input" | "textarea" | "select";
   selectOptions?: { value: string; label: string }[] | ((row: Record<string, any>) => { value: string; label: string }[]);
   validator?: (value: string, row: Record<string, any>) => boolean;
   singleClick?: boolean;
   sortable?: boolean | "string" | "number" | "boolean";
-  // Badge and Button properties
   badges?: (row: Record<string, any>) => BadgeConfig[];
   buttons?: (row: Record<string, any>) => ButtonConfig[];
 }
 
 const props = defineProps({
-  theme: {
-    type: String,
-    required: false,
-    default: "light",
-    validator: (value: string) => isValidTheme(value),
-  },
-  // Table props - pass through to Table.vue
-  columns: {
-    type: Array as () => Column[],
-    required: false,
-    default: () => [],
-  },
-  data: {
-    type: Array as () => Record<string, any>[],
-    required: false,
-    default: () => [],
-  },
-  empty: {
-    type: String,
-    required: false,
-    default: "No hay datos que mostrar",
-  },
-  
-  // Pagination props
-  pagination: {
-    type: Boolean,
-    required: false,
-    default: true,
-  },
-  itemsPerPage: {
-    type: Number,
-    required: false,
-    default: 10,
-  },
-  showPageSize: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
-  pageSizeOptions: {
-    type: Array as () => number[],
-    required: false,
-    default: () => [5, 10, 20, 50],
-  },
+  theme: { type: String, required: false, default: "light" },
+  columns: { type: Array as () => Column[], required: false, default: () => [] },
+  data: { type: Array as () => Record<string, any>[], required: false, default: () => [] },
+  empty: { type: String, required: false, default: "No hay datos que mostrar" },
+  pagination: { type: Boolean, required: false, default: true },
+  itemsPerPage: { type: Number, required: false, default: 10 },
+  showPageSize: { type: Boolean, required: false, default: false },
+  pageSizeOptions: { type: Array as () => number[], required: false, default: () => [5, 10, 20, 50] },
   color: {
     type: String,
     required: false,
-    default: "#2c2c2c",
+    default: "neutral",
     validator: (value: string) =>
-      /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/i.test(value),
+      ["primary", "secondary", "neutral", "success", "warning", "danger"].includes(value),
   },
   variant: {
     type: String,
     required: false,
     default: "soft",
     validator: (value: string) =>
-      ["outlined", "soft", "ghost", "subtle", "solid", "link", "none"].includes(value),
+      ["solid", "outlined", "soft", "ghost", "subtle"].includes(value),
   },
-  // Search props
-  searchEnabled: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
-  searchPlaceholder: {
-    type: String,
-    required: false,
-    default: "Buscar...",
-  },
-  searchFields: {
-    type: Array as () => string[],
-    required: false,
-    default: () => [],
-  },
-  searchValue: {
-    type: String,
-    required: false,
-    default: "",
-  },
-  // Table max height prop
-  tableMaxHeight: {
-    type: String,
-    required: false,
-    default: "",
-  },
-  filters: {
-    type: Object as () => Record<string, any>,
-    required: false,
-    default: () => ({}),
-  },
-  loading: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
-  actions: {
-    type: Array as () => ButtonConfig[],
-    required: false,
-    default: () => [],
-  },
-  hightContrast: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
+  searchEnabled: { type: Boolean, required: false, default: false },
+  searchPlaceholder: { type: String, required: false, default: "Buscar..." },
+  searchFields: { type: Array as () => string[], required: false, default: () => [] },
+  searchValue: { type: String, required: false, default: "" },
+  tableMaxHeight: { type: String, required: false, default: "" },
+  filters: { type: Object as () => Record<string, any>, required: false, default: () => ({}) },
+  loading: { type: Boolean, required: false, default: false },
+  actions: { type: Array as () => ButtonConfig[], required: false, default: () => [] },
 });
 
 const emit = defineEmits([
-  "update:currentPage",
-  "update:itemsPerPage",
-  "update:search",
-  "row-click",
-  "row-dblclick",
-  "cell-click",
-  "edit-start",
-  "edit-save",
-  "edit-cancel",
+  "update:currentPage", "update:itemsPerPage", "update:search",
+  "row-click", "row-dblclick", "cell-click",
+  "edit-start", "edit-save", "edit-cancel",
 ]);
 
-// Search ref
 const searchQuery = ref("");
 
-// Use table data composable
-const { data: localData, updateRow, getData, getRow, removeRow, addRow, pushData } = 
+const { data: localData, updateRow, getData, getRow, removeRow, addRow, pushData } =
   useTableData(toRef(() => props.data));
 
 const normalizedSearchFields = computed(() => {
@@ -230,7 +130,6 @@ const { filteredData: searchedData } = useSearch(localData, {
   columns: computed(() => props.columns),
 });
 
-// Apply column filters on top of searched data
 const filteredData = computed(() => {
   const data = searchedData.value;
   const filters = props.filters;
@@ -245,7 +144,6 @@ const filteredData = computed(() => {
   );
 });
 
-// Sort state
 const sortBy = ref("");
 const sortDir = ref<"" | "asc" | "desc">("");
 
@@ -290,10 +188,8 @@ const sortedData = computed(() => {
   return sorted;
 });
 
-// Watch sort changes to reset page
 watch([sortBy, sortDir], () => pagination.setCurrentPage(1));
 
-// Use pagination composable with sorted data
 const pagination = usePagination(sortedData, {
   initialPage: 1,
   initialItemsPerPage: props.itemsPerPage,
@@ -301,48 +197,19 @@ const pagination = usePagination(sortedData, {
   pageSizeOptions: props.pageSizeOptions,
 });
 
-// Watch for external changes to itemsPerPage prop
-watch(
-  () => props.itemsPerPage,
-  (newVal) => {
-    if (newVal !== pagination.itemsPerPage.value) {
-      pagination.setItemsPerPage(newVal);
-    }
+watch(() => props.itemsPerPage, (newVal) => {
+  if (newVal !== pagination.itemsPerPage.value) {
+    pagination.setItemsPerPage(newVal);
   }
-);
-
-// Watch for external search value changes
-watch(
-  () => props.searchValue,
-  (newVal) => {
-    searchQuery.value = newVal;
-  },
-  { immediate: true }
-);
-
-// Watch for search query changes and reset pagination
-watch(searchQuery, (newVal) => {
-  emit("update:search", newVal);
-  pagination.setCurrentPage(1); // Reset to first page when search changes
 });
 
-// Handle search updates
-const handleSearchUpdate = (value: string) => {
-  searchQuery.value = value;
-};
+watch(() => props.searchValue, (newVal) => { searchQuery.value = newVal; }, { immediate: true });
+watch(searchQuery, (newVal) => { emit("update:search", newVal); pagination.setCurrentPage(1); });
 
-// Handle pagination events
-const handlePageChange = (page: number) => {
-  pagination.setCurrentPage(page);
-  emit("update:currentPage", page);
-};
+const handleSearchUpdate = (value: string) => { searchQuery.value = value; };
+const handlePageChange = (page: number) => { pagination.setCurrentPage(page); emit("update:currentPage", page); };
+const handlePageSizeChange = (size: number) => { pagination.setItemsPerPage(size); emit("update:itemsPerPage", size); };
 
-const handlePageSizeChange = (size: number) => {
-  pagination.setItemsPerPage(size);
-  emit("update:itemsPerPage", size);
-};
-
-// Table props to pass through
 const augmentedColumns = computed(() =>
   props.actions?.length
     ? [...props.columns, { key: '__actions__', label: '', width: '1%', align: 'center' as const, sortable: false }]
@@ -351,66 +218,29 @@ const augmentedColumns = computed(() =>
 
 const tableProps = computed(() => ({
   columns: augmentedColumns.value,
-  data: props.pagination ? pagination.displayData.value : filteredData.value,
+  data: props.pagination ? pagination.displayData.value : sortedData.value,
   empty: props.empty,
-  maxHeight: props.tableMaxHeight,
   color: props.color,
   variant: props.variant,
-  sortBy: sortBy.value,
-  sortDir: sortDir.value,
   loading: props.loading,
 }));
 
-// Color classes using palette utilities
-const bgClass = computed(() => getBgClasses(props.color, props.variant, props.hightContrast));
-const fgClass = computed(() => getFgClasses(props.color, props.variant, props.hightContrast));
+const tableStyles = computed(() => ({
+  '--table-bg': `var(--cu-color-${props.color}-soft)`,
+  '--table-fg': `var(--cu-color-${props.color}-text)`,
+  '--table-bg-hover': `var(--cu-color-${props.color}-soft-hover)`,
+  '--table-bd': `var(--cu-color-${props.color}-subtle-border)`,
+}));
 
-// Map table variant to input variant (Input doesn't support "solid")
-const inputVariant = computed(() => {
-  return props.variant === 'solid' ? 'soft' : props.variant;
-});
+const inputVariant = computed(() => props.variant === 'solid' ? 'soft' : props.variant);
+const paginationVariant = computed(() => props.variant === 'solid' ? 'soft' : props.variant);
 
-// Map table variant to pagination variant (Pagination doesn't support "solid")
-const paginationVariant = computed(() => {
-  return props.variant === 'solid' ? 'soft' : props.variant;
-});
-
-// Convert color names to hex values for Button and Badge components
-const getHexColor = (color: string): string => {
-  const themeMap = getColorMap(props.theme as any);
-  if (color && themeMap[color as keyof typeof themeMap]) {
-    return themeMap[color as keyof typeof themeMap];
-  }
-  return color;
-};
-
-// Handle row events
-const handleRowClick = (row: Record<string, any>, index: number, event: MouseEvent) => {
-  emit("row-click", { row, index, event });
-};
-
-const handleRowDblClick = (row: Record<string, any>, index: number, event: MouseEvent) => {
-  emit("row-dblclick", { row, index, event });
-};
-
-const handleCellClick = (row: Record<string, any>, col: Column, index: number, event: MouseEvent) => {
-  emit("cell-click", { row, col, index, event });
-};
-
-// Expose data manipulation methods
 defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
 </script>
 
 <template>
-  <div class="flex flex-col overflow-hidden max-w-full" :style="{
-    '--table-bg': bgClass.main,
-    '--table-fg': fgClass.main,
-    '--table-bg-hover': bgClass.hover,
-    '--table-bg-active': bgClass.active,
-    '--table-bd': fgClass.border,
-  }">
-    <!-- Search Input -->
-    <div v-if="props.searchEnabled" class="p-3">
+  <div class="cu-advanced-table" :style="tableStyles">
+    <div v-if="props.searchEnabled" class="cu-advanced-table-search">
       <slot name="search" :query="searchQuery" :update="handleSearchUpdate">
         <Input
           :placeholder="props.searchPlaceholder"
@@ -421,52 +251,63 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
         />
       </slot>
     </div>
-    
-    <!-- Table Component -->
-    <Table v-bind="tableProps" @sort-change="handleSort">
-      <!-- Pass through all slots from parent -->
+
+    <Table v-bind="tableProps">
       <template v-for="(_, slotName) in $slots" v-slot:[slotName]="slotProps">
         <slot :name="slotName" v-bind="slotProps"></slot>
       </template>
-      
-      <!-- Editable cells -->
+
+      <template v-for="col in augmentedColumns" v-slot:[`header-${col.key}`]="{ column }">
+        <span class="cu-table-th-content">
+          <Button
+            v-if="column.sortable"
+            :color="props.color"
+            variant="ghost"
+            @click.stop="handleSort(column.key)"
+          >
+            <template v-if="sortBy === column.key && sortDir === 'asc'">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6L12 2L16 6"/><path d="M12 2V22"/></svg>
+            </template>
+            <template v-else-if="sortBy === column.key && sortDir === 'desc'">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 18L12 22L16 18"/><path d="M12 2V22"/></svg>
+            </template>
+            <template v-else>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="m8 18 4 4 4-4"/><path d="m8 6 4-4 4 4"/></svg>
+            </template>
+          </Button>
+          {{ column.label || column.key }}
+        </span>
+      </template>
+
       <template v-for="col in augmentedColumns" v-slot:[`cell-${col.key}`]="{ row, value, index }">
-        <!-- Buttons only - no cell value -->
-        <div v-if="hasButtons(col)" class="flex items-center gap-2">
+        <div v-if="hasButtons(col)" class="cu-advanced-table-cell-buttons">
           <Button
             v-for="(button, buttonIndex) in getCellButtons(col, row)"
             :key="`button-${index}-${col.key}-${buttonIndex}`"
-            :color="getHexColor(button.color || props.color)"
+            :color="button.color || props.color"
             :variant="button.variant || props.variant"
             :to="button.to"
             :target="button.target"
             :disabled="button.disabled"
-            @click="(e) => {
-              if (button.onClick) {
-                e.stopPropagation();
-                button.onClick(row);
-              }
-            }"
+            @click="(e: MouseEvent) => { if (button.onClick) { e.stopPropagation(); button.onClick(row); } }"
           >
-            <component :is="button.icon" v-if="typeof button.icon === 'object'" class="transform translate-y-0.5" />
-            <span v-else-if="button.icon" v-html="button.icon" class="transform translate-y-0.5"></span>
+            <component :is="button.icon" v-if="typeof button.icon === 'object'" class="cu-advanced-table-icon" />
+            <span v-else-if="button.icon" v-html="button.icon" class="cu-advanced-table-icon"></span>
             <span v-if="button.label">{{ button.label }}</span>
           </Button>
         </div>
-        
-        <!-- Badges only - no cell value -->
-        <div v-else-if="hasBadges(col)" class="flex items-center gap-2">
+
+        <div v-else-if="hasBadges(col)" class="cu-advanced-table-cell-badges">
           <Badge
             v-for="(badge, badgeIndex) in getCellBadges(col, row)"
             :key="`badge-${index}-${col.key}-${badgeIndex}`"
-            :color="getHexColor(badge.color || props.color)"
+            :color="badge.color || props.color"
             :variant="badge.variant || props.variant"
           >
             {{ badge.value }}
           </Badge>
         </div>
-        
-        <!-- Editable cell -->
+
         <EditableTableCell
           v-else-if="col.editable"
           :value="value"
@@ -475,49 +316,29 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
           :index="index"
           :color="props.color"
           :variant="inputVariant"
-          :validation="validationStates.get(getCellKey(index, col.key)) || { success: false, error: null }"
-          @edit-start="(e) => {
-            const displayIndex = e.index;
-            const originalIndex = getOriginalIndex(displayIndex);
-            emit('edit-start', { ...e, index: originalIndex });
-          }"
-          @edit-save="(e) => {
-            const displayIndex = e.index;
-            const originalIndex = getOriginalIndex(displayIndex);
-            const cellKey = getCellKey(displayIndex, e.column.key);
-            validationStates.set(cellKey, { success: true, error: null });
-            updateRow(originalIndex, { [e.column.key]: e.value });
-            emit('edit-save', { ...e, index: originalIndex });
-          }"
-          @edit-cancel="(e) => {
-            const displayIndex = e.index;
-            const originalIndex = getOriginalIndex(displayIndex);
-            const cellKey = getCellKey(displayIndex, e.column.key);
-            validationStates.set(cellKey, { success: false, error: null });
-            emit('edit-cancel', { ...e, index: originalIndex });
-          }"
+          :validation="validationStates[getCellKey(index, col.key)] || { success: false, error: null }"
+          @edit-start="(e: any) => { const displayIndex = e.index; const originalIndex = getOriginalIndex(displayIndex); emit('edit-start', { ...e, index: originalIndex }); }"
+          @edit-save="(e: any) => { const displayIndex = e.index; const originalIndex = getOriginalIndex(displayIndex); const cellKey = getCellKey(displayIndex, e.column.key); validationStates[cellKey] = { success: true, error: null }; updateRow(originalIndex, { [e.column.key]: e.value }); emit('edit-save', { ...e, index: originalIndex }); }"
+          @edit-cancel="(e: any) => { const displayIndex = e.index; const originalIndex = getOriginalIndex(displayIndex); const cellKey = getCellKey(displayIndex, e.column.key); validationStates[cellKey] = { success: false, error: null }; emit('edit-cancel', { ...e, index: originalIndex }); }"
         />
-        
-        <!-- Custom cell rendering -->
+
         <span v-else-if="hasCellFunction(col)">{{ getCellValue(col, row) }}</span>
-        <!-- Actions dropdown -->
-        <div v-else-if="col.key === '__actions__' && props.actions?.length" class="flex items-center justify-center">
+
+        <div v-else-if="col.key === '__actions__' && props.actions?.length" class="cu-advanced-table-actions">
           <DropdownMenu
-            :color="getHexColor(props.color)"
+            :color="props.color"
             variant="ghost"
             placement="bottom-end"
             fixed
-            :menu-bg="getColorMap(props.theme as any).surface"
-            :items="props.actions.map(a => ({ ...a, color: a.color ? getHexColor(a.color) : undefined, onClick: () => a.onClick?.(row) }))"
+            :items="props.actions.map(a => ({ ...a, color: a.color || undefined, onClick: () => a.onClick?.(row) }))"
             @click.stop
           >
             <template #toggle="{ toggle }">
               <Button
-                color="#888"
+                color="neutral"
                 variant="ghost"
                 @click="toggle"
-                style="padding:2px 6px;min-width:0;height:28px"
-                class="box-border"
+                class="cu-advanced-table-actions-btn"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                   <circle cx="12" cy="5" r="1.5"/>
@@ -528,13 +349,12 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
             </template>
           </DropdownMenu>
         </div>
-        <!-- Regular cell value only -->
+
         <span v-else>{{ value }}</span>
       </template>
     </Table>
 
-    <!-- Pagination Controls -->
-    <div v-if="props.pagination && pagination.showPaginationControl.value" class="mt-4">
+    <div v-if="props.pagination && pagination.showPaginationControl.value" class="cu-advanced-table-pagination">
       <Pagination
         :color="props.color"
         :variant="paginationVariant"
@@ -551,6 +371,48 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
   </div>
 </template>
 
-<style>
-@unocss-placeholder;
+<style scoped>
+.cu-advanced-table {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  max-width: 100%;
+}
+
+.cu-advanced-table-search {
+  padding: var(--cu-space-md);
+}
+
+.cu-advanced-table-cell-buttons {
+  display: flex;
+  align-items: center;
+  gap: var(--cu-space-sm);
+}
+
+.cu-advanced-table-cell-badges {
+  display: flex;
+  align-items: center;
+  gap: var(--cu-space-sm);
+}
+
+.cu-advanced-table-icon {
+  transform: translateY(2px);
+}
+
+.cu-advanced-table-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cu-advanced-table-actions-btn {
+  padding: 2px 6px;
+  min-width: 0;
+  height: 28px;
+  box-sizing: border-box;
+}
+
+.cu-advanced-table-pagination {
+  margin-top: var(--cu-space-lg);
+}
 </style>

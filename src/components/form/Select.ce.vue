@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch, getCurrentInstance } from "vue";
 import Select from "./Select.vue";
-import { getColorMap } from "../../utils/palette";
-import { getHostTheme } from "../../utils/getHostTheme";
-import { isValidTheme, type ThemeName } from "../../config/theme";
 
 interface SelectOption {
   value: string;
@@ -14,22 +11,18 @@ interface SelectOption {
 }
 
 const props = defineProps({
-  theme: { type: String, required: false, default: "", validator: isValidTheme },
+  theme: { type: String, required: false, default: "" },
   modelValue: { type: String, required: false, default: "" },
   options: { type: Array as () => SelectOption[], required: false, default: () => [] },
   color: {
     type: String,
     required: false,
     default: "neutral",
-    validator: (value: string) =>
-      ["primary", "neutral", "success", "warning", "danger"].includes(value),
   },
   variant: {
     type: String,
     required: false,
-    default: "none",
-    validator: (value: string) =>
-      ["solid", "outlined", "soft", "ghost", "subtle", "link", "none"].includes(value),
+    default: "soft",
   },
   placeholder: { type: String, required: false },
   placeholderWrap: { type: Boolean, required: false, default: false },
@@ -40,18 +33,10 @@ const props = defineProps({
   hightContrast: { type: Boolean, required: false, default: false },
 });
 
-const effectiveTheme = computed(() => props.theme || getHostTheme());
-const hexColor = computed(() => {
-  const map = getColorMap(effectiveTheme.value as ThemeName);
-  return map[props.color as keyof typeof map] || props.color;
-});
-
-const themeMap = computed(() => getColorMap(effectiveTheme.value as ThemeName));
-
 const resolvedOptions = computed(() =>
   (props.options || []).map((opt: any) => ({
     ...opt,
-    color: opt.color ? (themeMap.value[opt.color as keyof typeof themeMap.value] || opt.color) : undefined,
+    color: opt.color || undefined,
   })),
 );
 
@@ -95,7 +80,7 @@ defineExpose({
 <template>
   <Select
     ref="selectRef"
-    :color="hexColor"
+    :color="props.color"
     :variant="props.variant"
     :disabled="props.disabled"
     :hight-contrast="props.hightContrast"
@@ -106,13 +91,11 @@ defineExpose({
     :placement="props.placement"
     :model-value="innerValue"
     :options="resolvedOptions"
-    :menu-bg="getColorMap(effectiveTheme as ThemeName).surface"
     @select="ceEmit('select', $event)"
     @close="ceEmit('close', $event)"
     @blur="ceEmit('blur', $event)"
   />
 </template>
 
-<style>
-@unocss-placeholder;
+<style scoped>
 </style>

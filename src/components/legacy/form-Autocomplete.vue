@@ -2,7 +2,7 @@
 import { ref, computed, watch, defineModel } from "vue";
 import Dropdown from "../Dropdown.vue";
 import Input from "./Input.vue";
-import Button from "../buttons/Button.vue";
+import Button from "../Button.vue";
 
 interface AutocompleteItem {
   label: string;
@@ -11,38 +11,18 @@ interface AutocompleteItem {
 }
 
 const props = defineProps({
-  color: {
-    type: String,
-    required: false,
-    default: "neutral",
-    validator: (value: string) =>
-      ["primary", "secondary", "neutral", "success", "warning", "danger"].includes(value),
-  },
+  color: { type: String, required: false, default: "#2c2c2c" },
+  hightContrast: { type: Boolean, required: false, default: false },
   disabled: { type: Boolean, required: false, default: false },
   readOnly: { type: Boolean, required: false, default: false },
   placeholder: { type: String, required: false, default: "" },
-  variant: {
-    type: String,
-    required: false,
-    default: "soft",
-    validator: (value: string) =>
-      ["outlined", "soft", "ghost", "subtle"].includes(value),
-  },
+  variant: { type: String, required: false, default: "none" },
   type: { type: String, required: false, default: "text" },
   minChars: { type: Number, required: false, default: 0 },
   items: { type: Array as () => AutocompleteItem[], required: false, default: () => [] },
-  position: {
-    type: String,
-    required: false,
-    default: "bottom",
-    validator: (value: string) => ["bottom", "top"].includes(value),
-  },
-  align: {
-    type: String,
-    required: false,
-    default: "start",
-    validator: (value: string) => ["start", "center", "end"].includes(value),
-  },
+  menuBg: { type: String, required: false, default: "#ffffff" },
+  position: { type: String, required: false, default: "bottom" },
+  align: { type: String, required: false, default: "start" },
   placement: { type: String, required: false, default: "" },
 });
 
@@ -123,10 +103,12 @@ defineExpose({
     ref="dropdownRef"
     :color="color"
     :disabled="disabled"
+    :hight-contrast="hightContrast"
     :position="position"
     :align="align"
     :placement="placement"
     :offset="4"
+    :menu-bg="menuBg"
     style="width:100%"
   >
     <template #toggle>
@@ -139,24 +121,25 @@ defineExpose({
         :color="color"
         :variant="variant"
         :type="type"
+        :hight-contrast="hightContrast"
         style="width:100%"
         @update:model-value="onInput"
         @focus="onFocus"
       />
     </template>
     <template #default>
-      <div v-if="filteredItems.length > 0" class="cu-autocomplete-options">
+      <div v-if="filteredItems.length > 0" class="max-h-[240px] overflow-y-auto">
         <Button
           v-for="(item, i) in filteredItems"
           :key="i"
-          color="neutral"
+          color="#888"
           variant="ghost"
           :disabled="item.disabled"
-          class="cu-autocomplete-option"
-          :class="{ 'cu-autocomplete-option--disabled': item.disabled }"
+          :class="{ 'opacity-50 cursor-not-allowed': item.disabled }"
+          style="width:100%;justify-content:flex-start"
           @click="item.disabled ? undefined : onItemClick(item)"
         >
-          <span v-if="item.icon" v-html="item.icon" class="cu-autocomplete-icon"></span>
+          <span v-if="item.icon" v-html="item.icon" class="transform translate-y-0.5" style="opacity:.6"></span>
           <span v-if="item.label">{{ item.label }}</span>
         </Button>
       </div>
@@ -165,29 +148,6 @@ defineExpose({
   </div>
 </template>
 
-<style scoped>
-.cu-autocomplete {
-  width: 100%;
-  outline: none;
-}
-
-.cu-autocomplete-options {
-  max-height: 240px;
-  overflow-y: auto;
-}
-
-.cu-autocomplete-option {
-  width: 100%;
-  justify-content: flex-start;
-}
-
-.cu-autocomplete-option--disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.cu-autocomplete-icon {
-  transform: translateY(2px);
-  opacity: 0.6;
-}
+<style>
+@unocss-placeholder;
 </style>

@@ -1,6 +1,9 @@
 <script setup lang="ts">
-import { ref, type Component } from "vue";
+import { ref, computed, getCurrentInstance, type Component } from "vue";
 import Table from "./AdvancedTable.vue";
+import { getColorMap } from "../../utils/palette";
+import { getHostTheme } from "../../utils/getHostTheme";
+import { isValidTheme } from "../../config/theme";
 
 interface BadgeConfig {
   value: string;
@@ -23,11 +26,13 @@ interface Column {
   key: string;
   label?: string;
   cell?: (row: Record<string, any>) => string | string[];
+  // Editable properties
   editable?: boolean | RegExp | ((row: Record<string, any>) => boolean);
   inputType?: "input" | "textarea" | "select";
   selectOptions?: { value: string; label: string }[] | ((row: Record<string, any>) => { value: string; label: string }[]);
   validator?: (value: string, row: Record<string, any>) => boolean;
   singleClick?: boolean;
+  // Badge and Button properties
   badges?: (row: Record<string, any>) => BadgeConfig[];
   buttons?: (row: Record<string, any>) => ButtonConfig[];
 }
@@ -37,6 +42,7 @@ const props = defineProps({
     type: String,
     required: false,
     default: "",
+    validator: isValidTheme,
   },
   columns: {
     type: Array as () => Column[],
@@ -77,11 +83,15 @@ const props = defineProps({
     type: String,
     required: false,
     default: "neutral",
+    validator: (value: string) =>
+      ["primary", "neutral", "success", "warning", "danger"].includes(value),
   },
   variant: {
     type: String,
     required: false,
     default: "soft",
+    validator: (value: string) =>
+      ["solid", "outlined", "soft", "ghost", "subtle", "link", "none"].includes(value),
   },
   searchEnabled: { type: Boolean, required: false, default: false },
   searchPlaceholder: { type: String, required: false, default: "Buscar..." },
@@ -90,11 +100,31 @@ const props = defineProps({
   filters: { type: Object as () => Record<string, any>, required: false, default: () => ({}) },
   loading: { type: Boolean, required: false, default: false },
   actions: { type: Array, required: false, default: () => [] },
+  hightContrast: { type: Boolean, required: false, default: false },
+});
 
+const effectiveTheme = computed(() => props.theme || getHostTheme());
+const hexColor = computed(() => {
+  const map = getColorMap(effectiveTheme.value as "light" | "dark");
+  return map[props.color as keyof typeof map] || props.color;
 });
 
 const tableRef = ref<InstanceType<typeof Table> | null>(null);
+const instance = getCurrentInstance();
 
+function ceEmit(event: string, payload: unknown) {
+  const el = instance?.vnode.el as HTMLElement | null;
+  const host = el?.getRootNode()?.host || el;
+  if (host) {
+    host.dispatchEvent(new CustomEvent(event, {
+      detail: payload,
+      bubbles: true,
+      composed: true,
+    }));
+  }
+}
+
+// Expose data manipulation methods from AdvancedTable
 defineExpose({
   updateRow: (rowIndex: number, newData: Record<string, any>) => tableRef.value?.updateRow(rowIndex, newData),
   getData: () => tableRef.value?.getData(),
@@ -115,7 +145,8 @@ defineExpose({
     :items-per-page="props.itemsPerPage"
     :show-page-size="props.showPageSize"
     :page-size-options="props.pageSizeOptions"
-    :color="props.color"
+    :theme="effectiveTheme"
+    :color="hexColor"
     :variant="props.variant"
     :search-enabled="props.searchEnabled"
     :search-placeholder="props.searchPlaceholder"
@@ -124,13 +155,13 @@ defineExpose({
     :filters="props.filters"
     :loading="props.loading"
     :actions="props.actions"
-
-    @update:current-page="$emit('update:currentPage', $event)"
-    @update:items-per-page="$emit('update:itemsPerPage', $event)"
-    @update:search="$emit('update:search', $event)"
-    @edit-start="$emit('edit-start', $event)"
-    @edit-save="$emit('edit-save', $event)"
-    @edit-cancel="$emit('edit-cancel', $event)"
+    :hight-contrast="props.hightContrast"
+    @update:current-page="ceEmit('update:currentPage', $event)"
+    @update:items-per-page="ceEmit('update:itemsPerPage', $event)"
+    @update:search="ceEmit('update:search', $event)"
+    @edit-start="ceEmit('edit-start', $event)"
+    @edit-save="ceEmit('edit-save', $event)"
+    @edit-cancel="ceEmit('edit-cancel', $event)"
   >
     <!-- Header slots -->
     <template #header="{ column }">
@@ -141,6 +172,8 @@ defineExpose({
       </slot>
     </template>
 
+
+
     <!-- Empty slot -->
     <template #empty>
       <slot name="empty">{{ props.empty || "No hay datos que mostrar" }}</slot>
@@ -148,5 +181,6 @@ defineExpose({
   </Table>
 </template>
 
-<style scoped>
+<style>
+@unocss-placeholder;
 </style>
