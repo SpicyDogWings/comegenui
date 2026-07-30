@@ -158,7 +158,7 @@ const cancelEdit = () => {
 };
 
 const handleKeyDown = (event: KeyboardEvent) => {
-  if (event.key === "Enter") {
+  if (event.key === "Enter" && props.column.inputType !== "textarea") {
     saveEdit();
   } else if (event.key === "Escape") {
     cancelEdit();
@@ -181,10 +181,10 @@ const displayValue = computed(() => {
 
 const validationClass = computed(() => {
   if (!props.validation.success && props.validation.error) {
-    return "text-red-500";
+    return "cu-editable-cell--error";
   }
   if (props.validation.success) {
-    return "text-green-500";
+    return "cu-editable-cell--success";
   }
   return "";
 });
@@ -342,8 +342,9 @@ const canEdit = computed(() => {
 
 .cu-editable-cell-view {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--cu-space-sm);
+  white-space: pre-line;
 }
 
 .cu-editable-cell-view--disabled {
@@ -352,5 +353,13 @@ const canEdit = computed(() => {
 
 .cu-editable-cell-icon {
   flex-shrink: 0;
+}
+
+.cu-editable-cell--success {
+  color: var(--cu-color-success);
+}
+
+.cu-editable-cell--error {
+  color: var(--cu-color-danger);
 }
 </style>

@@ -43,24 +43,52 @@ const props = defineProps({
     required: false,
     default: false,
   },
+  maxHeight: {
+    type: String,
+    required: false,
+    default: "",
+  },
 });
 
-const tableStyles = computed(() => {
+const tableStyles = computed(() => ({
+  '--table-fg': `var(--cu-color-${props.color}-text)`,
+  '--table-bg-hover': `var(--cu-color-${props.color}-ghost-hover)`,
+  '--table-bd': `var(--cu-color-${props.color}-subtle-border)`,
+  '--table-bg-solid': `var(--cu-color-${props.color})`,
+  '--loader-color': `var(--cu-color-${props.color})`,
+  ...(props.maxHeight ? { maxHeight: props.maxHeight } : {}),
+}));
+
+const thStyle = computed(() => {
   const base: Record<string, string> = {
-    '--table-fg': `var(--cu-color-${props.color}-text)`,
-    '--table-bg-hover': `var(--cu-color-${props.color}-ghost-hover)`,
-    '--table-bd': `var(--cu-color-${props.color}-subtle-border)`,
-    '--table-bg-solid': `var(--cu-color-${props.color})`,
+    'width': '',
+    'background-color': `var(--cu-color-${props.color}-soft)`,
+    'color': `var(--cu-color-${props.color}-text)`,
+    'border-bottom': `1px solid rgba(0, 0, 0, 0.08)`,
   };
 
-  if (props.variant === 'ghost' || props.variant === 'outlined') {
-    base['--table-bg'] = 'transparent';
-  } else {
-    base['--table-bg'] = `var(--cu-color-${props.color}-soft)`;
+  if (props.maxHeight) {
+    base['backdrop-filter'] = 'blur(8px)';
+  }
+
+  if (props.variant === 'solid') {
+    base['background-color'] = `var(--cu-color-${props.color})`;
+    base['color'] = 'var(--cu-color-surface)';
+    base['border-bottom'] = 'none';
+    base['backdrop-filter'] = 'none';
+  } else if (props.variant === 'ghost' || props.variant === 'outlined') {
+    base['background-color'] = 'transparent';
+    if (props.variant === 'outlined') {
+      base['border-bottom'] = `2px solid var(--cu-color-${props.color}-subtle-border)`;
+    }
   }
 
   return base;
 });
+
+const thStyleFn = (col: Column) => {
+  return { ...thStyle.value, width: col.width || '' };
+};
 
 const tableColumns = computed<Column[]>(() => {
   if (props.columns.length > 0) {
@@ -78,7 +106,7 @@ const getCellValue = (row: Record<string, any>, col: Column): string => {
 </script>
 
 <template>
-  <div class="cu-table" :style="tableStyles">
+  <div class="cu-table" :class="{ 'cu-table--outlined': variant === 'outlined' }" :style="tableStyles">
     <div v-if="loading" class="cu-table-loader">
       <div class="cu-table-loader-bar" />
     </div>
@@ -90,12 +118,7 @@ const getCellValue = (row: Record<string, any>, col: Column): string => {
               v-for="col in tableColumns"
               :key="col.key"
               class="cu-table-th"
-              :class="{
-                'cu-table-th--solid': variant === 'solid',
-                'cu-table-th--ghost': variant === 'ghost',
-                'cu-table-th--outlined': variant === 'outlined',
-              }"
-              :style="{ width: col.width }"
+              :style="thStyleFn(col)"
             >
               <slot :name="`header-${col.key}`" :column="col" :color="props.color" :variant="props.variant">
                 <span class="cu-table-th-content">
@@ -159,16 +182,22 @@ const getCellValue = (row: Record<string, any>, col: Column): string => {
   display: flex;
   flex-direction: column;
   max-width: 100%;
+  overflow: hidden;
 }
 
 .cu-table-scroll {
   overflow: auto;
   border-radius: var(--cu-radius-md);
+  flex: 1;
 }
 
 .cu-table-element {
   width: 100%;
   border-collapse: collapse;
+}
+
+.cu-table--outlined .cu-table-scroll {
+  border: var(--cu-border-medium) solid var(--table-bd);
 }
 
 .cu-table-th {
@@ -180,38 +209,22 @@ const getCellValue = (row: Record<string, any>, col: Column): string => {
   top: 0;
   z-index: 20;
   user-select: none;
-  background-color: var(--table-bg);
-  color: var(--table-fg);
-  border-bottom: 1px solid var(--table-bd);
 }
 
-.cu-table-th--solid {
-  background-color: var(--table-bg-solid);
-  color: var(--cu-color-surface);
-}
-
-.cu-table-th--ghost {
-  background-color: transparent;
-}
-
-.cu-table-th--ghost:hover {
-  background-color: var(--table-bg-hover);
-}
-
-.cu-table-th--outlined {
-  background-color: transparent;
-  border-bottom: 2px solid var(--table-bd);
-}
-
-.cu-table-th-content {
+.cu-table .cu-table-th-content {
   display: inline-flex;
   align-items: center;
   gap: var(--cu-space-xs);
+  color: inherit;
 }
 
 .cu-table-row {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  border-bottom: var(--cu-border-thin) solid rgba(0, 0, 0, 0.08);
   transition: background-color 150ms ease;
+}
+
+.cu-table--outlined .cu-table-row {
+  border-bottom-color: var(--table-bd);
 }
 
 .cu-table-row:hover {

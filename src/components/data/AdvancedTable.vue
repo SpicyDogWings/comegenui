@@ -11,7 +11,7 @@ import { usePagination } from "../../composables/usePagination";
 import { useSearch } from "../../composables/useSearch";
 import { useTableData } from "../../composables/useTableData";
 
-const validationStates = new Map<string, { success: boolean; error: string | null }>();
+const validationStates = ref<Record<string, { success: boolean; error: string | null }>>({});
 
 const getOriginalIndex = (displayIndex: number): number => {
   const displayRow = pagination.displayData.value[displayIndex];
@@ -316,10 +316,10 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
           :index="index"
           :color="props.color"
           :variant="inputVariant"
-          :validation="validationStates.get(getCellKey(index, col.key)) || { success: false, error: null }"
+          :validation="validationStates[getCellKey(index, col.key)] || { success: false, error: null }"
           @edit-start="(e: any) => { const displayIndex = e.index; const originalIndex = getOriginalIndex(displayIndex); emit('edit-start', { ...e, index: originalIndex }); }"
-          @edit-save="(e: any) => { const displayIndex = e.index; const originalIndex = getOriginalIndex(displayIndex); const cellKey = getCellKey(displayIndex, e.column.key); validationStates.set(cellKey, { success: true, error: null }); updateRow(originalIndex, { [e.column.key]: e.value }); emit('edit-save', { ...e, index: originalIndex }); }"
-          @edit-cancel="(e: any) => { const displayIndex = e.index; const originalIndex = getOriginalIndex(displayIndex); const cellKey = getCellKey(displayIndex, e.column.key); validationStates.set(cellKey, { success: false, error: null }); emit('edit-cancel', { ...e, index: originalIndex }); }"
+          @edit-save="(e: any) => { const displayIndex = e.index; const originalIndex = getOriginalIndex(displayIndex); const cellKey = getCellKey(displayIndex, e.column.key); validationStates[cellKey] = { success: true, error: null }; updateRow(originalIndex, { [e.column.key]: e.value }); emit('edit-save', { ...e, index: originalIndex }); }"
+          @edit-cancel="(e: any) => { const displayIndex = e.index; const originalIndex = getOriginalIndex(displayIndex); const cellKey = getCellKey(displayIndex, e.column.key); validationStates[cellKey] = { success: false, error: null }; emit('edit-cancel', { ...e, index: originalIndex }); }"
         />
 
         <span v-else-if="hasCellFunction(col)">{{ getCellValue(col, row) }}</span>

@@ -7,6 +7,7 @@ const outlineItems = [
   { label: 'Colors', id: 'colors' },
   { label: 'Variants', id: 'variants' },
   { label: 'Scroll', id: 'scroll' },
+  { label: 'Scroll (Sticky)', id: 'scroll-sticky' },
   { label: 'Empty State', id: 'empty' },
 ];
 
@@ -68,9 +69,16 @@ const variants = ["soft", "solid", "outlined", "ghost"];
 
       <section id="scroll" class="playground-section">
         <h2>Scroll</h2>
-        <div style="max-height: 250px; overflow-y: auto; border: 1px solid var(--cu-border-color); border-radius: var(--cu-radius-md);">
+        <div style="max-height: 300px; overflow-y: auto; border: var(--cu-border-thin) solid var(--cu-border-color); border-radius: var(--cu-radius-md);">
           <Table :columns="columns" :data="sampleData" />
         </div>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="scroll-sticky" class="playground-section">
+        <h2>Scroll (Sticky Header)</h2>
+        <Table :columns="columns" :data="sampleData" max-height="300px" />
       </section>
 
       <hr class="playground-separator" />

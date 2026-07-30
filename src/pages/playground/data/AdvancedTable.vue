@@ -7,6 +7,8 @@ const outlineItems = [
   { label: 'Sortable', id: 'sortable' },
   { label: 'With Badges', id: 'badges' },
   { label: 'With Buttons', id: 'buttons' },
+  { label: 'Buttons with Icons', id: 'buttons-icons' },
+  { label: 'Editable Cells', id: 'editable' },
   { label: 'Pagination', id: 'pagination' },
   { label: 'Search', id: 'search' },
   { label: 'Empty State', id: 'empty' },
@@ -69,6 +71,79 @@ const buttonColumns = [
     ],
   },
 ];
+
+const iconButtonColumns = [
+  { key: "name", label: "Name" },
+  { key: "email", label: "Email" },
+  {
+    key: "actions",
+    label: "Actions",
+    buttons: (row: any) => [
+      {
+        color: "primary",
+        variant: "ghost",
+        icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>',
+        onClick: () => console.log("edit", row),
+      },
+      {
+        color: "neutral",
+        variant: "ghost",
+        icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>',
+        onClick: () => console.log("more", row),
+      },
+      {
+        color: "danger",
+        variant: "ghost",
+        icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>',
+        onClick: () => console.log("delete", row),
+      },
+    ],
+  },
+];
+
+const editableColumns = [
+  { key: "name", label: "Name", editable: true },
+  { key: "email", label: "Email", editable: true },
+  {
+    key: "notes",
+    label: "Notes",
+    editable: true,
+    inputType: "textarea" as const,
+    textarea: { rows: 2 },
+  },
+  {
+    key: "status",
+    label: "Status",
+    editable: true,
+    inputType: "select" as const,
+    select: {
+      options: [
+        { value: "Active", label: "Active" },
+        { value: "Pending", label: "Pending" },
+        { value: "Inactive", label: "Inactive" },
+      ],
+    },
+  },
+  {
+    key: "role",
+    label: "Role",
+    editable: true,
+    inputType: "select" as const,
+    select: {
+      options: [
+        { value: "Admin", label: "Admin" },
+        { value: "Editor", label: "Editor" },
+        { value: "User", label: "User" },
+      ],
+    },
+  },
+];
+
+const editableData = [
+  { id: 1, name: "Alice Johnson", email: "alice@example.com", notes: "Team lead", status: "Active", role: "Admin" },
+  { id: 2, name: "Bob Smith", email: "bob@example.com", notes: "New hire", status: "Pending", role: "User" },
+  { id: 3, name: "Carol White", email: "carol@example.com", notes: "On vacation", status: "Active", role: "Editor" },
+];
 </script>
 
 <template>
@@ -98,6 +173,20 @@ const buttonColumns = [
       <section id="buttons" class="playground-section">
         <h2>With Buttons</h2>
         <AdvancedTable :columns="buttonColumns" :data="sampleData" :pagination="false" />
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="buttons-icons" class="playground-section">
+        <h2>Buttons with Icons</h2>
+        <AdvancedTable :columns="iconButtonColumns" :data="sampleData" :pagination="false" />
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="editable" class="playground-section">
+        <h2>Editable Cells</h2>
+        <AdvancedTable :columns="editableColumns" :data="editableData" :pagination="false" />
       </section>
 
       <hr class="playground-separator" />
