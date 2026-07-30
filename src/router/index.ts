@@ -106,11 +106,6 @@ const router = createRouter({
               name: "AdvancedTable playground",
               component: () => import("@/pages/playground/components/AdvancedTable.vue")
             },
-            {
-              path: "label",
-              name: "Label playground",
-              component: () => import("@/pages/playground/components/Label.vue")
-            },
           ]
         },
       ]

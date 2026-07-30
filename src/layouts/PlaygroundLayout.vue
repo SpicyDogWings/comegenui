@@ -37,7 +37,6 @@ const navItems = [
       { label: 'Pagination', path: '/playground/components/pagination' },
       { label: 'Table', path: '/playground/components/table' },
       { label: 'AdvancedTable', path: '/playground/components/advanced-table' },
-      { label: 'Label', path: '/playground/components/label' },
     ]
   },
 ]
