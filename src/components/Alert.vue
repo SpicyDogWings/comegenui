@@ -164,7 +164,7 @@ defineExpose({
 }
 
 .cu-alert-title-text {
-  font-size: var(--cu-font-size-base);
+  font-size: var(--cu-font-size-lg);
   font-weight: var(--cu-font-weight-bold);
   margin: 0;
   color: inherit;
