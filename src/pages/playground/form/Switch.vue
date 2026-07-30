@@ -11,7 +11,6 @@ const colors = ["primary", "secondary", "neutral", "success", "warning", "danger
 
 const outlineItems = [
   { label: 'Default', id: 'default' },
-  { label: 'Variants', id: 'variants' },
   { label: 'Sizes', id: 'sizes' },
   { label: 'Colors', id: 'colors' },
   { label: 'Disabled', id: 'disabled' },

@@ -10,12 +10,6 @@ const props = defineProps({
     required: false,
     default: "neutral",
   },
-  variant: {
-    type: String,
-    required: false,
-    default: "solid",
-    validator: (value: string) => ["solid", "soft", "outlined"].includes(value),
-  },
   size: {
     type: String,
     required: false,
@@ -35,10 +29,7 @@ const { focused: inputFocus } = useFocus(inputRef);
 
 const switchStyles = computed(() => ({
   '--switch-bg': `var(--cu-color-${props.color})`,
-  '--switch-soft': `var(--cu-color-${props.color}-soft)`,
   '--switch-ghost-hover': `var(--cu-color-${props.color}-ghost-hover)`,
-  '--switch-soft-hover': `var(--cu-color-${props.color}-soft-hover)`,
-  '--switch-text': `var(--cu-color-${props.color}-text)`,
 }));
 
 const toggle = () => {
@@ -71,7 +62,6 @@ defineExpose({
     class="cu-switch"
     :class="[
       `cu-switch--${props.size}`,
-      `cu-switch--${props.variant}`,
       {
         'cu-switch--disabled': props.disabled,
         'cu-switch--checked': checked,
@@ -113,55 +103,19 @@ defineExpose({
   height: 20px;
 }
 
-/* solid (default) */
-.cu-switch--solid.cu-switch--checked {
+.cu-switch--checked {
   background-color: var(--switch-bg);
 }
 
-.cu-switch--solid:not(.cu-switch--checked) {
+.cu-switch:not(.cu-switch--checked) {
   background-color: var(--cu-color-neutral-soft);
 }
 
-.cu-switch--solid:hover:not(.cu-switch--disabled) {
+.cu-switch:hover:not(.cu-switch--disabled) {
   background-color: var(--switch-ghost-hover);
 }
 
-.cu-switch--solid:not(.cu-switch--checked):hover:not(.cu-switch--disabled) {
-  background-color: var(--cu-color-neutral-ghost-hover);
-}
-
-/* soft */
-.cu-switch--soft.cu-switch--checked {
-  background-color: var(--switch-soft);
-}
-
-.cu-switch--soft:not(.cu-switch--checked) {
-  background-color: var(--cu-color-neutral-subtle);
-}
-
-.cu-switch--soft:hover:not(.cu-switch--disabled) {
-  background-color: var(--switch-soft-hover);
-}
-
-.cu-switch--soft:not(.cu-switch--checked):hover:not(.cu-switch--disabled) {
-  background-color: var(--cu-color-neutral-subtle-hover);
-}
-
-/* outlined */
-.cu-switch--outlined.cu-switch--checked {
-  background-color: var(--switch-bg);
-}
-
-.cu-switch--outlined:not(.cu-switch--checked) {
-  background-color: transparent;
-  border: var(--cu-border-medium) solid var(--cu-border-color);
-}
-
-.cu-switch--outlined:hover:not(.cu-switch--disabled) {
-  background-color: var(--switch-ghost-hover);
-}
-
-.cu-switch--outlined:not(.cu-switch--checked):hover:not(.cu-switch--disabled) {
+.cu-switch:not(.cu-switch--checked):hover:not(.cu-switch--disabled) {
   background-color: var(--cu-color-neutral-ghost-hover);
 }
 
