@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import LucideChevronRight from '@/components/icons/LucideChevronRight.vue'
+import Button from '@/components/buttons/Button.vue'
 
 const props = defineProps<{
   label: string
@@ -45,10 +46,10 @@ function onAfterLeave(el: Element) {
 
 <template>
   <div class="cu-collapse">
-    <button class="cu-collapse-trigger" @click="isOpen = !isOpen">
+    <Button class="cu-collapse-trigger" variant="none" color="neutral" @click="isOpen = !isOpen">
       <LucideChevronRight class="cu-collapse-chevron" :class="{ 'is-open': isOpen }" :width="14" :height="14" />
       {{ label }}
-    </button>
+    </Button>
     <Transition
       @enter="onEnter"
       @after-enter="onAfterEnter"
@@ -69,24 +70,8 @@ function onAfterLeave(el: Element) {
 }
 
 .cu-collapse-trigger {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  width: 100%;
-  padding: 0.5rem 0.75rem;
-  border: none;
-  background: none;
-  color: var(--cu-color-neutral);
-  font-size: var(--cu-font-size-sm);
-  font-weight: var(--cu-font-weight-semibold);
+  justify-content: flex-start;
   cursor: pointer;
-  text-align: left;
-  border-radius: var(--cu-radius-md);
-  transition: background-color 0.15s;
-}
-
-.cu-collapse-trigger:hover {
-  background-color: var(--cu-color-primary-subtle-hover);
 }
 
 .cu-collapse-chevron {
@@ -100,8 +85,8 @@ function onAfterLeave(el: Element) {
 .cu-collapse-content {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
-  padding: 0.25rem 0 0.25rem 0.75rem;
+  gap: var(--cu-space-2xs);
+  padding: 0 0 0 var(--cu-space-lg);
   transition: height 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 </style>
