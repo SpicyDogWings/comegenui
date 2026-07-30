@@ -50,6 +50,27 @@ const router = createRouter({
             }
           ]
         },
+        {
+          path: "form",
+          name: "Form playground",
+          children: [
+            {
+              path: "switch",
+              name: "Switch playground",
+              component: () => import("@/pages/playground/form/Switch.vue")
+            },
+            {
+              path: "file-input",
+              name: "FileInput playground",
+              component: () => import("@/pages/playground/form/FileInput.vue")
+            },
+            {
+              path: "file-input-zone",
+              name: "FileInputZone playground",
+              component: () => import("@/pages/playground/form/FileInputZone.vue")
+            }
+          ]
+        },
       ]
     }
   ]
