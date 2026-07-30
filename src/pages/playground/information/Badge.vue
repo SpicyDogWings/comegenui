@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
-import Badge from "@/components/Badge.vue";
+import Badge from "@/components/information/Badge.vue";
 
 const outlineItems = [
   { label: 'Variants', id: 'variants' },
