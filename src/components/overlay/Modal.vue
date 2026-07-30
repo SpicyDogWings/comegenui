@@ -102,6 +102,7 @@ defineExpose({
             <h2
               id="modal-title"
               class="cu-modal-title"
+              :style="{ color: `var(--cu-color-${color})` }"
             >
               {{ title }}
             </h2>
@@ -204,7 +205,6 @@ defineExpose({
   font-size: var(--cu-font-size-lg);
   font-weight: var(--cu-font-weight-bold);
   margin: 0;
-  color: var(--modal-color);
 }
 
 .cu-modal-description {

@@ -105,7 +105,7 @@ defineExpose({
   </div>
 </template>
 
-<style>
+<style scoped>
 .cu-alert {
   font-family: var(--cu-font-sans);
   font-size: var(--cu-font-size-sm);

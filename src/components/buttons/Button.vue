@@ -91,7 +91,7 @@ const colorStyles = computed(() => ({
   </button>
 </template>
 
-<style>
+<style scoped>
 .cu-button {
   font-family: var(--cu-font-sans);
   font-size: var(--cu-font-size-sm);

@@ -33,7 +33,7 @@ const badgeStyles = computed(() => ({
   </span>
 </template>
 
-<style>
+<style scoped>
 .cu-badge {
   display: inline-flex;
   align-items: center;
@@ -51,7 +51,7 @@ const badgeStyles = computed(() => ({
 }
 
 /* solid */
-.cu-badge--solid {
+.cu-badge.cu-badge--solid {
   background-color: var(--badge-bg);
   color: var(--cu-color-surface);
 }
@@ -80,10 +80,5 @@ const badgeStyles = computed(() => ({
   background-color: transparent;
   color: var(--badge-text);
   border-color: var(--badge-bg);
-}
-
-/* dark theme override */
-[data-theme="dark"] .cu-badge--solid {
-  color: var(--badge-bg);
 }
 </style>
