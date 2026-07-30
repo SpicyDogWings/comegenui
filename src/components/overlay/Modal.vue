@@ -155,6 +155,7 @@ defineExpose({
   color: var(--cu-color-neutral);
   border-radius: var(--cu-radius-lg);
   box-shadow: var(--cu-shadow-xl);
+  padding: var(--cu-space-md);
   width: 100%;
   display: flex;
   flex-direction: column;
