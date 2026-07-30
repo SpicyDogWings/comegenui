@@ -274,6 +274,7 @@ const canEdit = computed(() => {
         :options="resolvedOptions"
         :placement="column.select?.placement"
         :placeholder-wrap="column.select?.placeholderWrap"
+        fixed
         @update:model-value="(val) => { editValue = val; saveEdit(); }"
         @select="(opt) => { editValue = opt.value; saveEdit(); }"
         @blur="saveEdit"
@@ -287,6 +288,7 @@ const canEdit = computed(() => {
         v-model="editValue"
         :items="resolvedAutocompleteItems"
         :min-chars="column.autocomplete?.minChars ?? 0"
+        fixed
         @blur="saveEdit"
         @select="(item) => { if (item.value) editValue = item.value; saveEdit(); }"
         class="cu-editable-cell-input"
