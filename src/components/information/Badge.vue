@@ -40,7 +40,7 @@ const badgeStyles = computed(() => ({
   justify-content: center;
   gap: var(--cu-space-xs);
   padding: var(--cu-space-2xs) var(--cu-space-sm);
-  border-radius: var(--cu-radius-full);
+  border-radius: var(--cu-radius-md);
   font-family: var(--cu-font-sans);
   font-size: var(--cu-font-size-xs);
   font-weight: var(--cu-font-weight-medium);
