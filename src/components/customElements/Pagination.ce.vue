@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Pagination from "./Pagination.vue";
+import Pagination from "../Pagination.vue";
 
 const props = defineProps({
   theme: {

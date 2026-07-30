@@ -1,9 +1,19 @@
 <script setup lang="ts">
-import { ref, watch, getCurrentInstance } from "vue";
-import Autocomplete from "./Autocomplete.vue";
+import { computed, ref, watch, getCurrentInstance } from "vue";
+import Select from "../../form/Select.vue";
+
+interface SelectOption {
+  value: string;
+  label: string;
+  disabled?: boolean;
+  color?: string;
+  variant?: string;
+}
 
 const props = defineProps({
   theme: { type: String, required: false, default: "" },
+  modelValue: { type: String, required: false, default: "" },
+  options: { type: Array as () => SelectOption[], required: false, default: () => [] },
   color: {
     type: String,
     required: false,
@@ -14,24 +24,23 @@ const props = defineProps({
     required: false,
     default: "soft",
   },
-  type: {
-    type: String,
-    required: false,
-    default: "text",
-  },
-  disabled: { type: Boolean, required: false, default: false },
-  readOnly: { type: Boolean, required: false, default: false },
-  hightContrast: { type: Boolean, required: false, default: false },
-  placeholder: { type: String, required: false, default: "" },
-  minChars: { type: Number, required: false, default: 0 },
+  placeholder: { type: String, required: false },
+  placeholderWrap: { type: Boolean, required: false, default: false },
   position: { type: String, required: false, default: "bottom" },
   align: { type: String, required: false, default: "start" },
   placement: { type: String, required: false, default: "" },
-  items: { type: Array, required: false, default: () => [] },
-  modelValue: { type: String, required: false, default: "" },
+  disabled: { type: Boolean, required: false, default: false },
+  hightContrast: { type: Boolean, required: false, default: false },
 });
 
-const autocompleteRef = ref<InstanceType<typeof Autocomplete> | null>(null);
+const resolvedOptions = computed(() =>
+  (props.options || []).map((opt: any) => ({
+    ...opt,
+    color: opt.color || undefined,
+  })),
+);
+
+const selectRef = ref<InstanceType<typeof Select> | null>(null);
 const instance = getCurrentInstance();
 const innerValue = ref(props.modelValue);
 
@@ -39,7 +48,7 @@ watch(() => props.modelValue, (val) => {
   innerValue.value = val;
 });
 
-watch(() => autocompleteRef.value?.get(), (val) => {
+watch(() => selectRef.value?.get(), (val) => {
   if (val !== undefined && val !== null && val !== innerValue.value) {
     innerValue.value = val;
     ceEmit("update:modelValue", val);
@@ -59,31 +68,31 @@ function ceEmit(event: string, payload: unknown) {
 }
 
 defineExpose({
-  get: () => autocompleteRef.value?.get(),
-  set: (val: string) => autocompleteRef.value?.set(val),
-  focus: () => autocompleteRef.value?.focus(),
-  isOpen: () => autocompleteRef.value?.isOpen || false,
-  selectedItem: () => autocompleteRef.value?.selectedItem || null,
+  get: () => selectRef.value?.get(),
+  set: (val: string) => selectRef.value?.set(val),
+  reset: () => selectRef.value?.reset(),
+  focus: () => selectRef.value?.focus(),
+  isOpen: () => selectRef.value?.isOpen || false,
+  selectedItem: () => selectRef.value?.selectedItem || null,
 });
 </script>
 
 <template>
-  <Autocomplete
-    ref="autocompleteRef"
+  <Select
+    ref="selectRef"
     :color="props.color"
     :variant="props.variant"
-    :type="props.type"
     :disabled="props.disabled"
-    :read-only="props.readOnly"
     :hight-contrast="props.hightContrast"
     :placeholder="props.placeholder"
-    :min-chars="props.minChars"
+    :placeholder-wrap="props.placeholderWrap"
     :position="props.position"
     :align="props.align"
     :placement="props.placement"
-    :items="props.items"
     :model-value="innerValue"
+    :options="resolvedOptions"
     @select="ceEmit('select', $event)"
+    @close="ceEmit('close', $event)"
     @blur="ceEmit('blur', $event)"
   />
 </template>

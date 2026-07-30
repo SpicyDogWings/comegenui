@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, type Component } from "vue";
-import Table from "./AdvancedTable.vue";
+import Table from "../../data/AdvancedTable.vue";
 
 interface BadgeConfig {
   value: string;

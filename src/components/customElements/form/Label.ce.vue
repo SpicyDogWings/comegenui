@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import Label from "./Label.vue";
-import { getColorMap } from "../../utils/palette";
-import { getHostTheme } from "../../utils/getHostTheme";
-import { isValidTheme } from "../../config/theme";
+import Label from "../../form/Label.vue";
+import { getColorMap } from "../../../utils/palette";
+import { getHostTheme } from "../../../utils/getHostTheme";
+import { isValidTheme } from "../../../config/theme";
 
 const props = defineProps({
   theme: {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import DropdownMenu from "./DropdownMenu.vue";
+import DropdownMenu from "../DropdownMenu.vue";
 
 const props = defineProps({
   theme: { type: String, required: false, default: "" },

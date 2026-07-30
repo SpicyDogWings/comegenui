@@ -72,10 +72,8 @@ function onFocusOut(e: FocusEvent) {
 
 defineExpose({
   get, set, reset, focus,
-  get isOpen() { return dropdownRef.value?.isOpen || false },
-  get selectedItem() {
-    return props.options.find(o => o.value === selectedValue.value) || null;
-  },
+  isOpen: () => dropdownRef.value?.isOpen || false,
+  selectedItem: () => props.options.find(o => o.value === selectedValue.value) || null,
 });
 </script>
 

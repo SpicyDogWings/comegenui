@@ -113,8 +113,8 @@ function focus() { inputRef.value?.focus(); }
 
 defineExpose({
   get, set, reset, focus,
-  get isOpen() { return dropdownRef.value?.isOpen || false },
-  get selectedItem() { return selectedItem.value },
+  isOpen: () => dropdownRef.value?.isOpen || false,
+  selectedItem: () => selectedItem.value,
 });
 </script>
 

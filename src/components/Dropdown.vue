@@ -139,7 +139,7 @@ function get() { return selectedValue.value; }
 function set(val: string) { selectedValue.value = val; }
 function reset() { selectedValue.value = ""; }
 
-defineExpose({ open, close, toggle, get, set, reset, get isOpen() { return isOpen.value } });
+defineExpose({ open, close, toggle, get, set, reset, isOpen: () => isOpen.value });
 </script>
 
 <template>
