@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import Modal from '@/components/overlay/Modal.vue'
 import Button from '@/components/buttons/Button.vue'
+import Input from '@/components/form/Input.vue'
 
 interface ThemeConfig {
   themes: Record<string, Record<string, string>>
@@ -13,10 +14,12 @@ interface ThemeConfig {
 }
 
 const props = defineProps<{
+  themeName: string
   cssOutput: string
 }>()
 
 const emit = defineEmits<{
+  (e: 'update:themeName', value: string): void
   (e: 'import', config: ThemeConfig): void
   (e: 'export'): void
   (e: 'reset'): void
@@ -59,6 +62,15 @@ defineExpose({ open, close })
 <template>
   <Modal ref="modalRef" title="Theme Manager" size="lg" @close="close">
     <div class="tm-modal">
+      <div class="tm-section">
+        <h3>Theme Name</h3>
+        <Input
+          :model-value="themeName"
+          @update:model-value="emit('update:themeName', $event)"
+          placeholder="my-theme"
+        />
+      </div>
+
       <div class="tm-section">
         <h3>Acciones</h3>
         <div class="tm-actions">

@@ -180,7 +180,7 @@ defineExpose({
   width: 100%;
   display: flex;
   flex-direction: column;
-  overflow-x: hidden;
+  overflow: visible;
   box-sizing: border-box;
 }
 
@@ -256,7 +256,6 @@ defineExpose({
 
 .cu-modal-body > * {
   width: 100%;
-  overflow-x: hidden;
 }
 
 .cu-modal-footer {

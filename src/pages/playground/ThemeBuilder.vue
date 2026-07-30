@@ -42,7 +42,6 @@ const tableColumns = [
 ]
 
 const themeName = ref('light')
-const savedThemes = ref<Record<string, ThemeConfig>>({})
 const modalRef = ref<InstanceType<typeof ThemeManagerModal> | null>(null)
 
 const colors = ref({
@@ -249,8 +248,7 @@ watch(cssOutput, (css) => {
 }, { immediate: true })
 
 function saveToStorage() {
-  savedThemes.value[themeName.value] = getCurrentConfig()
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(savedThemes.value))
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(getCurrentConfig()))
 }
 
 watch([colors, typography, spacing, borderRadius, shadows, borders], () => {
@@ -291,38 +289,10 @@ function loadFromStorage() {
   const raw = localStorage.getItem(STORAGE_KEY)
   if (raw) {
     try {
-      savedThemes.value = JSON.parse(raw)
-    } catch {
-      savedThemes.value = {}
-    }
+      const config = JSON.parse(raw) as ThemeConfig
+      applyConfig(config)
+    } catch {}
   }
-}
-
-function handleLoad(name: string) {
-  const config = savedThemes.value[name]
-  if (config) {
-    themeName.value = name
-    applyConfig(config)
-  }
-}
-
-function handleDelete(name: string) {
-  delete savedThemes.value[name]
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(savedThemes.value))
-  if (themeName.value === name) {
-    const names = Object.keys(savedThemes.value)
-    if (names.length > 0) {
-      handleLoad(names[0] as string)
-    } else {
-      resetToDefaults()
-      themeName.value = 'light'
-    }
-  }
-}
-
-function handleSave(name: string) {
-  themeName.value = name
-  saveToStorage()
 }
 
 function handleImport(config: any) {
@@ -379,13 +349,6 @@ function resetToDefaults() {
 
 onMounted(() => {
   loadFromStorage()
-  const names = Object.keys(savedThemes.value)
-  if (names.length > 0) {
-    const firstName = names[0] as string
-    if (savedThemes.value[firstName]) {
-      handleLoad(firstName)
-    }
-  }
 })
 </script>
 
@@ -687,12 +650,8 @@ onMounted(() => {
 
     <ThemeManagerModal
       ref="modalRef"
-      :saved-themes="savedThemes"
-      :current-theme-name="themeName"
+      v-model:theme-name="themeName"
       :css-output="cssOutput"
-      @load="handleLoad"
-      @delete="handleDelete"
-      @save="handleSave"
       @import="handleImport"
       @export="handleExport"
       @reset="resetToDefaults"
