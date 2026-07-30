@@ -149,7 +149,7 @@ defineExpose({
               <Button :color="color" variant="solid" @click="handleAccept">Aceptar</Button>
             </template>
             <template v-else>
-              <Button :color="color" variant="ghost" @click="close">Cerrar</Button>
+              <Button color="neutral" variant="ghost" @click="close">Cerrar</Button>
             </template>
           </div>
         </slot>
