@@ -160,7 +160,7 @@ defineExpose({
 .cu-alert-title {
   display: flex;
   align-items: center;
-  gap: var(--cu-space-xs);
+  gap: var(--cu-space-sm);
 }
 
 .cu-alert-title-text {
