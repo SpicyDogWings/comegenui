@@ -1,16 +1,12 @@
 <script setup lang="ts">
-import { computed, ref, watch, getCurrentInstance } from "vue";
+import { ref, watch, getCurrentInstance } from "vue";
 import Input from "./Input.vue";
-import { getColorMap } from "../../utils/palette";
-import { getHostTheme } from "../../utils/getHostTheme";
-import { isValidTheme } from "../../config/theme";
 
 const props = defineProps({
   theme: {
     type: String,
     required: false,
     default: "",
-    validator: isValidTheme,
   },
   modelValue: {
     type: String,
@@ -25,22 +21,16 @@ const props = defineProps({
     type: String,
     required: false,
     default: "neutral",
-    validator: (value: string) =>
-      ["primary", "neutral", "success", "warning", "danger"].includes(value),
   },
   variant: {
     type: String,
     required: false,
-    default: "none",
-    validator: (value: string) =>
-      ["outlined", "soft", "ghost", "subtle", "none"].includes(value),
+    default: "soft",
   },
   type: {
     type: String,
     required: false,
     default: "text",
-    validator: (value: string) =>
-      ["text", "password", "email", "number", "tel", "url", "search"].includes(value),
   },
   placeholder: {
     type: String,
@@ -56,17 +46,7 @@ const props = defineProps({
     required: false,
     default: false,
   },
-  hightContrast: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
-});
 
-const effectiveTheme = computed(() => props.theme || getHostTheme());
-const hexColor = computed(() => {
-  const map = getColorMap(effectiveTheme.value as "light" | "dark");
-  return map[props.color as keyof typeof map] || props.color;
 });
 
 const innerValue = ref(props.modelValue);
@@ -107,18 +87,17 @@ defineExpose({
 <template>
   <Input
     ref="inputRef"
-    :color="hexColor"
+    :color="props.color"
     :variant="props.variant"
     :type="props.type"
     :placeholder="props.placeholder"
     :disabled="props.disabled"
     :read-only="props.readOnly"
-    :hight-contrast="props.hightContrast"
+
     :start-value="props.startValue"
     :model-value="innerValue"
   />
 </template>
 
-<style>
-@unocss-placeholder;
+<style scoped>
 </style>

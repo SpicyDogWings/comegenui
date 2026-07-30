@@ -1,16 +1,12 @@
 <script setup lang="ts">
-import { computed, ref, watch, getCurrentInstance } from "vue";
+import { ref, watch, getCurrentInstance } from "vue";
 import Textarea from "./Textarea.vue";
-import { getColorMap } from "../../utils/palette";
-import { getHostTheme } from "../../utils/getHostTheme";
-import { isValidTheme } from "../../config/theme";
 
 const props = defineProps({
   theme: {
     type: String,
     required: false,
     default: "",
-    validator: isValidTheme,
   },
   modelValue: {
     type: String,
@@ -25,14 +21,12 @@ const props = defineProps({
     type: String,
     required: false,
     default: "neutral",
-    validator: (value: string) =>
-      ["primary", "neutral", "success", "warning", "danger"].includes(value),
   },
   variant: {
     type: String,
     required: false,
-    default: "none",
-    validator: (value: string) => ["outlined", "soft", "ghost", "subtle", "none"].includes(value),
+    default: "soft",
+    validator: (value: string) => ["outlined", "soft", "ghost", "subtle"].includes(value),
   },
   placeholder: {
     type: String,
@@ -63,12 +57,6 @@ const props = defineProps({
     required: false,
     default: false,
   },
-});
-
-const effectiveTheme = computed(() => props.theme || getHostTheme());
-const hexColor = computed(() => {
-  const map = getColorMap(effectiveTheme.value as "light" | "dark");
-  return map[props.color as keyof typeof map] || props.color;
 });
 
 const innerValue = ref(props.modelValue);
@@ -109,7 +97,7 @@ defineExpose({
 <template>
   <Textarea
     ref="textareaRef"
-    :color="hexColor"
+    :color="props.color"
     :variant="props.variant"
     :placeholder="props.placeholder"
     :disabled="props.disabled"
@@ -118,10 +106,8 @@ defineExpose({
     :no-resize="props.noResize"
     :start-value="props.startValue"
     :model-value="innerValue"
-    :hight-contrast="props.hightContrast"
   />
 </template>
 
-<style>
-@unocss-placeholder;
+<style scoped>
 </style>

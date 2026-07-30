@@ -30,9 +30,11 @@ interface Column {
   width?: string;
   align?: "left" | "center" | "right";
 
+  // Shorthands (aplican a cualquier tipo):
   color?: string;
   variant?: string;
 
+  // Props específicas por tipo (priority sobre shorthands):
   select?: {
     options: SelectOption[];
     color?: string;
@@ -59,6 +61,7 @@ interface Column {
     variant?: string;
   };
 
+  // Legacy (deprecated, compatibilidad):
   selectOptions?: SelectOption[] | ((row: Record<string, any>) => SelectOption[]);
   autocompleteItems?: AutocompleteItem[] | ((row: Record<string, any>) => AutocompleteItem[]);
 }
@@ -83,7 +86,7 @@ const props = defineProps({
   color: {
     type: String,
     required: false,
-    default: "neutral",
+    default: "#2c2c2c",
   },
   variant: {
     type: String,
@@ -103,11 +106,13 @@ const emit = defineEmits([
   "edit-cancel",
 ]);
 
+// State
 const isEditing = ref(false);
 const saving = ref(false);
 const editValue = ref<string>("");
 const inputRef = ref<InstanceType<typeof Input | typeof Textarea | typeof Select | typeof Autocomplete> | null>(null);
 
+// Initialize edit value
 watch(
   () => props.value,
   (newVal) => {
@@ -116,11 +121,13 @@ watch(
   { immediate: true }
 );
 
+// Methods
 const startEditing = async () => {
   if (saving.value || !canEdit.value) return;
   isEditing.value = true;
   emit("edit-start", { row: props.row, column: props.column, index: props.index });
   await nextTick();
+  // NEW: Autofocus
   inputRef.value?.focus?.();
 };
 
@@ -129,10 +136,12 @@ const saveEdit = () => {
   let isValid = true;
   const value = editValue.value;
 
+  // Validate against regex if editable is a RegExp
   if (props.column.editable instanceof RegExp && !props.column.editable.test(value)) {
     isValid = false;
   }
 
+  // Validate using custom validator if provided
   if (isValid && props.column.validator && !props.column.validator(value, props.row)) {
     isValid = false;
   }
@@ -157,6 +166,7 @@ const cancelEdit = () => {
   isEditing.value = false;
 };
 
+// Handle keyboard events
 const handleKeyDown = (event: KeyboardEvent) => {
   if (event.key === "Enter") {
     saveEdit();
@@ -165,6 +175,7 @@ const handleKeyDown = (event: KeyboardEvent) => {
   }
 };
 
+// Computed
 const displayValue = computed(() => {
   if (props.column.inputType === 'select') {
     const options = resolvedOptions.value;
@@ -213,7 +224,7 @@ function resolveProp<T>(val: T | ((row: Record<string, any>) => T) | undefined, 
 
 const elementColor = computed(() => {
   const col = props.column;
-  if (props.validation.error) return "danger";
+  if (props.validation.error) return "#ff0000";
   const c = resolveProp(
     col.inputType === "select" ? col.select?.color
       : col.inputType === "autocomplete" ? col.autocomplete?.color
@@ -250,10 +261,11 @@ const canEdit = computed(() => {
 
 <template>
   <div
-    class="cu-editable-cell"
+    class="cursor-pointer"
     @click="column.singleClick !== false && canEdit && startEditing()"
     @dblclick="column.singleClick === false && canEdit && startEditing()"
   >
+    <!-- Edit Mode -->
     <template v-if="isEditing">
       <Textarea
         v-if="column.inputType === 'textarea'"
@@ -263,7 +275,7 @@ const canEdit = computed(() => {
         @keydown="handleKeyDown"
         :no-resize="column.textarea?.noResize !== false"
         :rows="column.textarea?.rows ?? 3"
-        class="cu-editable-cell-input"
+        class="w-full"
         :color="elementColor"
         :variant="elementVariant"
       />
@@ -277,7 +289,7 @@ const canEdit = computed(() => {
         @update:model-value="(val) => { editValue = val; saveEdit(); }"
         @select="(opt) => { editValue = opt.value; saveEdit(); }"
         @blur="saveEdit"
-        class="cu-editable-cell-input"
+        class="w-full"
         :color="elementColor"
         :variant="elementVariant"
       />
@@ -289,7 +301,7 @@ const canEdit = computed(() => {
         :min-chars="column.autocomplete?.minChars ?? 0"
         @blur="saveEdit"
         @select="(item) => { if (item.value) editValue = item.value; saveEdit(); }"
-        class="cu-editable-cell-input"
+        class="w-full"
         :color="elementColor"
         :variant="elementVariant"
       />
@@ -301,14 +313,15 @@ const canEdit = computed(() => {
         :start-value="column.input?.startValue"
         @blur="saveEdit"
         @keydown="handleKeyDown"
-        class="cu-editable-cell-input"
+        class="w-full"
         :color="elementColor"
         :variant="elementVariant"
       />
     </template>
-
+    
+    <!-- View Mode -->
     <template v-else>
-      <span class="cu-editable-cell-view" :class="{ 'cu-editable-cell-view--disabled': !canEdit }">
+      <span class="flex items-center gap-2" :class="{ 'opacity-40': !canEdit }">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="16"
@@ -319,7 +332,7 @@ const canEdit = computed(() => {
           stroke-width="2"
           stroke-linecap="round"
           stroke-linejoin="round"
-          class="cu-editable-cell-icon"
+          class="lucide lucide-pencil"
           :class="validationClass"
         >
           <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
@@ -331,26 +344,6 @@ const canEdit = computed(() => {
   </div>
 </template>
 
-<style scoped>
-.cu-editable-cell {
-  cursor: pointer;
-}
-
-.cu-editable-cell-input {
-  width: 100%;
-}
-
-.cu-editable-cell-view {
-  display: flex;
-  align-items: center;
-  gap: var(--cu-space-sm);
-}
-
-.cu-editable-cell-view--disabled {
-  opacity: 0.4;
-}
-
-.cu-editable-cell-icon {
-  flex-shrink: 0;
-}
+<style>
+@unocss-placeholder;
 </style>

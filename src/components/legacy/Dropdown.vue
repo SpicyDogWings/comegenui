@@ -1,38 +1,18 @@
 <script setup lang="ts">
 import { ref, computed, defineModel, onMounted, onUnmounted } from "vue";
-import Button from "./buttons/Button.vue";
+import Button from "./Button.vue";
 
 const props = defineProps({
-  color: {
-    type: String,
-    required: false,
-    default: "neutral",
-    validator: (value: string) =>
-      ["primary", "secondary", "neutral", "success", "warning", "danger"].includes(value),
-  },
-  variant: {
-    type: String,
-    required: false,
-    default: "ghost",
-    validator: (value: string) =>
-      ["solid", "outlined", "soft", "ghost", "subtle", "link", "none"].includes(value),
-  },
+  color: { type: String, required: false, default: "#2c2c2c" },
+  hightContrast: { type: Boolean, required: false, default: false },
+  variant: { type: String, required: false, default: "ghost" },
   disabled: { type: Boolean, required: false, default: false },
   label: { type: String, required: false, default: "" },
   placement: { type: String, required: false, default: "bottom-start" },
-  position: {
-    type: String,
-    required: false,
-    default: "",
-    validator: (value: string) => ["", "bottom", "top"].includes(value),
-  },
-  align: {
-    type: String,
-    required: false,
-    default: "",
-    validator: (value: string) => ["", "start", "center", "end"].includes(value),
-  },
+  position: { type: String, required: false, default: "" },
+  align: { type: String, required: false, default: "" },
   offset: { type: Number, required: false, default: 4 },
+  menuBg: { type: String, required: false, default: "#ffffff" },
   fixed: { type: Boolean, required: false, default: false },
 });
 
@@ -42,44 +22,11 @@ const effectiveAlign = computed(() => props.align || props.placement.split("-")[
 const panelPos = ref({ top: "0px", left: "0px" });
 
 const panelStyle = computed(() => {
-  const base: Record<string, string> = {
-    backgroundColor: "var(--cu-color-surface)",
-    minWidth: "200px",
-    maxWidth: "80vw",
-  };
-
+  const base: Record<string, string> = { "--menu-bg": props.menuBg };
   if (props.fixed) {
-    return {
-      ...base,
-      position: "fixed",
-      top: panelPos.value.top,
-      left: panelPos.value.left,
-      zIndex: "10000",
-    };
+    return { ...base, position: "fixed", top: panelPos.value.top, left: panelPos.value.left, zIndex: "10000" };
   }
-
-  base.position = "absolute";
-  base.zIndex = "1000";
-  base.width = "100%";
-
-  if (effectivePosition.value === "bottom") {
-    base.top = "100%";
-    base.marginTop = `${props.offset}px`;
-  } else {
-    base.bottom = "100%";
-    base.marginBottom = `${props.offset}px`;
-  }
-
-  if (effectiveAlign.value === "start") {
-    base.left = "0";
-  } else if (effectiveAlign.value === "end") {
-    base.right = "0";
-  } else {
-    base.left = "50%";
-    base.transform = "translateX(-50%)";
-  }
-
-  return base;
+  return { ...base, "--offset": `${props.offset}px` };
 });
 
 const selectedValue = defineModel<string>({ default: "" });
@@ -143,12 +90,13 @@ defineExpose({ open, close, toggle, get, set, reset, get isOpen() { return isOpe
 </script>
 
 <template>
-  <div ref="dropdownRef" class="cu-dropdown">
+  <div ref="dropdownRef" class="relative inline-block box-border">
     <slot name="toggle" :toggle="toggle" :isOpen="isOpen">
       <Button
         :color="color"
         :variant="variant"
         :disabled="disabled"
+        :hight-contrast="hightContrast"
         @click="toggle"
       >
         {{ label || "Dropdown" }}
@@ -158,7 +106,19 @@ defineExpose({ open, close, toggle, get, set, reset, get isOpen() { return isOpe
     <div
       v-if="isOpen"
       :style="panelStyle"
-      class="cu-dropdown-panel"
+      :class="[
+        'z-1000 min-w-[200px] max-w-[80vw] rounded-cu p-2 font-sans shadow-xl bg-[var(--menu-bg)]',
+        props.fixed ? '' : 'absolute w-full',
+        {
+          'top-full': !props.fixed && effectivePosition === 'bottom',
+          'bottom-full': !props.fixed && effectivePosition === 'top',
+          'left-0': !props.fixed && effectiveAlign === 'start',
+          'right-0': !props.fixed && effectiveAlign === 'end',
+          'left-1/2 -translate-x-1/2': !props.fixed && effectiveAlign === 'center',
+          'mt-[var(--offset)]': !props.fixed && effectivePosition === 'bottom',
+          'mb-[var(--offset)]': !props.fixed && effectivePosition === 'top',
+        },
+      ]"
       role="menu"
     >
       <slot></slot>
@@ -166,17 +126,6 @@ defineExpose({ open, close, toggle, get, set, reset, get isOpen() { return isOpe
   </div>
 </template>
 
-<style scoped>
-.cu-dropdown {
-  position: relative;
-  display: inline-block;
-  box-sizing: border-box;
-}
-
-.cu-dropdown-panel {
-  padding: var(--cu-space-sm);
-  border-radius: var(--cu-radius-md);
-  font-family: var(--cu-font-sans);
-  box-shadow: var(--cu-shadow-xl);
-}
+<style>
+@unocss-placeholder;
 </style>

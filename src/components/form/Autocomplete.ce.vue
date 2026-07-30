@@ -1,32 +1,23 @@
 <script setup lang="ts">
-import { computed, ref, watch, getCurrentInstance } from "vue";
+import { ref, watch, getCurrentInstance } from "vue";
 import Autocomplete from "./Autocomplete.vue";
-import { getColorMap } from "../../utils/palette";
-import { getHostTheme } from "../../utils/getHostTheme";
-import { isValidTheme, type ThemeName } from "../../config/theme";
 
 const props = defineProps({
-  theme: { type: String, required: false, default: "", validator: isValidTheme },
+  theme: { type: String, required: false, default: "" },
   color: {
     type: String,
     required: false,
     default: "neutral",
-    validator: (value: string) =>
-      ["primary", "neutral", "success", "warning", "danger"].includes(value),
   },
   variant: {
     type: String,
     required: false,
-    default: "none",
-    validator: (value: string) =>
-      ["outlined", "soft", "ghost", "subtle", "none"].includes(value),
+    default: "soft",
   },
   type: {
     type: String,
     required: false,
     default: "text",
-    validator: (value: string) =>
-      ["text", "password", "email", "number", "tel", "url", "search"].includes(value),
   },
   disabled: { type: Boolean, required: false, default: false },
   readOnly: { type: Boolean, required: false, default: false },
@@ -38,12 +29,6 @@ const props = defineProps({
   placement: { type: String, required: false, default: "" },
   items: { type: Array, required: false, default: () => [] },
   modelValue: { type: String, required: false, default: "" },
-});
-
-const effectiveTheme = computed(() => props.theme || getHostTheme());
-const hexColor = computed(() => {
-  const map = getColorMap(effectiveTheme.value as "light" | "dark");
-  return map[props.color as keyof typeof map] || props.color;
 });
 
 const autocompleteRef = ref<InstanceType<typeof Autocomplete> | null>(null);
@@ -85,7 +70,7 @@ defineExpose({
 <template>
   <Autocomplete
     ref="autocompleteRef"
-    :color="hexColor"
+    :color="props.color"
     :variant="props.variant"
     :type="props.type"
     :disabled="props.disabled"
@@ -97,13 +82,11 @@ defineExpose({
     :align="props.align"
     :placement="props.placement"
     :items="props.items"
-    :menu-bg="getColorMap(effectiveTheme as ThemeName).surface"
     :model-value="innerValue"
     @select="ceEmit('select', $event)"
     @blur="ceEmit('blur', $event)"
   />
 </template>
 
-<style>
-@unocss-placeholder;
+<style scoped>
 </style>

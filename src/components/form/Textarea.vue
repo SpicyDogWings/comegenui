@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, defineModel, useTemplateRef } from "vue";
-import { getBgClasses, getFgClasses } from "../../utils/palette";
 
 const value = defineModel<string>({ default: "" });
 
@@ -12,14 +11,15 @@ const props = defineProps({
   color: {
     type: String,
     required: false,
-    default: "#2c2c2c",
-    validator: (value: string) => /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/i.test(value),
+    default: "neutral",
+    validator: (value: string) =>
+      ["primary", "secondary", "neutral", "success", "warning", "danger"].includes(value),
   },
   variant: {
     type: String,
     required: false,
-    default: "none",
-    validator: (value: string) => ["outlined", "soft", "ghost", "subtle", "none"].includes(value),
+    default: "soft",
+    validator: (value: string) => ["outlined", "soft", "ghost", "subtle"].includes(value),
   },
   placeholder: {
     type: String,
@@ -45,21 +45,20 @@ const props = defineProps({
     required: false,
     default: false,
   },
-  hightContrast: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
+
 });
 
 const textareaRef = useTemplateRef("textarea");
 
-const bgClass = computed(() =>
-  getBgClasses(props.color, props.variant, props.hightContrast),
-);
-const fgClass = computed(() =>
-  getFgClasses(props.color, props.variant, props.hightContrast),
-);
+const textareaStyles = computed(() => ({
+  '--btn-bg': `var(--cu-color-${props.color})`,
+  '--btn-bg-hover': `var(--cu-color-${props.color}-ghost-hover)`,
+  '--btn-soft': `var(--cu-color-${props.color}-soft)`,
+  '--btn-soft-hover': `var(--cu-color-${props.color}-soft-hover)`,
+  '--btn-subtle': `var(--cu-color-${props.color}-subtle)`,
+  '--btn-subtle-hover': `var(--cu-color-${props.color}-subtle-hover)`,
+  '--btn-subtle-border': `var(--cu-color-${props.color}-subtle-border)`,
+}));
 
 const get = () => value.value;
 const set = (newValue: string | number) => { value.value = String(newValue); };
@@ -75,29 +74,85 @@ defineExpose({ get, set, reset, focus });
     :placeholder="props.placeholder"
     :value="value"
     @input="value = ($event.target as HTMLTextAreaElement).value"
-    class="py-2 px-3 rounded-cu font-sans border-none text-[var(--btn-fg)] focus:outline-none focus:ring-2 w-full bg-[var(--btn-bg)] box-border ph-op-100"
-    :class="{
-      'focus:ring-[var(--btn-bd)]': true,
-      'resize-none': props.noResize,
-      'cursor-not-allowed opacity-70 ph-op-50': props.disabled,
-      'border-solid border-1 border-[var(--btn-bd)]': props.variant === 'subtle',
-      'bg-transparent border-solid border-2 border-[var(--btn-bd)] hover:bg-[var(--btn-bg-hover)]': props.variant === 'outlined',
-      'hover:bg-[var(--btn-bg-hover)]': props.variant === 'soft' || props.variant === 'ghost',
-      'bg-transparent border-solid border-1 border-[var(--btn-bd)]': props.variant === 'none',
-    }"
-    :style="{
-      '--btn-fg': fgClass.main,
-      '--btn-bg': bgClass.main,
-      '--btn-bg-hover': bgClass.hover,
-      '--btn-bg-active': bgClass.active,
-      '--btn-bd': fgClass.border,
-    }"
+    class="cu-textarea"
+    :class="[
+      `cu-textarea--${props.variant}`,
+      { 'cu-textarea--disabled': props.disabled, 'cu-textarea--no-resize': props.noResize },
+    ]"
+    :style="textareaStyles"
     :disabled="props.disabled"
     :readonly="props.readOnly"
     :rows="props.rows"
   />
 </template>
 
-<style>
-@unocss-placeholder;
+<style scoped>
+.cu-textarea {
+  font-family: var(--cu-font-sans);
+  font-size: var(--cu-font-size-sm);
+  padding: var(--cu-space-sm) var(--cu-space-md);
+  border-radius: var(--cu-radius-md);
+  border: none;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: var(--btn-bg);
+  color: var(--cu-color-neutral-text);
+  transition: all 150ms ease;
+  resize: vertical;
+}
+
+.cu-textarea::placeholder {
+  color: var(--cu-color-neutral-text);
+  opacity: 0.5;
+}
+
+.cu-textarea:focus {
+  box-shadow: 0 0 0 2px var(--btn-subtle-border);
+}
+
+.cu-textarea--no-resize {
+  resize: none;
+}
+
+/* subtle */
+.cu-textarea--subtle {
+  background-color: var(--btn-subtle);
+  border: var(--cu-border-thin) solid var(--btn-subtle-border);
+}
+.cu-textarea--subtle:hover {
+  background-color: var(--btn-subtle-hover);
+}
+
+/* soft */
+.cu-textarea--soft {
+  background-color: var(--btn-soft);
+}
+.cu-textarea--soft:hover {
+  background-color: var(--btn-soft-hover);
+}
+
+/* ghost */
+.cu-textarea--ghost {
+  background-color: transparent;
+}
+.cu-textarea--ghost:hover {
+  background-color: var(--btn-bg-hover);
+}
+
+/* outlined */
+.cu-textarea--outlined {
+  background-color: transparent;
+  border: 2px solid var(--btn-subtle-border);
+}
+.cu-textarea--outlined:hover {
+  background-color: var(--btn-bg-hover);
+}
+
+/* disabled */
+.cu-textarea--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
 </style>

@@ -1,37 +1,31 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { computed, ref } from "vue";
 import DropdownMenu from "./DropdownMenu.vue";
+import { getColorMap } from "../utils/palette";
+import { getHostTheme } from "../utils/getHostTheme";
+import { isValidTheme, type ThemeName } from "../config/theme";
 
 const props = defineProps({
-  theme: { type: String, required: false, default: "" },
+  theme: { type: String, required: false, default: "", validator: isValidTheme },
   color: {
     type: String,
     required: false,
     default: "neutral",
     validator: (value: string) =>
-      ["primary", "secondary", "neutral", "success", "warning", "danger"].includes(value),
+      ["primary", "neutral", "success", "warning", "danger"].includes(value),
   },
   variant: {
     type: String,
     required: false,
-    default: "ghost",
+    default: "none",
     validator: (value: string) =>
       ["solid", "outlined", "soft", "ghost", "subtle", "link", "none"].includes(value),
   },
   disabled: { type: Boolean, required: false, default: false },
+  hightContrast: { type: Boolean, required: false, default: false },
   label: { type: String, required: false, default: "" },
-  position: {
-    type: String,
-    required: false,
-    default: "bottom",
-    validator: (value: string) => ["bottom", "top"].includes(value),
-  },
-  align: {
-    type: String,
-    required: false,
-    default: "start",
-    validator: (value: string) => ["start", "center", "end"].includes(value),
-  },
+  position: { type: String, required: false, default: "bottom" },
+  align: { type: String, required: false, default: "start" },
   placement: { type: String, required: false, default: "" },
   offset: { type: Number, required: false, default: 4 },
   fixed: { type: Boolean, required: false, default: false },
@@ -40,10 +34,18 @@ const props = defineProps({
 
 const emit = defineEmits(["open", "close"]);
 
+const effectiveTheme = computed(() => props.theme || getHostTheme());
+const hexColor = computed(() => {
+  const map = getColorMap(effectiveTheme.value as "light" | "dark");
+  return map[props.color as keyof typeof map] || props.color;
+});
+
+const themeMap = computed(() => getColorMap(effectiveTheme.value as ThemeName));
+
 const resolvedItems = computed(() =>
   (props.items || []).map((item: any) => ({
     ...item,
-    color: item.color || undefined,
+    color: item.color ? (themeMap.value[item.color as keyof typeof themeMap.value] || item.color) : undefined,
   })),
 );
 
@@ -60,15 +62,17 @@ defineExpose({
 <template>
   <DropdownMenu
     ref="dropdownRef"
-    :color="props.color"
+    :color="hexColor"
     :variant="props.variant"
     :disabled="props.disabled"
+    :hight-contrast="props.hightContrast"
     :label="props.label"
     :position="props.position"
     :align="props.align"
     :placement="props.placement"
     :fixed="props.fixed"
     :offset="props.offset"
+    :menu-bg="themeMap.surface"
     :items="resolvedItems"
     @open="emit('open')"
     @close="emit('close')"
@@ -79,3 +83,7 @@ defineExpose({
     <slot></slot>
   </DropdownMenu>
 </template>
+
+<style>
+@unocss-placeholder;
+</style>
