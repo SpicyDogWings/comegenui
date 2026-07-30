@@ -10,10 +10,6 @@ import Input from "./components/form/Input.vue";
 /*@unocss-placeholder;*/
 @import "/css/vars.css";
 
-html {
-    scroll-behavior: smooth;
-}
-
 body {
     margin: 0;
 }
