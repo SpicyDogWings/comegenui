@@ -11,6 +11,7 @@ const colors = ["primary", "secondary", "neutral", "success", "warning", "danger
 
 const outlineItems = [
   { label: 'Default', id: 'default' },
+  { label: 'Sizes', id: 'sizes' },
   { label: 'Colors', id: 'colors' },
   { label: 'Disabled', id: 'disabled' },
   { label: 'Programmatic', id: 'programmatic' },
@@ -29,6 +30,17 @@ const outlineItems = [
         <div class="playground-checkbox-row">
           <Checkbox v-model="checked2" label="Pre-checked" />
           <span class="playground-checkbox-label">{{ checked2 ? 'checked' : 'unchecked' }}</span>
+        </div>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <!-- Sizes -->
+      <section id="sizes" class="playground-checkbox-section">
+        <h2>Sizes</h2>
+        <div class="playground-checkbox-row playground-checkbox-row--horizontal">
+          <Checkbox size="md" label="md (default)" />
+          <Checkbox size="sm" label="sm" />
         </div>
       </section>
 

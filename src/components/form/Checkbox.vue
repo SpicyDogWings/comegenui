@@ -9,6 +9,12 @@ const props = defineProps({
     required: false,
     default: "neutral",
   },
+  size: {
+    type: String,
+    required: false,
+    default: "md",
+    validator: (value: string) => ["sm", "md"].includes(value),
+  },
   disabled: {
     type: Boolean,
     required: false,
@@ -47,7 +53,10 @@ defineExpose({
 <template>
   <label
     class="cu-checkbox"
-    :class="{ 'cu-checkbox--disabled': props.disabled }"
+    :class="[
+      `cu-checkbox--${props.size}`,
+      { 'cu-checkbox--disabled': props.disabled }
+    ]"
   >
     <input
       ref="inputRef"
@@ -92,6 +101,14 @@ defineExpose({
   width: fit-content;
 }
 
+.cu-checkbox--md {
+  gap: var(--cu-space-sm);
+}
+
+.cu-checkbox--sm {
+  gap: var(--cu-space-xs);
+}
+
 .cu-checkbox--disabled {
   pointer-events: none;
   opacity: 0.7;
@@ -107,8 +124,6 @@ defineExpose({
 
 .cu-checkbox-box {
   position: relative;
-  width: 14px;
-  height: 14px;
   border-radius: var(--cu-radius-sm);
   display: flex;
   align-items: center;
@@ -117,6 +132,17 @@ defineExpose({
   border: var(--cu-border-medium) solid var(--cu-border-color);
   background-color: transparent;
   box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.cu-checkbox--md .cu-checkbox-box {
+  width: 16px;
+  height: 16px;
+}
+
+.cu-checkbox--sm .cu-checkbox-box {
+  width: 14px;
+  height: 14px;
 }
 
 .cu-checkbox-box--checked {
@@ -138,9 +164,16 @@ defineExpose({
 }
 
 .cu-checkbox-label {
-  font-size: var(--cu-font-size-sm);
   font-family: var(--cu-font-sans);
   color: var(--cu-color-neutral);
+}
+
+.cu-checkbox--md .cu-checkbox-label {
+  font-size: var(--cu-font-size-sm);
+}
+
+.cu-checkbox--sm .cu-checkbox-label {
+  font-size: var(--cu-font-size-xs);
 }
 
 .cu-checkbox--disabled .cu-checkbox-label {
