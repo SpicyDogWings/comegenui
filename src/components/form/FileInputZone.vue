@@ -65,7 +65,7 @@ const fileInputRef = useTemplateRef<HTMLInputElement>("fileInput");
 
 const zoneStyles = computed(() => ({
   '--zone-bg': `var(--cu-color-${props.color})`,
-  '--zone-bg-hover': `var(--cu-color-${props.color}-hover)`,
+  '--zone-ghost-hover': `var(--cu-color-${props.color}-ghost-hover)`,
   '--zone-text': `var(--cu-color-${props.color}-text)`,
 }));
 
@@ -341,7 +341,7 @@ defineExpose({ get, set, reset, focus, trigger });
 
 .cu-file-zone:hover:not(.cu-file-zone--disabled) {
   border-color: var(--zone-bg);
-  background-color: var(--zone-bg-hover);
+  background-color: var(--zone-ghost-hover);
 }
 
 .cu-file-zone--disabled {
@@ -352,7 +352,7 @@ defineExpose({ get, set, reset, focus, trigger });
 
 .cu-file-zone--drag-over {
   border-color: var(--zone-bg);
-  background-color: var(--zone-bg-hover);
+  background-color: var(--zone-ghost-hover);
 }
 
 .cu-file-zone--empty {
