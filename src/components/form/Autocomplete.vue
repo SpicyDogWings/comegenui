@@ -44,6 +44,7 @@ const props = defineProps({
     validator: (value: string) => ["start", "center", "end"].includes(value),
   },
   placement: { type: String, required: false, default: "" },
+  fixed: { type: Boolean, required: false, default: false },
 });
 
 const emit = defineEmits(["select", "blur"]);
@@ -126,6 +127,7 @@ defineExpose({
     :position="position"
     :align="align"
     :placement="placement"
+    :fixed="fixed"
     :offset="4"
     style="width:100%"
   >
