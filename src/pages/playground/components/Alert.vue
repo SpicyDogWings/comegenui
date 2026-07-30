@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import Alert from "@/components/Alert.vue";
+import Button from "@/components/buttons/Button.vue";
 import { ref } from "vue";
 
 const showAlert = ref(true);
@@ -47,9 +48,9 @@ const showAlert = ref(true);
 
             <h2>v-model:show</h2>
             <div class="playground-alert-row">
-                <button @click="showAlert = !showAlert" class="playground-alert-toggle">
+                <Button @click="showAlert = !showAlert">
                     Toggle Alert ({{ showAlert ? 'visible' : 'hidden' }})
-                </button>
+                </Button>
                 <Alert v-model:show="showAlert" title="Toggleable" color="success" close>
                     This alert is controlled via v-model:show.
                 </Alert>
@@ -89,22 +90,5 @@ const showAlert = ref(true);
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-}
-
-.playground-alert-toggle {
-    align-self: flex-start;
-    padding: var(--cu-space-sm) var(--cu-space-md);
-    background-color: var(--cu-color-neutral-soft);
-    color: var(--cu-color-neutral);
-    border: none;
-    border-radius: var(--cu-radius-md);
-    cursor: pointer;
-    font-family: var(--cu-font-sans);
-    font-size: var(--cu-font-size-sm);
-    transition: background-color 150ms ease;
-}
-
-.playground-alert-toggle:hover {
-    background-color: var(--cu-color-neutral-soft-hover);
 }
 </style>
