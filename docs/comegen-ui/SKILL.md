@@ -182,17 +182,17 @@ Cada componente que usa color acepta dos props clave:
 
 Refleja los validadores reales de cada `.ce.vue`. `—` significa que la variante no es aceptada por ese componente.
 
-| Variante | Button | Alert | Badge | Input | FileInput | FileInputZone | Checkbox | Textarea | Pagination | Table | DropdownMenu | Autocomplete | Select | Modal | ColorPicker | FloatingButton |
-|----------|--------|-------|-------|-------|-----------|---------------|----------|----------|------------|-------|--------------|--------------|--------|-------|-------------|----------------|
-| `solid` | ✓ | ✓ | ✓ | — | — | — | — | — | — | ✓ | ✓ | — | — | — | — | — |
-| `outlined` | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — |
-| `soft` | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — |
-| `ghost` | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — |
-| `subtle` | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — |
-| `link` | ✓ | — | — | — | — | — | — | — | — | — | ✓ | — | — | — | — | — |
-| `none` | ✓ | — | — | — | — | — | — | — | ✓ | — | ✓ | — | — | — | — | — |
+| Variante | Button | Alert | Badge | Input | FileInput | FileInputZone | Checkbox | Textarea | Pagination | Table | DropdownMenu | Autocomplete | Select | Modal | ColorPicker | FloatingButton | Label | Switch |
+|----------|--------|-------|-------|-------|-----------|---------------|----------|----------|------------|-------|--------------|--------------|--------|-------|-------------|----------------|-------|--------|
+| `solid` | ✓ | ✓ | ✓ | — | — | — | — | — | — | ✓ | ✓ | — | — | — | — | — | — | — |
+| `outlined` | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — | — | — |
+| `soft` | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — | — | — |
+| `ghost` | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — | — | — |
+| `subtle` | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — | — | — |
+| `link` | ✓ | — | — | — | — | — | — | — | — | — | ✓ | — | — | — | — | — | — | — |
+| `none` | ✓ | — | — | — | — | — | — | — | ✓ | — | ✓ | — | — | — | — | — | — | — |
 
-> Checkbox, FileInputZone, Modal, ColorPicker y FloatingButton **no tienen prop `variant`**. Badge acepta `ghost`; Alert acepta `ghost` pero no `none`. Input, Textarea, Autocomplete, Select y FileInput aceptan solo `outlined`/`soft`/`ghost`/`subtle`. Table acepta `solid`/`outlined`/`soft`/`ghost`/`subtle`. Pagination acepta además `none`.
+> Checkbox, FileInputZone, Modal, ColorPicker, FloatingButton, Label y Switch **no tienen prop `variant`**. Badge acepta `ghost`; Alert acepta `ghost` pero no `none`. Input, Textarea, Autocomplete, Select y FileInput aceptan solo `outlined`/`soft`/`ghost`/`subtle`. Table acepta `solid`/`outlined`/`soft`/`ghost`/`subtle`. Pagination acepta además `none`. `<cu-tabs>` usa su propio set de variantes: `tabs`, `pills`, `boxed`, `soft`.
 
 **Default de `variant` por componente:**
 
@@ -209,10 +209,12 @@ Refleja los validadores reales de cada `.ce.vue`. `—` significa que la variant
 | `<cu-file-input-zone>` | — (sin variant) |
 | `<cu-floating-button>` | — (sin variant) |
 | `<cu-input>` | `soft` |
+| `<cu-label>` | — (sin variant) |
 | `<cu-modal>` | — (sin variant) |
 | `<cu-pagination>` | `soft` |
 | `<cu-select>` | `soft` |
 | `<cu-switch>` | — (sin variant) |
+| `<cu-tabs>` | `tabs` |
 | `<cu-table>` | `soft` |
 | `<cu-textarea>` | `soft` |
 
@@ -318,6 +320,7 @@ Cada archivo UMD incluye el runtime de Vue 3 (no externalizado):
 | CuFileInputZone | ~220 kB | ~53 kB |
 | CuColorPicker | ~178 kB | ~42 kB |
 | CuFloatingButton | ~167 kB | ~40 kB |
+| CuTabs | ~200 kB | ~49 kB |
 
 ### Compatibilidad
 
