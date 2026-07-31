@@ -19,24 +19,55 @@ const navItems = [
   {
     label: 'Components',
     children: [
-      { label: 'Button', path: '/playground/components/button' },
-      { label: 'ToggleColorScheme', path: '/playground/components/toggle-color-scheme' },
-      { label: 'Alert', path: '/playground/components/alert' },
-      { label: 'Badge', path: '/playground/components/badge' },
-      { label: 'Modal', path: '/playground/components/modal' },
-      { label: 'Switch', path: '/playground/components/switch' },
-      { label: 'Checkbox', path: '/playground/components/checkbox' },
-      { label: 'Input', path: '/playground/components/input' },
-      { label: 'Textarea', path: '/playground/components/textarea' },
-      { label: 'Select', path: '/playground/components/select' },
-      { label: 'Autocomplete', path: '/playground/components/autocomplete' },
-      { label: 'FileInput', path: '/playground/components/file-input' },
-      { label: 'FileInputZone', path: '/playground/components/file-input-zone' },
-      { label: 'Dropdown', path: '/playground/components/dropdown' },
-      { label: 'DropdownMenu', path: '/playground/components/dropdown-menu' },
-      { label: 'Pagination', path: '/playground/components/pagination' },
-      { label: 'Table', path: '/playground/components/table' },
-      { label: 'AdvancedTable', path: '/playground/components/advanced-table' },
+      {
+        label: 'buttons',
+        children: [
+          { label: 'Button', path: '/playground/components/button' },
+          { label: 'ToggleColorScheme', path: '/playground/components/toggle-color-scheme' },
+        ]
+      },
+      {
+        label: 'form',
+        children: [
+          { label: 'Switch', path: '/playground/components/switch' },
+          { label: 'Checkbox', path: '/playground/components/checkbox' },
+          { label: 'Input', path: '/playground/components/input' },
+          { label: 'Textarea', path: '/playground/components/textarea' },
+          { label: 'Select', path: '/playground/components/select' },
+          { label: 'Autocomplete', path: '/playground/components/autocomplete' },
+          { label: 'FileInput', path: '/playground/components/file-input' },
+          { label: 'FileInputZone', path: '/playground/components/file-input-zone' },
+        ]
+      },
+      {
+        label: 'information',
+        children: [
+          { label: 'Alert', path: '/playground/components/alert' },
+          { label: 'Badge', path: '/playground/components/badge' },
+        ]
+      },
+      {
+        label: 'overlay',
+        children: [
+          { label: 'Modal', path: '/playground/components/modal' },
+        ]
+      },
+      {
+        label: 'data',
+        children: [
+          { label: 'Table', path: '/playground/components/table' },
+          { label: 'AdvancedTable', path: '/playground/components/advanced-table' },
+        ]
+      },
+      {
+        label: 'root',
+        children: [
+          { label: 'Dropdown', path: '/playground/components/dropdown' },
+          { label: 'DropdownMenu', path: '/playground/components/dropdown-menu' },
+          { label: 'Pagination', path: '/playground/components/pagination' },
+          { label: 'Tabs', path: '/playground/components/tabs' },
+        ]
+      },
     ]
   },
 ]

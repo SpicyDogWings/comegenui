@@ -97,6 +97,11 @@ const router = createRouter({
               component: () => import("@/pages/playground/components/Pagination.vue")
             },
             {
+              path: "tabs",
+              name: "Tabs playground",
+              component: () => import("@/pages/playground/components/Tabs.vue")
+            },
+            {
               path: "table",
               name: "Table playground",
               component: () => import("@/pages/playground/components/Table.vue")
