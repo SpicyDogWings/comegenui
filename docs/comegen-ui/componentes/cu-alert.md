@@ -10,13 +10,11 @@ Alerta con color semántico, título opcional y botón de cerrar. Puede controla
 
 | Prop | Tipo | Default | Descripción |
 |------|------|---------|-------------|
-| `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
 | `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `string` | `"soft"` | `solid`, `outlined`, `soft`, `subtle`, `none` |
+| `variant` | `string` | `"soft"` | `solid`, `outlined`, `soft`, `ghost`, `subtle` |
 | `close` | `boolean` | `false` | Muestra el botón de cerrar (X) |
 | `title` | `string` | — | Título visible en la cabecera |
 | `show` | `boolean` | `true` | Controla visibilidad. Cambiar este atributo emite `update:show` |
-| `hightContrast` | `boolean` | `false` | Modo de alto contraste para el texto |
 
 > **Atributos booleanos:** en HTML se usan sin valor: `<cu-alert close show>...`
 
@@ -50,7 +48,14 @@ Alerta con color semántico, título opcional y botón de cerrar. Puede controla
 
 ## Métodos expuestos
 
-No expone métodos (`open()`, `close()`, etc. no están disponibles en el Custom Element). El control debe hacerse via el atributo `show` o escuchando los eventos `open`/`close`.
+| Método | Descripción |
+|--------|-------------|
+| `.open()` | Muestra la alerta |
+| `.close()` | Oculta la alerta |
+| `.toggle()` | Alterna visibilidad |
+| `.isOpen()` | Devuelve `true`/`false` según la visibilidad actual |
+
+El control también puede hacerse via el atributo `show` o escuchando los eventos `open`/`close`.
 
 ---
 

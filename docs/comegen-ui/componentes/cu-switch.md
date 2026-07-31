@@ -10,14 +10,12 @@ Toggle switch con color semántico y dos tamaños. Controlable via `modelValue` 
 
 | Prop | Tipo | Default | Descripción |
 |------|------|---------|-------------|
-| `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
 | `modelValue` | `boolean` | `false` | Estado del toggle (controlado) |
 | `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `size` | `string` | `"md"` | Tamaño del switch: `sm`, `md` |
 | `disabled` | `boolean` | `false` | Estado deshabilitado |
-| `hightContrast` | `boolean` | `false` | Modo de alto contraste para el texto |
 
-> El Custom Element **no expone** una prop `checked` separada. El control se hace únicamente con `modelValue`. Tampoco tiene prop `variant`; el tamaño se controla con `size`.
+> El Custom Element **no expone** una prop `checked` separada. El control se hace únicamente con `modelValue`. Tampoco tiene props `variant`, `theme` ni `hightContrast`; el tamaño se controla con `size`.
 
 ## Eventos
 

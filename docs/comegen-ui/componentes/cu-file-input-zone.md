@@ -10,10 +10,8 @@ Selector de archivos con zona de drag & drop amplia, soporte para carpetas (recu
 
 | Prop | Tipo | Default | Descripción |
 |------|------|---------|-------------|
-| `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
 | `modelValue` | `File \| File[] \| null` | `null` | Archivo/s seleccionados |
 | `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `string` | `"none"` | `outlined`, `soft`, `ghost`, `subtle`, `none` |
 | `placeholder` | `string` | `"Selecciona un archivo o arrastra aquí"` | Texto cuando no hay archivos |
 | `disabled` | `boolean` | `false` | Deshabilita interacción |
 | `readOnly` | `boolean` | `false` | Modo solo lectura |
@@ -23,16 +21,16 @@ Selector de archivos con zona de drag & drop amplia, soporte para carpetas (recu
 | `directory` | `boolean` | `false` | Activa modo carpeta (incluye `multiple` implícitamente) |
 | `directoryDeep` | `number` | `0` | Niveles de recursión en carpetas: `0` = solo raíz, `1` = +1 subnivel, `-1` = sin límite |
 | `maxHeight` | `string` | `""` | Altura máxima del listado (ej: `"200px"`). Sin scroll si se omite. |
-| `hightContrast` | `boolean` | `false` | Alto contraste |
 
 > **Atributos en HTML:** `readOnly` → `readonly`, `maxSize` → `max-size`, `directoryDeep` → `directory-deep`, `maxHeight` → `max-height`.
+
+> **El Custom Element no expone prop `variant`.**
 
 ## Eventos
 
 | Evento | Payload (`e.detail`) | Descripción |
 |--------|----------------------|-------------|
-| `file-change` | `File \| File[] \| null` | Se dispara al cambiar la selección |
-| `update:modelValue` | `File \| File[] \| null` | Para v-model |
+| `update:modelValue` | `File \| File[] \| null` | Se emite al cambiar la selección |
 
 ## Slots
 
@@ -53,13 +51,13 @@ Ninguno.
 ## Uso en HTML plano
 
 ```html
-<script src="dist/CuFileInputZone.umd.js"></script>
+<script src="dist/CuFile-input-zone.umd.js"></script>
 
 <!-- Básico -->
 <cu-file-input-zone placeholder="Arrastra un archivo"></cu-file-input-zone>
 
 <!-- Múltiple + imágenes -->
-<cu-file-input-zone color="primary" variant="outlined" multiple accept="image/*"
+<cu-file-input-zone color="primary" multiple accept="image/*"
   placeholder="Subí tus imágenes"></cu-file-input-zone>
 
 <!-- Carpeta con scroll -->
@@ -68,7 +66,7 @@ Ninguno.
 
 <script>
   const zone = document.querySelector('cu-file-input-zone');
-  zone.addEventListener('file-change', (e) => {
+  zone.addEventListener('update:modelValue', (e) => {
     const files = e.detail;
     if (Array.isArray(files)) {
       console.log(`${files.length} archivos seleccionados`);

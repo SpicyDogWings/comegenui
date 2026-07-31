@@ -10,15 +10,13 @@ Checkbox con label, controlable via `modelValue` o métodos `get`/`set`.
 
 | Prop | Tipo | Default | Descripción |
 |------|------|---------|-------------|
-| `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
 | `modelValue` | `boolean` | `false` | Estado del checkbox (controlado) |
 | `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `string` | `"none"` | `outlined`, `soft`, `ghost`, `subtle`, `none` |
+| `size` | `string` | `"md"` | Tamaño del checkbox: `sm`, `md` |
 | `disabled` | `boolean` | `false` | Estado deshabilitado |
 | `label` | `string` | — | Texto visible junto al checkbox |
-| `hightContrast` | `boolean` | `false` | Modo de alto contraste para el texto |
 
-> El Custom Element **no expone** una prop `checked` separada; el control se hace únicamente con `modelValue`.
+> El Custom Element **no expone** una prop `checked` separada (el control se hace únicamente con `modelValue`), ni una prop `variant` (el estilo se fija con `size` y `color`).
 
 ## Eventos
 
@@ -47,7 +45,7 @@ Ninguno (el texto se pasa via `label`).
 ```html
 <script src="dist/CuCheckbox.umd.js"></script>
 
-<cu-checkbox label="Acepto los términos" color="primary" variant="soft"></cu-checkbox>
+<cu-checkbox label="Acepto los términos" color="primary"></cu-checkbox>
 <cu-checkbox label="Opción deshabilitada" disabled></cu-checkbox>
 
 <script>

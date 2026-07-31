@@ -10,15 +10,14 @@ Modal/diálogo con backdrop, animación, soporte para `size`/`height` y slot `fo
 
 | Prop | Tipo | Default | Descripción |
 |------|------|---------|-------------|
-| `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
 | `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `string` | `"ghost"` | `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` |
-| `hightContrast` | `boolean` | `false` | Modo de alto contraste para el texto |
 | `title` | `string` | `""` | Título del modal (se muestra en la cabecera) |
 | `description` | `string` | `""` | Descripción bajo el título (texto secundario) |
 | `persistent` | `boolean` | `false` | Si es `true`, no se cierra con click en el backdrop ni con `Escape` |
 | `size` | `string` | `"auto"` | Ancho del modal: `auto`, `sm`, `md`, `lg`, `xl`, `full` |
 | `height` | `string` | `"auto"` | Alto del modal: `auto`, `sm`, `md`, `lg`, `xl`, `full` |
+
+> El Custom Element **no expone** prop `variant` ni `theme`. El estilo se controla con `color`.
 
 ## Eventos
 
@@ -27,8 +26,10 @@ Modal/diálogo con backdrop, animación, soporte para `size`/`height` y slot `fo
 | `close` | — | Se inicia el cierre (click en backdrop, Escape, llamada a `.close()`) |
 | `opened` | — | El modal pasó a `isOpen = true` (animación de apertura completa) |
 | `closed` | — | La animación de cierre terminó y `isOpen = false` |
+| `cancel` | — | Se emite con el footer por defecto de un modal `persistent` al pulsar "Cancelar" (luego cierra el modal) |
+| `accept` | — | Se emite con el footer por defecto de un modal `persistent` al pulsar "Aceptar" (luego cierra el modal) |
 
-> Si el modal es `persistent`, no se emiten `close`/`closed` por click en backdrop o `Escape`. Solo se emiten cuando llamás a `.close()` programáticamente.
+> Si el modal es `persistent`, no se emiten `close`/`closed`/`cancel` por click en backdrop o `Escape`. Solo se emiten cuando llamás a `.close()` programáticamente.
 
 ## Slots
 
@@ -44,7 +45,7 @@ Modal/diálogo con backdrop, animación, soporte para `size`/`height` y slot `fo
 | `.open()` | Abre el modal |
 | `.close()` | Cierra el modal |
 | `.toggle()` | Alterna visibilidad |
-| `.isOpen` (getter) | Estado actual (`boolean`) |
+| `.isOpen()` | Devuelve el estado actual (`boolean`) |
 
 ---
 

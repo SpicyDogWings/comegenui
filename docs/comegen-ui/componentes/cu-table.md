@@ -12,7 +12,7 @@ Tabla avanzada con búsqueda, paginación, edición inline, ordenamiento, badges
 |------|------|---------|-------------|
 | `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
 | `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `string` | `"soft"` | `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` |
+| `variant` | `string` | `"soft"` | `solid`, `outlined`, `soft`, `ghost`, `subtle` |
 | `columns` | `array` | `[]` | Definición de columnas (ver [Interfaz de columna](#interfaz-de-columna)). Se asigna como propiedad JS |
 | `data` | `array` | `[]` | Filas de la tabla. Se asigna como propiedad JS |
 | `empty` | `string` | `""` | Texto a mostrar cuando no hay datos. Si se omite, usa `"No hay datos que mostrar"` |
@@ -485,13 +485,18 @@ tabla.addEventListener('edit-save', (e) => {
 
 ## Sticky header
 
-Si el contenedor padre tiene `max-height` definido, los headers se vuelven `position: sticky`. En variantes distintas de `solid` se aplica `backdrop-filter: blur(8px)` para mantener la legibilidad.
+El header es `position: sticky`. Sigue el scroll del contenedor de scroll más cercano:
+
+- **Scroll de página:** si la tabla está en una página que scrollea (y ningún ancestro intermedio tiene `overflow` que cree un scroll container propio), el header se pega al tope de la página.
+- **Scroll interno:** con `max-height` en la tabla, el header se pega al tope del área de scroll de la tabla.
+
+En variantes transparentes (`outlined`, `ghost`) se aplica `backdrop-filter: blur(8px)` al header para mantener la legibilidad al scrollear contenido por debajo.
 
 ```html
 <cu-table
   id="miTabla"
   search-enabled
   search-placeholder="Buscar..."
-  style="max-height: 400px; width: 100%;"
+  style="width: 100%;"
 ></cu-table>
 ```

@@ -14,7 +14,7 @@ Selector de opciones con color, variante, ícono chevron, opciones deshabilitada
 | `modelValue` | `string` | `""` | Valor seleccionado |
 | `options` | `array` | `[]` | Opciones del select (ver abajo). Se asigna como propiedad JS |
 | `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `string` | `"none"` | `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` |
+| `variant` | `string` | `"soft"` | `outlined`, `soft`, `ghost`, `subtle` |
 | `placeholder` | `string` | — | Texto mostrado cuando no hay selección |
 | `placeholderWrap` | `boolean` | `false` | Si `true`, el texto wrappea; si `false`, se trunca con `...` (atributo HTML: `placeholder-wrap`) |
 | `position` | `string` | `"bottom"` | Posición del dropdown: `bottom`, `top` |
@@ -58,8 +58,8 @@ Ninguno.
 | `.set(value)` | Asigna un valor (debe existir en `options`) |
 | `.reset()` | Limpia la selección |
 | `.focus()` | Enfoca el select |
-| `.isOpen` (getter) | Estado del dropdown (`boolean`) |
-| `.selectedItem` (getter) | Objeto `{ value, label }` de la opción seleccionada o `null` |
+| `.isOpen()` | Estado del dropdown (`boolean`) |
+| `.selectedItem()` | Objeto `{ value, label }` de la opción seleccionada o `null` |
 
 ---
 
@@ -153,9 +153,9 @@ Si una opción no especifica `color` ni `variant`, hereda los valores del `<cu-s
 
   s.set('a');             // seleccionar 'a'
   s.get();                // 'a'
-  s.selectedItem;         // { value: 'a', label: 'A' }
+  s.selectedItem();       // { value: 'a', label: 'A' }
   s.reset();              // limpiar
-  s.isOpen;               // false
+  s.isOpen();             // false
   s.focus();              // foco
 </script>
 ```
@@ -165,7 +165,7 @@ Si una opción no especifica `color` ni `variant`, hereda los valores del `<cu-s
 ```html
 <!-- Con position + align separados -->
 <cu-select position="bottom" align="end"></cu-select>
-<cu-select position="top" align="center" offset="8"></cu-select>
+<cu-select position="top" align="center"></cu-select>
 
 <!-- O con placement shorthand -->
 <cu-select placement="bottom-end"></cu-select>
