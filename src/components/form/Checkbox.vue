@@ -64,6 +64,7 @@ defineExpose({
       :checked="checked"
       @change="(e) => { checked = (e.target as HTMLInputElement).checked; emit('change', e); }"
       :disabled="props.disabled"
+      tabindex="-1"
       class="cu-checkbox-input"
     />
     <div
@@ -91,7 +92,7 @@ defineExpose({
   </label>
 </template>
 
-<style>
+<style scoped>
 .cu-checkbox {
   display: inline-flex;
   align-items: center;
