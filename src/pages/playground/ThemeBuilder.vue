@@ -164,7 +164,7 @@ function colorVar(name: string, value: string) {
     --cu-color-${name}-subtle-border: ${transparentize(value, 0.5)};`
 }
 
-const cssOutput = computed(() => {
+function buildCssVariables(): string {
   const t = typography.value
   const s = spacing.value
   const r = borderRadius.value
@@ -179,8 +179,7 @@ const cssOutput = computed(() => {
   const shadowAlpha05 = hexToRgba(sh.color, 0.05)
   const shadowAlpha1 = hexToRgba(sh.color, 0.1)
 
-  return `.tb-preview {
-    /* Colors */
+  return `/* Colors */
     ${colorsCSS}
 
     /* Typography */
@@ -232,13 +231,17 @@ const cssOutput = computed(() => {
     --cu-border-thick: ${b.width.thick};
     --cu-border-color: ${b.color.default};
     --cu-border-color-strong: ${b.color.strong};
-    --cu-border-color-focus: ${b.color.focus};
-}`
+    --cu-border-color-focus: ${b.color.focus};`
+}
+
+const cssPreview = computed(() => `.tb-preview {\n${buildCssVariables()}\n}`)
+
+const cssExport = computed(() => `:root {\n${buildCssVariables()}\n}`)
 })
 
 let styleEl: HTMLStyleElement | null = null
 
-watch(cssOutput, (css) => {
+watch(cssPreview, (css) => {
   if (!styleEl) {
     styleEl = document.createElement('style')
     styleEl.id = 'theme-builder-preview'
@@ -312,11 +315,11 @@ function handleExport() {
 }
 
 function handleCopyCSS() {
-  navigator.clipboard.writeText(cssOutput.value)
+  navigator.clipboard.writeText(cssExport.value)
 }
 
 function handleDownloadCSS() {
-  const blob = new Blob([cssOutput.value], { type: 'text/css' })
+  const blob = new Blob([cssExport.value], { type: 'text/css' })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
@@ -658,7 +661,7 @@ onBeforeUnmount(() => {
     <ThemeManagerModal
       ref="modalRef"
       v-model:theme-name="themeName"
-      :css-output="cssOutput"
+      :css-output="cssExport"
       @import="handleImport"
       @export="handleExport"
       @reset="resetToDefaults"
