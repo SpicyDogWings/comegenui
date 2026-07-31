@@ -1,76 +1,261 @@
 # AGENTS.md — Arquitectura de Componentes ComegenUI
 
-## Patrón de archivos
-
-Cada componente público sigue esta estructura de 3 archivos:
+## Estructura de directorios
 
 ```
-src/components/
-├── MiComponente.ce.vue   # Thin wrapper para Custom Element (UMD)
-├── MiComponente.vue      # Lógica real del componente
-└── MiComponente.ts       # defineCustomElement + registro
+src/
+├── components/
+│   ├── {category}/MiComponente.vue        # Lógica real del componente
+│   ├── customElements/{category}/MiComponente.ce.vue  # Wrapper CE (thin)
+│   └── ...otrascarpetas (icons, theme, lab, archived, legacy)
+├── lib/
+│   └── {category}/mi-componente.ts        # Entry point: defineCustomElement + registro
+├── config/
+│   └── theme.ts                           # Definiciones estáticas de temas
+├── plugins/cu-tokens/                     # Sistema de tokens CSS
+├── composables/                           # Composables reutilizables
+└── utils/                                 # Utilidades (getHostTheme, palette, fileIcons)
 ```
 
-Un componente puede ser solo `.vue` si es interno (sin CE público), como `Dropdown.vue` (motor genérico).
+Donde `{category}` es uno de: `form/`, `information/`, `overlay/`, `data/`, `buttons/`, o raíz.
 
-### Responsabilidades
+### Patrón de 3 archivos (componentes públicos)
 
-**`MiComponente.vue`** — El componente real
-- Define la interfaz del componente (props, emits, exposes)
-- Importa y usa sub-componentes `.vue` directamente (`import Button from "./Button.vue"`)
-- Contiene toda la lógica de negocio, template, y estilos
-- No sabe nada de Custom Elements ni temas
-- Espera `color` como hex string (`#1774A4`)
+```
+src/components/{category}/MiComponente.vue        → Componente real
+src/components/customElements/{category}/MiComponente.ce.vue  → Wrapper CE
+src/lib/{category}/mi-componente.ts               → Entry point para build
+```
+
+### Componentes sin wrapper CE (internos o directos)
+
+Algunos componentes van directo de `.vue` a `.ts` sin `.ce.vue`:
+
+- `Button.vue` → `lib/buttons/button.ts` (usa CSS tokens directamente)
+- `Badge.vue` → `lib/information/badge.ts` (usa CSS tokens directamente)
+
+### Componentes internos (sin CE público)
+
+- `Dropdown.vue` — Motor genérico (toggle + panel + posicionamiento)
+- `AdvancedTable.vue`, `EditableTableCell.vue` — Tabla interna
+- `FileList.vue` — Lista de archivos
+- `icons/*.vue` — Iconos
+- `theme/ThemeManagerModal.vue` — Modal de configuración
+- `lab/` — Componentes experimentales
+
+### Legacy
+
+`src/components/legacy/` contiene versiones anteriores que usan `getBgClasses`/`getBgClasses` de `palette.ts`. No usar como referencia para componentes nuevos.
+
+---
+
+## Responsabilidades
+
+### `MiComponente.vue` — El componente real
+
+- Define la interfaz (props, emits, exposes)
+- Importa y usa sub-componentes `.vue` directamente
+- Contiene lógica de negocio, template, y estilos
+- **Acepta `color` como nombre semántico** (`'primary' | 'neutral' | 'success' | ...`)
+- Usa **CSS custom properties** para resolver colores: `var(--cu-color-{name}-*)`
 - **Usa sintaxis Vue `#nombre` para slots** (ej: `<template #toggle>`)
+- `defineExpose` siempre con **arrow functions** (`isOpen: () => ...`), nunca getters
 
-**`MiComponente.ce.vue`** — Wrapper para Custom Element
+```ts
+// Ejemplo de resolución de color en .vue
+const colorStyles = computed(() => ({
+  '--alert-bg': `var(--cu-color-${props.color})`,
+  '--alert-text': `var(--cu-color-${props.color}-text)`,
+  '--alert-soft': `var(--cu-color-${props.color}-soft)`,
+  // ... más variantes
+}))
+```
+
+### `MiComponente.ce.vue` — Wrapper para Custom Element
+
 - Importa `MiComponente.vue`
 - Define props con nombres semánticos (`"primary"`, `"neutral"`)
-- Resuelve el tema activo via `getHostTheme()` y convierte colores a hex con `getColorMap()`
-- Pasa props explícitamente al `.vue` (NO usar `v-bind="{...props}"`)
-- Forwardea slots y eventos nativos de Custom Elements
-- **Usa `slot="nombre"` (HTML nativo) en vez de `#nombre` (Vue)**, porque los CE wrappers se renderizan en shadow DOM y deben usar la sintaxis de Custom Elements para proyectar slots
+- **Pasa props explícitamente** al `.vue` (NO usar `v-bind="{...props}"`)
+- Puede importar `initTokens()` si el `.ts` no lo hace
+- Forwardea slots y eventos
+- **Slots:** usa sintaxis Vue `<template #nombre>` o HTML `slot="nombre"` (ver nota abajo)
 - Expone métodos via `defineExpose` delegando al ref interno
+-桥接 eventos Vue a CustomEvents via `ceEmit()`
 
-**`MiComponente.ts`** — Punto de entrada para el build
-- `defineCustomElement(MiComponente.ce.vue)`
-- `customElements.define("cu-mi-componente", ...)`
+**Nota sobre slots en `.ce.vue`:**
+La mayoría usa `<template #nombre>` (sintaxis Vue). `DropdownMenu.ce.vue` usa `slot="nombre"` (HTML nativo) en un `<div>` wrapper. Ambos patrones funcionan; preferir `<template #nombre>` para consistencia.
 
-### Ejemplo: DropdownMenu
-
-```
-Dropdown.vue           → Motor genérico (toggle + panel + posicionamiento + click-outside)
-                          Props: color (hex), variant, label, placement, offset, menuBg
-                          Slots: #toggle (con slot props: toggle, isOpen), #default (panel)
-                          Sin items, sin iconos, sin divisores.
-                          NO tiene .ts ni .ce — es Vue interno.
-
-DropdownMenu.vue       → Menú con items (usa Dropdown.vue)
-                          Props: mismos que Dropdown + items (DropdownItem[])
-                          Slots: forwardea #toggle (con slot props), #default (fallback)
-                          NO tiene .ts ni .ce.
-
-DropdownMenu.ce.vue    → Wrapper CE del menú
-                          Importa DropdownMenu.vue
-                          Props: theme, color (semántico), variant, label, items, etc.
-                          Template: <DropdownMenu :color="hexColor" :items="resolvedItems" ...>
-                          Slot forwarding con slot="nombre" (HTML), no #nombre (Vue)
-
-DropdownMenu.ts        → defineCustomElement("cu-dropdown-menu", DropdownMenu.ce.vue)
+```ts
+// ceEmit:桥接 eventos Vue → CustomEvents nativos
+function ceEmit(event: string, payload: unknown) {
+  const el = instance?.vnode.el as HTMLElement | null;
+  const host = el?.getRootNode()?.host || el;
+  if (host) {
+    host.dispatchEvent(new CustomEvent(event, {
+      detail: payload,
+      bubbles: true,
+      composed: true,
+    }));
+  }
+}
 ```
 
-### Build
+### `mi-componente.ts` — Entry point para el build
 
-`build-libs.ts` busca `src/components/**/*.ts` y construye cada uno como UMD con Vite:
+- Importa `defineCustomElement` de Vue
+- Importa el `.ce.vue` (o `.vue` si no hay wrapper CE)
+- Llama `initTokens()` si el `.ce.vue` no lo hace
+- Registra el Custom Element
+- Exporta el componente
+
+```ts
+import { defineCustomElement } from 'vue'
+import Component from '@/components/customElements/{category}/Component.ce.vue'
+import { initTokens } from '@/plugins/cu-tokens/css'
+
+initTokens()
+
+const CuComponent = defineCustomElement(Component)
+customElements.define('cu-component', CuComponent)
+
+export default CuComponent
+```
+
+> **`initTokens()`** inyecta un `<style>` con los CSS custom properties del tema activo. Debe llamarse una vez por componente UMD, ya sea en el `.ce.vue` o en el `.ts`.
+
+---
+
+## Sistema de Color y Temas
+
+### Flujo de color
+
+```
+Usuario pasa color="primary" (string semántico)
+        ↓
+.ce.vue recibe y pasa al .vue
+        ↓
+.vue resuelve via CSS: var(--cu-color-primary)
+        ↓
+CSS tokens (inyectados por initTokens o themes.css) resuelven el hex según el tema activo
+```
+
+**Ya NO se usa `getHostTheme()` + `getColorMap()` para convertir a hex** (excepto en `Label.ce.vue` que es transicional). El patrón moderno usa CSS custom properties directamente.
+
+### Sistema de temas
+
+Tres temas: `light` (default), `dark`, `sigacadv2`.
+
+```html
+<html data-theme="dark">              <!-- Global -->
+<cu-button theme="sigacadv2">         <!-- Por componente -->
+```
+
+Prioridad: `theme` prop → `data-theme` en `<html>` → `prefers-color-scheme` (OS).
+
+### Tokens CSS
+
+El sistema de tokens (`cu-tokens`) genera para cada color:
+- `--cu-color-{name}` (base)
+- `--cu-color-{name}-text` (texto sobre el color)
+- `--cu-color-{name}-hover`, `-active` (estados)
+- `--cu-color-{name}-soft`, `-soft-hover`, `-soft-active` (variante soft)
+- `--cu-color-{name}-subtle`, `-subtle-hover`, `-subtle-active`, `-subtle-border` (variante subtle)
+- `--cu-color-{name}-ghost-hover`, `-ghost-active` (variante ghost)
+
+Tokens compartidos: tipografía, spacing, border-radius, shadows, borders.
+
+---
+
+## Build
+
+`build-lib.ts` busca `src/lib/**/*.ts` (excluyendo `index.ts` y `tokens.ts`) y construye cada uno como UMD:
+
 - `vue({ features: { customElement: true } })`
 - `UnoCSS({ mode: "shadow-dom" })`
+- Genera `dist/css/themes.css` + `dist/css/{theme}.css`
+- Crea zip versionado: `comegenui-v{version}.zip`
 
-### Reglas
+---
 
-1. Los `.ce.vue` NO importan sub-componentes `.vue` — esa responsabilidad es del `.vue`
-2. Los `.ce.vue` solo resuelven tema/color y delegan
-3. Los `.vue` aceptan colores en hex, los `.ce.vue` convierten de nombre semántico a hex
-4. Los `.ts` son siempre 3 líneas: import, define, export
-5. No usar `v-bind="{...props}"` en `.ce.vue` — pasar props explícitamente (como hace Table.ce.vue)
-6. **Slots:** los `.vue` usan `#nombre` (sintaxis Vue), los `.ce.vue` usan `slot="nombre"` (HTML nativo)
-7. **`defineExpose` en `.ce.vue`:** siempre usar arrow functions (`isOpen: () => ...`), **nunca** getters (`get isOpen() { ... }`). Los getters no se serializan correctamente al exponer el CE. Ver commit `a4e5d70` en Autocomplete.ce.vue como referencia.
+## Reglas
+
+1. Los `.ce.vue` **NO importan sub-componentes `.vue`** — esa responsabilidad es del `.vue`
+2. Los `.ce.vue` pasan props **explícitamente** (nunca `v-bind="{...props}"`)
+3. Los `.vue` resuelven colores via **CSS custom properties** (`var(--cu-color-{name}-*)`)
+4. `initTokens()` debe llamarse en el `.ce.vue` o en el `.ts` (al menos una vez por componente UMD)
+5. **Slots:** los `.vue` usan `#nombre` (sintaxis Vue); los `.ce.vue` usan `<template #nombre>` (consistente)
+6. **`defineExpose` en `.ce.vue`:** siempre **arrow functions** (`isOpen: () => ...`), **nunca** getters
+7. Los `.ce.vue`桥edan eventos Vue a CustomEvents via **`ceEmit()`**
+8. Los componentes nuevos van en `src/components/{category}/` y `src/components/customElements/{category}/`
+9. Los entry points van en `src/lib/{category}/mi-componente.ts`
+10. `hightContrast` es el nombre correcto del prop (typo persistente en todo el codebase)
+
+---
+
+## Ejemplo completo: Alert
+
+### `src/components/information/Alert.vue`
+
+```vue
+<script setup lang="ts">
+const props = defineProps({
+  color: { type: String, default: "neutral" },
+  variant: { type: String, default: "soft" },
+  // ...
+})
+
+const colorStyles = computed(() => ({
+  '--alert-bg': `var(--cu-color-${props.color})`,
+  '--alert-text': `var(--cu-color-${props.color}-text)`,
+  // ...
+}))
+</script>
+
+<template>
+  <div :class="['cu-alert', `cu-alert--${props.variant}`]" :style="colorStyles">
+    <slot name="icon" />
+    <slot />
+  </div>
+</template>
+```
+
+### `src/components/customElements/information/Alert.ce.vue`
+
+```vue
+<script setup lang="ts">
+import Alert from "../../information/Alert.vue";
+import { initTokens } from "@/plugins/cu-tokens/css";
+
+initTokens();
+
+const props = defineProps({
+  color: { type: String, default: "neutral" },
+  variant: { type: String, default: "soft" },
+  // ...
+});
+
+const alertRef = ref(null);
+// ceEmit para桥edar eventos...
+</script>
+
+<template>
+  <Alert ref="alertRef" :color="props.color" :variant="props.variant" ...>
+    <template #icon>
+      <slot name="icon"></slot>
+    </template>
+    <slot></slot>
+  </Alert>
+</template>
+```
+
+### `src/lib/information/alert.ts`
+
+```ts
+import { defineCustomElement } from 'vue'
+import Alert from '@/components/customElements/information/Alert.ce.vue'
+
+const CuAlert = defineCustomElement(Alert)
+customElements.define('cu-alert', CuAlert)
+
+export default CuAlert
+```

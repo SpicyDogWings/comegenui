@@ -179,7 +179,7 @@ const cssOutput = computed(() => {
   const shadowAlpha05 = hexToRgba(sh.color, 0.05)
   const shadowAlpha1 = hexToRgba(sh.color, 0.1)
 
-  return `:root {
+  return `.tb-preview {
     /* Colors */
     ${colorsCSS}
 
@@ -666,6 +666,35 @@ onMounted(() => {
 </template>
 
 <style scoped>
+:global(:root) {
+  --cu-color-primary: #1774A4;
+  --cu-color-primary-soft: rgba(23, 116, 164, 0.15);
+  --cu-color-neutral: #2c2c2c;
+  --cu-color-neutral-text: #000000;
+  --cu-color-neutral-hover: #000000;
+  --cu-color-neutral-active: #343434;
+  --cu-color-neutral-ghost-hover: rgba(44, 44, 44, 0.1);
+  --cu-color-neutral-ghost-active: rgba(44, 44, 44, 0.2);
+  --cu-color-neutral-soft: rgba(44, 44, 44, 0.15);
+  --cu-color-neutral-soft-hover: rgba(44, 44, 44, 0.25);
+  --cu-color-neutral-soft-active: rgba(44, 44, 44, 0.35);
+  --cu-color-neutral-subtle: rgba(44, 44, 44, 0.1);
+  --cu-color-neutral-subtle-hover: rgba(44, 44, 44, 0.2);
+  --cu-color-neutral-subtle-active: rgba(44, 44, 44, 0.3);
+  --cu-color-neutral-subtle-border: rgba(44, 44, 44, 0.5);
+  --cu-color-surface: #ffffff;
+  --cu-font-sans: Inter, system-ui, sans-serif;
+  --cu-font-mono: Fira Code, monospace;
+  --cu-font-size-xs: 0.75rem;
+  --cu-font-size-sm: 0.875rem;
+  --cu-font-weight-medium: 500;
+  --cu-font-weight-semibold: 600;
+  --cu-space-xs: 4px;
+  --cu-space-sm: 8px;
+  --cu-radius: 8px;
+  --cu-border-thin: 1px;
+  --cu-border-color: #d1d5db;
+}
 .tb-layout {
   display: flex;
   gap: 2rem;

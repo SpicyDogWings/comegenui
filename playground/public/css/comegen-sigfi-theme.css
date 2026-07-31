@@ -1,0 +1,145 @@
+:root {
+    /* Colors */
+    --cu-color-primary: #0059b1;
+    --cu-color-primary-text: #001971;
+    --cu-color-primary-hover: #003f97;
+    --cu-color-primary-active: #1a73cb;
+    --cu-color-primary-ghost-hover: rgba(0, 89, 177, 0.09999999999999998);
+    --cu-color-primary-ghost-active: rgba(0, 89, 177, 0.19999999999999996);
+    --cu-color-primary-soft: rgba(0, 89, 177, 0.15000000000000002);
+    --cu-color-primary-soft-hover: rgba(0, 89, 177, 0.25);
+    --cu-color-primary-soft-active: rgba(0, 89, 177, 0.35);
+    --cu-color-primary-subtle: rgba(0, 89, 177, 0.09999999999999998);
+    --cu-color-primary-subtle-hover: rgba(0, 89, 177, 0.19999999999999996);
+    --cu-color-primary-subtle-active: rgba(0, 89, 177, 0.30000000000000004);
+    --cu-color-primary-subtle-border: rgba(0, 89, 177, 0.5);
+    --cu-color-secondary: #008ec1;
+    --cu-color-secondary-text: #004e81;
+    --cu-color-secondary-hover: #0074a7;
+    --cu-color-secondary-active: #1aa8db;
+    --cu-color-secondary-ghost-hover: rgba(0, 142, 193, 0.09999999999999998);
+    --cu-color-secondary-ghost-active: rgba(0, 142, 193, 0.19999999999999996);
+    --cu-color-secondary-soft: rgba(0, 142, 193, 0.15000000000000002);
+    --cu-color-secondary-soft-hover: rgba(0, 142, 193, 0.25);
+    --cu-color-secondary-soft-active: rgba(0, 142, 193, 0.35);
+    --cu-color-secondary-subtle: rgba(0, 142, 193, 0.09999999999999998);
+    --cu-color-secondary-subtle-hover: rgba(0, 142, 193, 0.19999999999999996);
+    --cu-color-secondary-subtle-active: rgba(0, 142, 193, 0.30000000000000004);
+    --cu-color-secondary-subtle-border: rgba(0, 142, 193, 0.5);
+    --cu-color-neutral: #1a1a1a;
+    --cu-color-neutral-text: #000000;
+    --cu-color-neutral-hover: #000000;
+    --cu-color-neutral-active: #343434;
+    --cu-color-neutral-ghost-hover: rgba(26, 26, 26, 0.09999999999999998);
+    --cu-color-neutral-ghost-active: rgba(26, 26, 26, 0.19999999999999996);
+    --cu-color-neutral-soft: rgba(26, 26, 26, 0.15000000000000002);
+    --cu-color-neutral-soft-hover: rgba(26, 26, 26, 0.25);
+    --cu-color-neutral-soft-active: rgba(26, 26, 26, 0.35);
+    --cu-color-neutral-subtle: rgba(26, 26, 26, 0.09999999999999998);
+    --cu-color-neutral-subtle-hover: rgba(26, 26, 26, 0.19999999999999996);
+    --cu-color-neutral-subtle-active: rgba(26, 26, 26, 0.30000000000000004);
+    --cu-color-neutral-subtle-border: rgba(26, 26, 26, 0.5);
+    --cu-color-success: #128a00;
+    --cu-color-success-text: #004a00;
+    --cu-color-success-hover: #007000;
+    --cu-color-success-active: #2ca41a;
+    --cu-color-success-ghost-hover: rgba(18, 138, 0, 0.09999999999999998);
+    --cu-color-success-ghost-active: rgba(18, 138, 0, 0.19999999999999996);
+    --cu-color-success-soft: rgba(18, 138, 0, 0.15000000000000002);
+    --cu-color-success-soft-hover: rgba(18, 138, 0, 0.25);
+    --cu-color-success-soft-active: rgba(18, 138, 0, 0.35);
+    --cu-color-success-subtle: rgba(18, 138, 0, 0.09999999999999998);
+    --cu-color-success-subtle-hover: rgba(18, 138, 0, 0.19999999999999996);
+    --cu-color-success-subtle-active: rgba(18, 138, 0, 0.30000000000000004);
+    --cu-color-success-subtle-border: rgba(18, 138, 0, 0.5);
+    --cu-color-warning: #e5a50a;
+    --cu-color-warning-text: #a56500;
+    --cu-color-warning-hover: #cb8b00;
+    --cu-color-warning-active: #ffbf24;
+    --cu-color-warning-ghost-hover: rgba(229, 165, 10, 0.09999999999999998);
+    --cu-color-warning-ghost-active: rgba(229, 165, 10, 0.19999999999999996);
+    --cu-color-warning-soft: rgba(229, 165, 10, 0.15000000000000002);
+    --cu-color-warning-soft-hover: rgba(229, 165, 10, 0.25);
+    --cu-color-warning-soft-active: rgba(229, 165, 10, 0.35);
+    --cu-color-warning-subtle: rgba(229, 165, 10, 0.09999999999999998);
+    --cu-color-warning-subtle-hover: rgba(229, 165, 10, 0.19999999999999996);
+    --cu-color-warning-subtle-active: rgba(229, 165, 10, 0.30000000000000004);
+    --cu-color-warning-subtle-border: rgba(229, 165, 10, 0.5);
+    --cu-color-danger: #e01b24;
+    --cu-color-danger-text: #a00000;
+    --cu-color-danger-hover: #c6010a;
+    --cu-color-danger-active: #fa353e;
+    --cu-color-danger-ghost-hover: rgba(224, 27, 36, 0.09999999999999998);
+    --cu-color-danger-ghost-active: rgba(224, 27, 36, 0.19999999999999996);
+    --cu-color-danger-soft: rgba(224, 27, 36, 0.15000000000000002);
+    --cu-color-danger-soft-hover: rgba(224, 27, 36, 0.25);
+    --cu-color-danger-soft-active: rgba(224, 27, 36, 0.35);
+    --cu-color-danger-subtle: rgba(224, 27, 36, 0.09999999999999998);
+    --cu-color-danger-subtle-hover: rgba(224, 27, 36, 0.19999999999999996);
+    --cu-color-danger-subtle-active: rgba(224, 27, 36, 0.30000000000000004);
+    --cu-color-danger-subtle-border: rgba(224, 27, 36, 0.5);
+    --cu-color-surface: #eeeeee;
+    --cu-color-surface-text: #aeaeae;
+    --cu-color-surface-hover: #d4d4d4;
+    --cu-color-surface-active: #ffffff;
+    --cu-color-surface-ghost-hover: rgba(238, 238, 238, 0.09999999999999998);
+    --cu-color-surface-ghost-active: rgba(238, 238, 238, 0.19999999999999996);
+    --cu-color-surface-soft: rgba(238, 238, 238, 0.15000000000000002);
+    --cu-color-surface-soft-hover: rgba(238, 238, 238, 0.25);
+    --cu-color-surface-soft-active: rgba(238, 238, 238, 0.35);
+    --cu-color-surface-subtle: rgba(238, 238, 238, 0.09999999999999998);
+    --cu-color-surface-subtle-hover: rgba(238, 238, 238, 0.19999999999999996);
+    --cu-color-surface-subtle-active: rgba(238, 238, 238, 0.30000000000000004);
+    --cu-color-surface-subtle-border: rgba(238, 238, 238, 0.5);
+
+    /* Typography */
+    --cu-font-sans: Inter, system-ui, sans-serif;
+    --cu-font-mono: Fira Code, monospace;
+    --cu-font-size-xs: 0.75rem;
+    --cu-font-size-sm: 0.875rem;
+    --cu-font-size-md: 1rem;
+    --cu-font-size-lg: 1.125rem;
+    --cu-font-size-xl: 1.25rem;
+    --cu-font-size-2xl: 1.5rem;
+    --cu-font-weight-normal: 400;
+    --cu-font-weight-medium: 500;
+    --cu-font-weight-semibold: 600;
+    --cu-font-weight-bold: 700;
+    --cu-line-height-tight: 1.25;
+    --cu-line-height-normal: 1.5;
+    --cu-line-height-relaxed: 1.75;
+
+    /* Spacing */
+    --cu-space-2xs: 2px;
+    --cu-space-xs: 4px;
+    --cu-space-sm: 8px;
+    --cu-space-md: 12px;
+    --cu-space-lg: 16px;
+    --cu-space-xl: 24px;
+    --cu-space-2xl: 32px;
+    --cu-space-3xl: 48px;
+
+    /* Border Radius */
+    --cu-radius: 8px;
+    --cu-radius-none: 0;
+    --cu-radius-sm: 4px;
+    --cu-radius-md: 8px;
+    --cu-radius-lg: 12px;
+    --cu-radius-full: 9999px;
+
+    /* Shadows */
+    --cu-shadow-color: rgba(0, 0, 0, 1);
+    --cu-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --cu-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --cu-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+    --cu-shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
+
+    /* Borders */
+    --cu-border-none: 0;
+    --cu-border-thin: 1px;
+    --cu-border-medium: 2px;
+    --cu-border-thick: 4px;
+    --cu-border-color: #d1d5db;
+    --cu-border-color-strong: #6b7280;
+    --cu-border-color-focus: #1774A4;
+}

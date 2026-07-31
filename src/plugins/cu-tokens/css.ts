@@ -142,6 +142,12 @@ export function inject(css: string) {
 
 // Standalone init for UMD builds
 export function initTokens(customConfig?: any) {
+  // Skip if external CSS already defines --cu-color-primary on :root
+  const existing = getComputedStyle(document.documentElement).getPropertyValue('--cu-color-primary').trim()
+  if (existing) {
+    return
+  }
+
   const config = customConfig || {}
 
   let themes: Record<string, any> = {}
