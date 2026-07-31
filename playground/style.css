@@ -97,3 +97,41 @@ body.dark {
   font-weight: 500;
   opacity: .7;
 }
+
+/* ── Tabs Labs ── */
+.card--wide {
+  align-items: flex-start;
+  max-width: 1000px;
+}
+
+.tabs-demo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  width: 100%;
+}
+
+.tabs-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tabs-label {
+  font-size: 12px;
+  font-weight: 500;
+  opacity: .5;
+}
+
+.tabs-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.tabs-log {
+  font-size: 13px;
+  opacity: .6;
+  margin-left: 8px;
+  font-family: ui-monospace, monospace;
+}

@@ -5,7 +5,7 @@ import Button from '@/components/buttons/Button.vue'
 
 export interface NavItem {
   label: string
-  path: string
+  path?: string
   children?: NavItem[]
 }
 
@@ -18,21 +18,13 @@ const route = useRoute()
 
 <template>
   <nav class="cu-navbar">
-    <template v-for="item in items" :key="item.path">
+    <template v-for="item in items" :key="item.path || item.label">
       <Collapse v-if="item.children?.length" :label="item.label" :defaultOpen="true">
-        <Button
-          v-for="child in item.children"
-          :key="child.path"
-          :to="child.path"
-          :color="route.path === child.path ? 'primary' : undefined"
-          :variant="route.path === child.path ? 'soft' : undefined"
-        >
-          {{ child.label }}
-        </Button>
+        <Navbar :items="item.children" />
       </Collapse>
       <Button
         v-else
-        :to="item.path"
+        :to="item.path!"
         :color="route.path === item.path ? 'primary' : undefined"
         :variant="route.path === item.path ? 'soft' : undefined"
       >

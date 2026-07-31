@@ -99,5 +99,9 @@ defineExpose({
   />
 </template>
 
-<style scoped>
+<style>
+:host {
+  display: block;
+  width: 100%;
+}
 </style>

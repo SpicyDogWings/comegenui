@@ -10,10 +10,8 @@ Etiqueta o badge pequeño para estados, categorías o metadata. Componente de pr
 
 | Prop | Tipo | Default | Descripción |
 |------|------|---------|-------------|
-| `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
 | `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `string` | `"soft"` | `solid`, `outlined`, `soft`, `ghost`, `subtle`, `none` |
-| `hightContrast` | `boolean` | `false` | Modo de alto contraste para el texto |
+| `variant` | `string` | `"soft"` | `solid`, `outlined`, `soft`, `ghost`, `subtle` |
 
 ## Slots
 

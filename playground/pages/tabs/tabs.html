@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="es" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tabs — Playground Vanilla</title>
+    <link rel="stylesheet" href="../../style.css" />
+    <link rel="stylesheet" href="../../public/css/comegen-sigfi-theme.css" />
+    <script src="../../../dist/CuTabs.umd.js"></script>
+  </head>
+  <body>
+    <div class="topbar">
+      <h1 style="font-size:16px;font-weight:600">Tabs Labs</h1>
+      <div class="topbar-actions">
+        <button class="topbar-btn" id="btnTheme" title="Toggle theme">🌙</button>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="card card--wide">
+        <h2>Variants</h2>
+        <div class="tabs-demo">
+          <div class="tabs-block">
+            <p class="tabs-label">variant="tabs"</p>
+            <cu-tabs id="tabs-underline" variant="tabs" color="primary">
+              <div slot="general">Contenido General</div>
+              <div slot="advanced">Contenido Advanced</div>
+              <div slot="locked">Contenido Locked</div>
+            </cu-tabs>
+          </div>
+
+          <div class="tabs-block">
+            <p class="tabs-label">variant="pills"</p>
+            <cu-tabs id="tabs-pills" variant="pills" color="secondary">
+              <div slot="general">Contenido General</div>
+              <div slot="advanced">Contenido Advanced</div>
+              <div slot="locked">Contenido Locked</div>
+            </cu-tabs>
+          </div>
+
+          <div class="tabs-block">
+            <p class="tabs-label">variant="soft"</p>
+            <cu-tabs id="tabs-soft" variant="soft" color="success">
+              <div slot="general">Contenido General</div>
+              <div slot="advanced">Contenido Advanced</div>
+              <div slot="locked">Contenido Locked</div>
+            </cu-tabs>
+          </div>
+
+          <div class="tabs-block">
+            <p class="tabs-label">Disabled tab (locked)</p>
+            <cu-tabs id="tabs-disabled" variant="boxed" color="danger">
+              <div slot="general">Contenido General</div>
+              <div slot="locked">Contenido Locked</div>
+              <div slot="admin">Contenido Admin</div>
+            </cu-tabs>
+          </div>
+
+          <div class="tabs-block">
+            <p class="tabs-label">Iconos via slot="tab-icon-{key}"</p>
+            <cu-tabs id="tabs-icons" variant="pills" color="primary">
+              <svg slot="tab-icon-home" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              <svg slot="tab-icon-search" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              <div slot="home">Contenido Home</div>
+              <div slot="search">Contenido Search</div>
+            </cu-tabs>
+          </div>
+
+          <div class="tabs-block">
+            <p class="tabs-label">Controlado via JS (setActive / getActive)</p>
+            <div class="tabs-actions">
+              <button class="topbar-btn" id="btnFirst" title="Ir a First">1</button>
+              <button class="topbar-btn" id="btnSecond" title="Ir a Second">2</button>
+              <button class="topbar-btn" id="btnThird" title="Ir a Third">3</button>
+              <span id="tabs-log" class="tabs-log">activo: first</span>
+            </div>
+            <cu-tabs id="tabs-controlled" variant="tabs" color="neutral">
+              <div slot="first">Contenido First</div>
+              <div slot="second">Contenido Second</div>
+              <div slot="third">Contenido Third</div>
+            </cu-tabs>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ── Props complejas: array "tabs" se asigna por property DOM ──
+      const setTabs = (id, tabs) => {
+        customElements.whenDefined('cu-tabs').then(() => {
+          document.getElementById(id).tabs = tabs;
+        });
+      };
+
+      setTabs('tabs-underline', [
+        { key: 'general', label: 'General' },
+        { key: 'advanced', label: 'Advanced' },
+        { key: 'locked', label: 'Locked', disabled: true },
+      ]);
+
+      setTabs('tabs-pills', [
+        { key: 'general', label: 'General' },
+        { key: 'advanced', label: 'Advanced' },
+        { key: 'locked', label: 'Locked', disabled: true },
+      ]);
+
+      setTabs('tabs-soft', [
+        { key: 'general', label: 'General' },
+        { key: 'advanced', label: 'Advanced' },
+        { key: 'locked', label: 'Locked', disabled: true },
+      ]);
+
+      setTabs('tabs-disabled', [
+        { key: 'general', label: 'General' },
+        { key: 'locked', label: 'Locked', disabled: true },
+        { key: 'admin', label: 'Admin' },
+      ]);
+
+      setTabs('tabs-icons', [
+        { key: 'home', label: 'Home' },
+        { key: 'search', label: 'Search' },
+      ]);
+
+      // ── Controlado: eventos custom + métodos expuestos ──
+      const controlled = document.getElementById('tabs-controlled');
+      const log = document.getElementById('tabs-log');
+
+      customElements.whenDefined('cu-tabs').then(() => {
+        controlled.tabs = [
+          { key: 'first', label: 'First' },
+          { key: 'second', label: 'Second' },
+          { key: 'third', label: 'Third' },
+        ];
+
+        controlled.addEventListener('change', (e) => {
+          log.textContent = `activo: ${e.detail}`;
+        });
+
+        document.getElementById('btnFirst').addEventListener('click', () => controlled.setActive('first'));
+        document.getElementById('btnSecond').addEventListener('click', () => controlled.setActive('second'));
+        document.getElementById('btnThird').addEventListener('click', () => controlled.setActive('third'));
+      });
+    </script>
+
+    <script src="../../playground.js"></script>
+  </body>
+</html>

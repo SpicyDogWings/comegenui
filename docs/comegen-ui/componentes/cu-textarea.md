@@ -14,7 +14,7 @@
 | `modelValue` | `string` | `""` | Valor controlado |
 | `startValue` | `string` | — | Valor inicial usado por `.reset()` |
 | `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `string` | `"none"` | `outlined`, `soft`, `ghost`, `subtle`, `none` |
+| `variant` | `string` | `"soft"` | `outlined`, `soft`, `ghost`, `subtle` |
 | `placeholder` | `string` | — | Placeholder del textarea |
 | `disabled` | `boolean` | `false` | Estado deshabilitado |
 | `readOnly` | `boolean` | `false` | Solo lectura (en HTML se usa como `readonly`) |

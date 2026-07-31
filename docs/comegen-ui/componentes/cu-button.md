@@ -10,11 +10,11 @@ Botón con soporte de color, variante, link y estados. Si se define `to`, se ren
 
 | Prop | Tipo | Default | Descripción |
 |------|------|---------|-------------|
-| `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
 | `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `string` | `"none"` | `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` |
+| `variant` | `string` | `"ghost"` | `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` |
+| `type` | `string` | `"button"` | Tipo del `<button>`: `button`, `submit`, `reset` |
 | `disabled` | `boolean` | `false` | Estado deshabilitado |
-| `hightContrast` | `boolean` | `false` | Modo de alto contraste para el texto |
+| `loading` | `boolean` | `false` | Muestra un spinner en lugar del contenido. Deshabilita el botón mientras está activo |
 | `to` | `string` | — | Si se especifica, el botón se renderiza como `<a>` |
 | `target` | `string` | `"_self"` | Target del link cuando `to` está definido: `_self`, `_blank`, `_parent`, `_top` |
 
@@ -66,6 +66,34 @@ No expone métodos.
 <cu-button color="primary" variant="ghost">ghost</cu-button>
 <cu-button color="primary" variant="subtle">subtle</cu-button>
 <cu-button color="primary" variant="link">link</cu-button>
+```
+
+## Estado de carga
+
+Con `loading` el botón muestra un spinner animado y queda deshabilitado hasta que se apague:
+
+```html
+<cu-button color="primary" variant="solid" loading id="guardar">Guardar</cu-button>
+
+<script>
+  const btn = document.getElementById('guardar');
+  btn.addEventListener('click', async () => {
+    btn.loading = true;
+    await fetch('/api/guardar', { method: 'POST' });
+    btn.loading = false;
+  });
+</script>
+```
+
+## Tipo submit/reset
+
+Usá `type` cuando el botón viva dentro de un `<form>`:
+
+```html
+<form>
+  <cu-button type="submit" color="primary" variant="solid">Enviar</cu-button>
+  <cu-button type="reset" variant="ghost">Limpiar</cu-button>
+</form>
 ```
 
 ## Escuchar clicks

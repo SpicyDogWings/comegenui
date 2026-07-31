@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="es" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Select Width — Playground Vanilla</title>
+    <link rel="stylesheet" href="../../style.css" />
+    <link rel="stylesheet" href="../../public/css/comegen-sigfi-theme.css" />
+    <script src="../../../dist/CuSelect.umd.js"></script>
+    <script src="../../../dist/CuInput.umd.js"></script>
+    <style>
+      .card--wide {
+        align-items: flex-start;
+        max-width: 1000px;
+      }
+
+      .width-demo {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        width: 100%;
+      }
+
+      .width-block {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .width-label {
+        font-size: 12px;
+        font-weight: 500;
+        opacity: .5;
+      }
+
+      .width-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        width: 100%;
+      }
+
+      .width-full {
+        width: 100%;
+      }
+
+      .width-300 {
+        max-width: 300px;
+      }
+
+      .width-200 {
+        max-width: 200px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <h1 style="font-size:16px;font-weight:600">Select Width Labs</h1>
+      <div class="topbar-actions">
+        <button class="topbar-btn" id="btnTheme" title="Toggle theme">🌙</button>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="card card--wide">
+        <h2>Select width — Custom Elements</h2>
+
+        <div class="width-demo">
+          <div class="width-block">
+            <p class="width-label">Full width (sin límite)</p>
+            <cu-select id="sel-full" variant="soft" placeholder="Seleccionar..."></cu-select>
+          </div>
+
+          <div class="width-block">
+            <p class="width-label">max-width: 300px</p>
+            <cu-select id="sel-300" variant="outlined" placeholder="Seleccionar..." style="max-width:300px"></cu-select>
+          </div>
+
+          <div class="width-block">
+            <p class="width-label">max-width: 200px</p>
+            <cu-select id="sel-200" variant="ghost" placeholder="Seleccionar..." style="max-width:200px"></cu-select>
+          </div>
+
+          <div class="width-block">
+            <p class="width-label">Comparación con cu-input (full width)</p>
+            <cu-input id="inp-compare" placeholder="Un input full width"></cu-input>
+          </div>
+        </div>
+
+        <div class="width-block" style="width:100%">
+          <p class="width-label">Stack de variantes — cada una full width</p>
+          <div class="width-stack">
+            <cu-select id="sel-soft" variant="soft" placeholder="soft (default)"></cu-select>
+            <cu-select id="sel-outlined" variant="outlined" placeholder="outlined"></cu-select>
+            <cu-select id="sel-subtle" variant="subtle" placeholder="subtle"></cu-select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ── Prop compleja "options" se asigna por property DOM ──
+      const roles = [
+        { value: 'admin', label: 'Administrador' },
+        { value: 'editor', label: 'Editor' },
+        { value: 'visor', label: 'Visor' },
+        { value: 'invitado', label: 'Invitado' },
+        { value: 'supervisor', label: 'Supervisor', disabled: true },
+      ];
+
+      customElements.whenDefined('cu-select').then(() => {
+        document.querySelectorAll('cu-select').forEach((sel) => {
+          sel.options = roles;
+        });
+      });
+    </script>
+
+    <script src="../../playground.js"></script>
+  </body>
+</html>

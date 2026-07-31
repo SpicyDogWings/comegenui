@@ -12,7 +12,7 @@ Campo de texto con sugerencias en menú desplegable. Filtra los `items` en vivo 
 |------|------|---------|-------------|
 | `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
 | `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `string` | `"none"` | `outlined`, `soft`, `ghost`, `subtle`, `none` |
+| `variant` | `string` | `"soft"` | `outlined`, `soft`, `ghost`, `subtle` |
 | `type` | `string` | `"text"` | `text`, `password`, `email`, `number`, `tel`, `url`, `search` |
 | `placeholder` | `string` | `""` | Placeholder del input |
 | `minChars` | `number` | `0` | Caracteres mínimos para abrir el menú (atributo HTML: `min-chars`) |
@@ -61,8 +61,8 @@ Ninguno.
 | `.get()` | Texto actual del input |
 | `.set(value)` | Asigna texto al input |
 | `.focus()` | Enfoca el input |
-| `.isOpen` (getter) | Estado del menú (`boolean`) |
-| `.selectedItem` (getter) | Último item seleccionado o `null` |
+| `.isOpen()` | Estado del menú (`boolean`) |
+| `.selectedItem()` | Último item seleccionado o `null` |
 
 > El componente **no expone** `.reset()`. Si necesitás limpiar programáticamente, usá `.set('')`.
 
@@ -129,7 +129,7 @@ Por defecto el menú se abre al recibir foco. Con `min-chars="2"` solo se abre t
 
 ```html
 <!-- Con position + align -->
-<cu-autocomplete position="top" align="end" offset="8"></cu-autocomplete>
+<cu-autocomplete position="top" align="end"></cu-autocomplete>
 
 <!-- O con placement shorthand -->
 <cu-autocomplete placement="bottom-end"></cu-autocomplete>
@@ -147,8 +147,8 @@ Por defecto el menú se abre al recibir foco. Con `min-chars="2"` solo se abre t
   ac.set('Admin');             // asigna texto
   console.log(ac.get());       // "Admin"
   ac.focus();                  // enfoca
-  console.log(ac.selectedItem); // último item seleccionado
-  console.log(ac.isOpen);      // true / false
+  console.log(ac.selectedItem()); // último item seleccionado
+  console.log(ac.isOpen());      // true / false
 </script>
 ```
 

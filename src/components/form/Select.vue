@@ -147,6 +147,10 @@ defineExpose({
   outline: none;
 }
 
+.cu-select :deep(.cu-dropdown) {
+  width: 100%;
+}
+
 .cu-select-toggle {
   width: 100%;
   justify-content: space-between;

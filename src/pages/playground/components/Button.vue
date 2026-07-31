@@ -1,6 +1,24 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import Button from "@/components/buttons/Button.vue";
+
+const loading1 = ref(false);
+const loading2 = ref(false);
+const loading3 = ref(false);
+
+function toggleLoading1() {
+  loading1.value = true;
+  setTimeout(() => { loading1.value = false; }, 2000);
+}
+function toggleLoading2() {
+  loading2.value = true;
+  setTimeout(() => { loading2.value = false; }, 2000);
+}
+function toggleLoading3() {
+  loading3.value = true;
+  setTimeout(() => { loading3.value = false; }, 2000);
+}
 
 const outlineItems = [
   { label: 'Variants', id: 'variants' },
@@ -8,6 +26,7 @@ const outlineItems = [
   { label: 'Disabled', id: 'disabled' },
   { label: 'Sizes', id: 'sizes' },
   { label: 'With Icon', id: 'icons' },
+  { label: 'Loading', id: 'loading' },
   { label: 'As Link', id: 'links' },
 ];
 </script>
@@ -83,6 +102,25 @@ const outlineItems = [
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
             Delete
           </Button>
+        </div>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="loading" class="playground-section">
+        <h2>Loading</h2>
+        <div class="playground-row">
+          <Button color="primary" :loading="loading1" @click="toggleLoading1">
+            {{ loading1 ? 'Loading...' : 'Click to Load' }}
+          </Button>
+          <Button color="secondary" variant="soft" :loading="loading2" @click="toggleLoading2">
+            {{ loading2 ? 'Saving...' : 'Save' }}
+          </Button>
+          <Button color="danger" variant="solid" :loading="loading3" @click="toggleLoading3">
+            {{ loading3 ? 'Deleting...' : 'Delete' }}
+          </Button>
+          <Button color="primary" :loading="true">Always Loading</Button>
+          <Button color="primary" loading disabled>Disabled + Loading</Button>
         </div>
       </section>
 

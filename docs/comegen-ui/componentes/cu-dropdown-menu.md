@@ -12,9 +12,8 @@ Menú desplegable con items declarativos (label, ícono, color, divisor, link). 
 |------|------|---------|-------------|
 | `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
 | `color` | `string` | `"neutral"` | Color semántico del toggle: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `string` | `"none"` | Variante del toggle: `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` |
+| `variant` | `string` | `"ghost"` | Variante del toggle: `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` |
 | `disabled` | `boolean` | `false` | Deshabilita el toggle |
-| `hightContrast` | `boolean` | `false` | Modo de alto contraste |
 | `label` | `string` | `""` | Texto del toggle (se ignora si se provee slot `toggle`) |
 | `position` | `string` | `"bottom"` | Posición preferida del panel: `bottom`, `top` |
 | `align` | `string` | `"start"` | Alineación del panel: `start`, `center`, `end` |
@@ -60,14 +59,14 @@ Cada item del array `items` puede tener:
 | `.open()` | Abre el menú |
 | `.close()` | Cierra el menú |
 | `.toggle()` | Alterna visibilidad |
-| `.isOpen` (getter) | Estado actual (`boolean`) |
+| `.isOpen()` | Devuelve el estado actual (`boolean`) |
 
 ---
 
 ## Uso en HTML plano
 
 ```html
-<script src="dist/CuDropdownMenu.umd.js"></script>
+<script src="dist/CuDropdown-menu.umd.js"></script>
 
 <cu-dropdown-menu id="dd" label="Acciones" color="primary" variant="soft"></cu-dropdown-menu>
 
@@ -148,7 +147,7 @@ El dropdown usa tres props combinables:
   dd.open();
   dd.close();
   dd.toggle();
-  console.log(dd.isOpen);
+  console.log(dd.isOpen());
 
   dd.addEventListener('open', () => console.log('abierto'));
   dd.addEventListener('close', () => console.log('cerrado'));
