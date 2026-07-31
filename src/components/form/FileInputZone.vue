@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, useTemplateRef } from "vue";
-import { getBgClasses, getFgClasses } from "../../utils/palette";
+import { computed, ref, useTemplateRef, type PropType } from "vue";
 import { useFocus } from "@vueuse/core";
 import FileList from "../FileList.vue";
 
@@ -8,18 +7,9 @@ const value = defineModel<File | File[] | null>({ default: null });
 
 const props = defineProps({
   color: {
-    type: String,
+    type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     required: false,
-    default: "#2c2c2c",
-    validator: (value: string) =>
-      /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/i.test(value),
-  },
-  variant: {
-    type: String,
-    required: false,
-    default: "none",
-    validator: (value: string) =>
-      ["outlined", "soft", "ghost", "subtle", "none"].includes(value),
+    default: "neutral",
   },
   placeholder: {
     type: String,
@@ -64,11 +54,6 @@ const props = defineProps({
     required: false,
     default: "",
   },
-  hightContrast: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
 });
 
 const effectiveMultiple = computed(() => props.multiple || props.directory);
@@ -78,12 +63,11 @@ const dropZoneRef = useTemplateRef("dropZone");
 const { focused: dropFocus } = useFocus(dropZoneRef);
 const fileInputRef = useTemplateRef<HTMLInputElement>("fileInput");
 
-const bgClass = computed(() =>
-  getBgClasses(props.color, props.variant, props.hightContrast),
-);
-const fgClass = computed(() =>
-  getFgClasses(props.color, props.variant, props.hightContrast),
-);
+const zoneStyles = computed(() => ({
+  '--zone-bg': `var(--cu-color-${props.color})`,
+  '--zone-ghost-hover': `var(--cu-color-${props.color}-ghost-hover)`,
+  '--zone-text': `var(--cu-color-${props.color}-text)`,
+}));
 
 const fileList = computed(() => {
   if (!value.value) return [];
@@ -266,24 +250,14 @@ defineExpose({ get, set, reset, focus, trigger });
 <template>
   <div
     ref="dropZone"
-    class="relative flex flex-col gap-3 py-10 px-8 rounded-cu border-4 border-dashed cursor-pointer transition-all duration-200 min-h-[160px] font-sans select-none text-[var(--btn-fg)] focus:outline-none focus:ring-2 focus:ring-[var(--btn-bd)]"
+    class="cu-file-zone"
     :class="{
-      'cursor-not-allowed opacity-70 ph-op-50': props.disabled,
-      'bg-[var(--btn-bg-hover)] !border-[var(--btn-fg)]': isDragOver,
-      'bg-[var(--btn-bg)] border-[var(--btn-bd)]': !isDragOver,
-      'hover:bg-[var(--btn-bg-hover)] hover:border-[var(--btn-fg)]': !props.disabled && !isDragOver,
-      'bg-transparent border-none': props.variant === 'ghost',
-      'bg-transparent': props.variant === 'none' || props.variant === 'outlined',
-      'items-center justify-center': fileList.length === 0,
-      'items-start justify-start': fileList.length > 0,
+      'cu-file-zone--disabled': props.disabled,
+      'cu-file-zone--drag-over': isDragOver,
+      'cu-file-zone--empty': fileList.length === 0,
+      'cu-file-zone--has-files': fileList.length > 0,
     }"
-    :style="{
-      '--btn-fg': fgClass.main,
-      '--btn-bg': bgClass.main,
-      '--btn-bg-hover': bgClass.hover,
-      '--btn-bg-active': bgClass.active,
-      '--btn-bd': fgClass.border || fgClass.main,
-    }"
+    :style="zoneStyles"
     @dragover="onDragOver"
     @dragleave="onDragLeave"
     @drop="onDrop"
@@ -300,7 +274,7 @@ defineExpose({ get, set, reset, focus, trigger });
       :accept="props.accept"
       :multiple="effectiveMultiple"
       :webkitdirectory="props.directory || undefined"
-      class="hidden"
+      class="cu-file-zone-hidden"
       @change="handleInputChange"
     />
 
@@ -315,16 +289,16 @@ defineExpose({ get, set, reset, focus, trigger });
       stroke-width="2"
       stroke-linecap="round"
       stroke-linejoin="round"
-      class="text-[var(--btn-fg)] opacity-60 shrink-0"
+      class="cu-file-zone-icon"
     >
       <path d="M12 3v12" />
       <path d="m17 8-5-5-5 5" />
       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
     </svg>
 
-    <div v-if="fileList.length === 0" class="text-center">
-      <p class="text-sm font-medium text-[var(--btn-fg)]">{{ props.placeholder }}</p>
-      <p v-if="props.accept" class="text-xs mt-1 text-[var(--btn-fg)] opacity-50">
+    <div v-if="fileList.length === 0" class="cu-file-zone-text">
+      <p class="cu-file-zone-placeholder">{{ props.placeholder }}</p>
+      <p v-if="props.accept" class="cu-file-zone-formats">
         Formatos aceptados: {{ props.accept }}
       </p>
     </div>
@@ -335,7 +309,6 @@ defineExpose({ get, set, reset, focus, trigger });
       :color="props.color"
       :disabled="props.disabled"
       :max-height="props.maxHeight"
-      :hight-contrast="props.hightContrast"
       @remove="removeFile"
       @select="handleFileClick"
     />
@@ -343,5 +316,80 @@ defineExpose({ get, set, reset, focus, trigger });
 </template>
 
 <style>
-@unocss-placeholder;
+.cu-file-zone {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--cu-space-md);
+  padding: var(--cu-space-xl) var(--cu-space-2xl);
+  border-radius: var(--cu-radius);
+  border: var(--cu-border-thick) dashed var(--cu-border-color);
+  cursor: pointer;
+  transition: all 200ms ease;
+  min-height: 160px;
+  font-family: var(--cu-font-sans);
+  user-select: none;
+  color: var(--zone-text);
+  box-sizing: border-box;
+}
+
+.cu-file-zone:focus {
+  outline: none;
+  border-color: var(--zone-bg);
+  box-shadow: 0 0 0 2px var(--zone-bg);
+}
+
+.cu-file-zone:hover:not(.cu-file-zone--disabled) {
+  border-color: var(--zone-bg);
+  background-color: var(--zone-ghost-hover);
+}
+
+.cu-file-zone--disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.cu-file-zone--drag-over {
+  border-color: var(--zone-bg);
+  background-color: var(--zone-ghost-hover);
+}
+
+.cu-file-zone--empty {
+  align-items: center;
+  justify-content: center;
+}
+
+.cu-file-zone--has-files {
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.cu-file-zone-hidden {
+  display: none;
+}
+
+.cu-file-zone-icon {
+  color: var(--zone-text);
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+.cu-file-zone-text {
+  text-align: center;
+}
+
+.cu-file-zone-placeholder {
+  font-size: var(--cu-font-size-sm);
+  font-weight: var(--cu-font-weight-medium);
+  color: var(--zone-text);
+  margin: 0;
+}
+
+.cu-file-zone-formats {
+  font-size: var(--cu-font-size-xs);
+  margin-top: var(--cu-space-2xs);
+  color: var(--zone-text);
+  opacity: 0.5;
+}
 </style>

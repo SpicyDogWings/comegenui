@@ -3,15 +3,17 @@ import Input from "./components/form/Input.vue";
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col items-center justify-center gap-4">
-    <div class="flex flex-col gap-2 w-64">
-      <Input placeholder="Default input" />
-      <Input variant="none" placeholder="None variant input" />
-      <Input variant="none" placeholder="Disabled input" disabled />
-    </div>
-  </div>
+    <router-view/>
 </template>
 
 <style>
-@unocss-placeholder;
+/*@unocss-placeholder;*/
+@import "/css/vars.css";
+
+html, body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    height: 100%;
+}
 </style>

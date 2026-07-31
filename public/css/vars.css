@@ -1,0 +1,4 @@
+:root {
+    --body-bg: #eee;
+    --playground-bg: var(--body-bg);
+}

@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import Button from "./Button.vue";
-import { getBgClasses, getFgClasses } from "../utils/palette";
+import { computed, type PropType } from "vue";
+import Button from "./buttons/Button.vue";
 import { getFileIconSvg, formatFileSize } from "../utils/fileIcons";
 
 const props = defineProps({
@@ -11,9 +10,9 @@ const props = defineProps({
     default: null,
   },
   color: {
-    type: String,
+    type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     required: false,
-    default: "#2c2c2c",
+    default: "neutral",
   },
   disabled: {
     type: Boolean,
@@ -25,11 +24,6 @@ const props = defineProps({
     required: false,
     default: "",
   },
-  hightContrast: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
 });
 
 const emit = defineEmits<{
@@ -37,14 +31,10 @@ const emit = defineEmits<{
   select: [index: number];
 }>();
 
-const fgClass = computed(() =>
-  getFgClasses(props.color, "none", props.hightContrast),
-);
-const bgClass = computed(() =>
-  getBgClasses(props.color, "none", props.hightContrast),
-);
-
-
+const listStyles = computed(() => ({
+  '--list-ghost-hover': `var(--cu-color-${props.color}-ghost-hover)`,
+  '--list-text': `var(--cu-color-${props.color}-text)`,
+}));
 
 const fileList = computed(() => {
   if (!props.files) return [];
@@ -55,25 +45,25 @@ const fileList = computed(() => {
 </script>
 
 <template>
-  <div v-if="fileList.length > 0" class="text-start w-full" :style="{ maxHeight: props.maxHeight || undefined, overflowY: props.maxHeight ? 'auto' : 'visible' }">
+  <div
+    v-if="fileList.length > 0"
+    class="cu-file-list"
+    :style="{ ...listStyles, maxHeight: props.maxHeight || undefined, overflowY: props.maxHeight ? 'auto' : 'visible' }"
+  >
     <div
       v-for="(file, i) in fileList"
       :key="i"
-      class="flex items-center gap-2 px-3 py-1.5 text-sm rounded-cu hover:bg-[var(--btn-bg-hover)] transition-colors duration-150 cursor-pointer"
+      class="cu-file-list-item"
       @click.stop="emit('select', i)"
-      :style="{
-        '--btn-fg': fgClass.main,
-        '--btn-bg-hover': bgClass.hover,
-      }"
     >
-      <span v-html="getFileIconSvg(file)"></span>
-      <span class="truncate font-medium flex-1 min-w-0 text-[var(--btn-fg)]">{{ file.name }}</span>
-      <span class="shrink-0 opacity-80 text-xs whitespace-nowrap text-[var(--btn-fg)]">{{ formatFileSize(file.size) }}</span>
+      <span v-html="getFileIconSvg(file)" class="cu-file-list-icon"></span>
+      <span class="cu-file-list-name">{{ file.name }}</span>
+      <span class="cu-file-list-size">{{ formatFileSize(file.size) }}</span>
       <Button
         v-if="!props.disabled"
-        :color="props.color"
+        :color="color"
         variant="ghost"
-        class="!p-0.5 !min-w-0 !h-auto !gap-0 shrink-0 opacity-70 hover:opacity-100"
+        class="cu-file-list-remove"
         @click.stop="emit('remove', i)"
       >
         <svg
@@ -96,5 +86,57 @@ const fileList = computed(() => {
 </template>
 
 <style>
-@unocss-placeholder;
+.cu-file-list {
+  width: 100%;
+}
+
+.cu-file-list-item {
+  display: flex;
+  align-items: center;
+  gap: var(--cu-space-sm);
+  padding: var(--cu-space-xs) var(--cu-space-md);
+  font-size: var(--cu-font-size-sm);
+  border-radius: var(--cu-radius);
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.cu-file-list-item:hover {
+  background-color: var(--list-ghost-hover);
+}
+
+.cu-file-list-icon {
+  flex-shrink: 0;
+}
+
+.cu-file-list-name {
+  flex: 1;
+  min-width: 0;
+  font-weight: var(--cu-font-weight-medium);
+  color: var(--list-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cu-file-list-size {
+  flex-shrink: 0;
+  opacity: 0.8;
+  font-size: var(--cu-font-size-xs);
+  white-space: nowrap;
+  color: var(--list-text);
+}
+
+.cu-file-list-remove {
+  padding: var(--cu-space-2xs) !important;
+  min-width: 0 !important;
+  height: auto !important;
+  gap: 0 !important;
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.cu-file-list-remove:hover {
+  opacity: 1;
+}
 </style>

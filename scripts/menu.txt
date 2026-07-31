@@ -1,8 +1,0 @@
-󱉟 Library/󰣪 Build
-󱉟 Library/󰆾 Move and Unzip
-
-󰒓 Configuración/󰞷 Administrador de paquetes
-󰒓 Configuración/󱁉 Source Zip Path
-󰒓 Configuración/󰉋 Destination Path
-
- Salir

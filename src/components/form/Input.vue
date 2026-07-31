@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, defineModel, useTemplateRef } from "vue";
-import { getBgClasses, getFgClasses } from "../../utils/palette";
 import { useFocus } from "@vueuse/core";
 
 const value = defineModel<string>({ default: "" });
@@ -13,16 +12,16 @@ const props = defineProps({
   color: {
     type: String,
     required: false,
-    default: "#2c2c2c",
+    default: "neutral",
     validator: (value: string) =>
-      /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/i.test(value),
+      ["primary", "secondary", "neutral", "success", "warning", "danger"].includes(value),
   },
   variant: {
     type: String,
     required: false,
-    default: "none",
+    default: "soft",
     validator: (value: string) =>
-      ["outlined", "soft", "ghost", "subtle", "none"].includes(value),
+      ["outlined", "soft", "ghost", "subtle"].includes(value),
   },
   type: {
     type: String,
@@ -45,22 +44,22 @@ const props = defineProps({
     required: false,
     default: false,
   },
-  hightContrast: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
+
 });
 
 const inputRef = useTemplateRef("input");
 const { focused: inputFocus } = useFocus(inputRef);
 
-const bgClass = computed(() =>
-  getBgClasses(props.color, props.variant, props.hightContrast),
-);
-const fgClass = computed(() =>
-  getFgClasses(props.color, props.variant, props.hightContrast),
-);
+const inputStyles = computed(() => ({
+  '--btn-bg': `var(--cu-color-${props.color})`,
+  '--btn-bg-hover': `var(--cu-color-${props.color}-ghost-hover)`,
+  '--btn-bg-active': `var(--cu-color-${props.color}-ghost-active)`,
+  '--btn-soft': `var(--cu-color-${props.color}-soft)`,
+  '--btn-soft-hover': `var(--cu-color-${props.color}-soft-hover)`,
+  '--btn-subtle': `var(--cu-color-${props.color}-subtle)`,
+  '--btn-subtle-hover': `var(--cu-color-${props.color}-subtle-hover)`,
+  '--btn-subtle-border': `var(--cu-color-${props.color}-subtle-border)`,
+}));
 
 const get = () => value.value;
 const set = (newValue: string | number) => { value.value = String(newValue); };
@@ -81,27 +80,79 @@ defineExpose({
     :placeholder="props.placeholder"
     :value="value"
     @input="value = ($event.target as HTMLInputElement).value"
-    class="py-2 px-3 rounded-cu font-sans border-none text-[var(--btn-fg)] focus:outline-none focus:ring-2 w-full bg-[var(--btn-bg)] box-border"
-    :class="{
-      'focus:ring-[var(--btn-bd)]': true,
-      'cursor-not-allowed opacity-70 ph-op-50': props.disabled,
-      'border-solid border-1 border-[var(--btn-bd)]': props.variant === 'subtle',
-      'bg-transparent border-solid border-2 border-[var(--btn-bd)] hover:bg-[var(--btn-bg-hover)]': props.variant === 'outlined',
-      'hover:bg-[var(--btn-bg-hover)]': props.variant === 'soft' || props.variant === 'ghost',
-      'bg-transparent border-solid border-1 border-[var(--btn-bd)]': props.variant === 'none',
-    }"
-    :style="{
-      '--btn-fg': fgClass.main,
-      '--btn-bg': bgClass.main,
-      '--btn-bg-hover': bgClass.hover,
-      '--btn-bg-active': bgClass.active,
-      '--btn-bd': fgClass.border,
-    }"
+    class="cu-input"
+    :class="[
+      `cu-input--${props.variant}`,
+      { 'cu-input--disabled': props.disabled },
+    ]"
+    :style="inputStyles"
     :disabled="props.disabled"
     :readonly="props.readOnly"
   />
 </template>
 
-<style>
-@unocss-placeholder;
+<style scoped>
+.cu-input {
+  font-family: var(--cu-font-sans);
+  font-size: var(--cu-font-size-sm);
+  padding: var(--cu-space-sm) var(--cu-space-md);
+  border-radius: var(--cu-radius-md);
+  border: none;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: var(--btn-bg);
+  color: var(--cu-color-neutral-text);
+  transition: all 150ms ease;
+}
+
+.cu-input::placeholder {
+  color: var(--cu-color-neutral-text);
+  opacity: 0.5;
+}
+
+.cu-input:focus {
+  box-shadow: 0 0 0 2px var(--btn-subtle-border);
+}
+
+/* subtle */
+.cu-input--subtle {
+  background-color: var(--btn-subtle);
+  border: var(--cu-border-thin) solid var(--btn-subtle-border);
+}
+.cu-input--subtle:hover {
+  background-color: var(--btn-subtle-hover);
+}
+
+/* soft */
+.cu-input--soft {
+  background-color: var(--btn-soft);
+}
+.cu-input--soft:hover {
+  background-color: var(--btn-soft-hover);
+}
+
+/* ghost */
+.cu-input--ghost {
+  background-color: transparent;
+}
+.cu-input--ghost:hover {
+  background-color: var(--btn-bg-hover);
+}
+
+/* outlined */
+.cu-input--outlined {
+  background-color: transparent;
+  border: 2px solid var(--btn-subtle-border);
+}
+.cu-input--outlined:hover {
+  background-color: var(--btn-bg-hover);
+}
+
+/* disabled */
+.cu-input--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
 </style>

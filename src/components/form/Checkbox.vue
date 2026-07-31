@@ -1,23 +1,19 @@
 <script setup lang="ts">
-import { computed, ref, defineModel } from "vue";
-import { getBgClasses, getFgClasses } from "../../utils/palette";
+import { computed, ref, defineModel, type PropType } from "vue";
 
 const checked = defineModel<boolean>({ default: false });
 
 const props = defineProps({
   color: {
-    type: String,
+    type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     required: false,
-    default: "#2c2c2c",
-    validator: (value: string) =>
-      /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/i.test(value),
+    default: "neutral",
   },
-  variant: {
+  size: {
     type: String,
     required: false,
-    default: "none",
-    validator: (value: string) =>
-      ["outlined", "soft", "ghost", "subtle", "none"].includes(value),
+    default: "md",
+    validator: (value: string) => ["sm", "md"].includes(value),
   },
   disabled: {
     type: Boolean,
@@ -28,22 +24,17 @@ const props = defineProps({
     type: String,
     required: false,
   },
-  hightContrast: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
 });
 
 const emit = defineEmits(["change"]);
 const inputRef = ref<HTMLInputElement | null>(null);
 
-const bgClass = computed(() =>
-  getBgClasses(props.color, props.variant, props.hightContrast),
-);
-const fgClass = computed(() =>
-  getFgClasses(props.color, props.variant, props.hightContrast),
-);
+const checkboxStyles = computed(() => ({
+  '--cb-bg': `var(--cu-color-${props.color})`,
+  '--cb-soft': `var(--cu-color-${props.color}-soft)`,
+  '--cb-ghost-hover': `var(--cu-color-${props.color}-ghost-hover)`,
+  '--cb-text': `var(--cu-color-${props.color}-text)`,
+}));
 
 defineExpose({
   get: () => checked.value,
@@ -60,55 +51,134 @@ defineExpose({
 </script>
 
 <template>
-  <label class="flex items-center gap-2 cursor-pointer box-border w-fit" :class="{ 'pointer-events-none': props.disabled }">
+  <label
+    class="cu-checkbox"
+    :class="[
+      `cu-checkbox--${props.size}`,
+      { 'cu-checkbox--disabled': props.disabled }
+    ]"
+  >
     <input
       ref="inputRef"
       type="checkbox"
       :checked="checked"
       @change="(e) => { checked = (e.target as HTMLInputElement).checked; emit('change', e); }"
       :disabled="props.disabled"
-      class="absolute opacity-0 w-0 h-0 box-border"
+      tabindex="-1"
+      class="cu-checkbox-input"
     />
     <div
-      class="relative w-3.5 h-3.5 rounded-cu flex items-center justify-center transition-all duration-200 text-[var(--btn-fg)] box-border"
-      :class="{
-        'border-solid border-2 border-[var(--btn-bd)] bg-transparent hover:bg-opacity-10': props.variant === 'outlined' && !checked,
-        'border-solid border-2 border-[var(--btn-bd)]': props.variant === 'outlined' && checked,
-        'border-2 border-solid border-[var(--btn-bd)] bg-opacity-10': props.variant === 'subtle' && !checked,
-        'border-2 border-solid border-[var(--btn-bd)]': props.variant === 'subtle' && checked,
-        'bg-opacity-10 hover:bg-opacity-20': props.variant === 'ghost' && !checked,
-        'w-4 h-4 bg-[var(--btn-bg)] bg-opacity-10 hover:bg-opacity-20': props.variant === 'soft',
-        'border-solid border-1 border-[var(--btn-bd)]': props.variant === 'none',
-        'cursor-not-allowed opacity-70': props.disabled,
-      }"
-      :style="{
-        '--btn-fg': fgClass.main,
-        '--btn-bg': bgClass.main,
-        '--btn-bg-hover': bgClass.hover,
-        '--btn-bg-active': bgClass.active,
-        '--btn-bd': fgClass.border,
-      }"
+      class="cu-checkbox-box"
+      :class="{ 'cu-checkbox-box--checked': checked }"
+      :style="checkboxStyles"
     >
       <svg
         v-if="checked"
         xmlns="http://www.w3.org/2000/svg"
-        :width="props.variant === 'soft' ? 16 : 14"
-        :height="props.variant === 'soft' ? 16 : 14"
+        width="14"
+        height="14"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
         stroke-width="3"
         stroke-linecap="round"
         stroke-linejoin="round"
-        class="text-[var(--btn-fg)]"
+        class="cu-checkbox-icon"
       >
         <path d="M20 6L9 17l-5-5" />
       </svg>
     </div>
-    <span v-if="props.label" class="text-sm text-charcoal-800 font-sans" :class="{ 'opacity-70': props.disabled }">{{ props.label }}</span>
+    <span v-if="props.label" class="cu-checkbox-label">{{ props.label }}</span>
   </label>
 </template>
 
-<style>
-@unocss-placeholder;
+<style scoped>
+.cu-checkbox {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cu-space-sm);
+  cursor: pointer;
+  box-sizing: border-box;
+  width: fit-content;
+}
+
+.cu-checkbox--md {
+  gap: var(--cu-space-sm);
+}
+
+.cu-checkbox--sm {
+  gap: var(--cu-space-xs);
+}
+
+.cu-checkbox--disabled {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.cu-checkbox-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  box-sizing: border-box;
+}
+
+.cu-checkbox-box {
+  position: relative;
+  border-radius: var(--cu-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 200ms ease;
+  border: var(--cu-border-medium) solid var(--cu-border-color);
+  background-color: transparent;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.cu-checkbox--md .cu-checkbox-box {
+  width: 16px;
+  height: 16px;
+}
+
+.cu-checkbox--sm .cu-checkbox-box {
+  width: 14px;
+  height: 14px;
+}
+
+.cu-checkbox-box--checked {
+  background-color: var(--cb-bg);
+  border-color: var(--cb-bg);
+}
+
+.cu-checkbox-box:hover:not(.cu-checkbox--disabled) {
+  border-color: var(--cb-bg);
+  background-color: var(--cb-ghost-hover);
+}
+
+.cu-checkbox-box--checked:hover:not(.cu-checkbox--disabled) {
+  background-color: var(--cb-bg);
+}
+
+.cu-checkbox-icon {
+  color: var(--cu-color-surface);
+}
+
+.cu-checkbox-label {
+  font-family: var(--cu-font-sans);
+  color: var(--cu-color-neutral);
+}
+
+.cu-checkbox--md .cu-checkbox-label {
+  font-size: var(--cu-font-size-sm);
+}
+
+.cu-checkbox--sm .cu-checkbox-label {
+  font-size: var(--cu-font-size-xs);
+}
+
+.cu-checkbox--disabled .cu-checkbox-label {
+  opacity: 0.7;
+}
 </style>

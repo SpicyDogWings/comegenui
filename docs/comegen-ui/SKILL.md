@@ -70,7 +70,7 @@ Cada `<script>` registra automáticamente su Custom Element. Los componentes est
 | `CuTable.umd.js` | `<cu-table>` | Tabla avanzada |
 | `CuTextarea.umd.js` | `<cu-textarea>` | Textarea |
 
-> **Nota sobre el código fuente:** Internamente, los `.ce.vue` viven en `src/components/` (raíz, `form/`, `data/`). El `<cu-select>` se compila desde `src/components/form/Select.ts`. No hay un tag `cu-select-native` documentado como oficial.
+> **Nota sobre el código fuente:** Los `.ce.vue` viven en `src/components/customElements/{category}/`, los `.vue` en `src/components/{category}/`, y los entry points en `src/lib/{category}/`. Ejemplo: `<cu-select>` → `src/lib/form/select.ts` → `src/components/customElements/form/Select.ce.vue` → `src/components/form/Select.vue`.
 
 ### Esperar a que los Custom Elements estén listos
 
@@ -155,7 +155,7 @@ theme prop (componente) → data-theme (<html>) → prefers-color-scheme (OS)
 Para agregar un tema nuevo:
 
 1. Editar `src/config/theme.ts` — agregar entrada en el objeto `themes` con los 6 colores (`primary`, `neutral`, `success`, `warning`, `danger`, `surface`).
-2. Rebuild: `npx vite build --config build-libs.ts`.
+2. Rebuild: `npx vite build --config build-lib.ts`.
 3. Usar: `<html data-theme="mi-tema">` o `<cu-button theme="mi-tema">`.
 
 El nuevo tema se auto-registra. No requiere configuración adicional.

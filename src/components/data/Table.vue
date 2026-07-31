@@ -1,17 +1,11 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { getBgClasses, getFgClasses } from "../../utils/palette";
-import { transparentize } from "color2k";
-import Button from "../Button.vue";
 
 interface Column {
   key: string;
   label?: string;
   width?: string;
   align?: "left" | "center" | "right";
-  sortable?: boolean | "string" | "number" | "boolean";
-  badges?: (row: Record<string, any>) => BadgeConfig[];
-  buttons?: (row: Record<string, any>) => ButtonConfig[];
 }
 
 const props = defineProps({
@@ -33,45 +27,68 @@ const props = defineProps({
   color: {
     type: String,
     required: false,
-    default: "#2c2c2c",
+    default: "neutral",
+    validator: (value: string) =>
+      ["primary", "secondary", "neutral", "success", "warning", "danger"].includes(value),
   },
   variant: {
     type: String,
     required: false,
     default: "soft",
-  },
-  sortBy: {
-    type: String,
-    required: false,
-    default: "",
-  },
-  sortDir: {
-    type: String as () => "" | "asc" | "desc",
-    required: false,
-    default: "",
+    validator: (value: string) =>
+      ["solid", "outlined", "soft", "ghost", "subtle"].includes(value),
   },
   loading: {
     type: Boolean,
     required: false,
     default: false,
   },
+  maxHeight: {
+    type: String,
+    required: false,
+    default: "",
+  },
 });
 
-const emit = defineEmits<{
-  (e: "sort-change", key: string): void;
-}>();
+const tableStyles = computed(() => ({
+  '--table-fg': `var(--cu-color-${props.color}-text)`,
+  '--table-bg-hover': `var(--cu-color-${props.color}-ghost-hover)`,
+  '--table-bd': `var(--cu-color-${props.color}-subtle-border)`,
+  '--table-bg-solid': `var(--cu-color-${props.color})`,
+  '--loader-color': `var(--cu-color-${props.color})`,
+  ...(props.maxHeight ? { maxHeight: props.maxHeight } : {}),
+}));
 
-const bgClasses = computed(() => getBgClasses(props.color, props.variant, false));
-const fgClasses = computed(() => getFgClasses(props.color, props.variant, false));
+const thStyle = computed(() => {
+  const base: Record<string, string> = {
+    'width': '',
+    'background-color': `var(--cu-color-${props.color}-soft)`,
+    'color': `var(--cu-color-${props.color}-text)`,
+    'border-bottom': `1px solid rgba(0, 0, 0, 0.08)`,
+  };
 
-// For solid variant, use a softer hover effect for rows
-const rowHoverBg = computed(() => {
-  if (props.variant === 'solid') {
-    // Use a semi-transparent version of the color for softer hover
-    return transparentize(props.color, 0.9);
+  if (props.maxHeight) {
+    base['backdrop-filter'] = 'blur(8px)';
   }
-  return bgClasses.value.hover;
+
+  if (props.variant === 'solid') {
+    base['background-color'] = `var(--cu-color-${props.color})`;
+    base['color'] = 'var(--cu-color-surface)';
+    base['border-bottom'] = 'none';
+    base['backdrop-filter'] = 'none';
+  } else if (props.variant === 'ghost' || props.variant === 'outlined') {
+    base['background-color'] = 'transparent';
+    if (props.variant === 'outlined') {
+      base['border-bottom'] = `2px solid var(--cu-color-${props.color}-subtle-border)`;
+    }
+  }
+
+  return base;
 });
+
+const thStyleFn = (col: Column) => {
+  return { ...thStyle.value, width: col.width || '' };
+};
 
 const tableColumns = computed<Column[]>(() => {
   if (props.columns.length > 0) {
@@ -89,64 +106,33 @@ const getCellValue = (row: Record<string, any>, col: Column): string => {
 </script>
 
 <template>
-  <div class="flex flex-col overflow-hidden max-w-full relative" :style="{ '--loader-color': fgClasses.main }">
-    <div
-      v-if="loading"
-      class="absolute top-0 left-0 right-0 z-30 overflow-hidden"
-      style="height: 3px;"
-    >
-      <div
-        class="absolute top-0 h-full"
-        style="width: 60%; background: linear-gradient(90deg, transparent 0%, var(--loader-color) 50%, transparent 100%); animation: cu-loader 3s ease-in-out infinite;"
-      />
+  <div class="cu-table" :class="{ 'cu-table--outlined': variant === 'outlined' }" :style="tableStyles">
+    <div v-if="loading" class="cu-table-loader">
+      <div class="cu-table-loader-bar" />
     </div>
-    <div class="overflow-auto rounded-cu">
-      <table class="w-full border-collapse">
+    <div class="cu-table-scroll">
+      <table class="cu-table-element">
         <thead>
           <tr>
             <th
               v-for="col in tableColumns"
               :key="col.key"
-              class="text-left p-3 font-sans font-medium sticky top-0 z-20 select-none"
-              :width="col.width"
-              :style="{
-                'background-color': props.variant === 'solid' ? bgClasses.main : 'var(--table-bg)',
-                'backdrop-filter': props.variant !== 'solid' ? 'blur(8px)' : 'none',
-                'color': props.variant === 'solid' ? 'white' : 'var(--table-fg)',
-                'border-color': 'var(--table-bd)',
-              }"
+              class="cu-table-th"
+              :style="thStyleFn(col)"
             >
               <slot :name="`header-${col.key}`" :column="col" :color="props.color" :variant="props.variant">
-                <span class="inline-flex items-center gap-1">
-                  <Button
-                    v-if="col.sortable"
-                    :color="fgClasses.main"
-                    variant="ghost"
-                    class="!p-0 !w-6 !h-6 !min-w-0"
-                    @click.stop="emit('sort-change', col.key)"
-                  >
-                    <template v-if="props.sortBy === col.key && props.sortDir === 'asc'">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6L12 2L16 6"/><path d="M12 2V22"/></svg>
-                    </template>
-                    <template v-else-if="props.sortBy === col.key && props.sortDir === 'desc'">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 18L12 22L16 18"/><path d="M12 2V22"/></svg>
-                    </template>
-                    <template v-else>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="m8 18 4 4 4-4"/><path d="m8 6 4-4 4 4"/></svg>
-                    </template>
-                  </Button>
+                <span class="cu-table-th-content">
                   {{ col.label || col.key }}
                 </span>
               </slot>
             </th>
           </tr>
         </thead>
-        <tbody :class="{ 'opacity-40 pointer-events-none': props.loading }">
+        <tbody :class="{ 'cu-table-loading': props.loading }">
           <tr
             v-for="(row, rowIndex) in props.data"
             :key="rowIndex"
-            class="border-b-1 border-b-solid border-charcoal-100 hover:bg-[var(--row-hover-bg)] transition-colors"
-            :style="{ '--row-hover-bg': rowHoverBg }"
+            class="cu-table-row"
           >
             <slot
               name="template"
@@ -158,11 +144,11 @@ const getCellValue = (row: Record<string, any>, col: Column): string => {
               <td
                 v-for="col in tableColumns"
                 :key="col.key"
-                class="p-3 font-sans text-charcoal-800"
+                class="cu-table-td"
                 :class="{
-                  'text-left': col.align !== 'center' && col.align !== 'right',
-                  'text-center': col.align === 'center',
-                  'text-right': col.align === 'right',
+                  'cu-table-td--left': col.align !== 'center' && col.align !== 'right',
+                  'cu-table-td--center': col.align === 'center',
+                  'cu-table-td--right': col.align === 'right',
                 }"
               >
                 <slot
@@ -178,10 +164,7 @@ const getCellValue = (row: Record<string, any>, col: Column): string => {
             </slot>
           </tr>
           <tr v-if="props.data.length === 0">
-            <td
-              :colspan="tableColumns.length"
-              class="p-8 text-center text-charcoal-500 italic font-sans"
-            >
+            <td :colspan="tableColumns.length" class="cu-table-empty">
               <slot name="empty">
                 {{ empty }}
               </slot>
@@ -193,11 +176,108 @@ const getCellValue = (row: Record<string, any>, col: Column): string => {
   </div>
 </template>
 
-<style>
-@unocss-placeholder;
-</style>
+<style scoped>
+.cu-table {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  overflow: hidden;
+}
 
-<style>
+.cu-table-scroll {
+  overflow: auto;
+  border-radius: var(--cu-radius-md);
+  flex: 1;
+}
+
+.cu-table-element {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.cu-table--outlined .cu-table-scroll {
+  border: var(--cu-border-medium) solid var(--table-bd);
+}
+
+.cu-table-th {
+  text-align: left;
+  padding: var(--cu-space-md);
+  font-family: var(--cu-font-sans);
+  font-weight: var(--cu-font-weight-medium);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  user-select: none;
+}
+
+.cu-table .cu-table-th-content {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cu-space-xs);
+  color: inherit;
+}
+
+.cu-table-row {
+  border-bottom: var(--cu-border-thin) solid rgba(0, 0, 0, 0.08);
+  transition: background-color 150ms ease;
+}
+
+.cu-table--outlined .cu-table-row {
+  border-bottom-color: var(--table-bd);
+}
+
+.cu-table-row:hover {
+  background-color: var(--table-bg-hover);
+}
+
+.cu-table-row:last-child {
+  border-bottom: none;
+}
+
+.cu-table-loading {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.cu-table-td {
+  padding: var(--cu-space-md);
+  font-family: var(--cu-font-sans);
+  color: var(--cu-color-neutral-text);
+}
+
+.cu-table-td--left { text-align: left; }
+.cu-table-td--center { text-align: center; }
+.cu-table-td--right { text-align: right; }
+
+.cu-table-empty {
+  padding: var(--cu-space-xl);
+  text-align: center;
+  color: var(--cu-color-neutral-text);
+  opacity: 0.5;
+  font-style: italic;
+  font-family: var(--cu-font-sans);
+}
+
+.cu-table-loader {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  overflow: hidden;
+  height: 3px;
+}
+
+.cu-table-loader-bar {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 60%;
+  background: linear-gradient(90deg, transparent 0%, var(--loader-color) 50%, transparent 100%);
+  animation: cu-loader 3s ease-in-out infinite;
+}
+
 @keyframes cu-loader {
   0% { left: -100%; }
   50% { left: 0%; }
