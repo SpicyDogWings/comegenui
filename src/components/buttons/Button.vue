@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, type PropType } from "vue";
+import LucideLoader from "@/components/icons/LucideLoader.vue";
 
 const props = defineProps({
   color: {
@@ -35,7 +36,14 @@ const props = defineProps({
     required: false,
     default: false,
   },
+  loading: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 });
+
+const isDisabled = computed(() => props.disabled || props.loading)
 
 const colorStyles = computed(() => ({
   '--btn-bg': `var(--cu-color-${props.color})`,
@@ -59,7 +67,7 @@ const colorStyles = computed(() => ({
     :href="props.to"
     :target="props.target"
     :class="{
-      'cu-button--disabled': props.disabled,
+      'cu-button--disabled': isDisabled,
     }"
     class="cu-button-link"
   >
@@ -68,11 +76,12 @@ const colorStyles = computed(() => ({
       :class="[
         'cu-button',
         `cu-button--${props.variant}`,
-        { 'cu-button--disabled': props.disabled }
+        { 'cu-button--disabled': isDisabled }
       ]"
       :style="colorStyles"
-      :disabled="props.disabled"
+      :disabled="isDisabled"
     >
+      <LucideLoader v-if="props.loading" class="cu-button-spinner" />
       <slot></slot>
     </button>
   </a>
@@ -82,11 +91,12 @@ const colorStyles = computed(() => ({
     :class="[
       'cu-button',
       `cu-button--${props.variant}`,
-      { 'cu-button--disabled': props.disabled }
+      { 'cu-button--disabled': isDisabled }
     ]"
     :style="colorStyles"
-    :disabled="props.disabled"
+    :disabled="isDisabled"
   >
+    <LucideLoader v-if="props.loading" class="cu-button-spinner" />
     <slot></slot>
   </button>
 </template>
@@ -219,5 +229,15 @@ const colorStyles = computed(() => ({
 /* icon-only */
 .cu-button--icon-only {
   padding: var(--cu-space-sm);
+}
+
+/* loading spinner */
+.cu-button-spinner {
+  animation: cu-spin 0.8s linear infinite;
+}
+
+@keyframes cu-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 </style>
