@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import PlaygroundLayout from '@/layouts/PlaygroundLayout.vue'
 import Button from '@/components/buttons/Button.vue'
 import Alert from '@/components/information/Alert.vue'
@@ -349,6 +349,13 @@ function resetToDefaults() {
 
 onMounted(() => {
   loadFromStorage()
+})
+
+onBeforeUnmount(() => {
+  if (styleEl) {
+    styleEl.remove()
+    styleEl = null
+  }
 })
 </script>
 
