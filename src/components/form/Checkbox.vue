@@ -94,6 +94,7 @@ defineExpose({
 
 <style scoped>
 .cu-checkbox {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: var(--cu-space-sm);
