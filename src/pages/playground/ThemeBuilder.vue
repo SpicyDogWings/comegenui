@@ -498,6 +498,10 @@ onBeforeUnmount(() => {
               <Button color="primary" variant="outlined">Outlined</Button>
               <Button color="primary" variant="subtle">Subtle</Button>
             </div>
+            <div class="tb-preview-row">
+              <Button color="primary" :loading="true">Loading</Button>
+              <Button color="danger" variant="solid" :loading="true">Loading</Button>
+            </div>
           </div>
 
           <div class="tb-preview-section">
