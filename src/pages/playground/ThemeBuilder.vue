@@ -237,7 +237,6 @@ function buildCssVariables(): string {
 const cssPreview = computed(() => `.tb-preview {\n${buildCssVariables()}\n}`)
 
 const cssExport = computed(() => `:root {\n${buildCssVariables()}\n}`)
-})
 
 let styleEl: HTMLStyleElement | null = null
 
