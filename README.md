@@ -1,42 +1,147 @@
 # comegenui
 
-This template should help get you started developing with Vue 3 in Vite.
+Librería de componentes UI como Web Components (Custom Elements) construidos con Vue 3.
 
-## Recommended IDE Setup
-
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Recommended Browser Setup
-
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
-
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
+## Quick Start
 
 ```sh
 pnpm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
 pnpm dev
 ```
 
-### Type-Check, Compile and Minify for Production
+## Scripts
+
+| Comando | Descripción |
+|---------|-------------|
+| `pnpm dev` | Dev server con hot-reload |
+| `pnpm build` | Type-check + build para producción (app) |
+| `pnpm build:lib` | Build de la librería UMD (Web Components) |
+| `pnpm storybook` | Storybook en `localhost:6006` |
+| `pnpm type-check` | Type-check con `vue-tsc` |
+
+## Build de la librería
 
 ```sh
-pnpm build
+pnpm build:lib
 ```
+
+Compila cada componente en `src/lib/` como UMD independiente. Output en `dist/`:
+
+```
+dist/
+├── CuAlert.umd.js
+├── CuButton.umd.js
+├── CuBadge.umd.js
+├── ...
+├── css/
+│   ├── themes.css      ← Todos los temas combinados
+│   ├── light.css       ← Solo tema light
+│   └── dark.css        ← Solo tema dark
+├── README-BUILD.md
+└── comegenui-v{version}.zip
+```
+
+### Cómo funciona
+
+1. Busca todos los `src/lib/**/*.ts` (excluye `index.ts` y `tokens.ts`)
+2. Cada `.ts` es un entry point que define un Custom Element via `defineCustomElement`
+3. Compila cada uno como UMD con `vue({ features: { customElement: true } })` + `UnoCSS({ mode: "shadow-dom" })`
+4. Genera los CSS del sistema de tokens
+5. Empaqueta todo en un zip versionado
+
+### Agregar un componente nuevo
+
+1. Crear `src/components/{category}/MiComponente.vue` (componente real)
+2. Crear `src/components/customElements/{category}/MiComponente.ce.vue` (wrapper CE)
+3. Crear `src/lib/{category}/mi-componente.ts` (entry point)
+4. Ejecutar `pnpm build:lib`
+
+## Temas
+
+Los temas se configuran en `comegen.config.json`:
+
+```json
+{
+  "themes": {
+    "light": {
+      "primary": "#E73F1E",
+      "neutral": "#1a1a1a",
+      "success": "#22c55e",
+      "warning": "#f59e0b",
+      "danger": "#ef4444",
+      "surface": "#eeeeee"
+    },
+    "dark": {
+      "neutral": "#e5e5e5",
+      "surface": "#1c1c1c"
+    }
+  }
+}
+```
+
+### Agregar un tema nuevo
+
+1. Agregar entrada en `comegen.config.json` con los 6 colores
+2. Ejecutar `pnpm build:lib`
+3. Usar: `<html data-theme="mi-tema">` o `<cu-button theme="mi-tema">`
+
+### Prioridad de temas
+
+```
+theme prop (componente) → data-theme (<html>) → prefers-color-scheme (OS)
+```
+
+### Tokens CSS generados
+
+Para cada color (`primary`, `neutral`, `success`, etc.) se generan:
+
+- `--cu-color-{name}` — color base
+- `--cu-color-{name}-text` — texto sobre el color
+- `--cu-color-{name}-hover`, `-active` — estados interactivos
+- `--cu-color-{name}-soft` — variante suave
+- `--cu-color-{name}-subtle` — variante sutil
+- `--cu-color-{name}-ghost-hover`, `-ghost-active` — variante fantasma
+
+## Uso (HTML plano)
+
+```html
+<!-- 1. Incluir CSS del tema -->
+<link rel="stylesheet" href="dist/css/themes.css">
+
+<!-- 2. Incluir componentes UMD -->
+<script src="dist/CuButton.umd.js"></script>
+<script src="dist/CuAlert.umd.js"></script>
+
+<!-- 3. Usar -->
+<cu-button color="primary">Click me</cu-button>
+<cu-alert color="success" variant="soft">Guardado correctamente</cu-alert>
+```
+
+## Estructura del proyecto
+
+```
+src/
+├── components/
+│   ├── {category}/MiComponente.vue        ← Componente real
+│   ├── customElements/{category}/MiComponente.ce.vue  ← Wrapper CE
+│   ├── icons/                             ← Iconos
+│   ├── theme/                             ← ThemeManagerModal
+│   ├── lab/                               ← Experimentales
+│   └── legacy/                            ← Versiones anteriores (no usar)
+├── lib/
+│   └── {category}/mi-componente.ts        ← Entry points para build
+├── config/
+│   └── theme.ts                           ← Definiciones de temas
+├── plugins/cu-tokens/                     ← Sistema de tokens CSS
+├── composables/                           ← Composables reutilizables
+└── utils/                                 ← Utilidades
+```
+
+## IDE Setup
+
+- [VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (deshabilitar Vitur)
+
+## Browser Setup
+
+- Chromium: [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd) + [Custom Object Formatter](http://bit.ly/object-formatters)
+- Firefox: [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/) + [Custom Object Formatter](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
