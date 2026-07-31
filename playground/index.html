@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Button Labs — Playground</title>
-    <link rel="stylesheet" href="../dist/css/themes.css" />
+    <link rel="stylesheet" href="../dist/css/comegen-sigfi-theme.css" />
     <link rel="stylesheet" href="style.css" />
     <script src="../dist/CuButton.umd.js"></script>
   </head>
@@ -18,18 +18,11 @@
 
     <div class="main">
       <div class="card">
-        <h2>Default Config</h2>
-        <div id="default-buttons"></div>
-
-        <hr style="width:100%;border:none;border-top:1px solid var(--border, #eee);margin:16px 0">
-
-        <h2>Custom Config (primary: #10B981, secondary: #8B5CF6)</h2>
-        <link rel="stylesheet" href="cu-tokens-custom.css" />
-        <div id="custom-buttons" class="theme-custom"></div>
+        <h2>Sigfi Theme — Button Primary</h2>
+        <cu-button color="primary" variant="solid">Primary</cu-button>
       </div>
     </div>
 
     <script src="playground.js"></script>
-    <script src="examples/button-labs.js"></script>
   </body>
 </html>
