@@ -666,7 +666,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
-:global(:root) {
+.tb-controls {
   --cu-color-primary: #1774A4;
   --cu-color-primary-soft: rgba(23, 116, 164, 0.15);
   --cu-color-neutral: #2c2c2c;
