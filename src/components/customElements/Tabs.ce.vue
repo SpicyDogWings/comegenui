@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, getCurrentInstance, type PropType } from "vue";
+import { ref, watch, getCurrentInstance, type PropType } from "vue";
 import Tabs from "../Tabs.vue";
 import { initTokens } from "@/plugins/cu-tokens/css";
 
@@ -36,6 +36,16 @@ function ceEmit(event: string, payload: unknown) {
   }
 }
 
+const localModel = ref(props.modelValue);
+watch(() => props.modelValue, (v) => {
+  localModel.value = v;
+});
+
+function onUpdate(val: string) {
+  localModel.value = val;
+  ceEmit('update:modelValue', val);
+}
+
 function getActive() { return tabsRef.value?.getActive() ?? ""; }
 function setActive(key: string) { tabsRef.value?.setActive(key); }
 function next() { tabsRef.value?.next(); }
@@ -48,12 +58,12 @@ defineExpose({ getActive, setActive, next, prev });
   <Tabs
     ref="tabsRef"
     :tabs="props.tabs"
-    :modelValue="props.modelValue"
+    :modelValue="localModel"
     :color="props.color"
     :variant="props.variant"
     :size="props.size"
     :disabled="props.disabled"
-    @update:modelValue="ceEmit('update:modelValue', $event)"
+    @update:modelValue="onUpdate"
     @change="ceEmit('change', $event)"
   >
     <template v-for="tab in props.tabs" :key="tab.key" #[tab.key]>
@@ -64,3 +74,7 @@ defineExpose({ getActive, setActive, next, prev });
     </template>
   </Tabs>
 </template>
+
+<style>
+@unocss-placeholder;
+</style>

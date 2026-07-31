@@ -17,6 +17,7 @@ import LucideSave from '@/components/icons/LucideSave.vue'
 import ThemeManagerModal from '@/components/theme/ThemeManagerModal.vue'
 import Table from '@/components/data/Table.vue'
 import Pagination from '@/components/Pagination.vue'
+import Tabs from '@/components/Tabs.vue'
 
 const STORAGE_KEY = 'cu-theme-builder'
 
@@ -540,6 +541,21 @@ onBeforeUnmount(() => {
               <Alert title="Outlined" color="primary" variant="outlined">Outlined variant.</Alert>
               <Alert title="Subtle" color="primary" variant="subtle">Subtle variant.</Alert>
             </div>
+          </div>
+        </div>
+
+        <div class="tb-preview-section">
+          <h3>Tabs</h3>
+          <div class="tb-preview-col">
+            <Tabs variant="tabs" :tabs="[
+              { key: 'general', label: 'General' },
+              { key: 'advanced', label: 'Advanced' },
+              { key: 'locked', label: 'Locked', disabled: true },
+            ]">
+              <template #general>Contenido General</template>
+              <template #advanced>Contenido Advanced</template>
+              <template #locked>Contenido Locked</template>
+            </Tabs>
           </div>
         </div>
 

@@ -70,6 +70,7 @@ Cada `<script>` registra automáticamente su Custom Element. Los componentes est
 | `CuSelect.umd.js` | `<cu-select>` | Selector |
 | `CuSwitch.umd.js` | `<cu-switch>` | Switch/Toggle |
 | `CuTable.umd.js` | `<cu-table>` | Tabla avanzada |
+| `CuTabs.umd.js` | `<cu-tabs>` | Pestañas |
 | `CuTextarea.umd.js` | `<cu-textarea>` | Textarea |
 
 > Los nombres de archivo se generan desde el entry point (`src/lib/{categoria}/{componente}.ts`), por eso los de varias palabras llevan guion: `CuDropdown-menu`, `CuFile-input-zone`, `CuColor-picker`, `CuFloating-button`.
@@ -345,5 +346,6 @@ Cada archivo UMD incluye el runtime de Vue 3 (no externalizado):
 - [\<cu-pagination\>](componentes/cu-pagination.md) — Paginación
 - [\<cu-select\>](componentes/cu-select.md) — Selector
 - [\<cu-switch\>](componentes/cu-switch.md) — Switch/Toggle
+- [\<cu-tabs\>](componentes/cu-tabs.md) — Pestañas
 - [\<cu-table\>](componentes/cu-table.md) — Tabla avanzada
 - [\<cu-textarea\>](componentes/cu-textarea.md) — Textarea
