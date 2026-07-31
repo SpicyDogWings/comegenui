@@ -29,6 +29,13 @@ function colorsBlock(colors: any) {
     --cu-color-surface: ${colors.surface};`
 }
 
+function shadowVar(name: string, value: string, color?: string) {
+  if (/rgba?\(|hsla?\(|#[0-9a-f]{3,8}/i.test(value)) {
+    return `--cu-shadow-${name}: ${value};`
+  }
+  return `--cu-shadow-${name}: ${value} var(--cu-shadow-color, ${color || '#000000'});`
+}
+
 function sharedBlock(shared: any) {
   return `/* Typography */
     --cu-font-sans: ${shared.typography.fontFamily.sans};
@@ -66,11 +73,11 @@ function sharedBlock(shared: any) {
     --cu-radius-full: ${shared.borderRadius.full};
 
     /* Shadows */
-    --cu-shadow-color: ${shared.shadows.color};
-    --cu-shadow-sm: ${shared.shadows.sm} var(--cu-shadow-color, ${shared.shadows.color});
-    --cu-shadow-md: ${shared.shadows.md} var(--cu-shadow-color, ${shared.shadows.color});
-    --cu-shadow-lg: ${shared.shadows.lg} var(--cu-shadow-color, ${shared.shadows.color});
-    --cu-shadow-xl: ${shared.shadows.xl} var(--cu-shadow-color, ${shared.shadows.color});
+    --cu-shadow-color: ${shared.shadows.color || '#000000'};
+    ${shadowVar('sm', shared.shadows.sm, shared.shadows.color)}
+    ${shadowVar('md', shared.shadows.md, shared.shadows.color)}
+    ${shadowVar('lg', shared.shadows.lg, shared.shadows.color)}
+    ${shadowVar('xl', shared.shadows.xl, shared.shadows.color)}
 
     /* Borders */
     --cu-border-none: ${shared.borders.width.none};
