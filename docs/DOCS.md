@@ -34,6 +34,7 @@ Si vas a modificar o agregar componentes a la librería:
 | `<cu-alert>` | [Ver docs](comegen-ui/componentes/cu-alert.md) |
 | `<cu-autocomplete>` | [Ver docs](comegen-ui/componentes/cu-autocomplete.md) |
 | `<cu-badge>` | [Ver docs](comegen-ui/componentes/cu-badge.md) |
+| `<cu-card>` | [Ver docs](comegen-ui/componentes/cu-card.md) |
 | `<cu-button>` | [Ver docs](comegen-ui/componentes/cu-button.md) |
 | `<cu-checkbox>` | [Ver docs](comegen-ui/componentes/cu-checkbox.md) |
 | `<cu-dropdown-menu>` | [Ver docs](comegen-ui/componentes/cu-dropdown-menu.md) |

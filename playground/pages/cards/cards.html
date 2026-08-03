@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="es" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Card — Playground Vanilla</title>
+    <link rel="stylesheet" href="../../style.css" />
+    <link rel="stylesheet" href="../../public/css/comegen-sigfi-theme.css" />
+    <script src="../../../dist/CuCard.umd.js"></script>
+    <style>
+      .card--wide {
+        align-items: flex-start;
+        max-width: 1000px;
+      }
+      .card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 16px;
+        width: 100%;
+      }
+      .card-block {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .card-label {
+        font-size: 12px;
+        font-weight: 500;
+        opacity: .5;
+      }
+      .card-demo-actions {
+        display: flex;
+        gap: 8px;
+      }
+      .card-media-side {
+        height: 100%;
+        min-height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--cu-color-primary);
+        color: var(--cu-color-surface);
+        font-weight: 600;
+      }
+      .card-footer-badge {
+        font-size: 12px;
+        padding: 2px 10px;
+        border-radius: 6px;
+        background-color: var(--cu-color-success);
+        color: var(--cu-color-surface);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <h1 style="font-size:16px;font-weight:600">Card Labs</h1>
+      <div class="topbar-actions">
+        <button class="topbar-btn" id="btnTheme" title="Toggle theme">🌙</button>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="card card--wide">
+        <h2>Default (con title)</h2>
+        <div class="card-grid">
+          <div class="card-block">
+            <p class="card-label">title + subtitle</p>
+            <cu-card title="Tarjeta de información" subtitle="Subtítulo descriptivo">
+              Contenido principal de la tarjeta.
+            </cu-card>
+          </div>
+          <div class="card-block">
+            <p class="card-label">title sin subtitle</p>
+            <cu-card title="Solo título">
+              Contenido.
+            </cu-card>
+          </div>
+          <div class="card-block">
+            <p class="card-label">sin title</p>
+            <cu-card>
+              Solo contenido.
+            </cu-card>
+          </div>
+        </div>
+      </div>
+
+      <div class="card card--wide">
+        <h2>Layout horizontal</h2>
+        <div class="card-grid">
+          <div class="card-block">
+            <p class="card-label">layout horizontal con media slot</p>
+            <cu-card layout="horizontal" title="Horizontal" subtitle="Media al costado" color="primary" variant="soft">
+              <div slot="media" class="card-media-side">Side</div>
+              Contenido del lado derecho.
+            </cu-card>
+          </div>
+          <div class="card-block">
+            <p class="card-label">layout vertical (default)</p>
+            <cu-card title="Vertical" subtitle="Media arriba" color="success" variant="soft">
+              <div slot="media" class="card-media-side" style="min-height:80px">Top</div>
+              Contenido debajo.
+            </cu-card>
+          </div>
+        </div>
+      </div>
+
+      <div class="card card--wide">
+        <h2>Footer</h2>
+        <div class="card-grid">
+          <div class="card-block">
+            <p class="card-label">con footer slot</p>
+            <cu-card title="Acciones">
+              Contenido.
+              <div slot="footer" class="card-demo-actions">
+                <button class="topbar-btn">Aceptar</button>
+                <button class="topbar-btn">Cancelar</button>
+              </div>
+            </cu-card>
+          </div>
+          <div class="card-block">
+            <p class="card-label">sin footer (no debería haber divider)</p>
+            <cu-card title="Sin footer">
+              Contenido. No debe verse línea divisoria al final.
+            </cu-card>
+          </div>
+          <div class="card-block">
+            <p class="card-label">footer con badge</p>
+            <cu-card title="Info" color="success" variant="soft">
+              Contenido.
+              <div slot="footer"><span class="card-footer-badge">Activo</span></div>
+            </cu-card>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="../../playground.js"></script>
+  </body>
+</html>

@@ -57,6 +57,7 @@ Cada `<script>` registra automáticamente su Custom Element. Los componentes est
 | `CuAutocomplete.umd.js` | `<cu-autocomplete>` | Autocompletado con búsqueda |
 | `CuBadge.umd.js` | `<cu-badge>` | Badge |
 | `CuButton.umd.js` | `<cu-button>` | Botón |
+| `CuCard.umd.js` | `<cu-card>` | Tarjeta de información |
 | `CuCheckbox.umd.js` | `<cu-checkbox>` | Checkbox |
 | `CuColor-picker.umd.js` | `<cu-color-picker>` | Selector de color |
 | `CuDropdown-menu.umd.js` | `<cu-dropdown-menu>` | Menú desplegable |
@@ -202,6 +203,7 @@ Refleja los validadores reales de cada `.ce.vue`. `—` significa que la variant
 | `<cu-autocomplete>` | `soft` |
 | `<cu-badge>` | `soft` |
 | `<cu-button>` | `ghost` |
+| `<cu-card>` | `ghost` |
 | `<cu-checkbox>` | — (sin variant) |
 | `<cu-color-picker>` | — (sin variant) |
 | `<cu-dropdown-menu>` | `ghost` |
@@ -337,6 +339,7 @@ Cada archivo UMD incluye el runtime de Vue 3 (no externalizado):
 - [\<cu-autocomplete\>](componentes/cu-autocomplete.md) — Autocompletado con búsqueda
 - [\<cu-badge\>](componentes/cu-badge.md) — Badge
 - [\<cu-button\>](componentes/cu-button.md) — Botón
+- [\<cu-card\>](componentes/cu-card.md) — Tarjeta de información
 - [\<cu-checkbox\>](componentes/cu-checkbox.md) — Checkbox
 - [\<cu-color-picker\>](componentes/cu-color-picker.md) — Selector de color
 - [\<cu-dropdown-menu\>](componentes/cu-dropdown-menu.md) — Menú desplegable con items

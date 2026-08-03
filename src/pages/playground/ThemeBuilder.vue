@@ -4,6 +4,7 @@ import PlaygroundLayout from '@/layouts/PlaygroundLayout.vue'
 import Button from '@/components/buttons/Button.vue'
 import Alert from '@/components/information/Alert.vue'
 import Badge from '@/components/information/Badge.vue'
+import Card from '@/components/information/Card.vue'
 import Input from '@/components/form/Input.vue'
 import Switch from '@/components/form/Switch.vue'
 import Checkbox from '@/components/form/Checkbox.vue'
@@ -545,6 +546,24 @@ onBeforeUnmount(() => {
         </div>
 
         <div class="tb-preview-section">
+          <h3>Cards</h3>
+          <div class="tb-preview-row">
+            <Card title="Tarjeta" subtitle="Subtítulo descriptivo" variant="ghost">
+              Contenido de la tarjeta para mostrar información agrupada.
+            </Card>
+            <Card title="Solid" variant="solid" color="primary">
+              Variante solid con el color activo del tema.
+            </Card>
+            <Card title="Soft" variant="soft" color="primary">
+              Variante soft con el color activo del tema.
+            </Card>
+            <Card title="Outlined" variant="outlined" color="primary">
+              Variante outlined con el color activo del tema.
+            </Card>
+          </div>
+        </div>
+
+        <div class="tb-preview-section">
           <h3>Tabs</h3>
           <div class="tb-preview-col">
             <Tabs variant="tabs" :tabs="[
@@ -767,6 +786,10 @@ onBeforeUnmount(() => {
   flex-wrap: wrap;
   gap: 0.5rem;
   align-items: center;
+}
+
+.tb-preview-row :deep(.cu-card) {
+  flex: 1 1 200px;
 }
 
 .tb-preview-col {

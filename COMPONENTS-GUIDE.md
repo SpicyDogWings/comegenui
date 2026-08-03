@@ -13,6 +13,7 @@ Librería de componentes UI como Custom Elements nativos, construidos con Vue 3 
   - [`<cu-button>`](#cu-button)
   - [`<cu-alert>`](#cu-alert)
   - [`<cu-badge>`](#cu-badge)
+  - [`<cu-card>`](#cu-card)
   - [`<cu-input>`](#cu-input)
   - [`<cu-checkbox>`](#cu-checkbox)
   - [`<cu-textarea>`](#cu-textarea)
@@ -36,6 +37,7 @@ Cada componente es un archivo **UMD** independiente. Incluye solo los que necesi
 <script src="ruta/CuButton.umd.js"></script>
 <script src="ruta/CuAlert.umd.js"></script>
 <script src="ruta/CuBadge.umd.js"></script>
+<script src="ruta/CuCard.umd.js"></script>
 <script src="ruta/CuInput.umd.js"></script>
 <script src="ruta/CuCheckbox.umd.js"></script>
 <script src="ruta/CuTextarea.umd.js"></script>
@@ -57,6 +59,7 @@ Cada script registra automáticamente su Custom Element. No necesitas instalar V
 | `CuButton.umd.js` | `<cu-button>` | Botón |
 | `CuAlert.umd.js` | `<cu-alert>` | Alerta |
 | `CuBadge.umd.js` | `<cu-badge>` | Badge |
+| `CuCard.umd.js` | `<cu-card>` | Tarjeta de información |
 | `CuInput.umd.js` | `<cu-input>` | Input de texto |
 | `CuCheckbox.umd.js` | `<cu-checkbox>` | Checkbox |
 | `CuTextarea.umd.js` | `<cu-textarea>` | Textarea |
@@ -264,6 +267,50 @@ Etiqueta o badge pequeño.
 <cu-badge color="success" variant="soft">Activo</cu-badge>
 <cu-badge color="warning" variant="outlined">Pendiente</cu-badge>
 <cu-badge color="danger" variant="subtle">Error</cu-badge>
+```
+
+---
+
+### `<cu-card>`
+
+Tarjeta para mostrar información agrupada con media, header (título + subtítulo), contenido y footer.
+
+#### Props
+
+| Prop | Tipo | Default | Descripción |
+|------|------|---------|-------------|
+| `theme` | `string` | `""` | Tema |
+| `color` | `string` | `"neutral"` | Color semántico |
+| `variant` | `string` | `"ghost"` | `ghost`, `outlined`, `soft`, `subtle`, `solid` |
+| `layout` | `string` | `"vertical"` | `vertical` (media arriba) o `horizontal` (media al costado) |
+| `title` | `string` | — | Título del header |
+| `subtitle` | `string` | — | Subtítulo bajo el título |
+| `image` | `string` | — | URL de imagen de la media |
+| `hightContrast` | `boolean` | `false` | Alto contraste |
+
+#### Slots
+
+| Slot | Descripción |
+|------|-------------|
+| `default` | Contenido principal del cuerpo |
+| `media` | Contenido de la parte superior (reemplaza `image`) |
+| `header` | Reemplaza el título/subtítulo por defecto |
+| `footer` | Contenido al pie de la tarjeta |
+
+#### Uso
+
+```html
+<cu-card title="Resumen" subtitle="Último corte" color="primary">
+  Contenido de la tarjeta.
+  <div slot="footer">
+    <cu-button color="primary" variant="soft">Ver más</cu-button>
+  </div>
+</cu-card>
+
+<!-- Layout horizontal: media al costado -->
+<cu-card layout="horizontal" title="Perfil" image="https://example.com/avatar.jpg">
+  Datos del perfil.
+</cu-card>
 ```
 
 ---
