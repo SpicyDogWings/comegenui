@@ -51,6 +51,7 @@ const navItems = [
         label: 'overlay',
         children: [
           { label: 'Modal', path: '/playground/components/modal' },
+          { label: 'Collapse', path: '/playground/components/collapse' },
         ]
       },
       {

@@ -19,6 +19,7 @@ import ThemeManagerModal from '@/components/theme/ThemeManagerModal.vue'
 import Table from '@/components/data/Table.vue'
 import Pagination from '@/components/Pagination.vue'
 import Tabs from '@/components/Tabs.vue'
+import Collapse from '@/components/overlay/Collapse.vue'
 
 const STORAGE_KEY = 'cu-theme-builder'
 
@@ -575,6 +576,28 @@ onBeforeUnmount(() => {
               <template #advanced>Contenido Advanced</template>
               <template #locked>Contenido Locked</template>
             </Tabs>
+          </div>
+        </div>
+
+        <div class="tb-preview-section">
+          <h3>Collapse</h3>
+          <div class="tb-preview-row-group">
+            <div class="tb-preview-col">
+              <Collapse label="Más información" color="primary">
+                <p>Contenido colapsable con el color primario del tema activo.</p>
+              </Collapse>
+              <Collapse label="Opciones avanzadas" :default-open="true">
+                <p>Este collapse arranca abierto usando <code>default-open</code>.</p>
+              </Collapse>
+            </div>
+            <div class="tb-preview-col">
+              <Collapse label="Detalles" color="success">
+                <p>Los colores del trigger siguen los tokens del tema editado.</p>
+              </Collapse>
+              <Collapse label="Ayuda" color="warning">
+                <p>Probá cambiar colores en el panel y ver cómo se actualiza.</p>
+              </Collapse>
+            </div>
           </div>
         </div>
 

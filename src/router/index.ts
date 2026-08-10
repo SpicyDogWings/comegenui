@@ -47,6 +47,11 @@ const router = createRouter({
               component: () => import("@/pages/playground/components/Modal.vue")
             },
             {
+              path: "collapse",
+              name: "Collapse playground",
+              component: () => import("@/pages/playground/components/Collapse.vue")
+            },
+            {
               path: "switch",
               name: "Switch playground",
               component: () => import("@/pages/playground/components/Switch.vue")

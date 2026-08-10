@@ -1,15 +1,47 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, type PropType } from 'vue'
 import LucideChevronRight from '@/components/icons/LucideChevronRight.vue'
 import Button from '@/components/buttons/Button.vue'
 
-const props = defineProps<{
-  label: string
-  defaultOpen?: boolean
+const props = defineProps({
+  label: {
+    type: String,
+    required: true,
+  },
+  defaultOpen: {
+    type: Boolean,
+    default: false,
+  },
+  color: {
+    type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
+    default: 'neutral',
+  },
+})
+
+const emit = defineEmits<{
+  (e: 'toggle', isOpen: boolean): void
 }>()
 
-const isOpen = ref(props.defaultOpen ?? false)
+const isOpen = ref(props.defaultOpen)
 const contentRef = ref<HTMLElement>()
+
+function setOpen(value: boolean) {
+  if (isOpen.value === value) return
+  isOpen.value = value
+  emit('toggle', value)
+}
+
+function toggle() {
+  setOpen(!isOpen.value)
+}
+
+function open() {
+  setOpen(true)
+}
+
+function close() {
+  setOpen(false)
+}
 
 function onEnter(el: Element) {
   const el_ = el as HTMLElement
@@ -42,13 +74,25 @@ function onAfterLeave(el: Element) {
   el_.style.height = ''
   el_.style.overflow = ''
 }
+
+defineExpose({
+  open,
+  close,
+  toggle,
+  isOpen: () => isOpen.value,
+})
 </script>
 
 <template>
   <div class="cu-collapse">
-    <Button class="cu-collapse-trigger" @click="isOpen = !isOpen">
+    <Button
+      class="cu-collapse-trigger"
+      :color="props.color"
+      variant="ghost"
+      @click="toggle()"
+    >
       <LucideChevronRight class="cu-collapse-chevron" :class="{ 'is-open': isOpen }" :width="14" :height="14" />
-      {{ label }}
+      {{ props.label }}
     </Button>
     <Transition
       @enter="onEnter"

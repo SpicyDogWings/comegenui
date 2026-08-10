@@ -21,6 +21,7 @@ Librería de componentes UI como Custom Elements nativos, construidos con Vue 3 
   - [`<cu-switch>`](#cu-switch)
   - [`<cu-label>`](#cu-label)
   - [`<cu-modal>`](#cu-modal)
+  - [`<cu-collapse>`](#cu-collapse)
   - [`<cu-pagination>`](#cu-pagination)
   - [`<cu-table>`](#cu-table)
   - [`<cu-dropdown-menu>`](#cu-dropdown-menu)
@@ -45,6 +46,7 @@ Cada componente es un archivo **UMD** independiente. Incluye solo los que necesi
 <script src="ruta/CuSwitch.umd.js"></script>
 <script src="ruta/CuLabel.umd.js"></script>
 <script src="ruta/CuModal.umd.js"></script>
+<script src="ruta/CuCollapse.umd.js"></script>
 <script src="ruta/CuPagination.umd.js"></script>
 <script src="ruta/CuTable.umd.js"></script>
 <script src="ruta/CuDropdownMenu.umd.js"></script>
@@ -67,6 +69,7 @@ Cada script registra automáticamente su Custom Element. No necesitas instalar V
 | `CuSwitch.umd.js` | `<cu-switch>` | Switch/Toggle |
 | `CuLabel.umd.js` | `<cu-label>` | Label |
 | `CuModal.umd.js` | `<cu-modal>` | Modal |
+| `CuCollapse.umd.js` | `<cu-collapse>` | Colapsable |
 | `CuPagination.umd.js` | `<cu-pagination>` | Paginación |
 | `CuTable.umd.js` | `<cu-table>` | Tabla avanzada |
 | `CuDropdownMenu.umd.js` | `<cu-dropdown-menu>` | Menú desplegable |
@@ -126,15 +129,15 @@ Cada componente que usa color acepta dos props clave:
 
 ### Variantes disponibles por componente
 
-| Variante | Button | Alert | Badge | Input | Checkbox | Textarea | Pagination | Table | DropdownMenu | Select |
-|----------|--------|-------|-------|-------|----------|----------|------------|-------|----------|--------|
-| `solid` | ✓ | ✓ | ✓ | — | — | — | — | ✓ | ✓ | ✓ |
-| `outlined` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `soft` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `ghost` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `subtle` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| `link` | ✓ | — | — | — | — | — | — | ✓ | — | ✓ |
-| `none` | ✓ | — | — | ✓ | ✓ | ✓ | — | — | — | ✓ |
+| Variante | Button | Alert | Badge | Input | Checkbox | Textarea | Pagination | Table | DropdownMenu | Select | Collapse |
+|----------|--------|-------|-------|-------|----------|----------|------------|-------|----------|--------|----------|
+| `solid` | ✓ | ✓ | ✓ | — | — | — | — | ✓ | ✓ | ✓ | — |
+| `outlined` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — |
+| `soft` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — |
+| `ghost` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — |
+| `subtle` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — |
+| `link` | ✓ | — | — | — | — | — | — | ✓ | — | ✓ | — |
+| `none` | ✓ | — | — | ✓ | ✓ | ✓ | — | — | — | ✓ | — |
 
 ---
 
@@ -648,6 +651,76 @@ Modal/diálogo modal con backdrop, animación, y slots para footer.
 
 ---
 
+### `<cu-collapse>`
+
+Sección colapsable con trigger (botón + chevron animado). El contenido se muestra/oculta con una transición de altura. Útil para acordeones, menús anidados o secciones "más información".
+
+#### Props
+
+| Prop | Tipo | Default | Descripción |
+|------|------|---------|-------------|
+| `label` | `string` | *(requerido)* | Texto del trigger |
+| `default-open` | `boolean` | `false` | Si es `true`, el contenido arranca visible |
+| `color` | `string` | `"neutral"` | Color semántico del trigger: `primary`, `neutral`, `success`, `warning`, `danger` |
+
+> No expone prop `variant` ni `theme`. El trigger siempre usa la variante `ghost` y el color se controla con `color`.
+
+#### Eventos
+
+| Evento | Payload | Descripción |
+|--------|---------|-------------|
+| `toggle` | `boolean` | Cambio de estado abierto/cerrado (`true` = abierto) |
+
+#### Slots
+
+| Slot | Descripción |
+|------|-------------|
+| `default` | Contenido colapsable |
+
+#### Métodos expuestos
+
+| Método | Descripción |
+|--------|-------------|
+| `.open()` | Abre el collapse |
+| `.close()` | Cierra el collapse |
+| `.toggle()` | Alterna el estado |
+| `.isOpen()` | Devuelve el estado actual (`boolean`) |
+
+#### Uso
+
+```html
+<cu-collapse label="Más información" color="primary">
+  <p>Contenido oculto hasta que se hace click en el trigger.</p>
+</cu-collapse>
+```
+
+Abierto por defecto:
+
+```html
+<cu-collapse label="Opciones avanzadas" default-open>
+  <p>Visible desde el inicio.</p>
+</cu-collapse>
+```
+
+Control programático y eventos:
+
+```html
+<cu-collapse id="faq" label="Pregunta">
+  <p>Respuesta.</p>
+</cu-collapse>
+
+<script>
+  const faq = document.getElementById('faq');
+  faq.addEventListener('toggle', (e) => console.log('abierto:', e.detail));
+  faq.open();
+  faq.close();
+  faq.toggle();
+  faq.isOpen();
+</script>
+```
+
+---
+
 ### `<cu-pagination>`
 
 Paginación para tablas o listas.
@@ -1026,6 +1099,7 @@ Cada archivo UMD incluye el runtime de Vue 3 (no externalizado):
 | CuSwitch | ~186 kB | ~45 kB |
 | CuLabel | ~167 kB | ~40 kB |
 | CuModal | ~204 kB | ~50 kB |
+| CuCollapse | ~217 kB | ~52 kB |
 | CuPagination | ~197 kB | ~48 kB |
 | CuTable | ~256 kB | ~57 kB |
 | CuDropdownMenu | ~204 kB | ~49 kB |
