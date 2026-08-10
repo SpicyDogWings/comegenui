@@ -604,20 +604,18 @@ onBeforeUnmount(() => {
         </div>
 
         <div class="tb-preview-section">
-          <h3>MonthSlider</h3>
-          <div class="tb-preview-col">
-            <MonthSlider />
-            <MonthSlider month-format="MMM yyyy" color="success" />
-            <MonthSlider :year-navigation="false" color="warning" />
-          </div>
-        </div>
-
-        <div class="tb-preview-section">
-          <h3>YearSlider</h3>
-          <div class="tb-preview-col">
-            <YearSlider />
-            <YearSlider variant="outlined" color="success" />
-            <YearSlider :min="2020" :max="2030" color="warning" />
+          <h3>Sliders</h3>
+          <div class="tb-preview-row-group">
+            <div class="tb-preview-col">
+              <MonthSlider />
+              <MonthSlider month-format="MMM yyyy" color="success" />
+              <MonthSlider :year-navigation="false" color="warning" />
+            </div>
+            <div class="tb-preview-col">
+              <YearSlider />
+              <YearSlider variant="outlined" color="success" />
+              <YearSlider :min="2020" :max="2030" color="warning" />
+            </div>
           </div>
         </div>
 
