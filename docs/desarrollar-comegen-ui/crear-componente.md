@@ -270,9 +270,20 @@ Después, abrir el playground en el navegador y verificar que el nuevo tag funci
 
 Usá la skill [`documentar-comegen-ui`](../documentar-comegen-ui/SKILL.md) para crear el archivo `cu-<nombre>.md` en `docs/comegen-ui/componentes/`.
 
-## 8. Actualizar SKILL.md
+## 8. Actualizar SKILL.md e índices
 
-Si agregás un componente nuevo, agregalo al índice de `docs/comegen-ui/SKILL.md` y a la tabla de "Archivos disponibles".
+Un componente nuevo **no está completo con solo su `.md`**. Hay que actualizar **todos** los índices que listan componentes (verificar con `grep` por el tag `<cu-xxx>`):
+
+1. **`docs/comegen-ui/SKILL.md`** (usuario final) — 3 lugares:
+   - Tabla "Archivos disponibles" (agregar `Cu<Nombre>.umd.js` / `<cu-xxx>` / descripción).
+   - Tabla "Default de `variant` por componente" (si tiene variant).
+   - Índice "Componentes" (link a `componentes/cu-xxx.md`).
+   - Si corresponde, la tabla de "Variantes disponibles" y la de "Tamaño de los bundles" (los tamaños salen del `pnpm run build:lib`).
+2. **`docs/DOCS.md`** — tabla "Componentes disponibles".
+3. **`COMPONENTS-GUIDE.md`** (raíz del repo) — índice, listado de `<script>` de instalación, tabla "Archivos disponibles", y una sección `### <cu-xxx>` completa.
+4. **Skill local `~/.agents/skills/comegen-ui/`** — la copia del SKILL.md y del `componentes/cu-xxx.md` debe quedar **idéntica** a la de `docs/comegen-ui/` (verificar con `diff`).
+
+> Regla de oro: **el tag `<cu-xxx>` debe aparecer en todos los índices o en ninguno.** Si solo está en el `.md` y en `SKILL.md`, el componente queda "documentado pero invisible" en `DOCS.md` y `COMPONENTS-GUIDE.md`.
 
 ## Checklist final
 
@@ -283,4 +294,7 @@ Si agregás un componente nuevo, agregalo al índice de `docs/comegen-ui/SKILL.m
 - [ ] (Opcional) Preset en `playground/examples/`.
 - [ ] Build UMD funciona: `pnpm build:lib`.
 - [ ] Documentación `cu-<nombre>.md` existe.
-- [ ] SKILL.md actualizado con el nuevo componente.
+- [ ] `docs/comegen-ui/SKILL.md` actualizado (tabla UMD, default variant, índice).
+- [ ] `docs/DOCS.md` actualizado (tabla "Componentes disponibles").
+- [ ] `COMPONENTS-GUIDE.md` actualizado (índice + sección `<cu-xxx>`).
+- [ ] Skill local `~/.agents/skills/comegen-ui/` idéntico a `docs/comegen-ui/`.

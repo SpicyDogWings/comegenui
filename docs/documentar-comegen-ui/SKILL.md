@@ -48,6 +48,22 @@ Si la tarea es **modificar el código fuente** de un componente (`.ce.vue`, `.vu
 7. Si el componente hereda props del tema (`theme`, `color`, `variant`, `hightContrast`), documentarlas en bloque.
 8. Pasar el [checklist de auditoría](checklist-auditoria.md) sobre el `.md` resultante.
 
+### Índices a actualizar al crear un componente nuevo
+
+Un componente nuevo **no está documentado solo con su `.md`**. Cuando se crea uno (ej. `<cu-card>`), hay que actualizar **todos** los índices que listan componentes. Verificarlos con `grep` por el tag del componente:
+
+1. **`docs/comegen-ui/SKILL.md`** (usuario final) — 3 lugares:
+   - Tabla "Archivos disponibles" (agregar `Cu<Nombre>.umd.js` / `<cu-xxx>` / descripción).
+   - Tabla "Default de `variant` por componente" (si tiene variant).
+   - Índice "Componentes" (link a `componentes/cu-xxx.md`).
+   - Si corresponde, la tabla de "Variantes disponibles" y la de "Tamaño de los bundles" (los tamaños salen del `pnpm run build:lib`).
+2. **`docs/DOCS.md`** — tabla "Componentes disponibles" (agregar fila con link al `.md`).
+3. **`COMPONENTS-GUIDE.md`** (raíz del repo) — índice, listado de `<script>` de instalación, tabla "Archivos disponibles", y una sección `### <cu-xxx>` completa con props/slots/uso.
+4. **Skill local `~/.agents/skills/comegen-ui/`** — la copia del SKILL.md y del `componentes/cu-xxx.md` debe quedar **idéntica** a la de `docs/comegen-ui/` (verificar con `diff`).
+5. **`docs/desarrollar-comegen-ui/convenciones-desarrollo.md`** — solo si el componente introduce una convención nueva (ej. reglas CSS, especificidad de títulos `solid`, patrones de slots).
+
+> Regla de oro: **el tag `<cu-xxx>` debe aparecer en todos los índices o en ninguno.** Si solo lo agregás al `.md` y al SKILL.md, el componente queda "documentado pero invisible" en `DOCS.md` y `COMPONENTS-GUIDE.md`.
+
 ### Para auditar un `.md` existente
 
 1. Leer el `.md` y el `.ce.vue` correspondiente.

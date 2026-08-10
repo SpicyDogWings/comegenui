@@ -44,12 +44,14 @@ const navItems = [
         children: [
           { label: 'Alert', path: '/playground/components/alert' },
           { label: 'Badge', path: '/playground/components/badge' },
+          { label: 'Card', path: '/playground/components/card' },
         ]
       },
       {
         label: 'overlay',
         children: [
           { label: 'Modal', path: '/playground/components/modal' },
+          { label: 'Collapse', path: '/playground/components/collapse' },
         ]
       },
       {

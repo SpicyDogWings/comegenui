@@ -100,6 +100,58 @@ Reglas que se aplican a todo el código de `src/`. Mantener consistencia con el 
   </template>
   ```
 
+### Slots opcionales con contenido default (patrón `slotHasContent`)
+
+**Problema:** el `.ce.vue` reenvía los slots de forma **incondicional** (`<template #header><slot name="header"></slot></template>`). En Vue, un slot provisto pero **vacío** descarta el contenido fallback del `.vue` interno — el host no lo llenó, pero el fallback (ej. el `title` como `<h3>`) tampoco se renderiza.
+
+**Solución:** en el `.vue` interno, no depender del fallback de `<slot name="x">`. Detectar si el slot tiene contenido real con un helper y renderizar el slot o el fallback explícitamente:
+
+```ts
+// Card.vue
+import { computed, useSlots, type VNode } from "vue";
+
+const slots = useSlots();
+
+function slotHasContent(name: string): boolean {
+  const fn = slots[name];
+  if (!fn) return false;
+  return fn().some((vnode: VNode) => {
+    if (typeof vnode.type === 'symbol') return false;
+    if (vnode.type === 'comment') return false;
+    if (vnode.type === 'text' && typeof vnode.children === 'string' && !vnode.children.trim()) return false;
+    return true;
+  });
+}
+
+const hasHeader = computed(() => slotHasContent('header'));
+const hasFooter = computed(() => slotHasContent('footer'));
+const hasMedia = computed(() => slotHasContent('media'));
+```
+
+```html
+<!-- .vue -->
+<header v-if="props.title || props.subtitle || hasHeader" class="cu-card-header">
+  <template v-if="hasHeader">
+    <slot name="header" />
+  </template>
+  <template v-else>
+    <h3 v-if="props.title" class="cu-card-title">{{ props.title }}</h3>
+    <p v-if="props.subtitle" class="cu-card-subtitle">{{ props.subtitle }}</p>
+  </template>
+</header>
+
+<footer v-if="hasFooter" class="cu-card-footer">
+  <slot name="footer" />
+</footer>
+```
+
+**Reglas del patrón:**
+
+- Usar `useSlots()` + helper `slotHasContent` cuando un slot tenga **contenido default** (fallback) y el `.ce.vue` lo reenvíe.
+- El fallback se renderiza con `v-else`, no como contenido del `<slot>`.
+- Slots sin fallback (ej. `footer`, `media`) solo necesitan el `v-if="slotHasContent('x')"`.
+- Slots siempre presentes y con contenido obligatorio (ej. `default`) no necesitan nada de esto.
+
 ## CSS / UnoCSS
 
 - Usar **utility-first** de UnoCSS: `bg-red-500`, `text-sm`, `p-4`, etc.
@@ -113,6 +165,43 @@ Reglas que se aplican a todo el código de `src/`. Mantener consistencia con el 
 
 - **No** escribir CSS custom salvo que sea estrictamente necesario. Si necesitás algo custom, poné una clase con prefijo único para no chocar con utilities.
 - **No** uses `@apply` salvo en casos muy justificados.
+
+### Estilos `scoped`
+
+- **Todos los componentes `.vue` deben usar `<style scoped>`.** Nunca `<style>` global, para no filtrar reglas hacia afuera ni pisar estilos del consumidor.
+- Los `.ce.vue` son la excepción: usan `<style>` no-scoped, pero solo para `@unocss-placeholder` y reglas de `:host` (ver [`arquitectura.md`](arquitectura.md)).
+
+### Especificidad en títulos con variante `solid`
+
+Los componentes con título sobre fondo sólido (variante `solid`) **deben agregar especificidad** al color del título. Reglas globales del consumidor tipo `h1, h2, h3 { color: black }` (muy comunes en apps/playgrounds) tienen menor especificidad que una clase scoped, pero pueden pisar el `color: inherit` del título y romper el color `surface` sobre fondo solid.
+
+**Patrón:** doble clase + clase interna, para ganar en cascada:
+
+```css
+/* Alert.vue */
+.cu-alert--solid {
+  background-color: var(--alert-bg);
+  color: var(--cu-color-surface);
+}
+.cu-alert.cu-alert--solid .cu-alert-title-text {
+  color: var(--cu-color-surface);
+}
+```
+
+```css
+/* Card.vue */
+.cu-card--solid {
+  background-color: var(--card-bg);
+  color: var(--cu-color-surface);
+}
+.cu-card.cu-card--solid .cu-card-title {
+  color: var(--cu-color-surface);
+}
+```
+
+La clase duplicada (`.cu-alert.cu-alert--solid` / `.cu-card.cu-card--solid`) sube la especificidad a `(0,3,0)`, suficiente para ganarle a reglas globales de elementos.
+
+Aplica a **todo componente** con variante `solid` y título sobre el color solid: el título debe quedar `var(--cu-color-surface)`, nunca heredar un color global del consumidor.
 
 ## Imports
 

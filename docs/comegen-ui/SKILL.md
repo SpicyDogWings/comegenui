@@ -57,7 +57,9 @@ Cada `<script>` registra automáticamente su Custom Element. Los componentes est
 | `CuAutocomplete.umd.js` | `<cu-autocomplete>` | Autocompletado con búsqueda |
 | `CuBadge.umd.js` | `<cu-badge>` | Badge |
 | `CuButton.umd.js` | `<cu-button>` | Botón |
+| `CuCard.umd.js` | `<cu-card>` | Tarjeta de información |
 | `CuCheckbox.umd.js` | `<cu-checkbox>` | Checkbox |
+| `CuCollapse.umd.js` | `<cu-collapse>` | Colapsable |
 | `CuColor-picker.umd.js` | `<cu-color-picker>` | Selector de color |
 | `CuDropdown-menu.umd.js` | `<cu-dropdown-menu>` | Menú desplegable |
 | `CuFile-input.umd.js` | `<cu-file-input>` | Input de archivo compacto |
@@ -182,17 +184,17 @@ Cada componente que usa color acepta dos props clave:
 
 Refleja los validadores reales de cada `.ce.vue`. `—` significa que la variante no es aceptada por ese componente.
 
-| Variante | Button | Alert | Badge | Input | FileInput | FileInputZone | Checkbox | Textarea | Pagination | Table | DropdownMenu | Autocomplete | Select | Modal | ColorPicker | FloatingButton | Label | Switch |
-|----------|--------|-------|-------|-------|-----------|---------------|----------|----------|------------|-------|--------------|--------------|--------|-------|-------------|----------------|-------|--------|
-| `solid` | ✓ | ✓ | ✓ | — | — | — | — | — | — | ✓ | ✓ | — | — | — | — | — | — | — |
-| `outlined` | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — | — | — |
-| `soft` | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — | — | — |
-| `ghost` | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — | — | — |
-| `subtle` | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — | — | — |
-| `link` | ✓ | — | — | — | — | — | — | — | — | — | ✓ | — | — | — | — | — | — | — |
-| `none` | ✓ | — | — | — | — | — | — | — | ✓ | — | ✓ | — | — | — | — | — | — | — |
+| Variante | Button | Alert | Badge | Input | FileInput | FileInputZone | Checkbox | Textarea | Pagination | Table | DropdownMenu | Autocomplete | Select | Modal | ColorPicker | Collapse | FloatingButton | Label | Switch |
+|----------|--------|-------|-------|-------|-----------|---------------|----------|----------|------------|-------|--------------|--------------|--------|-------|-------------|----------|----------------|-------|--------|
+| `solid` | ✓ | ✓ | ✓ | — | — | — | — | — | — | ✓ | ✓ | — | — | — | — | — | — | — | — |
+| `outlined` | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — | — | — | — |
+| `soft` | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — | — | — | — |
+| `ghost` | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — | — | — | — |
+| `subtle` | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — | — | — | — |
+| `link` | ✓ | — | — | — | — | — | — | — | — | — | ✓ | — | — | — | — | — | — | — | — |
+| `none` | ✓ | — | — | — | — | — | — | — | ✓ | — | ✓ | — | — | — | — | — | — | — | — |
 
-> Checkbox, FileInputZone, Modal, ColorPicker, FloatingButton, Label y Switch **no tienen prop `variant`**. Badge acepta `ghost`; Alert acepta `ghost` pero no `none`. Input, Textarea, Autocomplete, Select y FileInput aceptan solo `outlined`/`soft`/`ghost`/`subtle`. Table acepta `solid`/`outlined`/`soft`/`ghost`/`subtle`. Pagination acepta además `none`. `<cu-tabs>` usa su propio set de variantes: `tabs`, `pills`, `boxed`, `soft`.
+> Checkbox, FileInputZone, Modal, ColorPicker, Collapse, FloatingButton, Label y Switch **no tienen prop `variant`**. Badge acepta `ghost`; Alert acepta `ghost` pero no `none`. Input, Textarea, Autocomplete, Select y FileInput aceptan solo `outlined`/`soft`/`ghost`/`subtle`. Table acepta `solid`/`outlined`/`soft`/`ghost`/`subtle`. Pagination acepta además `none`. `<cu-tabs>` usa su propio set de variantes: `tabs`, `pills`, `boxed`, `soft`.
 
 **Default de `variant` por componente:**
 
@@ -202,7 +204,9 @@ Refleja los validadores reales de cada `.ce.vue`. `—` significa que la variant
 | `<cu-autocomplete>` | `soft` |
 | `<cu-badge>` | `soft` |
 | `<cu-button>` | `ghost` |
+| `<cu-card>` | `ghost` |
 | `<cu-checkbox>` | — (sin variant) |
+| `<cu-collapse>` | — (sin variant) |
 | `<cu-color-picker>` | — (sin variant) |
 | `<cu-dropdown-menu>` | `ghost` |
 | `<cu-file-input>` | `outlined` |
@@ -312,6 +316,7 @@ Cada archivo UMD incluye el runtime de Vue 3 (no externalizado):
 | CuSwitch | ~194 kB | ~48 kB |
 | CuLabel | ~189 kB | ~46 kB |
 | CuModal | ~210 kB | ~51 kB |
+| CuCollapse | ~217 kB | ~52 kB |
 | CuPagination | ~215 kB | ~51 kB |
 | CuTable | ~293 kB | ~65 kB |
 | CuAutocomplete | ~219 kB | ~52 kB |
@@ -337,8 +342,10 @@ Cada archivo UMD incluye el runtime de Vue 3 (no externalizado):
 - [\<cu-autocomplete\>](componentes/cu-autocomplete.md) — Autocompletado con búsqueda
 - [\<cu-badge\>](componentes/cu-badge.md) — Badge
 - [\<cu-button\>](componentes/cu-button.md) — Botón
+- [\<cu-card\>](componentes/cu-card.md) — Tarjeta de información
 - [\<cu-checkbox\>](componentes/cu-checkbox.md) — Checkbox
 - [\<cu-color-picker\>](componentes/cu-color-picker.md) — Selector de color
+- [\<cu-collapse\>](componentes/cu-collapse.md) — Colapsable
 - [\<cu-dropdown-menu\>](componentes/cu-dropdown-menu.md) — Menú desplegable con items
 - [\<cu-file-input\>](componentes/cu-file-input.md) — Input de archivo compacto
 - [\<cu-file-input-zone\>](componentes/cu-file-input-zone.md) — Zona de drag & drop para archivos

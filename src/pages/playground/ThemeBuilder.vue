@@ -4,6 +4,7 @@ import PlaygroundLayout from '@/layouts/PlaygroundLayout.vue'
 import Button from '@/components/buttons/Button.vue'
 import Alert from '@/components/information/Alert.vue'
 import Badge from '@/components/information/Badge.vue'
+import Card from '@/components/information/Card.vue'
 import Input from '@/components/form/Input.vue'
 import Switch from '@/components/form/Switch.vue'
 import Checkbox from '@/components/form/Checkbox.vue'
@@ -18,6 +19,7 @@ import ThemeManagerModal from '@/components/theme/ThemeManagerModal.vue'
 import Table from '@/components/data/Table.vue'
 import Pagination from '@/components/Pagination.vue'
 import Tabs from '@/components/Tabs.vue'
+import Collapse from '@/components/overlay/Collapse.vue'
 
 const STORAGE_KEY = 'cu-theme-builder'
 
@@ -545,6 +547,24 @@ onBeforeUnmount(() => {
         </div>
 
         <div class="tb-preview-section">
+          <h3>Cards</h3>
+          <div class="tb-preview-row">
+            <Card title="Tarjeta" subtitle="Subtítulo descriptivo" variant="ghost">
+              Contenido de la tarjeta para mostrar información agrupada.
+            </Card>
+            <Card title="Solid" variant="solid" color="primary">
+              Variante solid con el color activo del tema.
+            </Card>
+            <Card title="Soft" variant="soft" color="primary">
+              Variante soft con el color activo del tema.
+            </Card>
+            <Card title="Outlined" variant="outlined" color="primary">
+              Variante outlined con el color activo del tema.
+            </Card>
+          </div>
+        </div>
+
+        <div class="tb-preview-section">
           <h3>Tabs</h3>
           <div class="tb-preview-col">
             <Tabs variant="tabs" :tabs="[
@@ -556,6 +576,28 @@ onBeforeUnmount(() => {
               <template #advanced>Contenido Advanced</template>
               <template #locked>Contenido Locked</template>
             </Tabs>
+          </div>
+        </div>
+
+        <div class="tb-preview-section">
+          <h3>Collapse</h3>
+          <div class="tb-preview-row-group">
+            <div class="tb-preview-col">
+              <Collapse label="Más información" color="primary">
+                <p>Contenido colapsable con el color primario del tema activo.</p>
+              </Collapse>
+              <Collapse label="Opciones avanzadas" :default-open="true">
+                <p>Este collapse arranca abierto usando <code>default-open</code>.</p>
+              </Collapse>
+            </div>
+            <div class="tb-preview-col">
+              <Collapse label="Detalles" color="success">
+                <p>Los colores del trigger siguen los tokens del tema editado.</p>
+              </Collapse>
+              <Collapse label="Ayuda" color="warning">
+                <p>Probá cambiar colores en el panel y ver cómo se actualiza.</p>
+              </Collapse>
+            </div>
           </div>
         </div>
 
@@ -767,6 +809,10 @@ onBeforeUnmount(() => {
   flex-wrap: wrap;
   gap: 0.5rem;
   align-items: center;
+}
+
+.tb-preview-row :deep(.cu-card) {
+  flex: 1 1 200px;
 }
 
 .tb-preview-col {
