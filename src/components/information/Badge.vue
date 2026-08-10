@@ -57,26 +57,26 @@ const badgeStyles = computed(() => ({
 }
 
 /* soft */
-.cu-badge--soft {
+.cu-badge.cu-badge--soft {
   background-color: var(--badge-soft);
   color: var(--badge-text);
 }
 
 /* ghost */
-.cu-badge--ghost {
+.cu-badge.cu-badge--ghost {
   background-color: transparent;
   color: var(--badge-text);
 }
 
 /* subtle */
-.cu-badge--subtle {
+.cu-badge.cu-badge--subtle {
   background-color: var(--badge-subtle);
   color: var(--badge-text);
   border-color: var(--badge-subtle-border);
 }
 
 /* outlined */
-.cu-badge--outlined {
+.cu-badge.cu-badge--outlined {
   background-color: transparent;
   color: var(--badge-text);
   border-color: var(--badge-bg);

@@ -160,40 +160,40 @@ function endDrag() {
 }
 
 /* outlined */
-.cu-month-slider-label--outlined {
+.cu-month-slider-label.cu-month-slider-label--outlined {
   background-color: transparent;
   color: var(--ms-accent);
   border: var(--cu-border-thin) solid var(--ms-accent);
 }
-.cu-month-slider-label--outlined:hover {
+.cu-month-slider-label.cu-month-slider-label--outlined:hover {
   background-color: var(--ms-ghost-hover);
 }
 
 /* soft (default) */
-.cu-month-slider-label--soft {
+.cu-month-slider-label.cu-month-slider-label--soft {
   background-color: var(--ms-soft);
   color: var(--ms-accent);
 }
-.cu-month-slider-label--soft:hover {
+.cu-month-slider-label.cu-month-slider-label--soft:hover {
   background-color: var(--ms-soft-hover);
 }
 
 /* ghost */
-.cu-month-slider-label--ghost {
+.cu-month-slider-label.cu-month-slider-label--ghost {
   background-color: transparent;
   color: var(--ms-accent);
 }
-.cu-month-slider-label--ghost:hover {
+.cu-month-slider-label.cu-month-slider-label--ghost:hover {
   background-color: var(--ms-ghost-hover);
 }
 
 /* subtle */
-.cu-month-slider-label--subtle {
+.cu-month-slider-label.cu-month-slider-label--subtle {
   background-color: var(--ms-subtle);
   color: var(--ms-accent);
   border: var(--cu-border-thin) solid var(--ms-subtle-border);
 }
-.cu-month-slider-label--subtle:hover {
+.cu-month-slider-label.cu-month-slider-label--subtle:hover {
   background-color: var(--ms-subtle-hover);
 }
 

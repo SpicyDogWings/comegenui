@@ -118,7 +118,7 @@ defineExpose({
 }
 
 /* solid */
-.cu-alert--solid {
+.cu-alert.cu-alert--solid {
   background-color: var(--alert-bg);
   color: var(--cu-color-surface);
 }
@@ -127,26 +127,26 @@ defineExpose({
 }
 
 /* ghost */
-.cu-alert--ghost {
+.cu-alert.cu-alert--ghost {
   background-color: transparent;
   color: var(--alert-text);
 }
 
 /* soft */
-.cu-alert--soft {
+.cu-alert.cu-alert--soft {
   background-color: var(--alert-soft);
   color: var(--alert-text);
 }
 
 /* subtle */
-.cu-alert--subtle {
+.cu-alert.cu-alert--subtle {
   background-color: var(--alert-subtle);
   color: var(--alert-text);
   border: var(--cu-border-thin) solid var(--alert-subtle-border);
 }
 
 /* outlined */
-.cu-alert--outlined {
+.cu-alert.cu-alert--outlined {
   background-color: transparent;
   color: var(--alert-text);
   border: var(--cu-border-thin) solid var(--alert-bg);
