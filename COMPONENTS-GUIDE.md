@@ -798,7 +798,7 @@ Control programático:
 
 ### `<cu-year-slider>`
 
-Selector de año con navegación por botones. Muestra el año actual y permite moverse de 1 en 1 con `<` / `>`. No usa `<<` / `>>` porque los años van de uno en uno. Soporta límites mínimos/máximos y las mismas variantes de color que el resto de la librería.
+Selector de año con navegación por botones y arrastre. Muestra el año actual y permite moverse de 1 en 1 con `<` / `>` (no usa `<<` / `>>` porque los años van de uno en uno). El label también responde al arrastre: deslizá a la izquierda para el año siguiente y a la derecha para el anterior (un gesto = un año). Soporta límites mínimos/máximos y las mismas variantes de color que el resto de la librería.
 
 #### Props
 

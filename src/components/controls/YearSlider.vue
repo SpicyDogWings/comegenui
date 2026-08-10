@@ -152,10 +152,10 @@ const colorStyles = computed(() => ({
 
     <MonthSliderLabel
       :label="String(year)"
-      :draggable="false"
       :disabled="props.disabled"
       :color="props.color"
       :variant="props.variant"
+      @navigate="(dir) => setYear(year + dir)"
     />
 
     <Button

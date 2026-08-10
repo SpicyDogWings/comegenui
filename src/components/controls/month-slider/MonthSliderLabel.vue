@@ -207,6 +207,14 @@ function endDrag() {
   background-color: var(--ms-subtle-hover);
 }
 
+/* El texto del mes lleva color explícito (inherit del root) con especificidad
+   suficiente para ganarle a reglas globales del consumidor tipo
+   `.playground :is(h1, ..., span, ...) { color: ... }` que pegan en spans internos.
+   La clase scoped [data-v] sube la regla a (0,3,0). */
+.cu-month-slider-label .cu-month-slider-label-month {
+  color: inherit;
+}
+
 .cu-month-slider-label.is-draggable {
   cursor: grab;
 }

@@ -1,6 +1,6 @@
 # `<cu-year-slider>`
 
-Selector de año con navegación por botones. Muestra el año actual y permite moverse de 1 en 1 con `<` / `>`. No usa `<<` / `>>` porque los años van de uno en uno. Soporta límites mínimos/máximos y las mismas variantes de color que el resto de la librería.
+Selector de año con navegación por botones y arrastre. Muestra el año actual y permite moverse de 1 en 1 con `<` / `>` (no usa `<<` / `>>` porque los años van de uno en uno). El label también responde al **arrastre**: deslizá hacia la izquierda para pasar al año siguiente y hacia la derecha para volver al anterior (un gesto = un año). Soporta límites mínimos/máximos y las mismas variantes de color que el resto de la librería.
 
 [← Volver](../SKILL.md)
 
@@ -71,3 +71,7 @@ Selector de año con navegación por botones. Muestra el año actual y permite m
   console.log(anio.getValue());
 </script>
 ```
+
+## Drag del label
+
+El label responde a Pointer Events (mouse y touch): arrastrá hacia la **izquierda** para pasar al año siguiente y hacia la **derecha** para volver al anterior. Hay que arrastrar **bastante** (umbral fijo, ~96 px, igual que el month-slider) para que cambie, y **un gesto = un año**. También se puede navegar con las flechas `←` / `→` cuando el label tiene foco.
