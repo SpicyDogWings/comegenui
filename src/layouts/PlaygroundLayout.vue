@@ -37,6 +37,7 @@ const navItems = [
           { label: 'Autocomplete', path: '/playground/components/autocomplete' },
           { label: 'FileInput', path: '/playground/components/file-input' },
           { label: 'FileInputZone', path: '/playground/components/file-input-zone' },
+          { label: 'MonthSlider', path: '/playground/components/month-slider' },
         ]
       },
       {

@@ -20,6 +20,7 @@ import Table from '@/components/data/Table.vue'
 import Pagination from '@/components/Pagination.vue'
 import Tabs from '@/components/Tabs.vue'
 import Collapse from '@/components/overlay/Collapse.vue'
+import MonthSlider from '@/components/form/MonthSlider.vue'
 
 const STORAGE_KEY = 'cu-theme-builder'
 
@@ -598,6 +599,15 @@ onBeforeUnmount(() => {
                 <p>Probá cambiar colores en el panel y ver cómo se actualiza.</p>
               </Collapse>
             </div>
+          </div>
+        </div>
+
+        <div class="tb-preview-section">
+          <h3>MonthSlider</h3>
+          <div class="tb-preview-col">
+            <MonthSlider />
+            <MonthSlider month-format="MMM yyyy" color="success" />
+            <MonthSlider :year-navigation="false" color="warning" />
           </div>
         </div>
 

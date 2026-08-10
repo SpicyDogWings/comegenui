@@ -68,6 +68,7 @@ Cada `<script>` registra automáticamente su Custom Element. Los componentes est
 | `CuInput.umd.js` | `<cu-input>` | Input de texto |
 | `CuLabel.umd.js` | `<cu-label>` | Label |
 | `CuModal.umd.js` | `<cu-modal>` | Modal |
+| `CuMonth-slider.umd.js` | `<cu-month-slider>` | Slider de meses con arrastre |
 | `CuPagination.umd.js` | `<cu-pagination>` | Paginación |
 | `CuSelect.umd.js` | `<cu-select>` | Selector |
 | `CuSwitch.umd.js` | `<cu-switch>` | Switch/Toggle |
@@ -215,6 +216,7 @@ Refleja los validadores reales de cada `.ce.vue`. `—` significa que la variant
 | `<cu-input>` | `soft` |
 | `<cu-label>` | — (sin variant) |
 | `<cu-modal>` | — (sin variant) |
+| `<cu-month-slider>` | — (sin variant) |
 | `<cu-pagination>` | `soft` |
 | `<cu-select>` | `soft` |
 | `<cu-switch>` | — (sin variant) |
@@ -317,6 +319,7 @@ Cada archivo UMD incluye el runtime de Vue 3 (no externalizado):
 | CuLabel | ~189 kB | ~46 kB |
 | CuModal | ~210 kB | ~51 kB |
 | CuCollapse | ~217 kB | ~52 kB |
+| CuMonth-slider | ~208 kB | ~49 kB |
 | CuPagination | ~215 kB | ~51 kB |
 | CuTable | ~293 kB | ~65 kB |
 | CuAutocomplete | ~219 kB | ~52 kB |
@@ -353,6 +356,7 @@ Cada archivo UMD incluye el runtime de Vue 3 (no externalizado):
 - [\<cu-input\>](componentes/cu-input.md) — Input de texto
 - [\<cu-label\>](componentes/cu-label.md) — Label
 - [\<cu-modal\>](componentes/cu-modal.md) — Modal
+- [\<cu-month-slider\>](componentes/cu-month-slider.md) — Slider de meses con arrastre
 - [\<cu-pagination\>](componentes/cu-pagination.md) — Paginación
 - [\<cu-select\>](componentes/cu-select.md) — Selector
 - [\<cu-switch\>](componentes/cu-switch.md) — Switch/Toggle
