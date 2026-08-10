@@ -171,15 +171,15 @@ const hasMedia = computed(() => slotHasContent('media'));
 - **Todos los componentes `.vue` deben usar `<style scoped>`.** Nunca `<style>` global, para no filtrar reglas hacia afuera ni pisar estilos del consumidor.
 - Los `.ce.vue` son la excepción: usan `<style>` no-scoped, pero solo para `@unocss-placeholder` y reglas de `:host` (ver [`arquitectura.md`](arquitectura.md)).
 
-### Especificidad en títulos con variante `solid`
+### Especificidad en variantes con color propio
 
-Los componentes con título sobre fondo sólido (variante `solid`) **deben agregar especificidad** al color del título. Reglas globales del consumidor tipo `h1, h2, h3 { color: black }` (muy comunes en apps/playgrounds) tienen menor especificidad que una clase scoped, pero pueden pisar el `color: inherit` del título y romper el color `surface` sobre fondo solid.
+Todas las reglas de variante que definen `color`/`background-color` propios **deben usar doble clase** (`.cu-alert.cu-alert--solid`, `.cu-button.cu-button--ghost`, ...) para ganarle en cascada a reglas globales del consumidor (reset CSS, `button { color }`, `.card span { color }`, etc.). Una clase scoped simple (`(0,1,0)`) pierde contra reglas globales de tipo `.container span { color }` (`(0,1,1)`).
 
-**Patrón:** doble clase + clase interna, para ganar en cascada:
+**Patrón:** doble clase en la base + doble clase + clase interna en el título:
 
 ```css
 /* Alert.vue */
-.cu-alert--solid {
+.cu-alert.cu-alert--solid {
   background-color: var(--alert-bg);
   color: var(--cu-color-surface);
 }
@@ -190,7 +190,7 @@ Los componentes con título sobre fondo sólido (variante `solid`) **deben agreg
 
 ```css
 /* Card.vue */
-.cu-card--solid {
+.cu-card.cu-card--solid {
   background-color: var(--card-bg);
   color: var(--cu-color-surface);
 }
@@ -199,9 +199,9 @@ Los componentes con título sobre fondo sólido (variante `solid`) **deben agreg
 }
 ```
 
-La clase duplicada (`.cu-alert.cu-alert--solid` / `.cu-card.cu-card--solid`) sube la especificidad a `(0,3,0)`, suficiente para ganarle a reglas globales de elementos.
+La clase duplicada sube la especificidad a `(0,2,0)` (y `(0,3,0)` con el título), suficiente para ganarle a reglas globales de elementos.
 
-Aplica a **todo componente** con variante `solid` y título sobre el color solid: el título debe quedar `var(--cu-color-surface)`, nunca heredar un color global del consumidor.
+Aplica a **todo componente** con variantes de color (`solid`, `ghost`, `soft`, `subtle`, `outlined`, ...): las reglas de variante van con doble clase, y en `solid` el texto debe quedar `var(--cu-color-surface)`, nunca heredar un color global del consumidor.
 
 ## Imports
 

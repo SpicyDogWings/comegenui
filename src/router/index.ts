@@ -92,6 +92,16 @@ const router = createRouter({
               component: () => import("@/pages/playground/components/FileInputZone.vue")
             },
             {
+              path: "month-slider",
+              name: "MonthSlider playground",
+              component: () => import("@/pages/playground/components/MonthSlider.vue")
+            },
+            {
+              path: "year-slider",
+              name: "YearSlider playground",
+              component: () => import("@/pages/playground/components/YearSlider.vue")
+            },
+            {
               path: "dropdown",
               name: "Dropdown playground",
               component: () => import("@/pages/playground/components/Dropdown.vue")

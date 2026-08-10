@@ -104,7 +104,7 @@ const hasFooter = computed(() => slotHasContent('footer'));
 }
 
 /* ghost */
-.cu-card--ghost {
+.cu-card.cu-card--ghost {
   background-color: var(--cu-color-surface);
   color: var(--cu-color-neutral);
   border-color: var(--cu-border-color);
@@ -112,7 +112,7 @@ const hasFooter = computed(() => slotHasContent('footer'));
 }
 
 /* solid */
-.cu-card--solid {
+.cu-card.cu-card--solid {
   background-color: var(--card-bg);
   color: var(--cu-color-surface);
 }
@@ -121,20 +121,20 @@ const hasFooter = computed(() => slotHasContent('footer'));
 }
 
 /* soft */
-.cu-card--soft {
+.cu-card.cu-card--soft {
   background-color: var(--card-soft);
   color: var(--card-text);
 }
 
 /* subtle */
-.cu-card--subtle {
+.cu-card.cu-card--subtle {
   background-color: var(--card-subtle);
   color: var(--card-text);
   border-color: var(--card-subtle-border);
 }
 
 /* outlined */
-.cu-card--outlined {
+.cu-card.cu-card--outlined {
   background-color: transparent;
   color: var(--card-text);
   border-color: var(--card-bg);

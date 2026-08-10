@@ -22,6 +22,8 @@ Librería de componentes UI como Custom Elements nativos, construidos con Vue 3 
   - [`<cu-label>`](#cu-label)
   - [`<cu-modal>`](#cu-modal)
   - [`<cu-collapse>`](#cu-collapse)
+  - [`<cu-month-slider>`](#cu-month-slider)
+  - [`<cu-year-slider>`](#cu-year-slider)
   - [`<cu-pagination>`](#cu-pagination)
   - [`<cu-table>`](#cu-table)
   - [`<cu-dropdown-menu>`](#cu-dropdown-menu)
@@ -47,6 +49,8 @@ Cada componente es un archivo **UMD** independiente. Incluye solo los que necesi
 <script src="ruta/CuLabel.umd.js"></script>
 <script src="ruta/CuModal.umd.js"></script>
 <script src="ruta/CuCollapse.umd.js"></script>
+<script src="ruta/CuMonth-slider.umd.js"></script>
+<script src="ruta/CuYear-slider.umd.js"></script>
 <script src="ruta/CuPagination.umd.js"></script>
 <script src="ruta/CuTable.umd.js"></script>
 <script src="ruta/CuDropdownMenu.umd.js"></script>
@@ -70,6 +74,8 @@ Cada script registra automáticamente su Custom Element. No necesitas instalar V
 | `CuLabel.umd.js` | `<cu-label>` | Label |
 | `CuModal.umd.js` | `<cu-modal>` | Modal |
 | `CuCollapse.umd.js` | `<cu-collapse>` | Colapsable |
+| `CuMonth-slider.umd.js` | `<cu-month-slider>` | Slider de meses con arrastre |
+| `CuYear-slider.umd.js` | `<cu-year-slider>` | Slider de años (1 en 1) |
 | `CuPagination.umd.js` | `<cu-pagination>` | Paginación |
 | `CuTable.umd.js` | `<cu-table>` | Tabla avanzada |
 | `CuDropdownMenu.umd.js` | `<cu-dropdown-menu>` | Menú desplegable |
@@ -721,6 +727,135 @@ Control programático y eventos:
 
 ---
 
+### `<cu-month-slider>`
+
+Selector de mes con navegación por botones y arrastre. Muestra el mes actual (con el año al lado si no es el año en curso) y permite moverse mes a mes (`<` / `>`) o año a año (`<<` / `>>`, activable por prop). También se puede cambiar de mes arrastrando el label hacia la izquierda (mes siguiente) o derecha (mes anterior).
+
+#### Props
+
+| Prop | Tipo | Default | Descripción |
+|------|------|---------|-------------|
+| `model-value` | `string \| number \| Date` | mes actual | Mes seleccionado (soporta `v-model`). Acepta `Date`, timestamp o string ISO (`"2026-03-01"`) |
+| `month-format` | `string` | `"MMMM"` | Formato del label del mes (`MMMM`, `MMM`, `MM`, `M`, `yyyy`, `yy`) |
+| `year-format` | `string` | `"yyyy"` | Formato del año mostrado al lado cuando no es el año actual |
+| `locale` | `string` | `"es"` | Locale usado por `Intl` para los nombres de mes |
+| `year-navigation` | `boolean` | `true` | Muestra/oculta los botones `<<` / `>>` de navegación anual (`year-navigation="false"` la desactiva) |
+| `variant` | `string` | `"soft"` | Variante del label: `solid`, `outlined`, `soft`, `ghost`, `subtle` |
+| `min` | `string \| number \| Date` | — | Fecha mínima navegable (botones deshabilitados en el borde, drag recortado) |
+| `max` | `string \| number \| Date` | — | Fecha máxima navegable |
+| `color` | `string` | `"primary"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
+| `disabled` | `boolean` | `false` | Deshabilita la navegación y el arrastre |
+
+> No expone prop `theme`.
+
+**Año automático:** si `month-format` no incluye un token de año y el mes seleccionado no es del año en curso, el año se agrega al lado (ej.: `"agosto"` → `"agosto 2025"`).
+
+#### Eventos
+
+| Evento | Payload | Descripción |
+|--------|---------|-------------|
+| `change` | `Date` | Cambio de mes (botones, teclado o arrastre) |
+| `update:modelValue` | `Date` | Nuevo mes (para `v-model` en Vue) |
+
+#### Métodos expuestos
+
+| Método | Descripción |
+|--------|-------------|
+| `.nextMonth()` / `.prevMonth()` | Avanza / retrocede un mes |
+| `.nextYear()` / `.prevYear()` | Avanza / retrocede un año |
+| `.goToMonth(value)` | Va a un mes puntual (`string \| number \| Date`) |
+| `.getValue()` | Devuelve el mes actual como `Date` |
+| `.setValue(value)` | Setea el mes actual |
+
+#### Uso
+
+```html
+<script src="ruta/CuMonth-slider.umd.js"></script>
+
+<cu-month-slider></cu-month-slider>
+
+<cu-month-slider model-value="2025-03-01"></cu-month-slider>
+
+<cu-month-slider month-format="MMM yyyy" year-navigation="false" color="success" variant="outlined"></cu-month-slider>
+
+<cu-month-slider min="2026-01-01" max="2026-12-01"></cu-month-slider>
+```
+
+Control programático:
+
+```html
+<cu-month-slider id="mes"></cu-month-slider>
+
+<script>
+  const mes = document.getElementById('mes');
+  mes.addEventListener('change', (e) => console.log('nuevo mes:', e.detail));
+  mes.nextMonth();
+  mes.goToMonth('2030-06-01');
+</script>
+```
+
+---
+
+### `<cu-year-slider>`
+
+Selector de año con navegación por botones y arrastre. Muestra el año actual y permite moverse de 1 en 1 con `<` / `>` (no usa `<<` / `>>` porque los años van de uno en uno). El label también responde al arrastre: deslizá a la izquierda para el año siguiente y a la derecha para el anterior (un gesto = un año). Soporta límites mínimos/máximos y las mismas variantes de color que el resto de la librería.
+
+#### Props
+
+| Prop | Tipo | Default | Descripción |
+|------|------|---------|-------------|
+| `model-value` | `number` | año actual | Año seleccionado (soporta `v-model`) |
+| `variant` | `string` | `"soft"` | Variante del label: `solid`, `outlined`, `soft`, `ghost`, `subtle` |
+| `min` | `number` | — | Año mínimo navegable (el botón `<` se deshabilita en el borde) |
+| `max` | `number` | — | Año máximo navegable (el botón `>` se deshabilita en el borde) |
+| `color` | `string` | `"primary"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
+| `disabled` | `boolean` | `false` | Deshabilita la navegación |
+
+> No expone prop `theme`.
+
+#### Eventos
+
+| Evento | Payload | Descripción |
+|--------|---------|-------------|
+| `change` | `number` | Cambio de año (botones o programático) |
+| `update:modelValue` | `number` | Nuevo año (para `v-model` en Vue) |
+
+#### Métodos expuestos
+
+| Método | Descripción |
+|--------|-------------|
+| `.nextYear()` / `.prevYear()` | Avanza / retrocede un año |
+| `.goToYear(value)` | Va a un año puntual (`number`), recortado por `min`/`max` |
+| `.getValue()` | Devuelve el año actual como `number` |
+| `.setValue(value)` | Setea el año actual |
+
+#### Uso
+
+```html
+<script src="ruta/CuYear-slider.umd.js"></script>
+
+<cu-year-slider></cu-year-slider>
+
+<cu-year-slider model-value="2025" min="2020" max="2030"></cu-year-slider>
+
+<cu-year-slider variant="outlined" color="success"></cu-year-slider>
+```
+
+Control programático:
+
+```html
+<cu-year-slider id="anio"></cu-year-slider>
+
+<script>
+  const anio = document.getElementById('anio');
+  anio.addEventListener('change', (e) => console.log('nuevo año:', e.detail));
+  anio.nextYear();
+  anio.goToYear(2030);
+</script>
+```
+
+---
+
 ### `<cu-pagination>`
 
 Paginación para tablas o listas.
@@ -1100,6 +1235,8 @@ Cada archivo UMD incluye el runtime de Vue 3 (no externalizado):
 | CuLabel | ~167 kB | ~40 kB |
 | CuModal | ~204 kB | ~50 kB |
 | CuCollapse | ~217 kB | ~52 kB |
+| CuMonth-slider | ~208 kB | ~49 kB |
+| CuYear-slider | ~208 kB | ~49 kB |
 | CuPagination | ~197 kB | ~48 kB |
 | CuTable | ~256 kB | ~57 kB |
 | CuDropdownMenu | ~204 kB | ~49 kB |

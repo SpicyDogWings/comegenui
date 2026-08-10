@@ -42,6 +42,8 @@ Si vas a modificar o agregar componentes a la librería:
 | `<cu-input>` | [Ver docs](comegen-ui/componentes/cu-input.md) |
 | `<cu-label>` | [Ver docs](comegen-ui/componentes/cu-label.md) |
 | `<cu-modal>` | [Ver docs](comegen-ui/componentes/cu-modal.md) |
+| `<cu-month-slider>` | [Ver docs](comegen-ui/componentes/cu-month-slider.md) |
+| `<cu-year-slider>` | [Ver docs](comegen-ui/componentes/cu-year-slider.md) |
 | `<cu-pagination>` | [Ver docs](comegen-ui/componentes/cu-pagination.md) |
 | `<cu-select>` | [Ver docs](comegen-ui/componentes/cu-select.md) |
 | `<cu-switch>` | [Ver docs](comegen-ui/componentes/cu-switch.md) |

@@ -1,5 +1,5 @@
 import { ref, type App } from 'vue'
-import { DEFAULTS, DEFAULT_COLORS, extractColors, extractShared } from './defaults'
+import { DEFAULTS, DEFAULT_COLORS, DEFAULT_DARK_COLORS, extractColors, extractShared } from './defaults'
 import { generateThemesCSS, inject } from './css'
 
 const theme = ref('light')

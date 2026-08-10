@@ -40,6 +40,13 @@ const navItems = [
         ]
       },
       {
+        label: 'controls',
+        children: [
+          { label: 'MonthSlider', path: '/playground/components/month-slider' },
+          { label: 'YearSlider', path: '/playground/components/year-slider' },
+        ]
+      },
+      {
         label: 'information',
         children: [
           { label: 'Alert', path: '/playground/components/alert' },
