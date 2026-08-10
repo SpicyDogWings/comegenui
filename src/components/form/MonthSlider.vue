@@ -42,16 +42,6 @@ const props = defineProps({
     type: [String, Number, Date] as PropType<string | number | Date | null>,
     default: null,
   },
-  // Sensibilidad del drag: píxeles necesarios para disparar un paso (menor = más sensible)
-  dragThreshold: {
-    type: Number,
-    default: 48,
-  },
-  // Meses que avanza cada deslizada completa (1 = uno por gesto)
-  dragSteps: {
-    type: Number,
-    default: 1,
-  },
   color: {
     type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     default: 'primary',
@@ -299,8 +289,6 @@ const colorStyles = computed(() => ({
       :disabled="props.disabled"
       :color="props.color"
       :variant="props.variant"
-      :threshold="props.dragThreshold"
-      :steps="props.dragSteps"
       @navigate="(dir) => setMonth(addMonths(month, dir))"
     />
 

@@ -38,14 +38,6 @@ const props = defineProps({
     type: [String, Number, Date] as PropType<string | number | Date | null>,
     default: null,
   },
-  dragThreshold: {
-    type: Number,
-    default: 48,
-  },
-  dragSteps: {
-    type: Number,
-    default: 1,
-  },
   color: {
     type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     default: 'primary',
@@ -93,8 +85,6 @@ defineExpose({ nextMonth, prevMonth, nextYear, prevYear, goToMonth, getValue, se
     :variant="props.variant"
     :min="props.min"
     :max="props.max"
-    :drag-threshold="props.dragThreshold"
-    :drag-steps="props.dragSteps"
     :color="props.color"
     :disabled="props.disabled"
     @change="ceEmit('change', $event)"

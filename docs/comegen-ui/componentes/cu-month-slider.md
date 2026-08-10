@@ -18,8 +18,6 @@ Selector de mes con navegación por botones y arrastre. Muestra el mes actual (c
 | `variant` | `string` | `"soft"` | Variante del label: `solid`, `outlined`, `soft`, `ghost`, `subtle` |
 | `min` | `string \| number \| Date` | — | Fecha mínima navegable (los botones se deshabilitan al llegar al borde y el drag se recorta) |
 | `max` | `string \| number \| Date` | — | Fecha máxima navegable |
-| `drag-threshold` | `number` | `48` | Píxeles de arrastre necesarios para disparar un paso (menor = más sensible) |
-| `drag-steps` | `number` | `1` | Meses que avanza cada deslizada completa. Con el default, **una deslizada = un mes**, sin importar la velocidad |
 | `color` | `string` | `"primary"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
 | `disabled` | `boolean` | `false` | Deshabilita la navegación y el arrastre |
 
@@ -87,13 +85,6 @@ Cualquier otro texto del formato se mantiene literal (`"MM/yyyy"` → `"08/2026"
 <cu-month-slider min="2026-01-01" max="2026-12-01"></cu-month-slider>
 ```
 
-### Drag más sensible (16 px por paso) o varios meses por gesto
-
-```html
-<cu-month-slider drag-threshold="16"></cu-month-slider>
-<cu-month-slider drag-steps="3"></cu-month-slider>
-```
-
 ### Control programático y eventos
 
 ```html
@@ -111,4 +102,4 @@ Cualquier otro texto del formato se mantiene literal (`"MM/yyyy"` → `"08/2026"
 
 ## Drag del label
 
-El label responde a Pointer Events (mouse y touch): arrastrá hacia la **izquierda** para pasar al mes siguiente y hacia la **derecha** para volver al anterior. Por defecto **un gesto = un paso**, aunque arrastres rápido o muy lejos; si querés varios meses por deslizada usá `drag-steps`. También se puede navegar con las flechas `←` / `→` cuando el label tiene foco.
+El label responde a Pointer Events (mouse y touch): arrastrá hacia la **izquierda** para pasar al mes siguiente y hacia la **derecha** para volver al anterior. Hay que arrastrar **bastante** (umbral fijo, ~96 px) para que cambie, así se evitan cambios accidentales, y **un gesto = un mes** sin importar la velocidad. También se puede navegar con las flechas `←` / `→` cuando el label tiene foco.

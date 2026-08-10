@@ -22,7 +22,6 @@ const outlineItems = [
   { label: 'Año distinto', id: 'other-year' },
   { label: 'Variantes', id: 'variants' },
   { label: 'Min / Max', id: 'min-max' },
-  { label: 'Sensibilidad', id: 'sensitivity' },
   { label: 'Programático', id: 'programmatic' },
   { label: 'Colores', id: 'colors' },
   { label: 'Disabled', id: 'disabled' },
@@ -114,23 +113,6 @@ const outlineItems = [
           <MonthSlider min="2026-01-01" max="2026-12-01" />
           <MonthSlider min="2024-06-01" max="2028-06-01" month-format="MMM yyyy" variant="outlined" />
           <MonthSlider min="2026-05-01" model-value="2025-01-01" />
-        </div>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <!-- Sensibilidad -->
-      <section id="sensitivity" class="playground-month-slider-section">
-        <h2>Sensibilidad del drag</h2>
-        <p class="playground-month-slider-desc">
-          Por defecto <strong>una deslizada = un mes</strong> (sin importar la velocidad). Con <code>drag-steps</code> podés
-          avanzar varios meses por gesto, y con <code>drag-threshold</code> ajustás los píxeles necesarios (menor = más sensible).
-        </p>
-        <div class="playground-month-slider-col">
-          <MonthSlider />
-          <MonthSlider :drag-steps="3" />
-          <MonthSlider :drag-threshold="16" />
-          <MonthSlider :drag-threshold="96" />
         </div>
       </section>
 

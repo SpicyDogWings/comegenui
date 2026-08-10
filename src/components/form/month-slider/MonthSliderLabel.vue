@@ -23,10 +23,11 @@ const props = defineProps({
     type: String as PropType<'solid' | 'outlined' | 'soft' | 'ghost' | 'subtle'>,
     default: 'soft',
   },
-  // Píxeles acumulados de arrastre necesarios para disparar un paso
+  // Píxeles acumulados de arrastre necesarios para disparar un paso.
+  // Fijo: hay que arrastrar bastante (96px) para evitar cambios accidentales.
   threshold: {
     type: Number,
-    default: 48,
+    default: 96,
   },
   // Meses que avanza cada deslizada completa (1 = uno por gesto)
   steps: {
@@ -49,13 +50,13 @@ const yearBadgeVariant = computed<'solid' | 'subtle'>(() =>
 const root = ref<HTMLElement | null>(null)
 const dragging = ref(false)
 const offsetX = ref(0)
+// Una vez que se supera el umbral, la deslizada queda "consumida":
+// un gesto = un paso, sin importar la velocidad ni la distancia.
+const fired = ref(false)
 
 let pointerId = 0
 let lastX = 0
 let accX = 0
-// Una vez que se supera el umbral, la deslizada queda "consumida":
-// un gesto = un paso, sin importar la velocidad ni la distancia.
-let fired = false
 
 function onPointerDown(event: PointerEvent) {
   if (props.disabled) return
@@ -63,12 +64,12 @@ function onPointerDown(event: PointerEvent) {
   pointerId = event.pointerId
   lastX = event.clientX
   accX = 0
-  fired = false
+  fired.value = false
   root.value?.setPointerCapture(pointerId)
 }
 
 function onPointerMove(event: PointerEvent) {
-  if (!dragging.value || event.pointerId !== pointerId || fired) return
+  if (!dragging.value || event.pointerId !== pointerId || fired.value) return
   const dx = event.clientX - lastX
   lastX = event.clientX
   accX += dx
@@ -77,7 +78,7 @@ function onPointerMove(event: PointerEvent) {
   if (Math.abs(accX) >= props.threshold) {
     // Arrastrar a la izquierda (accX negativo) = mes(es) siguiente(s)
     emit('navigate', (accX < 0 ? 1 : -1) * props.steps)
-    fired = true
+    fired.value = true
     offsetX.value = 0
   }
 }
@@ -85,7 +86,7 @@ function onPointerMove(event: PointerEvent) {
 function endDrag() {
   if (!dragging.value) return
   dragging.value = false
-  fired = false
+  fired.value = false
   accX = 0
   offsetX.value = 0
   try {
@@ -102,7 +103,7 @@ function endDrag() {
     class="cu-month-slider-label"
     :class="[
       `cu-month-slider-label--${props.variant}`,
-      { 'is-dragging': dragging, 'is-disabled': props.disabled },
+      { 'is-dragging': dragging, 'is-fired': fired, 'is-disabled': props.disabled },
     ]"
     :style="{ '--drag-offset': `${offsetX}px` }"
     role="button"
@@ -115,9 +116,10 @@ function endDrag() {
     @keydown.left.prevent="emit('navigate', -1 * props.steps)"
     @keydown.right.prevent="emit('navigate', props.steps)"
   >
-    <span class="cu-month-slider-label-month">{{ props.label }}</span>
+    <span :key="props.label" class="cu-month-slider-label-month">{{ props.label }}</span>
     <Badge
       v-if="props.year"
+      :key="props.year"
       class="cu-month-slider-label-year"
       :color="props.color"
       :variant="yearBadgeVariant"
@@ -144,7 +146,7 @@ function endDrag() {
   user-select: none;
   touch-action: pan-y;
   transform: translateX(var(--drag-offset, 0px));
-  transition: transform 0.2s ease, background-color 150ms ease, color 150ms ease;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.25s ease, color 0.25s ease;
   will-change: transform;
 }
 
@@ -200,6 +202,11 @@ function endDrag() {
   transition: none;
 }
 
+/* Al consumir la deslizada, el label vuelve con un rebote suave */
+.cu-month-slider-label.is-fired {
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 .cu-month-slider-label.is-disabled {
   cursor: not-allowed;
   opacity: 0.6;
@@ -208,5 +215,22 @@ function endDrag() {
 .cu-month-slider-label:focus-visible {
   outline: 2px solid var(--ms-accent);
   outline-offset: 2px;
+}
+
+/* Entrada suave del texto al cambiar el mes (key en el span lo re-monta) */
+.cu-month-slider-label-month,
+.cu-month-slider-label-year {
+  animation: cu-month-slide-in 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes cu-month-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>

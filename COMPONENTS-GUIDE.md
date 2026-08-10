@@ -740,8 +740,6 @@ Selector de mes con navegación por botones y arrastre. Muestra el mes actual (c
 | `variant` | `string` | `"soft"` | Variante del label: `solid`, `outlined`, `soft`, `ghost`, `subtle` |
 | `min` | `string \| number \| Date` | — | Fecha mínima navegable (botones deshabilitados en el borde, drag recortado) |
 | `max` | `string \| number \| Date` | — | Fecha máxima navegable |
-| `drag-threshold` | `number` | `48` | Píxeles de arrastre para disparar un paso (menor = más sensible) |
-| `drag-steps` | `number` | `1` | Meses por deslizada (default: una deslizada = un mes) |
 | `color` | `string` | `"primary"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
 | `disabled` | `boolean` | `false` | Deshabilita la navegación y el arrastre |
 
@@ -778,9 +776,6 @@ Selector de mes con navegación por botones y arrastre. Muestra el mes actual (c
 <cu-month-slider month-format="MMM yyyy" year-navigation="false" color="success" variant="outlined"></cu-month-slider>
 
 <cu-month-slider min="2026-01-01" max="2026-12-01"></cu-month-slider>
-
-<cu-month-slider drag-threshold="16"></cu-month-slider>
-<cu-month-slider drag-steps="3"></cu-month-slider>
 ```
 
 Control programático:
