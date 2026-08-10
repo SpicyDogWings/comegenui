@@ -20,7 +20,8 @@ import Table from '@/components/data/Table.vue'
 import Pagination from '@/components/Pagination.vue'
 import Tabs from '@/components/Tabs.vue'
 import Collapse from '@/components/overlay/Collapse.vue'
-import MonthSlider from '@/components/form/MonthSlider.vue'
+import MonthSlider from '@/components/controls/MonthSlider.vue'
+import YearSlider from '@/components/controls/YearSlider.vue'
 
 const STORAGE_KEY = 'cu-theme-builder'
 
@@ -608,6 +609,15 @@ onBeforeUnmount(() => {
             <MonthSlider />
             <MonthSlider month-format="MMM yyyy" color="success" />
             <MonthSlider :year-navigation="false" color="warning" />
+          </div>
+        </div>
+
+        <div class="tb-preview-section">
+          <h3>YearSlider</h3>
+          <div class="tb-preview-col">
+            <YearSlider />
+            <YearSlider variant="outlined" color="success" />
+            <YearSlider :min="2020" :max="2030" color="warning" />
           </div>
         </div>
 

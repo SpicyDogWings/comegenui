@@ -15,6 +15,11 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  // Permite usar el label sin drag (p.ej. en el YearSlider, que navega solo con botones)
+  draggable: {
+    type: Boolean,
+    default: true,
+  },
   color: {
     type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     default: 'primary',
@@ -59,7 +64,7 @@ let lastX = 0
 let accX = 0
 
 function onPointerDown(event: PointerEvent) {
-  if (props.disabled) return
+  if (props.disabled || !props.draggable) return
   dragging.value = true
   pointerId = event.pointerId
   lastX = event.clientX
@@ -103,18 +108,23 @@ function endDrag() {
     class="cu-month-slider-label"
     :class="[
       `cu-month-slider-label--${props.variant}`,
-      { 'is-dragging': dragging, 'is-fired': fired, 'is-disabled': props.disabled },
+      {
+        'is-draggable': props.draggable,
+        'is-dragging': dragging,
+        'is-fired': fired,
+        'is-disabled': props.disabled,
+      },
     ]"
     :style="{ '--drag-offset': `${offsetX}px` }"
-    role="button"
-    tabindex="0"
+    :role="props.draggable ? 'button' : 'group'"
+    :tabindex="props.draggable ? 0 : -1"
     :aria-label="props.year ? `${props.label} ${props.year}` : props.label"
     @pointerdown="onPointerDown"
     @pointermove="onPointerMove"
     @pointerup="endDrag"
     @pointercancel="endDrag"
-    @keydown.left.prevent="emit('navigate', -1 * props.steps)"
-    @keydown.right.prevent="emit('navigate', props.steps)"
+    @keydown.left.prevent="props.draggable && emit('navigate', -1 * props.steps)"
+    @keydown.right.prevent="props.draggable && emit('navigate', props.steps)"
   >
     <span :key="props.label" class="cu-month-slider-label-month">{{ props.label }}</span>
     <Badge
@@ -142,7 +152,7 @@ function endDrag() {
   font-family: var(--cu-font-sans);
   font-size: var(--cu-font-size-md);
   font-weight: var(--cu-font-weight-semibold);
-  cursor: grab;
+  cursor: default;
   user-select: none;
   touch-action: pan-y;
   transform: translateX(var(--drag-offset, 0px));
@@ -195,6 +205,10 @@ function endDrag() {
 }
 .cu-month-slider-label.cu-month-slider-label--subtle:hover {
   background-color: var(--ms-subtle-hover);
+}
+
+.cu-month-slider-label.is-draggable {
+  cursor: grab;
 }
 
 .cu-month-slider-label.is-dragging {

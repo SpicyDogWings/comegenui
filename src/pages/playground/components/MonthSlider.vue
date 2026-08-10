@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
-import MonthSlider from "@/components/form/MonthSlider.vue";
+import MonthSlider from "@/components/controls/MonthSlider.vue";
 import Button from "@/components/buttons/Button.vue";
 import { ref } from "vue";
 

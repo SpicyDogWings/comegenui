@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, getCurrentInstance, type PropType } from 'vue'
-import MonthSlider from '../../form/MonthSlider.vue'
+import MonthSlider from '../../controls/MonthSlider.vue'
 import { initTokens } from '@/plugins/cu-tokens/css'
 
 initTokens()

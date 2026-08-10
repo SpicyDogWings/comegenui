@@ -23,6 +23,7 @@ Librería de componentes UI como Custom Elements nativos, construidos con Vue 3 
   - [`<cu-modal>`](#cu-modal)
   - [`<cu-collapse>`](#cu-collapse)
   - [`<cu-month-slider>`](#cu-month-slider)
+  - [`<cu-year-slider>`](#cu-year-slider)
   - [`<cu-pagination>`](#cu-pagination)
   - [`<cu-table>`](#cu-table)
   - [`<cu-dropdown-menu>`](#cu-dropdown-menu)
@@ -49,6 +50,7 @@ Cada componente es un archivo **UMD** independiente. Incluye solo los que necesi
 <script src="ruta/CuModal.umd.js"></script>
 <script src="ruta/CuCollapse.umd.js"></script>
 <script src="ruta/CuMonth-slider.umd.js"></script>
+<script src="ruta/CuYear-slider.umd.js"></script>
 <script src="ruta/CuPagination.umd.js"></script>
 <script src="ruta/CuTable.umd.js"></script>
 <script src="ruta/CuDropdownMenu.umd.js"></script>
@@ -73,6 +75,7 @@ Cada script registra automáticamente su Custom Element. No necesitas instalar V
 | `CuModal.umd.js` | `<cu-modal>` | Modal |
 | `CuCollapse.umd.js` | `<cu-collapse>` | Colapsable |
 | `CuMonth-slider.umd.js` | `<cu-month-slider>` | Slider de meses con arrastre |
+| `CuYear-slider.umd.js` | `<cu-year-slider>` | Slider de años (1 en 1) |
 | `CuPagination.umd.js` | `<cu-pagination>` | Paginación |
 | `CuTable.umd.js` | `<cu-table>` | Tabla avanzada |
 | `CuDropdownMenu.umd.js` | `<cu-dropdown-menu>` | Menú desplegable |
@@ -793,6 +796,66 @@ Control programático:
 
 ---
 
+### `<cu-year-slider>`
+
+Selector de año con navegación por botones. Muestra el año actual y permite moverse de 1 en 1 con `<` / `>`. No usa `<<` / `>>` porque los años van de uno en uno. Soporta límites mínimos/máximos y las mismas variantes de color que el resto de la librería.
+
+#### Props
+
+| Prop | Tipo | Default | Descripción |
+|------|------|---------|-------------|
+| `model-value` | `number` | año actual | Año seleccionado (soporta `v-model`) |
+| `variant` | `string` | `"soft"` | Variante del label: `solid`, `outlined`, `soft`, `ghost`, `subtle` |
+| `min` | `number` | — | Año mínimo navegable (el botón `<` se deshabilita en el borde) |
+| `max` | `number` | — | Año máximo navegable (el botón `>` se deshabilita en el borde) |
+| `color` | `string` | `"primary"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
+| `disabled` | `boolean` | `false` | Deshabilita la navegación |
+
+> No expone prop `theme`.
+
+#### Eventos
+
+| Evento | Payload | Descripción |
+|--------|---------|-------------|
+| `change` | `number` | Cambio de año (botones o programático) |
+| `update:modelValue` | `number` | Nuevo año (para `v-model` en Vue) |
+
+#### Métodos expuestos
+
+| Método | Descripción |
+|--------|-------------|
+| `.nextYear()` / `.prevYear()` | Avanza / retrocede un año |
+| `.goToYear(value)` | Va a un año puntual (`number`), recortado por `min`/`max` |
+| `.getValue()` | Devuelve el año actual como `number` |
+| `.setValue(value)` | Setea el año actual |
+
+#### Uso
+
+```html
+<script src="ruta/CuYear-slider.umd.js"></script>
+
+<cu-year-slider></cu-year-slider>
+
+<cu-year-slider model-value="2025" min="2020" max="2030"></cu-year-slider>
+
+<cu-year-slider variant="outlined" color="success"></cu-year-slider>
+```
+
+Control programático:
+
+```html
+<cu-year-slider id="anio"></cu-year-slider>
+
+<script>
+  const anio = document.getElementById('anio');
+  anio.addEventListener('change', (e) => console.log('nuevo año:', e.detail));
+  anio.nextYear();
+  anio.goToYear(2030);
+</script>
+```
+
+---
+
 ### `<cu-pagination>`
 
 Paginación para tablas o listas.
@@ -1173,6 +1236,7 @@ Cada archivo UMD incluye el runtime de Vue 3 (no externalizado):
 | CuModal | ~204 kB | ~50 kB |
 | CuCollapse | ~217 kB | ~52 kB |
 | CuMonth-slider | ~208 kB | ~49 kB |
+| CuYear-slider | ~208 kB | ~49 kB |
 | CuPagination | ~197 kB | ~48 kB |
 | CuTable | ~256 kB | ~57 kB |
 | CuDropdownMenu | ~204 kB | ~49 kB |

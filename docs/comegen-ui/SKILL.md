@@ -69,6 +69,7 @@ Cada `<script>` registra automáticamente su Custom Element. Los componentes est
 | `CuLabel.umd.js` | `<cu-label>` | Label |
 | `CuModal.umd.js` | `<cu-modal>` | Modal |
 | `CuMonth-slider.umd.js` | `<cu-month-slider>` | Slider de meses con arrastre |
+| `CuYear-slider.umd.js` | `<cu-year-slider>` | Slider de años (1 en 1) |
 | `CuPagination.umd.js` | `<cu-pagination>` | Paginación |
 | `CuSelect.umd.js` | `<cu-select>` | Selector |
 | `CuSwitch.umd.js` | `<cu-switch>` | Switch/Toggle |
@@ -185,17 +186,17 @@ Cada componente que usa color acepta dos props clave:
 
 Refleja los validadores reales de cada `.ce.vue`. `—` significa que la variante no es aceptada por ese componente.
 
-| Variante | Button | Alert | Badge | Input | FileInput | FileInputZone | Checkbox | Textarea | Pagination | Table | DropdownMenu | Autocomplete | Select | Modal | ColorPicker | Collapse | FloatingButton | Label | Switch | MonthSlider |
-|----------|--------|-------|-------|-------|-----------|---------------|----------|----------|------------|-------|--------------|--------------|--------|-------|-------------|----------|----------------|-------|--------|----------|
-| `solid` | ✓ | ✓ | ✓ | — | — | — | — | — | — | ✓ | ✓ | — | — | — | — | — | — | — | — | ✓ |
-| `outlined` | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — | — | — | — | ✓ |
-| `soft` | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — | — | — | — | ✓ |
-| `ghost` | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — | — | — | — | ✓ |
-| `subtle` | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — | — | — | — | ✓ |
-| `link` | ✓ | — | — | — | — | — | — | — | — | — | ✓ | — | — | — | — | — | — | — | — | — |
-| `none` | ✓ | — | — | — | — | — | — | — | ✓ | — | ✓ | — | — | — | — | — | — | — | — | — |
+| Variante | Button | Alert | Badge | Input | FileInput | FileInputZone | Checkbox | Textarea | Pagination | Table | DropdownMenu | Autocomplete | Select | Modal | ColorPicker | Collapse | FloatingButton | Label | Switch | MonthSlider | YearSlider |
+|----------|--------|-------|-------|-------|-----------|---------------|----------|----------|------------|-------|--------------|--------------|--------|-------|-------------|----------|----------------|-------|--------|----------|----------|
+| `solid` | ✓ | ✓ | ✓ | — | — | — | — | — | — | ✓ | ✓ | — | — | — | — | — | — | — | — | ✓ | ✓ |
+| `outlined` | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — | — | — | — | ✓ | ✓ |
+| `soft` | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — | — | — | — | ✓ | ✓ |
+| `ghost` | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — | — | — | — | ✓ | ✓ |
+| `subtle` | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — | — | — | — | ✓ | ✓ |
+| `link` | ✓ | — | — | — | — | — | — | — | — | — | ✓ | — | — | — | — | — | — | — | — | — | — |
+| `none` | ✓ | — | — | — | — | — | — | — | ✓ | — | ✓ | — | — | — | — | — | — | — | — | — | — |
 
-> Checkbox, FileInputZone, Modal, ColorPicker, Collapse, FloatingButton, Label y Switch **no tienen prop `variant`**. Badge acepta `ghost`; Alert acepta `ghost` pero no `none`. Input, Textarea, Autocomplete, Select y FileInput aceptan solo `outlined`/`soft`/`ghost`/`subtle`. Table y MonthSlider aceptan `solid`/`outlined`/`soft`/`ghost`/`subtle`. Pagination acepta además `none`. `<cu-tabs>` usa su propio set de variantes: `tabs`, `pills`, `boxed`, `soft`.
+> Checkbox, FileInputZone, Modal, ColorPicker, Collapse, FloatingButton, Label y Switch **no tienen prop `variant`**. Badge acepta `ghost`; Alert acepta `ghost` pero no `none`. Input, Textarea, Autocomplete, Select y FileInput aceptan solo `outlined`/`soft`/`ghost`/`subtle`. Table, MonthSlider y YearSlider aceptan `solid`/`outlined`/`soft`/`ghost`/`subtle`. Pagination acepta además `none`. `<cu-tabs>` usa su propio set de variantes: `tabs`, `pills`, `boxed`, `soft`.
 
 **Default de `variant` por componente:**
 
@@ -217,6 +218,7 @@ Refleja los validadores reales de cada `.ce.vue`. `—` significa que la variant
 | `<cu-label>` | — (sin variant) |
 | `<cu-modal>` | — (sin variant) |
 | `<cu-month-slider>` | `soft` |
+| `<cu-year-slider>` | `soft` |
 | `<cu-pagination>` | `soft` |
 | `<cu-select>` | `soft` |
 | `<cu-switch>` | — (sin variant) |
@@ -320,6 +322,7 @@ Cada archivo UMD incluye el runtime de Vue 3 (no externalizado):
 | CuModal | ~210 kB | ~51 kB |
 | CuCollapse | ~217 kB | ~52 kB |
 | CuMonth-slider | ~208 kB | ~49 kB |
+| CuYear-slider | ~208 kB | ~49 kB |
 | CuPagination | ~215 kB | ~51 kB |
 | CuTable | ~293 kB | ~65 kB |
 | CuAutocomplete | ~219 kB | ~52 kB |
@@ -357,6 +360,7 @@ Cada archivo UMD incluye el runtime de Vue 3 (no externalizado):
 - [\<cu-label\>](componentes/cu-label.md) — Label
 - [\<cu-modal\>](componentes/cu-modal.md) — Modal
 - [\<cu-month-slider\>](componentes/cu-month-slider.md) — Slider de meses con arrastre
+- [\<cu-year-slider\>](componentes/cu-year-slider.md) — Slider de años
 - [\<cu-pagination\>](componentes/cu-pagination.md) — Paginación
 - [\<cu-select\>](componentes/cu-select.md) — Selector
 - [\<cu-switch\>](componentes/cu-switch.md) — Switch/Toggle
