@@ -736,11 +736,16 @@ Selector de mes con navegación por botones y arrastre. Muestra el mes actual (c
 | `month-format` | `string` | `"MMMM"` | Formato del label del mes (`MMMM`, `MMM`, `MM`, `M`, `yyyy`, `yy`) |
 | `year-format` | `string` | `"yyyy"` | Formato del año mostrado al lado cuando no es el año actual |
 | `locale` | `string` | `"es"` | Locale usado por `Intl` para los nombres de mes |
-| `year-navigation` | `boolean` | `true` | Muestra/oculta los botones `<<` / `>>` de navegación anual |
+| `year-navigation` | `boolean` | `true` | Muestra/oculta los botones `<<` / `>>` de navegación anual (`year-navigation="false"` la desactiva) |
+| `variant` | `string` | `"soft"` | Variante del label: `solid`, `outlined`, `soft`, `ghost`, `subtle` |
+| `min` | `string \| number \| Date` | — | Fecha mínima navegable (botones deshabilitados en el borde, drag recortado) |
+| `max` | `string \| number \| Date` | — | Fecha máxima navegable |
+| `drag-threshold` | `number` | `48` | Píxeles de arrastre para disparar un paso (menor = más sensible) |
+| `drag-steps` | `number` | `1` | Meses por deslizada (default: una deslizada = un mes) |
 | `color` | `string` | `"primary"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
 | `disabled` | `boolean` | `false` | Deshabilita la navegación y el arrastre |
 
-> No expone prop `variant` ni `theme`.
+> No expone prop `theme`.
 
 **Año automático:** si `month-format` no incluye un token de año y el mes seleccionado no es del año en curso, el año se agrega al lado (ej.: `"agosto"` → `"agosto 2025"`).
 
@@ -770,7 +775,12 @@ Selector de mes con navegación por botones y arrastre. Muestra el mes actual (c
 
 <cu-month-slider model-value="2025-03-01"></cu-month-slider>
 
-<cu-month-slider month-format="MMM yyyy" year-navigation="false" color="success"></cu-month-slider>
+<cu-month-slider month-format="MMM yyyy" year-navigation="false" color="success" variant="outlined"></cu-month-slider>
+
+<cu-month-slider min="2026-01-01" max="2026-12-01"></cu-month-slider>
+
+<cu-month-slider drag-threshold="16"></cu-month-slider>
+<cu-month-slider drag-steps="3"></cu-month-slider>
 ```
 
 Control programático:

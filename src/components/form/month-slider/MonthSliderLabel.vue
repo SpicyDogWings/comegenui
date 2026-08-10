@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, type PropType } from 'vue'
 
 const props = defineProps({
   label: {
@@ -14,15 +14,26 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  variant: {
+    type: String as PropType<'solid' | 'outlined' | 'soft' | 'ghost' | 'subtle'>,
+    default: 'soft',
+  },
+  // Píxeles acumulados de arrastre necesarios para disparar un paso
+  threshold: {
+    type: Number,
+    default: 48,
+  },
+  // Meses que avanza cada deslizada completa (1 = uno por gesto)
+  steps: {
+    type: Number,
+    default: 1,
+  },
 })
 
 const emit = defineEmits<{
-  // 1 = mes siguiente (swipe a la izquierda), -1 = mes anterior (swipe a la derecha)
-  (e: 'navigate', direction: -1 | 1): void
+  // Positivo = mes siguiente (swipe a la izquierda), negativo = mes anterior
+  (e: 'navigate', direction: number): void
 }>()
-
-// Píxeles acumulados de arrastre necesarios para cambiar de mes
-const THRESHOLD = 48
 
 const root = ref<HTMLElement | null>(null)
 const dragging = ref(false)
@@ -31,6 +42,9 @@ const offsetX = ref(0)
 let pointerId = 0
 let lastX = 0
 let accX = 0
+// Una vez que se supera el umbral, la deslizada queda "consumida":
+// un gesto = un paso, sin importar la velocidad ni la distancia.
+let fired = false
 
 function onPointerDown(event: PointerEvent) {
   if (props.disabled) return
@@ -38,20 +52,21 @@ function onPointerDown(event: PointerEvent) {
   pointerId = event.pointerId
   lastX = event.clientX
   accX = 0
+  fired = false
   root.value?.setPointerCapture(pointerId)
 }
 
 function onPointerMove(event: PointerEvent) {
-  if (!dragging.value || event.pointerId !== pointerId) return
+  if (!dragging.value || event.pointerId !== pointerId || fired) return
   const dx = event.clientX - lastX
   lastX = event.clientX
   accX += dx
   // El label acompaña el dedo, limitado al umbral
-  offsetX.value = Math.max(-THRESHOLD, Math.min(THRESHOLD, accX))
-  if (Math.abs(accX) >= THRESHOLD) {
-    // Arrastrar a la izquierda (accX negativo) = mes siguiente
-    emit('navigate', accX < 0 ? 1 : -1)
-    accX = 0
+  offsetX.value = Math.max(-props.threshold, Math.min(props.threshold, accX))
+  if (Math.abs(accX) >= props.threshold) {
+    // Arrastrar a la izquierda (accX negativo) = mes(es) siguiente(s)
+    emit('navigate', (accX < 0 ? 1 : -1) * props.steps)
+    fired = true
     offsetX.value = 0
   }
 }
@@ -59,6 +74,7 @@ function onPointerMove(event: PointerEvent) {
 function endDrag() {
   if (!dragging.value) return
   dragging.value = false
+  fired = false
   accX = 0
   offsetX.value = 0
   try {
@@ -73,7 +89,10 @@ function endDrag() {
   <div
     ref="root"
     class="cu-month-slider-label"
-    :class="{ 'is-dragging': dragging, 'is-disabled': props.disabled }"
+    :class="[
+      `cu-month-slider-label--${props.variant}`,
+      { 'is-dragging': dragging, 'is-disabled': props.disabled },
+    ]"
     :style="{ '--drag-offset': `${offsetX}px` }"
     role="button"
     tabindex="0"
@@ -82,8 +101,8 @@ function endDrag() {
     @pointermove="onPointerMove"
     @pointerup="endDrag"
     @pointercancel="endDrag"
-    @keydown.left.prevent="emit('navigate', -1)"
-    @keydown.right.prevent="emit('navigate', 1)"
+    @keydown.left.prevent="emit('navigate', -1 * props.steps)"
+    @keydown.right.prevent="emit('navigate', props.steps)"
   >
     <span class="cu-month-slider-label-month">{{ props.label }}</span>
     <span v-if="props.year" class="cu-month-slider-label-year">{{ props.year }}</span>
@@ -99,8 +118,7 @@ function endDrag() {
   justify-content: center;
   padding: var(--cu-space-md) var(--cu-space-lg);
   border-radius: var(--cu-radius);
-  background-color: var(--month-slider-soft);
-  color: var(--month-slider-accent);
+  border: var(--cu-border-none) solid transparent;
   font-family: var(--cu-font-sans);
   font-size: var(--cu-font-size-md);
   font-weight: var(--cu-font-weight-semibold);
@@ -108,8 +126,59 @@ function endDrag() {
   user-select: none;
   touch-action: pan-y;
   transform: translateX(var(--drag-offset, 0px));
-  transition: transform 0.2s ease, background-color 150ms ease;
+  transition: transform 0.2s ease, background-color 150ms ease, color 150ms ease;
   will-change: transform;
+}
+
+/* solid */
+.cu-month-slider-label--solid {
+  background-color: var(--ms-accent);
+  color: var(--ms-surface);
+}
+.cu-month-slider-label--solid:hover {
+  background-color: var(--ms-accent-hover);
+}
+.cu-month-slider-label--solid .cu-month-slider-label-year {
+  background-color: var(--ms-surface);
+  color: var(--ms-accent);
+}
+
+/* outlined */
+.cu-month-slider-label--outlined {
+  background-color: transparent;
+  color: var(--ms-accent);
+  border: var(--cu-border-thin) solid var(--ms-accent);
+}
+.cu-month-slider-label--outlined:hover {
+  background-color: var(--ms-ghost-hover);
+}
+
+/* soft (default) */
+.cu-month-slider-label--soft {
+  background-color: var(--ms-soft);
+  color: var(--ms-accent);
+}
+.cu-month-slider-label--soft:hover {
+  background-color: var(--ms-soft-hover);
+}
+
+/* ghost */
+.cu-month-slider-label--ghost {
+  background-color: transparent;
+  color: var(--ms-accent);
+}
+.cu-month-slider-label--ghost:hover {
+  background-color: var(--ms-ghost-hover);
+}
+
+/* subtle */
+.cu-month-slider-label--subtle {
+  background-color: var(--ms-subtle);
+  color: var(--ms-accent);
+  border: var(--cu-border-thin) solid var(--ms-subtle-border);
+}
+.cu-month-slider-label--subtle:hover {
+  background-color: var(--ms-subtle-hover);
 }
 
 .cu-month-slider-label.is-dragging {
@@ -123,7 +192,7 @@ function endDrag() {
 }
 
 .cu-month-slider-label:focus-visible {
-  outline: 2px solid var(--month-slider-accent);
+  outline: 2px solid var(--ms-accent);
   outline-offset: 2px;
 }
 
@@ -132,7 +201,7 @@ function endDrag() {
   font-weight: var(--cu-font-weight-medium);
   padding: 2px var(--cu-space-sm);
   border-radius: var(--cu-radius-full);
-  background-color: var(--month-slider-accent);
-  color: var(--month-slider-accent-text);
+  background-color: var(--ms-accent);
+  color: var(--ms-accent-text);
 }
 </style>

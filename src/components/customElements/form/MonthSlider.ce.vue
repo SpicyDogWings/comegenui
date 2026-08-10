@@ -26,6 +26,26 @@ const props = defineProps({
     type: [Boolean, String] as PropType<boolean | string>,
     default: true,
   },
+  variant: {
+    type: String as PropType<'solid' | 'outlined' | 'soft' | 'ghost' | 'subtle'>,
+    default: 'soft',
+  },
+  min: {
+    type: [String, Number, Date] as PropType<string | number | Date | null>,
+    default: null,
+  },
+  max: {
+    type: [String, Number, Date] as PropType<string | number | Date | null>,
+    default: null,
+  },
+  dragThreshold: {
+    type: Number,
+    default: 48,
+  },
+  dragSteps: {
+    type: Number,
+    default: 1,
+  },
   color: {
     type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     default: 'primary',
@@ -70,6 +90,11 @@ defineExpose({ nextMonth, prevMonth, nextYear, prevYear, goToMonth, getValue, se
     :year-format="props.yearFormat"
     :locale="props.locale"
     :year-navigation="props.yearNavigation"
+    :variant="props.variant"
+    :min="props.min"
+    :max="props.max"
+    :drag-threshold="props.dragThreshold"
+    :drag-steps="props.dragSteps"
     :color="props.color"
     :disabled="props.disabled"
     @change="ceEmit('change', $event)"

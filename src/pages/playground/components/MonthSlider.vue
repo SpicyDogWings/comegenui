@@ -13,11 +13,16 @@ function readValue() {
 
 const colors = ["primary", "secondary", "neutral", "success", "warning", "danger"] as const;
 
+const variants = ["solid", "outlined", "soft", "ghost", "subtle"] as const;
+
 const outlineItems = [
   { label: 'Default', id: 'default' },
   { label: 'Sin año', id: 'no-year-nav' },
   { label: 'Formatos', id: 'formats' },
   { label: 'Año distinto', id: 'other-year' },
+  { label: 'Variantes', id: 'variants' },
+  { label: 'Min / Max', id: 'min-max' },
+  { label: 'Sensibilidad', id: 'sensitivity' },
   { label: 'Programático', id: 'programmatic' },
   { label: 'Colores', id: 'colors' },
   { label: 'Disabled', id: 'disabled' },
@@ -81,6 +86,51 @@ const outlineItems = [
         <div class="playground-month-slider-col">
           <MonthSlider model-value="2025-03-01" />
           <MonthSlider model-value="2027-11-15" month-format="MMM" />
+        </div>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <!-- Variantes -->
+      <section id="variants" class="playground-month-slider-section">
+        <h2>Variantes</h2>
+        <p class="playground-month-slider-desc">
+          El label acepta <code>solid</code>, <code>outlined</code>, <code>soft</code> (default), <code>ghost</code> y <code>subtle</code>.
+        </p>
+        <div class="playground-month-slider-col">
+          <MonthSlider v-for="variant in variants" :key="variant" :variant="variant" />
+        </div>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <!-- Min / Max -->
+      <section id="min-max" class="playground-month-slider-section">
+        <h2>Fechas mínima y máxima</h2>
+        <p class="playground-month-slider-desc">
+          Con <code>min</code> y <code>max</code> la navegación queda limitada: los botones se deshabilitan al llegar al borde y el drag se recorta.
+        </p>
+        <div class="playground-month-slider-col">
+          <MonthSlider min="2026-01-01" max="2026-12-01" />
+          <MonthSlider min="2024-06-01" max="2028-06-01" month-format="MMM yyyy" variant="outlined" />
+          <MonthSlider min="2026-05-01" model-value="2025-01-01" />
+        </div>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <!-- Sensibilidad -->
+      <section id="sensitivity" class="playground-month-slider-section">
+        <h2>Sensibilidad del drag</h2>
+        <p class="playground-month-slider-desc">
+          Por defecto <strong>una deslizada = un mes</strong> (sin importar la velocidad). Con <code>drag-steps</code> podés
+          avanzar varios meses por gesto, y con <code>drag-threshold</code> ajustás los píxeles necesarios (menor = más sensible).
+        </p>
+        <div class="playground-month-slider-col">
+          <MonthSlider />
+          <MonthSlider :drag-steps="3" />
+          <MonthSlider :drag-threshold="16" />
+          <MonthSlider :drag-threshold="96" />
         </div>
       </section>
 

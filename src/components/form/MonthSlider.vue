@@ -24,6 +24,30 @@ const props = defineProps({
     type: [Boolean, String] as PropType<boolean | string>,
     default: true,
   },
+  variant: {
+    type: String as PropType<'solid' | 'outlined' | 'soft' | 'ghost' | 'subtle'>,
+    default: 'soft',
+    validator: (value: string) =>
+      ['solid', 'outlined', 'soft', 'ghost', 'subtle'].includes(value),
+  },
+  min: {
+    type: [String, Number, Date] as PropType<string | number | Date | null>,
+    default: null,
+  },
+  max: {
+    type: [String, Number, Date] as PropType<string | number | Date | null>,
+    default: null,
+  },
+  // Sensibilidad del drag: píxeles necesarios para disparar un paso (menor = más sensible)
+  dragThreshold: {
+    type: Number,
+    default: 48,
+  },
+  // Meses que avanza cada deslizada completa (1 = uno por gesto)
+  dragSteps: {
+    type: Number,
+    default: 1,
+  },
   color: {
     type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     default: 'primary',
@@ -75,15 +99,26 @@ function addMonths(date: Date, delta: number): Date {
   return new Date(date.getFullYear(), date.getMonth() + delta, 1)
 }
 
+// ── Límites (min / max) ──
+
+const minDate = computed(() => (props.min === null || props.min === undefined || props.min === '' ? null : parseDateInput(props.min)))
+const maxDate = computed(() => (props.max === null || props.max === undefined || props.max === '' ? null : parseDateInput(props.max)))
+
+function clampDate(date: Date): Date {
+  if (minDate.value && date < minDate.value) return minDate.value
+  if (maxDate.value && date > maxDate.value) return maxDate.value
+  return date
+}
+
 // ── Estado ──
 
-const month = ref<Date>(parseDateInput(props.modelValue))
+const month = ref<Date>(clampDate(parseDateInput(props.modelValue)))
 
 watch(
   () => props.modelValue,
   (value) => {
     if (value === null || value === undefined || value === '') return
-    const parsed = parseDateInput(value)
+    const parsed = clampDate(parseDateInput(value))
     if (!sameMonth(parsed, month.value)) {
       month.value = parsed
     }
@@ -141,13 +176,15 @@ const showAutoYear = computed(() => !hasYearToken.value && month.value.getFullYe
 const monthLabel = computed(() => formatMonth(month.value, props.monthFormat))
 const yearLabel = computed(() => formatMonth(month.value, props.yearFormat))
 
-// ── Navegación ──
+// ── Navegación (con límites) ──
 
 function setMonth(next: Date) {
-  if (props.disabled || sameMonth(next, month.value)) return
-  month.value = next
-  emit('update:modelValue', next)
-  emit('change', next)
+  if (props.disabled) return
+  const clamped = clampDate(next)
+  if (sameMonth(clamped, month.value)) return
+  month.value = clamped
+  emit('update:modelValue', clamped)
+  emit('change', clamped)
 }
 
 function nextMonth() {
@@ -189,12 +226,29 @@ defineExpose({
   setValue,
 })
 
-// ── Estilos por color semántico ──
+// Botones deshabilitados en los bordes de min/max
+const canPrevMonth = computed(() => !minDate.value || month.value > minDate.value)
+const canNextMonth = computed(() => !maxDate.value || month.value < maxDate.value)
+const canPrevYear = computed(
+  () => !minDate.value || new Date(month.value.getFullYear() - 1, month.value.getMonth(), 1) >= minDate.value,
+)
+const canNextYear = computed(
+  () => !maxDate.value || new Date(month.value.getFullYear() + 1, month.value.getMonth(), 1) <= maxDate.value,
+)
+
+// ── Estilos por color semántico (cascada hacia el label) ──
 
 const colorStyles = computed(() => ({
-  '--month-slider-accent': `var(--cu-color-${props.color})`,
-  '--month-slider-accent-text': `var(--cu-color-${props.color}-text)`,
-  '--month-slider-soft': `var(--cu-color-${props.color}-soft)`,
+  '--ms-accent': `var(--cu-color-${props.color})`,
+  '--ms-accent-hover': `var(--cu-color-${props.color}-hover)`,
+  '--ms-accent-text': `var(--cu-color-${props.color}-text)`,
+  '--ms-soft': `var(--cu-color-${props.color}-soft)`,
+  '--ms-soft-hover': `var(--cu-color-${props.color}-soft-hover)`,
+  '--ms-subtle': `var(--cu-color-${props.color}-subtle)`,
+  '--ms-subtle-hover': `var(--cu-color-${props.color}-subtle-hover)`,
+  '--ms-subtle-border': `var(--cu-color-${props.color}-subtle-border)`,
+  '--ms-ghost-hover': `var(--cu-color-${props.color}-ghost-hover)`,
+  '--ms-surface': `var(--cu-color-surface)`,
 }))
 </script>
 
@@ -211,25 +265,28 @@ const colorStyles = computed(() => ({
       direction="left"
       double
       :color="props.color"
-      :disabled="props.disabled"
+      :disabled="props.disabled || !canPrevYear"
       @click="prevYear()"
     />
     <MonthSliderNavButton
       direction="left"
       :color="props.color"
-      :disabled="props.disabled"
+      :disabled="props.disabled || !canPrevMonth"
       @click="prevMonth()"
     />
     <MonthSliderLabel
       :label="monthLabel"
       :year="showAutoYear ? yearLabel : ''"
       :disabled="props.disabled"
+      :variant="props.variant"
+      :threshold="props.dragThreshold"
+      :steps="props.dragSteps"
       @navigate="(dir) => setMonth(addMonths(month, dir))"
     />
     <MonthSliderNavButton
       direction="right"
       :color="props.color"
-      :disabled="props.disabled"
+      :disabled="props.disabled || !canNextMonth"
       @click="nextMonth()"
     />
     <MonthSliderNavButton
@@ -237,7 +294,7 @@ const colorStyles = computed(() => ({
       direction="right"
       double
       :color="props.color"
-      :disabled="props.disabled"
+      :disabled="props.disabled || !canNextYear"
       @click="nextYear()"
     />
   </div>

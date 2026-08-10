@@ -14,11 +14,16 @@ Selector de mes con navegación por botones y arrastre. Muestra el mes actual (c
 | `month-format` | `string` | `"MMMM"` | Formato del label del mes (ver tokens abajo) |
 | `year-format` | `string` | `"yyyy"` | Formato del año que se muestra al lado cuando no es el año actual |
 | `locale` | `string` | `"es"` | Locale usado por `Intl` para los nombres de mes |
-| `year-navigation` | `boolean` | `true` | Muestra/oculta los botones `<<` / `>>` de navegación anual |
+| `year-navigation` | `boolean` | `true` | Muestra/oculta los botones `<<` / `>>` de navegación anual. En HTML plano: `year-navigation="false"` la desactiva |
+| `variant` | `string` | `"soft"` | Variante del label: `solid`, `outlined`, `soft`, `ghost`, `subtle` |
+| `min` | `string \| number \| Date` | — | Fecha mínima navegable (los botones se deshabilitan al llegar al borde y el drag se recorta) |
+| `max` | `string \| number \| Date` | — | Fecha máxima navegable |
+| `drag-threshold` | `number` | `48` | Píxeles de arrastre necesarios para disparar un paso (menor = más sensible) |
+| `drag-steps` | `number` | `1` | Meses que avanza cada deslizada completa. Con el default, **una deslizada = un mes**, sin importar la velocidad |
 | `color` | `string` | `"primary"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
 | `disabled` | `boolean` | `false` | Deshabilita la navegación y el arrastre |
 
-> No expone prop `variant` ni `theme`. El color se controla con `color`.
+> No expone prop `theme`. El color se controla con `color` y el estilo del label con `variant`.
 
 ### Tokens de formato
 
@@ -50,7 +55,7 @@ Cualquier otro texto del formato se mantiene literal (`"MM/yyyy"` → `"08/2026"
 | `.prevMonth()` | Retrocede un mes |
 | `.nextYear()` | Avanza un año |
 | `.prevYear()` | Retrocede un año |
-| `.goToMonth(value)` | Va a un mes puntual (`string \| number \| Date`) |
+| `.goToMonth(value)` | Va a un mes puntual (`string \| number \| Date`), recortado por `min`/`max` |
 | `.getValue()` | Devuelve el mes actual como `Date` (primer día del mes, hora local) |
 | `.setValue(value)` | Setea el mes actual (`string \| number \| Date`) |
 
@@ -59,7 +64,7 @@ Cualquier otro texto del formato se mantiene literal (`"MM/yyyy"` → `"08/2026"
 ## Uso en HTML plano
 
 ```html
-<script src="dist/CuMonthSlider.umd.js"></script>
+<script src="dist/CuMonth-slider.umd.js"></script>
 
 <cu-month-slider></cu-month-slider>
 ```
@@ -70,10 +75,23 @@ Cualquier otro texto del formato se mantiene literal (`"MM/yyyy"` → `"08/2026"
 <cu-month-slider model-value="2025-03-01"></cu-month-slider>
 ```
 
-### Sin navegación de año y con otro formato
+### Variante, sin navegación de año y otro formato
 
 ```html
-<cu-month-slider month-format="MMM yyyy" year-navigation="false" color="success"></cu-month-slider>
+<cu-month-slider month-format="MMM yyyy" year-navigation="false" color="success" variant="outlined"></cu-month-slider>
+```
+
+### Con límites mínimos y máximos
+
+```html
+<cu-month-slider min="2026-01-01" max="2026-12-01"></cu-month-slider>
+```
+
+### Drag más sensible (16 px por paso) o varios meses por gesto
+
+```html
+<cu-month-slider drag-threshold="16"></cu-month-slider>
+<cu-month-slider drag-steps="3"></cu-month-slider>
 ```
 
 ### Control programático y eventos
@@ -91,6 +109,6 @@ Cualquier otro texto del formato se mantiene literal (`"MM/yyyy"` → `"08/2026"
 </script>
 ```
 
-### Drag del label
+## Drag del label
 
-El label responde a Pointer Events (mouse y touch): arrastrá hacia la **izquierda** para pasar al mes siguiente y hacia la **derecha** para volver al anterior. También se puede navegar con las flechas `←` / `→` cuando el label tiene foco.
+El label responde a Pointer Events (mouse y touch): arrastrá hacia la **izquierda** para pasar al mes siguiente y hacia la **derecha** para volver al anterior. Por defecto **un gesto = un paso**, aunque arrastres rápido o muy lejos; si querés varios meses por deslizada usá `drag-steps`. También se puede navegar con las flechas `←` / `→` cuando el label tiene foco.
