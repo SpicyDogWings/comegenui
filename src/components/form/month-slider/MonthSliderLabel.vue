@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, type PropType } from 'vue'
+import { computed, ref, type PropType } from 'vue'
+import Badge from '@/components/information/Badge.vue'
 
 const props = defineProps({
   label: {
@@ -13,6 +14,10 @@ const props = defineProps({
   disabled: {
     type: Boolean,
     default: false,
+  },
+  color: {
+    type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
+    default: 'primary',
   },
   variant: {
     type: String as PropType<'solid' | 'outlined' | 'soft' | 'ghost' | 'subtle'>,
@@ -34,6 +39,12 @@ const emit = defineEmits<{
   // Positivo = mes siguiente (swipe a la izquierda), negativo = mes anterior
   (e: 'navigate', direction: number): void
 }>()
+
+// Sobre un label solid (fondo = color), el badge solid se perdería:
+// se usa un badge suave para mantener contraste.
+const yearBadgeVariant = computed<'solid' | 'subtle'>(() =>
+  props.variant === 'solid' ? 'subtle' : 'solid',
+)
 
 const root = ref<HTMLElement | null>(null)
 const dragging = ref(false)
@@ -105,7 +116,14 @@ function endDrag() {
     @keydown.right.prevent="emit('navigate', props.steps)"
   >
     <span class="cu-month-slider-label-month">{{ props.label }}</span>
-    <span v-if="props.year" class="cu-month-slider-label-year">{{ props.year }}</span>
+    <Badge
+      v-if="props.year"
+      class="cu-month-slider-label-year"
+      :color="props.color"
+      :variant="yearBadgeVariant"
+    >
+      {{ props.year }}
+    </Badge>
   </div>
 </template>
 
@@ -130,17 +148,13 @@ function endDrag() {
   will-change: transform;
 }
 
-/* solid */
-.cu-month-slider-label--solid {
+/* solid: doble clase para ganarle a reglas globales del consumidor (convención del repo) */
+.cu-month-slider-label.cu-month-slider-label--solid {
   background-color: var(--ms-accent);
   color: var(--ms-surface);
 }
-.cu-month-slider-label--solid:hover {
+.cu-month-slider-label.cu-month-slider-label--solid:hover {
   background-color: var(--ms-accent-hover);
-}
-.cu-month-slider-label--solid .cu-month-slider-label-year {
-  background-color: var(--ms-surface);
-  color: var(--ms-accent);
 }
 
 /* outlined */
@@ -194,14 +208,5 @@ function endDrag() {
 .cu-month-slider-label:focus-visible {
   outline: 2px solid var(--ms-accent);
   outline-offset: 2px;
-}
-
-.cu-month-slider-label-year {
-  font-size: var(--cu-font-size-sm);
-  font-weight: var(--cu-font-weight-medium);
-  padding: 2px var(--cu-space-sm);
-  border-radius: var(--cu-radius-full);
-  background-color: var(--ms-accent);
-  color: var(--ms-accent-text);
 }
 </style>

@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { computed, ref, watch, type PropType } from 'vue'
+import Button from '@/components/buttons/Button.vue'
+import LucideChevronLeft from '@/components/icons/LucideChevronLeft.vue'
+import LucideChevronRight from '@/components/icons/LucideChevronRight.vue'
+import LucideChevronsLeft from '@/components/icons/LucideChevronsLeft.vue'
+import LucideChevronsRight from '@/components/icons/LucideChevronsRight.vue'
 import MonthSliderLabel from './month-slider/MonthSliderLabel.vue'
-import MonthSliderNavButton from './month-slider/MonthSliderNavButton.vue'
 
 const props = defineProps({
   modelValue: {
@@ -236,6 +240,12 @@ const canNextYear = computed(
   () => !maxDate.value || new Date(month.value.getFullYear() + 1, month.value.getMonth(), 1) <= maxDate.value,
 )
 
+// Labels de accesibilidad de los botones de navegación
+const ariaYearPrev = 'Ir al año anterior'
+const ariaMonthPrev = 'Ir al mes anterior'
+const ariaMonthNext = 'Ir al mes siguiente'
+const ariaYearNext = 'Ir al año siguiente'
+
 // ── Estilos por color semántico (cascada hacia el label) ──
 
 const colorStyles = computed(() => ({
@@ -260,43 +270,62 @@ const colorStyles = computed(() => ({
     role="group"
     :aria-label="`Selector de mes: ${showAutoYear ? monthLabel + ' ' + yearLabel : monthLabel}`"
   >
-    <MonthSliderNavButton
+    <Button
       v-if="showYearNavigation"
-      direction="left"
-      double
+      class="cu-button--icon-only"
+      variant="ghost"
       :color="props.color"
       :disabled="props.disabled || !canPrevYear"
+      :aria-label="ariaYearPrev"
       @click="prevYear()"
-    />
-    <MonthSliderNavButton
-      direction="left"
+    >
+      <LucideChevronsLeft :width="16" :height="16" />
+    </Button>
+
+    <Button
+      class="cu-button--icon-only"
+      variant="ghost"
       :color="props.color"
       :disabled="props.disabled || !canPrevMonth"
+      :aria-label="ariaMonthPrev"
       @click="prevMonth()"
-    />
+    >
+      <LucideChevronLeft :width="16" :height="16" />
+    </Button>
+
     <MonthSliderLabel
       :label="monthLabel"
       :year="showAutoYear ? yearLabel : ''"
       :disabled="props.disabled"
+      :color="props.color"
       :variant="props.variant"
       :threshold="props.dragThreshold"
       :steps="props.dragSteps"
       @navigate="(dir) => setMonth(addMonths(month, dir))"
     />
-    <MonthSliderNavButton
-      direction="right"
+
+    <Button
+      class="cu-button--icon-only"
+      variant="ghost"
       :color="props.color"
       :disabled="props.disabled || !canNextMonth"
+      :aria-label="ariaMonthNext"
       @click="nextMonth()"
-    />
-    <MonthSliderNavButton
+    >
+      <LucideChevronRight :width="16" :height="16" />
+    </Button>
+
+    <Button
       v-if="showYearNavigation"
-      direction="right"
-      double
+      class="cu-button--icon-only"
+      variant="ghost"
       :color="props.color"
       :disabled="props.disabled || !canNextYear"
+      :aria-label="ariaYearNext"
       @click="nextYear()"
-    />
+    >
+      <LucideChevronsRight :width="16" :height="16" />
+    </Button>
   </div>
 </template>
 
