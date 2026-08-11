@@ -104,6 +104,9 @@ const props = defineProps({
   filters: { type: Object as () => Record<string, any>, required: false, default: () => ({}) },
   loading: { type: Boolean, required: false, default: false },
   actions: { type: Array as () => ButtonConfig[], required: false, default: () => [] },
+  // Estado reactivo: cuando es true, todas las columnas editables renderizan
+  // el editor (input/select/textarea) directamente, sin lápiz.
+  inlineEditing: { type: Boolean, required: false, default: false },
 });
 
 const emit = defineEmits([
@@ -313,6 +316,7 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
           :value="value"
           :row="row"
           :column="col"
+          :inline-edit="inlineEditing"
           :index="index"
           :color="props.color"
           :variant="inputVariant"

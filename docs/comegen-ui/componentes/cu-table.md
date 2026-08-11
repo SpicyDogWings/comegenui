@@ -74,6 +74,27 @@ interface ButtonConfig {
 }
 ```
 
+### Celdas editables — dos modos
+
+Por defecto las columnas con `editable` muestran el valor con un **lápiz**; hacé click
+(o doble click si `singleClick: false`) para editar inline.
+
+Para renderizar los editores (input / select / textarea) **directamente**, sin lápiz,
+usá el estado reactivo `inlineEditing` de la tabla:
+
+```vue
+<AdvancedTable
+  :columns="columns"
+  :data="data"
+  :inline-editing="inlineEditing"   <!-- estado reactivo (ref) -->
+/>
+```
+
+> `inlineEditing` es un **estado**, no una propiedad estática de columna: cuando es
+> `true`, todas las columnas editables renderizan el editor directo; cuando es
+> `false`, vuelven al modo lápiz. Ideal para un botón "lápiz" en la columna de
+> acciones que togglea el estado, o para formularios de edición masiva.
+
 ### Acciones de fila (`actions`)
 
 Es un array de `ButtonConfig`. Cuando se asigna, la tabla agrega automáticamente una columna al final con un dropdown "..." que muestra las acciones. El `onClick` recibe la fila completa.

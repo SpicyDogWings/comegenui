@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import AdvancedTable from "@/components/data/AdvancedTable.vue";
 
@@ -139,6 +140,47 @@ const editableColumns = [
   },
 ];
 
+// Estado reactivo: toggle desde el botón lápiz de la columna "Acciones".
+const inlineEditing = ref(false);
+
+const editableActionColumns = [
+  { key: "name", label: "Name", editable: true },
+  { key: "email", label: "Email", editable: true },
+  {
+    key: "notes",
+    label: "Notes",
+    editable: true,
+    inputType: "textarea" as const,
+    textarea: { rows: 2 },
+  },
+  {
+    key: "status",
+    label: "Status",
+    editable: true,
+    inputType: "select" as const,
+    select: {
+      options: [
+        { value: "Active", label: "Active" },
+        { value: "Pending", label: "Pending" },
+        { value: "Inactive", label: "Inactive" },
+      ],
+    },
+  },
+  {
+    key: "actions",
+    label: "Acciones",
+    buttons: () => [
+      {
+        label: inlineEditing.value ? "Ver valores" : "Editar inline",
+        icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>',
+        color: inlineEditing.value ? "primary" : "neutral",
+        variant: inlineEditing.value ? "solid" : "ghost",
+        onClick: () => { inlineEditing.value = !inlineEditing.value; },
+      },
+    ],
+  },
+];
+
 const editableData = [
   { id: 1, name: "Alice Johnson", email: "alice@example.com", notes: "Team lead", status: "Active", role: "Admin" },
   { id: 2, name: "Bob Smith", email: "bob@example.com", notes: "New hire", status: "Pending", role: "User" },
@@ -186,7 +228,15 @@ const editableData = [
 
       <section id="editable" class="playground-section">
         <h2>Editable Cells</h2>
+        <p>
+          Por defecto las celdas editables muestran un <strong>lápiz</strong>; hacé click para editar.
+          Con el estado reactivo <code>inlineEditing</code> (prop de la tabla), las celdas renderizan
+          el editor directo — acá lo togglea el botón en la columna <em>Acciones</em>.
+        </p>
+        <h3>Modo lápiz (por defecto)</h3>
         <AdvancedTable :columns="editableColumns" :data="editableData" :pagination="false" />
+        <h3>Estado inline (toggle desde columna Acciones)</h3>
+        <AdvancedTable :columns="editableActionColumns" :data="editableData" :inline-editing="inlineEditing" :pagination="false" />
       </section>
 
       <hr class="playground-separator" />
