@@ -90,7 +90,18 @@ const outlineItems = [
           <Dropdown label="Top" position="top">
             <Button variant="ghost" style="width:100%;justify-content:flex-start">Top</Button>
           </Dropdown>
+          <Dropdown label="Right" position="right">
+            <Button variant="ghost" style="width:100%;justify-content:flex-start">Right</Button>
+          </Dropdown>
+          <div class="playground-dropdown-demo--left">
+            <Dropdown label="Left" position="left">
+              <Button variant="ghost" style="width:100%;justify-content:flex-start">Left</Button>
+            </Dropdown>
+          </div>
         </div>
+        <p class="playground-desc">
+          El panel abre abajo/arriba (<code>bottom</code>/<code>top</code>) o a los costados del trigger (<code>left</code>/<code>right</code>).
+        </p>
       </section>
 
       <hr class="playground-separator" />
@@ -133,6 +144,22 @@ const outlineItems = [
           <Dropdown label="Top-end" placement="top-end">
             <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
           </Dropdown>
+          <Dropdown label="Right-start" placement="right-start">
+            <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
+          </Dropdown>
+          <Dropdown label="Right-end" placement="right-end">
+            <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
+          </Dropdown>
+          <div class="playground-dropdown-demo--left">
+            <Dropdown label="Left-start" placement="left-start">
+              <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
+            </Dropdown>
+          </div>
+          <div class="playground-dropdown-demo--left">
+            <Dropdown label="Left-end" placement="left-end">
+              <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
+            </Dropdown>
+          </div>
         </div>
       </section>
 
@@ -216,11 +243,30 @@ const outlineItems = [
       <section id="fixed" class="playground-section">
         <h2>Fixed Position</h2>
         <div class="playground-row">
-          <Dropdown label="Fixed Menu" fixed>
+          <Dropdown label="Bottom fixed" fixed>
             <Button variant="ghost" style="width:100%;justify-content:flex-start">Fixed Item 1</Button>
             <Button variant="ghost" style="width:100%;justify-content:flex-start">Fixed Item 2</Button>
           </Dropdown>
+          <div class="playground-dropdown-demo--top">
+            <Dropdown label="Top fixed" position="top" fixed>
+              <Button variant="ghost" style="width:100%;justify-content:flex-start">Fixed Item 1</Button>
+              <Button variant="ghost" style="width:100%;justify-content:flex-start">Fixed Item 2</Button>
+            </Dropdown>
+          </div>
+          <Dropdown label="Right fixed" position="right" fixed>
+            <Button variant="ghost" style="width:100%;justify-content:flex-start">Fixed Item 1</Button>
+            <Button variant="ghost" style="width:100%;justify-content:flex-start">Fixed Item 2</Button>
+          </Dropdown>
+          <div class="playground-dropdown-demo--left">
+            <Dropdown label="Left fixed" position="left" fixed>
+              <Button variant="ghost" style="width:100%;justify-content:flex-start">Fixed Item 1</Button>
+              <Button variant="ghost" style="width:100%;justify-content:flex-start">Fixed Item 2</Button>
+            </Dropdown>
+          </div>
         </div>
+        <p class="playground-desc">
+          Con <code>fixed</code> el panel se fija al viewport y las 4 posiciones calculan con <code>getBoundingClientRect()</code>.
+        </p>
       </section>
 
       <hr class="playground-separator" />
@@ -280,5 +326,15 @@ const outlineItems = [
   margin: 0;
   font-size: var(--cu-font-size-sm);
   color: var(--cu-color-neutral);
+}
+
+/* Espacio para que el panel en position="left" no se recorte contra el borde */
+.playground-dropdown-demo--left {
+  margin-left: 220px;
+}
+
+/* Espacio para que el panel en position="top" no se recorte contra el header */
+.playground-dropdown-demo--top {
+  margin-top: 160px;
 }
 </style>

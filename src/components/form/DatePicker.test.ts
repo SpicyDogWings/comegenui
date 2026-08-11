@@ -60,4 +60,30 @@ describe("DatePicker — label del trigger y selección", () => {
     expect(selected).toHaveLength(1);
     expect(selected[0]!.text()).toBe("14");
   });
+
+  it("placement top-start abre el panel arriba (los defaults no lo anulan)", async () => {
+    const w = mount(DatePicker, { props: { placement: "top-start", modelValue: "2026-08-11" } });
+    await w.find(".cu-date-picker-toggle").trigger("click");
+    await flushPromises();
+    const style = w.find(".cu-dropdown-panel").attributes("style") || "";
+    expect(style).toContain("bottom: 100%"); // panel arriba
+    expect(style).not.toContain("top: 100%");
+  });
+
+  it("position top abre el panel arriba", async () => {
+    const w = mount(DatePicker, { props: { position: "top", modelValue: "2026-08-11" } });
+    await w.find(".cu-date-picker-toggle").trigger("click");
+    await flushPromises();
+    const style = w.find(".cu-dropdown-panel").attributes("style") || "";
+    expect(style).toContain("bottom: 100%");
+  });
+
+  it("position left abre el panel a la izquierda", async () => {
+    const w = mount(DatePicker, { props: { position: "left", modelValue: "2026-08-11" } });
+    await w.find(".cu-date-picker-toggle").trigger("click");
+    await flushPromises();
+    const style = w.find(".cu-dropdown-panel").attributes("style") || "";
+    expect(style).toContain("right: 100%"); // panel a la izquierda
+    expect(style).not.toContain("left: 100%");
+  });
 });
