@@ -102,6 +102,16 @@ const router = createRouter({
               component: () => import("@/pages/playground/components/YearSlider.vue")
             },
             {
+              path: "calendar",
+              name: "Calendar playground",
+              component: () => import("@/pages/playground/components/Calendar.vue")
+            },
+            {
+              path: "date-picker",
+              name: "DatePicker playground",
+              component: () => import("@/pages/playground/components/DatePicker.vue")
+            },
+            {
               path: "dropdown",
               name: "Dropdown playground",
               component: () => import("@/pages/playground/components/Dropdown.vue")
