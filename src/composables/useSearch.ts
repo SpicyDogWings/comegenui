@@ -13,8 +13,10 @@ interface UseSearchOptions {
   columns?: MaybeRef<Column[]>;
 }
 
-const normalize = (s: string) =>
-  s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+const normalize = (s: string, caseSensitive = false) => {
+  const normalized = s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  return caseSensitive ? normalized : normalized.toLowerCase();
+};
 
 export function useSearch(data: any[] | Ref<any[]>, options: UseSearchOptions) {
   const { searchQuery, caseSensitive = false } = options;
@@ -24,7 +26,7 @@ export function useSearch(data: any[] | Ref<any[]>, options: UseSearchOptions) {
     const query = searchQuery.value.trim();
     if (!query) return unrefedData;
 
-    const normalizedQuery = normalize(query);
+    const normalizedQuery = normalize(query, caseSensitive);
     const fields = unref(options.searchFields) || [];
     const columns = unref(options.columns) || [];
 
@@ -43,10 +45,10 @@ export function useSearch(data: any[] | Ref<any[]>, options: UseSearchOptions) {
             ? col.selectOptions(item)
             : col.selectOptions || [];
           const opt = opts.find((o: any) => o.value === raw);
-          if (opt) return normalize(opt.label).includes(normalizedQuery);
+          if (opt) return normalize(opt.label, caseSensitive).includes(normalizedQuery);
         }
 
-        return normalize(String(raw)).includes(normalizedQuery);
+        return normalize(String(raw), caseSensitive).includes(normalizedQuery);
       });
     });
   });
