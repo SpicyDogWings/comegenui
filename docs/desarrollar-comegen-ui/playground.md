@@ -133,5 +133,6 @@ Si creaste un componente nuevo, agregá su script en `index.html`:
 
 - `playground.js`: `btnTheme`, `log`.
 - `examples/table.js`: `tabla`.
+- `examples/table-inline-editing.js`: `tabla-estados`.
 
 Si agregás un preset nuevo, usá un `id` distinto a esos.
