@@ -121,6 +121,10 @@ const selectedLabel = computed(() => {
   return formatDate(selectedValue.value, props.format, props.locale)
 })
 
+// Panel: más ancho cuando el calendario interno tiene navegación de año
+// (header del MonthSlider con 4 botones necesita ~300-310px).
+const panelWidth = computed(() => (props.yearNavigation ? '330px' : '280px'))
+
 // ── Interacción ──
 
 function onSelect(day: Date) {
@@ -179,7 +183,7 @@ defineExpose({ open, close, toggle, getValue, setValue, clear, isOpen: () => dro
       :placement="placement"
       :fixed="fixed"
       :offset="4"
-      :panel-width="'280px'"
+      :panel-width="panelWidth"
       @open="emit('open')"
       @close="emit('close')"
     >

@@ -287,7 +287,7 @@ const colorStyles = computed(() => ({
 <template>
   <div
     class="cu-calendar"
-    :class="{ 'is-disabled': props.disabled }"
+    :class="{ 'is-disabled': props.disabled, 'cu-calendar--year-nav': yearNavigation }"
     :style="colorStyles"
     role="grid"
     :aria-label="monthLabel"
@@ -347,6 +347,12 @@ const colorStyles = computed(() => ({
   min-width: 240px;
   font-family: var(--cu-font-sans);
   box-sizing: border-box;
+}
+
+/* Con navegación de año (4 botones del MonthSlider + label min 150px) el header
+   necesita más ancho que la grilla: forzamos min-width para evitar overflow. */
+.cu-calendar--year-nav {
+  min-width: 330px;
 }
 
 .cu-calendar.is-disabled {

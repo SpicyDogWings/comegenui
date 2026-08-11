@@ -106,7 +106,7 @@ picker.format = 'dd-MM-yy';    // "11-08-26"
 ## Comportamiento
 
 - **Trigger:** botón con ícono de calendario + fecha formateada (o placeholder) + chevron que rota al abrir.
-- **Panel:** box con el `cu-calendar` adentro (ancho fijo ~280px) y footer con "Hoy" y "Limpiar" (configurables con `today-button` y `clearable`).
+- **Panel:** box con el `cu-calendar` adentro (ancho ~280px, o ~330px cuando `year-navigation` está activo — el header con botones de año necesita más espacio) y footer con "Hoy" y "Limpiar" (configurables con `today-button` y `clearable`).
 - **Fuera del rango:** los días deshabilitados no se pueden elegir; "Hoy" y la selección manual respetan `min`/`max` del calendario.
 - **Cierre:** al elegir un día, ir a "Hoy" o limpiar, el panel se cierra. También con click afuera o `Escape` (lo maneja el dropdown interno).
 
