@@ -26,6 +26,9 @@ Selector de fecha: un botón-trigger que abre un **dropdown con un calendario ad
 | `fixed` | `boolean` | `false` | Panel en `position: fixed` (útil en contenedores con overflow) |
 | `clearable` | `boolean` | `true` | Muestra el botón "Limpiar" en el footer del panel |
 | `todayButton` | `boolean` | `true` | Muestra el botón "Hoy" en el footer del panel |
+| `yearNavigation` | `boolean` | `false` | Controles de mes del calendario interno: botones `«`/`»` de año |
+| `monthFormat` | `string` | `"MMMM"` | Formato del mes en el header del calendario interno |
+| `yearFormat` | `string` | `"yyyy"` | Formato del año en el header del calendario interno |
 
 ---
 

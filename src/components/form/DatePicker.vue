@@ -39,6 +39,10 @@ const props = defineProps({
   },
   // Formato de la fecha mostrada en el trigger (tokens: dd MM MMM MMMM yy yyyy)
   format: { type: String, required: false, default: 'dd/MM/yyyy' },
+  // Controles de mes del calendario interno (delegan al MonthSlider)
+  yearNavigation: { type: [Boolean, String] as PropType<boolean | string>, required: false, default: false },
+  monthFormat: { type: String, required: false, default: 'MMMM' },
+  yearFormat: { type: String, required: false, default: 'yyyy' },
   position: { type: String, required: false, default: 'bottom' },
   align: { type: String, required: false, default: 'start' },
   placement: { type: String, required: false, default: '' },
@@ -234,6 +238,9 @@ defineExpose({ open, close, toggle, getValue, setValue, clear, isOpen: () => dro
             :variant="variant"
             :locale="locale"
             :week-start="weekStart"
+            :year-navigation="yearNavigation"
+            :month-format="monthFormat"
+            :year-format="yearFormat"
             :disabled="disabled"
             @select="onSelect"
           />

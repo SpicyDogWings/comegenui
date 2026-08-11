@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch, type PropType } from 'vue'
-import Button from '@/components/buttons/Button.vue'
-import LucideChevronLeft from '@/components/icons/LucideChevronLeft.vue'
-import LucideChevronRight from '@/components/icons/LucideChevronRight.vue'
+import MonthSlider from './MonthSlider.vue'
 
 const props = defineProps({
   // API espejo de MonthSlider/YearSlider: acepta Date, timestamp o fecha "YYYY-MM-DD".
@@ -42,6 +40,19 @@ const props = defineProps({
     type: Number,
     default: 1,
     validator: (value: number) => value >= 0 && value <= 6,
+  },
+  // ── Controles de mes (delegan al MonthSlider del repo) ──
+  yearNavigation: {
+    type: [Boolean, String] as PropType<boolean | string>,
+    default: false,
+  },
+  monthFormat: {
+    type: String,
+    default: 'MMMM',
+  },
+  yearFormat: {
+    type: String,
+    default: 'yyyy',
   },
 })
 
@@ -166,6 +177,11 @@ function goToMonth(value: string | number | Date) {
   viewMonth.value = clampMonth(new Date(parsed.getFullYear(), parsed.getMonth(), 1))
 }
 
+// El MonthSlider navega solo (botones + drag); acá solo seguimos su mes
+function onMonthChange(date: Date) {
+  viewMonth.value = new Date(date.getFullYear(), date.getMonth(), 1)
+}
+
 // ── Grilla (7 columnas que se reparten el ancho disponible) ──
 
 const dayLabels = computed<string[]>(() => {
@@ -276,29 +292,21 @@ const colorStyles = computed(() => ({
     role="grid"
     :aria-label="monthLabel"
   >
-    <!-- Header: navegación de meses -->
+    <!-- Header: MonthSlider del repo (chevrons + label con drag + navegación de año) -->
     <div class="cu-calendar-header">
-      <Button
-        class="cu-button--icon-only"
-        variant="ghost"
-        :color="props.color"
-        :disabled="props.disabled || !canPrevMonth"
-        aria-label="Mes anterior"
-        @click="prevMonth()"
-      >
-        <LucideChevronLeft :width="16" :height="16" />
-      </Button>
-      <span class="cu-calendar-month">{{ monthLabel }}</span>
-      <Button
-        class="cu-button--icon-only"
-        variant="ghost"
-        :color="props.color"
-        :disabled="props.disabled || !canNextMonth"
-        aria-label="Mes siguiente"
-        @click="nextMonth()"
-      >
-        <LucideChevronRight :width="16" :height="16" />
-      </Button>
+      <MonthSlider
+        :model-value="viewMonth"
+        :min="min"
+        :max="max"
+        :color="color"
+        :variant="variant"
+        :locale="locale"
+        :year-navigation="yearNavigation"
+        :month-format="monthFormat"
+        :year-format="yearFormat"
+        :disabled="disabled"
+        @change="onMonthChange"
+      />
     </div>
 
     <!-- Días de la semana -->
@@ -348,18 +356,8 @@ const colorStyles = computed(() => ({
 .cu-calendar-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: var(--cu-space-2xs);
-}
-
-.cu-calendar-month {
-  flex: 1;
-  text-align: center;
-  font-size: var(--cu-font-size-md);
-  font-weight: var(--cu-font-weight-semibold);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 /* 7 columnas: cada una ocupa 1/7 del ancho que mida el contenedor */

@@ -19,6 +19,7 @@ const outlineItems = [
   { label: 'Default', id: 'default' },
   { label: 'Seleccionado', id: 'selected' },
   { label: 'Min / Max', id: 'min-max' },
+  { label: 'Controles de mes', id: 'month-controls' },
   { label: 'Semana domingo', id: 'week-start' },
   { label: 'Locale', id: 'locale' },
   { label: 'Variantes', id: 'variants' },
@@ -69,6 +70,20 @@ function onEvent(name: string, payload: any) {
         </p>
         <div class="playground-calendar-col">
           <Calendar min="2026-01-10" max="2026-12-24" model-value="2026-08-11" style="width: 300px;" />
+        </div>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="month-controls" class="playground-section">
+        <h2>Controles de mes (MonthSlider)</h2>
+        <p class="playground-desc">
+          El header reutiliza el <code>MonthSlider</code>: chevrons prev/next, <strong>drag</strong> sobre el label y navegación de año opcional (<code>year-navigation</code>).
+        </p>
+        <div class="playground-calendar-col">
+          <Calendar model-value="2026-08-11" style="width: 300px;" />
+          <Calendar model-value="2026-08-11" year-navigation style="width: 300px;" />
+          <Calendar model-value="2026-08-11" month-format="MMM yyyy" year-navigation style="width: 300px;" />
         </div>
       </section>
 

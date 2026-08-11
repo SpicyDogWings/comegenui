@@ -44,6 +44,7 @@ function onEvent(name: string, payload: any) {
         </p>
         <div class="playground-date-picker-col">
           <DatePicker style="max-width: 280px;" />
+          <DatePicker model-value="2026-08-11" year-navigation style="max-width: 280px;" />
         </div>
       </section>
 

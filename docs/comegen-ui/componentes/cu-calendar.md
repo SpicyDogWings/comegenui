@@ -18,6 +18,9 @@ Calendario de mes: muestra el mes actual y/o seleccionado con sus días distribu
 | `disabled` | `boolean` | `false` | Deshabilita todo el calendario |
 | `locale` | `string` | `"es"` | Locale para nombres de mes y días de la semana |
 | `weekStart` | `number` | `1` | Día en que arranca la semana: `0` = domingo, `1` = lunes |
+| `yearNavigation` | `boolean` | `false` | Muestra botones `«`/`»` para saltar de año en el header |
+| `monthFormat` | `string` | `"MMMM"` | Formato del mes en el header (tokens como MonthSlider) |
+| `yearFormat` | `string` | `"yyyy"` | Formato del año en el header |
 
 > **API espejo de los sliders:** las fechas aceptan `Date`, timestamp numérico o string `"YYYY-MM-DD"`. En HTML plano los atributos llegan como string; `modelValue="2026-08-11"` funciona directo.
 
@@ -92,6 +95,26 @@ Los días se distribuyen en `grid-template-columns: repeat(7, 1fr)`: **7 columna
 <!-- Ancho fijo -->
 <cu-calendar id="cal2" style="width: 280px;"></cu-calendar>
 ```
+
+---
+
+## Controles de mes (reutiliza `MonthSlider`)
+
+El header del calendario **reutiliza el componente `MonthSlider` del repo**: chevrons prev/next mes, label con **drag** para navegar meses, año automático cuando navegás a otro año, y navegación de año opcional. Las props `monthFormat`, `yearFormat` y `locale` se delegan tal cual al slider.
+
+```html
+<!-- Con saltos de año (botones « ») y mes abreviado -->
+<cu-calendar year-navigation month-format="MMM yyyy"></cu-calendar>
+
+<!-- Solo mes: drag sobre el label para navegar -->
+<cu-calendar></cu-calendar>
+```
+
+- **`year-navigation`** (default `false`): agrega los botones `«` / `»` para saltar de año (atributo booleano en HTML plano: `year-navigation`).
+- **Drag** sobre el label del mes navega meses (misma lógica que el slider).
+- **Año automático:** con `month-format="MMMM"` y el mes del año en curso, el año se oculta; al navegar a otro año aparece al lado del mes.
+- La navegación respeta `min`/`max` (los botones se deshabilitan en el borde).
+- El label del header usa la misma `variant` y `color` del calendario.
 
 ---
 

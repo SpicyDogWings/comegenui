@@ -10,10 +10,9 @@ describe("Calendar — grilla, límites y selección", () => {
     expect(weekdays[0]!.text()).toBe("Lun"); // weekStart default = 1 (lunes)
   });
 
-  it("muestra el header con el mes del modelValue", () => {
+  it("muestra el mes del modelValue en el header (MonthSlider)", () => {
     const w = mount(Calendar, { props: { modelValue: "2026-08-11" } });
-    expect(w.find(".cu-calendar-month").text()).toContain("2026");
-    expect(w.find(".cu-calendar-month").text()).toContain("Agosto");
+    expect(w.find(".cu-month-slider-label-month").text()).toBe("agosto");
   });
 
   it("renderiza un día por cada día del mes", () => {
@@ -87,32 +86,46 @@ describe("Calendar — grilla, límites y selección", () => {
       props: { modelValue: "2026-08-11", min: "2026-07-01", max: "2026-09-30" },
     });
     const vm = w.vm as any;
+    const label = () => w.find(".cu-month-slider-label-month").text();
     vm.nextMonth();
     await flushPromises();
-    expect(w.find(".cu-calendar-month").text()).toContain("Septiembre");
+    expect(label()).toBe("septiembre");
     vm.nextMonth();
     await flushPromises();
     // Octubre está fuera de max → no navega
-    expect(w.find(".cu-calendar-month").text()).toContain("Septiembre");
+    expect(label()).toBe("septiembre");
     vm.prevMonth();
     await flushPromises();
-    expect(w.find(".cu-calendar-month").text()).toContain("Agosto");
+    expect(label()).toBe("agosto");
     vm.prevMonth();
     await flushPromises();
     // Julio está dentro de min (2026-07-01) → navega
-    expect(w.find(".cu-calendar-month").text()).toContain("Julio");
+    expect(label()).toBe("julio");
     vm.prevMonth();
     await flushPromises();
     // Junio está fuera de min → no navega
-    expect(w.find(".cu-calendar-month").text()).toContain("Julio");
+    expect(label()).toBe("julio");
   });
 
-  it("goToMonth navega al mes pedido", async () => {
+  it("goToMonth navega al mes pedido y muestra el año auto", async () => {
     const w = mount(Calendar, { props: { modelValue: "2026-08-11" } });
     (w.vm as any).goToMonth("2030-06-15");
     await flushPromises();
-    expect(w.find(".cu-calendar-month").text()).toContain("Junio");
-    expect(w.find(".cu-calendar-month").text()).toContain("2030");
+    expect(w.find(".cu-month-slider-label-month").text()).toBe("junio");
+    expect(w.find(".cu-month-slider-label-year").text()).toContain("2030");
+  });
+
+  it("yearNavigation agrega los botones de año del MonthSlider", () => {
+    const w = mount(Calendar, { props: { modelValue: "2026-08-11" } });
+    // default (false): solo prev/next month
+    expect(w.findAll(".cu-month-slider .cu-button--icon-only")).toHaveLength(2);
+    const w2 = mount(Calendar, { props: { modelValue: "2026-08-11", yearNavigation: true } });
+    expect(w2.findAll(".cu-month-slider .cu-button--icon-only").length).toBeGreaterThanOrEqual(4);
+  });
+
+  it("monthFormat personaliza el label del header", () => {
+    const w = mount(Calendar, { props: { modelValue: "2026-08-11", monthFormat: "MMM" } });
+    expect(w.find(".cu-month-slider-label-month").text()).toBe("ago");
   });
 
   it("disabled bloquea la selección", async () => {

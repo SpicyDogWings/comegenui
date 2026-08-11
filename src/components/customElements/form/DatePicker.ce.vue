@@ -31,6 +31,9 @@ const props = defineProps({
   locale: { type: String, default: 'es' },
   weekStart: { type: Number, default: 1 },
   format: { type: String, default: 'dd/MM/yyyy' },
+  yearNavigation: { type: [Boolean, String] as PropType<boolean | string>, default: false },
+  monthFormat: { type: String, default: 'MMMM' },
+  yearFormat: { type: String, default: 'yyyy' },
   position: { type: String, default: 'bottom' },
   align: { type: String, default: 'start' },
   placement: { type: String, default: '' },
@@ -82,6 +85,9 @@ defineExpose({ open, close, toggle, getValue, setValue, clear, isOpen: () => pic
     :locale="props.locale"
     :week-start="props.weekStart"
     :format="props.format"
+    :year-navigation="props.yearNavigation"
+    :month-format="props.monthFormat"
+    :year-format="props.yearFormat"
     :position="props.position"
     :align="props.align"
     :placement="props.placement"

@@ -39,6 +39,18 @@ const props = defineProps({
     type: Number,
     default: 1,
   },
+  yearNavigation: {
+    type: [Boolean, String] as PropType<boolean | string>,
+    default: false,
+  },
+  monthFormat: {
+    type: String,
+    default: 'MMMM',
+  },
+  yearFormat: {
+    type: String,
+    default: 'yyyy',
+  },
 })
 
 const calendarRef = ref<InstanceType<typeof Calendar> | null>(null)
@@ -76,6 +88,9 @@ defineExpose({ nextMonth, prevMonth, goToMonth, getValue, setValue })
     :disabled="props.disabled"
     :locale="props.locale"
     :week-start="props.weekStart"
+    :year-navigation="props.yearNavigation"
+    :month-format="props.monthFormat"
+    :year-format="props.yearFormat"
     @select="ceEmit('select', $event)"
     @change="ceEmit('change', $event)"
     @update:modelValue="ceEmit('update:modelValue', $event)"
