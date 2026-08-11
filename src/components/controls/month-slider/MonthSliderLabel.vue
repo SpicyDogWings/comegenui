@@ -15,7 +15,7 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  // Permite usar el label sin drag (p.ej. en el YearSlider, que navega solo con botones)
+  // Permite usar el label sin drag (p.ej. si solo se quiere navegar con botones)
   draggable: {
     type: Boolean,
     default: true,
@@ -38,6 +38,17 @@ const props = defineProps({
   steps: {
     type: Number,
     default: 1,
+  },
+  // Hacia dónde se puede navegar (lo resuelve el padre según min/max).
+  // Cuando un gesto intenta cruzar un límite, el label "choca" contra la
+  // pared en vez de consumir la deslizada y rebotar sin efecto.
+  canNavigatePrev: {
+    type: Boolean,
+    default: true,
+  },
+  canNavigateNext: {
+    type: Boolean,
+    default: true,
   },
 })
 
@@ -78,11 +89,21 @@ function onPointerMove(event: PointerEvent) {
   const dx = event.clientX - lastX
   lastX = event.clientX
   accX += dx
+  // Arrastrar a la izquierda (accX negativo) = siguiente (+1),
+  // arrastrar a la derecha (accX positivo) = anterior (-1)
+  const dir = accX < 0 ? 1 : -1
+  const blocked = dir === 1 ? !props.canNavigateNext : !props.canNavigatePrev
+  if (blocked) {
+    // Límite alcanzado: el label se queda pegado a la pared sin consumir
+    // el gesto, así que invertir la dirección dispara de inmediato.
+    accX = dir === 1 ? -props.threshold : props.threshold
+    offsetX.value = accX
+    return
+  }
   // El label acompaña el dedo, limitado al umbral
   offsetX.value = Math.max(-props.threshold, Math.min(props.threshold, accX))
   if (Math.abs(accX) >= props.threshold) {
-    // Arrastrar a la izquierda (accX negativo) = mes(es) siguiente(s)
-    emit('navigate', (accX < 0 ? 1 : -1) * props.steps)
+    emit('navigate', dir * props.steps)
     fired.value = true
     offsetX.value = 0
   }
@@ -123,8 +144,8 @@ function endDrag() {
     @pointermove="onPointerMove"
     @pointerup="endDrag"
     @pointercancel="endDrag"
-    @keydown.left.prevent="props.draggable && emit('navigate', -1 * props.steps)"
-    @keydown.right.prevent="props.draggable && emit('navigate', props.steps)"
+    @keydown.left.prevent="props.draggable && props.canNavigatePrev && emit('navigate', -1 * props.steps)"
+    @keydown.right.prevent="props.draggable && props.canNavigateNext && emit('navigate', props.steps)"
   >
     <span :key="props.label" class="cu-month-slider-label-month">{{ props.label }}</span>
     <Badge

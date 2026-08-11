@@ -32,7 +32,7 @@ const outlineItems = [
       <section id="default" class="playground-year-slider-section">
         <h2>Default</h2>
         <p class="playground-year-slider-desc">
-          Muestra el año actual y navega de 1 en 1 con <code>&lt;</code> / <code>&gt;</code>.
+          Muestra el año actual y navega de 1 en 1 con <code>&lt;</code> / <code>&gt;</code> o arrastrando el label (swipe: izquierda = año siguiente).
         </p>
         <div class="playground-year-slider-col">
           <YearSlider />
@@ -45,11 +45,13 @@ const outlineItems = [
       <section id="min-max" class="playground-year-slider-section">
         <h2>Límites</h2>
         <p class="playground-year-slider-desc">
-          Con <code>min</code> y <code>max</code> la navegación queda limitada y los botones se deshabilitan en el borde.
+          Con <code>min</code> y <code>max</code> la navegación queda limitada: los botones se deshabilitan en el borde y el drag "choca" contra la pared (podés arrastrar el label).
+          Acepta años (<code>2020</code>) o fechas estilo MonthSlider (<code>"2020-01-01"</code>).
         </p>
         <div class="playground-year-slider-col">
           <YearSlider :min="2020" :max="2030" />
           <YearSlider :min="2024" :max="2028" variant="outlined" />
+          <YearSlider min="2020-01-01" max="2030-01-01" variant="soft" />
         </div>
       </section>
 

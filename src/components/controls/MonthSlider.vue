@@ -119,6 +119,14 @@ watch(
   },
 )
 
+// Si min/max cambian en runtime y dejan el mes fuera del rango, se re-ajusta
+watch([minDate, maxDate], () => {
+  const next = clampDate(month.value)
+  if (!sameMonth(next, month.value)) {
+    month.value = next
+  }
+})
+
 // ── Formato con tokens (Intl nativo) ──
 
 // Orden importa: se escanea de mayor a menor longitud
@@ -289,6 +297,8 @@ const colorStyles = computed(() => ({
       :disabled="props.disabled"
       :color="props.color"
       :variant="props.variant"
+      :can-navigate-prev="canPrevMonth"
+      :can-navigate-next="canNextMonth"
       @navigate="(dir) => setMonth(addMonths(month, dir))"
     />
 
