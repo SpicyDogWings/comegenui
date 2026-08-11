@@ -13,13 +13,14 @@ function readValue() {
 }
 
 const colors = ["primary", "secondary", "neutral", "success", "warning", "danger"] as const;
-const variants = ["solid", "outlined", "soft", "ghost", "subtle"] as const;
+const variants = ["solid", "outlined", "soft", "subtle"] as const;
 
 const outlineItems = [
   { label: 'Default', id: 'default' },
   { label: 'Controles de mes', id: 'month-controls' },
   { label: 'Seleccionado', id: 'selected' },
   { label: 'Min / Max', id: 'min-max' },
+  { label: 'Días deshabilitados', id: 'disabled-days' },
   { label: 'Semana domingo', id: 'week-start' },
   { label: 'Locale', id: 'locale' },
   { label: 'Variantes', id: 'variants' },
@@ -87,6 +88,23 @@ function onEvent(name: string, payload: any) {
         </p>
         <div class="playground-calendar-col">
           <Calendar min="2026-01-10" max="2026-12-24" model-value="2026-08-11" style="width: 300px;" />
+        </div>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="disabled-days" class="playground-section">
+        <h2>Días deshabilitados</h2>
+        <p class="playground-desc">
+          Además de <code>min</code>/<code>max</code> podés deshabilitar días de la semana (<code>disabled-weekdays</code>) o fechas puntuales (<code>disabled-dates</code>).
+        </p>
+        <div class="playground-calendar-col">
+          <p class="playground-desc"><strong>Ventana min/max:</strong> solo se puede elegir del 10 al 25.</p>
+          <Calendar min="2026-08-10" max="2026-08-25" model-value="2026-08-11" style="width: 300px;" />
+          <p class="playground-desc"><strong>De → hasta con días deshabilitados en el medio:</strong> ventana del 10 al 25 + <code>disabled-weekdays="0,6"</code> (fines de semana).</p>
+          <Calendar min="2026-08-10" max="2026-08-25" disabled-weekdays="0,6" model-value="2026-08-11" style="width: 300px;" />
+          <p class="playground-desc"><strong>Fechas puntuales (feriado):</strong> <code>disabled-dates="2026-08-15,2026-08-16"</code>.</p>
+          <Calendar disabled-dates="2026-08-15,2026-08-16" model-value="2026-08-11" style="width: 300px;" />
         </div>
       </section>
 

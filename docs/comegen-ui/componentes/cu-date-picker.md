@@ -13,8 +13,8 @@ Selector de fecha: un botón-trigger que abre un **dropdown con un calendario ad
 | `modelValue` | `string \| number \| Date \| null` | `null` | Fecha seleccionada |
 | `min` | `string \| number \| Date \| null` | `null` | Fecha mínima seleccionable |
 | `max` | `string \| number \| Date \| null` | `null` | Fecha máxima seleccionable |
-| `color` | `string` | `"neutral"` | Color semántico del trigger |
-| `variant` | `string` | `"soft"` | Variante del trigger: `outlined`, `soft`, `ghost`, `subtle` |
+| `color` | `string` | `"neutral"` | Color semántico del trigger y del día seleccionado del calendario interno (se pasa tal cual; `neutral` = neutral, ya no mapea a primary) |
+| `variant` | `string` | `"soft"` | Variante del trigger: `outlined`, `soft`, `ghost`, `subtle`. En el calendario interno `ghost` se mapea a `soft` (el calendario ya no tiene ghost) |
 | `disabled` | `boolean` | `false` | Deshabilita el picker completo |
 | `placeholder` | `string` | `""` | Texto cuando no hay fecha (default: `"Seleccionar fecha..."`) |
 | `format` | `string` | `"dd/MM/yyyy"` | Formato de la fecha en el trigger (ver [Formato](#formato)) |
@@ -29,6 +29,8 @@ Selector de fecha: un botón-trigger que abre un **dropdown con un calendario ad
 | `yearNavigation` | `boolean` | `false` | Controles de mes del calendario interno: botones `«`/`»` de año |
 | `monthFormat` | `string` | `"MMMM"` | Formato del mes en el header del calendario interno |
 | `yearFormat` | `string` | `"yyyy"` | Formato del año en el header del calendario interno |
+| `disabledWeekdays` | `number[] \| string` | `""` | Días de la semana no seleccionables (`0`=domingo … `6`=sábado). En HTML: `disabled-weekdays="0,6"` |
+| `disabledDates` | `(string \| Date)[] \| string` | `""` | Fechas puntuales no seleccionables. En HTML: `disabled-dates="2026-08-15,2026-08-16"` |
 
 ---
 

@@ -81,6 +81,38 @@ describe("Calendar — grilla, límites y selección", () => {
     expect(selected[0]!.text()).toBe("25");
   });
 
+  it("disabledWeekdays deshabilita esos días de la semana", () => {
+    // Agosto 2026: 1/8 = viernes → sábado 2 y domingo 3 deshabilitados con [0,6]
+    const w = mount(Calendar, {
+      props: { modelValue: "2026-08-11", disabledWeekdays: [0, 6] },
+    });
+    const days = w.findAll(".cu-calendar-day");
+    const day2 = days.find((d) => d.text() === "2");
+    const day4 = days.find((d) => d.text() === "4");
+    expect(day2!.attributes("disabled")).toBeDefined(); // sábado
+    expect(day4!.attributes("disabled")).toBeUndefined(); // lunes
+  });
+
+  it("disabledWeekdays acepta string separado por comas (CE)", () => {
+    const w = mount(Calendar, {
+      props: { modelValue: "2026-08-11", disabledWeekdays: "0,6" },
+    });
+    const day2 = w.findAll(".cu-calendar-day").find((d) => d.text() === "2");
+    expect(day2!.attributes("disabled")).toBeDefined();
+  });
+
+  it("disabledDates deshabilita fechas puntuales", () => {
+    const w = mount(Calendar, {
+      props: { modelValue: "2026-08-11", disabledDates: "2026-08-15,2026-08-16" },
+    });
+    const day15 = w.findAll(".cu-calendar-day").find((d) => d.text() === "15");
+    const day16 = w.findAll(".cu-calendar-day").find((d) => d.text() === "16");
+    const day17 = w.findAll(".cu-calendar-day").find((d) => d.text() === "17");
+    expect(day15!.attributes("disabled")).toBeDefined();
+    expect(day16!.attributes("disabled")).toBeDefined();
+    expect(day17!.attributes("disabled")).toBeUndefined();
+  });
+
   it("navega con nextMonth/prevMonth y respeta los límites", async () => {
     const w = mount(Calendar, {
       props: { modelValue: "2026-08-11", min: "2026-07-01", max: "2026-09-30" },

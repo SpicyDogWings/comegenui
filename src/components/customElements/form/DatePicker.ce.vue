@@ -34,6 +34,8 @@ const props = defineProps({
   yearNavigation: { type: [Boolean, String] as PropType<boolean | string>, default: false },
   monthFormat: { type: String, default: 'MMMM' },
   yearFormat: { type: String, default: 'yyyy' },
+  disabledWeekdays: { type: [Array, String] as PropType<number[] | string>, default: '' },
+  disabledDates: { type: [Array, String] as PropType<(string | Date)[] | string>, default: '' },
   position: { type: String, default: 'bottom' },
   align: { type: String, default: 'start' },
   placement: { type: String, default: '' },
@@ -88,6 +90,8 @@ defineExpose({ open, close, toggle, getValue, setValue, clear, isOpen: () => pic
     :year-navigation="props.yearNavigation"
     :month-format="props.monthFormat"
     :year-format="props.yearFormat"
+    :disabled-weekdays="props.disabledWeekdays"
+    :disabled-dates="props.disabledDates"
     :position="props.position"
     :align="props.align"
     :placement="props.placement"

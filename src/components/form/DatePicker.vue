@@ -43,6 +43,9 @@ const props = defineProps({
   yearNavigation: { type: [Boolean, String] as PropType<boolean | string>, required: false, default: false },
   monthFormat: { type: String, required: false, default: 'MMMM' },
   yearFormat: { type: String, required: false, default: 'yyyy' },
+  // Días deshabilitados del calendario interno (además de min/max)
+  disabledWeekdays: { type: [Array, String] as PropType<number[] | string>, required: false, default: '' },
+  disabledDates: { type: [Array, String] as PropType<(string | Date)[] | string>, required: false, default: '' },
   position: { type: String, required: false, default: 'bottom' },
   align: { type: String, required: false, default: 'start' },
   placement: { type: String, required: false, default: '' },
@@ -239,14 +242,16 @@ defineExpose({ open, close, toggle, getValue, setValue, clear, isOpen: () => dro
             :model-value="modelValue"
             :min="min"
             :max="max"
-            :color="color === 'neutral' ? 'primary' : color"
-            :variant="variant"
+            :color="color"
+            :variant="variant === 'ghost' ? 'soft' : variant"
             :locale="locale"
             :week-start="weekStart"
             :year-navigation="yearNavigation"
             :month-format="monthFormat"
             :year-format="yearFormat"
             :disabled="disabled"
+            :disabled-weekdays="disabledWeekdays"
+            :disabled-dates="disabledDates"
             @select="onSelect"
           />
           <div v-if="todayButton || clearable" class="cu-date-picker-footer">

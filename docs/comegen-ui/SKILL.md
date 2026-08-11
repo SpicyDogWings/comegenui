@@ -200,7 +200,7 @@ Refleja los validadores reales de cada `.ce.vue`. `—` significa que la variant
 
 > Checkbox, FileInputZone, Modal, ColorPicker, Collapse, FloatingButton, Label y Switch **no tienen prop `variant`**. Badge acepta `ghost`; Alert acepta `ghost` pero no `none`. Input, Textarea, Autocomplete, Select y FileInput aceptan solo `outlined`/`soft`/`ghost`/`subtle`. Table, MonthSlider y YearSlider aceptan `solid`/`outlined`/`soft`/`ghost`/`subtle`. Pagination acepta además `none`. `<cu-tabs>` usa su propio set de variantes: `tabs`, `pills`, `boxed`, `soft`.
 
-> **Calendar / DatePicker:** aceptan `solid`/`outlined`/`soft`/`ghost`/`subtle`. En `<cu-calendar>` la variante aplica al **día seleccionado**; en `<cu-date-picker>` aplica al trigger (el calendario interno hereda el mismo color).
+> **Calendar / DatePicker:** `<cu-calendar>` acepta `solid`/`outlined`/`soft`/`subtle` (la variante aplica al **día seleccionado**; `ghost` se eliminó porque se confundía con el día de hoy, que ahora se ve ghost: número en color sin fondo). `<cu-date-picker>` acepta `outlined`/`soft`/`ghost`/`subtle` en el **trigger** (el calendario interno usa el mismo color y mapea `ghost`→`soft`).
 
 **Default de `variant` por componente:**
 

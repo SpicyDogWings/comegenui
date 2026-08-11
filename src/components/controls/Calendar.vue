@@ -22,14 +22,28 @@ const props = defineProps({
     default: 'primary',
   },
   variant: {
-    type: String as PropType<'solid' | 'outlined' | 'soft' | 'ghost' | 'subtle'>,
+    // ghost se quita: el día de hoy (transparente + color accent) se confundía con el seleccionado ghost
+    type: String as PropType<'solid' | 'outlined' | 'soft' | 'subtle'>,
     default: 'soft',
     validator: (value: string) =>
-      ['solid', 'outlined', 'soft', 'ghost', 'subtle'].includes(value),
+      ['solid', 'outlined', 'soft', 'subtle'].includes(value),
   },
   disabled: {
     type: Boolean,
     default: false,
+  },
+  // Días deshabilitados adicionales (además de min/max):
+  // - disabledWeekdays: números de día de la semana (0 = domingo ... 6 = sábado).
+  //   En CE llega como string "0,6" (o array en Vue).
+  disabledWeekdays: {
+    type: [Array, String] as PropType<number[] | string>,
+    default: () => [],
+  },
+  // - disabledDates: fechas puntuales "YYYY-MM-DD" (o Date/timestamp en Vue).
+  //   En CE llega como string separado por comas "2026-08-15,2026-08-16".
+  disabledDates: {
+    type: [Array, String] as PropType<(string | Date)[] | string>,
+    default: () => [],
   },
   locale: {
     type: String,
@@ -109,6 +123,30 @@ function addMonths(date: Date, delta: number): Date {
 
 const minDate = computed<Date | null>(() => parseDateInput(props.min))
 const maxDate = computed<Date | null>(() => parseDateInput(props.max))
+
+// Normaliza disabledWeekdays ("0,6" en CE o [0,6] en Vue)
+const disabledWeekdayList = computed<number[]>(() => {
+  if (Array.isArray(props.disabledWeekdays)) return props.disabledWeekdays
+  if (typeof props.disabledWeekdays === 'string' && props.disabledWeekdays.trim()) {
+    return props.disabledWeekdays
+      .split(',')
+      .map((s) => Number(s.trim()))
+      .filter((n) => !Number.isNaN(n))
+  }
+  return []
+})
+
+// Normaliza disabledDates ("2026-08-15,2026-08-16" en CE o array en Vue)
+const disabledDateList = computed<Date[]>(() => {
+  const raw = Array.isArray(props.disabledDates)
+    ? props.disabledDates
+    : typeof props.disabledDates === 'string' && props.disabledDates.trim()
+      ? props.disabledDates.split(',')
+      : []
+  return raw
+    .map((d) => parseDateInput(String(d).trim()))
+    .filter((d): d is Date => d !== null)
+})
 
 // Recorta el mes visible al mes de min/max (navegación no sale del rango)
 function clampMonth(date: Date): Date {
@@ -233,6 +271,8 @@ function isDisabledDay(day: Date): boolean {
   if (props.disabled) return true
   if (minDate.value && day < minDate.value) return true
   if (maxDate.value && day > maxDate.value) return true
+  if (disabledWeekdayList.value.includes(day.getDay())) return true
+  if (disabledDateList.value.some((d) => sameDay(day, d))) return true
   return false
 }
 
@@ -409,9 +449,12 @@ const colorStyles = computed(() => ({
   cursor: not-allowed;
 }
 
+/* Hoy: transparente + número en color accent (look ghost). Sin fondo para no
+   confundirse con el día seleccionado — se distingue solo por el color. */
 .cu-calendar-day.cu-calendar-day--today {
-  background: var(--cal-subtle);
+  background: transparent;
   color: var(--cal-accent);
+  font-weight: var(--cu-font-weight-semibold);
 }
 
 /* Variantes del día seleccionado */
@@ -433,10 +476,6 @@ const colorStyles = computed(() => ({
 }
 .cu-calendar-day--selected.cu-calendar-day--soft:hover:not(:disabled) {
   background: var(--cal-soft-hover);
-}
-.cu-calendar-day--selected.cu-calendar-day--ghost {
-  color: var(--cal-accent);
-  font-weight: var(--cu-font-weight-semibold);
 }
 .cu-calendar-day--selected.cu-calendar-day--subtle {
   background: var(--cal-subtle);

@@ -14,7 +14,9 @@ Calendario de mes: muestra el mes actual y/o seleccionado con sus días distribu
 | `min` | `string \| number \| Date \| null` | `null` | Fecha mínima seleccionable (días anteriores quedan deshabilitados) |
 | `max` | `string \| number \| Date \| null` | `null` | Fecha máxima seleccionable |
 | `color` | `string` | `"primary"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `string` | `"soft"` | Variante del día seleccionado: `solid`, `outlined`, `soft`, `ghost`, `subtle` |
+| `variant` | `string` | `"soft"` | Variante del día seleccionado: `solid`, `outlined`, `soft`, `subtle` (sin `ghost`: se confunde con el día de hoy) |
+| `disabledWeekdays` | `number[] \| string` | `""` | Días de la semana no seleccionables (`0`=domingo … `6`=sábado). En HTML plano: `disabled-weekdays="0,6"` |
+| `disabledDates` | `(string \| Date)[] \| string` | `""` | Fechas puntuales no seleccionables `"YYYY-MM-DD"`. En HTML plano: `disabled-dates="2026-08-15,2026-08-16"` |
 | `disabled` | `boolean` | `false` | Deshabilita todo el calendario |
 | `locale` | `string` | `"es"` | Locale para nombres de mes y días de la semana |
 | `weekStart` | `number` | `1` | Día en que arranca la semana: `0` = domingo, `1` = lunes |
@@ -149,13 +151,34 @@ cal.max = '2026-12-24';
 
 ## Variantes del día seleccionado
 
-El día seleccionado usa la variante elegida; el día de hoy se marca con fondo `subtle` (si coincide con la selección, gana la variante de seleccionado):
+El día seleccionado usa la variante elegida (`solid`, `outlined`, `soft`, `subtle`). **La variante `ghost` se eliminó**: su look (transparente + número en color) es el mismo que el del día de hoy y confundía.
+
+El **día de hoy** se muestra como ghost: número en el color accent, sin fondo (si hoy coincide con la selección, gana la variante de seleccionado):
 
 ```html
 <cu-calendar model-value="2026-08-11" variant="solid"></cu-calendar>
 <cu-calendar model-value="2026-08-11" variant="outlined"></cu-calendar>
-<cu-calendar model-value="2026-08-11" variant="ghost"></cu-calendar>
+<cu-calendar model-value="2026-08-11" variant="soft"></cu-calendar>
 ```
+
+---
+
+## Días deshabilitados
+
+Además de `min`/`max`, podés deshabilitar días de la semana o fechas puntuales. Se complementan entre sí:
+
+```html
+<!-- De → hasta (10 al 25) + fines de semana deshabilitados en el medio -->
+<cu-calendar min="2026-08-10" max="2026-08-25" disabled-weekdays="0,6"></cu-calendar>
+
+<!-- Ventana + un feriado puntual -->
+<cu-calendar min="2026-08-10" max="2026-08-25" disabled-dates="2026-08-15,2026-08-16"></cu-calendar>
+
+<!-- Solo fines de semana, todo el mes -->
+<cu-calendar disabled-weekdays="0,6"></cu-calendar>
+```
+
+> Los días deshabilitados no se pueden seleccionar (ni con click ni con `setValue`) y se ven atenuados.
 
 ---
 

@@ -24,12 +24,20 @@ const props = defineProps({
     default: 'primary',
   },
   variant: {
-    type: String as PropType<'solid' | 'outlined' | 'soft' | 'ghost' | 'subtle'>,
+    type: String as PropType<'solid' | 'outlined' | 'soft' | 'subtle'>,
     default: 'soft',
   },
   disabled: {
     type: Boolean,
     default: false,
+  },
+  disabledWeekdays: {
+    type: [Array, String] as PropType<number[] | string>,
+    default: '',
+  },
+  disabledDates: {
+    type: [Array, String] as PropType<(string | Date)[] | string>,
+    default: '',
   },
   locale: {
     type: String,
@@ -91,6 +99,8 @@ defineExpose({ nextMonth, prevMonth, goToMonth, getValue, setValue })
     :year-navigation="props.yearNavigation"
     :month-format="props.monthFormat"
     :year-format="props.yearFormat"
+    :disabled-weekdays="props.disabledWeekdays"
+    :disabled-dates="props.disabledDates"
     @select="ceEmit('select', $event)"
     @change="ceEmit('change', $event)"
     @update:modelValue="ceEmit('update:modelValue', $event)"
