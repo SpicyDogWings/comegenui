@@ -48,7 +48,7 @@ interface Column {
   label?: string;                                                   // Texto del header
   cell?: (row: Record<string, any>) => string | string[];            // Render custom de la celda
   editable?: boolean | RegExp | ((row: Record<string, any>) => boolean);  // Editable: bool, regex validator, o función condicional
-  inputType?: "input" | "textarea" | "select";                       // Tipo de editor
+  inputType?: "input" | "textarea" | "select" | "autocomplete" | "date";  // Tipo de editor
   selectOptions?: { value: string; label: string }[] | ((row: Record<string, any>) => { value: string; label: string }[]);  // Opciones del select
   validator?: (value: string, row: Record<string, any>) => boolean;  // Validador custom
   singleClick?: boolean;                                             // Si true, edita con un click (default: doble click)
@@ -401,6 +401,35 @@ tabla.columns = [
     : [{ value: 'a', label: 'Categoría A' }],
 }
 ```
+
+---
+
+## Edición con fecha
+
+`inputType: 'date'` + `date.*` para que la celda editable renderice un `<cu-date-picker>` como editor. El valor se guarda como **string `"YYYY-MM-DD"`** (en modo vista se muestra con `date.format`, default `dd/MM/yyyy`):
+
+```js
+tabla.columns = [
+  { key: 'nombre', label: 'Nombre', editable: true },
+  {
+    key: 'fecha',
+    label: 'Fecha',
+    editable: true,
+    inputType: 'date',
+    singleClick: true,
+    date: {
+      format: 'dd/MM/yyyy',        // tokens iguales al <cu-date-picker>
+      min: '2026-01-01',           // límite inferior (desde)
+      max: '2026-12-31',           // límite superior (hasta)
+      yearNavigation: true,        // botones « » de año en el calendario
+      disabledWeekdays: '0,6',     // fines de semana deshabilitados
+      disabledDates: '2026-08-15', // feriados puntuales
+    },
+  },
+];
+```
+
+> El evento `edit-save` entrega el valor como `"YYYY-MM-DD"`. La config `date.*` acepta los mismos valores que las props del `<cu-date-picker>` (string `"0,6"` o array `[0,6]` para `disabledWeekdays`, etc.).
 
 ---
 

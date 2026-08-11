@@ -1,14 +1,12 @@
 <script setup lang="ts">
-import { ref, computed, defineModel, onMounted, onUnmounted } from "vue";
+import { ref, computed, onMounted, onUnmounted, type PropType } from "vue";
 import Button from "./buttons/Button.vue";
 
 const props = defineProps({
   color: {
-    type: String,
+    type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     required: false,
     default: "neutral",
-    validator: (value: string) =>
-      ["primary", "secondary", "neutral", "success", "warning", "danger"].includes(value),
   },
   variant: {
     type: String,
@@ -34,6 +32,9 @@ const props = defineProps({
   },
   offset: { type: Number, required: false, default: 4 },
   fixed: { type: Boolean, required: false, default: false },
+  // Ancho del panel (CSS, ej: "280px"). Default "" = width:100% del trigger.
+  // Útil cuando el contenido del panel es más ancho que el trigger (ej: un calendario).
+  panelWidth: { type: String, required: false, default: "" },
 });
 
 const effectivePosition = computed(() => props.position || props.placement.split("-")[0] || "bottom");
@@ -55,12 +56,13 @@ const panelStyle = computed(() => {
       top: panelPos.value.top,
       left: panelPos.value.left,
       zIndex: "10000",
+      ...(props.panelWidth ? { width: props.panelWidth } : {}),
     };
   }
 
   base.position = "absolute";
   base.zIndex = "1000";
-  base.width = "100%";
+  base.width = props.panelWidth || "100%";
 
   if (effectivePosition.value === "bottom") {
     base.top = "100%";

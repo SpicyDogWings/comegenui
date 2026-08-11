@@ -85,6 +85,7 @@ const outlineItems = [
         <div class="playground-month-slider-col">
           <MonthSlider model-value="2025-03-01" />
           <MonthSlider model-value="2027-11-15" month-format="MMM" />
+          <MonthSlider model-value="2025-03-01" variant="solid" />
         </div>
       </section>
 

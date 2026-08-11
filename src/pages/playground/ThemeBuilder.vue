@@ -22,6 +22,8 @@ import Tabs from '@/components/Tabs.vue'
 import Collapse from '@/components/overlay/Collapse.vue'
 import MonthSlider from '@/components/controls/MonthSlider.vue'
 import YearSlider from '@/components/controls/YearSlider.vue'
+import Calendar from '@/components/controls/Calendar.vue'
+import DatePicker from '@/components/form/DatePicker.vue'
 
 const STORAGE_KEY = 'cu-theme-builder'
 
@@ -616,6 +618,17 @@ onBeforeUnmount(() => {
               <YearSlider variant="outlined" color="success" />
               <YearSlider :min="2020" :max="2030" color="warning" />
             </div>
+          </div>
+        </div>
+
+        <div class="tb-preview-section">
+          <h3>Calendar & Date Picker</h3>
+          <div class="tb-preview-row">
+            <Calendar model-value="2026-08-11" style="width: 300px;" />
+            <Calendar model-value="2026-08-11" variant="solid" year-navigation style="width: 330px;" />
+            <Calendar model-value="2026-08-11" color="success" style="width: 300px;" />
+            <DatePicker model-value="2026-08-11" style="max-width: 280px;" />
+            <DatePicker model-value="2026-08-11" year-navigation style="max-width: 280px;" />
           </div>
         </div>
 

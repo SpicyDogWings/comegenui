@@ -5,6 +5,7 @@ import Input from "../form/Input.vue";
 import Textarea from "../form/Textarea.vue";
 import Select from "../form/Select.vue";
 import Autocomplete from "../form/Autocomplete.vue";
+import DatePicker from "../form/DatePicker.vue";
 
 interface AutocompleteItem {
   label: string;
@@ -25,7 +26,7 @@ interface Column {
   label?: string;
   editable?: boolean | RegExp | ((row: Record<string, any>) => boolean);
   validator?: (value: string, row: Record<string, any>) => boolean;
-  inputType?: "input" | "textarea" | "select" | "autocomplete";
+  inputType?: "input" | "textarea" | "select" | "autocomplete" | "date";
   singleClick?: boolean;
   inlineEdit?: boolean; // Estado por columna: renderiza el editor directo
   width?: string;
@@ -33,6 +34,17 @@ interface Column {
 
   color?: string;
   variant?: string;
+
+  date?: {
+    format?: string;
+    min?: string | number | Date;
+    max?: string | number | Date;
+    yearNavigation?: boolean;
+    disabledWeekdays?: number[] | string;
+    disabledDates?: (string | Date)[] | string;
+    color?: string;
+    variant?: string;
+  };
 
   select?: {
     options: SelectOption[];
@@ -121,7 +133,7 @@ const isEditing = ref(false);
 const showEditor = computed(() => columnInlineEdit.value || inlineEdit.value || isEditing.value);
 const saving = ref(false);
 const editValue = ref<string>("");
-const inputRef = ref<InstanceType<typeof Input | typeof Textarea | typeof Select | typeof Autocomplete> | null>(null);
+const inputRef = ref<{ focus?: () => void } | null>(null);
 
 watch(
   () => props.value,
@@ -179,6 +191,21 @@ const cancelEdit = () => {
   }
 };
 
+// Fecha elegida en el <cu-date-picker> → se guarda como "YYYY-MM-DD"
+const onDateChange = (d: Date | null) => {
+  if (!d) return;
+  editValue.value = toDateValue(d);
+  saveEdit();
+};
+
+// El panel del picker se cerró (click afuera / Escape) sin elegir: en modo
+// lápiz salimos del editor; en inline el editor queda (puede reabrir).
+const onDateClose = () => {
+  if (!inlineEdit.value && isEditing.value) {
+    isEditing.value = false;
+  }
+};
+
 const handleKeyDown = (event: KeyboardEvent) => {
   if (event.key === "Enter" && props.column.inputType !== "textarea") {
     saveEdit();
@@ -198,8 +225,39 @@ const displayValue = computed(() => {
     const item = items.find(i => (i.value || i.label) === props.value);
     return item ? item.label : String(props.value);
   }
+  if (props.column.inputType === 'date') {
+    return formatDateValue(props.value, props.column.date?.format || 'dd/MM/yyyy');
+  }
   return props.value != null ? String(props.value) : "";
 });
+
+// ── Fechas (inputType 'date') ──
+// El valor se guarda como string "YYYY-MM-DD"; en modo vista se formatea con los
+// mismos tokens del <cu-date-picker> (yyyy yy MMMM MMM MM dd).
+function toDateValue(d: Date): string {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+function formatDateValue(value: string | number, format: string): string {
+  const s = String(value ?? "").trim();
+  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return s;
+  const date = new Date(Number(m[1] ?? 0), Number(m[2] ?? 1) - 1, Number(m[3] ?? 1));
+  if (Number.isNaN(date.getTime())) return s;
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const monthName = (long: boolean) =>
+    new Intl.DateTimeFormat("es", { month: long ? "long" : "short" }).format(date);
+  const tokens: Record<string, () => string> = {
+    yyyy: () => String(date.getFullYear()),
+    yy: () => String(date.getFullYear()).slice(-2),
+    MMMM: () => monthName(true),
+    MMM: () => monthName(false),
+    MM: () => pad(date.getMonth() + 1),
+    dd: () => pad(date.getDate()),
+  };
+  return format.replace(/yyyy|MMMM|MMM|yy|MM|dd/g, (t) => tokens[t]?.() ?? t);
+}
 
 const validationClass = computed(() => {
   if (!props.validation.success && props.validation.error) {
@@ -241,6 +299,7 @@ const elementColor = computed(() => {
       : col.inputType === "autocomplete" ? col.autocomplete?.color
       : col.inputType === "textarea" ? col.textarea?.color
       : col.inputType === "input" ? col.input?.color
+      : col.inputType === "date" ? col.date?.color
       : undefined,
     props.row
   );
@@ -256,6 +315,7 @@ const elementVariant = computed(() => {
       : col.inputType === "autocomplete" ? col.autocomplete?.variant
       : col.inputType === "textarea" ? col.textarea?.variant
       : col.inputType === "input" ? col.input?.variant
+      : col.inputType === "date" ? col.date?.variant
       : undefined,
     props.row
   );
@@ -316,6 +376,23 @@ const canEdit = computed(() => {
         class="cu-editable-cell-input"
         :color="elementColor"
         :variant="elementVariant"
+      />
+      <DatePicker
+        v-else-if="column.inputType === 'date'"
+        ref="inputRef"
+        :model-value="editValue"
+        :format="column.date?.format"
+        :min="column.date?.min"
+        :max="column.date?.max"
+        :year-navigation="column.date?.yearNavigation"
+        :disabled-weekdays="column.date?.disabledWeekdays"
+        :disabled-dates="column.date?.disabledDates"
+        :color="(elementColor as any)"
+        :variant="(elementVariant as any)"
+        fixed
+        @change="onDateChange"
+        @close="onDateClose"
+        class="cu-editable-cell-input"
       />
       <Input
         v-else
