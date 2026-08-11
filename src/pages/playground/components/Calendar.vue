@@ -158,7 +158,7 @@ function onEvent(name: string, payload: any) {
           getValue(): <strong>{{ programmaticValue ? programmaticValue.toISOString().slice(0, 10) : '—' }}</strong>
         </p>
         <div class="playground-calendar-col">
-          <Calendar ref="programmaticRef" style="width: 300px;" />
+          <Calendar ref="programmaticRef" style="width: 300px;" @select="readValue" />
         </div>
       </section>
 
