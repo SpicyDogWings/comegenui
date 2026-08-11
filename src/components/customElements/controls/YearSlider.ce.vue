@@ -6,8 +6,9 @@ import { initTokens } from '@/plugins/cu-tokens/css'
 initTokens()
 
 const props = defineProps({
+  // API espejo de MonthSlider: acepta número, string numérico o fecha "YYYY-MM-DD"
   modelValue: {
-    type: Number,
+    type: [Number, String] as PropType<number | string | null>,
     default: null,
   },
   variant: {
@@ -15,11 +16,11 @@ const props = defineProps({
     default: 'soft',
   },
   min: {
-    type: Number,
+    type: [Number, String] as PropType<number | string | null>,
     default: null,
   },
   max: {
-    type: Number,
+    type: [Number, String] as PropType<number | string | null>,
     default: null,
   },
   color: {
@@ -49,9 +50,9 @@ function ceEmit(event: string, payload: unknown) {
 
 function nextYear() { sliderRef.value?.nextYear() }
 function prevYear() { sliderRef.value?.prevYear() }
-function goToYear(value: number) { sliderRef.value?.goToYear(value) }
+function goToYear(value: number | string) { sliderRef.value?.goToYear(value) }
 function getValue(): number | null { return sliderRef.value?.getValue() ?? null }
-function setValue(value: number | null) { sliderRef.value?.setValue(value) }
+function setValue(value: number | string | null) { sliderRef.value?.setValue(value) }
 
 defineExpose({ nextYear, prevYear, goToYear, getValue, setValue })
 </script>
