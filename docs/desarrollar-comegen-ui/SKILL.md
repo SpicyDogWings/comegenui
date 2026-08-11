@@ -73,6 +73,8 @@ Si la tarea es **documentar** un componente para la skill del usuario final, us�
 
 > **Regla de oro #2 — Especificidad de variantes (activa en CADA componente que crees o modifiques):** toda regla de variante que defina `color`/`background-color` va con **doble clase** (`.cu-x.cu-x--variant`), y el texto sobre `solid` va **siempre** con `var(--cu-color-surface)` — **nunca** `--cu-color-{name}-text`, que es el color oscurecido y en temas como `sigacadv2` llega a `#000000` (texto negro sobre solid). Sin esto, estilos globales del consumidor/playground (`button { color }`, `.card span { color }`, resets) rompen la variante. Detalle y checklist en [convenciones-desarrollo.md](convenciones-desarrollo.md#especificidad-en-variantes-con-color-propio).
 
+> **Regla de oro #3 — Workflow de ramas (activa en CADA tarea de desarrollo):** toda nueva funcionalidad o cambio (feature, fix, docs, tests) se desarrolla en una **rama propia creada fuera de `main`** (ej: `feat/mi-feature`, `fix/arreglo-x`, `docs/tema-y`, `test/componente-z`). **Nunca se commitea directo en `main`**: `main` solo recibe merges (idealmente con MR/review). Al terminar la tarea, mergear la rama en `main` (o abrir el MR) y borrar la rama local.
+
 ---
 
 ## Estructura del proyecto

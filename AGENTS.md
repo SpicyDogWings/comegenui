@@ -189,6 +189,7 @@ Tokens compartidos: tipografía, spacing, border-radius, shadows, borders.
 8. Los componentes nuevos van en `src/components/{category}/` y `src/components/customElements/{category}/`
 9. Los entry points van en `src/lib/{category}/mi-componente.ts`
 10. `hightContrast` es el nombre correcto del prop (typo persistente en todo el codebase)
+11. **Toda nueva funcionalidad o cambio se desarrolla en una rama propia fuera de `main`** (ej: `feat/x`, `fix/x`, `docs/x`, `test/x`). Nunca commitees directo en `main`; `main` solo recibe merges. Si la tarea requiere cambios y no hay rama, creala antes de tocar código.
 
 ---
 
