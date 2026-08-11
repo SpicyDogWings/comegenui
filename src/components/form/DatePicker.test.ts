@@ -86,4 +86,23 @@ describe("DatePicker — label del trigger y selección", () => {
     expect(style).toContain("right: 100%"); // panel a la izquierda
     expect(style).not.toContain("left: 100%");
   });
+
+  it("placement right-start abre el panel a la derecha, alineado arriba", async () => {
+    const w = mount(DatePicker, { props: { placement: "right-start", modelValue: "2026-08-11" } });
+    await w.find(".cu-date-picker-toggle").trigger("click");
+    await flushPromises();
+    const style = w.find(".cu-dropdown-panel").attributes("style") || "";
+    expect(style).toContain("left: 100%"); // panel a la derecha
+    expect(style).toContain("top: 0");     // alineado arriba (start)
+    expect(style).not.toContain("bottom: 0");
+  });
+
+  it("position right align center centra verticalmente el panel", async () => {
+    const w = mount(DatePicker, { props: { position: "right", align: "center", modelValue: "2026-08-11" } });
+    await w.find(".cu-date-picker-toggle").trigger("click");
+    await flushPromises();
+    const style = w.find(".cu-dropdown-panel").attributes("style") || "";
+    expect(style).toContain("left: 100%");
+    expect(style).toContain("translateY(-50%)");
+  });
 });

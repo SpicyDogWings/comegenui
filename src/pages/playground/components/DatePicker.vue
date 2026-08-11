@@ -181,6 +181,10 @@ function onEvent(name: string, payload: any) {
             <strong>position="right" align="start"</strong>
             <DatePicker model-value="2026-08-11" position="right" align="start" style="max-width: 280px;" />
           </div>
+          <div class="playground-position-demo">
+            <strong>position="right" align="center"</strong>
+            <DatePicker model-value="2026-08-11" position="right" align="center" style="max-width: 280px;" />
+          </div>
           <div class="playground-position-demo playground-position-demo--left">
             <strong>position="left"</strong>
             <DatePicker model-value="2026-08-11" position="left" style="max-width: 280px;" />

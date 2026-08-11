@@ -93,6 +93,9 @@ const outlineItems = [
           <Dropdown label="Right" position="right">
             <Button variant="ghost" style="width:100%;justify-content:flex-start">Right</Button>
           </Dropdown>
+          <Dropdown label="Right + Center" position="right" align="center">
+            <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
+          </Dropdown>
           <div class="playground-dropdown-demo--left">
             <Dropdown label="Left" position="left">
               <Button variant="ghost" style="width:100%;justify-content:flex-start">Left</Button>
