@@ -64,6 +64,24 @@ describe("Calendar — grilla, límites y selección", () => {
     expect(w.emitted("update:modelValue")).toBeUndefined();
   });
 
+  it("al clickear un día queda marcado como seleccionado (estado interno)", async () => {
+    const w = mount(Calendar, { props: { modelValue: "2026-08-11" } });
+    const day20 = w.findAll(".cu-calendar-day").find((d) => d.text() === "20");
+    await day20!.trigger("click");
+    const selected = w.findAll(".cu-calendar-day--selected");
+    expect(selected).toHaveLength(1);
+    expect(selected[0]!.text()).toBe("20");
+  });
+
+  it("setValue actualiza el día seleccionado (estado interno)", async () => {
+    const w = mount(Calendar, { props: { modelValue: "2026-08-11" } });
+    (w.vm as any).setValue("2026-08-25");
+    await flushPromises();
+    const selected = w.findAll(".cu-calendar-day--selected");
+    expect(selected).toHaveLength(1);
+    expect(selected[0]!.text()).toBe("25");
+  });
+
   it("navega con nextMonth/prevMonth y respeta los límites", async () => {
     const w = mount(Calendar, {
       props: { modelValue: "2026-08-11", min: "2026-07-01", max: "2026-09-30" },

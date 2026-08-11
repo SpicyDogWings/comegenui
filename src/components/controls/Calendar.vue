@@ -117,12 +117,15 @@ function clampMonth(date: Date): Date {
 const today = new Date()
 const viewMonth = ref<Date>(clampMonth(parseDateInput(props.modelValue) ?? startOfCurrentMonth()))
 
-const selectedDate = computed<Date | null>(() => parseDateInput(props.modelValue))
+// Estado interno de la selección (como Select/sliders): se actualiza al
+// clickear y se sincroniza cuando cambia la prop modelValue desde afuera.
+const selectedValue = ref<Date | null>(parseDateInput(props.modelValue))
 
 watch(
   () => props.modelValue,
   (value) => {
     const parsed = parseDateInput(value)
+    selectedValue.value = parsed
     if (parsed === null) return
     viewMonth.value = clampMonth(new Date(parsed.getFullYear(), parsed.getMonth(), 1))
   },
@@ -219,13 +222,14 @@ function isDisabledDay(day: Date): boolean {
 
 function selectDay(day: Date) {
   if (isDisabledDay(day)) return
+  selectedValue.value = day
   emit('update:modelValue', day)
   emit('change', day)
   emit('select', day)
 }
 
 function dayClasses(day: Date): Record<string, boolean> {
-  const selected = selectedDate.value !== null && sameDay(day, selectedDate.value)
+  const selected = selectedValue.value !== null && sameDay(day, selectedValue.value)
   return {
     'cu-calendar-day--selected': selected,
     'cu-calendar-day--today': sameDay(day, today) && !selected,
@@ -236,12 +240,13 @@ function dayClasses(day: Date): Record<string, boolean> {
 // ── API programática ──
 
 function getValue(): Date | null {
-  return selectedDate.value
+  return selectedValue.value
 }
 
 function setValue(value: string | number | Date | null) {
   const parsed = parseDateInput(value)
   if (parsed === null) return
+  selectedValue.value = parsed
   viewMonth.value = clampMonth(new Date(parsed.getFullYear(), parsed.getMonth(), 1))
   emit('update:modelValue', parsed)
   emit('change', parsed)

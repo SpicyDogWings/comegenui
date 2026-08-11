@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, type PropType } from 'vue'
+import { computed, ref, watch, type PropType } from 'vue'
 import Dropdown from '../Dropdown.vue'
 import Button from '../buttons/Button.vue'
 import Calendar from '../controls/Calendar.vue'
@@ -100,16 +100,27 @@ function formatDate(date: Date, format: string, locale: string): string {
 
 // ── Estado y label ──
 
-const selectedDate = computed<Date | null>(() => parseDateInput(props.modelValue))
+// Estado interno (como Select): se actualiza al seleccionar y se sincroniza
+// con la prop modelValue desde afuera. Sin esto, en el CE el valor emitido
+// no volvía como prop y el trigger/calendario no reflejaban la selección.
+const selectedValue = ref<Date | null>(parseDateInput(props.modelValue))
+
+watch(
+  () => props.modelValue,
+  (value) => {
+    selectedValue.value = parseDateInput(value)
+  },
+)
 
 const selectedLabel = computed(() => {
-  if (selectedDate.value === null) return props.placeholder || 'Seleccionar fecha...'
-  return formatDate(selectedDate.value, props.format, props.locale)
+  if (selectedValue.value === null) return props.placeholder || 'Seleccionar fecha...'
+  return formatDate(selectedValue.value, props.format, props.locale)
 })
 
 // ── Interacción ──
 
 function onSelect(day: Date) {
+  selectedValue.value = day
   emit('update:modelValue', day)
   emit('change', day)
   emit('select', day)
@@ -118,6 +129,7 @@ function onSelect(day: Date) {
 
 function goToday() {
   const now = normalize(new Date())
+  selectedValue.value = now
   emit('update:modelValue', now)
   emit('change', now)
   emit('select', now)
@@ -125,6 +137,7 @@ function goToday() {
 }
 
 function clear() {
+  selectedValue.value = null
   emit('update:modelValue', null)
   emit('change', null)
   dropdownRef.value?.close()
@@ -133,12 +146,13 @@ function clear() {
 // ── API programática ──
 
 function getValue(): Date | null {
-  return selectedDate.value
+  return selectedValue.value
 }
 
 function setValue(value: string | number | Date | null) {
   const parsed = parseDateInput(value)
   if (parsed === null) return
+  selectedValue.value = parsed
   emit('update:modelValue', parsed)
   emit('change', parsed)
 }
