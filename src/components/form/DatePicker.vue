@@ -46,9 +46,8 @@ const props = defineProps({
   // Días deshabilitados del calendario interno (además de min/max)
   disabledWeekdays: { type: [Array, String] as PropType<number[] | string>, required: false, default: '' },
   disabledDates: { type: [Array, String] as PropType<(string | Date)[] | string>, required: false, default: '' },
-  position: { type: String, required: false, default: '' },
-  align: { type: String, required: false, default: '' },
-  placement: { type: String, required: false, default: '' },
+  position: { type: String, required: false, default: 'bottom' },
+  align: { type: String, required: false, default: 'start' },
   fixed: { type: Boolean, required: false, default: false },
   clearable: { type: Boolean, required: false, default: true },
   todayButton: { type: Boolean, required: false, default: true },
@@ -183,7 +182,6 @@ defineExpose({ open, close, toggle, getValue, setValue, clear, isOpen: () => dro
       :disabled="disabled"
       :position="position"
       :align="align"
-      :placement="placement"
       :fixed="fixed"
       :offset="4"
       :panel-width="panelWidth"

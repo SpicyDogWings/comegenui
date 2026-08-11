@@ -26,7 +26,6 @@ const props = defineProps({
   minChars: { type: Number, required: false, default: 0 },
   position: { type: String, required: false, default: "bottom" },
   align: { type: String, required: false, default: "start" },
-  placement: { type: String, required: false, default: "" },
   items: { type: Array, required: false, default: () => [] },
   modelValue: { type: String, required: false, default: "" },
 });
@@ -80,7 +79,6 @@ defineExpose({
     :min-chars="props.minChars"
     :position="props.position"
     :align="props.align"
-    :placement="props.placement"
     :items="props.items"
     :model-value="innerValue"
     @select="ceEmit('select', $event)"

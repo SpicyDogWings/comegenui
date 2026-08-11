@@ -17,8 +17,6 @@ const outlineItems = [
   { label: 'Variants', id: 'variants' },
   { label: 'Colors', id: 'colors' },
   { label: 'Positions', id: 'positions' },
-  { label: 'Aligns', id: 'aligns' },
-  { label: 'Placements', id: 'placements' },
   { label: 'Contenedor', id: 'container' },
   { label: 'Custom toggle', id: 'custom-toggle' },
   { label: 'Fixed', id: 'fixed' },
@@ -81,90 +79,88 @@ const outlineItems = [
 
       <hr class="playground-separator" />
 
-      <section id="positions" class="playground-section">
-        <h2>Positions</h2>
-        <div class="playground-row">
-          <Dropdown label="Bottom (default)" position="bottom">
-            <Button variant="ghost" style="width:100%;justify-content:flex-start">Bottom</Button>
-          </Dropdown>
-          <Dropdown label="Top" position="top">
-            <Button variant="ghost" style="width:100%;justify-content:flex-start">Top</Button>
-          </Dropdown>
-          <Dropdown label="Right" position="right">
-            <Button variant="ghost" style="width:100%;justify-content:flex-start">Right</Button>
-          </Dropdown>
-          <Dropdown label="Right + Center" position="right" align="center">
-            <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
-          </Dropdown>
-          <div class="playground-dropdown-demo--left">
-            <Dropdown label="Left" position="left">
-              <Button variant="ghost" style="width:100%;justify-content:flex-start">Left</Button>
-            </Dropdown>
-          </div>
-        </div>
+            <section id="positions" class="playground-section">
+        <h2>Posiciones — todas las combinaciones</h2>
         <p class="playground-desc">
-          El panel abre abajo/arriba (<code>bottom</code>/<code>top</code>) o a los costados del trigger (<code>left</code>/<code>right</code>).
+          API: <code>position</code> (<code>bottom</code>/<code>top</code>/<code>left</code>/<code>right</code>) + <code>align</code> (<code>start</code>/<code>center</code>/<code>end</code>).
+          Sin props → default (<code>bottom</code> + <code>start</code>).
         </p>
-      </section>
 
-      <hr class="playground-separator" />
-
-      <section id="aligns" class="playground-section">
-        <h2>Aligns</h2>
-        <div class="playground-row">
-          <Dropdown label="Start" align="start">
-            <Button variant="ghost" style="width:100%;justify-content:flex-start">Start</Button>
-          </Dropdown>
-          <Dropdown label="Center" align="center">
-            <Button variant="ghost" style="width:100%;justify-content:flex-start">Center</Button>
-          </Dropdown>
-          <Dropdown label="End" align="end">
-            <Button variant="ghost" style="width:100%;justify-content:flex-start">End</Button>
-          </Dropdown>
-        </div>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="placements" class="playground-section">
-        <h2>Placements (position + align combinados)</h2>
-        <p class="playground-desc">
-          <code>placement="bottom-end"</code>, <code>"top-start"</code>, <code>"top-end"</code>… anulan <code>position</code>/<code>align</code>.
-        </p>
-        <div class="playground-row">
-          <Dropdown label="Bottom-start" placement="bottom-start">
-            <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
-          </Dropdown>
-          <Dropdown label="Bottom-end" placement="bottom-end">
-            <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
-          </Dropdown>
-          <Dropdown label="Bottom-center" placement="bottom-center">
-            <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
-          </Dropdown>
-          <Dropdown label="Top-start" placement="top-start">
-            <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
-          </Dropdown>
-          <Dropdown label="Top-end" placement="top-end">
-            <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
-          </Dropdown>
-          <Dropdown label="Right-start" placement="right-start">
-            <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
-          </Dropdown>
-          <Dropdown label="Right-end" placement="right-end">
-            <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
-          </Dropdown>
-          <div class="playground-dropdown-demo--left">
-            <Dropdown label="Left-start" placement="left-start">
+        <div class="playground-position-group">
+          <span class="playground-position-group-title">default</span>
+          <div class="playground-row">
+            <Dropdown label="Default">
               <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
             </Dropdown>
           </div>
-          <div class="playground-dropdown-demo--left">
-            <Dropdown label="Left-end" placement="left-end">
+        </div>
+
+        <div class="playground-position-group">
+          <span class="playground-position-group-title">bottom</span>
+          <div class="playground-row">
+            <Dropdown label="Start" position="bottom" align="start">
+              <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
+            </Dropdown>
+            <Dropdown label="Center" position="bottom" align="center">
+              <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
+            </Dropdown>
+            <Dropdown label="End" position="bottom" align="end">
+              <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
+            </Dropdown>
+          </div>
+        </div>
+
+        <div class="playground-position-group playground-position-group--top">
+          <span class="playground-position-group-title">top</span>
+          <div class="playground-row">
+            <Dropdown label="Start" position="top" align="start">
+              <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
+            </Dropdown>
+            <Dropdown label="Center" position="top" align="center">
+              <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
+            </Dropdown>
+            <Dropdown label="End" position="top" align="end">
+              <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
+            </Dropdown>
+          </div>
+        </div>
+
+        <div class="playground-position-group">
+          <span class="playground-position-group-title">right</span>
+          <div class="playground-row">
+            <Dropdown label="Start" position="right" align="start">
+              <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
+            </Dropdown>
+            <Dropdown label="Center" position="right" align="center">
+              <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
+            </Dropdown>
+            <Dropdown label="End" position="right" align="end">
+              <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
+            </Dropdown>
+          </div>
+        </div>
+
+        <div class="playground-position-group playground-position-group--left">
+          <span class="playground-position-group-title">left</span>
+          <div class="playground-row">
+            <Dropdown label="Start" position="left" align="start">
+              <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
+            </Dropdown>
+            <Dropdown label="Center" position="left" align="center">
+              <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
+            </Dropdown>
+            <Dropdown label="End" position="left" align="end">
               <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
             </Dropdown>
           </div>
         </div>
       </section>
+
+      
+
+      </section>
+
+      <hr class="playground-separator" />
 
       <hr class="playground-separator" />
 
@@ -331,13 +327,27 @@ const outlineItems = [
   color: var(--cu-color-neutral);
 }
 
-/* Espacio para que el panel en position="left" no se recorte contra el borde */
-.playground-dropdown-demo--left {
-  margin-left: 220px;
+/* Grupos de posiciones del dropdown */
+.playground-position-group {
+  margin-top: 1.25rem;
+}
+
+.playground-position-group-title {
+  display: block;
+  font-size: var(--cu-font-size-xs);
+  font-weight: 600;
+  color: var(--cu-color-neutral);
+  font-family: var(--cu-font-mono);
+  margin-bottom: 0.5rem;
 }
 
 /* Espacio para que el panel en position="top" no se recorte contra el header */
-.playground-dropdown-demo--top {
-  margin-top: 160px;
+.playground-position-group--top {
+  margin-top: 170px;
+}
+
+/* Espacio para que el panel en position="left" no se recorte contra el borde */
+.playground-position-group--left {
+  margin-left: 240px;
 }
 </style>

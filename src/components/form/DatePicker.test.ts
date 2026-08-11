@@ -61,8 +61,8 @@ describe("DatePicker — label del trigger y selección", () => {
     expect(selected[0]!.text()).toBe("14");
   });
 
-  it("placement top-start abre el panel arriba (los defaults no lo anulan)", async () => {
-    const w = mount(DatePicker, { props: { placement: "top-start", modelValue: "2026-08-11" } });
+  it("position top + align start abre el panel arriba", async () => {
+    const w = mount(DatePicker, { props: { position: "top", align: "start", modelValue: "2026-08-11" } });
     await w.find(".cu-date-picker-toggle").trigger("click");
     await flushPromises();
     const style = w.find(".cu-dropdown-panel").attributes("style") || "";
@@ -87,8 +87,8 @@ describe("DatePicker — label del trigger y selección", () => {
     expect(style).not.toContain("left: 100%");
   });
 
-  it("placement right-start abre el panel a la derecha, alineado arriba", async () => {
-    const w = mount(DatePicker, { props: { placement: "right-start", modelValue: "2026-08-11" } });
+  it("position right + align start abre el panel a la derecha, alineado arriba", async () => {
+    const w = mount(DatePicker, { props: { position: "right", align: "start", modelValue: "2026-08-11" } });
     await w.find(".cu-date-picker-toggle").trigger("click");
     await flushPromises();
     const style = w.find(".cu-dropdown-panel").attributes("style") || "";

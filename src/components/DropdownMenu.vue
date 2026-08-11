@@ -36,7 +36,7 @@ const props = defineProps({
     type: String,
     required: false,
     default: "bottom",
-    validator: (value: string) => ["bottom", "top"].includes(value),
+    validator: (value: string) => ["bottom", "top", "left", "right"].includes(value),
   },
   align: {
     type: String,
@@ -44,7 +44,6 @@ const props = defineProps({
     default: "start",
     validator: (value: string) => ["start", "center", "end"].includes(value),
   },
-  placement: { type: String, required: false, default: "" },
   offset: { type: Number, required: false, default: 4 },
   fixed: { type: Boolean, required: false, default: false },
   items: { type: Array as () => DropdownItem[], required: false, default: () => [] },
@@ -76,7 +75,6 @@ defineExpose({
     :label="label"
     :position="position"
     :align="align"
-    :placement="placement"
     :offset="offset"
     :fixed="fixed"
     @open="emit('open')"

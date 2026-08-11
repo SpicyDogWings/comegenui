@@ -341,7 +341,8 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
           <DropdownMenu
             :color="props.color"
             variant="ghost"
-            placement="bottom-end"
+            position="bottom"
+            align="end"
             fixed
             :items="props.actions.map(a => ({ ...a, color: a.color || undefined, onClick: () => a.onClick?.(row) }))"
             @click.stop

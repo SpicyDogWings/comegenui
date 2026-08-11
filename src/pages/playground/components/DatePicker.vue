@@ -128,85 +128,37 @@ function onEvent(name: string, payload: any) {
 
       <hr class="playground-separator" />
 
-      <section id="positions" class="playground-section">
-        <h2>Posición del panel</h2>
+            <section id="positions" class="playground-section">
+        <h2>Posición del panel — todas las combinaciones</h2>
         <p class="playground-desc">
-          El panel del calendario se posiciona con <code>position</code> (<code>bottom</code>/<code>top</code>/<code>left</code>/<code>right</code>)
-          + <code>align</code> (<code>start</code>/<code>center</code>/<code>end</code>) — o <code>placement</code>
-          (combinación tipo <code>top-start</code> que anula a los dos). <code>fixed</code> fija el panel al viewport
-          (útil en contenedores con overflow).
+          API: <code>position</code> (<code>bottom</code>/<code>top</code>/<code>left</code>/<code>right</code>) + <code>align</code> (<code>start</code>/<code>center</code>/<code>end</code>).
+          Sin props → default (<code>bottom</code> + <code>start</code>). <code>fixed</code> fija el panel al viewport.
         </p>
         <div class="playground-date-picker-row">
           <div class="playground-position-demo">
             <strong>default</strong>
             <DatePicker model-value="2026-08-11" style="max-width: 280px;" />
           </div>
-          <div class="playground-position-demo playground-position-demo--top">
-            <strong>position="top"</strong>
-            <DatePicker model-value="2026-08-11" position="top" style="max-width: 280px;" />
-          </div>
-          <div class="playground-position-demo playground-position-demo--top">
-            <strong>placement="top-start"</strong>
-            <DatePicker model-value="2026-08-11" placement="top-start" style="max-width: 280px;" />
-          </div>
-          <div class="playground-position-demo playground-position-demo--top">
-            <strong>placement="top-end"</strong>
-            <DatePicker model-value="2026-08-11" placement="top-end" style="max-width: 280px;" />
-          </div>
         </div>
         <div class="playground-date-picker-row">
-          <div class="playground-position-demo">
-            <strong>position="bottom" align="center"</strong>
-            <DatePicker model-value="2026-08-11" position="bottom" align="center" style="max-width: 280px;" />
-          </div>
-          <div class="playground-position-demo">
-            <strong>placement="bottom-end"</strong>
-            <DatePicker model-value="2026-08-11" placement="bottom-end" style="max-width: 280px;" />
-          </div>
-          <div class="playground-position-demo playground-position-demo--top">
-            <strong>position="top" align="end"</strong>
-            <DatePicker model-value="2026-08-11" position="top" align="end" style="max-width: 280px;" />
-          </div>
-          <div class="playground-position-demo playground-position-demo--top">
-            <strong>position="top" fixed</strong>
-            <DatePicker model-value="2026-08-11" position="top" fixed style="max-width: 280px;" />
-          </div>
+          <div class="playground-position-demo"><strong>bottom + start</strong><DatePicker model-value="2026-08-11" position="bottom" align="start" style="max-width: 280px;" /></div>
+          <div class="playground-position-demo"><strong>bottom + center</strong><DatePicker model-value="2026-08-11" position="bottom" align="center" style="max-width: 280px;" /></div>
+          <div class="playground-position-demo"><strong>bottom + end</strong><DatePicker model-value="2026-08-11" position="bottom" align="end" style="max-width: 280px;" /></div>
         </div>
         <div class="playground-date-picker-row">
-          <div class="playground-position-demo playground-position-demo--left">
-            <strong>position="right"</strong>
-            <DatePicker model-value="2026-08-11" position="right" style="max-width: 280px;" />
-          </div>
-          <div class="playground-position-demo">
-            <strong>position="right" align="start"</strong>
-            <DatePicker model-value="2026-08-11" position="right" align="start" style="max-width: 280px;" />
-          </div>
-          <div class="playground-position-demo">
-            <strong>position="right" align="center"</strong>
-            <DatePicker model-value="2026-08-11" position="right" align="center" style="max-width: 280px;" />
-          </div>
-          <div class="playground-position-demo playground-position-demo--left">
-            <strong>position="left"</strong>
-            <DatePicker model-value="2026-08-11" position="left" style="max-width: 280px;" />
-          </div>
-          <div class="playground-position-demo playground-position-demo--left">
-            <strong>position="left" align="center"</strong>
-            <DatePicker model-value="2026-08-11" position="left" align="center" style="max-width: 280px;" />
-          </div>
+          <div class="playground-position-demo playground-position-demo--top"><strong>top + start</strong><DatePicker model-value="2026-08-11" position="top" align="start" style="max-width: 280px;" /></div>
+          <div class="playground-position-demo playground-position-demo--top"><strong>top + center</strong><DatePicker model-value="2026-08-11" position="top" align="center" style="max-width: 280px;" /></div>
+          <div class="playground-position-demo playground-position-demo--top"><strong>top + end</strong><DatePicker model-value="2026-08-11" position="top" align="end" style="max-width: 280px;" /></div>
         </div>
         <div class="playground-date-picker-row">
-          <div class="playground-position-demo playground-position-demo--left">
-            <strong>placement="right-start"</strong>
-            <DatePicker model-value="2026-08-11" placement="right-start" style="max-width: 280px;" />
-          </div>
-          <div class="playground-position-demo">
-            <strong>position="right" fixed</strong>
-            <DatePicker model-value="2026-08-11" position="right" fixed style="max-width: 280px;" />
-          </div>
-          <div class="playground-position-demo playground-position-demo--left">
-            <strong>position="left" align="end" fixed</strong>
-            <DatePicker model-value="2026-08-11" position="left" align="end" fixed style="max-width: 280px;" />
-          </div>
+          <div class="playground-position-demo"><strong>right + start</strong><DatePicker model-value="2026-08-11" position="right" align="start" style="max-width: 280px;" /></div>
+          <div class="playground-position-demo"><strong>right + center</strong><DatePicker model-value="2026-08-11" position="right" align="center" style="max-width: 280px;" /></div>
+          <div class="playground-position-demo"><strong>right + end</strong><DatePicker model-value="2026-08-11" position="right" align="end" style="max-width: 280px;" /></div>
+        </div>
+        <div class="playground-date-picker-row">
+          <div class="playground-position-demo playground-position-demo--left"><strong>left + start</strong><DatePicker model-value="2026-08-11" position="left" align="start" style="max-width: 280px;" /></div>
+          <div class="playground-position-demo playground-position-demo--left"><strong>left + center</strong><DatePicker model-value="2026-08-11" position="left" align="center" style="max-width: 280px;" /></div>
+          <div class="playground-position-demo playground-position-demo--left"><strong>left + end</strong><DatePicker model-value="2026-08-11" position="left" align="end" style="max-width: 280px;" /></div>
         </div>
       </section>
 

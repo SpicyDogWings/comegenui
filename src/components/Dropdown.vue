@@ -17,18 +17,17 @@ const props = defineProps({
   },
   disabled: { type: Boolean, required: false, default: false },
   label: { type: String, required: false, default: "" },
-  placement: { type: String, required: false, default: "bottom-start" },
   position: {
     type: String,
     required: false,
-    default: "",
-    validator: (value: string) => ["", "bottom", "top", "left", "right"].includes(value),
+    default: "bottom",
+    validator: (value: string) => ["bottom", "top", "left", "right"].includes(value),
   },
   align: {
     type: String,
     required: false,
-    default: "",
-    validator: (value: string) => ["", "start", "center", "end"].includes(value),
+    default: "start",
+    validator: (value: string) => ["start", "center", "end"].includes(value),
   },
   offset: { type: Number, required: false, default: 4 },
   fixed: { type: Boolean, required: false, default: false },
@@ -37,8 +36,8 @@ const props = defineProps({
   panelWidth: { type: String, required: false, default: "" },
 });
 
-const effectivePosition = computed(() => props.position || props.placement.split("-")[0] || "bottom");
-const effectiveAlign = computed(() => props.align || props.placement.split("-")[1] || "start");
+const effectivePosition = computed(() => props.position);
+const effectiveAlign = computed(() => props.align);
 
 const panelPos = ref({ top: "0px", left: "0px" });
 

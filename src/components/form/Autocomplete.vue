@@ -35,7 +35,7 @@ const props = defineProps({
     type: String,
     required: false,
     default: "bottom",
-    validator: (value: string) => ["bottom", "top"].includes(value),
+    validator: (value: string) => ["bottom", "top", "left", "right"].includes(value),
   },
   align: {
     type: String,
@@ -43,7 +43,6 @@ const props = defineProps({
     default: "start",
     validator: (value: string) => ["start", "center", "end"].includes(value),
   },
-  placement: { type: String, required: false, default: "" },
   fixed: { type: Boolean, required: false, default: false },
 });
 
@@ -126,7 +125,6 @@ defineExpose({
     :disabled="disabled"
     :position="position"
     :align="align"
-    :placement="placement"
     :fixed="fixed"
     :offset="4"
     style="width:100%"
