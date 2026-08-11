@@ -259,9 +259,9 @@ Ver [arquitectura.md](arquitectura.md#ubicaciones). Reglas rápidas:
 
 ## Workflow de ramas (git)
 
-Toda tarea de desarrollo (feature, fix, docs, tests) se trabaja en una **rama propia creada desde `main`** — nunca se commitea directo en `main`; `main` solo recibe merges (idealmente con MR/review). Ver la [Regla de oro #3](SKILL.md#regla-de-oro).
+Creá una rama propia **solo cuando la rama base es `main`** y la tarea tiene entidad propia (feature, fix, docs, tests) — nunca se commitea directo en `main`; `main` solo recibe merges (idealmente con MR/review). **Si ya estás en una rama de trabajo (base ≠ `main`), NO crees otra rama** salvo pedido explícito del usuario: trabajá sobre la rama actual. Ver la [Regla de oro #3](SKILL.md#regla-de-oro).
 
 - **Naming:** `feat/<nombre>`, `fix/<nombre>`, `docs/<nombre>`, `test/<nombre>`, `chore/<nombre>`.
-- **Antes de empezar:** `git checkout main && git pull --ff-only && git checkout -b <tipo>/<nombre>`.
+- **Antes de empezar (base = `main`):** `git checkout main && git pull --ff-only && git checkout -b <tipo>/<nombre>`.
 - **Al terminar:** commit + push, mergear a `main` (o abrir MR) y borrar la rama local (`git branch -d <tipo>/<nombre>`).
-- Si la tarea solo toca documentación, igual va en rama: `docs/<tema>`.
+- Si la tarea solo toca documentación, igual va en rama propia cuando la base es `main`: `docs/<tema>`.

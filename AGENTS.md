@@ -189,7 +189,7 @@ Tokens compartidos: tipografía, spacing, border-radius, shadows, borders.
 8. Los componentes nuevos van en `src/components/{category}/` y `src/components/customElements/{category}/`
 9. Los entry points van en `src/lib/{category}/mi-componente.ts`
 10. `hightContrast` es el nombre correcto del prop (typo persistente en todo el codebase)
-11. **Toda nueva funcionalidad o cambio se desarrolla en una rama propia fuera de `main`** (ej: `feat/x`, `fix/x`, `docs/x`, `test/x`). Nunca commitees directo en `main`; `main` solo recibe merges. Si la tarea requiere cambios y no hay rama, creala antes de tocar código.
+11. **Creá ramas solo cuando corresponde, no a cada rato.** Creá una rama nueva **solo cuando la rama base es `main`** y la tarea es una feature, fix, docs o tests con entidad propia (ej: `feat/x`, `fix/x`, `docs/x`, `test/x`). **Si ya estás trabajando en una rama (base ≠ `main`), NO crees otra rama** salvo que el usuario lo pida explícitamente — trabajá sobre la rama actual. `main` solo recibe merges.
 
 ---
 
