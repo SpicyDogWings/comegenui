@@ -68,6 +68,7 @@ interface Column {
   selectOptions?: { value: string; label: string }[] | ((row: Record<string, any>) => { value: string; label: string }[]);
   validator?: (value: string, row: Record<string, any>) => boolean;
   singleClick?: boolean;
+  inlineEdit?: boolean; // Estado por columna: renderiza el editor directo
   sortable?: boolean | "string" | "number" | "boolean";
   badges?: (row: Record<string, any>) => BadgeConfig[];
   buttons?: (row: Record<string, any>) => ButtonConfig[];

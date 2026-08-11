@@ -79,21 +79,23 @@ interface ButtonConfig {
 Por defecto las columnas con `editable` muestran el valor con un **lápiz**; hacé click
 (o doble click si `singleClick: false`) para editar inline.
 
-Para renderizar los editores (input / select / textarea) **directamente**, sin lápiz,
-usá el estado reactivo `inlineEditing` de la tabla:
+**Estado por columna** (forma principal): agregá `inlineEdit: true` en la columna para
+que esa columna renderice el editor directo (input / select / textarea), sin lápiz:
 
-```vue
-<AdvancedTable
-  :columns="columns"
-  :data="data"
-  :inline-editing="inlineEditing"   <!-- estado reactivo (ref) -->
-/>
+```ts
+{ key: "email", label: "Email", editable: true, inlineEdit: true }
 ```
 
-> `inlineEditing` es un **estado**, no una propiedad estática de columna: cuando es
-> `true`, todas las columnas editables renderizan el editor directo; cuando es
-> `false`, vuelven al modo lápiz. Ideal para un botón "lápiz" en la columna de
-> acciones que togglea el estado, o para formularios de edición masiva.
+**Estado global en la tabla** (opcional, por compatibilidad): `inlineEditing` activa el
+inline en todas las columnas editables:
+
+```vue
+<AdvancedTable :columns="columns" :data="data" :inline-editing="inlineEditing" />
+```
+
+> Ambos son **estados reactivos**, no propiedades estáticas: podés alternarlos cuando
+> quieras (ej: botón "lápiz" en la columna de acciones que togglea el estado global).
+> El estado de la **columna** tiene prioridad sobre el de la tabla.
 
 ### Acciones de fila (`actions`)
 

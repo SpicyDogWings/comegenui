@@ -27,6 +27,7 @@ interface Column {
   validator?: (value: string, row: Record<string, any>) => boolean;
   inputType?: "input" | "textarea" | "select" | "autocomplete";
   singleClick?: boolean;
+  inlineEdit?: boolean; // Estado por columna: renderiza el editor directo
   width?: string;
   align?: "left" | "center" | "right";
 
@@ -110,12 +111,14 @@ const emit = defineEmits([
 
 // Dos modos:
 // - Por defecto (lápiz): se muestra el valor con un lápiz; click para editar.
-// - Estado inline (prop reactiva `inlineEdit`): el editor (input/select/
-//   textarea) se renderiza directamente. No es una propiedad estática de la
-//   columna: el padre (o la tabla vía `inlineEditing`) decide cuándo activarlo.
+// - Estado inline: el editor (input/select/textarea) se renderiza directo.
+//   Se activa POR COLUMNA (`column.inlineEdit: true`, forma principal) o
+//   globalmente desde la tabla (`inlineEditing` → prop `inlineEdit` de la
+//   celda, por compatibilidad). El estado de la columna tiene prioridad.
 const inlineEdit = computed(() => props.inlineEdit === true);
+const columnInlineEdit = computed(() => props.column.inlineEdit === true);
 const isEditing = ref(false);
-const showEditor = computed(() => inlineEdit.value || isEditing.value);
+const showEditor = computed(() => columnInlineEdit.value || inlineEdit.value || isEditing.value);
 const saving = ref(false);
 const editValue = ref<string>("");
 const inputRef = ref<InstanceType<typeof Input | typeof Textarea | typeof Select | typeof Autocomplete> | null>(null);

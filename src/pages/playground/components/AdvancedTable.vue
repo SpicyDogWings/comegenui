@@ -181,6 +181,47 @@ const editableActionColumns = [
   },
 ];
 
+// Estado inline POR COLUMNA: cada columna decide si renderiza el editor directo.
+const mixedInlineColumns = [
+  { key: "name", label: "Name", editable: true },
+  { key: "email", label: "Email", editable: true, inlineEdit: true },
+  {
+    key: "notes",
+    label: "Notes",
+    editable: true,
+    inputType: "textarea" as const,
+    textarea: { rows: 2 },
+    inlineEdit: true,
+  },
+  {
+    key: "status",
+    label: "Status",
+    editable: true,
+    inputType: "select" as const,
+    select: {
+      options: [
+        { value: "Active", label: "Active" },
+        { value: "Pending", label: "Pending" },
+        { value: "Inactive", label: "Inactive" },
+      ],
+    },
+    inlineEdit: true,
+  },
+  {
+    key: "role",
+    label: "Role",
+    editable: true,
+    inputType: "select" as const,
+    select: {
+      options: [
+        { value: "Admin", label: "Admin" },
+        { value: "Editor", label: "Editor" },
+        { value: "User", label: "User" },
+      ],
+    },
+  },
+];
+
 const editableData = [
   { id: 1, name: "Alice Johnson", email: "alice@example.com", notes: "Team lead", status: "Active", role: "Admin" },
   { id: 2, name: "Bob Smith", email: "bob@example.com", notes: "New hire", status: "Pending", role: "User" },
@@ -230,16 +271,17 @@ const editableData = [
         <h2>Editable Cells</h2>
         <p>
           Por defecto las celdas editables muestran un <strong>lápiz</strong>; hacé click para editar.
-          Con el estado reactivo <code>inlineEditing</code> (prop de la tabla), las celdas renderizan
-          el editor directo — acá lo togglea el botón en la columna <em>Acciones</em>.
+          El estado inline se setea <strong>por columna</strong> (<code>inlineEdit: true</code>) o
+          globalmente en la tabla (<code>:inline-editing</code>, por compatibilidad) — acá lo
+          togglea el botón en la columna <em>Acciones</em>.
         </p>
         <h3>Modo lápiz (por defecto)</h3>
         <AdvancedTable :columns="editableColumns" :data="editableData" :pagination="false" />
         <h3>Estado inline (toggle desde columna Acciones)</h3>
         <AdvancedTable :columns="editableActionColumns" :data="editableData" :inline-editing="inlineEditing" :pagination="false" />
 
-        <h3>Estado inline desde el inicio (<code>:inline-editing="true"</code>)</h3>
-        <AdvancedTable :columns="editableColumns" :data="editableData" :inline-editing="true" :pagination="false" />
+        <h3>Estado inline por columna (<code>inlineEdit: true</code>)</h3>
+        <AdvancedTable :columns="mixedInlineColumns" :data="editableData" :pagination="false" />
       </section>
 
       <hr class="playground-separator" />

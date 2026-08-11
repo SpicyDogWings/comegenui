@@ -90,4 +90,16 @@ describe("EditableTableCell — modo lápiz (default) y estado inline", () => {
     expect(w.find(".cu-editable-cell-icon").exists()).toBe(true);
     expect(w.find("input").exists()).toBe(false);
   });
+
+  it("column.inlineEdit: renderiza el editor directo, sin lápiz", () => {
+    const w = factory({ inlineEdit: true });
+    expect(w.find("input").exists()).toBe(true);
+    expect(w.find(".cu-editable-cell-icon").exists()).toBe(false);
+  });
+
+  it("column.inlineEdit tiene prioridad sobre el inlineEdit de la tabla", () => {
+    const w = factory({ inlineEdit: true }, "Alice Johnson", false);
+    expect(w.find("input").exists()).toBe(true);
+    expect(w.find(".cu-editable-cell-icon").exists()).toBe(false);
+  });
 });
