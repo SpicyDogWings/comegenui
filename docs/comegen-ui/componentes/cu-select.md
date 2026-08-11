@@ -19,7 +19,7 @@ Selector de opciones con color, variante, ícono chevron, opciones deshabilitada
 | `placeholderWrap` | `boolean` | `false` | Si `true`, el texto wrappea; si `false`, se trunca con `...` (atributo HTML: `placeholder-wrap`) |
 | `position` | `string` | `"bottom"` | Posición del dropdown: `bottom`, `top` |
 | `align` | `string` | `"start"` | Alineación: `start`, `center`, `end` |
-| `placement` | `string` | `""` | Shorthand (`bottom-start`, etc.). Si se define, sobrescribe `position` y `align` |
+
 | `disabled` | `boolean` | `false` | Estado deshabilitado |
 | `hightContrast` | `boolean` | `false` | Modo de alto contraste para el texto |
 
@@ -167,7 +167,6 @@ Si una opción no especifica `color` ni `variant`, hereda los valores del `<cu-s
 <cu-select position="bottom" align="end"></cu-select>
 <cu-select position="top" align="center"></cu-select>
 
-<!-- O con placement shorthand -->
-<cu-select placement="bottom-end"></cu-select>
-<cu-select placement="top-start"></cu-select>
+<cu-select position="bottom" align="end"></cu-select>
+<cu-select position="top" align="start"></cu-select>
 ```

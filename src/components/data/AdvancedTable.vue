@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { computed, ref, watch, toRef, type Component } from "vue";
 import Table from "./Table.vue";
-import Pagination from "../Pagination.vue";
+import Pagination from "../controls/Pagination.vue";
 import Input from "../form/Input.vue";
 import EditableTableCell from "./EditableTableCell.vue";
 import Button from "../buttons/Button.vue";
 import Badge from "../information/Badge.vue";
-import DropdownMenu from "../DropdownMenu.vue";
+import DropdownMenu from "../controls/DropdownMenu.vue";
 import { usePagination } from "../../composables/usePagination";
 import { useSearch } from "../../composables/useSearch";
 import { useTableData } from "../../composables/useTableData";
@@ -341,7 +341,8 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
           <DropdownMenu
             :color="props.color"
             variant="ghost"
-            placement="bottom-end"
+            position="bottom"
+            align="end"
             fixed
             :items="props.actions.map(a => ({ ...a, color: a.color || undefined, onClick: () => a.onClick?.(row) }))"
             @click.stop

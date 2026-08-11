@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
-import Pagination from "@/components/Pagination.vue";
+import Pagination from "@/components/controls/Pagination.vue";
 
 const outlineItems = [
   { label: 'Basic', id: 'basic' },

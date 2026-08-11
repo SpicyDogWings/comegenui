@@ -17,7 +17,7 @@ Menú desplegable con items declarativos (label, ícono, color, divisor, link). 
 | `label` | `string` | `""` | Texto del toggle (se ignora si se provee slot `toggle`) |
 | `position` | `string` | `"bottom"` | Posición preferida del panel: `bottom`, `top` |
 | `align` | `string` | `"start"` | Alineación del panel: `start`, `center`, `end` |
-| `placement` | `string` | `""` | Shorthand combinado (`bottom-start`, `bottom-end`, `top-start`, `top-end`). Si se define, sobrescribe `position` y `align` |
+
 | `offset` | `number` | `4` | Separación en píxeles entre el toggle y el panel |
 | `fixed` | `boolean` | `false` | Si es `true`, el panel usa `position: fixed` en vez de absoluto |
 | `items` | `array` | `[]` | Lista de items (ver abajo). Se asigna como propiedad JS, no como atributo HTML |
@@ -129,10 +129,9 @@ Si pasás contenido en el slot por defecto, el panel ignora `items` y muestra lo
 El dropdown usa tres props combinables:
 
 - `position` + `align`: separados (`bottom` + `start`)
-- `placement`: shorthand (`bottom-start`)
 
 ```html
-<cu-dropdown-menu label="Arriba" placement="top-end"></cu-dropdown-menu>
+<cu-dropdown-menu label="Arriba" position="top" align="end"></cu-dropdown-menu>
 <cu-dropdown-menu label="Alineado" position="bottom" align="end" offset="8"></cu-dropdown-menu>
 ```
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch, type PropType } from 'vue'
-import Dropdown from '../Dropdown.vue'
+import Dropdown from '../overlay/Dropdown.vue'
 import Button from '../buttons/Button.vue'
 import Calendar from '../controls/Calendar.vue'
 
@@ -48,7 +48,6 @@ const props = defineProps({
   disabledDates: { type: [Array, String] as PropType<(string | Date)[] | string>, required: false, default: '' },
   position: { type: String, required: false, default: 'bottom' },
   align: { type: String, required: false, default: 'start' },
-  placement: { type: String, required: false, default: '' },
   fixed: { type: Boolean, required: false, default: false },
   clearable: { type: Boolean, required: false, default: true },
   todayButton: { type: Boolean, required: false, default: true },
@@ -183,7 +182,6 @@ defineExpose({ open, close, toggle, getValue, setValue, clear, isOpen: () => dro
       :disabled="disabled"
       :position="position"
       :align="align"
-      :placement="placement"
       :fixed="fixed"
       :offset="4"
       :panel-width="panelWidth"

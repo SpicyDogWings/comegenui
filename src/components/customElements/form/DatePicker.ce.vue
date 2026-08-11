@@ -38,7 +38,6 @@ const props = defineProps({
   disabledDates: { type: [Array, String] as PropType<(string | Date)[] | string>, default: '' },
   position: { type: String, default: 'bottom' },
   align: { type: String, default: 'start' },
-  placement: { type: String, default: '' },
   fixed: { type: Boolean, default: false },
   clearable: { type: Boolean, default: true },
   todayButton: { type: Boolean, default: true },
@@ -94,7 +93,6 @@ defineExpose({ open, close, toggle, getValue, setValue, clear, isOpen: () => pic
     :disabled-dates="props.disabledDates"
     :position="props.position"
     :align="props.align"
-    :placement="props.placement"
     :fixed="props.fixed"
     :clearable="props.clearable"
     :today-button="props.todayButton"

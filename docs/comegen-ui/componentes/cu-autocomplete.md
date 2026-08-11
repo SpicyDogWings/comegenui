@@ -18,7 +18,7 @@ Campo de texto con sugerencias en menú desplegable. Filtra los `items` en vivo 
 | `minChars` | `number` | `0` | Caracteres mínimos para abrir el menú (atributo HTML: `min-chars`) |
 | `position` | `string` | `"bottom"` | Posición del dropdown: `bottom`, `top` |
 | `align` | `string` | `"start"` | Alineación: `start`, `center`, `end` |
-| `placement` | `string` | `""` | Shorthand (`bottom-start`, etc.). Si se define, sobrescribe `position` y `align` |
+
 | `disabled` | `boolean` | `false` | Estado deshabilitado |
 | `readOnly` | `boolean` | `false` | Solo lectura (en HTML se usa como `readonly`) |
 | `hightContrast` | `boolean` | `false` | Modo de alto contraste |
@@ -131,8 +131,7 @@ Por defecto el menú se abre al recibir foco. Con `min-chars="2"` solo se abre t
 <!-- Con position + align -->
 <cu-autocomplete position="top" align="end"></cu-autocomplete>
 
-<!-- O con placement shorthand -->
-<cu-autocomplete placement="bottom-end"></cu-autocomplete>
+<cu-autocomplete position="bottom" align="end"></cu-autocomplete>
 ```
 
 ## Control programático
