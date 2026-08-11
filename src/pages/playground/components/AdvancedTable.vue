@@ -237,6 +237,9 @@ const editableData = [
         <AdvancedTable :columns="editableColumns" :data="editableData" :pagination="false" />
         <h3>Estado inline (toggle desde columna Acciones)</h3>
         <AdvancedTable :columns="editableActionColumns" :data="editableData" :inline-editing="inlineEditing" :pagination="false" />
+
+        <h3>Estado inline desde el inicio (<code>:inline-editing="true"</code>)</h3>
+        <AdvancedTable :columns="editableColumns" :data="editableData" :inline-editing="true" :pagination="false" />
       </section>
 
       <hr class="playground-separator" />
