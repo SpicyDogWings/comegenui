@@ -1,0 +1,439 @@
+<script setup lang="ts">
+import { computed, ref, watch, type PropType } from 'vue'
+import Button from '@/components/buttons/Button.vue'
+import LucideChevronLeft from '@/components/icons/LucideChevronLeft.vue'
+import LucideChevronRight from '@/components/icons/LucideChevronRight.vue'
+
+const props = defineProps({
+  // API espejo de MonthSlider/YearSlider: acepta Date, timestamp o fecha "YYYY-MM-DD".
+  // En Custom Elements los atributos siempre llegan como string.
+  modelValue: {
+    type: [String, Number, Date] as PropType<string | number | Date | null>,
+    default: null,
+  },
+  min: {
+    type: [String, Number, Date] as PropType<string | number | Date | null>,
+    default: null,
+  },
+  max: {
+    type: [String, Number, Date] as PropType<string | number | Date | null>,
+    default: null,
+  },
+  color: {
+    type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
+    default: 'primary',
+  },
+  variant: {
+    type: String as PropType<'solid' | 'outlined' | 'soft' | 'ghost' | 'subtle'>,
+    default: 'soft',
+    validator: (value: string) =>
+      ['solid', 'outlined', 'soft', 'ghost', 'subtle'].includes(value),
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
+  locale: {
+    type: String,
+    default: 'es',
+  },
+  // Día en que empieza la semana: 0 = domingo, 1 = lunes (default)
+  weekStart: {
+    type: Number,
+    default: 1,
+    validator: (value: number) => value >= 0 && value <= 6,
+  },
+})
+
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: Date): void
+  (e: 'change', value: Date): void
+  (e: 'select', value: Date): void
+}>()
+
+const WEEK_LENGTH = 7
+
+// ── Utilidades de fecha (sin librerías externas) ──
+
+function startOfCurrentMonth(): Date {
+  const now = new Date()
+  return new Date(now.getFullYear(), now.getMonth(), 1)
+}
+
+// Normaliza cualquier entrada a medianoche local (evita el desfase UTC de
+// "YYYY-MM-DD"). '' e inválidos = null (mismo criterio que los sliders).
+function parseDateInput(value: string | number | Date | null | undefined): Date | null {
+  if (value === null || value === undefined || value === '') return null
+  if (value instanceof Date) {
+    if (Number.isNaN(value.getTime())) return null
+    return new Date(value.getFullYear(), value.getMonth(), value.getDate())
+  }
+  if (typeof value === 'number') {
+    if (!Number.isFinite(value)) return null
+    const d = new Date(value)
+    if (Number.isNaN(d.getTime())) return null
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate())
+  }
+  const m = value.trim().match(/^(\d{4})-(\d{2})(?:-(\d{2}))?$/)
+  const parsed = m
+    ? new Date(Number(m[1] ?? 0), Number(m[2] ?? 1) - 1, m[3] ? Number(m[3]) : 1)
+    : new Date(value)
+  if (Number.isNaN(parsed.getTime())) return null
+  return new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate())
+}
+
+function sameDay(a: Date, b: Date): boolean {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  )
+}
+
+function addMonths(date: Date, delta: number): Date {
+  return new Date(date.getFullYear(), date.getMonth() + delta, 1)
+}
+
+// ── Límites (min / max) ──
+
+const minDate = computed<Date | null>(() => parseDateInput(props.min))
+const maxDate = computed<Date | null>(() => parseDateInput(props.max))
+
+// Recorta el mes visible al mes de min/max (navegación no sale del rango)
+function clampMonth(date: Date): Date {
+  if (minDate.value) {
+    const limit = new Date(minDate.value.getFullYear(), minDate.value.getMonth(), 1)
+    if (date < limit) return limit
+  }
+  if (maxDate.value) {
+    const limit = new Date(maxDate.value.getFullYear(), maxDate.value.getMonth(), 1)
+    if (date > limit) return limit
+  }
+  return date
+}
+
+// ── Estado ──
+
+const today = new Date()
+const viewMonth = ref<Date>(clampMonth(parseDateInput(props.modelValue) ?? startOfCurrentMonth()))
+
+const selectedDate = computed<Date | null>(() => parseDateInput(props.modelValue))
+
+watch(
+  () => props.modelValue,
+  (value) => {
+    const parsed = parseDateInput(value)
+    if (parsed === null) return
+    viewMonth.value = clampMonth(new Date(parsed.getFullYear(), parsed.getMonth(), 1))
+  },
+)
+
+// Si min/max cambian en runtime y dejan el mes fuera del rango, se re-ajusta
+watch([minDate, maxDate], () => {
+  viewMonth.value = clampMonth(viewMonth.value)
+})
+
+// ── Navegación ──
+
+const canPrevMonth = computed(() => {
+  if (!minDate.value) return true
+  const limit = new Date(minDate.value.getFullYear(), minDate.value.getMonth(), 1)
+  return viewMonth.value > limit
+})
+
+const canNextMonth = computed(() => {
+  if (!maxDate.value) return true
+  const limit = new Date(maxDate.value.getFullYear(), maxDate.value.getMonth(), 1)
+  return viewMonth.value < limit
+})
+
+function nextMonth() {
+  if (props.disabled || !canNextMonth.value) return
+  viewMonth.value = addMonths(viewMonth.value, 1)
+}
+
+function prevMonth() {
+  if (props.disabled || !canPrevMonth.value) return
+  viewMonth.value = addMonths(viewMonth.value, -1)
+}
+
+function goToMonth(value: string | number | Date) {
+  const parsed = parseDateInput(value)
+  if (parsed === null) return
+  viewMonth.value = clampMonth(new Date(parsed.getFullYear(), parsed.getMonth(), 1))
+}
+
+// ── Grilla (7 columnas que se reparten el ancho disponible) ──
+
+const dayLabels = computed<string[]>(() => {
+  // Semana de referencia que empieza en domingo: 2026-08-02
+  const base = new Date(2026, 7, 2)
+  const labels: string[] = []
+  for (let i = 0; i < WEEK_LENGTH; i++) {
+    const label = new Intl.DateTimeFormat(props.locale, { weekday: 'short' }).format(
+      new Date(base.getFullYear(), base.getMonth(), base.getDate() + i),
+    )
+    labels.push(label.charAt(0).toUpperCase() + label.slice(1))
+  }
+  // Rotar para que la semana arranque en weekStart (0 = domingo)
+  return [...labels.slice(props.weekStart), ...labels.slice(0, props.weekStart)]
+})
+
+interface DayCell {
+  date: Date | null
+}
+
+const weeks = computed<DayCell[][]>(() => {
+  const year = viewMonth.value.getFullYear()
+  const month = viewMonth.value.getMonth()
+  const first = new Date(year, month, 1)
+  const offset = (first.getDay() - props.weekStart + WEEK_LENGTH) % WEEK_LENGTH
+  const daysInMonth = new Date(year, month + 1, 0).getDate()
+
+  const cells: DayCell[] = []
+  for (let i = 0; i < offset; i++) cells.push({ date: null })
+  for (let day = 1; day <= daysInMonth; day++) cells.push({ date: new Date(year, month, day) })
+
+  const rows: DayCell[][] = []
+  for (let i = 0; i < cells.length; i += WEEK_LENGTH) {
+    rows.push(cells.slice(i, i + WEEK_LENGTH))
+  }
+  return rows
+})
+
+const monthLabel = computed(() => {
+  const label = new Intl.DateTimeFormat(props.locale, { month: 'long', year: 'numeric' }).format(
+    viewMonth.value,
+  )
+  return label.charAt(0).toUpperCase() + label.slice(1)
+})
+
+// ── Selección ──
+
+function isDisabledDay(day: Date): boolean {
+  if (props.disabled) return true
+  if (minDate.value && day < minDate.value) return true
+  if (maxDate.value && day > maxDate.value) return true
+  return false
+}
+
+function selectDay(day: Date) {
+  if (isDisabledDay(day)) return
+  emit('update:modelValue', day)
+  emit('change', day)
+  emit('select', day)
+}
+
+function dayClasses(day: Date): Record<string, boolean> {
+  const selected = selectedDate.value !== null && sameDay(day, selectedDate.value)
+  return {
+    'cu-calendar-day--selected': selected,
+    'cu-calendar-day--today': sameDay(day, today) && !selected,
+    [`cu-calendar-day--${props.variant}`]: selected,
+  }
+}
+
+// ── API programática ──
+
+function getValue(): Date | null {
+  return selectedDate.value
+}
+
+function setValue(value: string | number | Date | null) {
+  const parsed = parseDateInput(value)
+  if (parsed === null) return
+  viewMonth.value = clampMonth(new Date(parsed.getFullYear(), parsed.getMonth(), 1))
+  emit('update:modelValue', parsed)
+  emit('change', parsed)
+}
+
+defineExpose({ nextMonth, prevMonth, goToMonth, getValue, setValue })
+
+// ── Estilos por color semántico (CSS custom properties) ──
+
+const colorStyles = computed(() => ({
+  '--cal-accent': `var(--cu-color-${props.color})`,
+  '--cal-accent-hover': `var(--cu-color-${props.color}-hover)`,
+  '--cal-accent-text': `var(--cu-color-${props.color}-text)`,
+  '--cal-soft': `var(--cu-color-${props.color}-soft)`,
+  '--cal-soft-hover': `var(--cu-color-${props.color}-soft-hover)`,
+  '--cal-subtle': `var(--cu-color-${props.color}-subtle)`,
+  '--cal-subtle-hover': `var(--cu-color-${props.color}-subtle-hover)`,
+  '--cal-subtle-border': `var(--cu-color-${props.color}-subtle-border)`,
+  '--cal-ghost-hover': `var(--cu-color-${props.color}-ghost-hover)`,
+}))
+</script>
+
+<template>
+  <div
+    class="cu-calendar"
+    :class="{ 'is-disabled': props.disabled }"
+    :style="colorStyles"
+    role="grid"
+    :aria-label="monthLabel"
+  >
+    <!-- Header: navegación de meses -->
+    <div class="cu-calendar-header">
+      <Button
+        class="cu-button--icon-only"
+        variant="ghost"
+        :color="props.color"
+        :disabled="props.disabled || !canPrevMonth"
+        aria-label="Mes anterior"
+        @click="prevMonth()"
+      >
+        <LucideChevronLeft :width="16" :height="16" />
+      </Button>
+      <span class="cu-calendar-month">{{ monthLabel }}</span>
+      <Button
+        class="cu-button--icon-only"
+        variant="ghost"
+        :color="props.color"
+        :disabled="props.disabled || !canNextMonth"
+        aria-label="Mes siguiente"
+        @click="nextMonth()"
+      >
+        <LucideChevronRight :width="16" :height="16" />
+      </Button>
+    </div>
+
+    <!-- Días de la semana -->
+    <div class="cu-calendar-weekdays" role="row">
+      <span v-for="(label, i) in dayLabels" :key="i" class="cu-calendar-weekday">
+        {{ label }}
+      </span>
+    </div>
+
+    <!-- Grilla de días: 7 columnas que se reparten el ancho del contenedor -->
+    <div class="cu-calendar-grid">
+      <div v-for="(week, wi) in weeks" :key="wi" class="cu-calendar-week" role="row">
+        <template v-for="(cell, ci) in week" :key="ci">
+          <button
+            v-if="cell.date"
+            type="button"
+            class="cu-calendar-day"
+            :class="dayClasses(cell.date)"
+            :disabled="isDisabledDay(cell.date)"
+            role="gridcell"
+            @click="selectDay(cell.date)"
+          >
+            {{ cell.date.getDate() }}
+          </button>
+          <span v-else class="cu-calendar-day--empty"></span>
+        </template>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.cu-calendar {
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--cu-space-sm);
+  width: 100%;
+  min-width: 240px;
+  font-family: var(--cu-font-sans);
+  box-sizing: border-box;
+}
+
+.cu-calendar.is-disabled {
+  opacity: 0.7;
+}
+
+.cu-calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--cu-space-2xs);
+}
+
+.cu-calendar-month {
+  flex: 1;
+  text-align: center;
+  font-size: var(--cu-font-size-md);
+  font-weight: var(--cu-font-weight-semibold);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 7 columnas: cada una ocupa 1/7 del ancho que mida el contenedor */
+.cu-calendar-weekdays,
+.cu-calendar-week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--cu-space-2xs);
+}
+
+.cu-calendar-weekday {
+  text-align: center;
+  font-size: var(--cu-font-size-xs);
+  font-weight: var(--cu-font-weight-medium);
+  opacity: 0.6;
+  padding: var(--cu-space-2xs) 0;
+}
+
+.cu-calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: var(--cu-radius-sm);
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  font-size: var(--cu-font-size-sm);
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease;
+  box-sizing: border-box;
+}
+
+.cu-calendar-day:hover:not(:disabled) {
+  background: var(--cal-ghost-hover);
+}
+
+.cu-calendar-day:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.cu-calendar-day--today {
+  background: var(--cal-subtle);
+  color: var(--cal-accent);
+}
+
+/* Variantes del día seleccionado */
+.cu-calendar-day--selected.cu-calendar-day--solid {
+  background: var(--cal-accent);
+  color: var(--cal-accent-text);
+}
+.cu-calendar-day--selected.cu-calendar-day--solid:hover:not(:disabled) {
+  background: var(--cal-accent-hover);
+}
+.cu-calendar-day--selected.cu-calendar-day--outlined {
+  outline: 1.5px solid var(--cal-accent);
+  color: var(--cal-accent);
+}
+.cu-calendar-day--selected.cu-calendar-day--soft {
+  background: var(--cal-soft);
+  color: var(--cal-accent);
+}
+.cu-calendar-day--selected.cu-calendar-day--soft:hover:not(:disabled) {
+  background: var(--cal-soft-hover);
+}
+.cu-calendar-day--selected.cu-calendar-day--ghost {
+  color: var(--cal-accent);
+  font-weight: var(--cu-font-weight-semibold);
+}
+.cu-calendar-day--selected.cu-calendar-day--subtle {
+  background: var(--cal-subtle);
+  color: var(--cal-accent);
+  box-shadow: inset 0 0 0 1px var(--cal-subtle-border);
+}
+
+.cu-calendar-day--empty {
+  aspect-ratio: 1;
+}
+</style>
