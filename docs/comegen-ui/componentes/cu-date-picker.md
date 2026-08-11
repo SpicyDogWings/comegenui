@@ -20,9 +20,9 @@ Selector de fecha: un botón-trigger que abre un **dropdown con un calendario ad
 | `format` | `string` | `"dd/MM/yyyy"` | Formato de la fecha en el trigger (ver [Formato](#formato)) |
 | `locale` | `string` | `"es"` | Locale del calendario y nombres de mes |
 | `weekStart` | `number` | `1` | Primer día de la semana (`0` domingo, `1` lunes) |
-| `position` | `string` | `"bottom"` | `bottom` \| `top` |
+| `position` | `string` | `"bottom"` | `bottom` \| `top` \| `left` \| `right` |
 | `align` | `string` | `"start"` | `start` \| `center` \| `end` |
-| `placement` | `string` | `""` | Combinación `bottom-start`, `top-end`, etc. (anula position/align) |
+| `placement` | `string` | `""` | Combinación `bottom-start`, `top-end`, `right-start`, etc. (anula position/align) |
 | `fixed` | `boolean` | `false` | Panel en `position: fixed` (útil en contenedores con overflow) |
 | `clearable` | `boolean` | `true` | Muestra el botón "Limpiar" en el footer del panel |
 | `todayButton` | `boolean` | `true` | Muestra el botón "Hoy" en el footer del panel |

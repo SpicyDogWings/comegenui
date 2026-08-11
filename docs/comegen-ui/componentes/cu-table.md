@@ -439,7 +439,7 @@ La config `date.*` acepta las props de posicionamiento del `<cu-date-picker>`:
 | Prop de `date.*` | Valores | Default | Descripción |
 |---|---|---|---|
 | `placement` | `"bottom-start"`, `"top-start"`, `"top-end"`, ... | — | Posición del panel (anula `position`/`align`) |
-| `position` | `"bottom"` \| `"top"` | `"bottom"` | Panel debajo o **arriba** del trigger |
+| `position` | `"bottom"` \| `"top"` \| `"left"` \| `"right"` | `"bottom"` | Panel debajo, arriba o a los costados del trigger |
 | `align` | `"start"` \| `"center"` \| `"end"` | `"start"` | Alineación horizontal del panel |
 | `fixed` | `boolean` | `true` | Panel en `position: fixed` (default `true` en celdas editables para no romper el layout de la tabla) |
 

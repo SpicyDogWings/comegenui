@@ -131,8 +131,8 @@ function onEvent(name: string, payload: any) {
       <section id="positions" class="playground-section">
         <h2>Posición del panel</h2>
         <p class="playground-desc">
-          El panel del calendario se posiciona con <code>position</code> (<code>bottom</code>/<code>top</code>),
-          <code>align</code> (<code>start</code>/<code>center</code>/<code>end</code>) o <code>placement</code>
+          El panel del calendario se posiciona con <code>position</code> (<code>bottom</code>/<code>top</code>/<code>left</code>/<code>right</code>)
+          + <code>align</code> (<code>start</code>/<code>center</code>/<code>end</code>) — o <code>placement</code>
           (combinación tipo <code>top-start</code> que anula a los dos). <code>fixed</code> fija el panel al viewport
           (útil en contenedores con overflow).
         </p>
@@ -170,6 +170,38 @@ function onEvent(name: string, payload: any) {
           <div class="playground-position-demo playground-position-demo--top">
             <strong>position="top" fixed</strong>
             <DatePicker model-value="2026-08-11" position="top" fixed style="max-width: 280px;" />
+          </div>
+        </div>
+        <div class="playground-date-picker-row">
+          <div class="playground-position-demo playground-position-demo--left">
+            <strong>position="right"</strong>
+            <DatePicker model-value="2026-08-11" position="right" style="max-width: 280px;" />
+          </div>
+          <div class="playground-position-demo">
+            <strong>position="right" align="start"</strong>
+            <DatePicker model-value="2026-08-11" position="right" align="start" style="max-width: 280px;" />
+          </div>
+          <div class="playground-position-demo playground-position-demo--left">
+            <strong>position="left"</strong>
+            <DatePicker model-value="2026-08-11" position="left" style="max-width: 280px;" />
+          </div>
+          <div class="playground-position-demo playground-position-demo--left">
+            <strong>position="left" align="center"</strong>
+            <DatePicker model-value="2026-08-11" position="left" align="center" style="max-width: 280px;" />
+          </div>
+        </div>
+        <div class="playground-date-picker-row">
+          <div class="playground-position-demo playground-position-demo--left">
+            <strong>placement="right-start"</strong>
+            <DatePicker model-value="2026-08-11" placement="right-start" style="max-width: 280px;" />
+          </div>
+          <div class="playground-position-demo">
+            <strong>position="right" fixed</strong>
+            <DatePicker model-value="2026-08-11" position="right" fixed style="max-width: 280px;" />
+          </div>
+          <div class="playground-position-demo playground-position-demo--left">
+            <strong>position="left" align="end" fixed</strong>
+            <DatePicker model-value="2026-08-11" position="left" align="end" fixed style="max-width: 280px;" />
           </div>
         </div>
       </section>
@@ -266,6 +298,11 @@ function onEvent(name: string, payload: any) {
 /* Espacio arriba para que el panel en position="top" no se recorte contra el header */
 .playground-position-demo--top {
   margin-top: 180px;
+}
+
+/* Espacio a la izquierda para que el panel en position="left" no se recorte contra el borde */
+.playground-position-demo--left {
+  margin-left: 220px;
 }
 
 .playground-state {

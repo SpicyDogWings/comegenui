@@ -22,7 +22,7 @@ const props = defineProps({
     type: String,
     required: false,
     default: "",
-    validator: (value: string) => ["", "bottom", "top"].includes(value),
+    validator: (value: string) => ["", "bottom", "top", "left", "right"].includes(value),
   },
   align: {
     type: String,
@@ -64,21 +64,41 @@ const panelStyle = computed(() => {
   base.zIndex = "1000";
   base.width = props.panelWidth || "100%";
 
-  if (effectivePosition.value === "bottom") {
+  // Eje vertical (bottom/top) → panel abajo/arriba del trigger; eje horizontal (left/right) → a los costados.
+  const pos = effectivePosition.value;
+  if (pos === "bottom") {
     base.top = "100%";
     base.marginTop = `${props.offset}px`;
-  } else {
+  } else if (pos === "top") {
     base.bottom = "100%";
     base.marginBottom = `${props.offset}px`;
+  } else if (pos === "right") {
+    base.left = "100%";
+    base.marginLeft = `${props.offset}px`;
+  } else if (pos === "left") {
+    base.right = "100%";
+    base.marginRight = `${props.offset}px`;
   }
 
-  if (effectiveAlign.value === "start") {
-    base.left = "0";
-  } else if (effectiveAlign.value === "end") {
-    base.right = "0";
+  // Alineación: horizontal para bottom/top, vertical para left/right.
+  if (pos === "left" || pos === "right") {
+    if (effectiveAlign.value === "start") {
+      base.top = "0";
+    } else if (effectiveAlign.value === "end") {
+      base.bottom = "0";
+    } else {
+      base.top = "50%";
+      base.transform = "translateY(-50%)";
+    }
   } else {
-    base.left = "50%";
-    base.transform = "translateX(-50%)";
+    if (effectiveAlign.value === "start") {
+      base.left = "0";
+    } else if (effectiveAlign.value === "end") {
+      base.right = "0";
+    } else {
+      base.left = "50%";
+      base.transform = "translateX(-50%)";
+    }
   }
 
   return base;
@@ -118,11 +138,20 @@ function open() {
   if (props.disabled) return;
   if (props.fixed && dropdownRef.value) {
     const r = dropdownRef.value.getBoundingClientRect();
-    const t = effectivePosition.value === "bottom" ? r.bottom + props.offset : r.top - props.offset;
-    const l = effectiveAlign.value === "start" ? r.left
-      : effectiveAlign.value === "end" ? r.right - 200
-      : r.left + r.width / 2 - 100;
-    panelPos.value = { top: `${t}px`, left: `${Math.max(0, l)}px` };
+    const pos = effectivePosition.value;
+    // Mitad del panel (min-width 200px) para centrar en modo fixed.
+    const half = 100;
+    const alignH = (align: string) =>
+      align === "start" ? r.left : align === "end" ? r.right - half * 2 : r.left + r.width / 2 - half;
+    const alignV = (align: string) =>
+      align === "start" ? r.top : align === "end" ? r.bottom - half * 2 : r.top + r.height / 2 - half;
+    const t = pos === "bottom" ? r.bottom + props.offset
+      : pos === "top" ? r.top - props.offset
+      : alignV(effectiveAlign.value);
+    const l = pos === "right" ? r.right + props.offset
+      : pos === "left" ? r.left - props.offset
+      : alignH(effectiveAlign.value);
+    panelPos.value = { top: `${Math.max(0, t)}px`, left: `${Math.max(0, l)}px` };
   }
   isOpen.value = true;
   emit("open");
