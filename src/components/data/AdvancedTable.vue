@@ -68,6 +68,7 @@ interface Column {
   selectOptions?: { value: string; label: string }[] | ((row: Record<string, any>) => { value: string; label: string }[]);
   validator?: (value: string, row: Record<string, any>) => boolean;
   singleClick?: boolean;
+  inlineEdit?: boolean; // Estado por columna: renderiza el editor directo
   sortable?: boolean | "string" | "number" | "boolean";
   badges?: (row: Record<string, any>) => BadgeConfig[];
   buttons?: (row: Record<string, any>) => ButtonConfig[];
@@ -104,6 +105,9 @@ const props = defineProps({
   filters: { type: Object as () => Record<string, any>, required: false, default: () => ({}) },
   loading: { type: Boolean, required: false, default: false },
   actions: { type: Array as () => ButtonConfig[], required: false, default: () => [] },
+  // Estado reactivo: cuando es true, todas las columnas editables renderizan
+  // el editor (input/select/textarea) directamente, sin lápiz.
+  inlineEditing: { type: Boolean, required: false, default: false },
 });
 
 const emit = defineEmits([
@@ -313,6 +317,7 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
           :value="value"
           :row="row"
           :column="col"
+          :inline-edit="inlineEditing"
           :index="index"
           :color="props.color"
           :variant="inputVariant"

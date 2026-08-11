@@ -27,6 +27,7 @@ interface Column {
   validator?: (value: string, row: Record<string, any>) => boolean;
   inputType?: "input" | "textarea" | "select" | "autocomplete";
   singleClick?: boolean;
+  inlineEdit?: boolean; // Estado por columna: renderiza el editor directo
   width?: string;
   align?: "left" | "center" | "right";
 
@@ -94,6 +95,11 @@ const props = defineProps({
     type: Object as () => { success: boolean; error: string | null },
     required: true,
     default: () => ({ success: false, error: null })
+  },
+  inlineEdit: {
+    type: Boolean,
+    required: false,
+    default: false,
   }
 });
 
@@ -103,7 +109,16 @@ const emit = defineEmits([
   "edit-cancel",
 ]);
 
+// Dos modos:
+// - Por defecto (lápiz): se muestra el valor con un lápiz; click para editar.
+// - Estado inline: el editor (input/select/textarea) se renderiza directo.
+//   Se activa POR COLUMNA (`column.inlineEdit: true`, forma principal) o
+//   globalmente desde la tabla (`inlineEditing` → prop `inlineEdit` de la
+//   celda, por compatibilidad). El estado de la columna tiene prioridad.
+const inlineEdit = computed(() => props.inlineEdit === true);
+const columnInlineEdit = computed(() => props.column.inlineEdit === true);
 const isEditing = ref(false);
+const showEditor = computed(() => columnInlineEdit.value || inlineEdit.value || isEditing.value);
 const saving = ref(false);
 const editValue = ref<string>("");
 const inputRef = ref<InstanceType<typeof Input | typeof Textarea | typeof Select | typeof Autocomplete> | null>(null);
@@ -117,7 +132,7 @@ watch(
 );
 
 const startEditing = async () => {
-  if (saving.value || !canEdit.value) return;
+  if (showEditor.value || saving.value || !canEdit.value) return;
   isEditing.value = true;
   emit("edit-start", { row: props.row, column: props.column, index: props.index });
   await nextTick();
@@ -148,13 +163,20 @@ const saveEdit = () => {
     value: editValue.value,
     index: props.index
   });
-  isEditing.value = false;
+  if (!inlineEdit.value) {
+    isEditing.value = false;
+  }
   nextTick(() => { saving.value = false; });
 };
 
 const cancelEdit = () => {
   emit("edit-cancel", { row: props.row, column: props.column, index: props.index });
-  isEditing.value = false;
+  if (inlineEdit.value) {
+    // Estado inline: revertir el valor y seguir mostrando el editor
+    editValue.value = props.value != null ? String(props.value) : "";
+  } else {
+    isEditing.value = false;
+  }
 };
 
 const handleKeyDown = (event: KeyboardEvent) => {
@@ -254,7 +276,7 @@ const canEdit = computed(() => {
     @click="column.singleClick !== false && canEdit && startEditing()"
     @dblclick="column.singleClick === false && canEdit && startEditing()"
   >
-    <template v-if="isEditing">
+    <template v-if="showEditor">
       <Textarea
         v-if="column.inputType === 'textarea'"
         ref="inputRef"
@@ -310,7 +332,11 @@ const canEdit = computed(() => {
     </template>
 
     <template v-else>
-      <span class="cu-editable-cell-view" :class="{ 'cu-editable-cell-view--disabled': !canEdit }">
+      <span
+        class="cu-editable-cell-view"
+        :class="{ 'cu-editable-cell-view--disabled': !canEdit }"
+        title="Click to edit"
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="16"
