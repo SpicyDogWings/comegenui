@@ -259,7 +259,6 @@ defineExpose({ nextMonth, prevMonth, goToMonth, getValue, setValue })
 const colorStyles = computed(() => ({
   '--cal-accent': `var(--cu-color-${props.color})`,
   '--cal-accent-hover': `var(--cu-color-${props.color}-hover)`,
-  '--cal-accent-text': `var(--cu-color-${props.color}-text)`,
   '--cal-soft': `var(--cu-color-${props.color}-soft)`,
   '--cal-soft-hover': `var(--cu-color-${props.color}-soft-hover)`,
   '--cal-subtle': `var(--cu-color-${props.color}-subtle)`,
@@ -395,16 +394,18 @@ const colorStyles = computed(() => ({
   box-sizing: border-box;
 }
 
-.cu-calendar-day:hover:not(:disabled) {
+/* Doble clase (convención del repo): ganarle en cascada a reglas globales
+   del consumidor (reset CSS, `.playground button`, etc.) */
+.cu-calendar-day.cu-calendar-day:hover:not(:disabled) {
   background: var(--cal-ghost-hover);
 }
 
-.cu-calendar-day:disabled {
+.cu-calendar-day.cu-calendar-day:disabled {
   opacity: 0.35;
   cursor: not-allowed;
 }
 
-.cu-calendar-day--today {
+.cu-calendar-day.cu-calendar-day--today {
   background: var(--cal-subtle);
   color: var(--cal-accent);
 }
@@ -412,7 +413,8 @@ const colorStyles = computed(() => ({
 /* Variantes del día seleccionado */
 .cu-calendar-day--selected.cu-calendar-day--solid {
   background: var(--cal-accent);
-  color: var(--cal-accent-text);
+  /* texto sobre solid SIEMPRE con surface (blanco), nunca -text (es el color oscurecido) */
+  color: var(--cu-color-surface);
 }
 .cu-calendar-day--selected.cu-calendar-day--solid:hover:not(:disabled) {
   background: var(--cal-accent-hover);

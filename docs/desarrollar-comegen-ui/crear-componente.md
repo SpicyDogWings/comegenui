@@ -72,6 +72,7 @@ const bgClass = computed(() =>
 - Usá `getBgClasses` y `getFgClasses` de `palette.ts` para los colores.
 - Slots con sintaxis Vue: `<slot>`, `<slot name="toggle">`, `<template #header>`.
 - Al final del `<style>` agregá `@unocss-placeholder;` (directiva de UnoCSS para activar las utilities).
+- **Especificidad (regla activa):** toda regla de variante con `color`/`background-color` va con **doble clase** (`.cu-x.cu-x--variant`), y el texto sobre `solid` va con `var(--cu-color-surface)` (nunca `--cu-color-{name}-text`, que es el color oscurecido). Ver [convenciones-desarrollo.md](convenciones-desarrollo.md#especificidad-en-variantes-con-color-propio).
 
 ## 2. Crear el `.ce.vue` (Custom Element wrapper)
 
@@ -291,6 +292,7 @@ Un componente nuevo **no está completo con solo su `.md`**. Hay que actualizar 
 - [ ] `.ce.vue` existe y expone la API con colores semánticos.
 - [ ] `.ts` registra el Custom Element.
 - [ ] Storybook story existe y muestra al menos una variante.
+- [ ] **Especificidad:** reglas de variante con doble clase (`.cu-x.cu-x--variant`) y texto sobre `solid` con `var(--cu-color-surface)`. Probar `solid` en el playground (reglas globales de color) antes de cerrar.
 - [ ] (Opcional) Preset en `playground/examples/`.
 - [ ] Build UMD funciona: `pnpm build:lib`.
 - [ ] Documentación `cu-<nombre>.md` existe.

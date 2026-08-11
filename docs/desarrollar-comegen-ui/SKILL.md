@@ -71,6 +71,8 @@ Si la tarea es **documentar** un componente para la skill del usuario final, us�
 
 > **Todo componente público debe tener 3 archivos: `.vue`, `.ce.vue`, `.ts`.** No escatimes ninguno. El `.ce.vue` es la **única** fuente de verdad de la API pública; el `.vue` interno puede refactorizarse sin tocar la API.
 
+> **Regla de oro #2 — Especificidad de variantes (activa en CADA componente que crees o modifiques):** toda regla de variante que defina `color`/`background-color` va con **doble clase** (`.cu-x.cu-x--variant`), y el texto sobre `solid` va **siempre** con `var(--cu-color-surface)` — **nunca** `--cu-color-{name}-text`, que es el color oscurecido y en temas como `sigacadv2` llega a `#000000` (texto negro sobre solid). Sin esto, estilos globales del consumidor/playground (`button { color }`, `.card span { color }`, resets) rompen la variante. Detalle y checklist en [convenciones-desarrollo.md](convenciones-desarrollo.md#especificidad-en-variantes-con-color-propio).
+
 ---
 
 ## Estructura del proyecto

@@ -203,6 +203,13 @@ La clase duplicada sube la especificidad a `(0,2,0)` (y `(0,3,0)` con el título
 
 Aplica a **todo componente** con variantes de color (`solid`, `ghost`, `soft`, `subtle`, `outlined`, ...): las reglas de variante van con doble clase, y en `solid` el texto debe quedar `var(--cu-color-surface)`, nunca heredar un color global del consumidor.
 
+> ⚠️ **`--cu-color-{name}-text` NO es para texto sobre `solid`.** Ese token es el color **oscurecido** (`darken(color, 0.25)` — en `sigacadv2`, `--cu-color-neutral-text: #000000`), pensado como tinte/énfasis sobre variantes suaves, no como contraste sobre el color base. Texto sobre fondo `solid` va **siempre** con `var(--cu-color-surface)` (blanco), como hacen `Button`, `Alert`, `Card` y `MonthSliderLabel`.
+
+**Regla activa (aplicar en cada componente que se desarrolle/modifique):**
+1. Toda regla de variante que defina `color`/`background-color` → **doble clase** (`.cu-x.cu-x--variant`, y para estados: `.cu-x.cu-x:hover:not(:disabled)`, `.cu-x.cu-x--today`, ...).
+2. Texto sobre `solid` → `var(--cu-color-surface)`.
+3. Probar la variante `solid` en el playground (donde hay reglas globales de color) antes de dar por cerrado el componente.
+
 ## Imports
 
 - Imports relativos dentro de `src/`:
