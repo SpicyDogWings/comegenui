@@ -44,6 +44,10 @@ interface Column {
     disabledDates?: (string | Date)[] | string;
     color?: string;
     variant?: string;
+    placement?: string;
+    position?: string;
+    align?: string;
+    fixed?: boolean;
   };
 
   select?: {
@@ -389,7 +393,10 @@ const canEdit = computed(() => {
         :disabled-dates="column.date?.disabledDates"
         :color="(elementColor as any)"
         :variant="(elementVariant as any)"
-        fixed
+        :placement="column.date?.placement"
+        :position="column.date?.position"
+        :align="column.date?.align"
+        :fixed="column.date?.fixed ?? true"
         @change="onDateChange"
         @close="onDateClose"
         class="cu-editable-cell-input"
