@@ -239,7 +239,7 @@ defineExpose({ open, close, toggle, getValue, setValue, clear, isOpen: () => dro
       <template #default>
         <div class="cu-date-picker-panel">
           <Calendar
-            :model-value="modelValue"
+            :model-value="selectedValue"
             :min="min"
             :max="max"
             :color="color"

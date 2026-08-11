@@ -139,7 +139,7 @@ function onEvent(name: string, payload: any) {
           getValue(): <strong>{{ programmaticValue ? programmaticValue.toISOString().slice(0, 10) : '—' }}</strong>
         </p>
         <div class="playground-date-picker-col">
-          <DatePicker ref="pickerRef" style="max-width: 280px;" />
+          <DatePicker ref="pickerRef" style="max-width: 280px;" @select="readValue" @change="readValue" />
         </div>
       </section>
 

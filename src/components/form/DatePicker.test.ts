@@ -42,4 +42,22 @@ describe("DatePicker — label del trigger y selección", () => {
     await flushPromises();
     expect(w.find(".cu-date-picker-label").text()).toBe("Sin fecha");
   });
+
+  it("al reabrir el panel, el día elegido sigue seleccionado (estado interno, no la prop)", async () => {
+    // modelValue se queda en el 11 (prop estática); al elegir el 14 el estado
+    // interno avanza. Reabrir debe marcar el 14, NO la prop (11).
+    const w = mount(DatePicker, { props: { modelValue: "2026-08-11" } });
+    await w.find(".cu-date-picker-toggle").trigger("click");
+    await flushPromises();
+    const day14 = w.findAll(".cu-calendar-day").find((d) => d.text() === "14");
+    expect(day14).toBeTruthy();
+    await day14!.trigger("click");
+    await flushPromises();
+    // panel cerrado → reabrir
+    await w.find(".cu-date-picker-toggle").trigger("click");
+    await flushPromises();
+    const selected = w.findAll(".cu-calendar-day--selected");
+    expect(selected).toHaveLength(1);
+    expect(selected[0]!.text()).toBe("14");
+  });
 });
