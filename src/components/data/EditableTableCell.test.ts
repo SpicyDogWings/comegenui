@@ -4,7 +4,7 @@ import EditableTableCell from "./EditableTableCell.vue";
 
 const row = { id: 1, name: "Alice Johnson", status: "Active" };
 
-function factory(column: Record<string, any>, value: string | number = "Alice Johnson") {
+function factory(column: Record<string, any>, value: string | number = "Alice Johnson", inlineEdit = false) {
   return mount(EditableTableCell, {
     props: {
       value,
@@ -12,39 +12,28 @@ function factory(column: Record<string, any>, value: string | number = "Alice Jo
       column: { key: "name", label: "Name", editable: true, ...column },
       index: 0,
       validation: { success: false, error: null },
+      inlineEdit,
     },
   });
 }
 
-describe("EditableTableCell — modos de edición", () => {
-  it("default: renderiza el input directo, sin lápiz", () => {
+describe("EditableTableCell — modo lápiz (default) y estado inline", () => {
+  it("default: muestra el lápiz y NO el input", () => {
     const w = factory({});
-    expect(w.find(".cu-editable-cell-icon").exists()).toBe(false);
-    expect(w.find("input").exists()).toBe(true);
-  });
-
-  it("default: select se renderiza directo, sin lápiz", () => {
-    const w = factory(
-      { inputType: "select", select: { options: [{ value: "Active", label: "Active" }] } },
-      "Active"
-    );
-    expect(w.find(".cu-editable-cell-icon").exists()).toBe(false);
-    expect(w.find(".cu-editable-cell-input").exists()).toBe(true);
-  });
-
-  it("clickToEdit: muestra lápiz y NO el input hasta el click", async () => {
-    const w = factory({ clickToEdit: true });
     expect(w.find(".cu-editable-cell-icon").exists()).toBe(true);
     expect(w.find("input").exists()).toBe(false);
+  });
 
+  it("default: click sobre la celda abre el editor", async () => {
+    const w = factory({});
     await w.trigger("click");
     await flushPromises();
     expect(w.find("input").exists()).toBe(true);
     expect(w.find(".cu-editable-cell-icon").exists()).toBe(false);
   });
 
-  it("clickToEdit: Escape cancela y vuelve al lápiz", async () => {
-    const w = factory({ clickToEdit: true });
+  it("default: Escape cierra y vuelve al lápiz", async () => {
+    const w = factory({});
     await w.trigger("click");
     await flushPromises();
     await w.find("input").trigger("keydown", { key: "Escape" });
@@ -53,8 +42,8 @@ describe("EditableTableCell — modos de edición", () => {
     expect(w.find("input").exists()).toBe(false);
   });
 
-  it("clickToEdit: Enter guarda y emite edit-save", async () => {
-    const w = factory({ clickToEdit: true });
+  it("default: Enter guarda (edit-save) y vuelve al lápiz", async () => {
+    const w = factory({});
     await w.trigger("click");
     await flushPromises();
     await w.find("input").setValue("Bob Smith");
@@ -64,10 +53,17 @@ describe("EditableTableCell — modos de edición", () => {
     expect(saves).toBeTruthy();
     const payload = (saves as unknown[][])[0]![0] as { value: string };
     expect(payload.value).toBe("Bob Smith");
+    expect(w.find(".cu-editable-cell-icon").exists()).toBe(true);
   });
 
-  it("default: Enter guarda y SIGUE en modo edición (sin lápiz)", async () => {
-    const w = factory({});
+  it("inlineEdit: renderiza el editor directo, sin lápiz", () => {
+    const w = factory({}, "Alice Johnson", true);
+    expect(w.find("input").exists()).toBe(true);
+    expect(w.find(".cu-editable-cell-icon").exists()).toBe(false);
+  });
+
+  it("inlineEdit: Enter guarda y SIGUE mostrando el editor", async () => {
+    const w = factory({}, "Alice Johnson", true);
     await w.find("input").setValue("Bob Smith");
     await w.find("input").trigger("keydown", { key: "Enter" });
     await flushPromises();
@@ -76,13 +72,22 @@ describe("EditableTableCell — modos de edición", () => {
     expect(w.find(".cu-editable-cell-icon").exists()).toBe(false);
   });
 
-  it("default: Escape revierte el valor y sigue en modo edición", async () => {
-    const w = factory({}, "Alice Johnson");
+  it("inlineEdit: Escape revierte y sigue mostrando el editor", async () => {
+    const w = factory({}, "Alice Johnson", true);
     await w.find("input").setValue("Changed");
     await w.find("input").trigger("keydown", { key: "Escape" });
     await flushPromises();
     expect(w.find("input").exists()).toBe(true);
     const inputEl = w.find("input").element as HTMLInputElement | undefined;
     expect(inputEl?.value).toBe("Alice Johnson");
+  });
+
+  it("inlineEdit es un estado: al apagarlo vuelve al lápiz", async () => {
+    const w = factory({}, "Alice Johnson", true);
+    expect(w.find("input").exists()).toBe(true);
+    await w.setProps({ inlineEdit: false });
+    await flushPromises();
+    expect(w.find(".cu-editable-cell-icon").exists()).toBe(true);
+    expect(w.find("input").exists()).toBe(false);
   });
 });
