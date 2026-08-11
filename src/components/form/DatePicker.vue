@@ -179,6 +179,7 @@ defineExpose({ open, close, toggle, getValue, setValue, clear, isOpen: () => dro
       :placement="placement"
       :fixed="fixed"
       :offset="4"
+      :panel-width="'280px'"
       @open="emit('open')"
       @close="emit('close')"
     >
@@ -278,12 +279,6 @@ defineExpose({ open, close, toggle, getValue, setValue, clear, isOpen: () => dro
 
 .cu-date-picker :deep(.cu-dropdown) {
   width: 100%;
-}
-
-/* El panel tiene un ancho fijo para que el calendario (min 240px) no desborde */
-.cu-date-picker :deep(.cu-dropdown-panel) {
-  width: 280px;
-  padding: var(--cu-space-sm);
 }
 
 .cu-date-picker-toggle {
