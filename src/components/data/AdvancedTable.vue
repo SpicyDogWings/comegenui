@@ -64,7 +64,15 @@ interface Column {
   align?: "left" | "center" | "right";
   cell?: (row: Record<string, any>) => string | string[];
   editable?: boolean | RegExp | ((row: Record<string, any>) => boolean);
-  inputType?: "input" | "textarea" | "select";
+  inputType?: "input" | "textarea" | "select" | "autocomplete" | "date";
+  date?: {
+    format?: string;
+    min?: string | number | Date;
+    max?: string | number | Date;
+    yearNavigation?: boolean;
+    disabledWeekdays?: number[] | string;
+    disabledDates?: (string | Date)[] | string;
+  };
   selectOptions?: { value: string; label: string }[] | ((row: Record<string, any>) => { value: string; label: string }[]);
   validator?: (value: string, row: Record<string, any>) => boolean;
   singleClick?: boolean;

@@ -102,4 +102,30 @@ describe("EditableTableCell — modo lápiz (default) y estado inline", () => {
     expect(w.find("input").exists()).toBe(true);
     expect(w.find(".cu-editable-cell-icon").exists()).toBe(false);
   });
+
+  it("inputType 'date': muestra la fecha formateada en modo vista", () => {
+    const w = factory({ inputType: "date", date: { format: "dd/MM/yyyy" } }, "2026-08-14");
+    expect(w.find(".cu-editable-cell-view").text()).toContain("14/08/2026");
+    expect(w.find(".cu-editable-cell-icon").exists()).toBe(true);
+  });
+
+  it("inputType 'date': al elegir un día guarda 'YYYY-MM-DD' y sale del editor (modo lápiz)", async () => {
+    const w = factory({ inputType: "date", date: { format: "dd/MM/yyyy" } }, "2026-08-14");
+    await w.find(".cu-editable-cell-view").trigger("click");
+    await flushPromises();
+    // el editor es el date-picker
+    expect(w.find(".cu-date-picker").exists()).toBe(true);
+    // abrir el panel y elegir el 20
+    await w.find(".cu-date-picker-toggle").trigger("click");
+    await flushPromises();
+    const day20 = w.findAll(".cu-calendar-day").find((d) => d.text() === "20");
+    expect(day20).toBeTruthy();
+    await day20!.trigger("click");
+    await flushPromises();
+    const saves = w.emitted("edit-save");
+    expect(saves).toBeTruthy();
+    expect((saves![0]![0] as any).value).toBe("2026-08-20");
+    // en modo lápiz vuelve a la vista
+    expect(w.find(".cu-editable-cell-icon").exists()).toBe(true);
+  });
 });

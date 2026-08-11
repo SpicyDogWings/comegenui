@@ -138,6 +138,19 @@ const editableColumns = [
       ],
     },
   },
+  {
+    key: "fecha",
+    label: "Fecha",
+    editable: true,
+    inputType: "date" as const,
+    date: {
+      format: "dd/MM/yyyy",
+      min: "2026-01-01",
+      max: "2026-12-31",
+      yearNavigation: true,
+      disabledWeekdays: "0,6",
+    },
+  },
 ];
 
 // Estado reactivo: toggle desde el botón lápiz de la columna "Acciones".
@@ -223,9 +236,9 @@ const mixedInlineColumns = [
 ];
 
 const editableData = [
-  { id: 1, name: "Alice Johnson", email: "alice@example.com", notes: "Team lead", status: "Active", role: "Admin" },
-  { id: 2, name: "Bob Smith", email: "bob@example.com", notes: "New hire", status: "Pending", role: "User" },
-  { id: 3, name: "Carol White", email: "carol@example.com", notes: "On vacation", status: "Active", role: "Editor" },
+  { id: 1, name: "Alice Johnson", email: "alice@example.com", notes: "Team lead", status: "Active", role: "Admin", fecha: "2026-08-14" },
+  { id: 2, name: "Bob Smith", email: "bob@example.com", notes: "New hire", status: "Pending", role: "User", fecha: "2026-08-11" },
+  { id: 3, name: "Carol White", email: "carol@example.com", notes: "On vacation", status: "Active", role: "Editor", fecha: "2026-08-20" },
 ];
 </script>
 
