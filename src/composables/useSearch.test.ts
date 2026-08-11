@@ -1,3 +1,4 @@
+import { describe, expect, test } from "vitest";
 import { ref } from "vue";
 import { useSearch } from "./useSearch";
 
@@ -5,7 +6,7 @@ describe("useSearch", () => {
   const testData = [
     { id: 1, name: "John Doe", email: "john@example.com", age: 28, role: "Developer" },
     { id: 2, name: "Jane Smith", email: "jane@example.com", age: 32, role: "Designer" },
-    { id: 3, name: "Bob Johnson", email: "bob@example.com", age: 45, role: "Manager" },
+    { id: 3, name: "Bob Miller", email: "bob@example.com", age: 45, role: "Manager" },
     { id: 4, name: "Alice Williams", email: "alice@example.com", age: 27, role: "QA Engineer" },
     { id: 5, name: "Charlie Brown", email: "charlie@example.com", age: 31, role: "DevOps" },
   ];
@@ -20,7 +21,7 @@ describe("useSearch", () => {
 
   test("should filter data based on search query (case-insensitive)", () => {
     const searchQuery = ref("john");
-    const { filteredData } = useSearch(testData, { searchQuery });
+    const { filteredData } = useSearch(testData, { searchQuery, searchFields: ["name"] });
     
     expect(filteredData.value.length).toBe(1);
     expect(filteredData.value[0].name).toBe("John Doe");
@@ -58,7 +59,8 @@ describe("useSearch", () => {
     const searchQuery = ref("john");
     const { filteredData } = useSearch(testData, { 
       searchQuery, 
-      caseSensitive: true
+      caseSensitive: true,
+      searchFields: ["name"]
     });
     
     expect(filteredData.value.length).toBe(0); // "john" != "John"
@@ -92,7 +94,7 @@ describe("useSearch", () => {
 
   test("should handle whitespace in search query", () => {
     const searchQuery = ref("  John  ");
-    const { filteredData } = useSearch(testData, { searchQuery });
+    const { filteredData } = useSearch(testData, { searchQuery, searchFields: ["name"] });
     
     expect(filteredData.value.length).toBe(1);
     expect(filteredData.value[0].name).toBe("John Doe");
