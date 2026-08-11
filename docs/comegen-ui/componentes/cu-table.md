@@ -424,12 +424,34 @@ tabla.columns = [
       yearNavigation: true,        // botones « » de año en el calendario
       disabledWeekdays: '0,6',     // fines de semana deshabilitados
       disabledDates: '2026-08-15', // feriados puntuales
+      placement: 'top-start',      // panel arriba (o position: 'top', align: 'start', fixed: false)
     },
   },
 ];
 ```
 
 > El evento `edit-save` entrega el valor como `"YYYY-MM-DD"`. La config `date.*` acepta los mismos valores que las props del `<cu-date-picker>` (string `"0,6"` o array `[0,6]` para `disabledWeekdays`, etc.).
+
+### Posición del panel (calendario arriba, etc.)
+
+La config `date.*` acepta las props de posicionamiento del `<cu-date-picker>`:
+
+| Prop de `date.*` | Valores | Default | Descripción |
+|---|---|---|---|
+| `placement` | `"bottom-start"`, `"top-start"`, `"top-end"`, ... | — | Posición del panel (anula `position`/`align`) |
+| `position` | `"bottom"` \| `"top"` | `"bottom"` | Panel debajo o **arriba** del trigger |
+| `align` | `"start"` \| `"center"` \| `"end"` | `"start"` | Alineación horizontal del panel |
+| `fixed` | `boolean` | `true` | Panel en `position: fixed` (default `true` en celdas editables para no romper el layout de la tabla) |
+
+```js
+// Panel arriba del trigger, alineado a la derecha
+{ key: 'fecha', label: 'Fecha', editable: true, inputType: 'date', date: { placement: 'top-end' } }
+
+// Equivalente con position/align
+{ key: 'fecha', label: 'Fecha', editable: true, inputType: 'date', date: { position: 'top', align: 'end' } }
+```
+
+> Con `fixed: false` el panel se posiciona en `absolute` respecto al trigger (puede recortarse si la celda/tabla tiene `overflow`). El default es `true` justamente para evitarlo.
 
 ---
 
