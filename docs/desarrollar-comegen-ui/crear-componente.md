@@ -16,6 +16,7 @@ Antes de tocar código, responder:
 - **¿Qué props públicas necesita?** Pensar desde la perspectiva del consumidor (HTML plano + UMD).
 - **¿Qué eventos custom emite?** Solo si la lógica de negocio lo requiere.
 - **¿Tiene slots?** Slots HTML nativos (no Vue), con `slot="nombre"`.
+- **¿Rama de trabajo?** Toda tarea va en una rama propia **fuera de `main`** (`feat/<tag>`, `docs/<tag>`, etc.). Creala antes de tocar código: `git checkout main && git pull --ff-only && git checkout -b feat/cu-<nombre>`. Ver [convenciones-desarrollo.md](convenciones-desarrollo.md#workflow-de-ramas-git).
 
 ## 1. Crear el `.vue` interno (implementación real)
 

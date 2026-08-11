@@ -47,13 +47,33 @@ bash scripts/config.sh                 # editar variables de env
 ## Flujo típico: agregar un componente nuevo
 
 ```bash
+# 0. Trabajar en una rama propia (nunca directo en main)
+git checkout main && git pull --ff-only
+git checkout -b feat/cu-mi-componente
 # 1. Crear los 3 archivos del componente (.vue, .ce.vue, .ts)
 # 2. Crear la storybook (src/stories/X.stories.ts)
 # 3. Compilar
 pnpm build:lib
 # 4. Probar en el playground
 # 5. Documentar (usar skill documentar-comegen-ui)
-# 6. Commit
+# 6. Commit y merge a main (o MR)
+git add -A && git commit -m "feat(componente): descripción"
+git push -u origin feat/cu-mi-componente
+```
+
+## Git (workflow de ramas)
+
+Ver [convenciones-desarrollo.md](convenciones-desarrollo.md#workflow-de-ramas-git). Resumen:
+
+```bash
+git checkout main && git pull --ff-only            # actualizar main
+git checkout -b <tipo>/<nombre>                    # crear rama (feat/fix/docs/test/chore)
+# ...trabajar...
+git add -A && git commit -m "<tipo>(<scope>): descripción"
+git push -u origin <tipo>/<nombre>                 # subir rama
+# mergear a main (o abrir MR) y borrar la rama local:
+git checkout main && git pull --ff-only && git merge <tipo>/<nombre>
+git branch -d <tipo>/<nombre>
 ```
 
 ## Flujo típico: iterar visualmente sobre un componente existente
