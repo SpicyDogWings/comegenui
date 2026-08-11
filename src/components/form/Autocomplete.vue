@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch, defineModel } from "vue";
-import Dropdown from "../Dropdown.vue";
+import Dropdown from "../overlay/Dropdown.vue";
 import Input from "./Input.vue";
 import Button from "../buttons/Button.vue";
 

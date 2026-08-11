@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import Dropdown from "./Dropdown.vue";
-import Button from "./buttons/Button.vue";
+import Dropdown from "../overlay/Dropdown.vue";
+import Button from "../buttons/Button.vue";
 
 interface DropdownItem {
   label?: string;

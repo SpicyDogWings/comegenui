@@ -1,4 +1,4 @@
-import Pagination from "../components/Pagination.vue";
+import Pagination from "../components/controls/Pagination.vue";
 import { ref } from "vue";
 
 import type { Meta, StoryObj } from "@storybook/vue3";

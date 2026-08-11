@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import Button from "./buttons/Button.vue";
-import Select from "./form/Select.vue";
+import Button from "../buttons/Button.vue";
+import Select from "../form/Select.vue";
 
 const props = defineProps({
   color: {

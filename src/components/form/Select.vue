@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
-import Dropdown from "../Dropdown.vue";
+import Dropdown from "../overlay/Dropdown.vue";
 import Button from "../buttons/Button.vue";
 
 interface SelectOption {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, type PropType } from "vue";
-import Button from "./buttons/Button.vue";
+import Button from "../buttons/Button.vue";
 
 const props = defineProps({
   color: {

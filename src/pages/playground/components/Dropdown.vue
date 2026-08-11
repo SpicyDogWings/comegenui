@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
-import Dropdown from "@/components/Dropdown.vue";
+import Dropdown from "@/components/overlay/Dropdown.vue";
 import Button from "@/components/buttons/Button.vue";
 import Calendar from "@/components/controls/Calendar.vue";
 import { ref } from "vue";
@@ -155,12 +155,6 @@ const outlineItems = [
           </div>
         </div>
       </section>
-
-      
-
-      </section>
-
-      <hr class="playground-separator" />
 
       <hr class="playground-separator" />
 
