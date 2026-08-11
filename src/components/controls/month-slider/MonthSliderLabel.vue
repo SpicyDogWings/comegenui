@@ -236,6 +236,16 @@ function endDrag() {
   color: inherit;
 }
 
+/* Sobre label solid, el badge del año (variante subtle) se pierde: el tinte
+   translúcido sobre el fondo solid oscuro no aporta contraste y el texto
+   (`--cu-color-{name}-text` = color oscurecido) queda casi negro e imperceptible.
+   Se invierte el badge: fondo = surface (color del texto del label) + texto = accent
+   (color del solid). Specificity (0,4,0) > `.cu-badge.cu-badge--subtle` (0,3,0). */
+.cu-month-slider-label.cu-month-slider-label--solid .cu-month-slider-label-year {
+  background-color: var(--ms-surface);
+  color: var(--ms-accent);
+}
+
 .cu-month-slider-label.is-draggable {
   cursor: grab;
 }
