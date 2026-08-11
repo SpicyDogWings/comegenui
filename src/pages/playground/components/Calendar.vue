@@ -17,9 +17,9 @@ const variants = ["solid", "outlined", "soft", "ghost", "subtle"] as const;
 
 const outlineItems = [
   { label: 'Default', id: 'default' },
+  { label: 'Controles de mes', id: 'month-controls' },
   { label: 'Seleccionado', id: 'selected' },
   { label: 'Min / Max', id: 'min-max' },
-  { label: 'Controles de mes', id: 'month-controls' },
   { label: 'Semana domingo', id: 'week-start' },
   { label: 'Locale', id: 'locale' },
   { label: 'Variantes', id: 'variants' },
@@ -50,6 +50,23 @@ function onEvent(name: string, payload: any) {
 
       <hr class="playground-separator" />
 
+      <section id="month-controls" class="playground-section">
+        <h2>Controles de mes (MonthSlider)</h2>
+        <p class="playground-desc">
+          El header reutiliza el <code>MonthSlider</code> del repo: chevrons prev/next, <strong>drag</strong> sobre el label, año automático y navegación de año opcional.
+        </p>
+        <div class="playground-calendar-col">
+          <p class="playground-desc"><strong>Con <code>year-navigation</code></strong> → botones « » para saltar de año (los del slider):</p>
+          <Calendar model-value="2026-08-11" year-navigation style="width: 300px;" />
+          <p class="playground-desc"><strong>Con <code>year-navigation</code> + <code>month-format="MMM yyyy"</code>:</strong></p>
+          <Calendar model-value="2026-08-11" month-format="MMM yyyy" year-navigation style="width: 300px;" />
+          <p class="playground-desc"><strong>Default</strong> (solo prev/next mes + drag, año automático):</p>
+          <Calendar model-value="2026-08-11" style="width: 300px;" />
+        </div>
+      </section>
+
+      <hr class="playground-separator" />
+
       <section id="selected" class="playground-section">
         <h2>Con fecha seleccionada</h2>
         <p class="playground-desc">
@@ -70,20 +87,6 @@ function onEvent(name: string, payload: any) {
         </p>
         <div class="playground-calendar-col">
           <Calendar min="2026-01-10" max="2026-12-24" model-value="2026-08-11" style="width: 300px;" />
-        </div>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="month-controls" class="playground-section">
-        <h2>Controles de mes (MonthSlider)</h2>
-        <p class="playground-desc">
-          El header reutiliza el <code>MonthSlider</code>: chevrons prev/next, <strong>drag</strong> sobre el label y navegación de año opcional (<code>year-navigation</code>).
-        </p>
-        <div class="playground-calendar-col">
-          <Calendar model-value="2026-08-11" style="width: 300px;" />
-          <Calendar model-value="2026-08-11" year-navigation style="width: 300px;" />
-          <Calendar model-value="2026-08-11" month-format="MMM yyyy" year-navigation style="width: 300px;" />
         </div>
       </section>
 

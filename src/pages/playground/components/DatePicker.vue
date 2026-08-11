@@ -20,6 +20,7 @@ const outlineItems = [
   { label: 'Placeholder', id: 'placeholder' },
   { label: 'Formato', id: 'format' },
   { label: 'Min / Max', id: 'min-max' },
+  { label: 'Controles de mes', id: 'month-controls' },
   { label: 'Sin footer', id: 'no-footer' },
   { label: 'Variantes', id: 'variants' },
   { label: 'Colores', id: 'colors' },
@@ -44,7 +45,6 @@ function onEvent(name: string, payload: any) {
         </p>
         <div class="playground-date-picker-col">
           <DatePicker style="max-width: 280px;" />
-          <DatePicker model-value="2026-08-11" year-navigation style="max-width: 280px;" />
         </div>
       </section>
 
@@ -77,6 +77,19 @@ function onEvent(name: string, payload: any) {
         <h2>Min / Max</h2>
         <div class="playground-date-picker-col">
           <DatePicker model-value="2026-08-11" min="2026-01-01" max="2026-12-31" style="max-width: 280px;" />
+        </div>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="month-controls" class="playground-section">
+        <h2>Controles de mes (año)</h2>
+        <p class="playground-desc">
+          El calendario interno hereda <code>year-navigation</code> (botones « » para saltar de año, del MonthSlider) y <code>month-format</code>.
+        </p>
+        <div class="playground-date-picker-col">
+          <DatePicker model-value="2026-08-11" year-navigation style="max-width: 280px;" />
+          <DatePicker model-value="2026-08-11" year-navigation month-format="MMM yyyy" style="max-width: 280px;" />
         </div>
       </section>
 
