@@ -74,28 +74,47 @@ interface ButtonConfig {
 }
 ```
 
-### Celdas editables — dos modos
+### Estados de las celdas editables
 
-Por defecto las columnas con `editable` muestran el valor con un **lápiz**; hacé click
-(o doble click si `singleClick: false`) para editar inline.
+Una columna con `editable` tiene **dos estados** posibles. Ambos son **reactivos**: podés alternarlos en runtime (ej: un botón "lápiz" que togglea el estado global).
 
-**Estado por columna** (forma principal): agregá `inlineEdit: true` en la columna para
-que esa columna renderice el editor directo (input / select / textarea), sin lápiz:
+#### Estado 1 — Modo lápiz (default)
+
+La celda muestra el valor con un **lápiz** ✏️. Hacé click (o doble click si `singleClick: false`) para entrar al editor.
+
+| Acción | Comportamiento |
+|--------|----------------|
+| Click / doble click | Entra en edición, emite `edit-start` |
+| `Enter` (o blur) | Guarda, emite `edit-save`, **vuelve al lápiz** |
+| `Escape` | Cancela, emite `edit-cancel`, **vuelve al lápiz** |
+
+#### Estado 2 — Inline (editor siempre visible)
+
+La celda renderiza el editor (input / select / textarea / autocomplete) **directamente**, sin lápiz. Se activa **por columna** o **globalmente**:
+
+**Por columna** (forma principal — funciona también en `<cu-table>`):
 
 ```ts
 { key: "email", label: "Email", editable: true, inlineEdit: true }
 ```
 
-**Estado global en la tabla** (opcional, por compatibilidad): `inlineEditing` activa el
-inline en todas las columnas editables:
+**Global en la tabla** (solo componente Vue `AdvancedTable`, por compatibilidad):
 
 ```vue
 <AdvancedTable :columns="columns" :data="data" :inline-editing="inlineEditing" />
 ```
 
-> Ambos son **estados reactivos**, no propiedades estáticas: podés alternarlos cuando
-> quieras (ej: botón "lápiz" en la columna de acciones que togglea el estado global).
-> El estado de la **columna** tiene prioridad sobre el de la tabla.
+> ⚠️ **En HTML plano:** el `<cu-table>` (Custom Element) **no expone** la prop `inlineEditing`. Para celdas siempre editables con UMD usá `inlineEdit: true` en cada columna (las `columns` se reenvían tal cual al interno).
+
+| Acción | Comportamiento en estado inline |
+|--------|---------------------------------|
+| `Enter` (o blur) | Guarda, emite `edit-save`, **el editor permanece** |
+| `Escape` | Cancela, emite `edit-cancel`, **el editor permanece** (en estado global revierte además el valor al original) |
+| Apagar el estado | Vuelve al modo lápiz sin perder lo ya guardado |
+
+**Prioridad:** el estado de la **columna** (`column.inlineEdit`) tiene prioridad sobre el global (`inlineEditing`). Una columna con `inlineEdit: true` queda inline aunque la tabla tenga `inlineEditing: false`.
+
+> Ver [Recetas](#recetas) para ejemplos completos de cada estado, incluyendo el preset de playground `examples/table-inline-editing.js`.
 
 ### Acciones de fila (`actions`)
 
@@ -503,6 +522,114 @@ tabla.addEventListener('edit-save', (e) => {
 ```
 
 `updateRow` hace merge, así que solo actualiza `editado` sin pisar el resto.
+
+---
+
+## Recetas: estados de las celdas editables
+
+### Receta 1 — Modo edición masiva con toggle (Vue)
+
+Un botón que alterna toda la tabla entre modo lápiz y modo inline (todos los editores visibles). Ideal para "editar en lote".
+
+```vue
+<script setup lang="ts">
+import { ref } from "vue";
+import AdvancedTable from "@/components/data/AdvancedTable.vue";
+
+const inlineEditing = ref(false); // ← estado reactivo
+const data = ref([
+  { id: 1, nombre: "Juan", email: "juan@x.com", rol: "admin" },
+  { id: 2, nombre: "María", email: "maria@x.com", rol: "editor" },
+]);
+
+const columns = [
+  { key: "nombre", label: "Nombre", editable: true },
+  { key: "email", label: "Correo", editable: /^[^\s@]+@[^\s@]+\.[^\s@]+$/ },
+  {
+    key: "rol", label: "Rol", editable: true, inputType: "select",
+    selectOptions: [
+      { value: "admin", label: "Admin" },
+      { value: "editor", label: "Editor" },
+    ],
+  },
+];
+</script>
+
+<template>
+  <button @click="inlineEditing = !inlineEditing">
+    {{ inlineEditing ? "Terminar edición" : "Editar en lote" }}
+  </button>
+  <AdvancedTable :columns="columns" :data="data" :inline-editing="inlineEditing" />
+</template>
+```
+
+> Al apagar el estado, todas las celdas vuelven al lápiz sin perder los valores ya guardados (cada `edit-save` actualizó `data` en el momento).
+
+### Receta 2 — Columna siempre editable en HTML plano (`<cu-table>`)
+
+El Custom Element no expone `inlineEditing`, así que el estado inline se activa **por columna**:
+
+```html
+<script src="dist/CuTable.umd.js"></script>
+
+<cu-table id="tablaInline"></cu-table>
+
+<script>
+  const t = document.getElementById('tablaInline');
+
+  t.columns = [
+    { key: 'nombre', label: 'Nombre', editable: true, inlineEdit: true }, // siempre inline
+    { key: 'email',  label: 'Correo', editable: true },                   // modo lápiz
+    {
+      key: 'rol', label: 'Rol', editable: true, inlineEdit: true,
+      inputType: 'select',
+      selectOptions: [
+        { value: 'admin',  label: 'Administrador' },
+        { value: 'editor', label: 'Editor' },
+      ],
+    },
+  ];
+
+  t.data = [
+    { nombre: 'Juan Pérez', email: 'juan@ejemplo.com', rol: 'admin' },
+    { nombre: 'María García', email: 'maria@ejemplo.com', rol: 'editor' },
+  ];
+
+  t.addEventListener('edit-save', (e) => {
+    console.log(`Guardado: ${e.detail.column.key} = "${e.detail.value}" (fila ${e.detail.index})`);
+  });
+</script>
+```
+
+### Receta 3 — Estados mixtos + validación y edición condicional
+
+Combiná lápiz e inline en la misma tabla, con validación por columna y celdas habilitadas según la fila:
+
+```js
+tabla.columns = [
+  {
+    key: 'nombre', label: 'Nombre',
+    editable: true, inlineEdit: true,                    // siempre inline
+    validator: (v) => v.trim().length >= 3,              // valida al guardar
+  },
+  {
+    key: 'email', label: 'Correo',
+    editable: (row) => row.activo,                       // modo lápiz, solo si la fila está activa
+    validator: (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),
+  },
+  {
+    key: 'estado', label: 'Estado',
+    editable: true,                                      // modo lápiz (default)
+    inputType: 'select',
+    selectOptions: [
+      { value: 'activo', label: 'Activo' },
+      { value: 'inactivo', label: 'Inactivo' },
+    ],
+  },
+];
+```
+
+> **Nota:** `editable` como función controla el **modo lápiz** (habilita/deshabilita el click y atenúa la celda con `.cu-editable-cell-view--disabled`). En estado inline el editor se renderiza igual aunque la función devuelva `false`; usá `validator` para controlar qué se guarda.
 
 ---
 
