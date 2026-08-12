@@ -3,11 +3,16 @@ import ToggleColorSheme from '@/components/buttons/ToggleColorSheme.vue'
 import Navbar from '@/components/lab/collapse/navigation/Navbar.vue'
 import Outline from '@/components/lab/collapse/navigation/Outline.vue'
 import type { OutlineItem } from '@/components/lab/collapse/navigation/Outline.vue'
+import Badge from '@/components/information/Badge.vue'
+import { useLibStatus } from '@/pages/playground/useLibStatus'
 
 defineProps<{
   title?: string
   outlineItems?: OutlineItem[]
 }>()
+
+// Badge "En lib / No en lib": derivado de la ruta + entry points reales de src/lib
+const { libKey, inLib } = useLibStatus()
 
 const navItems = [
   {
@@ -71,6 +76,7 @@ const navItems = [
         children: [
           { label: 'Table', path: '/playground/components/table' },
           { label: 'AdvancedTable', path: '/playground/components/advanced-table' },
+          { label: 'EditableRow', path: '/playground/components/editable-row' },
         ]
       },
       {
@@ -88,7 +94,16 @@ const navItems = [
   <section class="playground">
     <div class="playground-headerbar">
       <h1>{{ title || 'Playground' }}</h1>
-      <ToggleColorSheme />
+      <div class="playground-header-actions">
+        <Badge
+          :color="inLib ? 'success' : 'neutral'"
+          variant="subtle"
+          :title="`Entry point en src/lib: ${libKey}`"
+        >
+          {{ inLib ? 'En lib' : 'No en lib' }}
+        </Badge>
+        <ToggleColorSheme />
+      </div>
     </div>
     <div class="playground-body">
       <aside class="playground-sidebar">
@@ -123,6 +138,12 @@ const navItems = [
   align-items: center;
   padding: 0 2rem;
   border-bottom: var(--cu-border-thin) solid var(--cu-border-color);
+}
+
+.playground-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .playground-body {
