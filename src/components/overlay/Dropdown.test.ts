@@ -102,4 +102,66 @@ describe("Dropdown — motor genérico toggle + panel", () => {
     expect(w.find(".cu-dropdown-panel").exists()).toBe(true);
     w.unmount();
   });
+
+  it("fixed + position top: el panel se ancla por debajo del trigger (bottom) y NO lo tapa", async () => {
+    const w = factory({ fixed: true, position: "top", align: "center", panelWidth: "280px" });
+    const trigger = w.find(".cu-dropdown");
+    trigger.element.getBoundingClientRect = () =>
+      ({ left: 400, width: 40, top: 200, height: 20, right: 440, bottom: 220 }) as DOMRect;
+    await trigger.find("button").trigger("click");
+    const style = w.find(".cu-dropdown-panel").attributes("style") || "";
+    // Espeja el modo absolute: bottom: 100% → el borde inferior del panel queda en el top del trigger.
+    // vh (jsdom 768) - r.top (200) + offset (4) = 572px. Antes usaba top: 196px y tapaba el trigger.
+    expect(style).toContain("bottom: 572px");
+    expect(style).not.toContain("top: 196px");
+    // Centrado horizontal sin estimar el ancho: centro del trigger (420px) + translateX(-50%)
+    expect(style).toContain("left: 420px");
+    expect(style).toContain("translateX(-50%)");
+    w.unmount();
+  });
+
+  it("fixed + position left: el panel se ancla por la derecha (right) y centra vertical", async () => {
+    const w = factory({ fixed: true, position: "left", align: "center" });
+    const trigger = w.find(".cu-dropdown");
+    trigger.element.getBoundingClientRect = () =>
+      ({ left: 400, width: 40, top: 200, height: 20, right: 440, bottom: 220 }) as DOMRect;
+    await trigger.find("button").trigger("click");
+    const style = w.find(".cu-dropdown-panel").attributes("style") || "";
+    // vw (jsdom 1024) - r.left (400) + offset (4) = 628px → el panel queda a la izquierda del trigger
+    expect(style).toContain("right: 628px");
+    expect(style).not.toContain("left: 396px");
+    // Centro vertical: centro del trigger (210px) + translateY(-50%)
+    expect(style).toContain("top: 210px");
+    expect(style).toContain("translateY(-50%)");
+    w.unmount();
+  });
+
+  it("fixed + position bottom align start: panel debajo del trigger, alineado a la izquierda", async () => {
+    const w = factory({ fixed: true, position: "bottom", align: "start" });
+    const trigger = w.find(".cu-dropdown");
+    trigger.element.getBoundingClientRect = () =>
+      ({ left: 400, width: 40, top: 200, height: 20, right: 440, bottom: 220 }) as DOMRect;
+    await trigger.find("button").trigger("click");
+    const style = w.find(".cu-dropdown-panel").attributes("style") || "";
+    expect(style).toContain("top: 224px"); // r.bottom (220) + offset (4)
+    expect(style).toContain("left: 400px");
+    w.unmount();
+  });
+
+  it("fixed: al scrollear re-posiciona el panel (sigue al trigger)", async () => {
+    const w = factory({ fixed: true, position: "bottom", align: "start" });
+    const trigger = w.find(".cu-dropdown");
+    let rect = { left: 400, width: 40, top: 200, height: 20, right: 440, bottom: 220 } as DOMRect;
+    trigger.element.getBoundingClientRect = () => rect;
+    await trigger.find("button").trigger("click");
+    expect(w.find(".cu-dropdown-panel").attributes("style") || "").toContain("top: 224px");
+
+    // Simula scroll (página o contenedor interno): el trigger se mueve 50px hacia arriba
+    rect = { left: 400, width: 40, top: 150, height: 20, right: 440, bottom: 170 } as DOMRect;
+    document.dispatchEvent(new Event("scroll"));
+    await nextTick();
+    const style = w.find(".cu-dropdown-panel").attributes("style") || "";
+    expect(style).toContain("top: 174px"); // r.bottom (170) + offset (4) → siguió al trigger
+    w.unmount();
+  });
 });
