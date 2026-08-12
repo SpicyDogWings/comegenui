@@ -8,6 +8,15 @@
 #   curl -L -o comegenui.zip \
 #     "https://gitlab.com/SpicyDogWings/comegen-ui/-/jobs/artifacts/main/download?job=build"
 
+# El pipeline corre SOLO en:
+#   - la rama por defecto (main)  → build + artifact
+#   - tags                        → build + Release (necesita el build)
+# Cualquier otra rama o MR no ejecuta nada.
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_TAG
+
 stages:
   - build
   - release
