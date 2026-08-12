@@ -12,9 +12,9 @@ pnpm dev
 ## Instalación (desde el repo)
 
 El build se genera en la nube: GitLab CI compila la librería y publica el
-artifact con **los archivos en la raíz** (UMD + temas CSS + doc skill +
-`comegenui-v{version}.zip`) — el zip descargado ES la carpeta de la librería,
-sin prefijo `dist/`. Descargalo directo desde el repo:
+artifact (UMD + temas CSS + doc skill + `comegenui-v{version}.zip`). El zip
+descomprime en la carpeta **`comegenui/`** con los archivos adentro, sin
+prefijo `dist/`. Descargalo directo desde el repo:
 
 ```sh
 # 1. Descargar el último build de main
@@ -27,9 +27,10 @@ unzip comegenui.zip -d <carpeta-destino>
 
 > El build incluye los Custom Elements UMD (`CuAlert.umd.js`, `CuButton.umd.js`,
 > ...), los CSS de temas (`css/themes.css`), la doc skill `docs/comegen-ui/` y
-> el zip versionado `comegenui-v{version}.zip`. Cargá los `.umd.js` con un
-> `<script>` y usá las etiquetas (`<cu-button>`, `<cu-alert>`, ...) directo en
-> el HTML — ver [Uso (HTML plano)](#uso-html-plano).
+> el zip versionado `comegenui-v{version}.zip`, todo dentro de la carpeta
+> `comegenui/`. Cargá los `.umd.js` con un `<script>` y usá las etiquetas
+> (`<cu-button>`, `<cu-alert>`, ...) directo en el HTML — ver
+> [Uso (HTML plano)](#uso-html-plano).
 
 ### Versión específica (Release)
 
@@ -140,11 +141,11 @@ Para cada color (`primary`, `neutral`, `success`, etc.) se generan:
 
 ```html
 <!-- 1. Incluir CSS del tema -->
-<link rel="stylesheet" href="css/themes.css">
+<link rel="stylesheet" href="comegenui/css/themes.css">
 
 <!-- 2. Incluir componentes UMD -->
-<script src="CuButton.umd.js"></script>
-<script src="CuAlert.umd.js"></script>
+<script src="comegenui/CuButton.umd.js"></script>
+<script src="comegenui/CuAlert.umd.js"></script>
 
 <!-- 3. Usar -->
 <cu-button color="primary">Click me</cu-button>

@@ -80,14 +80,17 @@ Los componentes soportan variantes via el prop `variant`:
 
 ## Estructura del zip
 
+Al descomprimir `comegenui-v{version}.zip` se genera la carpeta `comegenui/` con los archivos adentro:
+
 ```
 comegenui-v{version}.zip
-├── Cu*.umd.js          ← Componentes UMD
-├── css/
-│   ├── themes.css      ← Todos los temas
-│   ├── light.css       ← Tema light
-│   └── dark.css        ← Tema dark
-├── docs/
-│   └── comegen-ui/     ← Doc skill: SKILL.md + docs por componente
-└── README-BUILD.md     ← Este archivo
+└── comegenui/
+    ├── Cu*.umd.js          ← Componentes UMD
+    ├── css/
+    │   ├── themes.css      ← Todos los temas
+    │   ├── light.css       ← Tema light
+    │   └── dark.css        ← Tema dark
+    ├── docs/
+    │   └── comegen-ui/     ← Doc skill: SKILL.md + docs por componente
+    └── README-BUILD.md     ← Este archivo
 ```
