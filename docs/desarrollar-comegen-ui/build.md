@@ -14,7 +14,7 @@ Esto ejecuta `build-libs.ts` (Node) que:
 2. **Encuentra** todos los `*.ts` bajo `src/components/` recursivamente.
 3. **Compila** cada uno como UMD independiente con Vite.
 4. **Copia** `README-BUILD.md` a `dist/` con la versión actualizada.
-5. **Crea** `dist/comegenui-v{version}.zip` con la carpeta `comegenui/` adentro (UMD + `css/` + doc skill `docs/comegen-ui/` + `README-BUILD.md`). Al descomprimir genera `comegenui/` con los archivos en la raíz, sin `dist/`.
+5. **Crea** `dist/comegenui-v{version}.zip`: los archivos de la lib (UMD + `css/` + `README-BUILD.md`) + el folder de la skill de uso `comegen-ui/` (solo esa; no la de desarrollo ni la de documentar), al mismo nivel.
 
 ## ¿Qué sale en `dist/`?
 
@@ -37,7 +37,7 @@ dist/
 ├── CuSelectNative.umd.js    ← viene de archived/ (ver nota)
 ├── Cuindex.umd.js           ← viene de data/index.ts (artifact, ver nota)
 ├── README-BUILD.md
-└── comegenui-v{version}.zip   ← contiene comegenui/ (UMD + css/ + docs/comegen-ui/)
+└── comegenui-v{version}.zip   ← archivos de la lib + comegen-ui/ (skill de uso)
 ```
 
 > **Nota:** `cu-select-native` y `Cuindex.umd.js` se generan por el glob sin filtros. Ver [`docs/notes/01-build-glob.md`](../../notes/01-build-glob.md) para detalles.
