@@ -123,6 +123,7 @@ const emit = defineEmits([
   "edit-start",
   "edit-save",
   "edit-cancel",
+  "edit-error",
 ]);
 
 // Dos modos:
@@ -169,6 +170,12 @@ const saveEdit = () => {
   }
 
   if (!isValid) {
+    emit("edit-error", {
+      row: props.row,
+      column: props.column,
+      value,
+      index: props.index,
+    });
     return;
   }
 

@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { mount, flushPromises } from "@vue/test-utils";
 import EditableTableCell from "./EditableTableCell.vue";
+import Input from "../form/Input.vue";
 
 const row = { id: 1, name: "Alice Johnson", status: "Active" };
 
@@ -101,6 +102,33 @@ describe("EditableTableCell — modo lápiz (default) y estado inline", () => {
     const w = factory({ inlineEdit: true }, "Alice Johnson", false);
     expect(w.find("input").exists()).toBe(true);
     expect(w.find(".cu-editable-cell-icon").exists()).toBe(false);
+  });
+
+  it("regex inválido: emite edit-error y NO edit-save (no guarda)", async () => {
+    const w = factory({ editable: /^\d+\.\d{2}$/ }, "1200.50", true);
+    await w.find("input").setValue("1200.555");
+    await w.find("input").trigger("keydown", { key: "Enter" });
+    await flushPromises();
+    expect(w.emitted("edit-save")).toBeFalsy();
+    expect(w.emitted("edit-error")).toBeTruthy();
+    const payload = (w.emitted("edit-error")![0]![0] as { value: string });
+    expect(payload.value).toBe("1200.555");
+  });
+
+  it("regex válido: NO emite edit-error y sí edit-save", async () => {
+    const w = factory({ editable: /^\d+\.\d{2}$/ }, "1200.50", true);
+    await w.find("input").setValue("25.99");
+    await w.find("input").trigger("keydown", { key: "Enter" });
+    await flushPromises();
+    expect(w.emitted("edit-error")).toBeFalsy();
+    expect(w.emitted("edit-save")).toBeTruthy();
+  });
+
+  it("validation.error: el input recibe color danger (se tiñe de rojo)", async () => {
+    const w = factory({}, "Alice Johnson", true);
+    await w.setProps({ validation: { success: false, error: "Formato inválido" } });
+    await flushPromises();
+    expect(w.findComponent(Input).props("color")).toBe("danger");
   });
 
   it("inputType 'date': muestra la fecha formateada en modo vista", () => {

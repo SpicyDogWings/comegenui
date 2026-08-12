@@ -151,6 +151,7 @@ Como `columns` se pasa sin filtrar al `AdvancedTable.vue` interno, podés usar e
 | `edit-start` | `{ row, column, index }` | Inicia edición de celda |
 | `edit-save` | `{ row, column, value, index }` | Celda editada y guardada. La tabla ya actualizó `row[key]` antes de emitir |
 | `edit-cancel` | `{ row, column, index }` | Edición cancelada |
+| `edit-error` | `{ row, column, value, index }` | Validación falló (regex o `validator`): el valor **no** se guarda y el editor se tiñe de rojo (`color: danger`) |
 
 > El Custom Element **no re-emite** los eventos `row-click`, `row-dblclick` ni `cell-click` (existen internamente pero no atraviesan el wrapper). Si necesitás reaccionar a clicks en filas, agregá un `ButtonConfig` o `BadgeConfig` a la columna correspondiente.
 
@@ -363,6 +364,8 @@ También acepta `RegExp` para validar al guardar:
 ```
 
 > Con `singleClick: true` la celda entra en modo edición con un solo click (default: doble click).
+
+> 💡 Si la validación falla, el editor se tiñe de rojo y se emite `edit-error`. Ver [Receta 4 — Validar formato con regex](#receta-4--validar-formato-con-regex-precio-con-2-decimales) para el patrón completo (con `inlineEdit` y feedback visible).
 
 ---
 
@@ -681,6 +684,51 @@ tabla.columns = [
 ```
 
 > **Nota:** `editable` como función controla el **modo lápiz** (habilita/deshabilita el click y atenúa la celda con `.cu-editable-cell-view--disabled`). En estado inline el editor se renderiza igual aunque la función devuelva `false`; usá `validator` para controlar qué se guarda.
+
+### Receta 4 — Validar formato con regex (precio con 2 decimales)
+
+`editable` acepta un **`RegExp`** como validador (además de `boolean` y función). Es la forma más corta de validar formato al guardar: precios, emails, DNIs, códigos, etc. **Los agentes rara vez lo usan** — acá está el patrón completo.
+
+El regex se evalúa con `.test(value)` al guardar (Enter / blur / elegir opción en select). Si no matchea:
+
+- El valor **no se guarda** (no se emite `edit-save`).
+- Se emite [`edit-error`](#eventos) con `{ row, column, value, index }`.
+- El editor se tiñe de rojo (prop `color: danger`) — aplica a **todos** los tipos de editor (input, textarea, select, autocomplete, date), no solo al input de texto.
+
+Ejemplo: tabla de productos donde `precio` solo acepta números con **exactamente 2 decimales**:
+
+```js
+const priceRegex = /^\d+\.\d{2}$/;   // "1200.50" ✓ | "1200.555" ✗ | "1200.5" ✗ | "abc" ✗ | "12,50" ✗
+
+const columns = [
+  { key: 'producto', label: 'Producto' },
+  { key: 'precio', label: 'Precio', editable: priceRegex },                    // modo lápiz (default)
+];
+
+const columnsInline = [
+  { key: 'producto', label: 'Producto' },
+  { key: 'precio', label: 'Precio', editable: priceRegex, inlineEdit: true },  // modo inline
+];
+```
+
+En HTML plano (`<cu-table>`), mismo ejemplo con el editor siempre visible:
+
+```js
+tabla.columns = [
+  { key: 'producto', label: 'Producto' },
+  { key: 'precio', label: 'Precio', editable: /^\d+\.\d{2}$/, inlineEdit: true },
+];
+```
+
+**Comportamiento al validar:**
+
+| Acción | Resultado |
+|--------|-----------|
+| Escribís `1200.555` (más de 2 decimales) | No se guarda, el input se tiñe de rojo, emite `edit-error` |
+| Escribís `25.99` (válido) | Se guarda (emite `edit-save`), el rojo desaparece |
+| `Escape` | Cancela y limpia el estado de error |
+
+> El tintado rojo no es un CSS aparte: es la misma prop `color="danger"` que recibe el editor cuando la validación falla. Si querés mostrar tu propio mensaje, escuchá `edit-error` (en `<cu-table>`: `tabla.addEventListener('edit-error', ...)`).
 
 ---
 
