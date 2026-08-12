@@ -154,6 +154,15 @@ async function createZip() {
     archive.file(readmePath, { name: 'README-BUILD.md' })
   }
 
+  // Add doc skill (guía de uso + docs por componente) — SIEMPRE en el zip
+  const docsDir = resolve(__dirname, 'docs/comegen-ui')
+  if (fs.existsSync(docsDir)) {
+    archive.directory(docsDir, 'docs/comegen-ui')
+    console.log('📚 Doc skill agregada al zip: docs/comegen-ui/')
+  } else {
+    console.log('⚠️  docs/comegen-ui no encontrada, se omite del zip')
+  }
+
   await archive.finalize()
 }
 

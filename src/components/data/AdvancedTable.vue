@@ -121,7 +121,7 @@ const props = defineProps({
 const emit = defineEmits([
   "update:currentPage", "update:itemsPerPage", "update:search",
   "row-click", "row-dblclick", "cell-click",
-  "edit-start", "edit-save", "edit-cancel",
+  "edit-start", "edit-save", "edit-cancel", "edit-error",
 ]);
 
 const searchQuery = ref("");
@@ -330,9 +330,10 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
           :color="props.color"
           :variant="inputVariant"
           :validation="validationStates[getCellKey(index, col.key)] || { success: false, error: null }"
-          @edit-start="(e: any) => { const displayIndex = e.index; const originalIndex = getOriginalIndex(displayIndex); emit('edit-start', { ...e, index: originalIndex }); }"
+          @edit-start="(e: any) => { const displayIndex = e.index; const originalIndex = getOriginalIndex(displayIndex); const cellKey = getCellKey(displayIndex, e.column.key); validationStates[cellKey] = { success: false, error: null }; emit('edit-start', { ...e, index: originalIndex }); }"
           @edit-save="(e: any) => { const displayIndex = e.index; const originalIndex = getOriginalIndex(displayIndex); const cellKey = getCellKey(displayIndex, e.column.key); validationStates[cellKey] = { success: true, error: null }; updateRow(originalIndex, { [e.column.key]: e.value }); emit('edit-save', { ...e, index: originalIndex }); }"
           @edit-cancel="(e: any) => { const displayIndex = e.index; const originalIndex = getOriginalIndex(displayIndex); const cellKey = getCellKey(displayIndex, e.column.key); validationStates[cellKey] = { success: false, error: null }; emit('edit-cancel', { ...e, index: originalIndex }); }"
+          @edit-error="(e: any) => { const displayIndex = e.index; const originalIndex = getOriginalIndex(displayIndex); const cellKey = getCellKey(displayIndex, e.column.key); validationStates[cellKey] = { success: false, error: 'Formato inválido' }; emit('edit-error', { ...e, index: originalIndex }); }"
         />
 
         <span v-else-if="hasCellFunction(col)">{{ getCellValue(col, row) }}</span>

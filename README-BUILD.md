@@ -87,5 +87,7 @@ comegenui-v{version}.zip
 │   ├── themes.css      ← Todos los temas
 │   ├── light.css       ← Tema light
 │   └── dark.css        ← Tema dark
+├── docs/
+│   └── comegen-ui/     ← Doc skill: SKILL.md + docs por componente
 └── README-BUILD.md     ← Este archivo
 ```

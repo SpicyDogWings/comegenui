@@ -10,6 +10,7 @@ const outlineItems = [
   { label: 'With Buttons', id: 'buttons' },
   { label: 'Buttons with Icons', id: 'buttons-icons' },
   { label: 'Editable Cells', id: 'editable' },
+  { label: 'Precio validado', id: 'price-validation' },
   { label: 'Pagination', id: 'pagination' },
   { label: 'Search', id: 'search' },
   { label: 'Empty State', id: 'empty' },
@@ -240,6 +241,28 @@ const editableData = [
   { id: 2, name: "Bob Smith", email: "bob@example.com", notes: "New hire", status: "Pending", role: "User", fecha: "2026-08-11" },
   { id: 3, name: "Carol White", email: "carol@example.com", notes: "On vacation", status: "Active", role: "Editor", fecha: "2026-08-20" },
 ];
+
+// ── Precio validado: solo números con exactamente 2 decimales ──
+const priceData = [
+  { id: 1, producto: "Laptop", precio: "1200.50" },
+  { id: 2, producto: "Mouse", precio: "25.99" },
+  { id: 3, producto: "Teclado", precio: "45.00" },
+  { id: 4, producto: "Monitor", precio: "350.75" },
+  { id: 5, producto: "Auriculares", precio: "89.90" },
+];
+
+// Acepta "1200.50", "25.99"... Rechaza "1200.5", "1200.555", "abc", "12,50"
+const priceRegex = /^\d+\.\d{2}$/;
+
+const priceColumns = [
+  { key: "producto", label: "Producto" },
+  { key: "precio", label: "Precio", editable: priceRegex },
+];
+
+const priceInlineColumns = [
+  { key: "producto", label: "Producto" },
+  { key: "precio", label: "Precio", editable: priceRegex, inlineEdit: true },
+];
 </script>
 
 <template>
@@ -299,6 +322,28 @@ const editableData = [
 
       <hr class="playground-separator" />
 
+      <section id="price-validation" class="playground-section">
+        <h2>Precio validado</h2>
+        <p>
+          La columna <code>precio</code> usa un regex (<code>^\d+\.\d{2}$</code>): solo números con
+          <strong>exactamente 2 decimales</strong> (ej. <code>1200.50</code>). Si ponés más de 2 decimales
+          (<code>1200.555</code>), menos (<code>1200.5</code>), letras o comas, el valor <strong>no se guarda</strong>
+          y el input se <strong>tiñe de rojo</strong> (color <code>danger</code>).
+        </p>
+        <div class="price-grid">
+          <div>
+            <h3>Modo lápiz</h3>
+            <AdvancedTable :columns="priceColumns" :data="priceData" :pagination="false" />
+          </div>
+          <div>
+            <h3>Modo inline (<code>inlineEdit: true</code>)</h3>
+            <AdvancedTable :columns="priceInlineColumns" :data="priceData" :pagination="false" />
+          </div>
+        </div>
+      </section>
+
+      <hr class="playground-separator" />
+
       <section id="pagination" class="playground-section">
         <h2>Pagination</h2>
         <AdvancedTable :columns="columns" :data="sampleData" :pagination="true" :items-per-page="5" />
@@ -320,3 +365,18 @@ const editableData = [
     </div>
   </PlaygroundLayout>
 </template>
+
+<style scoped>
+.price-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--cu-space-lg);
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .price-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
