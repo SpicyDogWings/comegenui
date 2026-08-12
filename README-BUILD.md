@@ -90,5 +90,6 @@ comegenui-v{version}.zip
 │   ├── light.css       ← Tema light
 │   └── dark.css        ← Tema dark
 ├── comegen-ui/         ← Skill de uso: SKILL.md + docs por componente
+├── update.sh           ← Actualizador del proyecto huésped (./update.sh)
 └── README-BUILD.md     ← Este archivo
 ```

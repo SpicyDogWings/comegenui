@@ -174,7 +174,7 @@ Tokens compartidos: tipografía, spacing, border-radius, shadows, borders.
 - `UnoCSS({ mode: "shadow-dom" })`
 - Genera `dist/css/themes.css` + `dist/css/{theme}.css`
 - Crea zip versionado: `comegenui-v{version}.zip`
-- **El zip SIEMPRE incluye la skill de uso** `comegen-ui/` (`SKILL.md` + `componentes/`) al lado de los archivos de la lib — viaja con la lib para que los agentes del proyecto consumidor tengan la doc. Solo la de uso; no la de desarrollo ni la de documentar
+- **El zip SIEMPRE incluye la skill de uso** `comegen-ui/` (`SKILL.md` + `componentes/`) al lado de los archivos de la lib — viaja con la lib para que los agentes del proyecto consumidor tengan la doc. Solo la de uso; no la de desarrollo ni la de documentar. Incluye también `update.sh` (actualizador del proyecto huésped: `./update.sh`)
 
 ---
 

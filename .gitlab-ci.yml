@@ -44,7 +44,7 @@ build:
     - pnpm run build:lib
     # La salida final ES el zip descargable: los archivos de la lib + el folder
     # de la skill de uso, al mismo nivel (sin dist/, sin docs/, sin zip anidado).
-    - cp dist/*.umd.js dist/README-BUILD.md .
+    - cp dist/*.umd.js dist/README-BUILD.md update.sh .
     - cp -r dist/css .
     - cp -r docs/comegen-ui .
   artifacts:
@@ -53,6 +53,7 @@ build:
       - '*.umd.js'
       - css/
       - README-BUILD.md
+      - update.sh
       - comegen-ui/   # skill de uso de comegen — nada más (no desarrollar/documentar)
     expire_in: never
     when: on_success
