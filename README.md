@@ -12,29 +12,24 @@ pnpm dev
 ## Instalación (desde el repo)
 
 El build se genera en la nube: GitLab CI compila la librería con `build:lib`
-(lo mismo que el build local) y publica el artifact con **el zip versionado**
-`comegenui-v{version}.zip` + la carpeta `docs/comegen-ui/` (skill de uso de
-comegen, sin las de desarrollo/documentar). El zip descomprime en la carpeta
-**`comegenui/`**. Descargalo directo desde el repo:
+(lo mismo que el build local) y publica el artifact: los **archivos de la lib**
+(`Cu*.umd.js`, `css/`, `README-BUILD.md`) + el **folder de la skill de uso**
+`comegen-ui/` (sin `docs/`, sin zip anidado). Descargalo directo desde el repo:
 
 ```sh
 # 1. Descargar el último build de main
 curl -L -o comegenui.zip \
   "https://gitlab.com/SpicyDogWings/comegen-ui/-/jobs/artifacts/main/download?job=build"
 
-# 2. Descomprimir el artifact (zip versionado + skill de uso)
-unzip comegenui.zip
-
-# 3. Descomprimir la librería en tu proyecto → crea la carpeta comegenui/
-unzip comegenui-v{version}.zip -d <carpeta-destino>
+# 2. Descomprimir en tu proyecto → archivos + comegen-ui/ al mismo nivel
+unzip comegenui.zip -d <carpeta-destino>
 ```
 
-> El artifact incluye el zip versionado `comegenui-v{version}.zip` (que al
-> descomprimir genera la carpeta `comegenui/` con los UMD, `css/` y la skill de
-> uso `docs/comegen-ui/`) y la carpeta `docs/comegen-ui/` con la skill de uso.
-> Cargá los `.umd.js` con un `<script>` y usá las etiquetas
-> (`<cu-button>`, `<cu-alert>`, ...) directo en el HTML — ver
-> [Uso (HTML plano)](#uso-html-plano).
+> El artifact incluye los UMD (`CuAlert.umd.js`, `CuButton.umd.js`, ...), los
+> CSS de temas (`css/themes.css`), el `README-BUILD.md` y el folder de la skill
+> de uso `comegen-ui/` (SKILL.md + docs por componente). Cargá los `.umd.js` con
+> un `<script>` y usá las etiquetas (`<cu-button>`, `<cu-alert>`, ...) directo
+> en el HTML — ver [Uso (HTML plano)](#uso-html-plano).
 
 ### Versión específica (Release)
 
@@ -145,11 +140,11 @@ Para cada color (`primary`, `neutral`, `success`, etc.) se generan:
 
 ```html
 <!-- 1. Incluir CSS del tema -->
-<link rel="stylesheet" href="comegenui/css/themes.css">
+<link rel="stylesheet" href="css/themes.css">
 
 <!-- 2. Incluir componentes UMD -->
-<script src="comegenui/CuButton.umd.js"></script>
-<script src="comegenui/CuAlert.umd.js"></script>
+<script src="CuButton.umd.js"></script>
+<script src="CuAlert.umd.js"></script>
 
 <!-- 3. Usar -->
 <cu-button color="primary">Click me</cu-button>

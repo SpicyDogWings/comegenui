@@ -42,15 +42,18 @@ build:
   script:
     - pnpm install --frozen-lockfile
     - pnpm run build:lib
-    # Lo mismo que hace build-lib: comprimir dist en el zip versionado
-    # (el zip contiene comegenui/ con UMD + css + skill de uso docs/comegen-ui).
-    # Lo movemos a la raíz para que el artifact no arrastre el prefijo dist/.
-    - mv dist/comegenui-v*.zip .
+    # La salida final ES el zip descargable: los archivos de la lib + el folder
+    # de la skill de uso, al mismo nivel (sin dist/, sin docs/, sin zip anidado).
+    - cp dist/*.umd.js dist/README-BUILD.md .
+    - cp -r dist/css .
+    - cp -r docs/comegen-ui .
   artifacts:
     name: "comegenui"
     paths:
-      - 'comegenui-v*.zip'
-      - docs/comegen-ui/   # skill de uso de comegen — nada más (no desarrollar/documentar)
+      - '*.umd.js'
+      - css/
+      - README-BUILD.md
+      - comegen-ui/   # skill de uso de comegen — nada más (no desarrollar/documentar)
     expire_in: never
     when: on_success
 
@@ -67,13 +70,12 @@ release:
     description: |
       Release generado automáticamente por GitLab CI.
 
-      **Contenido:** el zip versionado `comegenui-v{version}.zip` (descomprime en la carpeta **`comegenui/`** con UMD, CSS y la skill de uso `docs/comegen-ui/`) + la carpeta `docs/comegen-ui/` con la skill de uso de comegen.
+      **Contenido:** los archivos de la lib (`Cu*.umd.js`, `css/`, `README-BUILD.md`) + el folder de la skill de uso `comegen-ui/` (SKILL + docs por componente) — al mismo nivel, sin `docs/` ni zip anidado.
 
       **Instalación:**
       ```sh
       curl -L -o comegenui.zip "https://gitlab.com/${PROJECT_PATH}/-/jobs/artifacts/${CI_COMMIT_TAG}/download?job=build"
-      unzip comegenui.zip
-      unzip comegenui-v{version}.zip -d <carpeta-destino>
+      unzip comegenui.zip -d <carpeta-destino>
       ```
     tag_name: $CI_COMMIT_TAG
     ref: $CI_COMMIT_TAG
