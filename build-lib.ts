@@ -136,29 +136,33 @@ async function createZip() {
 
   archive.pipe(output)
 
+  // El zip contiene la carpeta comegenui/ en la raíz: al descomprimir
+  // se genera comegenui/ con los archivos adentro (sin prefijo dist/).
+  const pkgDir = 'comegenui'
+
   // Add all UMD files
   const umdFiles = fs.readdirSync(outDir).filter(f => f.endsWith('.umd.js'))
   for (const file of umdFiles) {
-    archive.file(resolve(outDir, file), { name: file })
+    archive.file(resolve(outDir, file), { name: `${pkgDir}/${file}` })
   }
 
   // Add CSS folder
   const cssDir = resolve(outDir, 'css')
   if (fs.existsSync(cssDir)) {
-    archive.directory(cssDir, 'css')
+    archive.directory(cssDir, `${pkgDir}/css`)
   }
 
   // Add README
   const readmePath = resolve(outDir, 'README-BUILD.md')
   if (fs.existsSync(readmePath)) {
-    archive.file(readmePath, { name: 'README-BUILD.md' })
+    archive.file(readmePath, { name: `${pkgDir}/README-BUILD.md` })
   }
 
   // Add doc skill (guía de uso + docs por componente) — SIEMPRE en el zip
   const docsDir = resolve(__dirname, 'docs/comegen-ui')
   if (fs.existsSync(docsDir)) {
-    archive.directory(docsDir, 'docs/comegen-ui')
-    console.log('📚 Doc skill agregada al zip: docs/comegen-ui/')
+    archive.directory(docsDir, `${pkgDir}/docs/comegen-ui`)
+    console.log('📚 Doc skill agregada al zip: comegenui/docs/comegen-ui/')
   } else {
     console.log('⚠️  docs/comegen-ui no encontrada, se omite del zip')
   }

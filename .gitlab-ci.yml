@@ -42,10 +42,18 @@ build:
   script:
     - pnpm install --frozen-lockfile
     - pnpm run build:lib
+    # Empaquetar en comegenui/: el artifact descomprime como carpeta comegenui/
+    # con los archivos adentro (sin prefijo dist/).
+    - mkdir -p comegenui comegenui/docs
+    - cp dist/*.umd.js dist/README-BUILD.md comegenui/
+    - cp -r dist/css comegenui/
+    - cp -r docs/comegen-ui comegenui/docs/
+    - cp dist/comegenui-v*.zip .
   artifacts:
     name: "comegenui"
     paths:
-      - dist/
+      - comegenui/
+      - 'comegenui-v*.zip'
     expire_in: never
     when: on_success
 
@@ -62,7 +70,7 @@ release:
     description: |
       Release generado automáticamente por GitLab CI.
 
-      **Contenido:** Custom Elements UMD (`Cu*.umd.js`), CSS de temas (`css/`), el zip versionado `comegenui-v{version}.zip` y la doc skill `docs/comegen-ui/` (SKILL + docs por componente).
+      **Contenido:** el zip descomprime en la carpeta **`comegenui/`** (sin `dist/`): Custom Elements UMD (`Cu*.umd.js`), CSS de temas (`css/`), la doc skill `docs/comegen-ui/` (SKILL + docs por componente), `README-BUILD.md` y el zip versionado `comegenui-v{version}.zip`.
 
       **Instalación:**
       ```sh
