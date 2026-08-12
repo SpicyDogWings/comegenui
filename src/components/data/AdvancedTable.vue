@@ -57,6 +57,20 @@ interface ButtonConfig {
   disabled?: boolean;
 }
 
+interface AutocompleteItem {
+  label: string;
+  value?: string;
+  icon?: string;
+}
+
+interface SelectOption {
+  value: string;
+  label: string;
+  disabled?: boolean;
+  color?: string;
+  variant?: string;
+}
+
 interface Column {
   key: string;
   label?: string;
@@ -65,6 +79,10 @@ interface Column {
   cell?: (row: Record<string, any>) => string | string[];
   editable?: boolean | RegExp | ((row: Record<string, any>) => boolean);
   inputType?: "input" | "textarea" | "select" | "autocomplete" | "date";
+  color?: string;
+  variant?: string;
+  // Las sub-key de date/select/autocomplete/textarea/input se pasan tal cual a
+  // EditableTableCell, que las forwardea al editor correspondiente.
   date?: {
     format?: string;
     min?: string | number | Date;
@@ -72,8 +90,41 @@ interface Column {
     yearNavigation?: boolean;
     disabledWeekdays?: number[] | string;
     disabledDates?: (string | Date)[] | string;
+    color?: string;
+    variant?: string;
+    placement?: string;
+    position?: string; // "bottom" | "top" | "left" | "right" — posición del panel del calendario
+    align?: string; // "start" | "center" | "end"
+    fixed?: boolean;
   };
-  selectOptions?: { value: string; label: string }[] | ((row: Record<string, any>) => { value: string; label: string }[]);
+  select?: {
+    options: SelectOption[];
+    color?: string;
+    variant?: string;
+    position?: string;
+    align?: string;
+    placeholderWrap?: boolean;
+  };
+  autocomplete?: {
+    items: AutocompleteItem[];
+    minChars?: number;
+    color?: string;
+    variant?: string;
+  };
+  textarea?: {
+    rows?: number;
+    noResize?: boolean;
+    color?: string;
+    variant?: string;
+  };
+  input?: {
+    type?: string;
+    startValue?: string;
+    color?: string;
+    variant?: string;
+  };
+  selectOptions?: SelectOption[] | ((row: Record<string, any>) => SelectOption[]);
+  autocompleteItems?: AutocompleteItem[] | ((row: Record<string, any>) => AutocompleteItem[]);
   validator?: (value: string, row: Record<string, any>) => boolean;
   singleClick?: boolean;
   inlineEdit?: boolean; // Estado por columna: renderiza el editor directo

@@ -166,6 +166,13 @@ async function createZip() {
     console.log('⚠️  docs/comegen-ui no encontrada, se omite del zip')
   }
 
+  // Add update.sh (actualizador del proyecto huésped) — SIEMPRE en el zip
+  const updatePath = resolve(__dirname, 'update.sh')
+  if (fs.existsSync(updatePath)) {
+    archive.file(updatePath, { name: 'update.sh' })
+    console.log('🔁 update.sh agregado al zip')
+  }
+
   await archive.finalize()
 }
 

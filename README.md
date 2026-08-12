@@ -23,6 +23,10 @@ curl -L -o comegenui.zip \
 
 # 2. Descomprimir en tu proyecto → archivos + comegen-ui/ al mismo nivel
 unzip comegenui.zip -d <carpeta-destino>
+
+# 3. Actualizar después: update.sh viaja dentro de la lib y además instala
+#    la skill de uso en .agents/skills/ del proyecto (para los agentes).
+./<carpeta-destino>/update.sh
 ```
 
 > El artifact incluye los UMD (`CuAlert.umd.js`, `CuButton.umd.js`, ...), los

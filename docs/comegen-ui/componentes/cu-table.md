@@ -449,9 +449,6 @@ La config `date.*` acepta las props de posicionamiento del `<cu-date-picker>`:
 ```js
 // Panel arriba del trigger, alineado a la derecha
 { key: 'fecha', label: 'Fecha', editable: true, inputType: 'date', date: { position: 'top', align: 'end' } }
-
-// Equivalente con position/align
-{ key: 'fecha', label: 'Fecha', editable: true, inputType: 'date', date: { position: 'top', align: 'end' } }
 ```
 
 > Con `fixed: false` el panel se posiciona en `absolute` respecto al trigger (puede recortarse si la celda/tabla tiene `overflow`). El default es `true` justamente para evitarlo.

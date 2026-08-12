@@ -11,6 +11,7 @@ const outlineItems = [
   { label: 'Buttons with Icons', id: 'buttons-icons' },
   { label: 'Editable Cells', id: 'editable' },
   { label: 'Precio validado', id: 'price-validation' },
+  { label: 'Calendario en celda', id: 'date-position' },
   { label: 'Pagination', id: 'pagination' },
   { label: 'Search', id: 'search' },
   { label: 'Empty State', id: 'empty' },
@@ -263,6 +264,41 @@ const priceInlineColumns = [
   { key: "producto", label: "Producto" },
   { key: "precio", label: "Precio", editable: priceRegex, inlineEdit: true },
 ];
+
+// ── Calendario en celda: posición del panel del date-picker (date.position/align/fixed) ──
+const dateData = [
+  { id: 1, producto: "Laptop", fecha: "2026-08-14" },
+  { id: 2, producto: "Mouse", fecha: "2026-08-11" },
+  { id: 3, producto: "Teclado", fecha: "2026-08-20" },
+  { id: 4, producto: "Monitor", fecha: "2026-08-02" },
+  { id: 5, producto: "Auriculares", fecha: "2026-08-27" },
+];
+
+// El calendario abre ARRIBA del trigger (position: "top"), alineado al final (align: "end")
+// para no tapar las filas de abajo. Keys disponibles: date.position ("bottom"|"top"|"left"|"right"),
+// date.align ("start"|"center"|"end"), date.fixed (default true para no recortarse con el overflow).
+const datePositionColumns = [
+  { key: "producto", label: "Producto" },
+  {
+    key: "fecha",
+    label: "Fecha",
+    editable: true,
+    inputType: "date" as const,
+    date: { format: "dd/MM/yyyy", position: "top", align: "end" },
+  },
+];
+
+const datePositionInlineColumns = [
+  { key: "producto", label: "Producto" },
+  {
+    key: "fecha",
+    label: "Fecha",
+    editable: true,
+    inputType: "date" as const,
+    inlineEdit: true,
+    date: { format: "dd/MM/yyyy", position: "top", align: "end" },
+  },
+];
 </script>
 
 <template>
@@ -344,6 +380,31 @@ const priceInlineColumns = [
 
       <hr class="playground-separator" />
 
+      <section id="date-position" class="playground-section">
+        <h2>Calendario en celda (posición del panel)</h2>
+        <p>
+          La columna <code>fecha</code> usa <code>inputType: "date"</code>. Las keys
+          <code>date.position</code> (<code>"bottom" | "top" | "left" | "right"</code>) y
+          <code>date.align</code> (<code>"start" | "center" | "end"</code>) controlan dónde abre el
+          calendario — acá <code>position: "top", align: "end"</code>, para que no tape las filas de
+          abajo. Con <code>fixed: false</code> el panel se posiciona en <code>absolute</code> respecto
+          al trigger (puede recortarse si la celda/tabla tiene <code>overflow</code>); el default es
+          <code>true</code>.
+        </p>
+        <div class="date-grid">
+          <div>
+            <h3>Modo lápiz</h3>
+            <AdvancedTable :columns="datePositionColumns" :data="dateData" :pagination="false" />
+          </div>
+          <div>
+            <h3>Modo inline (<code>inlineEdit: true</code>)</h3>
+            <AdvancedTable :columns="datePositionInlineColumns" :data="dateData" :pagination="false" />
+          </div>
+        </div>
+      </section>
+
+      <hr class="playground-separator" />
+
       <section id="pagination" class="playground-section">
         <h2>Pagination</h2>
         <AdvancedTable :columns="columns" :data="sampleData" :pagination="true" :items-per-page="5" />
@@ -367,15 +428,22 @@ const priceInlineColumns = [
 </template>
 
 <style scoped>
-.price-grid {
+.price-grid,
+.date-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--cu-space-lg);
   align-items: start;
 }
 
+/* Espacio para que el panel del calendario en position="top" no tape el contenido de arriba */
+.date-grid {
+  padding-top: var(--cu-space-xl);
+}
+
 @media (max-width: 900px) {
-  .price-grid {
+  .price-grid,
+  .date-grid {
     grid-template-columns: 1fr;
   }
 }
