@@ -11,24 +11,28 @@ pnpm dev
 
 ## Instalación (desde el repo)
 
-El build se genera en la nube: GitLab CI compila la librería y publica el
-artifact (UMD + temas CSS + doc skill + `comegenui-v{version}.zip`). El zip
-descomprime en la carpeta **`comegenui/`** con los archivos adentro, sin
-prefijo `dist/`. Descargalo directo desde el repo:
+El build se genera en la nube: GitLab CI compila la librería con `build:lib`
+(lo mismo que el build local) y publica el artifact con **el zip versionado**
+`comegenui-v{version}.zip` + la carpeta `docs/comegen-ui/` (skill de uso de
+comegen, sin las de desarrollo/documentar). El zip descomprime en la carpeta
+**`comegenui/`**. Descargalo directo desde el repo:
 
 ```sh
 # 1. Descargar el último build de main
 curl -L -o comegenui.zip \
   "https://gitlab.com/SpicyDogWings/comegen-ui/-/jobs/artifacts/main/download?job=build"
 
-# 2. Descomprimir en tu proyecto
-unzip comegenui.zip -d <carpeta-destino>
+# 2. Descomprimir el artifact (zip versionado + skill de uso)
+unzip comegenui.zip
+
+# 3. Descomprimir la librería en tu proyecto → crea la carpeta comegenui/
+unzip comegenui-v{version}.zip -d <carpeta-destino>
 ```
 
-> El build incluye los Custom Elements UMD (`CuAlert.umd.js`, `CuButton.umd.js`,
-> ...), los CSS de temas (`css/themes.css`), la doc skill `docs/comegen-ui/` y
-> el zip versionado `comegenui-v{version}.zip`, todo dentro de la carpeta
-> `comegenui/`. Cargá los `.umd.js` con un `<script>` y usá las etiquetas
+> El artifact incluye el zip versionado `comegenui-v{version}.zip` (que al
+> descomprimir genera la carpeta `comegenui/` con los UMD, `css/` y la skill de
+> uso `docs/comegen-ui/`) y la carpeta `docs/comegen-ui/` con la skill de uso.
+> Cargá los `.umd.js` con un `<script>` y usá las etiquetas
 > (`<cu-button>`, `<cu-alert>`, ...) directo en el HTML — ver
 > [Uso (HTML plano)](#uso-html-plano).
 
