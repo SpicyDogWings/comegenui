@@ -44,7 +44,9 @@ build:
     - pnpm run build:lib
     # La salida final ES el zip descargable: los archivos de la lib + el folder
     # de la skill de uso, al mismo nivel (sin dist/, sin docs/, sin zip anidado).
-    - cp dist/*.umd.js dist/README-BUILD.md update.sh .
+    # update.sh ya está en la raíz del repo (workspace del job) y el artifact lo
+    # incluye — NO copiarlo (cp update.sh . falla: 'same file').
+    - cp dist/*.umd.js dist/README-BUILD.md .
     - cp -r dist/css .
     - cp -r docs/comegen-ui .
   artifacts:
