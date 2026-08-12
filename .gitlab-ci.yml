@@ -1,0 +1,71 @@
+# .gitlab-ci.yml — Pipeline de ComegenUI
+#
+# Genera el build de la librería en la nube (GitLab CI): UMD (Custom Elements)
+# + CSS de temas + comegenui-v{version}.zip, publicados como artifact.
+# En cada tag crea además una Release con link de descarga.
+#
+# Descarga del último build de main (repo público, sin auth):
+#   curl -L -o comegenui.zip \
+#     "https://gitlab.com/SpicyDogWings/comegen-ui/-/jobs/artifacts/main/download?job=build"
+
+stages:
+  - build
+  - release
+
+variables:
+  PROJECT_PATH: "SpicyDogWings/comegen-ui"
+  NODE_IMAGE: "node:22"
+
+cache:
+  key:
+    files:
+      - pnpm-lock.yaml
+  paths:
+    - .pnpm-store/
+
+# Compila la librería (UMD + temas CSS) y publica dist/ como artifact del pipeline.
+build:
+  stage: build
+  image: ${NODE_IMAGE}
+  before_script:
+    - npm install -g pnpm@11.5.1
+    - pnpm config set store-dir .pnpm-store
+  script:
+    - pnpm install --frozen-lockfile
+    - pnpm run build:lib
+  artifacts:
+    name: "comegenui"
+    paths:
+      - dist/
+    expire_in: never
+    when: on_success
+
+# En tags: crea la página de Release con el build como asset descargable.
+release:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  needs:
+    - build
+  script:
+    - echo "Creando release ${CI_COMMIT_TAG}..."
+  release:
+    name: "ComegenUI ${CI_COMMIT_TAG}"
+    description: |
+      Release generado automáticamente por GitLab CI.
+
+      **Contenido:** Custom Elements UMD (`Cu*.umd.js`), CSS de temas (`css/`) y el zip versionado `comegenui-v{version}.zip`.
+
+      **Instalación:**
+      ```sh
+      curl -L -o comegenui.zip "https://gitlab.com/${PROJECT_PATH}/-/jobs/artifacts/${CI_COMMIT_TAG}/download?job=build"
+      unzip comegenui.zip -d <carpeta-destino>
+      ```
+    tag_name: $CI_COMMIT_TAG
+    ref: $CI_COMMIT_TAG
+    assets:
+      links:
+        - name: "comegenui (build ${CI_COMMIT_TAG})"
+          url: "https://gitlab.com/${PROJECT_PATH}/-/jobs/artifacts/${CI_COMMIT_TAG}/download?job=build"
+          link_type: "package"
+  rules:
+    - if: $CI_COMMIT_TAG
