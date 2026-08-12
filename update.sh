@@ -7,7 +7,12 @@
 #   ./update.sh          → último build de main
 #   ./update.sh v3.0.0   → build de un tag/release
 #
-# Avanzado: CG_URL para override de la URL (útil para probar con un archivo local).
+# Al actualizar también instala la skill de uso (comegen-ui/) en
+# .agents/skills/ del proyecto huésped, para que los agentes tengan la doc.
+#
+# Avanzado: CG_URL para override de la URL (útil para probar con un archivo local)
+# y CG_PROJECT_ROOT para indicar la raíz del proyecto (si no, se detecta subiendo
+# desde esta carpeta hasta .git / AGENTS.md / package.json).
 set -euo pipefail
 
 SELF="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -42,6 +47,31 @@ if [ "${1:-}" = "__swap__" ]; then
     cp "$SELF.old/update.sh" "$SELF/update.sh" 2>/dev/null || true
   fi
   rm -rf "$SELF.old"
+
+  # Instalar la skill de uso en .agents/skills/ del proyecto huésped.
+  # La raíz del proyecto se detecta subiendo desde la lib hasta .git / AGENTS.md /
+  # package.json; CG_PROJECT_ROOT la fuerza (útil si no hay ninguno de esos).
+  PROJECT_ROOT="${CG_PROJECT_ROOT:-}"
+  if [ -z "$PROJECT_ROOT" ]; then
+    D="$SELF"
+    while [ "$D" != "/" ] && [ ! -d "$D/.git" ] && [ ! -f "$D/AGENTS.md" ] && [ ! -f "$D/package.json" ]; do
+      D="$(dirname "$D")"
+    done
+    if [ "$D" != "/" ]; then
+      PROJECT_ROOT="$D"
+    fi
+  fi
+
+  if [ -n "$PROJECT_ROOT" ] && [ -d "$SELF/comegen-ui" ]; then
+    mkdir -p "$PROJECT_ROOT/.agents/skills"
+    rm -rf "$PROJECT_ROOT/.agents/skills/comegen-ui"
+    cp -r "$SELF/comegen-ui" "$PROJECT_ROOT/.agents/skills/comegen-ui"
+    echo "📚 Skill de uso instalada en $PROJECT_ROOT/.agents/skills/comegen-ui"
+  elif [ -z "$PROJECT_ROOT" ]; then
+    echo "⚠️  No se detectó la raíz del proyecto (sin .git/AGENTS.md/package.json). Seteá CG_PROJECT_ROOT para instalar la skill en .agents/skills."
+  else
+    echo "⚠️  El build no incluye la skill comegen-ui/, se omite la instalación en .agents/skills."
+  fi
 
   echo "✅ ComegenUI '${TAG}' actualizado en $SELF"
   exit 0
