@@ -105,4 +105,14 @@ describe("DatePicker — label del trigger y selección", () => {
     expect(style).toContain("left: 100%");
     expect(style).toContain("translateY(-50%)");
   });
+
+  it("position top align center centra horizontalmente el panel", async () => {
+    const w = mount(DatePicker, { props: { position: "top", align: "center", modelValue: "2026-08-11" } });
+    await w.find(".cu-date-picker-toggle").trigger("click");
+    await flushPromises();
+    const style = w.find(".cu-dropdown-panel").attributes("style") || "";
+    expect(style).toContain("bottom: 100%"); // panel arriba del trigger
+    expect(style).toContain("left: 50%");    // centrado horizontal
+    expect(style).toContain("translateX(-50%)");
+  });
 });

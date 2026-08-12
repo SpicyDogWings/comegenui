@@ -39,7 +39,7 @@ const props = defineProps({
 const effectivePosition = computed(() => props.position);
 const effectiveAlign = computed(() => props.align);
 
-const panelPos = ref({ top: "0px", left: "0px" });
+const panelPos = ref<Record<string, string>>({ top: "0px", left: "0px" });
 
 const panelStyle = computed(() => {
   const base: Record<string, string> = {
@@ -52,8 +52,7 @@ const panelStyle = computed(() => {
     return {
       ...base,
       position: "fixed",
-      top: panelPos.value.top,
-      left: panelPos.value.left,
+      ...panelPos.value,
       zIndex: "10000",
       ...(props.panelWidth ? { width: props.panelWidth } : {}),
     };
@@ -127,31 +126,70 @@ function onKeyDown(e: KeyboardEvent) {
 onMounted(() => {
   document.addEventListener("click", onDocumentClick, true);
   document.addEventListener("keydown", onKeyDown);
+  window.addEventListener("resize", onViewportChange);
+  // capture: captura el scroll de TODOS los contenedores (página y overflow interno tipo tabla)
+  document.addEventListener("scroll", onViewportChange, true);
 });
 onUnmounted(() => {
   document.removeEventListener("click", onDocumentClick, true);
   document.removeEventListener("keydown", onKeyDown);
+  window.removeEventListener("resize", onViewportChange);
+  document.removeEventListener("scroll", onViewportChange, true);
 });
+
+// Recalcula la posición del panel en modo fixed (coordenadas de viewport). Se llama al
+// abrir y de nuevo en cada scroll/resize mientras está abierto: como el panel es
+// position: fixed, no sigue solo al trigger cuando scrollea la página o un contenedor
+// interno (ej. la tabla con overflow) — sin esto quedaría flotando en las coordenadas
+// viejas (o escondido si quedó fuera de pantalla).
+function positionPanel() {
+  if (!props.fixed || !dropdownRef.value) return;
+  // El modo fixed espeja EXACTAMENTE el modo absolute pero en coordenadas de viewport:
+  // en vez de "top: 100% / bottom: 100% / left: 100% / right: 100%" sobre el trigger,
+  // usamos top/bottom/left/right del viewport calculados con getBoundingClientRect.
+  // Importante: para top/left el panel se ancla por el borde OPUESTO (bottom/right) —
+  // si se usara "top: r.top - offset" el panel crecería hacia abajo y taparía el trigger.
+  // El centrado usa transform (no estima el ancho/alto del panel).
+  const r = dropdownRef.value.getBoundingClientRect();
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const pos = effectivePosition.value;
+  const align = effectiveAlign.value;
+  const style: Record<string, string> = {};
+
+  if (pos === "bottom") {
+    style.top = `${r.bottom + props.offset}px`;
+    if (align === "start") style.left = `${r.left}px`;
+    else if (align === "end") style.right = `${vw - r.right}px`;
+    else { style.left = `${r.left + r.width / 2}px`; style.transform = "translateX(-50%)"; }
+  } else if (pos === "top") {
+    style.bottom = `${vh - r.top + props.offset}px`;
+    if (align === "start") style.left = `${r.left}px`;
+    else if (align === "end") style.right = `${vw - r.right}px`;
+    else { style.left = `${r.left + r.width / 2}px`; style.transform = "translateX(-50%)"; }
+  } else if (pos === "right") {
+    style.left = `${r.right + props.offset}px`;
+    if (align === "start") style.top = `${r.top}px`;
+    else if (align === "end") style.bottom = `${vh - r.bottom}px`;
+    else { style.top = `${r.top + r.height / 2}px`; style.transform = "translateY(-50%)"; }
+  } else { // left
+    style.right = `${vw - r.left + props.offset}px`;
+    if (align === "start") style.top = `${r.top}px`;
+    else if (align === "end") style.bottom = `${vh - r.bottom}px`;
+    else { style.top = `${r.top + r.height / 2}px`; style.transform = "translateY(-50%)"; }
+  }
+  panelPos.value = style;
+}
+
+// Mientras el panel está abierto en modo fixed, re-posicionarlo en cada scroll/resize
+// para que siga al trigger (el fixed no se mueve solo con el contenido).
+function onViewportChange() {
+  if (isOpen.value && props.fixed) positionPanel();
+}
 
 function open() {
   if (props.disabled) return;
-  if (props.fixed && dropdownRef.value) {
-    const r = dropdownRef.value.getBoundingClientRect();
-    const pos = effectivePosition.value;
-    // Mitad del panel (min-width 200px) para centrar en modo fixed.
-    const half = 100;
-    const alignH = (align: string) =>
-      align === "start" ? r.left : align === "end" ? r.right - half * 2 : r.left + r.width / 2 - half;
-    const alignV = (align: string) =>
-      align === "start" ? r.top : align === "end" ? r.bottom - half * 2 : r.top + r.height / 2 - half;
-    const t = pos === "bottom" ? r.bottom + props.offset
-      : pos === "top" ? r.top - props.offset
-      : alignV(effectiveAlign.value);
-    const l = pos === "right" ? r.right + props.offset
-      : pos === "left" ? r.left - props.offset
-      : alignH(effectiveAlign.value);
-    panelPos.value = { top: `${Math.max(0, t)}px`, left: `${Math.max(0, l)}px` };
-  }
+  positionPanel();
   isOpen.value = true;
   emit("open");
 }
