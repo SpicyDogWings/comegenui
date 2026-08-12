@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
-import DropdownMenu from "@/components/DropdownMenu.vue";
+import DropdownMenu from "@/components/controls/DropdownMenu.vue";
 
 const outlineItems = [
   { label: 'Variants', id: 'variants' },

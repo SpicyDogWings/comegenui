@@ -9,6 +9,39 @@ pnpm install
 pnpm dev
 ```
 
+## Instalación (desde el repo)
+
+El build se genera en la nube: GitLab CI compila la librería y publica `dist/`
+(UMD + temas CSS + `comegenui-v{version}.zip`) como artifact del pipeline.
+Descargalo directo desde el repo:
+
+```sh
+# 1. Descargar el último build de main
+curl -L -o comegenui.zip \
+  "https://gitlab.com/SpicyDogWings/comegen-ui/-/jobs/artifacts/main/download?job=build"
+
+# 2. Descomprimir en tu proyecto
+unzip comegenui.zip -d <carpeta-destino>
+```
+
+> El build incluye los Custom Elements UMD (`CuAlert.umd.js`, `CuButton.umd.js`,
+> ...), los CSS de temas (`css/themes.css`) y el zip versionado
+> `comegenui-v{version}.zip`. Cargá los `.umd.js` con un `<script>` y usá las
+> etiquetas (`<cu-button>`, `<cu-alert>`, ...) directo en el HTML — ver
+> [Uso (HTML plano)](#uso-html-plano).
+
+### Versión específica (Release)
+
+Cada tag publica una [Release](https://gitlab.com/SpicyDogWings/comegen-ui/-/releases)
+con el build como asset. Para bajar un tag puntual:
+
+```sh
+curl -L -o comegenui.zip \
+  "https://gitlab.com/SpicyDogWings/comegen-ui/-/jobs/artifacts/<TAG>/download?job=build"
+```
+
+(reemplazá `<TAG>` por el tag, ej. `v3.0.0`)
+
 ## Scripts
 
 | Comando | Descripción |

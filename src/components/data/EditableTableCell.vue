@@ -44,7 +44,6 @@ interface Column {
     disabledDates?: (string | Date)[] | string;
     color?: string;
     variant?: string;
-    placement?: string;
     position?: string;
     align?: string;
     fixed?: boolean;
@@ -54,7 +53,8 @@ interface Column {
     options: SelectOption[];
     color?: string;
     variant?: string;
-    placement?: string;
+    position?: string;
+    align?: string;
     placeholderWrap?: boolean;
   };
   autocomplete?: {
@@ -365,7 +365,8 @@ const canEdit = computed(() => {
         ref="inputRef"
         :model-value="editValue"
         :options="resolvedOptions"
-        :placement="column.select?.placement"
+        :position="column.select?.position"
+        :align="column.select?.align"
         :placeholder-wrap="column.select?.placeholderWrap"
         fixed
         @update:model-value="(val) => { editValue = val; saveEdit(); }"
@@ -400,7 +401,6 @@ const canEdit = computed(() => {
         :disabled-dates="column.date?.disabledDates"
         :color="(elementColor as any)"
         :variant="(elementVariant as any)"
-        :placement="column.date?.placement"
         :position="column.date?.position"
         :align="column.date?.align"
         :fixed="column.date?.fixed ?? true"

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
-import Dropdown from "@/components/Dropdown.vue";
+import Dropdown from "@/components/overlay/Dropdown.vue";
 import Button from "@/components/buttons/Button.vue";
 import Calendar from "@/components/controls/Calendar.vue";
 import { ref } from "vue";
@@ -17,8 +17,6 @@ const outlineItems = [
   { label: 'Variants', id: 'variants' },
   { label: 'Colors', id: 'colors' },
   { label: 'Positions', id: 'positions' },
-  { label: 'Aligns', id: 'aligns' },
-  { label: 'Placements', id: 'placements' },
   { label: 'Contenedor', id: 'container' },
   { label: 'Custom toggle', id: 'custom-toggle' },
   { label: 'Fixed', id: 'fixed' },
@@ -81,58 +79,80 @@ const outlineItems = [
 
       <hr class="playground-separator" />
 
-      <section id="positions" class="playground-section">
-        <h2>Positions</h2>
-        <div class="playground-row">
-          <Dropdown label="Bottom (default)" position="bottom">
-            <Button variant="ghost" style="width:100%;justify-content:flex-start">Bottom</Button>
-          </Dropdown>
-          <Dropdown label="Top" position="top">
-            <Button variant="ghost" style="width:100%;justify-content:flex-start">Top</Button>
-          </Dropdown>
-        </div>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="aligns" class="playground-section">
-        <h2>Aligns</h2>
-        <div class="playground-row">
-          <Dropdown label="Start" align="start">
-            <Button variant="ghost" style="width:100%;justify-content:flex-start">Start</Button>
-          </Dropdown>
-          <Dropdown label="Center" align="center">
-            <Button variant="ghost" style="width:100%;justify-content:flex-start">Center</Button>
-          </Dropdown>
-          <Dropdown label="End" align="end">
-            <Button variant="ghost" style="width:100%;justify-content:flex-start">End</Button>
-          </Dropdown>
-        </div>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="placements" class="playground-section">
-        <h2>Placements (position + align combinados)</h2>
+            <section id="positions" class="playground-section">
+        <h2>Posiciones — todas las combinaciones</h2>
         <p class="playground-desc">
-          <code>placement="bottom-end"</code>, <code>"top-start"</code>, <code>"top-end"</code>… anulan <code>position</code>/<code>align</code>.
+          API: <code>position</code> (<code>bottom</code>/<code>top</code>/<code>left</code>/<code>right</code>) + <code>align</code> (<code>start</code>/<code>center</code>/<code>end</code>).
+          Sin props → default (<code>bottom</code> + <code>start</code>).
         </p>
-        <div class="playground-row">
-          <Dropdown label="Bottom-start" placement="bottom-start">
-            <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
-          </Dropdown>
-          <Dropdown label="Bottom-end" placement="bottom-end">
-            <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
-          </Dropdown>
-          <Dropdown label="Bottom-center" placement="bottom-center">
-            <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
-          </Dropdown>
-          <Dropdown label="Top-start" placement="top-start">
-            <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
-          </Dropdown>
-          <Dropdown label="Top-end" placement="top-end">
-            <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
-          </Dropdown>
+
+        <div class="playground-position-group">
+          <span class="playground-position-group-title">default</span>
+          <div class="playground-row">
+            <Dropdown label="Default">
+              <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
+            </Dropdown>
+          </div>
+        </div>
+
+        <div class="playground-position-group">
+          <span class="playground-position-group-title">bottom</span>
+          <div class="playground-row">
+            <Dropdown label="Start" position="bottom" align="start">
+              <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
+            </Dropdown>
+            <Dropdown label="Center" position="bottom" align="center">
+              <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
+            </Dropdown>
+            <Dropdown label="End" position="bottom" align="end">
+              <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
+            </Dropdown>
+          </div>
+        </div>
+
+        <div class="playground-position-group playground-position-group--top">
+          <span class="playground-position-group-title">top</span>
+          <div class="playground-row">
+            <Dropdown label="Start" position="top" align="start">
+              <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
+            </Dropdown>
+            <Dropdown label="Center" position="top" align="center">
+              <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
+            </Dropdown>
+            <Dropdown label="End" position="top" align="end">
+              <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
+            </Dropdown>
+          </div>
+        </div>
+
+        <div class="playground-position-group">
+          <span class="playground-position-group-title">right</span>
+          <div class="playground-row">
+            <Dropdown label="Start" position="right" align="start">
+              <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
+            </Dropdown>
+            <Dropdown label="Center" position="right" align="center">
+              <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
+            </Dropdown>
+            <Dropdown label="End" position="right" align="end">
+              <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
+            </Dropdown>
+          </div>
+        </div>
+
+        <div class="playground-position-group playground-position-group--left">
+          <span class="playground-position-group-title">left</span>
+          <div class="playground-row">
+            <Dropdown label="Start" position="left" align="start">
+              <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
+            </Dropdown>
+            <Dropdown label="Center" position="left" align="center">
+              <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
+            </Dropdown>
+            <Dropdown label="End" position="left" align="end">
+              <Button variant="ghost" style="width:100%;justify-content:flex-start">Item</Button>
+            </Dropdown>
+          </div>
         </div>
       </section>
 
@@ -216,11 +236,30 @@ const outlineItems = [
       <section id="fixed" class="playground-section">
         <h2>Fixed Position</h2>
         <div class="playground-row">
-          <Dropdown label="Fixed Menu" fixed>
+          <Dropdown label="Bottom fixed" fixed>
             <Button variant="ghost" style="width:100%;justify-content:flex-start">Fixed Item 1</Button>
             <Button variant="ghost" style="width:100%;justify-content:flex-start">Fixed Item 2</Button>
           </Dropdown>
+          <div class="playground-dropdown-demo--top">
+            <Dropdown label="Top fixed" position="top" fixed>
+              <Button variant="ghost" style="width:100%;justify-content:flex-start">Fixed Item 1</Button>
+              <Button variant="ghost" style="width:100%;justify-content:flex-start">Fixed Item 2</Button>
+            </Dropdown>
+          </div>
+          <Dropdown label="Right fixed" position="right" fixed>
+            <Button variant="ghost" style="width:100%;justify-content:flex-start">Fixed Item 1</Button>
+            <Button variant="ghost" style="width:100%;justify-content:flex-start">Fixed Item 2</Button>
+          </Dropdown>
+          <div class="playground-dropdown-demo--left">
+            <Dropdown label="Left fixed" position="left" fixed>
+              <Button variant="ghost" style="width:100%;justify-content:flex-start">Fixed Item 1</Button>
+              <Button variant="ghost" style="width:100%;justify-content:flex-start">Fixed Item 2</Button>
+            </Dropdown>
+          </div>
         </div>
+        <p class="playground-desc">
+          Con <code>fixed</code> el panel se fija al viewport y las 4 posiciones calculan con <code>getBoundingClientRect()</code>.
+        </p>
       </section>
 
       <hr class="playground-separator" />
@@ -280,5 +319,29 @@ const outlineItems = [
   margin: 0;
   font-size: var(--cu-font-size-sm);
   color: var(--cu-color-neutral);
+}
+
+/* Grupos de posiciones del dropdown */
+.playground-position-group {
+  margin-top: 1.25rem;
+}
+
+.playground-position-group-title {
+  display: block;
+  font-size: var(--cu-font-size-xs);
+  font-weight: 600;
+  color: var(--cu-color-neutral);
+  font-family: var(--cu-font-mono);
+  margin-bottom: 0.5rem;
+}
+
+/* Espacio para que el panel en position="top" no se recorte contra el header */
+.playground-position-group--top {
+  margin-top: 170px;
+}
+
+/* Espacio para que el panel en position="left" no se recorte contra el borde */
+.playground-position-group--left {
+  margin-left: 240px;
 }
 </style>

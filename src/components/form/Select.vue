@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
-import Dropdown from "../Dropdown.vue";
+import Dropdown from "../overlay/Dropdown.vue";
 import Button from "../buttons/Button.vue";
 
 interface SelectOption {
@@ -31,7 +31,6 @@ const props = defineProps({
   placeholderWrap: { type: Boolean, required: false, default: false },
   position: { type: String, required: false, default: "bottom" },
   align: { type: String, required: false, default: "start" },
-  placement: { type: String, required: false, default: "" },
   fixed: { type: Boolean, required: false, default: false },
   modelValue: { type: String, required: false, default: "" },
   options: { type: Array as () => SelectOption[], required: false, default: () => [] },
@@ -85,7 +84,6 @@ defineExpose({
       :disabled="disabled"
       :position="position"
       :align="align"
-      :placement="placement"
       :fixed="fixed"
       :offset="4"
       @close="emit('close')"

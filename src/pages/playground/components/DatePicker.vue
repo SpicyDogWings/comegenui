@@ -24,6 +24,7 @@ const outlineItems = [
   { label: 'Sin footer', id: 'no-footer' },
   { label: 'Variantes', id: 'variants' },
   { label: 'Colores', id: 'colors' },
+  { label: 'Posiciones', id: 'positions' },
   { label: 'Programático', id: 'programmatic' },
   { label: 'Eventos', id: 'events' },
   { label: 'Disabled', id: 'disabled' },
@@ -127,6 +128,42 @@ function onEvent(name: string, payload: any) {
 
       <hr class="playground-separator" />
 
+            <section id="positions" class="playground-section">
+        <h2>Posición del panel — todas las combinaciones</h2>
+        <p class="playground-desc">
+          API: <code>position</code> (<code>bottom</code>/<code>top</code>/<code>left</code>/<code>right</code>) + <code>align</code> (<code>start</code>/<code>center</code>/<code>end</code>).
+          Sin props → default (<code>bottom</code> + <code>start</code>). <code>fixed</code> fija el panel al viewport.
+        </p>
+        <div class="playground-date-picker-row">
+          <div class="playground-position-demo">
+            <strong>default</strong>
+            <DatePicker model-value="2026-08-11" style="max-width: 280px;" />
+          </div>
+        </div>
+        <div class="playground-date-picker-row">
+          <div class="playground-position-demo"><strong>bottom + start</strong><DatePicker model-value="2026-08-11" position="bottom" align="start" style="max-width: 280px;" /></div>
+          <div class="playground-position-demo"><strong>bottom + center</strong><DatePicker model-value="2026-08-11" position="bottom" align="center" style="max-width: 280px;" /></div>
+          <div class="playground-position-demo"><strong>bottom + end</strong><DatePicker model-value="2026-08-11" position="bottom" align="end" style="max-width: 280px;" /></div>
+        </div>
+        <div class="playground-date-picker-row">
+          <div class="playground-position-demo playground-position-demo--top"><strong>top + start</strong><DatePicker model-value="2026-08-11" position="top" align="start" style="max-width: 280px;" /></div>
+          <div class="playground-position-demo playground-position-demo--top"><strong>top + center</strong><DatePicker model-value="2026-08-11" position="top" align="center" style="max-width: 280px;" /></div>
+          <div class="playground-position-demo playground-position-demo--top"><strong>top + end</strong><DatePicker model-value="2026-08-11" position="top" align="end" style="max-width: 280px;" /></div>
+        </div>
+        <div class="playground-date-picker-row">
+          <div class="playground-position-demo"><strong>right + start</strong><DatePicker model-value="2026-08-11" position="right" align="start" style="max-width: 280px;" /></div>
+          <div class="playground-position-demo"><strong>right + center</strong><DatePicker model-value="2026-08-11" position="right" align="center" style="max-width: 280px;" /></div>
+          <div class="playground-position-demo"><strong>right + end</strong><DatePicker model-value="2026-08-11" position="right" align="end" style="max-width: 280px;" /></div>
+        </div>
+        <div class="playground-date-picker-row">
+          <div class="playground-position-demo playground-position-demo--left"><strong>left + start</strong><DatePicker model-value="2026-08-11" position="left" align="start" style="max-width: 280px;" /></div>
+          <div class="playground-position-demo playground-position-demo--left"><strong>left + center</strong><DatePicker model-value="2026-08-11" position="left" align="center" style="max-width: 280px;" /></div>
+          <div class="playground-position-demo playground-position-demo--left"><strong>left + end</strong><DatePicker model-value="2026-08-11" position="left" align="end" style="max-width: 280px;" /></div>
+        </div>
+      </section>
+
+      <hr class="playground-separator" />
+
       <section id="programmatic" class="playground-section">
         <h2>Control programático</h2>
         <div class="playground-date-picker-row">
@@ -198,6 +235,30 @@ function onEvent(name: string, payload: any) {
   flex-wrap: wrap;
   gap: 1rem;
   align-items: flex-start;
+}
+
+.playground-position-demo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 220px;
+}
+
+.playground-position-demo strong {
+  font-size: var(--cu-font-size-xs);
+  color: var(--cu-color-neutral);
+  font-family: var(--cu-font-mono);
+  font-weight: 600;
+}
+
+/* Espacio arriba para que el panel en position="top" no se recorte contra el header */
+.playground-position-demo--top {
+  margin-top: 180px;
+}
+
+/* Espacio a la izquierda para que el panel en position="left" no se recorte contra el borde */
+.playground-position-demo--left {
+  margin-left: 220px;
 }
 
 .playground-state {

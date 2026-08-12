@@ -46,6 +46,8 @@ const navItems = [
           { label: 'MonthSlider', path: '/playground/components/month-slider' },
           { label: 'YearSlider', path: '/playground/components/year-slider' },
           { label: 'Calendar', path: '/playground/components/calendar' },
+          { label: 'DropdownMenu', path: '/playground/components/dropdown-menu' },
+          { label: 'Pagination', path: '/playground/components/pagination' },
         ]
       },
       {
@@ -61,6 +63,7 @@ const navItems = [
         children: [
           { label: 'Modal', path: '/playground/components/modal' },
           { label: 'Collapse', path: '/playground/components/collapse' },
+          { label: 'Dropdown', path: '/playground/components/dropdown' },
         ]
       },
       {
@@ -73,9 +76,6 @@ const navItems = [
       {
         label: 'root',
         children: [
-          { label: 'Dropdown', path: '/playground/components/dropdown' },
-          { label: 'DropdownMenu', path: '/playground/components/dropdown-menu' },
-          { label: 'Pagination', path: '/playground/components/pagination' },
           { label: 'Tabs', path: '/playground/components/tabs' },
         ]
       },

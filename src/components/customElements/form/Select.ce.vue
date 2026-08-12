@@ -28,7 +28,6 @@ const props = defineProps({
   placeholderWrap: { type: Boolean, required: false, default: false },
   position: { type: String, required: false, default: "bottom" },
   align: { type: String, required: false, default: "start" },
-  placement: { type: String, required: false, default: "" },
   disabled: { type: Boolean, required: false, default: false },
   fixed: { type: Boolean, required: false, default: false },
   hightContrast: { type: Boolean, required: false, default: false },
@@ -89,7 +88,6 @@ defineExpose({
     :placeholder-wrap="props.placeholderWrap"
     :position="props.position"
     :align="props.align"
-    :placement="props.placement"
     :fixed="props.fixed"
     :model-value="innerValue"
     :options="resolvedOptions"
