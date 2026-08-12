@@ -62,7 +62,7 @@ release:
     description: |
       Release generado automáticamente por GitLab CI.
 
-      **Contenido:** Custom Elements UMD (`Cu*.umd.js`), CSS de temas (`css/`) y el zip versionado `comegenui-v{version}.zip`.
+      **Contenido:** Custom Elements UMD (`Cu*.umd.js`), CSS de temas (`css/`), el zip versionado `comegenui-v{version}.zip` y la doc skill `docs/comegen-ui/` (SKILL + docs por componente).
 
       **Instalación:**
       ```sh
