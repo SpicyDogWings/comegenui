@@ -24,10 +24,14 @@ interface Column {
   label?: string;
   cell?: (row: Record<string, any>) => string | string[];
   editable?: boolean | RegExp | ((row: Record<string, any>) => boolean);
-  inputType?: "input" | "textarea" | "select";
+  inputType?: "input" | "textarea" | "select" | "switch";
   selectOptions?: { value: string; label: string }[] | ((row: Record<string, any>) => { value: string; label: string }[]);
   validator?: (value: string, row: Record<string, any>) => boolean;
   singleClick?: boolean;
+  switch?: {
+    size?: "sm" | "md";
+    color?: string;
+  };
   badges?: (row: Record<string, any>) => BadgeConfig[];
   buttons?: (row: Record<string, any>) => ButtonConfig[];
 }

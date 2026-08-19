@@ -156,4 +156,25 @@ describe("EditableTableCell — modo lápiz (default) y estado inline", () => {
     // en modo lápiz vuelve a la vista
     expect(w.find(".cu-editable-cell-icon").exists()).toBe(true);
   });
+
+  it("inputType 'switch': renderiza el switch directo, sin lápiz ni input", () => {
+    const w = factory({ inputType: "switch" }, true);
+    expect(w.find(".cu-switch").exists()).toBe(true);
+    expect(w.find(".cu-editable-cell-icon").exists()).toBe(false);
+    expect(w.find("input[type='checkbox']").exists()).toBe(true);
+  });
+
+  it("inputType 'switch': arranca marcado si el valor es true", () => {
+    const w = factory({ inputType: "switch" }, true);
+    expect(w.find(".cu-switch").classes()).toContain("cu-switch--checked");
+  });
+
+  it("inputType 'switch': al alternar emite edit-save con valor booleano", async () => {
+    const w = factory({ inputType: "switch" }, false);
+    await w.find(".cu-switch").trigger("click");
+    await flushPromises();
+    const saves = w.emitted("edit-save");
+    expect(saves).toBeTruthy();
+    expect((saves![0]![0] as any).value).toBe(true);
+  });
 });
