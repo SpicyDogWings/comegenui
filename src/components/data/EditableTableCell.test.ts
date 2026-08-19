@@ -233,4 +233,22 @@ describe("EditableTableCell — modo lápiz (default) y estado inline", () => {
     expect(w.find(".cu-editable-cell-icon").exists()).toBe(true);
     expect(w.find(".cu-editable-cell").classes()).toContain("cu-editable-cell--disabled");
   });
+
+  it("disabled: un switch disabled SIGUE renderizándose como switch (deshabilitado), sin lápiz", () => {
+    const w = mount(EditableTableCell, {
+      props: {
+        value: true,
+        row,
+        column: { key: "activo", label: "Activo", editable: true, inputType: "switch" },
+        index: 0,
+        validation: { success: false, error: null },
+        disabled: true,
+      },
+    });
+    const sw = w.find(".cu-switch");
+    expect(sw.exists()).toBe(true);
+    expect(sw.classes()).toContain("cu-switch--disabled");
+    expect(w.find(".cu-editable-cell-icon").exists()).toBe(false);
+    expect(w.find(".cu-editable-cell").classes()).toContain("cu-editable-cell--disabled");
+  });
 });

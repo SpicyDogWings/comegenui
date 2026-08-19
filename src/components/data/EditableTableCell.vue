@@ -147,9 +147,11 @@ const inlineEdit = computed(() => props.inlineEdit === true);
 const columnInlineEdit = computed(() => props.column.inlineEdit === true);
 const isEditing = ref(false);
 const showEditor = computed(() =>
-  props.disabled
-    ? false
-    : (columnInlineEdit.value || inlineEdit.value || isEditing.value || props.column.inputType === "switch")
+  props.column.inputType === "switch"
+    ? true
+    : props.disabled
+      ? false
+      : (columnInlineEdit.value || inlineEdit.value || isEditing.value)
 );
 const saving = ref(false);
 const editValue = ref<string>("");

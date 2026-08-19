@@ -8,7 +8,9 @@ const outlineItems = [
   { label: 'Precio validado', id: 'price-validation' },
   { label: 'Calendario en celda', id: 'date-position' },
   { label: 'Switch en celda', id: 'switch' },
-  { label: 'Disabled (fila/col/celda)', id: 'disabled' },
+  { label: 'Disabled: filas', id: 'disabled-rows' },
+  { label: 'Disabled: columnas', id: 'disabled-columns' },
+  { label: 'Disabled: celdas', id: 'disabled-cells' },
 ];
 
 const editableColumns = [
@@ -251,20 +253,17 @@ const switchData = [
 // - rowDisabled: prop de la tabla (boolean o función por fila)
 // - column.disabled: boolean o función por fila (toda la columna / columna por fila)
 // - column.cellDisabled: función que deshabilita una celda puntual (fila × columna)
-const disabledData = [
+
+const disabledRowsData = [
   { id: 1, name: "Alice Johnson", email: "alice@example.com", activo: true, bloqueado: false },
-  { id: 2, name: "Bob Smith", email: "bob@example.com", activo: false, bloqueado: true },
-  { id: 3, name: "Carol White", email: "carol@example.com", activo: true, bloqueado: false },
+  { id: 2, name: "Bob Smith", email: "bob@example.com", activo: true, bloqueado: true },
+  { id: 3, name: "Carol White", email: "carol@example.com", activo: false, bloqueado: false },
+  { id: 4, name: "David Brown", email: "david@example.com", activo: true, bloqueado: false },
 ];
 
-const disabledColumns = [
+const disabledRowsColumns = [
   { key: "name", label: "Nombre", editable: true },
-  {
-    key: "email",
-    label: "Correo (columna disabled en Bob)",
-    editable: true,
-    disabled: (row: any) => row.name === "Bob Smith",
-  },
+  { key: "email", label: "Correo", editable: true },
   {
     key: "activo",
     label: "Activo",
@@ -274,11 +273,79 @@ const disabledColumns = [
   },
   {
     key: "bloqueado",
-    label: "Bloqueado (fila 3 celda disabled)",
+    label: "Bloqueado",
     editable: true,
     inputType: "switch" as const,
     switch: { color: "danger", size: "sm" } as const,
+  },
+];
+
+const disabledColsData = [
+  { id: 1, name: "Alice Johnson", email: "alice@example.com", activo: true, rol: "Admin" },
+  { id: 2, name: "Bob Smith", email: "bob@example.com", activo: true, rol: "Editor" },
+  { id: 3, name: "Carol White", email: "carol@example.com", activo: false, rol: "User" },
+  { id: 4, name: "David Brown", email: "david@example.com", activo: true, rol: "Admin" },
+];
+
+const disabledColsColumns = [
+  { key: "name", label: "Nombre", editable: true },
+  {
+    key: "email",
+    label: "Correo (disabled en todo)",
+    editable: true,
+    disabled: true,
+  },
+  {
+    key: "activo",
+    label: "Activo (disabled solo en Carol)",
+    editable: true,
+    inputType: "switch" as const,
+    switch: { color: "success", size: "sm" } as const,
+    disabled: (row: any) => row.name === "Carol White",
+  },
+  {
+    key: "rol",
+    label: "Rol (disabled en Admins)",
+    editable: true,
+    disabled: (row: any) => row.rol === "Admin",
+  },
+];
+
+const disabledCellsData = [
+  { id: 1, name: "Alice Johnson", email: "alice@example.com", activo: true, bloqueado: false },
+  { id: 2, name: "Bob Smith", email: "bob@example.com", activo: true, bloqueado: true },
+  { id: 3, name: "Carol White", email: "carol@example.com", activo: true, bloqueado: false },
+  { id: 4, name: "David Brown", email: "david@example.com", activo: true, bloqueado: false },
+];
+
+const disabledCellsColumns = [
+  {
+    key: "name",
+    label: "Nombre (celda disabled en Carol)",
+    editable: true,
     cellDisabled: (row: any) => row.name === "Carol White",
+  },
+  {
+    key: "email",
+    label: "Correo (celda disabled en Bob)",
+    editable: true,
+    cellDisabled: (row: any) => row.name === "Bob Smith",
+  },
+  {
+    key: "activo",
+    label: "Activo (celda disabled en Alice)",
+    editable: true,
+    inputType: "switch" as const,
+    switch: { color: "success", size: "sm" } as const,
+    cellDisabled: (row: any) => row.name === "Alice Johnson",
+  },
+  {
+    key: "bloqueado",
+    label: "Bloqueado (celda disabled en David)",
+    editable: true,
+    inputType: "switch" as const,
+    switch: { color: "danger", size: "sm" } as const,
+    cellDisabled: (row: any) => row.name === "David Brown",
   },
 ];
 </script>
@@ -367,18 +434,44 @@ const disabledColumns = [
 
       <hr class="playground-separator" />
 
-      <section id="disabled" class="playground-section">
-        <h2>Disabled: fila, columna y celda</h2>
+      <section id="disabled-rows" class="playground-section">
+        <h2>Disabled: filas</h2>
         <p>
-          El estado deshabilitado se bloquea a tres niveles con prioridad
-          <strong>fila &gt; columna &gt; celda</strong>:
+          La prop <code>rowDisabled</code> (boolean o función por fila) deshabilita una fila
+          completa: se atenúa, no edita, no emite clicks y sus switches se ven deshabilitados.
+          Acá Bob (fila 2) está deshabilitado porque <code>bloqueado: true</code>.
         </p>
-        <ul>
-          <li><strong>Fila:</strong> prop <code>rowDisabled</code> (boolean o función por fila). Acá Bob (fila 2) está deshabilitado: toda la fila se atenúa.</li>
-          <li><strong>Columna:</strong> <code>column.disabled</code> (boolean o función por fila). Acá la columna <em>Correo</em> está deshabilitada solo en Bob.</li>
-          <li><strong>Celda:</strong> <code>column.cellDisabled</code> (función). Acá el switch <em>Bloqueado</em> está deshabilitado solo en Carol (fila 3).</li>
-        </ul>
-        <AdvancedTable :columns="disabledColumns" :data="disabledData" :pagination="false" :row-disabled="(row: any) => row.bloqueado === true" />
+        <AdvancedTable
+          :columns="disabledRowsColumns"
+          :data="disabledRowsData"
+          :pagination="false"
+          :row-disabled="(row: any) => row.bloqueado === true"
+        />
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="disabled-columns" class="playground-section">
+        <h2>Disabled: columnas</h2>
+        <p>
+          <code>column.disabled</code> deshabilita una columna completa (<code>true</code>) o
+          solo en ciertas filas (función). Acá <em>Correo</em> está deshabilitada en todas las
+          filas; <em>Activo</em> solo en Carol; <em>Rol</em> solo en los Admins.
+        </p>
+        <AdvancedTable :columns="disabledColsColumns" :data="disabledColsData" :pagination="false" />
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="disabled-cells" class="playground-section">
+        <h2>Disabled: celdas</h2>
+        <p>
+          <code>column.cellDisabled</code> deshabilita una celda puntual (intersección
+          fila × columna). Acá cada columna tiene una celda deshabilitada en una fila distinta:
+          <em>Nombre</em> en Carol, <em>Correo</em> en Bob, <em>Activo</em> en Alice y
+          <em>Bloqueado</em> en David.
+        </p>
+        <AdvancedTable :columns="disabledCellsColumns" :data="disabledCellsData" :pagination="false" />
       </section>
     </div>
   </PlaygroundLayout>
