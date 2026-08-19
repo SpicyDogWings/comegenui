@@ -3,23 +3,71 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Button Labs — Playground</title>
+    <title>Button Full Width — Playground</title>
     <link rel="stylesheet" href="style.css" />
     <script src="../dist/CuButton.umd.js"></script>
     <link rel="stylesheet" href="./public/css/comegen-sigfi-theme.css" />
+    <style>
+      .fw-label {
+        font-size: 12px;
+        font-weight: 600;
+        opacity: .6;
+        margin: 4px 0;
+      }
+      .fw-flex {
+        display: flex;
+        gap: 8px;
+        align-items: stretch;
+        padding: 12px;
+        border: 1px solid var(--cu-border-color, #e2e8f0);
+        border-radius: 8px;
+        width: 100%;
+        box-sizing: border-box;
+      }
+    </style>
   </head>
   <body>
     <div class="topbar">
-      <h1 style="font-size:16px;font-weight:600">Button Labs</h1>
+      <h1 style="font-size:16px;font-weight:600">Button Full Width</h1>
       <div class="topbar-actions">
         <button class="topbar-btn" id="btnTheme" title="Toggle theme">🌙</button>
       </div>
     </div>
 
     <div class="main">
-      <div class="card">
-        <h2>Sigfi Theme — Button Primary</h2>
-        <cu-button color="primary" variant="solid">Primary</cu-button>
+      <div class="card" style="align-items:stretch; max-width:560px">
+        <h2>Full Width en display:flex</h2>
+        <p style="font-size:13px;opacity:.65;line-height:1.5;margin:0">
+          El host <code>&lt;cu-button&gt;</code> es <code>inline</code> y su botón interno
+          <code>inline-flex</code>. En un contenedor <code>display:flex</code> con
+          <code>align-items:stretch</code> (default), el <code>width:100%</code> directo
+          estira el botón al ancho completo. Evitá <code>flex:1</code> o
+          <code>display:block</code> en el host: el botón interno se encoge.
+        </p>
+
+        <div class="fw-label">✅ width:100% directo (funciona)</div>
+        <div class="fw-flex">
+          <cu-button color="primary" variant="solid" style="width:100%">Guardar</cu-button>
+          <cu-button color="neutral" variant="soft">Cancelar</cu-button>
+        </div>
+
+        <div class="fw-label">✅ Varias variantes full width en columna</div>
+        <div style="display:flex;flex-direction:column;gap:8px;width:100%">
+          <cu-button color="primary" variant="solid" style="width:100%">solid</cu-button>
+          <cu-button color="primary" variant="soft" style="width:100%">soft</cu-button>
+          <cu-button color="primary" variant="outlined" style="width:100%">outlined</cu-button>
+          <cu-button color="primary" variant="subtle" style="width:100%">subtle</cu-button>
+          <cu-button color="danger" variant="ghost" style="width:100%">ghost</cu-button>
+        </div>
+
+        <div class="fw-label">❌ No usar: display:block en el host (se encoge)</div>
+        <div class="fw-flex">
+          <style>
+            #fw-bad { display: block; width: 100%; }
+          </style>
+          <cu-button id="fw-bad" color="danger" variant="solid">Se encoge</cu-button>
+          <cu-button color="neutral" variant="soft">Cancelar</cu-button>
+        </div>
       </div>
     </div>
 

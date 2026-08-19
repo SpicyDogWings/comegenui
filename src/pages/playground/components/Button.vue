@@ -28,6 +28,7 @@ const outlineItems = [
   { label: 'With Icon', id: 'icons' },
   { label: 'Loading', id: 'loading' },
   { label: 'As Link', id: 'links' },
+  { label: 'Full Width', id: 'fullwidth' },
 ];
 </script>
 
@@ -131,6 +132,18 @@ const outlineItems = [
         <div class="playground-row">
           <Button color="primary" to="https://google.com" target="_blank">External Link</Button>
           <Button color="secondary" to="/playground/buttons/button">Internal Link</Button>
+        </div>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="fullwidth" class="playground-section">
+        <h2>Full Width</h2>
+        <div class="playground-col">
+          <Button color="primary" variant="solid" style="width:100%">Full Width Solid</Button>
+          <Button color="success" variant="soft" style="width:100%">Full Width Soft</Button>
+          <Button color="warning" variant="outlined" style="width:100%">Full Width Outlined</Button>
+          <Button color="danger" variant="subtle" style="width:100%">Full Width Subtle</Button>
         </div>
       </section>
     </div>
