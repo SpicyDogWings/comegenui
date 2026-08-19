@@ -52,6 +52,7 @@ interface Column {
   selectOptions?: { value: string; label: string }[] | ((row: Record<string, any>) => { value: string; label: string }[]);  // Opciones del select
   validator?: (value: string, row: Record<string, any>) => boolean;  // Validador custom
   singleClick?: boolean;                                             // Si true, edita con un click (default: doble click)
+  editorAlign?: "start" | "center" | "end";                          // Alineación del editor dentro de la celda (default: switch centrado, resto start)
   badges?: (row: Record<string, any>) => BadgeConfig[];              // Badges por celda
   buttons?: (row: Record<string, any>) => ButtonConfig[];            // Botones por celda
 }
@@ -484,6 +485,19 @@ tabla.columns = [
 
 > **Comportamiento:** al alternar el switch se emite `edit-save` inmediatamente con `value` **booleano** (`true` / `false`) y la tabla actualiza `row[key]`. El switch no pasa por modo lápiz ni por validación regex/`validator` (su valor siempre es booleano válido). Para arrancar "encendido", el dato debe venir con `activo: true`.
 
+> **Alineación y ancho:** el switch **no ocupa todo el ancho de la celda** (`width: fit-content`) — queda con su tamaño natural y por defecto **centrado** para que el thumb recorra el recorrido completo sin deformarse. Para moverlo dentro de la celda usá `editorAlign` (campo de columna):
+
+| Campo de columna | Valores | Default | Descripción |
+|---|---|---|---|
+| `editorAlign` | `"start"` \| `"center"` \| `"end"` | `"center"` para switch (si no hay `align`) | Alineación del editor dentro de la celda. Aplica a cualquier `inputType` cuyo editor no ocupe todo el ancho |
+
+```js
+// Switch centrado (default) / a la izquierda / a la derecha
+{ key: 'activo', label: 'Activo', editable: true, inputType: 'switch' }
+{ key: 'envio', label: 'Envío', editable: true, inputType: 'switch', editorAlign: 'start', switch: { color: 'primary', size: 'sm' } }
+{ key: 'garantia', label: 'Garantía', editable: true, inputType: 'switch', editorAlign: 'end', switch: { color: 'warning' } }
+```
+
 ```js
 tabla.addEventListener('edit-save', (e) => {
   console.log(`Fila ${e.detail.index}: activo = ${e.detail.value}`);  // true / false
@@ -506,6 +520,28 @@ tabla.addEventListener('edit-save', (e) => {
     variant: 'soft',
   }],
 }
+```
+
+### Multi-badge con wrap
+
+Si la función `badges` devuelve **varios** badges, el contenedor usa `flex-wrap: wrap`: los badges **saltan de línea entre sí** en lugar de estirarse en una fila larga. Ideal para columnas con etiquetas/tags múltiples (skills, roles, permisos). Limitá el ancho de la columna con `width` para que el wrap se active a partir de ese ancho.
+
+```js
+tabla.columns = [
+  { key: 'nombre', label: 'Nombre' },
+  {
+    key: 'skills',
+    label: 'Skills',
+    width: '220px',   // a partir de este ancho los badges hacen wrap
+    badges: (row) => [
+      { value: 'Vue', color: 'primary', variant: 'soft' },
+      { value: 'TypeScript', color: 'primary', variant: 'soft' },
+      { value: 'Docker', color: 'neutral', variant: 'soft' },
+      { value: 'PostgreSQL', color: 'warning', variant: 'soft' },
+      ...(row.senior ? [{ value: 'Arquitectura', color: 'secondary', variant: 'soft' }] : []),
+    ],
+  },
+];
 ```
 
 ### Botones condicionales
