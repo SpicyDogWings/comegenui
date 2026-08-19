@@ -58,6 +58,24 @@ const badgeColumns = [
   },
 ];
 
+const multiBadgeColumns = [
+  { key: "name", label: "Name" },
+  {
+    key: "skills",
+    label: "Skills (multi-badge)",
+    width: "220px",
+    badges: (row: any) => [
+      { value: "Vue", color: "primary", variant: "soft" },
+      { value: "TypeScript", color: "primary", variant: "soft" },
+      { value: "Node", color: "success", variant: "soft" },
+      { value: "Docker", color: "neutral", variant: "soft" },
+      { value: "PostgreSQL", color: "warning", variant: "soft" },
+      { value: "CI/CD", color: "danger", variant: "soft" },
+      ...(row.senior ? [{ value: "Arquitectura", color: "secondary", variant: "soft" }] : []),
+    ],
+  },
+];
+
 const buttonColumns = [
   { key: "name", label: "Name" },
   { key: "email", label: "Email" },
@@ -121,6 +139,13 @@ const iconButtonColumns = [
       <section id="badges" class="playground-section">
         <h2>With Badges</h2>
         <AdvancedTable :columns="badgeColumns" :data="sampleData" :pagination="false" />
+        <h3>Multi-badge con wrap</h3>
+        <p>
+          Cuando una celda devuelve <strong>varios badges</strong>, el contenedor hace
+          <code>flex-wrap: wrap</code>: los badges saltan de línea entre sí en lugar de
+          estirarse en una fila larga.
+        </p>
+        <AdvancedTable :columns="multiBadgeColumns" :data="sampleData" :pagination="false" />
       </section>
 
       <hr class="playground-separator" />

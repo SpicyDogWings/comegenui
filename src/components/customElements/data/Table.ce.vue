@@ -28,6 +28,7 @@ interface Column {
   selectOptions?: { value: string; label: string }[] | ((row: Record<string, any>) => { value: string; label: string }[]);
   validator?: (value: string, row: Record<string, any>) => boolean;
   singleClick?: boolean;
+  editorAlign?: "start" | "center" | "end"; // Alineación del editor en la celda (para celdas que no ocupan todo el ancho, ej. switch)
   switch?: {
     size?: "sm" | "md";
     color?: string;

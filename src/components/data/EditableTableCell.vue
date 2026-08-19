@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, nextTick, watch } from "vue";
+import { ref, computed, nextTick, watch, type PropType } from "vue";
 
 import Input from "../form/Input.vue";
 import Textarea from "../form/Textarea.vue";
@@ -32,6 +32,7 @@ interface Column {
   inlineEdit?: boolean; // Estado por columna: renderiza el editor directo
   width?: string;
   align?: "left" | "center" | "right";
+  editorAlign?: "start" | "center" | "end"; // Alineación del editor en la celda (para celdas que no ocupan todo el ancho, ej. switch)
 
   color?: string;
   variant?: string;
@@ -87,7 +88,7 @@ interface Column {
 
 const props = defineProps({
   value: {
-    type: [String, Number, Boolean] as () => string | number | boolean,
+    type: [String, Number, Boolean] as PropType<string | number | boolean>,
     required: true,
   },
   row: {
@@ -257,7 +258,7 @@ const displayValue = computed(() => {
     return item ? item.label : String(props.value);
   }
   if (props.column.inputType === 'date') {
-    return formatDateValue(props.value, props.column.date?.format || 'dd/MM/yyyy');
+    return formatDateValue(String(props.value), props.column.date?.format || 'dd/MM/yyyy');
   }
   return props.value != null ? String(props.value) : "";
 });
@@ -356,6 +357,20 @@ const elementVariant = computed(() => {
   return props.variant;
 });
 
+// Alineación del editor dentro de la celda. Prioridad:
+// editorAlign explícito > (switch por defecto centrado) > align de la columna > start
+const editorAlignStyle = computed(() => {
+  const col = props.column;
+  const align =
+    col.editorAlign ??
+    (col.inputType === "switch" ? "center" : null) ??
+    col.align ??
+    "start";
+  const textAlign: "start" | "center" | "end" =
+    align === "end" || align === "right" ? "end" : align === "center" ? "center" : "start";
+  return { textAlign };
+});
+
 const canEdit = computed(() => {
   if (typeof props.column.editable === "function") return props.column.editable(props.row);
   return true;
@@ -365,6 +380,7 @@ const canEdit = computed(() => {
 <template>
   <div
     class="cu-editable-cell"
+    :style="editorAlignStyle"
     @click="column.singleClick !== false && canEdit && startEditing()"
     @dblclick="column.singleClick === false && canEdit && startEditing()"
   >
@@ -435,7 +451,7 @@ const canEdit = computed(() => {
         :color="elementColor"
         :size="column.switch?.size || 'md'"
         @change="onSwitchChange"
-        class="cu-editable-cell-input"
+        class="cu-editable-cell-switch"
       />
       <Input
         v-else
@@ -487,6 +503,11 @@ const canEdit = computed(() => {
 .cu-editable-cell-input {
   width: 100%;
 }
+
+/* Sin width: el switch conserva su tamaño natural (cu-switch--md/--sm) y NO se
+   estira a la celda. El centrado/alineación lo hace text-align del contenedor
+   (editorAlignStyle). fit-content NO se usa: colapsa el track a 0px porque el
+   thumb está position:absolute (sin contenido in-flow) y el switch queda en blanco. */
 
 .cu-editable-cell-view {
   display: flex;

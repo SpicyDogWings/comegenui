@@ -5,7 +5,7 @@ import Input from "../form/Input.vue";
 
 const row = { id: 1, name: "Alice Johnson", status: "Active" };
 
-function factory(column: Record<string, any>, value: string | number = "Alice Johnson", inlineEdit = false) {
+function factory(column: Record<string, any>, value: string | number | boolean = "Alice Johnson", inlineEdit = false) {
   return mount(EditableTableCell, {
     props: {
       value,
@@ -176,5 +176,25 @@ describe("EditableTableCell — modo lápiz (default) y estado inline", () => {
     const saves = w.emitted("edit-save");
     expect(saves).toBeTruthy();
     expect((saves![0]![0] as any).value).toBe(true);
+  });
+
+  it("inputType 'switch': NO usa width 100% (no se estira en la celda)", () => {
+    const w = factory({ inputType: "switch" });
+    const sw = w.find(".cu-switch");
+    expect(sw.exists()).toBe(true);
+    expect(sw.classes()).not.toContain("cu-editable-cell-input");
+    expect(sw.classes()).toContain("cu-editable-cell-switch");
+  });
+
+  it("inputType 'switch': por defecto queda centrado en la celda", () => {
+    const w = factory({ inputType: "switch" });
+    expect((w.find(".cu-editable-cell").element as HTMLElement).style.textAlign).toBe("center");
+  });
+
+  it("editorAlign: 'start' y 'end' sobreescriben el centrado default del switch", () => {
+    const start = factory({ inputType: "switch", editorAlign: "start" });
+    expect((start.find(".cu-editable-cell").element as HTMLElement).style.textAlign).toBe("start");
+    const end = factory({ inputType: "switch", editorAlign: "end" });
+    expect((end.find(".cu-editable-cell").element as HTMLElement).style.textAlign).toBe("end");
   });
 });

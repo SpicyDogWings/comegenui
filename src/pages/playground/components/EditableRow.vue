@@ -7,6 +7,7 @@ const outlineItems = [
   { label: 'Editable Cells', id: 'editable' },
   { label: 'Precio validado', id: 'price-validation' },
   { label: 'Calendario en celda', id: 'date-position' },
+  { label: 'Switch en celda', id: 'switch' },
 ];
 
 const editableColumns = [
@@ -205,6 +206,44 @@ const datePositionInlineColumns = [
     date: { format: "dd/MM/yyyy", position: "top", align: "center" },
   },
 ];
+
+// ── Switch en celda: inputType "switch" renderiza el <cu-switch> directo ──
+// El valor de la fila es booleano; al alternar se emite edit-save con true/false.
+// El switch NO ocupa todo el ancho de la celda (width: fit-content) y por defecto
+// queda centrado; editorAlign ("start"|"center"|"end") lo mueve dentro de la celda.
+const switchColumns = [
+  { key: "producto", label: "Producto" },
+  {
+    key: "disponible",
+    label: "Disponible (centrado, default)",
+    editable: true,
+    inputType: "switch" as const,
+    switch: { color: "success", size: "sm" } as const,
+  },
+  {
+    key: "envio",
+    label: "Envío gratis (start)",
+    editable: true,
+    inputType: "switch" as const,
+    editorAlign: "start" as const,
+    switch: { color: "primary", size: "md" } as const,
+  },
+  {
+    key: "garantia",
+    label: "Garantía (end)",
+    editable: true,
+    inputType: "switch" as const,
+    editorAlign: "end" as const,
+    switch: { color: "warning", size: "sm" } as const,
+  },
+];
+
+const switchData = [
+  { id: 1, producto: "Laptop", disponible: true, envio: true, garantia: false },
+  { id: 2, producto: "Mouse", disponible: false, envio: false, garantia: true },
+  { id: 3, producto: "Teclado", disponible: true, envio: false, garantia: true },
+  { id: 4, producto: "Monitor", disponible: false, envio: true, garantia: false },
+];
 </script>
 
 <template>
@@ -272,6 +311,21 @@ const datePositionInlineColumns = [
             <AdvancedTable :columns="datePositionInlineColumns" :data="dateData" :pagination="false" />
           </div>
         </div>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="switch" class="playground-section">
+        <h2>Switch en celda</h2>
+        <p>
+          La columna usa <code>inputType: "switch"</code> con la config
+          <code>switch: { size, color }</code>. El switch se renderiza <strong>directo, sin lápiz</strong>,
+          <strong>sin estirarse</strong> al ancho de la celda (queda centrado por defecto) y al
+          alternarlo se emite <code>edit-save</code> con el valor <strong>booleano</strong>
+          (<code>true</code> / <code>false</code>), que actualiza <code>row[key]</code>.
+          Con <code>editorAlign: "start" | "center" | "end"</code> podés alinearlo dentro de la celda.
+        </p>
+        <AdvancedTable :columns="switchColumns" :data="switchData" :pagination="false" @edit-save="(e: any) => console.log('Switch guardado:', e)" />
       </section>
     </div>
   </PlaygroundLayout>

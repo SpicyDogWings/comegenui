@@ -76,6 +76,7 @@ interface Column {
   label?: string;
   width?: string;
   align?: "left" | "center" | "right";
+  editorAlign?: "start" | "center" | "end"; // Alineación del editor en la celda (para celdas que no ocupan todo el ancho, ej. switch)
   cell?: (row: Record<string, any>) => string | string[];
   editable?: boolean | RegExp | ((row: Record<string, any>) => boolean);
   inputType?: "input" | "textarea" | "select" | "autocomplete" | "date" | "switch";
@@ -462,6 +463,7 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
 .cu-advanced-table-cell-badges {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: var(--cu-space-sm);
 }
 
