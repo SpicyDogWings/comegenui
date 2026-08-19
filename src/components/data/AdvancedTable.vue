@@ -78,7 +78,7 @@ interface Column {
   align?: "left" | "center" | "right";
   cell?: (row: Record<string, any>) => string | string[];
   editable?: boolean | RegExp | ((row: Record<string, any>) => boolean);
-  inputType?: "input" | "textarea" | "select" | "autocomplete" | "date";
+  inputType?: "input" | "textarea" | "select" | "autocomplete" | "date" | "switch";
   color?: string;
   variant?: string;
   // Las sub-key de date/select/autocomplete/textarea/input se pasan tal cual a
@@ -122,6 +122,10 @@ interface Column {
     startValue?: string;
     color?: string;
     variant?: string;
+  };
+  switch?: {
+    size?: "sm" | "md";
+    color?: string;
   };
   selectOptions?: SelectOption[] | ((row: Record<string, any>) => SelectOption[]);
   autocompleteItems?: AutocompleteItem[] | ((row: Record<string, any>) => AutocompleteItem[]);

@@ -6,6 +6,7 @@ import Textarea from "../form/Textarea.vue";
 import Select from "../form/Select.vue";
 import Autocomplete from "../form/Autocomplete.vue";
 import DatePicker from "../form/DatePicker.vue";
+import Switch from "../form/Switch.vue";
 
 interface AutocompleteItem {
   label: string;
@@ -26,7 +27,7 @@ interface Column {
   label?: string;
   editable?: boolean | RegExp | ((row: Record<string, any>) => boolean);
   validator?: (value: string, row: Record<string, any>) => boolean;
-  inputType?: "input" | "textarea" | "select" | "autocomplete" | "date";
+  inputType?: "input" | "textarea" | "select" | "autocomplete" | "date" | "switch";
   singleClick?: boolean;
   inlineEdit?: boolean; // Estado por columna: renderiza el editor directo
   width?: string;
@@ -75,6 +76,10 @@ interface Column {
     color?: string;
     variant?: string;
   };
+  switch?: {
+    size?: "sm" | "md";
+    color?: string;
+  };
 
   selectOptions?: SelectOption[] | ((row: Record<string, any>) => SelectOption[]);
   autocompleteItems?: AutocompleteItem[] | ((row: Record<string, any>) => AutocompleteItem[]);
@@ -82,7 +87,7 @@ interface Column {
 
 const props = defineProps({
   value: {
-    type: [String, Number] as () => string | number,
+    type: [String, Number, Boolean] as () => string | number | boolean,
     required: true,
   },
   row: {
@@ -135,7 +140,7 @@ const emit = defineEmits([
 const inlineEdit = computed(() => props.inlineEdit === true);
 const columnInlineEdit = computed(() => props.column.inlineEdit === true);
 const isEditing = ref(false);
-const showEditor = computed(() => columnInlineEdit.value || inlineEdit.value || isEditing.value);
+const showEditor = computed(() => columnInlineEdit.value || inlineEdit.value || isEditing.value || props.column.inputType === "switch");
 const saving = ref(false);
 const editValue = ref<string>("");
 const inputRef = ref<{ focus?: () => void } | null>(null);
@@ -207,6 +212,21 @@ const onDateChange = (d: Date | null) => {
   if (!d) return;
   editValue.value = toDateValue(d);
   saveEdit();
+};
+
+// Switch: valor booleano, guarda directo (sin edición intermedia)
+const switchValue = computed(() => props.value === true || props.value === "true");
+
+const onSwitchChange = (val: boolean) => {
+  if (saving.value) return;
+  saving.value = true;
+  emit("edit-save", {
+    row: props.row,
+    column: props.column,
+    value: val,
+    index: props.index,
+  });
+  nextTick(() => { saving.value = false; });
 };
 
 // El panel del picker se cerró (click afuera / Escape) sin elegir: en modo
@@ -311,6 +331,7 @@ const elementColor = computed(() => {
       : col.inputType === "textarea" ? col.textarea?.color
       : col.inputType === "input" ? col.input?.color
       : col.inputType === "date" ? col.date?.color
+      : col.inputType === "switch" ? col.switch?.color
       : undefined,
     props.row
   );
@@ -406,6 +427,14 @@ const canEdit = computed(() => {
         :fixed="column.date?.fixed ?? true"
         @change="onDateChange"
         @close="onDateClose"
+        class="cu-editable-cell-input"
+      />
+      <Switch
+        v-else-if="column.inputType === 'switch'"
+        :model-value="switchValue"
+        :color="elementColor"
+        :size="column.switch?.size || 'md'"
+        @change="onSwitchChange"
         class="cu-editable-cell-input"
       />
       <Input

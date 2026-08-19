@@ -48,7 +48,7 @@ interface Column {
   label?: string;                                                   // Texto del header
   cell?: (row: Record<string, any>) => string | string[];            // Render custom de la celda
   editable?: boolean | RegExp | ((row: Record<string, any>) => boolean);  // Editable: bool, regex validator, o función condicional
-  inputType?: "input" | "textarea" | "select" | "autocomplete" | "date";  // Tipo de editor
+  inputType?: "input" | "textarea" | "select" | "autocomplete" | "date" | "switch";  // Tipo de editor
   selectOptions?: { value: string; label: string }[] | ((row: Record<string, any>) => { value: string; label: string }[]);  // Opciones del select
   validator?: (value: string, row: Record<string, any>) => boolean;  // Validador custom
   singleClick?: boolean;                                             // Si true, edita con un click (default: doble click)
@@ -113,6 +113,8 @@ La celda renderiza el editor (input / select / textarea / autocomplete) **direct
 | Apagar el estado | Vuelve al modo lápiz sin perder lo ya guardado |
 
 **Prioridad:** el estado de la **columna** (`column.inlineEdit`) tiene prioridad sobre el global (`inlineEditing`). Una columna con `inlineEdit: true` queda inline aunque la tabla tenga `inlineEditing: false`.
+
+> 💡 **`inputType: 'switch'` es una excepción:** el switch **siempre** se renderiza visible, sin lápiz y sin depender de los estados lápiz/inline. Ver [Edición con switch](#edición-con-switch).
 
 > Ver [Recetas](#recetas) para ejemplos completos de cada estado, incluyendo el preset de playground `examples/table-inline-editing.js`.
 
@@ -452,6 +454,41 @@ La config `date.*` acepta las props de posicionamiento del `<cu-date-picker>`:
 ```
 
 > Con `fixed: false` el panel se posiciona en `absolute` respecto al trigger (puede recortarse si la celda/tabla tiene `overflow`). El default es `true` justamente para evitarlo.
+
+---
+
+## Edición con switch
+
+`inputType: 'switch'` + `switch.*` para que la celda editable renderice un `<cu-switch>` **directamente, sin lápiz** (el switch siempre está visible, como el estado inline). El valor de la fila es booleano (`true` / `false`).
+
+```js
+tabla.columns = [
+  { key: 'nombre', label: 'Nombre', editable: true },
+  {
+    key: 'activo',
+    label: 'Activo',
+    editable: true,
+    inputType: 'switch',
+    switch: {
+      size: 'sm',        // "sm" | "md" (default "md")
+      color: 'success',  // color semántico del switch (default: el de la tabla)
+    },
+  },
+];
+```
+
+| Campo de `switch.*` | Valores | Default | Descripción |
+|---|---|---|---|
+| `size` | `"sm"` \| `"md"` | `"md"` | Tamaño del switch |
+| `color` | color semántico | color de la tabla | Color del switch |
+
+> **Comportamiento:** al alternar el switch se emite `edit-save` inmediatamente con `value` **booleano** (`true` / `false`) y la tabla actualiza `row[key]`. El switch no pasa por modo lápiz ni por validación regex/`validator` (su valor siempre es booleano válido). Para arrancar "encendido", el dato debe venir con `activo: true`.
+
+```js
+tabla.addEventListener('edit-save', (e) => {
+  console.log(`Fila ${e.detail.index}: activo = ${e.detail.value}`);  // true / false
+});
+```
 
 ---
 
