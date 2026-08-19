@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, type PropType } from "vue";
 
 interface Column {
   key: string;
@@ -47,6 +47,11 @@ const props = defineProps({
     type: String,
     required: false,
     default: "",
+  },
+  rowDisabled: {
+    type: [Boolean, Function] as PropType<boolean | ((row: Record<string, any>) => boolean)>,
+    required: false,
+    default: false,
   },
 });
 
@@ -103,6 +108,11 @@ const tableColumns = computed<Column[]>(() => {
 const getCellValue = (row: Record<string, any>, col: Column): string => {
   return row[col.key] != null ? String(row[col.key]) : "";
 };
+
+const isRowDisabled = (row: Record<string, any>): boolean => {
+  const rd = props.rowDisabled;
+  return typeof rd === "function" ? rd(row) : !!rd;
+};
 </script>
 
 <template>
@@ -133,6 +143,7 @@ const getCellValue = (row: Record<string, any>, col: Column): string => {
             v-for="(row, rowIndex) in props.data"
             :key="rowIndex"
             class="cu-table-row"
+            :class="{ 'cu-table-row--disabled': isRowDisabled(row) }"
           >
             <slot
               name="template"
@@ -229,6 +240,15 @@ const getCellValue = (row: Record<string, any>, col: Column): string => {
 
 .cu-table-row:hover {
   background-color: var(--table-bg-hover);
+}
+
+.cu-table-row--disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.cu-table-row--disabled:hover {
+  background-color: transparent;
 }
 
 .cu-table-row:last-child {

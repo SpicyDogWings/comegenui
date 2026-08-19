@@ -115,4 +115,56 @@ describe("AdvancedTable", () => {
     expect(pages).toBeTruthy();
     expect((pages as unknown[][])[0]![0]).toBe(2);
   });
+
+  it("rowDisabled: marca la fila con la clase visual cu-table-row--disabled", () => {
+    const w = factory({
+      columns: [{ key: "name", label: "Nombre" }],
+      data: [
+        { id: 1, name: "Alice", blocked: true },
+        { id: 2, name: "Bob", blocked: false },
+      ],
+      rowDisabled: (row: any) => row.blocked === true,
+    });
+    const rows = w.findAll("tr.cu-table-row");
+    expect(rows[0]!.classes()).toContain("cu-table-row--disabled");
+    expect(rows[1]!.classes()).not.toContain("cu-table-row--disabled");
+  });
+
+  it("rowDisabled: true deshabilita todas las filas", () => {
+    const w = factory({
+      columns: [{ key: "name", label: "Nombre" }],
+      data: [{ name: "Alice" }],
+      rowDisabled: true,
+    });
+    expect(w.find("tr.cu-table-row").classes()).toContain("cu-table-row--disabled");
+  });
+
+  it("columna disabled: la celda editable se renderiza deshabilitada (no entra en edición)", async () => {
+    const w = factory({
+      columns: [
+        { key: "name", label: "Nombre", editable: true, disabled: true },
+      ],
+      data: [{ id: 1, name: "Alice" }],
+    });
+    const cell = w.find(".cu-editable-cell");
+    expect(cell.classes()).toContain("cu-editable-cell--disabled");
+    await cell.trigger("click");
+    await flushPromises();
+    expect(w.find("input").exists()).toBe(false);
+  });
+
+  it("cellDisabled: deshabilita solo la celda puntual (fila×columna)", async () => {
+    const w = factory({
+      columns: [
+        { key: "name", label: "Nombre", editable: true, cellDisabled: (row: any) => row.name === "Bob" },
+      ],
+      data: [
+        { id: 1, name: "Alice" },
+        { id: 2, name: "Bob" },
+      ],
+    });
+    const cells = w.findAll(".cu-editable-cell");
+    expect(cells[0]!.classes()).not.toContain("cu-editable-cell--disabled");
+    expect(cells[1]!.classes()).toContain("cu-editable-cell--disabled");
+  });
 });

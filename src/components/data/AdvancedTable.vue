@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch, toRef, type Component } from "vue";
+import { computed, ref, watch, toRef, type Component, type PropType } from "vue";
 import Table from "./Table.vue";
 import Pagination from "../controls/Pagination.vue";
 import Input from "../form/Input.vue";
@@ -38,6 +38,19 @@ const getCellBadges = (col: Column, row: Record<string, any>): BadgeConfig[] => 
 
 const getCellButtons = (col: Column, row: Record<string, any>): ButtonConfig[] => {
   return col.buttons ? col.buttons(row) : [];
+};
+
+// Disabled: fila > columna > celda (prioridad).
+const isRowDisabled = (row: Record<string, any>): boolean => {
+  const rd = props.rowDisabled;
+  return typeof rd === "function" ? rd(row) : !!rd;
+};
+
+const isCellDisabled = (col: Column, row: Record<string, any>): boolean => {
+  if (isRowDisabled(row)) return true;
+  if (typeof col.disabled === "function" ? col.disabled(row) : !!col.disabled) return true;
+  if (typeof col.cellDisabled === "function" && col.cellDisabled(row)) return true;
+  return false;
 };
 
 interface BadgeConfig {
@@ -136,6 +149,8 @@ interface Column {
   sortable?: boolean | "string" | "number" | "boolean";
   badges?: (row: Record<string, any>) => BadgeConfig[];
   buttons?: (row: Record<string, any>) => ButtonConfig[];
+  disabled?: boolean | ((row: Record<string, any>) => boolean); // Columna deshabilitada (opcional por fila)
+  cellDisabled?: (row: Record<string, any>) => boolean; // Celda deshabilitada (intersección fila × columna)
 }
 
 const props = defineProps({
@@ -172,6 +187,11 @@ const props = defineProps({
   // Estado reactivo: cuando es true, todas las columnas editables renderizan
   // el editor (input/select/textarea) directamente, sin lápiz.
   inlineEditing: { type: Boolean, required: false, default: false },
+  rowDisabled: {
+    type: [Boolean, Function] as PropType<boolean | ((row: Record<string, any>) => boolean)>,
+    required: false,
+    default: false,
+  },
 });
 
 const emit = defineEmits([
@@ -291,6 +311,7 @@ const tableProps = computed(() => ({
   color: props.color,
   variant: props.variant,
   loading: props.loading,
+  rowDisabled: props.rowDisabled,
 }));
 
 const tableStyles = computed(() => ({
@@ -356,8 +377,8 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
             :variant="button.variant || props.variant"
             :to="button.to"
             :target="button.target"
-            :disabled="button.disabled"
-            @click="(e: MouseEvent) => { if (button.onClick) { e.stopPropagation(); button.onClick(row); } }"
+            :disabled="isCellDisabled(col, row) || button.disabled"
+            @click="(e: MouseEvent) => { if (button.onClick && !isCellDisabled(col, row)) { e.stopPropagation(); button.onClick(row); } }"
           >
             <component :is="button.icon" v-if="typeof button.icon === 'object'" class="cu-advanced-table-icon" />
             <span v-else-if="button.icon" v-html="button.icon" class="cu-advanced-table-icon"></span>
@@ -382,6 +403,7 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
           :row="row"
           :column="col"
           :inline-edit="inlineEditing"
+          :disabled="isCellDisabled(col, row)"
           :index="index"
           :color="props.color"
           :variant="inputVariant"
@@ -401,13 +423,14 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
             position="bottom"
             align="end"
             fixed
-            :items="props.actions.map(a => ({ ...a, color: a.color || undefined, onClick: () => a.onClick?.(row) }))"
+            :items="props.actions.map(a => ({ ...a, disabled: isRowDisabled(row) || a.disabled, color: a.color || undefined, onClick: () => { if (!isRowDisabled(row)) a.onClick?.(row); } }))"
             @click.stop
           >
             <template #toggle="{ toggle }">
               <Button
                 color="neutral"
                 variant="ghost"
+                :disabled="isRowDisabled(row)"
                 @click="toggle"
                 class="cu-advanced-table-actions-btn"
               >

@@ -27,6 +27,7 @@ Tabla avanzada con búsqueda, paginación, edición inline, ordenamiento, badges
 | `filters` | `object` | `{}` | Filtros por columna. Se asigna como propiedad JS |
 | `loading` | `boolean` | `false` | Muestra una barra de carga animada en el tope |
 | `actions` | `array` | `[]` | Acciones de fila (botón "..." al final de cada fila). Se asigna como propiedad JS |
+| `rowDisabled` | `boolean \| (row) => boolean` | `false` | Deshabilita filas (ver [Deshabilitar filas, columnas y celdas](#deshabilitar-filas-columnas-y-celdas)). Se asigna como propiedad JS |
 
 > **Pipeline interno:** `data → search → filters → sort → pagination`. El ordenamiento y la paginación operan sobre los datos ya filtrados.
 
@@ -55,6 +56,8 @@ interface Column {
   editorAlign?: "start" | "center" | "end";                          // Alineación del editor dentro de la celda (default: switch centrado, resto start)
   badges?: (row: Record<string, any>) => BadgeConfig[];              // Badges por celda
   buttons?: (row: Record<string, any>) => ButtonConfig[];            // Botones por celda
+  disabled?: boolean | ((row: Record<string, any>) => boolean);      // Columna deshabilitada (boolean o por fila)
+  cellDisabled?: (row: Record<string, any>) => boolean;              // Celda deshabilitada (intersección fila × columna)
 }
 
 interface BadgeConfig {
@@ -369,6 +372,47 @@ También acepta `RegExp` para validar al guardar:
 > Con `singleClick: true` la celda entra en modo edición con un solo click (default: doble click).
 
 > 💡 Si la validación falla, el editor se tiñe de rojo y se emite `edit-error`. Ver [Receta 4 — Validar formato con regex](#receta-4--validar-formato-con-regex-precio-con-2-decimales) para el patrón completo (con `inlineEdit` y feedback visible).
+
+---
+
+## Deshabilitar filas, columnas y celdas
+
+Podés deshabilitar la edición y el estado visual a **tres niveles**, con prioridad **fila > columna > celda**:
+
+| Nivel | Cómo | Alcance |
+|---|---|---|
+| **Fila** | prop `rowDisabled` (boolean o `(row) => boolean`) | Toda la fila se atenúa, no edita, no emite clicks |
+| **Columna** | campo `column.disabled` (boolean o `(row) => boolean`) | Deshabilita la columna completa o solo en ciertas filas |
+| **Celda** | campo `column.cellDisabled` (`(row) => boolean`) | Deshabilita una celda puntual (intersección fila × columna) |
+
+Al deshabilitar una celda:
+- La celda se **atenúa** y muestra `cursor: not-allowed`.
+- No entra en modo edición (ni lápiz ni inline; en inline muestra la vista atenuada).
+- Los **botones** de la celda y las **acciones** del dropdown "..." se deshabilitan.
+- Los **badges** se siguen viendo (solo atenuados con la fila).
+
+```js
+tabla.rowDisabled = (row) => row.bloqueado === true;   // fila deshabilitada
+
+tabla.columns = [
+  { key: 'nombre', label: 'Nombre', editable: true },
+  {
+    key: 'email',
+    label: 'Correo',
+    editable: true,
+    disabled: (row) => row.rol === 'invitado',          // columna disabled solo para invitados
+  },
+  {
+    key: 'activo',
+    label: 'Activo',
+    editable: true,
+    inputType: 'switch',
+    cellDisabled: (row) => row.nombre === 'Carol',       // celda puntual deshabilitada
+  },
+];
+```
+
+> `rowDisabled` como `boolean` deshabilita **todas** las filas; como función, decide por fila.
 
 ---
 

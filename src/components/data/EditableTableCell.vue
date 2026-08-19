@@ -122,6 +122,11 @@ const props = defineProps({
     type: Boolean,
     required: false,
     default: false,
+  },
+  disabled: {
+    type: Boolean,
+    required: false,
+    default: false,
   }
 });
 
@@ -141,7 +146,13 @@ const emit = defineEmits([
 const inlineEdit = computed(() => props.inlineEdit === true);
 const columnInlineEdit = computed(() => props.column.inlineEdit === true);
 const isEditing = ref(false);
-const showEditor = computed(() => columnInlineEdit.value || inlineEdit.value || isEditing.value || props.column.inputType === "switch");
+const showEditor = computed(() =>
+  props.column.inputType === "switch"
+    ? true
+    : props.disabled
+      ? false
+      : (columnInlineEdit.value || inlineEdit.value || isEditing.value)
+);
 const saving = ref(false);
 const editValue = ref<string>("");
 const inputRef = ref<{ focus?: () => void } | null>(null);
@@ -155,6 +166,7 @@ watch(
 );
 
 const startEditing = async () => {
+  if (props.disabled) return;
   if (showEditor.value || saving.value || !canEdit.value) return;
   isEditing.value = true;
   emit("edit-start", { row: props.row, column: props.column, index: props.index });
@@ -372,6 +384,7 @@ const editorAlignStyle = computed(() => {
 });
 
 const canEdit = computed(() => {
+  if (props.disabled) return false;
   if (typeof props.column.editable === "function") return props.column.editable(props.row);
   return true;
 });
@@ -380,6 +393,7 @@ const canEdit = computed(() => {
 <template>
   <div
     class="cu-editable-cell"
+    :class="{ 'cu-editable-cell--disabled': props.disabled }"
     :style="editorAlignStyle"
     @click="column.singleClick !== false && canEdit && startEditing()"
     @dblclick="column.singleClick === false && canEdit && startEditing()"
@@ -393,6 +407,7 @@ const canEdit = computed(() => {
         @keydown="handleKeyDown"
         :no-resize="column.textarea?.noResize !== false"
         :rows="column.textarea?.rows ?? 3"
+        :disabled="props.disabled"
         class="cu-editable-cell-input"
         :color="elementColor"
         :variant="elementVariant"
@@ -409,6 +424,7 @@ const canEdit = computed(() => {
         @update:model-value="(val) => { editValue = val; saveEdit(); }"
         @select="(opt) => { editValue = opt.value; saveEdit(); }"
         @blur="saveEdit"
+        :disabled="props.disabled"
         class="cu-editable-cell-input"
         :color="elementColor"
         :variant="elementVariant"
@@ -419,6 +435,7 @@ const canEdit = computed(() => {
         v-model="editValue"
         :items="resolvedAutocompleteItems"
         :min-chars="column.autocomplete?.minChars ?? 0"
+        :disabled="props.disabled"
         fixed
         @blur="saveEdit"
         @select="(item) => { if (item.value) editValue = item.value; saveEdit(); }"
@@ -441,6 +458,7 @@ const canEdit = computed(() => {
         :position="column.date?.position"
         :align="column.date?.align"
         :fixed="column.date?.fixed ?? true"
+        :disabled="props.disabled"
         @change="onDateChange"
         @close="onDateClose"
         class="cu-editable-cell-input"
@@ -450,6 +468,7 @@ const canEdit = computed(() => {
         :model-value="switchValue"
         :color="elementColor"
         :size="column.switch?.size || 'md'"
+        :disabled="props.disabled"
         @change="onSwitchChange"
         class="cu-editable-cell-switch"
       />
@@ -459,6 +478,7 @@ const canEdit = computed(() => {
         v-model="editValue"
         :type="column.input?.type || 'text'"
         :start-value="column.input?.startValue"
+        :disabled="props.disabled"
         @blur="saveEdit"
         @keydown="handleKeyDown"
         class="cu-editable-cell-input"
@@ -498,6 +518,12 @@ const canEdit = computed(() => {
 <style scoped>
 .cu-editable-cell {
   cursor: pointer;
+}
+
+.cu-editable-cell--disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 .cu-editable-cell-input {
