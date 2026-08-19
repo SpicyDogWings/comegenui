@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, type Component } from "vue";
+import { ref, type Component, type PropType } from "vue";
 import Table from "../../data/AdvancedTable.vue";
 
 interface BadgeConfig {
@@ -35,6 +35,8 @@ interface Column {
   };
   badges?: (row: Record<string, any>) => BadgeConfig[];
   buttons?: (row: Record<string, any>) => ButtonConfig[];
+  disabled?: boolean | ((row: Record<string, any>) => boolean); // Columna deshabilitada (opcional por fila)
+  cellDisabled?: (row: Record<string, any>) => boolean; // Celda deshabilitada (intersección fila × columna)
 }
 
 const props = defineProps({
@@ -95,6 +97,7 @@ const props = defineProps({
   filters: { type: Object as () => Record<string, any>, required: false, default: () => ({}) },
   loading: { type: Boolean, required: false, default: false },
   actions: { type: Array, required: false, default: () => [] },
+  rowDisabled: { type: [Boolean, Function] as PropType<boolean | ((row: Record<string, any>) => boolean)>, required: false, default: false },
 
 });
 
@@ -129,6 +132,7 @@ defineExpose({
     :filters="props.filters"
     :loading="props.loading"
     :actions="props.actions"
+    :row-disabled="props.rowDisabled"
 
     @update:current-page="$emit('update:currentPage', $event)"
     @update:items-per-page="$emit('update:itemsPerPage', $event)"

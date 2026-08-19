@@ -197,4 +197,40 @@ describe("EditableTableCell — modo lápiz (default) y estado inline", () => {
     const end = factory({ inputType: "switch", editorAlign: "end" });
     expect((end.find(".cu-editable-cell").element as HTMLElement).style.textAlign).toBe("end");
   });
+
+  it("disabled: la celda se atenúa y NO entra en modo edición al hacer click", async () => {
+    const w = mount(EditableTableCell, {
+      props: {
+        value: "Alice",
+        row,
+        column: { key: "name", label: "Name", editable: true },
+        index: 0,
+        validation: { success: false, error: null },
+        disabled: true,
+      },
+    });
+    const cell = w.find(".cu-editable-cell");
+    expect(cell.classes()).toContain("cu-editable-cell--disabled");
+    await cell.trigger("click");
+    await flushPromises();
+    expect(w.find("input").exists()).toBe(false);
+    expect(w.find(".cu-editable-cell-icon").exists()).toBe(true);
+  });
+
+  it("disabled: en modo inline NO renderiza el editor (queda la vista atenuada)", () => {
+    const w = mount(EditableTableCell, {
+      props: {
+        value: "Alice",
+        row,
+        column: { key: "name", label: "Name", editable: true },
+        index: 0,
+        validation: { success: false, error: null },
+        inlineEdit: true,
+        disabled: true,
+      },
+    });
+    expect(w.find("input").exists()).toBe(false);
+    expect(w.find(".cu-editable-cell-icon").exists()).toBe(true);
+    expect(w.find(".cu-editable-cell").classes()).toContain("cu-editable-cell--disabled");
+  });
 });

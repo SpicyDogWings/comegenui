@@ -8,6 +8,7 @@ const outlineItems = [
   { label: 'Precio validado', id: 'price-validation' },
   { label: 'Calendario en celda', id: 'date-position' },
   { label: 'Switch en celda', id: 'switch' },
+  { label: 'Disabled (fila/col/celda)', id: 'disabled' },
 ];
 
 const editableColumns = [
@@ -244,6 +245,42 @@ const switchData = [
   { id: 3, producto: "Teclado", disponible: true, envio: false, garantia: true },
   { id: 4, producto: "Monitor", disponible: false, envio: true, garantia: false },
 ];
+
+// ── Disabled a nivel fila / columna / celda ──
+// Prioridad: fila > columna > celda.
+// - rowDisabled: prop de la tabla (boolean o función por fila)
+// - column.disabled: boolean o función por fila (toda la columna / columna por fila)
+// - column.cellDisabled: función que deshabilita una celda puntual (fila × columna)
+const disabledData = [
+  { id: 1, name: "Alice Johnson", email: "alice@example.com", activo: true, bloqueado: false },
+  { id: 2, name: "Bob Smith", email: "bob@example.com", activo: false, bloqueado: true },
+  { id: 3, name: "Carol White", email: "carol@example.com", activo: true, bloqueado: false },
+];
+
+const disabledColumns = [
+  { key: "name", label: "Nombre", editable: true },
+  {
+    key: "email",
+    label: "Correo (columna disabled en Bob)",
+    editable: true,
+    disabled: (row: any) => row.name === "Bob Smith",
+  },
+  {
+    key: "activo",
+    label: "Activo",
+    editable: true,
+    inputType: "switch" as const,
+    switch: { color: "success", size: "sm" } as const,
+  },
+  {
+    key: "bloqueado",
+    label: "Bloqueado (fila 3 celda disabled)",
+    editable: true,
+    inputType: "switch" as const,
+    switch: { color: "danger", size: "sm" } as const,
+    cellDisabled: (row: any) => row.name === "Carol White",
+  },
+];
 </script>
 
 <template>
@@ -326,6 +363,22 @@ const switchData = [
           Con <code>editorAlign: "start" | "center" | "end"</code> podés alinearlo dentro de la celda.
         </p>
         <AdvancedTable :columns="switchColumns" :data="switchData" :pagination="false" @edit-save="(e: any) => console.log('Switch guardado:', e)" />
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="disabled" class="playground-section">
+        <h2>Disabled: fila, columna y celda</h2>
+        <p>
+          El estado deshabilitado se bloquea a tres niveles con prioridad
+          <strong>fila &gt; columna &gt; celda</strong>:
+        </p>
+        <ul>
+          <li><strong>Fila:</strong> prop <code>rowDisabled</code> (boolean o función por fila). Acá Bob (fila 2) está deshabilitado: toda la fila se atenúa.</li>
+          <li><strong>Columna:</strong> <code>column.disabled</code> (boolean o función por fila). Acá la columna <em>Correo</em> está deshabilitada solo en Bob.</li>
+          <li><strong>Celda:</strong> <code>column.cellDisabled</code> (función). Acá el switch <em>Bloqueado</em> está deshabilitado solo en Carol (fila 3).</li>
+        </ul>
+        <AdvancedTable :columns="disabledColumns" :data="disabledData" :pagination="false" :row-disabled="(row: any) => row.bloqueado === true" />
       </section>
     </div>
   </PlaygroundLayout>
