@@ -37,7 +37,7 @@ build:
   stage: build
   image: ${NODE_IMAGE}
   before_script:
-    - npm install -g pnpm@11.5.1
+    - npm install -g pnpm@12.0.0
     - pnpm config set store-dir .pnpm-store
   script:
     - pnpm install --frozen-lockfile
