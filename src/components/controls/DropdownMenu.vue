@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import Dropdown from "../overlay/Dropdown.vue";
 import Button from "../buttons/Button.vue";
 
@@ -44,6 +44,12 @@ const props = defineProps({
     default: "start",
     validator: (value: string) => ["start", "center", "end"].includes(value),
   },
+  textAlign: {
+    type: String,
+    required: false,
+    default: "left",
+    validator: (value: string) => ["left", "center", "right"].includes(value),
+  },
   offset: { type: Number, required: false, default: 4 },
   fixed: { type: Boolean, required: false, default: false },
   items: { type: Array as () => DropdownItem[], required: false, default: () => [] },
@@ -51,6 +57,8 @@ const props = defineProps({
 
 const emit = defineEmits(["open", "close"]);
 const dropdownRef = ref<InstanceType<typeof Dropdown> | null>(null);
+
+const itemStyle = computed(() => ({ textAlign: props.textAlign }));
 
 function handleItemClick(item: DropdownItem) {
   if (item.disabled || item.divider) return;
@@ -120,6 +128,7 @@ defineExpose({
             :target="item.target"
             :disabled="item.disabled"
             class="cu-dropdown-item"
+            :style="itemStyle"
             @click="handleItemClick(item)"
           >
             <span v-if="item.icon" v-html="item.icon" class="cu-dropdown-icon"></span>

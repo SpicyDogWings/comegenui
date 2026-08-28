@@ -32,6 +32,12 @@ const props = defineProps({
     default: "start",
     validator: (value: string) => ["start", "center", "end"].includes(value),
   },
+  textAlign: {
+    type: String,
+    required: false,
+    default: "left",
+    validator: (value: string) => ["left", "center", "right"].includes(value),
+  },
   offset: { type: Number, required: false, default: 4 },
   fixed: { type: Boolean, required: false, default: false },
   items: { type: Array, required: false, default: () => [] },
@@ -65,6 +71,7 @@ defineExpose({
     :label="props.label"
     :position="props.position"
     :align="props.align"
+    :text-align="props.textAlign"
     :fixed="props.fixed"
     :offset="props.offset"
     :items="resolvedItems"
