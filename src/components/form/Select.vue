@@ -31,6 +31,12 @@ const props = defineProps({
   placeholderWrap: { type: Boolean, required: false, default: false },
   position: { type: String, required: false, default: "bottom" },
   align: { type: String, required: false, default: "start" },
+  textAlign: {
+    type: String,
+    required: false,
+    default: "left",
+    validator: (value: string) => ["left", "center", "right"].includes(value),
+  },
   fixed: { type: Boolean, required: false, default: false },
   modelValue: { type: String, required: false, default: "" },
   options: { type: Array as () => SelectOption[], required: false, default: () => [] },
@@ -57,6 +63,8 @@ function onSelect(option: SelectOption) {
   emit("select", option);
   dropdownRef.value?.close();
 }
+
+const optionStyle = computed(() => ({ textAlign: props.textAlign }));
 
 function get() { return selectedValue.value; }
 function set(value: string) { selectedValue.value = value; }
@@ -126,6 +134,7 @@ defineExpose({
             :disabled="opt.disabled"
             class="cu-select-option"
             :class="{ 'cu-select-option--disabled': opt.disabled }"
+            :style="optionStyle"
             @click="onSelect(opt)"
           >
             {{ opt.label }}
