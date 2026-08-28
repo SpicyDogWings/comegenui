@@ -47,6 +47,7 @@ storybook-static
 # agents
 .agents
 .opencode
+graphify-out
 
 # Pesonal
 .octo
