@@ -351,6 +351,7 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
           <Button
             v-if="column.sortable"
             :color="props.color"
+            :style="props.variant === 'solid' ? { '--btn-bg': 'var(--cu-color-surface)' } : {}"
             variant="ghost"
             @click.stop="handleSort(column.key)"
           >
