@@ -17,6 +17,7 @@ Menú desplegable con items declarativos (label, ícono, color, divisor, link). 
 | `label` | `string` | `""` | Texto del toggle (se ignora si se provee slot `toggle`) |
 | `position` | `string` | `"bottom"` | Posición preferida del panel: `bottom`, `top` |
 | `align` | `string` | `"start"` | Alineación del panel: `start`, `center`, `end` |
+| `textAlign` | `string` | `"left"` | Alineación del texto del toggle: `left`, `center`, `right` |
 
 | `offset` | `number` | `4` | Separación en píxeles entre el toggle y el panel |
 | `fixed` | `boolean` | `false` | Si es `true`, el panel usa `position: fixed` en vez de absoluto |

@@ -10,7 +10,7 @@ Selector de año con navegación por botones y arrastre. Muestra el año actual 
 
 | Prop | Tipo | Default | Descripción |
 |------|------|---------|-------------|
-| `model-value` | `number` | año actual | Año seleccionado (soporta `v-model`) |
+| `model-value` | `number` \| `string` | año actual | Año seleccionado (soporta `v-model`). Acepta número o string numérico (`"2025"`) |
 | `variant` | `string` | `"soft"` | Variante del label: `solid`, `outlined`, `soft`, `ghost`, `subtle` |
 | `min` | `number` | — | Año mínimo navegable (el botón `<` se deshabilita al llegar al borde) |
 | `max` | `number` | — | Año máximo navegable (el botón `>` se deshabilita al llegar al borde) |

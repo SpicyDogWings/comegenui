@@ -1,6 +1,20 @@
 <script setup lang="ts">
-import { ref, type Component, type PropType } from "vue";
+import { ref, getCurrentInstance, type Component, type PropType } from "vue";
 import Table from "../../data/AdvancedTable.vue";
+
+const instance = getCurrentInstance();
+function ceEmit(event: string, payload: unknown) {
+  const el = instance?.vnode.el as HTMLElement | null;
+  const root = el?.getRootNode() as ShadowRoot | Document | null;
+  const host = root && 'host' in root ? (root as ShadowRoot).host : el;
+  if (host) {
+    host.dispatchEvent(new CustomEvent(event, {
+      detail: payload,
+      bubbles: true,
+      composed: true,
+    }));
+  }
+}
 
 interface BadgeConfig {
   value: string;
@@ -24,7 +38,7 @@ interface Column {
   label?: string;
   cell?: (row: Record<string, any>) => string | string[];
   editable?: boolean | RegExp | ((row: Record<string, any>) => boolean);
-  inputType?: "input" | "textarea" | "select" | "switch";
+  inputType?: "input" | "textarea" | "select" | "autocomplete" | "date" | "switch";
   selectOptions?: { value: string; label: string }[] | ((row: Record<string, any>) => { value: string; label: string }[]);
   validator?: (value: string, row: Record<string, any>) => boolean;
   singleClick?: boolean;
@@ -134,12 +148,13 @@ defineExpose({
     :actions="props.actions"
     :row-disabled="props.rowDisabled"
 
-    @update:current-page="$emit('update:currentPage', $event)"
-    @update:items-per-page="$emit('update:itemsPerPage', $event)"
-    @update:search="$emit('update:search', $event)"
-    @edit-start="$emit('edit-start', $event)"
-    @edit-save="$emit('edit-save', $event)"
-    @edit-cancel="$emit('edit-cancel', $event)"
+    @update:current-page="ceEmit('update:currentPage', $event)"
+    @update:items-per-page="ceEmit('update:itemsPerPage', $event)"
+    @update:search="ceEmit('update:search', $event)"
+    @edit-start="ceEmit('edit-start', $event)"
+    @edit-save="ceEmit('edit-save', $event)"
+    @edit-cancel="ceEmit('edit-cancel', $event)"
+    @edit-error="ceEmit('edit-error', $event)"
   >
     <!-- Header slots -->
     <template #header="{ column }">

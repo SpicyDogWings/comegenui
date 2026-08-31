@@ -36,6 +36,7 @@ Modal/diálogo con backdrop, animación, soporte para `size`/`height` y slot `fo
 | Slot | Descripción |
 |------|-------------|
 | `default` | Cuerpo del modal |
+| `icon` | Ícono en la cabecera (junto al título) |
 | `footer` | Pie del modal (típicamente botones de acción) |
 
 ## Métodos expuestos
