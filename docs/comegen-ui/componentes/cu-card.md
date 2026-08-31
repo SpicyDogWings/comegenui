@@ -28,7 +28,9 @@ Tarjeta para mostrar información agrupada con jerarquía visual: media, header 
 
 ## Eventos
 
-Ninguno (los nativos como `click` burbujean desde el Shadow DOM).
+| Evento | Payload (`e.detail`) | Descripción |
+|--------|----------------------|-------------|
+| `click` | `MouseEvent` | Click en la tarjeta (re-emitido por el wrapper) |
 
 ## Métodos
 

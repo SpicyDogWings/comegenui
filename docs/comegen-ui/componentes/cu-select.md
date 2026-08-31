@@ -19,7 +19,8 @@ Selector de opciones con color, variante, ícono chevron, opciones deshabilitada
 | `placeholderWrap` | `boolean` | `false` | Si `true`, el texto wrappea; si `false`, se trunca con `...` (atributo HTML: `placeholder-wrap`) |
 | `position` | `string` | `"bottom"` | Posición del dropdown: `bottom`, `top` |
 | `align` | `string` | `"start"` | Alineación: `start`, `center`, `end` |
-
+| `textAlign` | `string` | `"left"` | Alineación del texto seleccionado: `left`, `center`, `right` |
+| `fixed` | `boolean` | `false` | Si es `true`, el dropdown usa `position: fixed` en vez de absoluto |
 | `disabled` | `boolean` | `false` | Estado deshabilitado |
 | `hightContrast` | `boolean` | `false` | Modo de alto contraste para el texto |
 
