@@ -171,6 +171,43 @@ Cuando `searchEnabled` es `true`, el select acepta entrada por teclado (como un 
 - Backspace borra el último carácter
 - Escape y Tab no afectan la búsqueda
 
+## Estado de carga (loading)
+
+Cuando `loading` es `true`, se muestra una barra animada en el tope del dropdown y el panel se atenúa (sin interacción):
+
+```html
+<cu-select id="miSelect" loading></cu-select>
+```
+
+```js
+const select = document.getElementById('miSelect');
+select.loading = true;   // mostrar
+// ...carga...
+select.loading = false;  // ocultar
+```
+
+**Nota:** Si `loading` está activo, la barra de cooldown (del `searchEnabled`) **no se muestra**.
+
+## Barra de cooldown
+
+Mientras el usuario escribe (con `searchEnabled`), aparece una barra de cooldown que se vacía en `searchResetDelay` ms. Al presionar otra tecla, la barra se reinicia.
+
+```html
+<!-- Cooldown con color suave (ghost, default) -->
+<cu-select search-enabled></cu-select>
+
+<!-- Cooldown con color lleno (solid) -->
+<cu-select search-enabled cooldown-variant="solid"></cu-select>
+
+<!-- Cooldown personalizado: 3s -->
+<cu-select search-enabled search-reset-delay="3000"></cu-select>
+```
+
+| `cooldownVariant` | Apariencia |
+|-------------------|------------|
+| `ghost` (default) | Color suave (`--cu-color-{color}-ghost-hover`) |
+| `solid` | Color lleno (`--cu-color-{color}`) |
+
 ## Control programático
 
 ```html
