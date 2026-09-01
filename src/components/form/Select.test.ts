@@ -59,4 +59,39 @@ describe("Select", () => {
     await w.find("button.cu-select-toggle").trigger("click");
     expect(w.find(".cu-select-empty").exists()).toBe(true);
   });
+
+  it("no renderiza input de búsqueda cuando searchEnabled es false", async () => {
+    const w = factory({});
+    await w.find("button.cu-select-toggle").trigger("click");
+    expect(w.find(".cu-select-search").exists()).toBe(false);
+  });
+
+  it("renderiza input de búsqueda cuando searchEnabled es true", async () => {
+    const w = factory({ searchEnabled: true });
+    await w.find("button.cu-select-toggle").trigger("click");
+    expect(w.find(".cu-select-search").exists()).toBe(true);
+  });
+
+  it("filtra opciones al escribir en el input de búsqueda", async () => {
+    const w = factory({ searchEnabled: true });
+    await w.find("button.cu-select-toggle").trigger("click");
+
+    expect(w.findAll("button.cu-select-option")).toHaveLength(3);
+
+    const searchInput = w.find(".cu-select-search input");
+    await searchInput.setValue("arg");
+
+    expect(w.findAll("button.cu-select-option")).toHaveLength(1);
+    expect(w.find("button.cu-select-option").text()).toContain("Argentina");
+  });
+
+  it("muestra 'Sin resultados' cuando no hay coincidencias", async () => {
+    const w = factory({ searchEnabled: true });
+    await w.find("button.cu-select-toggle").trigger("click");
+
+    const searchInput = w.find(".cu-select-search input");
+    await searchInput.setValue("xyz");
+
+    expect(w.find(".cu-select-empty").text()).toContain("Sin resultados");
+  });
 });

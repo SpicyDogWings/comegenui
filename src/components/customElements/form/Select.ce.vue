@@ -37,6 +37,8 @@ const props = defineProps({
   disabled: { type: Boolean, required: false, default: false },
   fixed: { type: Boolean, required: false, default: false },
   hightContrast: { type: Boolean, required: false, default: false },
+  searchEnabled: { type: Boolean, required: false, default: false },
+  searchPlaceholder: { type: String, required: false, default: "Buscar..." },
 });
 
 const resolvedOptions = computed(() =>
@@ -98,6 +100,8 @@ defineExpose({
     :fixed="props.fixed"
     :model-value="innerValue"
     :options="resolvedOptions"
+    :search-enabled="props.searchEnabled"
+    :search-placeholder="props.searchPlaceholder"
     @select="ceEmit('select', $event)"
     @close="ceEmit('close', $event)"
     @blur="ceEmit('blur', $event)"

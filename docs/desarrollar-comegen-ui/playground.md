@@ -1,5 +1,81 @@
 # Playground
 
+El playground tiene dos versiones:
+
+1. **Playground Vue** (`src/pages/playground/`) — aplicación Vue para desarrollar y demostrar componentes. Es la herramienta principal para iterar.
+2. **Playground HTML estático** (`playground/`) — carga bundles UMD para experimentar como usuario final.
+
+## Playground Vue (`src/pages/playground/`)
+
+### Regla: usá los propios componentes
+
+> **Siempre que sea posible, usá los componentes de ComegenUI dentro del playground.** No uses HTML vanilla (`<button>`, `<input>`, `<select>`) si existe un componente equivalente (`Button`, `Input`, `Select`, etc.).
+
+```vue
+<!-- ❌ Mal: HTML vanilla -->
+<button class="cu-button cu-button--ghost" @click="selected = 'opt1'">Set Option 1</button>
+
+<!-- ✅ Bien: componente del proyecto -->
+<Button color="neutral" variant="ghost" @click="selected = 'opt1'">Set Option 1</Button>
+```
+
+**Importá siempre el componente correspondiente:**
+
+```ts
+import Button from "@/components/buttons/Button.vue";
+import Input from "@/components/form/Input.vue";
+import Select from "@/components/form/Select.vue";
+```
+
+Esto asegura que el playground refleje el comportamiento real de los componentes y sirva como documentación viva.
+
+### Estructura
+
+```
+src/pages/playground/
+├── components/          ← un .vue por componente
+│   ├── Select.vue
+│   ├── Button.vue
+│   └── ...
+├── useLibStatus.ts      ← composable para badge "En lib"
+└── (router en src/router/index.ts)
+```
+
+### Agregar un ejemplo de componente
+
+Crear `src/pages/playground/components/<Nombre>.vue`:
+
+```vue
+<script setup lang="ts">
+import { ref } from "vue";
+import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
+import MiComponente from "@/components/<carpeta>/MiComponente.vue";
+import Button from "@/components/buttons/Button.vue";
+
+const outlineItems = [
+  { label: 'Variants', id: 'variants' },
+];
+</script>
+
+<template>
+  <PlaygroundLayout title="MiComponente" :outlineItems="outlineItems">
+    <div class="playground-content">
+      <section id="variants" class="playground-section">
+        <h2>Variants</h2>
+        <div class="playground-row">
+          <MiComponente variant="soft" />
+          <MiComponente variant="outlined" />
+        </div>
+      </section>
+    </div>
+  </PlaygroundLayout>
+</template>
+```
+
+---
+
+## Playground HTML estático (`playground/`)
+
 El playground es un HTML estático en `playground/` que carga los bundles UMD ya construidos y permite experimentar con los componentes en vivo.
 
 ## Estructura
@@ -112,15 +188,15 @@ Si creaste un componente nuevo, agregá su script en `index.html`:
 - No podés usar `<template>` de Vue ni directivas Vue (`v-if`, `v-for`, etc.). Es HTML plano + JS vanilla.
 - El playground lee de `../dist/`, así que necesitás haber corrido `pnpm build:lib` al menos una vez para que los UMD existan.
 
-## Cuándo usar playground vs Storybook
+## Cuándo usar cada playground
 
 | Necesitás... | Usá... |
 |--------------|--------|
-| Experimentar con HTML plano + UMD (como el usuario final) | Playground |
-| Probar todas las variantes/variants de un componente con controles | Storybook |
-| Iterar rápido sobre el código Vue del componente | Storybook |
-| Testear un preset completo con datos reales | Playground |
-| Ver cómo se ve el bundle UMD en producción | Playground |
+| Iterar rápido sobre el código Vue del componente | Playground Vue |
+| Probar todas las variantes de un componente | Playground Vue |
+| Testear un preset completo con datos reales | Playground HTML |
+| Ver cómo se ve el bundle UMD en producción | Playground HTML |
+| Experimentar como usuario final (HTML plano + UMD) | Playground HTML |
 
 ## Convenciones dentro de los presets
 

@@ -122,6 +122,73 @@ defineExpose({
 - `get`/`set` definen getters/setters.
 - Si el `.ce.vue` no llama a `defineExpose`, el componente no expone nada.
 
+## Patrón: búsqueda en dropdown (Input con filtrado)
+
+Algunos componentes con lista desplegable (como `Select`) pueden ofrecer búsqueda mediante un `Input` visible dentro del dropdown que filtra las opciones en tiempo real.
+
+**Implementación en `Select.vue`:**
+
+```vue
+<template>
+  <div v-if="searchEnabled" class="cu-select-search">
+    <Input
+      :placeholder="searchPlaceholder"
+      :model-value="searchQuery"
+      :color="color"
+      variant="ghost"
+      @update:model-value="searchQuery = $event"
+    />
+  </div>
+  <div v-if="filteredOptions.length > 0" class="cu-select-options">
+    <!-- opciones filtradas -->
+  </div>
+  <div v-else-if="searchEnabled && searchQuery" class="cu-select-empty">
+    Sin resultados
+  </div>
+</template>
+```
+
+```ts
+import Input from "./Input.vue";
+
+const searchQuery = ref("");
+
+const filteredOptions = computed(() => {
+  const q = searchQuery.value.toLowerCase().trim();
+  if (!q) return props.options;
+  return props.options.filter(o => o.label.toLowerCase().includes(q));
+});
+```
+
+**Reglas del patrón:**
+
+1. **Usa el componente `Input` del proyecto** — no un `<input>` nativo. Mantiene consistencia visual y funcional.
+2. **Filtrado en tiempo real** mediante `computed` — la lista se reduce a medida que se escribe.
+3. **Case-insensitive** — usar `toLowerCase()` tanto en el query como en el label.
+4. **Coincidencia por `includes`** (no `startsWith`) — busca en cualquier parte del label.
+5. **Estado vacío diferenciado** — cuando hay búsqueda sin resultados, mostrar "Sin resultados" (no "Sin opciones").
+6. **Separador visual** — el input va en un contenedor con `border-bottom` para separarlo de la lista.
+
+**CSS del contenedor de búsqueda:**
+
+```css
+.cu-select-search {
+  padding: var(--cu-space-sm);
+  border-bottom: 1px solid var(--cu-color-neutral-subtle-border, rgba(0, 0, 0, 0.1));
+}
+
+.cu-select-search :deep(.cu-input) {
+  width: 100%;
+}
+```
+
+**Props expuestas:**
+
+| Prop | Tipo | Default | Descripción |
+|------|------|---------|-------------|
+| `searchEnabled` | Boolean | `false` | Muestra el input de búsqueda dentro del dropdown |
+| `searchPlaceholder` | String | `"Buscar..."` | Placeholder del input de búsqueda |
+
 ## Resumen: qué leer cuando estás desarrollando
 
 | Necesitás... | Leé... |

@@ -2,6 +2,7 @@
 import { ref, computed, watch } from "vue";
 import Dropdown from "../overlay/Dropdown.vue";
 import Button from "../buttons/Button.vue";
+import Input from "./Input.vue";
 
 interface SelectOption {
   value: string;
@@ -40,12 +41,21 @@ const props = defineProps({
   fixed: { type: Boolean, required: false, default: false },
   modelValue: { type: String, required: false, default: "" },
   options: { type: Array as () => SelectOption[], required: false, default: () => [] },
+  searchEnabled: { type: Boolean, required: false, default: false },
+  searchPlaceholder: { type: String, required: false, default: "Buscar..." },
 });
 
 const emit = defineEmits(["update:modelValue", "select", "close", "blur"]);
 const selectedValue = ref(props.modelValue);
 const dropdownRef = ref<InstanceType<typeof Dropdown> | null>(null);
 const selectRoot = ref<HTMLElement | null>(null);
+const searchQuery = ref("");
+
+const filteredOptions = computed(() => {
+  const q = searchQuery.value.toLowerCase().trim();
+  if (!q) return props.options;
+  return props.options.filter(o => o.label.toLowerCase().includes(q));
+});
 
 const selectedLabel = computed(() => {
   const opt = props.options.find(o => o.value === selectedValue.value);
@@ -125,9 +135,18 @@ defineExpose({
         </Button>
       </template>
       <template #default>
-        <div v-if="options.length > 0" class="cu-select-options">
+        <div v-if="searchEnabled" class="cu-select-search">
+          <Input
+            :placeholder="searchPlaceholder"
+            :model-value="searchQuery"
+            :color="color"
+            variant="ghost"
+            @update:model-value="searchQuery = $event"
+          />
+        </div>
+        <div v-if="filteredOptions.length > 0" class="cu-select-options">
           <Button
-            v-for="(opt, i) in options"
+            v-for="(opt, i) in filteredOptions"
             :key="i"
             :color="opt.color || color"
             :variant="opt.variant || (opt.value === selectedValue ? 'soft' : 'ghost')"
@@ -139,6 +158,9 @@ defineExpose({
           >
             {{ opt.label }}
           </Button>
+        </div>
+        <div v-else-if="searchEnabled && searchQuery" class="cu-select-empty">
+          Sin resultados
         </div>
         <div v-else class="cu-select-empty">
           Sin opciones
@@ -200,7 +222,16 @@ defineExpose({
   cursor: not-allowed;
 }
 
-.cu-select-empty {
+.cu-select-search {
+  padding: var(--cu-space-sm);
+  border-bottom: 1px solid var(--cu-color-neutral-subtle-border, rgba(0, 0, 0, 0.1));
+}
+
+.cu-select-search :deep(.cu-input) {
+  width: 100%;
+}
+
+.cu-select-empty{
   padding: var(--cu-space-md);
   font-family: var(--cu-font-sans);
   font-size: var(--cu-font-size-sm);
