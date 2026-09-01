@@ -170,8 +170,9 @@ Como `columns` se pasa sin filtrar al `AdvancedTable.vue` interno, podés usar e
 | `header` | `{ column, color, variant }` | Personaliza el header completo (todas las columnas) |
 | `header-{key}` | `{ column, color, variant }` | Header de una columna específica (key dinámico) |
 | `empty` | — | Contenido cuando no hay datos (override del texto `empty`) |
+| `footer` | `{ columns }` | Contenido del footer de la tabla (ideal para totales, resúmenes) |
 
-> **Importante:** Los slots `cell-{key}` y `search` que aparecen en algunos ejemplos **no están expuestos** por el `<cu-table>` (el `.ce.vue` no los reenvía). Solo `header`, `header-{key}` y `empty`.
+> **Importante:** Los slots `cell-{key}` y `search` que aparecen en algunos ejemplos **no están expuestos** por el `<cu-table>` (el `.ce.vue` no los reenvía). Solo `header`, `header-{key}`, `empty` y `footer`.
 
 ### Ejemplo de slot header
 
@@ -669,6 +670,23 @@ t.loading = true;   // mostrar
 // ...fetch...
 t.loading = false;  // ocultar
 ```
+
+## Footer (totales, resúmenes)
+
+El slot `footer` permite agregar una fila al pie de la tabla, ideal para totales o resúmenes. Recibe `{ columns }` como binding (útil para `colspan`):
+
+```html
+<cu-table id="miTabla">
+  <template #footer="{ columns }">
+    <tr>
+      <td :colspan="columns.length - 1">Total</td>
+      <td style="text-align: right;">$1,500.00</td>
+    </tr>
+  </template>
+</cu-table>
+```
+
+> El `<tfoot>` solo se renderiza si el slot `footer` tiene contenido.
 
 ---
 

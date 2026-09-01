@@ -142,6 +142,11 @@ const router = createRouter({
               component: () => import("@/pages/playground/components/AdvancedTable.vue")
             },
             {
+              path: "loader",
+              name: "Loader playground",
+              component: () => import("@/pages/playground/components/Loader.vue")
+            },
+            {
               path: "editable-row",
               name: "Editable Row playground",
               component: () => import("@/pages/playground/components/EditableRow.vue")

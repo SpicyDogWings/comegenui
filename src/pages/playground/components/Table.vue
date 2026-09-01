@@ -9,6 +9,8 @@ const outlineItems = [
   { label: 'Scroll', id: 'scroll' },
   { label: 'Scroll (Sticky)', id: 'scroll-sticky' },
   { label: 'Empty State', id: 'empty' },
+  { label: 'Footer', id: 'footer' },
+  { label: 'Loading', id: 'loading' },
 ];
 
 const sampleData = [
@@ -86,6 +88,27 @@ const variants = ["soft", "solid", "outlined", "ghost"];
       <section id="empty" class="playground-section">
         <h2>Empty State</h2>
         <Table :columns="columns" :data="[]" />
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="footer" class="playground-section">
+        <h2>Footer (Totals)</h2>
+        <Table :columns="columns" :data="sampleData.slice(0, 3)" color="primary" variant="soft">
+          <template #footer="{ columns: cols }">
+            <tr>
+              <td :colspan="cols.length - 1" style="font-weight: 600;">Total</td>
+              <td style="font-weight: 600; text-align: right;">$1,500.00</td>
+            </tr>
+          </template>
+        </Table>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="loading" class="playground-section">
+        <h2>Loading</h2>
+        <Table :columns="columns" :data="sampleData.slice(0, 3)" loading />
       </section>
     </div>
   </PlaygroundLayout>
