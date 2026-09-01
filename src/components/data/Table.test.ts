@@ -85,4 +85,26 @@ describe("Table", () => {
     const w = factory();
     expect(w.emitted()).toEqual({});
   });
+
+  it("muestra slot footer cuando está presente", () => {
+    const w = factory({
+      columns: [{ key: "nombre", label: "Nombre" }, { key: "precio", label: "Precio" }],
+      data: [{ nombre: "Juan", precio: 100 }],
+    }, {
+      footer: ({ columns }: { columns: any[] }) =>
+        h("tr", {}, [
+          h("td", { colspan: columns.length }, `Total: ${columns.length} columnas`),
+        ]),
+    });
+    expect(w.find("tfoot").exists()).toBe(true);
+    expect(w.find("tfoot td").text()).toBe("Total: 2 columnas");
+  });
+
+  it("no muestra tfoot si no hay slot footer", () => {
+    const w = factory({
+      columns: [{ key: "nombre", label: "Nombre" }],
+      data: [{ nombre: "Juan" }],
+    });
+    expect(w.find("tfoot").exists()).toBe(false);
+  });
 });

@@ -180,6 +180,9 @@ const isRowDisabled = (row: Record<string, any>): boolean => {
             </td>
           </tr>
         </tbody>
+        <tfoot v-if="$slots.footer">
+          <slot name="footer" :columns="tableColumns" />
+        </tfoot>
       </table>
     </div>
   </div>
@@ -277,5 +280,8 @@ const isRowDisabled = (row: Record<string, any>): boolean => {
   font-family: var(--cu-font-sans);
 }
 
+.cu-table tr:last-child td {
+  border-bottom: none;
+}
 
 </style>

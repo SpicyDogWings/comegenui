@@ -130,16 +130,13 @@ Algunos componentes con lista desplegable (como `Select`) pueden ofrecer búsque
 
 ```vue
 <template>
-  <Input
+  <input
     v-if="searchEnabled"
-    ref="searchInputRef"
+    ref="nativeInputRef"
     class="cu-select-hidden-input"
-    :model-value="searchText"
-    :color="color"
-    variant="ghost"
+    type="text"
     tabindex="-1"
     autocomplete="off"
-    @keydown="onKeyDown"
   />
   <div v-if="options.length > 0" class="cu-select-options">
     <!-- opciones (sin filtrar) -->
@@ -148,9 +145,8 @@ Algunos componentes con lista desplegable (como `Select`) pueden ofrecer búsque
 ```
 
 ```ts
-import Input from "./Input.vue";
-
 const searchText = ref("");
+const nativeInputRef = ref<HTMLInputElement | null>(null);
 let resetTimeout: ReturnType<typeof setTimeout> | null = null;
 
 const matchIndex = computed(() => {
@@ -163,13 +159,15 @@ const matchIndex = computed(() => {
 
 function scheduleReset() {
   if (resetTimeout) clearTimeout(resetTimeout);
-  resetTimeout = setTimeout(() => { searchText.value = ""; }, 2000);
+  resetTimeout = setTimeout(() => { searchText.value = ""; }, props.searchResetDelay);
 }
 
 function onKeyDown(e: KeyboardEvent) {
+  if (e.key === "Escape" || e.key === "Tab") return;
   if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
     e.preventDefault();
     searchText.value += e.key;
+    cooldownKey.value++; // fuerza re-render de la barra de cooldown
     scheduleReset();
     if (matchIndex.value >= 0) {
       nextTick(() => scrollToMatch(matchIndex.value));
@@ -177,6 +175,7 @@ function onKeyDown(e: KeyboardEvent) {
   } else if (e.key === "Backspace") {
     e.preventDefault();
     searchText.value = searchText.value.slice(0, -1);
+    cooldownKey.value++;
     scheduleReset();
   }
 }
@@ -187,18 +186,47 @@ function scrollToMatch(index: number) {
   const optionEl = optionsEl.children[index] as HTMLElement | undefined;
   if (optionEl) optionEl.scrollIntoView({ block: "nearest" });
 }
+
+// Listener se agrega dinámicamente al abrir el dropdown
+function onDropdownOpen() {
+  if (props.searchEnabled) {
+    searchText.value = "";
+    nextTick(() => {
+      const input = nativeInputRef.value;
+      if (input) {
+        input.addEventListener("keydown", onKeyDown);
+        input.focus();
+      }
+    });
+  }
+}
+
+function onDropdownClose() {
+  const input = nativeInputRef.value;
+  if (input) input.removeEventListener("keydown", onKeyDown);
+  if (resetTimeout) clearTimeout(resetTimeout);
+  searchText.value = "";
+  cooldownActive.value = false;
+}
+
+watch(() => dropdownRef.value?.isOpen(), (open) => {
+  if (open) onDropdownOpen();
+  else onDropdownClose();
+});
 ```
 
 **Reglas del patrón:**
 
-1. **Usa el componente `Input` del proyecto** — no un `<input>` nativo, pero lo ocultás visualmente con CSS.
-2. **Input visualmente oculto** (CSS `clip`, `opacity: 0`, `position: absolute`) pero funcional — captura teclas vía `@keydown`.
-3. **Auto-focus al abrir** el dropdown para que el usuario pueda escribir inmediatamente.
-4. **Reset automático** del texto acumulado después de 2s de inactividad (como el `<select>` nativo).
-5. **Scroll al match**, no filtro — la lista completa sigue visible, solo se posiciona en la primera coincidencia.
-6. **Coincidencia por `startsWith`** (no `includes`) — comportamiento nativo del select.
-7. **Backspace** borra el último carácter del texto acumulado.
-8. **Ignora** teclas de control (Ctrl, Meta), Escape, Tab.
+1. **Usa un `<input>` nativo** — no el componente `Input` (el wrapper Vue no propaga `@keydown` del inner `<input>`).
+2. **Input visualmente oculto** (CSS `clip`, `opacity: 0`, `position: absolute`) pero funcional.
+3. **Listener dinámico** — se agrega al abrir el dropdown y se remueve al cerrar (el input se renderiza condicionalmente).
+4. **Auto-focus al abrir** el dropdown para que el usuario pueda escribir inmediatamente.
+5. **Reset automático** del texto acumulado después de `searchResetDelay` ms de inactividad.
+6. **Scroll al match**, no filtro — la lista completa sigue visible, solo se posiciona en la primera coincidencia.
+7. **Coincidencia por `startsWith`** (no `includes`) — comportamiento nativo del select.
+8. **Backspace** borra el último carácter del texto acumulado.
+9. **Ignora** teclas de control (Ctrl, Meta), Escape, Tab.
+10. **Cooldown bar** — se muestra en el dropdown mientras el usuario escribe, usando el componente `Loader` con `animation="cooldown"`.
 
 **CSS del input oculto:**
 
@@ -223,6 +251,64 @@ function scrollToMatch(index: number) {
 |------|------|---------|-------------|
 | `searchEnabled` | Boolean | `false` | Activa la búsqueda por teclado (estilo select nativo) |
 | `searchResetDelay` | Number | `2000` | Tiempo en ms antes de resetear el texto acumulado |
+| `loading` | Boolean | `false` | Muestra barra de carga (oculta cooldown) |
+
+---
+
+## Componente `Loader` — Barra animada reutilizable
+
+El componente `Loader` (`src/components/overlay/Loader.vue`) provee una barra delgada animada para indicar carga o cooldown. **Solo se encarga de la barra visual** — no maneja opacidad del panel ni `pointer-events`.
+
+**Props:**
+
+| Prop | Tipo | Default | Descripción |
+|------|------|---------|-------------|
+| `color` | String | `"primary"` | Color semántico (`--cu-color-{color}`) |
+| `animation` | String | `"loading"` | `"loading"` (slide infinito) o `"cooldown"` (deplete 100%→0%) |
+| `delay` | Number | `2000` | Duración del cooldown en ms |
+
+**Uso:**
+
+```vue
+<!-- Barra de carga infinita -->
+<Loader :color="color" animation="loading" />
+
+<!-- Barra de cooldown que se vacía en 2s -->
+<Loader :color="color" animation="cooldown" :delay="2000" />
+```
+
+**Animaciones:**
+
+| Animación | Comportamiento |
+|-----------|----------------|
+| `loading` | Slide infinito de izquierda a derecha (60% width, gradiente transparente→color→transparente) |
+| `cooldown` | Depleta de 100% a 0% width en `delay` ms (linear, se resetea con `:key`) |
+
+**Componentes que usan `Loader`:**
+
+- `Table.vue` — loading state
+- `Dropdown.vue` — loading + cooldown states
+
+**Patrón de uso con cooldown:**
+
+```ts
+const cooldownKey = ref(0);
+
+function onKeyDown(e: KeyboardEvent) {
+  // ... acumular texto ...
+  cooldownKey.value++; // fuerza re-render, reinicia animación
+}
+```
+
+```vue
+<Loader
+  v-if="cooldown && !loading"
+  :key="cooldownKey"
+  :color="color"
+  animation="cooldown"
+  :delay="delay"
+/>
+```
 
 ## Resumen: qué leer cuando estás desarrollando
 

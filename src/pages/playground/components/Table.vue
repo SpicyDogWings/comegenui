@@ -9,17 +9,19 @@ const outlineItems = [
   { label: 'Scroll', id: 'scroll' },
   { label: 'Scroll (Sticky)', id: 'scroll-sticky' },
   { label: 'Empty State', id: 'empty' },
+  { label: 'Footer', id: 'footer' },
+  { label: 'Loading', id: 'loading' },
 ];
 
 const sampleData = [
-  { id: 1, name: "Alice Johnson", email: "alice@example.com", status: "Active", role: "Admin" },
-  { id: 2, name: "Bob Smith", email: "bob@example.com", status: "Pending", role: "User" },
-  { id: 3, name: "Carol White", email: "carol@example.com", status: "Active", role: "Editor" },
-  { id: 4, name: "David Brown", email: "david@example.com", status: "Inactive", role: "User" },
-  { id: 5, name: "Eva Martinez", email: "eva@example.com", status: "Active", role: "Admin" },
-  { id: 6, name: "Frank Lee", email: "frank@example.com", status: "Pending", role: "User" },
-  { id: 7, name: "Grace Kim", email: "grace@example.com", status: "Active", role: "Editor" },
-  { id: 8, name: "Henry Park", email: "henry@example.com", status: "Inactive", role: "User" },
+  { id: 1, name: "Alice Johnson", email: "alice@example.com", status: "Active", role: "Admin", amount: 250.00 },
+  { id: 2, name: "Bob Smith", email: "bob@example.com", status: "Pending", role: "User", amount: 175.50 },
+  { id: 3, name: "Carol White", email: "carol@example.com", status: "Active", role: "Editor", amount: 320.00 },
+  { id: 4, name: "David Brown", email: "david@example.com", status: "Inactive", role: "User", amount: 89.90 },
+  { id: 5, name: "Eva Martinez", email: "eva@example.com", status: "Active", role: "Admin", amount: 410.25 },
+  { id: 6, name: "Frank Lee", email: "frank@example.com", status: "Pending", role: "User", amount: 132.75 },
+  { id: 7, name: "Grace Kim", email: "grace@example.com", status: "Active", role: "Editor", amount: 298.00 },
+  { id: 8, name: "Henry Park", email: "henry@example.com", status: "Inactive", role: "User", amount: 156.60 },
 ];
 
 const columns = [
@@ -27,6 +29,7 @@ const columns = [
   { key: "email", label: "Email" },
   { key: "status", label: "Status" },
   { key: "role", label: "Role" },
+  { key: "amount", label: "Amount", align: "right" as const },
 ];
 
 const colors = ["primary", "secondary", "neutral", "success", "warning", "danger"];
@@ -86,6 +89,29 @@ const variants = ["soft", "solid", "outlined", "ghost"];
       <section id="empty" class="playground-section">
         <h2>Empty State</h2>
         <Table :columns="columns" :data="[]" />
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="footer" class="playground-section">
+        <h2>Footer (Totals)</h2>
+        <Table :columns="columns" :data="sampleData" color="primary" variant="soft">
+          <template #footer="{ columns: cols }">
+            <tr>
+              <td :colspan="cols.length - 1" style="font-weight: 600;">Total</td>
+              <td style="font-weight: 600; text-align: right;">
+                ${{ sampleData.reduce((sum, r) => sum + r.amount, 0).toFixed(2) }}
+              </td>
+            </tr>
+          </template>
+        </Table>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="loading" class="playground-section">
+        <h2>Loading</h2>
+        <Table :columns="columns" :data="sampleData.slice(0, 3)" loading />
       </section>
     </div>
   </PlaygroundLayout>

@@ -14,7 +14,7 @@ interface UseSearchOptions {
 }
 
 const normalize = (s: string, caseSensitive = false) => {
-  const normalized = s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const normalized = s.normalize("NFD").replace(/[\u0300-\u0302\u0304-\u036f]/g, "");
   return caseSensitive ? normalized : normalized.toLowerCase();
 };
 

@@ -169,6 +169,11 @@ defineExpose({
     <template #empty>
       <slot name="empty">{{ props.empty || "No hay datos que mostrar" }}</slot>
     </template>
+
+    <!-- Footer slot -->
+    <template #footer="{ columns }">
+      <slot name="footer" :columns="columns" />
+    </template>
   </Table>
 </template>
 
