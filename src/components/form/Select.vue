@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, nextTick } from "vue";
 import Dropdown from "../overlay/Dropdown.vue";
 import Button from "../buttons/Button.vue";
 import Input from "./Input.vue";
@@ -42,19 +42,63 @@ const props = defineProps({
   modelValue: { type: String, required: false, default: "" },
   options: { type: Array as () => SelectOption[], required: false, default: () => [] },
   searchEnabled: { type: Boolean, required: false, default: false },
-  searchPlaceholder: { type: String, required: false, default: "Buscar..." },
 });
 
 const emit = defineEmits(["update:modelValue", "select", "close", "blur"]);
 const selectedValue = ref(props.modelValue);
 const dropdownRef = ref<InstanceType<typeof Dropdown> | null>(null);
 const selectRoot = ref<HTMLElement | null>(null);
-const searchQuery = ref("");
+const searchInputRef = ref<InstanceType<typeof Input> | null>(null);
+const searchText = ref("");
+let resetTimeout: ReturnType<typeof setTimeout> | null = null;
 
-const filteredOptions = computed(() => {
-  const q = searchQuery.value.toLowerCase().trim();
-  if (!q) return props.options;
-  return props.options.filter(o => o.label.toLowerCase().includes(q));
+const matchIndex = computed(() => {
+  const q = searchText.value.toLowerCase();
+  if (!q) return -1;
+  return props.options.findIndex(o =>
+    !o.disabled && o.label.toLowerCase().startsWith(q)
+  );
+});
+
+function scheduleReset() {
+  if (resetTimeout) clearTimeout(resetTimeout);
+  resetTimeout = setTimeout(() => { searchText.value = ""; }, 2000);
+}
+
+function onKeyDown(e: KeyboardEvent) {
+  if (!props.searchEnabled) return;
+  if (e.key === "Escape" || e.key === "Tab") return;
+
+  if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
+    e.preventDefault();
+    searchText.value += e.key;
+    scheduleReset();
+    if (matchIndex.value >= 0) {
+      nextTick(() => scrollToMatch(matchIndex.value));
+    }
+  } else if (e.key === "Backspace") {
+    e.preventDefault();
+    searchText.value = searchText.value.slice(0, -1);
+    scheduleReset();
+  }
+}
+
+function scrollToMatch(index: number) {
+  const optionsEl = selectRoot.value?.querySelector(".cu-select-options");
+  if (!optionsEl) return;
+  const optionEl = optionsEl.children[index] as HTMLElement | undefined;
+  if (optionEl) optionEl.scrollIntoView({ block: "nearest" });
+}
+
+function onDropdownOpen() {
+  if (props.searchEnabled) {
+    searchText.value = "";
+    nextTick(() => searchInputRef.value?.focus());
+  }
+}
+
+watch(() => dropdownRef.value?.isOpen, (open) => {
+  if (open) onDropdownOpen();
 });
 
 const selectedLabel = computed(() => {
@@ -135,18 +179,20 @@ defineExpose({
         </Button>
       </template>
       <template #default>
-        <div v-if="searchEnabled" class="cu-select-search">
-          <Input
-            :placeholder="searchPlaceholder"
-            :model-value="searchQuery"
-            :color="color"
-            variant="ghost"
-            @update:model-value="searchQuery = $event"
-          />
-        </div>
-        <div v-if="filteredOptions.length > 0" class="cu-select-options">
+        <Input
+          v-if="searchEnabled"
+          ref="searchInputRef"
+          class="cu-select-hidden-input"
+          :model-value="searchText"
+          :color="color"
+          variant="ghost"
+          tabindex="-1"
+          autocomplete="off"
+          @keydown="onKeyDown"
+        />
+        <div v-if="options.length > 0" class="cu-select-options">
           <Button
-            v-for="(opt, i) in filteredOptions"
+            v-for="(opt, i) in options"
             :key="i"
             :color="opt.color || color"
             :variant="opt.variant || (opt.value === selectedValue ? 'soft' : 'ghost')"
@@ -158,9 +204,6 @@ defineExpose({
           >
             {{ opt.label }}
           </Button>
-        </div>
-        <div v-else-if="searchEnabled && searchQuery" class="cu-select-empty">
-          Sin resultados
         </div>
         <div v-else class="cu-select-empty">
           Sin opciones
@@ -222,13 +265,17 @@ defineExpose({
   cursor: not-allowed;
 }
 
-.cu-select-search {
-  padding: var(--cu-space-sm);
-  border-bottom: 1px solid var(--cu-color-neutral-subtle-border, rgba(0, 0, 0, 0.1));
-}
-
-.cu-select-search :deep(.cu-input) {
-  width: 100%;
+.cu-select-hidden-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+  opacity: 0;
 }
 
 .cu-select-empty{

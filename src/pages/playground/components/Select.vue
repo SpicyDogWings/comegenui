@@ -90,8 +90,8 @@ const countryOptions = [
       <section id="searchable" class="playground-section">
         <h2>Searchable (searchEnabled)</h2>
         <p class="playground-code">
-          Prop <code>searchEnabled</code> muestra un input dentro del dropdown para filtrar opciones.
-          Escribe para filtrar la lista en tiempo real.
+          Prop <code>searchEnabled</code> activa un input oculto (como <code>&lt;select&gt;</code> nativo).
+          Al escribir, hace scroll a la primera opción que coincide. El texto se resetea después de 2s.
         </p>
         <div class="playground-col">
           <Select

@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { mount } from "@vue/test-utils";
 import Select from "./Select.vue";
 
@@ -60,38 +60,37 @@ describe("Select", () => {
     expect(w.find(".cu-select-empty").exists()).toBe(true);
   });
 
-  it("no renderiza input de búsqueda cuando searchEnabled es false", async () => {
+  it("no renderiza input oculto cuando searchEnabled es false", async () => {
     const w = factory({});
     await w.find("button.cu-select-toggle").trigger("click");
-    expect(w.find(".cu-select-search").exists()).toBe(false);
+    expect(w.find(".cu-select-hidden-input").exists()).toBe(false);
   });
 
-  it("renderiza input de búsqueda cuando searchEnabled es true", async () => {
+  it("renderiza input oculto cuando searchEnabled es true", async () => {
     const w = factory({ searchEnabled: true });
     await w.find("button.cu-select-toggle").trigger("click");
-    expect(w.find(".cu-select-search").exists()).toBe(true);
+    expect(w.find(".cu-select-hidden-input").exists()).toBe(true);
   });
 
-  it("filtra opciones al escribir en el input de búsqueda", async () => {
+  it("hace scroll al matching option al escribir", async () => {
+    const scrollMock = vi.fn();
+    Element.prototype.scrollIntoView = scrollMock;
+
     const w = factory({ searchEnabled: true });
     await w.find("button.cu-select-toggle").trigger("click");
+
+    await w.find(".cu-select-hidden-input").trigger("keydown", { key: "b" });
+    await w.vm.$nextTick();
+
+    expect(scrollMock).toHaveBeenCalled();
+  });
+
+  it("no filtra las opciones (lista completa visible)", async () => {
+    const w = factory({ searchEnabled: true });
+    await w.find("button.cu-select-toggle").trigger("click");
+
+    await w.find(".cu-select-hidden-input").trigger("keydown", { key: "a" });
 
     expect(w.findAll("button.cu-select-option")).toHaveLength(3);
-
-    const searchInput = w.find(".cu-select-search input");
-    await searchInput.setValue("arg");
-
-    expect(w.findAll("button.cu-select-option")).toHaveLength(1);
-    expect(w.find("button.cu-select-option").text()).toContain("Argentina");
-  });
-
-  it("muestra 'Sin resultados' cuando no hay coincidencias", async () => {
-    const w = factory({ searchEnabled: true });
-    await w.find("button.cu-select-toggle").trigger("click");
-
-    const searchInput = w.find(".cu-select-search input");
-    await searchInput.setValue("xyz");
-
-    expect(w.find(".cu-select-empty").text()).toContain("Sin resultados");
   });
 });
