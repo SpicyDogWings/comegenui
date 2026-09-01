@@ -237,14 +237,14 @@ defineExpose({ open, close, toggle, get, set, reset, isOpen: () => isOpen.value 
       <div v-if="loading" class="cu-dropdown-loader">
         <div
           class="cu-dropdown-loader-bar"
-          :style="{ '--cu-dropdown-color': `var(--cu-color-${color})` }"
+          :style="{ '--cu-dropdown-color': `var(--cu-color-${color}-soft)` }"
         />
       </div>
       <div v-if="cooldown" class="cu-dropdown-cooldown">
         <div
           :key="cooldownKey"
           class="cu-dropdown-cooldown-bar"
-          :style="{ '--cu-dropdown-delay': `${delay}ms`, '--cu-dropdown-color': `var(--cu-color-${color})` }"
+          :style="{ '--cu-dropdown-delay': `${delay}ms`, '--cu-dropdown-color': `var(--cu-color-${color}-ghost-hover)` }"
         />
       </div>
       <slot></slot>
