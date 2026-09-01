@@ -37,12 +37,17 @@ const props = defineProps({
   loading: { type: Boolean, required: false, default: false },
   cooldown: { type: Boolean, required: false, default: false },
   cooldownKey: { type: Number, required: false, default: 0 },
-  cooldownVariant: { type: String, required: false, default: "ghost-hover" },
+  cooldownVariant: { type: String, required: false, default: "ghost" },
   delay: { type: Number, required: false, default: 2000 },
 });
 
 const effectivePosition = computed(() => props.position);
 const effectiveAlign = computed(() => props.align);
+
+const cooldownColor = computed(() => {
+  if (props.cooldownVariant === "solid") return `var(--cu-color-${props.color})`;
+  return `var(--cu-color-${props.color}-ghost-hover)`;
+});
 
 const panelPos = ref<Record<string, string>>({ top: "0px", left: "0px" });
 
@@ -241,11 +246,11 @@ defineExpose({ open, close, toggle, get, set, reset, isOpen: () => isOpen.value 
           :style="{ '--cu-dropdown-color': `var(--cu-color-${color}-soft)` }"
         />
       </div>
-      <div v-if="cooldown" class="cu-dropdown-cooldown">
+      <div v-if="cooldown && !loading" class="cu-dropdown-cooldown">
         <div
           :key="cooldownKey"
           class="cu-dropdown-cooldown-bar"
-          :style="{ '--cu-dropdown-delay': `${delay}ms`, '--cu-dropdown-color': `var(--cu-color-${color}-${cooldownVariant})` }"
+          :style="{ '--cu-dropdown-delay': `${delay}ms`, '--cu-dropdown-color': cooldownColor }"
         />
       </div>
       <slot></slot>
