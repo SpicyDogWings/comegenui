@@ -35,6 +35,7 @@ const props = defineProps({
   // Útil cuando el contenido del panel es más ancho que el trigger (ej: un calendario).
   panelWidth: { type: String, required: false, default: "" },
   loading: { type: Boolean, required: false, default: false },
+  cooldown: { type: Boolean, required: false, default: false },
   delay: { type: Number, required: false, default: 2000 },
 });
 
@@ -233,7 +234,16 @@ defineExpose({ open, close, toggle, get, set, reset, isOpen: () => isOpen.value 
       role="menu"
     >
       <div v-if="loading" class="cu-dropdown-loader">
-        <div class="cu-dropdown-loader-bar" :style="{ '--cu-dropdown-delay': `${delay}ms` }" />
+        <div
+          class="cu-dropdown-loader-bar"
+          :style="{ '--cu-dropdown-color': `var(--cu-color-${color})` }"
+        />
+      </div>
+      <div v-if="cooldown" class="cu-dropdown-cooldown">
+        <div
+          class="cu-dropdown-cooldown-bar"
+          :style="{ '--cu-dropdown-delay': `${delay}ms`, '--cu-dropdown-color': `var(--cu-color-${color})` }"
+        />
       </div>
       <slot></slot>
     </div>
@@ -276,7 +286,28 @@ defineExpose({ open, close, toggle, get, set, reset, isOpen: () => isOpen.value 
   left: 0;
   height: 100%;
   width: 100%;
-  background: var(--cu-color-primary);
+  background: var(--cu-dropdown-color, var(--cu-color-primary));
+  animation: cu-dropdown-cooldown var(--cu-dropdown-delay, 2000ms) linear forwards;
+}
+
+.cu-dropdown-cooldown {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  overflow: hidden;
+  height: 2px;
+  background: transparent;
+}
+
+.cu-dropdown-cooldown-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: var(--cu-dropdown-color, var(--cu-color-primary));
   animation: cu-dropdown-cooldown var(--cu-dropdown-delay, 2000ms) linear forwards;
 }
 

@@ -113,18 +113,34 @@ const countryOptions = [
         <p class="playground-code">
           Cuando <code>searchEnabled</code> está activo y escribís, aparece una barra de cooldown
           que muestra cuánto falta para que el texto se resetee. La barra se vacía en 2s (configurable
-          con <code>searchResetDelay</code>).
+          con <code>searchResetDelay</code>). El color sigue el <code>color</code> del select.
         </p>
-        <div class="playground-col">
+        <div class="playground-row">
           <Select
             v-model="searchSelected"
             :options="countryOptions"
             search-enabled
+            color="primary"
             :search-reset-delay="2000"
-            placeholder="Escribí para ver el cooldown..."
-            style="max-width:300px"
+            placeholder="primary"
+            style="max-width:200px"
           />
-          <p class="playground-code">Selected: {{ searchSelected || '(ninguno)' }}</p>
+          <Select
+            :options="countryOptions"
+            search-enabled
+            color="success"
+            :search-reset-delay="2000"
+            placeholder="success"
+            style="max-width:200px"
+          />
+          <Select
+            :options="countryOptions"
+            search-enabled
+            color="danger"
+            :search-reset-delay="2000"
+            placeholder="danger"
+            style="max-width:200px"
+          />
         </div>
       </section>
     </div>
