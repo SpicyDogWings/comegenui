@@ -280,14 +280,8 @@ const isRowDisabled = (row: Record<string, any>): boolean => {
   font-family: var(--cu-font-sans);
 }
 
-.cu-table tfoot {
-  border-top: 2px solid var(--cu-color-neutral-subtle-border, rgba(0, 0, 0, 0.12));
-}
-
-.cu-table tfoot td {
-  padding: var(--cu-space-md);
-  font-family: var(--cu-font-sans);
-  color: var(--cu-color-neutral-text);
+.cu-table tr:last-child td {
+  border-bottom: none;
 }
 
 </style>

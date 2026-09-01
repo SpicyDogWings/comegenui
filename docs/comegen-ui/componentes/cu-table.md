@@ -675,12 +675,28 @@ t.loading = false;  // ocultar
 
 El slot `footer` permite agregar una fila al pie de la tabla, ideal para totales o resúmenes. Recibe `{ columns }` como binding (útil para `colspan`):
 
+```js
+const t = document.getElementById('miTabla');
+t.columns = [
+  { key: 'producto', label: 'Producto' },
+  { key: 'precio', label: 'Precio', align: 'right' },
+];
+t.data = [
+  { producto: 'Widget A', precio: 250.00 },
+  { producto: 'Widget B', precio: 175.50 },
+  { producto: 'Widget C', precio: 320.00 },
+];
+
+// Calcular total
+const total = t.data.reduce((sum, row) => sum + row.precio, 0);
+```
+
 ```html
 <cu-table id="miTabla">
   <template #footer="{ columns }">
     <tr>
       <td :colspan="columns.length - 1">Total</td>
-      <td style="text-align: right;">$1,500.00</td>
+      <td style="text-align: right;">${{ total.toFixed(2) }}</td>
     </tr>
   </template>
 </cu-table>
