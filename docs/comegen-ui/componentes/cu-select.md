@@ -23,6 +23,8 @@ Selector de opciones con color, variante, ícono chevron, opciones deshabilitada
 | `fixed` | `boolean` | `false` | Si es `true`, el dropdown usa `position: fixed` en vez de absoluto |
 | `disabled` | `boolean` | `false` | Estado deshabilitado |
 | `hightContrast` | `boolean` | `false` | Modo de alto contraste para el texto |
+| `searchEnabled` | `boolean` | `false` | Activa búsqueda por teclado (estilo select nativo: escribir hace scroll al match) |
+| `searchResetDelay` | `number` | `2000` | Tiempo (ms) antes de resetear el texto de búsqueda. Se reinicia con cada tecla |
 
 ### Opciones (`options`)
 
@@ -139,6 +141,33 @@ Si una opción no especifica `color` ni `variant`, hereda los valores del `<cu-s
   });
 </script>
 ```
+
+## Búsqueda por teclado (searchEnabled)
+
+Cuando `searchEnabled` es `true`, el select acepta entrada por teclado (como un `<select>` nativo): el usuario escribe y la lista hace scroll a la primera opción que coincide.
+
+```html
+<cu-select id="paises" search-enabled></cu-select>
+
+<script>
+  const select = document.getElementById('paises');
+  select.options = [
+    { value: 'ar', label: 'Argentina' },
+    { value: 'br', label: 'Brasil' },
+    { value: 'cl', label: 'Chile' },
+    { value: 'co', label: 'Colombia' },
+    { value: 'mx', label: 'México' },
+    { value: 'pe', label: 'Perú' },
+  ];
+</script>
+```
+
+**Comportamiento:**
+- Al abrir el dropdown, el input oculto recibe foco
+- Al escribir, la lista scrollea a la primera opción que coincide (por `startsWith`)
+- El texto acumulado se resetea después de 2s sin teclear (configurable con `searchResetDelay`)
+- Backspace borra el último carácter
+- Escape y Tab no afectan la búsqueda
 
 ## Control programático
 

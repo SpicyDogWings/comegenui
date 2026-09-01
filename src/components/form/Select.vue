@@ -2,7 +2,6 @@
 import { ref, computed, watch, nextTick } from "vue";
 import Dropdown from "../overlay/Dropdown.vue";
 import Button from "../buttons/Button.vue";
-import Input from "./Input.vue";
 
 interface SelectOption {
   value: string;
@@ -42,13 +41,14 @@ const props = defineProps({
   modelValue: { type: String, required: false, default: "" },
   options: { type: Array as () => SelectOption[], required: false, default: () => [] },
   searchEnabled: { type: Boolean, required: false, default: false },
+  searchResetDelay: { type: Number, required: false, default: 2000 },
 });
 
 const emit = defineEmits(["update:modelValue", "select", "close", "blur"]);
 const selectedValue = ref(props.modelValue);
 const dropdownRef = ref<InstanceType<typeof Dropdown> | null>(null);
 const selectRoot = ref<HTMLElement | null>(null);
-const searchInputRef = ref<InstanceType<typeof Input> | null>(null);
+const nativeInputRef = ref<HTMLInputElement | null>(null);
 const searchText = ref("");
 let resetTimeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -62,7 +62,7 @@ const matchIndex = computed(() => {
 
 function scheduleReset() {
   if (resetTimeout) clearTimeout(resetTimeout);
-  resetTimeout = setTimeout(() => { searchText.value = ""; }, 2000);
+  resetTimeout = setTimeout(() => { searchText.value = ""; }, props.searchResetDelay);
 }
 
 function onKeyDown(e: KeyboardEvent) {
@@ -72,6 +72,7 @@ function onKeyDown(e: KeyboardEvent) {
   if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
     e.preventDefault();
     searchText.value += e.key;
+    console.log("[Select search] key:", e.key, "| searchText:", searchText.value, "| matchIndex:", matchIndex.value);
     scheduleReset();
     if (matchIndex.value >= 0) {
       nextTick(() => scrollToMatch(matchIndex.value));
@@ -79,6 +80,7 @@ function onKeyDown(e: KeyboardEvent) {
   } else if (e.key === "Backspace") {
     e.preventDefault();
     searchText.value = searchText.value.slice(0, -1);
+    console.log("[Select search] backspace | searchText:", searchText.value);
     scheduleReset();
   }
 }
@@ -91,14 +93,36 @@ function scrollToMatch(index: number) {
 }
 
 function onDropdownOpen() {
+  console.log("[Select] onDropdownOpen called, searchEnabled:", props.searchEnabled);
   if (props.searchEnabled) {
     searchText.value = "";
-    nextTick(() => searchInputRef.value?.focus());
+    nextTick(() => {
+      console.log("[Select] nextTick, nativeInputRef:", nativeInputRef.value);
+      const input = nativeInputRef.value;
+      if (input) {
+        input.addEventListener("keydown", onKeyDown);
+        input.focus();
+        console.log("[Select] listener added and focused");
+      } else {
+        console.log("[Select] ERROR: nativeInputRef is null");
+      }
+    });
   }
 }
 
-watch(() => dropdownRef.value?.isOpen, (open) => {
+function onDropdownClose() {
+  if (props.searchEnabled) {
+    const input = nativeInputRef.value;
+    if (input) {
+      input.removeEventListener("keydown", onKeyDown);
+    }
+  }
+}
+
+watch(() => dropdownRef.value?.isOpen(), (open) => {
+  console.log("[Select] dropdown isOpen changed:", open);
   if (open) onDropdownOpen();
+  else onDropdownClose();
 });
 
 const selectedLabel = computed(() => {
@@ -179,16 +203,13 @@ defineExpose({
         </Button>
       </template>
       <template #default>
-        <Input
+        <input
           v-if="searchEnabled"
-          ref="searchInputRef"
-          class="cu-select-hidden-input"
-          :model-value="searchText"
-          :color="color"
-          variant="ghost"
+          ref="nativeInputRef"
+          type="text"
+          class="cu-select-hidden-input cu-input cu-input--ghost"
           tabindex="-1"
           autocomplete="off"
-          @keydown="onKeyDown"
         />
         <div v-if="options.length > 0" class="cu-select-options">
           <Button
