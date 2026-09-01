@@ -51,6 +51,7 @@ const dropdownRef = ref<InstanceType<typeof Dropdown> | null>(null);
 const selectRoot = ref<HTMLElement | null>(null);
 const nativeInputRef = ref<HTMLInputElement | null>(null);
 const searchText = ref("");
+const cooldownActive = ref(false);
 let resetTimeout: ReturnType<typeof setTimeout> | null = null;
 
 const matchIndex = computed(() => {
@@ -63,7 +64,11 @@ const matchIndex = computed(() => {
 
 function scheduleReset() {
   if (resetTimeout) clearTimeout(resetTimeout);
-  resetTimeout = setTimeout(() => { searchText.value = ""; }, props.searchResetDelay);
+  cooldownActive.value = true;
+  resetTimeout = setTimeout(() => {
+    searchText.value = "";
+    cooldownActive.value = false;
+  }, props.searchResetDelay);
 }
 
 function onKeyDown(e: KeyboardEvent) {
@@ -173,7 +178,8 @@ defineExpose({
       :align="align"
       :fixed="fixed"
       :offset="4"
-      :loading="loading"
+      :loading="loading || cooldownActive"
+      :delay="searchResetDelay"
       @close="emit('close')"
     >
       <template #toggle="{ toggle, isOpen }">

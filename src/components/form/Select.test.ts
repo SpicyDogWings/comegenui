@@ -95,13 +95,22 @@ describe("Select", () => {
     expect(w.findAll("button.cu-select-option")).toHaveLength(3);
   });
 
+  it("muestra barra de cooldown al escribir (searchEnabled)", async () => {
+    const w = factory({ searchEnabled: true });
+    await w.find("button.cu-select-toggle").trigger("click");
+
+    await w.find(".cu-select-hidden-input").trigger("keydown", { key: "a" });
+
+    expect(w.find(".cu-dropdown-loader").exists()).toBe(true);
+  });
+
   it("muestra loader cuando loading es true", async () => {
     const w = factory({ loading: true });
     await w.find("button.cu-select-toggle").trigger("click");
     expect(w.find(".cu-dropdown-loader").exists()).toBe(true);
   });
 
-  it("no muestra loader cuando loading es false", async () => {
+  it("no muestra loader cuando loading es false y no hay búsqueda", async () => {
     const w = factory({ loading: false });
     await w.find("button.cu-select-toggle").trigger("click");
     expect(w.find(".cu-dropdown-loader").exists()).toBe(false);

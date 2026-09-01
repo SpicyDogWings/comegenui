@@ -15,7 +15,6 @@ const outlineItems = [
 
 const selected = ref("opt1");
 const searchSelected = ref("");
-const loading = ref(false);
 const options = [
   { value: "opt1", label: "Option 1" },
   { value: "opt2", label: "Option 2" },
@@ -110,20 +109,22 @@ const countryOptions = [
       <hr class="playground-separator" />
 
       <section id="loading" class="playground-section">
-        <h2>Loading</h2>
+        <h2>Cooldown (barra de búsqueda)</h2>
         <p class="playground-code">
-          Prop <code>loading</code> muestra una barra de progreso animada en el dropdown.
+          Cuando <code>searchEnabled</code> está activo y escribís, aparece una barra de cooldown
+          que muestra cuánto falta para que el texto se resetee. La barra se vacía en 2s (configurable
+          con <code>searchResetDelay</code>).
         </p>
         <div class="playground-col">
           <Select
-            :options="options"
-            :loading="loading"
-            placeholder="Select con loading..."
+            v-model="searchSelected"
+            :options="countryOptions"
+            search-enabled
+            :search-reset-delay="2000"
+            placeholder="Escribí para ver el cooldown..."
             style="max-width:300px"
           />
-          <Button color="neutral" variant="ghost" @click="loading = !loading" style="margin-top: 8px;">
-            {{ loading ? 'Stop' : 'Start' }} Loading
-          </Button>
+          <p class="playground-code">Selected: {{ searchSelected || '(ninguno)' }}</p>
         </div>
       </section>
     </div>
