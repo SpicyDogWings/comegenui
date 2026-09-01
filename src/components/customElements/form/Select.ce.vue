@@ -40,6 +40,7 @@ const props = defineProps({
   searchEnabled: { type: Boolean, required: false, default: false },
   searchResetDelay: { type: Number, required: false, default: 2000 },
   loading: { type: Boolean, required: false, default: false },
+  cooldownVariant: { type: String, required: false, default: "ghost-hover" },
 });
 
 const resolvedOptions = computed(() =>
@@ -104,6 +105,7 @@ defineExpose({
     :search-enabled="props.searchEnabled"
     :search-reset-delay="props.searchResetDelay"
     :loading="props.loading"
+    :cooldown-variant="props.cooldownVariant"
     @select="ceEmit('select', $event)"
     @close="ceEmit('close', $event)"
     @blur="ceEmit('blur', $event)"

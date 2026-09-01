@@ -43,6 +43,7 @@ const props = defineProps({
   searchEnabled: { type: Boolean, required: false, default: false },
   searchResetDelay: { type: Number, required: false, default: 2000 },
   loading: { type: Boolean, required: false, default: false },
+  cooldownVariant: { type: String, required: false, default: "ghost-hover" },
 });
 
 const emit = defineEmits(["update:modelValue", "select", "close", "blur"]);
@@ -184,6 +185,7 @@ defineExpose({
       :loading="loading"
       :cooldown="cooldownActive"
       :cooldown-key="cooldownKey"
+      :cooldown-variant="cooldownVariant"
       :delay="searchResetDelay"
       @close="emit('close')"
     >

@@ -26,6 +26,7 @@ Selector de opciones con color, variante, ícono chevron, opciones deshabilitada
 | `searchEnabled` | `boolean` | `false` | Activa búsqueda por teclado (estilo select nativo: escribir hace scroll al match) |
 | `searchResetDelay` | `number` | `2000` | Tiempo (ms) antes de resetear el texto de búsqueda. Se reinicia con cada tecla |
 | `loading` | `boolean` | `false` | Muestra una barra de progreso animada en el dropdown |
+| `cooldownVariant` | `string` | `"ghost-hover"` | Variante de color para la barra de cooldown: `ghost-hover`, `soft`, `soft-hover`, etc. |
 
 ### Opciones (`options`)
 

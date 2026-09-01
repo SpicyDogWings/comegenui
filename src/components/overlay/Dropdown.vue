@@ -37,6 +37,7 @@ const props = defineProps({
   loading: { type: Boolean, required: false, default: false },
   cooldown: { type: Boolean, required: false, default: false },
   cooldownKey: { type: Number, required: false, default: 0 },
+  cooldownVariant: { type: String, required: false, default: "ghost-hover" },
   delay: { type: Number, required: false, default: 2000 },
 });
 
@@ -244,7 +245,7 @@ defineExpose({ open, close, toggle, get, set, reset, isOpen: () => isOpen.value 
         <div
           :key="cooldownKey"
           class="cu-dropdown-cooldown-bar"
-          :style="{ '--cu-dropdown-delay': `${delay}ms`, '--cu-dropdown-color': `var(--cu-color-${color}-ghost-hover)` }"
+          :style="{ '--cu-dropdown-delay': `${delay}ms`, '--cu-dropdown-color': `var(--cu-color-${color}-${cooldownVariant})` }"
         />
       </div>
       <slot></slot>
