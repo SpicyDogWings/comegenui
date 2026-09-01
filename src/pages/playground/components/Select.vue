@@ -10,10 +10,12 @@ const outlineItems = [
   { label: 'Disabled', id: 'disabled' },
   { label: 'Selected Value', id: 'selected' },
   { label: 'Searchable', id: 'searchable' },
+  { label: 'Loading', id: 'loading' },
 ];
 
 const selected = ref("opt1");
 const searchSelected = ref("");
+const loading = ref(false);
 const options = [
   { value: "opt1", label: "Option 1" },
   { value: "opt2", label: "Option 2" },
@@ -102,6 +104,26 @@ const countryOptions = [
             style="max-width:300px"
           />
           <p class="playground-code">Selected: {{ searchSelected || '(ninguno)' }}</p>
+        </div>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="loading" class="playground-section">
+        <h2>Loading</h2>
+        <p class="playground-code">
+          Prop <code>loading</code> muestra una barra de progreso animada en el dropdown.
+        </p>
+        <div class="playground-col">
+          <Select
+            :options="options"
+            :loading="loading"
+            placeholder="Select con loading..."
+            style="max-width:300px"
+          />
+          <Button color="neutral" variant="ghost" @click="loading = !loading" style="margin-top: 8px;">
+            {{ loading ? 'Stop' : 'Start' }} Loading
+          </Button>
         </div>
       </section>
     </div>

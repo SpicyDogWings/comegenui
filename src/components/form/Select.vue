@@ -42,6 +42,7 @@ const props = defineProps({
   options: { type: Array as () => SelectOption[], required: false, default: () => [] },
   searchEnabled: { type: Boolean, required: false, default: false },
   searchResetDelay: { type: Number, required: false, default: 2000 },
+  loading: { type: Boolean, required: false, default: false },
 });
 
 const emit = defineEmits(["update:modelValue", "select", "close", "blur"]);
@@ -172,6 +173,7 @@ defineExpose({
       :align="align"
       :fixed="fixed"
       :offset="4"
+      :loading="loading"
       @close="emit('close')"
     >
       <template #toggle="{ toggle, isOpen }">

@@ -34,6 +34,7 @@ const props = defineProps({
   // Ancho del panel (CSS, ej: "280px"). Default "" = width:100% del trigger.
   // Útil cuando el contenido del panel es más ancho que el trigger (ej: un calendario).
   panelWidth: { type: String, required: false, default: "" },
+  loading: { type: Boolean, required: false, default: false },
 });
 
 const effectivePosition = computed(() => props.position);
@@ -227,8 +228,12 @@ defineExpose({ open, close, toggle, get, set, reset, isOpen: () => isOpen.value 
       v-if="isOpen"
       :style="panelStyle"
       class="cu-dropdown-panel"
+      :class="{ 'cu-dropdown-panel--loading': loading }"
       role="menu"
     >
+      <div v-if="loading" class="cu-dropdown-loader">
+        <div class="cu-dropdown-loader-bar" />
+      </div>
       <slot></slot>
     </div>
   </div>
@@ -246,5 +251,35 @@ defineExpose({ open, close, toggle, get, set, reset, isOpen: () => isOpen.value 
   border-radius: var(--cu-radius-md);
   font-family: var(--cu-font-sans);
   box-shadow: var(--cu-shadow-xl);
+}
+
+.cu-dropdown-panel--loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.cu-dropdown-loader {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  overflow: hidden;
+  height: 3px;
+}
+
+.cu-dropdown-loader-bar {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 60%;
+  background: linear-gradient(90deg, transparent 0%, var(--cu-color-primary) 50%, transparent 100%);
+  animation: cu-dropdown-loader 1.5s ease-in-out infinite;
+}
+
+@keyframes cu-dropdown-loader {
+  0% { left: -100%; }
+  50% { left: 0%; }
+  100% { left: 100%; }
 }
 </style>

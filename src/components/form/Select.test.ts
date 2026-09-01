@@ -79,7 +79,8 @@ describe("Select", () => {
     const w = factory({ searchEnabled: true });
     await w.find("button.cu-select-toggle").trigger("click");
 
-    await w.find(".cu-select-hidden-input").trigger("keydown", { key: "b" });
+    const nativeInput = w.find(".cu-select-hidden-input").element as HTMLInputElement;
+    nativeInput.dispatchEvent(new KeyboardEvent("keydown", { key: "b", bubbles: true }));
     await w.vm.$nextTick();
 
     expect(scrollMock).toHaveBeenCalled();
@@ -92,5 +93,17 @@ describe("Select", () => {
     await w.find(".cu-select-hidden-input").trigger("keydown", { key: "a" });
 
     expect(w.findAll("button.cu-select-option")).toHaveLength(3);
+  });
+
+  it("muestra loader cuando loading es true", async () => {
+    const w = factory({ loading: true });
+    await w.find("button.cu-select-toggle").trigger("click");
+    expect(w.find(".cu-dropdown-loader").exists()).toBe(true);
+  });
+
+  it("no muestra loader cuando loading es false", async () => {
+    const w = factory({ loading: false });
+    await w.find("button.cu-select-toggle").trigger("click");
+    expect(w.find(".cu-dropdown-loader").exists()).toBe(false);
   });
 });

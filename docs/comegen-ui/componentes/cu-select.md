@@ -25,6 +25,7 @@ Selector de opciones con color, variante, ícono chevron, opciones deshabilitada
 | `hightContrast` | `boolean` | `false` | Modo de alto contraste para el texto |
 | `searchEnabled` | `boolean` | `false` | Activa búsqueda por teclado (estilo select nativo: escribir hace scroll al match) |
 | `searchResetDelay` | `number` | `2000` | Tiempo (ms) antes de resetear el texto de búsqueda. Se reinicia con cada tecla |
+| `loading` | `boolean` | `false` | Muestra una barra de progreso animada en el dropdown |
 
 ### Opciones (`options`)
 
