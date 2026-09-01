@@ -111,6 +111,35 @@ describe("useSearch", () => {
     expect(filteredData.value.length).toBe(1);
   });
 
+  test("should treat ñ as distinct from n", () => {
+    const dataWithÑ = [
+      { id: 1, name: "Señor Lopez", role: "Manager" },
+      { id: 2, name: "Nose Smith", role: "Developer" },
+      { id: 3, name: "Año Nuevo", role: "Designer" },
+    ];
+
+    // ñ matches only names with ñ (Señor Lopez and Año Nuevo)
+    const searchQuery = ref("ñ");
+    const { filteredData } = useSearch(dataWithÑ, { searchQuery, searchFields: ["name"] });
+    expect(filteredData.value.length).toBe(2);
+    expect(filteredData.value.map(d => d.name)).toContain("Señor Lopez");
+    expect(filteredData.value.map(d => d.name)).toContain("Año Nuevo");
+
+    // n matches only names with n but no ñ (Nose Smith)
+    searchQuery.value = "nose";
+    expect(filteredData.value.length).toBe(1);
+    expect(filteredData.value[0].name).toBe("Nose Smith");
+
+    // año matches only Año Nuevo
+    searchQuery.value = "año";
+    expect(filteredData.value.length).toBe(1);
+    expect(filteredData.value[0].name).toBe("Año Nuevo");
+
+    // ano does NOT match año (ñ is distinct from n)
+    searchQuery.value = "ano";
+    expect(filteredData.value.length).toBe(0);
+  });
+
   test("should handle data with null values", () => {
     const dataWithNull = [
       { id: 1, name: "John Doe", email: null },
