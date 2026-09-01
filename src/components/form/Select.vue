@@ -52,6 +52,7 @@ const selectRoot = ref<HTMLElement | null>(null);
 const nativeInputRef = ref<HTMLInputElement | null>(null);
 const searchText = ref("");
 const cooldownActive = ref(false);
+const cooldownKey = ref(0);
 let resetTimeout: ReturnType<typeof setTimeout> | null = null;
 
 const matchIndex = computed(() => {
@@ -78,6 +79,7 @@ function onKeyDown(e: KeyboardEvent) {
   if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
     e.preventDefault();
     searchText.value += e.key;
+    cooldownKey.value++;
     console.log("[Select search] key:", e.key, "| searchText:", searchText.value, "| matchIndex:", matchIndex.value);
     scheduleReset();
     if (matchIndex.value >= 0) {
@@ -86,6 +88,7 @@ function onKeyDown(e: KeyboardEvent) {
   } else if (e.key === "Backspace") {
     e.preventDefault();
     searchText.value = searchText.value.slice(0, -1);
+    cooldownKey.value++;
     console.log("[Select search] backspace | searchText:", searchText.value);
     scheduleReset();
   }
@@ -178,7 +181,9 @@ defineExpose({
       :align="align"
       :fixed="fixed"
       :offset="4"
-      :loading="loading || cooldownActive"
+      :loading="loading"
+      :cooldown="cooldownActive"
+      :cooldown-key="cooldownKey"
       :delay="searchResetDelay"
       @close="emit('close')"
     >
