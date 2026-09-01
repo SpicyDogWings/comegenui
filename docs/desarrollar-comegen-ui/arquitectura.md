@@ -122,6 +122,108 @@ defineExpose({
 - `get`/`set` definen getters/setters.
 - Si el `.ce.vue` no llama a `defineExpose`, el componente no expone nada.
 
+## Patrón: búsqueda en dropdown (input oculto, estilo select nativo)
+
+Algunos componentes con lista desplegable (como `Select`) pueden ofrecer búsqueda tipo `<select>` nativo: el usuario escribe y la lista hace scroll a la opción que coincide, sin ver un input visible. El texto acumulado se resetea después de 2s de inactividad.
+
+**Implementación en `Select.vue`:**
+
+```vue
+<template>
+  <Input
+    v-if="searchEnabled"
+    ref="searchInputRef"
+    class="cu-select-hidden-input"
+    :model-value="searchText"
+    :color="color"
+    variant="ghost"
+    tabindex="-1"
+    autocomplete="off"
+    @keydown="onKeyDown"
+  />
+  <div v-if="options.length > 0" class="cu-select-options">
+    <!-- opciones (sin filtrar) -->
+  </div>
+</template>
+```
+
+```ts
+import Input from "./Input.vue";
+
+const searchText = ref("");
+let resetTimeout: ReturnType<typeof setTimeout> | null = null;
+
+const matchIndex = computed(() => {
+  const q = searchText.value.toLowerCase();
+  if (!q) return -1;
+  return props.options.findIndex(o =>
+    !o.disabled && o.label.toLowerCase().startsWith(q)
+  );
+});
+
+function scheduleReset() {
+  if (resetTimeout) clearTimeout(resetTimeout);
+  resetTimeout = setTimeout(() => { searchText.value = ""; }, 2000);
+}
+
+function onKeyDown(e: KeyboardEvent) {
+  if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
+    e.preventDefault();
+    searchText.value += e.key;
+    scheduleReset();
+    if (matchIndex.value >= 0) {
+      nextTick(() => scrollToMatch(matchIndex.value));
+    }
+  } else if (e.key === "Backspace") {
+    e.preventDefault();
+    searchText.value = searchText.value.slice(0, -1);
+    scheduleReset();
+  }
+}
+
+function scrollToMatch(index: number) {
+  const optionsEl = selectRoot.value?.querySelector(".cu-select-options");
+  if (!optionsEl) return;
+  const optionEl = optionsEl.children[index] as HTMLElement | undefined;
+  if (optionEl) optionEl.scrollIntoView({ block: "nearest" });
+}
+```
+
+**Reglas del patrón:**
+
+1. **Usa el componente `Input` del proyecto** — no un `<input>` nativo, pero lo ocultás visualmente con CSS.
+2. **Input visualmente oculto** (CSS `clip`, `opacity: 0`, `position: absolute`) pero funcional — captura teclas vía `@keydown`.
+3. **Auto-focus al abrir** el dropdown para que el usuario pueda escribir inmediatamente.
+4. **Reset automático** del texto acumulado después de 2s de inactividad (como el `<select>` nativo).
+5. **Scroll al match**, no filtro — la lista completa sigue visible, solo se posiciona en la primera coincidencia.
+6. **Coincidencia por `startsWith`** (no `includes`) — comportamiento nativo del select.
+7. **Backspace** borra el último carácter del texto acumulado.
+8. **Ignora** teclas de control (Ctrl, Meta), Escape, Tab.
+
+**CSS del input oculto:**
+
+```css
+.cu-select-hidden-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+  opacity: 0;
+}
+```
+
+**Props expuestas:**
+
+| Prop | Tipo | Default | Descripción |
+|------|------|---------|-------------|
+| `searchEnabled` | Boolean | `false` | Activa la búsqueda por teclado (estilo select nativo) |
+| `searchResetDelay` | Number | `2000` | Tiempo en ms antes de resetear el texto acumulado |
+
 ## Resumen: qué leer cuando estás desarrollando
 
 | Necesitás... | Leé... |

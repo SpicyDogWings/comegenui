@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, type PropType } from "vue";
 import Button from "../buttons/Button.vue";
+import Loader from "./Loader.vue";
 
 const props = defineProps({
   color: {
@@ -34,6 +35,10 @@ const props = defineProps({
   // Ancho del panel (CSS, ej: "280px"). Default "" = width:100% del trigger.
   // Útil cuando el contenido del panel es más ancho que el trigger (ej: un calendario).
   panelWidth: { type: String, required: false, default: "" },
+  loading: { type: Boolean, required: false, default: false },
+  cooldown: { type: Boolean, required: false, default: false },
+  cooldownKey: { type: Number, required: false, default: 0 },
+  delay: { type: Number, required: false, default: 2000 },
 });
 
 const effectivePosition = computed(() => props.position);
@@ -227,8 +232,21 @@ defineExpose({ open, close, toggle, get, set, reset, isOpen: () => isOpen.value 
       v-if="isOpen"
       :style="panelStyle"
       class="cu-dropdown-panel"
+      :class="{ 'cu-dropdown-panel--loading': loading }"
       role="menu"
     >
+      <Loader
+        v-if="loading"
+        :color="color"
+        animation="loading"
+      />
+      <Loader
+        v-if="cooldown && !loading"
+        :key="cooldownKey"
+        :color="color"
+        animation="cooldown"
+        :delay="delay"
+      />
       <slot></slot>
     </div>
   </div>
@@ -246,5 +264,10 @@ defineExpose({ open, close, toggle, get, set, reset, isOpen: () => isOpen.value 
   border-radius: var(--cu-radius-md);
   font-family: var(--cu-font-sans);
   box-shadow: var(--cu-shadow-xl);
+}
+
+.cu-dropdown-panel--loading {
+  opacity: 0.6;
+  pointer-events: none;
 }
 </style>

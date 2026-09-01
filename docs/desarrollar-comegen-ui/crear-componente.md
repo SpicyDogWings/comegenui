@@ -188,57 +188,42 @@ export default comegenMiComponente;
 - El nombre de la variable es `comegen<NombrePascalCase>`.
 - Una sola línea `customElements.define(...)`.
 
-## 4. Crear la Storybook story
+## 4. Agregar ejemplo en el playground
 
-Path: `src/stories/<Nombre>.stories.ts` (o `form/<Nombre>.stories.ts`, etc.)
+Path: `src/pages/playground/components/<Nombre>.vue`
 
-```ts
-import MiComponente from "../components/MiComponente.vue";
-// ajustar el path según la carpeta
+El playground Vue es la herramienta principal para demostrar componentes (reemplazó a Storybook). Ver [playground.md](playground.md) para la estructura y convenciones.
 
-import type { Meta, StoryObj } from "@storybook/vue3";
+```vue
+<script setup lang="ts">
+import { ref } from "vue";
+import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
+import MiComponente from "@/components/<carpeta>/MiComponente.vue";
 
-const meta: Meta<typeof MiComponente> = {
-  title: "Components/MiComponente",  // o "Form/MiComponente", "Data/MiComponente"
-  component: MiComponente,
-  tags: ["autodocs"],
-  argTypes: {
-    color: {
-      control: "color",
-      description: "Color hex (ej: #ff0000)",
-    },
-    hightContrast: {
-      control: "boolean",
-      description: "Alto contraste",
-    },
-    variant: {
-      control: "select",
-      options: ["solid", "outlined", "soft", "ghost", "subtle"],
-    },
-  },
-};
+const outlineItems = [
+  { label: 'Variants', id: 'variants' },
+  { label: 'Otros', id: 'otros' },
+];
 
-export default meta;
-type Story = StoryObj<typeof MiComponente>;
+const selected = ref("");
+</script>
 
-export const Solid: Story = {
-  args: {
-    color: "#1774A4",
-    variant: "solid",
-  },
-  render: (args) => ({
-    components: { MiComponente },
-    setup: () => ({ args }),
-    template: `<MiComponente v-bind="args">Click me</MiComponente>`,
-  }),
-};
-
-// más variantes...
+<template>
+  <PlaygroundLayout title="MiComponente" :outlineItems="outlineItems">
+    <div class="playground-content">
+      <section id="variants" class="playground-section">
+        <h2>Variants</h2>
+        <div class="playground-row">
+          <MiComponente variant="soft" placeholder="soft" />
+          <MiComponente variant="outlined" placeholder="outlined" />
+        </div>
+      </section>
+    </div>
+  </PlaygroundLayout>
+</template>
 ```
 
-> **Nota:** la story usa el `.vue` interno directamente (no el `.ce.vue`), porque Storybook corre en Vue, no en UMD.
-
-## 5. (Opcional) Agregar un preset en el playground
+## 5. (Opcional) Agregar un preset en el playground HTML estático
 
 Path: `playground/examples/<nombre>.js`
 
@@ -292,7 +277,7 @@ Un componente nuevo **no está completo con solo su `.md`**. Hay que actualizar 
 - [ ] `.vue` interno existe y recibe `color` como hex.
 - [ ] `.ce.vue` existe y expone la API con colores semánticos.
 - [ ] `.ts` registra el Custom Element.
-- [ ] Storybook story existe y muestra al menos una variante.
+- [ ] Playground Vue existe y muestra al menos una variante.
 - [ ] **Especificidad:** reglas de variante con doble clase (`.cu-x.cu-x--variant`) y texto sobre `solid` con `var(--cu-color-surface)`. Probar `solid` en el playground (reglas globales de color) antes de cerrar.
 - [ ] (Opcional) Preset en `playground/examples/`.
 - [ ] Build UMD funciona: `pnpm build:lib`.

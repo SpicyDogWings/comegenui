@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, type PropType } from "vue";
+import Loader from "../overlay/Loader.vue";
 
 interface Column {
   key: string;
@@ -60,7 +61,6 @@ const tableStyles = computed(() => ({
   '--table-bg-hover': `var(--cu-color-${props.color}-ghost-hover)`,
   '--table-bd': `var(--cu-color-${props.color}-subtle-border)`,
   '--table-bg-solid': `var(--cu-color-${props.color})`,
-  '--loader-color': `var(--cu-color-${props.color})`,
   ...(props.maxHeight ? { maxHeight: props.maxHeight } : {}),
 }));
 
@@ -117,9 +117,7 @@ const isRowDisabled = (row: Record<string, any>): boolean => {
 
 <template>
   <div class="cu-table" :class="{ 'cu-table--outlined': variant === 'outlined' }" :style="tableStyles">
-    <div v-if="loading" class="cu-table-loader">
-      <div class="cu-table-loader-bar" />
-    </div>
+     <Loader v-if="loading" :color="color" animation="loading" />
     <div class="cu-table-scroll">
       <table class="cu-table-element">
         <thead>
@@ -279,28 +277,5 @@ const isRowDisabled = (row: Record<string, any>): boolean => {
   font-family: var(--cu-font-sans);
 }
 
-.cu-table-loader {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 30;
-  overflow: hidden;
-  height: 3px;
-}
 
-.cu-table-loader-bar {
-  position: absolute;
-  top: 0;
-  height: 100%;
-  width: 60%;
-  background: linear-gradient(90deg, transparent 0%, var(--loader-color) 50%, transparent 100%);
-  animation: cu-loader 3s ease-in-out infinite;
-}
-
-@keyframes cu-loader {
-  0% { left: -100%; }
-  50% { left: 0%; }
-  100% { left: 100%; }
-}
 </style>

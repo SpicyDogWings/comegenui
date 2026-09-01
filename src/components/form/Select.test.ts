@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { mount } from "@vue/test-utils";
 import Select from "./Select.vue";
 
@@ -58,5 +58,62 @@ describe("Select", () => {
     const w = factory({ options: [] });
     await w.find("button.cu-select-toggle").trigger("click");
     expect(w.find(".cu-select-empty").exists()).toBe(true);
+  });
+
+  it("no renderiza input oculto cuando searchEnabled es false", async () => {
+    const w = factory({});
+    await w.find("button.cu-select-toggle").trigger("click");
+    expect(w.find(".cu-select-hidden-input").exists()).toBe(false);
+  });
+
+  it("renderiza input oculto cuando searchEnabled es true", async () => {
+    const w = factory({ searchEnabled: true });
+    await w.find("button.cu-select-toggle").trigger("click");
+    expect(w.find(".cu-select-hidden-input").exists()).toBe(true);
+  });
+
+  it("hace scroll al matching option al escribir", async () => {
+    const scrollMock = vi.fn();
+    Element.prototype.scrollIntoView = scrollMock;
+
+    const w = factory({ searchEnabled: true });
+    await w.find("button.cu-select-toggle").trigger("click");
+
+    const nativeInput = w.find(".cu-select-hidden-input").element as HTMLInputElement;
+    nativeInput.dispatchEvent(new KeyboardEvent("keydown", { key: "b", bubbles: true }));
+    await w.vm.$nextTick();
+
+    expect(scrollMock).toHaveBeenCalled();
+  });
+
+  it("no filtra las opciones (lista completa visible)", async () => {
+    const w = factory({ searchEnabled: true });
+    await w.find("button.cu-select-toggle").trigger("click");
+
+    await w.find(".cu-select-hidden-input").trigger("keydown", { key: "a" });
+
+    expect(w.findAll("button.cu-select-option")).toHaveLength(3);
+  });
+
+  it("muestra barra de cooldown al escribir (searchEnabled)", async () => {
+    const w = factory({ searchEnabled: true });
+    await w.find("button.cu-select-toggle").trigger("click");
+
+    await w.find(".cu-select-hidden-input").trigger("keydown", { key: "a" });
+
+    expect(w.find(".cu-loader-bar--cooldown").exists()).toBe(true);
+    expect(w.find(".cu-loader-bar--loading").exists()).toBe(false);
+  });
+
+  it("muestra loader cuando loading es true", async () => {
+    const w = factory({ loading: true });
+    await w.find("button.cu-select-toggle").trigger("click");
+    expect(w.find(".cu-loader-bar--loading").exists()).toBe(true);
+  });
+
+  it("no muestra loader cuando loading es false y no hay búsqueda", async () => {
+    const w = factory({ loading: false });
+    await w.find("button.cu-select-toggle").trigger("click");
+    expect(w.find(".cu-loader").exists()).toBe(false);
   });
 });

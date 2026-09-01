@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, nextTick } from "vue";
 import Dropdown from "../overlay/Dropdown.vue";
 import Button from "../buttons/Button.vue";
 
@@ -40,12 +40,92 @@ const props = defineProps({
   fixed: { type: Boolean, required: false, default: false },
   modelValue: { type: String, required: false, default: "" },
   options: { type: Array as () => SelectOption[], required: false, default: () => [] },
+  searchEnabled: { type: Boolean, required: false, default: false },
+  searchResetDelay: { type: Number, required: false, default: 2000 },
+  loading: { type: Boolean, required: false, default: false },
+  cooldownVariant: { type: String, required: false, default: "ghost-hover" },
 });
 
 const emit = defineEmits(["update:modelValue", "select", "close", "blur"]);
 const selectedValue = ref(props.modelValue);
 const dropdownRef = ref<InstanceType<typeof Dropdown> | null>(null);
 const selectRoot = ref<HTMLElement | null>(null);
+const nativeInputRef = ref<HTMLInputElement | null>(null);
+const searchText = ref("");
+const cooldownActive = ref(false);
+const cooldownKey = ref(0);
+let resetTimeout: ReturnType<typeof setTimeout> | null = null;
+
+const matchIndex = computed(() => {
+  const q = searchText.value.toLowerCase();
+  if (!q) return -1;
+  return props.options.findIndex(o =>
+    !o.disabled && o.label.toLowerCase().startsWith(q)
+  );
+});
+
+function scheduleReset() {
+  if (resetTimeout) clearTimeout(resetTimeout);
+  cooldownActive.value = true;
+  resetTimeout = setTimeout(() => {
+    searchText.value = "";
+    cooldownActive.value = false;
+  }, props.searchResetDelay);
+}
+
+function onKeyDown(e: KeyboardEvent) {
+  if (!props.searchEnabled) return;
+  if (e.key === "Escape" || e.key === "Tab") return;
+
+  if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
+    e.preventDefault();
+    searchText.value += e.key;
+    cooldownKey.value++;
+    scheduleReset();
+    if (matchIndex.value >= 0) {
+      nextTick(() => scrollToMatch(matchIndex.value));
+    }
+  } else if (e.key === "Backspace") {
+    e.preventDefault();
+    searchText.value = searchText.value.slice(0, -1);
+    cooldownKey.value++;
+    scheduleReset();
+  }
+}
+
+function scrollToMatch(index: number) {
+  const optionsEl = selectRoot.value?.querySelector(".cu-select-options");
+  if (!optionsEl) return;
+  const optionEl = optionsEl.children[index] as HTMLElement | undefined;
+  if (optionEl) optionEl.scrollIntoView({ block: "nearest" });
+}
+
+function onDropdownOpen() {
+  if (props.searchEnabled) {
+    searchText.value = "";
+    nextTick(() => {
+      const input = nativeInputRef.value;
+      if (input) {
+        input.addEventListener("keydown", onKeyDown);
+        input.focus();
+      }
+    });
+  }
+}
+
+function onDropdownClose() {
+  if (props.searchEnabled) {
+    const input = nativeInputRef.value;
+    if (input) {
+      input.removeEventListener("keydown", onKeyDown);
+    }
+  }
+}
+
+watch(() => dropdownRef.value?.isOpen(), (open) => {
+  if (open) onDropdownOpen();
+  else onDropdownClose();
+});
 
 const selectedLabel = computed(() => {
   const opt = props.options.find(o => o.value === selectedValue.value);
@@ -94,6 +174,11 @@ defineExpose({
       :align="align"
       :fixed="fixed"
       :offset="4"
+      :loading="loading"
+      :cooldown="cooldownActive"
+      :cooldown-key="cooldownKey"
+      :cooldown-variant="cooldownVariant"
+      :delay="searchResetDelay"
       @close="emit('close')"
     >
       <template #toggle="{ toggle, isOpen }">
@@ -125,6 +210,14 @@ defineExpose({
         </Button>
       </template>
       <template #default>
+        <input
+          v-if="searchEnabled"
+          ref="nativeInputRef"
+          type="text"
+          class="cu-select-hidden-input cu-input cu-input--ghost"
+          tabindex="-1"
+          autocomplete="off"
+        />
         <div v-if="options.length > 0" class="cu-select-options">
           <Button
             v-for="(opt, i) in options"
@@ -200,7 +293,20 @@ defineExpose({
   cursor: not-allowed;
 }
 
-.cu-select-empty {
+.cu-select-hidden-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+  opacity: 0;
+}
+
+.cu-select-empty{
   padding: var(--cu-space-md);
   font-family: var(--cu-font-sans);
   font-size: var(--cu-font-size-sm);

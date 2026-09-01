@@ -7,7 +7,7 @@ Reglas que se aplican a todo el código de `src/`. Mantener consistencia con el 
 - **Componentes:** PascalCase. `<Nombre>.vue`, `<Nombre>.ce.vue`, `<Nombre>.ts`.
 - **Composables:** camelCase con prefijo `use`. `usePagination.ts`, `useSearch.ts`, `useTableData.ts`.
 - **Utils:** camelCase. `palette.ts`, `getHostTheme.ts`.
-- **Stories:** `<Nombre>.stories.ts`, en `src/stories/` o subcarpeta según el tipo.
+- **Playground Vue:** `<Nombre>.vue` en `src/pages/playground/components/`.
 - **Tests:** `<archivo>.test.ts` al lado del archivo que testean.
 
 ## Nombres de tags (Custom Elements)
