@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, type PropType } from "vue";
 import Button from "../buttons/Button.vue";
+import Loader from "./Loader.vue";
 
 const props = defineProps({
   color: {
@@ -37,17 +38,11 @@ const props = defineProps({
   loading: { type: Boolean, required: false, default: false },
   cooldown: { type: Boolean, required: false, default: false },
   cooldownKey: { type: Number, required: false, default: 0 },
-  cooldownVariant: { type: String, required: false, default: "ghost" },
   delay: { type: Number, required: false, default: 2000 },
 });
 
 const effectivePosition = computed(() => props.position);
 const effectiveAlign = computed(() => props.align);
-
-const cooldownColor = computed(() => {
-  if (props.cooldownVariant === "solid") return `var(--cu-color-${props.color})`;
-  return `var(--cu-color-${props.color}-ghost-hover)`;
-});
 
 const panelPos = ref<Record<string, string>>({ top: "0px", left: "0px" });
 
@@ -240,19 +235,18 @@ defineExpose({ open, close, toggle, get, set, reset, isOpen: () => isOpen.value 
       :class="{ 'cu-dropdown-panel--loading': loading }"
       role="menu"
     >
-      <div v-if="loading" class="cu-dropdown-loader">
-        <div
-          class="cu-dropdown-loader-bar"
-          :style="{ '--cu-dropdown-color': `var(--cu-color-${color}-soft)` }"
-        />
-      </div>
-      <div v-if="cooldown && !loading" class="cu-dropdown-cooldown">
-        <div
-          :key="cooldownKey"
-          class="cu-dropdown-cooldown-bar"
-          :style="{ '--cu-dropdown-delay': `${delay}ms`, '--cu-dropdown-color': cooldownColor }"
-        />
-      </div>
+      <Loader
+        v-if="loading"
+        :color="color"
+        animation="loading"
+      />
+      <Loader
+        v-if="cooldown && !loading"
+        :key="cooldownKey"
+        :color="color"
+        animation="cooldown"
+        :delay="delay"
+      />
       <slot></slot>
     </div>
   </div>
@@ -275,52 +269,5 @@ defineExpose({ open, close, toggle, get, set, reset, isOpen: () => isOpen.value 
 .cu-dropdown-panel--loading {
   opacity: 0.6;
   pointer-events: none;
-}
-
-.cu-dropdown-loader {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 30;
-  overflow: hidden;
-  height: 3px;
-  background: var(--cu-color-neutral-subtle, rgba(0, 0, 0, 0.08));
-}
-
-.cu-dropdown-loader-bar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
-  background: var(--cu-dropdown-color, var(--cu-color-primary));
-  animation: cu-dropdown-cooldown var(--cu-dropdown-delay, 2000ms) linear forwards;
-}
-
-.cu-dropdown-cooldown {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 30;
-  overflow: hidden;
-  height: 2px;
-  background: transparent;
-}
-
-.cu-dropdown-cooldown-bar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
-  background: var(--cu-dropdown-color, var(--cu-color-primary));
-  animation: cu-dropdown-cooldown var(--cu-dropdown-delay, 2000ms) linear forwards;
-}
-
-@keyframes cu-dropdown-cooldown {
-  from { width: 100%; }
-  to { width: 0%; }
 }
 </style>

@@ -101,18 +101,19 @@ describe("Select", () => {
 
     await w.find(".cu-select-hidden-input").trigger("keydown", { key: "a" });
 
-    expect(w.find(".cu-dropdown-loader").exists()).toBe(true);
+    expect(w.find(".cu-loader-bar--cooldown").exists()).toBe(true);
+    expect(w.find(".cu-loader-bar--loading").exists()).toBe(false);
   });
 
   it("muestra loader cuando loading es true", async () => {
     const w = factory({ loading: true });
     await w.find("button.cu-select-toggle").trigger("click");
-    expect(w.find(".cu-dropdown-loader").exists()).toBe(true);
+    expect(w.find(".cu-loader-bar--loading").exists()).toBe(true);
   });
 
   it("no muestra loader cuando loading es false y no hay búsqueda", async () => {
     const w = factory({ loading: false });
     await w.find("button.cu-select-toggle").trigger("click");
-    expect(w.find(".cu-dropdown-loader").exists()).toBe(false);
+    expect(w.find(".cu-loader").exists()).toBe(false);
   });
 });

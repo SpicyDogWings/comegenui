@@ -81,7 +81,6 @@ function onKeyDown(e: KeyboardEvent) {
     e.preventDefault();
     searchText.value += e.key;
     cooldownKey.value++;
-    console.log("[Select search] key:", e.key, "| searchText:", searchText.value, "| matchIndex:", matchIndex.value);
     scheduleReset();
     if (matchIndex.value >= 0) {
       nextTick(() => scrollToMatch(matchIndex.value));
@@ -90,7 +89,6 @@ function onKeyDown(e: KeyboardEvent) {
     e.preventDefault();
     searchText.value = searchText.value.slice(0, -1);
     cooldownKey.value++;
-    console.log("[Select search] backspace | searchText:", searchText.value);
     scheduleReset();
   }
 }
@@ -103,18 +101,13 @@ function scrollToMatch(index: number) {
 }
 
 function onDropdownOpen() {
-  console.log("[Select] onDropdownOpen called, searchEnabled:", props.searchEnabled);
   if (props.searchEnabled) {
     searchText.value = "";
     nextTick(() => {
-      console.log("[Select] nextTick, nativeInputRef:", nativeInputRef.value);
       const input = nativeInputRef.value;
       if (input) {
         input.addEventListener("keydown", onKeyDown);
         input.focus();
-        console.log("[Select] listener added and focused");
-      } else {
-        console.log("[Select] ERROR: nativeInputRef is null");
       }
     });
   }
@@ -130,7 +123,6 @@ function onDropdownClose() {
 }
 
 watch(() => dropdownRef.value?.isOpen(), (open) => {
-  console.log("[Select] dropdown isOpen changed:", open);
   if (open) onDropdownOpen();
   else onDropdownClose();
 });
