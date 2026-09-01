@@ -64,7 +64,8 @@ describe("Table", () => {
 
   it("muestra el loader cuando loading=true", () => {
     const w = factory({ loading: true });
-    expect(w.find(".cu-table-loader").exists()).toBe(true);
+    expect(w.find(".cu-loader").exists()).toBe(true);
+    expect(w.find(".cu-loader-bar--loading").exists()).toBe(true);
     expect(w.find("tbody").classes()).toContain("cu-table-loading");
   });
 
