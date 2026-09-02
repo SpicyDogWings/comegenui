@@ -138,13 +138,13 @@ defineExpose({
 }
 
 .cu-checkbox--md .cu-checkbox-box {
-  width: 16px;
-  height: 16px;
+  width: var(--cu-space-lg);
+  height: var(--cu-space-lg);
 }
 
 .cu-checkbox--sm .cu-checkbox-box {
-  width: 14px;
-  height: 14px;
+  width: var(--cu-space-md);
+  height: var(--cu-space-md);
 }
 
 .cu-checkbox-box--checked {

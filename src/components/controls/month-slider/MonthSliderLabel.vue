@@ -266,8 +266,8 @@ function endDrag() {
 }
 
 .cu-month-slider-label:focus-visible {
-  outline: 2px solid var(--ms-accent);
-  outline-offset: 2px;
+  outline: var(--cu-border-thin) solid var(--ms-accent);
+  outline-offset: var(--cu-space-2xs);
 }
 
 /* Entrada suave del texto al cambiar el mes (key en el span lo re-monta) */
