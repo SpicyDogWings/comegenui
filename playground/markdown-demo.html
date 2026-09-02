@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CuMarkdown Demo</title>
+  <link rel="stylesheet" href="/dist/css/themes.css">
+  <style>
+    body {
+      font-family: var(--cu-font-sans);
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem;
+      background: var(--cu-color-surface);
+    }
+    .demo-section {
+      margin-bottom: 3rem;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+    .controls {
+      margin-bottom: 2rem;
+      display: flex;
+      gap: 1rem;
+    }
+    button {
+      padding: 0.5rem 1rem;
+      border: 1px solid #ccc;
+      background: white;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    button:hover {
+      background: #f5f5f5;
+    }
+    .dark-theme {
+      background: #1a1a2e;
+      color: #eee;
+    }
+    .dark-theme button {
+      background: #2d2d44;
+      color: #eee;
+      border-color: #444;
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-section">
+    <h1>CuMarkdown Demo</h1>
+    <div class="controls">
+      <button onclick="setTheme('light')">Light</button>
+      <button onclick="setTheme('dark')">Dark</button>
+    </div>
+  </div>
+
+  <cu-markdown>
+# Título Principal
+
+Este es un párrafo con **texto en negrita** y *texto en cursiva*. También podemos tener `código inline`.
+
+## Subtítulo
+
+### Lista desordenada
+
+- Item uno
+- Item dos
+- Item tres con **negrita**
+
+### Lista ordenada
+
+1. Primero
+2. Segundo
+3. Tercero
+
+## Código
+
+```javascript
+function hello() {
+  console.log("Hola mundo");
+  return true;
+}
+```
+
+## Tabla
+
+| Nombre | Edad | Ciudad |
+|--------|------|--------|
+| Ana | 25 | Madrid |
+| Carlos | 30 | Barcelona |
+| María | 28 | Valencia |
+
+## Blockquote
+
+> Esta es una cita importante.
+> Puede tener múltiples líneas.
+
+## Links y Imágenes
+
+[Visita Google](https://www.google.com)
+
+## Regla horizontal
+
+---
+
+## Strikethrough
+
+Este texto está ~~tachado~~.
+
+## Texto combinado
+
+Este párrafo tiene **negrita**, *cursiva*, `codigo`, y [un link](https://example.com) todo junto.
+  </cu-markdown>
+
+  <script src="/dist/CuMarkdown.umd.js"></script>
+  <script>
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      if (theme === 'dark') {
+        document.body.classList.add('dark-theme');
+      } else {
+        document.body.classList.remove('dark-theme');
+      }
+    }
+  </script>
+</body>
+</html>
