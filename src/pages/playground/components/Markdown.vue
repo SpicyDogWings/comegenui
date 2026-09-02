@@ -119,7 +119,7 @@ Abajo
 
 ## Imagen
 
-![Placeholder](https://via.placeholder.com/150)
+![Placeholder](https://picsum.photos/300/200)
         </Markdown>
       </section>
     </div>
