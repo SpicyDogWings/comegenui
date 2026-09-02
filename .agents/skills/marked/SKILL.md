@@ -259,6 +259,62 @@ onMounted(() => {
 
 This avoids the whitespace issue entirely.
 
+### Table rendering with Table.vue
+
+The markdown component uses the internal `Table.vue` component for tables instead of raw HTML. This ensures visual consistency across the library.
+
+**Architecture:**
+1. `marked.lexer()` splits markdown into tokens
+2. Table tokens are converted to `{ columns, data }` format
+3. Cell content is parsed as inline markdown via `marked.parseInline()`
+4. Non-table tokens render as sanitized HTML via `v-html`
+5. Tables render via `<Table :html-cells="true">`
+
+**Important:** The `htmlCells` prop on `Table.vue` is **NOT** exposed in the CE wrapper (`Table.ce.vue`). This prevents XSS via the public API while allowing internal markdown tables to render formatted content.
+
+```ts
+// Markdown.vue - parsing tables for Table.vue
+function parseToBlocks(markdown: string): Block[] {
+  const tokens = marked.lexer(markdown)
+  const result: Block[] = []
+
+  for (const token of tokens) {
+    if (token.type === 'table') {
+      const header = token.header.map((cell: any) => cell.text)
+      const columns = header.map((text: string) => ({ key: text, label: text }))
+      const rows = token.rows.map((row: any[]) => {
+        const obj: Record<string, string> = {}
+        row.forEach((cell: any, i: number) => {
+          if (header[i]) {
+            obj[header[i]] = marked.parseInline(cell.text)
+          }
+        })
+        return obj
+      })
+      result.push({ type: 'table', columns, data: rows })
+    } else {
+      const html = marked.parser([token])
+      result.push({ type: 'html', html: DOMPurify.sanitize(html) })
+    }
+  }
+
+  return result
+}
+```
+
+```vue
+<!-- Rendering -->
+<template v-for="(block, i) in blocks" :key="i">
+  <Table
+    v-if="block.type === 'table'"
+    :columns="block.columns"
+    :data="block.data"
+    :html-cells="true"
+  />
+  <div v-else v-html="block.html"></div>
+</template>
+```
+
 ## Common Pitfalls
 
 | Issue | Cause | Solution |

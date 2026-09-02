@@ -1,17 +1,71 @@
 <script setup lang="ts">
 import { ref, onMounted, nextTick } from 'vue'
-import { useMarkdown } from '@/composables/useMarkdown'
+import DOMPurify from 'dompurify'
+import { marked } from 'marked'
+import '@/markdown'
+import Table from '../data/Table.vue'
 
+interface Block {
+  type: 'html' | 'table'
+  html?: string
+  columns?: Array<{ key: string; label: string }>
+  data?: Array<Record<string, string>>
+}
+
+const blocks = ref<Block[]>([])
 const slotEl = ref<HTMLElement | null>(null)
-const slotText = ref('')
 
-const { rendered } = useMarkdown(slotText)
+function dedent(text: string): string {
+  const lines = text.split('\n')
+  while (lines.length && lines[0].trim() === '') lines.shift()
+  while (lines.length && lines[lines.length - 1].trim() === '') lines.pop()
+
+  let minIndent = Infinity
+  for (const line of lines) {
+    if (line.trim() === '') continue
+    const match = line.match(/^(\s*)/)
+    if (match) {
+      minIndent = Math.min(minIndent, match[1].length)
+    }
+  }
+
+  if (minIndent === Infinity) minIndent = 0
+  return lines.map(line => line.slice(minIndent)).join('\n')
+}
+
+function parseToBlocks(markdown: string): Block[] {
+  const tokens = marked.lexer(markdown)
+  const result: Block[] = []
+
+  for (const token of tokens) {
+    if (token.type === 'table') {
+      const header = token.header.map((cell: any) => cell.text)
+      const columns = header.map((text: string) => ({ key: text, label: text }))
+      const rows = token.rows.map((row: any[]) => {
+        const obj: Record<string, string> = {}
+        row.forEach((cell: any, i: number) => {
+          if (header[i]) {
+            obj[header[i]] = marked.parseInline(cell.text)
+          }
+        })
+        return obj
+      })
+      result.push({ type: 'table', columns, data: rows })
+    } else {
+      const html = marked.parser([token])
+      result.push({ type: 'html', html: DOMPurify.sanitize(html) })
+    }
+  }
+
+  return result
+}
 
 onMounted(() => {
   nextTick(() => {
     const el = slotEl.value
     if (!el) return
-    slotText.value = el.textContent || ''
+    const raw = dedent(el.textContent || '')
+    blocks.value = parseToBlocks(raw)
     el.style.display = 'none'
   })
 })
@@ -20,7 +74,17 @@ onMounted(() => {
 <template>
   <div class="cu-markdown">
     <div ref="slotEl" class="cu-md-slot"><slot /></div>
-    <div class="cu-md-output" v-html="rendered"></div>
+    <div class="cu-md-output">
+      <template v-for="(block, i) in blocks" :key="i">
+        <Table
+          v-if="block.type === 'table' && block.columns && block.data"
+          :columns="block.columns"
+          :data="block.data"
+          :html-cells="true"
+        />
+        <div v-else-if="block.type === 'html'" v-html="block.html"></div>
+      </template>
+    </div>
   </div>
 </template>
 
@@ -120,37 +184,6 @@ onMounted(() => {
   border-radius: var(--cu-radius-sm);
   font-family: var(--cu-font-mono);
   font-size: 0.9em;
-}
-
-.cu-markdown :deep(.cu-table-element) {
-  width: 100%;
-  border-collapse: collapse;
-  border-radius: var(--cu-radius-md);
-  overflow: hidden;
-}
-
-.cu-markdown :deep(.cu-table-th) {
-  text-align: left;
-  padding: var(--cu-space-md);
-  font-family: var(--cu-font-sans);
-  font-weight: var(--cu-font-weight-medium);
-  background-color: var(--cu-color-neutral-soft);
-  color: var(--cu-color-neutral-text);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-}
-
-.cu-markdown :deep(.cu-table-td) {
-  padding: var(--cu-space-md);
-  font-family: var(--cu-font-sans);
-  color: var(--cu-color-neutral-text);
-}
-
-.cu-markdown :deep(.cu-table-row) {
-  border-bottom: var(--cu-border-thin) solid rgba(0, 0, 0, 0.08);
-}
-
-.cu-markdown :deep(.cu-table-row:last-child) {
-  border-bottom: none;
 }
 
 .cu-markdown :deep(.cu-md-hr) {

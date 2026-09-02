@@ -69,12 +69,12 @@ def saludar(nombre):
 
 ## Tabla
 
-| Nombre | Edad | Ciudad |
-|--------|------|--------|
-| Ana | 25 | Madrid |
-| Carlos | 30 | Barcelona |
-| María | 28 | Valencia |
-| Pedro | 35 | Sevilla |
+| Nombre | Edad | Ciudad | Notas |
+|--------|------|--------|-------|
+| **Ana** | 25 | Madrid | [Perfil](https://example.com) |
+| *Carlos* | 30 | Barcelona | \`activo\` |
+| **María** | ~~28~~ 29 | Valencia | **Premium** |
+| Pedro | 35 | Sevilla | *Pendiente* |
 
 ## Blockquote
 
