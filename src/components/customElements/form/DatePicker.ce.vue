@@ -41,6 +41,7 @@ const props = defineProps({
   fixed: { type: Boolean, default: false },
   clearable: { type: Boolean, default: true },
   todayButton: { type: Boolean, default: true },
+  label: { type: String, default: '' },
 })
 
 const pickerRef = ref<InstanceType<typeof DatePicker> | null>(null)
@@ -96,6 +97,7 @@ defineExpose({ open, close, toggle, getValue, setValue, clear, isOpen: () => pic
     :fixed="props.fixed"
     :clearable="props.clearable"
     :today-button="props.todayButton"
+    :label="props.label"
     @select="ceEmit('select', $event)"
     @change="ceEmit('change', $event)"
     @open="ceEmit('open', $event)"

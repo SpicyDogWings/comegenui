@@ -24,6 +24,7 @@ Campo de texto con sugerencias en menú desplegable. Filtra los `items` en vivo 
 | `hightContrast` | `boolean` | `false` | Modo de alto contraste |
 | `items` | `array` | `[]` | Opciones del menú (ver abajo). Se asigna como propiedad JS |
 | `modelValue` | `string` | `""` | Valor controlado |
+| `label` | `string` | `""` | Texto del label sobre el input |
 
 ### Items
 
@@ -91,6 +92,14 @@ Ninguno.
     console.log('Seleccionado:', e.detail.label);
   });
 </script>
+```
+
+### Con label
+
+El label se muestra sobre el input:
+
+```html
+<cu-autocomplete id="ac" label="Buscar rol" placeholder="Escriba para buscar..."></cu-autocomplete>
 ```
 
 ## Items con ícono
