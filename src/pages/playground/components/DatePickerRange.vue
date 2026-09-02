@@ -17,6 +17,7 @@ const outlineItems = [
   { label: 'Placeholder', id: 'placeholder' },
   { label: 'Formato', id: 'format' },
   { label: 'Min / Max', id: 'min-max' },
+  { label: 'Eventos', id: 'events' },
   { label: 'Dual Calendar', id: 'dual-calendar' },
   { label: 'Colores', id: 'colors' },
   { label: 'Programático', id: 'programmatic' },
@@ -117,6 +118,25 @@ function fmt(d: Date | null) {
 
       <hr class="playground-separator" />
 
+      <section id="events" class="playground-section">
+        <h2>Eventos</h2>
+        <p class="playground-desc">
+          Puntos bajo las fechas para señalar eventos. Compatible con rangos.
+        </p>
+        <div class="playground-dp-range-col">
+          <DatePickerRange
+            style="max-width: 320px;"
+            :events="rangeEvents"
+            :start-date="startDate"
+            :end-date="endDate"
+            @update:start-date="startDate = $event"
+            @update:end-date="endDate = $event"
+          />
+        </div>
+      </section>
+
+      <hr class="playground-separator" />
+
       <section id="dual-calendar" class="playground-section">
         <h2>Dual Calendar</h2>
         <p class="playground-desc">
@@ -167,25 +187,6 @@ function fmt(d: Date | null) {
             getStartDate(): <strong>{{ fmt(rangeRef?.getStartDate() ?? null) }}</strong> |
             getEndDate(): <strong>{{ fmt(rangeRef?.getEndDate() ?? null) }}</strong>
           </p>
-        </div>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="events" class="playground-section">
-        <h2>Eventos (puntos en el calendario)</h2>
-        <p class="playground-desc">
-          Puntos bajo las fechas para señalar eventos. Compatible con rangos.
-        </p>
-        <div class="playground-dp-range-col">
-          <DatePickerRange
-            style="max-width: 320px;"
-            :events="rangeEvents"
-            :start-date="startDate"
-            :end-date="endDate"
-            @update:start-date="startDate = $event"
-            @update:end-date="endDate = $event"
-          />
         </div>
       </section>
 
