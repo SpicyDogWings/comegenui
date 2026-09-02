@@ -20,8 +20,8 @@ const outlineItems = [
   { label: 'Eventos', id: 'events' },
   { label: 'Dual Calendar', id: 'dual-calendar' },
   { label: 'Colores', id: 'colors' },
+  { label: 'Posiciones', id: 'positions' },
   { label: 'Programático', id: 'programmatic' },
-  { label: 'Eventos', id: 'events' },
   { label: 'Disabled', id: 'disabled' },
 ];
 
@@ -168,6 +168,51 @@ function fmt(d: Date | null) {
 
       <hr class="playground-separator" />
 
+      <section id="positions" class="playground-section">
+        <h2>Posición del panel — todas las combinaciones</h2>
+        <p class="playground-desc">
+          API: <code>position</code> (<code>bottom</code>/<code>top</code>/<code>left</code>/<code>right</code>) + <code>align</code> (<code>start</code>/<code>center</code>/<code>end</code>).
+          Sin props → default (<code>bottom</code> + <code>start</code>). <code>fixed</code> fija el panel al viewport.
+        </p>
+        <div class="playground-dp-range-row">
+          <div class="playground-position-demo">
+            <strong>default</strong>
+            <DatePickerRange start-date="2026-09-03" end-date="2026-09-07" style="max-width: 280px;" />
+          </div>
+        </div>
+        <div class="playground-dp-range-row">
+          <div class="playground-position-demo"><strong>bottom + start</strong><DatePickerRange start-date="2026-09-03" end-date="2026-09-07" position="bottom" align="start" style="max-width: 280px;" /></div>
+          <div class="playground-position-demo"><strong>bottom + center</strong><DatePickerRange start-date="2026-09-03" end-date="2026-09-07" position="bottom" align="center" style="max-width: 280px;" /></div>
+          <div class="playground-position-demo"><strong>bottom + end</strong><DatePickerRange start-date="2026-09-03" end-date="2026-09-07" position="bottom" align="end" style="max-width: 280px;" /></div>
+        </div>
+        <div class="playground-dp-range-row">
+          <div class="playground-position-demo playground-position-demo--top"><strong>top + start</strong><DatePickerRange start-date="2026-09-03" end-date="2026-09-07" position="top" align="start" style="max-width: 280px;" /></div>
+          <div class="playground-position-demo playground-position-demo--top"><strong>top + center</strong><DatePickerRange start-date="2026-09-03" end-date="2026-09-07" position="top" align="center" style="max-width: 280px;" /></div>
+          <div class="playground-position-demo playground-position-demo--top"><strong>top + end</strong><DatePickerRange start-date="2026-09-03" end-date="2026-09-07" position="top" align="end" style="max-width: 280px;" /></div>
+        </div>
+        <div class="playground-dp-range-row">
+          <div class="playground-position-demo"><strong>right + start</strong><DatePickerRange start-date="2026-09-03" end-date="2026-09-07" position="right" align="start" style="max-width: 280px;" /></div>
+          <div class="playground-position-demo"><strong>right + center</strong><DatePickerRange start-date="2026-09-03" end-date="2026-09-07" position="right" align="center" style="max-width: 280px;" /></div>
+          <div class="playground-position-demo"><strong>right + end</strong><DatePickerRange start-date="2026-09-03" end-date="2026-09-07" position="right" align="end" style="max-width: 280px;" /></div>
+        </div>
+        <div class="playground-dp-range-row">
+          <div class="playground-position-demo playground-position-demo--left"><strong>left + start</strong><DatePickerRange start-date="2026-09-03" end-date="2026-09-07" position="left" align="start" style="max-width: 280px;" /></div>
+          <div class="playground-position-demo playground-position-demo--left"><strong>left + center</strong><DatePickerRange start-date="2026-09-03" end-date="2026-09-07" position="left" align="center" style="max-width: 280px;" /></div>
+          <div class="playground-position-demo playground-position-demo--left"><strong>left + end</strong><DatePickerRange start-date="2026-09-03" end-date="2026-09-07" position="left" align="end" style="max-width: 280px;" /></div>
+        </div>
+        <p class="playground-desc" style="margin-top: 1rem;">
+          <strong>Dual calendar + posición:</strong> se combinan sin problemas.
+        </p>
+        <div class="playground-dp-range-row">
+          <div class="playground-position-demo"><strong>dual + right</strong><DatePickerRange dual-calendar position="right" align="start" start-date="2026-09-03" end-date="2026-10-07" style="max-width: 600px;" /></div>
+        </div>
+        <div class="playground-dp-range-row">
+          <div class="playground-position-demo playground-position-demo--left"><strong>dual + left</strong><DatePickerRange dual-calendar position="left" align="end" start-date="2026-09-03" end-date="2026-10-07" style="max-width: 600px;" /></div>
+        </div>
+      </section>
+
+      <hr class="playground-separator" />
+
       <section id="programmatic" class="playground-section">
         <h2>Control programático</h2>
         <div class="playground-dp-range-row">
@@ -235,5 +280,29 @@ function fmt(d: Date | null) {
   font-family: var(--cu-font-mono);
   font-size: var(--cu-font-size-sm);
   margin: 0;
+}
+
+.playground-position-demo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 220px;
+}
+
+.playground-position-demo strong {
+  font-size: var(--cu-font-size-xs);
+  color: var(--cu-color-neutral);
+  font-family: var(--cu-font-mono);
+  font-weight: 600;
+}
+
+/* Espacio arriba para que el panel en position="top" no se recorte contra el header */
+.playground-position-demo--top {
+  margin-top: 180px;
+}
+
+/* Espacio a la izquierda para que el panel en position="left" no se recorte contra el borde */
+.playground-position-demo--left {
+  margin-left: 220px;
 }
 </style>
