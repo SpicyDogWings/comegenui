@@ -182,13 +182,26 @@ export function parseMarkdown(content: string): string {
 
 ## Vue Integration Pattern
 
-### Problem: Vue Collapses Whitespace
+### Problem: Vue Collapses Whitespace at Compile Time
 
-Vue's template compiler collapses whitespace between tags by default. This breaks markdown parsing since newlines are significant.
+Vue's template compiler collapses whitespace between tags by default. This happens **before** DOM rendering, so `textContent` already arrives without newlines. CSS `white-space: pre-wrap` does NOT fix this because the newlines are gone before the browser even renders.
 
-### Solution: Use `white-space: pre-wrap` + read textContent
+### Solution: `whitespace: 'preserve'` in Vue Compiler Options
 
-> **CRITICAL GOTCHA:** The `white-space: pre-wrap` MUST be on the source element whose `textContent` you're reading. If you use `data-md-source` attribute without the class, or any element without this style, `textContent` will NOT contain newlines and markdown will render as a single inline block.
+**This is the ONLY reliable fix.** You must configure Vue's template compiler to preserve whitespace:
+
+```ts
+// vite.config.ts
+vue({
+  template: {
+    compilerOptions: {
+      whitespace: 'preserve'
+    }
+  }
+})
+```
+
+> **CRITICAL:** Without this compiler option, `el.textContent` will NOT contain newlines regardless of any CSS you apply.
 
 ```vue
 <script setup lang="ts">
@@ -226,20 +239,14 @@ onMounted(() => {
 
 <template>
   <div class="cu-markdown">
-    <div ref="slotEl" class="cu-md-slot"><slot /></div>
+    <div ref="slotEl"><slot /></div>
     <div class="cu-md-output" v-html="rendered"></div>
   </div>
 </template>
-
-<style scoped>
-.cu-md-slot {
-  white-space: pre-wrap;
-}
-</style>
 ```
 
 ### Key Points:
-1. **`white-space: pre-wrap`** preserves newlines in the rendered DOM
+1. **`whitespace: 'preserve'` in vite.config.ts** - THE critical fix, without this nothing works
 2. **`dedent()`** removes common indentation from slot content
 3. **`el.style.display = 'none'`** hides raw markdown after parsing (JS, not CSS, because CSS can't select previous siblings)
 4. **`{ async: false }`** required in marked v15+ to get string instead of Promise
@@ -256,7 +263,7 @@ This avoids the whitespace issue entirely.
 
 | Issue | Cause | Solution |
 |-------|-------|----------|
-| Everything renders inline (no line breaks) | Source element missing `white-space: pre-wrap` | Add `.cu-md-slot { white-space: pre-wrap }` to the div with `<slot />` |
+| Everything renders inline (no line breaks) | Vue compiler collapsing whitespace | Add `whitespace: 'preserve'` to `@vitejs/plugin-vue` config |
 | `[object Promise]` in output | `marked.parse()` returns Promise in v15+ | Use `{ async: false }` option |
 | Bold/italic not rendering | Inline tokens not parsed | Use `this.parser.parseInline(token.tokens)` |
 | Lists show "undefined" | `body` param no longer exists | Use `token.items` array |
