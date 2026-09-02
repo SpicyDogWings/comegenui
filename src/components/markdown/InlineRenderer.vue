@@ -25,6 +25,8 @@ function tokenToHtml(token: any): string {
       return `<code class="cu-md-code-inline">${escapeHtml(token.text)}</code>`
     case 'del':
       return `<del>${(token.tokens || []).map(tokenToHtml).join('')}</del>`
+    case 'image':
+      return `<img src="${escapeHtml(token.href)}" alt="${escapeHtml((token.tokens || []).map(tokenToHtml).join('') || token.text)}" class="cu-md-image" />`
     case 'br':
       return '<br>'
     case 'escape':
