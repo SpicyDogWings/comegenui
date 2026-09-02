@@ -103,7 +103,8 @@ const lineCount = computed(() => lines.value.length)
 }
 
 .cu-code-block--solid .cu-code-block-code,
-.cu-code-block--solid .cu-code-block-line-number {
+.cu-code-block--solid .cu-code-block-line-number,
+.cu-code-block--solid .cu-code-block-line-content {
   color: var(--cu-color-surface);
 }
 
