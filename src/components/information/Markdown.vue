@@ -122,23 +122,33 @@ onMounted(() => {
   font-size: 0.9em;
 }
 
-.cu-markdown :deep(.cu-md-table) {
+.cu-markdown :deep(.cu-table-element) {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: var(--cu-space-md);
 }
 
-.cu-markdown :deep(.cu-md-th) {
-  background-color: var(--cu-color-neutral-soft);
-  padding: var(--cu-space-sm) var(--cu-space-md);
+.cu-markdown :deep(.cu-table-th) {
   text-align: left;
-  font-weight: var(--cu-font-weight-semibold);
-  border-bottom: 2px solid var(--cu-color-neutral-subtle-border);
+  padding: var(--cu-space-md);
+  font-family: var(--cu-font-sans);
+  font-weight: var(--cu-font-weight-medium);
+  background-color: var(--cu-color-neutral-soft);
+  color: var(--cu-color-neutral-text);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
 
-.cu-markdown :deep(.cu-md-td) {
-  padding: var(--cu-space-sm) var(--cu-space-md);
+.cu-markdown :deep(.cu-table-td) {
+  padding: var(--cu-space-md);
+  font-family: var(--cu-font-sans);
+  color: var(--cu-color-neutral-text);
+}
+
+.cu-markdown :deep(.cu-table-row) {
   border-bottom: var(--cu-border-thin) solid rgba(0, 0, 0, 0.08);
+}
+
+.cu-markdown :deep(.cu-table-row:last-child) {
+  border-bottom: none;
 }
 
 .cu-markdown :deep(.cu-md-hr) {

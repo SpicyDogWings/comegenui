@@ -13,9 +13,10 @@ const classMap: Record<string, string> = {
   link: 'cu-md-link',
   image: 'cu-md-image',
   hr: 'cu-md-hr',
-  table: 'cu-md-table',
-  th: 'cu-md-th',
-  td: 'cu-md-td',
+  table: 'cu-table-element',
+  th: 'cu-table-th',
+  td: 'cu-table-td',
+  tr: 'cu-table-row',
   del: 'cu-md-del',
   br: 'cu-md-br',
 }
@@ -88,7 +89,7 @@ renderer.table = function ({ header, rows }: any) {
     for (const cell of row) {
       rowCells += `<td class="${classMap.td}">${this.parser.parseInline(cell.tokens)}</td>`
     }
-    bodyRows += `<tr>${rowCells}</tr>`
+    bodyRows += `<tr class="${classMap.tr}">${rowCells}</tr>`
   }
   return `<table class="${classMap.table}"><thead><tr>${headerRow}</tr></thead><tbody>${bodyRows}</tbody></table>\n`
 }
