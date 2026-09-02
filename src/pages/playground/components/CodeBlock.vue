@@ -14,7 +14,6 @@ const codePython = `def saludar(nombre):
 const outlineItems = [
   { label: 'Variants', id: 'variants' },
   { label: 'Line numbers', id: 'line-numbers' },
-  { label: 'Sin lenguaje', id: 'sin-lenguaje' },
 ];
 </script>
 
@@ -35,14 +34,12 @@ const outlineItems = [
 
       <section id="line-numbers" class="playground-section">
         <h2>Line Numbers</h2>
-        <CodeBlock :code="codePython" language="python" :line-numbers="true" />
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="sin-lenguaje" class="playground-section">
-        <h2>Sin lenguaje</h2>
-        <CodeBlock :code="codeJavaScript" />
+        <h3>default</h3>
+        <CodeBlock :code="codePython" language="python" variant="default" :line-numbers="true" />
+        <h3>outlined</h3>
+        <CodeBlock :code="codePython" language="python" variant="outlined" :line-numbers="true" />
+        <h3>solid</h3>
+        <CodeBlock :code="codePython" language="python" variant="solid" :line-numbers="true" />
       </section>
     </div>
   </PlaygroundLayout>
