@@ -17,10 +17,11 @@ defineProps({
 <style scoped>
 .cu-code-block {
   position: relative;
-  background-color: var(--cu-color-neutral);
+  background-color: var(--cu-color-surface);
   border-radius: var(--cu-radius-sm);
   margin-bottom: var(--cu-space-md);
   overflow: hidden;
+  border: var(--cu-border-thin) solid var(--cu-color-neutral-subtle-border);
 }
 
 .cu-code-block-pre {
@@ -42,7 +43,7 @@ defineProps({
   bottom: 0;
   right: 0;
   padding: var(--cu-space-2xs) var(--cu-space-sm);
-  background-color: var(--cu-color-neutral-subtle);
+  background-color: var(--cu-color-neutral-soft);
   border-top-left-radius: var(--cu-radius-sm);
   font-family: var(--cu-font-sans);
   font-size: var(--cu-font-size-xs);
