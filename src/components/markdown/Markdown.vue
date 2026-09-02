@@ -94,6 +94,7 @@ defineExpose({
         <component
           v-else-if="block.type === 'inline'"
           :is="block.tag"
+          :id="block.id"
           :class="block.html"
         >
           <InlineRenderer :tokens="block.tokens || []" />
