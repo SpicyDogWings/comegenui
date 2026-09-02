@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
-import Blockquote from "@/components/information/Blockquote.vue";
+import Blockquote from "@/components/markdown/Blockquote.vue";
 
 const outlineItems = [
   { label: 'Default', id: 'default' },

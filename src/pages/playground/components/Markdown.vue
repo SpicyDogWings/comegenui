@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
-import Markdown from "@/components/information/Markdown.vue";
+import Markdown from "@/components/markdown/Markdown.vue";
 
 const outlineItems = [
   { label: "Headings", id: "headings" },

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
-import CodeBlock from "@/components/information/CodeBlock.vue";
+import CodeBlock from "@/components/markdown/CodeBlock.vue";
 
 const codeJavaScript = `function hello() {
   console.log("Hola mundo");
