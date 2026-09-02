@@ -1,34 +1,17 @@
 <script setup lang="ts">
 import { ref, onMounted, nextTick } from 'vue'
-import { parseMarkdown } from '@/markdown'
+import { useMarkdown } from '@/composables/useMarkdown'
 
-const markdown = ref('')
 const slotEl = ref<HTMLElement | null>(null)
+const slotText = ref('')
 
-function dedent(text: string): string {
-  const lines = text.split('\n')
-  while (lines.length && lines[0].trim() === '') lines.shift()
-  while (lines.length && lines[lines.length - 1].trim() === '') lines.pop()
-
-  let minIndent = Infinity
-  for (const line of lines) {
-    if (line.trim() === '') continue
-    const match = line.match(/^(\s*)/)
-    if (match) {
-      minIndent = Math.min(minIndent, match[1].length)
-    }
-  }
-
-  if (minIndent === Infinity) minIndent = 0
-  return lines.map(line => line.slice(minIndent)).join('\n')
-}
+const { rendered } = useMarkdown(slotText)
 
 onMounted(() => {
   nextTick(() => {
     const el = slotEl.value
     if (!el) return
-    const raw = dedent(el.textContent || '')
-    markdown.value = raw ? parseMarkdown(raw) : ''
+    slotText.value = el.textContent || ''
     el.style.display = 'none'
   })
 })
@@ -37,7 +20,7 @@ onMounted(() => {
 <template>
   <div class="cu-markdown">
     <div ref="slotEl" class="cu-md-slot"><slot /></div>
-    <div class="cu-md-output" v-html="markdown"></div>
+    <div class="cu-md-output" v-html="rendered"></div>
   </div>
 </template>
 
