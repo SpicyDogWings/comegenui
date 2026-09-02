@@ -64,6 +64,14 @@ const navItems = [
         ]
       },
       {
+        label: 'markdown',
+        children: [
+          { label: 'Markdown', path: '/playground/components/markdown' },
+          { label: 'CodeBlock', path: '/playground/components/codeblock' },
+          { label: 'Blockquote', path: '/playground/components/blockquote' },
+        ]
+      },
+      {
         label: 'overlay',
         children: [
           { label: 'Modal', path: '/playground/components/modal' },

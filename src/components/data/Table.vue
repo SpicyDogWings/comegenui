@@ -54,6 +54,11 @@ const props = defineProps({
     required: false,
     default: false,
   },
+  htmlCells: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 });
 
 const tableStyles = computed(() => ({
@@ -167,7 +172,8 @@ const isRowDisabled = (row: Record<string, any>): boolean => {
                   :index="rowIndex"
                   :value="getCellValue(row, col)"
                 >
-                  {{ getCellValue(row, col) }}
+                  <span v-if="props.htmlCells" v-html="getCellValue(row, col)"></span>
+                  <template v-else>{{ getCellValue(row, col) }}</template>
                 </slot>
               </td>
             </slot>

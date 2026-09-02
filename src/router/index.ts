@@ -142,14 +142,24 @@ const router = createRouter({
               component: () => import("@/pages/playground/components/AdvancedTable.vue")
             },
             {
-              path: "loader",
-              name: "Loader playground",
-              component: () => import("@/pages/playground/components/Loader.vue")
-            },
-            {
               path: "editable-row",
               name: "Editable Row playground",
               component: () => import("@/pages/playground/components/EditableRow.vue")
+            },
+            {
+              path: "markdown",
+              name: "Markdown playground",
+              component: () => import("@/pages/playground/components/Markdown.vue")
+            },
+            {
+              path: "codeblock",
+              name: "CodeBlock playground",
+              component: () => import("@/pages/playground/components/CodeBlock.vue")
+            },
+            {
+              path: "blockquote",
+              name: "Blockquote playground",
+              component: () => import("@/pages/playground/components/Blockquote.vue")
             },
           ]
         },
