@@ -37,7 +37,7 @@ const lineCount = computed(() => lines.value.length)
 }
 
 .cu-code-block-pre {
-  padding: var(--cu-space-lg) var(--cu-space-xl);
+  padding: var(--cu-space-xl) var(--cu-space-2xl);
   overflow-x: auto;
   margin: 0;
 }
