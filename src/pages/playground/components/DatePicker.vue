@@ -35,15 +35,20 @@ function onEvent(name: string, payload: any) {
   lastEvent.value = `${name}: ${payload instanceof Date ? payload.toISOString().slice(0, 10) : JSON.stringify(payload)}`;
 }
 
+const now = new Date();
+const y = now.getFullYear();
+const m = String(now.getMonth() + 1).padStart(2, '0');
+const d = (day: number) => `${y}-${m}-${String(day).padStart(2, '0')}`;
+
 const pickerEvents = [
-  { date: '2026-08-03', color: 'primary' },
-  { date: '2026-08-07', color: 'success' },
-  { date: '2026-08-11', color: 'warning' },
-  { date: '2026-08-15', color: 'danger' },
-  { date: '2026-08-18', color: 'primary' },
-  { date: '2026-08-22', color: 'success' },
-  { date: '2026-08-25', color: 'warning' },
-  { date: '2026-08-11', color: 'danger' },
+  { date: d(3), color: 'primary' },
+  { date: d(7), color: 'success' },
+  { date: d(11), color: 'warning' },
+  { date: d(15), color: 'danger' },
+  { date: d(18), color: 'primary' },
+  { date: d(22), color: 'success' },
+  { date: d(25), color: 'warning' },
+  { date: d(11), color: 'danger' },
 ]
 </script>
 

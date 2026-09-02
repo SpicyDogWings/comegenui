@@ -34,16 +34,22 @@ function onEvent(name: string, payload: any) {
   lastEvent.value = `${name}: ${payload instanceof Date ? payload.toISOString().slice(0, 10) : JSON.stringify(payload)}`;
 }
 
+const now = new Date();
+const y = now.getFullYear();
+const m = String(now.getMonth() + 1).padStart(2, '0');
+const d = (day: number) => `${y}-${m}-${String(day).padStart(2, '0')}`;
+
 const calendarEvents = [
-  { date: '2026-08-03', color: 'primary' },
-  { date: '2026-08-07', color: 'success' },
-  { date: '2026-08-11', color: 'warning' },
-  { date: '2026-08-15', color: 'danger' },
-  { date: '2026-08-18', color: 'primary' },
-  { date: '2026-08-22', color: 'success' },
-  { date: '2026-08-25', color: 'warning' },
+  { date: d(3), color: 'primary' },
+  { date: d(7), color: 'success' },
+  { date: d(11), color: 'warning' },
+  { date: d(15), color: 'danger' },
+  { date: d(18), color: 'primary' },
+  { date: d(22), color: 'success' },
+  { date: d(25), color: 'warning' },
   // Día con múltiples eventos:
-  { date: '2026-08-11', color: 'danger' },
+  { date: d(11), color: 'danger' },
+  { date: d(11), color: 'primary' },
 ]
 </script>
 
@@ -89,7 +95,7 @@ const calendarEvents = [
           <Calendar
             style="width: 380px;"
             :events="calendarEvents"
-            model-value="2026-08-11"
+            :model-value="d(11)"
             @select="(d: Date) => onEvent('select', d)"
             @change="(d: Date) => onEvent('change', d)"
           />
@@ -100,7 +106,7 @@ const calendarEvents = [
               <li><span class="legend-dot" style="background: #22c55e;"></span> Recepción (7, 22)</li>
               <li><span class="legend-dot" style="background: #f59e0b;"></span> Vencimiento (11, 25)</li>
               <li><span class="legend-dot" style="background: #ef4444;"></span> Urgente (15)</li>
-              <li><span class="legend-dot" style="background: #f59e0b;"></span><span class="legend-dot" style="background: #ef4444;"></span> Múltiple (11)</li>
+              <li><span class="legend-dot" style="background: #f59e0b;"></span><span class="legend-dot" style="background: #ef4444;"></span><span class="legend-dot" style="background: #3b82f6;"></span> Múltiple (11)</li>
             </ul>
           </div>
         </div>
