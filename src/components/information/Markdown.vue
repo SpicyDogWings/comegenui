@@ -125,6 +125,8 @@ onMounted(() => {
 .cu-markdown :deep(.cu-table-element) {
   width: 100%;
   border-collapse: collapse;
+  border-radius: var(--cu-radius-md);
+  overflow: hidden;
 }
 
 .cu-markdown :deep(.cu-table-th) {
