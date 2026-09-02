@@ -1,23 +1,29 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import Badge from './Badge.vue'
 
 const props = defineProps({
   code: { type: String, required: true },
   language: { type: String, default: '' },
   variant: { type: String, default: 'default' },
+  lineNumbers: { type: Boolean, default: false },
 })
 
 const codeBlockClasses = computed(() => [
   'cu-code-block',
   `cu-code-block--${props.variant}`,
+  { 'cu-code-block--line-numbers': props.lineNumbers },
 ])
+
+const lines = computed(() => props.code.split('\n'))
+const lineCount = computed(() => lines.value.length)
 </script>
 
 <template>
   <div :class="codeBlockClasses">
-    <pre class="cu-code-block-pre"><code class="cu-code-block-code">{{ code }}</code></pre>
+    <pre class="cu-code-block-pre"><code class="cu-code-block-code"><template v-if="lineNumbers"><span v-for="(line, i) in lines" :key="i" class="cu-code-block-line"><span class="cu-code-block-line-number">{{ i + 1 }}</span><span class="cu-code-block-line-content">{{ line }}</span></span></template><template v-else>{{ code }}</template></code></pre>
     <div v-if="language" class="cu-code-block-lang">
-      <span>{{ language }}</span>
+      <Badge color="neutral" variant="soft">{{ language }}</Badge>
     </div>
   </div>
 </template>
@@ -31,7 +37,7 @@ const codeBlockClasses = computed(() => [
 }
 
 .cu-code-block-pre {
-  padding: var(--cu-space-md);
+  padding: var(--cu-space-md) var(--cu-space-lg);
   overflow-x: auto;
   margin: 0;
 }
@@ -46,23 +52,37 @@ const codeBlockClasses = computed(() => [
 
 .cu-code-block-lang {
   position: absolute;
-  bottom: 0;
-  right: 0;
-  padding: var(--cu-space-2xs) var(--cu-space-sm);
-  border-top-left-radius: var(--cu-radius-sm);
-  font-family: var(--cu-font-sans);
-  font-size: var(--cu-font-size-xs);
-  font-weight: var(--cu-font-weight-medium);
-  opacity: 0.8;
+  bottom: var(--cu-space-xs);
+  right: var(--cu-space-xs);
 }
 
-/* default - white background, no visible border */
+/* line numbers */
+.cu-code-block-line {
+  display: block;
+}
+
+.cu-code-block-line-number {
+  display: inline-block;
+  width: 2em;
+  margin-right: var(--cu-space-md);
+  text-align: right;
+  color: var(--cu-color-neutral-text);
+  opacity: 0.4;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.cu-code-block-line-content {
+  display: inline;
+}
+
+/* default - solid neutral */
 .cu-code-block--default {
-  background-color: var(--cu-color-surface);
+  background-color: var(--cu-color-neutral-soft);
+  border: none;
 }
 
 .cu-code-block--default .cu-code-block-lang {
-  background-color: var(--cu-color-neutral-soft);
   color: var(--cu-color-neutral-text);
 }
 
@@ -73,18 +93,22 @@ const codeBlockClasses = computed(() => [
 }
 
 .cu-code-block--outlined .cu-code-block-lang {
-  background-color: var(--cu-color-neutral-soft);
   color: var(--cu-color-neutral-text);
 }
 
-/* solid - neutral background */
+/* solid - darker neutral */
 .cu-code-block--solid {
-  background-color: var(--cu-color-neutral-soft);
+  background-color: var(--cu-color-neutral);
   border: none;
 }
 
-.cu-code-block--solid .cu-code-block-lang {
-  background-color: var(--cu-color-neutral);
+.cu-code-block--solid .cu-code-block-code,
+.cu-code-block--solid .cu-code-block-line-number {
+  color: var(--cu-color-surface);
+}
+
+.cu-code-block--solid :deep(.cu-badge) {
+  background-color: rgba(255, 255, 255, 0.15);
   color: var(--cu-color-surface);
 }
 </style>
