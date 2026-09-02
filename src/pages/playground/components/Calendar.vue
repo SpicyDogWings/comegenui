@@ -23,16 +23,28 @@ const outlineItems = [
   { label: 'Días deshabilitados', id: 'disabled-days' },
   { label: 'Semana domingo', id: 'week-start' },
   { label: 'Locale', id: 'locale' },
+  { label: 'Eventos', id: 'events' },
   { label: 'Variantes', id: 'variants' },
   { label: 'Colores', id: 'colors' },
   { label: 'Programático', id: 'programmatic' },
-  { label: 'Eventos', id: 'events' },
   { label: 'Disabled', id: 'disabled' },
 ];
 
 function onEvent(name: string, payload: any) {
   lastEvent.value = `${name}: ${payload instanceof Date ? payload.toISOString().slice(0, 10) : JSON.stringify(payload)}`;
 }
+
+const calendarEvents = [
+  { date: '2026-08-03', color: 'primary' },
+  { date: '2026-08-07', color: 'success' },
+  { date: '2026-08-11', color: 'warning' },
+  { date: '2026-08-15', color: 'danger' },
+  { date: '2026-08-18', color: 'primary' },
+  { date: '2026-08-22', color: 'success' },
+  { date: '2026-08-25', color: 'warning' },
+  // Día con múltiples eventos:
+  { date: '2026-08-11', color: 'danger' },
+]
 </script>
 
 <template>
@@ -128,6 +140,35 @@ function onEvent(name: string, payload: any) {
 
       <hr class="playground-separator" />
 
+      <section id="events" class="playground-section">
+        <h2>Eventos (puntos bajo la fecha)</h2>
+        <p class="playground-desc">
+          Puntos bajo las fechas para señalar eventos. Cada evento tiene <code>date</code> y opcional <code>color</code> (semántico: <code>primary</code>, <code>success</code>, <code>warning</code>, <code>danger</code>…). Un día puede tener múltiples puntos.
+        </p>
+        <div class="playground-calendar-row">
+          <Calendar
+            style="width: 380px;"
+            :events="calendarEvents"
+            model-value="2026-08-11"
+            @select="(d: Date) => onEvent('select', d)"
+            @change="(d: Date) => onEvent('change', d)"
+          />
+          <div class="playground-events-legend">
+            <strong>Leyenda:</strong>
+            <ul>
+              <li><span class="legend-dot" style="background: var(--cu-color-primary)"></span> Entrada a bodega (3, 18)</li>
+              <li><span class="legend-dot" style="background: var(--cu-color-success)"></span> Recepción (7, 22)</li>
+              <li><span class="legend-dot" style="background: var(--cu-color-warning)"></span> Vencimiento (11, 25)</li>
+              <li><span class="legend-dot" style="background: var(--cu-color-danger)"></span> Urgente (15)</li>
+              <li><span class="legend-dot" style="background: var(--cu-color-warning)"></span><span class="legend-dot" style="background: var(--cu-color-danger)"></span> Múltiple (11)</li>
+            </ul>
+          </div>
+        </div>
+        <p class="playground-state">último evento: <strong>{{ lastEvent || '—' }}</strong></p>
+      </section>
+
+      <hr class="playground-separator" />
+
       <section id="variants" class="playground-section">
         <h2>Variantes del día seleccionado</h2>
         <div class="playground-calendar-row">
@@ -159,20 +200,6 @@ function onEvent(name: string, payload: any) {
         </p>
         <div class="playground-calendar-col">
           <Calendar ref="programmaticRef" style="width: 300px;" @select="readValue" />
-        </div>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="events" class="playground-section">
-        <h2>Eventos</h2>
-        <div class="playground-calendar-col">
-          <Calendar
-            style="width: 300px;"
-            @select="(d: Date) => onEvent('select', d)"
-            @change="(d: Date) => onEvent('change', d)"
-          />
-          <p class="playground-state">último evento: <strong>{{ lastEvent || '—' }}</strong></p>
         </div>
       </section>
 
@@ -221,5 +248,33 @@ function onEvent(name: string, payload: any) {
   font-family: var(--cu-font-mono);
   font-size: var(--cu-font-size-sm);
   margin: 0;
+}
+
+.playground-events-legend {
+  font-size: var(--cu-font-size-sm);
+  color: var(--cu-color-neutral);
+}
+
+.playground-events-legend ul {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.playground-events-legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
 }
 </style>

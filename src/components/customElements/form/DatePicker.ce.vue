@@ -36,6 +36,10 @@ const props = defineProps({
   yearFormat: { type: String, default: 'yyyy' },
   disabledWeekdays: { type: [Array, String] as PropType<number[] | string>, default: '' },
   disabledDates: { type: [Array, String] as PropType<(string | Date)[] | string>, default: '' },
+  events: {
+    type: Array as PropType<CalendarEvent[]>,
+    default: () => [],
+  },
   position: { type: String, default: 'bottom' },
   align: { type: String, default: 'start' },
   fixed: { type: Boolean, default: false },
@@ -43,6 +47,11 @@ const props = defineProps({
   todayButton: { type: Boolean, default: true },
   label: { type: String, default: '' },
 })
+
+interface CalendarEvent {
+  date: string | number | Date
+  color?: string
+}
 
 const pickerRef = ref<InstanceType<typeof DatePicker> | null>(null)
 const innerValue = ref(props.modelValue)
@@ -92,6 +101,7 @@ defineExpose({ open, close, toggle, getValue, setValue, clear, isOpen: () => pic
     :year-format="props.yearFormat"
     :disabled-weekdays="props.disabledWeekdays"
     :disabled-dates="props.disabledDates"
+    :events="props.events"
     :position="props.position"
     :align="props.align"
     :fixed="props.fixed"
