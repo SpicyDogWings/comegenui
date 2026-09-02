@@ -4,14 +4,12 @@ import { computed } from 'vue'
 const props = defineProps({
   code: { type: String, required: true },
   language: { type: String, default: '' },
-  color: { type: String, default: 'neutral' },
   variant: { type: String, default: 'default' },
 })
 
 const codeBlockClasses = computed(() => [
   'cu-code-block',
   `cu-code-block--${props.variant}`,
-  `cu-code-block--${props.color}`,
 ])
 </script>
 
@@ -28,7 +26,7 @@ const codeBlockClasses = computed(() => [
 .cu-code-block {
   position: relative;
   border-radius: var(--cu-radius-sm);
-  margin-bottom: var(--cu-space-md);
+  margin-bottom: var(--cu-space-lg);
   overflow: hidden;
 }
 
@@ -55,88 +53,38 @@ const codeBlockClasses = computed(() => [
   font-family: var(--cu-font-sans);
   font-size: var(--cu-font-size-xs);
   font-weight: var(--cu-font-weight-medium);
-  opacity: 0.7;
+  opacity: 0.8;
 }
 
-/* default (solid neutral) */
+/* default - white background, no visible border */
 .cu-code-block--default {
   background-color: var(--cu-color-surface);
-  border: var(--cu-border-thin) solid var(--cu-color-neutral-subtle-border);
 }
+
 .cu-code-block--default .cu-code-block-lang {
   background-color: var(--cu-color-neutral-soft);
   color: var(--cu-color-neutral-text);
 }
 
-/* outlined */
+/* outlined - transparent with border */
 .cu-code-block--outlined {
   background-color: transparent;
   border: var(--cu-border-thin) solid var(--cu-color-neutral-subtle-border);
 }
+
 .cu-code-block--outlined .cu-code-block-lang {
   background-color: var(--cu-color-neutral-soft);
   color: var(--cu-color-neutral-text);
 }
 
-/* solid */
+/* solid - neutral background */
 .cu-code-block--solid {
+  background-color: var(--cu-color-neutral-soft);
   border: none;
 }
-.cu-code-block--solid.cu-code-block--neutral {
-  background-color: var(--cu-color-neutral-soft);
-}
-.cu-code-block--solid.cu-code-block--neutral .cu-code-block-lang {
+
+.cu-code-block--solid .cu-code-block-lang {
   background-color: var(--cu-color-neutral);
   color: var(--cu-color-surface);
-}
-.cu-code-block--solid.cu-code-block--primary {
-  background-color: var(--cu-color-primary);
-}
-.cu-code-block--solid.cu-code-block--primary .cu-code-block-code,
-.cu-code-block--solid.cu-code-block--primary .cu-code-block-lang {
-  color: var(--cu-color-surface);
-}
-.cu-code-block--solid.cu-code-block--primary .cu-code-block-lang {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-.cu-code-block--solid.cu-code-block--secondary {
-  background-color: var(--cu-color-secondary);
-}
-.cu-code-block--solid.cu-code-block--secondary .cu-code-block-code,
-.cu-code-block--solid.cu-code-block--secondary .cu-code-block-lang {
-  color: var(--cu-color-surface);
-}
-.cu-code-block--solid.cu-code-block--secondary .cu-code-block-lang {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-.cu-code-block--solid.cu-code-block--success {
-  background-color: var(--cu-color-success);
-}
-.cu-code-block--solid.cu-code-block--success .cu-code-block-code,
-.cu-code-block--solid.cu-code-block--success .cu-code-block-lang {
-  color: var(--cu-color-surface);
-}
-.cu-code-block--solid.cu-code-block--success .cu-code-block-lang {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-.cu-code-block--solid.cu-code-block--warning {
-  background-color: var(--cu-color-warning);
-}
-.cu-code-block--solid.cu-code-block--warning .cu-code-block-code,
-.cu-code-block--solid.cu-code-block--warning .cu-code-block-lang {
-  color: var(--cu-color-surface);
-}
-.cu-code-block--solid.cu-code-block--warning .cu-code-block-lang {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-.cu-code-block--solid.cu-code-block--danger {
-  background-color: var(--cu-color-danger);
-}
-.cu-code-block--solid.cu-code-block--danger .cu-code-block-code,
-.cu-code-block--solid.cu-code-block--danger .cu-code-block-lang {
-  color: var(--cu-color-surface);
-}
-.cu-code-block--solid.cu-code-block--danger .cu-code-block-lang {
-  background-color: rgba(255, 255, 255, 0.1);
 }
 </style>
