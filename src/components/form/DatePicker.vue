@@ -285,6 +285,9 @@ defineExpose({ open, close, toggle, getValue, setValue, clear, isOpen: () => dro
 .cu-date-picker {
   width: 100%;
   outline: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .cu-date-picker :deep(.cu-dropdown) {
