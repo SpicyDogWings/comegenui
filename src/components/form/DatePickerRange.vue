@@ -179,7 +179,6 @@ function onSelect(day: Date) {
     pickingEnd.value = false
     emit('select', { start: startValue.value, end: endValue.value })
     emit('change', { start: startValue.value, end: endValue.value })
-    dropdownRef.value?.close()
   }
 }
 
