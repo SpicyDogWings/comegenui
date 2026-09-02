@@ -1,18 +1,18 @@
 :root {
-/* Colors */
-    --cu-color-primary: #006289;
-    --cu-color-primary-text: #002249;
-    --cu-color-primary-hover: #00486f;
-    --cu-color-primary-active: #1a7ca3;
-    --cu-color-primary-ghost-hover: rgba(0, 98, 137, 0.09999999999999998);
-    --cu-color-primary-ghost-active: rgba(0, 98, 137, 0.19999999999999996);
-    --cu-color-primary-soft: rgba(0, 98, 137, 0.15000000000000002);
-    --cu-color-primary-soft-hover: rgba(0, 98, 137, 0.25);
-    --cu-color-primary-soft-active: rgba(0, 98, 137, 0.35);
-    --cu-color-primary-subtle: rgba(0, 98, 137, 0.09999999999999998);
-    --cu-color-primary-subtle-hover: rgba(0, 98, 137, 0.19999999999999996);
-    --cu-color-primary-subtle-active: rgba(0, 98, 137, 0.30000000000000004);
-    --cu-color-primary-subtle-border: rgba(0, 98, 137, 0.5);
+    /* Colors */
+    --cu-color-primary: #0059b1;
+    --cu-color-primary-text: #001971;
+    --cu-color-primary-hover: #003f97;
+    --cu-color-primary-active: #1a73cb;
+    --cu-color-primary-ghost-hover: rgba(0, 89, 177, 0.09999999999999998);
+    --cu-color-primary-ghost-active: rgba(0, 89, 177, 0.19999999999999996);
+    --cu-color-primary-soft: rgba(0, 89, 177, 0.15000000000000002);
+    --cu-color-primary-soft-hover: rgba(0, 89, 177, 0.25);
+    --cu-color-primary-soft-active: rgba(0, 89, 177, 0.35);
+    --cu-color-primary-subtle: rgba(0, 89, 177, 0.09999999999999998);
+    --cu-color-primary-subtle-hover: rgba(0, 89, 177, 0.19999999999999996);
+    --cu-color-primary-subtle-active: rgba(0, 89, 177, 0.30000000000000004);
+    --cu-color-primary-subtle-border: rgba(0, 89, 177, 0.5);
     --cu-color-secondary: #008ec1;
     --cu-color-secondary-text: #004e81;
     --cu-color-secondary-hover: #0074a7;
@@ -78,19 +78,19 @@
     --cu-color-danger-subtle-hover: rgba(224, 27, 36, 0.19999999999999996);
     --cu-color-danger-subtle-active: rgba(224, 27, 36, 0.30000000000000004);
     --cu-color-danger-subtle-border: rgba(224, 27, 36, 0.5);
-    --cu-color-surface: #f6f5f4;
-    --cu-color-surface-text: #b6b5b4;
-    --cu-color-surface-hover: #dcdbda;
+    --cu-color-surface: #eeeeee;
+    --cu-color-surface-text: #aeaeae;
+    --cu-color-surface-hover: #d4d4d4;
     --cu-color-surface-active: #ffffff;
-    --cu-color-surface-ghost-hover: rgba(246, 245, 244, 0.09999999999999998);
-    --cu-color-surface-ghost-active: rgba(246, 245, 244, 0.19999999999999996);
-    --cu-color-surface-soft: rgba(246, 245, 244, 0.15000000000000002);
-    --cu-color-surface-soft-hover: rgba(246, 245, 244, 0.25);
-    --cu-color-surface-soft-active: rgba(246, 245, 244, 0.35);
-    --cu-color-surface-subtle: rgba(246, 245, 244, 0.09999999999999998);
-    --cu-color-surface-subtle-hover: rgba(246, 245, 244, 0.19999999999999996);
-    --cu-color-surface-subtle-active: rgba(246, 245, 244, 0.30000000000000004);
-    --cu-color-surface-subtle-border: rgba(246, 245, 244, 0.5);
+    --cu-color-surface-ghost-hover: rgba(238, 238, 238, 0.09999999999999998);
+    --cu-color-surface-ghost-active: rgba(238, 238, 238, 0.19999999999999996);
+    --cu-color-surface-soft: rgba(238, 238, 238, 0.15000000000000002);
+    --cu-color-surface-soft-hover: rgba(238, 238, 238, 0.25);
+    --cu-color-surface-soft-active: rgba(238, 238, 238, 0.35);
+    --cu-color-surface-subtle: rgba(238, 238, 238, 0.09999999999999998);
+    --cu-color-surface-subtle-hover: rgba(238, 238, 238, 0.19999999999999996);
+    --cu-color-surface-subtle-active: rgba(238, 238, 238, 0.30000000000000004);
+    --cu-color-surface-subtle-border: rgba(238, 238, 238, 0.5);
 
     /* Typography */
     --cu-font-sans: Inter, system-ui, sans-serif;
