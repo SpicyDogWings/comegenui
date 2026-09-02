@@ -48,7 +48,7 @@ function escapeHtml(text: string): string {
       <Button
         v-if="isLink(token)"
         variant="link"
-        :href="token.href"
+        :to="token.href"
         target="_blank"
         rel="noopener"
       >
