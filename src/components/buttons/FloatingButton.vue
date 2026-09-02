@@ -45,11 +45,11 @@ function onClick() {
 <style>
 .cu-floating-button {
   position: fixed;
-  bottom: 1.5rem;
-  right: 1.5rem;
+  bottom: var(--cu-space-lg);
+  right: var(--cu-space-lg);
   z-index: 1000;
-  width: 48px;
-  height: 48px;
+  width: var(--cu-space-3xl);
+  height: var(--cu-space-3xl);
   padding: 0;
   border: none;
   border-radius: var(--cu-radius-full);

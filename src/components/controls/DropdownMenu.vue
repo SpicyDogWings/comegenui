@@ -150,7 +150,7 @@ defineExpose({
   margin: var(--cu-space-xs) auto;
   width: 90%;
   border: 0;
-  border-top: 1px solid var(--cu-border-color);
+  border-top: var(--cu-border-thin) solid var(--cu-border-color);
 }
 
 .cu-dropdown-item {
