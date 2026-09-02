@@ -19,6 +19,7 @@ const rootRef = ref<HTMLElement | null>(null)
 const activeId = ref('')
 let scrollContainer: HTMLElement | null = null
 let sections: HTMLElement[] = []
+let skipNextScrollUpdate = false
 
 function findScrollableAncestor(el: HTMLElement | null): HTMLElement | null {
   let node = el?.parentElement ?? null
@@ -37,6 +38,10 @@ function collectSections() {
 }
 
 function updateActive() {
+  if (skipNextScrollUpdate) {
+    skipNextScrollUpdate = false
+    return
+  }
   if (!scrollContainer) return
   const containerTop = scrollContainer.getBoundingClientRect().top
   const threshold = containerTop + 80
@@ -77,6 +82,7 @@ onBeforeUnmount(() => {
 })
 
 function handleClick(id: string) {
+  skipNextScrollUpdate = true
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
   activeId.value = id
 }
