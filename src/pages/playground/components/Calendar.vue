@@ -81,7 +81,7 @@ const calendarEvents = [
       <hr class="playground-separator" />
 
       <section id="events" class="playground-section">
-        <h2>Eventos (puntos bajo la fecha)</h2>
+        <h2>Eventos</h2>
         <p class="playground-desc">
           Puntos bajo las fechas para señalar eventos. Cada evento tiene <code>date</code> y opcional <code>color</code> (semántico: <code>primary</code>, <code>success</code>, <code>warning</code>, <code>danger</code>…). Un día puede tener múltiples puntos.
         </p>
@@ -96,15 +96,14 @@ const calendarEvents = [
           <div class="playground-events-legend">
             <strong>Leyenda:</strong>
             <ul>
-              <li><span class="legend-dot" style="background: var(--cu-color-primary)"></span> Entrada a bodega (3, 18)</li>
-              <li><span class="legend-dot" style="background: var(--cu-color-success)"></span> Recepción (7, 22)</li>
-              <li><span class="legend-dot" style="background: var(--cu-color-warning)"></span> Vencimiento (11, 25)</li>
-              <li><span class="legend-dot" style="background: var(--cu-color-danger)"></span> Urgente (15)</li>
-              <li><span class="legend-dot" style="background: var(--cu-color-warning)"></span><span class="legend-dot" style="background: var(--cu-color-danger)"></span> Múltiple (11)</li>
+              <li><span class="legend-dot" style="background: #3b82f6;"></span> Entrada a bodega (3, 18)</li>
+              <li><span class="legend-dot" style="background: #22c55e;"></span> Recepción (7, 22)</li>
+              <li><span class="legend-dot" style="background: #f59e0b;"></span> Vencimiento (11, 25)</li>
+              <li><span class="legend-dot" style="background: #ef4444;"></span> Urgente (15)</li>
+              <li><span class="legend-dot" style="background: #f59e0b;"></span><span class="legend-dot" style="background: #ef4444;"></span> Múltiple (11)</li>
             </ul>
           </div>
         </div>
-        <p class="playground-state">último evento: <strong>{{ lastEvent || '—' }}</strong></p>
       </section>
 
       <hr class="playground-separator" />

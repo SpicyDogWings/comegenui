@@ -125,7 +125,7 @@ const pickerEvents = [
       <hr class="playground-separator" />
 
       <section id="events" class="playground-section">
-        <h2>Eventos (puntos en el calendario)</h2>
+        <h2>Eventos</h2>
         <p class="playground-desc">
           Puntos bajo las fechas para señalar eventos. Cada evento tiene <code>date</code> y opcional <code>color</code> (semántico: <code>primary</code>, <code>success</code>, <code>warning</code>, <code>danger</code>…).
         </p>
@@ -138,7 +138,6 @@ const pickerEvents = [
             @open="lastEvent = 'open'"
             @close="lastEvent = 'close'"
           />
-          <p class="playground-state">último evento: <strong>{{ lastEvent || '—' }}</strong></p>
         </div>
       </section>
 
