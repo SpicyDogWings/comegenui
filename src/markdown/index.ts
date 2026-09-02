@@ -5,7 +5,9 @@ export interface MarkdownBlock {
   type: 'html' | 'table' | 'code-block' | 'blockquote' | 'inline' | 'list'
   html?: string
   tag?: string
-  tokens?: any[]
+  id?: string
+  htmlContent?: string
+  listHtml?: string[]
   table?: {
     columns: Array<{ key: string; label: string }>
     data: Array<Record<string, string>>
@@ -146,7 +148,7 @@ export function parseMarkdown(content: string): string {
 export function extractHeadingIds(blocks: MarkdownBlock[]): string[] {
   return blocks
     .filter(b => b.type === 'inline' && b.tag?.startsWith('h'))
-    .map(b => b.html?.match(/id="([^"]+)"/)?.[1])
+    .map(b => b.id)
     .filter((id): id is string => !!id)
 }
 
@@ -189,11 +191,14 @@ export function parseToBlocks(markdown: string): MarkdownBlock[] {
         html: classMap.paragraph,
       })
     } else if (token.type === 'heading') {
+      const html = marked.parser([token])
+      const id = html.match(/id="([^"]+)"/)?.[1] || ''
       result.push({
         type: 'inline',
         tag: `h${token.depth}`,
         tokens: token.tokens,
         html: `${classMap.heading} ${classMap.heading}-${token.depth}`,
+        id,
       })
     } else if (token.type === 'list') {
       result.push({
