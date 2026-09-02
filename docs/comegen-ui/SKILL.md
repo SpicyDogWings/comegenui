@@ -63,6 +63,7 @@ Cada `<script>` registra automáticamente su Custom Element. Los componentes est
 | `CuCollapse.umd.js` | `<cu-collapse>` | Colapsable |
 | `CuColor-picker.umd.js` | `<cu-color-picker>` | Selector de color |
 | `CuDate-picker.umd.js` | `<cu-date-picker>` | Selector de fecha (dropdown + calendario) |
+| `CuDate-picker-range.umd.js` | `<cu-date-picker-range>` | Selector de rango de fechas |
 | `CuDropdown-menu.umd.js` | `<cu-dropdown-menu>` | Menú desplegable |
 | `CuFile-input.umd.js` | `<cu-file-input>` | Input de archivo compacto |
 | `CuFile-input-zone.umd.js` | `<cu-file-input-zone>` | Zona de drag & drop para archivos |
@@ -362,6 +363,7 @@ Cada archivo UMD incluye el runtime de Vue 3 (no externalizado):
 - [\<cu-color-picker\>](componentes/cu-color-picker.md) — Selector de color
 - [\<cu-collapse\>](componentes/cu-collapse.md) — Colapsable
 - [\<cu-date-picker\>](componentes/cu-date-picker.md) — Selector de fecha (dropdown + calendario)
+- [\<cu-date-picker-range\>](componentes/cu-date-picker-range.md) — Selector de rango de fechas
 - [\<cu-dropdown-menu\>](componentes/cu-dropdown-menu.md) — Menú desplegable con items
 - [\<cu-file-input\>](componentes/cu-file-input.md) — Input de archivo compacto
 - [\<cu-file-input-zone\>](componentes/cu-file-input-zone.md) — Zona de drag & drop para archivos

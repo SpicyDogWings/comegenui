@@ -28,6 +28,7 @@ Tabla avanzada con búsqueda, paginación, edición inline, ordenamiento, badges
 | `loading` | `boolean` | `false` | Muestra una barra de carga animada en el tope |
 | `actions` | `array` | `[]` | Acciones de fila (botón "..." al final de cada fila). Se asigna como propiedad JS |
 | `rowDisabled` | `boolean \| (row) => boolean` | `false` | Deshabilita filas (ver [Deshabilitar filas, columnas y celdas](#deshabilitar-filas-columnas-y-celdas)). Se asigna como propiedad JS |
+| `footer` | `array` | `[]` | Filas de footer (ver [Footer (API programática)](#footer-api-programática)). Se asigna como propiedad JS |
 
 > **Pipeline interno:** `data → search → filters → sort → pagination`. El ordenamiento y la paginación operan sobre los datos ya filtrados.
 
@@ -671,9 +672,9 @@ t.loading = true;   // mostrar
 t.loading = false;  // ocultar
 ```
 
-## Footer (totales, resúmenes)
+## Footer (API programática)
 
-El slot `footer` permite agregar una fila al pie de la tabla, ideal para totales o resúmenes. Recibe `{ columns }` como binding (útil para `colspan`):
+Además del slot `footer` (ver [Slots](#slots)), el `<cu-table>` expone una **propiedad `footer`** que permite definir filas de pie de forma programática — ideal para totales, resúmenes o notas al pie.
 
 ```js
 const t = document.getElementById('miTabla');
@@ -687,19 +688,59 @@ t.data = [
   { producto: 'Widget C', precio: 320.00 },
 ];
 
-// Calcular total
 const total = t.data.reduce((sum, row) => sum + row.precio, 0);
+
+// Definir footer (múltiples filas)
+t.footer = [
+  {
+    cells: [
+      { value: 'Total', colspan: 1 },
+      { value: `$${total.toFixed(2)}`, align: 'right' },
+    ],
+  },
+  {
+    cells: [
+      { value: '* Precios sin IVA', colspan: 2 },
+    ],
+  },
+];
 ```
 
+**Interfaz:**
+
+```ts
+interface FooterCell {
+  value: string;
+  colspan?: number;
+  align?: "left" | "center" | "right";
+}
+
+interface FooterRow {
+  cells: FooterCell[];
+}
+```
+
+> **Prioridad:** si el slot `footer` tiene contenido, tiene prioridad sobre la prop `footer`. Si no usás el slot, el `<tfoot>` se renderiza si `footer.length > 0`.
+
+> **Múltiples filas:** cada elemento del array `footer` es una fila `<tr>` independiente.
+
+---
+
+## Footer (slot, modo Vue)
+
+En modo Vue (no CE), podés usar el slot `footer` para mayor flexibilidad:
+
 ```html
-<cu-table id="miTabla">
-  <template #footer="{ columns }">
-    <tr>
-      <td :colspan="columns.length - 1">Total</td>
-      <td style="text-align: right;">${{ total.toFixed(2) }}</td>
-    </tr>
-  </template>
-</cu-table>
+<template>
+  <CuTable :columns="columns" :data="data">
+    <template #footer="{ columns }">
+      <tr>
+        <td :colspan="columns.length - 1">Total</td>
+        <td style="text-align: right;">$1,234.56</td>
+      </tr>
+    </template>
+  </CuTable>
+</template>
 ```
 
 > El `<tfoot>` solo se renderiza si el slot `footer` tiene contenido.

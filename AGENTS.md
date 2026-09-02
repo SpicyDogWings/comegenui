@@ -47,6 +47,44 @@ Algunos componentes van directo de `.vue` a `.ts` sin `.ce.vue`:
 
 `src/components/legacy/` contiene versiones anteriores que usan `getBgClasses`/`getBgClasses` de `palette.ts`. No usar como referencia para componentes nuevos.
 
+### Notas de componentes específicos
+
+#### Table — Footer programático
+
+`<cu-table>` expone una prop `footer` (además del slot) que acepta `FooterRow[]` para definir filas de pie sin HTML:
+
+```ts
+interface FooterCell {
+  value: string;
+  colspan?: number;
+  align?: "left" | "center" | "right";
+}
+
+interface FooterRow {
+  cells: FooterCell[];
+}
+```
+
+```js
+table.footer = [
+  { cells: [
+    { value: 'Total', colspan: 1 },
+    { value: '$745.50', align: 'right' },
+  ]},
+];
+```
+
+- Prioridad: slot `footer` > prop `footer`
+- El `<tfoot>` solo se renderiza si hay contenido (slot o prop)
+
+#### DatePicker — Calendar condicional
+
+El `<cu-date-picker>` renderiza el `<Calendar>` interno solo cuando el panel está abierto (`Dropdown.vue` usa `v-if="isOpen"`). Esto significa:
+
+- Asignar `picker.events = [...]` con el panel cerrado: los puntos aparecen la próxima vez que se abre (mount fresco)
+- Cambiar `events` con el panel abierto: el Calendar recibe el prop actualizado y re-renderiza
+- Para forzar re-render con el panel abierto: `picker.close(); picker.open()`
+
 ---
 
 ## Responsabilidades

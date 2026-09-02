@@ -112,6 +112,11 @@ const router = createRouter({
               component: () => import("@/pages/playground/components/DatePicker.vue")
             },
             {
+              path: "date-picker-range",
+              name: "DatePickerRange playground",
+              component: () => import("@/pages/playground/components/DatePickerRange.vue")
+            },
+            {
               path: "dropdown",
               name: "Dropdown playground",
               component: () => import("@/pages/playground/components/Dropdown.vue")

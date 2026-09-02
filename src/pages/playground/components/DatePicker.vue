@@ -22,12 +22,12 @@ const outlineItems = [
   { label: 'Formato', id: 'format' },
   { label: 'Min / Max', id: 'min-max' },
   { label: 'Controles de mes', id: 'month-controls' },
+  { label: 'Eventos', id: 'events' },
   { label: 'Sin footer', id: 'no-footer' },
   { label: 'Variantes', id: 'variants' },
   { label: 'Colores', id: 'colors' },
   { label: 'Posiciones', id: 'positions' },
   { label: 'Programático', id: 'programmatic' },
-  { label: 'Eventos', id: 'events' },
   { label: 'Disabled', id: 'disabled' },
 ];
 
@@ -35,15 +35,20 @@ function onEvent(name: string, payload: any) {
   lastEvent.value = `${name}: ${payload instanceof Date ? payload.toISOString().slice(0, 10) : JSON.stringify(payload)}`;
 }
 
+const now = new Date();
+const y = now.getFullYear();
+const m = String(now.getMonth() + 1).padStart(2, '0');
+const d = (day: number) => `${y}-${m}-${String(day).padStart(2, '0')}`;
+
 const pickerEvents = [
-  { date: '2026-08-03', color: 'primary' },
-  { date: '2026-08-07', color: 'success' },
-  { date: '2026-08-11', color: 'warning' },
-  { date: '2026-08-15', color: 'danger' },
-  { date: '2026-08-18', color: 'primary' },
-  { date: '2026-08-22', color: 'success' },
-  { date: '2026-08-25', color: 'warning' },
-  { date: '2026-08-11', color: 'danger' },
+  { date: d(3), color: 'primary' },
+  { date: d(7), color: 'success' },
+  { date: d(11), color: 'warning' },
+  { date: d(15), color: 'danger' },
+  { date: d(18), color: 'primary' },
+  { date: d(22), color: 'success' },
+  { date: d(25), color: 'warning' },
+  { date: d(11), color: 'danger' },
 ]
 </script>
 
@@ -119,6 +124,25 @@ const pickerEvents = [
         <div class="playground-date-picker-col">
           <DatePicker model-value="2026-08-11" year-navigation style="max-width: 280px;" />
           <DatePicker model-value="2026-08-11" year-navigation month-format="MMM yyyy" style="max-width: 280px;" />
+        </div>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="events" class="playground-section">
+        <h2>Eventos</h2>
+        <p class="playground-desc">
+          Puntos bajo las fechas para señalar eventos. Cada evento tiene <code>date</code> y opcional <code>color</code> (semántico: <code>primary</code>, <code>success</code>, <code>warning</code>, <code>danger</code>…).
+        </p>
+        <div class="playground-date-picker-col">
+          <DatePicker
+            style="max-width: 280px;"
+            :events="pickerEvents"
+            @select="(d: Date) => onEvent('select', d)"
+            @change="(d: Date | null) => onEvent('change', d)"
+            @open="lastEvent = 'open'"
+            @close="lastEvent = 'close'"
+          />
         </div>
       </section>
 
@@ -200,26 +224,6 @@ const pickerEvents = [
         </p>
         <div class="playground-date-picker-col">
           <DatePicker ref="pickerRef" style="max-width: 280px;" @select="readValue" @change="readValue" />
-        </div>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="events" class="playground-section">
-        <h2>Eventos (puntos en el calendario)</h2>
-        <p class="playground-desc">
-          Puntos bajo las fechas para señalar eventos. Cada evento tiene <code>date</code> y opcional <code>color</code> (semántico: <code>primary</code>, <code>success</code>, <code>warning</code>, <code>danger</code>…).
-        </p>
-        <div class="playground-date-picker-col">
-          <DatePicker
-            style="max-width: 280px;"
-            :events="pickerEvents"
-            @select="(d: Date) => onEvent('select', d)"
-            @change="(d: Date | null) => onEvent('change', d)"
-            @open="lastEvent = 'open'"
-            @close="lastEvent = 'close'"
-          />
-          <p class="playground-state">último evento: <strong>{{ lastEvent || '—' }}</strong></p>
         </div>
       </section>
 

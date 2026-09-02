@@ -43,6 +43,7 @@ const navItems = [
           { label: 'FileInput', path: '/playground/components/file-input' },
           { label: 'FileInputZone', path: '/playground/components/file-input-zone' },
           { label: 'DatePicker', path: '/playground/components/date-picker' },
+          { label: 'DatePickerRange', path: '/playground/components/date-picker-range' },
         ]
       },
       {

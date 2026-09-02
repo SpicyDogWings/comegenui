@@ -24,6 +24,8 @@ Calendario de mes: muestra el mes actual y/o seleccionado con sus días distribu
 | `monthFormat` | `string` | `"MMMM"` | Formato del mes en el header (tokens como MonthSlider) |
 | `yearFormat` | `string` | `"yyyy"` | Formato del año en el header |
 | `events` | `array` | `[]` | Eventos a señalar con puntos bajo la fecha (ver [Eventos](#eventos-puntos)). Se asigna como propiedad JS |
+| `rangeStart` | `string \| number \| Date \| null` | `null` | Inicio del rango (resalta los días entre inicio y fin). Se asigna como propiedad JS |
+| `rangeEnd` | `string \| number \| Date \| null` | `null` | Fin del rango. Se asigna como propiedad JS |
 
 > **API espejo de los sliders:** las fechas aceptan `Date`, timestamp numérico o string `"YYYY-MM-DD"`. En HTML plano los atributos llegan como string; `modelValue="2026-08-11"` funciona directo.
 
@@ -208,6 +210,25 @@ cal.events.push({ date: '2026-08-11', color: 'primary' });
 - Si no se especifica `color`, usa el `color` del calendario (`--cal-accent`).
 
 ---
+
+## Rango (resaltado de días)
+
+Las props `rangeStart` y `rangeEnd` resaltan visualmente los días entre dos fechas. Útil para mostrar períodos selecciónados o rangos en un `<cu-date-picker-range>`.
+
+```js
+const cal = document.getElementById('miCalendario');
+
+cal.rangeStart = '2026-09-03';
+cal.rangeEnd = '2026-09-15';
+```
+
+- Los días entre inicio y fin se resaltan con fondo soft.
+- Los extremos (inicio y fin) se resaltan con fondo accent.
+- Se asignan como **propiedad JS** (`cal.rangeStart = [...]`, no como atributo HTML).
+
+---
+
+## Disabled
 
 ## Disabled
 

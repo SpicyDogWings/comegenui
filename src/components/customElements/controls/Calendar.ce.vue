@@ -63,6 +63,14 @@ const props = defineProps({
     type: Array as PropType<CalendarEvent[]>,
     default: () => [],
   },
+  rangeStart: {
+    type: [String, Number, Date] as PropType<string | number | Date | null>,
+    default: null,
+  },
+  rangeEnd: {
+    type: [String, Number, Date] as PropType<string | number | Date | null>,
+    default: null,
+  },
 })
 
 interface CalendarEvent {
@@ -111,6 +119,8 @@ defineExpose({ nextMonth, prevMonth, goToMonth, getValue, setValue })
     :disabled-weekdays="props.disabledWeekdays"
     :disabled-dates="props.disabledDates"
     :events="props.events"
+    :range-start="props.rangeStart"
+    :range-end="props.rangeEnd"
     @select="ceEmit('select', $event)"
     @change="ceEmit('change', $event)"
     @update:modelValue="ceEmit('update:modelValue', $event)"
