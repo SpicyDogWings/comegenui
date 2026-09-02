@@ -68,6 +68,11 @@ const props = defineProps({
     type: String,
     default: 'yyyy',
   },
+  // ── Eventos (puntos bajo la fecha) ──
+  events: {
+    type: Array as PropType<CalendarEvent[]>,
+    default: () => [],
+  },
 })
 
 const emit = defineEmits<{
@@ -75,6 +80,11 @@ const emit = defineEmits<{
   (e: 'change', value: Date): void
   (e: 'select', value: Date): void
 }>()
+
+interface CalendarEvent {
+  date: string | number | Date
+  color?: string
+}
 
 const WEEK_LENGTH = 7
 
@@ -265,6 +275,12 @@ const monthLabel = computed(() => {
   return label.charAt(0).toUpperCase() + label.slice(1)
 })
 
+// ── Eventos ──
+
+function getEventsForDay(day: Date): CalendarEvent[] {
+  return props.events.filter((ev) => sameDay(parseDateInput(ev.date) as Date, day))
+}
+
 // ── Selección ──
 
 function isDisabledDay(day: Date): boolean {
@@ -370,6 +386,17 @@ const colorStyles = computed(() => ({
             @click="selectDay(cell.date)"
           >
             {{ cell.date.getDate() }}
+            <span
+              v-if="getEventsForDay(cell.date).length"
+              class="cu-calendar-dots"
+            >
+              <span
+                v-for="(ev, ei) in getEventsForDay(cell.date)"
+                :key="ei"
+                class="cu-calendar-dot"
+                :style="ev.color ? { '--dot-color': ev.color.startsWith('var(') ? ev.color : `var(--cu-color-${ev.color})` } : undefined"
+              ></span>
+            </span>
           </button>
           <span v-else class="cu-calendar-day--empty"></span>
         </template>
@@ -485,5 +512,30 @@ const colorStyles = computed(() => ({
 
 .cu-calendar-day--empty {
   aspect-ratio: 1;
+}
+
+/* ── Puntos de eventos ── */
+.cu-calendar-day {
+  position: relative;
+}
+
+.cu-calendar-dots {
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 2px;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.cu-calendar-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--dot-color, var(--cal-accent));
+  display: block;
 }
 </style>

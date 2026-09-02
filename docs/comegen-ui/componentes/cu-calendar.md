@@ -23,6 +23,7 @@ Calendario de mes: muestra el mes actual y/o seleccionado con sus días distribu
 | `yearNavigation` | `boolean` | `false` | Muestra botones `«`/`»` para saltar de año en el header |
 | `monthFormat` | `string` | `"MMMM"` | Formato del mes en el header (tokens como MonthSlider) |
 | `yearFormat` | `string` | `"yyyy"` | Formato del año en el header |
+| `events` | `array` | `[]` | Eventos a señalar con puntos bajo la fecha (ver [Eventos](#eventos-puntos)). Se asigna como propiedad JS |
 
 > **API espejo de los sliders:** las fechas aceptan `Date`, timestamp numérico o string `"YYYY-MM-DD"`. En HTML plano los atributos llegan como string; `modelValue="2026-08-11"` funciona directo.
 
@@ -179,6 +180,32 @@ Además de `min`/`max`, podés deshabilitar días de la semana o fechas puntuale
 ```
 
 > Los días deshabilitados no se pueden seleccionar (ni con click ni con `setValue`) y se ven atenuados.
+
+---
+
+## Eventos (puntos)
+
+Puntos bajo las fechas para señalar eventos (entradas a bodega, vencimientos, etc.). Cada evento es un objeto con `date` (fecha) y opcional `color` (nombre semántico: `primary`, `success`, `warning`, `danger`…).
+
+> **Importante:** `events` se asigna como **propiedad JS** (`cal.events = [...]`), no como atributo HTML.
+
+```js
+const cal = document.getElementById('miCalendario');
+
+cal.events = [
+  { date: '2026-08-03', color: 'primary' },   // entrada a bodega
+  { date: '2026-08-07', color: 'success' },   // recepción
+  { date: '2026-08-11', color: 'warning' },   // vencimiento
+  { date: '2026-08-15', color: 'danger' },    // urgente
+];
+
+// Múltiples puntos en un mismo día:
+cal.events.push({ date: '2026-08-11', color: 'primary' });
+```
+
+- Los puntos se muestran centrados bajo el número del día.
+- Si un día tiene varios eventos, se muestran varios puntos en fila.
+- Si no se especifica `color`, usa el `color` del calendario (`--cal-accent`).
 
 ---
 

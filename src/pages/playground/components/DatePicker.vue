@@ -34,6 +34,17 @@ const outlineItems = [
 function onEvent(name: string, payload: any) {
   lastEvent.value = `${name}: ${payload instanceof Date ? payload.toISOString().slice(0, 10) : JSON.stringify(payload)}`;
 }
+
+const pickerEvents = [
+  { date: '2026-08-03', color: 'primary' },
+  { date: '2026-08-07', color: 'success' },
+  { date: '2026-08-11', color: 'warning' },
+  { date: '2026-08-15', color: 'danger' },
+  { date: '2026-08-18', color: 'primary' },
+  { date: '2026-08-22', color: 'success' },
+  { date: '2026-08-25', color: 'warning' },
+  { date: '2026-08-11', color: 'danger' },
+]
 </script>
 
 <template>
@@ -195,10 +206,14 @@ function onEvent(name: string, payload: any) {
       <hr class="playground-separator" />
 
       <section id="events" class="playground-section">
-        <h2>Eventos</h2>
+        <h2>Eventos (puntos en el calendario)</h2>
+        <p class="playground-desc">
+          Puntos bajo las fechas para señalar eventos. Cada evento tiene <code>date</code> y opcional <code>color</code> (semántico: <code>primary</code>, <code>success</code>, <code>warning</code>, <code>danger</code>…).
+        </p>
         <div class="playground-date-picker-col">
           <DatePicker
             style="max-width: 280px;"
+            :events="pickerEvents"
             @select="(d: Date) => onEvent('select', d)"
             @change="(d: Date | null) => onEvent('change', d)"
             @open="lastEvent = 'open'"

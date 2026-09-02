@@ -47,6 +47,10 @@ const props = defineProps({
   // Días deshabilitados del calendario interno (además de min/max)
   disabledWeekdays: { type: [Array, String] as PropType<number[] | string>, required: false, default: '' },
   disabledDates: { type: [Array, String] as PropType<(string | Date)[] | string>, required: false, default: '' },
+  events: {
+    type: Array as PropType<CalendarEvent[]>,
+    default: () => [],
+  },
   position: { type: String, required: false, default: 'bottom' },
   align: { type: String, required: false, default: 'start' },
   fixed: { type: Boolean, required: false, default: false },
@@ -54,6 +58,11 @@ const props = defineProps({
   todayButton: { type: Boolean, required: false, default: true },
   label: { type: String, required: false, default: '' },
 })
+
+interface CalendarEvent {
+  date: string | number | Date
+  color?: string
+}
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: Date | null): void
@@ -253,6 +262,7 @@ defineExpose({ open, close, toggle, getValue, setValue, clear, isOpen: () => dro
             :disabled="disabled"
             :disabled-weekdays="disabledWeekdays"
             :disabled-dates="disabledDates"
+            :events="events"
             @select="onSelect"
           />
           <div v-if="todayButton || clearable" class="cu-date-picker-footer">

@@ -32,6 +32,7 @@ Selector de fecha: un botón-trigger que abre un **dropdown con un calendario ad
 | `disabledWeekdays` | `number[] \| string` | `""` | Días de la semana no seleccionables (`0`=domingo … `6`=sábado). En HTML: `disabled-weekdays="0,6"` |
 | `disabledDates` | `(string \| Date)[] \| string` | `""` | Fechas puntuales no seleccionables. En HTML: `disabled-dates="2026-08-15,2026-08-16"` |
 | `label` | `string` | `""` | Texto del label sobre el picker |
+| `events` | `array` | `[]` | Eventos a señalar con puntos bajo la fecha en el calendario interno (ver [Eventos](cu-calendar.md#eventos-puntos)). Se asigna como propiedad JS |
 
 ---
 
