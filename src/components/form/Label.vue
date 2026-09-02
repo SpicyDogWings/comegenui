@@ -22,10 +22,16 @@ const props = defineProps({
   },
 });
 
+const emit = defineEmits<{
+  (e: 'click'): void
+}>()
+
 const handleClick = () => {
-  if (!props.for) return;
-  const target = document.getElementById(props.for);
-  if (target) target.focus();
+  if (props.for) {
+    const target = document.getElementById(props.for);
+    if (target) target.focus();
+  }
+  emit('click');
 };
 </script>
 

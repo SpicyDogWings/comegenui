@@ -178,7 +178,7 @@ defineExpose({ open, close, toggle, getValue, setValue, clear, isOpen: () => dro
 
 <template>
   <div class="cu-date-picker">
-    <Label v-if="label" :label="label" />
+    <Label v-if="label" :label="label" @click="open" />
     <Dropdown
       ref="dropdownRef"
       :color="color"
