@@ -273,11 +273,49 @@ This avoids the whitespace issue entirely.
 
 ## Security Warning
 
-**Marked does not sanitize output HTML.** Always use a sanitization library like DOMPurify on the output if rendering user-generated content:
+### XSS en Markdown
+
+Marked no sanitiza el HTML de salida. El composable `useMarkdown` ya incluye DOMPurify por defecto:
 
 ```ts
 import DOMPurify from 'dompurify'
-const clean = DOMPurify.sanitize(marked.parse(md, { async: false }))
+
+export function useMarkdown(source: string | Ref<string>) {
+  const rendered = computed(() => {
+    const raw = dedent(unref(sourceRef.value))
+    if (!raw) return ''
+    const html = parseMarkdown(raw)
+    return DOMPurify.sanitize(html)
+  })
+  return { rendered }
+}
+```
+
+### Audit de v-html en otros componentes
+
+Los siguientes componentes usan `v-html` y podrían ser vulnerables a XSS si reciben contenido no confiable:
+
+| Componente | Línea | Uso | Riesgo |
+|-------------|-------|-----|--------|
+| `DropdownMenu.vue` | 134 | `item.icon` (prop) | **Medio** - si `item.icon` viene de datos de usuario |
+| `AdvancedTable.vue` | 385 | `button.icon` (prop) | **Medio** - si `button.icon` viene de datos de usuario |
+| `Autocomplete.vue` | 159 | `item.icon` (prop) | **Medio** - si `item.icon` viene de datos de usuario |
+| `FileList.vue` | 59 | `getFileIconSvg()` | Bajo - SVG generado internamente |
+| `FileInput.vue` | 205 | `getFileIconSvg()` | Bajo - SVG generado internariamente |
+
+**Recomendaciones:**
+1. Las props `item.icon`, `button.icon` deben ser controladas por el developer, nunca directamente de input de usuario
+2. Si se necesita renderizar HTML arbitrario en estos componentes, agregar DOMPurify
+3. Los métodos `getFileIconSvg()` son seguros porque generan SVG paths, no HTML arbitrario
+
+```ts
+// ❌ Peligroso - nunca hagas esto
+const items = userInput.map(i => ({ icon: i.htmlFromUser }))
+
+// ✅ Seguro - iconos controlados por el developer
+const items = [
+  { icon: '<svg>...</svg>', label: 'Opción 1' }
+]
 ```
 
 ## Resources

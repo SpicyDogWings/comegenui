@@ -1,4 +1,5 @@
 import { ref, computed, unref, type Ref } from 'vue'
+import DOMPurify from 'dompurify'
 import { parseMarkdown } from '@/markdown'
 
 function dedent(text: string): string {
@@ -24,7 +25,9 @@ export function useMarkdown(source: string | Ref<string>) {
 
   const rendered = computed(() => {
     const raw = dedent(unref(sourceRef.value))
-    return raw ? parseMarkdown(raw) : ''
+    if (!raw) return ''
+    const html = parseMarkdown(raw)
+    return DOMPurify.sanitize(html)
   })
 
   return {
