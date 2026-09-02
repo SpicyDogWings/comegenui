@@ -31,6 +31,7 @@ Selector de fecha: un botón-trigger que abre un **dropdown con un calendario ad
 | `yearFormat` | `string` | `"yyyy"` | Formato del año en el header del calendario interno |
 | `disabledWeekdays` | `number[] \| string` | `""` | Días de la semana no seleccionables (`0`=domingo … `6`=sábado). En HTML: `disabled-weekdays="0,6"` |
 | `disabledDates` | `(string \| Date)[] \| string` | `""` | Fechas puntuales no seleccionables. En HTML: `disabled-dates="2026-08-15,2026-08-16"` |
+| `label` | `string` | `""` | Texto del label sobre el picker |
 
 ---
 
@@ -101,6 +102,14 @@ picker.format = 'dd-MM-yy';    // "11-08-26"
 
 ```html
 <cu-date-picker id="miPicker" model-value="2026-08-11" min="2026-01-01" max="2026-12-31" format="dd/MM/yyyy"></cu-date-picker>
+```
+
+### Con label
+
+El label se muestra sobre el picker y es clickeable — hace foco en el input y abre el panel:
+
+```html
+<cu-date-picker id="miPicker" label="Fecha de nacimiento"></cu-date-picker>
 ```
 
 ---
