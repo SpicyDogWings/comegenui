@@ -3,6 +3,7 @@ import { computed, ref, watch, type PropType } from 'vue'
 import Dropdown from '../overlay/Dropdown.vue'
 import Button from '../buttons/Button.vue'
 import Calendar from '../controls/Calendar.vue'
+import Label from './Label.vue'
 
 const props = defineProps({
   // API espejo de MonthSlider/YearSlider: acepta Date, timestamp o fecha "YYYY-MM-DD"
@@ -51,6 +52,7 @@ const props = defineProps({
   fixed: { type: Boolean, required: false, default: false },
   clearable: { type: Boolean, required: false, default: true },
   todayButton: { type: Boolean, required: false, default: true },
+  label: { type: String, required: false, default: '' },
 })
 
 const emit = defineEmits<{
@@ -176,6 +178,7 @@ defineExpose({ open, close, toggle, getValue, setValue, clear, isOpen: () => dro
 
 <template>
   <div class="cu-date-picker">
+    <Label v-if="label" :label="label" @click="open" />
     <Dropdown
       ref="dropdownRef"
       :color="color"
@@ -282,6 +285,9 @@ defineExpose({ open, close, toggle, getValue, setValue, clear, isOpen: () => dro
 .cu-date-picker {
   width: 100%;
   outline: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--cu-space-sm);
 }
 
 .cu-date-picker :deep(.cu-dropdown) {

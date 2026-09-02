@@ -119,8 +119,8 @@ defineExpose({ get, set, reset, focus: () => (focused.value = true) });
 
 .cu-color-picker-swatch {
   position: relative;
-  width: 32px;
-  height: 32px;
+  width: var(--cu-space-2xl);
+  height: var(--cu-space-2xl);
   padding: 0;
   border: var(--cu-border-thin) solid var(--cu-subtle-border, var(--cu-border-color));
   border-radius: var(--cu-radius-md);
@@ -164,7 +164,7 @@ defineExpose({ get, set, reset, focus: () => (focused.value = true) });
 
 .cu-color-picker-input:focus {
   border-color: var(--cp-subtle-border);
-  box-shadow: 0 0 0 2px var(--cp-soft);
+  box-shadow: 0 0 0 var(--cu-border-thin) var(--cp-soft);
 }
 
 .cu-color-picker--disabled {

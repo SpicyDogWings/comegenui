@@ -171,8 +171,8 @@ defineExpose({ getActive, setActive, next, prev });
 }
 
 .cu-tabs-tab:focus-visible {
-  outline: 2px solid var(--cu-border-color-focus);
-  outline-offset: 2px;
+  outline: var(--cu-border-thin) solid var(--cu-border-color-focus);
+  outline-offset: var(--cu-space-2xs);
 }
 
 .cu-tabs-tab:disabled {
@@ -202,7 +202,7 @@ defineExpose({ getActive, setActive, next, prev });
 }
 
 .cu-tabs--tabs .cu-tabs-tab {
-  border-bottom: 2px solid transparent;
+  border-bottom: var(--cu-border-thin) solid transparent;
   border-radius: var(--cu-radius-sm) var(--cu-radius-sm) 0 0;
   margin-bottom: calc(var(--cu-border-thin) * -1);
 }

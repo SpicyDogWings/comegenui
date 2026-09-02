@@ -22,23 +22,41 @@ const props = defineProps({
   },
 });
 
+const emit = defineEmits<{
+  (e: 'click'): void
+}>()
+
 const handleClick = () => {
-  if (!props.for) return;
-  const target = document.getElementById(props.for);
-  if (target) target.focus();
+  if (props.for) {
+    const target = document.getElementById(props.for);
+    if (target) target.focus();
+  }
+  emit('click');
 };
 </script>
 
 <template>
   <label
     :style="{ '--label-fg': props.color }"
-    class="inline-block font-sans flex flex-col gap-2 text-[var(--label-fg)]"
+    class="cu-label"
   >
-    <span v-if="props.label" @click="handleClick" class="font-sans w-fit cursor-pointer">{{ props.label }}</span>
+    <span v-if="props.label" @click="handleClick" class="cu-label-text">{{ props.label }}</span>
     <slot></slot>
   </label>
 </template>
 
-<style>
-@unocss-placeholder;
+<style scoped>
+.cu-label {
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--cu-space-xs);
+  font-family: var(--cu-font-sans);
+  color: var(--label-fg);
+}
+
+.cu-label-text {
+  width: fit-content;
+  cursor: pointer;
+  font-family: var(--cu-font-sans);
+}
 </style>

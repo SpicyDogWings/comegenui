@@ -304,7 +304,7 @@ defineExpose({ get, set, reset, focus, trigger });
 .cu-file-input:focus {
   outline: none;
   border-color: var(--input-bg);
-  box-shadow: 0 0 0 2px var(--input-bg);
+  box-shadow: 0 0 0 var(--cu-border-thin) var(--input-bg);
 }
 
 .cu-file-input--disabled {

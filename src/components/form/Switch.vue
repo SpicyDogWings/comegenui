@@ -95,11 +95,11 @@ defineExpose({
 
 .cu-switch--md {
   width: 48px;
-  height: 32px;
+  height: var(--cu-space-2xl);
 }
 
 .cu-switch--sm {
-  width: 32px;
+  width: var(--cu-space-2xl);
   height: 20px;
 }
 

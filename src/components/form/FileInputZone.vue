@@ -336,7 +336,7 @@ defineExpose({ get, set, reset, focus, trigger });
 .cu-file-zone:focus {
   outline: none;
   border-color: var(--zone-bg);
-  box-shadow: 0 0 0 2px var(--zone-bg);
+  box-shadow: 0 0 0 var(--cu-border-thin) var(--zone-bg);
 }
 
 .cu-file-zone:hover:not(.cu-file-zone--disabled) {

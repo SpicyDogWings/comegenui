@@ -14,15 +14,18 @@ src/
 ├── composables/
 │   └── useMarkdown.ts        # Composable (HTML simple)
 ├── components/
-│   ├── information/
+│   ├── markdown/
 │   │   ├── Markdown.vue      # Componente principal (usa componentes Vue)
+│   │   ├── InlineRenderer.vue # Renderiza tokens inline (text, bold, links, images)
 │   │   ├── CodeBlock.vue     # Bloque de código con label de lenguaje
 │   │   └── Blockquote.vue    # Cita en bloque
 │   ├── data/
 │   │   └── Table.vue         # Tabla (htmlCells prop para markdown)
 │   └── customElements/
-│       └── information/
+│       └── markdown/
 │           └── Markdown.ce.vue  # Wrapper CE (NO expone htmlCells)
+├── utils/
+│   └── slugify.ts            # Genera slugs URL-friendly para headings
 └── lib/
     └── information/
         └── markdown.ts       # Entry point UMD
@@ -101,8 +104,12 @@ The `Markdown.vue` component uses `parseToBlocks()` to render markdown with Vue 
 
 ```ts
 interface MarkdownBlock {
-  type: 'html' | 'table' | 'code-block' | 'blockquote'
+  type: 'html' | 'table' | 'code-block' | 'blockquote' | 'inline' | 'list'
   html?: string
+  tag?: string
+  id?: string
+  htmlContent?: string
+  listHtml?: string[]
   table?: {
     columns: Array<{ key: string; label: string }>
     data: Array<Record<string, string>>
@@ -114,6 +121,55 @@ interface MarkdownBlock {
   blockquote?: {
     html: string
   }
+  ordered?: boolean
+}
+```
+
+### Heading IDs (para Outline/índice)
+
+Los headings generan `id` automáticamente desde su texto usando `slugify()`:
+
+```ts
+// src/utils/slugify.ts
+export function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .trim()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+}
+```
+
+El renderer de headings genera `id` y `parseToBlocks` lo guarda en el bloque:
+
+```ts
+renderer.heading = function ({ depth, tokens }: any) {
+  const cls = classMap.heading
+  const content = this.parser.parseInline(tokens)
+  const id = slugify(content)
+  return `<h${depth} id="${id}" class="${cls} ${cls}-${depth}">${content}</h${depth}>\n`
+}
+```
+
+`Markdown.vue` expone los IDs via evento `@parsed`:
+
+```ts
+emit('parsed', headingIds.value)
+```
+
+Y el padre los consume para poblar el Outline:
+
+```vue
+<Markdown @parsed="handleParsed" />
+```
+
+```ts
+function handleParsed(headingIds: string[]) {
+  outlineItems.value = headingIds.map(id => ({ label: id.replace(/-/g, ' '), id }))
 }
 ```
 
@@ -127,37 +183,66 @@ export function parseToBlocks(markdown: string): MarkdownBlock[] {
 
   for (const token of tokens) {
     if (token.type === 'table') {
-      // Tables → Table.vue component
       const header = token.header.map((cell: any) => cell.text)
       const columns = header.map((text: string) => ({ key: text, label: text }))
       const data = token.rows.map((row: any[]) => {
         const obj: Record<string, string> = {}
         row.forEach((cell: any, i: number) => {
           if (header[i]) {
-            obj[header[i]] = marked.parseInline(cell.text)
+            obj[header[i]] = marked.parseInline(cell.text as any) as string
           }
         })
         return obj
       })
       result.push({ type: 'table', table: { columns, data } })
     } else if (token.type === 'code') {
-      // Code blocks → CodeBlock.vue component
       result.push({
         type: 'code-block',
         codeBlock: { code: token.text, language: token.lang || '' },
       })
     } else if (token.type === 'blockquote') {
-      // Blockquotes → Blockquote.vue component
       const html = marked.parser([token])
-      result.push({ type: 'blockquote', blockquote: { html } })
+      const inner = stripOuterBlockquote(html)
+      result.push({ type: 'blockquote', blockquote: { html: inner } })
+    } else if (token.type === 'paragraph') {
+      result.push({
+        type: 'inline',
+        tag: 'p',
+        tokens: token.tokens,
+        html: classMap.paragraph,
+      })
+    } else if (token.type === 'heading') {
+      const html = marked.parser([token])
+      const id = html.match(/id="([^"]+)"/)?.[1] || ''
+      result.push({
+        type: 'inline',
+        tag: `h${token.depth}`,
+        tokens: token.tokens,
+        html: `${classMap.heading} ${classMap.heading}-${token.depth}`,
+        id,
+      })
+    } else if (token.type === 'list') {
+      result.push({
+        type: 'list',
+        tag: token.ordered ? 'ol' : 'ul',
+        listItems: token.items.map((item: any) => ({ tokens: item.tokens })),
+        html: `${classMap.list} ${classMap.list}--${token.ordered ? 'ordered' : 'unordered'}`,
+        ordered: token.ordered,
+      })
     } else {
-      // Everything else → sanitized HTML
       const html = marked.parser([token])
       result.push({ type: 'html', html })
     }
   }
 
   return result
+}
+
+export function extractHeadingIds(blocks: MarkdownBlock[]): string[] {
+  return blocks
+    .filter(b => b.type === 'inline' && b.tag?.startsWith('h'))
+    .map(b => b.id)
+    .filter((id): id is string => !!id)
 }
 ```
 
@@ -180,16 +265,66 @@ export function parseToBlocks(markdown: string): MarkdownBlock[] {
           v-else-if="block.type === 'code-block' && block.codeBlock"
           :code="block.codeBlock.code"
           :language="block.codeBlock.language"
+          variant="solid"
         />
         <Blockquote
           v-else-if="block.type === 'blockquote' && block.blockquote"
           :html="block.blockquote.html"
         />
+        <component
+          v-else-if="block.type === 'inline'"
+          :is="block.tag"
+          :id="block.id"
+          :class="block.html"
+        >
+          <InlineRenderer :tokens="block.tokens || []" />
+        </component>
+        <component
+          v-else-if="block.type === 'list'"
+          :is="block.tag"
+          :class="block.html"
+        >
+          <li
+            v-for="(item, j) in block.listItems"
+            :key="j"
+            class="cu-md-list-item"
+          >
+            <InlineRenderer :tokens="item.tokens || []" />
+          </li>
+        </component>
         <div v-else-if="block.html" v-html="block.html"></div>
       </template>
     </div>
   </div>
 </template>
+```
+
+## InlineRenderer (`src/components/markdown/InlineRenderer.vue`)
+
+Renderiza tokens inline recursivamente. Usa `Button` con prop `to` (no `href`) para links:
+
+```vue
+<Button
+  v-if="isLink(token)"
+  variant="link"
+  :to="token.href"
+  target="_blank"
+  rel="noopener"
+>
+  <InlineRenderer :tokens="token.tokens || []" />
+</Button>
+<span v-else v-html="tokenToHtml(token)"></span>
+```
+
+`tokenToHtml` maneja: `text` (con sub-tokens), `strong`, `em`, `codespan`, `del`, `image`, `link`, `br`, `escape`.
+
+**IMPORTANTE**: Los tokens `text` con sub-tokens deben parsear recursivamente:
+```ts
+case 'text':
+  if (token.tokens && token.tokens.length > 0) {
+    return token.tokens.map(tokenToHtml).join('')
+  }
+  return token.text
 ```
 
 ## Components Used by Markdown
@@ -323,10 +458,14 @@ function sanitizeBlock(block: MarkdownBlock): MarkdownBlock {
 |-------|-------|----------|
 | Everything renders inline (no line breaks) | Vue compiler collapsing whitespace | Add `whitespace: 'preserve'` to `@vitejs/plugin-vue` config |
 | `[object Promise]` in output | `marked.parse()` returns Promise in v15+ | Use `{ async: false }` option |
-| Bold/italic not rendering | Inline tokens not parsed | Use `this.parser.parseInline(token.tokens)` |
-| Lists show "undefined" | `body` param no longer exists | Use `token.items` array |
-| `parseInline` error on blockquote | Contains block-level tokens | Use `marked.parser()` instead |
-| Links not rendering | `token.text` is raw markdown | Parse inline tokens |
+| Bold/italic not rendering in list items | `text` token con sub-tokens no parsea | Verificar `token.tokens` y mapear recursivamente |
+| Links no redireccionan en markdown | Button usa `to`, no `href` | Usar `:to="token.href"` en InlineRenderer |
+| Links dentro de list items no aparecen | `tokenToHtml` sin caso `link` | Agregar caso `link` en el switch |
+| Imágenes no se muestran | `tokenToHtml` sin caso `image` | Agregar caso `image` con `<img>` |
+| Outline/índice no aparece | `defineExpose` no es reactivo | Usar evento `@parsed` para emitir heading IDs |
+| Outline no hace scroll | Headings sin atributo `id` en DOM | Renderizar `:id="block.id"` en template |
+| Outline pierde focus al click | Scroll event pisa activeId | Flag `skipNextScrollUpdate` post-click |
+| `marked.parseInline(tokens)` error | v18 espera string, no tokens | Usar `new marked.Parser().parseInline(tokens)` |
 | `this.parser is undefined` | Arrow function used | Use regular `function()` syntax |
 
 ## Resources

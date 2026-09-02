@@ -74,7 +74,7 @@ const thStyle = computed(() => {
     'width': '',
     'background-color': `var(--cu-color-${props.color}-soft)`,
     'color': `var(--cu-color-${props.color}-text)`,
-    'border-bottom': `1px solid rgba(0, 0, 0, 0.08)`,
+    'border-bottom': `var(--cu-border-thin) solid var(--cu-color-neutral-subtle-border)`,
   };
 
   if (props.maxHeight) {
@@ -89,7 +89,7 @@ const thStyle = computed(() => {
   } else if (props.variant === 'ghost' || props.variant === 'outlined') {
     base['background-color'] = 'transparent';
     if (props.variant === 'outlined') {
-      base['border-bottom'] = `2px solid var(--cu-color-${props.color}-subtle-border)`;
+      base['border-bottom'] = `var(--cu-border-medium) solid var(--cu-color-${props.color}-subtle-border)`;
     }
   }
 

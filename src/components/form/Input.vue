@@ -112,7 +112,7 @@ defineExpose({
 }
 
 .cu-input:focus {
-  box-shadow: 0 0 0 2px var(--btn-subtle-border);
+  box-shadow: 0 0 0 var(--cu-border-thin) var(--btn-subtle-border);
 }
 
 /* subtle */
@@ -143,7 +143,7 @@ defineExpose({
 /* outlined */
 .cu-input--outlined {
   background-color: transparent;
-  border: 2px solid var(--btn-subtle-border);
+  border: var(--cu-border-thin) solid var(--btn-subtle-border);
 }
 .cu-input--outlined:hover {
   background-color: var(--btn-bg-hover);

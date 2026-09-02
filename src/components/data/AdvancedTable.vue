@@ -502,7 +502,7 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
 }
 
 .cu-advanced-table-actions-btn {
-  padding: 2px 6px;
+  padding: var(--cu-space-2xs) var(--cu-space-sm);
   min-width: 0;
   height: 28px;
   box-sizing: border-box;
