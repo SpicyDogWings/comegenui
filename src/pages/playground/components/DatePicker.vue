@@ -22,12 +22,12 @@ const outlineItems = [
   { label: 'Formato', id: 'format' },
   { label: 'Min / Max', id: 'min-max' },
   { label: 'Controles de mes', id: 'month-controls' },
+  { label: 'Eventos', id: 'events' },
   { label: 'Sin footer', id: 'no-footer' },
   { label: 'Variantes', id: 'variants' },
   { label: 'Colores', id: 'colors' },
   { label: 'Posiciones', id: 'positions' },
   { label: 'Programático', id: 'programmatic' },
-  { label: 'Eventos', id: 'events' },
   { label: 'Disabled', id: 'disabled' },
 ];
 
@@ -124,6 +124,26 @@ const pickerEvents = [
 
       <hr class="playground-separator" />
 
+      <section id="events" class="playground-section">
+        <h2>Eventos (puntos en el calendario)</h2>
+        <p class="playground-desc">
+          Puntos bajo las fechas para señalar eventos. Cada evento tiene <code>date</code> y opcional <code>color</code> (semántico: <code>primary</code>, <code>success</code>, <code>warning</code>, <code>danger</code>…).
+        </p>
+        <div class="playground-date-picker-col">
+          <DatePicker
+            style="max-width: 280px;"
+            :events="pickerEvents"
+            @select="(d: Date) => onEvent('select', d)"
+            @change="(d: Date | null) => onEvent('change', d)"
+            @open="lastEvent = 'open'"
+            @close="lastEvent = 'close'"
+          />
+          <p class="playground-state">último evento: <strong>{{ lastEvent || '—' }}</strong></p>
+        </div>
+      </section>
+
+      <hr class="playground-separator" />
+
       <section id="no-footer" class="playground-section">
         <h2>Sin footer (Hoy / Limpiar)</h2>
         <div class="playground-date-picker-col">
@@ -200,26 +220,6 @@ const pickerEvents = [
         </p>
         <div class="playground-date-picker-col">
           <DatePicker ref="pickerRef" style="max-width: 280px;" @select="readValue" @change="readValue" />
-        </div>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="events" class="playground-section">
-        <h2>Eventos (puntos en el calendario)</h2>
-        <p class="playground-desc">
-          Puntos bajo las fechas para señalar eventos. Cada evento tiene <code>date</code> y opcional <code>color</code> (semántico: <code>primary</code>, <code>success</code>, <code>warning</code>, <code>danger</code>…).
-        </p>
-        <div class="playground-date-picker-col">
-          <DatePicker
-            style="max-width: 280px;"
-            :events="pickerEvents"
-            @select="(d: Date) => onEvent('select', d)"
-            @change="(d: Date | null) => onEvent('change', d)"
-            @open="lastEvent = 'open'"
-            @close="lastEvent = 'close'"
-          />
-          <p class="playground-state">último evento: <strong>{{ lastEvent || '—' }}</strong></p>
         </div>
       </section>
 

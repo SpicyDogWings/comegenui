@@ -18,12 +18,12 @@ const variants = ["solid", "outlined", "soft", "subtle"] as const;
 const outlineItems = [
   { label: 'Default', id: 'default' },
   { label: 'Controles de mes', id: 'month-controls' },
+  { label: 'Eventos', id: 'events' },
   { label: 'Seleccionado', id: 'selected' },
   { label: 'Min / Max', id: 'min-max' },
   { label: 'Días deshabilitados', id: 'disabled-days' },
   { label: 'Semana domingo', id: 'week-start' },
   { label: 'Locale', id: 'locale' },
-  { label: 'Eventos', id: 'events' },
   { label: 'Variantes', id: 'variants' },
   { label: 'Colores', id: 'colors' },
   { label: 'Programático', id: 'programmatic' },
@@ -76,6 +76,35 @@ const calendarEvents = [
           <p class="playground-desc"><strong>Default</strong> (solo prev/next mes + drag, año automático):</p>
           <Calendar model-value="2026-08-11" style="width: 300px;" />
         </div>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="events" class="playground-section">
+        <h2>Eventos (puntos bajo la fecha)</h2>
+        <p class="playground-desc">
+          Puntos bajo las fechas para señalar eventos. Cada evento tiene <code>date</code> y opcional <code>color</code> (semántico: <code>primary</code>, <code>success</code>, <code>warning</code>, <code>danger</code>…). Un día puede tener múltiples puntos.
+        </p>
+        <div class="playground-calendar-row">
+          <Calendar
+            style="width: 380px;"
+            :events="calendarEvents"
+            model-value="2026-08-11"
+            @select="(d: Date) => onEvent('select', d)"
+            @change="(d: Date) => onEvent('change', d)"
+          />
+          <div class="playground-events-legend">
+            <strong>Leyenda:</strong>
+            <ul>
+              <li><span class="legend-dot" style="background: var(--cu-color-primary)"></span> Entrada a bodega (3, 18)</li>
+              <li><span class="legend-dot" style="background: var(--cu-color-success)"></span> Recepción (7, 22)</li>
+              <li><span class="legend-dot" style="background: var(--cu-color-warning)"></span> Vencimiento (11, 25)</li>
+              <li><span class="legend-dot" style="background: var(--cu-color-danger)"></span> Urgente (15)</li>
+              <li><span class="legend-dot" style="background: var(--cu-color-warning)"></span><span class="legend-dot" style="background: var(--cu-color-danger)"></span> Múltiple (11)</li>
+            </ul>
+          </div>
+        </div>
+        <p class="playground-state">último evento: <strong>{{ lastEvent || '—' }}</strong></p>
       </section>
 
       <hr class="playground-separator" />
@@ -136,35 +165,6 @@ const calendarEvents = [
         <div class="playground-calendar-col">
           <Calendar locale="en" model-value="2026-08-11" style="width: 300px;" />
         </div>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="events" class="playground-section">
-        <h2>Eventos (puntos bajo la fecha)</h2>
-        <p class="playground-desc">
-          Puntos bajo las fechas para señalar eventos. Cada evento tiene <code>date</code> y opcional <code>color</code> (semántico: <code>primary</code>, <code>success</code>, <code>warning</code>, <code>danger</code>…). Un día puede tener múltiples puntos.
-        </p>
-        <div class="playground-calendar-row">
-          <Calendar
-            style="width: 380px;"
-            :events="calendarEvents"
-            model-value="2026-08-11"
-            @select="(d: Date) => onEvent('select', d)"
-            @change="(d: Date) => onEvent('change', d)"
-          />
-          <div class="playground-events-legend">
-            <strong>Leyenda:</strong>
-            <ul>
-              <li><span class="legend-dot" style="background: var(--cu-color-primary)"></span> Entrada a bodega (3, 18)</li>
-              <li><span class="legend-dot" style="background: var(--cu-color-success)"></span> Recepción (7, 22)</li>
-              <li><span class="legend-dot" style="background: var(--cu-color-warning)"></span> Vencimiento (11, 25)</li>
-              <li><span class="legend-dot" style="background: var(--cu-color-danger)"></span> Urgente (15)</li>
-              <li><span class="legend-dot" style="background: var(--cu-color-warning)"></span><span class="legend-dot" style="background: var(--cu-color-danger)"></span> Múltiple (11)</li>
-            </ul>
-          </div>
-        </div>
-        <p class="playground-state">último evento: <strong>{{ lastEvent || '—' }}</strong></p>
       </section>
 
       <hr class="playground-separator" />
