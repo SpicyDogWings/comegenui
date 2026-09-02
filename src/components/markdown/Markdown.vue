@@ -7,6 +7,10 @@ import CodeBlock from './CodeBlock.vue'
 import Blockquote from './Blockquote.vue'
 import InlineRenderer from './InlineRenderer.vue'
 
+const emit = defineEmits<{
+  (e: 'parsed', headingIds: string[]): void
+}>()
+
 const blocks = ref<MarkdownBlock[]>([])
 const slotEl = ref<HTMLElement | null>(null)
 const headingIds = ref<string[]>([])
@@ -56,6 +60,7 @@ onMounted(() => {
     const parsed = parseToBlocks(raw)
     blocks.value = parsed.map(sanitizeBlock)
     headingIds.value = extractHeadingIds(parsed)
+    emit('parsed', headingIds.value)
     el.style.display = 'none'
   })
 })

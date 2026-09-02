@@ -16,6 +16,9 @@ function isHtml(token: any) {
 function tokenToHtml(token: any): string {
   switch (token.type) {
     case 'text':
+      if (token.tokens && token.tokens.length > 0) {
+        return token.tokens.map(tokenToHtml).join('')
+      }
       return token.text
     case 'strong':
       return `<strong>${(token.tokens || []).map(tokenToHtml).join('')}</strong>`
@@ -27,6 +30,8 @@ function tokenToHtml(token: any): string {
       return `<del>${(token.tokens || []).map(tokenToHtml).join('')}</del>`
     case 'image':
       return `<img src="${escapeHtml(token.href)}" alt="${escapeHtml((token.tokens || []).map(tokenToHtml).join('') || token.text)}" class="cu-md-image" />`
+    case 'link':
+      return `<a href="${escapeHtml(token.href)}" class="cu-md-link" target="_blank" rel="noopener">${(token.tokens || []).map(tokenToHtml).join('')}</a>`
     case 'br':
       return '<br>'
     case 'escape':
