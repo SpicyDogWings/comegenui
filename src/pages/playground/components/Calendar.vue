@@ -177,19 +177,30 @@ const calendarEvents = [
       <hr class="playground-separator" />
 
       <section id="events" class="playground-section">
-        <h2>Eventos (puntos)</h2>
+        <h2>Eventos (puntos bajo la fecha)</h2>
         <p class="playground-desc">
-          Puntos bajo las fechas para señalar eventos. Cada evento tiene <code>date</code> y opcional <code>color</code> (semántico: <code>primary</code>, <code>success</code>, <code>warning</code>, <code>danger</code>…).
+          Puntos bajo las fechas para señalar eventos. Cada evento tiene <code>date</code> y opcional <code>color</code> (semántico: <code>primary</code>, <code>success</code>, <code>warning</code>, <code>danger</code>…). Un día puede tener múltiples puntos.
         </p>
-        <div class="playground-calendar-col">
+        <div class="playground-calendar-row">
           <Calendar
-            style="width: 300px;"
+            style="width: 380px;"
             :events="calendarEvents"
+            model-value="2026-08-11"
             @select="(d: Date) => onEvent('select', d)"
             @change="(d: Date) => onEvent('change', d)"
           />
-          <p class="playground-state">último evento: <strong>{{ lastEvent || '—' }}</strong></p>
+          <div class="playground-events-legend">
+            <strong>Leyenda:</strong>
+            <ul>
+              <li><span class="legend-dot" style="background: var(--cu-color-primary)"></span> Entrada a bodega (3, 18)</li>
+              <li><span class="legend-dot" style="background: var(--cu-color-success)"></span> Recepción (7, 22)</li>
+              <li><span class="legend-dot" style="background: var(--cu-color-warning)"></span> Vencimiento (11, 25)</li>
+              <li><span class="legend-dot" style="background: var(--cu-color-danger)"></span> Urgente (15)</li>
+              <li><span class="legend-dot" style="background: var(--cu-color-warning)"></span><span class="legend-dot" style="background: var(--cu-color-danger)"></span> Múltiple (11)</li>
+            </ul>
+          </div>
         </div>
+        <p class="playground-state">último evento: <strong>{{ lastEvent || '—' }}</strong></p>
       </section>
 
       <hr class="playground-separator" />
@@ -237,5 +248,33 @@ const calendarEvents = [
   font-family: var(--cu-font-mono);
   font-size: var(--cu-font-size-sm);
   margin: 0;
+}
+
+.playground-events-legend {
+  font-size: var(--cu-font-size-sm);
+  color: var(--cu-color-neutral);
+}
+
+.playground-events-legend ul {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.playground-events-legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
 }
 </style>
