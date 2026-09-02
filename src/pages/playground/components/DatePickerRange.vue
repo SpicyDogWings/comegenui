@@ -200,6 +200,15 @@ function fmt(d: Date | null) {
           <div class="playground-position-demo playground-position-demo--left"><strong>left + center</strong><DatePickerRange start-date="2026-09-03" end-date="2026-09-07" position="left" align="center" style="max-width: 280px;" /></div>
           <div class="playground-position-demo playground-position-demo--left"><strong>left + end</strong><DatePickerRange start-date="2026-09-03" end-date="2026-09-07" position="left" align="end" style="max-width: 280px;" /></div>
         </div>
+        <p class="playground-desc" style="margin-top: 1rem;">
+          <strong>Dual calendar + posición:</strong> se combinan sin problemas.
+        </p>
+        <div class="playground-dp-range-row">
+          <div class="playground-position-demo"><strong>dual + right</strong><DatePickerRange dual-calendar position="right" align="start" start-date="2026-09-03" end-date="2026-10-07" style="max-width: 600px;" /></div>
+        </div>
+        <div class="playground-dp-range-row">
+          <div class="playground-position-demo playground-position-demo--left"><strong>dual + left</strong><DatePickerRange dual-calendar position="left" align="end" start-date="2026-09-03" end-date="2026-10-07" style="max-width: 600px;" /></div>
+        </div>
       </section>
 
       <hr class="playground-separator" />
