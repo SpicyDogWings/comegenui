@@ -72,6 +72,7 @@ onMounted(() => {
           v-else-if="block.type === 'code-block' && block.codeBlock"
           :code="block.codeBlock.code"
           :language="block.codeBlock.language"
+          variant="solid"
         />
         <Blockquote
           v-else-if="block.type === 'blockquote' && block.blockquote"
