@@ -28,6 +28,7 @@ const props = defineProps({
   align: { type: String, required: false, default: "start" },
   items: { type: Array, required: false, default: () => [] },
   modelValue: { type: String, required: false, default: "" },
+  label: { type: String, required: false, default: "" },
 });
 
 const autocompleteRef = ref<InstanceType<typeof Autocomplete> | null>(null);
@@ -81,6 +82,7 @@ defineExpose({
     :align="props.align"
     :items="props.items"
     :model-value="innerValue"
+    :label="props.label"
     @select="ceEmit('select', $event)"
     @blur="ceEmit('blur', $event)"
   />
