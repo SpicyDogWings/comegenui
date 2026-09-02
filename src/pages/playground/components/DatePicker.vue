@@ -17,6 +17,7 @@ const variants = ["outlined", "soft", "ghost", "subtle"] as const;
 
 const outlineItems = [
   { label: 'Default', id: 'default' },
+  { label: 'Label', id: 'label' },
   { label: 'Placeholder', id: 'placeholder' },
   { label: 'Formato', id: 'format' },
   { label: 'Min / Max', id: 'min-max' },
@@ -46,6 +47,17 @@ function onEvent(name: string, payload: any) {
         </p>
         <div class="playground-date-picker-col">
           <DatePicker style="max-width: 280px;" />
+        </div>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="label" class="playground-section">
+        <h2>Label</h2>
+        <div class="playground-date-picker-col">
+          <DatePicker label="Fecha de nacimiento" style="max-width: 280px;" />
+          <DatePicker label="Fecha de inicio" model-value="2026-08-11" style="max-width: 280px;" />
+          <DatePicker label="Fecha límite" color="danger" model-value="2026-12-31" style="max-width: 280px;" />
         </div>
       </section>
 
