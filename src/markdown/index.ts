@@ -1,4 +1,5 @@
 import { marked } from 'marked'
+import { slugify } from '@/utils/slugify'
 
 export interface MarkdownBlock {
   type: 'html' | 'table' | 'code-block' | 'blockquote' | 'inline' | 'list'
@@ -46,7 +47,8 @@ const renderer = new marked.Renderer()
 renderer.heading = function ({ depth, tokens }: any) {
   const cls = classMap.heading
   const content = this.parser.parseInline(tokens)
-  return `<h${depth} class="${cls} ${cls}-${depth}">${content}</h${depth}>\n`
+  const id = slugify(content)
+  return `<h${depth} id="${id}" class="${cls} ${cls}-${depth}">${content}</h${depth}>\n`
 }
 
 renderer.paragraph = function ({ tokens }: any) {
@@ -139,6 +141,13 @@ function escapeHtml(text: string): string {
 
 export function parseMarkdown(content: string): string {
   return marked.parse(content, { async: false }) as string
+}
+
+export function extractHeadingIds(blocks: MarkdownBlock[]): string[] {
+  return blocks
+    .filter(b => b.type === 'inline' && b.tag?.startsWith('h'))
+    .map(b => b.html?.match(/id="([^"]+)"/)?.[1])
+    .filter((id): id is string => !!id)
 }
 
 function stripOuterBlockquote(html: string): string {

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, nextTick } from 'vue'
 import DOMPurify from 'dompurify'
-import { parseToBlocks, type MarkdownBlock } from '@/markdown'
+import { parseToBlocks, extractHeadingIds, type MarkdownBlock } from '@/markdown'
 import Table from '../data/Table.vue'
 import CodeBlock from './CodeBlock.vue'
 import Blockquote from './Blockquote.vue'
@@ -9,6 +9,7 @@ import InlineRenderer from './InlineRenderer.vue'
 
 const blocks = ref<MarkdownBlock[]>([])
 const slotEl = ref<HTMLElement | null>(null)
+const headingIds = ref<string[]>([])
 
 function dedent(text: string): string {
   const lines = text.split('\n')
@@ -52,9 +53,15 @@ onMounted(() => {
     const el = slotEl.value
     if (!el) return
     const raw = dedent(el.textContent || '')
-    blocks.value = parseToBlocks(raw).map(sanitizeBlock)
+    const parsed = parseToBlocks(raw)
+    blocks.value = parsed.map(sanitizeBlock)
+    headingIds.value = extractHeadingIds(parsed)
     el.style.display = 'none'
   })
+})
+
+defineExpose({
+  headingIds: () => headingIds.value
 })
 </script>
 

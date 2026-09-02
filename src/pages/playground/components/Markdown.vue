@@ -1,18 +1,14 @@
 <script setup lang="ts">
+import { computed, ref } from "vue";
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import Markdown from "@/components/markdown/Markdown.vue";
 
-const outlineItems = [
-  { label: "Headings", id: "headings" },
-  { label: "Texto", id: "text" },
-  { label: "Links", id: "links" },
-  { label: "Código inline", id: "inline-code" },
-  { label: "Listas", id: "lists" },
-  { label: "Código", id: "code" },
-  { label: "Tablas", id: "tables" },
-  { label: "Citas", id: "blockquotes" },
-  { label: "Imagenes", id: "images" },
-];
+const markdownRef = ref<InstanceType<typeof Markdown> | null>(null)
+
+const outlineItems = computed(() => {
+  const ids = markdownRef.value?.headingIds() || []
+  return ids.map(id => ({ label: id.replace(/-/g, ' '), id }))
+})
 </script>
 
 <template>
@@ -20,7 +16,7 @@ const outlineItems = [
     <div class="playground-content">
       <section id="full-demo" class="playground-section">
         <h2>Demo completa</h2>
-        <Markdown>
+        <Markdown ref="markdownRef">
 # Título Principal
 
 Este es un párrafo con **texto en negrita** y *texto en cursiva*. También podemos tener `código inline` que se renderiza como badge.
