@@ -37,27 +37,6 @@ const outlineItems = [
 
       <hr class="playground-separator" />
 
-      <!-- Variants -->
-      <section id="variants" class="playground-switch-section">
-        <h2>Variants</h2>
-        <div class="playground-switch-row playground-switch-row--horizontal">
-          <div class="playground-switch-item">
-            <Switch variant="solid" color="primary" />
-            <span class="playground-switch-label">solid</span>
-          </div>
-          <div class="playground-switch-item">
-            <Switch variant="soft" color="primary" />
-            <span class="playground-switch-label">soft</span>
-          </div>
-          <div class="playground-switch-item">
-            <Switch variant="outlined" color="primary" />
-            <span class="playground-switch-label">outlined</span>
-          </div>
-        </div>
-      </section>
-
-      <hr class="playground-separator" />
-
       <!-- Sizes -->
       <section id="sizes" class="playground-switch-section">
         <h2>Sizes</h2>
