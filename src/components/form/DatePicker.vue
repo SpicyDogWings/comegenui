@@ -287,7 +287,7 @@ defineExpose({ open, close, toggle, getValue, setValue, clear, isOpen: () => dro
   outline: none;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--cu-space-sm);
 }
 
 .cu-date-picker :deep(.cu-dropdown) {
