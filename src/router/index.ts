@@ -156,6 +156,11 @@ const router = createRouter({
               name: "CodeBlock playground",
               component: () => import("@/pages/playground/components/CodeBlock.vue")
             },
+            {
+              path: "blockquote",
+              name: "Blockquote playground",
+              component: () => import("@/pages/playground/components/Blockquote.vue")
+            },
           ]
         },
       ]

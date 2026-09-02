@@ -61,8 +61,14 @@ const navItems = [
           { label: 'Alert', path: '/playground/components/alert' },
           { label: 'Badge', path: '/playground/components/badge' },
           { label: 'Card', path: '/playground/components/card' },
-          { label: 'CodeBlock', path: '/playground/components/codeblock' },
+        ]
+      },
+      {
+        label: 'markdown',
+        children: [
           { label: 'Markdown', path: '/playground/components/markdown' },
+          { label: 'CodeBlock', path: '/playground/components/codeblock' },
+          { label: 'Blockquote', path: '/playground/components/blockquote' },
         ]
       },
       {

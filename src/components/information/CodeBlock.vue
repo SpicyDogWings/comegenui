@@ -17,7 +17,7 @@ defineProps({
 <style scoped>
 .cu-code-block {
   position: relative;
-  background-color: var(--cu-color-neutral-soft);
+  background-color: var(--cu-color-neutral);
   border-radius: var(--cu-radius-sm);
   margin-bottom: var(--cu-space-md);
   overflow: hidden;
