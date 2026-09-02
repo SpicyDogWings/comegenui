@@ -11,50 +11,43 @@ const codePython = `def saludar(nombre):
     print(f"Hola, {nombre}")
     return {"nombre": nombre, "saludo": "Hola"}`;
 
-const codeHtml = `<!DOCTYPE html>
-<html>
-  <head>
-    <title>Ejemplo</title>
-  </head>
-  <body>
-    <h1>Hola</h1>
-  </body>
-</html>`;
-
-const codeSinLenguaje = `Texto de código sin
-ningún lenguaje especificado.`;
-
 const outlineItems = [
-  { label: 'Con lenguaje', id: 'con-lenguaje' },
+  { label: 'Variants', id: 'variants' },
+  { label: 'Colors (solid)', id: 'colors' },
   { label: 'Sin lenguaje', id: 'sin-lenguaje' },
-  { label: 'Múltiples bloques', id: 'multiples' },
 ];
 </script>
 
 <template>
   <PlaygroundLayout title="CodeBlock" :outlineItems="outlineItems">
     <div class="playground-content">
-      <section id="con-lenguaje" class="playground-section">
-        <h2>Con lenguaje</h2>
-        <CodeBlock :code="codeJavaScript" language="javascript" />
-        <CodeBlock :code="codePython" language="python" />
-        <CodeBlock :code="codeHtml" language="html" />
+      <section id="variants" class="playground-section">
+        <h2>Variants</h2>
+        <h3>default</h3>
+        <CodeBlock :code="codeJavaScript" language="javascript" variant="default" />
+        <h3>outlined</h3>
+        <CodeBlock :code="codeJavaScript" language="javascript" variant="outlined" />
+        <h3>solid</h3>
+        <CodeBlock :code="codeJavaScript" language="javascript" variant="solid" />
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="colors" class="playground-section">
+        <h2>Colors (solid variant)</h2>
+        <CodeBlock :code="codePython" language="python" variant="solid" color="neutral" />
+        <CodeBlock :code="codePython" language="python" variant="solid" color="primary" />
+        <CodeBlock :code="codePython" language="python" variant="solid" color="secondary" />
+        <CodeBlock :code="codePython" language="python" variant="solid" color="success" />
+        <CodeBlock :code="codePython" language="python" variant="solid" color="warning" />
+        <CodeBlock :code="codePython" language="python" variant="solid" color="danger" />
       </section>
 
       <hr class="playground-separator" />
 
       <section id="sin-lenguaje" class="playground-section">
         <h2>Sin lenguaje</h2>
-        <CodeBlock :code="codeSinLenguaje" />
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="multiples" class="playground-section">
-        <h2>Múltiples bloques</h2>
-        <p>Los bloques de código se apilan con margen inferior automático.</p>
-        <CodeBlock :code="codeJavaScript" language="javascript" />
-        <CodeBlock :code="codePython" language="python" />
+        <CodeBlock :code="codeJavaScript" />
       </section>
     </div>
   </PlaygroundLayout>
