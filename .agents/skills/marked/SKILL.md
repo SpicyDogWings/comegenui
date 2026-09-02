@@ -1,11 +1,32 @@
 ---
 name: marked
-description: Use when working with the marked npm package (markdown parser/renderer), creating custom renderers, handling markdown-to-HTML conversion, or debugging marked v15+ API issues. Covers v18 renderer API, inline vs block token parsing, and Vue integration patterns.
+description: Use when working with the marked npm package (markdown parser/renderer), creating custom renderers, handling markdown-to-HTML conversion, or debugging marked v15+ API issues. Covers v18 renderer API, inline vs block token parsing, Vue integration patterns, and comegen-ui component-based rendering.
 ---
 
 # Marked - Markdown Parser Skill
 
-Marked is a low-level compiler for parsing markdown without caching or blocking for long periods of time. It implements all markdown features from supported flavors & flavors.
+## Arquitectura del Markdown Component
+
+```
+src/
+├── markdown/
+│   └── index.ts              # Parser + renderer config + parseToBlocks()
+├── composables/
+│   └── useMarkdown.ts        # Composable (HTML simple)
+├── components/
+│   ├── information/
+│   │   ├── Markdown.vue      # Componente principal (usa componentes Vue)
+│   │   ├── CodeBlock.vue     # Bloque de código con label de lenguaje
+│   │   └── Blockquote.vue    # Cita en bloque
+│   ├── data/
+│   │   └── Table.vue         # Tabla (htmlCells prop para markdown)
+│   └── customElements/
+│       └── information/
+│           └── Markdown.ce.vue  # Wrapper CE (NO expone htmlCells)
+└── lib/
+    └── information/
+        └── markdown.ts       # Entry point UMD
+```
 
 ## Version Compatibility (CRITICAL)
 
@@ -72,123 +93,158 @@ Marked v15+ introduced breaking API changes. Always check `node_modules/marked/p
    }
    ```
 
-## Custom Renderer Pattern (v18)
+## Component-Based Rendering
+
+The `Markdown.vue` component uses `parseToBlocks()` to render markdown with Vue components instead of raw HTML.
+
+### Block Types
 
 ```ts
-import { marked } from 'marked'
-
-const renderer = new marked.Renderer()
-
-// Block-level renderers
-renderer.heading = function(token) {
-  const tag = `h${token.depth}`
-  return `<${tag} class="heading-${token.depth}">${this.parser.parseInline(token.tokens)}</${tag}>\n`
-}
-
-renderer.paragraph = function(token) {
-  return `<p>${this.parser.parseInline(token.tokens)}</p>\n`
-}
-
-renderer.code = function(token) {
-  return `<pre><code>${escapeHtml(token.text)}</code></pre>\n`
-}
-
-renderer.blockquote = function(token) {
-  return `<blockquote>${marked.parser(token.tokens)}</blockquote>\n`
-}
-
-renderer.list = function(token) {
-  const tag = token.ordered ? 'ol' : 'ul'
-  let body = ''
-  for (const item of token.items) {
-    body += `<li>${this.parser.parseInline(item.tokens)}</li>\n`
+interface MarkdownBlock {
+  type: 'html' | 'table' | 'code-block' | 'blockquote'
+  html?: string
+  table?: {
+    columns: Array<{ key: string; label: string }>
+    data: Array<Record<string, string>>
   }
-  return `<${tag}>${body}</${tag}>\n`
-}
-
-// Inline-level renderers
-renderer.strong = function(token) {
-  return `<strong>${this.parser.parseInline(token.tokens)}</strong>`
-}
-
-renderer.em = function(token) {
-  return `<em>${this.parser.parseInline(token.tokens)}</em>`
-}
-
-renderer.link = function(token) {
-  return `<a href="${token.href}">${this.parser.parseInline(token.tokens)}</a>`
-}
-
-renderer.codespan = function(token) {
-  return `<code>${escapeHtml(token.text)}</code>`
-}
-
-renderer.del = function(token) {
-  return `<del>${this.parser.parseInline(token.tokens)}</del>`
-}
-
-renderer.image = function(token) {
-  return `<img src="${token.href}" alt="${token.text}" />`
-}
-
-renderer.hr = function() {
-  return `<hr />\n`
-}
-
-renderer.br = function() {
-  return `<br />`
-}
-
-// Table (mixed block/inline)
-renderer.table = function(token) {
-  let headerRow = ''
-  for (const cell of token.header) {
-    headerRow += `<th>${this.parser.parseInline(cell.tokens)}</th>`
+  codeBlock?: {
+    code: string
+    language: string
   }
-  let bodyRows = ''
-  for (const row of token.rows) {
-    let rowCells = ''
-    for (const cell of row) {
-      rowCells += `<td>${this.parser.parseInline(cell.tokens)}</td>`
+  blockquote?: {
+    html: string
+  }
+}
+```
+
+### Parsing to Blocks
+
+```ts
+// src/markdown/index.ts
+export function parseToBlocks(markdown: string): MarkdownBlock[] {
+  const tokens = marked.lexer(markdown)
+  const result: MarkdownBlock[] = []
+
+  for (const token of tokens) {
+    if (token.type === 'table') {
+      // Tables → Table.vue component
+      const header = token.header.map((cell: any) => cell.text)
+      const columns = header.map((text: string) => ({ key: text, label: text }))
+      const data = token.rows.map((row: any[]) => {
+        const obj: Record<string, string> = {}
+        row.forEach((cell: any, i: number) => {
+          if (header[i]) {
+            obj[header[i]] = marked.parseInline(cell.text)
+          }
+        })
+        return obj
+      })
+      result.push({ type: 'table', table: { columns, data } })
+    } else if (token.type === 'code') {
+      // Code blocks → CodeBlock.vue component
+      result.push({
+        type: 'code-block',
+        codeBlock: { code: token.text, language: token.lang || '' },
+      })
+    } else if (token.type === 'blockquote') {
+      // Blockquotes → Blockquote.vue component
+      const html = marked.parser([token])
+      result.push({ type: 'blockquote', blockquote: { html } })
+    } else {
+      // Everything else → sanitized HTML
+      const html = marked.parser([token])
+      result.push({ type: 'html', html })
     }
-    bodyRows += `<tr>${rowCells}</tr>`
   }
-  return `<table><thead><tr>${headerRow}</tr></thead><tbody>${bodyRows}</tbody></table>\n`
-}
 
-// Text handler (important for nested tokens)
-renderer.text = function(token) {
-  if (token.tokens && token.tokens.length > 0) {
-    return this.parser.parseInline(token.tokens)
-  }
-  return token.escaped ? token.text : escapeHtml(token.text)
+  return result
 }
+```
 
-marked.setOptions({ renderer, gfm: true })
+### Rendering Blocks
 
-function escapeHtml(text: string): string {
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;')
-}
+```vue
+<!-- Markdown.vue -->
+<template>
+  <div class="cu-markdown">
+    <div ref="slotEl" class="cu-md-slot"><slot /></div>
+    <div class="cu-md-output">
+      <template v-for="(block, i) in blocks" :key="i">
+        <Table
+          v-if="block.type === 'table' && block.table"
+          :columns="block.table.columns"
+          :data="block.table.data"
+          :html-cells="true"
+        />
+        <CodeBlock
+          v-else-if="block.type === 'code-block' && block.codeBlock"
+          :code="block.codeBlock.code"
+          :language="block.codeBlock.language"
+        />
+        <Blockquote
+          v-else-if="block.type === 'blockquote' && block.blockquote"
+          :html="block.blockquote.html"
+        />
+        <div v-else-if="block.html" v-html="block.html"></div>
+      </template>
+    </div>
+  </div>
+</template>
+```
 
-export function parseMarkdown(content: string): string {
-  return marked.parse(content, { async: false }) as string
-}
+## Components Used by Markdown
+
+### Table (`src/components/data/Table.vue`)
+
+The `htmlCells` prop enables v-html rendering for table cells (for markdown inline formatting).
+
+```vue
+<Table :columns="columns" :data="data" :html-cells="true" />
+```
+
+**IMPORTANT:** `htmlCells` is NOT exposed in `Table.ce.vue` (CE wrapper). This prevents XSS via the public API.
+
+```vue
+<!-- Table.vue internal cell rendering -->
+<slot :name="`cell-${col.key}`" :value="getCellValue(row, col)">
+  <span v-if="props.htmlCells" v-html="getCellValue(row, col)"></span>
+  <template v-else>{{ getCellValue(row, col) }}</template>
+</slot>
+```
+
+### CodeBlock (`src/components/information/CodeBlock.vue`)
+
+Renders code with a language label at bottom right.
+
+```vue
+<CodeBlock :code="codeString" :language="'javascript'" />
+```
+
+Output:
+```
+┌─────────────────────────────┐
+│ function hello() {          │
+│   console.log("Hello");     │
+│ }                           │
+│                    javascript│
+└─────────────────────────────┘
+```
+
+### Blockquote (`src/components/information/Blockquote.vue`)
+
+Renders a blockquote with left border and optional color.
+
+```vue
+<Blockquote :html="blockquoteHtml" color="primary" />
 ```
 
 ## Vue Integration Pattern
 
 ### Problem: Vue Collapses Whitespace at Compile Time
 
-Vue's template compiler collapses whitespace between tags by default. This happens **before** DOM rendering, so `textContent` already arrives without newlines. CSS `white-space: pre-wrap` does NOT fix this because the newlines are gone before the browser even renders.
+Vue's template compiler collapses whitespace between tags by default. This happens **before** DOM rendering, so `textContent` already arrives without newlines. CSS `white-space: pre-wrap` does NOT fix this.
 
 ### Solution: `whitespace: 'preserve'` in Vue Compiler Options
-
-**This is the ONLY reliable fix.** You must configure Vue's template compiler to preserve whitespace:
 
 ```ts
 // vite.config.ts
@@ -201,16 +257,9 @@ vue({
 })
 ```
 
-> **CRITICAL:** Without this compiler option, `el.textContent` will NOT contain newlines regardless of any CSS you apply.
+### Dedent Function
 
-```vue
-<script setup lang="ts">
-import { ref, onMounted, nextTick } from 'vue'
-import { parseMarkdown } from './markdown'
-
-const rendered = ref('')
-const slotEl = ref<HTMLElement | null>(null)
-
+```ts
 function dedent(text: string): string {
   const lines = text.split('\n')
   while (lines.length && lines[0].trim() === '') lines.shift()
@@ -225,95 +274,48 @@ function dedent(text: string): string {
   if (minIndent === Infinity) minIndent = 0
   return lines.map(line => line.slice(minIndent)).join('\n')
 }
-
-onMounted(() => {
-  nextTick(() => {
-    const el = slotEl.value
-    if (!el) return
-    const raw = dedent(el.textContent || '')
-    rendered.value = raw ? parseMarkdown(raw) : ''
-    el.style.display = 'none'
-  })
-})
-</script>
-
-<template>
-  <div class="cu-markdown">
-    <div ref="slotEl"><slot /></div>
-    <div class="cu-md-output" v-html="rendered"></div>
-  </div>
-</template>
 ```
 
-### Key Points:
-1. **`whitespace: 'preserve'` in vite.config.ts** - THE critical fix, without this nothing works
-2. **`dedent()`** removes common indentation from slot content
-3. **`el.style.display = 'none'`** hides raw markdown after parsing (JS, not CSS, because CSS can't select previous siblings)
-4. **`{ async: false }`** required in marked v15+ to get string instead of Promise
+## Security
 
-### Alternative: Use a prop instead of slot
+### XSS Protection
 
-```vue
-<Markdown :content="markdownString" />
-```
-
-This avoids the whitespace issue entirely.
-
-### Table rendering with Table.vue
-
-The markdown component uses the internal `Table.vue` component for tables instead of raw HTML. This ensures visual consistency across the library.
-
-**Architecture:**
-1. `marked.lexer()` splits markdown into tokens
-2. Table tokens are converted to `{ columns, data }` format
-3. Cell content is parsed as inline markdown via `marked.parseInline()`
-4. Non-table tokens render as sanitized HTML via `v-html`
-5. Tables render via `<Table :html-cells="true">`
-
-**Important:** The `htmlCells` prop on `Table.vue` is **NOT** exposed in the CE wrapper (`Table.ce.vue`). This prevents XSS via the public API while allowing internal markdown tables to render formatted content.
+The markdown component uses DOMPurify to sanitize all output:
 
 ```ts
-// Markdown.vue - parsing tables for Table.vue
-function parseToBlocks(markdown: string): Block[] {
-  const tokens = marked.lexer(markdown)
-  const result: Block[] = []
+import DOMPurify from 'dompurify'
 
-  for (const token of tokens) {
-    if (token.type === 'table') {
-      const header = token.header.map((cell: any) => cell.text)
-      const columns = header.map((text: string) => ({ key: text, label: text }))
-      const rows = token.rows.map((row: any[]) => {
-        const obj: Record<string, string> = {}
-        row.forEach((cell: any, i: number) => {
-          if (header[i]) {
-            obj[header[i]] = marked.parseInline(cell.text)
-          }
-        })
-        return obj
-      })
-      result.push({ type: 'table', columns, data: rows })
-    } else {
-      const html = marked.parser([token])
-      result.push({ type: 'html', html: DOMPurify.sanitize(html) })
-    }
+function sanitizeBlock(block: MarkdownBlock): MarkdownBlock {
+  if (block.html) {
+    block.html = DOMPurify.sanitize(block.html)
   }
-
-  return result
+  if (block.blockquote) {
+    block.blockquote.html = DOMPurify.sanitize(block.blockquote.html)
+  }
+  if (block.table) {
+    block.table.data = block.table.data.map(row => {
+      const sanitized: Record<string, string> = {}
+      for (const key in row) {
+        sanitized[key] = DOMPurify.sanitize(row[key])
+      }
+      return sanitized
+    })
+  }
+  return block
 }
 ```
 
-```vue
-<!-- Rendering -->
-<template v-for="(block, i) in blocks" :key="i">
-  <Table
-    v-if="block.type === 'table'"
-    :columns="block.columns"
-    :data="block.data"
-    :html-cells="true"
-  />
-  <div v-else v-html="block.html"></div>
-</template>
-```
+### Components Using v-html (XSS Audit)
+
+| Component | Line | Uso | Riesgo |
+|-----------|------|-----|--------|
+| `DropdownMenu.vue` | 134 | `item.icon` (prop) | Medio - si viene de usuario |
+| `AdvancedTable.vue` | 385 | `button.icon` (prop) | Medio - si viene de usuario |
+| `Autocomplete.vue` | 159 | `item.icon` (prop) | Medio - si viene de usuario |
+| `FileList.vue` | 59 | `getFileIconSvg()` | Bajo - SVG interno |
+| `FileInput.vue` | 205 | `getFileIconSvg()` | Bajo - SVG interno |
+
+**Recommendation:** Props like `item.icon` should always be developer-controlled, never from user input.
 
 ## Common Pitfalls
 
@@ -327,55 +329,9 @@ function parseToBlocks(markdown: string): Block[] {
 | Links not rendering | `token.text` is raw markdown | Parse inline tokens |
 | `this.parser is undefined` | Arrow function used | Use regular `function()` syntax |
 
-## Security Warning
-
-### XSS en Markdown
-
-Marked no sanitiza el HTML de salida. El composable `useMarkdown` ya incluye DOMPurify por defecto:
-
-```ts
-import DOMPurify from 'dompurify'
-
-export function useMarkdown(source: string | Ref<string>) {
-  const rendered = computed(() => {
-    const raw = dedent(unref(sourceRef.value))
-    if (!raw) return ''
-    const html = parseMarkdown(raw)
-    return DOMPurify.sanitize(html)
-  })
-  return { rendered }
-}
-```
-
-### Audit de v-html en otros componentes
-
-Los siguientes componentes usan `v-html` y podrían ser vulnerables a XSS si reciben contenido no confiable:
-
-| Componente | Línea | Uso | Riesgo |
-|-------------|-------|-----|--------|
-| `DropdownMenu.vue` | 134 | `item.icon` (prop) | **Medio** - si `item.icon` viene de datos de usuario |
-| `AdvancedTable.vue` | 385 | `button.icon` (prop) | **Medio** - si `button.icon` viene de datos de usuario |
-| `Autocomplete.vue` | 159 | `item.icon` (prop) | **Medio** - si `item.icon` viene de datos de usuario |
-| `FileList.vue` | 59 | `getFileIconSvg()` | Bajo - SVG generado internamente |
-| `FileInput.vue` | 205 | `getFileIconSvg()` | Bajo - SVG generado internariamente |
-
-**Recomendaciones:**
-1. Las props `item.icon`, `button.icon` deben ser controladas por el developer, nunca directamente de input de usuario
-2. Si se necesita renderizar HTML arbitrario en estos componentes, agregar DOMPurify
-3. Los métodos `getFileIconSvg()` son seguros porque generan SVG paths, no HTML arbitrario
-
-```ts
-// ❌ Peligroso - nunca hagas esto
-const items = userInput.map(i => ({ icon: i.htmlFromUser }))
-
-// ✅ Seguro - iconos controlados por el developer
-const items = [
-  { icon: '<svg>...</svg>', label: 'Opción 1' }
-]
-```
-
 ## Resources
 
 - [Official docs](https://marked.js.org)
 - [GitHub repo](https://github.com/markedjs/marked)
 - [npm package](https://www.npmjs.com/package/marked)
+- [DOMPurify](https://github.com/cure53/DOMPurify)

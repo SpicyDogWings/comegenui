@@ -1,5 +1,21 @@
 import { marked } from 'marked'
 
+export interface MarkdownBlock {
+  type: 'html' | 'table' | 'code-block' | 'blockquote'
+  html?: string
+  table?: {
+    columns: Array<{ key: string; label: string }>
+    data: Array<Record<string, string>>
+  }
+  codeBlock?: {
+    code: string
+    language: string
+  }
+  blockquote?: {
+    html: string
+  }
+}
+
 const classMap: Record<string, string> = {
   heading: 'cu-md-heading',
   paragraph: 'cu-md-paragraph',
@@ -118,4 +134,39 @@ function escapeHtml(text: string): string {
 
 export function parseMarkdown(content: string): string {
   return marked.parse(content, { async: false }) as string
+}
+
+export function parseToBlocks(markdown: string): MarkdownBlock[] {
+  const tokens = marked.lexer(markdown)
+  const result: MarkdownBlock[] = []
+
+  for (const token of tokens) {
+    if (token.type === 'table') {
+      const header = token.header.map((cell: any) => cell.text)
+      const columns = header.map((text: string) => ({ key: text, label: text }))
+      const data = token.rows.map((row: any[]) => {
+        const obj: Record<string, string> = {}
+        row.forEach((cell: any, i: number) => {
+          if (header[i]) {
+            obj[header[i]] = marked.parseInline(cell.text)
+          }
+        })
+        return obj
+      })
+      result.push({ type: 'table', table: { columns, data } })
+    } else if (token.type === 'code') {
+      result.push({
+        type: 'code-block',
+        codeBlock: { code: token.text, language: token.lang || '' },
+      })
+    } else if (token.type === 'blockquote') {
+      const html = marked.parser([token])
+      result.push({ type: 'blockquote', blockquote: { html } })
+    } else {
+      const html = marked.parser([token])
+      result.push({ type: 'html', html })
+    }
+  }
+
+  return result
 }

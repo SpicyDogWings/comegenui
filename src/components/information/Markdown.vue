@@ -1,18 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted, nextTick } from 'vue'
 import DOMPurify from 'dompurify'
-import { marked } from 'marked'
-import '@/markdown'
+import { parseToBlocks, type MarkdownBlock } from '@/markdown'
 import Table from '../data/Table.vue'
+import CodeBlock from './CodeBlock.vue'
+import Blockquote from './Blockquote.vue'
 
-interface Block {
-  type: 'html' | 'table'
-  html?: string
-  columns?: Array<{ key: string; label: string }>
-  data?: Array<Record<string, string>>
-}
-
-const blocks = ref<Block[]>([])
+const blocks = ref<MarkdownBlock[]>([])
 const slotEl = ref<HTMLElement | null>(null)
 
 function dedent(text: string): string {
@@ -33,31 +27,23 @@ function dedent(text: string): string {
   return lines.map(line => line.slice(minIndent)).join('\n')
 }
 
-function parseToBlocks(markdown: string): Block[] {
-  const tokens = marked.lexer(markdown)
-  const result: Block[] = []
-
-  for (const token of tokens) {
-    if (token.type === 'table') {
-      const header = token.header.map((cell: any) => cell.text)
-      const columns = header.map((text: string) => ({ key: text, label: text }))
-      const rows = token.rows.map((row: any[]) => {
-        const obj: Record<string, string> = {}
-        row.forEach((cell: any, i: number) => {
-          if (header[i]) {
-            obj[header[i]] = marked.parseInline(cell.text)
-          }
-        })
-        return obj
-      })
-      result.push({ type: 'table', columns, data: rows })
-    } else {
-      const html = marked.parser([token])
-      result.push({ type: 'html', html: DOMPurify.sanitize(html) })
-    }
+function sanitizeBlock(block: MarkdownBlock): MarkdownBlock {
+  if (block.html) {
+    block.html = DOMPurify.sanitize(block.html)
   }
-
-  return result
+  if (block.blockquote) {
+    block.blockquote.html = DOMPurify.sanitize(block.blockquote.html)
+  }
+  if (block.table) {
+    block.table.data = block.table.data.map(row => {
+      const sanitized: Record<string, string> = {}
+      for (const key in row) {
+        sanitized[key] = DOMPurify.sanitize(row[key])
+      }
+      return sanitized
+    })
+  }
+  return block
 }
 
 onMounted(() => {
@@ -65,7 +51,7 @@ onMounted(() => {
     const el = slotEl.value
     if (!el) return
     const raw = dedent(el.textContent || '')
-    blocks.value = parseToBlocks(raw)
+    blocks.value = parseToBlocks(raw).map(sanitizeBlock)
     el.style.display = 'none'
   })
 })
@@ -77,12 +63,21 @@ onMounted(() => {
     <div class="cu-md-output">
       <template v-for="(block, i) in blocks" :key="i">
         <Table
-          v-if="block.type === 'table' && block.columns && block.data"
-          :columns="block.columns"
-          :data="block.data"
+          v-if="block.type === 'table' && block.table"
+          :columns="block.table.columns"
+          :data="block.table.data"
           :html-cells="true"
         />
-        <div v-else-if="block.type === 'html'" v-html="block.html"></div>
+        <CodeBlock
+          v-else-if="block.type === 'code-block' && block.codeBlock"
+          :code="block.codeBlock.code"
+          :language="block.codeBlock.language"
+        />
+        <Blockquote
+          v-else-if="block.type === 'blockquote' && block.blockquote"
+          :html="block.blockquote.html"
+        />
+        <div v-else-if="block.html" v-html="block.html"></div>
       </template>
     </div>
   </div>
@@ -126,16 +121,6 @@ onMounted(() => {
   font-style: italic;
 }
 
-.cu-markdown :deep(.cu-md-blockquote) {
-  border-left: 4px solid var(--cu-color-primary);
-  padding-left: var(--cu-space-md);
-  margin-left: 0;
-  margin-bottom: var(--cu-space-md);
-  color: var(--cu-color-neutral-text);
-  opacity: 0.85;
-  font-style: italic;
-}
-
 .cu-markdown :deep(.cu-md-list) {
   margin-bottom: var(--cu-space-md);
   padding-left: var(--cu-space-xl);
@@ -161,29 +146,6 @@ onMounted(() => {
 
 .cu-markdown :deep(.cu-md-link:hover) {
   color: var(--cu-color-primary-hover);
-}
-
-.cu-markdown :deep(.cu-md-code-block) {
-  background-color: var(--cu-color-neutral-soft);
-  border-radius: var(--cu-radius-sm);
-  padding: var(--cu-space-md);
-  margin-bottom: var(--cu-space-md);
-  overflow-x: auto;
-  font-family: var(--cu-font-mono);
-  font-size: var(--cu-font-size-sm);
-}
-
-.cu-markdown :deep(.cu-md-code-block code) {
-  background: none;
-  padding: 0;
-}
-
-.cu-markdown :deep(.cu-md-code-inline) {
-  background-color: var(--cu-color-neutral-soft);
-  padding: var(--cu-space-2xs) var(--cu-space-xs);
-  border-radius: var(--cu-radius-sm);
-  font-family: var(--cu-font-mono);
-  font-size: 0.9em;
 }
 
 .cu-markdown :deep(.cu-md-hr) {

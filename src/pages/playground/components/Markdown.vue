@@ -5,11 +5,11 @@ import Markdown from "@/components/information/Markdown.vue";
 const outlineItems = [
   { label: "Headings", id: "headings" },
   { label: "Text", id: "text" },
+  { label: "Links", id: "links" },
   { label: "Lists", id: "lists" },
   { label: "Code", id: "code" },
   { label: "Tables", id: "tables" },
   { label: "Blockquotes", id: "blockquotes" },
-  { label: "Links & HR", id: "links" },
 ];
 </script>
 
@@ -21,7 +21,7 @@ const outlineItems = [
         <Markdown>
 # Título Principal
 
-Este es un párrafo con **texto en negrita** y *texto en cursiva*. También podemos tener `código inline`.
+Este es un párrafo con **texto en negrita** y *texto en cursiva*. También podemos tener `código inline` que se renderiza como badge.
 
 ## Subtítulo nivel 2
 
@@ -35,25 +35,21 @@ Este es un párrafo con **texto en negrita** y *texto en cursiva*. También pode
 
 ## Texto enriquecido
 
-Este párrafo tiene **negrita**, *cursiva*, `codigo`, y [un link](https://example.com) todo junto.
+Este párrafo tiene **negrita**, *cursiva*, `codigo`, y [un link](https://example.com) que se renderiza como botón. También podemos tener ~~texto tachado~~.
 
-También podemos tener ~~texto tachado~~.
+## Links
 
-## Listas desordenadas
+[Visita Google](https://www.google.com)
 
-- Item uno
-- Item dos
-- Item tres con **negrita**
-- Item cuatro con `codigo`
+[ComegenUI en GitLab](https://gitlab.com/SpicyDogWings/comegen-ui)
 
-## Listas ordenadas
+[Múltiples links](https://example.com) en el [mismo párrafo](https://example.org)
 
-1. Primero
-2. Segundo
-3. Tercero con *cursiva*
-4. Cuarto
+## Código inline
 
-## Código
+Usa la función `calculateTotal()` para sumar. El valor `null` representa ausencia de datos. Puedes usar `async/await` para operaciones asíncronas.
+
+## Bloques de código
 
 ```javascript
 function hello() {
@@ -65,22 +61,42 @@ function hello() {
 ```python
 def saludar(nombre):
     print(f"Hola, {nombre}")
+    return {"nombre": nombre, "saludo": "Hola"}
 ```
+
+```
+Sin lenguaje especificado
+```
+
+## Listas desordenadas
+
+- Item uno
+- Item dos
+- Item tres con **negrita**
+- Item cuatro con `codigo`
+- Item cinco con [un link](https://example.com)
+
+## Listas ordenadas
+
+1. Primero
+2. Segundo
+3. Tercero con *cursiva*
+4. Cuarto con `codigo Quinto con [link](https://example.com)
 
 ## Tabla
 
-| Nombre | Edad | Ciudad | Notas |
-|--------|------|--------|-------|
-| **Ana** | 25 | Madrid | [Perfil](https://example.com) |
-| *Carlos* | 30 | Barcelona | \`activo\` |
-| **María** | ~~28~~ 29 | Valencia | **Premium** |
-| Pedro | 35 | Sevilla | *Pendiente* |
+| Nombre | Edad | Ciudad | Estado |
+|--------|------|--------|--------|
+| **Ana** | 25 | Madrid | `activo` |
+| *Carlos* | 30 | Barcelona | **inactivo** |
+| ~~Pedro~~ Luis | 35 | Valencia | *pendiente* |
+| María | ~~28~~ 29 | Sevilla | [Ver](https://example.com) |
 
 ## Blockquote
 
 > Esta es una cita importante.
 > Puede tener múltiples líneas.
-> Y continúa aquí.
+> Y **formato inline** también.
 
 ## Regla horizontal
 
@@ -90,11 +106,9 @@ Arriba
 
 Abajo
 
-## Links
+## Imagen
 
-[Visita Google](https://www.google.com)
-
-[ComegenUI en GitLab](https://gitlab.com/SpicyDogWings/comegen-ui)
+![Alt text](https://via.placeholder.com/150)
         </Markdown>
       </section>
     </div>
