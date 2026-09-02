@@ -1,8 +1,10 @@
 import { marked } from 'marked'
 
 export interface MarkdownBlock {
-  type: 'html' | 'table' | 'code-block' | 'blockquote'
+  type: 'html' | 'table' | 'code-block' | 'blockquote' | 'inline' | 'list'
   html?: string
+  tag?: string
+  tokens?: any[]
   table?: {
     columns: Array<{ key: string; label: string }>
     data: Array<Record<string, string>>
@@ -14,6 +16,8 @@ export interface MarkdownBlock {
   blockquote?: {
     html: string
   }
+  listItems?: { tokens: any[] }[]
+  ordered?: boolean
 }
 
 const classMap: Record<string, string> = {
@@ -168,6 +172,28 @@ export function parseToBlocks(markdown: string): MarkdownBlock[] {
       const html = marked.parser([token])
       const inner = stripOuterBlockquote(html)
       result.push({ type: 'blockquote', blockquote: { html: inner } })
+    } else if (token.type === 'paragraph') {
+      result.push({
+        type: 'inline',
+        tag: 'p',
+        tokens: token.tokens,
+        html: classMap.paragraph,
+      })
+    } else if (token.type === 'heading') {
+      result.push({
+        type: 'inline',
+        tag: `h${token.depth}`,
+        tokens: token.tokens,
+        html: `${classMap.heading} ${classMap.heading}-${token.depth}`,
+      })
+    } else if (token.type === 'list') {
+      result.push({
+        type: 'list',
+        tag: token.ordered ? 'ol' : 'ul',
+        listItems: token.items.map((item: any) => ({ tokens: item.tokens })),
+        html: `${classMap.list} ${classMap.list}--${token.ordered ? 'ordered' : 'unordered'}`,
+        ordered: token.ordered,
+      })
     } else {
       const html = marked.parser([token])
       result.push({ type: 'html', html })

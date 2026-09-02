@@ -5,6 +5,7 @@ import { parseToBlocks, type MarkdownBlock } from '@/markdown'
 import Table from '../data/Table.vue'
 import CodeBlock from './CodeBlock.vue'
 import Blockquote from './Blockquote.vue'
+import InlineRenderer from './InlineRenderer.vue'
 
 const blocks = ref<MarkdownBlock[]>([])
 const slotEl = ref<HTMLElement | null>(null)
@@ -28,7 +29,7 @@ function dedent(text: string): string {
 }
 
 function sanitizeBlock(block: MarkdownBlock): MarkdownBlock {
-  if (block.html) {
+  if (block.html && block.type === 'html') {
     block.html = DOMPurify.sanitize(block.html)
   }
   if (block.blockquote) {
@@ -78,6 +79,26 @@ onMounted(() => {
           v-else-if="block.type === 'blockquote' && block.blockquote"
           :html="block.blockquote.html"
         />
+        <component
+          v-else-if="block.type === 'inline'"
+          :is="block.tag"
+          :class="block.html"
+        >
+          <InlineRenderer :tokens="block.tokens || []" />
+        </component>
+        <component
+          v-else-if="block.type === 'list'"
+          :is="block.tag"
+          :class="block.html"
+        >
+          <li
+            v-for="(item, j) in block.listItems"
+            :key="j"
+            class="cu-md-list-item"
+          >
+            <InlineRenderer :tokens="item.tokens || []" />
+          </li>
+        </component>
         <div v-else-if="block.html" v-html="block.html"></div>
       </template>
     </div>
@@ -137,44 +158,6 @@ onMounted(() => {
 
 .cu-markdown :deep(.cu-md-list-item) {
   margin-bottom: var(--cu-space-xs);
-}
-
-.cu-markdown :deep(.cu-md-link) {
-  display: inline-flex;
-  align-items: center;
-  background-color: transparent;
-  color: var(--cu-color-primary);
-  padding: 0;
-  box-shadow: none;
-  text-decoration: underline;
-  text-underline-offset: var(--cu-space-2xs);
-  cursor: pointer;
-  font-family: var(--cu-font-sans);
-  font-size: inherit;
-  font-weight: var(--cu-font-weight-medium);
-  line-height: inherit;
-  border: none;
-  border-radius: 0;
-}
-
-.cu-markdown :deep(.cu-md-link:hover) {
-  color: var(--cu-color-primary-hover);
-  text-decoration-thickness: 2px;
-}
-
-.cu-markdown :deep(.cu-md-code-inline) {
-  display: inline-flex;
-  align-items: center;
-  padding: var(--cu-space-2xs) var(--cu-space-sm);
-  border-radius: var(--cu-radius);
-  font-family: var(--cu-font-mono);
-  font-size: var(--cu-font-size-xs);
-  font-weight: var(--cu-font-weight-medium);
-  line-height: var(--cu-line-height-tight);
-  white-space: nowrap;
-  background-color: var(--cu-color-neutral-soft);
-  color: var(--cu-color-neutral-text);
-  border: var(--cu-border-thin) solid transparent;
 }
 
 .cu-markdown :deep(.cu-md-hr) {
