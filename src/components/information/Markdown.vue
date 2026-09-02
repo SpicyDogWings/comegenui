@@ -139,13 +139,41 @@ onMounted(() => {
 }
 
 .cu-markdown :deep(.cu-md-link) {
+  display: inline-flex;
+  align-items: center;
+  background-color: transparent;
   color: var(--cu-color-primary);
+  padding: 0;
+  box-shadow: none;
   text-decoration: underline;
+  text-underline-offset: var(--cu-space-2xs);
   cursor: pointer;
+  font-family: var(--cu-font-sans);
+  font-size: inherit;
+  font-weight: var(--cu-font-weight-medium);
+  line-height: inherit;
+  border: none;
+  border-radius: 0;
 }
 
 .cu-markdown :deep(.cu-md-link:hover) {
   color: var(--cu-color-primary-hover);
+  text-decoration-thickness: 2px;
+}
+
+.cu-markdown :deep(.cu-md-code-inline) {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--cu-space-2xs) var(--cu-space-sm);
+  border-radius: var(--cu-radius);
+  font-family: var(--cu-font-mono);
+  font-size: var(--cu-font-size-xs);
+  font-weight: var(--cu-font-weight-medium);
+  line-height: var(--cu-line-height-tight);
+  white-space: nowrap;
+  background-color: var(--cu-color-neutral-soft);
+  color: var(--cu-color-neutral-text);
+  border: var(--cu-border-thin) solid transparent;
 }
 
 .cu-markdown :deep(.cu-md-hr) {

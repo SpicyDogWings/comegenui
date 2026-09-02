@@ -83,7 +83,8 @@ renderer.list = function ({ ordered, items }: any) {
 }
 
 renderer.link = function ({ href, tokens }: any) {
-  return `<a href="${href}" class="${classMap.link}" target="_blank" rel="noopener">${this.parser.parseInline(tokens)}</a>`
+  const text = this.parser.parseInline(tokens)
+  return `<a href="${href}" class="${classMap.link}" target="_blank" rel="noopener">${text}</a>`
 }
 
 renderer.image = function ({ href, text }: any) {
@@ -136,6 +137,10 @@ export function parseMarkdown(content: string): string {
   return marked.parse(content, { async: false }) as string
 }
 
+function stripOuterBlockquote(html: string): string {
+  return html.replace(/^<blockquote[^>]*>/, '').replace(/<\/blockquote>\s*$/, '')
+}
+
 export function parseToBlocks(markdown: string): MarkdownBlock[] {
   const tokens = marked.lexer(markdown)
   const result: MarkdownBlock[] = []
@@ -161,7 +166,8 @@ export function parseToBlocks(markdown: string): MarkdownBlock[] {
       })
     } else if (token.type === 'blockquote') {
       const html = marked.parser([token])
-      result.push({ type: 'blockquote', blockquote: { html } })
+      const inner = stripOuterBlockquote(html)
+      result.push({ type: 'blockquote', blockquote: { html: inner } })
     } else {
       const html = marked.parser([token])
       result.push({ type: 'html', html })

@@ -4,12 +4,14 @@ import Markdown from "@/components/information/Markdown.vue";
 
 const outlineItems = [
   { label: "Headings", id: "headings" },
-  { label: "Text", id: "text" },
+  { label: "Texto", id: "text" },
   { label: "Links", id: "links" },
-  { label: "Lists", id: "lists" },
-  { label: "Code", id: "code" },
-  { label: "Tables", id: "tables" },
-  { label: "Blockquotes", id: "blockquotes" },
+  { label: "Código inline", id: "inline-code" },
+  { label: "Listas", id: "lists" },
+  { label: "Código", id: "code" },
+  { label: "Tablas", id: "tables" },
+  { label: "Citas", id: "blockquotes" },
+  { label: "Imagenes", id: "images" },
 ];
 </script>
 
@@ -43,11 +45,11 @@ Este párrafo tiene **negrita**, *cursiva*, `codigo`, y [un link](https://exampl
 
 [ComegenUI en GitLab](https://gitlab.com/SpicyDogWings/comegen-ui)
 
-[Múltiples links](https://example.com) en el [mismo párrafo](https://example.org)
+Párrafo con [múltiples](https://example.com) links en el [mismo texto](https://example.org).
 
 ## Código inline
 
-Usa la función `calculateTotal()` para sumar. El valor `null` representa ausencia de datos. Puedes usar `async/await` para operaciones asíncronas.
+Usa la función `calculateTotal()` para sumar. El valor `null` representa ausencia de datos. Puedes usar `async/await` para operaciones asíncronas. La constante `MAX_SIZE` define el límite.
 
 ## Bloques de código
 
@@ -62,6 +64,14 @@ function hello() {
 def saludar(nombre):
     print(f"Hola, {nombre}")
     return {"nombre": nombre, "saludo": "Hola"}
+```
+
+```html
+<!DOCTYPE html>
+<html>
+  <head><title>Ejemplo</title></head>
+  <body><h1>Hola</h1></body>
+</html>
 ```
 
 ```
@@ -81,7 +91,8 @@ Sin lenguaje especificado
 1. Primero
 2. Segundo
 3. Tercero con *cursiva*
-4. Cuarto con `codigo Quinto con [link](https://example.com)
+4. Cuarto con `codigo`
+5. Quinto con [link](https://example.com)
 
 ## Tabla
 
@@ -108,7 +119,7 @@ Abajo
 
 ## Imagen
 
-![Alt text](https://via.placeholder.com/150)
+![Placeholder](https://via.placeholder.com/150)
         </Markdown>
       </section>
     </div>
