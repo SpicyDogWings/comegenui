@@ -70,6 +70,7 @@ Cada `<script>` registra automáticamente su Custom Element. Los componentes est
 | `CuFloating-button.umd.js` | `<cu-floating-button>` | Botón flotante (FAB) |
 | `CuInput.umd.js` | `<cu-input>` | Input de texto |
 | `CuLabel.umd.js` | `<cu-label>` | Label |
+| `CuMarkdown.umd.js` | `<cu-markdown>` | Renderizador de Markdown |
 | `CuModal.umd.js` | `<cu-modal>` | Modal |
 | `CuMonth-slider.umd.js` | `<cu-month-slider>` | Slider de meses con arrastre |
 | `CuYear-slider.umd.js` | `<cu-year-slider>` | Slider de años (1 en 1) |
@@ -370,6 +371,7 @@ Cada archivo UMD incluye el runtime de Vue 3 (no externalizado):
 - [\<cu-floating-button\>](componentes/cu-floating-button.md) — Botón flotante (FAB)
 - [\<cu-input\>](componentes/cu-input.md) — Input de texto
 - [\<cu-label\>](componentes/cu-label.md) — Label
+- [\<cu-markdown\>](componentes/cu-markdown.md) — Renderizador de Markdown
 - [\<cu-modal\>](componentes/cu-modal.md) — Modal
 - [\<cu-month-slider\>](componentes/cu-month-slider.md) — Slider de meses con arrastre
 - [\<cu-year-slider\>](componentes/cu-year-slider.md) — Slider de años
