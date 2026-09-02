@@ -73,6 +73,15 @@ const props = defineProps({
     type: Array as PropType<CalendarEvent[]>,
     default: () => [],
   },
+  // ── Rango (resaltado entre dos fechas) ──
+  rangeStart: {
+    type: [String, Number, Date] as PropType<string | number | Date | null>,
+    default: null,
+  },
+  rangeEnd: {
+    type: [String, Number, Date] as PropType<string | number | Date | null>,
+    default: null,
+  },
 })
 
 const emit = defineEmits<{
@@ -302,11 +311,28 @@ function selectDay(day: Date) {
 
 function dayClasses(day: Date): Record<string, boolean> {
   const selected = selectedValue.value !== null && sameDay(day, selectedValue.value)
+  const inRange = isInRange(day)
   return {
     'cu-calendar-day--selected': selected,
     'cu-calendar-day--today': sameDay(day, today) && !selected,
+    'cu-calendar-day--range': inRange,
+    'cu-calendar-day--range-start': rangeStartVal.value !== null && sameDay(day, rangeStartVal.value),
+    'cu-calendar-day--range-end': rangeEndVal.value !== null && sameDay(day, rangeEndVal.value),
     [`cu-calendar-day--${props.variant}`]: selected,
   }
+}
+
+const rangeStartVal = computed(() => parseDateInput(props.rangeStart))
+const rangeEndVal = computed(() => parseDateInput(props.rangeEnd))
+
+function isInRange(day: Date): boolean {
+  const start = rangeStartVal.value
+  const end = rangeEndVal.value
+  if (!start || !end) return false
+  const s = start.getTime()
+  const e = end.getTime()
+  const d = day.getTime()
+  return d >= Math.min(s, e) && d <= Math.max(s, e)
 }
 
 // ── API programática ──
@@ -512,6 +538,25 @@ const colorStyles = computed(() => ({
 
 .cu-calendar-day--empty {
   aspect-ratio: 1;
+}
+
+/* ── Rango ── */
+.cu-calendar-day.cu-calendar-day--range {
+  background: var(--cal-soft);
+  border-radius: 0;
+}
+.cu-calendar-day.cu-calendar-day--range-start {
+  background: var(--cal-accent);
+  color: var(--cu-color-surface);
+  border-radius: var(--cu-radius-sm) 0 0 var(--cu-radius-sm);
+}
+.cu-calendar-day.cu-calendar-day--range-end {
+  background: var(--cal-accent);
+  color: var(--cu-color-surface);
+  border-radius: 0 var(--cu-radius-sm) var(--cu-radius-sm) 0;
+}
+.cu-calendar-day--range-start.cu-calendar-day--range-end {
+  border-radius: var(--cu-radius-sm);
 }
 
 /* ── Puntos de eventos ── */

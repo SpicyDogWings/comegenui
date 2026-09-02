@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import DatePicker from "@/components/form/DatePicker.vue";
+import DatePickerRange from "@/components/form/DatePickerRange.vue";
 import Button from "@/components/buttons/Button.vue";
 import { ref } from "vue";
 
 const pickerRef = ref<InstanceType<typeof DatePicker> | null>(null);
 const programmaticValue = ref<Date | null>(null);
 const lastEvent = ref("");
+const rangeStart = ref<Date | null>(null);
+const rangeEnd = ref<Date | null>(null);
 
 function readValue() {
   programmaticValue.value = pickerRef.value?.getValue() ?? null;
@@ -23,6 +26,7 @@ const outlineItems = [
   { label: 'Min / Max', id: 'min-max' },
   { label: 'Controles de mes', id: 'month-controls' },
   { label: 'Eventos', id: 'events' },
+  { label: 'Rango', id: 'range' },
   { label: 'Sin footer', id: 'no-footer' },
   { label: 'Variantes', id: 'variants' },
   { label: 'Colores', id: 'colors' },
@@ -142,6 +146,40 @@ const pickerEvents = [
             @change="(d: Date | null) => onEvent('change', d)"
             @open="lastEvent = 'open'"
             @close="lastEvent = 'close'"
+          />
+        </div>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="range" class="playground-section">
+        <h2>Rango de fechas</h2>
+        <p class="playground-desc">
+          Seleccioná un inicio y un fin. El primer click define el inicio, el segundo define el fin (si es anterior, se swapea).
+        </p>
+        <div class="playground-date-picker-col">
+          <DatePickerRange
+            style="max-width: 320px;"
+            :start-date="rangeStart"
+            :end-date="rangeEnd"
+            @update:start-date="rangeStart = $event"
+            @update:end-date="rangeEnd = $event"
+          />
+          <p class="playground-state">
+            Rango: <strong>{{ rangeStart ? rangeStart.toISOString().slice(0, 10) : '—' }} → {{ rangeEnd ? rangeEnd.toISOString().slice(0, 10) : '—' }}</strong>
+          </p>
+        </div>
+        <p class="playground-desc" style="margin-top: 1rem;">
+          <code>dual-calendar</code>: muestra dos meses lado a lado.
+        </p>
+        <div class="playground-date-picker-col">
+          <DatePickerRange
+            style="max-width: 600px;"
+            dual-calendar
+            :start-date="rangeStart"
+            :end-date="rangeEnd"
+            @update:start-date="rangeStart = $event"
+            @update:end-date="rangeEnd = $event"
           />
         </div>
       </section>
