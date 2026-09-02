@@ -9,6 +9,16 @@ interface Column {
   align?: "left" | "center" | "right";
 }
 
+interface FooterCell {
+  value: string;
+  colspan?: number;
+  align?: "left" | "center" | "right";
+}
+
+interface FooterRow {
+  cells: FooterCell[];
+}
+
 const props = defineProps({
   columns: {
     type: Array as () => Column[],
@@ -58,6 +68,11 @@ const props = defineProps({
     type: Boolean,
     required: false,
     default: false,
+  },
+  footer: {
+    type: Array as () => FooterRow[],
+    required: false,
+    default: () => [],
   },
 });
 
@@ -186,8 +201,24 @@ const isRowDisabled = (row: Record<string, any>): boolean => {
             </td>
           </tr>
         </tbody>
-        <tfoot v-if="$slots.footer">
-          <slot name="footer" :columns="tableColumns" />
+        <tfoot v-if="$slots.footer || props.footer.length">
+          <slot name="footer" :columns="tableColumns">
+            <tr v-for="(fRow, fi) in props.footer" :key="fi">
+              <td
+                v-for="(cell, ci) in fRow.cells"
+                :key="ci"
+                :colspan="cell.colspan"
+                class="cu-table-td cu-table-td--footer"
+                :class="{
+                  'cu-table-td--left': cell.align !== 'center' && cell.align !== 'right',
+                  'cu-table-td--center': cell.align === 'center',
+                  'cu-table-td--right': cell.align === 'right',
+                }"
+              >
+                {{ cell.value }}
+              </td>
+            </tr>
+          </slot>
         </tfoot>
       </table>
     </div>
@@ -284,6 +315,12 @@ const isRowDisabled = (row: Record<string, any>): boolean => {
   opacity: 0.5;
   font-style: italic;
   font-family: var(--cu-font-sans);
+}
+
+.cu-table-td--footer {
+  font-weight: var(--cu-font-weight-semibold);
+  border-top: var(--cu-border-medium) solid var(--cu-color-neutral-subtle-border);
+  background-color: var(--cu-color-neutral-soft);
 }
 
 .cu-table tr:last-child td {

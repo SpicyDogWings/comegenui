@@ -33,6 +33,16 @@ interface ButtonConfig {
   disabled?: boolean;
 }
 
+interface FooterCell {
+  value: string;
+  colspan?: number;
+  align?: "left" | "center" | "right";
+}
+
+interface FooterRow {
+  cells: FooterCell[];
+}
+
 interface Column {
   key: string;
   label?: string;
@@ -112,7 +122,7 @@ const props = defineProps({
   loading: { type: Boolean, required: false, default: false },
   actions: { type: Array, required: false, default: () => [] },
   rowDisabled: { type: [Boolean, Function] as PropType<boolean | ((row: Record<string, any>) => boolean)>, required: false, default: false },
-
+  footer: { type: Array as () => FooterRow[], required: false, default: () => [] },
 });
 
 const tableRef = ref<InstanceType<typeof Table> | null>(null);
@@ -147,6 +157,7 @@ defineExpose({
     :loading="props.loading"
     :actions="props.actions"
     :row-disabled="props.rowDisabled"
+    :footer="props.footer"
 
     @update:current-page="ceEmit('update:currentPage', $event)"
     @update:items-per-page="ceEmit('update:itemsPerPage', $event)"

@@ -84,6 +84,16 @@ interface SelectOption {
   variant?: string;
 }
 
+interface FooterCell {
+  value: string;
+  colspan?: number;
+  align?: "left" | "center" | "right";
+}
+
+interface FooterRow {
+  cells: FooterCell[];
+}
+
 interface Column {
   key: string;
   label?: string;
@@ -191,6 +201,11 @@ const props = defineProps({
     type: [Boolean, Function] as PropType<boolean | ((row: Record<string, any>) => boolean)>,
     required: false,
     default: false,
+  },
+  footer: {
+    type: Array as () => FooterRow[],
+    required: false,
+    default: () => [],
   },
 });
 
@@ -312,6 +327,7 @@ const tableProps = computed(() => ({
   variant: props.variant,
   loading: props.loading,
   rowDisabled: props.rowDisabled,
+  footer: props.footer,
 }));
 
 const tableStyles = computed(() => ({
