@@ -16,18 +16,31 @@ El build se genera en la nube: GitLab CI compila la librería con `build:lib`
 (`Cu*.umd.js`, `css/`, `README-BUILD.md`) + el **folder de la skill de uso**
 `comegen-ui/` (sin `docs/`, sin zip anidado). Descargalo directo desde el repo:
 
+**Linux / macOS:**
 ```sh
-# 1. Descargar el último build de main
-curl -L -o comegenui.zip \
-  "https://gitlab.com/SpicyDogWings/comegen-ui/-/jobs/artifacts/main/download?job=build"
+curl -L -o comegenui.zip "https://gitlab.com/SpicyDogWings/comegen-ui/-/jobs/artifacts/main/download?job=build"
+```
 
-# 2. Descomprimir en tu proyecto → archivos + comegen-ui/ al mismo nivel
-unzip comegenui.zip -d <carpeta-destino>
+**Windows (PowerShell):**
+```powershell
+Invoke-WebRequest -Uri "https://gitlab.com/SpicyDogWings/comegen-ui/-/jobs/artifacts/main/download?job=build" -OutFile "comegenui.zip"
+```
 
-# 3. Actualizar después: update.sh viaja dentro de la lib y además instala
-#    la skill de uso en .agents/skills/ del proyecto (para los agentes).
+Luego descomprimí en tu proyecto (los archivos + `comegen-ui/` quedan al mismo nivel).
+
+**Actualizar a futuro:** `update.sh` (Linux/macOS) y `update.bat` (Windows) viajan dentro de la lib. Ejecutalo desde la carpeta de la lib — además instala la skill de uso en `.agents/skills/` del proyecto (para los agentes).
+
+**Linux / macOS:**
+```sh
 ./<carpeta-destino>/update.sh
 ```
+
+**Windows** (doble clic en `update.bat`, o desde cmd):
+```cmd
+update.bat
+```
+
+Con tag específico: `update.bat v3.0.0`
 
 > El artifact incluye los UMD (`CuAlert.umd.js`, `CuButton.umd.js`, ...), los
 > CSS de temas (`css/themes.css`), el `README-BUILD.md` y el folder de la skill
@@ -38,14 +51,7 @@ unzip comegenui.zip -d <carpeta-destino>
 ### Versión específica (Release)
 
 Cada tag publica una [Release](https://gitlab.com/SpicyDogWings/comegen-ui/-/releases)
-con el build como asset. Para bajar un tag puntual:
-
-```sh
-curl -L -o comegenui.zip \
-  "https://gitlab.com/SpicyDogWings/comegen-ui/-/jobs/artifacts/<TAG>/download?job=build"
-```
-
-(reemplazá `<TAG>` por el tag, ej. `v3.0.0`)
+con el build como asset. Para bajar un tag puntual reemplazá `main` por el tag (ej. `v3.0.0`) en la URL de arriba.
 
 ## Scripts
 

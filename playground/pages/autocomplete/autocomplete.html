@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="es" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Autocomplete — Playground Vanilla</title>
+    <link rel="stylesheet" href="../../style.css" />
+    <link rel="stylesheet" href="../../public/css/comegen-sigfi-theme.css" />
+    <script src="../../../dist/CuAutocomplete.umd.js"></script>
+    <script src="../../../dist/CuButton.umd.js"></script>
+    <style>
+      .card--wide {
+        align-items: flex-start;
+        max-width: 1000px;
+      }
+
+      .ac-demo {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        width: 100%;
+      }
+
+      .ac-block {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .ac-label {
+        font-size: 12px;
+        font-weight: 500;
+        opacity: .5;
+      }
+
+      .ac-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        width: 100%;
+      }
+
+      .ac-row {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+      }
+
+      .ac-row cu-autocomplete {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .ac-300 {
+        max-width: 300px;
+      }
+
+      .ac-200 {
+        max-width: 200px;
+      }
+
+      .ac-right {
+        margin-left: auto;
+      }
+
+      .ac-full {
+        width: 100%;
+      }
+
+      .ac-events {
+        background: #f8f8f8;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        padding: 12px;
+        font-size: 12px;
+        font-family: monospace;
+        max-height: 150px;
+        overflow-y: auto;
+        width: 100%;
+      }
+
+      .dark .ac-events {
+        background: #1a1a1a;
+        border-color: #333;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <h1 style="font-size:16px;font-weight:600">Autocomplete Labs</h1>
+      <div class="topbar-actions">
+        <button class="topbar-btn" id="btnTheme" title="Toggle theme">🌙</button>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="card card--wide">
+        <h2>Básico</h2>
+        <div class="ac-demo">
+          <div class="ac-block">
+            <p class="ac-label">Default (soft, bottom, start)</p>
+            <cu-autocomplete id="ac-basic" placeholder="Buscar rol..." color="primary"></cu-autocomplete>
+          </div>
+          <div class="ac-block">
+            <p class="ac-label">Outlined</p>
+            <cu-autocomplete id="ac-outlined" variant="outlined" placeholder="Buscar..." color="neutral"></cu-autocomplete>
+          </div>
+          <div class="ac-block">
+            <p class="ac-label">Ghost</p>
+            <cu-autocomplete id="ac-ghost" variant="ghost" placeholder="Buscar..." color="secondary"></cu-autocomplete>
+          </div>
+          <div class="ac-block">
+            <p class="ac-label">Subtle</p>
+            <cu-autocomplete id="ac-subtle" variant="subtle" placeholder="Buscar..." color="success"></cu-autocomplete>
+          </div>
+        </div>
+      </div>
+
+      <div class="card card--wide">
+        <h2>Posiciones y alineación</h2>
+        <div class="ac-demo">
+          <div class="ac-block">
+            <p class="ac-label">position="bottom" align="end" (derecha)</p>
+            <cu-autocomplete id="ac-bottom-end" position="bottom" align="end" placeholder="Alineado a la derecha..." color="primary"></cu-autocomplete>
+          </div>
+          <div class="ac-block">
+            <p class="ac-label">position="top" align="start"</p>
+            <cu-autocomplete id="ac-top-start" position="top" align="start" placeholder="Arriba..." color="primary"></cu-autocomplete>
+          </div>
+          <div class="ac-block">
+            <p class="ac-label">position="right" align="start"</p>
+            <cu-autocomplete id="ac-right-start" position="right" align="start" placeholder="Panel a la derecha..." color="primary"></cu-autocomplete>
+          </div>
+          <div class="ac-block">
+            <p class="ac-label">position="left" align="end"</p>
+            <cu-autocomplete id="ac-left-end" position="left" align="end" placeholder="Panel a la izquierda..." color="primary"></cu-autocomplete>
+          </div>
+        </div>
+      </div>
+
+      <div class="card card--wide">
+        <h2>Con iconos y disabled items</h2>
+        <div class="ac-stack">
+          <cu-autocomplete id="ac-icons" placeholder="Buscar usuario..." color="primary"></cu-autocomplete>
+          <cu-autocomplete id="ac-disabled" placeholder="Con opciones deshabilitadas..." color="warning"></cu-autocomplete>
+        </div>
+      </div>
+
+      <div class="card card--wide">
+        <h2>minChars (2 caracteres para abrir)</h2>
+        <div class="ac-stack">
+          <cu-autocomplete id="ac-minchars" placeholder="Escribí 2+ chars..." color="primary"></cu-autocomplete>
+        </div>
+      </div>
+
+      <div class="card card--wide">
+        <h2>Layout con botón alineado a la derecha</h2>
+        <div class="ac-row">
+          <cu-autocomplete id="ac-inline" placeholder="Buscar..." color="primary"></cu-autocomplete>
+          <cu-button color="primary" variant="solid" id="btn-search">Buscar</cu-button>
+        </div>
+      </div>
+
+      <div class="card card--wide">
+        <h2>Ancho limitado</h2>
+        <div class="ac-stack">
+          <div class="ac-block">
+            <p class="ac-label">max-width: 300px</p>
+            <cu-autocomplete id="ac-300" placeholder="300px max..." color="primary" style="max-width:300px"></cu-autocomplete>
+          </div>
+          <div class="ac-block">
+            <p class="ac-label">max-width: 200px</p>
+            <cu-autocomplete id="ac-200" placeholder="200px max..." color="primary" style="max-width:200px"></cu-autocomplete>
+          </div>
+          <div class="ac-block">
+            <p class="ac-label">Alineado a la derecha (max 300px)</p>
+            <div style="display:flex;justify-content:flex-end">
+              <cu-autocomplete id="ac-right-align" placeholder="Derecha..." color="primary" style="max-width:300px;width:100%"></cu-autocomplete>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card card--wide">
+        <h2>Eventos</h2>
+        <cu-autocomplete id="ac-events" placeholder="Elegí un item..." color="primary"></cu-autocomplete>
+        <div class="ac-events" id="events-log">
+          <span style="opacity:.5">Los eventos aparecen aquí...</span>
+        </div>
+      </div>
+
+      <div class="card card--wide">
+        <h2>Métodos</h2>
+        <div class="ac-row">
+          <cu-autocomplete id="ac-methods" placeholder="Probá los métodos..." color="primary"></cu-autocomplete>
+          <cu-button color="neutral" variant="soft" id="btn-get">.get()</cu-button>
+          <cu-button color="neutral" variant="soft" id="btn-set">.set()</cu-button>
+          <cu-button color="neutral" variant="soft" id="btn-reset">.reset()</cu-button>
+          <cu-button color="neutral" variant="soft" id="btn-focus">.focus()</cu-button>
+          <cu-button color="neutral" variant="soft" id="btn-isopen">.isOpen()</cu-button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const roles = [
+        { label: 'Administrador' },
+        { label: 'Editor de contenido' },
+        { label: 'Visor de reportes' },
+        { label: 'Invitado externo' },
+        { label: 'Supervisor' },
+        { label: 'Analista de datos' },
+        { label: 'Gestor de usuarios' },
+        { label: 'Desarrollador' },
+        { label: 'Diseñador UX' },
+        { label: 'Product Owner' },
+      ];
+
+      const rolesWithIcon = [
+        { label: 'Administrador', icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>' },
+        { label: 'Editor', icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>' },
+        { label: 'Visor', icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>' },
+        { label: 'Invitado', icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>' },
+        { label: 'Supervisor', icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>' },
+      ];
+
+      const rolesWithDisabled = [
+        { label: 'Administrador' },
+        { label: 'Editor' },
+        { label: 'Visor', disabled: true },
+        { label: 'Invitado' },
+        { label: 'Supervisor', disabled: true },
+        { label: 'Analista' },
+      ];
+
+      // Asignar items a cada autocomplete
+      customElements.whenDefined('cu-autocomplete').then(() => {
+        // Básicos
+        document.getElementById('ac-basic').items = roles;
+        document.getElementById('ac-outlined').items = roles;
+        document.getElementById('ac-ghost').items = roles;
+        document.getElementById('ac-subtle').items = roles;
+
+        // Posiciones
+        document.getElementById('ac-bottom-end').items = roles;
+        document.getElementById('ac-top-start').items = roles;
+        document.getElementById('ac-right-start').items = roles;
+        document.getElementById('ac-left-end').items = roles;
+
+        // Iconos y disabled
+        document.getElementById('ac-icons').items = rolesWithIcon;
+        document.getElementById('ac-disabled').items = rolesWithDisabled;
+
+        // minChars
+        document.getElementById('ac-minchars').items = roles;
+        document.getElementById('ac-minchars').setAttribute('min-chars', '2');
+
+        // Layout con botón
+        document.getElementById('ac-inline').items = roles;
+
+        // Ancho limitado
+        document.getElementById('ac-300').items = roles;
+        document.getElementById('ac-200').items = roles;
+        document.getElementById('ac-right-align').items = roles;
+
+        // Eventos
+        const acEvents = document.getElementById('ac-events');
+        acEvents.items = roles;
+        acEvents.addEventListener('select', (e) => {
+          logEvent('select', e.detail);
+        });
+
+        // Métodos
+        document.getElementById('ac-methods').items = roles;
+      });
+
+      // Log de eventos
+      function logEvent(name, detail) {
+        const log = document.getElementById('events-log');
+        const entry = document.createElement('div');
+        entry.textContent = `${name}: ${JSON.stringify(detail)}`;
+        log.appendChild(entry);
+        log.scrollTop = log.scrollHeight;
+      }
+
+      // Botones de métodos
+      customElements.whenDefined('cu-button').then(() => {
+        document.getElementById('btn-get').addEventListener('click', () => {
+          const ac = document.getElementById('ac-methods');
+          alert('.get() = ' + JSON.stringify(ac.get()));
+        });
+        document.getElementById('btn-set').addEventListener('click', () => {
+          document.getElementById('ac-methods').set('Administrador');
+        });
+        document.getElementById('btn-reset').addEventListener('click', () => {
+          document.getElementById('ac-methods').reset();
+        });
+        document.getElementById('btn-focus').addEventListener('click', () => {
+          document.getElementById('ac-methods').focus();
+        });
+        document.getElementById('btn-isopen').addEventListener('click', () => {
+          alert('.isOpen() = ' + document.getElementById('ac-methods').isOpen());
+        });
+      });
+    </script>
+
+    <script src="../../playground.js"></script>
+  </body>
+</html>

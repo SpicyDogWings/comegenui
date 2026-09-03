@@ -177,6 +177,11 @@ async function createZip() {
     archive.file(updatePs1, { name: 'update.ps1' })
     console.log('🔁 update.ps1 agregado al zip')
   }
+  const updateBat = resolve(__dirname, 'update.bat')
+  if (fs.existsSync(updateBat)) {
+    archive.file(updateBat, { name: 'update.bat' })
+    console.log('🔁 update.bat agregado al zip')
+  }
 
   await archive.finalize()
 }
