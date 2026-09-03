@@ -44,9 +44,13 @@ scripts/config
 *storybook.log
 storybook-static
 
-# agents
-.agents
-.opencode
+# agents (but track skills)
+.agents/*
+!.agents/skills/
+!.agents/skills/**/*
+.opencode/*
+!.opencode/skills/
+!.opencode/skills/**/*
 graphify-out
 
 # Pesonal
