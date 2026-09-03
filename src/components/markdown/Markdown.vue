@@ -52,16 +52,46 @@ function sanitizeBlock(block: MarkdownBlock): MarkdownBlock {
   return block
 }
 
+function getText(): string {
+  const el = slotEl.value
+  if (!el) return ''
+
+  const slot = el.querySelector('slot') as HTMLSlotElement | null
+  if (slot && slot.assignedNodes().length > 0) {
+    const nodes = slot.assignedNodes({ flatten: true })
+    let text = ''
+    for (const node of nodes) {
+      text += node.textContent || ''
+    }
+    return text
+  }
+
+  return el.textContent || ''
+}
+
+function renderMarkdown() {
+  const el = slotEl.value
+  if (!el) return
+  const raw = dedent(getText())
+  if (!raw.trim()) return
+  const parsed = parseToBlocks(raw)
+  blocks.value = parsed.map(sanitizeBlock)
+  headingIds.value = extractHeadingIds(parsed)
+  emit('parsed', headingIds.value)
+  el.style.display = 'none'
+}
+
+function tryRender(attempts = 0) {
+  if (getText().trim()) {
+    renderMarkdown()
+  } else if (attempts < 50) {
+    setTimeout(() => tryRender(attempts + 1), 100)
+  }
+}
+
 onMounted(() => {
   nextTick(() => {
-    const el = slotEl.value
-    if (!el) return
-    const raw = dedent(el.textContent || '')
-    const parsed = parseToBlocks(raw)
-    blocks.value = parsed.map(sanitizeBlock)
-    headingIds.value = extractHeadingIds(parsed)
-    emit('parsed', headingIds.value)
-    el.style.display = 'none'
+    tryRender()
   })
 })
 

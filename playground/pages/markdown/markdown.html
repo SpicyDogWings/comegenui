@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="es" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Markdown — Playground</title>
+    <link rel="stylesheet" href="../../style.css" />
+    <link rel="stylesheet" href="../../../dist/css/themes.css" />
+    <script src="../../../dist/CuMarkdown.umd.js"></script>
+  </head>
+  <body>
+    <div class="topbar">
+      <h1 style="font-size:16px;font-weight:600">Markdown Preview</h1>
+      <div class="topbar-actions">
+        <button class="topbar-btn" id="btnTheme">🌙</button>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="card">
+        <cu-markdown>
+# Título Principal
+
+Párrafo con **negrita**, *cursiva* y `código inline`.
+
+## Subtítulo
+
+### Lista desordenada
+
+- Item uno
+- Item dos
+- Item tres con **negrita**
+
+### Lista ordenada
+
+1. Primero
+2. Segundo
+3. Tercero
+
+## Código
+
+```javascript
+function hello() {
+  console.log("Hola mundo");
+  return true;
+}
+```
+
+## Tabla
+
+| Nombre | Edad | Ciudad |
+|--------|------|--------|
+| Ana | 25 | Madrid |
+| Carlos | 30 | Barcelona |
+| María | 28 | Valencia |
+
+## Blockquote
+
+> Esta es una cita importante.
+> Puede tener múltiples líneas.
+
+## Links
+
+[Visita Google](https://www.google.com)
+
+## Regla horizontal
+
+---
+
+## Strikethrough
+
+Este texto está ~~tachado~~.
+
+## Combinado
+
+Este párrafo tiene **negrita**, *cursiva*, `codigo`, y [un link](https://example.com) todo junto.
+        </cu-markdown>
+      </div>
+    </div>
+
+    <script src="../../playground.js"></script>
+  </body>
+</html>

@@ -98,8 +98,8 @@ const variants = ["soft", "solid", "outlined", "ghost"];
         <Table :columns="columns" :data="sampleData" color="primary" variant="soft">
           <template #footer="{ columns: cols }">
             <tr>
-              <td :colspan="cols.length - 1" style="font-weight: 600;">Total</td>
-              <td style="font-weight: 600; text-align: right;">
+              <td :colspan="cols.length - 1" class="cu-table-td cu-table-td--footer">Total</td>
+              <td class="cu-table-td cu-table-td--footer cu-table-td--right">
                 ${{ sampleData.reduce((sum, r) => sum + r.amount, 0).toFixed(2) }}
               </td>
             </tr>

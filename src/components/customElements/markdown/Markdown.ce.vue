@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref, onMounted, nextTick } from 'vue'
 import Markdown from '../../markdown/Markdown.vue'
 import { DEFAULTS, extractColors, extractShared } from '@/plugins/cu-tokens/defaults'
 import { darken, toHex, lighten, transparentize } from 'color2k'
