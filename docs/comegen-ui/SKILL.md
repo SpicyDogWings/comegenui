@@ -36,27 +36,20 @@ Cada componente se distribuye como archivo **UMD** independiente que se auto-reg
 
 ---
 
-## Guía rápida de uso
+## Guía rápida
 
-Ejemplos copy-pasteables. Para detalles completos ver [`componentes/`](componentes/).
+Ejemplos de los componentes más usados. Para todos los ejemplos (27 componentes) ver [`ejemplos.md`](ejemplos.md).
 
-### Botón
+### Button + Alert
 
 ```html
 <cu-button color="primary" variant="solid">Guardar</cu-button>
-<cu-button variant="ghost" color="danger">Eliminar</cu-button>
-<script src="dist/CuButton.umd.js"></script>
-```
-
-### Alerta
-
-```html
 <cu-alert color="success" title="Listo">Operación exitosa</cu-alert>
-<cu-alert color="warning" title="Atención" close></cu-alert>
+<script src="dist/CuButton.umd.js"></script>
 <script src="dist/CuAlert.umd.js"></script>
 ```
 
-### Tabla (con datos y footer)
+### Table (con datos)
 
 ```html
 <cu-table id="tabla"></cu-table>
@@ -64,33 +57,17 @@ Ejemplos copy-pasteables. Para detalles completos ver [`componentes/`](component
 <script>
   const t = document.getElementById('tabla');
   await customElements.whenDefined('cu-table');
-  t.columns = [
-    { key: 'nombre', label: 'Nombre' },
-    { key: 'email', label: 'Email' },
-  ];
-  t.data = [
-    { nombre: 'Ana', email: 'ana@test.com' },
-  ];
-  // Footer programático
-  t.footer = [{ cells: [{ value: 'Total', colspan: 1 }, { value: '1 usuario', align: 'right' }] }];
+  t.columns = [{ key: 'nombre', label: 'Nombre' }];
+  t.data = [{ nombre: 'Ana' }];
 </script>
 ```
 
 ### Modal
 
 ```html
-<cu-modal id="modal" title="Confirmar">
-  <p>¿Estás seguro?</p>
-</cu-modal>
+<cu-modal id="modal" title="Confirmar"><p>¿Estás seguro?</p></cu-modal>
 <cu-button onclick="document.getElementById('modal').open()">Abrir</cu-button>
 <script src="dist/CuModal.umd.js"></script>
-<script>
-  const modal = document.getElementById('modal');
-  await customElements.whenDefined('cu-modal');
-  modal.addEventListener('closed', (e) => {
-    if (e.detail?.action === 'confirm') confirmar();
-  });
-</script>
 ```
 
 ### Select
@@ -101,58 +78,36 @@ Ejemplos copy-pasteables. Para detalles completos ver [`componentes/`](component
 <script>
   const s = document.getElementById('select');
   await customElements.whenDefined('cu-select');
-  s.options = [{ value: 'a', label: 'Opción A' }, { value: 'b', label: 'Opción B' }];
-  s.addEventListener('change', (e) => console.log('Elegido:', e.detail));
+  s.options = [{ value: 'a', label: 'Opción A' }];
 </script>
 ```
 
-### Date Picker
+---
 
-```html
-<cu-date-picker id="fecha"></cu-date-picker>
-<cu-date-picker-range id="rango"></cu-date-picker-range>
-<script src="dist/CuDate-picker.umd.js"></script>
-<script src="dist/CuDate-picker-range.umd.js"></script>
-<script>
-  const rango = document.getElementById('rango');
-  await customElements.whenDefined('cu-date-picker-range');
-  rango.addEventListener('change', (e) => console.log(e.detail)); // { start, end }
-</script>
+## Actualización
+
+El zip incluye scripts para actualizar la lib en el proyecto huésped:
+
+**Linux / macOS / Git Bash:**
+```bash
+./update.sh          # último build de main
+./update.sh v3.0.0   # build de un tag/release
 ```
 
-### Tabs
-
-```html
-<cu-tabs id="tabs" variant="pills">
-  <div slot="general">Contenido General</div>
-  <div slot="advanced">Contenido Advanced</div>
-</cu-tabs>
-<script src="dist/CuTabs.umd.js"></script>
-<script>
-  const tabs = document.getElementById('tabs');
-  await customElements.whenDefined('cu-tabs');
-  tabs.tabs = [
-    { key: 'general', label: 'General' },
-    { key: 'advanced', label: 'Advanced' },
-  ];
-  tabs.addEventListener('change', (e) => console.log('Activo:', e.detail));
-</script>
+**Windows (PowerShell):**
+```powershell
+.\update.ps1            # último build de main
+.\update.ps1 v3.0.0    # build de un tag/release
 ```
 
-### Markdown
+**Qué hace:**
+1. Descarga el artifact de GitLab (según tag o main)
+2. Reemplaza la carpeta de forma atómico (si falla, lo anterior queda intacto)
+3. Instala la skill de uso en `.agents/skills/comegen-ui/` del proyecto huésped
 
-```html
-<cu-markdown>
-# Título
-
-Texto con **negrita** y *cursiva*.
-
-| Col A | Col B |
-|-------|-------|
-| a     | b     |
-</cu-markdown>
-<script src="dist/CuMarkdown.umd.js"></script>
-```
+**Variables opcionales:**
+- Linux: `CG_URL`, `CG_PROJECT_ROOT`
+- Windows: `$env:CG_URL`, `$env:CG_PROJECT_ROOT`
 
 ---
 
