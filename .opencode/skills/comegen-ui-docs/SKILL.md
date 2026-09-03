@@ -52,10 +52,12 @@ Si la tarea es **modificar el código fuente** de un componente (`.ce.vue`, `.vu
 
 Documentar un componente significa actualizar **2 destinos distintos**:
 
-| Destino | Ubicación | Audiencia |
-|---|---|---|
-| **Skill (agentes)** | `.opencode/skills/comegen-ui/` | Agentes IA (viaja con el zip) |
-| **Docs (humanos)** | `docs/comegen-ui/`, `docs/DOCS.md`, `COMPONENTS-GUIDE.md` | Humanos |
+| Destino | Ubicación | Tipo | Audiencia |
+|---|---|---|---|
+| **Skill** | `.opencode/skills/comegen-ui/` | Skill (receta) | Agentes IA (viaja con el zip) |
+| **Docs** | `docs/comegen-ui/`, `docs/DOCS.md`, `COMPONENTS-GUIDE.md` | Documentación | Humanos |
+
+> La skill de uso (`comegen-ui`) es una **receta para el agente**, no documentación. La documentación real vive en `docs/`.
 
 ### Índices a actualizar — Skill (agentes)
 
@@ -74,6 +76,13 @@ Documentar un componente significa actualizar **2 destinos distintos**:
 4. **`docs/desarrollar-comegen-ui/convenciones-desarrollo.md`** — solo si el componente introduce una convención nueva.
 
 > Regla de oro: **el tag `<cu-xxx>` debe aparecer en TODOS los índices o en ninguno.** Si solo lo agregás al `.md` y al skill, el componente queda "documentado pero invisible" para humanos.
+
+### Validación post-documentación
+
+Después de documentar, auditar con **skill-auditor** para verificar:
+- Los `.md` en skill y docs son idénticos (`diff`).
+- El tag aparece en todos los índices.
+- No hay ruido documental (la skill sigue siendo receta, no doc).
 
 ### Para auditar un `.md` existente
 
