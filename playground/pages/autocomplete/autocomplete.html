@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Autocomplete — Playground Vanilla</title>
+    <link rel="stylesheet" href="../../style.css" />
+    <link rel="stylesheet" href="../../public/css/comegen-sigfi-theme.css" />
+    <script src="../../../dist/CuAutocomplete.umd.js"></script>
+  </head>
+  <body>
+    <div class="topbar">
+      <h1 style="font-size:16px;font-weight:600">Autocomplete Labs</h1>
+      <div class="topbar-actions">
+        <button class="topbar-btn" id="btnTheme" title="Toggle theme">🌙</button>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="card">
+        <h2>Autocomplete</h2>
+        <cu-autocomplete id="ac" placeholder="Buscar rol..." color="primary"></cu-autocomplete>
+      </div>
+    </div>
+
+    <script>
+      const roles = [
+        { label: 'Administrador' },
+        { label: 'Editor de contenido' },
+        { label: 'Visor de reportes' },
+        { label: 'Invitado externo' },
+        { label: 'Supervisor' },
+        { label: 'Analista de datos' },
+        { label: 'Gestor de usuarios' },
+      ];
+
+      customElements.whenDefined('cu-autocomplete').then(() => {
+        document.getElementById('ac').items = roles;
+      });
+    </script>
+
+    <script src="../../playground.js"></script>
+  </body>
+</html>

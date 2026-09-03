@@ -90,6 +90,9 @@ comegenui-v{version}.zip
 │   ├── light.css       ← Tema light
 │   └── dark.css        ← Tema dark
 ├── comegen-ui/         ← Skill de uso: SKILL.md + docs por componente
-├── update.sh           ← Actualizador del proyecto huésped (./update.sh; instala la skill en .agents/skills/)
+├── update.sh           ← Actualizador Linux/macOS (./update.sh)
+├── update.bat          ← Actualizador Windows (doble clic o update.bat [tag])
+├── update.ps1          ← Alternativa PowerShell (.\update.ps1 [tag])
+                       (todos instalan la skill de uso en .agents/skills/)
 └── README-BUILD.md     ← Este archivo
 ```
