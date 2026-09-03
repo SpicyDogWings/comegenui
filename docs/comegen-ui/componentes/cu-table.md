@@ -728,25 +728,20 @@ interface FooterRow {
 
 ## Footer (slot, modo Vue)
 
-En modo Vue (no CE), podés usar el slot `footer` para mayor flexibilidad. **Importante:** los `td` del slot necesitan las clases `cu-table-td` y `cu-table-td--footer` para tener padding y estilos correctos:
+En modo Vue (no CE), podés usar el slot `footer` para mayor flexibilidad:
 
 ```html
 <template>
   <CuTable :columns="columns" :data="data">
     <template #footer="{ columns }">
       <tr>
-        <td class="cu-table-td cu-table-td--footer" :colspan="columns.length - 1">Total</td>
-        <td class="cu-table-td cu-table-td--footer cu-table-td--right">$1,234.56</td>
+        <td :colspan="columns.length - 1">Total</td>
+        <td style="text-align: right;">$1,234.56</td>
       </tr>
     </template>
   </CuTable>
 </template>
 ```
-
-> **Clases necesarias:**
-> - `cu-table-td` — aplica padding (`var(--cu-space-md)`), fuente y color de texto
-> - `cu-table-td--footer` — aplica `font-weight: semibold` y el borde superior de separación
-> - `cu-table-td--left` / `cu-table-td--center` / `cu-table-td--right` — alineación (izquierda por defecto)
 
 > El `<tfoot>` solo se renderiza si el slot `footer` tiene contenido.
 
