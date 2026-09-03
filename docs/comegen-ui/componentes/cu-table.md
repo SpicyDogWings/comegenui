@@ -171,9 +171,8 @@ Como `columns` se pasa sin filtrar al `AdvancedTable.vue` interno, podés usar e
 | `header` | `{ column, color, variant }` | Personaliza el header completo (todas las columnas) |
 | `header-{key}` | `{ column, color, variant }` | Header de una columna específica (key dinámico) |
 | `empty` | — | Contenido cuando no hay datos (override del texto `empty`) |
-| `footer` | `{ columns }` | Contenido del footer de la tabla (ideal para totales, resúmenes) |
 
-> **Importante:** Los slots `cell-{key}` y `search` que aparecen en algunos ejemplos **no están expuestos** por el `<cu-table>` (el `.ce.vue` no los reenvía). Solo `header`, `header-{key}`, `empty` y `footer`.
+> **Importante:** Los slots `cell-{key}`, `search` y `footer` que aparecen en algunos ejemplos **no están expuestos** por el `<cu-table>` (el `.ce.vue` no los reenvía). Solo `header`, `header-{key}` y `empty`. Para footer en HTML plano, usá la [API programática](#footer-api-programática) (prop `footer` vía JS).
 
 ### Ejemplo de slot header
 
@@ -723,27 +722,6 @@ interface FooterRow {
 > **Prioridad:** si el slot `footer` tiene contenido, tiene prioridad sobre la prop `footer`. Si no usás el slot, el `<tfoot>` se renderiza si `footer.length > 0`.
 
 > **Múltiples filas:** cada elemento del array `footer` es una fila `<tr>` independiente.
-
----
-
-## Footer (slot, modo Vue)
-
-En modo Vue (no CE), podés usar el slot `footer` para mayor flexibilidad:
-
-```html
-<template>
-  <CuTable :columns="columns" :data="data">
-    <template #footer="{ columns }">
-      <tr>
-        <td :colspan="columns.length - 1">Total</td>
-        <td style="text-align: right;">$1,234.56</td>
-      </tr>
-    </template>
-  </CuTable>
-</template>
-```
-
-> El `<tfoot>` solo se renderiza si el slot `footer` tiene contenido.
 
 ---
 
