@@ -110,6 +110,7 @@ defineExpose({
           :columns="block.table.columns"
           :data="block.table.data"
           :html-cells="true"
+          variant="ghost"
         />
         <CodeBlock
           v-else-if="block.type === 'code-block' && block.codeBlock"
