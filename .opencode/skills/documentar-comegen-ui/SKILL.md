@@ -48,21 +48,32 @@ Si la tarea es **modificar el código fuente** de un componente (`.ce.vue`, `.vu
 7. Si el componente hereda props del tema (`theme`, `color`, `variant`, `hightContrast`), documentarlas en bloque.
 8. Pasar el [checklist de auditoría](checklist-auditoria.md) sobre el `.md` resultante.
 
-### Índices a actualizar al crear un componente nuevo
+### Destinos de la documentación
 
-Un componente nuevo **no está documentado solo con su `.md`**. Cuando se crea uno (ej. `<cu-card>`), hay que actualizar **todos** los índices que listan componentes. Verificarlos con `grep` por el tag del componente:
+Documentar un componente significa actualizar **2 destinos distintos**:
 
-1. **`.opencode/skills/comegen-ui/SKILL.md`** (skill de uso) — 3 lugares:
+| Destino | Ubicación | Audiencia |
+|---|---|---|
+| **Skill (agentes)** | `.opencode/skills/comegen-ui/` | Agentes IA (viaja con el zip) |
+| **Docs (humanos)** | `docs/comegen-ui/`, `docs/DOCS.md`, `COMPONENTS-GUIDE.md` | Humanos |
+
+### Índices a actualizar — Skill (agentes)
+
+1. **`.opencode/skills/comegen-ui/SKILL.md`** — 3 lugares:
     - Tabla "Archivos disponibles" (agregar `Cu<Nombre>.umd.js` / `<cu-xxx>` / descripción).
     - Tabla "Default de `variant` por componente" (si tiene variant).
     - Índice "Componentes" (link a `componentes/cu-xxx.md`).
     - Si corresponde, la tabla de "Variantes disponibles" y la de "Tamaño de los bundles" (los tamaños salen del `pnpm build:lib`).
+2. **`.opencode/skills/comegen-ui/componentes/<nombre>.md`** — el archivo de API del componente.
+
+### Índices a actualizar — Docs (humanos)
+
+1. **`docs/comegen-ui/componentes/<nombre>.md`** — copia del `.md` de la skill (verificar con `diff`).
 2. **`docs/DOCS.md`** — tabla "Componentes disponibles" (agregar fila con link al `.md`).
 3. **`COMPONENTS-GUIDE.md`** (raíz del repo) — índice, listado de `<script>` de instalación, tabla "Archivos disponibles", y una sección `### <cu-xxx>` completa con props/slots/uso.
-4. **`.opencode/skills/comegen-ui/`** — la copia del SKILL.md y del `componentes/cu-xxx.md` debe quedar **idéntica** (verificar con `diff`).
-5. **`docs/desarrollar-comegen-ui/convenciones-desarrollo.md`** — solo si el componente introduce una convención nueva (ej. reglas CSS, especificidad de títulos `solid`, patrones de slots).
+4. **`docs/desarrollar-comegen-ui/convenciones-desarrollo.md`** — solo si el componente introduce una convención nueva.
 
-> Regla de oro: **el tag `<cu-xxx>` debe aparecer en todos los índices o en ninguno.** Si solo lo agregás al `.md` y al SKILL.md, el componente queda "documentado pero invisible" en `DOCS.md` y `COMPONENTS-GUIDE.md`.
+> Regla de oro: **el tag `<cu-xxx>` debe aparecer en TODOS los índices o en ninguno.** Si solo lo agregás al `.md` y al skill, el componente queda "documentado pero invisible" para humanos.
 
 ### Para auditar un `.md` existente
 
@@ -88,9 +99,17 @@ Esto es importante porque:
 
 ## Archivos de referencia en el proyecto
 
-- `src/components/**/<Nombre>.ce.vue` — fuente de verdad de la API.
+**Fuente de verdad:**
+- `src/components/**/<Nombre>.ce.vue` — API pública (la fuente de verdad).
 - `src/components/**/<Nombre>.vue` — implementación interna (referencia, no para docs).
-- `src/components/**/<Nombre>.ts` — punto de entrada del build (no suele afectar docs).
-- `.opencode/skills/comegen-ui/SKILL.md` — la skill de uso (usuario final).
-- `.opencode/skills/comegen-ui/componentes/<nombre>.md` — el archivo a crear/actualizar/auditar.
+- `src/components/**/<Nombre>.ts` — punto de entrada del build.
+
+**Destino — Skill (agentes):**
+- `.opencode/skills/comegen-ui/SKILL.md` — skill de uso.
+- `.opencode/skills/comegen-ui/componentes/<nombre>.md` — API del componente.
+
+**Destino — Docs (humanos):**
+- `docs/comegen-ui/` — documentación para humanos.
+- `docs/DOCS.md` — índice principal.
+- `COMPONENTS-GUIDE.md` — guía de componentes (raíz del repo).
 - `docs/notes/` — notas internas sobre problemas pendientes.
