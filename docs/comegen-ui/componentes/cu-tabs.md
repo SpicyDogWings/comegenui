@@ -86,13 +86,13 @@ En HTML plano se usan con el atributo `slot="..."` sobre el elemento hijo.
 ## Variantes
 
 ```html
-<cu-tabs variant="tabs" :tabs="...">...</cu-tabs>   <!-- underline -->
-<cu-tabs variant="pills" :tabs="...">...</cu-tabs>  <!-- pills redondeadas -->
-<cu-tabs variant="boxed" :tabs="...">...</cu-tabs>  <!-- contenedor con borde -->
-<cu-tabs variant="soft" :tabs="...">...</cu-tabs>   <!-- contenedor soft + activo solid -->
+<cu-tabs variant="tabs"><!-- underline --></cu-tabs>
+<cu-tabs variant="pills"><!-- pills redondeadas --></cu-tabs>
+<cu-tabs variant="boxed"><!-- contenedor con borde --></cu-tabs>
+<cu-tabs variant="soft"><!-- contenedor soft + activo solid --></cu-tabs>
 ```
 
-En HTML plano reemplazá `:tabs` por la asignación via JS.
+> El array `tabs` se asigna vía JavaScript (ver [Uso en HTML plano](#uso-en-html-plano)).
 
 ## Iconos
 
