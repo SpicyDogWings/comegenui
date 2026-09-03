@@ -298,17 +298,17 @@ const isRowDisabled = (row: Record<string, any>): boolean => {
   pointer-events: none;
 }
 
-.cu-table-td {
+:deep(.cu-table-td) {
   padding: var(--cu-space-md);
   font-family: var(--cu-font-sans);
   color: var(--cu-color-neutral-text);
 }
 
-.cu-table-td--left { text-align: left; }
-.cu-table-td--center { text-align: center; }
-.cu-table-td--right { text-align: right; }
+:deep(.cu-table-td--left) { text-align: left; }
+:deep(.cu-table-td--center) { text-align: center; }
+:deep(.cu-table-td--right) { text-align: right; }
 
-.cu-table-empty {
+:deep(.cu-table-empty) {
   padding: var(--cu-space-xl);
   text-align: center;
   color: var(--cu-color-neutral-text);
@@ -317,10 +317,9 @@ const isRowDisabled = (row: Record<string, any>): boolean => {
   font-family: var(--cu-font-sans);
 }
 
-.cu-table-td--footer {
+:deep(.cu-table-td--footer) {
   font-weight: var(--cu-font-weight-semibold);
   border-top: var(--cu-border-medium) solid var(--cu-color-neutral-subtle-border);
-  background-color: var(--cu-color-neutral-soft);
 }
 
 .cu-table tr:last-child td {

@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="es" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Table Footer — Playground Vanilla</title>
+    <link rel="stylesheet" href="../../style.css" />
+    <link rel="stylesheet" href="../../public/css/comegen-sigfi-theme.css" />
+    <script src="../../../dist/CuTable.umd.js"></script>
+    <style>
+      .card--wide { align-items: flex-start; max-width: 1100px; }
+      .preset-bar {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        width: 100%;
+        padding: 12px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border: 1px solid #e9ecef;
+      }
+      .dark .preset-bar { background: #1f1f1f; border-color: #333; }
+      .preset-btn {
+        padding: 6px 14px;
+        border-radius: 6px;
+        border: 1px solid #dee2e6;
+        background: #fff;
+        color: #333;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all .2s;
+      }
+      .preset-btn:hover { background: #e9ecef; }
+      .preset-btn.active { background: #3b82f6; color: #fff; border-color: #3b82f6; }
+      .dark .preset-btn { background: #2a2a2a; border-color: #444; color: #ddd; }
+      .dark .preset-btn:hover { background: #3a3a3a; }
+      .dark .preset-btn.active { background: #3b82f6; color: #fff; }
+      .table-wrapper { width: 100%; }
+      .code-preview {
+        width: 100%;
+        background: #1e1e1e;
+        color: #d4d4d4;
+        padding: 16px;
+        border-radius: 8px;
+        font-family: ui-monospace, monospace;
+        font-size: 12px;
+        line-height: 1.6;
+        overflow-x: auto;
+        white-space: pre;
+      }
+      .code-preview .kw { color: #569cd6; }
+      .code-preview .str { color: #ce9178; }
+      .code-preview .num { color: #b5cea8; }
+      .code-preview .cm { color: #6a9955; }
+      .section-title { font-size: 14px; font-weight: 600; opacity: .7; margin-top: 8px; }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <h1 style="font-size:16px;font-weight:600">Table Footer — Playground</h1>
+      <div class="topbar-actions">
+        <button class="topbar-btn" id="btnTheme" title="Toggle theme">🌙</button>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="card card--wide">
+        <h2>Footer Programático</h2>
+        <p style="font-size:13px;opacity:.65;line-height:1.5;margin:0">
+          El prop <code>footer</code> acepta <code>FooterRow[]</code> para definir filas de pie sin HTML.
+          Cada celda soporta <code>value</code>, <code>colspan</code> y <code>align</code>.
+        </p>
+
+        <div class="preset-bar" id="presetBar">
+          <button class="preset-btn active" data-preset="total">Total simple</button>
+          <button class="preset-btn" data-preset="multi">Multi-fila</button>
+          <button class="preset-btn" data-preset="fullwidth">Full width</button>
+          <button class="preset-btn" data-preset="empty">Sin footer</button>
+        </div>
+
+        <div class="table-wrapper">
+          <cu-table id="demoTable" color="primary" variant="soft"></cu-table>
+        </div>
+
+        <p class="section-title">Código del preset:</p>
+        <div class="code-preview" id="codePreview"></div>
+      </div>
+    </div>
+
+    <script src="../../playground.js"></script>
+    <script>
+      const table = document.getElementById('demoTable');
+      const codePreview = document.getElementById('codePreview');
+      const presetBar = document.getElementById('presetBar');
+
+      const columns = [
+        { key: 'producto', label: 'Producto' },
+        { key: 'categoria', label: 'Categoría' },
+        { key: 'precio', label: 'Precio', align: 'right' },
+        { key: 'stock', label: 'Stock', align: 'center' },
+      ];
+
+      const data = [
+        { producto: 'Widget A', categoria: 'Electrónica', precio: 250.00, stock: 45 },
+        { producto: 'Widget B', categoria: 'Electrónica', precio: 175.50, stock: 32 },
+        { producto: 'Widget C', categoria: 'Hogar', precio: 320.00, stock: 18 },
+        { producto: 'Widget D', categoria: 'Hogar', precio: 89.90, stock: 67 },
+      ];
+
+      const presets = {
+        total: {
+          label: 'Total simple',
+          code: `<span class="kw">const</span> total = data.reduce((s, r) => s + r.precio, 0);
+table.footer = [
+  {
+    cells: [
+      { value: <span class="str">'Total'</span>, colspan: <span class="num">2</span> },
+      { value: <span class="str">\`$\${total.toFixed(2)}\`</span>, align: <span class="str">'right'</span> },
+      { value: <span class="str">\`${data.reduce((s,r) => s+r.stock, 0)} uds\`</span>, align: <span class="str">'center'</span> },
+    ],
+  },
+];`,
+          footer: [
+            {
+              cells: [
+                { value: 'Total', colspan: 2 },
+                { value: `$${data.reduce((s, r) => s + r.precio, 0).toFixed(2)}`, align: 'right' },
+                { value: `${data.reduce((s, r) => s + r.stock, 0)} uds`, align: 'center' },
+              ],
+            },
+          ],
+        },
+        multi: {
+          label: 'Multi-fila',
+          code: `<span class="kw">const</span> total = data.reduce((s, r) => s + r.precio, 0);
+<span class="kw">const</span> avg = total / data.length;
+table.footer = [
+  {
+    cells: [
+      { value: <span class="str">'Subtotal'</span>, colspan: <span class="num">2</span> },
+      { value: <span class="str">\`$\${total.toFixed(2)}\`</span>, align: <span class="str">'right'</span> },
+      { value: <span class="str">''</span> },
+    ],
+  },
+  {
+    cells: [
+      { value: <span class="str">'Promedio'</span>, colspan: <span class="num">2</span> },
+      { value: <span class="str">\`$\${avg.toFixed(2)}\`</span>, align: <span class="str">'right'</span> },
+      { value: <span class="str">''</span> },
+    ],
+  },
+  {
+    cells: [
+      { value: <span class="str">'* Precios sin IVA'</span>, colspan: <span class="num">4</span> },
+    ],
+  },
+];`,
+          footer: [
+            {
+              cells: [
+                { value: 'Subtotal', colspan: 2 },
+                { value: `$${data.reduce((s, r) => s + r.precio, 0).toFixed(2)}`, align: 'right' },
+                { value: '' },
+              ],
+            },
+            {
+              cells: [
+                { value: 'Promedio', colspan: 2 },
+                { value: `$${(data.reduce((s, r) => s + r.precio, 0) / data.length).toFixed(2)}`, align: 'right' },
+                { value: '' },
+              ],
+            },
+            {
+              cells: [
+                { value: '* Precios sin IVA', colspan: 4 },
+              ],
+            },
+          ],
+        },
+        fullwidth: {
+          label: 'Full width',
+          code: `table.footer = [
+  {
+    cells: [
+      {
+        value: <span class="str">'Nota: Los precios están sujetos a cambios sin previo aviso. Stock actualizado al '</span> + <span class="kw">new</span> <span class="cm">Date</span>().toLocaleDateString(),
+        colspan: <span class="num">4</span>,
+      },
+    ],
+  },
+];`,
+          footer: [
+            {
+              cells: [
+                {
+                  value: `Nota: Los precios están sujetos a cambios sin previo aviso. Stock actualizado al ${new Date().toLocaleDateString()}`,
+                  colspan: 4,
+                },
+              ],
+            },
+          ],
+        },
+        empty: {
+          label: 'Sin footer',
+          code: `<span class="cm">// Asignar array oculta el &lt;tfoot&gt;</span>
+table.footer = [];`,
+          footer: [],
+        },
+      };
+
+      function applyPreset(name) {
+        const preset = presets[name];
+        table.footer = preset.footer;
+        codePreview.innerHTML = preset.code;
+        presetBar.querySelectorAll('.preset-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.preset === name);
+        });
+      }
+
+      presetBar.addEventListener('click', (e) => {
+        const btn = e.target.closest('.preset-btn');
+        if (btn) applyPreset(btn.dataset.preset);
+      });
+
+      customElements.whenDefined('cu-table').then(() => {
+        table.columns = columns;
+        table.data = data;
+        applyPreset('total');
+      });
+    </script>
+  </body>
+</html>
