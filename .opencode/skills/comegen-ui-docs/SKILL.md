@@ -1,5 +1,5 @@
 ---
-name: documentar-comegen-ui
+name: comegen-ui-docs
 description: Guía para documentar componentes de ComegenUI 2.x. Úsala cuando se pida crear, actualizar o auditar la documentación de un Custom Element de ComegenUI (los archivos en `.opencode/skills/comegen-ui/componentes/cu-*.md`).
 ---
 
