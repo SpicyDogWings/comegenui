@@ -84,6 +84,26 @@ Ejemplos de los componentes más usados. Para todos los ejemplos (27 componentes
 
 ---
 
+## Actualización (update.sh)
+
+El zip incluye `update.sh` que actualiza la lib en el proyecto huésped:
+
+```bash
+./update.sh          # último build de main
+./update.sh v3.0.0   # build de un tag/release
+```
+
+**Qué hace:**
+1. Descarga el artifact de GitLab (según tag o main)
+2. Reemplaza la carpeta de forma atómico (si falla, lo anterior queda intacto)
+3. Instala la skill de uso en `.agents/skills/comegen-ui/` del proyecto huésped
+
+**Variables opcionales:**
+- `CG_URL` — override de URL (para probar con archivo local)
+- `CG_PROJECT_ROOT` — forzar raíz del proyecto (si no detecta `.git`/`AGENTS.md`/`package.json`)
+
+---
+
 ## Temas
 
 Tres temas: `light` (default), `dark`, `sigacadv2`.
