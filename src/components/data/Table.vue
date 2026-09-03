@@ -319,7 +319,7 @@ const isRowDisabled = (row: Record<string, any>): boolean => {
 
 :deep(.cu-table-td--footer) {
   font-weight: var(--cu-font-weight-semibold);
-  border-top: var(--cu-border-medium) solid var(--cu-color-neutral-subtle-border);
+  border-top: var(--cu-border-medium) solid var(--cu-color-neutral-soft);
 }
 
 .cu-table tr:last-child td {
