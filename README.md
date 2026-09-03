@@ -53,6 +53,41 @@ Con tag específico: `update.bat v3.0.0`
 Cada tag publica una [Release](https://gitlab.com/SpicyDogWings/comegen-ui/-/releases)
 con el build como asset. Para bajar un tag puntual reemplazá `main` por el tag (ej. `v3.0.0`) en la URL de arriba.
 
+## Instalación desde source (build local)
+
+Si preferís compilar vos mismo desde el código fuente:
+
+```sh
+# 1. Clonar el repo
+git clone https://gitlab.com/SpicyDogWings/comegen-ui.git
+cd comegen-ui
+
+# 2. Instalar dependencias
+pnpm install
+
+# 3. Build de la librería
+pnpm build:lib
+```
+
+El output queda en `dist/`:
+
+```
+dist/
+├── CuAlert.umd.js
+├── CuButton.umd.js
+├── ...
+├── css/themes.css
+└── comegenui-v{version}.zip
+```
+
+Para usar en tu proyecto, copiá los `.umd.js` que necesités y el CSS:
+
+```html
+<link rel="stylesheet" href="dist/css/themes.css">
+<script src="dist/CuButton.umd.js"></script>
+<cu-button color="primary">Guardar</cu-button>
+```
+
 ## Scripts
 
 | Comando | Descripción |
