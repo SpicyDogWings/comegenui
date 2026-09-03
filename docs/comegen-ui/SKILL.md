@@ -84,13 +84,20 @@ Ejemplos de los componentes más usados. Para todos los ejemplos (27 componentes
 
 ---
 
-## Actualización (update.sh)
+## Actualización
 
-El zip incluye `update.sh` que actualiza la lib en el proyecto huésped:
+El zip incluye scripts para actualizar la lib en el proyecto huésped:
 
+**Linux / macOS / Git Bash:**
 ```bash
 ./update.sh          # último build de main
 ./update.sh v3.0.0   # build de un tag/release
+```
+
+**Windows (PowerShell):**
+```powershell
+.\update.ps1            # último build de main
+.\update.ps1 v3.0.0    # build de un tag/release
 ```
 
 **Qué hace:**
@@ -99,8 +106,8 @@ El zip incluye `update.sh` que actualiza la lib en el proyecto huésped:
 3. Instala la skill de uso en `.agents/skills/comegen-ui/` del proyecto huésped
 
 **Variables opcionales:**
-- `CG_URL` — override de URL (para probar con archivo local)
-- `CG_PROJECT_ROOT` — forzar raíz del proyecto (si no detecta `.git`/`AGENTS.md`/`package.json`)
+- Linux: `CG_URL`, `CG_PROJECT_ROOT`
+- Windows: `$env:CG_URL`, `$env:CG_PROJECT_ROOT`
 
 ---
 
