@@ -259,7 +259,7 @@ defineExpose({ open, close, toggle, get, set, reset, isOpen: () => isOpen.value 
         animation="cooldown"
         :delay="delay"
       />
-      <slot></slot>
+      <slot v-if="!loading"></slot>
     </div>
   </div>
 </template>
@@ -278,8 +278,9 @@ defineExpose({ open, close, toggle, get, set, reset, isOpen: () => isOpen.value 
   box-shadow: var(--cu-shadow-xl);
 }
 
+/* Mientras carga el panel muestra solo el loader (slot oculto) — sin opacity:
+   atenuar el panel lo hacía transparente y se veía la página a través */
 .cu-dropdown-panel--loading {
-  opacity: 0.6;
   pointer-events: none;
 }
 </style>
