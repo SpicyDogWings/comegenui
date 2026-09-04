@@ -4,8 +4,14 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
+      path: "/",
+      name: "Home",
+      component: () => import("@/pages/Home.vue")
+    },
+    {
       path: "/playground",
       name: "Playground",
+      redirect: "/playground/components/button",
       children: [
         {
           path: "theme-builder",
