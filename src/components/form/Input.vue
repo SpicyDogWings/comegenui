@@ -95,7 +95,8 @@ defineExpose({
 .cu-input {
   font-family: var(--cu-font-sans);
   font-size: var(--cu-font-size-sm);
-  padding: var(--cu-space-sm) var(--cu-space-md);
+  font-weight: var(--cu-font-weight-medium);
+  padding: var(--cu-space-md) var(--cu-space-lg);
   border-radius: var(--cu-radius-md);
   border: none;
   outline: none;
