@@ -14,6 +14,7 @@ import ThemeDropdown from "@/components/theme/ThemeDropdown.vue";
         <slot name="title" />
       </div>
       <div class="app-topbar-actions">
+        <ThemeDropdown />
         <slot name="actions" />
         <a
           class="app-topbar-icon"
@@ -25,7 +26,6 @@ import ThemeDropdown from "@/components/theme/ThemeDropdown.vue";
         >
           <LucideGitLab />
         </a>
-        <ThemeDropdown />
       </div>
     </header>
     <main class="app-body">
