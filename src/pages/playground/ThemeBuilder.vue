@@ -31,6 +31,7 @@ import DropdownMenu from '@/components/controls/DropdownMenu.vue'
 import Markdown from '@/components/markdown/Markdown.vue'
 import Modal from '@/components/overlay/Modal.vue'
 import { colorsBlock } from '@/plugins/cu-tokens/css'
+import { theme as activeTheme, setTheme } from '@/plugins/cu-tokens'
 
 const STORAGE_KEY = 'cu-theme-builder'
 
@@ -147,25 +148,18 @@ function hexToRgba(hex: string, alpha: number) {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`
 }
 
-function buildCssVariables(): string {
+function buildSharedVariables(): string {
   const t = typography.value
   const s = spacing.value
   const r = borderRadius.value
   const sh = shadows.value
   const b = borders.value
 
-  /* mismo generador que la lib (cu-tokens): incluye --cu-color-*-code y
-     el esquema --cu-code-* — nunca diverge */
-  const colorsCSS = colorsBlock(colors.value)
-
   const shadowColor = hexToRgba(sh.color, 1)
   const shadowAlpha05 = hexToRgba(sh.color, 0.05)
   const shadowAlpha1 = hexToRgba(sh.color, 0.1)
 
-  return `/* Colors */
-    ${colorsCSS}
-
-    /* Typography */
+  return `/* Typography */
     --cu-font-sans: ${t.fontFamily.sans};
     --cu-font-mono: ${t.fontFamily.mono};
     --cu-font-size-xs: ${t.fontSize.xs};
@@ -217,9 +211,19 @@ function buildCssVariables(): string {
     --cu-border-color-focus: ${b.color.focus};`
 }
 
-const cssPreview = computed(() => `.tb-preview {\n${buildCssVariables()}\n}`)
+/* mismo generador que la lib (cu-tokens): incluye --cu-color-*-code y
+   el esquema --cu-code-* — nunca diverge */
+const cssColors = computed(() => colorsBlock(colors.value))
+const cssShared = computed(() => buildSharedVariables())
 
-const cssExport = computed(() => `:root {\n${buildCssVariables()}\n}`)
+// La page entera toma el tema editado: los colores van bajo el selector del
+// tema activo (pisa al :root del plugin por especificidad) y los tokens
+// compartidos en :root (el style tag inyectado va después del del plugin).
+const cssPreview = computed(
+  () => `html[data-theme="${themeName.value}"] {\n${cssColors.value}\n}\n\n:root {\n${cssShared.value}\n}`
+)
+
+const cssExport = computed(() => `:root {\n${cssColors.value}\n\n${cssShared.value}\n}`)
 
 let styleEl: HTMLStyleElement | null = null
 
@@ -332,15 +336,24 @@ function resetToDefaults() {
   borders.value = { width: { none: '0', thin: '1px', medium: '2px', thick: '4px' }, color: { default: '#d1d5db', strong: '#6b7280', focus: '#1774A4' } }
 }
 
+// El tema activo pasa a ser el que se está editando (preview global en vivo);
+// al salir se restaura el que estaba ("el de ahorita" queda como default).
+const previousTheme = ref('')
+
 onMounted(() => {
   loadFromStorage()
+  previousTheme.value = activeTheme.value
+  setTheme(themeName.value)
 })
+
+watch(themeName, (name) => setTheme(name))
 
 onBeforeUnmount(() => {
   if (styleEl) {
     styleEl.remove()
     styleEl = null
   }
+  if (previousTheme.value) setTheme(previousTheme.value)
 })
 </script>
 
