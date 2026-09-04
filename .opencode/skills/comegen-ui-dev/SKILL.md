@@ -187,10 +187,11 @@ const outlineItems = [
 
 4. **API en una sección** con `h3` chicos (Props/Slots/Events/Exposes/Interfaces) y `Table variant="ghost" compact`. Nada de filas fake con "—": usar el `empty` de la Table (`empty="No tiene slots"`). Los `h3` con ids (`api-*`) van como `children` del outline (el `Outline` soporta sub-menús).
 5. **Interfaces**: si un prop tiene estructura (items, options, columns, events), la API lleva la subsección `Interfaces` con `CodeBlock :code="interfaceCode" language="ts" variant="solid"` mostrando la interfaz **real** del componente (leerla del source, **no inventar**). El demo que la usa linkea con `Button variant="link" to="#api-interfaces"` ("Ver interfaz X ↓") en vez de enumerar campos en texto. Si los props son primitivos, no hay subsección Interfaces.
-6. **Programmatic** (si el componente expone métodos): **Programmatic y API son las ÚLTIMAS DOS secciones de la página, en ese orden** (ninguna sección entre ellas ni después). Layout fijo (referencia: DatePicker):
-   - `<div class="playground-heading"><h2>Programmatic</h2></div>` + `<p class="playground-desc">Seguidilla de botones sobre la instancia de abajo.</p>`
-   - `SectionDemo` con: una fila de `Button color="neutral"` (uniformes, una acción por botón, **nunca `<button>` nativo**), UNA línea `<p class="playground-state">` con los getters en vivo, y el componente **al final**.
+6. **Programmatic** (si el componente expone métodos **o se controla por v-model**): **Programmatic y API son las ÚLTIMAS DOS secciones de la página, en ese orden** (ninguna sección entre ellas ni después). Layout fijo (referencia: DatePicker):
+   - `<div class="playground-heading"><h2>Programmatic</h2></div>` + `<p class="playground-desc">Seguidilla de botones sobre la instancia de abajo</p>` (los paneles pueden aclarar: "— el panel abre acá al lado").
+   - `SectionDemo` con: una fila de `Button color="neutral"` (uniformes, una acción por botón, **nunca `<button>` nativo**), UNA línea `<p class="playground-state">` con los getters/v-model en vivo, y el componente **al final**.
    - Estado en vivo: actualizar en cada acción **y** en los events del componente (`@update:model-value`, `@close`, `@change`…).
+   - Sin métodos expuestos → manipular los v-models (ej: Pagination `v-model:current-page` con botones `page 1`/`prev()`/`next()`/`page 5`).
    - Outline `Programmatic` **sin children** (los h3 por-método están proscriptos).
    - En snippets el estado se loguea a `console` (`logState()`); Vanilla usa `cu-button`.
 
@@ -205,6 +206,7 @@ const outlineItems = [
 | Tooltips nativos (`title`) | No cuentan como feedback visible de una prop; si debe "verse", renderizar texto real. |
 | Swap animado de textos | Un solo `<Transition mode="out-in">` con `:key`; dos Transitions independientes popean al resetear. |
 | FABs y componentes `position: fixed` en preview | En la demo: `style="position: static"` por instancia; en el snippet vanilla/vue, incluirlo también. |
+| Páginas legacy sin tabs (Calendar, DropdownMenu, Tabs, Table, sliders) | Sus secciones viejas NO usan `SectionDemo`. Al tocarlas, migrar la sección a `SectionDemo` (con Vanilla solo si el componente está en lib) — no dejar secciones híbridas. |
 
 ### Registrar el playground (router + nav)
 
