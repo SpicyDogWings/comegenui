@@ -5,8 +5,13 @@ import Input from "@/components/form/Input.vue";
 import Badge from "@/components/information/Badge.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Table from "@/components/data/Table.vue";
+import Button from "@/components/buttons/Button.vue";
 
 const nombre = ref("");
+
+const inputRef = ref<InstanceType<typeof Input> | null>(null);
+const progValue = ref("");
+const progGetResult = ref<string | null>(null);
 
 const outlineItems = [
   { label: 'Variants', id: 'variants' },
@@ -16,6 +21,16 @@ const outlineItems = [
   { label: 'With Values', id: 'values' },
   { label: 'v-model', id: 'v-model' },
   { label: 'Read Only', id: 'readonly' },
+  {
+    label: 'Programmatic',
+    id: 'programmatic',
+    children: [
+      { label: 'get()', id: 'prog-get' },
+      { label: 'set()', id: 'prog-set' },
+      { label: 'reset()', id: 'prog-reset' },
+      { label: 'focus()', id: 'prog-focus' },
+    ],
+  },
   {
     label: 'API',
     id: 'api',
@@ -131,6 +146,65 @@ const readonlyVanilla = `<script src="dist/CuInput.umd.js"><\/script>
 
 <cu-input read-only model-value="Solo lectura"></cu-input>
 <cu-input read-only variant="outlined" model-value="Outlined read-only"></cu-input>`;
+
+const programmaticVue = `<script setup>
+import { ref } from 'vue'
+import Input from '@/components/form/Input.vue'
+
+const value = ref('')
+const inputRef = ref(null)
+<\/script>
+
+<template>
+  <div style="display:flex;flex-direction:column;gap:12px">
+    <Input ref="inputRef" v-model="value" placeholder="Escribí algo" style="max-width:280px" />
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button @click="console.log(inputRef?.get())">get()</button>
+      <button @click="inputRef?.set('Hola')">set('Hola')</button>
+      <button @click="inputRef?.set(42)">set(42)</button>
+      <button @click="inputRef?.reset()">reset()</button>
+      <button @click="inputRef?.focus()">focus()</button>
+    </div>
+  </div>
+</template>`;
+
+const programmaticVanilla = `<script src="dist/CuInput.umd.js"><\/script>
+
+<div style="display:flex;flex-direction:column;gap:12px">
+  <cu-input id="in-prog" placeholder="Escribí algo" style="max-width:280px"></cu-input>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <button id="in-prog-get">get()</button>
+    <button id="in-prog-set">set('Hola')</button>
+    <button id="in-prog-set-number">set(42)</button>
+    <button id="in-prog-reset">reset()</button>
+    <button id="in-prog-focus">focus()</button>
+  </div>
+  <span id="in-prog-state">""</span>
+</div>
+
+<script>
+  customElements.whenDefined('cu-input').then(() => {
+    const input = document.getElementById('in-prog');
+    const state = document.getElementById('in-prog-state');
+    const showValue = () => {
+      state.textContent = 'get(): ' + JSON.stringify(input.get());
+    };
+    document.getElementById('in-prog-get').addEventListener('click', showValue);
+    document.getElementById('in-prog-set').addEventListener('click', () => {
+      input.set('Hola');
+      showValue();
+    });
+    document.getElementById('in-prog-set-number').addEventListener('click', () => {
+      input.set(42);
+      showValue();
+    });
+    document.getElementById('in-prog-reset').addEventListener('click', () => {
+      input.reset();
+      showValue();
+    });
+    document.getElementById('in-prog-focus').addEventListener('click', () => input.focus());
+  });
+<\/script>`;
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -277,6 +351,37 @@ const exposesData = [
           <div class="playground-col">
             <Input read-only model-value="Solo lectura" />
             <Input read-only variant="outlined" model-value="Outlined read-only" />
+          </div>
+        </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="programmatic" class="playground-section">
+        <h2>Programmatic</h2>
+        <SectionDemo :vue-code="programmaticVue" :vanilla-code="programmaticVanilla">
+          <div class="playground-col">
+            <div class="playground-row">
+              <Input ref="inputRef" v-model="progValue" placeholder="Escribí algo" style="max-width:280px" />
+            </div>
+            <h3 id="prog-get">get()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="progGetResult = inputRef?.get() ?? null">get()</Button>
+              <span class="playground-code">{{ progGetResult ?? '—' }}</span>
+            </div>
+            <h3 id="prog-set">set()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="inputRef?.set('Hola')">set('Hola')</Button>
+              <Button color="neutral" variant="soft" @click="inputRef?.set(42)">set(42)</Button>
+            </div>
+            <h3 id="prog-reset">reset()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="inputRef?.reset()">reset()</Button>
+            </div>
+            <h3 id="prog-focus">focus()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="inputRef?.focus()">focus()</Button>
+            </div>
           </div>
         </SectionDemo>
       </section>

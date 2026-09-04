@@ -3,6 +3,7 @@ import { ref } from "vue";
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import Textarea from "@/components/form/Textarea.vue";
 import Badge from "@/components/information/Badge.vue";
+import Button from "@/components/buttons/Button.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Table from "@/components/data/Table.vue";
 
@@ -15,6 +16,16 @@ const outlineItems = [
   { label: 'Disabled', id: 'disabled' },
   { label: 'Rows', id: 'rows' },
   { label: 'v-model', id: 'v-model' },
+  {
+    label: 'Programmatic',
+    id: 'programmatic',
+    children: [
+      { label: 'get()', id: 'prog-get' },
+      { label: 'set()', id: 'prog-set' },
+      { label: 'reset()', id: 'prog-reset' },
+      { label: 'focus()', id: 'prog-focus' },
+    ],
+  },
   {
     label: 'API',
     id: 'api',
@@ -112,6 +123,53 @@ const vmodelVanilla = `<script src="dist/CuTextarea.umd.js"><\/script>
   // El valor también puede setearse por propiedad: ta.modelValue = 'texto inicial'
   ta.addEventListener('update:modelValue', (e) => {
     out.textContent = 'Value: ' + e.detail;
+  });
+<\/script>`;
+
+const textareaRef = ref<InstanceType<typeof Textarea> | null>(null);
+const progGet = ref("—");
+
+function readProgrammaticState() {
+  const el = textareaRef.value;
+  if (!el) return;
+  progGet.value = el.get() || "(vacío)";
+}
+
+const programmaticVue = `<script setup>
+import { ref } from 'vue'
+import Textarea from '@/components/form/Textarea.vue'
+import Button from '@/components/buttons/Button.vue'
+
+const taRef = ref(null)
+
+function logValue() {
+  console.log('get():', taRef.value.get())
+}
+<\/script>
+
+<template>
+  <Textarea ref="taRef" placeholder="Escribí algo..." :rows="3" />
+  <Button color="neutral" @click="logValue()">get()</Button>
+  <Button color="neutral" @click="taRef.set('Hola mundo'); logValue()">set('Hola mundo')</Button>
+  <Button color="neutral" @click="taRef.reset(); logValue()">reset()</Button>
+  <Button color="neutral" @click="taRef.focus()">focus()</Button>
+</template>`;
+
+const programmaticVanilla = `<script src="dist/CuTextarea.umd.js"><\/script>
+
+<cu-textarea id="ta" placeholder="Escribí algo..." rows="3"></cu-textarea>
+<button id="btn-get">get()</button>
+<button id="btn-set">set('Hola mundo')</button>
+<button id="btn-reset">reset()</button>
+<button id="btn-focus">focus()</button>
+
+<script>
+  customElements.whenDefined('cu-textarea').then(() => {
+    const ta = document.getElementById('ta');
+    document.getElementById('btn-get').addEventListener('click', () => console.log('get():', ta.get()));
+    document.getElementById('btn-set').addEventListener('click', () => ta.set('Hola mundo'));
+    document.getElementById('btn-reset').addEventListener('click', () => ta.reset());
+    document.getElementById('btn-focus').addEventListener('click', () => ta.focus());
   });
 <\/script>`;
 
@@ -239,6 +297,38 @@ const exposesData = [
           <div class="playground-col">
             <Textarea v-model="vmodelText" placeholder="Escribí algo..." :rows="3" />
             <p class="playground-code">Value: {{ vmodelText || '(vacío)' }}</p>
+          </div>
+        </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="programmatic" class="playground-section">
+        <h2>Programmatic</h2>
+        <SectionDemo :vue-code="programmaticVue" :vanilla-code="programmaticVanilla">
+          <div class="playground-col">
+            <Textarea ref="textareaRef" placeholder="Textarea programático" :rows="3" />
+
+            <h3 id="prog-get">get()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="readProgrammaticState()">get()</Button>
+            </div>
+            <p class="playground-code">get(): {{ progGet }}</p>
+
+            <h3 id="prog-set">set()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="textareaRef?.set('Hola mundo'); readProgrammaticState()">set('Hola mundo')</Button>
+            </div>
+
+            <h3 id="prog-reset">reset()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="textareaRef?.reset(); readProgrammaticState()">reset()</Button>
+            </div>
+
+            <h3 id="prog-focus">focus()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="textareaRef?.focus()">focus()</Button>
+            </div>
           </div>
         </SectionDemo>
       </section>

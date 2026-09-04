@@ -5,9 +5,21 @@ import DatePickerRange from "@/components/form/DatePickerRange.vue";
 import Badge from "@/components/information/Badge.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Table from "@/components/data/Table.vue";
+import Button from "@/components/buttons/Button.vue";
+import CodeBlock from "@/components/markdown/CodeBlock.vue";
 
 const startDate = ref<Date | null>(null);
 const endDate = ref<Date | null>(null);
+
+const rangeRef = ref<InstanceType<typeof DatePickerRange> | null>(null);
+const progStart = ref<Date | null>(null);
+const progEnd = ref<Date | null>(null);
+const progIsOpen = ref(false);
+
+function readProgState() {
+  progStart.value = rangeRef.value?.getStartDate() ?? null;
+  progEnd.value = rangeRef.value?.getEndDate() ?? null;
+}
 
 const colors = ["primary", "secondary", "neutral", "success", "warning", "danger"] as const;
 
@@ -43,6 +55,20 @@ const outlineItems = [
   { label: 'Posiciones', id: 'positions' },
   { label: 'Disabled', id: 'disabled' },
   {
+    label: 'Programmatic',
+    id: 'programmatic',
+    children: [
+      { label: 'open()', id: 'prog-open' },
+      { label: 'close()', id: 'prog-close' },
+      { label: 'toggle()', id: 'prog-toggle' },
+      { label: 'getStartDate()', id: 'prog-getstartdate' },
+      { label: 'getEndDate()', id: 'prog-getenddate' },
+      { label: 'setRange()', id: 'prog-setrange' },
+      { label: 'clear()', id: 'prog-clear' },
+      { label: 'isOpen()', id: 'prog-isopen' },
+    ],
+  },
+  {
     label: 'API',
     id: 'api',
     children: [
@@ -50,6 +76,7 @@ const outlineItems = [
       { label: 'Slots', id: 'api-slots' },
       { label: 'Events', id: 'api-events' },
       { label: 'Exposes', id: 'api-exposes' },
+      { label: 'Interfaces', id: 'api-interfaces' },
     ],
   },
 ];
@@ -218,6 +245,51 @@ const positionsVanilla = `<script src="dist/CuDatePickerRange.umd.js"><\/script>
 const disabledVanilla = `<script src="dist/CuDatePickerRange.umd.js"><\/script>
 
 <cu-date-picker-range disabled start-date="2026-09-03" end-date="2026-09-15"></cu-date-picker-range>`;
+
+const programmaticVue = `<script setup>
+import { ref, onMounted } from 'vue'
+import DatePickerRange from '@/components/form/DatePickerRange.vue'
+
+const rangeRef = ref(null)
+
+onMounted(() => {
+  rangeRef.value?.setRange('2026-09-03', '2026-09-15')
+  console.log('getStartDate():', rangeRef.value?.getStartDate()) // Date
+  console.log('getEndDate():', rangeRef.value?.getEndDate()) // Date
+  rangeRef.value?.open()
+  console.log('isOpen():', rangeRef.value?.isOpen()) // true
+  // rangeRef.value?.close()
+  // rangeRef.value?.toggle()
+  // rangeRef.value?.clear()
+})
+<\/script>
+
+<template>
+  <DatePickerRange ref="rangeRef" />
+</template>`;
+
+const programmaticVanilla = `<script src="dist/CuDatePickerRange.umd.js"><\/script>
+
+<cu-date-picker-range id="range-prog"></cu-date-picker-range>
+
+<script>
+  customElements.whenDefined('cu-date-picker-range').then(() => {
+    const range = document.getElementById('range-prog');
+    range.setRange('2026-09-03', '2026-09-15');
+    console.log('getStartDate():', range.getStartDate()); // Date
+    console.log('getEndDate():', range.getEndDate()); // Date
+    range.open();
+    console.log('isOpen():', range.isOpen()); // true
+    // range.close();
+    // range.toggle();
+    // range.clear();
+  });
+<\/script>`;
+
+const interfaceCode = `interface CalendarEvent {
+  date: string | number | Date
+  color?: string
+}`;
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -499,6 +571,73 @@ const exposesData = [
 
       <hr class="playground-separator" />
 
+      <section id="programmatic" class="playground-section">
+        <div class="playground-heading">
+          <h2>Programmatic</h2>
+        </div>
+        <p class="playground-desc">
+          Métodos expuestos por el componente. Los botones operan sobre la instancia de abajo y el estado se lee en vivo.
+        </p>
+        <SectionDemo :vue-code="programmaticVue" :vanilla-code="programmaticVanilla">
+          <div class="playground-col">
+            <DatePickerRange
+              ref="rangeRef"
+              style="max-width: 320px;"
+              @change="readProgState"
+              @open="progIsOpen = true"
+              @close="progIsOpen = false"
+            />
+            <p class="playground-state">
+              getStartDate(): <strong>{{ fmt(progStart) }}</strong>
+              · getEndDate(): <strong>{{ fmt(progEnd) }}</strong>
+              · isOpen(): <strong>{{ progIsOpen ? 'true' : 'false' }}</strong>
+            </p>
+          </div>
+        </SectionDemo>
+
+        <h3 id="prog-open">open()</h3>
+        <div class="playground-row">
+          <Button color="neutral" @click="rangeRef?.open(); readProgState()">open()</Button>
+        </div>
+
+        <h3 id="prog-close">close()</h3>
+        <div class="playground-row">
+          <Button color="neutral" @click="rangeRef?.close(); readProgState()">close()</Button>
+        </div>
+
+        <h3 id="prog-toggle">toggle()</h3>
+        <div class="playground-row">
+          <Button color="neutral" @click="rangeRef?.toggle(); readProgState()">toggle()</Button>
+        </div>
+
+        <h3 id="prog-getstartdate">getStartDate()</h3>
+        <div class="playground-row">
+          <Button color="neutral" @click="readProgState()">getStartDate()</Button>
+        </div>
+
+        <h3 id="prog-getenddate">getEndDate()</h3>
+        <div class="playground-row">
+          <Button color="neutral" @click="readProgState()">getEndDate()</Button>
+        </div>
+
+        <h3 id="prog-setrange">setRange()</h3>
+        <div class="playground-row">
+          <Button color="neutral" @click="rangeRef?.setRange('2026-09-03', '2026-09-15'); readProgState()">setRange('2026-09-03', '2026-09-15')</Button>
+        </div>
+
+        <h3 id="prog-clear">clear()</h3>
+        <div class="playground-row">
+          <Button color="neutral" @click="rangeRef?.clear(); readProgState()">clear()</Button>
+        </div>
+
+        <h3 id="prog-isopen">isOpen()</h3>
+        <div class="playground-row">
+          <Button color="neutral" @click="readProgState()">isOpen()</Button>
+        </div>
+      </section>
+
+      <hr class="playground-separator" />
+
       <section id="api" class="playground-section">
         <h2>API</h2>
 
@@ -513,6 +652,9 @@ const exposesData = [
 
         <h3 id="api-exposes">Exposes</h3>
         <Table :columns="apiColumns" :data="exposesData" variant="ghost" compact />
+
+        <h3 id="api-interfaces">Interfaces</h3>
+        <CodeBlock :code="interfaceCode" language="ts" variant="solid" />
       </section>
     </div>
   </PlaygroundLayout>

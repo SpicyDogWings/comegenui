@@ -5,11 +5,21 @@ import DatePicker from "@/components/form/DatePicker.vue";
 import Badge from "@/components/information/Badge.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Table from "@/components/data/Table.vue";
+import Button from "@/components/buttons/Button.vue";
+import CodeBlock from "@/components/markdown/CodeBlock.vue";
 
 const lastEvent = ref("");
 
 function onEvent(name: string, payload: any) {
   lastEvent.value = `${name}: ${payload instanceof Date ? payload.toISOString().slice(0, 10) : JSON.stringify(payload)}`;
+}
+
+const pickerRef = ref<InstanceType<typeof DatePicker> | null>(null);
+const progValue = ref<Date | null>(null);
+const progIsOpen = ref(false);
+
+function readProgState() {
+  progValue.value = pickerRef.value?.getValue() ?? null;
 }
 
 const colors = ["primary", "secondary", "neutral", "success", "warning", "danger"] as const;
@@ -45,6 +55,19 @@ const outlineItems = [
   { label: 'Posiciones', id: 'positions' },
   { label: 'Disabled', id: 'disabled' },
   {
+    label: 'Programmatic',
+    id: 'programmatic',
+    children: [
+      { label: 'open()', id: 'prog-open' },
+      { label: 'close()', id: 'prog-close' },
+      { label: 'toggle()', id: 'prog-toggle' },
+      { label: 'getValue()', id: 'prog-getvalue' },
+      { label: 'setValue()', id: 'prog-setvalue' },
+      { label: 'clear()', id: 'prog-clear' },
+      { label: 'isOpen()', id: 'prog-isopen' },
+    ],
+  },
+  {
     label: 'API',
     id: 'api',
     children: [
@@ -52,6 +75,7 @@ const outlineItems = [
       { label: 'Slots', id: 'api-slots' },
       { label: 'Events', id: 'api-events' },
       { label: 'Exposes', id: 'api-exposes' },
+      { label: 'Interfaces', id: 'api-interfaces' },
     ],
   },
 ];
@@ -230,6 +254,49 @@ const positionsVanilla = `<script src="dist/CuDatePicker.umd.js"><\/script>
 const disabledVanilla = `<script src="dist/CuDatePicker.umd.js"><\/script>
 
 <cu-date-picker disabled model-value="2026-08-11"></cu-date-picker>`;
+
+const programmaticVue = `<script setup>
+import { ref, onMounted } from 'vue'
+import DatePicker from '@/components/form/DatePicker.vue'
+
+const pickerRef = ref(null)
+
+onMounted(() => {
+  pickerRef.value?.setValue('2026-08-11')
+  console.log('getValue():', pickerRef.value?.getValue()) // Date
+  pickerRef.value?.open()
+  console.log('isOpen():', pickerRef.value?.isOpen()) // true
+  // pickerRef.value?.close()
+  // pickerRef.value?.toggle()
+  // pickerRef.value?.clear()
+})
+<\/script>
+
+<template>
+  <DatePicker ref="pickerRef" />
+</template>`;
+
+const programmaticVanilla = `<script src="dist/CuDatePicker.umd.js"><\/script>
+
+<cu-date-picker id="picker-prog"></cu-date-picker>
+
+<script>
+  customElements.whenDefined('cu-date-picker').then(() => {
+    const picker = document.getElementById('picker-prog');
+    picker.setValue('2026-08-11');
+    console.log('getValue():', picker.getValue()); // Date
+    picker.open();
+    console.log('isOpen():', picker.isOpen()); // true
+    // picker.close();
+    // picker.toggle();
+    // picker.clear();
+  });
+<\/script>`;
+
+const interfaceCode = `interface CalendarEvent {
+  date: string | number | Date
+  color?: string
+}`;
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -512,6 +579,67 @@ const exposesData = [
 
       <hr class="playground-separator" />
 
+      <section id="programmatic" class="playground-section">
+        <div class="playground-heading">
+          <h2>Programmatic</h2>
+        </div>
+        <p class="playground-desc">
+          Métodos expuestos por el componente. Los botones operan sobre la instancia de abajo y el estado se lee en vivo.
+        </p>
+        <SectionDemo :vue-code="programmaticVue" :vanilla-code="programmaticVanilla">
+          <div class="playground-col">
+            <DatePicker
+              ref="pickerRef"
+              style="max-width: 280px;"
+              @change="readProgState"
+              @open="progIsOpen = true"
+              @close="progIsOpen = false"
+            />
+            <p class="playground-state">
+              getValue(): <strong>{{ progValue ? progValue.toISOString().slice(0, 10) : '—' }}</strong>
+              · isOpen(): <strong>{{ progIsOpen ? 'true' : 'false' }}</strong>
+            </p>
+          </div>
+        </SectionDemo>
+
+        <h3 id="prog-open">open()</h3>
+        <div class="playground-row">
+          <Button color="neutral" @click="pickerRef?.open(); readProgState()">open()</Button>
+        </div>
+
+        <h3 id="prog-close">close()</h3>
+        <div class="playground-row">
+          <Button color="neutral" @click="pickerRef?.close(); readProgState()">close()</Button>
+        </div>
+
+        <h3 id="prog-toggle">toggle()</h3>
+        <div class="playground-row">
+          <Button color="neutral" @click="pickerRef?.toggle(); readProgState()">toggle()</Button>
+        </div>
+
+        <h3 id="prog-getvalue">getValue()</h3>
+        <div class="playground-row">
+          <Button color="neutral" @click="readProgState()">getValue()</Button>
+        </div>
+
+        <h3 id="prog-setvalue">setValue()</h3>
+        <div class="playground-row">
+          <Button color="neutral" @click="pickerRef?.setValue('2026-08-11'); readProgState()">setValue('2026-08-11')</Button>
+        </div>
+
+        <h3 id="prog-clear">clear()</h3>
+        <div class="playground-row">
+          <Button color="neutral" @click="pickerRef?.clear(); readProgState()">clear()</Button>
+        </div>
+
+        <h3 id="prog-isopen">isOpen()</h3>
+        <div class="playground-row">
+          <Button color="neutral" @click="readProgState()">isOpen()</Button>
+        </div>
+      </section>
+
+      <hr class="playground-separator" />
+
       <section id="api" class="playground-section">
         <h2>API</h2>
 
@@ -526,6 +654,9 @@ const exposesData = [
 
         <h3 id="api-exposes">Exposes</h3>
         <Table :columns="apiColumns" :data="exposesData" variant="ghost" compact />
+
+        <h3 id="api-interfaces">Interfaces</h3>
+        <CodeBlock :code="interfaceCode" language="ts" variant="solid" />
       </section>
     </div>
   </PlaygroundLayout>

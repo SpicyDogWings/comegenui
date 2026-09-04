@@ -5,10 +5,19 @@ import FileInput from "@/components/form/FileInput.vue";
 import Badge from "@/components/information/Badge.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Table from "@/components/data/Table.vue";
+import Button from "@/components/buttons/Button.vue";
 
 const file1 = ref<File | null>(null);
 const file2 = ref<File | null>(null);
 const file3 = ref<File | null>(null);
+
+const progRef = ref<InstanceType<typeof FileInput> | null>(null);
+const progFile = ref<File | null>(null);
+const progGet = ref("");
+
+function makeFile() {
+  return new File(["contenido de prueba"], "demo.txt", { type: "text/plain" });
+}
 
 const outlineItems = [
   { label: 'Default', id: 'default' },
@@ -18,6 +27,17 @@ const outlineItems = [
   { label: 'With Max Size', id: 'maxsize' },
   { label: 'Disabled', id: 'disabled' },
   { label: 'ReadOnly', id: 'readonly' },
+  {
+    label: 'Programmatic',
+    id: 'programmatic',
+    children: [
+      { label: 'get()', id: 'prog-get' },
+      { label: 'set()', id: 'prog-set' },
+      { label: 'reset()', id: 'prog-reset' },
+      { label: 'focus()', id: 'prog-focus' },
+      { label: 'trigger()', id: 'prog-trigger' },
+    ],
+  },
   {
     label: 'API',
     id: 'api',
@@ -106,6 +126,41 @@ const disabledVanilla = `<script src="dist/CuFileInput.umd.js"><\/script>
 const readonlyVanilla = `<script src="dist/CuFileInput.umd.js"><\/script>
 
 <cu-file-input read-only placeholder="Solo lectura"></cu-file-input>`;
+
+const progVue = `<script setup>
+import { ref } from 'vue'
+import FileInput from '@/components/form/FileInput.vue'
+
+const fi = ref(null)
+
+const demo = () => {
+  const file = fi.value.get()      // File | null
+  fi.value.set(new File(['contenido'], 'demo.txt', { type: 'text/plain' }))
+  fi.value.reset()                 // limpia la selección
+  fi.value.focus()                 // pone el foco
+  fi.value.trigger()               // abre el diálogo de archivos
+}
+<\/script>
+
+<template>
+  <FileInput ref="fi" />
+</template>`;
+
+const progVanilla = `<script src="dist/CuFileInput.umd.js"><\/script>
+
+<cu-file-input id="fi"></cu-file-input>
+
+<script>
+  customElements.whenDefined('cu-file-input').then(() => {
+    const fi = document.getElementById('fi');
+
+    const file = fi.get();     // File | null
+    fi.set(new File(['contenido'], 'demo.txt', { type: 'text/plain' }));
+    fi.reset();                // limpia la selección
+    fi.focus();                // pone el foco
+    fi.trigger();              // abre el diálogo de archivos
+  });
+<\/script>`;
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -253,6 +308,48 @@ const exposesData = [
         <SectionDemo :vue-code="readonlyVue" :vanilla-code="readonlyVanilla">
           <div class="playground-col">
             <FileInput read-only placeholder="Solo lectura" />
+          </div>
+        </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="programmatic" class="playground-section">
+        <h2>Programmatic</h2>
+        <SectionDemo :vue-code="progVue" :vanilla-code="progVanilla">
+          <div class="playground-col">
+            <FileInput ref="progRef" v-model="progFile" placeholder="Archivo de prueba" />
+            <p class="playground-code">v-model → {{ progFile ? progFile.name : 'null' }}</p>
+
+            <h3 id="prog-get">get()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="progGet = progRef?.get()?.name || 'null'">get()</Button>
+              <span class="playground-code">→ {{ progGet || '—' }}</span>
+            </div>
+
+            <h3 id="prog-set">set()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="progRef?.set(makeFile())">set(demo.txt)</Button>
+              <span class="playground-code">v-model → {{ progFile ? progFile.name : 'null' }}</span>
+            </div>
+
+            <h3 id="prog-reset">reset()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="progRef?.reset()">reset()</Button>
+              <span class="playground-code">v-model → {{ progFile ? progFile.name : 'null' }}</span>
+            </div>
+
+            <h3 id="prog-focus">focus()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="progRef?.focus()">focus()</Button>
+              <span class="playground-code">pone el foco en el control</span>
+            </div>
+
+            <h3 id="prog-trigger">trigger()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="progRef?.trigger()">trigger()</Button>
+              <span class="playground-code">abre el diálogo nativo de archivos</span>
+            </div>
           </div>
         </SectionDemo>
       </section>

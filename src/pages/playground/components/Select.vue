@@ -3,6 +3,8 @@ import { ref } from "vue";
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import Select from "@/components/form/Select.vue";
 import Badge from "@/components/information/Badge.vue";
+import Button from "@/components/buttons/Button.vue";
+import CodeBlock from "@/components/markdown/CodeBlock.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Table from "@/components/data/Table.vue";
 
@@ -47,6 +49,18 @@ const outlineItems = [
   { label: 'Search Cooldown', id: 'cooldown' },
   { label: 'Loading', id: 'loading' },
   {
+    label: 'Programmatic',
+    id: 'programmatic',
+    children: [
+      { label: 'get()', id: 'prog-get' },
+      { label: 'set()', id: 'prog-set' },
+      { label: 'reset()', id: 'prog-reset' },
+      { label: 'focus()', id: 'prog-focus' },
+      { label: 'isOpen()', id: 'prog-isOpen' },
+      { label: 'selectedItem()', id: 'prog-selectedItem' },
+    ],
+  },
+  {
     label: 'API',
     id: 'api',
     children: [
@@ -54,6 +68,7 @@ const outlineItems = [
       { label: 'Slots', id: 'api-slots' },
       { label: 'Events', id: 'api-events' },
       { label: 'Exposes', id: 'api-exposes' },
+      { label: 'Interfaces', id: 'api-interfaces' },
     ],
   },
 ];
@@ -239,6 +254,76 @@ const cooldownVanilla = vanillaSnippet(`<cu-select id="k1" search-enabled color=
 
 const loadingVanilla = vanillaSnippet(`<cu-select id="loading-demo" loading placeholder="Cargando opciones..." style="max-width:300px"></cu-select>`, assignOptionsJs);
 
+const selectRef = ref<InstanceType<typeof Select> | null>(null);
+const progGet = ref("—");
+const progIsOpen = ref("—");
+const progSelectedItem = ref("—");
+
+function readProgrammaticState() {
+  const el = selectRef.value;
+  if (!el) return;
+  progGet.value = el.get() || "(ninguno)";
+  progIsOpen.value = String(el.isOpen());
+  const option = el.selectedItem();
+  progSelectedItem.value = option ? JSON.stringify(option) : "(ninguno)";
+}
+
+const programmaticVue = `<script setup>
+import { ref } from 'vue'
+import Select from '@/components/form/Select.vue'
+import Button from '@/components/buttons/Button.vue'
+
+const options = [
+  { value: 'opt1', label: 'Option 1' },
+  { value: 'opt2', label: 'Option 2' },
+  { value: 'opt3', label: 'Option 3' },
+]
+const selectRef = ref(null)
+
+function logState() {
+  console.log('get():', selectRef.value.get())
+  console.log('isOpen():', selectRef.value.isOpen())
+  console.log('selectedItem():', selectRef.value.selectedItem())
+}
+<\/script>
+
+<template>
+  <Select ref="selectRef" :options="options" placeholder="Seleccionar..." style="max-width:300px" />
+  <Button color="neutral" @click="selectRef.set('opt2'); logState()">set('opt2')</Button>
+  <Button color="neutral" @click="selectRef.reset(); logState()">reset()</Button>
+  <Button color="neutral" @click="selectRef.focus()">focus()</Button>
+  <Button color="neutral" @click="logState()">get() / isOpen() / selectedItem()</Button>
+</template>`;
+
+const programmaticVanilla = vanillaSnippet(`<cu-select id="sel" placeholder="Seleccionar..." style="max-width:300px"></cu-select>
+<button id="btn-set">set('opt2')</button>
+<button id="btn-reset">reset()</button>
+<button id="btn-focus">focus()</button>
+<button id="btn-log">get() / isOpen() / selectedItem()</button>`, `  customElements.whenDefined('cu-select').then(() => {
+    const select = document.getElementById('sel');
+    select.options = [
+      { value: 'opt1', label: 'Option 1' },
+      { value: 'opt2', label: 'Option 2' },
+      { value: 'opt3', label: 'Option 3' },
+    ];
+    document.getElementById('btn-set').addEventListener('click', () => select.set('opt2'));
+    document.getElementById('btn-reset').addEventListener('click', () => select.reset());
+    document.getElementById('btn-focus').addEventListener('click', () => select.focus());
+    document.getElementById('btn-log').addEventListener('click', () => {
+      console.log('get():', select.get());
+      console.log('isOpen():', select.isOpen());
+      console.log('selectedItem():', select.selectedItem());
+    });
+  });`);
+
+const interfaceCode = `interface SelectOption {
+  value: string;
+  label: string;
+  disabled?: boolean;
+  color?: string;
+  variant?: string;
+}`;
+
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
   { key: 'type', label: 'Tipo' },
@@ -404,6 +489,51 @@ const exposesData = [
 
       <hr class="playground-separator" />
 
+      <section id="programmatic" class="playground-section">
+        <h2>Programmatic</h2>
+        <SectionDemo :vue-code="programmaticVue" :vanilla-code="programmaticVanilla">
+          <div class="playground-col">
+            <Select ref="selectRef" :options="options" placeholder="Select programático" style="max-width:300px" />
+
+            <h3 id="prog-get">get()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="readProgrammaticState()">get()</Button>
+            </div>
+            <p class="playground-code">get(): {{ progGet }}</p>
+
+            <h3 id="prog-set">set()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="selectRef?.set('opt2'); readProgrammaticState()">set('opt2')</Button>
+              <Button color="neutral" @click="selectRef?.set('opt3'); readProgrammaticState()">set('opt3')</Button>
+            </div>
+
+            <h3 id="prog-reset">reset()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="selectRef?.reset(); readProgrammaticState()">reset()</Button>
+            </div>
+
+            <h3 id="prog-focus">focus()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="selectRef?.focus()">focus()</Button>
+            </div>
+
+            <h3 id="prog-isOpen">isOpen()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="readProgrammaticState()">isOpen()</Button>
+            </div>
+            <p class="playground-code">isOpen(): {{ progIsOpen }}</p>
+
+            <h3 id="prog-selectedItem">selectedItem()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="readProgrammaticState()">selectedItem()</Button>
+            </div>
+            <p class="playground-code">selectedItem(): {{ progSelectedItem }}</p>
+          </div>
+        </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
       <section id="api" class="playground-section">
         <h2>API</h2>
 
@@ -418,6 +548,9 @@ const exposesData = [
 
         <h3 id="api-exposes">Exposes</h3>
         <Table :columns="apiColumns" :data="exposesData" variant="ghost" compact />
+
+        <h3 id="api-interfaces">Interfaces</h3>
+        <CodeBlock :code="interfaceCode" language="ts" variant="solid" />
       </section>
     </div>
   </PlaygroundLayout>

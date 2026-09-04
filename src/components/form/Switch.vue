@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, defineModel, useTemplateRef, type PropType } from "vue";
 import { useFocus } from "@vueuse/core";
-import Label from "./Label.vue";
 
 const checked = defineModel<boolean>({ default: false });
 
@@ -38,10 +37,16 @@ const switchStyles = computed(() => ({
   '--switch-ghost-hover': `var(--cu-color-${props.color}-ghost-hover)`,
 }));
 
-const toggle = () => {
+const toggle = (next?: boolean) => {
   if (props.disabled) return;
-  checked.value = !checked.value;
-  emit("change", checked.value);
+  const value = next ?? !checked.value;
+  if (value === checked.value) return;
+  checked.value = value;
+  emit("change", value);
+};
+
+const onInput = (e: Event) => {
+  toggle((e.target as HTMLInputElement).checked);
 };
 
 const get = () => checked.value;
@@ -63,16 +68,16 @@ defineExpose({
 </script>
 
 <template>
-  <div class="cu-switch-field" @click="toggle">
-    <div
-      class="cu-switch"
-      :class="[
-        `cu-switch--${props.size}`,
-        {
-          'cu-switch--disabled': props.disabled,
-          'cu-switch--checked': checked,
-        }
-      ]"
+  <label
+    class="cu-switch"
+    :class="[
+      `cu-switch--${props.size}`,
+      { 'cu-switch--disabled': props.disabled }
+    ]"
+  >
+    <span
+      class="cu-switch-track"
+      :class="{ 'cu-switch--checked': checked }"
       :style="switchStyles"
       role="switch"
       :aria-checked="checked"
@@ -82,19 +87,23 @@ defineExpose({
         ref="input"
         type="checkbox"
         :checked="checked"
-        class="cu-switch-input"
         :disabled="props.disabled"
+        tabindex="-1"
+        class="cu-switch-input"
+        @change="onInput"
       />
-    </div>
-    <Label v-if="props.label || $slots.default" class="cu-switch-label">
+    </span>
+    <span v-if="props.label || $slots.default" class="cu-switch-label">
       <slot>{{ props.label }}</slot>
-    </Label>
-  </div>
+    </span>
+  </label>
 </template>
 
 <style>
-/* el click en el switch o en el label alterna: el campo entero es clicable */
-.cu-switch-field {
+/* label nativo (misma implementación que Checkbox): el click en el label
+   activa el input anidado y su change alterna */
+.cu-switch {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: var(--cu-space-sm);
@@ -102,54 +111,52 @@ defineExpose({
   cursor: pointer;
 }
 
-.cu-switch-field:has(.cu-switch--disabled) {
-  cursor: not-allowed;
-}
-
-.cu-switch-field .cu-switch-label {
-  cursor: inherit;
-}
-
-.cu-switch {
+.cu-switch-track {
   position: relative;
   display: inline-flex;
   align-items: center;
   border-radius: var(--cu-radius-full);
-  cursor: pointer;
   transition: all 150ms ease;
   box-sizing: border-box;
 }
 
-.cu-switch--md {
+.cu-switch--md .cu-switch-track {
   width: 48px;
   height: var(--cu-space-2xl);
 }
 
-.cu-switch--sm {
+.cu-switch--sm .cu-switch-track {
   width: var(--cu-space-2xl);
   height: 20px;
 }
 
-.cu-switch--checked {
+.cu-switch-track.cu-switch--checked {
   background-color: var(--switch-bg);
 }
 
-.cu-switch:not(.cu-switch--checked) {
+.cu-switch-track:not(.cu-switch--checked) {
   background-color: var(--cu-color-neutral-soft);
 }
 
-.cu-switch:hover:not(.cu-switch--disabled) {
+.cu-switch-track.cu-switch--checked:hover {
   background-color: var(--switch-ghost-hover);
 }
 
-.cu-switch:not(.cu-switch--checked):hover:not(.cu-switch--disabled) {
+.cu-switch-track:not(.cu-switch--checked):hover {
   background-color: var(--cu-color-neutral-ghost-hover);
 }
 
 .cu-switch--disabled {
-  opacity: 0.7;
   cursor: not-allowed;
+}
+
+.cu-switch--disabled .cu-switch-track {
+  opacity: 0.7;
   pointer-events: none;
+}
+
+.cu-switch--disabled .cu-switch-label {
+  opacity: 0.7;
 }
 
 .cu-switch-thumb {
@@ -174,11 +181,11 @@ defineExpose({
   left: 2px;
 }
 
-.cu-switch--checked.cu-switch--md .cu-switch-thumb {
+.cu-switch--md .cu-switch-track.cu-switch--checked .cu-switch-thumb {
   transform: translateX(16px);
 }
 
-.cu-switch--checked.cu-switch--sm .cu-switch-thumb {
+.cu-switch--sm .cu-switch-track.cu-switch--checked .cu-switch-thumb {
   transform: translateX(12px);
 }
 
@@ -187,5 +194,18 @@ defineExpose({
   opacity: 0;
   width: 0;
   height: 0;
+}
+
+.cu-switch-label {
+  font-family: var(--cu-font-sans);
+  color: var(--cu-color-neutral);
+}
+
+.cu-switch--md .cu-switch-label {
+  font-size: var(--cu-font-size-sm);
+}
+
+.cu-switch--sm .cu-switch-label {
+  font-size: var(--cu-font-size-xs);
 }
 </style>

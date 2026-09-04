@@ -166,12 +166,12 @@ describe("EditableTableCell — modo lápiz (default) y estado inline", () => {
 
   it("inputType 'switch': arranca marcado si el valor es true", () => {
     const w = factory({ inputType: "switch" }, true);
-    expect(w.find(".cu-switch").classes()).toContain("cu-switch--checked");
+    expect(w.find(".cu-switch-track").classes()).toContain("cu-switch--checked");
   });
 
   it("inputType 'switch': al alternar emite edit-save con valor booleano", async () => {
     const w = factory({ inputType: "switch" }, false);
-    await w.find(".cu-switch").trigger("click");
+    await w.find("input[type='checkbox']").setValue(true);
     await flushPromises();
     const saves = w.emitted("edit-save");
     expect(saves).toBeTruthy();
@@ -180,7 +180,7 @@ describe("EditableTableCell — modo lápiz (default) y estado inline", () => {
 
   it("inputType 'switch': NO usa width 100% (no se estira en la celda)", () => {
     const w = factory({ inputType: "switch" });
-    const sw = w.find(".cu-switch-field");
+    const sw = w.find(".cu-switch");
     expect(sw.exists()).toBe(true);
     expect(sw.classes()).not.toContain("cu-editable-cell-input");
     expect(sw.classes()).toContain("cu-editable-cell-switch");

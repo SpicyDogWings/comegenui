@@ -5,9 +5,14 @@ import Checkbox from "@/components/form/Checkbox.vue";
 import Badge from "@/components/information/Badge.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Table from "@/components/data/Table.vue";
+import Button from "@/components/buttons/Button.vue";
 
 const checked1 = ref(false);
 const checked2 = ref(true);
+
+const checkboxRef = ref<InstanceType<typeof Checkbox> | null>(null);
+const progChecked = ref(false);
+const progGetResult = ref<boolean | null>(null);
 
 const colors = ["primary", "secondary", "neutral", "success", "warning", "danger"] as const;
 
@@ -17,6 +22,16 @@ const outlineItems = [
   { label: 'Sizes', id: 'sizes' },
   { label: 'Colors', id: 'colors' },
   { label: 'Disabled', id: 'disabled' },
+  {
+    label: 'Programmatic',
+    id: 'programmatic',
+    children: [
+      { label: 'get()', id: 'prog-get' },
+      { label: 'set()', id: 'prog-set' },
+      { label: 'reset()', id: 'prog-reset' },
+      { label: 'focus()', id: 'prog-focus' },
+    ],
+  },
   {
     label: 'API',
     id: 'api',
@@ -119,6 +134,59 @@ const disabledVanilla = `<script src="dist/CuCheckbox.umd.js"><\/script>
 
 <cu-checkbox disabled label="Disabled unchecked"></cu-checkbox>
 <cu-checkbox model-value="true" disabled label="Disabled checked"></cu-checkbox>`;
+
+const programmaticVue = `<script setup>
+import { ref } from 'vue'
+import Checkbox from '@/components/form/Checkbox.vue'
+
+const checked = ref(false)
+const checkboxRef = ref(null)
+<\/script>
+
+<template>
+  <div style="display:flex;flex-direction:column;gap:12px">
+    <Checkbox ref="checkboxRef" v-model="checked" label="Términos" />
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button @click="console.log(checkboxRef?.get())">get()</button>
+      <button @click="checkboxRef?.set(true)">set(true)</button>
+      <button @click="checkboxRef?.set(false)">set(false)</button>
+      <button @click="checkboxRef?.reset()">reset()</button>
+      <button @click="checkboxRef?.focus()">focus()</button>
+    </div>
+  </div>
+</template>`;
+
+const programmaticVanilla = `<script src="dist/CuCheckbox.umd.js"><\/script>
+
+<div style="display:flex;flex-direction:column;gap:12px">
+  <cu-checkbox id="cb-prog" label="Términos"></cu-checkbox>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <button id="cb-prog-get">get()</button>
+    <button id="cb-prog-set-true">set(true)</button>
+    <button id="cb-prog-set-false">set(false)</button>
+    <button id="cb-prog-reset">reset()</button>
+    <button id="cb-prog-focus">focus()</button>
+  </div>
+  <span id="cb-prog-state">unchecked</span>
+</div>
+
+<script>
+  customElements.whenDefined('cu-checkbox').then(() => {
+    const cb = document.getElementById('cb-prog');
+    const state = document.getElementById('cb-prog-state');
+    cb.addEventListener('change', (e) => {
+      const checked = e.detail?.target?.checked ?? e.detail;
+      state.textContent = checked ? 'checked' : 'unchecked';
+    });
+    document.getElementById('cb-prog-get').addEventListener('click', () => {
+      state.textContent = 'get(): ' + cb.get();
+    });
+    document.getElementById('cb-prog-set-true').addEventListener('click', () => cb.set(true));
+    document.getElementById('cb-prog-set-false').addEventListener('click', () => cb.set(false));
+    document.getElementById('cb-prog-reset').addEventListener('click', () => cb.reset());
+    document.getElementById('cb-prog-focus').addEventListener('click', () => cb.focus());
+  });
+<\/script>`;
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -227,6 +295,38 @@ const exposesData = [
           <div class="playground-row">
             <Checkbox disabled label="Disabled unchecked" />
             <Checkbox :model-value="true" disabled label="Disabled checked" />
+          </div>
+        </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="programmatic" class="playground-section">
+        <h2>Programmatic</h2>
+        <SectionDemo :vue-code="programmaticVue" :vanilla-code="programmaticVanilla">
+          <div class="playground-col">
+            <div class="playground-row">
+              <Checkbox ref="checkboxRef" v-model="progChecked" label="Términos" />
+              <span class="playground-code">{{ progChecked ? 'checked' : 'unchecked' }}</span>
+            </div>
+            <h3 id="prog-get">get()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="progGetResult = checkboxRef?.get() ?? null">get()</Button>
+              <span class="playground-code">{{ progGetResult ?? '—' }}</span>
+            </div>
+            <h3 id="prog-set">set()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="checkboxRef?.set(true)">set(true)</Button>
+              <Button color="neutral" variant="soft" @click="checkboxRef?.set(false)">set(false)</Button>
+            </div>
+            <h3 id="prog-reset">reset()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="checkboxRef?.reset()">reset()</Button>
+            </div>
+            <h3 id="prog-focus">focus()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="checkboxRef?.focus()">focus()</Button>
+            </div>
           </div>
         </SectionDemo>
       </section>

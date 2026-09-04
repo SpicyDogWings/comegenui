@@ -5,16 +5,28 @@ import ColorPicker from "@/components/form/ColorPicker.vue";
 import Badge from "@/components/information/Badge.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Table from "@/components/data/Table.vue";
+import Button from "@/components/buttons/Button.vue";
 
 const vmColor = ref("#3b82f6");
 
-const colors = ["primary", "secondary", "neutral", "success", "warning", "danger"] as const;
+const progRef = ref<InstanceType<typeof ColorPicker> | null>(null);
+const progColor = ref("#3b82f6");
+const progGet = ref("");
 
 const outlineItems = [
   { label: 'Default', id: 'default' },
-  { label: 'Colores', id: 'colors' },
   { label: 'v-model', id: 'v-model' },
   { label: 'Disabled', id: 'disabled' },
+  {
+    label: 'Programmatic',
+    id: 'programmatic',
+    children: [
+      { label: 'get()', id: 'prog-get' },
+      { label: 'set()', id: 'prog-set' },
+      { label: 'reset()', id: 'prog-reset' },
+      { label: 'focus()', id: 'prog-focus' },
+    ],
+  },
   {
     label: 'API',
     id: 'api',
@@ -39,13 +51,6 @@ ${body}
 
 const defaultVue = vueSnippet(`  <ColorPicker />`);
 
-const colorsVue = vueSnippet(`  <ColorPicker color="primary" />
-  <ColorPicker color="secondary" />
-  <ColorPicker color="neutral" />
-  <ColorPicker color="success" />
-  <ColorPicker color="warning" />
-  <ColorPicker color="danger" />`);
-
 const vmodelVue = `<script setup>
 import { ref } from 'vue'
 import ColorPicker from '@/components/form/ColorPicker.vue'
@@ -63,15 +68,6 @@ const disabledVue = vueSnippet(`  <ColorPicker color="primary" disabled />`);
 const defaultVanilla = `<script src="dist/CuColorPicker.umd.js"><\/script>
 
 <cu-color-picker></cu-color-picker>`;
-
-const colorsVanilla = `<script src="dist/CuColorPicker.umd.js"><\/script>
-
-<cu-color-picker color="primary"></cu-color-picker>
-<cu-color-picker color="secondary"></cu-color-picker>
-<cu-color-picker color="neutral"></cu-color-picker>
-<cu-color-picker color="success"></cu-color-picker>
-<cu-color-picker color="warning"></cu-color-picker>
-<cu-color-picker color="danger"></cu-color-picker>`;
 
 const vmodelVanilla = `<script src="dist/CuColorPicker.umd.js"><\/script>
 
@@ -91,6 +87,39 @@ const vmodelVanilla = `<script src="dist/CuColorPicker.umd.js"><\/script>
 const disabledVanilla = `<script src="dist/CuColorPicker.umd.js"><\/script>
 
 <cu-color-picker color="primary" disabled></cu-color-picker>`;
+
+const progVue = `<script setup>
+import { ref } from 'vue'
+import ColorPicker from '@/components/form/ColorPicker.vue'
+
+const cp = ref(null)
+
+const demo = () => {
+  const hex = cp.value.get()   // hex actual
+  cp.value.set('#3b82f6')      // setea el color
+  cp.value.reset()             // vuelve a #000000
+  cp.value.focus()             // enfoca el input hex
+}
+<\/script>
+
+<template>
+  <ColorPicker ref="cp" />
+</template>`;
+
+const progVanilla = `<script src="dist/CuColorPicker.umd.js"><\/script>
+
+<cu-color-picker id="cp"></cu-color-picker>
+
+<script>
+  customElements.whenDefined('cu-color-picker').then(() => {
+    const cp = document.getElementById('cp');
+
+    const hex = cp.get();      // hex actual
+    cp.set('#3b82f6');         // setea el color
+    cp.reset();                // vuelve a #000000
+    cp.focus();                // enfoca el input hex
+  });
+<\/script>`;
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -139,20 +168,6 @@ const exposesData = [
 
       <hr class="playground-separator" />
 
-      <section id="colors" class="playground-section">
-        <div class="playground-heading">
-          <h2>Colores</h2>
-          <Badge color="neutral" title="Color por defecto">neutral</Badge>
-        </div>
-        <SectionDemo :vue-code="colorsVue" :vanilla-code="colorsVanilla">
-          <div class="playground-row">
-            <ColorPicker v-for="color in colors" :key="color" :color="color" />
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
       <section id="v-model" class="playground-section">
         <div class="playground-heading">
           <h2>v-model</h2>
@@ -179,6 +194,42 @@ const exposesData = [
           <div class="playground-row">
             <ColorPicker color="primary" disabled />
             <ColorPicker color="danger" disabled model-value="#ef4444" />
+          </div>
+        </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="programmatic" class="playground-section">
+        <h2>Programmatic</h2>
+        <SectionDemo :vue-code="progVue" :vanilla-code="progVanilla">
+          <div class="playground-col">
+            <ColorPicker ref="progRef" v-model="progColor" />
+            <p class="playground-code">v-model → {{ progColor }}</p>
+
+            <h3 id="prog-get">get()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="progGet = progRef?.get() || 'null'">get()</Button>
+              <span class="playground-code">→ {{ progGet || '—' }}</span>
+            </div>
+
+            <h3 id="prog-set">set()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="progRef?.set('#3b82f6')">set('#3b82f6')</Button>
+              <span class="playground-code">v-model → {{ progColor }}</span>
+            </div>
+
+            <h3 id="prog-reset">reset()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="progRef?.reset()">reset()</Button>
+              <span class="playground-code">v-model → {{ progColor }}</span>
+            </div>
+
+            <h3 id="prog-focus">focus()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="progRef?.focus()">focus()</Button>
+              <span class="playground-code">enfoca el input hex</span>
+            </div>
           </div>
         </SectionDemo>
       </section>

@@ -5,11 +5,16 @@ import Switch from "@/components/form/Switch.vue";
 import Badge from "@/components/information/Badge.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Table from "@/components/data/Table.vue";
+import Button from "@/components/buttons/Button.vue";
 
 const checked1 = ref(false);
 const checked2 = ref(true);
 const labelChecked1 = ref(true);
 const labelChecked2 = ref(false);
+
+const switchRef = ref<InstanceType<typeof Switch> | null>(null);
+const progChecked = ref(false);
+const progGetResult = ref<boolean | null>(null);
 
 const colors = ["primary", "secondary", "neutral", "success", "warning", "danger"] as const;
 
@@ -19,6 +24,16 @@ const outlineItems = [
   { label: 'Sizes', id: 'sizes' },
   { label: 'Colors', id: 'colors' },
   { label: 'Disabled', id: 'disabled' },
+  {
+    label: 'Programmatic',
+    id: 'programmatic',
+    children: [
+      { label: 'get()', id: 'prog-get' },
+      { label: 'set()', id: 'prog-set' },
+      { label: 'reset()', id: 'prog-reset' },
+      { label: 'focus()', id: 'prog-focus' },
+    ],
+  },
   {
     label: 'API',
     id: 'api',
@@ -138,6 +153,58 @@ const disabledVanilla = `<script src="dist/CuSwitch.umd.js"><\/script>
 
 <cu-switch disabled></cu-switch>
 <cu-switch model-value="true" disabled></cu-switch>`;
+
+const programmaticVue = `<script setup>
+import { ref } from 'vue'
+import Switch from '@/components/form/Switch.vue'
+
+const checked = ref(false)
+const switchRef = ref(null)
+<\/script>
+
+<template>
+  <div style="display:flex;flex-direction:column;gap:12px">
+    <Switch ref="switchRef" v-model="checked" />
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button @click="console.log(switchRef?.get())">get()</button>
+      <button @click="switchRef?.set(true)">set(true)</button>
+      <button @click="switchRef?.set(false)">set(false)</button>
+      <button @click="switchRef?.reset()">reset()</button>
+      <button @click="switchRef?.focus()">focus()</button>
+    </div>
+  </div>
+</template>`;
+
+const programmaticVanilla = `<script src="dist/CuSwitch.umd.js"><\/script>
+
+<div style="display:flex;flex-direction:column;gap:12px">
+  <cu-switch id="sw-prog"></cu-switch>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <button id="sw-prog-get">get()</button>
+    <button id="sw-prog-set-true">set(true)</button>
+    <button id="sw-prog-set-false">set(false)</button>
+    <button id="sw-prog-reset">reset()</button>
+    <button id="sw-prog-focus">focus()</button>
+  </div>
+  <span id="sw-prog-state">OFF</span>
+</div>
+
+<script>
+  customElements.whenDefined('cu-switch').then(() => {
+    const sw = document.getElementById('sw-prog');
+    const state = document.getElementById('sw-prog-state');
+    sw.addEventListener('change', (e) => {
+      state.textContent = e.detail ? 'ON' : 'OFF';
+    });
+    document.getElementById('sw-prog-get').addEventListener('click', () => {
+      state.textContent = 'get(): ' + sw.get();
+    });
+    document.getElementById('sw-prog-set-true').addEventListener('click', () => sw.set(true));
+    document.getElementById('sw-prog-set-false').addEventListener('click', () => sw.set(false));
+    document.getElementById('sw-prog-reset').addEventListener('click', () => sw.reset());
+    document.getElementById('sw-prog-focus').addEventListener('click', () => sw.focus());
+  });
+<\/script>`;
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -267,6 +334,38 @@ const exposesData = [
             <div style="display:flex;align-items:center;gap:8px">
               <Switch :model-value="true" disabled />
               <span class="playground-code">ON (disabled)</span>
+            </div>
+          </div>
+        </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="programmatic" class="playground-section">
+        <h2>Programmatic</h2>
+        <SectionDemo :vue-code="programmaticVue" :vanilla-code="programmaticVanilla">
+          <div class="playground-col">
+            <div class="playground-row">
+              <Switch ref="switchRef" v-model="progChecked" />
+              <span class="playground-code">{{ progChecked ? 'ON' : 'OFF' }}</span>
+            </div>
+            <h3 id="prog-get">get()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="progGetResult = switchRef?.get() ?? null">get()</Button>
+              <span class="playground-code">{{ progGetResult ?? '—' }}</span>
+            </div>
+            <h3 id="prog-set">set()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="switchRef?.set(true)">set(true)</Button>
+              <Button color="neutral" variant="soft" @click="switchRef?.set(false)">set(false)</Button>
+            </div>
+            <h3 id="prog-reset">reset()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="switchRef?.reset()">reset()</Button>
+            </div>
+            <h3 id="prog-focus">focus()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="switchRef?.focus()">focus()</Button>
             </div>
           </div>
         </SectionDemo>

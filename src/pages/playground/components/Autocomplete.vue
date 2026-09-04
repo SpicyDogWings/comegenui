@@ -3,6 +3,8 @@ import { ref } from "vue";
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import Autocomplete from "@/components/form/Autocomplete.vue";
 import Badge from "@/components/information/Badge.vue";
+import Button from "@/components/buttons/Button.vue";
+import CodeBlock from "@/components/markdown/CodeBlock.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Table from "@/components/data/Table.vue";
 
@@ -21,14 +23,16 @@ const items = [
   { label: "PHP", value: "php" },
 ];
 
-const iconSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7-6.2-3.7-6.2 3.7 1.6-7L2 9.2l7.1-.6z"/></svg>';
+const pencilSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>';
+const downloadSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z"/></svg>';
+const starSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7-6.2-3.7-6.2 3.7 1.6-7L2 9.2l7.1-.6z"/></svg>';
 
 const itemsWithIcon = [
+  { label: "Editar", value: "edit", icon: pencilSvg },
+  { label: "Descargar", value: "download", icon: downloadSvg },
+  { label: "Destacar", value: "star", icon: starSvg },
   { label: "JavaScript", value: "js" },
-  { label: "TypeScript", value: "ts", icon: iconSvg },
-  { label: "Python", value: "py", icon: iconSvg },
-  { label: "Rust", value: "rs" },
-  { label: "Go", value: "go" },
+  { label: "Rust" },
 ];
 
 const outlineItems = [
@@ -39,6 +43,18 @@ const outlineItems = [
   { label: 'Min Chars', id: 'min-chars' },
   { label: 'v-model', id: 'v-model' },
   {
+    label: 'Programmatic',
+    id: 'programmatic',
+    children: [
+      { label: 'get()', id: 'prog-get' },
+      { label: 'set()', id: 'prog-set' },
+      { label: 'reset()', id: 'prog-reset' },
+      { label: 'focus()', id: 'prog-focus' },
+      { label: 'isOpen()', id: 'prog-isOpen' },
+      { label: 'selectedItem()', id: 'prog-selectedItem' },
+    ],
+  },
+  {
     label: 'API',
     id: 'api',
     children: [
@@ -46,6 +62,7 @@ const outlineItems = [
       { label: 'Slots', id: 'api-slots' },
       { label: 'Events', id: 'api-events' },
       { label: 'Exposes', id: 'api-exposes' },
+      { label: 'Interfaces', id: 'api-interfaces' },
     ],
   },
 ];
@@ -83,19 +100,21 @@ const colorsVue = vueSnippet(`  <Autocomplete color="primary" :items="items" pla
 const itemsVue = `<script setup>
 import Autocomplete from '@/components/form/Autocomplete.vue'
 
-// Cada item acepta: label, value?, icon? (icon es un string HTML/SVG, se renderiza con v-html)
-const icon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7-6.2-3.7-6.2 3.7 1.6-7L2 9.2l7.1-.6z"/></svg>'
+const pencil = '${pencilSvg}'
+const download = '${downloadSvg}'
+const star = '${starSvg}'
 
 const items = [
+  { label: 'Editar', value: 'edit', icon: pencil },
+  { label: 'Descargar', value: 'download', icon: download },
+  { label: 'Destacar', value: 'star', icon: star },
   { label: 'JavaScript', value: 'js' },
-  { label: 'TypeScript', value: 'ts', icon },
-  { label: 'Python', value: 'py', icon },
-  { label: 'Rust', value: 'rs' },
+  { label: 'Rust' },
 ]
 <\/script>
 
 <template>
-  <Autocomplete :items="items" placeholder="Buscar lenguaje..." style="max-width:300px" />
+  <Autocomplete :items="items" placeholder="Buscar..." style="max-width:300px" />
 </template>`;
 
 const disabledVue = vueSnippet(`  <Autocomplete color="primary" disabled :items="items" placeholder="Disabled" style="max-width:300px" />`);
@@ -150,14 +169,14 @@ const colorsVanilla = vanillaSnippet(`<cu-autocomplete id="c1" color="primary" p
 <cu-autocomplete id="c5" color="warning" placeholder="warning" style="max-width:200px"></cu-autocomplete>
 <cu-autocomplete id="c6" color="danger" placeholder="danger" style="max-width:200px"></cu-autocomplete>`, assignItemsJs);
 
-const itemsVanilla = vanillaSnippet(`<cu-autocomplete id="demo" placeholder="Buscar lenguaje..." style="max-width:300px"></cu-autocomplete>`, `  // items es una prop Array: se asigna por JS (no por atributo).
-  // icon es un string HTML/SVG que se renderiza con v-html dentro de la opción.
-  const icon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7-6.2-3.7-6.2 3.7 1.6-7L2 9.2l7.1-.6z"/></svg>';
+const itemsVanilla = vanillaSnippet(`<cu-autocomplete id="demo" placeholder="Buscar..." style="max-width:300px"></cu-autocomplete>`, `  // items es una prop Array: se asigna por JS (no por atributo)
+  const pencil = '${pencilSvg}';
+  const download = '${downloadSvg}';
   document.getElementById('demo').items = [
+    { label: 'Editar', value: 'edit', icon: pencil },
+    { label: 'Descargar', value: 'download', icon: download },
     { label: 'JavaScript', value: 'js' },
-    { label: 'TypeScript', value: 'ts', icon },
-    { label: 'Python', value: 'py', icon },
-    { label: 'Rust', value: 'rs' },
+    { label: 'Rust' },
   ];`);
 
 const disabledVanilla = vanillaSnippet(`<cu-autocomplete id="disabled-demo" color="primary" disabled placeholder="Disabled" style="max-width:300px"></cu-autocomplete>`, assignItemsJs);
@@ -183,6 +202,76 @@ const vmodelVanilla = `<script src="dist/CuAutocomplete.umd.js"><\/script>
   });
   ac.addEventListener('select', (e) => console.log('select', e.detail));
 <\/script>`;
+
+const autoRef = ref<InstanceType<typeof Autocomplete> | null>(null);
+const progGet = ref("—");
+const progIsOpen = ref("—");
+const progSelectedItem = ref("—");
+
+function readProgrammaticState() {
+  const el = autoRef.value;
+  if (!el) return;
+  progGet.value = el.get() || "(vacío)";
+  progIsOpen.value = String(el.isOpen());
+  const item = el.selectedItem();
+  progSelectedItem.value = item
+    ? JSON.stringify({ label: item.label, value: item.value ?? item.label })
+    : "(ninguno)";
+}
+
+const programmaticVue = `<script setup>
+import { ref } from 'vue'
+import Autocomplete from '@/components/form/Autocomplete.vue'
+import Button from '@/components/buttons/Button.vue'
+
+const items = [
+  { label: 'JavaScript', value: 'js' },
+  { label: 'TypeScript', value: 'ts' },
+  { label: 'Python', value: 'py' },
+]
+const autoRef = ref(null)
+
+function logState() {
+  console.log('get():', autoRef.value.get())
+  console.log('isOpen():', autoRef.value.isOpen())
+  console.log('selectedItem():', autoRef.value.selectedItem())
+}
+<\/script>
+
+<template>
+  <Autocomplete ref="autoRef" :items="items" placeholder="Search..." style="max-width:300px" />
+  <Button color="neutral" @click="autoRef.set('TypeScript'); logState()">set('TypeScript')</Button>
+  <Button color="neutral" @click="autoRef.reset(); logState()">reset()</Button>
+  <Button color="neutral" @click="autoRef.focus()">focus()</Button>
+  <Button color="neutral" @click="logState()">get() / isOpen() / selectedItem()</Button>
+</template>`;
+
+const programmaticVanilla = vanillaSnippet(`<cu-autocomplete id="auto" placeholder="Search..." style="max-width:300px"></cu-autocomplete>
+<button id="btn-set">set('TypeScript')</button>
+<button id="btn-reset">reset()</button>
+<button id="btn-focus">focus()</button>
+<button id="btn-log">get() / isOpen() / selectedItem()</button>`, `  customElements.whenDefined('cu-autocomplete').then(() => {
+    const auto = document.getElementById('auto');
+    auto.items = [
+      { label: 'JavaScript', value: 'js' },
+      { label: 'TypeScript', value: 'ts' },
+      { label: 'Python', value: 'py' },
+    ];
+    document.getElementById('btn-set').addEventListener('click', () => auto.set('TypeScript'));
+    document.getElementById('btn-reset').addEventListener('click', () => auto.reset());
+    document.getElementById('btn-focus').addEventListener('click', () => auto.focus());
+    document.getElementById('btn-log').addEventListener('click', () => {
+      console.log('get():', auto.get());
+      console.log('isOpen():', auto.isOpen());
+      console.log('selectedItem():', auto.selectedItem());
+    });
+  });`);
+
+const interfaceCode = `interface AutocompleteItem {
+  label: string;
+  icon?: string;
+  value?: string;
+}`;
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -269,8 +358,7 @@ const exposesData = [
         </div>
         <SectionDemo :vue-code="itemsVue" :vanilla-code="itemsVanilla">
           <div class="playground-col">
-            <Autocomplete :items="itemsWithIcon" placeholder="Buscar lenguaje..." style="max-width:300px" />
-            <p class="playground-code">Cada item acepta: label, value?, icon? (string HTML/SVG)</p>
+            <Autocomplete :items="itemsWithIcon" placeholder="Buscar..." style="max-width:300px" />
           </div>
         </SectionDemo>
       </section>
@@ -315,6 +403,51 @@ const exposesData = [
 
       <hr class="playground-separator" />
 
+      <section id="programmatic" class="playground-section">
+        <h2>Programmatic</h2>
+        <SectionDemo :vue-code="programmaticVue" :vanilla-code="programmaticVanilla">
+          <div class="playground-col">
+            <Autocomplete ref="autoRef" :items="items" placeholder="Autocomplete programático" style="max-width:300px" />
+
+            <h3 id="prog-get">get()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="readProgrammaticState()">get()</Button>
+            </div>
+            <p class="playground-code">get(): {{ progGet }}</p>
+
+            <h3 id="prog-set">set()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="autoRef?.set('TypeScript'); readProgrammaticState()">set('TypeScript')</Button>
+              <Button color="neutral" @click="autoRef?.set('texto libre'); readProgrammaticState()">set('texto libre')</Button>
+            </div>
+
+            <h3 id="prog-reset">reset()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="autoRef?.reset(); readProgrammaticState()">reset()</Button>
+            </div>
+
+            <h3 id="prog-focus">focus()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="autoRef?.focus()">focus()</Button>
+            </div>
+
+            <h3 id="prog-isOpen">isOpen()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="readProgrammaticState()">isOpen()</Button>
+            </div>
+            <p class="playground-code">isOpen(): {{ progIsOpen }}</p>
+
+            <h3 id="prog-selectedItem">selectedItem()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="readProgrammaticState()">selectedItem()</Button>
+            </div>
+            <p class="playground-code">selectedItem(): {{ progSelectedItem }}</p>
+          </div>
+        </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
       <section id="api" class="playground-section">
         <h2>API</h2>
 
@@ -329,6 +462,9 @@ const exposesData = [
 
         <h3 id="api-exposes">Exposes</h3>
         <Table :columns="apiColumns" :data="exposesData" variant="ghost" compact />
+
+        <h3 id="api-interfaces">Interfaces</h3>
+        <CodeBlock :code="interfaceCode" language="ts" variant="solid" />
       </section>
     </div>
   </PlaygroundLayout>

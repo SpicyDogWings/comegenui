@@ -5,10 +5,28 @@ import FileInputZone from "@/components/form/FileInputZone.vue";
 import Badge from "@/components/information/Badge.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Table from "@/components/data/Table.vue";
+import Button from "@/components/buttons/Button.vue";
 
 const files1 = ref<File | File[] | null>(null);
 const files2 = ref<File | File[] | null>(null);
 const files3 = ref<File | File[] | null>(null);
+
+const progRef = ref<InstanceType<typeof FileInputZone> | null>(null);
+const progFiles = ref<File | File[] | null>(null);
+const progGet = ref("");
+
+function filesLabel(files: File | File[] | null) {
+  if (!files) return "null";
+  if (Array.isArray(files)) return `${files.length} archivo(s)`;
+  return files.name;
+}
+
+function makeFiles() {
+  return [
+    new File(["contenido A"], "demo-a.txt", { type: "text/plain" }),
+    new File(["contenido B"], "demo-b.txt", { type: "text/plain" }),
+  ];
+}
 
 const outlineItems = [
   { label: 'Default', id: 'default' },
@@ -19,6 +37,17 @@ const outlineItems = [
   { label: 'Directory', id: 'directory' },
   { label: 'Disabled', id: 'disabled' },
   { label: 'ReadOnly', id: 'readonly' },
+  {
+    label: 'Programmatic',
+    id: 'programmatic',
+    children: [
+      { label: 'get()', id: 'prog-get' },
+      { label: 'set()', id: 'prog-set' },
+      { label: 'reset()', id: 'prog-reset' },
+      { label: 'focus()', id: 'prog-focus' },
+      { label: 'trigger()', id: 'prog-trigger' },
+    ],
+  },
   {
     label: 'API',
     id: 'api',
@@ -109,6 +138,48 @@ const disabledVanilla = `<script src="dist/CuFileInputZone.umd.js"><\/script>
 const readonlyVanilla = `<script src="dist/CuFileInputZone.umd.js"><\/script>
 
 <cu-file-input-zone read-only placeholder="Solo lectura"></cu-file-input-zone>`;
+
+const progVue = `<script setup>
+import { ref } from 'vue'
+import FileInputZone from '@/components/form/FileInputZone.vue'
+
+const fiz = ref(null)
+
+const demo = () => {
+  const files = fiz.value.get()    // File | File[] | null
+  fiz.value.set([
+    new File(['contenido A'], 'demo-a.txt', { type: 'text/plain' }),
+    new File(['contenido B'], 'demo-b.txt', { type: 'text/plain' }),
+  ])
+  fiz.value.reset()                // limpia la selección
+  fiz.value.focus()                // pone el foco
+  fiz.value.trigger()              // abre el diálogo de archivos
+}
+<\/script>
+
+<template>
+  <FileInputZone ref="fiz" />
+</template>`;
+
+const progVanilla = `<script src="dist/CuFileInputZone.umd.js"><\/script>
+
+<cu-file-input-zone id="fiz"></cu-file-input-zone>
+
+<script>
+  customElements.whenDefined('cu-file-input-zone').then(() => {
+    const fiz = document.getElementById('fiz');
+
+    const files = fiz.get();   // File | File[] | null
+    const demo = [
+      new File(['contenido A'], 'demo-a.txt', { type: 'text/plain' }),
+      new File(['contenido B'], 'demo-b.txt', { type: 'text/plain' }),
+    ];
+    fiz.set(demo);             // File | File[] | null
+    fiz.reset();               // limpia la selección
+    fiz.focus();               // pone el foco
+    fiz.trigger();             // abre el diálogo de archivos
+  });
+<\/script>`;
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -261,6 +332,48 @@ const exposesData = [
         <SectionDemo :vue-code="readonlyVue" :vanilla-code="readonlyVanilla">
           <div class="playground-col">
             <FileInputZone read-only placeholder="Solo lectura" />
+          </div>
+        </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="programmatic" class="playground-section">
+        <h2>Programmatic</h2>
+        <SectionDemo :vue-code="progVue" :vanilla-code="progVanilla">
+          <div class="playground-col">
+            <FileInputZone ref="progRef" v-model="progFiles" placeholder="Archivos de prueba" />
+            <p class="playground-code">v-model → {{ filesLabel(progFiles) }}</p>
+
+            <h3 id="prog-get">get()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="progGet = filesLabel(progRef?.get() ?? null)">get()</Button>
+              <span class="playground-code">→ {{ progGet || '—' }}</span>
+            </div>
+
+            <h3 id="prog-set">set()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="progRef?.set(makeFiles())">set(2 archivos)</Button>
+              <span class="playground-code">v-model → {{ filesLabel(progFiles) }}</span>
+            </div>
+
+            <h3 id="prog-reset">reset()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="progRef?.reset()">reset()</Button>
+              <span class="playground-code">v-model → {{ filesLabel(progFiles) }}</span>
+            </div>
+
+            <h3 id="prog-focus">focus()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="progRef?.focus()">focus()</Button>
+              <span class="playground-code">pone el foco en la zona</span>
+            </div>
+
+            <h3 id="prog-trigger">trigger()</h3>
+            <div class="playground-row">
+              <Button color="neutral" @click="progRef?.trigger()">trigger()</Button>
+              <span class="playground-code">abre el diálogo nativo de archivos</span>
+            </div>
           </div>
         </SectionDemo>
       </section>
