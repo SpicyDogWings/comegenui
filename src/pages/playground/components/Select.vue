@@ -48,18 +48,7 @@ const outlineItems = [
   { label: 'Searchable', id: 'searchable' },
   { label: 'Search Cooldown', id: 'cooldown' },
   { label: 'Loading', id: 'loading' },
-  {
-    label: 'Programmatic',
-    id: 'programmatic',
-    children: [
-      { label: 'get()', id: 'prog-get' },
-      { label: 'set()', id: 'prog-set' },
-      { label: 'reset()', id: 'prog-reset' },
-      { label: 'focus()', id: 'prog-focus' },
-      { label: 'isOpen()', id: 'prog-isOpen' },
-      { label: 'selectedItem()', id: 'prog-selectedItem' },
-    ],
-  },
+  { label: 'Programmatic', id: 'programmatic' },
   {
     label: 'API',
     id: 'api',
@@ -105,7 +94,6 @@ const colorsVue = vueSnippet(`  <Select color="primary" :options="options" place
 const optionsVue = `<script setup>
 import Select from '@/components/form/Select.vue'
 
-// Cada opción acepta: value, label, disabled?, color?, variant?
 const options = [
   { value: 'ar', label: 'Argentina' },
   { value: 'br', label: 'Brasil', color: 'primary' },
@@ -216,8 +204,7 @@ const colorsVanilla = vanillaSnippet(`<cu-select id="c1" color="primary" placeho
 <cu-select id="c5" color="warning" placeholder="warning" style="max-width:200px"></cu-select>
 <cu-select id="c6" color="danger" placeholder="danger" style="max-width:200px"></cu-select>`, assignOptionsJs);
 
-const optionsVanilla = vanillaSnippet(`<cu-select id="custom" placeholder="Opciones custom" style="max-width:300px"></cu-select>`, `  // Cada opción acepta: value, label, disabled?, color?, variant?
-  const select = document.getElementById('custom');
+const optionsVanilla = vanillaSnippet(`<cu-select id="custom" placeholder="Opciones custom" style="max-width:300px"></cu-select>`, `    const select = document.getElementById('custom');
   select.options = [
     { value: 'ar', label: 'Argentina' },
     { value: 'br', label: 'Brasil', color: 'primary' },
@@ -289,31 +276,35 @@ function logState() {
 
 <template>
   <Button color="neutral" @click="selectRef.set('opt2'); logState()">set('opt2')</Button>
+  <Button color="neutral" @click="selectRef.set('opt3'); logState()">set('opt3')</Button>
   <Button color="neutral" @click="selectRef.reset(); logState()">reset()</Button>
   <Button color="neutral" @click="selectRef.focus()">focus()</Button>
-  <Button color="neutral" @click="logState()">get() / isOpen() / selectedItem()</Button>
-  <Select ref="selectRef" :options="options" placeholder="Seleccionar..." style="max-width:300px" />
+  <Button color="neutral" @click="logState()">get()</Button>
+  <Select ref="selectRef" :options="options" placeholder="Select programático" style="max-width:300px" />
 </template>`;
 
-const programmaticVanilla = vanillaSnippet(`<button id="btn-set">set('opt2')</button>
-<button id="btn-reset">reset()</button>
-<button id="btn-focus">focus()</button>
-<button id="btn-log">get() / isOpen() / selectedItem()</button>
-<cu-select id="sel" placeholder="Seleccionar..." style="max-width:300px"></cu-select>`, `  customElements.whenDefined('cu-select').then(() => {
+const programmaticVanilla = vanillaSnippet(`<cu-button id="sel-prog-set">set('opt2')</cu-button>
+<cu-button id="sel-prog-set3">set('opt3')</cu-button>
+<cu-button id="sel-prog-reset">reset()</cu-button>
+<cu-button id="sel-prog-focus">focus()</cu-button>
+<cu-button id="sel-prog-get">get()</cu-button>
+<cu-select id="sel" placeholder="Select programático" style="max-width:300px"></cu-select>`, `  customElements.whenDefined('cu-select').then(() => {
     const select = document.getElementById('sel');
     select.options = [
       { value: 'opt1', label: 'Option 1' },
       { value: 'opt2', label: 'Option 2' },
       { value: 'opt3', label: 'Option 3' },
     ];
-    document.getElementById('btn-set').addEventListener('click', () => select.set('opt2'));
-    document.getElementById('btn-reset').addEventListener('click', () => select.reset());
-    document.getElementById('btn-focus').addEventListener('click', () => select.focus());
-    document.getElementById('btn-log').addEventListener('click', () => {
+    const logState = () => {
       console.log('get():', select.get());
       console.log('isOpen():', select.isOpen());
       console.log('selectedItem():', select.selectedItem());
-    });
+    };
+    document.getElementById('sel-prog-set').addEventListener('click', () => { select.set('opt2'); logState(); });
+    document.getElementById('sel-prog-set3').addEventListener('click', () => { select.set('opt3'); logState(); });
+    document.getElementById('sel-prog-reset').addEventListener('click', () => { select.reset(); logState(); });
+    document.getElementById('sel-prog-focus').addEventListener('click', () => select.focus());
+    document.getElementById('sel-prog-get').addEventListener('click', logState);
   });`);
 
 const interfaceCode = `interface SelectOption {
@@ -414,7 +405,7 @@ const exposesData = [
         <SectionDemo :vue-code="optionsVue" :vanilla-code="optionsVanilla">
           <div class="playground-col">
             <Select :options="customOptions" placeholder="Opciones custom" style="max-width:300px" />
-            <p class="playground-code">Cada opción acepta: value, label, disabled?, color?, variant?</p>
+            <Button variant="link" to="#api-interfaces">Ver interfaz SelectOption ↓</Button>
           </div>
         </SectionDemo>
       </section>
@@ -490,43 +481,26 @@ const exposesData = [
       <hr class="playground-separator" />
 
       <section id="programmatic" class="playground-section">
-        <h2>Programmatic</h2>
+        <div class="playground-heading">
+          <h2>Programmatic</h2>
+        </div>
+        <p class="playground-desc">
+          Seguidilla de botones sobre la instancia de abajo — el panel abre acá al lado.
+        </p>
         <SectionDemo :vue-code="programmaticVue" :vanilla-code="programmaticVanilla">
           <div class="playground-col">
-            <h3 id="prog-get">get()</h3>
-            <div class="playground-row">
-              <Button color="neutral" @click="readProgrammaticState()">get()</Button>
-            </div>
-            <p class="playground-code">get(): {{ progGet }}</p>
-
-            <h3 id="prog-set">set()</h3>
             <div class="playground-row">
               <Button color="neutral" @click="selectRef?.set('opt2'); readProgrammaticState()">set('opt2')</Button>
               <Button color="neutral" @click="selectRef?.set('opt3'); readProgrammaticState()">set('opt3')</Button>
-            </div>
-
-            <h3 id="prog-reset">reset()</h3>
-            <div class="playground-row">
               <Button color="neutral" @click="selectRef?.reset(); readProgrammaticState()">reset()</Button>
-            </div>
-
-            <h3 id="prog-focus">focus()</h3>
-            <div class="playground-row">
               <Button color="neutral" @click="selectRef?.focus()">focus()</Button>
+              <Button color="neutral" @click="readProgrammaticState()">get()</Button>
             </div>
-
-            <h3 id="prog-isOpen">isOpen()</h3>
-            <div class="playground-row">
-              <Button color="neutral" @click="readProgrammaticState()">isOpen()</Button>
-            </div>
-            <p class="playground-code">isOpen(): {{ progIsOpen }}</p>
-
-            <h3 id="prog-selectedItem">selectedItem()</h3>
-            <div class="playground-row">
-              <Button color="neutral" @click="readProgrammaticState()">selectedItem()</Button>
-            </div>
-            <p class="playground-code">selectedItem(): {{ progSelectedItem }}</p>
-
+            <p class="playground-state">
+              get(): <strong>{{ progGet }}</strong>
+              · isOpen(): <strong>{{ progIsOpen }}</strong>
+              · selectedItem(): <strong>{{ progSelectedItem }}</strong>
+            </p>
             <Select ref="selectRef" :options="options" placeholder="Select programático" style="max-width:300px" />
           </div>
         </SectionDemo>
