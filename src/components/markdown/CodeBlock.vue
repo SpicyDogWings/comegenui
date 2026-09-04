@@ -114,9 +114,9 @@ const gutterText = computed(() => lines.value.map((_, i) => i + 1).join('\n'))
   display: block;
 }
 
-/* clase duplicada a propósito: (0,3,0) le gana al global del playground
-   ".playground[data-v] span" (0,2,1), que fuerza color neutral en los spans */
-.cu-code-block-line.cu-code-block-line {
+/* clases triplicadas a propósito: (0,4,0) le gana sobrado al global del
+   playground ".playground[data-v] span" (0,2,1), que fuerza neutral en spans */
+.cu-code-block-line.cu-code-block-line.cu-code-block-line {
   color: var(--cb-text);
 }
 
@@ -144,7 +144,7 @@ const gutterText = computed(() => lines.value.map((_, i) => i + 1).join('\n'))
   flex: 1;
 }
 
-.cu-code-block-gutter.cu-code-block-gutter {
+.cu-code-block-gutter.cu-code-block-gutter.cu-code-block-gutter {
   display: inline-block;
   flex-shrink: 0;
   width: 2em;
@@ -230,85 +230,100 @@ const gutterText = computed(() => lines.value.map((_, i) => i + 1).join('\n'))
   --cb-hl-meta: color-mix(in srgb, var(--cu-code-text) 70%, transparent);
 }
 
-/* clases duplicadas a propósito: (0,3,0) le gana al global del playground
+/* clase triplicada a propósito: (0,4,0) le gana al global del playground
    ".playground[data-v] span" (0,2,1), que fuerza color neutral en los spans */
-.cu-code-block-hl.cu-code-block-hl {
+.cu-code-block-hl.cu-code-block-hl.cu-code-block-hl {
   color: var(--cb-text);
 }
 
-.cu-code-block-code.cu-code-block-code :deep(.hljs-keyword),
-.cu-code-block-code.cu-code-block-code :deep(.hljs-selector-tag),
-.cu-code-block-code.cu-code-block-code :deep(.hljs-literal) {
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-keyword),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-selector-tag),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-literal) {
   color: var(--cb-hl-keyword);
 }
 
-.cu-code-block-code.cu-code-block-code :deep(.hljs-string),
-.cu-code-block-code.cu-code-block-code :deep(.hljs-regexp),
-.cu-code-block-code.cu-code-block-code :deep(.hljs-addition) {
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-string),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-regexp),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-addition) {
   color: var(--cb-hl-string);
 }
 
-.cu-code-block-code.cu-code-block-code :deep(.hljs-number),
-.cu-code-block-code.cu-code-block-code :deep(.hljs-symbol),
-.cu-code-block-code.cu-code-block-code :deep(.hljs-bullet),
-.cu-code-block-code.cu-code-block-code :deep(.hljs-variable),
-.cu-code-block-code.cu-code-block-code :deep(.hljs-template-variable) {
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-number),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-symbol),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-bullet),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-variable),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-template-variable) {
   color: var(--cb-hl-number);
 }
 
-.cu-code-block-code.cu-code-block-code :deep(.hljs-tag),
-.cu-code-block-code.cu-code-block-code :deep(.hljs-name),
-.cu-code-block-code.cu-code-block-code :deep(.hljs-selector-class),
-.cu-code-block-code.cu-code-block-code :deep(.hljs-selector-id),
-.cu-code-block-code.cu-code-block-code :deep(.hljs-built_in),
-.cu-code-block-code.cu-code-block-code :deep(.hljs-type),
-.cu-code-block-code.cu-code-block-code :deep(.hljs-class) {
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-tag),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-name),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-selector-class),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-selector-id),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-built_in),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-type),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-class) {
   color: var(--cb-hl-tag);
 }
 
-.cu-code-block-code.cu-code-block-code :deep(.hljs-attr),
-.cu-code-block-code.cu-code-block-code :deep(.hljs-attribute),
-.cu-code-block-code.cu-code-block-code :deep(.hljs-params) {
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-attr),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-attribute),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-params) {
   color: var(--cb-hl-attr);
 }
 
-.cu-code-block-code.cu-code-block-code :deep(.hljs-title),
-.cu-code-block-code.cu-code-block-code :deep(.hljs-function),
-.cu-code-block-code.cu-code-block-code :deep(.hljs-section) {
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-title),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-function),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-section) {
   color: var(--cb-hl-title);
   font-weight: var(--cu-font-weight-medium);
 }
 
-.cu-code-block-code.cu-code-block-code :deep(.hljs-comment),
-.cu-code-block-code.cu-code-block-code :deep(.hljs-quote) {
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-comment),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-quote) {
   color: var(--cb-hl-comment);
   font-style: italic;
 }
 
-.cu-code-block-code.cu-code-block-code :deep(.hljs-meta),
-.cu-code-block-code.cu-code-block-code :deep(.hljs-doctag) {
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-meta),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-doctag) {
   color: var(--cb-hl-meta);
 }
 
 /* clases que hljs emite sin token propio: plain del esquema. Sin esta regla,
    el global del playground las pisa con neutral → negro sobre --cu-code-bg */
-.cu-code-block-code.cu-code-block-code :deep(.hljs-subst),
-.cu-code-block-code.cu-code-block-code :deep(.hljs-property),
-.cu-code-block-code.cu-code-block-code :deep(.hljs-operator),
-.cu-code-block-code.cu-code-block-code :deep(.hljs-punctuation) {
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-subst),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-property),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-operator),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-punctuation) {
   color: var(--cb-text);
 }
 
-.cu-code-block-code.cu-code-block-code :deep(.hljs-emphasis) {
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-emphasis) {
   font-style: italic;
 }
 
-.cu-code-block-code.cu-code-block-code :deep(.hljs-strong) {
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-strong) {
   font-weight: var(--cu-font-weight-bold);
 }
 
-.cu-code-block-code.cu-code-block-code :deep(.hljs-deletion) {
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-deletion) {
   color: var(--cb-hl-attr);
   text-decoration: line-through;
+}
+</style>
+
+<style>
+/* fallback sin scoped (namespaced bajo .cu-code-block): le gana al global
+   del playground (0,3,0) > (0,2,1) aunque el scope id no matchee */
+.cu-code-block .cu-code-block-code .cu-code-block-hl,
+.cu-code-block .cu-code-block-code .cu-code-block-gutter,
+.cu-code-block .cu-code-block-code .cu-code-block-line {
+  color: var(--cb-text);
+}
+
+/* cualquier span hljs no mapeado hereda el plain del esquema */
+.cu-code-block .cu-code-block-code .cu-code-block-hl span {
+  color: inherit;
 }
 </style>
