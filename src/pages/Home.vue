@@ -9,6 +9,7 @@ import Input from "@/components/form/Input.vue";
 import Switch from "@/components/form/Switch.vue";
 import Checkbox from "@/components/form/Checkbox.vue";
 import Markdown from "@/components/markdown/Markdown.vue";
+import LucideGitLab from "@/components/icons/LucideGitLab.vue";
 import ToggleColorSheme from "@/components/buttons/ToggleColorSheme.vue";
 
 const demoValue = ref("");
@@ -26,7 +27,19 @@ const currentTheme = computed(() => theme.value);
         <span class="home-brand">ComegenUI</span>
         <Badge color="neutral" variant="subtle">v{{ version }}</Badge>
       </div>
-      <ToggleColorSheme />
+      <div class="home-topbar-actions">
+        <a
+          class="home-topbar-icon"
+          href="https://gitlab.com/SpicyDogWings/comegen-ui"
+          target="_blank"
+          rel="noopener"
+          aria-label="Repositorio en GitLab"
+          title="GitLab"
+        >
+          <LucideGitLab />
+        </a>
+        <ToggleColorSheme />
+      </div>
     </header>
 
     <main class="home-main">
@@ -174,6 +187,25 @@ const currentTheme = computed(() => theme.value);
   display: flex;
   align-items: center;
   gap: 0.75rem;
+}
+
+.home-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.home-topbar-icon {
+  display: inline-flex;
+  font-size: var(--cu-font-size-md);
+  color: var(--cu-color-neutral);
+  opacity: 0.75;
+  transition: opacity 150ms ease, color 150ms ease;
+}
+
+.home-topbar-icon:hover {
+  opacity: 1;
+  color: var(--cu-color-primary);
 }
 
 .home-brand {

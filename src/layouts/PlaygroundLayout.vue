@@ -4,6 +4,7 @@ import Navbar from '@/components/lab/collapse/navigation/Navbar.vue'
 import Outline from '@/components/lab/collapse/navigation/Outline.vue'
 import type { OutlineItem } from '@/components/lab/collapse/navigation/Outline.vue'
 import Badge from '@/components/information/Badge.vue'
+import LucideGitLab from '@/components/icons/LucideGitLab.vue'
 import { useLibStatus } from '@/pages/playground/useLibStatus'
 
 defineProps<{
@@ -113,7 +114,7 @@ const navItems = [
   <section class="playground">
     <div class="playground-topbar">
       <div class="playground-topbar-left">
-        <span class="playground-topbar-brand">ComegenUI</span>
+        <RouterLink to="/" class="playground-topbar-brand">ComegenUI</RouterLink>
         <span class="playground-topbar-divider" aria-hidden="true"></span>
         <span class="playground-topbar-title">{{ title || 'Playground' }}</span>
       </div>
@@ -125,6 +126,16 @@ const navItems = [
         >
           {{ inLib ? 'En lib' : 'No en lib' }}
         </Badge>
+        <a
+          class="playground-topbar-icon"
+          href="https://gitlab.com/SpicyDogWings/comegen-ui"
+          target="_blank"
+          rel="noopener"
+          aria-label="Repositorio en GitLab"
+          title="GitLab"
+        >
+          <LucideGitLab />
+        </a>
         <ToggleColorSheme />
       </div>
     </div>
@@ -173,6 +184,25 @@ const navItems = [
   font-size: var(--cu-font-size-md);
   font-weight: var(--cu-font-weight-bold);
   letter-spacing: -0.01em;
+  color: var(--cu-color-neutral);
+  text-decoration: none;
+}
+
+.playground-topbar-brand:hover {
+  opacity: 0.8;
+}
+
+.playground-topbar-icon {
+  display: inline-flex;
+  font-size: var(--cu-font-size-md);
+  color: var(--cu-color-neutral);
+  opacity: 0.75;
+  transition: opacity 150ms ease, color 150ms ease;
+}
+
+.playground-topbar-icon:hover {
+  opacity: 1;
+  color: var(--cu-color-primary);
 }
 
 .playground-topbar-divider {
