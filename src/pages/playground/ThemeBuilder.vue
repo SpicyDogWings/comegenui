@@ -29,6 +29,14 @@ import Label from '@/components/form/Label.vue'
 import Autocomplete from '@/components/form/Autocomplete.vue'
 import DropdownMenu from '@/components/controls/DropdownMenu.vue'
 import Markdown from '@/components/markdown/Markdown.vue'
+import CodeBlock from '@/components/markdown/CodeBlock.vue'
+import Blockquote from '@/components/markdown/Blockquote.vue'
+import CopyButton from '@/components/buttons/CopyButton.vue'
+import AdvancedTable from '@/components/data/AdvancedTable.vue'
+import Navbar from '@/components/lab/collapse/navigation/Navbar.vue'
+import Outline from '@/components/lab/collapse/navigation/Outline.vue'
+import type { NavItem } from '@/components/lab/collapse/navigation/Navbar.vue'
+import type { OutlineItem } from '@/components/lab/collapse/navigation/Outline.vue'
 import Modal from '@/components/overlay/Modal.vue'
 import { colorsBlock } from '@/plugins/cu-tokens/css'
 import { theme as activeTheme, setTheme } from '@/plugins/cu-tokens'
@@ -65,6 +73,33 @@ const dropdownItems = [
   { label: 'Editar', value: 'edit' },
   { label: 'Eliminar', value: 'delete' },
 ]
+
+const demoNavItems: NavItem[] = [
+  { label: 'Inicio', path: '/' },
+  { label: 'Button', path: '/playground/components/button' },
+  { label: 'Table', path: '/playground/components/table' },
+  { label: 'Markdown', path: '/playground/components/markdown' },
+  {
+    label: 'Ayuda',
+    children: [{ label: 'Guía', path: '/playground/theme-builder' }],
+  },
+]
+
+const demoOutlineItems: OutlineItem[] = [
+  { label: 'Introducción', id: 'tb-outline-intro' },
+  {
+    label: 'Uso',
+    id: 'tb-outline-uso',
+    children: [
+      { label: 'Props', id: 'tb-outline-props' },
+      { label: 'Eventos', id: 'tb-outline-eventos' },
+    ],
+  },
+]
+
+const editorialSnippet = `const tokens = getThemeNames();
+// cambiás un color y todo el ecosistema lo sigue
+setTheme('nord');`
 
 const colors = ref({
   primary: '#E73F1E',
@@ -393,6 +428,7 @@ onMounted(() => {
   loadFromStorage()
   previousTheme.value = activeTheme.value
   setTheme(themeName.value)
+  modalPreviewRef.value?.open()
 })
 
 watch(themeName, (name) => setTheme(name))
@@ -529,306 +565,301 @@ onBeforeUnmount(() => {
       </aside>
 
       <main class="tb-preview">
-        <div class="tb-preview-row-group asymmetric">
-          <div class="tb-preview-section">
-            <h3>Buttons</h3>
-            <div class="tb-preview-row">
-              <Button color="primary">Primary</Button>
-              <Button color="secondary">Secondary</Button>
-              <Button color="neutral">Neutral</Button>
-              <Button color="success">Success</Button>
-              <Button color="warning">Warning</Button>
-              <Button color="danger">Danger</Button>
+        <div class="tb-gallery">
+          <Card variant="ghost" title="Acciones" class="tb-card tb-card--wide">
+            <div class="tb-cluster">
+              <p class="tb-cluster-label">Colores — solid</p>
+              <div class="tb-row">
+                <Button color="primary">Primary</Button>
+                <Button color="secondary">Secondary</Button>
+                <Button color="neutral">Neutral</Button>
+                <Button color="success">Success</Button>
+                <Button color="warning">Warning</Button>
+                <Button color="danger">Danger</Button>
+              </div>
             </div>
-            <div class="tb-preview-row">
-              <Button color="primary" variant="soft">Soft</Button>
-              <Button color="primary" variant="ghost">Ghost</Button>
-              <Button color="primary" variant="outlined">Outlined</Button>
-              <Button color="primary" variant="subtle">Subtle</Button>
+            <div class="tb-cluster">
+              <p class="tb-cluster-label">Variantes</p>
+              <div class="tb-row">
+                <Button color="primary" variant="soft">Soft</Button>
+                <Button color="primary" variant="ghost">Ghost</Button>
+                <Button color="primary" variant="outlined">Outlined</Button>
+                <Button color="primary" variant="subtle">Subtle</Button>
+                <Button color="primary" variant="link">Link</Button>
+              </div>
             </div>
-            <div class="tb-preview-row">
-              <Button color="primary" :loading="true">Loading</Button>
-              <Button color="danger" variant="solid" :loading="true">Loading</Button>
+            <div class="tb-cluster">
+              <p class="tb-cluster-label">Estados y con función</p>
+              <div class="tb-row">
+                <Button :loading="true">Loading</Button>
+                <Button color="danger" :loading="true">Loading</Button>
+                <Button :disabled="true">Disabled</Button>
+                <CopyButton text="comegen-ui" label="Copiar" />
+                <ToggleColorSheme />
+                <FloatingButton style="position: static" color="primary">
+                  <LucideSave :width="18" :height="18" />
+                </FloatingButton>
+              </div>
             </div>
-          </div>
+          </Card>
 
-          <div class="tb-preview-section">
-            <h3>Badges</h3>
-            <div class="tb-preview-row">
-              <Badge color="primary">Primary</Badge>
-              <Badge color="secondary">Secondary</Badge>
-              <Badge color="neutral">Neutral</Badge>
-              <Badge color="success">Success</Badge>
-              <Badge color="warning">Warning</Badge>
-              <Badge color="danger">Danger</Badge>
+          <Card variant="ghost" title="Campos" class="tb-card">
+            <div class="tb-sim">
+              <Label label="Nombre" />
+              <Input placeholder="Tu nombre" />
+              <div class="tb-two">
+                <div class="tb-cluster">
+                  <Label label="Email" color="primary" />
+                  <Input placeholder="tu@email.com" color="primary" />
+                </div>
+                <div class="tb-cluster">
+                  <Label label="Rol" />
+                  <Select placeholder="Elegí…">
+                    <option value="dev">Dev</option>
+                    <option value="designer">Designer</option>
+                  </Select>
+                </div>
+              </div>
+              <Label label="Bio" />
+              <Textarea placeholder="Contanos qué estás construyendo…" />
+              <Label label="Avatar" />
+              <FileInput placeholder="Adjuntá una imagen" accept="image/*" />
+              <Label label="Color" />
+              <ColorPicker model-value="#E73F1E" />
+              <Autocomplete placeholder="¿Dónde estás?" />
             </div>
-            <div class="tb-preview-row">
-              <Badge color="primary" variant="solid">Solid</Badge>
-              <Badge color="primary" variant="soft">Soft</Badge>
-              <Badge color="primary" variant="ghost">Ghost</Badge>
-              <Badge color="primary" variant="outlined">Outlined</Badge>
-              <Badge color="primary" variant="subtle">Subtle</Badge>
+            <div class="tb-cluster">
+              <p class="tb-cluster-label">Zona de carga</p>
+              <FileInputZone placeholder="Arrastrá archivos acá, o hacé clic para elegir" />
             </div>
-          </div>
-        </div>
+          </Card>
 
-        <div class="tb-preview-section">
-          <h3>Dropdown Menu</h3>
-          <div class="tb-preview-row">
-            <DropdownMenu color="primary" label="Opciones" :items="dropdownItems" />
-            <DropdownMenu color="neutral" variant="soft" label="Acciones" :items="dropdownItems" />
-          </div>
-        </div>
-
-        <div class="tb-preview-section">
-          <h3>Alerts</h3>
-          <div class="tb-preview-row-group">
-            <div class="tb-preview-col">
-              <Alert title="Primary" color="primary">This is a primary alert.</Alert>
-              <Alert title="Success" color="success">This is a success alert.</Alert>
-              <Alert title="Warning" color="warning">This is a warning alert.</Alert>
-              <Alert title="Danger" color="danger">This is a danger alert.</Alert>
+          <Card variant="ghost" title="Opciones" class="tb-card">
+            <div class="tb-cluster">
+              <p class="tb-cluster-label">Switches</p>
+              <div class="tb-row">
+                <Switch />
+                <Switch color="primary" :model-value="true" />
+                <Switch color="success" :model-value="true" />
+                <Switch color="danger" :model-value="true" />
+                <Switch :disabled="true" />
+              </div>
             </div>
-            <div class="tb-preview-col">
-              <Alert title="Solid" color="primary" variant="solid">Solid variant.</Alert>
-              <Alert title="Soft" color="primary" variant="soft">Soft variant.</Alert>
-              <Alert title="Ghost" color="primary" variant="ghost">Ghost variant.</Alert>
-              <Alert title="Outlined" color="primary" variant="outlined">Outlined variant.</Alert>
-              <Alert title="Subtle" color="primary" variant="subtle">Subtle variant.</Alert>
+            <div class="tb-cluster">
+              <p class="tb-cluster-label">Checkboxes</p>
+              <div class="tb-col">
+                <Checkbox label="Notificaciones" color="primary" :model-value="true" />
+                <Checkbox label="Newsletter" color="success" :model-value="true" />
+                <Checkbox label="Modo oscuro" />
+                <Checkbox label="Borrado definitivo" color="danger" :disabled="true" />
+              </div>
             </div>
-          </div>
-        </div>
+          </Card>
 
-        <div class="tb-preview-section">
-          <h3>Cards</h3>
-          <div class="tb-preview-row">
-            <Card title="Tarjeta" subtitle="Subtítulo descriptivo" variant="ghost">
-              Contenido de la tarjeta para mostrar información agrupada.
-            </Card>
-            <Card title="Solid" variant="solid" color="primary">
-              Variante solid con el color activo del tema.
-            </Card>
-            <Card title="Soft" variant="soft" color="primary">
-              Variante soft con el color activo del tema.
-            </Card>
-            <Card title="Outlined" variant="outlined" color="primary">
-              Variante outlined con el color activo del tema.
-            </Card>
-          </div>
-        </div>
-
-        <div class="tb-preview-section">
-          <h3>Tabs</h3>
-          <div class="tb-preview-col">
-            <Tabs variant="tabs" :tabs="[
-              { key: 'general', label: 'General' },
-              { key: 'advanced', label: 'Advanced' },
-              { key: 'locked', label: 'Locked', disabled: true },
-            ]">
-              <template #general>Contenido General</template>
-              <template #advanced>Contenido Advanced</template>
-              <template #locked>Contenido Locked</template>
-            </Tabs>
-          </div>
-        </div>
-
-        <div class="tb-preview-section">
-          <h3>Collapse</h3>
-          <div class="tb-preview-row-group">
-            <div class="tb-preview-col">
-              <Collapse label="Más información" color="primary">
-                <p>Contenido colapsable con el color primario del tema activo.</p>
-              </Collapse>
-              <Collapse label="Opciones avanzadas" :default-open="true">
-                <p>Este collapse arranca abierto usando <code>default-open</code>.</p>
-              </Collapse>
+          <Card variant="ghost" title="Fechas" class="tb-card tb-card--wide">
+            <div class="tb-agenda">
+              <Calendar model-value="2026-09-11" style="width: 300px" />
+              <div class="tb-agenda-side">
+                <DatePicker model-value="2026-09-11" />
+                <DatePickerRange start-date="2026-09-01" end-date="2026-09-10" />
+              </div>
             </div>
-            <div class="tb-preview-col">
-              <Collapse label="Detalles" color="success">
-                <p>Los colores del trigger siguen los tokens del tema editado.</p>
-              </Collapse>
-              <Collapse label="Ayuda" color="warning">
-                <p>Probá cambiar colores en el panel y ver cómo se actualiza.</p>
-              </Collapse>
-            </div>
-          </div>
-        </div>
-
-        <div class="tb-preview-section">
-          <h3>Sliders</h3>
-          <div class="tb-preview-row-group">
-            <div class="tb-preview-col">
+            <div class="tb-row">
               <MonthSlider />
               <MonthSlider month-format="MMM yyyy" color="success" />
-              <MonthSlider :year-navigation="false" color="warning" />
-            </div>
-            <div class="tb-preview-col">
               <YearSlider />
               <YearSlider variant="outlined" color="success" />
-              <YearSlider :min="2020" :max="2030" color="warning" />
             </div>
-          </div>
-        </div>
+          </Card>
 
-        <div class="tb-preview-section">
-          <h3>Calendar & Date Picker & Range</h3>
-          <div class="tb-preview-row">
-            <Calendar model-value="2026-08-11" style="width: 300px;" />
-            <Calendar model-value="2026-08-11" variant="solid" year-navigation style="width: 330px;" />
-            <Calendar model-value="2026-08-11" color="success" style="width: 300px;" />
-            <DatePicker model-value="2026-08-11" style="max-width: 280px;" />
-            <DatePicker model-value="2026-08-11" year-navigation style="max-width: 280px;" />
-            <DatePickerRange start-date="2026-09-01" end-date="2026-09-10" style="max-width: 420px;" />
-          </div>
-        </div>
-
-        <div class="tb-preview-row-group">
-          <div class="tb-preview-section">
-            <h3>Inputs</h3>
-            <div class="tb-preview-col">
-              <Label label="Nombre" for="tb-input-demo" />
-              <Input id="tb-input-demo" placeholder="Con Label..." />
-              <Label label="Email" for="tb-input-email" color="primary" />
-              <Input id="tb-input-email" placeholder="Label primary..." color="primary" />
-              <Input placeholder="Default..." />
-              <Input placeholder="Primary..." color="primary" />
-              <Input placeholder="Disabled..." :disabled="true" />
-              <Input placeholder="Soft..." variant="soft" />
-              <Input placeholder="Outlined..." variant="outlined" />
-            </div>
-          </div>
-
-          <div class="tb-preview-col">
-            <div class="tb-preview-section">
-              <h3>Selects & Autocomplete</h3>
-              <div class="tb-preview-row">
-                <Select placeholder="Select...">
-                  <option value="1">Option 1</option>
-                  <option value="2">Option 2</option>
-                </Select>
-                <Select placeholder="Choose..." color="primary">
-                  <option value="a">Choice A</option>
-                  <option value="b">Choice B</option>
-                </Select>
+          <Card variant="ghost" title="Feedback" class="tb-card tb-card--wide">
+            <div class="tb-two">
+              <div class="tb-col">
+                <Alert title="Primary" color="primary">Mensaje informativo con el color del tema.</Alert>
+                <Alert title="Success" color="success">Todo salió como esperabas.</Alert>
+                <Alert title="Warning" color="warning">Algo necesita tu atención.</Alert>
+                <Alert title="Danger" color="danger">Esta acción no se puede deshacer.</Alert>
               </div>
-              <Autocomplete placeholder="Buscar..." />
-              <Autocomplete placeholder="Buscar..." color="primary" />
-            </div>
-
-            <div class="tb-preview-section">
-              <h3>File Inputs</h3>
-              <div class="tb-preview-row">
-                <FileInput placeholder="Select file..." />
-                <FileInput placeholder="Images only..." accept="image/*" color="primary" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="tb-preview-row-group three-cols">
-          <div class="tb-preview-section">
-            <h3>Switches</h3>
-            <div class="tb-preview-row">
-              <Switch />
-              <Switch color="primary" :model-value="true" />
-              <Switch color="success" :model-value="true" />
-              <Switch color="danger" :model-value="true" />
-              <Switch :disabled="true" />
-            </div>
-          </div>
-
-          <div class="tb-preview-section">
-            <h3>Checkboxes</h3>
-            <div class="tb-preview-row">
-              <Checkbox label="Default" />
-              <Checkbox label="Primary" color="primary" :model-value="true" />
-              <Checkbox label="Success" color="success" :model-value="true" />
-              <Checkbox label="Danger" color="danger" />
-            </div>
-          </div>
-
-          <div class="tb-preview-section">
-            <h3>Textarea</h3>
-            <Textarea placeholder="Write something..." />
-          </div>
-        </div>
-
-        <div class="tb-preview-section">
-          <h3>Table</h3>
-          <Table :columns="tableColumns" :data="tableData" color="primary">
-            <template #cell-status="{ value }">
-              <Badge
-                :color="value === 'Active' ? 'success' : value === 'Pending' ? 'warning' : 'danger'"
-              >
-                {{ value }}
-              </Badge>
-            </template>
-          </Table>
-        </div>
-
-        <div class="tb-preview-section">
-          <h3>Pagination</h3>
-          <Pagination :total-pages="10" :current-page="3" :total-items="100" color="primary" />
-        </div>
-
-        <div class="tb-preview-section">
-          <h3>Markdown</h3>
-          <Markdown>
-# Título del tema
-
-Párrafo con **negrita**, *itálica* y `código inline`.
-
-- Item uno
-- Item dos
-
-```js
-const tema = 'builder';
-```
-          </Markdown>
-        </div>
-
-        <div class="tb-preview-row-group">
-          <div class="tb-preview-section">
-            <h3>File Dropzone</h3>
-            <FileInputZone placeholder="Drag & drop files here, or click to browse" />
-          </div>
-
-          <div class="tb-preview-section">
-            <h3>Modal</h3>
-            <div class="cu-modal" data-size="sm" data-height="auto">
-              <header class="cu-modal-header">
-                <div class="cu-modal-header-text">
-                  <div class="cu-modal-title-row">
-                    <h2 class="cu-modal-title">Confirm Action</h2>
+              <div class="tb-col">
+                <div class="tb-cluster">
+                  <p class="tb-cluster-label">Colores</p>
+                  <div class="tb-row">
+                    <Badge color="primary">Primary</Badge>
+                    <Badge color="secondary">Secondary</Badge>
+                    <Badge color="neutral">Neutral</Badge>
+                    <Badge color="success">Success</Badge>
+                    <Badge color="warning">Warning</Badge>
+                    <Badge color="danger">Danger</Badge>
                   </div>
-                  <p class="cu-modal-description">This action cannot be undone.</p>
                 </div>
-                <Button color="neutral" variant="ghost" class="cu-modal-close" aria-label="Close">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                </Button>
-              </header>
-              <main class="cu-modal-body">
-                <p>Are you sure you want to delete this item?</p>
-              </main>
-              <footer class="cu-modal-footer">
-                <div class="cu-modal-footer-default">
-                  <Button color="neutral" variant="ghost">Cancel</Button>
-                  <Button color="danger">Delete</Button>
+                <div class="tb-cluster">
+                  <p class="tb-cluster-label">Variantes</p>
+                  <div class="tb-row">
+                    <Badge color="primary" variant="solid">Solid</Badge>
+                    <Badge color="primary" variant="soft">Soft</Badge>
+                    <Badge color="primary" variant="ghost">Ghost</Badge>
+                    <Badge color="primary" variant="outlined">Outlined</Badge>
+                    <Badge color="primary" variant="subtle">Subtle</Badge>
+                  </div>
                 </div>
-              </footer>
+                <div class="tb-cluster">
+                  <p class="tb-cluster-label">En contexto</p>
+                  <div class="tb-notis">
+                    <div class="tb-noti">
+                      <Badge color="success" variant="soft">OK</Badge>
+                      <span>Tema publicado</span>
+                    </div>
+                    <div class="tb-noti">
+                      <Badge color="danger" variant="soft">Error</Badge>
+                      <span>No se pudo guardar el tema</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="tb-preview-row">
-              <Button color="primary" @click="modalPreviewRef?.open()">Abrir Modal</Button>
+          </Card>
+
+          <Card variant="ghost" title="Datos" class="tb-card tb-card--wide">
+            <div class="tb-sim">
+              <div class="tb-toolbar">
+                <Input placeholder="Buscar…" style="max-width: 240px" />
+                <Button color="primary">Nuevo</Button>
+              </div>
+              <Table :columns="tableColumns" :data="tableData" color="primary">
+                <template #cell-status="{ value }">
+                  <Badge
+                    :color="value === 'Active' ? 'success' : value === 'Pending' ? 'warning' : 'danger'"
+                  >
+                    {{ value }}
+                  </Badge>
+                </template>
+              </Table>
+              <Pagination :total-pages="10" :current-page="3" :total-items="100" color="primary" />
             </div>
-            <Modal
-              ref="modalPreviewRef"
-              size="sm"
-              title="Confirmar acción"
-              description="El modal usa los tokens del tema activo."
-            >
-              <p>Contenido del modal con el tema del ThemeBuilder.</p>
-            </Modal>
-          </div>
+            <div class="tb-cluster">
+              <p class="tb-cluster-label">Tabla avanzada — búsqueda, orden y paginación incluidos</p>
+              <AdvancedTable :columns="tableColumns" :data="tableData" :items-per-page="5" color="primary" />
+            </div>
+          </Card>
+
+          <Card variant="ghost" title="Superficies" class="tb-card">
+            <div class="tb-cards-grid">
+              <Card title="Ghost" variant="ghost">Contenido apoyado sobre el fondo.</Card>
+              <Card title="Soft" variant="soft" color="primary">Tinte suave del color activo.</Card>
+              <Card title="Subtle" variant="subtle" color="secondary">Fondo tenue con borde propio.</Card>
+              <Card title="Solid" variant="solid" color="primary">Bloque de color pleno.</Card>
+            </div>
+          </Card>
+
+          <Card variant="ghost" title="Navegación" class="tb-card">
+            <div class="tb-site">
+              <div class="tb-site-cols">
+                <nav class="tb-site-nav">
+                  <Navbar :items="demoNavItems" />
+                </nav>
+                <div class="tb-site-body">
+                  <div class="tb-sim-lines">
+                    <span class="tb-sim-line tb-sim-line--w80"></span>
+                    <span class="tb-sim-line"></span>
+                    <span class="tb-sim-line tb-sim-line--w60"></span>
+                  </div>
+                  <Tabs variant="tabs" :tabs="[
+                    { key: 'general', label: 'General' },
+                    { key: 'advanced', label: 'Advanced' },
+                    { key: 'locked', label: 'Locked', disabled: true },
+                  ]">
+                    <template #general>Contenido General</template>
+                    <template #advanced>Contenido Advanced</template>
+                    <template #locked>Contenido Locked</template>
+                  </Tabs>
+                </div>
+              </div>
+            </div>
+            <div class="tb-cluster">
+              <p class="tb-cluster-label">Outline</p>
+              <Outline :items="demoOutlineItems" />
+            </div>
+          </Card>
+
+          <Card variant="ghost" title="Editorial" class="tb-card tb-card--wide">
+            <div class="tb-two">
+              <Blockquote color="primary">
+                Los tokens son la fuente única de verdad: cambiás un color y todo el ecosistema lo sigue.
+              </Blockquote>
+              <Markdown>
+                # Título del tema
+
+                Párrafo con **negrita**, *itálica* y `código inline`.
+
+                - Item uno
+                - Item dos
+              </Markdown>
+            </div>
+            <CodeBlock :code="editorialSnippet" language="javascript" />
+          </Card>
+
+          <Card variant="ghost" title="Overlays" class="tb-card tb-card--wide">
+            <div class="tb-overlays">
+              <div class="tb-cluster">
+                <p class="tb-cluster-label">Modal — renderizado en contexto</p>
+                <div class="tb-sim">
+                  <div class="tb-sim-lines">
+                    <span class="tb-sim-line tb-sim-line--w80"></span>
+                    <span class="tb-sim-line"></span>
+                  </div>
+                  <div class="cu-modal" data-size="sm" data-height="auto">
+                    <header class="cu-modal-header">
+                      <div class="cu-modal-header-text">
+                        <div class="cu-modal-title-row">
+                          <h2 class="cu-modal-title">Confirm Action</h2>
+                        </div>
+                        <p class="cu-modal-description">This action cannot be undone.</p>
+                      </div>
+                      <Button color="neutral" variant="ghost" class="cu-modal-close" aria-label="Close">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                      </Button>
+                    </header>
+                    <main class="cu-modal-body">
+                      <p>Are you sure you want to delete this item?</p>
+                    </main>
+                    <footer class="cu-modal-footer">
+                      <div class="cu-modal-footer-default">
+                        <Button color="neutral" variant="ghost">Cancel</Button>
+                        <Button color="danger">Delete</Button>
+                      </div>
+                    </footer>
+                  </div>
+                </div>
+              </div>
+              <div class="tb-cluster">
+                <p class="tb-cluster-label">Modal real + expandibles</p>
+                <div class="tb-sim">
+                  <div class="tb-sim-lines">
+                    <span class="tb-sim-line tb-sim-line--w80"></span>
+                    <span class="tb-sim-line tb-sim-line--w60"></span>
+                  </div>
+                  <Collapse label="Más información" color="primary" :default-open="true">
+                    <p>El contenido aparece sobre la página, con el tema editado.</p>
+                  </Collapse>
+                  <Collapse label="Detalles" color="success">
+                    <p>Cada color sigue los tokens del tema activo.</p>
+                  </Collapse>
+                  <Modal
+                    ref="modalPreviewRef"
+                    size="sm"
+                    title="Confirmar acción"
+                    description="El modal usa los tokens del tema activo."
+                  >
+                    <p>Contenido del modal con el tema del ThemeBuilder.</p>
+                  </Modal>
+                </div>
+              </div>
+            </div>
+            <div class="tb-row">
+              <Button color="primary" @click="modalPreviewRef?.open()">Abrir modal real</Button>
+              <DropdownMenu color="primary" label="Menú" :items="dropdownItems" />
+            </div>
+          </Card>
         </div>
       </main>
     </div>
@@ -887,52 +918,161 @@ const tema = 'builder';
   min-width: 0;
 }
 
-.tb-preview-section {
+.tb-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.tb-card--wide {
+  grid-column: 1 / -1;
+}
+
+.tb-cluster {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tb-cluster-label {
+  font-size: var(--cu-font-size-xs);
+  font-weight: var(--cu-font-weight-semibold);
+  opacity: 0.6;
+  margin: 0;
+}
+
+.tb-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tb-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tb-two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+/* Simulaciones: mini-páginas con contenido de contexto (como la vitrina de la home).
+   El transform crea containing block → los position:fixed (Modal, FAB) quedan adentro. */
+.tb-sim {
+  position: relative;
+  transform: translateZ(0);
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
   padding: 1.25rem;
   border: var(--cu-border-thin) solid var(--cu-border-color);
-  border-radius: var(--cu-radius);
-  background: var(--cu-color-surface);
+  border-radius: var(--cu-radius-lg);
+  background-color: var(--cu-color-surface);
+  overflow: hidden;
 }
 
-.tb-preview-section h3 {
-  font-size: var(--cu-font-size-sm);
-  font-weight: var(--cu-font-weight-semibold);
-  margin: 0;
-  color: var(--cu-color-neutral);
-}
-
-.tb-preview-row {
+.tb-sim-lines {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tb-sim-line {
+  height: 6px;
+  border-radius: 3px;
+  background-color: var(--cu-color-neutral);
+  opacity: 0.12;
+}
+
+.tb-sim-line--w60 {
+  width: 60%;
+}
+
+.tb-sim-line--w80 {
+  width: 80%;
+}
+
+.tb-toolbar {
+  display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
-.tb-preview-row :deep(.cu-card) {
-  flex: 1 1 200px;
+.tb-agenda {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem;
+  align-items: start;
 }
 
-.tb-preview-col {
+.tb-agenda-side {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  min-width: 0;
 }
 
-.tb-preview-row-group {
+.tb-cards-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.5rem;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
 }
 
-.tb-preview-row-group.asymmetric {
-  grid-template-columns: 2fr 1fr;
+.tb-notis {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-.tb-preview-row-group.three-cols {
-  grid-template-columns: repeat(3, 1fr);
+.tb-noti {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border: var(--cu-border-thin) solid var(--cu-border-color);
+  border-radius: var(--cu-radius);
+  font-size: var(--cu-font-size-sm);
+}
+
+.tb-site {
+  transform: translateZ(0);
+  border: var(--cu-border-thin) solid var(--cu-border-color);
+  border-radius: var(--cu-radius-lg);
+  overflow: hidden;
+  background-color: var(--cu-color-surface);
+}
+
+.tb-site-cols {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  min-height: 250px;
+}
+
+.tb-site-nav {
+  padding: 0.5rem;
+  border-right: var(--cu-border-thin) solid var(--cu-border-color);
+  overflow-y: auto;
+}
+
+.tb-site-body {
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.tb-overlays {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
 }
 
 .tb-section h2 {
