@@ -933,6 +933,9 @@ const tema = 'builder';
 .tb-color-row {
   display: flex;
   flex-direction: column;
+  gap: 0.125rem;
+}
+
 .tb-field {
   display: flex;
   flex-direction: column;
