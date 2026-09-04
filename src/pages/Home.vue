@@ -139,7 +139,7 @@ const currentTheme = computed(() => theme.value);
             <div class="home-theme-samples" inert>
               <div class="home-theme-row">
                 <Button color="primary" variant="solid">Botón</Button>
-                <Badge color="success" variant="subtle">Estable</Badge>
+                <Badge color="success" variant="soft">Estable</Badge>
               </div>
               <div class="home-theme-row">
                 <Switch :model-value="true" color="primary" />
