@@ -207,6 +207,11 @@ const props = defineProps({
     required: false,
     default: () => [],
   },
+  compact: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 });
 
 const emit = defineEmits([
@@ -328,6 +333,7 @@ const tableProps = computed(() => ({
   loading: props.loading,
   rowDisabled: props.rowDisabled,
   footer: props.footer,
+  compact: props.compact,
 }));
 
 const tableStyles = computed(() => ({

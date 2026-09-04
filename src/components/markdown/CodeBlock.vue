@@ -1,6 +1,34 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import hljs from 'highlight.js/lib/core'
+import xml from 'highlight.js/lib/languages/xml'
+import css from 'highlight.js/lib/languages/css'
+import javascript from 'highlight.js/lib/languages/javascript'
+import typescript from 'highlight.js/lib/languages/typescript'
+import bash from 'highlight.js/lib/languages/bash'
+import json from 'highlight.js/lib/languages/json'
+import python from 'highlight.js/lib/languages/python'
 import Badge from '../information/Badge.vue'
+import CopyButton from '@/components/buttons/CopyButton.vue'
+
+hljs.registerLanguage('xml', xml)
+hljs.registerLanguage('css', css)
+hljs.registerLanguage('javascript', javascript)
+hljs.registerLanguage('typescript', typescript)
+hljs.registerLanguage('bash', bash)
+hljs.registerLanguage('json', json)
+hljs.registerLanguage('python', python)
+
+const LANGUAGE_ALIASES: Record<string, string> = {
+  html: 'xml',
+  vue: 'xml',
+  sfc: 'xml',
+  js: 'javascript',
+  ts: 'typescript',
+  sh: 'bash',
+  shell: 'bash',
+  py: 'python',
+}
 
 const props = defineProps({
   code: { type: String, required: true },
@@ -15,13 +43,31 @@ const codeBlockClasses = computed(() => [
   { 'cu-code-block--line-numbers': props.lineNumbers },
 ])
 
+const highlightLanguage = computed(() => {
+  const lang = (props.language || '').toLowerCase().trim()
+  const resolved = LANGUAGE_ALIASES[lang] ?? lang
+  return resolved && hljs.getLanguage(resolved) ? resolved : ''
+})
+
+// highlight.js escapa el input; si algo falla, cae a texto plano
+const highlightedHtml = computed(() => {
+  if (!highlightLanguage.value) return ''
+  try {
+    return hljs.highlight(props.code, { language: highlightLanguage.value, ignoreIllegals: true }).value
+  } catch {
+    return ''
+  }
+})
+
 const lines = computed(() => props.code.split('\n'))
 const lineCount = computed(() => lines.value.length)
+const gutterText = computed(() => lines.value.map((_, i) => i + 1).join('\n'))
 </script>
 
 <template>
   <div :class="codeBlockClasses">
-    <pre class="cu-code-block-pre"><code class="cu-code-block-code"><template v-if="lineNumbers"><span v-for="(line, i) in lines" :key="i" class="cu-code-block-line"><span class="cu-code-block-line-number">{{ i + 1 }}</span><span class="cu-code-block-line-content">{{ line }}</span></span></template><template v-else>{{ code }}</template></code></pre>
+    <CopyButton :text="code" :variant="variant === 'solid' ? 'solid' : 'soft'" class="cu-code-block-copy" />
+    <pre class="cu-code-block-pre"><code :class="['cu-code-block-code', { 'cu-code-block-code--gutter': lineNumbers && highlightedHtml }]"><span v-if="lineNumbers" class="cu-code-block-gutter" aria-hidden="true">{{ gutterText }}</span><span v-if="lineNumbers && highlightedHtml" class="cu-code-block-hl" v-html="highlightedHtml"></span><template v-else-if="lineNumbers"><span v-for="(line, i) in lines" :key="i" class="cu-code-block-line"><span class="cu-code-block-line-number">{{ i + 1 }}</span><span class="cu-code-block-line-content">{{ line }}</span></span></template><span v-else-if="highlightedHtml" class="cu-code-block-hl" v-html="highlightedHtml"></span><template v-else>{{ code }}</template></code></pre>
     <div v-if="language" class="cu-code-block-lang">
       <Badge color="neutral" variant="soft">{{ language }}</Badge>
     </div>
@@ -34,6 +80,13 @@ const lineCount = computed(() => lines.value.length)
   border-radius: var(--cu-radius-sm);
   margin-bottom: var(--cu-space-lg);
   overflow: hidden;
+}
+
+.cu-code-block-copy {
+  position: absolute;
+  top: var(--cu-space-sm);
+  right: var(--cu-space-sm);
+  z-index: 1;
 }
 
 .cu-code-block-pre {
@@ -76,6 +129,29 @@ const lineCount = computed(() => lines.value.length)
   display: inline;
 }
 
+/* gutter de números (modo highlight): flex para alinear columnas arriba */
+.cu-code-block-code--gutter {
+  display: flex;
+  align-items: flex-start;
+}
+
+.cu-code-block-code--gutter .cu-code-block-hl {
+  flex: 1;
+}
+
+.cu-code-block-gutter {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 2em;
+  margin-right: var(--cu-space-md);
+  text-align: right;
+  color: var(--cu-color-neutral-text);
+  opacity: 0.4;
+  user-select: none;
+  -webkit-user-select: none;
+  white-space: pre;
+}
+
 /* default - solid neutral */
 .cu-code-block--default {
   background-color: var(--cu-color-neutral-soft);
@@ -111,5 +187,115 @@ const lineCount = computed(() => lines.value.length)
 .cu-code-block--solid :deep(.cu-badge) {
   background-color: rgba(255, 255, 255, 0.15);
   color: var(--cu-color-surface);
+}
+
+/* syntax highlighting (highlight.js) — paleta sobre tokens del tema */
+/* base (default/outlined): acentos aclarados con toque de brillo */
+.cu-code-block {
+  --cb-hl-keyword: color-mix(in srgb, var(--cu-color-primary) 87%, var(--cu-color-neutral-text));
+  --cb-hl-string: color-mix(in srgb, var(--cu-color-success) 87%, var(--cu-color-neutral-text));
+  --cb-hl-number: color-mix(in srgb, var(--cu-color-warning) 89%, var(--cu-color-neutral-text));
+  --cb-hl-tag: color-mix(in srgb, var(--cu-color-secondary) 87%, var(--cu-color-neutral-text));
+  --cb-hl-attr: color-mix(in srgb, var(--cu-color-danger) 87%, var(--cu-color-neutral-text));
+  --cb-hl-title: color-mix(in srgb, var(--cu-color-primary) 87%, var(--cu-color-neutral-text));
+  --cb-hl-comment: color-mix(in srgb, var(--cu-color-neutral-text) 50%, transparent);
+  --cb-hl-meta: color-mix(in srgb, var(--cu-color-neutral-text) 85%, transparent);
+}
+
+/* default (fondo soft neutral): un poco más de brillo */
+.cu-code-block--default {
+  --cb-hl-keyword: color-mix(in srgb, var(--cu-color-primary) 94%, var(--cu-color-neutral-text));
+  --cb-hl-string: color-mix(in srgb, var(--cu-color-success) 94%, var(--cu-color-neutral-text));
+  --cb-hl-number: color-mix(in srgb, var(--cu-color-warning) 96%, var(--cu-color-neutral-text));
+  --cb-hl-tag: color-mix(in srgb, var(--cu-color-secondary) 94%, var(--cu-color-neutral-text));
+  --cb-hl-attr: color-mix(in srgb, var(--cu-color-danger) 94%, var(--cu-color-neutral-text));
+  --cb-hl-title: color-mix(in srgb, var(--cu-color-primary) 94%, var(--cu-color-neutral-text));
+  --cb-hl-comment: color-mix(in srgb, var(--cu-color-neutral-text) 55%, transparent);
+  --cb-hl-meta: color-mix(in srgb, var(--cu-color-neutral-text) 92%, transparent);
+}
+
+/* solid: acentos mezclados hacia surface — surface es siempre el opuesto
+   de neutral en todos los temas, así el contraste queda garantizado */
+.cu-code-block--solid {
+  --cb-hl-keyword: color-mix(in srgb, var(--cu-color-primary) 60%, var(--cu-color-surface));
+  --cb-hl-string: color-mix(in srgb, var(--cu-color-success) 60%, var(--cu-color-surface));
+  --cb-hl-number: color-mix(in srgb, var(--cu-color-warning) 65%, var(--cu-color-surface));
+  --cb-hl-tag: color-mix(in srgb, var(--cu-color-secondary) 60%, var(--cu-color-surface));
+  --cb-hl-attr: color-mix(in srgb, var(--cu-color-danger) 60%, var(--cu-color-surface));
+  --cb-hl-title: color-mix(in srgb, var(--cu-color-primary) 60%, var(--cu-color-surface));
+  --cb-hl-comment: color-mix(in srgb, var(--cu-color-surface) 55%, transparent);
+  --cb-hl-meta: color-mix(in srgb, var(--cu-color-surface) 70%, transparent);
+}
+
+.cu-code-block-hl,
+.cu-code-block--solid .cu-code-block-hl {
+  color: inherit;
+}
+
+.cu-code-block-code :deep(.hljs-keyword),
+.cu-code-block-code :deep(.hljs-selector-tag),
+.cu-code-block-code :deep(.hljs-literal) {
+  color: var(--cb-hl-keyword);
+}
+
+.cu-code-block-code :deep(.hljs-string),
+.cu-code-block-code :deep(.hljs-regexp),
+.cu-code-block-code :deep(.hljs-addition) {
+  color: var(--cb-hl-string);
+}
+
+.cu-code-block-code :deep(.hljs-number),
+.cu-code-block-code :deep(.hljs-symbol),
+.cu-code-block-code :deep(.hljs-bullet),
+.cu-code-block-code :deep(.hljs-variable),
+.cu-code-block-code :deep(.hljs-template-variable) {
+  color: var(--cb-hl-number);
+}
+
+.cu-code-block-code :deep(.hljs-tag),
+.cu-code-block-code :deep(.hljs-name),
+.cu-code-block-code :deep(.hljs-selector-class),
+.cu-code-block-code :deep(.hljs-selector-id),
+.cu-code-block-code :deep(.hljs-built_in),
+.cu-code-block-code :deep(.hljs-type),
+.cu-code-block-code :deep(.hljs-class) {
+  color: var(--cb-hl-tag);
+}
+
+.cu-code-block-code :deep(.hljs-attr),
+.cu-code-block-code :deep(.hljs-attribute),
+.cu-code-block-code :deep(.hljs-params) {
+  color: var(--cb-hl-attr);
+}
+
+.cu-code-block-code :deep(.hljs-title),
+.cu-code-block-code :deep(.hljs-function),
+.cu-code-block-code :deep(.hljs-section) {
+  color: var(--cb-hl-title);
+  font-weight: var(--cu-font-weight-medium);
+}
+
+.cu-code-block-code :deep(.hljs-comment),
+.cu-code-block-code :deep(.hljs-quote) {
+  color: var(--cb-hl-comment);
+  font-style: italic;
+}
+
+.cu-code-block-code :deep(.hljs-meta),
+.cu-code-block-code :deep(.hljs-doctag) {
+  color: var(--cb-hl-meta);
+}
+
+.cu-code-block-code :deep(.hljs-emphasis) {
+  font-style: italic;
+}
+
+.cu-code-block-code :deep(.hljs-strong) {
+  font-weight: var(--cu-font-weight-bold);
+}
+
+.cu-code-block-code :deep(.hljs-deletion) {
+  color: var(--cb-hl-attr);
+  text-decoration: line-through;
 }
 </style>

@@ -22,6 +22,11 @@ const router = createRouter({
               component: () => import("@/pages/playground/components/Button.vue")
             },
             {
+              path: "copy-button",
+              name: "CopyButton playground",
+              component: () => import("@/pages/playground/components/CopyButton.vue")
+            },
+            {
               path: "toggle-color-scheme",
               name: "ToggleColorScheme playground",
               component: () => import("@/pages/playground/components/ToggleColorScheme.vue")

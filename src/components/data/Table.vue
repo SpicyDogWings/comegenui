@@ -74,6 +74,11 @@ const props = defineProps({
     required: false,
     default: () => [],
   },
+  compact: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 });
 
 const tableStyles = computed(() => ({
@@ -136,7 +141,7 @@ const isRowDisabled = (row: Record<string, any>): boolean => {
 </script>
 
 <template>
-  <div class="cu-table" :class="{ 'cu-table--outlined': variant === 'outlined' }" :style="tableStyles">
+  <div class="cu-table" :class="{ 'cu-table--outlined': variant === 'outlined', 'cu-table--compact': props.compact }" :style="tableStyles">
      <Loader v-if="loading" :color="color" animation="loading" />
     <div class="cu-table-scroll">
       <table class="cu-table-element">
@@ -324,6 +329,19 @@ const isRowDisabled = (row: Record<string, any>): boolean => {
 
 .cu-table tr:last-child td {
   border-bottom: none;
+}
+
+/* compact: menos padding en celdas */
+.cu-table--compact .cu-table-th {
+  padding: var(--cu-space-xs) var(--cu-space-sm);
+}
+
+.cu-table--compact :deep(.cu-table-td) {
+  padding: var(--cu-space-xs) var(--cu-space-sm);
+}
+
+.cu-table--compact :deep(.cu-table-empty) {
+  padding: var(--cu-space-md);
 }
 
 </style>

@@ -41,8 +41,6 @@ __screenshots__/
 # scripts
 scripts/config
 
-*storybook.log
-storybook-static
 
 # agents (but track skills)
 .agents/*

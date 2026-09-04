@@ -11,6 +11,7 @@ const outlineItems = [
   { label: 'Empty State', id: 'empty' },
   { label: 'Footer', id: 'footer' },
   { label: 'Loading', id: 'loading' },
+  { label: 'Compact', id: 'compact' },
 ];
 
 const sampleData = [
@@ -112,6 +113,15 @@ const variants = ["soft", "solid", "outlined", "ghost"];
       <section id="loading" class="playground-section">
         <h2>Loading</h2>
         <Table :columns="columns" :data="sampleData.slice(0, 3)" loading />
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="compact" class="playground-section">
+        <h2>Compact</h2>
+        <p class="playground-code">Menos padding en celdas (th/td) — compone con cualquier variante.</p>
+        <Table :columns="columns" :data="sampleData.slice(0, 4)" compact />
+        <Table :columns="columns" :data="sampleData.slice(0, 4)" variant="outlined" compact />
       </section>
     </div>
   </PlaygroundLayout>

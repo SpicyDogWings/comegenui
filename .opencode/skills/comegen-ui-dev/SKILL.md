@@ -1,53 +1,45 @@
 ---
 name: comegen-ui-dev
-description: 'Skill de desarrollo de componentes para comegen-ui (Vue 3 + Custom Elements + UnoCSS). Usar cuando el usuario pida crear, modificar, eliminar o buildear un componente de comegen-ui. Frases: "crear componente", "nuevo componente", "agregar componente", "modificar componente", "buildear comegen", "build lib", "agregar al storybook", "testear componente". NO la uses para usar componentes en otro proyecto (esa es la skill de uso que viaja con el zip).'
+description: 'Skill de desarrollo de componentes para comegen-ui (Vue 3 + Custom Elements + UnoCSS). Usar cuando el usuario pida crear, modificar, eliminar o buildear un componente de comegen-ui, o trabajar en el playground. Frases: "crear componente", "nuevo componente", "modificar componente", "buildear comegen", "build lib", "testear componente", "playground". NO la uses para usar componentes en otro proyecto (esa es la skill de uso que viaja con el zip).'
 ---
 
 # `comegen-ui-dev`
 
-Desarrollo de componentes **comegen-ui**: Vue 3 + Custom Elements + UnoCSS, buildeados como UMD via `build-lib.ts`.
+Desarrollo de componentes **comegen-ui** (Vue 3 + Custom Elements + UnoCSS, UMD via `build-lib.ts`) y de su playground.
 
-> **Regla de oro:** todo componente público sigue el **patrón de 3 archivos** (`.vue` → `.ce.vue` → `.ts`). No lo rompas.
+> **Regla de oro:** todo componente público sigue el **patrón de 3 archivos** (`.vue` → `.ce.vue` → `.ts`) y resuelve colores via **CSS custom properties** (`var(--cu-color-{name}-*)`), nunca `getHostTheme()`.
 
 ## Cuándo se activa
 
-- "Crear/agregar/eliminar un componente".
-- "Modificar/cambiar un componente existente".
-- "Buildear la lib" (`pnpm build:lib`).
-- "Testear un componente" (vitest).
-- "Storybook" (`pnpm storybook`).
+- "Crear/agregar componente" → [Crear](#crear-un-componente-nuevo).
+- "Modificar componente" → [Modificar](#modificar-un-componente-existente).
+- "Buildear la lib" → [Build y validación](#build-y-validación).
+- "Testear componente" → [Build y validación](#build-y-validación).
+- "Playground / probar componente" → [Playground](#playground--patrón-de-página).
 
 ## Cuándo NO se activa
 
-- Usar componentes comegen-ui en otro proyecto (esa es la skill de uso).
-- Modificar el build system (`build-lib.ts`, `vite.config.ts`).
-- Modificar el sistema de tokens (`cu-tokens/`).
-- Storybook: **obsoleto**. No se usa más. Usar playground para probar componentes.
+- Usar comegen-ui en **otro** proyecto (esa es la skill de uso que viaja con el zip).
+- Modificar el build system (`build-lib.ts`, `vite.config.ts`) o los tokens (`cu-tokens/`).
+- Storybook: **obsoleto, eliminado**. Probar en el playground.
 
 ---
 
 ## Crear un componente nuevo
 
-**Antes de crear**, verificar que no existe:
+Verificar que no existe:
 
 ```bash
-ls src/components/*/MiComponente.vue 2>/dev/null && echo "YA EXISTE" || echo "NO EXISTE"
-ls src/components/customElements/*/MiComponente.ce.vue 2>/dev/null && echo "YA EXISTE" || echo "NO EXISTE"
+ls src/components/{category}/MiComponente.vue src/components/customElements/{category}/MiComponente.ce.vue 2>/dev/null && echo "YA EXISTE" || echo "NO EXISTE"
 ```
 
-Si ya existe, **no crear** — modificar el existente.
-
-**Patrón de 3 archivos** (componente público con Custom Element):
-
-### 1. Componente real — `src/components/{category}/MiComponente.vue`
+**1. Componente real** — `src/components/{category}/MiComponente.vue`:
 
 ```vue
 <script setup lang="ts">
 const props = defineProps({
   color: { type: String, default: "neutral" },
-  // ... más props
 })
-
 const colorStyles = computed(() => ({
   '--mi-bg': `var(--cu-color-${props.color})`,
   '--mi-text': `var(--cu-color-${props.color}-text)`,
@@ -55,18 +47,13 @@ const colorStyles = computed(() => ({
 </script>
 
 <template>
-  <div :class="['cu-mi-componente']" :style="colorStyles">
+  <div class="cu-mi-componente" :style="colorStyles">
     <slot />
   </div>
 </template>
 ```
 
-**Reglas:**
-- `defineExpose` siempre con **arrow functions** (`isOpen: () => ...`), nunca getters.
-- Colores via **CSS custom properties** (`var(--cu-color-{name}-*)`), NO `getHostTheme()`.
-- Slots con sintaxis Vue `#nombre`.
-
-### 2. Wrapper CE — `src/components/customElements/{category}/MiComponente.ce.vue`
+**2. Wrapper CE** — `src/components/customElements/{category}/MiComponente.ce.vue`:
 
 ```vue
 <script setup lang="ts">
@@ -75,20 +62,13 @@ import { initTokens } from "@/plugins/cu-tokens/css"
 
 initTokens()
 
-const props = defineProps({
-  color: { type: String, default: "neutral" },
-  // ... mismos props que el .vue
-})
-
+const props = defineProps({ color: { type: String, default: "neutral" } })
 const ref = ref(null)
 
-// ceEmit para eventos
 function ceEmit(event: string, payload: unknown) {
   const el = ref.value?.$el
   const host = el?.getRootNode()?.host || el
-  if (host) {
-    host.dispatchEvent(new CustomEvent(event, { detail: payload, bubbles: true, composed: true }))
-  }
+  if (host) host.dispatchEvent(new CustomEvent(event, { detail: payload, bubbles: true, composed: true }))
 }
 </script>
 
@@ -99,12 +79,9 @@ function ceEmit(event: string, payload: unknown) {
 </template>
 ```
 
-**Reglas:**
-- **NO** importar sub-componentes `.vue` (eso hace el `.vue`).
-- Pasar props **explícitamente** (nunca `v-bind="{...props}"`).
-- `initTokens()` va aquí o en el `.ts`, una vez por componente.
+Reglas del `.ce.vue`: **NO** importa sub-componentes `.vue`; pasa props **explícitamente** (nunca `v-bind="{...props}"`); `initTokens()` una vez por componente (acá o en el `.ts`).
 
-### 3. Entry point — `src/lib/{category}/mi-componente.ts`
+**3. Entry point** — `src/lib/{category}/mi-componente.ts`:
 
 ```ts
 import { defineCustomElement } from 'vue'
@@ -116,102 +93,128 @@ customElements.define('cu-mi-componente', CuMiComponente)
 export default CuMiComponente
 ```
 
-### 4. Validar
+**4. Validar y commit:**
 
 ```bash
-pnpm build:lib   # debe buildear sin errores
-pnpm type-check  # vue-tsc debe pasar
+pnpm run build-only && pnpm exec vitest run && pnpm run build:lib
+git add -A && git commit -m "feat: agregar componente MiComponente"
 ```
 
-### 5. Commit
-
-```bash
-git add -A
-git commit -m "feat: agregar componente MiComponente"
-```
+Reglas transversales: `defineExpose` **siempre arrow functions** (`isOpen: () => ...`); slots con sintaxis Vue `#nombre`.
 
 ---
 
 ## Modificar un componente existente
 
-1. Identificar el componente: `src/components/{category}/MiComponente.vue`.
-2. Si el cambio afecta la interfaz (props/emits), actualizar también el `.ce.vue`.
-3. Validar: `pnpm type-check && pnpm build:lib`.
+1. Identificar: `src/components/{category}/MiComponente.vue`.
+2. Si cambia la interfaz (props/emits), actualizar también el `.ce.vue`.
+3. Validar: `pnpm run build-only && pnpm exec vitest run` (+ `pnpm run build:lib` si es público).
 4. Commit: `git add -A && git commit -m "fix: descripción del cambio"`.
 
 ---
 
-## Build
+## Build y validación
 
 ```bash
-pnpm build:lib    # buildea UMD + genera zip en dist/
-pnpm type-check   # verificación de tipos
+pnpm run build-only     # compila la app (validación principal)
+pnpm exec vitest run    # tests; un solo componente: pnpm exec vitest run src/components/...
+pnpm run build:lib      # UMD + zip en dist/comegenui-v{version}.zip (si tocó la lib)
 ```
 
-Salida: `dist/comegenui-v{version}.zip` con los CSS, JS y la skill de uso.
+> `pnpm type-check` **NO es gate usable**: tiene ~400 errores pre-existentes en `legacy/`. Validar con `build-only` + `vitest`.
+
+Los tests viven junto al componente: `src/components/{category}/MiComponente.test.ts` (patrón: `mount` de `@vue/test-utils`). Con fake timers usar `vi.advanceTimersByTimeAsync(ms)` — `runAllTimersAsync` ejecuta los timeouts internos del componente.
 
 ---
 
-## Tests
+## Playground — patrón de página
 
-```bash
-pnpm test                  # todos los tests
-pnpm test ComponentName    # un componente
+Páginas en `src/pages/playground/components/`. Patrón **estricto**: solo demos en vivo, sin snippets sueltos ni párrafos explicativos. Iterar con `pnpm dev` (hot reload).
+
+```vue
+<script setup lang="ts">
+import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
+import SectionDemo from "@/pages/playground/SectionDemo.vue";
+import Badge from "@/components/information/Badge.vue";
+
+const outlineItems = [
+  { label: 'Variants', id: 'variants' },
+  { label: 'API', id: 'api', children: [
+    { label: 'Props', id: 'api-props' },
+    { label: 'Slots', id: 'api-slots' },
+    { label: 'Events', id: 'api-events' },
+    { label: 'Exposes', id: 'api-exposes' },
+  ]},
+];
+</script>
+
+<template>
+  <PlaygroundLayout title="MiComponente" :outlineItems="outlineItems">
+    <div class="playground-content">
+      <section id="variants" class="playground-section">
+        <div class="playground-heading">
+          <h2>Variants</h2>
+          <Badge color="neutral" title="Variante por defecto">soft</Badge>
+        </div>
+        <SectionDemo :vue-code="vueVariants" :vanilla-code="vanillaVariants">
+          <div class="playground-row"><!-- demos en vivo --></div>
+        </SectionDemo>
+      </section>
+      <hr class="playground-separator" />
+    </div>
+  </PlaygroundLayout>
+</template>
 ```
 
-Los tests van junto al componente: `src/components/{category}/MiComponente.test.ts`.
+**Reglas:**
+1. **Badge de default** junto a cada `h2` (`.playground-heading`): el valor default de lo que demuestra la sección.
+2. **`SectionDemo`**: SIEMPRE las 3 tabs en orden **Preview, Vue, Vanilla**. En snippets escapar `</script>` como `<\/script>` (si no, rompe el SFC).
+3. **Qué muestra cada tab:**
+
+| Tab | Contenido |
+|---|---|
+| Preview | Demo en vivo (slot default) |
+| Vue | Uso como **componente Vue**: `import Button from '@/components/buttons/Button.vue'` + `<Button ...>` — el mismo import que usa el playground. **NUNCA** markup de custom element acá |
+| Vanilla | Uso como **custom element**: `<script src="dist/CuButton.umd.js">` + `<cu-button ...>` — **solo si el componente está en lib** (entry en `src/lib/`); los internos no tienen tab Vanilla |
+
+4. **API en una sección** con `h3` chicos (Props/Slots/Events/Exposes) y `Table variant="ghost" compact`. Nada de filas fake con "—": usar el `empty` de la Table (`empty="No tiene slots"`). Los `h3` con ids (`api-*`) van como `children` del outline (el `Outline` soporta sub-menús).
+5. Registrar la página en `src/router/index.ts` y en el menú del `PlaygroundLayout`.
+
+**Trampas:**
+
+| Trampa | Fix |
+|---|---|
+| El global del layout pisa colores de spans: `.playground[data-v] :is(...,span,...)` = (0,2,1) | Subir especificidad en el componente (clase duplicada → 0,3,0). **NO** tocar el layout. |
+| `Button.vue` setea `--btn-*` inline → no sobreescribibles desde afuera | Elegir la variante según el fondo: `soft` en claros, `solid` sobre fondos `neutral` (texto via `--cu-color-surface`, que es el opuesto de `neutral` en los 3 temas). |
+| Tooltips nativos (`title`) | No cuentan como feedback visible de una prop; si debe "verse", renderizar texto real. |
+| Swap animado de textos | Un solo `<Transition mode="out-in">` con `:key`; dos Transitions independientes popean al resetear. |
 
 ---
 
-## Probar componente
+## Probar CE buildeado (fuera de Vue)
 
-Siempre probar en **2 contextos**: Vue (desarrollo) y CE buildeado (uso real fuera de Vue).
-
-### 1. Vue playground (desarrollo rápido)
-
-```bash
-pnpm dev   # vite dev server
-```
-
-Crear ejemplo en `src/pages/playground/components/MiComponente.vue` para iterar con hot reload.
-
-### 2. CE buildeado (uso real fuera de Vue)
-
-Después de `pnpm build:lib`:
+Después de `pnpm run build:lib`:
 
 ```html
 <!DOCTYPE html>
 <html data-theme="dark">
-<head>
-  <link rel="stylesheet" href="dist/css/themes.css">
-</head>
+<head><link rel="stylesheet" href="dist/css/themes.css"></head>
 <body>
-  <cu-button color="primary" variant="soft">Click me</button>
-
+  <cu-button color="primary" variant="soft">Click me</cu-button>
   <script src="dist/CuButton.umd.js"></script>
   <script>
-    const btn = document.querySelector('cu-button')
-    btn.addEventListener('click', () => console.log('clicked'))
+    document.querySelector('cu-button').addEventListener('click', () => console.log('clicked'))
   </script>
 </body>
 </html>
 ```
 
-**Reglas:**
-- El `<script>` del componente **siempre** va en `<body>` o con `defer` (nunca en `<head>` sin defer).
-- `themes.css` incluye todos los temas; `data-theme` en `<html>` controla cuál se aplica.
-- Los Custom Elements se usan como tags nativos: `<cu-button>`, `<cu-alert>`, etc.
-- Props se setean como atributos: `color="primary"`, `variant="soft"`.
-- Eventos: `addEventListener('cu-event', ...)` o el nombre que defina el componente.
-
-**Para servir localmente:**
-
-```bash
-cd dist && python3 -m http.server 3000
-```
+- `<script>` del componente siempre en `<body>` (o `defer`).
+- Props como atributos kebab-case; arrays/objetos por JS (`el.options = [...]` tras `customElements.whenDefined`).
+- Servir: `cd dist && python3 -m http.server 3000`.
 
 ---
 
 ## Referencia de arquitectura
 
-Para detalles del sistema de color, tokens, temas y reglas completas → [`AGENTS.md`](../../AGENTS.md).
+Sistema de color, tokens, temas y reglas completas → [`AGENTS.md`](../../AGENTS.md).

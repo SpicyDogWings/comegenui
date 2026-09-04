@@ -61,4 +61,21 @@ describe("Button", () => {
     expect(link.attributes("target")).toBe("_blank");
     expect(w.find("button.cu-button").exists()).toBe(true);
   });
+
+  it("size: aplica la clase del tamaño; default md", () => {
+    const sm = mount(Button, { props: { size: "sm" } });
+    expect(sm.find("button.cu-button").classes()).toContain("cu-button--sm");
+    const lg = mount(Button, { props: { size: "lg" } });
+    expect(lg.find("button.cu-button").classes()).toContain("cu-button--lg");
+    const md = mount(Button, { props: { size: "md" } });
+    expect(md.find("button.cu-button").classes()).toContain("cu-button--md");
+    const def = mount(Button);
+    expect(def.find("button.cu-button").classes()).toContain("cu-button--md");
+  });
+
+  it("size: no pisa el padding 0 del variant link", () => {
+    const w = mount(Button, { props: { size: "lg", variant: "link" } });
+    expect(w.find("button.cu-button").classes()).toContain("cu-button--lg");
+    expect(w.find("button.cu-button").classes()).toContain("cu-button--link");
+  });
 });

@@ -28,6 +28,7 @@ const navItems = [
         label: 'buttons',
         children: [
           { label: 'Button', path: '/playground/components/button' },
+          { label: 'CopyButton', path: '/playground/components/copy-button' },
           { label: 'ToggleColorScheme', path: '/playground/components/toggle-color-scheme' },
         ]
       },
@@ -208,6 +209,12 @@ const navItems = [
   color: var(--cu-color-neutral);
 }
 
+.playground-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 .playground-row {
   display: flex;
   flex-wrap: wrap;
@@ -236,16 +243,6 @@ const navItems = [
   font-size: var(--cu-font-size-sm);
   opacity: 0.7;
   margin: 0;
-}
-
-.playground-btn-sm {
-  font-size: var(--cu-font-size-xs) !important;
-  padding: var(--cu-space-xs) var(--cu-space-sm) !important;
-}
-
-.playground-btn-lg {
-  font-size: var(--cu-font-size-lg) !important;
-  padding: var(--cu-space-lg) var(--cu-space-xl) !important;
 }
 
 .playground-badge-table {
