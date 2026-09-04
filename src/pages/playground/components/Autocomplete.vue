@@ -42,18 +42,7 @@ const outlineItems = [
   { label: 'Disabled', id: 'disabled' },
   { label: 'Min Chars', id: 'min-chars' },
   { label: 'v-model', id: 'v-model' },
-  {
-    label: 'Programmatic',
-    id: 'programmatic',
-    children: [
-      { label: 'get()', id: 'prog-get' },
-      { label: 'set()', id: 'prog-set' },
-      { label: 'reset()', id: 'prog-reset' },
-      { label: 'focus()', id: 'prog-focus' },
-      { label: 'isOpen()', id: 'prog-isOpen' },
-      { label: 'selectedItem()', id: 'prog-selectedItem' },
-    ],
-  },
+  { label: 'Programmatic', id: 'programmatic' },
   {
     label: 'API',
     id: 'api',
@@ -240,31 +229,35 @@ function logState() {
 
 <template>
   <Button color="neutral" @click="autoRef.set('TypeScript'); logState()">set('TypeScript')</Button>
+  <Button color="neutral" @click="autoRef.set('texto libre'); logState()">set('texto libre')</Button>
   <Button color="neutral" @click="autoRef.reset(); logState()">reset()</Button>
   <Button color="neutral" @click="autoRef.focus()">focus()</Button>
-  <Button color="neutral" @click="logState()">get() / isOpen() / selectedItem()</Button>
-  <Autocomplete ref="autoRef" :items="items" placeholder="Search..." style="max-width:300px" />
+  <Button color="neutral" @click="logState()">get()</Button>
+  <Autocomplete ref="autoRef" :items="items" placeholder="Autocomplete programático" style="max-width:300px" />
 </template>`;
 
-const programmaticVanilla = vanillaSnippet(`<button id="btn-set">set('TypeScript')</button>
-<button id="btn-reset">reset()</button>
-<button id="btn-focus">focus()</button>
-<button id="btn-log">get() / isOpen() / selectedItem()</button>
-<cu-autocomplete id="auto" placeholder="Search..." style="max-width:300px"></cu-autocomplete>`, `  customElements.whenDefined('cu-autocomplete').then(() => {
+const programmaticVanilla = vanillaSnippet(`<cu-button id="auto-prog-set">set('TypeScript')</cu-button>
+<cu-button id="auto-prog-setfree">set('texto libre')</cu-button>
+<cu-button id="auto-prog-reset">reset()</cu-button>
+<cu-button id="auto-prog-focus">focus()</cu-button>
+<cu-button id="auto-prog-get">get()</cu-button>
+<cu-autocomplete id="auto" placeholder="Autocomplete programático" style="max-width:300px"></cu-autocomplete>`, `  customElements.whenDefined('cu-autocomplete').then(() => {
     const auto = document.getElementById('auto');
     auto.items = [
       { label: 'JavaScript', value: 'js' },
       { label: 'TypeScript', value: 'ts' },
       { label: 'Python', value: 'py' },
     ];
-    document.getElementById('btn-set').addEventListener('click', () => auto.set('TypeScript'));
-    document.getElementById('btn-reset').addEventListener('click', () => auto.reset());
-    document.getElementById('btn-focus').addEventListener('click', () => auto.focus());
-    document.getElementById('btn-log').addEventListener('click', () => {
+    const logState = () => {
       console.log('get():', auto.get());
       console.log('isOpen():', auto.isOpen());
       console.log('selectedItem():', auto.selectedItem());
-    });
+    };
+    document.getElementById('auto-prog-set').addEventListener('click', () => { auto.set('TypeScript'); logState(); });
+    document.getElementById('auto-prog-setfree').addEventListener('click', () => { auto.set('texto libre'); logState(); });
+    document.getElementById('auto-prog-reset').addEventListener('click', () => { auto.reset(); logState(); });
+    document.getElementById('auto-prog-focus').addEventListener('click', () => auto.focus());
+    document.getElementById('auto-prog-get').addEventListener('click', logState);
   });`);
 
 const interfaceCode = `interface AutocompleteItem {
@@ -359,6 +352,7 @@ const exposesData = [
         <SectionDemo :vue-code="itemsVue" :vanilla-code="itemsVanilla">
           <div class="playground-col">
             <Autocomplete :items="itemsWithIcon" placeholder="Buscar..." style="max-width:300px" />
+            <Button variant="link" to="#api-interfaces">Ver interfaz AutocompleteItem ↓</Button>
           </div>
         </SectionDemo>
       </section>
@@ -404,43 +398,26 @@ const exposesData = [
       <hr class="playground-separator" />
 
       <section id="programmatic" class="playground-section">
-        <h2>Programmatic</h2>
+        <div class="playground-heading">
+          <h2>Programmatic</h2>
+        </div>
+        <p class="playground-desc">
+          Seguidilla de botones sobre la instancia de abajo — el panel abre acá al lado.
+        </p>
         <SectionDemo :vue-code="programmaticVue" :vanilla-code="programmaticVanilla">
           <div class="playground-col">
-            <h3 id="prog-get">get()</h3>
-            <div class="playground-row">
-              <Button color="neutral" @click="readProgrammaticState()">get()</Button>
-            </div>
-            <p class="playground-code">get(): {{ progGet }}</p>
-
-            <h3 id="prog-set">set()</h3>
             <div class="playground-row">
               <Button color="neutral" @click="autoRef?.set('TypeScript'); readProgrammaticState()">set('TypeScript')</Button>
               <Button color="neutral" @click="autoRef?.set('texto libre'); readProgrammaticState()">set('texto libre')</Button>
-            </div>
-
-            <h3 id="prog-reset">reset()</h3>
-            <div class="playground-row">
               <Button color="neutral" @click="autoRef?.reset(); readProgrammaticState()">reset()</Button>
-            </div>
-
-            <h3 id="prog-focus">focus()</h3>
-            <div class="playground-row">
               <Button color="neutral" @click="autoRef?.focus()">focus()</Button>
+              <Button color="neutral" @click="readProgrammaticState()">get()</Button>
             </div>
-
-            <h3 id="prog-isOpen">isOpen()</h3>
-            <div class="playground-row">
-              <Button color="neutral" @click="readProgrammaticState()">isOpen()</Button>
-            </div>
-            <p class="playground-code">isOpen(): {{ progIsOpen }}</p>
-
-            <h3 id="prog-selectedItem">selectedItem()</h3>
-            <div class="playground-row">
-              <Button color="neutral" @click="readProgrammaticState()">selectedItem()</Button>
-            </div>
-            <p class="playground-code">selectedItem(): {{ progSelectedItem }}</p>
-
+            <p class="playground-state">
+              get(): <strong>{{ progGet }}</strong>
+              · isOpen(): <strong>{{ progIsOpen }}</strong>
+              · selectedItem(): <strong>{{ progSelectedItem }}</strong>
+            </p>
             <Autocomplete ref="autoRef" :items="items" placeholder="Autocomplete programático" style="max-width:300px" />
           </div>
         </SectionDemo>
