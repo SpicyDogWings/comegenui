@@ -98,6 +98,12 @@ const navItems = [
           { label: 'Tabs', path: '/playground/components/tabs' },
         ]
       },
+      {
+        label: 'Lab',
+        children: [
+          { label: 'Navbar', path: '/playground/components/navbar' },
+        ]
+      },
     ]
   },
 ]
