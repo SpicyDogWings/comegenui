@@ -24,6 +24,12 @@ import MonthSlider from '@/components/controls/MonthSlider.vue'
 import YearSlider from '@/components/controls/YearSlider.vue'
 import Calendar from '@/components/controls/Calendar.vue'
 import DatePicker from '@/components/form/DatePicker.vue'
+import DatePickerRange from '@/components/form/DatePickerRange.vue'
+import Label from '@/components/form/Label.vue'
+import Autocomplete from '@/components/form/Autocomplete.vue'
+import DropdownMenu from '@/components/controls/DropdownMenu.vue'
+import Markdown from '@/components/markdown/Markdown.vue'
+import Modal from '@/components/overlay/Modal.vue'
 import { colorsBlock } from '@/plugins/cu-tokens/css'
 
 const STORAGE_KEY = 'cu-theme-builder'
@@ -51,6 +57,13 @@ const tableColumns = [
 
 const themeName = ref('light')
 const modalRef = ref<InstanceType<typeof ThemeManagerModal> | null>(null)
+const modalPreviewRef = ref<InstanceType<typeof Modal> | null>(null)
+
+const dropdownItems = [
+  { label: 'Ver detalle', value: 'detail' },
+  { label: 'Editar', value: 'edit' },
+  { label: 'Eliminar', value: 'delete' },
+]
 
 const colors = ref({
   primary: '#E73F1E',
@@ -495,6 +508,14 @@ onBeforeUnmount(() => {
         </div>
 
         <div class="tb-preview-section">
+          <h3>Dropdown Menu</h3>
+          <div class="tb-preview-row">
+            <DropdownMenu color="primary" label="Opciones" :items="dropdownItems" />
+            <DropdownMenu color="neutral" variant="soft" label="Acciones" :items="dropdownItems" />
+          </div>
+        </div>
+
+        <div class="tb-preview-section">
           <h3>Alerts</h3>
           <div class="tb-preview-row-group">
             <div class="tb-preview-col">
@@ -585,13 +606,14 @@ onBeforeUnmount(() => {
         </div>
 
         <div class="tb-preview-section">
-          <h3>Calendar & Date Picker</h3>
+          <h3>Calendar & Date Picker & Range</h3>
           <div class="tb-preview-row">
             <Calendar model-value="2026-08-11" style="width: 300px;" />
             <Calendar model-value="2026-08-11" variant="solid" year-navigation style="width: 330px;" />
             <Calendar model-value="2026-08-11" color="success" style="width: 300px;" />
             <DatePicker model-value="2026-08-11" style="max-width: 280px;" />
             <DatePicker model-value="2026-08-11" year-navigation style="max-width: 280px;" />
+            <DatePickerRange start-date="2026-09-01" end-date="2026-09-10" style="max-width: 420px;" />
           </div>
         </div>
 
@@ -599,6 +621,10 @@ onBeforeUnmount(() => {
           <div class="tb-preview-section">
             <h3>Inputs</h3>
             <div class="tb-preview-col">
+              <Label label="Nombre" for="tb-input-demo" />
+              <Input id="tb-input-demo" placeholder="Con Label..." />
+              <Label label="Email" for="tb-input-email" color="primary" />
+              <Input id="tb-input-email" placeholder="Label primary..." color="primary" />
               <Input placeholder="Default..." />
               <Input placeholder="Primary..." color="primary" />
               <Input placeholder="Disabled..." :disabled="true" />
@@ -609,7 +635,7 @@ onBeforeUnmount(() => {
 
           <div class="tb-preview-col">
             <div class="tb-preview-section">
-              <h3>Selects</h3>
+              <h3>Selects & Autocomplete</h3>
               <div class="tb-preview-row">
                 <Select placeholder="Select...">
                   <option value="1">Option 1</option>
@@ -620,6 +646,8 @@ onBeforeUnmount(() => {
                   <option value="b">Choice B</option>
                 </Select>
               </div>
+              <Autocomplete placeholder="Buscar..." />
+              <Autocomplete placeholder="Buscar..." color="primary" />
             </div>
 
             <div class="tb-preview-section">
@@ -678,6 +706,22 @@ onBeforeUnmount(() => {
           <Pagination :total-pages="10" :current-page="3" :total-items="100" color="primary" />
         </div>
 
+        <div class="tb-preview-section">
+          <h3>Markdown</h3>
+          <Markdown>
+# Título del tema
+
+Párrafo con **negrita**, *itálica* y `código inline`.
+
+- Item uno
+- Item dos
+
+```js
+const tema = 'builder';
+```
+          </Markdown>
+        </div>
+
         <div class="tb-preview-row-group">
           <div class="tb-preview-section">
             <h3>File Dropzone</h3>
@@ -686,28 +730,18 @@ onBeforeUnmount(() => {
 
           <div class="tb-preview-section">
             <h3>Modal</h3>
-            <div class="cu-modal" data-size="sm" data-height="auto">
-              <header class="cu-modal-header">
-                <div class="cu-modal-header-text">
-                  <div class="cu-modal-title-row">
-                    <h2 class="cu-modal-title">Confirm Action</h2>
-                  </div>
-                  <p class="cu-modal-description">This action cannot be undone.</p>
-                </div>
-                <Button color="neutral" variant="ghost" class="cu-modal-close" aria-label="Close">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                </Button>
-              </header>
-              <main class="cu-modal-body">
-                <p>Are you sure you want to delete this item?</p>
-              </main>
-              <footer class="cu-modal-footer">
-                <div class="cu-modal-footer-default">
-                  <Button color="neutral" variant="ghost">Cancel</Button>
-                  <Button color="danger">Delete</Button>
-                </div>
-              </footer>
+            <div class="tb-preview-row">
+              <Button color="primary" @click="modalPreviewRef?.open()">Abrir Modal</Button>
+              <Button color="danger" variant="soft" @click="modalPreviewRef?.open()">Modal Danger</Button>
             </div>
+            <Modal
+              ref="modalPreviewRef"
+              size="sm"
+              title="Confirmar acción"
+              description="El modal usa los tokens del tema activo."
+            >
+              <p>Contenido del modal con el tema del ThemeBuilder.</p>
+            </Modal>
           </div>
         </div>
       </main>

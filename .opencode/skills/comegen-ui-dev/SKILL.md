@@ -16,11 +16,13 @@ Desarrollo de componentes **comegen-ui** (Vue 3 + Custom Elements + UnoCSS, UMD 
 - "Buildear la lib" → [Build y validación](#build-y-validación).
 - "Testear componente" → [Build y validación](#build-y-validación).
 - "Playground / probar componente" → [Playground](#playground--patrón-de-página).
+- "Agregar/modificar un token" → [Tokens ↔ ThemeBuilder](#tokens--themebuilder).
+- "Agregar componente a la lib" → además, su preview en el ThemeBuilder ([Tokens ↔ ThemeBuilder](#tokens--themebuilder)).
 
 ## Cuándo NO se activa
 
 - Usar comegen-ui en **otro** proyecto (esa es la skill de uso que viaja con el zip).
-- Modificar el build system (`build-lib.ts`, `vite.config.ts`) o los tokens (`cu-tokens/`).
+- Modificar el build system (`build-lib.ts`, `vite.config.ts`).
 - Storybook: **obsoleto, eliminado**. Probar en el playground.
 
 ---
@@ -188,6 +190,15 @@ const outlineItems = [
 | `Button.vue` setea `--btn-*` inline → no sobreescribibles desde afuera | Elegir la variante según el fondo: `soft` en claros, `solid` sobre fondos `neutral` (texto via `--cu-color-surface`, que es el opuesto de `neutral` en los 3 temas). |
 | Tooltips nativos (`title`) | No cuentan como feedback visible de una prop; si debe "verse", renderizar texto real. |
 | Swap animado de textos | Un solo `<Transition mode="out-in">` con `:key`; dos Transitions independientes popean al resetear. |
+
+---
+
+## Tokens ↔ ThemeBuilder
+
+El ThemeBuilder (`src/pages/playground/ThemeBuilder.vue`) **no genera tokens propios**: consume `colorsBlock()` desde `src/plugins/cu-tokens/css.ts` (el generador compartido con `build:lib`).
+
+1. **Si modificás o agregás un token** → tocá SOLO el generador (`css.ts`) y verificá que la variable salga en el CSS exportado del ThemeBuilder (modal → Copy/Download CSS). Test de contrato: `src/plugins/cu-tokens/css.test.ts`.
+2. **El ThemeBuilder previsualiza TODOS los componentes de la lib** — al agregar un componente a `src/lib/`, agregá su preview al ThemeBuilder. Inventario: `ls src/lib/*/`.
 
 ---
 
