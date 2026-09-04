@@ -111,8 +111,12 @@ const navItems = [
 
 <template>
   <section class="playground">
-    <div class="playground-headerbar">
-      <h1>{{ title || 'Playground' }}</h1>
+    <div class="playground-topbar">
+      <div class="playground-topbar-left">
+        <span class="playground-topbar-brand">ComegenUI</span>
+        <span class="playground-topbar-divider" aria-hidden="true"></span>
+        <span class="playground-topbar-title">{{ title || 'Playground' }}</span>
+      </div>
       <div class="playground-header-actions">
         <Badge
           :color="inLib ? 'success' : 'neutral'"
@@ -151,12 +155,35 @@ const navItems = [
   color: var(--cu-color-neutral);
 }
 
-.playground-headerbar {
+.playground-topbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 2rem;
+  padding: 1rem 2.5rem;
   border-bottom: var(--cu-border-thin) solid var(--cu-border-color);
+}
+
+.playground-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.playground-topbar-brand {
+  font-size: var(--cu-font-size-md);
+  font-weight: var(--cu-font-weight-bold);
+  letter-spacing: -0.01em;
+}
+
+.playground-topbar-divider {
+  width: 1px;
+  height: 1.1rem;
+  background: var(--cu-border-color);
+}
+
+.playground-topbar-title {
+  font-size: var(--cu-font-size-sm);
+  opacity: 0.55;
 }
 
 .playground-header-actions {

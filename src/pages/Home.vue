@@ -1,99 +1,31 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
+import { version } from "../../package.json";
+import { theme, loaded, setTheme, getThemeNames } from "@/plugins/cu-tokens";
 import Button from "@/components/buttons/Button.vue";
+import Badge from "@/components/information/Badge.vue";
+import Alert from "@/components/information/Alert.vue";
 import Input from "@/components/form/Input.vue";
 import Switch from "@/components/form/Switch.vue";
 import Checkbox from "@/components/form/Checkbox.vue";
+import Markdown from "@/components/markdown/Markdown.vue";
 import ToggleColorSheme from "@/components/buttons/ToggleColorSheme.vue";
 
 const demoValue = ref("");
 const notifications = ref(true);
 const keepSession = ref(true);
 
-const indexGroups = [
-  {
-    group: "Buttons",
-    items: [
-      { label: "Button", path: "/playground/components/button" },
-      { label: "CopyButton", path: "/playground/components/copy-button" },
-      { label: "FloatingButton", path: "/playground/components/floating-button" },
-      { label: "ToggleColorScheme", path: "/playground/components/toggle-color-scheme" },
-    ],
-  },
-  {
-    group: "Form",
-    items: [
-      { label: "Autocomplete", path: "/playground/components/autocomplete" },
-      { label: "Checkbox", path: "/playground/components/checkbox" },
-      { label: "ColorPicker", path: "/playground/components/color-picker" },
-      { label: "DatePicker", path: "/playground/components/date-picker" },
-      { label: "DatePickerRange", path: "/playground/components/date-picker-range" },
-      { label: "FileInput", path: "/playground/components/file-input" },
-      { label: "FileInputZone", path: "/playground/components/file-input-zone" },
-      { label: "Input", path: "/playground/components/input" },
-      { label: "Label", path: "/playground/components/label" },
-      { label: "Select", path: "/playground/components/select" },
-      { label: "Switch", path: "/playground/components/switch" },
-      { label: "Textarea", path: "/playground/components/textarea" },
-    ],
-  },
-  {
-    group: "Controls",
-    items: [
-      { label: "MonthSlider", path: "/playground/components/month-slider" },
-      { label: "YearSlider", path: "/playground/components/year-slider" },
-      { label: "Calendar", path: "/playground/components/calendar" },
-      { label: "DropdownMenu", path: "/playground/components/dropdown-menu" },
-      { label: "Pagination", path: "/playground/components/pagination" },
-    ],
-  },
-  {
-    group: "Information",
-    items: [
-      { label: "Alert", path: "/playground/components/alert" },
-      { label: "Badge", path: "/playground/components/badge" },
-      { label: "Card", path: "/playground/components/card" },
-    ],
-  },
-  {
-    group: "Markdown",
-    items: [
-      { label: "Markdown", path: "/playground/components/markdown" },
-      { label: "CodeBlock", path: "/playground/components/codeblock" },
-      { label: "Blockquote", path: "/playground/components/blockquote" },
-    ],
-  },
-  {
-    group: "Overlay",
-    items: [
-      { label: "Modal", path: "/playground/components/modal" },
-      { label: "Collapse", path: "/playground/components/collapse" },
-      { label: "Dropdown", path: "/playground/components/dropdown" },
-    ],
-  },
-  {
-    group: "Data",
-    items: [
-      { label: "Table", path: "/playground/components/table" },
-      { label: "AdvancedTable", path: "/playground/components/advanced-table" },
-      { label: "EditableRow", path: "/playground/components/editable-row" },
-    ],
-  },
-  {
-    group: "Root",
-    items: [{ label: "Tabs", path: "/playground/components/tabs" }],
-  },
-  {
-    group: "Lab",
-    items: [{ label: "Navbar", path: "/playground/components/navbar" }],
-  },
-];
+const themeNames = computed(() => (loaded.value ? getThemeNames() : []));
+const currentTheme = computed(() => theme.value);
 </script>
 
 <template>
   <section class="home">
     <header class="home-topbar">
-      <span class="home-brand">ComegenUI</span>
+      <div class="home-topbar-left">
+        <span class="home-brand">ComegenUI</span>
+        <Badge color="neutral" variant="subtle">v{{ version }}</Badge>
+      </div>
       <ToggleColorSheme />
     </header>
 
@@ -150,27 +82,57 @@ const indexGroups = [
 // &lt;cu-button color="primary"&gt;Click me&lt;/cu-button&gt;</code></pre>
           </div>
         </div>
+        <Alert color="primary" variant="subtle">
+          Hecha para agentes: el zip de la lib viaja con la skill de uso y
+          ./update.sh la instala en .agents/skills/ de tu proyecto.
+        </Alert>
       </section>
 
-      <section class="home-index">
-        <div class="home-index-head">
-          <h2 class="home-heading">Índice</h2>
-          <p class="home-index-note">
-            Cada componente tiene su página en el playground: props, eventos y
-            demos en vivo.
+      <section class="home-doc">
+        <Markdown>
+          # Markdown, tal cual
+
+          Este bloque lo renderiza el componente **Markdown** de la lib: el
+          texto va crudo en el slot y sale parseado — headings, **negritas**,
+          `código inline`, [links](/playground/components/markdown) y listas
+          como esta.
+
+          - Sanitizado con DOMPurify.
+          - Renderiza al montar, sin configuración.
+        </Markdown>
+      </section>
+
+      <section v-if="themeNames.length > 1" class="home-themes">
+        <div class="home-themes-head">
+          <h2 class="home-heading">Un atributo, todos los temas</h2>
+          <p class="home-themes-note">
+            Un data-theme cambia todo el ecosistema. Tocá uno para activarlo.
           </p>
         </div>
-        <div class="home-index-grid">
-          <div v-for="group in indexGroups" :key="group.group" class="home-index-group">
-            <h3 class="home-index-group-label">{{ group.group }}</h3>
-            <RouterLink
-              v-for="item in group.items"
-              :key="item.path"
-              :to="item.path"
-              class="home-index-link"
-            >
-              {{ item.label }}
-            </RouterLink>
+        <div class="home-themes-grid">
+          <div
+            v-for="name in themeNames"
+            :key="name"
+            class="home-theme"
+            :class="{ 'home-theme--active': currentTheme === name }"
+            :data-theme="name"
+            role="button"
+            tabindex="0"
+            :aria-pressed="currentTheme === name"
+            @click="setTheme(name)"
+            @keydown.enter.prevent="setTheme(name)"
+            @keydown.space.prevent="setTheme(name)"
+          >
+            <div class="home-theme-samples" inert>
+              <div class="home-theme-row">
+                <Button color="primary" variant="solid">Botón</Button>
+                <Badge color="success" variant="subtle">Estable</Badge>
+              </div>
+              <div class="home-theme-row">
+                <Switch :model-value="true" color="primary" />
+              </div>
+            </div>
+            <span class="home-theme-name">{{ name }}</span>
           </div>
         </div>
       </section>
@@ -206,6 +168,12 @@ const indexGroups = [
   align-items: center;
   padding: 1rem 2.5rem;
   border-bottom: var(--cu-border-thin) solid var(--cu-border-color);
+}
+
+.home-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .home-brand {
@@ -333,62 +301,76 @@ const indexGroups = [
   box-sizing: border-box;
 }
 
-.home-index {
+.home-doc {
+  max-width: 42rem;
+}
+
+.home-themes {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
-.home-index-head {
+.home-themes-head {
   display: flex;
   align-items: baseline;
   gap: 1rem;
   flex-wrap: wrap;
 }
 
-.home-index-note {
+.home-themes-note {
   font-size: var(--cu-font-size-sm);
   opacity: 0.6;
 }
 
-.home-index-grid {
+.home-themes-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
-  gap: 2rem 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 1rem;
 }
 
-.home-index-group {
+.home-theme {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
-}
-
-.home-index-group-label {
-  font-size: var(--cu-font-size-sm);
-  font-weight: var(--cu-font-weight-semibold);
-  padding-bottom: 0.4rem;
-  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);
-}
-
-.home-index-link {
-  font-size: var(--cu-font-size-sm);
+  gap: 0.75rem;
+  padding: 1.25rem;
+  border: var(--cu-border-thin) solid var(--cu-border-color);
+  border-radius: var(--cu-radius-lg);
+  background-color: var(--cu-color-surface);
   color: var(--cu-color-neutral);
-  text-decoration: none;
-  width: fit-content;
-  transition: color 150ms ease;
+  cursor: pointer;
+  transition: border-color 150ms ease;
 }
 
-.home-index-link:hover {
-  color: var(--cu-color-primary);
-  text-decoration: underline;
-  text-underline-offset: 3px;
+.home-theme:hover {
+  border-color: var(--cu-color-primary);
 }
 
-.home-index-link:focus-visible,
-.home-hero-actions :focus-visible {
+.home-theme:focus-visible {
   outline: 2px solid var(--cu-color-primary);
   outline-offset: 2px;
-  border-radius: 2px;
+}
+
+.home-theme--active {
+  outline: 2px solid var(--cu-color-primary);
+  outline-offset: 2px;
+}
+
+.home-theme-samples {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.home-theme-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.home-theme-name {
+  font-size: var(--cu-font-size-sm);
+  font-weight: var(--cu-font-weight-semibold);
 }
 
 .home-footer {
