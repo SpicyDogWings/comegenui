@@ -234,6 +234,32 @@ function buildSharedVariables(): string {
     --cu-border-color-focus: ${b.color.focus};`
 }
 
+/* El form de edición usa tokens propios que invierten con la polaridad del
+   surface del tema editado (tinta oscura en light, clara en dark) — así el
+   form sigue siendo legible mientras armás un tema oscuro. La tipografía y
+   los espacios quedan fijos para que el form no se mueva mientras editás. */
+const controlsStyles = computed(() => {
+  const dark = luma(colors.value.surface) < 0.5
+  const ink = dark ? '#e5e5e5' : '#2c2c2c'
+  return {
+    '--cu-color-neutral': ink,
+    '--cu-color-neutral-text': dark ? '#ffffff' : '#000000',
+    '--cu-color-neutral-hover': dark ? '#ffffff' : '#000000',
+    '--cu-color-neutral-active': dark ? '#d4d4d4' : '#343434',
+    '--cu-color-neutral-ghost-hover': hexToRgba(ink, 0.1),
+    '--cu-color-neutral-ghost-active': hexToRgba(ink, 0.2),
+    '--cu-color-neutral-soft': hexToRgba(ink, 0.15),
+    '--cu-color-neutral-soft-hover': hexToRgba(ink, 0.25),
+    '--cu-color-neutral-soft-active': hexToRgba(ink, 0.35),
+    '--cu-color-neutral-subtle': hexToRgba(ink, 0.1),
+    '--cu-color-neutral-subtle-hover': hexToRgba(ink, 0.2),
+    '--cu-color-neutral-subtle-active': hexToRgba(ink, 0.3),
+    '--cu-color-neutral-subtle-border': hexToRgba(ink, 0.5),
+    '--cu-color-surface': dark ? '#1a1a1a' : '#ffffff',
+    '--cu-border-color': dark ? '#4b5563' : '#d1d5db',
+  }
+})
+
 /* mismo generador que la lib (cu-tokens): incluye --cu-color-*-code y
    el esquema --cu-code-* — nunca diverge */
 const cssColors = computed(() => colorsBlock(colors.value))
@@ -383,7 +409,7 @@ onBeforeUnmount(() => {
 <template>
   <PlaygroundLayout title="Theme Builder">
     <div class="tb-layout">
-      <aside class="tb-controls">
+      <aside class="tb-controls" :style="controlsStyles">
         <section class="tb-section">
           <h2>Colors</h2>
           <div class="tb-colors-list">
@@ -825,23 +851,10 @@ const tema = 'builder';
 </template>
 
 <style scoped>
+/* Colores del form: dinámicos via :style="controlsStyles" (invierten con la
+   polaridad del surface del tema editado). Acá solo lo estructural — la
+   tipografía y los espacios quedan fijos para que el form no se mueva. */
 .tb-controls {
-  --cu-color-primary: #1774A4;
-  --cu-color-primary-soft: rgba(23, 116, 164, 0.15);
-  --cu-color-neutral: #2c2c2c;
-  --cu-color-neutral-text: #000000;
-  --cu-color-neutral-hover: #000000;
-  --cu-color-neutral-active: #343434;
-  --cu-color-neutral-ghost-hover: rgba(44, 44, 44, 0.1);
-  --cu-color-neutral-ghost-active: rgba(44, 44, 44, 0.2);
-  --cu-color-neutral-soft: rgba(44, 44, 44, 0.15);
-  --cu-color-neutral-soft-hover: rgba(44, 44, 44, 0.25);
-  --cu-color-neutral-soft-active: rgba(44, 44, 44, 0.35);
-  --cu-color-neutral-subtle: rgba(44, 44, 44, 0.1);
-  --cu-color-neutral-subtle-hover: rgba(44, 44, 44, 0.2);
-  --cu-color-neutral-subtle-active: rgba(44, 44, 44, 0.3);
-  --cu-color-neutral-subtle-border: rgba(44, 44, 44, 0.5);
-  --cu-color-surface: #ffffff;
   --cu-font-sans: Inter, system-ui, sans-serif;
   --cu-font-mono: Fira Code, monospace;
   --cu-font-size-xs: 0.75rem;
@@ -852,7 +865,6 @@ const tema = 'builder';
   --cu-space-sm: 8px;
   --cu-radius: 8px;
   --cu-border-thin: 1px;
-  --cu-border-color: #d1d5db;
 }
 .tb-layout {
   display: flex;
