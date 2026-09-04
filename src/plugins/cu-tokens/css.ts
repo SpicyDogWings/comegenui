@@ -3,7 +3,7 @@ import { DEFAULTS, DEFAULT_COLORS, extractColors, extractShared } from './defaul
 
 let styleEl: HTMLStyleElement | null = null
 
-function colorVar(name: string, value: string, surface: string) {
+export function colorVar(name: string, value: string, surface: string) {
   return `--cu-color-${name}: ${value};
     --cu-color-${name}-text: ${toHex(darken(value, 0.25))};
     --cu-color-${name}-hover: ${toHex(darken(value, 0.1))};
@@ -20,7 +20,7 @@ function colorVar(name: string, value: string, surface: string) {
     --cu-color-${name}-code: ${toHex(mix(value, surface, 0.4))};`
 }
 
-function colorsBlock(colors: any) {
+export function colorsBlock(colors: any) {
   return `${colorVar('primary', colors.primary, colors.surface)}
     ${colorVar('secondary', colors.secondary, colors.surface)}
     ${colorVar('neutral', colors.neutral, colors.surface)}

@@ -24,6 +24,7 @@ import MonthSlider from '@/components/controls/MonthSlider.vue'
 import YearSlider from '@/components/controls/YearSlider.vue'
 import Calendar from '@/components/controls/Calendar.vue'
 import DatePicker from '@/components/form/DatePicker.vue'
+import { colorsBlock } from '@/plugins/cu-tokens/css'
 
 const STORAGE_KEY = 'cu-theme-builder'
 
@@ -133,44 +134,6 @@ function hexToRgba(hex: string, alpha: number) {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`
 }
 
-function colorVar(name: string, value: string) {
-  const darken = (c: string, amount: number) => {
-    const hex = c.replace('#', '')
-    const r = Math.max(0, parseInt(hex.slice(0, 2), 16) - Math.round(255 * amount))
-    const g = Math.max(0, parseInt(hex.slice(2, 4), 16) - Math.round(255 * amount))
-    const b = Math.max(0, parseInt(hex.slice(4, 6), 16) - Math.round(255 * amount))
-    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`
-  }
-  const lighten = (c: string, amount: number) => {
-    const hex = c.replace('#', '')
-    const r = Math.min(255, parseInt(hex.slice(0, 2), 16) + Math.round(255 * amount))
-    const g = Math.min(255, parseInt(hex.slice(2, 4), 16) + Math.round(255 * amount))
-    const b = Math.min(255, parseInt(hex.slice(4, 6), 16) + Math.round(255 * amount))
-    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`
-  }
-  const transparentize = (c: string, amount: number) => {
-    const hex = c.replace('#', '')
-    const r = parseInt(hex.slice(0, 2), 16)
-    const g = parseInt(hex.slice(2, 4), 16)
-    const b = parseInt(hex.slice(4, 6), 16)
-    return `rgba(${r}, ${g}, ${b}, ${1 - amount})`
-  }
-
-  return `--cu-color-${name}: ${value};
-    --cu-color-${name}-text: ${darken(value, 0.25)};
-    --cu-color-${name}-hover: ${darken(value, 0.1)};
-    --cu-color-${name}-active: ${lighten(value, 0.1)};
-    --cu-color-${name}-ghost-hover: ${transparentize(value, 0.9)};
-    --cu-color-${name}-ghost-active: ${transparentize(value, 0.8)};
-    --cu-color-${name}-soft: ${transparentize(value, 0.85)};
-    --cu-color-${name}-soft-hover: ${transparentize(value, 0.75)};
-    --cu-color-${name}-soft-active: ${transparentize(value, 0.65)};
-    --cu-color-${name}-subtle: ${transparentize(value, 0.9)};
-    --cu-color-${name}-subtle-hover: ${transparentize(value, 0.8)};
-    --cu-color-${name}-subtle-active: ${transparentize(value, 0.7)};
-    --cu-color-${name}-subtle-border: ${transparentize(value, 0.5)};`
-}
-
 function buildCssVariables(): string {
   const t = typography.value
   const s = spacing.value
@@ -178,9 +141,9 @@ function buildCssVariables(): string {
   const sh = shadows.value
   const b = borders.value
 
-  const colorsCSS = Object.entries(colors.value)
-    .map(([name, value]) => colorVar(name, value))
-    .join('\n    ')
+  /* mismo generador que la lib (cu-tokens): incluye --cu-color-*-code y
+     el esquema --cu-code-* — nunca diverge */
+  const colorsCSS = colorsBlock(colors.value)
 
   const shadowColor = hexToRgba(sh.color, 1)
   const shadowAlpha05 = hexToRgba(sh.color, 0.05)
