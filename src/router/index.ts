@@ -68,6 +68,11 @@ const router = createRouter({
               component: () => import("@/pages/playground/components/Card.vue")
             },
             {
+              path: "loader",
+              name: "Loader playground",
+              component: () => import("@/pages/playground/components/Loader.vue")
+            },
+            {
               path: "modal",
               name: "Modal playground",
               component: () => import("@/pages/playground/components/Modal.vue")

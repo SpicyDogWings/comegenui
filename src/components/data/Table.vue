@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, type PropType } from "vue";
-import Loader from "../overlay/Loader.vue";
+import Loader from "../information/Loader.vue";
 
 interface Column {
   key: string;
