@@ -730,9 +730,30 @@ const tema = 'builder';
 
           <div class="tb-preview-section">
             <h3>Modal</h3>
+            <div class="cu-modal" data-size="sm" data-height="auto">
+              <header class="cu-modal-header">
+                <div class="cu-modal-header-text">
+                  <div class="cu-modal-title-row">
+                    <h2 class="cu-modal-title">Confirm Action</h2>
+                  </div>
+                  <p class="cu-modal-description">This action cannot be undone.</p>
+                </div>
+                <Button color="neutral" variant="ghost" class="cu-modal-close" aria-label="Close">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </Button>
+              </header>
+              <main class="cu-modal-body">
+                <p>Are you sure you want to delete this item?</p>
+              </main>
+              <footer class="cu-modal-footer">
+                <div class="cu-modal-footer-default">
+                  <Button color="neutral" variant="ghost">Cancel</Button>
+                  <Button color="danger">Delete</Button>
+                </div>
+              </footer>
+            </div>
             <div class="tb-preview-row">
               <Button color="primary" @click="modalPreviewRef?.open()">Abrir Modal</Button>
-              <Button color="danger" variant="soft" @click="modalPreviewRef?.open()">Modal Danger</Button>
             </div>
             <Modal
               ref="modalPreviewRef"
