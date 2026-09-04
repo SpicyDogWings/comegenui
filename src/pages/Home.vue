@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { version } from "../../package.json";
 import { theme, loaded, setTheme, getThemeNames } from "@/plugins/cu-tokens";
+import AppLayout from "@/layouts/AppLayout.vue";
 import Button from "@/components/buttons/Button.vue";
 import Badge from "@/components/information/Badge.vue";
 import Alert from "@/components/information/Alert.vue";
@@ -9,8 +9,6 @@ import Input from "@/components/form/Input.vue";
 import Switch from "@/components/form/Switch.vue";
 import Checkbox from "@/components/form/Checkbox.vue";
 import Markdown from "@/components/markdown/Markdown.vue";
-import LucideGitLab from "@/components/icons/LucideGitLab.vue";
-import ThemeDropdown from "@/components/theme/ThemeDropdown.vue";
 
 const demoValue = ref("");
 const notifications = ref(true);
@@ -21,28 +19,9 @@ const currentTheme = computed(() => theme.value);
 </script>
 
 <template>
-  <section class="home">
-    <header class="home-topbar">
-      <div class="home-topbar-left">
-        <span class="home-brand">ComegenUI</span>
-        <Badge color="neutral" variant="subtle">v{{ version }}</Badge>
-      </div>
-      <div class="home-topbar-actions">
-        <a
-          class="home-topbar-icon"
-          href="https://gitlab.com/SpicyDogWings/comegen-ui"
-          target="_blank"
-          rel="noopener"
-          aria-label="Repositorio en GitLab"
-          title="GitLab"
-        >
-          <LucideGitLab />
-        </a>
-        <ThemeDropdown />
-      </div>
-    </header>
-
-    <main class="home-main">
+  <AppLayout>
+    <div class="home-scroll">
+      <main class="home-main">
       <section class="home-hero">
         <div class="home-hero-copy">
           <h1 class="home-hero-title">Componentes para llevar.</h1>
@@ -151,67 +130,17 @@ const currentTheme = computed(() => theme.value);
       </section>
     </main>
 
-    <footer class="home-footer">
-      <p>Esta página está hecha con la lib.</p>
-    </footer>
-  </section>
+      <footer class="home-footer">
+        <p>Esta página está hecha con la lib.</p>
+      </footer>
+    </div>
+  </AppLayout>
 </template>
 
 <style scoped>
-.home {
-  width: 100dvw;
-  height: 100dvh;
+.home-scroll {
+  flex: 1;
   overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  background-color: var(--cu-color-surface);
-  font-family: var(--cu-font-sans);
-  color: var(--cu-color-neutral);
-  box-sizing: border-box;
-}
-
-.home :is(h1, h2, h3, p, span) {
-  margin: 0;
-  color: inherit;
-}
-
-.home-topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 2.5rem;
-  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);
-}
-
-.home-topbar-left {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.home-topbar-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.home-topbar-icon {
-  display: inline-flex;
-  font-size: var(--cu-font-size-md);
-  color: var(--cu-color-neutral);
-  opacity: 0.75;
-  transition: opacity 150ms ease, color 150ms ease;
-}
-
-.home-topbar-icon:hover {
-  opacity: 1;
-  color: var(--cu-color-primary);
-}
-
-.home-brand {
-  font-size: var(--cu-font-size-md);
-  font-weight: var(--cu-font-weight-bold);
-  letter-spacing: -0.01em;
 }
 
 .home-main {

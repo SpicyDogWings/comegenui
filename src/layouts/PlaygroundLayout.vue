@@ -1,10 +1,9 @@
 <script setup lang="ts">
+import AppLayout from '@/layouts/AppLayout.vue'
 import Navbar from '@/components/lab/collapse/navigation/Navbar.vue'
 import Outline from '@/components/lab/collapse/navigation/Outline.vue'
 import type { OutlineItem } from '@/components/lab/collapse/navigation/Outline.vue'
 import Badge from '@/components/information/Badge.vue'
-import LucideGitLab from '@/components/icons/LucideGitLab.vue'
-import ThemeDropdown from '@/components/theme/ThemeDropdown.vue'
 import { useLibStatus } from '@/pages/playground/useLibStatus'
 
 defineProps<{
@@ -111,35 +110,21 @@ const navItems = [
 </script>
 
 <template>
-  <section class="playground">
-    <div class="playground-topbar">
-      <div class="playground-topbar-left">
-        <RouterLink to="/" class="playground-topbar-brand">ComegenUI</RouterLink>
-        <span class="playground-topbar-divider" aria-hidden="true"></span>
-        <span class="playground-topbar-title">{{ title || 'Playground' }}</span>
-      </div>
-      <div class="playground-header-actions">
-        <Badge
-          :color="inLib ? 'success' : 'neutral'"
-          variant="subtle"
-          :title="`Entry point en src/lib: ${libKey}`"
-        >
-          {{ inLib ? 'En lib' : 'No en lib' }}
-        </Badge>
-        <a
-          class="playground-topbar-icon"
-          href="https://gitlab.com/SpicyDogWings/comegen-ui"
-          target="_blank"
-          rel="noopener"
-          aria-label="Repositorio en GitLab"
-          title="GitLab"
-        >
-          <LucideGitLab />
-        </a>
-        <ThemeDropdown />
-      </div>
-    </div>
-    <div class="playground-body">
+  <AppLayout>
+    <template #title>
+      <span class="playground-topbar-divider" aria-hidden="true"></span>
+      <span class="playground-topbar-title">{{ title || 'Playground' }}</span>
+    </template>
+    <template #actions>
+      <Badge
+        :color="inLib ? 'success' : 'neutral'"
+        variant="subtle"
+        :title="`Entry point en src/lib: ${libKey}`"
+      >
+        {{ inLib ? 'En lib' : 'No en lib' }}
+      </Badge>
+    </template>
+    <div class="playground">
       <aside class="playground-sidebar">
         <Navbar :items="navItems" search />
       </aside>
@@ -148,61 +133,19 @@ const navItems = [
         <slot />
       </div>
     </div>
-  </section>
+  </AppLayout>
 </template>
 
 <style scoped>
 .playground {
-  width: 100dvw;
-  height: 100dvh;
+  flex: 1;
+  min-height: 0;
   display: flex;
-  flex-direction: column;
-  background-color: var(--cu-color-surface);
-  font-family: var(--cu-font-sans);
-  color: var(--cu-color-neutral);
+  overflow: hidden;
 }
 
 .playground :is(h1, h2, h3, h4, h5, h6, p, span, a, li, label) {
   color: var(--cu-color-neutral);
-}
-
-.playground-topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 2.5rem;
-  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);
-}
-
-.playground-topbar-left {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.playground-topbar-brand {
-  font-size: var(--cu-font-size-md);
-  font-weight: var(--cu-font-weight-bold);
-  letter-spacing: -0.01em;
-  color: var(--cu-color-neutral);
-  text-decoration: none;
-}
-
-.playground-topbar-brand:hover {
-  opacity: 0.8;
-}
-
-.playground-topbar-icon {
-  display: inline-flex;
-  font-size: var(--cu-font-size-md);
-  color: var(--cu-color-neutral);
-  opacity: 0.75;
-  transition: opacity 150ms ease, color 150ms ease;
-}
-
-.playground-topbar-icon:hover {
-  opacity: 1;
-  color: var(--cu-color-primary);
 }
 
 .playground-topbar-divider {
@@ -214,18 +157,6 @@ const navItems = [
 .playground-topbar-title {
   font-size: var(--cu-font-size-sm);
   opacity: 0.55;
-}
-
-.playground-header-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.playground-body {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
 }
 
 .playground-sidebar {
