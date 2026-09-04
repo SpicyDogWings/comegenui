@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import ToggleColorSheme from '@/components/buttons/ToggleColorSheme.vue'
+import ThemeDropdown from '@/components/theme/ThemeDropdown.vue'
 import Navbar from '@/components/lab/collapse/navigation/Navbar.vue'
 import Outline from '@/components/lab/collapse/navigation/Outline.vue'
 import type { OutlineItem } from '@/components/lab/collapse/navigation/Outline.vue'
 import Badge from '@/components/information/Badge.vue'
 import LucideGitLab from '@/components/icons/LucideGitLab.vue'
+import ThemeDropdown from '@/components/theme/ThemeDropdown.vue'
 import { useLibStatus } from '@/pages/playground/useLibStatus'
 
 defineProps<{
@@ -136,7 +137,7 @@ const navItems = [
         >
           <LucideGitLab />
         </a>
-        <ToggleColorSheme />
+        <ThemeDropdown />
       </div>
     </div>
     <div class="playground-body">

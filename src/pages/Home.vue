@@ -10,7 +10,7 @@ import Switch from "@/components/form/Switch.vue";
 import Checkbox from "@/components/form/Checkbox.vue";
 import Markdown from "@/components/markdown/Markdown.vue";
 import LucideGitLab from "@/components/icons/LucideGitLab.vue";
-import ToggleColorSheme from "@/components/buttons/ToggleColorSheme.vue";
+import ThemeDropdown from "@/components/theme/ThemeDropdown.vue";
 
 const demoValue = ref("");
 const notifications = ref(true);
@@ -38,7 +38,7 @@ const currentTheme = computed(() => theme.value);
         >
           <LucideGitLab />
         </a>
-        <ToggleColorSheme />
+        <ThemeDropdown />
       </div>
     </header>
 
