@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
+import Table from "@/components/data/Table.vue";
 import Button from "@/components/buttons/Button.vue";
 import Pagination from "@/components/controls/Pagination.vue";
 
@@ -11,10 +12,48 @@ const outlineItems = [
   { label: 'With Page Size', id: 'page-size' },
   { label: 'First & Last', id: 'first-last' },
   { label: 'Programmatic', id: 'programmatic' },
+  {
+    label: 'API',
+    id: 'api',
+    children: [
+      { label: 'Props', id: 'api-props' },
+      { label: 'Slots', id: 'api-slots' },
+      { label: 'Events', id: 'api-events' },
+      { label: 'Exposes', id: 'api-exposes' },
+    ],
+  },
 ];
 
 const progPage = ref(1);
 const progItemsPerPage = ref(10);
+
+const apiColumns = [
+  { key: 'name', label: 'Nombre' },
+  { key: 'type', label: 'Tipo' },
+  { key: 'default', label: 'Default' },
+  { key: 'description', label: 'Descripción' },
+];
+
+const propsData = [
+  { name: 'color', type: 'string', default: '"neutral"', description: 'primary, secondary, neutral, success, warning, danger' },
+  { name: 'variant', type: 'string', default: '"soft"', description: 'outlined, soft, ghost, subtle, none' },
+  { name: 'currentPage', type: 'number', default: '1', description: 'Página actual (v-model:current-page)' },
+  { name: 'totalPages', type: 'number', default: '1', description: 'Total de páginas' },
+  { name: 'totalItems', type: 'number', default: '0', description: 'Total de items (texto "X–Y de Z")' },
+  { name: 'itemsPerPage', type: 'number', default: '10', description: 'Items por página (v-model:items-per-page)' },
+  { name: 'showPageSize', type: 'boolean', default: 'false', description: 'Muestra el select de items por página' },
+  { name: 'pageSizeOptions', type: 'number[]', default: '[5, 10, 20, 50]', description: 'Opciones del select de items por página' },
+  { name: 'showFirstAndLast', type: 'boolean', default: 'false', description: 'Muestra botones primera/última' },
+];
+
+const slotsData: { name: string; description: string }[] = [];
+
+const eventsData = [
+  { name: 'update:currentPage', type: '(page: number) => void', description: 'Cambia la página (v-model:current-page)' },
+  { name: 'update:itemsPerPage', type: '(n: number) => void', description: 'Cambia items por página (v-model:items-per-page)' },
+];
+
+const exposesData: { name: string; type: string; description: string }[] = [];
 
 const currentPage = ref(1);
 
@@ -144,6 +183,23 @@ const totalItems = ref(87);
         </SectionDemo>
       </section>
 
+      <hr class="playground-separator" />
+
+      <section id="api" class="playground-section">
+        <h2>API</h2>
+
+        <h3 id="api-props">Props</h3>
+        <Table :columns="apiColumns" :data="propsData" variant="ghost" compact />
+
+        <h3 id="api-slots">Slots</h3>
+        <Table :columns="apiColumns" :data="slotsData" empty="No tiene slots" variant="ghost" compact />
+
+        <h3 id="api-events">Events</h3>
+        <Table :columns="apiColumns" :data="eventsData" variant="ghost" compact />
+
+        <h3 id="api-exposes">Exposes</h3>
+        <Table :columns="apiColumns" :data="exposesData" empty="No expone métodos (usa v-model)" variant="ghost" compact />
+      </section>
     </div>
   </PlaygroundLayout>
 </template>
