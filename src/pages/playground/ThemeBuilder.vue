@@ -148,6 +148,29 @@ function hexToRgba(hex: string, alpha: number) {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`
 }
 
+/* neutral es la tinta (títulos, labels, texto del layout): en temas oscuros
+   debe ser claro. Si al editar el surface el neutral queda con la misma
+   polaridad (texto oscuro sobre fondo oscuro o viceversa), se invierte solo.
+   Editar el neutral a mano nunca lo pisa. */
+function luma(hex: string) {
+  const h = hex.replace('#', '')
+  const r = parseInt(h.slice(0, 2), 16)
+  const g = parseInt(h.slice(2, 4), 16)
+  const b = parseInt(h.slice(4, 6), 16)
+  return (0.299 * r + 0.587 * g + 0.114 * b) / 255
+}
+
+watch(() => colors.value.surface, (surface) => {
+  if (!surface || !colors.value.neutral) return
+  const surfaceDark = luma(surface) < 0.5
+  const neutralDark = luma(colors.value.neutral) < 0.5
+  if (surfaceDark && neutralDark) {
+    colors.value.neutral = '#e5e5e5'
+  } else if (!surfaceDark && !neutralDark) {
+    colors.value.neutral = '#1a1a1a'
+  }
+})
+
 function buildSharedVariables(): string {
   const t = typography.value
   const s = spacing.value
@@ -365,10 +388,13 @@ onBeforeUnmount(() => {
           <h2>Colors</h2>
           <div class="tb-colors-list">
             <div v-for="(value, key) in colors" :key="key" class="tb-color-row">
-              <Label :label="key" color="var(--cu-color-neutral)" />
+              <Label :label="key === 'neutral' ? 'neutral (texto/títulos)' : key" color="var(--cu-color-neutral)" />
               <ColorPicker :model-value="value" @update:model-value="colors[key] = $event" />
             </div>
           </div>
+          <p class="tb-hint">
+            <strong>neutral</strong> es la tinta: títulos, labels y texto del layout. En temas oscuros debe ser un color claro (se invierte solo al oscurecer el surface).
+          </p>
         </section>
 
         <hr class="tb-separator" />
@@ -934,6 +960,14 @@ const tema = 'builder';
   display: flex;
   flex-direction: column;
   gap: 0.125rem;
+}
+
+.tb-hint {
+  margin: 0.5rem 0 0;
+  font-size: var(--cu-font-size-xs);
+  line-height: var(--cu-line-height-normal);
+  color: var(--cu-color-neutral);
+  opacity: 0.75;
 }
 
 .tb-field {
