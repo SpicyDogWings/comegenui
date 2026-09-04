@@ -180,7 +180,7 @@ describe("EditableTableCell — modo lápiz (default) y estado inline", () => {
 
   it("inputType 'switch': NO usa width 100% (no se estira en la celda)", () => {
     const w = factory({ inputType: "switch" });
-    const sw = w.find(".cu-switch");
+    const sw = w.find(".cu-switch-field");
     expect(sw.exists()).toBe(true);
     expect(sw.classes()).not.toContain("cu-editable-cell-input");
     expect(sw.classes()).toContain("cu-editable-cell-switch");

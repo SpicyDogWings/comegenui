@@ -8,7 +8,6 @@ import Table from "@/components/data/Table.vue";
 
 const checked1 = ref(false);
 const checked2 = ref(true);
-const programmaticRef = ref<InstanceType<typeof Checkbox> | null>(null);
 
 const colors = ["primary", "secondary", "neutral", "success", "warning", "danger"] as const;
 
@@ -18,7 +17,6 @@ const outlineItems = [
   { label: 'Sizes', id: 'sizes' },
   { label: 'Colors', id: 'colors' },
   { label: 'Disabled', id: 'disabled' },
-  { label: 'Programmatic', id: 'programmatic' },
   {
     label: 'API',
     id: 'api',
@@ -72,22 +70,6 @@ const colorsVue = vueSnippet(`  <Checkbox color="primary" label="primary" />
 const disabledVue = vueSnippet(`  <Checkbox disabled label="Disabled unchecked" />
   <Checkbox :model-value="true" disabled label="Disabled checked" />`);
 
-const programmaticVue = `<script setup>
-import { ref } from 'vue'
-import Checkbox from '@/components/form/Checkbox.vue'
-
-const checkboxRef = ref(null)
-<\/script>
-
-<template>
-  <div style="display:flex;align-items:center;gap:12px">
-    <Checkbox ref="checkboxRef" label="Programmatic checkbox" />
-    <button class="demo-btn" @click="checkboxRef.set(true)">set(true)</button>
-    <button class="demo-btn" @click="checkboxRef.set(false)">set(false)</button>
-    <button class="demo-btn" @click="checkboxRef.reset()">reset()</button>
-  </div>
-</template>`;
-
 const defaultVanilla = `<script src="dist/CuCheckbox.umd.js"><\/script>
 
 <div style="display:flex;flex-direction:column;gap:12px">
@@ -137,22 +119,6 @@ const disabledVanilla = `<script src="dist/CuCheckbox.umd.js"><\/script>
 
 <cu-checkbox disabled label="Disabled unchecked"></cu-checkbox>
 <cu-checkbox model-value="true" disabled label="Disabled checked"></cu-checkbox>`;
-
-const programmaticVanilla = `<script src="dist/CuCheckbox.umd.js"><\/script>
-
-<div style="display:flex;align-items:center;gap:12px">
-  <cu-checkbox id="mi-checkbox" label="Programmatic checkbox"></cu-checkbox>
-  <button class="demo-btn" id="btn-on">set(true)</button>
-  <button class="demo-btn" id="btn-off">set(false)</button>
-  <button class="demo-btn" id="btn-reset">reset()</button>
-</div>
-
-<script>
-  const cb = document.getElementById('mi-checkbox');
-  document.getElementById('btn-on').addEventListener('click', () => cb.set(true));
-  document.getElementById('btn-off').addEventListener('click', () => cb.set(false));
-  document.getElementById('btn-reset').addEventListener('click', () => cb.reset());
-<\/script>`;
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -267,22 +233,6 @@ const exposesData = [
 
       <hr class="playground-separator" />
 
-      <section id="programmatic" class="playground-section">
-        <div class="playground-heading">
-          <h2>Programmatic Control</h2>
-        </div>
-        <SectionDemo :vue-code="programmaticVue" :vanilla-code="programmaticVanilla">
-          <div class="playground-row">
-            <Checkbox ref="programmaticRef" label="Programmatic checkbox" />
-            <button class="demo-btn" @click="programmaticRef?.set(true)">set(true)</button>
-            <button class="demo-btn" @click="programmaticRef?.set(false)">set(false)</button>
-            <button class="demo-btn" @click="programmaticRef?.reset()">reset()</button>
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
       <section id="api" class="playground-section">
         <h2>API</h2>
 
@@ -301,19 +251,3 @@ const exposesData = [
     </div>
   </PlaygroundLayout>
 </template>
-
-<style scoped>
-.demo-btn {
-  font-family: var(--cu-font-sans);
-  font-size: var(--cu-font-size-sm);
-  padding: var(--cu-space-xs) var(--cu-space-sm);
-  border-radius: var(--cu-radius-md);
-  border: var(--cu-border-thin) solid var(--cu-border-color);
-  background: var(--cu-color-surface);
-  cursor: pointer;
-}
-
-.demo-btn:hover {
-  background: var(--cu-color-neutral-soft);
-}
-</style>

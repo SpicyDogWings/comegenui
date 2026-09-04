@@ -5,15 +5,8 @@ import DatePicker from "@/components/form/DatePicker.vue";
 import Badge from "@/components/information/Badge.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Table from "@/components/data/Table.vue";
-import Button from "@/components/buttons/Button.vue";
 
-const pickerRef = ref<InstanceType<typeof DatePicker> | null>(null);
-const programmaticValue = ref<Date | null>(null);
 const lastEvent = ref("");
-
-function readValue() {
-  programmaticValue.value = pickerRef.value?.getValue() ?? null;
-}
 
 function onEvent(name: string, payload: any) {
   lastEvent.value = `${name}: ${payload instanceof Date ? payload.toISOString().slice(0, 10) : JSON.stringify(payload)}`;
@@ -50,7 +43,6 @@ const outlineItems = [
   { label: 'Variantes', id: 'variants' },
   { label: 'Colores', id: 'colors' },
   { label: 'Posiciones', id: 'positions' },
-  { label: 'Programático', id: 'programmatic' },
   { label: 'Disabled', id: 'disabled' },
   {
     label: 'API',
@@ -139,29 +131,6 @@ const positionsVue = vueSnippet(`  <DatePicker model-value="2026-08-11" />
   <DatePicker model-value="2026-08-11" position="left" align="start" />
   <DatePicker model-value="2026-08-11" position="left" align="center" />
   <DatePicker model-value="2026-08-11" position="left" align="end" />`);
-
-const programmaticVue = `<script setup>
-import { ref } from 'vue'
-import DatePicker from '@/components/form/DatePicker.vue'
-
-const picker = ref(null)
-const value = ref(null)
-
-function readValue() {
-  value.value = picker.value?.getValue() ?? null
-}
-<\/script>
-
-<template>
-  <div style="display: flex; gap: 8px; flex-wrap: wrap">
-    <button @click="picker?.open(); readValue()">open()</button>
-    <button @click="picker?.close(); readValue()">close()</button>
-    <button @click="picker?.setValue('2026-12-24'); readValue()">setValue('2026-12-24')</button>
-    <button @click="picker?.clear(); readValue()">clear()</button>
-  </div>
-  <p>getValue(): {{ value ? value.toISOString().slice(0, 10) : '—' }}</p>
-  <DatePicker ref="picker" @select="readValue" @change="readValue" />
-</template>`;
 
 const disabledVue = vueSnippet(`  <DatePicker disabled model-value="2026-08-11" />`);
 
@@ -257,23 +226,6 @@ const positionsVanilla = `<script src="dist/CuDatePicker.umd.js"><\/script>
 <cu-date-picker model-value="2026-08-11" position="left" align="start"></cu-date-picker>
 <cu-date-picker model-value="2026-08-11" position="left" align="center"></cu-date-picker>
 <cu-date-picker model-value="2026-08-11" position="left" align="end"></cu-date-picker>`;
-
-const programmaticVanilla = `<script src="dist/CuDatePicker.umd.js"><\/script>
-
-<cu-date-picker id="picker"></cu-date-picker>
-
-<script>
-  customElements.whenDefined('cu-date-picker').then(() => {
-    const picker = document.getElementById('picker');
-    // picker.open();
-    // picker.close();
-    // picker.setValue('2026-12-24');
-    // picker.getValue(); // Date | null
-    // picker.clear();
-    // picker.isOpen(); // boolean
-    console.log(picker.getValue());
-  });
-<\/script>`;
 
 const disabledVanilla = `<script src="dist/CuDatePicker.umd.js"><\/script>
 
@@ -540,28 +492,6 @@ const exposesData = [
               <div class="playground-position-demo playground-position-demo--left"><strong>left + center</strong><DatePicker model-value="2026-08-11" position="left" align="center" style="max-width: 280px;" /></div>
               <div class="playground-position-demo playground-position-demo--left"><strong>left + end</strong><DatePicker model-value="2026-08-11" position="left" align="end" style="max-width: 280px;" /></div>
             </div>
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="programmatic" class="playground-section">
-        <div class="playground-heading">
-          <h2>Control programático</h2>
-        </div>
-        <SectionDemo :vue-code="programmaticVue" :vanilla-code="programmaticVanilla">
-          <div class="playground-col">
-            <div class="playground-row">
-              <Button @click="pickerRef?.open(); readValue()" color="primary" variant="solid">open()</Button>
-              <Button @click="pickerRef?.close(); readValue()" color="neutral" variant="ghost">close()</Button>
-              <Button @click="pickerRef?.setValue('2026-12-24'); readValue()" color="success" variant="soft">setValue('2026-12-24')</Button>
-              <Button @click="pickerRef?.clear(); readValue()" color="danger" variant="soft">clear()</Button>
-            </div>
-            <p class="playground-state">
-              getValue(): <strong>{{ programmaticValue ? programmaticValue.toISOString().slice(0, 10) : '—' }}</strong>
-            </p>
-            <DatePicker ref="pickerRef" style="max-width: 280px;" @select="readValue" @change="readValue" />
           </div>
         </SectionDemo>
       </section>

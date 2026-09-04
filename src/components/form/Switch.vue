@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, defineModel, useTemplateRef, type PropType } from "vue";
 import { useFocus } from "@vueuse/core";
+import Label from "./Label.vue";
 
 const checked = defineModel<boolean>({ default: false });
 
@@ -20,6 +21,11 @@ const props = defineProps({
     type: Boolean,
     required: false,
     default: false,
+  },
+  label: {
+    type: String,
+    required: false,
+    default: "",
   },
 });
 
@@ -57,32 +63,53 @@ defineExpose({
 </script>
 
 <template>
-  <div
-    @click="toggle"
-    class="cu-switch"
-    :class="[
-      `cu-switch--${props.size}`,
-      {
-        'cu-switch--disabled': props.disabled,
-        'cu-switch--checked': checked,
-      }
-    ]"
-    :style="switchStyles"
-    role="switch"
-    :aria-checked="checked"
-  >
-    <span class="cu-switch-thumb" />
-    <input
-      ref="input"
-      type="checkbox"
-      :checked="checked"
-      class="cu-switch-input"
-      :disabled="props.disabled"
-    />
+  <div class="cu-switch-field" @click="toggle">
+    <div
+      class="cu-switch"
+      :class="[
+        `cu-switch--${props.size}`,
+        {
+          'cu-switch--disabled': props.disabled,
+          'cu-switch--checked': checked,
+        }
+      ]"
+      :style="switchStyles"
+      role="switch"
+      :aria-checked="checked"
+    >
+      <span class="cu-switch-thumb" />
+      <input
+        ref="input"
+        type="checkbox"
+        :checked="checked"
+        class="cu-switch-input"
+        :disabled="props.disabled"
+      />
+    </div>
+    <Label v-if="props.label || $slots.default" class="cu-switch-label">
+      <slot>{{ props.label }}</slot>
+    </Label>
   </div>
 </template>
 
 <style>
+/* el click en el switch o en el label alterna: el campo entero es clicable */
+.cu-switch-field {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cu-space-sm);
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+.cu-switch-field:has(.cu-switch--disabled) {
+  cursor: not-allowed;
+}
+
+.cu-switch-field .cu-switch-label {
+  cursor: inherit;
+}
+
 .cu-switch {
   position: relative;
   display: inline-flex;

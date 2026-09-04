@@ -34,7 +34,7 @@ const navItems = [
         ]
       },
       {
-        label: 'form',
+        label: 'Form',
         children: [
           { label: 'Autocomplete', path: '/playground/components/autocomplete' },
           { label: 'Checkbox', path: '/playground/components/checkbox' },
@@ -51,7 +51,7 @@ const navItems = [
         ]
       },
       {
-        label: 'controls',
+        label: 'Controls',
         children: [
           { label: 'MonthSlider', path: '/playground/components/month-slider' },
           { label: 'YearSlider', path: '/playground/components/year-slider' },
@@ -61,7 +61,7 @@ const navItems = [
         ]
       },
       {
-        label: 'information',
+        label: 'Information',
         children: [
           { label: 'Alert', path: '/playground/components/alert' },
           { label: 'Badge', path: '/playground/components/badge' },
@@ -69,7 +69,7 @@ const navItems = [
         ]
       },
       {
-        label: 'markdown',
+        label: 'Markdown',
         children: [
           { label: 'Markdown', path: '/playground/components/markdown' },
           { label: 'CodeBlock', path: '/playground/components/codeblock' },
@@ -77,7 +77,7 @@ const navItems = [
         ]
       },
       {
-        label: 'overlay',
+        label: 'Overlay',
         children: [
           { label: 'Modal', path: '/playground/components/modal' },
           { label: 'Collapse', path: '/playground/components/collapse' },
@@ -85,7 +85,7 @@ const navItems = [
         ]
       },
       {
-        label: 'data',
+        label: 'Data',
         children: [
           { label: 'Table', path: '/playground/components/table' },
           { label: 'AdvancedTable', path: '/playground/components/advanced-table' },
@@ -93,7 +93,7 @@ const navItems = [
         ]
       },
       {
-        label: 'root',
+        label: 'Root',
         children: [
           { label: 'Tabs', path: '/playground/components/tabs' },
         ]
@@ -126,7 +126,7 @@ const navItems = [
     </div>
     <div class="playground-body">
       <aside class="playground-sidebar">
-        <Navbar :items="navItems" />
+        <Navbar :items="navItems" search />
       </aside>
       <div class="playground-box">
         <Outline v-if="outlineItems" :items="outlineItems" class="playground-outline" />

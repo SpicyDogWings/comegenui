@@ -13,6 +13,7 @@ const props = defineProps({
   },
   size: { type: String, default: "md" },
   disabled: Boolean,
+  label: { type: String, default: "" },
 });
 
 const switchRef = ref<InstanceType<typeof Switch> | null>(null);
@@ -45,9 +46,12 @@ defineExpose({ get, set, reset, focus });
     :color="props.color"
     :size="props.size"
     :disabled="props.disabled"
+    :label="props.label"
     @update:modelValue="ceEmit('update:modelValue', $event)"
     @change="ceEmit('change', $event)"
-  />
+  >
+    <slot></slot>
+  </Switch>
 </template>
 
 <style>

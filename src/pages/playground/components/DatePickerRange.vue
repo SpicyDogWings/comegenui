@@ -5,9 +5,7 @@ import DatePickerRange from "@/components/form/DatePickerRange.vue";
 import Badge from "@/components/information/Badge.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Table from "@/components/data/Table.vue";
-import Button from "@/components/buttons/Button.vue";
 
-const rangeRef = ref<InstanceType<typeof DatePickerRange> | null>(null);
 const startDate = ref<Date | null>(null);
 const endDate = ref<Date | null>(null);
 
@@ -43,7 +41,6 @@ const outlineItems = [
   { label: 'Dual Calendar', id: 'dual-calendar' },
   { label: 'Colores', id: 'colors' },
   { label: 'Posiciones', id: 'positions' },
-  { label: 'Programático', id: 'programmatic' },
   { label: 'Disabled', id: 'disabled' },
   {
     label: 'API',
@@ -133,30 +130,6 @@ const positionsVue = vueSnippet(`  <DatePickerRange start-date="2026-09-03" end-
   <DatePickerRange dual-calendar position="right" align="start" start-date="2026-09-03" end-date="2026-10-07" />
   <DatePickerRange dual-calendar position="left" align="end" start-date="2026-09-03" end-date="2026-10-07" />`);
 
-const programmaticVue = `<script setup>
-import { ref } from 'vue'
-import DatePickerRange from '@/components/form/DatePickerRange.vue'
-
-const range = ref(null)
-const start = ref(null)
-const end = ref(null)
-
-function readValue() {
-  start.value = range.value?.getStartDate() ?? null
-  end.value = range.value?.getEndDate() ?? null
-}
-<\/script>
-
-<template>
-  <div style="display: flex; gap: 8px; flex-wrap: wrap">
-    <button @click="range?.setRange('2026-09-01', '2026-09-15'); readValue()">setRange('2026-09-01', '2026-09-15')</button>
-    <button @click="range?.clear(); readValue()">clear()</button>
-    <button @click="range?.open()">open()</button>
-    <button @click="range?.close()">close()</button>
-  </div>
-  <DatePickerRange ref="range" @change="readValue" />
-</template>`;
-
 const disabledVue = vueSnippet(`  <DatePickerRange disabled start-date="2026-09-03" end-date="2026-09-15" />`);
 
 const defaultVanilla = `<script src="dist/CuDatePickerRange.umd.js"><\/script>
@@ -241,24 +214,6 @@ const positionsVanilla = `<script src="dist/CuDatePickerRange.umd.js"><\/script>
 <cu-date-picker-range start-date="2026-09-03" end-date="2026-09-07" position="left" align="end"></cu-date-picker-range>
 <cu-date-picker-range dual-calendar position="right" align="start" start-date="2026-09-03" end-date="2026-10-07"></cu-date-picker-range>
 <cu-date-picker-range dual-calendar position="left" align="end" start-date="2026-09-03" end-date="2026-10-07"></cu-date-picker-range>`;
-
-const programmaticVanilla = `<script src="dist/CuDatePickerRange.umd.js"><\/script>
-
-<cu-date-picker-range id="range"></cu-date-picker-range>
-
-<script>
-  customElements.whenDefined('cu-date-picker-range').then(() => {
-    const range = document.getElementById('range');
-    // range.setRange('2026-09-01', '2026-09-15');
-    // range.clear();
-    // range.open();
-    // range.close();
-    // range.getStartDate(); // Date | null
-    // range.getEndDate(); // Date | null
-    // range.isOpen(); // boolean
-    console.log(range.getStartDate(), range.getEndDate());
-  });
-<\/script>`;
 
 const disabledVanilla = `<script src="dist/CuDatePickerRange.umd.js"><\/script>
 
@@ -524,34 +479,6 @@ const exposesData = [
             <div class="playground-row">
               <div class="playground-position-demo playground-position-demo--left"><strong>dual + left</strong><DatePickerRange dual-calendar position="left" align="end" start-date="2026-09-03" end-date="2026-10-07" style="max-width: 600px;" /></div>
             </div>
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="programmatic" class="playground-section">
-        <div class="playground-heading">
-          <h2>Control programático</h2>
-        </div>
-        <SectionDemo :vue-code="programmaticVue" :vanilla-code="programmaticVanilla">
-          <div class="playground-col">
-            <div class="playground-row">
-              <Button @click="rangeRef?.setRange('2026-09-01', '2026-09-15')" color="primary" variant="solid">setRange('2026-09-01', '2026-09-15')</Button>
-              <Button @click="rangeRef?.clear()" color="danger" variant="soft">clear()</Button>
-              <Button @click="rangeRef?.open()" color="neutral" variant="ghost">open()</Button>
-              <Button @click="rangeRef?.close()" color="neutral" variant="ghost">close()</Button>
-            </div>
-            <DatePickerRange
-              ref="rangeRef"
-              style="max-width: 320px;"
-              @update:start-date="startDate = $event"
-              @update:end-date="endDate = $event"
-            />
-            <p class="playground-state">
-              getStartDate(): <strong>{{ fmt(rangeRef?.getStartDate() ?? null) }}</strong> |
-              getEndDate(): <strong>{{ fmt(rangeRef?.getEndDate() ?? null) }}</strong>
-            </p>
           </div>
         </SectionDemo>
       </section>

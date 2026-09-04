@@ -5,24 +5,16 @@ import ColorPicker from "@/components/form/ColorPicker.vue";
 import Badge from "@/components/information/Badge.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Table from "@/components/data/Table.vue";
-import Button from "@/components/buttons/Button.vue";
 
-const pickerRef = ref<InstanceType<typeof ColorPicker> | null>(null);
-const programmaticValue = ref("#000000");
 const vmColor = ref("#3b82f6");
 
 const colors = ["primary", "secondary", "neutral", "success", "warning", "danger"] as const;
-
-function readValue() {
-  programmaticValue.value = pickerRef.value?.get() ?? "—";
-}
 
 const outlineItems = [
   { label: 'Default', id: 'default' },
   { label: 'Colores', id: 'colors' },
   { label: 'v-model', id: 'v-model' },
   { label: 'Disabled', id: 'disabled' },
-  { label: 'Programático', id: 'programmatic' },
   {
     label: 'API',
     id: 'api',
@@ -68,29 +60,6 @@ const color = ref('#3b82f6')
 
 const disabledVue = vueSnippet(`  <ColorPicker color="primary" disabled />`);
 
-const programmaticVue = `<script setup>
-import { ref } from 'vue'
-import ColorPicker from '@/components/form/ColorPicker.vue'
-
-const picker = ref(null)
-const value = ref(null)
-
-function readValue() {
-  value.value = picker.value?.get() ?? null
-}
-<\/script>
-
-<template>
-  <div style="display: flex; gap: 8px; flex-wrap: wrap">
-    <button @click="picker?.set('#ff6600'); readValue()">set('#ff6600')</button>
-    <button @click="readValue()">get()</button>
-    <button @click="picker?.reset(); readValue()">reset()</button>
-    <button @click="picker?.focus()">focus()</button>
-  </div>
-  <p>get(): {{ value ?? '—' }}</p>
-  <ColorPicker ref="picker" />
-</template>`;
-
 const defaultVanilla = `<script src="dist/CuColorPicker.umd.js"><\/script>
 
 <cu-color-picker></cu-color-picker>`;
@@ -122,21 +91,6 @@ const vmodelVanilla = `<script src="dist/CuColorPicker.umd.js"><\/script>
 const disabledVanilla = `<script src="dist/CuColorPicker.umd.js"><\/script>
 
 <cu-color-picker color="primary" disabled></cu-color-picker>`;
-
-const programmaticVanilla = `<script src="dist/CuColorPicker.umd.js"><\/script>
-
-<cu-color-picker id="cp"></cu-color-picker>
-
-<script>
-  customElements.whenDefined('cu-color-picker').then(() => {
-    const picker = document.getElementById('cp');
-    // picker.set('#ff6600');
-    // picker.get(); // hex actual
-    // picker.reset(); // vuelve a #000000
-    // picker.focus(); // enfoca el input hex
-    console.log(picker.get());
-  });
-<\/script>`;
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -225,28 +179,6 @@ const exposesData = [
           <div class="playground-row">
             <ColorPicker color="primary" disabled />
             <ColorPicker color="danger" disabled model-value="#ef4444" />
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="programmatic" class="playground-section">
-        <div class="playground-heading">
-          <h2>Control programático</h2>
-        </div>
-        <SectionDemo :vue-code="programmaticVue" :vanilla-code="programmaticVanilla">
-          <div class="playground-col">
-            <div class="playground-row">
-              <Button @click="pickerRef?.set('#ff6600'); readValue()" color="success" variant="soft">set('#ff6600')</Button>
-              <Button @click="readValue()" color="primary" variant="solid">get()</Button>
-              <Button @click="pickerRef?.reset(); readValue()" color="warning" variant="soft">reset()</Button>
-              <Button @click="pickerRef?.focus()" color="neutral" variant="ghost">focus()</Button>
-            </div>
-            <p class="playground-state">
-              get(): <strong>{{ programmaticValue }}</strong>
-            </p>
-            <ColorPicker ref="pickerRef" />
           </div>
         </SectionDemo>
       </section>

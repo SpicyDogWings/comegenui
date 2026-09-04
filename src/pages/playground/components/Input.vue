@@ -7,12 +7,6 @@ import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Table from "@/components/data/Table.vue";
 
 const nombre = ref("");
-const programmaticRef = ref<InstanceType<typeof Input> | null>(null);
-const programmaticValue = ref("");
-
-function getProgrammaticValue() {
-  programmaticValue.value = programmaticRef.value?.get() ?? "";
-}
 
 const outlineItems = [
   { label: 'Variants', id: 'variants' },
@@ -22,7 +16,6 @@ const outlineItems = [
   { label: 'With Values', id: 'values' },
   { label: 'v-model', id: 'v-model' },
   { label: 'Read Only', id: 'readonly' },
-  { label: 'Programmatic', id: 'programmatic' },
   {
     label: 'API',
     id: 'api',
@@ -86,26 +79,6 @@ const nombre = ref('')
 const readonlyVue = vueSnippet(`  <Input read-only model-value="Solo lectura" />
   <Input read-only variant="outlined" model-value="Outlined read-only" />`);
 
-const programmaticVue = `<script setup>
-import { ref } from 'vue'
-import Input from '@/components/form/Input.vue'
-
-const inputRef = ref(null)
-const valor = ref('')
-<\/script>
-
-<template>
-  <div style="display:flex;flex-direction:column;gap:12px">
-    <div style="display:flex;align-items:center;gap:8px">
-      <Input ref="inputRef" placeholder="Controlado por métodos" style="max-width:240px" />
-      <button class="demo-btn" @click="inputRef.set('Hola')">set('Hola')</button>
-      <button class="demo-btn" @click="inputRef.reset()">reset()</button>
-      <button class="demo-btn" @click="valor = inputRef.get()">get()</button>
-    </div>
-    <span>get() → {{ valor || '(vacío)' }}</span>
-  </div>
-</template>`;
-
 const variantsVanilla = `<script src="dist/CuInput.umd.js"><\/script>
 
 <cu-input variant="soft" placeholder="soft (default)"></cu-input>
@@ -158,27 +131,6 @@ const readonlyVanilla = `<script src="dist/CuInput.umd.js"><\/script>
 
 <cu-input read-only model-value="Solo lectura"></cu-input>
 <cu-input read-only variant="outlined" model-value="Outlined read-only"></cu-input>`;
-
-const programmaticVanilla = `<script src="dist/CuInput.umd.js"><\/script>
-
-<div style="display:flex;flex-direction:column;gap:12px">
-  <div style="display:flex;align-items:center;gap:8px">
-    <cu-input id="mi-input" placeholder="Controlado por métodos" style="max-width:240px"></cu-input>
-    <button class="demo-btn" id="btn-set">set('Hola')</button>
-    <button class="demo-btn" id="btn-reset">reset()</button>
-    <button class="demo-btn" id="btn-get">get()</button>
-  </div>
-  <span id="get-result">get() → (vacío)</span>
-</div>
-
-<script>
-  const input = document.getElementById('mi-input');
-  document.getElementById('btn-set').addEventListener('click', () => input.set('Hola'));
-  document.getElementById('btn-reset').addEventListener('click', () => input.reset());
-  document.getElementById('btn-get').addEventListener('click', () => {
-    document.getElementById('get-result').textContent = 'get() → ' + (input.get() || '(vacío)');
-  });
-<\/script>`;
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -331,25 +283,6 @@ const exposesData = [
 
       <hr class="playground-separator" />
 
-      <section id="programmatic" class="playground-section">
-        <div class="playground-heading">
-          <h2>Programmatic Control</h2>
-        </div>
-        <SectionDemo :vue-code="programmaticVue" :vanilla-code="programmaticVanilla">
-          <div class="playground-col">
-            <div class="playground-row">
-              <Input ref="programmaticRef" placeholder="Controlado por métodos" style="max-width:240px" />
-              <button class="demo-btn" @click="programmaticRef?.set('Hola')">set('Hola')</button>
-              <button class="demo-btn" @click="programmaticRef?.reset()">reset()</button>
-              <button class="demo-btn" @click="getProgrammaticValue">get()</button>
-            </div>
-            <span class="playground-code">get() → {{ programmaticValue || '(vacío)' }}</span>
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
       <section id="api" class="playground-section">
         <h2>API</h2>
 
@@ -368,19 +301,3 @@ const exposesData = [
     </div>
   </PlaygroundLayout>
 </template>
-
-<style scoped>
-.demo-btn {
-  font-family: var(--cu-font-sans);
-  font-size: var(--cu-font-size-sm);
-  padding: var(--cu-space-xs) var(--cu-space-sm);
-  border-radius: var(--cu-radius-md);
-  border: var(--cu-border-thin) solid var(--cu-border-color);
-  background: var(--cu-color-surface);
-  cursor: pointer;
-}
-
-.demo-btn:hover {
-  background: var(--cu-color-neutral-soft);
-}
-</style>

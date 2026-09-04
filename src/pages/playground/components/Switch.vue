@@ -8,16 +8,17 @@ import Table from "@/components/data/Table.vue";
 
 const checked1 = ref(false);
 const checked2 = ref(true);
-const programmaticRef = ref<InstanceType<typeof Switch> | null>(null);
+const labelChecked1 = ref(true);
+const labelChecked2 = ref(false);
 
 const colors = ["primary", "secondary", "neutral", "success", "warning", "danger"] as const;
 
 const outlineItems = [
   { label: 'Default', id: 'default' },
+  { label: 'With Label', id: 'with-label' },
   { label: 'Sizes', id: 'sizes' },
   { label: 'Colors', id: 'colors' },
   { label: 'Disabled', id: 'disabled' },
-  { label: 'Programmatic', id: 'programmatic' },
   {
     label: 'API',
     id: 'api',
@@ -64,6 +65,25 @@ const darkMode = ref(true)
 const sizesVue = vueSnippet(`  <Switch size="md" />
   <Switch size="sm" />`);
 
+const withLabelVue = vueSnippet(`  <Switch v-model="notifications" label="Notificaciones" />
+  <Switch v-model="darkMode" color="success">
+    Modo oscuro automático
+  </Switch>`);
+
+const withLabelVanilla = `<script src="dist/CuSwitch.umd.js"><\/script>
+
+<cu-switch id="switch-label-1" label="Notificaciones"></cu-switch>
+<cu-switch id="switch-label-2" color="success">Modo oscuro automático</cu-switch>
+
+<script>
+  customElements.whenDefined('cu-switch').then(() => {
+    const one = document.getElementById('switch-label-1');
+    const two = document.getElementById('switch-label-2');
+    one.addEventListener('change', (e) => { one.modelValue = e.detail; });
+    two.addEventListener('change', (e) => { two.modelValue = e.detail; });
+  });
+<\/script>`;
+
 const colorsVue = vueSnippet(`  <Switch color="primary" />
   <Switch color="secondary" />
   <Switch color="neutral" />
@@ -73,22 +93,6 @@ const colorsVue = vueSnippet(`  <Switch color="primary" />
 
 const disabledVue = vueSnippet(`  <Switch disabled />
   <Switch :model-value="true" disabled />`);
-
-const programmaticVue = `<script setup>
-import { ref } from 'vue'
-import Switch from '@/components/form/Switch.vue'
-
-const switchRef = ref(null)
-<\/script>
-
-<template>
-  <div style="display:flex;align-items:center;gap:12px">
-    <Switch ref="switchRef" />
-    <button class="demo-btn" @click="switchRef.set(true)">set(true)</button>
-    <button class="demo-btn" @click="switchRef.set(false)">set(false)</button>
-    <button class="demo-btn" @click="switchRef.reset()">reset()</button>
-  </div>
-</template>`;
 
 const defaultVanilla = `<script src="dist/CuSwitch.umd.js"><\/script>
 
@@ -135,22 +139,6 @@ const disabledVanilla = `<script src="dist/CuSwitch.umd.js"><\/script>
 <cu-switch disabled></cu-switch>
 <cu-switch model-value="true" disabled></cu-switch>`;
 
-const programmaticVanilla = `<script src="dist/CuSwitch.umd.js"><\/script>
-
-<div style="display:flex;align-items:center;gap:12px">
-  <cu-switch id="mi-switch"></cu-switch>
-  <button class="demo-btn" id="btn-on">set(true)</button>
-  <button class="demo-btn" id="btn-off">set(false)</button>
-  <button class="demo-btn" id="btn-reset">reset()</button>
-</div>
-
-<script>
-  const sw = document.getElementById('mi-switch');
-  document.getElementById('btn-on').addEventListener('click', () => sw.set(true));
-  document.getElementById('btn-off').addEventListener('click', () => sw.set(false));
-  document.getElementById('btn-reset').addEventListener('click', () => sw.reset());
-<\/script>`;
-
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
   { key: 'type', label: 'Tipo' },
@@ -160,6 +148,7 @@ const apiColumns = [
 
 const propsData = [
   { name: 'modelValue', type: 'boolean', default: 'false', description: 'Estado del switch (v-model)' },
+  { name: 'label', type: 'string', default: '""', description: 'Texto del label (usa el componente Label); también acepta slot default. El click sobre el label alterna el switch' },
   { name: 'color', type: 'string', default: '"neutral"', description: 'Color semántico: primary, secondary, neutral, success, warning, danger' },
   { name: 'size', type: 'string', default: '"md"', description: 'Tamaño del switch: sm, md' },
   { name: 'disabled', type: 'boolean', default: 'false', description: 'Deshabilita la interacción y atenúa el componente' },
@@ -198,6 +187,28 @@ const exposesData = [
             <div class="playground-row">
               <Switch v-model="checked2" />
               <span class="playground-code">{{ checked2 ? 'ON' : 'OFF' }}</span>
+            </div>
+          </div>
+        </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="with-label" class="playground-section">
+        <div class="playground-heading">
+          <h2>With Label</h2>
+        </div>
+        <SectionDemo :vue-code="withLabelVue" :vanilla-code="withLabelVanilla">
+          <div class="playground-col">
+            <div class="playground-row">
+              <Switch v-model="labelChecked1" label="Notificaciones" />
+              <span class="playground-code">{{ labelChecked1 ? 'ON' : 'OFF' }}</span>
+            </div>
+            <div class="playground-row">
+              <Switch v-model="labelChecked2" color="success">
+                Modo oscuro automático
+              </Switch>
+              <span class="playground-code">{{ labelChecked2 ? 'ON' : 'OFF' }}</span>
             </div>
           </div>
         </SectionDemo>
@@ -263,25 +274,6 @@ const exposesData = [
 
       <hr class="playground-separator" />
 
-      <section id="programmatic" class="playground-section">
-        <div class="playground-heading">
-          <h2>Programmatic Control</h2>
-        </div>
-        <SectionDemo :vue-code="programmaticVue" :vanilla-code="programmaticVanilla">
-          <div class="playground-row">
-            <div style="display:flex;align-items:center;gap:8px">
-              <Switch ref="programmaticRef" />
-              <span class="playground-code">Control por métodos</span>
-            </div>
-            <button class="demo-btn" @click="programmaticRef?.set(true)">set(true)</button>
-            <button class="demo-btn" @click="programmaticRef?.set(false)">set(false)</button>
-            <button class="demo-btn" @click="programmaticRef?.reset()">reset()</button>
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
       <section id="api" class="playground-section">
         <h2>API</h2>
 
@@ -300,19 +292,3 @@ const exposesData = [
     </div>
   </PlaygroundLayout>
 </template>
-
-<style scoped>
-.demo-btn {
-  font-family: var(--cu-font-sans);
-  font-size: var(--cu-font-size-sm);
-  padding: var(--cu-space-xs) var(--cu-space-sm);
-  border-radius: var(--cu-radius-md);
-  border: var(--cu-border-thin) solid var(--cu-border-color);
-  background: var(--cu-color-surface);
-  cursor: pointer;
-}
-
-.demo-btn:hover {
-  background: var(--cu-color-neutral-soft);
-}
-</style>

@@ -9,7 +9,6 @@ import Table from "@/components/data/Table.vue";
 const file1 = ref<File | null>(null);
 const file2 = ref<File | null>(null);
 const file3 = ref<File | null>(null);
-const fileInputRef = ref<InstanceType<typeof FileInput> | null>(null);
 
 const outlineItems = [
   { label: 'Default', id: 'default' },
@@ -19,7 +18,6 @@ const outlineItems = [
   { label: 'With Max Size', id: 'maxsize' },
   { label: 'Disabled', id: 'disabled' },
   { label: 'ReadOnly', id: 'readonly' },
-  { label: 'Programmatic', id: 'programmatic' },
   {
     label: 'API',
     id: 'api',
@@ -73,20 +71,6 @@ const disabledVue = vueSnippet(`  <FileInput disabled placeholder="No disponible
 
 const readonlyVue = vueSnippet(`  <FileInput read-only placeholder="Solo lectura" />`);
 
-const programmaticVue = `<script setup>
-import { ref } from 'vue'
-import FileInput from '@/components/form/FileInput.vue'
-
-const fileInput = ref(null)
-<\/script>
-
-<template>
-  <FileInput ref="fileInput" />
-  <button @click="fileInput?.trigger()">trigger()</button>
-  <button @click="fileInput?.reset()">reset()</button>
-  <button @click="console.log(fileInput?.get())">get()</button>
-</template>`;
-
 const defaultVanilla = `<script src="dist/CuFileInput.umd.js"><\/script>
 
 <cu-file-input></cu-file-input>`;
@@ -122,13 +106,6 @@ const disabledVanilla = `<script src="dist/CuFileInput.umd.js"><\/script>
 const readonlyVanilla = `<script src="dist/CuFileInput.umd.js"><\/script>
 
 <cu-file-input read-only placeholder="Solo lectura"></cu-file-input>`;
-
-const programmaticVanilla = `<script src="dist/CuFileInput.umd.js"><\/script>
-
-<cu-file-input id="file-programmatic"></cu-file-input>
-<button onclick="document.getElementById('file-programmatic').trigger()">trigger()</button>
-<button onclick="document.getElementById('file-programmatic').reset()">reset()</button>
-<button onclick="console.log(document.getElementById('file-programmatic').get())">get()</button>`;
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -276,24 +253,6 @@ const exposesData = [
         <SectionDemo :vue-code="readonlyVue" :vanilla-code="readonlyVanilla">
           <div class="playground-col">
             <FileInput read-only placeholder="Solo lectura" />
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="programmatic" class="playground-section">
-        <div class="playground-heading">
-          <h2>Programmatic</h2>
-        </div>
-        <SectionDemo :vue-code="programmaticVue" :vanilla-code="programmaticVanilla">
-          <div class="playground-col">
-            <FileInput ref="fileInputRef" />
-            <div class="playground-row">
-              <button @click="fileInputRef?.trigger()">trigger()</button>
-              <button @click="fileInputRef?.reset()">reset()</button>
-              <button @click="console.log(fileInputRef?.get())">get()</button>
-            </div>
           </div>
         </SectionDemo>
       </section>

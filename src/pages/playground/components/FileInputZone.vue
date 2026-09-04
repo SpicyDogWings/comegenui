@@ -9,7 +9,6 @@ import Table from "@/components/data/Table.vue";
 const files1 = ref<File | File[] | null>(null);
 const files2 = ref<File | File[] | null>(null);
 const files3 = ref<File | File[] | null>(null);
-const fileZoneRef = ref<InstanceType<typeof FileInputZone> | null>(null);
 
 const outlineItems = [
   { label: 'Default', id: 'default' },
@@ -20,7 +19,6 @@ const outlineItems = [
   { label: 'Directory', id: 'directory' },
   { label: 'Disabled', id: 'disabled' },
   { label: 'ReadOnly', id: 'readonly' },
-  { label: 'Programmatic', id: 'programmatic' },
   {
     label: 'API',
     id: 'api',
@@ -74,20 +72,6 @@ const disabledVue = vueSnippet(`  <FileInputZone disabled placeholder="No dispon
 
 const readonlyVue = vueSnippet(`  <FileInputZone read-only placeholder="Solo lectura" />`);
 
-const programmaticVue = `<script setup>
-import { ref } from 'vue'
-import FileInputZone from '@/components/form/FileInputZone.vue'
-
-const fileZone = ref(null)
-<\/script>
-
-<template>
-  <FileInputZone ref="fileZone" />
-  <button @click="fileZone?.trigger()">trigger()</button>
-  <button @click="fileZone?.reset()">reset()</button>
-  <button @click="console.log(fileZone?.get())">get()</button>
-</template>`;
-
 const defaultVanilla = `<script src="dist/CuFileInputZone.umd.js"><\/script>
 
 <cu-file-input-zone></cu-file-input-zone>`;
@@ -125,13 +109,6 @@ const disabledVanilla = `<script src="dist/CuFileInputZone.umd.js"><\/script>
 const readonlyVanilla = `<script src="dist/CuFileInputZone.umd.js"><\/script>
 
 <cu-file-input-zone read-only placeholder="Solo lectura"></cu-file-input-zone>`;
-
-const programmaticVanilla = `<script src="dist/CuFileInputZone.umd.js"><\/script>
-
-<cu-file-input-zone id="zone-programmatic"></cu-file-input-zone>
-<button onclick="document.getElementById('zone-programmatic').trigger()">trigger()</button>
-<button onclick="document.getElementById('zone-programmatic').reset()">reset()</button>
-<button onclick="console.log(document.getElementById('zone-programmatic').get())">get()</button>`;
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -284,24 +261,6 @@ const exposesData = [
         <SectionDemo :vue-code="readonlyVue" :vanilla-code="readonlyVanilla">
           <div class="playground-col">
             <FileInputZone read-only placeholder="Solo lectura" />
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="programmatic" class="playground-section">
-        <div class="playground-heading">
-          <h2>Programmatic</h2>
-        </div>
-        <SectionDemo :vue-code="programmaticVue" :vanilla-code="programmaticVanilla">
-          <div class="playground-col">
-            <FileInputZone ref="fileZoneRef" />
-            <div class="playground-row">
-              <button @click="fileZoneRef?.trigger()">trigger()</button>
-              <button @click="fileZoneRef?.reset()">reset()</button>
-              <button @click="console.log(fileZoneRef?.get())">get()</button>
-            </div>
           </div>
         </SectionDemo>
       </section>
