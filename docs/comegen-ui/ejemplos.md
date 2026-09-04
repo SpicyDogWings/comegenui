@@ -313,31 +313,6 @@ Ejemplos copy-pasteables de todos los componentes en HTML plano. Para la guía d
 </script>
 ```
 
-### Month Slider
-
-```html
-<cu-month-slider id="mes" color="primary"></cu-month-slider>
-<script src="dist/CuMonthSlider.umd.js"></script>
-<script>
-  const mes = document.getElementById('mes');
-  await customElements.whenDefined('cu-month-slider');
-  mes.addEventListener('change', (e) => console.log('Mes:', e.detail));
-</script>
-```
-
-### Year Slider
-
-```html
-<cu-year-slider id="anio" color="primary"></cu-year-slider>
-<script src="dist/CuYearSlider.umd.js"></script>
-<script>
-  const anio = document.getElementById('anio');
-  await customElements.whenDefined('cu-year-slider');
-  anio.addEventListener('change', (e) => console.log('Año:', e.detail));
-  anio.goToYear(2025);
-</script>
-```
-
 ---
 
 ## Otros

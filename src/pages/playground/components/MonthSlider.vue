@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
+import SectionDemo from "@/pages/playground/SectionDemo.vue";
+import Table from "@/components/data/Table.vue";
 import MonthSlider from "@/components/controls/MonthSlider.vue";
 import Button from "@/components/buttons/Button.vue";
 import { ref } from "vue";
@@ -22,9 +24,78 @@ const outlineItems = [
   { label: 'Año distinto', id: 'other-year' },
   { label: 'Variantes', id: 'variants' },
   { label: 'Min / Max', id: 'min-max' },
-  { label: 'Programático', id: 'programmatic' },
+  { label: 'Programmatic', id: 'programmatic' },
   { label: 'Colores', id: 'colors' },
   { label: 'Disabled', id: 'disabled' },
+  {
+    label: 'API',
+    id: 'api',
+    children: [
+      { label: 'Props', id: 'api-props' },
+      { label: 'Slots', id: 'api-slots' },
+      { label: 'Events', id: 'api-events' },
+      { label: 'Exposes', id: 'api-exposes' },
+    ],
+  },
+];
+
+const programmaticVue = `<script setup>
+import { ref } from 'vue'
+import MonthSlider from '@/components/controls/MonthSlider.vue'
+import Button from '@/components/buttons/Button.vue'
+
+const programmaticRef = ref(null)
+const value = ref(null)
+
+function readValue() {
+  value.value = programmaticRef.value?.getValue() ?? null
+}
+\/script>
+
+<template>
+  <Button color="neutral" @click="programmaticRef.nextMonth(); readValue()">nextMonth()</Button>
+  <Button color="neutral" @click="programmaticRef.prevMonth(); readValue()">prevMonth()</Button>
+  <Button color="neutral" @click="programmaticRef.nextYear(); readValue()">nextYear()</Button>
+  <Button color="neutral" @click="programmaticRef.prevYear(); readValue()">prevYear()</Button>
+  <Button color="neutral" @click="programmaticRef.goToMonth('2030-06-01'); readValue()">goToMonth('2030-06-01')</Button>
+  <MonthSlider ref="programmaticRef" @change="readValue" />
+</template>`;
+
+const apiColumns = [
+  { key: 'name', label: 'Nombre' },
+  { key: 'type', label: 'Tipo' },
+  { key: 'default', label: 'Default' },
+  { key: 'description', label: 'Descripción' },
+];
+
+const propsData = [
+  { name: 'modelValue', type: 'string | number | Date | null', default: 'null', description: 'Valor (v-model)' },
+  { name: 'monthFormat', type: 'string', default: '"MMMM"', description: 'Formato del mes (tokens MM MMM MMMM)' },
+  { name: 'yearFormat', type: 'string', default: '"yyyy"', description: 'Formato del año (tokens yy yyyy)' },
+  { name: 'locale', type: 'string', default: '"es"', description: 'Locale de los nombres' },
+  { name: 'yearNavigation', type: 'boolean', default: 'true', description: 'Habilita navegación de años (‹ ‹‹)' },
+  { name: 'variant', type: 'string', default: '"soft"', description: 'solid, outlined, soft, ghost, subtle' },
+  { name: 'min', type: 'string | number | Date | null', default: 'null', description: 'Mes mínimo' },
+  { name: 'max', type: 'string | number | Date | null', default: 'null', description: 'Mes máximo' },
+  { name: 'color', type: 'string', default: '"primary"', description: 'primary, secondary, neutral, success, warning, danger' },
+  { name: 'disabled', type: 'boolean', default: 'false', description: 'Deshabilita el control' },
+];
+
+const slotsData: { name: string; description: string }[] = [];
+
+const eventsData = [
+  { name: 'update:modelValue', type: '(value: Date) => void', description: 'Al cambiar el mes (v-model)' },
+  { name: 'change', type: '(value: Date) => void', description: 'Al cambiar el mes' },
+];
+
+const exposesData = [
+  { name: 'nextMonth', type: '() => void', description: 'Avanza un mes' },
+  { name: 'prevMonth', type: '() => void', description: 'Retrocede un mes' },
+  { name: 'nextYear', type: '() => void', description: 'Avanza un año' },
+  { name: 'prevYear', type: '() => void', description: 'Retrocede un año' },
+  { name: 'goToMonth', type: '(value: string | number | Date) => void', description: 'Va al mes indicado' },
+  { name: 'getValue', type: '() => Date | null', description: 'Devuelve el valor actual' },
+  { name: 'setValue', type: '(value: string | number | Date) => void', description: 'Setea el valor' },
 ];
 </script>
 
@@ -120,21 +191,28 @@ const outlineItems = [
       <hr class="playground-separator" />
 
       <!-- Programático -->
-      <section id="programmatic" class="playground-month-slider-section">
-        <h2>Control programático</h2>
-        <div class="playground-month-slider-row">
-          <Button @click="programmaticRef?.nextMonth(); readValue()" color="primary" variant="solid">nextMonth()</Button>
-          <Button @click="programmaticRef?.prevMonth(); readValue()" color="neutral" variant="ghost">prevMonth()</Button>
-          <Button @click="programmaticRef?.nextYear(); readValue()" color="primary" variant="outlined">nextYear()</Button>
-          <Button @click="programmaticRef?.prevYear(); readValue()" color="neutral" variant="ghost">prevYear()</Button>
-          <Button @click="programmaticRef?.goToMonth('2030-06-01'); readValue()" color="success" variant="soft">goToMonth('2030-06-01')</Button>
+      <section id="programmatic" class="playground-section">
+        <div class="playground-heading">
+          <h2>Programmatic</h2>
         </div>
-        <p class="playground-month-slider-state">
-          getValue(): <strong>{{ programmaticValue ? programmaticValue.toISOString().slice(0, 10) : '—' }}</strong>
+        <p class="playground-desc">
+          Seguidilla de botones sobre la instancia de abajo.
         </p>
-        <div class="playground-month-slider-col">
-          <MonthSlider ref="programmaticRef" @change="readValue" />
-        </div>
+        <SectionDemo :vue-code="programmaticVue">
+          <div class="playground-col">
+            <div class="playground-row">
+              <Button color="neutral" @click="programmaticRef?.nextMonth(); readValue()">nextMonth()</Button>
+              <Button color="neutral" @click="programmaticRef?.prevMonth(); readValue()">prevMonth()</Button>
+              <Button color="neutral" @click="programmaticRef?.nextYear(); readValue()">nextYear()</Button>
+              <Button color="neutral" @click="programmaticRef?.prevYear(); readValue()">prevYear()</Button>
+              <Button color="neutral" @click="programmaticRef?.goToMonth('2030-06-01'); readValue()">goToMonth('2030-06-01')</Button>
+            </div>
+            <p class="playground-state">
+              getValue(): <strong>{{ programmaticValue ? programmaticValue.toISOString().slice(0, 10) : '—' }}</strong>
+            </p>
+            <MonthSlider ref="programmaticRef" @change="readValue" />
+          </div>
+        </SectionDemo>
       </section>
 
       <hr class="playground-separator" />
@@ -157,6 +235,21 @@ const outlineItems = [
         </div>
       </section>
 
+      <section id="api" class="playground-section">
+        <h2>API</h2>
+
+        <h3 id="api-props">Props</h3>
+        <Table :columns="apiColumns" :data="propsData" variant="ghost" compact />
+
+        <h3 id="api-slots">Slots</h3>
+        <Table :columns="apiColumns" :data="slotsData" empty="No tiene slots" variant="ghost" compact />
+
+        <h3 id="api-events">Events</h3>
+        <Table :columns="apiColumns" :data="eventsData" variant="ghost" compact />
+
+        <h3 id="api-exposes">Exposes</h3>
+        <Table :columns="apiColumns" :data="exposesData" variant="ghost" compact />
+      </section>
     </div>
   </PlaygroundLayout>
 </template>
