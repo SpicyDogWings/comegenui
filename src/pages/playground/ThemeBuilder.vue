@@ -717,29 +717,30 @@ onBeforeUnmount(() => {
             </div>
           </Card>
 
-          <div class="tb-pair">
           <Card variant="ghost" title="Superficies" class="tb-card">
-            <div class="tb-cards-grid">
-              <Card title="Ghost" variant="ghost">Contenido apoyado sobre el fondo.</Card>
-              <Card title="Soft" variant="soft" color="primary">Tinte suave del color activo.</Card>
-              <Card title="Subtle" variant="subtle" color="secondary">Fondo tenue con borde propio.</Card>
-              <Card title="Solid" variant="solid" color="primary">Bloque de color pleno.</Card>
-            </div>
-            <div class="tb-cluster">
-              <p class="tb-cluster-label">Horizontal y con footer</p>
-              <Card title="Horizontal" variant="ghost" layout="horizontal">
-                <template #media>
-                  <div style="background: linear-gradient(135deg, var(--cu-color-primary), var(--cu-color-secondary)); height: 100%; min-height: 90px;"></div>
-                </template>
-                Media al costado, contenido a la derecha.
-              </Card>
-              <Card title="Con footer" variant="subtle" color="success">
-                El footer queda anclado abajo con su separador.
-                <template #footer>
-                  <Button color="success" variant="soft">Aceptar</Button>
-                  <Button color="neutral" variant="ghost">Cancelar</Button>
-                </template>
-              </Card>
+            <div class="tb-two">
+              <div class="tb-cards-grid">
+                <Card title="Ghost" variant="ghost">Contenido apoyado sobre el fondo.</Card>
+                <Card title="Soft" variant="soft" color="primary">Tinte suave del color activo.</Card>
+                <Card title="Subtle" variant="subtle" color="secondary">Fondo tenue con borde propio.</Card>
+                <Card title="Solid" variant="solid" color="primary">Bloque de color pleno.</Card>
+              </div>
+              <div class="tb-cluster">
+                <p class="tb-cluster-label">Horizontal y con footer</p>
+                <Card title="Horizontal" variant="ghost" layout="horizontal">
+                  <template #media>
+                    <div style="background: linear-gradient(135deg, var(--cu-color-primary), var(--cu-color-secondary)); height: 100%; min-height: 90px;"></div>
+                  </template>
+                  Media al costado, contenido a la derecha.
+                </Card>
+                <Card title="Con footer" variant="subtle" color="success">
+                  El footer queda anclado abajo con su separador.
+                  <template #footer>
+                    <Button color="success" variant="soft">Aceptar</Button>
+                    <Button color="neutral" variant="ghost">Cancelar</Button>
+                  </template>
+                </Card>
+              </div>
             </div>
           </Card>
 
@@ -767,12 +768,27 @@ onBeforeUnmount(() => {
                 </div>
               </div>
             </div>
-            <div class="tb-cluster">
-              <p class="tb-cluster-label">Outline</p>
-              <Outline :items="demoOutlineItems" />
+            <div class="tb-nav-grid">
+              <div class="tb-cluster">
+                <p class="tb-cluster-label">Outline — cápsula propia</p>
+                <div class="tb-sim">
+                  <Outline :items="demoOutlineItems" />
+                </div>
+              </div>
+              <div class="tb-cluster">
+                <p class="tb-cluster-label">Menú desplegable</p>
+                <div class="tb-sim">
+                  <div class="tb-sim-lines">
+                    <span class="tb-sim-line tb-sim-line--w60"></span>
+                  </div>
+                  <div class="tb-row">
+                    <DropdownMenu color="primary" label="Opciones" :items="dropdownItems" />
+                    <DropdownMenu color="neutral" variant="soft" label="Acciones" :items="dropdownItems" />
+                  </div>
+                </div>
+              </div>
             </div>
           </Card>
-          </div>
 
           <Card variant="ghost" title="Editorial" class="tb-card">
             <div class="tb-two">
@@ -850,7 +866,6 @@ onBeforeUnmount(() => {
             </div>
             <div class="tb-row">
               <Button color="primary" @click="modalPreviewRef?.open()">Abrir modal real</Button>
-              <DropdownMenu color="primary" label="Menú" :items="dropdownItems" />
             </div>
           </Card>
         </div>
@@ -1087,6 +1102,12 @@ onBeforeUnmount(() => {
   flex-direction: column;
   gap: 1rem;
   min-width: 0;
+}
+
+.tb-nav-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
 }
 
 .tb-overlays {
