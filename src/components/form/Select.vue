@@ -149,7 +149,11 @@ const optionStyle = computed(() => ({ textAlign: props.textAlign }));
 function get() { return selectedValue.value; }
 function set(value: string) { selectedValue.value = value; }
 function reset() { selectedValue.value = ""; }
-function focus() { selectRoot.value?.focus(); }
+function focus() {
+  // Enfoca el trigger real (el botón), no el wrapper: el div es tabindex -1,
+  // se enfoca sin ningún feedback visible y sin soporte de teclado
+  selectRoot.value?.querySelector<HTMLElement>(".cu-select-toggle")?.focus();
+}
 
 function onFocusOut(e: FocusEvent) {
   if (!selectRoot.value?.contains(e.relatedTarget as Node)) {
@@ -256,6 +260,12 @@ defineExpose({
   justify-content: space-between;
   gap: var(--cu-space-md);
   box-sizing: border-box;
+}
+
+/* Anillo de focus del trigger (como .cu-input:focus) — focus() enfoca el botón
+   de verdad: visible para el usuario y para teclado */
+.cu-select-toggle:focus {
+  box-shadow: 0 0 0 var(--cu-border-thin) var(--btn-subtle-border);
 }
 
 .cu-select-label {

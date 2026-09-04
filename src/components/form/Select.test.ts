@@ -117,3 +117,17 @@ describe("Select", () => {
     expect(w.find(".cu-loader").exists()).toBe(false);
   });
 });
+
+it("focus() enfoca el trigger real y get() devuelve la selección", async () => {
+  const w = mount(Select, {
+    props: { options: [{ value: "ar", label: "Argentina" }, { value: "br", label: "Brasil" }, { value: "cl", label: "Chile" }] },
+    attachTo: document.body,
+  });
+  expect((w.vm as any).get()).toBe("");
+  await w.find("button.cu-select-toggle").trigger("click");
+  await w.findAll("button.cu-select-option")[1]!.trigger("click");
+  expect((w.vm as any).get()).toBe("br");
+  (w.vm as any).focus();
+  expect(document.activeElement).toBe(w.find("button.cu-select-toggle").element);
+  w.unmount();
+});

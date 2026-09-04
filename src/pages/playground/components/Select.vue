@@ -501,7 +501,14 @@ const exposesData = [
               · isOpen(): <strong>{{ progIsOpen }}</strong>
               · selectedItem(): <strong>{{ progSelectedItem }}</strong>
             </p>
-            <Select ref="selectRef" :options="options" placeholder="Select programático" style="max-width:300px" />
+            <Select
+              ref="selectRef"
+              :options="options"
+              placeholder="Select programático"
+              style="max-width:300px"
+              @update:model-value="readProgrammaticState()"
+              @close="readProgrammaticState()"
+            />
           </div>
         </SectionDemo>
       </section>
