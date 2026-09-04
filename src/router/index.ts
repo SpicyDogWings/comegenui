@@ -37,6 +37,16 @@ const router = createRouter({
               component: () => import("@/pages/playground/components/FloatingButton.vue")
             },
             {
+              path: "color-picker",
+              name: "ColorPicker playground",
+              component: () => import("@/pages/playground/components/ColorPicker.vue")
+            },
+            {
+              path: "label",
+              name: "Label playground",
+              component: () => import("@/pages/playground/components/Label.vue")
+            },
+            {
               path: "alert",
               name: "Alert playground",
               component: () => import("@/pages/playground/components/Alert.vue")

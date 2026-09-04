@@ -36,16 +36,18 @@ const navItems = [
       {
         label: 'form',
         children: [
-          { label: 'Switch', path: '/playground/components/switch' },
-          { label: 'Checkbox', path: '/playground/components/checkbox' },
-          { label: 'Input', path: '/playground/components/input' },
-          { label: 'Textarea', path: '/playground/components/textarea' },
-          { label: 'Select', path: '/playground/components/select' },
           { label: 'Autocomplete', path: '/playground/components/autocomplete' },
-          { label: 'FileInput', path: '/playground/components/file-input' },
-          { label: 'FileInputZone', path: '/playground/components/file-input-zone' },
+          { label: 'Checkbox', path: '/playground/components/checkbox' },
+          { label: 'ColorPicker', path: '/playground/components/color-picker' },
           { label: 'DatePicker', path: '/playground/components/date-picker' },
           { label: 'DatePickerRange', path: '/playground/components/date-picker-range' },
+          { label: 'FileInput', path: '/playground/components/file-input' },
+          { label: 'FileInputZone', path: '/playground/components/file-input-zone' },
+          { label: 'Input', path: '/playground/components/input' },
+          { label: 'Label', path: '/playground/components/label' },
+          { label: 'Select', path: '/playground/components/select' },
+          { label: 'Switch', path: '/playground/components/switch' },
+          { label: 'Textarea', path: '/playground/components/textarea' },
         ]
       },
       {
