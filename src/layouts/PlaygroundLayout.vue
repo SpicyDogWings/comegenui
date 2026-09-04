@@ -16,12 +16,6 @@ const { libKey, inLib } = useLibStatus()
 
 const navItems = [
   {
-    label: 'Theme Builder',
-    children: [
-      { label: 'Editor', path: '/playground/theme-builder' },
-    ]
-  },
-  {
     label: 'Components',
     children: [
       {
