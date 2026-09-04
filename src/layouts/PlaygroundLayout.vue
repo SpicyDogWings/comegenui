@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import ThemeDropdown from '@/components/theme/ThemeDropdown.vue'
 import Navbar from '@/components/lab/collapse/navigation/Navbar.vue'
 import Outline from '@/components/lab/collapse/navigation/Outline.vue'
 import type { OutlineItem } from '@/components/lab/collapse/navigation/Outline.vue'
