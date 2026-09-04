@@ -24,17 +24,6 @@ const y = now.getFullYear();
 const m = String(now.getMonth() + 1).padStart(2, '0');
 const d = (day: number) => `${y}-${m}-${String(day).padStart(2, '0')}`;
 
-const pickerEvents = [
-  { date: d(3), color: 'primary' },
-  { date: d(7), color: 'success' },
-  { date: d(11), color: 'warning' },
-  { date: d(15), color: 'danger' },
-  { date: d(18), color: 'primary' },
-  { date: d(22), color: 'success' },
-  { date: d(25), color: 'warning' },
-  { date: d(11), color: 'danger' },
-]
-
 const tokenColumns = [
   { key: 'token', label: 'Token' },
   { key: 'ejemplo', label: 'Con 2026-08-11' },
@@ -57,7 +46,6 @@ const outlineItems = [
   { label: 'Formato', id: 'format' },
   { label: 'Min / Max', id: 'min-max' },
   { label: 'Controles de mes', id: 'month-controls' },
-  { label: 'Eventos', id: 'events' },
   { label: 'Sin footer', id: 'no-footer' },
   { label: 'Variantes', id: 'variants' },
   { label: 'Colores', id: 'colors' },
@@ -108,21 +96,6 @@ const minMaxVue = vueSnippet(`  <DatePicker model-value="2026-08-11" min="2026-0
 
 const monthControlsVue = vueSnippet(`  <DatePicker model-value="2026-08-11" year-navigation />
   <DatePicker model-value="2026-08-11" year-navigation month-format="MMM yyyy" />`);
-
-const eventsVue = `<script setup>
-import DatePicker from '@/components/form/DatePicker.vue'
-
-const events = [
-  { date: '2026-08-03', color: 'primary' },
-  { date: '2026-08-07', color: 'success' },
-  { date: '2026-08-11', color: 'warning' },
-  { date: '2026-08-15', color: 'danger' },
-]
-<\/script>
-
-<template>
-  <DatePicker :events="events" />
-</template>`;
 
 const noFooterVue = vueSnippet(`  <DatePicker model-value="2026-08-11" :today-button="false" :clearable="false" />`);
 
@@ -181,24 +154,6 @@ const monthControlsVanilla = `<script src="dist/CuDatePicker.umd.js"><\/script>
 
 <cu-date-picker model-value="2026-08-11" year-navigation></cu-date-picker>
 <cu-date-picker model-value="2026-08-11" year-navigation month-format="MMM yyyy"></cu-date-picker>`;
-
-const eventsVanilla = `<script src="dist/CuDatePicker.umd.js"><\/script>
-
-<cu-date-picker id="picker-events"></cu-date-picker>
-
-<script>
-  customElements.whenDefined('cu-date-picker').then(() => {
-    const picker = document.getElementById('picker-events');
-    // Los arrays se asignan por JS (los atributos HTML no aceptan arrays):
-    // picker.events = [{ date, color? }, ...]
-    picker.events = [
-      { date: '2026-08-03', color: 'primary' },
-      { date: '2026-08-07', color: 'success' },
-      { date: '2026-08-11', color: 'warning' },
-      { date: '2026-08-15', color: 'danger' },
-    ];
-  });
-<\/script>`;
 
 const noFooterVanilla = `<script src="dist/CuDatePicker.umd.js"><\/script>
 
@@ -445,24 +400,6 @@ const exposesData = [
           <div class="playground-col">
             <DatePicker model-value="2026-08-11" year-navigation style="max-width: 280px;" />
             <DatePicker model-value="2026-08-11" year-navigation month-format="MMM yyyy" style="max-width: 280px;" />
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="events" class="playground-section">
-        <div class="playground-heading">
-          <h2>Eventos</h2>
-          <Badge color="neutral" title="events por defecto">[]</Badge>
-        </div>
-        <p class="playground-desc">
-          Puntos bajo las fechas para señalar eventos (prop <code>events</code>): cada evento tiene <code>date</code> y opcional <code>color</code> semántico.
-          Los eventos emitidos (select, change, open, close) están documentados en API → Events.
-        </p>
-        <SectionDemo :vue-code="eventsVue" :vanilla-code="eventsVanilla">
-          <div class="playground-col">
-            <DatePicker style="max-width: 280px;" :events="pickerEvents" />
           </div>
         </SectionDemo>
       </section>

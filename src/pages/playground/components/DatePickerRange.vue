@@ -28,17 +28,6 @@ const y = now.getFullYear();
 const m = String(now.getMonth() + 1).padStart(2, '0');
 const d = (day: number) => `${y}-${m}-${String(day).padStart(2, '0')}`;
 
-const rangeEvents = [
-  { date: d(3), color: 'primary' },
-  { date: d(7), color: 'success' },
-  { date: d(11), color: 'warning' },
-  { date: d(15), color: 'danger' },
-  { date: d(18), color: 'primary' },
-  { date: d(22), color: 'success' },
-  { date: d(25), color: 'warning' },
-  { date: d(11), color: 'danger' },
-];
-
 function fmt(d: Date | null) {
   return d ? d.toISOString().slice(0, 10) : '—';
 }
@@ -64,7 +53,6 @@ const outlineItems = [
   { label: 'Placeholder', id: 'placeholder' },
   { label: 'Formato', id: 'format' },
   { label: 'Min / Max', id: 'min-max' },
-  { label: 'Eventos', id: 'events' },
   { label: 'Dual Calendar', id: 'dual-calendar' },
   { label: 'Colores', id: 'colors' },
   { label: 'Posiciones', id: 'positions' },
@@ -120,22 +108,6 @@ const formatVue = vueSnippet(`  <DatePickerRange start-date="2026-09-03" end-dat
 
 const minMaxVue = vueSnippet(`  <DatePickerRange start-date="2026-09-05" end-date="2026-09-20" min="2026-01-01" max="2026-12-31" />
   <DatePickerRange min="2026-09-10" max="2026-09-25" disabled-weekdays="0,6" />`);
-
-const eventsVue = `<script setup>
-import { ref } from 'vue'
-import DatePickerRange from '@/components/form/DatePickerRange.vue'
-
-const events = [
-  { date: '2026-09-03', color: 'primary' },
-  { date: '2026-09-07', color: 'success' },
-  { date: '2026-09-11', color: 'warning' },
-  { date: '2026-09-15', color: 'danger' },
-]
-<\/script>
-
-<template>
-  <DatePickerRange :events="events" />
-</template>`;
 
 const dualCalendarVue = vueSnippet(`  <DatePickerRange start-date="2026-09-20" end-date="2026-10-05" dual-calendar />`);
 
@@ -197,24 +169,6 @@ const minMaxVanilla = `<script src="dist/CuDatePickerRange.umd.js"><\/script>
 
 <cu-date-picker-range start-date="2026-09-05" end-date="2026-09-20" min="2026-01-01" max="2026-12-31"></cu-date-picker-range>
 <cu-date-picker-range min="2026-09-10" max="2026-09-25" disabled-weekdays="0,6"></cu-date-picker-range>`;
-
-const eventsVanilla = `<script src="dist/CuDatePickerRange.umd.js"><\/script>
-
-<cu-date-picker-range id="range-events"></cu-date-picker-range>
-
-<script>
-  customElements.whenDefined('cu-date-picker-range').then(() => {
-    const range = document.getElementById('range-events');
-    // Los arrays se asignan por JS (los atributos HTML no aceptan arrays):
-    // range.events = [{ date, color? }, ...]
-    range.events = [
-      { date: '2026-09-03', color: 'primary' },
-      { date: '2026-09-07', color: 'success' },
-      { date: '2026-09-11', color: 'warning' },
-      { date: '2026-09-15', color: 'danger' },
-    ];
-  });
-<\/script>`;
 
 const dualCalendarVanilla = `<script src="dist/CuDatePickerRange.umd.js"><\/script>
 
@@ -442,30 +396,6 @@ const exposesData = [
               <strong>Con días deshabilitados:</strong> ventana del 10 al 25 + fines de semana (<code>disabled-weekdays="0,6"</code>).
             </p>
             <DatePickerRange min="2026-09-10" max="2026-09-25" disabled-weekdays="0,6" style="max-width: 320px;" />
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="events" class="playground-section">
-        <div class="playground-heading">
-          <h2>Eventos</h2>
-          <Badge color="neutral" title="events por defecto">[]</Badge>
-        </div>
-        <p class="playground-desc">
-          Puntos bajo las fechas para señalar eventos. Compatible con rangos.
-        </p>
-        <SectionDemo :vue-code="eventsVue" :vanilla-code="eventsVanilla">
-          <div class="playground-col">
-            <DatePickerRange
-              style="max-width: 320px;"
-              :events="rangeEvents"
-              :start-date="startDate"
-              :end-date="endDate"
-              @update:start-date="startDate = $event"
-              @update:end-date="endDate = $event"
-            />
           </div>
         </SectionDemo>
       </section>
