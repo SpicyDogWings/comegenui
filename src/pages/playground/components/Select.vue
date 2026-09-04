@@ -48,6 +48,7 @@ const outlineItems = [
   { label: 'Searchable', id: 'searchable' },
   { label: 'Search Cooldown', id: 'cooldown' },
   { label: 'Loading', id: 'loading' },
+  { label: 'Positions', id: 'positions' },
   { label: 'Programmatic', id: 'programmatic' },
   {
     label: 'API',
@@ -255,6 +256,11 @@ function readProgrammaticState() {
   progSelectedItem.value = option ? JSON.stringify(option) : "(ninguno)";
 }
 
+const positionsVue = vueSnippet(`  <Select position="bottom" :options="options" placeholder="bottom" style="max-width:200px" />
+  <Select position="top" :options="options" placeholder="top" style="max-width:200px" />
+  <Select position="left" :options="options" placeholder="left" style="max-width:200px" />
+  <Select position="right" :options="options" placeholder="right" style="max-width:200px" />`);
+
 const programmaticVue = `<script setup>
 import { ref } from 'vue'
 import Select from '@/components/form/Select.vue'
@@ -282,6 +288,11 @@ function logState() {
   <Button color="neutral" @click="logState()">get()</Button>
   <Select ref="selectRef" :options="options" placeholder="Select programático" style="max-width:300px" />
 </template>`;
+
+const positionsVanilla = vanillaSnippet(`<cu-select id="pos-bottom" position="bottom" placeholder="bottom" style="max-width:200px"></cu-select>
+<cu-select id="pos-top" position="top" placeholder="top" style="max-width:200px"></cu-select>
+<cu-select id="pos-left" position="left" placeholder="left" style="max-width:200px"></cu-select>
+<cu-select id="pos-right" position="right" placeholder="right" style="max-width:200px"></cu-select>`, assignOptionsJs);
 
 const programmaticVanilla = vanillaSnippet(`<cu-button id="sel-prog-set">set('opt2')</cu-button>
 <cu-button id="sel-prog-set3">set('opt3')</cu-button>
@@ -475,6 +486,23 @@ const exposesData = [
         </div>
         <SectionDemo :vue-code="loadingVue" :vanilla-code="loadingVanilla">
           <Select :options="options" loading placeholder="Cargando opciones..." style="max-width:300px" />
+        </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="positions" class="playground-section">
+        <div class="playground-heading">
+          <h2>Positions</h2>
+          <Badge color="neutral" title="Posición por defecto">bottom</Badge>
+        </div>
+        <SectionDemo :vue-code="positionsVue" :vanilla-code="positionsVanilla">
+          <div class="playground-row">
+            <Select :options="options" position="bottom" placeholder="bottom" style="max-width:200px" />
+            <Select :options="options" position="top" placeholder="top" style="max-width:200px" />
+            <Select :options="options" position="left" placeholder="left" style="max-width:200px" />
+            <Select :options="options" position="right" placeholder="right" style="max-width:200px" />
+          </div>
         </SectionDemo>
       </section>
 

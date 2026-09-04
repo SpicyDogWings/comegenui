@@ -133,6 +133,8 @@ const interfaceCode = `interface DropdownItem {
         <div class="playground-row">
           <DropdownMenu label="Bottom" position="bottom" :items="basicItems" />
           <DropdownMenu label="Top" position="top" :items="basicItems" />
+          <DropdownMenu label="Left" position="left" :items="basicItems" />
+          <DropdownMenu label="Right" position="right" :items="basicItems" />
         </div>
       </section>
 

@@ -42,6 +42,7 @@ const outlineItems = [
   { label: 'Disabled', id: 'disabled' },
   { label: 'Min Chars', id: 'min-chars' },
   { label: 'v-model', id: 'v-model' },
+  { label: 'Positions', id: 'positions' },
   { label: 'Programmatic', id: 'programmatic' },
   {
     label: 'API',
@@ -208,6 +209,11 @@ function readProgrammaticState() {
     : "(ninguno)";
 }
 
+const positionsVue = vueSnippet(`  <Autocomplete position="bottom" :items="items" placeholder="bottom" style="max-width:200px" />
+  <Autocomplete position="top" :items="items" placeholder="top" style="max-width:200px" />
+  <Autocomplete position="left" :items="items" placeholder="left" style="max-width:200px" />
+  <Autocomplete position="right" :items="items" placeholder="right" style="max-width:200px" />`);
+
 const programmaticVue = `<script setup>
 import { ref } from 'vue'
 import Autocomplete from '@/components/form/Autocomplete.vue'
@@ -235,6 +241,32 @@ function logState() {
   <Button color="neutral" @click="logState()">get()</Button>
   <Autocomplete ref="autoRef" :items="items" placeholder="Autocomplete programático" style="max-width:300px" />
 </template>`;
+
+const positionsVanilla = vanillaSnippet(`<cu-autocomplete id="pos-bottom" position="bottom" placeholder="bottom" style="max-width:200px"></cu-autocomplete>
+<cu-autocomplete id="pos-top" position="top" placeholder="top" style="max-width:200px"></cu-autocomplete>
+<cu-autocomplete id="pos-left" position="left" placeholder="left" style="max-width:200px"></cu-autocomplete>
+<cu-autocomplete id="pos-right" position="right" placeholder="right" style="max-width:200px"></cu-autocomplete>`, `  customElements.whenDefined('cu-autocomplete').then(() => {
+    document.getElementById('pos-bottom').items = [
+      { label: 'JavaScript', value: 'js' },
+      { label: 'TypeScript', value: 'ts' },
+      { label: 'Python', value: 'py' },
+    ];
+    document.getElementById('pos-top').items = [
+      { label: 'JavaScript', value: 'js' },
+      { label: 'TypeScript', value: 'ts' },
+      { label: 'Python', value: 'py' },
+    ];
+    document.getElementById('pos-left').items = [
+      { label: 'JavaScript', value: 'js' },
+      { label: 'TypeScript', value: 'ts' },
+      { label: 'Python', value: 'py' },
+    ];
+    document.getElementById('pos-right').items = [
+      { label: 'JavaScript', value: 'js' },
+      { label: 'TypeScript', value: 'ts' },
+      { label: 'Python', value: 'py' },
+    ];
+  });`);
 
 const programmaticVanilla = vanillaSnippet(`<cu-button id="auto-prog-set">set('TypeScript')</cu-button>
 <cu-button id="auto-prog-setfree">set('texto libre')</cu-button>
@@ -391,6 +423,23 @@ const exposesData = [
           <div class="playground-col">
             <Autocomplete v-model="selected" :items="items" placeholder="Search..." style="max-width:300px" />
             <p class="playground-code">Selected: {{ selected || '(ninguno)' }}</p>
+          </div>
+        </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="positions" class="playground-section">
+        <div class="playground-heading">
+          <h2>Positions</h2>
+          <Badge color="neutral" title="Posición por defecto">bottom</Badge>
+        </div>
+        <SectionDemo :vue-code="positionsVue" :vanilla-code="positionsVanilla">
+          <div class="playground-row">
+            <Autocomplete :items="items" position="bottom" placeholder="bottom" style="max-width:200px" />
+            <Autocomplete :items="items" position="top" placeholder="top" style="max-width:200px" />
+            <Autocomplete :items="items" position="left" placeholder="left" style="max-width:200px" />
+            <Autocomplete :items="items" position="right" placeholder="right" style="max-width:200px" />
           </div>
         </SectionDemo>
       </section>
