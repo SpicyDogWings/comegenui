@@ -48,8 +48,8 @@ const files = fg.sync('./src/lib/**/*.ts', {
 })
 
 async function runBuilds() {
-  console.log('🧹 Limpiando directorio dist...')
-  const outDir = resolve(__dirname, 'dist')
+  console.log('🧹 Limpiando directorio dist-lib...')
+  const outDir = resolve(__dirname, 'dist-lib')
   if (fs.existsSync(outDir)) {
     fs.rmSync(outDir, { recursive: true, force: true })
   }
@@ -100,7 +100,7 @@ async function runBuilds() {
     fs.writeFileSync(resolve(cssDir, `${name}.css`), themeCSS)
   }
 
-  console.log(`\n✅ Build complete! Output: dist/`)
+  console.log(`\n✅ Build complete! Output: dist-lib/`)
   for (const file of files) {
     const baseName = basename(file, extname(file))
     console.log(`   - ${baseName}.umd.js`)
@@ -124,7 +124,7 @@ async function runBuilds() {
 
 async function createZip() {
   console.log('\n📦 Creando zip...')
-  const outDir = resolve(__dirname, 'dist')
+  const outDir = resolve(__dirname, 'dist-lib')
   const version = process.argv[2] || packageJson.version
   const zipName = `comegenui-v${version}.zip`
   const outputPath = resolve(outDir, zipName)
