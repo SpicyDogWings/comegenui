@@ -13,6 +13,9 @@ Desarrollo de componentes **comegen-ui** (Vue 3 + Custom Elements + UnoCSS, UMD 
 
 - "Crear/agregar componente" → [Crear](#crear-un-componente-nuevo).
 - "Modificar componente" → [Modificar](#modificar-un-componente-existente).
+- "Crear playground de un componente" → [Playground](#playground--patrón-de-página) + [Registrar](#registrar-el-playground-router--nav).
+- "Crear una sección/grupo nuevo en el menú" → [Nueva sección](#nueva-sección-grupo-del-nav).
+- "Ordenar/clasificar/sincronizar el menú con las carpetas" → [Sincronizar nav ↔ carpetas](#sincronizar-nav--carpetas).
 - "Buildear la lib" → [Build y validación](#build-y-validación).
 - "Testear componente" → [Build y validación](#build-y-validación).
 - "Playground / probar componente" → [Playground](#playground--patrón-de-página).
@@ -180,7 +183,6 @@ const outlineItems = [
 | Vanilla | Uso como **custom element**: `<script src="dist/CuButton.umd.js">` + `<cu-button ...>` — **solo si el componente está en lib** (entry en `src/lib/`); los internos no tienen tab Vanilla |
 
 4. **API en una sección** con `h3` chicos (Props/Slots/Events/Exposes) y `Table variant="ghost" compact`. Nada de filas fake con "—": usar el `empty` de la Table (`empty="No tiene slots"`). Los `h3` con ids (`api-*`) van como `children` del outline (el `Outline` soporta sub-menús).
-5. Registrar la página en `src/router/index.ts` y en el menú del `PlaygroundLayout`.
 
 **Trampas:**
 
@@ -190,6 +192,74 @@ const outlineItems = [
 | `Button.vue` setea `--btn-*` inline → no sobreescribibles desde afuera | Elegir la variante según el fondo: `soft` en claros, `solid` sobre fondos `neutral` (texto via `--cu-color-surface`, que es el opuesto de `neutral` en los 3 temas). |
 | Tooltips nativos (`title`) | No cuentan como feedback visible de una prop; si debe "verse", renderizar texto real. |
 | Swap animado de textos | Un solo `<Transition mode="out-in">` con `:key`; dos Transitions independientes popean al resetear. |
+| FABs y componentes `position: fixed` en preview | En la demo: `style="position: static"` por instancia; en el snippet vanilla/vue, incluirlo también. |
+
+### Registrar el playground (router + nav)
+
+La página sola no alcanza: **3 lugares**.
+
+1. **Página** — `src/pages/playground/components/MiComponente.vue` (PascalCase, igual al componente).
+2. **Route** — `src/router/index.ts` (path kebab-case):
+
+```ts
+{
+  path: "mi-componente",
+  name: "MiComponente playground",
+  component: () => import("@/pages/playground/components/MiComponente.vue")
+},
+```
+
+3. **Nav** — `PlaygroundLayout.vue`, dentro del grupo de su categoría (label = nombre exacto del componente):
+
+```ts
+{ label: 'MiComponente', path: '/playground/components/mi-componente' },
+```
+
+**Validación:** abrir `/playground/components/mi-componente` — aparece en el nav, el outline salta a las secciones, tabs ok.
+
+---
+
+## Nueva sección (grupo del nav)
+
+Un grupo del nav = una **categoría de carpeta**. Receta:
+
+1. **Carpeta** — `src/components/{category}/` (convención actual: `buttons`, `form`, `controls`, `information`, `markdown`, `overlay`, `data`).
+2. **Lib** (si sus componentes son públicos) — `src/lib/{category}/`.
+3. **Nav group** — `PlaygroundLayout.vue` (label **Capitalized**, siempre):
+
+```ts
+{
+  label: '{Category}',
+  children: [
+    { label: 'MiComponente', path: '/playground/components/mi-componente' },
+  ],
+},
+```
+
+4. Cada componente del grupo → [Registrar el playground](#registrar-el-playground-router--nav).
+5. Si la categoría es nueva, actualizar el árbol de directorios de [`AGENTS.md`](../../AGENTS.md).
+
+**Validación:** el grupo lista EXACTAMENTE lo que hay en la carpeta (ver siguiente sección).
+
+---
+
+## Sincronizar nav ↔ carpetas
+
+**Regla:** el grupo del nav **espeja la carpeta 1:1** — label = nombre del archivo sin `.vue`, orden alfabético.
+
+1. **Auditar** — comparar:
+
+```bash
+ls src/components/buttons/ | grep -v test
+```
+
+contra el grupo en `PlaygroundLayout.vue`.
+
+2. **Por cada componente sin entrada:** crear página ([patrón de página](#playground--patrón-de-página)) + [route + nav](#registrar-el-playground-router--nav).
+3. Validar: contar entradas del nav del grupo = archivos `.vue` sin test de la carpeta.
+4. Commit: `git commit -m "feat: sección {Category} completa (N/N componentes)"`.
+
+**Ejemplo real (Buttons):** la carpeta tenía 4 componentes (Button, CopyButton, FloatingButton, ToggleColorSheme) y el nav listaba 3 — faltaba FloatingButton: página completa + route `floating-button` + nav entry → 4/4. Labels de grupo Capitalized (`Buttons`), labels de componente = nombre exacto.
 
 ---
 
