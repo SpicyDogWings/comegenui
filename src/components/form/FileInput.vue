@@ -248,7 +248,7 @@ defineExpose({ get, set, reset, focus, trigger });
   display: flex;
   align-items: center;
   gap: var(--cu-space-sm);
-  padding: var(--cu-space-sm) var(--cu-space-md);
+  padding: var(--cu-space-md) var(--cu-space-lg);
   border-radius: var(--cu-radius);
   font-family: var(--cu-font-sans);
   font-size: var(--cu-font-size-sm);
