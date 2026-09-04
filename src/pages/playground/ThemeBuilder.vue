@@ -365,7 +365,7 @@ onBeforeUnmount(() => {
           <h2>Colors</h2>
           <div class="tb-colors-list">
             <div v-for="(value, key) in colors" :key="key" class="tb-color-row">
-              <label class="tb-color-label">{{ key }}</label>
+              <Label :label="key" color="var(--cu-color-neutral)" />
               <ColorPicker :model-value="value" @update:model-value="colors[key] = $event" />
             </div>
           </div>
@@ -378,11 +378,11 @@ onBeforeUnmount(() => {
           <div class="tb-group">
             <h3>Font Family</h3>
             <div class="tb-field">
-              <label>Sans</label>
+              <Label label="Sans" color="var(--cu-color-neutral)" />
               <Input v-model="typography.fontFamily.sans" />
             </div>
             <div class="tb-field">
-              <label>Mono</label>
+              <Label label="Mono" color="var(--cu-color-neutral)" />
               <Input v-model="typography.fontFamily.mono" />
             </div>
           </div>
@@ -390,7 +390,7 @@ onBeforeUnmount(() => {
             <h3>Font Size</h3>
             <div class="tb-grid">
               <div v-for="(value, key) in typography.fontSize" :key="key" class="tb-field">
-                <label>{{ key }}</label>
+                <Label :label="key" color="var(--cu-color-neutral)" />
                 <Input v-model="typography.fontSize[key]" />
               </div>
             </div>
@@ -399,7 +399,7 @@ onBeforeUnmount(() => {
             <h3>Font Weight</h3>
             <div class="tb-grid">
               <div v-for="(value, key) in typography.fontWeight" :key="key" class="tb-field">
-                <label>{{ key }}</label>
+                <Label :label="key" color="var(--cu-color-neutral)" />
                 <Input v-model="typography.fontWeight[key]" />
               </div>
             </div>
@@ -408,7 +408,7 @@ onBeforeUnmount(() => {
             <h3>Line Height</h3>
             <div class="tb-grid">
               <div v-for="(value, key) in typography.lineHeight" :key="key" class="tb-field">
-                <label>{{ key }}</label>
+                <Label :label="key" color="var(--cu-color-neutral)" />
                 <Input v-model="typography.lineHeight[key]" />
               </div>
             </div>
@@ -421,7 +421,7 @@ onBeforeUnmount(() => {
           <h2>Spacing</h2>
           <div class="tb-grid">
             <div v-for="(value, key) in spacing" :key="key" class="tb-field">
-              <label>{{ key }}</label>
+              <Label :label="key" color="var(--cu-color-neutral)" />
               <Input v-model="spacing[key]" />
             </div>
           </div>
@@ -433,7 +433,7 @@ onBeforeUnmount(() => {
           <h2>Border Radius</h2>
           <div class="tb-grid">
             <div v-for="(value, key) in borderRadius" :key="key" class="tb-field">
-              <label>{{ key }}</label>
+              <Label :label="key" color="var(--cu-color-neutral)" />
               <Input v-model="borderRadius[key]" />
             </div>
           </div>
@@ -445,7 +445,7 @@ onBeforeUnmount(() => {
           <h2>Shadow Color</h2>
           <div class="tb-colors-list">
             <div class="tb-color-row">
-              <label class="tb-color-label">color</label>
+              <Label label="color" color="var(--cu-color-neutral)" />
               <ColorPicker v-model="shadows.color" />
             </div>
           </div>
@@ -459,7 +459,7 @@ onBeforeUnmount(() => {
             <h3>Width</h3>
             <div class="tb-grid">
               <div v-for="(value, key) in borders.width" :key="key" class="tb-field">
-                <label>{{ key }}</label>
+                <Label :label="key" color="var(--cu-color-neutral)" />
                 <Input v-model="borders.width[key]" />
               </div>
             </div>
@@ -468,7 +468,7 @@ onBeforeUnmount(() => {
             <h3>Color</h3>
             <div class="tb-colors-list">
               <div v-for="(value, key) in borders.color" :key="key" class="tb-color-row">
-                <label class="tb-color-label">{{ key }}</label>
+                <Label :label="key" color="var(--cu-color-neutral)" />
                 <ColorPicker :model-value="value" @update:model-value="borders.color[key] = $event" />
               </div>
             </div>
@@ -933,44 +933,10 @@ const tema = 'builder';
 .tb-color-row {
   display: flex;
   flex-direction: column;
-  gap: 0.125rem;
-}
-
-.tb-color-label {
-  font-size: var(--cu-font-size-xs);
-  font-weight: var(--cu-font-weight-medium);
-  color: var(--cu-color-neutral);
-  opacity: 0.7;
-  text-transform: capitalize;
-}
-
 .tb-field {
   display: flex;
   flex-direction: column;
   gap: 0.125rem;
-}
-
-.tb-field label {
-  font-size: var(--cu-font-size-xs);
-  font-weight: var(--cu-font-weight-medium);
-  color: var(--cu-color-neutral);
-  opacity: 0.7;
-}
-
-.tb-field input[type="text"] {
-  padding: var(--cu-space-xs) var(--cu-space-sm);
-  border: var(--cu-border-thin) solid var(--cu-border-color);
-  border-radius: var(--cu-radius);
-  font-family: var(--cu-font-mono);
-  font-size: var(--cu-font-size-xs);
-  background: var(--cu-color-surface);
-  color: var(--cu-color-neutral);
-}
-
-.tb-field input[type="text"]:focus {
-  outline: none;
-  border-color: var(--cu-color-primary);
-  box-shadow: 0 0 0 2px var(--cu-color-primary-soft);
 }
 
 .tb-separator {
