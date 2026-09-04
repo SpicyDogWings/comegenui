@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
+import Button from "@/components/buttons/Button.vue";
+import CodeBlock from "@/components/markdown/CodeBlock.vue";
 import Table from "@/components/data/Table.vue";
 
 const outlineItems = [
@@ -12,6 +14,17 @@ const outlineItems = [
   { label: 'Footer', id: 'footer' },
   { label: 'Loading', id: 'loading' },
   { label: 'Compact', id: 'compact' },
+  {
+    label: 'API',
+    id: 'api',
+    children: [
+      { label: 'Props', id: 'api-props' },
+      { label: 'Slots', id: 'api-slots' },
+      { label: 'Events', id: 'api-events' },
+      { label: 'Exposes', id: 'api-exposes' },
+      { label: 'Interfaces', id: 'api-interfaces' },
+    ],
+  },
 ];
 
 const sampleData = [
@@ -35,6 +48,52 @@ const columns = [
 
 const colors = ["primary", "secondary", "neutral", "success", "warning", "danger"];
 const variants = ["soft", "solid", "outlined", "ghost"];
+const apiColumns = [
+  { key: 'name', label: 'Nombre' },
+  { key: 'type', label: 'Tipo' },
+  { key: 'default', label: 'Default' },
+  { key: 'description', label: 'Descripción' },
+];
+
+const propsData = [
+  { name: 'columns', type: 'Column[]', default: '[]', description: 'Definición de columnas' },
+  { name: 'data', type: 'Record<string, any>[]', default: '[]', description: 'Filas: objetos key → valor' },
+  { name: 'empty', type: 'string', default: '"No hay datos que mostrar"', description: 'Mensaje sin datos' },
+  { name: 'color', type: 'string', default: '"neutral"', description: 'primary, secondary, neutral, success, warning, danger' },
+  { name: 'variant', type: 'string', default: '"soft"', description: 'solid, outlined, soft, ghost, subtle, none' },
+  { name: 'loading', type: 'boolean', default: 'false', description: 'Muestra loader en el body' },
+  { name: 'maxHeight', type: 'string', default: '""', description: 'Altura máxima con scroll (ej: 300px)' },
+  { name: 'rowDisabled', type: 'boolean', default: 'false', description: 'Deshabilita la interacción de filas' },
+  { name: 'htmlCells', type: 'boolean', default: 'false', description: 'Renderiza los valores como HTML' },
+  { name: 'footer', type: 'FooterRow[]', default: '[]', description: 'Filas de pie programáticas' },
+  { name: 'compact', type: 'boolean', default: 'false', description: 'Densidad compacta' },
+];
+
+const slotsData = [
+  { name: 'header-{key}', description: 'Contenido del header de la columna' },
+  { name: 'cell-{key}', description: 'Contenido de la celda (por columna)' },
+];
+
+const eventsData: { name: string; type: string; description: string }[] = [];
+
+const exposesData: { name: string; type: string; description: string }[] = [];
+
+const interfaceCode = `interface Column {
+  key: string
+  label?: string
+  width?: string
+  align?: "left" | "center" | "right"
+}
+
+interface FooterCell {
+  value: string
+  colspan?: number
+  align?: "left" | "center" | "right"
+}
+
+interface FooterRow {
+  cells: FooterCell[]
+}`;
 </script>
 
 <template>
@@ -43,6 +102,7 @@ const variants = ["soft", "solid", "outlined", "ghost"];
       <section id="basic" class="playground-section">
         <h2>Basic</h2>
         <Table :columns="columns" :data="sampleData" />
+        <Button variant="link" to="#api-interfaces">Ver interfaz Column ↓</Button>
       </section>
 
       <hr class="playground-separator" />
@@ -122,6 +182,24 @@ const variants = ["soft", "solid", "outlined", "ghost"];
         <p class="playground-code">Menos padding en celdas (th/td) — compone con cualquier variante.</p>
         <Table :columns="columns" :data="sampleData.slice(0, 4)" compact />
         <Table :columns="columns" :data="sampleData.slice(0, 4)" variant="outlined" compact />
+      </section>
+      <section id="api" class="playground-section">
+        <h2>API</h2>
+
+        <h3 id="api-props">Props</h3>
+        <Table :columns="apiColumns" :data="propsData" variant="ghost" compact />
+
+        <h3 id="api-slots">Slots</h3>
+        <Table :columns="apiColumns" :data="slotsData" empty="No tiene slots" variant="ghost" compact />
+
+        <h3 id="api-events">Events</h3>
+        <Table :columns="apiColumns" :data="eventsData" variant="ghost" compact />
+
+        <h3 id="api-exposes">Exposes</h3>
+        <Table :columns="apiColumns" :data="exposesData" variant="ghost" compact />
+
+        <h3 id="api-interfaces">Interfaces</h3>
+        <CodeBlock :code="interfaceCode" language="ts" variant="solid" />
       </section>
     </div>
   </PlaygroundLayout>

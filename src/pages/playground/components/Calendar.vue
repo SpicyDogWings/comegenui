@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
+import CodeBlock from "@/components/markdown/CodeBlock.vue";
+import Table from "@/components/data/Table.vue";
 import Calendar from "@/components/controls/Calendar.vue";
 import Button from "@/components/buttons/Button.vue";
 import { ref } from "vue";
@@ -28,6 +30,17 @@ const outlineItems = [
   { label: 'Colores', id: 'colors' },
   { label: 'Programático', id: 'programmatic' },
   { label: 'Disabled', id: 'disabled' },
+  {
+    label: 'API',
+    id: 'api',
+    children: [
+      { label: 'Props', id: 'api-props' },
+      { label: 'Slots', id: 'api-slots' },
+      { label: 'Events', id: 'api-events' },
+      { label: 'Exposes', id: 'api-exposes' },
+      { label: 'Interfaces', id: 'api-interfaces' },
+    ],
+  },
 ];
 
 function onEvent(name: string, payload: any) {
@@ -51,6 +64,51 @@ const calendarEvents = [
   { date: d(11), color: 'danger' },
   { date: d(11), color: 'primary' },
 ]
+const apiColumns = [
+  { key: 'name', label: 'Nombre' },
+  { key: 'type', label: 'Tipo' },
+  { key: 'default', label: 'Default' },
+  { key: 'description', label: 'Descripción' },
+];
+
+const propsData = [
+  { name: 'modelValue', type: 'string | number | Date | null', default: 'null', description: 'Fecha seleccionada (v-model)' },
+  { name: 'min', type: 'string | number | Date | null', default: 'null', description: 'Fecha mínima' },
+  { name: 'max', type: 'string | number | Date | null', default: 'null', description: 'Fecha máxima' },
+  { name: 'color', type: 'string', default: '"primary"', description: 'primary, secondary, neutral, success, warning, danger' },
+  { name: 'variant', type: 'string', default: '"soft"', description: 'solid, outlined, soft, ghost, subtle' },
+  { name: 'disabled', type: 'boolean', default: 'false', description: 'Deshabilita la selección' },
+  { name: 'disabledWeekdays', type: 'number[]', default: '[]', description: 'Días de semana deshabilitados (0=domingo)' },
+  { name: 'disabledDates', type: '(string | number | Date)[]', default: '[]', description: 'Fechas puntuales deshabilitadas' },
+  { name: 'locale', type: 'string', default: '"es"', description: 'Locale de los nombres' },
+  { name: 'weekStart', type: 'number', default: '1', description: 'Primer día de la semana (0=domingo, 1=lunes)' },
+  { name: 'monthFormat', type: 'string', default: '"MMMM"', description: 'Formato del mes' },
+  { name: 'yearFormat', type: 'string', default: '"yyyy"', description: 'Formato del año' },
+  { name: 'events', type: 'CalendarEvent[]', default: '[]', description: 'Puntos bajo las fechas' },
+  { name: 'rangeStart', type: 'string | number | Date | null', default: 'null', description: 'Inicio de rango resaltado' },
+  { name: 'rangeEnd', type: 'string | number | Date | null', default: 'null', description: 'Fin de rango resaltado' },
+];
+
+const slotsData: { name: string; description: string }[] = [];
+
+const eventsData = [
+  { name: 'update:modelValue', type: '(value: Date) => void', description: 'Fecha seleccionada (v-model)' },
+  { name: 'change', type: '(value: Date) => void', description: 'Cambia la selección' },
+  { name: 'select', type: '(value: Date) => void', description: 'Click en un día' },
+];
+
+const exposesData = [
+  { name: 'nextMonth', type: '() => void', description: 'Avanza un mes' },
+  { name: 'prevMonth', type: '() => void', description: 'Retrocede un mes' },
+  { name: 'goToMonth', type: '(value: string | number | Date) => void', description: 'Va al mes indicado' },
+  { name: 'getValue', type: '() => Date | null', description: 'Devuelve la fecha actual' },
+  { name: 'setValue', type: '(value: string | number | Date) => void', description: 'Setea la fecha' },
+];
+
+const interfaceCode = `interface CalendarEvent {
+  date: string | number | Date
+  color?: string
+}`;
 </script>
 
 <template>
@@ -89,8 +147,9 @@ const calendarEvents = [
       <section id="events" class="playground-section">
         <h2>Eventos</h2>
         <p class="playground-desc">
-          Puntos bajo las fechas para señalar eventos. Cada evento tiene <code>date</code> y opcional <code>color</code> (semántico: <code>primary</code>, <code>success</code>, <code>warning</code>, <code>danger</code>…). Un día puede tener múltiples puntos.
+          Puntos bajo las fechas para señalar eventos. Un día puede tener múltiples puntos.
         </p>
+        <Button variant="link" to="#api-interfaces">Ver interfaz CalendarEvent ↓</Button>
         <div class="playground-calendar-row">
           <Calendar
             style="width: 380px;"
@@ -217,6 +276,24 @@ const calendarEvents = [
         </div>
       </section>
 
+      <section id="api" class="playground-section">
+        <h2>API</h2>
+
+        <h3 id="api-props">Props</h3>
+        <Table :columns="apiColumns" :data="propsData" variant="ghost" compact />
+
+        <h3 id="api-slots">Slots</h3>
+        <Table :columns="apiColumns" :data="slotsData" empty="No tiene slots" variant="ghost" compact />
+
+        <h3 id="api-events">Events</h3>
+        <Table :columns="apiColumns" :data="eventsData" variant="ghost" compact />
+
+        <h3 id="api-exposes">Exposes</h3>
+        <Table :columns="apiColumns" :data="exposesData" variant="ghost" compact />
+
+        <h3 id="api-interfaces">Interfaces</h3>
+        <CodeBlock :code="interfaceCode" language="ts" variant="solid" />
+      </section>
     </div>
   </PlaygroundLayout>
 </template>

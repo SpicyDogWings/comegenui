@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
+import Button from "@/components/buttons/Button.vue";
+import CodeBlock from "@/components/markdown/CodeBlock.vue";
+import Table from "@/components/data/Table.vue";
 import DropdownMenu from "@/components/controls/DropdownMenu.vue";
 
 const outlineItems = [
@@ -10,6 +13,17 @@ const outlineItems = [
   { label: 'With Icons', id: 'icons' },
   { label: 'Dividers', id: 'dividers' },
   { label: 'Disabled Items', id: 'disabled' },
+  {
+    label: 'API',
+    id: 'api',
+    children: [
+      { label: 'Props', id: 'api-props' },
+      { label: 'Slots', id: 'api-slots' },
+      { label: 'Events', id: 'api-events' },
+      { label: 'Exposes', id: 'api-exposes' },
+      { label: 'Interfaces', id: 'api-interfaces' },
+    ],
+  },
 ];
 
 const basicItems = [
@@ -36,6 +50,51 @@ const disabledItems = [
   { label: "Disabled", disabled: true, onClick: () => {} },
   { label: "Also Enabled", onClick: () => console.log("also enabled") },
 ];
+const apiColumns = [
+  { key: 'name', label: 'Nombre' },
+  { key: 'type', label: 'Tipo' },
+  { key: 'default', label: 'Default' },
+  { key: 'description', label: 'Descripción' },
+];
+
+const propsData = [
+  { name: 'color', type: 'string', default: '"neutral"', description: 'primary, secondary, neutral, success, warning, danger' },
+  { name: 'variant', type: 'string', default: '"ghost"', description: 'solid, outlined, soft, ghost, subtle, link, none' },
+  { name: 'disabled', type: 'boolean', default: 'false', description: 'Deshabilita el trigger' },
+  { name: 'label', type: 'string', default: '""', description: 'Texto del trigger (si no hay slot)' },
+  { name: 'position', type: 'string', default: '"bottom"', description: 'bottom, top, left, right' },
+  { name: 'align', type: 'string', default: '"start"', description: 'start, center, end' },
+  { name: 'textAlign', type: 'string', default: '"left"', description: 'Alineación del texto de los items' },
+  { name: 'offset', type: 'number', default: '4', description: 'Separación del panel (px)' },
+  { name: 'fixed', type: 'boolean', default: 'false', description: 'Panel position: fixed (viewport)' },
+  { name: 'items', type: 'DropdownItem[]', default: '[]', description: 'Items del menú' },
+];
+
+const slotsData: { name: string; description: string }[] = [];
+
+const eventsData = [
+  { name: 'open', type: '() => void', description: 'Se abre el panel' },
+  { name: 'close', type: '() => void', description: 'Se cierra el panel' },
+];
+
+const exposesData = [
+  { name: 'open', type: '() => void', description: 'Abre el panel' },
+  { name: 'close', type: '() => void', description: 'Cierra el panel' },
+  { name: 'toggle', type: '() => void', description: 'Abre/cierra el panel' },
+  { name: 'isOpen', type: '() => boolean', description: 'Estado del panel' },
+];
+
+const interfaceCode = `interface DropdownItem {
+  label?: string
+  icon?: string
+  href?: string
+  onClick?: () => void
+  color?: string
+  variant?: string
+  disabled?: boolean
+  divider?: boolean
+  target?: string
+}`;
 </script>
 
 <template>
@@ -43,6 +102,7 @@ const disabledItems = [
     <div class="playground-content">
       <section id="variants" class="playground-section">
         <h2>Variants</h2>
+        <Button variant="link" to="#api-interfaces">Ver interfaz DropdownItem ↓</Button>
         <div class="playground-row">
           <DropdownMenu variant="solid" label="Solid" :items="basicItems" />
           <DropdownMenu variant="soft" label="Soft" :items="basicItems" />
@@ -106,6 +166,24 @@ const disabledItems = [
       <section id="disabled" class="playground-section">
         <h2>Disabled Items</h2>
         <DropdownMenu label="Mixed" :items="disabledItems" />
+      </section>
+      <section id="api" class="playground-section">
+        <h2>API</h2>
+
+        <h3 id="api-props">Props</h3>
+        <Table :columns="apiColumns" :data="propsData" variant="ghost" compact />
+
+        <h3 id="api-slots">Slots</h3>
+        <Table :columns="apiColumns" :data="slotsData" empty="No tiene slots" variant="ghost" compact />
+
+        <h3 id="api-events">Events</h3>
+        <Table :columns="apiColumns" :data="eventsData" variant="ghost" compact />
+
+        <h3 id="api-exposes">Exposes</h3>
+        <Table :columns="apiColumns" :data="exposesData" variant="ghost" compact />
+
+        <h3 id="api-interfaces">Interfaces</h3>
+        <CodeBlock :code="interfaceCode" language="ts" variant="solid" />
       </section>
     </div>
   </PlaygroundLayout>

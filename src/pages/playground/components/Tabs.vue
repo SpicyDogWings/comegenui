@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
+import CodeBlock from "@/components/markdown/CodeBlock.vue";
+import Table from "@/components/data/Table.vue";
 import Tabs from "@/components/Tabs.vue";
 import Button from "@/components/buttons/Button.vue";
 
@@ -11,6 +13,17 @@ const outlineItems = [
   { label: 'Sizes', id: 'sizes' },
   { label: 'Disabled', id: 'disabled' },
   { label: 'Controlled', id: 'controlled' },
+  {
+    label: 'API',
+    id: 'api',
+    children: [
+      { label: 'Props', id: 'api-props' },
+      { label: 'Slots', id: 'api-slots' },
+      { label: 'Events', id: 'api-events' },
+      { label: 'Exposes', id: 'api-exposes' },
+      { label: 'Interfaces', id: 'api-interfaces' },
+    ],
+  },
 ];
 
 const basicTabs = [
@@ -23,6 +36,43 @@ const colors = ['primary', 'secondary', 'neutral', 'success', 'warning', 'danger
 const sizes = ['sm', 'md', 'lg'] as const;
 
 const controlled = ref('first');
+const apiColumns = [
+  { key: 'name', label: 'Nombre' },
+  { key: 'type', label: 'Tipo' },
+  { key: 'default', label: 'Default' },
+  { key: 'description', label: 'Descripción' },
+];
+
+const propsData = [
+  { name: 'tabs', type: 'TabItem[]', default: '— (requerido)', description: 'Pestañas' },
+  { name: 'color', type: 'string', default: '"primary"', description: 'primary, secondary, neutral, success, warning, danger' },
+  { name: 'variant', type: 'string', default: '"tabs"', description: 'tabs, pills, boxed, soft' },
+  { name: 'size', type: 'string', default: '"md"', description: 'sm, md, lg' },
+  { name: 'disabled', type: 'boolean', default: 'false', description: 'Deshabilita todas las pestañas' },
+];
+
+const slotsData = [
+  { name: '{key}', description: 'Contenido del panel de la pestaña (slot dinámico por key)' },
+  { name: 'tab-icon-{key}', description: 'Ícono del tab (slot dinámico por key)' },
+];
+
+const eventsData = [
+  { name: 'update:modelValue', type: '(key: string) => void', description: 'Pestaña activa (v-model)' },
+  { name: 'change', type: '(key: string) => void', description: 'Cambia la pestaña activa' },
+];
+
+const exposesData = [
+  { name: 'getActive', type: '() => string', description: 'Key de la pestaña activa' },
+  { name: 'setActive', type: '(key: string) => void', description: 'Activa la pestaña' },
+  { name: 'next', type: '() => void', description: 'Activa la siguiente' },
+  { name: 'prev', type: '() => void', description: 'Activa la anterior' },
+];
+
+const interfaceCode = `interface TabItem {
+  key: string
+  label: string
+  disabled?: boolean
+}`;
 </script>
 
 <template>
@@ -30,6 +80,7 @@ const controlled = ref('first');
     <div class="playground-content">
       <section id="variants" class="playground-section">
         <h2>Variants</h2>
+        <Button variant="link" to="#api-interfaces">Ver interfaz TabItem ↓</Button>
         <div class="playground-variants">
           <Tabs variant="tabs" :tabs="basicTabs">
             <template #overview>Contenido Overview</template>
@@ -162,6 +213,24 @@ const controlled = ref('first');
           <template #second>Contenido Second</template>
           <template #third>Contenido Third</template>
         </Tabs>
+      </section>
+      <section id="api" class="playground-section">
+        <h2>API</h2>
+
+        <h3 id="api-props">Props</h3>
+        <Table :columns="apiColumns" :data="propsData" variant="ghost" compact />
+
+        <h3 id="api-slots">Slots</h3>
+        <Table :columns="apiColumns" :data="slotsData" empty="No tiene slots" variant="ghost" compact />
+
+        <h3 id="api-events">Events</h3>
+        <Table :columns="apiColumns" :data="eventsData" variant="ghost" compact />
+
+        <h3 id="api-exposes">Exposes</h3>
+        <Table :columns="apiColumns" :data="exposesData" variant="ghost" compact />
+
+        <h3 id="api-interfaces">Interfaces</h3>
+        <CodeBlock :code="interfaceCode" language="ts" variant="solid" />
       </section>
     </div>
   </PlaygroundLayout>
