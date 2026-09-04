@@ -7,6 +7,10 @@ const loaded = ref(false)
 const themes = ref<Record<string, any>>({})
 const shared = ref<any>({})
 const themeNames = ref<string[]>([])
+// Temas registrados en runtime (ej: el import del ThemeBuilder) — persisten
+// en localStorage para sobrevivir recargas.
+const customThemes = ref<Record<string, Record<string, string>>>({})
+const CUSTOM_KEY = 'cu-custom-themes'
 
 function detectTheme(): string {
   const saved = localStorage.getItem('cu-theme')
@@ -66,6 +70,7 @@ async function init() {
     }
     themeNames.value = ['light', 'dark']
   } finally {
+    restoreCustomThemes()
     loaded.value = true
     theme.value = detectTheme()
     applyTheme(theme.value)
@@ -83,10 +88,36 @@ function getThemeNames() {
   return themeNames.value
 }
 
+// Registra (o actualiza) un tema en runtime: queda en el theme chooser, su CSS
+// se regenera con el resto y persiste en localStorage.
+function registerTheme(name: string, colors: Record<string, string>) {
+  const merged = { ...extractColors(DEFAULTS), ...colors }
+  customThemes.value = { ...customThemes.value, [name]: colors }
+  themes.value[name] = { colors: merged }
+  if (!themeNames.value.includes(name)) themeNames.value = [...themeNames.value, name]
+  try {
+    localStorage.setItem(CUSTOM_KEY, JSON.stringify(customThemes.value))
+  } catch {}
+  regenerateCSS()
+}
+
+function restoreCustomThemes() {
+  try {
+    const raw = localStorage.getItem(CUSTOM_KEY)
+    if (!raw) return
+    const stored = JSON.parse(raw) as Record<string, Record<string, string>>
+    for (const [name, colors] of Object.entries(stored)) {
+      customThemes.value = { ...customThemes.value, [name]: colors }
+      themes.value[name] = { colors: { ...extractColors(DEFAULTS), ...colors } }
+      if (!themeNames.value.includes(name)) themeNames.value = [...themeNames.value, name]
+    }
+  } catch {}
+}
+
 export default {
   install(app: App) {
     init()
   }
 }
 
-export { theme, loaded, setTheme, getThemeNames }
+export { theme, loaded, setTheme, getThemeNames, registerTheme }

@@ -39,7 +39,7 @@ import type { NavItem } from '@/components/lab/collapse/navigation/Navbar.vue'
 import type { OutlineItem } from '@/components/lab/collapse/navigation/Outline.vue'
 import Modal from '@/components/overlay/Modal.vue'
 import { colorsBlock } from '@/plugins/cu-tokens/css'
-import { theme as activeTheme, setTheme } from '@/plugins/cu-tokens'
+import { theme as activeTheme, setTheme, registerTheme } from '@/plugins/cu-tokens'
 
 const STORAGE_KEY = 'cu-theme-builder'
 
@@ -346,6 +346,14 @@ function loadFromStorage() {
 function handleImport(config: any) {
   applyConfig(config as ThemeConfig)
   saveToStorage()
+  // El tema importado se registra como "custom": aparece en el theme chooser,
+  // sus estilos quedan aplicados y no se restauran al salir del builder.
+  const importedColors = Object.values((config as ThemeConfig)?.themes ?? {})[0]
+  if (importedColors) {
+    registerTheme('custom', importedColors)
+    themeName.value = 'custom'
+    previousTheme.value = ''
+  }
 }
 
 function handleExport() {
