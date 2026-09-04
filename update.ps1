@@ -48,9 +48,8 @@ try {
         Write-Host "🔁 Reemplazando $Self ..."
         $oldPath = "$Self.old"
         if (Test-Path $oldPath) { Remove-Item $oldPath -Recurse -Force }
-        if (Test-Path $Self) { Rename-Item -Path $Self -NewName "$($Self.old)" -Force }
+        if (Test-Path $Self) { Rename-Item -Path $Self -NewName "$Self.old" -Force }
         Move-Item -Path $content -Destination $Self -Force
-        if (Test-Path $oldPath) { Remove-Item $oldPath -Recurse -Force }
 
         # Si el build nuevo no trae update.ps1, restaurarlo (para seguir actualizando).
         if (-not (Test-Path (Join-Path $Self "update.ps1"))) {
@@ -62,6 +61,8 @@ try {
             $oldSh = Join-Path $oldPath "update.sh"
             if (Test-Path $oldSh) { Copy-Item $oldSh (Join-Path $Self "update.sh") -Force }
         }
+        # Recién ahora se descarta el backup.
+        if (Test-Path $oldPath) { Remove-Item $oldPath -Recurse -Force }
 
         # Instalar la skill de uso en .agents/skills/ del proyecto huésped.
         $projectRoot = $env:CG_PROJECT_ROOT
