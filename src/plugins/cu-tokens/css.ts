@@ -20,16 +20,40 @@ export function colorVar(name: string, value: string, surface: string) {
     --cu-color-${name}-code: ${toHex(mix(value, surface, 0.4))};`
 }
 
+/* neutral es la tinta (texto/títulos del layout): debe contrastar con el
+   surface. Si la paleta lo trae con la MISMA polaridad (tinta oscura sobre
+   fondo oscuro o viceversa), se deriva del surface — una sola fuente de
+   verdad: este generador (lib y ThemeBuilder usan colorsBlock). Si ya
+   contrasta (ej. Nord #eceff4), se respeta tal cual. */
+function luma01(hex: string): number {
+  try {
+    const h = toHex(hex)
+    const r = parseInt(h.slice(1, 3), 16) / 255
+    const g = parseInt(h.slice(3, 5), 16) / 255
+    const b = parseInt(h.slice(5, 7), 16) / 255
+    return 0.299 * r + 0.587 * g + 0.114 * b
+  } catch {
+    return 0.5
+  }
+}
+
+export function resolveInk(surface: string, neutral?: string): string {
+  const surfaceDark = luma01(surface) < 0.5
+  if (neutral && (luma01(neutral) < 0.5) !== surfaceDark) return neutral
+  return surfaceDark ? toHex(mix(surface, '#ffffff', 0.88)) : toHex(mix(surface, '#000000', 0.88))
+}
+
 export function colorsBlock(colors: any) {
+  const ink = resolveInk(colors.surface, colors.neutral)
   return `${colorVar('primary', colors.primary, colors.surface)}
     ${colorVar('secondary', colors.secondary, colors.surface)}
-    ${colorVar('neutral', colors.neutral, colors.surface)}
+    ${colorVar('neutral', ink, colors.surface)}
     ${colorVar('success', colors.success, colors.surface)}
     ${colorVar('warning', colors.warning, colors.surface)}
     ${colorVar('danger', colors.danger, colors.surface)}
     --cu-color-surface: ${colors.surface};
     /* esquema de código: tokens dedicados (invierten con el tema) */
-    --cu-code-bg: ${colors.neutral};
+    --cu-code-bg: ${ink};
     --cu-code-text: ${colors.surface};
     --cu-code-faded: ${transparentize(colors.surface, 0.45)};`
 }

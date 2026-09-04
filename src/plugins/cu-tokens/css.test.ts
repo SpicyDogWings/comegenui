@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { colorsBlock, colorVar, generateThemeCSS, generateThemesCSS } from './css'
+import { colorsBlock, colorVar, generateThemeCSS, generateThemesCSS, resolveInk } from './css'
 import { DEFAULTS, extractShared } from './defaults'
 
 const COLORS = {
@@ -13,6 +13,28 @@ const COLORS = {
 }
 
 const COLOR_NAMES = ['primary', 'secondary', 'neutral', 'success', 'warning', 'danger']
+
+describe('resolveInk', () => {
+  it('deriva la tinta cuando el neutral no contrasta con el surface (paleta oscura sin neutral claro)', () => {
+    const ink = resolveInk('#1a1a1a', '#1a1a1a')
+    const luma = (hex: string) => {
+      const r = parseInt(hex.slice(1, 3), 16) / 255
+      const g = parseInt(hex.slice(3, 5), 16) / 255
+      const b = parseInt(hex.slice(5, 7), 16) / 255
+      return 0.299 * r + 0.587 * g + 0.114 * b
+    }
+    expect(luma(ink)).toBeGreaterThan(0.5)
+  })
+
+  it('respeta la tinta cuando ya contrasta (Nord)', () => {
+    expect(resolveInk('#2e3440', '#eceff4')).toBe('#eceff4')
+  })
+
+  it('deriva tinta oscura sobre surface claro', () => {
+    const ink = resolveInk('#eeeeee', '#eeeeee')
+    expect(parseInt(ink.slice(1, 3), 16)).toBeLessThan(128)
+  })
+})
 
 describe('colorsBlock', () => {
   it('genera --cu-color-{name}-code para cada color', () => {
