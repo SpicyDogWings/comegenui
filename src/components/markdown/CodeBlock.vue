@@ -236,69 +236,78 @@ const gutterText = computed(() => lines.value.map((_, i) => i + 1).join('\n'))
   color: var(--cb-text);
 }
 
-.cu-code-block-code :deep(.hljs-keyword),
-.cu-code-block-code :deep(.hljs-selector-tag),
-.cu-code-block-code :deep(.hljs-literal) {
+.cu-code-block-code.cu-code-block-code :deep(.hljs-keyword),
+.cu-code-block-code.cu-code-block-code :deep(.hljs-selector-tag),
+.cu-code-block-code.cu-code-block-code :deep(.hljs-literal) {
   color: var(--cb-hl-keyword);
 }
 
-.cu-code-block-code :deep(.hljs-string),
-.cu-code-block-code :deep(.hljs-regexp),
-.cu-code-block-code :deep(.hljs-addition) {
+.cu-code-block-code.cu-code-block-code :deep(.hljs-string),
+.cu-code-block-code.cu-code-block-code :deep(.hljs-regexp),
+.cu-code-block-code.cu-code-block-code :deep(.hljs-addition) {
   color: var(--cb-hl-string);
 }
 
-.cu-code-block-code :deep(.hljs-number),
-.cu-code-block-code :deep(.hljs-symbol),
-.cu-code-block-code :deep(.hljs-bullet),
-.cu-code-block-code :deep(.hljs-variable),
-.cu-code-block-code :deep(.hljs-template-variable) {
+.cu-code-block-code.cu-code-block-code :deep(.hljs-number),
+.cu-code-block-code.cu-code-block-code :deep(.hljs-symbol),
+.cu-code-block-code.cu-code-block-code :deep(.hljs-bullet),
+.cu-code-block-code.cu-code-block-code :deep(.hljs-variable),
+.cu-code-block-code.cu-code-block-code :deep(.hljs-template-variable) {
   color: var(--cb-hl-number);
 }
 
-.cu-code-block-code :deep(.hljs-tag),
-.cu-code-block-code :deep(.hljs-name),
-.cu-code-block-code :deep(.hljs-selector-class),
-.cu-code-block-code :deep(.hljs-selector-id),
-.cu-code-block-code :deep(.hljs-built_in),
-.cu-code-block-code :deep(.hljs-type),
-.cu-code-block-code :deep(.hljs-class) {
+.cu-code-block-code.cu-code-block-code :deep(.hljs-tag),
+.cu-code-block-code.cu-code-block-code :deep(.hljs-name),
+.cu-code-block-code.cu-code-block-code :deep(.hljs-selector-class),
+.cu-code-block-code.cu-code-block-code :deep(.hljs-selector-id),
+.cu-code-block-code.cu-code-block-code :deep(.hljs-built_in),
+.cu-code-block-code.cu-code-block-code :deep(.hljs-type),
+.cu-code-block-code.cu-code-block-code :deep(.hljs-class) {
   color: var(--cb-hl-tag);
 }
 
-.cu-code-block-code :deep(.hljs-attr),
-.cu-code-block-code :deep(.hljs-attribute),
-.cu-code-block-code :deep(.hljs-params) {
+.cu-code-block-code.cu-code-block-code :deep(.hljs-attr),
+.cu-code-block-code.cu-code-block-code :deep(.hljs-attribute),
+.cu-code-block-code.cu-code-block-code :deep(.hljs-params) {
   color: var(--cb-hl-attr);
 }
 
-.cu-code-block-code :deep(.hljs-title),
-.cu-code-block-code :deep(.hljs-function),
-.cu-code-block-code :deep(.hljs-section) {
+.cu-code-block-code.cu-code-block-code :deep(.hljs-title),
+.cu-code-block-code.cu-code-block-code :deep(.hljs-function),
+.cu-code-block-code.cu-code-block-code :deep(.hljs-section) {
   color: var(--cb-hl-title);
   font-weight: var(--cu-font-weight-medium);
 }
 
-.cu-code-block-code :deep(.hljs-comment),
-.cu-code-block-code :deep(.hljs-quote) {
+.cu-code-block-code.cu-code-block-code :deep(.hljs-comment),
+.cu-code-block-code.cu-code-block-code :deep(.hljs-quote) {
   color: var(--cb-hl-comment);
   font-style: italic;
 }
 
-.cu-code-block-code :deep(.hljs-meta),
-.cu-code-block-code :deep(.hljs-doctag) {
+.cu-code-block-code.cu-code-block-code :deep(.hljs-meta),
+.cu-code-block-code.cu-code-block-code :deep(.hljs-doctag) {
   color: var(--cb-hl-meta);
 }
 
-.cu-code-block-code :deep(.hljs-emphasis) {
+/* clases que hljs emite sin token propio: plain del esquema. Sin esta regla,
+   el global del playground las pisa con neutral → negro sobre --cu-code-bg */
+.cu-code-block-code.cu-code-block-code :deep(.hljs-subst),
+.cu-code-block-code.cu-code-block-code :deep(.hljs-property),
+.cu-code-block-code.cu-code-block-code :deep(.hljs-operator),
+.cu-code-block-code.cu-code-block-code :deep(.hljs-punctuation) {
+  color: var(--cb-text);
+}
+
+.cu-code-block-code.cu-code-block-code :deep(.hljs-emphasis) {
   font-style: italic;
 }
 
-.cu-code-block-code :deep(.hljs-strong) {
+.cu-code-block-code.cu-code-block-code :deep(.hljs-strong) {
   font-weight: var(--cu-font-weight-bold);
 }
 
-.cu-code-block-code :deep(.hljs-deletion) {
+.cu-code-block-code.cu-code-block-code :deep(.hljs-deletion) {
   color: var(--cb-hl-attr);
   text-decoration: line-through;
 }
