@@ -16,16 +16,7 @@ const outlineItems = [
   { label: 'Disabled', id: 'disabled' },
   { label: 'Rows', id: 'rows' },
   { label: 'v-model', id: 'v-model' },
-  {
-    label: 'Programmatic',
-    id: 'programmatic',
-    children: [
-      { label: 'get()', id: 'prog-get' },
-      { label: 'set()', id: 'prog-set' },
-      { label: 'reset()', id: 'prog-reset' },
-      { label: 'focus()', id: 'prog-focus' },
-    ],
-  },
+    { label: 'Programmatic', id: 'programmatic' },
   {
     label: 'API',
     id: 'api',
@@ -158,10 +149,10 @@ function logValue() {
 const programmaticVanilla = `<script src="dist/CuTextarea.umd.js"><\/script>
 
 <cu-textarea id="ta" placeholder="Escribí algo..." rows="3"></cu-textarea>
-<button id="btn-get">get()</button>
-<button id="btn-set">set('Hola mundo')</button>
-<button id="btn-reset">reset()</button>
-<button id="btn-focus">focus()</button>
+<cu-button id="btn-get">get()</cu-button>
+<cu-button id="btn-set">set('Hola mundo')</cu-button>
+<cu-button id="btn-reset">reset()</cu-button>
+<cu-button id="btn-focus">focus()</cu-button>
 
 <script>
   customElements.whenDefined('cu-textarea').then(() => {
@@ -304,31 +295,24 @@ const exposesData = [
       <hr class="playground-separator" />
 
       <section id="programmatic" class="playground-section">
-        <h2>Programmatic</h2>
+        <div class="playground-heading">
+          <h2>Programmatic</h2>
+        </div>
+        <p class="playground-desc">
+          Seguidilla de botones sobre la instancia de abajo.
+        </p>
         <SectionDemo :vue-code="programmaticVue" :vanilla-code="programmaticVanilla">
           <div class="playground-col">
-            <Textarea ref="textareaRef" placeholder="Textarea programático" :rows="3" />
-
-            <h3 id="prog-get">get()</h3>
             <div class="playground-row">
               <Button color="neutral" @click="readProgrammaticState()">get()</Button>
-            </div>
-            <p class="playground-code">get(): {{ progGet }}</p>
-
-            <h3 id="prog-set">set()</h3>
-            <div class="playground-row">
               <Button color="neutral" @click="textareaRef?.set('Hola mundo'); readProgrammaticState()">set('Hola mundo')</Button>
-            </div>
-
-            <h3 id="prog-reset">reset()</h3>
-            <div class="playground-row">
               <Button color="neutral" @click="textareaRef?.reset(); readProgrammaticState()">reset()</Button>
-            </div>
-
-            <h3 id="prog-focus">focus()</h3>
-            <div class="playground-row">
               <Button color="neutral" @click="textareaRef?.focus()">focus()</Button>
             </div>
+            <p class="playground-state">
+              get(): <strong>{{ progGet }}</strong>
+            </p>
+            <Textarea ref="textareaRef" placeholder="Textarea programático" :rows="3" />
           </div>
         </SectionDemo>
       </section>

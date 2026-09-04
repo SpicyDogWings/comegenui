@@ -37,17 +37,7 @@ const outlineItems = [
   { label: 'Directory', id: 'directory' },
   { label: 'Disabled', id: 'disabled' },
   { label: 'ReadOnly', id: 'readonly' },
-  {
-    label: 'Programmatic',
-    id: 'programmatic',
-    children: [
-      { label: 'get()', id: 'prog-get' },
-      { label: 'set()', id: 'prog-set' },
-      { label: 'reset()', id: 'prog-reset' },
-      { label: 'focus()', id: 'prog-focus' },
-      { label: 'trigger()', id: 'prog-trigger' },
-    ],
-  },
+    { label: 'Programmatic', id: 'programmatic' },
   {
     label: 'API',
     id: 'api',
@@ -339,41 +329,26 @@ const exposesData = [
       <hr class="playground-separator" />
 
       <section id="programmatic" class="playground-section">
-        <h2>Programmatic</h2>
+        <div class="playground-heading">
+          <h2>Programmatic</h2>
+        </div>
+        <p class="playground-desc">
+          Seguidilla de botones sobre la instancia de abajo.
+        </p>
         <SectionDemo :vue-code="progVue" :vanilla-code="progVanilla">
           <div class="playground-col">
-            <FileInputZone ref="progRef" v-model="progFiles" placeholder="Archivos de prueba" />
-            <p class="playground-code">v-model → {{ filesLabel(progFiles) }}</p>
-
-            <h3 id="prog-get">get()</h3>
             <div class="playground-row">
               <Button color="neutral" @click="progGet = filesLabel(progRef?.get() ?? null)">get()</Button>
-              <span class="playground-code">→ {{ progGet || '—' }}</span>
-            </div>
-
-            <h3 id="prog-set">set()</h3>
-            <div class="playground-row">
               <Button color="neutral" @click="progRef?.set(makeFiles())">set(2 archivos)</Button>
-              <span class="playground-code">v-model → {{ filesLabel(progFiles) }}</span>
-            </div>
-
-            <h3 id="prog-reset">reset()</h3>
-            <div class="playground-row">
               <Button color="neutral" @click="progRef?.reset()">reset()</Button>
-              <span class="playground-code">v-model → {{ filesLabel(progFiles) }}</span>
-            </div>
-
-            <h3 id="prog-focus">focus()</h3>
-            <div class="playground-row">
               <Button color="neutral" @click="progRef?.focus()">focus()</Button>
-              <span class="playground-code">pone el foco en la zona</span>
-            </div>
-
-            <h3 id="prog-trigger">trigger()</h3>
-            <div class="playground-row">
               <Button color="neutral" @click="progRef?.trigger()">trigger()</Button>
-              <span class="playground-code">abre el diálogo nativo de archivos</span>
             </div>
+            <p class="playground-state">
+              get(): <strong>{{ progGet || '—' }}</strong>
+              · v-model: <strong>{{ filesLabel(progFiles) }}</strong>
+            </p>
+            <FileInputZone ref="progRef" v-model="progFiles" placeholder="Archivos de prueba" />
           </div>
         </SectionDemo>
       </section>
