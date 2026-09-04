@@ -603,6 +603,31 @@ onBeforeUnmount(() => {
                 <Checkbox label="Borrado definitivo" color="danger" :disabled="true" />
               </div>
             </div>
+            <div class="tb-cluster">
+              <p class="tb-cluster-label">En contexto — preferencias</p>
+              <div class="tb-sim">
+                <div class="tb-option-row">
+                  <span class="tb-option-label">Notificaciones push</span>
+                  <Switch color="primary" :model-value="true" />
+                </div>
+                <div class="tb-option-row">
+                  <span class="tb-option-label">Resumen semanal</span>
+                  <Switch />
+                </div>
+                <div class="tb-option-row">
+                  <span class="tb-option-label">Mantener la sesión abierta</span>
+                  <Checkbox color="primary" :model-value="true" />
+                </div>
+                <div class="tb-option-row">
+                  <span class="tb-option-label">Compartir métricas</span>
+                  <Checkbox color="success" :model-value="true" />
+                </div>
+                <div class="tb-option-row">
+                  <span class="tb-option-label">Cuenta de prueba</span>
+                  <Checkbox :disabled="true" />
+                </div>
+              </div>
+            </div>
           </Card>
           </div>
 
@@ -699,6 +724,22 @@ onBeforeUnmount(() => {
               <Card title="Soft" variant="soft" color="primary">Tinte suave del color activo.</Card>
               <Card title="Subtle" variant="subtle" color="secondary">Fondo tenue con borde propio.</Card>
               <Card title="Solid" variant="solid" color="primary">Bloque de color pleno.</Card>
+            </div>
+            <div class="tb-cluster">
+              <p class="tb-cluster-label">Horizontal y con footer</p>
+              <Card title="Horizontal" variant="ghost" layout="horizontal">
+                <template #media>
+                  <div style="background: linear-gradient(135deg, var(--cu-color-primary), var(--cu-color-secondary)); height: 100%; min-height: 90px;"></div>
+                </template>
+                Media al costado, contenido a la derecha.
+              </Card>
+              <Card title="Con footer" variant="subtle" color="success">
+                El footer queda anclado abajo con su separador.
+                <template #footer>
+                  <Button color="success" variant="soft">Aceptar</Button>
+                  <Button color="neutral" variant="ghost">Cancelar</Button>
+                </template>
+              </Card>
             </div>
           </Card>
 
@@ -1006,6 +1047,17 @@ onBeforeUnmount(() => {
   padding: 0.75rem 1rem;
   border: var(--cu-border-thin) solid var(--cu-border-color);
   border-radius: var(--cu-radius);
+  font-size: var(--cu-font-size-sm);
+}
+
+.tb-option-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.tb-option-label {
   font-size: var(--cu-font-size-sm);
 }
 
