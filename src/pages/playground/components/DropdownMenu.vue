@@ -191,6 +191,13 @@ const interfaceCode = `interface DropdownItem {
 
       <hr class="playground-separator" />
 
+      <section id="disabled" class="playground-section">
+        <h2>Disabled Items</h2>
+        <DropdownMenu label="Mixed" :items="disabledItems" />
+      </section>
+
+      <hr class="playground-separator" />
+
       <section id="programmatic" class="playground-section">
         <div class="playground-heading">
           <h2>Programmatic</h2>
@@ -213,12 +220,6 @@ const interfaceCode = `interface DropdownItem {
         </SectionDemo>
       </section>
 
-      <hr class="playground-separator" />
-
-      <section id="disabled" class="playground-section">
-        <h2>Disabled Items</h2>
-        <DropdownMenu label="Mixed" :items="disabledItems" />
-      </section>
       <section id="api" class="playground-section">
         <h2>API</h2>
 
