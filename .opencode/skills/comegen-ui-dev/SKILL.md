@@ -19,6 +19,7 @@ Desarrollo de componentes **comegen-ui** (Vue 3 + Custom Elements + UnoCSS, UMD 
 - "Buildear la lib" → [Build y validación](#build-y-validación).
 - "Testear componente" → [Build y validación](#build-y-validación).
 - "Playground / probar componente" → [Playground](#playground--patrón-de-página).
+- "Agregar Programmatic/API/Interfaces a una página del playground" → [Playground](#playground--patrón-de-página) (reglas 4-6).
 - "Agregar/modificar un token" → [Tokens ↔ ThemeBuilder](#tokens--themebuilder).
 - "Agregar componente a la lib" → además, su preview en el ThemeBuilder ([Tokens ↔ ThemeBuilder](#tokens--themebuilder)).
 
@@ -144,11 +145,13 @@ import Badge from "@/components/information/Badge.vue";
 
 const outlineItems = [
   { label: 'Variants', id: 'variants' },
+  { label: 'Programmatic', id: 'programmatic' },
   { label: 'API', id: 'api', children: [
     { label: 'Props', id: 'api-props' },
     { label: 'Slots', id: 'api-slots' },
     { label: 'Events', id: 'api-events' },
     { label: 'Exposes', id: 'api-exposes' },
+    { label: 'Interfaces', id: 'api-interfaces' },
   ]},
 ];
 </script>
@@ -182,7 +185,16 @@ const outlineItems = [
 | Vue | Uso como **componente Vue**: `import Button from '@/components/buttons/Button.vue'` + `<Button ...>` — el mismo import que usa el playground. **NUNCA** markup de custom element acá |
 | Vanilla | Uso como **custom element**: `<script src="dist/CuButton.umd.js">` + `<cu-button ...>` — **solo si el componente está en lib** (entry en `src/lib/`); los internos no tienen tab Vanilla |
 
-4. **API en una sección** con `h3` chicos (Props/Slots/Events/Exposes) y `Table variant="ghost" compact`. Nada de filas fake con "—": usar el `empty` de la Table (`empty="No tiene slots"`). Los `h3` con ids (`api-*`) van como `children` del outline (el `Outline` soporta sub-menús).
+4. **API en una sección** con `h3` chicos (Props/Slots/Events/Exposes/Interfaces) y `Table variant="ghost" compact`. Nada de filas fake con "—": usar el `empty` de la Table (`empty="No tiene slots"`). Los `h3` con ids (`api-*`) van como `children` del outline (el `Outline` soporta sub-menús).
+5. **Interfaces**: si un prop tiene estructura (items, options, columns, events), la API lleva la subsección `Interfaces` con `CodeBlock :code="interfaceCode" language="ts" variant="solid"` mostrando la interfaz **real** del componente (leerla del source, **no inventar**). El demo que la usa linkea con `Button variant="link" to="#api-interfaces"` ("Ver interfaz X ↓") en vez de enumerar campos en texto. Si los props son primitivos, no hay subsección Interfaces.
+6. **Programmatic** (si el componente expone métodos): sección **SIEMPRE antes de API**. Layout fijo (referencia: DatePicker):
+   - `<div class="playground-heading"><h2>Programmatic</h2></div>` + `<p class="playground-desc">Seguidilla de botones sobre la instancia de abajo.</p>`
+   - `SectionDemo` con: una fila de `Button color="neutral"` (uniformes, una acción por botón, **nunca `<button>` nativo**), UNA línea `<p class="playground-state">` con los getters en vivo, y el componente **al final**.
+   - Estado en vivo: actualizar en cada acción **y** en los events del componente (`@update:model-value`, `@close`, `@change`…).
+   - Outline `Programmatic` **sin children** (los h3 por-método están proscriptos).
+   - En snippets el estado se loguea a `console` (`logState()`); Vanilla usa `cu-button`.
+
+   **Validación:** `pnpm run build-only` — el outline salta a Programmatic (arriba de API) y el estado se actualiza al usar cada botón y al interactuar con el componente.
 
 **Trampas:**
 
