@@ -176,6 +176,11 @@ const router = createRouter({
               name: "Blockquote playground",
               component: () => import("@/pages/playground/components/Blockquote.vue")
             },
+            {
+              path: "navbar",
+              name: "Navbar playground",
+              component: () => import("@/pages/playground/components/Navbar.vue")
+            },
           ]
         },
       ]
