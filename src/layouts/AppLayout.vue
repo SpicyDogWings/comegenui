@@ -2,6 +2,7 @@
 import { version } from "../../package.json";
 import Badge from "@/components/information/Badge.vue";
 import LucideGitLab from "@/components/icons/LucideGitLab.vue";
+import LucidePalette from "@/components/icons/LucidePalette.vue";
 import ThemeDropdown from "@/components/theme/ThemeDropdown.vue";
 </script>
 
@@ -16,6 +17,14 @@ import ThemeDropdown from "@/components/theme/ThemeDropdown.vue";
       <div class="app-topbar-actions">
         <ThemeDropdown />
         <slot name="actions" />
+        <RouterLink
+          to="/playground/theme-builder"
+          class="app-topbar-icon"
+          aria-label="Theme Builder"
+          title="Theme Builder"
+        >
+          <LucidePalette />
+        </RouterLink>
         <a
           class="app-topbar-icon"
           href="https://gitlab.com/SpicyDogWings/comegen-ui"
