@@ -258,7 +258,6 @@ const pickerRef = ref(null)
 
 <template>
   <div style="display:flex;flex-direction:column;gap:12px">
-    <DatePicker ref="pickerRef" />
     <div style="display:flex;gap:8px;flex-wrap:wrap">
       <Button @click="pickerRef?.open()">open()</Button>
       <Button @click="pickerRef?.close()">close()</Button>
@@ -266,13 +265,12 @@ const pickerRef = ref(null)
       <Button @click="pickerRef?.setValue('2026-08-11')">setValue()</Button>
       <Button @click="pickerRef?.clear()">clear()</Button>
     </div>
+    <DatePicker ref="pickerRef" />
   </div>
 </template>`;
 
 const programmaticVanilla = `<script src="dist/CuDatePicker.umd.js"><\/script>
 <script src="dist/CuButton.umd.js"><\/script>
-
-<cu-date-picker id="picker-prog"></cu-date-picker>
 
 <div style="display:flex;gap:8px;flex-wrap:wrap">
   <cu-button id="picker-prog-open">open()</cu-button>
@@ -281,6 +279,8 @@ const programmaticVanilla = `<script src="dist/CuDatePicker.umd.js"><\/script>
   <cu-button id="picker-prog-set">setValue()</cu-button>
   <cu-button id="picker-prog-clear">clear()</cu-button>
 </div>
+
+<cu-date-picker id="picker-prog"></cu-date-picker>
 
 <script>
   customElements.whenDefined('cu-date-picker').then(() => {
@@ -577,13 +577,6 @@ const exposesData = [
         </p>
         <SectionDemo :vue-code="programmaticVue" :vanilla-code="programmaticVanilla">
           <div class="playground-col">
-            <DatePicker
-              ref="pickerRef"
-              style="max-width: 280px;"
-              @change="readProgState"
-              @open="progIsOpen = true"
-              @close="progIsOpen = false"
-            />
             <div class="playground-row">
               <Button color="neutral" @click="pickerRef?.open()">open()</Button>
               <Button color="neutral" @click="pickerRef?.close()">close()</Button>
@@ -595,6 +588,13 @@ const exposesData = [
               getValue(): <strong>{{ progValue ? progValue.toISOString().slice(0, 10) : '—' }}</strong>
               · isOpen(): <strong>{{ progIsOpen ? 'true' : 'false' }}</strong>
             </p>
+            <DatePicker
+              ref="pickerRef"
+              style="max-width: 280px;"
+              @change="readProgState"
+              @open="progIsOpen = true"
+              @close="progIsOpen = false"
+            />
           </div>
         </SectionDemo>
       </section>

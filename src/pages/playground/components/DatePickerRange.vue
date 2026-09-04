@@ -261,7 +261,6 @@ const rangeRef = ref(null)
 
 <template>
   <div style="display:flex;flex-direction:column;gap:12px">
-    <DatePickerRange ref="rangeRef" />
     <div style="display:flex;gap:8px;flex-wrap:wrap">
       <Button @click="rangeRef?.open()">open()</Button>
       <Button @click="rangeRef?.close()">close()</Button>
@@ -269,13 +268,12 @@ const rangeRef = ref(null)
       <Button @click="rangeRef?.setRange('2026-09-03', '2026-09-15')">setRange()</Button>
       <Button @click="rangeRef?.clear()">clear()</Button>
     </div>
+    <DatePickerRange ref="rangeRef" />
   </div>
 </template>`;
 
 const programmaticVanilla = `<script src="dist/CuDatePickerRange.umd.js"><\/script>
 <script src="dist/CuButton.umd.js"><\/script>
-
-<cu-date-picker-range id="range-prog"></cu-date-picker-range>
 
 <div style="display:flex;gap:8px;flex-wrap:wrap">
   <cu-button id="range-prog-open">open()</cu-button>
@@ -284,6 +282,8 @@ const programmaticVanilla = `<script src="dist/CuDatePickerRange.umd.js"><\/scri
   <cu-button id="range-prog-setrange">setRange()</cu-button>
   <cu-button id="range-prog-clear">clear()</cu-button>
 </div>
+
+<cu-date-picker-range id="range-prog"></cu-date-picker-range>
 
 <script>
   customElements.whenDefined('cu-date-picker-range').then(() => {
@@ -588,13 +588,6 @@ const exposesData = [
         </p>
         <SectionDemo :vue-code="programmaticVue" :vanilla-code="programmaticVanilla">
           <div class="playground-col">
-            <DatePickerRange
-              ref="rangeRef"
-              style="max-width: 320px;"
-              @change="readProgState"
-              @open="progIsOpen = true"
-              @close="progIsOpen = false"
-            />
             <div class="playground-row">
               <Button color="neutral" @click="rangeRef?.open()">open()</Button>
               <Button color="neutral" @click="rangeRef?.close()">close()</Button>
@@ -607,6 +600,13 @@ const exposesData = [
               · getEndDate(): <strong>{{ fmt(progEnd) }}</strong>
               · isOpen(): <strong>{{ progIsOpen ? 'true' : 'false' }}</strong>
             </p>
+            <DatePickerRange
+              ref="rangeRef"
+              style="max-width: 320px;"
+              @change="readProgState"
+              @open="progIsOpen = true"
+              @close="progIsOpen = false"
+            />
           </div>
         </SectionDemo>
       </section>

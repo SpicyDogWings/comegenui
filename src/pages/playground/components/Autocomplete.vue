@@ -239,18 +239,18 @@ function logState() {
 <\/script>
 
 <template>
-  <Autocomplete ref="autoRef" :items="items" placeholder="Search..." style="max-width:300px" />
   <Button color="neutral" @click="autoRef.set('TypeScript'); logState()">set('TypeScript')</Button>
   <Button color="neutral" @click="autoRef.reset(); logState()">reset()</Button>
   <Button color="neutral" @click="autoRef.focus()">focus()</Button>
   <Button color="neutral" @click="logState()">get() / isOpen() / selectedItem()</Button>
+  <Autocomplete ref="autoRef" :items="items" placeholder="Search..." style="max-width:300px" />
 </template>`;
 
-const programmaticVanilla = vanillaSnippet(`<cu-autocomplete id="auto" placeholder="Search..." style="max-width:300px"></cu-autocomplete>
-<button id="btn-set">set('TypeScript')</button>
+const programmaticVanilla = vanillaSnippet(`<button id="btn-set">set('TypeScript')</button>
 <button id="btn-reset">reset()</button>
 <button id="btn-focus">focus()</button>
-<button id="btn-log">get() / isOpen() / selectedItem()</button>`, `  customElements.whenDefined('cu-autocomplete').then(() => {
+<button id="btn-log">get() / isOpen() / selectedItem()</button>
+<cu-autocomplete id="auto" placeholder="Search..." style="max-width:300px"></cu-autocomplete>`, `  customElements.whenDefined('cu-autocomplete').then(() => {
     const auto = document.getElementById('auto');
     auto.items = [
       { label: 'JavaScript', value: 'js' },
@@ -407,8 +407,6 @@ const exposesData = [
         <h2>Programmatic</h2>
         <SectionDemo :vue-code="programmaticVue" :vanilla-code="programmaticVanilla">
           <div class="playground-col">
-            <Autocomplete ref="autoRef" :items="items" placeholder="Autocomplete programático" style="max-width:300px" />
-
             <h3 id="prog-get">get()</h3>
             <div class="playground-row">
               <Button color="neutral" @click="readProgrammaticState()">get()</Button>
@@ -442,6 +440,8 @@ const exposesData = [
               <Button color="neutral" @click="readProgrammaticState()">selectedItem()</Button>
             </div>
             <p class="playground-code">selectedItem(): {{ progSelectedItem }}</p>
+
+            <Autocomplete ref="autoRef" :items="items" placeholder="Autocomplete programático" style="max-width:300px" />
           </div>
         </SectionDemo>
       </section>

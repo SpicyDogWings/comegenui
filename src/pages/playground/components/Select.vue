@@ -288,18 +288,18 @@ function logState() {
 <\/script>
 
 <template>
-  <Select ref="selectRef" :options="options" placeholder="Seleccionar..." style="max-width:300px" />
   <Button color="neutral" @click="selectRef.set('opt2'); logState()">set('opt2')</Button>
   <Button color="neutral" @click="selectRef.reset(); logState()">reset()</Button>
   <Button color="neutral" @click="selectRef.focus()">focus()</Button>
   <Button color="neutral" @click="logState()">get() / isOpen() / selectedItem()</Button>
+  <Select ref="selectRef" :options="options" placeholder="Seleccionar..." style="max-width:300px" />
 </template>`;
 
-const programmaticVanilla = vanillaSnippet(`<cu-select id="sel" placeholder="Seleccionar..." style="max-width:300px"></cu-select>
-<button id="btn-set">set('opt2')</button>
+const programmaticVanilla = vanillaSnippet(`<button id="btn-set">set('opt2')</button>
 <button id="btn-reset">reset()</button>
 <button id="btn-focus">focus()</button>
-<button id="btn-log">get() / isOpen() / selectedItem()</button>`, `  customElements.whenDefined('cu-select').then(() => {
+<button id="btn-log">get() / isOpen() / selectedItem()</button>
+<cu-select id="sel" placeholder="Seleccionar..." style="max-width:300px"></cu-select>`, `  customElements.whenDefined('cu-select').then(() => {
     const select = document.getElementById('sel');
     select.options = [
       { value: 'opt1', label: 'Option 1' },
@@ -493,8 +493,6 @@ const exposesData = [
         <h2>Programmatic</h2>
         <SectionDemo :vue-code="programmaticVue" :vanilla-code="programmaticVanilla">
           <div class="playground-col">
-            <Select ref="selectRef" :options="options" placeholder="Select programático" style="max-width:300px" />
-
             <h3 id="prog-get">get()</h3>
             <div class="playground-row">
               <Button color="neutral" @click="readProgrammaticState()">get()</Button>
@@ -528,6 +526,8 @@ const exposesData = [
               <Button color="neutral" @click="readProgrammaticState()">selectedItem()</Button>
             </div>
             <p class="playground-code">selectedItem(): {{ progSelectedItem }}</p>
+
+            <Select ref="selectRef" :options="options" placeholder="Select programático" style="max-width:300px" />
           </div>
         </SectionDemo>
       </section>
