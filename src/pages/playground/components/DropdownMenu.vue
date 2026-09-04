@@ -3,7 +3,12 @@ import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import Button from "@/components/buttons/Button.vue";
 import CodeBlock from "@/components/markdown/CodeBlock.vue";
 import Table from "@/components/data/Table.vue";
+import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import DropdownMenu from "@/components/controls/DropdownMenu.vue";
+import { ref } from "vue";
+
+const menuRef = ref<InstanceType<typeof DropdownMenu> | null>(null);
+const progIsOpen = ref(false);
 
 const outlineItems = [
   { label: 'Variants', id: 'variants' },
@@ -13,6 +18,7 @@ const outlineItems = [
   { label: 'With Icons', id: 'icons' },
   { label: 'Dividers', id: 'dividers' },
   { label: 'Disabled Items', id: 'disabled' },
+  { label: 'Programmatic', id: 'programmatic' },
   {
     label: 'API',
     id: 'api',
@@ -50,6 +56,26 @@ const disabledItems = [
   { label: "Disabled", disabled: true, onClick: () => {} },
   { label: "Also Enabled", onClick: () => console.log("also enabled") },
 ];
+const programmaticVue = `<script setup>
+import { ref } from 'vue'
+import DropdownMenu from '@/components/controls/DropdownMenu.vue'
+import Button from '@/components/buttons/Button.vue'
+
+const menuRef = ref(null)
+const isOpen = ref(false)
+
+function logState() {
+  console.log('isOpen():', menuRef.value.isOpen())
+}
+\/script>
+
+<template>
+  <Button color="neutral" @click="menuRef.open(); isOpen = true">open()</Button>
+  <Button color="neutral" @click="menuRef.close(); isOpen = false">close()</Button>
+  <Button color="neutral" @click="menuRef.toggle(); logState()">toggle()</Button>
+  <DropdownMenu ref="menuRef" label="Menú programático" :items="basicItems" @open="isOpen = true" @close="isOpen = false" />
+</template>`;
+
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
   { key: 'type', label: 'Tipo' },
@@ -161,6 +187,30 @@ const interfaceCode = `interface DropdownItem {
       <section id="dividers" class="playground-section">
         <h2>With Dividers</h2>
         <DropdownMenu label="Edit Menu" :items="dividerItems" />
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="programmatic" class="playground-section">
+        <div class="playground-heading">
+          <h2>Programmatic</h2>
+        </div>
+        <p class="playground-desc">
+          Seguidilla de botones sobre la instancia de abajo — el panel abre acá al lado.
+        </p>
+        <SectionDemo :vue-code="programmaticVue">
+          <div class="playground-col">
+            <div class="playground-row">
+              <Button color="neutral" @click="menuRef?.open(); progIsOpen = true">open()</Button>
+              <Button color="neutral" @click="menuRef?.close(); progIsOpen = false">close()</Button>
+              <Button color="neutral" @click="menuRef?.toggle(); progIsOpen = menuRef?.isOpen() ?? false">toggle()</Button>
+            </div>
+            <p class="playground-state">
+              isOpen(): <strong>{{ progIsOpen ? 'true' : 'false' }}</strong>
+            </p>
+            <DropdownMenu ref="menuRef" label="Menú programático" :items="basicItems" @open="progIsOpen = true" @close="progIsOpen = false" />
+          </div>
+        </SectionDemo>
       </section>
 
       <hr class="playground-separator" />
