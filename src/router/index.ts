@@ -32,6 +32,11 @@ const router = createRouter({
               component: () => import("@/pages/playground/components/ToggleColorScheme.vue")
             },
             {
+              path: "floating-button",
+              name: "FloatingButton playground",
+              component: () => import("@/pages/playground/components/FloatingButton.vue")
+            },
+            {
               path: "alert",
               name: "Alert playground",
               component: () => import("@/pages/playground/components/Alert.vue")

@@ -29,6 +29,7 @@ const navItems = [
         children: [
           { label: 'Button', path: '/playground/components/button' },
           { label: 'CopyButton', path: '/playground/components/copy-button' },
+          { label: 'FloatingButton', path: '/playground/components/floating-button' },
           { label: 'ToggleColorScheme', path: '/playground/components/toggle-color-scheme' },
         ]
       },
