@@ -514,7 +514,7 @@ onBeforeUnmount(() => {
 
       <main class="tb-preview">
         <div class="tb-gallery">
-          <Card variant="ghost" title="Acciones" class="tb-card tb-card--wide">
+          <Card variant="ghost" title="Acciones" class="tb-card">
             <div class="tb-cluster">
               <p class="tb-cluster-label">Colores — solid</p>
               <div class="tb-row">
@@ -551,7 +551,8 @@ onBeforeUnmount(() => {
             </div>
           </Card>
 
-          <Card variant="ghost" title="Campos" class="tb-card">
+          <div class="tb-pair">
+            <Card variant="ghost" title="Campos" class="tb-card">
             <div class="tb-sim">
               <Label label="Nombre" />
               <Input placeholder="Tu nombre" />
@@ -603,8 +604,9 @@ onBeforeUnmount(() => {
               </div>
             </div>
           </Card>
+          </div>
 
-          <Card variant="ghost" title="Fechas" class="tb-card tb-card--wide">
+          <Card variant="ghost" title="Fechas" class="tb-card">
             <div class="tb-agenda">
               <Calendar model-value="2026-09-11" style="width: 300px" />
               <div class="tb-agenda-side">
@@ -620,7 +622,7 @@ onBeforeUnmount(() => {
             </div>
           </Card>
 
-          <Card variant="ghost" title="Feedback" class="tb-card tb-card--wide">
+          <Card variant="ghost" title="Feedback" class="tb-card">
             <div class="tb-two">
               <div class="tb-col">
                 <Alert title="Primary" color="primary">Mensaje informativo con el color del tema.</Alert>
@@ -667,7 +669,7 @@ onBeforeUnmount(() => {
             </div>
           </Card>
 
-          <Card variant="ghost" title="Datos" class="tb-card tb-card--wide">
+          <Card variant="ghost" title="Datos" class="tb-card">
             <div class="tb-sim">
               <div class="tb-toolbar">
                 <Input placeholder="Buscar…" style="max-width: 240px" />
@@ -690,6 +692,7 @@ onBeforeUnmount(() => {
             </div>
           </Card>
 
+          <div class="tb-pair">
           <Card variant="ghost" title="Superficies" class="tb-card">
             <div class="tb-cards-grid">
               <Card title="Ghost" variant="ghost">Contenido apoyado sobre el fondo.</Card>
@@ -728,8 +731,9 @@ onBeforeUnmount(() => {
               <Outline :items="demoOutlineItems" />
             </div>
           </Card>
+          </div>
 
-          <Card variant="ghost" title="Editorial" class="tb-card tb-card--wide">
+          <Card variant="ghost" title="Editorial" class="tb-card">
             <div class="tb-two">
               <Blockquote color="primary">
                 Los tokens son la fuente única de verdad: cambiás un color y todo el ecosistema lo sigue.
@@ -746,7 +750,7 @@ onBeforeUnmount(() => {
             <CodeBlock :code="editorialSnippet" language="javascript" />
           </Card>
 
-          <Card variant="ghost" title="Overlays" class="tb-card tb-card--wide">
+          <Card variant="ghost" title="Overlays" class="tb-card">
             <div class="tb-overlays">
               <div class="tb-cluster">
                 <p class="tb-cluster-label">Modal — renderizado en contexto</p>
@@ -881,14 +885,16 @@ onBeforeUnmount(() => {
 }
 
 .tb-gallery {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 1.5rem;
-  align-items: start;
 }
 
-.tb-card--wide {
-  grid-column: 1 / -1;
+.tb-pair {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: 1.5rem;
+  align-items: stretch;
 }
 
 .tb-cluster {
