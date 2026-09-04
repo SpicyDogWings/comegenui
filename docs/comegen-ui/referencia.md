@@ -16,19 +16,19 @@ Tablas de referencia completas. Para la guía de uso ver [`SKILL.md`](SKILL.md).
 | `CuCard.umd.js` | `<cu-card>` | Tarjeta de información |
 | `CuCheckbox.umd.js` | `<cu-checkbox>` | Checkbox |
 | `CuCollapse.umd.js` | `<cu-collapse>` | Colapsable |
-| `CuColor-picker.umd.js` | `<cu-color-picker>` | Selector de color |
-| `CuDate-picker.umd.js` | `<cu-date-picker>` | Selector de fecha (dropdown + calendario) |
-| `CuDate-picker-range.umd.js` | `<cu-date-picker-range>` | Selector de rango de fechas |
-| `CuDropdown-menu.umd.js` | `<cu-dropdown-menu>` | Menú desplegable |
-| `CuFile-input.umd.js` | `<cu-file-input>` | Input de archivo compacto |
-| `CuFile-input-zone.umd.js` | `<cu-file-input-zone>` | Zona de drag & drop para archivos |
-| `CuFloating-button.umd.js` | `<cu-floating-button>` | Botón flotante (FAB) |
+| `CuColorPicker.umd.js` | `<cu-color-picker>` | Selector de color |
+| `CuDatePicker.umd.js` | `<cu-date-picker>` | Selector de fecha (dropdown + calendario) |
+| `CuDatePickerRange.umd.js` | `<cu-date-picker-range>` | Selector de rango de fechas |
+| `CuDropdownMenu.umd.js` | `<cu-dropdown-menu>` | Menú desplegable |
+| `CuFileInput.umd.js` | `<cu-file-input>` | Input de archivo compacto |
+| `CuFileInputZone.umd.js` | `<cu-file-input-zone>` | Zona de drag & drop para archivos |
+| `CuFloatingButton.umd.js` | `<cu-floating-button>` | Botón flotante (FAB) |
 | `CuInput.umd.js` | `<cu-input>` | Input de texto |
 | `CuLabel.umd.js` | `<cu-label>` | Label |
 | `CuMarkdown.umd.js` | `<cu-markdown>` | Renderizador de Markdown |
 | `CuModal.umd.js` | `<cu-modal>` | Modal |
-| `CuMonth-slider.umd.js` | `<cu-month-slider>` | Slider de meses con arrastre |
-| `CuYear-slider.umd.js` | `<cu-year-slider>` | Slider de años (1 en 1) |
+| `CuMonthSlider.umd.js` | `<cu-month-slider>` | Slider de meses con arrastre |
+| `CuYearSlider.umd.js` | `<cu-year-slider>` | Slider de años (1 en 1) |
 | `CuPagination.umd.js` | `<cu-pagination>` | Paginación |
 | `CuSelect.umd.js` | `<cu-select>` | Selector |
 | `CuSwitch.umd.js` | `<cu-switch>` | Switch/Toggle |

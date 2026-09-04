@@ -59,7 +59,13 @@ async function runBuilds() {
 
   for (const file of files) {
     const baseName = basename(file, extname(file))
-    const name = 'Cu' + baseName.charAt(0).toUpperCase() + baseName.slice(1)
+    // PascalCase real: date-picker → CuDatePicker (los snippets y las páginas
+    // huésped cargan dist/CuDatePicker.umd.js; con solo capitalizar la primera
+    // letra quedaba CuDate-picker.umd.js y el HTML viejo cargaba 404/stale)
+    const name = 'Cu' + baseName
+      .split('-')
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join('')
 
     console.log(`📦 Building ${name}...`)
 

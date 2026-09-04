@@ -90,7 +90,7 @@ Ejemplos copy-pasteables de todos los componentes en HTML plano. Para la guía d
 
 ```html
 <cu-file-input id="file" accept="image/*" placeholder="Seleccionar archivo"></cu-file-input>
-<script src="dist/CuFile-input.umd.js"></script>
+<script src="dist/CuFileInput.umd.js"></script>
 <script>
   const file = document.getElementById('file');
   await customElements.whenDefined('cu-file-input');
@@ -102,7 +102,7 @@ Ejemplos copy-pasteables de todos los componentes en HTML plano. Para la guía d
 
 ```html
 <cu-file-input-zone id="zone" multiple accept="image/*"></cu-file-input-zone>
-<script src="dist/CuFile-input-zone.umd.js"></script>
+<script src="dist/CuFileInputZone.umd.js"></script>
 <script>
   const zone = document.getElementById('zone');
   await customElements.whenDefined('cu-file-input-zone');
@@ -128,7 +128,7 @@ Ejemplos copy-pasteables de todos los componentes en HTML plano. Para la guía d
 <cu-floating-button id="fab" color="primary">
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
 </cu-floating-button>
-<script src="dist/CuFloating-button.umd.js"></script>
+<script src="dist/CuFloatingButton.umd.js"></script>
 <script>
   document.getElementById('fab').addEventListener('click', () => console.log('FAB'));
 </script>
@@ -233,7 +233,7 @@ Ejemplos copy-pasteables de todos los componentes en HTML plano. Para la guía d
 <cu-dropdown-menu id="menu" label="Opciones" color="primary">
   <span>Contenido del panel</span>
 </cu-dropdown-menu>
-<script src="dist/CuDropdown-menu.umd.js"></script>
+<script src="dist/CuDropdownMenu.umd.js"></script>
 <script>
   const menu = document.getElementById('menu');
   await customElements.whenDefined('cu-dropdown-menu');
@@ -293,7 +293,7 @@ Ejemplos copy-pasteables de todos los componentes en HTML plano. Para la guía d
 
 ```html
 <cu-date-picker id="fecha"></cu-date-picker>
-<script src="dist/CuDate-picker.umd.js"></script>
+<script src="dist/CuDatePicker.umd.js"></script>
 <script>
   const fecha = document.getElementById('fecha');
   await customElements.whenDefined('cu-date-picker');
@@ -305,7 +305,7 @@ Ejemplos copy-pasteables de todos los componentes en HTML plano. Para la guía d
 
 ```html
 <cu-date-picker-range id="rango"></cu-date-picker-range>
-<script src="dist/CuDate-picker-range.umd.js"></script>
+<script src="dist/CuDatePickerRange.umd.js"></script>
 <script>
   const rango = document.getElementById('rango');
   await customElements.whenDefined('cu-date-picker-range');
@@ -317,7 +317,7 @@ Ejemplos copy-pasteables de todos los componentes en HTML plano. Para la guía d
 
 ```html
 <cu-month-slider id="mes" color="primary"></cu-month-slider>
-<script src="dist/CuMonth-slider.umd.js"></script>
+<script src="dist/CuMonthSlider.umd.js"></script>
 <script>
   const mes = document.getElementById('mes');
   await customElements.whenDefined('cu-month-slider');
@@ -329,7 +329,7 @@ Ejemplos copy-pasteables de todos los componentes en HTML plano. Para la guía d
 
 ```html
 <cu-year-slider id="anio" color="primary"></cu-year-slider>
-<script src="dist/CuYear-slider.umd.js"></script>
+<script src="dist/CuYearSlider.umd.js"></script>
 <script>
   const anio = document.getElementById('anio');
   await customElements.whenDefined('cu-year-slider');
@@ -346,7 +346,7 @@ Ejemplos copy-pasteables de todos los componentes en HTML plano. Para la guía d
 
 ```html
 <cu-color-picker id="color" color="primary"></cu-color-picker>
-<script src="dist/CuColor-picker.umd.js"></script>
+<script src="dist/CuColorPicker.umd.js"></script>
 <script>
   const cp = document.getElementById('color');
   await customElements.whenDefined('cu-color-picker');

@@ -62,7 +62,7 @@ Cualquier otro texto del formato se mantiene literal (`"MM/yyyy"` → `"08/2026"
 ## Uso en HTML plano
 
 ```html
-<script src="dist/CuMonth-slider.umd.js"></script>
+<script src="dist/CuMonthSlider.umd.js"></script>
 
 <cu-month-slider></cu-month-slider>
 ```

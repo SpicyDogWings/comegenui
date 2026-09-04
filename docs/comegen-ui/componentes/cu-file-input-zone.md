@@ -51,7 +51,7 @@ Ninguno.
 ## Uso en HTML plano
 
 ```html
-<script src="dist/CuFile-input-zone.umd.js"></script>
+<script src="dist/CuFileInputZone.umd.js"></script>
 
 <!-- Básico -->
 <cu-file-input-zone placeholder="Arrastra un archivo"></cu-file-input-zone>

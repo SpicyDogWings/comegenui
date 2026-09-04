@@ -46,7 +46,7 @@ Ninguno.
 ## Uso en HTML plano
 
 ```html
-<script src="dist/CuFile-input.umd.js"></script>
+<script src="dist/CuFileInput.umd.js"></script>
 
 <cu-file-input placeholder="Elige un archivo..." color="primary"></cu-file-input>
 <cu-file-input accept="image/*" variant="outlined" id="miInput"></cu-file-input>

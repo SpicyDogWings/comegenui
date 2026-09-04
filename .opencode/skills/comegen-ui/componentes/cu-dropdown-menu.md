@@ -67,7 +67,7 @@ Cada item del array `items` puede tener:
 ## Uso en HTML plano
 
 ```html
-<script src="dist/CuDropdown-menu.umd.js"></script>
+<script src="dist/CuDropdownMenu.umd.js"></script>
 
 <cu-dropdown-menu id="dd" label="Acciones" color="primary" variant="soft"></cu-dropdown-menu>
 

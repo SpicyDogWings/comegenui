@@ -41,7 +41,7 @@ Selector de año con navegación por botones y arrastre. Muestra el año actual 
 ## Uso en HTML plano
 
 ```html
-<script src="dist/CuYear-slider.umd.js"></script>
+<script src="dist/CuYearSlider.umd.js"></script>
 
 <cu-year-slider></cu-year-slider>
 ```

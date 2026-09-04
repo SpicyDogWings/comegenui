@@ -41,7 +41,7 @@ Ninguno.
 ## Uso en HTML plano
 
 ```html
-<script src="dist/CuColor-picker.umd.js"></script>
+<script src="dist/CuColorPicker.umd.js"></script>
 
 <cu-color-picker id="miColor" color="primary"></cu-color-picker>
 

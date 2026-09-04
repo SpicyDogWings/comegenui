@@ -85,7 +85,7 @@ picker.format = 'dd-MM-yy';    // "11-08-26"
 ## Uso básico
 
 ```html
-<script src="dist/CuDate-picker.umd.js"></script>
+<script src="dist/CuDatePicker.umd.js"></script>
 
 <cu-date-picker id="miPicker" placeholder="Elegí una fecha"></cu-date-picker>
 

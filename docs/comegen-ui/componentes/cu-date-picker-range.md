@@ -64,7 +64,7 @@ Selector de rango de fechas: dos fechas (inicio + fin) con resaltado del períod
 ## Uso básico
 
 ```html
-<script src="dist/CuDate-picker-range.umd.js"></script>
+<script src="dist/CuDatePickerRange.umd.js"></script>
 
 <cu-date-picker-range id="rango" label="Período"></cu-date-picker-range>
 
