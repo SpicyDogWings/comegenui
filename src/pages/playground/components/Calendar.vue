@@ -28,8 +28,8 @@ const outlineItems = [
   { label: 'Locale', id: 'locale' },
   { label: 'Variantes', id: 'variants' },
   { label: 'Colores', id: 'colors' },
-  { label: 'Programático', id: 'programmatic' },
   { label: 'Disabled', id: 'disabled' },
+  { label: 'Programático', id: 'programmatic' },
   {
     label: 'API',
     id: 'api',
@@ -251,6 +251,15 @@ const interfaceCode = `interface CalendarEvent {
 
       <hr class="playground-separator" />
 
+      <section id="disabled" class="playground-section">
+        <h2>Disabled</h2>
+        <div class="playground-calendar-col">
+          <Calendar :disabled="true" model-value="2026-08-11" style="width: 300px;" />
+        </div>
+      </section>
+
+      <hr class="playground-separator" />
+
       <section id="programmatic" class="playground-section">
         <h2>Control programático</h2>
         <div class="playground-calendar-row">
@@ -264,15 +273,6 @@ const interfaceCode = `interface CalendarEvent {
         </p>
         <div class="playground-calendar-col">
           <Calendar ref="programmaticRef" style="width: 300px;" @select="readValue" />
-        </div>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="disabled" class="playground-section">
-        <h2>Disabled</h2>
-        <div class="playground-calendar-col">
-          <Calendar :disabled="true" model-value="2026-08-11" style="width: 300px;" />
         </div>
       </section>
 

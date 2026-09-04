@@ -24,9 +24,9 @@ const outlineItems = [
   { label: 'Año distinto', id: 'other-year' },
   { label: 'Variantes', id: 'variants' },
   { label: 'Min / Max', id: 'min-max' },
-  { label: 'Programmatic', id: 'programmatic' },
   { label: 'Colores', id: 'colors' },
   { label: 'Disabled', id: 'disabled' },
+  { label: 'Programmatic', id: 'programmatic' },
   {
     label: 'API',
     id: 'api',
@@ -190,6 +190,26 @@ const exposesData = [
 
       <hr class="playground-separator" />
 
+      <!-- Colores -->
+      <section id="colors" class="playground-month-slider-section">
+        <h2>Colores</h2>
+        <div class="playground-month-slider-col">
+          <MonthSlider v-for="color in colors" :key="color" :color="color" />
+        </div>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <!-- Disabled -->
+      <section id="disabled" class="playground-month-slider-section">
+        <h2>Disabled</h2>
+        <div class="playground-month-slider-col">
+          <MonthSlider :disabled="true" />
+        </div>
+      </section>
+
+      <hr class="playground-separator" />
+
       <!-- Programático -->
       <section id="programmatic" class="playground-section">
         <div class="playground-heading">
@@ -213,26 +233,6 @@ const exposesData = [
             <MonthSlider ref="programmaticRef" @change="readValue" />
           </div>
         </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <!-- Colores -->
-      <section id="colors" class="playground-month-slider-section">
-        <h2>Colores</h2>
-        <div class="playground-month-slider-col">
-          <MonthSlider v-for="color in colors" :key="color" :color="color" />
-        </div>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <!-- Disabled -->
-      <section id="disabled" class="playground-month-slider-section">
-        <h2>Disabled</h2>
-        <div class="playground-month-slider-col">
-          <MonthSlider :disabled="true" />
-        </div>
       </section>
 
       <section id="api" class="playground-section">

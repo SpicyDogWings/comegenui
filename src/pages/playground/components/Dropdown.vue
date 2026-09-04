@@ -20,9 +20,9 @@ const outlineItems = [
   { label: 'Contenedor', id: 'container' },
   { label: 'Custom toggle', id: 'custom-toggle' },
   { label: 'Fixed', id: 'fixed' },
-  { label: 'Programático', id: 'programmatic' },
   { label: 'Eventos', id: 'events' },
   { label: 'Disabled', id: 'disabled' },
+  { label: 'Programmatic', id: 'programmatic' },
 ];
 </script>
 
@@ -264,29 +264,6 @@ const outlineItems = [
 
       <hr class="playground-separator" />
 
-      <section id="programmatic" class="playground-section">
-        <h2>Control programático</h2>
-        <p class="playground-desc">
-          Métodos expuestos: <code>open()</code>, <code>close()</code>, <code>toggle()</code>, <code>isOpen()</code>.
-        </p>
-        <div class="playground-row">
-          <Button @click="dropdownRef?.open(); syncState()" color="primary" variant="solid">open()</Button>
-          <Button @click="dropdownRef?.close(); syncState()" color="neutral" variant="ghost">close()</Button>
-          <Button @click="dropdownRef?.toggle(); syncState()" color="success" variant="soft">toggle()</Button>
-        </div>
-        <p class="playground-desc">
-          Estado: <strong>{{ dropdownState ? 'abierto' : 'cerrado' }}</strong>
-        </p>
-        <div class="playground-row">
-          <Dropdown ref="dropdownRef" label="Controlado por código">
-            <Button variant="ghost" style="width:100%;justify-content:flex-start">Item 1</Button>
-            <Button variant="ghost" style="width:100%;justify-content:flex-start">Item 2</Button>
-          </Dropdown>
-        </div>
-      </section>
-
-      <hr class="playground-separator" />
-
       <section id="events" class="playground-section">
         <h2>Eventos open / close</h2>
         <div class="playground-row">
@@ -307,6 +284,29 @@ const outlineItems = [
         <h2>Disabled</h2>
         <div class="playground-row">
           <Dropdown label="Disabled" disabled />
+        </div>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="programmatic" class="playground-section">
+        <h2>Control programático</h2>
+        <p class="playground-desc">
+          Métodos expuestos: <code>open()</code>, <code>close()</code>, <code>toggle()</code>, <code>isOpen()</code>.
+        </p>
+        <div class="playground-row">
+          <Button @click="dropdownRef?.open(); syncState()" color="primary" variant="solid">open()</Button>
+          <Button @click="dropdownRef?.close(); syncState()" color="neutral" variant="ghost">close()</Button>
+          <Button @click="dropdownRef?.toggle(); syncState()" color="success" variant="soft">toggle()</Button>
+        </div>
+        <p class="playground-desc">
+          Estado: <strong>{{ dropdownState ? 'abierto' : 'cerrado' }}</strong>
+        </p>
+        <div class="playground-row">
+          <Dropdown ref="dropdownRef" label="Controlado por código">
+            <Button variant="ghost" style="width:100%;justify-content:flex-start">Item 1</Button>
+            <Button variant="ghost" style="width:100%;justify-content:flex-start">Item 2</Button>
+          </Dropdown>
         </div>
       </section>
 

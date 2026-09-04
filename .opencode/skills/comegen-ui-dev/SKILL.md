@@ -187,7 +187,7 @@ const outlineItems = [
 
 4. **API en una sección** con `h3` chicos (Props/Slots/Events/Exposes/Interfaces) y `Table variant="ghost" compact`. Nada de filas fake con "—": usar el `empty` de la Table (`empty="No tiene slots"`). Los `h3` con ids (`api-*`) van como `children` del outline (el `Outline` soporta sub-menús).
 5. **Interfaces**: si un prop tiene estructura (items, options, columns, events), la API lleva la subsección `Interfaces` con `CodeBlock :code="interfaceCode" language="ts" variant="solid"` mostrando la interfaz **real** del componente (leerla del source, **no inventar**). El demo que la usa linkea con `Button variant="link" to="#api-interfaces"` ("Ver interfaz X ↓") en vez de enumerar campos en texto. Si los props son primitivos, no hay subsección Interfaces.
-6. **Programmatic** (si el componente expone métodos): sección **SIEMPRE antes de API**. Layout fijo (referencia: DatePicker):
+6. **Programmatic** (si el componente expone métodos): **Programmatic y API son las ÚLTIMAS DOS secciones de la página, en ese orden** (ninguna sección entre ellas ni después). Layout fijo (referencia: DatePicker):
    - `<div class="playground-heading"><h2>Programmatic</h2></div>` + `<p class="playground-desc">Seguidilla de botones sobre la instancia de abajo.</p>`
    - `SectionDemo` con: una fila de `Button color="neutral"` (uniformes, una acción por botón, **nunca `<button>` nativo**), UNA línea `<p class="playground-state">` con los getters en vivo, y el componente **al final**.
    - Estado en vivo: actualizar en cada acción **y** en los events del componente (`@update:model-value`, `@close`, `@change`…).
