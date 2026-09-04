@@ -43,6 +43,72 @@
         "danger": "#f38ba8",
         "surface": "#1e1e2e"
       }
+    },
+    "solarized-light": {
+      "colors": {
+        "primary": "#268bd2",
+        "secondary": "#2aa198",
+        "neutral": "#657b83",
+        "success": "#859900",
+        "warning": "#b58900",
+        "danger": "#dc322f",
+        "surface": "#fdf6e3"
+      }
+    },
+    "solarized-dark": {
+      "colors": {
+        "primary": "#268bd2",
+        "secondary": "#2aa198",
+        "neutral": "#839496",
+        "success": "#859900",
+        "warning": "#b58900",
+        "danger": "#dc322f",
+        "surface": "#002b36"
+      }
+    },
+    "dracula": {
+      "colors": {
+        "primary": "#bd93f9",
+        "secondary": "#8be9fd",
+        "neutral": "#f8f8f2",
+        "success": "#50fa7b",
+        "warning": "#f1fa8c",
+        "danger": "#ff5555",
+        "surface": "#282a36"
+      }
+    },
+    "gruvbox-dark": {
+      "colors": {
+        "primary": "#83a598",
+        "secondary": "#8ec07c",
+        "neutral": "#ebdbb2",
+        "success": "#b8bb26",
+        "warning": "#fabd2f",
+        "danger": "#fb4934",
+        "surface": "#282828"
+      }
+    },
+    "one-dark": {
+      "colors": {
+        "primary": "#61afef",
+        "secondary": "#c678dd",
+        "neutral": "#abb2bf",
+        "success": "#98c379",
+        "warning": "#e5c07b",
+        "danger": "#e06c75",
+        "surface": "#282c34"
+      }
+    },
+    "tokyo-night": {
+      "colors": {
+        "primary": "#7aa2f7",
+        "secondary": "#bb9af7",
+        "neutral": "#a9b1d6",
+        "success": "#9ece6a",
+        "warning": "#e0af68",
+        "danger": "#f7768e",
+        "surface": "#1a1b26"
+      }
     }
   }
 }
