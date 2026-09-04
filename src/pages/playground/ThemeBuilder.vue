@@ -379,11 +379,11 @@ onBeforeUnmount(() => {
             <h3>Font Family</h3>
             <div class="tb-field">
               <label>Sans</label>
-              <input type="text" v-model="typography.fontFamily.sans" />
+              <Input v-model="typography.fontFamily.sans" />
             </div>
             <div class="tb-field">
               <label>Mono</label>
-              <input type="text" v-model="typography.fontFamily.mono" />
+              <Input v-model="typography.fontFamily.mono" />
             </div>
           </div>
           <div class="tb-group">
@@ -391,7 +391,7 @@ onBeforeUnmount(() => {
             <div class="tb-grid">
               <div v-for="(value, key) in typography.fontSize" :key="key" class="tb-field">
                 <label>{{ key }}</label>
-                <input type="text" v-model="typography.fontSize[key]" />
+                <Input v-model="typography.fontSize[key]" />
               </div>
             </div>
           </div>
@@ -400,7 +400,7 @@ onBeforeUnmount(() => {
             <div class="tb-grid">
               <div v-for="(value, key) in typography.fontWeight" :key="key" class="tb-field">
                 <label>{{ key }}</label>
-                <input type="text" v-model="typography.fontWeight[key]" />
+                <Input v-model="typography.fontWeight[key]" />
               </div>
             </div>
           </div>
@@ -409,7 +409,7 @@ onBeforeUnmount(() => {
             <div class="tb-grid">
               <div v-for="(value, key) in typography.lineHeight" :key="key" class="tb-field">
                 <label>{{ key }}</label>
-                <input type="text" v-model="typography.lineHeight[key]" />
+                <Input v-model="typography.lineHeight[key]" />
               </div>
             </div>
           </div>
@@ -422,7 +422,7 @@ onBeforeUnmount(() => {
           <div class="tb-grid">
             <div v-for="(value, key) in spacing" :key="key" class="tb-field">
               <label>{{ key }}</label>
-              <input type="text" v-model="spacing[key]" />
+              <Input v-model="spacing[key]" />
             </div>
           </div>
         </section>
@@ -434,7 +434,7 @@ onBeforeUnmount(() => {
           <div class="tb-grid">
             <div v-for="(value, key) in borderRadius" :key="key" class="tb-field">
               <label>{{ key }}</label>
-              <input type="text" v-model="borderRadius[key]" />
+              <Input v-model="borderRadius[key]" />
             </div>
           </div>
         </section>
@@ -460,7 +460,7 @@ onBeforeUnmount(() => {
             <div class="tb-grid">
               <div v-for="(value, key) in borders.width" :key="key" class="tb-field">
                 <label>{{ key }}</label>
-                <input type="text" v-model="borders.width[key]" />
+                <Input v-model="borders.width[key]" />
               </div>
             </div>
           </div>
