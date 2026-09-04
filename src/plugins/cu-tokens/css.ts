@@ -1,9 +1,9 @@
-import { darken, toHex, lighten, transparentize } from 'color2k'
+import { darken, toHex, lighten, transparentize, mix } from 'color2k'
 import { DEFAULTS, DEFAULT_COLORS, extractColors, extractShared } from './defaults'
 
 let styleEl: HTMLStyleElement | null = null
 
-function colorVar(name: string, value: string) {
+function colorVar(name: string, value: string, surface: string) {
   return `--cu-color-${name}: ${value};
     --cu-color-${name}-text: ${toHex(darken(value, 0.25))};
     --cu-color-${name}-hover: ${toHex(darken(value, 0.1))};
@@ -16,17 +16,22 @@ function colorVar(name: string, value: string) {
     --cu-color-${name}-subtle: ${toHex(transparentize(value, 0.9))};
     --cu-color-${name}-subtle-hover: ${toHex(transparentize(value, 0.8))};
     --cu-color-${name}-subtle-active: ${toHex(transparentize(value, 0.7))};
-    --cu-color-${name}-subtle-border: ${transparentize(value, 0.5)};`
+    --cu-color-${name}-subtle-border: ${transparentize(value, 0.5)};
+    --cu-color-${name}-code: ${toHex(mix(value, surface, 0.4))};`
 }
 
 function colorsBlock(colors: any) {
-  return `${colorVar('primary', colors.primary)}
-    ${colorVar('secondary', colors.secondary)}
-    ${colorVar('neutral', colors.neutral)}
-    ${colorVar('success', colors.success)}
-    ${colorVar('warning', colors.warning)}
-    ${colorVar('danger', colors.danger)}
-    --cu-color-surface: ${colors.surface};`
+  return `${colorVar('primary', colors.primary, colors.surface)}
+    ${colorVar('secondary', colors.secondary, colors.surface)}
+    ${colorVar('neutral', colors.neutral, colors.surface)}
+    ${colorVar('success', colors.success, colors.surface)}
+    ${colorVar('warning', colors.warning, colors.surface)}
+    ${colorVar('danger', colors.danger, colors.surface)}
+    --cu-color-surface: ${colors.surface};
+    /* esquema de código: tokens dedicados (invierten con el tema) */
+    --cu-code-bg: ${colors.neutral};
+    --cu-code-text: ${colors.surface};
+    --cu-code-faded: ${transparentize(colors.surface, 0.45)};`
 }
 
 function shadowVar(name: string, value: string, color?: string) {

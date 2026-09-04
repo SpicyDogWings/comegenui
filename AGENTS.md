@@ -199,6 +199,12 @@ El sistema de tokens (`cu-tokens`) genera para cada color:
 - `--cu-color-{name}-soft`, `-soft-hover`, `-soft-active` (variante soft)
 - `--cu-color-{name}-subtle`, `-subtle-hover`, `-subtle-active`, `-subtle-border` (variante subtle)
 - `--cu-color-{name}-ghost-hover`, `-ghost-active` (variante ghost)
+- `--cu-color-{name}-code` (acento para superficies de código: mezcla del color hacia surface — legible sobre `--cu-code-bg` en todos los temas)
+
+Tokens del esquema de código (invierten con el tema, pensados para el contexto "inverso" de los code blocks):
+- `--cu-code-bg` (fondo de código, = neutral)
+- `--cu-code-text` (texto sobre código, = surface)
+- `--cu-code-faded` (atenuados: comentarios, meta, gutter = surface al 55%)
 
 Tokens compartidos: tipografía, spacing, border-radius, shadows, borders.
 

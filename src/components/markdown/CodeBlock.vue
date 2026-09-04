@@ -99,7 +99,7 @@ const gutterText = computed(() => lines.value.map((_, i) => i + 1).join('\n'))
   font-family: var(--cu-font-mono);
   font-size: var(--cu-font-size-sm);
   line-height: var(--cu-line-height-relaxed);
-  color: var(--cu-color-neutral-text);
+  color: var(--cb-text);
   white-space: pre;
 }
 
@@ -114,12 +114,17 @@ const gutterText = computed(() => lines.value.map((_, i) => i + 1).join('\n'))
   display: block;
 }
 
+/* clase duplicada a propósito: (0,3,0) le gana al global del playground
+   ".playground[data-v] span" (0,2,1), que fuerza color neutral en los spans */
+.cu-code-block-line.cu-code-block-line {
+  color: var(--cb-text);
+}
+
 .cu-code-block-line-number {
   display: inline-block;
   width: 2em;
   margin-right: var(--cu-space-md);
   text-align: right;
-  color: var(--cu-color-neutral-text);
   opacity: 0.4;
   user-select: none;
   -webkit-user-select: none;
@@ -139,13 +144,13 @@ const gutterText = computed(() => lines.value.map((_, i) => i + 1).join('\n'))
   flex: 1;
 }
 
-.cu-code-block-gutter {
+.cu-code-block-gutter.cu-code-block-gutter {
   display: inline-block;
   flex-shrink: 0;
   width: 2em;
   margin-right: var(--cu-space-md);
   text-align: right;
-  color: var(--cu-color-neutral-text);
+  color: var(--cb-text);
   opacity: 0.4;
   user-select: none;
   -webkit-user-select: none;
@@ -172,26 +177,21 @@ const gutterText = computed(() => lines.value.map((_, i) => i + 1).join('\n'))
   color: var(--cu-color-neutral-text);
 }
 
-/* solid - darker neutral */
+/* solid - esquema de código (tokens dedicados, invierten con el tema) */
 .cu-code-block--solid {
-  background-color: var(--cu-color-neutral);
+  background-color: var(--cu-code-bg);
   border: none;
 }
 
-.cu-code-block--solid .cu-code-block-code,
-.cu-code-block--solid .cu-code-block-line-number,
-.cu-code-block--solid .cu-code-block-line-content {
-  color: var(--cu-color-surface);
-}
-
 .cu-code-block--solid :deep(.cu-badge) {
-  background-color: rgba(255, 255, 255, 0.15);
-  color: var(--cu-color-surface);
+  background-color: var(--cu-code-faded);
+  color: var(--cu-code-text);
 }
 
 /* syntax highlighting (highlight.js) — paleta sobre tokens del tema */
-/* base (default/outlined): acentos aclarados con toque de brillo */
+/* texto plano (sin clase hljs: identificadores, operadores, puntuación) */
 .cu-code-block {
+  --cb-text: var(--cu-color-neutral-text);
   --cb-hl-keyword: color-mix(in srgb, var(--cu-color-primary) 87%, var(--cu-color-neutral-text));
   --cb-hl-string: color-mix(in srgb, var(--cu-color-success) 87%, var(--cu-color-neutral-text));
   --cb-hl-number: color-mix(in srgb, var(--cu-color-warning) 89%, var(--cu-color-neutral-text));
@@ -214,22 +214,26 @@ const gutterText = computed(() => lines.value.map((_, i) => i + 1).join('\n'))
   --cb-hl-meta: color-mix(in srgb, var(--cu-color-neutral-text) 92%, transparent);
 }
 
-/* solid: acentos mezclados hacia surface — surface es siempre el opuesto
-   de neutral en todos los temas, así el contraste queda garantizado */
+/* solid: acentos precalculados por token (--cu-color-*-code = mezcla hacia
+   surface generada en cu-tokens), garantizan contraste sobre --cu-code-bg
+   en los 3 temas. Este bloque va DESPUÉS del base: misma especificidad,
+   gana el último en la cascada */
 .cu-code-block--solid {
-  --cb-hl-keyword: color-mix(in srgb, var(--cu-color-primary) 60%, var(--cu-color-surface));
-  --cb-hl-string: color-mix(in srgb, var(--cu-color-success) 60%, var(--cu-color-surface));
-  --cb-hl-number: color-mix(in srgb, var(--cu-color-warning) 65%, var(--cu-color-surface));
-  --cb-hl-tag: color-mix(in srgb, var(--cu-color-secondary) 60%, var(--cu-color-surface));
-  --cb-hl-attr: color-mix(in srgb, var(--cu-color-danger) 60%, var(--cu-color-surface));
-  --cb-hl-title: color-mix(in srgb, var(--cu-color-primary) 60%, var(--cu-color-surface));
-  --cb-hl-comment: color-mix(in srgb, var(--cu-color-surface) 55%, transparent);
-  --cb-hl-meta: color-mix(in srgb, var(--cu-color-surface) 70%, transparent);
+  --cb-text: var(--cu-code-text);
+  --cb-hl-keyword: var(--cu-color-primary-code);
+  --cb-hl-string: var(--cu-color-success-code);
+  --cb-hl-number: var(--cu-color-warning-code);
+  --cb-hl-tag: var(--cu-color-secondary-code);
+  --cb-hl-attr: var(--cu-color-danger-code);
+  --cb-hl-title: var(--cu-color-primary-code);
+  --cb-hl-comment: var(--cu-code-faded);
+  --cb-hl-meta: color-mix(in srgb, var(--cu-code-text) 70%, transparent);
 }
 
-.cu-code-block-hl,
-.cu-code-block--solid .cu-code-block-hl {
-  color: inherit;
+/* clases duplicadas a propósito: (0,3,0) le gana al global del playground
+   ".playground[data-v] span" (0,2,1), que fuerza color neutral en los spans */
+.cu-code-block-hl.cu-code-block-hl {
+  color: var(--cb-text);
 }
 
 .cu-code-block-code :deep(.hljs-keyword),
