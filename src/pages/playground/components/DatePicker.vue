@@ -8,12 +8,6 @@ import Table from "@/components/data/Table.vue";
 import Button from "@/components/buttons/Button.vue";
 import CodeBlock from "@/components/markdown/CodeBlock.vue";
 
-const lastEvent = ref("");
-
-function onEvent(name: string, payload: any) {
-  lastEvent.value = `${name}: ${payload instanceof Date ? payload.toISOString().slice(0, 10) : JSON.stringify(payload)}`;
-}
-
 const pickerRef = ref<InstanceType<typeof DatePicker> | null>(null);
 const progValue = ref<Date | null>(null);
 const progIsOpen = ref(false);
@@ -41,6 +35,21 @@ const pickerEvents = [
   { date: d(11), color: 'danger' },
 ]
 
+const tokenColumns = [
+  { key: 'token', label: 'Token' },
+  { key: 'ejemplo', label: 'Con 2026-08-11' },
+  { key: 'que', label: 'Qué es' },
+];
+
+const formatTokens = [
+  { token: 'dd', ejemplo: '11', que: 'Día con dos dígitos' },
+  { token: 'MM', ejemplo: '08', que: 'Mes con dos dígitos' },
+  { token: 'MMM', ejemplo: 'ago', que: 'Mes corto (locale)' },
+  { token: 'MMMM', ejemplo: 'agosto', que: 'Mes completo (locale)' },
+  { token: 'yy', ejemplo: '26', que: 'Año corto' },
+  { token: 'yyyy', ejemplo: '2026', que: 'Año completo' },
+];
+
 const outlineItems = [
   { label: 'Default', id: 'default' },
   { label: 'Label', id: 'label' },
@@ -57,15 +66,6 @@ const outlineItems = [
   {
     label: 'Programmatic',
     id: 'programmatic',
-    children: [
-      { label: 'open()', id: 'prog-open' },
-      { label: 'close()', id: 'prog-close' },
-      { label: 'toggle()', id: 'prog-toggle' },
-      { label: 'getValue()', id: 'prog-getvalue' },
-      { label: 'setValue()', id: 'prog-setvalue' },
-      { label: 'clear()', id: 'prog-clear' },
-      { label: 'isOpen()', id: 'prog-isopen' },
-    ],
   },
   {
     label: 'API',
@@ -110,7 +110,6 @@ const monthControlsVue = vueSnippet(`  <DatePicker model-value="2026-08-11" year
   <DatePicker model-value="2026-08-11" year-navigation month-format="MMM yyyy" />`);
 
 const eventsVue = `<script setup>
-import { ref } from 'vue'
 import DatePicker from '@/components/form/DatePicker.vue'
 
 const events = [
@@ -122,13 +121,7 @@ const events = [
 <\/script>
 
 <template>
-  <DatePicker
-    :events="events"
-    @select="(d) => console.log('select', d)"
-    @change="(d) => console.log('change', d)"
-    @open="console.log('open')"
-    @close="console.log('close')"
-  />
+  <DatePicker :events="events" />
 </template>`;
 
 const noFooterVue = vueSnippet(`  <DatePicker model-value="2026-08-11" :today-button="false" :clearable="false" />`);
@@ -256,40 +249,47 @@ const disabledVanilla = `<script src="dist/CuDatePicker.umd.js"><\/script>
 <cu-date-picker disabled model-value="2026-08-11"></cu-date-picker>`;
 
 const programmaticVue = `<script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import DatePicker from '@/components/form/DatePicker.vue'
+import Button from '@/components/buttons/Button.vue'
 
 const pickerRef = ref(null)
-
-onMounted(() => {
-  pickerRef.value?.setValue('2026-08-11')
-  console.log('getValue():', pickerRef.value?.getValue()) // Date
-  pickerRef.value?.open()
-  console.log('isOpen():', pickerRef.value?.isOpen()) // true
-  // pickerRef.value?.close()
-  // pickerRef.value?.toggle()
-  // pickerRef.value?.clear()
-})
 <\/script>
 
 <template>
-  <DatePicker ref="pickerRef" />
+  <div style="display:flex;flex-direction:column;gap:12px">
+    <DatePicker ref="pickerRef" />
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <Button @click="pickerRef?.open()">open()</Button>
+      <Button @click="pickerRef?.close()">close()</Button>
+      <Button @click="pickerRef?.toggle()">toggle()</Button>
+      <Button @click="pickerRef?.setValue('2026-08-11')">setValue()</Button>
+      <Button @click="pickerRef?.clear()">clear()</Button>
+    </div>
+  </div>
 </template>`;
 
 const programmaticVanilla = `<script src="dist/CuDatePicker.umd.js"><\/script>
+<script src="dist/CuButton.umd.js"><\/script>
 
 <cu-date-picker id="picker-prog"></cu-date-picker>
+
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+  <cu-button id="picker-prog-open">open()</cu-button>
+  <cu-button id="picker-prog-close">close()</cu-button>
+  <cu-button id="picker-prog-toggle">toggle()</cu-button>
+  <cu-button id="picker-prog-set">setValue()</cu-button>
+  <cu-button id="picker-prog-clear">clear()</cu-button>
+</div>
 
 <script>
   customElements.whenDefined('cu-date-picker').then(() => {
     const picker = document.getElementById('picker-prog');
-    picker.setValue('2026-08-11');
-    console.log('getValue():', picker.getValue()); // Date
-    picker.open();
-    console.log('isOpen():', picker.isOpen()); // true
-    // picker.close();
-    // picker.toggle();
-    // picker.clear();
+    document.getElementById('picker-prog-open').addEventListener('click', () => picker.open());
+    document.getElementById('picker-prog-close').addEventListener('click', () => picker.close());
+    document.getElementById('picker-prog-toggle').addEventListener('click', () => picker.toggle());
+    document.getElementById('picker-prog-set').addEventListener('click', () => picker.setValue('2026-08-11'));
+    document.getElementById('picker-prog-clear').addEventListener('click', () => picker.clear());
   });
 <\/script>`;
 
@@ -403,9 +403,7 @@ const exposesData = [
           <h2>Formato de la fecha en el trigger</h2>
           <Badge color="neutral" title="Formato por defecto">dd/MM/yyyy</Badge>
         </div>
-        <p class="playground-desc">
-          Tokens: <code>dd</code>, <code>MM</code>, <code>MMM</code>, <code>MMMM</code>, <code>yy</code>, <code>yyyy</code>.
-        </p>
+        <Table :columns="tokenColumns" :data="formatTokens" variant="ghost" compact />
         <SectionDemo :vue-code="formatVue" :vanilla-code="formatVanilla">
           <div class="playground-col">
             <DatePicker model-value="2026-08-11" format="dd/MM/yyyy" style="max-width: 280px;" />
@@ -459,21 +457,12 @@ const exposesData = [
           <Badge color="neutral" title="events por defecto">[]</Badge>
         </div>
         <p class="playground-desc">
-          Puntos bajo las fechas para señalar eventos. Cada evento tiene <code>date</code> y opcional <code>color</code> (semántico: <code>primary</code>, <code>success</code>, <code>warning</code>, <code>danger</code>…).
+          Puntos bajo las fechas para señalar eventos (prop <code>events</code>): cada evento tiene <code>date</code> y opcional <code>color</code> semántico.
+          Los eventos emitidos (select, change, open, close) están documentados en API → Events.
         </p>
         <SectionDemo :vue-code="eventsVue" :vanilla-code="eventsVanilla">
           <div class="playground-col">
-            <DatePicker
-              style="max-width: 280px;"
-              :events="pickerEvents"
-              @select="(d: Date) => onEvent('select', d)"
-              @change="(d: Date | null) => onEvent('change', d)"
-              @open="lastEvent = 'open'"
-              @close="lastEvent = 'close'"
-            />
-            <p class="playground-state">
-              Último evento: <strong>{{ lastEvent || '—' }}</strong>
-            </p>
+            <DatePicker style="max-width: 280px;" :events="pickerEvents" />
           </div>
         </SectionDemo>
       </section>
@@ -584,7 +573,7 @@ const exposesData = [
           <h2>Programmatic</h2>
         </div>
         <p class="playground-desc">
-          Métodos expuestos por el componente. Los botones operan sobre la instancia de abajo y el estado se lee en vivo.
+          Seguidilla de botones sobre la instancia de arriba — el calendario abre acá al lado.
         </p>
         <SectionDemo :vue-code="programmaticVue" :vanilla-code="programmaticVanilla">
           <div class="playground-col">
@@ -595,47 +584,19 @@ const exposesData = [
               @open="progIsOpen = true"
               @close="progIsOpen = false"
             />
+            <div class="playground-row">
+              <Button color="neutral" @click="pickerRef?.open()">open()</Button>
+              <Button color="neutral" @click="pickerRef?.close()">close()</Button>
+              <Button color="neutral" @click="pickerRef?.toggle()">toggle()</Button>
+              <Button color="neutral" @click="pickerRef?.setValue('2026-08-11')">setValue()</Button>
+              <Button color="neutral" @click="pickerRef?.clear()">clear()</Button>
+            </div>
             <p class="playground-state">
               getValue(): <strong>{{ progValue ? progValue.toISOString().slice(0, 10) : '—' }}</strong>
               · isOpen(): <strong>{{ progIsOpen ? 'true' : 'false' }}</strong>
             </p>
           </div>
         </SectionDemo>
-
-        <h3 id="prog-open">open()</h3>
-        <div class="playground-row">
-          <Button color="neutral" @click="pickerRef?.open(); readProgState()">open()</Button>
-        </div>
-
-        <h3 id="prog-close">close()</h3>
-        <div class="playground-row">
-          <Button color="neutral" @click="pickerRef?.close(); readProgState()">close()</Button>
-        </div>
-
-        <h3 id="prog-toggle">toggle()</h3>
-        <div class="playground-row">
-          <Button color="neutral" @click="pickerRef?.toggle(); readProgState()">toggle()</Button>
-        </div>
-
-        <h3 id="prog-getvalue">getValue()</h3>
-        <div class="playground-row">
-          <Button color="neutral" @click="readProgState()">getValue()</Button>
-        </div>
-
-        <h3 id="prog-setvalue">setValue()</h3>
-        <div class="playground-row">
-          <Button color="neutral" @click="pickerRef?.setValue('2026-08-11'); readProgState()">setValue('2026-08-11')</Button>
-        </div>
-
-        <h3 id="prog-clear">clear()</h3>
-        <div class="playground-row">
-          <Button color="neutral" @click="pickerRef?.clear(); readProgState()">clear()</Button>
-        </div>
-
-        <h3 id="prog-isopen">isOpen()</h3>
-        <div class="playground-row">
-          <Button color="neutral" @click="readProgState()">isOpen()</Button>
-        </div>
       </section>
 
       <hr class="playground-separator" />

@@ -65,20 +65,12 @@ const darkMode = ref(true)
 <\/script>
 
 <template>
-  <div style="display:flex;flex-direction:column;gap:12px">
-    <div style="display:flex;align-items:center;gap:8px">
-      <Switch v-model="notifications" />
-      <span>Notifications: {{ notifications ? 'ON' : 'OFF' }}</span>
-    </div>
-    <div style="display:flex;align-items:center;gap:8px">
-      <Switch v-model="darkMode" />
-      <span>Dark mode: {{ darkMode ? 'ON' : 'OFF' }}</span>
-    </div>
-  </div>
+  <Switch v-model="notifications" label="Notificaciones" />
+  <Switch v-model="darkMode" label="Modo oscuro" />
 </template>`;
 
-const sizesVue = vueSnippet(`  <Switch size="md" />
-  <Switch size="sm" />`);
+const sizesVue = vueSnippet(`  <Switch size="md" label="md (default)" />
+  <Switch size="sm" label="sm" />`);
 
 const withLabelVue = vueSnippet(`  <Switch v-model="notifications" label="Notificaciones" />
   <Switch v-model="darkMode" color="success">
@@ -99,60 +91,39 @@ const withLabelVanilla = `<script src="dist/CuSwitch.umd.js"><\/script>
   });
 <\/script>`;
 
-const colorsVue = vueSnippet(`  <Switch color="primary" />
-  <Switch color="secondary" />
-  <Switch color="neutral" />
-  <Switch color="success" />
-  <Switch color="warning" />
-  <Switch color="danger" />`);
+const colorsVue = vueSnippet(`  <Switch color="primary" label="primary" />
+  <Switch color="secondary" label="secondary" />
+  <Switch color="neutral" label="neutral" />
+  <Switch color="success" label="success" />
+  <Switch color="warning" label="warning" />
+  <Switch color="danger" label="danger" />`);
 
-const disabledVue = vueSnippet(`  <Switch disabled />
-  <Switch :model-value="true" disabled />`);
+const disabledVue = vueSnippet(`  <Switch disabled label="Disabled unchecked" />
+  <Switch :model-value="true" disabled label="Disabled checked" />`);
 
 const defaultVanilla = `<script src="dist/CuSwitch.umd.js"><\/script>
 
-<div style="display:flex;flex-direction:column;gap:12px">
-  <div style="display:flex;align-items:center;gap:8px">
-    <cu-switch id="sw-notif"></cu-switch>
-    <span id="sw-notif-label">Notifications: OFF</span>
-  </div>
-  <div style="display:flex;align-items:center;gap:8px">
-    <cu-switch id="sw-dark" model-value="true"></cu-switch>
-    <span id="sw-dark-label">Dark mode: ON</span>
-  </div>
-</div>
-
-<script>
-  function bindSwitch(id) {
-    const sw = document.getElementById(id);
-    const label = document.getElementById(id + '-label');
-    sw.addEventListener('change', (e) => {
-      const name = label.textContent.split(':')[0];
-      label.textContent = name + ': ' + (e.detail ? 'ON' : 'OFF');
-    });
-  }
-  bindSwitch('sw-notif');
-  bindSwitch('sw-dark');
-<\/script>`;
+<cu-switch label="Notificaciones"></cu-switch>
+<cu-switch label="Modo oscuro" model-value="true"></cu-switch>`;
 
 const sizesVanilla = `<script src="dist/CuSwitch.umd.js"><\/script>
 
-<cu-switch size="md"></cu-switch>
-<cu-switch size="sm"></cu-switch>`;
+<cu-switch size="md" label="md (default)"></cu-switch>
+<cu-switch size="sm" label="sm"></cu-switch>`;
 
 const colorsVanilla = `<script src="dist/CuSwitch.umd.js"><\/script>
 
-<cu-switch color="primary"></cu-switch>
-<cu-switch color="secondary"></cu-switch>
-<cu-switch color="neutral"></cu-switch>
-<cu-switch color="success"></cu-switch>
-<cu-switch color="warning"></cu-switch>
-<cu-switch color="danger"></cu-switch>`;
+<cu-switch color="primary" label="primary"></cu-switch>
+<cu-switch color="secondary" label="secondary"></cu-switch>
+<cu-switch color="neutral" label="neutral"></cu-switch>
+<cu-switch color="success" label="success"></cu-switch>
+<cu-switch color="warning" label="warning"></cu-switch>
+<cu-switch color="danger" label="danger"></cu-switch>`;
 
 const disabledVanilla = `<script src="dist/CuSwitch.umd.js"><\/script>
 
-<cu-switch disabled></cu-switch>
-<cu-switch model-value="true" disabled></cu-switch>`;
+<cu-switch disabled label="Disabled unchecked"></cu-switch>
+<cu-switch model-value="true" disabled label="Disabled checked"></cu-switch>`;
 
 const programmaticVue = `<script setup>
 import { ref } from 'vue'
@@ -247,14 +218,8 @@ const exposesData = [
         </div>
         <SectionDemo :vue-code="defaultVue" :vanilla-code="defaultVanilla">
           <div class="playground-col">
-            <div class="playground-row">
-              <Switch v-model="checked1" />
-              <span class="playground-code">{{ checked1 ? 'ON' : 'OFF' }}</span>
-            </div>
-            <div class="playground-row">
-              <Switch v-model="checked2" />
-              <span class="playground-code">{{ checked2 ? 'ON' : 'OFF' }}</span>
-            </div>
+            <Switch v-model="checked1" label="Notificaciones" />
+            <Switch v-model="checked2" label="Modo oscuro" />
           </div>
         </SectionDemo>
       </section>
@@ -267,16 +232,10 @@ const exposesData = [
         </div>
         <SectionDemo :vue-code="withLabelVue" :vanilla-code="withLabelVanilla">
           <div class="playground-col">
-            <div class="playground-row">
-              <Switch v-model="labelChecked1" label="Notificaciones" />
-              <span class="playground-code">{{ labelChecked1 ? 'ON' : 'OFF' }}</span>
-            </div>
-            <div class="playground-row">
-              <Switch v-model="labelChecked2" color="success">
-                Modo oscuro automático
-              </Switch>
-              <span class="playground-code">{{ labelChecked2 ? 'ON' : 'OFF' }}</span>
-            </div>
+            <Switch v-model="labelChecked1" label="Notificaciones" />
+            <Switch v-model="labelChecked2" color="success">
+              Modo oscuro automático
+            </Switch>
           </div>
         </SectionDemo>
       </section>
@@ -289,14 +248,8 @@ const exposesData = [
         </div>
         <SectionDemo :vue-code="sizesVue" :vanilla-code="sizesVanilla">
           <div class="playground-row">
-            <div style="display:flex;align-items:center;gap:8px">
-              <Switch size="md" />
-              <span class="playground-code">md (default)</span>
-            </div>
-            <div style="display:flex;align-items:center;gap:8px">
-              <Switch size="sm" />
-              <span class="playground-code">sm</span>
-            </div>
+            <Switch size="md" label="md (default)" />
+            <Switch size="sm" label="sm" />
           </div>
         </SectionDemo>
       </section>
@@ -310,10 +263,7 @@ const exposesData = [
         </div>
         <SectionDemo :vue-code="colorsVue" :vanilla-code="colorsVanilla">
           <div class="playground-row">
-            <div v-for="color in colors" :key="color" style="display:flex;align-items:center;gap:8px">
-              <Switch :color="color" />
-              <span class="playground-code">{{ color }}</span>
-            </div>
+            <Switch v-for="color in colors" :key="color" :color="color" :label="color" />
           </div>
         </SectionDemo>
       </section>
@@ -327,14 +277,8 @@ const exposesData = [
         </div>
         <SectionDemo :vue-code="disabledVue" :vanilla-code="disabledVanilla">
           <div class="playground-row">
-            <div style="display:flex;align-items:center;gap:8px">
-              <Switch disabled />
-              <span class="playground-code">OFF (disabled)</span>
-            </div>
-            <div style="display:flex;align-items:center;gap:8px">
-              <Switch :model-value="true" disabled />
-              <span class="playground-code">ON (disabled)</span>
-            </div>
+            <Switch disabled label="Disabled unchecked" />
+            <Switch :model-value="true" disabled label="Disabled checked" />
           </div>
         </SectionDemo>
       </section>
@@ -346,7 +290,7 @@ const exposesData = [
         <SectionDemo :vue-code="programmaticVue" :vanilla-code="programmaticVanilla">
           <div class="playground-col">
             <div class="playground-row">
-              <Switch ref="switchRef" v-model="progChecked" />
+              <Switch ref="switchRef" v-model="progChecked" label="Términos" />
               <span class="playground-code">{{ progChecked ? 'ON' : 'OFF' }}</span>
             </div>
             <h3 id="prog-get">get()</h3>

@@ -1,15 +1,25 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import Label from "@/components/form/Label.vue";
+import Input from "@/components/form/Input.vue";
+import Select from "@/components/form/Select.vue";
+import Textarea from "@/components/form/Textarea.vue";
 import Badge from "@/components/information/Badge.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Table from "@/components/data/Table.vue";
+
+const paises = [
+  { value: 'ar', label: 'Argentina' },
+  { value: 'mx', label: 'México' },
+  { value: 'es', label: 'España' },
+];
 
 const outlineItems = [
   { label: 'Default', id: 'default' },
   { label: 'With For', id: 'for' },
   { label: 'Colors', id: 'colors' },
   { label: 'With Slot', id: 'slot' },
+  { label: 'Native', id: 'native' },
   {
     label: 'API',
     id: 'api',
@@ -32,48 +42,90 @@ const vueSnippet = (body: string) => `${vueImport}
 ${body}
 </template>`;
 
-const defaultVue = vueSnippet(`  <Label label="Correo electrónico" />
-  <Label label="Nombre de usuario">
-    <input type="text" placeholder="Escribe tu nombre" />
-  </Label>`);
+const defaultVue = `<script setup>
+import Label from '@/components/form/Label.vue'
+import Input from '@/components/form/Input.vue'
+<\/script>
 
-const forVue = vueSnippet(`  <Label label="Enfoca el input" for="label-demo-input" />
-  <input id="label-demo-input" type="text" placeholder="Recibo el foco al hacer click en el label" />
+<template>
+  <Label label="Correo electrónico" />
+  <Label label="Nombre de usuario">
+    <Input placeholder="Escribe tu nombre" />
+  </Label>
+</template>`;
+
+const forVue = `<script setup>
+import Label from '@/components/form/Label.vue'
+import Input from '@/components/form/Input.vue'
+<\/script>
+
+<template>
+  <Label label="Enfoca el input" for="label-demo-input" />
+  <Input id="label-demo-input" placeholder="Recibo el foco al hacer click en el label" />
   <Label label="Sin for" />
-  <input type="text" placeholder="No recibo foco" />`);
+  <Input placeholder="No recibo foco" />
+</template>`;
 
 const colorsVue = vueSnippet(`  <Label label="Default" />
   <Label label="Azul" color="#2563eb" />
   <Label label="Verde" color="#16a34a" />
   <Label label="Rojo" color="#dc2626" />`);
 
-const slotVue = vueSnippet(`  <Label label="Usuario">
-    <input type="text" placeholder="Nombre de usuario" />
+const slotVue = `<script setup>
+import Label from '@/components/form/Label.vue'
+import Input from '@/components/form/Input.vue'
+import Select from '@/components/form/Select.vue'
+import Textarea from '@/components/form/Textarea.vue'
+
+const paises = [
+  { value: 'ar', label: 'Argentina' },
+  { value: 'mx', label: 'México' },
+  { value: 'es', label: 'España' },
+]
+<\/script>
+
+<template>
+  <Label label="Usuario">
+    <Input placeholder="Nombre de usuario" />
   </Label>
   <Label label="País">
-    <select>
-      <option>Argentina</option>
-      <option>México</option>
-      <option>España</option>
-    </select>
+    <Select :options="paises" />
   </Label>
   <Label label="Comentarios">
-    <textarea rows="3" placeholder="Escribe aquí..."></textarea>
-  </Label>`);
+    <Textarea :rows="3" placeholder="Escribe aquí..." />
+  </Label>
+</template>`;
+
+const nativeVue = `<template>
+  <label for="native-usuario">Usuario</label>
+  <input id="native-usuario" type="text" placeholder="Input nativo" />
+
+  <label for="native-pais">País</label>
+  <select id="native-pais">
+    <option>Argentina</option>
+    <option>México</option>
+    <option>España</option>
+  </select>
+
+  <label for="native-comentarios">Comentarios</label>
+  <textarea id="native-comentarios" rows="3" placeholder="Textarea nativo"></textarea>
+</template>`;
 
 const defaultVanilla = `<script src="dist/CuLabel.umd.js"><\/script>
+<script src="dist/CuInput.umd.js"><\/script>
 
 <cu-label label="Correo electrónico"></cu-label>
 <cu-label label="Nombre de usuario">
-  <input type="text" placeholder="Escribe tu nombre" />
+  <cu-input placeholder="Escribe tu nombre"></cu-input>
 </cu-label>`;
 
 const forVanilla = `<script src="dist/CuLabel.umd.js"><\/script>
+<script src="dist/CuInput.umd.js"><\/script>
 
 <cu-label label="Enfoca el input" for="label-demo-input"></cu-label>
-<input id="label-demo-input" type="text" placeholder="Recibo el foco al hacer click en el label" />
+<cu-input id="label-demo-input" placeholder="Recibo el foco al hacer click en el label"></cu-input>
 <cu-label label="Sin for"></cu-label>
-<input type="text" placeholder="No recibo foco" />`;
+<cu-input placeholder="No recibo foco"></cu-input>`;
 
 const colorsVanilla = `<script src="dist/CuLabel.umd.js"><\/script>
 
@@ -84,20 +136,42 @@ const colorsVanilla = `<script src="dist/CuLabel.umd.js"><\/script>
 <cu-label label="Danger" color="danger"></cu-label>`;
 
 const slotVanilla = `<script src="dist/CuLabel.umd.js"><\/script>
+<script src="dist/CuInput.umd.js"><\/script>
+<script src="dist/CuSelect.umd.js"><\/script>
+<script src="dist/CuTextarea.umd.js"><\/script>
 
 <cu-label label="Usuario">
-  <input type="text" placeholder="Nombre de usuario" />
+  <cu-input placeholder="Nombre de usuario"></cu-input>
 </cu-label>
 <cu-label label="País">
-  <select>
-    <option>Argentina</option>
-    <option>México</option>
-    <option>España</option>
-  </select>
+  <cu-select id="label-pais"></cu-select>
 </cu-label>
 <cu-label label="Comentarios">
-  <textarea rows="3" placeholder="Escribe aquí..."></textarea>
-</cu-label>`;
+  <cu-textarea rows="3" placeholder="Escribe aquí..."></cu-textarea>
+</cu-label>
+
+<script>
+  customElements.whenDefined('cu-select').then(() => {
+    document.getElementById('label-pais').options = [
+      { value: 'ar', label: 'Argentina' },
+      { value: 'mx', label: 'México' },
+      { value: 'es', label: 'España' },
+    ];
+  });
+<\/script>`;
+
+const nativeVanilla = `<label for="native-usuario">Usuario</label>
+<input id="native-usuario" type="text" placeholder="Input nativo" />
+
+<label for="native-pais">País</label>
+<select id="native-pais">
+  <option>Argentina</option>
+  <option>México</option>
+  <option>España</option>
+</select>
+
+<label for="native-comentarios">Comentarios</label>
+<textarea id="native-comentarios" rows="3" placeholder="Textarea nativo"></textarea>`;
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -133,7 +207,7 @@ const eventsData = [
           <div class="playground-col">
             <Label label="Correo electrónico" />
             <Label label="Nombre de usuario">
-              <input type="text" placeholder="Escribe tu nombre" />
+              <Input placeholder="Escribe tu nombre" />
             </Label>
           </div>
         </SectionDemo>
@@ -148,9 +222,9 @@ const eventsData = [
         <SectionDemo :vue-code="forVue" :vanilla-code="forVanilla">
           <div class="playground-col">
             <Label label="Enfoca el input" for="label-demo-input" />
-            <input id="label-demo-input" type="text" placeholder="Recibo el foco al hacer click en el label" />
+            <Input id="label-demo-input" placeholder="Recibo el foco al hacer click en el label" />
             <Label label="Sin for" />
-            <input type="text" placeholder="No recibo foco" />
+            <Input placeholder="No recibo foco" />
           </div>
         </SectionDemo>
       </section>
@@ -181,18 +255,41 @@ const eventsData = [
         <SectionDemo :vue-code="slotVue" :vanilla-code="slotVanilla">
           <div class="playground-col">
             <Label label="Usuario">
-              <input type="text" placeholder="Nombre de usuario" />
+              <Input placeholder="Nombre de usuario" />
             </Label>
             <Label label="País">
-              <select>
-                <option>Argentina</option>
-                <option>México</option>
-                <option>España</option>
-              </select>
+              <Select :options="paises" />
             </Label>
             <Label label="Comentarios">
-              <textarea rows="3" placeholder="Escribe aquí..."></textarea>
+              <Textarea :rows="3" placeholder="Escribe aquí..." />
             </Label>
+          </div>
+        </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="native" class="playground-section">
+        <div class="playground-heading">
+          <h2>Native</h2>
+        </div>
+        <p class="playground-desc">
+          Los elementos HTML nativos que CuLabel envuelve: <code>label</code> + <code>input</code> / <code>select</code> / <code>textarea</code>, sin estilos de la lib.
+        </p>
+        <SectionDemo :vue-code="nativeVue" :vanilla-code="nativeVanilla">
+          <div class="playground-col" style="display:flex;flex-direction:column;gap:12px;max-width:320px">
+            <label for="native-usuario">Usuario</label>
+            <input id="native-usuario" type="text" placeholder="Input nativo" />
+
+            <label for="native-pais">País</label>
+            <select id="native-pais">
+              <option>Argentina</option>
+              <option>México</option>
+              <option>España</option>
+            </select>
+
+            <label for="native-comentarios">Comentarios</label>
+            <textarea id="native-comentarios" rows="3" placeholder="Textarea nativo"></textarea>
           </div>
         </SectionDemo>
       </section>

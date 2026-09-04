@@ -43,6 +43,21 @@ function fmt(d: Date | null) {
   return d ? d.toISOString().slice(0, 10) : '—';
 }
 
+const tokenColumns = [
+  { key: 'token', label: 'Token' },
+  { key: 'ejemplo', label: 'Con 2026-09-15' },
+  { key: 'que', label: 'Qué es' },
+];
+
+const formatTokens = [
+  { token: 'dd', ejemplo: '15', que: 'Día con dos dígitos' },
+  { token: 'MM', ejemplo: '09', que: 'Mes con dos dígitos' },
+  { token: 'MMM', ejemplo: 'sep', que: 'Mes corto (locale)' },
+  { token: 'MMMM', ejemplo: 'septiembre', que: 'Mes completo (locale)' },
+  { token: 'yy', ejemplo: '26', que: 'Año corto' },
+  { token: 'yyyy', ejemplo: '2026', que: 'Año completo' },
+];
+
 const outlineItems = [
   { label: 'Default', id: 'default' },
   { label: 'Label', id: 'label' },
@@ -57,16 +72,6 @@ const outlineItems = [
   {
     label: 'Programmatic',
     id: 'programmatic',
-    children: [
-      { label: 'open()', id: 'prog-open' },
-      { label: 'close()', id: 'prog-close' },
-      { label: 'toggle()', id: 'prog-toggle' },
-      { label: 'getStartDate()', id: 'prog-getstartdate' },
-      { label: 'getEndDate()', id: 'prog-getenddate' },
-      { label: 'setRange()', id: 'prog-setrange' },
-      { label: 'clear()', id: 'prog-clear' },
-      { label: 'isOpen()', id: 'prog-isopen' },
-    ],
   },
   {
     label: 'API',
@@ -247,42 +252,47 @@ const disabledVanilla = `<script src="dist/CuDatePickerRange.umd.js"><\/script>
 <cu-date-picker-range disabled start-date="2026-09-03" end-date="2026-09-15"></cu-date-picker-range>`;
 
 const programmaticVue = `<script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import DatePickerRange from '@/components/form/DatePickerRange.vue'
+import Button from '@/components/buttons/Button.vue'
 
 const rangeRef = ref(null)
-
-onMounted(() => {
-  rangeRef.value?.setRange('2026-09-03', '2026-09-15')
-  console.log('getStartDate():', rangeRef.value?.getStartDate()) // Date
-  console.log('getEndDate():', rangeRef.value?.getEndDate()) // Date
-  rangeRef.value?.open()
-  console.log('isOpen():', rangeRef.value?.isOpen()) // true
-  // rangeRef.value?.close()
-  // rangeRef.value?.toggle()
-  // rangeRef.value?.clear()
-})
 <\/script>
 
 <template>
-  <DatePickerRange ref="rangeRef" />
+  <div style="display:flex;flex-direction:column;gap:12px">
+    <DatePickerRange ref="rangeRef" />
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <Button @click="rangeRef?.open()">open()</Button>
+      <Button @click="rangeRef?.close()">close()</Button>
+      <Button @click="rangeRef?.toggle()">toggle()</Button>
+      <Button @click="rangeRef?.setRange('2026-09-03', '2026-09-15')">setRange()</Button>
+      <Button @click="rangeRef?.clear()">clear()</Button>
+    </div>
+  </div>
 </template>`;
 
 const programmaticVanilla = `<script src="dist/CuDatePickerRange.umd.js"><\/script>
+<script src="dist/CuButton.umd.js"><\/script>
 
 <cu-date-picker-range id="range-prog"></cu-date-picker-range>
+
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+  <cu-button id="range-prog-open">open()</cu-button>
+  <cu-button id="range-prog-close">close()</cu-button>
+  <cu-button id="range-prog-toggle">toggle()</cu-button>
+  <cu-button id="range-prog-setrange">setRange()</cu-button>
+  <cu-button id="range-prog-clear">clear()</cu-button>
+</div>
 
 <script>
   customElements.whenDefined('cu-date-picker-range').then(() => {
     const range = document.getElementById('range-prog');
-    range.setRange('2026-09-03', '2026-09-15');
-    console.log('getStartDate():', range.getStartDate()); // Date
-    console.log('getEndDate():', range.getEndDate()); // Date
-    range.open();
-    console.log('isOpen():', range.isOpen()); // true
-    // range.close();
-    // range.toggle();
-    // range.clear();
+    document.getElementById('range-prog-open').addEventListener('click', () => range.open());
+    document.getElementById('range-prog-close').addEventListener('click', () => range.close());
+    document.getElementById('range-prog-toggle').addEventListener('click', () => range.toggle());
+    document.getElementById('range-prog-setrange').addEventListener('click', () => range.setRange('2026-09-03', '2026-09-15'));
+    document.getElementById('range-prog-clear').addEventListener('click', () => range.clear());
   });
 <\/script>`;
 
@@ -409,9 +419,7 @@ const exposesData = [
           <h2>Formato del rango en el trigger</h2>
           <Badge color="neutral" title="Formato por defecto">dd/MM/yyyy</Badge>
         </div>
-        <p class="playground-desc">
-          Tokens: <code>dd</code>, <code>MM</code>, <code>MMM</code>, <code>MMMM</code>, <code>yy</code>, <code>yyyy</code>.
-        </p>
+        <Table :columns="tokenColumns" :data="formatTokens" variant="ghost" compact />
         <SectionDemo :vue-code="formatVue" :vanilla-code="formatVanilla">
           <div class="playground-col">
             <DatePickerRange start-date="2026-09-03" end-date="2026-09-15" format="dd/MM/yyyy" style="max-width: 320px;" />
@@ -576,7 +584,7 @@ const exposesData = [
           <h2>Programmatic</h2>
         </div>
         <p class="playground-desc">
-          Métodos expuestos por el componente. Los botones operan sobre la instancia de abajo y el estado se lee en vivo.
+          Seguidilla de botones sobre la instancia de arriba — el calendario abre acá al lado.
         </p>
         <SectionDemo :vue-code="programmaticVue" :vanilla-code="programmaticVanilla">
           <div class="playground-col">
@@ -587,6 +595,13 @@ const exposesData = [
               @open="progIsOpen = true"
               @close="progIsOpen = false"
             />
+            <div class="playground-row">
+              <Button color="neutral" @click="rangeRef?.open()">open()</Button>
+              <Button color="neutral" @click="rangeRef?.close()">close()</Button>
+              <Button color="neutral" @click="rangeRef?.toggle()">toggle()</Button>
+              <Button color="neutral" @click="rangeRef?.setRange('2026-09-03', '2026-09-15')">setRange()</Button>
+              <Button color="neutral" @click="rangeRef?.clear()">clear()</Button>
+            </div>
             <p class="playground-state">
               getStartDate(): <strong>{{ fmt(progStart) }}</strong>
               · getEndDate(): <strong>{{ fmt(progEnd) }}</strong>
@@ -594,46 +609,6 @@ const exposesData = [
             </p>
           </div>
         </SectionDemo>
-
-        <h3 id="prog-open">open()</h3>
-        <div class="playground-row">
-          <Button color="neutral" @click="rangeRef?.open(); readProgState()">open()</Button>
-        </div>
-
-        <h3 id="prog-close">close()</h3>
-        <div class="playground-row">
-          <Button color="neutral" @click="rangeRef?.close(); readProgState()">close()</Button>
-        </div>
-
-        <h3 id="prog-toggle">toggle()</h3>
-        <div class="playground-row">
-          <Button color="neutral" @click="rangeRef?.toggle(); readProgState()">toggle()</Button>
-        </div>
-
-        <h3 id="prog-getstartdate">getStartDate()</h3>
-        <div class="playground-row">
-          <Button color="neutral" @click="readProgState()">getStartDate()</Button>
-        </div>
-
-        <h3 id="prog-getenddate">getEndDate()</h3>
-        <div class="playground-row">
-          <Button color="neutral" @click="readProgState()">getEndDate()</Button>
-        </div>
-
-        <h3 id="prog-setrange">setRange()</h3>
-        <div class="playground-row">
-          <Button color="neutral" @click="rangeRef?.setRange('2026-09-03', '2026-09-15'); readProgState()">setRange('2026-09-03', '2026-09-15')</Button>
-        </div>
-
-        <h3 id="prog-clear">clear()</h3>
-        <div class="playground-row">
-          <Button color="neutral" @click="rangeRef?.clear(); readProgState()">clear()</Button>
-        </div>
-
-        <h3 id="prog-isopen">isOpen()</h3>
-        <div class="playground-row">
-          <Button color="neutral" @click="readProgState()">isOpen()</Button>
-        </div>
       </section>
 
       <hr class="playground-separator" />
