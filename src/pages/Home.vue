@@ -9,10 +9,20 @@ import Input from "@/components/form/Input.vue";
 import Switch from "@/components/form/Switch.vue";
 import Checkbox from "@/components/form/Checkbox.vue";
 import Markdown from "@/components/markdown/Markdown.vue";
+import CodeBlock from "@/components/markdown/CodeBlock.vue";
 
 const demoValue = ref("");
 const notifications = ref(true);
 const keepSession = ref(true);
+
+const scriptSnippet = `<body>
+  <script src="comegenui/CuButton.umd.js"><\/script>
+  <cu-button color="primary">Click me</cu-button>
+</body>`;
+
+const bundlerSnippet = `import "comegenui/CuButton.umd.js";
+// y en cualquier template:
+// <cu-button color="primary">Click me</cu-button>`;
 
 const themeNames = computed(() => (loaded.value ? getThemeNames() : []));
 const currentTheme = computed(() => theme.value);
@@ -69,16 +79,11 @@ function prettyTheme(value: string) {
         <div class="home-usage-grid">
           <div class="home-usage-col">
             <h3 class="home-usage-label">Script directo</h3>
-            <pre class="home-code"><code>&lt;body&gt;
-  &lt;script src="comegenui/CuButton.umd.js"&gt;&lt;/script&gt;
-  &lt;cu-button color="primary"&gt;Click me&lt;/cu-button&gt;
-&lt;/body&gt;</code></pre>
+            <CodeBlock :code="scriptSnippet" language="html" />
           </div>
           <div class="home-usage-col">
             <h3 class="home-usage-label">Bundler</h3>
-            <pre class="home-code"><code>import "comegenui/CuButton.umd.js";
-// y en cualquier template:
-// &lt;cu-button color="primary"&gt;Click me&lt;/cu-button&gt;</code></pre>
+            <CodeBlock :code="bundlerSnippet" language="javascript" />
           </div>
         </div>
         <Alert color="primary" variant="subtle">
@@ -254,19 +259,6 @@ function prettyTheme(value: string) {
   font-size: var(--cu-font-size-sm);
   font-weight: var(--cu-font-weight-semibold);
   opacity: 0.7;
-}
-
-.home-code {
-  margin: 0;
-  padding: 1rem 1.25rem;
-  background-color: var(--cu-code-bg);
-  color: var(--cu-code-text);
-  font-family: var(--cu-font-mono);
-  font-size: var(--cu-font-size-sm);
-  line-height: var(--cu-line-height-relaxed);
-  border-radius: var(--cu-radius);
-  overflow-x: auto;
-  box-sizing: border-box;
 }
 
 .home-doc {
