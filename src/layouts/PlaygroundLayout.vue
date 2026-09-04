@@ -25,7 +25,7 @@ const navItems = [
     label: 'Components',
     children: [
       {
-        label: 'buttons',
+        label: 'Buttons',
         children: [
           { label: 'Button', path: '/playground/components/button' },
           { label: 'CopyButton', path: '/playground/components/copy-button' },
