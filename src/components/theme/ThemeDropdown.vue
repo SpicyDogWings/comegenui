@@ -11,8 +11,11 @@ const dropdownRef = ref<InstanceType<typeof Dropdown> | null>(null);
 const themeNames = computed(() => (loaded.value ? getThemeNames() : []));
 const current = computed(() => theme.value);
 
-function capitalize(value: string) {
-  return value.charAt(0).toUpperCase() + value.slice(1);
+function label(value: string) {
+  return value
+    .split("-")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
 }
 
 function select(name: string) {
@@ -32,7 +35,7 @@ function select(name: string) {
   >
     <template #toggle="{ toggle, isOpen }">
       <Button variant="ghost" color="neutral" @click="toggle" aria-label="Seleccionar tema">
-        <span class="theme-dropdown-label">{{ current ? capitalize(current) : "Tema" }}</span>
+        <span class="theme-dropdown-label">{{ current ? label(current) : "Tema" }}</span>
         <LucideChevronDown
           :class="['theme-dropdown-chevron', { 'theme-dropdown-chevron--open': isOpen }]"
         />
@@ -48,7 +51,7 @@ function select(name: string) {
       :class="{ 'theme-dropdown-item--active': current === name }"
       @click="select(name)"
     >
-      <span>{{ capitalize(name) }}</span>
+      <span>{{ label(name) }}</span>
       <LucideCheck v-if="current === name" class="theme-dropdown-check" />
     </button>
   </Dropdown>

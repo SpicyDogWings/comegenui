@@ -16,6 +16,13 @@ const keepSession = ref(true);
 
 const themeNames = computed(() => (loaded.value ? getThemeNames() : []));
 const currentTheme = computed(() => theme.value);
+
+function prettyTheme(value: string) {
+  return value
+    .split("-")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
 </script>
 
 <template>
@@ -124,7 +131,7 @@ const currentTheme = computed(() => theme.value);
                 <Switch :model-value="true" color="primary" />
               </div>
             </div>
-            <span class="home-theme-name">{{ name }}</span>
+            <span class="home-theme-name">{{ prettyTheme(name) }}</span>
           </div>
         </div>
       </section>
