@@ -304,7 +304,7 @@ function buildSharedVariables(): string {
 /* mismo generador que la lib (cu-tokens): incluye --cu-color-*-code y
    el esquema --cu-code-* — nunca diverge. resolveInk deriva la tinta
    (neutral) del surface cuando no contrasta — única fuente de verdad */
-const cssColors = computed(() => colorsBlock(colors.value))
+const cssColors = computed(() => colorsBlock(colors.value, themeName.value, pluginOpacities.value))
 const cssShared = computed(() => buildSharedVariables())
 const shadowPreview = computed(() => hexToRgba(shadowHex.value || '#000000', opacities.value.shadow ?? 10))
 
@@ -628,13 +628,17 @@ onBeforeUnmount(() => {
 
         <Collapse label="Opacities" :default-open="false">
           <div class="tb-colors-list">
-            <div class="tb-field">
+            <div class="tb-color-row">
               <Label label="shadow" color="var(--cu-color-neutral)" />
+              <ColorPicker :model-value="shadowHex" :disabled="!isEditing" @update:model-value="shadowHex = $event" />
+            </div>
+            <div class="tb-field">
+              <Label label="shadow opacity" color="var(--cu-color-neutral)" />
               <Input v-model="shadowOpacityRaw" :disabled="!isEditing" />
             </div>
           </div>
           <p class="tb-hint">
-            <code>shadow</code>: {{ shadowHex.value }} con opacidad {{ opacities.shadow }}% → <code>{{ shadowPreview }}</code>
+            <code>shadow</code>: {{ shadowHex }} con opacidad {{ opacities.shadow }}% → <code>{{ shadowPreview }}</code>
           </p>
         </Collapse>
       </aside>
