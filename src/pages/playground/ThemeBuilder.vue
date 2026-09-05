@@ -74,8 +74,8 @@ const isBuiltIn = computed(() => builtInNames.value.includes(themeName.value))
 
 function enableEditing() {
   isEditing.value = true
-  registerTheme('custom', { ...colors.value, shadow: shadowHex.value })
-  pluginOpacities.value = { ...pluginOpacities.value, custom: { shadow: opacities.value.shadow } }
+  registerTheme('custom', { ...colors.value })
+  pluginOpacities.value = { ...pluginOpacities.value, custom: { shadow: parseInt(shadowOpacityRaw.value) || 10 } }
   themeName.value = 'custom'
   setTheme('custom')
 }
@@ -124,24 +124,10 @@ const colors = ref({
   focus: '#1774A4',
   strong: '#6b7280',
   default: '#d1d5db',
-})
-
-const shadowHex = ref('#000000')
-
-const opacities = ref({
-  shadow: 10,
+  shadow: '#000000',
 })
 
 const shadowOpacityRaw = ref('10')
-
-watch(shadowOpacityRaw, (val) => {
-  const num = parseInt(val, 10)
-  opacities.value.shadow = isNaN(num) ? 10 : num
-})
-
-watch(() => opacities.value.shadow, (val) => {
-  shadowOpacityRaw.value = String(val)
-})
 
 
 
@@ -246,8 +232,8 @@ function buildSharedVariables(): string {
   const r = borderRadius.value
   const b = borders.value
 
-  const shadowOpacity = opacities.value.shadow ?? 10
-  const shadowColor = hexToRgba(shadowHex.value || '#000000', shadowOpacity)
+  const shadowOpacity = parseInt(shadowOpacityRaw.value) || 10
+  const shadowColor = hexToRgba(colors.value.shadow || '#000000', shadowOpacity)
 
   return `/* Typography */
     --cu-font-sans: ${t.fontFamily.sans};
@@ -306,7 +292,7 @@ function buildSharedVariables(): string {
    (neutral) del surface cuando no contrasta — única fuente de verdad */
 const cssColors = computed(() => colorsBlock(colors.value, themeName.value, pluginOpacities.value))
 const cssShared = computed(() => buildSharedVariables())
-const shadowPreview = computed(() => hexToRgba(shadowHex.value || '#000000', opacities.value.shadow ?? 10))
+const shadowPreview = computed(() => hexToRgba(colors.value.shadow || '#000000', parseInt(shadowOpacityRaw.value) || 10))
 
 // La page entera toma el tema editado: los colores van bajo el selector del
 // tema activo (pisa al :root del plugin por especificidad) y los tokens
@@ -332,14 +318,14 @@ function saveToStorage() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(getCurrentConfig()))
 }
 
-watch([colors, shadowHex, opacities, typography, spacing, borderRadius, borders], () => {
+watch([colors, shadowOpacityRaw, typography, spacing, borderRadius, borders], () => {
   saveToStorage()
 }, { deep: true })
 
 function getCurrentConfig(): ThemeConfig {
   return {
-    themes: { [themeName.value]: { ...colors.value, shadow: shadowHex.value } },
-    opacities: { [themeName.value]: { shadow: opacities.value.shadow } },
+    themes: { [themeName.value]: { ...colors.value } },
+    opacities: { [themeName.value]: { shadow: parseInt(shadowOpacityRaw.value) || 10 } },
     typography: JSON.parse(JSON.stringify(typography.value)),
     spacing: JSON.parse(JSON.stringify(spacing.value)),
     borderRadius: JSON.parse(JSON.stringify(borderRadius.value)),
@@ -355,25 +341,21 @@ function applyConfig(config: ThemeConfig) {
       themeName.value = firstTheme
       const themeColors = config.themes[firstTheme]
       if (themeColors) {
-        const { shadow, ...rest } = themeColors
-        colors.value = { ...colors.value, ...rest }
-        if (shadow) shadowHex.value = shadow
+        colors.value = { ...colors.value, ...themeColors }
       }
     }
   }
   if (config.typography) typography.value = config.typography
   if (config.spacing) spacing.value = config.spacing
   if (config.borderRadius) borderRadius.value = config.borderRadius
-  // Migrar shadows.color viejo → colors.shadow nuevo
-  if (config.shadows?.color && !shadowHex.value) {
-    shadowHex.value = config.shadows.color
+  if (config.shadows?.color && !colors.value.shadow) {
+    colors.value.shadow = config.shadows.color
   }
-  // Migrar opacidades (por tema)
   if (config.opacities) {
+    const themeOp = config.opacities[themeName.value]?.shadow ?? config.opacities.default?.shadow
+    if (themeOp !== undefined) shadowOpacityRaw.value = String(themeOp)
     pluginOpacities.value = { ...pluginOpacities.value, ...config.opacities }
-    opacities.value.shadow = getThemeOpacity(themeName.value)
   }
-  // Migrar borders.color viejo → colors.default/strong/focus nuevos
   if (config.borders?.color) {
     if (!colors.value.default) colors.value.default = config.borders.color.default
     if (!colors.value.strong) colors.value.strong = config.borders.color.strong
@@ -446,11 +428,9 @@ function resetToDefaults() {
     focus: '#1774A4',
     strong: '#6b7280',
     default: '#d1d5db',
+    shadow: '#000000',
   }
-  shadowHex.value = '#000000'
-  opacities.value = {
-    shadow: 10,
-  }
+  shadowOpacityRaw.value = '10'
   typography.value = {
     fontFamily: { sans: 'Inter, system-ui, sans-serif', mono: 'Fira Code, monospace' },
     fontSize: { xs: '0.75rem', sm: '0.875rem', md: '1rem', lg: '1.125rem', xl: '1.25rem', '2xl': '1.5rem', '3xl': '1.75rem', '4xl': '2rem' },
@@ -475,17 +455,15 @@ onMounted(() => {
   previousTheme.value = activeTheme.value
   setTheme(themeName.value)
   modalPreviewRef.value?.open()
-  opacities.value.shadow = getThemeOpacity(themeName.value)
+  shadowOpacityRaw.value = String(getThemeOpacity(themeName.value))
 })
 
 // Cargar los tokens de un tema en el editor
 function loadThemeIntoTokens(name: string) {
   const themeTokens = allThemes.value[name]
   if (themeTokens?.colors) {
-    const { shadow, ...rest } = themeTokens.colors
-    colors.value = { ...colors.value, ...rest }
-    if (shadow) shadowHex.value = shadow
-    opacities.value.shadow = getThemeOpacity(name)
+    colors.value = { ...colors.value, ...themeTokens.colors }
+    shadowOpacityRaw.value = String(getThemeOpacity(name))
   }
 }
 
@@ -508,10 +486,10 @@ watch(activeTheme, (name) => {
 })
 
 // Detectar cambios → solo cuando está editando (isEditing)
-watch([colors, shadowHex, opacities, typography, spacing, borderRadius, borders], () => {
+watch([colors, shadowOpacityRaw, typography, spacing, borderRadius, borders], () => {
   if (!isEditing.value) return
-  registerTheme('custom', { ...colors.value, shadow: shadowHex.value })
-  pluginOpacities.value = { ...pluginOpacities.value, custom: { shadow: opacities.value.shadow } }
+  registerTheme('custom', { ...colors.value })
+  pluginOpacities.value = { ...pluginOpacities.value, custom: { shadow: parseInt(shadowOpacityRaw.value) || 10 } }
   if (themeName.value !== 'custom') {
     themeName.value = 'custom'
     setTheme('custom')
@@ -628,17 +606,13 @@ onBeforeUnmount(() => {
 
         <Collapse label="Opacities" :default-open="false">
           <div class="tb-colors-list">
-            <div class="tb-color-row">
-              <Label label="shadow" color="var(--cu-color-neutral)" />
-              <ColorPicker :model-value="shadowHex" :disabled="!isEditing" @update:model-value="shadowHex = $event" />
-            </div>
             <div class="tb-field">
-              <Label label="shadow opacity" color="var(--cu-color-neutral)" />
+              <Label label="shadow" color="var(--cu-color-neutral)" />
               <Input v-model="shadowOpacityRaw" :disabled="!isEditing" />
             </div>
           </div>
           <p class="tb-hint">
-            <code>shadow</code>: {{ shadowHex }} con opacidad {{ opacities.shadow }}% → <code>{{ shadowPreview }}</code>
+            <code>shadow</code>: {{ colors.shadow }} con opacidad {{ shadowOpacityRaw }}% → <code>{{ shadowPreview }}</code>
           </p>
         </Collapse>
       </aside>
