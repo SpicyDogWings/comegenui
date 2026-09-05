@@ -58,7 +58,6 @@ const colorStyles = computed(() => ({
   '--btn-ghost-hover': `var(--cu-color-${props.color}-ghost-hover)`,
   '--btn-ghost-active': `var(--cu-color-${props.color}-ghost-active)`,
   '--btn-soft': `var(--cu-color-${props.color}-soft)`,
-  '--btn-soft-text': `var(--cu-color-${props.color}-soft-text)`,
   '--btn-soft-hover': `var(--cu-color-${props.color}-soft-hover)`,
   '--btn-soft-active': `var(--cu-color-${props.color}-soft-active)`,
   '--btn-subtle': `var(--cu-color-${props.color}-subtle)`,
@@ -173,7 +172,7 @@ const colorStyles = computed(() => ({
 /* soft */
 .cu-button.cu-button--soft {
   background-color: var(--btn-soft);
-  color: var(--btn-soft-text);
+  color: var(--btn-bg);
 }
 .cu-button.cu-button--soft:hover:not(.cu-button--disabled) {
   background-color: var(--btn-soft-hover);
@@ -185,7 +184,7 @@ const colorStyles = computed(() => ({
 /* subtle */
 .cu-button.cu-button--subtle {
   background-color: var(--btn-subtle);
-  color: var(--btn-soft-text);
+  color: var(--btn-bg);
   border: var(--cu-border-thin) solid var(--btn-subtle-border);
 }
 .cu-button.cu-button--subtle:hover:not(.cu-button--disabled) {
