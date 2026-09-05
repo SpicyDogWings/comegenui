@@ -4,7 +4,7 @@ import Dropdown from "@/components/overlay/Dropdown.vue";
 import Button from "@/components/buttons/Button.vue";
 import LucideChevronDown from "@/components/icons/LucideChevronDown.vue";
 import LucideCheck from "@/components/icons/LucideCheck.vue";
-import { theme, loaded, setTheme, getThemeNames } from "@/plugins/cu-tokens";
+import { theme, loaded, setTheme, getThemeNames, allThemes } from "@/plugins/cu-tokens";
 
 const dropdownRef = ref<InstanceType<typeof Dropdown> | null>(null);
 
@@ -16,6 +16,10 @@ function label(value: string) {
     .split("-")
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(" ");
+}
+
+function getThemeColor(name: string): string {
+  return allThemes.value[name]?.colors?.primary || '#888888';
 }
 
 function select(name: string) {
@@ -51,7 +55,10 @@ function select(name: string) {
       :class="{ 'theme-dropdown-item--active': current === name }"
       @click="select(name)"
     >
-      <span>{{ label(name) }}</span>
+      <span class="theme-dropdown-item-label">
+        <span class="theme-dropdown-dot" :style="{ backgroundColor: getThemeColor(name) }"></span>
+        {{ label(name) }}
+      </span>
       <LucideCheck v-if="current === name" class="theme-dropdown-check" />
     </button>
   </Dropdown>
@@ -93,6 +100,20 @@ function select(name: string) {
 
 .theme-dropdown-item--active {
   font-weight: var(--cu-font-weight-semibold);
+}
+
+.theme-dropdown-item-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.theme-dropdown-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 1px solid rgba(0,0,0,0.1);
 }
 
 .theme-dropdown-check {
