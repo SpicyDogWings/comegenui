@@ -29,7 +29,7 @@
       "warning": "#EBCB8B",
       "danger": "#BF616A",
       "surface": "#2E3440",
-      "focus": "#88C0D0",
+      "focus": "#5E81AC",
       "shadow": "rgba(46, 52, 64, 0.4)",
       "strong": "#4C566A",
       "default": "#3B4252"
@@ -42,7 +42,7 @@
       "warning": "#EBCB8B",
       "danger": "#B48EAD",
       "surface": "#2E3440",
-      "focus": "#88C0D0",
+      "focus": "#EBCB8B",
       "shadow": "rgba(46, 52, 64, 0.5)",
       "strong": "#D08770",
       "default": "#3B4252"
@@ -55,7 +55,7 @@
       "warning": "#f59e0b",
       "danger": "#ef4444",
       "surface": "#ECEFF4",
-      "focus": "#5E81AC",
+      "focus": "#81A1C1",
       "shadow": "rgba(76, 86, 106, 0.3)",
       "strong": "#4C566A",
       "default": "#D8DEE9"
