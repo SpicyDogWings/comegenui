@@ -15,6 +15,7 @@ import FileInputZone from '@/components/form/FileInputZone.vue'
 import ColorPicker from '@/components/form/ColorPicker.vue'
 import FloatingButton from '@/components/buttons/FloatingButton.vue'
 import LucideSave from '@/components/icons/LucideSave.vue'
+import LucidePencil from '@/components/icons/LucidePencil.vue'
 import ThemeManagerModal from '@/components/theme/ThemeManagerModal.vue'
 import Table from '@/components/data/Table.vue'
 import Pagination from '@/components/controls/Pagination.vue'
@@ -65,10 +66,18 @@ const tableColumns = [
 ]
 
 const themeName = ref('light')
+const isEditing = ref(false)
 const modalRef = ref<InstanceType<typeof ThemeManagerModal> | null>(null)
 const modalPreviewRef = ref<InstanceType<typeof Modal> | null>(null)
 
 const isBuiltIn = computed(() => builtInNames.value.includes(themeName.value))
+
+function enableEditing() {
+  isEditing.value = true
+  registerTheme('custom', { ...colors.value, shadow: shadowHex.value })
+  themeName.value = 'custom'
+  setTheme('custom')
+}
 
 const dropdownItems = [
   { label: 'Ver detalle', value: 'detail' },
@@ -377,6 +386,10 @@ function loadFromStorage() {
     try {
       const config = JSON.parse(raw) as ThemeConfig
       applyConfig(config)
+      // Si el tema guardado es custom, entrar en modo edición
+      if (Object.keys(config.themes)[0] === 'custom') {
+        isEditing.value = true
+      }
     } catch {}
   }
 }
@@ -484,47 +497,20 @@ watch(themeName, (name) => {
 watch(activeTheme, (name) => {
   if (name !== themeName.value) {
     themeName.value = name
+    isEditing.value = false
     loadThemeIntoTokens(name)
   }
 })
 
-// Detectar cambios → si es built-in, copiar a custom; si no, registrar custom
+// Detectar cambios → solo cuando está editando (isEditing)
 watch([colors, shadowHex, opacities, typography, spacing, borderRadius, borders], () => {
-  if (isBuiltIn.value) {
-    // Copiar el tema built-in a custom y cambiar a custom
-    registerTheme('custom', colors.value)
-    themeName.value = 'custom'
-    setTheme('custom')
-    return
-  }
-  const matchingTheme = findMatchingTheme()
-  if (matchingTheme && matchingTheme !== themeName.value) {
-    themeName.value = matchingTheme
-    setTheme(matchingTheme)
-  } else if (!matchingTheme && themeName.value !== 'custom') {
-    registerTheme('custom', colors.value)
+  if (!isEditing.value) return
+  registerTheme('custom', { ...colors.value, shadow: shadowHex.value })
+  if (themeName.value !== 'custom') {
     themeName.value = 'custom'
     setTheme('custom')
   }
 }, { deep: true })
-
-// Buscar si los colores actuales coinciden con algún tema registrado
-function findMatchingTheme(): string | null {
-  const currentColors = colors.value
-  for (const [name, tokens] of Object.entries(allThemes.value)) {
-    if (name === 'custom') continue
-    const themeColors = tokens.colors
-    if (themeColors && colorsMatch(currentColors, themeColors)) {
-      return name
-    }
-  }
-  return null
-}
-
-function colorsMatch(a: Record<string, string>, b: Record<string, string>): boolean {
-  const keys = ['primary', 'secondary', 'neutral', 'success', 'warning', 'danger', 'surface']
-  return keys.every(k => a[k] === b[k])
-}
 
 onBeforeUnmount(() => {
   if (styleEl) {
@@ -539,11 +525,23 @@ onBeforeUnmount(() => {
   <PlaygroundLayout title="Theme Builder">
     <div class="tb-layout">
       <aside class="tb-controls">
+        <div class="tb-controls-header">
+          <span class="tb-controls-theme-name">{{ themeName }}</span>
+          <button
+            v-if="!isEditing"
+            class="tb-edit-btn"
+            title="Editar tema"
+            @click="enableEditing"
+          >
+            <LucidePencil :width="16" :height="16" />
+          </button>
+        </div>
+
         <Collapse label="Colors" :default-open="true">
           <div class="tb-colors-list">
             <div v-for="(value, key) in colors" :key="key" class="tb-color-row">
               <Label :label="key === 'neutral' ? 'neutral (texto/títulos)' : key" color="var(--cu-color-neutral)" />
-              <ColorPicker :model-value="value" @update:model-value="colors[key] = $event" />
+              <ColorPicker :model-value="value" :disabled="!isEditing" @update:model-value="colors[key] = $event" />
             </div>
           </div>
           <p class="tb-hint">
@@ -556,11 +554,11 @@ onBeforeUnmount(() => {
             <h3>Font Family</h3>
             <div class="tb-field">
               <Label label="Sans" color="var(--cu-color-neutral)" />
-              <Input v-model="typography.fontFamily.sans" />
+              <Input v-model="typography.fontFamily.sans" :disabled="!isEditing" />
             </div>
             <div class="tb-field">
               <Label label="Mono" color="var(--cu-color-neutral)" />
-              <Input v-model="typography.fontFamily.mono" />
+              <Input v-model="typography.fontFamily.mono" :disabled="!isEditing" />
             </div>
           </div>
           <div class="tb-group">
@@ -568,7 +566,7 @@ onBeforeUnmount(() => {
             <div class="tb-grid">
               <div v-for="(value, key) in typography.fontSize" :key="key" class="tb-field">
                 <Label :label="key" color="var(--cu-color-neutral)" />
-                <Input v-model="typography.fontSize[key]" />
+                <Input v-model="typography.fontSize[key]" :disabled="!isEditing" />
               </div>
             </div>
           </div>
@@ -577,7 +575,7 @@ onBeforeUnmount(() => {
             <div class="tb-grid">
               <div v-for="(value, key) in typography.fontWeight" :key="key" class="tb-field">
                 <Label :label="key" color="var(--cu-color-neutral)" />
-                <Input v-model="typography.fontWeight[key]" />
+                <Input v-model="typography.fontWeight[key]" :disabled="!isEditing" />
               </div>
             </div>
           </div>
@@ -586,7 +584,7 @@ onBeforeUnmount(() => {
             <div class="tb-grid">
               <div v-for="(value, key) in typography.lineHeight" :key="key" class="tb-field">
                 <Label :label="key" color="var(--cu-color-neutral)" />
-                <Input v-model="typography.lineHeight[key]" />
+                <Input v-model="typography.lineHeight[key]" :disabled="!isEditing" />
               </div>
             </div>
           </div>
@@ -596,7 +594,7 @@ onBeforeUnmount(() => {
           <div class="tb-grid">
             <div v-for="(value, key) in spacing" :key="key" class="tb-field">
               <Label :label="key" color="var(--cu-color-neutral)" />
-              <Input v-model="spacing[key]" />
+              <Input v-model="spacing[key]" :disabled="!isEditing" />
             </div>
           </div>
         </Collapse>
@@ -605,7 +603,7 @@ onBeforeUnmount(() => {
           <div class="tb-grid">
             <div v-for="(value, key) in borderRadius" :key="key" class="tb-field">
               <Label :label="key" color="var(--cu-color-neutral)" />
-              <Input v-model="borderRadius[key]" />
+              <Input v-model="borderRadius[key]" :disabled="!isEditing" />
             </div>
           </div>
         </Collapse>
@@ -616,7 +614,7 @@ onBeforeUnmount(() => {
             <div class="tb-grid">
               <div v-for="(value, key) in borders.width" :key="key" class="tb-field">
                 <Label :label="key" color="var(--cu-color-neutral)" />
-                <Input v-model="borders.width[key]" />
+                <Input v-model="borders.width[key]" :disabled="!isEditing" />
               </div>
             </div>
           </div>
@@ -626,7 +624,7 @@ onBeforeUnmount(() => {
           <div class="tb-colors-list">
             <div class="tb-field">
               <Label label="shadow" color="var(--cu-color-neutral)" />
-              <Input v-model="shadowOpacityRaw" />
+              <Input v-model="shadowOpacityRaw" :disabled="!isEditing" />
             </div>
           </div>
           <p class="tb-hint">
@@ -1043,6 +1041,39 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.tb-controls-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.25rem;
+}
+
+.tb-controls-theme-name {
+  font-weight: var(--cu-font-weight-semibold);
+  font-size: var(--cu-font-size-sm);
+  color: var(--cu-color-neutral);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tb-edit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: var(--cu-border-thin) solid var(--cu-border-color);
+  border-radius: var(--cu-radius-sm);
+  background: transparent;
+  color: var(--cu-color-neutral);
+  cursor: pointer;
+  transition: background 150ms ease;
+}
+
+.tb-edit-btn:hover {
+  background: var(--cu-color-neutral-ghost-hover);
 }
 
 .tb-preview {
