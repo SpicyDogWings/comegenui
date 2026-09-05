@@ -46,7 +46,7 @@ const STORAGE_KEY = 'cu-theme-builder'
 
 interface ThemeConfig {
   themes: Record<string, Record<string, string>>
-  opacities: { shadow: number }
+  opacities: Record<string, { shadow: number }>
   typography: typeof typography.value
   spacing: typeof spacing.value
   borderRadius: typeof borderRadius.value
@@ -74,7 +74,8 @@ const isBuiltIn = computed(() => builtInNames.value.includes(themeName.value))
 
 function enableEditing() {
   isEditing.value = true
-  registerTheme('custom', { ...colors.value, shadow: shadowHex.value, shadowOpacity: opacities.value.shadow })
+  registerTheme('custom', { ...colors.value, shadow: shadowHex.value })
+  pluginOpacities.value = { ...pluginOpacities.value, custom: { shadow: opacities.value.shadow } }
   themeName.value = 'custom'
   setTheme('custom')
 }
@@ -338,7 +339,7 @@ watch([colors, shadowHex, opacities, typography, spacing, borderRadius, borders]
 function getCurrentConfig(): ThemeConfig {
   return {
     themes: { [themeName.value]: { ...colors.value, shadow: shadowHex.value } },
-    opacities: JSON.parse(JSON.stringify(opacities.value)),
+    opacities: { [themeName.value]: { shadow: opacities.value.shadow } },
     typography: JSON.parse(JSON.stringify(typography.value)),
     spacing: JSON.parse(JSON.stringify(spacing.value)),
     borderRadius: JSON.parse(JSON.stringify(borderRadius.value)),
@@ -367,9 +368,10 @@ function applyConfig(config: ThemeConfig) {
   if (config.shadows?.color && !shadowHex.value) {
     shadowHex.value = config.shadows.color
   }
-  // Migrar opacidades
+  // Migrar opacidades (por tema)
   if (config.opacities) {
-    opacities.value = { ...opacities.value, ...config.opacities }
+    pluginOpacities.value = { ...pluginOpacities.value, ...config.opacities }
+    opacities.value.shadow = getThemeOpacity(themeName.value)
   }
   // Migrar borders.color viejo → colors.default/strong/focus nuevos
   if (config.borders?.color) {
@@ -464,32 +466,26 @@ function resetToDefaults() {
 // al salir se restaura el que estaba ("el de ahorita" queda como default).
 const previousTheme = ref('')
 
+function getThemeOpacity(name: string): number {
+  return pluginOpacities.value[name]?.shadow ?? pluginOpacities.value.default?.shadow ?? 10
+}
+
 onMounted(() => {
   loadFromStorage()
   previousTheme.value = activeTheme.value
   setTheme(themeName.value)
   modalPreviewRef.value?.open()
-  // Sync opacities from plugin (root config)
-  if (pluginOpacities.value) {
-    opacities.value = { ...pluginOpacities.value }
-  }
-})
-
-// Sync plugin opacities → local
-watch(pluginOpacities, (val) => {
-  if (val) opacities.value = { ...val }
+  opacities.value.shadow = getThemeOpacity(themeName.value)
 })
 
 // Cargar los tokens de un tema en el editor
 function loadThemeIntoTokens(name: string) {
   const themeTokens = allThemes.value[name]
   if (themeTokens?.colors) {
-    const { shadow, shadowOpacity, ...rest } = themeTokens.colors
+    const { shadow, ...rest } = themeTokens.colors
     colors.value = { ...colors.value, ...rest }
     if (shadow) shadowHex.value = shadow
-    if (shadowOpacity !== undefined) {
-      opacities.value.shadow = shadowOpacity
-    }
+    opacities.value.shadow = getThemeOpacity(name)
   }
 }
 
@@ -514,8 +510,8 @@ watch(activeTheme, (name) => {
 // Detectar cambios → solo cuando está editando (isEditing)
 watch([colors, shadowHex, opacities, typography, spacing, borderRadius, borders], () => {
   if (!isEditing.value) return
-  registerTheme('custom', { ...colors.value, shadow: shadowHex.value, shadowOpacity: opacities.value.shadow })
-  pluginOpacities.value = { ...opacities.value }
+  registerTheme('custom', { ...colors.value, shadow: shadowHex.value })
+  pluginOpacities.value = { ...pluginOpacities.value, custom: { shadow: opacities.value.shadow } }
   if (themeName.value !== 'custom') {
     themeName.value = 'custom'
     setTheme('custom')

@@ -6,7 +6,7 @@ const theme = ref('light')
 const loaded = ref(false)
 const themes = ref<Record<string, any>>({})
 const shared = ref<any>({})
-const opacities = ref<{ shadow: number }>({ ...DEFAULT_OPACITIES })
+const opacities = ref<Record<string, { shadow: number }>>({ ...DEFAULT_OPACITIES })
 const themeNames = ref<string[]>([])
 const builtInNames = ref<string[]>([])
 // Temas registrados en runtime (ej: el import del ThemeBuilder) — persisten

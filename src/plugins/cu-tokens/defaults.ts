@@ -13,7 +13,7 @@ export const DEFAULT_COLORS = {
 }
 
 export const DEFAULT_OPACITIES = {
-  shadow: 10
+  default: { shadow: 10 }
 }
 
 export const DEFAULT_DARK_COLORS = {
@@ -118,12 +118,10 @@ export const DEFAULTS = {
 const COLOR_KEYS = Object.keys(DEFAULT_COLORS)
 
 export function extractColors(obj: any) {
-  const colors: Record<string, any> = {}
+  const colors: Record<string, string> = {}
   for (const key of COLOR_KEYS) {
     if (obj[key] !== undefined) colors[key] = obj[key]
   }
-  // Preservar shadowOpacity si existe (no es un color pero viaja con el tema)
-  if (obj.shadowOpacity !== undefined) colors.shadowOpacity = obj.shadowOpacity
   return colors
 }
 
