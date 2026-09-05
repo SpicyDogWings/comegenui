@@ -55,7 +55,12 @@ export function colorsBlock(colors: any) {
     /* esquema de código: tokens dedicados (invierten con el tema) */
     --cu-code-bg: ${ink};
     --cu-code-text: ${colors.surface};
-    --cu-code-faded: ${transparentize(colors.surface, 0.45)};`
+    --cu-code-faded: ${transparentize(colors.surface, 0.45)};
+    /* per-theme shadow + border colors */
+    --cu-shadow-color: ${colors.shadow || 'rgba(0,0,0,0.1)'};
+    --cu-border-color: ${colors.default || '#d1d5db'};
+    --cu-border-color-strong: ${colors.strong || '#6b7280'};
+    --cu-border-color-focus: ${colors.focus || '#1774A4'};`
 }
 
 function shadowVar(name: string, value: string, color?: string) {
@@ -101,21 +106,17 @@ function sharedBlock(shared: any) {
     --cu-radius-lg: ${shared.borderRadius.lg};
     --cu-radius-full: ${shared.borderRadius.full};
 
-    /* Shadows */
-    --cu-shadow-color: ${shared.shadows.color || '#000000'};
-    ${shadowVar('sm', shared.shadows.sm, shared.shadows.color)}
-    ${shadowVar('md', shared.shadows.md, shared.shadows.color)}
-    ${shadowVar('lg', shared.shadows.lg, shared.shadows.color)}
-    ${shadowVar('xl', shared.shadows.xl, shared.shadows.color)}
+    /* Shadows (sizes only — color is per-theme) */
+    ${shadowVar('sm', shared.shadows.sm, 'currentColor')}
+    ${shadowVar('md', shared.shadows.md, 'currentColor')}
+    ${shadowVar('lg', shared.shadows.lg, 'currentColor')}
+    ${shadowVar('xl', shared.shadows.xl, 'currentColor')}
 
-    /* Borders */
+    /* Borders (widths only — colors are per-theme) */
     --cu-border-none: ${shared.borders.width.none};
     --cu-border-thin: ${shared.borders.width.thin};
     --cu-border-medium: ${shared.borders.width.medium};
     --cu-border-thick: ${shared.borders.width.thick};
-    --cu-border-color: ${shared.borders.color.default};
-    --cu-border-color-strong: ${shared.borders.color.strong};
-    --cu-border-color-focus: ${shared.borders.color.focus};
 
     /* Modal */
     --cu-modal-size-sm: ${shared.modal.size.sm};

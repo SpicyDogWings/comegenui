@@ -5,7 +5,11 @@ export const DEFAULT_COLORS = {
   success: '#22c55e',
   warning: '#f59e0b',
   danger: '#ef4444',
-  surface: '#eeeeee'
+  surface: '#eeeeee',
+  focus: '#1774A4',
+  shadow: 'rgba(0,0,0,0.1)',
+  strong: '#6b7280',
+  default: '#d1d5db'
 }
 
 export const DEFAULT_DARK_COLORS = {

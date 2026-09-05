@@ -48,8 +48,7 @@ interface ThemeConfig {
   typography: typeof typography.value
   spacing: typeof spacing.value
   borderRadius: typeof borderRadius.value
-  shadows: typeof shadows.value
-  borders: typeof borders.value
+  borders: { width: typeof borders.value.width }
 }
 
 const tableData = [
@@ -111,6 +110,10 @@ const colors = ref({
   warning: '#f59e0b',
   danger: '#ef4444',
   surface: '#eeeeee',
+  focus: '#1774A4',
+  shadow: 'rgba(0,0,0,0.1)',
+  strong: '#6b7280',
+  default: '#d1d5db',
 })
 
 const typography = ref({
@@ -163,10 +166,6 @@ const borderRadius = ref({
   full: '9999px',
 })
 
-const shadows = ref({
-  color: '#000000',
-})
-
 const borders = ref({
   width: {
     none: '0',
@@ -216,12 +215,11 @@ function buildSharedVariables(): string {
   const t = typography.value
   const s = spacing.value
   const r = borderRadius.value
-  const sh = shadows.value
   const b = borders.value
 
-  const shadowColor = hexToRgba(sh.color, 1)
-  const shadowAlpha05 = hexToRgba(sh.color, 0.05)
-  const shadowAlpha1 = hexToRgba(sh.color, 0.1)
+  const shadowColor = colors.value.shadow || 'rgba(0,0,0,0.1)'
+  const shadowAlpha05 = hexToRgba(shadowColor, 0.05)
+  const shadowAlpha1 = hexToRgba(shadowColor, 0.1)
 
   return `/* Typography */
     --cu-font-sans: ${t.fontFamily.sans};
@@ -262,21 +260,17 @@ function buildSharedVariables(): string {
     --cu-radius-lg: ${r.lg};
     --cu-radius-full: ${r.full};
 
-    /* Shadows */
-    --cu-shadow-color: ${shadowColor};
-    --cu-shadow-sm: 0 1px 2px ${shadowAlpha05};
-    --cu-shadow-md: 0 4px 6px ${shadowAlpha1};
-    --cu-shadow-lg: 0 10px 15px ${shadowAlpha1};
-    --cu-shadow-xl: 0 20px 25px ${shadowAlpha1};
+    /* Shadows (sizes only — color is per-theme via --cu-shadow-color) */
+    --cu-shadow-sm: 0 1px 2px ${shadowColor};
+    --cu-shadow-md: 0 4px 6px ${shadowColor};
+    --cu-shadow-lg: 0 10px 15px ${shadowColor};
+    --cu-shadow-xl: 0 20px 25px ${shadowColor};
 
-    /* Borders */
+    /* Borders (widths only — colors are per-theme) */
     --cu-border-none: ${b.width.none};
     --cu-border-thin: ${b.width.thin};
     --cu-border-medium: ${b.width.medium};
-    --cu-border-thick: ${b.width.thick};
-    --cu-border-color: ${b.color.default};
-    --cu-border-color-strong: ${b.color.strong};
-    --cu-border-color-focus: ${b.color.focus};`
+    --cu-border-thick: ${b.width.thick};`
 }
 
 /* mismo generador que la lib (cu-tokens): incluye --cu-color-*-code y
@@ -309,7 +303,7 @@ function saveToStorage() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(getCurrentConfig()))
 }
 
-watch([colors, typography, spacing, borderRadius, shadows, borders], () => {
+watch([colors, typography, spacing, borderRadius, borders], () => {
   saveToStorage()
 }, { deep: true })
 
@@ -319,8 +313,7 @@ function getCurrentConfig(): ThemeConfig {
     typography: JSON.parse(JSON.stringify(typography.value)),
     spacing: JSON.parse(JSON.stringify(spacing.value)),
     borderRadius: JSON.parse(JSON.stringify(borderRadius.value)),
-    shadows: JSON.parse(JSON.stringify(shadows.value)),
-    borders: JSON.parse(JSON.stringify(borders.value)),
+    borders: { width: JSON.parse(JSON.stringify(borders.value.width)) },
   }
 }
 
@@ -339,8 +332,17 @@ function applyConfig(config: ThemeConfig) {
   if (config.typography) typography.value = config.typography
   if (config.spacing) spacing.value = config.spacing
   if (config.borderRadius) borderRadius.value = config.borderRadius
-  if (config.shadows) shadows.value = config.shadows
-  if (config.borders) borders.value = config.borders
+  // Migrar shadows.color viejo → colors.shadow nuevo
+  if (config.shadows?.color && !colors.value.shadow) {
+    colors.value.shadow = config.shadows.color
+  }
+  // Migrar borders.color viejo → colors.default/strong/focus nuevos
+  if (config.borders?.color) {
+    if (!colors.value.default) colors.value.default = config.borders.color.default
+    if (!colors.value.strong) colors.value.strong = config.borders.color.strong
+    if (!colors.value.focus) colors.value.focus = config.borders.color.focus
+  }
+  if (config.borders?.width) borders.value.width = config.borders.width
 }
 
 function loadFromStorage() {
@@ -400,6 +402,10 @@ function resetToDefaults() {
     warning: '#f59e0b',
     danger: '#ef4444',
     surface: '#eeeeee',
+    focus: '#1774A4',
+    shadow: 'rgba(0,0,0,0.1)',
+    strong: '#6b7280',
+    default: '#d1d5db',
   }
   typography.value = {
     fontFamily: { sans: 'Inter, system-ui, sans-serif', mono: 'Fira Code, monospace' },
@@ -409,8 +415,7 @@ function resetToDefaults() {
   }
   spacing.value = { '2xs': '2px', xs: '4px', sm: '8px', md: '12px', lg: '16px', xl: '24px', '2xl': '32px', '3xl': '48px', '4xl': '64px', '5xl': '80px' }
   borderRadius.value = { default: '8px', none: '0', sm: '4px', md: '8px', lg: '12px', full: '9999px' }
-  shadows.value = { color: '#000000' }
-  borders.value = { width: { none: '0', thin: '1px', medium: '2px', thick: '4px' }, color: { default: '#d1d5db', strong: '#6b7280', focus: '#1774A4' } }
+  borders.value = { width: { none: '0', thin: '1px', medium: '2px', thick: '4px' } }
 }
 
 // El tema activo pasa a ser el que se está editando (preview global en vivo);
@@ -441,8 +446,16 @@ watch(themeName, (name) => {
   }
 })
 
+// Sync editor when theme changes externally (e.g. ThemeChooser/Dropdown)
+watch(activeTheme, (name) => {
+  if (name !== themeName.value) {
+    themeName.value = name
+    loadThemeIntoTokens(name)
+  }
+})
+
 // Detectar cambios → si es built-in, copiar a custom; si no, registrar custom
-watch([colors, typography, spacing, borderRadius, shadows, borders], () => {
+watch([colors, typography, spacing, borderRadius, borders], () => {
   if (isBuiltIn.value) {
     // Copiar el tema built-in a custom y cambiar a custom
     registerTheme('custom', colors.value)
@@ -563,15 +576,6 @@ onBeforeUnmount(() => {
           </div>
         </Collapse>
 
-        <Collapse label="Shadows" :default-open="false">
-          <div class="tb-colors-list">
-            <div class="tb-color-row">
-              <Label label="color" color="var(--cu-color-neutral)" />
-              <ColorPicker v-model="shadows.color" />
-            </div>
-          </div>
-        </Collapse>
-
         <Collapse label="Borders" :default-open="false">
           <div class="tb-group">
             <h3>Width</h3>
@@ -579,15 +583,6 @@ onBeforeUnmount(() => {
               <div v-for="(value, key) in borders.width" :key="key" class="tb-field">
                 <Label :label="key" color="var(--cu-color-neutral)" />
                 <Input v-model="borders.width[key]" />
-              </div>
-            </div>
-          </div>
-          <div class="tb-group">
-            <h3>Color</h3>
-            <div class="tb-colors-list">
-              <div v-for="(value, key) in borders.color" :key="key" class="tb-color-row">
-                <Label :label="key" color="var(--cu-color-neutral)" />
-                <ColorPicker :model-value="value" @update:model-value="borders.color[key] = $event" />
               </div>
             </div>
           </div>
