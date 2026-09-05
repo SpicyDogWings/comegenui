@@ -996,7 +996,7 @@ onBeforeUnmount(() => {
   flex: 0 0 400px;
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 1rem;
 }
 
 .tb-preview {
