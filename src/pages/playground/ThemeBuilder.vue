@@ -39,7 +39,7 @@ import type { NavItem } from '@/components/lab/collapse/navigation/Navbar.vue'
 import type { OutlineItem } from '@/components/lab/collapse/navigation/Outline.vue'
 import Modal from '@/components/overlay/Modal.vue'
 import { colorsBlock } from '@/plugins/cu-tokens/css'
-import { theme as activeTheme, setTheme, registerTheme } from '@/plugins/cu-tokens'
+import { theme as activeTheme, setTheme, registerTheme, allThemes, builtInNames } from '@/plugins/cu-tokens'
 
 const STORAGE_KEY = 'cu-theme-builder'
 
@@ -67,6 +67,8 @@ const tableColumns = [
 const themeName = ref('light')
 const modalRef = ref<InstanceType<typeof ThemeManagerModal> | null>(null)
 const modalPreviewRef = ref<InstanceType<typeof Modal> | null>(null)
+
+const isBuiltIn = computed(() => builtInNames.value.includes(themeName.value))
 
 const dropdownItems = [
   { label: 'Ver detalle', value: 'detail' },
@@ -123,6 +125,8 @@ const typography = ref({
     lg: '1.125rem',
     xl: '1.25rem',
     '2xl': '1.5rem',
+    '3xl': '1.75rem',
+    '4xl': '2rem',
   },
   fontWeight: {
     normal: '400',
@@ -146,6 +150,8 @@ const spacing = ref({
   xl: '24px',
   '2xl': '32px',
   '3xl': '48px',
+  '4xl': '64px',
+  '5xl': '80px',
 })
 
 const borderRadius = ref({
@@ -226,6 +232,8 @@ function buildSharedVariables(): string {
     --cu-font-size-lg: ${t.fontSize.lg};
     --cu-font-size-xl: ${t.fontSize.xl};
     --cu-font-size-2xl: ${t.fontSize['2xl']};
+    --cu-font-size-3xl: ${t.fontSize['3xl']};
+    --cu-font-size-4xl: ${t.fontSize['4xl']};
     --cu-font-weight-normal: ${t.fontWeight.normal};
     --cu-font-weight-medium: ${t.fontWeight.medium};
     --cu-font-weight-semibold: ${t.fontWeight.semibold};
@@ -243,6 +251,8 @@ function buildSharedVariables(): string {
     --cu-space-xl: ${s.xl};
     --cu-space-2xl: ${s['2xl']};
     --cu-space-3xl: ${s['3xl']};
+    --cu-space-4xl: ${s['4xl']};
+    --cu-space-5xl: ${s['5xl']};
 
     /* Border Radius */
     --cu-radius: ${r.default};
@@ -393,11 +403,11 @@ function resetToDefaults() {
   }
   typography.value = {
     fontFamily: { sans: 'Inter, system-ui, sans-serif', mono: 'Fira Code, monospace' },
-    fontSize: { xs: '0.75rem', sm: '0.875rem', md: '1rem', lg: '1.125rem', xl: '1.25rem', '2xl': '1.5rem' },
+    fontSize: { xs: '0.75rem', sm: '0.875rem', md: '1rem', lg: '1.125rem', xl: '1.25rem', '2xl': '1.5rem', '3xl': '1.75rem', '4xl': '2rem' },
     fontWeight: { normal: '400', medium: '500', semibold: '600', bold: '700' },
     lineHeight: { tight: '1.25', normal: '1.5', relaxed: '1.75' },
   }
-  spacing.value = { '2xs': '2px', xs: '4px', sm: '8px', md: '12px', lg: '16px', xl: '24px', '2xl': '32px', '3xl': '48px' }
+  spacing.value = { '2xs': '2px', xs: '4px', sm: '8px', md: '12px', lg: '16px', xl: '24px', '2xl': '32px', '3xl': '48px', '4xl': '64px', '5xl': '80px' }
   borderRadius.value = { default: '8px', none: '0', sm: '4px', md: '8px', lg: '12px', full: '9999px' }
   shadows.value = { color: '#000000' }
   borders.value = { width: { none: '0', thin: '1px', medium: '2px', thick: '4px' }, color: { default: '#d1d5db', strong: '#6b7280', focus: '#1774A4' } }
@@ -414,7 +424,60 @@ onMounted(() => {
   modalPreviewRef.value?.open()
 })
 
-watch(themeName, (name) => setTheme(name))
+// Cargar los tokens de un tema en el editor
+function loadThemeIntoTokens(name: string) {
+  const themeTokens = allThemes.value[name]
+  if (themeTokens?.colors) {
+    colors.value = { ...colors.value, ...themeTokens.colors }
+  }
+}
+
+watch(themeName, (name) => {
+  if (name !== activeTheme.value) {
+    setTheme(name)
+  }
+  if (builtInNames.value.includes(name)) {
+    loadThemeIntoTokens(name)
+  }
+})
+
+// Detectar cambios → si es built-in, copiar a custom; si no, registrar custom
+watch([colors, typography, spacing, borderRadius, shadows, borders], () => {
+  if (isBuiltIn.value) {
+    // Copiar el tema built-in a custom y cambiar a custom
+    registerTheme('custom', colors.value)
+    themeName.value = 'custom'
+    setTheme('custom')
+    return
+  }
+  const matchingTheme = findMatchingTheme()
+  if (matchingTheme && matchingTheme !== themeName.value) {
+    themeName.value = matchingTheme
+    setTheme(matchingTheme)
+  } else if (!matchingTheme && themeName.value !== 'custom') {
+    registerTheme('custom', colors.value)
+    themeName.value = 'custom'
+    setTheme('custom')
+  }
+}, { deep: true })
+
+// Buscar si los colores actuales coinciden con algún tema registrado
+function findMatchingTheme(): string | null {
+  const currentColors = colors.value
+  for (const [name, tokens] of Object.entries(allThemes.value)) {
+    if (name === 'custom') continue
+    const themeColors = tokens.colors
+    if (themeColors && colorsMatch(currentColors, themeColors)) {
+      return name
+    }
+  }
+  return null
+}
+
+function colorsMatch(a: Record<string, string>, b: Record<string, string>): boolean {
+  const keys = ['primary', 'secondary', 'neutral', 'success', 'warning', 'danger', 'surface']
+  return keys.every(k => a[k] === b[k])
+}
 
 onBeforeUnmount(() => {
   if (styleEl) {
@@ -429,8 +492,7 @@ onBeforeUnmount(() => {
   <PlaygroundLayout title="Theme Builder">
     <div class="tb-layout">
       <aside class="tb-controls">
-        <section class="tb-section">
-          <h2>Colors</h2>
+        <Collapse label="Colors" :default-open="true">
           <div class="tb-colors-list">
             <div v-for="(value, key) in colors" :key="key" class="tb-color-row">
               <Label :label="key === 'neutral' ? 'neutral (texto/títulos)' : key" color="var(--cu-color-neutral)" />
@@ -440,12 +502,9 @@ onBeforeUnmount(() => {
           <p class="tb-hint">
             <strong>neutral</strong> es la tinta: títulos, labels y texto del layout. En temas oscuros debe ser un color claro (se invierte solo al oscurecer el surface).
           </p>
-        </section>
+        </Collapse>
 
-        <hr class="tb-separator" />
-
-        <section class="tb-section">
-          <h2>Typography</h2>
+        <Collapse label="Typography" :default-open="false">
           <div class="tb-group">
             <h3>Font Family</h3>
             <div class="tb-field">
@@ -484,48 +543,36 @@ onBeforeUnmount(() => {
               </div>
             </div>
           </div>
-        </section>
+        </Collapse>
 
-        <hr class="tb-separator" />
-
-        <section class="tb-section">
-          <h2>Spacing</h2>
+        <Collapse label="Spacing" :default-open="false">
           <div class="tb-grid">
             <div v-for="(value, key) in spacing" :key="key" class="tb-field">
               <Label :label="key" color="var(--cu-color-neutral)" />
               <Input v-model="spacing[key]" />
             </div>
           </div>
-        </section>
+        </Collapse>
 
-        <hr class="tb-separator" />
-
-        <section class="tb-section">
-          <h2>Border Radius</h2>
+        <Collapse label="Border Radius" :default-open="false">
           <div class="tb-grid">
             <div v-for="(value, key) in borderRadius" :key="key" class="tb-field">
               <Label :label="key" color="var(--cu-color-neutral)" />
               <Input v-model="borderRadius[key]" />
             </div>
           </div>
-        </section>
+        </Collapse>
 
-        <hr class="tb-separator" />
-
-        <section class="tb-section">
-          <h2>Shadow Color</h2>
+        <Collapse label="Shadows" :default-open="false">
           <div class="tb-colors-list">
             <div class="tb-color-row">
               <Label label="color" color="var(--cu-color-neutral)" />
               <ColorPicker v-model="shadows.color" />
             </div>
           </div>
-        </section>
+        </Collapse>
 
-        <hr class="tb-separator" />
-
-        <section class="tb-section">
-          <h2>Borders</h2>
+        <Collapse label="Borders" :default-open="false">
           <div class="tb-group">
             <h3>Width</h3>
             <div class="tb-grid">
@@ -544,7 +591,7 @@ onBeforeUnmount(() => {
               </div>
             </div>
           </div>
-        </section>
+        </Collapse>
       </aside>
 
       <main class="tb-preview">
@@ -939,6 +986,37 @@ onBeforeUnmount(() => {
   --cu-space-sm: 8px;
   --cu-radius: 8px;
   --cu-border-thin: 1px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--cu-space-xs);
+}
+
+/* Collapse integrado en tb-controls */
+.tb-controls :deep(.cu-collapse) {
+  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);
+  padding-bottom: var(--cu-space-xs);
+}
+.tb-controls :deep(.cu-collapse-trigger) {
+  font-size: var(--cu-font-size-sm);
+  font-weight: var(--cu-font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: var(--cu-space-xs) 0;
+}
+.tb-controls :deep(.cu-collapse-content) {
+  padding-left: 0;
+  gap: var(--cu-space-sm);
+}
+.tb-controls :deep(.cu-collapse-content) h3 {
+  font-size: var(--cu-font-size-xs);
+  font-weight: var(--cu-font-weight-medium);
+  margin: 0 0 0.5rem 0;
+  color: var(--cu-color-neutral);
+  opacity: 0.7;
+}
+
+.tb-separator {
+  display: none;
 }
 .tb-layout {
   display: flex;
@@ -1137,23 +1215,6 @@ onBeforeUnmount(() => {
   gap: 1rem;
 }
 
-.tb-section h2 {
-  font-size: var(--cu-font-size-sm);
-  font-weight: var(--cu-font-weight-semibold);
-  margin: 0 0 0.75rem 0;
-  color: var(--cu-color-neutral);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.tb-section h3 {
-  font-size: var(--cu-font-size-xs);
-  font-weight: var(--cu-font-weight-medium);
-  margin: 0 0 0.5rem 0;
-  color: var(--cu-color-neutral);
-  opacity: 0.7;
-}
-
 .tb-group {
   margin-bottom: 0.75rem;
 }
@@ -1190,9 +1251,4 @@ onBeforeUnmount(() => {
   gap: 0.125rem;
 }
 
-.tb-separator {
-  border: none;
-  border-top: 1px solid var(--cu-border-color);
-  margin: 0.5rem 0;
-}
 </style>

@@ -126,7 +126,7 @@ defineExpose({ open, close })
 .tm-code {
   background: #1a1a2e;
   color: #e0e0e0;
-  padding: 1rem;
+  padding: var(--cu-space-lg);
   border-radius: var(--cu-radius);
   overflow-x: auto;
   font-family: var(--cu-font-mono);

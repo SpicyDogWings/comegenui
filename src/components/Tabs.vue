@@ -24,10 +24,10 @@ const props = defineProps({
     default: "primary",
   },
   variant: {
-    type: String as PropType<'tabs' | 'pills' | 'boxed' | 'soft'>,
+    type: String as PropType<'ghost' | 'solid' | 'boxed' | 'soft'>,
     required: false,
-    default: "tabs",
-    validator: (value: string) => ["tabs", "pills", "boxed", "soft"].includes(value),
+    default: "ghost",
+    validator: (value: string) => ["ghost", "solid", "boxed", "soft"].includes(value),
   },
   size: {
     type: String as PropType<'sm' | 'md' | 'lg'>,
@@ -182,6 +182,22 @@ defineExpose({ getActive, setActive, next, prev });
   color: var(--tabs-color);
 }
 
+/* El icono hereda el color del tab (default/hover/active). Se encadena
+   .cu-tabs-tab para ganar especificidad frente a reglas del huésped tipo
+   `.playground :is(span)` (0,2,1): scoped esto compila a 0,3,0. */
+.cu-tabs-tab .cu-tabs-tab-icon {
+  color: inherit;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* :deep() para alcanzar el svg inyectado via v-html (no lleva data-v scoped) */
+.cu-tabs-tab-icon :deep(svg) {
+  color: inherit;
+  width: 1em;
+  height: 1em;
+}
+
 .cu-tabs-tab:focus-visible {
   outline: var(--cu-border-thin) solid var(--cu-border-color-focus);
   outline-offset: var(--cu-space-2xs);
@@ -208,37 +224,41 @@ defineExpose({ getActive, setActive, next, prev });
   font-size: var(--cu-font-size-md);
 }
 
-/* Variant: tabs (underline) */
-.cu-tabs--tabs .cu-tabs-header {
+/* Variant: ghost (underline) */
+.cu-tabs--ghost .cu-tabs-header {
   border-bottom: var(--cu-border-thin) solid var(--cu-border-color);
 }
 
-.cu-tabs--tabs .cu-tabs-tab {
+.cu-tabs--ghost .cu-tabs-tab {
   border-bottom: var(--cu-border-thin) solid transparent;
   border-radius: var(--cu-radius-sm) var(--cu-radius-sm) 0 0;
   margin-bottom: calc(var(--cu-border-thin) * -1);
 }
 
-.cu-tabs--tabs .cu-tabs-tab--active {
+.cu-tabs--ghost .cu-tabs-tab--active {
   color: var(--tabs-color);
   border-bottom-color: var(--tabs-color);
 }
 
-/* Variant: pills */
-.cu-tabs--pills .cu-tabs-tab {
-  border-radius: var(--cu-radius-full);
+/* Variant: solid */
+.cu-tabs--solid .cu-tabs-header {
+  padding-bottom: var(--cu-space-xs);
 }
 
-.cu-tabs--pills .cu-tabs-tab:hover:not(:disabled) {
+.cu-tabs--solid .cu-tabs-tab {
+  border-radius: calc(var(--cu-radius-md) - var(--cu-space-2xs));
+}
+
+.cu-tabs--solid .cu-tabs-tab:hover:not(:disabled) {
   background-color: var(--tabs-soft-hover);
 }
 
-.cu-tabs--pills .cu-tabs-tab.cu-tabs-tab--active {
+.cu-tabs--solid .cu-tabs-tab.cu-tabs-tab--active {
   background-color: var(--tabs-color);
   color: var(--cu-color-surface);
 }
 
-.cu-tabs--pills .cu-tabs-tab.cu-tabs-tab--active:hover:not(:disabled) {
+.cu-tabs--solid .cu-tabs-tab.cu-tabs-tab--active:hover:not(:disabled) {
   background-color: var(--tabs-color);
   color: var(--cu-color-surface);
 }
@@ -252,7 +272,7 @@ defineExpose({ getActive, setActive, next, prev });
 }
 
 .cu-tabs--boxed .cu-tabs-tab {
-  border-radius: var(--cu-radius-md);
+  border-radius: calc(var(--cu-radius-md) - var(--cu-space-2xs));
 }
 
 .cu-tabs--boxed .cu-tabs-tab:hover:not(:disabled) {
@@ -278,7 +298,7 @@ defineExpose({ getActive, setActive, next, prev });
 }
 
 .cu-tabs--soft .cu-tabs-tab {
-  border-radius: var(--cu-radius-md);
+  border-radius: calc(var(--cu-radius-md) - var(--cu-space-2xs));
 }
 
 .cu-tabs--soft .cu-tabs-tab:hover:not(:disabled) {

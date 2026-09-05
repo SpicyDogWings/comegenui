@@ -31,7 +31,9 @@ export const DEFAULTS = {
       md: '1rem',
       lg: '1.125rem',
       xl: '1.25rem',
-      '2xl': '1.5rem'
+      '2xl': '1.5rem',
+      '3xl': '1.75rem',
+      '4xl': '2rem'
     },
     fontWeight: {
       normal: '400',
@@ -53,7 +55,9 @@ export const DEFAULTS = {
     lg: '16px',
     xl: '24px',
     '2xl': '32px',
-    '3xl': '48px'
+    '3xl': '48px',
+    '4xl': '64px',
+    '5xl': '80px'
   },
   borderRadius: {
     default: '8px',

@@ -50,6 +50,7 @@ const props = defineProps({
 const colorStyles = computed(() => ({
   '--card-bg': `var(--cu-color-${props.color})`,
   '--card-text': `var(--cu-color-${props.color}-text)`,
+  '--card-soft-text': `var(--cu-color-${props.color}-soft-text)`,
   '--card-soft': `var(--cu-color-${props.color}-soft)`,
   '--card-subtle': `var(--cu-color-${props.color}-subtle)`,
   '--card-subtle-border': `var(--cu-color-${props.color}-subtle-border)`,
@@ -123,20 +124,20 @@ const hasFooter = computed(() => slotHasContent('footer'));
 /* soft */
 .cu-card.cu-card--soft {
   background-color: var(--card-soft);
-  color: var(--card-text);
+  color: var(--card-soft-text);
 }
 
 /* subtle */
 .cu-card.cu-card--subtle {
   background-color: var(--card-subtle);
-  color: var(--card-text);
+  color: var(--card-soft-text);
   border-color: var(--card-subtle-border);
 }
 
 /* outlined */
 .cu-card.cu-card--outlined {
   background-color: transparent;
-  color: var(--card-text);
+  color: var(--card-soft-text);
   border-color: var(--card-bg);
 }
 

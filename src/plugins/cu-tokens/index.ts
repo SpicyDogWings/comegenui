@@ -7,6 +7,7 @@ const loaded = ref(false)
 const themes = ref<Record<string, any>>({})
 const shared = ref<any>({})
 const themeNames = ref<string[]>([])
+const builtInNames = ref<string[]>([])
 // Temas registrados en runtime (ej: el import del ThemeBuilder) — persisten
 // en localStorage para sobrevivir recargas.
 const customThemes = ref<Record<string, Record<string, string>>>({})
@@ -51,7 +52,8 @@ async function init() {
         const themeColors = tokens.colors || tokens
         themes.value[name] = { colors: { ...defaultColors, ...themeColors } }
       }
-      themeNames.value = Object.keys(configThemes)
+       themeNames.value = Object.keys(configThemes)
+      builtInNames.value = Object.keys(configThemes)
     } else {
       // Single theme process
       const merged = { ...DEFAULTS, ...config }
@@ -59,22 +61,34 @@ async function init() {
       shared.value = extractShared(merged)
       themes.value['light'] = { colors }
       themeNames.value = ['light']
+      builtInNames.value = ['light']
     }
 
   } catch {
     console.warn('[Comegen] comegen.config.json no encontrado, usando defaults')
     shared.value = extractShared(DEFAULTS)
-    themes.value = {
+          themes.value = {
       light: { colors: { ...DEFAULT_COLORS } },
       dark: { colors: { ...DEFAULT_COLORS, ...DEFAULT_DARK_COLORS } }
     }
     themeNames.value = ['light', 'dark']
+    builtInNames.value = ['light', 'dark']
   } finally {
     restoreCustomThemes()
+    ensureCustomTheme()
     loaded.value = true
     theme.value = detectTheme()
     applyTheme(theme.value)
     regenerateCSS()
+  }
+}
+
+// Asegura que "custom" siempre esté disponible en el theme chooser
+function ensureCustomTheme() {
+  if (!themeNames.value.includes('custom')) {
+    const sourceColors = themes.value[theme.value]?.colors || extractColors(DEFAULTS)
+    themes.value['custom'] = { colors: { ...sourceColors } }
+    themeNames.value = [...themeNames.value, 'custom']
   }
 }
 
@@ -120,4 +134,4 @@ export default {
   }
 }
 
-export { theme, loaded, setTheme, getThemeNames, registerTheme }
+export { theme, loaded, setTheme, getThemeNames, registerTheme, themes as allThemes, builtInNames }
