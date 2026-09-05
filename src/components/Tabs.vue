@@ -4,6 +4,9 @@ import { computed, ref, defineModel, type PropType } from "vue";
 interface TabItem {
   key: string;
   label: string;
+  // Icono del tab como HTML/SVG string (render con v-html), consistente con
+  // label. Si la tab no trae icon, se usa el slot dinámico tab-icon-{key}.
+  icon?: string;
   disabled?: boolean;
   // Mantiene el panel montado aunque no esté activo (v-show, no v-if):
   // el estado de los componentes internos sobrevive al cambio de tab.
@@ -125,7 +128,8 @@ defineExpose({ getActive, setActive, next, prev });
         :tabindex="tab.key === activeKey ? 0 : -1"
         @click="select(tab.key)"
       >
-        <slot :name="`tab-icon-${tab.key}`"></slot>
+        <span v-if="tab.icon" class="cu-tabs-tab-icon" v-html="tab.icon"></span>
+        <slot v-else :name="`tab-icon-${tab.key}`"></slot>
         {{ tab.label }}
       </button>
     </div>

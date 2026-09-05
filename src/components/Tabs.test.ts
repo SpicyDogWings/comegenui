@@ -142,4 +142,24 @@ describe("Tabs — pestañas", () => {
     await w.findAll(".cu-tabs-tab")[0]!.trigger("click");
     expect(w.find("#cu-tabs-panel-b").exists()).toBe(false);
   });
+
+  it("icon: la prop icon se renderiza y tiene precedencia sobre el slot", () => {
+    const w = mount(Tabs, {
+      props: { tabs: [{ key: "a", label: "Tab A", icon: "<b class='icon-prop'>I</b>" }] },
+      slots: { "tab-icon-a": "<i class='icon-slot'>SLOT</i>" },
+    });
+    expect(w.find(".cu-tabs-tab-icon").exists()).toBe(true);
+    expect(w.find(".icon-prop").exists()).toBe(true);
+    expect(w.find(".icon-slot").exists()).toBe(false);
+    expect(w.find(".cu-tabs-tab").text()).toContain("Tab A");
+  });
+
+  it("icon: sin prop, el slot tab-icon-{key} sigue funcionando (fallback)", () => {
+    const w = mount(Tabs, {
+      props: { tabs: [{ key: "a", label: "Tab A" }] },
+      slots: { "tab-icon-a": "<i class='icon-slot'>SLOT</i>" },
+    });
+    expect(w.find(".cu-tabs-tab-icon").exists()).toBe(false);
+    expect(w.find(".icon-slot").exists()).toBe(true);
+  });
 });

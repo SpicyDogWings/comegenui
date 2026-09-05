@@ -14,6 +14,7 @@ const outlineItems = [
   { label: 'Colors', id: 'colors' },
   { label: 'Sizes', id: 'sizes' },
   { label: 'Disabled', id: 'disabled' },
+  { label: 'Keep Alive', id: 'keep-alive' },
   { label: 'Programmatic', id: 'programmatic' },
   {
     label: 'API',
@@ -40,6 +41,23 @@ const sizes = ['sm', 'md', 'lg'] as const;
 const controlled = ref('first');
 const tabsRef = ref<InstanceType<typeof Tabs> | null>(null);
 
+// Iconos como prop (forma primaria; el slot tab-icon-{key} queda como fallback)
+const svgHome = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>';
+const svgSearch = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>';
+const svgSettings = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>';
+
+const iconTabs = [
+  { key: 'home', label: 'Home', icon: svgHome },
+  { key: 'search', label: 'Search', icon: svgSearch },
+  { key: 'settings', label: 'Settings', icon: svgSettings },
+];
+
+// Tabs para la demo de keepAlive (el estado vive en el DOM: input nativo)
+const keepAliveTabs = [
+  { key: 'alive', label: 'Con keepAlive', keepAlive: true },
+  { key: 'normal', label: 'Sin keepAlive' },
+];
+
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
   { key: 'type', label: 'Tipo' },
@@ -57,7 +75,7 @@ const propsData = [
 
 const slotsData = [
   { name: '{key}', description: 'Contenido del panel de la pestaña (slot dinámico por key)' },
-  { name: 'tab-icon-{key}', description: 'Ícono del tab (slot dinámico por key)' },
+  { name: 'tab-icon-{key}', description: 'Ícono del tab (fallback: solo si la tab no trae la prop icon)' },
 ];
 
 const eventsData = [
@@ -75,7 +93,9 @@ const exposesData = [
 const interfaceCode = `interface TabItem {
   key: string
   label: string
+  icon?: string      // HTML/SVG string (render con v-html); si falta, slot tab-icon-{key}
   disabled?: boolean
+  keepAlive?: boolean // panel montado siempre (v-show): el estado sobrevive al cambio de tab
 }`;
 
 // ── Snippets Vue ──
@@ -105,18 +125,16 @@ const variantsVue = vueSnippet(`  <Tabs v-for="variant in ['tabs', 'pills', 'box
 const iconsVue = `<script setup>
 import Tabs from '@/components/Tabs.vue'
 
+// icon: HTML/SVG string — consistente con label (el slot tab-icon-{key} queda como fallback)
 const tabs = [
-  { key: 'home', label: 'Home' },
-  { key: 'search', label: 'Search' },
-  { key: 'settings', label: 'Settings' },
+  { key: 'home', label: 'Home', icon: '<svg ...></svg>' },
+  { key: 'search', label: 'Search', icon: '<svg ...></svg>' },
+  { key: 'settings', label: 'Settings', icon: '<svg ...></svg>' },
 ]
 <\/script>
 
 <template>
   <Tabs variant="tabs" :tabs="tabs">
-    <template #tab-icon-home><svg ...></svg></template>
-    <template #tab-icon-search><svg ...></svg></template>
-    <template #tab-icon-settings><svg ...></svg></template>
     <template #home>Contenido Home</template>
     <template #search>Contenido Search</template>
     <template #settings>Contenido Settings</template>
@@ -227,9 +245,6 @@ ${basicTabsVanilla}
 const iconsVanilla = `${tabsImportVanilla}
 
 <cu-tabs id="tabs-icons" variant="tabs">
-  <span slot="tab-icon-home"><svg ...></svg></span>
-  <span slot="tab-icon-search"><svg ...></svg></span>
-  <span slot="tab-icon-settings"><svg ...></svg></span>
   <div slot="home">Contenido Home</div>
   <div slot="search">Contenido Search</div>
   <div slot="settings">Contenido Settings</div>
@@ -238,9 +253,44 @@ const iconsVanilla = `${tabsImportVanilla}
 <script>
   customElements.whenDefined('cu-tabs').then(() => {
     document.getElementById('tabs-icons').tabs = [
-      { key: 'home', label: 'Home' },
-      { key: 'search', label: 'Search' },
-      { key: 'settings', label: 'Settings' },
+      { key: 'home', label: 'Home', icon: '<svg ...></svg>' },
+      { key: 'search', label: 'Search', icon: '<svg ...></svg>' },
+      { key: 'settings', label: 'Settings', icon: '<svg ...></svg>' },
+    ];
+  });
+<\/script>`;
+
+const keepAliveVue = `<script setup>
+import Tabs from '@/components/Tabs.vue'
+<\/script>
+
+<template>
+  <!-- keepAlive: true → el panel se mantiene montado (v-show) y el estado sobrevive -->
+  <Tabs :tabs="[
+    { key: 'alive', label: 'Con keepAlive', keepAlive: true },
+    { key: 'normal', label: 'Sin keepAlive' },
+  ]">
+    <template #alive>
+      <input type="text" placeholder="Este texto sobrevive al cambio de tab..." />
+    </template>
+    <template #normal>
+      <input type="text" placeholder="Este texto se pierde al cambiar de tab..." />
+    </template>
+  </Tabs>
+</template>`;
+
+const keepAliveVanilla = `${tabsImportVanilla}
+
+<cu-tabs id="tabs-keepalive">
+  <input slot="alive" type="text" placeholder="Este texto sobrevive al cambio de tab..." />
+  <input slot="normal" type="text" placeholder="Este texto se pierde al cambiar de tab..." />
+</cu-tabs>
+
+<script>
+  customElements.whenDefined('cu-tabs').then(() => {
+    document.getElementById('tabs-keepalive').tabs = [
+      { key: 'alive', label: 'Con keepAlive', keepAlive: true },
+      { key: 'normal', label: 'Sin keepAlive' },
     ];
   });
 <\/script>`;
@@ -377,38 +427,12 @@ const programmaticVanilla = `${tabsImportVanilla}
         </div>
         <SectionDemo :vue-code="iconsVue" :vanilla-code="iconsVanilla">
           <div class="playground-variants">
-            <Tabs variant="tabs" :tabs="[
-              { key: 'home', label: 'Home' },
-              { key: 'search', label: 'Search' },
-              { key: 'settings', label: 'Settings' },
-            ]">
-              <template #tab-icon-home>
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-              </template>
-              <template #tab-icon-search>
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-              </template>
-              <template #tab-icon-settings>
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
-              </template>
+            <Tabs variant="tabs" :tabs="iconTabs">
               <template #home>Contenido Home</template>
               <template #search>Contenido Search</template>
               <template #settings>Contenido Settings</template>
             </Tabs>
-            <Tabs variant="pills" :tabs="[
-              { key: 'home', label: 'Home' },
-              { key: 'search', label: 'Search' },
-              { key: 'settings', label: 'Settings' },
-            ]">
-              <template #tab-icon-home>
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-              </template>
-              <template #tab-icon-search>
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-              </template>
-              <template #tab-icon-settings>
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
-              </template>
+            <Tabs variant="pills" :tabs="iconTabs">
               <template #home>Contenido Home</template>
               <template #search>Contenido Search</template>
               <template #settings>Contenido Settings</template>
@@ -475,6 +499,40 @@ const programmaticVanilla = `${tabsImportVanilla}
               <template #general>Contenido General</template>
               <template #locked>Contenido Locked</template>
               <template #admin>Contenido Admin</template>
+            </Tabs>
+          </div>
+        </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="keep-alive" class="playground-section">
+        <div class="playground-heading">
+          <h2>Keep Alive</h2>
+          <Badge color="neutral" title="keepAlive por defecto">false</Badge>
+        </div>
+        <p class="playground-desc">
+          Con <code>keepAlive: true</code> el panel se mantiene montado (<code>v-show</code>, no <code>v-if</code>):
+          el estado que vive en el DOM sobrevive al cambio de tab. Escribí en cada input, cambiá de tab y volvé —
+          el de la tab <em>Con keepAlive</em> conserva lo tipeado, el de <em>Sin keepAlive</em> se pierde.
+        </p>
+        <SectionDemo :vue-code="keepAliveVue" :vanilla-code="keepAliveVanilla">
+          <div class="playground-col">
+            <Tabs :tabs="keepAliveTabs">
+              <template #alive>
+                <input
+                  type="text"
+                  placeholder="Este texto sobrevive al cambio de tab..."
+                  style="padding: var(--cu-space-sm); border-radius: var(--cu-radius-sm); border: var(--cu-border-thin) solid var(--cu-border-color); font-family: var(--cu-font-sans); width: 320px; max-width: 100%;"
+                />
+              </template>
+              <template #normal>
+                <input
+                  type="text"
+                  placeholder="Este texto se pierde al cambiar de tab..."
+                  style="padding: var(--cu-space-sm); border-radius: var(--cu-radius-sm); border: var(--cu-border-thin) solid var(--cu-border-color); font-family: var(--cu-font-sans); width: 320px; max-width: 100%;"
+                />
+              </template>
             </Tabs>
           </div>
         </SectionDemo>

@@ -7,7 +7,7 @@ initTokens();
 
 const props = defineProps({
   tabs: {
-    type: Array as PropType<{ key: string; label: string; disabled?: boolean }[]>,
+    type: Array as PropType<{ key: string; label: string; icon?: string; disabled?: boolean; keepAlive?: boolean }[]>,
     default: () => [],
   },
   modelValue: { type: String, default: "" },
