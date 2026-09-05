@@ -175,15 +175,15 @@ const outlineItems = [
 ```
 
 **Reglas:**
-1. **Badge de default** junto a cada `h2` (`.playground-heading`): el valor default de lo que demuestra la sección.
-2. **`SectionDemo`**: SIEMPRE las 3 tabs en orden **Preview, Vue, Vanilla**. En snippets escapar `</script>` como `<\/script>` (si no, rompe el SFC).
+1. **Badge de default** junto a cada `h2` (`.playground-heading`): el valor default de lo que demuestra la sección (leerlo del source del componente, no de la tabla de la API).
+2. **`SectionDemo`**: TODA sección de demo lleva su `SectionDemo` — la **API es la única sección sin tabs** (una sección puede llevar más de un `SectionDemo`, ej: Navbar `modes`). Tabs en orden **Preview, Vue, Vanilla** (la tab Vanilla solo si el componente está en lib → 2 tabs si no; ver regla 3). En snippets escapar `</script>` como `<\/script>` (si no, rompe el SFC).
 3. **Qué muestra cada tab:**
 
 | Tab | Contenido |
 |---|---|
 | Preview | Demo en vivo (slot default) |
 | Vue | Uso como **componente Vue**: `import Button from '@/components/buttons/Button.vue'` + `<Button ...>` — el mismo import que usa el playground. **NUNCA** markup de custom element acá |
-| Vanilla | Uso como **custom element**: `<script src="dist/CuButton.umd.js">` + `<cu-button ...>` — **solo si el componente está en lib** (entry en `src/lib/`); los internos no tienen tab Vanilla |
+| Vanilla | Uso como **custom element**: `<script src="dist/CuButton.umd.js">` + `<cu-button ...>` — **solo si el componente está en lib** (entry en `src/lib/`); los internos no tienen tab Vanilla. Props array/objeto (items, events, options) por JS tras `customElements.whenDefined('cu-x')`; eventos se escuchan con el nombre del emit tal cual (`addEventListener('update:currentPage', e => e.detail)`) |
 
 4. **API en una sección** con `h3` chicos (Props/Slots/Events/Exposes/Interfaces) y `Table variant="ghost" compact`. Nada de filas fake con "—": usar el `empty` de la Table (`empty="No tiene slots"`). Los `h3` con ids (`api-*`) van como `children` del outline (el `Outline` soporta sub-menús).
 5. **Interfaces**: si un prop tiene estructura (items, options, columns, events), la API lleva la subsección `Interfaces` con `CodeBlock :code="interfaceCode" language="ts" variant="solid"` mostrando la interfaz **real** del componente (leerla del source, **no inventar**). El demo que la usa linkea con `Button variant="link" to="#api-interfaces"` ("Ver interfaz X ↓") en vez de enumerar campos en texto. Si los props son primitivos, no hay subsección Interfaces.
@@ -206,7 +206,17 @@ const outlineItems = [
 | Tooltips nativos (`title`) | No cuentan como feedback visible de una prop; si debe "verse", renderizar texto real. |
 | Swap animado de textos | Un solo `<Transition mode="out-in">` con `:key`; dos Transitions independientes popean al resetear. |
 | FABs y componentes `position: fixed` en preview | En la demo: `style="position: static"` por instancia; en el snippet vanilla/vue, incluirlo también. |
-| Páginas legacy sin tabs (Calendar, DropdownMenu, Tabs, Table, sliders) | Sus secciones viejas NO usan `SectionDemo`. Al tocarlas, migrar la sección a `SectionDemo` (con Vanilla solo si el componente está en lib) — no dejar secciones híbridas. |
+| Páginas legacy sin tabs (hoy: AdvancedTable, Blockquote, CodeBlock, Collapse, Dropdown, EditableRow, Markdown, Modal, Table, Tabs; parcial: Loader `colors`) | Sus secciones viejas NO usan `SectionDemo`. Al tocarlas, migrar la sección a `SectionDemo` (con Vanilla solo si el componente está en lib) — no dejar secciones híbridas. La lista se re-deriva con el comando de auditoría de abajo. |
+
+**Auditoría rápida del playground** — `SectionDemo` envueltos vs secciones demo (todas menos la API):
+
+```bash
+cd src/pages/playground/components && for f in *.vue; do
+  echo "$(grep -c '<SectionDemo' "$f")/$(($(grep -c '<section' "$f") - $(grep -c 'id="api"' "$f"))) $f"
+done
+```
+
+Interpretación: `N/N` o `N>M` = completa (N>M = sección con varios demos, ej: Navbar); `0/N` = legacy; `0<N<M` = parcial.
 
 ### Registrar el playground (router + nav)
 
