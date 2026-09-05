@@ -112,13 +112,25 @@ const colors = ref({
   danger: '#ef4444',
   surface: '#eeeeee',
   focus: '#1774A4',
-  shadow: '#000000',
   strong: '#6b7280',
   default: '#d1d5db',
 })
 
+const shadowHex = ref('#000000')
+
 const opacities = ref({
   shadow: 10,
+})
+
+const shadowOpacityRaw = ref('10')
+
+watch(shadowOpacityRaw, (val) => {
+  const num = parseInt(val, 10)
+  opacities.value.shadow = isNaN(num) ? 10 : num
+})
+
+watch(() => opacities.value.shadow, (val) => {
+  shadowOpacityRaw.value = String(val)
 })
 
 
@@ -225,7 +237,7 @@ function buildSharedVariables(): string {
   const b = borders.value
 
   const shadowOpacity = opacities.value.shadow ?? 10
-  const shadowColor = hexToRgba(colors.value.shadow || '#000000', shadowOpacity)
+  const shadowColor = hexToRgba(shadowHex.value || '#000000', shadowOpacity)
 
   return `/* Typography */
     --cu-font-sans: ${t.fontFamily.sans};
@@ -284,7 +296,7 @@ function buildSharedVariables(): string {
    (neutral) del surface cuando no contrasta — única fuente de verdad */
 const cssColors = computed(() => colorsBlock(colors.value))
 const cssShared = computed(() => buildSharedVariables())
-const shadowPreview = computed(() => hexToRgba(colors.value.shadow || '#000000', opacities.value.shadow ?? 10))
+const shadowPreview = computed(() => hexToRgba(shadowHex.value || '#000000', opacities.value.shadow ?? 10))
 
 // La page entera toma el tema editado: los colores van bajo el selector del
 // tema activo (pisa al :root del plugin por especificidad) y los tokens
@@ -310,13 +322,13 @@ function saveToStorage() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(getCurrentConfig()))
 }
 
-watch([colors, opacities, typography, spacing, borderRadius, borders], () => {
+watch([colors, shadowHex, opacities, typography, spacing, borderRadius, borders], () => {
   saveToStorage()
 }, { deep: true })
 
 function getCurrentConfig(): ThemeConfig {
   return {
-    themes: { [themeName.value]: { ...colors.value } },
+    themes: { [themeName.value]: { ...colors.value, shadow: shadowHex.value } },
     opacities: JSON.parse(JSON.stringify(opacities.value)),
     typography: JSON.parse(JSON.stringify(typography.value)),
     spacing: JSON.parse(JSON.stringify(spacing.value)),
@@ -333,7 +345,9 @@ function applyConfig(config: ThemeConfig) {
       themeName.value = firstTheme
       const themeColors = config.themes[firstTheme]
       if (themeColors) {
-        colors.value = { ...colors.value, ...themeColors }
+        const { shadow, ...rest } = themeColors
+        colors.value = { ...colors.value, ...rest }
+        if (shadow) shadowHex.value = shadow
       }
     }
   }
@@ -341,8 +355,8 @@ function applyConfig(config: ThemeConfig) {
   if (config.spacing) spacing.value = config.spacing
   if (config.borderRadius) borderRadius.value = config.borderRadius
   // Migrar shadows.color viejo → colors.shadow nuevo
-  if (config.shadows?.color && !colors.value.shadow) {
-    colors.value.shadow = config.shadows.color
+  if (config.shadows?.color && !shadowHex.value) {
+    shadowHex.value = config.shadows.color
   }
   // Migrar opacidades
   if (config.opacities) {
@@ -415,10 +429,10 @@ function resetToDefaults() {
     danger: '#ef4444',
     surface: '#eeeeee',
     focus: '#1774A4',
-    shadow: '#000000',
     strong: '#6b7280',
     default: '#d1d5db',
   }
+  shadowHex.value = '#000000'
   opacities.value = {
     shadow: 10,
   }
@@ -448,7 +462,9 @@ onMounted(() => {
 function loadThemeIntoTokens(name: string) {
   const themeTokens = allThemes.value[name]
   if (themeTokens?.colors) {
-    colors.value = { ...colors.value, ...themeTokens.colors }
+    const { shadow, ...rest } = themeTokens.colors
+    colors.value = { ...colors.value, ...rest }
+    if (shadow) shadowHex.value = shadow
     if (themeTokens.colors.shadowOpacity !== undefined) {
       opacities.value.shadow = themeTokens.colors.shadowOpacity
     }
@@ -473,7 +489,7 @@ watch(activeTheme, (name) => {
 })
 
 // Detectar cambios → si es built-in, copiar a custom; si no, registrar custom
-watch([colors, opacities, typography, spacing, borderRadius, borders], () => {
+watch([colors, shadowHex, opacities, typography, spacing, borderRadius, borders], () => {
   if (isBuiltIn.value) {
     // Copiar el tema built-in a custom y cambiar a custom
     registerTheme('custom', colors.value)
@@ -610,11 +626,11 @@ onBeforeUnmount(() => {
           <div class="tb-colors-list">
             <div class="tb-field">
               <Label label="shadow" color="var(--cu-color-neutral)" />
-              <Input v-model.number="opacities.shadow" />
+              <Input v-model="shadowOpacityRaw" />
             </div>
           </div>
           <p class="tb-hint">
-            <code>shadow</code>: {{ colors.shadow }} con opacidad {{ opacities.shadow }}% → <code>{{ shadowPreview }}</code>
+            <code>shadow</code>: {{ shadowHex.value }} con opacidad {{ opacities.shadow }}% → <code>{{ shadowPreview }}</code>
           </p>
         </Collapse>
       </aside>
