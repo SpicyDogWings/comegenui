@@ -341,7 +341,8 @@ function applyConfig(config: ThemeConfig) {
       themeName.value = firstTheme
       const themeColors = config.themes[firstTheme]
       if (themeColors) {
-        colors.value = { ...colors.value, ...themeColors }
+        const { shadowOpacity, ...rest } = themeColors
+        colors.value = { ...colors.value, ...rest }
       }
     }
   }
@@ -462,7 +463,8 @@ onMounted(() => {
 function loadThemeIntoTokens(name: string) {
   const themeTokens = allThemes.value[name]
   if (themeTokens?.colors) {
-    colors.value = { ...colors.value, ...themeTokens.colors }
+    const { shadowOpacity, ...rest } = themeTokens.colors
+    colors.value = { ...colors.value, ...rest }
     shadowOpacityRaw.value = String(getThemeOpacity(name))
   }
 }
