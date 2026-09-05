@@ -12,6 +12,15 @@
     "dark": {
       "neutral": "#e5e5e5",
       "surface": "#1c1c1c"
+    },
+    "nord": {
+      "primary": "#88C0D0",
+      "secondary": "#81A1C1",
+      "neutral": "#ECEFF4",
+      "success": "#A3BE8C",
+      "warning": "#EBCB8B",
+      "danger": "#BF616A",
+      "surface": "#2E3440"
     }
   },
   "typography": {
@@ -74,6 +83,13 @@
       "default": "#d1d5db",
       "strong": "#6b7280",
       "focus": "#1774A4"
+    }
+  },
+  "_meta": {
+    "nord": {
+      "repo": "https://github.com/nordtheme/nord",
+      "website": "https://www.nordtheme.com/",
+      "description": "An arctic, north-bluish color palette by Arctic Ice Studio"
     }
   }
 }
