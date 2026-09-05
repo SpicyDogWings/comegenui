@@ -1000,8 +1000,6 @@ onBeforeUnmount(() => {
   font-size: var(--cu-font-size-sm);
   font-weight: var(--cu-font-weight-semibold);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: var(--cu-space-xs) 0;
 }
 .tb-controls :deep(.cu-collapse-content) {
   padding-left: 0;
