@@ -43,7 +43,7 @@ export function resolveInk(surface: string, neutral?: string): string {
   return surfaceDark ? toHex(mix(surface, '#ffffff', 0.88)) : toHex(mix(surface, '#000000', 0.88))
 }
 
-export function hexToRgba(hex: string, opacity: number): string {
+function hexToRgba(hex: string, opacity: number): string {
   const h = hex.replace('#', '')
   const r = parseInt(h.slice(0, 2), 16)
   const g = parseInt(h.slice(2, 4), 16)

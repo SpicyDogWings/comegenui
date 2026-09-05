@@ -1,6 +1,6 @@
 import { ref, type App } from 'vue'
 import { DEFAULTS, DEFAULT_COLORS, DEFAULT_DARK_COLORS, DEFAULT_OPACITIES, extractColors, extractShared } from './defaults'
-import { generateThemesCSS, generateThemeCSS, inject, hexToRgba } from './css'
+import { generateThemesCSS, generateThemeCSS, inject } from './css'
 
 const theme = ref('light')
 const loaded = ref(false)
@@ -137,16 +137,40 @@ function getShared(): any {
   return shared.value
 }
 
-// Resuelve la opacidad de sombra para un tema (per-theme o default).
-function getOpacity(name: string): number {
-  return opacities.value[name]?.shadow ?? opacities.value.default?.shadow ?? 10
-}
-
 // Genera el CSS completo de un tema (colores + shared) en formato [data-theme].
 function getThemeCSS(name: string): string {
   const t = themes.value[name]
   if (!t) return ''
   return generateThemeCSS(name, t, shared.value, opacities.value)
+}
+
+// Aplica un config completo (themes + opacidades + shared) de una sola vez.
+// Agnóstico: no sabe de dónde viene el config, solo lo refleja en el estado
+// interno y regenera CSS una única vez.
+function applyFullConfig(config: {
+  themes?: Record<string, Record<string, string>>
+  opacities?: Record<string, { shadow: number }>
+  shared?: any
+}): void {
+  if (config.themes) {
+    const defaultColors = extractColors(DEFAULTS)
+    for (const [name, colors] of Object.entries(config.themes)) {
+      themes.value[name] = { colors: { ...defaultColors, ...colors } }
+      if (!themeNames.value.includes(name)) {
+        themeNames.value = [...themeNames.value, name]
+      }
+    }
+  }
+
+  if (config.opacities) {
+    opacities.value = { ...opacities.value, ...config.opacities }
+  }
+
+  if (config.shared) {
+    shared.value = { ...shared.value, ...config.shared }
+  }
+
+  regenerateCSS()
 }
 
 function restoreCustomThemes() {
@@ -168,4 +192,4 @@ export default {
   }
 }
 
-export { theme, loaded, setTheme, getThemeNames, registerTheme, setShared, getShared, getOpacity, getThemeCSS, themes as allThemes, builtInNames, opacities, hexToRgba }
+export { theme, loaded, setTheme, getThemeNames, registerTheme, setShared, getShared, getThemeCSS, applyFullConfig, themes as allThemes, builtInNames, opacities }

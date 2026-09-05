@@ -40,9 +40,22 @@ import type { NavItem } from '@/components/lab/collapse/navigation/Navbar.vue'
 import type { OutlineItem } from '@/components/lab/collapse/navigation/Outline.vue'
 import Modal from '@/components/overlay/Modal.vue'
 import {
-  theme as activeTheme, setTheme, registerTheme, allThemes, builtInNames,
-  getShared, setShared, getOpacity, getThemeCSS, hexToRgba,
+  theme as activeTheme, setTheme, registerTheme, allThemes, builtInNames, opacities,
+  setShared, getThemeCSS, applyFullConfig,
 } from '@/plugins/cu-tokens'
+
+// Preview local para el hint de Opacities (UI de la app, no generación de CSS).
+function hexToRgba(hex: string, alpha: number): string {
+  const h = hex.replace('#', '')
+  const r = parseInt(h.slice(0, 2), 16)
+  const g = parseInt(h.slice(2, 4), 16)
+  const b = parseInt(h.slice(4, 6), 16)
+  return `rgba(${r}, ${g}, ${b}, ${alpha / 100})`
+}
+
+function resolveOpacity(name: string): number {
+  return opacities.value[name]?.shadow ?? opacities.value.default?.shadow ?? 10
+}
 
 const STORAGE_KEY = 'cu-theme-builder'
 
@@ -233,36 +246,40 @@ function getCurrentConfig(): ThemeConfig {
 }
 
 function applyConfig(config: ThemeConfig) {
-  if (config.themes) {
-    const themeNames = Object.keys(config.themes)
-    if (themeNames.length > 0) {
-      const firstTheme = themeNames[0] as string
-      themeName.value = firstTheme
-      const themeColors = config.themes[firstTheme]
-      if (themeColors) {
-        const { shadowOpacity, ...rest } = themeColors
-        colors.value = { ...colors.value, ...rest }
-      }
+  if (!config.themes) return
+
+  const themeNames = Object.keys(config.themes)
+  if (themeNames.length > 0) {
+    themeName.value = themeNames[0]
+    const themeColors = config.themes[themeName.value]
+    if (themeColors) {
+      const { shadowOpacity, ...rest } = themeColors
+      colors.value = { ...colors.value, ...rest }
     }
   }
-  if (config.typography) typography.value = config.typography
-  if (config.spacing) spacing.value = config.spacing
-  if (config.borderRadius) borderRadius.value = config.borderRadius
-  if (config.shadows?.color && !colors.value.shadow) {
-    colors.value.shadow = config.shadows.color
-  }
+
   if (config.opacities) {
     const themeOp = config.opacities[themeName.value]?.shadow ?? config.opacities.default?.shadow
     if (themeOp !== undefined) shadowOpacityRaw.value = String(themeOp)
   }
+
   if (config.borders?.color) {
     if (!colors.value.default) colors.value.default = config.borders.color.default
     if (!colors.value.strong) colors.value.strong = config.borders.color.strong
     if (!colors.value.focus) colors.value.focus = config.borders.color.focus
   }
-  if (config.borders?.width) borders.value.width = config.borders.width
-  // Empujar los shared tokens al plugin para que el preview refleje el config cargado
-  setShared(sharedSnapshot())
+
+  // Aplica todo de una vez: temas, opacidades y shared tokens.
+  // El plugin regenera CSS una sola vez.
+  applyFullConfig({
+    themes: config.themes,
+    opacities: config.opacities,
+    shared: sharedSnapshot(),
+  })
+
+  if (config.shadows?.color && !colors.value.shadow) {
+    colors.value.shadow = config.shadows.color
+  }
 }
 
 function loadFromStorage() {
@@ -280,14 +297,16 @@ function loadFromStorage() {
 }
 
 function handleImport(config: any) {
-  applyConfig(config as ThemeConfig)
+  const cfg = config as ThemeConfig
+  applyConfig(cfg)
   saveToStorage()
-  // El tema importado se registra como "custom": aparece en el theme chooser,
-  // sus estilos quedan aplicados y no se restauran al salir del builder.
-  const importedColors = Object.values((config as ThemeConfig)?.themes ?? {})[0]
+
+  // El import se aplica como "custom" para que sea editable y persistente.
+  const importedColors = Object.values(cfg?.themes ?? {})[0]
   if (importedColors) {
-    registerTheme('custom', importedColors, {
-      opacity: config.opacities?.[Object.keys(config.themes)[0]]?.shadow ?? config.opacities?.default?.shadow ?? 10,
+    applyFullConfig({
+      themes: { custom: importedColors },
+      opacities: cfg?.opacities?.custom ? { custom: cfg.opacities.custom } : undefined,
       shared: sharedSnapshot(),
     })
     themeName.value = 'custom'
@@ -357,7 +376,7 @@ onMounted(() => {
   previousTheme.value = activeTheme.value
   setTheme(themeName.value)
   modalPreviewRef.value?.open()
-  shadowOpacityRaw.value = String(getOpacity(themeName.value))
+  shadowOpacityRaw.value = String(resolveOpacity(themeName.value))
 })
 
 // Cargar los tokens de un tema en el editor
@@ -366,7 +385,7 @@ function loadThemeIntoTokens(name: string) {
   if (themeTokens?.colors) {
     const { shadowOpacity, ...rest } = themeTokens.colors
     colors.value = { ...colors.value, ...rest }
-    shadowOpacityRaw.value = String(getOpacity(name))
+    shadowOpacityRaw.value = String(resolveOpacity(name))
   }
 }
 
