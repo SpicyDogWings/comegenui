@@ -207,7 +207,7 @@ const outlineItems = [
 | Tooltips nativos (`title`) | No cuentan como feedback visible de una prop; si debe "verse", renderizar texto real. |
 | Swap animado de textos | Un solo `<Transition mode="out-in">` con `:key`; dos Transitions independientes popean al resetear. |
 | FABs y componentes `position: fixed` en preview | En la demo: `style="position: static"` por instancia; en el snippet vanilla/vue, incluirlo también. |
-| Páginas legacy sin tabs (hoy: AdvancedTable, Blockquote, CodeBlock, Collapse, Dropdown, EditableRow, Markdown, Modal, Table, Tabs; parcial: Loader `colors`) | Sus secciones viejas NO usan `SectionDemo`. Al tocarlas, migrar la sección a `SectionDemo` (con Vanilla solo si el componente está en lib) — no dejar secciones híbridas. La lista se re-deriva con el comando de auditoría de abajo. |
+| Páginas legacy sin tabs (hoy: AdvancedTable, Collapse, Dropdown, EditableRow, Modal, Table, Tabs; parcial: Loader `colors`) | Sus secciones viejas NO usan `SectionDemo`. Al tocarlas, migrar la sección a `SectionDemo` (con Vanilla solo si el componente está en lib) — no dejar secciones híbridas. La lista se re-deriva con el comando de auditoría de abajo. |
 | Verificación superficial de migración | `grep -c SectionDemo` cuenta líneas (import + apertura + cierre), no secciones envueltas: un "3" puede ser un solo uso. Para verificar de verdad usar el comando de auditoría (SectionDemo envueltos vs secciones demo) — NUNCA declarar "migrado" sin que el conteo cumpla. |
 
 **Auditoría rápida del playground** — `SectionDemo` envueltos vs secciones demo (todas menos la API):
