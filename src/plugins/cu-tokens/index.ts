@@ -32,7 +32,7 @@ function regenerateCSS() {
 
 async function init() {
   try {
-    const res = await fetch('/comegen.config.json')
+    const res = await fetch('/comegen.config.json', { cache: 'no-store' })
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
     const config = await res.json()
 
