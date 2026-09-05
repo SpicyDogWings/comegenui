@@ -12,6 +12,42 @@
     "dark": {
       "neutral": "#e5e5e5",
       "surface": "#1c1c1c"
+    },
+    "nord-frost": {
+      "primary": "#88C0D0",
+      "secondary": "#81A1C1",
+      "neutral": "#ECEFF4",
+      "success": "#A3BE8C",
+      "warning": "#EBCB8B",
+      "danger": "#BF616A",
+      "surface": "#2E3440"
+    },
+    "nord-aurora": {
+      "primary": "#BF616A",
+      "secondary": "#D08770",
+      "neutral": "#ECEFF4",
+      "success": "#A3BE8C",
+      "warning": "#EBCB8B",
+      "danger": "#BF616A",
+      "surface": "#2E3440"
+    },
+    "nord-snow-storm": {
+      "primary": "#5E81AC",
+      "secondary": "#81A1C1",
+      "neutral": "#4C566A",
+      "success": "#A3BE8C",
+      "warning": "#EBCB8B",
+      "danger": "#BF616A",
+      "surface": "#ECEFF4"
+    },
+    "nord-polar-night": {
+      "primary": "#88C0D0",
+      "secondary": "#4C566A",
+      "neutral": "#D8DEE9",
+      "success": "#A3BE8C",
+      "warning": "#EBCB8B",
+      "danger": "#BF616A",
+      "surface": "#2E3440"
     }
   },
   "typography": {

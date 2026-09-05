@@ -2,14 +2,22 @@
 import { computed, ref } from "vue";
 import Dropdown from "@/components/overlay/Dropdown.vue";
 import Button from "@/components/buttons/Button.vue";
+import Input from "@/components/form/Input.vue";
 import LucideChevronDown from "@/components/icons/LucideChevronDown.vue";
 import LucideCheck from "@/components/icons/LucideCheck.vue";
 import { theme, loaded, setTheme, getThemeNames, allThemes } from "@/plugins/cu-tokens";
 
 const dropdownRef = ref<InstanceType<typeof Dropdown> | null>(null);
+const searchQuery = ref("");
 
 const themeNames = computed(() => (loaded.value ? getThemeNames() : []));
 const current = computed(() => theme.value);
+
+const filteredThemes = computed(() => {
+  if (!searchQuery.value) return themeNames.value;
+  const q = searchQuery.value.toLowerCase();
+  return themeNames.value.filter((name) => name.toLowerCase().includes(q));
+});
 
 function label(value: string) {
   return value
@@ -24,6 +32,7 @@ function getThemeColor(name: string): string {
 
 function select(name: string) {
   setTheme(name);
+  searchQuery.value = "";
   dropdownRef.value?.close();
 }
 </script>
@@ -35,7 +44,7 @@ function select(name: string) {
     variant="ghost"
     position="bottom"
     align="end"
-    panel-width="180px"
+    panel-width="200px"
   >
     <template #toggle="{ toggle, isOpen }">
       <Button variant="ghost" color="neutral" @click="toggle" aria-label="Seleccionar tema">
@@ -46,8 +55,16 @@ function select(name: string) {
       </Button>
     </template>
 
+    <div class="theme-dropdown-search">
+      <Input
+        v-model="searchQuery"
+        placeholder="Buscar tema..."
+        size="sm"
+      />
+    </div>
+
     <button
-      v-for="name in themeNames"
+      v-for="name in filteredThemes"
       :key="name"
       type="button"
       role="menuitem"
@@ -56,7 +73,16 @@ function select(name: string) {
       @click="select(name)"
     >
       <span class="theme-dropdown-item-label">
-        <span class="theme-dropdown-dot" :style="{ backgroundColor: getThemeColor(name) }"></span>
+        <svg
+          class="theme-dropdown-dot"
+          xmlns="http://www.w3.org/2000/svg"
+          width="12"
+          height="12"
+          viewBox="0 0 32 32"
+          :style="{ color: getThemeColor(name) }"
+        >
+          <path fill="currentColor" d="M16 0C7.161 0 0 7.161 0 16s7.161 16 16 16s16-7.161 16-16S24.839 0 16 0"/>
+        </svg>
         {{ label(name) }}
       </span>
       <LucideCheck v-if="current === name" class="theme-dropdown-check" />
@@ -67,6 +93,12 @@ function select(name: string) {
 <style scoped>
 .theme-dropdown-label {
   font-size: var(--cu-font-size-sm);
+}
+
+.theme-dropdown-search {
+  padding: var(--cu-space-sm);
+  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);
+  margin-bottom: var(--cu-space-xs);
 }
 
 .theme-dropdown-chevron {
@@ -109,11 +141,7 @@ function select(name: string) {
 }
 
 .theme-dropdown-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
   flex-shrink: 0;
-  border: 1px solid rgba(0,0,0,0.1);
 }
 
 .theme-dropdown-check {
