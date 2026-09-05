@@ -103,7 +103,8 @@ export default CuMiComponente
 
 ```bash
 pnpm run build-only && pnpm exec vitest run && pnpm run build:lib
-git add -A && git commit -m "feat: agregar componente MiComponente"
+git status --short   # revisar: stagear solo los archivos de la tarea, nunca git add -A a ciegas
+git add src/components src/lib && git commit -m "feat: agregar componente MiComponente"
 ```
 
 Reglas transversales: `defineExpose` **siempre arrow functions** (`isOpen: () => ...`); slots con sintaxis Vue `#nombre`.
@@ -115,7 +116,7 @@ Reglas transversales: `defineExpose` **siempre arrow functions** (`isOpen: () =>
 1. Identificar: `src/components/{category}/MiComponente.vue`.
 2. Si cambia la interfaz (props/emits), actualizar también el `.ce.vue`.
 3. Validar: `pnpm run build-only && pnpm exec vitest run` (+ `pnpm run build:lib` si es público).
-4. Commit: `git add -A && git commit -m "fix: descripción del cambio"`.
+4. Commit: `git status --short` para stagear solo lo de la tarea (nunca `git add -A` a ciegas) → `git commit -m "fix: descripción del cambio"`.
 
 ---
 
