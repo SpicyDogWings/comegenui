@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
+import Badge from "@/components/information/Badge.vue";
 import Table from "@/components/data/Table.vue";
 import Button from "@/components/buttons/Button.vue";
 import Loader from "@/components/information/Loader.vue";
@@ -66,6 +67,7 @@ const loadingVanilla = `<link rel="stylesheet" href="css/themes.css">
 const cooldownVue = `<script setup>
 import { ref } from 'vue'
 import Loader from '@/components/information/Loader.vue'
+import Button from '@/components/buttons/Button.vue'
 
 const key = ref(0)
 <\/script>
@@ -74,8 +76,31 @@ const key = ref(0)
   <div class="demo-box">
     <Loader :key="key" animation="cooldown" :delay="2000" />
   </div>
-  <button @click="key++">Reiniciar</button>
+  <Button color="neutral" variant="soft" @click="key++">Reiniciar</Button>
 </template>`;
+
+const colorsVue = `<script setup>
+import Loader from '@/components/information/Loader.vue'
+<\/script>
+
+<template>
+  <Loader color="primary" animation="loading" />
+  <Loader color="secondary" animation="loading" />
+  <Loader color="neutral" animation="loading" />
+  <Loader color="success" animation="loading" />
+  <Loader color="warning" animation="loading" />
+  <Loader color="danger" animation="loading" />
+</template>`;
+
+const colorsVanilla = `<link rel="stylesheet" href="css/themes.css">
+<script src="CuLoader.umd.js"><\/script>
+
+<cu-loader color="primary" animation="loading"></cu-loader>
+<cu-loader color="secondary" animation="loading"></cu-loader>
+<cu-loader color="neutral" animation="loading"></cu-loader>
+<cu-loader color="success" animation="loading"></cu-loader>
+<cu-loader color="warning" animation="loading"></cu-loader>
+<cu-loader color="danger" animation="loading"></cu-loader>`;
 
 const progAnimation = ref('loading');
 const progKey = ref(0);
@@ -90,9 +115,9 @@ const key = ref(0)
 <\/script>
 
 <template>
-  <Button @click="animation = 'loading'">loading()</Button>
-  <Button @click="animation = 'cooldown'">cooldown()</Button>
-  <Button @click="key++">restart()</Button>
+  <Button color="neutral" @click="animation = 'loading'">loading()</Button>
+  <Button color="neutral" @click="animation = 'cooldown'">cooldown()</Button>
+  <Button color="neutral" @click="key++">restart()</Button>
   <div class="demo-box">
     <Loader :key="key" :animation="animation" :delay="2000" />
   </div>
@@ -103,7 +128,10 @@ const key = ref(0)
   <PlaygroundLayout title="Loader" :outlineItems="outlineItems">
     <div class="playground-content">
       <section id="loading" class="playground-section">
-        <h2>Loading</h2>
+        <div class="playground-heading">
+          <h2>Loading</h2>
+          <Badge color="neutral" title="animation por defecto">loading</Badge>
+        </div>
         <p class="playground-desc">Barra de carga infinita (slide de izquierda a derecha). Usada en tablas, dropdowns, etc.</p>
         <SectionDemo :vue-code="loadingVue" :vanilla-code="loadingVanilla">
           <div class="playground-demo-box">
@@ -115,7 +143,10 @@ const key = ref(0)
       <hr class="playground-separator" />
 
       <section id="cooldown" class="playground-section">
-        <h2>Cooldown</h2>
+        <div class="playground-heading">
+          <h2>Cooldown</h2>
+          <Badge color="neutral" title="delay por defecto (ms)">2000</Badge>
+        </div>
         <p class="playground-desc">Barra que se vacía en el tiempo configurable (<code>delay</code> ms). Se reinicia con cada tecla (estilo select nativo).</p>
         <SectionDemo :vue-code="cooldownVue">
           <div class="playground-col">
@@ -134,21 +165,28 @@ const key = ref(0)
       <hr class="playground-separator" />
 
       <section id="colors" class="playground-section">
-        <h2>Colors</h2>
-        <div class="playground-grid">
-          <div v-for="color in ['primary', 'secondary', 'neutral', 'success', 'warning', 'danger']" :key="color">
-            <span class="playground-label">{{ color }}</span>
-            <div class="playground-demo-box">
-              <Loader :color="color" animation="loading" />
+        <div class="playground-heading">
+          <h2>Colors</h2>
+          <Badge color="neutral" title="Color por defecto">primary</Badge>
+        </div>
+        <SectionDemo :vue-code="colorsVue" :vanilla-code="colorsVanilla">
+          <div class="playground-grid">
+            <div v-for="color in ['primary', 'secondary', 'neutral', 'success', 'warning', 'danger']" :key="color">
+              <span class="playground-label">{{ color }}</span>
+              <div class="playground-demo-box">
+                <Loader :color="color" animation="loading" />
+              </div>
             </div>
           </div>
-        </div>
+        </SectionDemo>
       </section>
 
       <hr class="playground-separator" />
 
       <section id="programmatic" class="playground-section">
-        <h2>Programmatic</h2>
+        <div class="playground-heading">
+          <h2>Programmatic</h2>
+        </div>
         <p class="playground-desc">
           Seguidilla de botones sobre la instancia de abajo — la animación cambia en vivo. No expone métodos: se maneja por props (el <code>:key</code> reinicia el cooldown).
         </p>
@@ -191,7 +229,7 @@ const key = ref(0)
   </PlaygroundLayout>
 </template>
 
-<style>
+<style scoped>
 .playground-demo-box {
   position: relative;
   height: 3px;
