@@ -5,6 +5,9 @@ interface TabItem {
   key: string;
   label: string;
   disabled?: boolean;
+  // Mantiene el panel montado aunque no esté activo (v-show, no v-if):
+  // el estado de los componentes internos sobrevive al cambio de tab.
+  keepAlive?: boolean;
 }
 
 const props = defineProps({
@@ -127,15 +130,20 @@ defineExpose({ getActive, setActive, next, prev });
       </button>
     </div>
 
-    <div
-      v-if="activeKey"
-      :id="`cu-tabs-panel-${activeKey}`"
-      class="cu-tabs-panel"
-      role="tabpanel"
-      :aria-labelledby="`cu-tabs-tab-${activeKey}`"
-    >
-      <slot :name="activeKey"></slot>
-    </div>
+    <!-- Panels: los keepAlive se montan siempre y se ocultan con v-show (estado
+         persistente); los normales se montan solo cuando están activos (v-if). -->
+    <template v-for="tab in props.tabs" :key="tab.key">
+      <div
+        v-if="tab.keepAlive || tab.key === activeKey"
+        v-show="tab.key === activeKey"
+        :id="`cu-tabs-panel-${tab.key}`"
+        class="cu-tabs-panel"
+        role="tabpanel"
+        :aria-labelledby="`cu-tabs-tab-${tab.key}`"
+      >
+        <slot :name="tab.key"></slot>
+      </div>
+    </template>
   </div>
 </template>
 

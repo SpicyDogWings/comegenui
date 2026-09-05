@@ -6,6 +6,7 @@ import CodeBlock from "@/components/markdown/CodeBlock.vue";
 interface TabItem {
   key: string;
   label: string;
+  keepAlive?: boolean;
 }
 
 const props = defineProps<{
@@ -16,9 +17,11 @@ const props = defineProps<{
 }>();
 
 const tabs = computed<TabItem[]>(() => {
-  const items: TabItem[] = [{ key: "preview", label: "Preview" }];
-  if (props.vueCode) items.push({ key: "vue", label: "Vue" });
-  if (props.vanillaCode) items.push({ key: "vanilla", label: "Vanilla" });
+  // keepAlive en las 3: el componente en vivo del Preview no pierde estado
+  // al mirar el código Vue/Vanilla y volver.
+  const items: TabItem[] = [{ key: "preview", label: "Preview", keepAlive: true }];
+  if (props.vueCode) items.push({ key: "vue", label: "Vue", keepAlive: true });
+  if (props.vanillaCode) items.push({ key: "vanilla", label: "Vanilla", keepAlive: true });
   return items;
 });
 </script>
