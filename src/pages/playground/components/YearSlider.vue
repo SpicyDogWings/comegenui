@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
+import Badge from "@/components/information/Badge.vue";
 import Table from "@/components/data/Table.vue";
 import YearSlider from "@/components/controls/YearSlider.vue";
 import Button from "@/components/buttons/Button.vue";
@@ -35,6 +36,35 @@ const outlineItems = [
   },
 ];
 
+// ── Snippets Vue ──
+
+const vueImport = `<script setup>
+import YearSlider from '@/components/controls/YearSlider.vue'
+<\/script>`;
+
+const vueSnippet = (body: string) => `${vueImport}
+
+<template>
+${body}
+</template>`;
+
+const defaultVue = vueSnippet(`  <YearSlider />`);
+
+const minMaxVue = vueSnippet(`  <YearSlider :min="2020" :max="2030" />
+  <YearSlider :min="2024" :max="2028" variant="outlined" />
+  <YearSlider min="2020-01-01" max="2030-01-01" variant="soft" />`);
+
+const variantsVue = vueSnippet(`  <YearSlider v-for="variant in ['solid', 'outlined', 'soft', 'ghost', 'subtle']" :key="variant" :variant="variant" />`);
+
+const colorsVue = vueSnippet(`  <YearSlider color="primary" />
+  <YearSlider color="secondary" />
+  <YearSlider color="neutral" />
+  <YearSlider color="success" />
+  <YearSlider color="warning" />
+  <YearSlider color="danger" />`);
+
+const disabledVue = vueSnippet(`  <YearSlider disabled />`);
+
 const programmaticVue = `<script setup>
 import { ref } from 'vue'
 import YearSlider from '@/components/controls/YearSlider.vue'
@@ -46,13 +76,17 @@ const value = ref(null)
 function readValue() {
   value.value = programmaticRef.value?.getValue() ?? null
 }
-\/script>
+<\/script>
 
 <template>
-  <Button color="neutral" @click="programmaticRef.nextYear(); readValue()">nextYear()</Button>
-  <Button color="neutral" @click="programmaticRef.prevYear(); readValue()">prevYear()</Button>
-  <Button color="neutral" @click="programmaticRef.goToYear(2035); readValue()">goToYear(2035)</Button>
-  <YearSlider ref="programmaticRef" @change="readValue" />
+  <div style="display:flex;flex-direction:column;gap:12px">
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <Button color="neutral" @click="programmaticRef?.nextYear(); readValue()">nextYear()</Button>
+      <Button color="neutral" @click="programmaticRef?.prevYear(); readValue()">prevYear()</Button>
+      <Button color="neutral" @click="programmaticRef?.goToYear(2035); readValue()">goToYear(2035)</Button>
+    </div>
+    <YearSlider ref="programmaticRef" @change="readValue" />
+  </div>
 </template>`;
 
 const apiColumns = [
@@ -89,68 +123,85 @@ const exposesData = [
 
 <template>
   <PlaygroundLayout title="YearSlider" :outlineItems="outlineItems">
-    <div class="playground-year-slider">
+    <div class="playground-content">
 
-      <!-- Default -->
-      <section id="default" class="playground-year-slider-section">
-        <h2>Default</h2>
-        <p class="playground-year-slider-desc">
+      <section id="default" class="playground-section">
+        <div class="playground-heading">
+          <h2>Default</h2>
+        </div>
+        <p class="playground-desc">
           Muestra el año actual y navega de 1 en 1 con <code>&lt;</code> / <code>&gt;</code> o arrastrando el label (swipe: izquierda = año siguiente).
         </p>
-        <div class="playground-year-slider-col">
-          <YearSlider />
-        </div>
+        <SectionDemo :vue-code="defaultVue">
+          <div class="playground-col">
+            <YearSlider />
+          </div>
+        </SectionDemo>
       </section>
 
       <hr class="playground-separator" />
 
-      <!-- Min / Max -->
-      <section id="min-max" class="playground-year-slider-section">
-        <h2>Límites</h2>
-        <p class="playground-year-slider-desc">
-          Con <code>min</code> y <code>max</code> la navegación queda limitada: los botones se deshabilitan en el borde y el drag "choca" contra la pared (podés arrastrar el label).
-          Acepta años (<code>2020</code>) o fechas estilo MonthSlider (<code>"2020-01-01"</code>).
-        </p>
-        <div class="playground-year-slider-col">
-          <YearSlider :min="2020" :max="2030" />
-          <YearSlider :min="2024" :max="2028" variant="outlined" />
-          <YearSlider min="2020-01-01" max="2030-01-01" variant="soft" />
+      <section id="min-max" class="playground-section">
+        <div class="playground-heading">
+          <h2>Límites</h2>
         </div>
+        <SectionDemo :vue-code="minMaxVue">
+          <div class="playground-col">
+            <p class="playground-desc">
+              Con <code>min</code> y <code>max</code> la navegación queda limitada: los botones se deshabilitan en el borde y el drag "choca" contra la pared (podés arrastrar el label).
+              Acepta años (<code>2020</code>) o fechas estilo MonthSlider (<code>"2020-01-01"</code>).
+            </p>
+            <YearSlider :min="2020" :max="2030" />
+            <YearSlider :min="2024" :max="2028" variant="outlined" />
+            <YearSlider min="2020-01-01" max="2030-01-01" variant="soft" />
+          </div>
+        </SectionDemo>
       </section>
 
       <hr class="playground-separator" />
 
-      <!-- Variantes -->
-      <section id="variants" class="playground-year-slider-section">
-        <h2>Variantes</h2>
-        <div class="playground-year-slider-col">
-          <YearSlider v-for="variant in variants" :key="variant" :variant="variant" />
+      <section id="variants" class="playground-section">
+        <div class="playground-heading">
+          <h2>Variantes</h2>
+          <Badge color="neutral" title="Variante por defecto">soft</Badge>
         </div>
+        <SectionDemo :vue-code="variantsVue">
+          <div class="playground-col">
+            <YearSlider v-for="variant in variants" :key="variant" :variant="variant" />
+          </div>
+        </SectionDemo>
       </section>
 
       <hr class="playground-separator" />
 
-      <!-- Colores -->
-      <section id="colors" class="playground-year-slider-section">
-        <h2>Colores</h2>
-        <div class="playground-year-slider-col">
-          <YearSlider v-for="color in colors" :key="color" :color="color" />
+      <section id="colors" class="playground-section">
+        <div class="playground-heading">
+          <h2>Colores</h2>
+          <Badge color="neutral" title="Color por defecto">primary</Badge>
         </div>
+        <SectionDemo :vue-code="colorsVue">
+          <div class="playground-col">
+            <YearSlider v-for="color in colors" :key="color" :color="color" />
+          </div>
+        </SectionDemo>
       </section>
 
       <hr class="playground-separator" />
 
-      <!-- Disabled -->
-      <section id="disabled" class="playground-year-slider-section">
-        <h2>Disabled</h2>
-        <div class="playground-year-slider-col">
-          <YearSlider :disabled="true" />
+      <section id="disabled" class="playground-section">
+        <div class="playground-heading">
+          <h2>Disabled</h2>
+          <Badge color="neutral" title="Valor por defecto">false</Badge>
         </div>
+        <SectionDemo :vue-code="disabledVue">
+          <div class="playground-col">
+            <YearSlider :disabled="true" />
+          </div>
+        </SectionDemo>
       </section>
 
       <hr class="playground-separator" />
 
-      <!-- Programático -->
       <section id="programmatic" class="playground-section">
         <div class="playground-heading">
           <h2>Programmatic</h2>
@@ -193,46 +244,13 @@ const exposesData = [
 </template>
 
 <style scoped>
-.playground-year-slider {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  width: 100%;
-}
-
-.playground-year-slider h2 {
-  font-size: var(--cu-font-size-lg);
-  font-weight: var(--cu-font-weight-semibold);
-  margin: 0;
-  color: var(--cu-color-neutral);
-}
-
-.playground-year-slider-desc {
+.playground-desc {
   margin: 0;
   font-size: var(--cu-font-size-sm);
   color: var(--cu-color-neutral);
 }
 
-.playground-year-slider-section {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.playground-year-slider-col {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  align-items: flex-start;
-}
-
-.playground-year-slider-row {
-  display: flex;
-  gap: var(--cu-space-sm);
-  flex-wrap: wrap;
-}
-
-.playground-year-slider-state {
+.playground-state {
   font-family: var(--cu-font-mono);
   font-size: var(--cu-font-size-sm);
   margin: 0;

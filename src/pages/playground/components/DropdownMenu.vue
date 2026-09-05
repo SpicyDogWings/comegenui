@@ -4,6 +4,7 @@ import Button from "@/components/buttons/Button.vue";
 import CodeBlock from "@/components/markdown/CodeBlock.vue";
 import Table from "@/components/data/Table.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
+import Badge from "@/components/information/Badge.vue";
 import DropdownMenu from "@/components/controls/DropdownMenu.vue";
 import { ref } from "vue";
 
@@ -56,6 +57,90 @@ const disabledItems = [
   { label: "Disabled", disabled: true, onClick: () => {} },
   { label: "Also Enabled", onClick: () => console.log("also enabled") },
 ];
+
+// ── Snippets Vue ──
+
+const vueImport = `<script setup>
+import DropdownMenu from '@/components/controls/DropdownMenu.vue'
+
+const items = [
+  { label: 'Edit' },
+  { label: 'Duplicate' },
+  { label: 'Archive' },
+]
+<\/script>`;
+
+const vueSnippet = (body: string) => `${vueImport}
+
+<template>
+${body}
+</template>`;
+
+const variantsVue = vueSnippet(`  <DropdownMenu variant="solid" label="Solid" :items="items" />
+  <DropdownMenu variant="soft" label="Soft" :items="items" />
+  <DropdownMenu variant="ghost" label="Ghost" :items="items" />
+  <DropdownMenu variant="outlined" label="Outlined" :items="items" />
+  <DropdownMenu variant="subtle" label="Subtle" :items="items" />`);
+
+const colorsVue = vueSnippet(`  <DropdownMenu color="primary" label="Primary" :items="items" />
+  <DropdownMenu color="secondary" label="Secondary" :items="items" />
+  <DropdownMenu color="neutral" label="Neutral" :items="items" />
+  <DropdownMenu color="success" label="Success" :items="items" />
+  <DropdownMenu color="warning" label="Warning" :items="items" />
+  <DropdownMenu color="danger" label="Danger" :items="items" />`);
+
+const positionsVue = vueSnippet(`  <DropdownMenu label="Bottom" position="bottom" :items="items" />
+  <DropdownMenu label="Top" position="top" :items="items" />
+  <DropdownMenu label="Left" position="left" :items="items" />
+  <DropdownMenu label="Right" position="right" :items="items" />`);
+
+const alignsVue = vueSnippet(`  <DropdownMenu label="Start" align="start" :items="items" />
+  <DropdownMenu label="Center" align="center" :items="items" />
+  <DropdownMenu label="End" align="end" :items="items" />`);
+
+const iconsVue = `<script setup>
+import DropdownMenu from '@/components/controls/DropdownMenu.vue'
+
+const items = [
+  { label: 'Copy', icon: '<svg ...></svg>' },
+  { label: 'Download', icon: '<svg ...></svg>' },
+  { label: 'Delete', icon: '<svg ...></svg>', color: 'danger' },
+]
+<\/script>
+
+<template>
+  <DropdownMenu label="File Actions" :items="items" />
+</template>`;
+
+const dividersVue = `<script setup>
+import DropdownMenu from '@/components/controls/DropdownMenu.vue'
+
+const items = [
+  { label: 'Cut' },
+  { label: 'Copy' },
+  { divider: true },
+  { label: 'Paste' },
+]
+<\/script>
+
+<template>
+  <DropdownMenu label="Edit Menu" :items="items" />
+</template>`;
+
+const disabledItemsVue = `<script setup>
+import DropdownMenu from '@/components/controls/DropdownMenu.vue'
+
+const items = [
+  { label: 'Enabled' },
+  { label: 'Disabled', disabled: true },
+  { label: 'Also Enabled' },
+]
+<\/script>
+
+<template>
+  <DropdownMenu label="Mixed" :items="items" />
+</template>`;
+
 const programmaticVue = `<script setup>
 import { ref } from 'vue'
 import DropdownMenu from '@/components/controls/DropdownMenu.vue'
@@ -67,14 +152,163 @@ const isOpen = ref(false)
 function logState() {
   console.log('isOpen():', menuRef.value.isOpen())
 }
-\/script>
+<\/script>
 
 <template>
-  <Button color="neutral" @click="menuRef.open(); isOpen = true">open()</Button>
-  <Button color="neutral" @click="menuRef.close(); isOpen = false">close()</Button>
-  <Button color="neutral" @click="menuRef.toggle(); logState()">toggle()</Button>
-  <DropdownMenu ref="menuRef" label="Menú programático" :items="basicItems" @open="isOpen = true" @close="isOpen = false" />
+  <div style="display:flex;flex-direction:column;gap:12px">
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <Button color="neutral" @click="menuRef?.open(); isOpen = true">open()</Button>
+      <Button color="neutral" @click="menuRef?.close(); isOpen = false">close()</Button>
+      <Button color="neutral" @click="menuRef?.toggle(); logState()">toggle()</Button>
+    </div>
+    <DropdownMenu ref="menuRef" label="Menú programático" :items="items" @open="isOpen = true" @close="isOpen = false" />
+  </div>
 </template>`;
+
+// ── Snippets Vanilla ──
+
+const dropdownImportVanilla = `<script src="dist/CuDropdown-menu.umd.js"><\/script>`;
+
+const itemsAssignVanilla = `    menu.items = [
+      { label: 'Edit' },
+      { label: 'Duplicate' },
+      { label: 'Archive' },
+    ];`;
+
+const variantsVanilla = `${dropdownImportVanilla}
+
+<cu-dropdown-menu id="menu-solid" label="Solid"></cu-dropdown-menu>
+<cu-dropdown-menu id="menu-soft" label="Soft"></cu-dropdown-menu>
+<cu-dropdown-menu id="menu-ghost" label="Ghost"></cu-dropdown-menu>
+<cu-dropdown-menu id="menu-outlined" label="Outlined"></cu-dropdown-menu>
+<cu-dropdown-menu id="menu-subtle" label="Subtle"></cu-dropdown-menu>
+
+<script>
+  customElements.whenDefined('cu-dropdown-menu').then(() => {
+    ['menu-solid', 'menu-soft', 'menu-ghost', 'menu-outlined', 'menu-subtle'].forEach((id) => {
+      const menu = document.getElementById(id);
+      ${itemsAssignVanilla}
+    });
+  });
+<\/script>`;
+
+const colorsVanilla = `${dropdownImportVanilla}
+
+<cu-dropdown-menu id="menu-primary" color="primary" label="Primary"></cu-dropdown-menu>
+<cu-dropdown-menu id="menu-secondary" color="secondary" label="Secondary"></cu-dropdown-menu>
+<cu-dropdown-menu id="menu-neutral" color="neutral" label="Neutral"></cu-dropdown-menu>
+<cu-dropdown-menu id="menu-success" color="success" label="Success"></cu-dropdown-menu>
+<cu-dropdown-menu id="menu-warning" color="warning" label="Warning"></cu-dropdown-menu>
+<cu-dropdown-menu id="menu-danger" color="danger" label="Danger"></cu-dropdown-menu>
+
+<script>
+  customElements.whenDefined('cu-dropdown-menu').then(() => {
+    ['menu-primary', 'menu-secondary', 'menu-neutral', 'menu-success', 'menu-warning', 'menu-danger'].forEach((id) => {
+      const menu = document.getElementById(id);
+      ${itemsAssignVanilla}
+    });
+  });
+<\/script>`;
+
+const positionsVanilla = `${dropdownImportVanilla}
+
+<cu-dropdown-menu id="menu-bottom" label="Bottom"></cu-dropdown-menu>
+<cu-dropdown-menu id="menu-top" label="Top" position="top"></cu-dropdown-menu>
+<cu-dropdown-menu id="menu-left" label="Left" position="left"></cu-dropdown-menu>
+<cu-dropdown-menu id="menu-right" label="Right" position="right"></cu-dropdown-menu>
+
+<script>
+  customElements.whenDefined('cu-dropdown-menu').then(() => {
+    ['menu-bottom', 'menu-top', 'menu-left', 'menu-right'].forEach((id) => {
+      const menu = document.getElementById(id);
+      ${itemsAssignVanilla}
+    });
+  });
+<\/script>`;
+
+const alignsVanilla = `${dropdownImportVanilla}
+
+<cu-dropdown-menu id="menu-start" label="Start"></cu-dropdown-menu>
+<cu-dropdown-menu id="menu-center" label="Center" align="center"></cu-dropdown-menu>
+<cu-dropdown-menu id="menu-end" label="End" align="end"></cu-dropdown-menu>
+
+<script>
+  customElements.whenDefined('cu-dropdown-menu').then(() => {
+    ['menu-start', 'menu-center', 'menu-end'].forEach((id) => {
+      const menu = document.getElementById(id);
+      ${itemsAssignVanilla}
+    });
+  });
+<\/script>`;
+
+const iconsVanilla = `${dropdownImportVanilla}
+
+<cu-dropdown-menu id="menu-icons" label="File Actions"></cu-dropdown-menu>
+
+<script>
+  customElements.whenDefined('cu-dropdown-menu').then(() => {
+    document.getElementById('menu-icons').items = [
+      { label: 'Copy', icon: '<svg ...></svg>' },
+      { label: 'Download', icon: '<svg ...></svg>' },
+      { label: 'Delete', icon: '<svg ...></svg>', color: 'danger' },
+    ];
+  });
+<\/script>`;
+
+const dividersVanilla = `${dropdownImportVanilla}
+
+<cu-dropdown-menu id="menu-dividers" label="Edit Menu"></cu-dropdown-menu>
+
+<script>
+  customElements.whenDefined('cu-dropdown-menu').then(() => {
+    document.getElementById('menu-dividers').items = [
+      { label: 'Cut' },
+      { label: 'Copy' },
+      { divider: true },
+      { label: 'Paste' },
+    ];
+  });
+<\/script>`;
+
+const disabledItemsVanilla = `${dropdownImportVanilla}
+
+<cu-dropdown-menu id="menu-disabled" label="Mixed"></cu-dropdown-menu>
+
+<script>
+  customElements.whenDefined('cu-dropdown-menu').then(() => {
+    document.getElementById('menu-disabled').items = [
+      { label: 'Enabled' },
+      { label: 'Disabled', disabled: true },
+      { label: 'Also Enabled' },
+    ];
+  });
+<\/script>`;
+
+const programmaticVanilla = `${dropdownImportVanilla}
+<script src="dist/CuButton.umd.js"><\/script>
+
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+  <cu-button id="menu-prog-open">open()</cu-button>
+  <cu-button id="menu-prog-close">close()</cu-button>
+  <cu-button id="menu-prog-toggle">toggle()</cu-button>
+</div>
+
+<cu-dropdown-menu id="menu-prog" label="Menú programático"></cu-dropdown-menu>
+
+<script>
+  customElements.whenDefined('cu-dropdown-menu').then(() => {
+    const menu = document.getElementById('menu-prog');
+    ${itemsAssignVanilla}
+    document.getElementById('menu-prog-open').addEventListener('click', () => menu.open());
+    document.getElementById('menu-prog-close').addEventListener('click', () => menu.close());
+    document.getElementById('menu-prog-toggle').addEventListener('click', () => {
+      menu.toggle();
+      console.log('isOpen():', menu.isOpen());
+    });
+    menu.addEventListener('open', () => console.log('open'));
+    menu.addEventListener('close', () => console.log('close'));
+  });
+<\/script>`;
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -127,73 +361,111 @@ const interfaceCode = `interface DropdownItem {
   <PlaygroundLayout title="DropdownMenu" :outlineItems="outlineItems">
     <div class="playground-content">
       <section id="variants" class="playground-section">
-        <h2>Variants</h2>
-        <Button variant="link" to="#api-interfaces">Ver interfaz DropdownItem ↓</Button>
-        <div class="playground-row">
-          <DropdownMenu variant="solid" label="Solid" :items="basicItems" />
-          <DropdownMenu variant="soft" label="Soft" :items="basicItems" />
-          <DropdownMenu variant="ghost" label="Ghost" :items="basicItems" />
-          <DropdownMenu variant="outlined" label="Outlined" :items="basicItems" />
-          <DropdownMenu variant="subtle" label="Subtle" :items="basicItems" />
+        <div class="playground-heading">
+          <h2>Variants</h2>
+          <Badge color="neutral" title="Variante por defecto">ghost</Badge>
         </div>
+        <Button variant="link" to="#api-interfaces">Ver interfaz DropdownItem ↓</Button>
+        <SectionDemo :vue-code="variantsVue" :vanilla-code="variantsVanilla">
+          <div class="playground-row">
+            <DropdownMenu variant="solid" label="Solid" :items="basicItems" />
+            <DropdownMenu variant="soft" label="Soft" :items="basicItems" />
+            <DropdownMenu variant="ghost" label="Ghost" :items="basicItems" />
+            <DropdownMenu variant="outlined" label="Outlined" :items="basicItems" />
+            <DropdownMenu variant="subtle" label="Subtle" :items="basicItems" />
+          </div>
+        </SectionDemo>
       </section>
 
       <hr class="playground-separator" />
 
       <section id="colors" class="playground-section">
-        <h2>Colors</h2>
-        <div class="playground-row">
-          <DropdownMenu color="primary" label="Primary" :items="basicItems" />
-          <DropdownMenu color="secondary" label="Secondary" :items="basicItems" />
-          <DropdownMenu color="neutral" label="Neutral" :items="basicItems" />
-          <DropdownMenu color="success" label="Success" :items="basicItems" />
-          <DropdownMenu color="warning" label="Warning" :items="basicItems" />
-          <DropdownMenu color="danger" label="Danger" :items="basicItems" />
+        <div class="playground-heading">
+          <h2>Colors</h2>
+          <Badge color="neutral" title="Color por defecto">neutral</Badge>
         </div>
+        <SectionDemo :vue-code="colorsVue" :vanilla-code="colorsVanilla">
+          <div class="playground-row">
+            <DropdownMenu color="primary" label="Primary" :items="basicItems" />
+            <DropdownMenu color="secondary" label="Secondary" :items="basicItems" />
+            <DropdownMenu color="neutral" label="Neutral" :items="basicItems" />
+            <DropdownMenu color="success" label="Success" :items="basicItems" />
+            <DropdownMenu color="warning" label="Warning" :items="basicItems" />
+            <DropdownMenu color="danger" label="Danger" :items="basicItems" />
+          </div>
+        </SectionDemo>
       </section>
 
       <hr class="playground-separator" />
 
       <section id="positions" class="playground-section">
-        <h2>Positions</h2>
-        <div class="playground-row">
-          <DropdownMenu label="Bottom" position="bottom" :items="basicItems" />
-          <DropdownMenu label="Top" position="top" :items="basicItems" />
-          <DropdownMenu label="Left" position="left" :items="basicItems" />
-          <DropdownMenu label="Right" position="right" :items="basicItems" />
+        <div class="playground-heading">
+          <h2>Positions</h2>
+          <Badge color="neutral" title="Posición por defecto">bottom</Badge>
         </div>
+        <SectionDemo :vue-code="positionsVue" :vanilla-code="positionsVanilla">
+          <div class="playground-row">
+            <DropdownMenu label="Bottom" position="bottom" :items="basicItems" />
+            <DropdownMenu label="Top" position="top" :items="basicItems" />
+            <DropdownMenu label="Left" position="left" :items="basicItems" />
+            <DropdownMenu label="Right" position="right" :items="basicItems" />
+          </div>
+        </SectionDemo>
       </section>
 
       <hr class="playground-separator" />
 
       <section id="aligns" class="playground-section">
-        <h2>Aligns</h2>
-        <div class="playground-row">
-          <DropdownMenu label="Start" align="start" :items="basicItems" />
-          <DropdownMenu label="Center" align="center" :items="basicItems" />
-          <DropdownMenu label="End" align="end" :items="basicItems" />
+        <div class="playground-heading">
+          <h2>Aligns</h2>
+          <Badge color="neutral" title="Alineación por defecto">start</Badge>
         </div>
+        <SectionDemo :vue-code="alignsVue" :vanilla-code="alignsVanilla">
+          <div class="playground-row">
+            <DropdownMenu label="Start" align="start" :items="basicItems" />
+            <DropdownMenu label="Center" align="center" :items="basicItems" />
+            <DropdownMenu label="End" align="end" :items="basicItems" />
+          </div>
+        </SectionDemo>
       </section>
 
       <hr class="playground-separator" />
 
       <section id="icons" class="playground-section">
-        <h2>With Icons</h2>
-        <DropdownMenu label="File Actions" :items="iconItems" />
+        <div class="playground-heading">
+          <h2>With Icons</h2>
+        </div>
+        <SectionDemo :vue-code="iconsVue" :vanilla-code="iconsVanilla">
+          <div class="playground-row">
+            <DropdownMenu label="File Actions" :items="iconItems" />
+          </div>
+        </SectionDemo>
       </section>
 
       <hr class="playground-separator" />
 
       <section id="dividers" class="playground-section">
-        <h2>With Dividers</h2>
-        <DropdownMenu label="Edit Menu" :items="dividerItems" />
+        <div class="playground-heading">
+          <h2>With Dividers</h2>
+        </div>
+        <SectionDemo :vue-code="dividersVue" :vanilla-code="dividersVanilla">
+          <div class="playground-row">
+            <DropdownMenu label="Edit Menu" :items="dividerItems" />
+          </div>
+        </SectionDemo>
       </section>
 
       <hr class="playground-separator" />
 
       <section id="disabled" class="playground-section">
-        <h2>Disabled Items</h2>
-        <DropdownMenu label="Mixed" :items="disabledItems" />
+        <div class="playground-heading">
+          <h2>Disabled Items</h2>
+        </div>
+        <SectionDemo :vue-code="disabledItemsVue" :vanilla-code="disabledItemsVanilla">
+          <div class="playground-row">
+            <DropdownMenu label="Mixed" :items="disabledItems" />
+          </div>
+        </SectionDemo>
       </section>
 
       <hr class="playground-separator" />
@@ -205,7 +477,7 @@ const interfaceCode = `interface DropdownItem {
         <p class="playground-desc">
           Seguidilla de botones sobre la instancia de abajo — el panel abre acá al lado.
         </p>
-        <SectionDemo :vue-code="programmaticVue">
+        <SectionDemo :vue-code="programmaticVue" :vanilla-code="programmaticVanilla">
           <div class="playground-col">
             <div class="playground-row">
               <Button color="neutral" @click="menuRef?.open(); progIsOpen = true">open()</Button>
@@ -241,3 +513,17 @@ const interfaceCode = `interface DropdownItem {
     </div>
   </PlaygroundLayout>
 </template>
+
+<style scoped>
+.playground-desc {
+  margin: 0;
+  font-size: var(--cu-font-size-sm);
+  color: var(--cu-color-neutral);
+}
+
+.playground-state {
+  font-family: var(--cu-font-mono);
+  font-size: var(--cu-font-size-sm);
+  margin: 0;
+}
+</style>
