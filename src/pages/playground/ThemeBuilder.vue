@@ -74,7 +74,7 @@ const isBuiltIn = computed(() => builtInNames.value.includes(themeName.value))
 
 function enableEditing() {
   isEditing.value = true
-  registerTheme('custom', { ...colors.value, shadow: shadowHex.value })
+  registerTheme('custom', { ...colors.value, shadow: shadowHex.value, shadowOpacity: opacities.value.shadow })
   themeName.value = 'custom'
   setTheme('custom')
 }
@@ -484,9 +484,12 @@ watch(pluginOpacities, (val) => {
 function loadThemeIntoTokens(name: string) {
   const themeTokens = allThemes.value[name]
   if (themeTokens?.colors) {
-    const { shadow, ...rest } = themeTokens.colors
+    const { shadow, shadowOpacity, ...rest } = themeTokens.colors
     colors.value = { ...colors.value, ...rest }
     if (shadow) shadowHex.value = shadow
+    if (shadowOpacity !== undefined) {
+      opacities.value.shadow = shadowOpacity
+    }
   }
 }
 
@@ -511,7 +514,7 @@ watch(activeTheme, (name) => {
 // Detectar cambios → solo cuando está editando (isEditing)
 watch([colors, shadowHex, opacities, typography, spacing, borderRadius, borders], () => {
   if (!isEditing.value) return
-  registerTheme('custom', { ...colors.value, shadow: shadowHex.value })
+  registerTheme('custom', { ...colors.value, shadow: shadowHex.value, shadowOpacity: opacities.value.shadow })
   pluginOpacities.value = { ...opacities.value }
   if (themeName.value !== 'custom') {
     themeName.value = 'custom'

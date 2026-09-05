@@ -11,7 +11,8 @@
       "focus": "#1774A4",
       "shadow": "#000000",
       "strong": "#6b7280",
-      "default": "#d1d5db"
+      "default": "#d1d5db",
+      "shadowOpacity": 10
     },
     "dark": {
       "neutral": "#e5e5e5",
@@ -19,7 +20,8 @@
       "focus": "#60a5fa",
       "shadow": "#000000",
       "strong": "#9ca3af",
-      "default": "#4b5563"
+      "default": "#4b5563",
+      "shadowOpacity": 40
     },
     "nord-frost": {
       "primary": "#88C0D0",
@@ -32,7 +34,8 @@
       "focus": "#5E81AC",
       "shadow": "#2e3440",
       "strong": "#4C566A",
-      "default": "#3B4252"
+      "default": "#3B4252",
+      "shadowOpacity": 40
     },
     "nord-aurora": {
       "primary": "#BF616A",
@@ -45,7 +48,8 @@
       "focus": "#EBCB8B",
       "shadow": "#2e3440",
       "strong": "#D08770",
-      "default": "#3B4252"
+      "default": "#3B4252",
+      "shadowOpacity": 50
     },
     "nord-snow-storm": {
       "primary": "#5E81AC",
@@ -58,7 +62,8 @@
       "focus": "#81A1C1",
       "shadow": "#4c566a",
       "strong": "#4C566A",
-      "default": "#D8DEE9"
+      "default": "#D8DEE9",
+      "shadowOpacity": 30
     },
     "nord-polar-night": {
       "primary": "#4C566A",
@@ -71,7 +76,8 @@
       "focus": "#88C0D0",
       "shadow": "#000000",
       "strong": "#4C566A",
-      "default": "#3B4252"
+      "default": "#3B4252",
+      "shadowOpacity": 50
     }
   },
   "opacities": {

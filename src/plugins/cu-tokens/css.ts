@@ -53,7 +53,7 @@ function hexToRgba(hex: string, opacity: number): string {
 
 export function colorsBlock(colors: any, opacities?: { shadow: number }) {
   const ink = resolveInk(colors.surface, colors.neutral)
-  const shadowOpacity = opacities?.shadow ?? 10
+  const shadowOpacity = colors.shadowOpacity ?? opacities?.shadow ?? 10
   const shadowRgba = hexToRgba(colors.shadow || '#000000', shadowOpacity)
   return `${colorVar('primary', colors.primary, colors.surface)}
     ${colorVar('secondary', colors.secondary, colors.surface)}
