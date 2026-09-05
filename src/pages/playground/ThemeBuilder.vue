@@ -121,6 +121,25 @@ const opacities = ref({
   shadow: 10,
 })
 
+const opacitiesRaw = ref('10')
+let syncing = false
+
+watch(opacitiesRaw, (val) => {
+  if (syncing) return
+  const num = parseInt(val, 10)
+  if (!isNaN(num) && num >= 0 && num <= 100) {
+    opacities.value.shadow = num
+  } else {
+    opacities.value.shadow = 10
+  }
+})
+
+watch(() => opacities.value.shadow, (val) => {
+  syncing = true
+  opacitiesRaw.value = String(val)
+  syncing = false
+})
+
 const typography = ref({
   fontFamily: {
     sans: 'Inter, system-ui, sans-serif',
@@ -608,7 +627,7 @@ onBeforeUnmount(() => {
           <div class="tb-colors-list">
             <div class="tb-field">
               <Label label="shadow" color="var(--cu-color-neutral)" />
-              <Input v-model.number="opacities.shadow" type="number" min="0" max="100" />
+              <Input v-model="opacitiesRaw" />
             </div>
           </div>
           <p class="tb-hint">
