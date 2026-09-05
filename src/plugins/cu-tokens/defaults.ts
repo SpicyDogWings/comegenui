@@ -8,9 +8,12 @@ export const DEFAULT_COLORS = {
   surface: '#eeeeee',
   focus: '#1774A4',
   shadow: '#000000',
-  shadowOpacity: 10,
   strong: '#6b7280',
   default: '#d1d5db'
+}
+
+export const DEFAULT_OPACITIES = {
+  shadow: 10
 }
 
 export const DEFAULT_DARK_COLORS = {

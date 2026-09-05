@@ -40,7 +40,7 @@ import type { NavItem } from '@/components/lab/collapse/navigation/Navbar.vue'
 import type { OutlineItem } from '@/components/lab/collapse/navigation/Outline.vue'
 import Modal from '@/components/overlay/Modal.vue'
 import { colorsBlock } from '@/plugins/cu-tokens/css'
-import { theme as activeTheme, setTheme, registerTheme, allThemes, builtInNames } from '@/plugins/cu-tokens'
+import { theme as activeTheme, setTheme, registerTheme, allThemes, builtInNames, opacities as pluginOpacities } from '@/plugins/cu-tokens'
 
 const STORAGE_KEY = 'cu-theme-builder'
 
@@ -469,6 +469,15 @@ onMounted(() => {
   previousTheme.value = activeTheme.value
   setTheme(themeName.value)
   modalPreviewRef.value?.open()
+  // Sync opacities from plugin (root config)
+  if (pluginOpacities.value) {
+    opacities.value = { ...pluginOpacities.value }
+  }
+})
+
+// Sync plugin opacities → local
+watch(pluginOpacities, (val) => {
+  if (val) opacities.value = { ...val }
 })
 
 // Cargar los tokens de un tema en el editor
@@ -478,9 +487,6 @@ function loadThemeIntoTokens(name: string) {
     const { shadow, ...rest } = themeTokens.colors
     colors.value = { ...colors.value, ...rest }
     if (shadow) shadowHex.value = shadow
-    if (themeTokens.colors.shadowOpacity !== undefined) {
-      opacities.value.shadow = themeTokens.colors.shadowOpacity
-    }
   }
 }
 
@@ -506,6 +512,7 @@ watch(activeTheme, (name) => {
 watch([colors, shadowHex, opacities, typography, spacing, borderRadius, borders], () => {
   if (!isEditing.value) return
   registerTheme('custom', { ...colors.value, shadow: shadowHex.value })
+  pluginOpacities.value = { ...opacities.value }
   if (themeName.value !== 'custom') {
     themeName.value = 'custom'
     setTheme('custom')

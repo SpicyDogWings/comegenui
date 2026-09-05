@@ -1,11 +1,12 @@
 import { ref, type App } from 'vue'
-import { DEFAULTS, DEFAULT_COLORS, DEFAULT_DARK_COLORS, extractColors, extractShared } from './defaults'
+import { DEFAULTS, DEFAULT_COLORS, DEFAULT_DARK_COLORS, DEFAULT_OPACITIES, extractColors, extractShared } from './defaults'
 import { generateThemesCSS, inject } from './css'
 
 const theme = ref('light')
 const loaded = ref(false)
 const themes = ref<Record<string, any>>({})
 const shared = ref<any>({})
+const opacities = ref<{ shadow: number }>({ ...DEFAULT_OPACITIES })
 const themeNames = ref<string[]>([])
 const builtInNames = ref<string[]>([])
 // Temas registrados en runtime (ej: el import del ThemeBuilder) — persisten
@@ -27,7 +28,7 @@ function applyTheme(value: string) {
 }
 
 function regenerateCSS() {
-  inject(generateThemesCSS(themes.value, shared.value))
+  inject(generateThemesCSS(themes.value, shared.value, opacities.value))
 }
 
 async function init() {
@@ -43,6 +44,9 @@ async function init() {
       // Shared tokens: defaults + config overrides (no colors)
       const mergedShared = { ...DEFAULTS, ...configRest }
       shared.value = extractShared(mergedShared)
+
+      // Opacities: defaults + config overrides
+      opacities.value = { ...DEFAULT_OPACITIES, ...config.opacities }
 
       // Default colors for fallback
       const defaultColors = extractColors(DEFAULTS)
@@ -134,4 +138,4 @@ export default {
   }
 }
 
-export { theme, loaded, setTheme, getThemeNames, registerTheme, themes as allThemes, builtInNames }
+export { theme, loaded, setTheme, getThemeNames, registerTheme, themes as allThemes, builtInNames, opacities }

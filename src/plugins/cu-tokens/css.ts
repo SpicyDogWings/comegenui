@@ -1,5 +1,5 @@
 import { darken, toHex, lighten, transparentize, mix } from 'color2k'
-import { DEFAULTS, DEFAULT_COLORS, extractColors, extractShared } from './defaults'
+import { DEFAULTS, DEFAULT_COLORS, DEFAULT_OPACITIES, extractColors, extractShared } from './defaults'
 
 let styleEl: HTMLStyleElement | null = null
 
@@ -51,9 +51,10 @@ function hexToRgba(hex: string, opacity: number): string {
   return `rgba(${r}, ${g}, ${b}, ${opacity / 100})`
 }
 
-export function colorsBlock(colors: any) {
+export function colorsBlock(colors: any, opacities?: { shadow: number }) {
   const ink = resolveInk(colors.surface, colors.neutral)
-  const shadowRgba = hexToRgba(colors.shadow || '#000000', colors.shadowOpacity ?? 10)
+  const shadowOpacity = opacities?.shadow ?? 10
+  const shadowRgba = hexToRgba(colors.shadow || '#000000', shadowOpacity)
   return `${colorVar('primary', colors.primary, colors.surface)}
     ${colorVar('secondary', colors.secondary, colors.surface)}
     ${colorVar('neutral', ink, colors.surface)}
@@ -142,15 +143,15 @@ function sharedBlock(shared: any) {
     --cu-modal-height-full: ${shared.modal.height.full};`
 }
 
-function themeBlock(tokens: any) {
+function themeBlock(tokens: any, opacities?: { shadow: number }) {
   let block = ''
-  if (tokens.colors) block += colorsBlock(tokens.colors)
+  if (tokens.colors) block += colorsBlock(tokens.colors, opacities)
   block += sharedBlock(tokens)
   return block
 }
 
 // Generate themes.css: :root (first theme) + [data-theme] for each theme
-export function generateThemesCSS(themes: Record<string, any>, shared: any) {
+export function generateThemesCSS(themes: Record<string, any>, shared: any, opacities?: { shadow: number }) {
   const names = Object.keys(themes)
   const first = names[0]
 
@@ -159,22 +160,22 @@ export function generateThemesCSS(themes: Record<string, any>, shared: any) {
   // :root = first theme (default)
   if (first) {
     const merged = { ...shared, colors: themes[first].colors }
-    css += `:root {\n${themeBlock(merged)}\n}`
+    css += `:root {\n${themeBlock(merged, opacities)}\n}`
   }
 
   // [data-theme] for each theme
   for (const [name, tokens] of Object.entries(themes)) {
     const merged = { ...shared, colors: tokens.colors }
-    css += `\n\n[data-theme="${name}"] {\n${themeBlock(merged)}\n}`
+    css += `\n\n[data-theme="${name}"] {\n${themeBlock(merged, opacities)}\n}`
   }
 
   return css
 }
 
 // Generate single theme CSS: [data-theme="{name}"] with all variables
-export function generateThemeCSS(name: string, tokens: any, shared: any) {
+export function generateThemeCSS(name: string, tokens: any, shared: any, opacities?: { shadow: number }) {
   const merged = { ...shared, colors: tokens.colors }
-  return `[data-theme="${name}"] {\n${themeBlock(merged)}\n}`
+  return `[data-theme="${name}"] {\n${themeBlock(merged, opacities)}\n}`
 }
 
 export function inject(css: string) {
@@ -198,6 +199,7 @@ export function initTokens(customConfig?: any) {
 
   let themes: Record<string, any> = {}
   let shared: any = {}
+  const opacities = { ...DEFAULT_OPACITIES, ...config.opacities }
 
   if (config.themes && typeof config.themes === 'object') {
     // Multi-theme process
@@ -218,6 +220,6 @@ export function initTokens(customConfig?: any) {
     themes['light'] = { colors }
   }
 
-  const css = generateThemesCSS(themes, shared)
+  const css = generateThemesCSS(themes, shared, opacities)
   inject(css)
 }
