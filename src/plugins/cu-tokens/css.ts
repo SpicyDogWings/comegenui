@@ -43,7 +43,7 @@ export function resolveInk(surface: string, neutral?: string): string {
   return surfaceDark ? toHex(mix(surface, '#ffffff', 0.88)) : toHex(mix(surface, '#000000', 0.88))
 }
 
-function hexToRgba(hex: string, opacity: number): string {
+export function hexToRgba(hex: string, opacity: number): string {
   const h = hex.replace('#', '')
   const r = parseInt(h.slice(0, 2), 16)
   const g = parseInt(h.slice(2, 4), 16)
@@ -107,6 +107,8 @@ function sharedBlock(shared: any) {
     --cu-space-xl: ${shared.spacing.xl};
     --cu-space-2xl: ${shared.spacing['2xl']};
     --cu-space-3xl: ${shared.spacing['3xl']};
+    --cu-space-4xl: ${shared.spacing['4xl']};
+    --cu-space-5xl: ${shared.spacing['5xl']};
 
     /* Border Radius */
     --cu-radius: ${shared.borderRadius.default};

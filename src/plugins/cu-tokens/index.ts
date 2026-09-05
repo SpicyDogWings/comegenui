@@ -1,6 +1,6 @@
 import { ref, type App } from 'vue'
 import { DEFAULTS, DEFAULT_COLORS, DEFAULT_DARK_COLORS, DEFAULT_OPACITIES, extractColors, extractShared } from './defaults'
-import { generateThemesCSS, inject } from './css'
+import { generateThemesCSS, generateThemeCSS, inject, hexToRgba } from './css'
 
 const theme = ref('light')
 const loaded = ref(false)
@@ -108,15 +108,45 @@ function getThemeNames() {
 
 // Registra (o actualiza) un tema en runtime: queda en el theme chooser, su CSS
 // se regenera con el resto y persiste en localStorage.
-function registerTheme(name: string, colors: Record<string, string>) {
+// opacity: per-theme shadow opacity (1-100). shared: typography/spacing/radius/borders.
+function registerTheme(name: string, colors: Record<string, string>, opts?: { opacity?: number; shared?: any }) {
   const merged = { ...extractColors(DEFAULTS), ...colors }
   customThemes.value = { ...customThemes.value, [name]: colors }
   themes.value[name] = { colors: merged }
   if (!themeNames.value.includes(name)) themeNames.value = [...themeNames.value, name]
+  if (opts?.opacity !== undefined) {
+    opacities.value = { ...opacities.value, [name]: { shadow: opts.opacity } }
+  }
+  if (opts?.shared) {
+    shared.value = { ...shared.value, ...opts.shared }
+  }
   try {
     localStorage.setItem(CUSTOM_KEY, JSON.stringify(customThemes.value))
   } catch {}
   regenerateCSS()
+}
+
+// Actualiza los tokens compartidos (tipografía, spacing, etc) y regenera CSS.
+function setShared(patch: any) {
+  shared.value = { ...shared.value, ...patch }
+  regenerateCSS()
+}
+
+// Devuelve los tokens compartidos actuales (para cargar en el editor).
+function getShared(): any {
+  return shared.value
+}
+
+// Resuelve la opacidad de sombra para un tema (per-theme o default).
+function getOpacity(name: string): number {
+  return opacities.value[name]?.shadow ?? opacities.value.default?.shadow ?? 10
+}
+
+// Genera el CSS completo de un tema (colores + shared) en formato [data-theme].
+function getThemeCSS(name: string): string {
+  const t = themes.value[name]
+  if (!t) return ''
+  return generateThemeCSS(name, t, shared.value, opacities.value)
 }
 
 function restoreCustomThemes() {
@@ -138,4 +168,4 @@ export default {
   }
 }
 
-export { theme, loaded, setTheme, getThemeNames, registerTheme, themes as allThemes, builtInNames, opacities }
+export { theme, loaded, setTheme, getThemeNames, registerTheme, setShared, getShared, getOpacity, getThemeCSS, themes as allThemes, builtInNames, opacities, hexToRgba }

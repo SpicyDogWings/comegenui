@@ -36,9 +36,11 @@ describe('resolveInk', () => {
   })
 })
 
+const OPACITIES = { default: { shadow: 10 } }
+
 describe('colorsBlock', () => {
   it('genera --cu-color-{name}-code para cada color', () => {
-    const css = colorsBlock(COLORS)
+    const css = colorsBlock(COLORS, 'light', OPACITIES)
     for (const name of COLOR_NAMES) {
       expect(css).toContain(`--cu-color-${name}-code:`)
     }
@@ -67,14 +69,14 @@ describe('colorsBlock', () => {
   })
 
   it('genera el esquema de código --cu-code-* desde neutral/surface', () => {
-    const css = colorsBlock(COLORS)
+    const css = colorsBlock(COLORS, 'light', OPACITIES)
     expect(css).toContain('--cu-code-bg: #1a1a1a')
     expect(css).toContain('--cu-code-text: #eeeeee')
     expect(css).toContain('--cu-code-faded: rgba(238,')
   })
 
   it('incluye --cu-color-surface', () => {
-    expect(colorsBlock(COLORS)).toContain('--cu-color-surface: #eeeeee')
+    expect(colorsBlock(COLORS, 'light', OPACITIES)).toContain('--cu-color-surface: #eeeeee')
   })
 })
 
@@ -86,7 +88,7 @@ describe('generateThemesCSS / generateThemeCSS', () => {
       light: { colors: COLORS },
       dark: { colors: { ...COLORS, neutral: '#e5e5e5', surface: '#1c1c1c' } },
     }
-    const css = generateThemesCSS(themes, shared)
+    const css = generateThemesCSS(themes, shared, OPACITIES)
     const rootBlock = css.split('[data-theme')[0]
     const darkBlock = css.split('[data-theme="dark"')[1]
 
@@ -99,7 +101,7 @@ describe('generateThemesCSS / generateThemeCSS', () => {
   })
 
   it('generateThemeCSS emite el bloque completo de un tema', () => {
-    const css = generateThemeCSS('light', { colors: COLORS }, shared)
+    const css = generateThemeCSS('light', { colors: COLORS }, shared, OPACITIES)
     expect(css).toContain('[data-theme="light"]')
     expect(css).toContain('--cu-color-danger-code:')
     expect(css).toContain('--cu-code-faded:')

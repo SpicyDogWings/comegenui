@@ -39,8 +39,10 @@ import Outline from '@/components/lab/collapse/navigation/Outline.vue'
 import type { NavItem } from '@/components/lab/collapse/navigation/Navbar.vue'
 import type { OutlineItem } from '@/components/lab/collapse/navigation/Outline.vue'
 import Modal from '@/components/overlay/Modal.vue'
-import { colorsBlock } from '@/plugins/cu-tokens/css'
-import { theme as activeTheme, setTheme, registerTheme, allThemes, builtInNames, opacities as pluginOpacities } from '@/plugins/cu-tokens'
+import {
+  theme as activeTheme, setTheme, registerTheme, allThemes, builtInNames,
+  getShared, setShared, getOpacity, getThemeCSS, hexToRgba,
+} from '@/plugins/cu-tokens'
 
 const STORAGE_KEY = 'cu-theme-builder'
 
@@ -74,10 +76,21 @@ const isBuiltIn = computed(() => builtInNames.value.includes(themeName.value))
 
 function enableEditing() {
   isEditing.value = true
-  registerTheme('custom', { ...colors.value })
-  pluginOpacities.value = { ...pluginOpacities.value, custom: { shadow: parseInt(shadowOpacityRaw.value) || 10 } }
+  registerTheme('custom', { ...colors.value }, {
+    opacity: parseInt(shadowOpacityRaw.value) || 10,
+    shared: sharedSnapshot(),
+  })
   themeName.value = 'custom'
   setTheme('custom')
+}
+
+function sharedSnapshot() {
+  return {
+    typography: JSON.parse(JSON.stringify(typography.value)),
+    spacing: JSON.parse(JSON.stringify(spacing.value)),
+    borderRadius: JSON.parse(JSON.stringify(borderRadius.value)),
+    borders: { width: JSON.parse(JSON.stringify(borders.value.width)) },
+  }
 }
 
 const dropdownItems = [
@@ -195,124 +208,10 @@ const borders = ref({
   },
 })
 
-function hexToRgba(hex: string, alpha: number) {
-  const h = hex.replace('#', '')
-  const r = parseInt(h.slice(0, 2), 16)
-  const g = parseInt(h.slice(2, 4), 16)
-  const b = parseInt(h.slice(4, 6), 16)
-  return `rgba(${r}, ${g}, ${b}, ${alpha / 100})`
-}
-
-/* neutral es la tinta (títulos, labels, texto del layout): en temas oscuros
-   debe ser claro. Si al editar el surface el neutral queda con la misma
-   polaridad (texto oscuro sobre fondo oscuro o viceversa), se invierte solo.
-   Editar el neutral a mano nunca lo pisa. */
-function luma(hex: string) {
-  const h = hex.replace('#', '')
-  const r = parseInt(h.slice(0, 2), 16)
-  const g = parseInt(h.slice(2, 4), 16)
-  const b = parseInt(h.slice(4, 6), 16)
-  return (0.299 * r + 0.587 * g + 0.114 * b) / 255
-}
-
-watch(() => colors.value.surface, (surface) => {
-  if (!surface || !colors.value.neutral) return
-  const surfaceDark = luma(surface) < 0.5
-  const neutralDark = luma(colors.value.neutral) < 0.5
-  if (surfaceDark && neutralDark) {
-    colors.value.neutral = '#e5e5e5'
-  } else if (!surfaceDark && !neutralDark) {
-    colors.value.neutral = '#1a1a1a'
-  }
-})
-
-function buildSharedVariables(): string {
-  const t = typography.value
-  const s = spacing.value
-  const r = borderRadius.value
-  const b = borders.value
-
-  const shadowOpacity = parseInt(shadowOpacityRaw.value) || 10
-  const shadowColor = hexToRgba(colors.value.shadow || '#000000', shadowOpacity)
-
-  return `/* Typography */
-    --cu-font-sans: ${t.fontFamily.sans};
-    --cu-font-mono: ${t.fontFamily.mono};
-    --cu-font-size-xs: ${t.fontSize.xs};
-    --cu-font-size-sm: ${t.fontSize.sm};
-    --cu-font-size-md: ${t.fontSize.md};
-    --cu-font-size-lg: ${t.fontSize.lg};
-    --cu-font-size-xl: ${t.fontSize.xl};
-    --cu-font-size-2xl: ${t.fontSize['2xl']};
-    --cu-font-size-3xl: ${t.fontSize['3xl']};
-    --cu-font-size-4xl: ${t.fontSize['4xl']};
-    --cu-font-weight-normal: ${t.fontWeight.normal};
-    --cu-font-weight-medium: ${t.fontWeight.medium};
-    --cu-font-weight-semibold: ${t.fontWeight.semibold};
-    --cu-font-weight-bold: ${t.fontWeight.bold};
-    --cu-line-height-tight: ${t.lineHeight.tight};
-    --cu-line-height-normal: ${t.lineHeight.normal};
-    --cu-line-height-relaxed: ${t.lineHeight.relaxed};
-
-    /* Spacing */
-    --cu-space-2xs: ${s['2xs']};
-    --cu-space-xs: ${s.xs};
-    --cu-space-sm: ${s.sm};
-    --cu-space-md: ${s.md};
-    --cu-space-lg: ${s.lg};
-    --cu-space-xl: ${s.xl};
-    --cu-space-2xl: ${s['2xl']};
-    --cu-space-3xl: ${s['3xl']};
-    --cu-space-4xl: ${s['4xl']};
-    --cu-space-5xl: ${s['5xl']};
-
-    /* Border Radius */
-    --cu-radius: ${r.default};
-    --cu-radius-none: ${r.none};
-    --cu-radius-sm: ${r.sm};
-    --cu-radius-md: ${r.md};
-    --cu-radius-lg: ${r.lg};
-    --cu-radius-full: ${r.full};
-
-    /* Shadows (sizes only — color is per-theme via --cu-shadow-color) */
-    --cu-shadow-sm: 0 1px 2px ${shadowColor};
-    --cu-shadow-md: 0 4px 6px ${shadowColor};
-    --cu-shadow-lg: 0 10px 15px ${shadowColor};
-    --cu-shadow-xl: 0 20px 25px ${shadowColor};
-
-    /* Borders (widths only — colors are per-theme) */
-    --cu-border-none: ${b.width.none};
-    --cu-border-thin: ${b.width.thin};
-    --cu-border-medium: ${b.width.medium};
-    --cu-border-thick: ${b.width.thick};`
-}
-
-/* mismo generador que la lib (cu-tokens): incluye --cu-color-*-code y
-   el esquema --cu-code-* — nunca diverge. resolveInk deriva la tinta
-   (neutral) del surface cuando no contrasta — única fuente de verdad */
-const cssColors = computed(() => colorsBlock(colors.value, themeName.value, pluginOpacities.value))
-const cssShared = computed(() => buildSharedVariables())
 const shadowPreview = computed(() => hexToRgba(colors.value.shadow || '#000000', parseInt(shadowOpacityRaw.value) || 10))
 
-// La page entera toma el tema editado: los colores van bajo el selector del
-// tema activo (pisa al :root del plugin por especificidad) y los tokens
-// compartidos en :root (el style tag inyectado va después del del plugin).
-const cssPreview = computed(
-  () => `html[data-theme="${themeName.value}"] {\n${cssColors.value}\n}\n\n:root {\n${cssShared.value}\n}`
-)
-
-const cssExport = computed(() => `:root {\n${cssColors.value}\n\n${cssShared.value}\n}`)
-
-let styleEl: HTMLStyleElement | null = null
-
-watch(cssPreview, (css) => {
-  if (!styleEl) {
-    styleEl = document.createElement('style')
-    styleEl.id = 'theme-builder-preview'
-    document.head.appendChild(styleEl)
-  }
-  styleEl.textContent = css
-}, { immediate: true })
+// CSS de export: lo genera el plugin (colores + shared) — ya no hay duplicación.
+const cssExport = computed(() => getThemeCSS(themeName.value))
 
 function saveToStorage() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(getCurrentConfig()))
@@ -355,7 +254,6 @@ function applyConfig(config: ThemeConfig) {
   if (config.opacities) {
     const themeOp = config.opacities[themeName.value]?.shadow ?? config.opacities.default?.shadow
     if (themeOp !== undefined) shadowOpacityRaw.value = String(themeOp)
-    pluginOpacities.value = { ...pluginOpacities.value, ...config.opacities }
   }
   if (config.borders?.color) {
     if (!colors.value.default) colors.value.default = config.borders.color.default
@@ -363,6 +261,8 @@ function applyConfig(config: ThemeConfig) {
     if (!colors.value.focus) colors.value.focus = config.borders.color.focus
   }
   if (config.borders?.width) borders.value.width = config.borders.width
+  // Empujar los shared tokens al plugin para que el preview refleje el config cargado
+  setShared(sharedSnapshot())
 }
 
 function loadFromStorage() {
@@ -386,9 +286,14 @@ function handleImport(config: any) {
   // sus estilos quedan aplicados y no se restauran al salir del builder.
   const importedColors = Object.values((config as ThemeConfig)?.themes ?? {})[0]
   if (importedColors) {
-    registerTheme('custom', importedColors)
+    registerTheme('custom', importedColors, {
+      opacity: config.opacities?.[Object.keys(config.themes)[0]]?.shadow ?? config.opacities?.default?.shadow ?? 10,
+      shared: sharedSnapshot(),
+    })
     themeName.value = 'custom'
+    isEditing.value = true
     previousTheme.value = ''
+    setTheme('custom')
   }
 }
 
@@ -447,16 +352,12 @@ function resetToDefaults() {
 // al salir se restaura el que estaba ("el de ahorita" queda como default).
 const previousTheme = ref('')
 
-function getThemeOpacity(name: string): number {
-  return pluginOpacities.value[name]?.shadow ?? pluginOpacities.value.default?.shadow ?? 10
-}
-
 onMounted(() => {
   loadFromStorage()
   previousTheme.value = activeTheme.value
   setTheme(themeName.value)
   modalPreviewRef.value?.open()
-  shadowOpacityRaw.value = String(getThemeOpacity(themeName.value))
+  shadowOpacityRaw.value = String(getOpacity(themeName.value))
 })
 
 // Cargar los tokens de un tema en el editor
@@ -465,7 +366,7 @@ function loadThemeIntoTokens(name: string) {
   if (themeTokens?.colors) {
     const { shadowOpacity, ...rest } = themeTokens.colors
     colors.value = { ...colors.value, ...rest }
-    shadowOpacityRaw.value = String(getThemeOpacity(name))
+    shadowOpacityRaw.value = String(getOpacity(name))
   }
 }
 
@@ -490,8 +391,10 @@ watch(activeTheme, (name) => {
 // Detectar cambios → solo cuando está editando (isEditing)
 watch([colors, shadowOpacityRaw, typography, spacing, borderRadius, borders], () => {
   if (!isEditing.value) return
-  registerTheme('custom', { ...colors.value })
-  pluginOpacities.value = { ...pluginOpacities.value, custom: { shadow: parseInt(shadowOpacityRaw.value) || 10 } }
+  registerTheme('custom', { ...colors.value }, {
+    opacity: parseInt(shadowOpacityRaw.value) || 10,
+    shared: sharedSnapshot(),
+  })
   if (themeName.value !== 'custom') {
     themeName.value = 'custom'
     setTheme('custom')
@@ -499,10 +402,6 @@ watch([colors, shadowOpacityRaw, typography, spacing, borderRadius, borders], ()
 }, { deep: true })
 
 onBeforeUnmount(() => {
-  if (styleEl) {
-    styleEl.remove()
-    styleEl = null
-  }
   if (previousTheme.value) setTheme(previousTheme.value)
 })
 </script>
