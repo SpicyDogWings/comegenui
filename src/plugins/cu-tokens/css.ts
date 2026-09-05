@@ -43,8 +43,17 @@ export function resolveInk(surface: string, neutral?: string): string {
   return surfaceDark ? toHex(mix(surface, '#ffffff', 0.88)) : toHex(mix(surface, '#000000', 0.88))
 }
 
+function hexToRgba(hex: string, opacity: number): string {
+  const h = hex.replace('#', '')
+  const r = parseInt(h.slice(0, 2), 16)
+  const g = parseInt(h.slice(2, 4), 16)
+  const b = parseInt(h.slice(4, 6), 16)
+  return `rgba(${r}, ${g}, ${b}, ${opacity / 100})`
+}
+
 export function colorsBlock(colors: any) {
   const ink = resolveInk(colors.surface, colors.neutral)
+  const shadowRgba = hexToRgba(colors.shadow || '#000000', colors.shadowOpacity ?? 10)
   return `${colorVar('primary', colors.primary, colors.surface)}
     ${colorVar('secondary', colors.secondary, colors.surface)}
     ${colorVar('neutral', ink, colors.surface)}
@@ -56,8 +65,8 @@ export function colorsBlock(colors: any) {
     --cu-code-bg: ${ink};
     --cu-code-text: ${colors.surface};
     --cu-code-faded: ${transparentize(colors.surface, 0.45)};
-    /* per-theme shadow + border colors */
-    --cu-shadow-color: ${colors.shadow || 'rgba(0,0,0,0.1)'};
+    /* per-theme shadow (color + opacidad 1-100) + border colors */
+    --cu-shadow-color: ${shadowRgba};
     --cu-border-color: ${colors.default || '#d1d5db'};
     --cu-border-color-strong: ${colors.strong || '#6b7280'};
     --cu-border-color-focus: ${colors.focus || '#1774A4'};`

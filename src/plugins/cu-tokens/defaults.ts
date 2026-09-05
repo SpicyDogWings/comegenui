@@ -7,7 +7,8 @@ export const DEFAULT_COLORS = {
   danger: '#ef4444',
   surface: '#eeeeee',
   focus: '#1774A4',
-  shadow: 'rgba(0,0,0,0.1)',
+  shadow: '#000000',
+  shadowOpacity: 10,
   strong: '#6b7280',
   default: '#d1d5db'
 }
