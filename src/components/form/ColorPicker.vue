@@ -147,7 +147,7 @@ defineExpose({ get, set, reset, focus: () => inputRef.value?.focus() });
 }
 
 .cu-color-picker-input {
-  width: 88px;
+  width: var(--cu-space-5xl);
 }
 
 .cu-color-picker--disabled {

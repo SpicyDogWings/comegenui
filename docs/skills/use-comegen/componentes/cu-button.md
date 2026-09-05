@@ -12,6 +12,7 @@ Botón con soporte de color, variante, link y estados. Si se define `to`, se ren
 |------|------|---------|-------------|
 | `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `variant` | `string` | `"ghost"` | `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` |
+| `size` | `string` | `"md"` | Tamaño: `sm`, `md`, `lg` |
 | `type` | `string` | `"button"` | Tipo del `<button>`: `button`, `submit`, `reset` |
 | `disabled` | `boolean` | `false` | Estado deshabilitado |
 | `loading` | `boolean` | `false` | Muestra un spinner en lugar del contenido. Deshabilita el botón mientras está activo |
@@ -67,6 +68,16 @@ No expone métodos.
 <cu-button color="primary" variant="subtle">subtle</cu-button>
 <cu-button color="primary" variant="link">link</cu-button>
 ```
+
+## Tamaños
+
+```html
+<cu-button size="sm">Chico</cu-button>
+<cu-button size="md">Medio (default)</cu-button>
+<cu-button size="lg">Grande</cu-button>
+```
+
+> En la variante `link` el padding queda fijo en 0 (el `size` no lo pisa).
 
 ## Estado de carga
 

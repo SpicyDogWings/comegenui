@@ -164,12 +164,12 @@ async function createZip() {
 
   // Add skill de uso (SKILL.md + componentes/) — SIEMPRE en el zip, al lado de
   // los archivos de la lib. Solo la de uso; no la de desarrollo ni documentar.
-  const docsDir = resolve(__dirname, 'docs/comegen-ui')
+  const docsDir = resolve(__dirname, 'docs/skills/use-comegen')
   if (fs.existsSync(docsDir)) {
-    archive.directory(docsDir, 'comegen-ui')
-    console.log('📚 Skill de uso agregada al zip: comegen-ui/')
+    archive.directory(docsDir, 'use-comegen')
+    console.log('📚 Skill de uso agregada al zip: use-comegen/')
   } else {
-    console.log('⚠️  docs/comegen-ui no encontrada, se omite del zip')
+    console.log('⚠️  docs/skills/use-comegen no encontrada, se omite del zip')
   }
 
   // Add update.sh / update.ps1 (actualizador del proyecto huésped) — SIEMPRE en el zip

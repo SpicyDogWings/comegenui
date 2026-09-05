@@ -121,13 +121,13 @@ defineExpose({
 }
 
 .cu-switch--md .cu-switch-track {
-  width: 48px;
+  width: var(--cu-space-3xl);
   height: var(--cu-space-2xl);
 }
 
 .cu-switch--sm .cu-switch-track {
   width: var(--cu-space-2xl);
-  height: 20px;
+  height: var(--cu-space-xl);
 }
 
 .cu-switch-track.cu-switch--checked {
@@ -168,17 +168,17 @@ defineExpose({
 }
 
 .cu-switch--md .cu-switch-thumb {
-  width: 24px;
-  height: 24px;
-  top: 4px;
-  left: 4px;
+  width: var(--cu-space-xl);
+  height: var(--cu-space-xl);
+  top: var(--cu-space-xs);
+  left: var(--cu-space-xs);
 }
 
 .cu-switch--sm .cu-switch-thumb {
-  width: 16px;
-  height: 16px;
-  top: 2px;
-  left: 2px;
+  width: var(--cu-space-lg);
+  height: var(--cu-space-lg);
+  top: var(--cu-space-2xs);
+  left: var(--cu-space-2xs);
 }
 
 .cu-switch--md .cu-switch-track.cu-switch--checked .cu-switch-thumb {

@@ -68,7 +68,7 @@ const apiColumns = [
 const propsData = [
   { name: 'tabs', type: 'TabItem[]', default: '— (requerido)', description: 'Pestañas' },
   { name: 'color', type: 'string', default: '"primary"', description: 'primary, secondary, neutral, success, warning, danger' },
-  { name: 'variant', type: 'string', default: '"tabs"', description: 'tabs, pills, boxed, soft' },
+  { name: 'variant', type: 'string', default: '"ghost"', description: 'ghost, solid, boxed, soft' },
   { name: 'size', type: 'string', default: '"md"', description: 'sm, md, lg' },
   { name: 'disabled', type: 'boolean', default: 'false', description: 'Deshabilita todas las pestañas' },
 ];
@@ -116,7 +116,7 @@ const vueSnippet = (body: string) => `${vueImport}
 ${body}
 </template>`;
 
-const variantsVue = vueSnippet(`  <Tabs v-for="variant in ['tabs', 'pills', 'boxed', 'soft']" :key="variant" :variant="variant" :tabs="tabs">
+const variantsVue = vueSnippet(`  <Tabs v-for="variant in ['ghost', 'solid', 'boxed', 'soft']" :key="variant" :variant="variant" :tabs="ghost">
     <template #overview>Contenido Overview</template>
     <template #settings>Contenido Settings</template>
     <template #activity>Contenido Activity</template>
@@ -134,27 +134,27 @@ const tabs = [
 <\/script>
 
 <template>
-  <Tabs variant="tabs" :tabs="tabs">
+  <Tabs variant="ghost" :tabs="ghost">
     <template #home>Contenido Home</template>
     <template #search>Contenido Search</template>
     <template #settings>Contenido Settings</template>
   </Tabs>
 </template>`;
 
-const colorsVue = vueSnippet(`  <Tabs v-for="color in ['primary', 'secondary', 'neutral', 'success', 'warning', 'danger']" :key="color" variant="pills" :color="color" :tabs="tabs">
+const colorsVue = vueSnippet(`  <Tabs v-for="color in ['primary', 'secondary', 'neutral', 'success', 'warning', 'danger']" :key="color" variant="solid" :color="color" :tabs="ghost">
     <template #overview>Contenido Overview</template>
     <template #settings>Contenido Settings</template>
     <template #activity>Contenido Activity</template>
   </Tabs>`);
 
-const sizesVue = vueSnippet(`  <Tabs v-for="size in ['sm', 'md', 'lg']" :key="size" variant="boxed" :size="size" :tabs="tabs">
+const sizesVue = vueSnippet(`  <Tabs v-for="size in ['sm', 'md', 'lg']" :key="size" variant="boxed" :size="size" :tabs="ghost">
     <template #overview>Contenido Overview</template>
     <template #settings>Contenido Settings</template>
     <template #activity>Contenido Activity</template>
   </Tabs>`);
 
 const disabledVue = vueSnippet(`  <!-- Todas deshabilitadas -->
-  <Tabs variant="tabs" disabled :tabs="tabs">
+  <Tabs variant="ghost" disabled :tabs="ghost">
     <template #overview>Contenido Overview</template>
     <template #settings>Contenido Settings</template>
     <template #activity>Contenido Activity</template>
@@ -213,12 +213,12 @@ const basicTabsVanilla = `    el.tabs = [
 
 const variantsVanilla = `${tabsImportVanilla}
 
-<cu-tabs variant="tabs">
+<cu-tabs variant="ghost">
   <div slot="overview">Contenido Overview</div>
   <div slot="settings">Contenido Settings</div>
   <div slot="activity">Contenido Activity</div>
 </cu-tabs>
-<cu-tabs variant="pills">
+<cu-tabs variant="solid">
   <div slot="overview">Contenido Overview</div>
   <div slot="settings">Contenido Settings</div>
   <div slot="activity">Contenido Activity</div>
@@ -234,6 +234,7 @@ const variantsVanilla = `${tabsImportVanilla}
   <div slot="activity">Contenido Activity</div>
 </cu-tabs>
 
+
 <script>
   customElements.whenDefined('cu-tabs').then(() => {
     document.querySelectorAll('cu-tabs').forEach((el) => {
@@ -244,7 +245,7 @@ ${basicTabsVanilla}
 
 const iconsVanilla = `${tabsImportVanilla}
 
-<cu-tabs id="tabs-icons" variant="tabs">
+<cu-tabs id="tabs-icons" variant="ghost">
   <div slot="home">Contenido Home</div>
   <div slot="search">Contenido Search</div>
   <div slot="settings">Contenido Settings</div>
@@ -297,12 +298,12 @@ const keepAliveVanilla = `${tabsImportVanilla}
 
 const colorsVanilla = `${tabsImportVanilla}
 
-<cu-tabs id="tabs-primary" variant="pills" color="primary"></cu-tabs>
-<cu-tabs id="tabs-secondary" variant="pills" color="secondary"></cu-tabs>
-<cu-tabs id="tabs-neutral" variant="pills" color="neutral"></cu-tabs>
-<cu-tabs id="tabs-success" variant="pills" color="success"></cu-tabs>
-<cu-tabs id="tabs-warning" variant="pills" color="warning"></cu-tabs>
-<cu-tabs id="tabs-danger" variant="pills" color="danger"></cu-tabs>
+<cu-tabs id="tabs-primary" variant="solid" color="primary"></cu-tabs>
+<cu-tabs id="tabs-secondary" variant="solid" color="secondary"></cu-tabs>
+<cu-tabs id="tabs-neutral" variant="solid" color="neutral"></cu-tabs>
+<cu-tabs id="tabs-success" variant="solid" color="success"></cu-tabs>
+<cu-tabs id="tabs-warning" variant="solid" color="warning"></cu-tabs>
+<cu-tabs id="tabs-danger" variant="solid" color="danger"></cu-tabs>
 
 <script>
   customElements.whenDefined('cu-tabs').then(() => {
@@ -331,7 +332,7 @@ ${basicTabsVanilla}
 const disabledVanilla = `${tabsImportVanilla}
 
 <!-- Todas deshabilitadas -->
-<cu-tabs id="tabs-disabled" variant="tabs" disabled></cu-tabs>
+<cu-tabs id="tabs-disabled" variant="ghost" disabled></cu-tabs>
 
 <!-- Solo una -->
 <cu-tabs id="tabs-locked" variant="soft"></cu-tabs>
@@ -395,12 +396,12 @@ const programmaticVanilla = `${tabsImportVanilla}
         <Button variant="link" to="#api-interfaces">Ver interfaz TabItem ↓</Button>
         <SectionDemo :vue-code="variantsVue" :vanilla-code="variantsVanilla">
           <div class="playground-variants">
-            <Tabs variant="tabs" :tabs="basicTabs">
+            <Tabs variant="ghost" :tabs="basicTabs">
               <template #overview>Contenido Overview</template>
               <template #settings>Contenido Settings</template>
               <template #activity>Contenido Activity</template>
             </Tabs>
-            <Tabs variant="pills" :tabs="basicTabs">
+            <Tabs variant="solid" :tabs="basicTabs">
               <template #overview>Contenido Overview</template>
               <template #settings>Contenido Settings</template>
               <template #activity>Contenido Activity</template>
@@ -415,6 +416,7 @@ const programmaticVanilla = `${tabsImportVanilla}
               <template #settings>Contenido Settings</template>
               <template #activity>Contenido Activity</template>
             </Tabs>
+
           </div>
         </SectionDemo>
       </section>
@@ -427,12 +429,12 @@ const programmaticVanilla = `${tabsImportVanilla}
         </div>
         <SectionDemo :vue-code="iconsVue" :vanilla-code="iconsVanilla">
           <div class="playground-variants">
-            <Tabs variant="tabs" :tabs="iconTabs">
+            <Tabs variant="ghost" :tabs="iconTabs">
               <template #home>Contenido Home</template>
               <template #search>Contenido Search</template>
               <template #settings>Contenido Settings</template>
             </Tabs>
-            <Tabs variant="pills" :tabs="iconTabs">
+            <Tabs variant="solid" :tabs="iconTabs">
               <template #home>Contenido Home</template>
               <template #search>Contenido Search</template>
               <template #settings>Contenido Settings</template>
@@ -450,7 +452,7 @@ const programmaticVanilla = `${tabsImportVanilla}
         </div>
         <SectionDemo :vue-code="colorsVue" :vanilla-code="colorsVanilla">
           <div class="playground-variants">
-            <Tabs v-for="color in colors" :key="color" variant="pills" :color="color" :tabs="basicTabs">
+            <Tabs v-for="color in colors" :key="color" variant="solid" :color="color" :tabs="basicTabs">
               <template #overview>Contenido Overview</template>
               <template #settings>Contenido Settings</template>
               <template #activity>Contenido Activity</template>
@@ -486,7 +488,7 @@ const programmaticVanilla = `${tabsImportVanilla}
         </div>
         <SectionDemo :vue-code="disabledVue" :vanilla-code="disabledVanilla">
           <div class="playground-col">
-            <Tabs variant="tabs" disabled :tabs="basicTabs">
+            <Tabs variant="ghost" disabled :tabs="basicTabs">
               <template #overview>Contenido Overview</template>
               <template #settings>Contenido Settings</template>
               <template #activity>Contenido Activity</template>

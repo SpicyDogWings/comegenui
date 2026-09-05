@@ -6,7 +6,7 @@
 #   .\update.ps1            → último build de main
 #   .\update.ps1 v3.0.0     → build de un tag/release
 #
-# Al actualizar también instala la skill de uso (comegen-ui/) en
+# Al actualizar también instala la skill de uso (use-comegen/) en
 # .agents/skills/ del proyecto huésped, para que los agentes tengan la doc.
 #
 # Avanzados: $env:CG_URL para override de la URL (útil para probar con un archivo local)
@@ -75,17 +75,17 @@ try {
             }
         }
 
-        if ($projectRoot -and (Test-Path (Join-Path $Self "comegen-ui") -PathType Container)) {
+        if ($projectRoot -and (Test-Path (Join-Path $Self "use-comegen") -PathType Container)) {
             $skillsDir = Join-Path $projectRoot ".agents\skills"
             New-Item -ItemType Directory -Path $skillsDir -Force | Out-Null
-            $dest = Join-Path $skillsDir "comegen-ui"
+            $dest = Join-Path $skillsDir "use-comegen"
             if (Test-Path $dest) { Remove-Item $dest -Recurse -Force }
-            Copy-Item -Path (Join-Path $Self "comegen-ui") -Destination $dest -Recurse -Force
-            Write-Host "📚 Skill de uso instalada en $skillsDir\comegen-ui"
+            Copy-Item -Path (Join-Path $Self "use-comegen") -Destination $dest -Recurse -Force
+            Write-Host "📚 Skill de uso instalada en $skillsDir\use-comegen"
         } elseif (-not $projectRoot) {
             Write-Host "⚠️  No se detectó la raíz del proyecto (sin .git/AGENTS.md/package.json). Seteá `$env:CG_PROJECT_ROOT para instalar la skill en .agents/skills."
         } else {
-            Write-Host "⚠️  El build no incluye la skill comegen-ui/, se omite la instalación en .agents/skills."
+            Write-Host "⚠️  El build no incluye la skill use-comegen/, se omite la instalación en .agents/skills."
         }
 
         Write-Host "✅ ComegenUI '$Tag' actualizado en $Self"
