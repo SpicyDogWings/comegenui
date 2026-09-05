@@ -246,7 +246,7 @@ function buildSharedVariables(): string {
   const r = borderRadius.value
   const b = borders.value
 
-  const shadowOpacity = opacities.value.shadow
+  const shadowOpacity = opacities.value.shadow ?? 10
   const shadowColor = hexToRgba(shadowHex.value || '#000000', shadowOpacity)
 
   return `/* Typography */
@@ -304,9 +304,9 @@ function buildSharedVariables(): string {
 /* mismo generador que la lib (cu-tokens): incluye --cu-color-*-code y
    el esquema --cu-code-* — nunca diverge. resolveInk deriva la tinta
    (neutral) del surface cuando no contrasta — única fuente de verdad */
-const cssColors = computed(() => colorsBlock(colors.value, themeName.value, pluginOpacities.value))
+const cssColors = computed(() => colorsBlock(colors.value))
 const cssShared = computed(() => buildSharedVariables())
-const shadowPreview = computed(() => hexToRgba(shadowHex.value || '#000000', opacities.value.shadow))
+const shadowPreview = computed(() => hexToRgba(shadowHex.value || '#000000', opacities.value.shadow ?? 10))
 
 // La page entera toma el tema editado: los colores van bajo el selector del
 // tema activo (pisa al :root del plugin por especificidad) y los tokens
@@ -467,7 +467,7 @@ function resetToDefaults() {
 const previousTheme = ref('')
 
 function getThemeOpacity(name: string): number {
-  return pluginOpacities.value[name]?.shadow ?? pluginOpacities.value.default?.shadow
+  return pluginOpacities.value[name]?.shadow ?? pluginOpacities.value.default?.shadow ?? 10
 }
 
 onMounted(() => {
