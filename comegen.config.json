@@ -15,7 +15,7 @@
     },
     "nord-frost": {
       "primary": "#88C0D0",
-      "secondary": "#81A1C1",
+      "secondary": "#5E81AC",
       "neutral": "#ECEFF4",
       "success": "#A3BE8C",
       "warning": "#EBCB8B",
@@ -28,25 +28,25 @@
       "neutral": "#ECEFF4",
       "success": "#A3BE8C",
       "warning": "#EBCB8B",
-      "danger": "#BF616A",
+      "danger": "#B48EAD",
       "surface": "#2E3440"
     },
     "nord-snow-storm": {
       "primary": "#5E81AC",
       "secondary": "#81A1C1",
       "neutral": "#4C566A",
-      "success": "#A3BE8C",
-      "warning": "#EBCB8B",
-      "danger": "#BF616A",
+      "success": "#22c55e",
+      "warning": "#f59e0b",
+      "danger": "#ef4444",
       "surface": "#ECEFF4"
     },
     "nord-polar-night": {
-      "primary": "#88C0D0",
-      "secondary": "#4C566A",
+      "primary": "#4C566A",
+      "secondary": "#3B4252",
       "neutral": "#D8DEE9",
-      "success": "#A3BE8C",
-      "warning": "#EBCB8B",
-      "danger": "#BF616A",
+      "success": "#434C5E",
+      "warning": "#4C566A",
+      "danger": "#3B4252",
       "surface": "#2E3440"
     }
   },
