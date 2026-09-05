@@ -991,31 +991,6 @@ onBeforeUnmount(() => {
   gap: var(--cu-space-xs);
 }
 
-/* Collapse integrado en tb-controls */
-.tb-controls :deep(.cu-collapse) {
-  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);
-  padding-bottom: var(--cu-space-xs);
-}
-.tb-controls :deep(.cu-collapse-trigger) {
-  font-size: var(--cu-font-size-sm);
-  font-weight: var(--cu-font-weight-semibold);
-  text-transform: uppercase;
-}
-.tb-controls :deep(.cu-collapse-content) {
-  padding-left: 0;
-  gap: var(--cu-space-sm);
-}
-.tb-controls :deep(.cu-collapse-content) h3 {
-  font-size: var(--cu-font-size-xs);
-  font-weight: var(--cu-font-weight-medium);
-  margin: 0 0 0.5rem 0;
-  color: var(--cu-color-neutral);
-  opacity: 0.7;
-}
-
-.tb-separator {
-  display: none;
-}
 .tb-layout {
   display: flex;
   gap: 2rem;
