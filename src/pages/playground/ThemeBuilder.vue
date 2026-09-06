@@ -41,7 +41,7 @@ import type { OutlineItem } from '@/components/lab/collapse/navigation/Outline.v
 import Modal from '@/components/overlay/Modal.vue'
 import {
   theme as activeTheme, setTheme, registerTheme, allThemes, builtInNames, opacities,
-  setShared, getThemeCSS, applyFullConfig,
+  setShared, getShared, getThemeCSS, applyFullConfig,
 } from '@/plugins/cu-tokens'
 import { DEFAULTS, DEFAULT_COLORS, DEFAULT_OPACITIES } from '@/plugins/cu-tokens/defaults'
 import { hexToRgba } from '@/lib/colors'
