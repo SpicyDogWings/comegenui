@@ -71,7 +71,7 @@ import ThemeDropdown from "@/components/theme/ThemeDropdown.vue";
 .app-topbar-actions {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 2rem;
 }
 
 .app-topbar-brand {
