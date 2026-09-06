@@ -149,3 +149,115 @@ function handleSaveProfile() {
     </div>
   </div>
 </template>
+
+<style scoped>
+.tb-scene {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.tb-scene-header {
+  padding: 0 0.25rem;
+  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);
+  padding-bottom: 0.75rem;
+}
+.tb-scene-title {
+  font-size: var(--cu-font-size-lg);
+  font-weight: var(--cu-font-weight-semibold);
+  color: var(--cu-color-neutral);
+  margin: 0;
+}
+.tb-scene-desc {
+  font-size: var(--cu-font-size-sm);
+  color: var(--cu-color-neutral);
+  opacity: 0.6;
+  margin: 0.25rem 0 0;
+}
+.tb-settings {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 1.25rem;
+}
+.tb-settings-card {
+  padding: 1.25rem;
+}
+.tb-settings-profile {
+  min-width: 0;
+}
+.tb-settings-prefs-card {
+  min-width: 0;
+}
+.tb-settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.tb-settings-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.tb-settings-form-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  padding-top: 1rem;
+  border-top: var(--cu-border-thin) solid var(--cu-border-color);
+}
+.tb-settings-form-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+.tb-settings-collapse {
+  margin-top: 1rem;
+}
+.tb-settings-prefs {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.tb-pref-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.tb-pref-title {
+  font-size: var(--cu-font-size-sm);
+  font-weight: var(--cu-font-weight-semibold);
+  color: var(--cu-color-neutral);
+  margin: 0;
+}
+.tb-pref-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.375rem 0;
+}
+.tb-pref-label {
+  font-size: var(--cu-font-size-sm);
+  color: var(--cu-color-neutral);
+}
+.tb-over-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.tb-over-option-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.tb-over-option-title {
+  font-size: var(--cu-font-size-sm);
+  font-weight: var(--cu-font-weight-medium);
+  color: var(--cu-color-neutral);
+}
+.tb-over-option-desc {
+  font-size: var(--cu-font-size-xs);
+  color: var(--cu-color-neutral);
+  opacity: 0.6;
+}
+</style>

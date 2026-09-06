@@ -93,7 +93,96 @@ const demoOutlineItems = [
               <Badge :color="value === 'Active' ? 'success' : value === 'Pending' ? 'warning' : 'danger'">
                 {{ value }}
               </Badge>
-            </template>
+</template>
+
+<style scoped>
+.tb-scene {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.tb-scene-header {
+  padding: 0 0.25rem;
+  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);
+  padding-bottom: 0.75rem;
+}
+.tb-scene-title {
+  font-size: var(--cu-font-size-lg);
+  font-weight: var(--cu-font-weight-semibold);
+  color: var(--cu-color-neutral);
+  margin: 0;
+}
+.tb-scene-desc {
+  font-size: var(--cu-font-size-sm);
+  color: var(--cu-color-neutral);
+  opacity: 0.6;
+  margin: 0.25rem 0 0;
+}
+.tb-dashboard {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 1.25rem;
+  background-color: var(--cu-color-surface);
+  border: var(--cu-border-thin) solid var(--cu-border-color);
+  border-radius: var(--cu-radius-lg);
+  overflow: hidden;
+}
+.tb-dash-sidebar {
+  padding: 1rem;
+  border-right: var(--cu-border-thin) solid var(--cu-border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background-color: var(--cu-color-surface);
+}
+.tb-dash-sidebar-footer {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: var(--cu-border-thin) solid var(--cu-border-color);
+}
+.tb-dash-main {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-width: 0;
+}
+.tb-dash-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.tb-dash-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.tb-dash-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+.tb-stat {
+  padding: 1rem;
+}
+.tb-stat-value {
+  font-size: var(--cu-font-size-2xl);
+  font-weight: var(--cu-font-weight-bold);
+  color: var(--cu-color-neutral);
+  line-height: 1.2;
+}
+.tb-stat-label {
+  font-size: var(--cu-font-size-xs);
+  color: var(--cu-color-neutral);
+  opacity: 0.6;
+  margin-top: 0.25rem;
+}
+.tb-dash-table {
+  padding: 1rem;
+}
+</style>
           </Table>
           <template #footer>
             <Pagination :total-pages="10" :current-page="3" :total-items="100" color="primary" />

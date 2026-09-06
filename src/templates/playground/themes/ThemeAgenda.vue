@@ -111,7 +111,129 @@ function createEvent() {
                   <p class="tb-agenda-event-desc">{{ event.desc }}</p>
                 </div>
               </div>
-            </template>
+</template>
+
+<style scoped>
+.tb-scene {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.tb-scene-header {
+  padding: 0 0.25rem;
+  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);
+  padding-bottom: 0.75rem;
+}
+.tb-scene-title {
+  font-size: var(--cu-font-size-lg);
+  font-weight: var(--cu-font-weight-semibold);
+  color: var(--cu-color-neutral);
+  margin: 0;
+}
+.tb-scene-desc {
+  font-size: var(--cu-font-size-sm);
+  color: var(--cu-color-neutral);
+  opacity: 0.6;
+  margin: 0.25rem 0 0;
+}
+.tb-agenda {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.tb-agenda-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.tb-agenda-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.tb-agenda-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+.tb-agenda-cal {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.tb-agenda-events {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.tb-agenda-section-title {
+  font-size: var(--cu-font-size-sm);
+  font-weight: var(--cu-font-weight-semibold);
+  color: var(--cu-color-neutral);
+  margin: 0;
+}
+.tb-agenda-event {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border: var(--cu-border-thin) solid var(--cu-border-color);
+  border-radius: var(--cu-radius);
+}
+.tb-agenda-event:last-child {
+  margin-bottom: 0;
+}
+.tb-agenda-event-time {
+  font-size: var(--cu-font-size-xs);
+  font-weight: var(--cu-font-weight-semibold);
+  color: var(--cu-color-neutral);
+  opacity: 0.6;
+  min-width: 3rem;
+}
+.tb-agenda-event-content {
+  flex: 1;
+}
+.tb-agenda-event-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.tb-agenda-event-title {
+  font-size: var(--cu-font-size-sm);
+  font-weight: var(--cu-font-weight-medium);
+  color: var(--cu-color-neutral);
+}
+.tb-agenda-event-desc {
+  font-size: var(--cu-font-size-xs);
+  color: var(--cu-color-neutral);
+  opacity: 0.6;
+  margin: 0.25rem 0 0;
+}
+.tb-agenda-empty {
+  font-size: var(--cu-font-size-sm);
+  color: var(--cu-color-neutral);
+  opacity: 0.5;
+  padding: 1rem;
+  text-align: center;
+}
+.tb-agenda-side {
+  min-width: 0;
+}
+.tb-agenda-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.tb-agenda-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+.tb-agenda-form-actions {
+  margin-top: 0.5rem;
+}
+</style>
             <p v-else class="tb-agenda-empty">No hay eventos para este día</p>
           </div>
         </div>

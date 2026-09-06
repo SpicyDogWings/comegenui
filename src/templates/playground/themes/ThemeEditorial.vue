@@ -165,3 +165,206 @@ Definís un tema nuevo en pocos pasos:
     </div>
   </div>
 </template>
+
+<style scoped>
+.tb-scene {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.tb-scene-header {
+  padding: 0 0.25rem;
+  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);
+  padding-bottom: 0.75rem;
+}
+.tb-scene-title {
+  font-size: var(--cu-font-size-lg);
+  font-weight: var(--cu-font-weight-semibold);
+  color: var(--cu-color-neutral);
+  margin: 0;
+}
+.tb-scene-desc {
+  font-size: var(--cu-font-size-sm);
+  color: var(--cu-color-neutral);
+  opacity: 0.6;
+  margin: 0.25rem 0 0;
+}
+.tb-editorial {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 1.5rem;
+}
+.tb-doc {
+  min-width: 0;
+}
+.tb-doc-header {
+  margin-bottom: 1.5rem;
+}
+.tb-doc-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+.tb-doc-date,
+.tb-doc-read {
+  font-size: var(--cu-font-size-xs);
+  color: var(--cu-color-neutral);
+  opacity: 0.6;
+}
+.tb-doc-date::before,
+.tb-doc-read::before {
+  content: '·';
+  margin-right: 0.25rem;
+}
+.tb-doc-title {
+  font-size: var(--cu-font-size-3xl);
+  font-weight: var(--cu-font-weight-bold);
+  color: var(--cu-color-neutral);
+  margin: 0 0 0.5rem;
+  line-height: 1.2;
+}
+.tb-doc-subtitle {
+  font-size: var(--cu-font-size-md);
+  color: var(--cu-color-neutral);
+  opacity: 0.7;
+  margin: 0;
+}
+.tb-doc-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  border-top: var(--cu-border-thin) solid var(--cu-border-color);
+  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);
+  margin-bottom: 1.5rem;
+}
+.tb-doc-toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.tb-doc-toolbar-group:last-of-type {
+  margin-left: auto;
+}
+.tb-doc-tb-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: var(--cu-radius-sm);
+  background: transparent;
+  color: var(--cu-color-neutral);
+  cursor: pointer;
+  font-size: var(--cu-font-size-sm);
+  transition: background 150ms ease;
+}
+.tb-doc-tb-btn:hover {
+  background: var(--cu-color-neutral-ghost-hover);
+}
+.tb-doc-toolbar-spacer {
+  flex: 1;
+}
+.tb-doc-body {
+  margin-bottom: 1.5rem;
+}
+.tb-doc-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 1rem;
+  border-top: var(--cu-border-thin) solid var(--cu-border-color);
+}
+.tb-doc-tags {
+  display: flex;
+  gap: 0.5rem;
+}
+.tb-doc-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+.tb-doc-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.tb-doc-toc-card {
+  padding: 1rem;
+}
+.tb-doc-meta-card {
+  padding: 1rem;
+}
+.tb-doc-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+.tb-doc-stat {
+  text-align: center;
+}
+.tb-doc-stat-value {
+  font-size: var(--cu-font-size-lg);
+  font-weight: var(--cu-font-weight-bold);
+  color: var(--cu-color-neutral);
+}
+.tb-doc-stat-label {
+  font-size: var(--cu-font-size-xs);
+  color: var(--cu-color-neutral);
+  opacity: 0.6;
+}
+.tb-doc-versions-card {
+  padding: 1rem;
+}
+.tb-doc-versions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.tb-doc-version {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0;
+}
+.tb-doc-version--current {
+  font-weight: var(--cu-font-weight-medium);
+}
+.tb-doc-version-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--cu-border-color);
+  flex-shrink: 0;
+}
+.tb-doc-version--current .tb-doc-version-dot {
+  background: var(--cu-color-success);
+}
+.tb-doc-version-info {
+  flex: 1;
+}
+.tb-doc-version-label {
+  font-size: var(--cu-font-size-sm);
+  color: var(--cu-color-neutral);
+}
+.tb-doc-version-date {
+  font-size: var(--cu-font-size-xs);
+  color: var(--cu-color-neutral);
+  opacity: 0.5;
+}
+.tb-doc-note-card {
+  padding: 1rem;
+}
+.tb-doc-note-text {
+  font-size: var(--cu-font-size-sm);
+  color: var(--cu-color-neutral);
+  margin: 0;
+}
+.tb-doc-sidebar-title {
+  font-size: var(--cu-font-size-sm);
+  font-weight: var(--cu-font-weight-semibold);
+  color: var(--cu-color-neutral);
+  margin: 0 0 0.75rem;
+}
+</style>
