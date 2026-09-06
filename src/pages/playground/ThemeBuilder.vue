@@ -782,6 +782,7 @@ onBeforeUnmount(() => {
         </div>
       </div>
     </Modal>
+    </div>
   </PlaygroundLayout>
 </template>
 
