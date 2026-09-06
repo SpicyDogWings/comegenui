@@ -369,6 +369,24 @@ const disabledCellsColumns = [
 
 const componentTokens = [];
 
+const componentDeps = [
+  { label: 'Input', path: '/playground/components/input' },
+  { label: 'Textarea', path: '/playground/components/textarea' },
+  { label: 'Select', path: '/playground/components/select' },
+  { label: 'Autocomplete', path: '/playground/components/autocomplete' },
+  { label: 'DatePicker', path: '/playground/components/date-picker' },
+  { label: 'Switch', path: '/playground/components/switch' },
+];
+
+const styleSubComponents = [
+  { label: 'Input', path: '/playground/components/input#style' },
+  { label: 'Textarea', path: '/playground/components/textarea#style' },
+  { label: 'Select', path: '/playground/components/select#style' },
+  { label: 'Autocomplete', path: '/playground/components/autocomplete#style' },
+  { label: 'DatePicker', path: '/playground/components/date-picker#style' },
+  { label: 'Switch', path: '/playground/components/switch#style' },
+];
+
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
   { key: 'type', label: 'Tipo' },
@@ -769,10 +787,13 @@ const disabledCellsVue = vueSnippet(`  <!-- cellDisabled: deshabilita una celda 
 
       <hr class="playground-separator" />
 
-      <hr class="playground-separator" />      <PlaygroundStyle :tokens="componentTokens" />
+      <hr class="playground-separator" />
+      <PlaygroundStyle :tokens="componentTokens" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>
+
+        <PlaygroundApiComponents :deps="componentDeps" />
 
         <h3 id="api-props">Props de AdvancedTable usadas acá</h3>
         <Table :columns="apiColumns" :data="propsData" variant="ghost" compact />
