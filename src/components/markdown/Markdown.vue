@@ -55,18 +55,7 @@ function sanitizeBlock(block: MarkdownBlock): MarkdownBlock {
 function getText(): string {
   const el = slotEl.value
   if (!el) return ''
-
-  const slot = el.querySelector('slot') as HTMLSlotElement | null
-  if (slot && slot.assignedNodes().length > 0) {
-    const nodes = slot.assignedNodes({ flatten: true })
-    let text = ''
-    for (const node of nodes) {
-      text += node.textContent || ''
-    }
-    return text
-  }
-
-  return el.textContent || ''
+  return (el.textContent || '').replace(/\\n/g, '\n')
 }
 
 function renderMarkdown() {

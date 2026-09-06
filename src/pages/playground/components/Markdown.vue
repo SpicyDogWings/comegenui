@@ -9,7 +9,6 @@ const outlineItems = ref<{ label: string; id: string }[]>([])
 
 function handleParsed(headingIds: string[]) {
   const items = headingIds.map(id => ({ label: id.replace(/-/g, ' '), id }))
-  // Insertar Style y API al inicio del outline
   outlineItems.value = [
     { label: 'Style', id: 'style', children: [{ label: 'CSS Variables', id: 'style-variables' }] },
     { label: 'API', id: 'api', children: [
@@ -133,7 +132,7 @@ const exposesData = [
 </script>
 
 <template>
-  <PlaygroundLayout title="Markdown" :outlineItems="outlineItems">
+  <PlaygroundLayout title="Markdown" :outline-items="outlineItems">
     <div class="playground-content">
       <section id="full-demo" class="playground-section">
         <div class="playground-heading">
