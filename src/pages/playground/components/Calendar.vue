@@ -566,7 +566,7 @@ const interfaceCode = `interface CalendarEvent {
         </p>
         <ul class="playground-component-links">
           <li v-for="dep in [{ label: 'MonthSlider', path: '/playground/components/month-slider' }]" :key="dep.label">
-            <a :href="dep.path" class="playground-component-link">{ dep.label }</a>
+            <Button :to="dep.path" variant="link" size="sm">{{ dep.label }}</Button>
           </li>
         </ul>
 

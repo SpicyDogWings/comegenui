@@ -595,7 +595,7 @@ const exposesData = [
         </p>
         <ul class="playground-component-links">
           <li v-for="dep in [{ label: 'Dropdown', path: '/playground/components/dropdown' }, { label: 'Button', path: '/playground/components/button' }, { label: 'Calendar', path: '/playground/components/calendar' }, { label: 'Label', path: '/playground/components/label' }]" :key="dep.label">
-            <a :href="dep.path" class="playground-component-link">{ dep.label }</a>
+            <Button :to="dep.path" variant="link" size="sm">{{ dep.label }}</Button>
           </li>
         </ul>
 

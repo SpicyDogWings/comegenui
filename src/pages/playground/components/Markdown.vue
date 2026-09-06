@@ -28,6 +28,7 @@ function handleParsed(headingIds: string[]) {
 const markdownVue = `<script setup>
 import { ref } from 'vue'
 import Markdown from '@/components/markdown/Markdown.vue'
+import Button from '@/components/buttons/Button.vue';
 
 const outlineItems = ref([])
 
@@ -281,7 +282,7 @@ Abajo
         </p>
         <ul class="playground-component-links">
           <li v-for="dep in [{ label: 'Table', path: '/playground/components/table' }, { label: 'CodeBlock', path: '/playground/components/code-block' }, { label: 'Blockquote', path: '/playground/components/blockquote' }]" :key="dep.label">
-            <a :href="dep.path" class="playground-component-link">{ dep.label }</a>
+            <Button :to="dep.path" variant="link" size="sm">{{ dep.label }}</Button>
           </li>
         </ul>
 

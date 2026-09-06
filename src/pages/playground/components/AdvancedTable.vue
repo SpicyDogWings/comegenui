@@ -365,6 +365,7 @@ const data = [
 
 const buttonsIconsVue = `<script setup>
 import AdvancedTable from '@/components/data/AdvancedTable.vue'
+import Button from '@/components/buttons/Button.vue';
 
 const columns = [
   { key: 'name', label: 'Name' },
@@ -710,7 +711,7 @@ const emptyVanilla = `${tableImportVanilla}
         </p>
         <ul class="playground-component-links">
           <li v-for="dep in [{ label: 'Table', path: '/playground/components/table' }, { label: 'Pagination', path: '/playground/components/pagination' }, { label: 'Input', path: '/playground/components/input' }, { label: 'Button', path: '/playground/components/button' }, { label: 'Badge', path: '/playground/components/badge' }, { label: 'DropdownMenu', path: '/playground/components/dropdown-menu' }]" :key="dep.label">
-            <a :href="dep.path" class="playground-component-link">{ dep.label }</a>
+            <Button :to="dep.path" variant="link" size="sm">{{ dep.label }}</Button>
           </li>
         </ul>
 

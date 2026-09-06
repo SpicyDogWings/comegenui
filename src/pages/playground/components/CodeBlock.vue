@@ -78,6 +78,7 @@ const outlineItems = [
 
 const vueImport = `<script setup>
 import CodeBlock from '@/components/markdown/CodeBlock.vue'
+import Button from '@/components/buttons/Button.vue';
 
 const code = '// tu código acá'
 <\/script>`;
@@ -221,7 +222,7 @@ const exposesData: { name: string; type: string; description: string }[] = [];
         </p>
         <ul class="playground-component-links">
           <li v-for="dep in [{ label: 'Badge', path: '/playground/components/badge' }]" :key="dep.label">
-            <a :href="dep.path" class="playground-component-link">{ dep.label }</a>
+            <Button :to="dep.path" variant="link" size="sm">{{ dep.label }}</Button>
           </li>
         </ul>
 

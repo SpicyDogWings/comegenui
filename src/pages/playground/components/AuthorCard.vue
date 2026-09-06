@@ -260,7 +260,7 @@ const size = ref('md')
         </p>
         <ul class="playground-component-links">
           <li v-for="dep in [{ label: 'Avatar', path: '/playground/components/avatar' }]" :key="dep.label">
-            <a :href="dep.path" class="playground-component-link">{ dep.label }</a>
+            <Button :to="dep.path" variant="link" size="sm">{{ dep.label }}</Button>
           </li>
         </ul>
 

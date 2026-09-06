@@ -513,7 +513,7 @@ const totalDemo = sampleData.reduce((sum, r) => sum + r.amount, 0).toFixed(2);
         </p>
         <ul class="playground-component-links">
           <li v-for="dep in [{ label: 'Loader', path: '/playground/components/loader' }]" :key="dep.label">
-            <a :href="dep.path" class="playground-component-link">{ dep.label }</a>
+            <Button :to="dep.path" variant="link" size="sm">{{ dep.label }}</Button>
           </li>
         </ul>
 
