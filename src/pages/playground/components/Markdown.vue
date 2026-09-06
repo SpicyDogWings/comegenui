@@ -261,10 +261,6 @@ Abajo
 
       <hr class="playground-separator" />
 
-      
-
-      <hr class="playground-separator" />
-
       <PlaygroundStyle :tokens="componentTokens" :sub-components="styleSubComponents" />
 
       <section id="api" class="playground-section">
