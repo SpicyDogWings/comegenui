@@ -43,10 +43,10 @@ import Outline from '@/components/lab/collapse/navigation/Outline.vue'
 import type { NavItem } from '@/components/lab/collapse/navigation/Navbar.vue'
 import type { OutlineItem } from '@/components/lab/collapse/navigation/Outline.vue'
 import Modal from '@/components/overlay/Modal.vue'
-import ThemeDashboard from '@/templates/playground/themes/ThemeDashboard.vue'
-import ThemeSettings from '@/templates/playground/themes/ThemeSettings.vue'
-import ThemeAgenda from '@/templates/playground/themes/ThemeAgenda.vue'
-import ThemeEditorial from '@/templates/playground/themes/ThemeEditorial.vue'
+import ThemeDashboard from '@/components/theme-previews/ThemeDashboard.vue'
+import ThemeSettings from '@/components/theme-previews/ThemeSettings.vue'
+import ThemeAgenda from '@/components/theme-previews/ThemeAgenda.vue'
+import ThemeEditorial from '@/components/theme-previews/ThemeEditorial.vue'
 import {
   theme as activeTheme, setTheme, registerTheme, allThemes, builtInNames, opacities,
   setShared, getShared, getThemeCSS, applyFullConfig,
@@ -84,28 +84,12 @@ const tableColumns = [
   { key: 'role', label: 'Role' },
 ]
 
-const themeName = ref(themeStore.current)
-
-// Sync themeName → store (cuando cambia en el editor)
-watch(themeName, (name) => {
-  if (name !== themeStore.current) {
+// Computed bidireccional: fuente de verdad única vía Pinia store
+const themeName = computed({
+  get: () => themeStore.current,
+  set: (name: string) => {
     themeStore.setTheme(name)
-  }
-  if (name !== activeTheme.value) {
-    setTheme(name)
-  }
-  if (builtInNames.value.includes(name)) {
-    loadThemeIntoTokens(name)
-  }
-})
-
-// Sync store → themeName (cuando cambia externamente)
-watch(() => themeStore.current, (name) => {
-  if (name !== themeName.value) {
-    themeName.value = name
-    isEditing.value = false
-    loadThemeIntoTokens(name)
-  }
+  },
 })
 
 // Sync editor when theme changes externally (e.g. ThemeChooser/Dropdown)
