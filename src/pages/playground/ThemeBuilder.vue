@@ -672,8 +672,17 @@ onBeforeUnmount(() => {
             </div>
             <div class="tb-agenda">
               <div class="tb-agenda-main">
-                <Card variant="ghost" class="tb-agenda-card">
-                  <Calendar model-value="2026-09-11" style="width: 100%" />
+                <div class="tb-agenda-toolbar">
+                  <Input placeholder="Buscar evento…" style="max-width: 220px" />
+                  <div class="tb-agenda-toolbar-actions">
+                    <DropdownMenu color="neutral" variant="soft" label="Filtrar" :items="dropdownItems" />
+                    <Button color="primary">Nuevo evento</Button>
+                  </div>
+                </div>
+                <div class="tb-agenda-split">
+                  <div class="tb-agenda-cal">
+                    <Calendar model-value="2026-09-11" style="width: 100%" />
+                  </div>
                   <div class="tb-agenda-events">
                     <h4 class="tb-agenda-section-title">Eventos del día</h4>
                     <div class="tb-agenda-event">
@@ -717,69 +726,37 @@ onBeforeUnmount(() => {
                       </div>
                     </div>
                   </div>
-                </Card>
+                </div>
               </div>
               <div class="tb-agenda-sidebar">
-                <Card variant="ghost" title="Nuevo evento" class="tb-agenda-side-card">
-                  <div class="tb-agenda-form">
-                    <div class="tb-field">
-                      <Label label="Título" />
-                      <Input placeholder="Nombre del evento" />
+                <h4 class="tb-agenda-section-title">Acciones rápidas</h4>
+                <div class="tb-agenda-actions">
+                  <Button color="primary" variant="soft" style="width: 100%">Ver semana</Button>
+                  <Button color="success" variant="soft" style="width: 100%">Completados</Button>
+                  <Button color="warning" variant="outlined" style="width: 100%">Pendientes</Button>
+                  <Button color="danger" variant="ghost" style="width: 100%">Cancelar todo</Button>
+                </div>
+                <div class="tb-agenda-legend">
+                  <h4 class="tb-agenda-section-title">Leyenda</h4>
+                  <div class="tb-agenda-legend-items">
+                    <div class="tb-agenda-legend-item">
+                      <Badge color="primary" variant="soft">Work</Badge>
+                      <span>Trabajo</span>
                     </div>
-                    <div class="tb-settings-row">
-                      <div class="tb-field">
-                        <Label label="Fecha" />
-                        <DatePicker model-value="2026-09-11" />
-                      </div>
-                      <div class="tb-field">
-                        <Label label="Hora" />
-                        <Input placeholder="14:00" />
-                      </div>
+                    <div class="tb-agenda-legend-item">
+                      <Badge color="success" variant="soft">Done</Badge>
+                      <span>Completado</span>
                     </div>
-                    <div class="tb-field">
-                      <Label label="Categoría" />
-                      <Select placeholder="Elegí…">
-                        <option value="work">Work</option>
-                        <option value="personal">Personal</option>
-                        <option value="urgent">Urgent</option>
-                      </Select>
+                    <div class="tb-agenda-legend-item">
+                      <Badge color="warning" variant="soft">Pending</Badge>
+                      <span>Pendiente</span>
                     </div>
-                    <div class="tb-field">
-                      <Label label="Descripción" />
-                      <Textarea placeholder="Detalles del evento…" />
-                    </div>
-                    <Button color="primary" style="width: 100%">Crear evento</Button>
-                  </div>
-                </Card>
-                <Card variant="ghost" title="Acciones rápidas" class="tb-agenda-side-card">
-                  <div class="tb-agenda-actions">
-                    <Button color="primary" variant="soft" style="width: 100%">Ver semana</Button>
-                    <Button color="success" variant="soft" style="width: 100%">Completados</Button>
-                    <Button color="warning" variant="outlined" style="width: 100%">Pendientes</Button>
-                    <Button color="danger" variant="ghost" style="width: 100%">Cancelar todo</Button>
-                  </div>
-                  <div class="tb-agenda-legend">
-                    <h4 class="tb-agenda-section-title">Leyenda</h4>
-                    <div class="tb-agenda-legend-items">
-                      <div class="tb-agenda-legend-item">
-                        <Badge color="primary" variant="soft">Work</Badge>
-                        <span>Trabajo</span>
-                      </div>
-                      <div class="tb-agenda-legend-item">
-                        <Badge color="success" variant="soft">Done</Badge>
-                        <span>Completado</span>
-                      </div>
-                      <div class="tb-agenda-legend-item">
-                        <Badge color="warning" variant="soft">Pending</Badge>
-                        <span>Pendiente</span>
-                      </div>
-                      <div class="tb-agenda-legend-item">
-                        <Badge color="danger" variant="soft">Urgent</Badge>
-                        <span>Urgente</span>
-                      </div>
+                    <div class="tb-agenda-legend-item">
+                      <Badge color="danger" variant="soft">Urgent</Badge>
+                      <span>Urgente</span>
                     </div>
                   </div>
-                </Card>
+                </div>
               </div>
             </div>
           </div>
@@ -1160,18 +1137,46 @@ onBeforeUnmount(() => {
 /* === AGENDA === */
 .tb-agenda {
   display: grid;
-  grid-template-columns: 1fr 300px;
+  grid-template-columns: 1fr 240px;
   gap: 1.25rem;
 }
 
-.tb-agenda-card {
+.tb-agenda-main {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.tb-agenda-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background-color: var(--cu-color-surface);
+  border: var(--cu-border-thin) solid var(--cu-border-color);
+  border-radius: var(--cu-radius-lg);
+}
+
+.tb-agenda-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tb-agenda-split {
+  display: grid;
+  grid-template-columns: minmax(280px, 320px) 1fr;
+  gap: 1rem;
   padding: 1.25rem;
+  background-color: var(--cu-color-surface);
+  border: var(--cu-border-thin) solid var(--cu-border-color);
+  border-radius: var(--cu-radius-lg);
 }
 
 .tb-agenda-events {
-  margin-top: 1.25rem;
-  padding-top: 1rem;
-  border-top: var(--cu-border-thin) solid var(--cu-border-color);
+  display: flex;
+  flex-direction: column;
 }
 
 .tb-agenda-section-title {
@@ -1229,26 +1234,17 @@ onBeforeUnmount(() => {
 .tb-agenda-sidebar {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
-}
-
-.tb-agenda-side-card {
+  gap: 1.5rem;
   padding: 1.25rem;
-}
-
-.tb-agenda-form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.875rem;
+  background-color: var(--cu-color-surface);
+  border: var(--cu-border-thin) solid var(--cu-border-color);
+  border-radius: var(--cu-radius-lg);
 }
 
 .tb-agenda-actions {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  margin-bottom: 1.25rem;
-  padding-bottom: 1.25rem;
-  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);
 }
 
 .tb-agenda-legend {
