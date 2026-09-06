@@ -158,6 +158,8 @@ const advancedtable_tokens = [
 
 const styleData = advancedtable_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
+const componentDeps = [{ label: 'Table', path: '/playground/components/table' }, { label: 'Pagination', path: '/playground/components/pagination' }, { label: 'Input', path: '/playground/components/input' }, { label: 'Button', path: '/playground/components/button' }, { label: 'Badge', path: '/playground/components/badge' }, { label: 'DropdownMenu', path: '/playground/components/dropdown-menu' }];
+
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
   { key: 'type', label: 'Tipo' },
@@ -685,12 +687,32 @@ const emptyVanilla = `${tableImportVanilla}
 
         <h3 id="style-variables">CSS Variables</h3>
         <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
+
+        <h4>Sub-componentes con estilos propios</h4>
+        <ul class="playground-component-links">
+          <li><a href="/playground/components/table" class="playground-component-link">Table</a> — revisá sus variables CSS en su propia sección Style</li>
+          <li><a href="/playground/components/pagination" class="playground-component-link">Pagination</a> — revisá sus variables CSS en su propia sección Style</li>
+          <li><a href="/playground/components/input" class="playground-component-link">Input</a> — revisá sus variables CSS en su propia sección Style</li>
+          <li><a href="/playground/components/button" class="playground-component-link">Button</a> — revisá sus variables CSS en su propia sección Style</li>
+          <li><a href="/playground/components/badge" class="playground-component-link">Badge</a> — revisá sus variables CSS en su propia sección Style</li>
+          <li><a href="/playground/components/dropdown-menu" class="playground-component-link">DropdownMenu</a> — revisá sus variables CSS en su propia sección Style</li>
+        </ul>
       </section>
 
       <hr class="playground-separator" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>
+
+        <h3 id="api-components">Components</h3>
+        <p class="playground-desc">
+          Este componente usa los siguientes sub-componentes:
+        </p>
+        <ul class="playground-component-links">
+          <li v-for="dep in [{ label: 'Table', path: '/playground/components/table' }, { label: 'Pagination', path: '/playground/components/pagination' }, { label: 'Input', path: '/playground/components/input' }, { label: 'Button', path: '/playground/components/button' }, { label: 'Badge', path: '/playground/components/badge' }, { label: 'DropdownMenu', path: '/playground/components/dropdown-menu' }]" :key="dep.label">
+            <a :href="dep.path" class="playground-component-link">{ dep.label }</a>
+          </li>
+        </ul>
 
         <h3 id="api-props">Props</h3>
         <Table :columns="apiColumns" :data="propsData" variant="ghost" compact />

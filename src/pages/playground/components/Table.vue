@@ -85,6 +85,8 @@ const table_tokens = [
 
 const styleData = table_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
+const componentDeps = [{ label: 'Loader', path: '/playground/components/loader' }];
+
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
   { key: 'type', label: 'Tipo' },
@@ -493,12 +495,27 @@ const totalDemo = sampleData.reduce((sum, r) => sum + r.amount, 0).toFixed(2);
 
         <h3 id="style-variables">CSS Variables</h3>
         <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
+
+        <h4>Sub-componentes con estilos propios</h4>
+        <ul class="playground-component-links">
+          <li><a href="/playground/components/loader" class="playground-component-link">Loader</a> — revisá sus variables CSS en su propia sección Style</li>
+        </ul>
       </section>
 
       <hr class="playground-separator" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>
+
+        <h3 id="api-components">Components</h3>
+        <p class="playground-desc">
+          Este componente usa los siguientes sub-componentes:
+        </p>
+        <ul class="playground-component-links">
+          <li v-for="dep in [{ label: 'Loader', path: '/playground/components/loader' }]" :key="dep.label">
+            <a :href="dep.path" class="playground-component-link">{ dep.label }</a>
+          </li>
+        </ul>
 
         <h3 id="api-props">Props</h3>
         <Table :columns="apiColumns" :data="propsData" variant="ghost" compact />

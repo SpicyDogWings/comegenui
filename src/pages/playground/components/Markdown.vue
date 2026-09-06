@@ -113,6 +113,8 @@ const markdown_tokens = [
 
 const styleData = markdown_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
+const componentDeps = [{ label: 'Table', path: '/playground/components/table' }, { label: 'CodeBlock', path: '/playground/components/code-block' }, { label: 'Blockquote', path: '/playground/components/blockquote' }];
+
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
   { key: 'type', label: 'Tipo' },
@@ -259,12 +261,29 @@ Abajo
 
         <h3 id="style-variables">CSS Variables</h3>
         <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
+
+        <h4>Sub-componentes con estilos propios</h4>
+        <ul class="playground-component-links">
+          <li><a href="/playground/components/table" class="playground-component-link">Table</a> — revisá sus variables CSS en su propia sección Style</li>
+          <li><a href="/playground/components/code-block" class="playground-component-link">CodeBlock</a> — revisá sus variables CSS en su propia sección Style</li>
+          <li><a href="/playground/components/blockquote" class="playground-component-link">Blockquote</a> — revisá sus variables CSS en su propia sección Style</li>
+        </ul>
       </section>
 
       <hr class="playground-separator" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>
+
+        <h3 id="api-components">Components</h3>
+        <p class="playground-desc">
+          Este componente usa los siguientes sub-componentes:
+        </p>
+        <ul class="playground-component-links">
+          <li v-for="dep in [{ label: 'Table', path: '/playground/components/table' }, { label: 'CodeBlock', path: '/playground/components/code-block' }, { label: 'Blockquote', path: '/playground/components/blockquote' }]" :key="dep.label">
+            <a :href="dep.path" class="playground-component-link">{ dep.label }</a>
+          </li>
+        </ul>
 
         <h3 id="api-props">Props</h3>
         <Table :columns="apiColumns" :data="propsData" empty="No tiene props (el contenido va por slot)" variant="ghost" compact />

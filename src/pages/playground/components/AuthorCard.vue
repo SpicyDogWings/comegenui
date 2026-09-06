@@ -25,6 +25,7 @@ const outlineItems = [
     label: 'API',
     id: 'api',
     children: [
+      { label: 'Components', id: 'api-components' },
       { label: 'Props', id: 'api-props' },
       { label: 'Slots', id: 'api-slots' },
       { label: 'Events', id: 'api-events' },
@@ -56,6 +57,10 @@ const avatarTokens = [
 
 const authorCardStyleData = authorCardTokens.map(name => ({ name, description: getTokenDescription(name) }));
 const avatarStyleData = avatarTokens.map(name => ({ name, description: getTokenDescription(name) }));
+
+const componentDeps = [
+      { label: 'Avatar', path: '/playground/components/avatar' },
+];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -236,19 +241,28 @@ const size = ref('md')
         <h2>Style</h2>
 
         <h3 id="style-variables">CSS Variables</h3>
-        <p class="playground-desc">
-          AuthorCard comparte las variables de estilo de <code>Avatar</code> (su hijo directo). La lista incluye ambas.
-        </p>
-        <h4>AuthorCard</h4>
         <Table :columns="styleColumns" :data="authorCardStyleData" variant="ghost" compact />
-        <h4>Avatar (sub-componente)</h4>
-        <Table :columns="styleColumns" :data="avatarStyleData" variant="ghost" compact />
+
+        <h4>Sub-componentes con estilos propios</h4>
+        <ul class="playground-component-links">
+          <li><a href="/playground/components/avatar" class="playground-component-link">Avatar</a> — revisá sus variables CSS en su propia sección Style</li>
+        </ul>
       </section>
 
       <hr class="playground-separator" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>
+
+        <h3 id="api-components">Components</h3>
+        <p class="playground-desc">
+          Este componente usa los siguientes sub-componentes:
+        </p>
+        <ul class="playground-component-links">
+          <li v-for="dep in [{ label: 'Avatar', path: '/playground/components/avatar' }]" :key="dep.label">
+            <a :href="dep.path" class="playground-component-link">{ dep.label }</a>
+          </li>
+        </ul>
 
         <h3 id="api-props">Props</h3>
         <Table :columns="apiColumns" :data="propsData" variant="ghost" compact />
@@ -289,5 +303,24 @@ const size = ref('md')
   font-size: var(--cu-font-size-sm);
   color: var(--cu-color-neutral);
   margin: 0;
+}
+
+.playground-component-links {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.playground-component-link {
+  color: var(--cu-color-primary);
+  text-decoration: none;
+  font-weight: var(--cu-font-weight-medium);
+}
+
+.playground-component-link:hover {
+  text-decoration: underline;
 }
 </style>

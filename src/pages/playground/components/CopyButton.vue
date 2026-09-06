@@ -59,6 +59,7 @@ const outlineItems = [
     label: 'API',
     id: 'api',
     children: [
+      { label: 'Components', id: 'api-components' },
       { label: 'Props', id: 'api-props' },
       { label: 'Slots', id: 'api-slots' },
       { label: 'Events', id: 'api-events' },
@@ -84,6 +85,8 @@ const copybutton_tokens = [
 ];
 
 const styleData = copybutton_tokens.map(name => ({ name, description: getTokenDescription(name) }));
+
+const componentDeps = [{ label: 'Button', path: '/playground/components/button' }];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -163,12 +166,27 @@ const eventsData = [
 
         <h3 id="style-variables">CSS Variables</h3>
         <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
+
+        <h4>Sub-componentes con estilos propios</h4>
+        <ul class="playground-component-links">
+          <li><a href="/playground/components/button" class="playground-component-link">Button</a> — revisá sus variables CSS en su propia sección Style</li>
+        </ul>
       </section>
 
       <hr class="playground-separator" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>
+
+        <h3 id="api-components">Components</h3>
+        <p class="playground-desc">
+          Este componente usa los siguientes sub-componentes:
+        </p>
+        <ul class="playground-component-links">
+          <li v-for="dep in [{ label: 'Button', path: '/playground/components/button' }]" :key="dep.label">
+            <a :href="dep.path" class="playground-component-link">{ dep.label }</a>
+          </li>
+        </ul>
 
         <h3 id="api-props">Props</h3>
         <Table :columns="apiColumns" :data="propsData" variant="ghost" compact />
