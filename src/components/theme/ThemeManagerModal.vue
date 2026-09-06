@@ -155,10 +155,9 @@ defineExpose({ open, close })
   font-family: var(--cu-font-mono);
   font-size: var(--cu-font-size-xs);
   line-height: 1.6;
-  flex: 1;
-  overflow: auto;
   overflow-x: auto;
   overflow-y: auto;
+  max-height: 300px;
   margin: 0;
 }
 </style>
