@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch, nextTick, type PropType } from 'vue'
+import { computed, ref, watch, nextTick, onMounted, type PropType } from 'vue'
 import { useRoute } from 'vue-router'
 import Collapse from '@/components/overlay/Collapse.vue'
 import Button from '@/components/buttons/Button.vue'
@@ -119,16 +119,28 @@ const activeItem = computed(() => {
   return findActive(props.items)
 })
 
-watch(activeItem, async (item) => {
-  if (!item) return
-  await nextTick()
-  navRef.value?.querySelector('[data-navbar-active]')?.scrollIntoView({ block: 'nearest' })
+function scrollToActive() {
+  nextTick(() => {
+    const el = document.querySelector('[data-navbar-active]')
+    if (el) {
+      el.scrollIntoView({ block: 'nearest', inline: 'nearest' })
+    }
+  })
+}
+
+watch(activeItem, (item) => {
+  if (item) scrollToActive()
 })
 
 watch(firstMatch, async (item) => {
   if (!item) return
   await nextTick()
   navRef.value?.querySelector('[data-navbar-match]')?.scrollIntoView({ block: 'nearest' })
+})
+
+// Scroll también al montar (para la ruta inicial)
+onMounted(() => {
+  if (activeItem.value) scrollToActive()
 })
 </script>
 
