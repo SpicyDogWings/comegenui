@@ -55,6 +55,7 @@ function saludar(usuario: Usuario): string {
 const outlineItems = [
   { label: 'Variants', id: 'variants' },
   { label: 'Line numbers', id: 'line-numbers' },
+  { label: 'Scroll', id: 'scroll' },
   {
     label: 'Style',
     id: 'style',
@@ -97,6 +98,57 @@ const variantsVue = vueSnippet(`  <CodeBlock :code="code" language="javascript" 
 const lineNumbersVue = vueSnippet(`  <CodeBlock :code="code" language="html" variant="default" :line-numbers="true" />
   <CodeBlock :code="code" language="css" variant="outlined" :line-numbers="true" />
   <CodeBlock :code="code" language="ts" variant="solid" :line-numbers="true" />`);
+
+const codeLong = `/* Este es un ejemplo de código largo para demostrar el scroll interno */
+:root {
+  --cu-color-primary: #1774A4;
+  --cu-color-primary-text: #ffffff;
+  --cu-color-primary-hover: #125a82;
+  --cu-color-primary-active: #0d4a6e;
+  --cu-color-primary-ghost-hover: rgba(23, 116, 164, 0.1);
+  --cu-color-primary-ghost-active: rgba(23, 116, 164, 0.2);
+  --cu-color-primary-soft: rgba(23, 116, 164, 0.15);
+  --cu-color-primary-soft-hover: rgba(23, 116, 164, 0.25);
+  --cu-color-primary-soft-active: rgba(23, 116, 164, 0.35);
+  --cu-color-primary-subtle: rgba(23, 116, 164, 0.1);
+  --cu-color-primary-subtle-hover: rgba(23, 116, 164, 0.2);
+  --cu-color-primary-subtle-active: rgba(23, 116, 164, 0.3);
+  --cu-color-primary-subtle-border: rgba(23, 116, 164, 0.5);
+  --cu-color-primary-code: #1a90c4;
+  --cu-color-secondary: #6366f1;
+  --cu-color-secondary-text: #ffffff;
+  --cu-color-secondary-hover: #4f46e5;
+  --cu-color-secondary-active: #4338ca;
+  --cu-color-surface: #ffffff;
+  --cu-code-bg: #1a1a1a;
+  --cu-code-text: #e0e0e0;
+  --cu-code-faded: rgba(224, 224, 224, 0.55);
+}
+
+.cu-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--cu-space-xs);
+  font-family: var(--cu-font-sans);
+  font-weight: var(--cu-font-weight-medium);
+  border-radius: var(--cu-radius);
+  transition: all 150ms ease;
+}
+
+.cu-button--primary {
+  background-color: var(--cu-color-primary);
+  color: var(--cu-color-primary-text);
+}
+
+.cu-button--primary:hover {
+  background-color: var(--cu-color-primary-hover);
+}`;
+
+const scrollVue = vueSnippet(`  <!-- Código largo con scroll interno -->
+  <div style="max-height: 200px;">
+    <CodeBlock :code="codeLargo" language="css" variant="solid" />
+  </div>`);
 
 const componentTokens = [
   '--cb-text',
@@ -199,7 +251,20 @@ const exposesData: { name: string; type: string; description: string }[] = [];
 
       <hr class="playground-separator" />
 
-      
+      <section id="scroll" class="playground-section">
+        <div class="playground-heading">
+          <h2>Scroll</h2>
+          <Badge color="neutral" title="Scroll interno">max-height</Badge>
+        </div>
+        <SectionDemo :vue-code="scrollVue">
+          <div class="playground-col">
+            <p class="playground-desc">El CodeBlock maneja scroll interno cuando el código excede la altura del contenedor.</p>
+            <div class="playground-scroll-demo">
+              <CodeBlock :code="codeLong" language="css" variant="solid" />
+            </div>
+          </div>
+        </SectionDemo>
+      </section>
 
       <hr class="playground-separator" />
 
