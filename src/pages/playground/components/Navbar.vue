@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
+import { getTokenDescription } from '@/config/css-tokens';
 import Navbar from "@/components/lab/collapse/navigation/Navbar.vue";
 import Badge from "@/components/information/Badge.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
@@ -113,16 +114,18 @@ const styleColumns = [
   { key: 'description', label: 'Uso' },
 ];
 
-const styleData = [
-  { name: '--cu-font-sans', description: 'Fuente' },
-  { name: '--cu-font-size-sm', description: 'Tamaño texto' },
-  { name: '--cu-font-weight-medium', description: 'Peso medio' },
-  { name: '--cu-space-sm', description: 'Espaciado' },
-  { name: '--cu-space-md', description: 'Espaciado' },
-  { name: '--cu-shadow-md', description: 'Sombra' },
-  { name: '--cu-color-surface', description: 'Color superficie' },
-  { name: '--cu-border-thin', description: 'Borde fino' },
+const navbar_tokens = [
+  '--cu-font-sans',
+  '--cu-font-size-sm',
+  '--cu-font-weight-medium',
+  '--cu-space-sm',
+  '--cu-space-md',
+  '--cu-shadow-md',
+  '--cu-color-surface',
+  '--cu-border-thin',
 ];
+
+const styleData = navbar_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

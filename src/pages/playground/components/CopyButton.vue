@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
+import { getTokenDescription } from '@/config/css-tokens';
 import CopyButton from "@/components/buttons/CopyButton.vue";
 import Table from "@/components/data/Table.vue";
 import Badge from "@/components/information/Badge.vue";
@@ -73,14 +74,16 @@ const styleColumns = [
   { key: 'description', label: 'Uso' },
 ];
 
-const styleData = [
-  { name: '--cu-font-sans', description: 'Fuente' },
-  { name: '--cu-font-size-sm', description: 'Tamaño texto' },
-  { name: '--cu-radius', description: 'Radio' },
-  { name: '--cu-space-sm', description: 'Espaciado' },
-  { name: '--cu-color-surface', description: 'Color superficie' },
-  { name: '--cu-border-thin', description: 'Borde fino' },
+const copybutton_tokens = [
+  '--cu-font-sans',
+  '--cu-font-size-sm',
+  '--cu-radius',
+  '--cu-space-sm',
+  '--cu-color-surface',
+  '--cu-border-thin',
 ];
+
+const styleData = copybutton_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

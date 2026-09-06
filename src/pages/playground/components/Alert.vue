@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { getTokenDescription } from '@/config/css-tokens';
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Table from "@/components/data/Table.vue";
@@ -37,31 +38,29 @@ const styleColumns = [
   { key: 'description', label: 'Uso' },
 ];
 
-const styleData = [
-  { name: '--alert-bg', description: 'Fondo' },
-  { name: '--alert-text', description: 'Texto' },
-  { name: '--alert-soft', description: 'Fondo soft' },
-  { name: '--alert-soft-hover', description: 'Hover soft' },
-  { name: '--alert-soft-active', description: 'Activo soft' },
-  { name: '--alert-subtle', description: 'Fondo subtle' },
-  { name: '--alert-subtle-hover', description: 'Hover subtle' },
-  { name: '--alert-subtle-active', description: 'Activo subtle' },
-  { name: '--alert-subtle-border', description: 'Borde subtle' },
-  { name: '--alert-ghost-hover', description: 'Hover ghost' },
-  { name: '--alert-ghost-active', description: 'Activo ghost' },
-  { name: '--cu-font-sans', description: 'Fuente' },
-  { name: '--cu-font-size-sm', description: 'Tamaño sm' },
-  { name: '--cu-font-size-lg', description: 'Tamaño lg' },
-  { name: '--cu-font-weight-bold', description: 'Peso bold' },
-  { name: '--cu-radius', description: 'Radio' },
-  { name: '--cu-radius-sm', description: 'Radio sm' },
-  { name: '--cu-border-thin', description: 'Borde fino' },
-  { name: '--cu-space-2xs', description: 'Espaciado 2xs' },
-  { name: '--cu-space-sm', description: 'Espaciado sm' },
-  { name: '--cu-space-md', description: 'Espaciado md' },
-  { name: '--cu-space-lg', description: 'Espaciado lg' },
-  { name: '--cu-color-surface', description: 'Color superficie' },
+const alert_tokens = [
+  '--alert-bg',
+  '--alert-text',
+  '--alert-soft',
+  '--alert-subtle',
+  '--alert-subtle-border',
+  '--alert-ghost-hover',
+  '--alert-ghost-active',
+  '--cu-font-sans',
+  '--cu-font-size-sm',
+  '--cu-font-size-lg',
+  '--cu-font-weight-bold',
+  '--cu-radius',
+  '--cu-radius-sm',
+  '--cu-border-thin',
+  '--cu-space-2xs',
+  '--cu-space-sm',
+  '--cu-space-md',
+  '--cu-space-lg',
+  '--cu-color-surface',
 ];
+
+const styleData = alert_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

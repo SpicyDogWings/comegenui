@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
+import { getTokenDescription } from '@/config/css-tokens';
 import Button from "@/components/buttons/Button.vue";
 import CodeBlock from "@/components/markdown/CodeBlock.vue";
 import Table from "@/components/data/Table.vue";
@@ -322,12 +323,14 @@ const styleColumns = [
   { key: 'description', label: 'Uso' },
 ];
 
-const styleData = [
-  { name: '--cu-border-color', description: 'Color borde' },
-  { name: '--cu-border-thin', description: 'Borde fino' },
-  { name: '--cu-space-md', description: 'Espaciado vertical' },
-  { name: '--cu-space-xs', description: 'Espaciado horizontal' },
+const dropdownmenu_tokens = [
+  '--cu-border-color',
+  '--cu-border-thin',
+  '--cu-space-md',
+  '--cu-space-xs',
 ];
+
+const styleData = dropdownmenu_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

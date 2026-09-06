@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { getTokenDescription } from '@/config/css-tokens';
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Badge from "@/components/information/Badge.vue";
@@ -251,26 +252,28 @@ const styleColumns = [
   { key: 'description', label: 'Uso' },
 ];
 
-const styleData = [
-  { name: '--cal-accent', description: 'Acento' },
-  { name: '--cal-accent-hover', description: 'Acento hover' },
-  { name: '--cal-soft', description: 'Fondo soft' },
-  { name: '--cal-soft-hover', description: 'Hover soft' },
-  { name: '--cal-subtle', description: 'Fondo subtle' },
-  { name: '--cal-subtle-border', description: 'Borde subtle' },
-  { name: '--cal-ghost-hover', description: 'Hover ghost' },
-  { name: '--cu-font-sans', description: 'Fuente' },
-  { name: '--cu-font-size-sm', description: 'Tamaño sm' },
-  { name: '--cu-font-size-xs', description: 'Tamaño xs' },
-  { name: '--cu-font-weight-medium', description: 'Peso medio' },
-  { name: '--cu-font-weight-semibold', description: 'Peso semi-bold' },
-  { name: '--cu-radius-sm', description: 'Radio sm' },
-  { name: '--cu-space-2xs', description: 'Espaciado 2xs' },
-  { name: '--cu-space-xs', description: 'Espaciado xs' },
-  { name: '--cu-space-sm', description: 'Espaciado sm' },
-  { name: '--cu-border-thin', description: 'Borde fino' },
-  { name: '--cu-color-surface', description: 'Color superficie' },
+const calendar_tokens = [
+  '--cal-accent',
+  '--cal-accent-hover',
+  '--cal-soft',
+  '--cal-soft-hover',
+  '--cal-subtle',
+  '--cal-subtle-border',
+  '--cal-ghost-hover',
+  '--cu-font-sans',
+  '--cu-font-size-sm',
+  '--cu-font-size-xs',
+  '--cu-font-weight-medium',
+  '--cu-font-weight-semibold',
+  '--cu-radius-sm',
+  '--cu-space-2xs',
+  '--cu-space-xs',
+  '--cu-space-sm',
+  '--cu-border-thin',
+  '--cu-color-surface',
 ];
+
+const styleData = calendar_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { getTokenDescription } from '@/config/css-tokens';
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Badge from "@/components/information/Badge.vue";
@@ -370,11 +371,13 @@ const styleColumns = [
   { key: 'description', label: 'Uso' },
 ];
 
-const styleData = [
-  { name: '--cu-color-success', description: 'Color éxito' },
-  { name: '--cu-color-danger', description: 'Color error' },
-  { name: '--cu-space-sm', description: 'Espaciado' },
+const editablerow_tokens = [
+  '--cu-color-success',
+  '--cu-color-danger',
+  '--cu-space-sm',
 ];
+
+const styleData = editablerow_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

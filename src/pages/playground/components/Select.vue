@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { getTokenDescription } from '@/config/css-tokens';
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import Select from "@/components/form/Select.vue";
 import Badge from "@/components/information/Badge.vue";
@@ -338,13 +339,15 @@ const styleColumns = [
   { key: 'description', label: 'Uso' },
 ];
 
-const styleData = [
-  { name: '--btn-subtle-border', description: 'Borde' },
-  { name: '--cu-font-sans', description: 'Fuente' },
-  { name: '--cu-font-size-sm', description: 'Tamaño texto' },
-  { name: '--cu-border-thin', description: 'Borde fino' },
-  { name: '--cu-space-md', description: 'Espaciado' },
+const select_tokens = [
+  '--btn-subtle-border',
+  '--cu-font-sans',
+  '--cu-font-size-sm',
+  '--cu-border-thin',
+  '--cu-space-md',
 ];
+
+const styleData = select_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

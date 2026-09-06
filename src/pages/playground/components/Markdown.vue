@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { getTokenDescription } from '@/config/css-tokens';
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Table from "@/components/data/Table.vue";
@@ -88,27 +89,29 @@ const styleColumns = [
   { key: 'description', label: 'Uso' },
 ];
 
-const styleData = [
-  { name: '--cu-font-sans', description: 'Fuente' },
-  { name: '--cu-font-size-xs', description: 'Tamaño xs' },
-  { name: '--cu-font-size-sm', description: 'Tamaño sm' },
-  { name: '--cu-font-size-xl', description: 'Tamaño xl' },
-  { name: '--cu-font-size-2xl', description: 'Tamaño 2xl' },
-  { name: '--cu-font-size-3xl', description: 'Tamaño 3xl' },
-  { name: '--cu-font-size-4xl', description: 'Tamaño 4xl' },
-  { name: '--cu-font-weight-bold', description: 'Peso bold' },
-  { name: '--cu-line-height-tight', description: 'Altura línea tight' },
-  { name: '--cu-line-height-relaxed', description: 'Altura línea relaxed' },
-  { name: '--cu-radius-sm', description: 'Radio' },
-  { name: '--cu-border-thin', description: 'Borde fino' },
-  { name: '--cu-space-xs', description: 'Espaciado xs' },
-  { name: '--cu-space-sm', description: 'Espaciado sm' },
-  { name: '--cu-space-md', description: 'Espaciado md' },
-  { name: '--cu-space-lg', description: 'Espaciado lg' },
-  { name: '--cu-space-xl', description: 'Espaciado xl' },
-  { name: '--cu-color-neutral-text', description: 'Texto neutral' },
-  { name: '--cu-color-neutral-subtle-border', description: 'Borde neutral' },
+const markdown_tokens = [
+  '--cu-font-sans',
+  '--cu-font-size-xs',
+  '--cu-font-size-sm',
+  '--cu-font-size-xl',
+  '--cu-font-size-2xl',
+  '--cu-font-size-3xl',
+  '--cu-font-size-4xl',
+  '--cu-font-weight-bold',
+  '--cu-line-height-tight',
+  '--cu-line-height-relaxed',
+  '--cu-radius-sm',
+  '--cu-border-thin',
+  '--cu-space-xs',
+  '--cu-space-sm',
+  '--cu-space-md',
+  '--cu-space-lg',
+  '--cu-space-xl',
+  '--cu-color-neutral-text',
+  '--cu-color-neutral-subtle-border',
 ];
+
+const styleData = markdown_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

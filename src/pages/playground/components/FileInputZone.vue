@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { getTokenDescription } from '@/config/css-tokens';
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import FileInputZone from "@/components/form/FileInputZone.vue";
 import Badge from "@/components/information/Badge.vue";
@@ -183,23 +184,25 @@ const styleColumns = [
   { key: 'description', label: 'Uso' },
 ];
 
-const styleData = [
-  { name: '--zone-bg', description: 'Fondo zona' },
-  { name: '--zone-text', description: 'Texto zona' },
-  { name: '--zone-ghost-hover', description: 'Hover ghost' },
-  { name: '--cu-font-sans', description: 'Fuente' },
-  { name: '--cu-font-size-sm', description: 'Tamaño sm' },
-  { name: '--cu-font-size-xs', description: 'Tamaño xs' },
-  { name: '--cu-font-weight-medium', description: 'Peso medio' },
-  { name: '--cu-radius', description: 'Radio' },
-  { name: '--cu-border-thin', description: 'Borde fino' },
-  { name: '--cu-border-thick', description: 'Borde grueso' },
-  { name: '--cu-border-color', description: 'Color borde' },
-  { name: '--cu-space-2xs', description: 'Espaciado 2xs' },
-  { name: '--cu-space-md', description: 'Espaciado md' },
-  { name: '--cu-space-xl', description: 'Espaciado xl' },
-  { name: '--cu-space-2xl', description: 'Espaciado 2xl' },
+const fileinputzone_tokens = [
+  '--zone-bg',
+  '--zone-text',
+  '--zone-ghost-hover',
+  '--cu-font-sans',
+  '--cu-font-size-sm',
+  '--cu-font-size-xs',
+  '--cu-font-weight-medium',
+  '--cu-radius',
+  '--cu-border-thin',
+  '--cu-border-thick',
+  '--cu-border-color',
+  '--cu-space-2xs',
+  '--cu-space-md',
+  '--cu-space-xl',
+  '--cu-space-2xl',
 ];
+
+const styleData = fileinputzone_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
+import { getTokenDescription } from '@/config/css-tokens';
 import FloatingButton from "@/components/buttons/FloatingButton.vue";
 import Badge from "@/components/information/Badge.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
@@ -93,17 +94,19 @@ const styleColumns = [
   { key: 'description', label: 'Uso' },
 ];
 
-const styleData = [
-  { name: '--fab-bg', description: 'Fondo FAB' },
-  { name: '--fab-bg-hover', description: 'Fondo hover' },
-  { name: '--fab-bg-active', description: 'Fondo activo' },
-  { name: '--cu-radius-full', description: 'Radio completo' },
-  { name: '--cu-shadow-lg', description: 'Sombra lg' },
-  { name: '--cu-shadow-xl', description: 'Sombra xl' },
-  { name: '--cu-space-lg', description: 'Espaciado' },
-  { name: '--cu-space-3xl', description: 'Touch target' },
-  { name: '--cu-color-surface', description: 'Color superficie' },
+const floatingbutton_tokens = [
+  '--fab-bg',
+  '--fab-bg-hover',
+  '--fab-bg-active',
+  '--cu-radius-full',
+  '--cu-shadow-lg',
+  '--cu-shadow-xl',
+  '--cu-space-lg',
+  '--cu-space-3xl',
+  '--cu-color-surface',
 ];
+
+const styleData = floatingbutton_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

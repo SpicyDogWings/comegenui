@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
+import { getTokenDescription } from '@/config/css-tokens';
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Badge from "@/components/information/Badge.vue";
 import Button from "@/components/buttons/Button.vue";
@@ -63,25 +64,26 @@ const styleColumns = [
   { key: 'description', label: 'Uso' },
 ];
 
-const styleData = [
-  { name: '--table-bg', description: 'Fondo tabla' },
-  { name: '--table-bd', description: 'Color bordes' },
-  { name: '--table-bg-hover', description: 'Fondo hover fila' },
-  { name: '--cu-font-sans', description: 'Fuente' },
-  { name: '--cu-font-weight-medium', description: 'Peso medio' },
-  { name: '--cu-font-weight-semibold', description: 'Peso semi-bold' },
-  { name: '--cu-radius-md', description: 'Radio' },
-  { name: '--cu-border-thin', description: 'Borde fino' },
-  { name: '--cu-border-medium', description: 'Borde medio' },
-  { name: '--cu-space-xs', description: 'Espaciado xs' },
-  { name: '--cu-space-sm', description: 'Espaciado sm' },
-  { name: '--cu-space-md', description: 'Espaciado md' },
-  { name: '--cu-space-xl', description: 'Espaciado xl' },
-  { name: '--cu-color-surface', description: 'Color superficie' },
-  { name: '--cu-color-neutral-soft', description: 'Fondo neutral' },
-  { name: '--cu-color-neutral-subtle-border', description: 'Borde neutral' },
-  { name: '--cu-color-neutral-text', description: 'Texto neutral' },
+const table_tokens = [
+  '--table-bg-hover',
+  '--table-bd',
+  '--cu-font-sans',
+  '--cu-font-weight-medium',
+  '--cu-font-weight-semibold',
+  '--cu-radius-md',
+  '--cu-border-thin',
+  '--cu-border-medium',
+  '--cu-space-xs',
+  '--cu-space-sm',
+  '--cu-space-md',
+  '--cu-space-xl',
+  '--cu-color-surface',
+  '--cu-color-neutral-soft',
+  '--cu-color-neutral-subtle-border',
+  '--cu-color-neutral-text',
 ];
+
+const styleData = table_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { getTokenDescription } from '@/config/css-tokens';
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Badge from "@/components/information/Badge.vue";
@@ -36,10 +37,12 @@ const styleColumns = [
   { key: 'description', label: 'Uso' },
 ];
 
-const styleData = [
-  { name: '--cu-loader-color', description: 'Color loader' },
-  { name: '--cu-loader-delay', description: 'Duración animación' },
+const loader_tokens = [
+  '--cu-loader-color',
+  '--cu-loader-delay',
 ];
+
+const styleData = loader_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

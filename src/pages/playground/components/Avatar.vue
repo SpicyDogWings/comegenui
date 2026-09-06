@@ -6,6 +6,7 @@ import Table from "@/components/data/Table.vue";
 import Button from "@/components/buttons/Button.vue";
 import Badge from "@/components/information/Badge.vue";
 import Avatar from "@/components/information/Avatar.vue";
+import { getTokenDescription } from "@/config/css-tokens";
 
 const outlineItems = [
   { label: 'Default', id: 'default' },
@@ -37,13 +38,15 @@ const styleColumns = [
   { key: 'description', label: 'Uso' },
 ];
 
-const avatarStyleData = [
-  { name: '--avatar-bg', description: 'Color de fondo (resuelto desde --cu-color-{color})' },
-  { name: '--cu-font-weight-semibold', description: 'Peso de las iniciales' },
-  { name: '--cu-font-size-xs', description: 'Iniciales tamaño sm' },
-  { name: '--cu-font-size-sm', description: 'Iniciales tamaño md' },
-  { name: '--cu-font-size-md', description: 'Iniciales tamaño lg' },
+const avatarTokens = [
+  '--avatar-bg',
+  '--cu-font-weight-semibold',
+  '--cu-font-size-xs',
+  '--cu-font-size-sm',
+  '--cu-font-size-md',
 ];
+
+const avatarStyleData = avatarTokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

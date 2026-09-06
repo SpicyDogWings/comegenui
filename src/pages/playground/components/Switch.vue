@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { getTokenDescription } from '@/config/css-tokens';
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import Switch from "@/components/form/Switch.vue";
 import Badge from "@/components/information/Badge.vue";
@@ -180,26 +181,28 @@ const styleColumns = [
   { key: 'description', label: 'Uso' },
 ];
 
-const styleData = [
-  { name: '--switch-bg', description: 'Fondo switch' },
-  { name: '--switch-ghost-hover', description: 'Hover ghost' },
-  { name: '--cu-font-sans', description: 'Fuente' },
-  { name: '--cu-font-size-sm', description: 'Tamaño sm' },
-  { name: '--cu-font-size-xs', description: 'Tamaño xs' },
-  { name: '--cu-radius-full', description: 'Radio completo' },
-  { name: '--cu-shadow-sm', description: 'Sombra' },
-  { name: '--cu-space-2xs', description: 'Espaciado 2xs' },
-  { name: '--cu-space-xs', description: 'Espaciado xs' },
-  { name: '--cu-space-sm', description: 'Espaciado sm' },
-  { name: '--cu-space-lg', description: 'Espaciado lg' },
-  { name: '--cu-space-xl', description: 'Espaciado xl' },
-  { name: '--cu-space-2xl', description: 'Espaciado 2xl' },
-  { name: '--cu-space-3xl', description: 'Espaciado 3xl' },
-  { name: '--cu-color-surface', description: 'Color superficie' },
-  { name: '--cu-color-neutral', description: 'Color neutral' },
-  { name: '--cu-color-neutral-soft', description: 'Soft neutral' },
-  { name: '--cu-color-neutral-ghost-hover', description: 'Hover ghost neutral' },
+const switch_tokens = [
+  '--switch-bg',
+  '--switch-ghost-hover',
+  '--cu-font-sans',
+  '--cu-font-size-sm',
+  '--cu-font-size-xs',
+  '--cu-radius-full',
+  '--cu-shadow-sm',
+  '--cu-space-2xs',
+  '--cu-space-xs',
+  '--cu-space-sm',
+  '--cu-space-lg',
+  '--cu-space-xl',
+  '--cu-space-2xl',
+  '--cu-space-3xl',
+  '--cu-color-surface',
+  '--cu-color-neutral',
+  '--cu-color-neutral-soft',
+  '--cu-color-neutral-ghost-hover',
 ];
+
+const styleData = switch_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

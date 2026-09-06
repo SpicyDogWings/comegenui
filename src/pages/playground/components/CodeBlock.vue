@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
+import { getTokenDescription } from '@/config/css-tokens';
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Badge from "@/components/information/Badge.vue";
 import Table from "@/components/data/Table.vue";
@@ -99,36 +100,38 @@ const styleColumns = [
   { key: 'description', label: 'Uso' },
 ];
 
-const styleData = [
-  { name: '--cb-text', description: 'Texto código' },
-  { name: '--cb-hl-keyword', description: 'Keywords' },
-  { name: '--cb-hl-string', description: 'Strings' },
-  { name: '--cb-hl-number', description: 'Números' },
-  { name: '--cb-hl-title', description: 'Títulos' },
-  { name: '--cb-hl-tag', description: 'Tags' },
-  { name: '--cb-hl-attr', description: 'Atributos' },
-  { name: '--cb-hl-meta', description: 'Meta' },
-  { name: '--cb-hl-comment', description: 'Comentarios' },
-  { name: '--cu-font-mono', description: 'Fuente monoespaciada' },
-  { name: '--cu-font-size-sm', description: 'Tamaño texto' },
-  { name: '--cu-font-weight-bold', description: 'Peso bold' },
-  { name: '--cu-font-weight-medium', description: 'Peso medio' },
-  { name: '--cu-line-height-relaxed', description: 'Altura línea' },
-  { name: '--cu-radius-sm', description: 'Radio' },
-  { name: '--cu-border-thin', description: 'Borde fino' },
-  { name: '--cu-space-xs', description: 'Espaciado xs' },
-  { name: '--cu-space-sm', description: 'Espaciado sm' },
-  { name: '--cu-space-md', description: 'Espaciado md' },
-  { name: '--cu-space-lg', description: 'Espaciado lg' },
-  { name: '--cu-space-xl', description: 'Espaciado xl' },
-  { name: '--cu-space-2xl', description: 'Espaciado 2xl' },
-  { name: '--cu-code-bg', description: 'Fondo código' },
-  { name: '--cu-code-text', description: 'Texto código (tema)' },
-  { name: '--cu-code-faded', description: 'Texto atenuado' },
-  { name: '--cu-color-neutral-soft', description: 'Fondo neutral' },
-  { name: '--cu-color-neutral-subtle-border', description: 'Borde neutral' },
-  { name: '--cu-color-neutral-text', description: 'Texto neutral' },
+const codeblock_tokens = [
+  '--cb-text',
+  '--cb-hl-keyword',
+  '--cb-hl-string',
+  '--cb-hl-number',
+  '--cb-hl-title',
+  '--cb-hl-tag',
+  '--cb-hl-attr',
+  '--cb-hl-meta',
+  '--cb-hl-comment',
+  '--cu-font-mono',
+  '--cu-font-size-sm',
+  '--cu-font-weight-bold',
+  '--cu-font-weight-medium',
+  '--cu-line-height-relaxed',
+  '--cu-radius-sm',
+  '--cu-border-thin',
+  '--cu-space-xs',
+  '--cu-space-sm',
+  '--cu-space-md',
+  '--cu-space-lg',
+  '--cu-space-xl',
+  '--cu-space-2xl',
+  '--cu-code-bg',
+  '--cu-code-text',
+  '--cu-code-faded',
+  '--cu-color-neutral-soft',
+  '--cu-color-neutral-subtle-border',
+  '--cu-color-neutral-text',
 ];
+
+const styleData = codeblock_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

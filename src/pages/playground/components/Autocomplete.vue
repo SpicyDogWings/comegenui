@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { getTokenDescription } from '@/config/css-tokens';
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import Autocomplete from "@/components/form/Autocomplete.vue";
 import Badge from "@/components/information/Badge.vue";
@@ -310,17 +311,19 @@ const styleColumns = [
   { key: 'description', label: 'Uso' },
 ];
 
-const styleData = [
-  { name: '--cu-font-sans', description: 'Fuente' },
-  { name: '--cu-font-size-sm', description: 'Tamaño texto' },
-  { name: '--cu-radius-md', description: 'Radio' },
-  { name: '--cu-border-thin', description: 'Borde fino' },
-  { name: '--cu-space-sm', description: 'Espaciado' },
-  { name: '--cu-space-md', description: 'Espaciado' },
-  { name: '--cu-shadow-md', description: 'Sombra' },
-  { name: '--cu-color-surface', description: 'Color superficie' },
-  { name: '--cu-color-neutral-text', description: 'Texto neutral' },
+const autocomplete_tokens = [
+  '--cu-font-sans',
+  '--cu-font-size-sm',
+  '--cu-radius-md',
+  '--cu-border-thin',
+  '--cu-space-sm',
+  '--cu-space-md',
+  '--cu-shadow-md',
+  '--cu-color-surface',
+  '--cu-color-neutral-text',
 ];
+
+const styleData = autocomplete_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

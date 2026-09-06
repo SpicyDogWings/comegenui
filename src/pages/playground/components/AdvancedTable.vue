@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
+import { getTokenDescription } from '@/config/css-tokens';
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Badge from "@/components/information/Badge.vue";
 import Table from "@/components/data/Table.vue";
@@ -145,15 +146,17 @@ const styleColumns = [
   { key: 'description', label: 'Uso' },
 ];
 
-const styleData = [
-  { name: '--cu-font-sans', description: 'Fuente' },
-  { name: '--cu-space-2xs', description: 'Espaciado 2xs' },
-  { name: '--cu-space-sm', description: 'Espaciado sm' },
-  { name: '--cu-space-md', description: 'Espaciado md' },
-  { name: '--cu-space-lg', description: 'Espaciado lg' },
-  { name: '--cu-space-2xl', description: 'Espaciado 2xl' },
-  { name: '--cu-color-surface', description: 'Color superficie' },
+const advancedtable_tokens = [
+  '--cu-font-sans',
+  '--cu-space-2xs',
+  '--cu-space-sm',
+  '--cu-space-md',
+  '--cu-space-lg',
+  '--cu-space-2xl',
+  '--cu-color-surface',
 ];
+
+const styleData = advancedtable_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

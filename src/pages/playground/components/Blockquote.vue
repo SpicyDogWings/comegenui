@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
+import { getTokenDescription } from '@/config/css-tokens';
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Badge from "@/components/information/Badge.vue";
 import Table from "@/components/data/Table.vue";
@@ -60,14 +61,16 @@ const styleColumns = [
   { key: 'description', label: 'Uso' },
 ];
 
-const styleData = [
-  { name: '--cu-border-thick', description: 'Borde izquierdo' },
-  { name: '--cu-font-size-sm', description: 'Tamaño texto' },
-  { name: '--cu-space-sm', description: 'Espaciado' },
-  { name: '--cu-space-md', description: 'Espaciado' },
-  { name: '--cu-color-neutral', description: 'Color neutral' },
-  { name: '--cu-color-neutral-text', description: 'Texto neutral' },
+const blockquote_tokens = [
+  '--cu-border-thick',
+  '--cu-font-size-sm',
+  '--cu-space-sm',
+  '--cu-space-md',
+  '--cu-color-neutral',
+  '--cu-color-neutral-text',
 ];
+
+const styleData = blockquote_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

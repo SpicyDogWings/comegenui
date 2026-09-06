@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { getTokenDescription } from '@/config/css-tokens';
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Table from "@/components/data/Table.vue";
@@ -40,28 +41,30 @@ const styleColumns = [
   { key: 'description', label: 'Uso' },
 ];
 
-const styleData = [
-  { name: '--card-bg', description: 'Fondo' },
-  { name: '--card-text', description: 'Texto' },
-  { name: '--card-soft', description: 'Fondo soft' },
-  { name: '--card-subtle', description: 'Fondo subtle' },
-  { name: '--card-subtle-border', description: 'Borde subtle' },
-  { name: '--cu-font-sans', description: 'Fuente' },
-  { name: '--cu-font-size-sm', description: 'Tamaño sm' },
-  { name: '--cu-font-size-lg', description: 'Tamaño lg' },
-  { name: '--cu-font-weight-bold', description: 'Peso bold' },
-  { name: '--cu-line-height-relaxed', description: 'Altura línea' },
-  { name: '--cu-radius-lg', description: 'Radio lg' },
-  { name: '--cu-shadow-md', description: 'Sombra' },
-  { name: '--cu-border-thin', description: 'Borde fino' },
-  { name: '--cu-border-color', description: 'Color borde' },
-  { name: '--cu-space-2xs', description: 'Espaciado 2xs' },
-  { name: '--cu-space-sm', description: 'Espaciado sm' },
-  { name: '--cu-space-md', description: 'Espaciado md' },
-  { name: '--cu-space-lg', description: 'Espaciado lg' },
-  { name: '--cu-color-surface', description: 'Color superficie' },
-  { name: '--cu-color-neutral', description: 'Color neutral' },
+const card_tokens = [
+  '--card-bg',
+  '--card-text',
+  '--card-soft',
+  '--card-subtle',
+  '--card-subtle-border',
+  '--cu-font-sans',
+  '--cu-font-size-sm',
+  '--cu-font-size-lg',
+  '--cu-font-weight-bold',
+  '--cu-line-height-relaxed',
+  '--cu-radius-lg',
+  '--cu-shadow-md',
+  '--cu-border-thin',
+  '--cu-border-color',
+  '--cu-space-2xs',
+  '--cu-space-sm',
+  '--cu-space-md',
+  '--cu-space-lg',
+  '--cu-color-surface',
+  '--cu-color-neutral',
 ];
+
+const styleData = card_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

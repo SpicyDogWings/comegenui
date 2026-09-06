@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { getTokenDescription } from '@/config/css-tokens';
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import Checkbox from "@/components/form/Checkbox.vue";
 import Badge from "@/components/information/Badge.vue";
@@ -191,22 +192,24 @@ const styleColumns = [
   { key: 'description', label: 'Uso' },
 ];
 
-const styleData = [
-  { name: '--cb-bg', description: 'Fondo check' },
-  { name: '--cb-ghost-hover', description: 'Hover ghost' },
-  { name: '--cu-font-sans', description: 'Fuente' },
-  { name: '--cu-font-size-sm', description: 'Tamaño sm' },
-  { name: '--cu-font-size-xs', description: 'Tamaño xs' },
-  { name: '--cu-radius-sm', description: 'Radio' },
-  { name: '--cu-border-color', description: 'Color borde' },
-  { name: '--cu-border-medium', description: 'Borde medio' },
-  { name: '--cu-space-xs', description: 'Espaciado xs' },
-  { name: '--cu-space-sm', description: 'Espaciado sm' },
-  { name: '--cu-space-md', description: 'Espaciado md' },
-  { name: '--cu-space-lg', description: 'Espaciado lg' },
-  { name: '--cu-color-surface', description: 'Color superficie' },
-  { name: '--cu-color-neutral', description: 'Color neutral' },
+const checkbox_tokens = [
+  '--cb-bg',
+  '--cb-ghost-hover',
+  '--cu-font-sans',
+  '--cu-font-size-sm',
+  '--cu-font-size-xs',
+  '--cu-radius-sm',
+  '--cu-border-color',
+  '--cu-border-medium',
+  '--cu-space-xs',
+  '--cu-space-sm',
+  '--cu-space-md',
+  '--cu-space-lg',
+  '--cu-color-surface',
+  '--cu-color-neutral',
 ];
+
+const styleData = checkbox_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

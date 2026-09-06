@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
+import { getTokenDescription } from '@/config/css-tokens';
 import Label from "@/components/form/Label.vue";
 import Input from "@/components/form/Input.vue";
 import Select from "@/components/form/Select.vue";
@@ -185,11 +186,13 @@ const styleColumns = [
   { key: 'description', label: 'Uso' },
 ];
 
-const styleData = [
-  { name: '--label-fg', description: 'Color texto' },
-  { name: '--cu-font-sans', description: 'Fuente' },
-  { name: '--cu-space-xs', description: 'Espaciado' },
+const label_tokens = [
+  '--label-fg',
+  '--cu-font-sans',
+  '--cu-space-xs',
 ];
+
+const styleData = label_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

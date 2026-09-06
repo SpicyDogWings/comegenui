@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { getTokenDescription } from '@/config/css-tokens';
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import DatePickerRange from "@/components/form/DatePickerRange.vue";
 import Badge from "@/components/information/Badge.vue";
@@ -267,12 +268,14 @@ const styleColumns = [
   { key: 'description', label: 'Uso' },
 ];
 
-const styleData = [
-  { name: '--cu-border-color', description: 'Color borde' },
-  { name: '--cu-border-thin', description: 'Borde fino' },
-  { name: '--cu-space-md', description: 'Espaciado md' },
-  { name: '--cu-space-sm', description: 'Espaciado sm' },
+const datepickerrange_tokens = [
+  '--cu-border-color',
+  '--cu-border-thin',
+  '--cu-space-md',
+  '--cu-space-sm',
 ];
+
+const styleData = datepickerrange_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

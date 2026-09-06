@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { getTokenDescription } from '@/config/css-tokens';
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import Button from "@/components/buttons/Button.vue";
 import Badge from "@/components/information/Badge.vue";
@@ -204,34 +205,38 @@ const styleColumns = [
   { key: 'description', label: 'Uso' },
 ];
 
-const styleData = [
-  { name: '--btn-bg', description: 'Fondo del botón' },
-  { name: '--btn-bg-hover', description: 'Fondo hover' },
-  { name: '--btn-bg-active', description: 'Fondo activo' },
-  { name: '--btn-soft', description: 'Fondo variante soft' },
-  { name: '--btn-soft-hover', description: 'Hover soft' },
-  { name: '--btn-soft-active', description: 'Activo soft' },
-  { name: '--btn-subtle', description: 'Fondo variante subtle' },
-  { name: '--btn-subtle-hover', description: 'Hover subtle' },
-  { name: '--btn-subtle-active', description: 'Activo subtle' },
-  { name: '--btn-subtle-border', description: 'Borde subtle' },
-  { name: '--btn-ghost-hover', description: 'Hover ghost' },
-  { name: '--btn-ghost-active', description: 'Activo ghost' },
-  { name: '--cu-font-sans', description: 'Fuente' },
-  { name: '--cu-font-size-sm', description: 'Tamaño sm' },
-  { name: '--cu-font-size-xs', description: 'Tamaño xs' },
-  { name: '--cu-font-size-lg', description: 'Tamaño lg' },
-  { name: '--cu-font-weight-medium', description: 'Peso medio' },
-  { name: '--cu-radius', description: 'Radio' },
-  { name: '--cu-space-2xs', description: 'Espaciado 2xs' },
-  { name: '--cu-space-xs', description: 'Espaciado xs' },
-  { name: '--cu-space-sm', description: 'Espaciado sm' },
-  { name: '--cu-space-md', description: 'Espaciado md' },
-  { name: '--cu-space-lg', description: 'Espaciado lg' },
-  { name: '--cu-space-xl', description: 'Espaciado xl' },
-  { name: '--cu-border-thin', description: 'Borde fino' },
-  { name: '--cu-color-surface', description: 'Color superficie' },
+const button_tokens = [
+  '--btn-bg',
+  '--btn-bg-hover',
+  '--btn-bg-active',
+  '--btn-fg',
+  '--btn-bd',
+  '--btn-soft',
+  '--btn-soft-hover',
+  '--btn-soft-active',
+  '--btn-subtle',
+  '--btn-subtle-hover',
+  '--btn-subtle-active',
+  '--btn-subtle-border',
+  '--btn-ghost-hover',
+  '--btn-ghost-active',
+  '--cu-font-sans',
+  '--cu-font-size-sm',
+  '--cu-font-size-xs',
+  '--cu-font-size-lg',
+  '--cu-font-weight-medium',
+  '--cu-radius',
+  '--cu-space-2xs',
+  '--cu-space-xs',
+  '--cu-space-sm',
+  '--cu-space-md',
+  '--cu-space-lg',
+  '--cu-space-xl',
+  '--cu-border-thin',
+  '--cu-color-surface',
 ];
+
+const styleData = button_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

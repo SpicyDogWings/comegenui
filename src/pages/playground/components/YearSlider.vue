@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
+import { getTokenDescription } from '@/config/css-tokens';
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Badge from "@/components/information/Badge.vue";
 import Table from "@/components/data/Table.vue";
@@ -101,11 +102,13 @@ const styleColumns = [
   { key: 'description', label: 'Uso' },
 ];
 
-const styleData = [
-  { name: '--cu-font-sans', description: 'Fuente' },
-  { name: '--cu-space-2xs', description: 'Espaciado interno' },
-  { name: '--cu-color-surface', description: 'Color superficie' },
+const yearslider_tokens = [
+  '--cu-font-sans',
+  '--cu-space-2xs',
+  '--cu-color-surface',
 ];
+
+const styleData = yearslider_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
+import { getTokenDescription } from '@/config/css-tokens';
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Badge from "@/components/information/Badge.vue";
 import Table from "@/components/data/Table.vue";
@@ -162,10 +163,12 @@ const styleColumns = [
   { key: 'description', label: 'Uso' },
 ];
 
-const styleData = [
-  { name: '--cu-space-2xs', description: 'Espaciado' },
-  { name: '--cu-space-lg', description: 'Espaciado' },
+const collapse_tokens = [
+  '--cu-space-2xs',
+  '--cu-space-lg',
 ];
+
+const styleData = collapse_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

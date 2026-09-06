@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { getTokenDescription } from '@/config/css-tokens';
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import FileInput from "@/components/form/FileInput.vue";
 import Badge from "@/components/information/Badge.vue";
@@ -164,25 +165,27 @@ const styleColumns = [
   { key: 'description', label: 'Uso' },
 ];
 
-const styleData = [
-  { name: '--input-bg', description: 'Fondo input' },
-  { name: '--input-text', description: 'Texto input' },
-  { name: '--input-soft', description: 'Fondo soft' },
-  { name: '--input-soft-hover', description: 'Hover soft' },
-  { name: '--input-ghost-hover', description: 'Hover ghost' },
-  { name: '--cu-font-sans', description: 'Fuente' },
-  { name: '--cu-font-size-sm', description: 'Tamaño sm' },
-  { name: '--cu-font-size-xs', description: 'Tamaño xs' },
-  { name: '--cu-font-weight-medium', description: 'Peso medio' },
-  { name: '--cu-radius', description: 'Radio' },
-  { name: '--cu-border-thin', description: 'Borde fino' },
-  { name: '--cu-border-color', description: 'Color borde' },
-  { name: '--cu-space-2xs', description: 'Espaciado 2xs' },
-  { name: '--cu-space-sm', description: 'Espaciado sm' },
-  { name: '--cu-space-md', description: 'Espaciado md' },
-  { name: '--cu-space-lg', description: 'Espaciado lg' },
-  { name: '--cu-color-surface', description: 'Color superficie' },
+const fileinput_tokens = [
+  '--input-bg',
+  '--input-text',
+  '--input-soft',
+  '--input-soft-hover',
+  '--input-ghost-hover',
+  '--cu-font-sans',
+  '--cu-font-size-sm',
+  '--cu-font-size-xs',
+  '--cu-font-weight-medium',
+  '--cu-radius',
+  '--cu-border-thin',
+  '--cu-border-color',
+  '--cu-space-2xs',
+  '--cu-space-sm',
+  '--cu-space-md',
+  '--cu-space-lg',
+  '--cu-color-surface',
 ];
+
+const styleData = fileinput_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

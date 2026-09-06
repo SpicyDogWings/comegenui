@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { getTokenDescription } from '@/config/css-tokens';
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Badge from "@/components/information/Badge.vue";
@@ -201,15 +202,17 @@ const styleColumns = [
   { key: 'description', label: 'Uso' },
 ];
 
-const styleData = [
-  { name: '--cu-font-sans', description: 'Fuente' },
-  { name: '--cu-font-size-sm', description: 'Tamaño texto' },
-  { name: '--cu-color-neutral-text', description: 'Color texto' },
-  { name: '--cu-space-xs', description: 'Entre items' },
-  { name: '--cu-space-sm', description: 'Espaciado interno' },
-  { name: '--cu-space-md', description: 'Espaciado' },
-  { name: '--cu-space-3xl', description: 'Touch target' },
+const pagination_tokens = [
+  '--cu-font-sans',
+  '--cu-font-size-sm',
+  '--cu-color-neutral-text',
+  '--cu-space-xs',
+  '--cu-space-sm',
+  '--cu-space-md',
+  '--cu-space-3xl',
 ];
+
+const styleData = pagination_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
+import { getTokenDescription } from '@/config/css-tokens';
 import ToggleColorSheme from "@/components/buttons/ToggleColorSheme.vue";
 import Badge from "@/components/information/Badge.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
@@ -52,12 +53,14 @@ const styleColumns = [
   { key: 'description', label: 'Uso' },
 ];
 
-const styleData = [
-  { name: '--cu-radius-full', description: 'Radio completo' },
-  { name: '--cu-space-sm', description: 'Espaciado' },
-  { name: '--cu-shadow-sm', description: 'Sombra' },
-  { name: '--cu-font-size-sm', description: 'Tamaño texto' },
+const togglecolorscheme_tokens = [
+  '--cu-radius-full',
+  '--cu-space-sm',
+  '--cu-shadow-sm',
+  '--cu-font-size-sm',
 ];
+
+const styleData = togglecolorscheme_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

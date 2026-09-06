@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { getTokenDescription } from '@/config/css-tokens';
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import ColorPicker from "@/components/form/ColorPicker.vue";
 import Badge from "@/components/information/Badge.vue";
@@ -124,15 +125,17 @@ const styleColumns = [
   { key: 'description', label: 'Uso' },
 ];
 
-const styleData = [
-  { name: '--cp-subtle-border', description: 'Borde sutil' },
-  { name: '--cu-font-sans', description: 'Fuente' },
-  { name: '--cu-radius-md', description: 'Radio' },
-  { name: '--cu-border-thin', description: 'Borde fino' },
-  { name: '--cu-space-sm', description: 'Espaciado sm' },
-  { name: '--cu-space-2xl', description: 'Espaciado 2xl' },
-  { name: '--cu-space-5xl', description: 'Espaciado 5xl' },
+const colorpicker_tokens = [
+  '--cp-subtle-border',
+  '--cu-font-sans',
+  '--cu-radius-md',
+  '--cu-border-thin',
+  '--cu-space-sm',
+  '--cu-space-2xl',
+  '--cu-space-5xl',
 ];
+
+const styleData = colorpicker_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

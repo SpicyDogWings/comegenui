@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { getTokenDescription } from '@/config/css-tokens';
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import Input from "@/components/form/Input.vue";
 import Badge from "@/components/information/Badge.vue";
@@ -209,24 +210,26 @@ const styleColumns = [
   { key: 'description', label: 'Uso' },
 ];
 
-const styleData = [
-  { name: '--btn-bg', description: 'Fondo botón interno' },
-  { name: '--btn-bg-hover', description: 'Hover' },
-  { name: '--btn-soft', description: 'Soft' },
-  { name: '--btn-soft-hover', description: 'Hover soft' },
-  { name: '--btn-subtle', description: 'Subtle' },
-  { name: '--btn-subtle-hover', description: 'Hover subtle' },
-  { name: '--btn-subtle-border', description: 'Borde subtle' },
-  { name: '--cu-font-sans', description: 'Fuente' },
-  { name: '--cu-font-size-sm', description: 'Tamaño texto' },
-  { name: '--cu-font-weight-medium', description: 'Peso medio' },
-  { name: '--cu-radius-md', description: 'Radio' },
-  { name: '--cu-border-thin', description: 'Borde fino' },
-  { name: '--cu-space-md', description: 'Espaciado md' },
-  { name: '--cu-space-lg', description: 'Espaciado lg' },
-  { name: '--cu-color-neutral-text', description: 'Texto neutral' },
-  { name: '--cu-color-surface', description: 'Color superficie' },
+const input_tokens = [
+  '--btn-bg',
+  '--btn-bg-hover',
+  '--btn-soft',
+  '--btn-soft-hover',
+  '--btn-subtle',
+  '--btn-subtle-hover',
+  '--btn-subtle-border',
+  '--cu-font-sans',
+  '--cu-font-size-sm',
+  '--cu-font-weight-medium',
+  '--cu-radius-md',
+  '--cu-border-thin',
+  '--cu-space-md',
+  '--cu-space-lg',
+  '--cu-color-neutral-text',
+  '--cu-color-surface',
 ];
+
+const styleData = input_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

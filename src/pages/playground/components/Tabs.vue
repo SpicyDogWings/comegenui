@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { getTokenDescription } from '@/config/css-tokens';
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Badge from "@/components/information/Badge.vue";
@@ -70,17 +71,22 @@ const styleColumns = [
   { key: 'description', label: 'Uso' },
 ];
 
-const styleData = [
-  { name: '--cu-font-sans', description: 'Fuente' },
-  { name: '--cu-font-size-sm', description: 'Tamaño texto' },
-  { name: '--cu-font-weight-medium', description: 'Peso medio' },
-  { name: '--cu-space-sm', description: 'Espaciado' },
-  { name: '--cu-space-md', description: 'Espaciado' },
-  { name: '--cu-border-thin', description: 'Borde fino' },
-  { name: '--cu-radius', description: 'Radio' },
-  { name: '--cu-color-neutral-text', description: 'Texto neutral' },
-  { name: '--cu-color-neutral-soft', description: 'Fondo neutral' },
+const tabs_tokens = [
+  '--tabs-color',
+  '--tabs-soft',
+  '--tabs-soft-hover',
+  '--cu-font-sans',
+  '--cu-font-size-sm',
+  '--cu-font-weight-medium',
+  '--cu-space-sm',
+  '--cu-space-md',
+  '--cu-border-thin',
+  '--cu-radius',
+  '--cu-color-neutral-text',
+  '--cu-color-neutral-soft',
 ];
+
+const styleData = tabs_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { getTokenDescription } from '@/config/css-tokens';
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Table from "@/components/data/Table.vue";
@@ -35,24 +36,25 @@ const styleColumns = [
   { key: 'description', label: 'Uso' },
 ];
 
-const styleData = [
-  { name: '--badge-bg', description: 'Fondo' },
-  { name: '--badge-text', description: 'Texto' },
-  { name: '--badge-soft', description: 'Fondo soft' },
-  { name: '--badge-soft-hover', description: 'Hover soft' },
-  { name: '--badge-subtle', description: 'Fondo subtle' },
-  { name: '--badge-subtle-border', description: 'Borde subtle' },
-  { name: '--cu-font-sans', description: 'Fuente' },
-  { name: '--cu-font-size-xs', description: 'Tamaño xs' },
-  { name: '--cu-font-weight-medium', description: 'Peso medio' },
-  { name: '--cu-line-height-tight', description: 'Altura línea' },
-  { name: '--cu-radius', description: 'Radio' },
-  { name: '--cu-border-thin', description: 'Borde fino' },
-  { name: '--cu-space-2xs', description: 'Espaciado 2xs' },
-  { name: '--cu-space-xs', description: 'Espaciado xs' },
-  { name: '--cu-space-sm', description: 'Espaciado sm' },
-  { name: '--cu-color-surface', description: 'Color superficie' },
+const badge_tokens = [
+  '--badge-bg',
+  '--badge-text',
+  '--badge-soft',
+  '--badge-subtle',
+  '--badge-subtle-border',
+  '--cu-font-sans',
+  '--cu-font-size-xs',
+  '--cu-font-weight-medium',
+  '--cu-line-height-tight',
+  '--cu-radius',
+  '--cu-border-thin',
+  '--cu-space-2xs',
+  '--cu-space-xs',
+  '--cu-space-sm',
+  '--cu-color-surface',
 ];
+
+const styleData = badge_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
+import { getTokenDescription } from '@/config/css-tokens';
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Badge from "@/components/information/Badge.vue";
 import Table from "@/components/data/Table.vue";
@@ -451,23 +452,25 @@ const styleColumns = [
   { key: 'description', label: 'Uso' },
 ];
 
-const styleData = [
-  { name: '--modal-color', description: 'Color header' },
-  { name: '--cu-font-sans', description: 'Fuente' },
-  { name: '--cu-font-size-sm', description: 'Tamaño sm' },
-  { name: '--cu-font-size-lg', description: 'Tamaño lg' },
-  { name: '--cu-font-weight-bold', description: 'Peso bold' },
-  { name: '--cu-radius', description: 'Radio' },
-  { name: '--cu-shadow-xl', description: 'Sombra' },
-  { name: '--cu-border-thin', description: 'Borde fino' },
-  { name: '--cu-border-color', description: 'Color borde' },
-  { name: '--cu-space-2xs', description: 'Espaciado 2xs' },
-  { name: '--cu-space-sm', description: 'Espaciado sm' },
-  { name: '--cu-space-md', description: 'Espaciado md' },
-  { name: '--cu-space-lg', description: 'Espaciado lg' },
-  { name: '--cu-color-surface', description: 'Color superficie' },
-  { name: '--cu-color-neutral', description: 'Color neutral' },
+const modal_tokens = [
+  '--modal-color',
+  '--cu-font-sans',
+  '--cu-font-size-sm',
+  '--cu-font-size-lg',
+  '--cu-font-weight-bold',
+  '--cu-radius',
+  '--cu-shadow-xl',
+  '--cu-border-thin',
+  '--cu-border-color',
+  '--cu-space-2xs',
+  '--cu-space-sm',
+  '--cu-space-md',
+  '--cu-space-lg',
+  '--cu-color-surface',
+  '--cu-color-neutral',
 ];
+
+const styleData = modal_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
