@@ -4,6 +4,8 @@ import PlaygroundLayout from '@/layouts/PlaygroundLayout.vue'
 import Button from '@/components/buttons/Button.vue'
 import Alert from '@/components/information/Alert.vue'
 import Badge from '@/components/information/Badge.vue'
+import Avatar from '@/components/information/Avatar.vue'
+import AuthorCard from '@/components/information/AuthorCard.vue'
 import Card from '@/components/information/Card.vue'
 import Input from '@/components/form/Input.vue'
 import Switch from '@/components/form/Switch.vue'
@@ -804,11 +806,7 @@ onBeforeUnmount(() => {
                   <h1 class="tb-doc-title">Sistema de tokens y temas</h1>
                   <p class="tb-doc-subtitle">Cómo funciona la personalización de colores, tipografía y espaciado en ComegenUI</p>
                   <div class="tb-doc-author">
-                    <div class="tb-doc-avatar">MC</div>
-                    <div>
-                      <div class="tb-doc-author-name">María Cano</div>
-                      <div class="tb-doc-author-role">Design Systems</div>
-                    </div>
+                    <AuthorCard name="María Cano" role="Design Systems" />
                   </div>
                 </div>
                 <div class="tb-doc-toolbar">
@@ -1474,37 +1472,6 @@ onBeforeUnmount(() => {
   margin: 0 0 1rem;
 }
 
-.tb-doc-author {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.tb-doc-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--cu-color-primary), var(--cu-color-secondary));
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: var(--cu-font-size-xs);
-  font-weight: var(--cu-font-weight-semibold);
-}
-
-.tb-doc-author-name {
-  font-size: var(--cu-font-size-sm);
-  font-weight: var(--cu-font-weight-medium);
-  color: var(--cu-color-neutral);
-}
-
-.tb-doc-author-role {
-  font-size: var(--cu-font-size-xs);
-  color: var(--cu-color-neutral);
-  opacity: 0.5;
-}
-
 .tb-doc-toolbar {
   display: flex;
   align-items: center;
@@ -1538,6 +1505,8 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   font-size: var(--cu-font-size-sm);
+  white-space: nowrap;
+  flex-shrink: 0;
   transition: background 150ms ease;
 }
 
