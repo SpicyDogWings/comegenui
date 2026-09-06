@@ -122,9 +122,33 @@ const activeItem = computed(() => {
 function scrollToActive() {
   nextTick(() => {
     const el = document.querySelector('[data-navbar-active]')
-    if (el) {
-      el.scrollIntoView({ block: 'nearest', inline: 'nearest' })
+    if (!el) return
+
+    // Encontrar el contenedor scrollable
+    let parent = el.parentElement
+    let scrollContainer: HTMLElement | null = null
+    while (parent) {
+      const overflow = getComputedStyle(parent).overflow
+      if (overflow === 'auto' || overflow === 'scroll') {
+        scrollContainer = parent
+        break
+      }
+      parent = parent.parentElement
     }
+
+    if (!scrollContainer) {
+      // Fallback: centrar en el viewport
+      el.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' })
+      return
+    }
+
+    // Centrar el elemento dentro del contenedor scrollable
+    const containerRect = scrollContainer.getBoundingClientRect()
+    const elRect = el.getBoundingClientRect()
+    const scrollOffset = elRect.top - containerRect.top + scrollContainer.scrollTop
+    const centerOffset = scrollOffset - (containerRect.height / 2) + (elRect.height / 2)
+
+    scrollContainer.scrollTo({ top: centerOffset, behavior: 'smooth' })
   })
 }
 
