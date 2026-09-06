@@ -186,7 +186,7 @@ defineExpose({
 }
 
 .cu-switch--sm .cu-switch-track.cu-switch--checked .cu-switch-thumb {
-  transform: translateX(12px);
+  transform: translateX(8px);
 }
 
 .cu-switch-input {
