@@ -664,115 +664,123 @@ onBeforeUnmount(() => {
           </div>
           </div>
 
-          <!-- COMPONENTS GALLERY -->
+          <!-- AGENDA -->
           <div class="tb-scene">
             <div class="tb-scene-header">
-              <h3 class="tb-scene-title">Componentes</h3>
-              <p class="tb-scene-desc">Botones, badges, alertas y feedback en contexto</p>
+              <h3 class="tb-scene-title">Agenda</h3>
+              <p class="tb-scene-desc">Calendario con eventos, badges de estado y acciones rápidas</p>
             </div>
-            <div class="tb-components">
-              <Card variant="ghost" title="Acciones" class="tb-comp-card">
-                <div class="tb-comp-group">
-                  <p class="tb-comp-label">Colores — solid</p>
-                  <div class="tb-row">
-                    <Button color="primary">Primary</Button>
-                    <Button color="secondary">Secondary</Button>
-                    <Button color="neutral">Neutral</Button>
-                    <Button color="success">Success</Button>
-                    <Button color="warning">Warning</Button>
-                    <Button color="danger">Danger</Button>
-                  </div>
-                </div>
-                <div class="tb-comp-group">
-                  <p class="tb-comp-label">Variantes</p>
-                  <div class="tb-row">
-                    <Button color="primary" variant="soft">Soft</Button>
-                    <Button color="primary" variant="ghost">Ghost</Button>
-                    <Button color="primary" variant="outlined">Outlined</Button>
-                    <Button color="primary" variant="subtle">Subtle</Button>
-                    <Button color="primary" variant="link">Link</Button>
-                  </div>
-                </div>
-                <div class="tb-comp-group">
-                  <p class="tb-comp-label">Estados</p>
-                  <div class="tb-row">
-                    <Button :loading="true">Loading</Button>
-                    <Button color="danger" :loading="true">Loading</Button>
-                    <Button :disabled="true">Disabled</Button>
-                    <CopyButton text="comegen-ui" label="Copiar" />
-                    <ToggleColorSheme />
-                  </div>
-                </div>
-              </Card>
-              <Card variant="ghost" title="Feedback" class="tb-comp-card">
-                <div class="tb-col">
-                  <Alert title="Primary" color="primary">Mensaje informativo con el color del tema.</Alert>
-                  <Alert title="Success" color="success">Todo salió como esperabas.</Alert>
-                  <Alert title="Warning" color="warning">Algo necesita tu atención.</Alert>
-                  <Alert title="Danger" color="danger">Esta acción no se puede deshacer.</Alert>
-                </div>
-              </Card>
-              <Card variant="ghost" title="Badges" class="tb-comp-card">
-                <div class="tb-comp-group">
-                  <p class="tb-comp-label">Colores</p>
-                  <div class="tb-row">
-                    <Badge color="primary">Primary</Badge>
-                    <Badge color="secondary">Secondary</Badge>
-                    <Badge color="neutral">Neutral</Badge>
-                    <Badge color="success">Success</Badge>
-                    <Badge color="warning">Warning</Badge>
-                    <Badge color="danger">Danger</Badge>
-                  </div>
-                </div>
-                <div class="tb-comp-group">
-                  <p class="tb-comp-label">Variantes</p>
-                  <div class="tb-row">
-                    <Badge color="primary" variant="solid">Solid</Badge>
-                    <Badge color="primary" variant="soft">Soft</Badge>
-                    <Badge color="primary" variant="ghost">Ghost</Badge>
-                    <Badge color="primary" variant="outlined">Outlined</Badge>
-                    <Badge color="primary" variant="subtle">Subtle</Badge>
-                  </div>
-                </div>
-                <div class="tb-comp-group">
-                  <p class="tb-comp-label">En contexto</p>
-                  <div class="tb-notis">
-                    <div class="tb-noti">
-                      <Badge color="success" variant="soft">OK</Badge>
-                      <span>Tema publicado</span>
+            <div class="tb-agenda">
+              <div class="tb-agenda-main">
+                <Card variant="ghost" class="tb-agenda-card">
+                  <Calendar model-value="2026-09-11" style="width: 100%" />
+                  <div class="tb-agenda-events">
+                    <h4 class="tb-agenda-section-title">Eventos del día</h4>
+                    <div class="tb-agenda-event">
+                      <div class="tb-agenda-event-time">09:00</div>
+                      <div class="tb-agenda-event-content">
+                        <div class="tb-agenda-event-header">
+                          <span class="tb-agenda-event-title">Review de diseño</span>
+                          <Badge color="primary" variant="soft">Work</Badge>
+                        </div>
+                        <p class="tb-agenda-event-desc">Revisar mockups del dashboard nuevo</p>
+                      </div>
                     </div>
-                    <div class="tb-noti">
-                      <Badge color="danger" variant="soft">Error</Badge>
-                      <span>No se pudo guardar el tema</span>
+                    <div class="tb-agenda-event">
+                      <div class="tb-agenda-event-time">11:30</div>
+                      <div class="tb-agenda-event-content">
+                        <div class="tb-agenda-event-header">
+                          <span class="tb-agenda-event-title">Sprint planning</span>
+                          <Badge color="success" variant="soft">Done</Badge>
+                        </div>
+                        <p class="tb-agenda-event-desc">Planificar tareas del sprint 14</p>
+                      </div>
+                    </div>
+                    <div class="tb-agenda-event">
+                      <div class="tb-agenda-event-time">14:00</div>
+                      <div class="tb-agenda-event-content">
+                        <div class="tb-agenda-event-header">
+                          <span class="tb-agenda-event-title">Call con cliente</span>
+                          <Badge color="warning" variant="soft">Pending</Badge>
+                        </div>
+                        <p class="tb-agenda-event-desc">Presentar avances del tema system</p>
+                      </div>
+                    </div>
+                    <div class="tb-agenda-event">
+                      <div class="tb-agenda-event-time">16:30</div>
+                      <div class="tb-agenda-event-content">
+                        <div class="tb-agenda-event-header">
+                          <span class="tb-agenda-event-title">Deploy staging</span>
+                          <Badge color="danger" variant="soft">Urgent</Badge>
+                        </div>
+                        <p class="tb-agenda-event-desc">Subir versión 2.0 a staging</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Card>
-            </div>
-          </div>
-
-          <!-- CALENDAR -->
-          <div class="tb-scene">
-            <div class="tb-scene-header">
-              <h3 class="tb-scene-title">Fechas</h3>
-              <p class="tb-scene-desc">Calendario, selectores de fecha y sliders temporales</p>
-            </div>
-            <div class="tb-calendar">
-              <Card variant="ghost" class="tb-cal-card">
-                <Calendar model-value="2026-09-11" style="width: 100%" />
-              </Card>
-              <Card variant="ghost" class="tb-cal-card">
-                <div class="tb-cal-side">
-                  <DatePicker model-value="2026-09-11" />
-                  <DatePickerRange start-date="2026-09-01" end-date="2026-09-10" />
-                </div>
-                <div class="tb-cal-sliders">
-                  <MonthSlider />
-                  <MonthSlider month-format="MMM yyyy" color="success" />
-                  <YearSlider />
-                  <YearSlider variant="outlined" color="success" />
-                </div>
-              </Card>
+                </Card>
+              </div>
+              <div class="tb-agenda-sidebar">
+                <Card variant="ghost" title="Nuevo evento" class="tb-agenda-side-card">
+                  <div class="tb-agenda-form">
+                    <div class="tb-field">
+                      <Label label="Título" />
+                      <Input placeholder="Nombre del evento" />
+                    </div>
+                    <div class="tb-settings-row">
+                      <div class="tb-field">
+                        <Label label="Fecha" />
+                        <DatePicker model-value="2026-09-11" />
+                      </div>
+                      <div class="tb-field">
+                        <Label label="Hora" />
+                        <Input placeholder="14:00" />
+                      </div>
+                    </div>
+                    <div class="tb-field">
+                      <Label label="Categoría" />
+                      <Select placeholder="Elegí…">
+                        <option value="work">Work</option>
+                        <option value="personal">Personal</option>
+                        <option value="urgent">Urgent</option>
+                      </Select>
+                    </div>
+                    <div class="tb-field">
+                      <Label label="Descripción" />
+                      <Textarea placeholder="Detalles del evento…" />
+                    </div>
+                    <Button color="primary" style="width: 100%">Crear evento</Button>
+                  </div>
+                </Card>
+                <Card variant="ghost" title="Acciones rápidas" class="tb-agenda-side-card">
+                  <div class="tb-agenda-actions">
+                    <Button color="primary" variant="soft" style="width: 100%">Ver semana</Button>
+                    <Button color="success" variant="soft" style="width: 100%">Completados</Button>
+                    <Button color="warning" variant="outlined" style="width: 100%">Pendientes</Button>
+                    <Button color="danger" variant="ghost" style="width: 100%">Cancelar todo</Button>
+                  </div>
+                  <div class="tb-agenda-legend">
+                    <h4 class="tb-agenda-section-title">Leyenda</h4>
+                    <div class="tb-agenda-legend-items">
+                      <div class="tb-agenda-legend-item">
+                        <Badge color="primary" variant="soft">Work</Badge>
+                        <span>Trabajo</span>
+                      </div>
+                      <div class="tb-agenda-legend-item">
+                        <Badge color="success" variant="soft">Done</Badge>
+                        <span>Completado</span>
+                      </div>
+                      <div class="tb-agenda-legend-item">
+                        <Badge color="warning" variant="soft">Pending</Badge>
+                        <span>Pendiente</span>
+                      </div>
+                      <div class="tb-agenda-legend-item">
+                        <Badge color="danger" variant="soft">Urgent</Badge>
+                        <span>Urgente</span>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              </div>
             </div>
           </div>
 
@@ -1149,58 +1157,119 @@ onBeforeUnmount(() => {
   color: var(--cu-color-neutral);
 }
 
-/* === COMPONENTS === */
-.tb-components {
+/* === AGENDA === */
+.tb-agenda {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr 300px;
   gap: 1.25rem;
 }
 
-.tb-comp-card {
+.tb-agenda-card {
   padding: 1.25rem;
+}
+
+.tb-agenda-events {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: var(--cu-border-thin) solid var(--cu-border-color);
+}
+
+.tb-agenda-section-title {
+  font-size: var(--cu-font-size-sm);
+  font-weight: var(--cu-font-weight-semibold);
+  color: var(--cu-color-neutral);
+  margin: 0 0 0.75rem;
+}
+
+.tb-agenda-event {
   display: flex;
-  flex-direction: column;
   gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);
 }
 
-.tb-comp-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+.tb-agenda-event:last-child {
+  border-bottom: none;
 }
 
-.tb-comp-label {
+.tb-agenda-event-time {
   font-size: var(--cu-font-size-xs);
   font-weight: var(--cu-font-weight-semibold);
+  color: var(--cu-color-neutral);
+  opacity: 0.5;
+  min-width: 42px;
+  padding-top: 2px;
+}
+
+.tb-agenda-event-content {
+  flex: 1;
+}
+
+.tb-agenda-event-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 2px;
+}
+
+.tb-agenda-event-title {
+  font-size: var(--cu-font-size-sm);
+  font-weight: var(--cu-font-weight-medium);
+  color: var(--cu-color-neutral);
+}
+
+.tb-agenda-event-desc {
+  font-size: var(--cu-font-size-xs);
   color: var(--cu-color-neutral);
   opacity: 0.6;
   margin: 0;
 }
 
-/* === CALENDAR === */
-.tb-calendar {
-  display: grid;
-  grid-template-columns: minmax(280px, 320px) 1fr;
+.tb-agenda-sidebar {
+  display: flex;
+  flex-direction: column;
   gap: 1.25rem;
 }
 
-.tb-cal-card {
+.tb-agenda-side-card {
   padding: 1.25rem;
 }
 
-.tb-cal-side {
+.tb-agenda-form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  min-width: 0;
+  gap: 0.875rem;
 }
 
-.tb-cal-sliders {
+.tb-agenda-actions {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  padding-top: 1rem;
-  border-top: var(--cu-border-thin) solid var(--cu-border-color);
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);
+}
+
+.tb-agenda-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tb-agenda-legend-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tb-agenda-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: var(--cu-font-size-xs);
+  color: var(--cu-color-neutral);
+  opacity: 0.8;
 }
 
 /* === EDITORIAL === */
