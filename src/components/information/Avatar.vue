@@ -47,13 +47,14 @@ const resolvedColors = computed(() => {
     const idx = ALL_COLORS.indexOf(props.color as typeof PALETTE[number]);
     return { bg: props.color, gradient: ALL_COLORS[(idx + 1) % ALL_COLORS.length] };
   }
-  const key = (props.initials || ' ').toLowerCase();
+  const key = (props.initials || props.name || 'x').toLowerCase();
   const idx = hashString(key) % PALETTE.length;
   return { bg: PALETTE[idx], gradient: PALETTE[(idx + 1) % PALETTE.length] };
 });
 
 const avatarStyles = computed(() => ({
-  '--avatar-bg': `var(--cu-color-${resolvedColors.value.bg})`,
+  '--avatar-bg': `var(--cu-color-${resolvedColors.value.bg}, #6366f1)`,
+  'background-color': `var(--cu-color-${resolvedColors.value.bg}, #6366f1)`,
 }));
 
 const sizeClass = computed(() => `cu-avatar--${props.size}`);

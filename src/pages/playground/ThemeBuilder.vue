@@ -79,7 +79,38 @@ const tableColumns = [
   { key: 'role', label: 'Role' },
 ]
 
-const themeName = ref('light')
+const themeName = ref(themeStore.current)
+
+// Sync themeName → store (cuando cambia en el editor)
+watch(themeName, (name) => {
+  if (name !== themeStore.current) {
+    themeStore.setTheme(name)
+  }
+  if (name !== activeTheme.value) {
+    setTheme(name)
+  }
+  if (builtInNames.value.includes(name)) {
+    loadThemeIntoTokens(name)
+  }
+})
+
+// Sync store → themeName (cuando cambia externamente)
+watch(() => themeStore.current, (name) => {
+  if (name !== themeName.value) {
+    themeName.value = name
+    isEditing.value = false
+    loadThemeIntoTokens(name)
+  }
+})
+
+// Sync editor when theme changes externally (e.g. ThemeChooser/Dropdown)
+watch(activeTheme, (name) => {
+  if (name !== themeName.value) {
+    themeName.value = name
+    isEditing.value = false
+    loadThemeIntoTokens(name)
+  }
+})
 const isEditing = ref(false)
 const modalRef = ref<InstanceType<typeof ThemeManagerModal> | null>(null)
 const modalPreviewRef = ref<InstanceType<typeof Modal> | null>(null)
@@ -476,24 +507,6 @@ function loadThemeIntoTokens(name: string) {
     shadowOpacityRaw.value = String(resolveOpacity(name))
   }
 }
-
-watch(themeName, (name) => {
-  if (name !== activeTheme.value) {
-    setTheme(name)
-  }
-  if (builtInNames.value.includes(name)) {
-    loadThemeIntoTokens(name)
-  }
-})
-
-// Sync editor when theme changes externally (e.g. ThemeChooser/Dropdown)
-watch(activeTheme, (name) => {
-  if (name !== themeName.value) {
-    themeName.value = name
-    isEditing.value = false
-    loadThemeIntoTokens(name)
-  }
-})
 
 // Detectar cambios → solo cuando está editando (isEditing)
 watch([colors, shadowOpacityRaw, typography, spacing, borderRadius, borders], () => {
