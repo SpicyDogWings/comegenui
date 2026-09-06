@@ -49,16 +49,7 @@ const sizeVue = vueSnippet(`  <ToggleColorScheme :size="16" />
   <ToggleColorScheme :size="20" />
   <ToggleColorScheme :size="24" />`);
 
-const togglecolorscheme_tokens = [
-  '--cu-radius-full',
-  '--cu-space-sm',
-  '--cu-shadow-sm',
-  '--cu-font-size-sm',
-];
-
-const componentTokens = [
-  ,
-];
+const componentTokens = [];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

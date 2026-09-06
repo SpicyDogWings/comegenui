@@ -162,7 +162,7 @@ const progVanilla = `<script src="dist/CuFileInput.umd.js"><\/script>
   });
 <\/script>`;
 
-const fileinput_tokens = [
+const componentTokens = [
   '--input-bg',
   '--input-text',
   '--input-soft',

@@ -122,7 +122,7 @@ const progVanilla = `<script src="dist/CuColorPicker.umd.js"><\/script>
   });
 <\/script>`;
 
-const colorpicker_tokens = [
+const componentTokens = [
   '--cp-subtle-border',
   '--cu-font-sans',
   '--cu-radius-md',

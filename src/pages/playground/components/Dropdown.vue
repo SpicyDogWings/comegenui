@@ -243,7 +243,7 @@ function logState() {
   </div>
 </template>`;
 
-const dropdown_tokens = [
+const componentTokens = [
   '--cu-font-sans',
   '--cu-radius-md',
   '--cu-shadow-xl',

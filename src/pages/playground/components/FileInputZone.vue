@@ -180,41 +180,7 @@ const progVanilla = `<script src="dist/CuFileInputZone.umd.js"><\/script>
   });
 <\/script>`;
 
-const fileinputzone_tokens = [
-  '--zone-bg',
-  '--zone-text',
-  '--zone-ghost-hover',
-  '--cu-font-sans',
-  '--cu-font-size-sm',
-  '--cu-font-size-xs',
-  '--cu-font-weight-medium',
-  '--cu-radius',
-  '--cu-border-thin',
-  '--cu-border-thick',
-  '--cu-border-color',
-  '--cu-space-2xs',
-  '--cu-space-md',
-  '--cu-space-xl',
-  '--cu-space-2xl',
-];
-
-const componentTokens = [
-  '--zone-bg',
-  '--zone-text',
-  '--zone-ghost-hover',
-  '--cu-font-sans',
-  '--cu-font-size-sm',
-  '--cu-font-size-xs',
-  '--cu-font-weight-medium',
-  '--cu-radius',
-  '--cu-border-thin',
-  '--cu-border-thick',
-  '--cu-border-color',
-  '--cu-space-2xs',
-  '--cu-space-md',
-  '--cu-space-xl',
-  '--cu-space-2xl',
-];
+const componentTokens = [];
 
 const componentDeps = [
   { label: 'FileList', path: '/playground/components/advanced-table' }

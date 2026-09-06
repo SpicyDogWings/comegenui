@@ -199,7 +199,7 @@ const programmaticVanilla = `${paginationImportVanilla}
   });
 <\/script>`;
 
-const pagination_tokens = [
+const componentTokens = [
   '--cu-font-sans',
   '--cu-font-size-sm',
   '--cu-color-neutral-text',

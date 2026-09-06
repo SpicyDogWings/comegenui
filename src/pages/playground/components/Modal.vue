@@ -449,7 +449,7 @@ const programmaticVanilla = `${modalImportVanilla}
   });
 <\/script>`;
 
-const modal_tokens = [
+const componentTokens = [
   '--modal-color',
   '--cu-font-sans',
   '--cu-font-size-sm',

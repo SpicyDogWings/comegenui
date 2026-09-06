@@ -98,7 +98,7 @@ const lineNumbersVue = vueSnippet(`  <CodeBlock :code="code" language="html" var
   <CodeBlock :code="code" language="css" variant="outlined" :line-numbers="true" />
   <CodeBlock :code="code" language="ts" variant="solid" :line-numbers="true" />`);
 
-const codeblock_tokens = [
+const componentTokens = [
   '--cb-text',
   '--cb-hl-keyword',
   '--cb-hl-string',

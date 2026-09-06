@@ -142,7 +142,7 @@ const iconButtonColumns = [
   },
 ];
 
-const advancedtable_tokens = [
+const componentTokens = [
   '--cu-font-sans',
   '--cu-space-2xs',
   '--cu-space-sm',

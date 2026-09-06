@@ -188,39 +188,7 @@ const programmaticVanilla = `<script src="dist/CuCheckbox.umd.js"><\/script>
   });
 <\/script>`;
 
-const checkbox_tokens = [
-  '--cb-bg',
-  '--cb-ghost-hover',
-  '--cu-font-sans',
-  '--cu-font-size-sm',
-  '--cu-font-size-xs',
-  '--cu-radius-sm',
-  '--cu-border-color',
-  '--cu-border-medium',
-  '--cu-space-xs',
-  '--cu-space-sm',
-  '--cu-space-md',
-  '--cu-space-lg',
-  '--cu-color-surface',
-  '--cu-color-neutral',
-];
-
-const componentTokens = [
-  '--cb-bg',
-  '--cb-ghost-hover',
-  '--cb-soft',
-  '--cb-text',
-  '--cu-font-sans',
-  '--cu-font-size-sm',
-  '--cu-font-size-xs',
-  '--cu-radius-sm',
-  '--cu-border-color',
-  '--cu-border-medium',
-  '--cu-space-xs',
-  '--cu-space-sm',
-  '--cu-space-md',
-  '--cu-space-lg',
-];
+const componentTokens = [];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

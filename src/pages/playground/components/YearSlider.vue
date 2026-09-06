@@ -98,26 +98,7 @@ function readValue() {
   </div>
 </template>`;
 
-const yearslider_tokens = [
-  '--cu-font-sans',
-  '--cu-space-2xs',
-  '--cu-color-surface',
-];
-
-const componentTokens = [
-  '--ms-accent',
-  '--ms-accent-hover',
-  '--ms-accent-text',
-  '--ms-soft',
-  '--ms-soft-hover',
-  '--ms-subtle',
-  '--ms-subtle-border',
-  '--ms-subtle-hover',
-  '--ms-ghost-hover',
-  '--ms-surface',
-  '--cu-font-sans',
-  '--cu-space-2xs',
-];
+const componentTokens = [];
 
 const componentDeps = [
   { label: 'MonthSliderLabel', path: '/playground/components/year-slider' }

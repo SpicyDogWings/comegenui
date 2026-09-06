@@ -90,28 +90,7 @@ const slotVanilla = `<script src="dist/CuFloatingButton.umd.js"><\/script>
   </svg>
 </cu-floating-button>`;
 
-const floatingbutton_tokens = [
-  '--fab-bg',
-  '--fab-bg-hover',
-  '--fab-bg-active',
-  '--cu-radius-full',
-  '--cu-shadow-lg',
-  '--cu-shadow-xl',
-  '--cu-space-lg',
-  '--cu-space-3xl',
-  '--cu-color-surface',
-];
-
-const componentTokens = [
-  '--fab-bg',
-  '--fab-bg-hover',
-  '--fab-bg-active',
-  '--cu-radius-full',
-  '--cu-shadow-lg',
-  '--cu-shadow-xl',
-  '--cu-space-lg',
-  '--cu-space-3xl',
-];
+const componentTokens = [];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

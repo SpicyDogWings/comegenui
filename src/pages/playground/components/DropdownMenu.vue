@@ -319,7 +319,7 @@ const programmaticVanilla = `${dropdownImportVanilla}
   });
 <\/script>`;
 
-const dropdownmenu_tokens = [
+const componentTokens = [
   '--cu-border-color',
   '--cu-border-thin',
   '--cu-space-md',

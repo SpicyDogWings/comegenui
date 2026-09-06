@@ -35,7 +35,7 @@ const outlineItems = [
   },
 ];
 
-const alert_tokens = [
+const componentTokens = [
   '--alert-bg',
   '--alert-text',
   '--alert-soft',

@@ -264,7 +264,7 @@ const interfaceCode = `interface CalendarEvent {
   color?: string
 }`;
 
-const datepickerrange_tokens = [
+const componentTokens = [
   '--cu-border-color',
   '--cu-border-thin',
   '--cu-space-md',

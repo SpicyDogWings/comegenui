@@ -262,7 +262,7 @@ const interfaceCode = `interface CalendarEvent {
   color?: string
 }`;
 
-const datepicker_tokens = [
+const componentTokens = [
   '--cu-border-color',
   '--cu-border-thin',
   '--cu-font-size-xs',

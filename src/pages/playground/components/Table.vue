@@ -60,7 +60,7 @@ const columns = [
 const colors = ["primary", "secondary", "neutral", "success", "warning", "danger"];
 const variants = ["soft", "solid", "outlined", "ghost"];
 
-const table_tokens = [
+const componentTokens = [
   '--table-bg-hover',
   '--table-bd',
   '--cu-font-sans',

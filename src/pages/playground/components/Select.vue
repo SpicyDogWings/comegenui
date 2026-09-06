@@ -335,7 +335,7 @@ const interfaceCode = `interface SelectOption {
   variant?: string;
 }`;
 
-const select_tokens = [
+const componentTokens = [
   '--btn-subtle-border',
   '--cu-font-sans',
   '--cu-font-size-sm',

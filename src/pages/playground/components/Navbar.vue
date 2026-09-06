@@ -110,24 +110,7 @@ const items = [
   <Navbar :items="items" search :search-fields="['label']" />
 </template>`;
 
-const navbar_tokens = [
-  '--cu-font-sans',
-  '--cu-font-size-sm',
-  '--cu-font-weight-medium',
-  '--cu-space-sm',
-  '--cu-space-md',
-  '--cu-shadow-md',
-  '--cu-color-surface',
-  '--cu-border-thin',
-];
-
-const componentTokens = [
-  '--cu-font-size-sm',
-  '--cu-space-2xs',
-  '--cu-space-xs',
-  '--cu-space-sm',
-  '--cu-space-md',
-];
+const componentTokens = [];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

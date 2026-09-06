@@ -177,43 +177,7 @@ const programmaticVanilla = `<script src="dist/CuSwitch.umd.js"><\/script>
   });
 <\/script>`;
 
-const switch_tokens = [
-  '--switch-bg',
-  '--switch-ghost-hover',
-  '--cu-font-sans',
-  '--cu-font-size-sm',
-  '--cu-font-size-xs',
-  '--cu-radius-full',
-  '--cu-shadow-sm',
-  '--cu-space-2xs',
-  '--cu-space-xs',
-  '--cu-space-sm',
-  '--cu-space-lg',
-  '--cu-space-xl',
-  '--cu-space-2xl',
-  '--cu-space-3xl',
-  '--cu-color-surface',
-  '--cu-color-neutral',
-  '--cu-color-neutral-soft',
-  '--cu-color-neutral-ghost-hover',
-];
-
-const componentTokens = [
-  '--switch-bg',
-  '--switch-ghost-hover',
-  '--cu-font-sans',
-  '--cu-font-size-sm',
-  '--cu-font-size-xs',
-  '--cu-radius-full',
-  '--cu-shadow-sm',
-  '--cu-space-2xs',
-  '--cu-space-xs',
-  '--cu-space-sm',
-  '--cu-space-lg',
-  '--cu-space-xl',
-  '--cu-space-2xl',
-  '--cu-space-3xl',
-];
+const componentTokens = [];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

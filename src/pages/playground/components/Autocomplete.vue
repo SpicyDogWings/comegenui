@@ -307,7 +307,7 @@ const interfaceCode = `interface AutocompleteItem {
   value?: string;
 }`;
 
-const autocomplete_tokens = [
+const componentTokens = [
   '--cu-font-sans',
   '--cu-font-size-sm',
   '--cu-radius-md',

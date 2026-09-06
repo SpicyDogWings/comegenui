@@ -159,15 +159,7 @@ const programmaticVanilla = `${collapseImportVanilla}
   });
 <\/script>`;
 
-const collapse_tokens = [
-  '--cu-space-2xs',
-  '--cu-space-lg',
-];
-
-const componentTokens = [
-  '--cu-space-2xs',
-  '--cu-space-lg',
-];
+const componentTokens = [];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

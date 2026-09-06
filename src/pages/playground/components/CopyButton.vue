@@ -72,7 +72,7 @@ const outlineItems = [
 
 const colors = ['primary', 'secondary', 'neutral', 'success', 'warning', 'danger'] as const;
 
-const copybutton_tokens = [
+const componentTokens = [
   '--cu-font-sans',
   '--cu-font-size-sm',
   '--cu-radius',

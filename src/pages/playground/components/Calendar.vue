@@ -248,7 +248,7 @@ const programmaticVanilla = `<script src="dist/CuCalendar.umd.js"><\/script>
   });
 <\/script>`;
 
-const calendar_tokens = [
+const componentTokens = [
   '--cal-accent',
   '--cal-accent-hover',
   '--cal-soft',

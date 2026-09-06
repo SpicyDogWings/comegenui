@@ -33,15 +33,7 @@ const outlineItems = [
   },
 ];
 
-const loader_tokens = [
-  '--cu-loader-color',
-  '--cu-loader-delay',
-];
-
-const componentTokens = [
-  '--cu-loader-color',
-  '--cu-loader-delay',
-];
+const componentTokens = [];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

@@ -86,7 +86,7 @@ console.log('hola')
 \`\`\`
 </cu-markdown>`;
 
-const markdown_tokens = [
+const componentTokens = [
   '--cu-font-sans',
   '--cu-font-size-xs',
   '--cu-font-size-sm',

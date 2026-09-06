@@ -57,20 +57,7 @@ const slotVue = vueSnippet(`  <Blockquote color="success">
     <p>Cita pasada por slot (alternativa a html).</p>
   </Blockquote>`);
 
-const blockquote_tokens = [
-  '--cu-border-thick',
-  '--cu-font-size-sm',
-  '--cu-space-sm',
-  '--cu-space-md',
-  '--cu-color-neutral',
-  '--cu-color-neutral-text',
-];
-
-const componentTokens = [
-  '--cu-border-thick',
-  '--cu-space-sm',
-  '--cu-space-md',
-];
+const componentTokens = [];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

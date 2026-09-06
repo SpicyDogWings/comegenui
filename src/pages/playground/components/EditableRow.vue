@@ -367,15 +367,7 @@ const disabledCellsColumns = [
 
 // ── API ──
 
-const editablerow_tokens = [
-  '--cu-color-success',
-  '--cu-color-danger',
-  '--cu-space-sm',
-];
-
-const componentTokens = [
-  ,
-];
+const componentTokens = [];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

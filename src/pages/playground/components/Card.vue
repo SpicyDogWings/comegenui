@@ -37,49 +37,7 @@ const outlineItems = [
   },
 ];
 
-const card_tokens = [
-  '--card-bg',
-  '--card-text',
-  '--card-soft',
-  '--card-subtle',
-  '--card-subtle-border',
-  '--cu-font-sans',
-  '--cu-font-size-sm',
-  '--cu-font-size-lg',
-  '--cu-font-weight-bold',
-  '--cu-line-height-relaxed',
-  '--cu-radius-lg',
-  '--cu-shadow-md',
-  '--cu-border-thin',
-  '--cu-border-color',
-  '--cu-space-2xs',
-  '--cu-space-sm',
-  '--cu-space-md',
-  '--cu-space-lg',
-  '--cu-color-surface',
-  '--cu-color-neutral',
-];
-
-const componentTokens = [
-  '--card-bg',
-  '--card-text',
-  '--card-soft',
-  '--card-subtle',
-  '--card-subtle-border',
-  '--cu-font-sans',
-  '--cu-font-size-sm',
-  '--cu-font-size-lg',
-  '--cu-font-weight-bold',
-  '--cu-line-height-relaxed',
-  '--cu-radius-lg',
-  '--cu-shadow-md',
-  '--cu-border-thin',
-  '--cu-border-color',
-  '--cu-space-2xs',
-  '--cu-space-sm',
-  '--cu-space-md',
-  '--cu-space-lg',
-];
+const componentTokens = [];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
