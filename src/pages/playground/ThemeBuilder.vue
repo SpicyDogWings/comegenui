@@ -566,14 +566,16 @@ onBeforeUnmount(() => {
       <aside class="tb-controls">
         <div class="tb-controls-header">
           <span class="tb-controls-theme-name">{{ themeName }}</span>
-          <button
+          <Button
             v-if="!isEditing"
-            class="tb-edit-btn"
+            color="neutral"
+            variant="ghost"
+            size="sm"
             title="Editar tema"
             @click="enableEditing"
           >
             <LucidePalette :width="16" :height="16" />
-          </button>
+          </Button>
         </div>
 
         <Collapse label="Colors" :default-open="true">
