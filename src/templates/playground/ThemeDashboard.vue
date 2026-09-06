@@ -93,6 +93,15 @@ const demoOutlineItems = [
               <Badge :color="value === 'Active' ? 'success' : value === 'Pending' ? 'warning' : 'danger'">
                 {{ value }}
               </Badge>
+            </template>
+          </Table>
+          <template #footer>
+            <Pagination :total-pages="10" :current-page="3" :total-items="100" color="primary" />
+          </template>
+        </Card>
+      </div>
+    </div>
+  </div>
 </template>
 
 <style>
@@ -183,12 +192,3 @@ const demoOutlineItems = [
   padding: 1rem;
 }
 </style>
-          </Table>
-          <template #footer>
-            <Pagination :total-pages="10" :current-page="3" :total-items="100" color="primary" />
-          </template>
-        </Card>
-      </div>
-    </div>
-  </div>
-</template>

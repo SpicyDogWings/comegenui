@@ -108,9 +108,54 @@ function createEvent() {
                     <span class="tb-agenda-event-title">{{ event.title }}</span>
                     <Badge :color="event.color" variant="soft">{{ event.badge }}</Badge>
                   </div>
-                  <p class="tb-agenda-event-desc">{{ event.desc }}</p>
+                    <p class="tb-agenda-event-desc">{{ event.desc }}</p>
                 </div>
               </div>
+            </template>
+          </div>
+        </div>
+        <div class="tb-agenda-side">
+          <h4 class="tb-agenda-section-title">Nuevo evento</h4>
+          <div class="tb-agenda-form">
+            <div class="tb-field">
+              <Label label="Título" />
+              <Input v-model="newEvent.title" placeholder="Nombre del evento" />
+            </div>
+            <div class="tb-agenda-form-row">
+              <div class="tb-field">
+                <Label label="Fecha" />
+                <DatePicker v-model="newEvent.date" />
+              </div>
+              <div class="tb-field">
+                <Label label="Hora" />
+                <Input v-model="newEvent.time" placeholder="14:00" />
+              </div>
+            </div>
+            <div class="tb-field">
+              <Label label="Categoría" />
+              <Select v-model="newEvent.category">
+                <option value="work">Work</option>
+                <option value="personal">Personal</option>
+                <option value="urgent">Urgent</option>
+              </Select>
+            </div>
+            <div class="tb-field">
+              <Label label="Descripción" />
+              <Textarea v-model="newEvent.desc" placeholder="Detalles del evento…" />
+            </div>
+            <div class="tb-agenda-form-actions">
+              <Button color="primary" style="width: 100%" @click="createEvent">Crear evento</Button>
+            </div>
+            <Transition name="tb-fade">
+              <Alert v-if="eventSaved" title="Evento creado" color="success">
+                Se agregó a tu agenda.
+              </Alert>
+            </Transition>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <style>
@@ -234,49 +279,3 @@ function createEvent() {
   margin-top: 0.5rem;
 }
 </style>
-            <p v-else class="tb-agenda-empty">No hay eventos para este día</p>
-          </div>
-        </div>
-        <div class="tb-agenda-side">
-          <h4 class="tb-agenda-section-title">Nuevo evento</h4>
-          <div class="tb-agenda-form">
-            <div class="tb-field">
-              <Label label="Título" />
-              <Input v-model="newEvent.title" placeholder="Nombre del evento" />
-            </div>
-            <div class="tb-agenda-form-row">
-              <div class="tb-field">
-                <Label label="Fecha" />
-                <DatePicker v-model="newEvent.date" />
-              </div>
-              <div class="tb-field">
-                <Label label="Hora" />
-                <Input v-model="newEvent.time" placeholder="14:00" />
-              </div>
-            </div>
-            <div class="tb-field">
-              <Label label="Categoría" />
-              <Select v-model="newEvent.category">
-                <option value="work">Work</option>
-                <option value="personal">Personal</option>
-                <option value="urgent">Urgent</option>
-              </Select>
-            </div>
-            <div class="tb-field">
-              <Label label="Descripción" />
-              <Textarea v-model="newEvent.desc" placeholder="Detalles del evento…" />
-            </div>
-            <div class="tb-agenda-form-actions">
-              <Button color="primary" style="width: 100%" @click="createEvent">Crear evento</Button>
-            </div>
-            <Transition name="tb-fade">
-              <Alert v-if="eventSaved" title="Evento creado" color="success">
-                Se agregó a tu agenda.
-              </Alert>
-            </Transition>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
