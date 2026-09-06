@@ -62,6 +62,13 @@ const outlineItems = [
     id: 'programmatic',
   },
   {
+    label: 'Style',
+    id: 'style',
+    children: [
+      { label: 'CSS Variables', id: 'style-variables' },
+    ],
+  },
+  {
     label: 'API',
     id: 'api',
     children: [
@@ -254,6 +261,18 @@ const interfaceCode = `interface CalendarEvent {
   date: string | number | Date
   color?: string
 }`;
+
+const styleColumns = [
+  { key: 'name', label: 'Variable' },
+  { key: 'description', label: 'Uso' },
+];
+
+const styleData = [
+  { name: '--cu-border-color', description: 'Color borde' },
+  { name: '--cu-border-thin', description: 'Borde fino' },
+  { name: '--cu-space-md', description: 'Espaciado md' },
+  { name: '--cu-space-sm', description: 'Espaciado sm' },
+];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -539,6 +558,17 @@ const exposesData = [
             />
           </div>
         </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <hr class="playground-separator" />
+
+      <section id="style" class="playground-section">
+        <h2>Style</h2>
+
+        <h3 id="style-variables">CSS Variables</h3>
+        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
       </section>
 
       <hr class="playground-separator" />

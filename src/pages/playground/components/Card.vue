@@ -17,6 +17,13 @@ const outlineItems = [
   { label: 'Custom Slots', id: 'slots' },
   { label: 'Programmatic', id: 'programmatic' },
   {
+    label: 'Style',
+    id: 'style',
+    children: [
+      { label: 'CSS Variables', id: 'style-variables' },
+    ],
+  },
+  {
     label: 'API',
     id: 'api',
     children: [
@@ -26,6 +33,34 @@ const outlineItems = [
       { label: 'Exposes', id: 'api-exposes' },
     ],
   },
+];
+
+const styleColumns = [
+  { key: 'name', label: 'Variable' },
+  { key: 'description', label: 'Uso' },
+];
+
+const styleData = [
+  { name: '--card-bg', description: 'Fondo' },
+  { name: '--card-text', description: 'Texto' },
+  { name: '--card-soft', description: 'Fondo soft' },
+  { name: '--card-subtle', description: 'Fondo subtle' },
+  { name: '--card-subtle-border', description: 'Borde subtle' },
+  { name: '--cu-font-sans', description: 'Fuente' },
+  { name: '--cu-font-size-sm', description: 'Tamaño sm' },
+  { name: '--cu-font-size-lg', description: 'Tamaño lg' },
+  { name: '--cu-font-weight-bold', description: 'Peso bold' },
+  { name: '--cu-line-height-relaxed', description: 'Altura línea' },
+  { name: '--cu-radius-lg', description: 'Radio lg' },
+  { name: '--cu-shadow-md', description: 'Sombra' },
+  { name: '--cu-border-thin', description: 'Borde fino' },
+  { name: '--cu-border-color', description: 'Color borde' },
+  { name: '--cu-space-2xs', description: 'Espaciado 2xs' },
+  { name: '--cu-space-sm', description: 'Espaciado sm' },
+  { name: '--cu-space-md', description: 'Espaciado md' },
+  { name: '--cu-space-lg', description: 'Espaciado lg' },
+  { name: '--cu-color-surface', description: 'Color superficie' },
+  { name: '--cu-color-neutral', description: 'Color neutral' },
 ];
 
 const apiColumns = [
@@ -376,6 +411,17 @@ const layout = ref('vertical')
             </div>
           </div>
         </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <hr class="playground-separator" />
+
+      <section id="style" class="playground-section">
+        <h2>Style</h2>
+
+        <h3 id="style-variables">CSS Variables</h3>
+        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
       </section>
 
       <hr class="playground-separator" />

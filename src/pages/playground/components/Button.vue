@@ -33,6 +33,13 @@ const outlineItems = [
   { label: 'As Link', id: 'links' },
   { label: 'Full Width', id: 'fullwidth' },
   {
+    label: 'Style',
+    id: 'style',
+    children: [
+      { label: 'CSS Variables', id: 'style-variables' },
+    ],
+  },
+  {
     label: 'API',
     id: 'api',
     children: [
@@ -191,6 +198,40 @@ const fullwidthVanilla = `<script src="dist/CuButton.umd.js"><\/script>
 <cu-button color="success" variant="soft" style="width:100%">Full Width Soft</cu-button>
 <cu-button color="warning" variant="outlined" style="width:100%">Full Width Outlined</cu-button>
 <cu-button color="danger" variant="subtle" style="width:100%">Full Width Subtle</cu-button>`;
+
+const styleColumns = [
+  { key: 'name', label: 'Variable' },
+  { key: 'description', label: 'Uso' },
+];
+
+const styleData = [
+  { name: '--btn-bg', description: 'Fondo del botón' },
+  { name: '--btn-bg-hover', description: 'Fondo hover' },
+  { name: '--btn-bg-active', description: 'Fondo activo' },
+  { name: '--btn-soft', description: 'Fondo variante soft' },
+  { name: '--btn-soft-hover', description: 'Hover soft' },
+  { name: '--btn-soft-active', description: 'Activo soft' },
+  { name: '--btn-subtle', description: 'Fondo variante subtle' },
+  { name: '--btn-subtle-hover', description: 'Hover subtle' },
+  { name: '--btn-subtle-active', description: 'Activo subtle' },
+  { name: '--btn-subtle-border', description: 'Borde subtle' },
+  { name: '--btn-ghost-hover', description: 'Hover ghost' },
+  { name: '--btn-ghost-active', description: 'Activo ghost' },
+  { name: '--cu-font-sans', description: 'Fuente' },
+  { name: '--cu-font-size-sm', description: 'Tamaño sm' },
+  { name: '--cu-font-size-xs', description: 'Tamaño xs' },
+  { name: '--cu-font-size-lg', description: 'Tamaño lg' },
+  { name: '--cu-font-weight-medium', description: 'Peso medio' },
+  { name: '--cu-radius', description: 'Radio' },
+  { name: '--cu-space-2xs', description: 'Espaciado 2xs' },
+  { name: '--cu-space-xs', description: 'Espaciado xs' },
+  { name: '--cu-space-sm', description: 'Espaciado sm' },
+  { name: '--cu-space-md', description: 'Espaciado md' },
+  { name: '--cu-space-lg', description: 'Espaciado lg' },
+  { name: '--cu-space-xl', description: 'Espaciado xl' },
+  { name: '--cu-border-thin', description: 'Borde fino' },
+  { name: '--cu-color-surface', description: 'Color superficie' },
+];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -379,6 +420,17 @@ const eventsData = [
             <Button color="danger" variant="subtle" style="width:100%">Full Width Subtle</Button>
           </div>
         </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <hr class="playground-separator" />
+
+      <section id="style" class="playground-section">
+        <h2>Style</h2>
+
+        <h3 id="style-variables">CSS Variables</h3>
+        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
       </section>
 
       <hr class="playground-separator" />

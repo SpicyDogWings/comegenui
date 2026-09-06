@@ -54,6 +54,13 @@ const outlineItems = [
   { label: 'Persistent Default Footer', id: 'persistent-default-footer' },
   { label: 'Programmatic', id: 'programmatic' },
   {
+    label: 'Style',
+    id: 'style',
+    children: [
+      { label: 'CSS Variables', id: 'style-variables' },
+    ],
+  },
+  {
     label: 'API',
     id: 'api',
     children: [
@@ -439,6 +446,29 @@ const programmaticVanilla = `${modalImportVanilla}
   });
 <\/script>`;
 
+const styleColumns = [
+  { key: 'name', label: 'Variable' },
+  { key: 'description', label: 'Uso' },
+];
+
+const styleData = [
+  { name: '--modal-color', description: 'Color header' },
+  { name: '--cu-font-sans', description: 'Fuente' },
+  { name: '--cu-font-size-sm', description: 'Tamaño sm' },
+  { name: '--cu-font-size-lg', description: 'Tamaño lg' },
+  { name: '--cu-font-weight-bold', description: 'Peso bold' },
+  { name: '--cu-radius', description: 'Radio' },
+  { name: '--cu-shadow-xl', description: 'Sombra' },
+  { name: '--cu-border-thin', description: 'Borde fino' },
+  { name: '--cu-border-color', description: 'Color borde' },
+  { name: '--cu-space-2xs', description: 'Espaciado 2xs' },
+  { name: '--cu-space-sm', description: 'Espaciado sm' },
+  { name: '--cu-space-md', description: 'Espaciado md' },
+  { name: '--cu-space-lg', description: 'Espaciado lg' },
+  { name: '--cu-color-surface', description: 'Color superficie' },
+  { name: '--cu-color-neutral', description: 'Color neutral' },
+];
+
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
   { key: 'type', label: 'Tipo' },
@@ -735,6 +765,17 @@ const exposesData = [
           </div>
         </SectionDemo>
       </section>
+
+      <hr class="playground-separator" />
+
+      <section id="style" class="playground-section">
+        <h2>Style</h2>
+
+        <h3 id="style-variables">CSS Variables</h3>
+        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
+      </section>
+
+      <hr class="playground-separator" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>

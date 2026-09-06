@@ -14,6 +14,13 @@ const outlineItems = [
   { label: 'First & Last', id: 'first-last' },
   { label: 'Programmatic', id: 'programmatic' },
   {
+    label: 'Style',
+    id: 'style',
+    children: [
+      { label: 'CSS Variables', id: 'style-variables' },
+    ],
+  },
+  {
     label: 'API',
     id: 'api',
     children: [
@@ -189,6 +196,21 @@ const programmaticVanilla = `${paginationImportVanilla}
   });
 <\/script>`;
 
+const styleColumns = [
+  { key: 'name', label: 'Variable' },
+  { key: 'description', label: 'Uso' },
+];
+
+const styleData = [
+  { name: '--cu-font-sans', description: 'Fuente' },
+  { name: '--cu-font-size-sm', description: 'Tamaño texto' },
+  { name: '--cu-color-neutral-text', description: 'Color texto' },
+  { name: '--cu-space-xs', description: 'Entre items' },
+  { name: '--cu-space-sm', description: 'Espaciado interno' },
+  { name: '--cu-space-md', description: 'Espaciado' },
+  { name: '--cu-space-3xl', description: 'Touch target' },
+];
+
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
   { key: 'type', label: 'Tipo' },
@@ -331,6 +353,17 @@ const exposesData: { name: string; type: string; description: string }[] = [];
           </div>
         </SectionDemo>
       </section>
+
+      <hr class="playground-separator" />
+
+      <section id="style" class="playground-section">
+        <h2>Style</h2>
+
+        <h3 id="style-variables">CSS Variables</h3>
+        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
+      </section>
+
+      <hr class="playground-separator" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>

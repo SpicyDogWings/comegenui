@@ -54,6 +54,13 @@ const outlineItems = [
   { label: 'Variants', id: 'variants' },
   { label: 'Line numbers', id: 'line-numbers' },
   {
+    label: 'Style',
+    id: 'style',
+    children: [
+      { label: 'CSS Variables', id: 'style-variables' },
+    ],
+  },
+  {
     label: 'API',
     id: 'api',
     children: [
@@ -86,6 +93,42 @@ const variantsVue = vueSnippet(`  <CodeBlock :code="code" language="javascript" 
 const lineNumbersVue = vueSnippet(`  <CodeBlock :code="code" language="html" variant="default" :line-numbers="true" />
   <CodeBlock :code="code" language="css" variant="outlined" :line-numbers="true" />
   <CodeBlock :code="code" language="ts" variant="solid" :line-numbers="true" />`);
+
+const styleColumns = [
+  { key: 'name', label: 'Variable' },
+  { key: 'description', label: 'Uso' },
+];
+
+const styleData = [
+  { name: '--cb-text', description: 'Texto código' },
+  { name: '--cb-hl-keyword', description: 'Keywords' },
+  { name: '--cb-hl-string', description: 'Strings' },
+  { name: '--cb-hl-number', description: 'Números' },
+  { name: '--cb-hl-title', description: 'Títulos' },
+  { name: '--cb-hl-tag', description: 'Tags' },
+  { name: '--cb-hl-attr', description: 'Atributos' },
+  { name: '--cb-hl-meta', description: 'Meta' },
+  { name: '--cb-hl-comment', description: 'Comentarios' },
+  { name: '--cu-font-mono', description: 'Fuente monoespaciada' },
+  { name: '--cu-font-size-sm', description: 'Tamaño texto' },
+  { name: '--cu-font-weight-bold', description: 'Peso bold' },
+  { name: '--cu-font-weight-medium', description: 'Peso medio' },
+  { name: '--cu-line-height-relaxed', description: 'Altura línea' },
+  { name: '--cu-radius-sm', description: 'Radio' },
+  { name: '--cu-border-thin', description: 'Borde fino' },
+  { name: '--cu-space-xs', description: 'Espaciado xs' },
+  { name: '--cu-space-sm', description: 'Espaciado sm' },
+  { name: '--cu-space-md', description: 'Espaciado md' },
+  { name: '--cu-space-lg', description: 'Espaciado lg' },
+  { name: '--cu-space-xl', description: 'Espaciado xl' },
+  { name: '--cu-space-2xl', description: 'Espaciado 2xl' },
+  { name: '--cu-code-bg', description: 'Fondo código' },
+  { name: '--cu-code-text', description: 'Texto código (tema)' },
+  { name: '--cu-code-faded', description: 'Texto atenuado' },
+  { name: '--cu-color-neutral-soft', description: 'Fondo neutral' },
+  { name: '--cu-color-neutral-subtle-border', description: 'Borde neutral' },
+  { name: '--cu-color-neutral-text', description: 'Texto neutral' },
+];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -146,6 +189,17 @@ const exposesData: { name: string; type: string; description: string }[] = [];
           </div>
         </SectionDemo>
       </section>
+
+      <hr class="playground-separator" />
+
+      <section id="style" class="playground-section">
+        <h2>Style</h2>
+
+        <h3 id="style-variables">CSS Variables</h3>
+        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
+      </section>
+
+      <hr class="playground-separator" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>

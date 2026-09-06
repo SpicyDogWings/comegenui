@@ -17,6 +17,13 @@ const outlineItems = [
   { label: 'Loading', id: 'loading' },
   { label: 'Compact', id: 'compact' },
   {
+    label: 'Style',
+    id: 'style',
+    children: [
+      { label: 'CSS Variables', id: 'style-variables' },
+    ],
+  },
+  {
     label: 'API',
     id: 'api',
     children: [
@@ -50,6 +57,31 @@ const columns = [
 
 const colors = ["primary", "secondary", "neutral", "success", "warning", "danger"];
 const variants = ["soft", "solid", "outlined", "ghost"];
+
+const styleColumns = [
+  { key: 'name', label: 'Variable' },
+  { key: 'description', label: 'Uso' },
+];
+
+const styleData = [
+  { name: '--table-bg', description: 'Fondo tabla' },
+  { name: '--table-bd', description: 'Color bordes' },
+  { name: '--table-bg-hover', description: 'Fondo hover fila' },
+  { name: '--cu-font-sans', description: 'Fuente' },
+  { name: '--cu-font-weight-medium', description: 'Peso medio' },
+  { name: '--cu-font-weight-semibold', description: 'Peso semi-bold' },
+  { name: '--cu-radius-md', description: 'Radio' },
+  { name: '--cu-border-thin', description: 'Borde fino' },
+  { name: '--cu-border-medium', description: 'Borde medio' },
+  { name: '--cu-space-xs', description: 'Espaciado xs' },
+  { name: '--cu-space-sm', description: 'Espaciado sm' },
+  { name: '--cu-space-md', description: 'Espaciado md' },
+  { name: '--cu-space-xl', description: 'Espaciado xl' },
+  { name: '--cu-color-surface', description: 'Color superficie' },
+  { name: '--cu-color-neutral-soft', description: 'Fondo neutral' },
+  { name: '--cu-color-neutral-subtle-border', description: 'Borde neutral' },
+  { name: '--cu-color-neutral-text', description: 'Texto neutral' },
+];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -451,6 +483,17 @@ const totalDemo = sampleData.reduce((sum, r) => sum + r.amount, 0).toFixed(2);
           </div>
         </SectionDemo>
       </section>
+
+      <hr class="playground-separator" />
+
+      <section id="style" class="playground-section">
+        <h2>Style</h2>
+
+        <h3 id="style-variables">CSS Variables</h3>
+        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
+      </section>
+
+      <hr class="playground-separator" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>

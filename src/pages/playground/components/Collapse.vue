@@ -19,6 +19,13 @@ const outlineItems = [
   { label: 'Nested', id: 'nested' },
   { label: 'Programmatic', id: 'programmatic' },
   {
+    label: 'Style',
+    id: 'style',
+    children: [
+      { label: 'CSS Variables', id: 'style-variables' },
+    ],
+  },
+  {
     label: 'API',
     id: 'api',
     children: [
@@ -149,6 +156,16 @@ const programmaticVanilla = `${collapseImportVanilla}
     collapse.addEventListener('toggle', (e) => console.log('isOpen():', e.detail));
   });
 <\/script>`;
+
+const styleColumns = [
+  { key: 'name', label: 'Variable' },
+  { key: 'description', label: 'Uso' },
+];
+
+const styleData = [
+  { name: '--cu-space-2xs', description: 'Espaciado' },
+  { name: '--cu-space-lg', description: 'Espaciado' },
+];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -285,6 +302,17 @@ const exposesData = [
           </div>
         </SectionDemo>
       </section>
+
+      <hr class="playground-separator" />
+
+      <section id="style" class="playground-section">
+        <h2>Style</h2>
+
+        <h3 id="style-variables">CSS Variables</h3>
+        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
+      </section>
+
+      <hr class="playground-separator" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>

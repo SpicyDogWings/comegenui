@@ -12,6 +12,13 @@ const outlineItems = [
   { label: 'All Combinations', id: 'combinations' },
   { label: 'Programmatic', id: 'programmatic' },
   {
+    label: 'Style',
+    id: 'style',
+    children: [
+      { label: 'CSS Variables', id: 'style-variables' },
+    ],
+  },
+  {
     label: 'API',
     id: 'api',
     children: [
@@ -21,6 +28,30 @@ const outlineItems = [
       { label: 'Exposes', id: 'api-exposes' },
     ],
   },
+];
+
+const styleColumns = [
+  { key: 'name', label: 'Variable' },
+  { key: 'description', label: 'Uso' },
+];
+
+const styleData = [
+  { name: '--badge-bg', description: 'Fondo' },
+  { name: '--badge-text', description: 'Texto' },
+  { name: '--badge-soft', description: 'Fondo soft' },
+  { name: '--badge-soft-hover', description: 'Hover soft' },
+  { name: '--badge-subtle', description: 'Fondo subtle' },
+  { name: '--badge-subtle-border', description: 'Borde subtle' },
+  { name: '--cu-font-sans', description: 'Fuente' },
+  { name: '--cu-font-size-xs', description: 'Tamaño xs' },
+  { name: '--cu-font-weight-medium', description: 'Peso medio' },
+  { name: '--cu-line-height-tight', description: 'Altura línea' },
+  { name: '--cu-radius', description: 'Radio' },
+  { name: '--cu-border-thin', description: 'Borde fino' },
+  { name: '--cu-space-2xs', description: 'Espaciado 2xs' },
+  { name: '--cu-space-xs', description: 'Espaciado xs' },
+  { name: '--cu-space-sm', description: 'Espaciado sm' },
+  { name: '--cu-color-surface', description: 'Color superficie' },
 ];
 
 const apiColumns = [
@@ -185,6 +216,17 @@ const variant = ref('soft')
             </div>
           </div>
         </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <hr class="playground-separator" />
+
+      <section id="style" class="playground-section">
+        <h2>Style</h2>
+
+        <h3 id="style-variables">CSS Variables</h3>
+        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
       </section>
 
       <hr class="playground-separator" />

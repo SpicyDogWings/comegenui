@@ -23,6 +23,13 @@ const outlineItems = [
   { label: 'Read Only', id: 'readonly' },
     { label: 'Programmatic', id: 'programmatic' },
   {
+    label: 'Style',
+    id: 'style',
+    children: [
+      { label: 'CSS Variables', id: 'style-variables' },
+    ],
+  },
+  {
     label: 'API',
     id: 'api',
     children: [
@@ -196,6 +203,30 @@ const programmaticVanilla = `<script src="dist/CuInput.umd.js"><\/script>
     document.getElementById('in-prog-focus').addEventListener('click', () => input.focus());
   });
 <\/script>`;
+
+const styleColumns = [
+  { key: 'name', label: 'Variable' },
+  { key: 'description', label: 'Uso' },
+];
+
+const styleData = [
+  { name: '--btn-bg', description: 'Fondo botón interno' },
+  { name: '--btn-bg-hover', description: 'Hover' },
+  { name: '--btn-soft', description: 'Soft' },
+  { name: '--btn-soft-hover', description: 'Hover soft' },
+  { name: '--btn-subtle', description: 'Subtle' },
+  { name: '--btn-subtle-hover', description: 'Hover subtle' },
+  { name: '--btn-subtle-border', description: 'Borde subtle' },
+  { name: '--cu-font-sans', description: 'Fuente' },
+  { name: '--cu-font-size-sm', description: 'Tamaño texto' },
+  { name: '--cu-font-weight-medium', description: 'Peso medio' },
+  { name: '--cu-radius-md', description: 'Radio' },
+  { name: '--cu-border-thin', description: 'Borde fino' },
+  { name: '--cu-space-md', description: 'Espaciado md' },
+  { name: '--cu-space-lg', description: 'Espaciado lg' },
+  { name: '--cu-color-neutral-text', description: 'Texto neutral' },
+  { name: '--cu-color-surface', description: 'Color superficie' },
+];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -371,6 +402,17 @@ const exposesData = [
             <Input ref="inputRef" v-model="progValue" placeholder="Escribí algo" style="max-width:280px" />
           </div>
         </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <hr class="playground-separator" />
+
+      <section id="style" class="playground-section">
+        <h2>Style</h2>
+
+        <h3 id="style-variables">CSS Variables</h3>
+        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
       </section>
 
       <hr class="playground-separator" />

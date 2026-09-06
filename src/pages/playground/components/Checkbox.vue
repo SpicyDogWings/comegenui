@@ -24,6 +24,13 @@ const outlineItems = [
   { label: 'Disabled', id: 'disabled' },
     { label: 'Programmatic', id: 'programmatic' },
   {
+    label: 'Style',
+    id: 'style',
+    children: [
+      { label: 'CSS Variables', id: 'style-variables' },
+    ],
+  },
+  {
     label: 'API',
     id: 'api',
     children: [
@@ -179,6 +186,28 @@ const programmaticVanilla = `<script src="dist/CuCheckbox.umd.js"><\/script>
   });
 <\/script>`;
 
+const styleColumns = [
+  { key: 'name', label: 'Variable' },
+  { key: 'description', label: 'Uso' },
+];
+
+const styleData = [
+  { name: '--cb-bg', description: 'Fondo check' },
+  { name: '--cb-ghost-hover', description: 'Hover ghost' },
+  { name: '--cu-font-sans', description: 'Fuente' },
+  { name: '--cu-font-size-sm', description: 'Tamaño sm' },
+  { name: '--cu-font-size-xs', description: 'Tamaño xs' },
+  { name: '--cu-radius-sm', description: 'Radio' },
+  { name: '--cu-border-color', description: 'Color borde' },
+  { name: '--cu-border-medium', description: 'Borde medio' },
+  { name: '--cu-space-xs', description: 'Espaciado xs' },
+  { name: '--cu-space-sm', description: 'Espaciado sm' },
+  { name: '--cu-space-md', description: 'Espaciado md' },
+  { name: '--cu-space-lg', description: 'Espaciado lg' },
+  { name: '--cu-color-surface', description: 'Color superficie' },
+  { name: '--cu-color-neutral', description: 'Color neutral' },
+];
+
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
   { key: 'type', label: 'Tipo' },
@@ -315,6 +344,17 @@ const exposesData = [
             <Checkbox ref="checkboxRef" v-model="progChecked" label="Términos" />
           </div>
         </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <hr class="playground-separator" />
+
+      <section id="style" class="playground-section">
+        <h2>Style</h2>
+
+        <h3 id="style-variables">CSS Variables</h3>
+        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
       </section>
 
       <hr class="playground-separator" />

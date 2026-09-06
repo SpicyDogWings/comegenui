@@ -45,6 +45,13 @@ const outlineItems = [
   { label: 'Positions', id: 'positions' },
   { label: 'Programmatic', id: 'programmatic' },
   {
+    label: 'Style',
+    id: 'style',
+    children: [
+      { label: 'CSS Variables', id: 'style-variables' },
+    ],
+  },
+  {
     label: 'API',
     id: 'api',
     children: [
@@ -298,6 +305,23 @@ const interfaceCode = `interface AutocompleteItem {
   value?: string;
 }`;
 
+const styleColumns = [
+  { key: 'name', label: 'Variable' },
+  { key: 'description', label: 'Uso' },
+];
+
+const styleData = [
+  { name: '--cu-font-sans', description: 'Fuente' },
+  { name: '--cu-font-size-sm', description: 'Tamaño texto' },
+  { name: '--cu-radius-md', description: 'Radio' },
+  { name: '--cu-border-thin', description: 'Borde fino' },
+  { name: '--cu-space-sm', description: 'Espaciado' },
+  { name: '--cu-space-md', description: 'Espaciado' },
+  { name: '--cu-shadow-md', description: 'Sombra' },
+  { name: '--cu-color-surface', description: 'Color superficie' },
+  { name: '--cu-color-neutral-text', description: 'Texto neutral' },
+];
+
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
   { key: 'type', label: 'Tipo' },
@@ -470,6 +494,17 @@ const exposesData = [
             <Autocomplete ref="autoRef" :items="items" placeholder="Autocomplete programático" style="max-width:300px" />
           </div>
         </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <hr class="playground-separator" />
+
+      <section id="style" class="playground-section">
+        <h2>Style</h2>
+
+        <h3 id="style-variables">CSS Variables</h3>
+        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
       </section>
 
       <hr class="playground-separator" />

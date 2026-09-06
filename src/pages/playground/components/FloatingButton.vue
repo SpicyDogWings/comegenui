@@ -12,6 +12,13 @@ const outlineItems = [
   { label: 'Disabled', id: 'disabled' },
   { label: 'Slot', id: 'slot' },
   {
+    label: 'Style',
+    id: 'style',
+    children: [
+      { label: 'CSS Variables', id: 'style-variables' },
+    ],
+  },
+  {
     label: 'API',
     id: 'api',
     children: [
@@ -80,6 +87,23 @@ const slotVanilla = `<script src="dist/CuFloatingButton.umd.js"><\/script>
     <path d="M5 12h14" /><path d="m12 5 7 7-7 7" />
   </svg>
 </cu-floating-button>`;
+
+const styleColumns = [
+  { key: 'name', label: 'Variable' },
+  { key: 'description', label: 'Uso' },
+];
+
+const styleData = [
+  { name: '--fab-bg', description: 'Fondo FAB' },
+  { name: '--fab-bg-hover', description: 'Fondo hover' },
+  { name: '--fab-bg-active', description: 'Fondo activo' },
+  { name: '--cu-radius-full', description: 'Radio completo' },
+  { name: '--cu-shadow-lg', description: 'Sombra lg' },
+  { name: '--cu-shadow-xl', description: 'Sombra xl' },
+  { name: '--cu-space-lg', description: 'Espaciado' },
+  { name: '--cu-space-3xl', description: 'Touch target' },
+  { name: '--cu-color-surface', description: 'Color superficie' },
+];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -154,6 +178,17 @@ const eventsData = [
             </FloatingButton>
           </div>
         </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <hr class="playground-separator" />
+
+      <section id="style" class="playground-section">
+        <h2>Style</h2>
+
+        <h3 id="style-variables">CSS Variables</h3>
+        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
       </section>
 
       <hr class="playground-separator" />

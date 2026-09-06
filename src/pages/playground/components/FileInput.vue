@@ -29,6 +29,13 @@ const outlineItems = [
   { label: 'ReadOnly', id: 'readonly' },
     { label: 'Programmatic', id: 'programmatic' },
   {
+    label: 'Style',
+    id: 'style',
+    children: [
+      { label: 'CSS Variables', id: 'style-variables' },
+    ],
+  },
+  {
     label: 'API',
     id: 'api',
     children: [
@@ -151,6 +158,31 @@ const progVanilla = `<script src="dist/CuFileInput.umd.js"><\/script>
     fi.trigger();              // abre el diálogo de archivos
   });
 <\/script>`;
+
+const styleColumns = [
+  { key: 'name', label: 'Variable' },
+  { key: 'description', label: 'Uso' },
+];
+
+const styleData = [
+  { name: '--input-bg', description: 'Fondo input' },
+  { name: '--input-text', description: 'Texto input' },
+  { name: '--input-soft', description: 'Fondo soft' },
+  { name: '--input-soft-hover', description: 'Hover soft' },
+  { name: '--input-ghost-hover', description: 'Hover ghost' },
+  { name: '--cu-font-sans', description: 'Fuente' },
+  { name: '--cu-font-size-sm', description: 'Tamaño sm' },
+  { name: '--cu-font-size-xs', description: 'Tamaño xs' },
+  { name: '--cu-font-weight-medium', description: 'Peso medio' },
+  { name: '--cu-radius', description: 'Radio' },
+  { name: '--cu-border-thin', description: 'Borde fino' },
+  { name: '--cu-border-color', description: 'Color borde' },
+  { name: '--cu-space-2xs', description: 'Espaciado 2xs' },
+  { name: '--cu-space-sm', description: 'Espaciado sm' },
+  { name: '--cu-space-md', description: 'Espaciado md' },
+  { name: '--cu-space-lg', description: 'Espaciado lg' },
+  { name: '--cu-color-surface', description: 'Color superficie' },
+];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -327,6 +359,17 @@ const exposesData = [
             <FileInput ref="progRef" v-model="progFile" placeholder="Archivo de prueba" />
           </div>
         </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <hr class="playground-separator" />
+
+      <section id="style" class="playground-section">
+        <h2>Style</h2>
+
+        <h3 id="style-variables">CSS Variables</h3>
+        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
       </section>
 
       <hr class="playground-separator" />

@@ -9,6 +9,13 @@ const outlineItems = [
   { label: 'Variants', id: 'variants' },
   { label: 'Size', id: 'size' },
   {
+    label: 'Style',
+    id: 'style',
+    children: [
+      { label: 'CSS Variables', id: 'style-variables' },
+    ],
+  },
+  {
     label: 'API',
     id: 'api',
     children: [
@@ -39,6 +46,18 @@ const variantsVue = vueSnippet(`  <ToggleColorScheme variant="ghost" />
 const sizeVue = vueSnippet(`  <ToggleColorScheme :size="16" />
   <ToggleColorScheme :size="20" />
   <ToggleColorScheme :size="24" />`);
+
+const styleColumns = [
+  { key: 'name', label: 'Variable' },
+  { key: 'description', label: 'Uso' },
+];
+
+const styleData = [
+  { name: '--cu-radius-full', description: 'Radio completo' },
+  { name: '--cu-space-sm', description: 'Espaciado' },
+  { name: '--cu-shadow-sm', description: 'Sombra' },
+  { name: '--cu-font-size-sm', description: 'Tamaño texto' },
+];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -90,6 +109,17 @@ const eventsData = [
             <ToggleColorSheme :size="24" />
           </div>
         </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <hr class="playground-separator" />
+
+      <section id="style" class="playground-section">
+        <h2>Style</h2>
+
+        <h3 id="style-variables">CSS Variables</h3>
+        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
       </section>
 
       <hr class="playground-separator" />

@@ -21,6 +21,13 @@ const outlineItems = [
   { label: 'With Slot', id: 'slot' },
   { label: 'Native', id: 'native' },
   {
+    label: 'Style',
+    id: 'style',
+    children: [
+      { label: 'CSS Variables', id: 'style-variables' },
+    ],
+  },
+  {
     label: 'API',
     id: 'api',
     children: [
@@ -173,6 +180,17 @@ const nativeVanilla = `<label for="native-usuario">Usuario</label>
 <label for="native-comentarios">Comentarios</label>
 <textarea id="native-comentarios" rows="3" placeholder="Textarea nativo"></textarea>`;
 
+const styleColumns = [
+  { key: 'name', label: 'Variable' },
+  { key: 'description', label: 'Uso' },
+];
+
+const styleData = [
+  { name: '--label-fg', description: 'Color texto' },
+  { name: '--cu-font-sans', description: 'Fuente' },
+  { name: '--cu-space-xs', description: 'Espaciado' },
+];
+
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
   { key: 'type', label: 'Tipo' },
@@ -292,6 +310,17 @@ const eventsData = [
             <textarea id="native-comentarios" rows="3" placeholder="Textarea nativo"></textarea>
           </div>
         </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <hr class="playground-separator" />
+
+      <section id="style" class="playground-section">
+        <h2>Style</h2>
+
+        <h3 id="style-variables">CSS Variables</h3>
+        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
       </section>
 
       <hr class="playground-separator" />

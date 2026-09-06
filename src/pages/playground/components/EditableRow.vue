@@ -17,6 +17,13 @@ const outlineItems = [
   { label: 'Disabled: columnas', id: 'disabled-columns' },
   { label: 'Disabled: celdas', id: 'disabled-cells' },
   {
+    label: 'Style',
+    id: 'style',
+    children: [
+      { label: 'CSS Variables', id: 'style-variables' },
+    ],
+  },
+  {
     label: 'API',
     id: 'api',
     children: [
@@ -357,6 +364,17 @@ const disabledCellsColumns = [
 ];
 
 // ── API ──
+
+const styleColumns = [
+  { key: 'name', label: 'Variable' },
+  { key: 'description', label: 'Uso' },
+];
+
+const styleData = [
+  { name: '--cu-color-success', description: 'Color éxito' },
+  { name: '--cu-color-danger', description: 'Color error' },
+  { name: '--cu-space-sm', description: 'Espaciado' },
+];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -755,6 +773,17 @@ const disabledCellsVue = vueSnippet(`  <!-- cellDisabled: deshabilita una celda 
           </div>
         </SectionDemo>
       </section>
+
+      <hr class="playground-separator" />
+
+      <section id="style" class="playground-section">
+        <h2>Style</h2>
+
+        <h3 id="style-variables">CSS Variables</h3>
+        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
+      </section>
+
+      <hr class="playground-separator" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>

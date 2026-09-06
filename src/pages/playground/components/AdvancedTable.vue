@@ -16,6 +16,13 @@ const outlineItems = [
   { label: 'Search', id: 'search' },
   { label: 'Empty State', id: 'empty' },
   {
+    label: 'Style',
+    id: 'style',
+    children: [
+      { label: 'CSS Variables', id: 'style-variables' },
+    ],
+  },
+  {
     label: 'API',
     id: 'api',
     children: [
@@ -131,6 +138,21 @@ const iconButtonColumns = [
       },
     ],
   },
+];
+
+const styleColumns = [
+  { key: 'name', label: 'Variable' },
+  { key: 'description', label: 'Uso' },
+];
+
+const styleData = [
+  { name: '--cu-font-sans', description: 'Fuente' },
+  { name: '--cu-space-2xs', description: 'Espaciado 2xs' },
+  { name: '--cu-space-sm', description: 'Espaciado sm' },
+  { name: '--cu-space-md', description: 'Espaciado md' },
+  { name: '--cu-space-lg', description: 'Espaciado lg' },
+  { name: '--cu-space-2xl', description: 'Espaciado 2xl' },
+  { name: '--cu-color-surface', description: 'Color superficie' },
 ];
 
 const apiColumns = [
@@ -652,6 +674,17 @@ const emptyVanilla = `${tableImportVanilla}
           </div>
         </SectionDemo>
       </section>
+
+      <hr class="playground-separator" />
+
+      <section id="style" class="playground-section">
+        <h2>Style</h2>
+
+        <h3 id="style-variables">CSS Variables</h3>
+        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
+      </section>
+
+      <hr class="playground-separator" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>

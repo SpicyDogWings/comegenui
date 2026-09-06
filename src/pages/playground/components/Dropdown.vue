@@ -27,6 +27,13 @@ const outlineItems = [
   { label: 'Disabled', id: 'disabled' },
   { label: 'Programmatic', id: 'programmatic' },
   {
+    label: 'Style',
+    id: 'style',
+    children: [
+      { label: 'CSS Variables', id: 'style-variables' },
+    ],
+  },
+  {
     label: 'API',
     id: 'api',
     children: [
@@ -232,6 +239,19 @@ function logState() {
     </Dropdown>
   </div>
 </template>`;
+
+const styleColumns = [
+  { key: 'name', label: 'Variable' },
+  { key: 'description', label: 'Uso' },
+];
+
+const styleData = [
+  { name: '--cu-font-sans', description: 'Fuente' },
+  { name: '--cu-radius-md', description: 'Radio' },
+  { name: '--cu-shadow-xl', description: 'Sombra' },
+  { name: '--cu-space-sm', description: 'Espaciado' },
+  { name: '--cu-color-surface', description: 'Color superficie' },
+];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -608,6 +628,17 @@ const exposesData = [
           </div>
         </SectionDemo>
       </section>
+
+      <hr class="playground-separator" />
+
+      <section id="style" class="playground-section">
+        <h2>Style</h2>
+
+        <h3 id="style-variables">CSS Variables</h3>
+        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
+      </section>
+
+      <hr class="playground-separator" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>

@@ -32,6 +32,13 @@ const outlineItems = [
   { label: 'Disabled', id: 'disabled' },
   { label: 'Programmatic', id: 'programmatic' },
   {
+    label: 'Style',
+    id: 'style',
+    children: [
+      { label: 'CSS Variables', id: 'style-variables' },
+    ],
+  },
+  {
     label: 'API',
     id: 'api',
     children: [
@@ -238,6 +245,32 @@ const programmaticVanilla = `<script src="dist/CuCalendar.umd.js"><\/script>
     calendar.addEventListener('select', () => console.log('getValue():', calendar.getValue()));
   });
 <\/script>`;
+
+const styleColumns = [
+  { key: 'name', label: 'Variable' },
+  { key: 'description', label: 'Uso' },
+];
+
+const styleData = [
+  { name: '--cal-accent', description: 'Acento' },
+  { name: '--cal-accent-hover', description: 'Acento hover' },
+  { name: '--cal-soft', description: 'Fondo soft' },
+  { name: '--cal-soft-hover', description: 'Hover soft' },
+  { name: '--cal-subtle', description: 'Fondo subtle' },
+  { name: '--cal-subtle-border', description: 'Borde subtle' },
+  { name: '--cal-ghost-hover', description: 'Hover ghost' },
+  { name: '--cu-font-sans', description: 'Fuente' },
+  { name: '--cu-font-size-sm', description: 'Tamaño sm' },
+  { name: '--cu-font-size-xs', description: 'Tamaño xs' },
+  { name: '--cu-font-weight-medium', description: 'Peso medio' },
+  { name: '--cu-font-weight-semibold', description: 'Peso semi-bold' },
+  { name: '--cu-radius-sm', description: 'Radio sm' },
+  { name: '--cu-space-2xs', description: 'Espaciado 2xs' },
+  { name: '--cu-space-xs', description: 'Espaciado xs' },
+  { name: '--cu-space-sm', description: 'Espaciado sm' },
+  { name: '--cu-border-thin', description: 'Borde fino' },
+  { name: '--cu-color-surface', description: 'Color superficie' },
+];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -502,6 +535,17 @@ const interfaceCode = `interface CalendarEvent {
           </div>
         </SectionDemo>
       </section>
+
+      <hr class="playground-separator" />
+
+      <section id="style" class="playground-section">
+        <h2>Style</h2>
+
+        <h3 id="style-variables">CSS Variables</h3>
+        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
+      </section>
+
+      <hr class="playground-separator" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>

@@ -39,6 +39,13 @@ const outlineItems = [
   { label: 'ReadOnly', id: 'readonly' },
     { label: 'Programmatic', id: 'programmatic' },
   {
+    label: 'Style',
+    id: 'style',
+    children: [
+      { label: 'CSS Variables', id: 'style-variables' },
+    ],
+  },
+  {
     label: 'API',
     id: 'api',
     children: [
@@ -170,6 +177,29 @@ const progVanilla = `<script src="dist/CuFileInputZone.umd.js"><\/script>
     fiz.trigger();             // abre el diálogo de archivos
   });
 <\/script>`;
+
+const styleColumns = [
+  { key: 'name', label: 'Variable' },
+  { key: 'description', label: 'Uso' },
+];
+
+const styleData = [
+  { name: '--zone-bg', description: 'Fondo zona' },
+  { name: '--zone-text', description: 'Texto zona' },
+  { name: '--zone-ghost-hover', description: 'Hover ghost' },
+  { name: '--cu-font-sans', description: 'Fuente' },
+  { name: '--cu-font-size-sm', description: 'Tamaño sm' },
+  { name: '--cu-font-size-xs', description: 'Tamaño xs' },
+  { name: '--cu-font-weight-medium', description: 'Peso medio' },
+  { name: '--cu-radius', description: 'Radio' },
+  { name: '--cu-border-thin', description: 'Borde fino' },
+  { name: '--cu-border-thick', description: 'Borde grueso' },
+  { name: '--cu-border-color', description: 'Color borde' },
+  { name: '--cu-space-2xs', description: 'Espaciado 2xs' },
+  { name: '--cu-space-md', description: 'Espaciado md' },
+  { name: '--cu-space-xl', description: 'Espaciado xl' },
+  { name: '--cu-space-2xl', description: 'Espaciado 2xl' },
+];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -351,6 +381,17 @@ const exposesData = [
             <FileInputZone ref="progRef" v-model="progFiles" placeholder="Archivos de prueba" />
           </div>
         </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <hr class="playground-separator" />
+
+      <section id="style" class="playground-section">
+        <h2>Style</h2>
+
+        <h3 id="style-variables">CSS Variables</h3>
+        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
       </section>
 
       <hr class="playground-separator" />

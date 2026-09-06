@@ -13,6 +13,13 @@ const outlineItems = [
   { label: 'Colors', id: 'colors' },
   { label: 'Programmatic', id: 'programmatic' },
   {
+    label: 'Style',
+    id: 'style',
+    children: [
+      { label: 'CSS Variables', id: 'style-variables' },
+    ],
+  },
+  {
     label: 'API',
     id: 'api',
     children: [
@@ -22,6 +29,16 @@ const outlineItems = [
       { label: 'Exposes', id: 'api-exposes' },
     ],
   },
+];
+
+const styleColumns = [
+  { key: 'name', label: 'Variable' },
+  { key: 'description', label: 'Uso' },
+];
+
+const styleData = [
+  { name: '--cu-loader-color', description: 'Color loader' },
+  { name: '--cu-loader-delay', description: 'Duración animación' },
 ];
 
 const apiColumns = [
@@ -206,6 +223,17 @@ const key = ref(0)
             </div>
           </div>
         </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <hr class="playground-separator" />
+
+      <section id="style" class="playground-section">
+        <h2>Style</h2>
+
+        <h3 id="style-variables">CSS Variables</h3>
+        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
       </section>
 
       <hr class="playground-separator" />

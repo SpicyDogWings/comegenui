@@ -48,6 +48,13 @@ const outlineItems = [
   { label: 'Colors', id: 'colors' },
   { label: 'Labels', id: 'labels' },
   {
+    label: 'Style',
+    id: 'style',
+    children: [
+      { label: 'CSS Variables', id: 'style-variables' },
+    ],
+  },
+  {
     label: 'API',
     id: 'api',
     children: [
@@ -60,6 +67,20 @@ const outlineItems = [
 ];
 
 const colors = ['primary', 'secondary', 'neutral', 'success', 'warning', 'danger'] as const;
+
+const styleColumns = [
+  { key: 'name', label: 'Variable' },
+  { key: 'description', label: 'Uso' },
+];
+
+const styleData = [
+  { name: '--cu-font-sans', description: 'Fuente' },
+  { name: '--cu-font-size-sm', description: 'Tamaño texto' },
+  { name: '--cu-radius', description: 'Radio' },
+  { name: '--cu-space-sm', description: 'Espaciado' },
+  { name: '--cu-color-surface', description: 'Color superficie' },
+  { name: '--cu-border-thin', description: 'Borde fino' },
+];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -128,6 +149,17 @@ const eventsData = [
             <CopyButton text="npm install comegen-ui" label="Copiar comando" copiedLabel="¡Comando copiado!" />
           </div>
         </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <hr class="playground-separator" />
+
+      <section id="style" class="playground-section">
+        <h2>Style</h2>
+
+        <h3 id="style-variables">CSS Variables</h3>
+        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
       </section>
 
       <hr class="playground-separator" />

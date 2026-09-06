@@ -14,6 +14,13 @@ const outlineItems = [
   ]},
   { label: 'Search Fields', id: 'fields' },
   {
+    label: 'Style',
+    id: 'style',
+    children: [
+      { label: 'CSS Variables', id: 'style-variables' },
+    ],
+  },
+  {
     label: 'API',
     id: 'api',
     children: [
@@ -100,6 +107,22 @@ const items = [
   <!-- Solo busca por label: "/seguridad" ya no matchea -->
   <Navbar :items="items" search :search-fields="['label']" />
 </template>`;
+
+const styleColumns = [
+  { key: 'name', label: 'Variable' },
+  { key: 'description', label: 'Uso' },
+];
+
+const styleData = [
+  { name: '--cu-font-sans', description: 'Fuente' },
+  { name: '--cu-font-size-sm', description: 'Tamaño texto' },
+  { name: '--cu-font-weight-medium', description: 'Peso medio' },
+  { name: '--cu-space-sm', description: 'Espaciado' },
+  { name: '--cu-space-md', description: 'Espaciado' },
+  { name: '--cu-shadow-md', description: 'Sombra' },
+  { name: '--cu-color-surface', description: 'Color superficie' },
+  { name: '--cu-border-thin', description: 'Borde fino' },
+];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -195,6 +218,17 @@ const eventsData = [
             </div>
           </div>
         </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <hr class="playground-separator" />
+
+      <section id="style" class="playground-section">
+        <h2>Style</h2>
+
+        <h3 id="style-variables">CSS Variables</h3>
+        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
       </section>
 
       <hr class="playground-separator" />

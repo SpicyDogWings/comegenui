@@ -19,6 +19,13 @@ const outlineItems = [
   { label: 'Disabled', id: 'disabled' },
     { label: 'Programmatic', id: 'programmatic' },
   {
+    label: 'Style',
+    id: 'style',
+    children: [
+      { label: 'CSS Variables', id: 'style-variables' },
+    ],
+  },
+  {
     label: 'API',
     id: 'api',
     children: [
@@ -111,6 +118,21 @@ const progVanilla = `<script src="dist/CuColorPicker.umd.js"><\/script>
     cp.focus();                // enfoca el input hex
   });
 <\/script>`;
+
+const styleColumns = [
+  { key: 'name', label: 'Variable' },
+  { key: 'description', label: 'Uso' },
+];
+
+const styleData = [
+  { name: '--cp-subtle-border', description: 'Borde sutil' },
+  { name: '--cu-font-sans', description: 'Fuente' },
+  { name: '--cu-radius-md', description: 'Radio' },
+  { name: '--cu-border-thin', description: 'Borde fino' },
+  { name: '--cu-space-sm', description: 'Espaciado sm' },
+  { name: '--cu-space-2xl', description: 'Espaciado 2xl' },
+  { name: '--cu-space-5xl', description: 'Espaciado 5xl' },
+];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -213,6 +235,17 @@ const exposesData = [
             <ColorPicker ref="progRef" v-model="progColor" />
           </div>
         </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <hr class="playground-separator" />
+
+      <section id="style" class="playground-section">
+        <h2>Style</h2>
+
+        <h3 id="style-variables">CSS Variables</h3>
+        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
       </section>
 
       <hr class="playground-separator" />

@@ -26,6 +26,13 @@ const outlineItems = [
   { label: 'Disabled', id: 'disabled' },
     { label: 'Programmatic', id: 'programmatic' },
   {
+    label: 'Style',
+    id: 'style',
+    children: [
+      { label: 'CSS Variables', id: 'style-variables' },
+    ],
+  },
+  {
     label: 'API',
     id: 'api',
     children: [
@@ -168,6 +175,32 @@ const programmaticVanilla = `<script src="dist/CuSwitch.umd.js"><\/script>
   });
 <\/script>`;
 
+const styleColumns = [
+  { key: 'name', label: 'Variable' },
+  { key: 'description', label: 'Uso' },
+];
+
+const styleData = [
+  { name: '--switch-bg', description: 'Fondo switch' },
+  { name: '--switch-ghost-hover', description: 'Hover ghost' },
+  { name: '--cu-font-sans', description: 'Fuente' },
+  { name: '--cu-font-size-sm', description: 'Tamaño sm' },
+  { name: '--cu-font-size-xs', description: 'Tamaño xs' },
+  { name: '--cu-radius-full', description: 'Radio completo' },
+  { name: '--cu-shadow-sm', description: 'Sombra' },
+  { name: '--cu-space-2xs', description: 'Espaciado 2xs' },
+  { name: '--cu-space-xs', description: 'Espaciado xs' },
+  { name: '--cu-space-sm', description: 'Espaciado sm' },
+  { name: '--cu-space-lg', description: 'Espaciado lg' },
+  { name: '--cu-space-xl', description: 'Espaciado xl' },
+  { name: '--cu-space-2xl', description: 'Espaciado 2xl' },
+  { name: '--cu-space-3xl', description: 'Espaciado 3xl' },
+  { name: '--cu-color-surface', description: 'Color superficie' },
+  { name: '--cu-color-neutral', description: 'Color neutral' },
+  { name: '--cu-color-neutral-soft', description: 'Soft neutral' },
+  { name: '--cu-color-neutral-ghost-hover', description: 'Hover ghost neutral' },
+];
+
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
   { key: 'type', label: 'Tipo' },
@@ -299,6 +332,17 @@ const exposesData = [
             <Switch ref="switchRef" v-model="progChecked" label="Términos" />
           </div>
         </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <hr class="playground-separator" />
+
+      <section id="style" class="playground-section">
+        <h2>Style</h2>
+
+        <h3 id="style-variables">CSS Variables</h3>
+        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
       </section>
 
       <hr class="playground-separator" />

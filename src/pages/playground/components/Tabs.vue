@@ -17,6 +17,13 @@ const outlineItems = [
   { label: 'Keep Alive', id: 'keep-alive' },
   { label: 'Programmatic', id: 'programmatic' },
   {
+    label: 'Style',
+    id: 'style',
+    children: [
+      { label: 'CSS Variables', id: 'style-variables' },
+    ],
+  },
+  {
     label: 'API',
     id: 'api',
     children: [
@@ -56,6 +63,23 @@ const iconTabs = [
 const keepAliveTabs = [
   { key: 'alive', label: 'Con keepAlive', keepAlive: true },
   { key: 'normal', label: 'Sin keepAlive' },
+];
+
+const styleColumns = [
+  { key: 'name', label: 'Variable' },
+  { key: 'description', label: 'Uso' },
+];
+
+const styleData = [
+  { name: '--cu-font-sans', description: 'Fuente' },
+  { name: '--cu-font-size-sm', description: 'Tamaño texto' },
+  { name: '--cu-font-weight-medium', description: 'Peso medio' },
+  { name: '--cu-space-sm', description: 'Espaciado' },
+  { name: '--cu-space-md', description: 'Espaciado' },
+  { name: '--cu-border-thin', description: 'Borde fino' },
+  { name: '--cu-radius', description: 'Radio' },
+  { name: '--cu-color-neutral-text', description: 'Texto neutral' },
+  { name: '--cu-color-neutral-soft', description: 'Fondo neutral' },
 ];
 
 const apiColumns = [
@@ -573,6 +597,17 @@ const programmaticVanilla = `${tabsImportVanilla}
           </div>
         </SectionDemo>
       </section>
+
+      <hr class="playground-separator" />
+
+      <section id="style" class="playground-section">
+        <h2>Style</h2>
+
+        <h3 id="style-variables">CSS Variables</h3>
+        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
+      </section>
+
+      <hr class="playground-separator" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>

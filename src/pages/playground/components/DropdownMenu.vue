@@ -21,6 +21,13 @@ const outlineItems = [
   { label: 'Disabled Items', id: 'disabled' },
   { label: 'Programmatic', id: 'programmatic' },
   {
+    label: 'Style',
+    id: 'style',
+    children: [
+      { label: 'CSS Variables', id: 'style-variables' },
+    ],
+  },
+  {
     label: 'API',
     id: 'api',
     children: [
@@ -310,6 +317,18 @@ const programmaticVanilla = `${dropdownImportVanilla}
   });
 <\/script>`;
 
+const styleColumns = [
+  { key: 'name', label: 'Variable' },
+  { key: 'description', label: 'Uso' },
+];
+
+const styleData = [
+  { name: '--cu-border-color', description: 'Color borde' },
+  { name: '--cu-border-thin', description: 'Borde fino' },
+  { name: '--cu-space-md', description: 'Espaciado vertical' },
+  { name: '--cu-space-xs', description: 'Espaciado horizontal' },
+];
+
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
   { key: 'type', label: 'Tipo' },
@@ -491,6 +510,17 @@ const interfaceCode = `interface DropdownItem {
           </div>
         </SectionDemo>
       </section>
+
+      <hr class="playground-separator" />
+
+      <section id="style" class="playground-section">
+        <h2>Style</h2>
+
+        <h3 id="style-variables">CSS Variables</h3>
+        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
+      </section>
+
+      <hr class="playground-separator" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>

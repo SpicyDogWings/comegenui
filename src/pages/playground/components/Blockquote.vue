@@ -10,6 +10,13 @@ const outlineItems = [
   { label: 'Colors', id: 'colors' },
   { label: 'Con formato', id: 'con-formato' },
   {
+    label: 'Style',
+    id: 'style',
+    children: [
+      { label: 'CSS Variables', id: 'style-variables' },
+    ],
+  },
+  {
     label: 'API',
     id: 'api',
     children: [
@@ -47,6 +54,20 @@ const conFormatoVue = vueSnippet(`  <Blockquote html="<p>Cita con <strong>negrit
 const slotVue = vueSnippet(`  <Blockquote color="success">
     <p>Cita pasada por slot (alternativa a html).</p>
   </Blockquote>`);
+
+const styleColumns = [
+  { key: 'name', label: 'Variable' },
+  { key: 'description', label: 'Uso' },
+];
+
+const styleData = [
+  { name: '--cu-border-thick', description: 'Borde izquierdo' },
+  { name: '--cu-font-size-sm', description: 'Tamaño texto' },
+  { name: '--cu-space-sm', description: 'Espaciado' },
+  { name: '--cu-space-md', description: 'Espaciado' },
+  { name: '--cu-color-neutral', description: 'Color neutral' },
+  { name: '--cu-color-neutral-text', description: 'Texto neutral' },
+];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -129,6 +150,17 @@ const exposesData: { name: string; type: string; description: string }[] = [];
           </div>
         </SectionDemo>
       </section>
+
+      <hr class="playground-separator" />
+
+      <section id="style" class="playground-section">
+        <h2>Style</h2>
+
+        <h3 id="style-variables">CSS Variables</h3>
+        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
+      </section>
+
+      <hr class="playground-separator" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>
