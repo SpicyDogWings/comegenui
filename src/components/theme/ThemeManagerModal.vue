@@ -60,33 +60,39 @@ defineExpose({ open, close })
 </script>
 
 <template>
-  <Modal ref="modalRef" title="Theme Manager" size="lg" @close="close">
-    <div class="tm-modal">
-      <div class="tm-section">
-        <h3>Theme Name</h3>
-        <Input
-          :model-value="themeName"
-          @update:model-value="emit('update:themeName', $event)"
-          placeholder="my-theme"
-        />
-      </div>
+  <Modal ref="modalRef" title="Theme Manager" size="xl" @close="close">
+    <div class="tm-layout">
+      <div class="tm-sidebar">
+        <div class="tm-section">
+          <h3>Theme Name</h3>
+          <Input
+            :model-value="themeName"
+            @update:model-value="emit('update:themeName', $event)"
+            placeholder="my-theme"
+          />
+        </div>
 
-      <div class="tm-section">
-        <h3>Acciones</h3>
-        <div class="tm-actions">
-          <input ref="importFileInput" type="file" accept=".json" @change="handleImport" class="tm-file-input" />
-          <Button color="secondary" variant="soft" @click="importFileInput?.click()">Import JSON</Button>
-          <Button color="secondary" @click="emit('export')">Export JSON</Button>
-          <Button color="neutral" @click="emit('reset')">Reset Defaults</Button>
+        <div class="tm-section">
+          <h3>Acciones</h3>
+          <div class="tm-actions">
+            <input ref="importFileInput" type="file" accept=".json" @change="handleImport" class="tm-file-input" />
+            <Button color="secondary" variant="soft" @click="importFileInput?.click()">Import JSON</Button>
+            <Button color="secondary" @click="emit('export')">Export JSON</Button>
+            <Button color="neutral" @click="emit('reset')">Reset Defaults</Button>
+          </div>
+        </div>
+
+        <div class="tm-section">
+          <h3>CSS</h3>
+          <div class="tm-output-actions">
+            <Button color="primary" variant="ghost" @click="emit('copy-css')">Copy CSS</Button>
+            <Button color="primary" variant="ghost" @click="emit('download-css')">Download CSS</Button>
+          </div>
         </div>
       </div>
 
-      <div class="tm-section">
+      <div class="tm-main">
         <h3>CSS Output</h3>
-        <div class="tm-output-actions">
-          <Button color="primary" variant="ghost" @click="emit('copy-css')">Copy CSS</Button>
-          <Button color="primary" variant="ghost" @click="emit('download-css')">Download CSS</Button>
-        </div>
         <pre class="tm-code"><code>{{ cssOutput }}</code></pre>
       </div>
     </div>
@@ -94,23 +100,40 @@ defineExpose({ open, close })
 </template>
 
 <style scoped>
-.tm-modal {
+.tm-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 1.5rem;
+  min-height: 400px;
+}
+
+.tm-sidebar {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
+}
+
+.tm-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
 .tm-section h3 {
   font-size: var(--cu-font-size-sm);
   font-weight: var(--cu-font-weight-semibold);
-  margin: 0 0 0.75rem 0;
+  margin: 0 0 0.5rem 0;
   color: var(--cu-color-neutral);
 }
 
 .tm-actions {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 0.5rem;
+}
+
+.tm-actions .tm-btn {
+  width: 100%;
 }
 
 .tm-file-input {
@@ -119,8 +142,8 @@ defineExpose({ open, close })
 
 .tm-output-actions {
   display: flex;
+  flex-direction: column;
   gap: 0.5rem;
-  margin-bottom: 0.75rem;
 }
 
 .tm-code {
@@ -131,8 +154,11 @@ defineExpose({ open, close })
   overflow-x: auto;
   font-family: var(--cu-font-mono);
   font-size: var(--cu-font-size-xs);
-  line-height: 1.5;
-  max-height: 300px;
+  line-height: 1.6;
+  flex: 1;
+  min-height: 350px;
+  max-height: 600px;
   overflow-y: auto;
+  margin: 0;
 }
 </style>
