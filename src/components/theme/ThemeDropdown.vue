@@ -5,13 +5,16 @@ import Button from "@/components/buttons/Button.vue";
 import Input from "@/components/form/Input.vue";
 import LucideChevronDown from "@/components/icons/LucideChevronDown.vue";
 import LucideCheck from "@/components/icons/LucideCheck.vue";
-import { theme, loaded, setTheme, getThemeNames, allThemes } from "@/plugins/cu-tokens";
+import { loaded } from "@/plugins/cu-tokens";
+import { useThemeStore } from "@/stores/theme";
+
+const store = useThemeStore();
 
 const dropdownRef = ref<InstanceType<typeof Dropdown> | null>(null);
 const searchQuery = ref("");
 
-const themeNames = computed(() => (loaded.value ? getThemeNames() : []));
-const current = computed(() => theme.value);
+const themeNames = computed(() => (loaded.value ? store.themeNames : []));
+const current = computed(() => store.current);
 
 const filteredThemes = computed(() => {
   if (!searchQuery.value) return themeNames.value;
@@ -26,12 +29,8 @@ function label(value: string) {
     .join(" ");
 }
 
-function getThemeColor(name: string): string {
-  return allThemes.value[name]?.colors?.primary || '#888888';
-}
-
 function select(name: string) {
-  setTheme(name);
+  store.setTheme(name);
   searchQuery.value = "";
   dropdownRef.value?.close();
 }
@@ -79,7 +78,7 @@ function select(name: string) {
           width="12"
           height="12"
           viewBox="0 0 32 32"
-          :style="{ color: getThemeColor(name) }"
+          :style="{ color: store.getThemeColor(name) }"
         >
           <path fill="currentColor" d="M16 0C7.161 0 0 7.161 0 16s7.161 16 16 16s16-7.161 16-16S24.839 0 16 0"/>
         </svg>

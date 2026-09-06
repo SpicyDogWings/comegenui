@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { theme, loaded, setTheme, getThemeNames } from "@/plugins/cu-tokens";
+import { loaded } from "@/plugins/cu-tokens";
+import { useThemeStore } from "@/stores/theme";
 import AppLayout from "@/layouts/AppLayout.vue";
 import Button from "@/components/buttons/Button.vue";
 import Badge from "@/components/information/Badge.vue";
@@ -10,6 +11,8 @@ import Switch from "@/components/form/Switch.vue";
 import Checkbox from "@/components/form/Checkbox.vue";
 import Markdown from "@/components/markdown/Markdown.vue";
 import CodeBlock from "@/components/markdown/CodeBlock.vue";
+
+const store = useThemeStore();
 
 const demoValue = ref("");
 const notifications = ref(true);
@@ -24,8 +27,8 @@ const bundlerSnippet = `import "comegenui/CuButton.umd.js";
 // y en cualquier template:
 // <cu-button color="primary">Click me</cu-button>`;
 
-const themeNames = computed(() => (loaded.value ? getThemeNames() : []));
-const currentTheme = computed(() => theme.value);
+const themeNames = computed(() => (loaded.value ? store.themeNames : []));
+const currentTheme = computed(() => store.current);
 
 function prettyTheme(value: string) {
   return value
@@ -123,9 +126,9 @@ function prettyTheme(value: string) {
             role="button"
             tabindex="0"
             :aria-pressed="currentTheme === name"
-            @click="setTheme(name)"
-            @keydown.enter.prevent="setTheme(name)"
-            @keydown.space.prevent="setTheme(name)"
+            @click="store.setTheme(name)"
+            @keydown.enter.prevent="store.setTheme(name)"
+            @keydown.space.prevent="store.setTheme(name)"
           >
             <div class="home-theme-samples" inert>
               <div class="home-theme-row">

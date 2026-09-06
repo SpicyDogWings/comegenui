@@ -48,28 +48,16 @@ import ThemeSettings from '@/templates/playground/ThemeSettings.vue'
 import ThemeAgenda from '@/templates/playground/ThemeAgenda.vue'
 import ThemeEditorial from '@/templates/playground/ThemeEditorial.vue'
 import {
-  theme as activeTheme, setTheme, registerTheme, allThemes, builtInNames, opacities,
-  setShared, getShared, getThemeCSS, applyFullConfig,
+  allThemes, opacities,
 } from '@/plugins/cu-tokens'
-import { useThemeStore } from '@/stores/theme'
+import { useThemeStore, type CustomThemeConfig } from '@/stores/theme'
 import { DEFAULTS, DEFAULT_COLORS, DEFAULT_OPACITIES } from '@/plugins/cu-tokens/defaults'
 import { hexToRgba } from '@/lib/colors'
 
-const themeStore = useThemeStore()
+const store = useThemeStore()
 
 function resolveOpacity(name: string): number {
   return opacities.value[name]?.shadow ?? opacities.value.default?.shadow ?? 10
-}
-
-const STORAGE_KEY = 'cu-theme-builder'
-
-interface ThemeConfig {
-  themes: Record<string, Record<string, string>>
-  opacities: Record<string, { shadow: number }>
-  typography: typeof typography.value
-  spacing: typeof spacing.value
-  borderRadius: typeof borderRadius.value
-  borders: { width: typeof borders.value.width }
 }
 
 const tableData = [
@@ -84,12 +72,9 @@ const tableColumns = [
   { key: 'role', label: 'Role' },
 ]
 
-// Computed bidireccional: fuente de verdad única vía Pinia store
 const themeName = computed({
-  get: () => themeStore.current,
-  set: (name: string) => {
-    themeStore.setTheme(name)
-  },
+  get: () => store.current,
+  set: (name: string) => store.setTheme(name),
 })
 
 const isEditing = ref(false)
@@ -140,16 +125,25 @@ function triggerToast(type: 'success' | 'warning' | 'danger' | 'primary') {
   }, 3000)
 }
 
-const isBuiltIn = computed(() => builtInNames.value.includes(themeName.value))
+const isBuiltIn = computed(() => store.isBuiltIn)
 
 function enableEditing() {
+  const current = themeName.value
+  const sourceColors = allThemes.value[current]?.colors
+  if (sourceColors) {
+    const { shadowOpacity, ...rest } = sourceColors
+    colors.value = { ...colors.value, ...rest }
+    shadowOpacityRaw.value = String(
+      opacities.value[current]?.shadow ?? opacities.value.default?.shadow ?? 10,
+    )
+  }
   isEditing.value = true
-  registerTheme('custom', { ...colors.value }, {
-    opacity: parseInt(shadowOpacityRaw.value) || 10,
-    shared: sharedSnapshot(),
-  })
+  store.registerCustom(
+    { ...colors.value },
+    sharedSnapshot(),
+    parseInt(shadowOpacityRaw.value) || 10,
+  )
   themeName.value = 'custom'
-  setTheme('custom')
 }
 
 function sharedSnapshot() {
@@ -313,75 +307,13 @@ const borders = ref({
 const shadowPreview = computed(() => hexToRgba(colors.value.shadow || '#000000', parseInt(shadowOpacityRaw.value) || 10))
 
 // CSS de export: lo genera el plugin (colores + shared) — ya no hay duplicación.
-const cssExport = computed(() => getThemeCSS(themeName.value))
+const cssExport = computed(() => store.getCSS(themeName.value))
 
-function saveToStorage() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(getCurrentConfig()))
-}
-
-watch([colors, shadowOpacityRaw, typography, spacing, borderRadius, borders], () => {
-  saveToStorage()
-}, { deep: true })
-
-function getCurrentConfig(): ThemeConfig {
+function exportConfig(): CustomThemeConfig {
   return {
-    themes: { [themeName.value]: { ...colors.value } },
-    opacities: { [themeName.value]: { shadow: parseInt(shadowOpacityRaw.value) || 10 } },
-    typography: JSON.parse(JSON.stringify(typography.value)),
-    spacing: JSON.parse(JSON.stringify(spacing.value)),
-    borderRadius: JSON.parse(JSON.stringify(borderRadius.value)),
-    borders: { width: JSON.parse(JSON.stringify(borders.value.width)) },
-  }
-}
-
-function applyConfig(config: ThemeConfig) {
-  if (!config.themes) return
-
-  const themeNames = Object.keys(config.themes)
-  if (themeNames.length > 0) {
-    themeName.value = themeNames[0]
-    const themeColors = config.themes[themeName.value]
-    if (themeColors) {
-      const { shadowOpacity, ...rest } = themeColors
-      colors.value = { ...colors.value, ...rest }
-    }
-  }
-
-  if (config.opacities) {
-    const themeOp = config.opacities[themeName.value]?.shadow ?? config.opacities.default?.shadow
-    if (themeOp !== undefined) shadowOpacityRaw.value = String(themeOp)
-  }
-
-  if (config.borders?.color) {
-    if (!colors.value.default) colors.value.default = config.borders.color.default
-    if (!colors.value.strong) colors.value.strong = config.borders.color.strong
-    if (!colors.value.focus) colors.value.focus = config.borders.color.focus
-  }
-
-  // Aplica todo de una vez: temas, opacidades y shared tokens.
-  // El plugin regenera CSS una sola vez.
-  applyFullConfig({
-    themes: config.themes,
-    opacities: config.opacities,
-    shared: sharedSnapshot(),
-  })
-
-  if (config.shadows?.color && !colors.value.shadow) {
-    colors.value.shadow = config.shadows.color
-  }
-}
-
-function loadFromStorage() {
-  const raw = localStorage.getItem(STORAGE_KEY)
-  if (raw) {
-    try {
-      const config = JSON.parse(raw) as ThemeConfig
-      applyConfig(config)
-      // Si el tema guardado es custom, entrar en modo edición
-      if (Object.keys(config.themes)[0] === 'custom') {
-        isEditing.value = true
-      }
-    } catch {}
+    colors: { ...colors.value },
+    opacities: { shadow: parseInt(shadowOpacityRaw.value) || 10 },
+    ...sharedSnapshot(),
   }
 }
 
@@ -398,7 +330,7 @@ watch(showImportPicker, async (val) => {
 const lastImportedConfig = ref<ThemeConfig | null>(null)
 
 function handleImport(config: any) {
-  const cfg = config as ThemeConfig
+  const cfg = config as CustomThemeConfig
   const themeNames = Object.keys(cfg?.themes ?? {})
 
   if (themeNames.length === 0) {
@@ -406,38 +338,32 @@ function handleImport(config: any) {
     return
   }
 
-  // Siempre mostrar picker para escoger (1 o múltiples temas)
   lastImportedConfig.value = cfg
   importedThemes.value = themeNames
   showImportPicker.value = true
-  modalRef.value?.close() // Cerrar ThemeManagerModal para ver el picker
+  modalRef.value?.close()
 }
 
-function applyImportedTheme(cfg: ThemeConfig, name: string) {
+function applyImportedTheme(cfg: CustomThemeConfig, name: string) {
   const themeColors = cfg.themes[name]
   if (!themeColors) return
 
   const { shadowOpacity, ...rest } = themeColors
 
-  // Registra como "custom" en localStorage (no toca comegen.config.json)
-  registerTheme('custom', { ...rest }, {
-    opacity: cfg?.opacities?.[name]?.shadow ?? cfg?.opacities?.default?.shadow,
+  store.applyCustomFromImport({
+    colors: { ...rest },
+    opacities: { shadow: cfg?.opacities?.[name]?.shadow ?? cfg?.opacities?.default?.shadow ?? 10 },
+    ...sharedSnapshot(),
   })
 
-  // Activar custom
-  themeName.value = 'custom'
-  themeStore.setTheme('custom')
-  setTheme('custom')
   isEditing.value = true
   previousTheme.value = name
-
-  // Cargar colores en el editor
   colors.value = { ...colors.value, ...rest }
   showImportPicker.value = false
 }
 
 function handleExport() {
-  const config = getCurrentConfig()
+  const config = exportConfig()
   const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
@@ -487,9 +413,8 @@ function resetToDefaults() {
   borders.value = { width: { none: '0', thin: '1px', medium: '2px', thick: '4px' } }
 }
 
-// Sincroniza los shared tokens (typography, spacing, etc.) desde el plugin.
 function syncSharedFromPlugin() {
-  const s = getShared()
+  const s = store.getShared()
   if (!s) return
   if (s.typography) typography.value = { ...typography.value, ...s.typography }
   if (s.spacing) spacing.value = { ...spacing.value, ...s.spacing }
@@ -502,12 +427,11 @@ function syncSharedFromPlugin() {
 const previousTheme = ref('')
 
 onMounted(() => {
-  loadFromStorage()
   syncSharedFromPlugin()
   initColorsFromTheme(themeName.value)
-  previousTheme.value = activeTheme.value
-  setTheme(themeName.value)
+  previousTheme.value = store.current
   shadowOpacityRaw.value = String(resolveOpacity(themeName.value))
+  isEditing.value = store.isCustom
 })
 
 // Cargar los tokens de un tema en el editor
@@ -523,19 +447,15 @@ function loadThemeIntoTokens(name: string) {
 // Detectar cambios → solo cuando está editando (isEditing)
 watch([colors, shadowOpacityRaw, typography, spacing, borderRadius, borders], () => {
   if (!isEditing.value) return
-  registerTheme('custom', { ...colors.value }, {
-    opacity: parseInt(shadowOpacityRaw.value) || 10,
-    shared: sharedSnapshot(),
-  })
+  store.registerCustom(
+    { ...colors.value },
+    sharedSnapshot(),
+    parseInt(shadowOpacityRaw.value) || 10,
+  )
   if (themeName.value !== 'custom') {
     themeName.value = 'custom'
-    setTheme('custom')
   }
 }, { deep: true })
-
-onBeforeUnmount(() => {
-  if (previousTheme.value) setTheme(previousTheme.value)
-})
 </script>
 
 <template>
@@ -545,14 +465,14 @@ onBeforeUnmount(() => {
         <div class="tb-controls-header">
           <span class="tb-controls-theme-name">{{ themeName }}</span>
           <Button
-            v-if="themeName !== 'custom'"
+            v-if="store.showEditBtn"
             color="neutral"
             variant="ghost"
             size="sm"
             title="Editar tema"
             @click="enableEditing"
           >
-            <LucidePalette :width="16" :height="16" />
+            <LucidePencil :width="16" :height="16" />
           </Button>
         </div>
 
