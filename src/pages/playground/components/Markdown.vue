@@ -11,8 +11,9 @@ const outlineItems = ref<{ label: string; id: string }[]>([])
 
 function handleParsed(headingIds: string[]) {
   const items = headingIds.map(id => ({ label: id.replace(/-/g, ' '), id }))
-  // Insertar Style y API al inicio del outline
+  // Primero los headings del demo, luego Style y API
   outlineItems.value = [
+    ...items,
     { label: 'Style', id: 'style', children: [{ label: 'CSS Variables', id: 'style-variables' }] },
     { label: 'API', id: 'api', children: [
       { label: 'Props', id: 'api-props' },
@@ -20,7 +21,6 @@ function handleParsed(headingIds: string[]) {
       { label: 'Events', id: 'api-events' },
       { label: 'Exposes', id: 'api-exposes' },
     ]},
-    ...items,
   ]
 }
 
