@@ -144,9 +144,59 @@ const demoOutlineItems: OutlineItem[] = [
   },
 ]
 
+const docOutlineItems: OutlineItem[] = [
+  { label: 'Introducción', id: 'doc-intro' },
+  { label: '¿Cómo funciona?', id: 'doc-how' },
+  {
+    label: 'Buenas prácticas',
+    id: 'doc-best',
+    children: [
+      { label: 'Consistencia', id: 'doc-consistency' },
+      { label: 'Contexto', id: 'doc-context' },
+    ],
+  },
+]
+
 const editorialSnippet = `const tokens = getThemeNames();
 // cambiás un color y todo el ecosistema lo sigue
 setTheme('nord');`
+
+interface AgendaEvent {
+  date: string
+  time: string
+  title: string
+  desc: string
+  color: string
+  badge: string
+}
+
+const allAgendaEvents: AgendaEvent[] = [
+  { date: '2026-09-03', time: '10:00', title: 'Workshop UX', desc: 'Mapear flujos del nuevo dashboard', color: 'primary', badge: 'Work' },
+  { date: '2026-09-08', time: '14:00', title: 'Demo interna', desc: 'Mostrar avances al equipo', color: 'success', badge: 'Done' },
+  { date: '2026-09-11', time: '09:00', title: 'Review de diseño', desc: 'Revisar mockups del dashboard nuevo', color: 'primary', badge: 'Work' },
+  { date: '2026-09-11', time: '14:00', title: 'Call con cliente', desc: 'Presentar avances del tema system', color: 'warning', badge: 'Pending' },
+  { date: '2026-09-15', time: '11:00', title: 'Sprint review', desc: 'Retrospectiva del sprint 14', color: 'primary', badge: 'Work' },
+  { date: '2026-09-18', time: '16:00', title: 'Deploy producción', desc: 'Subir versión 2.0 a producción', color: 'success', badge: 'Done' },
+  { date: '2026-09-22', time: '09:30', title: 'Post-mortem', desc: 'Análisis del incidente en staging', color: 'danger', badge: 'Urgent' },
+  { date: '2026-09-25', time: '13:00', title: 'Planning Q4', desc: 'Definir objetivos del próximo trimestre', color: 'warning', badge: 'Pending' },
+];
+
+const agendaSelectedDate = ref('2026-09-11');
+
+const agendaEvents = computed(() =>
+  allAgendaEvents.filter(e => e.date === agendaSelectedDate.value)
+);
+
+const agendaDots = computed(() =>
+  allAgendaEvents.map(e => ({ date: e.date, color: e.color }))
+);
+
+function onSelectDate(date: Date) {
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+  agendaSelectedDate.value = `${yyyy}-${mm}-${dd}`;
+}
 
 // Inicializa los colores desde el tema activo del plugin (o defaults si no cargó).
 function initColorsFromTheme(name: string) {
@@ -671,89 +721,65 @@ onBeforeUnmount(() => {
               <p class="tb-scene-desc">Calendario con eventos, badges de estado y acciones rápidas</p>
             </div>
             <div class="tb-agenda">
-              <div class="tb-agenda-main">
-                <div class="tb-agenda-toolbar">
-                  <Input placeholder="Buscar evento…" style="max-width: 220px" />
-                  <div class="tb-agenda-toolbar-actions">
-                    <DropdownMenu color="neutral" variant="soft" label="Filtrar" :items="dropdownItems" />
-                    <Button color="primary">Nuevo evento</Button>
-                  </div>
-                </div>
-                <div class="tb-agenda-split">
-                  <div class="tb-agenda-cal">
-                    <Calendar model-value="2026-09-11" style="width: 100%" />
-                  </div>
-                  <div class="tb-agenda-events">
-                    <h4 class="tb-agenda-section-title">Eventos del día</h4>
-                    <div class="tb-agenda-event">
-                      <div class="tb-agenda-event-time">09:00</div>
-                      <div class="tb-agenda-event-content">
-                        <div class="tb-agenda-event-header">
-                          <span class="tb-agenda-event-title">Review de diseño</span>
-                          <Badge color="primary" variant="soft">Work</Badge>
-                        </div>
-                        <p class="tb-agenda-event-desc">Revisar mockups del dashboard nuevo</p>
-                      </div>
-                    </div>
-                    <div class="tb-agenda-event">
-                      <div class="tb-agenda-event-time">11:30</div>
-                      <div class="tb-agenda-event-content">
-                        <div class="tb-agenda-event-header">
-                          <span class="tb-agenda-event-title">Sprint planning</span>
-                          <Badge color="success" variant="soft">Done</Badge>
-                        </div>
-                        <p class="tb-agenda-event-desc">Planificar tareas del sprint 14</p>
-                      </div>
-                    </div>
-                    <div class="tb-agenda-event">
-                      <div class="tb-agenda-event-time">14:00</div>
-                      <div class="tb-agenda-event-content">
-                        <div class="tb-agenda-event-header">
-                          <span class="tb-agenda-event-title">Call con cliente</span>
-                          <Badge color="warning" variant="soft">Pending</Badge>
-                        </div>
-                        <p class="tb-agenda-event-desc">Presentar avances del tema system</p>
-                      </div>
-                    </div>
-                    <div class="tb-agenda-event">
-                      <div class="tb-agenda-event-time">16:30</div>
-                      <div class="tb-agenda-event-content">
-                        <div class="tb-agenda-event-header">
-                          <span class="tb-agenda-event-title">Deploy staging</span>
-                          <Badge color="danger" variant="soft">Urgent</Badge>
-                        </div>
-                        <p class="tb-agenda-event-desc">Subir versión 2.0 a staging</p>
-                      </div>
-                    </div>
-                  </div>
+              <div class="tb-agenda-toolbar">
+                <Input placeholder="Buscar evento…" style="max-width: 220px" />
+                <div class="tb-agenda-toolbar-actions">
+                  <DropdownMenu color="neutral" variant="soft" label="Filtrar" :items="dropdownItems" />
+                  <Button color="primary">Nuevo evento</Button>
                 </div>
               </div>
-              <div class="tb-agenda-sidebar">
-                <h4 class="tb-agenda-section-title">Acciones rápidas</h4>
-                <div class="tb-agenda-actions">
-                  <Button color="primary" variant="soft" style="width: 100%">Ver semana</Button>
-                  <Button color="success" variant="soft" style="width: 100%">Completados</Button>
-                  <Button color="warning" variant="outlined" style="width: 100%">Pendientes</Button>
-                  <Button color="danger" variant="ghost" style="width: 100%">Cancelar todo</Button>
+              <div class="tb-agenda-split">
+                <div class="tb-agenda-cal">
+                  <Calendar
+                    :model-value="agendaSelectedDate"
+                    :events="agendaDots"
+                    style="width: 100%"
+                    @select="onSelectDate"
+                  />
+                  <div class="tb-agenda-events">
+                    <h4 class="tb-agenda-section-title">Eventos del día ({{ agendaEvents.length }})</h4>
+                    <template v-if="agendaEvents.length > 0">
+                      <div v-for="event in agendaEvents" :key="event.time + event.title" class="tb-agenda-event">
+                        <div class="tb-agenda-event-time">{{ event.time }}</div>
+                        <div class="tb-agenda-event-content">
+                          <div class="tb-agenda-event-header">
+                            <span class="tb-agenda-event-title">{{ event.title }}</span>
+                            <Badge :color="event.color" variant="soft">{{ event.badge }}</Badge>
+                          </div>
+                          <p class="tb-agenda-event-desc">{{ event.desc }}</p>
+                        </div>
+                      </div>
+                    </template>
+                    <p v-else class="tb-agenda-empty">No hay eventos para este día</p>
+                  </div>
                 </div>
-                <div class="tb-agenda-legend">
-                  <h4 class="tb-agenda-section-title">Leyenda</h4>
-                  <div class="tb-agenda-legend-items">
-                    <div class="tb-agenda-legend-item">
-                      <Badge color="primary" variant="soft">Work</Badge>
-                      <span>Trabajo</span>
-                    </div>
-                    <div class="tb-agenda-legend-item">
-                      <Badge color="success" variant="soft">Done</Badge>
-                      <span>Completado</span>
-                    </div>
-                    <div class="tb-agenda-legend-item">
-                      <Badge color="warning" variant="soft">Pending</Badge>
-                      <span>Pendiente</span>
-                    </div>
-                    <div class="tb-agenda-legend-item">
-                      <Badge color="danger" variant="soft">Urgent</Badge>
-                      <span>Urgente</span>
+                <div class="tb-agenda-side">
+                  <h4 class="tb-agenda-section-title">Acciones rápidas</h4>
+                  <div class="tb-agenda-actions">
+                    <Button color="primary" variant="soft" style="width: 100%">Ver semana</Button>
+                    <Button color="success" variant="soft" style="width: 100%">Completados</Button>
+                    <Button color="warning" variant="outlined" style="width: 100%">Pendientes</Button>
+                    <Button color="danger" variant="ghost" style="width: 100%">Cancelar todo</Button>
+                  </div>
+                  <div class="tb-agenda-legend">
+                    <h4 class="tb-agenda-section-title">Leyenda</h4>
+                    <div class="tb-agenda-legend-items">
+                      <div class="tb-agenda-legend-item">
+                        <Badge color="primary" variant="soft">Work</Badge>
+                        <span>Trabajo</span>
+                      </div>
+                      <div class="tb-agenda-legend-item">
+                        <Badge color="success" variant="soft">Done</Badge>
+                        <span>Completado</span>
+                      </div>
+                      <div class="tb-agenda-legend-item">
+                        <Badge color="warning" variant="soft">Pending</Badge>
+                        <span>Pendiente</span>
+                      </div>
+                      <div class="tb-agenda-legend-item">
+                        <Badge color="danger" variant="soft">Urgent</Badge>
+                        <span>Urgente</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -765,25 +791,151 @@ onBeforeUnmount(() => {
           <div class="tb-scene">
             <div class="tb-scene-header">
               <h3 class="tb-scene-title">Editorial</h3>
-              <p class="tb-scene-desc">Contenido markdown, citas y bloques de código</p>
+              <p class="tb-scene-desc">Nota de documentación con formato de artículo</p>
             </div>
             <div class="tb-editorial">
-              <Card variant="ghost" class="tb-ed-card">
-                <Markdown>
-                  # Título del tema
+              <div class="tb-doc">
+                <div class="tb-doc-header">
+                  <div class="tb-doc-meta">
+                    <Badge color="primary" variant="soft">Documentación</Badge>
+                    <span class="tb-doc-date">6 sep 2026</span>
+                    <span class="tb-doc-read">4 min de lectura</span>
+                  </div>
+                  <h1 class="tb-doc-title">Sistema de tokens y temas</h1>
+                  <p class="tb-doc-subtitle">Cómo funciona la personalización de colores, tipografía y espaciado en ComegenUI</p>
+                  <div class="tb-doc-author">
+                    <div class="tb-doc-avatar">MC</div>
+                    <div>
+                      <div class="tb-doc-author-name">María Cano</div>
+                      <div class="tb-doc-author-role">Design Systems</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="tb-doc-toolbar">
+                  <div class="tb-doc-toolbar-group">
+                    <button class="tb-doc-tb-btn" title="Negrita"><strong>B</strong></button>
+                    <button class="tb-doc-tb-btn" title="Itálica"><em>I</em></button>
+                    <button class="tb-doc-tb-btn" title="Código">&lt;/&gt;</button>
+                    <button class="tb-doc-tb-btn" title="Link">🔗</button>
+                  </div>
+                  <div class="tb-doc-toolbar-group">
+                    <button class="tb-doc-tb-btn" title="Lista">☰</button>
+                    <button class="tb-doc-tb-btn" title="Título">H</button>
+                    <button class="tb-doc-tb-btn" title="Cita">❝</button>
+                  </div>
+                  <div class="tb-doc-toolbar-spacer" />
+                  <Badge color="success" variant="soft">Publicado</Badge>
+                </div>
+                <div class="tb-doc-body">
+                  <Markdown>
+                    ## Introducción
 
-                  Párrafo con **negrita**, *itálica* y `código inline`. Un párrafo más largo para ver cómo se comporta el texto extenso con el tema aplicado y los tokens de tipografía.
+                    Los **tokens de diseño** son la fuente única de verdad para todo el sistema visual. En lugar de hardcodear colores o tamaños en cada componente, usamos variables CSS que se resuelven según el tema activo.
 
-                  - Item uno
-                  - Item dos
-                  - Item tres
-                </Markdown>
-              </Card>
-              <div class="tb-ed-sidebar">
-                <Blockquote color="primary">
-                  Los tokens son la fuente única de verdad: cambiás un color y todo el ecosistema lo sigue.
-                </Blockquote>
-                <CodeBlock :code="editorialSnippet" language="javascript" />
+                    > Cambiás un token y todo el ecosistema lo sigue — desde los botones hasta las alertas.
+
+                    ## ¿Cómo funciona?
+
+                    Cada tema define un conjunto de tokens que cubren:
+
+                    - **Colores**: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger`
+                    - **Tipografía**: familias, pesos y tamaños
+                    - **Espaciado**: escala consistente para márgenes y paddings
+                    - **Bordes**: radios y anchos
+
+                    ### Ejemplo rápido
+
+                    Definís un tema nuevo en pocos pasos:
+
+                    1. Abrís el Theme Builder
+                    2. Ajustás los colores con los pickers
+                    3. Exportás el CSS generado
+                    4. Lo importás en tu proyecto
+
+                    ## Buenas prácticas
+
+                    - **No mezcles temas** en la misma vista
+                    - **Usá los tokens semánticos** (`primary`, `success`) en vez de nombres de color
+                    - **Probá en contexto** con las previews del builder
+                    - **Exportá y versioná** los temas junto al código
+                  </Markdown>
+                </div>
+                <div class="tb-doc-footer">
+                  <div class="tb-doc-tags">
+                    <Badge color="neutral" variant="soft">Design Tokens</Badge>
+                    <Badge color="neutral" variant="soft">Temas</Badge>
+                    <Badge color="neutral" variant="soft">CSS</Badge>
+                  </div>
+                  <div class="tb-doc-actions">
+                    <Button color="neutral" variant="ghost">Compartir</Button>
+                    <Button color="primary">Guardar borrador</Button>
+                  </div>
+                </div>
+              </div>
+              <div class="tb-doc-sidebar">
+                <Card variant="subtle" color="primary" class="tb-doc-toc-card">
+                  <h4 class="tb-doc-sidebar-title">En esta página</h4>
+                  <Outline :items="docOutlineItems" />
+                </Card>
+                <Card variant="ghost" class="tb-doc-meta-card">
+                  <h4 class="tb-doc-sidebar-title">Estadísticas</h4>
+                  <div class="tb-doc-stats">
+                    <div class="tb-doc-stat">
+                      <span class="tb-doc-stat-value">1.2k</span>
+                      <span class="tb-doc-stat-label">Palabras</span>
+                    </div>
+                    <div class="tb-doc-stat">
+                      <span class="tb-doc-stat-value">4</span>
+                      <span class="tb-doc-stat-label">Secciones</span>
+                    </div>
+                    <div class="tb-doc-stat">
+                      <span class="tb-doc-stat-value">3</span>
+                      <span class="tb-doc-stat-label">Bloques código</span>
+                    </div>
+                    <div class="tb-doc-stat">
+                      <span class="tb-doc-stat-value">2</span>
+                      <span class="tb-doc-stat-label">Citas</span>
+                    </div>
+                  </div>
+                </Card>
+                <Card variant="ghost" class="tb-doc-versions-card">
+                  <h4 class="tb-doc-sidebar-title">Versiones</h4>
+                  <div class="tb-doc-versions">
+                    <div class="tb-doc-version tb-doc-version--current">
+                      <div class="tb-doc-version-dot" />
+                      <div class="tb-doc-version-info">
+                        <span class="tb-doc-version-label">v1.3</span>
+                        <span class="tb-doc-version-date">Hoy, 14:20</span>
+                      </div>
+                      <Badge color="success" variant="soft">Actual</Badge>
+                    </div>
+                    <div class="tb-doc-version">
+                      <div class="tb-doc-version-dot" />
+                      <div class="tb-doc-version-info">
+                        <span class="tb-doc-version-label">v1.2</span>
+                        <span class="tb-doc-version-date">Ayer, 09:45</span>
+                      </div>
+                    </div>
+                    <div class="tb-doc-version">
+                      <div class="tb-doc-version-dot" />
+                      <div class="tb-doc-version-info">
+                        <span class="tb-doc-version-label">v1.1</span>
+                        <span class="tb-doc-version-date">5 sep, 18:00</span>
+                      </div>
+                    </div>
+                    <div class="tb-doc-version">
+                      <div class="tb-doc-version-dot" />
+                      <div class="tb-doc-version-info">
+                        <span class="tb-doc-version-label">v1.0</span>
+                        <span class="tb-doc-version-date">3 sep, 11:30</span>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+                <Card variant="soft" color="warning" class="tb-doc-note-card">
+                  <h4 class="tb-doc-sidebar-title">Nota del editor</h4>
+                  <p class="tb-doc-note-text">Esta documentación está en revisión. Faltan ejemplos de migración desde v1.x.</p>
+                </Card>
               </div>
             </div>
           </div>
@@ -1136,15 +1288,13 @@ onBeforeUnmount(() => {
 
 /* === AGENDA === */
 .tb-agenda {
-  display: grid;
-  grid-template-columns: 1fr 240px;
-  gap: 1.25rem;
-}
-
-.tb-agenda-main {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  padding: 1.25rem;
+  background-color: var(--cu-color-surface);
+  border: var(--cu-border-thin) solid var(--cu-border-color);
+  border-radius: var(--cu-radius-lg);
 }
 
 .tb-agenda-toolbar {
@@ -1152,10 +1302,8 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 1rem 1.25rem;
-  background-color: var(--cu-color-surface);
-  border: var(--cu-border-thin) solid var(--cu-border-color);
-  border-radius: var(--cu-radius-lg);
+  padding-bottom: 1rem;
+  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);
 }
 
 .tb-agenda-toolbar-actions {
@@ -1166,17 +1314,52 @@ onBeforeUnmount(() => {
 
 .tb-agenda-split {
   display: grid;
-  grid-template-columns: minmax(280px, 320px) 1fr;
+  grid-template-columns: 1fr 200px;
+  gap: 1.5rem;
+}
+
+.tb-agenda-cal {
+  display: flex;
+  flex-direction: column;
   gap: 1rem;
-  padding: 1.25rem;
-  background-color: var(--cu-color-surface);
-  border: var(--cu-border-thin) solid var(--cu-border-color);
-  border-radius: var(--cu-radius-lg);
 }
 
 .tb-agenda-events {
   display: flex;
   flex-direction: column;
+}
+
+.tb-agenda-side {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.tb-agenda-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tb-agenda-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tb-agenda-legend-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tb-agenda-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: var(--cu-font-size-xs);
+  color: var(--cu-color-neutral);
+  opacity: 0.8;
 }
 
 .tb-agenda-section-title {
@@ -1231,58 +1414,284 @@ onBeforeUnmount(() => {
   margin: 0;
 }
 
-.tb-agenda-sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  padding: 1.25rem;
-  background-color: var(--cu-color-surface);
-  border: var(--cu-border-thin) solid var(--cu-border-color);
-  border-radius: var(--cu-radius-lg);
-}
-
-.tb-agenda-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.tb-agenda-legend {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.tb-agenda-legend-items {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.tb-agenda-legend-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: var(--cu-font-size-xs);
+.tb-agenda-empty {
+  font-size: var(--cu-font-size-sm);
   color: var(--cu-color-neutral);
-  opacity: 0.8;
+  opacity: 0.5;
+  margin: 0;
+  padding: 0.5rem 0;
 }
 
 /* === EDITORIAL === */
 .tb-editorial {
   display: grid;
-  grid-template-columns: 1fr 320px;
+  grid-template-columns: 1fr 280px;
   gap: 1.25rem;
 }
 
-.tb-ed-card {
+.tb-doc {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--cu-color-surface);
+  border: var(--cu-border-thin) solid var(--cu-border-color);
+  border-radius: var(--cu-radius-lg);
+  overflow: hidden;
+}
+
+.tb-doc-header {
+  padding: 1.5rem 1.5rem 1rem;
+  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);
+}
+
+.tb-doc-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  font-size: var(--cu-font-size-xs);
+  color: var(--cu-color-neutral);
+  opacity: 0.6;
+}
+
+.tb-doc-date::before,
+.tb-doc-read::before {
+  content: '·';
+  margin-right: 0.75rem;
+}
+
+.tb-doc-title {
+  font-size: var(--cu-font-size-2xl);
+  font-weight: var(--cu-weight-bold);
+  color: var(--cu-color-neutral);
+  margin: 0 0 0.5rem;
+  line-height: 1.2;
+}
+
+.tb-doc-subtitle {
+  font-size: var(--cu-font-size-md);
+  color: var(--cu-color-neutral);
+  opacity: 0.7;
+  margin: 0 0 1rem;
+}
+
+.tb-doc-author {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.tb-doc-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--cu-color-primary), var(--cu-color-secondary));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--cu-font-size-xs);
+  font-weight: var(--cu-font-weight-semibold);
+}
+
+.tb-doc-author-name {
+  font-size: var(--cu-font-size-sm);
+  font-weight: var(--cu-font-weight-medium);
+  color: var(--cu-color-neutral);
+}
+
+.tb-doc-author-role {
+  font-size: var(--cu-font-size-xs);
+  color: var(--cu-color-neutral);
+  opacity: 0.5;
+}
+
+.tb-doc-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);
+  background-color: var(--cu-color-surface);
+}
+
+.tb-doc-toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding-right: 0.5rem;
+  border-right: var(--cu-border-thin) solid var(--cu-border-color);
+}
+
+.tb-doc-toolbar-group:last-of-type {
+  border-right: none;
+}
+
+.tb-doc-tb-btn {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: var(--cu-radius-sm);
+  background: transparent;
+  color: var(--cu-color-neutral);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--cu-font-size-sm);
+  transition: background 150ms ease;
+}
+
+.tb-doc-tb-btn:hover {
+  background: var(--cu-color-neutral-ghost-hover);
+}
+
+.tb-doc-toolbar-spacer {
+  flex: 1;
+}
+
+.tb-doc-body {
   padding: 1.5rem;
 }
 
-.tb-ed-sidebar {
+.tb-doc-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-top: var(--cu-border-thin) solid var(--cu-border-color);
+  margin-top: auto;
+}
+
+.tb-doc-tags {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tb-doc-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tb-doc-sidebar {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+}
+
+.tb-doc-toc-card {
+  padding: 1rem;
+}
+
+.tb-doc-snippet-card {
+  padding: 1rem;
+}
+
+.tb-doc-meta-card {
+  padding: 1rem;
+}
+
+.tb-doc-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.tb-doc-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tb-doc-stat-value {
+  font-size: var(--cu-font-size-lg);
+  font-weight: var(--cu-font-weight-semibold);
+  color: var(--cu-color-neutral);
+}
+
+.tb-doc-stat-label {
+  font-size: var(--cu-font-size-xs);
+  color: var(--cu-color-neutral);
+  opacity: 0.5;
+}
+
+.tb-doc-versions-card {
+  padding: 1rem;
+}
+
+.tb-doc-versions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.tb-doc-version {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.5rem;
+  border-radius: var(--cu-radius-sm);
+  transition: background 150ms ease;
+}
+
+.tb-doc-version--current {
+  background-color: var(--cu-color-primary-soft);
+}
+
+.tb-doc-version-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--cu-color-neutral);
+  opacity: 0.3;
+  flex-shrink: 0;
+}
+
+.tb-doc-version--current .tb-doc-version-dot {
+  background-color: var(--cu-color-primary);
+  opacity: 1;
+}
+
+.tb-doc-version-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.tb-doc-version-label {
+  font-size: var(--cu-font-size-sm);
+  font-weight: var(--cu-font-weight-medium);
+  color: var(--cu-color-neutral);
+}
+
+.tb-doc-version-date {
+  font-size: var(--cu-font-size-xs);
+  color: var(--cu-color-neutral);
+  opacity: 0.5;
+}
+
+.tb-doc-note-card {
+  padding: 1rem;
+}
+
+.tb-doc-note-text {
+  font-size: var(--cu-font-size-sm);
+  color: var(--cu-color-neutral);
+  opacity: 0.8;
+  margin: 0;
+  line-height: var(--cu-line-height-normal);
+}
+
+.tb-doc-sidebar-title {
+  font-size: var(--cu-font-size-xs);
+  font-weight: var(--cu-font-weight-semibold);
+  color: var(--cu-color-neutral);
+  opacity: 0.6;
+  margin: 0 0 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 /* === OVERLAYS === */
