@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import PlaygroundStyle from '@/templates/playground/PlaygroundStyle.vue';
+import PlaygroundApiComponents from '@/templates/playground/PlaygroundApiComponents.vue';
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Table from "@/components/data/Table.vue";
@@ -54,6 +56,25 @@ const badge_tokens = [
 ];
 
 const styleData = badge_tokens.map(name => ({ name, description: getTokenDescription(name) }));
+
+const componentTokens = [
+  '--badge-bg',
+  '--badge-text',
+  '--badge-soft',
+  '--badge-soft-hover',
+  '--badge-subtle',
+  '--badge-subtle-border',
+  '--badge-ghost-hover',
+  '--cu-font-sans',
+  '--cu-font-size-xs',
+  '--cu-font-weight-medium',
+  '--cu-line-height-tight',
+  '--cu-radius',
+  '--cu-border-thin',
+  '--cu-space-2xs',
+  '--cu-space-xs',
+  '--cu-space-sm',
+];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -230,7 +251,7 @@ const variant = ref('soft')
         <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
       </section>
 
-      <hr class="playground-separator" />
+      <hr class="playground-separator" />      <PlaygroundStyle :tokens="componentTokens" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>

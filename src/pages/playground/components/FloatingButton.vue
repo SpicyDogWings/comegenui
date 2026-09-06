@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
+import PlaygroundStyle from '@/templates/playground/PlaygroundStyle.vue';
+import PlaygroundApiComponents from '@/templates/playground/PlaygroundApiComponents.vue';
 import FloatingButton from "@/components/buttons/FloatingButton.vue";
 import Badge from "@/components/information/Badge.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
@@ -107,6 +109,17 @@ const floatingbutton_tokens = [
 
 const styleData = floatingbutton_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
+const componentTokens = [
+  '--fab-bg',
+  '--fab-bg-hover',
+  '--fab-bg-active',
+  '--cu-radius-full',
+  '--cu-shadow-lg',
+  '--cu-shadow-xl',
+  '--cu-space-lg',
+  '--cu-space-3xl',
+];
+
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
   { key: 'type', label: 'Tipo' },
@@ -193,7 +206,7 @@ const eventsData = [
         <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
       </section>
 
-      <hr class="playground-separator" />
+      <hr class="playground-separator" />      <PlaygroundStyle :tokens="componentTokens" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>

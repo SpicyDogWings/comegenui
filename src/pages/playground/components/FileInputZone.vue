@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import PlaygroundStyle from '@/templates/playground/PlaygroundStyle.vue';
+import PlaygroundApiComponents from '@/templates/playground/PlaygroundApiComponents.vue';
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import FileInputZone from "@/components/form/FileInputZone.vue";
 import Badge from "@/components/information/Badge.vue";
@@ -203,6 +205,32 @@ const fileinputzone_tokens = [
 
 const styleData = fileinputzone_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
+const componentTokens = [
+  '--zone-bg',
+  '--zone-text',
+  '--zone-ghost-hover',
+  '--cu-font-sans',
+  '--cu-font-size-sm',
+  '--cu-font-size-xs',
+  '--cu-font-weight-medium',
+  '--cu-radius',
+  '--cu-border-thin',
+  '--cu-border-thick',
+  '--cu-border-color',
+  '--cu-space-2xs',
+  '--cu-space-md',
+  '--cu-space-xl',
+  '--cu-space-2xl',
+];
+
+const componentDeps = [
+  { label: 'FileList', path: '/playground/components/advanced-table' }
+];
+
+const styleSubComponents = [
+  { label: 'FileList', path: '/playground/components/advanced-table#style' }
+];
+
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
   { key: 'type', label: 'Tipo' },
@@ -396,10 +424,10 @@ const exposesData = [
         <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
       </section>
 
-      <hr class="playground-separator" />
+      <hr class="playground-separator" />      <PlaygroundStyle :tokens="componentTokens" :sub-components="styleSubComponents" />
 
       <section id="api" class="playground-section">
-        <h2>API</h2>
+        <h2>API</h2>        <PlaygroundApiComponents :deps="componentDeps" />
 
         <h3 id="api-props">Props</h3>
         <Table :columns="apiColumns" :data="propsData" variant="ghost" compact />

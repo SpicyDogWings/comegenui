@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import PlaygroundStyle from '@/templates/playground/PlaygroundStyle.vue';
+import PlaygroundApiComponents from '@/templates/playground/PlaygroundApiComponents.vue';
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Badge from "@/components/information/Badge.vue";
@@ -86,6 +88,29 @@ const tabs_tokens = [
 ];
 
 const styleData = tabs_tokens.map(name => ({ name, description: getTokenDescription(name) }));
+
+const componentTokens = [
+  '--tabs-color',
+  '--tabs-soft',
+  '--tabs-soft-hover',
+  '--tabs-soft-active',
+  '--tabs-subtle-border',
+  '--cu-font-sans',
+  '--cu-font-size-sm',
+  '--cu-font-size-md',
+  '--cu-font-size-xs',
+  '--cu-font-weight-medium',
+  '--cu-radius-sm',
+  '--cu-radius-md',
+  '--cu-border-thin',
+  '--cu-border-color',
+  '--cu-border-color-focus',
+  '--cu-space-2xs',
+  '--cu-space-xs',
+  '--cu-space-sm',
+  '--cu-space-md',
+  '--cu-space-lg',
+];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -262,7 +287,6 @@ const variantsVanilla = `${tabsImportVanilla}
   <div slot="settings">Contenido Settings</div>
   <div slot="activity">Contenido Activity</div>
 </cu-tabs>
-
 
 <script>
   customElements.whenDefined('cu-tabs').then(() => {
@@ -612,7 +636,7 @@ const programmaticVanilla = `${tabsImportVanilla}
         <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
       </section>
 
-      <hr class="playground-separator" />
+      <hr class="playground-separator" />      <PlaygroundStyle :tokens="componentTokens" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>

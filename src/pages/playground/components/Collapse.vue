@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
+import PlaygroundStyle from '@/templates/playground/PlaygroundStyle.vue';
+import PlaygroundApiComponents from '@/templates/playground/PlaygroundApiComponents.vue';
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Badge from "@/components/information/Badge.vue";
 import Table from "@/components/data/Table.vue";
@@ -169,6 +171,11 @@ const collapse_tokens = [
 
 const styleData = collapse_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
+const componentTokens = [
+  '--cu-space-2xs',
+  '--cu-space-lg',
+];
+
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
   { key: 'type', label: 'Tipo' },
@@ -314,7 +321,7 @@ const exposesData = [
         <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
       </section>
 
-      <hr class="playground-separator" />
+      <hr class="playground-separator" />      <PlaygroundStyle :tokens="componentTokens" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>

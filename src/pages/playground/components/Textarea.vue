@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import PlaygroundStyle from '@/templates/playground/PlaygroundStyle.vue';
+import PlaygroundApiComponents from '@/templates/playground/PlaygroundApiComponents.vue';
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import Textarea from "@/components/form/Textarea.vue";
 import Badge from "@/components/information/Badge.vue";
@@ -197,6 +199,23 @@ const textarea_tokens = [
 
 const styleData = textarea_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
+const componentTokens = [
+  '--btn-bg',
+  '--btn-bg-hover',
+  '--btn-soft',
+  '--btn-soft-hover',
+  '--btn-subtle',
+  '--btn-subtle-hover',
+  '--btn-subtle-border',
+  '--cu-font-sans',
+  '--cu-font-size-sm',
+  '--cu-font-weight-medium',
+  '--cu-radius-md',
+  '--cu-border-thin',
+  '--cu-space-md',
+  '--cu-space-lg',
+];
+
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
   { key: 'type', label: 'Tipo' },
@@ -361,7 +380,7 @@ const exposesData = [
         <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
       </section>
 
-      <hr class="playground-separator" />
+      <hr class="playground-separator" />      <PlaygroundStyle :tokens="componentTokens" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>

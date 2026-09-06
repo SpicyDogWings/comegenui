@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import PlaygroundStyle from '@/templates/playground/PlaygroundStyle.vue';
+import PlaygroundApiComponents from '@/templates/playground/PlaygroundApiComponents.vue';
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import Switch from "@/components/form/Switch.vue";
 import Badge from "@/components/information/Badge.vue";
@@ -203,6 +205,23 @@ const switch_tokens = [
 
 const styleData = switch_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
+const componentTokens = [
+  '--switch-bg',
+  '--switch-ghost-hover',
+  '--cu-font-sans',
+  '--cu-font-size-sm',
+  '--cu-font-size-xs',
+  '--cu-radius-full',
+  '--cu-shadow-sm',
+  '--cu-space-2xs',
+  '--cu-space-xs',
+  '--cu-space-sm',
+  '--cu-space-lg',
+  '--cu-space-xl',
+  '--cu-space-2xl',
+  '--cu-space-3xl',
+];
+
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
   { key: 'type', label: 'Tipo' },
@@ -347,7 +366,7 @@ const exposesData = [
         <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
       </section>
 
-      <hr class="playground-separator" />
+      <hr class="playground-separator" />      <PlaygroundStyle :tokens="componentTokens" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>

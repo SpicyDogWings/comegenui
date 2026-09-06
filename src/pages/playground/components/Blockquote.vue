@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
+import PlaygroundStyle from '@/templates/playground/PlaygroundStyle.vue';
+import PlaygroundApiComponents from '@/templates/playground/PlaygroundApiComponents.vue';
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Badge from "@/components/information/Badge.vue";
 import Table from "@/components/data/Table.vue";
@@ -70,6 +72,12 @@ const blockquote_tokens = [
 ];
 
 const styleData = blockquote_tokens.map(name => ({ name, description: getTokenDescription(name) }));
+
+const componentTokens = [
+  '--cu-border-thick',
+  '--cu-space-sm',
+  '--cu-space-md',
+];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -162,7 +170,7 @@ const exposesData: { name: string; type: string; description: string }[] = [];
         <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
       </section>
 
-      <hr class="playground-separator" />
+      <hr class="playground-separator" />      <PlaygroundStyle :tokens="componentTokens" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>

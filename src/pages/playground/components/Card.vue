@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import PlaygroundStyle from '@/templates/playground/PlaygroundStyle.vue';
+import PlaygroundApiComponents from '@/templates/playground/PlaygroundApiComponents.vue';
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Table from "@/components/data/Table.vue";
@@ -64,6 +66,27 @@ const card_tokens = [
 ];
 
 const styleData = card_tokens.map(name => ({ name, description: getTokenDescription(name) }));
+
+const componentTokens = [
+  '--card-bg',
+  '--card-text',
+  '--card-soft',
+  '--card-subtle',
+  '--card-subtle-border',
+  '--cu-font-sans',
+  '--cu-font-size-sm',
+  '--cu-font-size-lg',
+  '--cu-font-weight-bold',
+  '--cu-line-height-relaxed',
+  '--cu-radius-lg',
+  '--cu-shadow-md',
+  '--cu-border-thin',
+  '--cu-border-color',
+  '--cu-space-2xs',
+  '--cu-space-sm',
+  '--cu-space-md',
+  '--cu-space-lg',
+];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -426,7 +449,7 @@ const layout = ref('vertical')
         <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
       </section>
 
-      <hr class="playground-separator" />
+      <hr class="playground-separator" />      <PlaygroundStyle :tokens="componentTokens" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>

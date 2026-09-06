@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import PlaygroundStyle from '@/templates/playground/PlaygroundStyle.vue';
+import PlaygroundApiComponents from '@/templates/playground/PlaygroundApiComponents.vue';
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import Button from "@/components/buttons/Button.vue";
 import Badge from "@/components/information/Badge.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Table from "@/components/data/Table.vue";
+import { getTokenDescription } from "@/config/css-tokens";
 
 const loading1 = ref(false);
 const loading2 = ref(false);
@@ -237,6 +240,34 @@ const button_tokens = [
 
 const styleData = button_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
+const componentTokens = [
+  '--btn-bg',
+  '--btn-bg-hover',
+  '--btn-bg-active',
+  '--btn-soft',
+  '--btn-soft-hover',
+  '--btn-soft-active',
+  '--btn-subtle',
+  '--btn-subtle-hover',
+  '--btn-subtle-active',
+  '--btn-subtle-border',
+  '--btn-ghost-hover',
+  '--btn-ghost-active',
+  '--cu-font-sans',
+  '--cu-font-size-sm',
+  '--cu-font-size-xs',
+  '--cu-font-size-lg',
+  '--cu-font-weight-medium',
+  '--cu-radius',
+  '--cu-border-thin',
+  '--cu-space-2xs',
+  '--cu-space-xs',
+  '--cu-space-sm',
+  '--cu-space-md',
+  '--cu-space-lg',
+  '--cu-space-xl',
+];
+
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
   { key: 'type', label: 'Tipo' },
@@ -437,7 +468,7 @@ const eventsData = [
         <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
       </section>
 
-      <hr class="playground-separator" />
+      <hr class="playground-separator" />      <PlaygroundStyle :tokens="componentTokens" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>

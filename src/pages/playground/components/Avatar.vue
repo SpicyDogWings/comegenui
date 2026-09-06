@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import PlaygroundStyle from '@/templates/playground/PlaygroundStyle.vue';
+import PlaygroundApiComponents from '@/templates/playground/PlaygroundApiComponents.vue';
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Table from "@/components/data/Table.vue";
@@ -7,6 +9,9 @@ import Button from "@/components/buttons/Button.vue";
 import Badge from "@/components/information/Badge.vue";
 import Avatar from "@/components/information/Avatar.vue";
 import { getTokenDescription } from "@/config/css-tokens";
+import { initTokens } from "@/plugins/cu-tokens/css";
+
+initTokens();
 
 const outlineItems = [
   { label: 'Default', id: 'default' },
@@ -47,6 +52,14 @@ const avatarTokens = [
 ];
 
 const avatarStyleData = avatarTokens.map(name => ({ name, description: getTokenDescription(name) }));
+
+const componentTokens = [
+  '--avatar-bg',
+  '--cu-font-weight-semibold',
+  '--cu-font-size-xs',
+  '--cu-font-size-sm',
+  '--cu-font-size-md',
+];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -239,7 +252,7 @@ const size = ref('md')
         <Table :columns="styleColumns" :data="avatarStyleData" variant="ghost" compact />
       </section>
 
-      <hr class="playground-separator" />
+      <hr class="playground-separator" />      <PlaygroundStyle :tokens="componentTokens" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>

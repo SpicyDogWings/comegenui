@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import PlaygroundStyle from '@/templates/playground/PlaygroundStyle.vue';
+import PlaygroundApiComponents from '@/templates/playground/PlaygroundApiComponents.vue';
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Badge from "@/components/information/Badge.vue";
@@ -42,6 +44,11 @@ const loader_tokens = [
 ];
 
 const styleData = loader_tokens.map(name => ({ name, description: getTokenDescription(name) }));
+
+const componentTokens = [
+  '--cu-loader-color',
+  '--cu-loader-delay',
+];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -238,7 +245,7 @@ const key = ref(0)
         <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
       </section>
 
-      <hr class="playground-separator" />
+      <hr class="playground-separator" />      <PlaygroundStyle :tokens="componentTokens" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>

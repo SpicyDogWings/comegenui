@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
+import PlaygroundStyle from '@/templates/playground/PlaygroundStyle.vue';
+import PlaygroundApiComponents from '@/templates/playground/PlaygroundApiComponents.vue';
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Badge from "@/components/information/Badge.vue";
 import Table from "@/components/data/Table.vue";
@@ -108,6 +110,29 @@ const yearslider_tokens = [
 ];
 
 const styleData = yearslider_tokens.map(name => ({ name, description: getTokenDescription(name) }));
+
+const componentTokens = [
+  '--ms-accent',
+  '--ms-accent-hover',
+  '--ms-accent-text',
+  '--ms-soft',
+  '--ms-soft-hover',
+  '--ms-subtle',
+  '--ms-subtle-border',
+  '--ms-subtle-hover',
+  '--ms-ghost-hover',
+  '--ms-surface',
+  '--cu-font-sans',
+  '--cu-space-2xs',
+];
+
+const componentDeps = [
+  { label: 'MonthSliderLabel', path: '/playground/components/year-slider' }
+];
+
+const styleSubComponents = [
+  { label: 'MonthSliderLabel', path: '/playground/components/year-slider#style' }
+];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -253,10 +278,10 @@ const exposesData = [
         <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
       </section>
 
-      <hr class="playground-separator" />
+      <hr class="playground-separator" />      <PlaygroundStyle :tokens="componentTokens" :sub-components="styleSubComponents" />
 
       <section id="api" class="playground-section">
-        <h2>API</h2>
+        <h2>API</h2>        <PlaygroundApiComponents :deps="componentDeps" />
 
         <h3 id="api-props">Props</h3>
         <Table :columns="apiColumns" :data="propsData" variant="ghost" compact />
