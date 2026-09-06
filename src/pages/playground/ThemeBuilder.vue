@@ -43,15 +43,8 @@ import {
   theme as activeTheme, setTheme, registerTheme, allThemes, builtInNames, opacities,
   setShared, getThemeCSS, applyFullConfig,
 } from '@/plugins/cu-tokens'
-
-// Preview local para el hint de Opacities (UI de la app, no generación de CSS).
-function hexToRgba(hex: string, alpha: number): string {
-  const h = hex.replace('#', '')
-  const r = parseInt(h.slice(0, 2), 16)
-  const g = parseInt(h.slice(2, 4), 16)
-  const b = parseInt(h.slice(4, 6), 16)
-  return `rgba(${r}, ${g}, ${b}, ${alpha / 100})`
-}
+import { DEFAULTS, DEFAULT_COLORS, DEFAULT_OPACITIES } from '@/plugins/cu-tokens/defaults'
+import { hexToRgba } from '@/lib/colors'
 
 function resolveOpacity(name: string): number {
   return opacities.value[name]?.shadow ?? opacities.value.default?.shadow ?? 10
@@ -139,86 +132,30 @@ const editorialSnippet = `const tokens = getThemeNames();
 // cambiás un color y todo el ecosistema lo sigue
 setTheme('nord');`
 
-const colors = ref({
-  primary: '#E73F1E',
-  secondary: '#6366f1',
-  neutral: '#1a1a1a',
-  success: '#22c55e',
-  warning: '#f59e0b',
-  danger: '#ef4444',
-  surface: '#eeeeee',
-  focus: '#1774A4',
-  strong: '#6b7280',
-  default: '#d1d5db',
-  shadow: '#000000',
-})
+// Inicializa los colores desde el tema activo del plugin (o defaults si no cargó).
+function initColorsFromTheme(name: string) {
+  const themeColors = allThemes.value[name]?.colors
+  if (themeColors) {
+    const { shadowOpacity, ...rest } = themeColors
+    colors.value = { ...colors.value, ...rest }
+  }
+}
 
-const shadowOpacityRaw = ref('10')
+const colors = ref({ ...DEFAULT_COLORS })
 
+initColorsFromTheme('light')
 
+const shadowOpacityRaw = ref(String(opacities.value.default?.shadow ?? 10))
 
-const typography = ref({
-  fontFamily: {
-    sans: 'Inter, system-ui, sans-serif',
-    mono: 'Fira Code, monospace',
-  },
-  fontSize: {
-    xs: '0.75rem',
-    sm: '0.875rem',
-    md: '1rem',
-    lg: '1.125rem',
-    xl: '1.25rem',
-    '2xl': '1.5rem',
-    '3xl': '1.75rem',
-    '4xl': '2rem',
-  },
-  fontWeight: {
-    normal: '400',
-    medium: '500',
-    semibold: '600',
-    bold: '700',
-  },
-  lineHeight: {
-    tight: '1.25',
-    normal: '1.5',
-    relaxed: '1.75',
-  },
-})
+const typography = ref({ ...getShared()?.typography })
 
-const spacing = ref({
-  '2xs': '2px',
-  xs: '4px',
-  sm: '8px',
-  md: '12px',
-  lg: '16px',
-  xl: '24px',
-  '2xl': '32px',
-  '3xl': '48px',
-  '4xl': '64px',
-  '5xl': '80px',
-})
+const spacing = ref({ ...getShared()?.spacing })
 
-const borderRadius = ref({
-  default: '8px',
-  none: '0',
-  sm: '4px',
-  md: '8px',
-  lg: '12px',
-  full: '9999px',
-})
+const borderRadius = ref({ ...getShared()?.borderRadius })
 
 const borders = ref({
-  width: {
-    none: '0',
-    thin: '1px',
-    medium: '2px',
-    thick: '4px',
-  },
-  color: {
-    default: '#d1d5db',
-    strong: '#6b7280',
-    focus: '#1774A4',
-  },
+  width: { ...getShared()?.borders?.width },
+  color: { ...getShared()?.borders?.color },
 })
 
 const shadowPreview = computed(() => hexToRgba(colors.value.shadow || '#000000', parseInt(shadowOpacityRaw.value) || 10))
@@ -367,12 +304,24 @@ function resetToDefaults() {
   borders.value = { width: { none: '0', thin: '1px', medium: '2px', thick: '4px' } }
 }
 
+// Sincroniza los shared tokens (typography, spacing, etc.) desde el plugin.
+function syncSharedFromPlugin() {
+  const s = getShared()
+  if (!s) return
+  if (s.typography) typography.value = { ...typography.value, ...s.typography }
+  if (s.spacing) spacing.value = { ...spacing.value, ...s.spacing }
+  if (s.borderRadius) borderRadius.value = { ...borderRadius.value, ...s.borderRadius }
+  if (s.borders) borders.value = { ...borders.value, ...s.borders }
+}
+
 // El tema activo pasa a ser el que se está editando (preview global en vivo);
 // al salir se restaura el que estaba ("el de ahorita" queda como default).
 const previousTheme = ref('')
 
 onMounted(() => {
   loadFromStorage()
+  syncSharedFromPlugin()
+  initColorsFromTheme(themeName.value)
   previousTheme.value = activeTheme.value
   setTheme(themeName.value)
   modalPreviewRef.value?.open()

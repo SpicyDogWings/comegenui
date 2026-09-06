@@ -1,5 +1,6 @@
 import { darken, toHex, lighten, transparentize, mix } from 'color2k'
 import { DEFAULTS, DEFAULT_COLORS, DEFAULT_OPACITIES, extractColors, extractShared } from './defaults'
+import { hexToRgba } from '@/lib/colors'
 
 let styleEl: HTMLStyleElement | null = null
 
@@ -41,14 +42,6 @@ export function resolveInk(surface: string, neutral?: string): string {
   const surfaceDark = luma01(surface) < 0.5
   if (neutral && (luma01(neutral) < 0.5) !== surfaceDark) return neutral
   return surfaceDark ? toHex(mix(surface, '#ffffff', 0.88)) : toHex(mix(surface, '#000000', 0.88))
-}
-
-function hexToRgba(hex: string, opacity: number): string {
-  const h = hex.replace('#', '')
-  const r = parseInt(h.slice(0, 2), 16)
-  const g = parseInt(h.slice(2, 4), 16)
-  const b = parseInt(h.slice(4, 6), 16)
-  return `rgba(${r}, ${g}, ${b}, ${opacity / 100})`
 }
 
 export function colorsBlock(colors: any, themeName: string, opacities: Record<string, { shadow: number }>) {
