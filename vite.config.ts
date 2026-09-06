@@ -5,7 +5,14 @@ import vueDevTools from 'vite-plugin-vue-devtools';
 
 export default defineConfig({
   plugins: [
-    vue(),
+    vue({
+      template: {
+        compilerOptions: {
+          whitespace: 'condense',
+          isCustomElement: (tag) => tag.startsWith('cu-'),
+        }
+      }
+    }),
     vueDevTools({ launchEditor: 'zed' })
   ],
   resolve: {
