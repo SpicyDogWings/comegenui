@@ -8,9 +8,7 @@ import Table from "@/components/data/Table.vue";
 import Button from "@/components/buttons/Button.vue";
 import Badge from "@/components/information/Badge.vue";
 import Avatar from "@/components/information/Avatar.vue";
-import { initTokens } from "@/plugins/cu-tokens/css";
 
-initTokens();
 
 const outlineItems = [
   { label: 'Default', id: 'default' },

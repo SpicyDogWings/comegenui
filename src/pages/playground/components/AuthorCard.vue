@@ -6,11 +6,9 @@ import Table from "@/components/data/Table.vue";
 import Button from "@/components/buttons/Button.vue";
 import Badge from "@/components/information/Badge.vue";
 import AuthorCard from "@/components/information/AuthorCard.vue";
-import { initTokens } from "@/plugins/cu-tokens/css";
 import PlaygroundStyle from "@/templates/playground/PlaygroundStyle.vue";
 import PlaygroundApiComponents from "@/templates/playground/PlaygroundApiComponents.vue";
 
-initTokens();
 
 const outlineItems = [
   { label: "Default", id: "default" },
