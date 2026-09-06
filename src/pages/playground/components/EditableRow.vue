@@ -788,7 +788,7 @@ const disabledCellsVue = vueSnippet(`  <!-- cellDisabled: deshabilita una celda 
       <hr class="playground-separator" />
 
       <hr class="playground-separator" />
-      <PlaygroundStyle :tokens="componentTokens" />
+      <PlaygroundStyle :tokens="componentTokens" :sub-components="styleSubComponents" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>
