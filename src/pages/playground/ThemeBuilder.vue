@@ -46,8 +46,11 @@ import {
   theme as activeTheme, setTheme, registerTheme, allThemes, builtInNames, opacities,
   setShared, getShared, getThemeCSS, applyFullConfig,
 } from '@/plugins/cu-tokens'
+import { useThemeStore } from '@/stores/theme'
 import { DEFAULTS, DEFAULT_COLORS, DEFAULT_OPACITIES } from '@/plugins/cu-tokens/defaults'
 import { hexToRgba } from '@/lib/colors'
+
+const themeStore = useThemeStore()
 
 function resolveOpacity(name: string): number {
   return opacities.value[name]?.shadow ?? opacities.value.default?.shadow ?? 10
