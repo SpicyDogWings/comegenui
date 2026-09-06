@@ -98,16 +98,7 @@ defineExpose({ open, close })
           </div>
         </div>
 
-        <div class="tm-section">
-          <h3>CSS</h3>
-          <div class="tm-output-actions">
-            <Button color="primary" variant="ghost" @click="emit('copy-css')">Copy CSS</Button>
-            <Button color="primary" variant="ghost" @click="emit('download-css')">Download CSS</Button>
-          </div>
-        </div>
-      </div>
-
-      <div class="tm-main">
+        <div class="tm-main">
         <h3>CSS Output</h3>
         <CodeBlock :code="cssOutput" language="css" variant="solid" class="tm-code-block" />
       </div>
