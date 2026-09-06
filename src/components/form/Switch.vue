@@ -177,8 +177,8 @@ defineExpose({
 .cu-switch--sm .cu-switch-thumb {
   width: var(--cu-space-lg);
   height: var(--cu-space-lg);
-  top: var(--cu-space-2xs);
-  left: var(--cu-space-2xs);
+  top: calc((var(--cu-space-xl) - var(--cu-space-lg)) / 2);
+  left: calc((var(--cu-space-xl) - var(--cu-space-lg)) / 2);
 }
 
 .cu-switch--md .cu-switch-track.cu-switch--checked .cu-switch-thumb {
