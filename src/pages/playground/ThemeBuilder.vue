@@ -92,14 +92,6 @@ const themeName = computed({
   },
 })
 
-// Sync editor when theme changes externally (e.g. ThemeChooser/Dropdown)
-watch(activeTheme, (name) => {
-  if (name !== themeName.value) {
-    themeName.value = name
-    isEditing.value = false
-    loadThemeIntoTokens(name)
-  }
-})
 const isEditing = ref(false)
 const modalRef = ref<InstanceType<typeof ThemeManagerModal> | null>(null)
 const modalPreviewRef = ref<InstanceType<typeof Modal> | null>(null)
