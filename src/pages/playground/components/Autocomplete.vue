@@ -319,8 +319,6 @@ const autocomplete_tokens = [
   '--cu-color-neutral-text',
 ];
 
-const styleData = autocomplete_tokens.map(name => ({ name, description: getTokenDescription(name) }));
-
 const componentDeps = [
   { label: 'Dropdown', path: '/playground/components/dropdown' },
   { label: 'Input', path: '/playground/components/input' },

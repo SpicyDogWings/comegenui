@@ -343,8 +343,6 @@ const select_tokens = [
   '--cu-space-md',
 ];
 
-const styleData = select_tokens.map(name => ({ name, description: getTokenDescription(name) }));
-
 const componentDeps = [
   { label: 'Dropdown', path: '/playground/components/dropdown' },
   { label: 'Button', path: '/playground/components/button' },

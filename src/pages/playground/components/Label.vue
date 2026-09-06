@@ -182,18 +182,11 @@ const nativeVanilla = `<label for="native-usuario">Usuario</label>
 <label for="native-comentarios">Comentarios</label>
 <textarea id="native-comentarios" rows="3" placeholder="Textarea nativo"></textarea>`;
 
-const styleColumns = [
-  { key: 'name', label: 'Variable' },
-  { key: 'description', label: 'Uso' },
-];
-
 const label_tokens = [
   '--label-fg',
   '--cu-font-sans',
   '--cu-space-xs',
 ];
-
-const styleData = label_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const componentTokens = [
   '--label-fg',
@@ -325,13 +318,6 @@ const eventsData = [
       <hr class="playground-separator" />
 
       <hr class="playground-separator" />
-
-      <section id="style" class="playground-section">
-        <h2>Style</h2>
-
-        <h3 id="style-variables">CSS Variables</h3>
-        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
-      </section>
 
       <hr class="playground-separator" />      <PlaygroundStyle :tokens="componentTokens" />
 

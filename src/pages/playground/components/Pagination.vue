@@ -209,8 +209,6 @@ const pagination_tokens = [
   '--cu-space-3xl',
 ];
 
-const styleData = pagination_tokens.map(name => ({ name, description: getTokenDescription(name) }));
-
 const componentDeps = [
   { label: 'Button', path: '/playground/components/button' },
   { label: 'Select', path: '/playground/components/select' },

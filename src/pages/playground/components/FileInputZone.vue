@@ -180,11 +180,6 @@ const progVanilla = `<script src="dist/CuFileInputZone.umd.js"><\/script>
   });
 <\/script>`;
 
-const styleColumns = [
-  { key: 'name', label: 'Variable' },
-  { key: 'description', label: 'Uso' },
-];
-
 const fileinputzone_tokens = [
   '--zone-bg',
   '--zone-text',
@@ -202,8 +197,6 @@ const fileinputzone_tokens = [
   '--cu-space-xl',
   '--cu-space-2xl',
 ];
-
-const styleData = fileinputzone_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const componentTokens = [
   '--zone-bg',
@@ -416,13 +409,6 @@ const exposesData = [
       <hr class="playground-separator" />
 
       <hr class="playground-separator" />
-
-      <section id="style" class="playground-section">
-        <h2>Style</h2>
-
-        <h3 id="style-variables">CSS Variables</h3>
-        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
-      </section>
 
       <hr class="playground-separator" />      <PlaygroundStyle :tokens="componentTokens" :sub-components="styleSubComponents" />
 

@@ -129,8 +129,6 @@ const codeblock_tokens = [
   '--cu-color-neutral-text',
 ];
 
-const styleData = codeblock_tokens.map(name => ({ name, description: getTokenDescription(name) }));
-
 const componentDeps = [
   { label: 'Badge', path: '/playground/components/badge' },
 ];

@@ -467,8 +467,6 @@ const modal_tokens = [
   '--cu-color-neutral',
 ];
 
-const styleData = modal_tokens.map(name => ({ name, description: getTokenDescription(name) }));
-
 const componentDeps = [
   { label: 'Button', path: '/playground/components/button' },
 ];

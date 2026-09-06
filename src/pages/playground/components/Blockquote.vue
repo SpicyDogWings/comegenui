@@ -57,11 +57,6 @@ const slotVue = vueSnippet(`  <Blockquote color="success">
     <p>Cita pasada por slot (alternativa a html).</p>
   </Blockquote>`);
 
-const styleColumns = [
-  { key: 'name', label: 'Variable' },
-  { key: 'description', label: 'Uso' },
-];
-
 const blockquote_tokens = [
   '--cu-border-thick',
   '--cu-font-size-sm',
@@ -70,8 +65,6 @@ const blockquote_tokens = [
   '--cu-color-neutral',
   '--cu-color-neutral-text',
 ];
-
-const styleData = blockquote_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const componentTokens = [
   '--cu-border-thick',
@@ -162,13 +155,6 @@ const exposesData: { name: string; type: string; description: string }[] = [];
       </section>
 
       <hr class="playground-separator" />
-
-      <section id="style" class="playground-section">
-        <h2>Style</h2>
-
-        <h3 id="style-variables">CSS Variables</h3>
-        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
-      </section>
 
       <hr class="playground-separator" />      <PlaygroundStyle :tokens="componentTokens" />
 

@@ -79,8 +79,6 @@ const table_tokens = [
   '--cu-color-neutral-text',
 ];
 
-const styleData = table_tokens.map(name => ({ name, description: getTokenDescription(name) }));
-
 const componentDeps = [
   { label: 'Loader', path: '/playground/components/loader' },
 ];

@@ -108,8 +108,6 @@ const markdown_tokens = [
   '--cu-color-neutral-subtle-border',
 ];
 
-const styleData = markdown_tokens.map(name => ({ name, description: getTokenDescription(name) }));
-
 const componentDeps = [
   { label: 'Table', path: '/playground/components/table' },
   { label: 'CodeBlock', path: '/playground/components/codeblock' },

@@ -188,11 +188,6 @@ const programmaticVanilla = `<script src="dist/CuCheckbox.umd.js"><\/script>
   });
 <\/script>`;
 
-const styleColumns = [
-  { key: 'name', label: 'Variable' },
-  { key: 'description', label: 'Uso' },
-];
-
 const checkbox_tokens = [
   '--cb-bg',
   '--cb-ghost-hover',
@@ -209,8 +204,6 @@ const checkbox_tokens = [
   '--cu-color-surface',
   '--cu-color-neutral',
 ];
-
-const styleData = checkbox_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const componentTokens = [
   '--cb-bg',
@@ -370,13 +363,6 @@ const exposesData = [
       <hr class="playground-separator" />
 
       <hr class="playground-separator" />
-
-      <section id="style" class="playground-section">
-        <h2>Style</h2>
-
-        <h3 id="style-variables">CSS Variables</h3>
-        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
-      </section>
 
       <hr class="playground-separator" />      <PlaygroundStyle :tokens="componentTokens" />
 

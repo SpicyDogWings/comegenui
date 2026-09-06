@@ -81,8 +81,6 @@ const copybutton_tokens = [
   '--cu-border-thin',
 ];
 
-const styleData = copybutton_tokens.map(name => ({ name, description: getTokenDescription(name) }));
-
 const componentDeps = [
   { label: 'Button', path: '/playground/components/button' },
 ];

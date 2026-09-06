@@ -132,8 +132,6 @@ const colorpicker_tokens = [
   '--cu-space-5xl',
 ];
 
-const styleData = colorpicker_tokens.map(name => ({ name, description: getTokenDescription(name) }));
-
 const componentDeps = [
   { label: 'Input', path: '/playground/components/input' },
 ];

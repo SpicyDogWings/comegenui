@@ -271,8 +271,6 @@ const datepickerrange_tokens = [
   '--cu-space-sm',
 ];
 
-const styleData = datepickerrange_tokens.map(name => ({ name, description: getTokenDescription(name) }));
-
 const componentDeps = [
   { label: 'Dropdown', path: '/playground/components/dropdown' },
   { label: 'Button', path: '/playground/components/button' },

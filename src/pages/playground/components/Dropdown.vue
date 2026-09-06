@@ -251,8 +251,6 @@ const dropdown_tokens = [
   '--cu-color-surface',
 ];
 
-const styleData = dropdown_tokens.map(name => ({ name, description: getTokenDescription(name) }));
-
 const componentDeps = [
   { label: 'Button', path: '/playground/components/button' },
   { label: 'Loader', path: '/playground/components/loader' },

@@ -7,8 +7,6 @@ import Button from "@/components/buttons/Button.vue";
 import Badge from "@/components/information/Badge.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Table from "@/components/data/Table.vue";
-import { getTokenDescription } from "@/config/css-tokens";
-
 const loading1 = ref(false);
 const loading2 = ref(false);
 const loading3 = ref(false);
@@ -202,11 +200,6 @@ const fullwidthVanilla = `<script src="dist/CuButton.umd.js"><\/script>
 <cu-button color="warning" variant="outlined" style="width:100%">Full Width Outlined</cu-button>
 <cu-button color="danger" variant="subtle" style="width:100%">Full Width Subtle</cu-button>`;
 
-const styleColumns = [
-  { key: 'name', label: 'Variable' },
-  { key: 'description', label: 'Uso' },
-];
-
 const button_tokens = [
   '--btn-bg',
   '--btn-bg-hover',
@@ -237,8 +230,6 @@ const button_tokens = [
   '--cu-border-thin',
   '--cu-color-surface',
 ];
-
-const styleData = button_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const componentTokens = [
   '--btn-bg',
@@ -460,13 +451,6 @@ const eventsData = [
       <hr class="playground-separator" />
 
       <hr class="playground-separator" />
-
-      <section id="style" class="playground-section">
-        <h2>Style</h2>
-
-        <h3 id="style-variables">CSS Variables</h3>
-        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
-      </section>
 
       <hr class="playground-separator" />      <PlaygroundStyle :tokens="componentTokens" />
 

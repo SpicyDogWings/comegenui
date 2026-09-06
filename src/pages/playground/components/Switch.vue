@@ -177,11 +177,6 @@ const programmaticVanilla = `<script src="dist/CuSwitch.umd.js"><\/script>
   });
 <\/script>`;
 
-const styleColumns = [
-  { key: 'name', label: 'Variable' },
-  { key: 'description', label: 'Uso' },
-];
-
 const switch_tokens = [
   '--switch-bg',
   '--switch-ghost-hover',
@@ -202,8 +197,6 @@ const switch_tokens = [
   '--cu-color-neutral-soft',
   '--cu-color-neutral-ghost-hover',
 ];
-
-const styleData = switch_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const componentTokens = [
   '--switch-bg',
@@ -358,13 +351,6 @@ const exposesData = [
       <hr class="playground-separator" />
 
       <hr class="playground-separator" />
-
-      <section id="style" class="playground-section">
-        <h2>Style</h2>
-
-        <h3 id="style-variables">CSS Variables</h3>
-        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
-      </section>
 
       <hr class="playground-separator" />      <PlaygroundStyle :tokens="componentTokens" />
 

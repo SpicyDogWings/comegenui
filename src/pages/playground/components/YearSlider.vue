@@ -98,18 +98,11 @@ function readValue() {
   </div>
 </template>`;
 
-const styleColumns = [
-  { key: 'name', label: 'Variable' },
-  { key: 'description', label: 'Uso' },
-];
-
 const yearslider_tokens = [
   '--cu-font-sans',
   '--cu-space-2xs',
   '--cu-color-surface',
 ];
-
-const styleData = yearslider_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const componentTokens = [
   '--ms-accent',
@@ -270,13 +263,6 @@ const exposesData = [
       </section>
 
       <hr class="playground-separator" />
-
-      <section id="style" class="playground-section">
-        <h2>Style</h2>
-
-        <h3 id="style-variables">CSS Variables</h3>
-        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
-      </section>
 
       <hr class="playground-separator" />      <PlaygroundStyle :tokens="componentTokens" :sub-components="styleSubComponents" />
 

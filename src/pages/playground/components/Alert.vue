@@ -57,8 +57,6 @@ const alert_tokens = [
   '--cu-color-surface',
 ];
 
-const styleData = alert_tokens.map(name => ({ name, description: getTokenDescription(name) }));
-
 const componentDeps = [
   { label: 'Button', path: '/playground/components/button' },
 ];

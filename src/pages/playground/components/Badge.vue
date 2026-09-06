@@ -32,11 +32,6 @@ const outlineItems = [
   },
 ];
 
-const styleColumns = [
-  { key: 'name', label: 'Variable' },
-  { key: 'description', label: 'Uso' },
-];
-
 const badge_tokens = [
   '--badge-bg',
   '--badge-text',
@@ -54,8 +49,6 @@ const badge_tokens = [
   '--cu-space-sm',
   '--cu-color-surface',
 ];
-
-const styleData = badge_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const componentTokens = [
   '--badge-bg',
@@ -243,13 +236,6 @@ const variant = ref('soft')
       <hr class="playground-separator" />
 
       <hr class="playground-separator" />
-
-      <section id="style" class="playground-section">
-        <h2>Style</h2>
-
-        <h3 id="style-variables">CSS Variables</h3>
-        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
-      </section>
 
       <hr class="playground-separator" />      <PlaygroundStyle :tokens="componentTokens" />
 

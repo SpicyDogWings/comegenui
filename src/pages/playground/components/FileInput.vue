@@ -182,8 +182,6 @@ const fileinput_tokens = [
   '--cu-color-surface',
 ];
 
-const styleData = fileinput_tokens.map(name => ({ name, description: getTokenDescription(name) }));
-
 const componentDeps = [
   { label: 'Button', path: '/playground/components/button' },
 ];

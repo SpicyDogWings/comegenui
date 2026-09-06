@@ -367,18 +367,11 @@ const disabledCellsColumns = [
 
 // ── API ──
 
-const styleColumns = [
-  { key: 'name', label: 'Variable' },
-  { key: 'description', label: 'Uso' },
-];
-
 const editablerow_tokens = [
   '--cu-color-success',
   '--cu-color-danger',
   '--cu-space-sm',
 ];
-
-const styleData = editablerow_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const componentTokens = [
   ,
@@ -783,13 +776,6 @@ const disabledCellsVue = vueSnippet(`  <!-- cellDisabled: deshabilita una celda 
       </section>
 
       <hr class="playground-separator" />
-
-      <section id="style" class="playground-section">
-        <h2>Style</h2>
-
-        <h3 id="style-variables">CSS Variables</h3>
-        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
-      </section>
 
       <hr class="playground-separator" />      <PlaygroundStyle :tokens="componentTokens" />
 

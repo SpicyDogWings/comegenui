@@ -49,19 +49,12 @@ const sizeVue = vueSnippet(`  <ToggleColorScheme :size="16" />
   <ToggleColorScheme :size="20" />
   <ToggleColorScheme :size="24" />`);
 
-const styleColumns = [
-  { key: 'name', label: 'Variable' },
-  { key: 'description', label: 'Uso' },
-];
-
 const togglecolorscheme_tokens = [
   '--cu-radius-full',
   '--cu-space-sm',
   '--cu-shadow-sm',
   '--cu-font-size-sm',
 ];
-
-const styleData = togglecolorscheme_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const componentTokens = [
   ,
@@ -122,13 +115,6 @@ const eventsData = [
       <hr class="playground-separator" />
 
       <hr class="playground-separator" />
-
-      <section id="style" class="playground-section">
-        <h2>Style</h2>
-
-        <h3 id="style-variables">CSS Variables</h3>
-        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
-      </section>
 
       <hr class="playground-separator" />      <PlaygroundStyle :tokens="componentTokens" />
 

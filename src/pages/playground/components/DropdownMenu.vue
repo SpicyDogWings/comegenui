@@ -326,8 +326,6 @@ const dropdownmenu_tokens = [
   '--cu-space-xs',
 ];
 
-const styleData = dropdownmenu_tokens.map(name => ({ name, description: getTokenDescription(name) }));
-
 const componentDeps = [
   { label: 'Dropdown', path: '/playground/components/dropdown' },
   { label: 'Button', path: '/playground/components/button' },

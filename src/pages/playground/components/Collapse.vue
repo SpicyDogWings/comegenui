@@ -159,17 +159,10 @@ const programmaticVanilla = `${collapseImportVanilla}
   });
 <\/script>`;
 
-const styleColumns = [
-  { key: 'name', label: 'Variable' },
-  { key: 'description', label: 'Uso' },
-];
-
 const collapse_tokens = [
   '--cu-space-2xs',
   '--cu-space-lg',
 ];
-
-const styleData = collapse_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const componentTokens = [
   '--cu-space-2xs',
@@ -313,13 +306,6 @@ const exposesData = [
       </section>
 
       <hr class="playground-separator" />
-
-      <section id="style" class="playground-section">
-        <h2>Style</h2>
-
-        <h3 id="style-variables">CSS Variables</h3>
-        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
-      </section>
 
       <hr class="playground-separator" />      <PlaygroundStyle :tokens="componentTokens" />
 

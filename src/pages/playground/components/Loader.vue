@@ -33,17 +33,10 @@ const outlineItems = [
   },
 ];
 
-const styleColumns = [
-  { key: 'name', label: 'Variable' },
-  { key: 'description', label: 'Uso' },
-];
-
 const loader_tokens = [
   '--cu-loader-color',
   '--cu-loader-delay',
 ];
-
-const styleData = loader_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const componentTokens = [
   '--cu-loader-color',
@@ -237,13 +230,6 @@ const key = ref(0)
       <hr class="playground-separator" />
 
       <hr class="playground-separator" />
-
-      <section id="style" class="playground-section">
-        <h2>Style</h2>
-
-        <h3 id="style-variables">CSS Variables</h3>
-        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
-      </section>
 
       <hr class="playground-separator" />      <PlaygroundStyle :tokens="componentTokens" />
 

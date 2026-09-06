@@ -90,11 +90,6 @@ const slotVanilla = `<script src="dist/CuFloatingButton.umd.js"><\/script>
   </svg>
 </cu-floating-button>`;
 
-const styleColumns = [
-  { key: 'name', label: 'Variable' },
-  { key: 'description', label: 'Uso' },
-];
-
 const floatingbutton_tokens = [
   '--fab-bg',
   '--fab-bg-hover',
@@ -106,8 +101,6 @@ const floatingbutton_tokens = [
   '--cu-space-3xl',
   '--cu-color-surface',
 ];
-
-const styleData = floatingbutton_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const componentTokens = [
   '--fab-bg',
@@ -198,13 +191,6 @@ const eventsData = [
       <hr class="playground-separator" />
 
       <hr class="playground-separator" />
-
-      <section id="style" class="playground-section">
-        <h2>Style</h2>
-
-        <h3 id="style-variables">CSS Variables</h3>
-        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
-      </section>
 
       <hr class="playground-separator" />      <PlaygroundStyle :tokens="componentTokens" />
 

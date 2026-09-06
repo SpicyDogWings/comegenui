@@ -270,8 +270,6 @@ const datepicker_tokens = [
   '--cu-space-sm',
 ];
 
-const styleData = datepicker_tokens.map(name => ({ name, description: getTokenDescription(name) }));
-
 const componentDeps = [
   { label: 'Dropdown', path: '/playground/components/dropdown' },
   { label: 'Button', path: '/playground/components/button' },

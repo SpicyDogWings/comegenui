@@ -269,8 +269,6 @@ const calendar_tokens = [
   '--cu-color-surface',
 ];
 
-const styleData = calendar_tokens.map(name => ({ name, description: getTokenDescription(name) }));
-
 const componentDeps = [
   { label: 'MonthSlider', path: '/playground/components/month-slider' },
 ];

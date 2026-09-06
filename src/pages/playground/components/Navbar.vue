@@ -110,11 +110,6 @@ const items = [
   <Navbar :items="items" search :search-fields="['label']" />
 </template>`;
 
-const styleColumns = [
-  { key: 'name', label: 'Variable' },
-  { key: 'description', label: 'Uso' },
-];
-
 const navbar_tokens = [
   '--cu-font-sans',
   '--cu-font-size-sm',
@@ -125,8 +120,6 @@ const navbar_tokens = [
   '--cu-color-surface',
   '--cu-border-thin',
 ];
-
-const styleData = navbar_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const componentTokens = [
   '--cu-font-size-sm',
@@ -235,13 +228,6 @@ const eventsData = [
       <hr class="playground-separator" />
 
       <hr class="playground-separator" />
-
-      <section id="style" class="playground-section">
-        <h2>Style</h2>
-
-        <h3 id="style-variables">CSS Variables</h3>
-        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
-      </section>
 
       <hr class="playground-separator" />      <PlaygroundStyle :tokens="componentTokens" />
 

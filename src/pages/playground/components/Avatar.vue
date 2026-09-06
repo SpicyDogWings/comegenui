@@ -8,7 +8,6 @@ import Table from "@/components/data/Table.vue";
 import Button from "@/components/buttons/Button.vue";
 import Badge from "@/components/information/Badge.vue";
 import Avatar from "@/components/information/Avatar.vue";
-import { getTokenDescription } from "@/config/css-tokens";
 import { initTokens } from "@/plugins/cu-tokens/css";
 
 initTokens();
@@ -38,11 +37,6 @@ const outlineItems = [
   },
 ];
 
-const styleColumns = [
-  { key: 'name', label: 'Variable' },
-  { key: 'description', label: 'Uso' },
-];
-
 const avatarTokens = [
   '--avatar-bg',
   '--cu-font-weight-semibold',
@@ -50,8 +44,6 @@ const avatarTokens = [
   '--cu-font-size-sm',
   '--cu-font-size-md',
 ];
-
-const avatarStyleData = avatarTokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const componentTokens = [
   '--avatar-bg',
@@ -244,13 +236,6 @@ const size = ref('md')
       </section>
 
       <hr class="playground-separator" />
-
-      <section id="style" class="playground-section">
-        <h2>Style</h2>
-
-        <h3 id="style-variables">CSS Variables</h3>
-        <Table :columns="styleColumns" :data="avatarStyleData" variant="ghost" compact />
-      </section>
 
       <hr class="playground-separator" />      <PlaygroundStyle :tokens="componentTokens" />
 

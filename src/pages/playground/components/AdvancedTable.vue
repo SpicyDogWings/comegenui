@@ -152,8 +152,6 @@ const advancedtable_tokens = [
   '--cu-color-surface',
 ];
 
-const styleData = advancedtable_tokens.map(name => ({ name, description: getTokenDescription(name) }));
-
 const componentDeps = [
   { label: 'Table', path: '/playground/components/table' },
   { label: 'Pagination', path: '/playground/components/pagination' },
