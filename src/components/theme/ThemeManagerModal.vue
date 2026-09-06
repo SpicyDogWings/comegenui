@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import Modal from '@/components/overlay/Modal.vue'
 import Button from '@/components/buttons/Button.vue'
 import Input from '@/components/form/Input.vue'
+import CodeBlock from '@/components/markdown/CodeBlock.vue'
 
 interface ThemeConfig {
   themes: Record<string, Record<string, string>>
@@ -60,7 +61,7 @@ defineExpose({ open, close })
 </script>
 
 <template>
-  <Modal ref="modalRef" title="Theme Manager" size="full" @close="close">
+  <Modal ref="modalRef" title="Theme Manager" size="full" height="xl" @close="close">
     <div class="tm-layout">
       <div class="tm-sidebar">
         <div class="tm-section">
@@ -93,7 +94,9 @@ defineExpose({ open, close })
 
       <div class="tm-main">
         <h3>CSS Output</h3>
-        <pre class="tm-code"><code>{{ cssOutput }}</code></pre>
+        <div class="tm-code-wrapper">
+          <CodeBlock :code="cssOutput" language="css" variant="solid" />
+        </div>
       </div>
     </div>
   </Modal>
@@ -147,17 +150,10 @@ defineExpose({ open, close })
   gap: 0.5rem;
 }
 
-.tm-code {
-  background: #1a1a2e;
-  color: #e0e0e0;
-  padding: var(--cu-space-lg);
-  border-radius: var(--cu-radius);
-  font-family: var(--cu-font-mono);
-  font-size: var(--cu-font-size-xs);
-  line-height: 1.6;
-  overflow-x: auto;
+.tm-code-wrapper {
+  flex: 1;
   overflow-y: auto;
   max-height: 300px;
-  margin: 0;
+  border-radius: var(--cu-radius-sm);
 }
 </style>
