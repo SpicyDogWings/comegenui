@@ -166,7 +166,7 @@ Definís un tema nuevo en pocos pasos:
   </div>
 </template>
 
-<style scoped>
+<style>
 .tb-scene {
   display: flex;
   flex-direction: column;

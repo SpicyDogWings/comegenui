@@ -95,7 +95,7 @@ const demoOutlineItems = [
               </Badge>
 </template>
 
-<style scoped>
+<style>
 .tb-scene {
   display: flex;
   flex-direction: column;
