@@ -96,6 +96,35 @@ function handleSaveProfile() {
   }, 2000)
 }
 
+const showDeleteModal = ref(false)
+const deleteModalRef = ref<InstanceType<typeof Modal> | null>(null)
+watch(showDeleteModal, (val) => {
+  if (val) deleteModalRef.value?.open()
+})
+
+const showDrawer = ref(false)
+const toastVisible = ref(false)
+const toastType = ref<'success' | 'warning' | 'danger' | 'primary'>('success')
+const toastMessage = ref('')
+const toastIcon = ref('✓')
+
+const toastMessages = {
+  success: { msg: 'Cambios guardados correctamente', icon: '✓' },
+  warning: { msg: 'Tené cuidado con esta acción', icon: '⚠' },
+  danger: { msg: 'Ocurrió un error inesperado', icon: '✕' },
+  primary: { msg: 'Procesando solicitud...', icon: 'ℹ' },
+}
+
+function triggerToast(type: 'success' | 'warning' | 'danger' | 'primary') {
+  toastType.value = type
+  toastMessage.value = toastMessages[type].msg
+  toastIcon.value = toastMessages[type].icon
+  toastVisible.value = true
+  setTimeout(() => {
+    toastVisible.value = false
+  }, 3000)
+}
+
 const isBuiltIn = computed(() => builtInNames.value.includes(themeName.value))
 
 function enableEditing() {
@@ -198,6 +227,46 @@ function onSelectDate(date: Date) {
   const mm = String(date.getMonth() + 1).padStart(2, '0');
   const dd = String(date.getDate()).padStart(2, '0');
   agendaSelectedDate.value = `${yyyy}-${mm}-${dd}`;
+}
+
+const newEvent = ref({
+  title: '',
+  date: '2026-09-11',
+  time: '',
+  category: 'work',
+  desc: '',
+});
+
+const eventSaved = ref(false);
+
+function saveEventDraft() {
+  eventSaved.value = true;
+  setTimeout(() => { eventSaved.value = false; }, 2500);
+}
+
+function createEvent() {
+  if (!newEvent.value.title) return;
+  const colorMap: Record<string, AgendaEvent['color']> = {
+    work: 'primary',
+    personal: 'success',
+    urgent: 'danger',
+  };
+  const badgeMap: Record<string, string> = {
+    work: 'Work',
+    personal: 'Personal',
+    urgent: 'Urgent',
+  };
+  allAgendaEvents.push({
+    date: newEvent.value.date,
+    time: newEvent.value.time || '12:00',
+    title: newEvent.value.title,
+    desc: newEvent.value.desc,
+    color: colorMap[newEvent.value.category] || 'primary',
+    badge: badgeMap[newEvent.value.category] || 'Work',
+  });
+  newEvent.value = { title: '', date: '2026-09-11', time: '', category: 'work', desc: '' };
+  eventSaved.value = true;
+  setTimeout(() => { eventSaved.value = false; }, 2500);
 }
 
 // Inicializa los colores desde el tema activo del plugin (o defaults si no cargó).
@@ -711,6 +780,24 @@ onBeforeUnmount(() => {
                   <h4 class="tb-pref-title">Zona de carga</h4>
                   <FileInputZone placeholder="Arrastrá archivos acá, o hacé clic para elegir" />
                 </div>
+                <Collapse label="Zona de peligro" color="danger" :default-open="true" class="tb-settings-collapse">
+                  <div class="tb-over-options">
+                    <div class="tb-over-option-row">
+                      <div>
+                        <span class="tb-over-option-title">Eliminar cuenta</span>
+                        <span class="tb-over-option-desc">Esta acción no se puede deshacer</span>
+                      </div>
+                      <Button color="danger" variant="outlined" size="sm" @click="showDeleteModal = true">Eliminar</Button>
+                    </div>
+                    <div class="tb-over-option-row">
+                      <div>
+                        <span class="tb-over-option-title">Cerrar sesión</span>
+                        <span class="tb-over-option-desc">Se cerrará en todos los dispositivos</span>
+                      </div>
+                      <Switch color="danger" />
+                    </div>
+                  </div>
+                </Collapse>
               </div>
             </Card>
           </div>
@@ -727,7 +814,6 @@ onBeforeUnmount(() => {
                 <Input placeholder="Buscar evento…" style="max-width: 220px" />
                 <div class="tb-agenda-toolbar-actions">
                   <DropdownMenu color="neutral" variant="soft" label="Filtrar" :items="dropdownItems" />
-                  <Button color="primary">Nuevo evento</Button>
                 </div>
               </div>
               <div class="tb-agenda-split">
@@ -756,33 +842,42 @@ onBeforeUnmount(() => {
                   </div>
                 </div>
                 <div class="tb-agenda-side">
-                  <h4 class="tb-agenda-section-title">Acciones rápidas</h4>
-                  <div class="tb-agenda-actions">
-                    <Button color="primary" variant="soft" style="width: 100%">Ver semana</Button>
-                    <Button color="success" variant="soft" style="width: 100%">Completados</Button>
-                    <Button color="warning" variant="outlined" style="width: 100%">Pendientes</Button>
-                    <Button color="danger" variant="ghost" style="width: 100%">Cancelar todo</Button>
-                  </div>
-                  <div class="tb-agenda-legend">
-                    <h4 class="tb-agenda-section-title">Leyenda</h4>
-                    <div class="tb-agenda-legend-items">
-                      <div class="tb-agenda-legend-item">
-                        <Badge color="primary" variant="soft">Work</Badge>
-                        <span>Trabajo</span>
+                  <h4 class="tb-agenda-section-title">Nuevo evento</h4>
+                  <div class="tb-agenda-form">
+                    <div class="tb-field">
+                      <Label label="Título" />
+                      <Input v-model="newEvent.title" placeholder="Nombre del evento" />
+                    </div>
+                    <div class="tb-agenda-form-row">
+                      <div class="tb-field">
+                        <Label label="Fecha" />
+                        <DatePicker v-model="newEvent.date" />
                       </div>
-                      <div class="tb-agenda-legend-item">
-                        <Badge color="success" variant="soft">Done</Badge>
-                        <span>Completado</span>
-                      </div>
-                      <div class="tb-agenda-legend-item">
-                        <Badge color="warning" variant="soft">Pending</Badge>
-                        <span>Pendiente</span>
-                      </div>
-                      <div class="tb-agenda-legend-item">
-                        <Badge color="danger" variant="soft">Urgent</Badge>
-                        <span>Urgente</span>
+                      <div class="tb-field">
+                        <Label label="Hora" />
+                        <Input v-model="newEvent.time" placeholder="14:00" />
                       </div>
                     </div>
+                    <div class="tb-field">
+                      <Label label="Categoría" />
+                      <Select v-model="newEvent.category">
+                        <option value="work">Work</option>
+                        <option value="personal">Personal</option>
+                        <option value="urgent">Urgent</option>
+                      </Select>
+                    </div>
+                    <div class="tb-field">
+                      <Label label="Descripción" />
+                      <Textarea v-model="newEvent.desc" placeholder="Detalles del evento…" />
+                    </div>
+                    <div class="tb-agenda-form-actions">
+                      <Button color="primary" style="width: 100%" @click="createEvent">Crear evento</Button>
+                    </div>
+                    <Transition name="tb-fade">
+                      <Alert v-if="eventSaved" title="Evento creado" color="success">
+                        Se agregó a tu agenda.
+                      </Alert>
+                    </Transition>
                   </div>
                 </div>
               </div>
@@ -938,68 +1033,67 @@ onBeforeUnmount(() => {
             </div>
           </div>
 
-          <!-- OVERLAYS -->
-          <div class="tb-scene">
-            <div class="tb-scene-header">
-              <h3 class="tb-scene-title">Overlays</h3>
-              <p class="tb-scene-desc">Modales, collapse y elementos flotantes</p>
+          <!-- Toast container -->
+          <Transition name="tb-toast">
+            <div v-if="toastVisible" class="tb-toast" :class="`tb-toast--${toastType}`">
+              <span class="tb-toast-icon">{{ toastIcon }}</span>
+              <span class="tb-toast-msg">{{ toastMessage }}</span>
             </div>
-            <div class="tb-overlays-mock">
-              <div class="tb-overlay-page">
-                <div class="tb-overlay-content">
-                  <div class="tb-sim-lines">
-                    <span class="tb-sim-line tb-sim-line--w80"></span>
-                    <span class="tb-sim-line"></span>
-                    <span class="tb-sim-line tb-sim-line--w60"></span>
-                  </div>
-                  <Collapse label="Más información" color="primary" :default-open="true">
-                    <p>El contenido aparece sobre la página, con el tema editado.</p>
-                  </Collapse>
-                  <Collapse label="Detalles" color="success">
-                    <p>Cada color sigue los tokens del tema activo.</p>
-                  </Collapse>
+          </Transition>
+
+          <!-- Delete Modal -->
+          <Modal
+            ref="deleteModalRef"
+            size="sm"
+            title="¿Eliminar cuenta?"
+            description="Esta acción no se puede deshacer. Todos tus datos serán eliminados permanentemente."
+            @close="showDeleteModal = false"
+          >
+            <div class="tb-modal-actions">
+              <Button color="neutral" variant="ghost" @click="deleteModalRef?.close()">Cancelar</Button>
+              <Button color="danger" @click="deleteModalRef?.close(); showDeleteModal = false">Sí, eliminar cuenta</Button>
+            </div>
+          </Modal>
+
+          <!-- Drawer -->
+          <Transition name="tb-drawer">
+            <div v-if="showDrawer" class="tb-drawer-overlay" @click="showDrawer = false">
+              <div class="tb-drawer" @click.stop>
+                <div class="tb-drawer-header">
+                  <h3 class="tb-drawer-title">Configuración</h3>
+                  <Button color="neutral" variant="ghost" @click="showDrawer = false">✕</Button>
                 </div>
-                <div class="tb-overlay-modal">
-                  <div class="cu-modal" data-size="sm" data-height="auto">
-                    <header class="cu-modal-header">
-                      <div class="cu-modal-header-text">
-                        <div class="cu-modal-title-row">
-                          <h2 class="cu-modal-title">Confirm Action</h2>
-                        </div>
-                        <p class="cu-modal-description">This action cannot be undone.</p>
-                      </div>
-                      <Button color="neutral" variant="ghost" class="cu-modal-close" aria-label="Close">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                      </Button>
-                    </header>
-                    <main class="cu-modal-body">
-                      <p>Are you sure you want to delete this item?</p>
-                    </main>
-                    <footer class="cu-modal-footer">
-                      <div class="cu-modal-footer-default">
-                        <Button color="neutral" variant="ghost">Cancel</Button>
-                        <Button color="danger">Delete</Button>
-                      </div>
-                    </footer>
+                <div class="tb-drawer-body">
+                  <div class="tb-drawer-section">
+                    <h4 class="tb-drawer-section-title">General</h4>
+                    <div class="tb-drawer-row">
+                      <span>Notificaciones</span>
+                      <Switch color="primary" :model-value="true" />
+                    </div>
+                    <div class="tb-drawer-row">
+                      <span>Modo oscuro</span>
+                      <Switch />
+                    </div>
                   </div>
+                  <div class="tb-drawer-section">
+                    <h4 class="tb-drawer-section-title">Privacidad</h4>
+                    <div class="tb-drawer-row">
+                      <span>Perfil público</span>
+                      <Checkbox color="primary" :model-value="true" />
+                    </div>
+                    <div class="tb-drawer-row">
+                      <span>Compartir métricas</span>
+                      <Checkbox color="success" :model-value="true" />
+                    </div>
+                  </div>
+                </div>
+                <div class="tb-drawer-footer">
+                  <Button color="neutral" variant="ghost" style="width: 100%" @click="showDrawer = false">Cerrar</Button>
+                  <Button color="primary" style="width: 100%">Guardar cambios</Button>
                 </div>
               </div>
-              <div class="tb-overlay-actions">
-                <Modal
-                  ref="modalPreviewRef"
-                  size="sm"
-                  title="Confirmar acción"
-                  description="El modal usa los tokens del tema activo."
-                >
-                  <p>Contenido del modal con el tema del ThemeBuilder.</p>
-                </Modal>
-                <Button color="primary" @click="modalPreviewRef?.open()">Abrir modal real</Button>
-                <FloatingButton style="position: static" color="primary">
-                  <LucideSave :width="18" :height="18" />
-                </FloatingButton>
-              </div>
             </div>
-          </div>
+          </Transition>
 
         </div>
       </main>
@@ -1251,6 +1345,10 @@ onBeforeUnmount(() => {
   gap: 0.5rem;
 }
 
+.tb-settings-collapse {
+  margin-top: 0.5rem;
+}
+
 .tb-settings-prefs {
   display: flex;
   flex-direction: column;
@@ -1312,7 +1410,7 @@ onBeforeUnmount(() => {
 
 .tb-agenda-split {
   display: grid;
-  grid-template-columns: 1fr 200px;
+  grid-template-columns: 1fr 260px;
   gap: 1.5rem;
 }
 
@@ -1333,31 +1431,22 @@ onBeforeUnmount(() => {
   gap: 1.25rem;
 }
 
-.tb-agenda-actions {
+.tb-agenda-form {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: var(--cu-space-md);
 }
 
-.tb-agenda-legend {
+.tb-agenda-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--cu-space-md);
+}
+
+.tb-agenda-form-actions {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-}
-
-.tb-agenda-legend-items {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.tb-agenda-legend-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: var(--cu-font-size-xs);
-  color: var(--cu-color-neutral);
-  opacity: 0.8;
+  gap: var(--cu-space-sm);
 }
 
 .tb-agenda-section-title {
@@ -1663,43 +1752,201 @@ onBeforeUnmount(() => {
   letter-spacing: 0.05em;
 }
 
-/* === OVERLAYS === */
-.tb-overlays-mock {
+/* === OVERLAYS (integrados) === */
+.tb-over-options {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-.tb-overlay-page {
-  position: relative;
-  transform: translateZ(0);
-  border: var(--cu-border-thin) solid var(--cu-border-color);
-  border-radius: var(--cu-radius-lg);
-  background-color: var(--cu-color-surface);
-  overflow: hidden;
-  min-height: 320px;
-}
-
-.tb-overlay-content {
-  padding: 1.5rem;
+.tb-over-option-row {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
   gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);
 }
 
-.tb-overlay-modal {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 10;
+.tb-over-option-row:last-child {
+  border-bottom: none;
 }
 
-.tb-overlay-actions {
+.tb-over-option-title {
+  display: block;
+  font-size: var(--cu-font-size-sm);
+  font-weight: var(--cu-font-weight-medium);
+  color: var(--cu-color-neutral);
+}
+
+.tb-over-option-desc {
+  display: block;
+  font-size: var(--cu-font-size-xs);
+  color: var(--cu-color-neutral);
+  opacity: 0.6;
+}
+
+.tb-over-fab-item {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0 0.25rem;
+  font-size: var(--cu-font-size-sm);
+  color: var(--cu-color-neutral);
+}
+
+.tb-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+/* === TOAST === */
+.tb-toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1.25rem;
+  border-radius: var(--cu-radius);
+  background-color: var(--cu-color-surface);
+  border: var(--cu-border-thin) solid var(--cu-border-color);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  font-size: var(--cu-font-size-sm);
+  color: var(--cu-color-neutral);
+}
+
+.tb-toast-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: var(--cu-font-size-xs);
+  font-weight: var(--cu-font-weight-semibold);
+  color: white;
+  flex-shrink: 0;
+}
+
+.tb-toast--success .tb-toast-icon { background-color: var(--cu-color-success); }
+.tb-toast--warning .tb-toast-icon { background-color: var(--cu-color-warning); }
+.tb-toast--danger .tb-toast-icon { background-color: var(--cu-color-danger); }
+.tb-toast--primary .tb-toast-icon { background-color: var(--cu-color-primary); }
+
+.tb-toast-enter-active,
+.tb-toast-leave-active {
+  transition: all 0.3s ease;
+}
+
+.tb-toast-enter-from,
+.tb-toast-leave-to {
+  opacity: 0;
+  transform: translateY(1rem);
+}
+
+.tb-fade-enter-active,
+.tb-fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.tb-fade-enter-from,
+.tb-fade-leave-to {
+  opacity: 0;
+}
+
+/* === DRAWER === */
+.tb-drawer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.tb-drawer {
+  width: 360px;
+  height: 100%;
+  background-color: var(--cu-color-surface);
+  border-left: var(--cu-border-thin) solid var(--cu-border-color);
+  display: flex;
+  flex-direction: column;
+  animation: tb-drawer-in 0.25s ease;
+}
+
+@keyframes tb-drawer-in {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.tb-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem;
+  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);
+}
+
+.tb-drawer-title {
+  font-size: var(--cu-font-size-lg);
+  font-weight: var(--cu-font-weight-semibold);
+  color: var(--cu-color-neutral);
+  margin: 0;
+}
+
+.tb-drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.tb-drawer-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.tb-drawer-section-title {
+  font-size: var(--cu-font-size-xs);
+  font-weight: var(--cu-font-weight-semibold);
+  color: var(--cu-color-neutral);
+  opacity: 0.6;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tb-drawer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--cu-font-size-sm);
+  color: var(--cu-color-neutral);
+}
+
+.tb-drawer-footer {
+  padding: 1.25rem;
+  border-top: var(--cu-border-thin) solid var(--cu-border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tb-drawer-enter-active,
+.tb-drawer-leave-active {
+  transition: opacity 0.25s ease;
+}
+
+.tb-drawer-enter-from,
+.tb-drawer-leave-to {
+  opacity: 0;
 }
 
 /* === SHARED === */
