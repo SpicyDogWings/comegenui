@@ -43,10 +43,10 @@ import Outline from '@/components/lab/collapse/navigation/Outline.vue'
 import type { NavItem } from '@/components/lab/collapse/navigation/Navbar.vue'
 import type { OutlineItem } from '@/components/lab/collapse/navigation/Outline.vue'
 import Modal from '@/components/overlay/Modal.vue'
-import ThemeDashboard from '@/components/theme-previews/ThemeDashboard.vue'
-import ThemeSettings from '@/components/theme-previews/ThemeSettings.vue'
-import ThemeAgenda from '@/components/theme-previews/ThemeAgenda.vue'
-import ThemeEditorial from '@/components/theme-previews/ThemeEditorial.vue'
+import ThemeDashboard from '@/components/ThemeDashboard.vue'
+import ThemeSettings from '@/components/ThemeSettings.vue'
+import ThemeAgenda from '@/components/ThemeAgenda.vue'
+import ThemeEditorial from '@/components/ThemeEditorial.vue'
 import {
   theme as activeTheme, setTheme, registerTheme, allThemes, builtInNames, opacities,
   setShared, getShared, getThemeCSS, applyFullConfig,
