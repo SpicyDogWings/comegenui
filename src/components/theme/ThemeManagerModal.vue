@@ -4,6 +4,7 @@ import Modal from '@/components/overlay/Modal.vue'
 import Button from '@/components/buttons/Button.vue'
 import Input from '@/components/form/Input.vue'
 import CodeBlock from '@/components/markdown/CodeBlock.vue'
+import FileInput from '@/components/form/FileInput.vue'
 import LucideDownload from '@/components/icons/LucideDownload.vue'
 
 interface ThemeConfig {
@@ -30,7 +31,7 @@ const emit = defineEmits<{
 }>()
 
 const modalRef = ref<InstanceType<typeof Modal> | null>(null)
-const importFileInput = ref<HTMLInputElement | null>(null)
+const fileInputRef = ref<InstanceType<typeof FileInput> | null>(null)
 
 function open() {
   modalRef.value?.open()
@@ -40,9 +41,8 @@ function close() {
   modalRef.value?.close()
 }
 
-function handleImport(event: Event) {
-  const input = event.target as HTMLInputElement
-  const file = input.files?.[0]
+function handleImport() {
+  const file = fileInputRef.value?.get() as File | null | undefined
   if (!file) return
 
   const reader = new FileReader()
@@ -55,7 +55,7 @@ function handleImport(event: Event) {
     }
   }
   reader.readAsText(file)
-  input.value = ''
+  fileInputRef.value?.reset()
 }
 
 defineExpose({ open, close })
@@ -76,10 +76,12 @@ defineExpose({ open, close })
 
         <div class="tm-section">
           <h3>Import</h3>
-          <input ref="importFileInput" type="file" accept=".json" @change="handleImport" class="tm-file-input" />
-          <Button color="secondary" variant="soft" @click="importFileInput?.click()">
-            Seleccionar JSON
-          </Button>
+          <FileInput
+            ref="fileInputRef"
+            accept=".json"
+            placeholder="Seleccionar JSON"
+            @change="handleImport"
+          />
         </div>
 
         <div class="tm-section">
@@ -98,7 +100,9 @@ defineExpose({ open, close })
           </div>
         </div>
 
-        <div class="tm-main">
+      </div>
+
+      <div class="tm-main">
         <h3>CSS Output</h3>
         <CodeBlock :code="cssOutput" language="css" variant="solid" class="tm-code-block" />
       </div>
