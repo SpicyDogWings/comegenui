@@ -73,10 +73,9 @@ async function init() {
     shared.value = extractShared(DEFAULTS)
     themes.value = {
       light: { colors: { ...DEFAULT_COLORS } },
-      dark: { colors: { ...DEFAULT_COLORS, ...DEFAULT_DARK_COLORS } },
     }
-    themeNames.value = ['light', 'dark']
-    builtInNames.value = ['light', 'dark']
+    themeNames.value = ['light']
+    builtInNames.value = ['light']
   } finally {
     restoreCustomThemes()
     ensureCustomTheme()

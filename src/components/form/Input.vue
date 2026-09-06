@@ -44,8 +44,15 @@ const props = defineProps({
     required: false,
     default: false,
   },
-
+  size: {
+    type: String,
+    required: false,
+    default: "md",
+    validator: (value: string) => ["sm", "md", "lg"].includes(value),
+  },
 });
+
+const sizeClass = computed(() => props.size !== 'md' ? `cu-input--${props.size}` : '');
 
 const inputRef = useTemplateRef("input");
 const { focused: inputFocus } = useFocus(inputRef);
@@ -83,6 +90,7 @@ defineExpose({
     class="cu-input"
     :class="[
       `cu-input--${props.variant}`,
+      sizeClass,
       { 'cu-input--disabled': props.disabled },
     ]"
     :style="inputStyles"
@@ -105,6 +113,17 @@ defineExpose({
   background-color: var(--btn-bg);
   color: var(--cu-color-neutral-text);
   transition: all 150ms ease;
+}
+
+/* sizes */
+.cu-input--sm {
+  padding: var(--cu-space-sm) var(--cu-space-md);
+  font-size: var(--cu-font-size-xs);
+}
+
+.cu-input--lg {
+  padding: var(--cu-space-lg) var(--cu-space-xl);
+  font-size: var(--cu-font-size-md);
 }
 
 .cu-input::placeholder {

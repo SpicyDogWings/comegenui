@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import PlaygroundLayout from '@/layouts/PlaygroundLayout.vue'
 import Button from '@/components/buttons/Button.vue'
 import Alert from '@/components/information/Alert.vue'
@@ -43,6 +43,10 @@ import Outline from '@/components/lab/collapse/navigation/Outline.vue'
 import type { NavItem } from '@/components/lab/collapse/navigation/Navbar.vue'
 import type { OutlineItem } from '@/components/lab/collapse/navigation/Outline.vue'
 import Modal from '@/components/overlay/Modal.vue'
+import ThemeDashboard from '@/templates/playground/themes/ThemeDashboard.vue'
+import ThemeSettings from '@/templates/playground/themes/ThemeSettings.vue'
+import ThemeAgenda from '@/templates/playground/themes/ThemeAgenda.vue'
+import ThemeEditorial from '@/templates/playground/themes/ThemeEditorial.vue'
 import {
   theme as activeTheme, setTheme, registerTheme, allThemes, builtInNames, opacities,
   setShared, getShared, getThemeCSS, applyFullConfig,
@@ -407,6 +411,14 @@ function loadFromStorage() {
 
 const importedThemes = ref<string[]>([])
 const showImportPicker = ref(false)
+const importPickerRef = ref<InstanceType<typeof Modal> | null>(null)
+
+watch(showImportPicker, async (val) => {
+  if (val) {
+    await nextTick()
+    importPickerRef.value?.open()
+  }
+})
 const lastImportedConfig = ref<ThemeConfig | null>(null)
 
 function handleImport(config: any) {
@@ -418,36 +430,27 @@ function handleImport(config: any) {
     return
   }
 
-  // Si hay múltiples temas, mostrar picker para escoger
-  if (themeNames.length > 1) {
-    lastImportedConfig.value = cfg
-    importedThemes.value = themeNames
-    showImportPicker.value = true
-    modalRef.value?.close() // Cerrar ThemeManagerModal para ver el picker
-    return
-  }
-
-  // Solo uno: aplicar directamente
+  // Siempre mostrar picker para escoger (1 o múltiples temas)
   lastImportedConfig.value = cfg
-  applyImportedTheme(cfg, themeNames[0])
-  modalRef.value?.close() // Cerrar ThemeManagerModal
+  importedThemes.value = themeNames
+  showImportPicker.value = true
+  modalRef.value?.close() // Cerrar ThemeManagerModal para ver el picker
 }
 
 function applyImportedTheme(cfg: ThemeConfig, name: string) {
-  // Solo crea un tema "custom" con los colores del tema elegido
-  // No toca los temas existentes (gruvbox, nord, etc.)
   const themeColors = cfg.themes[name]
   if (!themeColors) return
 
   const { shadowOpacity, ...rest } = themeColors
 
-  // Registra solo como custom, sin tocar otros temas
+  // Registra como "custom" en localStorage (no toca comegen.config.json)
   registerTheme('custom', { ...rest }, {
     opacity: cfg?.opacities?.[name]?.shadow ?? cfg?.opacities?.default?.shadow,
   })
 
   // Activar custom
   themeName.value = 'custom'
+  themeStore.setTheme('custom')
   setTheme('custom')
   isEditing.value = true
   previousTheme.value = name
@@ -455,7 +458,6 @@ function applyImportedTheme(cfg: ThemeConfig, name: string) {
   // Cargar colores en el editor
   colors.value = { ...colors.value, ...rest }
   showImportPicker.value = false
-  modalRef.value?.close() // Cerrar ThemeManagerModal
 }
 
 function handleExport() {
@@ -676,416 +678,17 @@ onBeforeUnmount(() => {
 
       <main class="tb-preview">
         <div class="tb-gallery">
+          <ThemeDashboard />
+          <hr class="playground-separator" />
+          <ThemeSettings />
+          <hr class="playground-separator" />
+          <ThemeAgenda />
+          <hr class="playground-separator" />
+          <ThemeEditorial />
+        </div>
+      </main>
 
-          <!-- DASHBOARD -->
-          <div class="tb-scene">
-            <div class="tb-scene-header">
-              <h3 class="tb-scene-title">Dashboard</h3>
-              <p class="tb-scene-desc">Vista general con métricas, datos y acciones rápidas</p>
-            </div>
-            <div class="tb-dashboard">
-              <div class="tb-dash-sidebar">
-                <Navbar :items="demoNavItems" :search="true" search-placeholder="Buscar sección..." />
-                <div class="tb-dash-sidebar-footer">
-                  <Outline :items="demoOutlineItems" />
-                </div>
-              </div>
-              <div class="tb-dash-main">
-                <div class="tb-dash-toolbar">
-                  <Input placeholder="Buscar…" style="max-width: 240px" />
-                  <div class="tb-dash-toolbar-actions">
-                    <Button color="primary">Nuevo</Button>
-                    <DropdownMenu color="neutral" variant="soft" label="Exportar" :items="dropdownItems" />
-                  </div>
-                </div>
-                <div class="tb-dash-stats">
-                  <Card variant="soft" color="primary" class="tb-stat">
-                    <div class="tb-stat-value">1,284</div>
-                    <div class="tb-stat-label">Usuarios activos</div>
-                  </Card>
-                  <Card variant="soft" color="success" class="tb-stat">
-                    <div class="tb-stat-value">98.2%</div>
-                    <div class="tb-stat-label">Uptime</div>
-                  </Card>
-                  <Card variant="soft" color="warning" class="tb-stat">
-                    <div class="tb-stat-value">42</div>
-                    <div class="tb-stat-label">Alertas</div>
-                  </Card>
-                  <Card variant="subtle" color="secondary" class="tb-stat">
-                    <div class="tb-stat-value">$12.4k</div>
-                    <div class="tb-stat-label">Ingresos</div>
-                  </Card>
-                </div>
-                <Card variant="ghost" class="tb-dash-table">
-                  <Table :columns="tableColumns" :data="tableData" color="primary">
-                    <template #cell-status="{ value }">
-                      <Badge
-                        :color="value === 'Active' ? 'success' : value === 'Pending' ? 'warning' : 'danger'"
-                      >
-                        {{ value }}
-                      </Badge>
-                    </template>
-                  </Table>
-                  <template #footer>
-                    <Pagination :total-pages="10" :current-page="3" :total-items="100" color="primary" />
-                  </template>
-                </Card>
-              </div>
-            </div>
-          </div>
-
-          <!-- SETTINGS -->
-          <div class="tb-scene">
-            <div class="tb-scene-header">
-              <h3 class="tb-scene-title">Settings</h3>
-              <p class="tb-scene-desc">Formulario de configuración con preferencias y campos</p>
-            </div>
-          <div class="tb-settings">
-            <Card variant="ghost" title="Perfil" class="tb-settings-card tb-settings-profile">
-              <div class="tb-settings-form">
-                <div class="tb-settings-row">
-                  <div class="tb-field">
-                    <Label label="Nombre" />
-                    <Input placeholder="Tu nombre" />
-                  </div>
-                  <div class="tb-field">
-                    <Label label="Apellido" />
-                    <Input placeholder="Tu apellido" />
-                  </div>
-                </div>
-                <div class="tb-settings-row">
-                  <div class="tb-field">
-                    <Label label="Email" color="primary" />
-                    <Input placeholder="tu@email.com" color="primary" />
-                  </div>
-                  <div class="tb-field">
-                    <Label label="Teléfono" />
-                    <Input placeholder="+54 11 1234-5678" />
-                  </div>
-                </div>
-                <div class="tb-field">
-                  <Label label="Bio" />
-                  <Textarea placeholder="Contanos qué estás construyendo…" />
-                </div>
-                <div class="tb-settings-row">
-                  <div class="tb-field">
-                    <Label label="Rol" />
-                    <Select placeholder="Elegí…">
-                      <option value="dev">Dev</option>
-                      <option value="designer">Designer</option>
-                    </Select>
-                  </div>
-                  <div class="tb-field">
-                    <Label label="Ubicación" />
-                    <Autocomplete placeholder="¿Dónde estás?" />
-                  </div>
-                </div>
-                <div class="tb-field">
-                  <Label label="Avatar" />
-                  <FileInput placeholder="Adjuntá una imagen" accept="image/*" />
-                </div>
-                <div class="tb-settings-form-footer">
-                  <Checkbox label="Acepto los términos y condiciones" color="primary" />
-                  <div class="tb-settings-form-actions">
-                    <Button color="neutral" variant="ghost">Cancelar</Button>
-                    <Button color="primary" :loading="isSaving" @click="handleSaveProfile">
-                      {{ showSaveSuccess ? 'Guardado ✓' : 'Guardar cambios' }}
-                    </Button>
-                  </div>
-                  <Transition name="tb-fade">
-                    <Alert v-if="showSaveSuccess" title="Cambios guardados" color="success">
-                      Tu perfil se actualizó correctamente.
-                    </Alert>
-                  </Transition>
-                </div>
-              </div>
-            </Card>
-            <Card variant="ghost" title="Preferencias" class="tb-settings-card tb-settings-prefs-card">
-              <div class="tb-settings-prefs">
-                <div class="tb-pref-section">
-                  <h4 class="tb-pref-title">Notificaciones</h4>
-                  <div class="tb-pref-row">
-                    <span class="tb-pref-label">Notificaciones push</span>
-                    <Switch color="primary" :model-value="true" />
-                  </div>
-                  <div class="tb-pref-row">
-                    <span class="tb-pref-label">Resumen semanal</span>
-                    <Switch />
-                  </div>
-                  <div class="tb-pref-row">
-                    <span class="tb-pref-label">Newsletter</span>
-                    <Switch color="success" :model-value="true" />
-                  </div>
-                </div>
-                <div class="tb-pref-section">
-                  <h4 class="tb-pref-title">Privacidad</h4>
-                  <div class="tb-pref-row">
-                    <span class="tb-pref-label">Perfil público</span>
-                    <Checkbox color="primary" :model-value="true" />
-                  </div>
-                  <div class="tb-pref-row">
-                    <span class="tb-pref-label">Compartir métricas</span>
-                    <Checkbox color="success" :model-value="true" />
-                  </div>
-                </div>
-                <div class="tb-pref-section">
-                  <h4 class="tb-pref-title">Zona de carga</h4>
-                  <FileInputZone placeholder="Arrastrá archivos acá, o hacé clic para elegir" />
-                </div>
-                <Collapse label="Zona de peligro" color="danger" :default-open="true" class="tb-settings-collapse">
-                  <div class="tb-over-options">
-                    <div class="tb-over-option-row">
-                      <div>
-                        <span class="tb-over-option-title">Eliminar cuenta</span>
-                        <span class="tb-over-option-desc">Esta acción no se puede deshacer</span>
-                      </div>
-                      <Button color="danger" variant="outlined" size="sm" @click="showDeleteModal = true">Eliminar</Button>
-                    </div>
-                    <div class="tb-over-option-row">
-                      <div>
-                        <span class="tb-over-option-title">Cerrar sesión</span>
-                        <span class="tb-over-option-desc">Se cerrará en todos los dispositivos</span>
-                      </div>
-                      <Switch color="danger" />
-                    </div>
-                  </div>
-                </Collapse>
-              </div>
-            </Card>
-          </div>
-          </div>
-
-          <!-- AGENDA -->
-          <div class="tb-scene">
-            <div class="tb-scene-header">
-              <h3 class="tb-scene-title">Agenda</h3>
-              <p class="tb-scene-desc">Calendario con eventos, badges de estado y acciones rápidas</p>
-            </div>
-            <div class="tb-agenda">
-              <div class="tb-agenda-toolbar">
-                <Input placeholder="Buscar evento…" style="max-width: 220px" />
-                <div class="tb-agenda-toolbar-actions">
-                  <DropdownMenu color="neutral" variant="soft" label="Filtrar" :items="dropdownItems" />
-                </div>
-              </div>
-              <div class="tb-agenda-split">
-                <div class="tb-agenda-cal">
-                  <Calendar
-                    :model-value="agendaSelectedDate"
-                    :events="agendaDots"
-                    style="width: 100%"
-                    @select="onSelectDate"
-                  />
-                  <div class="tb-agenda-events">
-                    <h4 class="tb-agenda-section-title">Eventos del día ({{ agendaEvents.length }})</h4>
-                    <template v-if="agendaEvents.length > 0">
-                      <div v-for="event in agendaEvents" :key="event.time + event.title" class="tb-agenda-event">
-                        <div class="tb-agenda-event-time">{{ event.time }}</div>
-                        <div class="tb-agenda-event-content">
-                          <div class="tb-agenda-event-header">
-                            <span class="tb-agenda-event-title">{{ event.title }}</span>
-                            <Badge :color="event.color" variant="soft">{{ event.badge }}</Badge>
-                          </div>
-                          <p class="tb-agenda-event-desc">{{ event.desc }}</p>
-                        </div>
-                      </div>
-                    </template>
-                    <p v-else class="tb-agenda-empty">No hay eventos para este día</p>
-                  </div>
-                </div>
-                <div class="tb-agenda-side">
-                  <h4 class="tb-agenda-section-title">Nuevo evento</h4>
-                  <div class="tb-agenda-form">
-                    <div class="tb-field">
-                      <Label label="Título" />
-                      <Input v-model="newEvent.title" placeholder="Nombre del evento" />
-                    </div>
-                    <div class="tb-agenda-form-row">
-                      <div class="tb-field">
-                        <Label label="Fecha" />
-                        <DatePicker v-model="newEvent.date" />
-                      </div>
-                      <div class="tb-field">
-                        <Label label="Hora" />
-                        <Input v-model="newEvent.time" placeholder="14:00" />
-                      </div>
-                    </div>
-                    <div class="tb-field">
-                      <Label label="Categoría" />
-                      <Select v-model="newEvent.category">
-                        <option value="work">Work</option>
-                        <option value="personal">Personal</option>
-                        <option value="urgent">Urgent</option>
-                      </Select>
-                    </div>
-                    <div class="tb-field">
-                      <Label label="Descripción" />
-                      <Textarea v-model="newEvent.desc" placeholder="Detalles del evento…" />
-                    </div>
-                    <div class="tb-agenda-form-actions">
-                      <Button color="primary" style="width: 100%" @click="createEvent">Crear evento</Button>
-                    </div>
-                    <Transition name="tb-fade">
-                      <Alert v-if="eventSaved" title="Evento creado" color="success">
-                        Se agregó a tu agenda.
-                      </Alert>
-                    </Transition>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- EDITORIAL -->
-          <div class="tb-scene">
-            <div class="tb-scene-header">
-              <h3 class="tb-scene-title">Editorial</h3>
-              <p class="tb-scene-desc">Nota de documentación con formato de artículo</p>
-            </div>
-            <div class="tb-editorial">
-              <div class="tb-doc">
-                <div class="tb-doc-header">
-                  <div class="tb-doc-meta">
-                    <Badge color="primary" variant="soft">Documentación</Badge>
-                    <span class="tb-doc-date">6 sep 2026</span>
-                    <span class="tb-doc-read">4 min de lectura</span>
-                  </div>
-                  <h1 class="tb-doc-title">Sistema de tokens y temas</h1>
-                  <p class="tb-doc-subtitle">Cómo funciona la personalización de colores, tipografía y espaciado en ComegenUI</p>
-                  <div class="tb-doc-author">
-                    <AuthorCard name="María Cano" role="Design Systems" />
-                  </div>
-                </div>
-                <div class="tb-doc-toolbar">
-                  <div class="tb-doc-toolbar-group">
-                    <button class="tb-doc-tb-btn" title="Negrita"><strong>B</strong></button>
-                    <button class="tb-doc-tb-btn" title="Itálica"><em>I</em></button>
-                    <button class="tb-doc-tb-btn" title="Código">&lt;/&gt;</button>
-                    <button class="tb-doc-tb-btn" title="Link">🔗</button>
-                  </div>
-                  <div class="tb-doc-toolbar-group">
-                    <button class="tb-doc-tb-btn" title="Lista">☰</button>
-                    <button class="tb-doc-tb-btn" title="Título">H</button>
-                    <button class="tb-doc-tb-btn" title="Cita">❝</button>
-                  </div>
-                  <div class="tb-doc-toolbar-spacer" />
-                  <Badge color="success" variant="soft">Publicado</Badge>
-                </div>
-                <div class="tb-doc-body">
-                  <Markdown>
-                    ## Introducción
-
-                    Los **tokens de diseño** son la fuente única de verdad para todo el sistema visual. En lugar de hardcodear colores o tamaños en cada componente, usamos variables CSS que se resuelven según el tema activo.
-
-                    > Cambiás un token y todo el ecosistema lo sigue — desde los botones hasta las alertas.
-
-                    ## ¿Cómo funciona?
-
-                    Cada tema define un conjunto de tokens que cubren:
-
-                    - **Colores**: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger`
-                    - **Tipografía**: familias, pesos y tamaños
-                    - **Espaciado**: escala consistente para márgenes y paddings
-                    - **Bordes**: radios y anchos
-
-                    ### Ejemplo rápido
-
-                    Definís un tema nuevo en pocos pasos:
-
-                    1. Abrís el Theme Builder
-                    2. Ajustás los colores con los pickers
-                    3. Exportás el CSS generado
-                    4. Lo importás en tu proyecto
-
-                    ## Buenas prácticas
-
-                    - **No mezcles temas** en la misma vista
-                    - **Usá los tokens semánticos** (`primary`, `success`) en vez de nombres de color
-                    - **Probá en contexto** con las previews del builder
-                    - **Exportá y versioná** los temas junto al código
-                  </Markdown>
-                </div>
-                <div class="tb-doc-footer">
-                  <div class="tb-doc-tags">
-                    <Badge color="neutral" variant="soft">Design Tokens</Badge>
-                    <Badge color="neutral" variant="soft">Temas</Badge>
-                    <Badge color="neutral" variant="soft">CSS</Badge>
-                  </div>
-                  <div class="tb-doc-actions">
-                    <Button color="neutral" variant="ghost">Compartir</Button>
-                    <Button color="primary">Guardar borrador</Button>
-                  </div>
-                </div>
-              </div>
-              <div class="tb-doc-sidebar">
-                <Card variant="subtle" color="primary" class="tb-doc-toc-card">
-                  <h4 class="tb-doc-sidebar-title">En esta página</h4>
-                  <Outline :items="docOutlineItems" />
-                </Card>
-                <Card variant="ghost" class="tb-doc-meta-card">
-                  <h4 class="tb-doc-sidebar-title">Estadísticas</h4>
-                  <div class="tb-doc-stats">
-                    <div class="tb-doc-stat">
-                      <span class="tb-doc-stat-value">1.2k</span>
-                      <span class="tb-doc-stat-label">Palabras</span>
-                    </div>
-                    <div class="tb-doc-stat">
-                      <span class="tb-doc-stat-value">4</span>
-                      <span class="tb-doc-stat-label">Secciones</span>
-                    </div>
-                    <div class="tb-doc-stat">
-                      <span class="tb-doc-stat-value">3</span>
-                      <span class="tb-doc-stat-label">Bloques código</span>
-                    </div>
-                    <div class="tb-doc-stat">
-                      <span class="tb-doc-stat-value">2</span>
-                      <span class="tb-doc-stat-label">Citas</span>
-                    </div>
-                  </div>
-                </Card>
-                <Card variant="ghost" class="tb-doc-versions-card">
-                  <h4 class="tb-doc-sidebar-title">Versiones</h4>
-                  <div class="tb-doc-versions">
-                    <div class="tb-doc-version tb-doc-version--current">
-                      <div class="tb-doc-version-dot" />
-                      <div class="tb-doc-version-info">
-                        <span class="tb-doc-version-label">v1.3</span>
-                        <span class="tb-doc-version-date">Hoy, 14:20</span>
-                      </div>
-                      <Badge color="success" variant="soft">Actual</Badge>
-                    </div>
-                    <div class="tb-doc-version">
-                      <div class="tb-doc-version-dot" />
-                      <div class="tb-doc-version-info">
-                        <span class="tb-doc-version-label">v1.2</span>
-                        <span class="tb-doc-version-date">Ayer, 09:45</span>
-                      </div>
-                    </div>
-                    <div class="tb-doc-version">
-                      <div class="tb-doc-version-dot" />
-                      <div class="tb-doc-version-info">
-                        <span class="tb-doc-version-label">v1.1</span>
-                        <span class="tb-doc-version-date">5 sep, 18:00</span>
-                      </div>
-                    </div>
-                    <div class="tb-doc-version">
-                      <div class="tb-doc-version-dot" />
-                      <div class="tb-doc-version-info">
-                        <span class="tb-doc-version-label">v1.0</span>
-                        <span class="tb-doc-version-date">3 sep, 11:30</span>
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-                <Card variant="soft" color="warning" class="tb-doc-note-card">
-                  <h4 class="tb-doc-sidebar-title">Nota del editor</h4>
-                  <p class="tb-doc-note-text">Esta documentación está en revisión. Faltan ejemplos de migración desde v1.x.</p>
-                </Card>
-              </div>
-            </div>
-          </div>
-
-          <!-- Toast container -->
+      <!-- Toast container -->
           <Transition name="tb-toast">
             <div v-if="toastVisible" class="tb-toast" :class="`tb-toast--${toastType}`">
               <span class="tb-toast-icon">{{ toastIcon }}</span>
@@ -1147,10 +750,6 @@ onBeforeUnmount(() => {
             </div>
           </Transition>
 
-        </div>
-      </main>
-    </div>
-
     <ThemeManagerModal
       ref="modalRef"
       v-model:theme-name="themeName"
@@ -1166,7 +765,7 @@ onBeforeUnmount(() => {
       <LucidePalette :width="20" :height="20" />
     </FloatingButton>
 
-    <Modal v-if="showImportPicker" title="Elegir tema" size="sm" @close="showImportPicker = false">
+    <Modal v-if="showImportPicker" ref="importPickerRef" title="Elegir tema" size="sm" @close="showImportPicker = false">
       <div class="tb-import-picker">
         <p class="tb-import-picker-desc">Este archivo contiene varios temas. Elegí cuál querés usar:</p>
         <div class="tb-import-picker-list">
