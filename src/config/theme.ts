@@ -23,6 +23,23 @@ export const themes = {
     danger: '#dc3545',
     surface: '#f5f5f5',
   },
+  // Gruvbox — https://github.com/morhetz/gruvbox
+  'gruvbox-dark': {
+    primary: '#83a598',   // bright_blue
+    neutral: '#ebdbb2',   // light1 (fg)
+    success: '#b8bb26',   // bright_green
+    warning: '#fabd2f',   // bright_yellow
+    danger: '#fb4934',    // bright_red
+    surface: '#282828',   // dark0
+  },
+  'gruvbox-light': {
+    primary: '#076678',   // faded_blue
+    neutral: '#3c3836',   // dark1 (fg)
+    success: '#79740e',   // faded_green
+    warning: '#b57614',   // faded_yellow
+    danger: '#9d0006',    // faded_red
+    surface: '#fbf1c7',   // light0
+  },
 };
 
 export const theme = {

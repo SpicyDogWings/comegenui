@@ -72,6 +72,32 @@
       "shadow": "#000000",
       "strong": "#4C566A",
       "default": "#3B4252"
+    },
+    "gruvbox-dark": {
+      "primary": "#83a598",
+      "secondary": "#8ec07c",
+      "neutral": "#ebdbb2",
+      "success": "#b8bb26",
+      "warning": "#fabd2f",
+      "danger": "#fb4934",
+      "surface": "#282828",
+      "focus": "#83a598",
+      "shadow": "#1d2021",
+      "strong": "#928374",
+      "default": "#3c3836"
+    },
+    "gruvbox-light": {
+      "primary": "#076678",
+      "secondary": "#427b58",
+      "neutral": "#3c3836",
+      "success": "#79740e",
+      "warning": "#b57614",
+      "danger": "#9d0006",
+      "surface": "#fbf1c7",
+      "focus": "#076678",
+      "shadow": "#928374",
+      "strong": "#7c6f64",
+      "default": "#d5c4a1"
     }
   },
   "opacities": {
@@ -80,7 +106,9 @@
     "nord-frost": { "shadow": 40 },
     "nord-aurora": { "shadow": 50 },
     "nord-snow-storm": { "shadow": 30 },
-    "nord-polar-night": { "shadow": 50 }
+    "nord-polar-night": { "shadow": 50 },
+    "gruvbox-dark": { "shadow": 45 },
+    "gruvbox-light": { "shadow": 25 }
   },
   "typography": {
     "fontFamily": {

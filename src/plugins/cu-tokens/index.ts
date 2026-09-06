@@ -71,12 +71,35 @@ async function init() {
   } catch {
     console.warn('[Comegen] comegen.config.json no encontrado, usando defaults')
     shared.value = extractShared(DEFAULTS)
-          themes.value = {
+    themes.value = {
       light: { colors: { ...DEFAULT_COLORS } },
-      dark: { colors: { ...DEFAULT_COLORS, ...DEFAULT_DARK_COLORS } }
+      dark: { colors: { ...DEFAULT_COLORS, ...DEFAULT_DARK_COLORS } },
+      // Gruvbox — https://github.com/morhetz/gruvbox
+      'gruvbox-dark': {
+        colors: {
+          ...DEFAULT_COLORS,
+          primary: '#83a598',
+          neutral: '#ebdbb2',
+          success: '#b8bb26',
+          warning: '#fabd2f',
+          danger: '#fb4934',
+          surface: '#282828',
+        }
+      },
+      'gruvbox-light': {
+        colors: {
+          ...DEFAULT_COLORS,
+          primary: '#076678',
+          neutral: '#3c3836',
+          success: '#79740e',
+          warning: '#b57614',
+          danger: '#9d0006',
+          surface: '#fbf1c7',
+        }
+      },
     }
-    themeNames.value = ['light', 'dark']
-    builtInNames.value = ['light', 'dark']
+    themeNames.value = ['light', 'dark', 'gruvbox-dark', 'gruvbox-light']
+    builtInNames.value = ['light', 'dark', 'gruvbox-dark', 'gruvbox-light']
   } finally {
     restoreCustomThemes()
     ensureCustomTheme()
