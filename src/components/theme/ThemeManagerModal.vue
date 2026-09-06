@@ -60,7 +60,7 @@ defineExpose({ open, close })
 </script>
 
 <template>
-  <Modal ref="modalRef" title="Theme Manager" size="xl" @close="close">
+  <Modal ref="modalRef" title="Theme Manager" size="full" @close="close">
     <div class="tm-layout">
       <div class="tm-sidebar">
         <div class="tm-section">
@@ -102,9 +102,9 @@ defineExpose({ open, close })
 <style scoped>
 .tm-layout {
   display: grid;
-  grid-template-columns: 280px 1fr;
+  grid-template-columns: 320px 1fr;
   gap: 1.5rem;
-  min-height: 400px;
+  height: 100%;
 }
 
 .tm-sidebar {
@@ -117,6 +117,7 @@ defineExpose({ open, close })
   display: flex;
   flex-direction: column;
   min-width: 0;
+  overflow: hidden;
 }
 
 .tm-section h3 {
@@ -151,14 +152,11 @@ defineExpose({ open, close })
   color: #e0e0e0;
   padding: var(--cu-space-lg);
   border-radius: var(--cu-radius);
-  overflow-x: auto;
   font-family: var(--cu-font-mono);
   font-size: var(--cu-font-size-xs);
   line-height: 1.6;
   flex: 1;
-  min-height: 350px;
-  max-height: 600px;
-  overflow-y: auto;
+  overflow: auto;
   margin: 0;
 }
 </style>
