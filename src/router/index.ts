@@ -68,6 +68,16 @@ const router = createRouter({
               component: () => import("@/pages/playground/components/Card.vue")
             },
             {
+              path: "author-card",
+              name: "AuthorCard playground",
+              component: () => import("@/pages/playground/components/AuthorCard.vue")
+            },
+            {
+              path: "avatar",
+              name: "Avatar playground",
+              component: () => import("@/pages/playground/components/Avatar.vue")
+            },
+            {
               path: "loader",
               name: "Loader playground",
               component: () => import("@/pages/playground/components/Loader.vue")

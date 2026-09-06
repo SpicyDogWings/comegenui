@@ -60,6 +60,8 @@ const navItems = [
           { label: 'Alert', path: '/playground/components/alert' },
           { label: 'Badge', path: '/playground/components/badge' },
           { label: 'Card', path: '/playground/components/card' },
+          { label: 'AuthorCard', path: '/playground/components/author-card' },
+          { label: 'Avatar', path: '/playground/components/avatar' },
           { label: 'Loader', path: '/playground/components/loader' },
         ]
       },
