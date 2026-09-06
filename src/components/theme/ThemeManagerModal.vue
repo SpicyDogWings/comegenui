@@ -4,6 +4,7 @@ import Modal from '@/components/overlay/Modal.vue'
 import Button from '@/components/buttons/Button.vue'
 import Input from '@/components/form/Input.vue'
 import CodeBlock from '@/components/markdown/CodeBlock.vue'
+import FileInput from '@/components/form/FileInput.vue'
 import LucideUpload from '@/components/icons/LucideUpload.vue'
 import LucideDownload from '@/components/icons/LucideDownload.vue'
 
@@ -31,7 +32,7 @@ const emit = defineEmits<{
 }>()
 
 const modalRef = ref<InstanceType<typeof Modal> | null>(null)
-const importFileInput = ref<HTMLInputElement | null>(null)
+const fileInputRef = ref<InstanceType<typeof FileInput> | null>(null)
 
 function open() {
   modalRef.value?.open()
@@ -41,9 +42,8 @@ function close() {
   modalRef.value?.close()
 }
 
-function handleImport(event: Event) {
-  const input = event.target as HTMLInputElement
-  const file = input.files?.[0]
+function handleImport() {
+  const file = fileInputRef.value?.get() as File | null
   if (!file) return
 
   const reader = new FileReader()
@@ -56,7 +56,7 @@ function handleImport(event: Event) {
     }
   }
   reader.readAsText(file)
-  input.value = ''
+  fileInputRef.value?.reset()
 }
 
 defineExpose({ open, close })
@@ -76,18 +76,27 @@ defineExpose({ open, close })
         </div>
 
         <div class="tm-section">
-          <h3>Acciones</h3>
+          <h3>Import</h3>
           <div class="tm-actions">
-            <input ref="importFileInput" type="file" accept=".json" @change="handleImport" class="tm-file-input" />
-            <Button color="secondary" variant="soft" @click="importFileInput?.click()">
+            <FileInput
+              ref="fileInputRef"
+              accept=".json"
+              placeholder="Seleccionar JSON"
+              class="tm-file-input"
+            />
+            <Button color="secondary" variant="soft" @click="handleImport">
               <LucideUpload :width="16" :height="16" />
               Import JSON
             </Button>
-            <Button color="secondary" @click="emit('export')">
-              <LucideDownload :width="16" :height="16" />
-              Export JSON
-            </Button>
           </div>
+        </div>
+
+        <div class="tm-section">
+          <h3>Export</h3>
+          <Button color="secondary" @click="emit('export')">
+            <LucideDownload :width="16" :height="16" />
+            Export JSON
+          </Button>
         </div>
 
         <div class="tm-section">
@@ -146,7 +155,7 @@ defineExpose({ open, close })
 }
 
 .tm-file-input {
-  display: none;
+  width: 100%;
 }
 
 .tm-output-actions {
