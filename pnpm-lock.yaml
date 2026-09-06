@@ -146,6 +146,9 @@ importers:
       '@iconify-json/lucide':
         specifier: ^1.2.103
         version: 1.2.103
+      '@playwright/mcp':
+        specifier: ^0.0.80
+        version: 0.0.80
       '@tsconfig/node24':
         specifier: ^24.0.4
         version: 24.0.4
@@ -800,6 +803,11 @@ packages:
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
     engines: {node: '>=14'}
+
+  '@playwright/mcp@0.0.80':
+    resolution: {integrity: sha512-FOPXHm2SvFhAQylm10jMZ35B/SR2TaMLVkavAlwoG4N2qCb5RqbvhQYcu3zmXNyxR2DW0Ooxe+9XPVt5UjKRCQ==}
+    engines: {node: '>=18'}
+    hasBin: true
 
   '@polka/url@1.0.0-next.29':
     resolution: {integrity: sha512-wwQAWhWSuHaag8c4q/KN/vCoeOJYshAIvMQwD4GpSb3OiZklFfvAgmj0VCBBImRpuF/aFgIRzllXlVX93Jevww==}
@@ -2131,6 +2139,16 @@ packages:
   pkg-types@2.3.1:
     resolution: {integrity: sha512-y+ichcgc2LrADuhLNAx8DFjVfgz91pRxfZdI3UDhxHvcVEZsenLO+7XaU5vOp0u/7V/wZ+plyuQxtrDlZJ+yeg==}
 
+  playwright-core@1.63.0-alpha-2026-08-31:
+    resolution: {integrity: sha512-1ek0Lyr12h6jcs/WTcNoVtzZkQp7D/90PsMuBW/Rm6h3AsWAbzpqj0geMv8+8Tzzr9CSUYvg9kznrVZINQMXXw==}
+    engines: {node: '>=20'}
+    hasBin: true
+
+  playwright@1.63.0-alpha-2026-08-31:
+    resolution: {integrity: sha512-3XAsuznfu8jBVJ4QxdGvBkt0+b8ZFwuwJYyOfiIw5ZjUOrNLNRhKxzLzLuydou3gJ9c6eMwVqgzdiOwhy54Kzw==}
+    engines: {node: '>=20'}
+    hasBin: true
+
   pngjs@7.0.0:
     resolution: {integrity: sha512-LKWqWJRhstyYo9pGvgor/ivk2w94eSjE3RGVuzLGlr3NmD8bf7RcYGze1mNdEHRP6TRP6rMuDHk5t44hnTRyow==}
     engines: {node: '>=14.19.0'}
@@ -3238,6 +3256,11 @@ snapshots:
 
   '@pkgjs/parseargs@0.11.0':
     optional: true
+
+  '@playwright/mcp@0.0.80':
+    dependencies:
+      playwright: 1.63.0-alpha-2026-08-31
+      playwright-core: 1.63.0-alpha-2026-08-31
 
   '@polka/url@1.0.0-next.29': {}
 
@@ -4481,6 +4504,12 @@ snapshots:
       confbox: 0.2.4
       exsolve: 1.1.1
       pathe: 2.0.3
+
+  playwright-core@1.63.0-alpha-2026-08-31: {}
+
+  playwright@1.63.0-alpha-2026-08-31:
+    dependencies:
+      playwright-core: 1.63.0-alpha-2026-08-31
 
   pngjs@7.0.0:
     optional: true
