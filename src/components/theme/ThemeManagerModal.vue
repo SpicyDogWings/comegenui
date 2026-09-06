@@ -157,6 +157,8 @@ defineExpose({ open, close })
   line-height: 1.6;
   flex: 1;
   overflow: auto;
+  overflow-x: auto;
+  overflow-y: auto;
   margin: 0;
 }
 </style>
