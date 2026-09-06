@@ -405,24 +405,58 @@ function loadFromStorage() {
   }
 }
 
+const importedThemes = ref<string[]>([])
+const showImportPicker = ref(false)
+const lastImportedConfig = ref<ThemeConfig | null>(null)
+
 function handleImport(config: any) {
   const cfg = config as ThemeConfig
-  applyConfig(cfg)
-  saveToStorage()
+  const themeNames = Object.keys(cfg?.themes ?? {})
 
-  // El import se aplica como "custom" para que sea editable y persistente.
-  const importedColors = Object.values(cfg?.themes ?? {})[0]
-  if (importedColors) {
-    applyFullConfig({
-      themes: { custom: importedColors },
-      opacities: cfg?.opacities?.custom ? { custom: cfg.opacities.custom } : undefined,
-      shared: sharedSnapshot(),
-    })
-    themeName.value = 'custom'
-    isEditing.value = true
-    previousTheme.value = ''
-    setTheme('custom')
+  if (themeNames.length === 0) {
+    alert('No se encontraron temas en el archivo')
+    return
   }
+
+  // Si hay múltiples temas, mostrar picker para escoger
+  if (themeNames.length > 1) {
+    lastImportedConfig.value = cfg
+    importedThemes.value = themeNames
+    showImportPicker.value = true
+    return
+  }
+
+  // Solo uno: aplicar directamente
+  lastImportedConfig.value = cfg
+  applyImportedTheme(cfg, themeNames[0])
+}
+
+function applyImportedTheme(cfg: ThemeConfig, name: string) {
+  // Registra todos los temas importados en el dropdown
+  const importedThemesMap: Record<string, any> = {}
+  for (const [tName, tColors] of Object.entries(cfg.themes)) {
+    importedThemesMap[tName] = tColors
+  }
+
+  applyFullConfig({
+    themes: importedThemesMap,
+    opacities: cfg?.opacities,
+    shared: sharedSnapshot(),
+  })
+
+  // Activar el tema elegido
+  themeName.value = name
+  setTheme(name)
+  isEditing.value = false
+  previousTheme.value = name
+
+  // Cargar colores del tema elegido en el editor
+  const themeColors = cfg.themes[name]
+  if (themeColors) {
+    const { shadowOpacity, ...rest } = themeColors
+    colors.value = { ...colors.value, ...rest }
+  }
+  showImportPicker.value = false
 }
 
 function handleExport() {
@@ -1130,6 +1164,24 @@ onBeforeUnmount(() => {
     <FloatingButton color="primary" @click="modalRef?.open()">
       <LucidePalette :width="20" :height="20" />
     </FloatingButton>
+
+    <Modal v-if="showImportPicker" title="Elegir tema" size="sm" @close="showImportPicker = false">
+      <div class="tb-import-picker">
+        <p class="tb-import-picker-desc">Este archivo contiene varios temas. Elegí cuál querés usar:</p>
+        <div class="tb-import-picker-list">
+          <Button
+            v-for="name in importedThemes"
+            :key="name"
+            color="neutral"
+            variant="soft"
+            class="tb-import-picker-item"
+            @click="applyImportedTheme(lastImportedConfig, name)"
+          >
+            {{ name }}
+          </Button>
+        </div>
+      </div>
+    </Modal>
   </PlaygroundLayout>
 </template>
 
@@ -2051,6 +2103,27 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   gap: 0.125rem;
+}
+
+.tb-import-picker {
+  padding: 0.5rem 0;
+}
+
+.tb-import-picker-desc {
+  margin: 0 0 1rem;
+  font-size: var(--cu-font-size-sm);
+  color: var(--cu-color-neutral);
+  opacity: 0.8;
+}
+
+.tb-import-picker-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tb-import-picker-item {
+  width: 100%;
 }
 
 </style>
