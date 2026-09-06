@@ -14,6 +14,13 @@ const outlineItems = [
   { label: 'Colors', id: 'colors' },
   { label: 'Programmatic', id: 'programmatic' },
   {
+    label: 'Style',
+    id: 'style',
+    children: [
+      { label: 'CSS Variables', id: 'style-variables' },
+    ],
+  },
+  {
     label: 'API',
     id: 'api',
     children: [
@@ -23,6 +30,27 @@ const outlineItems = [
       { label: 'Exposes', id: 'api-exposes' },
     ],
   },
+];
+
+const styleColumns = [
+  { key: 'name', label: 'Variable' },
+  { key: 'description', label: 'Uso' },
+];
+
+const authorCardStyleData = [
+  { name: '--cu-font-size-sm', description: 'Tamaño del nombre' },
+  { name: '--cu-font-weight-medium', description: 'Peso del nombre' },
+  { name: '--cu-color-neutral', description: 'Color del nombre' },
+  { name: '--cu-line-height-tight', description: 'Altura de línea (nombre y rol)' },
+  { name: '--cu-font-size-xs', description: 'Tamaño del rol' },
+];
+
+const avatarStyleData = [
+  { name: '--avatar-bg', description: 'Color de fondo (resuelto desde --cu-color-{color})' },
+  { name: '--cu-font-weight-semibold', description: 'Peso de las iniciales' },
+  { name: '--cu-font-size-xs', description: 'Iniciales tamaño sm' },
+  { name: '--cu-font-size-sm', description: 'Iniciales tamaño md' },
+  { name: '--cu-font-size-md', description: 'Iniciales tamaño lg' },
 ];
 
 const apiColumns = [
@@ -196,6 +224,21 @@ const size = ref('md')
             <AuthorCard name="Demo User" role="Interactive" :color="progColor" :size="progSize" />
           </div>
         </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="style" class="playground-section">
+        <h2>Style</h2>
+
+        <h3 id="style-variables">CSS Variables</h3>
+        <p class="playground-desc">
+          AuthorCard comparte las variables de estilo de <code>Avatar</code> (su hijo directo). La lista incluye ambas.
+        </p>
+        <h4>AuthorCard</h4>
+        <Table :columns="styleColumns" :data="authorCardStyleData" variant="ghost" compact />
+        <h4>Avatar (sub-componente)</h4>
+        <Table :columns="styleColumns" :data="avatarStyleData" variant="ghost" compact />
       </section>
 
       <hr class="playground-separator" />
