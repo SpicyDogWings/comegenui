@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
-import { getTokenDescription } from '@/config/css-tokens';
 import Navbar from "@/components/lab/collapse/navigation/Navbar.vue";
 import Badge from "@/components/information/Badge.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";

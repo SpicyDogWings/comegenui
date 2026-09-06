@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
-import { getTokenDescription } from '@/config/css-tokens';
 import Label from "@/components/form/Label.vue";
 import Input from "@/components/form/Input.vue";
 import Select from "@/components/form/Select.vue";

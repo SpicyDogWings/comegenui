@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
-import { getTokenDescription } from '@/config/css-tokens';
+import PlaygroundStyle from '@/templates/playground/PlaygroundStyle.vue';
+import PlaygroundApiComponents from '@/templates/playground/PlaygroundApiComponents.vue';
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Badge from "@/components/information/Badge.vue";
 import Table from "@/components/data/Table.vue";
@@ -141,11 +142,6 @@ const iconButtonColumns = [
   },
 ];
 
-const styleColumns = [
-  { key: 'name', label: 'Variable' },
-  { key: 'description', label: 'Uso' },
-];
-
 const advancedtable_tokens = [
   '--cu-font-sans',
   '--cu-space-2xs',
@@ -159,12 +155,21 @@ const advancedtable_tokens = [
 const styleData = advancedtable_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const componentDeps = [
-      { label: 'Table', path: '/playground/components/table' },
-      { label: 'Pagination', path: '/playground/components/pagination' },
-      { label: 'Input', path: '/playground/components/input' },
-      { label: 'Button', path: '/playground/components/button' },
-      { label: 'Badge', path: '/playground/components/badge' },
-      { label: 'DropdownMenu', path: '/playground/components/dropdown-menu' },
+  { label: 'Table', path: '/playground/components/table' },
+  { label: 'Pagination', path: '/playground/components/pagination' },
+  { label: 'Input', path: '/playground/components/input' },
+  { label: 'Button', path: '/playground/components/button' },
+  { label: 'Badge', path: '/playground/components/badge' },
+  { label: 'DropdownMenu', path: '/playground/components/dropdown-menu' },
+];
+
+const styleSubComponents = [
+  { label: 'Table', path: '/playground/components/table#style' },
+  { label: 'Pagination', path: '/playground/components/pagination#style' },
+  { label: 'Input', path: '/playground/components/input#style' },
+  { label: 'Button', path: '/playground/components/button#style' },
+  { label: 'Badge', path: '/playground/components/badge#style' },
+  { label: 'DropdownMenu', path: '/playground/components/dropdown-menu#style' },
 ];
 
 const apiColumns = [
@@ -690,37 +695,17 @@ const emptyVanilla = `${tableImportVanilla}
 
       <hr class="playground-separator" />
 
-      <section id="style" class="playground-section">
-        <h2>Style</h2>
-
-        <h3 id="style-variables">CSS Variables</h3>
-        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
-
-        <h4>Sub-componentes con estilos propios</h4>
-        <ul class="playground-component-links">
-          <li><a href="/playground/components/table" class="playground-component-link">Table</a> — revisá sus variables CSS en su propia sección Style</li>
-          <li><a href="/playground/components/pagination" class="playground-component-link">Pagination</a> — revisá sus variables CSS en su propia sección Style</li>
-          <li><a href="/playground/components/input" class="playground-component-link">Input</a> — revisá sus variables CSS en su propia sección Style</li>
-          <li><a href="/playground/components/button" class="playground-component-link">Button</a> — revisá sus variables CSS en su propia sección Style</li>
-          <li><a href="/playground/components/badge" class="playground-component-link">Badge</a> — revisá sus variables CSS en su propia sección Style</li>
-          <li><a href="/playground/components/dropdown-menu" class="playground-component-link">DropdownMenu</a> — revisá sus variables CSS en su propia sección Style</li>
-        </ul>
-      </section>
+      
 
       <hr class="playground-separator" />
+
+      <PlaygroundStyle :tokens="componentTokens" :sub-components="styleSubComponents" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>
 
-        <h3 id="api-components">Components</h3>
-        <Table :columns="componentColumns" :data="componentDeps" variant="ghost" compact>
-          <template #cell-path="{ row }">
-            <Button :to="row.path" variant="link" size="sm">{{ row.label }}</Button>
-          </template>
-        </Table>
-        <p class="playground-desc">
-          Hacé clic en el componente para ir a su playground.
-        </p>
+        <PlaygroundApiComponents :deps="componentDeps" />
+
 <h3 id="api-props">Props</h3>
         <Table :columns="apiColumns" :data="propsData" variant="ghost" compact />
 

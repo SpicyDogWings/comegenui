@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { getTokenDescription } from '@/config/css-tokens';
+import PlaygroundStyle from '@/templates/playground/PlaygroundStyle.vue';
+import PlaygroundApiComponents from '@/templates/playground/PlaygroundApiComponents.vue';
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Table from "@/components/data/Table.vue";
@@ -85,11 +86,6 @@ console.log('hola')
 \`\`\`
 </cu-markdown>`;
 
-const styleColumns = [
-  { key: 'name', label: 'Variable' },
-  { key: 'description', label: 'Uso' },
-];
-
 const markdown_tokens = [
   '--cu-font-sans',
   '--cu-font-size-xs',
@@ -115,9 +111,15 @@ const markdown_tokens = [
 const styleData = markdown_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const componentDeps = [
-      { label: 'Table', path: '/playground/components/table' },
-      { label: 'CodeBlock', path: '/playground/components/code-block' },
-      { label: 'Blockquote', path: '/playground/components/blockquote' },
+  { label: 'Table', path: '/playground/components/table' },
+  { label: 'CodeBlock', path: '/playground/components/codeblock' },
+  { label: 'Blockquote', path: '/playground/components/blockquote' },
+];
+
+const styleSubComponents = [
+  { label: 'Table', path: '/playground/components/table#style' },
+  { label: 'CodeBlock', path: '/playground/components/codeblock#style' },
+  { label: 'Blockquote', path: '/playground/components/blockquote#style' },
 ];
 
 const apiColumns = [
@@ -261,34 +263,17 @@ Abajo
 
       <hr class="playground-separator" />
 
-      <section id="style" class="playground-section">
-        <h2>Style</h2>
-
-        <h3 id="style-variables">CSS Variables</h3>
-        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
-
-        <h4>Sub-componentes con estilos propios</h4>
-        <ul class="playground-component-links">
-          <li><a href="/playground/components/table" class="playground-component-link">Table</a> — revisá sus variables CSS en su propia sección Style</li>
-          <li><a href="/playground/components/code-block" class="playground-component-link">CodeBlock</a> — revisá sus variables CSS en su propia sección Style</li>
-          <li><a href="/playground/components/blockquote" class="playground-component-link">Blockquote</a> — revisá sus variables CSS en su propia sección Style</li>
-        </ul>
-      </section>
+      
 
       <hr class="playground-separator" />
+
+      <PlaygroundStyle :tokens="componentTokens" :sub-components="styleSubComponents" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>
 
-        <h3 id="api-components">Components</h3>
-        <Table :columns="componentColumns" :data="componentDeps" variant="ghost" compact>
-          <template #cell-path="{ row }">
-            <Button :to="row.path" variant="link" size="sm">{{ row.label }}</Button>
-          </template>
-        </Table>
-        <p class="playground-desc">
-          Hacé clic en el componente para ir a su playground.
-        </p>
+        <PlaygroundApiComponents :deps="componentDeps" />
+
 <h3 id="api-props">Props</h3>
         <Table :columns="apiColumns" :data="propsData" empty="No tiene props (el contenido va por slot)" variant="ghost" compact />
 

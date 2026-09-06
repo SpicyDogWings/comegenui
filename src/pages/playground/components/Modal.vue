@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
-import { getTokenDescription } from '@/config/css-tokens';
+import PlaygroundStyle from '@/templates/playground/PlaygroundStyle.vue';
+import PlaygroundApiComponents from '@/templates/playground/PlaygroundApiComponents.vue';
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Badge from "@/components/information/Badge.vue";
 import Table from "@/components/data/Table.vue";
@@ -448,11 +449,6 @@ const programmaticVanilla = `${modalImportVanilla}
   });
 <\/script>`;
 
-const styleColumns = [
-  { key: 'name', label: 'Variable' },
-  { key: 'description', label: 'Uso' },
-];
-
 const modal_tokens = [
   '--modal-color',
   '--cu-font-sans',
@@ -474,7 +470,11 @@ const modal_tokens = [
 const styleData = modal_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const componentDeps = [
-      { label: 'Button', path: '/playground/components/button' },
+  { label: 'Button', path: '/playground/components/button' },
+];
+
+const styleSubComponents = [
+  { label: 'Button', path: '/playground/components/button#style' },
 ];
 
 const apiColumns = [
@@ -776,32 +776,17 @@ const exposesData = [
 
       <hr class="playground-separator" />
 
-      <section id="style" class="playground-section">
-        <h2>Style</h2>
-
-        <h3 id="style-variables">CSS Variables</h3>
-        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
-
-        <h4>Sub-componentes con estilos propios</h4>
-        <ul class="playground-component-links">
-          <li><a href="/playground/components/button" class="playground-component-link">Button</a> — revisá sus variables CSS en su propia sección Style</li>
-        </ul>
-      </section>
+      
 
       <hr class="playground-separator" />
+
+      <PlaygroundStyle :tokens="componentTokens" :sub-components="styleSubComponents" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>
 
-        <h3 id="api-components">Components</h3>
-        <Table :columns="componentColumns" :data="componentDeps" variant="ghost" compact>
-          <template #cell-path="{ row }">
-            <Button :to="row.path" variant="link" size="sm">{{ row.label }}</Button>
-          </template>
-        </Table>
-        <p class="playground-desc">
-          Hacé clic en el componente para ir a su playground.
-        </p>
+        <PlaygroundApiComponents :deps="componentDeps" />
+
 <h3 id="api-props">Props</h3>
         <Table :columns="apiColumns" :data="propsData" variant="ghost" compact />
 

@@ -6,75 +6,88 @@ import Table from "@/components/data/Table.vue";
 import Button from "@/components/buttons/Button.vue";
 import Badge from "@/components/information/Badge.vue";
 import AuthorCard from "@/components/information/AuthorCard.vue";
-import { getTokenDescription } from "@/config/css-tokens";
+import PlaygroundStyle from "@/templates/playground/PlaygroundStyle.vue";
+import PlaygroundApiComponents from "@/templates/playground/PlaygroundApiComponents.vue";
 
 const outlineItems = [
-  { label: 'Default', id: 'default' },
-  { label: 'Sizes', id: 'sizes' },
-  { label: 'With Image', id: 'with-image' },
-  { label: 'Colors', id: 'colors' },
-  { label: 'Programmatic', id: 'programmatic' },
+  { label: "Default", id: "default" },
+  { label: "Sizes", id: "sizes" },
+  { label: "With Image", id: "with-image" },
+  { label: "Colors", id: "colors" },
+  { label: "Programmatic", id: "programmatic" },
   {
-    label: 'Style',
-    id: 'style',
-    children: [
-      { label: 'CSS Variables', id: 'style-variables' },
-    ],
+    label: "Style",
+    id: "style",
+    children: [{ label: "CSS Variables", id: "style-variables" }],
   },
   {
-    label: 'API',
-    id: 'api',
+    label: "API",
+    id: "api",
     children: [
-      { label: 'Components', id: 'api-components' },
-      { label: 'Props', id: 'api-props' },
-      { label: 'Slots', id: 'api-slots' },
-      { label: 'Events', id: 'api-events' },
-      { label: 'Exposes', id: 'api-exposes' },
+      { label: "Components", id: "api-components" },
+      { label: "Props", id: "api-props" },
+      { label: "Slots", id: "api-slots" },
+      { label: "Events", id: "api-events" },
+      { label: "Exposes", id: "api-exposes" },
     ],
   },
-];
-
-const styleColumns = [
-  { key: 'name', label: 'Variable' },
-  { key: 'description', label: 'Uso' },
 ];
 
 const authorCardTokens = [
-  '--cu-font-size-sm',
-  '--cu-font-weight-medium',
-  '--cu-color-neutral',
-  '--cu-line-height-tight',
-  '--cu-font-size-xs',
+  "--cu-font-size-sm",
+  "--cu-font-weight-medium",
+  "--cu-color-neutral",
+  "--cu-line-height-tight",
+  "--cu-font-size-xs",
 ];
-
-const avatarTokens = [
-  '--avatar-bg',
-  '--cu-font-weight-semibold',
-  '--cu-font-size-xs',
-  '--cu-font-size-sm',
-  '--cu-font-size-md',
-];
-
-const authorCardStyleData = authorCardTokens.map(name => ({ name, description: getTokenDescription(name) }));
-const avatarStyleData = avatarTokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const componentDeps = [
-      { label: 'Avatar', path: '/playground/components/avatar' },
+  { label: "Avatar", path: "/playground/components/avatar" },
+];
+
+const styleSubComponents = [
+  { label: "Avatar", path: "/playground/components/avatar#style" },
 ];
 
 const apiColumns = [
-  { key: 'name', label: 'Nombre' },
-  { key: 'type', label: 'Tipo' },
-  { key: 'default', label: 'Default' },
-  { key: 'description', label: 'Descripción' },
+  { key: "name", label: "Nombre" },
+  { key: "type", label: "Tipo" },
+  { key: "default", label: "Default" },
+  { key: "description", label: "Descripción" },
 ];
 
 const propsData = [
-  { name: 'name', type: 'string', default: '—', description: 'Nombre del autor (requerido)' },
-  { name: 'role', type: 'string', default: '""', description: 'Rol o cargo del autor' },
-  { name: 'color', type: 'string', default: '""', description: 'primary, secondary, neutral, success, warning, danger. Si no se pasa, se resuelve por hash del nombre' },
-  { name: 'size', type: 'string', default: '"md"', description: 'sm | md | lg' },
-  { name: 'src', type: 'string', default: '""', description: 'URL de imagen (muestra foto en vez de iniciales)' },
+  {
+    name: "name",
+    type: "string",
+    default: "—",
+    description: "Nombre del autor (requerido)",
+  },
+  {
+    name: "role",
+    type: "string",
+    default: '""',
+    description: "Rol o cargo del autor",
+  },
+  {
+    name: "color",
+    type: "string",
+    default: '""',
+    description:
+      "primary, secondary, neutral, success, warning, danger. Si no se pasa, se resuelve por hash del nombre",
+  },
+  {
+    name: "size",
+    type: "string",
+    default: '"md"',
+    description: "sm | md | lg",
+  },
+  {
+    name: "src",
+    type: "string",
+    default: '""',
+    description: "URL de imagen (muestra foto en vez de iniciales)",
+  },
 ];
 
 const slotsData: { name: string; description: string }[] = [];
@@ -122,8 +135,8 @@ const colorsVanilla = `<cu-author-card name="Primary" role="primary" color="prim
 <cu-author-card name="Warning" role="warning" color="warning" />
 <cu-author-card name="Danger" role="danger" color="danger" />`;
 
-const progColor = ref('primary');
-const progSize = ref('md');
+const progColor = ref("primary");
+const progSize = ref("md");
 
 const programmaticVue = `<script setup>
 import { ref } from 'vue'
@@ -149,7 +162,9 @@ const size = ref('md')
       <section id="default" class="playground-section">
         <div class="playground-heading">
           <h2>Default</h2>
-          <Badge color="neutral" title="Sin imagen — muestra iniciales">initials</Badge>
+          <Badge color="neutral" title="Sin imagen — muestra iniciales"
+            >initials</Badge
+          >
         </div>
         <SectionDemo :vue-code="defaultVue" :vanilla-code="defaultVanilla">
           <div class="playground-col">
@@ -181,12 +196,22 @@ const size = ref('md')
       <section id="with-image" class="playground-section">
         <div class="playground-heading">
           <h2>With Image</h2>
-          <Badge color="neutral" title="Con prop src — muestra foto">image</Badge>
+          <Badge color="neutral" title="Con prop src — muestra foto"
+            >image</Badge
+          >
         </div>
         <SectionDemo :vue-code="withImageVue" :vanilla-code="withImageVanilla">
           <div class="playground-row">
-            <AuthorCard name="Ada Lovelace" role="Mathematician" src="https://i.pravatar.cc/150?img=5" />
-            <AuthorCard name="Alan Turing" role="Computer Scientist" src="https://i.pravatar.cc/150?img=12" />
+            <AuthorCard
+              name="Ada Lovelace"
+              role="Mathematician"
+              src="https://i.pravatar.cc/150?img=5"
+            />
+            <AuthorCard
+              name="Alan Turing"
+              role="Computer Scientist"
+              src="https://i.pravatar.cc/150?img=12"
+            />
           </div>
         </SectionDemo>
       </section>
@@ -196,7 +221,9 @@ const size = ref('md')
       <section id="colors" class="playground-section">
         <div class="playground-heading">
           <h2>Colors</h2>
-          <Badge color="neutral" title="Color auto por hash si no se pasa">auto</Badge>
+          <Badge color="neutral" title="Color auto por hash si no se pasa"
+            >auto</Badge
+          >
         </div>
         <SectionDemo :vue-code="colorsVue" :vanilla-code="colorsVanilla">
           <div class="playground-col">
@@ -215,65 +242,89 @@ const size = ref('md')
           <h2>Programmatic</h2>
         </div>
         <p class="playground-desc">
-          Seguidilla de botones sobre la instancia de abajo — la tarjeta cambia en vivo. No expone métodos ni eventos: se maneja por props.
+          Seguidilla de botones sobre la instancia de abajo — la tarjeta cambia
+          en vivo. No expone métodos ni eventos: se maneja por props.
         </p>
         <SectionDemo :vue-code="programmaticVue">
           <div class="playground-col">
             <div class="playground-row">
-              <Button color="neutral" @click="progColor = 'success'">color = 'success'</Button>
-              <Button color="neutral" @click="progColor = 'warning'">color = 'warning'</Button>
-              <Button color="neutral" @click="progColor = 'primary'">color = 'primary'</Button>
-              <Button color="neutral" @click="progSize = 'sm'">size = 'sm'</Button>
-              <Button color="neutral" @click="progSize = 'lg'">size = 'lg'</Button>
+              <Button color="neutral" @click="progColor = 'success'"
+                >color = 'success'</Button
+              >
+              <Button color="neutral" @click="progColor = 'warning'"
+                >color = 'warning'</Button
+              >
+              <Button color="neutral" @click="progColor = 'primary'"
+                >color = 'primary'</Button
+              >
+              <Button color="neutral" @click="progSize = 'sm'"
+                >size = 'sm'</Button
+              >
+              <Button color="neutral" @click="progSize = 'lg'"
+                >size = 'lg'</Button
+              >
             </div>
             <p class="playground-state">
-              color: <strong>{{ progColor }}</strong>
-              · size: <strong>{{ progSize }}</strong>
+              color: <strong>{{ progColor }}</strong> · size:
+              <strong>{{ progSize }}</strong>
             </p>
-            <AuthorCard name="Demo User" role="Interactive" :color="progColor" :size="progSize" />
+            <AuthorCard
+              name="Demo User"
+              role="Interactive"
+              :color="progColor"
+              :size="progSize"
+            />
           </div>
         </SectionDemo>
       </section>
 
       <hr class="playground-separator" />
 
-      <section id="style" class="playground-section">
-        <h2>Style</h2>
-
-        <h3 id="style-variables">CSS Variables</h3>
-        <Table :columns="styleColumns" :data="authorCardStyleData" variant="ghost" compact />
-
-        <h4>Sub-componentes con estilos propios</h4>
-        <ul class="playground-component-links">
-          <li><a href="/playground/components/avatar" class="playground-component-link">Avatar</a> — revisá sus variables CSS en su propia sección Style</li>
-        </ul>
-      </section>
+      <PlaygroundStyle
+        :tokens="authorCardTokens"
+        :sub-components="styleSubComponents"
+      />
 
       <hr class="playground-separator" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>
 
-        <h3 id="api-components">Components</h3>
-        <Table :columns="componentColumns" :data="componentDeps" variant="ghost" compact>
-          <template #cell-path="{ row }">
-            <Button :to="row.path" variant="link" size="sm">{{ row.label }}</Button>
-          </template>
-        </Table>
-        <p class="playground-desc">
-          Hacé clic en el componente para ir a su playground.
-        </p>
-<h3 id="api-props">Props</h3>
-        <Table :columns="apiColumns" :data="propsData" variant="ghost" compact />
+        <PlaygroundApiComponents :deps="componentDeps" />
+        <h3 id="api-props">Props</h3>
+        <Table
+          :columns="apiColumns"
+          :data="propsData"
+          variant="ghost"
+          compact
+        />
 
         <h3 id="api-slots">Slots</h3>
-        <Table :columns="apiColumns" :data="slotsData" empty="No tiene slots" variant="ghost" compact />
+        <Table
+          :columns="apiColumns"
+          :data="slotsData"
+          empty="No tiene slots"
+          variant="ghost"
+          compact
+        />
 
         <h3 id="api-events">Events</h3>
-        <Table :columns="apiColumns" :data="eventsData" empty="No emite eventos" variant="ghost" compact />
+        <Table
+          :columns="apiColumns"
+          :data="eventsData"
+          empty="No emite eventos"
+          variant="ghost"
+          compact
+        />
 
         <h3 id="api-exposes">Exposes</h3>
-        <Table :columns="apiColumns" :data="exposesData" empty="No expone métodos (se maneja por props)" variant="ghost" compact />
+        <Table
+          :columns="apiColumns"
+          :data="exposesData"
+          empty="No expone métodos (se maneja por props)"
+          variant="ghost"
+          compact
+        />
       </section>
     </div>
   </PlaygroundLayout>

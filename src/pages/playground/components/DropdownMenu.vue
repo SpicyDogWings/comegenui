@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
-import { getTokenDescription } from '@/config/css-tokens';
+import PlaygroundStyle from '@/templates/playground/PlaygroundStyle.vue';
+import PlaygroundApiComponents from '@/templates/playground/PlaygroundApiComponents.vue';
 import Button from "@/components/buttons/Button.vue";
 import CodeBlock from "@/components/markdown/CodeBlock.vue";
 import Table from "@/components/data/Table.vue";
@@ -318,11 +319,6 @@ const programmaticVanilla = `${dropdownImportVanilla}
   });
 <\/script>`;
 
-const styleColumns = [
-  { key: 'name', label: 'Variable' },
-  { key: 'description', label: 'Uso' },
-];
-
 const dropdownmenu_tokens = [
   '--cu-border-color',
   '--cu-border-thin',
@@ -333,8 +329,13 @@ const dropdownmenu_tokens = [
 const styleData = dropdownmenu_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const componentDeps = [
-      { label: 'Dropdown', path: '/playground/components/dropdown' },
-      { label: 'Button', path: '/playground/components/button' },
+  { label: 'Dropdown', path: '/playground/components/dropdown' },
+  { label: 'Button', path: '/playground/components/button' },
+];
+
+const styleSubComponents = [
+  { label: 'Dropdown', path: '/playground/components/dropdown#style' },
+  { label: 'Button', path: '/playground/components/button#style' },
 ];
 
 const apiColumns = [
@@ -521,33 +522,17 @@ const interfaceCode = `interface DropdownItem {
 
       <hr class="playground-separator" />
 
-      <section id="style" class="playground-section">
-        <h2>Style</h2>
-
-        <h3 id="style-variables">CSS Variables</h3>
-        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
-
-        <h4>Sub-componentes con estilos propios</h4>
-        <ul class="playground-component-links">
-          <li><a href="/playground/components/dropdown" class="playground-component-link">Dropdown</a> — revisá sus variables CSS en su propia sección Style</li>
-          <li><a href="/playground/components/button" class="playground-component-link">Button</a> — revisá sus variables CSS en su propia sección Style</li>
-        </ul>
-      </section>
+      
 
       <hr class="playground-separator" />
+
+      <PlaygroundStyle :tokens="componentTokens" :sub-components="styleSubComponents" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>
 
-        <h3 id="api-components">Components</h3>
-        <Table :columns="componentColumns" :data="componentDeps" variant="ghost" compact>
-          <template #cell-path="{ row }">
-            <Button :to="row.path" variant="link" size="sm">{{ row.label }}</Button>
-          </template>
-        </Table>
-        <p class="playground-desc">
-          Hacé clic en el componente para ir a su playground.
-        </p>
+        <PlaygroundApiComponents :deps="componentDeps" />
+
 <h3 id="api-props">Props</h3>
         <Table :columns="apiColumns" :data="propsData" variant="ghost" compact />
 

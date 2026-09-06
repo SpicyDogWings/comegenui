@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { getTokenDescription } from '@/config/css-tokens';
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import Checkbox from "@/components/form/Checkbox.vue";
 import Badge from "@/components/information/Badge.vue";

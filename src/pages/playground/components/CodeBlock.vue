@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
-import { getTokenDescription } from '@/config/css-tokens';
+import PlaygroundStyle from '@/templates/playground/PlaygroundStyle.vue';
+import PlaygroundApiComponents from '@/templates/playground/PlaygroundApiComponents.vue';
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Badge from "@/components/information/Badge.vue";
 import Table from "@/components/data/Table.vue";
@@ -97,11 +98,6 @@ const lineNumbersVue = vueSnippet(`  <CodeBlock :code="code" language="html" var
   <CodeBlock :code="code" language="css" variant="outlined" :line-numbers="true" />
   <CodeBlock :code="code" language="ts" variant="solid" :line-numbers="true" />`);
 
-const styleColumns = [
-  { key: 'name', label: 'Variable' },
-  { key: 'description', label: 'Uso' },
-];
-
 const codeblock_tokens = [
   '--cb-text',
   '--cb-hl-keyword',
@@ -136,7 +132,11 @@ const codeblock_tokens = [
 const styleData = codeblock_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
 const componentDeps = [
-      { label: 'Badge', path: '/playground/components/badge' },
+  { label: 'Badge', path: '/playground/components/badge' },
+];
+
+const styleSubComponents = [
+  { label: 'Badge', path: '/playground/components/badge#style' },
 ];
 
 const apiColumns = [
@@ -201,32 +201,17 @@ const exposesData: { name: string; type: string; description: string }[] = [];
 
       <hr class="playground-separator" />
 
-      <section id="style" class="playground-section">
-        <h2>Style</h2>
-
-        <h3 id="style-variables">CSS Variables</h3>
-        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
-
-        <h4>Sub-componentes con estilos propios</h4>
-        <ul class="playground-component-links">
-          <li><a href="/playground/components/badge" class="playground-component-link">Badge</a> — revisá sus variables CSS en su propia sección Style</li>
-        </ul>
-      </section>
+      
 
       <hr class="playground-separator" />
+
+      <PlaygroundStyle :tokens="componentTokens" :sub-components="styleSubComponents" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>
 
-        <h3 id="api-components">Components</h3>
-        <Table :columns="componentColumns" :data="componentDeps" variant="ghost" compact>
-          <template #cell-path="{ row }">
-            <Button :to="row.path" variant="link" size="sm">{{ row.label }}</Button>
-          </template>
-        </Table>
-        <p class="playground-desc">
-          Hacé clic en el componente para ir a su playground.
-        </p>
+        <PlaygroundApiComponents :deps="componentDeps" />
+
 <h3 id="api-props">Props</h3>
         <Table :columns="apiColumns" :data="propsData" variant="ghost" compact />
 
