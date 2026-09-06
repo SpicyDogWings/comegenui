@@ -114,7 +114,11 @@ const markdown_tokens = [
 
 const styleData = markdown_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
-const componentDeps = [{ label: 'Table', path: '/playground/components/table' }, { label: 'CodeBlock', path: '/playground/components/code-block' }, { label: 'Blockquote', path: '/playground/components/blockquote' }];
+const componentDeps = [
+      { label: 'Table', path: '/playground/components/table' },
+      { label: 'CodeBlock', path: '/playground/components/code-block' },
+      { label: 'Blockquote', path: '/playground/components/blockquote' },
+];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -277,16 +281,15 @@ Abajo
         <h2>API</h2>
 
         <h3 id="api-components">Components</h3>
+        <Table :columns="componentColumns" :data="componentDeps" variant="ghost" compact>
+          <template #cell-path="{ row }">
+            <Button :to="row.path" variant="link" size="sm">{{ row.label }}</Button>
+          </template>
+        </Table>
         <p class="playground-desc">
-          Este componente usa los siguientes sub-componentes:
+          Hacé clic en el componente para ir a su playground.
         </p>
-        <ul class="playground-component-links">
-          <li v-for="dep in [{ label: 'Table', path: '/playground/components/table' }, { label: 'CodeBlock', path: '/playground/components/code-block' }, { label: 'Blockquote', path: '/playground/components/blockquote' }]" :key="dep.label">
-            <Button :to="dep.path" variant="link" size="sm">{{ dep.label }}</Button>
-          </li>
-        </ul>
-
-        <h3 id="api-props">Props</h3>
+<h3 id="api-props">Props</h3>
         <Table :columns="apiColumns" :data="propsData" empty="No tiene props (el contenido va por slot)" variant="ghost" compact />
 
         <h3 id="api-slots">Slots</h3>

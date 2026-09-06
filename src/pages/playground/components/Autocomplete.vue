@@ -325,7 +325,11 @@ const autocomplete_tokens = [
 
 const styleData = autocomplete_tokens.map(name => ({ name, description: getTokenDescription(name) }));
 
-const componentDeps = [{ label: 'Dropdown', path: '/playground/components/dropdown' }, { label: 'Input', path: '/playground/components/input' }, { label: 'Button', path: '/playground/components/button' }];
+const componentDeps = [
+      { label: 'Dropdown', path: '/playground/components/dropdown' },
+      { label: 'Input', path: '/playground/components/input' },
+      { label: 'Button', path: '/playground/components/button' },
+];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -525,16 +529,15 @@ const exposesData = [
         <h2>API</h2>
 
         <h3 id="api-components">Components</h3>
+        <Table :columns="componentColumns" :data="componentDeps" variant="ghost" compact>
+          <template #cell-path="{ row }">
+            <Button :to="row.path" variant="link" size="sm">{{ row.label }}</Button>
+          </template>
+        </Table>
         <p class="playground-desc">
-          Este componente usa los siguientes sub-componentes:
+          Hacé clic en el componente para ir a su playground.
         </p>
-        <ul class="playground-component-links">
-          <li v-for="dep in [{ label: 'Dropdown', path: '/playground/components/dropdown' }, { label: 'Input', path: '/playground/components/input' }, { label: 'Button', path: '/playground/components/button' }]" :key="dep.label">
-            <Button :to="dep.path" variant="link" size="sm">{{ dep.label }}</Button>
-          </li>
-        </ul>
-
-        <h3 id="api-props">Props</h3>
+<h3 id="api-props">Props</h3>
         <Table :columns="apiColumns" :data="propsData" variant="ghost" compact />
 
         <h3 id="api-slots">Slots</h3>
