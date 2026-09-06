@@ -61,7 +61,7 @@ defineExpose({ open, close })
 </script>
 
 <template>
-  <Modal ref="modalRef" title="Theme Manager" size="full" height="xl" @close="close">
+  <Modal ref="modalRef" title="Export" size="full" height="xl" @close="close">
     <div class="tm-layout">
       <div class="tm-sidebar">
         <div class="tm-section">
