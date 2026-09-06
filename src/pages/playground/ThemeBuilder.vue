@@ -545,7 +545,7 @@ onBeforeUnmount(() => {
         <div class="tb-controls-header">
           <span class="tb-controls-theme-name">{{ themeName }}</span>
           <Button
-            v-if="!isEditing"
+            v-if="themeName !== 'custom'"
             color="neutral"
             variant="ghost"
             size="sm"
