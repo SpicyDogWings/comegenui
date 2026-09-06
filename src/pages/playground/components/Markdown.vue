@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import PlaygroundStyle from '@/templates/playground/PlaygroundStyle.vue';
-import PlaygroundApiComponents from '@/templates/playground/PlaygroundApiComponents.vue';
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Table from "@/components/data/Table.vue";
@@ -11,9 +9,8 @@ const outlineItems = ref<{ label: string; id: string }[]>([])
 
 function handleParsed(headingIds: string[]) {
   const items = headingIds.map(id => ({ label: id.replace(/-/g, ' '), id }))
-  // Primero los headings del demo, luego Style y API
+  // Insertar Style y API al inicio del outline
   outlineItems.value = [
-    ...items,
     { label: 'Style', id: 'style', children: [{ label: 'CSS Variables', id: 'style-variables' }] },
     { label: 'API', id: 'api', children: [
       { label: 'Props', id: 'api-props' },
@@ -21,6 +18,7 @@ function handleParsed(headingIds: string[]) {
       { label: 'Events', id: 'api-events' },
       { label: 'Exposes', id: 'api-exposes' },
     ]},
+    ...items,
   ]
 }
 
@@ -29,7 +27,6 @@ function handleParsed(headingIds: string[]) {
 const markdownVue = `<script setup>
 import { ref } from 'vue'
 import Markdown from '@/components/markdown/Markdown.vue'
-import Button from '@/components/buttons/Button.vue';
 
 const outlineItems = ref([])
 
@@ -86,38 +83,31 @@ console.log('hola')
 \`\`\`
 </cu-markdown>`;
 
-const componentTokens = [
-  '--cu-font-sans',
-  '--cu-font-size-xs',
-  '--cu-font-size-sm',
-  '--cu-font-size-xl',
-  '--cu-font-size-2xl',
-  '--cu-font-size-3xl',
-  '--cu-font-size-4xl',
-  '--cu-font-weight-bold',
-  '--cu-line-height-tight',
-  '--cu-line-height-relaxed',
-  '--cu-radius-sm',
-  '--cu-border-thin',
-  '--cu-space-xs',
-  '--cu-space-sm',
-  '--cu-space-md',
-  '--cu-space-lg',
-  '--cu-space-xl',
-  '--cu-color-neutral-text',
-  '--cu-color-neutral-subtle-border',
+const styleColumns = [
+  { key: 'name', label: 'Variable' },
+  { key: 'description', label: 'Uso' },
 ];
 
-const componentDeps = [
-  { label: 'Table', path: '/playground/components/table' },
-  { label: 'CodeBlock', path: '/playground/components/codeblock' },
-  { label: 'Blockquote', path: '/playground/components/blockquote' },
-];
-
-const styleSubComponents = [
-  { label: 'Table', path: '/playground/components/table#style' },
-  { label: 'CodeBlock', path: '/playground/components/codeblock#style' },
-  { label: 'Blockquote', path: '/playground/components/blockquote#style' },
+const styleData = [
+  { name: '--cu-font-sans', description: 'Fuente' },
+  { name: '--cu-font-size-xs', description: 'Tamaño xs' },
+  { name: '--cu-font-size-sm', description: 'Tamaño sm' },
+  { name: '--cu-font-size-xl', description: 'Tamaño xl' },
+  { name: '--cu-font-size-2xl', description: 'Tamaño 2xl' },
+  { name: '--cu-font-size-3xl', description: 'Tamaño 3xl' },
+  { name: '--cu-font-size-4xl', description: 'Tamaño 4xl' },
+  { name: '--cu-font-weight-bold', description: 'Peso bold' },
+  { name: '--cu-line-height-tight', description: 'Altura línea tight' },
+  { name: '--cu-line-height-relaxed', description: 'Altura línea relaxed' },
+  { name: '--cu-radius-sm', description: 'Radio' },
+  { name: '--cu-border-thin', description: 'Borde fino' },
+  { name: '--cu-space-xs', description: 'Espaciado xs' },
+  { name: '--cu-space-sm', description: 'Espaciado sm' },
+  { name: '--cu-space-md', description: 'Espaciado md' },
+  { name: '--cu-space-lg', description: 'Espaciado lg' },
+  { name: '--cu-space-xl', description: 'Espaciado xl' },
+  { name: '--cu-color-neutral-text', description: 'Texto neutral' },
+  { name: '--cu-color-neutral-subtle-border', description: 'Borde neutral' },
 ];
 
 const apiColumns = [
@@ -261,14 +251,19 @@ Abajo
 
       <hr class="playground-separator" />
 
-      <PlaygroundStyle :tokens="componentTokens" :sub-components="styleSubComponents" />
+      <section id="style" class="playground-section">
+        <h2>Style</h2>
+
+        <h3 id="style-variables">CSS Variables</h3>
+        <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
+      </section>
+
+      <hr class="playground-separator" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>
 
-        <PlaygroundApiComponents :deps="componentDeps" />
-
-<h3 id="api-props">Props</h3>
+        <h3 id="api-props">Props</h3>
         <Table :columns="apiColumns" :data="propsData" empty="No tiene props (el contenido va por slot)" variant="ghost" compact />
 
         <h3 id="api-slots">Slots</h3>
