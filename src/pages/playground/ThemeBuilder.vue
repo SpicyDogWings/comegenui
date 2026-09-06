@@ -293,15 +293,15 @@ initColorsFromTheme('light')
 
 const shadowOpacityRaw = ref(String(opacities.value.default?.shadow ?? 10))
 
-const typography = ref({ ...getShared()?.typography })
+const typography = ref({ ...store.getShared()?.typography })
 
-const spacing = ref({ ...getShared()?.spacing })
+const spacing = ref({ ...store.getShared()?.spacing })
 
-const borderRadius = ref({ ...getShared()?.borderRadius })
+const borderRadius = ref({ ...store.getShared()?.borderRadius })
 
 const borders = ref({
-  width: { ...getShared()?.borders?.width },
-  color: { ...getShared()?.borders?.color },
+  width: { ...store.getShared()?.borders?.width },
+  color: { ...store.getShared()?.borders?.color },
 })
 
 const shadowPreview = computed(() => hexToRgba(colors.value.shadow || '#000000', parseInt(shadowOpacityRaw.value) || 10))
@@ -460,8 +460,8 @@ watch([colors, shadowOpacityRaw, typography, spacing, borderRadius, borders], ()
           <span class="tb-controls-theme-name">{{ themeName }}</span>
           <Button
             v-if="store.showEditBtn"
-            color="neutral"
-            variant="ghost"
+            color="primary"
+            variant="soft"
             size="sm"
             title="Editar tema"
             @click="enableEditing"
