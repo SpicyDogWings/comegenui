@@ -94,9 +94,7 @@ defineExpose({ open, close })
 
       <div class="tm-main">
         <h3>CSS Output</h3>
-        <div class="tm-code-wrapper">
-          <CodeBlock :code="cssOutput" language="css" variant="solid" />
-        </div>
+        <CodeBlock :code="cssOutput" language="css" variant="solid" class="tm-code-block" />
       </div>
     </div>
   </Modal>
@@ -150,10 +148,23 @@ defineExpose({ open, close })
   gap: 0.5rem;
 }
 
-.tm-code-wrapper {
+.tm-code-block {
   flex: 1;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.tm-code-block :deep(.cu-code-block) {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
   max-height: 300px;
-  border-radius: var(--cu-radius-sm);
+}
+
+.tm-code-block :deep(.cu-code-block-pre) {
+  flex: 1;
+  overflow: auto;
 }
 </style>
