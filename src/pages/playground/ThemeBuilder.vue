@@ -423,12 +423,14 @@ function handleImport(config: any) {
     lastImportedConfig.value = cfg
     importedThemes.value = themeNames
     showImportPicker.value = true
+    modalRef.value?.close() // Cerrar ThemeManagerModal para ver el picker
     return
   }
 
   // Solo uno: aplicar directamente
   lastImportedConfig.value = cfg
   applyImportedTheme(cfg, themeNames[0])
+  modalRef.value?.close() // Cerrar ThemeManagerModal
 }
 
 function applyImportedTheme(cfg: ThemeConfig, name: string) {
@@ -453,6 +455,7 @@ function applyImportedTheme(cfg: ThemeConfig, name: string) {
   // Cargar colores en el editor
   colors.value = { ...colors.value, ...rest }
   showImportPicker.value = false
+  modalRef.value?.close() // Cerrar ThemeManagerModal
 }
 
 function handleExport() {
@@ -569,7 +572,7 @@ onBeforeUnmount(() => {
             title="Editar tema"
             @click="enableEditing"
           >
-            <LucidePencil :width="16" :height="16" />
+            <LucidePalette :width="16" :height="16" />
           </button>
         </div>
 
