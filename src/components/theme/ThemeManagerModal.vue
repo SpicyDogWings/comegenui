@@ -153,6 +153,9 @@ defineExpose({ open, close })
   display: flex;
   flex-direction: column;
   min-height: 0;
+  max-height: 300px;
+  overflow: hidden;
+  border-radius: var(--cu-radius-sm);
 }
 
 .tm-code-block :deep(.cu-code-block) {
@@ -160,11 +163,12 @@ defineExpose({ open, close })
   flex-direction: column;
   flex: 1;
   min-height: 0;
-  max-height: 300px;
+  overflow: hidden;
 }
 
 .tm-code-block :deep(.cu-code-block-pre) {
   flex: 1;
-  overflow: auto;
+  overflow: auto !important;
+  max-height: none !important;
 }
 </style>
