@@ -19,6 +19,7 @@ import FloatingButton from '@/components/buttons/FloatingButton.vue'
 import ToggleColorSheme from '@/components/buttons/ToggleColorSheme.vue'
 import LucideSave from '@/components/icons/LucideSave.vue'
 import LucidePencil from '@/components/icons/LucidePencil.vue'
+import LucidePalette from '@/components/icons/LucidePalette.vue'
 import ThemeManagerModal from '@/components/theme/ThemeManagerModal.vue'
 import Table from '@/components/data/Table.vue'
 import Pagination from '@/components/controls/Pagination.vue'
@@ -1127,7 +1128,7 @@ onBeforeUnmount(() => {
     />
 
     <FloatingButton color="primary" @click="modalRef?.open()">
-      <LucideSave :width="20" :height="20" />
+      <LucidePalette :width="20" :height="20" />
     </FloatingButton>
   </PlaygroundLayout>
 </template>
@@ -1168,7 +1169,7 @@ onBeforeUnmount(() => {
 .tb-controls-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 0.5rem;
   padding: 0 0.25rem;
 }
 
