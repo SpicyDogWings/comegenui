@@ -432,30 +432,26 @@ function handleImport(config: any) {
 }
 
 function applyImportedTheme(cfg: ThemeConfig, name: string) {
-  // Registra todos los temas importados en el dropdown
-  const importedThemesMap: Record<string, any> = {}
-  for (const [tName, tColors] of Object.entries(cfg.themes)) {
-    importedThemesMap[tName] = tColors
-  }
+  // Solo crea un tema "custom" con los colores del tema elegido
+  // No toca los temas existentes (gruvbox, nord, etc.)
+  const themeColors = cfg.themes[name]
+  if (!themeColors) return
 
-  applyFullConfig({
-    themes: importedThemesMap,
-    opacities: cfg?.opacities,
-    shared: sharedSnapshot(),
+  const { shadowOpacity, ...rest } = themeColors
+
+  // Registra solo como custom, sin tocar otros temas
+  registerTheme('custom', { ...rest }, {
+    opacity: cfg?.opacities?.[name]?.shadow ?? cfg?.opacities?.default?.shadow,
   })
 
-  // Activar el tema elegido
-  themeName.value = name
-  setTheme(name)
-  isEditing.value = false
+  // Activar custom
+  themeName.value = 'custom'
+  setTheme('custom')
+  isEditing.value = true
   previousTheme.value = name
 
-  // Cargar colores del tema elegido en el editor
-  const themeColors = cfg.themes[name]
-  if (themeColors) {
-    const { shadowOpacity, ...rest } = themeColors
-    colors.value = { ...colors.value, ...rest }
-  }
+  // Cargar colores en el editor
+  colors.value = { ...colors.value, ...rest }
   showImportPicker.value = false
 }
 
