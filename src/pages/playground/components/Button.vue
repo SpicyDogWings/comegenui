@@ -200,7 +200,33 @@ const fullwidthVanilla = `<script src="dist/CuButton.umd.js"><\/script>
 <cu-button color="warning" variant="outlined" style="width:100%">Full Width Outlined</cu-button>
 <cu-button color="danger" variant="subtle" style="width:100%">Full Width Subtle</cu-button>`;
 
-const componentTokens = [];
+const componentTokens = [
+  '--btn-bg',
+  '--btn-bg-hover',
+  '--btn-bg-active',
+  '--btn-soft',
+  '--btn-soft-hover',
+  '--btn-soft-active',
+  '--btn-subtle',
+  '--btn-subtle-hover',
+  '--btn-subtle-active',
+  '--btn-subtle-border',
+  '--btn-ghost-hover',
+  '--btn-ghost-active',
+  '--cu-font-sans',
+  '--cu-font-size-sm',
+  '--cu-font-size-xs',
+  '--cu-font-size-lg',
+  '--cu-font-weight-medium',
+  '--cu-radius',
+  '--cu-border-thin',
+  '--cu-space-2xs',
+  '--cu-space-xs',
+  '--cu-space-sm',
+  '--cu-space-md',
+  '--cu-space-lg',
+  '--cu-space-xl',
+];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

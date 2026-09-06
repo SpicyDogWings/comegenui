@@ -67,7 +67,28 @@ const keepAliveTabs = [
   { key: 'normal', label: 'Sin keepAlive' },
 ];
 
-const componentTokens = [];
+const componentTokens = [
+  '--tabs-color',
+  '--tabs-soft',
+  '--tabs-soft-hover',
+  '--tabs-soft-active',
+  '--tabs-subtle-border',
+  '--cu-font-sans',
+  '--cu-font-size-sm',
+  '--cu-font-size-md',
+  '--cu-font-size-xs',
+  '--cu-font-weight-medium',
+  '--cu-radius-sm',
+  '--cu-radius-md',
+  '--cu-border-thin',
+  '--cu-border-color',
+  '--cu-border-color-focus',
+  '--cu-space-2xs',
+  '--cu-space-xs',
+  '--cu-space-sm',
+  '--cu-space-md',
+  '--cu-space-lg',
+];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -586,7 +607,9 @@ const programmaticVanilla = `${tabsImportVanilla}
 
       <hr class="playground-separator" />
 
-      <hr class="playground-separator" />      <PlaygroundStyle :tokens="componentTokens" />
+      <hr class="playground-separator" />
+
+      <PlaygroundStyle :tokens="componentTokens" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>

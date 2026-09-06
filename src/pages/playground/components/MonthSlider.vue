@@ -116,7 +116,20 @@ function readValue() {
   </div>
 </template>`;
 
-const componentTokens = [];
+const componentTokens = [
+  '--ms-accent',
+  '--ms-accent-hover',
+  '--ms-accent-text',
+  '--ms-soft',
+  '--ms-soft-hover',
+  '--ms-subtle',
+  '--ms-subtle-border',
+  '--ms-subtle-hover',
+  '--ms-ghost-hover',
+  '--ms-surface',
+  '--cu-font-sans',
+  '--cu-space-2xs',
+];
 
 const componentDeps = [
   { label: 'MonthSliderLabel', path: '/playground/components/month-slider' }

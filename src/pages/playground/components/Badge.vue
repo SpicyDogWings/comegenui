@@ -32,7 +32,24 @@ const outlineItems = [
   },
 ];
 
-const componentTokens = [];
+const componentTokens = [
+  '--badge-bg',
+  '--badge-text',
+  '--badge-soft',
+  '--badge-soft-hover',
+  '--badge-subtle',
+  '--badge-subtle-border',
+  '--badge-ghost-hover',
+  '--cu-font-sans',
+  '--cu-font-size-xs',
+  '--cu-font-weight-medium',
+  '--cu-line-height-tight',
+  '--cu-radius',
+  '--cu-border-thin',
+  '--cu-space-2xs',
+  '--cu-space-xs',
+  '--cu-space-sm',
+];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

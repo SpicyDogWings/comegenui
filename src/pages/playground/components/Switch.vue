@@ -177,7 +177,22 @@ const programmaticVanilla = `<script src="dist/CuSwitch.umd.js"><\/script>
   });
 <\/script>`;
 
-const componentTokens = [];
+const componentTokens = [
+  '--switch-bg',
+  '--switch-ghost-hover',
+  '--cu-font-sans',
+  '--cu-font-size-sm',
+  '--cu-font-size-xs',
+  '--cu-radius-full',
+  '--cu-shadow-sm',
+  '--cu-space-2xs',
+  '--cu-space-xs',
+  '--cu-space-sm',
+  '--cu-space-lg',
+  '--cu-space-xl',
+  '--cu-space-2xl',
+  '--cu-space-3xl',
+];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

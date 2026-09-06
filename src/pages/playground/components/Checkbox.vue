@@ -188,7 +188,22 @@ const programmaticVanilla = `<script src="dist/CuCheckbox.umd.js"><\/script>
   });
 <\/script>`;
 
-const componentTokens = [];
+const componentTokens = [
+  '--cb-bg',
+  '--cb-ghost-hover',
+  '--cb-soft',
+  '--cb-text',
+  '--cu-font-sans',
+  '--cu-font-size-sm',
+  '--cu-font-size-xs',
+  '--cu-radius-sm',
+  '--cu-border-color',
+  '--cu-border-medium',
+  '--cu-space-xs',
+  '--cu-space-sm',
+  '--cu-space-md',
+  '--cu-space-lg',
+];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

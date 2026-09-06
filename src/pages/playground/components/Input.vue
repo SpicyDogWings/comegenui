@@ -206,7 +206,22 @@ const programmaticVanilla = `<script src="dist/CuInput.umd.js"><\/script>
   });
 <\/script>`;
 
-const componentTokens = [];
+const componentTokens = [
+  '--btn-bg',
+  '--btn-bg-hover',
+  '--btn-soft',
+  '--btn-soft-hover',
+  '--btn-subtle',
+  '--btn-subtle-hover',
+  '--btn-subtle-border',
+  '--cu-font-sans',
+  '--cu-font-size-sm',
+  '--cu-font-weight-medium',
+  '--cu-radius-md',
+  '--cu-border-thin',
+  '--cu-space-md',
+  '--cu-space-lg',
+];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },

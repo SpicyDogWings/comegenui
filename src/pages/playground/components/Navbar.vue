@@ -110,7 +110,13 @@ const items = [
   <Navbar :items="items" search :search-fields="['label']" />
 </template>`;
 
-const componentTokens = [];
+const componentTokens = [
+  '--cu-font-size-sm',
+  '--cu-space-2xs',
+  '--cu-space-xs',
+  '--cu-space-sm',
+  '--cu-space-md',
+];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -212,7 +218,9 @@ const eventsData = [
 
       <hr class="playground-separator" />
 
-      <hr class="playground-separator" />      <PlaygroundStyle :tokens="componentTokens" />
+      <hr class="playground-separator" />
+
+      <PlaygroundStyle :tokens="componentTokens" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>

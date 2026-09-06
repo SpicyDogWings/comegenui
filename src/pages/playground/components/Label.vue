@@ -182,7 +182,11 @@ const nativeVanilla = `<label for="native-usuario">Usuario</label>
 <label for="native-comentarios">Comentarios</label>
 <textarea id="native-comentarios" rows="3" placeholder="Textarea nativo"></textarea>`;
 
-const componentTokens = [];
+const componentTokens = [
+  '--label-fg',
+  '--cu-font-sans',
+  '--cu-space-xs',
+];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
