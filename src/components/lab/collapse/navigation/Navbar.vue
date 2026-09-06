@@ -103,6 +103,28 @@ const highlightTarget = computed<NavItem | null>(() => props.highlightItem ?? fi
 
 const navRef = ref<HTMLElement | null>(null)
 
+// Scroll al item que matchea la ruta actual (item activo)
+const activeItem = computed(() => {
+  const currentPath = route.path
+  const findActive = (items: NavItem[]): NavItem | null => {
+    for (const item of items) {
+      if (item.path === currentPath) return item
+      if (item.children?.length) {
+        const found = findActive(item.children)
+        if (found) return found
+      }
+    }
+    return null
+  }
+  return findActive(props.items)
+})
+
+watch(activeItem, async (item) => {
+  if (!item) return
+  await nextTick()
+  navRef.value?.querySelector('[data-navbar-active]')?.scrollIntoView({ block: 'nearest' })
+})
+
 watch(firstMatch, async (item) => {
   if (!item) return
   await nextTick()
@@ -120,8 +142,9 @@ watch(firstMatch, async (item) => {
         v-if="item.children?.length"
         :label="item.label"
         :defaultOpen="true"
-        :class="{ 'cu-navbar-item--match': highlightTarget === item }"
+        :class="{ 'cu-navbar-item--match': highlightTarget === item, 'cu-navbar-item--active': activeItem === item }"
         :data-navbar-match="highlightTarget === item ? '' : undefined"
+        :data-navbar-active="activeItem === item ? '' : undefined"
       >
         <Navbar
           :items="item.children"
@@ -136,8 +159,9 @@ watch(firstMatch, async (item) => {
         :to="item.path!"
         :color="route.path === item.path ? 'primary' : undefined"
         :variant="route.path === item.path ? 'soft' : undefined"
-        :class="{ 'cu-navbar-item--match': highlightTarget === item }"
+        :class="{ 'cu-navbar-item--match': highlightTarget === item, 'cu-navbar-item--active': activeItem === item }"
         :data-navbar-match="highlightTarget === item ? '' : undefined"
+        :data-navbar-active="activeItem === item ? '' : undefined"
       >
         {{ item.label }}
       </Button>
