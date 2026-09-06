@@ -14,6 +14,7 @@ import FileInput from '@/components/form/FileInput.vue'
 import FileInputZone from '@/components/form/FileInputZone.vue'
 import ColorPicker from '@/components/form/ColorPicker.vue'
 import FloatingButton from '@/components/buttons/FloatingButton.vue'
+import ToggleColorSheme from '@/components/buttons/ToggleColorSheme.vue'
 import LucideSave from '@/components/icons/LucideSave.vue'
 import LucidePencil from '@/components/icons/LucidePencil.vue'
 import ThemeManagerModal from '@/components/theme/ThemeManagerModal.vue'
@@ -77,6 +78,21 @@ const themeName = ref('light')
 const isEditing = ref(false)
 const modalRef = ref<InstanceType<typeof ThemeManagerModal> | null>(null)
 const modalPreviewRef = ref<InstanceType<typeof Modal> | null>(null)
+const isSaving = ref(false)
+const showSaveSuccess = ref(false)
+
+function handleSaveProfile() {
+  if (showSaveSuccess.value) return
+  isSaving.value = true
+  showSaveSuccess.value = false
+  setTimeout(() => {
+    isSaving.value = false
+    showSaveSuccess.value = true
+    setTimeout(() => {
+      showSaveSuccess.value = false
+    }, 3000)
+  }, 2000)
+}
 
 const isBuiltIn = computed(() => builtInNames.value.includes(themeName.value))
 
@@ -324,7 +340,6 @@ onMounted(() => {
   initColorsFromTheme(themeName.value)
   previousTheme.value = activeTheme.value
   setTheme(themeName.value)
-  modalPreviewRef.value?.open()
   shadowOpacityRaw.value = String(resolveOpacity(themeName.value))
 })
 
@@ -488,150 +503,218 @@ onBeforeUnmount(() => {
 
       <main class="tb-preview">
         <div class="tb-gallery">
-          <Card variant="ghost" title="Acciones" class="tb-card">
-            <div class="tb-cluster">
-              <p class="tb-cluster-label">Colores — solid</p>
-              <div class="tb-row">
-                <Button color="primary">Primary</Button>
-                <Button color="secondary">Secondary</Button>
-                <Button color="neutral">Neutral</Button>
-                <Button color="success">Success</Button>
-                <Button color="warning">Warning</Button>
-                <Button color="danger">Danger</Button>
-              </div>
-            </div>
-            <div class="tb-cluster">
-              <p class="tb-cluster-label">Variantes</p>
-              <div class="tb-row">
-                <Button color="primary" variant="soft">Soft</Button>
-                <Button color="primary" variant="ghost">Ghost</Button>
-                <Button color="primary" variant="outlined">Outlined</Button>
-                <Button color="primary" variant="subtle">Subtle</Button>
-                <Button color="primary" variant="link">Link</Button>
-              </div>
-            </div>
-            <div class="tb-cluster">
-              <p class="tb-cluster-label">Estados y con función</p>
-              <div class="tb-row">
-                <Button :loading="true">Loading</Button>
-                <Button color="danger" :loading="true">Loading</Button>
-                <Button :disabled="true">Disabled</Button>
-                <CopyButton text="comegen-ui" label="Copiar" />
-                <ToggleColorSheme />
-                <FloatingButton style="position: static" color="primary">
-                  <LucideSave :width="18" :height="18" />
-                </FloatingButton>
-              </div>
-            </div>
-          </Card>
 
-          <div class="tb-pair">
-            <Card variant="ghost" title="Campos" class="tb-card">
-            <div class="tb-sim">
-              <Label label="Nombre" />
-              <Input placeholder="Tu nombre" />
-              <div class="tb-two">
-                <div class="tb-cluster">
-                  <Label label="Email" color="primary" />
-                  <Input placeholder="tu@email.com" color="primary" />
-                </div>
-                <div class="tb-cluster">
-                  <Label label="Rol" />
-                  <Select placeholder="Elegí…">
-                    <option value="dev">Dev</option>
-                    <option value="designer">Designer</option>
-                  </Select>
+          <!-- DASHBOARD -->
+          <div class="tb-scene">
+            <div class="tb-scene-header">
+              <h3 class="tb-scene-title">Dashboard</h3>
+              <p class="tb-scene-desc">Vista general con métricas, datos y acciones rápidas</p>
+            </div>
+            <div class="tb-dashboard">
+              <div class="tb-dash-sidebar">
+                <Navbar :items="demoNavItems" :search="true" search-placeholder="Buscar sección..." />
+                <div class="tb-dash-sidebar-footer">
+                  <Outline :items="demoOutlineItems" />
                 </div>
               </div>
-              <Label label="Bio" />
-              <Textarea placeholder="Contanos qué estás construyendo…" />
-              <Label label="Avatar" />
-              <FileInput placeholder="Adjuntá una imagen" accept="image/*" />
-              <Label label="Color" />
-              <ColorPicker model-value="#E73F1E" />
-              <Autocomplete placeholder="¿Dónde estás?" />
-            </div>
-            <div class="tb-cluster">
-              <p class="tb-cluster-label">Zona de carga</p>
-              <FileInputZone placeholder="Arrastrá archivos acá, o hacé clic para elegir" />
-            </div>
-          </Card>
-
-          <Card variant="ghost" title="Opciones" class="tb-card">
-            <div class="tb-cluster">
-              <p class="tb-cluster-label">Switches</p>
-              <div class="tb-row">
-                <Switch />
-                <Switch color="primary" :model-value="true" />
-                <Switch color="success" :model-value="true" />
-                <Switch color="danger" :model-value="true" />
-                <Switch :disabled="true" />
+              <div class="tb-dash-main">
+                <div class="tb-dash-toolbar">
+                  <Input placeholder="Buscar…" style="max-width: 240px" />
+                  <div class="tb-dash-toolbar-actions">
+                    <Button color="primary">Nuevo</Button>
+                    <DropdownMenu color="neutral" variant="soft" label="Exportar" :items="dropdownItems" />
+                  </div>
+                </div>
+                <div class="tb-dash-stats">
+                  <Card variant="soft" color="primary" class="tb-stat">
+                    <div class="tb-stat-value">1,284</div>
+                    <div class="tb-stat-label">Usuarios activos</div>
+                  </Card>
+                  <Card variant="soft" color="success" class="tb-stat">
+                    <div class="tb-stat-value">98.2%</div>
+                    <div class="tb-stat-label">Uptime</div>
+                  </Card>
+                  <Card variant="soft" color="warning" class="tb-stat">
+                    <div class="tb-stat-value">42</div>
+                    <div class="tb-stat-label">Alertas</div>
+                  </Card>
+                  <Card variant="subtle" color="secondary" class="tb-stat">
+                    <div class="tb-stat-value">$12.4k</div>
+                    <div class="tb-stat-label">Ingresos</div>
+                  </Card>
+                </div>
+                <Card variant="ghost" class="tb-dash-table">
+                  <Table :columns="tableColumns" :data="tableData" color="primary">
+                    <template #cell-status="{ value }">
+                      <Badge
+                        :color="value === 'Active' ? 'success' : value === 'Pending' ? 'warning' : 'danger'"
+                      >
+                        {{ value }}
+                      </Badge>
+                    </template>
+                  </Table>
+                  <template #footer>
+                    <Pagination :total-pages="10" :current-page="3" :total-items="100" color="primary" />
+                  </template>
+                </Card>
               </div>
             </div>
-            <div class="tb-cluster">
-              <p class="tb-cluster-label">Checkboxes</p>
-              <div class="tb-col">
-                <Checkbox label="Notificaciones" color="primary" :model-value="true" />
-                <Checkbox label="Newsletter" color="success" :model-value="true" />
-                <Checkbox label="Modo oscuro" />
-                <Checkbox label="Borrado definitivo" color="danger" :disabled="true" />
-              </div>
-            </div>
-            <div class="tb-cluster">
-              <p class="tb-cluster-label">En contexto — preferencias</p>
-              <div class="tb-sim">
-                <div class="tb-option-row">
-                  <span class="tb-option-label">Notificaciones push</span>
-                  <Switch color="primary" :model-value="true" />
-                </div>
-                <div class="tb-option-row">
-                  <span class="tb-option-label">Resumen semanal</span>
-                  <Switch />
-                </div>
-                <div class="tb-option-row">
-                  <span class="tb-option-label">Mantener la sesión abierta</span>
-                  <Checkbox color="primary" :model-value="true" />
-                </div>
-                <div class="tb-option-row">
-                  <span class="tb-option-label">Compartir métricas</span>
-                  <Checkbox color="success" :model-value="true" />
-                </div>
-                <div class="tb-option-row">
-                  <span class="tb-option-label">Cuenta de prueba</span>
-                  <Checkbox :disabled="true" />
-                </div>
-              </div>
-            </div>
-          </Card>
           </div>
 
-          <Card variant="ghost" title="Fechas" class="tb-card">
-            <div class="tb-agenda">
-              <Calendar model-value="2026-09-11" style="width: 300px" />
-              <div class="tb-agenda-side">
-                <DatePicker model-value="2026-09-11" />
-                <DatePickerRange start-date="2026-09-01" end-date="2026-09-10" />
+          <!-- SETTINGS -->
+          <div class="tb-scene">
+            <div class="tb-scene-header">
+              <h3 class="tb-scene-title">Settings</h3>
+              <p class="tb-scene-desc">Formulario de configuración con preferencias y campos</p>
+            </div>
+          <div class="tb-settings">
+            <Card variant="ghost" title="Perfil" class="tb-settings-card tb-settings-profile">
+              <div class="tb-settings-form">
+                <div class="tb-settings-row">
+                  <div class="tb-field">
+                    <Label label="Nombre" />
+                    <Input placeholder="Tu nombre" />
+                  </div>
+                  <div class="tb-field">
+                    <Label label="Apellido" />
+                    <Input placeholder="Tu apellido" />
+                  </div>
+                </div>
+                <div class="tb-settings-row">
+                  <div class="tb-field">
+                    <Label label="Email" color="primary" />
+                    <Input placeholder="tu@email.com" color="primary" />
+                  </div>
+                  <div class="tb-field">
+                    <Label label="Teléfono" />
+                    <Input placeholder="+54 11 1234-5678" />
+                  </div>
+                </div>
+                <div class="tb-field">
+                  <Label label="Bio" />
+                  <Textarea placeholder="Contanos qué estás construyendo…" />
+                </div>
+                <div class="tb-settings-row">
+                  <div class="tb-field">
+                    <Label label="Rol" />
+                    <Select placeholder="Elegí…">
+                      <option value="dev">Dev</option>
+                      <option value="designer">Designer</option>
+                    </Select>
+                  </div>
+                  <div class="tb-field">
+                    <Label label="Ubicación" />
+                    <Autocomplete placeholder="¿Dónde estás?" />
+                  </div>
+                </div>
+                <div class="tb-field">
+                  <Label label="Avatar" />
+                  <FileInput placeholder="Adjuntá una imagen" accept="image/*" />
+                </div>
+                <div class="tb-settings-form-footer">
+                  <Checkbox label="Acepto los términos y condiciones" color="primary" />
+                  <div class="tb-settings-form-actions">
+                    <Button color="neutral" variant="ghost">Cancelar</Button>
+                    <Button color="primary" :loading="isSaving" @click="handleSaveProfile">
+                      {{ showSaveSuccess ? 'Guardado ✓' : 'Guardar cambios' }}
+                    </Button>
+                  </div>
+                  <Transition name="tb-fade">
+                    <Alert v-if="showSaveSuccess" title="Cambios guardados" color="success">
+                      Tu perfil se actualizó correctamente.
+                    </Alert>
+                  </Transition>
+                </div>
               </div>
-            </div>
-            <div class="tb-row">
-              <MonthSlider />
-              <MonthSlider month-format="MMM yyyy" color="success" />
-              <YearSlider />
-              <YearSlider variant="outlined" color="success" />
-            </div>
-          </Card>
+            </Card>
+            <Card variant="ghost" title="Preferencias" class="tb-settings-card tb-settings-prefs-card">
+              <div class="tb-settings-prefs">
+                <div class="tb-pref-section">
+                  <h4 class="tb-pref-title">Notificaciones</h4>
+                  <div class="tb-pref-row">
+                    <span class="tb-pref-label">Notificaciones push</span>
+                    <Switch color="primary" :model-value="true" />
+                  </div>
+                  <div class="tb-pref-row">
+                    <span class="tb-pref-label">Resumen semanal</span>
+                    <Switch />
+                  </div>
+                  <div class="tb-pref-row">
+                    <span class="tb-pref-label">Newsletter</span>
+                    <Switch color="success" :model-value="true" />
+                  </div>
+                </div>
+                <div class="tb-pref-section">
+                  <h4 class="tb-pref-title">Privacidad</h4>
+                  <div class="tb-pref-row">
+                    <span class="tb-pref-label">Perfil público</span>
+                    <Checkbox color="primary" :model-value="true" />
+                  </div>
+                  <div class="tb-pref-row">
+                    <span class="tb-pref-label">Compartir métricas</span>
+                    <Checkbox color="success" :model-value="true" />
+                  </div>
+                </div>
+                <div class="tb-pref-section">
+                  <h4 class="tb-pref-title">Zona de carga</h4>
+                  <FileInputZone placeholder="Arrastrá archivos acá, o hacé clic para elegir" />
+                </div>
+              </div>
+            </Card>
+          </div>
+          </div>
 
-          <Card variant="ghost" title="Feedback" class="tb-card">
-            <div class="tb-two">
-              <div class="tb-col">
-                <Alert title="Primary" color="primary">Mensaje informativo con el color del tema.</Alert>
-                <Alert title="Success" color="success">Todo salió como esperabas.</Alert>
-                <Alert title="Warning" color="warning">Algo necesita tu atención.</Alert>
-                <Alert title="Danger" color="danger">Esta acción no se puede deshacer.</Alert>
-              </div>
-              <div class="tb-col">
-                <div class="tb-cluster">
-                  <p class="tb-cluster-label">Colores</p>
+          <!-- COMPONENTS GALLERY -->
+          <div class="tb-scene">
+            <div class="tb-scene-header">
+              <h3 class="tb-scene-title">Componentes</h3>
+              <p class="tb-scene-desc">Botones, badges, alertas y feedback en contexto</p>
+            </div>
+            <div class="tb-components">
+              <Card variant="ghost" title="Acciones" class="tb-comp-card">
+                <div class="tb-comp-group">
+                  <p class="tb-comp-label">Colores — solid</p>
+                  <div class="tb-row">
+                    <Button color="primary">Primary</Button>
+                    <Button color="secondary">Secondary</Button>
+                    <Button color="neutral">Neutral</Button>
+                    <Button color="success">Success</Button>
+                    <Button color="warning">Warning</Button>
+                    <Button color="danger">Danger</Button>
+                  </div>
+                </div>
+                <div class="tb-comp-group">
+                  <p class="tb-comp-label">Variantes</p>
+                  <div class="tb-row">
+                    <Button color="primary" variant="soft">Soft</Button>
+                    <Button color="primary" variant="ghost">Ghost</Button>
+                    <Button color="primary" variant="outlined">Outlined</Button>
+                    <Button color="primary" variant="subtle">Subtle</Button>
+                    <Button color="primary" variant="link">Link</Button>
+                  </div>
+                </div>
+                <div class="tb-comp-group">
+                  <p class="tb-comp-label">Estados</p>
+                  <div class="tb-row">
+                    <Button :loading="true">Loading</Button>
+                    <Button color="danger" :loading="true">Loading</Button>
+                    <Button :disabled="true">Disabled</Button>
+                    <CopyButton text="comegen-ui" label="Copiar" />
+                    <ToggleColorSheme />
+                  </div>
+                </div>
+              </Card>
+              <Card variant="ghost" title="Feedback" class="tb-comp-card">
+                <div class="tb-col">
+                  <Alert title="Primary" color="primary">Mensaje informativo con el color del tema.</Alert>
+                  <Alert title="Success" color="success">Todo salió como esperabas.</Alert>
+                  <Alert title="Warning" color="warning">Algo necesita tu atención.</Alert>
+                  <Alert title="Danger" color="danger">Esta acción no se puede deshacer.</Alert>
+                </div>
+              </Card>
+              <Card variant="ghost" title="Badges" class="tb-comp-card">
+                <div class="tb-comp-group">
+                  <p class="tb-comp-label">Colores</p>
                   <div class="tb-row">
                     <Badge color="primary">Primary</Badge>
                     <Badge color="secondary">Secondary</Badge>
@@ -641,8 +724,8 @@ onBeforeUnmount(() => {
                     <Badge color="danger">Danger</Badge>
                   </div>
                 </div>
-                <div class="tb-cluster">
-                  <p class="tb-cluster-label">Variantes</p>
+                <div class="tb-comp-group">
+                  <p class="tb-comp-label">Variantes</p>
                   <div class="tb-row">
                     <Badge color="primary" variant="solid">Solid</Badge>
                     <Badge color="primary" variant="soft">Soft</Badge>
@@ -651,8 +734,8 @@ onBeforeUnmount(() => {
                     <Badge color="primary" variant="subtle">Subtle</Badge>
                   </div>
                 </div>
-                <div class="tb-cluster">
-                  <p class="tb-cluster-label">En contexto</p>
+                <div class="tb-comp-group">
+                  <p class="tb-comp-label">En contexto</p>
                   <div class="tb-notis">
                     <div class="tb-noti">
                       <Badge color="success" variant="soft">OK</Badge>
@@ -664,132 +747,84 @@ onBeforeUnmount(() => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </Card>
             </div>
-          </Card>
+          </div>
 
-          <Card variant="ghost" title="Datos" class="tb-card">
-            <div class="tb-sim">
-              <div class="tb-toolbar">
-                <Input placeholder="Buscar…" style="max-width: 240px" />
-                <Button color="primary">Nuevo</Button>
-              </div>
-              <Table :columns="tableColumns" :data="tableData" color="primary">
-                <template #cell-status="{ value }">
-                  <Badge
-                    :color="value === 'Active' ? 'success' : value === 'Pending' ? 'warning' : 'danger'"
-                  >
-                    {{ value }}
-                  </Badge>
-                </template>
-              </Table>
-              <Pagination :total-pages="10" :current-page="3" :total-items="100" color="primary" />
+          <!-- CALENDAR -->
+          <div class="tb-scene">
+            <div class="tb-scene-header">
+              <h3 class="tb-scene-title">Fechas</h3>
+              <p class="tb-scene-desc">Calendario, selectores de fecha y sliders temporales</p>
             </div>
-            <div class="tb-cluster">
-              <p class="tb-cluster-label">Tabla avanzada — búsqueda, orden y paginación incluidos</p>
-              <AdvancedTable :columns="tableColumns" :data="tableData" :items-per-page="5" color="primary" />
+            <div class="tb-calendar">
+              <Card variant="ghost" class="tb-cal-card">
+                <Calendar model-value="2026-09-11" style="width: 100%" />
+              </Card>
+              <Card variant="ghost" class="tb-cal-card">
+                <div class="tb-cal-side">
+                  <DatePicker model-value="2026-09-11" />
+                  <DatePickerRange start-date="2026-09-01" end-date="2026-09-10" />
+                </div>
+                <div class="tb-cal-sliders">
+                  <MonthSlider />
+                  <MonthSlider month-format="MMM yyyy" color="success" />
+                  <YearSlider />
+                  <YearSlider variant="outlined" color="success" />
+                </div>
+              </Card>
             </div>
-          </Card>
+          </div>
 
-          <Card variant="ghost" title="Superficies" class="tb-card">
-            <div class="tb-two">
-              <div class="tb-cards-grid">
-                <Card title="Ghost" variant="ghost">Contenido apoyado sobre el fondo.</Card>
-                <Card title="Soft" variant="soft" color="primary">Tinte suave del color activo.</Card>
-                <Card title="Subtle" variant="subtle" color="secondary">Fondo tenue con borde propio.</Card>
-                <Card title="Solid" variant="solid" color="primary">Bloque de color pleno.</Card>
-              </div>
-              <div class="tb-cluster">
-                <p class="tb-cluster-label">Horizontal y con footer</p>
-                <Card title="Horizontal" variant="ghost" layout="horizontal">
-                  <template #media>
-                    <div style="background: linear-gradient(135deg, var(--cu-color-primary), var(--cu-color-secondary)); height: 100%; min-height: 90px;"></div>
-                  </template>
-                  Media al costado, contenido a la derecha.
-                </Card>
-                <Card title="Con footer" variant="subtle" color="success">
-                  El footer queda anclado abajo con su separador.
-                  <template #footer>
-                    <Button color="success" variant="soft">Aceptar</Button>
-                    <Button color="neutral" variant="ghost">Cancelar</Button>
-                  </template>
-                </Card>
+          <!-- EDITORIAL -->
+          <div class="tb-scene">
+            <div class="tb-scene-header">
+              <h3 class="tb-scene-title">Editorial</h3>
+              <p class="tb-scene-desc">Contenido markdown, citas y bloques de código</p>
+            </div>
+            <div class="tb-editorial">
+              <Card variant="ghost" class="tb-ed-card">
+                <Markdown>
+                  # Título del tema
+
+                  Párrafo con **negrita**, *itálica* y `código inline`. Un párrafo más largo para ver cómo se comporta el texto extenso con el tema aplicado y los tokens de tipografía.
+
+                  - Item uno
+                  - Item dos
+                  - Item tres
+                </Markdown>
+              </Card>
+              <div class="tb-ed-sidebar">
+                <Blockquote color="primary">
+                  Los tokens son la fuente única de verdad: cambiás un color y todo el ecosistema lo sigue.
+                </Blockquote>
+                <CodeBlock :code="editorialSnippet" language="javascript" />
               </div>
             </div>
-          </Card>
+          </div>
 
-          <Card variant="ghost" title="Navegación" class="tb-card">
-            <div class="tb-site">
-              <div class="tb-site-cols">
-                <nav class="tb-site-nav">
-                  <Navbar :items="demoNavItems" />
-                </nav>
-                <div class="tb-site-body">
+          <!-- OVERLAYS -->
+          <div class="tb-scene">
+            <div class="tb-scene-header">
+              <h3 class="tb-scene-title">Overlays</h3>
+              <p class="tb-scene-desc">Modales, collapse y elementos flotantes</p>
+            </div>
+            <div class="tb-overlays-mock">
+              <div class="tb-overlay-page">
+                <div class="tb-overlay-content">
                   <div class="tb-sim-lines">
                     <span class="tb-sim-line tb-sim-line--w80"></span>
                     <span class="tb-sim-line"></span>
                     <span class="tb-sim-line tb-sim-line--w60"></span>
                   </div>
-                  <Tabs variant="tabs" :tabs="[
-                    { key: 'general', label: 'General' },
-                    { key: 'advanced', label: 'Advanced' },
-                    { key: 'locked', label: 'Locked', disabled: true },
-                  ]">
-                    <template #general>Contenido General</template>
-                    <template #advanced>Contenido Advanced</template>
-                    <template #locked>Contenido Locked</template>
-                  </Tabs>
+                  <Collapse label="Más información" color="primary" :default-open="true">
+                    <p>El contenido aparece sobre la página, con el tema editado.</p>
+                  </Collapse>
+                  <Collapse label="Detalles" color="success">
+                    <p>Cada color sigue los tokens del tema activo.</p>
+                  </Collapse>
                 </div>
-              </div>
-            </div>
-            <div class="tb-nav-grid">
-              <div class="tb-cluster">
-                <p class="tb-cluster-label">Outline — cápsula propia</p>
-                <div class="tb-sim">
-                  <Outline :items="demoOutlineItems" />
-                </div>
-              </div>
-              <div class="tb-cluster">
-                <p class="tb-cluster-label">Menú desplegable</p>
-                <div class="tb-sim">
-                  <div class="tb-sim-lines">
-                    <span class="tb-sim-line tb-sim-line--w60"></span>
-                  </div>
-                  <div class="tb-row">
-                    <DropdownMenu color="primary" label="Opciones" :items="dropdownItems" />
-                    <DropdownMenu color="neutral" variant="soft" label="Acciones" :items="dropdownItems" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </Card>
-
-          <Card variant="ghost" title="Editorial" class="tb-card">
-            <div class="tb-two">
-              <Blockquote color="primary">
-                Los tokens son la fuente única de verdad: cambiás un color y todo el ecosistema lo sigue.
-              </Blockquote>
-              <Markdown>
-                # Título del tema
-
-                Párrafo con **negrita**, *itálica* y `código inline`.
-
-                - Item uno
-                - Item dos
-              </Markdown>
-            </div>
-            <CodeBlock :code="editorialSnippet" language="javascript" />
-          </Card>
-
-          <Card variant="ghost" title="Overlays" class="tb-card">
-            <div class="tb-overlays">
-              <div class="tb-cluster">
-                <p class="tb-cluster-label">Modal — renderizado en contexto</p>
-                <div class="tb-sim">
-                  <div class="tb-sim-lines">
-                    <span class="tb-sim-line tb-sim-line--w80"></span>
-                    <span class="tb-sim-line"></span>
-                  </div>
+                <div class="tb-overlay-modal">
                   <div class="cu-modal" data-size="sm" data-height="auto">
                     <header class="cu-modal-header">
                       <div class="cu-modal-header-text">
@@ -814,34 +849,23 @@ onBeforeUnmount(() => {
                   </div>
                 </div>
               </div>
-              <div class="tb-cluster">
-                <p class="tb-cluster-label">Modal real + expandibles</p>
-                <div class="tb-sim">
-                  <div class="tb-sim-lines">
-                    <span class="tb-sim-line tb-sim-line--w80"></span>
-                    <span class="tb-sim-line tb-sim-line--w60"></span>
-                  </div>
-                  <Collapse label="Más información" color="primary" :default-open="true">
-                    <p>El contenido aparece sobre la página, con el tema editado.</p>
-                  </Collapse>
-                  <Collapse label="Detalles" color="success">
-                    <p>Cada color sigue los tokens del tema activo.</p>
-                  </Collapse>
-                  <Modal
-                    ref="modalPreviewRef"
-                    size="sm"
-                    title="Confirmar acción"
-                    description="El modal usa los tokens del tema activo."
-                  >
-                    <p>Contenido del modal con el tema del ThemeBuilder.</p>
-                  </Modal>
-                </div>
+              <div class="tb-overlay-actions">
+                <Modal
+                  ref="modalPreviewRef"
+                  size="sm"
+                  title="Confirmar acción"
+                  description="El modal usa los tokens del tema activo."
+                >
+                  <p>Contenido del modal con el tema del ThemeBuilder.</p>
+                </Modal>
+                <Button color="primary" @click="modalPreviewRef?.open()">Abrir modal real</Button>
+                <FloatingButton style="position: static" color="primary">
+                  <LucideSave :width="18" :height="18" />
+                </FloatingButton>
               </div>
             </div>
-            <div class="tb-row">
-              <Button color="primary" @click="modalPreviewRef?.open()">Abrir modal real</Button>
-            </div>
-          </Card>
+          </div>
+
         </div>
       </main>
     </div>
@@ -933,36 +957,309 @@ onBeforeUnmount(() => {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 2rem;
   min-width: 0;
 }
 
 .tb-gallery {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 2.5rem;
 }
 
-.tb-pair {
+/* === SCENES === */
+.tb-scene {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.tb-scene-header {
+  padding: 0 0.25rem;
+  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);
+  padding-bottom: 0.75rem;
+}
+
+.tb-scene-title {
+  font-size: var(--cu-font-size-lg);
+  font-weight: var(--cu-font-weight-semibold);
+  color: var(--cu-color-neutral);
+  margin: 0;
+}
+
+.tb-scene-desc {
+  font-size: var(--cu-font-size-sm);
+  color: var(--cu-color-neutral);
+  opacity: 0.6;
+  margin: 0.25rem 0 0;
+}
+
+/* === DASHBOARD === */
+.tb-dashboard {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
-  gap: 1.5rem;
-  align-items: stretch;
+  grid-template-columns: 220px 1fr;
+  gap: 1.25rem;
+  background-color: var(--cu-color-surface);
+  border: var(--cu-border-thin) solid var(--cu-border-color);
+  border-radius: var(--cu-radius-lg);
+  overflow: hidden;
 }
 
-.tb-cluster {
+.tb-dash-sidebar {
+  padding: 1rem;
+  border-right: var(--cu-border-thin) solid var(--cu-border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background-color: var(--cu-color-surface);
+}
+
+.tb-dash-sidebar-footer {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: var(--cu-border-thin) solid var(--cu-border-color);
+}
+
+.tb-dash-main {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-width: 0;
+}
+
+.tb-dash-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.tb-dash-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tb-dash-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.tb-stat {
+  padding: 1rem;
+}
+
+.tb-stat-value {
+  font-size: var(--cu-font-size-2xl);
+  font-weight: var(--cu-weight-bold);
+  color: var(--cu-color-neutral);
+  line-height: 1.2;
+}
+
+.tb-stat-label {
+  font-size: var(--cu-font-size-xs);
+  color: var(--cu-color-neutral);
+  opacity: 0.6;
+  margin-top: 0.25rem;
+}
+
+.tb-dash-table {
+  padding: 1rem;
+}
+
+/* === SETTINGS === */
+.tb-settings {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 1.25rem;
+}
+
+.tb-settings-card {
+  padding: 1.25rem;
+}
+
+.tb-settings-profile {
+  /* Más ancho — formulario completo */
+}
+
+.tb-settings-prefs-card {
+  /* Más estrecho — preferencias compactas */
+}
+
+.tb-settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.tb-settings-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.tb-settings-form-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-top: 1rem;
+  border-top: var(--cu-border-thin) solid var(--cu-border-color);
+}
+
+.tb-settings-form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.tb-settings-prefs {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.tb-pref-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.tb-pref-title {
+  font-size: var(--cu-font-size-sm);
+  font-weight: var(--cu-font-weight-semibold);
+  color: var(--cu-color-neutral);
+  margin: 0;
+  padding-bottom: 0.5rem;
+  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);
+}
+
+.tb-pref-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.tb-pref-label {
+  font-size: var(--cu-font-size-sm);
+  color: var(--cu-color-neutral);
+}
+
+/* === COMPONENTS === */
+.tb-components {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+
+.tb-comp-card {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.tb-comp-group {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-.tb-cluster-label {
+.tb-comp-label {
   font-size: var(--cu-font-size-xs);
   font-weight: var(--cu-font-weight-semibold);
+  color: var(--cu-color-neutral);
   opacity: 0.6;
   margin: 0;
 }
 
+/* === CALENDAR === */
+.tb-calendar {
+  display: grid;
+  grid-template-columns: minmax(280px, 320px) 1fr;
+  gap: 1.25rem;
+}
+
+.tb-cal-card {
+  padding: 1.25rem;
+}
+
+.tb-cal-side {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.tb-cal-sliders {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  border-top: var(--cu-border-thin) solid var(--cu-border-color);
+}
+
+/* === EDITORIAL === */
+.tb-editorial {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 1.25rem;
+}
+
+.tb-ed-card {
+  padding: 1.5rem;
+}
+
+.tb-ed-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* === OVERLAYS === */
+.tb-overlays-mock {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.tb-overlay-page {
+  position: relative;
+  transform: translateZ(0);
+  border: var(--cu-border-thin) solid var(--cu-border-color);
+  border-radius: var(--cu-radius-lg);
+  background-color: var(--cu-color-surface);
+  overflow: hidden;
+  min-height: 320px;
+}
+
+.tb-overlay-content {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.tb-overlay-modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+}
+
+.tb-overlay-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0 0.25rem;
+}
+
+/* === SHARED === */
 .tb-row {
   display: flex;
   flex-wrap: wrap;
@@ -976,25 +1273,20 @@ onBeforeUnmount(() => {
   gap: 0.5rem;
 }
 
-.tb-two {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-
-/* Simulaciones: mini-páginas con contenido de contexto (como la vitrina de la home).
-   El transform crea containing block → los position:fixed (Modal, FAB) quedan adentro. */
-.tb-sim {
-  position: relative;
-  transform: translateZ(0);
+.tb-notis {
   display: flex;
   flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tb-noti {
+  display: flex;
+  align-items: center;
   gap: 0.75rem;
-  padding: 1.25rem;
+  padding: 0.75rem 1rem;
   border: var(--cu-border-thin) solid var(--cu-border-color);
-  border-radius: var(--cu-radius-lg);
-  background-color: var(--cu-color-surface);
-  overflow: hidden;
+  border-radius: var(--cu-radius);
+  font-size: var(--cu-font-size-sm);
 }
 
 .tb-sim-lines {
@@ -1016,101 +1308,6 @@ onBeforeUnmount(() => {
 
 .tb-sim-line--w80 {
   width: 80%;
-}
-
-.tb-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
-
-.tb-agenda {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 1rem;
-  align-items: start;
-}
-
-.tb-agenda-side {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  min-width: 0;
-}
-
-.tb-cards-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
-}
-
-.tb-notis {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.tb-noti {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  border: var(--cu-border-thin) solid var(--cu-border-color);
-  border-radius: var(--cu-radius);
-  font-size: var(--cu-font-size-sm);
-}
-
-.tb-option-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-}
-
-.tb-option-label {
-  font-size: var(--cu-font-size-sm);
-}
-
-.tb-site {
-  transform: translateZ(0);
-  border: var(--cu-border-thin) solid var(--cu-border-color);
-  border-radius: var(--cu-radius-lg);
-  overflow: hidden;
-  background-color: var(--cu-color-surface);
-}
-
-.tb-site-cols {
-  display: grid;
-  grid-template-columns: 200px 1fr;
-  min-height: 250px;
-}
-
-.tb-site-nav {
-  padding: 0.5rem;
-  border-right: var(--cu-border-thin) solid var(--cu-border-color);
-  overflow-y: auto;
-}
-
-.tb-site-body {
-  padding: 1rem 1.25rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  min-width: 0;
-}
-
-.tb-nav-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-
-.tb-overlays {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
 }
 
 .tb-group {
