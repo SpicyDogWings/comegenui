@@ -4,6 +4,8 @@ import Modal from '@/components/overlay/Modal.vue'
 import Button from '@/components/buttons/Button.vue'
 import Input from '@/components/form/Input.vue'
 import CodeBlock from '@/components/markdown/CodeBlock.vue'
+import LucideUpload from '@/components/icons/LucideUpload.vue'
+import LucideDownload from '@/components/icons/LucideDownload.vue'
 
 interface ThemeConfig {
   themes: Record<string, Record<string, string>>
@@ -77,9 +79,14 @@ defineExpose({ open, close })
           <h3>Acciones</h3>
           <div class="tm-actions">
             <input ref="importFileInput" type="file" accept=".json" @change="handleImport" class="tm-file-input" />
-            <Button color="secondary" variant="soft" @click="importFileInput?.click()">Import JSON</Button>
-            <Button color="secondary" @click="emit('export')">Export JSON</Button>
-            <Button color="neutral" @click="emit('reset')">Reset Defaults</Button>
+            <Button color="secondary" variant="soft" @click="importFileInput?.click()">
+              <LucideUpload :width="16" :height="16" />
+              Import JSON
+            </Button>
+            <Button color="secondary" @click="emit('export')">
+              <LucideDownload :width="16" :height="16" />
+              Export JSON
+            </Button>
           </div>
         </div>
 
@@ -153,7 +160,7 @@ defineExpose({ open, close })
   display: flex;
   flex-direction: column;
   min-height: 0;
-  max-height: 300px;
+  max-height: 35vh;
   overflow: hidden;
   border-radius: var(--cu-radius-sm);
 }
