@@ -357,7 +357,6 @@ function applyImportedTheme(cfg: CustomThemeConfig, name: string) {
   })
 
   isEditing.value = true
-  previousTheme.value = name
   colors.value = { ...colors.value, ...rest }
   showImportPicker.value = false
 }
@@ -422,14 +421,9 @@ function syncSharedFromPlugin() {
   if (s.borders) borders.value = { ...borders.value, ...s.borders }
 }
 
-// El tema activo pasa a ser el que se está editando (preview global en vivo);
-// al salir se restaura el que estaba ("el de ahorita" queda como default).
-const previousTheme = ref('')
-
 onMounted(() => {
   syncSharedFromPlugin()
   initColorsFromTheme(themeName.value)
-  previousTheme.value = store.current
   shadowOpacityRaw.value = String(resolveOpacity(themeName.value))
   isEditing.value = store.isCustom
 })
