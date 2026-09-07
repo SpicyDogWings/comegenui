@@ -252,6 +252,7 @@ const componentTokens = [
 ];
 
 const componentDeps = [
+  { label: 'Popover', path: '/playground/components/popover' },
   { label: 'Button', path: '/playground/components/button' },
   { label: 'Loader', path: '/playground/components/loader' },
 ];

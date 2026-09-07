@@ -264,7 +264,7 @@ const commands = [
       <section id="basic" class="playground-section">
         <div class="playground-heading">
           <h2>Basic</h2>
-          <Badge color="neutral" title="Commands requeridos">commands</Badge>
+          <Badge color="neutral" title="Valor por defecto">[]</Badge>
         </div>
         <SectionDemo :vue-code="basicVue" :vanilla-code="basicVanilla">
           <div class="playground-col">
@@ -280,7 +280,7 @@ const commands = [
       <section id="categories" class="playground-section">
         <div class="playground-heading">
           <h2>With Categories</h2>
-          <Badge color="neutral" title="Agrupa con headers y badges al final">category + badges</Badge>
+          <Badge color="neutral" title="Campo de CommandItem, opcional">category?</Badge>
         </div>
         <SectionDemo :vue-code="categoriesVue" :vanilla-code="categoriesVanilla">
           <div class="playground-col">
@@ -295,7 +295,7 @@ const commands = [
       <section id="shortcuts" class="playground-section">
         <div class="playground-heading">
           <h2>With Shortcuts</h2>
-          <Badge color="neutral" title="Shortcut opcional">shortcut</Badge>
+          <Badge color="neutral" title="Campo de CommandItem, opcional">shortcut?</Badge>
         </div>
         <SectionDemo :vue-code="shortcutsVue" :vanilla-code="shortcutsVanilla">
           <div class="playground-col">
@@ -358,7 +358,7 @@ const commands = [
           Estructura del <code>CommandItem</code> usado en la prop
           <code>commands</code>.
         </p>
-        <CodeBlock :code="interfaceCode" language="ts" variant="solid" />
+        <CodeBlock :code="interfaceCode" language="ts" />
       </section>
     </div>
   </PlaygroundLayout>

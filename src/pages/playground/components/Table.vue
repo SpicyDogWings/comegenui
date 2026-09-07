@@ -514,7 +514,7 @@ const totalDemo = sampleData.reduce((sum, r) => sum + r.amount, 0).toFixed(2);
         <Table :columns="apiColumns" :data="exposesData" empty="No expone métodos" variant="ghost" compact />
 
         <h3 id="api-interfaces">Interfaces</h3>
-        <CodeBlock :code="interfaceCode" language="ts" variant="solid" />
+        <CodeBlock :code="interfaceCode" language="ts" />
       </section>
     </div>
   </PlaygroundLayout>

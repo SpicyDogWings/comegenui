@@ -6,6 +6,7 @@ import Navbar from "@/components/lab/collapse/navigation/Navbar.vue";
 import Badge from "@/components/information/Badge.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Table from "@/components/data/Table.vue";
+import CodeBlock from "@/components/markdown/CodeBlock.vue";
 
 const outlineItems = [
   { label: 'Basic', id: 'basic' },
@@ -29,9 +30,16 @@ const outlineItems = [
       { label: 'Props', id: 'api-props' },
       { label: 'Events', id: 'api-events' },
       { label: 'Exposes', id: 'api-exposes' },
+      { label: 'Interfaces', id: 'api-interfaces' },
     ],
   },
 ];
+
+const interfaceCode = `export interface NavItem {
+  label: string
+  path?: string
+  children?: NavItem[]
+}`;
 
 const basicItems = [
   { label: 'Inicio', path: '/playground/components/navbar' },
@@ -233,12 +241,25 @@ const eventsData = [
 
         <h3 id="api-exposes">Exposes</h3>
         <Table :columns="apiColumns" :data="[]" empty="No expone métodos" variant="ghost" compact />
+
+        <h3 id="api-interfaces">Interfaces</h3>
+        <p class="playground-desc">
+          Estructura de cada item del prop <code>items</code>.
+        </p>
+        <CodeBlock :code="interfaceCode" language="ts" />
       </section>
     </div>
   </PlaygroundLayout>
 </template>
 
 <style scoped>
+.playground-desc {
+  font-size: var(--cu-font-size-sm);
+  color: var(--cu-color-neutral-text);
+  opacity: 0.7;
+  margin-bottom: 1rem;
+}
+
 .demo-panel {
   max-width: 320px;
   border: var(--cu-border-thin) solid var(--cu-border-color);
