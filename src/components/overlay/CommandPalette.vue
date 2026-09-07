@@ -2,11 +2,11 @@
 import { computed, ref, watch, nextTick } from "vue";
 import Modal from "../overlay/Modal.vue";
 import Input from "../form/Input.vue";
-import Badge from "../information/Badge.vue";
 
 export interface CommandItem {
   id: string;
   label: string;
+  description?: string;
   category?: string;
   icon?: string;
   shortcut?: string;
@@ -117,16 +117,21 @@ defineExpose({
             @click="select(cmd)"
             @mouseenter="activeIndex = index"
           >
-            <div class="cu-command-palette-item-main">
+            <div class="cu-command-palette-item-left">
               <span v-if="cmd.icon" class="cu-command-palette-item-icon">{{ cmd.icon }}</span>
-                  <span class="cu-command-palette-item-label">{{ cmd.label }}</span>
-                  <Badge v-if="cmd.category" color="neutral" variant="subtle">
-                    {{ cmd.category }}
-                  </Badge>
+                  <div class="cu-command-palette-item-text">
+                    <span class="cu-command-palette-item-label">{{ cmd.label }}</span>
+                    <span v-if="cmd.description" class="cu-command-palette-item-desc">{{ cmd.description }}</span>
+                  </div>
                 </div>
-                <span v-if="cmd.shortcut" class="cu-command-palette-item-shortcut">
-                  {{ cmd.shortcut }}
-                </span>
+                <div class="cu-command-palette-item-right">
+                  <span v-if="cmd.category" class="cu-command-palette-item-badge">
+                    {{ cmd.category }}
+                  </span>
+                  <span v-if="cmd.shortcut" class="cu-command-palette-item-shortcut">
+                    {{ cmd.shortcut }}
+                  </span>
+                </div>
               </div>
             </template>
             <div v-else class="cu-command-palette-empty">
@@ -173,20 +178,53 @@ defineExpose({
       background-color: var(--cu-color-neutral-ghost-hover);
     }
 
-    .cu-command-palette-item-main {
+    .cu-command-palette-item-left {
       display: flex;
       align-items: center;
       gap: 0.625rem;
+      min-width: 0;
     }
 
     .cu-command-palette-item-icon {
       font-size: 1rem;
       line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .cu-command-palette-item-text {
+      display: flex;
+      flex-direction: column;
+      gap: 0.125rem;
+      min-width: 0;
     }
 
     .cu-command-palette-item-label {
       font-size: var(--cu-font-size-sm);
       color: var(--cu-color-neutral);
+    }
+
+    .cu-command-palette-item-desc {
+      font-size: var(--cu-font-size-xs);
+      color: var(--cu-color-neutral);
+      opacity: 0.5;
+    }
+
+    .cu-command-palette-item-right {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-shrink: 0;
+      margin-left: 1rem;
+    }
+
+    .cu-command-palette-item-badge {
+      font-size: var(--cu-font-size-xs);
+      color: var(--cu-color-neutral);
+      opacity: 0.6;
+      padding: 0.125rem 0.5rem;
+      border: var(--cu-border-thin) solid var(--cu-border-color);
+      border-radius: var(--cu-radius-sm);
+      white-space: nowrap;
     }
 
     .cu-command-palette-item-shortcut {

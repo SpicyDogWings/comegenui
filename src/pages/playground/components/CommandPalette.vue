@@ -81,6 +81,7 @@ const exposesData = [
 const interfaceCode = `interface CommandItem {
   id: string;
   label: string;
+  description?: string;
   category?: string;
   icon?: string;
   shortcut?: string;
@@ -95,15 +96,15 @@ const basicCommands: CommandItem[] = [
 ];
 
 const categoryCommands: CommandItem[] = [
-  { id: 'new', label: 'Nuevo archivo', category: 'Archivo', icon: '📄', action: () => {} },
-  { id: 'open', label: 'Abrir archivo', category: 'Archivo', icon: '📂', action: () => {} },
-  { id: 'save', label: 'Guardar', category: 'Archivo', icon: '💾', action: () => {} },
-  { id: 'undo', label: 'Deshacer', category: 'Edición', icon: '↩️', action: () => {} },
-  { id: 'redo', label: 'Rehacer', category: 'Edición', icon: '↪️', action: () => {} },
-  { id: 'copy', label: 'Copiar', category: 'Edición', icon: '📋', action: () => {} },
-  { id: 'paste', label: 'Pegar', category: 'Edición', icon: '📌', action: () => {} },
-  { id: 'find', label: 'Buscar', category: 'Navegación', icon: '🔍', action: () => {} },
-  { id: 'replace', label: 'Reemplazar', category: 'Navegación', icon: '🔄', action: () => {} },
+  { id: 'new', label: 'Nuevo archivo', description: 'Crear un archivo vacío', category: 'Archivo', icon: '📄', action: () => {} },
+  { id: 'open', label: 'Abrir archivo', description: 'Abrir un archivo existente', category: 'Archivo', icon: '📂', action: () => {} },
+  { id: 'save', label: 'Guardar', description: 'Guardar cambios actuales', category: 'Archivo', icon: '💾', action: () => {} },
+  { id: 'undo', label: 'Deshacer', description: 'Revertir última acción', category: 'Edición', icon: '↩️', action: () => {} },
+  { id: 'redo', label: 'Rehacer', description: 'Reaplicar acción deshecha', category: 'Edición', icon: '↪️', action: () => {} },
+  { id: 'copy', label: 'Copiar', description: 'Copiar selección al portapapeles', category: 'Edición', icon: '📋', action: () => {} },
+  { id: 'paste', label: 'Pegar', description: 'Pegar desde el portapapeles', category: 'Edición', icon: '📌', action: () => {} },
+  { id: 'find', label: 'Buscar', description: 'Buscar texto en el archivo', category: 'Navegación', icon: '🔍', action: () => {} },
+  { id: 'replace', label: 'Reemplazar', description: 'Buscar y reemplazar texto', category: 'Navegación', icon: '🔄', action: () => {} },
 ];
 
 const shortcutCommands: CommandItem[] = [
