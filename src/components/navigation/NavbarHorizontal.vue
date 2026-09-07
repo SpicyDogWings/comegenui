@@ -18,8 +18,6 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits<{ (e: 'search', query: string): void }>()
-
 const {
   navRef,
   displayItems,
@@ -30,7 +28,6 @@ const {
   search: () => false,
   searchMode: () => 'filter',
   searchFields: () => [],
-  onSearch: (q) => emit('search', q),
 })
 </script>
 

@@ -12,6 +12,7 @@ const outlineItems = [
   { label: 'Trigger', id: 'trigger' },
   { label: 'Nested', id: 'nested' },
   { label: 'Flat', id: 'flat' },
+  { label: 'Icons', id: 'icons' },
   {
     label: 'Style',
     id: 'style',
@@ -24,7 +25,6 @@ const outlineItems = [
     id: 'api',
     children: [
       { label: 'Props', id: 'api-props' },
-      { label: 'Events', id: 'api-events' },
       { label: 'Interfaces', id: 'api-interfaces' },
     ],
   },
@@ -63,6 +63,26 @@ const flatItems = [
   { label: 'Docs', path: '/docs' },
   { label: 'Sin destino' },
   { label: 'Contacto', path: '/contacto' },
+];
+
+// Con iconos: cada item lleva un `icon` (HTML/emoji) que se renderiza antes del label.
+const iconItems = [
+  { label: 'Inicio', path: '/playground/components/navbar-horizontal', icon: '🏠' },
+  { label: 'Componentes', icon: '🧩', children: [
+    { label: 'Buttons', icon: '🔘', children: [
+      { label: 'Button', path: '/playground/components/button', icon: '🅱️' },
+      { label: 'CopyButton', path: '/playground/components/copy-button', icon: '📋' },
+    ]},
+    { label: 'Form', icon: '📝', children: [
+      { label: 'Input', path: '/playground/components/input', icon: '⌨️' },
+      { label: 'Select', path: '/playground/components/select', icon: '🔽' },
+    ]},
+  ]},
+  { label: 'Configuración', icon: '⚙️', children: [
+    { label: 'Perfil', path: '/perfil', icon: '👤' },
+    { label: 'Seguridad', path: '/seguridad', icon: '🔒' },
+  ]},
+  { label: 'Ayuda', path: '/ayuda', icon: '❓' },
 ];
 
 // Anidamiento profundo: los items con children se renderizan como Dropdown en
@@ -142,6 +162,23 @@ const items = [
   <NavbarHorizontal :items="items" />
 </template>`;
 
+const iconsVue = `<script setup lang="ts">
+import NavbarHorizontal from '@/components/navigation/NavbarHorizontal.vue'
+
+const items = [
+  { label: 'Inicio', path: '/inicio', icon: '🏠' },
+  { label: 'Componentes', icon: '🧩', children: [
+    { label: 'Buttons', icon: '🔘', children: [
+      { label: 'Button', path: '/componentes/button', icon: '🅱️' },
+    ]},
+  ]},
+]
+<\/script>
+
+<template>
+  <NavbarHorizontal :items="items" />
+</template>`;
+
 const vanillaImport = `<link rel="stylesheet" href="dist/css/themes.css">
 <script src="dist/CuNavbarHorizontal.umd.js"><\/script>`;
 
@@ -193,10 +230,6 @@ const apiColumns = [
 const propsData = [
   { name: 'items', type: 'NavItem[]', default: '—', description: 'Árbol de navegación: { label, path?, icon?, children? }. Los padres se renderizan como Dropdown en cascada (anidamiento infinito), las hojas como items de menú nativos' },
   { name: 'trigger', type: '"click" | "hover"', default: '"click"', description: 'Cómo abren los submenús: click (default) o hover' },
-];
-
-const eventsData = [
-  { name: 'search', type: 'string', description: 'Se emite al escribir; payload con el query actual' },
 ];
 
 const interfaceCode = `interface NavItem {
@@ -275,6 +308,22 @@ const interfaceCode = `interface NavItem {
 
       <hr class="playground-separator" />
 
+      <section id="icons" class="playground-section">
+        <div class="playground-heading">
+          <h2>Icons</h2>
+          <Badge color="neutral" title="Campo icon en NavItem">icon</Badge>
+        </div>
+        <SectionDemo :vue-code="iconsVue">
+          <div class="playground-col">
+            <div class="demo-panel">
+              <NavbarHorizontal :items="iconItems" />
+            </div>
+          </div>
+        </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
       <PlaygroundStyle :tokens="componentTokens" />
 
       <section id="api" class="playground-section">
@@ -282,9 +331,6 @@ const interfaceCode = `interface NavItem {
 
         <h3 id="api-props">Props</h3>
         <Table :columns="apiColumns" :data="propsData" variant="ghost" compact />
-
-        <h3 id="api-events">Events</h3>
-        <Table :columns="apiColumns" :data="eventsData" variant="ghost" compact />
 
         <h3 id="api-interfaces">Interfaces</h3>
         <CodeBlock :code="interfaceCode" language="ts" variant="solid" />
