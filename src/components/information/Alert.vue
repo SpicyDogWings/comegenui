@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch, type PropType } from "vue";
+import { computed, ref, useSlots, watch, type PropType } from "vue";
 
 const props = defineProps({
   color: {
@@ -31,6 +31,9 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["close", "open", "update:show"]);
+
+const slots = useSlots();
+const hasIcon = computed(() => !!slots.icon);
 
 const internalShow = ref(props.show);
 
@@ -85,7 +88,7 @@ defineExpose({
     :style="colorStyles"
     role="alert"
   >
-    <div class="cu-alert-header">
+    <div v-if="props.title || props.close || hasIcon" class="cu-alert-header">
       <div class="cu-alert-title">
         <slot name="icon" />
         <span v-if="props.title" class="cu-alert-title-text">{{ props.title }}</span>
