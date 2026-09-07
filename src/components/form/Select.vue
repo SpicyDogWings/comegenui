@@ -42,7 +42,7 @@ const props = defineProps({
   modelValue: { type: String, required: false, default: "" },
   options: { type: Array as () => SelectOption[], required: false, default: () => [] },
   searchEnabled: { type: Boolean, required: false, default: false },
-  searchResetDelay: { type: Number, required: false, default: 2000 },
+  searchResetDelay: { type: Number, required: false, default: 1000 },
   loading: { type: Boolean, required: false, default: false },
   cooldownVariant: { type: String, required: false, default: "ghost-hover" },
 });

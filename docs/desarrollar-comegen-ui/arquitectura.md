@@ -250,7 +250,7 @@ watch(() => dropdownRef.value?.isOpen(), (open) => {
 | Prop | Tipo | Default | Descripción |
 |------|------|---------|-------------|
 | `searchEnabled` | Boolean | `false` | Activa la búsqueda por teclado (estilo select nativo) |
-| `searchResetDelay` | Number | `2000` | Tiempo en ms antes de resetear el texto acumulado |
+| `searchResetDelay` | Number | `1000` | Tiempo en ms antes de resetear el texto acumulado |
 | `loading` | Boolean | `false` | Muestra barra de carga (oculta cooldown) |
 
 ---

@@ -373,7 +373,7 @@ const propsData = [
   { name: 'textAlign', type: 'string', default: '"left"', description: 'Alineación del texto de las opciones: left, center, right' },
   { name: 'fixed', type: 'boolean', default: 'false', description: 'Posiciona el panel con position: fixed (útil dentro de contenedores con overflow)' },
   { name: 'searchEnabled', type: 'boolean', default: 'false', description: 'Búsqueda por teclado como select nativo; hace scroll a la opción que coincide' },
-  { name: 'searchResetDelay', type: 'number', default: '2000', description: 'Ms antes de resetear el texto de búsqueda' },
+  { name: 'searchResetDelay', type: 'number', default: '1000', description: 'Ms antes de resetear el texto de búsqueda' },
   { name: 'loading', type: 'boolean', default: 'false', description: 'Muestra estado de carga en el panel (delegado al Dropdown interno)' },
   { name: 'cooldownVariant', type: 'string', default: '"ghost-hover"', description: 'Variante de la barra de cooldown de la búsqueda' },
 ];
