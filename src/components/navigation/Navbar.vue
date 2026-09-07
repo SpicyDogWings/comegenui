@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch, type PropType } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch, type PropType } from 'vue'
 import { useRoute } from 'vue-router'
 import Collapse from '@/components/overlay/Collapse.vue'
 import Button from '@/components/buttons/Button.vue'
@@ -23,6 +23,9 @@ const props = defineProps({
   searchFields: { type: Array as () => string[], required: false, default: () => [] },
   // Compact: muestra solo los iconos (o la inicial del label si no hay icono).
   compact: { type: Boolean, required: false, default: false },
+  // compactable: agrega un botón nativo (en la misma row que el search) que
+  // alterna el modo compact del componente.
+  compactable: { type: Boolean, required: false, default: false },
   // Responsive: bajo el breakpoint, la nav se vuelve un drawer overlay que se
   // abre con un botón hamburguesa. Solo aplica en la instancia raíz.
   responsive: { type: Boolean, required: false, default: false },
@@ -48,9 +51,17 @@ const {
   onSearch: (q) => emit('search', q),
 })
 
+// Modo compact efectivo: si se usa el toggle nativo (compactable), el estado lo
+// maneja el componente; si no, se respeta el prop `compact`.
+const localCompact = ref(props.compact)
+function toggleCompact() {
+  localCompact.value = !localCompact.value
+}
+const effectiveCompact = computed(() => (props.compactable ? localCompact.value : props.compact))
+
 function itemIcon(item: NavItem): string {
   if (item.icon) return item.icon
-  return props.compact ? item.label.charAt(0) : ''
+  return effectiveCompact.value ? item.label.charAt(0) : ''
 }
 
 // --- Modo responsive (drawer overlay en mobile) ---
@@ -104,13 +115,28 @@ watch(() => route.path, () => { open.value = false })
       ref="navRef"
       class="cu-navbar"
       :class="{
-        'cu-navbar--compact': compact,
+        'cu-navbar--compact': effectiveCompact,
         'cu-navbar--drawer': responsive && isMobile,
         'is-open': open,
       }"
     >
-      <div v-if="search && !compact" class="cu-navbar-search">
-        <Input v-model="query" :placeholder="searchPlaceholder" />
+      <div v-if="search || compactable" class="cu-navbar-header">
+        <Input
+          v-if="search && !effectiveCompact"
+          v-model="query"
+          :placeholder="searchPlaceholder"
+          class="cu-navbar-search-input"
+        />
+        <button
+          v-if="compactable"
+          type="button"
+          class="cu-navbar-compact-toggle"
+          :title="effectiveCompact ? 'Expandir' : 'Compactar'"
+          :aria-pressed="effectiveCompact"
+          @click="toggleCompact"
+        >
+          <span aria-hidden="true">{{ effectiveCompact ? '»' : '«' }}</span>
+        </button>
       </div>
 
       <template v-for="item in displayItems" :key="item.path || item.label">
@@ -128,7 +154,7 @@ watch(() => route.path, () => { open.value = false })
             :search="false"
             :search-mode="props.searchMode"
             :search-fields="props.searchFields"
-            :compact="compact"
+            :compact="effectiveCompact"
             :highlight-item="highlightTarget"
           />
         </Collapse>
@@ -137,7 +163,7 @@ watch(() => route.path, () => { open.value = false })
           :to="item.path!"
           :color="activeItem === item ? 'primary' : undefined"
           :variant="activeItem === item ? 'soft' : undefined"
-          :title="compact && !item.icon ? item.label : undefined"
+          :title="effectiveCompact && !item.icon ? item.label : undefined"
           :class="{ 'cu-navbar-item--match': highlightTarget === item, 'cu-navbar-item--active': activeItem === item }"
           :data-navbar-match="highlightTarget === item ? '' : undefined"
           :data-navbar-active="activeItem === item ? '' : undefined"
@@ -171,8 +197,36 @@ watch(() => route.path, () => { open.value = false })
   padding: var(--cu-space-sm) var(--cu-space-md);
 }
 
-.cu-navbar-search {
+.cu-navbar-header {
+  display: flex;
+  align-items: center;
+  gap: var(--cu-space-xs);
   margin-bottom: var(--cu-space-xs);
+}
+
+.cu-navbar-search-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.cu-navbar-compact-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  background: transparent;
+  border: var(--cu-border-thin) solid var(--cu-border-color);
+  border-radius: var(--cu-radius-sm);
+  cursor: pointer;
+  font-size: var(--cu-font-size-sm);
+  line-height: 1;
+  color: var(--cu-color-neutral);
+}
+
+.cu-navbar-compact-toggle:hover {
+  background-color: var(--cu-color-neutral-ghost-hover);
 }
 
 .cu-navbar :deep(.cu-collapse-content) {

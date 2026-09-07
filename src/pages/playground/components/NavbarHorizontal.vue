@@ -11,6 +11,7 @@ const outlineItems = [
   { label: 'Basic', id: 'basic' },
   { label: 'Trigger', id: 'trigger' },
   { label: 'Nested', id: 'nested' },
+  { label: 'Flat', id: 'flat' },
   {
     label: 'Style',
     id: 'style',
@@ -30,29 +31,38 @@ const outlineItems = [
 ];
 
 const navItems = [
-  { label: 'Inicio', path: '/playground/components/navbar-horizontal', icon: '🏠' },
-  { label: 'Componentes', icon: '🧩', children: [
-    { label: 'Buttons', icon: '🔘', children: [
-      { label: 'Button', path: '/playground/components/button', icon: '🅱️' },
-      { label: 'CopyButton', path: '/playground/components/copy-button', icon: '📋' },
-      { label: 'FloatingButton', path: '/playground/components/floating-button', icon: '🛫' },
+  { label: 'Inicio', path: '/playground/components/navbar-horizontal' },
+  { label: 'Componentes', children: [
+    { label: 'Buttons', children: [
+      { label: 'Button', path: '/playground/components/button' },
+      { label: 'CopyButton', path: '/playground/components/copy-button' },
+      { label: 'FloatingButton', path: '/playground/components/floating-button' },
     ]},
-    { label: 'Form', icon: '📝', children: [
-      { label: 'Input', path: '/playground/components/input', icon: '⌨️' },
-      { label: 'Select', path: '/playground/components/select', icon: '🔽' },
-      { label: 'Textarea', path: '/playground/components/textarea', icon: '📄' },
+    { label: 'Form', children: [
+      { label: 'Input', path: '/playground/components/input' },
+      { label: 'Select', path: '/playground/components/select' },
+      { label: 'Textarea', path: '/playground/components/textarea' },
     ]},
-    { label: 'Data', icon: '📊', children: [
-      { label: 'Table', path: '/playground/components/table', icon: '🗂️' },
-      { label: 'AdvancedTable', path: '/playground/components/advanced-table', icon: '📑' },
+    { label: 'Data', children: [
+      { label: 'Table', path: '/playground/components/table' },
+      { label: 'AdvancedTable', path: '/playground/components/advanced-table' },
     ]},
   ]},
-  { label: 'Configuración', icon: '⚙️', children: [
-    { label: 'Perfil', path: '/perfil', icon: '👤' },
-    { label: 'Seguridad', path: '/seguridad', icon: '🔒' },
-    { label: 'Notificaciones', path: '/notificaciones', icon: '🔔' },
+  { label: 'Configuración', children: [
+    { label: 'Perfil', path: '/perfil' },
+    { label: 'Seguridad', path: '/seguridad' },
+    { label: 'Notificaciones', path: '/notificaciones' },
   ]},
-  { label: 'Ayuda', path: '/ayuda', icon: '❓' },
+  { label: 'Ayuda', path: '/ayuda' },
+];
+
+// Nav plana: solo hojas (top-level sin children). Los items sin path se
+// renderizan deshabilitados (no linkean).
+const flatItems = [
+  { label: 'Inicio', path: '/inicio' },
+  { label: 'Docs', path: '/docs' },
+  { label: 'Sin destino' },
+  { label: 'Contacto', path: '/contacto' },
 ];
 
 // Anidamiento profundo: los items con children se renderizan como Dropdown en
@@ -110,6 +120,21 @@ const items = [
       ]},
     ]},
   ]},
+]
+<\/script>
+
+<template>
+  <NavbarHorizontal :items="items" />
+</template>`;
+
+const flatVue = `<script setup lang="ts">
+import NavbarHorizontal from '@/components/navigation/NavbarHorizontal.vue'
+
+// Nav plana: solo hojas. Los items sin path se renderizan deshabilitados.
+const items = [
+  { label: 'Inicio', path: '/inicio' },
+  { label: 'Docs', path: '/docs' },
+  { label: 'Sin destino' },
 ]
 <\/script>
 
@@ -227,6 +252,22 @@ const interfaceCode = `interface NavItem {
           <div class="playground-col">
             <div class="demo-panel">
               <NavbarHorizontal :items="deepItems" />
+            </div>
+          </div>
+        </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="flat" class="playground-section">
+        <div class="playground-heading">
+          <h2>Flat</h2>
+          <Badge color="neutral" title="Sin children: las hojas top-level son Buttons; sin path se deshabilitan">hojas</Badge>
+        </div>
+        <SectionDemo :vue-code="flatVue">
+          <div class="playground-col">
+            <div class="demo-panel">
+              <NavbarHorizontal :items="flatItems" />
             </div>
           </div>
         </SectionDemo>

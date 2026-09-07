@@ -12,6 +12,7 @@ const outlineItems = [
   { label: 'Nested', id: 'nested' },
   { label: 'Icons', id: 'icons' },
   { label: 'Compact', id: 'compact' },
+  { label: 'Compactable', id: 'compactable' },
   { label: 'Responsive', id: 'responsive' },
   { label: 'Search', id: 'search' },
   { label: 'Search Modes', id: 'modes', children: [
@@ -139,6 +140,22 @@ const items = [
   <Navbar :items="items" compact />
 </template>`;
 
+const compactableVue = `<script setup lang="ts">
+import Navbar from '@/components/navigation/Navbar.vue'
+
+const items = [
+  { label: 'Inicio', path: '/inicio', icon: '🏠' },
+  { label: 'Configuración', icon: '⚙️', children: [
+    { label: 'Perfil', path: '/perfil', icon: '👤' },
+  ]},
+]
+<\/script>
+
+<template>
+  <!-- Botón nativo de compactar, junto al search en la misma row -->
+  <Navbar :items="items" search compactable />
+</template>`;
+
 const responsiveVue = `<script setup lang="ts">
 import Navbar from '@/components/navigation/Navbar.vue'
 
@@ -228,6 +245,7 @@ const apiColumns = [
 const propsData = [
   { name: 'items', type: 'NavItem[]', default: '—', description: 'Árbol de navegación: { label, path?, icon?, children? }. Los items con children se renderizan como Collapse' },
   { name: 'compact', type: 'boolean', default: 'false', description: 'Modo compacto: muestra solo los iconos (o la inicial del label si no hay icono)' },
+  { name: 'compactable', type: 'boolean', default: 'false', description: 'Agrega un botón nativo en la misma row que el search para alternar el modo compact' },
   { name: 'responsive', type: 'boolean', default: 'false', description: 'Bajo 768px la nav se vuelve un drawer overlay con botón hamburguesa' },
   { name: 'search', type: 'boolean', default: 'false', description: 'Activa el input de búsqueda arriba del menú; filtra/resalta items automáticamente' },
   { name: 'searchPlaceholder', type: 'string', default: '"Buscar..."', description: 'Placeholder del input de búsqueda' },
@@ -308,6 +326,22 @@ const interfaceCode = `interface NavItem {
           <div class="playground-col">
             <div class="demo-panel">
               <Navbar :items="iconItems" compact />
+            </div>
+          </div>
+        </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="compactable" class="playground-section">
+        <div class="playground-heading">
+          <h2>Compactable</h2>
+          <Badge color="neutral" title="Botón nativo junto al search para alternar compact">compactable</Badge>
+        </div>
+        <SectionDemo :vue-code="compactableVue">
+          <div class="playground-col">
+            <div class="demo-panel">
+              <Navbar :items="iconItems" search compactable />
             </div>
           </div>
         </SectionDemo>

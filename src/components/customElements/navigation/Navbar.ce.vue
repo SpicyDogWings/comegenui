@@ -15,6 +15,7 @@ const props = defineProps({
   },
   searchFields: { type: Array as () => string[], default: () => [] },
   compact: { type: Boolean, default: false },
+  compactable: { type: Boolean, default: false },
   responsive: { type: Boolean, default: false },
 });
 
@@ -40,6 +41,7 @@ function ceEmit(event: string, payload: unknown) {
     :search-mode="props.searchMode"
     :search-fields="props.searchFields"
     :compact="props.compact"
+    :compactable="props.compactable"
     :responsive="props.responsive"
     @search="ceEmit('search', $event)"
   />
