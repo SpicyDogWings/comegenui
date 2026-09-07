@@ -35,6 +35,7 @@ const outlineItems = [
     children: [
       { label: 'Props', id: 'api-props' },
       { label: 'Events', id: 'api-events' },
+      { label: 'Exposes', id: 'api-exposes' },
       { label: 'Interfaces', id: 'api-interfaces' },
     ],
   },
@@ -635,7 +636,13 @@ const interfaceCode = `interface NavItem {
         <h3 id="api-events">Events</h3>
         <Table :columns="apiColumns" :data="eventsData" variant="ghost" compact />
 
+        <h3 id="api-exposes">Exposes</h3>
+        <Table :columns="apiColumns" :data="[]" empty="No expone métodos" variant="ghost" compact />
+
         <h3 id="api-interfaces">Interfaces</h3>
+        <p class="playground-desc">
+          Estructura de cada item del prop <code>items</code>.
+        </p>
         <CodeBlock :code="interfaceCode" language="ts" variant="solid" />
       </section>
 
@@ -644,6 +651,13 @@ const interfaceCode = `interface NavItem {
 </template>
 
 <style scoped>
+.playground-desc {
+  font-size: var(--cu-font-size-sm);
+  color: var(--cu-color-neutral-text);
+  opacity: 0.7;
+  margin-bottom: 1rem;
+}
+
 .demo-panel {
   max-width: 320px;
   border: var(--cu-border-thin) solid var(--cu-border-color);

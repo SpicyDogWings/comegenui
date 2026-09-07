@@ -79,6 +79,8 @@ const navItems = [
           { label: 'Modal', path: '/playground/components/modal' },
           { label: 'Collapse', path: '/playground/components/collapse' },
           { label: 'Dropdown', path: '/playground/components/dropdown' },
+          { label: 'Popover', path: '/playground/components/popover' },
+          { label: 'Tooltip', path: '/playground/components/tooltip' },
           { label: 'CommandPalette', path: '/playground/components/command-palette' },
           { label: 'SideOver', path: '/playground/components/side-over' },
         ]

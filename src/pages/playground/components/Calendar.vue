@@ -567,7 +567,7 @@ const interfaceCode = `interface CalendarEvent {
         <Table :columns="apiColumns" :data="exposesData" variant="ghost" compact />
 
         <h3 id="api-interfaces">Interfaces</h3>
-        <CodeBlock :code="interfaceCode" language="ts" variant="solid" />
+        <CodeBlock :code="interfaceCode" language="ts" />
       </section>
     </div>
   </PlaygroundLayout>

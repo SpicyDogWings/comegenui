@@ -1,9 +1,28 @@
 <script setup lang="ts">
+import { ref, onMounted, onBeforeUnmount } from "vue";
 import { version } from "../../package.json";
 import Badge from "@/components/information/Badge.vue";
 import LucideGitLab from "@/components/icons/LucideGitLab.vue";
 import LucidePalette from "@/components/icons/LucidePalette.vue";
 import ThemeDropdown from "@/components/theme/ThemeDropdown.vue";
+import CommandPalette from "@/components/overlay/CommandPalette.vue";
+import { navigationCommands } from "@/utils/command-routes";
+
+const navPaletteRef = ref<InstanceType<typeof CommandPalette> | null>(null);
+
+function handleNavShortcut(event: KeyboardEvent) {
+  if (event.ctrlKey && !event.altKey && !event.shiftKey && event.key.toLowerCase() === "k") {
+    event.preventDefault();
+    navPaletteRef.value?.open();
+  }
+}
+
+onMounted(() => {
+  window.addEventListener("keydown", handleNavShortcut);
+});
+onBeforeUnmount(() => {
+  window.removeEventListener("keydown", handleNavShortcut);
+});
 </script>
 
 <template>
@@ -19,6 +38,15 @@ import ThemeDropdown from "@/components/theme/ThemeDropdown.vue";
       </div>
       <div class="app-topbar-actions">
         <ThemeDropdown />
+        <Badge
+          color="neutral"
+          variant="subtle"
+          class="app-topbar-shortcut"
+          title="Abrir paleta de comandos"
+          @click="navPaletteRef?.open()"
+        >
+          CTRL+K comandos
+        </Badge>
         <slot name="actions" />
         <RouterLink
           to="/playground/theme-builder"
@@ -43,6 +71,12 @@ import ThemeDropdown from "@/components/theme/ThemeDropdown.vue";
     <main class="app-body">
       <slot />
     </main>
+    <CommandPalette
+      ref="navPaletteRef"
+      title="Navegar"
+      placeholder="Buscar página…"
+      :commands="navigationCommands()"
+    />
   </section>
 </template>
 
@@ -103,6 +137,16 @@ import ThemeDropdown from "@/components/theme/ThemeDropdown.vue";
   color: var(--cu-color-neutral);
   opacity: 0.75;
   transition: opacity 150ms ease, color 150ms ease;
+}
+
+.app-topbar-shortcut {
+  cursor: pointer;
+  user-select: none;
+  transition: opacity 150ms ease;
+}
+
+.app-topbar-shortcut:hover {
+  opacity: 0.75;
 }
 
 .app-topbar-icon:hover {

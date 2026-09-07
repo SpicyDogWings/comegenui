@@ -173,6 +173,16 @@ const router = createRouter({
               component: () => import("@/pages/playground/components/Dropdown.vue")
             },
             {
+              path: "popover",
+              name: "Popover playground",
+              component: () => import("@/pages/playground/components/Popover.vue")
+            },
+            {
+              path: "tooltip",
+              name: "Tooltip playground",
+              component: () => import("@/pages/playground/components/Tooltip.vue")
+            },
+            {
               path: "dropdown-menu",
               name: "DropdownMenu playground",
               component: () => import("@/pages/playground/components/DropdownMenu.vue")
