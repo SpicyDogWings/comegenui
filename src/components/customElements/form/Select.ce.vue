@@ -38,7 +38,7 @@ const props = defineProps({
   fixed: { type: Boolean, required: false, default: false },
   hightContrast: { type: Boolean, required: false, default: false },
   searchEnabled: { type: Boolean, required: false, default: false },
-  searchResetDelay: { type: Number, required: false, default: 2000 },
+  searchResetDelay: { type: Number, required: false, default: 1000 },
   loading: { type: Boolean, required: false, default: false },
   cooldownVariant: { type: String, required: false, default: "ghost-hover" },
 });

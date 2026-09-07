@@ -24,7 +24,7 @@ Selector de opciones con color, variante, ícono chevron, opciones deshabilitada
 | `disabled` | `boolean` | `false` | Estado deshabilitado |
 | `hightContrast` | `boolean` | `false` | Modo de alto contraste para el texto |
 | `searchEnabled` | `boolean` | `false` | Activa búsqueda por teclado (estilo select nativo: escribir hace scroll al match) |
-| `searchResetDelay` | `number` | `2000` | Tiempo (ms) antes de resetear el texto de búsqueda. Se reinicia con cada tecla |
+| `searchResetDelay` | `number` | `1000` | Tiempo (ms) antes de resetear el texto de búsqueda. Se reinicia con cada tecla |
 | `loading` | `boolean` | `false` | Muestra una barra de progreso animada en el dropdown |
 | `cooldownVariant` | `string` | `"ghost"` | Estilo de la barra de cooldown: `ghost` (suave) o `solid` (color lleno). No se muestra si `loading` está activo |
 
@@ -167,7 +167,7 @@ Cuando `searchEnabled` es `true`, el select acepta entrada por teclado (como un 
 **Comportamiento:**
 - Al abrir el dropdown, el input oculto recibe foco
 - Al escribir, la lista scrollea a la primera opción que coincide (por `startsWith`)
-- El texto acumulado se resetea después de 2s sin teclear (configurable con `searchResetDelay`)
+- El texto acumulado se resetea después de 1s sin teclear (configurable con `searchResetDelay`)
 - Backspace borra el último carácter
 - Escape y Tab no afectan la búsqueda
 
