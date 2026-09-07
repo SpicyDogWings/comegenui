@@ -9,6 +9,9 @@ import Alert from "@/components/information/Alert.vue";
 import Input from "@/components/form/Input.vue";
 import Switch from "@/components/form/Switch.vue";
 import Checkbox from "@/components/form/Checkbox.vue";
+import Select from "@/components/form/Select.vue";
+import Textarea from "@/components/form/Textarea.vue";
+import FileInput from "@/components/form/FileInput.vue";
 import Markdown from "@/components/markdown/Markdown.vue";
 import CodeBlock from "@/components/markdown/CodeBlock.vue";
 
@@ -17,6 +20,18 @@ const store = useThemeStore();
 const demoValue = ref("");
 const notifications = ref(true);
 const keepSession = ref(true);
+const selectedRole = ref("");
+const demoTextarea = ref("");
+const selectedPlan = ref("pro");
+const autoSave = ref(false);
+const acceptTerms = ref(false);
+const demoFile = ref<File | null>(null);
+
+const roleOptions = [
+  { label: "Desarrollador", value: "dev" },
+  { label: "Diseñador", value: "design" },
+  { label: "PM", value: "pm" },
+];
 
 const scriptSnippet = `<body>
   <script src="comegenui/CuButton.umd.js"><\/script>
@@ -44,6 +59,7 @@ function prettyTheme(value: string) {
       <main class="home-main">
       <section class="home-hero">
         <div class="home-hero-copy">
+          <img src="/img/comegen.webp" alt="ComegenUI" class="home-hero-logo" />
           <h1 class="home-hero-title">Componentes para llevar.</h1>
           <p class="home-hero-tagline">
             Lib de Web Components hecha en Vue 3: importalos como componentes
@@ -61,18 +77,36 @@ function prettyTheme(value: string) {
 
         <div class="home-vitrina" aria-label="Componentes en vivo">
           <div class="home-vitrina-row">
-            <Input v-model="demoValue" start-value="" placeholder="Escribí algo…" />
+            <Input v-model="demoValue" placeholder="Nombre completo" />
+          </div>
+          <div class="home-vitrina-row">
+            <Select v-model="selectedRole" :options="roleOptions" placeholder="Rol" />
+          </div>
+          <div class="home-vitrina-row">
+            <Textarea v-model="demoTextarea" placeholder="Contanos algo…" :rows="2" />
           </div>
           <div class="home-vitrina-row">
             <Switch v-model="notifications" color="primary" />
             <span class="home-vitrina-label">Notificaciones</span>
           </div>
           <div class="home-vitrina-row">
+            <Switch v-model="autoSave" color="success" />
+            <span class="home-vitrina-label">Auto-guardado</span>
+          </div>
+          <div class="home-vitrina-row">
+            <FileInput v-model="demoFile" label="Adjuntar archivo" />
+          </div>
+          <div class="home-vitrina-row">
             <Checkbox v-model="keepSession" color="primary" />
             <span class="home-vitrina-label">Mantener la sesión abierta</span>
           </div>
           <div class="home-vitrina-row">
-            <span class="home-vitrina-eco">{{ demoValue || "El input va llegando acá…" }}</span>
+            <Checkbox v-model="acceptTerms" color="primary" />
+            <span class="home-vitrina-label">Acepto los términos y condiciones</span>
+          </div>
+          <div class="home-vitrina-row home-vitrina-actions">
+            <Button color="primary" variant="solid">Enviar</Button>
+            <Button color="neutral" variant="ghost">Cancelar</Button>
           </div>
         </div>
       </section>
@@ -172,9 +206,9 @@ function prettyTheme(value: string) {
 
 .home-hero {
   display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
+  grid-template-columns: 1.5fr 1fr;
   gap: 3rem;
-  align-items: center;
+  align-items: start;
 }
 
 .home-hero-copy {
@@ -182,6 +216,12 @@ function prettyTheme(value: string) {
   flex-direction: column;
   align-items: flex-start;
   gap: 1.25rem;
+}
+
+.home-hero-logo {
+  height: 20rem;
+  width: auto;
+  margin-bottom: 1rem;
 }
 
 .home-hero-title {
@@ -223,6 +263,10 @@ function prettyTheme(value: string) {
 
 .home-vitrina-row:last-child {
   border-bottom: none;
+}
+
+.home-vitrina-actions {
+  justify-content: flex-end;
 }
 
 .home-vitrina-label {

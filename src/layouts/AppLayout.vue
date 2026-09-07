@@ -10,7 +10,10 @@ import ThemeDropdown from "@/components/theme/ThemeDropdown.vue";
   <section class="app-layout">
     <header class="app-topbar">
       <div class="app-topbar-left">
-        <RouterLink to="/" class="app-topbar-brand">ComegenUI</RouterLink>
+        <RouterLink to="/" class="app-topbar-brand">
+          <img src="/img/comegen.webp" alt="ComegenUI" class="app-topbar-logo" />
+          ComegenUI
+        </RouterLink>
         <Badge color="neutral" variant="subtle">v{{ version }}</Badge>
         <slot name="title" />
       </div>
@@ -75,6 +78,9 @@ import ThemeDropdown from "@/components/theme/ThemeDropdown.vue";
 }
 
 .app-topbar-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   font-size: var(--cu-font-size-md);
   font-weight: var(--cu-font-weight-bold);
   letter-spacing: -0.01em;
@@ -84,6 +90,11 @@ import ThemeDropdown from "@/components/theme/ThemeDropdown.vue";
 
 .app-topbar-brand:hover {
   opacity: 0.8;
+}
+
+.app-topbar-logo {
+  height: 1.5rem;
+  width: auto;
 }
 
 .app-topbar-icon {
