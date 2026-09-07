@@ -49,19 +49,11 @@ const highlightLanguage = computed(() => {
   return resolved && hljs.getLanguage(resolved) ? resolved : ''
 })
 
-function escapeHtml(text: string): string {
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;')
-}
-
+// highlight.js escapa el input; si algo falla, cae a texto plano
 const highlightedHtml = computed(() => {
   if (!highlightLanguage.value) return ''
   try {
-    return hljs.highlight(escapeHtml(props.code), { language: highlightLanguage.value, ignoreIllegals: true }).value
+    return hljs.highlight(props.code, { language: highlightLanguage.value, ignoreIllegals: true }).value
   } catch {
     return ''
   }
