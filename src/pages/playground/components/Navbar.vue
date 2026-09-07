@@ -500,7 +500,7 @@ const interfaceCode = `interface NavItem {
       <section id="triggers" class="playground-section">
         <div class="playground-heading">
           <h2>Triggers</h2>
-          <Badge color="neutral" title="Submenús en compact abren como Dropdown a la derecha con chevron ›">trigger</Badge>
+          <Badge color="neutral" title="Valor por defecto del prop trigger">click</Badge>
         </div>
         <SectionDemo :vue-code="triggersVue" :vanilla-code="triggersVanilla">
           <div class="playground-col">
