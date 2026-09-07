@@ -153,7 +153,7 @@ const matchIndex = computed(() => {
   const q = searchText.value.toLowerCase();
   if (!q) return -1;
   return props.options.findIndex(o =>
-    !o.disabled && o.label.toLowerCase().startsWith(q)
+    !o.disabled && matchesQuery(o.label, q),
   );
 });
 
@@ -223,7 +223,7 @@ watch(() => dropdownRef.value?.isOpen(), (open) => {
 4. **Auto-focus al abrir** el dropdown para que el usuario pueda escribir inmediatamente.
 5. **Reset automático** del texto acumulado después de `searchResetDelay` ms de inactividad.
 6. **Scroll al match**, no filtro — la lista completa sigue visible, solo se posiciona en la primera coincidencia.
-7. **Coincidencia por `startsWith`** (no `includes`) — comportamiento nativo del select.
+7. **Coincidencia por `includes`** — busca en cualquier parte del label, no solo al inicio.
 8. **Backspace** borra el último carácter del texto acumulado.
 9. **Ignora** teclas de control (Ctrl, Meta), Escape, Tab.
 10. **Cooldown bar** — se muestra en el dropdown mientras el usuario escribe, usando el componente `Loader` con `animation="cooldown"`.

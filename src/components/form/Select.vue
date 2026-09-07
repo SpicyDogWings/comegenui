@@ -61,7 +61,7 @@ const matchIndex = computed(() => {
   const q = searchText.value;
   if (!q) return -1;
   return props.options.findIndex(o =>
-    !o.disabled && matchesQuery(o.label, q, { mode: "startsWith" }),
+    !o.disabled && matchesQuery(o.label, q),
   );
 });
 

@@ -166,7 +166,7 @@ Cuando `searchEnabled` es `true`, el select acepta entrada por teclado (como un 
 
 **Comportamiento:**
 - Al abrir el dropdown, el input oculto recibe foco
-- Al escribir, la lista scrollea a la primera opción que coincide (por `startsWith`)
+- Al escribir, la lista scrollea a la primera opción que coincide (por `includes`)
 - El texto acumulado se resetea después de 1s sin teclear (configurable con `searchResetDelay`)
 - Backspace borra el último carácter
 - Escape y Tab no afectan la búsqueda
