@@ -78,6 +78,8 @@ const eventsData = [
 const exposesData = [
   { name: 'open()', type: '() => void', description: 'Abre el command palette' },
   { name: 'close()', type: '() => void', description: 'Cierra el command palette' },
+  { name: 'run(id)', type: '(id: string) => CommandItem | null', description: 'Ejecuta el comando con ese id desde afuera (sin abrir)' },
+  { name: 'getCommands()', type: '() => CommandItem[]', description: 'Devuelve la lista actual de comandos' },
   { name: 'isOpen()', type: '() => boolean', description: 'Estado actual' },
 ];
 
@@ -86,6 +88,7 @@ const interfaceCode = `interface CommandItem {
   label: string;
   description?: string;
   category?: string;
+  badges?: string[];
   icon?: string;
   shortcut?: string;
   action: () => void;
@@ -99,15 +102,15 @@ const basicCommands: CommandItem[] = [
 ];
 
 const categoryCommands: CommandItem[] = [
-  { id: 'new', label: 'Nuevo archivo', description: 'Crear un archivo vacío', category: 'Archivo', icon: '📄', action: () => {} },
-  { id: 'open', label: 'Abrir archivo', description: 'Abrir un archivo existente', category: 'Archivo', icon: '📂', action: () => {} },
-  { id: 'save', label: 'Guardar', description: 'Guardar cambios actuales', category: 'Archivo', icon: '💾', action: () => {} },
-  { id: 'undo', label: 'Deshacer', description: 'Revertir última acción', category: 'Edición', icon: '↩️', action: () => {} },
-  { id: 'redo', label: 'Rehacer', description: 'Reaplicar acción deshecha', category: 'Edición', icon: '↪️', action: () => {} },
-  { id: 'copy', label: 'Copiar', description: 'Copiar selección al portapapeles', category: 'Edición', icon: '📋', action: () => {} },
-  { id: 'paste', label: 'Pegar', description: 'Pegar desde el portapapeles', category: 'Edición', icon: '📌', action: () => {} },
-  { id: 'find', label: 'Buscar', description: 'Buscar texto en el archivo', category: 'Navegación', icon: '🔍', action: () => {} },
-  { id: 'replace', label: 'Reemplazar', description: 'Buscar y reemplazar texto', category: 'Navegación', icon: '🔄', action: () => {} },
+  { id: 'new', label: 'Nuevo archivo', description: 'Crear un archivo vacío', category: 'Archivo', icon: '📄', badges: ['Nuevo'], action: () => {} },
+  { id: 'open', label: 'Abrir archivo', description: 'Abrir un archivo existente', category: 'Archivo', icon: '📂', badges: ['Reciente'], action: () => {} },
+  { id: 'save', label: 'Guardar', description: 'Guardar cambios actuales', category: 'Archivo', icon: '💾', badges: ['Auto', 'Ctrl+S'], shortcut: 'Ctrl+S', action: () => {} },
+  { id: 'undo', label: 'Deshacer', description: 'Revertir última acción', category: 'Edición', icon: '↩️', badges: ['Edit', 'Undo'], action: () => {} },
+  { id: 'redo', label: 'Rehacer', description: 'Reaplicar acción deshecha', category: 'Edición', icon: '↪️', badges: ['Edit'], action: () => {} },
+  { id: 'copy', label: 'Copiar', description: 'Copiar selección al portapapeles', category: 'Edición', icon: '📋', badges: ['Clipboard'], action: () => {} },
+  { id: 'paste', label: 'Pegar', description: 'Pegar desde el portapapeles', category: 'Edición', icon: '📌', badges: ['Clipboard'], action: () => {} },
+  { id: 'find', label: 'Buscar', description: 'Buscar texto en el archivo', category: 'Navegación', icon: '🔍', badges: ['Go'], action: () => {} },
+  { id: 'replace', label: 'Reemplazar', description: 'Buscar y reemplazar texto', category: 'Navegación', icon: '🔄', badges: ['Go', 'Replace'], action: () => {} },
 ];
 
 const shortcutCommands: CommandItem[] = [
@@ -124,8 +127,14 @@ const shortcutsRef = ref<InstanceType<typeof CommandPalette> | null>(null);
 const programmaticRef = ref<InstanceType<typeof CommandPalette> | null>(null);
 const selectedCmd = ref<CommandItem | null>(null);
 
+const programmaticCommands: CommandItem[] = [
+  { id: 'new', label: 'Nuevo archivo', description: 'Crea un archivo vacío', category: 'Archivo', icon: '📄', action: () => { selectedCmd.value = { id: 'new', label: 'Nuevo archivo', action: () => {} }; } },
+  { id: 'save', label: 'Guardar', description: 'Guarda los cambios', category: 'Archivo', icon: '💾', action: () => { selectedCmd.value = { id: 'save', label: 'Guardar', action: () => {} }; } },
+  { id: 'find', label: 'Buscar', description: 'Busca en el archivo', category: 'Navegación', icon: '🔍', action: () => { selectedCmd.value = { id: 'find', label: 'Buscar', action: () => {} }; } },
+];
+
 function handleGlobalShortcut(event: KeyboardEvent) {
-  if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === 'p') {
+  if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === 'k') {
     event.preventDefault();
     programmaticRef.value?.open();
   }
@@ -217,7 +226,7 @@ const shortcutsVanilla = `<cu-command-palette id="my-palette"></cu-command-palet
 <\/script>`;
 
 const programmaticVue = `<script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref } from 'vue'
 import CommandPalette from '@/components/overlay/CommandPalette.vue'
 import Button from '@/components/buttons/Button.vue'
 
@@ -225,32 +234,26 @@ const paletteRef = ref(null)
 const selected = ref(null)
 
 const commands = [
-  { id: 'new', label: 'Nuevo archivo', action: () => {} },
-  { id: 'open', label: 'Abrir archivo', action: () => {} },
+  { id: 'new', label: 'Nuevo archivo', action: () => { selected.value = 'new' } },
+  { id: 'save', label: 'Guardar', action: () => { selected.value = 'save' } },
+  { id: 'find', label: 'Buscar', action: () => { selected.value = 'find' } },
 ]
-
-function onKeydown(e) {
-  if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'p') {
-    e.preventDefault()
-    paletteRef.value?.open()
-  }
-}
-onMounted(() => window.addEventListener('keydown', onKeydown))
-onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 <\/script>
 
 <template>
   <div class="playground-row">
     <Button color="neutral" @click="paletteRef?.open()">open()</Button>
     <Button color="neutral" @click="paletteRef?.close()">close()</Button>
+    <Button color="primary" variant="soft" @click="paletteRef?.run('new')">run('new')</Button>
+    <Button color="primary" variant="soft" @click="paletteRef?.run('save')">run('save')</Button>
   </div>
   <p class="playground-state">
-    Selected: <strong>{{ selected?.label ?? '—' }}</strong>
+    Selected: <strong>{{ selected ?? '—' }}</strong>
   </p>
   <CommandPalette
     ref="paletteRef"
     :commands="commands"
-    @select="selected = $event"
+    @select="selected = $event?.id"
   />
 </template>`;
 </script>
@@ -277,7 +280,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
       <section id="categories" class="playground-section">
         <div class="playground-heading">
           <h2>With Categories</h2>
-          <Badge color="neutral" title="Category opcional">category</Badge>
+          <Badge color="neutral" title="Agrupa con headers y badges al final">category + badges</Badge>
         </div>
         <SectionDemo :vue-code="categoriesVue" :vanilla-code="categoriesVanilla">
           <div class="playground-col">
@@ -308,20 +311,24 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
         <h2>Programmatic</h2>
         <p class="playground-desc">
           Seguidilla de botones sobre la instancia de abajo — el palette cambia en vivo.
-          También podés convocarlo con <strong>Ctrl+Shift+P</strong>.
+          También podés convocarlo con <strong>Ctrl+Shift+K</strong>
+          (Ctrl+Shift+P lo reserva el navegador para incógnito).
         </p>
         <SectionDemo :vue-code="programmaticVue">
           <div class="playground-col">
             <div class="playground-row">
               <Button color="neutral" @click="programmaticRef?.open()">open()</Button>
               <Button color="neutral" @click="programmaticRef?.close()">close()</Button>
+              <Button color="primary" variant="soft" @click="programmaticRef?.run('new')">run('new')</Button>
+              <Button color="primary" variant="soft" @click="programmaticRef?.run('save')">run('save')</Button>
+              <Button color="primary" variant="soft" @click="programmaticRef?.run('find')">run('find')</Button>
             </div>
             <p class="playground-state">
-              Shortcut: <strong>Ctrl+Shift+P</strong> · Selected: <strong>{{ selectedCmd?.label ?? '—' }}</strong>
+              Selected: <strong>{{ selectedCmd?.label ?? '—' }}</strong>
             </p>
             <CommandPalette
               ref="programmaticRef"
-              :commands="categoryCommands"
+              :commands="programmaticCommands"
               @select="selectedCmd = $event"
             />
           </div>

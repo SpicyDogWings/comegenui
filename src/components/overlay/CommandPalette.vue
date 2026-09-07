@@ -9,6 +9,7 @@ export interface CommandItem {
   label: string;
   description?: string;
   category?: string;
+  badges?: string[];
   icon?: string;
   shortcut?: string;
   action: () => void;
@@ -60,10 +61,20 @@ const filtered = computed(() => {
   );
 });
 
-const categories = computed(() => {
-  const cats = new Set<string>();
-  filtered.value.forEach((cmd) => cmd.category && cats.add(cmd.category));
-  return Array.from(cats);
+const grouped = computed(() => {
+  const groups: { category: string; items: { cmd: CommandItem; index: number }[] }[] = [];
+  const map = new Map<string, { cmd: CommandItem; index: number }[]>();
+  let idx = 0;
+  for (const cmd of filtered.value) {
+    const key = cmd.category || "";
+    if (!map.has(key)) map.set(key, []);
+    map.get(key)!.push({ cmd, index: idx });
+    idx++;
+  }
+  for (const [category, items] of map.entries()) {
+    groups.push({ category, items });
+  }
+  return groups;
 });
 
 watch(filtered, () => {
@@ -88,6 +99,14 @@ function select(cmd: CommandItem) {
   close();
 }
 
+function run(id: string): CommandItem | null {
+  const cmd = props.commands.find((c) => c.id === id);
+  if (!cmd) return null;
+  cmd.action();
+  emit("select", cmd);
+  return cmd;
+}
+
 function handleKeydown(event: KeyboardEvent) {
   if (!filtered.value.length) return;
   if (event.key === "ArrowDown") {
@@ -106,6 +125,8 @@ function handleKeydown(event: KeyboardEvent) {
 defineExpose({
   open,
   close,
+  run,
+  getCommands: () => props.commands,
   isOpen: () => modalRef.value?.isOpen() ?? false,
 });
 </script>
@@ -124,22 +145,31 @@ defineExpose({
 
       <div class="cu-command-palette-results">
         <template v-if="filtered.length">
-          <Button
-            v-for="(cmd, index) in filtered"
-            :key="cmd.id"
-            color="neutral"
-            variant="ghost"
-            class="cu-command-palette-item"
-            :class="{ 'cu-command-palette-item--active': index === activeIndex }"
-            @click="select(cmd)"
-            @mouseenter="activeIndex = index"
-          >
-            <span v-if="cmd.icon" class="cu-command-palette-item-icon">{{ cmd.icon }}</span>
-            <span class="cu-command-palette-item-label">{{ cmd.label }}</span>
-            <span v-if="cmd.description" class="cu-command-palette-item-desc">{{ cmd.description }}</span>
-            <span v-if="cmd.category" class="cu-command-palette-item-badge">{{ cmd.category }}</span>
-            <span v-if="cmd.shortcut" class="cu-command-palette-item-shortcut">{{ cmd.shortcut }}</span>
-          </Button>
+          <template v-for="group in grouped" :key="group.category">
+            <div v-if="group.category" class="cu-command-palette-group-label">
+              {{ group.category }}
+            </div>
+            <Button
+              v-for="item in group.items"
+              :key="item.cmd.id"
+              color="neutral"
+              variant="ghost"
+              class="cu-command-palette-item"
+              :class="{ 'cu-command-palette-item--active': item.index === activeIndex }"
+              @click="select(item.cmd)"
+              @mouseenter="activeIndex = item.index"
+            >
+              <span v-if="item.cmd.icon" class="cu-command-palette-item-icon">{{ item.cmd.icon }}</span>
+              <span class="cu-command-palette-item-label">{{ item.cmd.label }}</span>
+              <span v-if="item.cmd.description" class="cu-command-palette-item-desc">{{ item.cmd.description }}</span>
+              <span
+                v-for="badge in item.cmd.badges"
+                :key="badge"
+                class="cu-command-palette-item-badge"
+              >{{ badge }}</span>
+              <span v-if="item.cmd.shortcut" class="cu-command-palette-item-shortcut">{{ item.cmd.shortcut }}</span>
+            </Button>
+          </template>
             </template>
             <div v-else class="cu-command-palette-empty">
               No se encontraron comandos
@@ -179,6 +209,16 @@ defineExpose({
 
     .cu-command-palette-item--active {
       background-color: var(--cu-color-neutral-ghost-hover) !important;
+    }
+
+    .cu-command-palette-group-label {
+      padding: 0.5rem 0.75rem 0.25rem;
+      font-size: var(--cu-font-size-xs);
+      font-weight: var(--cu-font-weight-semibold);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--cu-color-neutral);
+      opacity: 0.5;
     }
 
     .cu-command-palette-item :deep(.cu-command-palette-item-icon) {
