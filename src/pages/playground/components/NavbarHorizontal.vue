@@ -5,6 +5,7 @@ import NavbarHorizontal from "@/components/overlay/NavbarHorizontal.vue";
 import Badge from "@/components/information/Badge.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Table from "@/components/data/Table.vue";
+import CodeBlock from "@/components/markdown/CodeBlock.vue";
 
 const outlineItems = [
   { label: 'Basic', id: 'basic' },
@@ -23,6 +24,7 @@ const outlineItems = [
     children: [
       { label: 'Props', id: 'api-props' },
       { label: 'Events', id: 'api-events' },
+      { label: 'Interfaces', id: 'api-interfaces' },
     ],
   },
 ];
@@ -171,6 +173,12 @@ const propsData = [
 const eventsData = [
   { name: 'search', type: 'string', description: 'Se emite al escribir; payload con el query actual' },
 ];
+
+const interfaceCode = `interface NavItem {
+  label: string
+  path?: string
+  children?: NavItem[]
+}`;
 </script>
 
 <template>
@@ -235,6 +243,9 @@ const eventsData = [
 
         <h3 id="api-events">Events</h3>
         <Table :columns="apiColumns" :data="eventsData" variant="ghost" compact />
+
+        <h3 id="api-interfaces">Interfaces</h3>
+        <CodeBlock :code="interfaceCode" language="ts" variant="solid" />
       </section>
 
     </div>

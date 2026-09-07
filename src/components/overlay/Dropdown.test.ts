@@ -196,4 +196,57 @@ describe("Dropdown — motor genérico toggle + panel", () => {
     expect(style).toContain("top: 174px"); // r.bottom (170) + offset (4) → siguió al trigger
     w.unmount();
   });
+
+  it("hover: abrir un dropdown hermano cierra el anterior AL INSTANTE (sin esperar el delay)", async () => {
+    const w = mount({
+      components: { Dropdown },
+      template: `
+        <div>
+          <Dropdown trigger="hover" label="A" />
+          <Dropdown trigger="hover" label="B" />
+        </div>
+      `,
+    });
+    const roots = w.findAll(".cu-dropdown");
+    const a = roots[0];
+    const b = roots[1];
+
+    await a.trigger("mouseenter");
+    await nextTick();
+    expect(a.find(".cu-dropdown-panel").exists()).toBe(true);
+    expect(b.find(".cu-dropdown-panel").exists()).toBe(false);
+
+    await b.trigger("mouseenter");
+    await nextTick();
+    // B se abrió y A se cerró en el mismo flush: no deben convivir dos paneles
+    expect(b.find(".cu-dropdown-panel").exists()).toBe(true);
+    expect(a.find(".cu-dropdown-panel").exists()).toBe(false);
+    expect(w.findAll(".cu-dropdown-panel").length).toBe(1);
+    w.unmount();
+  });
+
+  it("hover: abrir un dropdown ANIDADO (descendiente) NO cierra al ancestro", async () => {
+    const w = mount({
+      components: { Dropdown },
+      template: `
+        <Dropdown trigger="hover" label="Padre">
+          <Dropdown trigger="hover" label="Hijo" />
+        </Dropdown>
+      `,
+    });
+    const parent = w.find(".cu-dropdown");
+    await parent.trigger("mouseenter");
+    await nextTick();
+    expect(parent.find(".cu-dropdown-panel").exists()).toBe(true);
+
+    const child = w.find(".cu-dropdown .cu-dropdown");
+    expect(child.exists()).toBe(true);
+    await child.trigger("mouseenter");
+    await nextTick();
+    // El ancestro se preserva: padre y hijo abiertos, dos paneles
+    expect(child.find(".cu-dropdown-panel").exists()).toBe(true);
+    expect(parent.find(".cu-dropdown-panel").exists()).toBe(true);
+    expect(w.findAll(".cu-dropdown-panel").length).toBe(2);
+    w.unmount();
+  });
 });

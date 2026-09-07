@@ -163,29 +163,39 @@ const emit = defineEmits(["open", "close"]);
 const isOpen = ref(false);
 const dropdownRef = ref<HTMLElement | null>(null);
 
-// Registry (módulo) de dropdowns abiertos por hover: al abrir uno nuevo se
-// cierran los hermanos abiertos al INSTANTE (sin esperar el delay de salida),
-// así no quedan dos menús superpuestos. Los ancestros se preservan (entrar a
-// un submenú no cierra su padre).
+// Registry (global, sobre globalThis) de dropdowns abiertos por hover: al abrir
+// uno nuevo se cierran los hermanos abiertos al INSTANTE (sin esperar el delay
+// de salida), así no quedan dos menús superpuestos. Los ancestros se preservan
+// (entrar a un submenú no cierra su padre).
+//
+// NOTA: se guarda en globalThis (no como estado de módulo) porque el módulo puede
+// evaluarse más de una vez (tests, ramas del graph de build/HMR): con estado de
+// módulo cada instancia tendría su propio registry y los hermanos no se cerrarían.
 interface HoverEntry {
   el: HTMLElement;
   close: () => void;
 }
-const hoverRegistry: HoverEntry[] = [];
+const HOVER_REGISTRY_KEY = '__cu_hover_registry__';
+function hoverRegistry(): HoverEntry[] {
+  const g = globalThis as unknown as Record<string, HoverEntry[] | undefined>;
+  return (g[HOVER_REGISTRY_KEY] ??= []);
+}
 
 function registerHoverOpen() {
   const el = dropdownRef.value;
   if (!el) return;
-  const toClose = hoverRegistry.filter((entry) => entry.el !== el && !entry.el.contains(el));
-  hoverRegistry.push({ el, close });
+  const reg = hoverRegistry();
+  const toClose = reg.filter((entry) => entry.el !== el && !entry.el.contains(el));
+  reg.push({ el, close });
   for (const entry of toClose) entry.close();
 }
 
 function unregisterHover() {
   const el = dropdownRef.value;
   if (!el) return;
-  const idx = hoverRegistry.findIndex((entry) => entry.el === el);
-  if (idx !== -1) hoverRegistry.splice(idx, 1);
+  const reg = hoverRegistry();
+  const idx = reg.findIndex((entry) => entry.el === el);
+  if (idx !== -1) reg.splice(idx, 1);
 }
 
 // Un click fuera del dropdown cierra el panel en fase CAPTURA (antes que los handlers
