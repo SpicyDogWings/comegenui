@@ -5,6 +5,8 @@ import PlaygroundStyle from '@/templates/playground/PlaygroundStyle.vue';
 import SideOver from "@/components/overlay/SideOver.vue";
 import Button from "@/components/buttons/Button.vue";
 import Badge from "@/components/information/Badge.vue";
+import Input from "@/components/form/Input.vue";
+import Textarea from "@/components/form/Textarea.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Table from "@/components/data/Table.vue";
 
@@ -13,6 +15,7 @@ const outlineItems = [
   { label: 'Sizes', id: 'sizes' },
   { label: 'Fullscreen', id: 'fullscreen' },
   { label: 'Persistent', id: 'persistent' },
+  { label: 'Formulario', id: 'form' },
   { label: 'Programmatic', id: 'programmatic' },
   {
     label: 'Style',
@@ -40,6 +43,7 @@ const openLg = ref(false);
 const openXl = ref(false);
 const openFull = ref(false);
 const openPersistent = ref(false);
+const openForm = ref(false);
 const programmatic = ref(false);
 
 const vueImport = `<script setup lang="ts">
@@ -124,6 +128,34 @@ const persistentVanilla = `${vanillaImport}
     <p>Se cierra solo programáticamente</p>
     <button onclick="document.querySelector('#side').close()">Cerrar</button>
   </div>
+</cu-side-over>
+<script>
+  const side = document.querySelector('#side')
+  document.querySelector('#btn').addEventListener('click', () => side.open = true)
+<\/script>`;
+
+const formBody = `<form style="display:flex;flex-direction:column;gap:1rem;padding:1rem">
+    <label>Nombre<br><input type="text" placeholder="Nombre" style="width:100%;padding:0.5rem"></label>
+    <label>Email<br><input type="email" placeholder="Email" style="width:100%;padding:0.5rem"></label>
+    <label>Teléfono<br><input type="tel" placeholder="Teléfono" style="width:100%;padding:0.5rem"></label>
+    <label>Empresa<br><input type="text" placeholder="Empresa" style="width:100%;padding:0.5rem"></label>
+    <label>Cargo<br><input type="text" placeholder="Cargo" style="width:100%;padding:0.5rem"></label>
+    <label>Dirección<br><input type="text" placeholder="Dirección" style="width:100%;padding:0.5rem"></label>
+    <label>Ciudad<br><input type="text" placeholder="Ciudad" style="width:100%;padding:0.5rem"></label>
+    <label>País<br><input type="text" placeholder="País" style="width:100%;padding:0.5rem"></label>
+    <label>Comentarios<br><textarea placeholder="Comentarios" rows="3" style="width:100%;padding:0.5rem"></textarea></label>
+    <button type="submit" style="padding:0.5rem">Guardar</button>
+  </form>`;
+
+const formVue = vueSnippet(`  <SideOver v-model="open" title="Nuevo registro" size="md">
+${formBody}
+  </SideOver>`);
+
+const formVanilla = `${vanillaImport}
+
+<button id="btn">Abrir</button>
+<cu-side-over id="side" title="Nuevo registro" position="right" size="md">
+${formBody}
 </cu-side-over>
 <script>
   const side = document.querySelector('#side')
@@ -228,6 +260,18 @@ const eventsData = [
 
       <hr class="playground-separator" />
 
+      <section id="form" class="playground-section">
+        <div class="playground-heading">
+          <h2>Formulario</h2>
+          <Badge color="neutral" title="El contenido scrollea, el header queda fijo">scroll interno</Badge>
+        </div>
+        <SectionDemo :vue-code="formVue" :vanilla-code="formVanilla">
+          <Button @click="openForm = true" color="primary" variant="soft">Abrir formulario</Button>
+        </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
       <section id="programmatic" class="playground-section">
         <h2>Programmatic</h2>
         <div class="playground-row">
@@ -271,6 +315,20 @@ const eventsData = [
       <Button @click="openPersistent = false" color="primary" variant="soft">Cerrar</Button>
     </div>
   </SideOver>
+  <SideOver v-model="openForm" title="Nuevo registro" position="right" size="md">
+    <form class="sideover-form">
+      <label>Nombre<br /><Input placeholder="Nombre" /></label>
+      <label>Email<br /><Input placeholder="Email" type="email" /></label>
+      <label>Teléfono<br /><Input placeholder="Teléfono" type="tel" /></label>
+      <label>Empresa<br /><Input placeholder="Empresa" /></label>
+      <label>Cargo<br /><Input placeholder="Cargo" /></label>
+      <label>Dirección<br /><Input placeholder="Dirección" /></label>
+      <label>Ciudad<br /><Input placeholder="Ciudad" /></label>
+      <label>País<br /><Input placeholder="País" /></label>
+      <label>Comentarios<br /><Textarea placeholder="Comentarios" rows="3" /></label>
+      <Button color="primary" variant="solid" @click="openForm = false">Guardar</Button>
+    </form>
+  </SideOver>
   <SideOver v-model="programmatic" title="Programmatic" position="right" size="300px"><div class="sideover-demo"><p>Controlado por open() / close().</p></div></SideOver>
 </template>
 
@@ -280,5 +338,19 @@ const eventsData = [
 }
 .sideover-demo h3 {
   margin: 0 0 var(--cu-space-sm);
+}
+.sideover-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cu-space-md);
+  padding: var(--cu-space-lg);
+}
+.sideover-form label {
+  font-family: var(--cu-font-sans);
+  font-size: var(--cu-font-size-sm);
+  color: var(--cu-color-neutral);
+  display: flex;
+  flex-direction: column;
+  gap: var(--cu-space-xs);
 }
 </style>

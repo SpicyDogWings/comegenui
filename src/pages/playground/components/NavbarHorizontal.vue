@@ -9,7 +9,7 @@ import CodeBlock from "@/components/markdown/CodeBlock.vue";
 
 const outlineItems = [
   { label: 'Basic', id: 'basic' },
-  { label: 'Trigger', id: 'trigger' },
+  { label: 'Triggers', id: 'triggers' },
   { label: 'Nested', id: 'nested' },
   { label: 'Flat', id: 'flat' },
   { label: 'Icons', id: 'icons' },
@@ -297,9 +297,9 @@ const interfaceCode = `interface NavItem {
 
       <hr class="playground-separator" />
 
-      <section id="trigger" class="playground-section">
+      <section id="triggers" class="playground-section">
         <div class="playground-heading">
-          <h2>Trigger</h2>
+          <h2>Triggers</h2>
           <Badge color="neutral" title="Valor por defecto">click</Badge>
         </div>
         <SectionDemo :vue-code="hoverVue" :vanilla-code="hoverVanilla">
