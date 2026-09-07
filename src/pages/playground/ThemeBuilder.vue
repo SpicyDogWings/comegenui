@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
 import PlaygroundLayout from '@/layouts/PlaygroundLayout.vue'
 import Button from '@/components/buttons/Button.vue'
 import Alert from '@/components/information/Alert.vue'
@@ -47,18 +47,15 @@ import ThemeDashboard from '@/templates/playground/ThemeDashboard.vue'
 import ThemeSettings from '@/templates/playground/ThemeSettings.vue'
 import ThemeAgenda from '@/templates/playground/ThemeAgenda.vue'
 import ThemeEditorial from '@/templates/playground/ThemeEditorial.vue'
-import {
-  allThemes, opacities,
-} from '@/plugins/cu-tokens'
-import { useThemeStore, type CustomThemeConfig } from '@/stores/theme'
-import { DEFAULTS, DEFAULT_COLORS, DEFAULT_OPACITIES } from '@/plugins/cu-tokens/defaults'
-import { hexToRgba } from '@/lib/colors'
+import { useThemeBuilder } from '@/composables/useThemeBuilder'
 
-const store = useThemeStore()
-
-function resolveOpacity(name: string): number {
-  return opacities.value[name]?.shadow ?? opacities.value.default?.shadow ?? 10
-}
+const {
+  themeName, showEditBtn, isEditing, enableEditing,
+  colors, shadowOpacityRaw, typography, spacing, borderRadius, borders,
+  shadowPreview, cssExport, resetToDefaults,
+  importConfig, importedThemes, showImportPicker, lastImportedConfig, applyImportedTheme,
+  handleExport, handleCopyCSS, handleDownloadCSS,
+} = useThemeBuilder()
 
 const tableData = [
   { name: 'Alice Johnson', status: 'Active', role: 'Admin' },
@@ -72,12 +69,6 @@ const tableColumns = [
   { key: 'role', label: 'Role' },
 ]
 
-const themeName = computed({
-  get: () => store.current,
-  set: (name: string) => store.setTheme(name),
-})
-
-const isEditing = ref(false)
 const modalRef = ref<InstanceType<typeof ThemeManagerModal> | null>(null)
 const modalPreviewRef = ref<InstanceType<typeof Modal> | null>(null)
 const isSaving = ref(false)
@@ -123,36 +114,6 @@ function triggerToast(type: 'success' | 'warning' | 'danger' | 'primary') {
   setTimeout(() => {
     toastVisible.value = false
   }, 3000)
-}
-
-const isBuiltIn = computed(() => store.isBuiltIn)
-
-function enableEditing() {
-  const current = themeName.value
-  const sourceColors = allThemes.value[current]?.colors
-  if (sourceColors) {
-    const { shadowOpacity, ...rest } = sourceColors
-    colors.value = { ...colors.value, ...rest }
-    shadowOpacityRaw.value = String(
-      opacities.value[current]?.shadow ?? opacities.value.default?.shadow ?? 10,
-    )
-  }
-  isEditing.value = true
-  store.registerCustom(
-    { ...colors.value },
-    sharedSnapshot(),
-    parseInt(shadowOpacityRaw.value) || 10,
-  )
-  themeName.value = 'custom'
-}
-
-function sharedSnapshot() {
-  return {
-    typography: JSON.parse(JSON.stringify(typography.value)),
-    spacing: JSON.parse(JSON.stringify(spacing.value)),
-    borderRadius: JSON.parse(JSON.stringify(borderRadius.value)),
-    borders: { width: JSON.parse(JSON.stringify(borders.value.width)) },
-  }
 }
 
 const dropdownItems = [
@@ -278,47 +239,7 @@ function createEvent() {
   setTimeout(() => { eventSaved.value = false; }, 2500);
 }
 
-// Inicializa los colores desde el tema activo del plugin (o defaults si no cargó).
-function initColorsFromTheme(name: string) {
-  const themeColors = allThemes.value[name]?.colors
-  if (themeColors) {
-    const { shadowOpacity, ...rest } = themeColors
-    colors.value = { ...colors.value, ...rest }
-  }
-}
-
-const colors = ref({ ...DEFAULT_COLORS })
-
-initColorsFromTheme('light')
-
-const shadowOpacityRaw = ref(String(opacities.value.default?.shadow ?? 10))
-
-const typography = ref({ ...store.getShared()?.typography })
-
-const spacing = ref({ ...store.getShared()?.spacing })
-
-const borderRadius = ref({ ...store.getShared()?.borderRadius })
-
-const borders = ref({
-  width: { ...store.getShared()?.borders?.width },
-  color: { ...store.getShared()?.borders?.color },
-})
-
-const shadowPreview = computed(() => hexToRgba(colors.value.shadow || '#000000', parseInt(shadowOpacityRaw.value) || 10))
-
-// CSS de export: lo genera el plugin (colores + shared) — ya no hay duplicación.
-const cssExport = computed(() => store.getCSS(themeName.value))
-
-function exportConfig(): CustomThemeConfig {
-  return {
-    colors: { ...colors.value },
-    opacities: { shadow: parseInt(shadowOpacityRaw.value) || 10 },
-    ...sharedSnapshot(),
-  }
-}
-
-const importedThemes = ref<string[]>([])
-const showImportPicker = ref(false)
+// --- Capa de interacción: apertura del modal de import (picker) ---
 const importPickerRef = ref<InstanceType<typeof Modal> | null>(null)
 
 watch(showImportPicker, async (val) => {
@@ -327,172 +248,10 @@ watch(showImportPicker, async (val) => {
     importPickerRef.value?.open()
   }
 })
-const lastImportedConfig = ref<any | null>(null)
 
 function handleImport(config: any) {
-  const cfg = config as { themes?: Record<string, any>, colors?: Record<string, string> }
-  const themeNames = Object.keys(cfg?.themes ?? {})
-
-  // Config multi-tema ({ themes: {...} }) → picker para elegir cuál aplicar.
-  if (themeNames.length > 0) {
-    lastImportedConfig.value = cfg
-    importedThemes.value = themeNames
-    showImportPicker.value = true
-    modalRef.value?.close()
-    return
-  }
-
-  // Config de un solo tema plano — el formato que exporta comegen
-  // ({ colors, opacities, typography, spacing, borderRadius, borders }).
-  if (!cfg?.colors || typeof cfg.colors !== 'object' || Object.keys(cfg.colors).length === 0) {
-    alert('No se encontraron temas en el archivo')
-    return
-  }
-  applyImportedTheme(cfg, 'custom')
+  if (importConfig(config)) modalRef.value?.close()
 }
-
-function applyImportedTheme(cfg: CustomThemeConfig | any, name: string) {
-  const themeColors = cfg?.themes?.[name]
-
-  // Flat single-theme (export de comegen): el propio cfg ya es el tema.
-  if (!themeColors) {
-    applySingleTheme(cfg)
-    return
-  }
-
-  // Multi-theme: aplica colores del tema elegido conservando el shared actual.
-  const { shadowOpacity, ...rest } = themeColors
-
-  store.applyCustomFromImport({
-    colors: { ...rest },
-    opacities: { shadow: cfg?.opacities?.[name]?.shadow ?? cfg?.opacities?.default?.shadow ?? 10 },
-    ...sharedSnapshot(),
-  })
-
-  isEditing.value = true
-  colors.value = { ...colors.value, ...rest }
-  showImportPicker.value = false
-}
-
-// Aplica un tema plano (colores + opacidad + shared) fusionando los shared
-// sobre los DEFAULTS: "defaults + overrides del archivo", igual que init().
-function applySingleTheme(cfg: any) {
-  const { shadowOpacity, ...rest } = cfg?.colors ?? {}
-  const shadow =
-    cfg?.opacities?.shadow ?? cfg?.opacities?.default?.shadow ?? (parseInt(shadowOpacityRaw.value) || 10)
-
-  const merged = {
-    typography: { ...DEFAULTS.typography, ...(cfg?.typography ?? {}) },
-    spacing: { ...DEFAULTS.spacing, ...(cfg?.spacing ?? {}) },
-    borderRadius: { ...DEFAULTS.borderRadius, ...(cfg?.borderRadius ?? {}) },
-    borders: { width: { ...DEFAULTS.borders.width, ...(cfg?.borders?.width ?? {}) } },
-  }
-
-  store.applyCustomFromImport({
-    colors: { ...rest },
-    opacities: { shadow },
-    shared: merged,
-  })
-
-  isEditing.value = true
-  colors.value = { ...colors.value, ...rest }
-  shadowOpacityRaw.value = String(shadow)
-  typography.value = merged.typography
-  spacing.value = merged.spacing
-  borderRadius.value = merged.borderRadius
-  borders.value = { ...borders.value, width: merged.borders.width }
-  showImportPicker.value = false
-}
-
-function handleExport() {
-  const config = exportConfig()
-  const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `comegen-${themeName.value}-theme.json`
-  a.click()
-  URL.revokeObjectURL(url)
-}
-
-function handleCopyCSS() {
-  navigator.clipboard.writeText(cssExport.value)
-}
-
-function handleDownloadCSS() {
-  const blob = new Blob([cssExport.value], { type: 'text/css' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `comegen-${themeName.value}-theme.css`
-  a.click()
-  URL.revokeObjectURL(url)
-}
-
-function resetToDefaults() {
-  colors.value = {
-    primary: '#E73F1E',
-    secondary: '#6366f1',
-    neutral: '#1a1a1a',
-    success: '#22c55e',
-    warning: '#f59e0b',
-    danger: '#ef4444',
-    surface: '#eeeeee',
-    focus: '#1774A4',
-    strong: '#6b7280',
-    default: '#d1d5db',
-    shadow: '#000000',
-  }
-  shadowOpacityRaw.value = '10'
-  typography.value = {
-    fontFamily: { sans: 'Inter, system-ui, sans-serif', mono: 'Fira Code, monospace' },
-    fontSize: { xs: '0.75rem', sm: '0.875rem', md: '1rem', lg: '1.125rem', xl: '1.25rem', '2xl': '1.5rem', '3xl': '1.75rem', '4xl': '2rem' },
-    fontWeight: { normal: '400', medium: '500', semibold: '600', bold: '700' },
-    lineHeight: { tight: '1.25', normal: '1.5', relaxed: '1.75' },
-  }
-  spacing.value = { '2xs': '2px', xs: '4px', sm: '8px', md: '12px', lg: '16px', xl: '24px', '2xl': '32px', '3xl': '48px', '4xl': '64px', '5xl': '80px' }
-  borderRadius.value = { default: '8px', none: '0', sm: '4px', md: '8px', lg: '12px', full: '9999px' }
-  borders.value = { width: { none: '0', thin: '1px', medium: '2px', thick: '4px' } }
-}
-
-function syncSharedFromPlugin() {
-  const s = store.getShared()
-  if (!s) return
-  if (s.typography) typography.value = { ...typography.value, ...s.typography }
-  if (s.spacing) spacing.value = { ...spacing.value, ...s.spacing }
-  if (s.borderRadius) borderRadius.value = { ...borderRadius.value, ...s.borderRadius }
-  if (s.borders) borders.value = { ...borders.value, ...s.borders }
-}
-
-onMounted(() => {
-  syncSharedFromPlugin()
-  initColorsFromTheme(themeName.value)
-  shadowOpacityRaw.value = String(resolveOpacity(themeName.value))
-  isEditing.value = store.isCustom
-})
-
-// Cargar los tokens de un tema en el editor
-function loadThemeIntoTokens(name: string) {
-  const themeTokens = allThemes.value[name]
-  if (themeTokens?.colors) {
-    const { shadowOpacity, ...rest } = themeTokens.colors
-    colors.value = { ...colors.value, ...rest }
-    shadowOpacityRaw.value = String(resolveOpacity(name))
-  }
-}
-
-// Detectar cambios → solo cuando está editando (isEditing)
-watch([colors, shadowOpacityRaw, typography, spacing, borderRadius, borders], () => {
-  if (!isEditing.value) return
-  store.registerCustom(
-    { ...colors.value },
-    sharedSnapshot(),
-    parseInt(shadowOpacityRaw.value) || 10,
-  )
-  if (themeName.value !== 'custom') {
-    themeName.value = 'custom'
-  }
-}, { deep: true })
 </script>
 
 <template>
@@ -502,7 +261,7 @@ watch([colors, shadowOpacityRaw, typography, spacing, borderRadius, borders], ()
         <div class="tb-controls-header">
           <span class="tb-controls-theme-name">{{ themeName }}</span>
           <Button
-            v-if="store.showEditBtn"
+            v-if="showEditBtn"
             color="primary"
             variant="soft"
             size="sm"
