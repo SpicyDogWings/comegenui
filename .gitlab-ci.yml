@@ -48,7 +48,7 @@ build:
     # incluye — NO copiarlo (cp update.sh . falla: 'same file').
     - cp dist-lib/*.umd.js dist-lib/README-BUILD.md .
     - cp -r dist-lib/css .
-    - cp -r docs/comegen-ui .
+    - cp -r docs/skills/use-comegen .
   artifacts:
     name: "comegenui"
     paths:
@@ -56,7 +56,7 @@ build:
       - css/
       - README-BUILD.md
       - update.sh
-      - comegen-ui/   # skill de uso de comegen — nada más (no desarrollar/documentar)
+      - use-comegen/   # skill de uso de comegen — nada más (no desarrollar/documentar)
     expire_in: never
     when: on_success
 
@@ -73,7 +73,7 @@ release:
     description: |
       Release generado automáticamente por GitLab CI.
 
-      **Contenido:** los archivos de la lib (`Cu*.umd.js`, `css/`, `README-BUILD.md`) + el folder de la skill de uso `comegen-ui/` (SKILL + docs por componente) — al mismo nivel, sin `docs/` ni zip anidado.
+      **Contenido:** los archivos de la lib (`Cu*.umd.js`, `css/`, `README-BUILD.md`) + el folder de la skill de uso `use-comegen/` (SKILL + docs por componente) — al mismo nivel, sin `docs/` ni zip anidado.
 
       **Instalación:**
       ```sh
