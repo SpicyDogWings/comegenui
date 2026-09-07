@@ -34,10 +34,10 @@ const tabs = computed<TabItem[]>(() => {
       </div>
     </template>
     <template v-if="props.vueCode" #vue>
-      <CodeBlock :code="props.vueCode" language="vue" variant="solid" />
+      <CodeBlock :code="props.vueCode" language="vue" />
     </template>
     <template v-if="props.vanillaCode" #vanilla>
-      <CodeBlock :code="props.vanillaCode" language="html" variant="solid" />
+      <CodeBlock :code="props.vanillaCode" language="html" />
     </template>
   </Tabs>
 </template>

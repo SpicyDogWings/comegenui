@@ -1,0 +1,209 @@
+<script setup lang="ts">
+import { computed, ref, watch, nextTick } from "vue";
+import Modal from "../overlay/Modal.vue";
+import Input from "../form/Input.vue";
+import Badge from "../information/Badge.vue";
+
+export interface CommandItem {
+  id: string;
+  label: string;
+  category?: string;
+  icon?: string;
+  shortcut?: string;
+  action: () => void;
+}
+
+const props = defineProps({
+  color: {
+    type: String,
+    default: "neutral",
+  },
+  placeholder: {
+    type: String,
+    default: "Buscar comandos…",
+  },
+  commands: {
+    type: Array as () => CommandItem[],
+    default: () => [],
+  },
+});
+
+const emit = defineEmits(["select", "close"]);
+
+const modalRef = ref<InstanceType<typeof Modal> | null>(null);
+const search = ref("");
+const activeIndex = ref(0);
+const inputRef = ref<InstanceType<typeof Input> | null>(null);
+
+const filtered = computed(() => {
+  const q = search.value.toLowerCase().trim();
+  if (!q) return props.commands;
+  return props.commands.filter(
+    (cmd) =>
+      cmd.label.toLowerCase().includes(q) ||
+      cmd.category?.toLowerCase().includes(q),
+  );
+});
+
+const categories = computed(() => {
+  const cats = new Set<string>();
+  filtered.value.forEach((cmd) => cmd.category && cats.add(cmd.category));
+  return Array.from(cats);
+});
+
+watch(filtered, () => {
+  activeIndex.value = 0;
+});
+
+function open() {
+  modalRef.value?.open();
+  nextTick(() => inputRef.value?.focus());
+}
+
+
+function close() {
+  modalRef.value?.close();
+  search.value = "";
+  activeIndex.value = 0;
+}
+
+function select(cmd: CommandItem) {
+  cmd.action();
+  emit("select", cmd);
+  close();
+}
+
+function handleKeydown(event: KeyboardEvent) {
+  if (!filtered.value.length) return;
+  if (event.key === "ArrowDown") {
+    event.preventDefault();
+    activeIndex.value = (activeIndex.value + 1) % filtered.value.length;
+  } else if (event.key === "ArrowUp") {
+    event.preventDefault();
+    activeIndex.value = (activeIndex.value - 1 + filtered.value.length) % filtered.value.length;
+  } else if (event.key === "Enter") {
+    event.preventDefault();
+    const cmd = filtered.value[activeIndex.value];
+    if (cmd) select(cmd);
+  }
+}
+
+defineExpose({
+  open,
+  close,
+  isOpen: () => modalRef.value?.isOpen() ?? false,
+});
+</script>
+
+<template>
+  <Modal ref="modalRef" :color="color" size="md" @close="emit('close')">
+    <div class="cu-command-palette" @keydown="handleKeydown">
+      <div class="cu-command-palette-search">
+        <Input
+          ref="inputRef"
+          v-model="search"
+          :placeholder="placeholder"
+          class="cu-command-palette-input"
+        />
+      </div>
+
+      <div class="cu-command-palette-results">
+        <template v-if="filtered.length">
+          <div
+            v-for="(cmd, index) in filtered"
+            :key="cmd.id"
+            class="cu-command-palette-item"
+            :class="{ 'cu-command-palette-item--active': index === activeIndex }"
+            @click="select(cmd)"
+            @mouseenter="activeIndex = index"
+          >
+            <div class="cu-command-palette-item-main">
+              <span v-if="cmd.icon" class="cu-command-palette-item-icon">{{ cmd.icon }}</span>
+                  <span class="cu-command-palette-item-label">{{ cmd.label }}</span>
+                  <Badge v-if="cmd.category" color="neutral" variant="subtle">
+                    {{ cmd.category }}
+                  </Badge>
+                </div>
+                <span v-if="cmd.shortcut" class="cu-command-palette-item-shortcut">
+                  {{ cmd.shortcut }}
+                </span>
+              </div>
+            </template>
+            <div v-else class="cu-command-palette-empty">
+              No se encontraron comandos
+            </div>
+          </div>
+        </div>
+      </Modal>
+    </template>
+
+    <style scoped>
+    .cu-command-palette {
+      display: flex;
+      flex-direction: column;
+      max-height: 60vh;
+    }
+
+    .cu-command-palette-search {
+      padding: 0.75rem;
+      border-bottom: var(--cu-border-thin) solid var(--cu-border-color);
+    }
+
+    .cu-command-palette-input {
+      width: 100%;
+    }
+
+    .cu-command-palette-results {
+      overflow-y: auto;
+      padding: 0.5rem;
+    }
+
+    .cu-command-palette-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.625rem 0.75rem;
+      border-radius: var(--cu-radius-sm);
+      cursor: pointer;
+      transition: background-color 100ms ease;
+    }
+
+    .cu-command-palette-item:hover,
+    .cu-command-palette-item--active {
+      background-color: var(--cu-color-neutral-ghost-hover);
+    }
+
+    .cu-command-palette-item-main {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+    }
+
+    .cu-command-palette-item-icon {
+      font-size: 1rem;
+      line-height: 1;
+    }
+
+    .cu-command-palette-item-label {
+      font-size: var(--cu-font-size-sm);
+      color: var(--cu-color-neutral);
+    }
+
+    .cu-command-palette-item-shortcut {
+      font-family: var(--cu-font-mono);
+      font-size: var(--cu-font-size-xs);
+      color: var(--cu-color-neutral);
+      opacity: 0.5;
+      padding: 0.125rem 0.375rem;
+      border: var(--cu-border-thin) solid var(--cu-border-color);
+      border-radius: var(--cu-radius-sm);
+    }
+
+    .cu-command-palette-empty {
+      padding: 1.5rem;
+      text-align: center;
+      font-size: var(--cu-font-size-sm);
+      color: var(--cu-color-neutral);
+      opacity: 0.5;
+    }
+    </style>

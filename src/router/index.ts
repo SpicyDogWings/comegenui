@@ -93,6 +93,11 @@ const router = createRouter({
               component: () => import("@/pages/playground/components/Collapse.vue")
             },
             {
+              path: "command-palette",
+              name: "CommandPalette playground",
+              component: () => import("@/pages/playground/components/CommandPalette.vue")
+            },
+            {
               path: "switch",
               name: "Switch playground",
               component: () => import("@/pages/playground/components/Switch.vue")
