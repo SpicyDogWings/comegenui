@@ -106,7 +106,7 @@ defineExpose({
       :data-size="size"
       :data-height="height"
     >
-      <header class="cu-modal-header">
+      <header class="cu-modal-header" :class="{ 'cu-modal-header--accent': color !== 'neutral' }">
         <div class="cu-modal-header-text">
           <div v-if="title" class="cu-modal-title-row">
             <slot name="icon" />
@@ -209,6 +209,11 @@ defineExpose({
   align-items: flex-start;
   padding: var(--cu-space-lg);
   gap: var(--cu-space-md);
+  border-left: 4px solid transparent;
+}
+
+.cu-modal-header--accent {
+  border-left-color: var(--modal-color);
 }
 
 .cu-modal-header-text {
