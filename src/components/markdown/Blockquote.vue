@@ -14,7 +14,7 @@ defineProps({
 
 <style scoped>
 .cu-blockquote {
-  border-left: 4px solid var(--cu-color-primary);
+  border-left: var(--cu-border-thick) solid var(--cu-color-primary);
   padding-left: var(--cu-space-md);
   margin-left: 0;
   margin-bottom: var(--cu-space-md);

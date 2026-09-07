@@ -146,7 +146,7 @@ const visiblePages = computed(() => {
           :model-value="pageSizeValue"
           :options="pageSizeOptionsFormatted"
           :color="props.color"
-          style="width: calc(var(--cu-space-3xl) + var(--cu-space-sm))"
+          style="width: calc(var(--cu-space-3xl) * 2)"
           @select="(opt) => handlePageSizeChange(opt.value)"
         />
       </div>

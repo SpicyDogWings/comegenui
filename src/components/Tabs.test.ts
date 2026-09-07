@@ -101,4 +101,65 @@ describe("Tabs — pestañas", () => {
     expect(ch).toBeTruthy();
     expect((ch as unknown[][])[0]![0] as string).toBe("b");
   });
+
+  it("keepAlive: el panel se mantiene montado (v-show) y conserva su contenido al volver", async () => {
+    const w = mount(Tabs, {
+      props: {
+        tabs: [
+          { key: "a", label: "Tab A" },
+          { key: "b", label: "Tab B", keepAlive: true },
+        ],
+      },
+      slots: { a: "<p>Contenido A</p>", b: "<p class='state-b'>Estado B</p>" },
+    });
+    // Nota: se aserta el style inline (no getComputedStyle/isVisible) porque
+    // jsdom cachea el computed style del elemento y no refleja las mutaciones
+    // de v-show después de la primera lectura.
+    // keepAlive monta su panel desde el inicio, oculto si no está activo
+    const panelBInicial = w.find("#cu-tabs-panel-b");
+    expect(panelBInicial.exists()).toBe(true);
+    expect(panelBInicial.attributes("style")).toContain("display: none");
+
+    // activar b y volver a a
+    await w.findAll(".cu-tabs-tab")[1]!.trigger("click");
+    const panelBVisible = w.find("#cu-tabs-panel-b");
+    expect(panelBVisible.attributes("style") ?? "").not.toContain("display: none");
+    await w.findAll(".cu-tabs-tab")[0]!.trigger("click");
+
+    // el panel b sigue montado, solo oculto → estado preservado
+    const panelB = w.find("#cu-tabs-panel-b");
+    expect(panelB.exists()).toBe(true);
+    expect(panelB.attributes("style")).toContain("display: none");
+    expect(panelB.text()).toContain("Estado B");
+    const panelA = w.find("#cu-tabs-panel-a");
+    expect(panelA.attributes("style") ?? "").not.toContain("display: none");
+  });
+
+  it("default (sin keepAlive): el panel se destruye al cambiar de tab", async () => {
+    const w = factory({}, { a: "<p>A</p>", b: "<p>B</p>" });
+    await w.findAll(".cu-tabs-tab")[1]!.trigger("click");
+    expect(w.find("#cu-tabs-panel-b").exists()).toBe(true);
+    await w.findAll(".cu-tabs-tab")[0]!.trigger("click");
+    expect(w.find("#cu-tabs-panel-b").exists()).toBe(false);
+  });
+
+  it("icon: la prop icon se renderiza y tiene precedencia sobre el slot", () => {
+    const w = mount(Tabs, {
+      props: { tabs: [{ key: "a", label: "Tab A", icon: "<b class='icon-prop'>I</b>" }] },
+      slots: { "tab-icon-a": "<i class='icon-slot'>SLOT</i>" },
+    });
+    expect(w.find(".cu-tabs-tab-icon").exists()).toBe(true);
+    expect(w.find(".icon-prop").exists()).toBe(true);
+    expect(w.find(".icon-slot").exists()).toBe(false);
+    expect(w.find(".cu-tabs-tab").text()).toContain("Tab A");
+  });
+
+  it("icon: sin prop, el slot tab-icon-{key} sigue funcionando (fallback)", () => {
+    const w = mount(Tabs, {
+      props: { tabs: [{ key: "a", label: "Tab A" }] },
+      slots: { "tab-icon-a": "<i class='icon-slot'>SLOT</i>" },
+    });
+    expect(w.find(".cu-tabs-tab-icon").exists()).toBe(false);
+    expect(w.find(".icon-slot").exists()).toBe(true);
+  });
 });

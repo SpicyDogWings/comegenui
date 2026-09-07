@@ -64,6 +64,38 @@ describe("Dropdown — motor genérico toggle + panel", () => {
     w.unmount();
   });
 
+  it("click-outside + toggle() externo en el MISMO click: el toggle no reabre", async () => {
+    const w = factory();
+    await w.find("button").trigger("click");
+    expect(vmOf(w).isOpen()).toBe(true);
+
+    const external = document.createElement("button");
+    external.addEventListener("click", () => vmOf(w).toggle());
+    document.body.appendChild(external);
+
+    external.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    await nextTick();
+
+    expect(vmOf(w).isOpen()).toBe(false);
+    expect(w.find(".cu-dropdown-panel").exists()).toBe(false);
+    external.remove();
+    w.unmount();
+  });
+
+  it("toggle() externo con panel cerrado SÍ abre (el flag no filtra entre clicks)", async () => {
+    const w = factory();
+    const external = document.createElement("button");
+    external.addEventListener("click", () => vmOf(w).toggle());
+    document.body.appendChild(external);
+
+    external.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    await nextTick();
+    expect(vmOf(w).isOpen()).toBe(true);
+    expect(w.find(".cu-dropdown-panel").exists()).toBe(true);
+    external.remove();
+    w.unmount();
+  });
+
   it("click dentro del panel no lo cierra y los items del slot se renderizan", async () => {
     const w = factory({}, { default: `<button class="item">Opción</button>` });
     await w.find("button").trigger("click");

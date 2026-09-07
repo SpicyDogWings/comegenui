@@ -116,3 +116,31 @@ describe("DatePicker — label del trigger y selección", () => {
     expect(style).toContain("translateX(-50%)");
   });
 });
+
+describe("DatePicker — programático externo (toggle)", () => {
+  it("toggle() desde botón externo alterna: abre, cierra, abre", async () => {
+    const w = mount(DatePicker);
+    await flushPromises();
+
+    const external = document.createElement("button");
+    external.addEventListener("click", () => (w.vm as any).toggle());
+    document.body.appendChild(external);
+
+    const panel = () => w.find(".cu-dropdown-panel").exists();
+
+    external.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    await flushPromises();
+    expect(panel()).toBe(true);
+
+    external.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    await flushPromises();
+    expect(panel()).toBe(false);
+
+    external.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    await flushPromises();
+    expect(panel()).toBe(true);
+
+    external.remove();
+    w.unmount();
+  });
+});

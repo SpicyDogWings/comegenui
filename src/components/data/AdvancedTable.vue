@@ -207,6 +207,11 @@ const props = defineProps({
     required: false,
     default: () => [],
   },
+  compact: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 });
 
 const emit = defineEmits([
@@ -328,6 +333,7 @@ const tableProps = computed(() => ({
   loading: props.loading,
   rowDisabled: props.rowDisabled,
   footer: props.footer,
+  compact: props.compact,
 }));
 
 const tableStyles = computed(() => ({
@@ -520,7 +526,7 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
 .cu-advanced-table-actions-btn {
   padding: var(--cu-space-2xs) var(--cu-space-sm);
   min-width: 0;
-  height: 28px;
+  height: var(--cu-space-2xl);
   box-sizing: border-box;
 }
 

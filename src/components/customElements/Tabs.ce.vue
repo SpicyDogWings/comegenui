@@ -7,7 +7,7 @@ initTokens();
 
 const props = defineProps({
   tabs: {
-    type: Array as PropType<{ key: string; label: string; disabled?: boolean }[]>,
+    type: Array as PropType<{ key: string; label: string; icon?: string; disabled?: boolean; keepAlive?: boolean }[]>,
     default: () => [],
   },
   modelValue: { type: String, default: "" },
@@ -15,7 +15,7 @@ const props = defineProps({
     type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     default: "primary",
   },
-  variant: { type: String as PropType<'tabs' | 'pills' | 'boxed' | 'soft'>, default: "tabs" },
+  variant: { type: String as PropType<'ghost' | 'solid' | 'boxed' | 'soft'>, default: "ghost" },
   size: { type: String as PropType<'sm' | 'md' | 'lg'>, default: "md" },
   disabled: Boolean,
 });

@@ -1,6 +1,6 @@
 ---
 name: comegen-ui-docs
-description: Guía para documentar componentes de ComegenUI 2.x. Úsala cuando se pida crear, actualizar o auditar la documentación de un Custom Element de ComegenUI (los archivos en `.opencode/skills/comegen-ui/componentes/cu-*.md`).
+description: Guía para documentar componentes de ComegenUI 2.x. Úsala cuando se pida crear, actualizar o auditar la documentación de un Custom Element de ComegenUI (los archivos en `docs/skills/use-comegen/componentes/cu-*.md`).
 ---
 
 # Documentar ComegenUI
@@ -54,19 +54,19 @@ Documentar un componente significa actualizar **2 destinos distintos**:
 
 | Destino | Ubicación | Tipo | Audiencia |
 |---|---|---|---|
-| **Skill** | `.opencode/skills/comegen-ui/` | Skill (receta) | Agentes IA (viaja con el zip) |
+| **Skill** | `docs/skills/use-comegen/` (canonical; `.opencode/skills/comegen-ui/` es un symlink) | Skill (receta) | Agentes IA (viaja con el zip) |
 | **Docs** | `docs/comegen-ui/`, `docs/DOCS.md`, `COMPONENTS-GUIDE.md` | Documentación | Humanos |
 
-> La skill de uso (`comegen-ui`) es una **receta para el agente**, no documentación. La documentación real vive en `docs/`.
+> La skill de uso (`use-comegen`) es una **receta para el agente**, no documentación. La documentación real vive en `docs/comegen-ui/`.
 
 ### Índices a actualizar — Skill (agentes)
 
-1. **`.opencode/skills/comegen-ui/SKILL.md`** — 3 lugares:
+1. **`docs/skills/use-comegen/SKILL.md`** (canonical) — 3 lugares:
     - Tabla "Archivos disponibles" (agregar `Cu<Nombre>.umd.js` / `<cu-xxx>` / descripción).
     - Tabla "Default de `variant` por componente" (si tiene variant).
     - Índice "Componentes" (link a `componentes/cu-xxx.md`).
     - Si corresponde, la tabla de "Variantes disponibles" y la de "Tamaño de los bundles" (los tamaños salen del `pnpm build:lib`).
-2. **`.opencode/skills/comegen-ui/componentes/<nombre>.md`** — el archivo de API del componente.
+2. **`docs/skills/use-comegen/componentes/<nombre>.md`** (canonical) — el archivo de API del componente.
 
 ### Índices a actualizar — Docs (humanos)
 
@@ -114,8 +114,10 @@ Esto es importante porque:
 - `src/components/**/<Nombre>.ts` — punto de entrada del build.
 
 **Destino — Skill (agentes):**
-- `.opencode/skills/comegen-ui/SKILL.md` — skill de uso.
-- `.opencode/skills/comegen-ui/componentes/<nombre>.md` — API del componente.
+- `docs/skills/use-comegen/SKILL.md` (canonical) — skill de uso.
+- `docs/skills/use-comegen/componentes/<nombre>.md` (canonical) — API del componente.
+- `.opencode/skills/comegen-ui/` → symlink al canonical (lo lee opencode).
+- `.agents/skills/use-comegen/` → symlink al canonical (lo lee el agente del huésped).
 
 **Destino — Docs (humanos):**
 - `docs/comegen-ui/` — documentación para humanos.

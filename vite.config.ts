@@ -12,7 +12,7 @@ export default defineConfig({
         }
       }
     }),
-    vueDevTools()
+    vueDevTools({ launchEditor: 'zed' })
   ],
   resolve: {
     alias: {

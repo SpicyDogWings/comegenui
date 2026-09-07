@@ -21,6 +21,11 @@ const props = defineProps({
     required: false,
     default: false,
   },
+  label: {
+    type: String,
+    required: false,
+    default: "",
+  },
 });
 
 const emit = defineEmits(["change"]);
@@ -32,10 +37,16 @@ const switchStyles = computed(() => ({
   '--switch-ghost-hover': `var(--cu-color-${props.color}-ghost-hover)`,
 }));
 
-const toggle = () => {
+const toggle = (next?: boolean) => {
   if (props.disabled) return;
-  checked.value = !checked.value;
-  emit("change", checked.value);
+  const value = next ?? !checked.value;
+  if (value === checked.value) return;
+  checked.value = value;
+  emit("change", value);
+};
+
+const onInput = (e: Event) => {
+  toggle((e.target as HTMLInputElement).checked);
 };
 
 const get = () => checked.value;
@@ -57,72 +68,95 @@ defineExpose({
 </script>
 
 <template>
-  <div
-    @click="toggle"
+  <label
     class="cu-switch"
     :class="[
       `cu-switch--${props.size}`,
-      {
-        'cu-switch--disabled': props.disabled,
-        'cu-switch--checked': checked,
-      }
+      { 'cu-switch--disabled': props.disabled }
     ]"
-    :style="switchStyles"
-    role="switch"
-    :aria-checked="checked"
   >
-    <span class="cu-switch-thumb" />
-    <input
-      ref="input"
-      type="checkbox"
-      :checked="checked"
-      class="cu-switch-input"
-      :disabled="props.disabled"
-    />
-  </div>
+    <span
+      class="cu-switch-track"
+      :class="{ 'cu-switch--checked': checked }"
+      :style="switchStyles"
+      role="switch"
+      :aria-checked="checked"
+    >
+      <span class="cu-switch-thumb" />
+      <input
+        ref="input"
+        type="checkbox"
+        :checked="checked"
+        :disabled="props.disabled"
+        tabindex="-1"
+        class="cu-switch-input"
+        @change="onInput"
+      />
+    </span>
+    <span v-if="props.label || $slots.default" class="cu-switch-label">
+      <slot>{{ props.label }}</slot>
+    </span>
+  </label>
 </template>
 
 <style>
+/* label nativo (misma implementación que Checkbox): el click en el label
+   activa el input anidado y su change alterna */
 .cu-switch {
   position: relative;
   display: inline-flex;
   align-items: center;
-  border-radius: var(--cu-radius-full);
+  gap: var(--cu-space-sm);
+  vertical-align: middle;
   cursor: pointer;
+}
+
+.cu-switch-track {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--cu-radius-full);
   transition: all 150ms ease;
   box-sizing: border-box;
 }
 
-.cu-switch--md {
-  width: 48px;
+.cu-switch--md .cu-switch-track {
+  width: var(--cu-space-3xl);
   height: var(--cu-space-2xl);
 }
 
-.cu-switch--sm {
+.cu-switch--sm .cu-switch-track {
   width: var(--cu-space-2xl);
-  height: 20px;
+  height: var(--cu-space-xl);
 }
 
-.cu-switch--checked {
+.cu-switch-track.cu-switch--checked {
   background-color: var(--switch-bg);
 }
 
-.cu-switch:not(.cu-switch--checked) {
+.cu-switch-track:not(.cu-switch--checked) {
   background-color: var(--cu-color-neutral-soft);
 }
 
-.cu-switch:hover:not(.cu-switch--disabled) {
+.cu-switch-track.cu-switch--checked:hover {
   background-color: var(--switch-ghost-hover);
 }
 
-.cu-switch:not(.cu-switch--checked):hover:not(.cu-switch--disabled) {
+.cu-switch-track:not(.cu-switch--checked):hover {
   background-color: var(--cu-color-neutral-ghost-hover);
 }
 
 .cu-switch--disabled {
-  opacity: 0.7;
   cursor: not-allowed;
+}
+
+.cu-switch--disabled .cu-switch-track {
+  opacity: 0.7;
   pointer-events: none;
+}
+
+.cu-switch--disabled .cu-switch-label {
+  opacity: 0.7;
 }
 
 .cu-switch-thumb {
@@ -134,25 +168,25 @@ defineExpose({
 }
 
 .cu-switch--md .cu-switch-thumb {
-  width: 24px;
-  height: 24px;
-  top: 4px;
-  left: 4px;
+  width: var(--cu-space-xl);
+  height: var(--cu-space-xl);
+  top: var(--cu-space-xs);
+  left: var(--cu-space-xs);
 }
 
 .cu-switch--sm .cu-switch-thumb {
-  width: 16px;
-  height: 16px;
-  top: 2px;
-  left: 2px;
+  width: var(--cu-space-lg);
+  height: var(--cu-space-lg);
+  top: calc((var(--cu-space-xl) - var(--cu-space-lg)) / 2);
+  left: calc((var(--cu-space-xl) - var(--cu-space-lg)) / 2);
 }
 
-.cu-switch--checked.cu-switch--md .cu-switch-thumb {
+.cu-switch--md .cu-switch-track.cu-switch--checked .cu-switch-thumb {
   transform: translateX(16px);
 }
 
-.cu-switch--checked.cu-switch--sm .cu-switch-thumb {
-  transform: translateX(12px);
+.cu-switch--sm .cu-switch-track.cu-switch--checked .cu-switch-thumb {
+  transform: translateX(8px);
 }
 
 .cu-switch-input {
@@ -160,5 +194,18 @@ defineExpose({
   opacity: 0;
   width: 0;
   height: 0;
+}
+
+.cu-switch-label {
+  font-family: var(--cu-font-sans);
+  color: var(--cu-color-neutral);
+}
+
+.cu-switch--md .cu-switch-label {
+  font-size: var(--cu-font-size-sm);
+}
+
+.cu-switch--sm .cu-switch-label {
+  font-size: var(--cu-font-size-xs);
 }
 </style>

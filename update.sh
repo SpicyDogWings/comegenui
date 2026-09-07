@@ -7,7 +7,7 @@
 #   ./update.sh          → último build de main
 #   ./update.sh v3.0.0   → build de un tag/release
 #
-# Al actualizar también instala la skill de uso (comegen-ui/) en
+# Al actualizar también instala la skill de uso (use-comegen/) en
 # .agents/skills/ del proyecto huésped, para que los agentes tengan la doc.
 #
 # Avanzado: CG_URL para override de la URL (útil para probar con un archivo local)
@@ -62,15 +62,15 @@ if [ "${1:-}" = "__swap__" ]; then
     fi
   fi
 
-  if [ -n "$PROJECT_ROOT" ] && [ -d "$SELF/comegen-ui" ]; then
+  if [ -n "$PROJECT_ROOT" ] && [ -d "$SELF/use-comegen" ]; then
     mkdir -p "$PROJECT_ROOT/.agents/skills"
-    rm -rf "$PROJECT_ROOT/.agents/skills/comegen-ui"
-    cp -r "$SELF/comegen-ui" "$PROJECT_ROOT/.agents/skills/comegen-ui"
-    echo "📚 Skill de uso instalada en $PROJECT_ROOT/.agents/skills/comegen-ui"
+    rm -rf "$PROJECT_ROOT/.agents/skills/use-comegen"
+    cp -r "$SELF/use-comegen" "$PROJECT_ROOT/.agents/skills/use-comegen"
+    echo "📚 Skill de uso instalada en $PROJECT_ROOT/.agents/skills/use-comegen"
   elif [ -z "$PROJECT_ROOT" ]; then
     echo "⚠️  No se detectó la raíz del proyecto (sin .git/AGENTS.md/package.json). Seteá CG_PROJECT_ROOT para instalar la skill en .agents/skills."
   else
-    echo "⚠️  El build no incluye la skill comegen-ui/, se omite la instalación en .agents/skills."
+    echo "⚠️  El build no incluye la skill use-comegen/, se omite la instalación en .agents/skills."
   fi
 
   echo "✅ ComegenUI '${TAG}' actualizado en $SELF"

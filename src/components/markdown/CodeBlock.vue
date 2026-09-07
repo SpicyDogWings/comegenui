@@ -9,6 +9,7 @@ import bash from 'highlight.js/lib/languages/bash'
 import json from 'highlight.js/lib/languages/json'
 import python from 'highlight.js/lib/languages/python'
 import Badge from '../information/Badge.vue'
+import CopyButton from '@/components/buttons/CopyButton.vue'
 
 hljs.registerLanguage('xml', xml)
 hljs.registerLanguage('css', css)
@@ -68,11 +69,13 @@ const highlightedHtml = computed(() => {
 
 const lines = computed(() => props.code.split('\n'))
 const lineCount = computed(() => lines.value.length)
+const gutterText = computed(() => lines.value.map((_, i) => i + 1).join('\n'))
 </script>
 
 <template>
   <div :class="codeBlockClasses">
-    <pre class="cu-code-block-pre"><code class="cu-code-block-code"><template v-if="lineNumbers"><span v-for="(line, i) in lines" :key="i" class="cu-code-block-line"><span class="cu-code-block-line-number">{{ i + 1 }}</span><span class="cu-code-block-line-content">{{ escapeHtml(line) }}</span></span></template><template v-else-if="highlightedHtml"><span class="cu-code-block-hl" v-html="highlightedHtml"></span></template><template v-else>{{ code }}</template></code></pre>
+    <CopyButton :text="code" :variant="variant === 'solid' ? 'solid' : 'soft'" class="cu-code-block-copy" />
+    <pre class="cu-code-block-pre"><code :class="['cu-code-block-code', { 'cu-code-block-code--gutter': lineNumbers && highlightedHtml }]"><span v-if="lineNumbers" class="cu-code-block-gutter" aria-hidden="true">{{ gutterText }}</span><span v-if="lineNumbers && highlightedHtml" class="cu-code-block-hl" v-html="highlightedHtml"></span><template v-else-if="lineNumbers"><span v-for="(line, i) in lines" :key="i" class="cu-code-block-line"><span class="cu-code-block-line-number">{{ i + 1 }}</span><span class="cu-code-block-line-content">{{ line }}</span></span></template><span v-else-if="highlightedHtml" class="cu-code-block-hl" v-html="highlightedHtml"></span><template v-else>{{ code }}</template></code></pre>
     <div v-if="language" class="cu-code-block-lang">
       <Badge color="neutral" variant="soft">{{ language }}</Badge>
     </div>
@@ -87,6 +90,13 @@ const lineCount = computed(() => lines.value.length)
   overflow: hidden;
 }
 
+.cu-code-block-copy {
+  position: absolute;
+  top: var(--cu-space-sm);
+  right: var(--cu-space-sm);
+  z-index: 1;
+}
+
 .cu-code-block-pre {
   padding: var(--cu-space-xl) var(--cu-space-2xl);
   overflow-x: auto;
@@ -97,7 +107,7 @@ const lineCount = computed(() => lines.value.length)
   font-family: var(--cu-font-mono);
   font-size: var(--cu-font-size-sm);
   line-height: var(--cu-line-height-relaxed);
-  color: var(--cu-color-neutral-text);
+  color: var(--cb-text);
   white-space: pre;
 }
 
@@ -112,12 +122,17 @@ const lineCount = computed(() => lines.value.length)
   display: block;
 }
 
+/* clases triplicadas a propósito: (0,4,0) le gana sobrado al global del
+   playground ".playground[data-v] span" (0,2,1), que fuerza neutral en spans */
+.cu-code-block-line.cu-code-block-line.cu-code-block-line {
+  color: var(--cb-text);
+}
+
 .cu-code-block-line-number {
   display: inline-block;
   width: 2em;
   margin-right: var(--cu-space-md);
   text-align: right;
-  color: var(--cu-color-neutral-text);
   opacity: 0.4;
   user-select: none;
   -webkit-user-select: none;
@@ -127,65 +142,27 @@ const lineCount = computed(() => lines.value.length)
   display: inline;
 }
 
-/* syntax highlighting */
-.cu-code-block-hl {
-  color: var(--cu-color-neutral-text);
+/* gutter de números (modo highlight): flex para alinear columnas arriba */
+.cu-code-block-code--gutter {
+  display: flex;
+  align-items: flex-start;
 }
 
-.cu-code-block-code :deep(.hljs-keyword),
-.cu-code-block-code :deep(.hljs-selector-tag),
-.cu-code-block-code :deep(.hljs-literal) {
-  color: var(--cu-color-primary);
+.cu-code-block-code--gutter .cu-code-block-hl {
+  flex: 1;
 }
 
-.cu-code-block-code :deep(.hljs-string),
-.cu-code-block-code :deep(.hljs-regexp),
-.cu-code-block-code :deep(.hljs-addition) {
-  color: var(--cu-color-success);
-}
-
-.cu-code-block-code :deep(.hljs-number),
-.cu-code-block-code :deep(.hljs-symbol),
-.cu-code-block-code :deep(.hljs-bullet) {
-  color: var(--cu-color-warning);
-}
-
-.cu-code-block-code :deep(.hljs-tag),
-.cu-code-block-code :deep(.hljs-name),
-.cu-code-block-code :deep(.hljs-selector-class),
-.cu-code-block-code :deep(.hljs-selector-id),
-.cu-code-block-code :deep(.hljs-built_in),
-.cu-code-block-code :deep(.hljs-type),
-.cu-code-block-code :deep(.hljs-class),
-.cu-code-block-code :deep(.hljs-title),
-.cu-code-block-code :deep(.hljs-function),
-.cu-code-block-code :deep(.hljs-section) {
-  color: var(--cu-color-secondary);
-}
-
-.cu-code-block-code :deep(.hljs-attr),
-.cu-code-block-code :deep(.hljs-attribute),
-.cu-code-block-code :deep(.hljs-params) {
-  color: var(--cu-color-danger);
-}
-
-.cu-code-block-code :deep(.hljs-comment),
-.cu-code-block-code :deep(.hljs-quote) {
-  opacity: 0.5;
-  font-style: italic;
-}
-
-.cu-code-block-code :deep(.hljs-meta),
-.cu-code-block-code :deep(.hljs-doctag) {
-  color: var(--cu-color-neutral-text);
-  opacity: 0.6;
-}
-
-.cu-code-block-code :deep(.hljs-subst),
-.cu-code-block-code :deep(.hljs-property),
-.cu-code-block-code :deep(.hljs-operator),
-.cu-code-block-code :deep(.hljs-punctuation) {
-  color: inherit;
+.cu-code-block-gutter.cu-code-block-gutter.cu-code-block-gutter {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 2em;
+  margin-right: var(--cu-space-md);
+  text-align: right;
+  color: var(--cb-text);
+  opacity: 0.4;
+  user-select: none;
+  -webkit-user-select: none;
+  white-space: pre;
 }
 
 /* default - solid neutral */
@@ -208,20 +185,153 @@ const lineCount = computed(() => lines.value.length)
   color: var(--cu-color-neutral-text);
 }
 
-/* solid - darker neutral */
+/* solid - esquema de código (tokens dedicados, invierten con el tema) */
 .cu-code-block--solid {
-  background-color: var(--cu-color-neutral);
+  background-color: var(--cu-code-bg);
   border: none;
 }
 
-.cu-code-block--solid .cu-code-block-code,
-.cu-code-block--solid .cu-code-block-line-number,
-.cu-code-block--solid .cu-code-block-line-content {
-  color: var(--cu-color-surface);
+.cu-code-block--solid :deep(.cu-badge) {
+  background-color: var(--cu-code-faded);
+  color: var(--cu-code-text);
 }
 
-.cu-code-block--solid :deep(.cu-badge) {
-  background-color: rgba(255, 255, 255, 0.15);
-  color: var(--cu-color-surface);
+/* syntax highlighting (highlight.js) — paleta sobre tokens del tema */
+/* texto plano (sin clase hljs: identificadores, operadores, puntuación) */
+.cu-code-block {
+  --cb-text: var(--cu-color-neutral-text);
+  --cb-hl-keyword: color-mix(in srgb, var(--cu-color-primary) 87%, var(--cu-color-neutral-text));
+  --cb-hl-string: color-mix(in srgb, var(--cu-color-success) 87%, var(--cu-color-neutral-text));
+  --cb-hl-number: color-mix(in srgb, var(--cu-color-warning) 89%, var(--cu-color-neutral-text));
+  --cb-hl-tag: color-mix(in srgb, var(--cu-color-secondary) 87%, var(--cu-color-neutral-text));
+  --cb-hl-attr: color-mix(in srgb, var(--cu-color-danger) 87%, var(--cu-color-neutral-text));
+  --cb-hl-title: color-mix(in srgb, var(--cu-color-primary) 87%, var(--cu-color-neutral-text));
+  --cb-hl-comment: color-mix(in srgb, var(--cu-color-neutral-text) 50%, transparent);
+  --cb-hl-meta: color-mix(in srgb, var(--cu-color-neutral-text) 85%, transparent);
+}
+
+/* default (fondo soft neutral): un poco más de brillo */
+.cu-code-block--default {
+  --cb-hl-keyword: color-mix(in srgb, var(--cu-color-primary) 94%, var(--cu-color-neutral-text));
+  --cb-hl-string: color-mix(in srgb, var(--cu-color-success) 94%, var(--cu-color-neutral-text));
+  --cb-hl-number: color-mix(in srgb, var(--cu-color-warning) 96%, var(--cu-color-neutral-text));
+  --cb-hl-tag: color-mix(in srgb, var(--cu-color-secondary) 94%, var(--cu-color-neutral-text));
+  --cb-hl-attr: color-mix(in srgb, var(--cu-color-danger) 94%, var(--cu-color-neutral-text));
+  --cb-hl-title: color-mix(in srgb, var(--cu-color-primary) 94%, var(--cu-color-neutral-text));
+  --cb-hl-comment: color-mix(in srgb, var(--cu-color-neutral-text) 55%, transparent);
+  --cb-hl-meta: color-mix(in srgb, var(--cu-color-neutral-text) 92%, transparent);
+}
+
+/* solid: acentos precalculados por token (--cu-color-*-code = mezcla hacia
+   surface generada en cu-tokens), garantizan contraste sobre --cu-code-bg
+   en los 3 temas. Este bloque va DESPUÉS del base: misma especificidad,
+   gana el último en la cascada */
+.cu-code-block--solid {
+  --cb-text: var(--cu-code-text);
+  --cb-hl-keyword: var(--cu-color-primary-code);
+  --cb-hl-string: var(--cu-color-success-code);
+  --cb-hl-number: var(--cu-color-warning-code);
+  --cb-hl-tag: var(--cu-color-secondary-code);
+  --cb-hl-attr: var(--cu-color-danger-code);
+  --cb-hl-title: var(--cu-color-primary-code);
+  --cb-hl-comment: var(--cu-code-faded);
+  --cb-hl-meta: color-mix(in srgb, var(--cu-code-text) 70%, transparent);
+}
+
+/* clase triplicada a propósito: (0,4,0) le gana al global del playground
+   ".playground[data-v] span" (0,2,1), que fuerza color neutral en los spans */
+.cu-code-block-hl.cu-code-block-hl.cu-code-block-hl {
+  color: var(--cb-text);
+}
+
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-keyword),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-selector-tag),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-literal) {
+  color: var(--cb-hl-keyword);
+}
+
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-string),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-regexp),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-addition) {
+  color: var(--cb-hl-string);
+}
+
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-number),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-symbol),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-bullet),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-variable),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-template-variable) {
+  color: var(--cb-hl-number);
+}
+
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-tag),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-name),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-selector-class),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-selector-id),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-built_in),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-type),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-class) {
+  color: var(--cb-hl-tag);
+}
+
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-attr),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-attribute),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-params) {
+  color: var(--cb-hl-attr);
+}
+
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-title),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-function),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-section) {
+  color: var(--cb-hl-title);
+  font-weight: var(--cu-font-weight-medium);
+}
+
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-comment),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-quote) {
+  color: var(--cb-hl-comment);
+  font-style: italic;
+}
+
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-meta),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-doctag) {
+  color: var(--cb-hl-meta);
+}
+
+/* clases que hljs emite sin token propio: plain del esquema. Sin esta regla,
+   el global del playground las pisa con neutral → negro sobre --cu-code-bg */
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-subst),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-property),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-operator),
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-punctuation) {
+  color: var(--cb-text);
+}
+
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-emphasis) {
+  font-style: italic;
+}
+
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-strong) {
+  font-weight: var(--cu-font-weight-bold);
+}
+
+.cu-code-block-code.cu-code-block-code.cu-code-block-code :deep(.hljs-deletion) {
+  color: var(--cb-hl-attr);
+  text-decoration: line-through;
+}
+</style>
+
+<style>
+/* fallback sin scoped (namespaced bajo .cu-code-block): le gana al global
+   del playground (0,3,0) > (0,2,1) aunque el scope id no matchee */
+.cu-code-block .cu-code-block-code .cu-code-block-hl,
+.cu-code-block .cu-code-block-code .cu-code-block-gutter,
+.cu-code-block .cu-code-block-code .cu-code-block-line {
+  color: var(--cb-text);
+}
+
+/* cualquier span hljs no mapeado hereda el plain del esquema */
+.cu-code-block .cu-code-block-code .cu-code-block-hl span {
+  color: inherit;
 }
 </style>

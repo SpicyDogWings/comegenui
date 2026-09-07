@@ -533,7 +533,7 @@ const colorStyles = computed(() => ({
 .cu-calendar-day--selected.cu-calendar-day--subtle {
   background: var(--cal-subtle);
   color: var(--cal-accent);
-  box-shadow: inset 0 0 0 1px var(--cal-subtle-border);
+  box-shadow: inset 0 0 0 var(--cu-border-thin) var(--cal-subtle-border);
 }
 
 .cu-calendar-day--empty {
@@ -566,19 +566,19 @@ const colorStyles = computed(() => ({
 
 .cu-calendar-dots {
   position: absolute;
-  bottom: 2px;
+  bottom: var(--cu-space-2xs);
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: 2px;
+  gap: var(--cu-space-2xs);
   align-items: center;
   justify-content: center;
   pointer-events: none;
 }
 
 .cu-calendar-dot {
-  width: 4px;
-  height: 4px;
+  width: var(--cu-space-xs);
+  height: var(--cu-space-xs);
   border-radius: 50%;
   background: var(--dot-color, var(--cal-accent));
   display: block;

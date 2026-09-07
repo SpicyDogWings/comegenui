@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, type PropType } from "vue";
 import Button from "../buttons/Button.vue";
-import Loader from "./Loader.vue";
+import Loader from "../information/Loader.vue";
 
 const props = defineProps({
   color: {
@@ -113,11 +113,19 @@ const emit = defineEmits(["open", "close"]);
 const isOpen = ref(false);
 const dropdownRef = ref<HTMLElement | null>(null);
 
+// Un click fuera del dropdown cierra el panel en fase CAPTURA (antes que los handlers
+// del target). Si el mismo click dispara un toggle() externo (ej. botón programático),
+// toggle() vería el panel cerrado y lo reabriría: el flag marca "este click ya cerró"
+// y toggle() no reabre. Expira con el mismo evento (setTimeout 0).
+let closedByOutsideClick = false;
+
 function onDocumentClick(e: MouseEvent) {
   if (!isOpen.value || !dropdownRef.value) return;
   if (!e.composedPath().includes(dropdownRef.value)) {
+    closedByOutsideClick = true;
     isOpen.value = false;
     emit("close");
+    setTimeout(() => { closedByOutsideClick = false; }, 0);
   }
 }
 
@@ -204,6 +212,10 @@ function close() {
 }
 function toggle() {
   if (props.disabled) return;
+  if (closedByOutsideClick) {
+    closedByOutsideClick = false;
+    return;
+  }
   if (isOpen.value) close();
   else open();
 }
@@ -247,7 +259,7 @@ defineExpose({ open, close, toggle, get, set, reset, isOpen: () => isOpen.value 
         animation="cooldown"
         :delay="delay"
       />
-      <slot></slot>
+      <slot v-if="!loading"></slot>
     </div>
   </div>
 </template>
@@ -266,8 +278,9 @@ defineExpose({ open, close, toggle, get, set, reset, isOpen: () => isOpen.value 
   box-shadow: var(--cu-shadow-xl);
 }
 
+/* Mientras carga el panel muestra solo el loader (slot oculto) — sin opacity:
+   atenuar el panel lo hacía transparente y se veía la página a través */
 .cu-dropdown-panel--loading {
-  opacity: 0.6;
   pointer-events: none;
 }
 </style>

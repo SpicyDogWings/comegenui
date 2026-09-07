@@ -4,8 +4,14 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
+      path: "/",
+      name: "Home",
+      component: () => import("@/pages/Home.vue")
+    },
+    {
       path: "/playground",
       name: "Playground",
+      redirect: "/playground/components/button",
       children: [
         {
           path: "theme-builder",
@@ -22,9 +28,29 @@ const router = createRouter({
               component: () => import("@/pages/playground/components/Button.vue")
             },
             {
+              path: "copy-button",
+              name: "CopyButton playground",
+              component: () => import("@/pages/playground/components/CopyButton.vue")
+            },
+            {
               path: "toggle-color-scheme",
               name: "ToggleColorScheme playground",
               component: () => import("@/pages/playground/components/ToggleColorScheme.vue")
+            },
+            {
+              path: "floating-button",
+              name: "FloatingButton playground",
+              component: () => import("@/pages/playground/components/FloatingButton.vue")
+            },
+            {
+              path: "color-picker",
+              name: "ColorPicker playground",
+              component: () => import("@/pages/playground/components/ColorPicker.vue")
+            },
+            {
+              path: "label",
+              name: "Label playground",
+              component: () => import("@/pages/playground/components/Label.vue")
             },
             {
               path: "alert",
@@ -40,6 +66,21 @@ const router = createRouter({
               path: "card",
               name: "Card playground",
               component: () => import("@/pages/playground/components/Card.vue")
+            },
+            {
+              path: "author-card",
+              name: "AuthorCard playground",
+              component: () => import("@/pages/playground/components/AuthorCard.vue")
+            },
+            {
+              path: "avatar",
+              name: "Avatar playground",
+              component: () => import("@/pages/playground/components/Avatar.vue")
+            },
+            {
+              path: "loader",
+              name: "Loader playground",
+              component: () => import("@/pages/playground/components/Loader.vue")
             },
             {
               path: "modal",
@@ -165,6 +206,11 @@ const router = createRouter({
               path: "blockquote",
               name: "Blockquote playground",
               component: () => import("@/pages/playground/components/Blockquote.vue")
+            },
+            {
+              path: "navbar",
+              name: "Navbar playground",
+              component: () => import("@/pages/playground/components/Navbar.vue")
             },
           ]
         },

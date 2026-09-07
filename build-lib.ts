@@ -48,8 +48,8 @@ const files = fg.sync('./src/lib/**/*.ts', {
 })
 
 async function runBuilds() {
-  console.log('🧹 Limpiando directorio dist...')
-  const outDir = resolve(__dirname, 'dist')
+  console.log('🧹 Limpiando directorio dist-lib...')
+  const outDir = resolve(__dirname, 'dist-lib')
   if (fs.existsSync(outDir)) {
     fs.rmSync(outDir, { recursive: true, force: true })
   }
@@ -59,7 +59,13 @@ async function runBuilds() {
 
   for (const file of files) {
     const baseName = basename(file, extname(file))
-    const name = 'Cu' + baseName.charAt(0).toUpperCase() + baseName.slice(1)
+    // PascalCase real: date-picker → CuDatePicker (los snippets y las páginas
+    // huésped cargan dist/CuDatePicker.umd.js; con solo capitalizar la primera
+    // letra quedaba CuDate-picker.umd.js y el HTML viejo cargaba 404/stale)
+    const name = 'Cu' + baseName
+      .split('-')
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join('')
 
     console.log(`📦 Building ${name}...`)
 
@@ -94,7 +100,7 @@ async function runBuilds() {
     fs.writeFileSync(resolve(cssDir, `${name}.css`), themeCSS)
   }
 
-  console.log(`\n✅ Build complete! Output: dist/`)
+  console.log(`\n✅ Build complete! Output: dist-lib/`)
   for (const file of files) {
     const baseName = basename(file, extname(file))
     console.log(`   - ${baseName}.umd.js`)
@@ -118,7 +124,7 @@ async function runBuilds() {
 
 async function createZip() {
   console.log('\n📦 Creando zip...')
-  const outDir = resolve(__dirname, 'dist')
+  const outDir = resolve(__dirname, 'dist-lib')
   const version = process.argv[2] || packageJson.version
   const zipName = `comegenui-v${version}.zip`
   const outputPath = resolve(outDir, zipName)
@@ -158,12 +164,12 @@ async function createZip() {
 
   // Add skill de uso (SKILL.md + componentes/) — SIEMPRE en el zip, al lado de
   // los archivos de la lib. Solo la de uso; no la de desarrollo ni documentar.
-  const docsDir = resolve(__dirname, 'docs/comegen-ui')
+  const docsDir = resolve(__dirname, 'docs/skills/use-comegen')
   if (fs.existsSync(docsDir)) {
-    archive.directory(docsDir, 'comegen-ui')
-    console.log('📚 Skill de uso agregada al zip: comegen-ui/')
+    archive.directory(docsDir, 'use-comegen')
+    console.log('📚 Skill de uso agregada al zip: use-comegen/')
   } else {
-    console.log('⚠️  docs/comegen-ui no encontrada, se omite del zip')
+    console.log('⚠️  docs/skills/use-comegen no encontrada, se omite del zip')
   }
 
   // Add update.sh / update.ps1 (actualizador del proyecto huésped) — SIEMPRE en el zip
