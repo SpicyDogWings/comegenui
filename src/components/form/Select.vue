@@ -42,6 +42,12 @@ const props = defineProps({
   modelValue: { type: String, required: false, default: "" },
   options: { type: Array as () => SelectOption[], required: false, default: () => [] },
   searchEnabled: { type: Boolean, required: false, default: false },
+  searchMode: {
+    type: String,
+    required: false,
+    default: "startsWith",
+    validator: (value: string) => ["startsWith", "includes"].includes(value),
+  },
   searchResetDelay: { type: Number, required: false, default: 1000 },
   loading: { type: Boolean, required: false, default: false },
   cooldownVariant: { type: String, required: false, default: "ghost-hover" },
@@ -61,7 +67,7 @@ const matchIndex = computed(() => {
   const q = searchText.value;
   if (!q) return -1;
   return props.options.findIndex(o =>
-    !o.disabled && matchesQuery(o.label, q),
+    !o.disabled && matchesQuery(o.label, q, { mode: props.searchMode }),
   );
 });
 

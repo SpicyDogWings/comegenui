@@ -223,7 +223,7 @@ watch(() => dropdownRef.value?.isOpen(), (open) => {
 4. **Auto-focus al abrir** el dropdown para que el usuario pueda escribir inmediatamente.
 5. **Reset automático** del texto acumulado después de `searchResetDelay` ms de inactividad.
 6. **Scroll al match**, no filtro — la lista completa sigue visible, solo se posiciona en la primera coincidencia.
-7. **Coincidencia por `includes`** — busca en cualquier parte del label, no solo al inicio.
+7. **Coincidencia configurable** por `searchMode`: `startsWith` (por defecto, busca al inicio) o `includes` (busca en cualquier parte del label).
 8. **Backspace** borra el último carácter del texto acumulado.
 9. **Ignora** teclas de control (Ctrl, Meta), Escape, Tab.
 10. **Cooldown bar** — se muestra en el dropdown mientras el usuario escribe, usando el componente `Loader` con `animation="cooldown"`.
@@ -250,6 +250,7 @@ watch(() => dropdownRef.value?.isOpen(), (open) => {
 | Prop | Tipo | Default | Descripción |
 |------|------|---------|-------------|
 | `searchEnabled` | Boolean | `false` | Activa la búsqueda por teclado (estilo select nativo) |
+| `searchMode` | String | `"startsWith"` | Modo de coincidencia: `startsWith` (inicia con) o `includes` (contiene) |
 | `searchResetDelay` | Number | `1000` | Tiempo en ms antes de resetear el texto acumulado |
 | `loading` | Boolean | `false` | Muestra barra de carga (oculta cooldown) |
 
