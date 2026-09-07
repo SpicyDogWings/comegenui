@@ -327,27 +327,40 @@ watch(showImportPicker, async (val) => {
     importPickerRef.value?.open()
   }
 })
-const lastImportedConfig = ref<ThemeConfig | null>(null)
+const lastImportedConfig = ref<any | null>(null)
 
 function handleImport(config: any) {
-  const cfg = config as CustomThemeConfig
+  const cfg = config as { themes?: Record<string, any>, colors?: Record<string, string> }
   const themeNames = Object.keys(cfg?.themes ?? {})
 
-  if (themeNames.length === 0) {
-    alert('No se encontraron temas en el archivo')
+  // Config multi-tema ({ themes: {...} }) → picker para elegir cuál aplicar.
+  if (themeNames.length > 0) {
+    lastImportedConfig.value = cfg
+    importedThemes.value = themeNames
+    showImportPicker.value = true
+    modalRef.value?.close()
     return
   }
 
-  lastImportedConfig.value = cfg
-  importedThemes.value = themeNames
-  showImportPicker.value = true
-  modalRef.value?.close()
+  // Config de un solo tema plano — el formato que exporta comegen
+  // ({ colors, opacities, typography, spacing, borderRadius, borders }).
+  if (!cfg?.colors || typeof cfg.colors !== 'object' || Object.keys(cfg.colors).length === 0) {
+    alert('No se encontraron temas en el archivo')
+    return
+  }
+  applyImportedTheme(cfg, 'custom')
 }
 
-function applyImportedTheme(cfg: CustomThemeConfig, name: string) {
-  const themeColors = cfg.themes[name]
-  if (!themeColors) return
+function applyImportedTheme(cfg: CustomThemeConfig | any, name: string) {
+  const themeColors = cfg?.themes?.[name]
 
+  // Flat single-theme (export de comegen): el propio cfg ya es el tema.
+  if (!themeColors) {
+    applySingleTheme(cfg)
+    return
+  }
+
+  // Multi-theme: aplica colores del tema elegido conservando el shared actual.
   const { shadowOpacity, ...rest } = themeColors
 
   store.applyCustomFromImport({
@@ -358,6 +371,36 @@ function applyImportedTheme(cfg: CustomThemeConfig, name: string) {
 
   isEditing.value = true
   colors.value = { ...colors.value, ...rest }
+  showImportPicker.value = false
+}
+
+// Aplica un tema plano (colores + opacidad + shared) fusionando los shared
+// sobre los DEFAULTS: "defaults + overrides del archivo", igual que init().
+function applySingleTheme(cfg: any) {
+  const { shadowOpacity, ...rest } = cfg?.colors ?? {}
+  const shadow =
+    cfg?.opacities?.shadow ?? cfg?.opacities?.default?.shadow ?? (parseInt(shadowOpacityRaw.value) || 10)
+
+  const merged = {
+    typography: { ...DEFAULTS.typography, ...(cfg?.typography ?? {}) },
+    spacing: { ...DEFAULTS.spacing, ...(cfg?.spacing ?? {}) },
+    borderRadius: { ...DEFAULTS.borderRadius, ...(cfg?.borderRadius ?? {}) },
+    borders: { width: { ...DEFAULTS.borders.width, ...(cfg?.borders?.width ?? {}) } },
+  }
+
+  store.applyCustomFromImport({
+    colors: { ...rest },
+    opacities: { shadow },
+    shared: merged,
+  })
+
+  isEditing.value = true
+  colors.value = { ...colors.value, ...rest }
+  shadowOpacityRaw.value = String(shadow)
+  typography.value = merged.typography
+  spacing.value = merged.spacing
+  borderRadius.value = merged.borderRadius
+  borders.value = { ...borders.value, width: merged.borders.width }
   showImportPicker.value = false
 }
 
