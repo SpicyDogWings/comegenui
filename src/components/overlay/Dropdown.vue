@@ -29,6 +29,7 @@ const props = defineProps({
   },
   disabled: { type: Boolean, required: false, default: false },
   label: { type: String, required: false, default: "" },
+  icon: { type: String, required: false, default: "" },
   // Cómo se abre el panel: "click" (por defecto) o "hover" (abre al pasar el
   // mouse por el trigger y cierra al salir, con un pequeño delay).
   trigger: {
@@ -392,6 +393,7 @@ defineExpose({ open, close, toggle, get, set, reset, isOpen: () => isOpen.value 
         class="cu-dropdown-menu-item"
         @click="toggle"
       >
+        <span v-if="props.icon" class="cu-dropdown-menu-item-icon" v-html="props.icon"></span>
         <span class="cu-dropdown-menu-item-label">{{ label || "Submenú" }}</span>
         <LucideChevronRight :width="14" :height="14" class="cu-dropdown-menu-item-chevron" />
       </button>

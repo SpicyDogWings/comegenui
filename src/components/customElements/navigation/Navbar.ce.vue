@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { getCurrentInstance, type PropType } from "vue";
-import Navbar from "../../overlay/Navbar.vue";
+import Navbar from "../../navigation/Navbar.vue";
 import { initTokens } from "@/plugins/cu-tokens/css";
 
 initTokens();
@@ -14,6 +14,8 @@ const props = defineProps({
     default: 'filter',
   },
   searchFields: { type: Array as () => string[], default: () => [] },
+  compact: { type: Boolean, default: false },
+  responsive: { type: Boolean, default: false },
 });
 
 const instance = getCurrentInstance();
@@ -37,6 +39,8 @@ function ceEmit(event: string, payload: unknown) {
     :search-placeholder="props.searchPlaceholder"
     :search-mode="props.searchMode"
     :search-fields="props.searchFields"
+    :compact="props.compact"
+    :responsive="props.responsive"
     @search="ceEmit('search', $event)"
   />
 </template>

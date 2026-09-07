@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 export interface NavItem {
   label: string
   path?: string
+  icon?: string
   children?: NavItem[]
 }
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import PlaygroundStyle from '@/templates/playground/PlaygroundStyle.vue';
-import Navbar from "@/components/overlay/Navbar.vue";
+import Navbar from "@/components/navigation/Navbar.vue";
 import Badge from "@/components/information/Badge.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Table from "@/components/data/Table.vue";
@@ -10,6 +10,9 @@ import CodeBlock from "@/components/markdown/CodeBlock.vue";
 const outlineItems = [
   { label: 'Basic', id: 'basic' },
   { label: 'Nested', id: 'nested' },
+  { label: 'Icons', id: 'icons' },
+  { label: 'Compact', id: 'compact' },
+  { label: 'Responsive', id: 'responsive' },
   { label: 'Search', id: 'search' },
   { label: 'Search Modes', id: 'modes', children: [
     { label: 'Filter', id: 'mode-filter' },
@@ -60,8 +63,28 @@ const navItems = [
   { label: 'Ayuda', path: '/ayuda' },
 ];
 
+// Con iconos: cada item lleva un `icon` (HTML/emoji) que se renderiza antes del label.
+const iconItems = [
+  { label: 'Inicio', path: '/playground/components/navbar', icon: '🏠' },
+  { label: 'Componentes', icon: '🧩', children: [
+    { label: 'Buttons', icon: '🔘', children: [
+      { label: 'Button', path: '/playground/components/button', icon: '🅱️' },
+      { label: 'CopyButton', path: '/playground/components/copy-button', icon: '📋' },
+    ]},
+    { label: 'Form', icon: '📝', children: [
+      { label: 'Input', path: '/playground/components/input', icon: '⌨️' },
+      { label: 'Select', path: '/playground/components/select', icon: '🔽' },
+    ]},
+  ]},
+  { label: 'Configuración', icon: '⚙️', children: [
+    { label: 'Perfil', path: '/perfil', icon: '👤' },
+    { label: 'Seguridad', path: '/seguridad', icon: '🔒' },
+  ]},
+  { label: 'Ayuda', path: '/ayuda', icon: '❓' },
+];
+
 const vueImport = `<script setup lang="ts">
-import Navbar from '@/components/overlay/Navbar.vue'
+import Navbar from '@/components/navigation/Navbar.vue'
 
 const items = [
   { label: 'Inicio', path: '/inicio' },
@@ -84,6 +107,54 @@ ${body}
 
 const basicVue = vueSnippet(`  <Navbar :items="items" />`);
 
+const iconsVue = `<script setup lang="ts">
+import Navbar from '@/components/navigation/Navbar.vue'
+
+const items = [
+  { label: 'Inicio', path: '/inicio', icon: '🏠' },
+  { label: 'Configuración', icon: '⚙️', children: [
+    { label: 'Perfil', path: '/perfil', icon: '👤' },
+  ]},
+]
+<\/script>
+
+<template>
+  <Navbar :items="items" />
+</template>`;
+
+const compactVue = `<script setup lang="ts">
+import Navbar from '@/components/navigation/Navbar.vue'
+
+// Compact: solo iconos (o la inicial del label si no hay icono)
+const items = [
+  { label: 'Inicio', path: '/inicio', icon: '🏠' },
+  { label: 'Configuración', icon: '⚙️', children: [
+    { label: 'Perfil', path: '/perfil', icon: '👤' },
+  ]},
+  { label: 'Ayuda', path: '/ayuda' },
+]
+<\/script>
+
+<template>
+  <Navbar :items="items" compact />
+</template>`;
+
+const responsiveVue = `<script setup lang="ts">
+import Navbar from '@/components/navigation/Navbar.vue'
+
+const items = [
+  { label: 'Inicio', path: '/inicio' },
+  { label: 'Configuración', children: [
+    { label: 'Perfil', path: '/perfil' },
+  ]},
+]
+<\/script>
+
+<template>
+  <!-- Bajo 768px se vuelve un drawer overlay con botón hamburguesa -->
+  <Navbar :items="items" responsive />
+</template>`;
+
 const searchVue = vueSnippet(`  <Navbar :items="items" search />`);
 
 const filterVue = vueSnippet(`  <!-- filter (default): oculta lo que no matchea -->
@@ -93,7 +164,7 @@ const scrollVue = vueSnippet(`  <!-- scroll: resalta + scrollea al match -->
   <Navbar :items="items" search search-mode="scroll" />`);
 
 const fieldsVue = `<script setup lang="ts">
-import Navbar from '@/components/overlay/Navbar.vue'
+import Navbar from '@/components/navigation/Navbar.vue'
 
 const items = [
   { label: 'Perfil', path: '/perfil', tag: 'usuario' },
@@ -155,7 +226,9 @@ const apiColumns = [
 ];
 
 const propsData = [
-  { name: 'items', type: 'NavItem[]', default: '—', description: 'Árbol de navegación: { label, path?, children? }. Los items con children se renderizan como Collapse' },
+  { name: 'items', type: 'NavItem[]', default: '—', description: 'Árbol de navegación: { label, path?, icon?, children? }. Los items con children se renderizan como Collapse' },
+  { name: 'compact', type: 'boolean', default: 'false', description: 'Modo compacto: muestra solo los iconos (o la inicial del label si no hay icono)' },
+  { name: 'responsive', type: 'boolean', default: 'false', description: 'Bajo 768px la nav se vuelve un drawer overlay con botón hamburguesa' },
   { name: 'search', type: 'boolean', default: 'false', description: 'Activa el input de búsqueda arriba del menú; filtra/resalta items automáticamente' },
   { name: 'searchPlaceholder', type: 'string', default: '"Buscar..."', description: 'Placeholder del input de búsqueda' },
   { name: 'searchMode', type: 'string', default: '"filter"', description: 'filter: oculta lo que no matchea. scroll: deja el árbol completo y resalta + scrollea al primer match' },
@@ -169,6 +242,7 @@ const eventsData = [
 const interfaceCode = `interface NavItem {
   label: string
   path?: string
+  icon?: string
   children?: NavItem[]
 }`;
 </script>
@@ -202,6 +276,54 @@ const interfaceCode = `interface NavItem {
           <div class="playground-col">
             <div class="demo-panel">
               <Navbar :items="deepItems" />
+            </div>
+          </div>
+        </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="icons" class="playground-section">
+        <div class="playground-heading">
+          <h2>Icons</h2>
+          <Badge color="neutral" title="Campo icon en NavItem">icon</Badge>
+        </div>
+        <SectionDemo :vue-code="iconsVue">
+          <div class="playground-col">
+            <div class="demo-panel">
+              <Navbar :items="iconItems" />
+            </div>
+          </div>
+        </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="compact" class="playground-section">
+        <div class="playground-heading">
+          <h2>Compact</h2>
+          <Badge color="neutral" title="Solo iconos o la inicial del label">compact</Badge>
+        </div>
+        <SectionDemo :vue-code="compactVue">
+          <div class="playground-col">
+            <div class="demo-panel">
+              <Navbar :items="iconItems" compact />
+            </div>
+          </div>
+        </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="responsive" class="playground-section">
+        <div class="playground-heading">
+          <h2>Responsive</h2>
+          <Badge color="neutral" title="Bajo 768px se vuelve un drawer overlay">overlay</Badge>
+        </div>
+        <SectionDemo :vue-code="responsiveVue">
+          <div class="playground-col">
+            <div class="demo-panel">
+              <Navbar :items="navItems" responsive />
             </div>
           </div>
         </SectionDemo>

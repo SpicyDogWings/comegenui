@@ -19,7 +19,7 @@ const props = defineProps({
 <template>
   <div class="cu-navbar-menu">
     <template v-for="item in props.items" :key="item.path || item.label">
-      <Dropdown v-if="item.children?.length" :label="item.label" :trigger="props.trigger">
+      <Dropdown v-if="item.children?.length" :label="item.label" :icon="item.icon" :trigger="props.trigger">
         <NavbarMenu :items="item.children" :trigger="props.trigger" />
       </Dropdown>
       <a
@@ -27,12 +27,14 @@ const props = defineProps({
         :href="item.path"
         class="cu-navbar-menu-item"
       >
+        <span v-if="item.icon" class="cu-navbar-menu-icon" v-html="item.icon"></span>
         <span class="cu-navbar-menu-item-label">{{ item.label }}</span>
       </a>
       <span
         v-else
         class="cu-navbar-menu-item cu-navbar-menu-item--disabled"
       >
+        <span v-if="item.icon" class="cu-navbar-menu-icon" v-html="item.icon"></span>
         <span class="cu-navbar-menu-item-label">{{ item.label }}</span>
       </span>
     </template>
@@ -77,5 +79,14 @@ const props = defineProps({
 .cu-navbar-menu-item-label {
   text-align: left;
   white-space: nowrap;
+}
+
+.cu-navbar-menu-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 1.25rem;
+  line-height: 1;
 }
 </style>

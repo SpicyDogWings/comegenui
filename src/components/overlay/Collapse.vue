@@ -8,6 +8,11 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  icon: {
+    type: String,
+    required: false,
+    default: '',
+  },
   defaultOpen: {
     type: Boolean,
     default: false,
@@ -92,7 +97,8 @@ defineExpose({
       @click="toggle()"
     >
       <LucideChevronRight class="cu-collapse-chevron" :class="{ 'is-open': isOpen }" :width="14" :height="14" />
-      {{ props.label }}
+      <span v-if="props.icon" class="cu-collapse-icon" v-html="props.icon"></span>
+      <span class="cu-collapse-label">{{ props.label }}</span>
     </Button>
     <Transition
       @enter="onEnter"

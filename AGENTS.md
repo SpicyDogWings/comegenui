@@ -17,7 +17,7 @@ src/
 └── utils/                                 # Utilidades (getHostTheme, palette, fileIcons)
 ```
 
-Donde `{category}` es uno de: `form/`, `information/`, `overlay/`, `data/`, `buttons/`, o raíz.
+Donde `{category}` es uno de: `form/`, `information/`, `overlay/`, `navigation/`, `data/`, `buttons/`, o raíz.
 
 ### Patrón de 3 archivos (componentes públicos)
 

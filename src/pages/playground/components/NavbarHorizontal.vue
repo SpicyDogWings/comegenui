@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import PlaygroundStyle from '@/templates/playground/PlaygroundStyle.vue';
-import NavbarHorizontal from "@/components/overlay/NavbarHorizontal.vue";
+import NavbarHorizontal from "@/components/navigation/NavbarHorizontal.vue";
 import Badge from "@/components/information/Badge.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Table from "@/components/data/Table.vue";
@@ -30,29 +30,29 @@ const outlineItems = [
 ];
 
 const navItems = [
-  { label: 'Inicio', path: '/playground/components/navbar-horizontal' },
-  { label: 'Componentes', children: [
-    { label: 'Buttons', children: [
-      { label: 'Button', path: '/playground/components/button' },
-      { label: 'CopyButton', path: '/playground/components/copy-button' },
-      { label: 'FloatingButton', path: '/playground/components/floating-button' },
+  { label: 'Inicio', path: '/playground/components/navbar-horizontal', icon: '🏠' },
+  { label: 'Componentes', icon: '🧩', children: [
+    { label: 'Buttons', icon: '🔘', children: [
+      { label: 'Button', path: '/playground/components/button', icon: '🅱️' },
+      { label: 'CopyButton', path: '/playground/components/copy-button', icon: '📋' },
+      { label: 'FloatingButton', path: '/playground/components/floating-button', icon: '🛫' },
     ]},
-    { label: 'Form', children: [
-      { label: 'Input', path: '/playground/components/input' },
-      { label: 'Select', path: '/playground/components/select' },
-      { label: 'Textarea', path: '/playground/components/textarea' },
+    { label: 'Form', icon: '📝', children: [
+      { label: 'Input', path: '/playground/components/input', icon: '⌨️' },
+      { label: 'Select', path: '/playground/components/select', icon: '🔽' },
+      { label: 'Textarea', path: '/playground/components/textarea', icon: '📄' },
     ]},
-    { label: 'Data', children: [
-      { label: 'Table', path: '/playground/components/table' },
-      { label: 'AdvancedTable', path: '/playground/components/advanced-table' },
+    { label: 'Data', icon: '📊', children: [
+      { label: 'Table', path: '/playground/components/table', icon: '🗂️' },
+      { label: 'AdvancedTable', path: '/playground/components/advanced-table', icon: '📑' },
     ]},
   ]},
-  { label: 'Configuración', children: [
-    { label: 'Perfil', path: '/perfil' },
-    { label: 'Seguridad', path: '/seguridad' },
-    { label: 'Notificaciones', path: '/notificaciones' },
+  { label: 'Configuración', icon: '⚙️', children: [
+    { label: 'Perfil', path: '/perfil', icon: '👤' },
+    { label: 'Seguridad', path: '/seguridad', icon: '🔒' },
+    { label: 'Notificaciones', path: '/notificaciones', icon: '🔔' },
   ]},
-  { label: 'Ayuda', path: '/ayuda' },
+  { label: 'Ayuda', path: '/ayuda', icon: '❓' },
 ];
 
 // Anidamiento profundo: los items con children se renderizan como Dropdown en
@@ -72,7 +72,7 @@ const deepItems = [
 ];
 
 const vueImport = `<script setup lang="ts">
-import NavbarHorizontal from '@/components/overlay/NavbarHorizontal.vue'
+import NavbarHorizontal from '@/components/navigation/NavbarHorizontal.vue'
 
 const items = [
   { label: 'Inicio', path: '/inicio' },
@@ -99,7 +99,7 @@ const hoverVue = vueSnippet(`  <!-- Los submenús abren al pasar el mouse -->
   <NavbarHorizontal :items="items" trigger="hover" />`);
 
 const nestedVue = `<script setup lang="ts">
-import NavbarHorizontal from '@/components/overlay/NavbarHorizontal.vue'
+import NavbarHorizontal from '@/components/navigation/NavbarHorizontal.vue'
 
 // El anidamiento es infinito: cada nivel con children es un Dropdown en cascada
 const items = [
@@ -166,7 +166,7 @@ const apiColumns = [
 ];
 
 const propsData = [
-  { name: 'items', type: 'NavItem[]', default: '—', description: 'Árbol de navegación: { label, path?, children? }. Los padres se renderizan como Dropdown en cascada (anidamiento infinito), las hojas como items de menú nativos' },
+  { name: 'items', type: 'NavItem[]', default: '—', description: 'Árbol de navegación: { label, path?, icon?, children? }. Los padres se renderizan como Dropdown en cascada (anidamiento infinito), las hojas como items de menú nativos' },
   { name: 'trigger', type: '"click" | "hover"', default: '"click"', description: 'Cómo abren los submenús: click (default) o hover' },
 ];
 
@@ -177,6 +177,7 @@ const eventsData = [
 const interfaceCode = `interface NavItem {
   label: string
   path?: string
+  icon?: string
   children?: NavItem[]
 }`;
 </script>

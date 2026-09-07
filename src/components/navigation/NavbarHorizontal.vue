@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { type PropType } from 'vue'
 import Dropdown from '@/components/overlay/Dropdown.vue'
-import NavbarMenu from '@/components/overlay/NavbarMenu.vue'
+import NavbarMenu from '@/components/navigation/NavbarMenu.vue'
 import Button from '@/components/buttons/Button.vue'
 import LucideChevronDown from '@/components/icons/LucideChevronDown.vue'
 import { useNavbar, type NavItem } from '@/composables/useNavbar'
@@ -46,6 +46,7 @@ const {
       >
         <template #toggle="{ toggle: t }">
           <button class="cu-navbar-dropdown-trigger" @click="t">
+            <span v-if="item.icon" class="cu-navbar-icon" v-html="item.icon"></span>
             {{ item.label }}
             <LucideChevronDown :width="14" :height="14" class="cu-navbar-chevron" />
           </button>
@@ -63,7 +64,8 @@ const {
         :data-navbar-match="highlightTarget === item ? '' : undefined"
         :data-navbar-active="activeItem === item ? '' : undefined"
       >
-        {{ item.label }}
+        <span v-if="item.icon" class="cu-navbar-icon" v-html="item.icon"></span>
+        <span class="cu-navbar-label">{{ item.label }}</span>
       </Button>
     </template>
   </nav>
@@ -107,6 +109,16 @@ const {
   color: var(--cu-color-neutral);
   border-radius: var(--cu-radius-sm);
   transition: background-color 0.15s ease;
+}
+
+.cu-navbar-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 1.25rem;
+  font-size: var(--cu-font-size-sm);
+  line-height: 1;
 }
 
 .cu-navbar-dropdown-trigger:hover {
