@@ -5,7 +5,15 @@ export const DEFAULT_COLORS = {
   success: '#22c55e',
   warning: '#f59e0b',
   danger: '#ef4444',
-  surface: '#eeeeee'
+  surface: '#eeeeee',
+  focus: '#1774A4',
+  shadow: '#000000',
+  strong: '#6b7280',
+  default: '#d1d5db'
+}
+
+export const DEFAULT_OPACITIES = {
+  default: { shadow: 10 }
 }
 
 export const DEFAULT_DARK_COLORS = {
@@ -31,7 +39,9 @@ export const DEFAULTS = {
       md: '1rem',
       lg: '1.125rem',
       xl: '1.25rem',
-      '2xl': '1.5rem'
+      '2xl': '1.5rem',
+      '3xl': '1.75rem',
+      '4xl': '2rem'
     },
     fontWeight: {
       normal: '400',
@@ -53,7 +63,9 @@ export const DEFAULTS = {
     lg: '16px',
     xl: '24px',
     '2xl': '32px',
-    '3xl': '48px'
+    '3xl': '48px',
+    '4xl': '64px',
+    '5xl': '80px'
   },
   borderRadius: {
     default: '8px',
@@ -65,10 +77,10 @@ export const DEFAULTS = {
   },
   shadows: {
     color: '#000000',
-    sm: '0 1px 2px',
-    md: '0 4px 6px',
-    lg: '0 10px 15px',
-    xl: '0 20px 25px'
+    sm: '0 1px 2px rgba(0,0,0,0.05)',
+    md: '0 4px 6px rgba(0,0,0,0.1)',
+    lg: '0 10px 15px rgba(0,0,0,0.1)',
+    xl: '0 20px 25px rgba(0,0,0,0.1)'
   },
   borders: {
     width: {
@@ -99,6 +111,15 @@ export const DEFAULTS = {
       xl: '60vh',
       auto: '50vh',
       full: '90vh'
+    }
+  },
+  sideover: {
+    size: {
+      sm: '320px',
+      md: '400px',
+      lg: '512px',
+      xl: '640px',
+      full: '100%'
     }
   }
 }

@@ -1,9 +1,10 @@
-import { darken, toHex, lighten, transparentize } from 'color2k'
-import { DEFAULTS, DEFAULT_COLORS, extractColors, extractShared } from './defaults'
+import { darken, toHex, lighten, transparentize, mix } from 'color2k'
+import { DEFAULTS, DEFAULT_COLORS, DEFAULT_OPACITIES, extractColors, extractShared } from './defaults'
+import { hexToRgba } from '@/lib/colors'
 
 let styleEl: HTMLStyleElement | null = null
 
-function colorVar(name: string, value: string) {
+export function colorVar(name: string, value: string, surface: string) {
   return `--cu-color-${name}: ${value};
     --cu-color-${name}-text: ${toHex(darken(value, 0.25))};
     --cu-color-${name}-hover: ${toHex(darken(value, 0.1))};
@@ -16,17 +17,53 @@ function colorVar(name: string, value: string) {
     --cu-color-${name}-subtle: ${toHex(transparentize(value, 0.9))};
     --cu-color-${name}-subtle-hover: ${toHex(transparentize(value, 0.8))};
     --cu-color-${name}-subtle-active: ${toHex(transparentize(value, 0.7))};
-    --cu-color-${name}-subtle-border: ${transparentize(value, 0.5)};`
+    --cu-color-${name}-subtle-border: ${transparentize(value, 0.5)};
+    --cu-color-${name}-code: ${toHex(mix(value, surface, 0.4))};`
 }
 
-function colorsBlock(colors: any) {
-  return `${colorVar('primary', colors.primary)}
-    ${colorVar('secondary', colors.secondary)}
-    ${colorVar('neutral', colors.neutral)}
-    ${colorVar('success', colors.success)}
-    ${colorVar('warning', colors.warning)}
-    ${colorVar('danger', colors.danger)}
-    --cu-color-surface: ${colors.surface};`
+/* neutral es la tinta (texto/títulos del layout): debe contrastar con el
+   surface. Si la paleta lo trae con la MISMA polaridad (tinta oscura sobre
+   fondo oscuro o viceversa), se deriva del surface — una sola fuente de
+   verdad: este generador (lib y ThemeBuilder usan colorsBlock). Si ya
+   contrasta (ej. Nord #eceff4), se respeta tal cual. */
+function luma01(hex: string): number {
+  try {
+    const h = toHex(hex)
+    const r = parseInt(h.slice(1, 3), 16) / 255
+    const g = parseInt(h.slice(3, 5), 16) / 255
+    const b = parseInt(h.slice(5, 7), 16) / 255
+    return 0.299 * r + 0.587 * g + 0.114 * b
+  } catch {
+    return 0.5
+  }
+}
+
+export function resolveInk(surface: string, neutral?: string): string {
+  const surfaceDark = luma01(surface) < 0.5
+  if (neutral && (luma01(neutral) < 0.5) !== surfaceDark) return neutral
+  return surfaceDark ? toHex(mix(surface, '#ffffff', 0.88)) : toHex(mix(surface, '#000000', 0.88))
+}
+
+export function colorsBlock(colors: any, themeName: string, opacities: Record<string, { shadow: number }>) {
+  const ink = resolveInk(colors.surface, colors.neutral)
+  const shadowOpacity = opacities[themeName]?.shadow ?? opacities.default?.shadow ?? 10
+  const shadowRgba = hexToRgba(colors.shadow || '#000000', shadowOpacity)
+  return `${colorVar('primary', colors.primary, colors.surface)}
+    ${colorVar('secondary', colors.secondary, colors.surface)}
+    ${colorVar('neutral', ink, colors.surface)}
+    ${colorVar('success', colors.success, colors.surface)}
+    ${colorVar('warning', colors.warning, colors.surface)}
+    ${colorVar('danger', colors.danger, colors.surface)}
+    --cu-color-surface: ${colors.surface};
+    /* esquema de código: tokens dedicados (invierten con el tema) */
+    --cu-code-bg: ${ink};
+    --cu-code-text: ${colors.surface};
+    --cu-code-faded: ${transparentize(colors.surface, 0.45)};
+    /* per-theme shadow (color + opacidad 1-100) + border colors */
+    --cu-shadow-color: ${shadowRgba};
+    --cu-border-color: ${colors.default || '#d1d5db'};
+    --cu-border-color-strong: ${colors.strong || '#6b7280'};
+    --cu-border-color-focus: ${colors.focus || '#1774A4'};`
 }
 
 function shadowVar(name: string, value: string, color?: string) {
@@ -63,6 +100,8 @@ function sharedBlock(shared: any) {
     --cu-space-xl: ${shared.spacing.xl};
     --cu-space-2xl: ${shared.spacing['2xl']};
     --cu-space-3xl: ${shared.spacing['3xl']};
+    --cu-space-4xl: ${shared.spacing['4xl']};
+    --cu-space-5xl: ${shared.spacing['5xl']};
 
     /* Border Radius */
     --cu-radius: ${shared.borderRadius.default};
@@ -72,21 +111,17 @@ function sharedBlock(shared: any) {
     --cu-radius-lg: ${shared.borderRadius.lg};
     --cu-radius-full: ${shared.borderRadius.full};
 
-    /* Shadows */
-    --cu-shadow-color: ${shared.shadows.color || '#000000'};
-    ${shadowVar('sm', shared.shadows.sm, shared.shadows.color)}
-    ${shadowVar('md', shared.shadows.md, shared.shadows.color)}
-    ${shadowVar('lg', shared.shadows.lg, shared.shadows.color)}
-    ${shadowVar('xl', shared.shadows.xl, shared.shadows.color)}
+    /* Shadows (sizes only — color is per-theme) */
+    ${shadowVar('sm', shared.shadows.sm, 'currentColor')}
+    ${shadowVar('md', shared.shadows.md, 'currentColor')}
+    ${shadowVar('lg', shared.shadows.lg, 'currentColor')}
+    ${shadowVar('xl', shared.shadows.xl, 'currentColor')}
 
-    /* Borders */
+    /* Borders (widths only — colors are per-theme) */
     --cu-border-none: ${shared.borders.width.none};
     --cu-border-thin: ${shared.borders.width.thin};
     --cu-border-medium: ${shared.borders.width.medium};
     --cu-border-thick: ${shared.borders.width.thick};
-    --cu-border-color: ${shared.borders.color.default};
-    --cu-border-color-strong: ${shared.borders.color.strong};
-    --cu-border-color-focus: ${shared.borders.color.focus};
 
     /* Modal */
     --cu-modal-size-sm: ${shared.modal.size.sm};
@@ -100,18 +135,25 @@ function sharedBlock(shared: any) {
     --cu-modal-height-lg: ${shared.modal.height.lg};
     --cu-modal-height-xl: ${shared.modal.height.xl};
     --cu-modal-height-auto: ${shared.modal.height.auto};
-    --cu-modal-height-full: ${shared.modal.height.full};`
+    --cu-modal-height-full: ${shared.modal.height.full};
+
+    /* SideOver */
+    --cu-sideover-size-sm: ${shared.sideover.size.sm};
+    --cu-sideover-size-md: ${shared.sideover.size.md};
+    --cu-sideover-size-lg: ${shared.sideover.size.lg};
+    --cu-sideover-size-xl: ${shared.sideover.size.xl};
+    --cu-sideover-size-full: ${shared.sideover.size.full};`
 }
 
-function themeBlock(tokens: any) {
+function themeBlock(tokens: any, themeName: string, opacities: Record<string, { shadow: number }>) {
   let block = ''
-  if (tokens.colors) block += colorsBlock(tokens.colors)
+  if (tokens.colors) block += colorsBlock(tokens.colors, themeName, opacities)
   block += sharedBlock(tokens)
   return block
 }
 
 // Generate themes.css: :root (first theme) + [data-theme] for each theme
-export function generateThemesCSS(themes: Record<string, any>, shared: any) {
+export function generateThemesCSS(themes: Record<string, any>, shared: any, opacities: Record<string, { shadow: number }>) {
   const names = Object.keys(themes)
   const first = names[0]
 
@@ -120,22 +162,22 @@ export function generateThemesCSS(themes: Record<string, any>, shared: any) {
   // :root = first theme (default)
   if (first) {
     const merged = { ...shared, colors: themes[first].colors }
-    css += `:root {\n${themeBlock(merged)}\n}`
+    css += `:root {\n${themeBlock(merged, first, opacities)}\n}`
   }
 
   // [data-theme] for each theme
   for (const [name, tokens] of Object.entries(themes)) {
     const merged = { ...shared, colors: tokens.colors }
-    css += `\n\n[data-theme="${name}"] {\n${themeBlock(merged)}\n}`
+    css += `\n\n[data-theme="${name}"] {\n${themeBlock(merged, name, opacities)}\n}`
   }
 
   return css
 }
 
 // Generate single theme CSS: [data-theme="{name}"] with all variables
-export function generateThemeCSS(name: string, tokens: any, shared: any) {
+export function generateThemeCSS(name: string, tokens: any, shared: any, opacities: Record<string, { shadow: number }>) {
   const merged = { ...shared, colors: tokens.colors }
-  return `[data-theme="${name}"] {\n${themeBlock(merged)}\n}`
+  return `[data-theme="${name}"] {\n${themeBlock(merged, name, opacities)}\n}`
 }
 
 export function inject(css: string) {
@@ -159,6 +201,7 @@ export function initTokens(customConfig?: any) {
 
   let themes: Record<string, any> = {}
   let shared: any = {}
+  const opacities = { ...DEFAULT_OPACITIES, ...config.opacities } as Record<string, { shadow: number }>
 
   if (config.themes && typeof config.themes === 'object') {
     // Multi-theme process
@@ -179,6 +222,6 @@ export function initTokens(customConfig?: any) {
     themes['light'] = { colors }
   }
 
-  const css = generateThemesCSS(themes, shared)
+  const css = generateThemesCSS(themes, shared, opacities)
   inject(css)
 }

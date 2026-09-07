@@ -55,18 +55,7 @@ function sanitizeBlock(block: MarkdownBlock): MarkdownBlock {
 function getText(): string {
   const el = slotEl.value
   if (!el) return ''
-
-  const slot = el.querySelector('slot') as HTMLSlotElement | null
-  if (slot && slot.assignedNodes().length > 0) {
-    const nodes = slot.assignedNodes({ flatten: true })
-    let text = ''
-    for (const node of nodes) {
-      text += node.textContent || ''
-    }
-    return text
-  }
-
-  return el.textContent || ''
+  return (el.textContent || '').replace(/\\n/g, '\n')
 }
 
 function renderMarkdown() {
@@ -111,12 +100,13 @@ defineExpose({
           :data="block.table.data"
           :html-cells="true"
           variant="ghost"
+          compact
         />
         <CodeBlock
           v-else-if="block.type === 'code-block' && block.codeBlock"
           :code="block.codeBlock.code"
           :language="block.codeBlock.language"
-          variant="solid"
+          variant="default"
         />
         <Blockquote
           v-else-if="block.type === 'blockquote' && block.blockquote"
@@ -168,12 +158,12 @@ defineExpose({
   line-height: var(--cu-line-height-tight);
 }
 
-.cu-markdown :deep(.cu-md-heading-1) { font-size: 2rem; }
-.cu-markdown :deep(.cu-md-heading-2) { font-size: 1.75rem; }
+.cu-markdown :deep(.cu-md-heading-1) { font-size: var(--cu-font-size-4xl); }
+.cu-markdown :deep(.cu-md-heading-2) { font-size: var(--cu-font-size-3xl); }
 .cu-markdown :deep(.cu-md-heading-3) { font-size: 1.625rem; }
-.cu-markdown :deep(.cu-md-heading-4) { font-size: 1.5rem; }
+.cu-markdown :deep(.cu-md-heading-4) { font-size: var(--cu-font-size-2xl); }
 .cu-markdown :deep(.cu-md-heading-5) { font-size: 1.375rem; }
-.cu-markdown :deep(.cu-md-heading-6) { font-size: 1.25rem; }
+.cu-markdown :deep(.cu-md-heading-6) { font-size: var(--cu-font-size-xl); }
 
 .cu-markdown :deep(.cu-md-paragraph) {
   margin-bottom: var(--cu-space-md);

@@ -59,7 +59,7 @@ Un componente nuevo **no está documentado solo con su `.md`**. Cuando se crea u
    - Si corresponde, la tabla de "Variantes disponibles" y la de "Tamaño de los bundles" (los tamaños salen del `pnpm run build:lib`).
 2. **`docs/DOCS.md`** — tabla "Componentes disponibles" (agregar fila con link al `.md`).
 3. **`COMPONENTS-GUIDE.md`** (raíz del repo) — índice, listado de `<script>` de instalación, tabla "Archivos disponibles", y una sección `### <cu-xxx>` completa con props/slots/uso.
-4. **Skill local `~/.agents/skills/comegen-ui/`** — la copia del SKILL.md y del `componentes/cu-xxx.md` debe quedar **idéntica** a la de `docs/comegen-ui/` (verificar con `diff`).
+4. **Skill local `~/.agents/skills/use-comegen/`** — instalada por `update.sh`/`update.ps1` desde el zip (`use-comegen/`). Es una copia del canonical `docs/skills/use-comegen/`.
 5. **`docs/desarrollar-comegen-ui/convenciones-desarrollo.md`** — solo si el componente introduce una convención nueva (ej. reglas CSS, especificidad de títulos `solid`, patrones de slots).
 
 > Regla de oro: **el tag `<cu-xxx>` debe aparecer en todos los índices o en ninguno.** Si solo lo agregás al `.md` y al SKILL.md, el componente queda "documentado pero invisible" en `DOCS.md` y `COMPONENTS-GUIDE.md`.

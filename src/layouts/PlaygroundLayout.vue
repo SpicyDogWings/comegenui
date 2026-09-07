@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import ToggleColorSheme from '@/components/buttons/ToggleColorSheme.vue'
-import Navbar from '@/components/lab/collapse/navigation/Navbar.vue'
+import AppLayout from '@/layouts/AppLayout.vue'
+import Navbar from '@/components/navigation/Navbar.vue'
 import Outline from '@/components/lab/collapse/navigation/Outline.vue'
 import type { OutlineItem } from '@/components/lab/collapse/navigation/Outline.vue'
 import Badge from '@/components/information/Badge.vue'
@@ -16,38 +16,36 @@ const { libKey, inLib } = useLibStatus()
 
 const navItems = [
   {
-    label: 'Theme Builder',
-    children: [
-      { label: 'Editor', path: '/playground/theme-builder' },
-    ]
-  },
-  {
     label: 'Components',
     children: [
       {
-        label: 'buttons',
+        label: 'Buttons',
         children: [
           { label: 'Button', path: '/playground/components/button' },
+          { label: 'CopyButton', path: '/playground/components/copy-button' },
+          { label: 'FloatingButton', path: '/playground/components/floating-button' },
           { label: 'ToggleColorScheme', path: '/playground/components/toggle-color-scheme' },
         ]
       },
       {
-        label: 'form',
+        label: 'Form',
         children: [
-          { label: 'Switch', path: '/playground/components/switch' },
-          { label: 'Checkbox', path: '/playground/components/checkbox' },
-          { label: 'Input', path: '/playground/components/input' },
-          { label: 'Textarea', path: '/playground/components/textarea' },
-          { label: 'Select', path: '/playground/components/select' },
           { label: 'Autocomplete', path: '/playground/components/autocomplete' },
-          { label: 'FileInput', path: '/playground/components/file-input' },
-          { label: 'FileInputZone', path: '/playground/components/file-input-zone' },
+          { label: 'Checkbox', path: '/playground/components/checkbox' },
+          { label: 'ColorPicker', path: '/playground/components/color-picker' },
           { label: 'DatePicker', path: '/playground/components/date-picker' },
           { label: 'DatePickerRange', path: '/playground/components/date-picker-range' },
+          { label: 'FileInput', path: '/playground/components/file-input' },
+          { label: 'FileInputZone', path: '/playground/components/file-input-zone' },
+          { label: 'Input', path: '/playground/components/input' },
+          { label: 'Label', path: '/playground/components/label' },
+          { label: 'Select', path: '/playground/components/select' },
+          { label: 'Switch', path: '/playground/components/switch' },
+          { label: 'Textarea', path: '/playground/components/textarea' },
         ]
       },
       {
-        label: 'controls',
+        label: 'Controls',
         children: [
           { label: 'MonthSlider', path: '/playground/components/month-slider' },
           { label: 'YearSlider', path: '/playground/components/year-slider' },
@@ -57,15 +55,18 @@ const navItems = [
         ]
       },
       {
-        label: 'information',
+        label: 'Information',
         children: [
           { label: 'Alert', path: '/playground/components/alert' },
           { label: 'Badge', path: '/playground/components/badge' },
           { label: 'Card', path: '/playground/components/card' },
+          { label: 'AuthorCard', path: '/playground/components/author-card' },
+          { label: 'Avatar', path: '/playground/components/avatar' },
+          { label: 'Loader', path: '/playground/components/loader' },
         ]
       },
       {
-        label: 'markdown',
+        label: 'Markdown',
         children: [
           { label: 'Markdown', path: '/playground/components/markdown' },
           { label: 'CodeBlock', path: '/playground/components/codeblock' },
@@ -73,15 +74,26 @@ const navItems = [
         ]
       },
       {
-        label: 'overlay',
+        label: 'Overlay',
         children: [
           { label: 'Modal', path: '/playground/components/modal' },
           { label: 'Collapse', path: '/playground/components/collapse' },
           { label: 'Dropdown', path: '/playground/components/dropdown' },
+          { label: 'Popover', path: '/playground/components/popover' },
+          { label: 'Tooltip', path: '/playground/components/tooltip' },
+          { label: 'CommandPalette', path: '/playground/components/command-palette' },
+          { label: 'SideOver', path: '/playground/components/side-over' },
         ]
       },
       {
-        label: 'data',
+        label: 'Navigation',
+        children: [
+          { label: 'Navbar', path: '/playground/components/navbar' },
+          { label: 'NavbarHorizontal', path: '/playground/components/navbar-horizontal' },
+        ]
+      },
+      {
+        label: 'Data',
         children: [
           { label: 'Table', path: '/playground/components/table' },
           { label: 'AdvancedTable', path: '/playground/components/advanced-table' },
@@ -89,76 +101,65 @@ const navItems = [
         ]
       },
       {
-        label: 'root',
+        label: 'Root',
         children: [
           { label: 'Tabs', path: '/playground/components/tabs' },
         ]
       },
+
     ]
   },
 ]
 </script>
 
 <template>
-  <section class="playground">
-    <div class="playground-headerbar">
-      <h1>{{ title || 'Playground' }}</h1>
-      <div class="playground-header-actions">
-        <Badge
-          :color="inLib ? 'success' : 'neutral'"
-          variant="subtle"
-          :title="`Entry point en src/lib: ${libKey}`"
-        >
-          {{ inLib ? 'En lib' : 'No en lib' }}
-        </Badge>
-        <ToggleColorSheme />
-      </div>
-    </div>
-    <div class="playground-body">
+  <AppLayout>
+    <template #title>
+      <span class="playground-topbar-divider" aria-hidden="true"></span>
+      <span class="playground-topbar-title">{{ title || 'Playground' }}</span>
+    </template>
+    <template #actions>
+      <Badge
+        :color="inLib ? 'success' : 'neutral'"
+        variant="subtle"
+        :title="`Entry point en src/lib: ${libKey}`"
+      >
+        {{ inLib ? 'En lib' : 'No en lib' }}
+      </Badge>
+    </template>
+    <div class="playground">
       <aside class="playground-sidebar">
-        <Navbar :items="navItems" />
+        <Navbar :items="navItems" search />
       </aside>
       <div class="playground-box">
         <Outline v-if="outlineItems" :items="outlineItems" class="playground-outline" />
         <slot />
       </div>
     </div>
-  </section>
+  </AppLayout>
 </template>
 
 <style scoped>
 .playground {
-  width: 100dvw;
-  height: 100dvh;
+  flex: 1;
+  min-height: 0;
   display: flex;
-  flex-direction: column;
-  background-color: var(--cu-color-surface);
-  font-family: var(--cu-font-sans);
-  color: var(--cu-color-neutral);
+  overflow: hidden;
 }
 
 .playground :is(h1, h2, h3, h4, h5, h6, p, span, a, li, label) {
   color: var(--cu-color-neutral);
 }
 
-.playground-headerbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 2rem;
-  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);
+.playground-topbar-divider {
+  width: 1px;
+  height: 1.1rem;
+  background: var(--cu-border-color);
 }
 
-.playground-header-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.playground-body {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
+.playground-topbar-title {
+  font-size: var(--cu-font-size-sm);
+  opacity: 0.55;
 }
 
 .playground-sidebar {
@@ -208,6 +209,12 @@ const navItems = [
   color: var(--cu-color-neutral);
 }
 
+.playground-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 .playground-row {
   display: flex;
   flex-wrap: wrap;
@@ -236,16 +243,6 @@ const navItems = [
   font-size: var(--cu-font-size-sm);
   opacity: 0.7;
   margin: 0;
-}
-
-.playground-btn-sm {
-  font-size: var(--cu-font-size-xs) !important;
-  padding: var(--cu-space-xs) var(--cu-space-sm) !important;
-}
-
-.playground-btn-lg {
-  font-size: var(--cu-font-size-lg) !important;
-  padding: var(--cu-space-lg) var(--cu-space-xl) !important;
 }
 
 .playground-badge-table {

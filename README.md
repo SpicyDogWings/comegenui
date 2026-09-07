@@ -88,7 +88,7 @@ update.bat v3.0.0
 **Qué hacen:**
 1. Descargan el artifact de GitLab (según tag o `main`)
 2. Reemplazan la carpeta de forma **atómica** (si falla, lo anterior queda intacto)
-3. Instalan la skill de uso en `.agents/skills/comegen-ui/` del proyecto huésped
+3. Instalan la skill de uso en `.agents/skills/use-comegen/` del proyecto huésped
 
 **Variables opcionales:**
 - `CG_URL` / `$env:CG_URL` — override de URL (para probar con archivo local)

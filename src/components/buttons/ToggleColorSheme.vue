@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { theme, setTheme } from '@/plugins/cu-tokens'
+import { useThemeStore } from '@/stores/theme'
 import Button from './Button.vue'
 import LucideSun from '../icons/LucideSun.vue'
 import LucideMoon from '../icons/LucideMoon.vue'
+
+const store = useThemeStore()
 
 const props = defineProps({
   variant: {
@@ -16,10 +18,10 @@ const props = defineProps({
   },
 })
 
-const isDark = computed(() => theme.value === 'dark')
+const isDark = computed(() => store.current === 'dark')
 
 function toggle() {
-  setTheme(isDark.value ? 'light' : 'dark')
+  store.toggleLightDark()
 }
 </script>
 

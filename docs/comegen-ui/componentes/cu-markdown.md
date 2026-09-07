@@ -2,6 +2,8 @@
 
 Renderizador de Markdown como Custom Element. Convierte markdown en HTML semántico usando los componentes internos de ComegenUI (tablas, code blocks, blockquotes, listas, headings, párrafos).
 
+[← Volver](../SKILL.md)
+
 ## UMD
 
 ```
@@ -40,6 +42,12 @@ El contenido se pasa como **texto dentro del tag** (no como prop). El componente
 | Prop | Tipo | Default | Descripción |
 |------|------|---------|-------------|
 | `theme` | `string` | `'light'` | Tema de colores (`light`, `dark`, `sigacadv2`) |
+
+## Slots
+
+| Slot | Descripción |
+|------|-------------|
+| `default` | Contenido markdown a renderizar. Se pasa como texto dentro del tag. |
 
 ## Eventos
 

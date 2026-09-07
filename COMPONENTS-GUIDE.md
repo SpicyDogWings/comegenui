@@ -27,6 +27,13 @@ Librería de componentes UI como Custom Elements nativos, construidos con Vue 3 
   - [`<cu-pagination>`](#cu-pagination)
   - [`<cu-table>`](#cu-table)
   - [`<cu-dropdown-menu>`](#cu-dropdown-menu)
+  - [`<cu-author-card>`](#cu-author-card)
+  - [`<cu-avatar>`](#cu-avatar)
+  - [`<cu-command-palette>`](#cu-command-palette)
+  - [`<cu-navbar>`](#cu-navbar)
+  - [`<cu-navbar-horizontal>`](#cu-navbar-horizontal)
+  - [`<cu-side-over>`](#cu-side-over)
+  - [`<cu-tooltip>`](#cu-tooltip)
 - [Notas Técnicas](#notas-técnicas)
 
 ---
@@ -54,6 +61,13 @@ Cada componente es un archivo **UMD** independiente. Incluye solo los que necesi
 <script src="ruta/CuPagination.umd.js"></script>
 <script src="ruta/CuTable.umd.js"></script>
 <script src="ruta/CuDropdownMenu.umd.js"></script>
+<script src="ruta/CuAuthorCard.umd.js"></script>
+<script src="ruta/CuAvatar.umd.js"></script>
+<script src="ruta/CuCommandPalette.umd.js"></script>
+<script src="ruta/CuNavbar.umd.js"></script>
+<script src="ruta/CuNavbarHorizontal.umd.js"></script>
+<script src="ruta/CuSideOver.umd.js"></script>
+<script src="ruta/CuTooltip.umd.js"></script>
 ```
 
 Cada script registra automáticamente su Custom Element. No necesitas instalar Vue ni ninguna dependencia.
@@ -79,6 +93,13 @@ Cada script registra automáticamente su Custom Element. No necesitas instalar V
 | `CuPagination.umd.js` | `<cu-pagination>` | Paginación |
 | `CuTable.umd.js` | `<cu-table>` | Tabla avanzada |
 | `CuDropdownMenu.umd.js` | `<cu-dropdown-menu>` | Menú desplegable |
+| `CuAuthorCard.umd.js` | `<cu-author-card>` | Tarjeta de autor |
+| `CuAvatar.umd.js` | `<cu-avatar>` | Avatar circular |
+| `CuCommandPalette.umd.js` | `<cu-command-palette>` | Paleta de comandos |
+| `CuNavbar.umd.js` | `<cu-navbar>` | Barra de navegación |
+| `CuNavbarHorizontal.umd.js` | `<cu-navbar-horizontal>` | Barra de navegación horizontal |
+| `CuSideOver.umd.js` | `<cu-side-over>` | Panel lateral |
+| `CuTooltip.umd.js` | `<cu-tooltip>` | Tooltip |
 
 ---
 
@@ -1183,6 +1204,242 @@ Reemplaza el botón por defecto usando `slot="toggle"`:
   dd.toggle();              // Alterna visibilidad
   console.log(dd.isOpen);   // true | false
 </script>
+```
+
+---
+
+### `<cu-avatar>`
+
+Avatar circular (imagen o iniciales) con color semántico y tres tamaños.
+
+#### Props
+
+| Prop | Tipo | Default | Descripción |
+|------|------|---------|-------------|
+| `color` | `string` | `""` | Color semántico (`primary`, `secondary`, `neutral`, `success`, `warning`, `danger`). Vacío = se elige por hash de las iniciales |
+| `size` | `string` | `"md"` | `sm`, `md`, `lg` |
+| `initials` | `string` | `""` | Iniciales mostradas cuando no hay `src` |
+| `src` | `string` | `""` | URL de la imagen (el wrapper CE declara la prop pero aún no la forwardea al componente interno) |
+
+#### Uso
+
+```html
+<cu-avatar initials="JP" color="primary"></cu-avatar>
+<cu-avatar initials="MR" color="success" size="lg"></cu-avatar>
+<script src="ruta/CuAvatar.umd.js"></script>
+```
+
+---
+
+### `<cu-author-card>`
+
+Tarjeta de autor con avatar (iniciales generadas del nombre), nombre y rol.
+
+#### Props
+
+| Prop | Tipo | Default | Descripción |
+|------|------|---------|-------------|
+| `name` | `string` | **requerido** | Nombre del autor (genera las iniciales) |
+| `role` | `string` | `""` | Rol bajo el nombre |
+| `color` | `string` | `""` | Color semántico del avatar |
+| `size` | `string` | `"md"` | `sm`, `md`, `lg` |
+| `src` | `string` | `""` | URL de la imagen del avatar |
+
+#### Uso
+
+```html
+<cu-author-card name="Ana Pérez" role="Desarrolladora" color="primary"></cu-author-card>
+<script src="ruta/CuAuthorCard.umd.js"></script>
+```
+
+---
+
+### `<cu-command-palette>`
+
+Paleta de comandos (búsqueda + lista) en un modal.
+
+> **Nota:** el wrapper CE actual no expone la prop `commands` ni métodos `open`/`close`, por lo que aún no se le pueden pasar comandos vía HTML/JS.
+
+#### Props
+
+| Prop | Tipo | Default | Descripción |
+|------|------|---------|-------------|
+| `color` | `string` | `"neutral"` | Color semántico del modal |
+| `title` | `string` | `""` | Título del modal |
+| `placeholder` | `string` | `"Buscar comandos…"` | Placeholder del input |
+| `size` | `string` | `"auto"` | `auto`, `sm`, `md`, `lg`, `xl`, `full` |
+| `height` | `string` | `"auto"` | `auto`, `sm`, `md`, `lg`, `xl`, `full` |
+
+#### Eventos
+
+| Evento | Payload | Descripción |
+|--------|---------|-------------|
+| `select` | `CommandItem` | Se seleccionó un comando |
+| `close` | — | Se cerró el modal |
+
+#### Uso
+
+```html
+<cu-command-palette id="palette" title="Comandos" color="primary"></cu-command-palette>
+<script src="ruta/CuCommandPalette.umd.js"></script>
+```
+
+---
+
+### `<cu-navbar>`
+
+Barra de navegación vertical con submenús, búsqueda (`filter`/`scroll`), modo compacto y opción responsive.
+
+#### Props
+
+| Prop | Tipo | Default | Descripción |
+|------|------|---------|-------------|
+| `items` | `array` | **requerido** | Estructura de navegación (asignar por JS) |
+| `search` | `boolean` | `false` | Muestra el input de búsqueda |
+| `searchPlaceholder` | `string` | `"Buscar..."` | Placeholder del input |
+| `searchMode` | `string` | `"filter"` | `filter` o `scroll` |
+| `searchFields` | `array` | `[]` | Campos a buscar (asignar por JS) |
+| `compact` | `boolean` | `false` | Modo compacto (solo iconos) |
+| `compactable` | `boolean` | `false` | Botón nativo que alterna el modo compacto |
+| `collapsed` | `boolean` | `false` | Submenús arrancan colapsados |
+| `trigger` | `string` | `"click"` | `click` o `hover` |
+| `responsive` | `boolean` | `false` | Hamburguesa + panel lateral |
+| `responsiveMode` | `string` | `"auto"` | `auto`, `side`, `fullscreen` |
+| `sideOverPosition` | `string` | `"left"` | `left`, `right`, `top`, `bottom` |
+| `activePath` | `string` | `""` | Path activo manual |
+
+#### Eventos
+
+| Evento | Payload | Descripción |
+|--------|---------|-------------|
+| `search` | `string` | Consulta de búsqueda |
+
+#### Uso
+
+```html
+<cu-navbar id="nav" search active-path="/usuarios"></cu-navbar>
+<script src="ruta/CuNavbar.umd.js"></script>
+<script>
+  const nav = document.getElementById('nav');
+  await customElements.whenDefined('cu-navbar');
+  nav.items = [
+    { label: 'Inicio', path: '/' },
+    { label: 'Usuarios', children: [
+      { label: 'Lista', path: '/usuarios' },
+      { label: 'Roles', path: '/roles' },
+    ]},
+  ];
+</script>
+```
+
+---
+
+### `<cu-navbar-horizontal>`
+
+Barra de navegación horizontal con submenús desplegables.
+
+#### Props
+
+| Prop | Tipo | Default | Descripción |
+|------|------|---------|-------------|
+| `items` | `array` | **requerido** | Estructura de navegación (asignar por JS) |
+| `trigger` | `string` | `"click"` | `click` o `hover` |
+| `activePath` | `string` | `""` | Path activo manual |
+
+#### Uso
+
+```html
+<cu-navbar-horizontal id="nav" trigger="hover"></cu-navbar-horizontal>
+<script src="ruta/CuNavbarHorizontal.umd.js"></script>
+<script>
+  const nav = document.getElementById('nav');
+  await customElements.whenDefined('cu-navbar-horizontal');
+  nav.items = [
+    { label: 'Inicio', path: '/' },
+    { label: 'Equipo', children: [
+      { label: 'Desarrollo', path: '/equipo/dev' },
+      { label: 'Diseño', path: '/equipo/diseno' },
+    ]},
+  ];
+</script>
+```
+
+---
+
+### `<cu-side-over>`
+
+Panel overlay que desliza desde un borde, con scrim, opción `fullscreen` y control programático.
+
+#### Props
+
+| Prop | Tipo | Default | Descripción |
+|------|------|---------|-------------|
+| `open` | `boolean` | `false` | Estado de visibilidad |
+| `title` | `string` | `""` | Título de la cabecera |
+| `position` | `string` | `"right"` | `left`, `right`, `top`, `bottom` |
+| `size` | `string` | `"300px"` | Valor CSS o preset `sm`/`md`/`lg`/`xl`/`full` |
+| `fullscreen` | `boolean` | `false` | Ocupa toda la pantalla |
+| `persistent` | `boolean` | `false` | No se cierra por backdrop/Escape/botón |
+| `zIndex` | `number` | `1100` | Z-index (HTML: `z-index`) |
+
+#### Eventos
+
+| Evento | Payload | Descripción |
+|--------|---------|-------------|
+| `update:open` | `boolean` | Nuevo estado de visibilidad |
+| `close` | — | Se inició el cierre |
+
+#### Métodos expuestos
+
+| Método | Descripción |
+|--------|-------------|
+| `.open()` | Abre el panel |
+| `.close()` | Cierra el panel |
+| `.toggle()` | Alterna visibilidad |
+| `.isOpen()` | Estado actual (`boolean`) |
+
+#### Uso
+
+```html
+<cu-side-over id="side" title="Filtros" position="right">
+  <p>Contenido del panel.</p>
+</cu-side-over>
+<button onclick="document.getElementById('side').open()">Abrir panel</button>
+<script src="ruta/CuSideOver.umd.js"></script>
+```
+
+---
+
+### `<cu-tooltip>`
+
+Tooltip que aparece al hacer hover, con posición, alineación, offset y delay configurables.
+
+#### Props
+
+| Prop | Tipo | Default | Descripción |
+|------|------|---------|-------------|
+| `text` | `string` | `""` | Texto del tooltip (prioridad: slot `content`) |
+| `color` | `string` | `"neutral"` | Color semántico del fondo |
+| `position` | `string` | `"top"` | `top`, `bottom`, `left`, `right` |
+| `align` | `string` | `"center"` | `start`, `center`, `end` |
+| `offset` | `number` | `6` | Distancia (px) al elemento |
+| `delay` | `number` | `200` | Retardo (ms) del hover |
+| `disabled` | `boolean` | `false` | Deshabilita el tooltip |
+
+#### Slots
+
+| Slot | Descripción |
+|------|-------------|
+| `default` | Elemento que dispara el tooltip |
+| `content` | Contenido del tooltip (reemplaza `text`) |
+
+#### Uso
+
+```html
+<cu-tooltip text="Guardar cambios" color="primary">
+  <button>Guardar</button>
+</cu-tooltip>
+<script src="ruta/CuTooltip.umd.js"></script>
 ```
 
 ---

@@ -208,6 +208,11 @@ export function parseToBlocks(markdown: string): MarkdownBlock[] {
         html: `${classMap.list} ${classMap.list}--${token.ordered ? 'ordered' : 'unordered'}`,
         ordered: token.ordered,
       })
+    } else if (token.type === 'html') {
+      result.push({
+        type: 'code-block',
+        codeBlock: { code: token.raw, language: 'html' },
+      })
     } else {
       const html = marked.parser([token])
       result.push({ type: 'html', html })

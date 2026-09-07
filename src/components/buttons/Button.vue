@@ -15,6 +15,12 @@ const props = defineProps({
     validator: (value: string) =>
       ["solid", "outlined", "soft", "ghost", "subtle", "link", "none"].includes(value),
   },
+  size: {
+    type: String as PropType<'sm' | 'md' | 'lg'>,
+    required: false,
+    default: 'md',
+    validator: (value: string) => ['sm', 'md', 'lg'].includes(value),
+  },
   to: {
     type: String,
     required: false,
@@ -76,6 +82,7 @@ const colorStyles = computed(() => ({
       :class="[
         'cu-button',
         `cu-button--${props.variant}`,
+        `cu-button--${props.size}`,
         { 'cu-button--disabled': isDisabled }
       ]"
       :style="colorStyles"
@@ -91,6 +98,7 @@ const colorStyles = computed(() => ({
     :class="[
       'cu-button',
       `cu-button--${props.variant}`,
+      `cu-button--${props.size}`,
       { 'cu-button--disabled': isDisabled }
     ]"
     :style="colorStyles"
@@ -124,6 +132,17 @@ const colorStyles = computed(() => ({
 .cu-button--disabled {
   opacity: 0.7;
   cursor: not-allowed;
+}
+
+/* sizes (md = base; link mantiene su padding 0) */
+.cu-button--sm:not(.cu-button--link) {
+  font-size: var(--cu-font-size-xs);
+  padding: var(--cu-space-xs) var(--cu-space-sm);
+}
+
+.cu-button--lg:not(.cu-button--link) {
+  font-size: var(--cu-font-size-lg);
+  padding: var(--cu-space-lg) var(--cu-space-xl);
 }
 
 /* solid */

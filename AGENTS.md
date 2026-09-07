@@ -17,7 +17,7 @@ src/
 └── utils/                                 # Utilidades (getHostTheme, palette, fileIcons)
 ```
 
-Donde `{category}` es uno de: `form/`, `information/`, `overlay/`, `data/`, `buttons/`, o raíz.
+Donde `{category}` es uno de: `form/`, `information/`, `overlay/`, `navigation/`, `data/`, `buttons/`, o raíz.
 
 ### Patrón de 3 archivos (componentes públicos)
 
@@ -199,6 +199,12 @@ El sistema de tokens (`cu-tokens`) genera para cada color:
 - `--cu-color-{name}-soft`, `-soft-hover`, `-soft-active` (variante soft)
 - `--cu-color-{name}-subtle`, `-subtle-hover`, `-subtle-active`, `-subtle-border` (variante subtle)
 - `--cu-color-{name}-ghost-hover`, `-ghost-active` (variante ghost)
+- `--cu-color-{name}-code` (acento para superficies de código: mezcla del color hacia surface — legible sobre `--cu-code-bg` en todos los temas)
+
+Tokens del esquema de código (invierten con el tema, pensados para el contexto "inverso" de los code blocks):
+- `--cu-code-bg` (fondo de código, = neutral)
+- `--cu-code-text` (texto sobre código, = surface)
+- `--cu-code-faded` (atenuados: comentarios, meta, gutter = surface al 55%)
 
 Tokens compartidos: tipografía, spacing, border-radius, shadows, borders.
 
@@ -212,7 +218,7 @@ Tokens compartidos: tipografía, spacing, border-radius, shadows, borders.
 - `UnoCSS({ mode: "shadow-dom" })`
 - Genera `dist/css/themes.css` + `dist/css/{theme}.css`
 - Crea zip versionado: `comegenui-v{version}.zip`
-- **El zip SIEMPRE incluye la skill de uso** `comegen-ui/` (`SKILL.md` + `componentes/`) al lado de los archivos de la lib — viaja con la lib para que los agentes del proyecto consumidor tengan la doc. Solo la de uso; no la de desarrollo ni la de documentar. Incluye también `update.sh` (Linux/macOS: `./update.sh`), `update.bat` (Windows: `update.bat` — doble clic o desde cmd, evade ExecutionPolicy) y `update.ps1` (alternativa PowerShell: `.\update.ps1`) — actualizadores del proyecto huésped que además instalan la skill de uso en `.agents/skills/` del proyecto
+- **El zip SIEMPRE incluye la skill de uso** `use-comegen/` (`SKILL.md` + `componentes/`) al lado de los archivos de la lib — viaja con la lib para que los agentes del proyecto consumidor tengan la doc. Solo la de uso; no la de desarrollo ni la de documentar. Incluye también `update.sh` (Linux/macOS: `./update.sh`), `update.bat` (Windows: `update.bat` — doble clic o desde cmd, evade ExecutionPolicy) y `update.ps1` (alternativa PowerShell: `.\update.ps1`) — actualizadores del proyecto huésped que además instalan la skill de uso en `.agents/skills/` del proyecto
 
 ---
 

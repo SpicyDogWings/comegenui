@@ -5,7 +5,7 @@ Reglas que aplican a **todos** los `.md` de la skill `comegen-ui`. Cuando docume
 ## Tag y nombre del archivo
 
 - El archivo `.md` se nombra igual que el tag pero con guiones: `<cu-button>` → `cu-button.md`.
-- Va en la carpeta `docs/comegen-ui/componentes/`.
+- Va en la carpeta `docs/skills/use-comegen/componentes/` (canonical de la skill de agentes).
 
 ## Encabezado
 
@@ -231,12 +231,12 @@ Documentá los cuatro si existen.
 
 ## Links relativos
 
-Desde `docs/comegen-ui/componentes/cu-xxx.md`:
+Desde `docs/skills/use-comegen/componentes/cu-xxx.md`:
 
 - Volver a la skill principal: `[← Volver](../SKILL.md)`
 - Link a otro componente: `[`<cu-alert>`](cu-alert.md)`
 
-Desde `docs/comegen-ui/SKILL.md`:
+Desde `docs/skills/use-comegen/SKILL.md`:
 
 - Link a un componente: `[`<cu-alert>`](componentes/cu-alert.md)`
 - Link a una sección interna: `[Sistema de Temas](#sistema-de-temas)`

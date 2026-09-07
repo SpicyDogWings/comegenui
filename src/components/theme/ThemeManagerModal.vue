@@ -3,6 +3,9 @@ import { ref } from 'vue'
 import Modal from '@/components/overlay/Modal.vue'
 import Button from '@/components/buttons/Button.vue'
 import Input from '@/components/form/Input.vue'
+import CodeBlock from '@/components/markdown/CodeBlock.vue'
+import FileInput from '@/components/form/FileInput.vue'
+import LucideDownload from '@/components/icons/LucideDownload.vue'
 
 interface ThemeConfig {
   themes: Record<string, Record<string, string>>
@@ -28,7 +31,7 @@ const emit = defineEmits<{
 }>()
 
 const modalRef = ref<InstanceType<typeof Modal> | null>(null)
-const importFileInput = ref<HTMLInputElement | null>(null)
+const fileInputRef = ref<InstanceType<typeof FileInput> | null>(null)
 
 function open() {
   modalRef.value?.open()
@@ -38,9 +41,8 @@ function close() {
   modalRef.value?.close()
 }
 
-function handleImport(event: Event) {
-  const input = event.target as HTMLInputElement
-  const file = input.files?.[0]
+function handleImport() {
+  const file = fileInputRef.value?.get() as File | null | undefined
   if (!file) return
 
   const reader = new FileReader()
@@ -53,64 +55,97 @@ function handleImport(event: Event) {
     }
   }
   reader.readAsText(file)
-  input.value = ''
+  fileInputRef.value?.reset()
 }
 
 defineExpose({ open, close })
 </script>
 
 <template>
-  <Modal ref="modalRef" title="Theme Manager" size="lg" @close="close">
-    <div class="tm-modal">
-      <div class="tm-section">
-        <h3>Theme Name</h3>
-        <Input
-          :model-value="themeName"
-          @update:model-value="emit('update:themeName', $event)"
-          placeholder="my-theme"
-        />
-      </div>
-
-      <div class="tm-section">
-        <h3>Acciones</h3>
-        <div class="tm-actions">
-          <input ref="importFileInput" type="file" accept=".json" @change="handleImport" class="tm-file-input" />
-          <Button color="secondary" variant="soft" @click="importFileInput?.click()">Import JSON</Button>
-          <Button color="secondary" @click="emit('export')">Export JSON</Button>
-          <Button color="neutral" @click="emit('reset')">Reset Defaults</Button>
+  <Modal ref="modalRef" title="Export" size="full" height="xl" @close="close">
+    <div class="tm-layout">
+      <div class="tm-sidebar">
+        <div class="tm-section">
+          <h3>Theme Name</h3>
+          <Input
+            :model-value="themeName"
+            @update:model-value="emit('update:themeName', $event)"
+            placeholder="my-theme"
+          />
         </div>
+
+        <div class="tm-section">
+          <h3>Import</h3>
+          <FileInput
+            ref="fileInputRef"
+            accept=".json"
+            placeholder="Seleccionar JSON"
+            @change="handleImport"
+          />
+        </div>
+
+        <div class="tm-section">
+          <h3>Export</h3>
+          <div class="tm-actions">
+            <Button color="secondary" @click="emit('export')">
+              <LucideDownload :width="16" :height="16" />
+              Export JSON
+            </Button>
+            <Button color="primary" variant="ghost" @click="emit('copy-css')">
+              Copy CSS
+            </Button>
+            <Button color="primary" variant="ghost" @click="emit('download-css')">
+              Download CSS
+            </Button>
+          </div>
+        </div>
+
       </div>
 
-      <div class="tm-section">
+      <div class="tm-main">
         <h3>CSS Output</h3>
-        <div class="tm-output-actions">
-          <Button color="primary" variant="ghost" @click="emit('copy-css')">Copy CSS</Button>
-          <Button color="primary" variant="ghost" @click="emit('download-css')">Download CSS</Button>
-        </div>
-        <pre class="tm-code"><code>{{ cssOutput }}</code></pre>
+        <CodeBlock :code="cssOutput" language="css" variant="solid" class="tm-code-block" />
       </div>
     </div>
   </Modal>
 </template>
 
 <style scoped>
-.tm-modal {
+.tm-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 1.5rem;
+  height: 100%;
+}
+
+.tm-sidebar {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
+}
+
+.tm-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .tm-section h3 {
   font-size: var(--cu-font-size-sm);
   font-weight: var(--cu-font-weight-semibold);
-  margin: 0 0 0.75rem 0;
+  margin: 0 0 0.5rem 0;
   color: var(--cu-color-neutral);
 }
 
 .tm-actions {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 0.5rem;
+}
+
+.tm-actions .tm-btn {
+  width: 100%;
 }
 
 .tm-file-input {
@@ -119,20 +154,31 @@ defineExpose({ open, close })
 
 .tm-output-actions {
   display: flex;
+  flex-direction: column;
   gap: 0.5rem;
-  margin-bottom: 0.75rem;
 }
 
-.tm-code {
-  background: #1a1a2e;
-  color: #e0e0e0;
-  padding: 1rem;
-  border-radius: var(--cu-radius);
-  overflow-x: auto;
-  font-family: var(--cu-font-mono);
-  font-size: var(--cu-font-size-xs);
-  line-height: 1.5;
-  max-height: 300px;
-  overflow-y: auto;
+.tm-code-block {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  max-height: 35vh;
+  overflow: hidden;
+  border-radius: var(--cu-radius-sm);
+}
+
+.tm-code-block :deep(.cu-code-block) {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.tm-code-block :deep(.cu-code-block-pre) {
+  flex: 1;
+  overflow: auto !important;
+  max-height: none !important;
 }
 </style>

@@ -268,7 +268,7 @@ Un componente nuevo **no está completo con solo su `.md`**. Hay que actualizar 
    - Si corresponde, la tabla de "Variantes disponibles" y la de "Tamaño de los bundles" (los tamaños salen del `pnpm run build:lib`).
 2. **`docs/DOCS.md`** — tabla "Componentes disponibles".
 3. **`COMPONENTS-GUIDE.md`** (raíz del repo) — índice, listado de `<script>` de instalación, tabla "Archivos disponibles", y una sección `### <cu-xxx>` completa.
-4. **Skill local `~/.agents/skills/comegen-ui/`** — la copia del SKILL.md y del `componentes/cu-xxx.md` debe quedar **idéntica** a la de `docs/comegen-ui/` (verificar con `diff`).
+4. **Skill local `~/.agents/skills/use-comegen/`** — instalada por `update.sh`/`update.ps1` desde el zip (`use-comegen/`). Es una copia del canonical `docs/skills/use-comegen/`.
 
 > Regla de oro: **el tag `<cu-xxx>` debe aparecer en todos los índices o en ninguno.** Si solo está en el `.md` y en `SKILL.md`, el componente queda "documentado pero invisible" en `DOCS.md` y `COMPONENTS-GUIDE.md`.
 
@@ -285,4 +285,4 @@ Un componente nuevo **no está completo con solo su `.md`**. Hay que actualizar 
 - [ ] `docs/comegen-ui/SKILL.md` actualizado (tabla UMD, default variant, índice).
 - [ ] `docs/DOCS.md` actualizado (tabla "Componentes disponibles").
 - [ ] `COMPONENTS-GUIDE.md` actualizado (índice + sección `<cu-xxx>`).
-- [ ] Skill local `~/.agents/skills/comegen-ui/` idéntico a `docs/comegen-ui/`.
+- [ ] Skill local `~/.agents/skills/use-comegen/` (instalada por update.sh/ps1, copia de `docs/skills/use-comegen/`).

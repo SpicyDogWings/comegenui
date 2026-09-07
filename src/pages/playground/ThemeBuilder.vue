@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
 import PlaygroundLayout from '@/layouts/PlaygroundLayout.vue'
 import Button from '@/components/buttons/Button.vue'
 import Alert from '@/components/information/Alert.vue'
 import Badge from '@/components/information/Badge.vue'
+import Avatar from '@/components/information/Avatar.vue'
+import AuthorCard from '@/components/information/AuthorCard.vue'
 import Card from '@/components/information/Card.vue'
 import Input from '@/components/form/Input.vue'
 import Switch from '@/components/form/Switch.vue'
@@ -14,7 +16,10 @@ import FileInput from '@/components/form/FileInput.vue'
 import FileInputZone from '@/components/form/FileInputZone.vue'
 import ColorPicker from '@/components/form/ColorPicker.vue'
 import FloatingButton from '@/components/buttons/FloatingButton.vue'
+import ToggleColorSheme from '@/components/buttons/ToggleColorSheme.vue'
 import LucideSave from '@/components/icons/LucideSave.vue'
+import LucidePencil from '@/components/icons/LucidePencil.vue'
+import LucidePalette from '@/components/icons/LucidePalette.vue'
 import ThemeManagerModal from '@/components/theme/ThemeManagerModal.vue'
 import Table from '@/components/data/Table.vue'
 import Pagination from '@/components/controls/Pagination.vue'
@@ -24,17 +29,33 @@ import MonthSlider from '@/components/controls/MonthSlider.vue'
 import YearSlider from '@/components/controls/YearSlider.vue'
 import Calendar from '@/components/controls/Calendar.vue'
 import DatePicker from '@/components/form/DatePicker.vue'
+import DatePickerRange from '@/components/form/DatePickerRange.vue'
+import Label from '@/components/form/Label.vue'
+import Autocomplete from '@/components/form/Autocomplete.vue'
+import DropdownMenu from '@/components/controls/DropdownMenu.vue'
+import Markdown from '@/components/markdown/Markdown.vue'
+import CodeBlock from '@/components/markdown/CodeBlock.vue'
+import Blockquote from '@/components/markdown/Blockquote.vue'
+import CopyButton from '@/components/buttons/CopyButton.vue'
+import AdvancedTable from '@/components/data/AdvancedTable.vue'
+import Navbar from '@/components/navigation/Navbar.vue'
+import Outline from '@/components/lab/collapse/navigation/Outline.vue'
+import type { NavItem } from '@/composables/useNavbar'
+import type { OutlineItem } from '@/components/lab/collapse/navigation/Outline.vue'
+import Modal from '@/components/overlay/Modal.vue'
+import ThemeDashboard from '@/templates/playground/ThemeDashboard.vue'
+import ThemeSettings from '@/templates/playground/ThemeSettings.vue'
+import ThemeAgenda from '@/templates/playground/ThemeAgenda.vue'
+import ThemeEditorial from '@/templates/playground/ThemeEditorial.vue'
+import { useThemeBuilder } from '@/composables/useThemeBuilder'
 
-const STORAGE_KEY = 'cu-theme-builder'
-
-interface ThemeConfig {
-  themes: Record<string, Record<string, string>>
-  typography: typeof typography.value
-  spacing: typeof spacing.value
-  borderRadius: typeof borderRadius.value
-  shadows: typeof shadows.value
-  borders: typeof borders.value
-}
+const {
+  themeName, showEditBtn, isEditing, enableEditing,
+  colors, shadowOpacityRaw, typography, spacing, borderRadius, borders,
+  shadowPreview, cssExport, resetToDefaults,
+  importConfig, importedThemes, showImportPicker, lastImportedConfig, applyImportedTheme,
+  handleExport, handleCopyCSS, handleDownloadCSS,
+} = useThemeBuilder()
 
 const tableData = [
   { name: 'Alice Johnson', status: 'Active', role: 'Admin' },
@@ -48,361 +69,239 @@ const tableColumns = [
   { key: 'role', label: 'Role' },
 ]
 
-const themeName = ref('light')
 const modalRef = ref<InstanceType<typeof ThemeManagerModal> | null>(null)
+const modalPreviewRef = ref<InstanceType<typeof Modal> | null>(null)
+const isSaving = ref(false)
+const showSaveSuccess = ref(false)
 
-const colors = ref({
-  primary: '#E73F1E',
-  secondary: '#6366f1',
-  neutral: '#1a1a1a',
-  success: '#22c55e',
-  warning: '#f59e0b',
-  danger: '#ef4444',
-  surface: '#eeeeee',
+function handleSaveProfile() {
+  if (showSaveSuccess.value) return
+  isSaving.value = true
+  showSaveSuccess.value = false
+  setTimeout(() => {
+    isSaving.value = false
+    showSaveSuccess.value = true
+    setTimeout(() => {
+      showSaveSuccess.value = false
+    }, 3000)
+  }, 2000)
+}
+
+const showDeleteModal = ref(false)
+const deleteModalRef = ref<InstanceType<typeof Modal> | null>(null)
+watch(showDeleteModal, (val) => {
+  if (val) deleteModalRef.value?.open()
 })
 
-const typography = ref({
-  fontFamily: {
-    sans: 'Inter, system-ui, sans-serif',
-    mono: 'Fira Code, monospace',
+const showDrawer = ref(false)
+const toastVisible = ref(false)
+const toastType = ref<'success' | 'warning' | 'danger' | 'primary'>('success')
+const toastMessage = ref('')
+const toastIcon = ref('✓')
+
+const toastMessages = {
+  success: { msg: 'Cambios guardados correctamente', icon: '✓' },
+  warning: { msg: 'Tené cuidado con esta acción', icon: '⚠' },
+  danger: { msg: 'Ocurrió un error inesperado', icon: '✕' },
+  primary: { msg: 'Procesando solicitud...', icon: 'ℹ' },
+}
+
+function triggerToast(type: 'success' | 'warning' | 'danger' | 'primary') {
+  toastType.value = type
+  toastMessage.value = toastMessages[type].msg
+  toastIcon.value = toastMessages[type].icon
+  toastVisible.value = true
+  setTimeout(() => {
+    toastVisible.value = false
+  }, 3000)
+}
+
+const dropdownItems = [
+  { label: 'Ver detalle', value: 'detail' },
+  { label: 'Editar', value: 'edit' },
+  { label: 'Eliminar', value: 'delete' },
+]
+
+const demoNavItems: NavItem[] = [
+  { label: 'Inicio', path: '/' },
+  { label: 'Button', path: '/playground/components/button' },
+  { label: 'Table', path: '/playground/components/table' },
+  { label: 'Markdown', path: '/playground/components/markdown' },
+  {
+    label: 'Ayuda',
+    children: [{ label: 'Guía', path: '/playground/theme-builder' }],
   },
-  fontSize: {
-    xs: '0.75rem',
-    sm: '0.875rem',
-    md: '1rem',
-    lg: '1.125rem',
-    xl: '1.25rem',
-    '2xl': '1.5rem',
+]
+
+const demoOutlineItems: OutlineItem[] = [
+  { label: 'Introducción', id: 'tb-outline-intro' },
+  {
+    label: 'Uso',
+    id: 'tb-outline-uso',
+    children: [
+      { label: 'Props', id: 'tb-outline-props' },
+      { label: 'Eventos', id: 'tb-outline-eventos' },
+    ],
   },
-  fontWeight: {
-    normal: '400',
-    medium: '500',
-    semibold: '600',
-    bold: '700',
+]
+
+const docOutlineItems: OutlineItem[] = [
+  { label: 'Introducción', id: 'doc-intro' },
+  { label: '¿Cómo funciona?', id: 'doc-how' },
+  {
+    label: 'Buenas prácticas',
+    id: 'doc-best',
+    children: [
+      { label: 'Consistencia', id: 'doc-consistency' },
+      { label: 'Contexto', id: 'doc-context' },
+    ],
   },
-  lineHeight: {
-    tight: '1.25',
-    normal: '1.5',
-    relaxed: '1.75',
-  },
+]
+
+const editorialSnippet = `const tokens = getThemeNames();
+// cambiás un color y todo el ecosistema lo sigue
+setTheme('nord');`
+
+interface AgendaEvent {
+  date: string
+  time: string
+  title: string
+  desc: string
+  color: string
+  badge: string
+}
+
+const allAgendaEvents: AgendaEvent[] = [
+  { date: '2026-09-03', time: '10:00', title: 'Workshop UX', desc: 'Mapear flujos del nuevo dashboard', color: 'primary', badge: 'Work' },
+  { date: '2026-09-08', time: '14:00', title: 'Demo interna', desc: 'Mostrar avances al equipo', color: 'success', badge: 'Done' },
+  { date: '2026-09-11', time: '09:00', title: 'Review de diseño', desc: 'Revisar mockups del dashboard nuevo', color: 'primary', badge: 'Work' },
+  { date: '2026-09-11', time: '14:00', title: 'Call con cliente', desc: 'Presentar avances del tema system', color: 'warning', badge: 'Pending' },
+  { date: '2026-09-15', time: '11:00', title: 'Sprint review', desc: 'Retrospectiva del sprint 14', color: 'primary', badge: 'Work' },
+  { date: '2026-09-18', time: '16:00', title: 'Deploy producción', desc: 'Subir versión 2.0 a producción', color: 'success', badge: 'Done' },
+  { date: '2026-09-22', time: '09:30', title: 'Post-mortem', desc: 'Análisis del incidente en staging', color: 'danger', badge: 'Urgent' },
+  { date: '2026-09-25', time: '13:00', title: 'Planning Q4', desc: 'Definir objetivos del próximo trimestre', color: 'warning', badge: 'Pending' },
+];
+
+const agendaSelectedDate = ref('2026-09-11');
+
+const agendaEvents = computed(() =>
+  allAgendaEvents.filter(e => e.date === agendaSelectedDate.value)
+);
+
+const agendaDots = computed(() =>
+  allAgendaEvents.map(e => ({ date: e.date, color: e.color }))
+);
+
+function onSelectDate(date: Date) {
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+  agendaSelectedDate.value = `${yyyy}-${mm}-${dd}`;
+}
+
+const newEvent = ref({
+  title: '',
+  date: '2026-09-11',
+  time: '',
+  category: 'work',
+  desc: '',
+});
+
+const eventSaved = ref(false);
+
+function saveEventDraft() {
+  eventSaved.value = true;
+  setTimeout(() => { eventSaved.value = false; }, 2500);
+}
+
+function createEvent() {
+  if (!newEvent.value.title) return;
+  const colorMap: Record<string, AgendaEvent['color']> = {
+    work: 'primary',
+    personal: 'success',
+    urgent: 'danger',
+  };
+  const badgeMap: Record<string, string> = {
+    work: 'Work',
+    personal: 'Personal',
+    urgent: 'Urgent',
+  };
+  allAgendaEvents.push({
+    date: newEvent.value.date,
+    time: newEvent.value.time || '12:00',
+    title: newEvent.value.title,
+    desc: newEvent.value.desc,
+    color: colorMap[newEvent.value.category] || 'primary',
+    badge: badgeMap[newEvent.value.category] || 'Work',
+  });
+  newEvent.value = { title: '', date: '2026-09-11', time: '', category: 'work', desc: '' };
+  eventSaved.value = true;
+  setTimeout(() => { eventSaved.value = false; }, 2500);
+}
+
+// --- Capa de interacción: apertura del modal de import (picker) ---
+const importPickerRef = ref<InstanceType<typeof Modal> | null>(null)
+
+watch(showImportPicker, async (val) => {
+  if (val) {
+    await nextTick()
+    importPickerRef.value?.open()
+  }
 })
-
-const spacing = ref({
-  '2xs': '2px',
-  xs: '4px',
-  sm: '8px',
-  md: '12px',
-  lg: '16px',
-  xl: '24px',
-  '2xl': '32px',
-  '3xl': '48px',
-})
-
-const borderRadius = ref({
-  default: '8px',
-  none: '0',
-  sm: '4px',
-  md: '8px',
-  lg: '12px',
-  full: '9999px',
-})
-
-const shadows = ref({
-  color: '#000000',
-})
-
-const borders = ref({
-  width: {
-    none: '0',
-    thin: '1px',
-    medium: '2px',
-    thick: '4px',
-  },
-  color: {
-    default: '#d1d5db',
-    strong: '#6b7280',
-    focus: '#1774A4',
-  },
-})
-
-function hexToRgba(hex: string, alpha: number) {
-  const h = hex.replace('#', '')
-  const r = parseInt(h.slice(0, 2), 16)
-  const g = parseInt(h.slice(2, 4), 16)
-  const b = parseInt(h.slice(4, 6), 16)
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`
-}
-
-function colorVar(name: string, value: string) {
-  const darken = (c: string, amount: number) => {
-    const hex = c.replace('#', '')
-    const r = Math.max(0, parseInt(hex.slice(0, 2), 16) - Math.round(255 * amount))
-    const g = Math.max(0, parseInt(hex.slice(2, 4), 16) - Math.round(255 * amount))
-    const b = Math.max(0, parseInt(hex.slice(4, 6), 16) - Math.round(255 * amount))
-    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`
-  }
-  const lighten = (c: string, amount: number) => {
-    const hex = c.replace('#', '')
-    const r = Math.min(255, parseInt(hex.slice(0, 2), 16) + Math.round(255 * amount))
-    const g = Math.min(255, parseInt(hex.slice(2, 4), 16) + Math.round(255 * amount))
-    const b = Math.min(255, parseInt(hex.slice(4, 6), 16) + Math.round(255 * amount))
-    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`
-  }
-  const transparentize = (c: string, amount: number) => {
-    const hex = c.replace('#', '')
-    const r = parseInt(hex.slice(0, 2), 16)
-    const g = parseInt(hex.slice(2, 4), 16)
-    const b = parseInt(hex.slice(4, 6), 16)
-    return `rgba(${r}, ${g}, ${b}, ${1 - amount})`
-  }
-
-  return `--cu-color-${name}: ${value};
-    --cu-color-${name}-text: ${darken(value, 0.25)};
-    --cu-color-${name}-hover: ${darken(value, 0.1)};
-    --cu-color-${name}-active: ${lighten(value, 0.1)};
-    --cu-color-${name}-ghost-hover: ${transparentize(value, 0.9)};
-    --cu-color-${name}-ghost-active: ${transparentize(value, 0.8)};
-    --cu-color-${name}-soft: ${transparentize(value, 0.85)};
-    --cu-color-${name}-soft-hover: ${transparentize(value, 0.75)};
-    --cu-color-${name}-soft-active: ${transparentize(value, 0.65)};
-    --cu-color-${name}-subtle: ${transparentize(value, 0.9)};
-    --cu-color-${name}-subtle-hover: ${transparentize(value, 0.8)};
-    --cu-color-${name}-subtle-active: ${transparentize(value, 0.7)};
-    --cu-color-${name}-subtle-border: ${transparentize(value, 0.5)};`
-}
-
-function buildCssVariables(): string {
-  const t = typography.value
-  const s = spacing.value
-  const r = borderRadius.value
-  const sh = shadows.value
-  const b = borders.value
-
-  const colorsCSS = Object.entries(colors.value)
-    .map(([name, value]) => colorVar(name, value))
-    .join('\n    ')
-
-  const shadowColor = hexToRgba(sh.color, 1)
-  const shadowAlpha05 = hexToRgba(sh.color, 0.05)
-  const shadowAlpha1 = hexToRgba(sh.color, 0.1)
-
-  return `/* Colors */
-    ${colorsCSS}
-
-    /* Typography */
-    --cu-font-sans: ${t.fontFamily.sans};
-    --cu-font-mono: ${t.fontFamily.mono};
-    --cu-font-size-xs: ${t.fontSize.xs};
-    --cu-font-size-sm: ${t.fontSize.sm};
-    --cu-font-size-md: ${t.fontSize.md};
-    --cu-font-size-lg: ${t.fontSize.lg};
-    --cu-font-size-xl: ${t.fontSize.xl};
-    --cu-font-size-2xl: ${t.fontSize['2xl']};
-    --cu-font-weight-normal: ${t.fontWeight.normal};
-    --cu-font-weight-medium: ${t.fontWeight.medium};
-    --cu-font-weight-semibold: ${t.fontWeight.semibold};
-    --cu-font-weight-bold: ${t.fontWeight.bold};
-    --cu-line-height-tight: ${t.lineHeight.tight};
-    --cu-line-height-normal: ${t.lineHeight.normal};
-    --cu-line-height-relaxed: ${t.lineHeight.relaxed};
-
-    /* Spacing */
-    --cu-space-2xs: ${s['2xs']};
-    --cu-space-xs: ${s.xs};
-    --cu-space-sm: ${s.sm};
-    --cu-space-md: ${s.md};
-    --cu-space-lg: ${s.lg};
-    --cu-space-xl: ${s.xl};
-    --cu-space-2xl: ${s['2xl']};
-    --cu-space-3xl: ${s['3xl']};
-
-    /* Border Radius */
-    --cu-radius: ${r.default};
-    --cu-radius-none: ${r.none};
-    --cu-radius-sm: ${r.sm};
-    --cu-radius-md: ${r.md};
-    --cu-radius-lg: ${r.lg};
-    --cu-radius-full: ${r.full};
-
-    /* Shadows */
-    --cu-shadow-color: ${shadowColor};
-    --cu-shadow-sm: 0 1px 2px ${shadowAlpha05};
-    --cu-shadow-md: 0 4px 6px ${shadowAlpha1};
-    --cu-shadow-lg: 0 10px 15px ${shadowAlpha1};
-    --cu-shadow-xl: 0 20px 25px ${shadowAlpha1};
-
-    /* Borders */
-    --cu-border-none: ${b.width.none};
-    --cu-border-thin: ${b.width.thin};
-    --cu-border-medium: ${b.width.medium};
-    --cu-border-thick: ${b.width.thick};
-    --cu-border-color: ${b.color.default};
-    --cu-border-color-strong: ${b.color.strong};
-    --cu-border-color-focus: ${b.color.focus};`
-}
-
-const cssPreview = computed(() => `.tb-preview {\n${buildCssVariables()}\n}`)
-
-const cssExport = computed(() => `:root {\n${buildCssVariables()}\n}`)
-
-let styleEl: HTMLStyleElement | null = null
-
-watch(cssPreview, (css) => {
-  if (!styleEl) {
-    styleEl = document.createElement('style')
-    styleEl.id = 'theme-builder-preview'
-    document.head.appendChild(styleEl)
-  }
-  styleEl.textContent = css
-}, { immediate: true })
-
-function saveToStorage() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(getCurrentConfig()))
-}
-
-watch([colors, typography, spacing, borderRadius, shadows, borders], () => {
-  saveToStorage()
-}, { deep: true })
-
-function getCurrentConfig(): ThemeConfig {
-  return {
-    themes: { [themeName.value]: { ...colors.value } },
-    typography: JSON.parse(JSON.stringify(typography.value)),
-    spacing: JSON.parse(JSON.stringify(spacing.value)),
-    borderRadius: JSON.parse(JSON.stringify(borderRadius.value)),
-    shadows: JSON.parse(JSON.stringify(shadows.value)),
-    borders: JSON.parse(JSON.stringify(borders.value)),
-  }
-}
-
-function applyConfig(config: ThemeConfig) {
-  if (config.themes) {
-    const themeNames = Object.keys(config.themes)
-    if (themeNames.length > 0) {
-      const firstTheme = themeNames[0] as string
-      themeName.value = firstTheme
-      const themeColors = config.themes[firstTheme]
-      if (themeColors) {
-        colors.value = { ...colors.value, ...themeColors }
-      }
-    }
-  }
-  if (config.typography) typography.value = config.typography
-  if (config.spacing) spacing.value = config.spacing
-  if (config.borderRadius) borderRadius.value = config.borderRadius
-  if (config.shadows) shadows.value = config.shadows
-  if (config.borders) borders.value = config.borders
-}
-
-function loadFromStorage() {
-  const raw = localStorage.getItem(STORAGE_KEY)
-  if (raw) {
-    try {
-      const config = JSON.parse(raw) as ThemeConfig
-      applyConfig(config)
-    } catch {}
-  }
-}
 
 function handleImport(config: any) {
-  applyConfig(config as ThemeConfig)
-  saveToStorage()
+  if (importConfig(config)) modalRef.value?.close()
 }
-
-function handleExport() {
-  const config = getCurrentConfig()
-  const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `comegen-${themeName.value}-theme.json`
-  a.click()
-  URL.revokeObjectURL(url)
-}
-
-function handleCopyCSS() {
-  navigator.clipboard.writeText(cssExport.value)
-}
-
-function handleDownloadCSS() {
-  const blob = new Blob([cssExport.value], { type: 'text/css' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `comegen-${themeName.value}-theme.css`
-  a.click()
-  URL.revokeObjectURL(url)
-}
-
-function resetToDefaults() {
-  colors.value = {
-    primary: '#E73F1E',
-    secondary: '#6366f1',
-    neutral: '#1a1a1a',
-    success: '#22c55e',
-    warning: '#f59e0b',
-    danger: '#ef4444',
-    surface: '#eeeeee',
-  }
-  typography.value = {
-    fontFamily: { sans: 'Inter, system-ui, sans-serif', mono: 'Fira Code, monospace' },
-    fontSize: { xs: '0.75rem', sm: '0.875rem', md: '1rem', lg: '1.125rem', xl: '1.25rem', '2xl': '1.5rem' },
-    fontWeight: { normal: '400', medium: '500', semibold: '600', bold: '700' },
-    lineHeight: { tight: '1.25', normal: '1.5', relaxed: '1.75' },
-  }
-  spacing.value = { '2xs': '2px', xs: '4px', sm: '8px', md: '12px', lg: '16px', xl: '24px', '2xl': '32px', '3xl': '48px' }
-  borderRadius.value = { default: '8px', none: '0', sm: '4px', md: '8px', lg: '12px', full: '9999px' }
-  shadows.value = { color: '#000000' }
-  borders.value = { width: { none: '0', thin: '1px', medium: '2px', thick: '4px' }, color: { default: '#d1d5db', strong: '#6b7280', focus: '#1774A4' } }
-}
-
-onMounted(() => {
-  loadFromStorage()
-})
-
-onBeforeUnmount(() => {
-  if (styleEl) {
-    styleEl.remove()
-    styleEl = null
-  }
-})
 </script>
 
 <template>
   <PlaygroundLayout title="Theme Builder">
     <div class="tb-layout">
       <aside class="tb-controls">
-        <section class="tb-section">
-          <h2>Colors</h2>
+        <div class="tb-controls-header">
+          <span class="tb-controls-theme-name">{{ themeName }}</span>
+          <Button
+            v-if="showEditBtn"
+            color="primary"
+            variant="soft"
+            size="sm"
+            title="Editar tema"
+            @click="enableEditing"
+          >
+            <LucidePencil :width="16" :height="16" />
+          </Button>
+        </div>
+
+        <Collapse label="Colors" :default-open="true">
           <div class="tb-colors-list">
             <div v-for="(value, key) in colors" :key="key" class="tb-color-row">
-              <label class="tb-color-label">{{ key }}</label>
-              <ColorPicker :model-value="value" @update:model-value="colors[key] = $event" />
+              <Label :label="key === 'neutral' ? 'neutral (texto/títulos)' : key" color="var(--cu-color-neutral)" />
+              <ColorPicker :model-value="value" :disabled="!isEditing" @update:model-value="colors[key] = $event" />
             </div>
           </div>
-        </section>
+          <p class="tb-hint">
+            <strong>neutral</strong> es la tinta: títulos, labels y texto del layout. En temas oscuros debe ser un color claro (se invierte solo al oscurecer el surface).
+          </p>
+        </Collapse>
 
-        <hr class="tb-separator" />
-
-        <section class="tb-section">
-          <h2>Typography</h2>
+        <Collapse label="Typography" :default-open="false">
           <div class="tb-group">
             <h3>Font Family</h3>
             <div class="tb-field">
-              <label>Sans</label>
-              <input type="text" v-model="typography.fontFamily.sans" />
+              <Label label="Sans" color="var(--cu-color-neutral)" />
+              <Input v-model="typography.fontFamily.sans" :disabled="!isEditing" />
             </div>
             <div class="tb-field">
-              <label>Mono</label>
-              <input type="text" v-model="typography.fontFamily.mono" />
+              <Label label="Mono" color="var(--cu-color-neutral)" />
+              <Input v-model="typography.fontFamily.mono" :disabled="!isEditing" />
             </div>
           </div>
           <div class="tb-group">
             <h3>Font Size</h3>
             <div class="tb-grid">
               <div v-for="(value, key) in typography.fontSize" :key="key" class="tb-field">
-                <label>{{ key }}</label>
-                <input type="text" v-model="typography.fontSize[key]" />
+                <Label :label="key" color="var(--cu-color-neutral)" />
+                <Input v-model="typography.fontSize[key]" :disabled="!isEditing" />
               </div>
             </div>
           </div>
@@ -410,8 +309,8 @@ onBeforeUnmount(() => {
             <h3>Font Weight</h3>
             <div class="tb-grid">
               <div v-for="(value, key) in typography.fontWeight" :key="key" class="tb-field">
-                <label>{{ key }}</label>
-                <input type="text" v-model="typography.fontWeight[key]" />
+                <Label :label="key" color="var(--cu-color-neutral)" />
+                <Input v-model="typography.fontWeight[key]" :disabled="!isEditing" />
               </div>
             </div>
           </div>
@@ -419,336 +318,129 @@ onBeforeUnmount(() => {
             <h3>Line Height</h3>
             <div class="tb-grid">
               <div v-for="(value, key) in typography.lineHeight" :key="key" class="tb-field">
-                <label>{{ key }}</label>
-                <input type="text" v-model="typography.lineHeight[key]" />
+                <Label :label="key" color="var(--cu-color-neutral)" />
+                <Input v-model="typography.lineHeight[key]" :disabled="!isEditing" />
               </div>
             </div>
           </div>
-        </section>
+        </Collapse>
 
-        <hr class="tb-separator" />
-
-        <section class="tb-section">
-          <h2>Spacing</h2>
+        <Collapse label="Spacing" :default-open="false">
           <div class="tb-grid">
             <div v-for="(value, key) in spacing" :key="key" class="tb-field">
-              <label>{{ key }}</label>
-              <input type="text" v-model="spacing[key]" />
+              <Label :label="key" color="var(--cu-color-neutral)" />
+              <Input v-model="spacing[key]" :disabled="!isEditing" />
             </div>
           </div>
-        </section>
+        </Collapse>
 
-        <hr class="tb-separator" />
-
-        <section class="tb-section">
-          <h2>Border Radius</h2>
+        <Collapse label="Border Radius" :default-open="false">
           <div class="tb-grid">
             <div v-for="(value, key) in borderRadius" :key="key" class="tb-field">
-              <label>{{ key }}</label>
-              <input type="text" v-model="borderRadius[key]" />
+              <Label :label="key" color="var(--cu-color-neutral)" />
+              <Input v-model="borderRadius[key]" :disabled="!isEditing" />
             </div>
           </div>
-        </section>
+        </Collapse>
 
-        <hr class="tb-separator" />
-
-        <section class="tb-section">
-          <h2>Shadow Color</h2>
-          <div class="tb-colors-list">
-            <div class="tb-color-row">
-              <label class="tb-color-label">color</label>
-              <ColorPicker v-model="shadows.color" />
-            </div>
-          </div>
-        </section>
-
-        <hr class="tb-separator" />
-
-        <section class="tb-section">
-          <h2>Borders</h2>
+        <Collapse label="Borders" :default-open="false">
           <div class="tb-group">
             <h3>Width</h3>
             <div class="tb-grid">
               <div v-for="(value, key) in borders.width" :key="key" class="tb-field">
-                <label>{{ key }}</label>
-                <input type="text" v-model="borders.width[key]" />
+                <Label :label="key" color="var(--cu-color-neutral)" />
+                <Input v-model="borders.width[key]" :disabled="!isEditing" />
               </div>
             </div>
           </div>
-          <div class="tb-group">
-            <h3>Color</h3>
-            <div class="tb-colors-list">
-              <div v-for="(value, key) in borders.color" :key="key" class="tb-color-row">
-                <label class="tb-color-label">{{ key }}</label>
-                <ColorPicker :model-value="value" @update:model-value="borders.color[key] = $event" />
-              </div>
+        </Collapse>
+
+        <Collapse label="Opacities" :default-open="false">
+          <div class="tb-colors-list">
+            <div class="tb-field">
+              <Label label="shadow" color="var(--cu-color-neutral)" />
+              <Input v-model="shadowOpacityRaw" :disabled="!isEditing" />
             </div>
           </div>
-        </section>
+          <p class="tb-hint">
+            <code>shadow</code>: {{ colors.shadow }} con opacidad {{ shadowOpacityRaw }}% → <code>{{ shadowPreview }}</code>
+          </p>
+        </Collapse>
       </aside>
 
       <main class="tb-preview">
-        <div class="tb-preview-row-group asymmetric">
-          <div class="tb-preview-section">
-            <h3>Buttons</h3>
-            <div class="tb-preview-row">
-              <Button color="primary">Primary</Button>
-              <Button color="secondary">Secondary</Button>
-              <Button color="neutral">Neutral</Button>
-              <Button color="success">Success</Button>
-              <Button color="warning">Warning</Button>
-              <Button color="danger">Danger</Button>
-            </div>
-            <div class="tb-preview-row">
-              <Button color="primary" variant="soft">Soft</Button>
-              <Button color="primary" variant="ghost">Ghost</Button>
-              <Button color="primary" variant="outlined">Outlined</Button>
-              <Button color="primary" variant="subtle">Subtle</Button>
-            </div>
-            <div class="tb-preview-row">
-              <Button color="primary" :loading="true">Loading</Button>
-              <Button color="danger" variant="solid" :loading="true">Loading</Button>
-            </div>
-          </div>
-
-          <div class="tb-preview-section">
-            <h3>Badges</h3>
-            <div class="tb-preview-row">
-              <Badge color="primary">Primary</Badge>
-              <Badge color="secondary">Secondary</Badge>
-              <Badge color="neutral">Neutral</Badge>
-              <Badge color="success">Success</Badge>
-              <Badge color="warning">Warning</Badge>
-              <Badge color="danger">Danger</Badge>
-            </div>
-            <div class="tb-preview-row">
-              <Badge color="primary" variant="solid">Solid</Badge>
-              <Badge color="primary" variant="soft">Soft</Badge>
-              <Badge color="primary" variant="ghost">Ghost</Badge>
-              <Badge color="primary" variant="outlined">Outlined</Badge>
-              <Badge color="primary" variant="subtle">Subtle</Badge>
-            </div>
-          </div>
-        </div>
-
-        <div class="tb-preview-section">
-          <h3>Alerts</h3>
-          <div class="tb-preview-row-group">
-            <div class="tb-preview-col">
-              <Alert title="Primary" color="primary">This is a primary alert.</Alert>
-              <Alert title="Success" color="success">This is a success alert.</Alert>
-              <Alert title="Warning" color="warning">This is a warning alert.</Alert>
-              <Alert title="Danger" color="danger">This is a danger alert.</Alert>
-            </div>
-            <div class="tb-preview-col">
-              <Alert title="Solid" color="primary" variant="solid">Solid variant.</Alert>
-              <Alert title="Soft" color="primary" variant="soft">Soft variant.</Alert>
-              <Alert title="Ghost" color="primary" variant="ghost">Ghost variant.</Alert>
-              <Alert title="Outlined" color="primary" variant="outlined">Outlined variant.</Alert>
-              <Alert title="Subtle" color="primary" variant="subtle">Subtle variant.</Alert>
-            </div>
-          </div>
-        </div>
-
-        <div class="tb-preview-section">
-          <h3>Cards</h3>
-          <div class="tb-preview-row">
-            <Card title="Tarjeta" subtitle="Subtítulo descriptivo" variant="ghost">
-              Contenido de la tarjeta para mostrar información agrupada.
-            </Card>
-            <Card title="Solid" variant="solid" color="primary">
-              Variante solid con el color activo del tema.
-            </Card>
-            <Card title="Soft" variant="soft" color="primary">
-              Variante soft con el color activo del tema.
-            </Card>
-            <Card title="Outlined" variant="outlined" color="primary">
-              Variante outlined con el color activo del tema.
-            </Card>
-          </div>
-        </div>
-
-        <div class="tb-preview-section">
-          <h3>Tabs</h3>
-          <div class="tb-preview-col">
-            <Tabs variant="tabs" :tabs="[
-              { key: 'general', label: 'General' },
-              { key: 'advanced', label: 'Advanced' },
-              { key: 'locked', label: 'Locked', disabled: true },
-            ]">
-              <template #general>Contenido General</template>
-              <template #advanced>Contenido Advanced</template>
-              <template #locked>Contenido Locked</template>
-            </Tabs>
-          </div>
-        </div>
-
-        <div class="tb-preview-section">
-          <h3>Collapse</h3>
-          <div class="tb-preview-row-group">
-            <div class="tb-preview-col">
-              <Collapse label="Más información" color="primary">
-                <p>Contenido colapsable con el color primario del tema activo.</p>
-              </Collapse>
-              <Collapse label="Opciones avanzadas" :default-open="true">
-                <p>Este collapse arranca abierto usando <code>default-open</code>.</p>
-              </Collapse>
-            </div>
-            <div class="tb-preview-col">
-              <Collapse label="Detalles" color="success">
-                <p>Los colores del trigger siguen los tokens del tema editado.</p>
-              </Collapse>
-              <Collapse label="Ayuda" color="warning">
-                <p>Probá cambiar colores en el panel y ver cómo se actualiza.</p>
-              </Collapse>
-            </div>
-          </div>
-        </div>
-
-        <div class="tb-preview-section">
-          <h3>Sliders</h3>
-          <div class="tb-preview-row-group">
-            <div class="tb-preview-col">
-              <MonthSlider />
-              <MonthSlider month-format="MMM yyyy" color="success" />
-              <MonthSlider :year-navigation="false" color="warning" />
-            </div>
-            <div class="tb-preview-col">
-              <YearSlider />
-              <YearSlider variant="outlined" color="success" />
-              <YearSlider :min="2020" :max="2030" color="warning" />
-            </div>
-          </div>
-        </div>
-
-        <div class="tb-preview-section">
-          <h3>Calendar & Date Picker</h3>
-          <div class="tb-preview-row">
-            <Calendar model-value="2026-08-11" style="width: 300px;" />
-            <Calendar model-value="2026-08-11" variant="solid" year-navigation style="width: 330px;" />
-            <Calendar model-value="2026-08-11" color="success" style="width: 300px;" />
-            <DatePicker model-value="2026-08-11" style="max-width: 280px;" />
-            <DatePicker model-value="2026-08-11" year-navigation style="max-width: 280px;" />
-          </div>
-        </div>
-
-        <div class="tb-preview-row-group">
-          <div class="tb-preview-section">
-            <h3>Inputs</h3>
-            <div class="tb-preview-col">
-              <Input placeholder="Default..." />
-              <Input placeholder="Primary..." color="primary" />
-              <Input placeholder="Disabled..." :disabled="true" />
-              <Input placeholder="Soft..." variant="soft" />
-              <Input placeholder="Outlined..." variant="outlined" />
-            </div>
-          </div>
-
-          <div class="tb-preview-col">
-            <div class="tb-preview-section">
-              <h3>Selects</h3>
-              <div class="tb-preview-row">
-                <Select placeholder="Select...">
-                  <option value="1">Option 1</option>
-                  <option value="2">Option 2</option>
-                </Select>
-                <Select placeholder="Choose..." color="primary">
-                  <option value="a">Choice A</option>
-                  <option value="b">Choice B</option>
-                </Select>
-              </div>
-            </div>
-
-            <div class="tb-preview-section">
-              <h3>File Inputs</h3>
-              <div class="tb-preview-row">
-                <FileInput placeholder="Select file..." />
-                <FileInput placeholder="Images only..." accept="image/*" color="primary" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="tb-preview-row-group three-cols">
-          <div class="tb-preview-section">
-            <h3>Switches</h3>
-            <div class="tb-preview-row">
-              <Switch />
-              <Switch color="primary" :model-value="true" />
-              <Switch color="success" :model-value="true" />
-              <Switch color="danger" :model-value="true" />
-              <Switch :disabled="true" />
-            </div>
-          </div>
-
-          <div class="tb-preview-section">
-            <h3>Checkboxes</h3>
-            <div class="tb-preview-row">
-              <Checkbox label="Default" />
-              <Checkbox label="Primary" color="primary" :model-value="true" />
-              <Checkbox label="Success" color="success" :model-value="true" />
-              <Checkbox label="Danger" color="danger" />
-            </div>
-          </div>
-
-          <div class="tb-preview-section">
-            <h3>Textarea</h3>
-            <Textarea placeholder="Write something..." />
-          </div>
-        </div>
-
-        <div class="tb-preview-section">
-          <h3>Table</h3>
-          <Table :columns="tableColumns" :data="tableData" color="primary">
-            <template #cell-status="{ value }">
-              <Badge
-                :color="value === 'Active' ? 'success' : value === 'Pending' ? 'warning' : 'danger'"
-              >
-                {{ value }}
-              </Badge>
-            </template>
-          </Table>
-        </div>
-
-        <div class="tb-preview-section">
-          <h3>Pagination</h3>
-          <Pagination :total-pages="10" :current-page="3" :total-items="100" color="primary" />
-        </div>
-
-        <div class="tb-preview-row-group">
-          <div class="tb-preview-section">
-            <h3>File Dropzone</h3>
-            <FileInputZone placeholder="Drag & drop files here, or click to browse" />
-          </div>
-
-          <div class="tb-preview-section">
-            <h3>Modal</h3>
-            <div class="cu-modal" data-size="sm" data-height="auto">
-              <header class="cu-modal-header">
-                <div class="cu-modal-header-text">
-                  <div class="cu-modal-title-row">
-                    <h2 class="cu-modal-title">Confirm Action</h2>
-                  </div>
-                  <p class="cu-modal-description">This action cannot be undone.</p>
-                </div>
-                <Button color="neutral" variant="ghost" class="cu-modal-close" aria-label="Close">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                </Button>
-              </header>
-              <main class="cu-modal-body">
-                <p>Are you sure you want to delete this item?</p>
-              </main>
-              <footer class="cu-modal-footer">
-                <div class="cu-modal-footer-default">
-                  <Button color="neutral" variant="ghost">Cancel</Button>
-                  <Button color="danger">Delete</Button>
-                </div>
-              </footer>
-            </div>
-          </div>
+        <div class="tb-gallery">
+          <ThemeDashboard />
+          <hr class="playground-separator" />
+          <ThemeSettings />
+          <hr class="playground-separator" />
+          <ThemeAgenda />
+          <hr class="playground-separator" />
+          <ThemeEditorial />
         </div>
       </main>
-    </div>
+
+      <!-- Toast container -->
+          <Transition name="tb-toast">
+            <div v-if="toastVisible" class="tb-toast" :class="`tb-toast--${toastType}`">
+              <span class="tb-toast-icon">{{ toastIcon }}</span>
+              <span class="tb-toast-msg">{{ toastMessage }}</span>
+            </div>
+          </Transition>
+
+          <!-- Delete Modal -->
+          <Modal
+            ref="deleteModalRef"
+            size="sm"
+            title="¿Eliminar cuenta?"
+            description="Esta acción no se puede deshacer. Todos tus datos serán eliminados permanentemente."
+            @close="showDeleteModal = false"
+          >
+            <div class="tb-modal-actions">
+              <Button color="neutral" variant="ghost" @click="deleteModalRef?.close()">Cancelar</Button>
+              <Button color="danger" @click="deleteModalRef?.close(); showDeleteModal = false">Sí, eliminar cuenta</Button>
+            </div>
+          </Modal>
+
+          <!-- Drawer -->
+          <Transition name="tb-drawer">
+            <div v-if="showDrawer" class="tb-drawer-overlay" @click="showDrawer = false">
+              <div class="tb-drawer" @click.stop>
+                <div class="tb-drawer-header">
+                  <h3 class="tb-drawer-title">Configuración</h3>
+                  <Button color="neutral" variant="ghost" @click="showDrawer = false">✕</Button>
+                </div>
+                <div class="tb-drawer-body">
+                  <div class="tb-drawer-section">
+                    <h4 class="tb-drawer-section-title">General</h4>
+                    <div class="tb-drawer-row">
+                      <span>Notificaciones</span>
+                      <Switch color="primary" :model-value="true" />
+                    </div>
+                    <div class="tb-drawer-row">
+                      <span>Modo oscuro</span>
+                      <Switch />
+                    </div>
+                  </div>
+                  <div class="tb-drawer-section">
+                    <h4 class="tb-drawer-section-title">Privacidad</h4>
+                    <div class="tb-drawer-row">
+                      <span>Perfil público</span>
+                      <Checkbox color="primary" :model-value="true" />
+                    </div>
+                    <div class="tb-drawer-row">
+                      <span>Compartir métricas</span>
+                      <Checkbox color="success" :model-value="true" />
+                    </div>
+                  </div>
+                </div>
+                <div class="tb-drawer-footer">
+                  <Button color="neutral" variant="ghost" style="width: 100%" @click="showDrawer = false">Cerrar</Button>
+                  <Button color="primary" style="width: 100%">Guardar cambios</Button>
+                </div>
+              </div>
+            </div>
+          </Transition>
 
     <ThemeManagerModal
       ref="modalRef"
@@ -762,29 +454,35 @@ onBeforeUnmount(() => {
     />
 
     <FloatingButton color="primary" @click="modalRef?.open()">
-      <LucideSave :width="20" :height="20" />
+      <LucidePalette :width="20" :height="20" />
     </FloatingButton>
+
+    <Modal v-if="showImportPicker" ref="importPickerRef" title="Elegir tema" size="sm" @close="showImportPicker = false">
+      <div class="tb-import-picker">
+        <p class="tb-import-picker-desc">Este archivo contiene varios temas. Elegí cuál querés usar:</p>
+        <div class="tb-import-picker-list">
+          <Button
+            v-for="name in importedThemes"
+            :key="name"
+            color="neutral"
+            variant="soft"
+            class="tb-import-picker-item"
+            @click="applyImportedTheme(lastImportedConfig, name)"
+          >
+            {{ name }}
+          </Button>
+        </div>
+      </div>
+    </Modal>
+    </div>
   </PlaygroundLayout>
 </template>
 
 <style scoped>
+/* Colores del form: heredan el tema activo (resolveInk en colorsBlock es la
+   única fuente de verdad). Acá solo lo estructural — la tipografía y los
+   espacios quedan fijos para que el form no se mueva. */
 .tb-controls {
-  --cu-color-primary: #1774A4;
-  --cu-color-primary-soft: rgba(23, 116, 164, 0.15);
-  --cu-color-neutral: #2c2c2c;
-  --cu-color-neutral-text: #000000;
-  --cu-color-neutral-hover: #000000;
-  --cu-color-neutral-active: #343434;
-  --cu-color-neutral-ghost-hover: rgba(44, 44, 44, 0.1);
-  --cu-color-neutral-ghost-active: rgba(44, 44, 44, 0.2);
-  --cu-color-neutral-soft: rgba(44, 44, 44, 0.15);
-  --cu-color-neutral-soft-hover: rgba(44, 44, 44, 0.25);
-  --cu-color-neutral-soft-active: rgba(44, 44, 44, 0.35);
-  --cu-color-neutral-subtle: rgba(44, 44, 44, 0.1);
-  --cu-color-neutral-subtle-hover: rgba(44, 44, 44, 0.2);
-  --cu-color-neutral-subtle-active: rgba(44, 44, 44, 0.3);
-  --cu-color-neutral-subtle-border: rgba(44, 44, 44, 0.5);
-  --cu-color-surface: #ffffff;
   --cu-font-sans: Inter, system-ui, sans-serif;
   --cu-font-mono: Fira Code, monospace;
   --cu-font-size-xs: 0.75rem;
@@ -795,8 +493,11 @@ onBeforeUnmount(() => {
   --cu-space-sm: 8px;
   --cu-radius: 8px;
   --cu-border-thin: 1px;
-  --cu-border-color: #d1d5db;
+  display: flex;
+  flex-direction: column;
+  gap: var(--cu-space-xs);
 }
+
 .tb-layout {
   display: flex;
   gap: 2rem;
@@ -807,80 +508,858 @@ onBeforeUnmount(() => {
   flex: 0 0 400px;
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 1rem;
+}
+
+.tb-controls-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0 0.25rem;
+}
+
+.tb-controls-theme-name {
+  font-weight: var(--cu-font-weight-semibold);
+  font-size: var(--cu-font-size-sm);
+  color: var(--cu-color-neutral);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tb-edit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: var(--cu-border-thin) solid var(--cu-border-color);
+  border-radius: var(--cu-radius-sm);
+  background: transparent;
+  color: var(--cu-color-neutral);
+  cursor: pointer;
+  transition: background 150ms ease;
+}
+
+.tb-edit-btn:hover {
+  background: var(--cu-color-neutral-ghost-hover);
 }
 
 .tb-preview {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 2rem;
   min-width: 0;
 }
 
-.tb-preview-section {
+.tb-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+/* === SCENES === */
+.tb-scene {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.tb-scene-header {
+  padding: 0 0.25rem;
+  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);
+  padding-bottom: 0.75rem;
+}
+
+.tb-scene-title {
+  font-size: var(--cu-font-size-lg);
+  font-weight: var(--cu-font-weight-semibold);
+  color: var(--cu-color-neutral);
+  margin: 0;
+}
+
+.tb-scene-desc {
+  font-size: var(--cu-font-size-sm);
+  color: var(--cu-color-neutral);
+  opacity: 0.6;
+  margin: 0.25rem 0 0;
+}
+
+/* === DASHBOARD === */
+.tb-dashboard {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 1.25rem;
+  background-color: var(--cu-color-surface);
+  border: var(--cu-border-thin) solid var(--cu-border-color);
+  border-radius: var(--cu-radius-lg);
+  overflow: hidden;
+}
+
+.tb-dash-sidebar {
+  padding: 1rem;
+  border-right: var(--cu-border-thin) solid var(--cu-border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background-color: var(--cu-color-surface);
+}
+
+.tb-dash-sidebar-footer {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: var(--cu-border-thin) solid var(--cu-border-color);
+}
+
+.tb-dash-main {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-width: 0;
+}
+
+.tb-dash-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.tb-dash-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tb-dash-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.tb-stat {
+  padding: 1rem;
+}
+
+.tb-stat-value {
+  font-size: var(--cu-font-size-2xl);
+  font-weight: var(--cu-weight-bold);
+  color: var(--cu-color-neutral);
+  line-height: 1.2;
+}
+
+.tb-stat-label {
+  font-size: var(--cu-font-size-xs);
+  color: var(--cu-color-neutral);
+  opacity: 0.6;
+  margin-top: 0.25rem;
+}
+
+.tb-dash-table {
+  padding: 1rem;
+}
+
+/* === SETTINGS === */
+.tb-settings {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 1.25rem;
+}
+
+.tb-settings-card {
+  padding: 1.25rem;
+}
+
+.tb-settings-profile {
+  /* Más ancho — formulario completo */
+}
+
+.tb-settings-prefs-card {
+  /* Más estrecho — preferencias compactas */
+}
+
+.tb-settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.tb-settings-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.tb-settings-form-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-top: 1rem;
+  border-top: var(--cu-border-thin) solid var(--cu-border-color);
+}
+
+.tb-settings-form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.tb-settings-collapse {
+  margin-top: 0.5rem;
+}
+
+.tb-settings-prefs {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.tb-pref-section {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  padding: 1.25rem;
-  border: var(--cu-border-thin) solid var(--cu-border-color);
-  border-radius: var(--cu-radius);
-  background: var(--cu-color-surface);
 }
 
-.tb-preview-section h3 {
+.tb-pref-title {
   font-size: var(--cu-font-size-sm);
   font-weight: var(--cu-font-weight-semibold);
+  color: var(--cu-color-neutral);
   margin: 0;
+  padding-bottom: 0.5rem;
+  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);
+}
+
+.tb-pref-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.tb-pref-label {
+  font-size: var(--cu-font-size-sm);
   color: var(--cu-color-neutral);
 }
 
-.tb-preview-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.tb-preview-row :deep(.cu-card) {
-  flex: 1 1 200px;
-}
-
-.tb-preview-col {
+/* === AGENDA === */
+.tb-agenda {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 1rem;
+  padding: 1.25rem;
+  background-color: var(--cu-color-surface);
+  border: var(--cu-border-thin) solid var(--cu-border-color);
+  border-radius: var(--cu-radius-lg);
 }
 
-.tb-preview-row-group {
+.tb-agenda-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);
+}
+
+.tb-agenda-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tb-agenda-split {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1fr 260px;
   gap: 1.5rem;
 }
 
-.tb-preview-row-group.asymmetric {
-  grid-template-columns: 2fr 1fr;
+.tb-agenda-cal {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-.tb-preview-row-group.three-cols {
-  grid-template-columns: repeat(3, 1fr);
+.tb-agenda-events {
+  display: flex;
+  flex-direction: column;
 }
 
-.tb-section h2 {
+.tb-agenda-side {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.tb-agenda-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cu-space-md);
+}
+
+.tb-agenda-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--cu-space-md);
+}
+
+.tb-agenda-form-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cu-space-sm);
+}
+
+.tb-agenda-section-title {
   font-size: var(--cu-font-size-sm);
   font-weight: var(--cu-font-weight-semibold);
-  margin: 0 0 0.75rem 0;
   color: var(--cu-color-neutral);
+  margin: 0 0 0.75rem;
+}
+
+.tb-agenda-event {
+  display: flex;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);
+}
+
+.tb-agenda-event:last-child {
+  border-bottom: none;
+}
+
+.tb-agenda-event-time {
+  font-size: var(--cu-font-size-xs);
+  font-weight: var(--cu-font-weight-semibold);
+  color: var(--cu-color-neutral);
+  opacity: 0.5;
+  min-width: 42px;
+  padding-top: 2px;
+}
+
+.tb-agenda-event-content {
+  flex: 1;
+}
+
+.tb-agenda-event-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 2px;
+}
+
+.tb-agenda-event-title {
+  font-size: var(--cu-font-size-sm);
+  font-weight: var(--cu-font-weight-medium);
+  color: var(--cu-color-neutral);
+}
+
+.tb-agenda-event-desc {
+  font-size: var(--cu-font-size-xs);
+  color: var(--cu-color-neutral);
+  opacity: 0.6;
+  margin: 0;
+}
+
+.tb-agenda-empty {
+  font-size: var(--cu-font-size-sm);
+  color: var(--cu-color-neutral);
+  opacity: 0.5;
+  margin: 0;
+  padding: 0.5rem 0;
+}
+
+/* === EDITORIAL === */
+.tb-editorial {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 1.25rem;
+}
+
+.tb-doc {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--cu-color-surface);
+  border: var(--cu-border-thin) solid var(--cu-border-color);
+  border-radius: var(--cu-radius-lg);
+  overflow: hidden;
+}
+
+.tb-doc-header {
+  padding: 1.5rem 1.5rem 1rem;
+  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);
+}
+
+.tb-doc-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  font-size: var(--cu-font-size-xs);
+  color: var(--cu-color-neutral);
+  opacity: 0.6;
+}
+
+.tb-doc-date::before,
+.tb-doc-read::before {
+  content: '·';
+  margin-right: 0.75rem;
+}
+
+.tb-doc-title {
+  font-size: var(--cu-font-size-2xl);
+  font-weight: var(--cu-weight-bold);
+  color: var(--cu-color-neutral);
+  margin: 0 0 0.5rem;
+  line-height: 1.2;
+}
+
+.tb-doc-subtitle {
+  font-size: var(--cu-font-size-md);
+  color: var(--cu-color-neutral);
+  opacity: 0.7;
+  margin: 0 0 1rem;
+}
+
+.tb-doc-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);
+  background-color: var(--cu-color-surface);
+}
+
+.tb-doc-toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding-right: 0.5rem;
+  border-right: var(--cu-border-thin) solid var(--cu-border-color);
+}
+
+.tb-doc-toolbar-group:last-of-type {
+  border-right: none;
+}
+
+.tb-doc-tb-btn {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: var(--cu-radius-sm);
+  background: transparent;
+  color: var(--cu-color-neutral);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--cu-font-size-sm);
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 150ms ease;
+}
+
+.tb-doc-tb-btn:hover {
+  background: var(--cu-color-neutral-ghost-hover);
+}
+
+.tb-doc-toolbar-spacer {
+  flex: 1;
+}
+
+.tb-doc-body {
+  padding: 1.5rem;
+}
+
+.tb-doc-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-top: var(--cu-border-thin) solid var(--cu-border-color);
+  margin-top: auto;
+}
+
+.tb-doc-tags {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tb-doc-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tb-doc-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.tb-doc-toc-card {
+  padding: 1rem;
+}
+
+.tb-doc-snippet-card {
+  padding: 1rem;
+}
+
+.tb-doc-meta-card {
+  padding: 1rem;
+}
+
+.tb-doc-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.tb-doc-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tb-doc-stat-value {
+  font-size: var(--cu-font-size-lg);
+  font-weight: var(--cu-font-weight-semibold);
+  color: var(--cu-color-neutral);
+}
+
+.tb-doc-stat-label {
+  font-size: var(--cu-font-size-xs);
+  color: var(--cu-color-neutral);
+  opacity: 0.5;
+}
+
+.tb-doc-versions-card {
+  padding: 1rem;
+}
+
+.tb-doc-versions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.tb-doc-version {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.5rem;
+  border-radius: var(--cu-radius-sm);
+  transition: background 150ms ease;
+}
+
+.tb-doc-version--current {
+  background-color: var(--cu-color-primary-soft);
+}
+
+.tb-doc-version-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--cu-color-neutral);
+  opacity: 0.3;
+  flex-shrink: 0;
+}
+
+.tb-doc-version--current .tb-doc-version-dot {
+  background-color: var(--cu-color-primary);
+  opacity: 1;
+}
+
+.tb-doc-version-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.tb-doc-version-label {
+  font-size: var(--cu-font-size-sm);
+  font-weight: var(--cu-font-weight-medium);
+  color: var(--cu-color-neutral);
+}
+
+.tb-doc-version-date {
+  font-size: var(--cu-font-size-xs);
+  color: var(--cu-color-neutral);
+  opacity: 0.5;
+}
+
+.tb-doc-note-card {
+  padding: 1rem;
+}
+
+.tb-doc-note-text {
+  font-size: var(--cu-font-size-sm);
+  color: var(--cu-color-neutral);
+  opacity: 0.8;
+  margin: 0;
+  line-height: var(--cu-line-height-normal);
+}
+
+.tb-doc-sidebar-title {
+  font-size: var(--cu-font-size-xs);
+  font-weight: var(--cu-font-weight-semibold);
+  color: var(--cu-color-neutral);
+  opacity: 0.6;
+  margin: 0 0 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
-.tb-section h3 {
-  font-size: var(--cu-font-size-xs);
+/* === OVERLAYS (integrados) === */
+.tb-over-options {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.tb-over-option-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);
+}
+
+.tb-over-option-row:last-child {
+  border-bottom: none;
+}
+
+.tb-over-option-title {
+  display: block;
+  font-size: var(--cu-font-size-sm);
   font-weight: var(--cu-font-weight-medium);
-  margin: 0 0 0.5rem 0;
   color: var(--cu-color-neutral);
-  opacity: 0.7;
+}
+
+.tb-over-option-desc {
+  display: block;
+  font-size: var(--cu-font-size-xs);
+  color: var(--cu-color-neutral);
+  opacity: 0.6;
+}
+
+.tb-over-fab-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: var(--cu-font-size-sm);
+  color: var(--cu-color-neutral);
+}
+
+.tb-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+/* === TOAST === */
+.tb-toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1.25rem;
+  border-radius: var(--cu-radius);
+  background-color: var(--cu-color-surface);
+  border: var(--cu-border-thin) solid var(--cu-border-color);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  font-size: var(--cu-font-size-sm);
+  color: var(--cu-color-neutral);
+}
+
+.tb-toast-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: var(--cu-font-size-xs);
+  font-weight: var(--cu-font-weight-semibold);
+  color: white;
+  flex-shrink: 0;
+}
+
+.tb-toast--success .tb-toast-icon { background-color: var(--cu-color-success); }
+.tb-toast--warning .tb-toast-icon { background-color: var(--cu-color-warning); }
+.tb-toast--danger .tb-toast-icon { background-color: var(--cu-color-danger); }
+.tb-toast--primary .tb-toast-icon { background-color: var(--cu-color-primary); }
+
+.tb-toast-enter-active,
+.tb-toast-leave-active {
+  transition: all 0.3s ease;
+}
+
+.tb-toast-enter-from,
+.tb-toast-leave-to {
+  opacity: 0;
+  transform: translateY(1rem);
+}
+
+.tb-fade-enter-active,
+.tb-fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.tb-fade-enter-from,
+.tb-fade-leave-to {
+  opacity: 0;
+}
+
+/* === DRAWER === */
+.tb-drawer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.tb-drawer {
+  width: 360px;
+  height: 100%;
+  background-color: var(--cu-color-surface);
+  border-left: var(--cu-border-thin) solid var(--cu-border-color);
+  display: flex;
+  flex-direction: column;
+  animation: tb-drawer-in 0.25s ease;
+}
+
+@keyframes tb-drawer-in {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.tb-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem;
+  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);
+}
+
+.tb-drawer-title {
+  font-size: var(--cu-font-size-lg);
+  font-weight: var(--cu-font-weight-semibold);
+  color: var(--cu-color-neutral);
+  margin: 0;
+}
+
+.tb-drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.tb-drawer-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.tb-drawer-section-title {
+  font-size: var(--cu-font-size-xs);
+  font-weight: var(--cu-font-weight-semibold);
+  color: var(--cu-color-neutral);
+  opacity: 0.6;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tb-drawer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--cu-font-size-sm);
+  color: var(--cu-color-neutral);
+}
+
+.tb-drawer-footer {
+  padding: 1.25rem;
+  border-top: var(--cu-border-thin) solid var(--cu-border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tb-drawer-enter-active,
+.tb-drawer-leave-active {
+  transition: opacity 0.25s ease;
+}
+
+.tb-drawer-enter-from,
+.tb-drawer-leave-to {
+  opacity: 0;
+}
+
+/* === SHARED === */
+.tb-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tb-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tb-notis {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tb-noti {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border: var(--cu-border-thin) solid var(--cu-border-color);
+  border-radius: var(--cu-radius);
+  font-size: var(--cu-font-size-sm);
+}
+
+.tb-sim-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tb-sim-line {
+  height: 6px;
+  border-radius: 3px;
+  background-color: var(--cu-color-neutral);
+  opacity: 0.12;
+}
+
+.tb-sim-line--w60 {
+  width: 60%;
+}
+
+.tb-sim-line--w80 {
+  width: 80%;
 }
 
 .tb-group {
@@ -905,12 +1384,12 @@ onBeforeUnmount(() => {
   gap: 0.125rem;
 }
 
-.tb-color-label {
+.tb-hint {
+  margin: 0.5rem 0 0;
   font-size: var(--cu-font-size-xs);
-  font-weight: var(--cu-font-weight-medium);
+  line-height: var(--cu-line-height-normal);
   color: var(--cu-color-neutral);
-  opacity: 0.7;
-  text-transform: capitalize;
+  opacity: 0.75;
 }
 
 .tb-field {
@@ -919,32 +1398,25 @@ onBeforeUnmount(() => {
   gap: 0.125rem;
 }
 
-.tb-field label {
-  font-size: var(--cu-font-size-xs);
-  font-weight: var(--cu-font-weight-medium);
+.tb-import-picker {
+  padding: 0.5rem 0;
+}
+
+.tb-import-picker-desc {
+  margin: 0 0 1rem;
+  font-size: var(--cu-font-size-sm);
   color: var(--cu-color-neutral);
-  opacity: 0.7;
+  opacity: 0.8;
 }
 
-.tb-field input[type="text"] {
-  padding: var(--cu-space-xs) var(--cu-space-sm);
-  border: var(--cu-border-thin) solid var(--cu-border-color);
-  border-radius: var(--cu-radius);
-  font-family: var(--cu-font-mono);
-  font-size: var(--cu-font-size-xs);
-  background: var(--cu-color-surface);
-  color: var(--cu-color-neutral);
+.tb-import-picker-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-.tb-field input[type="text"]:focus {
-  outline: none;
-  border-color: var(--cu-color-primary);
-  box-shadow: 0 0 0 2px var(--cu-color-primary-soft);
+.tb-import-picker-item {
+  width: 100%;
 }
 
-.tb-separator {
-  border: none;
-  border-top: 1px solid var(--cu-border-color);
-  margin: 0.5rem 0;
-}
 </style>

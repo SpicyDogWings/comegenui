@@ -10,8 +10,8 @@ describe("Switch", () => {
   it("renderiza el switch con rol y aria-checked", () => {
     const w = factory({});
     expect(w.find(".cu-switch").exists()).toBe(true);
-    expect(w.find(".cu-switch").attributes("role")).toBe("switch");
-    expect(w.find(".cu-switch").attributes("aria-checked")).toBe("false");
+    expect(w.find(".cu-switch-track").attributes("role")).toBe("switch");
+    expect(w.find(".cu-switch-track").attributes("aria-checked")).toBe("false");
   });
 
   it("size cambia la clase raíz", () => {
@@ -27,9 +27,9 @@ describe("Switch", () => {
     expect(w.emitted("change")).toBeFalsy();
   });
 
-  it("al hacer click alterna y emite change + update:modelValue", async () => {
+  it("al alternar (change del input interno) emite change + update:modelValue", async () => {
     const w = factory({});
-    await w.find(".cu-switch").trigger("click");
+    await w.find("input[type='checkbox']").setValue(true);
 
     const changeEm = w.emitted("change");
     expect(changeEm).toBeTruthy();
@@ -41,15 +41,15 @@ describe("Switch", () => {
     const modelValue = (modelEm as unknown[][])[0]![0] as boolean;
     expect(modelValue).toBe(true);
 
-    expect(w.find(".cu-switch").classes()).toContain("cu-switch--checked");
-    expect(w.find(".cu-switch").attributes("aria-checked")).toBe("true");
+    expect(w.find(".cu-switch-track").classes()).toContain("cu-switch--checked");
+    expect(w.find(".cu-switch-track").attributes("aria-checked")).toBe("true");
   });
 
-  it("arranca encendido si modelValue es true y se apaga al hacer click", async () => {
+  it("arranca encendido si modelValue es true y se apaga al alternar", async () => {
     const w = factory({ modelValue: true });
-    expect(w.find(".cu-switch").classes()).toContain("cu-switch--checked");
+    expect(w.find(".cu-switch-track").classes()).toContain("cu-switch--checked");
 
-    await w.find(".cu-switch").trigger("click");
+    await w.find("input[type='checkbox']").setValue(false);
     const modelEm = w.emitted("update:modelValue");
     const modelValue = (modelEm as unknown[][])[0]![0] as boolean;
     expect(modelValue).toBe(false);

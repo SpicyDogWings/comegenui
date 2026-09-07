@@ -5,14 +5,8 @@ import vueDevTools from 'vite-plugin-vue-devtools';
 
 export default defineConfig({
   plugins: [
-    vue({
-      template: {
-        compilerOptions: {
-          whitespace: 'preserve'
-        }
-      }
-    }),
-    vueDevTools()
+    vue({ template: { compilerOptions: { whitespace: 'preserve' } } }),
+    vueDevTools({ launchEditor: 'zed' })
   ],
   resolve: {
     alias: {

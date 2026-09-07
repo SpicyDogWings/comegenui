@@ -10,6 +10,7 @@ lerna-debug.log*
 node_modules
 .DS_Store
 dist
+dist-lib
 dist-ssr
 coverage
 *.local
@@ -41,8 +42,6 @@ __screenshots__/
 # scripts
 scripts/config
 
-*storybook.log
-storybook-static
 
 # agents (but track skills)
 .agents/*

@@ -4,8 +4,14 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
+      path: "/",
+      name: "Home",
+      component: () => import("@/pages/Home.vue")
+    },
+    {
       path: "/playground",
       name: "Playground",
+      redirect: "/playground/components/button",
       children: [
         {
           path: "theme-builder",
@@ -22,9 +28,29 @@ const router = createRouter({
               component: () => import("@/pages/playground/components/Button.vue")
             },
             {
+              path: "copy-button",
+              name: "CopyButton playground",
+              component: () => import("@/pages/playground/components/CopyButton.vue")
+            },
+            {
               path: "toggle-color-scheme",
               name: "ToggleColorScheme playground",
               component: () => import("@/pages/playground/components/ToggleColorScheme.vue")
+            },
+            {
+              path: "floating-button",
+              name: "FloatingButton playground",
+              component: () => import("@/pages/playground/components/FloatingButton.vue")
+            },
+            {
+              path: "color-picker",
+              name: "ColorPicker playground",
+              component: () => import("@/pages/playground/components/ColorPicker.vue")
+            },
+            {
+              path: "label",
+              name: "Label playground",
+              component: () => import("@/pages/playground/components/Label.vue")
             },
             {
               path: "alert",
@@ -42,6 +68,21 @@ const router = createRouter({
               component: () => import("@/pages/playground/components/Card.vue")
             },
             {
+              path: "author-card",
+              name: "AuthorCard playground",
+              component: () => import("@/pages/playground/components/AuthorCard.vue")
+            },
+            {
+              path: "avatar",
+              name: "Avatar playground",
+              component: () => import("@/pages/playground/components/Avatar.vue")
+            },
+            {
+              path: "loader",
+              name: "Loader playground",
+              component: () => import("@/pages/playground/components/Loader.vue")
+            },
+            {
               path: "modal",
               name: "Modal playground",
               component: () => import("@/pages/playground/components/Modal.vue")
@@ -50,6 +91,16 @@ const router = createRouter({
               path: "collapse",
               name: "Collapse playground",
               component: () => import("@/pages/playground/components/Collapse.vue")
+            },
+            {
+              path: "command-palette",
+              name: "CommandPalette playground",
+              component: () => import("@/pages/playground/components/CommandPalette.vue")
+            },
+            {
+              path: "side-over",
+              name: "SideOver playground",
+              component: () => import("@/pages/playground/components/SideOver.vue")
             },
             {
               path: "switch",
@@ -122,6 +173,16 @@ const router = createRouter({
               component: () => import("@/pages/playground/components/Dropdown.vue")
             },
             {
+              path: "popover",
+              name: "Popover playground",
+              component: () => import("@/pages/playground/components/Popover.vue")
+            },
+            {
+              path: "tooltip",
+              name: "Tooltip playground",
+              component: () => import("@/pages/playground/components/Tooltip.vue")
+            },
+            {
               path: "dropdown-menu",
               name: "DropdownMenu playground",
               component: () => import("@/pages/playground/components/DropdownMenu.vue")
@@ -165,6 +226,16 @@ const router = createRouter({
               path: "blockquote",
               name: "Blockquote playground",
               component: () => import("@/pages/playground/components/Blockquote.vue")
+            },
+            {
+              path: "navbar",
+              name: "Navbar playground",
+              component: () => import("@/pages/playground/components/Navbar.vue")
+            },
+            {
+              path: "navbar-horizontal",
+              name: "NavbarHorizontal playground",
+              component: () => import("@/pages/playground/components/NavbarHorizontal.vue")
             },
           ]
         },

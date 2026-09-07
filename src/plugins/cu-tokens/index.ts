@@ -1,12 +1,18 @@
 import { ref, type App } from 'vue'
-import { DEFAULTS, DEFAULT_COLORS, DEFAULT_DARK_COLORS, extractColors, extractShared } from './defaults'
-import { generateThemesCSS, inject } from './css'
+import { DEFAULTS, DEFAULT_COLORS, DEFAULT_DARK_COLORS, DEFAULT_OPACITIES, extractColors, extractShared } from './defaults'
+import { generateThemesCSS, generateThemeCSS, inject } from './css'
 
 const theme = ref('light')
 const loaded = ref(false)
 const themes = ref<Record<string, any>>({})
 const shared = ref<any>({})
+const opacities = ref<Record<string, { shadow: number }>>({ ...DEFAULT_OPACITIES })
 const themeNames = ref<string[]>([])
+const builtInNames = ref<string[]>([])
+// Temas registrados en runtime (ej: el import del ThemeBuilder) — persisten
+// en localStorage para sobrevivir recargas.
+const customThemes = ref<Record<string, Record<string, string>>>({})
+const CUSTOM_KEY = 'cu-custom-themes'
 
 function detectTheme(): string {
   const saved = localStorage.getItem('cu-theme')
@@ -22,12 +28,12 @@ function applyTheme(value: string) {
 }
 
 function regenerateCSS() {
-  inject(generateThemesCSS(themes.value, shared.value))
+  inject(generateThemesCSS(themes.value, shared.value, opacities.value))
 }
 
 async function init() {
   try {
-    const res = await fetch('/comegen.config.json')
+    const res = await fetch('/comegen.config.json', { cache: 'no-store' })
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
     const config = await res.json()
 
@@ -39,6 +45,9 @@ async function init() {
       const mergedShared = { ...DEFAULTS, ...configRest }
       shared.value = extractShared(mergedShared)
 
+      // Opacities: defaults + config overrides
+      opacities.value = { ...DEFAULT_OPACITIES, ...config.opacities }
+
       // Default colors for fallback
       const defaultColors = extractColors(DEFAULTS)
 
@@ -47,7 +56,8 @@ async function init() {
         const themeColors = tokens.colors || tokens
         themes.value[name] = { colors: { ...defaultColors, ...themeColors } }
       }
-      themeNames.value = Object.keys(configThemes)
+       themeNames.value = Object.keys(configThemes)
+      builtInNames.value = Object.keys(configThemes)
     } else {
       // Single theme process
       const merged = { ...DEFAULTS, ...config }
@@ -55,6 +65,7 @@ async function init() {
       shared.value = extractShared(merged)
       themes.value['light'] = { colors }
       themeNames.value = ['light']
+      builtInNames.value = ['light']
     }
 
   } catch {
@@ -62,14 +73,25 @@ async function init() {
     shared.value = extractShared(DEFAULTS)
     themes.value = {
       light: { colors: { ...DEFAULT_COLORS } },
-      dark: { colors: { ...DEFAULT_COLORS, ...DEFAULT_DARK_COLORS } }
     }
-    themeNames.value = ['light', 'dark']
+    themeNames.value = ['light']
+    builtInNames.value = ['light']
   } finally {
+    restoreCustomThemes()
+    ensureCustomTheme()
     loaded.value = true
     theme.value = detectTheme()
     applyTheme(theme.value)
     regenerateCSS()
+  }
+}
+
+// Asegura que "custom" siempre esté disponible en el theme chooser
+function ensureCustomTheme() {
+  if (!themeNames.value.includes('custom')) {
+    const sourceColors = themes.value[theme.value]?.colors || extractColors(DEFAULTS)
+    themes.value['custom'] = { colors: { ...sourceColors } }
+    themeNames.value = [...themeNames.value, 'custom']
   }
 }
 
@@ -83,10 +105,90 @@ function getThemeNames() {
   return themeNames.value
 }
 
+// Registra (o actualiza) un tema en runtime: queda en el theme chooser, su CSS
+// se regenera con el resto y persiste en localStorage.
+// opacity: per-theme shadow opacity (1-100). shared: typography/spacing/radius/borders.
+function registerTheme(name: string, colors: Record<string, string>, opts?: { opacity?: number; shared?: any }) {
+  const merged = { ...extractColors(DEFAULTS), ...colors }
+  customThemes.value = { ...customThemes.value, [name]: colors }
+  themes.value[name] = { colors: merged }
+  if (!themeNames.value.includes(name)) themeNames.value = [...themeNames.value, name]
+  if (opts?.opacity !== undefined) {
+    opacities.value = { ...opacities.value, [name]: { shadow: opts.opacity } }
+  }
+  if (opts?.shared) {
+    shared.value = { ...shared.value, ...opts.shared }
+  }
+  try {
+    localStorage.setItem(CUSTOM_KEY, JSON.stringify(customThemes.value))
+  } catch {}
+  regenerateCSS()
+}
+
+// Actualiza los tokens compartidos (tipografía, spacing, etc) y regenera CSS.
+function setShared(patch: any) {
+  shared.value = { ...shared.value, ...patch }
+  regenerateCSS()
+}
+
+// Devuelve los tokens compartidos actuales (para cargar en el editor).
+function getShared(): any {
+  return shared.value
+}
+
+// Genera el CSS completo de un tema (colores + shared) en formato [data-theme].
+function getThemeCSS(name: string): string {
+  const t = themes.value[name]
+  if (!t) return ''
+  return generateThemeCSS(name, t, shared.value, opacities.value)
+}
+
+// Aplica un config completo (themes + opacidades + shared) de una sola vez.
+// Agnóstico: no sabe de dónde viene el config, solo lo refleja en el estado
+// interno y regenera CSS una única vez.
+function applyFullConfig(config: {
+  themes?: Record<string, Record<string, string>>
+  opacities?: Record<string, { shadow: number }>
+  shared?: any
+}): void {
+  if (config.themes) {
+    const defaultColors = extractColors(DEFAULTS)
+    for (const [name, colors] of Object.entries(config.themes)) {
+      themes.value[name] = { colors: { ...defaultColors, ...colors } }
+      if (!themeNames.value.includes(name)) {
+        themeNames.value = [...themeNames.value, name]
+      }
+    }
+  }
+
+  if (config.opacities) {
+    opacities.value = { ...opacities.value, ...config.opacities }
+  }
+
+  if (config.shared) {
+    shared.value = { ...shared.value, ...config.shared }
+  }
+
+  regenerateCSS()
+}
+
+function restoreCustomThemes() {
+  try {
+    const raw = localStorage.getItem(CUSTOM_KEY)
+    if (!raw) return
+    const stored = JSON.parse(raw) as Record<string, Record<string, string>>
+    for (const [name, colors] of Object.entries(stored)) {
+      customThemes.value = { ...customThemes.value, [name]: colors }
+      themes.value[name] = { colors: { ...extractColors(DEFAULTS), ...colors } }
+      if (!themeNames.value.includes(name)) themeNames.value = [...themeNames.value, name]
+    }
+  } catch {}
+}
+
 export default {
   install(app: App) {
     init()
   }
 }
 
-export { theme, loaded, setTheme, getThemeNames }
+export { theme, loaded, setTheme, getThemeNames, registerTheme, setShared, getShared, getThemeCSS, applyFullConfig, themes as allThemes, builtInNames, opacities }

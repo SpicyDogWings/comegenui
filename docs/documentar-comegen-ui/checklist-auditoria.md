@@ -15,7 +15,7 @@ Usá esta lista cada vez que revises un `.md` contra su `.ce.vue`. Marcar cada �
 
 - [ ] El título del `.md` es `# \`<cu-xxx>\`` con el tag correcto (verificar en `.ts`).
 - [ ] El archivo se llama `cu-xxx.md` (kebab-case, igual que el tag).
-- [ ] El archivo está en `docs/comegen-ui/componentes/`.
+- [ ] El archivo está en `docs/skills/use-comegen/componentes/`.
 - [ ] Hay un link `[← Volver](../SKILL.md)` después de la descripción.
 - [ ] Hay un `---` separando encabezado del cuerpo.
 - [ ] La descripción es funcional (1 línea), no técnica.
