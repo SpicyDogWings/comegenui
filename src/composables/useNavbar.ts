@@ -1,5 +1,6 @@
 import { computed, ref, watch, nextTick, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { normalizeText, matchesFields } from '@/utils/search'
 
 export interface NavItem {
   label: string
@@ -40,10 +41,7 @@ export function useNavbar(options: UseNavbarOptions) {
 
   watch(query, (value) => options.onSearch?.(value))
 
-  const normalize = (value: string) =>
-    value.normalize('NFD').replace(/[\u0300-\u0302\u0304-\u036f]/g, '').toLowerCase()
-
-  const normalizedQuery = computed(() => normalize(query.value.trim()))
+  const normalizedQuery = computed(() => normalizeText(query.value.trim()))
 
   const searchActive = computed(() => options.search() && normalizedQuery.value.length > 0)
 
@@ -54,10 +52,7 @@ export function useNavbar(options: UseNavbarOptions) {
           if (k === 'children') return false
           return typeof (item as Record<string, unknown>)[k] !== 'function'
         })
-    return keys.some((k) => {
-      const value = (item as Record<string, unknown>)[k]
-      return value != null && normalize(String(value)).includes(q)
-    })
+    return matchesFields(item as Record<string, unknown>, q, { fields: keys })
   }
 
   function filterTree(items: NavItem[], q: string): NavItem[] {
