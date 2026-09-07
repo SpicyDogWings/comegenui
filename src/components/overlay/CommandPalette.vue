@@ -2,6 +2,7 @@
 import { computed, ref, watch, nextTick } from "vue";
 import Modal from "../overlay/Modal.vue";
 import Input from "../form/Input.vue";
+import Button from "../buttons/Button.vue";
 
 export interface CommandItem {
   id: string;
@@ -109,30 +110,22 @@ defineExpose({
 
       <div class="cu-command-palette-results">
         <template v-if="filtered.length">
-          <div
+          <Button
             v-for="(cmd, index) in filtered"
             :key="cmd.id"
+            color="neutral"
+            variant="ghost"
             class="cu-command-palette-item"
             :class="{ 'cu-command-palette-item--active': index === activeIndex }"
             @click="select(cmd)"
             @mouseenter="activeIndex = index"
           >
-            <div class="cu-command-palette-item-left">
-              <span v-if="cmd.icon" class="cu-command-palette-item-icon">{{ cmd.icon }}</span>
-                  <div class="cu-command-palette-item-text">
-                    <span class="cu-command-palette-item-label">{{ cmd.label }}</span>
-                    <span v-if="cmd.description" class="cu-command-palette-item-desc">{{ cmd.description }}</span>
-                  </div>
-                </div>
-                <div class="cu-command-palette-item-right">
-                  <span v-if="cmd.category" class="cu-command-palette-item-badge">
-                    {{ cmd.category }}
-                  </span>
-                  <span v-if="cmd.shortcut" class="cu-command-palette-item-shortcut">
-                    {{ cmd.shortcut }}
-                  </span>
-                </div>
-              </div>
+            <span v-if="cmd.icon" class="cu-command-palette-item-icon">{{ cmd.icon }}</span>
+            <span class="cu-command-palette-item-label">{{ cmd.label }}</span>
+            <span v-if="cmd.description" class="cu-command-palette-item-desc">{{ cmd.description }}</span>
+            <span v-if="cmd.category" class="cu-command-palette-item-badge">{{ cmd.category }}</span>
+            <span v-if="cmd.shortcut" class="cu-command-palette-item-shortcut">{{ cmd.shortcut }}</span>
+          </Button>
             </template>
             <div v-else class="cu-command-palette-empty">
               No se encontraron comandos
@@ -164,60 +157,35 @@ defineExpose({
     }
 
     .cu-command-palette-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0.625rem 0.75rem;
+      width: 100%;
+      text-align: left;
       border-radius: var(--cu-radius-sm);
-      cursor: pointer;
-      transition: background-color 100ms ease;
+      gap: 0.75rem;
     }
 
-    .cu-command-palette-item:hover,
     .cu-command-palette-item--active {
-      background-color: var(--cu-color-neutral-ghost-hover);
+      background-color: var(--cu-color-neutral-ghost-hover) !important;
     }
 
-    .cu-command-palette-item-left {
-      display: flex;
-      align-items: center;
-      gap: 0.625rem;
-      min-width: 0;
-    }
-
-    .cu-command-palette-item-icon {
+    .cu-command-palette-item :deep(.cu-command-palette-item-icon) {
       font-size: 1rem;
       line-height: 1;
       flex-shrink: 0;
     }
 
-    .cu-command-palette-item-text {
-      display: flex;
-      flex-direction: column;
-      gap: 0.125rem;
-      min-width: 0;
-    }
-
-    .cu-command-palette-item-label {
+    .cu-command-palette-item :deep(.cu-command-palette-item-label) {
       font-size: var(--cu-font-size-sm);
       color: var(--cu-color-neutral);
+      flex: 1;
     }
 
-    .cu-command-palette-item-desc {
+    .cu-command-palette-item :deep(.cu-command-palette-item-desc) {
       font-size: var(--cu-font-size-xs);
       color: var(--cu-color-neutral);
       opacity: 0.5;
     }
 
-    .cu-command-palette-item-right {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      flex-shrink: 0;
-      margin-left: 1rem;
-    }
-
-    .cu-command-palette-item-badge {
+    .cu-command-palette-item :deep(.cu-command-palette-item-badge) {
       font-size: var(--cu-font-size-xs);
       color: var(--cu-color-neutral);
       opacity: 0.6;
@@ -225,9 +193,10 @@ defineExpose({
       border: var(--cu-border-thin) solid var(--cu-border-color);
       border-radius: var(--cu-radius-sm);
       white-space: nowrap;
+      flex-shrink: 0;
     }
 
-    .cu-command-palette-item-shortcut {
+    .cu-command-palette-item :deep(.cu-command-palette-item-shortcut) {
       font-family: var(--cu-font-mono);
       font-size: var(--cu-font-size-xs);
       color: var(--cu-color-neutral);
@@ -235,6 +204,7 @@ defineExpose({
       padding: 0.125rem 0.375rem;
       border: var(--cu-border-thin) solid var(--cu-border-color);
       border-radius: var(--cu-radius-sm);
+      flex-shrink: 0;
     }
 
     .cu-command-palette-empty {

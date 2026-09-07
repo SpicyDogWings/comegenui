@@ -89,10 +89,10 @@ const interfaceCode = `interface CommandItem {
 }`;
 
 const basicCommands: CommandItem[] = [
-  { id: 'new', label: 'Nuevo archivo', action: () => {} },
-  { id: 'open', label: 'Abrir archivo', action: () => {} },
-  { id: 'save', label: 'Guardar', action: () => {} },
-  { id: 'close', label: 'Cerrar', action: () => {} },
+  { id: 'new', label: 'Nuevo archivo', description: 'Crear un archivo vacío', category: 'Archivo', icon: '📄', action: () => {} },
+  { id: 'open', label: 'Abrir archivo', description: 'Abrir un archivo existente', category: 'Archivo', icon: '📂', action: () => {} },
+  { id: 'save', label: 'Guardar', description: 'Guardar los cambios', category: 'Archivo', icon: '💾', shortcut: 'Ctrl+S', action: () => {} },
+  { id: 'close', label: 'Cerrar', description: 'Cerrar el archivo activo', category: 'Archivo', icon: '❌', action: () => {} },
 ];
 
 const categoryCommands: CommandItem[] = [
@@ -115,12 +115,11 @@ const shortcutCommands: CommandItem[] = [
   { id: 'palette', label: 'Command Palette', icon: '⌨️', shortcut: 'Ctrl+K', action: () => {} },
 ];
 
-const paletteRef = ref<InstanceType<typeof CommandPalette> | null>(null);
+const basicRef = ref<InstanceType<typeof CommandPalette> | null>(null);
+const categoriesRef = ref<InstanceType<typeof CommandPalette> | null>(null);
+const shortcutsRef = ref<InstanceType<typeof CommandPalette> | null>(null);
+const programmaticRef = ref<InstanceType<typeof CommandPalette> | null>(null);
 const selectedCmd = ref<CommandItem | null>(null);
-
-function openPalette() {
-  paletteRef.value?.open();
-}
 
 const basicVue = `<script setup>
 import { ref } from 'vue'
@@ -130,9 +129,9 @@ import Button from '@/components/buttons/Button.vue'
 const paletteRef = ref(null)
 
 const commands = [
-  { id: 'new', label: 'Nuevo archivo', action: () => {} },
-  { id: 'open', label: 'Abrir archivo', action: () => {} },
-  { id: 'save', label: 'Guardar', action: () => {} },
+  { id: 'new', label: 'Nuevo archivo', category: 'Archivo', icon: '📄', action: () => {} },
+  { id: 'open', label: 'Abrir archivo', category: 'Archivo', icon: '📂', action: () => {} },
+  { id: 'save', label: 'Guardar', category: 'Archivo', icon: '💾', shortcut: 'Ctrl+S', action: () => {} },
 ]
 <\/script>
 
@@ -152,8 +151,8 @@ const basicVanilla = `<link rel="stylesheet" href="css/themes.css">
 <script>
   const palette = document.querySelector('#my-palette')
   palette.commands = [
-    { id: 'new', label: 'Nuevo archivo', action: () => {} },
-    { id: 'open', label: 'Abrir archivo', action: () => {} },
+    { id: 'new', label: 'Nuevo archivo', category: 'Archivo', icon: '📄', action: () => {} },
+    { id: 'open', label: 'Abrir archivo', category: 'Archivo', icon: '📂', action: () => {} },
   ]
   palette.addEventListener('select', (e) => console.log('Selected:', e.detail))
 <\/script>`;
@@ -240,8 +239,8 @@ const commands = [
         </div>
         <SectionDemo :vue-code="basicVue" :vanilla-code="basicVanilla">
           <div class="playground-col">
-            <Button @click="openPalette">Abrir Command Palette</Button>
-            <CommandPalette ref="paletteRef" :commands="basicCommands" @select="selectedCmd = $event" />
+            <Button @click="basicRef?.open()">Abrir Command Palette</Button>
+            <CommandPalette ref="basicRef" :commands="basicCommands" @select="selectedCmd = $event" />
           </div>
         </SectionDemo>
       </section>
@@ -255,8 +254,8 @@ const commands = [
         </div>
         <SectionDemo :vue-code="categoriesVue" :vanilla-code="categoriesVanilla">
           <div class="playground-col">
-            <Button @click="openPalette">Abrir con Categorías</Button>
-            <CommandPalette :commands="categoryCommands" @select="selectedCmd = $event" />
+            <Button @click="categoriesRef?.open()">Abrir con Categorías</Button>
+            <CommandPalette ref="categoriesRef" :commands="categoryCommands" @select="selectedCmd = $event" />
           </div>
         </SectionDemo>
       </section>
@@ -270,8 +269,8 @@ const commands = [
         </div>
         <SectionDemo :vue-code="shortcutsVue" :vanilla-code="shortcutsVanilla">
           <div class="playground-col">
-            <Button @click="openPalette">Abrir con Atajos</Button>
-            <CommandPalette :commands="shortcutCommands" @select="selectedCmd = $event" />
+            <Button @click="shortcutsRef?.open()">Abrir con Atajos</Button>
+            <CommandPalette ref="shortcutsRef" :commands="shortcutCommands" @select="selectedCmd = $event" />
           </div>
         </SectionDemo>
       </section>
@@ -286,15 +285,15 @@ const commands = [
         <SectionDemo :vue-code="programmaticVue">
           <div class="playground-col">
             <div class="playground-row">
-              <Button color="neutral" @click="paletteRef?.open()">open()</Button>
-              <Button color="neutral" @click="paletteRef?.close()">close()</Button>
+              <Button color="neutral" @click="programmaticRef?.open()">open()</Button>
+              <Button color="neutral" @click="programmaticRef?.close()">close()</Button>
             </div>
             <p class="playground-state">
               Selected: <strong>{{ selectedCmd?.label ?? '—' }}</strong>
             </p>
             <CommandPalette
-              ref="paletteRef"
-              :commands="basicCommands"
+              ref="programmaticRef"
+              :commands="categoryCommands"
               @select="selectedCmd = $event"
             />
           </div>
