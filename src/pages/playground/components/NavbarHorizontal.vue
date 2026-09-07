@@ -215,6 +215,39 @@ const hoverVanilla = `${vanillaImport}
   })
 <\/script>`;
 
+const vanillaSnippet = (attrs: string, items: string, extra = '') => `${vanillaImport}
+
+<cu-navbar-horizontal id="navbar"${attrs}></cu-navbar-horizontal>
+<script>
+  customElements.whenDefined('cu-navbar-horizontal').then(() => {
+    const el = document.querySelector('#navbar')
+    el.items = [${items}]
+${extra}  })
+<\/script>`;
+
+const nestedVanilla = vanillaSnippet('', `
+  { label: 'Nivel 1', children: [
+    { label: 'Nivel 2', children: [
+      { label: 'Nivel 3', children: [
+        { label: 'Nivel 4', path: '/nivel-4' },
+      ]},
+    ]},
+  ]},
+`);
+
+const flatVanilla = vanillaSnippet('', `
+  { label: 'Inicio', path: '/inicio' },
+  { label: 'Docs', path: '/docs' },
+  { label: 'Sin destino' },
+`);
+
+const iconsVanilla = vanillaSnippet('', `
+  { label: 'Inicio', path: '/inicio', icon: '🏠' },
+  { label: 'Configuración', icon: '⚙️', children: [
+    { label: 'Perfil', path: '/perfil', icon: '👤' },
+  ]},
+`);
+
 const componentTokens = [
   '--cu-font-size-sm',
   '--cu-space-2xs',
@@ -285,7 +318,7 @@ const interfaceCode = `interface NavItem {
           <h2>Nested</h2>
           <Badge color="neutral" title="El anidamiento es infinito">∞</Badge>
         </div>
-        <SectionDemo :vue-code="nestedVue">
+        <SectionDemo :vue-code="nestedVue" :vanilla-code="nestedVanilla">
           <div class="playground-col">
             <div class="demo-panel">
               <NavbarHorizontal :items="deepItems" />
@@ -301,7 +334,7 @@ const interfaceCode = `interface NavItem {
           <h2>Flat</h2>
           <Badge color="neutral" title="Sin children: las hojas top-level son Buttons; sin path se deshabilitan">hojas</Badge>
         </div>
-        <SectionDemo :vue-code="flatVue">
+        <SectionDemo :vue-code="flatVue" :vanilla-code="flatVanilla">
           <div class="playground-col">
             <div class="demo-panel">
               <NavbarHorizontal :items="flatItems" />
@@ -317,7 +350,7 @@ const interfaceCode = `interface NavItem {
           <h2>Icons</h2>
           <Badge color="neutral" title="Campo icon en NavItem">icon</Badge>
         </div>
-        <SectionDemo :vue-code="iconsVue">
+        <SectionDemo :vue-code="iconsVue" :vanilla-code="iconsVanilla">
           <div class="playground-col">
             <div class="demo-panel">
               <NavbarHorizontal :items="iconItems" />

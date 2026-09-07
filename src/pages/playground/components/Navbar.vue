@@ -275,6 +275,97 @@ const basicVanilla = `${vanillaImport}
   })
 <\/script>`;
 
+const vanillaSnippet = (attrs: string, items: string, extra = '') => `${vanillaImport}
+
+<cu-navbar id="navbar"${attrs}></cu-navbar>
+<script>
+  customElements.whenDefined('cu-navbar').then(() => {
+    const el = document.querySelector('#navbar')
+    el.items = [${items}]
+${extra}  })
+<\/script>`;
+
+const nestedVanilla = vanillaSnippet('', `
+  { label: 'Nivel 1', children: [
+    { label: 'Nivel 2', children: [
+      { label: 'Nivel 3', children: [
+        { label: 'Nivel 4', path: '/nivel-4' },
+      ]},
+    ]},
+  ]},
+`);
+
+const iconsVanilla = vanillaSnippet('', `
+  { label: 'Inicio', path: '/inicio', icon: '🏠' },
+  { label: 'Configuración', icon: '⚙️', children: [
+    { label: 'Perfil', path: '/perfil', icon: '👤' },
+  ]},
+`);
+
+const compactVanilla = vanillaSnippet(' compact', `
+  { label: 'Inicio', path: '/inicio', icon: '🏠' },
+  { label: 'Componentes', children: [
+    { label: 'Perfil', path: '/perfil' },
+  ]},
+  { label: 'Ayuda', path: '/ayuda' },
+`);
+
+const triggersVanilla = vanillaSnippet(' compact', `
+  { label: 'Inicio', path: '/inicio', icon: '🏠' },
+  { label: 'Configuración', icon: '⚙️', children: [
+    { label: 'Perfil', path: '/perfil', icon: '👤' },
+  ]},
+`, `    // flyout también abren por hover con el atributo trigger="hover"
+`);
+
+const collapsedVanilla = vanillaSnippet(' collapsed', `
+  { label: 'Inicio', path: '/inicio' },
+  { label: 'Configuración', children: [
+    { label: 'Perfil', path: '/perfil' },
+  ]},
+`);
+
+const compactableVanilla = vanillaSnippet(' search compactable', `
+  { label: 'Inicio', path: '/inicio', icon: '🏠' },
+  { label: 'Configuración', icon: '⚙️', children: [
+    { label: 'Perfil', path: '/perfil', icon: '👤' },
+  ]},
+`);
+
+const responsiveVanilla = vanillaSnippet(' responsive', `
+  { label: 'Inicio', path: '/inicio' },
+  { label: 'Configuración', children: [
+    { label: 'Perfil', path: '/perfil' },
+  ]},
+`);
+
+const searchVanilla = vanillaSnippet(' search', `
+  { label: 'Inicio', path: '/inicio' },
+  { label: 'Configuración', children: [
+    { label: 'Perfil', path: '/perfil' },
+  ]},
+`);
+
+const filterVanilla = vanillaSnippet(' search search-mode="filter"', `
+  { label: 'Inicio', path: '/inicio' },
+  { label: 'Configuración', children: [
+    { label: 'Perfil', path: '/perfil' },
+  ]},
+`);
+
+const scrollVanilla = vanillaSnippet(' search search-mode="scroll"', `
+  { label: 'Inicio', path: '/inicio' },
+  { label: 'Configuración', children: [
+    { label: 'Perfil', path: '/perfil' },
+  ]},
+`);
+
+const fieldsVanilla = vanillaSnippet(' search', `
+  { label: 'Perfil', path: '/perfil', tag: 'usuario' },
+  { label: 'Seguridad', path: '/seguridad', tag: 'sesión' },
+`, `    el.searchFields = ['label']
+`);
+
 // Anidamiento profundo: el componente es recursivo, no hay límite de niveles.
 const deepItems = [
   { label: 'Nivel 1', children: [
@@ -289,7 +380,6 @@ const deepItems = [
   ]},
   { label: 'Inicio', path: '/inicio' },
 ];
-
 const componentTokens = [
   '--cu-font-size-sm',
   '--cu-space-2xs',
@@ -357,7 +447,7 @@ const interfaceCode = `interface NavItem {
           <h2>Nested</h2>
           <Badge color="neutral" title="El anidamiento es infinito">∞</Badge>
         </div>
-        <SectionDemo :vue-code="basicVue">
+        <SectionDemo :vue-code="basicVue" :vanilla-code="nestedVanilla">
           <div class="playground-col">
             <div class="demo-panel">
               <Navbar :items="deepItems" />
@@ -373,7 +463,7 @@ const interfaceCode = `interface NavItem {
           <h2>Icons</h2>
           <Badge color="neutral" title="Campo icon en NavItem">icon</Badge>
         </div>
-        <SectionDemo :vue-code="iconsVue">
+        <SectionDemo :vue-code="iconsVue" :vanilla-code="iconsVanilla">
           <div class="playground-col">
             <div class="demo-panel">
               <Navbar :items="iconItems" />
@@ -389,7 +479,7 @@ const interfaceCode = `interface NavItem {
           <h2>Compact</h2>
           <Badge color="neutral" title="Solo iconos o la inicial del label">compact</Badge>
         </div>
-        <SectionDemo :vue-code="compactVue">
+        <SectionDemo :vue-code="compactVue" :vanilla-code="compactVanilla">
           <div class="playground-col">
             <div class="demo-panel">
               <Navbar :items="compactMixedItems" compact />
@@ -405,7 +495,7 @@ const interfaceCode = `interface NavItem {
           <h2>Triggers</h2>
           <Badge color="neutral" title="Submenús en compact abren como Dropdown a la derecha con chevron ›">trigger</Badge>
         </div>
-        <SectionDemo :vue-code="triggersVue">
+        <SectionDemo :vue-code="triggersVue" :vanilla-code="triggersVanilla">
           <div class="playground-col">
             <div class="demo-panel">
               <Navbar :items="iconItems" compact />
@@ -424,7 +514,7 @@ const interfaceCode = `interface NavItem {
           <h2>Collapsed</h2>
           <Badge color="neutral" title="Los Collapse arrancan colapsados">collapsed</Badge>
         </div>
-        <SectionDemo :vue-code="collapsedVue">
+        <SectionDemo :vue-code="collapsedVue" :vanilla-code="collapsedVanilla">
           <div class="playground-col">
             <div class="demo-panel">
               <Navbar :items="navItems" collapsed />
@@ -440,7 +530,7 @@ const interfaceCode = `interface NavItem {
           <h2>Compactable</h2>
           <Badge color="neutral" title="Botón nativo junto al search para alternar compact">compactable</Badge>
         </div>
-        <SectionDemo :vue-code="compactableVue">
+        <SectionDemo :vue-code="compactableVue" :vanilla-code="compactableVanilla">
           <div class="playground-col">
             <div class="demo-panel">
               <Navbar :items="iconItems" search compactable />
@@ -456,7 +546,7 @@ const interfaceCode = `interface NavItem {
           <h2>Responsive</h2>
           <Badge color="neutral" title="Botón hamburguesa que abre un SideOver (lateral o fullscreen)">SideOver</Badge>
         </div>
-        <SectionDemo :vue-code="responsiveVue">
+        <SectionDemo :vue-code="responsiveVue" :vanilla-code="responsiveVanilla">
           <div class="playground-col">
             <div class="demo-panel">
               <Navbar :items="navItems" responsive />
@@ -472,7 +562,7 @@ const interfaceCode = `interface NavItem {
           <h2>Search</h2>
           <Badge color="neutral" title="Valor por defecto">false</Badge>
         </div>
-        <SectionDemo :vue-code="searchVue">
+        <SectionDemo :vue-code="searchVue" :vanilla-code="searchVanilla">
           <div class="playground-col">
             <div class="demo-panel">
               <Navbar :items="navItems" search />
@@ -490,7 +580,7 @@ const interfaceCode = `interface NavItem {
         </div>
 
         <h3 id="mode-filter">Filter</h3>
-        <SectionDemo :vue-code="filterVue">
+        <SectionDemo :vue-code="filterVue" :vanilla-code="filterVanilla">
           <div class="playground-col">
             <div class="demo-panel">
               <Navbar :items="navItems" search search-mode="filter" />
@@ -499,7 +589,7 @@ const interfaceCode = `interface NavItem {
         </SectionDemo>
 
         <h3 id="mode-scroll">Scroll</h3>
-        <SectionDemo :vue-code="scrollVue">
+        <SectionDemo :vue-code="scrollVue" :vanilla-code="scrollVanilla">
           <div class="playground-col">
             <div class="demo-panel demo-panel--scroll">
               <Navbar :items="navItems" search search-mode="scroll" />
@@ -515,7 +605,7 @@ const interfaceCode = `interface NavItem {
           <h2>Search Fields</h2>
           <Badge color="neutral" title="Vacío busca en toda la interfaz del item">[]</Badge>
         </div>
-        <SectionDemo :vue-code="fieldsVue">
+        <SectionDemo :vue-code="fieldsVue" :vanilla-code="fieldsVanilla">
           <div class="playground-col">
             <div class="demo-panel">
               <Navbar :items="navItems" search :search-fields="['label']" />
