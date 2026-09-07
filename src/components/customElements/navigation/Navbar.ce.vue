@@ -22,7 +22,6 @@ const props = defineProps({
     default: 'click',
   },
   responsive: { type: Boolean, default: false },
-  minWidth: { type: Number, default: 768 },
   responsiveMode: {
     type: String as PropType<'auto' | 'side' | 'fullscreen'>,
     default: 'auto',
@@ -60,7 +59,6 @@ function ceEmit(event: string, payload: unknown) {
     :collapsed="props.collapsed"
     :trigger="props.trigger"
     :responsive="props.responsive"
-    :min-width="props.minWidth"
     :responsive-mode="props.responsiveMode"
     :side-over-position="props.sideOverPosition"
     :active-path="props.activePath"

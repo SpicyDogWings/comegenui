@@ -227,9 +227,8 @@ const items = [
 <\/script>
 
 <template>
-  <!-- Cuando el CONTENEDOR mide menos que minWidth (768px por defecto), la nav
-       desaparece y queda solo un botón hamburguesa que abre el menú en un
-       SideOver. Reducí el ancho del navegador para verlo colapsar solo. -->
+  <!-- Manual: con responsive, la nav se reemplaza por un botón hamburguesa que
+       abre el menú en un SideOver (lateral o fullscreen según responsiveMode) -->
   <Navbar :items="items" responsive />
 
   <!-- El SideOver puede salir de otro borde -->
@@ -407,8 +406,7 @@ const propsData = [
   { name: 'collapsed', type: 'boolean', default: 'false', description: 'Los submenús (Collapse) arrancan colapsados en lugar de expandidos' },
   { name: 'trigger', type: '"click" | "hover"', default: '"click"', description: 'Cómo abren los flyout de submenú en modo compact: click (default) o hover' },
   { name: 'activePath', type: 'string', default: '""', description: 'Path del item activo (manual). Sin esto, en apps Vue se toma de useRoute(); en vanilla/PHP setealo vos' },
-  { name: 'responsive', type: 'boolean', default: 'false', description: 'Activa el responsive por contenedor: cuando el ancho baja de minWidth, la nav se reemplaza por un botón hamburguesa que abre un SideOver con el menú' },
-  { name: 'minWidth', type: 'number', default: '768', description: 'Umbral de ancho del contenedor bajo el cual se activa el modo responsive' },
+  { name: 'responsive', type: 'boolean', default: 'false', description: 'Modo manual: reemplaza la nav inline por un botón hamburguesa que abre el menú en un SideOver' },
   { name: 'responsiveMode', type: '"auto" | "side" | "fullscreen"', default: '"auto"', description: 'Cómo se muestra el SideOver: auto = fullscreen en <480px y lateral en el resto; side = siempre lateral; fullscreen = siempre pantalla completa' },
   { name: 'sideOverPosition', type: '"left" | "right" | "top" | "bottom"', default: '"left"', description: 'Desde qué borde desliza el SideOver del responsive' },
   { name: 'search', type: 'boolean', default: 'false', description: 'Activa el input de búsqueda arriba del menú; filtra/resalta items automáticamente' },
@@ -555,10 +553,10 @@ const interfaceCode = `interface NavItem {
         </div>
         <SectionDemo :vue-code="responsiveVue" :vanilla-code="responsiveVanilla">
           <div class="playground-col">
-            <div class="demo-panel demo-panel--full">
+            <div class="demo-panel">
               <Navbar :items="navItems" responsive />
             </div>
-            <div class="demo-panel demo-panel--full">
+            <div class="demo-panel">
               <Navbar :items="navItems" responsive side-over-position="right" />
             </div>
           </div>

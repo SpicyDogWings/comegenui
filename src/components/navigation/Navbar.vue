@@ -31,15 +31,12 @@ const props = defineProps({
     required: false,
     default: 'click',
   },
-  // Responsive: mide el ancho del CONTENEDOR (no el viewport). Cuando cae por
-  // debajo de minWidth, la nav desaparece y queda solo un botón hamburguesa que
-  // abre el menú en un SideOver. Solo aplica en la instancia raíz.
+  // Responsive manual: en lugar de la nav inline, muestra un botón hamburguesa
+  // que abre el menú en un SideOver. Solo aplica en la instancia raíz.
   responsive: { type: Boolean, required: false, default: false },
-  // Umbral de ancho del contenedor bajo el cual se activa el modo responsive.
-  minWidth: { type: Number, required: false, default: 768 },
-  // Cómo se muestra el SideOver en modo responsive:
-  //   auto (default): fullscreen en contenedores muy angostos (<480px), lateral en el resto.
-  //   side: siempre lateral (izquierda).
+  // Cómo se muestra el SideOver del responsive:
+  //   auto (default): fullscreen en pantallas muy chicas (<480px), lateral en el resto.
+  //   side: siempre lateral.
   //   fullscreen: siempre pantalla completa.
   responsiveMode: {
     type: String as PropType<'auto' | 'side' | 'fullscreen'>,
@@ -87,33 +84,28 @@ function toggleCompact() {
 }
 const effectiveCompact = computed(() => (props.compactable ? localCompact.value : props.compact))
 
-// --- Modo responsive: mide el contenedor y muestra hamburguesa + SideOver ---
-const wrapperRef = ref<HTMLElement | null>(null)
-const containerWidth = ref(0)
-const isNarrow = ref(false)
+// --- Modo responsive (manual): hamburguesa + SideOver ---
 const open = ref(false)
-let ro: ResizeObserver | null = null
 
-function onResize() {
-  if (!wrapperRef.value) return
-  containerWidth.value = wrapperRef.value.getBoundingClientRect().width
-  isNarrow.value = containerWidth.value < props.minWidth
-  if (!isNarrow.value) open.value = false
+const isTiny = ref(false)
+let mqTiny: MediaQueryList | null = null
+function onChangeTiny(e: MediaQueryListEvent) {
+  isTiny.value = e.matches
 }
 
 onMounted(() => {
   if (!props.responsive) return
-  ro = new ResizeObserver(onResize)
-  if (wrapperRef.value) ro.observe(wrapperRef.value)
-  onResize()
+  mqTiny = window.matchMedia('(max-width: 480px)')
+  isTiny.value = mqTiny.matches
+  mqTiny.addEventListener('change', onChangeTiny)
 })
 
 onUnmounted(() => {
-  ro?.disconnect()
+  mqTiny?.removeEventListener('change', onChangeTiny)
 })
 
 const sideOverFullscreen = computed(() =>
-  props.responsiveMode === 'fullscreen' || (props.responsiveMode === 'auto' && containerWidth.value < 480),
+  props.responsiveMode === 'fullscreen' || (props.responsiveMode === 'auto' && isTiny.value),
 )
 
 let route: { path: string } | null = null
@@ -126,13 +118,9 @@ watch(() => route?.path, () => { open.value = false })
 </script>
 
 <template>
-  <div
-    ref="wrapperRef"
-    class="cu-navbar-responsive"
-    :class="{ 'is-responsive': responsive }"
-  >
+  <div class="cu-navbar-responsive" :class="{ 'is-responsive': responsive }">
     <button
-      v-if="responsive && isNarrow"
+      v-if="responsive"
       type="button"
       class="cu-navbar-responsive-toggle"
       :aria-expanded="open"
@@ -143,7 +131,7 @@ watch(() => route?.path, () => { open.value = false })
     </button>
 
     <SideOver
-      v-if="responsive && isNarrow"
+      v-if="responsive"
       v-model:model-value="open"
       :position="props.sideOverPosition"
       size="264px"
@@ -168,7 +156,7 @@ watch(() => route?.path, () => { open.value = false })
     </SideOver>
 
     <NavbarList
-      v-if="!responsive || !isNarrow"
+      v-if="!responsive"
       :items="displayItems"
       :search="props.search"
       :search-placeholder="props.searchPlaceholder"
