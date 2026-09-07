@@ -20,8 +20,6 @@ watch(() => props.open, (value) => {
   isOpen.value = value;
 });
 
-const sideOverRef = ref<InstanceType<typeof SideOver> | null>(null);
-
 const instance = getCurrentInstance();
 function ceEmit(event: string, payload: unknown) {
   const el = instance?.vnode.el as HTMLElement | null;
@@ -50,7 +48,6 @@ defineExpose({ open, close, toggle, isOpen: isOpenValue });
 
 <template>
   <SideOver
-    ref="sideOverRef"
     :model-value="isOpen"
     :title="props.title"
     :position="props.position"

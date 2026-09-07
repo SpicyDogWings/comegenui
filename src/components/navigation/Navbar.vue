@@ -47,6 +47,13 @@ const props = defineProps({
     default: 'auto',
     validator: (value: string) => ['auto', 'side', 'fullscreen'].includes(value),
   },
+  // Desde qué borde desliza el SideOver del responsive.
+  sideOverPosition: {
+    type: String as PropType<'left' | 'right' | 'top' | 'bottom'>,
+    required: false,
+    default: 'left',
+    validator: (value: string) => ['left', 'right', 'top', 'bottom'].includes(value),
+  },
   // Path activo manual (para vanilla/CE sin vue-router). Si se omite, se toma
   // de useRoute() cuando hay router.
   activePath: { type: String, required: false, default: '' },
@@ -138,7 +145,7 @@ watch(() => route?.path, () => { open.value = false })
     <SideOver
       v-if="responsive && isNarrow"
       v-model:model-value="open"
-      position="left"
+      :position="props.sideOverPosition"
       size="264px"
       :fullscreen="sideOverFullscreen"
     >

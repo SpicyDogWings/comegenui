@@ -229,11 +229,11 @@ const items = [
 <template>
   <!-- Cuando el CONTENEDOR mide menos que minWidth (768px por defecto), la nav
        desaparece y queda solo un botón hamburguesa que abre el menú en un
-       SideOver (lateral o fullscreen según responsiveMode) -->
+       SideOver. Reducí el ancho del navegador para verlo colapsar solo. -->
   <Navbar :items="items" responsive />
 
-  <!-- Umbral custom: colapsa recién por debajo de 500px -->
-  <Navbar :items="items" responsive :min-width="500" />
+  <!-- El SideOver puede salir de otro borde -->
+  <Navbar :items="items" responsive side-over-position="right" />
 </template>`;
 
 const searchVue = vueSnippet(`  <Navbar :items="items" search />`);
@@ -410,6 +410,7 @@ const propsData = [
   { name: 'responsive', type: 'boolean', default: 'false', description: 'Activa el responsive por contenedor: cuando el ancho baja de minWidth, la nav se reemplaza por un botón hamburguesa que abre un SideOver con el menú' },
   { name: 'minWidth', type: 'number', default: '768', description: 'Umbral de ancho del contenedor bajo el cual se activa el modo responsive' },
   { name: 'responsiveMode', type: '"auto" | "side" | "fullscreen"', default: '"auto"', description: 'Cómo se muestra el SideOver: auto = fullscreen en <480px y lateral en el resto; side = siempre lateral; fullscreen = siempre pantalla completa' },
+  { name: 'sideOverPosition', type: '"left" | "right" | "top" | "bottom"', default: '"left"', description: 'Desde qué borde desliza el SideOver del responsive' },
   { name: 'search', type: 'boolean', default: 'false', description: 'Activa el input de búsqueda arriba del menú; filtra/resalta items automáticamente' },
   { name: 'searchPlaceholder', type: 'string', default: '"Buscar..."', description: 'Placeholder del input de búsqueda' },
   { name: 'searchMode', type: 'string', default: '"filter"', description: 'filter: oculta lo que no matchea. scroll: deja el árbol completo y resalta + scrollea al primer match' },
@@ -554,11 +555,11 @@ const interfaceCode = `interface NavItem {
         </div>
         <SectionDemo :vue-code="responsiveVue" :vanilla-code="responsiveVanilla">
           <div class="playground-col">
-            <div class="demo-panel">
+            <div class="demo-panel demo-panel--full">
               <Navbar :items="navItems" responsive />
             </div>
-            <div class="demo-panel">
-              <Navbar :items="navItems" responsive :min-width="500" />
+            <div class="demo-panel demo-panel--full">
+              <Navbar :items="navItems" responsive side-over-position="right" />
             </div>
           </div>
         </SectionDemo>
@@ -654,5 +655,10 @@ const interfaceCode = `interface NavItem {
 .demo-panel--scroll {
   max-height: 280px;
   overflow-y: auto;
+}
+
+.demo-panel--full {
+  max-width: none;
+  width: 100%;
 }
 </style>

@@ -27,6 +27,10 @@ const props = defineProps({
     type: String as PropType<'auto' | 'side' | 'fullscreen'>,
     default: 'auto',
   },
+  sideOverPosition: {
+    type: String as PropType<'left' | 'right' | 'top' | 'bottom'>,
+    default: 'left',
+  },
   activePath: { type: String, default: '' },
 });
 
@@ -58,6 +62,7 @@ function ceEmit(event: string, payload: unknown) {
     :responsive="props.responsive"
     :min-width="props.minWidth"
     :responsive-mode="props.responsiveMode"
+    :side-over-position="props.sideOverPosition"
     :active-path="props.activePath"
     @search="ceEmit('search', $event)"
   />

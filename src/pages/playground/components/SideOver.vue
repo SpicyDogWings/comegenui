@@ -267,7 +267,6 @@ const eventsData = [
   <SideOver v-model="openFull" title="Fullscreen" fullscreen position="bottom"><div class="sideover-demo"><p>Ocupa toda la pantalla.</p></div></SideOver>
   <SideOver v-model="openPersistent" title="Persistent" position="right" persistent>
     <div class="sideover-demo">
-      <h3>Persistent</h3>
       <p>Se cierra solo con open=false</p>
       <Button @click="openPersistent = false" color="primary" variant="soft">Cerrar</Button>
     </div>
