@@ -14,6 +14,7 @@ const outlineItems = [
   { label: 'With Close', id: 'close' },
   { label: 'v-model:show', id: 'toggle' },
   { label: 'With Icon', id: 'icons' },
+  { label: 'Without Title', id: 'notitle' },
   { label: 'Programmatic', id: 'programmatic' },
   {
     label: 'Style',
@@ -191,6 +192,21 @@ const iconsVanilla = `<script src="CuAlert.umd.js"><\/script>
   This alert has an icon in the title.
 </cu-alert>`;
 
+const noTitleVue = `<script setup>
+import Alert from '@/components/information/Alert.vue'
+<\/script>
+
+<template>
+  <Alert color="primary" variant="soft">
+    This alert has no title — no empty header should render.
+  </Alert>
+</template>`;
+const noTitleVanilla = `<script src="CuAlert.umd.js"><\/script>
+
+<cu-alert color="primary" variant="soft">
+  This alert has no title — no empty header should render.
+</cu-alert>`;
+
 const programmaticVue = `<script setup>
 import { ref } from 'vue'
 import Alert from '@/components/information/Alert.vue'
@@ -279,6 +295,17 @@ const isOpen = ref(true)
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
             </template>
             This alert has an icon in the title.
+          </Alert>
+        </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="notitle" class="playground-section">
+        <h2>Without Title</h2>
+        <SectionDemo :vue-code="noTitleVue" :vanilla-code="noTitleVanilla">
+          <Alert color="primary" variant="soft">
+            This alert has no title — no empty header should render.
           </Alert>
         </SectionDemo>
       </section>

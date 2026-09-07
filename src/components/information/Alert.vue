@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, useSlots, watch, type PropType } from "vue";
+import { computed, nextTick, onMounted, ref, watch, type PropType } from "vue";
 
 const props = defineProps({
   color: {
@@ -32,8 +32,28 @@ const props = defineProps({
 
 const emit = defineEmits(["close", "open", "update:show"]);
 
-const slots = useSlots();
-const hasIcon = computed(() => !!slots.icon);
+const iconWrap = ref<HTMLElement | null>(null);
+const hasIcon = ref(false);
+
+function detectIcon() {
+  const el = iconWrap.value;
+  if (!el) return;
+  const hasRealContent = (node: Node): boolean => {
+    if (node.nodeType === Node.TEXT_NODE) return !!node.textContent?.trim();
+    if (node.nodeType === Node.ELEMENT_NODE) {
+      const slotEl = node as HTMLSlotElement;
+      if (node.tagName === 'SLOT') return slotEl.assignedNodes().length > 0;
+      return true;
+    }
+    return false;
+  };
+  hasIcon.value = Array.from(el.childNodes).some(hasRealContent);
+}
+
+onMounted(() => {
+  detectIcon();
+});
+watch(hasIcon, () => nextTick(detectIcon));
 
 const internalShow = ref(props.show);
 
@@ -88,6 +108,7 @@ defineExpose({
     :style="colorStyles"
     role="alert"
   >
+    <span ref="iconWrap" class="cu-alert-icon-detect"><slot name="icon" /></span>
     <div v-if="props.title || props.close || hasIcon" class="cu-alert-header">
       <div class="cu-alert-title">
         <slot name="icon" />
@@ -109,6 +130,10 @@ defineExpose({
 </template>
 
 <style scoped>
+.cu-alert-icon-detect {
+  display: none;
+}
+
 .cu-alert {
   font-family: var(--cu-font-sans);
   font-size: var(--cu-font-size-sm);

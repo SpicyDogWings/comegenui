@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="es" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Alert — Playground Vanilla</title>
+    <link rel="stylesheet" href="../../style.css" />
+    <link rel="stylesheet" href="../../public/css/comegen-sigfi-theme.css" />
+    <script src="../../../dist/CuAlert.umd.js"></script>
+  </head>
+  <body>
+    <div class="topbar">
+      <h1 style="font-size:16px;font-weight:600">Alert Labs</h1>
+      <div class="topbar-actions">
+        <button class="topbar-btn" id="btnTheme" title="Toggle theme">🌙</button>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="card card--wide">
+        <h2>Without Title</h2>
+        <cu-alert color="primary" variant="soft">
+          This alert has no title — no empty header should render.
+        </cu-alert>
+      </div>
+    </div>
+
+    <script src="../../playground.js"></script>
+  </body>
+</html>
