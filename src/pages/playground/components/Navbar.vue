@@ -192,11 +192,9 @@ const items = [
 <\/script>
 
 <template>
-  <!-- Botón nativo de compactar, junto al search en la misma row -->
+  <!-- El botón de compactar va junto al search en la misma row: con search
+       habilitado, el toggle queda a la derecha del input -->
   <Navbar :items="items" search compactable />
-
-  <!-- También funciona sin search: el botón queda solo en la header row -->
-  <Navbar :items="items" compactable />
 </template>`;
 
 const responsiveVue = `<script setup lang="ts">
@@ -427,9 +425,6 @@ const interfaceCode = `interface NavItem {
           <div class="playground-col">
             <div class="demo-panel">
               <Navbar :items="iconItems" search compactable />
-            </div>
-            <div class="demo-panel">
-              <Navbar :items="iconItems" compactable />
             </div>
           </div>
         </SectionDemo>
