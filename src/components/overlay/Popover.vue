@@ -39,10 +39,12 @@ const effectiveAlign = computed(() => props.align);
 const panelPos = ref<Record<string, string>>({ top: "0px", left: "0px" });
 
 const panelStyle = computed(() => {
+  // Anchos y fondo vía CSS vars para que los wrappers (Tooltip, etc.) los
+  // puedan sobrescribir sin pelear con estilos inline.
   const base: Record<string, string> = {
-    backgroundColor: "var(--cu-color-surface)",
-    minWidth: "200px",
-    maxWidth: "80vw",
+    backgroundColor: "var(--cu-popover-bg, var(--cu-color-surface))",
+    minWidth: "var(--cu-popover-min-width, 200px)",
+    maxWidth: "var(--cu-popover-max-width, 80vw)",
   };
 
   if (props.fixed) {
@@ -57,7 +59,7 @@ const panelStyle = computed(() => {
 
   base.position = "absolute";
   base.zIndex = "1000";
-  base.width = props.panelWidth || "100%";
+  base.width = props.panelWidth || "var(--cu-popover-width, 100%)";
 
   const pos = effectivePosition.value;
   if (pos === "bottom") {
