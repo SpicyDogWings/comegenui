@@ -135,7 +135,14 @@ function sharedBlock(shared: any) {
     --cu-modal-height-lg: ${shared.modal.height.lg};
     --cu-modal-height-xl: ${shared.modal.height.xl};
     --cu-modal-height-auto: ${shared.modal.height.auto};
-    --cu-modal-height-full: ${shared.modal.height.full};`
+    --cu-modal-height-full: ${shared.modal.height.full};
+
+    /* SideOver */
+    --cu-sideover-size-sm: ${shared.sideover.size.sm};
+    --cu-sideover-size-md: ${shared.sideover.size.md};
+    --cu-sideover-size-lg: ${shared.sideover.size.lg};
+    --cu-sideover-size-xl: ${shared.sideover.size.xl};
+    --cu-sideover-size-full: ${shared.sideover.size.full};`
 }
 
 function themeBlock(tokens: any, themeName: string, opacities: Record<string, { shadow: number }>) {

@@ -10,6 +10,7 @@ import Table from "@/components/data/Table.vue";
 
 const outlineItems = [
   { label: 'Positions', id: 'positions' },
+  { label: 'Sizes', id: 'sizes' },
   { label: 'Fullscreen', id: 'fullscreen' },
   { label: 'Persistent', id: 'persistent' },
   { label: 'Programmatic', id: 'programmatic' },
@@ -33,6 +34,10 @@ const openRight = ref(false);
 const openLeft = ref(false);
 const openTop = ref(false);
 const openBottom = ref(false);
+const openSm = ref(false);
+const openMd = ref(false);
+const openLg = ref(false);
+const openXl = ref(false);
 const openFull = ref(false);
 const openPersistent = ref(false);
 const programmatic = ref(false);
@@ -50,19 +55,23 @@ ${body}
 </template>`;
 
 const basicVue = vueSnippet(`  <Button @click="open = true">Abrir</Button>
-  <SideOver v-model="open" position="left">
-    <h3>Contenido</h3>
+  <SideOver v-model="open" title="Título" position="left">
     <p>Panel que desliza desde la izquierda.</p>
   </SideOver>`);
 
-const fullVue = vueSnippet(`  <SideOver v-model="open" fullscreen position="bottom">
-    <h3>Pantalla completa</h3>
+const sizesVue = vueSnippet(`  <Button @click="open = true">Abrir</Button>
+  <SideOver v-model="open" title="Tamaño md" size="md">
+    <p>Los presets de tamaño siguen el mismo esquema que Modal: sm | md | lg | xl | full.</p>
+  </SideOver>`);
+
+const fullVue = vueSnippet(`  <SideOver v-model="open" title="Fullscreen" fullscreen position="bottom">
     <p>Ocupa toda la pantalla (100dvh).</p>
   </SideOver>`);
 
-const persistentVue = vueSnippet(`  <!-- No se cierra por backdrop ni Escape -->
-  <SideOver v-model="open" persistent>
+const persistentVue = vueSnippet(`  <!-- No se cierra por backdrop, Escape ni el botón de cerrar -->
+  <SideOver v-model="open" title="Persistent" persistent>
     <p>Solo se cierra con open=false</p>
+    <Button @click="open = false">Cerrar</Button>
   </SideOver>`);
 
 const vanillaImport = `<link rel="stylesheet" href="dist/css/themes.css">
@@ -71,16 +80,54 @@ const vanillaImport = `<link rel="stylesheet" href="dist/css/themes.css">
 const vanillaSnippet = `${vanillaImport}
 
 <button id="btn">Abrir</button>
-<cu-side-over id="side" position="left" size="300px">
+<cu-side-over id="side" title="Título" position="left" size="300px">
   <div style="padding: 1rem">
-    <h3>Contenido</h3>
     <p>Panel desde la izquierda.</p>
   </div>
 </cu-side-over>
 <script>
-  document.querySelector('#btn').addEventListener('click', () => {
-    document.querySelector('#side').open = true
-  })
+  const side = document.querySelector('#side')
+  document.querySelector('#btn').addEventListener('click', () => side.open = true)
+<\/script>`;
+
+const sizesVanilla = `${vanillaImport}
+
+<button id="btn">Abrir</button>
+<cu-side-over id="side" title="Tamaño md" position="right" size="md">
+  <div style="padding: 1rem">
+    <p>Presets: sm | md | lg | xl | full</p>
+  </div>
+</cu-side-over>
+<script>
+  const side = document.querySelector('#side')
+  document.querySelector('#btn').addEventListener('click', () => side.open = true)
+<\/script>`;
+
+const fullscreenVanilla = `${vanillaImport}
+
+<button id="btn">Abrir</button>
+<cu-side-over id="side" title="Fullscreen" position="bottom" fullscreen>
+  <div style="padding: 1rem">
+    <p>Ocupa toda la pantalla (100dvh).</p>
+  </div>
+</cu-side-over>
+<script>
+  const side = document.querySelector('#side')
+  document.querySelector('#btn').addEventListener('click', () => side.open = true)
+<\/script>`;
+
+const persistentVanilla = `${vanillaImport}
+
+<button id="btn">Abrir</button>
+<cu-side-over id="side" title="Persistent" position="right" persistent>
+  <div style="padding: 1rem">
+    <p>Se cierra solo programáticamente</p>
+    <button onclick="document.querySelector('#side').close()">Cerrar</button>
+  </div>
+</cu-side-over>
+<script>
+  const side = document.querySelector('#side')
+  document.querySelector('#btn').addEventListener('click', () => side.open = true)
 <\/script>`;
 
 const componentTokens = [
@@ -88,6 +135,8 @@ const componentTokens = [
   '--cu-shadow-xl',
   '--cu-radius-md',
   '--cu-font-sans',
+  '--cu-border-color',
+  '--cu-sideover-size-md',
 ];
 
 const apiColumns = [
@@ -99,10 +148,11 @@ const apiColumns = [
 
 const propsData = [
   { name: 'modelValue', type: 'boolean', default: 'false', description: 'Abre/cierra el panel (v-model)' },
+  { name: 'title', type: 'string', default: '""', description: 'Título del panel. Se muestra en el header junto al botón de cerrar' },
   { name: 'position', type: '"left" | "right" | "top" | "bottom"', default: '"right"', description: 'Desde qué borde desliza el panel' },
-  { name: 'size', type: 'string', default: '"300px"', description: 'Ancho (left/right) o alto (top/bottom) del panel. Ignorado en fullscreen' },
+  { name: 'size', type: 'string', default: '"300px"', description: 'Ancho (left/right) o alto (top/bottom) del panel. Acepta CSS ("300px", "40vw") o preset "sm" | "md" | "lg" | "xl" | "full". Ignorado en fullscreen' },
   { name: 'fullscreen', type: 'boolean', default: 'false', description: 'Ocupa toda la pantalla (inset 0)' },
-  { name: 'persistent', type: 'boolean', default: 'false', description: 'No se cierra por backdrop ni Escape' },
+  { name: 'persistent', type: 'boolean', default: 'false', description: 'No se cierra por backdrop, Escape ni el botón de cerrar (que se oculta)' },
   { name: 'zIndex', type: 'number', default: '1100', description: 'Z-index del overlay' },
 ];
 
@@ -137,12 +187,29 @@ const eventsData = [
 
       <hr class="playground-separator" />
 
+      <section id="sizes" class="playground-section">
+        <div class="playground-heading">
+          <h2>Sizes</h2>
+          <Badge color="neutral" title="Presets como Modal">sm | md | lg | xl | full</Badge>
+        </div>
+        <SectionDemo :vue-code="sizesVue" :vanilla-code="sizesVanilla">
+          <div class="playground-row">
+            <Button @click="openSm = true" variant="soft">sm</Button>
+            <Button @click="openMd = true" color="primary" variant="soft">md</Button>
+            <Button @click="openLg = true" variant="soft">lg</Button>
+            <Button @click="openXl = true" variant="soft">xl</Button>
+          </div>
+        </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
       <section id="fullscreen" class="playground-section">
         <div class="playground-heading">
           <h2>Fullscreen</h2>
           <Badge color="neutral" title="Ocupa toda la pantalla">fullscreen</Badge>
         </div>
-        <SectionDemo :vue-code="fullVue">
+        <SectionDemo :vue-code="fullVue" :vanilla-code="fullscreenVanilla">
           <Button @click="openFull = true" color="primary" variant="soft">Abrir fullscreen</Button>
         </SectionDemo>
       </section>
@@ -152,9 +219,9 @@ const eventsData = [
       <section id="persistent" class="playground-section">
         <div class="playground-heading">
           <h2>Persistent</h2>
-          <Badge color="neutral" title="No se cierra por backdrop ni Escape">persistent</Badge>
+          <Badge color="neutral" title="No se cierra por backdrop, Escape ni botón">persistent</Badge>
         </div>
-        <SectionDemo :vue-code="persistentVue">
+        <SectionDemo :vue-code="persistentVue" :vanilla-code="persistentVanilla">
           <Button @click="openPersistent = true" color="warning" variant="soft">Abrir persistent</Button>
         </SectionDemo>
       </section>
@@ -189,15 +256,23 @@ const eventsData = [
     </div>
   </PlaygroundLayout>
 
-  <SideOver v-model="openRight" position="right"><div class="sideover-demo"><h3>Right</h3></div></SideOver>
-  <SideOver v-model="openLeft" position="left" size="300px"><div class="sideover-demo"><h3>Left</h3></div></SideOver>
-  <SideOver v-model="openTop" position="top" size="200px"><div class="sideover-demo"><h3>Top</h3></div></SideOver>
-  <SideOver v-model="openBottom" position="bottom" size="200px"><div class="sideover-demo"><h3>Bottom</h3></div></SideOver>
-  <SideOver v-model="openFull" fullscreen position="bottom"><div class="sideover-demo"><h3>Fullscreen</h3></div></SideOver>
-  <SideOver v-model="openPersistent" position="right" persistent>
-    <div class="sideover-demo"><h3>Persistent</h3><p>Se cierra solo con open=false</p></div>
+  <SideOver v-model="openRight" title="Right" position="right"><div class="sideover-demo"><p>Panel desde la derecha.</p></div></SideOver>
+  <SideOver v-model="openLeft" title="Left" position="left" size="300px"><div class="sideover-demo"><p>Panel desde la izquierda.</p></div></SideOver>
+  <SideOver v-model="openTop" title="Top" position="top" size="200px"><div class="sideover-demo"><p>Panel desde arriba.</p></div></SideOver>
+  <SideOver v-model="openBottom" title="Bottom" position="bottom" size="200px"><div class="sideover-demo"><p>Panel desde abajo.</p></div></SideOver>
+  <SideOver v-model="openSm" title="sm — 320px" position="right" size="sm"><div class="sideover-demo"><p>Preset sm.</p></div></SideOver>
+  <SideOver v-model="openMd" title="md — 400px" position="right" size="md"><div class="sideover-demo"><p>Preset md.</p></div></SideOver>
+  <SideOver v-model="openLg" title="lg — 512px" position="right" size="lg"><div class="sideover-demo"><p>Preset lg.</p></div></SideOver>
+  <SideOver v-model="openXl" title="xl — 640px" position="right" size="xl"><div class="sideover-demo"><p>Preset xl.</p></div></SideOver>
+  <SideOver v-model="openFull" title="Fullscreen" fullscreen position="bottom"><div class="sideover-demo"><p>Ocupa toda la pantalla.</p></div></SideOver>
+  <SideOver v-model="openPersistent" title="Persistent" position="right" persistent>
+    <div class="sideover-demo">
+      <h3>Persistent</h3>
+      <p>Se cierra solo con open=false</p>
+      <Button @click="openPersistent = false" color="primary" variant="soft">Cerrar</Button>
+    </div>
   </SideOver>
-  <SideOver v-model="programmatic" position="right" size="300px"><div class="sideover-demo"><h3>Programmatic</h3></div></SideOver>
+  <SideOver v-model="programmatic" title="Programmatic" position="right" size="300px"><div class="sideover-demo"><p>Controlado por open() / close().</p></div></SideOver>
 </template>
 
 <style scoped>

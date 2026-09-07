@@ -22,6 +22,7 @@ const props = defineProps({
     default: 'click',
   },
   responsive: { type: Boolean, default: false },
+  minWidth: { type: Number, default: 768 },
   responsiveMode: {
     type: String as PropType<'auto' | 'side' | 'fullscreen'>,
     default: 'auto',
@@ -55,6 +56,7 @@ function ceEmit(event: string, payload: unknown) {
     :collapsed="props.collapsed"
     :trigger="props.trigger"
     :responsive="props.responsive"
+    :min-width="props.minWidth"
     :responsive-mode="props.responsiveMode"
     :active-path="props.activePath"
     @search="ceEmit('search', $event)"

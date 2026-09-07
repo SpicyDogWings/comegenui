@@ -227,8 +227,13 @@ const items = [
 <\/script>
 
 <template>
-  <!-- Bajo 768px se vuelve un drawer overlay con botón hamburguesa -->
+  <!-- Cuando el CONTENEDOR mide menos que minWidth (768px por defecto), la nav
+       desaparece y queda solo un botón hamburguesa que abre el menú en un
+       SideOver (lateral o fullscreen según responsiveMode) -->
   <Navbar :items="items" responsive />
+
+  <!-- Umbral custom: colapsa recién por debajo de 500px -->
+  <Navbar :items="items" responsive :min-width="500" />
 </template>`;
 
 const searchVue = vueSnippet(`  <Navbar :items="items" search />`);
@@ -402,7 +407,8 @@ const propsData = [
   { name: 'collapsed', type: 'boolean', default: 'false', description: 'Los submenús (Collapse) arrancan colapsados en lugar de expandidos' },
   { name: 'trigger', type: '"click" | "hover"', default: '"click"', description: 'Cómo abren los flyout de submenú en modo compact: click (default) o hover' },
   { name: 'activePath', type: 'string', default: '""', description: 'Path del item activo (manual). Sin esto, en apps Vue se toma de useRoute(); en vanilla/PHP setealo vos' },
-  { name: 'responsive', type: 'boolean', default: 'false', description: 'Bajo 768px la nav se abre desde un botón hamburguesa dentro de un SideOver' },
+  { name: 'responsive', type: 'boolean', default: 'false', description: 'Activa el responsive por contenedor: cuando el ancho baja de minWidth, la nav se reemplaza por un botón hamburguesa que abre un SideOver con el menú' },
+  { name: 'minWidth', type: 'number', default: '768', description: 'Umbral de ancho del contenedor bajo el cual se activa el modo responsive' },
   { name: 'responsiveMode', type: '"auto" | "side" | "fullscreen"', default: '"auto"', description: 'Cómo se muestra el SideOver: auto = fullscreen en <480px y lateral en el resto; side = siempre lateral; fullscreen = siempre pantalla completa' },
   { name: 'search', type: 'boolean', default: 'false', description: 'Activa el input de búsqueda arriba del menú; filtra/resalta items automáticamente' },
   { name: 'searchPlaceholder', type: 'string', default: '"Buscar..."', description: 'Placeholder del input de búsqueda' },
@@ -550,6 +556,9 @@ const interfaceCode = `interface NavItem {
           <div class="playground-col">
             <div class="demo-panel">
               <Navbar :items="navItems" responsive />
+            </div>
+            <div class="demo-panel">
+              <Navbar :items="navItems" responsive :min-width="500" />
             </div>
           </div>
         </SectionDemo>

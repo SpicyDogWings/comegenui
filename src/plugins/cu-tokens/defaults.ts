@@ -112,6 +112,15 @@ export const DEFAULTS = {
       auto: '50vh',
       full: '90vh'
     }
+  },
+  sideover: {
+    size: {
+      sm: '320px',
+      md: '400px',
+      lg: '512px',
+      xl: '640px',
+      full: '100%'
+    }
   }
 }
 
