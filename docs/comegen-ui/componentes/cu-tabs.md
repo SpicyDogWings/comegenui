@@ -13,7 +13,7 @@ Pestañas con variantes, iconos, tabs deshabilitadas individuales y control prog
 | `tabs` | `{key, label, disabled?}[]` | `[]` | Definición de las pestañas |
 | `modelValue` | `string` | `""` | Key del tab activo (controlado) |
 | `color` | `string` | `"primary"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `string` | `"tabs"` | `tabs`, `pills`, `boxed`, `soft` |
+| `variant` | `string` | `"ghost"` | `ghost`, `solid`, `boxed`, `soft` |
 | `size` | `string` | `"md"` | `sm`, `md`, `lg` |
 | `disabled` | `boolean` | `false` | Deshabilita todas las pestañas |
 
@@ -63,7 +63,7 @@ En HTML plano se usan con el atributo `slot="..."` sobre el elemento hijo.
 ```html
 <script src="dist/CuTabs.umd.js"></script>
 
-<cu-tabs id="misTabs" variant="pills" color="primary">
+<cu-tabs id="misTabs" variant="solid" color="primary">
   <div slot="general">Contenido General</div>
   <div slot="advanced">Contenido Advanced</div>
   <div slot="locked">Contenido Locked</div>
@@ -86,8 +86,8 @@ En HTML plano se usan con el atributo `slot="..."` sobre el elemento hijo.
 ## Variantes
 
 ```html
-<cu-tabs variant="tabs"><!-- underline --></cu-tabs>
-<cu-tabs variant="pills"><!-- pills redondeadas --></cu-tabs>
+<cu-tabs variant="ghost"><!-- underline --></cu-tabs>
+<cu-tabs variant="solid"><!-- pills redondeadas --></cu-tabs>
 <cu-tabs variant="boxed"><!-- contenedor con borde --></cu-tabs>
 <cu-tabs variant="soft"><!-- contenedor soft + activo solid --></cu-tabs>
 ```
@@ -99,7 +99,7 @@ En HTML plano se usan con el atributo `slot="..."` sobre el elemento hijo.
 Cada tab puede llevar un icono con el slot `tab-icon-{key}`. El SVG debe usar `currentColor` para heredar el color del tab:
 
 ```html
-<cu-tabs id="iconos" variant="pills" color="primary">
+<cu-tabs id="iconos" variant="solid" color="primary">
   <svg slot="tab-icon-home" width="14" height="14" viewBox="0 0 24 24"
        fill="none" stroke="currentColor" stroke-width="2"
        stroke-linecap="round" stroke-linejoin="round">
@@ -120,7 +120,7 @@ Cada tab puede llevar un icono con el slot `tab-icon-{key}`. El SVG debe usar `c
 ## Escuchar cambios y control programático
 
 ```html
-<cu-tabs id="ctrl" variant="tabs" color="neutral">
+<cu-tabs id="ctrl" variant="ghost" color="neutral">
   <div slot="first">Contenido First</div>
   <div slot="second">Contenido Second</div>
   <div slot="third">Contenido Third</div>

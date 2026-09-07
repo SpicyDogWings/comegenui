@@ -38,7 +38,7 @@ Cada componente se distribuye como archivo **UMD** independiente que se auto-reg
 
 ## Guía rápida
 
-Ejemplos de los componentes más usados. Para todos los ejemplos (27 componentes) ver [`ejemplos.md`](ejemplos.md).
+Ejemplos de los componentes más usados. Para todos los ejemplos (32 componentes) ver [`ejemplos.md`](ejemplos.md).
 
 ### Button + Alert
 
@@ -103,7 +103,7 @@ El zip incluye scripts para actualizar la lib en el proyecto huésped:
 **Qué hace:**
 1. Descarga el artifact de GitLab (según tag o main)
 2. Reemplaza la carpeta de forma atómico (si falla, lo anterior queda intacto)
-3. Instala la skill de uso en `.agents/skills/comegen-ui/` del proyecto huésped
+3. Instala la skill de uso en `.agents/skills/use-comegen/` del proyecto huésped
 
 **Variables opcionales:**
 - Linux: `CG_URL`, `CG_PROJECT_ROOT`
@@ -178,13 +178,16 @@ Para tablas completas de archivos, colores por tema, variantes por componente, d
 ## Documentación por componente
 
 - [\<cu-alert\>](componentes/cu-alert.md) — Alerta
+- [\<cu-author-card\>](componentes/cu-author-card.md) — Tarjeta de autor
 - [\<cu-autocomplete\>](componentes/cu-autocomplete.md) — Autocompletado
+- [\<cu-avatar\>](componentes/cu-avatar.md) — Avatar
 - [\<cu-badge\>](componentes/cu-badge.md) — Badge
 - [\<cu-button\>](componentes/cu-button.md) — Botón
 - [\<cu-calendar\>](componentes/cu-calendar.md) — Calendario de mes
 - [\<cu-card\>](componentes/cu-card.md) — Tarjeta
 - [\<cu-checkbox\>](componentes/cu-checkbox.md) — Checkbox
 - [\<cu-collapse\>](componentes/cu-collapse.md) — Colapsable
+- [\<cu-command-palette\>](componentes/cu-command-palette.md) — Paleta de comandos
 - [\<cu-color-picker\>](componentes/cu-color-picker.md) — Selector de color
 - [\<cu-date-picker\>](componentes/cu-date-picker.md) — Selector de fecha
 - [\<cu-date-picker-range\>](componentes/cu-date-picker-range.md) — Rango de fechas
@@ -196,11 +199,13 @@ Para tablas completas de archivos, colores por tema, variantes por componente, d
 - [\<cu-label\>](componentes/cu-label.md) — Label
 - [\<cu-markdown\>](componentes/cu-markdown.md) — Renderizador Markdown
 - [\<cu-modal\>](componentes/cu-modal.md) — Modal
-- [\<cu-month-slider\>](componentes/cu-month-slider.md) — Slider de meses
-- [\<cu-year-slider\>](componentes/cu-year-slider.md) — Slider de años
+- [\<cu-navbar\>](componentes/cu-navbar.md) — Barra de navegación
+- [\<cu-navbar-horizontal\>](componentes/cu-navbar-horizontal.md) — Barra de navegación horizontal
 - [\<cu-pagination\>](componentes/cu-pagination.md) — Paginación
 - [\<cu-select\>](componentes/cu-select.md) — Selector
+- [\<cu-side-over\>](componentes/cu-side-over.md) — Panel lateral
 - [\<cu-switch\>](componentes/cu-switch.md) — Switch/Toggle
 - [\<cu-tabs\>](componentes/cu-tabs.md) — Pestañas
 - [\<cu-table\>](componentes/cu-table.md) — Tabla avanzada
 - [\<cu-textarea\>](componentes/cu-textarea.md) — Textarea
+- [\<cu-tooltip\>](componentes/cu-tooltip.md) — Tooltip

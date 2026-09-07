@@ -176,6 +176,23 @@ Ejemplos copy-pasteables de todos los componentes en HTML plano. Para la guía d
 <script src="dist/CuInput.umd.js"></script>
 ```
 
+### Avatar
+
+```html
+<cu-avatar initials="JP" color="primary"></cu-avatar>
+<cu-avatar initials="MR" color="success" size="lg"></cu-avatar>
+<cu-avatar initials="CD" size="sm"></cu-avatar>
+<script src="dist/CuAvatar.umd.js"></script>
+```
+
+### Author Card
+
+```html
+<cu-author-card name="Ana Pérez" role="Desarrolladora" color="primary"></cu-author-card>
+<cu-author-card name="Laura Gómez" src="https://example.com/avatar.jpg"></cu-author-card>
+<script src="dist/CuAuthorCard.umd.js"></script>
+```
+
 ---
 
 ## Data
@@ -244,6 +261,39 @@ Ejemplos copy-pasteables de todos los componentes en HTML plano. Para la guía d
 </script>
 ```
 
+### Tooltip
+
+```html
+<cu-tooltip text="Guardar cambios" color="primary">
+  <cu-button color="primary" variant="soft">Guardar</cu-button>
+</cu-tooltip>
+<script src="dist/CuTooltip.umd.js"></script>
+<script src="dist/CuButton.umd.js"></script>
+```
+
+### Side Over
+
+```html
+<cu-side-over id="side" title="Filtros" position="right">
+  <p>Contenido del panel.</p>
+</cu-side-over>
+<cu-button color="primary" variant="solid"
+  onclick="document.getElementById('side').open()">
+  Abrir panel
+</cu-button>
+<script src="dist/CuSideOver.umd.js"></script>
+<script src="dist/CuButton.umd.js"></script>
+```
+
+### Command Palette
+
+```html
+<cu-command-palette id="palette" title="Comandos" color="primary"></cu-command-palette>
+<script src="dist/CuCommandPalette.umd.js"></script>
+```
+
+> **Nota:** el wrapper CE actual no expone la prop `commands` ni métodos `open`/`close` (ver `componentes/cu-command-palette.md`).
+
 ---
 
 ## Navegación
@@ -271,6 +321,43 @@ Ejemplos copy-pasteables de todos los componentes en HTML plano. Para la guía d
   <p>Contenido colapsable.</p>
 </cu-collapse>
 <script src="dist/CuCollapse.umd.js"></script>
+```
+
+### Navbar
+
+```html
+<cu-navbar id="nav" search active-path="/usuarios"></cu-navbar>
+<script src="dist/CuNavbar.umd.js"></script>
+<script>
+  const nav = document.getElementById('nav');
+  await customElements.whenDefined('cu-navbar');
+  nav.items = [
+    { label: 'Inicio', path: '/' },
+    { label: 'Usuarios', children: [
+      { label: 'Lista', path: '/usuarios' },
+      { label: 'Roles', path: '/roles' },
+    ]},
+  ];
+  nav.addEventListener('search', (e) => console.log('buscando:', e.detail));
+</script>
+```
+
+### Navbar Horizontal
+
+```html
+<cu-navbar-horizontal id="navh" trigger="hover"></cu-navbar-horizontal>
+<script src="dist/CuNavbarHorizontal.umd.js"></script>
+<script>
+  const navh = document.getElementById('navh');
+  await customElements.whenDefined('cu-navbar-horizontal');
+  navh.items = [
+    { label: 'Inicio', path: '/' },
+    { label: 'Equipo', children: [
+      { label: 'Desarrollo', path: '/equipo/dev' },
+      { label: 'Diseño', path: '/equipo/diseno' },
+    ]},
+  ];
+</script>
 ```
 
 ---

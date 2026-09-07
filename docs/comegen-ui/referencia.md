@@ -10,6 +10,8 @@ Tablas de referencia completas. Para la guía de uso ver [`SKILL.md`](SKILL.md).
 |----------------------|-----|------------|
 | `CuAlert.umd.js` | `<cu-alert>` | Alerta |
 | `CuAutocomplete.umd.js` | `<cu-autocomplete>` | Autocompletado con búsqueda |
+| `CuAuthorCard.umd.js` | `<cu-author-card>` | Tarjeta de autor |
+| `CuAvatar.umd.js` | `<cu-avatar>` | Avatar circular |
 | `CuBadge.umd.js` | `<cu-badge>` | Badge |
 | `CuButton.umd.js` | `<cu-button>` | Botón |
 | `CuCalendar.umd.js` | `<cu-calendar>` | Calendario de mes (7 columnas) |
@@ -17,6 +19,7 @@ Tablas de referencia completas. Para la guía de uso ver [`SKILL.md`](SKILL.md).
 | `CuCheckbox.umd.js` | `<cu-checkbox>` | Checkbox |
 | `CuCollapse.umd.js` | `<cu-collapse>` | Colapsable |
 | `CuColorPicker.umd.js` | `<cu-color-picker>` | Selector de color |
+| `CuCommandPalette.umd.js` | `<cu-command-palette>` | Paleta de comandos |
 | `CuDatePicker.umd.js` | `<cu-date-picker>` | Selector de fecha (dropdown + calendario) |
 | `CuDatePickerRange.umd.js` | `<cu-date-picker-range>` | Selector de rango de fechas |
 | `CuDropdownMenu.umd.js` | `<cu-dropdown-menu>` | Menú desplegable |
@@ -27,12 +30,16 @@ Tablas de referencia completas. Para la guía de uso ver [`SKILL.md`](SKILL.md).
 | `CuLabel.umd.js` | `<cu-label>` | Label |
 | `CuMarkdown.umd.js` | `<cu-markdown>` | Renderizador de Markdown |
 | `CuModal.umd.js` | `<cu-modal>` | Modal |
+| `CuNavbar.umd.js` | `<cu-navbar>` | Barra de navegación |
+| `CuNavbarHorizontal.umd.js` | `<cu-navbar-horizontal>` | Barra de navegación horizontal |
 | `CuPagination.umd.js` | `<cu-pagination>` | Paginación |
 | `CuSelect.umd.js` | `<cu-select>` | Selector |
+| `CuSideOver.umd.js` | `<cu-side-over>` | Panel lateral |
 | `CuSwitch.umd.js` | `<cu-switch>` | Switch/Toggle |
 | `CuTable.umd.js` | `<cu-table>` | Tabla avanzada |
 | `CuTabs.umd.js` | `<cu-tabs>` | Pestañas |
 | `CuTextarea.umd.js` | `<cu-textarea>` | Textarea |
+| `CuTooltip.umd.js` | `<cu-tooltip>` | Tooltip |
 
 > Los nombres de archivo se generan desde el entry point (`src/lib/{categoria}/{componente}.ts`), por eso las de varias palabras llevan guion: `CuDropdown-menu`, `CuFile-input-zone`, `CuColor-picker`, `CuFloating-button`.
 
@@ -67,7 +74,7 @@ Refleja los validadores reales de cada `.ce.vue`. `—` significa que la variant
 | `link` | ✓ | — | — | — | — | — | — | — | — | — | ✓ | — | — | — | — | — | — | — | — | — | — |
 | `none` | ✓ | — | — | — | — | — | — | — | ✓ | — | ✓ | — | — | — | — | — | — | — | — | — | — |
 
-> Checkbox, FileInputZone, Modal, ColorPicker, Collapse, FloatingButton, Label y Switch **no tienen prop `variant`**. Badge acepta `ghost`; Alert acepta `ghost` pero no `none`. Input, Textarea, Autocomplete, Select y FileInput aceptan solo `outlined`/`soft`/`ghost`/`subtle`. Table acepta `solid`/`outlined`/`soft`/`ghost`/`subtle`. Pagination acepta además `none`. `<cu-tabs>` usa su propio set: `tabs`, `pills`, `boxed`, `soft`.
+> Checkbox, FileInputZone, Modal, ColorPicker, Collapse, FloatingButton, Label, Switch, AuthorCard, Avatar, CommandPalette, Navbar, NavbarHorizontal, SideOver y Tooltip **no tienen prop `variant`**. Badge acepta `ghost`; Alert acepta `ghost` pero no `none`. Input, Textarea, Autocomplete, Select y FileInput aceptan solo `outlined`/`soft`/`ghost`/`subtle`. Table acepta `solid`/`outlined`/`soft`/`ghost`/`subtle`. Pagination acepta además `none`. `<cu-tabs>` usa su propio set: `tabs`, `pills`, `boxed`, `soft`.
 
 > **Calendar / DatePicker:** `<cu-calendar>` acepta `solid`/`outlined`/`soft`/`subtle` (aplica al **día seleccionado**; `ghost` se eliminó porque se confundía con el día de hoy). `<cu-date-picker>` acepta `outlined`/`soft`/`ghost`/`subtle` en el **trigger**.
 
@@ -79,6 +86,8 @@ Refleja los validadores reales de cada `.ce.vue`. `—` significa que la variant
 |------------|---------|
 | `<cu-alert>` | `soft` |
 | `<cu-autocomplete>` | `soft` |
+| `<cu-author-card>` | — (sin variant) |
+| `<cu-avatar>` | — (sin variant) |
 | `<cu-badge>` | `soft` |
 | `<cu-button>` | `ghost` |
 | `<cu-calendar>` | `soft` (variante del día seleccionado) |
@@ -86,6 +95,7 @@ Refleja los validadores reales de cada `.ce.vue`. `—` significa que la variant
 | `<cu-checkbox>` | — (sin variant) |
 | `<cu-collapse>` | — (sin variant) |
 | `<cu-color-picker>` | — (sin variant) |
+| `<cu-command-palette>` | — (sin variant) |
 | `<cu-date-picker>` | `soft` |
 | `<cu-dropdown-menu>` | `ghost` |
 | `<cu-file-input>` | `outlined` |
@@ -94,12 +104,16 @@ Refleja los validadores reales de cada `.ce.vue`. `—` significa que la variant
 | `<cu-input>` | `soft` |
 | `<cu-label>` | — (sin variant) |
 | `<cu-modal>` | — (sin variant) |
+| `<cu-navbar>` | — (sin variant) |
+| `<cu-navbar-horizontal>` | — (sin variant) |
 | `<cu-pagination>` | `soft` |
 | `<cu-select>` | `soft` |
+| `<cu-side-over>` | — (sin variant) |
 | `<cu-switch>` | — (sin variant) |
 | `<cu-tabs>` | `tabs` |
 | `<cu-table>` | `soft` |
 | `<cu-textarea>` | `soft` |
+| `<cu-tooltip>` | — (sin variant) |
 
 ---
 
@@ -133,3 +147,10 @@ Cada archivo UMD incluye el runtime de Vue 3 (no externalizado):
 | CuDatePicker | ~225 kB | ~53 kB |
 | CuFloatingButton | ~167 kB | ~40 kB |
 | CuTabs | ~200 kB | ~49 kB |
+| CuAuthorCard | ~197 kB | ~48 kB |
+| CuAvatar | ~194 kB | ~48 kB |
+| CuCommandPalette | ~240 kB | ~57 kB |
+| CuNavbar | ~307 kB | ~70 kB |
+| CuNavbarHorizontal | ~244 kB | ~57 kB |
+| CuSideOver | ~228 kB | ~55 kB |
+| CuTooltip | ~204 kB | ~50 kB |

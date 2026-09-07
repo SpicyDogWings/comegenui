@@ -38,7 +38,7 @@ Cada componente se distribuye como archivo **UMD** independiente que se auto-reg
 
 ## Guía rápida
 
-Ejemplos de los componentes más usados. Para todos los ejemplos (25 componentes) ver [`ejemplos.md`](ejemplos.md).
+Ejemplos de los componentes más usados. Para todos los ejemplos (32 componentes) ver [`ejemplos.md`](ejemplos.md).
 
 ### Button + Alert
 
@@ -178,13 +178,16 @@ Para tablas completas de archivos, colores por tema, variantes por componente, d
 ## Documentación por componente
 
 - [\<cu-alert\>](componentes/cu-alert.md) — Alerta
+- [\<cu-author-card\>](componentes/cu-author-card.md) — Tarjeta de autor
 - [\<cu-autocomplete\>](componentes/cu-autocomplete.md) — Autocompletado
+- [\<cu-avatar\>](componentes/cu-avatar.md) — Avatar
 - [\<cu-badge\>](componentes/cu-badge.md) — Badge
 - [\<cu-button\>](componentes/cu-button.md) — Botón
 - [\<cu-calendar\>](componentes/cu-calendar.md) — Calendario de mes
 - [\<cu-card\>](componentes/cu-card.md) — Tarjeta
 - [\<cu-checkbox\>](componentes/cu-checkbox.md) — Checkbox
 - [\<cu-collapse\>](componentes/cu-collapse.md) — Colapsable
+- [\<cu-command-palette\>](componentes/cu-command-palette.md) — Paleta de comandos
 - [\<cu-color-picker\>](componentes/cu-color-picker.md) — Selector de color
 - [\<cu-date-picker\>](componentes/cu-date-picker.md) — Selector de fecha
 - [\<cu-date-picker-range\>](componentes/cu-date-picker-range.md) — Rango de fechas
@@ -196,9 +199,13 @@ Para tablas completas de archivos, colores por tema, variantes por componente, d
 - [\<cu-label\>](componentes/cu-label.md) — Label
 - [\<cu-markdown\>](componentes/cu-markdown.md) — Renderizador Markdown
 - [\<cu-modal\>](componentes/cu-modal.md) — Modal
+- [\<cu-navbar\>](componentes/cu-navbar.md) — Barra de navegación
+- [\<cu-navbar-horizontal\>](componentes/cu-navbar-horizontal.md) — Barra de navegación horizontal
 - [\<cu-pagination\>](componentes/cu-pagination.md) — Paginación
 - [\<cu-select\>](componentes/cu-select.md) — Selector
+- [\<cu-side-over\>](componentes/cu-side-over.md) — Panel lateral
 - [\<cu-switch\>](componentes/cu-switch.md) — Switch/Toggle
 - [\<cu-tabs\>](componentes/cu-tabs.md) — Pestañas
 - [\<cu-table\>](componentes/cu-table.md) — Tabla avanzada
 - [\<cu-textarea\>](componentes/cu-textarea.md) — Textarea
+- [\<cu-tooltip\>](componentes/cu-tooltip.md) — Tooltip
