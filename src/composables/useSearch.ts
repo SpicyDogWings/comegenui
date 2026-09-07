@@ -1,4 +1,5 @@
 import { computed, type Ref, type MaybeRef, unref } from "vue";
+import { matchesFields } from "@/utils/search";
 
 interface Column {
   key: string;
@@ -13,11 +14,6 @@ interface UseSearchOptions {
   columns?: MaybeRef<Column[]>;
 }
 
-const normalize = (s: string, caseSensitive = false) => {
-  const normalized = s.normalize("NFD").replace(/[\u0300-\u0302\u0304-\u036f]/g, "");
-  return caseSensitive ? normalized : normalized.toLowerCase();
-};
-
 export function useSearch(data: any[] | Ref<any[]>, options: UseSearchOptions) {
   const { searchQuery, caseSensitive = false } = options;
 
@@ -26,7 +22,6 @@ export function useSearch(data: any[] | Ref<any[]>, options: UseSearchOptions) {
     const query = searchQuery.value.trim();
     if (!query) return unrefedData;
 
-    const normalizedQuery = normalize(query, caseSensitive);
     const fields = unref(options.searchFields) || [];
     const columns = unref(options.columns) || [];
 
@@ -36,19 +31,19 @@ export function useSearch(data: any[] | Ref<any[]>, options: UseSearchOptions) {
       const keys = fields.length > 0 ? fields : Object.keys(item);
 
       return keys.some((key) => {
-        const raw = item[key];
-        if (raw == null) return false;
-
         const col = columns.find((c) => c.key === key);
         if (col?.inputType === "select") {
+          const raw = item[key];
+          if (raw == null) return false;
           const opts = typeof col.selectOptions === "function"
             ? col.selectOptions(item)
             : col.selectOptions || [];
           const opt = opts.find((o: any) => o.value === raw);
-          if (opt) return normalize(opt.label, caseSensitive).includes(normalizedQuery);
+          if (opt) return matchesFields({ value: opt.label }, query, { fields: ["value"], caseSensitive });
+          return false;
         }
 
-        return normalize(String(raw), caseSensitive).includes(normalizedQuery);
+        return matchesFields(item, query, { fields: [key], caseSensitive });
       });
     });
   });

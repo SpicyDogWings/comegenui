@@ -3,6 +3,7 @@ import { computed, ref, watch, nextTick } from "vue";
 import Modal from "../overlay/Modal.vue";
 import Input from "../form/Input.vue";
 import Button from "../buttons/Button.vue";
+import { useSearch } from "@/composables/useSearch";
 
 export interface CommandItem {
   id: string;
@@ -51,14 +52,9 @@ const search = ref("");
 const activeIndex = ref(0);
 const inputRef = ref<InstanceType<typeof Input> | null>(null);
 
-const filtered = computed(() => {
-  const q = search.value.toLowerCase().trim();
-  if (!q) return props.commands;
-  return props.commands.filter(
-    (cmd) =>
-      cmd.label.toLowerCase().includes(q) ||
-      cmd.category?.toLowerCase().includes(q),
-  );
+const { filteredData: filtered } = useSearch(props.commands, {
+  searchQuery: search,
+  searchFields: ["label", "category"],
 });
 
 const grouped = computed(() => {

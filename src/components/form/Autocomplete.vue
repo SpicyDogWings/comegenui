@@ -3,6 +3,7 @@ import { ref, computed, watch, defineModel } from "vue";
 import Dropdown from "../overlay/Dropdown.vue";
 import Input from "./Input.vue";
 import Button from "../buttons/Button.vue";
+import { useSearch } from "@/composables/useSearch";
 
 interface AutocompleteItem {
   label: string;
@@ -59,13 +60,9 @@ watch(() => searchValue.value, (val) => {
   searchText.value = val;
 }, { immediate: true });
 
-const filteredItems = computed(() => {
-  const q = searchText.value.toLowerCase().trim();
-  if (!q) return props.items;
-  return props.items.filter((item) =>
-    item.label.toLowerCase().includes(q) ||
-    (item.value && item.value.toLowerCase().includes(q)),
-  );
+const { filteredData: filteredItems } = useSearch(props.items, {
+  searchQuery: searchText,
+  searchFields: ["label", "value"],
 });
 
 function onFocus() {

@@ -2,6 +2,7 @@
 import { ref, computed, watch, nextTick } from "vue";
 import Dropdown from "../overlay/Dropdown.vue";
 import Button from "../buttons/Button.vue";
+import { matchesQuery } from "@/utils/search";
 
 interface SelectOption {
   value: string;
@@ -57,10 +58,10 @@ const cooldownKey = ref(0);
 let resetTimeout: ReturnType<typeof setTimeout> | null = null;
 
 const matchIndex = computed(() => {
-  const q = searchText.value.toLowerCase();
+  const q = searchText.value;
   if (!q) return -1;
   return props.options.findIndex(o =>
-    !o.disabled && o.label.toLowerCase().startsWith(q)
+    !o.disabled && matchesQuery(o.label, q, { mode: "startsWith" }),
   );
 });
 
