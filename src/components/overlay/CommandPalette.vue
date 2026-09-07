@@ -19,9 +19,23 @@ const props = defineProps({
     type: String,
     default: "neutral",
   },
+  title: {
+    type: String,
+    default: "",
+  },
   placeholder: {
     type: String,
     default: "Buscar comandos…",
+  },
+  size: {
+    type: String,
+    default: "auto",
+    validator: (value: string) => ["auto", "sm", "md", "lg", "xl", "full"].includes(value),
+  },
+  height: {
+    type: String,
+    default: "auto",
+    validator: (value: string) => ["auto", "sm", "md", "lg", "xl", "full"].includes(value),
   },
   commands: {
     type: Array as () => CommandItem[],
@@ -97,7 +111,7 @@ defineExpose({
 </script>
 
 <template>
-  <Modal ref="modalRef" :color="color" size="md" @close="emit('close')">
+  <Modal ref="modalRef" :color="color" :title="title" :size="size" :height="height" @close="emit('close')">
     <div class="cu-command-palette" @keydown="handleKeydown">
       <div class="cu-command-palette-search">
         <Input

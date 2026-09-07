@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted, onBeforeUnmount } from "vue";
 import PlaygroundStyle from '@/templates/playground/PlaygroundStyle.vue';
 import PlaygroundApiComponents from '@/templates/playground/PlaygroundApiComponents.vue';
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
@@ -63,7 +63,10 @@ const apiColumns = [
 
 const propsData = [
   { name: 'color', type: 'string', default: '"neutral"', description: 'primary, secondary, neutral, success, warning, danger' },
+  { name: 'title', type: 'string', default: '""', description: 'Título del modal' },
   { name: 'placeholder', type: 'string', default: '"Buscar comandos…"', description: 'Texto del input de búsqueda' },
+  { name: 'size', type: 'string', default: '"auto"', description: 'auto, sm, md, lg, xl, full' },
+  { name: 'height', type: 'string', default: '"auto"', description: 'auto, sm, md, lg, xl, full' },
   { name: 'commands', type: 'CommandItem[]', default: '[]', description: 'Lista de comandos (ver interfaz)' },
 ];
 
@@ -89,10 +92,10 @@ const interfaceCode = `interface CommandItem {
 }`;
 
 const basicCommands: CommandItem[] = [
-  { id: 'new', label: 'Nuevo archivo', description: 'Crear un archivo vacío', category: 'Archivo', icon: '📄', action: () => {} },
-  { id: 'open', label: 'Abrir archivo', description: 'Abrir un archivo existente', category: 'Archivo', icon: '📂', action: () => {} },
-  { id: 'save', label: 'Guardar', description: 'Guardar los cambios', category: 'Archivo', icon: '💾', shortcut: 'Ctrl+S', action: () => {} },
-  { id: 'close', label: 'Cerrar', description: 'Cerrar el archivo activo', category: 'Archivo', icon: '❌', action: () => {} },
+  { id: 'new', label: 'Nuevo archivo', action: () => {} },
+  { id: 'open', label: 'Abrir archivo', action: () => {} },
+  { id: 'save', label: 'Guardar', action: () => {} },
+  { id: 'close', label: 'Cerrar', action: () => {} },
 ];
 
 const categoryCommands: CommandItem[] = [
@@ -121,6 +124,20 @@ const shortcutsRef = ref<InstanceType<typeof CommandPalette> | null>(null);
 const programmaticRef = ref<InstanceType<typeof CommandPalette> | null>(null);
 const selectedCmd = ref<CommandItem | null>(null);
 
+function handleGlobalShortcut(event: KeyboardEvent) {
+  if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === 'p') {
+    event.preventDefault();
+    programmaticRef.value?.open();
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', handleGlobalShortcut);
+});
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', handleGlobalShortcut);
+});
+
 const basicVue = `<script setup>
 import { ref } from 'vue'
 import CommandPalette from '@/components/overlay/CommandPalette.vue'
@@ -129,9 +146,9 @@ import Button from '@/components/buttons/Button.vue'
 const paletteRef = ref(null)
 
 const commands = [
-  { id: 'new', label: 'Nuevo archivo', category: 'Archivo', icon: '📄', action: () => {} },
-  { id: 'open', label: 'Abrir archivo', category: 'Archivo', icon: '📂', action: () => {} },
-  { id: 'save', label: 'Guardar', category: 'Archivo', icon: '💾', shortcut: 'Ctrl+S', action: () => {} },
+  { id: 'new', label: 'Nuevo archivo', action: () => {} },
+  { id: 'open', label: 'Abrir archivo', action: () => {} },
+  { id: 'save', label: 'Guardar', action: () => {} },
 ]
 <\/script>
 
@@ -151,8 +168,8 @@ const basicVanilla = `<link rel="stylesheet" href="css/themes.css">
 <script>
   const palette = document.querySelector('#my-palette')
   palette.commands = [
-    { id: 'new', label: 'Nuevo archivo', category: 'Archivo', icon: '📄', action: () => {} },
-    { id: 'open', label: 'Abrir archivo', category: 'Archivo', icon: '📂', action: () => {} },
+    { id: 'new', label: 'Nuevo archivo', action: () => {} },
+    { id: 'open', label: 'Abrir archivo', action: () => {} },
   ]
   palette.addEventListener('select', (e) => console.log('Selected:', e.detail))
 <\/script>`;
@@ -200,7 +217,7 @@ const shortcutsVanilla = `<cu-command-palette id="my-palette"></cu-command-palet
 <\/script>`;
 
 const programmaticVue = `<script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import CommandPalette from '@/components/overlay/CommandPalette.vue'
 import Button from '@/components/buttons/Button.vue'
 
@@ -211,6 +228,15 @@ const commands = [
   { id: 'new', label: 'Nuevo archivo', action: () => {} },
   { id: 'open', label: 'Abrir archivo', action: () => {} },
 ]
+
+function onKeydown(e) {
+  if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'p') {
+    e.preventDefault()
+    paletteRef.value?.open()
+  }
+}
+onMounted(() => window.addEventListener('keydown', onKeydown))
+onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 <\/script>
 
 <template>
@@ -240,6 +266,7 @@ const commands = [
         <SectionDemo :vue-code="basicVue" :vanilla-code="basicVanilla">
           <div class="playground-col">
             <Button @click="basicRef?.open()">Abrir Command Palette</Button>
+            <Button variant="link" to="#api-interfaces">Ver interfaz CommandItem ↓</Button>
             <CommandPalette ref="basicRef" :commands="basicCommands" @select="selectedCmd = $event" />
           </div>
         </SectionDemo>
@@ -281,6 +308,7 @@ const commands = [
         <h2>Programmatic</h2>
         <p class="playground-desc">
           Seguidilla de botones sobre la instancia de abajo — el palette cambia en vivo.
+          También podés convocarlo con <strong>Ctrl+Shift+P</strong>.
         </p>
         <SectionDemo :vue-code="programmaticVue">
           <div class="playground-col">
@@ -289,7 +317,7 @@ const commands = [
               <Button color="neutral" @click="programmaticRef?.close()">close()</Button>
             </div>
             <p class="playground-state">
-              Selected: <strong>{{ selectedCmd?.label ?? '—' }}</strong>
+              Shortcut: <strong>Ctrl+Shift+P</strong> · Selected: <strong>{{ selectedCmd?.label ?? '—' }}</strong>
             </p>
             <CommandPalette
               ref="programmaticRef"
