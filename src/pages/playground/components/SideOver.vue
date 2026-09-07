@@ -85,7 +85,7 @@ const vanillaSnippet = `${vanillaImport}
 
 <button id="btn">Abrir</button>
 <cu-side-over id="side" title="Título" position="left" size="300px">
-  <div style="padding: 1rem">
+  <div>
     <p>Panel desde la izquierda.</p>
   </div>
 </cu-side-over>
@@ -98,7 +98,7 @@ const sizesVanilla = `${vanillaImport}
 
 <button id="btn">Abrir</button>
 <cu-side-over id="side" title="Tamaño md" position="right" size="md">
-  <div style="padding: 1rem">
+  <div>
     <p>Presets: sm | md | lg | xl | full</p>
   </div>
 </cu-side-over>
@@ -111,7 +111,7 @@ const fullscreenVanilla = `${vanillaImport}
 
 <button id="btn">Abrir</button>
 <cu-side-over id="side" title="Fullscreen" position="bottom" fullscreen>
-  <div style="padding: 1rem">
+  <div>
     <p>Ocupa toda la pantalla (100dvh).</p>
   </div>
 </cu-side-over>
@@ -124,7 +124,7 @@ const persistentVanilla = `${vanillaImport}
 
 <button id="btn">Abrir</button>
 <cu-side-over id="side" title="Persistent" position="right" persistent>
-  <div style="padding: 1rem">
+  <div>
     <p>Se cierra solo programáticamente</p>
     <button onclick="document.querySelector('#side').close()">Cerrar</button>
   </div>
@@ -134,7 +134,7 @@ const persistentVanilla = `${vanillaImport}
   document.querySelector('#btn').addEventListener('click', () => side.open = true)
 <\/script>`;
 
-const formBody = `<form style="display:flex;flex-direction:column;gap:1rem;padding:1rem">
+const formBody = `<form style="display:flex;flex-direction:column;gap:1rem">
     <label>Nombre<br><input type="text" placeholder="Nombre" style="width:100%;padding:0.5rem"></label>
     <label>Email<br><input type="email" placeholder="Email" style="width:100%;padding:0.5rem"></label>
     <label>Teléfono<br><input type="tel" placeholder="Teléfono" style="width:100%;padding:0.5rem"></label>
@@ -333,9 +333,6 @@ const eventsData = [
 </template>
 
 <style scoped>
-.sideover-demo {
-  padding: var(--cu-space-lg);
-}
 .sideover-demo h3 {
   margin: 0 0 var(--cu-space-sm);
 }
@@ -343,7 +340,6 @@ const eventsData = [
   display: flex;
   flex-direction: column;
   gap: var(--cu-space-md);
-  padding: var(--cu-space-lg);
 }
 .sideover-form label {
   font-family: var(--cu-font-sans);

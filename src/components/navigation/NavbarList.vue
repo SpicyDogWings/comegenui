@@ -135,7 +135,18 @@ function itemIcon(item: NavItem): string {
 .cu-navbar :deep(.cu-button) {
   justify-content: flex-start;
   text-align: left;
+  width: 100%;
   padding: var(--cu-space-sm) var(--cu-space-md);
+}
+
+/* La row completa del item es hovereable: el trigger del Collapse y los items
+   ocupan todo el ancho del contenedor (no solo el texto). */
+.cu-navbar :deep(.cu-collapse-trigger) {
+  width: 100%;
+}
+
+.cu-navbar :deep(.cu-dropdown) {
+  width: 100%;
 }
 
 .cu-navbar-header {

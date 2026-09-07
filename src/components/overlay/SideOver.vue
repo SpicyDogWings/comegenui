@@ -195,6 +195,7 @@ const panelStyle = computed(() => {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+  padding: var(--cu-space-lg);
 }
 
 /* Transición: scrim con fade + panel deslizando desde su borde */
