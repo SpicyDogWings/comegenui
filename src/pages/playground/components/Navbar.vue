@@ -12,6 +12,7 @@ const outlineItems = [
   { label: 'Nested', id: 'nested' },
   { label: 'Icons', id: 'icons' },
   { label: 'Compact', id: 'compact' },
+  { label: 'Collapsed', id: 'collapsed' },
   { label: 'Compactable', id: 'compactable' },
   { label: 'Responsive', id: 'responsive' },
   { label: 'Search', id: 'search' },
@@ -140,6 +141,23 @@ const items = [
   <Navbar :items="items" compact />
 </template>`;
 
+const collapsedVue = `<script setup lang="ts">
+import Navbar from '@/components/navigation/Navbar.vue'
+
+const items = [
+  { label: 'Inicio', path: '/inicio' },
+  { label: 'Configuración', children: [
+    { label: 'Perfil', path: '/perfil' },
+    { label: 'Seguridad', path: '/seguridad' },
+  ]},
+]
+<\/script>
+
+<template>
+  <!-- collapsed: los submenús arrancan colapsados (se expanden con un click) -->
+  <Navbar :items="items" collapsed />
+</template>`;
+
 const compactableVue = `<script setup lang="ts">
 import Navbar from '@/components/navigation/Navbar.vue'
 
@@ -247,8 +265,10 @@ const apiColumns = [
 
 const propsData = [
   { name: 'items', type: 'NavItem[]', default: '—', description: 'Árbol de navegación: { label, path?, icon?, children? }. Los items con children se renderizan como Collapse' },
-  { name: 'compact', type: 'boolean', default: 'false', description: 'Modo compacto: muestra solo los iconos (o la inicial del label si no hay icono)' },
+  { name: 'compact', type: 'boolean', default: 'false', description: 'Modo compacto: solo iconos (o la inicial); los submenús pasan a Dropdown flyout como en el horizontal' },
   { name: 'compactable', type: 'boolean', default: 'false', description: 'Agrega un botón nativo en la misma row que el search para alternar el modo compact' },
+  { name: 'collapsed', type: 'boolean', default: 'false', description: 'Los submenús (Collapse) arrancan colapsados en lugar de expandidos' },
+  { name: 'trigger', type: '"click" | "hover"', default: '"click"', description: 'Cómo abren los flyout de submenú en modo compact: click (default) o hover' },
   { name: 'responsive', type: 'boolean', default: 'false', description: 'Bajo 768px la nav se vuelve un drawer overlay con botón hamburguesa' },
   { name: 'search', type: 'boolean', default: 'false', description: 'Activa el input de búsqueda arriba del menú; filtra/resalta items automáticamente' },
   { name: 'searchPlaceholder', type: 'string', default: '"Buscar..."', description: 'Placeholder del input de búsqueda' },
@@ -329,6 +349,22 @@ const interfaceCode = `interface NavItem {
           <div class="playground-col">
             <div class="demo-panel">
               <Navbar :items="iconItems" compact />
+            </div>
+          </div>
+        </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="collapsed" class="playground-section">
+        <div class="playground-heading">
+          <h2>Collapsed</h2>
+          <Badge color="neutral" title="Los Collapse arrancan colapsados">collapsed</Badge>
+        </div>
+        <SectionDemo :vue-code="collapsedVue">
+          <div class="playground-col">
+            <div class="demo-panel">
+              <Navbar :items="navItems" collapsed />
             </div>
           </div>
         </SectionDemo>

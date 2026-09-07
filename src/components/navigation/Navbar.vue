@@ -2,8 +2,11 @@
 import { ref, computed, onMounted, onUnmounted, watch, type PropType } from 'vue'
 import { useRoute } from 'vue-router'
 import Collapse from '@/components/overlay/Collapse.vue'
+import Dropdown from '@/components/overlay/Dropdown.vue'
+import NavbarMenu from '@/components/navigation/NavbarMenu.vue'
 import Button from '@/components/buttons/Button.vue'
 import Input from '@/components/form/Input.vue'
+import LucideChevronRight from '@/components/icons/LucideChevronRight.vue'
 import { useNavbar, type NavItem } from '@/composables/useNavbar'
 
 export interface NavbarItem extends NavItem {}
@@ -26,6 +29,14 @@ const props = defineProps({
   // compactable: agrega un botón nativo (en la misma row que el search) que
   // alterna el modo compact del componente.
   compactable: { type: Boolean, required: false, default: false },
+  // collapsed: los Collapse arrancan colapsados en lugar de expandidos.
+  collapsed: { type: Boolean, required: false, default: false },
+  // Cómo abren los submenús en modo compact (flyout): "click" (default) o "hover".
+  trigger: {
+    type: String as PropType<'click' | 'hover'>,
+    required: false,
+    default: 'click',
+  },
   // Responsive: bajo el breakpoint, la nav se vuelve un drawer overlay que se
   // abre con un botón hamburguesa. Solo aplica en la instancia raíz.
   responsive: { type: Boolean, required: false, default: false },
@@ -140,11 +151,33 @@ watch(() => route.path, () => { open.value = false })
       </div>
 
       <template v-for="item in displayItems" :key="item.path || item.label">
+        <Dropdown
+          v-if="item.children?.length && effectiveCompact"
+          :trigger="props.trigger"
+          position="right"
+          align="start"
+          :class="{ 'cu-navbar-item--match': highlightTarget === item, 'cu-navbar-item--active': activeItem === item }"
+          :data-navbar-match="highlightTarget === item ? '' : undefined"
+          :data-navbar-active="activeItem === item ? '' : undefined"
+        >
+          <template #toggle="{ toggle: t }">
+            <button
+              type="button"
+              class="cu-navbar-compact-trigger"
+              :title="item.label"
+              @click="t"
+            >
+              <span class="cu-navbar-icon" v-html="itemIcon(item)"></span>
+              <LucideChevronRight :width="14" :height="14" class="cu-navbar-compact-chevron" />
+            </button>
+          </template>
+          <NavbarMenu :items="item.children" :trigger="props.trigger" />
+        </Dropdown>
         <Collapse
-          v-if="item.children?.length"
+          v-else-if="item.children?.length"
           :label="item.label"
           :icon="itemIcon(item)"
-          :defaultOpen="true"
+          :defaultOpen="!collapsed"
           :class="{ 'cu-navbar-item--match': highlightTarget === item, 'cu-navbar-item--active': activeItem === item }"
           :data-navbar-match="highlightTarget === item ? '' : undefined"
           :data-navbar-active="activeItem === item ? '' : undefined"
@@ -155,6 +188,7 @@ watch(() => route.path, () => { open.value = false })
             :search-mode="props.searchMode"
             :search-fields="props.searchFields"
             :compact="effectiveCompact"
+            :collapsed="collapsed"
             :highlight-item="highlightTarget"
           />
         </Collapse>
@@ -292,6 +326,35 @@ watch(() => route.path, () => { open.value = false })
 
 .cu-navbar--compact :deep(.cu-navbar-icon) {
   width: auto;
+}
+
+/* Trigger de submenú en modo compact: icono centrado + chevron a la derecha
+   que abre un flyout (Dropdown) con NavbarMenu adentro */
+.cu-navbar-compact-trigger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: var(--cu-space-sm);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: var(--cu-font-size-sm);
+  color: var(--cu-color-neutral);
+  border-radius: var(--cu-radius-sm);
+  transition: background-color 150ms ease;
+}
+
+.cu-navbar-compact-trigger:hover {
+  background-color: var(--cu-color-neutral-ghost-hover);
+}
+
+.cu-navbar-compact-chevron {
+  position: absolute;
+  right: var(--cu-space-2xs);
+  flex-shrink: 0;
+  opacity: 0.45;
 }
 
 /* --- Responsive: drawer overlay en mobile --- */
