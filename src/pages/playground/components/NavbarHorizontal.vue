@@ -348,7 +348,7 @@ const interfaceCode = `interface NavItem {
       <section id="icons" class="playground-section">
         <div class="playground-heading">
           <h2>Icons</h2>
-          <Badge color="neutral" title="Campo icon en NavItem">icon</Badge>
+          <Badge color="neutral" title="Default: sin icono (cadena vacía)">""</Badge>
         </div>
         <SectionDemo :vue-code="iconsVue" :vanilla-code="iconsVanilla">
           <div class="playground-col">

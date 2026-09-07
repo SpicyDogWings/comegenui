@@ -468,7 +468,7 @@ const interfaceCode = `interface NavItem {
       <section id="icons" class="playground-section">
         <div class="playground-heading">
           <h2>Icons</h2>
-          <Badge color="neutral" title="Campo icon en NavItem">icon</Badge>
+          <Badge color="neutral" title="Default: sin icono (cadena vacía)">""</Badge>
         </div>
         <SectionDemo :vue-code="iconsVue" :vanilla-code="iconsVanilla">
           <div class="playground-col">
@@ -484,7 +484,7 @@ const interfaceCode = `interface NavItem {
       <section id="compact" class="playground-section">
         <div class="playground-heading">
           <h2>Compact</h2>
-          <Badge color="neutral" title="Solo iconos o la inicial del label">compact</Badge>
+          <Badge color="neutral" title="Valor por defecto del prop compact">false</Badge>
         </div>
         <SectionDemo :vue-code="compactVue" :vanilla-code="compactVanilla">
           <div class="playground-col">
@@ -519,7 +519,7 @@ const interfaceCode = `interface NavItem {
       <section id="collapsed" class="playground-section">
         <div class="playground-heading">
           <h2>Collapsed</h2>
-          <Badge color="neutral" title="Los Collapse arrancan colapsados">collapsed</Badge>
+          <Badge color="neutral" title="Valor por defecto del prop collapsed">false</Badge>
         </div>
         <SectionDemo :vue-code="collapsedVue" :vanilla-code="collapsedVanilla">
           <div class="playground-col">
@@ -535,7 +535,7 @@ const interfaceCode = `interface NavItem {
       <section id="compactable" class="playground-section">
         <div class="playground-heading">
           <h2>Compactable</h2>
-          <Badge color="neutral" title="Botón nativo junto al search para alternar compact">compactable</Badge>
+          <Badge color="neutral" title="Valor por defecto del prop compactable">false</Badge>
         </div>
         <SectionDemo :vue-code="compactableVue" :vanilla-code="compactableVanilla">
           <div class="playground-col">
@@ -551,7 +551,7 @@ const interfaceCode = `interface NavItem {
       <section id="responsive" class="playground-section">
         <div class="playground-heading">
           <h2>Responsive</h2>
-          <Badge color="neutral" title="Botón hamburguesa que abre un SideOver (lateral o fullscreen)">SideOver</Badge>
+          <Badge color="neutral" title="Valor por defecto del prop responsive (con él, la nav se abre en un SideOver al angostar)">false</Badge>
         </div>
         <SectionDemo :vue-code="responsiveVue" :vanilla-code="responsiveVanilla">
           <div class="playground-col">
