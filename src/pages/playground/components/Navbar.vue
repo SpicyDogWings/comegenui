@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import PlaygroundStyle from '@/templates/playground/PlaygroundStyle.vue';
-import PlaygroundApiComponents from '@/templates/playground/PlaygroundApiComponents.vue';
-import Navbar from "@/components/lab/collapse/navigation/Navbar.vue";
+import Navbar from "@/components/overlay/Navbar.vue";
 import Badge from "@/components/information/Badge.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Table from "@/components/data/Table.vue";
 
 const outlineItems = [
-  { label: 'Basic', id: 'basic' },
+  { label: 'Vertical', id: 'vertical' },
+  { label: 'Horizontal', id: 'horizontal' },
   { label: 'Search', id: 'search' },
   { label: 'Search Modes', id: 'modes', children: [
     { label: 'Filter', id: 'mode-filter' },
@@ -28,12 +28,11 @@ const outlineItems = [
     children: [
       { label: 'Props', id: 'api-props' },
       { label: 'Events', id: 'api-events' },
-      { label: 'Exposes', id: 'api-exposes' },
     ],
   },
 ];
 
-const basicItems = [
+const navItems = [
   { label: 'Inicio', path: '/playground/components/navbar' },
   { label: 'Componentes', children: [
     { label: 'Buttons', children: [
@@ -60,7 +59,7 @@ const basicItems = [
 ];
 
 const vueImport = `<script setup lang="ts">
-import Navbar from '@/components/lab/collapse/navigation/Navbar.vue'
+import Navbar from '@/components/overlay/Navbar.vue'
 
 const items = [
   { label: 'Inicio', path: '/inicio' },
@@ -81,24 +80,23 @@ const vueSnippet = (body: string) => `${vueImport}
 ${body}
 </template>`;
 
-const basicVue = vueSnippet(`  <Navbar :items="items" />`);
+const verticalVue = vueSnippet(`  <!-- Vertical (default): submenús con Collapse -->
+  <Navbar :items="items" />`);
+
+const horizontalVue = vueSnippet(`  <!-- Horizontal: submenús con Dropdown -->
+  <Navbar :items="items" orientation="horizontal" />`);
 
 const searchVue = vueSnippet(`  <Navbar :items="items" search />`);
 
-const filterVue = vueSnippet(`  <!-- filter (default): oculta lo que no matchea.
-       Si matchea un subitem, se muestra su árbol entero -->
+const filterVue = vueSnippet(`  <!-- filter (default): oculta lo que no matchea -->
   <Navbar :items="items" search search-mode="filter" />`);
 
-const scrollVue = vueSnippet(`  <!-- scroll: deja el árbol completo y resalta + scrollea
-       al primer match -->
+const scrollVue = vueSnippet(`  <!-- scroll: resalta + scrollea al match -->
   <Navbar :items="items" search search-mode="scroll" />`);
 
 const fieldsVue = `<script setup lang="ts">
-import Navbar from '@/components/lab/collapse/navigation/Navbar.vue'
+import Navbar from '@/components/overlay/Navbar.vue'
 
-// Por defecto busca en TODA la interfaz del item (todos los campos menos
-// children). Con searchFields se limita a los campos indicados, como en las
-// tablas.
 const items = [
   { label: 'Perfil', path: '/perfil', tag: 'usuario' },
   { label: 'Seguridad', path: '/seguridad', tag: 'sesión' },
@@ -106,7 +104,7 @@ const items = [
 <\/script>
 
 <template>
-  <!-- Solo busca por label: "/seguridad" ya no matchea -->
+  <!-- Solo busca por label -->
   <Navbar :items="items" search :search-fields="['label']" />
 </template>`;
 
@@ -126,10 +124,11 @@ const apiColumns = [
 ];
 
 const propsData = [
-  { name: 'items', type: 'NavItem[]', default: '—', description: 'Árbol de navegación: { label, path?, children? }. Los items con children se renderizan como Collapse' },
+  { name: 'items', type: 'NavItem[]', default: '—', description: 'Árbol de navegación: { label, path?, children? }. Los items con children se renderizan como Collapse (vertical) o Dropdown (horizontal)' },
+  { name: 'orientation', type: '"vertical" | "horizontal"', default: '"vertical"', description: 'Orientación del navbar. Vertical usa Collapse para submenús; horizontal usa Dropdown' },
   { name: 'search', type: 'boolean', default: 'false', description: 'Activa el input de búsqueda arriba del menú; filtra/resalta items automáticamente' },
   { name: 'searchPlaceholder', type: 'string', default: '"Buscar..."', description: 'Placeholder del input de búsqueda' },
-  { name: 'searchMode', type: 'string', default: '"filter"', description: 'filter: oculta lo que no matchea (mostrando el árbol entero del match). scroll: deja el árbol completo y resalta + scrollea al primer match' },
+  { name: 'searchMode', type: 'string', default: '"filter"', description: 'filter: oculta lo que no matchea. scroll: deja el árbol completo y resalta + scrollea al primer match' },
   { name: 'searchFields', type: 'string[]', default: '[]', description: 'Campos a buscar. Vacío = toda la interfaz del item (todos los campos menos children)' },
 ];
 
@@ -141,15 +140,32 @@ const eventsData = [
 <template>
   <PlaygroundLayout title="Navbar" :outlineItems="outlineItems">
     <div class="playground-content">
-      <section id="basic" class="playground-section">
+
+      <section id="vertical" class="playground-section">
         <div class="playground-heading">
-          <h2>Basic</h2>
-          <Badge color="neutral" title="Items con children se renderizan como Collapse">tree</Badge>
+          <h2>Vertical</h2>
+          <Badge color="neutral" title="Orientación por defecto">default</Badge>
         </div>
-        <SectionDemo :vue-code="basicVue">
+        <SectionDemo :vue-code="verticalVue">
           <div class="playground-col">
             <div class="demo-panel">
-              <Navbar :items="basicItems" />
+              <Navbar :items="navItems" />
+            </div>
+          </div>
+        </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="horizontal" class="playground-section">
+        <div class="playground-heading">
+          <h2>Horizontal</h2>
+          <Badge color="neutral" title="Con Dropdown para submenús">orientation="horizontal"</Badge>
+        </div>
+        <SectionDemo :vue-code="horizontalVue">
+          <div class="playground-col">
+            <div class="demo-panel demo-panel--horizontal">
+              <Navbar :items="navItems" orientation="horizontal" />
             </div>
           </div>
         </SectionDemo>
@@ -165,7 +181,7 @@ const eventsData = [
         <SectionDemo :vue-code="searchVue">
           <div class="playground-col">
             <div class="demo-panel">
-              <Navbar :items="basicItems" search />
+              <Navbar :items="navItems" search />
             </div>
           </div>
         </SectionDemo>
@@ -183,7 +199,7 @@ const eventsData = [
         <SectionDemo :vue-code="filterVue">
           <div class="playground-col">
             <div class="demo-panel">
-              <Navbar :items="basicItems" search search-mode="filter" />
+              <Navbar :items="navItems" search search-mode="filter" />
             </div>
           </div>
         </SectionDemo>
@@ -192,7 +208,7 @@ const eventsData = [
         <SectionDemo :vue-code="scrollVue">
           <div class="playground-col">
             <div class="demo-panel demo-panel--scroll">
-              <Navbar :items="basicItems" search search-mode="scroll" />
+              <Navbar :items="navItems" search search-mode="scroll" />
             </div>
           </div>
         </SectionDemo>
@@ -208,15 +224,11 @@ const eventsData = [
         <SectionDemo :vue-code="fieldsVue">
           <div class="playground-col">
             <div class="demo-panel">
-              <Navbar :items="basicItems" search :search-fields="['label']" />
+              <Navbar :items="navItems" search :search-fields="['label']" />
             </div>
           </div>
         </SectionDemo>
       </section>
-
-      <hr class="playground-separator" />
-
-      <hr class="playground-separator" />
 
       <hr class="playground-separator" />
 
@@ -230,10 +242,8 @@ const eventsData = [
 
         <h3 id="api-events">Events</h3>
         <Table :columns="apiColumns" :data="eventsData" variant="ghost" compact />
-
-        <h3 id="api-exposes">Exposes</h3>
-        <Table :columns="apiColumns" :data="[]" empty="No expone métodos" variant="ghost" compact />
       </section>
+
     </div>
   </PlaygroundLayout>
 </template>
@@ -243,6 +253,11 @@ const eventsData = [
   max-width: 320px;
   border: var(--cu-border-thin) solid var(--cu-border-color);
   border-radius: var(--cu-radius-md);
+}
+
+.demo-panel--horizontal {
+  max-width: 100%;
+  width: 100%;
 }
 
 .demo-panel--scroll {

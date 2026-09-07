@@ -80,6 +80,7 @@ const navItems = [
           { label: 'Collapse', path: '/playground/components/collapse' },
           { label: 'Dropdown', path: '/playground/components/dropdown' },
           { label: 'CommandPalette', path: '/playground/components/command-palette' },
+          { label: 'Navbar', path: '/playground/components/navbar' },
         ]
       },
       {
@@ -96,12 +97,7 @@ const navItems = [
           { label: 'Tabs', path: '/playground/components/tabs' },
         ]
       },
-      {
-        label: 'Lab',
-        children: [
-          { label: 'Navbar', path: '/playground/components/navbar' },
-        ]
-      },
+
     ]
   },
 ]
