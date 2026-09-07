@@ -190,11 +190,11 @@ def saludar(nombre):
 ```
 
 ```html
-<!DOCTYPE html>
-<html>
-  <head><title>Ejemplo</title></head>
-  <body><h1>Hola</h1></body>
-</html>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;&lt;title&gt;Ejemplo&lt;/title&gt;&lt;/head&gt;
+  &lt;body&gt;&lt;h1&gt;Hola&lt;/h1&gt;&lt;/body&gt;
+&lt;/html&gt;
 ```
 
 ```
