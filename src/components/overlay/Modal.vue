@@ -209,11 +209,6 @@ defineExpose({
   align-items: flex-start;
   padding: var(--cu-space-lg);
   gap: var(--cu-space-md);
-  border-left: 4px solid transparent;
-}
-
-.cu-modal-header--accent {
-  border-left-color: var(--modal-color);
 }
 
 .cu-modal-header-text {
