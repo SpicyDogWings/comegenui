@@ -11,6 +11,7 @@ const props = defineProps({
     type: String as PropType<'click' | 'hover'>,
     default: 'click',
   },
+  activePath: { type: String, default: '' },
 });
 </script>
 
@@ -18,6 +19,7 @@ const props = defineProps({
   <NavbarHorizontal
     :items="props.items"
     :trigger="props.trigger"
+    :active-path="props.activePath"
   />
 </template>
 

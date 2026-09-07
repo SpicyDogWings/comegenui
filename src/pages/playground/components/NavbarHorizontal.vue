@@ -187,13 +187,16 @@ const basicVanilla = `${vanillaImport}
 <cu-navbar-horizontal id="navbar"></cu-navbar-horizontal>
 <script>
   customElements.whenDefined('cu-navbar-horizontal').then(() => {
-    document.querySelector('#navbar').items = [
+    const el = document.querySelector('#navbar')
+    el.items = [
       { label: 'Inicio', path: '/inicio' },
       { label: 'Componentes', children: [
         { label: 'Button', path: '/componentes/button' },
         { label: 'Input', path: '/componentes/input' },
       ]},
     ]
+    // Sin vue-router no hay match automático: seteá el item activo manualmente
+    el.activePath = '/inicio'
   })
 <\/script>`;
 
@@ -230,6 +233,7 @@ const apiColumns = [
 const propsData = [
   { name: 'items', type: 'NavItem[]', default: '—', description: 'Árbol de navegación: { label, path?, icon?, children? }. Los padres se renderizan como Dropdown en cascada (anidamiento infinito), las hojas como items de menú nativos' },
   { name: 'trigger', type: '"click" | "hover"', default: '"click"', description: 'Cómo abren los submenús: click (default) o hover' },
+  { name: 'activePath', type: 'string', default: '""', description: 'Path del item activo (manual). En apps Vue se toma de useRoute() si no se pasa; en vanilla/PHP setealo vos' },
 ];
 
 const interfaceCode = `interface NavItem {

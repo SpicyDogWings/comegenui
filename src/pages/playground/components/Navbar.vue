@@ -12,6 +12,7 @@ const outlineItems = [
   { label: 'Nested', id: 'nested' },
   { label: 'Icons', id: 'icons' },
   { label: 'Compact', id: 'compact' },
+  { label: 'Flyout', id: 'flyout' },
   { label: 'Collapsed', id: 'collapsed' },
   { label: 'Compactable', id: 'compactable' },
   { label: 'Responsive', id: 'responsive' },
@@ -127,7 +128,7 @@ const items = [
 const compactVue = `<script setup lang="ts">
 import Navbar from '@/components/navigation/Navbar.vue'
 
-// Compact: solo iconos (o la inicial del label si no hay icono)
+// Compact: solo iconos (o la inicial del label si no hay icono).
 const items = [
   { label: 'Inicio', path: '/inicio', icon: '🏠' },
   { label: 'Configuración', icon: '⚙️', children: [
@@ -139,6 +140,27 @@ const items = [
 
 <template>
   <Navbar :items="items" compact />
+</template>`;
+
+const flyoutVue = `<script setup lang="ts">
+import Navbar from '@/components/navigation/Navbar.vue'
+
+const items = [
+  { label: 'Inicio', path: '/inicio', icon: '🏠' },
+  { label: 'Configuración', icon: '⚙️', children: [
+    { label: 'Perfil', path: '/perfil', icon: '👤' },
+    { label: 'Seguridad', path: '/seguridad', icon: '🔒' },
+  ]},
+]
+<\/script>
+
+<template>
+  <!-- Los items con children muestran un chevron › (LucideChevronRight) y abren
+       un flyout (Dropdown) con NavbarMenu adentro, como el horizontal -->
+  <Navbar :items="items" compact />
+
+  <!-- Los flyout también abren por hover con trigger="hover" -->
+  <Navbar :items="items" compact trigger="hover" />
 </template>`;
 
 const collapsedVue = `<script setup lang="ts">
@@ -223,13 +245,17 @@ const basicVanilla = `${vanillaImport}
 <cu-navbar id="navbar"></cu-navbar>
 <script>
   customElements.whenDefined('cu-navbar').then(() => {
-    document.querySelector('#navbar').items = [
+    const el = document.querySelector('#navbar')
+    el.items = [
       { label: 'Inicio', path: '/inicio' },
       { label: 'Componentes', children: [
         { label: 'Button', path: '/componentes/button' },
         { label: 'Input', path: '/componentes/input' },
       ]},
     ]
+    // Sin vue-router no hay match automático: seteá el item activo manualmente
+    // (en una app PHP, la ruta actual la da tu backend)
+    el.activePath = '/inicio'
   })
 <\/script>`;
 
@@ -269,6 +295,7 @@ const propsData = [
   { name: 'compactable', type: 'boolean', default: 'false', description: 'Agrega un botón nativo en la misma row que el search para alternar el modo compact' },
   { name: 'collapsed', type: 'boolean', default: 'false', description: 'Los submenús (Collapse) arrancan colapsados en lugar de expandidos' },
   { name: 'trigger', type: '"click" | "hover"', default: '"click"', description: 'Cómo abren los flyout de submenú en modo compact: click (default) o hover' },
+  { name: 'activePath', type: 'string', default: '""', description: 'Path del item activo (manual). Sin esto, en apps Vue se toma de useRoute(); en vanilla/PHP setealo vos' },
   { name: 'responsive', type: 'boolean', default: 'false', description: 'Bajo 768px la nav se vuelve un drawer overlay con botón hamburguesa' },
   { name: 'search', type: 'boolean', default: 'false', description: 'Activa el input de búsqueda arriba del menú; filtra/resalta items automáticamente' },
   { name: 'searchPlaceholder', type: 'string', default: '"Buscar..."', description: 'Placeholder del input de búsqueda' },
@@ -349,6 +376,25 @@ const interfaceCode = `interface NavItem {
           <div class="playground-col">
             <div class="demo-panel">
               <Navbar :items="iconItems" compact />
+            </div>
+          </div>
+        </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="flyout" class="playground-section">
+        <div class="playground-heading">
+          <h2>Flyout</h2>
+          <Badge color="neutral" title="Submenús en compact abren como Dropdown a la derecha con chevron ›">trigger</Badge>
+        </div>
+        <SectionDemo :vue-code="flyoutVue">
+          <div class="playground-col">
+            <div class="demo-panel">
+              <Navbar :items="iconItems" compact />
+            </div>
+            <div class="demo-panel">
+              <Navbar :items="iconItems" compact trigger="hover" />
             </div>
           </div>
         </SectionDemo>

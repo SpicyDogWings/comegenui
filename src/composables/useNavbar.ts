@@ -13,6 +13,9 @@ interface UseNavbarOptions {
   search: () => boolean
   searchMode: () => 'filter' | 'scroll'
   searchFields: () => string[]
+  /** Path activo manual (para vanilla/CE sin vue-router). Si se omite, se usa
+   * useRoute() cuando hay router. */
+  activePath?: () => string | undefined
   /** Item global a resaltar en modo scroll (lo calcula la raíz y lo propagan
    * las instancias recursivas). Si no se pasa, lo calcula el composable. */
   highlightItem?: () => NavItem | null
@@ -24,7 +27,14 @@ interface UseNavbarOptions {
  * búsqueda (filter/scroll), item activo por ruta, resaltado y scroll automático.
  */
 export function useNavbar(options: UseNavbarOptions) {
-  const route = useRoute()
+  // En vanilla (Custom Element) no hay vue-router: useRoute() tira. Se guarda y
+  // se usa el path manual (activePath) cuando no hay router.
+  let route: { path: string } | null = null
+  try {
+    route = useRoute()
+  } catch {
+    route = null
+  }
   const query = ref('')
   const navRef = ref<HTMLElement | null>(null)
 
@@ -88,7 +98,8 @@ export function useNavbar(options: UseNavbarOptions) {
   const highlightTarget = computed<NavItem | null>(() => options.highlightItem?.() ?? firstMatch.value)
 
   const activeItem = computed(() => {
-    const currentPath = route.path
+    const currentPath = options.activePath?.() ?? route?.path
+    if (currentPath == null) return null
     const findActive = (items: NavItem[]): NavItem | null => {
       for (const item of items) {
         if (item.path === currentPath) return item

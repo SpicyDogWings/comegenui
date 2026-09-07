@@ -40,6 +40,9 @@ const props = defineProps({
   // Responsive: bajo el breakpoint, la nav se vuelve un drawer overlay que se
   // abre con un botón hamburguesa. Solo aplica en la instancia raíz.
   responsive: { type: Boolean, required: false, default: false },
+  // Path activo manual (para vanilla/CE sin vue-router). Si se omite, se toma
+  // de useRoute() cuando hay router.
+  activePath: { type: String, required: false, default: '' },
   // Interno: item global a resaltar en modo scroll (lo calcula la raíz y se
   // propaga a las instancias recursivas).
   highlightItem: { type: Object as () => NavItem | null, required: false, default: null },
@@ -58,6 +61,7 @@ const {
   search: () => props.search,
   searchMode: () => props.searchMode,
   searchFields: () => props.searchFields,
+  activePath: () => (props.activePath || undefined),
   highlightItem: () => props.highlightItem,
   onSearch: (q) => emit('search', q),
 })
@@ -96,8 +100,13 @@ onUnmounted(() => {
   mq?.removeEventListener('change', onChange)
 })
 
-const route = useRoute()
-watch(() => route.path, () => { open.value = false })
+let route: { path: string } | null = null
+try {
+  route = useRoute()
+} catch {
+  route = null
+}
+watch(() => route?.path, () => { open.value = false })
 </script>
 
 <template>
@@ -189,6 +198,7 @@ watch(() => route.path, () => { open.value = false })
             :search-fields="props.searchFields"
             :compact="effectiveCompact"
             :collapsed="collapsed"
+            :active-path="props.activePath"
             :highlight-item="highlightTarget"
           />
         </Collapse>
@@ -354,7 +364,7 @@ watch(() => route.path, () => { open.value = false })
   position: absolute;
   right: var(--cu-space-2xs);
   flex-shrink: 0;
-  opacity: 0.45;
+  opacity: 0.65;
 }
 
 /* --- Responsive: drawer overlay en mobile --- */

@@ -22,6 +22,7 @@ const props = defineProps({
     default: 'click',
   },
   responsive: { type: Boolean, default: false },
+  activePath: { type: String, default: '' },
 });
 
 const instance = getCurrentInstance();
@@ -50,6 +51,7 @@ function ceEmit(event: string, payload: unknown) {
     :collapsed="props.collapsed"
     :trigger="props.trigger"
     :responsive="props.responsive"
+    :active-path="props.activePath"
     @search="ceEmit('search', $event)"
   />
 </template>

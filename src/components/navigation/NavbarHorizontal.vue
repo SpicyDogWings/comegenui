@@ -16,6 +16,9 @@ const props = defineProps({
     required: false,
     default: 'click',
   },
+  // Path activo manual (para vanilla/CE sin vue-router). Si se omite, se toma
+  // de useRoute() cuando hay router.
+  activePath: { type: String, required: false, default: '' },
 })
 
 const {
@@ -28,6 +31,7 @@ const {
   search: () => false,
   searchMode: () => 'filter',
   searchFields: () => [],
+  activePath: () => (props.activePath || undefined),
 })
 </script>
 
