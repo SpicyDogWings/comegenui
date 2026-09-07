@@ -55,7 +55,12 @@ function sanitizeBlock(block: MarkdownBlock): MarkdownBlock {
 function getText(): string {
   const el = slotEl.value
   if (!el) return ''
-  return (el.textContent || '').replace(/\\n/g, '\n')
+  // En un Custom Element el contenido del slot vive en el light DOM del host
+  // (los nodos no son hijos DOM del div slotEl). Leer del host para no perderlo.
+  const root = el.getRootNode() as (ShadowRoot | Document)
+  const host = (root as ShadowRoot).host || null
+  const source = host || el
+  return (source.textContent || '').replace(/\\n/g, '\n')
 }
 
 function renderMarkdown() {
