@@ -86,6 +86,20 @@ const iconItems = [
   { label: 'Ayuda', path: '/ayuda', icon: '❓' },
 ];
 
+// Mixtos para compact: algunos con icono y otros sin (muestran la inicial).
+const compactMixedItems = [
+  { label: 'Inicio', path: '/playground/components/navbar', icon: '🏠' },
+  { label: 'Componentes', children: [
+    { label: 'Button', path: '/playground/components/button' },
+    { label: 'Input', path: '/playground/components/input', icon: '⌨️' },
+  ]},
+  { label: 'Configuración', icon: '⚙️', children: [
+    { label: 'Perfil', path: '/perfil', icon: '👤' },
+    { label: 'Seguridad', path: '/seguridad' },
+  ]},
+  { label: 'Ayuda', path: '/ayuda' },
+];
+
 const vueImport = `<script setup lang="ts">
 import Navbar from '@/components/navigation/Navbar.vue'
 
@@ -129,8 +143,12 @@ const compactVue = `<script setup lang="ts">
 import Navbar from '@/components/navigation/Navbar.vue'
 
 // Compact: solo iconos (o la inicial del label si no hay icono).
+// Los items sin icon muestran la inicial: Componentes → C, Ayuda → A.
 const items = [
   { label: 'Inicio', path: '/inicio', icon: '🏠' },
+  { label: 'Componentes', children: [
+    { label: 'Perfil', path: '/perfil' },
+  ]},
   { label: 'Configuración', icon: '⚙️', children: [
     { label: 'Perfil', path: '/perfil', icon: '👤' },
   ]},
@@ -374,10 +392,7 @@ const interfaceCode = `interface NavItem {
         <SectionDemo :vue-code="compactVue">
           <div class="playground-col">
             <div class="demo-panel">
-              <Navbar :items="iconItems" compact />
-            </div>
-            <div class="demo-panel">
-              <Navbar :items="navItems" compact />
+              <Navbar :items="compactMixedItems" compact />
             </div>
           </div>
         </SectionDemo>
