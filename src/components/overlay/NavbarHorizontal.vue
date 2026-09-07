@@ -1,69 +1,59 @@
 <script setup lang="ts">
 import { type PropType } from 'vue'
-import Collapse from '@/components/overlay/Collapse.vue'
+import Dropdown from '@/components/overlay/Dropdown.vue'
+import NavbarMenu from '@/components/overlay/NavbarMenu.vue'
 import Button from '@/components/buttons/Button.vue'
-import Input from '@/components/form/Input.vue'
+import LucideChevronDown from '@/components/icons/LucideChevronDown.vue'
 import { useNavbar, type NavItem } from '@/composables/useNavbar'
 
-export interface NavbarItem extends NavItem {}
+export interface NavbarHorizontalItem extends NavItem {}
 
 const props = defineProps({
   items: { type: Array as () => NavItem[], required: true },
-  search: { type: Boolean, required: false, default: false },
-  searchPlaceholder: { type: String, required: false, default: 'Buscar...' },
-  searchMode: {
-    type: String as PropType<'filter' | 'scroll'>,
+  // Cómo abren los submenús: "click" (default) o "hover".
+  trigger: {
+    type: String as PropType<'click' | 'hover'>,
     required: false,
-    default: 'filter',
-    validator: (value: string) => ['filter', 'scroll'].includes(value),
+    default: 'click',
   },
-  searchFields: { type: Array as () => string[], required: false, default: () => [] },
-  // Interno: item global a resaltar en modo scroll (lo calcula la raíz y se
-  // propaga a las instancias recursivas).
-  highlightItem: { type: Object as () => NavItem | null, required: false, default: null },
 })
 
 const emit = defineEmits<{ (e: 'search', query: string): void }>()
 
 const {
-  query,
   navRef,
   displayItems,
   highlightTarget,
   activeItem,
 } = useNavbar({
   items: () => props.items,
-  search: () => props.search,
-  searchMode: () => props.searchMode,
-  searchFields: () => props.searchFields,
-  highlightItem: () => props.highlightItem,
+  search: () => false,
+  searchMode: () => 'filter',
+  searchFields: () => [],
   onSearch: (q) => emit('search', q),
 })
 </script>
 
 <template>
   <nav ref="navRef" class="cu-navbar">
-    <div v-if="search" class="cu-navbar-search">
-      <Input v-model="query" :placeholder="searchPlaceholder" />
-    </div>
-
     <template v-for="item in displayItems" :key="item.path || item.label">
-      <Collapse
+      <Dropdown
         v-if="item.children?.length"
-        :label="item.label"
-        :defaultOpen="true"
+        :trigger="props.trigger"
         :class="{ 'cu-navbar-item--match': highlightTarget === item, 'cu-navbar-item--active': activeItem === item }"
         :data-navbar-match="highlightTarget === item ? '' : undefined"
         :data-navbar-active="activeItem === item ? '' : undefined"
       >
-        <Navbar
-          :items="item.children"
-          :search="false"
-          :search-mode="props.searchMode"
-          :search-fields="props.searchFields"
-          :highlight-item="highlightTarget"
-        />
-      </Collapse>
+        <template #toggle="{ toggle: t }">
+          <button class="cu-navbar-dropdown-trigger" @click="t">
+            {{ item.label }}
+            <LucideChevronDown :width="14" :height="14" class="cu-navbar-chevron" />
+          </button>
+        </template>
+        <template #default>
+          <NavbarMenu :items="item.children" :trigger="props.trigger" />
+        </template>
+      </Dropdown>
       <Button
         v-else
         :to="item.path!"
@@ -76,20 +66,15 @@ const {
         {{ item.label }}
       </Button>
     </template>
-
-    <div
-      v-if="props.search && props.searchMode === 'filter' && query && displayItems.length === 0"
-      class="cu-navbar-empty"
-    >
-      Sin resultados
-    </div>
   </nav>
 </template>
 
 <style scoped>
 .cu-navbar {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
   gap: var(--cu-space-2xs);
   padding: var(--cu-space-2xs);
 }
@@ -100,12 +85,8 @@ const {
   padding: var(--cu-space-sm) var(--cu-space-md);
 }
 
-.cu-navbar-search {
-  margin-bottom: var(--cu-space-xs);
-}
-
-.cu-navbar :deep(.cu-collapse-content) {
-  margin-top: var(--cu-space-xs);
+.cu-navbar :deep(.cu-dropdown-panel) {
+  padding: var(--cu-space-xs);
 }
 
 /* Highlight del modo scroll (clase duplicada → 0,3,0 para pisar el ghost) */
@@ -113,14 +94,26 @@ const {
   background-color: var(--cu-color-primary-soft);
 }
 
-.cu-navbar :deep(.cu-collapse.cu-navbar-item--match.cu-navbar-item--match > .cu-collapse-trigger) {
-  background-color: var(--cu-color-primary-soft);
+.cu-navbar-dropdown-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cu-space-2xs);
+  padding: var(--cu-space-sm) var(--cu-space-md);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: var(--cu-font-sans);
+  font-size: var(--cu-font-size-sm);
+  color: var(--cu-color-neutral);
+  border-radius: var(--cu-radius-sm);
+  transition: background-color 0.15s ease;
 }
 
-.cu-navbar-empty {
-  padding: var(--cu-space-sm) var(--cu-space-md);
-  font-size: var(--cu-font-size-sm);
-  color: var(--cu-color-neutral-text);
-  opacity: 0.6;
+.cu-navbar-dropdown-trigger:hover {
+  background-color: var(--cu-color-neutral-ghost-hover);
+}
+
+.cu-navbar-chevron {
+  transition: transform 0.2s ease;
 }
 </style>

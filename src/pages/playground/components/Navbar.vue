@@ -7,8 +7,8 @@ import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Table from "@/components/data/Table.vue";
 
 const outlineItems = [
-  { label: 'Vertical', id: 'vertical' },
-  { label: 'Horizontal', id: 'horizontal' },
+  { label: 'Basic', id: 'basic' },
+  { label: 'Nested', id: 'nested' },
   { label: 'Search', id: 'search' },
   { label: 'Search Modes', id: 'modes', children: [
     { label: 'Filter', id: 'mode-filter' },
@@ -80,11 +80,7 @@ const vueSnippet = (body: string) => `${vueImport}
 ${body}
 </template>`;
 
-const verticalVue = vueSnippet(`  <!-- Vertical (default): submenús con Collapse -->
-  <Navbar :items="items" />`);
-
-const horizontalVue = vueSnippet(`  <!-- Horizontal: submenús con Dropdown -->
-  <Navbar :items="items" orientation="horizontal" />`);
+const basicVue = vueSnippet(`  <Navbar :items="items" />`);
 
 const searchVue = vueSnippet(`  <Navbar :items="items" search />`);
 
@@ -108,6 +104,39 @@ const items = [
   <Navbar :items="items" search :search-fields="['label']" />
 </template>`;
 
+const vanillaImport = `<link rel="stylesheet" href="dist/css/themes.css">
+<script src="dist/CuNavbar.umd.js"><\/script>`;
+
+const basicVanilla = `${vanillaImport}
+
+<cu-navbar id="navbar"></cu-navbar>
+<script>
+  customElements.whenDefined('cu-navbar').then(() => {
+    document.querySelector('#navbar').items = [
+      { label: 'Inicio', path: '/inicio' },
+      { label: 'Componentes', children: [
+        { label: 'Button', path: '/componentes/button' },
+        { label: 'Input', path: '/componentes/input' },
+      ]},
+    ]
+  })
+<\/script>`;
+
+// Anidamiento profundo: el componente es recursivo, no hay límite de niveles.
+const deepItems = [
+  { label: 'Nivel 1', children: [
+    { label: 'Nivel 2', children: [
+      { label: 'Nivel 3', children: [
+        { label: 'Nivel 4', path: '/nivel-4' },
+        { label: 'Otro nivel 4', path: '/nivel-4-b' },
+      ]},
+      { label: 'Hoja nivel 3', path: '/hoja-3' },
+    ]},
+    { label: 'Hoja nivel 2', path: '/hoja-2' },
+  ]},
+  { label: 'Inicio', path: '/inicio' },
+];
+
 const componentTokens = [
   '--cu-font-size-sm',
   '--cu-space-2xs',
@@ -124,8 +153,7 @@ const apiColumns = [
 ];
 
 const propsData = [
-  { name: 'items', type: 'NavItem[]', default: '—', description: 'Árbol de navegación: { label, path?, children? }. Los items con children se renderizan como Collapse (vertical) o Dropdown (horizontal)' },
-  { name: 'orientation', type: '"vertical" | "horizontal"', default: '"vertical"', description: 'Orientación del navbar. Vertical usa Collapse para submenús; horizontal usa Dropdown' },
+  { name: 'items', type: 'NavItem[]', default: '—', description: 'Árbol de navegación: { label, path?, children? }. Los items con children se renderizan como Collapse' },
   { name: 'search', type: 'boolean', default: 'false', description: 'Activa el input de búsqueda arriba del menú; filtra/resalta items automáticamente' },
   { name: 'searchPlaceholder', type: 'string', default: '"Buscar..."', description: 'Placeholder del input de búsqueda' },
   { name: 'searchMode', type: 'string', default: '"filter"', description: 'filter: oculta lo que no matchea. scroll: deja el árbol completo y resalta + scrollea al primer match' },
@@ -141,12 +169,12 @@ const eventsData = [
   <PlaygroundLayout title="Navbar" :outlineItems="outlineItems">
     <div class="playground-content">
 
-      <section id="vertical" class="playground-section">
+      <section id="basic" class="playground-section">
         <div class="playground-heading">
-          <h2>Vertical</h2>
-          <Badge color="neutral" title="Orientación por defecto">default</Badge>
+          <h2>Basic</h2>
+          <Badge color="neutral" title="Items con children se renderizan como Collapse">tree</Badge>
         </div>
-        <SectionDemo :vue-code="verticalVue">
+        <SectionDemo :vue-code="basicVue" :vanilla-code="basicVanilla">
           <div class="playground-col">
             <div class="demo-panel">
               <Navbar :items="navItems" />
@@ -157,15 +185,15 @@ const eventsData = [
 
       <hr class="playground-separator" />
 
-      <section id="horizontal" class="playground-section">
+      <section id="nested" class="playground-section">
         <div class="playground-heading">
-          <h2>Horizontal</h2>
-          <Badge color="neutral" title="Con Dropdown para submenús">orientation="horizontal"</Badge>
+          <h2>Nested</h2>
+          <Badge color="neutral" title="El anidamiento es infinito">∞</Badge>
         </div>
-        <SectionDemo :vue-code="horizontalVue">
+        <SectionDemo :vue-code="basicVue">
           <div class="playground-col">
-            <div class="demo-panel demo-panel--horizontal">
-              <Navbar :items="navItems" orientation="horizontal" />
+            <div class="demo-panel">
+              <Navbar :items="deepItems" />
             </div>
           </div>
         </SectionDemo>
@@ -253,11 +281,6 @@ const eventsData = [
   max-width: 320px;
   border: var(--cu-border-thin) solid var(--cu-border-color);
   border-radius: var(--cu-radius-md);
-}
-
-.demo-panel--horizontal {
-  max-width: 100%;
-  width: 100%;
 }
 
 .demo-panel--scroll {

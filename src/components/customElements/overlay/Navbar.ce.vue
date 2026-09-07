@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, getCurrentInstance, type PropType } from "vue";
+import { getCurrentInstance, type PropType } from "vue";
 import Navbar from "../../overlay/Navbar.vue";
 import { initTokens } from "@/plugins/cu-tokens/css";
 
@@ -7,10 +7,6 @@ initTokens();
 
 const props = defineProps({
   items: { type: Array as () => unknown[], required: true },
-  orientation: {
-    type: String as PropType<'vertical' | 'horizontal'>,
-    default: 'vertical',
-  },
   search: { type: Boolean, default: false },
   searchPlaceholder: { type: String, default: 'Buscar...' },
   searchMode: {
@@ -19,8 +15,6 @@ const props = defineProps({
   },
   searchFields: { type: Array as () => string[], default: () => [] },
 });
-
-const navbarRef = ref<InstanceType<typeof Navbar> | null>(null);
 
 const instance = getCurrentInstance();
 function ceEmit(event: string, payload: unknown) {
@@ -38,9 +32,7 @@ function ceEmit(event: string, payload: unknown) {
 
 <template>
   <Navbar
-    ref="navbarRef"
     :items="props.items"
-    :orientation="props.orientation"
     :search="props.search"
     :search-placeholder="props.searchPlaceholder"
     :search-mode="props.searchMode"

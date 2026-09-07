@@ -81,6 +81,7 @@ const navItems = [
           { label: 'Dropdown', path: '/playground/components/dropdown' },
           { label: 'CommandPalette', path: '/playground/components/command-palette' },
           { label: 'Navbar', path: '/playground/components/navbar' },
+          { label: 'NavbarHorizontal', path: '/playground/components/navbar-horizontal' },
         ]
       },
       {

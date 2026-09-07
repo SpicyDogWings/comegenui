@@ -217,6 +217,11 @@ const router = createRouter({
               name: "Navbar playground",
               component: () => import("@/pages/playground/components/Navbar.vue")
             },
+            {
+              path: "navbar-horizontal",
+              name: "NavbarHorizontal playground",
+              component: () => import("@/pages/playground/components/NavbarHorizontal.vue")
+            },
           ]
         },
       ]
