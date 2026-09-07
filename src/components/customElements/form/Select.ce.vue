@@ -38,6 +38,7 @@ const props = defineProps({
   fixed: { type: Boolean, required: false, default: false },
   hightContrast: { type: Boolean, required: false, default: false },
   searchEnabled: { type: Boolean, required: false, default: false },
+  searchMode: { type: String, required: false, default: "startsWith" },
   searchResetDelay: { type: Number, required: false, default: 1000 },
   loading: { type: Boolean, required: false, default: false },
   cooldownVariant: { type: String, required: false, default: "ghost-hover" },
@@ -103,6 +104,7 @@ defineExpose({
     :model-value="innerValue"
     :options="resolvedOptions"
     :search-enabled="props.searchEnabled"
+    :search-mode="props.searchMode"
     :search-reset-delay="props.searchResetDelay"
     :loading="props.loading"
     :cooldown-variant="props.cooldownVariant"

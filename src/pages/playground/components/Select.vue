@@ -48,6 +48,7 @@ const outlineItems = [
   { label: 'Disabled', id: 'disabled' },
   { label: 'v-model', id: 'v-model' },
   { label: 'Searchable', id: 'searchable' },
+  { label: 'Search Mode', id: 'search-mode' },
   { label: 'Search Cooldown', id: 'cooldown' },
   { label: 'Loading', id: 'loading' },
   { label: 'Positions', id: 'positions' },
@@ -158,6 +159,17 @@ const selected = ref('')
   <Select v-model="selected" :options="countries" search-enabled placeholder="Buscar país..." style="max-width:300px" />
 </template>`;
 
+const searchModeVue = `<script setup>
+import Select from '@/components/form/Select.vue'
+
+${countriesTs}
+<\/script>
+
+<template>
+  <Select :options="countries" search-enabled search-mode="startsWith" placeholder="startsWith (default)" style="max-width:300px" />
+  <Select :options="countries" search-enabled search-mode="includes" placeholder="includes" style="max-width:300px" />
+</template>`;
+
 const cooldownVue = `<script setup>
 import Select from '@/components/form/Select.vue'
 
@@ -244,6 +256,9 @@ const vmodelVanilla = `<script src="dist/CuSelect.umd.js"><\/script>
 <\/script>`;
 
 const searchableVanilla = vanillaSnippet(`<cu-select id="pais" search-enabled placeholder="Buscar país..." style="max-width:300px"></cu-select>`, assignCountriesJs);
+
+const searchModeVanilla = vanillaSnippet(`<cu-select id="sm1" search-enabled search-mode="startsWith" placeholder="startsWith (default)" style="max-width:300px"></cu-select>
+<cu-select id="sm2" search-enabled search-mode="includes" placeholder="includes" style="max-width:300px"></cu-select>`, assignCountriesJs);
 
 const cooldownVanilla = vanillaSnippet(`<cu-select id="k1" search-enabled color="primary" search-reset-delay="2000" placeholder="primary" style="max-width:200px"></cu-select>
 <cu-select id="k2" search-enabled color="success" search-reset-delay="2000" placeholder="success" style="max-width:200px"></cu-select>
@@ -373,6 +388,7 @@ const propsData = [
   { name: 'textAlign', type: 'string', default: '"left"', description: 'Alineación del texto de las opciones: left, center, right' },
   { name: 'fixed', type: 'boolean', default: 'false', description: 'Posiciona el panel con position: fixed (útil dentro de contenedores con overflow)' },
   { name: 'searchEnabled', type: 'boolean', default: 'false', description: 'Búsqueda por teclado como select nativo; hace scroll a la opción que coincide' },
+  { name: 'searchMode', type: 'string', default: '"startsWith"', description: 'Modo de coincidencia: startsWith (inicia con) o includes (contiene)' },
   { name: 'searchResetDelay', type: 'number', default: '1000', description: 'Ms antes de resetear el texto de búsqueda' },
   { name: 'loading', type: 'boolean', default: 'false', description: 'Muestra estado de carga en el panel (delegado al Dropdown interno)' },
   { name: 'cooldownVariant', type: 'string', default: '"ghost-hover"', description: 'Variante de la barra de cooldown de la búsqueda' },
@@ -485,6 +501,24 @@ const exposesData = [
           <div class="playground-col">
             <Select v-model="searchSelected" :options="countryOptions" search-enabled placeholder="Buscar país..." style="max-width:300px" />
             <p class="playground-code">Selected: {{ searchSelected || '(ninguno)' }}</p>
+          </div>
+        </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="search-mode" class="playground-section">
+        <div class="playground-heading">
+          <h2>Search Mode</h2>
+          <Badge color="neutral" title="Default">startsWith</Badge>
+        </div>
+        <p class="playground-desc">
+          Controla cómo se matchea el texto de búsqueda: <code>startsWith</code> (solo al inicio) o <code>includes</code> (en cualquier parte del label).
+        </p>
+        <SectionDemo :vue-code="searchModeVue" :vanilla-code="searchModeVanilla">
+          <div class="playground-col">
+            <Select :options="countryOptions" search-enabled search-mode="startsWith" placeholder="startsWith (default)" style="max-width:300px" />
+            <Select :options="countryOptions" search-enabled search-mode="includes" placeholder="includes" style="max-width:300px" />
           </div>
         </SectionDemo>
       </section>
