@@ -72,6 +72,11 @@ async function runBuilds() {
     await build({
       configFile: false,
       define: { 'process.env.NODE_ENV': JSON.stringify('production') },
+      resolve: {
+        alias: {
+          '@': resolve(__dirname, 'src'),
+        },
+      },
       plugins: [vue({ features: { customElement: true } }), UnoCSS({ mode: 'shadow-dom' })],
       build: {
         emptyOutDir: false,
@@ -92,11 +97,13 @@ async function runBuilds() {
   const cssDir = resolve(outDir, 'css')
   fs.mkdirSync(cssDir, { recursive: true })
 
-  const themesCSS = generateThemesCSS(themes, shared)
+  const opacities = config.opacities || {}
+
+  const themesCSS = generateThemesCSS(themes, shared, opacities)
   fs.writeFileSync(resolve(cssDir, 'themes.css'), themesCSS)
 
   for (const [name, tokens] of Object.entries(themes)) {
-    const themeCSS = generateThemeCSS(name, tokens, shared)
+    const themeCSS = generateThemeCSS(name, tokens, shared, opacities)
     fs.writeFileSync(resolve(cssDir, `${name}.css`), themeCSS)
   }
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue'
-import Navbar from '@/components/lab/collapse/navigation/Navbar.vue'
+import Navbar from '@/components/navigation/Navbar.vue'
 import Outline from '@/components/lab/collapse/navigation/Outline.vue'
 import type { OutlineItem } from '@/components/lab/collapse/navigation/Outline.vue'
 import Badge from '@/components/information/Badge.vue'

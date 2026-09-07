@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Navbar from '@/components/lab/collapse/navigation/Navbar.vue'
+import Navbar from '@/components/navigation/Navbar.vue'
 import Outline from '@/components/lab/collapse/navigation/Outline.vue'
 import Input from '@/components/form/Input.vue'
 import Button from '@/components/buttons/Button.vue'
