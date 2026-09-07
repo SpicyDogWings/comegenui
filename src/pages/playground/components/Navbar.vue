@@ -12,7 +12,7 @@ const outlineItems = [
   { label: 'Nested', id: 'nested' },
   { label: 'Icons', id: 'icons' },
   { label: 'Compact', id: 'compact' },
-  { label: 'Flyout', id: 'flyout' },
+  { label: 'Triggers', id: 'triggers' },
   { label: 'Collapsed', id: 'collapsed' },
   { label: 'Compactable', id: 'compactable' },
   { label: 'Responsive', id: 'responsive' },
@@ -142,7 +142,7 @@ const items = [
   <Navbar :items="items" compact />
 </template>`;
 
-const flyoutVue = `<script setup lang="ts">
+const triggersVue = `<script setup lang="ts">
 import Navbar from '@/components/navigation/Navbar.vue'
 
 const items = [
@@ -294,7 +294,8 @@ const propsData = [
   { name: 'collapsed', type: 'boolean', default: 'false', description: 'Los submenús (Collapse) arrancan colapsados en lugar de expandidos' },
   { name: 'trigger', type: '"click" | "hover"', default: '"click"', description: 'Cómo abren los flyout de submenú en modo compact: click (default) o hover' },
   { name: 'activePath', type: 'string', default: '""', description: 'Path del item activo (manual). Sin esto, en apps Vue se toma de useRoute(); en vanilla/PHP setealo vos' },
-  { name: 'responsive', type: 'boolean', default: 'false', description: 'Bajo 768px la nav se vuelve un drawer overlay con botón hamburguesa' },
+  { name: 'responsive', type: 'boolean', default: 'false', description: 'Bajo 768px la nav se abre desde un botón hamburguesa dentro de un SideOver' },
+  { name: 'responsiveMode', type: '"auto" | "side" | "fullscreen"', default: '"auto"', description: 'Cómo se muestra el SideOver: auto = fullscreen en <480px y lateral en el resto; side = siempre lateral; fullscreen = siempre pantalla completa' },
   { name: 'search', type: 'boolean', default: 'false', description: 'Activa el input de búsqueda arriba del menú; filtra/resalta items automáticamente' },
   { name: 'searchPlaceholder', type: 'string', default: '"Buscar..."', description: 'Placeholder del input de búsqueda' },
   { name: 'searchMode', type: 'string', default: '"filter"', description: 'filter: oculta lo que no matchea. scroll: deja el árbol completo y resalta + scrollea al primer match' },
@@ -375,18 +376,21 @@ const interfaceCode = `interface NavItem {
             <div class="demo-panel">
               <Navbar :items="iconItems" compact />
             </div>
+            <div class="demo-panel">
+              <Navbar :items="navItems" compact />
+            </div>
           </div>
         </SectionDemo>
       </section>
 
       <hr class="playground-separator" />
 
-      <section id="flyout" class="playground-section">
+      <section id="triggers" class="playground-section">
         <div class="playground-heading">
-          <h2>Flyout</h2>
+          <h2>Triggers</h2>
           <Badge color="neutral" title="Submenús en compact abren como Dropdown a la derecha con chevron ›">trigger</Badge>
         </div>
-        <SectionDemo :vue-code="flyoutVue">
+        <SectionDemo :vue-code="triggersVue">
           <div class="playground-col">
             <div class="demo-panel">
               <Navbar :items="iconItems" compact />
@@ -435,7 +439,7 @@ const interfaceCode = `interface NavItem {
       <section id="responsive" class="playground-section">
         <div class="playground-heading">
           <h2>Responsive</h2>
-          <Badge color="neutral" title="Bajo 768px se vuelve un drawer overlay">overlay</Badge>
+          <Badge color="neutral" title="Botón hamburguesa que abre un SideOver (lateral o fullscreen)">SideOver</Badge>
         </div>
         <SectionDemo :vue-code="responsiveVue">
           <div class="playground-col">

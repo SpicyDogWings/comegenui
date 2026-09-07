@@ -150,7 +150,7 @@ export function useNavbar(options: UseNavbarOptions) {
   watch(firstMatch, async (item) => {
     if (!item) return
     await nextTick()
-    navRef.value?.querySelector('[data-navbar-match]')?.scrollIntoView({ block: 'nearest' })
+    document.querySelector('[data-navbar-match]')?.scrollIntoView({ block: 'nearest' })
   })
 
   onMounted(() => {

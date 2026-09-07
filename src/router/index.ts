@@ -98,6 +98,11 @@ const router = createRouter({
               component: () => import("@/pages/playground/components/CommandPalette.vue")
             },
             {
+              path: "side-over",
+              name: "SideOver playground",
+              component: () => import("@/pages/playground/components/SideOver.vue")
+            },
+            {
               path: "switch",
               name: "Switch playground",
               component: () => import("@/pages/playground/components/Switch.vue")
