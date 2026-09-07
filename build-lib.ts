@@ -127,6 +127,19 @@ async function runBuilds() {
     fs.writeFileSync(readmeDest, readmeContent)
     console.log('📄 README-BUILD.md copiado')
   }
+
+  // Copy UMD files and CSS to dist/ for playground dev server
+  const appDist = resolve(__dirname, 'dist')
+  if (fs.existsSync(appDist)) {
+    const umdFiles = fs.readdirSync(outDir).filter(f => f.endsWith('.umd.js'))
+    for (const file of umdFiles) {
+      fs.copyFileSync(resolve(outDir, file), resolve(appDist, file))
+    }
+    const appCssDir = resolve(appDist, 'css')
+    fs.mkdirSync(appCssDir, { recursive: true })
+    fs.copyFileSync(resolve(cssDir, 'themes.css'), resolve(appCssDir, 'themes.css'))
+    console.log(`📋 UMDs + CSS copiados a dist/ (${umdFiles.length} archivos)`)
+  }
 }
 
 async function createZip() {
