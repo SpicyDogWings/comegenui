@@ -54,3 +54,6 @@ graphify-out
 
 # Pesonal
 .octo
+
+# Playwright MCP (artefactos de sesión)
+.playwright-mcp/
