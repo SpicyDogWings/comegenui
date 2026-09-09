@@ -52,8 +52,9 @@ function onEnter(el: Element) {
   const el_ = el as HTMLElement
   el_.style.height = '0'
   el_.style.overflow = 'hidden'
-  el_.offsetHeight
-  el_.style.height = el_.scrollHeight + 'px'
+  requestAnimationFrame(() => {
+    el_.style.height = el_.scrollHeight + 'px'
+  })
   el_.addEventListener('transitionend', () => {
     el_.style.height = ''
     el_.style.overflow = ''
@@ -101,6 +102,7 @@ defineExpose({
       <span class="cu-collapse-label">{{ props.label }}</span>
     </Button>
     <Transition
+      appear
       @enter="onEnter"
       @after-enter="onAfterEnter"
       @leave="onLeave"
