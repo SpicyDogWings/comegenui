@@ -41,7 +41,7 @@ tu-proyecto/
 ├── CuAlert.umd.js
 ├── ...
 ├── css/themes.css
-├── comegen-ui/          ← skill de uso (para agentes)
+├── use-comegen/       ← skill de uso (para agentes)
 ├── update.sh            ← actualizador Linux/macOS
 ├── update.bat           ← actualizador Windows
 └── update.ps1           ← actualizador PowerShell
