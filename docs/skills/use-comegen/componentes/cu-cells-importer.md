@@ -25,6 +25,7 @@ Soporta matching de columnas **por label sin importar el orden** (`strict=false`
 | `disabled` | `boolean` | `false` | Deshabilita la selección |
 | `readOnly` | `boolean` | `false` | Modo solo lectura |
 | `maxSize` | `number` | — | Tamaño máximo en bytes |
+| `inputType` | `string` | `"input"` | `"input"` = `<cu-file-input>` compacto; `"zone"` = zona drag & drop (`<cu-file-input-zone>`). Single file en ambos |
 
 > **Atributos en HTML:** `hasHeader` se escribe `has-header`, `readOnly` → `readonly`, `maxSize` → `max-size`. Los arrays y objetos (`columns`, `template`, `formats`, `sheet`) se asignan por JS.
 
@@ -138,4 +139,5 @@ Ninguno.
 - **Validación:** `required`, tipos (`integer`/`number`/`date`/`boolean`/`email`), rangos `min`/`max`, largo `minLength`/`maxLength`, `pattern`, `enum` y `unique`. Reglas custom con `validate`.
 - **Feedback:** los errores (`danger`) se muestran en un `Collapse` expandible con una **tabla con paginación y buscador** (Fila/Columna/Error) — soporta un número ilimitado de errores. Las advertencias (`warning`) van en su propio `Collapse`. El resumen de filas OK / con errores queda siempre visible.
 - **Formato inválido / tamaño:** lo rechaza el `FileInput` interno (usa `accept` y `maxSize`).
+- **`inputType="zone"`:** el picker es la zona drag & drop (single file). `variant` no aplica en este modo (la zona no tiene variantes).
 - **Peso:** el parser de `.xlsx` (SheetJS) viaja solo en `CuCellsImporter.umd.js`; el resto de la lib no se ve afectado.

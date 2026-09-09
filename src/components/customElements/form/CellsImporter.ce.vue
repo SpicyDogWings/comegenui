@@ -20,6 +20,7 @@ const props = defineProps({
   disabled: Boolean,
   readOnly: Boolean,
   maxSize: Number,
+  inputType: { type: String, default: "input" },
 });
 
 const importerRef = ref<InstanceType<typeof CellsImporter> | null>(null);
@@ -67,6 +68,7 @@ defineExpose({ getRows, getHeaders, getErrors, getFile, validate, downloadTempla
     :disabled="props.disabled"
     :readOnly="props.readOnly"
     :maxSize="props.maxSize"
+    :inputType="props.inputType"
     @parse="ceEmit('parse', $event)"
     @error="ceEmit('error', $event as CellError[])"
     @change="ceEmit('change', $event)"

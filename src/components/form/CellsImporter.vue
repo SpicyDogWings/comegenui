@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, useTemplateRef, watch, type PropType } from "vue";
 import FileInput from "./FileInput.vue";
+import FileInputZone from "./FileInputZone.vue";
 import Button from "../buttons/Button.vue";
 import Collapse from "../overlay/Collapse.vue";
 import AdvancedTable from "../data/AdvancedTable.vue";
@@ -77,6 +78,12 @@ const props = defineProps({
     type: Number,
     required: false,
   },
+  inputType: {
+    type: String,
+    required: false,
+    default: "input",
+    validator: (value: string) => ["input", "zone"].includes(value),
+  },
 });
 
 const emit = defineEmits<{
@@ -92,7 +99,7 @@ const errors = ref<CellError[]>([]);
 const warnings = ref<string[]>([]);
 const status = ref<'idle' | 'parsing' | 'ready' | 'error'>('idle');
 
-const fileInputRef = useTemplateRef<InstanceType<typeof FileInput>>("fileInput");
+const fileInputRef = useTemplateRef<InstanceType<typeof FileInput> | InstanceType<typeof FileInputZone>>("fileInput");
 
 const accept = computed(() => props.formats.join(","));
 
@@ -216,10 +223,23 @@ const statusText = computed(() => {
   <div class="cu-cells-importer" :style="{ '--ci-accent': `var(--cu-color-${props.color})` }">
     <div class="cu-cells-importer-input">
       <FileInput
+        v-if="props.inputType === 'input'"
         ref="fileInput"
         :modelValue="file"
         :color="props.color"
         :variant="props.variant"
+        :placeholder="props.placeholder"
+        :disabled="props.disabled"
+        :readOnly="props.readOnly"
+        :accept="accept"
+        :maxSize="props.maxSize"
+        @update:modelValue="onFileInputUpdate"
+      />
+      <FileInputZone
+        v-else
+        ref="fileInput"
+        :modelValue="file"
+        :color="props.color"
         :placeholder="props.placeholder"
         :disabled="props.disabled"
         :readOnly="props.readOnly"

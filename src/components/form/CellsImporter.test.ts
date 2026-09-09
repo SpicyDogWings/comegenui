@@ -101,4 +101,16 @@ describe("CellsImporter (mount)", () => {
     expect(typeof vm.validate).toBe("function");
     expect(vm.getRows()).toEqual([]);
   });
+
+  it("inputType='zone' renderiza el FileInputZone en lugar del FileInput", () => {
+    const w = mount(CellsImporter, { props: { columns, inputType: "zone" } });
+    expect(w.find(".cu-file-zone").exists()).toBe(true);
+    expect(w.find(".cu-file-input").exists()).toBe(false);
+  });
+
+  it("inputType default es 'input'", () => {
+    const w = mount(CellsImporter, { props: { columns } });
+    expect(w.find(".cu-file-input").exists()).toBe(true);
+    expect(w.find(".cu-file-zone").exists()).toBe(false);
+  });
 });
