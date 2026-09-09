@@ -2,6 +2,7 @@
 import { computed, ref, watch, onUnmounted, useTemplateRef, type PropType } from "vue";
 import { useFocus } from "@vueuse/core";
 import Button from "../buttons/Button.vue";
+import Alert from "../information/Alert.vue";
 import { getFileIconSvg, formatFileSize } from "../../utils/fileIcons";
 
 const value = defineModel<File | null>({ default: null });
@@ -107,7 +108,7 @@ function rejectReason(file: File): string {
     return `Supera el tamaño máximo (${formatFileSize(props.maxSize)}).`;
   }
   if (props.accept && !matchesAccept(file)) {
-    return `Formato no permitido. Se aceptan: ${formatosStr.value || props.accept}.`;
+    return `Formato no permitido. Se aceptan: ${props.accept}.`;
   }
   return 'El archivo no se pudo aceptar.';
 }
@@ -160,6 +161,10 @@ function trigger() {
   if (props.disabled || props.readOnly) return;
   fileInputRef.value?.click();
 }
+
+watch(value, (file) => {
+  if (file) rejectMessage.value = "";
+});
 
 const get = () => value.value;
 const set = (file: File | null) => { value.value = file; rejectMessage.value = ""; };
@@ -268,7 +273,12 @@ defineExpose({ get, set, reset, focus, trigger });
       </Button>
     </div>
 
-    <p v-if="rejectMessage" class="cu-file-input-reject">{{ rejectMessage }}</p>
+    <Alert
+      v-if="rejectMessage"
+      color="danger"
+      variant="soft"
+      class="cu-file-input-reject"
+    >{{ rejectMessage }}</Alert>
   </div>
 </template>
 
@@ -398,5 +408,15 @@ defineExpose({ get, set, reset, focus, trigger });
 
 .cu-file-input-remove:hover {
   opacity: 1;
+}
+
+.cu-file-input-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cu-space-2xs);
+}
+
+.cu-file-input-reject {
+  margin-top: var(--cu-space-2xs);
 }
 </style>
