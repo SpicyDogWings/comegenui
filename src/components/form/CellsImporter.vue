@@ -2,6 +2,7 @@
 import { computed, ref, useTemplateRef, watch, type PropType } from "vue";
 import FileInput from "./FileInput.vue";
 import Button from "../buttons/Button.vue";
+import Collapse from "../overlay/Collapse.vue";
 import {
   parseFile,
   validateRows,
@@ -244,18 +245,21 @@ const statusText = computed(() => {
       </Button>
     </div>
 
-    <div v-if="warnings.length > 0" class="cu-cells-importer-warnings">
-      <p v-for="(w, i) in warnings" :key="`w${i}`" class="cu-cells-importer-warning">{{ w }}</p>
+    <div v-if="warnings.length > 0" class="cu-cells-importer-feedback">
+      <Collapse :label="`Advertencias (${warnings.length})`" color="warning">
+        <p v-for="(w, i) in warnings" :key="`w${i}`" class="cu-cells-importer-warning">{{ w }}</p>
+      </Collapse>
     </div>
 
-    <div v-if="errors.length > 0" class="cu-cells-importer-errors">
-      <p class="cu-cells-importer-errors-title">Errores de validación ({{ errors.length }})</p>
-      <ul class="cu-cells-importer-errors-list">
-        <li v-for="(e, i) in errors" :key="i" class="cu-cells-importer-error">
-          <strong>Fila {{ e.row + 1 }} · {{ e.columnLabel }}:</strong>
-          {{ e.message }}
-        </li>
-      </ul>
+    <div v-if="errors.length > 0" class="cu-cells-importer-feedback">
+      <Collapse :label="`Errores de validación (${errors.length})`" color="danger" :default-open="true">
+        <ul class="cu-cells-importer-errors-list">
+          <li v-for="(e, i) in errors" :key="i" class="cu-cells-importer-error">
+            <strong>Fila {{ e.row + 1 }} · {{ e.columnLabel }}:</strong>
+            {{ e.message }}
+          </li>
+        </ul>
+      </Collapse>
     </div>
   </div>
 </template>
@@ -293,12 +297,6 @@ const statusText = computed(() => {
 .cu-cells-importer-summary-ok { color: var(--cu-color-success); }
 .cu-cells-importer-summary-bad { color: var(--cu-color-danger); }
 
-.cu-cells-importer-warnings {
-  display: flex;
-  flex-direction: column;
-  gap: var(--cu-space-2xs);
-}
-
 .cu-cells-importer-warning {
   margin: 0;
   padding: var(--cu-space-2xs) var(--cu-space-sm);
@@ -308,23 +306,8 @@ const statusText = computed(() => {
   border-radius: var(--cu-radius);
 }
 
-.cu-cells-importer-errors {
-  padding: var(--cu-space-sm) var(--cu-space-md);
-  border-radius: var(--cu-radius);
-  background-color: var(--cu-color-danger-soft);
-  border: var(--cu-border-thin) solid var(--cu-color-danger-subtle-border);
-}
-
-.cu-cells-importer-errors-title {
-  margin: 0 0 var(--cu-space-2xs);
-  font-size: var(--cu-font-size-xs);
-  font-weight: var(--cu-font-weight-semibold);
-  color: var(--cu-color-danger);
-}
-
 .cu-cells-importer-errors-list {
   margin: 0;
-  padding-left: var(--cu-space-lg);
   display: flex;
   flex-direction: column;
   gap: var(--cu-space-2xs);
