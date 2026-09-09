@@ -39,6 +39,7 @@ Si vas a modificar o agregar componentes a la librería:
 | `<cu-button>` | [Ver docs](comegen-ui/componentes/cu-button.md) |
 | `<cu-calendar>` | [Ver docs](comegen-ui/componentes/cu-calendar.md) |
 | `<cu-card>` | [Ver docs](comegen-ui/componentes/cu-card.md) |
+| `<cu-cells-importer>` | [Ver docs](comegen-ui/componentes/cu-cells-importer.md) |
 | `<cu-checkbox>` | [Ver docs](comegen-ui/componentes/cu-checkbox.md) |
 | `<cu-collapse>` | [Ver docs](comegen-ui/componentes/cu-collapse.md) |
 | `<cu-command-palette>` | [Ver docs](comegen-ui/componentes/cu-command-palette.md) |
