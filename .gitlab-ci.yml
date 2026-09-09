@@ -56,6 +56,8 @@ build:
       - css/
       - README-BUILD.md
       - update.sh
+      - update.ps1
+      - update.bat
       - use-comegen/   # skill de uso de comegen — nada más (no desarrollar/documentar)
     expire_in: never
     when: on_success
