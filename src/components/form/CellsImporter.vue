@@ -3,6 +3,7 @@ import { computed, ref, useTemplateRef, watch, type PropType } from "vue";
 import FileInput from "./FileInput.vue";
 import Button from "../buttons/Button.vue";
 import Collapse from "../overlay/Collapse.vue";
+import Table from "../data/Table.vue";
 import {
   parseFile,
   validateRows,
@@ -102,6 +103,20 @@ const summary = computed(() => ({
 }));
 
 const errorRowCount = computed(() => new Set(errors.value.map((e) => e.row)).size);
+
+const errorColumns = [
+  { key: "row", label: "Fila", width: "80px" },
+  { key: "column", label: "Columna" },
+  { key: "message", label: "Error" },
+];
+
+const errorRows = computed(() =>
+  errors.value.map((e) => ({
+    row: e.row + 1,
+    column: e.columnLabel,
+    message: e.message,
+  })),
+);
 
 function clearResult() {
   rows.value = [];
@@ -253,12 +268,7 @@ const statusText = computed(() => {
 
     <div v-if="errors.length > 0" class="cu-cells-importer-feedback">
       <Collapse :label="`Errores de validación (${errors.length})`" color="danger" :default-open="true">
-        <ul class="cu-cells-importer-errors-list">
-          <li v-for="(e, i) in errors" :key="i" class="cu-cells-importer-error">
-            <strong>Fila {{ e.row + 1 }} · {{ e.columnLabel }}:</strong>
-            {{ e.message }}
-          </li>
-        </ul>
+        <Table :columns="errorColumns" :data="errorRows" variant="ghost" compact />
       </Collapse>
     </div>
   </div>
@@ -304,17 +314,5 @@ const statusText = computed(() => {
   color: var(--cu-color-warning);
   background-color: var(--cu-color-warning-soft);
   border-radius: var(--cu-radius);
-}
-
-.cu-cells-importer-errors-list {
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--cu-space-2xs);
-}
-
-.cu-cells-importer-error {
-  font-size: var(--cu-font-size-xs);
-  color: var(--cu-color-danger);
 }
 </style>
