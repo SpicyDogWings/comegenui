@@ -45,8 +45,14 @@ function readState() {
 
 const outlineItems = [
   { label: 'Default', id: 'default' },
+  { label: 'Formas de input', id: 'inputtype' },
   { label: 'Orden (strict)', id: 'strict' },
   { label: 'Plantilla', id: 'template' },
+  { label: 'Formatos', id: 'formats' },
+  { label: 'Delimitador', id: 'delimiter' },
+  { label: 'Encabezado', id: 'hasheader' },
+  { label: 'Apariencia', id: 'apariencia' },
+  { label: 'Estado', id: 'estado' },
   { label: 'Programmatic', id: 'programmatic' },
   {
     label: 'API', id: 'api', children: [
@@ -76,6 +82,14 @@ ${body}
 </template>`;
 
 const defaultVue = vueSnippet(`  <CellsImporter :columns="columns" />`);
+
+const inputTypeVue = vueSnippet(`  <CellsImporter :columns="columns" />                       <!-- input (default) -->
+  <CellsImporter :columns="columns" input-type="zone" />  <!-- zona drag & drop -->`);
+
+const inputTypeVanilla = `<script src="dist/CuCellsImporter.umd.js"><\/script>
+
+<cu-cells-importer columns='[{"key":"name","label":"Nombre","required":true}]'></cu-cells-importer>
+<cu-cells-importer input-type="zone" columns='[{"key":"name","label":"Nombre","required":true}]'></cu-cells-importer>`;
 
 const strictVue = vueSnippet(`  <p>Por label, sin importar el orden (strict=false)</p>
   <CellsImporter :columns="columns" />
@@ -152,6 +166,170 @@ const progVanilla = `<script src="dist/CuCellsImporter.umd.js"><\/script>
     imp.getErrors(); // errores de validación
   });
 <\/script>`;
+
+// --- Formatos ---
+const onlyCsvColumns: CellColumn[] = [
+  { key: "name", label: "Nombre", required: true },
+];
+
+// --- Delimitador ---
+const delimDefaultRef = ref<InstanceType<typeof CellsImporter> | null>(null);
+const delimPipeRef = ref<InstanceType<typeof CellsImporter> | null>(null);
+const delimDefaultState = ref("Sin cargar");
+const delimPipeState = ref("Sin cargar");
+const pipeCSV = "Nombre;Edad;Email\nJuan;30;juan@x.com\nAna;25;ana@x.com\nPepe;40;pepe@x.com";
+
+function pipeFile() {
+  return new File([pipeCSV], "datos.csv", { type: "text/csv" });
+}
+function loadDelimDefault() {
+  delimDefaultRef.value?.set(pipeFile());
+}
+function loadDelimPipe() {
+  delimPipeRef.value?.set(pipeFile());
+}
+function syncDelimDefault() {
+  delimDefaultState.value = `${delimDefaultRef.value?.getRows()?.length ?? 0} filas · ${delimDefaultRef.value?.getErrors()?.length ?? 0} errores`;
+}
+function syncDelimPipe() {
+  delimPipeState.value = `${delimPipeRef.value?.getRows()?.length ?? 0} filas · ${delimPipeRef.value?.getErrors()?.length ?? 0} errores`;
+}
+
+// --- hasHeader ---
+const hhTrueRef = ref<InstanceType<typeof CellsImporter> | null>(null);
+const hhFalseRef = ref<InstanceType<typeof CellsImporter> | null>(null);
+const hhTrueState = ref("Sin cargar");
+const hhFalseState = ref("Sin cargar");
+const headerlessCSV = "Juan,30,juan@x.com\nAna,25,ana@x.com";
+
+function headerlessFile() {
+  return new File([headerlessCSV], "sin-encabezado.csv", { type: "text/csv" });
+}
+function loadHhTrue() {
+  hhTrueRef.value?.set(headerlessFile());
+}
+function loadHhFalse() {
+  hhFalseRef.value?.set(headerlessFile());
+}
+function syncHhTrue() {
+  hhTrueState.value = `${hhTrueRef.value?.getRows()?.length ?? 0} filas · ${hhTrueRef.value?.getErrors()?.length ?? 0} errores`;
+}
+function syncHhFalse() {
+  hhFalseState.value = `${hhFalseRef.value?.getRows()?.length ?? 0} filas · ${hhFalseRef.value?.getErrors()?.length ?? 0} errores`;
+}
+
+const colorsCSV = "Nombre,Edad,Email\nJuan,30,juan@x.com";
+
+const formatsVue = `<script setup>
+import CellsImporter from '@/components/form/CellsImporter.vue'
+
+const columns = [{ key: 'name', label: 'Nombre', required: true }]
+<\/script>
+
+<template>
+  <CellsImporter :columns="columns" />                     <!-- default: .xlsx, .csv -->
+  <CellsImporter :columns="columns" :formats="['.csv']" /> <!-- solo .csv -->
+</template>`;
+
+const formatsVanilla = `<script src="dist/CuCellsImporter.umd.js"><\/script>
+
+<cu-cells-importer columns='[{"key":"name","label":"Nombre","required":true}]'></cu-cells-importer>
+<cu-cells-importer columns='[{"key":"name","label":"Nombre","required":true}]' formats='[".csv"]'></cu-cells-importer>`;
+
+const delimiterVue = `<script setup>
+import { ref } from 'vue'
+import CellsImporter from '@/components/form/CellsImporter.vue'
+
+const columns = [{ key: 'name', label: 'Nombre', required: true }]
+const imp = ref(null)
+
+function load() {
+  const csv = 'Nombre;Edad\\nJuan;30'     // separado por ;
+  imp.value.set(new File([csv], 'datos.csv', { type: 'text/csv' }))
+}
+<\/script>
+
+<template>
+  <CellsImporter ref="imp" :columns="columns" delimiter=";" />
+</template>`;
+
+const delimiterVanilla = `<script src="dist/CuCellsImporter.umd.js"><\/script>
+
+<cu-cells-importer id="imp" columns='[{"key":"name","label":"Nombre","required":true}]' delimiter=";"></cu-cells-importer>
+
+<script>
+  customElements.whenDefined('cu-cells-importer').then(() => {
+    const imp = document.getElementById('imp');
+    const csv = 'Nombre;Edad\\nJuan;30';
+    imp.set(new File([csv], 'datos.csv', { type: 'text/csv' }));
+  });
+<\/script>`;
+
+const hasHeaderVue = `<script setup>
+import CellsImporter from '@/components/form/CellsImporter.vue'
+
+const columns = [
+  { key: 'name', label: 'Nombre' },
+  { key: 'age', label: 'Edad' },
+  { key: 'email', label: 'Email' },
+]
+const headerless = 'Juan,30,juan@x.com\\nAna,25,ana@x.com'
+<\/script>
+
+<template>
+  <!-- has-header (default true): consume la 1ª fila como encabezado -->
+  <CellsImporter :columns="columns" />
+  <!-- has-header=false: la 1ª fila es dato (mapea por posición) -->
+  <CellsImporter :columns="columns" :has-header="false" />
+</template>`;
+
+const hasHeaderVanilla = `<script src="dist/CuCellsImporter.umd.js"><\/script>
+
+<cu-cells-importer id="a" columns='[{"key":"name","label":"Nombre"}]'></cu-cells-importer>
+<cu-cells-importer id="b" columns='[{"key":"name","label":"Nombre"}]'></cu-cells-importer>
+
+<script>
+  customElements.whenDefined('cu-cells-importer').then(() => {
+    // en CE los booleanos van por propiedad, no por atributo "false"
+    document.getElementById('b').hasHeader = false;
+  });
+<\/script>`;
+
+const aparienciaVue = `<script setup>
+import CellsImporter from '@/components/form/CellsImporter.vue'
+
+const columns = [{ key: 'name', label: 'Nombre', required: true }]
+<\/script>
+
+<template>
+  <CellsImporter :columns="columns" color="primary" variant="soft" />
+  <CellsImporter :columns="columns" color="success" variant="subtle" />
+  <CellsImporter :columns="columns" color="warning" />
+</template>`;
+
+const aparienciaVanilla = `<script src="dist/CuCellsImporter.umd.js"><\/script>
+
+<cu-cells-importer color="primary" variant="soft" columns='[{"key":"name","label":"Nombre","required":true}]'></cu-cells-importer>
+<cu-cells-importer color="success" variant="subtle" columns='[{"key":"name","label":"Nombre","required":true}]'></cu-cells-importer>
+<cu-cells-importer color="warning" columns='[{"key":"name","label":"Nombre","required":true}]'></cu-cells-importer>`;
+
+const estadoVue = `<script setup>
+import CellsImporter from '@/components/form/CellsImporter.vue'
+
+const columns = [{ key: 'name', label: 'Nombre', required: true }]
+<\/script>
+
+<template>
+  <CellsImporter :columns="columns" disabled placeholder="Deshabilitado" />
+  <CellsImporter :columns="columns" read-only placeholder="Solo lectura" />
+  <CellsImporter :columns="columns" :max-size="1024" placeholder="Máximo 1KB" />
+</template>`;
+
+const estadoVanilla = `<script src="dist/CuCellsImporter.umd.js"><\/script>
+
+<cu-cells-importer disabled columns='[{"key":"name","label":"Nombre","required":true}]' placeholder="Deshabilitado"></cu-cells-importer>
+<cu-cells-importer read-only columns='[{"key":"name","label":"Nombre","required":true}]' placeholder="Solo lectura"></cu-cells-importer>
+<cu-cells-importer max-size="1024" columns='[{"key":"name","label":"Nombre","required":true}]' placeholder="Máximo 1KB"></cu-cells-importer>`;
 
 const interfaceCode = `// CellColumn
 interface CellColumn {
@@ -240,6 +418,27 @@ const exposesData = [
 
       <hr class="playground-separator" />
 
+      <section id="inputtype" class="playground-section">
+        <div class="playground-heading">
+          <h2>Formas de input</h2>
+          <Badge color="neutral" title="Valor por defecto">input</Badge>
+        </div>
+        <SectionDemo :vue-code="inputTypeVue" :vanilla-code="inputTypeVanilla">
+          <div class="playground-col">
+            <CellsImporter :columns="demoColumns" />
+            <p style="margin:0;font-size:var(--cu-font-size-sm);opacity:0.7">
+              <code>input-type="input"</code> (default): input compacto.
+            </p>
+            <CellsImporter :columns="demoColumns" input-type="zone" />
+            <p style="margin:0;font-size:var(--cu-font-size-sm);opacity:0.7">
+              <code>input-type="zone"</code>: zona drag &amp; drop (single file). La validación y la tabla de errores son las mismas.
+            </p>
+          </div>
+        </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
       <section id="strict" class="playground-section">
         <div class="playground-heading">
           <h2>Orden (strict)</h2>
@@ -275,6 +474,139 @@ const exposesData = [
             <p style="margin:0;font-size:var(--cu-font-size-sm);opacity:0.7">
               El botón descarga un .csv con los headers esperados.
             </p>
+          </div>
+        </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="formats" class="playground-section">
+        <div class="playground-heading">
+          <h2>Formatos</h2>
+          <Badge color="neutral" title="Valor por defecto">.xlsx, .csv</Badge>
+        </div>
+        <SectionDemo :vue-code="formatsVue" :vanilla-code="formatsVanilla">
+          <div class="playground-col">
+            <CellsImporter :columns="demoColumns" />
+            <p style="margin:0;font-size:var(--cu-font-size-sm);opacity:0.7">
+              Default: acepta <strong>.xlsx</strong> y <strong>.csv</strong> (se listan en el input).
+            </p>
+            <CellsImporter :columns="onlyCsvColumns" :formats="['.csv']" />
+            <p style="margin:0;font-size:var(--cu-font-size-sm);opacity:0.7">
+              Restringido a <strong>.csv</strong>: el accept y la etiqueta reflejan solo ese formato.
+            </p>
+          </div>
+        </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="delimiter" class="playground-section">
+        <div class="playground-heading">
+          <h2>Delimitador</h2>
+          <Badge color="neutral" title="Valor por defecto">","</Badge>
+        </div>
+        <SectionDemo :vue-code="delimiterVue" :vanilla-code="delimiterVanilla">
+          <div class="playground-col">
+            <div class="playground-row">
+              <Button color="neutral" @click="loadDelimDefault">default (",")</Button>
+              <Button color="neutral" @click="loadDelimPipe">delimiter=";"</Button>
+            </div>
+            <p class="playground-state">
+              default: <strong>{{ delimDefaultState }}</strong>
+              · con ";" : <strong>{{ delimPipeState }}</strong>
+            </p>
+            <CellsImporter
+              ref="delimDefaultRef"
+              :columns="demoColumns"
+              @parse="syncDelimDefault"
+              @error="syncDelimDefault"
+            />
+            <CellsImporter
+              ref="delimPipeRef"
+              :columns="demoColumns"
+              delimiter=";"
+              @parse="syncDelimPipe"
+              @error="syncDelimPipe"
+            />
+            <p style="margin:0;font-size:var(--cu-font-size-sm);opacity:0.7">
+              Ambos cargan el mismo archivo separado por <strong>";"</strong>. El de <code>","</code> no
+              matchea columnas (celdas vacías → errores); el de <code>";"</code> lee las 3 filas sin errores.
+            </p>
+          </div>
+        </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="hasheader" class="playground-section">
+        <div class="playground-heading">
+          <h2>Encabezado</h2>
+          <Badge color="neutral" title="Valor por defecto">true</Badge>
+        </div>
+        <SectionDemo :vue-code="hasHeaderVue" :vanilla-code="hasHeaderVanilla">
+          <div class="playground-col">
+            <div class="playground-row">
+              <Button color="neutral" @click="loadHhTrue">has-header (true)</Button>
+              <Button color="neutral" @click="loadHhFalse">has-header=false</Button>
+            </div>
+            <p class="playground-state">
+              true: <strong>{{ hhTrueState }}</strong>
+              · false: <strong>{{ hhFalseState }}</strong>
+            </p>
+            <CellsImporter
+              ref="hhTrueRef"
+              :columns="demoColumns"
+              @parse="syncHhTrue"
+              @error="syncHhTrue"
+            />
+            <CellsImporter
+              ref="hhFalseRef"
+              :columns="demoColumns"
+              :has-header="false"
+              @parse="syncHhFalse"
+              @error="syncHhFalse"
+            />
+            <p style="margin:0;font-size:var(--cu-font-size-sm);opacity:0.7">
+              Ambos cargan un CSV <strong>sin encabezado</strong> ("Juan,30,…"). Con
+              <code>has-header</code> (true) la 1ª fila se consume como encabezado y no matchea las
+              columnas; con <code>false</code> la 1ª fila se lee como dato (mapeo por posición).
+            </p>
+          </div>
+        </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="apariencia" class="playground-section">
+        <div class="playground-heading">
+          <h2>Apariencia</h2>
+          <Badge color="neutral" title="Color por defecto">neutral</Badge>
+          <Badge color="neutral" title="Variante por defecto">outlined</Badge>
+        </div>
+        <SectionDemo :vue-code="aparienciaVue" :vanilla-code="aparienciaVanilla">
+          <div class="playground-col">
+            <CellsImporter :columns="demoColumns" color="primary" variant="soft" />
+            <CellsImporter :columns="demoColumns" color="success" variant="subtle" />
+            <CellsImporter :columns="demoColumns" color="warning" variant="ghost" />
+            <CellsImporter :columns="demoColumns" color="danger" />
+          </div>
+        </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="estado" class="playground-section">
+        <div class="playground-heading">
+          <h2>Estado</h2>
+          <Badge color="neutral" title="disabled por defecto">false</Badge>
+          <Badge color="neutral" title="readOnly por defecto">false</Badge>
+        </div>
+        <SectionDemo :vue-code="estadoVue" :vanilla-code="estadoVanilla">
+          <div class="playground-col">
+            <CellsImporter :columns="demoColumns" disabled placeholder="Deshabilitado" />
+            <CellsImporter :columns="demoColumns" read-only placeholder="Solo lectura" />
+            <CellsImporter :columns="demoColumns" :max-size="1024" placeholder="Máximo 1KB" />
           </div>
         </SectionDemo>
       </section>
