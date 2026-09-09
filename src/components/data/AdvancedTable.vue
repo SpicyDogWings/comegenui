@@ -471,7 +471,10 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
       </template>
     </Table>
 
-    <div v-if="props.pagination && pagination.showPaginationControl.value" class="cu-advanced-table-pagination">
+    <div
+      v-if="props.pagination && (pagination.showPaginationControl.value || props.showPageSize)"
+      class="cu-advanced-table-pagination"
+    >
       <Pagination
         :color="props.color"
         :variant="paginationVariant"
@@ -492,7 +495,6 @@ defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
 .cu-advanced-table {
   display: flex;
   flex-direction: column;
-  overflow: hidden;
   max-width: 100%;
 }
 
