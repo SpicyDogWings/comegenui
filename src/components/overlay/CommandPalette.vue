@@ -52,7 +52,8 @@ const search = ref("");
 const activeIndex = ref(0);
 const inputRef = ref<InstanceType<typeof Input> | null>(null);
 
-const { filteredData: filtered } = useSearch(props.commands, {
+const searchItems = computed(() => props.commands);
+const { filteredData: filtered } = useSearch(searchItems, {
   searchQuery: search,
   searchFields: ["label", "category"],
 });
