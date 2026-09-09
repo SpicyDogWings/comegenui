@@ -31,6 +31,7 @@ const navItems = [
         label: 'Form',
         children: [
           { label: 'Autocomplete', path: '/playground/components/autocomplete' },
+{ label: 'CellsImporter', path: '/playground/components/cells-importer' },
           { label: 'Checkbox', path: '/playground/components/checkbox' },
           { label: 'ColorPicker', path: '/playground/components/color-picker' },
           { label: 'DatePicker', path: '/playground/components/date-picker' },
