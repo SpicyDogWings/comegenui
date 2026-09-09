@@ -3,7 +3,7 @@ import { computed, ref, useTemplateRef, watch, type PropType } from "vue";
 import FileInput from "./FileInput.vue";
 import Button from "../buttons/Button.vue";
 import Collapse from "../overlay/Collapse.vue";
-import Table from "../data/Table.vue";
+import AdvancedTable from "../data/AdvancedTable.vue";
 import {
   parseFile,
   validateRows,
@@ -268,7 +268,19 @@ const statusText = computed(() => {
 
     <div v-if="errors.length > 0" class="cu-cells-importer-feedback">
       <Collapse :label="`Errores de validación (${errors.length})`" color="danger" :default-open="true">
-        <Table :columns="errorColumns" :data="errorRows" variant="ghost" compact />
+        <AdvancedTable
+          :columns="errorColumns"
+          :data="errorRows"
+          variant="ghost"
+          compact
+          :color="'danger'"
+          :pagination="true"
+          :items-per-page="10"
+          :show-page-size="true"
+          search-enabled
+          search-placeholder="Buscar en errores..."
+          :search-fields="['column', 'message']"
+        />
       </Collapse>
     </div>
   </div>

@@ -136,6 +136,6 @@ Ninguno.
 
 - **Orden de columnas:** con `strict=false` (default) el orden del archivo no importa — las columnas se matchean por `label`. Con `strict` se exige que el orden del archivo coincida con el del schema. Las columnas sobrantes del archivo se ignoran en ambos casos.
 - **Validación:** `required`, tipos (`integer`/`number`/`date`/`boolean`/`email`), rangos `min`/`max`, largo `minLength`/`maxLength`, `pattern`, `enum` y `unique`. Reglas custom con `validate`.
-- **Feedback:** los errores (`danger`) se muestran en un `Collapse` expandible con una **tabla** (Fila/Columna/Error) — soporta un número ilimitado de errores. Las advertencias (`warning`) van en su propio `Collapse`. El resumen de filas OK / con errores queda siempre visible.
+- **Feedback:** los errores (`danger`) se muestran en un `Collapse` expandible con una **tabla con paginación y buscador** (Fila/Columna/Error) — soporta un número ilimitado de errores. Las advertencias (`warning`) van en su propio `Collapse`. El resumen de filas OK / con errores queda siempre visible.
 - **Formato inválido / tamaño:** lo rechaza el `FileInput` interno (usa `accept` y `maxSize`).
 - **Peso:** el parser de `.xlsx` (SheetJS) viaja solo en `CuCellsImporter.umd.js`; el resto de la lib no se ve afectado.
