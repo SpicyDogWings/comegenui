@@ -28,6 +28,9 @@ try {
         # Segunda pasada: corremos desde una copia en TMP; el destino real llega en $Args[1].
         $Tag = if ($Args[0]) { $Args[0] } else { "main" }
         $Self = $Args[1]
+        # Windows no permite renombrar la carpeta que es el CWD del proceso
+        # (doble-clic en update.bat o `cd lib && .\update.ps1`). Salimos de ahí.
+        Set-Location $Tmp
         $url = if ($env:CG_URL) { $env:CG_URL } else { "https://gitlab.com/SpicyDogWings/comegen-ui/-/jobs/artifacts/$Tag/download?job=build" }
 
         Write-Host "⬇️  Descargando build '$Tag'..."
@@ -48,7 +51,7 @@ try {
         Write-Host "🔁 Reemplazando $Self ..."
         $oldPath = "$Self.old"
         if (Test-Path $oldPath) { Remove-Item $oldPath -Recurse -Force }
-        if (Test-Path $Self) { Rename-Item -Path $Self -NewName "$Self.old" -Force }
+        if (Test-Path $Self) { Move-Item -Path $Self -Destination "$Self.old" -Force }
         Move-Item -Path $content -Destination $Self -Force
 
         # Si el build nuevo no trae update.ps1, restaurarlo (para seguir actualizando).
@@ -77,12 +80,12 @@ try {
         }
 
         if ($projectRoot -and (Test-Path (Join-Path $Self "use-comegen") -PathType Container)) {
-            $skillsDir = Join-Path $projectRoot ".agents\skills"
+            $skillsDir = Join-Path (Join-Path $projectRoot ".agents") "skills"
             New-Item -ItemType Directory -Path $skillsDir -Force | Out-Null
             $dest = Join-Path $skillsDir "use-comegen"
             if (Test-Path $dest) { Remove-Item $dest -Recurse -Force }
             Copy-Item -Path (Join-Path $Self "use-comegen") -Destination $dest -Recurse -Force
-            Write-Host "📚 Skill de uso instalada en $skillsDir\use-comegen"
+            Write-Host "📚 Skill de uso instalada en $dest"
         } elseif (-not $projectRoot) {
             Write-Host "⚠️  No se detectó la raíz del proyecto (sin .git/AGENTS.md/package.json). Seteá `$env:CG_PROJECT_ROOT para instalar la skill en .agents/skills."
         } else {
@@ -99,7 +102,9 @@ try {
     $Self = Split-Path -Parent $MyInvocation.MyCommand.Path
     $selfPs1 = Join-Path $Tmp "self.ps1"
     Copy-Item $MyInvocation.MyCommand.Path $selfPs1
-    $tagArg = if ($args[0]) { $args[0] } else { "main" }
+    # El tag llega por el param $Tag (bind posicional desde update.bat o la CLI),
+    # NO por $args — que queda vacío cuando el param lo captura.
+    $tagArg = $Tag
     & $selfPs1 __swap__ $tagArg $Self
 } finally {
     if (Test-Path $Tmp) { Remove-Item $Tmp -Recurse -Force -ErrorAction SilentlyContinue }
