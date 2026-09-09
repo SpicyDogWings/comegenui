@@ -43,6 +43,27 @@ Soporta matching de columnas **por label sin importar el orden** (`strict=false`
 | `unique` | `boolean` | Rechaza duplicados en la columna |
 | `validate` | `function` | Regla custom: `(value, row) => string \| boolean \| undefined` |
 
+> **`validate`:** devolvé un `string` (mensaje de error), `false` (error genérico) o `true`/`undefined` (ok). Recibís el valor ya convertido por `type` y la fila completa por si la regla depende de otras columnas.
+
+## Plantilla
+
+La prop `template` activa el botón **Descargar plantilla** y define el formato del archivo generado. La plantilla se construye **siempre desde `columns`** (usa `label` de cada columna como encabezado).
+
+| Campo | Tipo | Default | Descripción |
+|-------|------|---------|-------------|
+| `enabled` | `boolean` | `false` | Muestra el botón de descarga |
+| `type` | `'csv' \| 'xlsx'` | `'csv'` | Formato del archivo |
+| `filename` | `string` | `'template'` | Nombre del archivo (sin extensión) |
+
+- **`csv`** → `filename.csv` con una fila de headers (escapa comas y comillas).
+- **`xlsx`** → `filename.xlsx` con la hoja `Template` y la misma fila de headers.
+
+```js
+imp.template = { enabled: true, type: 'xlsx', filename: 'plantilla-alumnos' };
+```
+
+El botón solo aparece si `enabled: true` **y** `columns.length > 0`. También se puede disparar manualmente con `.downloadTemplate()`.
+
 ## Eventos
 
 | Evento | Payload (`e.detail`) | Descripción |
@@ -86,11 +107,15 @@ Ninguno.
     const imp = document.getElementById('imp');
 
     imp.columns = [
-      { key: 'name', label: 'Nombre', required: true },
-      { key: 'age', label: 'Edad', type: 'integer', min: 0, max: 120 },
-      { key: 'email', label: 'Email', type: 'email' },
+      { key: 'name',  label: 'Nombre',  required: true },
+      { key: 'dni',   label: 'DNI',     type: 'integer', min: 1000000, unique: true },
+      { key: 'email', label: 'Email',   type: 'email' },
+      { key: 'code',  label: 'Código',  pattern: /^[A-Z]{2}-\d{3}$/ },
+      { key: 'state', label: 'Estado',  enum: ['Activo', 'Inactivo'] },
+      { key: 'note',  label: 'Nota',    maxLength: 200,
+        validate: (value, row) => (value && Number(row.dni) < 0 ? 'El DNI debe ser positivo' : true) },
     ];
-    imp.template = { enabled: true, type: 'csv', filename: 'plantilla' };
+    imp.template = { enabled: true, type: 'xlsx', filename: 'plantilla' };
 
     imp.addEventListener('parse', (e) => {
       console.log('Filas:', e.detail.rows);
@@ -100,7 +125,7 @@ Ninguno.
     });
 
     // Importación programática
-    const csv = 'Nombre,Edad,Email\nJuan,30,juan@x.com\nAna,200,correo';
+    const csv = 'Nombre,DNI,Email,Código,Estado,Nota\nJuan,30500000,juan@x.com,AB-123,Activo,ok\nAna,99999999,correo,ZZ-9,Desconocido,';
     imp.set(new File([csv], 'demo.csv', { type: 'text/csv' }));
     console.log(imp.getRows());
   });
@@ -111,5 +136,6 @@ Ninguno.
 
 - **Orden de columnas:** con `strict=false` (default) el orden del archivo no importa — las columnas se matchean por `label`. Con `strict` se exige que el orden del archivo coincida con el del schema. Las columnas sobrantes del archivo se ignoran en ambos casos.
 - **Validación:** `required`, tipos (`integer`/`number`/`date`/`boolean`/`email`), rangos `min`/`max`, largo `minLength`/`maxLength`, `pattern`, `enum` y `unique`. Reglas custom con `validate`.
+- **Feedback:** los errores (`danger`) y advertencias (`warning`) se muestran en `Collapse` expandibles con contador; el resumen de filas OK / con errores queda siempre visible.
 - **Formato inválido / tamaño:** lo rechaza el `FileInput` interno (usa `accept` y `maxSize`).
 - **Peso:** el parser de `.xlsx` (SheetJS) viaja solo en `CuCellsImporter.umd.js`; el resto de la lib no se ve afectado.
