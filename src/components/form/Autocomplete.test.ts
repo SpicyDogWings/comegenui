@@ -48,7 +48,7 @@ describe("Autocomplete", () => {
     const modelEm = w.emitted("update:modelValue");
     expect(modelEm).toBeTruthy();
     const modelValue = (modelEm as unknown[][])[0]![0] as string;
-    expect(modelValue).toBe("apple");
+    expect(modelValue).toBe("Apple");
   });
 
   it("filtra las opciones según el texto ingresado", async () => {
@@ -62,5 +62,13 @@ describe("Autocomplete", () => {
     const w = factory({});
     await w.find("div[tabindex='-1']").trigger("focusout", { relatedTarget: null });
     expect(w.emitted("blur")).toBeTruthy();
+  });
+
+  it("filtra items que llegan después del mount (prop reactiva)", async () => {
+    const w = factory({ items: [] });
+    await w.setProps({ items });
+    await w.find("input.cu-input").setValue("Ban");
+    expect(w.findAll("button.cu-autocomplete-option")).toHaveLength(1);
+    expect(w.find("button.cu-autocomplete-option").text()).toContain("Banana");
   });
 });
