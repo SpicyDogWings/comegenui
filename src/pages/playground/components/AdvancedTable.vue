@@ -50,6 +50,15 @@ const sampleData = [
   { id: 10, name: "Jack Wilson", email: "jack@example.com", status: "Pending", role: "User" },
   { id: 11, name: "Kate Brown", email: "kate@example.com", status: "Active", role: "Editor" },
   { id: 12, name: "Leo Garcia", email: "leo@example.com", status: "Inactive", role: "User" },
+  { id: 13, name: "Mia Rodriguez", email: "mia@example.com", status: "Active", role: "Admin" },
+  { id: 14, name: "Noah Nguyen", email: "noah@example.com", status: "Pending", role: "User" },
+  { id: 15, name: "Olivia Patel", email: "olivia@example.com", status: "Active", role: "Editor" },
+  { id: 16, name: "Peter Silva", email: "peter@example.com", status: "Inactive", role: "User" },
+  { id: 17, name: "Quinn Anderson", email: "quinn@example.com", status: "Active", role: "Admin" },
+  { id: 18, name: "Rosa Kim", email: "rosa@example.com", status: "Pending", role: "User" },
+  { id: 19, name: "Sam Carter", email: "sam@example.com", status: "Active", role: "Editor" },
+  { id: 20, name: "Tina Lopez", email: "tina@example.com", status: "Inactive", role: "User" },
+  { id: 21, name: "Uma Fischer", email: "uma@example.com", status: "Active", role: "Admin" },
 ];
 
 const columns = [
@@ -400,7 +409,7 @@ const data = [
   <AdvancedTable :columns="columns" :data="data" :pagination="false" />
 </template>`;
 
-const paginationVue = vueSnippet(`  <AdvancedTable :columns="columns" :data="data" :pagination="true" :items-per-page="5" />`);
+const paginationVue = vueSnippet(`  <AdvancedTable :columns="columns" :data="data" :pagination="true" :items-per-page="5" :show-page-size="true" />`);
 
 const searchVue = vueSnippet(`  <AdvancedTable :columns="columns" :data="data" :pagination="false" :search-enabled="true" />
   <!-- search-fields="['name', 'email']" limita los campos donde busca -->`);
@@ -536,7 +545,7 @@ const buttonsIconsVanilla = `${tableImportVanilla}
 
 const paginationVanilla = `${tableImportVanilla}
 
-<cu-table id="atbl-pag" items-per-page="5"></cu-table>
+<cu-table id="atbl-pag" items-per-page="5" show-page-size></cu-table>
 
 <script>
   customElements.whenDefined('cu-table').then(() => {
@@ -659,7 +668,7 @@ const emptyVanilla = `${tableImportVanilla}
         </div>
         <SectionDemo :vue-code="paginationVue" :vanilla-code="paginationVanilla">
           <div class="playground-col">
-            <AdvancedTable :columns="columns" :data="sampleData" :pagination="true" :items-per-page="5" />
+            <AdvancedTable :columns="columns" :data="sampleData" :pagination="true" :items-per-page="5" :show-page-size="true" />
           </div>
         </SectionDemo>
       </section>
