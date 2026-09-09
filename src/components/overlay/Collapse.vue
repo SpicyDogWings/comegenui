@@ -53,7 +53,16 @@ function onEnter(el: Element) {
   el_.style.height = '0'
   el_.style.overflow = 'hidden'
   requestAnimationFrame(() => {
-    el_.style.height = el_.scrollHeight + 'px'
+    // El contenido puede colapsar a 0 con height:0 (hijos con altura relativa,
+    // ej. AdvancedTable), lo que haría scrollHeight == 0. Se mide con height:auto
+    // sin pintar y se restaura el 0 antes de animar en el frame siguiente.
+    const prev = el_.style.height
+    el_.style.height = ''
+    const target = el_.scrollHeight
+    el_.style.height = prev
+    requestAnimationFrame(() => {
+      el_.style.height = target + 'px'
+    })
   })
   el_.addEventListener('transitionend', () => {
     el_.style.height = ''
