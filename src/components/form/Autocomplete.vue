@@ -60,7 +60,8 @@ watch(() => searchValue.value, (val) => {
   searchText.value = val;
 }, { immediate: true });
 
-const { filteredData: filteredItems } = useSearch(props.items, {
+const searchItems = computed(() => props.items);
+const { filteredData: filteredItems } = useSearch(searchItems, {
   searchQuery: searchText,
   searchFields: ["label", "value"],
 });
@@ -84,7 +85,7 @@ function onInput(val: string) {
 }
 
 function onItemClick(item: AutocompleteItem) {
-  const val = item.value || item.label;
+  const val = item.label || item.value;
   searchText.value = val;
   searchValue.value = val;
   selectedItem.value = item;

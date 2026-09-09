@@ -100,9 +100,15 @@ El zip incluye scripts para actualizar la lib en el proyecto huésped:
 .\update.ps1 v3.0.0    # build de un tag/release
 ```
 
+**Windows (cmd, evita ExecutionPolicy):**
+```cmd
+update.bat            # último build de main (o doble clic)
+update.bat v3.0.0     # build de un tag/release
+```
+
 **Qué hace:**
 1. Descarga el artifact de GitLab (según tag o main)
-2. Reemplaza la carpeta de forma atómico (si falla, lo anterior queda intacto)
+2. Reemplaza la carpeta de forma atómica (si falla, lo anterior queda intacto)
 3. Instala la skill de uso en `.agents/skills/use-comegen/` del proyecto huésped
 
 **Variables opcionales:**
