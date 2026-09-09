@@ -110,6 +110,23 @@ Ejemplos copy-pasteables de todos los componentes en HTML plano. Para la guía d
 </script>
 ```
 
+### Cells Importer (xlsx/csv)
+
+```html
+<cu-cells-importer id="imp"></cu-cells-importer>
+<script src="dist/CuCellsImporter.umd.js"></script>
+<script>
+  const imp = document.getElementById('imp');
+  await customElements.whenDefined('cu-cells-importer');
+  imp.columns = [
+    { key: 'name', label: 'Nombre', required: true },
+    { key: 'age', label: 'Edad', type: 'integer', min: 0, max: 120 },
+  ];
+  imp.addEventListener('parse', (e) => console.log('Filas:', e.detail.rows));
+  imp.addEventListener('error', (e) => console.log('Errores:', e.detail));
+</script>
+```
+
 ---
 
 ## Botones

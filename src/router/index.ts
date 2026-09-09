@@ -143,6 +143,11 @@ const router = createRouter({
               component: () => import("@/pages/playground/components/FileInputZone.vue")
             },
             {
+              path: "cells-importer",
+              name: "CellsImporter playground",
+              component: () => import("@/pages/playground/components/CellsImporter.vue")
+            },
+            {
               path: "month-slider",
               name: "MonthSlider playground",
               component: () => import("@/pages/playground/components/MonthSlider.vue")

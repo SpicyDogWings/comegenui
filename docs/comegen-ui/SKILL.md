@@ -191,6 +191,7 @@ Para tablas completas de archivos, colores por tema, variantes por componente, d
 - [\<cu-button\>](componentes/cu-button.md) — Botón
 - [\<cu-calendar\>](componentes/cu-calendar.md) — Calendario de mes
 - [\<cu-card\>](componentes/cu-card.md) — Tarjeta
+- [\<cu-cells-importer\>](componentes/cu-cells-importer.md) — Importador xlsx/csv
 - [\<cu-checkbox\>](componentes/cu-checkbox.md) — Checkbox
 - [\<cu-collapse\>](componentes/cu-collapse.md) — Colapsable
 - [\<cu-command-palette\>](componentes/cu-command-palette.md) — Paleta de comandos

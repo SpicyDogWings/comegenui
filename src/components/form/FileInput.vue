@@ -2,6 +2,7 @@
 import { computed, ref, watch, onUnmounted, useTemplateRef, type PropType } from "vue";
 import { useFocus } from "@vueuse/core";
 import Button from "../buttons/Button.vue";
+import Alert from "../information/Alert.vue";
 import { getFileIconSvg, formatFileSize } from "../../utils/fileIcons";
 
 const value = defineModel<File | null>({ default: null });
@@ -54,6 +55,7 @@ const fileInputRef = useTemplateRef<HTMLInputElement>("fileInput");
 const containerRef = useTemplateRef("container");
 const { focused: containerFocus } = useFocus(containerRef);
 const isDragOver = ref(false);
+const rejectMessage = ref("");
 
 const inputStyles = computed(() => ({
   '--input-bg': `var(--cu-color-${props.color})`,
@@ -100,16 +102,33 @@ function isValidFile(file: File): boolean {
   return true;
 }
 
+function rejectReason(file: File): string {
+  if (file.size === 0 && !file.type) return 'El archivo está vacío.';
+  if (props.maxSize && file.size > props.maxSize) {
+    return `Supera el tamaño máximo (${formatFileSize(props.maxSize)}).`;
+  }
+  if (props.accept && !matchesAccept(file)) {
+    return `Formato no permitido. Se aceptan: ${props.accept}.`;
+  }
+  return 'El archivo no se pudo aceptar.';
+}
+
 function handleInputChange(event: Event) {
   const input = event.target as HTMLInputElement;
   if (input.files && input.files.length > 0) {
     const file = input.files[0];
-    if (isValidFile(file)) value.value = file;
+    if (isValidFile(file)) {
+      rejectMessage.value = "";
+      value.value = file;
+    } else {
+      rejectMessage.value = rejectReason(file);
+    }
   }
 }
 
 function removeFile() {
   value.value = null;
+  rejectMessage.value = "";
   if (fileInputRef.value) fileInputRef.value.value = "";
 }
 
@@ -129,7 +148,13 @@ function onDrop(e: DragEvent) {
   isDragOver.value = false;
   if (props.disabled || props.readOnly) return;
   const file = e.dataTransfer?.files?.[0];
-  if (file && isValidFile(file)) value.value = file;
+  if (!file) return;
+  if (isValidFile(file)) {
+    rejectMessage.value = "";
+    value.value = file;
+  } else {
+    rejectMessage.value = rejectReason(file);
+  }
 }
 
 function trigger() {
@@ -137,10 +162,15 @@ function trigger() {
   fileInputRef.value?.click();
 }
 
+watch(value, (file) => {
+  if (file) rejectMessage.value = "";
+});
+
 const get = () => value.value;
-const set = (file: File | null) => { value.value = file; };
+const set = (file: File | null) => { value.value = file; rejectMessage.value = ""; };
 const reset = () => {
   value.value = null;
+  rejectMessage.value = "";
   if (fileInputRef.value) fileInputRef.value.value = "";
 };
 const focus = () => { containerFocus.value = true; };
@@ -149,97 +179,106 @@ defineExpose({ get, set, reset, focus, trigger });
 </script>
 
 <template>
-  <div
-    ref="container"
-    class="cu-file-input"
-    :class="[
-      `cu-file-input--${props.variant}`,
-      {
-        'cu-file-input--disabled': props.disabled,
-        'cu-file-input--drag-over': isDragOver,
-        'cu-file-input--has-file': !!value,
-      }
-    ]"
-    :style="inputStyles"
-    @click="trigger"
-    @dragover="onDragOver"
-    @dragleave="onDragLeave"
-    @drop="onDrop"
-    @keydown.enter="trigger"
-    @keydown.space.prevent="trigger"
-    tabindex="0"
-    role="button"
-    :aria-disabled="props.disabled"
-  >
-    <input
-      ref="fileInput"
-      type="file"
-      :accept="props.accept"
-      class="cu-file-input-hidden"
-      @change="handleInputChange"
-    />
-
-    <svg
-      v-if="!value"
-      xmlns="http://www.w3.org/2000/svg"
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      class="cu-file-input-icon"
+  <div class="cu-file-input-wrap">
+    <div
+      ref="container"
+      class="cu-file-input"
+      :class="[
+        `cu-file-input--${props.variant}`,
+        {
+          'cu-file-input--disabled': props.disabled,
+          'cu-file-input--drag-over': isDragOver,
+          'cu-file-input--has-file': !!value,
+        }
+      ]"
+      :style="inputStyles"
+      @click="trigger"
+      @dragover="onDragOver"
+      @dragleave="onDragLeave"
+      @drop="onDrop"
+      @keydown.enter="trigger"
+      @keydown.space.prevent="trigger"
+      tabindex="0"
+      role="button"
+      :aria-disabled="props.disabled"
     >
-      <path d="M12 3v12" />
-      <path d="m17 8-5-5-5 5" />
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-    </svg>
-    <span v-if="!value" class="cu-file-input-placeholder">
-      {{ props.placeholder }}
-      <template v-if="formatosStr">&nbsp;— {{ formatosStr }}</template>
-      <template v-if="maxSizeStr">&nbsp;(máx {{ maxSizeStr }})</template>
-    </span>
+      <input
+        ref="fileInput"
+        type="file"
+        :accept="props.accept"
+        class="cu-file-input-hidden"
+        @change="handleInputChange"
+      />
 
-    <span v-if="value" v-html="getFileIconSvg(value, 16)" class="cu-file-input-icon"></span>
-
-    <div v-if="value" class="cu-file-input-name" @click="trigger">
-      <a
-        :href="fileUrl"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="cu-file-input-link"
-        @click.stop
-      >
-        {{ value.name }}
-      </a>
-    </div>
-
-    <span v-if="value" class="cu-file-input-size">{{ formatFileSize(value.size) }}</span>
-
-    <Button
-      v-if="value && !props.disabled"
-      :color="color"
-      variant="ghost"
-      class="cu-file-input-remove"
-      @click.stop="removeFile"
-    >
       <svg
+        v-if="!value"
         xmlns="http://www.w3.org/2000/svg"
-        width="14"
-        height="14"
+        width="16"
+        height="16"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
         stroke-width="2"
         stroke-linecap="round"
         stroke-linejoin="round"
+        class="cu-file-input-icon"
       >
-        <path d="M18 6 6 18" />
-        <path d="m6 6 12 12" />
+        <path d="M12 3v12" />
+        <path d="m17 8-5-5-5 5" />
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
       </svg>
-    </Button>
+      <span v-if="!value" class="cu-file-input-placeholder">
+        {{ props.placeholder }}
+        <template v-if="formatosStr">&nbsp;— {{ formatosStr }}</template>
+        <template v-if="maxSizeStr">&nbsp;(máx {{ maxSizeStr }})</template>
+      </span>
+
+      <span v-if="value" v-html="getFileIconSvg(value, 16)" class="cu-file-input-icon"></span>
+
+      <div v-if="value" class="cu-file-input-name" @click="trigger">
+        <a
+          :href="fileUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="cu-file-input-link"
+          @click.stop
+        >
+          {{ value.name }}
+        </a>
+      </div>
+
+      <span v-if="value" class="cu-file-input-size">{{ formatFileSize(value.size) }}</span>
+
+      <Button
+        v-if="value && !props.disabled"
+        :color="color"
+        variant="ghost"
+        class="cu-file-input-remove"
+        @click.stop="removeFile"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M18 6 6 18" />
+          <path d="m6 6 12 12" />
+        </svg>
+      </Button>
+    </div>
+
+    <Alert
+      v-if="rejectMessage"
+      color="danger"
+      variant="soft"
+      class="cu-file-input-reject"
+    >{{ rejectMessage }}</Alert>
   </div>
 </template>
 
@@ -369,5 +408,15 @@ defineExpose({ get, set, reset, focus, trigger });
 
 .cu-file-input-remove:hover {
   opacity: 1;
+}
+
+.cu-file-input-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cu-space-2xs);
+}
+
+.cu-file-input-reject {
+  margin-top: var(--cu-space-2xs);
 }
 </style>

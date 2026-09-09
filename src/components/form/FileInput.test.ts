@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { nextTick } from "vue";
 import { mount } from "@vue/test-utils";
 import FileInput from "./FileInput.vue";
 
@@ -33,5 +34,51 @@ describe("FileInput", () => {
   it("muestra formatos legibles a partir de accept", () => {
     const w = factory({ accept: "image/*" });
     expect(w.find(".cu-file-input-placeholder").text()).toContain("Imagen");
+  });
+
+  it("muestra feedback cuando el archivo no coincide con accept", async () => {
+    const w = factory({ accept: ".csv" });
+    const input = w.find("input[type='file']");
+    const file = new File(["x"], "doc.pdf", { type: "application/pdf" });
+    Object.defineProperty(input.element, "files", { value: [file], configurable: true });
+    await input.trigger("change");
+    expect(w.find(".cu-file-input-reject").text()).toContain("Formato no permitido");
+    expect(w.find(".cu-file-input-reject").text()).toContain(".csv");
+    expect(w.emitted("update:modelValue")).toBeUndefined();
+  });
+
+  it("muestra feedback cuando el archivo supera maxSize", async () => {
+    const w = factory({ maxSize: 10 });
+    const input = w.find("input[type='file']");
+    const file = new File([new ArrayBuffer(100)], "grande.csv", { type: "text/csv" });
+    Object.defineProperty(input.element, "files", { value: [file], configurable: true });
+    await input.trigger("change");
+    expect(w.find(".cu-file-input-reject").text()).toContain("tamaño máximo");
+  });
+
+  it("limpia el feedback al seleccionar un archivo válido", async () => {
+    const w = factory({ accept: ".csv" });
+    const input = w.find("input[type='file']");
+    const bad = new File(["x"], "doc.pdf", { type: "application/pdf" });
+    Object.defineProperty(input.element, "files", { value: [bad], configurable: true });
+    await input.trigger("change");
+    expect(w.find(".cu-file-input-reject").exists()).toBe(true);
+    const good = new File(["a"], "datos.csv", { type: "text/csv" });
+    Object.defineProperty(input.element, "files", { value: [good], configurable: true });
+    await input.trigger("change");
+    expect(w.find(".cu-file-input-reject").exists()).toBe(false);
+    expect(w.emitted("update:modelValue")?.[0]?.[0]).toMatchObject({ name: "datos.csv" });
+  });
+
+  it("limpia el feedback al setear un archivo válido por v-model", async () => {
+    const w = factory({ accept: ".csv" });
+    const input = w.find("input[type='file']");
+    const bad = new File(["x"], "doc.pdf", { type: "application/pdf" });
+    Object.defineProperty(input.element, "files", { value: [bad], configurable: true });
+    await input.trigger("change");
+    expect(w.find(".cu-file-input-reject").exists()).toBe(true);
+    await w.setProps({ modelValue: new File(["a"], "datos.csv", { type: "text/csv" }) });
+    await nextTick();
+    expect(w.find(".cu-file-input-reject").exists()).toBe(false);
   });
 });

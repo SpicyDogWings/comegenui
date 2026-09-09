@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { computed, ref, useTemplateRef, type PropType } from "vue";
+import { computed, ref, watch, useTemplateRef, type PropType } from "vue";
 import { useFocus } from "@vueuse/core";
 import FileList from "../FileList.vue";
+import Alert from "../information/Alert.vue";
+import { formatFileSize } from "../../utils/fileIcons";
 
 const value = defineModel<File | File[] | null>({ default: null });
 
@@ -62,6 +64,8 @@ const isDragOver = ref(false);
 const dropZoneRef = useTemplateRef("dropZone");
 const { focused: dropFocus } = useFocus(dropZoneRef);
 const fileInputRef = useTemplateRef<HTMLInputElement>("fileInput");
+const rejectMessages = ref<string[]>([]);
+const internalSet = ref(false);
 
 const zoneStyles = computed(() => ({
   '--zone-bg': `var(--cu-color-${props.color})`,
@@ -95,6 +99,17 @@ function isValidFile(file: File): boolean {
   if (props.maxSize && file.size > props.maxSize) return false;
   if (!matchesAccept(file)) return false;
   return true;
+}
+
+function rejectReason(file: File): string {
+  if (file.size === 0 && !file.type) return `${file.name}: archivo vacío.`;
+  if (props.maxSize && file.size > props.maxSize) {
+    return `${file.name}: supera el tamaño máximo (${formatFileSize(props.maxSize)}).`;
+  }
+  if (props.accept && !matchesAccept(file)) {
+    return `${file.name}: formato no permitido (se aceptan: ${props.accept}).`;
+  }
+  return `${file.name}: no se pudo aceptar.`;
 }
 
 function readDirectory(entry: FileSystemDirectoryEntry, depth: number): Promise<File[]> {
@@ -138,21 +153,37 @@ async function processEntries(entries: FileSystemEntry[], depth: number): Promis
 
 function setFiles(files: File[]) {
   if (props.disabled || props.readOnly) return;
-  let validFiles = files.filter(isValidFile);
+  const rejected: string[] = [];
+  let validFiles = files.filter((f) => {
+    if (isValidFile(f)) return true;
+    rejected.push(rejectReason(f));
+    return false;
+  });
   if (props.directory && props.directoryDeep >= 0) {
     validFiles = validFiles.filter((f) => {
       if (!f.webkitRelativePath) return true;
       const subdirLevels = f.webkitRelativePath.split("/").length - 2;
-      return subdirLevels <= props.directoryDeep;
+      if (subdirLevels > props.directoryDeep) {
+        rejected.push(`${f.name}: excede la profundidad máxima de subcarpetas.`);
+        return false;
+      }
+      return true;
     });
   }
+  rejectMessages.value = rejected;
   if (validFiles.length === 0) return;
+  internalSet.value = true;
   if (effectiveMultiple.value) {
     value.value = validFiles;
   } else {
     value.value = validFiles[0];
   }
 }
+
+watch(value, (files) => {
+  if (internalSet.value) { internalSet.value = false; return; }
+  if (files && (files instanceof File || files.length > 0)) rejectMessages.value = [];
+});
 
 function handleInputChange(event: Event) {
   const input = event.target as HTMLInputElement;
@@ -227,19 +258,22 @@ function removeFile(index: number) {
   if (!value.value) return;
   if (value.value instanceof File) {
     value.value = null;
+    rejectMessages.value = [];
     return;
   }
   if (Array.isArray(value.value)) {
     const arr = [...value.value];
     arr.splice(index, 1);
     value.value = arr.length > 0 ? arr : null;
+    if (arr.length === 0) rejectMessages.value = [];
   }
 }
 
 const get = () => value.value;
-const set = (files: File | File[] | null) => { value.value = files as any; };
+const set = (files: File | File[] | null) => { value.value = files as any; rejectMessages.value = []; };
 const reset = () => {
   value.value = null;
+  rejectMessages.value = [];
   if (fileInputRef.value) fileInputRef.value.value = "";
 };
 const focus = () => { dropFocus.value = true; };
@@ -248,70 +282,81 @@ defineExpose({ get, set, reset, focus, trigger });
 </script>
 
 <template>
-  <div
-    ref="dropZone"
-    class="cu-file-zone"
-    :class="{
-      'cu-file-zone--disabled': props.disabled,
-      'cu-file-zone--drag-over': isDragOver,
-      'cu-file-zone--empty': fileList.length === 0,
-      'cu-file-zone--has-files': fileList.length > 0,
-    }"
-    :style="zoneStyles"
-    @dragover="onDragOver"
-    @dragleave="onDragLeave"
-    @drop="onDrop"
-    @click="trigger"
-    @keydown.enter="trigger"
-    @keydown.space.prevent="trigger"
-    tabindex="0"
-    role="button"
-    :aria-disabled="props.disabled"
-  >
-    <input
-      ref="fileInput"
-      type="file"
-      :accept="props.accept"
-      :multiple="effectiveMultiple"
-      :webkitdirectory="props.directory || undefined"
-      class="cu-file-zone-hidden"
-      @change="handleInputChange"
-    />
-
-    <svg
-      v-if="fileList.length === 0"
-      xmlns="http://www.w3.org/2000/svg"
-      width="40"
-      height="40"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      class="cu-file-zone-icon"
+  <div class="cu-file-zone-wrap">
+    <div
+      ref="dropZone"
+      class="cu-file-zone"
+      :class="{
+        'cu-file-zone--disabled': props.disabled,
+        'cu-file-zone--drag-over': isDragOver,
+        'cu-file-zone--empty': fileList.length === 0,
+        'cu-file-zone--has-files': fileList.length > 0,
+      }"
+      :style="zoneStyles"
+      @dragover="onDragOver"
+      @dragleave="onDragLeave"
+      @drop="onDrop"
+      @click="trigger"
+      @keydown.enter="trigger"
+      @keydown.space.prevent="trigger"
+      tabindex="0"
+      role="button"
+      :aria-disabled="props.disabled"
     >
-      <path d="M12 3v12" />
-      <path d="m17 8-5-5-5 5" />
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-    </svg>
+      <input
+        ref="fileInput"
+        type="file"
+        :accept="props.accept"
+        :multiple="effectiveMultiple"
+        :webkitdirectory="props.directory || undefined"
+        class="cu-file-zone-hidden"
+        @change="handleInputChange"
+      />
 
-    <div v-if="fileList.length === 0" class="cu-file-zone-text">
-      <p class="cu-file-zone-placeholder">{{ props.placeholder }}</p>
-      <p v-if="props.accept" class="cu-file-zone-formats">
-        Formatos aceptados: {{ props.accept }}
-      </p>
+      <svg
+        v-if="fileList.length === 0"
+        xmlns="http://www.w3.org/2000/svg"
+        width="40"
+        height="40"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="cu-file-zone-icon"
+      >
+        <path d="M12 3v12" />
+        <path d="m17 8-5-5-5 5" />
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      </svg>
+
+      <div v-if="fileList.length === 0" class="cu-file-zone-text">
+        <p class="cu-file-zone-placeholder">{{ props.placeholder }}</p>
+        <p v-if="props.accept" class="cu-file-zone-formats">
+          Formatos aceptados: {{ props.accept }}
+        </p>
+      </div>
+
+      <FileList
+        v-else
+        :files="value"
+        :color="props.color"
+        :disabled="props.disabled"
+        :max-height="props.maxHeight"
+        @remove="removeFile"
+        @select="handleFileClick"
+      />
     </div>
 
-    <FileList
-      v-else
-      :files="value"
-      :color="props.color"
-      :disabled="props.disabled"
-      :max-height="props.maxHeight"
-      @remove="removeFile"
-      @select="handleFileClick"
-    />
+    <Alert
+      v-if="rejectMessages.length > 0"
+      color="danger"
+      variant="soft"
+      class="cu-file-zone-reject"
+    >
+      <p v-for="(msg, i) in rejectMessages" :key="i" class="cu-file-zone-reject-item">{{ msg }}</p>
+    </Alert>
   </div>
 </template>
 
@@ -391,5 +436,20 @@ defineExpose({ get, set, reset, focus, trigger });
   margin-top: var(--cu-space-2xs);
   color: var(--zone-text);
   opacity: 0.5;
+}
+
+.cu-file-zone-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cu-space-2xs);
+}
+
+.cu-file-zone-reject {
+  margin-top: var(--cu-space-2xs);
+}
+
+.cu-file-zone-reject-item {
+  margin: 0;
+  font-size: var(--cu-font-size-sm);
 }
 </style>

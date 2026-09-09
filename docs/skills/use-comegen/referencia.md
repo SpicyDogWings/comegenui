@@ -16,6 +16,7 @@ Tablas de referencia completas. Para la guía de uso ver [`SKILL.md`](SKILL.md).
 | `CuButton.umd.js` | `<cu-button>` | Botón |
 | `CuCalendar.umd.js` | `<cu-calendar>` | Calendario de mes (7 columnas) |
 | `CuCard.umd.js` | `<cu-card>` | Tarjeta de información |
+| `CuCellsImporter.umd.js` | `<cu-cells-importer>` | Importador xlsx/csv con validación |
 | `CuCheckbox.umd.js` | `<cu-checkbox>` | Checkbox |
 | `CuCollapse.umd.js` | `<cu-collapse>` | Colapsable |
 | `CuColorPicker.umd.js` | `<cu-color-picker>` | Selector de color |
@@ -64,15 +65,15 @@ Tablas de referencia completas. Para la guía de uso ver [`SKILL.md`](SKILL.md).
 
 Refleja los validadores reales de cada `.ce.vue`. `—` significa que la variante no es aceptada.
 
-| Variante | Button | Alert | Badge | Input | FileInput | FileInputZone | Checkbox | Textarea | Pagination | Table | DropdownMenu | Autocomplete | Select | Modal | ColorPicker | Collapse | FloatingButton | Label | Switch
-|----------|--------|-------|-------|-------|-----------|---------------|----------|----------|------------|-------|--------------|--------------|--------|-------|-------------|----------|----------------|-------|--------|----------|----------|
-| `solid` | ✓ | ✓ | ✓ | — | — | — | — | — | — | ✓ | ✓ | — | — | — | — | — | — | — | — | ✓ | ✓ |
-| `outlined` | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — | — | — | — | ✓ | ✓ |
-| `soft` | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — | — | — | — | ✓ | ✓ |
-| `ghost` | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — | — | — | — | ✓ | ✓ |
-| `subtle` | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — | — | — | — | ✓ | ✓ |
+| Variante | Button | Alert | Badge | Input | FileInput | FileInputZone | CellsImporter | Checkbox | Textarea | Pagination | Table | DropdownMenu | Autocomplete | Select | Modal | ColorPicker | Collapse | FloatingButton | Label | Switch
+|----------|--------|-------|-------|-------|-----------|---------------|---------------|----------|----------|------------|-------|--------------|--------------|--------|-------|-------------|----------|----------------|-------|--------|----------|----------|
+| `solid` | ✓ | ✓ | ✓ | — | — | — | — | — | — | — | ✓ | ✓ | — | — | — | — | — | — | — | ✓ | ✓ |
+| `outlined` | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — | — | — | ✓ | ✓ |
+| `soft` | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — | — | — | ✓ | ✓ |
+| `ghost` | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — | — | — | ✓ | ✓ |
+| `subtle` | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — | — | — | ✓ | ✓ |
 | `link` | ✓ | — | — | — | — | — | — | — | — | — | ✓ | — | — | — | — | — | — | — | — | — | — |
-| `none` | ✓ | — | — | — | — | — | — | — | ✓ | — | ✓ | — | — | — | — | — | — | — | — | — | — |
+| `none` | ✓ | — | — | — | — | — | — | — | — | ✓ | — | ✓ | — | — | — | — | — | — | — | — | — |
 
 > Checkbox, FileInputZone, Modal, ColorPicker, Collapse, FloatingButton, Label, Switch, AuthorCard, Avatar, CommandPalette, Navbar, NavbarHorizontal, SideOver y Tooltip **no tienen prop `variant`**. Badge acepta `ghost`; Alert acepta `ghost` pero no `none`. Input, Textarea, Autocomplete, Select y FileInput aceptan solo `outlined`/`soft`/`ghost`/`subtle`. Table acepta `solid`/`outlined`/`soft`/`ghost`/`subtle`. Pagination acepta además `none`. `<cu-tabs>` usa su propio set: `tabs`, `pills`, `boxed`, `soft`.
 
@@ -92,6 +93,7 @@ Refleja los validadores reales de cada `.ce.vue`. `—` significa que la variant
 | `<cu-button>` | `ghost` |
 | `<cu-calendar>` | `soft` (variante del día seleccionado) |
 | `<cu-card>` | `ghost` |
+| `<cu-cells-importer>` | `outlined` |
 | `<cu-checkbox>` | — (sin variant) |
 | `<cu-collapse>` | — (sin variant) |
 | `<cu-color-picker>` | — (sin variant) |
@@ -143,6 +145,7 @@ Cada archivo UMD incluye el runtime de Vue 3 (no externalizado):
 | CuDropdownMenu | ~208 kB | ~50 kB |
 | CuFileInput | ~215 kB | ~52 kB |
 | CuFileInputZone | ~220 kB | ~53 kB |
+| CuCellsImporter | ~960 kB | ~236 kB |
 | CuColorPicker | ~178 kB | ~42 kB |
 | CuDatePicker | ~225 kB | ~53 kB |
 | CuFloatingButton | ~167 kB | ~40 kB |
@@ -154,3 +157,5 @@ Cada archivo UMD incluye el runtime de Vue 3 (no externalizado):
 | CuNavbarHorizontal | ~244 kB | ~57 kB |
 | CuSideOver | ~228 kB | ~55 kB |
 | CuTooltip | ~204 kB | ~50 kB |
+
+> `CuCellsImporter` incluye el parser de `.xlsx` (SheetJS), por eso pesa ~4× más que el resto. Solo ese archivo se ve afectado; los demás bundles no cambian.
