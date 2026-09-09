@@ -22,6 +22,9 @@ $ErrorActionPreference = "Stop"
 $Self = Split-Path -Parent $MyInvocation.MyCommand.Path
 $Tmp = Join-Path ([System.IO.Path]::GetTempPath()) ([System.IO.Path]::GetRandomFileName())
 New-Item -ItemType Directory -Path $Tmp | Out-Null
+# CWD original del usuario: la pasada 2 sale del dir de la lib para poder
+# renombrarla, y el finally lo restaura (no dejar al usuario en /tmp).
+$prevLoc = $null
 
 try {
     if ($Tag -eq "__swap__") {
@@ -29,7 +32,9 @@ try {
         $Tag = if ($Args[0]) { $Args[0] } else { "main" }
         $Self = $Args[1]
         # Windows no permite renombrar la carpeta que es el CWD del proceso
-        # (doble-clic en update.bat o `cd lib && .\update.ps1`). Salimos de ahí.
+        # (doble-clic en update.bat o `cd lib && .\update.ps1`). Salimos de ahí;
+        # el finally restaura el CWD original al terminar.
+        $prevLoc = Get-Location
         Set-Location $Tmp
         $url = if ($env:CG_URL) { $env:CG_URL } else { "https://gitlab.com/SpicyDogWings/comegen-ui/-/jobs/artifacts/$Tag/download?job=build" }
 
@@ -107,5 +112,6 @@ try {
     $tagArg = $Tag
     & $selfPs1 __swap__ $tagArg $Self
 } finally {
+    if ($prevLoc) { Set-Location -LiteralPath $prevLoc.Path -ErrorAction SilentlyContinue }
     if (Test-Path $Tmp) { Remove-Item $Tmp -Recurse -Force -ErrorAction SilentlyContinue }
 }
