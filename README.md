@@ -71,24 +71,35 @@ tu-proyecto/
 
 **Uso:**
 ```sh
-./update.sh          # último build de main
-./update.sh v3.0.0   # build de un tag específico
+./update.sh                          # actualiza TODA la lib (main)
+./update.sh v3.0.0                   # actualiza TODA la lib (tag específico)
+./update.sh --only CuButton          # actualiza SOLO CuButton
+./update.sh --only CuButton,CuAlert  # actualiza solo esos componentes
+./update.sh --only CuButton v3.0.0   # solo CuButton, desde un tag
 ```
 
 ```cmd
 update.bat
 update.bat v3.0.0
+update.bat -Only CuButton
+update.bat -Only CuButton,CuAlert v3.0.0
 ```
 
 ```powershell
 .\update.ps1
 .\update.ps1 v3.0.0
+.\update.ps1 -Only CuButton
+.\update.ps1 -Only CuButton,CuAlert v3.0.0
 ```
+
+`--only` / `-Only` acepta el nombre como `CuButton`, `button`, `cu-button` o
+`CuButton.umd.js` (sin distinguir mayúsculas ni guiones). `-o` es alias.
 
 **Qué hacen:**
 1. Descargan el artifact de GitLab (según tag o `main`)
-2. Reemplazan la carpeta de forma **atómica** (si falla, lo anterior queda intacto)
-3. Instalan la skill de uso en `.agents/skills/use-comegen/` del proyecto huésped
+2. **Sin `--only`:** reemplazan la carpeta de forma **atómica** (si falla, lo anterior queda intacto).
+   **Con `--only`:** copian solo los `.umd.js` elegidos y su doc (`use-comegen/componentes/cu-*.md`), dejando el resto de los componentes intactos (y sin tocar `css/themes.css`)
+3. Actualizan la skill de uso en `.agents/skills/use-comegen/` del proyecto huésped (completa o solo los docs elegidos)
 
 **Variables opcionales:**
 - `CG_URL` / `$env:CG_URL` — override de URL (para probar con archivo local)

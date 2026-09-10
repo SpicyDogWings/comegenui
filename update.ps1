@@ -1,25 +1,78 @@
 # update.ps1 — Actualiza ComegenUI en el proyecto huésped desde el artifact del repo.
-# Vive junto a la lib (se instala con el zip) y reemplaza esta carpeta de forma
-# atómica: si la descarga falla, lo anterior queda intacto.
+# Vive junto a la lib (se instala con el zip) y, sin -Only, reemplaza esta
+# carpeta de forma atómica: si la descarga falla, lo anterior queda intacto.
 #
 # Uso:
-#   .\update.ps1            → último build de main
-#   .\update.ps1 v3.0.0     → build de un tag/release
+#   .\update.ps1                          → actualiza TODA la lib (main)
+#   .\update.ps1 v3.0.0                   → actualiza TODA la lib (tag/release)
+#   .\update.ps1 -Only CuButton           → actualiza SOLO CuButton (main)
+#   .\update.ps1 -Only CuButton,CuAlert   → actualiza solo esos componentes
+#   .\update.ps1 -Only CuButton v3.0.0    → idem, pero desde un tag
 #
-# Al actualizar también instala la skill de uso (use-comegen/) en
-# .agents/skills/ del proyecto huésped, para que los agentes tengan la doc.
+#   -o es alias de -Only. Acepta `CuButton`, `button`, `cu-button` o
+#   `CuButton.umd.js`, sin distinguir mayúsculas ni guiones.
+#
+# Modo -Only: NO reemplaza toda la carpeta. Descarga el build y copia solo los
+# UMD elegidos + su doc (use-comegen/componentes/cu-*.md), dejando el resto de
+# los componentes intactos (y sin tocar css/themes.css).
+#
+# Al actualizar (completo o selectivo) también actualiza la skill de uso
+# (use-comegen/) en .agents/skills/ del proyecto huésped.
 #
 # Avanzados: $env:CG_URL para override de la URL (útil para probar con un archivo local)
 # y $env:CG_PROJECT_ROOT para indicar la raíz del proyecto (si no, se detecta subiendo
 # desde esta carpeta hasta .git / AGENTS.md / package.json).
 
-param(
-    [string]$Tag = "main"
-)
-
 $ErrorActionPreference = "Stop"
 
-$Self = Split-Path -Parent $MyInvocation.MyCommand.Path
+function Normalize-Component([string]$s) {
+    $t = $s -replace '\.umd\.js$', ''
+    $t = $t -replace '^[Cc]u', ''
+    $t = $t -replace '[^A-Za-z0-9]', ''
+    return $t.ToLower()
+}
+
+function Get-DocName([string]$file) {
+    $base = $file -replace '\.umd\.js$', ''
+    $base = $base -replace '^Cu', ''
+    $kebab = $base -creplace '([a-z0-9])([A-Z])', '$1-$2'
+    return "cu-$($kebab.ToLower()).md"
+}
+
+# --- Parseo de argumentos (sin param() para que --only/-Only funcione igual) ---
+$isSwap = $false
+$Tag = "main"
+$Only = ""
+if ($args.Count -gt 0 -and $args[0] -eq "__swap__") {
+    $isSwap = $true
+    $Tag = if ($args.Count -ge 2) { [string]$args[1] } else { "main" }
+    $Self = if ($args.Count -ge 3) { [string]$args[2] } else { (Get-Location).Path }
+    $Only = if ($args.Count -ge 4) { [string]$args[3] } else { "" }
+} else {
+    $i = 0
+    while ($i -lt $args.Count) {
+        $a = [string]$args[$i]
+        if ($a -eq "--only" -or $a -eq "-Only" -or $a -eq "-o") {
+            $i++
+            if ($i -lt $args.Count) {
+                $v = [string]$args[$i]
+                $Only = if ($Only) { "$Only,$v" } else { $v }
+                $i++
+            }
+        } elseif ($a -like "--only=*") {
+            $v = $a.Substring(7)
+            $Only = if ($Only) { "$Only,$v" } else { $v }
+            $i++
+        } elseif ($a -like "-*") {
+            # Opción desconocida: ignorar (paridad con update.sh).
+            $i++
+        } else {
+            $Tag = $a
+            $i++
+        }
+    }
+}
+
 $Tmp = Join-Path ([System.IO.Path]::GetTempPath()) ([System.IO.Path]::GetRandomFileName())
 New-Item -ItemType Directory -Path $Tmp | Out-Null
 # CWD original del usuario: la pasada 2 sale del dir de la lib para poder
@@ -27,10 +80,8 @@ New-Item -ItemType Directory -Path $Tmp | Out-Null
 $prevLoc = $null
 
 try {
-    if ($Tag -eq "__swap__") {
-        # Segunda pasada: corremos desde una copia en TMP; el destino real llega en $Args[1].
-        $Tag = if ($Args[0]) { $Args[0] } else { "main" }
-        $Self = $Args[1]
+    if ($isSwap) {
+        # Segunda pasada: corremos desde una copia en TMP; el destino real llega en $args.
         # Windows no permite renombrar la carpeta que es el CWD del proceso
         # (doble-clic en update.bat o `cd lib && .\update.ps1`). Salimos de ahí;
         # el finally restaura el CWD original al terminar.
@@ -53,6 +104,65 @@ try {
             $content = Join-Path $extractPath "comegenui"
         }
 
+        # Instalar la skill de uso en .agents/skills/ del proyecto huésped.
+        $projectRoot = $env:CG_PROJECT_ROOT
+        if (-not $projectRoot) {
+            $d = $Self
+            while ($d -ne (Split-Path $d -Parent) -and -not (Test-Path (Join-Path $d ".git") -PathType Container) -and -not (Test-Path (Join-Path $d "AGENTS.md")) -and -not (Test-Path (Join-Path $d "package.json"))) {
+                $d = Split-Path $d -Parent
+            }
+            if ($d -ne (Split-Path $d -Parent)) {
+                $projectRoot = $d
+            }
+        }
+
+        if ($Only) {
+            # --- Modo selectivo: copiar solo los UMD + doc elegidos -------------
+            $contentFiles = Get-ChildItem -Path $content -Filter "Cu*.umd.js" -File
+            $selectedDocs = @()
+            $updated = 0
+            foreach ($want in ($Only -split ',' | Where-Object { $_ })) {
+                $wnorm = Normalize-Component $want
+                $match = $contentFiles | Where-Object { (Normalize-Component $_.Name) -eq $wnorm } | Select-Object -First 1
+                if (-not $match) {
+                    Write-Host "⚠️  No se encontró '$want' en el build '$Tag' (se omite)"
+                    continue
+                }
+                Copy-Item $match.FullName (Join-Path $Self $match.Name) -Force
+                Write-Host "📦 $($match.Name) actualizado"
+                $doc = Get-DocName $match.Name
+                $docSrc = Join-Path $content "use-comegen/componentes/$doc"
+                if (Test-Path $docSrc) {
+                    $selfDocDir = Join-Path $Self "use-comegen/componentes"
+                    New-Item -ItemType Directory -Path $selfDocDir -Force | Out-Null
+                    Copy-Item $docSrc (Join-Path $selfDocDir $doc) -Force
+                    $selectedDocs += $doc
+                }
+                $updated++
+            }
+
+            if ($updated -eq 0) {
+                Write-Host "❌ Ningún componente coincidió con -Only ($Only). Nada se actualizó."
+                exit 1
+            }
+
+            if ($projectRoot -and $selectedDocs.Count -gt 0) {
+                $skillDir = Join-Path (Join-Path (Join-Path $projectRoot ".agents") "skills") "use-comegen"
+                $destDir = Join-Path $skillDir "componentes"
+                New-Item -ItemType Directory -Path $destDir -Force | Out-Null
+                foreach ($doc in $selectedDocs) {
+                    Copy-Item (Join-Path $Self "use-comegen/componentes/$doc") (Join-Path $destDir $doc) -Force
+                }
+                Write-Host "📚 Docs actualizadas en $destDir"
+            } elseif (-not $projectRoot) {
+                Write-Host "⚠️  No se detectó la raíz del proyecto (sin .git/AGENTS.md/package.json). Seteá `$env:CG_PROJECT_ROOT para instalar la skill en .agents/skills."
+            }
+
+            Write-Host "✅ ComegenUI '$Tag' actualizado (solo: $Only) en $Self"
+            exit 0
+        }
+
+        # --- Modo completo: reemplazo atómico de toda la carpeta ----------------
         Write-Host "🔁 Reemplazando $Self ..."
         $oldPath = "$Self.old"
         if (Test-Path $oldPath) { Remove-Item $oldPath -Recurse -Force }
@@ -71,18 +181,6 @@ try {
         }
         # Recién ahora se descarta el backup.
         if (Test-Path $oldPath) { Remove-Item $oldPath -Recurse -Force }
-
-        # Instalar la skill de uso en .agents/skills/ del proyecto huésped.
-        $projectRoot = $env:CG_PROJECT_ROOT
-        if (-not $projectRoot) {
-            $d = $Self
-            while ($d -ne (Split-Path $d -Parent) -and -not (Test-Path (Join-Path $d ".git") -PathType Container) -and -not (Test-Path (Join-Path $d "AGENTS.md")) -and -not (Test-Path (Join-Path $d "package.json"))) {
-                $d = Split-Path $d -Parent
-            }
-            if ($d -ne (Split-Path $d -Parent)) {
-                $projectRoot = $d
-            }
-        }
 
         if ($projectRoot -and (Test-Path (Join-Path $Self "use-comegen") -PathType Container)) {
             $skillsDir = Join-Path (Join-Path $projectRoot ".agents") "skills"
@@ -107,10 +205,7 @@ try {
     $Self = Split-Path -Parent $MyInvocation.MyCommand.Path
     $selfPs1 = Join-Path $Tmp "self.ps1"
     Copy-Item $MyInvocation.MyCommand.Path $selfPs1
-    # El tag llega por el param $Tag (bind posicional desde update.bat o la CLI),
-    # NO por $args — que queda vacío cuando el param lo captura.
-    $tagArg = $Tag
-    & $selfPs1 __swap__ $tagArg $Self
+    & $selfPs1 __swap__ $Tag $Self $Only
 } finally {
     if ($prevLoc) { Set-Location -LiteralPath $prevLoc.Path -ErrorAction SilentlyContinue }
     if (Test-Path $Tmp) { Remove-Item $Tmp -Recurse -Force -ErrorAction SilentlyContinue }

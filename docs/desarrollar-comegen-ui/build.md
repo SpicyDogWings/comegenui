@@ -14,7 +14,7 @@ Esto ejecuta `build-libs.ts` (Node) que:
 2. **Encuentra** todos los `*.ts` bajo `src/components/` recursivamente.
 3. **Compila** cada uno como UMD independiente con Vite.
 4. **Copia** `README-BUILD.md` a `dist/` con la versión actualizada.
-5. **Crea** `dist/comegenui-v{version}.zip`: los archivos de la lib (UMD + `css/` + `README-BUILD.md` + `update.sh`) + el folder de la skill de uso `use-comegen/` (desde `docs/skills/use-comegen/`; solo esa; no la de desarrollo ni la de documentar), al mismo nivel.
+5. **Crea** `dist/comegenui-v{version}.zip`: los archivos de la lib (UMD + `css/` + `README-BUILD.md` + `update.sh`/`update.ps1`/`update.bat`) + el folder de la skill de uso `use-comegen/` (desde `docs/skills/use-comegen/`; solo esa; no la de desarrollo ni la de documentar), al mismo nivel. Los actualizadores aceptan `--only`/`-Only CuX[,CuY]` para reemplazar solo algunos UMD (en vez de toda la carpeta).
 
 ## ¿Qué sale en `dist/`?
 
