@@ -490,3 +490,9 @@ Cada commit incluye su entrada en la **Bitácora**.
 - `refactor(devkit)`: **plugin** (`src/plugins/story-playground/`) = runtime + `cli/generate.mjs` (genérico) + `vitest/reporter.ts`. **Proyecto** (`tools/`) = `migrate.mjs`, `status.mjs`, `scaffold-component.mjs` (específicos de este repo).
 - Criterio: si sirve para cualquier `.vue` → plugin; si depende de `src/components`/páginas/tests viejos del repo → proyecto.
 - Scripts, README del plugin y skill actualizados con la separación.
+
+### 2026-09-10 — Metadata en las stories migradas
+
+- `feat(stories)`: `--meta-only` aplicado a las 21 stories que faltaban (CopyButton, FloatingButton, ToggleColorSheme, Badge, Alert, Card, Avatar, Loader, AuthorCard, Label, Switch, Checkbox, Textarea, Input, ColorPicker, Tooltip, SideOver, Tabs, Pagination, NavbarHorizontal) → ahora **todas usan la StoryPage genérica**.
+- Preflight verde (978 tests) tras la extracción de `tokens`/`subComponents`/`api` desde las páginas.
+- Pendiente inmediato: reponer los **Programmatic** de 14 de esas páginas como `X.stories.extras.ts` (el resto no tenía).

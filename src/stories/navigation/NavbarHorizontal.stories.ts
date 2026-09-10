@@ -296,6 +296,26 @@ function byText<T extends { text: () => string }>(elements: T[], text: string): 
 export const cuNavbarHorizontalStories: ComponentStory = {
   component: "cu-navbar-horizontal",
   vue: NavbarHorizontal,
+  tokens: [
+    '--cu-font-size-sm',
+    '--cu-space-2xs',
+    '--cu-space-xs',
+    '--cu-space-sm',
+    '--cu-space-md',
+  ],
+  api: {
+    props: [
+      { name: 'items', type: 'NavItem[]', default: '—', description: 'Árbol de navegación: { label, path?, icon?, children? }. Los padres se renderizan como Dropdown en cascada (anidamiento infinito), las hojas como items de menú nativos' },
+      { name: 'trigger', type: '"click" | "hover"', default: '"click"', description: 'Cómo abren los submenús: click (default) o hover' },
+      { name: 'activePath', type: 'string', default: '""', description: 'Path del item activo (manual). En apps Vue se toma de useRoute() si no se pasa; en vanilla/PHP setealo vos' },
+    ],
+    interfaceCode: `interface NavItem {
+  label: string
+  path?: string
+  icon?: string
+  children?: NavItem[]
+}`,
+  },
   setup() {
     // jsdom no implementa scrollIntoView y useNavbar lo llama al montar con un
     // item activo (`activePath`).

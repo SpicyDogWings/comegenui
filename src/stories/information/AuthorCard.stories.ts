@@ -15,6 +15,50 @@ function initialsOf(name: string): string {
 export const cuAuthorCardStories: ComponentStory = {
   component: "cu-author-card",
   vue: AuthorCard,
+  subComponents: [
+    { label: "Avatar", path: "/playground/components/avatar#style" },
+  ],
+  api: {
+    components: [
+      { label: "Avatar", path: "/playground/components/avatar" },
+    ],
+    props: [
+      {
+        name: "name",
+        type: "string",
+        default: "—",
+        description: "Nombre del autor (requerido)",
+      },
+      {
+        name: "role",
+        type: "string",
+        default: '""',
+        description: "Rol o cargo del autor",
+      },
+      {
+        name: "color",
+        type: "string",
+        default: '""',
+        description:
+          "primary, secondary, neutral, success, warning, danger. Si no se pasa, se resuelve por hash del nombre",
+      },
+      {
+        name: "size",
+        type: "string",
+        default: '"md"',
+        description: "sm | md | lg",
+      },
+      {
+        name: "src",
+        type: "string",
+        default: '""',
+        description: "URL de imagen (muestra foto en vez de iniciales)",
+      },
+    ],
+    slots: [],
+    events: [],
+    exposes: [],
+  },
   sections: [
     {
       id: "default",

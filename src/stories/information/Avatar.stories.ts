@@ -8,6 +8,24 @@ import type { ComponentStory } from "@/stories/types";
 export const cuAvatarStories: ComponentStory = {
   component: "cu-avatar",
   vue: Avatar,
+  tokens: [
+    '--avatar-bg',
+    '--cu-font-weight-semibold',
+    '--cu-font-size-xs',
+    '--cu-font-size-sm',
+    '--cu-font-size-md',
+  ],
+  api: {
+    props: [
+      { name: 'initials', type: 'string', default: '""', description: 'Iniciales a mostrar (2 chars)' },
+      { name: 'color', type: 'string', default: '""', description: 'primary, secondary, neutral, success, warning, danger. Si no se pasa, se resuelve por hash de las iniciales' },
+      { name: 'size', type: 'string', default: '"md"', description: 'sm | md | lg' },
+      { name: 'src', type: 'string', default: '""', description: 'URL de imagen (muestra foto en vez de iniciales)' },
+    ],
+    slots: [],
+    events: [],
+    exposes: [],
+  },
   sections: [
     {
       id: "default",

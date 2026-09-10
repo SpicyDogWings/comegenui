@@ -21,6 +21,16 @@ function stubMatchMedia(): void {
 export const cuToggleColorShemeStories: ComponentStory = {
   component: "cu-toggle-color-sheme",
   vue: ToggleColorSheme,
+  tokens: [],
+  api: {
+    props: [
+      { name: 'variant', type: 'string', default: '"ghost"', description: 'Variante del botón: solid, outlined, soft, ghost, subtle, link, none' },
+      { name: 'size', type: 'number', default: '20', description: 'Tamaño del ícono en px' },
+    ],
+    events: [
+      { name: 'click', type: 'nativo', description: 'Alterna entre el tema light y dark (persiste en localStorage)' },
+    ],
+  },
   async setup() {
     // El plugin real necesita init(); en jsdom el fetch falla y cae a defaults.
     // Registramos dark y arrancamos siempre en claro.

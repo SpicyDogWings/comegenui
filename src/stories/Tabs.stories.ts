@@ -29,6 +29,58 @@ function colorVariants(): Variant[] {
 export const cuTabsStories: ComponentStory = {
   component: "cu-tabs",
   vue: Tabs,
+  tokens: [
+    '--tabs-color',
+    '--tabs-soft',
+    '--tabs-soft-hover',
+    '--tabs-soft-active',
+    '--tabs-subtle-border',
+    '--cu-font-sans',
+    '--cu-font-size-sm',
+    '--cu-font-size-md',
+    '--cu-font-size-xs',
+    '--cu-font-weight-medium',
+    '--cu-radius-sm',
+    '--cu-radius-md',
+    '--cu-border-thin',
+    '--cu-border-color',
+    '--cu-border-color-focus',
+    '--cu-space-2xs',
+    '--cu-space-xs',
+    '--cu-space-sm',
+    '--cu-space-md',
+    '--cu-space-lg',
+  ],
+  api: {
+    props: [
+      { name: 'tabs', type: 'TabItem[]', default: '— (requerido)', description: 'Pestañas' },
+      { name: 'color', type: 'string', default: '"primary"', description: 'primary, secondary, neutral, success, warning, danger' },
+      { name: 'variant', type: 'string', default: '"ghost"', description: 'ghost, solid, boxed, soft' },
+      { name: 'size', type: 'string', default: '"md"', description: 'sm, md, lg' },
+      { name: 'disabled', type: 'boolean', default: 'false', description: 'Deshabilita todas las pestañas' },
+    ],
+    slots: [
+      { name: '{key}', description: 'Contenido del panel de la pestaña (slot dinámico por key)' },
+      { name: 'tab-icon-{key}', description: 'Ícono del tab (fallback: solo si la tab no trae la prop icon)' },
+    ],
+    events: [
+      { name: 'update:modelValue', type: '(key: string) => void', description: 'Pestaña activa (v-model)' },
+      { name: 'change', type: '(key: string) => void', description: 'Cambia la pestaña activa' },
+    ],
+    exposes: [
+      { name: 'getActive', type: '() => string', description: 'Key de la pestaña activa' },
+      { name: 'setActive', type: '(key: string) => void', description: 'Activa la pestaña' },
+      { name: 'next', type: '() => void', description: 'Activa la siguiente' },
+      { name: 'prev', type: '() => void', description: 'Activa la anterior' },
+    ],
+    interfaceCode: `interface TabItem {
+  key: string
+  label: string
+  icon?: string      // HTML/SVG string (render con v-html); si falta, slot tab-icon-{key}
+  disabled?: boolean
+  keepAlive?: boolean // panel montado siempre (v-show): el estado sobrevive al cambio de tab
+}`,
+  },
   sections: [
     {
       id: "variants",

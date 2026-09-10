@@ -34,6 +34,35 @@ const BadgeCombinationsPreview = defineComponent({
 export const cuBadgeStories: ComponentStory = {
   component: "cu-badge",
   vue: Badge,
+  tokens: [
+    '--badge-bg',
+    '--badge-text',
+    '--badge-soft',
+    '--badge-soft-hover',
+    '--badge-subtle',
+    '--badge-subtle-border',
+    '--badge-ghost-hover',
+    '--cu-font-sans',
+    '--cu-font-size-xs',
+    '--cu-font-weight-medium',
+    '--cu-line-height-tight',
+    '--cu-radius',
+    '--cu-border-thin',
+    '--cu-space-2xs',
+    '--cu-space-xs',
+    '--cu-space-sm',
+  ],
+  api: {
+    props: [
+      { name: 'color', type: 'string', default: '"neutral"', description: 'primary, secondary, neutral, success, warning, danger' },
+      { name: 'variant', type: 'string', default: '"soft"', description: 'solid, outlined, soft, ghost, subtle' },
+    ],
+    slots: [
+      { name: 'default', description: 'Texto del badge' },
+    ],
+    events: [],
+    exposes: [],
+  },
   sections: [
     {
       id: "variants",

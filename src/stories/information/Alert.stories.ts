@@ -43,6 +43,57 @@ function colorVariants(): Variant[] {
 export const cuAlertStories: ComponentStory = {
   component: "cu-alert",
   vue: Alert,
+  tokens: [
+    '--alert-bg',
+    '--alert-text',
+    '--alert-soft',
+    '--alert-subtle',
+    '--alert-subtle-border',
+    '--alert-ghost-hover',
+    '--alert-ghost-active',
+    '--cu-font-sans',
+    '--cu-font-size-sm',
+    '--cu-font-size-lg',
+    '--cu-font-weight-bold',
+    '--cu-radius',
+    '--cu-radius-sm',
+    '--cu-border-thin',
+    '--cu-space-2xs',
+    '--cu-space-sm',
+    '--cu-space-md',
+    '--cu-space-lg',
+    '--cu-color-surface',
+  ],
+  subComponents: [
+    { label: 'Button', path: '/playground/components/button#style' },
+  ],
+  api: {
+    components: [
+      { label: 'Button', path: '/playground/components/button' },
+    ],
+    props: [
+      { name: 'color', type: 'string', default: '"neutral"', description: 'primary, secondary, neutral, success, warning, danger' },
+      { name: 'variant', type: 'string', default: '"soft"', description: 'solid, outlined, soft, ghost, subtle' },
+      { name: 'title', type: 'string', default: '—', description: 'Título del alert' },
+      { name: 'close', type: 'boolean', default: 'false', description: 'Muestra el botón X para cerrar' },
+      { name: 'show', type: 'boolean', default: 'true', description: 'Visibilidad (v-model:show)' },
+    ],
+    slots: [
+      { name: 'default', description: 'Contenido del alert' },
+      { name: 'icon', description: 'Icono junto al título' },
+    ],
+    events: [
+      { name: 'close', type: '() => void', description: 'Se cerró el alert' },
+      { name: 'open', type: '() => void', description: 'Se abrió el alert' },
+      { name: 'update:show', type: '(value: boolean) => void', description: 'Cambió la visibilidad (v-model:show)' },
+    ],
+    exposes: [
+      { name: 'open()', type: '() => void', description: 'Abre el alert' },
+      { name: 'close()', type: '() => void', description: 'Cierra el alert' },
+      { name: 'toggle()', type: '() => void', description: 'Alterna abierto/cerrado' },
+      { name: 'isOpen()', type: '() => boolean', description: 'Estado actual' },
+    ],
+  },
   sections: [
     {
       id: "variants",

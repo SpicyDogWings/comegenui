@@ -334,6 +334,32 @@ const sizeVariants: Variant[] = SIZES.map((size) => ({
 export const cuSideOverStories: ComponentStory = {
   component: "cu-side-over",
   vue: SideOver,
+  tokens: [
+    '--cu-color-surface',
+    '--cu-shadow-xl',
+    '--cu-radius-md',
+    '--cu-font-sans',
+    '--cu-border-color',
+    '--cu-sideover-size-md',
+  ],
+  api: {
+    props: [
+      { name: 'modelValue', type: 'boolean', default: 'false', description: 'Abre/cierra el panel (v-model)' },
+      { name: 'title', type: 'string', default: '""', description: 'Título del panel. Se muestra en el header junto al botón de cerrar' },
+      { name: 'position', type: '"left" | "right" | "top" | "bottom"', default: '"right"', description: 'Desde qué borde desliza el panel' },
+      { name: 'size', type: 'string', default: '"300px"', description: 'Ancho (left/right) o alto (top/bottom) del panel. Acepta CSS ("300px", "40vw") o preset "sm" | "md" | "lg" | "xl" | "full". Ignorado en fullscreen' },
+      { name: 'fullscreen', type: 'boolean', default: 'false', description: 'Ocupa toda la pantalla (inset 0)' },
+      { name: 'persistent', type: 'boolean', default: 'false', description: 'No se cierra por backdrop, Escape ni el botón de cerrar (que se oculta)' },
+      { name: 'zIndex', type: 'number', default: '1100', description: 'Z-index del overlay' },
+    ],
+    slots: [
+      { name: 'default', type: 'contenido', default: '—', description: 'Contenido del panel' },
+    ],
+    events: [
+      { name: 'update:modelValue', type: 'boolean', description: 'Se emite al abrir/cerrar' },
+      { name: 'close', type: '—', description: 'Se emite cuando se cierra (backdrop/Escape)' },
+    ],
+  },
   // El panel se teleporta a body; con el stub los checks pueden buscarlo en el wrapper.
   global: () => ({ stubs: { teleport: true } }),
   sections: [

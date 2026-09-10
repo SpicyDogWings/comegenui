@@ -34,6 +34,28 @@ function colorVariants(): Variant[] {
 export const cuFloatingButtonStories: ComponentStory = {
   component: "cu-floating-button",
   vue: FloatingButton,
+  tokens: [
+    '--fab-bg',
+    '--fab-bg-hover',
+    '--fab-bg-active',
+    '--cu-radius-full',
+    '--cu-shadow-lg',
+    '--cu-shadow-xl',
+    '--cu-space-lg',
+    '--cu-space-3xl',
+  ],
+  api: {
+    props: [
+      { name: 'color', type: 'string', default: '"primary"', description: 'Color semántico: primary, secondary, neutral, success, warning, danger' },
+      { name: 'disabled', type: 'boolean', default: 'false', description: 'Estado deshabilitado' },
+    ],
+    slots: [
+      { name: 'default', type: 'slot', description: 'Contenido del FAB: ícono SVG inline' },
+    ],
+    events: [
+      { name: 'click', type: 'custom', description: 'Emitido al hacer click; no se emite si está disabled' },
+    ],
+  },
   sections: [
     {
       id: "colors",

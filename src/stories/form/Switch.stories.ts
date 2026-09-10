@@ -14,6 +14,47 @@ function colorVariants(): Variant[] {
 export const cuSwitchStories: ComponentStory = {
   component: "cu-switch",
   vue: Switch,
+  tokens: [
+    '--switch-bg',
+    '--switch-ghost-hover',
+    '--cu-font-sans',
+    '--cu-font-size-sm',
+    '--cu-font-size-xs',
+    '--cu-radius-full',
+    '--cu-shadow-sm',
+    '--cu-space-2xs',
+    '--cu-space-xs',
+    '--cu-space-sm',
+    '--cu-space-lg',
+    '--cu-space-xl',
+    '--cu-space-2xl',
+    '--cu-space-3xl',
+  ],
+  api: {
+    props: [
+      { name: 'modelValue', type: 'boolean', default: 'false', description: 'Estado del switch (v-model)' },
+      { name: 'label', type: 'string', default: '""', description: 'Texto del label (usa el componente Label); también acepta slot default. El click sobre el label alterna el switch' },
+      { name: 'color', type: 'string', default: '"neutral"', description: 'Color semántico: primary, secondary, neutral, success, warning, danger' },
+      { name: 'size', type: 'string', default: '"md"', description: 'Tamaño del switch: sm, md' },
+      { name: 'disabled', type: 'boolean', default: 'false', description: 'Deshabilita la interacción y atenúa el componente' },
+    ],
+    slots: [
+      { name: 'default', description: 'Texto del label (alternativa al prop label)' },
+    ],
+    events: [
+      { name: 'update:modelValue', type: 'custom', description: 'Se emite al alternar (v-model). detail: boolean' },
+      { name: 'change', type: 'custom', description: 'Se emite al alternar. detail: boolean (nuevo estado)' },
+      { name: 'click', type: 'nativo', description: 'Click sobre el switch (alterna el estado)' },
+      { name: 'focus', type: 'nativo', description: 'El input interno recibe foco' },
+      { name: 'blur', type: 'nativo', description: 'El input interno pierde el foco' },
+    ],
+    exposes: [
+      { name: 'get', type: '() => boolean', description: 'Devuelve el estado actual (checked)' },
+      { name: 'set', type: '(value: boolean) => void', description: 'Setea el estado y emite change' },
+      { name: 'reset', type: '() => void', description: 'Restaura el estado a false y emite change' },
+      { name: 'focus', type: '() => void', description: 'Pone el foco en el input interno' },
+    ],
+  },
   sections: [
     {
       id: "default",

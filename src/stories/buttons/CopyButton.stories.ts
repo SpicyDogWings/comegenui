@@ -14,6 +14,32 @@ function colorVariants(): Variant[] {
 export const cuCopyButtonStories: ComponentStory = {
   component: "cu-copy-button",
   vue: CopyButton,
+  tokens: [
+    '--cu-font-sans',
+    '--cu-font-size-sm',
+    '--cu-radius',
+    '--cu-space-sm',
+    '--cu-color-surface',
+    '--cu-border-thin',
+  ],
+  subComponents: [
+    { label: 'Button', path: '/playground/components/button#style' },
+  ],
+  api: {
+    components: [
+      { label: 'Button', path: '/playground/components/button' },
+    ],
+    props: [
+      { name: 'text', type: 'string', default: '—', description: 'Contenido a copiar (obligatorio)' },
+      { name: 'label', type: 'string', default: '""', description: 'Texto siempre visible junto al icono; vacío = icon-only (aria: "Copiar")' },
+      { name: 'copiedLabel', type: 'string', default: '"Copiado"', description: 'Texto animado + aria-label durante el estado copied (2s)' },
+      { name: 'color', type: 'string', default: '"neutral"', description: 'Color semántico del Button interno' },
+      { name: 'variant', type: 'string', default: '"soft"', description: 'Variante del Button interno' },
+    ],
+    events: [
+      { name: 'click', type: 'nativo', description: 'Click nativo del Button interno; dispara la copia al portapapeles' },
+    ],
+  },
   sections: [
     {
       id: "variants",

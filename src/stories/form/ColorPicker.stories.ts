@@ -4,6 +4,39 @@ import type { ComponentStory } from "@/stories/types";
 export const cuColorPickerStories: ComponentStory = {
   component: "cu-color-picker",
   vue: ColorPicker,
+  tokens: [
+    '--cp-subtle-border',
+    '--cu-font-sans',
+    '--cu-radius-md',
+    '--cu-border-thin',
+    '--cu-space-sm',
+    '--cu-space-2xl',
+    '--cu-space-5xl',
+  ],
+  subComponents: [
+    { label: 'Input', path: '/playground/components/input#style' },
+  ],
+  api: {
+    components: [
+      { label: 'Input', path: '/playground/components/input' },
+    ],
+    props: [
+      { name: 'modelValue', type: 'string', default: '"#000000"', description: 'Color seleccionado en hex (v-model)' },
+      { name: 'color', type: 'string', default: '"neutral"', description: 'Color semántico para foco/bordes: primary, secondary, neutral, success, warning, danger' },
+      { name: 'disabled', type: 'boolean', default: 'false', description: 'Deshabilita swatch e input hex' },
+    ],
+    slots: [],
+    events: [
+      { name: 'update:modelValue', type: 'custom', description: 'v-model: nuevo hex al cambiar' },
+      { name: 'change', type: 'custom', description: 'Hex al cambiar: siempre desde el picker nativo; desde el texto solo si matchea #rrggbb' },
+    ],
+    exposes: [
+      { name: 'get', type: '() => string', description: 'Devuelve el hex actual' },
+      { name: 'set', type: '(value: string) => void', description: 'Setea el color programáticamente' },
+      { name: 'reset', type: '() => void', description: 'Vuelve al valor por defecto (#000000)' },
+      { name: 'focus', type: '() => void', description: 'Enfoca el input hex' },
+    ],
+  },
   sections: [
     {
       id: "default",
