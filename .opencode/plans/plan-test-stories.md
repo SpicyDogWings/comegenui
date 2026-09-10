@@ -169,6 +169,7 @@ Tests de la capa `.vue` derivados de las secciones actuales de los playground, c
   - [x] **AuthorCard** migrado (story + 50 checks L1 + página con `StoryRenderer`).
   - [x] **Tooltip** migrado (story + 33 checks L1 + página con `StoryRenderer`).
   - [x] **SideOver** migrado (story + 53 checks L1 + página con `StoryRenderer`).
+  - [x] **NavbarHorizontal** migrado (story + 24 checks L1 + página con `StoryRenderer`).
   - Herramientas de eficiencia: `stories:status`, `stories:migrate`, `new:component`.
   - Orden sugerido: `Input`, `Select`, `Dropdown`, `Alert`, `Badge`, `Card`, `Checkbox`, `Switch`, `Textarea`, `Tabs`, `Modal`, `Table`, … (297 `SectionDemo` en 45 páginas).
   - Un commit atómico por componente (o por par de componentes chicos).
@@ -446,3 +447,9 @@ Cada commit incluye su entrada en la **Bitácora**.
 
 - `test(l1/side-over)`: SideOver migrado — 5 secciones (positions/sizes/fullscreen/persistent/form), **53 checks L1**, página a `StoryRenderer`.
 - Panel teleportado: `global: { stubs: { teleport: true } }`; verificado en navegador por el subagente.
+
+### 2026-09-10 — 1f: NavbarHorizontal migrado (subagente) + lote en paralelo
+
+- `test(l1/navbar-horizontal)`: NavbarHorizontal migrado — 6 secciones (basic/active/triggers/nested/flat/icons), **24 checks L1**, página a `StoryRenderer`.
+- `setup` con stub de `scrollIntoView` (jsdom); verificado en navegador por el subagente.
+- **Lote en paralelo con 4 subagentes**: AuthorCard (50), Tooltip (33), SideOver (53), NavbarHorizontal (24) = **160 checks nuevos** en una sola corrida.
