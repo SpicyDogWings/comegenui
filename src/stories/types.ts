@@ -92,5 +92,9 @@ export interface ComponentStory {
   vue: Component;
   /** wrapper `.ce.vue` (L2). */
   ce?: Component;
+  /** Setup previo a cada test L1 (ej: inicializar stores o plugins). */
+  setup?: () => void | Promise<void>;
+  /** Opciones de mount por test (ej: `{ plugins: [createPinia()] }`). */
+  global?: () => Record<string, unknown>;
   sections: Section[];
 }

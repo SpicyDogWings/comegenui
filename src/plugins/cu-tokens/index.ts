@@ -191,4 +191,4 @@ export default {
   }
 }
 
-export { theme, loaded, setTheme, getThemeNames, registerTheme, setShared, getShared, getThemeCSS, applyFullConfig, themes as allThemes, builtInNames, opacities }
+export { theme, loaded, setTheme, getThemeNames, registerTheme, setShared, getShared, getThemeCSS, applyFullConfig, themes as allThemes, builtInNames, opacities, init }

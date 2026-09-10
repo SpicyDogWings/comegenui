@@ -27,10 +27,13 @@ export function runL1Story(story: ComponentStory): void {
             } as never;
 
             it(`${variant.id} › ${check.name}`, { meta }, async () => {
+              await story.setup?.();
+
               const wrapper = mount(story.vue, {
                 props: variant.props as Record<string, unknown>,
                 attrs: variant.attrs,
                 slots: variant.slots as never,
+                global: story.global?.() as never,
               });
 
               try {

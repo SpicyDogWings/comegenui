@@ -14,10 +14,12 @@ import fg from "fast-glob";
 const ROOT = process.cwd();
 const args = process.argv.slice(2);
 const force = args.includes("--force");
-const name = args.find((a) => !a.startsWith("--"));
+const pageIndex = args.indexOf("--page");
+const pageName = pageIndex >= 0 ? args[pageIndex + 1] : undefined;
+const name = args.find((a) => !a.startsWith("--") && a !== pageName);
 
 if (!name) {
-  console.error("Uso: pnpm run stories:migrate <Componente> [--force]");
+  console.error("Uso: pnpm run stories:migrate <Componente> [--page <PaginaPlayground>] [--force]");
   process.exit(1);
 }
 
@@ -34,7 +36,7 @@ const kebabName = name.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
 const tag = `cu-${kebabName}`;
 const storyPath = `${storyDir}/${name}.stories.ts`;
 const testPath = `${storyDir}/${name}.l1.test.ts`;
-const pagePath = `src/pages/playground/components/${name}.vue`;
+const pagePath = `src/pages/playground/components/${pageName ?? name}.vue`;
 const oldTestPath = fg.sync(`src/components/**/${name}.test.ts`)[0];
 
 if (!force && (existsSync(resolve(ROOT, storyPath)) || existsSync(resolve(ROOT, testPath)))) {
