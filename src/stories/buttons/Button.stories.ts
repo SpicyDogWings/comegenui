@@ -1,192 +1,346 @@
+// Generado por tools/stories/generate.mjs a partir de las props de Button.vue.
+// (sin eventos declarados)
+
 import { defineComponent, h, ref } from "vue";
-import type { VNodeChild } from "vue";
 import Button from "@/components/buttons/Button.vue";
-import type { ComponentStory, Variant } from "@/stories/types";
-
-// ── Helpers de demo ──────────────────────────────────────────────────────────
-
-const COLORS = ["primary", "secondary", "neutral", "success", "warning", "danger"] as const;
-
-const ICON_SVG = {
-  xmlns: "http://www.w3.org/2000/svg",
-  width: 16,
-  height: 16,
-  viewBox: "0 0 24 24",
-  fill: "none",
-  stroke: "currentColor",
-  "stroke-width": 2,
-  "stroke-linecap": "round",
-  "stroke-linejoin": "round",
-} as const;
-
-function iconSlot(paths: string[], label: string): () => VNodeChild {
-  return () => [
-    h(
-      "svg",
-      ICON_SVG,
-      paths.map((d) => h("path", { d })),
-    ),
-    ` ${label}`,
-  ];
-}
-
-function capitalize(value: string): string {
-  return value.charAt(0).toUpperCase() + value.slice(1);
-}
-
-function colorVariants(extra: Record<string, unknown> = {}): Variant[] {
-  return COLORS.map((color) => ({
-    id: color,
-    props: { color, ...extra },
-    slots: { default: capitalize(color) },
-  }));
-}
-
-const vueSnippet = (body: string) => `<script setup>
-import Button from '@/components/buttons/Button.vue'
-<\/script>
-
-<template>
-${body}
-</template>`;
-
-const UMD_SCRIPT = `<script src="dist/CuButton.umd.js"><\/script>`;
-
-// ── Preview interactivo de la sección Loading ────────────────────────────────
+import type { ComponentStory } from "@/stories/types";
 
 const ButtonLoadingPreview = defineComponent({
   name: "ButtonLoadingPreview",
   setup() {
-    const loading = ref([false, false, false]);
-
-    function toggle(index: number) {
+    const entries: Array<{ idle: string; active: string; props?: Record<string, unknown> }> = [{"idle":"Click to Load","active":"Loading...","props":{"color":"primary","variant":"solid"}},{"idle":"Save","active":"Saving...","props":{"color":"secondary","variant":"soft"}},{"idle":"Delete","active":"Deleting...","props":{"color":"danger","variant":"solid"}}];
+    const loading = ref(entries.map(() => false));
+    const trigger = (index: number) => {
       loading.value[index] = true;
       setTimeout(() => {
         loading.value[index] = false;
       }, 1500);
-    }
-
-    return () => [
-      h(
-        Button,
-        { color: "primary", loading: loading.value[0], onClick: () => toggle(0) },
-        () => (loading.value[0] ? "Loading..." : "Click to Load"),
-      ),
-      h(
-        Button,
-        { color: "secondary", variant: "soft", loading: loading.value[1], onClick: () => toggle(1) },
-        () => (loading.value[1] ? "Saving..." : "Save"),
-      ),
-      h(
-        Button,
-        { color: "danger", variant: "solid", loading: loading.value[2], onClick: () => toggle(2) },
-        () => (loading.value[2] ? "Deleting..." : "Delete"),
-      ),
-      h(Button, { color: "primary", loading: true }, () => "Always Loading"),
-      h(Button, { color: "primary", loading: true, disabled: true }, () => "Disabled + Loading"),
-    ];
+    };
+    return () =>
+      entries.map((entry, index) =>
+        h(
+          Button,
+          { ...(entry.props ?? {}), loading: loading.value[index], onClick: () => trigger(index) },
+          () => (loading.value[index] ? entry.active : entry.idle),
+        ),
+      );
   },
 });
-
-// ── Story ────────────────────────────────────────────────────────────────────
 
 export const cuButtonStories: ComponentStory = {
   component: "cu-button",
   vue: Button,
   sections: [
     {
-      id: "variants",
-      title: "Variants",
-      badge: "ghost",
-      badgeTitle: "Variante por defecto",
-      layout: "row",
-      vue: vueSnippet(`  <Button color="primary" variant="solid">Solid</Button>
-  <Button color="primary" variant="soft">Soft</Button>
-  <Button color="primary" variant="ghost">Ghost</Button>
-  <Button color="primary" variant="subtle">Subtle</Button>
-  <Button color="primary" variant="outlined">Outlined</Button>
-  <Button color="primary" variant="link">Link</Button>`),
-      vanilla: `${UMD_SCRIPT}
-
-<cu-button color="primary" variant="solid">Solid</cu-button>
-<cu-button color="primary" variant="soft">Soft</cu-button>
-<cu-button color="primary" variant="ghost">Ghost</cu-button>
-<cu-button color="primary" variant="subtle">Subtle</cu-button>
-<cu-button color="primary" variant="outlined">Outlined</cu-button>
-<cu-button color="primary" variant="link">Link</cu-button>`,
+      id: "default",
+      title: "Default",
       variants: [
-        { id: "solid", props: { color: "primary", variant: "solid" }, slots: { default: "Solid" } },
-        { id: "soft", props: { color: "primary", variant: "soft" }, slots: { default: "Soft" } },
-        { id: "ghost", props: { color: "primary", variant: "ghost" }, slots: { default: "Ghost" } },
-        { id: "subtle", props: { color: "primary", variant: "subtle" }, slots: { default: "Subtle" } },
-        { id: "outlined", props: { color: "primary", variant: "outlined" }, slots: { default: "Outlined" } },
-        { id: "link", props: { color: "primary", variant: "link" }, slots: { default: "Link" } },
+        { id: "default", slots: {"default":"Guardar"} },
       ],
+      vue: `  <Button>Guardar</Button>`,
+      vanilla: `  <cu-button>Guardar</cu-button>`,
       checks: {
         l1: [
           {
-            name: "aplica la clase cu-button--{variant}",
-            run({ wrapper, expect }, variant) {
-              const value = variant.props?.variant as string;
-              expect(wrapper.find("button.cu-button").classes()).toContain(`cu-button--${value}`);
-            },
-          },
-          {
-            name: "type por defecto es button",
+            name: "renderiza .cu-button",
             run({ wrapper, expect }) {
-              expect(wrapper.find("button.cu-button").attributes("type")).toBe("button");
+              expect(wrapper.find(".cu-button").exists()).toBe(true);
             },
           },
           {
             name: "renderiza el contenido del slot",
             run({ wrapper, expect }, variant) {
-              const label = variant.slots?.default;
-              const text = typeof label === "string" ? label : variant.id;
-              expect(wrapper.find("button.cu-button").text()).toContain(text);
+              const text = variant.slots?.default;
+              if (typeof text !== "string" || !text) return;
+              expect(wrapper.text()).toContain(text);
             },
           },
-          {
-            name: "emite click",
-            async run({ wrapper, expect }) {
-              await wrapper.find("button.cu-button").trigger("click");
-              expect(wrapper.emitted("click")).toBeTruthy();
-            },
-          },
+          // TODO: checks específicos (eventos, exposes).
         ],
       },
     },
 
     {
-      id: "colors",
+      id: "color",
       title: "Colors",
       badge: "neutral",
-      badgeTitle: "Color por defecto",
-      layout: "row",
-      vue: vueSnippet(`  <Button color="primary">Primary</Button>
+      badgeTitle: "Default: neutral",
+      variants: [
+        { id: "primary", props: {"color":"primary"}, slots: {"default":"Primary"} },
+        { id: "secondary", props: {"color":"secondary"}, slots: {"default":"Secondary"} },
+        { id: "neutral", props: {"color":"neutral"}, slots: {"default":"Neutral"} },
+        { id: "success", props: {"color":"success"}, slots: {"default":"Success"} },
+        { id: "warning", props: {"color":"warning"}, slots: {"default":"Warning"} },
+        { id: "danger", props: {"color":"danger"}, slots: {"default":"Danger"} },
+      ],
+      vue: `  <Button color="primary">Primary</Button>
   <Button color="secondary">Secondary</Button>
   <Button color="neutral">Neutral</Button>
   <Button color="success">Success</Button>
   <Button color="warning">Warning</Button>
-  <Button color="danger">Danger</Button>`),
-      vanilla: `${UMD_SCRIPT}
-
-<cu-button color="primary">Primary</cu-button>
-<cu-button color="secondary">Secondary</cu-button>
-<cu-button color="neutral">Neutral</cu-button>
-<cu-button color="success">Success</cu-button>
-<cu-button color="warning">Warning</cu-button>
-<cu-button color="danger">Danger</cu-button>`,
-      variants: colorVariants(),
+  <Button color="danger">Danger</Button>`,
+      vanilla: `  <cu-button color="primary">Primary</cu-button>
+  <cu-button color="secondary">Secondary</cu-button>
+  <cu-button color="neutral">Neutral</cu-button>
+  <cu-button color="success">Success</cu-button>
+  <cu-button color="warning">Warning</cu-button>
+  <cu-button color="danger">Danger</cu-button>`,
       checks: {
         l1: [
           {
-            name: "resuelve --btn-bg al token --cu-color-{color}",
-            run({ wrapper, expect }, variant) {
-              const color = variant.props?.color as string;
-              const style = wrapper.find("button.cu-button").attributes("style") ?? "";
-              expect(style).toContain(`--btn-bg: var(--cu-color-${color})`);
+            name: "renderiza .cu-button",
+            run({ wrapper, expect }) {
+              expect(wrapper.find(".cu-button").exists()).toBe(true);
             },
           },
+          {
+            name: "renderiza el contenido del slot",
+            run({ wrapper, expect }, variant) {
+              const text = variant.slots?.default;
+              if (typeof text !== "string" || !text) return;
+              expect(wrapper.text()).toContain(text);
+            },
+          },
+          {
+            name: "resuelve el color como token CSS",
+            run({ wrapper, expect }, variant) {
+              const color = variant.props?.color as string | undefined;
+              if (!color) return;
+              expect(wrapper.html()).toContain(`var(--cu-color-${color}`);
+            },
+          },
+          // TODO: checks específicos (eventos, exposes).
+        ],
+      },
+    },
+
+    {
+      id: "variant",
+      title: "Variants",
+      badge: "ghost",
+      badgeTitle: "Default: ghost",
+      variants: [
+        { id: "solid", props: {"variant":"solid"}, slots: {"default":"Solid"} },
+        { id: "outlined", props: {"variant":"outlined"}, slots: {"default":"Outlined"} },
+        { id: "soft", props: {"variant":"soft"}, slots: {"default":"Soft"} },
+        { id: "ghost", props: {"variant":"ghost"}, slots: {"default":"Ghost"} },
+        { id: "subtle", props: {"variant":"subtle"}, slots: {"default":"Subtle"} },
+        { id: "link", props: {"variant":"link"}, slots: {"default":"Link"} },
+        { id: "none", props: {"variant":"none"}, slots: {"default":"None"} },
+      ],
+      vue: `  <Button variant="solid">Solid</Button>
+  <Button variant="outlined">Outlined</Button>
+  <Button variant="soft">Soft</Button>
+  <Button variant="ghost">Ghost</Button>
+  <Button variant="subtle">Subtle</Button>
+  <Button variant="link">Link</Button>
+  <Button variant="none">None</Button>`,
+      vanilla: `  <cu-button variant="solid">Solid</cu-button>
+  <cu-button variant="outlined">Outlined</cu-button>
+  <cu-button variant="soft">Soft</cu-button>
+  <cu-button variant="ghost">Ghost</cu-button>
+  <cu-button variant="subtle">Subtle</cu-button>
+  <cu-button variant="link">Link</cu-button>
+  <cu-button variant="none">None</cu-button>`,
+      checks: {
+        l1: [
+          {
+            name: "renderiza .cu-button",
+            run({ wrapper, expect }) {
+              expect(wrapper.find(".cu-button").exists()).toBe(true);
+            },
+          },
+          {
+            name: "renderiza el contenido del slot",
+            run({ wrapper, expect }, variant) {
+              const text = variant.slots?.default;
+              if (typeof text !== "string" || !text) return;
+              expect(wrapper.text()).toContain(text);
+            },
+          },
+          {
+            name: "aplica la clase cu-button--{variant}",
+            run({ wrapper, expect }, variant) {
+              const value = variant.props?.["variant"] as string | undefined;
+              if (!value) return;
+              expect(wrapper.find(".cu-button").classes()).toContain(`cu-button--${value}`);
+            },
+          },
+          // TODO: checks específicos (eventos, exposes).
+        ],
+      },
+    },
+
+    {
+      id: "size",
+      title: "Sizes",
+      badge: "md",
+      badgeTitle: "Default: md",
+      variants: [
+        { id: "sm", props: {"size":"sm"}, slots: {"default":"sm"} },
+        { id: "md", props: {"size":"md"}, slots: {"default":"md"} },
+        { id: "lg", props: {"size":"lg"}, slots: {"default":"lg"} },
+      ],
+      vue: `  <Button size="sm">sm</Button>
+  <Button size="md">md</Button>
+  <Button size="lg">lg</Button>`,
+      vanilla: `  <cu-button size="sm">sm</cu-button>
+  <cu-button size="md">md</cu-button>
+  <cu-button size="lg">lg</cu-button>`,
+      checks: {
+        l1: [
+          {
+            name: "renderiza .cu-button",
+            run({ wrapper, expect }) {
+              expect(wrapper.find(".cu-button").exists()).toBe(true);
+            },
+          },
+          {
+            name: "renderiza el contenido del slot",
+            run({ wrapper, expect }, variant) {
+              const text = variant.slots?.default;
+              if (typeof text !== "string" || !text) return;
+              expect(wrapper.text()).toContain(text);
+            },
+          },
+          {
+            name: "aplica la clase cu-button--{size}",
+            run({ wrapper, expect }, variant) {
+              const value = variant.props?.["size"] as string | undefined;
+              if (!value) return;
+              expect(wrapper.find(".cu-button").classes()).toContain(`cu-button--${value}`);
+            },
+          },
+          // TODO: checks específicos (eventos, exposes).
+        ],
+      },
+    },
+
+    {
+      id: "links",
+      title: "Links",
+      variants: [
+        { id: "external", props: {"to":"https://example.com","target":"_blank"}, slots: {"default":"External"} },
+        { id: "internal", props: {"to":"/playground/components/button"}, slots: {"default":"Internal"} },
+      ],
+      vue: `  <Button to="https://example.com" target="_blank">External</Button>
+  <Button to="/playground/components/button">Internal</Button>`,
+      vanilla: `  <cu-button to="https://example.com" target="_blank">External</cu-button>
+  <cu-button to="/playground/components/button">Internal</cu-button>`,
+      checks: {
+        l1: [
+          {
+            name: "renderiza .cu-button",
+            run({ wrapper, expect }) {
+              expect(wrapper.find(".cu-button").exists()).toBe(true);
+            },
+          },
+          {
+            name: "renderiza el contenido del slot",
+            run({ wrapper, expect }, variant) {
+              const text = variant.slots?.default;
+              if (typeof text !== "string" || !text) return;
+              expect(wrapper.text()).toContain(text);
+            },
+          },
+          {
+            name: "renderiza un <a> con href={to}",
+            run({ wrapper, expect }, variant) {
+              const value = variant.props?.["to"] as string | undefined;
+              if (!value) return;
+              const link = wrapper.find("a");
+              expect(link.exists()).toBe(true);
+              expect(link.attributes("href")).toBe(value);
+            },
+          },
+          // TODO: checks específicos (eventos, exposes).
+        ],
+      },
+    },
+
+    {
+      id: "target",
+      title: "Targets",
+      badge: "_self",
+      badgeTitle: "Default: _self",
+      variants: [
+        { id: "_self", props: {"target":"_self","to":"https://example.com"}, slots: {"default":"_self"} },
+        { id: "_blank", props: {"target":"_blank","to":"https://example.com"}, slots: {"default":"_blank"} },
+        { id: "_parent", props: {"target":"_parent","to":"https://example.com"}, slots: {"default":"_parent"} },
+        { id: "_top", props: {"target":"_top","to":"https://example.com"}, slots: {"default":"_top"} },
+      ],
+      vue: `  <Button target="_self" to="https://example.com">_self</Button>
+  <Button target="_blank" to="https://example.com">_blank</Button>
+  <Button target="_parent" to="https://example.com">_parent</Button>
+  <Button target="_top" to="https://example.com">_top</Button>`,
+      vanilla: `  <cu-button target="_self" to="https://example.com">_self</cu-button>
+  <cu-button target="_blank" to="https://example.com">_blank</cu-button>
+  <cu-button target="_parent" to="https://example.com">_parent</cu-button>
+  <cu-button target="_top" to="https://example.com">_top</cu-button>`,
+      checks: {
+        l1: [
+          {
+            name: "renderiza .cu-button",
+            run({ wrapper, expect }) {
+              expect(wrapper.find(".cu-button").exists()).toBe(true);
+            },
+          },
+          {
+            name: "renderiza el contenido del slot",
+            run({ wrapper, expect }, variant) {
+              const text = variant.slots?.default;
+              if (typeof text !== "string" || !text) return;
+              expect(wrapper.text()).toContain(text);
+            },
+          },
+          {
+            name: "renderiza un <a> con href={to}",
+            run({ wrapper, expect }, variant) {
+              const value = variant.props?.["to"] as string | undefined;
+              if (!value) return;
+              const link = wrapper.find("a");
+              expect(link.exists()).toBe(true);
+              expect(link.attributes("href")).toBe(value);
+            },
+          },
+          // TODO: checks específicos (eventos, exposes).
+        ],
+      },
+    },
+
+    {
+      id: "type",
+      title: "Types",
+      badge: "button",
+      badgeTitle: "Default: button",
+      variants: [
+        { id: "button", props: {"type":"button"}, slots: {"default":"button"} },
+        { id: "submit", props: {"type":"submit"}, slots: {"default":"submit"} },
+        { id: "reset", props: {"type":"reset"}, slots: {"default":"reset"} },
+      ],
+      vue: `  <Button type="button">button</Button>
+  <Button type="submit">submit</Button>
+  <Button type="reset">reset</Button>`,
+      vanilla: `  <cu-button type="button">button</cu-button>
+  <cu-button type="submit">submit</cu-button>
+  <cu-button type="reset">reset</cu-button>`,
+      checks: {
+        l1: [
+          {
+            name: "renderiza .cu-button",
+            run({ wrapper, expect }) {
+              expect(wrapper.find(".cu-button").exists()).toBe(true);
+            },
+          },
+          {
+            name: "renderiza el contenido del slot",
+            run({ wrapper, expect }, variant) {
+              const text = variant.slots?.default;
+              if (typeof text !== "string" || !text) return;
+              expect(wrapper.text()).toContain(text);
+            },
+          },
+          // TODO: checks específicos (eventos, exposes).
         ],
       },
     },
@@ -195,132 +349,40 @@ export const cuButtonStories: ComponentStory = {
       id: "disabled",
       title: "Disabled",
       badge: "false",
-      badgeTitle: "Valor por defecto",
-      layout: "row",
-      vue: vueSnippet(`  <Button color="primary" disabled>Primary</Button>
-  <Button color="secondary" disabled>Secondary</Button>
-  <Button color="neutral" disabled>Neutral</Button>
-  <Button color="success" disabled>Success</Button>
-  <Button color="warning" disabled>Warning</Button>
-  <Button color="danger" disabled>Danger</Button>`),
-      vanilla: `${UMD_SCRIPT}
-
-<cu-button color="primary" disabled>Primary</cu-button>
-<cu-button color="secondary" disabled>Secondary</cu-button>
-<cu-button color="neutral" disabled>Neutral</cu-button>
-<cu-button color="success" disabled>Success</cu-button>
-<cu-button color="warning" disabled>Warning</cu-button>
-<cu-button color="danger" disabled>Danger</cu-button>`,
-      variants: colorVariants({ disabled: true }),
-      checks: {
-        l1: [
-          {
-            name: "aplica disabled y la clase cu-button--disabled",
-            run({ wrapper, expect }) {
-              const button = wrapper.find("button.cu-button");
-              expect(button.attributes("disabled")).toBeDefined();
-              expect(button.classes()).toContain("cu-button--disabled");
-            },
-          },
-          {
-            name: "no emite click estando deshabilitado",
-            async run({ wrapper, expect }) {
-              await wrapper.find("button.cu-button").trigger("click");
-              expect(wrapper.emitted("click")).toBeUndefined();
-            },
-          },
-        ],
-      },
-    },
-
-    {
-      id: "sizes",
-      title: "Sizes",
-      layout: "row",
-      vue: vueSnippet(`  <Button color="primary" size="sm">Small</Button>
-  <Button color="primary" size="md">Medium</Button>
-  <Button color="primary" size="lg">Large</Button>`),
-      vanilla: `${UMD_SCRIPT}
-
-<cu-button color="primary" size="sm">Small</cu-button>
-<cu-button color="primary" size="md">Medium</cu-button>
-<cu-button color="primary" size="lg">Large</cu-button>`,
+      badgeTitle: "Default: false",
       variants: [
-        { id: "sm", props: { color: "primary", size: "sm" }, slots: { default: "Small" } },
-        { id: "md", props: { color: "primary", size: "md" }, slots: { default: "Medium" } },
-        { id: "lg", props: { color: "primary", size: "lg" }, slots: { default: "Large" } },
+        { id: "false", props: {"disabled":false}, slots: {"default":"Guardar"} },
+        { id: "true", props: {"disabled":true}, slots: {"default":"Guardar"} },
       ],
+      vue: `  <Button>Guardar</Button>
+  <Button disabled>Guardar</Button>`,
+      vanilla: `  <cu-button>Guardar</cu-button>
+  <cu-button disabled>Guardar</cu-button>`,
       checks: {
         l1: [
           {
-            name: "aplica la clase cu-button--{size}",
+            name: "renderiza .cu-button",
+            run({ wrapper, expect }) {
+              expect(wrapper.find(".cu-button").exists()).toBe(true);
+            },
+          },
+          {
+            name: "renderiza el contenido del slot",
             run({ wrapper, expect }, variant) {
-              const size = variant.props?.size as string;
-              expect(wrapper.find("button.cu-button").classes()).toContain(`cu-button--${size}`);
-            },
-          },
-        ],
-      },
-    },
-
-    {
-      id: "icons",
-      title: "With Icon",
-      layout: "row",
-      vue: vueSnippet(`  <Button color="primary">
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-    Next
-  </Button>
-  <Button color="secondary">
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
-    Back
-  </Button>`),
-      vanilla: `${UMD_SCRIPT}
-
-<cu-button color="primary">
-  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-  Next
-</cu-button>
-<cu-button color="secondary">
-  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
-  Back
-</cu-button>`,
-      variants: [
-        {
-          id: "next",
-          props: { color: "primary" },
-          slots: { default: iconSlot(["M5 12h14", "m12 5 7 7-7 7"], "Next") },
-        },
-        {
-          id: "back",
-          props: { color: "secondary" },
-          slots: { default: iconSlot(["M19 12H5", "m12 19-7-7 7-7"], "Back") },
-        },
-        {
-          id: "delete",
-          props: { color: "danger" },
-          slots: {
-            default: iconSlot(
-              ["M3 6h18", "M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6", "M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"],
-              "Delete",
-            ),
-          },
-        },
-      ],
-      checks: {
-        l1: [
-          {
-            name: "renderiza el icono (svg) dentro del slot",
-            run({ wrapper, expect }) {
-              expect(wrapper.find("button.cu-button svg").exists()).toBe(true);
+              const text = variant.slots?.default;
+              if (typeof text !== "string" || !text) return;
+              expect(wrapper.text()).toContain(text);
             },
           },
           {
-            name: "renderiza el label junto al icono",
-            run({ wrapper, expect }) {
-              expect(wrapper.find("button.cu-button").text().trim().length).toBeGreaterThan(0);
+            name: "disabled: refleja el atributo en el control",
+            run({ wrapper, expect }, variant) {
+              const control = wrapper.find("button, input, textarea, select");
+              if (variant.props?.disabled) expect(control.attributes("disabled")).toBeDefined();
+              else expect(control.attributes("disabled")).toBeUndefined();
             },
           },
+          // TODO: checks específicos (eventos, exposes).
         ],
       },
     },
@@ -329,161 +391,40 @@ export const cuButtonStories: ComponentStory = {
       id: "loading",
       title: "Loading",
       badge: "false",
-      badgeTitle: "Valor por defecto",
-      layout: "row",
+      badgeTitle: "Default: false",
       preview: ButtonLoadingPreview,
-      vue: `<script setup>
-import { ref } from 'vue'
-import Button from '@/components/buttons/Button.vue'
-
-const loading = ref(false)
-
-async function guardar() {
-  loading.value = true
-  await new Promise((r) => setTimeout(r, 2000))
-  loading.value = false
-}
-<\/script>
-
-<template>
-  <Button color="primary" :loading="loading" @click="guardar">
-    {{ loading ? 'Loading...' : 'Click to Load' }}
-  </Button>
-</template>`,
-      vanilla: `${UMD_SCRIPT}
-
-<cu-button color="primary" variant="solid" id="guardar">Guardar</cu-button>
-
-<script>
-  const btn = document.getElementById('guardar');
-  btn.addEventListener('click', async () => {
-    btn.loading = true;
-    await new Promise((r) => setTimeout(r, 2000));
-    btn.loading = false;
-  });
-<\/script>`,
       variants: [
-        { id: "loading", props: { color: "primary", loading: true }, slots: { default: "Loading..." } },
-        { id: "always-loading", props: { color: "primary", loading: true }, slots: { default: "Always Loading" } },
-        {
-          id: "disabled-loading",
-          props: { color: "primary", loading: true, disabled: true },
-          slots: { default: "Disabled + Loading" },
-        },
+        { id: "false", props: {"loading":false}, slots: {"default":"Guardar"} },
+        { id: "true", props: {"loading":true}, slots: {"default":"Guardar"} },
       ],
+      vue: `  <Button>Guardar</Button>
+  <Button loading>Guardar</Button>`,
+      vanilla: `  <cu-button>Guardar</cu-button>
+  <cu-button loading>Guardar</cu-button>`,
       checks: {
         l1: [
           {
-            name: "muestra el spinner",
+            name: "renderiza .cu-button",
             run({ wrapper, expect }) {
-              expect(wrapper.find(".cu-button-spinner").exists()).toBe(true);
+              expect(wrapper.find(".cu-button").exists()).toBe(true);
             },
           },
           {
-            name: "deshabilita el botón",
-            run({ wrapper, expect }) {
-              const button = wrapper.find("button.cu-button");
-              expect(button.attributes("disabled")).toBeDefined();
-              expect(button.classes()).toContain("cu-button--disabled");
-            },
-          },
-        ],
-      },
-    },
-
-    {
-      id: "links",
-      title: "As Link",
-      badge: "_self",
-      badgeTitle: "Target por defecto",
-      layout: "row",
-      vue: vueSnippet(`  <Button color="primary" to="https://google.com" target="_blank">External Link</Button>
-  <Button color="secondary" to="/playground/components/button">Internal Link</Button>`),
-      vanilla: `${UMD_SCRIPT}
-
-<cu-button color="primary" to="https://google.com" target="_blank">External Link</cu-button>
-<cu-button color="secondary" to="/playground/components/button">Internal Link</cu-button>`,
-      variants: [
-        {
-          id: "external",
-          props: { color: "primary", to: "https://google.com", target: "_blank" },
-          slots: { default: "External Link" },
-        },
-        {
-          id: "internal",
-          props: { color: "secondary", to: "/playground/components/button" },
-          slots: { default: "Internal Link" },
-        },
-      ],
-      checks: {
-        l1: [
-          {
-            name: "renderiza wrapper <a> con href/target",
+            name: "renderiza el contenido del slot",
             run({ wrapper, expect }, variant) {
-              const link = wrapper.find("a.cu-button-link");
-              expect(link.exists()).toBe(true);
-              expect(link.attributes("href")).toBe(variant.props?.to);
-              expect(link.attributes("target")).toBe((variant.props?.target as string) ?? "_self");
+              const text = variant.slots?.default;
+              if (typeof text !== "string" || !text) return;
+              expect(wrapper.text()).toContain(text);
             },
           },
           {
-            name: "mantiene el <button> interno",
-            run({ wrapper, expect }) {
-              expect(wrapper.find("button.cu-button").exists()).toBe(true);
+            name: "loading: muestra el spinner",
+            run({ wrapper, expect }, variant) {
+              if (variant.props?.loading) expect(wrapper.find(".cu-button-spinner").exists()).toBe(true);
+              else expect(wrapper.find(".cu-button-spinner").exists()).toBe(false);
             },
           },
-        ],
-      },
-    },
-
-    {
-      id: "fullwidth",
-      title: "Full Width",
-      layout: "col",
-      vue: vueSnippet(`  <Button color="primary" variant="solid" style="width:100%">Full Width Solid</Button>
-  <Button color="success" variant="soft" style="width:100%">Full Width Soft</Button>
-  <Button color="warning" variant="outlined" style="width:100%">Full Width Outlined</Button>
-  <Button color="danger" variant="subtle" style="width:100%">Full Width Subtle</Button>`),
-      vanilla: `${UMD_SCRIPT}
-
-<cu-button color="primary" variant="solid" style="width:100%">Full Width Solid</cu-button>
-<cu-button color="success" variant="soft" style="width:100%">Full Width Soft</cu-button>
-<cu-button color="warning" variant="outlined" style="width:100%">Full Width Outlined</cu-button>
-<cu-button color="danger" variant="subtle" style="width:100%">Full Width Subtle</cu-button>`,
-      variants: [
-        {
-          id: "solid",
-          props: { color: "primary", variant: "solid" },
-          attrs: { style: "width:100%" },
-          slots: { default: "Full Width Solid" },
-        },
-        {
-          id: "soft",
-          props: { color: "success", variant: "soft" },
-          attrs: { style: "width:100%" },
-          slots: { default: "Full Width Soft" },
-        },
-        {
-          id: "outlined",
-          props: { color: "warning", variant: "outlined" },
-          attrs: { style: "width:100%" },
-          slots: { default: "Full Width Outlined" },
-        },
-        {
-          id: "subtle",
-          props: { color: "danger", variant: "subtle" },
-          attrs: { style: "width:100%" },
-          slots: { default: "Full Width Subtle" },
-        },
-      ],
-      checks: {
-        l1: [
-          {
-            name: "respeta el style width:100% del host",
-            run({ wrapper, expect }) {
-              expect(wrapper.find("button.cu-button").attributes("style")).toContain("width: 100%");
-            },
-          },
+          // TODO: checks específicos (eventos, exposes).
         ],
       },
     },

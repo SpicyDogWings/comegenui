@@ -224,6 +224,7 @@ Tests de la capa `.vue` derivados de las secciones actuales de los playground, c
 - [x] `pnpm run stories:status` — inventario de componentes (público/página/story/test viejo/badges).
 - [x] `pnpm run stories:migrate X` — story + test L1 con secciones, snippets, **variants y checks genéricos** automáticos; marca los TODO (v-for, slots nombrados, dinámicos).
 - [x] `pnpm run new:component X <category> [--internal]` — scaffold de componente nuevo (`.vue` + `.ce.vue` + `lib/` + story + test).
+- [x] `pnpm run stories:generate X` — generador **prop-driven**: secciones desde las props del `.vue` (enum/boolean/texto) + `X.stories.config.json` por componente (order/include/exclude, `extraProps`, secciones `custom`, `preview` interactivo).
 - [x] `./scripts/preflight.sh X` — preflight scopeado a un componente (~8s).
 - [x] Badge del playground sin la palabra "tests": `✓ N` / `✗ fallos/total`.
 - [ ] Migrar el resto de 1f usando las herramientas (idealmente en paralelo por lotes).
@@ -453,3 +454,9 @@ Cada commit incluye su entrada en la **Bitácora**.
 - `test(l1/navbar-horizontal)`: NavbarHorizontal migrado — 6 secciones (basic/active/triggers/nested/flat/icons), **24 checks L1**, página a `StoryRenderer`.
 - `setup` con stub de `scrollIntoView` (jsdom); verificado en navegador por el subagente.
 - **Lote en paralelo con 4 subagentes**: AuthorCard (50), Tooltip (33), SideOver (53), NavbarHorizontal (24) = **160 checks nuevos** en una sola corrida.
+
+### 2026-09-10 — Generador prop-driven (`stories:generate`)
+
+- `feat(tools)`: `tools/stories/generate.mjs` — genera la story desde las props reales del `.vue` (enum por `validator`/`PropType`, booleanas y strings), con secciones, snippets Vue/Vanilla y checks derivados del source (clase/token/atributo/spinner/href).
+- `feat(tools)`: `X.stories.config.json` **por componente** (al lado de la story): `order`, `include`/`exclude`, `sections.<id>.extraProps|title|badge`, `custom[]` (secciones nuevas con valores) y `sections.<id>.preview.recipe` (interactivos).
+- Demo Button: 9 secciones (Links custom, Targets con `to`, loading interactivo), 86 checks L1 verdes; config versionado en `src/stories/buttons/Button.stories.config.json`.

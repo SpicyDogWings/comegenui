@@ -17,6 +17,7 @@
     "preflight": "bash scripts/preflight.sh",
     "stories:status": "node tools/stories/status.mjs",
     "stories:migrate": "node tools/stories/migrate.mjs",
+    "stories:generate": "node tools/stories/generate.mjs",
     "new:component": "node tools/scaffold-component.mjs"
   },
   "dependencies": {
