@@ -1,24 +1,26 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import PlaygroundStyle from '@/templates/playground/PlaygroundStyle.vue';
-import PlaygroundApiComponents from '@/templates/playground/PlaygroundApiComponents.vue';
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
-import Textarea from "@/components/form/Textarea.vue";
-import Badge from "@/components/information/Badge.vue";
-import Button from "@/components/buttons/Button.vue";
+import StoryRenderer from "@/pages/playground/StoryRenderer.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Table from "@/components/data/Table.vue";
+import Button from "@/components/buttons/Button.vue";
+import Textarea from "@/components/form/Textarea.vue";
+import { cuTextareaStories } from "@/stories/form/Textarea.stories";
 
-const vmodelText = ref("");
+const textareaRef = ref<InstanceType<typeof Textarea> | null>(null);
+const progGet = ref("—");
+
+function readProgrammaticState() {
+  const el = textareaRef.value;
+  if (!el) return;
+  progGet.value = el.get() || "(vacío)";
+}
 
 const outlineItems = [
-  { label: 'Variants', id: 'variants' },
-  { label: 'Colors', id: 'colors' },
-  { label: 'ReadOnly', id: 'readonly' },
-  { label: 'Disabled', id: 'disabled' },
-  { label: 'Rows', id: 'rows' },
-  { label: 'v-model', id: 'v-model' },
-    { label: 'Programmatic', id: 'programmatic' },
+  ...cuTextareaStories.sections.map((section) => ({ label: section.title, id: section.id })),
+  { label: 'Programmatic', id: 'programmatic' },
   {
     label: 'Style',
     id: 'style',
@@ -37,103 +39,6 @@ const outlineItems = [
     ],
   },
 ];
-
-const vueImport = `<script setup>
-import Textarea from '@/components/form/Textarea.vue'
-<\/script>`;
-
-const vueSnippet = (body: string) => `${vueImport}
-
-<template>
-${body}
-</template>`;
-
-const variantsVue = vueSnippet(`  <Textarea variant="soft" placeholder="soft (default)" :rows="2" />
-  <Textarea variant="outlined" placeholder="outlined" :rows="2" />
-  <Textarea variant="ghost" placeholder="ghost" :rows="2" />
-  <Textarea variant="subtle" placeholder="subtle" :rows="2" />`);
-
-const colorsVue = vueSnippet(`  <Textarea color="primary" placeholder="primary" :rows="2" />
-  <Textarea color="secondary" placeholder="secondary" :rows="2" />
-  <Textarea color="neutral" placeholder="neutral" :rows="2" />
-  <Textarea color="success" placeholder="success" :rows="2" />
-  <Textarea color="warning" placeholder="warning" :rows="2" />
-  <Textarea color="danger" placeholder="danger" :rows="2" />`);
-
-const readonlyVue = vueSnippet(`  <Textarea color="primary" read-only model-value="Este contenido es de solo lectura" :rows="2" />`);
-
-const disabledVue = vueSnippet(`  <Textarea color="primary" disabled placeholder="Disabled" :rows="2" />
-  <Textarea color="neutral" disabled placeholder="Disabled (neutral)" :rows="2" />`);
-
-const rowsVue = vueSnippet(`  <Textarea placeholder="2 rows" :rows="2" />
-  <Textarea placeholder="4 rows" :rows="4" />
-  <Textarea placeholder="6 rows, no resize" :rows="6" no-resize />`);
-
-const vmodelVue = `<script setup>
-import { ref } from 'vue'
-import Textarea from '@/components/form/Textarea.vue'
-
-const text = ref('')
-<\/script>
-
-<template>
-  <Textarea v-model="text" placeholder="Escribí algo..." :rows="3" />
-  <p>Value: {{ text }}</p>
-</template>`;
-
-const variantsVanilla = `<script src="dist/CuTextarea.umd.js"><\/script>
-
-<cu-textarea variant="soft" placeholder="soft (default)" rows="2"></cu-textarea>
-<cu-textarea variant="outlined" placeholder="outlined" rows="2"></cu-textarea>
-<cu-textarea variant="ghost" placeholder="ghost" rows="2"></cu-textarea>
-<cu-textarea variant="subtle" placeholder="subtle" rows="2"></cu-textarea>`;
-
-const colorsVanilla = `<script src="dist/CuTextarea.umd.js"><\/script>
-
-<cu-textarea color="primary" placeholder="primary" rows="2"></cu-textarea>
-<cu-textarea color="secondary" placeholder="secondary" rows="2"></cu-textarea>
-<cu-textarea color="neutral" placeholder="neutral" rows="2"></cu-textarea>
-<cu-textarea color="success" placeholder="success" rows="2"></cu-textarea>
-<cu-textarea color="warning" placeholder="warning" rows="2"></cu-textarea>
-<cu-textarea color="danger" placeholder="danger" rows="2"></cu-textarea>`;
-
-const readonlyVanilla = `<script src="dist/CuTextarea.umd.js"><\/script>
-
-<cu-textarea color="primary" read-only model-value="Este contenido es de solo lectura" rows="2"></cu-textarea>`;
-
-const disabledVanilla = `<script src="dist/CuTextarea.umd.js"><\/script>
-
-<cu-textarea color="primary" disabled placeholder="Disabled" rows="2"></cu-textarea>
-<cu-textarea color="neutral" disabled placeholder="Disabled (neutral)" rows="2"></cu-textarea>`;
-
-const rowsVanilla = `<script src="dist/CuTextarea.umd.js"><\/script>
-
-<cu-textarea placeholder="2 rows" rows="2"></cu-textarea>
-<cu-textarea placeholder="4 rows" rows="4"></cu-textarea>
-<cu-textarea placeholder="6 rows, no resize" rows="6" no-resize></cu-textarea>`;
-
-const vmodelVanilla = `<script src="dist/CuTextarea.umd.js"><\/script>
-
-<cu-textarea id="mi-textarea" placeholder="Escribí algo..." rows="3"></cu-textarea>
-<p id="out">Value: </p>
-
-<script>
-  const ta = document.getElementById('mi-textarea');
-  const out = document.getElementById('out');
-  // El valor también puede setearse por propiedad: ta.modelValue = 'texto inicial'
-  ta.addEventListener('update:modelValue', (e) => {
-    out.textContent = 'Value: ' + e.detail;
-  });
-<\/script>`;
-
-const textareaRef = ref<InstanceType<typeof Textarea> | null>(null);
-const progGet = ref("—");
-
-function readProgrammaticState() {
-  const el = textareaRef.value;
-  if (!el) return;
-  progGet.value = el.get() || "(vacío)";
-}
 
 const programmaticVue = `<script setup>
 import { ref } from 'vue'
@@ -209,7 +114,7 @@ const propsData = [
   { name: 'noResize', type: 'boolean', default: 'false', description: 'Desactiva el redimensionado manual' },
 ];
 
-const slotsData = [];
+const slotsData: { name: string; description: string }[] = [];
 
 const eventsData = [
   { name: 'update:modelValue', type: 'custom', description: 'Emite el valor actualizado en detail al escribir (v-model)' },
@@ -217,106 +122,17 @@ const eventsData = [
 ];
 
 const exposesData = [
-  { name: 'get', type: '() => string', default: '—', description: 'Devuelve el valor actual' },
-  { name: 'set', type: '(value: string | number) => void', default: '—', description: 'Setea el valor' },
-  { name: 'reset', type: '() => void', default: '—', description: 'Limpia el valor' },
-  { name: 'focus', type: '() => void', default: '—', description: 'Pone el foco en el textarea' },
+  { name: 'get', type: '() => string', description: 'Devuelve el valor actual' },
+  { name: 'set', type: '(value: string | number) => void', description: 'Setea el valor' },
+  { name: 'reset', type: '() => void', description: 'Limpia el valor' },
+  { name: 'focus', type: '() => void', description: 'Pone el foco en el textarea' },
 ];
 </script>
 
 <template>
   <PlaygroundLayout title="Textarea" :outlineItems="outlineItems">
     <div class="playground-content">
-      <section id="variants" class="playground-section">
-        <div class="playground-heading">
-          <h2>Variants</h2>
-          <Badge color="neutral" title="Variante por defecto">soft</Badge>
-        </div>
-        <SectionDemo :vue-code="variantsVue" :vanilla-code="variantsVanilla">
-          <div class="playground-col">
-            <Textarea variant="soft" placeholder="soft (default)" :rows="2" />
-            <Textarea variant="outlined" placeholder="outlined" :rows="2" />
-            <Textarea variant="ghost" placeholder="ghost" :rows="2" />
-            <Textarea variant="subtle" placeholder="subtle" :rows="2" />
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="colors" class="playground-section">
-        <div class="playground-heading">
-          <h2>Colors</h2>
-          <Badge color="neutral" title="Color por defecto">neutral</Badge>
-        </div>
-        <SectionDemo :vue-code="colorsVue" :vanilla-code="colorsVanilla">
-          <div class="playground-col">
-            <Textarea color="primary" placeholder="primary" :rows="2" />
-            <Textarea color="secondary" placeholder="secondary" :rows="2" />
-            <Textarea color="neutral" placeholder="neutral" :rows="2" />
-            <Textarea color="success" placeholder="success" :rows="2" />
-            <Textarea color="warning" placeholder="warning" :rows="2" />
-            <Textarea color="danger" placeholder="danger" :rows="2" />
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="readonly" class="playground-section">
-        <div class="playground-heading">
-          <h2>ReadOnly</h2>
-          <Badge color="neutral" title="Valor por defecto">false</Badge>
-        </div>
-        <SectionDemo :vue-code="readonlyVue" :vanilla-code="readonlyVanilla">
-          <Textarea color="primary" read-only model-value="Este contenido es de solo lectura" :rows="2" />
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="disabled" class="playground-section">
-        <div class="playground-heading">
-          <h2>Disabled</h2>
-          <Badge color="neutral" title="Valor por defecto">false</Badge>
-        </div>
-        <SectionDemo :vue-code="disabledVue" :vanilla-code="disabledVanilla">
-          <div class="playground-col">
-            <Textarea color="primary" disabled placeholder="Disabled" :rows="2" />
-            <Textarea color="neutral" disabled placeholder="Disabled (neutral)" :rows="2" />
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="rows" class="playground-section">
-        <div class="playground-heading">
-          <h2>Rows</h2>
-          <Badge color="neutral" title="Filas por defecto">3</Badge>
-        </div>
-        <SectionDemo :vue-code="rowsVue" :vanilla-code="rowsVanilla">
-          <div class="playground-col">
-            <Textarea placeholder="2 rows" :rows="2" />
-            <Textarea placeholder="4 rows" :rows="4" />
-            <Textarea placeholder="6 rows, no resize" :rows="6" no-resize />
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="v-model" class="playground-section">
-        <div class="playground-heading">
-          <h2>v-model</h2>
-        </div>
-        <SectionDemo :vue-code="vmodelVue" :vanilla-code="vmodelVanilla">
-          <div class="playground-col">
-            <Textarea v-model="vmodelText" placeholder="Escribí algo..." :rows="3" />
-            <p class="playground-code">Value: {{ vmodelText || '(vacío)' }}</p>
-          </div>
-        </SectionDemo>
-      </section>
+      <StoryRenderer :story="cuTextareaStories" />
 
       <hr class="playground-separator" />
 
@@ -344,10 +160,7 @@ const exposesData = [
       </section>
 
       <hr class="playground-separator" />
-
-      <hr class="playground-separator" />
-
-      <hr class="playground-separator" />      <PlaygroundStyle :tokens="componentTokens" />
+      <PlaygroundStyle :tokens="componentTokens" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>
@@ -367,3 +180,18 @@ const exposesData = [
     </div>
   </PlaygroundLayout>
 </template>
+
+<style>
+.playground-desc {
+  font-size: var(--cu-font-size-sm);
+  color: var(--cu-color-neutral-text);
+  opacity: 0.7;
+  margin-bottom: 1rem;
+}
+
+.playground-state {
+  font-size: var(--cu-font-size-sm);
+  color: var(--cu-color-neutral);
+  margin: 0;
+}
+</style>
