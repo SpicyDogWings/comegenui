@@ -1,0 +1,7 @@
+{
+  "exclude": ["text"],
+  "sections": {
+    "colors": { "extraProps": { "label": "Copiar" } },
+    "variants": { "extraProps": { "label": "Copiar" } }
+  }
+}

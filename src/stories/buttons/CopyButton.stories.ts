@@ -55,26 +55,6 @@ export const cuCopyButtonStories: ComponentStory = {
     },
 
     {
-      id: "text",
-      title: "Text",
-      variants: [
-        { id: "with-value", props: {"text":"CopyButton"} },
-      ],
-      vue: `  <CopyButton text="CopyButton"></CopyButton>`,
-      checks: {
-        l1: [
-          {
-            name: "renderiza .cu-copy-button",
-            run({ wrapper, expect }) {
-              expect(wrapper.find(".cu-copy-button").exists()).toBe(true);
-            },
-          },
-          // TODO: checks específicos (eventos, exposes).
-        ],
-      },
-    },
-
-    {
       id: "label",
       title: "Label",
       variants: [
