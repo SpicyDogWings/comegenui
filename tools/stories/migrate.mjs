@@ -87,10 +87,10 @@ function extractSnippets(source) {
 
 function parseAttrs(str) {
   const attrs = [];
-  const re = /([:@#\w.-]+)(?:\s*=\s*"([^"]*)")?/g;
+  const re = /([:@#\w.-]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'))?/g;
   let match;
   while ((match = re.exec(str))) {
-    attrs.push({ name: match[1], value: match[2], dynamic: false });
+    attrs.push({ name: match[1], value: match[2] ?? match[3], dynamic: false });
   }
   return attrs;
 }

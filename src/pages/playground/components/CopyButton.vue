@@ -1,55 +1,13 @@
 <script setup lang="ts">
-import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import PlaygroundStyle from '@/templates/playground/PlaygroundStyle.vue';
 import PlaygroundApiComponents from '@/templates/playground/PlaygroundApiComponents.vue';
-import CopyButton from "@/components/buttons/CopyButton.vue";
+import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
+import StoryRenderer from "@/pages/playground/StoryRenderer.vue";
 import Table from "@/components/data/Table.vue";
-import Badge from "@/components/information/Badge.vue";
-import SectionDemo from "@/pages/playground/SectionDemo.vue";
-
-const variantsVue = `<script setup>
-import CopyButton from '@/components/buttons/CopyButton.vue'
-<\/script>
-
-<template>
-  <CopyButton text="Contenido a copiar" variant="soft" />
-  <CopyButton text="Contenido a copiar" variant="solid" />
-  <CopyButton text="Contenido a copiar" variant="outlined" />
-  <CopyButton text="Contenido a copiar" variant="ghost" />
-  <CopyButton text="Contenido a copiar" variant="subtle" />
-</template>`;
-
-const colorsVue = `<script setup>
-import CopyButton from '@/components/buttons/CopyButton.vue'
-<\/script>
-
-<template>
-  <CopyButton text="Contenido" color="primary" />
-  <CopyButton text="Contenido" color="secondary" />
-  <CopyButton text="Contenido" color="neutral" />
-  <CopyButton text="Contenido" color="success" />
-  <CopyButton text="Contenido" color="warning" />
-  <CopyButton text="Contenido" color="danger" />
-</template>`;
-
-const labelsVue = `<script setup>
-import CopyButton from '@/components/buttons/CopyButton.vue'
-import Button from '@/components/buttons/Button.vue';
-<\/script>
-
-<template>
-  <!-- icon-only (label vacío) -->
-  <CopyButton text='{"id": 1, "nombre": "Ana"}' />
-
-  <!-- label siempre visible + copiedLabel animado -->
-  <CopyButton text='{"id": 1, "nombre": "Ana"}' label="Copiar JSON" copiedLabel="¡JSON copiado!" />
-  <CopyButton text="npm install comegen-ui" label="Copiar comando" copiedLabel="¡Comando copiado!" />
-</template>`;
+import { cuCopyButtonStories } from "@/stories/buttons/CopyButton.stories";
 
 const outlineItems = [
-  { label: 'Variants', id: 'variants' },
-  { label: 'Colors', id: 'colors' },
-  { label: 'Labels', id: 'labels' },
+  ...cuCopyButtonStories.sections.map((section) => ({ label: section.title, id: section.id })),
   {
     label: 'Style',
     id: 'style',
@@ -69,8 +27,6 @@ const outlineItems = [
     ],
   },
 ];
-
-const colors = ['primary', 'secondary', 'neutral', 'success', 'warning', 'danger'] as const;
 
 const componentTokens = [
   '--cu-font-sans',
@@ -112,58 +68,9 @@ const eventsData = [
 <template>
   <PlaygroundLayout title="CopyButton" :outlineItems="outlineItems">
     <div class="playground-content">
-      <section id="variants" class="playground-section">
-        <div class="playground-heading">
-          <h2>Variants</h2>
-          <Badge color="neutral" title="Variante por defecto">soft</Badge>
-        </div>
-        <SectionDemo :vue-code="variantsVue">
-          <div class="playground-row">
-            <CopyButton text="Contenido soft" variant="soft" />
-            <CopyButton text="Contenido solid" variant="solid" />
-            <CopyButton text="Contenido outlined" variant="outlined" />
-            <CopyButton text="Contenido ghost" variant="ghost" />
-            <CopyButton text="Contenido subtle" variant="subtle" />
-          </div>
-        </SectionDemo>
-      </section>
+      <StoryRenderer :story="cuCopyButtonStories" />
 
       <hr class="playground-separator" />
-
-      <section id="colors" class="playground-section">
-        <div class="playground-heading">
-          <h2>Colors</h2>
-          <Badge color="neutral" title="Color por defecto">neutral</Badge>
-        </div>
-        <SectionDemo :vue-code="colorsVue">
-          <div class="playground-row">
-            <CopyButton v-for="color in colors" :key="color" text="Contenido copiable" :color="color" />
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="labels" class="playground-section">
-        <div class="playground-heading">
-          <h2>Labels</h2>
-          <Badge color="neutral" title="label vacío por defecto: solo icono">icon-only</Badge>
-        </div>
-        <SectionDemo :vue-code="labelsVue">
-          <div class="playground-row">
-            <CopyButton text='{"id": 1, "nombre": "Ana"}' />
-            <CopyButton text='{"id": 1, "nombre": "Ana"}' label="Copiar JSON" copiedLabel="¡JSON copiado!" />
-            <CopyButton text="npm install comegen-ui" label="Copiar comando" copiedLabel="¡Comando copiado!" />
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      
-
-      <hr class="playground-separator" />
-
       <PlaygroundStyle :tokens="componentTokens" :sub-components="styleSubComponents" />
 
       <section id="api" class="playground-section">
@@ -171,7 +78,7 @@ const eventsData = [
 
         <PlaygroundApiComponents :deps="componentDeps" />
 
-<h3 id="api-props">Props</h3>
+        <h3 id="api-props">Props</h3>
         <Table :columns="apiColumns" :data="propsData" variant="ghost" compact />
 
         <h3 id="api-slots">Slots</h3>
