@@ -1,3 +1,6 @@
+// Generado por src/plugins/story-playground/cli/generate.mjs a partir de las props de FloatingButton.vue.
+// Refinado a mano: el plugin no puede inferir el slot SVG ni el workaround `position: static`
+// del preview (el FAB es position: fixed), ni los checks específicos (token --fab-bg, click, disabled).
 import { h } from "vue";
 import FloatingButton from "@/components/buttons/FloatingButton.vue";
 import type { ComponentStory, Variant } from "@/stories/types";
