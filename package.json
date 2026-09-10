@@ -10,7 +10,11 @@
     "build-only": "vite build",
     "build:lib": "pnpm exec tsx --tsconfig tsconfig.build-lib.json build-lib.ts",
     "build:labs": " build-labs.ts",
-    "type-check": "vue-tsc --build"
+    "type-check": "vue-tsc --build",
+    "test": "vitest run",
+    "test:l1": "vitest run --project l1",
+    "test:watch": "vitest",
+    "preflight": "bash scripts/preflight.sh"
   },
   "dependencies": {
     "@vueuse/core": "^14.2.1",

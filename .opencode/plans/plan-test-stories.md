@@ -127,7 +127,7 @@ export interface ComponentStory {
 
 Tests de la capa `.vue` derivados de las secciones actuales de los playground, corriendo en CLI, con resultados visibles en la UI.
 
-- [~] **1a** Fundaciones
+- [x] **1a** Fundaciones
   - `package.json`: `test`, `test:l1`, `test:watch`, `preflight`.
   - `scripts/preflight.sh`: `type-check` → tests L1 (corta al primer fallo).
   - `.opencode/skills/comegen-preflight/SKILL.md`: trigger "prepará el merge request".
@@ -213,3 +213,12 @@ Cada commit incluye su entrada en la **Bitácora**.
 
 - `docs(test)`: plan inicial en `docs/notes/plan-test-stories.md` (luego movido a `.opencode/plans/`).
 - Rama `test/stories-layers` desde `main`.
+
+### 2026-09-10 — 1a Fundaciones
+
+- `chore(test)`: scripts `test`/`test:l1`/`test:watch`/`preflight` en `package.json`.
+- `tools/reporters/playground-reporter.ts`: reporter custom → `public/test-results.json`.
+- `scripts/preflight.sh`: type-check + L1.
+- `.opencode/skills/comegen-preflight/SKILL.md`.
+- `vitest.config.ts`: project `l1` (jsdom) + reporter.
+- Verificado: 37 archivos / 331 tests corren; 6 fallos preexistentes (2 archivos) listados como bloqueantes.

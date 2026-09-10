@@ -10,8 +10,17 @@ export default defineConfig({
     },
   },
   test: {
-    environment: "jsdom",
-    globals: true,
-    include: ["src/**/*.test.ts"],
+    projects: [
+      {
+        extends: true,
+        test: {
+          name: "l1",
+          environment: "jsdom",
+          globals: true,
+          include: ["src/**/*.test.ts"],
+          reporters: ["default", "./tools/reporters/playground-reporter.ts"],
+        },
+      },
+    ],
   },
 });
