@@ -30,6 +30,16 @@ Específicas de la estructura de este repo; viven en `tools/` y `scripts/`:
   - **Events** = patio de **eventos** (nativos + `ceEmit` con `detail`).
 - El generador **no pisa** la story existente (salvo `--force`) ni el archivo de extras.
 
+## Runtime
+
+Los CLI (`.mjs`) y los tests corren tanto con **Node** (canónico; lo que usa CI/pnpm) como con **Bun**:
+
+```bash
+bun tools/status.mjs
+bun src/plugins/story-playground/cli/generate.mjs X
+bun x vitest run --project l1        # suite completa verde con Bun
+```
+
 ## Llevarlo a otro proyecto
 
 1. Copiá `src/plugins/story-playground/` al `src/plugins/` del destino.
