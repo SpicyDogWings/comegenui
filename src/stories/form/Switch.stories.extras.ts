@@ -23,7 +23,7 @@ const SwitchProgrammatic = defineComponent({
 
     const instance = () => switchRef.value as unknown as SwitchInstance | null;
 
-    const sync = () => {
+    const read = () => {
       const value = instance()?.get() ?? false;
       checked.value = value;
       getResult.value = value;
@@ -31,15 +31,13 @@ const SwitchProgrammatic = defineComponent({
 
     const run = (action: (switchInstance: SwitchInstance) => void) => {
       const switchInstance = instance();
-      if (!switchInstance) return;
-      action(switchInstance);
-      sync();
+      if (switchInstance) action(switchInstance);
     };
 
     return () =>
       h("div", { class: "playground-col" }, [
         h("div", { class: "playground-row" }, [
-          h(Button, { color: "neutral", onClick: sync }, () => "get()"),
+          h(Button, { color: "neutral", onClick: read }, () => "get()"),
           h(Button, { color: "neutral", onClick: () => run((sw) => sw.set(true)) }, () => "set(true)"),
           h(Button, { color: "neutral", onClick: () => run((sw) => sw.set(false)) }, () => "set(false)"),
           h(Button, { color: "neutral", onClick: () => run((sw) => sw.reset()) }, () => "reset()"),
@@ -55,8 +53,14 @@ const SwitchProgrammatic = defineComponent({
           ref: switchRef,
           label: "Términos",
           modelValue: checked.value,
-          "onUpdate:modelValue": (value: boolean) => (checked.value = value),
-          onChange: sync,
+          "onUpdate:modelValue": (value: boolean) => {
+            checked.value = value;
+            getResult.value = value;
+          },
+          onChange: (value: boolean) => {
+            checked.value = value;
+            getResult.value = value;
+          },
         }),
       ]);
   },
@@ -71,23 +75,20 @@ const checked = ref(false)
 const getResult = ref(null)
 const switchRef = ref(null)
 
-const sync = () => {
-  getResult.value = switchRef.value.get()
-  checked.value = switchRef.value.get()
-}
+const read = () => (getResult.value = switchRef.value.get())
 <\/script>
 
 <template>
   <div style="display:flex;flex-direction:column;gap:12px">
     <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <Button color="neutral" @click="sync()">get()</Button>
-      <Button color="neutral" @click="switchRef.set(true); sync()">set(true)</Button>
-      <Button color="neutral" @click="switchRef.set(false); sync()">set(false)</Button>
-      <Button color="neutral" @click="switchRef.reset(); sync()">reset()</Button>
+      <Button color="neutral" @click="read()">get()</Button>
+      <Button color="neutral" @click="switchRef.set(true)">set(true)</Button>
+      <Button color="neutral" @click="switchRef.set(false)">set(false)</Button>
+      <Button color="neutral" @click="switchRef.reset()">reset()</Button>
       <Button color="neutral" @click="switchRef.focus()">focus()</Button>
     </div>
     <p>get(): {{ getResult ?? '—' }} · v-model: {{ checked ? 'ON' : 'OFF' }}</p>
-    <Switch ref="switchRef" v-model="checked" label="Términos" />
+    <Switch ref="switchRef" v-model="checked" label="Términos" @update:model-value="getResult = $event" />
   </div>
 </template>`;
 

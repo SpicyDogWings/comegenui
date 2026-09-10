@@ -23,7 +23,7 @@ const TextareaProgrammatic = defineComponent({
 
     const instance = () => textareaRef.value as unknown as TextareaInstance | null;
 
-    const sync = () => {
+    const read = () => {
       const current = instance()?.get() ?? "";
       value.value = current;
       getResult.value = current || "(vacío)";
@@ -31,15 +31,13 @@ const TextareaProgrammatic = defineComponent({
 
     const run = (action: (textareaInstance: TextareaInstance) => void) => {
       const textareaInstance = instance();
-      if (!textareaInstance) return;
-      action(textareaInstance);
-      sync();
+      if (textareaInstance) action(textareaInstance);
     };
 
     return () =>
       h("div", { class: "playground-col" }, [
         h("div", { class: "playground-row" }, [
-          h(Button, { color: "neutral", onClick: sync }, () => "get()"),
+          h(Button, { color: "neutral", onClick: read }, () => "get()"),
           h(Button, { color: "neutral", onClick: () => run((ta) => ta.set("Hola mundo")) }, () => "set('Hola mundo')"),
           h(Button, { color: "neutral", onClick: () => run((ta) => ta.reset()) }, () => "reset()"),
           h(Button, { color: "neutral", onClick: () => run((ta) => ta.focus()) }, () => "focus()"),
@@ -73,22 +71,19 @@ const value = ref('')
 const getResult = ref('—')
 const textareaRef = ref(null)
 
-const sync = () => {
-  getResult.value = textareaRef.value.get() || '(vacío)'
-  value.value = textareaRef.value.get()
-}
+const read = () => (getResult.value = textareaRef.value.get() || '(vacío)')
 <\/script>
 
 <template>
   <div style="display:flex;flex-direction:column;gap:12px">
     <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <Button color="neutral" @click="sync()">get()</Button>
-      <Button color="neutral" @click="textareaRef.set('Hola mundo'); sync()">set('Hola mundo')</Button>
-      <Button color="neutral" @click="textareaRef.reset(); sync()">reset()</Button>
+      <Button color="neutral" @click="read()">get()</Button>
+      <Button color="neutral" @click="textareaRef.set('Hola mundo')">set('Hola mundo')</Button>
+      <Button color="neutral" @click="textareaRef.reset()">reset()</Button>
       <Button color="neutral" @click="textareaRef.focus()">focus()</Button>
     </div>
     <p>get(): {{ getResult }} · v-model: {{ value || '(vacío)' }}</p>
-    <Textarea ref="textareaRef" v-model="value" placeholder="Textarea programático" :rows="3" />
+    <Textarea ref="textareaRef" v-model="value" placeholder="Textarea programático" :rows="3" @update:model-value="getResult = $event || '(vacío)'" />
   </div>
 </template>`;
 

@@ -23,17 +23,20 @@ const InputProgrammatic = defineComponent({
 
     const instance = () => inputRef.value as unknown as InputInstance | null;
 
+    const read = () => {
+      const input = instance();
+      if (input) getResult.value = input.get();
+    };
+
     const run = (action: (input: InputInstance) => void) => {
       const input = instance();
-      if (!input) return;
-      action(input);
-      getResult.value = input.get();
+      if (input) action(input);
     };
 
     return () =>
       h("div", { class: "playground-col" }, [
         h("div", { class: "playground-row" }, [
-          h(Button, { color: "neutral", onClick: () => run((input) => input.get()) }, () => "get()"),
+          h(Button, { color: "neutral", onClick: read }, () => "get()"),
           h(Button, { color: "neutral", onClick: () => run((input) => input.set("Hola")) }, () => "set('Hola')"),
           h(Button, { color: "neutral", onClick: () => run((input) => input.reset()) }, () => "reset()"),
           h(Button, { color: "neutral", onClick: () => run((input) => input.focus()) }, () => "focus()"),
@@ -47,7 +50,10 @@ const InputProgrammatic = defineComponent({
         h(Input, {
           ref: inputRef,
           modelValue: value.value,
-          "onUpdate:modelValue": (next: string) => (value.value = next),
+          "onUpdate:modelValue": (next: string) => {
+            value.value = next;
+            getResult.value = next;
+          },
           placeholder: "Escribí algo",
           style: "max-width:280px",
         }),
@@ -64,16 +70,14 @@ const value = ref('')
 const inputRef = ref(null)
 const getResult = ref(null)
 
-const run = (action) => {
-  action(inputRef.value)
-  getResult.value = inputRef.value.get()
-}
-<\/script>
+const read = () => (getResult.value = inputRef.value.get())
+const run = (action) => action(inputRef.value)
+</script>
 
 <template>
   <div style="display:flex;flex-direction:column;gap:12px">
     <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <Button color="neutral" @click="run((input) => input.get())">get()</Button>
+      <Button color="neutral" @click="read()">get()</Button>
       <Button color="neutral" @click="run((input) => input.set('Hola'))">set('Hola')</Button>
       <Button color="neutral" @click="run((input) => input.reset())">reset()</Button>
       <Button color="neutral" @click="run((input) => input.focus())">focus()</Button>
@@ -82,7 +86,7 @@ const run = (action) => {
       get(): <strong>{{ getResult ?? '—' }}</strong>
       · v-model: <strong>{{ value || '—' }}</strong>
     </p>
-    <Input ref="inputRef" v-model="value" placeholder="Escribí algo" style="max-width:280px" />
+    <Input ref="inputRef" v-model="value" placeholder="Escribí algo" style="max-width:280px" @update:model-value="getResult = $event" />
   </div>
 </template>`;
 

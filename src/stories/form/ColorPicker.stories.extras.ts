@@ -23,17 +23,20 @@ const ColorPickerProgrammatic = defineComponent({
 
     const instance = () => pickerRef.value as unknown as ColorPickerInstance | null;
 
+    const read = () => {
+      const picker = instance();
+      if (picker) getResult.value = picker.get();
+    };
+
     const run = (action: (picker: ColorPickerInstance) => void) => {
       const picker = instance();
-      if (!picker) return;
-      action(picker);
-      getResult.value = picker.get();
+      if (picker) action(picker);
     };
 
     return () =>
       h("div", { class: "playground-col" }, [
         h("div", { class: "playground-row" }, [
-          h(Button, { color: "neutral", onClick: () => run((picker) => picker.get()) }, () => "get()"),
+          h(Button, { color: "neutral", onClick: read }, () => "get()"),
           h(Button, { color: "neutral", onClick: () => run((picker) => picker.set("#3b82f6")) }, () => "set('#3b82f6')"),
           h(Button, { color: "neutral", onClick: () => run((picker) => picker.reset()) }, () => "reset()"),
           h(Button, { color: "neutral", onClick: () => run((picker) => picker.focus()) }, () => "focus()"),
@@ -47,7 +50,10 @@ const ColorPickerProgrammatic = defineComponent({
         h(ColorPicker, {
           ref: pickerRef,
           modelValue: color.value,
-          "onUpdate:modelValue": (next: string) => (color.value = next),
+          "onUpdate:modelValue": (next: string) => {
+            color.value = next;
+            getResult.value = next;
+          },
         }),
       ]);
   },
@@ -62,16 +68,14 @@ const color = ref('#3b82f6')
 const picker = ref(null)
 const getResult = ref(null)
 
-const run = (action) => {
-  action(picker.value)
-  getResult.value = picker.value.get()
-}
-<\/script>
+const read = () => (getResult.value = picker.value.get())
+const run = (action) => action(picker.value)
+</script>
 
 <template>
   <div style="display:flex;flex-direction:column;gap:12px">
     <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <Button color="neutral" @click="run((picker) => picker.get())">get()</Button>
+      <Button color="neutral" @click="read()">get()</Button>
       <Button color="neutral" @click="run((picker) => picker.set('#3b82f6'))">set('#3b82f6')</Button>
       <Button color="neutral" @click="run((picker) => picker.reset())">reset()</Button>
       <Button color="neutral" @click="run((picker) => picker.focus())">focus()</Button>
@@ -80,7 +84,7 @@ const run = (action) => {
       get(): <strong>{{ getResult || '—' }}</strong>
       · v-model: <strong>{{ color }}</strong>
     </p>
-    <ColorPicker ref="picker" v-model="color" />
+    <ColorPicker ref="picker" v-model="color" @update:model-value="getResult = $event" />
   </div>
 </template>`;
 

@@ -23,7 +23,7 @@ const CheckboxProgrammatic = defineComponent({
 
     const instance = () => checkboxRef.value as unknown as CheckboxInstance | null;
 
-    const sync = () => {
+    const read = () => {
       const value = instance()?.get() ?? false;
       checked.value = value;
       getResult.value = value;
@@ -31,15 +31,13 @@ const CheckboxProgrammatic = defineComponent({
 
     const run = (action: (checkboxInstance: CheckboxInstance) => void) => {
       const checkboxInstance = instance();
-      if (!checkboxInstance) return;
-      action(checkboxInstance);
-      sync();
+      if (checkboxInstance) action(checkboxInstance);
     };
 
     return () =>
       h("div", { class: "playground-col" }, [
         h("div", { class: "playground-row" }, [
-          h(Button, { color: "neutral", onClick: sync }, () => "get()"),
+          h(Button, { color: "neutral", onClick: read }, () => "get()"),
           h(Button, { color: "neutral", onClick: () => run((cb) => cb.set(true)) }, () => "set(true)"),
           h(Button, { color: "neutral", onClick: () => run((cb) => cb.set(false)) }, () => "set(false)"),
           h(Button, { color: "neutral", onClick: () => run((cb) => cb.reset()) }, () => "reset()"),
@@ -55,8 +53,10 @@ const CheckboxProgrammatic = defineComponent({
           ref: checkboxRef,
           label: "Términos",
           modelValue: checked.value,
-          "onUpdate:modelValue": (value: boolean) => (checked.value = value),
-          onChange: sync,
+          "onUpdate:modelValue": (value: boolean) => {
+            checked.value = value;
+            getResult.value = value;
+          },
         }),
       ]);
   },
@@ -71,23 +71,20 @@ const checked = ref(false)
 const getResult = ref(null)
 const checkboxRef = ref(null)
 
-const sync = () => {
-  getResult.value = checkboxRef.value.get()
-  checked.value = checkboxRef.value.get()
-}
+const read = () => (getResult.value = checkboxRef.value.get())
 <\/script>
 
 <template>
   <div style="display:flex;flex-direction:column;gap:12px">
     <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <Button color="neutral" @click="sync()">get()</Button>
-      <Button color="neutral" @click="checkboxRef.set(true); sync()">set(true)</Button>
-      <Button color="neutral" @click="checkboxRef.set(false); sync()">set(false)</Button>
-      <Button color="neutral" @click="checkboxRef.reset(); sync()">reset()</Button>
+      <Button color="neutral" @click="read()">get()</Button>
+      <Button color="neutral" @click="checkboxRef.set(true)">set(true)</Button>
+      <Button color="neutral" @click="checkboxRef.set(false)">set(false)</Button>
+      <Button color="neutral" @click="checkboxRef.reset()">reset()</Button>
       <Button color="neutral" @click="checkboxRef.focus()">focus()</Button>
     </div>
     <p>get(): {{ getResult ?? '—' }} · v-model: {{ checked ? 'checked' : 'unchecked' }}</p>
-    <Checkbox ref="checkboxRef" v-model="checked" label="Términos" />
+    <Checkbox ref="checkboxRef" v-model="checked" label="Términos" @update:model-value="getResult = $event" />
   </div>
 </template>`;
 
