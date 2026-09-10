@@ -508,3 +508,8 @@ Cada commit incluye su entrada en la **Bitácora**.
 
 - `fix(stories)`: en `defineModel` controlado (`v-model` del padre), `set()/reset()` solo emiten `update:modelValue`; leer `get()` en el mismo tick devolvía el valor viejo y revertía el estado. Los Programmatic ahora actualizan el estado desde `onUpdate:modelValue`/eventos y `get()` solo en el botón get. Corregido en Switch, Checkbox, Textarea, Input y ColorPicker (código + snippets).
 - Verificado en navegador: `set(true)` enciende, `set(false)` apaga, `reset()` limpia.
+
+### 2026-09-10 — Paridad total de metadata + Button sin Events
+
+- Todas las stories (23/23) tienen `tokens`/`api`: se completó **FileList** a mano (era el único sin página de origen) → todas usan la StoryPage genérica con **Style + API**, igual que Button.
+- Se quitó el extra **Events** de Button (pedido): su playground queda con secciones prop-driven + Style + API. Los extras quedan solo como **Programmatic** en componentes con `defineExpose`.

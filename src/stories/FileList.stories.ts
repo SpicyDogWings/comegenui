@@ -20,6 +20,30 @@ function colorVariants(): Variant[] {
 export const cuFileListStories: ComponentStory = {
   component: "cu-file-list",
   vue: FileList,
+  tokens: [
+    '--list-ghost-hover',
+    '--list-text',
+    '--cu-font-size-sm',
+    '--cu-font-size-xs',
+    '--cu-font-weight-medium',
+    '--cu-radius',
+    '--cu-space-2xs',
+    '--cu-space-xs',
+    '--cu-space-sm',
+    '--cu-space-md',
+  ],
+  api: {
+    props: [
+      { name: 'files', type: 'File | File[] | null', default: 'null', description: 'Archivo o lista de archivos a mostrar; null no renderiza nada' },
+      { name: 'color', type: 'string', default: '"neutral"', description: 'primary, secondary, neutral, success, warning, danger' },
+      { name: 'disabled', type: 'boolean', default: 'false', description: 'Oculta los botones de remover' },
+      { name: 'maxHeight', type: 'string', default: '""', description: 'Altura máxima del contenedor (activa overflow-y: auto)' },
+    ],
+    events: [
+      { name: 'select', type: '(index: number) => void', description: 'Click en un item (índice)' },
+      { name: 'remove', type: '(index: number) => void', description: 'Click en el botón remover (índice)' },
+    ],
+  },
   sections: [
     {
       id: "items",

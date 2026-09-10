@@ -4,7 +4,6 @@
 import { defineComponent, h, ref } from "vue";
 import Button from "@/components/buttons/Button.vue";
 import type { ComponentStory } from "@/stories/types";
-import { extras } from "./Button.stories.extras";
 
 const ButtonLoadingExtra = defineComponent({
   name: "ButtonLoadingExtra",
@@ -87,7 +86,6 @@ export const cuButtonStories: ComponentStory = {
       { name: 'contextmenu', type: 'nativo', description: 'Menú contextual (click derecho)' },
     ],
   },
-  extras,
   sections: [
     {
       id: "default",
