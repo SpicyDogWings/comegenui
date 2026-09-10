@@ -161,4 +161,4 @@ Corre type-check contra `scripts/typecheck-baseline` (falla solo si hay errores 
 
 ## Tests viejos
 
-Los `X.test.ts` sin `runL1Story` son de la etapa anterior: siguen corriendo pero no dan badges ni salen de las secciones del playground. Al tocar un componente, **migralo** a story + `X.l1.test.ts` y borrá el viejo.
+Los `X.test.ts` sin `runL1Story` son de la etapa anterior: siguen corriendo pero no dan badges ni salen de las secciones del playground. Al tocar un componente, **migralo**: receta paso a paso (con Badge como ejemplo) en [`08-migrar-al-sistema-de-stories.md`](08-migrar-al-sistema-de-stories.md).

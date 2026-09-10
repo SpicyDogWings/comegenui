@@ -193,6 +193,7 @@ Tests de la capa `.vue` derivados de las secciones actuales de los playground, c
 
 - [x] Renombrar `comegen-ui-dev` → **`comegen-dev`** y partirlo en `SKILL.md` (entrada corta: flujo + DoD) + archivos de referencia (patrón de `comegen-ui-docs`).
 - [x] Referencias: `01-mapa-del-repo`, `02-crear-componente`, `03-modificar-componente`, `04-stories-y-tests`, `05-playground`, `06-build-y-validacion`, `07-documentacion`.
+- [x] `08-migrar-al-sistema-de-stories.md`: receta de migración (1f) con Badge como ejemplo trabajado (secciones, mapeo de checks, preview para la grilla, refactor de la página).
 - [x] `04-stories-y-tests.md`: contrato de story, runner L1, reporter, badges, Fases 2/3.
 - [x] `AGENTS.md`: árbol con stories/tests + puntero al playbook + sección "Tests y preflight".
 - [ ] Fase 2/3 del plan (`.ce` y `.umd`) reflejadas en `04` cuando existan.

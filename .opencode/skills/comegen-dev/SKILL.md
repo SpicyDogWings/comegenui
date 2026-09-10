@@ -13,6 +13,7 @@ Desarrollo de componentes **comegen-ui** (Vue 3 + Custom Elements + UnoCSS, UMD 
 
 - "Crear/agregar componente" → seguí el [flujo](#flujo) completo.
 - "Modificar componente" → [flujo](#flujo) + [`03-modificar-componente.md`](03-modificar-componente.md).
+- "Migrar componente al sistema de stories/tests" → [`08-migrar-al-sistema-de-stories.md`](08-migrar-al-sistema-de-stories.md).
 - "Story / testear componente" → [`04-stories-y-tests.md`](04-stories-y-tests.md) + [`06-build-y-validacion.md`](06-build-y-validacion.md).
 - "Playground" (página, sección, nav, trampas) → [`05-playground.md`](05-playground.md).
 - "Buildear la lib" / "preflight" → [`06-build-y-validacion.md`](06-build-y-validacion.md).

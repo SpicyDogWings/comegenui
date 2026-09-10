@@ -34,5 +34,5 @@ git commit -m "fix(cu-x): descripción del cambio"
 
 - **No toques el build system** (`build-lib.ts`, `vite.config.ts`, `vitest.config.ts`) en una tarea de componente.
 - **No corrijas el typo `hightContrast`** sin un plan de deprecación.
-- Si un test viejo (`.test.ts` sin runner de stories) cubre el componente y lo estás migrando, reemplazalo por `X.l1.test.ts` con las secciones de la story (no dejes los dos).
+- Si un test viejo (`.test.ts` sin runner de stories) cubre el componente y lo estás migrando, seguí la receta [`08-migrar-al-sistema-de-stories.md`](08-migrar-al-sistema-de-stories.md): `X.l1.test.ts` con las secciones de la story (no dejes los dos).
 - Si encontrás un problema no relacionado, registralo en `docs/notes/` en vez de arreglarlo de prepo.
