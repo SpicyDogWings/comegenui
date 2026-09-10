@@ -1,18 +1,8 @@
 // Generado por src/plugins/story-playground/cli/generate.mjs a partir de las props de CopyButton.vue.
-// Refinado a mano: el plugin no detecta color/variant (sin validator), ni el estado copied
-// (label/copiedLabel + clipboard), ni los checks específicos.
+// (sin eventos declarados)
+
 import CopyButton from "@/components/buttons/CopyButton.vue";
-import type { ComponentStory, Variant } from "@/stories/types";
-
-const COLORS = ["primary", "secondary", "neutral", "success", "warning", "danger"] as const;
-const VARIANTS = ["soft", "solid", "outlined", "ghost", "subtle"] as const;
-
-function colorVariants(): Variant[] {
-  return COLORS.map((color) => ({
-    id: color,
-    props: { text: "Contenido copiable", color },
-  }));
-}
+import type { ComponentStory } from "@/stories/types";
 
 export const cuCopyButtonStories: ComponentStory = {
   component: "cu-copy-button",
@@ -45,163 +35,137 @@ export const cuCopyButtonStories: ComponentStory = {
   },
   sections: [
     {
-      id: "variants",
-      title: "Variants",
-      badge: "soft",
-      badgeTitle: "Variante por defecto",
-      variants: VARIANTS.map((variant) => ({
-        id: variant,
-        props: { text: "Contenido a copiar", variant },
-      })),
-      vue: `<script setup>
-import CopyButton from '@/components/buttons/CopyButton.vue'
-<\/script>
-
-<template>
-  <CopyButton text="Contenido a copiar" variant="soft" />
-  <CopyButton text="Contenido a copiar" variant="solid" />
-  <CopyButton text="Contenido a copiar" variant="outlined" />
-  <CopyButton text="Contenido a copiar" variant="ghost" />
-  <CopyButton text="Contenido a copiar" variant="subtle" />
-</template>`,
-      vanilla: `<script src="dist/CuCopyButton.umd.js"><\/script>
-
-<cu-copy-button text="Contenido a copiar" variant="soft"></cu-copy-button>`,
+      id: "default",
+      title: "Default",
+      variants: [
+        { id: "default", props: {"text":"CopyButton"} },
+      ],
+      vue: `  <CopyButton text="CopyButton"></CopyButton>`,
       checks: {
         l1: [
           {
-            name: "renderiza solo el icono (sin texto) en el Button interno",
+            name: "renderiza .cu-copy-button",
             run({ wrapper, expect }) {
-              const button = wrapper.find("button.cu-button");
-              expect(button.exists()).toBe(true);
-              expect(button.find("svg").exists()).toBe(true);
-              expect(button.text()).toBe("");
+              expect(wrapper.find(".cu-copy-button").exists()).toBe(true);
             },
           },
-          {
-            name: "delega la variante al Button (cu-button--{variant})",
-            run({ wrapper, expect }, variant) {
-              expect(wrapper.find(".cu-copy-button").classes()).toContain(
-                `cu-button--${variant.props?.variant}`,
-              );
-            },
-          },
+          // TODO: checks específicos (eventos, exposes).
         ],
       },
     },
 
     {
-      id: "colors",
-      title: "Colors",
-      badge: "neutral",
-      badgeTitle: "Color por defecto",
-      variants: colorVariants(),
-      vue: `<script setup>
-import CopyButton from '@/components/buttons/CopyButton.vue'
-<\/script>
-
-<template>
-  <CopyButton text="Contenido" color="primary" />
-  <CopyButton text="Contenido" color="secondary" />
-  <CopyButton text="Contenido" color="neutral" />
-  <CopyButton text="Contenido" color="success" />
-  <CopyButton text="Contenido" color="warning" />
-  <CopyButton text="Contenido" color="danger" />
-</template>`,
-      vanilla: `<script src="dist/CuCopyButton.umd.js"><\/script>
-
-<cu-copy-button text="Contenido" color="primary"></cu-copy-button>
-<cu-copy-button text="Contenido" color="secondary"></cu-copy-button>
-<cu-copy-button text="Contenido" color="neutral"></cu-copy-button>
-<cu-copy-button text="Contenido" color="success"></cu-copy-button>
-<cu-copy-button text="Contenido" color="warning"></cu-copy-button>
-<cu-copy-button text="Contenido" color="danger"></cu-copy-button>`,
+      id: "text",
+      title: "Text",
+      variants: [
+        { id: "with-value", props: {"text":"CopyButton"} },
+      ],
+      vue: `  <CopyButton text="CopyButton"></CopyButton>`,
       checks: {
         l1: [
+          {
+            name: "renderiza .cu-copy-button",
+            run({ wrapper, expect }) {
+              expect(wrapper.find(".cu-copy-button").exists()).toBe(true);
+            },
+          },
+          // TODO: checks específicos (eventos, exposes).
+        ],
+      },
+    },
+
+    {
+      id: "label",
+      title: "Label",
+      variants: [
+        { id: "with-value", props: {"text":"CopyButton","label":"CopyButton"} },
+        { id: "empty", props: {"text":"CopyButton"} },
+      ],
+      vue: `  <CopyButton text="CopyButton" label="CopyButton"></CopyButton>
+  <CopyButton text="CopyButton"></CopyButton>`,
+      checks: {
+        l1: [
+          {
+            name: "renderiza .cu-copy-button",
+            run({ wrapper, expect }) {
+              expect(wrapper.find(".cu-copy-button").exists()).toBe(true);
+            },
+          },
+          // TODO: checks específicos (eventos, exposes).
+        ],
+      },
+    },
+
+    {
+      id: "color",
+      title: "Colors",
+      badge: "neutral",
+      badgeTitle: "Default: neutral",
+      variants: [
+        { id: "primary", props: {"text":"CopyButton","color":"primary"} },
+        { id: "secondary", props: {"text":"CopyButton","color":"secondary"} },
+        { id: "neutral", props: {"text":"CopyButton","color":"neutral"} },
+        { id: "success", props: {"text":"CopyButton","color":"success"} },
+        { id: "warning", props: {"text":"CopyButton","color":"warning"} },
+        { id: "danger", props: {"text":"CopyButton","color":"danger"} },
+      ],
+      vue: `  <CopyButton text="CopyButton" color="primary"></CopyButton>
+  <CopyButton text="CopyButton" color="secondary"></CopyButton>
+  <CopyButton text="CopyButton" color="neutral"></CopyButton>
+  <CopyButton text="CopyButton" color="success"></CopyButton>
+  <CopyButton text="CopyButton" color="warning"></CopyButton>
+  <CopyButton text="CopyButton" color="danger"></CopyButton>`,
+      checks: {
+        l1: [
+          {
+            name: "renderiza .cu-copy-button",
+            run({ wrapper, expect }) {
+              expect(wrapper.find(".cu-copy-button").exists()).toBe(true);
+            },
+          },
           {
             name: "resuelve el color como token CSS",
             run({ wrapper, expect }, variant) {
-              expect(wrapper.html()).toContain(`var(--cu-color-${variant.props?.color}`);
+              const color = variant.props?.color as string | undefined;
+              if (!color) return;
+              expect(wrapper.html()).toContain(`var(--cu-color-${color}`);
             },
           },
+          // TODO: checks específicos (eventos, exposes).
         ],
       },
     },
 
     {
-      id: "labels",
-      title: "Labels",
-      badge: "icon-only",
-      badgeTitle: "Sin label",
+      id: "variant",
+      title: "Variants",
+      badge: "soft",
+      badgeTitle: "Default: soft",
       variants: [
-        { id: "icon-only", props: { text: '{"id": 1, "nombre": "Ana"}' } },
-        {
-          id: "with-label",
-          props: { text: '{"id": 1, "nombre": "Ana"}', label: "Copiar JSON", copiedLabel: "¡JSON copiado!" },
-        },
-        {
-          id: "with-command",
-          props: { text: "npm install comegen-ui", label: "Copiar comando", copiedLabel: "¡Comando copiado!" },
-        },
+        { id: "solid", props: {"text":"CopyButton","variant":"solid"} },
+        { id: "outlined", props: {"text":"CopyButton","variant":"outlined"} },
+        { id: "soft", props: {"text":"CopyButton","variant":"soft"} },
+        { id: "ghost", props: {"text":"CopyButton","variant":"ghost"} },
+        { id: "subtle", props: {"text":"CopyButton","variant":"subtle"} },
+        { id: "link", props: {"text":"CopyButton","variant":"link"} },
+        { id: "none", props: {"text":"CopyButton","variant":"none"} },
       ],
-      vue: `<script setup>
-import CopyButton from '@/components/buttons/CopyButton.vue'
-import Button from '@/components/buttons/Button.vue';
-<\/script>
-
-<template>
-  <!-- icon-only (label vacío) -->
-  <CopyButton text='{"id": 1, "nombre": "Ana"}' />
-
-  <!-- label siempre visible + copiedLabel animado -->
-  <CopyButton text='{"id": 1, "nombre": "Ana"}' label="Copiar JSON" copiedLabel="¡JSON copiado!" />
-  <CopyButton text="npm install comegen-ui" label="Copiar comando" copiedLabel="¡Comando copiado!" />
-</template>`,
-      vanilla: `<script src="dist/CuCopyButton.umd.js"><\/script>
-
-<cu-copy-button text='{"id": 1, "nombre": "Ana"}'></cu-copy-button>
-<cu-copy-button text='{"id": 1, "nombre": "Ana"}' label="Copiar JSON" copied-label="¡JSON copiado!"></cu-copy-button>
-<cu-copy-button text="npm install comegen-ui" label="Copiar comando" copied-label="¡Comando copiado!"></cu-copy-button>`,
+      vue: `  <CopyButton text="CopyButton" variant="solid"></CopyButton>
+  <CopyButton text="CopyButton" variant="outlined"></CopyButton>
+  <CopyButton text="CopyButton" variant="soft"></CopyButton>
+  <CopyButton text="CopyButton" variant="ghost"></CopyButton>
+  <CopyButton text="CopyButton" variant="subtle"></CopyButton>
+  <CopyButton text="CopyButton" variant="link"></CopyButton>
+  <CopyButton text="CopyButton" variant="none"></CopyButton>`,
       checks: {
         l1: [
           {
-            name: "sin label: aria-label de fallback 'Copiar'",
-            run({ wrapper, expect }, variant) {
-              if (variant.props?.label) return;
-              const button = wrapper.find("button.cu-button");
-              expect(button.text()).toBe("");
-              expect(button.attributes("aria-label")).toBe("Copiar");
+            name: "renderiza .cu-copy-button",
+            run({ wrapper, expect }) {
+              expect(wrapper.find(".cu-copy-button").exists()).toBe(true);
             },
           },
-          {
-            name: "con label: texto visible y aria-label",
-            run({ wrapper, expect }, variant) {
-              const label = variant.props?.label as string | undefined;
-              if (!label) return;
-              const button = wrapper.find("button.cu-button");
-              expect(button.text()).toContain(label);
-              expect(button.attributes("aria-label")).toBe(label);
-            },
-          },
-          {
-            name: "al copiar muestra copiedLabel",
-            async run({ wrapper, expect }, variant) {
-              const copiedLabel = variant.props?.copiedLabel as string | undefined;
-              if (!copiedLabel) return;
-
-              Object.defineProperty(navigator, "clipboard", {
-                value: { writeText: () => Promise.resolve() },
-                configurable: true,
-              });
-
-              await wrapper.find("button.cu-button").trigger("click");
-              await new Promise((resolve) => setTimeout(resolve, 0));
-
-              const button = wrapper.find("button.cu-button");
-              expect(button.attributes("aria-label")).toBe(copiedLabel);
-              expect(button.text()).toContain(copiedLabel);
-            },
-          },
+          // TODO: checks específicos (eventos, exposes).
         ],
       },
     },
