@@ -1,5 +1,6 @@
 import Checkbox from "@/components/form/Checkbox.vue";
 import type { ComponentStory, Variant } from "@/stories/types";
+import { extras } from "./Checkbox.stories.extras";
 
 const COLORS = ["primary", "secondary", "neutral", "success", "warning", "danger"] as const;
 
@@ -13,6 +14,7 @@ function colorVariants(): Variant[] {
 export const cuCheckboxStories: ComponentStory = {
   component: "cu-checkbox",
   vue: Checkbox,
+  extras,
   tokens: [
     '--cb-bg',
     '--cb-ghost-hover',

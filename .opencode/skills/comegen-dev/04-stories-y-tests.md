@@ -45,10 +45,10 @@ Refiná con **`X.stories.config.json`** (hermano de la story):
 
 **Extras** (`X.stories.extras.ts`, exporta `extras: StoryExtra[]`):
 
-| Extra | Qué es | Ejemplo |
+| Extra | Qué es | Cuándo |
 |---|---|---|
-| **Programmatic** | Patio de los **exposes** (o v-model): botones neutrales + estado en vivo + instancia | `Collapse.stories.extras.ts` |
-| **Events** | Patio de **eventos** (nativos + `ceEmit` con `e.detail`) con log en vivo | `Button.stories.extras.ts` |
+| **Programmatic** | Patio de los **exposes**: botones neutrales + estado en vivo + instancia | **Solo si el componente usa `defineExpose`**. Si no expone métodos, **no** lleva Programmatic (no crearlo "por crear"). Ej: `Collapse`, `Alert`, `Input`. |
+| **Events** | Patio de **eventos** (nativos + `ceEmit` con `e.detail`) con log en vivo | Si emite eventos propios (`emits`/`ceEmit`) o nativos relevantes. Ej: `Button`. |
 
 El generador importa el archivo de extras si existe y lo agrega a la story sin pisarlo. El generador **no** toca estos archivos ni el config.
 

@@ -1,5 +1,6 @@
 import Switch from "@/components/form/Switch.vue";
 import type { ComponentStory, Variant } from "@/stories/types";
+import { extras } from "./Switch.stories.extras";
 
 const COLORS = ["primary", "secondary", "neutral", "success", "warning", "danger"] as const;
 
@@ -14,6 +15,7 @@ function colorVariants(): Variant[] {
 export const cuSwitchStories: ComponentStory = {
   component: "cu-switch",
   vue: Switch,
+  extras,
   tokens: [
     '--switch-bg',
     '--switch-ghost-hover',

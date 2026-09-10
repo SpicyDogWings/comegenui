@@ -496,3 +496,10 @@ Cada commit incluye su entrada en la **Bitácora**.
 - `feat(stories)`: `--meta-only` aplicado a las 21 stories que faltaban (CopyButton, FloatingButton, ToggleColorSheme, Badge, Alert, Card, Avatar, Loader, AuthorCard, Label, Switch, Checkbox, Textarea, Input, ColorPicker, Tooltip, SideOver, Tabs, Pagination, NavbarHorizontal) → ahora **todas usan la StoryPage genérica**.
 - Preflight verde (978 tests) tras la extracción de `tokens`/`subComponents`/`api` desde las páginas.
 - Pendiente inmediato: reponer los **Programmatic** de 14 de esas páginas como `X.stories.extras.ts` (el resto no tenía).
+
+### 2026-09-10 — Programmatic solo con `defineExpose`
+
+- Regla: **Programmatic solo si el componente usa `defineExpose`** (no por v-model ni "por crear"). Events es aparte (para eventos propios/nativos relevantes).
+- Se quitaron los extras de **Pagination, SideOver, AuthorCard, Avatar, Badge, Card y Loader** (sin exposes) y se revirtieron sus stories al estado con metadata.
+- Quedan Programmatic en **Alert, Checkbox, ColorPicker, Input, Switch, Textarea, Tabs y Collapse**; Events en **Button**.
+- Preflight verde: 978 tests, type-check 221. Regla documentada en `04`, `05` y el README del plugin.

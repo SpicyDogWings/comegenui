@@ -1,9 +1,11 @@
 import ColorPicker from "@/components/form/ColorPicker.vue";
 import type { ComponentStory } from "@/stories/types";
+import { extras } from "./ColorPicker.stories.extras";
 
 export const cuColorPickerStories: ComponentStory = {
   component: "cu-color-picker",
   vue: ColorPicker,
+  extras,
   tokens: [
     '--cp-subtle-border',
     '--cu-font-sans',

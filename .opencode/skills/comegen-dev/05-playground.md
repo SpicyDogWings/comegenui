@@ -13,7 +13,7 @@ El plugin `src/plugins/story-playground/` registra la ruta dinámica `/playgroun
 
 ### Extras (patio de juegos)
 
-- **Programmatic**: botones `Button color="neutral"` sobre una instancia (`ref`), una acción por botón, línea `playground-state` con los getters/v-model en vivo, y el componente al final. Ej: `src/stories/overlay/Collapse.stories.extras.ts`.
+- **Programmatic**: **solo si el componente usa `defineExpose`**. Botones `Button color="neutral"` sobre una instancia (`ref`), una acción por botón, línea `playground-state` con los getters en vivo, y el componente al final. Si no expone métodos, no se crea. Ej: `src/stories/overlay/Collapse.stories.extras.ts`, `src/stories/information/Alert.stories.extras.ts`.
 - **Events**: una instancia y un log en vivo de los eventos (nativos + `ceEmit` con `e.detail`). Ej: `src/stories/buttons/Button.stories.extras.ts`.
 - Se pintan como sección propia después de las secciones de la story.
 

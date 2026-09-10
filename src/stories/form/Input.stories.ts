@@ -10,10 +10,12 @@
 // Secciones que quedan en la página (no van a la story): programmatic, api
 import Input from "@/components/form/Input.vue";
 import type { ComponentStory } from "@/stories/types";
+import { extras } from "./Input.stories.extras";
 
 export const cuInputStories: ComponentStory = {
   component: "cu-input",
   vue: Input,
+  extras,
   tokens: [
     '--btn-bg',
     '--btn-bg-hover',

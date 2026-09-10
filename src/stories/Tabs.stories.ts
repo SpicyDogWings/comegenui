@@ -1,5 +1,6 @@
 import Tabs from "@/components/Tabs.vue";
 import type { ComponentStory, Variant } from "@/stories/types";
+import { extras } from "./Tabs.stories.extras";
 
 const COLORS = ["primary", "secondary", "neutral", "success", "warning", "danger"] as const;
 
@@ -29,6 +30,7 @@ function colorVariants(): Variant[] {
 export const cuTabsStories: ComponentStory = {
   component: "cu-tabs",
   vue: Tabs,
+  extras,
   tokens: [
     '--tabs-color',
     '--tabs-soft',

@@ -2,6 +2,7 @@ import { defineComponent, h, nextTick, ref } from "vue";
 import Alert from "@/components/information/Alert.vue";
 import Button from "@/components/buttons/Button.vue";
 import type { ComponentStory, Variant } from "@/stories/types";
+import { extras } from "./Alert.stories.extras";
 
 const COLORS = ["primary", "secondary", "neutral", "success", "warning", "danger"] as const;
 const VARIANTS = ["solid", "soft", "ghost", "subtle", "outlined"] as const;
@@ -43,6 +44,7 @@ function colorVariants(): Variant[] {
 export const cuAlertStories: ComponentStory = {
   component: "cu-alert",
   vue: Alert,
+  extras,
   tokens: [
     '--alert-bg',
     '--alert-text',

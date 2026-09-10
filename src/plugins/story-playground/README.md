@@ -26,7 +26,7 @@ Específicas de la estructura de este repo; viven en `tools/` y `scripts/`:
 
 - **Config por componente**: `src/stories/{cat}/X.stories.config.json`.
 - **Extras por componente**: `src/stories/{cat}/X.stories.extras.ts` → `StoryExtra[]`:
-  - **Programmatic** = patio de los **exposes**/v-model.
+  - **Programmatic** = patio de los **exposes**; solo si el componente usa `defineExpose`.
   - **Events** = patio de **eventos** (nativos + `ceEmit` con `detail`).
 - El generador **no pisa** la story existente (salvo `--force`) ni el archivo de extras.
 

@@ -1,5 +1,6 @@
 import Textarea from "@/components/form/Textarea.vue";
 import type { ComponentStory, Variant } from "@/stories/types";
+import { extras } from "./Textarea.stories.extras";
 
 const COLORS = ["primary", "secondary", "neutral", "success", "warning", "danger"] as const;
 
@@ -13,6 +14,7 @@ function colorVariants(extra: Record<string, unknown> = {}): Variant[] {
 export const cuTextareaStories: ComponentStory = {
   component: "cu-textarea",
   vue: Textarea,
+  extras,
   tokens: [
     '--btn-bg',
     '--btn-bg-hover',
