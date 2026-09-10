@@ -1,15 +1,23 @@
 # AGENTS.md — Arquitectura de Componentes ComegenUI
 
+> **Para desarrollar componentes, seguí el playbook `.opencode/skills/comegen-dev/SKILL.md`** (flujo de 8 pasos + Definición de terminado). Gate local: `./scripts/preflight.sh`. Documentar: skill `comegen-ui-docs`. Consumir la lib en otro proyecto: skill de uso `comegen-ui`.
+
 ## Estructura de directorios
 
 ```
 src/
 ├── components/
 │   ├── {category}/MiComponente.vue        # Lógica real del componente
+│   ├── {category}/MiComponente.stories.ts # Story: secciones + checks de test
+│   ├── {category}/MiComponente.l1.test.ts # Test capa L1 (runner de stories)
 │   ├── customElements/{category}/MiComponente.ce.vue  # Wrapper CE (thin)
 │   └── ...otrascarpetas (icons, theme, lab, archived, legacy)
 ├── lib/
 │   └── {category}/mi-componente.ts        # Entry point: defineCustomElement + registro
+├── stories/
+│   ├── types.ts                           # Contrato ComponentStory/Section/Variant
+│   └── runner.l1.ts                       # Runner capa L1 (.vue, jsdom)
+├── pages/playground/                      # Playground (StoryRenderer + badges)
 ├── config/
 │   └── theme.ts                           # Definiciones estáticas de temas
 ├── plugins/cu-tokens/                     # Sistema de tokens CSS
@@ -219,6 +227,12 @@ Tokens compartidos: tipografía, spacing, border-radius, shadows, borders.
 - Genera `dist/css/themes.css` + `dist/css/{theme}.css`
 - Crea zip versionado: `comegenui-v{version}.zip`
 - **El zip SIEMPRE incluye la skill de uso** `use-comegen/` (`SKILL.md` + `componentes/`) al lado de los archivos de la lib — viaja con la lib para que los agentes del proyecto consumidor tengan la doc. Solo la de uso; no la de desarrollo ni la de documentar. Incluye también `update.sh` (Linux/macOS: `./update.sh`), `update.bat` (Windows: `update.bat` — doble clic o desde cmd, evade ExecutionPolicy) y `update.ps1` (alternativa PowerShell: `.\update.ps1`) — actualizadores del proyecto huésped que además instalan la skill de uso en `.agents/skills/` del proyecto. Los tres aceptan `--only`/`-Only CuX[,CuY]` (alias `-o`) para actualizar solo algunos componentes: sin esa opción reemplazan toda la carpeta de forma atómica; con ella copian únicamente los UMD elegidos + su doc (`use-comegen/componentes/cu-*.md`), sin tocar `css/themes.css` ni el resto
+
+### Tests y preflight
+
+- Los tests salen de las **stories** (`X.stories.ts`) por capa; la capa L1 corre en jsdom (`pnpm run test:l1`). Ver `.opencode/skills/comegen-dev/04-stories-y-tests.md`.
+- Gate local antes de un MR: `./scripts/preflight.sh` (type-check contra baseline + L1).
+- El reporter escribe `public/test-results.json`, que el playground pinta como badges ✅/❌ por sección.
 
 ---
 

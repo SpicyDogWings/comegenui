@@ -189,6 +189,16 @@ Tests de la capa `.vue` derivados de las secciones actuales de los playground, c
 
 ---
 
+## Extra — Playbook `comegen-dev` (reestructura de la skill de desarrollo)
+
+- [x] Renombrar `comegen-ui-dev` → **`comegen-dev`** y partirlo en `SKILL.md` (entrada corta: flujo + DoD) + archivos de referencia (patrón de `comegen-ui-docs`).
+- [x] Referencias: `01-mapa-del-repo`, `02-crear-componente`, `03-modificar-componente`, `04-stories-y-tests`, `05-playground`, `06-build-y-validacion`, `07-documentacion`.
+- [x] `04-stories-y-tests.md`: contrato de story, runner L1, reporter, badges, Fases 2/3.
+- [x] `AGENTS.md`: árbol con stories/tests + puntero al playbook + sección "Tests y preflight".
+- [ ] Fase 2/3 del plan (`.ce` y `.umd`) reflejadas en `04` cuando existan.
+
+---
+
 ## Convención de commits
 
 Atómicos, uno por paso:
@@ -259,3 +269,9 @@ Cada commit incluye su entrada en la **Bitácora**.
 - `test(ui)`: `StoryRenderer.vue` pinta el badge por sección.
 - Verificado en dev server: secciones en ✅ con conteo; rompiendo un check a propósito → ❌ + tooltip con el error; revertido a verde.
 - Suite completa: 37 archivos / 386 tests; type-check sin errores nuevos (225 baseline).
+
+### 2026-09-10 — Playbook `comegen-dev`
+
+- `docs(skill)`: `comegen-ui-dev` → `comegen-dev`, partido en `SKILL.md` (flujo de 8 pasos + DoD) + `01`…`07` de referencia.
+- `docs(skill)`: nuevo `04-stories-y-tests.md` con el sistema de stories/tests por capas y el reporter.
+- `docs(agents)`: `AGENTS.md` con el árbol actualizado (stories/tests/playground), puntero al playbook y sección "Tests y preflight".
