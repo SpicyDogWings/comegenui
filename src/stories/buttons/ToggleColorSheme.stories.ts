@@ -1,3 +1,6 @@
+// Generado por src/plugins/story-playground/cli/generate.mjs y refinado a mano:
+// el plugin no incluye el setup del theme (Pinia + init/registerTheme) ni el
+// toggling light/dark, que son el comportamiento real del componente.
 import { nextTick } from "vue";
 import { createPinia } from "pinia";
 import { init, registerTheme, setTheme } from "@/plugins/cu-tokens";
@@ -5,7 +8,7 @@ import ToggleColorSheme from "@/components/buttons/ToggleColorSheme.vue";
 import type { ComponentStory } from "@/stories/types";
 
 function stubMatchMedia(): void {
-  if (window.matchMedia) return;
+  if (typeof window.matchMedia === "function") return;
   window.matchMedia = ((query: string) => ({
     matches: false,
     media: query,
@@ -31,7 +34,7 @@ export const cuToggleColorShemeStories: ComponentStory = {
       { name: 'click', type: 'nativo', description: 'Alterna entre el tema light y dark (persiste en localStorage)' },
     ],
   },
-  async setup() {
+  setup: async () => {
     // El plugin real necesita init(); en jsdom el fetch falla y cae a defaults.
     // Registramos dark y arrancamos siempre en claro.
     stubMatchMedia();
