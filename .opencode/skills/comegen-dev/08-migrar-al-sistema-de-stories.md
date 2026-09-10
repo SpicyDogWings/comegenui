@@ -198,6 +198,26 @@ export const cuBadgeStories: ComponentStory = {
 };
 ```
 
+## Migración en paralelo (lotes)
+
+Cuando hay varios componentes para migrar, **un subagente por componente en paralelo** multiplica la velocidad. Cada uno escribe archivos distintos (story, test y página de su componente), así que no hay conflictos; el orquestador valida y commitea por componente.
+
+**Prompt base para cada subagente** (adaptar nombre y categoría):
+
+> Estás en el repo comegen-ui. Migrá el componente **X** al sistema de stories/tests L1. NO hagas commit ni toques archivos fuera de los indicados.
+> 1. Leé `.opencode/skills/comegen-dev/04-stories-y-tests.md` y `08-migrar-al-sistema-de-stories.md`.
+> 2. `pnpm run stories:migrate X` (si falla o queda pobre, escribí la story a mano).
+> 3. Completá `src/stories/{cat}/X.stories.ts` (secciones = casos del playground, variants, `checks.l1`), creá `X.l1.test.ts` con `runL1Story`, y refactorizá `src/pages/playground/components/X.vue` a `StoryRenderer` (conservando Programmatic/Style/API).
+> 4. `pnpm exec vitest run --project l1 src/stories/{cat}/X.l1.test.ts` hasta verde.
+> 5. Reportá archivos, cantidad de checks, resultado y bloqueos.
+
+**Orquestador:** al terminar todos, correr `./scripts/preflight.sh <X>` por componente; si da verde, commit atómico `test(l1/x): migrar X al sistema de stories`; al cierre, `./scripts/preflight.sh` completo y ratchet del baseline si bajó.
+
+Reglas del lote:
+- Los subagentes **no commitean**; el orquestador revisa y commitea.
+- Un componente con interacciones difíciles (v-for, slots nombrados, teleport, Pinia) puede requerir ajustes del orquestador.
+- Si un subagente reporta errores de type-check ajenos, correr el preflight completo antes de asumir que son propios.
+
 ## Pitfalls
 
 - **Preview distinto**: si la tabla/grilla no se puede expresar con `variants`, usá `preview`; no deformes el demo para que entre en el loop.
