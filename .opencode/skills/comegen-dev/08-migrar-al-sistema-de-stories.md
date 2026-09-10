@@ -14,7 +14,7 @@ ls src/pages/playground/components/X.vue            # página actual (a refactor
 ls docs/skills/use-comegen/componentes/cu-x.md      # doc existente
 ```
 
-> **Atajo mecánico:** `pnpm run stories:migrate X` genera `src/stories/{category}/X.stories.ts` + `X.l1.test.ts` con las secciones, títulos, snippets y la lista de tests viejos a mapear. Lo que queda con `TODO` es lo semántico (variants y checks) y el refactor de la página.
+> **Atajo mecánico:** `pnpm run stories:migrate X` genera `src/stories/{category}/X.stories.ts` + `X.l1.test.ts` con las **secciones, snippets, variants y checks genéricos** (raíz, variant, color, slot) ya armados a partir de la página. Deja `TODO` solo en lo específico (eventos, exposes, `v-for`, slots nombrados) y lo marca en el reporte. Con eso, un componente simple pasa sus tests sin ediciones.
 
 ## 1. Extraer las secciones del playground
 
@@ -24,7 +24,7 @@ Para **Badge**: `variants`, `colors`, `combinations`, `programmatic` (esta últi
 
 ## 2. Escribir la story `X.stories.ts`
 
-Si usaste `pnpm run stories:migrate X`, este paso ya trae secciones y snippets: completá los `variants` (una fila por demo), los `checks.l1` y, si hay grilla/tabla, el `preview`.
+Si usaste `pnpm run stories:migrate X`, ya trae secciones, snippets, variants y checks genéricos: corré `pnpm exec vitest run --project l1 src/stories/{category}/X.l1.test.ts` y revisá el reporte de TODOs (eventos, exposes, `v-for`, slots nombrados). Agregá solo los checks específicos que falten.
 
 - `variants`: una fila por demo (los mismos valores que muestra el playground).
 - Snippets: moverlos tal cual; una misma sección no comparte snippet con otra salvo que el demo sea idéntico.
@@ -78,8 +78,8 @@ Patrón completo en [`05-playground.md`](05-playground.md).
 ## 6. Validar
 
 ```bash
-./scripts/preflight.sh
-pnpm dev      # /playground/components/x → badges ✅ por sección, preview igual al anterior
+./scripts/preflight.sh X     # scopeado (~8s): type-check + solo el L1 del componente
+pnpm dev                     # /playground/components/x → badges ✓ por sección
 ```
 
 Si el preview cambió respecto del viejo, o el badge no da ✅, no está migrado.

@@ -117,9 +117,11 @@ Comandos:
 
 ```bash
 pnpm run test:l1                 # capa L1 completa (project "l1")
+pnpm run test:l1 -- Card         # solo un componente (filtro por nombre)
 pnpm run test:watch              # modo watch
 pnpm run stories:status          # inventario: stories/tests/badges por componente
-pnpm run stories:migrate X       # genera el esqueleto de story+test de un componente existente
+pnpm run stories:migrate X       # genera story+test con variants y checks genéricos
+./scripts/preflight.sh X         # type-check + solo el L1 de X (~8s)
 pnpm exec vitest run --project l1 src/stories/buttons/Button.l1.test.ts
 ```
 
@@ -140,7 +142,7 @@ pnpm exec vitest run --project l1 src/stories/buttons/Button.l1.test.ts
 }
 ```
 
-El playground lo lee con `useTestResults()` y pinta el badge ✅/❌ por sección (`TestResultBadge.vue`, usado por `StoryRenderer.vue`). Si el archivo no existe: "sin correr". El `title` del badge lista los checks fallidos con su error.
+El playground lo lee con `useTestResults()` y pinta el badge por sección (`TestResultBadge.vue`, usado por `StoryRenderer.vue`): `✓ N` si todo pasa, `✗ fallos/total` si hay fallos, `—` si la sección no tiene tests o no se corrió el preflight. El `title` del badge lista los checks fallidos con su error.
 
 > El reporter **solo** cuenta tests con `meta`; los tests viejos (sin story) no aparecen en los badges.
 

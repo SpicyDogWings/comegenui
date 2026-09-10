@@ -71,9 +71,10 @@ Si falta cualquiera, decilo explícitamente en el reporte; no lo tapes con "el c
 | Comando | Para qué |
 |---|---|
 | `pnpm run stories:status` | Inventario: qué componentes tienen story/test/página/badges y cuáles faltan migrar. |
-| `pnpm run stories:migrate <X>` | Genera el esqueleto de story + test L1 de un componente existente (secciones, snippets, tests viejos a mapear). |
+| `pnpm run stories:migrate <X>` | Genera story + test L1 con **secciones, snippets, variants y checks genéricos** ya armados (deja TODO solo en lo específico). |
 | `pnpm run new:component <X> <category> [--internal]` | Scaffold de componente nuevo: `.vue` + `.ce.vue` + `lib/` + story + test. |
-| `./scripts/preflight.sh` | Gate local (type-check contra baseline + L1). |
+| `./scripts/preflight.sh` | Gate local completo (type-check contra baseline + todos los tests L1). |
+| `./scripts/preflight.sh <X>` | Gate **scopeado**: type-check + solo el test L1 de `<X>` (~8s). |
 
 ## Mapa rápido
 

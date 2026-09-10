@@ -203,8 +203,10 @@ Tests de la capa `.vue` derivados de las secciones actuales de los playground, c
 ## Extra — Eficiencia (herramientas)
 
 - [x] `pnpm run stories:status` — inventario de componentes (público/página/story/test viejo/badges).
-- [x] `pnpm run stories:migrate X` — esqueleto de story + test L1 desde la página del playground (secciones, títulos, snippets, tests viejos a mapear).
+- [x] `pnpm run stories:migrate X` — story + test L1 con secciones, snippets, **variants y checks genéricos** automáticos; marca los TODO (v-for, slots nombrados, dinámicos).
 - [x] `pnpm run new:component X <category> [--internal]` — scaffold de componente nuevo (`.vue` + `.ce.vue` + `lib/` + story + test).
+- [x] `./scripts/preflight.sh X` — preflight scopeado a un componente (~8s).
+- [x] Badge del playground sin la palabra "tests": `✓ N` / `✗ fallos/total`.
 - [ ] Migrar el resto de 1f usando las herramientas (idealmente en paralelo por lotes).
 - [x] `04-stories-y-tests.md`: contrato de story, runner L1, reporter, badges, Fases 2/3.
 - [x] `AGENTS.md`: árbol con stories/tests + puntero al playbook + sección "Tests y preflight".
@@ -324,3 +326,9 @@ Cada commit incluye su entrada en la **Bitácora**.
 - Preview interactivo de `toggle` (v-model:show) preservado con `preview`.
 - **Métricas:** tool <1s · story + checks + página + test **~51s** · preflight (type-check + 468 tests) **21s** · total **~1m 16s**.
 - Verificado en navegador: 6 secciones ✅, 17 alerts renderizados, 0 errores de consola.
+
+### 2026-09-10 — Herramientas v2 + preflight scopeado + badge
+
+- `feat(tools)`: `stories:migrate` ahora extrae **variants** del markup (props estáticos, booleanos, atómicos, interpolación `{{ prop }}`) y genera **checks genéricos** (raíz, variant, color, slot). Marca TODO: `v-for`, slots nombrados, atributos dinámicos.
+- `feat(preflight)`: `./scripts/preflight.sh <X>` corre type-check + solo el L1 del componente; `--no-typecheck` disponible. Full: 20s → scoped: ~8s.
+- `fix(ui)`: badge del playground sin "tests": `✓ N` / `✗ fallos/total` (tooltip con el detalle).

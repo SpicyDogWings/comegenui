@@ -16,16 +16,18 @@ const sectionResult = computed(
   () => results.value?.components[props.component]?.sections[props.section],
 );
 
-const label = computed(() => {
-  if (!available.value) return loaded.value ? "sin correr" : "…";
-  const status = sectionResult.value?.status;
-  if (!status) return "sin tests";
-  return status === "passed" ? "tests ✓" : "tests ✗";
-});
-
-const color = computed(() => {
-  if (!available.value || !sectionResult.value) return "neutral";
-  return sectionResult.value.status === "passed" ? "success" : "danger";
+const totals = computed(() => {
+  const result = sectionResult.value;
+  if (!result) return { total: 0, failed: 0 };
+  let total = 0;
+  let failed = 0;
+  for (const variant of Object.values(result.variants)) {
+    for (const check of variant.checks) {
+      total++;
+      if (check.status === "failed") failed++;
+    }
+  }
+  return { total, failed };
 });
 
 const failures = computed(() => {
@@ -41,15 +43,23 @@ const failures = computed(() => {
   return list;
 });
 
+const label = computed(() => {
+  if (!available.value) return loaded.value ? "—" : "…";
+  if (!sectionResult.value) return "—";
+  const { total, failed } = totals.value;
+  return failed > 0 ? `✗ ${failed}/${total}` : `✓ ${total}`;
+});
+
+const color = computed(() => {
+  if (!available.value || !sectionResult.value) return "neutral";
+  return totals.value.failed > 0 ? "danger" : "success";
+});
+
 const title = computed(() => {
   if (!available.value) return "Sin resultados: corré ./scripts/preflight.sh";
   if (!sectionResult.value) return "Esta sección todavía no tiene tests";
   if (failures.value.length) return failures.value.join("\n");
-  const count = Object.values(sectionResult.value.variants).reduce(
-    (acc, variant) => acc + variant.checks.length,
-    0,
-  );
-  return `${count} check(s) en verde`;
+  return `${totals.value.total} check(s) en verde`;
 });
 </script>
 
