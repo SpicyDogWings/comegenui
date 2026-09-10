@@ -78,6 +78,8 @@ export interface Section {
   variants: Variant[];
   /** demo interactiva que reemplaza al loop de variantes (opcional). */
   preview?: Component;
+  /** demo interactiva extra, pintada DESPUÉS de los variants (opcional). */
+  extra?: Component;
   /** snippet de uso en Vue (SFC). */
   vue?: string;
   /** snippet de uso en vanilla (custom element). */

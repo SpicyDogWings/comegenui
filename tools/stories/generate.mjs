@@ -435,20 +435,25 @@ const previews = [];
  * Preview interactivo declarativo (config `sections.<id>.preview`).
  * Receta `async-click`: al hacer click activa la prop (default `loading`)
  * durante `duration` ms y vuelve sola. Una entrada por botón.
+ *
+ * `mode: "append"` (default) agrega el ejemplo interactivo DESPUÉS de los
+ * variants estáticos de la sección (`extra`); `mode: "replace"` reemplaza
+ * todo el preview (`preview`).
  */
 function previewFor(section) {
   const preview = storyConfig.sections?.[section.id]?.preview;
   if (!preview || preview.recipe !== "async-click") return null;
 
-  const previewName = `${name}${capital(section.id)}Preview`;
+  const append = preview.mode !== "replace";
+  const componentName = `${name}${capital(section.id)}${append ? "Extra" : "Preview"}`;
   const prop = preview.prop ?? "loading";
   const duration = preview.duration ?? 1500;
   const entries = preview.entries?.length
     ? preview.entries
     : [{ idle: preview.idleLabel ?? sample, active: preview.activeLabel ?? "Cargando…", props: preview.props ?? {} }];
 
-  previews.push(`const ${previewName} = defineComponent({
-  name: ${JSON.stringify(previewName)},
+  previews.push(`const ${componentName} = defineComponent({
+  name: ${JSON.stringify(componentName)},
   setup() {
     const entries: Array<{ idle: string; active: string; props?: Record<string, unknown> }> = ${JSON.stringify(entries)};
     const loading = ref(entries.map(() => false));
@@ -468,7 +473,7 @@ function previewFor(section) {
       );
   },
 });`);
-  return previewName;
+  return { componentName, append };
 }
 
 const sectionsSource = sections
@@ -480,8 +485,10 @@ const sectionsSource = sections
     if (section.badge) lines.push(`      badge: ${JSON.stringify(section.badge)},`);
     if (section.badgeTitle) lines.push(`      badgeTitle: ${JSON.stringify(section.badgeTitle)},`);
     if (section.layout === "col") lines.push(`      layout: "col",`);
-    const previewName = previewFor(section);
-    if (previewName) lines.push(`      preview: ${previewName},`);
+    const previewInfo = previewFor(section);
+    if (previewInfo) {
+      lines.push(`      ${previewInfo.append ? "extra" : "preview"}: ${previewInfo.componentName},`);
+    }
     lines.push(`      variants: [`);
     lines.push(
       ...section.variants.map((variant) => {

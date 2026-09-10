@@ -9,11 +9,10 @@
     "loading": {
       "preview": {
         "recipe": "async-click",
+        "mode": "append",
         "duration": 1500,
         "entries": [
-          { "idle": "Click to Load", "active": "Loading...", "props": { "color": "primary", "variant": "solid" } },
-          { "idle": "Save", "active": "Saving...", "props": { "color": "secondary", "variant": "soft" } },
-          { "idle": "Delete", "active": "Deleting...", "props": { "color": "danger", "variant": "solid" } }
+          { "idle": "Click to Load", "active": "Loading...", "props": { "color": "primary", "variant": "solid" } }
         ]
       }
     }

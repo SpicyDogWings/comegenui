@@ -5,10 +5,10 @@ import { defineComponent, h, ref } from "vue";
 import Button from "@/components/buttons/Button.vue";
 import type { ComponentStory } from "@/stories/types";
 
-const ButtonLoadingPreview = defineComponent({
-  name: "ButtonLoadingPreview",
+const ButtonLoadingExtra = defineComponent({
+  name: "ButtonLoadingExtra",
   setup() {
-    const entries: Array<{ idle: string; active: string; props?: Record<string, unknown> }> = [{"idle":"Click to Load","active":"Loading...","props":{"color":"primary","variant":"solid"}},{"idle":"Save","active":"Saving...","props":{"color":"secondary","variant":"soft"}},{"idle":"Delete","active":"Deleting...","props":{"color":"danger","variant":"solid"}}];
+    const entries: Array<{ idle: string; active: string; props?: Record<string, unknown> }> = [{"idle":"Click to Load","active":"Loading...","props":{"color":"primary","variant":"solid"}}];
     const loading = ref(entries.map(() => false));
     const trigger = (index: number) => {
       loading.value[index] = true;
@@ -392,7 +392,7 @@ export const cuButtonStories: ComponentStory = {
       title: "Loading",
       badge: "false",
       badgeTitle: "Default: false",
-      preview: ButtonLoadingPreview,
+      extra: ButtonLoadingExtra,
       variants: [
         { id: "false", props: {"loading":false}, slots: {"default":"Guardar"} },
         { id: "true", props: {"loading":true}, slots: {"default":"Guardar"} },

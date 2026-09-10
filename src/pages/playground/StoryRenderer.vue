@@ -36,7 +36,10 @@ export default defineComponent({
       const layoutClass = section.layout === "col" ? "playground-col" : "playground-row";
       const preview = section.preview
         ? h(section.preview)
-        : section.variants.map((variant) => renderVariant(variant));
+        : [
+            ...section.variants.map((variant) => renderVariant(variant)),
+            section.extra ? h(section.extra, { key: "extra" }) : null,
+          ];
 
       return h("section", { id: section.id, class: "playground-section", key: section.id }, [
         h("div", { class: "playground-heading" }, [
