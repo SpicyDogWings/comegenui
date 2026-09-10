@@ -27,6 +27,8 @@ Selector de rango de fechas: dos fechas (inicio + fin) con resaltado del períod
 | `disabledWeekdays` | `number[] \| string` | `""` | Días de la semana no seleccionables (`0`=domingo … `6`=sábado) |
 | `disabledDates` | `(string \| Date)[] \| string` | `""` | Fechas puntuales no seleccionables |
 | `events` | `array` | `[]` | Eventos a señalar con puntos bajo la fecha (ver [cu-calendar](cu-calendar.md#eventos-puntos)) |
+| `grid` | `boolean` | `false` | Líneas **interiores** (cuadrícula) entre los días de los calendarios internos |
+| `border` | `boolean` | `false` | **Marco exterior** alrededor de la cuadrícula de días |
 | `dualCalendar` | `boolean` | `false` | Muestra dos meses lado a lado |
 | `clearable` | `boolean` | `true` | Muestra botón "Limpiar" |
 | `label` | `string` | `""` | Texto del label sobre el picker |

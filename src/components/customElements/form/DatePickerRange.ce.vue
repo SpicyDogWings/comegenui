@@ -44,6 +44,8 @@ const props = defineProps({
     type: Array as PropType<CalendarEvent[]>,
     default: () => [],
   },
+  grid: { type: Boolean, default: false },
+  border: { type: Boolean, default: false },
   dualCalendar: { type: Boolean, default: false },
   position: { type: String, default: 'bottom' },
   align: { type: String, default: 'start' },
@@ -109,6 +111,8 @@ defineExpose({
     :disabled-weekdays="props.disabledWeekdays"
     :disabled-dates="props.disabledDates"
     :events="props.events"
+    :grid="props.grid"
+    :border="props.border"
     :dual-calendar="props.dualCalendar"
     :position="props.position"
     :align="props.align"

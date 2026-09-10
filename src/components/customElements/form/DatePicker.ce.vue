@@ -40,6 +40,8 @@ const props = defineProps({
     type: Array as PropType<CalendarEvent[]>,
     default: () => [],
   },
+  grid: { type: Boolean, default: false },
+  border: { type: Boolean, default: false },
   position: { type: String, default: 'bottom' },
   align: { type: String, default: 'start' },
   fixed: { type: Boolean, default: false },
@@ -102,6 +104,8 @@ defineExpose({ open, close, toggle, getValue, setValue, clear, isOpen: () => pic
     :disabled-weekdays="props.disabledWeekdays"
     :disabled-dates="props.disabledDates"
     :events="props.events"
+    :grid="props.grid"
+    :border="props.border"
     :position="props.position"
     :align="props.align"
     :fixed="props.fixed"

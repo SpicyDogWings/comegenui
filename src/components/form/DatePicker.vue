@@ -51,6 +51,8 @@ const props = defineProps({
     type: Array as PropType<CalendarEvent[]>,
     default: () => [],
   },
+  grid: { type: Boolean, required: false, default: false },
+  border: { type: Boolean, required: false, default: false },
   position: { type: String, required: false, default: 'bottom' },
   align: { type: String, required: false, default: 'start' },
   fixed: { type: Boolean, required: false, default: false },
@@ -263,6 +265,8 @@ defineExpose({ open, close, toggle, getValue, setValue, clear, isOpen: () => dro
             :disabled-weekdays="disabledWeekdays"
             :disabled-dates="disabledDates"
             :events="events"
+            :grid="grid"
+            :border="border"
             @select="onSelect"
           />
           <div v-if="todayButton || clearable" class="cu-date-picker-footer">
