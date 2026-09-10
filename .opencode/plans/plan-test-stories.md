@@ -168,6 +168,7 @@ Tests de la capa `.vue` derivados de las secciones actuales de los playground, c
   - [x] **Pagination** migrado (story + 37 checks L1 + página con `StoryRenderer`).
   - [x] **AuthorCard** migrado (story + 50 checks L1 + página con `StoryRenderer`).
   - [x] **Tooltip** migrado (story + 33 checks L1 + página con `StoryRenderer`).
+  - [x] **SideOver** migrado (story + 53 checks L1 + página con `StoryRenderer`).
   - Herramientas de eficiencia: `stories:status`, `stories:migrate`, `new:component`.
   - Orden sugerido: `Input`, `Select`, `Dropdown`, `Alert`, `Badge`, `Card`, `Checkbox`, `Switch`, `Textarea`, `Tabs`, `Modal`, `Table`, … (297 `SectionDemo` en 45 páginas).
   - Un commit atómico por componente (o por par de componentes chicos).
@@ -440,3 +441,8 @@ Cada commit incluye su entrada en la **Bitácora**.
 
 - `test(l1/tooltip)`: Tooltip migrado — 6 secciones, **33 checks L1**, página a `StoryRenderer`.
 - Se agregó sección `disabled` (soportada por el componente); snippet vanilla de delay corregido (`delay="50"`).
+
+### 2026-09-10 — 1f: SideOver migrado (subagente)
+
+- `test(l1/side-over)`: SideOver migrado — 5 secciones (positions/sizes/fullscreen/persistent/form), **53 checks L1**, página a `StoryRenderer`.
+- Panel teleportado: `global: { stubs: { teleport: true } }`; verificado en navegador por el subagente.
