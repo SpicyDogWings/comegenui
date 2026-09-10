@@ -1,4 +1,4 @@
-// Generado por src/plugins/story-playground/cli/generate.mjs a partir de las props de ToggleColorSheme.vue.
+// Generado por src/plugins/cu-playground/cli/generate.mjs a partir de las props de ToggleColorSheme.vue.
 // (sin eventos declarados)
 
 import ToggleColorSheme from "@/components/buttons/ToggleColorSheme.vue";

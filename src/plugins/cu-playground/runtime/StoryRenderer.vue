@@ -1,8 +1,8 @@
 <script lang="ts">
 import { defineComponent, h, type PropType, type VNodeChild } from "vue";
 import Badge from "@/components/information/Badge.vue";
-import SectionDemo from "@/pages/playground/SectionDemo.vue";
-import TestResultBadge from "@/pages/playground/TestResultBadge.vue";
+import SectionDemo from "./SectionDemo.vue";
+import TestResultBadge from "./TestResultBadge.vue";
 import type { ComponentStory, Section, StoryExtra, Variant } from "@/stories/types";
 
 function slotFns(variant: Variant): Record<string, () => VNodeChild> {

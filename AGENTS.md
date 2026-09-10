@@ -17,13 +17,18 @@ src/
 │   ├── runner.l1.ts                       # Runner capa L1 (.vue, jsdom)
 │   └── {category}/MiComponente.stories.ts # Story (secciones + checks); espeja la categoría
 │       {category}/MiComponente.l1.test.ts # Test capa L1 (runner de stories)
-├── pages/playground/                      # Playground (StoryRenderer + badges)
+├── playground/                            # Páginas físicas opcionales (override; default vacío)
+├── pages/playground/                      # ThemeBuilder + resto del proyecto
 ├── config/
 │   └── theme.ts                           # Definiciones estáticas de temas
-├── plugins/cu-tokens/                     # Sistema de tokens CSS
+├── plugins/
+│   ├── cu-tokens/                         # Sistema de tokens CSS
+│   └── cu-playground/                     # Plugin del playground (runtime + runtime/, cli/, vitest/)
 ├── composables/                           # Composables reutilizables
 └── utils/                                 # Utilidades (getHostTheme, palette, fileIcons)
 ```
+
+Config del playground: `cu-playground.config.json` (raíz): `componentsDir`, `storiesDir`, `playgroundDir`, `base`, `pages`, `nav`.
 
 Donde `{category}` es uno de: `form/`, `information/`, `overlay/`, `navigation/`, `data/`, `buttons/`, o raíz.
 

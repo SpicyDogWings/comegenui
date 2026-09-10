@@ -24,7 +24,7 @@ src/
 ├── composables/useTestResults.ts       # Lee public/test-results.json
 ├── plugins/
 │   ├── cu-tokens/                      # Sistema de tokens CSS
-│   └── story-playground/               # Plugin de stories (runtime + generate + reporter)
+│   └── cu-playground/               # Plugin de stories (runtime + generate + reporter)
 │       ├── index.ts · keys.ts          # Vue plugin (ruta components/:name + registry)
 │       ├── cli/generate.mjs            # Generador prop-driven (genérico)
 │       └── vitest/reporter.ts          # Escribe public/test-results.json

@@ -4,12 +4,12 @@ Iterar con `pnpm dev` (hot reload).
 
 ## Playground genérico (actual)
 
-El plugin `src/plugins/story-playground/` registra la ruta dinámica `/playground/components/:name` y `StoryPage.vue` pinta la story completa: **secciones + extras (Programmatic/Events) + Style + API**. No se escribe una página por componente.
+El plugin `src/plugins/cu-playground/` registra la ruta dinámica `/playground/components/:name` y `StoryPage.vue` pinta la story completa: **secciones + extras (Programmatic/Events) + Style + API**. No se escribe una página por componente.
 
-- El nav sigue en `PlaygroundLayout.vue` (entrada por componente).
-- Para que use la página genérica, la story necesita `tokens`/`api`: `pnpm run stories:generate X --meta-only`.
-- Si la story **no** tiene metadata y existe página legacy, se usa la página legacy (transición). Sin página, se pinta igual (solo secciones).
-- Config por componente: `X.stories.config.json` (order/include/exclude, `extraProps`, `custom[]`, `preview`). Extras: `X.stories.extras.ts` (Programmatic = exposes/v-model; Events = eventos).
+- **Nav automático**: `PlaygroundLayout.vue` ya no hardcodea entradas; lo deriva del registry (categoría = subcarpeta de `src/stories`). Para ocultar/ordenar/renombrar: `cu-playground.config.json` → `nav`.
+- **Registry lazy**: las stories se cargan al navegar (code-splitting). Para que exista la página, la story necesita `tokens`/`api`: `pnpm cu-playground:generate X --meta-only` (o `--all`).
+- **Páginas físicas (opcional)**: `pnpm cu-playground:generate X --pages` crea `src/playground/X.vue` editable; si existe (la haya generado el plugin o no), **override** de la página genérica.
+- Config por componente: `X.stories.config.json` (order/include/exclude, `sections`, `custom[]`, `attrs`, `api`, `tokens`, `subComponents`, `components`, `interfaceCode`). Extras: `X.stories.extras.ts` (Programmatic = exposes/v-model; Events = eventos).
 
 ### Extras (patio de juegos)
 
@@ -19,66 +19,38 @@ El plugin `src/plugins/story-playground/` registra la ruta dinámica `/playgroun
 **Pitfall (v-model controlado):** si el componente usa `defineModel` y le pasás `v-model` desde el extra, `set()`/`reset()` **no** cambian el valor local en el mismo tick: solo emiten `update:modelValue`. El estado del patio debe actualizarse desde `onUpdate:modelValue`/eventos; `get()` se usa solo en el botón `get()`. Leer `get()` justo después de `set()` revierte el estado (bug real corregido en Switch/Checkbox/Textarea/Input/ColorPicker).
 - Se pintan como sección propia después de las secciones de la story.
 
-## Página legacy (transición)
+## Página física (opcional)
 
-Las páginas de `src/pages/playground/components/` existen solo como fallback mientras su story no tenga `tokens`/`api`. Al completar la metadata, la story manda.
+La página genérica alcanza para el 99%. Si necesitás una sección custom que la
+story no puede expresar, generá una página física con
+`pnpm cu-playground:generate X --pages`. El plugin la detecta (por nombre) y la
+usa en lugar de la genérica.
 
-### Patrón legacy
-
-La página **no escribe demos a mano**: renderiza la story con `StoryRenderer` y solo agrega lo que la story no puede expresar (Style, API, y Programmatic si hay métodos/v-model).
+El scaffold **reusa el runtime del plugin**: `StoryBody` pinta todo lo genérico y
+`buildOutline` arma el outline. Solo agregás lo tuyo.
 
 ```vue
 <script setup lang="ts">
-import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
-import StoryRenderer from "@/pages/playground/StoryRenderer.vue";
-import PlaygroundStyle from "@/templates/playground/PlaygroundStyle.vue";
-import Table from "@/components/data/Table.vue";
+import PlaygroundLayout from "@/plugins/cu-playground/runtime/PlaygroundLayout.vue";
+import StoryBody from "@/plugins/cu-playground/runtime/StoryBody.vue";
+import { buildOutline } from "@/plugins/cu-playground/runtime/outline";
 import { cuXStories } from "@/stories/{category}/X.stories";
 
-const outlineItems = [
-  ...cuXStories.sections.map((s) => ({ label: s.title, id: s.id })),
-  { label: 'Style', id: 'style', children: [{ label: 'CSS Variables', id: 'style-variables' }] },
-  { label: 'API', id: 'api', children: [
-    { label: 'Props', id: 'api-props' },
-    { label: 'Slots', id: 'api-slots' },
-    { label: 'Events', id: 'api-events' },
-    { label: 'Exposes', id: 'api-exposes' },
-    // { label: 'Interfaces', id: 'api-interfaces' },  // si hay props complejas
-  ]},
-];
-
-const componentTokens = [ /* tokens --cu-* del componente */ ];
-const apiColumns = [ /* … */ ];
-const propsData = [ /* … */ ];
-const slotsData = [ /* … */ ];
-const eventsData = [ /* … */ ];
+const outlineItems = buildOutline(cuXStories);
+// Si agregás una sección custom, sumá su item al outline:
+outlineItems.splice(-2, 0, { label: "Custom", id: "custom" });
 </script>
 
 <template>
   <PlaygroundLayout title="X" :outlineItems="outlineItems">
-    <div class="playground-content">
-      <StoryRenderer :story="cuXStories" />
-
-      <hr class="playground-separator" />
-      <PlaygroundStyle :tokens="componentTokens" />
-
-      <section id="api" class="playground-section">
-        <h2>API</h2>
-        <h3 id="api-props">Props</h3>
-        <Table :columns="apiColumns" :data="propsData" variant="ghost" compact />
-        <h3 id="api-slots">Slots</h3>
-        <Table :columns="apiColumns" :data="slotsData" variant="ghost" compact />
-        <h3 id="api-events">Events</h3>
-        <Table :columns="apiColumns" :data="eventsData" variant="ghost" compact />
-        <h3 id="api-exposes">Exposes</h3>
-        <Table :columns="apiColumns" :data="[]" empty="No expone métodos" variant="ghost" compact />
-      </section>
-    </div>
+    <StoryBody :story="cuXStories" />
+    <!-- Agregá acá secciones custom (con id propio para el outline). -->
   </PlaygroundLayout>
 </template>
 ```
 
-Referencia viva: `src/pages/playground/components/Button.vue`.
+> Las páginas legacy del repo quedaron en `backups/legacy-playground-pages/`
+> (ya no se compilan).
 
 ### Reglas de la story para que el preview quede bien
 
@@ -98,16 +70,16 @@ El layout del patio es el mismo en extras y en páginas legacy:
 - Outline del extra: `id: "programmatic"`, sin children.
 - En snippets el estado se loguea a `console`; Vanilla usa `cu-button`.
 
-## Patrón viejo (solo páginas sin migrar)
+## Secciones a mano (extras)
 
-Si una página todavía tiene `<section>` con demos inline, migrala al patrón nuevo (story + `StoryRenderer`) al tocarla. Reglas históricas del `SectionDemo` inline, por si tenés que escribir uno a mano (API, Programmatic):
+Las demos que la story no puede expresar van como **extras** (`X.stories.extras.ts`, `StoryExtra[]`), no en una página. Reglas del `SectionDemo` para un extra:
 
 - Toda sección de demo lleva `SectionDemo`; la **API es la única sin tabs**.
 - Tabs en orden **Preview, Vue, Vanilla** (Vanilla solo si está en `lib/`).
 - Tab **Vue**: uso como componente Vue (`import X from '@/components/.../X.vue'` + `<X />`). **Nunca** markup de custom element acá.
 - Tab **Vanilla**: `<script src="dist/CuX.umd.js">` + `<cu-x>`; arrays/objetos por JS tras `customElements.whenDefined('cu-x')`; eventos con `addEventListener('evento', e => e.detail)`.
 - API con `h3` chicos (`api-*`), `Table variant="ghost" compact`, `empty="…"` en vez de filas fake con "—".
-- **Interfaces**: si un prop tiene estructura (items/options/columns/events), subsección `Interfaces` con `CodeBlock :code="interfaceCode" language="ts" variant="solid"` con la interfaz **real** del source (no inventar). El demo linkea con `Button variant="link" to="#api-interfaces"`.
+- **Interfaces**: si un prop tiene estructura (items/options/columns/events), subsección `Interfaces` con `CodeBlock :code="interfaceCode" language="ts" variant="solid"` con la interfaz **real** del source (no inventar).
 
 ## Trampas
 
@@ -120,69 +92,39 @@ Si una página todavía tiene `<section>` con demos inline, migrala al patrón n
 | FABs y `position: fixed` en preview | En la demo: `style="position: static"` por instancia (también en el snippet). |
 | Secciones sin `SectionDemo` | Migrar al patrón nuevo al tocar la página; no dejar secciones híbridas. |
 
-## Registrar el playground (router + nav)
+## Registrar el playground (automático)
 
-La página sola no alcanza: **3 lugares**.
+Ya **no** hay que registrar nada a mano: el plugin deriva la ruta y el nav del
+glob de stories.
 
-1. **Página** — `src/pages/playground/components/X.vue` (PascalCase igual al componente).
-2. **Route** — `src/router/index.ts`:
+1. **Story** — `src/stories/{category}/X.stories.ts` (la crea
+   `pnpm cu-playground:generate X`, o `--all`).
+2. **Ruta** — la agrega el plugin (`/playground/components/:name`).
+3. **Nav** — lo deriva el plugin de la subcarpeta de la story (categoría). Para
+   ordenar/renombrar/ocultar: `cu-playground.config.json` → `nav`.
 
-```ts
-{
-  path: "x",
-  name: "X playground",
-  component: () => import("@/pages/playground/components/X.vue")
-},
-```
+**Validación:** abrir `/playground/components/x` — aparece en el nav solo, el
+outline salta a las secciones, tabs ok, badge de tests visible.
 
-3. **Nav** — `PlaygroundLayout.vue`, en el grupo de su categoría (label = nombre exacto del componente):
+## Nueva categoría (grupo del nav)
 
-```ts
-{ label: 'X', path: '/playground/components/x' },
-```
+Un grupo del nav = una **subcarpeta de `src/stories/`** (y de
+`src/components/`). Al crear `src/stories/{category}/X.stories.ts`, el grupo
+aparece solo. Para ubicarlo en un orden puntual, agregalo a
+`nav.order` en `cu-playground.config.json`. Si la categoría es nueva, actualizá
+el árbol de `AGENTS.md`.
 
-**Validación:** abrir `/playground/components/x` — aparece en el nav, el outline salta a las secciones, tabs ok, badge de tests visible.
+## Sincronizar
 
-## Nueva sección (grupo del nav)
-
-Un grupo del nav = una **categoría de carpeta**.
-
-1. Carpeta `src/components/{category}/`.
-2. `src/lib/{category}/` si son públicos.
-3. Grupo en `PlaygroundLayout.vue` (label **Capitalized**):
-
-```ts
-{ label: '{Category}', children: [
-  { label: 'X', path: '/playground/components/x' },
-]},
-```
-
-4. Cada componente → [Registrar](#registrar-el-playground-router--nav).
-5. Si la categoría es nueva, actualizar el árbol de `AGENTS.md`.
-
-## Sincronizar nav ↔ carpetas
-
-**Regla:** el grupo del nav espeja la carpeta 1:1 (label = archivo sin `.vue`, orden alfabético).
+El nav espeja `src/stories/` 1:1 (label = archivo sin `.stories.ts`, orden
+alfabético). Para ver qué falta:
 
 ```bash
-ls src/components/buttons/ | grep -v test
+pnpm cu-playground:generate --all   # crea/actualiza stories y metadata
 ```
 
-Por cada componente sin entrada: página + route + nav. Validar contando entradas del nav = archivos `.vue` sin test de la carpeta.
-
-## Auditoría de migración
-
-`SectionDemo` envueltos vs secciones demo (todas menos API). Con el patrón nuevo la página **no** tiene `SectionDemo` (los pone `StoryRenderer`), así que este comando aplica solo a páginas sin migrar:
-
-```bash
-cd src/pages/playground/components && for f in *.vue; do
-  echo "$(grep -c '<SectionDemo' "$f")/$(($(grep -c '<section' "$f") - $(grep -c 'id="api"' "$f"))) $f"
-done
-```
-
-Interpretación: `0/0` con `StoryRenderer` = migrada; `N/N` inline = completa; `0<N` = legacy.
-
-> Cuando te pregunten si una sección/grupo está "completo", verificá **ambos**: (1) nav ↔ carpeta 1:1 y (2) cada página migrada/terminada. No asumas.
+> Ya no existe el concepto de "página legacy". Las viejas quedaron en
+> `backups/legacy-playground-pages/`.
 
 ## Tokens ↔ ThemeBuilder
 

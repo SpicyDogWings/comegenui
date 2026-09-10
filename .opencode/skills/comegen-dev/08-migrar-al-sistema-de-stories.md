@@ -1,5 +1,10 @@
 # 08 — Migrar un componente al sistema de stories (1f)
 
+> **Histórico.** Con el plugin `cu-playground` la creación de stories es
+> automática: `pnpm cu-playground:generate X` (o `--all`) lee el contrato del
+> `.vue`. Este documento queda como referencia del flujo viejo (páginas legacy
+> en `src/pages/playground/components/`, hoy movidas a `backups/`).
+
 Receta para pasar un componente existente (test viejo + playground a mano) al sistema de **story + `X.l1.test.ts` + `StoryRenderer` + badges**, sin perder cobertura.
 
 > Es el trabajo de **1f** del plan (`.opencode/plans/plan-test-stories.md`). Un commit atómico por componente.

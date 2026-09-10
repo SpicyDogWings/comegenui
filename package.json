@@ -17,7 +17,8 @@
     "preflight": "bash scripts/preflight.sh",
     "stories:status": "node tools/status.mjs",
     "stories:migrate": "node tools/migrate.mjs",
-    "stories:generate": "node src/plugins/story-playground/cli/generate.mjs",
+    "cu-playground:generate": "node src/plugins/cu-playground/cli/generate.mjs",
+    "stories:generate": "node src/plugins/cu-playground/cli/generate.mjs",
     "new:component": "node tools/scaffold-component.mjs"
   },
   "dependencies": {

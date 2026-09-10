@@ -10,7 +10,7 @@ export default defineConfig({
     },
   },
   test: {
-    reporters: ["default", "./src/plugins/story-playground/vitest/reporter.ts"],
+    reporters: ["default", "./src/plugins/cu-playground/vitest/reporter.ts"],
     projects: [
       {
         extends: true,

@@ -170,7 +170,7 @@ pnpm exec vitest run --project l1 src/stories/buttons/Button.l1.test.ts
 
 ## Reporter y playground
 
-`src/plugins/story-playground/vitest/reporter.ts` (configurado en `vitest.config.ts`) escribe `public/test-results.json`:
+`src/plugins/cu-playground/vitest/reporter.ts` (configurado en `vitest.config.ts`) escribe `public/test-results.json`:
 
 ```jsonc
 {

@@ -1,4 +1,4 @@
-// Generado por src/plugins/story-playground/cli/generate.mjs a partir de las props de CopyButton.vue.
+// Generado por src/plugins/cu-playground/cli/generate.mjs a partir de las props de CopyButton.vue.
 // (sin eventos declarados)
 
 import CopyButton from "@/components/buttons/CopyButton.vue";

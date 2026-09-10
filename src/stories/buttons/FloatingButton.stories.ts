@@ -1,4 +1,4 @@
-// Generado por src/plugins/story-playground/cli/generate.mjs a partir de las props de FloatingButton.vue.
+// Generado por src/plugins/cu-playground/cli/generate.mjs a partir de las props de FloatingButton.vue.
 // Eventos detectados: click
 
 import FloatingButton from "@/components/buttons/FloatingButton.vue";

@@ -99,14 +99,14 @@ Receta completa y schema en [`04-stories-y-tests.md`](04-stories-y-tests.md).
 
 ## 6. Playground
 
-**No hay que escribir página**: el plugin `story-playground` (`src/plugins/story-playground/`) pinta cualquier story en `/playground/components/:name` (`StoryPage` genérica: secciones + extras + Style + API).
+**No hay que escribir página**: el plugin `cu-playground` (`src/plugins/cu-playground/`) pinta cualquier story en `/playground/components/:name` (`StoryPage` genérica: secciones + extras + Style + API) y **deriva el nav solo** (categoría = subcarpeta de `src/stories`).
 
-- Para que use `Style`/`API`, la story necesita `tokens`/`api`: `pnpm run stories:generate X --meta-only`.
+- Para que use `Style`/`API`, la story necesita `tokens`/`api`: `pnpm cu-playground:generate X --meta-only`.
 - **Extras** (`X.stories.extras.ts`):
   - **Programmatic**: **solo si el componente usa `defineExpose`** (si no expone métodos, no se crea).
   - **Events**: si emite eventos propios (`ceEmit`) o nativos relevantes.
-- La ruta ya existe (dinámica); solo agregá la entrada en el nav (`PlaygroundLayout.vue`).
-- Las páginas en `src/pages/playground/components/` son **legacy**: se usan solo como fallback mientras la story no tenga metadata.
+- Ruta y nav son automáticos. Página física de override (opcional): `pnpm cu-playground:generate X --pages` → `src/playground/X.vue`.
+- Config de rutas/nav: `cu-playground.config.json` (raíz).
 
 Detalle en [`05-playground.md`](05-playground.md).
 

@@ -34,10 +34,10 @@ Seguí los pasos **en orden**. No saltees el 3 (story) ni el 4 (tests): ahí es 
 | 0 | **Orientarse** | Leer `AGENTS.md` y [`01-mapa-del-repo.md`](01-mapa-del-repo.md). Decidir: ¿crear o modificar? ¿categoría? ¿público (lib) o interno? | [`01`](01-mapa-del-repo.md) |
 | 1 | **Contrato** | Definir props/emits/slots/`defineExpose` y tokens (`--cu-color-*`). Es la API que van a consumir los hosts. | [`02`](02-crear-componente.md) §Contrato |
 | 2 | **Implementar** | `.vue` real; si es público: `.ce.vue` + `lib/{cat}/x.ts`. | [`02`](02-crear-componente.md) / [`03`](03-modificar-componente.md) |
-| 3 | **Story** | `src/stories/{category}/X.stories.ts`: generala con `pnpm run stories:generate X` (prop-driven) y refinala con `X.stories.config.json`; `checks.l1` (y `ce`/`umd` cuando aplique). | [`04`](04-stories-y-tests.md) |
+| 3 | **Story** | `src/stories/{category}/X.stories.ts`: generala con `pnpm cu-playground:generate X` (desde el contrato del `.vue`) y refinala con `X.stories.config.json`; `checks.l1` (y `ce`/`umd` cuando aplique). | [`04`](04-stories-y-tests.md) |
 | 4 | **Tests** | `src/stories/{category}/X.l1.test.ts` con el runner de stories. Migrar tests viejos si existían. | [`04`](04-stories-y-tests.md) |
-| 5 | **Metadata + extras** | `pnpm run stories:generate X --meta-only` (`tokens`/`api` → Style/API en la página genérica). Extra **Programmatic** solo si el componente usa `defineExpose`; **Events** si emite eventos. | [`04`](04-stories-y-tests.md) · [`05`](05-playground.md) |
-| 6 | **Playground** | **No se escribe página**: el plugin `story-playground` pinta la story en `/playground/components/:name`. Solo agregar la entrada de nav. | [`05`](05-playground.md) |
+| 5 | **Metadata + extras** | `pnpm cu-playground:generate X --meta-only` (`tokens`/`api` → Style/API en la página genérica). Extra **Programmatic** solo si el componente usa `defineExpose`; **Events** si emite eventos. | [`04`](04-stories-y-tests.md) · [`05`](05-playground.md) |
+| 6 | **Playground** | **Automático**: el plugin `cu-playground` registra la ruta y el nav desde la story. Página genérica en `/playground/components/:name`; página física opcional con `--pages`. | [`05`](05-playground.md) |
 | 7 | **Docs** | `docs/skills/use-comegen/componentes/cu-x.md` (+ índices). | [`07`](07-documentacion.md) + skill `comegen-ui-docs` |
 | 8 | **Validar y commitear** | `./scripts/preflight.sh` verde; commit atómico (nunca `git add -A`). | [`06`](06-build-y-validacion.md) |
 
@@ -72,15 +72,17 @@ Si falta cualquiera, decilo explícitamente en el reporte; no lo tapes con "el c
 ## Herramientas
 
 Todo el devkit está separado por responsabilidad:
-- **Plugin** (`src/plugins/story-playground/`): runtime (Vue plugin), `generate` (prop-driven) y reporter de vitest (genérico/reutilizable; ver su `README.md`).
+- **Plugin** (`src/plugins/cu-playground/`): runtime (Vue plugin + nav automático), `generate` (contrato-driven) y reporter de vitest (genérico/reutilizable; ver su `README.md`).
 - **Proyecto** (`tools/`, `scripts/`): `migrate`, `status`, `new:component` y `preflight` (específicos de esta estructura de repo).
 
 | Comando | Para qué |
 |---|---|
 | `pnpm run stories:status` | Inventario: qué componentes tienen story/test/página/badges y cuáles faltan migrar. |
-| `pnpm run stories:generate <X>` | Genera la story **desde las props** del `.vue` (secciones enum/boolean/texto + snippets + checks). Lee `X.stories.config.json`. No pisa la story si existe. |
-| `pnpm run stories:generate <X> --meta-only` | Actualiza solo `tokens`/`api` de una story existente (la pasa a la StoryPage genérica) sin tocar secciones/checks/extras. |
-| `pnpm run stories:migrate <X>` | Genera story + test desde la **página** (secciones, snippets, variants y checks genéricos; deja TODO lo específico). Útil cuando el demo de la página es más rico que las props. |
+| `pnpm cu-playground:generate <X>` | Genera la story **desde el contrato** del `.vue` (props/emits/exposes/slots/tokens) → secciones + snippets + checks + `api`. Lee `X.stories.config.json`. No pisa la story si existe. |
+| `pnpm cu-playground:generate <X> --meta-only` | Actualiza solo `tokens`/`api` de una story existente sin tocar secciones/checks/extras; preserva descripciones curadas. |
+| `pnpm cu-playground:generate --all` | Barre `componentsDir` y genera/actualiza todas las stories (metadata). |
+| `pnpm cu-playground:generate <X> --pages` | Además emite una página física editable en `playgroundDir` (override de la genérica). |
+| `pnpm run stories:migrate <X>` | (Legacy) Genera story + test desde la **página** vieja. Las páginas legacy están en `backups/`. |
 | `pnpm run new:component <X> <category> [--internal]` | Scaffold de componente nuevo: `.vue` + `.ce.vue` + `lib/` + story + test. |
 | `./scripts/preflight.sh` | Gate local completo (type-check contra baseline + todos los tests L1). |
 | `./scripts/preflight.sh <X>` | Gate **scopeado**: type-check + solo el test L1 de `<X>` (~8s). |
@@ -97,8 +99,10 @@ Todo el devkit está separado por responsabilidad:
 | Test L1 | `src/stories/{category}/X.l1.test.ts` |
 | Entry point (build) | `src/lib/{category}/x.ts` |
 | Tipos de stories / runner | `src/stories/types.ts` · `src/stories/runner.l1.ts` |
-| Playground (genérico) | Plugin `src/plugins/story-playground/` + `src/pages/playground/StoryPage.vue` |
-| Playground legacy (transición) | `src/pages/playground/components/X.vue` (fallback si la story no tiene `api`/`tokens`) |
+| Playground (genérico) | Plugin `src/plugins/cu-playground/` (runtime en `runtime/`, nav automático) |
+| Página física (opcional) | `src/playground/X.vue` (override; la crea `--pages`) |
+| Config del playground | `cu-playground.config.json` (raíz) |
+| Páginas legacy (backup) | `backups/legacy-playground-pages/X.vue` (ya no se compilan) |
 | Docs del componente | `docs/skills/use-comegen/componentes/cu-x.md` |
 | Preflight | `scripts/preflight.sh` |
 | Reporte de tests | `public/test-results.json` (generado) |

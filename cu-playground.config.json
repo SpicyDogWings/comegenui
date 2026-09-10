@@ -1,0 +1,19 @@
+{
+  "componentsDir": "src/components",
+  "storiesDir": "src/stories",
+  "playgroundDir": "src/playground",
+  "base": "/playground/components",
+  "pages": false,
+  "nav": {
+    "order": [
+      "buttons",
+      "form",
+      "controls",
+      "information",
+      "markdown",
+      "overlay",
+      "navigation",
+      "data"
+    ]
+  }
+}
