@@ -144,7 +144,7 @@ Tests de la capa `.vue` derivados de las secciones actuales de los playground, c
   - `src/stories/runner.l1.ts`: itera story → sección → variante → check; `mount()` de `@vue/test-utils`; `it(name, { meta }, fn)` con `meta = { component, section, variant, layer: 'l1' }`.
   - `src/components/buttons/Button.l1.test.ts`: `runL1Story(cuButtonStories)`.
   - Eliminar `src/components/buttons/Button.test.ts` (sus checks se migran a la story).
-- [ ] **1e** UI de resultados
+- [x] **1e** UI de resultados
   - Composable/loader que fetchea `/test-results.json` (con fallback "sin correr" si no existe).
   - Badge ✅/❌/— en el heading de cada sección; al click, detalle de checks fallidos con el error.
 - [ ] **1f** Escalar al resto (progresivo, por orden de dependencia)
@@ -251,3 +251,11 @@ Cada commit incluye su entrada en la **Bitácora**.
 - `test(l1)`: `src/components/buttons/Button.l1.test.ts` reemplaza `Button.test.ts` (eliminado); se migraron sus checks a la story (defaults, slot, click, disabled, loading, variant, color, size, to, full width).
 - Reporter verificado: `public/test-results.json` con 65 checks de `cu-button` en verde.
 - Suite completa: 37 archivos / 386 tests en verde.
+
+### 2026-09-10 — 1e UI de resultados
+
+- `test(ui)`: `src/composables/useTestResults.ts` lee `public/test-results.json` (cache no-store, fallback "sin correr").
+- `test(ui)`: `src/pages/playground/TestResultBadge.vue` (✅/❌/—) con `title` que lista los checks fallidos.
+- `test(ui)`: `StoryRenderer.vue` pinta el badge por sección.
+- Verificado en dev server: secciones en ✅ con conteo; rompiendo un check a propósito → ❌ + tooltip con el error; revertido a verde.
+- Suite completa: 37 archivos / 386 tests; type-check sin errores nuevos (225 baseline).

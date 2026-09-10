@@ -2,6 +2,7 @@
 import { defineComponent, h, type PropType, type VNodeChild } from "vue";
 import Badge from "@/components/information/Badge.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
+import TestResultBadge from "@/pages/playground/TestResultBadge.vue";
 import type { ComponentStory, Section, Variant } from "@/stories/types";
 
 function slotFns(variant: Variant): Record<string, () => VNodeChild> {
@@ -40,6 +41,7 @@ export default defineComponent({
       return h("section", { id: section.id, class: "playground-section" }, [
         h("div", { class: "playground-heading" }, [
           h("h2", null, section.title),
+          h(TestResultBadge, { component: props.story.component, section: section.id }),
           section.badge
             ? h(Badge, { color: "neutral", title: section.badgeTitle }, () => section.badge ?? "")
             : null,
