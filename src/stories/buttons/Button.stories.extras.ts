@@ -2,119 +2,129 @@ import { defineComponent, h, ref } from "vue";
 import Button from "@/components/buttons/Button.vue";
 import type { StoryExtra } from "@/stories/types";
 
+interface LogEntry {
+  name: string;
+  info?: string;
+}
+
+const EVENT_NAMES = [
+  "click",
+  "dblclick",
+  "focus",
+  "blur",
+  "mouseenter",
+  "mouseleave",
+  "keydown",
+  "keyup",
+  "contextmenu",
+] as const;
+
+const MONO = "var(--cu-font-mono, monospace)";
+
+function capitalize(value: string): string {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
 /**
- * Demo interactiva (Programmatic) de Button: los `Button` neutrales cambian
- * las props de la instancia de abajo en vivo. Button no expone métodos ni
- * v-model, así que se controla por props.
+ * Patio de juegos de eventos: interactuá con los botones y mirá el log.
+ * Button no emite eventos custom; se muestran los eventos nativos del DOM.
  */
-const ButtonProgrammatic = defineComponent({
-  name: "ButtonProgrammatic",
+const ButtonEventsPlayground = defineComponent({
+  name: "ButtonEventsPlayground",
   setup() {
-    const color = ref<"primary" | "secondary" | "neutral" | "success" | "warning" | "danger">(
-      "primary",
-    );
-    const variant = ref<"solid" | "outlined" | "soft" | "ghost" | "subtle" | "link" | "none">(
-      "solid",
-    );
-    const size = ref<"sm" | "md" | "lg">("md");
-    const loading = ref(false);
+    const log = ref<LogEntry[]>([]);
 
-    const control = (label: string, onClick: () => void) =>
-      h(Button, { color: "neutral", onClick }, () => label);
-
-    const emulateLoading = () => {
-      loading.value = true;
-      setTimeout(() => {
-        loading.value = false;
-      }, 1500);
+    const record = (name: string, info?: string) => {
+      log.value = [{ name, info }, ...log.value].slice(0, 8);
     };
+
+    const handlers = Object.fromEntries(
+      EVENT_NAMES.map((eventName) => [
+        `on${capitalize(eventName)}`,
+        (event: Event) => {
+          const info = eventName.startsWith("key") ? (event as KeyboardEvent).key : undefined;
+          record(eventName, info);
+        },
+      ]),
+    ) as Record<string, (event: Event) => void>;
 
     return () =>
       h("div", { class: "playground-col" }, [
         h("div", { class: "playground-row" }, [
-          control("variant = solid", () => (variant.value = "solid")),
-          control("variant = outlined", () => (variant.value = "outlined")),
-          control("color = success", () => (color.value = "success")),
-          control("color = danger", () => (color.value = "danger")),
-          control("size = lg", () => (size.value = "lg")),
-          control("size = sm", () => (size.value = "sm")),
-          control("emulateLoading()", emulateLoading),
-        ]),
-        h("p", { class: "playground-state" }, [
-          "color: ",
-          h("strong", color.value),
-          " · variant: ",
-          h("strong", variant.value),
-          " · size: ",
-          h("strong", size.value),
-          " · loading: ",
-          h("strong", loading.value ? "true" : "false"),
+          h(Button, { color: "primary", variant: "solid", ...handlers }, () => "Guardar"),
+          h(Button, { color: "secondary", variant: "soft", ...handlers }, () => "Cancelar"),
+          h(Button, { color: "danger", variant: "solid", ...handlers }, () => "Eliminar"),
+          h(Button, { color: "neutral", onClick: () => (log.value = []) }, () => "Limpiar log"),
         ]),
         h(
-          Button,
-          { color: color.value, variant: variant.value, size: size.value, loading: loading.value },
-          () => "Guardar",
+          "p",
+          { class: "playground-state" },
+          "Interactuá con los botones (click, doble click, foco, teclado, hover) y mirá el log de eventos.",
+        ),
+        h(
+          "ul",
+          {
+            style: `margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:2px;font-family:${MONO};font-size:var(--cu-font-size-sm, 14px);min-height:120px`,
+          },
+          log.value.length
+            ? log.value.map((entry, index) =>
+                h(
+                  "li",
+                  { key: index, style: `opacity:${Math.max(0.35, 1 - index * 0.09)}` },
+                  `▸ ${entry.name}${entry.info ? ` (${entry.info})` : ""}`,
+                ),
+              )
+            : [h("li", { style: "opacity:.5" }, "— sin eventos —")],
         ),
       ]);
   },
 });
 
-const programmaticVue = `<script setup>
+const eventsVue = `<script setup>
 import { ref } from 'vue'
 import Button from '@/components/buttons/Button.vue'
 
-const color = ref('primary')
-const variant = ref('solid')
-const size = ref('md')
-const loading = ref(false)
-
-function emulateLoading() {
-  loading.value = true
-  setTimeout(() => (loading.value = false), 1500)
+const events = ref([])
+const log = (name) => (e) => {
+  events.value.unshift(name + (e.key ? ' (' + e.key + ')' : ''))
 }
 <\/script>
 
 <template>
-  <Button color="neutral" @click="variant = 'outlined'">variant = outlined</Button>
-  <Button color="neutral" @click="color = 'danger'">color = danger</Button>
-  <Button color="neutral" @click="size = 'lg'">size = lg</Button>
-  <Button color="neutral" @click="emulateLoading()">emulateLoading()</Button>
-
-  <Button :color="color" :variant="variant" :size="size" :loading="loading">
-    {{ loading ? 'Guardando...' : 'Guardar' }}
+  <Button
+    color="primary"
+    @click="log('click')"
+    @dblclick="log('dblclick')"
+    @focus="log('focus')"
+    @blur="log('blur')"
+    @mouseenter="log('mouseenter')"
+    @mouseleave="log('mouseleave')"
+    @keydown="log('keydown')"
+    @keyup="log('keyup')"
+    @contextmenu="log('contextmenu')"
+  >
+    Guardar
   </Button>
 </template>`;
 
-const programmaticVanilla = `<script src="dist/CuButton.umd.js"><\/script>
+const eventsVanilla = `<script src="dist/CuButton.umd.js"><\/script>
 
-<div style="display:flex;gap:8px;flex-wrap:wrap">
-  <cu-button id="btn-solid" color="neutral">variant = solid</cu-button>
-  <cu-button id="btn-danger" color="neutral">color = danger</cu-button>
-  <cu-button id="btn-lg" color="neutral">size = lg</cu-button>
-  <cu-button id="btn-loading" color="neutral">emulateLoading()</cu-button>
-</div>
-
-<cu-button id="btn-live" color="primary" variant="solid">Guardar</cu-button>
+<cu-button id="btn-events" color="primary" variant="solid">Guardar</cu-button>
 
 <script>
-  const live = document.getElementById('btn-live');
-  document.getElementById('btn-solid').addEventListener('click', () => (live.variant = 'solid'));
-  document.getElementById('btn-danger').addEventListener('click', () => (live.color = 'danger'));
-  document.getElementById('btn-lg').addEventListener('click', () => (live.size = 'lg'));
-  document.getElementById('btn-loading').addEventListener('click', () => {
-    live.loading = true;
-    setTimeout(() => (live.loading = false), 1500);
-  });
+  const btn = document.getElementById('btn-events');
+  ['click', 'dblclick', 'focus', 'blur', 'mouseenter', 'mouseleave', 'keydown', 'keyup', 'contextmenu']
+    .forEach((name) => btn.addEventListener(name, (e) => console.log(name, e.key ?? '')));
 <\/script>`;
 
 export const extras: StoryExtra[] = [
   {
-    id: "programmatic",
-    title: "Programmatic",
+    id: "events",
+    title: "Events",
     description:
-      "Seguidilla de botones sobre la instancia de abajo — el botón cambia por props en vivo.",
-    render: () => h(ButtonProgrammatic),
-    vue: programmaticVue,
-    vanilla: programmaticVanilla,
+      "Patio de juegos de eventos: interactuá con los botones y mirá el log en vivo.",
+    render: () => h(ButtonEventsPlayground),
+    vue: eventsVue,
+    vanilla: eventsVanilla,
   },
 ];
