@@ -151,6 +151,7 @@ Tests de la capa `.vue` derivados de las secciones actuales de los playground, c
   - [x] **Badge** migrado (story + 48 checks L1 + página con `StoryRenderer`).
   - [x] **Label** migrado (story + 19 checks L1 + página con `StoryRenderer`).
   - [x] **Alert** migrado (story + 32 checks L1 + página con `StoryRenderer`).
+  - [x] **Card** migrado (story + 36 checks L1 + página con `StoryRenderer`).
   - Herramientas de eficiencia: `stories:status`, `stories:migrate`, `new:component`.
   - Orden sugerido: `Input`, `Select`, `Dropdown`, `Alert`, `Badge`, `Card`, `Checkbox`, `Switch`, `Textarea`, `Tabs`, `Modal`, `Table`, … (297 `SectionDemo` en 45 páginas).
   - Un commit atómico por componente (o por par de componentes chicos).
@@ -332,3 +333,10 @@ Cada commit incluye su entrada en la **Bitácora**.
 - `feat(tools)`: `stories:migrate` ahora extrae **variants** del markup (props estáticos, booleanos, atómicos, interpolación `{{ prop }}`) y genera **checks genéricos** (raíz, variant, color, slot). Marca TODO: `v-for`, slots nombrados, atributos dinámicos.
 - `feat(preflight)`: `./scripts/preflight.sh <X>` corre type-check + solo el L1 del componente; `--no-typecheck` disponible. Full: 20s → scoped: ~8s.
 - `fix(ui)`: badge del playground sin "tests": `✓ N` / `✗ fallos/total` (tooltip con el detalle).
+
+### 2026-09-10 — 1f: Card migrado (métricas con tools v2)
+
+- `test(l1/card)`: Card migrado — 7 secciones, **36 checks L1** (los genéricos del tool + específicos de title/subtitle/image/layout/slots nombrados), página a `StoryRenderer`, `Card.test.ts` eliminado.
+- **Métricas:** tool <1s generó 59 checks (58 pasaban ya) · completar/combinar ~1m · preflight scopeado **8s**.
+- Nota del tool: `v-for` (colors) y slots nombrados quedan marcados como TODO; requieren mano humana.
+- Verificado en navegador: 7 secciones con `✓ N`, 24 cards, 0 errores de consola.
