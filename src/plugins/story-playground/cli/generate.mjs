@@ -146,6 +146,11 @@ for (const constName of [
 const extrasPath = resolve(ROOT, storyDir, `${name}.stories.extras.ts`);
 const hasExtras = existsSync(extrasPath);
 
+// Runtime por componente (setup/global de la story) en un archivo hermano:
+//   src/stories/{cat}/{Name}.stories.runtime.ts → exporta `setup` y/o `global`
+const runtimePath = resolve(ROOT, storyDir, `${name}.stories.runtime.ts`);
+const hasRuntime = existsSync(runtimePath);
+
 function indentValue(value, extra) {
   if (!/^[[{]/.test(value)) return value;
   const pad = " ".repeat(extra);
@@ -296,6 +301,10 @@ const emits = parseEmits(source);
 const rootClass = `cu-${kebab}`;
 const colorToken = source.match(/--([a-z0-9-]+)-bg\b/)?.[1];
 
+// ¿El componente usa la clase root `cu-{kebab}` en su markup? Si no (p. ej. envuelve
+// otro componente), no corresponde el check `.cu-{kebab}`.
+const hasRootClass = source.includes(rootClass);
+
 // ¿El componente declara un slot default? (<slot> sin name=). Si no, el generador
 // no debe emitir `slots.default` ni el check genérico de slot.
 const hasDefaultSlot = [...source.matchAll(/<slot\b[^>]*>/g)].some(
@@ -337,6 +346,7 @@ const SLOT_SAMPLES = {
   AuthorCard: "Ada Lovelace",
   Chip: "Chip",
   Tabs: "Contenido",
+  FloatingButton: "+",
 };
 
 const sample = SLOT_SAMPLES[name] ?? name;
@@ -454,6 +464,16 @@ let finalSections = sections.filter(
   (section) => (!include || include.includes(section.id)) && !exclude.has(section.id),
 );
 
+// attrs globales del config (ej. { "style": "position: static" } para un FAB fixed).
+if (storyConfig.attrs) {
+  for (const section of finalSections) {
+    section.variants = section.variants.map((variant) => ({
+      ...variant,
+      attrs: { ...(variant.attrs ?? {}), ...storyConfig.attrs },
+    }));
+  }
+}
+
 for (const section of finalSections) {
   const overrides = storyConfig.sections?.[section.id];
   if (!overrides) continue;
@@ -466,6 +486,12 @@ for (const section of finalSections) {
       props: { ...(variant.props ?? {}), ...overrides.extraProps },
     }));
     section.checks = [...new Set([...section.checks, ...Object.keys(overrides.extraProps)])];
+  }
+  if (overrides.extraAttrs) {
+    section.variants = section.variants.map((variant) => ({
+      ...variant,
+      attrs: { ...(variant.attrs ?? {}), ...overrides.extraAttrs },
+    }));
   }
 }
 
@@ -506,10 +532,18 @@ sections.push(...finalSections);
 // ── Emisión ─────────────────────────────────────────────────────────────────
 
 const KNOWN_CHECKS = {
-  root: (section) => `          {
+  root: (section) =>
+    hasRootClass
+      ? `          {
             name: "renderiza .${rootClass}",
             run({ wrapper, expect }) {
               expect(wrapper.find(".${rootClass}").exists()).toBe(true);
+            },
+          },`
+      : `          {
+            name: "renderiza el componente",
+            run({ wrapper, expect }) {
+              expect(wrapper.html()).not.toBe("");
             },
           },`,
   slot: () => `          {
@@ -660,6 +694,7 @@ const sectionsSource = sections
       ...section.variants.map((variant) => {
         const parts = [`id: ${JSON.stringify(variant.id)}`];
         if (Object.keys(variant.props ?? {}).length) parts.push(`props: ${JSON.stringify(variant.props)}`);
+        if (Object.keys(variant.attrs ?? {}).length) parts.push(`attrs: ${JSON.stringify(variant.attrs)}`);
         if (Object.keys(variant.slots ?? {}).length) parts.push(`slots: ${JSON.stringify(variant.slots)}`);
         return `        { ${parts.join(", ")} },`;
       }),
@@ -695,11 +730,11 @@ const header = [
 const story = `${header}
 ${previews.length ? 'import { defineComponent, h, ref } from "vue";\n' : ""}import ${name} from "${`@/${componentPath.replace(/^src\//, "")}`}";
 import type { ComponentStory } from "@/stories/types";
-${hasExtras ? `import { extras } from "./${name}.stories.extras";\n` : ""}
+${hasExtras ? `import { extras } from "./${name}.stories.extras";\n` : ""}${hasRuntime ? `import { setup, global } from "./${name}.stories.runtime";\n` : ""}
 ${previews.join("\n\n")}${previews.length ? "\n\n" : ""}export const ${`cu${name}Stories`}: ComponentStory = {
   component: ${JSON.stringify(tag)},
   vue: ${name},
-${metaLines.length ? metaLines.join("\n") + "\n" : ""}${hasExtras ? "  extras,\n" : ""}  sections: [
+${hasRuntime ? "  setup,\n  global,\n" : ""}${metaLines.length ? metaLines.join("\n") + "\n" : ""}${hasExtras ? "  extras,\n" : ""}  sections: [
 ${sectionsSource}
   ],
 };
