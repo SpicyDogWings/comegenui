@@ -92,11 +92,16 @@ function optionValue(rest, key) {
   const offset = trimmed.search(/\S/);
   if (offset < 0) return undefined;
   const valueStart = start + offset;
-  if ("[{(".includes(rest[valueStart])) {
+  const first = rest[valueStart];
+  if (first === '"' || first === "'" || first === "`") {
+    const end = skipQuoted(rest, valueStart, first);
+    return rest.slice(valueStart, end + 1);
+  }
+  if ("[{(".includes(first)) {
     const balanced = readBalanced(rest, valueStart);
     if (balanced) return balanced;
   }
-  return rest.slice(valueStart).split(/[,\n]/)[0].trim();
+  return rest.slice(valueStart).split(/[,\n}]/)[0].trim();
 }
 
 // ── Props ───────────────────────────────────────────────────────────────────
@@ -146,7 +151,10 @@ function parseProps(source, compiled) {
       prop.default = def.replace(/^["'`]|["'`]$/g, "");
     }
     const type = rest.match(/type\s*:\s*([^,\n]+)/);
-    if (type && !values.length) prop.type = type[1].trim();
+    if (type && !values.length) {
+      const raw = type[1].trim();
+      prop.type = { String: "string", Number: "number", Boolean: "boolean", Array: "array", Object: "object" }[raw] ?? raw;
+    }
     props.push(prop);
   }
   return props;
@@ -255,13 +263,16 @@ function kebab(value) {
 function parseComponentImports(source) {
   const deps = [];
   const seen = new Set();
-  const re = /import\s+(\w+)\s+from\s+["']@\/components\/(?!customElements|icons)([^"']+)\.vue["']/g;
+  // Imports locales de componentes: `@/components/...` o relativos (`./Button.vue`).
+  const re = /import\s+(\w+)\s+from\s+["'](?:@\/components\/|\.{1,2}\/)([^"']+)\.vue["']/g;
   let match;
   while ((match = re.exec(source))) {
-    const [, name] = match;
-    if (name === "Icon" || seen.has(name)) continue;
+    const [, name, spec] = match;
+    if (spec.includes("icons") || spec.includes("customElements")) continue;
+    const base = spec.split("/").pop();
+    if (!base || name === "Icon" || seen.has(name)) continue;
     seen.add(name);
-    deps.push({ label: name, path: `/playground/components/${kebab(name)}` });
+    deps.push({ label: name, path: `/playground/components/${kebab(base)}` });
   }
   return deps;
 }

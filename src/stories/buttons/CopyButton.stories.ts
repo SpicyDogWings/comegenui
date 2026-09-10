@@ -1,4 +1,4 @@
-// Generado por src/plugins/cu-playground/cli/generate.mjs a partir de las props de CopyButton.vue.
+// Generado por src/plugins/cu-playground/cli/generate.mjs a partir del contrato de CopyButton.vue.
 // (sin eventos declarados)
 
 import CopyButton from "@/components/buttons/CopyButton.vue";
@@ -7,31 +7,39 @@ import type { ComponentStory } from "@/stories/types";
 export const cuCopyButtonStories: ComponentStory = {
   component: "cu-copy-button",
   vue: CopyButton,
-  tokens: [
-    '--cu-font-sans',
-    '--cu-font-size-sm',
-    '--cu-radius',
-    '--cu-space-sm',
-    '--cu-color-surface',
-    '--cu-border-thin',
-  ],
-  subComponents: [
-    { label: 'Button', path: '/playground/components/button#style' },
-  ],
   api: {
-    components: [
-      { label: 'Button', path: '/playground/components/button' },
+    "components": [
+      {
+        "label": "Button",
+        "path": "/playground/components/button"
+      }
     ],
-    props: [
-      { name: 'text', type: 'string', default: '—', description: 'Contenido a copiar (obligatorio)' },
-      { name: 'label', type: 'string', default: '""', description: 'Texto siempre visible junto al icono; vacío = icon-only (aria: "Copiar")' },
-      { name: 'copiedLabel', type: 'string', default: '"Copiado"', description: 'Texto animado + aria-label durante el estado copied (2s)' },
-      { name: 'color', type: 'string', default: '"neutral"', description: 'Color semántico del Button interno' },
-      { name: 'variant', type: 'string', default: '"soft"', description: 'Variante del Button interno' },
-    ],
-    events: [
-      { name: 'click', type: 'nativo', description: 'Click nativo del Button interno; dispara la copia al portapapeles' },
-    ],
+    "props": [
+      {
+        "name": "text",
+        "type": "string"
+      },
+      {
+        "name": "label",
+        "type": "string",
+        "default": ""
+      },
+      {
+        "name": "copiedLabel",
+        "type": "string",
+        "default": "Copiado"
+      },
+      {
+        "name": "color",
+        "type": "primary | secondary | neutral | success | warning | danger",
+        "default": "neutral"
+      },
+      {
+        "name": "variant",
+        "type": "solid | outlined | soft | ghost | subtle | link | none",
+        "default": "soft"
+      }
+    ]
   },
   sections: [
     {

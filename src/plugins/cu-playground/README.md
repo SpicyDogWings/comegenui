@@ -23,6 +23,7 @@ posibilidad de páginas físicas de override).
 pnpm cu-playground:generate Button            # story + test desde el contrato
 pnpm cu-playground:generate Button --meta-only # solo tokens/api (página genérica)
 pnpm cu-playground:generate Button --pages     # + página física editable
+pnpm cu-playground:generate Button --dry-run   # previsualiza sin escribir
 pnpm cu-playground:generate --all              # barre componentsDir
 pnpm cu-playground:generate Button --force     # pisa story existente
 ```
@@ -68,6 +69,32 @@ El runtime la recibe desde `main.ts`; el CLI la lee del archivo.
 - Extras por componente: `src/stories/{cat}/X.stories.extras.ts` (`StoryExtra[]`).
 - El generador **no pisa** la story (salvo `--force`) ni el archivo de extras.
 - `--meta-only` preserva descripciones y deps curadas.
+
+## Regenerar sin perder lo custom
+
+Solo se generan `X.stories.ts` y `X.l1.test.ts`. Todo lo tuyo va en **sidecars
+que nunca se pisan**:
+
+| Archivo | ¿`--force` lo pisa? | Para qué |
+|---|---|---|
+| `X.stories.ts` | **Sí** | generado (secciones + tokens/api) |
+| `X.l1.test.ts` | **Sí** | generado (runner) |
+| `X.stories.config.json` | No | include/exclude/order, `sections`, `custom[]`, `attrs`, `api`, `tokens` |
+| `X.stories.extras.ts` | No | extras (Programmatic/Events/render custom) |
+| `X.stories.runtime.ts` | No | setup/global de la story |
+
+Reglas:
+
+1. **No edites `X.stories.ts` a mano**: lo que agregues ahí se pierde con
+   `--force`. Ponelo en config/extras/runtime.
+2. Para actualizar solo API/tokens sin tocar secciones: `--meta-only` (además
+   preserva descripciones, deps y events curados).
+3. Previsualizá antes de pisar: `--dry-run` (no escribe; con un solo componente
+   imprime la story resultante).
+4. Para que `--all` no toque un componente (o una categoría): `exclude` en
+   `cu-playground.config.json`.
+5. Página custom de un componente: `--pages` (o escribila a mano en
+   `playgroundDir`); el plugin la usa como override.
 
 ## Llevarlo a otro proyecto
 

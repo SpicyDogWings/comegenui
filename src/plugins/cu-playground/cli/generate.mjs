@@ -4,10 +4,15 @@
 // slots, tokens y sub-componentes) vía `vue/compiler-sfc`.
 //
 // Uso:
-//   pnpm cu-playground:generate Button            # story + test desde props
-//   pnpm cu-playground:generate Button --meta-only # solo tokens/api
-//   pnpm cu-playground:generate --all             # todos los componentes
+//   pnpm cu-playground:generate Button            # story + test desde el contrato
+//   pnpm cu-playground:generate Button --meta-only # solo tokens/api (no toca secciones)
+//   pnpm cu-playground:generate Button --dry-run   # previsualiza sin escribir
+//   pnpm cu-playground:generate --all              # todos los componentes
 //   pnpm cu-playground:generate Button --pages     # + página física editable
+//
+// La story (`X.stories.ts`) y su test se generan; tus custom viven en los
+// sidecars que NUNCA se pisan: `X.stories.config.json`, `X.stories.extras.ts`
+// y `X.stories.runtime.ts`.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import fg from "fast-glob";
@@ -18,6 +23,7 @@ const args = process.argv.slice(2);
 const force = args.includes("--force");
 const metaOnly = args.includes("--meta-only");
 const all = args.includes("--all");
+const dryRun = args.includes("--dry-run");
 const withPages = args.includes("--pages");
 const noPages = args.includes("--no-pages");
 const pageIndex = args.indexOf("--page");
@@ -123,6 +129,58 @@ function readValue(src, start) {
   return null;
 }
 
+/** Separa un bloque por comas de primer nivel (respeta strings y llaves). */
+function splitTopLevel(block) {
+  const parts = [];
+  let depth = 0;
+  let current = "";
+  let quote = null;
+  for (let i = 0; i < block.length; i++) {
+    const char = block[i];
+    if (quote) {
+      current += char;
+      if (char === "\\") {
+        current += block[++i] ?? "";
+        continue;
+      }
+      if (char === quote) quote = null;
+      continue;
+    }
+    if (char === '"' || char === "'" || char === "`") {
+      quote = char;
+      current += char;
+      continue;
+    }
+    if ("[{(".includes(char)) depth++;
+    else if ("}])".includes(char)) depth--;
+    if (char === "," && depth === 0) {
+      parts.push(current);
+      current = "";
+    } else {
+      current += char;
+    }
+  }
+  if (current.trim()) parts.push(current);
+  return parts;
+}
+
+/** Devuelve el string entrecomillado que sigue a `key:` dentro de un entry. */
+function quotedAfter(text, key) {
+  const match = new RegExp(`(?:^|[\\s,{])["']?${key}["']?\\s*:\\s*`).exec(text);
+  if (!match) return undefined;
+  const quote = text[match.index + match[0].length];
+  if (quote !== '"' && quote !== "'") return undefined;
+  const start = match.index + match[0].length + 1;
+  for (let i = start; i < text.length; i++) {
+    if (text[i] === "\\") {
+      i++;
+      continue;
+    }
+    if (text[i] === quote) return text.slice(start, i);
+  }
+  return undefined;
+}
+
 /**
  * Descripciones existentes por sub-array de `api` (para no pisarlas al
  * regenerar). Devuelve `{ props, slots, events, exposes }` → Map(name → desc).
@@ -135,11 +193,52 @@ function existingApiRows(src) {
     const start = src.indexOf("[", match.index);
     const block = readValue(src, start);
     if (!block) continue;
-    for (const entry of block.matchAll(/name:\s*['"]([^'"]+)['"]([^}]*?)description:\s*['"]([^'"]*)['"]/g)) {
-      result[key].set(entry[1], entry[3]);
+    for (const entry of splitTopLevel(block.slice(1, -1))) {
+      const name = quotedAfter(entry, "name");
+      const description = quotedAfter(entry, "description");
+      if (name && description) result[key].set(name, description);
     }
   }
   return result;
+}
+
+/** Filas existentes de un sub-array de `api` (fallback si el parser no detecta). */
+function existingRows(src, key) {
+  const match = new RegExp(`(?:^|[\\s{,])["']?${key}["']?\\s*:\\s*\\[`).exec(src);
+  if (!match) return [];
+  const start = src.indexOf("[", match.index);
+  const block = readValue(src, start);
+  if (!block) return [];
+  const rows = [];
+  for (const entry of splitTopLevel(block.slice(1, -1))) {
+    const name = quotedAfter(entry, "name");
+    if (!name) continue;
+    const row = { name };
+    const type = quotedAfter(entry, "type");
+    if (type !== undefined) row.type = type;
+    const def = quotedAfter(entry, "default");
+    if (def !== undefined) row.default = def;
+    const description = quotedAfter(entry, "description");
+    if (description !== undefined) row.description = description;
+    rows.push(row);
+  }
+  return rows;
+}
+
+/** Fusiona filas generadas con las existentes (las generated mandan por name). */
+function mergeRows(generated, existing) {
+  const names = new Set(generated.map((row) => row.name));
+  return [...generated, ...existing.filter((row) => !names.has(row.name))];
+}
+
+/** Tokens (`tokens: [...]`) existentes en una story, para no perderlos. */
+function existingTokens(src) {
+  const match = /(?:^|[\s{,])["']?tokens["']?\s*:\s*\[/.exec(src);
+  if (!match) return [];
+  const start = src.indexOf("[", match.index);
+  const block = readValue(src, start);
+  if (!block) return [];
+  return [...block.matchAll(/['"`]([^'"`]+)['"`]/g)].map((m) => m[1]);
 }
 
 /** Extrae un array `{ label, path }` (components/subComponents) de una story. */
@@ -242,15 +341,22 @@ function generateOne(componentName) {
   const componentRows =
     storyConfig.components ??
     (contract.components.length ? contract.components : existingDeps(existingSource, "components"));
-  const tokenRows = storyConfig.tokens ?? contract.tokens;
+  const tokenRows =
+    storyConfig.tokens ??
+    (contract.tokens.length ? contract.tokens : existingTokens(existingSource));
   const subComponentRows = storyConfig.subComponents ?? existingDeps(existingSource, "subComponents");
+
+  const allProps = mergeRows(propsRows, existingRows(existingSource, "props"));
+  const allSlots = mergeRows(slotsRows, existingRows(existingSource, "slots"));
+  const allEvents = mergeRows(eventsRows, existingRows(existingSource, "events"));
+  const allExposes = mergeRows(exposesRows, existingRows(existingSource, "exposes"));
 
   const api = {};
   if (componentRows.length) api.components = componentRows;
-  if (propsRows.length) api.props = propsRows;
-  if (slotsRows.length) api.slots = slotsRows;
-  if (eventsRows.length) api.events = eventsRows;
-  if (exposesRows.length) api.exposes = exposesRows;
+  if (allProps.length) api.props = allProps;
+  if (allSlots.length) api.slots = allSlots;
+  if (allEvents.length) api.events = allEvents;
+  if (allExposes.length) api.exposes = allExposes;
   if (storyConfig.interfaceCode) api.interfaceCode = storyConfig.interfaceCode;
 
   const metaLines = [];
@@ -285,6 +391,11 @@ const outlineItems = buildOutline(${`cu${componentName}Stories`});
   </PlaygroundLayout>
 </template>
 `;
+    if (dryRun) {
+      console.log(`[dry-run] escribiría ${pagePath}`);
+      if (!all) console.log(page);
+      return;
+    }
     mkdirSync(resolve(ROOT, playgroundDir), { recursive: true });
     writeFileSync(resolve(ROOT, pagePath), page);
     console.log(`✅ ${pagePath}`);
@@ -315,8 +426,15 @@ const outlineItems = buildOutline(${`cu${componentName}Stories`});
       return false;
     }
     const block = metaLines.length ? "\n" + metaLines.join("\n") : "";
-    writeFileSync(resolve(ROOT, storyPath), updated.replace(anchor, `$1${block}`));
-    console.log(`✅ ${storyPath} (metadata: ${metaLines.length ? metaLines.map((l) => l.trim().split(":")[0]).join(", ") : "sin campos"})`);
+    const next = updated.replace(anchor, `$1${block}`);
+    const detail = metaLines.length ? metaLines.map((l) => l.trim().split(":")[0]).join(", ") : "sin campos";
+    if (dryRun) {
+      console.log(`[dry-run] ${storyPath} (metadata: ${detail})`);
+      if (!all) console.log(next);
+    } else {
+      writeFileSync(resolve(ROOT, storyPath), next);
+      console.log(`✅ ${storyPath} (metadata: ${detail})`);
+    }
     if (generatePages) emitPage();
     return true;
   }
@@ -689,16 +807,23 @@ import { runL1Story } from "@/stories/runner.l1";
 runL1Story(${`cu${componentName}Stories`});
 `;
 
-  mkdirSync(resolve(ROOT, storyDir), { recursive: true });
-  writeFileSync(resolve(ROOT, storyPath), story);
-  writeFileSync(resolve(ROOT, testPath), test);
+  if (dryRun) {
+    console.log(`[dry-run] escribiría ${storyPath} y ${testPath}`);
+    if (!all) console.log(story);
+  } else {
+    mkdirSync(resolve(ROOT, storyDir), { recursive: true });
+    writeFileSync(resolve(ROOT, storyPath), story);
+    writeFileSync(resolve(ROOT, testPath), test);
+  }
 
   // ── Página física opcional ────────────────────────────────────────────────
   if (generatePages) emitPage();
 
   // ── Reporte ───────────────────────────────────────────────────────────────
-  console.log(`✅ ${storyPath}`);
-  console.log(`✅ ${testPath}`);
+  if (!dryRun) {
+    console.log(`✅ ${storyPath}`);
+    console.log(`✅ ${testPath}`);
+  }
   console.log(`   props: ${props.length} · emits: ${emits.length} · exposes: ${contract.exposes.length} · slots: ${contract.slots.length} · tokens: ${tokenRows.length}`);
   console.log(`   secciones: ${sections.map((s) => `${s.title} (${s.variants.length})`).join(", ")}`);
   return true;
@@ -720,6 +845,6 @@ if (all) {
 } else if (name) {
   generateOne(name);
 } else {
-  console.error("Uso: cu-playground generate <Componente> [--force] [--meta-only] [--pages] [--all]");
+  console.error("Uso: cu-playground generate <Componente> [--force] [--meta-only] [--pages] [--dry-run] [--all]");
   process.exit(1);
 }
