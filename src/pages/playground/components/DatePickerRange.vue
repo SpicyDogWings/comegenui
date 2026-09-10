@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import PlaygroundStyle from '@/templates/playground/PlaygroundStyle.vue';
 import PlaygroundApiComponents from '@/templates/playground/PlaygroundApiComponents.vue';
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
@@ -14,6 +14,7 @@ const startDate = ref<Date | null>(null);
 const endDate = ref<Date | null>(null);
 
 const rangeRef = ref<InstanceType<typeof DatePickerRange> | null>(null);
+const eventsRef = ref<InstanceType<typeof DatePickerRange> | null>(null);
 const progStart = ref<Date | null>(null);
 const progEnd = ref<Date | null>(null);
 const progIsOpen = ref(false);
@@ -29,6 +30,21 @@ const now = new Date();
 const y = now.getFullYear();
 const m = String(now.getMonth() + 1).padStart(2, '0');
 const d = (day: number) => `${y}-${m}-${String(day).padStart(2, '0')}`;
+
+const calendarEvents = [
+  { date: d(3), color: 'primary' },
+  { date: d(7), color: 'success' },
+  { date: d(11), color: 'warning' },
+  { date: d(15), color: 'danger' },
+  { date: d(18), color: 'primary' },
+  { date: d(22), color: 'success' },
+  { date: d(25), color: 'warning' },
+  // Día con múltiples eventos:
+  { date: d(11), color: 'danger' },
+  { date: d(11), color: 'primary' },
+];
+
+onMounted(() => eventsRef.value?.open());
 
 function fmt(d: Date | null) {
   return d ? d.toISOString().slice(0, 10) : '—';
@@ -57,6 +73,8 @@ const outlineItems = [
   { label: 'Min / Max', id: 'min-max' },
   { label: 'Dual Calendar', id: 'dual-calendar' },
   { label: 'Colores', id: 'colors' },
+  { label: 'Eventos', id: 'events' },
+  { label: 'Cuadrícula', id: 'grid' },
   { label: 'Posiciones', id: 'positions' },
   { label: 'Disabled', id: 'disabled' },
   {
@@ -127,6 +145,31 @@ const colorsVue = vueSnippet(`  <DatePickerRange color="primary" start-date="202
   <DatePickerRange color="warning" start-date="2026-09-03" end-date="2026-09-07" />
   <DatePickerRange color="danger" start-date="2026-09-03" end-date="2026-09-07" />`);
 
+const gridVue = vueSnippet(`  <DatePickerRange grid start-date="2026-09-03" end-date="2026-09-07" />
+  <DatePickerRange border start-date="2026-09-03" end-date="2026-09-07" />
+  <DatePickerRange grid border start-date="2026-09-03" end-date="2026-09-07" />`);
+
+const eventsVue = `<script setup>
+import { onMounted, ref } from 'vue'
+import DatePickerRange from '@/components/form/DatePickerRange.vue'
+
+const calendarEvents = [
+  { date: '2026-09-03', color: 'primary' },
+  { date: '2026-09-07', color: 'success' },
+  { date: '2026-09-11', color: 'warning' },
+  { date: '2026-09-11', color: 'danger' },
+  { date: '2026-09-11', color: 'primary' },
+  { date: '2026-09-18', color: 'primary' },
+]
+
+const rangeRef = ref(null)
+onMounted(() => rangeRef.value?.open())
+<\/script>
+
+<template>
+  <DatePickerRange ref="rangeRef" start-date="2026-09-03" end-date="2026-09-15" :events="calendarEvents" />
+</template>`;
+
 const positionsVue = vueSnippet(`  <DatePickerRange start-date="2026-09-03" end-date="2026-09-07" />
   <DatePickerRange start-date="2026-09-03" end-date="2026-09-07" position="bottom" align="start" />
   <DatePickerRange start-date="2026-09-03" end-date="2026-09-07" position="bottom" align="center" />
@@ -191,6 +234,31 @@ const colorsVanilla = `<script src="dist/CuDatePickerRange.umd.js"><\/script>
 <cu-date-picker-range color="success" start-date="2026-09-03" end-date="2026-09-07"></cu-date-picker-range>
 <cu-date-picker-range color="warning" start-date="2026-09-03" end-date="2026-09-07"></cu-date-picker-range>
 <cu-date-picker-range color="danger" start-date="2026-09-03" end-date="2026-09-07"></cu-date-picker-range>`;
+
+const eventsVanilla = `<script src="dist/CuDatePickerRange.umd.js"><\/script>
+
+<cu-date-picker-range id="range-events" start-date="2026-09-03" end-date="2026-09-15"></cu-date-picker-range>
+
+<script>
+  customElements.whenDefined('cu-date-picker-range').then(() => {
+    const range = document.getElementById('range-events');
+    range.events = [
+      { date: '2026-09-03', color: 'primary' },
+      { date: '2026-09-07', color: 'success' },
+      { date: '2026-09-11', color: 'warning' },
+      { date: '2026-09-11', color: 'danger' },
+      { date: '2026-09-11', color: 'primary' },
+      { date: '2026-09-18', color: 'primary' },
+    ];
+    range.open();
+  });
+<\/script>`;
+
+const gridVanilla = `<script src="dist/CuDatePickerRange.umd.js"><\/script>
+
+<cu-date-picker-range grid start-date="2026-09-03" end-date="2026-09-07"></cu-date-picker-range>
+<cu-date-picker-range border start-date="2026-09-03" end-date="2026-09-07"></cu-date-picker-range>
+<cu-date-picker-range grid border start-date="2026-09-03" end-date="2026-09-07"></cu-date-picker-range>`;
 
 const positionsVanilla = `<script src="dist/CuDatePickerRange.umd.js"><\/script>
 
@@ -310,6 +378,8 @@ const propsData = [
   { name: 'disabledWeekdays', type: 'number[] | string', default: '""', description: 'Días de semana deshabilitados (0=domingo). Acepta array o "0,6"' },
   { name: 'disabledDates', type: '(string | Date)[] | string', default: '""', description: 'Fechas puntuales deshabilitadas. Acepta array o "2026-09-15,2026-09-16"' },
   { name: 'events', type: 'CalendarEvent[]', default: '[]', description: 'Puntos bajo las fechas: { date, color? }. Compatible con rangos' },
+  { name: 'grid', type: 'boolean', default: 'false', description: 'Líneas interiores entre los días de los calendarios internos' },
+  { name: 'border', type: 'boolean', default: 'false', description: 'Marco exterior alrededor de la cuadrícula de días' },
   { name: 'dualCalendar', type: 'boolean', default: 'false', description: 'Dos meses lado a lado (ideal para rangos que cruzan meses)' },
   { name: 'position', type: 'string', default: '"bottom"', description: 'Posición del panel: bottom, top, left, right' },
   { name: 'align', type: 'string', default: '"start"', description: 'Alineación del panel: start, center, end' },
@@ -467,6 +537,59 @@ const exposesData = [
         <SectionDemo :vue-code="colorsVue" :vanilla-code="colorsVanilla">
           <div class="playground-row">
             <DatePickerRange v-for="color in colors" :key="color" :color="color" start-date="2026-09-03" end-date="2026-09-07" style="max-width: 240px;" />
+          </div>
+        </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="events" class="playground-section">
+        <div class="playground-heading">
+          <h2>Eventos</h2>
+          <Badge color="neutral" title="events por defecto">[]</Badge>
+        </div>
+        <p class="playground-desc">
+          Puntos bajo las fechas en el calendario interno. Un día puede tener múltiples puntos. Se pasan con <code>:events</code> y se ven al abrir el panel.
+        </p>
+        <Button variant="link" to="#api-interfaces">Ver interfaz CalendarEvent ↓</Button>
+        <SectionDemo :vue-code="eventsVue" :vanilla-code="eventsVanilla">
+          <div class="playground-row">
+            <DatePickerRange
+              ref="eventsRef"
+              :events="calendarEvents"
+              :start-date="d(3)"
+              :end-date="d(15)"
+              style="max-width: 300px;"
+            />
+            <div class="playground-events-legend">
+              <strong>Leyenda:</strong>
+              <ul>
+                <li><span class="legend-dot" style="background: #3b82f6;"></span> Entrada a bodega (3, 18)</li>
+                <li><span class="legend-dot" style="background: #22c55e;"></span> Recepción (7, 22)</li>
+                <li><span class="legend-dot" style="background: #f59e0b;"></span> Vencimiento (11, 25)</li>
+                <li><span class="legend-dot" style="background: #ef4444;"></span> Urgente (15)</li>
+                <li><span class="legend-dot" style="background: #f59e0b;"></span><span class="legend-dot" style="background: #ef4444;"></span><span class="legend-dot" style="background: #3b82f6;"></span> Múltiple (11)</li>
+              </ul>
+            </div>
+          </div>
+        </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="grid" class="playground-section">
+        <div class="playground-heading">
+          <h2>Cuadrícula</h2>
+          <Badge color="neutral" title="grid / border por defecto">false</Badge>
+        </div>
+        <p class="playground-desc">
+          <code>grid</code> dibuja líneas <strong>interiores</strong> entre los días de los calendarios internos; <code>border</code> agrega el <strong>marco exterior</strong>.
+        </p>
+        <SectionDemo :vue-code="gridVue" :vanilla-code="gridVanilla">
+          <div class="playground-row">
+            <DatePickerRange grid start-date="2026-09-03" end-date="2026-09-07" style="max-width: 300px;" />
+            <DatePickerRange border start-date="2026-09-03" end-date="2026-09-07" style="max-width: 300px;" />
+            <DatePickerRange grid border start-date="2026-09-03" end-date="2026-09-07" style="max-width: 300px;" />
           </div>
         </SectionDemo>
       </section>
@@ -638,5 +761,33 @@ const exposesData = [
 /* Espacio a la izquierda para que el panel en position="left" no se recorte contra el borde */
 .playground-position-demo--left {
   margin-left: 220px;
+}
+
+.playground-events-legend {
+  font-size: var(--cu-font-size-sm);
+  color: var(--cu-color-neutral);
+}
+
+.playground-events-legend ul {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.playground-events-legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
 }
 </style>

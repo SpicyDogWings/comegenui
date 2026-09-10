@@ -71,6 +71,14 @@ const props = defineProps({
     type: [String, Number, Date] as PropType<string | number | Date | null>,
     default: null,
   },
+  grid: {
+    type: Boolean,
+    default: false,
+  },
+  border: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 interface CalendarEvent {
@@ -121,6 +129,8 @@ defineExpose({ nextMonth, prevMonth, goToMonth, getValue, setValue })
     :events="props.events"
     :range-start="props.rangeStart"
     :range-end="props.rangeEnd"
+    :grid="props.grid"
+    :border="props.border"
     @select="ceEmit('select', $event)"
     @change="ceEmit('change', $event)"
     @update:modelValue="ceEmit('update:modelValue', $event)"

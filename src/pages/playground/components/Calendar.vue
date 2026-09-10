@@ -31,6 +31,7 @@ const outlineItems = [
   { label: 'Locale', id: 'locale' },
   { label: 'Variantes', id: 'variants' },
   { label: 'Colores', id: 'colors' },
+  { label: 'Cuadrícula', id: 'grid' },
   { label: 'Disabled', id: 'disabled' },
   { label: 'Programmatic', id: 'programmatic' },
   {
@@ -127,6 +128,10 @@ const colorsVue = vueSnippet(`  <Calendar color="primary" variant="solid" model-
   <Calendar color="warning" variant="solid" model-value="2026-08-11" />
   <Calendar color="danger" variant="solid" model-value="2026-08-11" />`);
 
+const gridVue = vueSnippet(`  <Calendar grid model-value="2026-08-11" />
+  <Calendar border model-value="2026-08-11" />
+  <Calendar grid border model-value="2026-08-11" />`);
+
 const disabledVue = vueSnippet(`  <Calendar disabled model-value="2026-08-11" />`);
 
 const programmaticVue = `<script setup>
@@ -221,6 +226,12 @@ const colorsVanilla = `<script src="dist/CuCalendar.umd.js"><\/script>
 <cu-calendar color="warning" variant="solid" model-value="2026-08-11"></cu-calendar>
 <cu-calendar color="danger" variant="solid" model-value="2026-08-11"></cu-calendar>`;
 
+const gridVanilla = `<script src="dist/CuCalendar.umd.js"><\/script>
+
+<cu-calendar grid model-value="2026-08-11"></cu-calendar>
+<cu-calendar border model-value="2026-08-11"></cu-calendar>
+<cu-calendar grid border model-value="2026-08-11"></cu-calendar>`;
+
 const disabledVanilla = `<script src="dist/CuCalendar.umd.js"><\/script>
 
 <cu-calendar disabled model-value="2026-08-11"></cu-calendar>`;
@@ -266,6 +277,7 @@ const componentTokens = [
   '--cu-space-xs',
   '--cu-space-sm',
   '--cu-border-thin',
+  '--cu-border-color',
   '--cu-color-surface',
 ];
 
@@ -300,6 +312,8 @@ const propsData = [
   { name: 'events', type: 'CalendarEvent[]', default: '[]', description: 'Puntos bajo las fechas' },
   { name: 'rangeStart', type: 'string | number | Date | null', default: 'null', description: 'Inicio de rango resaltado' },
   { name: 'rangeEnd', type: 'string | number | Date | null', default: 'null', description: 'Fin de rango resaltado' },
+  { name: 'grid', type: 'boolean', default: 'false', description: 'Líneas interiores entre los días (cuadrícula)' },
+  { name: 'border', type: 'boolean', default: 'false', description: 'Marco exterior alrededor de la cuadrícula de días' },
 ];
 
 const slotsData: { name: string; description: string }[] = [];
@@ -498,6 +512,25 @@ const interfaceCode = `interface CalendarEvent {
         <SectionDemo :vue-code="colorsVue" :vanilla-code="colorsVanilla">
           <div class="playground-row">
             <Calendar v-for="color in colors" :key="color" model-value="2026-08-11" :color="color" variant="solid" style="width: 240px;" />
+          </div>
+        </SectionDemo>
+      </section>
+
+      <hr class="playground-separator" />
+
+      <section id="grid" class="playground-section">
+        <div class="playground-heading">
+          <h2>Cuadrícula</h2>
+          <Badge color="neutral" title="grid / border por defecto">false</Badge>
+        </div>
+        <p class="playground-desc">
+          <code>grid</code> dibuja líneas <strong>interiores</strong> entre los días; <code>border</code> agrega el <strong>marco exterior</strong>. Son independientes y combinables.
+        </p>
+        <SectionDemo :vue-code="gridVue" :vanilla-code="gridVanilla">
+          <div class="playground-row">
+            <Calendar grid model-value="2026-08-11" style="width: 280px;" />
+            <Calendar border model-value="2026-08-11" style="width: 280px;" />
+            <Calendar grid border model-value="2026-08-11" style="width: 280px;" />
           </div>
         </SectionDemo>
       </section>

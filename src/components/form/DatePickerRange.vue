@@ -44,6 +44,8 @@ const props = defineProps({
     type: Array as PropType<CalendarEvent[]>,
     default: () => [],
   },
+  grid: { type: Boolean, default: false },
+  border: { type: Boolean, default: false },
   dualCalendar: { type: Boolean, default: false },
   position: { type: String, default: 'bottom' },
   align: { type: String, default: 'start' },
@@ -271,6 +273,8 @@ const panelWidth = computed(() => {
               :disabled-weekdays="disabledWeekdays"
               :disabled-dates="disabledDates"
               :events="events"
+              :grid="grid"
+              :border="border"
               @select="onSelect"
             />
             <Calendar
@@ -291,6 +295,8 @@ const panelWidth = computed(() => {
               :disabled-weekdays="disabledWeekdays"
               :disabled-dates="disabledDates"
               :events="events"
+              :grid="grid"
+              :border="border"
               @select="onSelect"
             />
           </div>

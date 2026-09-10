@@ -82,6 +82,14 @@ const props = defineProps({
     type: [String, Number, Date] as PropType<string | number | Date | null>,
     default: null,
   },
+  grid: {
+    type: Boolean,
+    default: false,
+  },
+  border: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const emit = defineEmits<{
@@ -369,7 +377,7 @@ const colorStyles = computed(() => ({
 <template>
   <div
     class="cu-calendar"
-    :class="{ 'is-disabled': props.disabled, 'cu-calendar--year-nav': yearNavigation }"
+    :class="{ 'is-disabled': props.disabled, 'cu-calendar--year-nav': yearNavigation, 'cu-calendar--grid': props.grid, 'cu-calendar--border': props.border }"
     :style="colorStyles"
     role="grid"
     :aria-label="monthLabel"
@@ -538,6 +546,36 @@ const colorStyles = computed(() => ({
 
 .cu-calendar-day--empty {
   aspect-ratio: 1;
+}
+
+/* ── Grid interno: líneas separadoras entre días ── */
+.cu-calendar--grid .cu-calendar-weekdays,
+.cu-calendar--grid .cu-calendar-week {
+  gap: 0;
+}
+
+.cu-calendar--grid .cu-calendar-day,
+.cu-calendar--grid .cu-calendar-day--empty {
+  border-right: var(--cu-border-thin) solid var(--cu-border-color);
+  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);
+  border-radius: 0;
+}
+
+.cu-calendar--grid .cu-calendar-week:last-child .cu-calendar-day,
+.cu-calendar--grid .cu-calendar-week:last-child .cu-calendar-day--empty {
+  border-bottom: none;
+}
+
+.cu-calendar--grid .cu-calendar-day:nth-child(7n),
+.cu-calendar--grid .cu-calendar-day--empty:nth-child(7n) {
+  border-right: none;
+}
+
+/* ── Borde exterior: marco alrededor de la cuadrícula de días ── */
+.cu-calendar--border .cu-calendar-grid {
+  border: var(--cu-border-thin) solid var(--cu-border-color);
+  border-radius: var(--cu-radius-sm);
+  overflow: hidden;
 }
 
 /* ── Rango ── */
