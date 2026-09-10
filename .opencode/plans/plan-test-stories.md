@@ -158,6 +158,7 @@ Tests de la capa `.vue` derivados de las secciones actuales de los playground, c
   - [x] **Input** migrado (story + 55 checks L1 + página con `StoryRenderer`).
   - [x] **Avatar** migrado (story + 45 checks L1 + página con `StoryRenderer`).
   - [x] **Loader** migrado (story + 8 checks L1 + página con `StoryRenderer`).
+  - [x] **ColorPicker** migrado (story + 6 checks L1 + página con `StoryRenderer`).
   - Herramientas de eficiencia: `stories:status`, `stories:migrate`, `new:component`.
   - Orden sugerido: `Input`, `Select`, `Dropdown`, `Alert`, `Badge`, `Card`, `Checkbox`, `Switch`, `Textarea`, `Tabs`, `Modal`, `Table`, … (297 `SectionDemo` en 45 páginas).
   - Un commit atómico por componente (o por par de componentes chicos).
@@ -380,3 +381,7 @@ Cada commit incluye su entrada en la **Bitácora**.
 
 - `test(l1/loader)`: Loader migrado — 3 secciones, **8 checks L1**, página a `StoryRenderer`, `Loader.test.ts` eliminado.
 - Previews propios con caja `position:relative` (el loader es `absolute`) y grilla para Colors.
+
+### 2026-09-10 — 1f: ColorPicker migrado
+
+- `test(l1/color-picker)`: ColorPicker migrado — 3 secciones, **6 checks L1**, página a `StoryRenderer`, `ColorPicker.test.ts` eliminado.
