@@ -140,7 +140,7 @@ Tests de la capa `.vue` derivados de las secciones actuales de los playground, c
 - [x] **1c** Preview del playground desde stories
   - `src/pages/playground/StoryRenderer.vue`: recorre `sections` → `variants` y renderiza `<component :is="section.vue" v-bind="variant.props">` con `variant.slots`. Soporta `section.preview` para demos interactivas (ej. `loading`).
   - `src/pages/playground/components/Button.vue`: reemplaza el markup inline por el renderer, conservando `<section id>`, headings, `Badge`, `SectionDemo` y el nav (`outlineItems`) para no romper el router.
-- [ ] **1d** Runner L1 + tests
+- [x] **1d** Runner L1 + tests
   - `src/stories/runner.l1.ts`: itera story → sección → variante → check; `mount()` de `@vue/test-utils`; `it(name, { meta }, fn)` con `meta = { component, section, variant, layer: 'l1' }`.
   - `src/components/buttons/Button.l1.test.ts`: `runL1Story(cuButtonStories)`.
   - Eliminar `src/components/buttons/Button.test.ts` (sus checks se migran a la story).
@@ -244,3 +244,10 @@ Cada commit incluye su entrada en la **Bitácora**.
 - `test(playground)`: `src/pages/playground/components/Button.vue` pasa a consumir `cuButtonStories`; el nav se deriva de las secciones de la story (se conservan Style y API).
 - Snippets de la sección `icons` completados (ya no tienen `…`).
 - Verificado en dev server: 8 secciones + Style + API, headings y badges correctos, 0 errores de consola.
+
+### 2026-09-10 — 1d Runner L1
+
+- `test(l1)`: `src/stories/runner.l1.ts` (mount `.vue` + `meta` plano para el reporter).
+- `test(l1)`: `src/components/buttons/Button.l1.test.ts` reemplaza `Button.test.ts` (eliminado); se migraron sus checks a la story (defaults, slot, click, disabled, loading, variant, color, size, to, full width).
+- Reporter verificado: `public/test-results.json` con 65 checks de `cu-button` en verde.
+- Suite completa: 37 archivos / 386 tests en verde.

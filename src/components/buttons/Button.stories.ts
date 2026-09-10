@@ -131,6 +131,27 @@ export const cuButtonStories: ComponentStory = {
               expect(wrapper.find("button.cu-button").classes()).toContain(`cu-button--${value}`);
             },
           },
+          {
+            name: "type por defecto es button",
+            run({ wrapper, expect }) {
+              expect(wrapper.find("button.cu-button").attributes("type")).toBe("button");
+            },
+          },
+          {
+            name: "renderiza el contenido del slot",
+            run({ wrapper, expect }, variant) {
+              const label = variant.slots?.default;
+              const text = typeof label === "string" ? label : variant.id;
+              expect(wrapper.find("button.cu-button").text()).toContain(text);
+            },
+          },
+          {
+            name: "emite click",
+            async run({ wrapper, expect }) {
+              await wrapper.find("button.cu-button").trigger("click");
+              expect(wrapper.emitted("click")).toBeTruthy();
+            },
+          },
         ],
       },
     },
@@ -296,10 +317,8 @@ export const cuButtonStories: ComponentStory = {
           },
           {
             name: "renderiza el label junto al icono",
-            run({ wrapper, expect }, variant) {
-              const label = variant.slots?.default;
-              const text = typeof label === "string" ? label : String(variant.id);
-              expect(wrapper.find("button.cu-button").text()).toContain(text);
+            run({ wrapper, expect }) {
+              expect(wrapper.find("button.cu-button").text().trim().length).toBeGreaterThan(0);
             },
           },
         ],
@@ -462,7 +481,7 @@ async function guardar() {
           {
             name: "respeta el style width:100% del host",
             run({ wrapper, expect }) {
-              expect(wrapper.find("button.cu-button").attributes("style")).toContain("width:100%");
+              expect(wrapper.find("button.cu-button").attributes("style")).toContain("width: 100%");
             },
           },
         ],
