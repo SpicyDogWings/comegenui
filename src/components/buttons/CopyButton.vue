@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, type PropType } from "vue";
 import Button from "./Button.vue";
 import LucideCopy from "@/components/icons/LucideCopy.vue";
 import LucideCheck from "@/components/icons/LucideCheck.vue";
@@ -8,8 +8,16 @@ const props = defineProps({
   text: { type: String, required: true },
   label: { type: String, default: "" },
   copiedLabel: { type: String, default: "Copiado" },
-  color: { type: String, default: "neutral" },
-  variant: { type: String, default: "soft" },
+  color: {
+    type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
+    required: false,
+    default: "neutral",
+  },
+  variant: {
+    type: String as PropType<'solid' | 'outlined' | 'soft' | 'ghost' | 'subtle' | 'link' | 'none'>,
+    required: false,
+    default: "soft",
+  },
 });
 
 const copied = ref(false);
