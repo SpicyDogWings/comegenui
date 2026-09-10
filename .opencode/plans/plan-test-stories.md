@@ -161,6 +161,7 @@ Tests de la capa `.vue` derivados de las secciones actuales de los playground, c
   - [x] **ColorPicker** migrado (story + 6 checks L1 + página con `StoryRenderer`).
   - [x] **CopyButton** migrado (story + 25 checks L1 + página con `StoryRenderer`).
   - [x] **FloatingButton** migrado (story + 25 checks L1 + página con `StoryRenderer`).
+  - [x] **ToggleColorSheme** migrado (story + 23 checks L1 + página con `StoryRenderer`).
   - Herramientas de eficiencia: `stories:status`, `stories:migrate`, `new:component`.
   - Orden sugerido: `Input`, `Select`, `Dropdown`, `Alert`, `Badge`, `Card`, `Checkbox`, `Switch`, `Textarea`, `Tabs`, `Modal`, `Table`, … (297 `SectionDemo` en 45 páginas).
   - Un commit atómico por componente (o por par de componentes chicos).
@@ -398,3 +399,8 @@ Cada commit incluye su entrada en la **Bitácora**.
 
 - `test(l1/floating-button)`: FloatingButton migrado — 3 secciones, **25 checks L1**, página a `StoryRenderer`, `FloatingButton.test.ts` eliminado.
 - Previews con `position: static` (trampa de FABs) e íconos por slot en las variantes.
+
+### 2026-09-10 — 1f: ToggleColorSheme migrado + infra de stories
+
+- `feat(stories)`: `ComponentStory.setup`/`global` (Pinia, init de plugins) en el runner; `--page` en `stories:migrate` (componente con typo `Sheme` vs página `Scheme`); export de `init` en cu-tokens.
+- `test(l1/toggle-color-sheme)`: ToggleColorSheme migrado — 2 secciones, **23 checks L1**, página a `StoryRenderer`, test viejo eliminado.

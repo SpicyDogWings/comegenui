@@ -1,15 +1,12 @@
 <script setup lang="ts">
-import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import PlaygroundStyle from '@/templates/playground/PlaygroundStyle.vue';
-import PlaygroundApiComponents from '@/templates/playground/PlaygroundApiComponents.vue';
-import ToggleColorSheme from "@/components/buttons/ToggleColorSheme.vue";
-import Badge from "@/components/information/Badge.vue";
-import SectionDemo from "@/pages/playground/SectionDemo.vue";
+import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
+import StoryRenderer from "@/pages/playground/StoryRenderer.vue";
 import Table from "@/components/data/Table.vue";
+import { cuToggleColorShemeStories } from "@/stories/buttons/ToggleColorSheme.stories";
 
 const outlineItems = [
-  { label: 'Variants', id: 'variants' },
-  { label: 'Size', id: 'size' },
+  ...cuToggleColorShemeStories.sections.map((section) => ({ label: section.title, id: section.id })),
   {
     label: 'Style',
     id: 'style',
@@ -29,27 +26,7 @@ const outlineItems = [
   },
 ];
 
-const vueImport = `<script setup>
-import ToggleColorScheme from '@/components/buttons/ToggleColorSheme.vue'
-<\/script>`;
-
-const vueSnippet = (body: string) => `${vueImport}
-
-<template>
-${body}
-</template>`;
-
-const variantsVue = vueSnippet(`  <ToggleColorScheme variant="ghost" />
-  <ToggleColorScheme variant="soft" />
-  <ToggleColorScheme variant="outlined" />
-  <ToggleColorScheme variant="subtle" />
-  <ToggleColorScheme variant="solid" />`);
-
-const sizeVue = vueSnippet(`  <ToggleColorScheme :size="16" />
-  <ToggleColorScheme :size="20" />
-  <ToggleColorScheme :size="24" />`);
-
-const componentTokens = [];
+const componentTokens: string[] = [];
 
 const apiColumns = [
   { key: 'name', label: 'Nombre' },
@@ -71,43 +48,10 @@ const eventsData = [
 <template>
   <PlaygroundLayout title="ToggleColorScheme" :outlineItems="outlineItems">
     <div class="playground-content">
-      <section id="variants" class="playground-section">
-        <div class="playground-heading">
-          <h2>Variants</h2>
-          <Badge color="neutral" title="Variante por defecto">ghost</Badge>
-        </div>
-        <SectionDemo :vue-code="variantsVue">
-          <div class="playground-row">
-            <ToggleColorSheme />
-            <ToggleColorSheme variant="soft" />
-            <ToggleColorSheme variant="outlined" />
-            <ToggleColorSheme variant="subtle" />
-            <ToggleColorSheme variant="solid" />
-          </div>
-        </SectionDemo>
-      </section>
+      <StoryRenderer :story="cuToggleColorShemeStories" />
 
       <hr class="playground-separator" />
-
-      <section id="size" class="playground-section">
-        <div class="playground-heading">
-          <h2>Size</h2>
-          <Badge color="neutral" title="Tamaño por defecto (px)">20</Badge>
-        </div>
-        <SectionDemo :vue-code="sizeVue">
-          <div class="playground-row">
-            <ToggleColorSheme :size="16" />
-            <ToggleColorSheme :size="20" />
-            <ToggleColorSheme :size="24" />
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <hr class="playground-separator" />
-
-      <hr class="playground-separator" />      <PlaygroundStyle :tokens="componentTokens" />
+      <PlaygroundStyle :tokens="componentTokens" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>
