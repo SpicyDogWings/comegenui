@@ -15,6 +15,8 @@ El plugin `src/plugins/story-playground/` registra la ruta dinámica `/playgroun
 
 - **Programmatic**: **solo si el componente usa `defineExpose`**. Botones `Button color="neutral"` sobre una instancia (`ref`), una acción por botón, línea `playground-state` con los getters en vivo, y el componente al final. Si no expone métodos, no se crea. Ej: `src/stories/overlay/Collapse.stories.extras.ts`, `src/stories/information/Alert.stories.extras.ts`.
 - **Events**: una instancia y un log en vivo de los eventos (nativos + `ceEmit` con `e.detail`). Ej: `src/stories/buttons/Button.stories.extras.ts`.
+
+**Pitfall (v-model controlado):** si el componente usa `defineModel` y le pasás `v-model` desde el extra, `set()`/`reset()` **no** cambian el valor local en el mismo tick: solo emiten `update:modelValue`. El estado del patio debe actualizarse desde `onUpdate:modelValue`/eventos; `get()` se usa solo en el botón `get()`. Leer `get()` justo después de `set()` revierte el estado (bug real corregido en Switch/Checkbox/Textarea/Input/ColorPicker).
 - Se pintan como sección propia después de las secciones de la story.
 
 ## Página legacy (transición)
@@ -84,18 +86,17 @@ Referencia viva: `src/pages/playground/components/Button.vue`.
 2. **`layout`**: `"row"` (default) o `"col"`.
 3. **Cada sección** lleva `vue` y `vanilla` (la tab Vanilla **solo si el componente está en `lib/`**). En snippets escapá `</script>` como `<\/script>`.
 4. **Interactividad**: si la sección necesita estado (loading, toggles), usá `preview` (un `defineComponent` con `setup()`); el loop de `variants` queda para los checks.
-5. **Programmatic** (si expone métodos o se controla por v-model): se escribe a mano en la página, **entre `StoryRenderer` y Style**, con el layout fijo de abajo.
+5. **Programmatic**: **no** va en la página; va como **extra** de la story (`X.stories.extras.ts`) y **solo si el componente usa `defineExpose`**. Página legacy: mismo layout en su `<section id="programmatic">`, pero es transitorio.
 
-### Programmatic (página, no story)
+### Programmatic (layout — aplica a extras)
 
-Referencia: `DatePicker.vue`.
+El layout del patio es el mismo en extras y en páginas legacy:
 
-- `<div class="playground-heading"><h2>Programmatic</h2></div>` + `<p class="playground-desc">Seguidilla de botones sobre la instancia de abajo</p>`.
-- `SectionDemo` con: fila de `Button color="neutral"` (uniformes, una acción por botón, nunca `<button>` nativo), UNA línea `<p class="playground-state">` con los getters/v-model en vivo, y el componente **al final**.
-- Estado en vivo: actualizar en cada acción **y** en los events del componente (`@update:model-value`, `@close`, `@change`…).
-- Sin métodos expuestos → manipular los v-models (ej: Pagination `v-model:current-page`).
-- Outline `Programmatic` **sin children**.
-- En snippets el estado se loguea a `console` (`logState()`); Vanilla usa `cu-button`.
+- `<h2>Programmatic</h2>` + `<p class="playground-desc">Seguidilla de botones sobre la instancia de abajo</p>`.
+- Fila de `Button color="neutral"` (uniformes, una acción por botón, nunca `<button>` nativo), UNA línea `<p class="playground-state">` con los getters en vivo, y el componente **al final**.
+- Actualizar el estado desde los eventos del componente (`@update:model-value`, `@change`, `@toggle`…) y en `get()` cuando se lo invoca; **no** leer `get()` justo después de `set()` en v-model controlado (ver pitfall arriba).
+- Outline del extra: `id: "programmatic"`, sin children.
+- En snippets el estado se loguea a `console`; Vanilla usa `cu-button`.
 
 ## Patrón viejo (solo páginas sin migrar)
 

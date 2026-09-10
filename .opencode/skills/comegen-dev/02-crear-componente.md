@@ -102,7 +102,9 @@ Receta completa y schema en [`04-stories-y-tests.md`](04-stories-y-tests.md).
 **No hay que escribir página**: el plugin `story-playground` (`src/plugins/story-playground/`) pinta cualquier story en `/playground/components/:name` (`StoryPage` genérica: secciones + extras + Style + API).
 
 - Para que use `Style`/`API`, la story necesita `tokens`/`api`: `pnpm run stories:generate X --meta-only`.
-- Si el componente tiene **exposes/v-model** o **eventos**, agregá el extra correspondiente.
+- **Extras** (`X.stories.extras.ts`):
+  - **Programmatic**: **solo si el componente usa `defineExpose`** (si no expone métodos, no se crea).
+  - **Events**: si emite eventos propios (`ceEmit`) o nativos relevantes.
 - La ruta ya existe (dinámica); solo agregá la entrada en el nav (`PlaygroundLayout.vue`).
 - Las páginas en `src/pages/playground/components/` son **legacy**: se usan solo como fallback mientras la story no tenga metadata.
 

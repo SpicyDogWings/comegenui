@@ -513,3 +513,7 @@ Cada commit incluye su entrada en la **Bitácora**.
 
 - Todas las stories (23/23) tienen `tokens`/`api`: se completó **FileList** a mano (era el único sin página de origen) → todas usan la StoryPage genérica con **Style + API**, igual que Button.
 - Se quitó el extra **Events** de Button (pedido): su playground queda con secciones prop-driven + Style + API. Los extras quedan solo como **Programmatic** en componentes con `defineExpose`.
+
+### 2026-09-10 — Skill alineada al flujo real
+
+- `docs(skill)`: `SKILL.md` (flujo de 9 pasos + DoD con metadata/extras/playground genérico), `02` (creación con generate/config/extras), `05` (extras, layout y pitfall de v-model controlado), `08` (generate primero, `--meta-only`, Programmatic solo con `defineExpose`).

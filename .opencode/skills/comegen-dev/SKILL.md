@@ -34,20 +34,23 @@ Seguí los pasos **en orden**. No saltees el 3 (story) ni el 4 (tests): ahí es 
 | 0 | **Orientarse** | Leer `AGENTS.md` y [`01-mapa-del-repo.md`](01-mapa-del-repo.md). Decidir: ¿crear o modificar? ¿categoría? ¿público (lib) o interno? | [`01`](01-mapa-del-repo.md) |
 | 1 | **Contrato** | Definir props/emits/slots/`defineExpose` y tokens (`--cu-color-*`). Es la API que van a consumir los hosts. | [`02`](02-crear-componente.md) §Contrato |
 | 2 | **Implementar** | `.vue` real; si es público: `.ce.vue` + `lib/{cat}/x.ts`. | [`02`](02-crear-componente.md) / [`03`](03-modificar-componente.md) |
-| 3 | **Story** | `src/stories/{category}/X.stories.ts` con secciones = casos de uso reales y `checks.l1` (y `ce`/`umd` cuando aplique). | [`04`](04-stories-y-tests.md) |
+| 3 | **Story** | `src/stories/{category}/X.stories.ts`: generala con `pnpm run stories:generate X` (prop-driven) y refinala con `X.stories.config.json`; `checks.l1` (y `ce`/`umd` cuando aplique). | [`04`](04-stories-y-tests.md) |
 | 4 | **Tests** | `src/stories/{category}/X.l1.test.ts` con el runner de stories. Migrar tests viejos si existían. | [`04`](04-stories-y-tests.md) |
-| 5 | **Playground** | Página + `route` + entrada de nav. El preview sale de la story vía `StoryRenderer`. | [`05`](05-playground.md) |
-| 6 | **Docs** | `docs/skills/use-comegen/componentes/cu-x.md` (+ índices). | [`07`](07-documentacion.md) + skill `comegen-ui-docs` |
-| 7 | **Validar y commitear** | `./scripts/preflight.sh` verde; commit atómico (nunca `git add -A`). | [`06`](06-build-y-validacion.md) |
+| 5 | **Metadata + extras** | `pnpm run stories:generate X --meta-only` (`tokens`/`api` → Style/API en la página genérica). Extra **Programmatic** solo si el componente usa `defineExpose`; **Events** si emite eventos. | [`04`](04-stories-y-tests.md) · [`05`](05-playground.md) |
+| 6 | **Playground** | **No se escribe página**: el plugin `story-playground` pinta la story en `/playground/components/:name`. Solo agregar la entrada de nav. | [`05`](05-playground.md) |
+| 7 | **Docs** | `docs/skills/use-comegen/componentes/cu-x.md` (+ índices). | [`07`](07-documentacion.md) + skill `comegen-ui-docs` |
+| 8 | **Validar y commitear** | `./scripts/preflight.sh` verde; commit atómico (nunca `git add -A`). | [`06`](06-build-y-validacion.md) |
 
 ## Definición de terminado (DoD)
 
 Un componente nuevo está terminado cuando **todo** esto existe y pasa:
 
 - [ ] **Contrato**: `X.vue`; si es público, también `X.ce.vue` + `src/lib/{cat}/x.ts` con `<cu-x>` registrado.
-- [ ] **Story**: `src/stories/{category}/X.stories.ts` con secciones = casos de uso (variantes, estados, slots, eventos) y `checks.l1` por sección.
-- [ ] **Test L1**: `src/stories/{category}/X.l1.test.ts` que llama a `runL1Story(X.stories)` (reemplaza tests viejos del componente).
-- [ ] **Playground**: página registrada en `router` + nav; el preview se renderiza desde la story.
+- [ ] **Story**: `src/stories/{category}/X.stories.ts` (generada con `stories:generate` y refinada con `X.stories.config.json`) con secciones y `checks.l1` por sección.
+- [ ] **Test L1**: `src/stories/{category}/X.l1.test.ts` que llama a `runL1Story(XStories)` (reemplaza tests viejos del componente).
+- [ ] **Metadata**: `tokens` + `api` en la story (`--meta-only`) → la página genérica pinta **Style** y **API**.
+- [ ] **Extras**: **Programmatic** solo si usa `defineExpose`; **Events** si emite eventos propios. En archivo hermano `X.stories.extras.ts`.
+- [ ] **Playground**: entrada en el nav (`PlaygroundLayout.vue`); la ruta y la página las provee el plugin (no hay `X.vue` de página).
 - [ ] **Docs**: `docs/skills/use-comegen/componentes/cu-x.md` con props/slots/events/methods.
 - [ ] **Verde**: `./scripts/preflight.sh` sin errores nuevos de type-check y con los tests en verde.
 - [ ] **Badges**: el playground muestra ✅ en cada sección (lo pinta `TestResultBadge` desde `public/test-results.json`).

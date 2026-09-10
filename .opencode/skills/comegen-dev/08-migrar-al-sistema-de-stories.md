@@ -16,7 +16,7 @@ ls docs/skills/use-comegen/componentes/cu-x.md      # doc existente
 
 > **Flujo actual (preferido):** `pnpm run stories:generate X` arma la story **desde las props** (secciones enum/boolean/texto, snippets y checks derivados del source). Refiná con `src/stories/{category}/X.stories.config.json` (`order`, `include`/`exclude`, `sections.<id>.extraProps|preview`, secciones `custom[]`). Después:
 > - `pnpm run stories:generate X --meta-only` → agrega `tokens`/`api` (la story pasa a la **StoryPage genérica**).
-> - `src/stories/{category}/X.stories.extras.ts` → **Programmatic** (exposes/v-model) y/o **Events**.
+> - `src/stories/{category}/X.stories.extras.ts` → **Programmatic** (solo si usa `defineExpose`) y/o **Events** (si emite).
 >
 > **Alternativa:** `pnpm run stories:migrate X` cuando el demo de la página es más rico que las props (extrae secciones/snippets/variants/checks de la página y deja TODO lo específico).
 
@@ -34,7 +34,7 @@ Si usaste `pnpm run stories:migrate X`, ya trae secciones, snippets, variants y 
 - Snippets: moverlos tal cual; una misma sección no comparte snippet con otra salvo que el demo sea idéntico.
 - **Secciones con grilla/tabla** (ej: Badge `combinations`, 5 variantes × 6 colores): usar `preview` (un `defineComponent` con `setup()` que renderiza la tabla) y dejar `variants` solo para los checks.
 - **Secciones interactivas** (v-model, toggles, loading): `preview` + variantes para checks.
-- **Programmatic** (métodos expuestos o v-model): va como **extra** en `X.stories.extras.ts` (`StoryExtra`), no en la página (ver [`05-playground.md`](05-playground.md)).
+- **Programmatic**: **solo si el componente usa `defineExpose`**; va como **extra** en `X.stories.extras.ts` (`StoryExtra`), no en la página (ver [`05-playground.md`](05-playground.md)).
 - **Events**: patio de eventos como extra (nativos + `ceEmit` con `e.detail`).
 
 ## 3. Migrar los checks del test viejo
@@ -212,7 +212,7 @@ Cuando hay varios componentes para migrar, **un subagente por componente en para
 > Estás en el repo comegen-ui. Migrá el componente **X** al sistema de stories/tests L1. NO hagas commit ni toques archivos fuera de los indicados.
 > 1. Leé `.opencode/skills/comegen-dev/04-stories-y-tests.md` y `08-migrar-al-sistema-de-stories.md`.
 > 2. `pnpm run stories:generate X` (prop-driven) y refiná con `X.stories.config.json`; si el demo de la página es más rico que las props, usá `pnpm run stories:migrate X` o escribila a mano.
-> 3. `pnpm run stories:generate X --meta-only` para `tokens`/`api`; agregá `X.stories.extras.ts` si hay exposes/v-model (Programmatic) o eventos (Events).
+> 3. `pnpm run stories:generate X --meta-only` para `tokens`/`api`; agregá `X.stories.extras.ts` con Programmatic **solo si usa `defineExpose`** (y Events si emite).
 > 4. `X.l1.test.ts` con `runL1Story`; borrá el test viejo (`git rm .../X.test.ts`).
 > 5. `pnpm exec vitest run --project l1 src/stories/{cat}/X.l1.test.ts` hasta verde.
 > 6. Reportá archivos, cantidad de checks, resultado y bloqueos.
