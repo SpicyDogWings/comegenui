@@ -3,17 +3,19 @@ import { ref } from "vue";
 import PlaygroundStyle from '@/templates/playground/PlaygroundStyle.vue';
 import PlaygroundApiComponents from '@/templates/playground/PlaygroundApiComponents.vue';
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
+import StoryRenderer from "@/pages/playground/StoryRenderer.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
-import Badge from "@/components/information/Badge.vue";
 import Table from "@/components/data/Table.vue";
 import Button from "@/components/buttons/Button.vue";
 import Pagination from "@/components/controls/Pagination.vue";
+import { cuPaginationStories } from "@/stories/controls/Pagination.stories";
+
+const progPage = ref(1);
+const progItemsPerPage = ref(10);
+const totalPages = ref(10);
 
 const outlineItems = [
-  { label: 'Basic', id: 'basic' },
-  { label: 'Colors', id: 'colors' },
-  { label: 'With Page Size', id: 'page-size' },
-  { label: 'First & Last', id: 'first-last' },
+  ...cuPaginationStories.sections.map((section) => ({ label: section.title, id: section.id })),
   { label: 'Programmatic', id: 'programmatic' },
   {
     label: 'Style',
@@ -34,83 +36,6 @@ const outlineItems = [
     ],
   },
 ];
-
-const progPage = ref(1);
-const progItemsPerPage = ref(10);
-
-const currentPage = ref(1);
-const itemsPerPage = ref(10);
-const totalItems = ref(87);
-
-const totalPages = ref(10);
-
-// ── Snippets Vue ──
-
-const basicVue = `<script setup>
-import { ref } from 'vue'
-import Pagination from '@/components/controls/Pagination.vue'
-
-const currentPage = ref(1)
-const itemsPerPage = ref(10)
-const totalItems = ref(87)
-<\/script>
-
-<template>
-  <Pagination
-    v-model:current-page="currentPage"
-    :total-pages="Math.ceil(totalItems / itemsPerPage)"
-    :total-items="totalItems"
-    :items-per-page="itemsPerPage"
-  />
-</template>`;
-
-const colorsVue = `<script setup>
-import Pagination from '@/components/controls/Pagination.vue'
-<\/script>
-
-<template>
-  <Pagination color="primary" :current-page="3" :total-pages="8" :total-items="80" :items-per-page="10" />
-  <Pagination color="secondary" :current-page="3" :total-pages="8" :total-items="80" :items-per-page="10" />
-  <Pagination color="success" :current-page="3" :total-pages="8" :total-items="80" :items-per-page="10" />
-  <Pagination color="warning" :current-page="3" :total-pages="8" :total-items="80" :items-per-page="10" />
-  <Pagination color="danger" :current-page="3" :total-pages="8" :total-items="80" :items-per-page="10" />
-</template>`;
-
-const pageSizeVue = `<script setup>
-import { ref } from 'vue'
-import Pagination from '@/components/controls/Pagination.vue'
-
-const currentPage = ref(1)
-const itemsPerPage = ref(10)
-<\/script>
-
-<template>
-  <Pagination
-    v-model:current-page="currentPage"
-    v-model:items-per-page="itemsPerPage"
-    :total-pages="9"
-    :total-items="87"
-    show-page-size
-    :page-size-options="[5, 10, 20, 50]"
-  />
-</template>`;
-
-const firstLastVue = `<script setup>
-import { ref } from 'vue'
-import Pagination from '@/components/controls/Pagination.vue'
-
-const currentPage = ref(1)
-<\/script>
-
-<template>
-  <Pagination
-    v-model:current-page="currentPage"
-    :total-pages="9"
-    :total-items="87"
-    :items-per-page="10"
-    show-first-and-last
-  />
-</template>`;
 
 const programmaticVue = `<script setup>
 import { ref } from 'vue'
@@ -143,40 +68,15 @@ function setPage(n: number) {
     </div>
     <Pagination
       v-model:current-page="page"
+      v-model:items-per-page="itemsPerPage"
       :total-pages="totalPages"
       :total-items="totalItems"
-      :items-per-page="itemsPerPage"
-      show-first-and-last
-      @update:current-page="page = $event"
+      :show-first-and-last="true"
     />
   </div>
 </template>`;
 
-// ── Snippets Vanilla ──
-
-const paginationImportVanilla = `<script src="dist/CuPagination.umd.js"><\/script>`;
-
-const basicVanilla = `${paginationImportVanilla}
-
-<cu-pagination current-page="1" total-pages="9" total-items="87" items-per-page="10"></cu-pagination>`;
-
-const colorsVanilla = `${paginationImportVanilla}
-
-<cu-pagination color="primary" current-page="3" total-pages="8" total-items="80" items-per-page="10"></cu-pagination>
-<cu-pagination color="secondary" current-page="3" total-pages="8" total-items="80" items-per-page="10"></cu-pagination>
-<cu-pagination color="success" current-page="3" total-pages="8" total-items="80" items-per-page="10"></cu-pagination>
-<cu-pagination color="warning" current-page="3" total-pages="8" total-items="80" items-per-page="10"></cu-pagination>
-<cu-pagination color="danger" current-page="3" total-pages="8" total-items="80" items-per-page="10"></cu-pagination>`;
-
-const pageSizeVanilla = `${paginationImportVanilla}
-
-<cu-pagination current-page="1" total-pages="9" total-items="87" items-per-page="10" show-page-size></cu-pagination>`;
-
-const firstLastVanilla = `${paginationImportVanilla}
-
-<cu-pagination current-page="1" total-pages="9" total-items="87" items-per-page="10" show-first-and-last></cu-pagination>`;
-
-const programmaticVanilla = `${paginationImportVanilla}
+const programmaticVanilla = `<script src="dist/CuPagination.umd.js"><\/script>
 <script src="dist/CuButton.umd.js"><\/script>
 
 <div style="display:flex;gap:8px;flex-wrap:wrap">
@@ -235,7 +135,7 @@ const propsData = [
   { name: 'itemsPerPage', type: 'number', default: '10', description: 'Items por página (v-model:items-per-page)' },
   { name: 'showPageSize', type: 'boolean', default: 'false', description: 'Muestra el select de items por página' },
   { name: 'pageSizeOptions', type: 'number[]', default: '[5, 10, 20, 50]', description: 'Opciones del select de items por página' },
-  { name: 'showFirstAndLast', type: 'boolean', default: 'false', description: 'Muestra botones primera/última' },
+  { name: 'showFirstAndLast', type: 'boolean', default: 'false', description: 'Fija la primera y la última página en la lista' },
 ];
 
 const slotsData: { name: string; description: string }[] = [];
@@ -251,84 +151,7 @@ const exposesData: { name: string; type: string; description: string }[] = [];
 <template>
   <PlaygroundLayout title="Pagination" :outlineItems="outlineItems">
     <div class="playground-content">
-      <section id="basic" class="playground-section">
-        <div class="playground-heading">
-          <h2>Basic</h2>
-        </div>
-        <SectionDemo :vue-code="basicVue" :vanilla-code="basicVanilla">
-          <div class="playground-col">
-            <Pagination
-              :current-page="currentPage"
-              :total-pages="Math.ceil(totalItems / itemsPerPage)"
-              :total-items="totalItems"
-              :items-per-page="itemsPerPage"
-              @update:current-page="currentPage = $event"
-            />
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="colors" class="playground-section">
-        <div class="playground-heading">
-          <h2>Colors</h2>
-          <Badge color="neutral" title="Color por defecto">neutral</Badge>
-        </div>
-        <SectionDemo :vue-code="colorsVue" :vanilla-code="colorsVanilla">
-          <div class="playground-col">
-            <Pagination color="primary" :current-page="3" :total-pages="8" :total-items="80" :items-per-page="10" />
-            <Pagination color="secondary" :current-page="3" :total-pages="8" :total-items="80" :items-per-page="10" />
-            <Pagination color="success" :current-page="3" :total-pages="8" :total-items="80" :items-per-page="10" />
-            <Pagination color="warning" :current-page="3" :total-pages="8" :total-items="80" :items-per-page="10" />
-            <Pagination color="danger" :current-page="3" :total-pages="8" :total-items="80" :items-per-page="10" />
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="page-size" class="playground-section">
-        <div class="playground-heading">
-          <h2>With Page Size Selector</h2>
-          <Badge color="neutral" title="showPageSize por defecto">false</Badge>
-        </div>
-        <SectionDemo :vue-code="pageSizeVue" :vanilla-code="pageSizeVanilla">
-          <div class="playground-col">
-            <Pagination
-              :current-page="currentPage"
-              :total-pages="Math.ceil(totalItems / itemsPerPage)"
-              :total-items="totalItems"
-              :items-per-page="itemsPerPage"
-              :show-page-size="true"
-              :page-size-options="[5, 10, 20, 50]"
-              @update:current-page="currentPage = $event"
-              @update:items-per-page="itemsPerPage = $event"
-            />
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="first-last" class="playground-section">
-        <div class="playground-heading">
-          <h2>With First &amp; Last Buttons</h2>
-          <Badge color="neutral" title="showFirstAndLast por defecto">false</Badge>
-        </div>
-        <SectionDemo :vue-code="firstLastVue" :vanilla-code="firstLastVanilla">
-          <div class="playground-col">
-            <Pagination
-              :current-page="currentPage"
-              :total-pages="Math.ceil(totalItems / itemsPerPage)"
-              :total-items="totalItems"
-              :items-per-page="itemsPerPage"
-              :show-first-and-last="true"
-              @update:current-page="currentPage = $event"
-            />
-          </div>
-        </SectionDemo>
-      </section>
+      <StoryRenderer :story="cuPaginationStories" />
 
       <hr class="playground-separator" />
 
@@ -363,11 +186,6 @@ const exposesData: { name: string; type: string; description: string }[] = [];
       </section>
 
       <hr class="playground-separator" />
-
-      
-
-      <hr class="playground-separator" />
-
       <PlaygroundStyle :tokens="componentTokens" :sub-components="styleSubComponents" />
 
       <section id="api" class="playground-section">
@@ -375,7 +193,7 @@ const exposesData: { name: string; type: string; description: string }[] = [];
 
         <PlaygroundApiComponents :deps="componentDeps" />
 
-<h3 id="api-props">Props</h3>
+        <h3 id="api-props">Props</h3>
         <Table :columns="apiColumns" :data="propsData" variant="ghost" compact />
 
         <h3 id="api-slots">Slots</h3>
