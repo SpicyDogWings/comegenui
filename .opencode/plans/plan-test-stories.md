@@ -503,3 +503,8 @@ Cada commit incluye su entrada en la **Bitácora**.
 - Se quitaron los extras de **Pagination, SideOver, AuthorCard, Avatar, Badge, Card y Loader** (sin exposes) y se revirtieron sus stories al estado con metadata.
 - Quedan Programmatic en **Alert, Checkbox, ColorPicker, Input, Switch, Textarea, Tabs y Collapse**; Events en **Button**.
 - Preflight verde: 978 tests, type-check 221. Regla documentada en `04`, `05` y el README del plugin.
+
+### 2026-09-10 — Fix Programmatic con v-model controlado
+
+- `fix(stories)`: en `defineModel` controlado (`v-model` del padre), `set()/reset()` solo emiten `update:modelValue`; leer `get()` en el mismo tick devolvía el valor viejo y revertía el estado. Los Programmatic ahora actualizan el estado desde `onUpdate:modelValue`/eventos y `get()` solo en el botón get. Corregido en Switch, Checkbox, Textarea, Input y ColorPicker (código + snippets).
+- Verificado en navegador: `set(true)` enciende, `set(false)` apaga, `reset()` limpia.
