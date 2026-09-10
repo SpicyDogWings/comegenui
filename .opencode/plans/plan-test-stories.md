@@ -153,6 +153,7 @@ Tests de la capa `.vue` derivados de las secciones actuales de los playground, c
   - [x] **Alert** migrado (story + 32 checks L1 + página con `StoryRenderer`).
   - [x] **Card** migrado (story + 36 checks L1 + página con `StoryRenderer`).
   - [x] **Switch** migrado (story + 25 checks L1 + página con `StoryRenderer`).
+  - [x] **Checkbox** migrado (story + 18 checks L1 + página con `StoryRenderer`).
   - Herramientas de eficiencia: `stories:status`, `stories:migrate`, `new:component`.
   - Orden sugerido: `Input`, `Select`, `Dropdown`, `Alert`, `Badge`, `Card`, `Checkbox`, `Switch`, `Textarea`, `Tabs`, `Modal`, `Table`, … (297 `SectionDemo` en 45 páginas).
   - Un commit atómico por componente (o por par de componentes chicos).
@@ -348,3 +349,9 @@ Cada commit incluye su entrada en la **Bitácora**.
 - `test(l1/switch)`: Switch migrado — 5 secciones, **25 checks L1**, página a `StoryRenderer`, `Switch.test.ts` eliminado. API de slots corregida (documenta el slot `default`).
 - **Métricas:** tool <1s (13 checks verdes automáticos) · completar checks específicos + página ~16s · preflight scopeado **9s**. Total **~1m 33s**, de los cuales ~40s fueron mejoras al tool que benefician a todos los próximos.
 - Verificado en navegador: `✓ 9 / ✓ 4 / ✓ 2 / ✓ 6 / ✓ 4`, 16 switches, 0 errores.
+
+### 2026-09-10 — 1f: Checkbox migrado
+
+- `test(l1/checkbox)`: Checkbox migrado — 5 secciones, **18 checks L1**, página a `StoryRenderer`, `Checkbox.test.ts` eliminado.
+- Tool: 9 checks automáticos verdes; completados los específicos (input+label, tildado con icono, change/update:modelValue, sizes, disabled).
+- Preflight scopeado: 18/18 verde.
