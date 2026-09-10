@@ -66,6 +66,15 @@ Si falta cualquiera, decilo explícitamente en el reporte; no lo tapes con "el c
 7. El prop se llama **`hightContrast`** (typo histórico del codebase: no "corregir" a `highContrast`).
 8. **Ramificar** según [`AGENTS.md`](../../../AGENTS.md) regla 11: rama nueva solo si la base es `main`.
 
+## Herramientas
+
+| Comando | Para qué |
+|---|---|
+| `pnpm run stories:status` | Inventario: qué componentes tienen story/test/página/badges y cuáles faltan migrar. |
+| `pnpm run stories:migrate <X>` | Genera el esqueleto de story + test L1 de un componente existente (secciones, snippets, tests viejos a mapear). |
+| `pnpm run new:component <X> <category> [--internal]` | Scaffold de componente nuevo: `.vue` + `.ce.vue` + `lib/` + story + test. |
+| `./scripts/preflight.sh` | Gate local (type-check contra baseline + L1). |
+
 ## Mapa rápido
 
 | Artefacto | Ruta |

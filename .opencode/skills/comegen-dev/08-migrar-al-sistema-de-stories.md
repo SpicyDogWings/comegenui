@@ -7,11 +7,14 @@ Receta para pasar un componente existente (test viejo + playground a mano) al si
 ## 0. Inventario
 
 ```bash
+pnpm run stories:status                             # estado de todos los componentes
 ls src/lib/**/x.ts                                  # ¿es público? (define tab Vanilla + doc)
 ls src/components/**/X.test.ts                      # test viejo (a migrar)
 ls src/pages/playground/components/X.vue            # página actual (a refactorizar)
 ls docs/skills/use-comegen/componentes/cu-x.md      # doc existente
 ```
+
+> **Atajo mecánico:** `pnpm run stories:migrate X` genera `src/stories/{category}/X.stories.ts` + `X.l1.test.ts` con las secciones, títulos, snippets y la lista de tests viejos a mapear. Lo que queda con `TODO` es lo semántico (variants y checks) y el refactor de la página.
 
 ## 1. Extraer las secciones del playground
 
@@ -20,6 +23,8 @@ Abrí la página y anotá por sección: `id`, `title`, badge/default, `layout` (
 Para **Badge**: `variants`, `colors`, `combinations`, `programmatic` (esta última queda en la página, no en la story) y luego `style`/`api`.
 
 ## 2. Escribir la story `X.stories.ts`
+
+Si usaste `pnpm run stories:migrate X`, este paso ya trae secciones y snippets: completá los `variants` (una fila por demo), los `checks.l1` y, si hay grilla/tabla, el `preview`.
 
 - `variants`: una fila por demo (los mismos valores que muestra el playground).
 - Snippets: moverlos tal cual; una misma sección no comparte snippet con otra salvo que el demo sea idéntico.

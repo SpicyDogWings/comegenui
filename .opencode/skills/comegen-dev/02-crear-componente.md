@@ -8,6 +8,8 @@
 ls src/components/{category}/X.vue src/components/customElements/{category}/X.ce.vue 2>/dev/null && echo "YA EXISTE" || echo "NO EXISTE"
 ```
 
+> **Atajo:** `pnpm run new:component X {category}` genera el esqueleto de los pasos 2–5 (componente, CE, entry, story y test). Después completá contrato, playground y docs.
+
 ## 1. Definir el contrato
 
 Antes de escribir código, fijá la API pública:
@@ -44,23 +46,24 @@ Solo si el componente es **público**.
 
 ```vue
 <script setup lang="ts">
+import { getCurrentInstance } from "vue"
 import X from "../../{category}/X.vue"
 import { initTokens } from "@/plugins/cu-tokens/css"
 
 initTokens()
 
 const props = defineProps({ color: { type: String, default: "neutral" } })
-const ref = ref(null)
 
+const instance = getCurrentInstance()
 function ceEmit(event: string, payload: unknown) {
-  const el = ref.value?.$el
+  const el = instance?.vnode.el as HTMLElement | null
   const host = el?.getRootNode()?.host || el
   if (host) host.dispatchEvent(new CustomEvent(event, { detail: payload, bubbles: true, composed: true }))
 }
 </script>
 
 <template>
-  <X ref="ref" :color="props.color">
+  <X :color="props.color">
     <slot></slot>
   </X>
 </template>

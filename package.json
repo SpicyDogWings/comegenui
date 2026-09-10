@@ -14,7 +14,10 @@
     "test": "vitest run",
     "test:l1": "vitest run --project l1",
     "test:watch": "vitest",
-    "preflight": "bash scripts/preflight.sh"
+    "preflight": "bash scripts/preflight.sh",
+    "stories:status": "node tools/stories/status.mjs",
+    "stories:migrate": "node tools/stories/migrate.mjs",
+    "new:component": "node tools/scaffold-component.mjs"
   },
   "dependencies": {
     "@vueuse/core": "^14.2.1",

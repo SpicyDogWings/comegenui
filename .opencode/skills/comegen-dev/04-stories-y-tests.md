@@ -118,6 +118,8 @@ Comandos:
 ```bash
 pnpm run test:l1                 # capa L1 completa (project "l1")
 pnpm run test:watch              # modo watch
+pnpm run stories:status          # inventario: stories/tests/badges por componente
+pnpm run stories:migrate X       # genera el esqueleto de story+test de un componente existente
 pnpm exec vitest run --project l1 src/stories/buttons/Button.l1.test.ts
 ```
 

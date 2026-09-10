@@ -147,7 +147,9 @@ Tests de la capa `.vue` derivados de las secciones actuales de los playground, c
 - [x] **1e** UI de resultados
   - Composable/loader que fetchea `/test-results.json` (con fallback "sin correr" si no existe).
   - Badge ✅/❌/— en el heading de cada sección; al click, detalle de checks fallidos con el error.
-- [ ] **1f** Escalar al resto (progresivo, por orden de dependencia)
+- [~] **1f** Escalar al resto (progresivo, por orden de dependencia)
+  - [x] **Badge** migrado (story + 48 checks L1 + página con `StoryRenderer`).
+  - Herramientas de eficiencia: `stories:status`, `stories:migrate`, `new:component`.
   - Orden sugerido: `Input`, `Select`, `Dropdown`, `Alert`, `Badge`, `Card`, `Checkbox`, `Switch`, `Textarea`, `Tabs`, `Modal`, `Table`, … (297 `SectionDemo` en 45 páginas).
   - Un commit atómico por componente (o por par de componentes chicos).
 
@@ -195,6 +197,13 @@ Tests de la capa `.vue` derivados de las secciones actuales de los playground, c
 - [x] Referencias: `01-mapa-del-repo`, `02-crear-componente`, `03-modificar-componente`, `04-stories-y-tests`, `05-playground`, `06-build-y-validacion`, `07-documentacion`.
 - [x] `08-migrar-al-sistema-de-stories.md`: receta de migración (1f) con Badge como ejemplo trabajado (secciones, mapeo de checks, preview para la grilla, refactor de la página).
 - [x] Stories y tests centralizados en `src/stories/{category}/` (espejo de categorías), fuera de `src/components/`: el componente ya no arrastra archivos de verificación al lado.
+
+## Extra — Eficiencia (herramientas)
+
+- [x] `pnpm run stories:status` — inventario de componentes (público/página/story/test viejo/badges).
+- [x] `pnpm run stories:migrate X` — esqueleto de story + test L1 desde la página del playground (secciones, títulos, snippets, tests viejos a mapear).
+- [x] `pnpm run new:component X <category> [--internal]` — scaffold de componente nuevo (`.vue` + `.ce.vue` + `lib/` + story + test).
+- [ ] Migrar el resto de 1f usando las herramientas (idealmente en paralelo por lotes).
 - [x] `04-stories-y-tests.md`: contrato de story, runner L1, reporter, badges, Fases 2/3.
 - [x] `AGENTS.md`: árbol con stories/tests + puntero al playbook + sección "Tests y preflight".
 - [ ] Fase 2/3 del plan (`.ce` y `.umd`) reflejadas en `04` cuando existan.
@@ -283,3 +292,11 @@ Cada commit incluye su entrada en la **Bitácora**.
 - `refactor(stories)`: `Button.stories.ts` y `Button.l1.test.ts` movidos de `src/components/buttons/` a `src/stories/buttons/` (espeja la categoría). El componente ya no convive con sus archivos de verificación.
 - Playground `Button.vue` y el playbook (`SKILL.md`, `01`–`05`, `08`, `AGENTS.md`) actualizados a la nueva ruta.
 - Preflight en verde tras el movimiento: 37 archivos / 386 tests; type-check sin errores nuevos.
+
+### 2026-09-10 — Herramientas de eficiencia
+
+- `feat(tools)`: `tools/stories/status.mjs` — inventario (público/página/story/test viejo/badges).
+- `feat(tools)`: `tools/stories/migrate.mjs` — genera story+test desde la página del playground (secciones, títulos, badges solo del heading, snippets, tests viejos a mapear).
+- `feat(tools)`: `tools/scaffold-component.mjs` — scaffold de componente nuevo (`.vue` + `.ce.vue` + `lib/` + story + test).
+- `chore(preflight)`: baseline de type-check 225 → 224.
+- Playbook actualizado con los comandos y el atajo de migración.
