@@ -3,7 +3,7 @@ import { defineComponent, h, type PropType, type VNodeChild } from "vue";
 import Badge from "@/components/information/Badge.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import TestResultBadge from "@/pages/playground/TestResultBadge.vue";
-import type { ComponentStory, Section, Variant } from "@/stories/types";
+import type { ComponentStory, Section, StoryExtra, Variant } from "@/stories/types";
 
 function slotFns(variant: Variant): Record<string, () => VNodeChild> {
   const slots: Record<string, () => VNodeChild> = {};
@@ -58,16 +58,32 @@ export default defineComponent({
       ]);
     }
 
+    function renderExtra(extra: StoryExtra): VNodeChild {
+      return h("section", { id: extra.id, class: "playground-section", key: extra.id }, [
+        h("div", { class: "playground-heading" }, [h("h2", null, extra.title)]),
+        extra.description ? h("p", { class: "playground-desc" }, extra.description) : null,
+        h(SectionDemo, { vueCode: extra.vue, vanillaCode: extra.vanilla }, () => extra.render()),
+      ]);
+    }
+
     // Fragmento (sin wrapper): las secciones quedan como hijas directas de
     // `.playground-content` y heredan su `gap: 1.5rem`, igual que las páginas
     // escritas a mano.
-    return () =>
-      props.story.sections.flatMap((section, index) => [
-        index > 0
-          ? h("hr", { class: "playground-separator", key: `sep-${section.id}` })
-          : null,
-        renderSection(section),
-      ]);
+    return () => {
+      const extras = props.story.extras ?? [];
+      return [
+        ...props.story.sections.flatMap((section, index) => [
+          index > 0
+            ? h("hr", { class: "playground-separator", key: `sep-${section.id}` })
+            : null,
+          renderSection(section),
+        ]),
+        ...extras.flatMap((extra) => [
+          h("hr", { class: "playground-separator", key: `sep-${extra.id}` }),
+          renderExtra(extra),
+        ]),
+      ];
+    };
   },
 });
 </script>

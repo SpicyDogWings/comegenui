@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, defineAsyncComponent } from "vue";
 import { useRoute } from "vue-router";
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import PlaygroundStyle from "@/templates/playground/PlaygroundStyle.vue";
@@ -10,7 +10,36 @@ import CodeBlock from "@/components/markdown/CodeBlock.vue";
 import { getStory } from "@/stories/registry";
 
 const route = useRoute();
-const entry = computed(() => getStory(String(route.params.name ?? "")));
+const name = computed(
+  () => String(route.params.name ?? route.path.split("/").filter(Boolean).pop() ?? ""),
+);
+const entry = computed(() => getStory(name.value));
+
+// La story "manda" cuando tiene metadata (tokens/api) o cuando no hay página
+// legacy. Si la story todavía no tiene metadata y existe página, se usa la
+// página legacy para no perder Style/API durante la transición.
+const hasMeta = computed(() => {
+  const story = entry.value?.story;
+  if (!story) return false;
+  return (story.tokens?.length ?? 0) > 0 || Object.keys(story.api ?? {}).length > 0;
+});
+
+// Fallback: componentes sin story (o sin metadata) → su página legacy.
+const legacyPages = import.meta.glob("@/pages/playground/components/*.vue");
+
+function normalize(value: string): string {
+  return value.replace(/[^a-z0-9]/gi, "").toLowerCase();
+}
+
+const LegacyPage = computed(() => {
+  if (entry.value && hasMeta.value) return null;
+  const match = Object.entries(legacyPages).find(([path]) => {
+    const file = path.split("/").pop()?.replace(/\.vue$/, "") ?? "";
+    return normalize(file) === normalize(name.value);
+  });
+  if (!match) return null;
+  return defineAsyncComponent(match[1] as () => Promise<never>);
+});
 
 const apiDeps = computed(() => entry.value?.story.api?.components ?? []);
 const apiProps = computed(() => entry.value?.story.api?.props ?? []);
@@ -34,6 +63,10 @@ const outlineItems = computed(() => {
     (section) => ({ label: section.title, id: section.id }),
   );
 
+  for (const extra of story.extras ?? []) {
+    items.push({ label: extra.title, id: extra.id });
+  }
+
   items.push({
     label: "Style",
     id: "style",
@@ -56,7 +89,9 @@ const outlineItems = computed(() => {
 </script>
 
 <template>
-  <PlaygroundLayout v-if="entry" :title="entry.name" :outlineItems="outlineItems">
+  <component :is="LegacyPage" v-if="LegacyPage" />
+
+  <PlaygroundLayout v-else-if="entry" :title="entry.name" :outlineItems="outlineItems">
     <div class="playground-content">
       <StoryRenderer :story="entry.story" />
 

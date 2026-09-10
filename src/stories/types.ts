@@ -105,6 +105,22 @@ export interface StoryApi {
   interfaceCode?: string;
 }
 
+/** Sección extra de la story (ej: Programmatic), con demo en vivo y snippets. */
+export interface StoryExtra {
+  /** id del nav: 'programmatic'. */
+  id: string;
+  /** título visible: 'Programmatic'. */
+  title: string;
+  /** párrafo descriptivo opcional. */
+  description?: string;
+  /** demo en vivo. */
+  render: () => VNodeChild;
+  /** snippet de uso en Vue (opcional). */
+  vue?: string;
+  /** snippet de uso en vanilla (opcional). */
+  vanilla?: string;
+}
+
 export interface ComponentStory {
   /** tag del custom element: 'cu-button'. */
   component: string;
@@ -118,6 +134,8 @@ export interface ComponentStory {
   subComponents?: { label: string; path: string }[];
   /** API declarada: la página genérica la pinta como tablas. */
   api?: StoryApi;
+  /** Secciones extra (ej: Programmatic) pintadas después de las secciones. */
+  extras?: StoryExtra[];
   /** Setup previo a cada test L1 (ej: inicializar stores o plugins). */
   setup?: () => void | Promise<void>;
   /** Opciones de mount por test (ej: `{ plugins: [createPinia()] }`). */
