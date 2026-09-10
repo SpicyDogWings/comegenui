@@ -1,3 +1,6 @@
+// Generado por src/plugins/story-playground/cli/generate.mjs a partir de las props de CopyButton.vue.
+// Refinado a mano: el plugin no detecta color/variant (sin validator), ni el estado copied
+// (label/copiedLabel + clipboard), ni los checks específicos.
 import CopyButton from "@/components/buttons/CopyButton.vue";
 import type { ComponentStory, Variant } from "@/stories/types";
 
