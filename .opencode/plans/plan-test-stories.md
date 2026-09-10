@@ -149,6 +149,7 @@ Tests de la capa `.vue` derivados de las secciones actuales de los playground, c
   - Badge ✅/❌/— en el heading de cada sección; al click, detalle de checks fallidos con el error.
 - [~] **1f** Escalar al resto (progresivo, por orden de dependencia)
   - [x] **Badge** migrado (story + 48 checks L1 + página con `StoryRenderer`).
+  - [x] **Label** migrado (story + 19 checks L1 + página con `StoryRenderer`).
   - Herramientas de eficiencia: `stories:status`, `stories:migrate`, `new:component`.
   - Orden sugerido: `Input`, `Select`, `Dropdown`, `Alert`, `Badge`, `Card`, `Checkbox`, `Switch`, `Textarea`, `Tabs`, `Modal`, `Table`, … (297 `SectionDemo` en 45 páginas).
   - Un commit atómico por componente (o por par de componentes chicos).
@@ -307,3 +308,11 @@ Cada commit incluye su entrada en la **Bitácora**.
 - `test(playground)`: `src/pages/playground/components/Badge.vue` refactorizado a `StoryRenderer` (Programmatic/Style/API se conservan).
 - `git rm src/components/information/Badge.test.ts` (4 tests migrados a la story).
 - Preflight en verde: 37 archivos / 430 tests; type-check sin errores nuevos.
+
+### 2026-09-10 — Fix espaciado + 1f: Label migrado (métricas)
+
+- `fix(playground)`: `StoryRenderer` vuelve a renderizar **fragmento** (sin `<div>` wrapper), restaurando el `gap: 1.5rem` entre secciones: 49px medidos, igual que las páginas a mano (Alert).
+- `feat(stories)`: `Section.description` opcional (párrafos tipo "Native") renderizado por el StoryRenderer.
+- `test(l1/label)`: Label migrado — 5 secciones (default/for/colors/slot/native), 19 checks L1, página refactorizada a `StoryRenderer`, `Label.test.ts` eliminado.
+- **Métricas de la migración:** tool `stories:migrate` <1s · story + checks + página + test ~50s · preflight (type-check + 444 tests) 20s · total ~1m 15s.
+- Preflight: 37 archivos / 444 tests; type-check 224 (sin errores nuevos).
