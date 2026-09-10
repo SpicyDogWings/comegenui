@@ -300,3 +300,10 @@ Cada commit incluye su entrada en la **Bitácora**.
 - `feat(tools)`: `tools/scaffold-component.mjs` — scaffold de componente nuevo (`.vue` + `.ce.vue` + `lib/` + story + test).
 - `chore(preflight)`: baseline de type-check 225 → 224.
 - Playbook actualizado con los comandos y el atajo de migración.
+
+### 2026-09-10 — 1f: Badge migrado
+
+- `test(l1/badge)`: `src/stories/information/Badge.stories.ts` (3 secciones, 48 checks L1: variants/default/colors/combinations) + `Badge.l1.test.ts`.
+- `test(playground)`: `src/pages/playground/components/Badge.vue` refactorizado a `StoryRenderer` (Programmatic/Style/API se conservan).
+- `git rm src/components/information/Badge.test.ts` (4 tests migrados a la story).
+- Preflight en verde: 37 archivos / 430 tests; type-check sin errores nuevos.

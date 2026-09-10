@@ -1,17 +1,16 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import PlaygroundStyle from '@/templates/playground/PlaygroundStyle.vue';
-import PlaygroundApiComponents from '@/templates/playground/PlaygroundApiComponents.vue';
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
+import StoryRenderer from "@/pages/playground/StoryRenderer.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Table from "@/components/data/Table.vue";
 import Button from "@/components/buttons/Button.vue";
 import Badge from "@/components/information/Badge.vue";
+import { cuBadgeStories } from "@/stories/information/Badge.stories";
 
 const outlineItems = [
-  { label: 'Variants', id: 'variants' },
-  { label: 'Colors', id: 'colors' },
-  { label: 'All Combinations', id: 'combinations' },
+  ...cuBadgeStories.sections.map((section) => ({ label: section.title, id: section.id })),
   { label: 'Programmatic', id: 'programmatic' },
   {
     label: 'Style',
@@ -71,49 +70,6 @@ const eventsData: { name: string; type: string; description: string }[] = [];
 
 const exposesData: { name: string; type: string; description: string }[] = [];
 
-const COLORS = ['primary', 'secondary', 'neutral', 'success', 'warning', 'danger'];
-const VARIANTS = ['solid', 'soft', 'ghost', 'subtle', 'outlined'];
-
-const variantsVue = `<script setup>
-import Badge from '@/components/information/Badge.vue'
-<\/script>
-
-<template>
-  <Badge color="primary" variant="solid">solid</Badge>
-  <Badge color="primary" variant="soft">soft</Badge>
-  <Badge color="primary" variant="ghost">ghost</Badge>
-  <Badge color="primary" variant="subtle">subtle</Badge>
-  <Badge color="primary" variant="outlined">outlined</Badge>
-</template>`;
-const variantsVanilla = `<link rel="stylesheet" href="css/themes.css">
-<script src="CuBadge.umd.js"><\/script>
-
-<cu-badge color="primary" variant="solid">solid</cu-badge>
-<cu-badge color="primary" variant="soft">soft</cu-badge>
-<cu-badge color="primary" variant="ghost">ghost</cu-badge>
-<cu-badge color="primary" variant="subtle">subtle</cu-badge>
-<cu-badge color="primary" variant="outlined">outlined</cu-badge>`;
-
-const colorsVue = `<Badge color="primary">primary</Badge>
-<Badge color="secondary">secondary</Badge>
-<Badge color="neutral">neutral</Badge>
-<Badge color="success">success</Badge>
-<Badge color="warning">warning</Badge>
-<Badge color="danger">danger</Badge>`;
-const colorsVanilla = `<cu-badge color="primary">primary</cu-badge>
-<cu-badge color="secondary">secondary</cu-badge>
-<cu-badge color="neutral">neutral</cu-badge>
-<cu-badge color="success">success</cu-badge>
-<cu-badge color="warning">warning</cu-badge>
-<cu-badge color="danger">danger</cu-badge>`;
-
-const combinationsVue = `<Badge color="success" variant="solid">solid</Badge>
-<Badge color="danger" variant="outlined">outlined</Badge>
-<Badge color="warning" variant="subtle">subtle</Badge>`;
-const combinationsVanilla = `<cu-badge color="success" variant="solid">solid</cu-badge>
-<cu-badge color="danger" variant="outlined">outlined</cu-badge>
-<cu-badge color="warning" variant="subtle">subtle</cu-badge>`;
-
 const progColor = ref('primary');
 const progVariant = ref('soft');
 
@@ -136,58 +92,7 @@ const variant = ref('soft')
 <template>
   <PlaygroundLayout title="Badge" :outlineItems="outlineItems">
     <div class="playground-content">
-      <section id="variants" class="playground-section">
-        <h2>Variants</h2>
-        <SectionDemo :vue-code="variantsVue" :vanilla-code="variantsVanilla">
-          <div class="playground-row">
-            <Badge color="primary" variant="solid">solid</Badge>
-            <Badge color="primary" variant="soft">soft</Badge>
-            <Badge color="primary" variant="ghost">ghost</Badge>
-            <Badge color="primary" variant="subtle">subtle</Badge>
-            <Badge color="primary" variant="outlined">outlined</Badge>
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="colors" class="playground-section">
-        <h2>Colors</h2>
-        <SectionDemo :vue-code="colorsVue" :vanilla-code="colorsVanilla">
-          <div class="playground-row">
-            <Badge color="primary">primary</Badge>
-            <Badge color="secondary">secondary</Badge>
-            <Badge color="neutral">neutral</Badge>
-            <Badge color="success">success</Badge>
-            <Badge color="warning">warning</Badge>
-            <Badge color="danger">danger</Badge>
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="combinations" class="playground-section">
-        <h2>All Combinations</h2>
-        <SectionDemo :vue-code="combinationsVue" :vanilla-code="combinationsVanilla">
-          <table class="playground-badge-table">
-            <thead>
-              <tr>
-                <th>variant \ color</th>
-                <th v-for="color in COLORS" :key="color">{{ color }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="variant in VARIANTS" :key="variant">
-                <td class="playground-badge-label">{{ variant }}</td>
-                <td v-for="color in COLORS" :key="color">
-                  <Badge :color="color" :variant="variant">{{ variant }}</Badge>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </SectionDemo>
-      </section>
+      <StoryRenderer :story="cuBadgeStories" />
 
       <hr class="playground-separator" />
 
@@ -216,10 +121,7 @@ const variant = ref('soft')
       </section>
 
       <hr class="playground-separator" />
-
-      <hr class="playground-separator" />
-
-      <hr class="playground-separator" />      <PlaygroundStyle :tokens="componentTokens" />
+      <PlaygroundStyle :tokens="componentTokens" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>
