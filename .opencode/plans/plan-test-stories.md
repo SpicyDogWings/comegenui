@@ -164,6 +164,7 @@ Tests de la capa `.vue` derivados de las secciones actuales de los playground, c
   - [x] **ToggleColorSheme** migrado (story + 23 checks L1 + página con `StoryRenderer`).
   - [x] **FileList** migrado (story + 13 checks L1; interno, sin página de playground).
   - [x] **Collapse** migrado (story + 20 checks L1 + página con `StoryRenderer`).
+  - [x] **Tabs** migrado (story + 50 checks L1 + página con `StoryRenderer`).
   - Herramientas de eficiencia: `stories:status`, `stories:migrate`, `new:component`.
   - Orden sugerido: `Input`, `Select`, `Dropdown`, `Alert`, `Badge`, `Card`, `Checkbox`, `Switch`, `Textarea`, `Tabs`, `Modal`, `Table`, … (297 `SectionDemo` en 45 páginas).
   - Un commit atómico por componente (o por par de componentes chicos).
@@ -416,3 +417,8 @@ Cada commit incluye su entrada en la **Bitácora**.
 
 - `test(l1/collapse)`: Collapse migrado — 4 secciones, **20 checks L1**, página a `StoryRenderer`, `Collapse.test.ts` eliminado.
 - Checks propios: abierto/cerrado, toggle(true/false), defaultOpen, exposes open/close/toggle, color.
+
+### 2026-09-10 — 1f: Tabs migrado
+
+- `test(l1/tabs)`: Tabs migrado — 6 secciones, **50 checks L1**, página a `StoryRenderer`, `Tabs.test.ts` eliminado.
+- Story escrita a mano (el esqueleto del tool quedaba roto con `tabs` dinámico): click, teclado, disabled global/por tab, keepAlive, icon prop vs slot, exposes.
