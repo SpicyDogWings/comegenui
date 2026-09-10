@@ -137,7 +137,7 @@ Tests de la capa `.vue` derivados de las secciones actuales de los playground, c
   - `src/stories/types.ts` con el contrato de arriba.
   - `src/components/buttons/Button.stories.ts` con las 8 secciones: `variants`, `colors`, `disabled`, `sizes`, `icons`, `loading`, `links`, `fullwidth`.
   - Cada variante = una fila del demo actual del playground; cada sección con sus `checks.l1`, `vue` y `vanilla` (mover los snippets existentes).
-- [ ] **1c** Preview del playground desde stories
+- [x] **1c** Preview del playground desde stories
   - `src/pages/playground/StoryRenderer.vue`: recorre `sections` → `variants` y renderiza `<component :is="section.vue" v-bind="variant.props">` con `variant.slots`. Soporta `section.preview` para demos interactivas (ej. `loading`).
   - `src/pages/playground/components/Button.vue`: reemplaza el markup inline por el renderer, conservando `<section id>`, headings, `Badge`, `SectionDemo` y el nav (`outlineItems`) para no romper el router.
 - [ ] **1d** Runner L1 + tests
@@ -237,3 +237,10 @@ Cada commit incluye su entrada en la **Bitácora**.
 - Verificado: `pnpm exec vitest run --project l1` → 2 archivos / 8 tests en verde.
 - `fix(preflight)`: `reporters` movido a la raíz de `vitest.config.ts` (no es config por proyecto); conteo de errores de type-check con el patrón correcto (`error TS[0-9]+`); `public/test-results.json` al `.gitignore`.
 - Preflight completo en verde: 225 errores preexistentes (baseline) + 37 archivos / 331 tests.
+
+### 2026-09-10 — 1c Preview desde stories
+
+- `test(playground)`: `src/pages/playground/StoryRenderer.vue` renderiza secciones/headings/badges/snippets y el preview (variantes o `preview` interactivo).
+- `test(playground)`: `src/pages/playground/components/Button.vue` pasa a consumir `cuButtonStories`; el nav se deriva de las secciones de la story (se conservan Style y API).
+- Snippets de la sección `icons` completados (ya no tienen `…`).
+- Verificado en dev server: 8 secciones + Style + API, headings y badges correctos, 0 errores de consola.
