@@ -50,6 +50,8 @@ scripts/config
 .opencode/*
 !.opencode/skills/
 !.opencode/skills/**/*
+!.opencode/plans/
+!.opencode/plans/**/*
 graphify-out
 
 # Pesonal
