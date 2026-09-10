@@ -153,11 +153,10 @@ Tests de la capa `.vue` derivados de las secciones actuales de los playground, c
 
 **Aceptación Fase 1:** `./scripts/preflight.sh` corre `type-check` + L1 de Button en verde; el playground de Button muestra ✅ por sección; romper `color` → test rojo y ❌ en la UI.
 
-**Bloqueantes conocidos (preexistentes, hay que resolverlos para que el preflight sea verde):**
-- `pnpm run type-check` falla con **225 errores** repartidos en playground/legacy/utils (main ya está rojo). Estrategia: **baseline** en preflight (no bloquea si no aumentan) y deuda aparte.
-- `src/components/buttons/ToggleColorSheme.test.ts` (3 fallos): el test mockea `@/plugins/cu-tokens`, pero el componente migró a `@/stores/theme` (Pinia).
-- `src/components/theme/ThemeManagerModal.test.ts` (3 fallos): el test no abre el `Modal` y su contenido se renderiza solo con `v-show`/`open()`, así que `.tm-modal` no existe.
-- Fix: actualizar los tests al comportamiento actual (Pinia activo en el primero; abrir el modal vía `defineExpose` en el segundo). Commits atómicos propios.
+**Bloqueantes conocidos (preexistentes):**
+- [x] `pnpm run type-check` falla con **225 errores** repartidos en playground/legacy/utils (main ya está rojo). Resuelto con **baseline** en `scripts/typecheck-baseline`: el preflight no bloquea por la deuda vieja, pero **sí falla si aparecen errores nuevos**. La deuda de fondo queda como tarea aparte.
+- [x] `src/components/buttons/ToggleColorSheme.test.ts` (3 fallos): el test mockeaba `@/plugins/cu-tokens`, pero el componente migró a `@/stores/theme` (Pinia). Actualizado a Pinia + mock del plugin.
+- [x] `src/components/theme/ThemeManagerModal.test.ts` (3 fallos): el test apuntaba a `.tm-modal` / "Reset Defaults" (markup viejo). Alineado al actual (`.tm-layout`, título "Export", `.tm-code-block`, botones Export/Copy/Download).
 
 ## Fase 2 — Layer 2 (`.ce`)
 
@@ -229,3 +228,10 @@ Cada commit incluye su entrada en la **Bitácora**.
 - `test(stories)`: `src/stories/types.ts` (contrato `ComponentStory`/`Section`/`Variant`/`checks.l1|ce|umd`), con `expect` inyectado en el contexto para que las stories no importen vitest.
 - `test(stories)`: `src/components/buttons/Button.stories.ts` con las 8 secciones del playground (variants, colors, disabled, sizes, icons, loading, links, fullwidth), snippets Vue/Vanilla y checks L1.
 - Sin errores de type-check en los archivos nuevos (el baseline rojo de 225 es preexistente).
+
+### 2026-09-10 — Bloqueantes de verde
+
+- `chore(preflight)`: baseline de type-check (`scripts/typecheck-baseline` = 225). El preflight no bloquea por deuda vieja; falla si hay errores nuevos.
+- `test(fix)`: `ToggleColorSheme.test.ts` monta con Pinia y mockea el plugin de tokens.
+- `test(fix)`: `ThemeManagerModal.test.ts` alineado al markup actual (`.tm-layout`, "Export", `.tm-code-block`, botones Export/Copy/Download).
+- Verificado: `pnpm exec vitest run --project l1` → 2 archivos / 8 tests en verde.
