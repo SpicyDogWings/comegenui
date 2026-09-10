@@ -12,7 +12,7 @@ import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import StoryRenderer from "@/pages/playground/StoryRenderer.vue";
 import PlaygroundStyle from "@/templates/playground/PlaygroundStyle.vue";
 import Table from "@/components/data/Table.vue";
-import { cuXStories } from "@/components/{category}/X.stories";
+import { cuXStories } from "@/stories/{category}/X.stories";
 
 const outlineItems = [
   ...cuXStories.sections.map((s) => ({ label: s.title, id: s.id })),

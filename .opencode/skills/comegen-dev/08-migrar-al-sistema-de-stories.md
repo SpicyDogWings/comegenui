@@ -43,7 +43,7 @@ Si un test viejo no mapea a una sección (interacción rara), agregá una secci�
 ## 4. Test L1 y borrar el viejo
 
 ```ts
-// src/components/information/Badge.l1.test.ts
+// src/stories/information/Badge.l1.test.ts
 import { cuBadgeStories } from "./Badge.stories";
 import { runL1Story } from "@/stories/runner.l1";
 
@@ -52,7 +52,7 @@ runL1Story(cuBadgeStories);
 
 ```bash
 git rm src/components/information/Badge.test.ts
-pnpm exec vitest run --project l1 src/components/information/Badge.l1.test.ts
+pnpm exec vitest run --project l1 src/stories/information/Badge.l1.test.ts
 ```
 
 ## 5. Refactorizar la página
@@ -83,8 +83,8 @@ Si el preview cambió respecto del viejo, o el badge no da ✅, no está migrado
 
 ```bash
 git status --short
-git add src/components/information/Badge.stories.ts \
-        src/components/information/Badge.l1.test.ts \
+git add src/stories/information/Badge.stories.ts \
+        src/stories/information/Badge.l1.test.ts \
         src/pages/playground/components/Badge.vue
 git commit -m "test(l1/badge): migrar Badge al sistema de stories"
 ```
@@ -92,7 +92,7 @@ git commit -m "test(l1/badge): migrar Badge al sistema de stories"
 ## Ejemplo completo (Badge, resumido)
 
 ```ts
-// src/components/information/Badge.stories.ts
+// src/stories/information/Badge.stories.ts
 import { defineComponent, h } from "vue";
 import Badge from "./Badge.vue";
 import type { ComponentStory } from "@/stories/types";

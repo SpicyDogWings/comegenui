@@ -17,7 +17,7 @@
 5. **Validar**:
 
 ```bash
-pnpm exec vitest run src/components/{category}/X.l1.test.ts
+pnpm exec vitest run src/stories/{category}/X.l1.test.ts
 ./scripts/preflight.sh
 pnpm run build:lib        # si es público y tocaste contrato/estilos de shadow DOM
 ```

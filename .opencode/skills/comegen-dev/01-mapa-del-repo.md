@@ -7,15 +7,15 @@ Para que un agente nuevo se ubique antes de tocar nada.
 ```
 src/
 ├── components/
-│   ├── {category}/X.vue                # Componente real (lógica, template, estilos)
-│   ├── {category}/X.stories.ts         # Story: secciones + checks de test
-│   ├── {category}/X.l1.test.ts         # Test L1 (runner de stories)
+│   ├── {category}/X.vue                # Componente real (solo lógica, template, estilos)
 │   ├── customElements/{category}/X.ce.vue  # Wrapper Custom Element (thin)
 │   ├── icons/ · theme/ · lab/ · legacy/ · archived/  # no públicos / internos
 ├── lib/{category}/x.ts                 # Entry point UMD (defineCustomElement + registro)
-├── stories/
+├── stories/                            # Verificación/demo: NO vive junto al componente
 │   ├── types.ts                        # Contrato ComponentStory/Section/Variant/checks
-│   └── runner.l1.ts                    # Runner capa L1 (.vue, jsdom)
+│   ├── runner.l1.ts                    # Runner capa L1 (.vue, jsdom)
+│   └── {category}/X.stories.ts         # Story (secciones + checks); espeja la categoría
+│       {category}/X.l1.test.ts         # Test L1 (runner de stories)
 ├── pages/playground/
 │   ├── components/X.vue                # Página del playground
 │   ├── StoryRenderer.vue               # Renderiza una story (preview + badges)
@@ -32,6 +32,8 @@ scripts/preflight.sh                    # type-check + tests (gate local)
 scripts/typecheck-baseline              # Deuda de type-check preexistente
 tools/reporters/playground-reporter.ts  # Escribe public/test-results.json
 ```
+
+**Regla de ubicación:** el componente (`X.vue`) vive en `src/components/{category}/`; su **story y test** viven en `src/stories/{category}/` (misma categoría). El componente nunca arrastra archivos de test al lado.
 
 Categorías válidas (`{category}`): `form/`, `information/`, `overlay/`, `navigation/`, `data/`, `buttons/`, `controls/`, `markdown/`, y raíz (ej: `Tabs.vue`, `floating-button.ts`).
 

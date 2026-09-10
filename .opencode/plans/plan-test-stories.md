@@ -194,6 +194,7 @@ Tests de la capa `.vue` derivados de las secciones actuales de los playground, c
 - [x] Renombrar `comegen-ui-dev` → **`comegen-dev`** y partirlo en `SKILL.md` (entrada corta: flujo + DoD) + archivos de referencia (patrón de `comegen-ui-docs`).
 - [x] Referencias: `01-mapa-del-repo`, `02-crear-componente`, `03-modificar-componente`, `04-stories-y-tests`, `05-playground`, `06-build-y-validacion`, `07-documentacion`.
 - [x] `08-migrar-al-sistema-de-stories.md`: receta de migración (1f) con Badge como ejemplo trabajado (secciones, mapeo de checks, preview para la grilla, refactor de la página).
+- [x] Stories y tests centralizados en `src/stories/{category}/` (espejo de categorías), fuera de `src/components/`: el componente ya no arrastra archivos de verificación al lado.
 - [x] `04-stories-y-tests.md`: contrato de story, runner L1, reporter, badges, Fases 2/3.
 - [x] `AGENTS.md`: árbol con stories/tests + puntero al playbook + sección "Tests y preflight".
 - [ ] Fase 2/3 del plan (`.ce` y `.umd`) reflejadas en `04` cuando existan.
@@ -276,3 +277,9 @@ Cada commit incluye su entrada en la **Bitácora**.
 - `docs(skill)`: `comegen-ui-dev` → `comegen-dev`, partido en `SKILL.md` (flujo de 8 pasos + DoD) + `01`…`07` de referencia.
 - `docs(skill)`: nuevo `04-stories-y-tests.md` con el sistema de stories/tests por capas y el reporter.
 - `docs(agents)`: `AGENTS.md` con el árbol actualizado (stories/tests/playground), puntero al playbook y sección "Tests y preflight".
+
+### 2026-09-10 — Ubicación de stories/tests
+
+- `refactor(stories)`: `Button.stories.ts` y `Button.l1.test.ts` movidos de `src/components/buttons/` a `src/stories/buttons/` (espeja la categoría). El componente ya no convive con sus archivos de verificación.
+- Playground `Button.vue` y el playbook (`SKILL.md`, `01`–`05`, `08`, `AGENTS.md`) actualizados a la nueva ruta.
+- Preflight en verde tras el movimiento: 37 archivos / 386 tests; type-check sin errores nuevos.

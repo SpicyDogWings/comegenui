@@ -3,7 +3,7 @@
 La **story** es la fuente única de un componente: alimenta el preview del playground, los snippets de código y los tests de las 3 capas. Si el preview y el test salen de la misma definición, un test rojo apunta al mismo escenario que ves en el playground.
 
 ```
-Story (src/components/{cat}/X.stories.ts)
+Story (src/stories/{cat}/X.stories.ts)
   ├── sections[] / variants[]  ──► StoryRenderer (preview)
   ├── checks.l1[]              ──► runner.l1  (.vue, jsdom)        ✅
   ├── checks.ce[]              ──► runner.ce  (.ce, browser)       ⏳ Fase 2
@@ -52,7 +52,7 @@ Los contextos (`L1Context`, `CeContext`, `UmdContext`) traen `expect` inyectado:
 ## Escribir una story
 
 ```ts
-// src/components/buttons/Button.stories.ts
+// src/stories/buttons/Button.stories.ts
 import Button from "./Button.vue";
 import type { ComponentStory } from "@/stories/types";
 
@@ -98,7 +98,7 @@ Buenas prácticas:
 ## Runner L1
 
 ```ts
-// src/components/buttons/Button.l1.test.ts
+// src/stories/buttons/Button.l1.test.ts
 import { cuButtonStories } from "./Button.stories";
 import { runL1Story } from "@/stories/runner.l1";
 
@@ -118,7 +118,7 @@ Comandos:
 ```bash
 pnpm run test:l1                 # capa L1 completa (project "l1")
 pnpm run test:watch              # modo watch
-pnpm exec vitest run --project l1 src/components/buttons/Button.l1.test.ts
+pnpm exec vitest run --project l1 src/stories/buttons/Button.l1.test.ts
 ```
 
 ## Reporter y playground

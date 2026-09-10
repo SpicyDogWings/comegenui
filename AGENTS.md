@@ -8,15 +8,15 @@
 src/
 ├── components/
 │   ├── {category}/MiComponente.vue        # Lógica real del componente
-│   ├── {category}/MiComponente.stories.ts # Story: secciones + checks de test
-│   ├── {category}/MiComponente.l1.test.ts # Test capa L1 (runner de stories)
 │   ├── customElements/{category}/MiComponente.ce.vue  # Wrapper CE (thin)
 │   └── ...otrascarpetas (icons, theme, lab, archived, legacy)
 ├── lib/
 │   └── {category}/mi-componente.ts        # Entry point: defineCustomElement + registro
 ├── stories/
 │   ├── types.ts                           # Contrato ComponentStory/Section/Variant
-│   └── runner.l1.ts                       # Runner capa L1 (.vue, jsdom)
+│   ├── runner.l1.ts                       # Runner capa L1 (.vue, jsdom)
+│   └── {category}/MiComponente.stories.ts # Story (secciones + checks); espeja la categoría
+│       {category}/MiComponente.l1.test.ts # Test capa L1 (runner de stories)
 ├── pages/playground/                      # Playground (StoryRenderer + badges)
 ├── config/
 │   └── theme.ts                           # Definiciones estáticas de temas

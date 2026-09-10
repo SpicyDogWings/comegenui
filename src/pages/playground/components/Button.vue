@@ -3,7 +3,7 @@ import PlaygroundStyle from '@/templates/playground/PlaygroundStyle.vue';
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import StoryRenderer from "@/pages/playground/StoryRenderer.vue";
 import Table from "@/components/data/Table.vue";
-import { cuButtonStories } from "@/components/buttons/Button.stories";
+import { cuButtonStories } from "@/stories/buttons/Button.stories";
 
 const outlineItems = [
   ...cuButtonStories.sections.map((section) => ({ label: section.title, id: section.id })),

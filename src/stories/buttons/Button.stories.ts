@@ -1,6 +1,6 @@
 import { defineComponent, h, ref } from "vue";
 import type { VNodeChild } from "vue";
-import Button from "./Button.vue";
+import Button from "@/components/buttons/Button.vue";
 import type { ComponentStory, Variant } from "@/stories/types";
 
 // ── Helpers de demo ──────────────────────────────────────────────────────────

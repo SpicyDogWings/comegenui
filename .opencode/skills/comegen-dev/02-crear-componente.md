@@ -86,8 +86,10 @@ export default CuX
 
 Esto es lo que separa un componente terminado de uno a medias:
 
-1. `src/components/{category}/X.stories.ts` — secciones = casos de uso reales, cada una con `variants`, `checks.l1`, snippets `vue` y `vanilla`.
-2. `src/components/{category}/X.l1.test.ts` — `runL1Story(XStories)`.
+1. `src/stories/{category}/X.stories.ts` — secciones = casos de uso reales, cada una con `variants`, `checks.l1`, snippets `vue` y `vanilla`.
+2. `src/stories/{category}/X.l1.test.ts` — `runL1Story(XStories)`.
+
+> La story y el test **no** van al lado del componente: viven en `src/stories/{category}/` (espejo de `src/components/{category}/`).
 
 Receta completa y schema en [`04-stories-y-tests.md`](04-stories-y-tests.md).
 
