@@ -1,20 +1,20 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import PlaygroundStyle from '@/templates/playground/PlaygroundStyle.vue';
-import PlaygroundApiComponents from '@/templates/playground/PlaygroundApiComponents.vue';
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
+import StoryRenderer from "@/pages/playground/StoryRenderer.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Table from "@/components/data/Table.vue";
 import Button from "@/components/buttons/Button.vue";
-import Badge from "@/components/information/Badge.vue";
 import Avatar from "@/components/information/Avatar.vue";
+import { cuAvatarStories } from "@/stories/information/Avatar.stories";
 
+const progInitials = ref('AB');
+const progColor = ref('primary');
+const progSize = ref('md');
 
 const outlineItems = [
-  { label: 'Default', id: 'default' },
-  { label: 'Sizes', id: 'sizes' },
-  { label: 'With Image', id: 'with-image' },
-  { label: 'Colors', id: 'colors' },
+  ...cuAvatarStories.sections.map((section) => ({ label: section.title, id: section.id })),
   { label: 'Programmatic', id: 'programmatic' },
   {
     label: 'Style',
@@ -33,14 +33,6 @@ const outlineItems = [
       { label: 'Exposes', id: 'api-exposes' },
     ],
   },
-];
-
-const avatarTokens = [
-  '--avatar-bg',
-  '--cu-font-weight-semibold',
-  '--cu-font-size-xs',
-  '--cu-font-size-sm',
-  '--cu-font-size-md',
 ];
 
 const componentTokens = [
@@ -71,51 +63,6 @@ const eventsData: { name: string; type: string; description: string }[] = [];
 
 const exposesData: { name: string; type: string; description: string }[] = [];
 
-const defaultVue = `<script setup>
-import Avatar from '@/components/information/Avatar.vue'
-<\/script>
-
-<template>
-  <Avatar initials="JD" />
-  <Avatar initials="AB" />
-  <Avatar initials="XY" />
-</template>`;
-const defaultVanilla = `<link rel="stylesheet" href="css/themes.css">
-<script src="CuAvatar.umd.js"><\/script>
-
-<cu-avatar initials="JD" />
-<cu-avatar initials="AB" />
-<cu-avatar initials="XY" />`;
-
-const sizesVue = `<Avatar initials="SM" size="sm" />
-<Avatar initials="MD" size="md" />
-<Avatar initials="LG" size="lg" />`;
-const sizesVanilla = `<cu-avatar initials="SM" size="sm" />
-<cu-avatar initials="MD" size="md" />
-<cu-avatar initials="LG" size="lg" />`;
-
-const withImageVue = `<Avatar src="https://i.pravatar.cc/150?img=3" />
-<Avatar src="https://i.pravatar.cc/150?img=8" />
-<Avatar src="https://i.pravatar.cc/150?img=15" />`;
-const withImageVanilla = `<cu-avatar src="https://i.pravatar.cc/150?img=3" />
-<cu-avatar src="https://i.pravatar.cc/150?img=8" />
-<cu-avatar src="https://i.pravatar.cc/150?img=15" />`;
-
-const colorsVue = `<Avatar initials="PR" color="primary" />
-<Avatar initials="SC" color="secondary" />
-<Avatar initials="SU" color="success" />
-<Avatar initials="WA" color="warning" />
-<Avatar initials="DA" color="danger" />`;
-const colorsVanilla = `<cu-avatar initials="PR" color="primary" />
-<cu-avatar initials="SC" color="secondary" />
-<cu-avatar initials="SU" color="success" />
-<cu-avatar initials="WA" color="warning" />
-<cu-avatar initials="DA" color="danger" />`;
-
-const progInitials = ref('AB');
-const progColor = ref('primary');
-const progSize = ref('md');
-
 const programmaticVue = `<script setup>
 import { ref } from 'vue'
 import Avatar from '@/components/information/Avatar.vue'
@@ -138,71 +85,7 @@ const size = ref('md')
 <template>
   <PlaygroundLayout title="Avatar" :outlineItems="outlineItems">
     <div class="playground-content">
-      <section id="default" class="playground-section">
-        <div class="playground-heading">
-          <h2>Default</h2>
-          <Badge color="neutral" title="Color auto por hash de iniciales">auto</Badge>
-        </div>
-        <SectionDemo :vue-code="defaultVue" :vanilla-code="defaultVanilla">
-          <div class="playground-row">
-            <Avatar initials="JD" />
-            <Avatar initials="AB" />
-            <Avatar initials="XY" />
-            <Avatar initials="MK" />
-            <Avatar initials="PL" />
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="sizes" class="playground-section">
-        <div class="playground-heading">
-          <h2>Sizes</h2>
-          <Badge color="neutral" title="Tamaño por defecto">md</Badge>
-        </div>
-        <SectionDemo :vue-code="sizesVue" :vanilla-code="sizesVanilla">
-          <div class="playground-row">
-            <Avatar initials="SM" size="sm" />
-            <Avatar initials="MD" size="md" />
-            <Avatar initials="LG" size="lg" />
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="with-image" class="playground-section">
-        <div class="playground-heading">
-          <h2>With Image</h2>
-          <Badge color="neutral" title="Con prop src — muestra foto">image</Badge>
-        </div>
-        <SectionDemo :vue-code="withImageVue" :vanilla-code="withImageVanilla">
-          <div class="playground-row">
-            <Avatar src="https://i.pravatar.cc/150?img=3" />
-            <Avatar src="https://i.pravatar.cc/150?img=8" />
-            <Avatar src="https://i.pravatar.cc/150?img=15" />
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="colors" class="playground-section">
-        <div class="playground-heading">
-          <h2>Colors</h2>
-          <Badge color="neutral" title="Color explícito">explicit</Badge>
-        </div>
-        <SectionDemo :vue-code="colorsVue" :vanilla-code="colorsVanilla">
-          <div class="playground-row">
-            <Avatar initials="PR" color="primary" />
-            <Avatar initials="SC" color="secondary" />
-            <Avatar initials="SU" color="success" />
-            <Avatar initials="WA" color="warning" />
-            <Avatar initials="DA" color="danger" />
-          </div>
-        </SectionDemo>
-      </section>
+      <StoryRenderer :story="cuAvatarStories" />
 
       <hr class="playground-separator" />
 
@@ -234,8 +117,7 @@ const size = ref('md')
       </section>
 
       <hr class="playground-separator" />
-
-      <hr class="playground-separator" />      <PlaygroundStyle :tokens="componentTokens" />
+      <PlaygroundStyle :tokens="componentTokens" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>

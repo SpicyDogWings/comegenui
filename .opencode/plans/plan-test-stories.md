@@ -156,6 +156,7 @@ Tests de la capa `.vue` derivados de las secciones actuales de los playground, c
   - [x] **Checkbox** migrado (story + 18 checks L1 + página con `StoryRenderer`).
   - [x] **Textarea** migrado (story + 24 checks L1 + página con `StoryRenderer`).
   - [x] **Input** migrado (story + 55 checks L1 + página con `StoryRenderer`).
+  - [x] **Avatar** migrado (story + 45 checks L1 + página con `StoryRenderer`).
   - Herramientas de eficiencia: `stories:status`, `stories:migrate`, `new:component`.
   - Orden sugerido: `Input`, `Select`, `Dropdown`, `Alert`, `Badge`, `Card`, `Checkbox`, `Switch`, `Textarea`, `Tabs`, `Modal`, `Table`, … (297 `SectionDemo` en 45 páginas).
   - Un commit atómico por componente (o por par de componentes chicos).
@@ -367,3 +368,9 @@ Cada commit incluye su entrada en la **Bitácora**.
 
 - `test(l1/input)`: Input migrado — 7 secciones, **55 checks L1**, página a `StoryRenderer`, `Input.test.ts` eliminado.
 - Tool: 39 checks automáticos verdes; completados placeholder/type, disabled, valor inicial y v-model.
+
+### 2026-09-10 — 1f: Avatar migrado
+
+- `test(l1/avatar)`: Avatar migrado (sin test viejo) — 4 secciones, **45 checks L1**, página a `StoryRenderer`.
+- `fix(tools)`: check de color tolerante a fallback (`var(--cu-color-x, #fallback)`).
+- Checks propios: iniciales, color de paleta, size, imagen y ausencia de iniciales con `src`.

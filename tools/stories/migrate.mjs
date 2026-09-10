@@ -260,7 +260,7 @@ function emitChecks(section) {
               const html = wrapper.html();
               ${
                 token
-                  ? `expect(html).toContain(\`var(--cu-color-\${color})\`);`
+                  ? `expect(html).toContain(\`var(--cu-color-\${color}\`);`
                   : `expect(html).toContain("var(--cu-color-");`
               }
             },
