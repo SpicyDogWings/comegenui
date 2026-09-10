@@ -1,31 +1,39 @@
-# `story-playground` — devkit de stories
+# `story-playground` — plugin de stories
 
-Plugin de desarrollo de ComegenUI: **runtime** (playground genérico) + **CLI** (generación/migración) + **reporter de vitest**. Todo vive junto para poder llevarlo a otro proyecto, igual que `cu-tokens` (runtime + build-time en la misma carpeta).
+Plugin de desarrollo de ComegenUI con lo **genérico/reutilizable**: runtime del playground, generador prop-driven y reporter de vitest. Lo específico del repo (migración de páginas, inventario, scaffold del patrón de 3 archivos) vive en `tools/`.
 
-## Entry points
+## Entry points (plugin)
 
 | Archivo | Tipo | Qué hace |
 |---|---|---|
-| `index.ts` | Vue plugin | `app.use(StoryPlayground, { router, stories })`: registra la ruta `components/:name` y provee el registry (`getStory`). **Instalar antes de `app.use(router)`** (el router navega al instalarse). |
+| `index.ts` | Vue plugin | `app.use(StoryPlayground, { router, stories })`: registra la ruta `components/:name` y provee el registry (`getStory`). **Instalar antes de `app.use(router)`**. |
 | `keys.ts` | Tipos + `InjectionKey` | `storyRegistryKey`, `StoryEntry`, `GetStory`. Lo consume `StoryPage.vue`. |
-| `cli/generate.mjs` | Node CLI | Genera la story **desde las props** del `.vue` (`pnpm run stories:generate X`). Con `--meta-only` actualiza solo `tokens`/`api` sin tocar secciones. Lee `X.stories.config.json`. |
-| `cli/migrate.mjs` | Node CLI | Genera story + test desde la **página** del playground (secciones, snippets, variants, checks genéricos). |
-| `cli/status.mjs` | Node CLI | Inventario: público/página/story/test viejo/badges. |
-| `cli/scaffold.mjs` | Node CLI | Scaffold de componente nuevo: `.vue` + `.ce.vue` + `lib/` + story + test (`pnpm run new:component X <category>`). |
+| `cli/generate.mjs` | Node CLI | Genera la story **desde las props** del `.vue` (`pnpm run stories:generate X`). Con `--meta-only` actualiza solo `tokens`/`api`. Lee `X.stories.config.json`. |
 | `vitest/reporter.ts` | Reporter | Escribe `public/test-results.json` (badges ✅/❌ del playground). Configurado en `vitest.config.ts`. |
 
-## Convenciones
+## Herramientas del proyecto (no viajan)
 
-- **Config por componente**: `src/stories/{cat}/X.stories.config.json` (order/include/exclude, `sections.<id>.extraProps`, `custom[]`, `preview` interactivo).
-- **Extras por componente**: `src/stories/{cat}/X.stories.extras.ts` exporta `extras: StoryExtra[]`:
-  - **Programmatic** → patio de los **exposes** (`open()`, `close()`…) o v-model.
-  - **Events** → patio de **eventos** (nativos + `ceEmit` con `detail`).
-- El generador **no pisa** la story si ya existe (salvo `--force`) ni el archivo de extras.
+Específicas de la estructura de este repo; viven en `tools/` y `scripts/`:
+
+| Comando | Archivo | Por qué es del proyecto |
+|---|---|---|
+| `pnpm run stories:migrate X` | `tools/migrate.mjs` | Parsea las páginas del playground y los tests viejos de este repo. |
+| `pnpm run stories:status` | `tools/status.mjs` | Inventario de `src/components` vs `src/stories` vs `src/lib` y playground. |
+| `pnpm run new:component X <cat>` | `tools/scaffold-component.mjs` | Crea el patrón de 3 archivos de ComegenUI (`.vue` + `.ce.vue` + `lib/` + story + test). |
+| `./scripts/preflight.sh` | `scripts/preflight.sh` | Gate local con baseline de type-check y scripts de este repo. |
+
+## Convenciones (aplican al generar)
+
+- **Config por componente**: `src/stories/{cat}/X.stories.config.json`.
+- **Extras por componente**: `src/stories/{cat}/X.stories.extras.ts` → `StoryExtra[]`:
+  - **Programmatic** = patio de los **exposes**/v-model.
+  - **Events** = patio de **eventos** (nativos + `ceEmit` con `detail`).
+- El generador **no pisa** la story existente (salvo `--force`) ni el archivo de extras.
 
 ## Llevarlo a otro proyecto
 
 1. Copiá `src/plugins/story-playground/` al `src/plugins/` del destino.
-2. Agregá los scripts de `package.json` (`stories:generate`, `stories:migrate`, `stories:status`, `new:component`).
+2. Agregá `stories:generate` en `package.json`.
 3. En `main.ts`: `app.use(StoryPlayground, { router, stories: import.meta.glob("./stories/**/*.stories.ts", { eager: true }) })` **antes** de `app.use(router)`.
 4. En `vitest.config.ts`: `reporters: ["default", "./src/plugins/story-playground/vitest/reporter.ts"]`.
 

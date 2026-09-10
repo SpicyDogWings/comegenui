@@ -17,20 +17,27 @@ src/
 │   └── {category}/X.stories.ts         # Story (secciones + checks); espeja la categoría
 │       {category}/X.l1.test.ts         # Test L1 (runner de stories)
 ├── pages/playground/
-│   ├── components/X.vue                # Página del playground
+│   ├── StoryPage.vue                   # Página genérica (la pinta el plugin)
 │   ├── StoryRenderer.vue               # Renderiza una story (preview + badges)
 │   ├── TestResultBadge.vue             # Badge ✅/❌ por sección
 │   └── SectionDemo.vue                 # Tabs Preview / Vue / Vanilla
 ├── composables/useTestResults.ts       # Lee public/test-results.json
-├── plugins/cu-tokens/                  # Sistema de tokens CSS
+├── plugins/
+│   ├── cu-tokens/                      # Sistema de tokens CSS
+│   └── story-playground/               # Plugin de stories (runtime + generate + reporter)
+│       ├── index.ts · keys.ts          # Vue plugin (ruta components/:name + registry)
+│       ├── cli/generate.mjs            # Generador prop-driven (genérico)
+│       └── vitest/reporter.ts          # Escribe public/test-results.json
 ├── config/theme.ts                     # Temas estáticos
-├── router/index.ts                     # Rutas del playground
+├── router/index.ts                     # Rutas (Home/Playground; la dinámica la agrega el plugin)
 ├── layouts/PlaygroundLayout.vue        # Nav lateral del playground
 └── utils/                              # getHostTheme, palette, fileIcons, search…
 
+tools/migrate.mjs                       # Migración desde páginas (específico del repo)
+tools/status.mjs                        # Inventario componentes/stories/badges (del repo)
+tools/scaffold-component.mjs            # Scaffold del patrón de 3 archivos (del repo)
 scripts/preflight.sh                    # type-check + tests (gate local)
 scripts/typecheck-baseline              # Deuda de type-check preexistente
-src/plugins/story-playground/vitest/reporter.ts  # Escribe public/test-results.json
 ```
 
 **Regla de ubicación:** el componente (`X.vue`) vive en `src/components/{category}/`; su **story y test** viven en `src/stories/{category}/` (misma categoría). El componente nunca arrastra archivos de test al lado.

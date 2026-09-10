@@ -68,7 +68,9 @@ Si falta cualquiera, decilo explícitamente en el reporte; no lo tapes con "el c
 
 ## Herramientas
 
-Todo el devkit vive en **`src/plugins/story-playground/`** (runtime + CLI + reporter; ver su `README.md`).
+Todo el devkit está separado por responsabilidad:
+- **Plugin** (`src/plugins/story-playground/`): runtime (Vue plugin), `generate` (prop-driven) y reporter de vitest (genérico/reutilizable; ver su `README.md`).
+- **Proyecto** (`tools/`, `scripts/`): `migrate`, `status`, `new:component` y `preflight` (específicos de esta estructura de repo).
 
 | Comando | Para qué |
 |---|---|

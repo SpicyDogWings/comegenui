@@ -15,10 +15,10 @@
     "test:l1": "vitest run --project l1",
     "test:watch": "vitest",
     "preflight": "bash scripts/preflight.sh",
-    "stories:status": "node src/plugins/story-playground/cli/status.mjs",
-    "stories:migrate": "node src/plugins/story-playground/cli/migrate.mjs",
+    "stories:status": "node tools/status.mjs",
+    "stories:migrate": "node tools/migrate.mjs",
     "stories:generate": "node src/plugins/story-playground/cli/generate.mjs",
-    "new:component": "node src/plugins/story-playground/cli/scaffold.mjs"
+    "new:component": "node tools/scaffold-component.mjs"
   },
   "dependencies": {
     "@vueuse/core": "^14.2.1",

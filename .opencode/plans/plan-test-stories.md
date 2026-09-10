@@ -484,3 +484,9 @@ Cada commit incluye su entrada en la **Bitácora**.
 
 - `refactor(devkit)`: `tools/stories/*`, `tools/scaffold-component.mjs` y `tools/reporters/playground-reporter.ts` movidos a **`src/plugins/story-playground/`** (`cli/` + `vitest/`), junto al plugin Vue. La carpeta es la unidad portable (runtime + CLI + reporter), como `cu-tokens`.
 - `docs(devkit)`: `README.md` del plugin (entries + cómo llevarlo a otro proyecto) y skill actualizada: flujo de creación/migración (`generate`, `--meta-only`, config, extras, StoryPage genérica, páginas legacy como fallback).
+
+### 2026-09-10 — Herramientas por responsabilidad
+
+- `refactor(devkit)`: **plugin** (`src/plugins/story-playground/`) = runtime + `cli/generate.mjs` (genérico) + `vitest/reporter.ts`. **Proyecto** (`tools/`) = `migrate.mjs`, `status.mjs`, `scaffold-component.mjs` (específicos de este repo).
+- Criterio: si sirve para cualquier `.vue` → plugin; si depende de `src/components`/páginas/tests viejos del repo → proyecto.
+- Scripts, README del plugin y skill actualizados con la separación.
