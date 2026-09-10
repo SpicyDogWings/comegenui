@@ -150,6 +150,7 @@ Tests de la capa `.vue` derivados de las secciones actuales de los playground, c
 - [~] **1f** Escalar al resto (progresivo, por orden de dependencia)
   - [x] **Badge** migrado (story + 48 checks L1 + página con `StoryRenderer`).
   - [x] **Label** migrado (story + 19 checks L1 + página con `StoryRenderer`).
+  - [x] **Alert** migrado (story + 32 checks L1 + página con `StoryRenderer`).
   - Herramientas de eficiencia: `stories:status`, `stories:migrate`, `new:component`.
   - Orden sugerido: `Input`, `Select`, `Dropdown`, `Alert`, `Badge`, `Card`, `Checkbox`, `Switch`, `Textarea`, `Tabs`, `Modal`, `Table`, … (297 `SectionDemo` en 45 páginas).
   - Un commit atómico por componente (o por par de componentes chicos).
@@ -316,3 +317,10 @@ Cada commit incluye su entrada en la **Bitácora**.
 - `test(l1/label)`: Label migrado — 5 secciones (default/for/colors/slot/native), 19 checks L1, página refactorizada a `StoryRenderer`, `Label.test.ts` eliminado.
 - **Métricas de la migración:** tool `stories:migrate` <1s · story + checks + página + test ~50s · preflight (type-check + 444 tests) 20s · total ~1m 15s.
 - Preflight: 37 archivos / 444 tests; type-check 224 (sin errores nuevos).
+
+### 2026-09-10 — 1f: Alert migrado (métricas)
+
+- `test(l1/alert)`: Alert migrado — 6 secciones (variants/colors/close/toggle/icons/notitle), **32 checks L1**, página refactorizada a `StoryRenderer`, `Alert.test.ts` eliminado.
+- Preview interactivo de `toggle` (v-model:show) preservado con `preview`.
+- **Métricas:** tool <1s · story + checks + página + test **~51s** · preflight (type-check + 468 tests) **21s** · total **~1m 16s**.
+- Verificado en navegador: 6 secciones ✅, 17 alerts renderizados, 0 errores de consola.
