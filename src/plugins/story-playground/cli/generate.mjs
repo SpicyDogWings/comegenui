@@ -296,6 +296,12 @@ const emits = parseEmits(source);
 const rootClass = `cu-${kebab}`;
 const colorToken = source.match(/--([a-z0-9-]+)-bg\b/)?.[1];
 
+// ¿El componente declara un slot default? (<slot> sin name=). Si no, el generador
+// no debe emitir `slots.default` ni el check genérico de slot.
+const hasDefaultSlot = [...source.matchAll(/<slot\b[^>]*>/g)].some(
+  (match) => !/\bname=/.test(match[0]),
+);
+
 function capital(value) {
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
@@ -334,6 +340,12 @@ const SLOT_SAMPLES = {
 };
 
 const sample = SLOT_SAMPLES[name] ?? name;
+
+// Props string required: se completan con un sample en cada variant para que el
+// preview no quede vacío ni dispare "Missing required prop".
+const requiredStringDefaults = Object.fromEntries(
+  props.filter((prop) => prop.kind === "string" && prop.required).map((prop) => [prop.name, sample]),
+);
 
 function attrString(propName, value, vanilla = false) {
   const kebabAttr = camelToKebab(propName);
@@ -374,53 +386,62 @@ const sections = [];
 sections.push({
   id: "default",
   title: "Default",
-  variants: [{ id: "default", props: {}, slots: { default: sample } }],
-  checks: ["root", "slot"],
+  variants: [
+    hasDefaultSlot
+      ? { id: "default", props: { ...requiredStringDefaults }, slots: { default: sample } }
+      : { id: "default", props: { ...requiredStringDefaults } },
+  ],
+  checks: hasDefaultSlot ? ["root", "slot"] : ["root"],
 });
 
 for (const prop of props) {
   if (prop.kind === "enum" && prop.values?.length) {
     const id = camelToKebab(prop.name);
-    const variants = prop.values.map((value) => ({
-      id: camelToKebab(value),
-      props: { [prop.name]: value },
-      slots: {
-        default:
-          prop.name === "color" || prop.name === "variant" ? capital(value) : String(value),
-      },
-    }));
+    const variants = prop.values.map((value) => {
+      const variant = { id: camelToKebab(value), props: { ...requiredStringDefaults, [prop.name]: value } };
+      if (hasDefaultSlot) {
+        variant.slots = {
+          default:
+            prop.name === "color" || prop.name === "variant" ? capital(value) : String(value),
+        };
+      }
+      return variant;
+    });
     sections.push({
       id,
       title: SECTION_TITLES[prop.name] ?? capital(prop.name),
       badge: prop.default !== undefined ? String(prop.default) : undefined,
       badgeTitle: prop.default !== undefined ? `Default: ${prop.default}` : undefined,
       variants,
-      checks: ["root", "slot", prop.name],
+      checks: hasDefaultSlot ? ["root", "slot", prop.name] : ["root", prop.name],
     });
   } else if (prop.kind === "boolean") {
     const id = camelToKebab(prop.name);
     const variants = [
-      { id: "false", props: { [prop.name]: false }, slots: { default: sample } },
-      { id: "true", props: { [prop.name]: true }, slots: { default: sample } },
+      { id: "false", props: { ...requiredStringDefaults, [prop.name]: false } },
+      { id: "true", props: { ...requiredStringDefaults, [prop.name]: true } },
     ];
+    if (hasDefaultSlot) variants.forEach((variant) => (variant.slots = { default: sample }));
     sections.push({
       id,
       title: capital(prop.name),
       badge: prop.default !== undefined ? String(prop.default) : undefined,
       badgeTitle: prop.default !== undefined ? `Default: ${prop.default}` : undefined,
       variants,
-      checks: ["root", "slot", prop.name],
+      checks: hasDefaultSlot ? ["root", "slot", prop.name] : ["root", prop.name],
     });
   } else if (prop.kind === "string" && ["label", "title", "placeholder", "text"].includes(prop.name)) {
     const id = camelToKebab(prop.name);
+    const variants = [
+      { id: "with-value", props: { ...requiredStringDefaults, [prop.name]: sample } },
+      ...(prop.required ? [] : [{ id: "empty", props: { ...requiredStringDefaults } }]),
+    ];
+    if (hasDefaultSlot) variants.forEach((variant) => (variant.slots = { default: sample }));
     sections.push({
       id,
       title: capital(prop.name),
-      variants: [
-        { id: "with-value", props: { [prop.name]: sample }, slots: { default: sample } },
-        ...(prop.required ? [] : [{ id: "empty", props: {}, slots: { default: sample } }]),
-      ],
-      checks: ["root", "slot", prop.name],
+      variants,
+      checks: hasDefaultSlot ? ["root", "slot", prop.name] : ["root", prop.name],
     });
   }
 }
