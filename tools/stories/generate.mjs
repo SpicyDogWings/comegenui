@@ -10,6 +10,7 @@ import fg from "fast-glob";
 const ROOT = process.cwd();
 const args = process.argv.slice(2);
 const force = args.includes("--force");
+const metaOnly = args.includes("--meta-only");
 const pageIndex = args.indexOf("--page");
 const pageName = pageIndex >= 0 ? args[pageIndex + 1] : undefined;
 const name = args.find((a) => !a.startsWith("--") && a !== pageName);
@@ -145,18 +146,65 @@ for (const constName of [
 const extrasPath = resolve(ROOT, storyDir, `${name}.stories.extras.ts`);
 const hasExtras = existsSync(extrasPath);
 
+function indentValue(value, extra) {
+  if (!/^[[{]/.test(value)) return value;
+  const pad = " ".repeat(extra);
+  return value
+    .split("\n")
+    .map((line, index) => (index === 0 ? line : pad + line))
+    .join("\n");
+}
+
 const metaLines = [];
-if (pageConsts.componentTokens) metaLines.push(`  tokens: ${pageConsts.componentTokens},`);
+if (pageConsts.componentTokens) {
+  metaLines.push(`  tokens: ${indentValue(pageConsts.componentTokens, 2)},`);
+}
 const subComponents = pageConsts.styleSubComponents ?? pageConsts.subComponents;
-if (subComponents) metaLines.push(`  subComponents: ${subComponents},`);
+if (subComponents) metaLines.push(`  subComponents: ${indentValue(subComponents, 2)},`);
 const apiParts = [];
-if (pageConsts.componentDeps) apiParts.push(`components: ${pageConsts.componentDeps}`);
-if (pageConsts.propsData) apiParts.push(`props: ${pageConsts.propsData}`);
-if (pageConsts.slotsData) apiParts.push(`slots: ${pageConsts.slotsData}`);
-if (pageConsts.eventsData) apiParts.push(`events: ${pageConsts.eventsData}`);
-if (pageConsts.exposesData) apiParts.push(`exposes: ${pageConsts.exposesData}`);
+if (pageConsts.componentDeps) apiParts.push(`components: ${indentValue(pageConsts.componentDeps, 4)}`);
+if (pageConsts.propsData) apiParts.push(`props: ${indentValue(pageConsts.propsData, 4)}`);
+if (pageConsts.slotsData) apiParts.push(`slots: ${indentValue(pageConsts.slotsData, 4)}`);
+if (pageConsts.eventsData) apiParts.push(`events: ${indentValue(pageConsts.eventsData, 4)}`);
+if (pageConsts.exposesData) apiParts.push(`exposes: ${indentValue(pageConsts.exposesData, 4)}`);
 if (pageConsts.interfaceCode) apiParts.push(`interfaceCode: ${pageConsts.interfaceCode}`);
 if (apiParts.length) metaLines.push(`  api: {\n    ${apiParts.join(",\n    ")},\n  },`);
+
+// ── Modo --meta-only: actualiza tokens/subComponents/api en una story existente
+if (metaOnly) {
+  if (!existsSync(resolve(ROOT, storyPath))) {
+    console.error(`❌ No existe ${storyPath} para actualizar metadata.`);
+    process.exit(1);
+  }
+
+  function removeField(source, field) {
+    const match = new RegExp(`\\n  ${field}: `).exec(source);
+    if (!match) return source;
+    const start = match.index;
+    const valueStart = match.index + match[0].length;
+    const value = readValue(source, valueStart);
+    if (!value) return source;
+    let end = valueStart + value.length;
+    if (source[end] === ",") end++;
+    return source.slice(0, start) + source.slice(end);
+  }
+
+  let updated = readFileSync(resolve(ROOT, storyPath), "utf-8");
+  for (const field of ["tokens", "subComponents", "api"]) {
+    updated = removeField(updated, field);
+  }
+
+  const anchor = new RegExp(`(vue:\\s*${name},)`);
+  if (anchor.test(updated)) {
+    const block = metaLines.length ? "\n" + metaLines.join("\n") : "";
+    updated = updated.replace(anchor, `$1${block}`);
+    writeFileSync(resolve(ROOT, storyPath), updated);
+    console.log(`✅ ${storyPath} (solo metadata: ${metaLines.length ? metaLines.map((l) => l.trim().split(":")[0]).join(", ") : "sin campos"})`);
+  } else {
+    console.error(`⚠️  No se encontró 'vue: ${name},' en ${storyPath}; no se insertó metadata.`);
+  }
+  process.exit(0);
+}
 
 if (!force && existsSync(resolve(ROOT, storyPath))) {
   console.error(`❌ Ya existe ${storyPath}. Usá --force para regenerar.`);

@@ -1,5 +1,6 @@
 import Collapse from "@/components/overlay/Collapse.vue";
 import type { ComponentStory, Variant } from "@/stories/types";
+import { extras } from "./Collapse.stories.extras";
 
 const COLORS = ["primary", "secondary", "neutral", "success", "warning", "danger"] as const;
 
@@ -18,6 +19,30 @@ async function flush(): Promise<void> {
 export const cuCollapseStories: ComponentStory = {
   component: "cu-collapse",
   vue: Collapse,
+  extras,
+  tokens: [
+    '--cu-space-2xs',
+    '--cu-space-lg',
+  ],
+  api: {
+    props: [
+      { name: 'label', type: 'string', default: '(required)', description: 'Texto del trigger (required)' },
+      { name: 'defaultOpen', type: 'boolean', default: 'false', description: 'Renderiza el contenido expandido al montar' },
+      { name: 'color', type: 'string', default: '"neutral"', description: 'primary, secondary, neutral, success, warning, danger' },
+    ],
+    slots: [
+      { name: 'default', description: 'Contenido colapsable' },
+    ],
+    events: [
+      { name: 'toggle', type: '(value: boolean) => void', description: 'Cambia el estado (payload: isOpen)' },
+    ],
+    exposes: [
+      { name: 'open', type: '() => void', description: 'Expande el contenido' },
+      { name: 'close', type: '() => void', description: 'Colapsa el contenido' },
+      { name: 'toggle', type: '() => void', description: 'Expande/colapsa' },
+      { name: 'isOpen', type: '() => boolean', description: 'Estado del collapse' },
+    ],
+  },
   sections: [
     {
       id: "default",

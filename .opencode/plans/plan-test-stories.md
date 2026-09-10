@@ -466,3 +466,9 @@ Cada commit incluye su entrada en la **Bitácora**.
 - `feat(stories)`: `X.stories.extras.ts` hermano con `export const extras: StoryExtra[]`; el generador lo importa y lo agrega a la story sin pisarlo.
 - `test(stories/button)`: extra **Events** (patio de juegos de eventos): 3 botones + log en vivo (click, dblclick, focus, blur, mouseenter/leave, keydown/up, contextmenu) con `e.key` y botón "Limpiar log"; snippets Vue/Vanilla con `addEventListener`.
 - Verificado en navegador: los eventos se loguean en vivo; el loading del extra interactivo vuelve a los 1.5s.
+
+### 2026-09-10 — Programmatic = exposes + `--meta-only`
+
+- `feat(tools)`: `stories:generate X --meta-only` actualiza solo `tokens`/`subComponents`/`api` en una story existente (no toca secciones/checks/extras); valores re-indentados.
+- `test(stories/collapse)`: Collapse pasa a la **StoryPage genérica** (metadata extraída de su página) y suma el extra **Programmatic**: patio de juegos de los exposes (`open()`, `close()`, `toggle()`, `isOpen()`) con estado en vivo. Verificado en navegador.
+- Aclaración: **Programmatic = exposes/v-model**; los eventos tienen su propio extra (Button → Events). Button no lleva Programmatic porque no expone métodos.
