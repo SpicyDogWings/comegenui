@@ -38,7 +38,7 @@ export default defineComponent({
         ? h(section.preview)
         : section.variants.map((variant) => renderVariant(variant));
 
-      return h("section", { id: section.id, class: "playground-section" }, [
+      return h("section", { id: section.id, class: "playground-section", key: section.id }, [
         h("div", { class: "playground-heading" }, [
           h("h2", null, section.title),
           h(TestResultBadge, { component: props.story.component, section: section.id }),
@@ -46,21 +46,25 @@ export default defineComponent({
             ? h(Badge, { color: "neutral", title: section.badgeTitle }, () => section.badge ?? "")
             : null,
         ]),
+        section.description
+          ? h("p", { class: "playground-desc" }, section.description)
+          : null,
         h(SectionDemo, { vueCode: section.vue, vanillaCode: section.vanilla }, () =>
           h("div", { class: layoutClass }, preview),
         ),
       ]);
     }
 
+    // Fragmento (sin wrapper): las secciones quedan como hijas directas de
+    // `.playground-content` y heredan su `gap: 1.5rem`, igual que las páginas
+    // escritas a mano.
     return () =>
-      h(
-        "div",
-        { class: "story-renderer" },
-        props.story.sections.flatMap((section, index) => [
-          index > 0 ? h("hr", { class: "playground-separator" }) : null,
-          renderSection(section),
-        ]),
-      );
+      props.story.sections.flatMap((section, index) => [
+        index > 0
+          ? h("hr", { class: "playground-separator", key: `sep-${section.id}` })
+          : null,
+        renderSection(section),
+      ]);
   },
 });
 </script>

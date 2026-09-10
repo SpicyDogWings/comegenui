@@ -66,6 +66,8 @@ export interface Section {
   id: string;
   /** título visible de la sección. */
   title: string;
+  /** párrafo descriptivo opcional, arriba del demo. */
+  description?: string;
   /** texto del Badge del heading (ej: 'ghost'). */
   badge?: string;
   /** title/tooltip del Badge. */
