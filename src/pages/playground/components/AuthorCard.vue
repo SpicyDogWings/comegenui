@@ -1,20 +1,18 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
+import StoryRenderer from "@/pages/playground/StoryRenderer.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Table from "@/components/data/Table.vue";
 import Button from "@/components/buttons/Button.vue";
-import Badge from "@/components/information/Badge.vue";
 import AuthorCard from "@/components/information/AuthorCard.vue";
 import PlaygroundStyle from "@/templates/playground/PlaygroundStyle.vue";
 import PlaygroundApiComponents from "@/templates/playground/PlaygroundApiComponents.vue";
+import { cuAuthorCardStories } from "@/stories/information/AuthorCard.stories";
 
 
 const outlineItems = [
-  { label: "Default", id: "default" },
-  { label: "Sizes", id: "sizes" },
-  { label: "With Image", id: "with-image" },
-  { label: "Colors", id: "colors" },
+  ...cuAuthorCardStories.sections.map((section) => ({ label: section.title, id: section.id })),
   { label: "Programmatic", id: "programmatic" },
   {
     label: "Style",
@@ -97,45 +95,6 @@ const eventsData: { name: string; type: string; description: string }[] = [];
 
 const exposesData: { name: string; type: string; description: string }[] = [];
 
-const defaultVue = `<script setup>
-import AuthorCard from '@/components/information/AuthorCard.vue'
-<\/script>
-
-<template>
-  <AuthorCard name="Jane Doe" role="Product Designer" />
-  <AuthorCard name="John Smith" role="Frontend Developer" />
-</template>`;
-const defaultVanilla = `<link rel="stylesheet" href="css/themes.css">
-<script src="CuAuthorCard.umd.js"><\/script>
-
-<cu-author-card name="Jane Doe" role="Product Designer" />
-<cu-author-card name="John Smith" role="Frontend Developer" />`;
-
-const sizesVue = `<AuthorCard name="Small" role="sm" size="sm" />
-<AuthorCard name="Medium" role="md (default)" size="md" />
-<AuthorCard name="Large" role="lg" size="lg" />`;
-const sizesVanilla = `<cu-author-card name="Small" role="sm" size="sm" />
-<cu-author-card name="Medium" role="md (default)" size="md" />
-<cu-author-card name="Large" role="lg" size="lg" />`;
-
-const withImageVue = `<AuthorCard name="Ada Lovelace" role="Mathematician"
-  src="https://i.pravatar.cc/150?img=5" />
-<AuthorCard name="Alan Turing" role="Computer Scientist"
-  src="https://i.pravatar.cc/150?img=12" />`;
-const withImageVanilla = `<cu-author-card name="Ada Lovelace" role="Mathematician"
-  src="https://i.pravatar.cc/150?img=5" />
-<cu-author-card name="Alan Turing" role="Computer Scientist"
-  src="https://i.pravatar.cc/150?img=12" />`;
-
-const colorsVue = `<AuthorCard name="Primary" role="primary" color="primary" />
-<AuthorCard name="Success" role="success" color="success" />
-<AuthorCard name="Warning" role="warning" color="warning" />
-<AuthorCard name="Danger" role="danger" color="danger" />`;
-const colorsVanilla = `<cu-author-card name="Primary" role="primary" color="primary" />
-<cu-author-card name="Success" role="success" color="success" />
-<cu-author-card name="Warning" role="warning" color="warning" />
-<cu-author-card name="Danger" role="danger" color="danger" />`;
-
 const progColor = ref("primary");
 const progSize = ref("md");
 
@@ -160,81 +119,7 @@ const size = ref('md')
 <template>
   <PlaygroundLayout title="AuthorCard" :outlineItems="outlineItems">
     <div class="playground-content">
-      <section id="default" class="playground-section">
-        <div class="playground-heading">
-          <h2>Default</h2>
-          <Badge color="neutral" title="Sin imagen — muestra iniciales"
-            >initials</Badge
-          >
-        </div>
-        <SectionDemo :vue-code="defaultVue" :vanilla-code="defaultVanilla">
-          <div class="playground-col">
-            <AuthorCard name="Jane Doe" role="Product Designer" />
-            <AuthorCard name="John Smith" role="Frontend Developer" />
-            <AuthorCard name="María García" role="Engineering Manager" />
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="sizes" class="playground-section">
-        <div class="playground-heading">
-          <h2>Sizes</h2>
-          <Badge color="neutral" title="Tamaño por defecto">md</Badge>
-        </div>
-        <SectionDemo :vue-code="sizesVue" :vanilla-code="sizesVanilla">
-          <div class="playground-row">
-            <AuthorCard name="Small Author" role="sm" size="sm" />
-            <AuthorCard name="Medium Author" role="md (default)" size="md" />
-            <AuthorCard name="Large Author" role="lg" size="lg" />
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="with-image" class="playground-section">
-        <div class="playground-heading">
-          <h2>With Image</h2>
-          <Badge color="neutral" title="Con prop src — muestra foto"
-            >image</Badge
-          >
-        </div>
-        <SectionDemo :vue-code="withImageVue" :vanilla-code="withImageVanilla">
-          <div class="playground-row">
-            <AuthorCard
-              name="Ada Lovelace"
-              role="Mathematician"
-              src="https://i.pravatar.cc/150?img=5"
-            />
-            <AuthorCard
-              name="Alan Turing"
-              role="Computer Scientist"
-              src="https://i.pravatar.cc/150?img=12"
-            />
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="colors" class="playground-section">
-        <div class="playground-heading">
-          <h2>Colors</h2>
-          <Badge color="neutral" title="Color auto por hash si no se pasa"
-            >auto</Badge
-          >
-        </div>
-        <SectionDemo :vue-code="colorsVue" :vanilla-code="colorsVanilla">
-          <div class="playground-col">
-            <AuthorCard name="Primary Author" role="primary" color="primary" />
-            <AuthorCard name="Success Author" role="success" color="success" />
-            <AuthorCard name="Warning Author" role="warning" color="warning" />
-            <AuthorCard name="Danger Author" role="danger" color="danger" />
-          </div>
-        </SectionDemo>
-      </section>
+      <StoryRenderer :story="cuAuthorCardStories" />
 
       <hr class="playground-separator" />
 
@@ -354,24 +239,5 @@ const size = ref('md')
   font-size: var(--cu-font-size-sm);
   color: var(--cu-color-neutral);
   margin: 0;
-}
-
-.playground-component-links {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 1rem 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.playground-component-link {
-  color: var(--cu-color-primary);
-  text-decoration: none;
-  font-weight: var(--cu-font-weight-medium);
-}
-
-.playground-component-link:hover {
-  text-decoration: underline;
 }
 </style>
