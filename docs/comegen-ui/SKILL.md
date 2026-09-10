@@ -90,26 +90,37 @@ El zip incluye scripts para actualizar la lib en el proyecto huésped:
 
 **Linux / macOS / Git Bash:**
 ```bash
-./update.sh          # último build de main
-./update.sh v3.0.0   # build de un tag/release
+./update.sh                          # actualiza TODA la lib (main)
+./update.sh v3.0.0                   # actualiza TODA la lib (tag/release)
+./update.sh --only CuButton          # actualiza SOLO CuButton (main)
+./update.sh --only CuButton,CuAlert  # actualiza solo esos componentes
+./update.sh --only CuButton v3.0.0   # solo CuButton, desde un tag
 ```
 
 **Windows (PowerShell):**
 ```powershell
-.\update.ps1            # último build de main
-.\update.ps1 v3.0.0    # build de un tag/release
+.\update.ps1                          # actualiza TODA la lib (main)
+.\update.ps1 v3.0.0                   # actualiza TODA la lib (tag/release)
+.\update.ps1 -Only CuButton           # actualiza SOLO CuButton
+.\update.ps1 -Only CuButton,CuAlert v3.0.0
 ```
 
 **Windows (cmd, evita ExecutionPolicy):**
 ```cmd
-update.bat            # último build de main (o doble clic)
-update.bat v3.0.0     # build de un tag/release
+update.bat                            # actualiza TODA la lib (main) (o doble clic)
+update.bat v3.0.0                     # actualiza TODA la lib (tag/release)
+update.bat -Only CuButton             # actualiza SOLO CuButton
+update.bat -Only CuButton,CuAlert v3.0.0
 ```
+
+`--only` / `-Only` acepta `CuButton`, `button`, `cu-button` o `CuButton.umd.js`
+(sin distinguir mayúsculas ni guiones). `-o` es alias.
 
 **Qué hace:**
 1. Descarga el artifact de GitLab (según tag o main)
-2. Reemplaza la carpeta de forma atómica (si falla, lo anterior queda intacto)
-3. Instala la skill de uso en `.agents/skills/use-comegen/` del proyecto huésped
+2. **Sin `--only`:** reemplaza la carpeta de forma atómica (si falla, lo anterior queda intacto).
+   **Con `--only`:** copia solo los `.umd.js` elegidos y su doc (`use-comegen/componentes/cu-*.md`), dejando el resto intacto y sin tocar `css/themes.css`
+3. Actualiza la skill de uso en `.agents/skills/use-comegen/` del proyecto huésped (completa o solo los docs elegidos)
 
 **Variables opcionales:**
 - Linux: `CG_URL`, `CG_PROJECT_ROOT`

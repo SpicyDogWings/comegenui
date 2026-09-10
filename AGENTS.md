@@ -218,7 +218,7 @@ Tokens compartidos: tipografía, spacing, border-radius, shadows, borders.
 - `UnoCSS({ mode: "shadow-dom" })`
 - Genera `dist/css/themes.css` + `dist/css/{theme}.css`
 - Crea zip versionado: `comegenui-v{version}.zip`
-- **El zip SIEMPRE incluye la skill de uso** `use-comegen/` (`SKILL.md` + `componentes/`) al lado de los archivos de la lib — viaja con la lib para que los agentes del proyecto consumidor tengan la doc. Solo la de uso; no la de desarrollo ni la de documentar. Incluye también `update.sh` (Linux/macOS: `./update.sh`), `update.bat` (Windows: `update.bat` — doble clic o desde cmd, evade ExecutionPolicy) y `update.ps1` (alternativa PowerShell: `.\update.ps1`) — actualizadores del proyecto huésped que además instalan la skill de uso en `.agents/skills/` del proyecto
+- **El zip SIEMPRE incluye la skill de uso** `use-comegen/` (`SKILL.md` + `componentes/`) al lado de los archivos de la lib — viaja con la lib para que los agentes del proyecto consumidor tengan la doc. Solo la de uso; no la de desarrollo ni la de documentar. Incluye también `update.sh` (Linux/macOS: `./update.sh`), `update.bat` (Windows: `update.bat` — doble clic o desde cmd, evade ExecutionPolicy) y `update.ps1` (alternativa PowerShell: `.\update.ps1`) — actualizadores del proyecto huésped que además instalan la skill de uso en `.agents/skills/` del proyecto. Los tres aceptan `--only`/`-Only CuX[,CuY]` (alias `-o`) para actualizar solo algunos componentes: sin esa opción reemplazan toda la carpeta de forma atómica; con ella copian únicamente los UMD elegidos + su doc (`use-comegen/componentes/cu-*.md`), sin tocar `css/themes.css` ni el resto
 
 ---
 
