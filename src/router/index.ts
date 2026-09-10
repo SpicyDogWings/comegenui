@@ -18,11 +18,6 @@ const router = createRouter({
           name: "Theme Builder",
           component: () => import("@/pages/playground/ThemeBuilder.vue")
         },
-        {
-          path: "components/:name",
-          name: "Component playground",
-          component: () => import("@/pages/playground/StoryPage.vue")
-        },
       ]
     }
   ]

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, defineAsyncComponent } from "vue";
+import { computed, defineAsyncComponent, inject } from "vue";
 import { useRoute } from "vue-router";
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import PlaygroundStyle from "@/templates/playground/PlaygroundStyle.vue";
@@ -7,13 +7,14 @@ import PlaygroundApiComponents from "@/templates/playground/PlaygroundApiCompone
 import StoryRenderer from "@/pages/playground/StoryRenderer.vue";
 import Table from "@/components/data/Table.vue";
 import CodeBlock from "@/components/markdown/CodeBlock.vue";
-import { getStory } from "@/stories/registry";
+import { storyRegistryKey, type GetStory } from "@/plugins/story-playground/keys";
 
 const route = useRoute();
+const getStory = inject<GetStory | null>(storyRegistryKey, null);
 const name = computed(
   () => String(route.params.name ?? route.path.split("/").filter(Boolean).pop() ?? ""),
 );
-const entry = computed(() => getStory(name.value));
+const entry = computed(() => (getStory ? getStory(name.value) : undefined));
 
 // La story "manda" cuando tiene metadata (tokens/api) o cuando no hay página
 // legacy. Si la story todavía no tiene metadata y existe página, se usa la
