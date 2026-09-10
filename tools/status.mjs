@@ -70,32 +70,46 @@ const names = fg
   .sort();
 
 const results = loadBadges();
+const pendingOnly = process.argv.includes("--pending");
 
-console.log("Componente               Público  Página  Story  Test viejo  L1");
-console.log("─".repeat(78));
-
-let pending = 0;
-for (const name of names) {
+const rows = names.map((name) => {
   const component = findComponent(name);
   const story = findStory(name);
   const oldTest = findOldTest(name);
   const playground = findPlayground(name);
   const publicApi = isPublic(component);
   const tag = `cu-${kebab(name)}`;
+  return { name, story, playground, publicApi, tag };
+});
 
-  if (!story) pending++;
+const pending = rows.filter((r) => !r.story);
+const withPage = pending.filter((r) => r.playground);
+const publicWithPage = withPage.filter((r) => r.publicApi);
+const internalWithPage = withPage.filter((r) => !r.publicApi);
+const internalNoPage = pending.filter((r) => !r.playground);
 
-  const row = [
-    name.padEnd(24),
-    (publicApi ? "sí" : "—").padEnd(8),
-    (playground ? "sí" : "—").padEnd(7),
-    (story ? "sí" : "—").padEnd(6),
-    (oldTest ? "sí" : "—").padEnd(11),
-    story ? badgeSummary(results, tag) : "—",
-  ];
-  console.log(row.join(" "));
+if (!pendingOnly) {
+  console.log("Componente               Público  Página  Story  Test viejo  L1");
+  console.log("─".repeat(78));
+
+  for (const row of rows) {
+    const oldTest = findOldTest(row.name);
+    const line = [
+      row.name.padEnd(24),
+      (row.publicApi ? "sí" : "—").padEnd(8),
+      (row.playground ? "sí" : "—").padEnd(7),
+      (row.story ? "sí" : "—").padEnd(6),
+      (oldTest ? "sí" : "—").padEnd(11),
+      row.story ? badgeSummary(results, row.tag) : "—",
+    ];
+    console.log(line.join(" "));
+  }
+  console.log("");
 }
 
-console.log("");
-console.log(`${names.length} componentes · ${pending} sin story (pendientes de migrar)`);
+const list = (items) => items.map((r) => r.name).join(", ");
+console.log(`${names.length} componentes · ${names.length - pending.length} con story · ${pending.length} sin story`);
+console.log(`  • Migrables (página sin story): ${withPage.length} — públicos: ${publicWithPage.length}${publicWithPage.length ? ` [${list(publicWithPage)}]` : ""}`);
+if (internalWithPage.length) console.log(`                                  internos: ${internalWithPage.length} [${list(internalWithPage)}]`);
+if (internalNoPage.length) console.log(`  • Internos sin página (no migrables): ${internalNoPage.length} [${list(internalNoPage)}]`);
 if (!results) console.log("Sin public/test-results.json: corré pnpm run test:l1 para ver los badges.");
