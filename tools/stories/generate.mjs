@@ -139,6 +139,12 @@ for (const constName of [
   if (value) pageConsts[constName] = value;
 }
 
+// Extras por componente (Programmatic u otras secciones especiales) en un
+// archivo hermano que el generador importa sin tocarlo:
+//   src/stories/{cat}/{Name}.stories.extras.ts → `export const extras: StoryExtra[]`
+const extrasPath = resolve(ROOT, storyDir, `${name}.stories.extras.ts`);
+const hasExtras = existsSync(extrasPath);
+
 const metaLines = [];
 if (pageConsts.componentTokens) metaLines.push(`  tokens: ${pageConsts.componentTokens},`);
 const subComponents = pageConsts.styleSubComponents ?? pageConsts.subComponents;
@@ -620,11 +626,11 @@ const header = [
 const story = `${header}
 ${previews.length ? 'import { defineComponent, h, ref } from "vue";\n' : ""}import ${name} from "${`@/${componentPath.replace(/^src\//, "")}`}";
 import type { ComponentStory } from "@/stories/types";
-
+${hasExtras ? `import { extras } from "./${name}.stories.extras";\n` : ""}
 ${previews.join("\n\n")}${previews.length ? "\n\n" : ""}export const ${`cu${name}Stories`}: ComponentStory = {
   component: ${JSON.stringify(tag)},
   vue: ${name},
-${metaLines.length ? metaLines.join("\n") + "\n" : ""}  sections: [
+${metaLines.length ? metaLines.join("\n") + "\n" : ""}${hasExtras ? "  extras,\n" : ""}  sections: [
 ${sectionsSource}
   ],
 };

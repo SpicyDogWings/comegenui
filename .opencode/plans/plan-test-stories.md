@@ -460,3 +460,9 @@ Cada commit incluye su entrada en la **Bitácora**.
 - `feat(tools)`: `tools/stories/generate.mjs` — genera la story desde las props reales del `.vue` (enum por `validator`/`PropType`, booleanas y strings), con secciones, snippets Vue/Vanilla y checks derivados del source (clase/token/atributo/spinner/href).
 - `feat(tools)`: `X.stories.config.json` **por componente** (al lado de la story): `order`, `include`/`exclude`, `sections.<id>.extraProps|title|badge`, `custom[]` (secciones nuevas con valores) y `sections.<id>.preview.recipe` (interactivos).
 - Demo Button: 9 secciones (Links custom, Targets con `to`, loading interactivo), 86 checks L1 verdes; config versionado en `src/stories/buttons/Button.stories.config.json`.
+
+### 2026-09-10 — Extras por componente (Programmatic en Button)
+
+- `feat(stories)`: `X.stories.extras.ts` hermano con `export const extras: StoryExtra[]`; el generador lo importa y lo agrega a la story sin pisarlo.
+- `test(stories/button)`: sección **Programmatic** en Button (controles que cambian color/variant/size y `emulateLoading()`), renderizada por `StoryRenderer` con snippet Vue/Vanilla.
+- Verificado en navegador: las props cambian en vivo y el loading vuelve a los 1.5s.
