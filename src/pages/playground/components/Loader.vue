@@ -1,18 +1,19 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import PlaygroundStyle from '@/templates/playground/PlaygroundStyle.vue';
-import PlaygroundApiComponents from '@/templates/playground/PlaygroundApiComponents.vue';
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
+import StoryRenderer from "@/pages/playground/StoryRenderer.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
-import Badge from "@/components/information/Badge.vue";
 import Table from "@/components/data/Table.vue";
 import Button from "@/components/buttons/Button.vue";
 import Loader from "@/components/information/Loader.vue";
+import { cuLoaderStories } from "@/stories/information/Loader.stories";
+
+const progAnimation = ref('loading');
+const progKey = ref(0);
 
 const outlineItems = [
-  { label: 'Loading', id: 'loading' },
-  { label: 'Cooldown', id: 'cooldown' },
-  { label: 'Colors', id: 'colors' },
+  ...cuLoaderStories.sections.map((section) => ({ label: section.title, id: section.id })),
   { label: 'Programmatic', id: 'programmatic' },
   {
     label: 'Style',
@@ -57,68 +58,6 @@ const eventsData: { name: string; type: string; description: string }[] = [];
 
 const exposesData: { name: string; type: string; description: string }[] = [];
 
-const loadingVue = `<script setup>
-import Loader from '@/components/information/Loader.vue'
-<\/script>
-
-<template>
-  <div class="demo-box">
-    <Loader color="primary" animation="loading" />
-  </div>
-</template>
-
-<style>
-.demo-box { position: relative; height: 3px; min-width: 200px; }
-</style>`;
-
-const loadingVanilla = `<link rel="stylesheet" href="css/themes.css">
-<script src="CuLoader.umd.js"><\/script>
-
-<div style="position: relative; height: 3px; min-width: 200px">
-  <cu-loader color="primary" animation="loading"></cu-loader>
-</div>`;
-
-const cooldownVue = `<script setup>
-import { ref } from 'vue'
-import Loader from '@/components/information/Loader.vue'
-import Button from '@/components/buttons/Button.vue'
-
-const key = ref(0)
-<\/script>
-
-<template>
-  <div class="demo-box">
-    <Loader :key="key" animation="cooldown" :delay="2000" />
-  </div>
-  <Button color="neutral" variant="soft" @click="key++">Reiniciar</Button>
-</template>`;
-
-const colorsVue = `<script setup>
-import Loader from '@/components/information/Loader.vue'
-<\/script>
-
-<template>
-  <Loader color="primary" animation="loading" />
-  <Loader color="secondary" animation="loading" />
-  <Loader color="neutral" animation="loading" />
-  <Loader color="success" animation="loading" />
-  <Loader color="warning" animation="loading" />
-  <Loader color="danger" animation="loading" />
-</template>`;
-
-const colorsVanilla = `<link rel="stylesheet" href="css/themes.css">
-<script src="CuLoader.umd.js"><\/script>
-
-<cu-loader color="primary" animation="loading"></cu-loader>
-<cu-loader color="secondary" animation="loading"></cu-loader>
-<cu-loader color="neutral" animation="loading"></cu-loader>
-<cu-loader color="success" animation="loading"></cu-loader>
-<cu-loader color="warning" animation="loading"></cu-loader>
-<cu-loader color="danger" animation="loading"></cu-loader>`;
-
-const progAnimation = ref('loading');
-const progKey = ref(0);
-
 const programmaticVue = `<script setup>
 import { ref } from 'vue'
 import Loader from '@/components/information/Loader.vue'
@@ -141,59 +80,7 @@ const key = ref(0)
 <template>
   <PlaygroundLayout title="Loader" :outlineItems="outlineItems">
     <div class="playground-content">
-      <section id="loading" class="playground-section">
-        <div class="playground-heading">
-          <h2>Loading</h2>
-          <Badge color="neutral" title="animation por defecto">loading</Badge>
-        </div>
-        <p class="playground-desc">Barra de carga infinita (slide de izquierda a derecha). Usada en tablas, dropdowns, etc.</p>
-        <SectionDemo :vue-code="loadingVue" :vanilla-code="loadingVanilla">
-          <div class="playground-demo-box">
-            <Loader color="primary" animation="loading" />
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="cooldown" class="playground-section">
-        <div class="playground-heading">
-          <h2>Cooldown</h2>
-          <Badge color="neutral" title="delay por defecto (ms)">2000</Badge>
-        </div>
-        <p class="playground-desc">Barra que se vacía en el tiempo configurable (<code>delay</code> ms). Se reinicia con cada tecla (estilo select nativo).</p>
-        <SectionDemo :vue-code="cooldownVue">
-          <div class="playground-col">
-            <div class="playground-demo-box">
-              <Loader :key="progKey" animation="cooldown" :delay="2000" />
-            </div>
-            <div class="playground-row">
-              <Button color="neutral" variant="soft" @click="progKey++">
-                Reiniciar cooldown
-              </Button>
-            </div>
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="colors" class="playground-section">
-        <div class="playground-heading">
-          <h2>Colors</h2>
-          <Badge color="neutral" title="Color por defecto">primary</Badge>
-        </div>
-        <SectionDemo :vue-code="colorsVue" :vanilla-code="colorsVanilla">
-          <div class="playground-grid">
-            <div v-for="color in ['primary', 'secondary', 'neutral', 'success', 'warning', 'danger']" :key="color">
-              <span class="playground-label">{{ color }}</span>
-              <div class="playground-demo-box">
-                <Loader :color="color" animation="loading" />
-              </div>
-            </div>
-          </div>
-        </SectionDemo>
-      </section>
+      <StoryRenderer :story="cuLoaderStories" />
 
       <hr class="playground-separator" />
 
@@ -223,10 +110,7 @@ const key = ref(0)
       </section>
 
       <hr class="playground-separator" />
-
-      <hr class="playground-separator" />
-
-      <hr class="playground-separator" />      <PlaygroundStyle :tokens="componentTokens" />
+      <PlaygroundStyle :tokens="componentTokens" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>
@@ -256,23 +140,9 @@ const key = ref(0)
   overflow: hidden;
   min-width: 200px;
 }
+</style>
 
-.playground-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.5rem;
-}
-
-.playground-label {
-  display: block;
-  font-size: var(--cu-font-size-sm);
-  font-weight: var(--cu-font-weight-medium);
-  color: var(--cu-color-neutral-text);
-  opacity: 0.6;
-  margin-bottom: 0.5rem;
-  text-transform: capitalize;
-}
-
+<style>
 .playground-desc {
   font-size: var(--cu-font-size-sm);
   color: var(--cu-color-neutral-text);
