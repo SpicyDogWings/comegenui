@@ -163,6 +163,7 @@ Tests de la capa `.vue` derivados de las secciones actuales de los playground, c
   - [x] **FloatingButton** migrado (story + 25 checks L1 + página con `StoryRenderer`).
   - [x] **ToggleColorSheme** migrado (story + 23 checks L1 + página con `StoryRenderer`).
   - [x] **FileList** migrado (story + 13 checks L1; interno, sin página de playground).
+  - [x] **Collapse** migrado (story + 20 checks L1 + página con `StoryRenderer`).
   - Herramientas de eficiencia: `stories:status`, `stories:migrate`, `new:component`.
   - Orden sugerido: `Input`, `Select`, `Dropdown`, `Alert`, `Badge`, `Card`, `Checkbox`, `Switch`, `Textarea`, `Tabs`, `Modal`, `Table`, … (297 `SectionDemo` en 45 páginas).
   - Un commit atómico por componente (o por par de componentes chicos).
@@ -410,3 +411,8 @@ Cada commit incluye su entrada en la **Bitácora**.
 
 - `test(l1/file-list)`: FileList migrado (interno, sin página) — 7 secciones, **13 checks L1**, test viejo eliminado.
 - Story escrita a mano (el tool requiere página): items, empty, select, remove, disabled, max-height, colors.
+
+### 2026-09-10 — 1f: Collapse migrado
+
+- `test(l1/collapse)`: Collapse migrado — 4 secciones, **20 checks L1**, página a `StoryRenderer`, `Collapse.test.ts` eliminado.
+- Checks propios: abierto/cerrado, toggle(true/false), defaultOpen, exposes open/close/toggle, color.

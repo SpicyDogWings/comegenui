@@ -1,24 +1,19 @@
 <script setup lang="ts">
-import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
+import { ref } from "vue";
 import PlaygroundStyle from '@/templates/playground/PlaygroundStyle.vue';
-import PlaygroundApiComponents from '@/templates/playground/PlaygroundApiComponents.vue';
+import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
+import StoryRenderer from "@/pages/playground/StoryRenderer.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
-import Badge from "@/components/information/Badge.vue";
 import Table from "@/components/data/Table.vue";
 import Collapse from "@/components/overlay/Collapse.vue";
 import Button from "@/components/buttons/Button.vue";
-import { ref } from "vue";
+import { cuCollapseStories } from "@/stories/overlay/Collapse.stories";
 
 const programmaticRef = ref<InstanceType<typeof Collapse> | null>(null);
 const programmaticIsOpen = ref(false);
 
-const colors = ["primary", "secondary", "neutral", "success", "warning", "danger"] as const;
-
 const outlineItems = [
-  { label: 'Default', id: 'default' },
-  { label: 'Default Open', id: 'default-open' },
-  { label: 'Colors', id: 'colors' },
-  { label: 'Nested', id: 'nested' },
+  ...cuCollapseStories.sections.map((section) => ({ label: section.title, id: section.id })),
   { label: 'Programmatic', id: 'programmatic' },
   {
     label: 'Style',
@@ -38,40 +33,6 @@ const outlineItems = [
     ],
   },
 ];
-
-// ── Snippets Vue ──
-
-const vueImport = `<script setup>
-import Collapse from '@/components/overlay/Collapse.vue'
-<\/script>`;
-
-const vueSnippet = (body: string) => `${vueImport}
-
-<template>
-${body}
-</template>`;
-
-const defaultVue = vueSnippet(`  <Collapse label="More information">
-    <p>This content is hidden by default and revealed when the trigger is clicked.</p>
-  </Collapse>`);
-
-const defaultOpenVue = vueSnippet(`  <Collapse label="Advanced options" :default-open="true">
-    <p>Use default-open to render the content expanded on mount.</p>
-  </Collapse>`);
-
-const colorsVue = vueSnippet(`  <Collapse v-for="color in ['primary', 'secondary', 'neutral', 'success', 'warning', 'danger']" :key="color" :label="color + ' options'" :color="color" :default-open="true">
-    <p>The trigger uses the <strong>{{ color }}</strong> color token.</p>
-  </Collapse>`);
-
-const nestedVue = vueSnippet(`  <Collapse label="Parent section" color="primary" :default-open="true">
-    <p>Collapses can be nested to build menus or accordion-like trees.</p>
-    <Collapse label="Child section">
-      <p>Deeply nested content with its own toggle.</p>
-    </Collapse>
-    <Collapse label="Another child" color="success">
-      <p>Each level keeps an independent open state.</p>
-    </Collapse>
-  </Collapse>`);
 
 const programmaticVue = `<script setup>
 import { ref } from 'vue'
@@ -99,44 +60,7 @@ function logState() {
   </div>
 </template>`;
 
-// ── Snippets Vanilla ──
-
-const collapseImportVanilla = `<script src="dist/CuCollapse.umd.js"><\/script>`;
-
-const defaultVanilla = `${collapseImportVanilla}
-
-<cu-collapse label="More information">
-  <p>This content is hidden by default and revealed when the trigger is clicked.</p>
-</cu-collapse>`;
-
-const defaultOpenVanilla = `${collapseImportVanilla}
-
-<cu-collapse label="Advanced options" default-open>
-  <p>Use default-open to render the content expanded on mount.</p>
-</cu-collapse>`;
-
-const colorsVanilla = `${collapseImportVanilla}
-
-<cu-collapse label="Primary options" color="primary" default-open><p>The trigger uses the <strong>primary</strong> color token.</p></cu-collapse>
-<cu-collapse label="Secondary options" color="secondary" default-open><p>The trigger uses the <strong>secondary</strong> color token.</p></cu-collapse>
-<cu-collapse label="Neutral options" color="neutral" default-open><p>The trigger uses the <strong>neutral</strong> color token.</p></cu-collapse>
-<cu-collapse label="Success options" color="success" default-open><p>The trigger uses the <strong>success</strong> color token.</p></cu-collapse>
-<cu-collapse label="Warning options" color="warning" default-open><p>The trigger uses the <strong>warning</strong> color token.</p></cu-collapse>
-<cu-collapse label="Danger options" color="danger" default-open><p>The trigger uses the <strong>danger</strong> color token.</p></cu-collapse>`;
-
-const nestedVanilla = `${collapseImportVanilla}
-
-<cu-collapse label="Parent section" color="primary" default-open>
-  <p>Collapses can be nested to build menus or accordion-like trees.</p>
-  <cu-collapse label="Child section">
-    <p>Deeply nested content with its own toggle.</p>
-  </cu-collapse>
-  <cu-collapse label="Another child" color="success">
-    <p>Each level keeps an independent open state.</p>
-  </cu-collapse>
-</cu-collapse>`;
-
-const programmaticVanilla = `${collapseImportVanilla}
+const programmaticVanilla = `<script src="dist/CuCollapse.umd.js"><\/script>
 <script src="dist/CuButton.umd.js"><\/script>
 
 <div style="display:flex;gap:8px;flex-wrap:wrap">
@@ -196,79 +120,7 @@ const exposesData = [
 <template>
   <PlaygroundLayout title="Collapse" :outlineItems="outlineItems">
     <div class="playground-content">
-
-      <section id="default" class="playground-section">
-        <div class="playground-heading">
-          <h2>Default</h2>
-        </div>
-        <SectionDemo :vue-code="defaultVue" :vanilla-code="defaultVanilla">
-          <div class="playground-col">
-            <Collapse label="More information">
-              <p>This content is hidden by default and revealed when the trigger is clicked.</p>
-              <p>The chevron rotates 90° while the content animates its height.</p>
-            </Collapse>
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="default-open" class="playground-section">
-        <div class="playground-heading">
-          <h2>Default Open</h2>
-          <Badge color="neutral" title="defaultOpen por defecto">false</Badge>
-        </div>
-        <SectionDemo :vue-code="defaultOpenVue" :vanilla-code="defaultOpenVanilla">
-          <div class="playground-col">
-            <Collapse label="Advanced options" :default-open="true">
-              <p>Use <code>default-open</code> to render the content expanded on mount.</p>
-            </Collapse>
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="colors" class="playground-section">
-        <div class="playground-heading">
-          <h2>Colors</h2>
-          <Badge color="neutral" title="Color por defecto">neutral</Badge>
-        </div>
-        <SectionDemo :vue-code="colorsVue" :vanilla-code="colorsVanilla">
-          <div class="playground-col">
-            <Collapse
-              v-for="color in colors"
-              :key="color"
-              :label="`${color.charAt(0).toUpperCase() + color.slice(1)} options`"
-              :color="color"
-              :default-open="true"
-            >
-              <p>The trigger uses the <strong>{{ color }}</strong> color token.</p>
-            </Collapse>
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="nested" class="playground-section">
-        <div class="playground-heading">
-          <h2>Nested</h2>
-        </div>
-        <SectionDemo :vue-code="nestedVue" :vanilla-code="nestedVanilla">
-          <div class="playground-col">
-            <Collapse label="Parent section" color="primary" :default-open="true">
-              <p>Collapses can be nested to build menus or accordion-like trees.</p>
-              <Collapse label="Child section">
-                <p>Deeply nested content with its own toggle.</p>
-              </Collapse>
-              <Collapse label="Another child" color="success">
-                <p>Each level keeps an independent open state.</p>
-              </Collapse>
-            </Collapse>
-          </div>
-        </SectionDemo>
-      </section>
+      <StoryRenderer :story="cuCollapseStories" />
 
       <hr class="playground-separator" />
 
@@ -301,8 +153,7 @@ const exposesData = [
       </section>
 
       <hr class="playground-separator" />
-
-      <hr class="playground-separator" />      <PlaygroundStyle :tokens="componentTokens" />
+      <PlaygroundStyle :tokens="componentTokens" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>
@@ -322,3 +173,18 @@ const exposesData = [
     </div>
   </PlaygroundLayout>
 </template>
+
+<style>
+.playground-desc {
+  font-size: var(--cu-font-size-sm);
+  color: var(--cu-color-neutral-text);
+  opacity: 0.7;
+  margin-bottom: 1rem;
+}
+
+.playground-state {
+  font-size: var(--cu-font-size-sm);
+  color: var(--cu-color-neutral);
+  margin: 0;
+}
+</style>
