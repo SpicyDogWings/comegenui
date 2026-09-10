@@ -133,7 +133,7 @@ Tests de la capa `.vue` derivados de las secciones actuales de los playground, c
   - `.opencode/skills/comegen-preflight/SKILL.md`: trigger "prepará el merge request".
   - `tools/reporters/playground-reporter.ts`: escribe `public/test-results.json`.
   - `vitest.config.ts`: project `l1` (jsdom) + reporter.
-- [ ] **1b** Story schema + piloto Button
+- [x] **1b** Story schema + piloto Button
   - `src/stories/types.ts` con el contrato de arriba.
   - `src/components/buttons/Button.stories.ts` con las 8 secciones: `variants`, `colors`, `disabled`, `sizes`, `icons`, `loading`, `links`, `fullwidth`.
   - Cada variante = una fila del demo actual del playground; cada sección con sus `checks.l1`, `vue` y `vanilla` (mover los snippets existentes).
@@ -154,6 +154,7 @@ Tests de la capa `.vue` derivados de las secciones actuales de los playground, c
 **Aceptación Fase 1:** `./scripts/preflight.sh` corre `type-check` + L1 de Button en verde; el playground de Button muestra ✅ por sección; romper `color` → test rojo y ❌ en la UI.
 
 **Bloqueantes conocidos (preexistentes, hay que resolverlos para que el preflight sea verde):**
+- `pnpm run type-check` falla con **225 errores** repartidos en playground/legacy/utils (main ya está rojo). Estrategia: **baseline** en preflight (no bloquea si no aumentan) y deuda aparte.
 - `src/components/buttons/ToggleColorSheme.test.ts` (3 fallos): el test mockea `@/plugins/cu-tokens`, pero el componente migró a `@/stores/theme` (Pinia).
 - `src/components/theme/ThemeManagerModal.test.ts` (3 fallos): el test no abre el `Modal` y su contenido se renderiza solo con `v-show`/`open()`, así que `.tm-modal` no existe.
 - Fix: actualizar los tests al comportamiento actual (Pinia activo en el primero; abrir el modal vía `defineExpose` en el segundo). Commits atómicos propios.
@@ -222,3 +223,9 @@ Cada commit incluye su entrada en la **Bitácora**.
 - `.opencode/skills/comegen-preflight/SKILL.md`.
 - `vitest.config.ts`: project `l1` (jsdom) + reporter.
 - Verificado: 37 archivos / 331 tests corren; 6 fallos preexistentes (2 archivos) listados como bloqueantes.
+
+### 2026-09-10 — 1b Story schema + Button
+
+- `test(stories)`: `src/stories/types.ts` (contrato `ComponentStory`/`Section`/`Variant`/`checks.l1|ce|umd`), con `expect` inyectado en el contexto para que las stories no importen vitest.
+- `test(stories)`: `src/components/buttons/Button.stories.ts` con las 8 secciones del playground (variants, colors, disabled, sizes, icons, loading, links, fullwidth), snippets Vue/Vanilla y checks L1.
+- Sin errores de type-check en los archivos nuevos (el baseline rojo de 225 es preexistente).
