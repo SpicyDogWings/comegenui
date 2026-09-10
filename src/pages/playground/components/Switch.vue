@@ -1,32 +1,21 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import PlaygroundStyle from '@/templates/playground/PlaygroundStyle.vue';
-import PlaygroundApiComponents from '@/templates/playground/PlaygroundApiComponents.vue';
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
-import Switch from "@/components/form/Switch.vue";
-import Badge from "@/components/information/Badge.vue";
+import StoryRenderer from "@/pages/playground/StoryRenderer.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Table from "@/components/data/Table.vue";
 import Button from "@/components/buttons/Button.vue";
+import Switch from "@/components/form/Switch.vue";
+import { cuSwitchStories } from "@/stories/form/Switch.stories";
 
-const checked1 = ref(false);
-const checked2 = ref(true);
-const labelChecked1 = ref(true);
-const labelChecked2 = ref(false);
-
-const switchRef = ref<InstanceType<typeof Switch> | null>(null);
+const switchRef = ref<any>(null);
 const progChecked = ref(false);
 const progGetResult = ref<boolean | null>(null);
 
-const colors = ["primary", "secondary", "neutral", "success", "warning", "danger"] as const;
-
 const outlineItems = [
-  { label: 'Default', id: 'default' },
-  { label: 'With Label', id: 'with-label' },
-  { label: 'Sizes', id: 'sizes' },
-  { label: 'Colors', id: 'colors' },
-  { label: 'Disabled', id: 'disabled' },
-    { label: 'Programmatic', id: 'programmatic' },
+  ...cuSwitchStories.sections.map((section) => ({ label: section.title, id: section.id })),
+  { label: 'Programmatic', id: 'programmatic' },
   {
     label: 'Style',
     id: 'style',
@@ -45,85 +34,6 @@ const outlineItems = [
     ],
   },
 ];
-
-const vueImport = `<script setup>
-import Switch from '@/components/form/Switch.vue'
-<\/script>`;
-
-const vueSnippet = (body: string) => `${vueImport}
-
-<template>
-${body}
-</template>`;
-
-const defaultVue = `<script setup>
-import { ref } from 'vue'
-import Switch from '@/components/form/Switch.vue'
-
-const notifications = ref(false)
-const darkMode = ref(true)
-<\/script>
-
-<template>
-  <Switch v-model="notifications" label="Notificaciones" />
-  <Switch v-model="darkMode" label="Modo oscuro" />
-</template>`;
-
-const sizesVue = vueSnippet(`  <Switch size="md" label="md (default)" />
-  <Switch size="sm" label="sm" />`);
-
-const withLabelVue = vueSnippet(`  <Switch v-model="notifications" label="Notificaciones" />
-  <Switch v-model="darkMode" color="success">
-    Modo oscuro automático
-  </Switch>`);
-
-const withLabelVanilla = `<script src="dist/CuSwitch.umd.js"><\/script>
-
-<cu-switch id="switch-label-1" label="Notificaciones"></cu-switch>
-<cu-switch id="switch-label-2" color="success">Modo oscuro automático</cu-switch>
-
-<script>
-  customElements.whenDefined('cu-switch').then(() => {
-    const one = document.getElementById('switch-label-1');
-    const two = document.getElementById('switch-label-2');
-    one.addEventListener('change', (e) => { one.modelValue = e.detail; });
-    two.addEventListener('change', (e) => { two.modelValue = e.detail; });
-  });
-<\/script>`;
-
-const colorsVue = vueSnippet(`  <Switch color="primary" label="primary" />
-  <Switch color="secondary" label="secondary" />
-  <Switch color="neutral" label="neutral" />
-  <Switch color="success" label="success" />
-  <Switch color="warning" label="warning" />
-  <Switch color="danger" label="danger" />`);
-
-const disabledVue = vueSnippet(`  <Switch disabled label="Disabled unchecked" />
-  <Switch :model-value="true" disabled label="Disabled checked" />`);
-
-const defaultVanilla = `<script src="dist/CuSwitch.umd.js"><\/script>
-
-<cu-switch label="Notificaciones"></cu-switch>
-<cu-switch label="Modo oscuro" model-value="true"></cu-switch>`;
-
-const sizesVanilla = `<script src="dist/CuSwitch.umd.js"><\/script>
-
-<cu-switch size="md" label="md (default)"></cu-switch>
-<cu-switch size="sm" label="sm"></cu-switch>`;
-
-const colorsVanilla = `<script src="dist/CuSwitch.umd.js"><\/script>
-
-<cu-switch color="primary" label="primary"></cu-switch>
-<cu-switch color="secondary" label="secondary"></cu-switch>
-<cu-switch color="neutral" label="neutral"></cu-switch>
-<cu-switch color="success" label="success"></cu-switch>
-<cu-switch color="warning" label="warning"></cu-switch>
-<cu-switch color="danger" label="danger"></cu-switch>`;
-
-const disabledVanilla = `<script src="dist/CuSwitch.umd.js"><\/script>
-
-<cu-switch disabled label="Disabled unchecked"></cu-switch>
-<cu-switch model-value="true" disabled label="Disabled checked"></cu-switch>`;
 
 const programmaticVue = `<script setup>
 import { ref } from 'vue'
@@ -209,6 +119,10 @@ const propsData = [
   { name: 'disabled', type: 'boolean', default: 'false', description: 'Deshabilita la interacción y atenúa el componente' },
 ];
 
+const slotsData = [
+  { name: 'default', description: 'Texto del label (alternativa al prop label)' },
+];
+
 const eventsData = [
   { name: 'update:modelValue', type: 'custom', description: 'Se emite al alternar (v-model). detail: boolean' },
   { name: 'change', type: 'custom', description: 'Se emite al alternar. detail: boolean (nuevo estado)' },
@@ -218,87 +132,17 @@ const eventsData = [
 ];
 
 const exposesData = [
-  { name: 'get', type: '() => boolean', default: '—', description: 'Devuelve el estado actual (checked)' },
-  { name: 'set', type: '(value: boolean) => void', default: '—', description: 'Setea el estado y emite change' },
-  { name: 'reset', type: '() => void', default: '—', description: 'Restaura el estado a false y emite change' },
-  { name: 'focus', type: '() => void', default: '—', description: 'Pone el foco en el input interno' },
+  { name: 'get', type: '() => boolean', description: 'Devuelve el estado actual (checked)' },
+  { name: 'set', type: '(value: boolean) => void', description: 'Setea el estado y emite change' },
+  { name: 'reset', type: '() => void', description: 'Restaura el estado a false y emite change' },
+  { name: 'focus', type: '() => void', description: 'Pone el foco en el input interno' },
 ];
 </script>
 
 <template>
   <PlaygroundLayout title="Switch" :outlineItems="outlineItems">
     <div class="playground-content">
-      <section id="default" class="playground-section">
-        <div class="playground-heading">
-          <h2>Default</h2>
-          <Badge color="neutral" title="modelValue por defecto">false</Badge>
-        </div>
-        <SectionDemo :vue-code="defaultVue" :vanilla-code="defaultVanilla">
-          <div class="playground-col">
-            <Switch v-model="checked1" label="Notificaciones" />
-            <Switch v-model="checked2" label="Modo oscuro" />
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="with-label" class="playground-section">
-        <div class="playground-heading">
-          <h2>With Label</h2>
-        </div>
-        <SectionDemo :vue-code="withLabelVue" :vanilla-code="withLabelVanilla">
-          <div class="playground-col">
-            <Switch v-model="labelChecked1" label="Notificaciones" />
-            <Switch v-model="labelChecked2" color="success">
-              Modo oscuro automático
-            </Switch>
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="sizes" class="playground-section">
-        <div class="playground-heading">
-          <h2>Sizes</h2>
-        </div>
-        <SectionDemo :vue-code="sizesVue" :vanilla-code="sizesVanilla">
-          <div class="playground-row">
-            <Switch size="md" label="md (default)" />
-            <Switch size="sm" label="sm" />
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="colors" class="playground-section">
-        <div class="playground-heading">
-          <h2>Colors</h2>
-          <Badge color="neutral" title="Color por defecto">neutral</Badge>
-        </div>
-        <SectionDemo :vue-code="colorsVue" :vanilla-code="colorsVanilla">
-          <div class="playground-row">
-            <Switch v-for="color in colors" :key="color" :color="color" :label="color" />
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="disabled" class="playground-section">
-        <div class="playground-heading">
-          <h2>Disabled</h2>
-          <Badge color="neutral" title="Valor por defecto">false</Badge>
-        </div>
-        <SectionDemo :vue-code="disabledVue" :vanilla-code="disabledVanilla">
-          <div class="playground-row">
-            <Switch disabled label="Disabled unchecked" />
-            <Switch :model-value="true" disabled label="Disabled checked" />
-          </div>
-        </SectionDemo>
-      </section>
+      <StoryRenderer :story="cuSwitchStories" />
 
       <hr class="playground-separator" />
 
@@ -328,10 +172,7 @@ const exposesData = [
       </section>
 
       <hr class="playground-separator" />
-
-      <hr class="playground-separator" />
-
-      <hr class="playground-separator" />      <PlaygroundStyle :tokens="componentTokens" />
+      <PlaygroundStyle :tokens="componentTokens" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>
@@ -340,7 +181,7 @@ const exposesData = [
         <Table :columns="apiColumns" :data="propsData" variant="ghost" compact />
 
         <h3 id="api-slots">Slots</h3>
-        <Table :columns="apiColumns" :data="[]" empty="No tiene slots" variant="ghost" compact />
+        <Table :columns="apiColumns" :data="slotsData" variant="ghost" compact />
 
         <h3 id="api-events">Events</h3>
         <Table :columns="apiColumns" :data="eventsData" variant="ghost" compact />
@@ -351,3 +192,18 @@ const exposesData = [
     </div>
   </PlaygroundLayout>
 </template>
+
+<style>
+.playground-desc {
+  font-size: var(--cu-font-size-sm);
+  color: var(--cu-color-neutral-text);
+  opacity: 0.7;
+  margin-bottom: 1rem;
+}
+
+.playground-state {
+  font-size: var(--cu-font-size-sm);
+  color: var(--cu-color-neutral);
+  margin: 0;
+}
+</style>
