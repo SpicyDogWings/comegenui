@@ -162,6 +162,7 @@ Tests de la capa `.vue` derivados de las secciones actuales de los playground, c
   - [x] **CopyButton** migrado (story + 25 checks L1 + página con `StoryRenderer`).
   - [x] **FloatingButton** migrado (story + 25 checks L1 + página con `StoryRenderer`).
   - [x] **ToggleColorSheme** migrado (story + 23 checks L1 + página con `StoryRenderer`).
+  - [x] **FileList** migrado (story + 13 checks L1; interno, sin página de playground).
   - Herramientas de eficiencia: `stories:status`, `stories:migrate`, `new:component`.
   - Orden sugerido: `Input`, `Select`, `Dropdown`, `Alert`, `Badge`, `Card`, `Checkbox`, `Switch`, `Textarea`, `Tabs`, `Modal`, `Table`, … (297 `SectionDemo` en 45 páginas).
   - Un commit atómico por componente (o por par de componentes chicos).
@@ -404,3 +405,8 @@ Cada commit incluye su entrada en la **Bitácora**.
 
 - `feat(stories)`: `ComponentStory.setup`/`global` (Pinia, init de plugins) en el runner; `--page` en `stories:migrate` (componente con typo `Sheme` vs página `Scheme`); export de `init` en cu-tokens.
 - `test(l1/toggle-color-sheme)`: ToggleColorSheme migrado — 2 secciones, **23 checks L1**, página a `StoryRenderer`, test viejo eliminado.
+
+### 2026-09-10 — 1f: FileList migrado
+
+- `test(l1/file-list)`: FileList migrado (interno, sin página) — 7 secciones, **13 checks L1**, test viejo eliminado.
+- Story escrita a mano (el tool requiere página): items, empty, select, remove, disabled, max-height, colors.
