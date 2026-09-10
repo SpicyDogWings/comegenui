@@ -52,14 +52,11 @@ const ButtonEventsPlayground = defineComponent({
       h("div", { class: "playground-col" }, [
         h("div", { class: "playground-row" }, [
           h(Button, { color: "primary", variant: "solid", ...handlers }, () => "Guardar"),
-          h(Button, { color: "secondary", variant: "soft", ...handlers }, () => "Cancelar"),
-          h(Button, { color: "danger", variant: "solid", ...handlers }, () => "Eliminar"),
-          h(Button, { color: "neutral", onClick: () => (log.value = []) }, () => "Limpiar log"),
         ]),
         h(
           "p",
           { class: "playground-state" },
-          "Interactuá con los botones (click, doble click, foco, teclado, hover) y mirá el log de eventos.",
+          "Button no emite eventos propios (loading es estado, no evento): interactuá con el botón (click, doble click, foco, teclado, hover) y mirá el log.",
         ),
         h(
           "ul",
@@ -122,7 +119,7 @@ export const extras: StoryExtra[] = [
     id: "events",
     title: "Events",
     description:
-      "Patio de juegos de eventos: interactuá con los botones y mirá el log en vivo.",
+      "Patio de juegos de eventos: interactuá con el botón y mirá el log en vivo. Button no emite eventos custom (loading es un estado, no un evento).",
     render: () => h(ButtonEventsPlayground),
     vue: eventsVue,
     vanilla: eventsVanilla,
