@@ -108,11 +108,14 @@ try {
         $projectRoot = $env:CG_PROJECT_ROOT
         if (-not $projectRoot) {
             $d = $Self
-            while ($d -ne (Split-Path $d -Parent) -and -not (Test-Path (Join-Path $d ".git") -PathType Container) -and -not (Test-Path (Join-Path $d "AGENTS.md")) -and -not (Test-Path (Join-Path $d "package.json"))) {
-                $d = Split-Path $d -Parent
-            }
-            if ($d -ne (Split-Path $d -Parent)) {
-                $projectRoot = $d
+            while ($d) {
+                if ((Test-Path (Join-Path $d ".git") -PathType Container) -or (Test-Path (Join-Path $d "AGENTS.md")) -or (Test-Path (Join-Path $d "package.json"))) {
+                    $projectRoot = $d
+                    break
+                }
+                $parent = Split-Path $d -Parent
+                if (-not $parent -or $parent -eq $d) { break }
+                $d = $parent
             }
         }
 
@@ -206,6 +209,7 @@ try {
     $selfPs1 = Join-Path $Tmp "self.ps1"
     Copy-Item $MyInvocation.MyCommand.Path $selfPs1
     & $selfPs1 __swap__ $Tag $Self $Only
+    exit $LASTEXITCODE
 } finally {
     if ($prevLoc) { Set-Location -LiteralPath $prevLoc.Path -ErrorAction SilentlyContinue }
     if (Test-Path $Tmp) { Remove-Item $Tmp -Recurse -Force -ErrorAction SilentlyContinue }
