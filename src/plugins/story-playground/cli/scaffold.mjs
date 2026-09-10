@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-// tools/scaffold-component.mjs — Genera el esqueleto completo de un componente
+// src/plugins/story-playground/cli/scaffold.mjs — Genera el esqueleto completo de un componente
 // nuevo de ComegenUI (componente + CE + entry + story + test L1).
 //
 // Uso:
-//   node tools/scaffold-component.mjs MiComponente buttons
-//   node tools/scaffold-component.mjs MiComponente buttons --internal
+//   node src/plugins/story-playground/cli/scaffold.mjs MiComponente buttons
+//   node src/plugins/story-playground/cli/scaffold.mjs MiComponente buttons --internal
 //
 // Después: playground (página + router + nav) y docs. Ver
 // .opencode/skills/comegen-dev/02-crear-componente.md.
@@ -16,7 +16,7 @@ const [name, category, ...flags] = process.argv.slice(2);
 const internal = flags.includes("--internal");
 
 if (!name || !/^[A-Z][A-Za-z0-9]*$/.test(name)) {
-  console.error("Uso: node tools/scaffold-component.mjs <MiComponente> <category> [--internal]");
+  console.error("Uso: node src/plugins/story-playground/cli/scaffold.mjs <MiComponente> <category> [--internal]");
   console.error("     <MiComponente> en PascalCase (ej: StatusCard), <category> ej: information");
   process.exit(1);
 }

@@ -1,4 +1,4 @@
-// Generado por tools/stories/generate.mjs a partir de las props de Button.vue.
+// Generado por src/plugins/story-playground/cli/generate.mjs a partir de las props de Button.vue.
 // (sin eventos declarados)
 
 import { defineComponent, h, ref } from "vue";

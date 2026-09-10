@@ -1,8 +1,27 @@
 # 05 — Playground
 
-Páginas en `src/pages/playground/components/`. Iterar con `pnpm dev` (hot reload).
+Iterar con `pnpm dev` (hot reload).
 
-## Patrón nuevo (story-driven — el obligatorio)
+## Playground genérico (actual)
+
+El plugin `src/plugins/story-playground/` registra la ruta dinámica `/playground/components/:name` y `StoryPage.vue` pinta la story completa: **secciones + extras (Programmatic/Events) + Style + API**. No se escribe una página por componente.
+
+- El nav sigue en `PlaygroundLayout.vue` (entrada por componente).
+- Para que use la página genérica, la story necesita `tokens`/`api`: `pnpm run stories:generate X --meta-only`.
+- Si la story **no** tiene metadata y existe página legacy, se usa la página legacy (transición). Sin página, se pinta igual (solo secciones).
+- Config por componente: `X.stories.config.json` (order/include/exclude, `extraProps`, `custom[]`, `preview`). Extras: `X.stories.extras.ts` (Programmatic = exposes/v-model; Events = eventos).
+
+### Extras (patio de juegos)
+
+- **Programmatic**: botones `Button color="neutral"` sobre una instancia (`ref`), una acción por botón, línea `playground-state` con los getters/v-model en vivo, y el componente al final. Ej: `src/stories/overlay/Collapse.stories.extras.ts`.
+- **Events**: una instancia y un log en vivo de los eventos (nativos + `ceEmit` con `e.detail`). Ej: `src/stories/buttons/Button.stories.extras.ts`.
+- Se pintan como sección propia después de las secciones de la story.
+
+## Página legacy (transición)
+
+Las páginas de `src/pages/playground/components/` existen solo como fallback mientras su story no tenga `tokens`/`api`. Al completar la metadata, la story manda.
+
+### Patrón legacy
 
 La página **no escribe demos a mano**: renderiza la story con `StoryRenderer` y solo agrega lo que la story no puede expresar (Style, API, y Programmatic si hay métodos/v-model).
 

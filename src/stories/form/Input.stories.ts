@@ -1,4 +1,4 @@
-// Generado por tools/stories/migrate.mjs — revisar y completar los TODO.
+// Generado por src/plugins/story-playground/cli/migrate.mjs — revisar y completar los TODO.
 //
 // Tests viejos a mapear:
 //   - renderiza un input con clase cu-input

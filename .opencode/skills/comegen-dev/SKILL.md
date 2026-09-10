@@ -68,10 +68,14 @@ Si falta cualquiera, decilo explícitamente en el reporte; no lo tapes con "el c
 
 ## Herramientas
 
+Todo el devkit vive en **`src/plugins/story-playground/`** (runtime + CLI + reporter; ver su `README.md`).
+
 | Comando | Para qué |
 |---|---|
 | `pnpm run stories:status` | Inventario: qué componentes tienen story/test/página/badges y cuáles faltan migrar. |
-| `pnpm run stories:migrate <X>` | Genera story + test L1 con **secciones, snippets, variants y checks genéricos** ya armados (deja TODO solo en lo específico). |
+| `pnpm run stories:generate <X>` | Genera la story **desde las props** del `.vue` (secciones enum/boolean/texto + snippets + checks). Lee `X.stories.config.json`. No pisa la story si existe. |
+| `pnpm run stories:generate <X> --meta-only` | Actualiza solo `tokens`/`api` de una story existente (la pasa a la StoryPage genérica) sin tocar secciones/checks/extras. |
+| `pnpm run stories:migrate <X>` | Genera story + test desde la **página** (secciones, snippets, variants y checks genéricos; deja TODO lo específico). Útil cuando el demo de la página es más rico que las props. |
 | `pnpm run new:component <X> <category> [--internal]` | Scaffold de componente nuevo: `.vue` + `.ce.vue` + `lib/` + story + test. |
 | `./scripts/preflight.sh` | Gate local completo (type-check contra baseline + todos los tests L1). |
 | `./scripts/preflight.sh <X>` | Gate **scopeado**: type-check + solo el test L1 de `<X>` (~8s). |
@@ -83,10 +87,13 @@ Si falta cualquiera, decilo explícitamente en el reporte; no lo tapes con "el c
 | Componente real | `src/components/{category}/X.vue` |
 | Wrapper CE | `src/components/customElements/{category}/X.ce.vue` |
 | Story | `src/stories/{category}/X.stories.ts` |
+| Config del generador (opcional) | `src/stories/{category}/X.stories.config.json` |
+| Extras: Programmatic / Events (opcional) | `src/stories/{category}/X.stories.extras.ts` |
 | Test L1 | `src/stories/{category}/X.l1.test.ts` |
 | Entry point (build) | `src/lib/{category}/x.ts` |
 | Tipos de stories / runner | `src/stories/types.ts` · `src/stories/runner.l1.ts` |
-| Playground | `src/pages/playground/components/X.vue` + `src/router/index.ts` + `PlaygroundLayout.vue` |
+| Playground (genérico) | Plugin `src/plugins/story-playground/` + `src/pages/playground/StoryPage.vue` |
+| Playground legacy (transición) | `src/pages/playground/components/X.vue` (fallback si la story no tiene `api`/`tokens`) |
 | Docs del componente | `docs/skills/use-comegen/componentes/cu-x.md` |
 | Preflight | `scripts/preflight.sh` |
 | Reporte de tests | `public/test-results.json` (generado) |

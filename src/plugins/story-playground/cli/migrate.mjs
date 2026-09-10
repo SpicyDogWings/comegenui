@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// tools/stories/migrate.mjs — Genera story + test L1 de un componente existente.
+// src/plugins/story-playground/cli/migrate.mjs — Genera story + test L1 de un componente existente.
 //
 // Extrae de la página del playground: secciones, títulos, badges, snippets,
 // VARIANTES (del markup de la demo) y CHECKS genéricos (raíz, variant, color,
@@ -313,7 +313,7 @@ const storySections = sections
 
 const testCount = sections.reduce((acc, s) => acc + s.variants.length, 0);
 const header = [
-  `// Generado por tools/stories/migrate.mjs — revisar y completar los TODO.`,
+  `// Generado por src/plugins/story-playground/cli/migrate.mjs — revisar y completar los TODO.`,
   oldTests.length
     ? ["//", "// Tests viejos a mapear:"].concat(oldTests.map((t) => `//   - ${t}`)).join("\n")
     : "// (sin test viejo)",

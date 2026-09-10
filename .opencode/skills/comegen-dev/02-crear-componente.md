@@ -8,7 +8,7 @@
 ls src/components/{category}/X.vue src/components/customElements/{category}/X.ce.vue 2>/dev/null && echo "YA EXISTE" || echo "NO EXISTE"
 ```
 
-> **Atajo:** `pnpm run new:component X {category}` genera el esqueleto de los pasos 2–5 (componente, CE, entry, story y test). Después completá contrato, playground y docs.
+> **Atajo:** `pnpm run new:component X {category}` genera el esqueleto de los pasos 2–5 (componente, CE, entry, story y test). Después completá contrato, metadata y docs. La **story** se puede regenerar desde las props con `pnpm run stories:generate X` (y ajustar con `X.stories.config.json`).
 
 ## 1. Definir el contrato
 
@@ -89,8 +89,9 @@ export default CuX
 
 Esto es lo que separa un componente terminado de uno a medias:
 
-1. `src/stories/{category}/X.stories.ts` — secciones = casos de uso reales, cada una con `variants`, `checks.l1`, snippets `vue` y `vanilla`.
+1. `src/stories/{category}/X.stories.ts` — secciones = casos de uso reales, cada una con `variants`, `checks.l1`, snippets `vue` y `vanilla`. Generala con `pnpm run stories:generate X` (prop-driven) y refiná con `X.stories.config.json` (order/include/exclude, `extraProps`, `custom[]`, `preview` interactivo).
 2. `src/stories/{category}/X.l1.test.ts` — `runL1Story(XStories)`.
+3. **Extras** (opcional): `X.stories.extras.ts` para el patio de **Programmatic** (exposes/v-model) y/o **Events**.
 
 > La story y el test **no** van al lado del componente: viven en `src/stories/{category}/` (espejo de `src/components/{category}/`).
 
@@ -98,9 +99,14 @@ Receta completa y schema en [`04-stories-y-tests.md`](04-stories-y-tests.md).
 
 ## 6. Playground
 
-Página + `route` + entrada de nav. El preview se renderiza desde la story con `StoryRenderer` (no se escribe markup a mano).
+**No hay que escribir página**: el plugin `story-playground` (`src/plugins/story-playground/`) pinta cualquier story en `/playground/components/:name` (`StoryPage` genérica: secciones + extras + Style + API).
 
-Receta en [`05-playground.md`](05-playground.md).
+- Para que use `Style`/`API`, la story necesita `tokens`/`api`: `pnpm run stories:generate X --meta-only`.
+- Si el componente tiene **exposes/v-model** o **eventos**, agregá el extra correspondiente.
+- La ruta ya existe (dinámica); solo agregá la entrada en el nav (`PlaygroundLayout.vue`).
+- Las páginas en `src/pages/playground/components/` son **legacy**: se usan solo como fallback mientras la story no tenga metadata.
+
+Detalle en [`05-playground.md`](05-playground.md).
 
 ## 7. Docs
 

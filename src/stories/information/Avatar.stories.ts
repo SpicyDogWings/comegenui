@@ -1,4 +1,4 @@
-// Generado por tools/stories/migrate.mjs — revisar y completar los TODO.
+// Generado por src/plugins/story-playground/cli/migrate.mjs — revisar y completar los TODO.
 // (sin test viejo)
 //
 // Secciones que quedan en la página (no van a la story): programmatic, api

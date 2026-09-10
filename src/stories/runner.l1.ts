@@ -7,7 +7,7 @@ import type { ComponentStory, L1Context } from "./types";
  * corre los `checks.l1` de cada story/variante.
  *
  * El nombre del test sigue `[componente] sección › variante › check` y el
- * reporter custom (`tools/reporters/playground-reporter.ts`) lee el `meta`
+ * reporter custom (`src/plugins/story-playground/vitest/reporter.ts`) lee el `meta`
  * para pintar los resultados en el playground.
  */
 export function runL1Story(story: ComponentStory): void {

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// tools/stories/generate.mjs — Genera una story prop-driven desde el propio
+// src/plugins/story-playground/cli/generate.mjs — Genera una story prop-driven desde el propio
 // componente: las secciones salen de sus props y valores (enum/boolean/texto).
 //
 // Uso: pnpm run stories:generate Button [--force]
@@ -666,7 +666,7 @@ const sectionsSource = sections
   .join("\n\n");
 
 const header = [
-  `// Generado por tools/stories/generate.mjs a partir de las props de ${name}.vue.`,
+  `// Generado por src/plugins/story-playground/cli/generate.mjs a partir de las props de ${name}.vue.`,
   emits.length ? `// Eventos detectados: ${emits.join(", ")}` : "// (sin eventos declarados)",
   "",
 ].join("\n");

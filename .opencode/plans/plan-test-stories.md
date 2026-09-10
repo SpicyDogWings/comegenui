@@ -479,3 +479,8 @@ Cada commit incluye su entrada en la **Bitácora**.
 - `test(stories/button)`: el extra Events dispara un loading de 1.5s al click y loguea `click` + `loading-change(true/false)`.
 - `docs`: `cu-button.md` (skill + docs humanos) documenta el evento.
 - Verificado en navegador: log `loading-change (true)` / `(false)` con spinner y disabled en el medio.
+
+### 2026-09-10 — Devkit unificado en el plugin
+
+- `refactor(devkit)`: `tools/stories/*`, `tools/scaffold-component.mjs` y `tools/reporters/playground-reporter.ts` movidos a **`src/plugins/story-playground/`** (`cli/` + `vitest/`), junto al plugin Vue. La carpeta es la unidad portable (runtime + CLI + reporter), como `cu-tokens`.
+- `docs(devkit)`: `README.md` del plugin (entries + cómo llevarlo a otro proyecto) y skill actualizada: flujo de creación/migración (`generate`, `--meta-only`, config, extras, StoryPage genérica, páginas legacy como fallback).

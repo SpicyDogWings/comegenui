@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// tools/stories/status.mjs — Inventario de componentes vs sistema de stories/tests.
+// src/plugins/story-playground/cli/status.mjs — Inventario de componentes vs sistema de stories/tests.
 //
 // Uso: pnpm run stories:status
 import { existsSync, readFileSync } from "node:fs";

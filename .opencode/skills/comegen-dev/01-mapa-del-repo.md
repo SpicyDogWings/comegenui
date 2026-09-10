@@ -30,7 +30,7 @@ src/
 
 scripts/preflight.sh                    # type-check + tests (gate local)
 scripts/typecheck-baseline              # Deuda de type-check preexistente
-tools/reporters/playground-reporter.ts  # Escribe public/test-results.json
+src/plugins/story-playground/vitest/reporter.ts  # Escribe public/test-results.json
 ```
 
 **Regla de ubicación:** el componente (`X.vue`) vive en `src/components/{category}/`; su **story y test** viven en `src/stories/{category}/` (misma categoría). El componente nunca arrastra archivos de test al lado.

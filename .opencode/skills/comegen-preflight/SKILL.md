@@ -34,4 +34,4 @@ Las fases 2 y 3 agregan tests **L2** (`.ce`, browser) y **L3** (`.umd`, browser)
 ## Notas
 
 - Los tests de stories viven junto al componente (`X.stories.ts`) y se generan por capa desde `src/stories/types.ts`.
-- El naming de los tests es `[cu-button] colors › primary › nombre del check`; el reporter (`tools/reporters/playground-reporter.ts`) lo mapea a sección/variante.
+- El naming de los tests es `[cu-button] colors › primary › nombre del check`; el reporter (`src/plugins/story-playground/vitest/reporter.ts`) lo mapea a sección/variante.

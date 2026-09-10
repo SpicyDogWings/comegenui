@@ -1,4 +1,4 @@
-// Migrado a mano: tools/stories/migrate.mjs no detecta los <Badge> multilínea de la página.
+// Migrado a mano: src/plugins/story-playground/cli/migrate.mjs no detecta los <Badge> multilínea de la página.
 // (sin test viejo)
 //
 // Secciones que quedan en la página (no van a la story): programmatic, api
