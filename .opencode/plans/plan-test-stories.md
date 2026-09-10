@@ -160,6 +160,7 @@ Tests de la capa `.vue` derivados de las secciones actuales de los playground, c
   - [x] **Loader** migrado (story + 8 checks L1 + página con `StoryRenderer`).
   - [x] **ColorPicker** migrado (story + 6 checks L1 + página con `StoryRenderer`).
   - [x] **CopyButton** migrado (story + 25 checks L1 + página con `StoryRenderer`).
+  - [x] **FloatingButton** migrado (story + 25 checks L1 + página con `StoryRenderer`).
   - Herramientas de eficiencia: `stories:status`, `stories:migrate`, `new:component`.
   - Orden sugerido: `Input`, `Select`, `Dropdown`, `Alert`, `Badge`, `Card`, `Checkbox`, `Switch`, `Textarea`, `Tabs`, `Modal`, `Table`, … (297 `SectionDemo` en 45 páginas).
   - Un commit atómico por componente (o por par de componentes chicos).
@@ -392,3 +393,8 @@ Cada commit incluye su entrada en la **Bitácora**.
 - `test(l1/copy-button)`: CopyButton migrado — 3 secciones, **25 checks L1**, página a `StoryRenderer`, `CopyButton.test.ts` eliminado.
 - `fix(tools)`: `parseAttrs` soporta valores con comillas simples (JSON en `text='{"id":1}'`).
 - Checks propios: icon-only/aria-label, label visible, `copiedLabel` tras copiar (clipboard mockeado), color y variante delegada a Button.
+
+### 2026-09-10 — 1f: FloatingButton migrado
+
+- `test(l1/floating-button)`: FloatingButton migrado — 3 secciones, **25 checks L1**, página a `StoryRenderer`, `FloatingButton.test.ts` eliminado.
+- Previews con `position: static` (trampa de FABs) e íconos por slot en las variantes.

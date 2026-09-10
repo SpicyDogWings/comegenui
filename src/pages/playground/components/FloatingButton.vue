@@ -1,18 +1,12 @@
 <script setup lang="ts">
-import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
 import PlaygroundStyle from '@/templates/playground/PlaygroundStyle.vue';
-import PlaygroundApiComponents from '@/templates/playground/PlaygroundApiComponents.vue';
-import FloatingButton from "@/components/buttons/FloatingButton.vue";
-import Badge from "@/components/information/Badge.vue";
-import SectionDemo from "@/pages/playground/SectionDemo.vue";
+import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
+import StoryRenderer from "@/pages/playground/StoryRenderer.vue";
 import Table from "@/components/data/Table.vue";
-import LucideSave from "@/components/icons/LucideSave.vue";
-import LucideCheck from "@/components/icons/LucideCheck.vue";
+import { cuFloatingButtonStories } from "@/stories/buttons/FloatingButton.stories";
 
 const outlineItems = [
-  { label: 'Colors', id: 'colors' },
-  { label: 'Disabled', id: 'disabled' },
-  { label: 'Slot', id: 'slot' },
+  ...cuFloatingButtonStories.sections.map((section) => ({ label: section.title, id: section.id })),
   {
     label: 'Style',
     id: 'style',
@@ -31,64 +25,6 @@ const outlineItems = [
     ],
   },
 ];
-
-const vueImport = `<script setup>
-import FloatingButton from '@/components/buttons/FloatingButton.vue'
-<\/script>`;
-
-const vueSnippet = (body: string) => `${vueImport}
-
-<template>
-${body}
-</template>`;
-
-const colorsVue = vueSnippet(`  <FloatingButton color="primary" style="position:static" />
-  <FloatingButton color="secondary" style="position:static" />
-  <FloatingButton color="neutral" style="position:static" />
-  <FloatingButton color="success" style="position:static" />
-  <FloatingButton color="warning" style="position:static" />
-  <FloatingButton color="danger" style="position:static" />`);
-
-const disabledVue = vueSnippet(`  <FloatingButton color="primary" style="position:static" />
-  <FloatingButton color="primary" style="position:static" disabled />`);
-
-const slotVue = vueSnippet(`  <FloatingButton color="primary" style="position:static">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M12 5v14" /><path d="M5 12h14" />
-    </svg>
-  </FloatingButton>
-  <FloatingButton color="secondary" style="position:static">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M5 12h14" /><path d="m12 5 7 7-7 7" />
-    </svg>
-  </FloatingButton>`);
-
-const colorsVanilla = `<script src="dist/CuFloatingButton.umd.js"><\/script>
-
-<cu-floating-button color="primary" style="position:static"></cu-floating-button>
-<cu-floating-button color="secondary" style="position:static"></cu-floating-button>
-<cu-floating-button color="neutral" style="position:static"></cu-floating-button>
-<cu-floating-button color="success" style="position:static"></cu-floating-button>
-<cu-floating-button color="warning" style="position:static"></cu-floating-button>
-<cu-floating-button color="danger" style="position:static"></cu-floating-button>`;
-
-const disabledVanilla = `<script src="dist/CuFloatingButton.umd.js"><\/script>
-
-<cu-floating-button color="primary" style="position:static"></cu-floating-button>
-<cu-floating-button color="primary" style="position:static" disabled></cu-floating-button>`;
-
-const slotVanilla = `<script src="dist/CuFloatingButton.umd.js"><\/script>
-
-<cu-floating-button color="primary" style="position:static">
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M12 5v14" /><path d="M5 12h14" />
-  </svg>
-</cu-floating-button>
-<cu-floating-button color="secondary" style="position:static">
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M5 12h14" /><path d="m12 5 7 7-7 7" />
-  </svg>
-</cu-floating-button>`;
 
 const componentTokens = [
   '--fab-bg',
@@ -125,62 +61,10 @@ const eventsData = [
 <template>
   <PlaygroundLayout title="FloatingButton" :outlineItems="outlineItems">
     <div class="playground-content">
-      <section id="colors" class="playground-section">
-        <div class="playground-heading">
-          <h2>Colors</h2>
-          <Badge color="neutral" title="Color por defecto">primary</Badge>
-        </div>
-        <SectionDemo :vue-code="colorsVue" :vanilla-code="colorsVanilla">
-          <div class="playground-row">
-            <FloatingButton color="primary" style="position: static"><LucideSave /></FloatingButton>
-            <FloatingButton color="secondary" style="position: static"><LucideCheck /></FloatingButton>
-            <FloatingButton color="neutral" style="position: static"><LucideCheck /></FloatingButton>
-            <FloatingButton color="success" style="position: static"><LucideCheck /></FloatingButton>
-            <FloatingButton color="warning" style="position: static"><LucideCheck /></FloatingButton>
-            <FloatingButton color="danger" style="position: static"><LucideCheck /></FloatingButton>
-          </div>
-        </SectionDemo>
-      </section>
+      <StoryRenderer :story="cuFloatingButtonStories" />
 
       <hr class="playground-separator" />
-
-      <section id="disabled" class="playground-section">
-        <div class="playground-heading">
-          <h2>Disabled</h2>
-          <Badge color="neutral" title="Valor por defecto">false</Badge>
-        </div>
-        <SectionDemo :vue-code="disabledVue" :vanilla-code="disabledVanilla">
-          <div class="playground-row">
-            <FloatingButton color="primary" style="position: static"><LucideSave /></FloatingButton>
-            <FloatingButton color="primary" style="position: static" disabled><LucideSave /></FloatingButton>
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="slot" class="playground-section">
-        <div class="playground-heading">
-          <h2>Slot</h2>
-          <Badge color="neutral" title="Único slot">default</Badge>
-        </div>
-        <SectionDemo :vue-code="slotVue" :vanilla-code="slotVanilla">
-          <div class="playground-row">
-            <FloatingButton color="primary" style="position: static">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
-            </FloatingButton>
-            <FloatingButton color="secondary" style="position: static">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-            </FloatingButton>
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <hr class="playground-separator" />
-
-      <hr class="playground-separator" />      <PlaygroundStyle :tokens="componentTokens" />
+      <PlaygroundStyle :tokens="componentTokens" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>
