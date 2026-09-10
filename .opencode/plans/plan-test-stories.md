@@ -235,3 +235,5 @@ Cada commit incluye su entrada en la **Bitácora**.
 - `test(fix)`: `ToggleColorSheme.test.ts` monta con Pinia y mockea el plugin de tokens.
 - `test(fix)`: `ThemeManagerModal.test.ts` alineado al markup actual (`.tm-layout`, "Export", `.tm-code-block`, botones Export/Copy/Download).
 - Verificado: `pnpm exec vitest run --project l1` → 2 archivos / 8 tests en verde.
+- `fix(preflight)`: `reporters` movido a la raíz de `vitest.config.ts` (no es config por proyecto); conteo de errores de type-check con el patrón correcto (`error TS[0-9]+`); `public/test-results.json` al `.gitignore`.
+- Preflight completo en verde: 225 errores preexistentes (baseline) + 37 archivos / 331 tests.

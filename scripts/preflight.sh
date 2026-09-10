@@ -29,14 +29,14 @@ echo "🛫 Preflight ComegenUI ($(git branch --show-current 2>/dev/null || echo 
 set +e
 pnpm run --silent type-check >"$TMP/typecheck.log" 2>&1
 set -e
-TC_COUNT="$(grep -cE '[0-9]+ error TS' "$TMP/typecheck.log" || true)"
+TC_COUNT="$(grep -cE 'error TS[0-9]+' "$TMP/typecheck.log" || true)"
 TC_BASELINE="$(tr -dc '0-9' <"$ROOT/scripts/typecheck-baseline" 2>/dev/null || true)"
 TC_BASELINE="${TC_BASELINE:-0}"
 
 if [ "$TC_COUNT" -gt "$TC_BASELINE" ]; then
   echo ""
   echo "❌ type-check: $TC_COUNT errores (baseline $TC_BASELINE) — hay errores NUEVOS:" >&2
-  grep -E '[0-9]+ error TS' "$TMP/typecheck.log" | head -30 >&2
+  grep -E 'error TS[0-9]+' "$TMP/typecheck.log" | head -30 >&2
   exit 1
 fi
 echo ""

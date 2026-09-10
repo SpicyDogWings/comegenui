@@ -10,6 +10,7 @@ export default defineConfig({
     },
   },
   test: {
+    reporters: ["default", "./tools/reporters/playground-reporter.ts"],
     projects: [
       {
         extends: true,
@@ -18,7 +19,6 @@ export default defineConfig({
           environment: "jsdom",
           globals: true,
           include: ["src/**/*.test.ts"],
-          reporters: ["default", "./tools/reporters/playground-reporter.ts"],
         },
       },
     ],
