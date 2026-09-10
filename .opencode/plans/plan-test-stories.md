@@ -472,3 +472,10 @@ Cada commit incluye su entrada en la **Bitácora**.
 - `feat(tools)`: `stories:generate X --meta-only` actualiza solo `tokens`/`subComponents`/`api` en una story existente (no toca secciones/checks/extras); valores re-indentados.
 - `test(stories/collapse)`: Collapse pasa a la **StoryPage genérica** (metadata extraída de su página) y suma el extra **Programmatic**: patio de juegos de los exposes (`open()`, `close()`, `toggle()`, `isOpen()`) con estado en vivo. Verificado en navegador.
 - Aclaración: **Programmatic = exposes/v-model**; los eventos tienen su propio extra (Button → Events). Button no lleva Programmatic porque no expone métodos.
+
+### 2026-09-10 — `loading-change` en Button
+
+- `feat(button)`: emite `loading-change(boolean)` cuando cambia el estado `loading` (prop observada; el host CE lo recibe como CustomEvent con `detail`).
+- `test(stories/button)`: el extra Events dispara un loading de 1.5s al click y loguea `click` + `loading-change(true/false)`.
+- `docs`: `cu-button.md` (skill + docs humanos) documenta el evento.
+- Verificado en navegador: log `loading-change (true)` / `(false)` con spinner y disabled en el medio.

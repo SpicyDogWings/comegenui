@@ -77,6 +77,7 @@ const slotsData = [
 ];
 
 const eventsData = [
+  { name: 'loading-change', type: '(value: boolean) => void', description: 'Cambió el estado loading (emit propio del componente; detail: boolean)' },
   { name: 'click', type: 'nativo', description: 'Activación del botón (mouse o teclado)' },
   { name: 'dblclick', type: 'nativo', description: 'Doble click' },
   { name: 'focus', type: 'nativo', description: 'El botón recibe foco' },

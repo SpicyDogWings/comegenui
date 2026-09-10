@@ -33,9 +33,17 @@ const ButtonEventsPlayground = defineComponent({
   name: "ButtonEventsPlayground",
   setup() {
     const log = ref<LogEntry[]>([]);
+    const loading = ref(false);
 
     const record = (name: string, info?: string) => {
       log.value = [{ name, info }, ...log.value].slice(0, 8);
+    };
+
+    const emulateLoading = () => {
+      loading.value = true;
+      setTimeout(() => {
+        loading.value = false;
+      }, 1500);
     };
 
     const handlers = Object.fromEntries(
@@ -51,12 +59,26 @@ const ButtonEventsPlayground = defineComponent({
     return () =>
       h("div", { class: "playground-col" }, [
         h("div", { class: "playground-row" }, [
-          h(Button, { color: "primary", variant: "solid", ...handlers }, () => "Guardar"),
+          h(
+            Button,
+            {
+              color: "primary",
+              variant: "solid",
+              loading: loading.value,
+              ...handlers,
+              onClick: (event: Event) => {
+                handlers.onClick?.(event);
+                emulateLoading();
+              },
+              onLoadingChange: (value: boolean) => record("loading-change", String(value)),
+            },
+            () => "Guardar",
+          ),
         ]),
         h(
           "p",
           { class: "playground-state" },
-          "Button no emite eventos propios (loading es estado, no evento): interactuá con el botón (click, doble click, foco, teclado, hover) y mirá el log.",
+          "El click dispara un loading de 1.5s: mirá click + loading-change(true/false). Los eventos de UI son nativos; loading-change es el único emit propio del componente.",
         ),
         h(
           "ul",
@@ -119,7 +141,7 @@ export const extras: StoryExtra[] = [
     id: "events",
     title: "Events",
     description:
-      "Patio de juegos de eventos: interactuá con el botón y mirá el log en vivo. Button no emite eventos custom (loading es un estado, no un evento).",
+      "Patio de juegos de eventos: click, foco, teclado y hover (nativos) + `loading-change` (emit propio cuando cambia el estado loading).",
     render: () => h(ButtonEventsPlayground),
     vue: eventsVue,
     vanilla: eventsVanilla,

@@ -27,11 +27,23 @@ Botón con soporte de color, variante, link y estados. Si se define `to`, se ren
 
 ## Eventos
 
-No re-emite eventos custom. Los eventos nativos del DOM (`click`, `focus`, `blur`, `mouseenter`, etc.) burbujean automáticamente al host:
+Los eventos nativos del DOM (`click`, `focus`, `blur`, `mouseenter`, etc.) burbujean automáticamente al host:
 
 ```js
 boton.addEventListener('click', (e) => {
   // e.detail es undefined; usá e.target normalmente
+});
+```
+
+Además emite un evento propio cuando cambia el estado `loading`:
+
+| Evento | Detalle | Descripción |
+|--------|---------|-------------|
+| `loading-change` | `boolean` | Se emite cuando `loading` pasa a `true` o `false` (también al setear `el.loading = true` por propiedad) |
+
+```js
+boton.addEventListener('loading-change', (e) => {
+  console.log('loading:', e.detail) // true | false
 });
 ```
 
