@@ -87,6 +87,24 @@ export interface Section {
   checks: SectionChecks;
 }
 
+/** Fila de las tablas de API (props/slots/events/exposes). */
+export interface ApiRow {
+  name: string;
+  type?: string;
+  default?: string;
+  description?: string;
+}
+
+/** Metadata de API que la página genérica pinta como tablas. */
+export interface StoryApi {
+  components?: { label: string; path: string }[];
+  props?: ApiRow[];
+  slots?: ApiRow[];
+  events?: ApiRow[];
+  exposes?: ApiRow[];
+  interfaceCode?: string;
+}
+
 export interface ComponentStory {
   /** tag del custom element: 'cu-button'. */
   component: string;
@@ -94,6 +112,12 @@ export interface ComponentStory {
   vue: Component;
   /** wrapper `.ce.vue` (L2). */
   ce?: Component;
+  /** Tokens CSS que usa el componente (sección Style). */
+  tokens?: string[];
+  /** Sub-componentes con estilos propios (sección Style). */
+  subComponents?: { label: string; path: string }[];
+  /** API declarada: la página genérica la pinta como tablas. */
+  api?: StoryApi;
   /** Setup previo a cada test L1 (ej: inicializar stores o plugins). */
   setup?: () => void | Promise<void>;
   /** Opciones de mount por test (ej: `{ plugins: [createPinia()] }`). */

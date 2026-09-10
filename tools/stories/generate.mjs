@@ -10,7 +10,9 @@ import fg from "fast-glob";
 const ROOT = process.cwd();
 const args = process.argv.slice(2);
 const force = args.includes("--force");
-const name = args.find((a) => !a.startsWith("--"));
+const pageIndex = args.indexOf("--page");
+const pageName = pageIndex >= 0 ? args[pageIndex + 1] : undefined;
+const name = args.find((a) => !a.startsWith("--") && a !== pageName);
 
 if (!name) {
   console.error("Uso: pnpm run stories:generate <Componente> [--force]");
@@ -60,6 +62,95 @@ if (existsSync(configPath)) {
     console.error(`⚠️  ${name}.stories.config.json inválido: ${error.message}`);
   }
 }
+
+// ── Metadata de página (tokens, API) para el playground genérico ─────────────
+
+const pagePath = `src/pages/playground/components/${pageName ?? name}.vue`;
+const pageSource = existsSync(resolve(ROOT, pagePath))
+  ? readFileSync(resolve(ROOT, pagePath), "utf-8")
+  : "";
+
+function skipQuoted(src, start, quote) {
+  for (let i = start + 1; i < src.length; i++) {
+    if (src[i] === "\\") {
+      i++;
+      continue;
+    }
+    if (src[i] === quote) return i;
+  }
+  return src.length;
+}
+
+function readBacktick(src, start) {
+  for (let i = start + 1; i < src.length; i++) {
+    if (src[i] === "\\") {
+      i++;
+      continue;
+    }
+    if (src[i] === "`") return src.slice(start, i + 1);
+  }
+  return null;
+}
+
+function readValue(src, start) {
+  const first = src[start];
+  if (first === "`") return readBacktick(src, start);
+  const pairs = { "[": "]", "{": "}", "(": ")" };
+  if (!pairs[first]) return null;
+  const stack = [];
+  for (let i = start; i < src.length; i++) {
+    const char = src[i];
+    if (char === "`") {
+      i = skipQuoted(src, i, "`");
+      continue;
+    }
+    if (char === '"' || char === "'") {
+      i = skipQuoted(src, i, char);
+      continue;
+    }
+    if (pairs[char]) stack.push(pairs[char]);
+    else if (stack.length && char === stack[stack.length - 1]) {
+      stack.pop();
+      if (!stack.length) return src.slice(start, i + 1);
+    }
+  }
+  return null;
+}
+
+function extractConst(src, constName) {
+  const match = new RegExp(`const\\s+${constName}\\s*(?::[^=]+)?=`).exec(src);
+  if (!match) return null;
+  return readValue(src, match.index + match[0].length + src.slice(match.index + match[0].length).search(/\S/));
+}
+
+const pageConsts = {};
+for (const constName of [
+  "componentTokens",
+  "styleSubComponents",
+  "subComponents",
+  "componentDeps",
+  "propsData",
+  "slotsData",
+  "eventsData",
+  "exposesData",
+  "interfaceCode",
+]) {
+  const value = pageSource ? extractConst(pageSource, constName) : null;
+  if (value) pageConsts[constName] = value;
+}
+
+const metaLines = [];
+if (pageConsts.componentTokens) metaLines.push(`  tokens: ${pageConsts.componentTokens},`);
+const subComponents = pageConsts.styleSubComponents ?? pageConsts.subComponents;
+if (subComponents) metaLines.push(`  subComponents: ${subComponents},`);
+const apiParts = [];
+if (pageConsts.componentDeps) apiParts.push(`components: ${pageConsts.componentDeps}`);
+if (pageConsts.propsData) apiParts.push(`props: ${pageConsts.propsData}`);
+if (pageConsts.slotsData) apiParts.push(`slots: ${pageConsts.slotsData}`);
+if (pageConsts.eventsData) apiParts.push(`events: ${pageConsts.eventsData}`);
+if (pageConsts.exposesData) apiParts.push(`exposes: ${pageConsts.exposesData}`);
+if (pageConsts.interfaceCode) apiParts.push(`interfaceCode: ${pageConsts.interfaceCode}`);
+if (apiParts.length) metaLines.push(`  api: {\n    ${apiParts.join(",\n    ")},\n  },`);
 
 if (!force && existsSync(resolve(ROOT, storyPath))) {
   console.error(`❌ Ya existe ${storyPath}. Usá --force para regenerar.`);
@@ -533,7 +624,7 @@ import type { ComponentStory } from "@/stories/types";
 ${previews.join("\n\n")}${previews.length ? "\n\n" : ""}export const ${`cu${name}Stories`}: ComponentStory = {
   component: ${JSON.stringify(tag)},
   vue: ${name},
-  sections: [
+${metaLines.length ? metaLines.join("\n") + "\n" : ""}  sections: [
 ${sectionsSource}
   ],
 };

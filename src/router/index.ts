@@ -23,6 +23,11 @@ const router = createRouter({
           name: "Components playground",
           children: [
             {
+              path: "story/:name",
+              name: "Story playground",
+              component: () => import("@/pages/playground/StoryPage.vue")
+            },
+            {
               path: "button",
               name: "Button playground",
               component: () => import("@/pages/playground/components/Button.vue")
