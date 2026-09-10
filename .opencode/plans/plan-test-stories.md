@@ -152,6 +152,7 @@ Tests de la capa `.vue` derivados de las secciones actuales de los playground, c
   - [x] **Label** migrado (story + 19 checks L1 + página con `StoryRenderer`).
   - [x] **Alert** migrado (story + 32 checks L1 + página con `StoryRenderer`).
   - [x] **Card** migrado (story + 36 checks L1 + página con `StoryRenderer`).
+  - [x] **Switch** migrado (story + 25 checks L1 + página con `StoryRenderer`).
   - Herramientas de eficiencia: `stories:status`, `stories:migrate`, `new:component`.
   - Orden sugerido: `Input`, `Select`, `Dropdown`, `Alert`, `Badge`, `Card`, `Checkbox`, `Switch`, `Textarea`, `Tabs`, `Modal`, `Table`, … (297 `SectionDemo` en 45 páginas).
   - Un commit atómico por componente (o por par de componentes chicos).
@@ -340,3 +341,10 @@ Cada commit incluye su entrada en la **Bitácora**.
 - **Métricas:** tool <1s generó 59 checks (58 pasaban ya) · completar/combinar ~1m · preflight scopeado **8s**.
 - Nota del tool: `v-for` (colors) y slots nombrados quedan marcados como TODO; requieren mano humana.
 - Verificado en navegador: 7 secciones con `✓ N`, 24 cards, 0 errores de consola.
+
+### 2026-09-10 — 1f: Switch migrado (métricas con tools v2.1)
+
+- `feat(tools)`: check de color/slot robusto (busca el token en todo el markup, no solo en la raíz) y detección de `defineModel` (modelValue va a `props`, no a `attrs`).
+- `test(l1/switch)`: Switch migrado — 5 secciones, **25 checks L1**, página a `StoryRenderer`, `Switch.test.ts` eliminado. API de slots corregida (documenta el slot `default`).
+- **Métricas:** tool <1s (13 checks verdes automáticos) · completar checks específicos + página ~16s · preflight scopeado **9s**. Total **~1m 33s**, de los cuales ~40s fueron mejoras al tool que benefician a todos los próximos.
+- Verificado en navegador: `✓ 9 / ✓ 4 / ✓ 2 / ✓ 6 / ✓ 4`, 16 switches, 0 errores.

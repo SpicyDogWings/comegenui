@@ -48,6 +48,9 @@ const rootClass = componentSource.includes(`.${tag}`) ? tag : (componentSource.m
 const declaredProps = new Set(
   [...componentSource.matchAll(/^\s{2}([a-zA-Z][\w-]*)\s*:\s*\{/gm)].map((m) => m[1]),
 );
+for (const match of componentSource.matchAll(/defineModel(?:<[^>]*>)?\(\s*(?:["'](\w+)["'])?/g)) {
+  declaredProps.add(match[1] || "modelValue");
+}
 const colorToken = componentSource.match(/--([a-z0-9-]+)-bg\b/)?.[1];
 
 // ── Parseo de la página ─────────────────────────────────────────────────────
@@ -254,11 +257,11 @@ function emitChecks(section) {
             run({ wrapper, expect }, variant) {
               const color = variant.props?.color as string | undefined;
               if (!color) return;
-              const style = wrapper.find(".${rootClass}").attributes("style") ?? "";
+              const html = wrapper.html();
               ${
                 token
-                  ? `expect(style).toContain(\`var(--cu-color-\${color})\`);`
-                  : `expect(style).toContain("var(--cu-color-");`
+                  ? `expect(html).toContain(\`var(--cu-color-\${color})\`);`
+                  : `expect(html).toContain("var(--cu-color-");`
               }
             },
           },`);
@@ -269,7 +272,7 @@ function emitChecks(section) {
             run({ wrapper, expect }, variant) {
               const text = variant.slots?.default;
               if (typeof text !== "string" || !text) return;
-              expect(wrapper.find(".${rootClass}").text()).toContain(text);
+              expect(wrapper.text()).toContain(text);
             },
           },`);
   }
