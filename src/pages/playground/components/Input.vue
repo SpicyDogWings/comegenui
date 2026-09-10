@@ -1,29 +1,21 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import PlaygroundStyle from '@/templates/playground/PlaygroundStyle.vue';
-import PlaygroundApiComponents from '@/templates/playground/PlaygroundApiComponents.vue';
 import PlaygroundLayout from "@/layouts/PlaygroundLayout.vue";
-import Input from "@/components/form/Input.vue";
-import Badge from "@/components/information/Badge.vue";
+import StoryRenderer from "@/pages/playground/StoryRenderer.vue";
 import SectionDemo from "@/pages/playground/SectionDemo.vue";
 import Table from "@/components/data/Table.vue";
 import Button from "@/components/buttons/Button.vue";
-
-const nombre = ref("");
+import Input from "@/components/form/Input.vue";
+import { cuInputStories } from "@/stories/form/Input.stories";
 
 const inputRef = ref<InstanceType<typeof Input> | null>(null);
 const progValue = ref("");
 const progGetResult = ref<string | null>(null);
 
 const outlineItems = [
-  { label: 'Variants', id: 'variants' },
-  { label: 'Colors', id: 'colors' },
-  { label: 'Disabled', id: 'disabled' },
-  { label: 'Types', id: 'types' },
-  { label: 'With Values', id: 'values' },
-  { label: 'v-model', id: 'v-model' },
-  { label: 'Read Only', id: 'readonly' },
-    { label: 'Programmatic', id: 'programmatic' },
+  ...cuInputStories.sections.map((section) => ({ label: section.title, id: section.id })),
+  { label: 'Programmatic', id: 'programmatic' },
   {
     label: 'Style',
     id: 'style',
@@ -42,110 +34,6 @@ const outlineItems = [
     ],
   },
 ];
-
-const vueImport = `<script setup>
-import Input from '@/components/form/Input.vue'
-<\/script>`;
-
-const vueSnippet = (body: string) => `${vueImport}
-
-<template>
-${body}
-</template>`;
-
-const variantsVue = vueSnippet(`  <Input variant="soft" placeholder="soft (default)" />
-  <Input variant="outlined" placeholder="outlined" />
-  <Input variant="ghost" placeholder="ghost" />
-  <Input variant="subtle" placeholder="subtle" />`);
-
-const colorsVue = vueSnippet(`  <Input color="primary" placeholder="primary" />
-  <Input color="secondary" placeholder="secondary" />
-  <Input color="neutral" placeholder="neutral" />
-  <Input color="success" placeholder="success" />
-  <Input color="warning" placeholder="warning" />
-  <Input color="danger" placeholder="danger" />`);
-
-const disabledVue = vueSnippet(`  <Input color="primary" disabled placeholder="Disabled" />
-  <Input color="neutral" disabled placeholder="Disabled" />`);
-
-const typesVue = vueSnippet(`  <Input type="text" placeholder="Text" />
-  <Input type="password" placeholder="Password" />
-  <Input type="email" placeholder="Email" />
-  <Input type="number" placeholder="Number" />`);
-
-const valuesVue = vueSnippet(`  <Input model-value="Default input" />
-  <Input variant="outlined" model-value="Outlined input" />
-  <Input variant="ghost" model-value="Ghost input" />`);
-
-const vmodelVue = `<script setup>
-import { ref } from 'vue'
-import Input from '@/components/form/Input.vue'
-
-const nombre = ref('')
-<\/script>
-
-<template>
-  <div style="display:flex;flex-direction:column;gap:12px">
-    <Input v-model="nombre" placeholder="Escribí tu nombre" style="max-width:280px" />
-    <span>Hola, {{ nombre || 'extraño' }}</span>
-  </div>
-</template>`;
-
-const readonlyVue = vueSnippet(`  <Input read-only model-value="Solo lectura" />
-  <Input read-only variant="outlined" model-value="Outlined read-only" />`);
-
-const variantsVanilla = `<script src="dist/CuInput.umd.js"><\/script>
-
-<cu-input variant="soft" placeholder="soft (default)"></cu-input>
-<cu-input variant="outlined" placeholder="outlined"></cu-input>
-<cu-input variant="ghost" placeholder="ghost"></cu-input>
-<cu-input variant="subtle" placeholder="subtle"></cu-input>`;
-
-const colorsVanilla = `<script src="dist/CuInput.umd.js"><\/script>
-
-<cu-input color="primary" placeholder="primary"></cu-input>
-<cu-input color="secondary" placeholder="secondary"></cu-input>
-<cu-input color="neutral" placeholder="neutral"></cu-input>
-<cu-input color="success" placeholder="success"></cu-input>
-<cu-input color="warning" placeholder="warning"></cu-input>
-<cu-input color="danger" placeholder="danger"></cu-input>`;
-
-const disabledVanilla = `<script src="dist/CuInput.umd.js"><\/script>
-
-<cu-input color="primary" disabled placeholder="Disabled"></cu-input>
-<cu-input color="neutral" disabled placeholder="Disabled"></cu-input>`;
-
-const typesVanilla = `<script src="dist/CuInput.umd.js"><\/script>
-
-<cu-input type="text" placeholder="Text"></cu-input>
-<cu-input type="password" placeholder="Password"></cu-input>
-<cu-input type="email" placeholder="Email"></cu-input>
-<cu-input type="number" placeholder="Number"></cu-input>`;
-
-const valuesVanilla = `<script src="dist/CuInput.umd.js"><\/script>
-
-<cu-input model-value="Default input"></cu-input>
-<cu-input variant="outlined" model-value="Outlined input"></cu-input>
-<cu-input variant="ghost" model-value="Ghost input"></cu-input>`;
-
-const vmodelVanilla = `<script src="dist/CuInput.umd.js"><\/script>
-
-<div style="display:flex;flex-direction:column;gap:12px">
-  <cu-input id="mi-nombre" placeholder="Escribí tu nombre" style="max-width:280px"></cu-input>
-  <span id="saludo">Hola, extraño</span>
-</div>
-
-<script>
-  const nombre = document.getElementById('mi-nombre');
-  nombre.addEventListener('update:modelValue', (e) => {
-    document.getElementById('saludo').textContent = 'Hola, ' + (e.detail || 'extraño');
-  });
-<\/script>`;
-
-const readonlyVanilla = `<script src="dist/CuInput.umd.js"><\/script>
-
-<cu-input read-only model-value="Solo lectura"></cu-input>
-<cu-input read-only variant="outlined" model-value="Outlined read-only"></cu-input>`;
 
 const programmaticVue = `<script setup>
 import { ref } from 'vue'
@@ -241,6 +129,8 @@ const propsData = [
   { name: 'readOnly', type: 'boolean', default: 'false', description: 'Muestra el valor pero no permite editarlo' },
 ];
 
+const slotsData: { name: string; description: string }[] = [];
+
 const eventsData = [
   { name: 'update:modelValue', type: 'custom', description: 'Se emite al escribir (v-model). detail: string' },
   { name: 'input', type: 'nativo', description: 'El usuario escribe; el componente usa este evento para actualizar el modelo' },
@@ -252,125 +142,17 @@ const eventsData = [
 ];
 
 const exposesData = [
-  { name: 'get', type: '() => string', default: '—', description: 'Devuelve el valor actual' },
-  { name: 'set', type: '(value: string | number) => void', default: '—', description: 'Setea el valor (convertido a string)' },
-  { name: 'reset', type: '() => void', default: '—', description: 'Vacía el campo' },
-  { name: 'focus', type: '() => void', default: '—', description: 'Pone el foco en el input' },
+  { name: 'get', type: '() => string', description: 'Devuelve el valor actual' },
+  { name: 'set', type: '(value: string | number) => void', description: 'Setea el valor (convertido a string)' },
+  { name: 'reset', type: '() => void', description: 'Vacía el campo' },
+  { name: 'focus', type: '() => void', description: 'Pone el foco en el input' },
 ];
 </script>
 
 <template>
   <PlaygroundLayout title="Input" :outlineItems="outlineItems">
     <div class="playground-content">
-      <section id="variants" class="playground-section">
-        <div class="playground-heading">
-          <h2>Variants</h2>
-          <Badge color="neutral" title="Variante por defecto">soft</Badge>
-        </div>
-        <SectionDemo :vue-code="variantsVue" :vanilla-code="variantsVanilla">
-          <div class="playground-col">
-            <Input variant="soft" placeholder="soft (default)" />
-            <Input variant="outlined" placeholder="outlined" />
-            <Input variant="ghost" placeholder="ghost" />
-            <Input variant="subtle" placeholder="subtle" />
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="colors" class="playground-section">
-        <div class="playground-heading">
-          <h2>Colors</h2>
-          <Badge color="neutral" title="Color por defecto">neutral</Badge>
-        </div>
-        <SectionDemo :vue-code="colorsVue" :vanilla-code="colorsVanilla">
-          <div class="playground-col">
-            <Input color="primary" placeholder="primary" />
-            <Input color="secondary" placeholder="secondary" />
-            <Input color="neutral" placeholder="neutral" />
-            <Input color="success" placeholder="success" />
-            <Input color="warning" placeholder="warning" />
-            <Input color="danger" placeholder="danger" />
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="disabled" class="playground-section">
-        <div class="playground-heading">
-          <h2>Disabled</h2>
-          <Badge color="neutral" title="Valor por defecto">false</Badge>
-        </div>
-        <SectionDemo :vue-code="disabledVue" :vanilla-code="disabledVanilla">
-          <div class="playground-col">
-            <Input color="primary" disabled placeholder="Disabled" />
-            <Input color="neutral" disabled placeholder="Disabled" />
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="types" class="playground-section">
-        <div class="playground-heading">
-          <h2>Types</h2>
-          <Badge color="neutral" title="Tipo por defecto">text</Badge>
-        </div>
-        <SectionDemo :vue-code="typesVue" :vanilla-code="typesVanilla">
-          <div class="playground-col">
-            <Input type="text" placeholder="Text" />
-            <Input type="password" placeholder="Password" />
-            <Input type="email" placeholder="Email" />
-            <Input type="number" placeholder="Number" />
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="values" class="playground-section">
-        <div class="playground-heading">
-          <h2>With Values</h2>
-        </div>
-        <SectionDemo :vue-code="valuesVue" :vanilla-code="valuesVanilla">
-          <div class="playground-col">
-            <Input model-value="Default input" />
-            <Input variant="outlined" model-value="Outlined input" />
-            <Input variant="ghost" model-value="Ghost input" />
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="v-model" class="playground-section">
-        <div class="playground-heading">
-          <h2>v-model</h2>
-        </div>
-        <SectionDemo :vue-code="vmodelVue" :vanilla-code="vmodelVanilla">
-          <div class="playground-col">
-            <Input v-model="nombre" placeholder="Escribí tu nombre" style="max-width:280px" />
-            <span class="playground-code">Hola, {{ nombre || 'extraño' }}</span>
-          </div>
-        </SectionDemo>
-      </section>
-
-      <hr class="playground-separator" />
-
-      <section id="readonly" class="playground-section">
-        <div class="playground-heading">
-          <h2>Read Only</h2>
-          <Badge color="neutral" title="Valor por defecto">false</Badge>
-        </div>
-        <SectionDemo :vue-code="readonlyVue" :vanilla-code="readonlyVanilla">
-          <div class="playground-col">
-            <Input read-only model-value="Solo lectura" />
-            <Input read-only variant="outlined" model-value="Outlined read-only" />
-          </div>
-        </SectionDemo>
-      </section>
+      <StoryRenderer :story="cuInputStories" />
 
       <hr class="playground-separator" />
 
@@ -400,10 +182,7 @@ const exposesData = [
       </section>
 
       <hr class="playground-separator" />
-
-      <hr class="playground-separator" />
-
-      <hr class="playground-separator" />      <PlaygroundStyle :tokens="componentTokens" />
+      <PlaygroundStyle :tokens="componentTokens" />
 
       <section id="api" class="playground-section">
         <h2>API</h2>
@@ -412,7 +191,7 @@ const exposesData = [
         <Table :columns="apiColumns" :data="propsData" variant="ghost" compact />
 
         <h3 id="api-slots">Slots</h3>
-        <Table :columns="apiColumns" :data="[]" empty="No tiene slots" variant="ghost" compact />
+        <Table :columns="apiColumns" :data="slotsData" empty="No tiene slots" variant="ghost" compact />
 
         <h3 id="api-events">Events</h3>
         <Table :columns="apiColumns" :data="eventsData" variant="ghost" compact />
@@ -423,3 +202,18 @@ const exposesData = [
     </div>
   </PlaygroundLayout>
 </template>
+
+<style>
+.playground-desc {
+  font-size: var(--cu-font-size-sm);
+  color: var(--cu-color-neutral-text);
+  opacity: 0.7;
+  margin-bottom: 1rem;
+}
+
+.playground-state {
+  font-size: var(--cu-font-size-sm);
+  color: var(--cu-color-neutral);
+  margin: 0;
+}
+</style>
