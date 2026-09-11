@@ -96,7 +96,8 @@ export const cuInputStories: ComponentStory = {
       {
         "name": "size",
         "type": "sm | md | lg",
-        "default": "md"
+        "default": "md",
+        "description": "Tamaño del input (sm | md | lg)."
       }
     ],
     "events": [
@@ -139,39 +140,23 @@ export const cuInputStories: ComponentStory = {
     "exposes": [
       {
         "name": "get()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Devuelve el valor actual del input."
       },
       {
         "name": "set()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Setea el valor del input."
       },
       {
         "name": "reset()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Limpia el input."
       },
       {
         "name": "focus()",
-        "type": "() => void"
-      },
-      {
-        "name": "get",
-        "type": "() => string",
-        "description": "Devuelve el valor actual"
-      },
-      {
-        "name": "set",
-        "type": "(value: string | number) => void",
-        "description": "Setea el valor (convertido a string)"
-      },
-      {
-        "name": "reset",
         "type": "() => void",
-        "description": "Vacía el campo"
-      },
-      {
-        "name": "focus",
-        "type": "() => void",
-        "description": "Pone el foco en el input"
+        "description": "Enfoca el input."
       }
     ]
   },

@@ -340,31 +340,18 @@ export const cuNavbarHorizontalStories: ComponentStory = {
       },
       {
         "name": "trigger",
-        "type": "\"click\" | \"hover\"",
-        "default": "\"click\"",
+        "type": "\\\\\\\\\\\\\\\"click\\\\\\\\\\\\\\\" | \\\\\\\\\\\\\\\"hover\\\\\\\\\\\\\\\"",
+        "default": "\\\\\\\\\\\\\\\"click\\\\\\\\\\\\\\\"",
         "description": "Cómo abren los submenús: click (default) o hover"
       },
       {
         "name": "activePath",
         "type": "string",
-        "default": "\"\"",
+        "default": "\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\"",
         "description": "Path del item activo (manual). En apps Vue se toma de useRoute() si no se pasa; en vanilla/PHP setealo vos"
       }
     ],
-    "slots": [
-      {
-        "name": "toggle"
-      },
-      {
-        "name": "default"
-      }
-    ],
-    "interfaceCode": `interface NavItem {
-    label: string
-    path?: string
-    icon?: string
-    children?: NavItem[]
-  }`
+    "interfaceCode": `export interface NavbarHorizontalItem extends NavItem {}`
   },
   setup() {
     // jsdom no implementa scrollIntoView y useNavbar lo llama al montar con un

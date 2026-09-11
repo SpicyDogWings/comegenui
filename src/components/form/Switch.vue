@@ -49,11 +49,14 @@ const onInput = (e: Event) => {
   toggle((e.target as HTMLInputElement).checked);
 };
 
+/** Devuelve el estado actual del switch. */
 const get = () => checked.value;
+/** Setea el estado del switch y emite change. */
 const set = (value: boolean) => {
   checked.value = value;
   emit("change", value);
 };
+/** Apaga el switch y emite change. */
 const reset = () => {
   checked.value = false;
   emit("change", false);
@@ -63,6 +66,7 @@ defineExpose({
   get,
   set,
   reset,
+  /** Enfoca el input nativo. */
   focus: () => (inputFocus.value = true),
 });
 </script>

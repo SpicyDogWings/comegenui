@@ -64,7 +64,7 @@ export const cuLoaderStories: ComponentStory = {
         "name": "delay",
         "type": "number",
         "default": "2000",
-        "description": "Duración del cooldown en ms (solo animation=\"cooldown\")"
+        "description": "Duración del cooldown en ms (solo animation=\\\\\\\\\\\\\\\"cooldown\\\\\\\\\\\\\\\")"
       }
     ]
   },

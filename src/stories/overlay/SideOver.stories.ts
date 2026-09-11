@@ -410,8 +410,8 @@ export const cuSideOverStories: ComponentStory = {
       {
         "name": "size",
         "type": "string",
-        "default": "\"300px\"",
-        "description": "Ancho (left/right) o alto (top/bottom) del panel. Acepta CSS (\"300px\", \"40vw\") o preset \"sm\" | \"md\" | \"lg\" | \"xl\" | \"full\". Ignorado en fullscreen"
+        "default": "\\\\\\\\\\\\\\\"300px\\\\\\\\\\\\\\\"",
+        "description": "Ancho (left/right) o alto (top/bottom) del panel. Acepta CSS (\\\\\\\\\\\\\\\"300px\\\\\\\\\\\\\\\", \\\\\\\\\\\\\\\"40vw\\\\\\\\\\\\\\\") o preset \\\\\\\\\\\\\\\"sm\\\\\\\\\\\\\\\" | \\\\\\\\\\\\\\\"md\\\\\\\\\\\\\\\" | \\\\\\\\\\\\\\\"lg\\\\\\\\\\\\\\\" | \\\\\\\\\\\\\\\"xl\\\\\\\\\\\\\\\" | \\\\\\\\\\\\\\\"full\\\\\\\\\\\\\\\". Ignorado en fullscreen"
       },
       {
         "name": "persistent",

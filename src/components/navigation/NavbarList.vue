@@ -11,23 +11,39 @@ import type { NavItem } from '@/composables/useNavbar'
 // Lista interna de la nav (header + items). Se usa en el nav inline y dentro
 // del SideOver responsive para no duplicar el markup.
 const props = defineProps({
+  /** Items del menú. */
   items: { type: Array as () => NavItem[], required: true },
+  /** Habilita el buscador de items. */
   search: { type: Boolean, default: false },
+  /** Placeholder del buscador. */
   searchPlaceholder: { type: String, default: 'Buscar...' },
+  /** Modo de búsqueda: filter (filtra items) o scroll (resalta y desplaza). */
   searchMode: { type: String, default: 'filter' },
+  /** Campos sobre los que busca el filtro. */
   searchFields: { type: Array as () => string[], default: () => [] },
+  /** Modo compacto: solo iconos o la inicial. */
   compact: { type: Boolean, default: false },
+  /** Muestra el botón para compactar y expandir. */
   compactable: { type: Boolean, default: false },
+  /** Inicia los submenús colapsados. */
   collapsed: { type: Boolean, default: false },
+  /** Disparador de los submenús: click o hover. */
   trigger: { type: String as PropType<'click' | 'hover'>, default: 'click' },
+  /** Path activo para resaltar el item correspondiente. */
   activePath: { type: String, default: '' },
+  /** Item a resaltar por búsqueda en modo scroll. */
   highlightTarget: { type: Object as () => NavItem | null, default: null },
+  /** Item activo según la ruta actual. */
   activeItem: { type: Object as () => NavItem | null, default: null },
 })
 
+/** Texto de búsqueda (v-model:query). */
 const query = defineModel<string>('query', { default: '' })
 
-const emit = defineEmits<{ (e: 'toggle-compact'): void }>()
+const emit = defineEmits<{
+  /** Se solicita alternar el modo compacto. */
+  (e: 'toggle-compact'): void
+}>()
 
 function itemIcon(item: NavItem): string {
   if (item.icon) return item.icon

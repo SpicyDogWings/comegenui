@@ -100,23 +100,28 @@ function setYear(next: number) {
   emit('change', clamped)
 }
 
+/** Avanza al año siguiente (respetando max). */
 function nextYear() {
   setYear(year.value + 1)
 }
 
+/** Retrocede al año anterior (respetando min). */
 function prevYear() {
   setYear(year.value - 1)
 }
 
+/** Navega al año indicado. */
 function goToYear(value: number | string) {
   const parsed = toYearNumber(value)
   if (parsed !== null) setYear(parsed)
 }
 
+/** Devuelve el año actual. */
 function getValue(): number {
   return year.value
 }
 
+/** Establece el año desde un número o string. */
 function setValue(value: number | string | null) {
   const parsed = toYearNumber(value)
   if (parsed !== null) setYear(parsed)

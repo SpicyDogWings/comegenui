@@ -189,30 +189,37 @@ function setMonth(next: Date) {
   emit('change', clamped)
 }
 
+/** Avanza un mes (respetando max). */
 function nextMonth() {
   setMonth(addMonths(month.value, 1))
 }
 
+/** Retrocede un mes (respetando min). */
 function prevMonth() {
   setMonth(addMonths(month.value, -1))
 }
 
+/** Avanza un año manteniendo el mes. */
 function nextYear() {
   setMonth(new Date(month.value.getFullYear() + 1, month.value.getMonth(), 1))
 }
 
+/** Retrocede un año manteniendo el mes. */
 function prevYear() {
   setMonth(new Date(month.value.getFullYear() - 1, month.value.getMonth(), 1))
 }
 
+/** Navega al mes de la fecha indicada. */
 function goToMonth(value: string | number | Date) {
   setMonth(parseDateInput(value))
 }
 
+/** Devuelve el mes visible. */
 function getValue(): Date {
   return new Date(month.value)
 }
 
+/** Establece el mes desde una fecha, timestamp o string. */
 function setValue(value: string | number | Date | null) {
   if (value === null || value === undefined || value === '') return
   setMonth(parseDateInput(value))

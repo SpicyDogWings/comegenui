@@ -168,6 +168,7 @@ const isRowDisabled = (row: Record<string, any>): boolean => {
             class="cu-table-row"
             :class="{ 'cu-table-row--disabled': isRowDisabled(row) }"
           >
+            <!-- Fila completa custom; scoped: { row, rowIndex, columns, getCellValue }. -->
             <slot
               name="template"
               :row="row"

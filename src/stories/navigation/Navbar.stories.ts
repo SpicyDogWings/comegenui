@@ -126,14 +126,14 @@ export const cuNavbarStories: ComponentStory = {
       },
       {
         "name": "trigger",
-        "type": "\"click\" | \"hover\"",
-        "default": "\"click\"",
+        "type": "\\\\\\\\\\\\\\\"click\\\\\\\\\\\\\\\" | \\\\\\\\\\\\\\\"hover\\\\\\\\\\\\\\\"",
+        "default": "\\\\\\\\\\\\\\\"click\\\\\\\\\\\\\\\"",
         "description": "Cómo abren los flyout de submenú en modo compact: click (default) o hover"
       },
       {
         "name": "activePath",
         "type": "string",
-        "default": "\"\"",
+        "default": "\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\"",
         "description": "Path del item activo (manual). Sin esto, en apps Vue se toma de useRoute(); en vanilla/PHP setealo vos"
       },
       {
@@ -144,14 +144,14 @@ export const cuNavbarStories: ComponentStory = {
       },
       {
         "name": "responsiveMode",
-        "type": "\"auto\" | \"side\" | \"fullscreen\"",
-        "default": "\"auto\"",
+        "type": "\\\\\\\\\\\\\\\"auto\\\\\\\\\\\\\\\" | \\\\\\\\\\\\\\\"side\\\\\\\\\\\\\\\" | \\\\\\\\\\\\\\\"fullscreen\\\\\\\\\\\\\\\"",
+        "default": "\\\\\\\\\\\\\\\"auto\\\\\\\\\\\\\\\"",
         "description": "Cómo se muestra el SideOver: auto = fullscreen en <480px y lateral en el resto; side = siempre lateral; fullscreen = siempre pantalla completa"
       },
       {
         "name": "sideOverPosition",
-        "type": "\"left\" | \"right\" | \"top\" | \"bottom\"",
-        "default": "\"left\"",
+        "type": "\\\\\\\\\\\\\\\"left\\\\\\\\\\\\\\\" | \\\\\\\\\\\\\\\"right\\\\\\\\\\\\\\\" | \\\\\\\\\\\\\\\"top\\\\\\\\\\\\\\\" | \\\\\\\\\\\\\\\"bottom\\\\\\\\\\\\\\\"",
+        "default": "\\\\\\\\\\\\\\\"left\\\\\\\\\\\\\\\"",
         "description": "Desde qué borde desliza el SideOver del responsive"
       }
     ],
@@ -162,12 +162,7 @@ export const cuNavbarStories: ComponentStory = {
         "description": "Se emite al escribir; payload con el query actual"
       }
     ],
-    "interfaceCode": `interface NavItem {
-    label: string
-    path?: string
-    icon?: string
-    children?: NavItem[]
-  }`
+    "interfaceCode": `export interface NavbarItem extends NavItem {}`
   },
   extras,
   setup: () => {

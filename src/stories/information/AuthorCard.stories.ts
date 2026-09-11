@@ -28,12 +28,6 @@ export const cuAuthorCardStories: ComponentStory = {
     "cu-author-name",
     "cu-author-role"
   ],
-  subComponents: [
-    {
-      "label": "Avatar",
-      "path": "/playground/components/avatar#style"
-    }
-  ],
   api: {
     "components": [
       {

@@ -100,16 +100,6 @@ export const cuDropdownMenuStories: ComponentStory = {
     "cu-dropdown-item",
     "cu-dropdown-toggle"
   ],
-  subComponents: [
-    {
-      "label": "Dropdown",
-      "path": "/playground/components/dropdown#style"
-    },
-    {
-      "label": "Button",
-      "path": "/playground/components/button#style"
-    }
-  ],
   api: {
     "components": [
       {
@@ -184,72 +174,58 @@ export const cuDropdownMenuStories: ComponentStory = {
     ],
     "slots": [
       {
-        "name": "toggle"
+        "name": "toggle",
+        "description": "Contenido del trigger; scoped: { toggle, isOpen }."
       },
       {
-        "name": "default"
+        "name": "default",
+        "description": "Contenido del panel."
       }
     ],
     "events": [
       {
         "name": "open",
         "type": "() => void",
-        "description": "Se abre el panel"
+        "description": "Abre el menú."
       },
       {
         "name": "close",
         "type": "() => void",
-        "description": "Se cierra el panel"
+        "description": "Cierra el menú."
       }
     ],
     "exposes": [
       {
         "name": "open()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Abre el menú."
       },
       {
         "name": "close()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Cierra el menú."
       },
       {
         "name": "toggle()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Alterna la visibilidad del menú."
       },
       {
         "name": "isOpen()",
-        "type": "() => void"
-      },
-      {
-        "name": "open",
         "type": "() => void",
-        "description": "Abre el panel"
-      },
-      {
-        "name": "close",
-        "type": "() => void",
-        "description": "Cierra el panel"
-      },
-      {
-        "name": "toggle",
-        "type": "() => void",
-        "description": "Abre/cierra el panel"
-      },
-      {
-        "name": "isOpen",
-        "type": "() => boolean",
-        "description": "Estado del panel"
+        "description": "Devuelve true si el menú está abierto."
       }
     ],
     "interfaceCode": `interface DropdownItem {
-    label?: string
-    icon?: string
-    href?: string
-    onClick?: () => void
-    color?: string
-    variant?: string
-    disabled?: boolean
-    divider?: boolean
-    target?: string
+    label?: string;
+    icon?: string;
+    href?: string;
+    onClick?: () => void;
+    color?: string;
+    variant?: string;
+    disabled?: boolean;
+    divider?: boolean;
+    target?: string;
   }`
   },
   extras,

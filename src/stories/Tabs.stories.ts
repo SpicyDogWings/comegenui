@@ -72,7 +72,8 @@ export const cuTabsStories: ComponentStory = {
     "props": [
       {
         "name": "modelValue",
-        "type": "string"
+        "type": "string",
+        "description": "Clave del tab activo (v-model)."
       },
       {
         "name": "tabs",
@@ -104,21 +105,11 @@ export const cuTabsStories: ComponentStory = {
         "description": "Deshabilita todas las pestañas"
       }
     ],
-    "slots": [
-      {
-        "name": "{key}",
-        "description": "Contenido del panel de la pestaña (slot dinámico por key)"
-      },
-      {
-        "name": "tab-icon-{key}",
-        "description": "Ícono del tab (fallback: solo si la tab no trae la prop icon)"
-      }
-    ],
     "events": [
       {
         "name": "update:modelValue",
         "type": "(value) => void",
-        "description": "Pestaña activa (v-model)"
+        "description": "Clave del tab activo (v-model)."
       },
       {
         "name": "change",
@@ -129,47 +120,35 @@ export const cuTabsStories: ComponentStory = {
     "exposes": [
       {
         "name": "getActive()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Devuelve la clave del tab activo."
       },
       {
         "name": "setActive()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Activa el tab con la clave indicada."
       },
       {
         "name": "next()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Avanza al siguiente tab habilitado."
       },
       {
         "name": "prev()",
-        "type": "() => void"
-      },
-      {
-        "name": "getActive",
-        "type": "() => string",
-        "description": "Key de la pestaña activa"
-      },
-      {
-        "name": "setActive",
-        "type": "(key: string) => void",
-        "description": "Activa la pestaña"
-      },
-      {
-        "name": "next",
         "type": "() => void",
-        "description": "Activa la siguiente"
-      },
-      {
-        "name": "prev",
-        "type": "() => void",
-        "description": "Activa la anterior"
+        "description": "Retrocede al tab habilitado anterior."
       }
     ],
     "interfaceCode": `interface TabItem {
-    key: string
-    label: string
-    icon?: string      // HTML/SVG string (render con v-html); si falta, slot tab-icon-{key}
-    disabled?: boolean
-    keepAlive?: boolean // panel montado siempre (v-show): el estado sobrevive al cambio de tab
+    key: string;
+    label: string;
+    // Icono del tab como HTML/SVG string (render con v-html), consistente con
+    // label. Si la tab no trae icon, se usa el slot dinámico tab-icon-{key}.
+    icon?: string;
+    disabled?: boolean;
+    // Mantiene el panel montado aunque no esté activo (v-show, no v-if):
+    // el estado de los componentes internos sobrevive al cambio de tab.
+    keepAlive?: boolean;
   }`
   },
   extras,

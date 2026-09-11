@@ -288,6 +288,17 @@ function mergeRows(generated, existing) {
   return [...generated, ...existing.filter((row) => !names.has(row.name))];
 }
 
+/** Deduplica filas por clave normalizada (la primera gana). */
+function dedupeBy(rows, keyOf) {
+  const seen = new Set();
+  return rows.filter((row) => {
+    const key = keyOf(row);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 /** Tokens (`tokens: [...]`) existentes en una story, para no perderlos. */
 function existingTokens(src) {
   const match = /(?:^|[\s{,])["']?tokens["']?\s*:\s*\[/.exec(src);
@@ -411,7 +422,10 @@ function generateOne(componentName) {
   const allProps = mergeRows(propsRows, existingRows(existingSource, "props"));
   const allSlots = mergeRows(slotsRows, existingRows(existingSource, "slots"));
   const allEvents = mergeRows(eventsRows, existingRows(existingSource, "events"));
-  const allExposes = mergeRows(exposesRows, existingRows(existingSource, "exposes"));
+  const allExposes = dedupeBy(
+    mergeRows(exposesRows, existingRows(existingSource, "exposes")),
+    (row) => row.name.replace(/\(\)$/, ""),
+  );
 
   const api = {};
   if (componentRows.length) api.components = componentRows;

@@ -226,16 +226,19 @@ const canNextMonth = computed(() => {
   return viewMonth.value < limit
 })
 
+/** Avanza al mes siguiente (respetando max). */
 function nextMonth() {
   if (props.disabled || !canNextMonth.value) return
   viewMonth.value = addMonths(viewMonth.value, 1)
 }
 
+/** Retrocede al mes anterior (respetando min). */
 function prevMonth() {
   if (props.disabled || !canPrevMonth.value) return
   viewMonth.value = addMonths(viewMonth.value, -1)
 }
 
+/** Navega al mes de la fecha indicada. */
 function goToMonth(value: string | number | Date) {
   const parsed = parseDateInput(value)
   if (parsed === null) return
@@ -345,10 +348,12 @@ function isInRange(day: Date): boolean {
 
 // ── API programática ──
 
+/** Devuelve la fecha seleccionada. */
 function getValue(): Date | null {
   return selectedValue.value
 }
 
+/** Establece la fecha seleccionada y emite los eventos de cambio. */
 function setValue(value: string | number | Date | null) {
   const parsed = parseDateInput(value)
   if (parsed === null) return

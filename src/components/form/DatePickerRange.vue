@@ -184,6 +184,7 @@ function onSelect(day: Date) {
   }
 }
 
+/** Limpia el rango de fechas. */
 function clear() {
   startValue.value = null
   endValue.value = null
@@ -195,8 +196,11 @@ function clear() {
 
 // ── API programática ──
 
+/** Devuelve la fecha de inicio. */
 function getStartDate(): Date | null { return startValue.value }
+/** Devuelve la fecha de fin. */
 function getEndDate(): Date | null { return endValue.value }
+/** Setea el rango de fechas y emite change. */
 function setRange(start: string | number | Date | null, end: string | number | Date | null) {
   startValue.value = parseDateInput(start)
   endValue.value = parseDateInput(end)
@@ -205,11 +209,14 @@ function setRange(start: string | number | Date | null, end: string | number | D
   emit('update:endDate', endValue.value)
   emit('change', { start: startValue.value, end: endValue.value })
 }
+/** Abre el panel del calendario. */
 function open() { dropdownRef.value?.open() }
+/** Cierra el panel del calendario. */
 function close() { dropdownRef.value?.close() }
+/** Alterna el panel del calendario. */
 function toggle() { dropdownRef.value?.toggle() }
 
-defineExpose({ open, close, toggle, getStartDate, getEndDate, setRange, clear, isOpen: () => dropdownRef.value?.isOpen || false })
+defineExpose({ open, close, toggle, getStartDate, getEndDate, setRange, clear, /** Indica si el panel está abierto. */ isOpen: () => dropdownRef.value?.isOpen || false })
 
 const panelWidth = computed(() => {
   if (props.dualCalendar) return '580px'

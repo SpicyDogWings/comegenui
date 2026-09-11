@@ -106,20 +106,6 @@ export const cuAutocompleteStories: ComponentStory = {
     "cu-autocomplete-option--disabled",
     "cu-autocomplete-options"
   ],
-  subComponents: [
-    {
-      "label": "Dropdown",
-      "path": "/playground/components/dropdown#style"
-    },
-    {
-      "label": "Input",
-      "path": "/playground/components/input#style"
-    },
-    {
-      "label": "Button",
-      "path": "/playground/components/button#style"
-    }
-  ],
   api: {
     "components": [
       {
@@ -138,7 +124,8 @@ export const cuAutocompleteStories: ComponentStory = {
     "props": [
       {
         "name": "modelValue",
-        "type": "string"
+        "type": "string",
+        "description": "Valor del texto de búsqueda (v-model)."
       },
       {
         "name": "color",
@@ -208,23 +195,15 @@ export const cuAutocompleteStories: ComponentStory = {
       {
         "name": "v-model",
         "type": "string",
-        "default": "\"\"",
+        "default": "\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\"",
         "description": "Texto/value actual (defineModel)"
-      }
-    ],
-    "slots": [
-      {
-        "name": "toggle"
-      },
-      {
-        "name": "default"
       }
     ],
     "events": [
       {
         "name": "update:modelValue",
         "type": "(value) => void",
-        "description": "Texto actualizado en detail (v-model)"
+        "description": "Valor del texto de búsqueda (v-model)."
       },
       {
         "name": "select",
@@ -240,63 +219,33 @@ export const cuAutocompleteStories: ComponentStory = {
     "exposes": [
       {
         "name": "get()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Devuelve el texto actual."
       },
       {
         "name": "set()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Setea el texto actual en el input."
       },
       {
         "name": "reset()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Limpia el texto de búsqueda."
       },
       {
         "name": "focus()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Enfoca el input."
       },
       {
         "name": "isOpen()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Indica si el panel está abierto."
       },
       {
         "name": "selectedItem()",
-        "type": "() => void"
-      },
-      {
-        "name": "get",
-        "type": "() => string",
-        "default": "—",
-        "description": "Devuelve el texto actual"
-      },
-      {
-        "name": "set",
-        "type": "(val: string) => void",
-        "default": "—",
-        "description": "Setea el texto (input y modelo)"
-      },
-      {
-        "name": "reset",
         "type": "() => void",
-        "default": "—",
-        "description": "Limpia el texto"
-      },
-      {
-        "name": "focus",
-        "type": "() => void",
-        "default": "—",
-        "description": "Pone el foco en el input"
-      },
-      {
-        "name": "isOpen",
-        "type": "() => boolean",
-        "default": "—",
-        "description": "Indica si el panel está abierto"
-      },
-      {
-        "name": "selectedItem",
-        "type": "() => AutocompleteItem | null",
-        "default": "—",
-        "description": "Último item seleccionado"
+        "description": "Devuelve el item seleccionado o null."
       }
     ],
     "interfaceCode": `interface AutocompleteItem {

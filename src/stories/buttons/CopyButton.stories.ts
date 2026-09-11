@@ -25,27 +25,32 @@ export const cuCopyButtonStories: ComponentStory = {
     "props": [
       {
         "name": "text",
-        "type": "string"
+        "type": "string",
+        "description": "Texto que se copia al portapapeles."
       },
       {
         "name": "label",
         "type": "string",
-        "default": ""
+        "default": "",
+        "description": "Etiqueta visible junto al ícono de copiar."
       },
       {
         "name": "copiedLabel",
         "type": "string",
-        "default": "Copiado"
+        "default": "Copiado",
+        "description": "Etiqueta que reemplaza a `label` durante la confirmación de copia."
       },
       {
         "name": "color",
         "type": "primary | secondary | neutral | success | warning | danger",
-        "default": "neutral"
+        "default": "neutral",
+        "description": "Color semántico del botón."
       },
       {
         "name": "variant",
         "type": "solid | outlined | soft | ghost | subtle | link | none",
-        "default": "soft"
+        "default": "soft",
+        "description": "Variante visual del botón."
       }
     ]
   },

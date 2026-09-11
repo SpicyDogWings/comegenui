@@ -91,24 +91,6 @@ export const cuDatePickerRangeStories: ComponentStory = {
     "cu-date-picker-range-toggle",
     "cu-dropdown"
   ],
-  subComponents: [
-    {
-      "label": "Dropdown",
-      "path": "/playground/components/dropdown#style"
-    },
-    {
-      "label": "Button",
-      "path": "/playground/components/button#style"
-    },
-    {
-      "label": "Calendar",
-      "path": "/playground/components/calendar#style"
-    },
-    {
-      "label": "Label",
-      "path": "/playground/components/label#style"
-    }
-  ],
   api: {
     "components": [
       {
@@ -133,7 +115,7 @@ export const cuDatePickerRangeStories: ComponentStory = {
         "name": "startDate",
         "type": "[String",
         "default": "null",
-        "description": "Inicio del rango (v-model:start-date). Acepta Date, timestamp o \"YYYY-MM-DD\""
+        "description": "Inicio del rango (v-model:start-date). Acepta Date, timestamp o \\\\\\\\\\\\\\\"YYYY-MM-DD\\\\\\\\\\\\\\\""
       },
       {
         "name": "endDate",
@@ -217,13 +199,13 @@ export const cuDatePickerRangeStories: ComponentStory = {
         "name": "disabledWeekdays",
         "type": "[Array",
         "default": "",
-        "description": "Días de semana deshabilitados (0=domingo). Acepta array o \"0,6\""
+        "description": "Días de semana deshabilitados (0=domingo). Acepta array o \\\\\\\\\\\\\\\"0,6\\\\\\\\\\\\\\\""
       },
       {
         "name": "disabledDates",
         "type": "[Array",
         "default": "",
-        "description": "Fechas puntuales deshabilitadas. Acepta array o \"2026-09-15,2026-09-16\""
+        "description": "Fechas puntuales deshabilitadas. Acepta array o \\\\\\\\\\\\\\\"2026-09-15,2026-09-16\\\\\\\\\\\\\\\""
       },
       {
         "name": "events",
@@ -285,14 +267,6 @@ export const cuDatePickerRangeStories: ComponentStory = {
         "description": "Label sobre el trigger (click abre el panel)"
       }
     ],
-    "slots": [
-      {
-        "name": "toggle"
-      },
-      {
-        "name": "default"
-      }
-    ],
     "events": [
       {
         "name": "update:startDate",
@@ -317,94 +291,54 @@ export const cuDatePickerRangeStories: ComponentStory = {
       {
         "name": "open",
         "type": "() => void",
-        "description": "El panel se abrió"
+        "description": "Abre el panel del calendario."
       },
       {
         "name": "close",
         "type": "() => void",
-        "description": "El panel se cerró"
+        "description": "Cierra el panel del calendario."
       }
     ],
     "exposes": [
       {
         "name": "open()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Abre el panel del calendario."
       },
       {
         "name": "close()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Cierra el panel del calendario."
       },
       {
         "name": "toggle()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Alterna el panel del calendario."
       },
       {
         "name": "getStartDate()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Devuelve la fecha de inicio."
       },
       {
         "name": "getEndDate()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Devuelve la fecha de fin."
       },
       {
         "name": "setRange()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Setea el rango de fechas y emite change."
       },
       {
         "name": "clear()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Limpia el rango de fechas."
       },
       {
         "name": "isOpen()",
-        "type": "() => void"
-      },
-      {
-        "name": "open",
         "type": "() => void",
-        "default": "—",
-        "description": "Abre el panel"
-      },
-      {
-        "name": "close",
-        "type": "() => void",
-        "default": "—",
-        "description": "Cierra el panel"
-      },
-      {
-        "name": "toggle",
-        "type": "() => void",
-        "default": "—",
-        "description": "Abre/cierra el panel"
-      },
-      {
-        "name": "getStartDate",
-        "type": "() => Date | null",
-        "default": "—",
-        "description": "Devuelve el inicio del rango"
-      },
-      {
-        "name": "getEndDate",
-        "type": "() => Date | null",
-        "default": "—",
-        "description": "Devuelve el fin del rango"
-      },
-      {
-        "name": "setRange",
-        "type": "(start, end: string | number | Date | null) => void",
-        "default": "—",
-        "description": "Setea el rango programáticamente"
-      },
-      {
-        "name": "clear",
-        "type": "() => void",
-        "default": "—",
-        "description": "Limpia el rango"
-      },
-      {
-        "name": "isOpen",
-        "type": "() => boolean",
-        "default": "—",
-        "description": "Indica si el panel está abierto"
+        "description": "Indica si el panel está abierto."
       }
     ],
     "interfaceCode": `interface CalendarEvent {

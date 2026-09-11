@@ -65,81 +65,91 @@ export const cuNavbarListStories: ComponentStory = {
     ],
     "props": [
       {
-        "name": "modelValue",
-        "type": "string"
+        "name": "query",
+        "type": "string",
+        "description": "Texto de búsqueda (v-model:query)."
       },
       {
         "name": "items",
-        "type": "Array as () => NavItem[]"
+        "type": "Array as () => NavItem[]",
+        "description": "Items del menú."
       },
       {
         "name": "search",
         "type": "boolean",
-        "default": "false"
+        "default": "false",
+        "description": "Habilita el buscador de items."
       },
       {
         "name": "searchPlaceholder",
         "type": "string",
-        "default": "Buscar..."
+        "default": "Buscar...",
+        "description": "Placeholder del buscador."
       },
       {
         "name": "searchMode",
         "type": "string",
-        "default": "filter"
+        "default": "filter",
+        "description": "Modo de búsqueda: filter (filtra items) o scroll (resalta y desplaza)."
       },
       {
         "name": "searchFields",
-        "type": "Array as () => string[]"
+        "type": "Array as () => string[]",
+        "description": "Campos sobre los que busca el filtro."
       },
       {
         "name": "compact",
         "type": "boolean",
-        "default": "false"
+        "default": "false",
+        "description": "Modo compacto: solo iconos o la inicial."
       },
       {
         "name": "compactable",
         "type": "boolean",
-        "default": "false"
+        "default": "false",
+        "description": "Muestra el botón para compactar y expandir."
       },
       {
         "name": "collapsed",
         "type": "boolean",
-        "default": "false"
+        "default": "false",
+        "description": "Inicia los submenús colapsados."
       },
       {
         "name": "trigger",
         "type": "click | hover",
-        "default": "click"
+        "default": "click",
+        "description": "Disparador de los submenús: click o hover."
       },
       {
         "name": "activePath",
         "type": "string",
-        "default": ""
+        "default": "",
+        "description": "Path activo para resaltar el item correspondiente."
       },
       {
         "name": "highlightTarget",
         "type": "Object as () => NavItem | null",
-        "default": "null"
+        "default": "null",
+        "description": "Item a resaltar por búsqueda en modo scroll."
       },
       {
         "name": "activeItem",
         "type": "Object as () => NavItem | null",
-        "default": "null"
-      }
-    ],
-    "slots": [
-      {
-        "name": "toggle"
+        "default": "null",
+        "description": "Item activo según la ruta actual."
       }
     ],
     "events": [
       {
-        "name": "update:modelValue",
-        "type": "(value) => void"
+        "name": "update:query",
+        "type": "(value) => void",
+        "description": "Texto de búsqueda (v-model:query)."
       },
       {
         "name": "toggle-compact",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Se solicita alternar el modo compacto."
       }
     ]
   },

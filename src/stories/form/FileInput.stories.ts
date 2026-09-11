@@ -62,12 +62,6 @@ export const cuFileInputStories: ComponentStory = {
     "cu-file-input-size",
     "cu-file-input-wrap"
   ],
-  subComponents: [
-    {
-      "label": "Button",
-      "path": "/playground/components/button#style"
-    }
-  ],
   api: {
     "components": [
       {
@@ -82,7 +76,8 @@ export const cuFileInputStories: ComponentStory = {
     "props": [
       {
         "name": "modelValue",
-        "type": "File | null"
+        "type": "File | null",
+        "description": "Archivo seleccionado (v-model)."
       },
       {
         "name": "color",
@@ -171,48 +166,28 @@ export const cuFileInputStories: ComponentStory = {
     "exposes": [
       {
         "name": "get()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Devuelve el archivo actual."
       },
       {
         "name": "set()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Setea el archivo actual."
       },
       {
         "name": "reset()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Quita el archivo seleccionado."
       },
       {
         "name": "focus()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Enfoca el contenedor del input."
       },
       {
         "name": "trigger()",
-        "type": "() => void"
-      },
-      {
-        "name": "get",
-        "type": "method",
-        "description": "Devuelve el File seleccionado o null"
-      },
-      {
-        "name": "set",
-        "type": "method",
-        "description": "set(file: File | null): establece el archivo programáticamente"
-      },
-      {
-        "name": "reset",
-        "type": "method",
-        "description": "Limpia la selección"
-      },
-      {
-        "name": "focus",
-        "type": "method",
-        "description": "Pone el foco en el control"
-      },
-      {
-        "name": "trigger",
-        "type": "method",
-        "description": "Abre el diálogo de selección de archivos"
+        "type": "() => void",
+        "description": "Abre el selector de archivos."
       }
     ]
   },

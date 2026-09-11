@@ -56,16 +56,6 @@ export const cuDropdownStories: ComponentStory = {
     "cu-dropdown-panel--nested",
     "cu-popover"
   ],
-  subComponents: [
-    {
-      "label": "Button",
-      "path": "/playground/components/button#style"
-    },
-    {
-      "label": "Loader",
-      "path": "/playground/components/loader#style"
-    }
-  ],
   api: {
     "components": [
       {
@@ -84,7 +74,8 @@ export const cuDropdownStories: ComponentStory = {
     "props": [
       {
         "name": "modelValue",
-        "type": "string"
+        "type": "string",
+        "description": "Valor seleccionado (v-model)."
       },
       {
         "name": "color",
@@ -113,7 +104,8 @@ export const cuDropdownStories: ComponentStory = {
       {
         "name": "icon",
         "type": "string",
-        "default": ""
+        "default": "",
+        "description": "Ícono del trigger (SVG/HTML)."
       },
       {
         "name": "position",
@@ -166,8 +158,8 @@ export const cuDropdownStories: ComponentStory = {
       {
         "name": "panelWidth",
         "type": "string",
-        "default": "\"\"",
-        "description": "Ancho del panel (CSS, ej: \"280px\"). Vacío = 100% del trigger"
+        "default": "\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\"",
+        "description": "Ancho del panel (CSS, ej: \\\\\\\\\\\\\\\"280px\\\\\\\\\\\\\\\"). Vacío = 100% del trigger"
       }
     ],
     "slots": [
@@ -183,82 +175,55 @@ export const cuDropdownStories: ComponentStory = {
     "events": [
       {
         "name": "update:modelValue",
-        "type": "(value) => void"
+        "type": "(value) => void",
+        "description": "Valor seleccionado (v-model)."
       },
       {
         "name": "open",
         "type": "() => void",
-        "description": "Se abre el panel"
+        "description": "Abre el panel."
       },
       {
         "name": "close",
         "type": "() => void",
-        "description": "Se cierra el panel"
+        "description": "Cierra el panel."
       }
     ],
     "exposes": [
       {
         "name": "open()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Abre el panel."
       },
       {
         "name": "close()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Cierra el panel."
       },
       {
         "name": "toggle()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Alterna la visibilidad del panel."
       },
       {
         "name": "get()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Devuelve el valor seleccionado."
       },
       {
         "name": "set()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Setea el valor seleccionado."
       },
       {
         "name": "reset()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Limpia el valor seleccionado."
       },
       {
         "name": "isOpen()",
-        "type": "() => void"
-      },
-      {
-        "name": "open",
         "type": "() => void",
-        "description": "Abre el panel"
-      },
-      {
-        "name": "close",
-        "type": "() => void",
-        "description": "Cierra el panel"
-      },
-      {
-        "name": "toggle",
-        "type": "() => void",
-        "description": "Abre/cierra el panel"
-      },
-      {
-        "name": "get",
-        "type": "() => boolean",
-        "description": "Estado del panel"
-      },
-      {
-        "name": "set",
-        "type": "(value: boolean) => void",
-        "description": "Setea el estado"
-      },
-      {
-        "name": "reset",
-        "type": "() => void",
-        "description": "Resetea el estado"
-      },
-      {
-        "name": "isOpen",
-        "type": "() => boolean",
-        "description": "Estado del panel"
+        "description": "Devuelve true si el panel está abierto."
       }
     ],
     "interfaceCode": `export interface DropdownMenuItem {

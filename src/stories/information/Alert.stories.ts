@@ -79,19 +79,7 @@ export const cuAlertStories: ComponentStory = {
     "cu-alert-title",
     "cu-alert-title-text"
   ],
-  subComponents: [
-    {
-      "label": "Button",
-      "path": "/playground/components/button#style"
-    }
-  ],
   api: {
-    "components": [
-      {
-        "label": "Button",
-        "path": "/playground/components/button"
-      }
-    ],
     "props": [
       {
         "name": "color",

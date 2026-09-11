@@ -42,16 +42,6 @@ export const cuSelectStories: ComponentStory = {
     "cu-select-options",
     "cu-select-toggle"
   ],
-  subComponents: [
-    {
-      "label": "Dropdown",
-      "path": "/playground/components/dropdown#style"
-    },
-    {
-      "label": "Button",
-      "path": "/playground/components/button#style"
-    }
-  ],
   api: {
     "components": [
       {
@@ -160,14 +150,6 @@ export const cuSelectStories: ComponentStory = {
         "description": "Variante de la barra de cooldown de la búsqueda"
       }
     ],
-    "slots": [
-      {
-        "name": "toggle"
-      },
-      {
-        "name": "default"
-      }
-    ],
     "events": [
       {
         "name": "update:modelValue",
@@ -193,63 +175,33 @@ export const cuSelectStories: ComponentStory = {
     "exposes": [
       {
         "name": "get()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Devuelve el valor seleccionado."
       },
       {
         "name": "set()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Setea el valor seleccionado."
       },
       {
         "name": "reset()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Limpia la selección."
       },
       {
         "name": "focus()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Enfoca el trigger del select."
       },
       {
         "name": "isOpen()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Indica si el panel está abierto."
       },
       {
         "name": "selectedItem()",
-        "type": "() => void"
-      },
-      {
-        "name": "get",
-        "type": "() => string",
-        "default": "—",
-        "description": "Devuelve el valor seleccionado"
-      },
-      {
-        "name": "set",
-        "type": "(value: string) => void",
-        "default": "—",
-        "description": "Setea el valor seleccionado"
-      },
-      {
-        "name": "reset",
         "type": "() => void",
-        "default": "—",
-        "description": "Limpia la selección"
-      },
-      {
-        "name": "focus",
-        "type": "() => void",
-        "default": "—",
-        "description": "Pone el foco en el select"
-      },
-      {
-        "name": "isOpen",
-        "type": "() => boolean",
-        "default": "—",
-        "description": "Indica si el panel está abierto"
-      },
-      {
-        "name": "selectedItem",
-        "type": "() => SelectOption | null",
-        "default": "—",
-        "description": "Opción seleccionada actualmente"
+        "description": "Devuelve la opción seleccionada o null."
       }
     ],
     "interfaceCode": `interface SelectOption {

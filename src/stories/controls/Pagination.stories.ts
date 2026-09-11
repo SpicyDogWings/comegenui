@@ -45,16 +45,6 @@ export const cuPaginationStories: ComponentStory = {
     "cu-pagination-page-size",
     "cu-pagination-pages"
   ],
-  subComponents: [
-    {
-      "label": "Button",
-      "path": "/playground/components/button#style"
-    },
-    {
-      "label": "Select",
-      "path": "/playground/components/select#style"
-    }
-  ],
   api: {
     "components": [
       {
@@ -95,7 +85,7 @@ export const cuPaginationStories: ComponentStory = {
         "name": "totalItems",
         "type": "number",
         "default": "0",
-        "description": "Total de items (texto \"X–Y de Z\")"
+        "description": "Total de items (texto \\\\\\\\\\\\\\\"X–Y de Z\\\\\\\\\\\\\\\")"
       },
       {
         "name": "itemsPerPage",

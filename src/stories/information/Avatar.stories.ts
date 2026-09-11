@@ -52,7 +52,8 @@ export const cuAvatarStories: ComponentStory = {
     ],
     "slots": [
       {
-        "name": "default"
+        "name": "default",
+        "description": "Iniciales o contenido del avatar."
       }
     ]
   },

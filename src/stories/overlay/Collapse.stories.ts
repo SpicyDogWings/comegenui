@@ -45,7 +45,8 @@ export const cuCollapseStories: ComponentStory = {
       {
         "name": "icon",
         "type": "string",
-        "default": ""
+        "default": "",
+        "description": "Ícono del trigger (SVG/HTML)."
       },
       {
         "name": "defaultOpen",
@@ -70,45 +71,29 @@ export const cuCollapseStories: ComponentStory = {
       {
         "name": "toggle",
         "type": "() => void",
-        "description": "Cambia el estado (payload: isOpen)"
+        "description": "Alterna el estado del collapse."
       }
     ],
     "exposes": [
       {
         "name": "open()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Abre el collapse."
       },
       {
         "name": "close()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Cierra el collapse."
       },
       {
         "name": "toggle()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Alterna el estado del collapse."
       },
       {
         "name": "isOpen()",
-        "type": "() => void"
-      },
-      {
-        "name": "open",
         "type": "() => void",
-        "description": "Expande el contenido"
-      },
-      {
-        "name": "close",
-        "type": "() => void",
-        "description": "Colapsa el contenido"
-      },
-      {
-        "name": "toggle",
-        "type": "() => void",
-        "description": "Expande/colapsa"
-      },
-      {
-        "name": "isOpen",
-        "type": "() => boolean",
-        "description": "Estado del collapse"
+        "description": "Devuelve true si el collapse está abierto."
       }
     ]
   },

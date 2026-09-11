@@ -229,119 +229,55 @@ export const cuCellsImporterStories: ComponentStory = {
     "exposes": [
       {
         "name": "getRows()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Devuelve las filas parseadas."
       },
       {
         "name": "getHeaders()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Devuelve los encabezados parseados."
       },
       {
         "name": "getErrors()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Devuelve los errores de validación."
       },
       {
         "name": "getFile()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Devuelve el archivo cargado."
       },
       {
         "name": "validate()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Revalida las filas y emite los errores."
       },
       {
         "name": "downloadTemplate()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Descarga la plantilla configurada (csv/xlsx)."
       },
       {
         "name": "reset()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Limpia el archivo y los resultados."
       },
       {
         "name": "set()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Setea el archivo y lo propaga al input."
       },
       {
         "name": "trigger()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Abre el selector de archivos."
       },
       {
         "name": "focus()",
-        "type": "() => void"
-      },
-      {
-        "name": "getRows",
-        "type": "() => Record<string, unknown>[]",
-        "description": "Devuelve las filas parseadas"
-      },
-      {
-        "name": "getHeaders",
-        "type": "() => string[]",
-        "description": "Devuelve los encabezados del archivo"
-      },
-      {
-        "name": "getErrors",
-        "type": "() => CellError[]",
-        "description": "Devuelve los errores de validación"
-      },
-      {
-        "name": "getFile",
-        "type": "() => File | null",
-        "description": "Devuelve el File seleccionado o null"
-      },
-      {
-        "name": "validate",
-        "type": "() => CellError[]",
-        "description": "Re-valida las filas actuales y devuelve los errores"
-      },
-      {
-        "name": "downloadTemplate",
         "type": "() => void",
-        "description": "Descarga la plantilla configurada (csv/xlsx)"
-      },
-      {
-        "name": "reset",
-        "type": "() => void",
-        "description": "Limpia archivo, filas y errores"
-      },
-      {
-        "name": "set",
-        "type": "(file: File | null) => void",
-        "description": "Establece el archivo programáticamente"
-      },
-      {
-        "name": "trigger",
-        "type": "() => void",
-        "description": "Abre el diálogo de selección de archivos"
-      },
-      {
-        "name": "focus",
-        "type": "() => void",
-        "description": "Pone el foco en el control"
+        "description": "Enfoca el input de archivo."
       }
-    ],
-    "interfaceCode": `// CellColumn
-  interface CellColumn {
-    key: string                       // identificador de la columna
-    label: string                     // header esperado en el archivo
-    type?: 'string' | 'integer' | 'number' | 'date' | 'boolean' | 'email'
-    required?: boolean                // rechaza celdas vacías
-    min?: number                      // valor mínimo (number/integer)
-    max?: number                      // valor máximo (number/integer)
-    minLength?: number                // largo mínimo (string)
-    maxLength?: number                // largo máximo (string)
-    pattern?: string | RegExp         // regex de formato (string)
-    enum?: (string | number)[]        // valores permitidos
-    unique?: boolean                  // rechaza duplicados en la columna
-    validate?: (value: unknown, row: Record<string, unknown>)
-      => string | boolean | undefined // regla custom
-  }
-  
-  // CellError
-  interface CellError {
-    row: number          // índice de la fila (0-based)
-    columnKey: string
-    columnLabel: string
-    message: string
-  }`
+    ]
   },
   extras,
   sections: [

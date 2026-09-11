@@ -18,12 +18,6 @@ export const cuYearSliderStories: ComponentStory = {
   classes: [
     "cu-year-slider"
   ],
-  subComponents: [
-    {
-      "label": "MonthSliderLabel",
-      "path": "/playground/components/year-slider#style"
-    }
-  ],
   api: {
     "components": [
       {
@@ -88,48 +82,28 @@ export const cuYearSliderStories: ComponentStory = {
     "exposes": [
       {
         "name": "nextYear()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Avanza al año siguiente (respetando max)."
       },
       {
         "name": "prevYear()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Retrocede al año anterior (respetando min)."
       },
       {
         "name": "goToYear()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Navega al año indicado."
       },
       {
         "name": "getValue()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Devuelve el año actual."
       },
       {
         "name": "setValue()",
-        "type": "() => void"
-      },
-      {
-        "name": "nextYear",
         "type": "() => void",
-        "description": "Avanza un año"
-      },
-      {
-        "name": "prevYear",
-        "type": "() => void",
-        "description": "Retrocede un año"
-      },
-      {
-        "name": "goToYear",
-        "type": "(value: number | string) => void",
-        "description": "Va al año indicado"
-      },
-      {
-        "name": "getValue",
-        "type": "() => number | null",
-        "description": "Devuelve el año actual"
-      },
-      {
-        "name": "setValue",
-        "type": "(value: number | string) => void",
-        "description": "Setea el año"
+        "description": "Establece el año desde un número o string."
       }
     ]
   },

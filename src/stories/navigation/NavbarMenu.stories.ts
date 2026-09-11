@@ -34,12 +34,14 @@ export const cuNavbarMenuStories: ComponentStory = {
     "props": [
       {
         "name": "items",
-        "type": "Array as () => NavItem[]"
+        "type": "Array as () => NavItem[]",
+        "description": "Items del nivel de menú."
       },
       {
         "name": "trigger",
         "type": "click | hover",
-        "default": "click"
+        "default": "click",
+        "description": "Disparador de los submenús: click o hover."
       }
     ]
   },

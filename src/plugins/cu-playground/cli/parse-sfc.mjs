@@ -137,6 +137,8 @@ function parseJsDocs(script) {
   for (const match of script.matchAll(member)) put(match[1], match[2]);
   const emitSig = /\*\*((?:(?!\*\/)[\s\S])*)\*\/\s*\(\s*e\s*:\s*['"]([^'"]+)['"]/g;
   for (const match of script.matchAll(emitSig)) put(match[1], match[2]);
+  const emitEntry = /\*\*((?:(?!\*\/)[\s\S])*)\*\/\s*['"]([\w:.-]+)['"]\s*[,)\]]/g;
+  for (const match of script.matchAll(emitEntry)) put(match[1], match[2]);
   const decl = /\*\*((?:(?!\*\/)[\s\S])*)\*\/\s*(?:export\s+)?(?:interface|type)\s+([\w$]+)/g;
   for (const match of script.matchAll(decl)) put(match[1], match[2]);
   return docs;
@@ -344,22 +346,26 @@ function parseExposes(source, docs) {
 
 // ── Slots ───────────────────────────────────────────────────────────────────
 
+/**
+ * Slots declarados por el componente (`<slot>`), no los `<template #x>` que
+ * pasan contenido a un hijo. Un comentario HTML inmediatamente anterior
+ * (`<!-- descripción -->`) se usa como descripción del slot.
+ */
 function parseSlots(descriptor) {
   const template = descriptor.template?.content ?? "";
-  const names = new Set();
-  for (const match of template.matchAll(/<template\s+([^>]*)>/g)) {
-    const attrs = match[1];
-    const named = attrs.match(/(?:#|v-slot:)([\w-]+)/);
-    if (named) names.add(named[1]);
-    else if (/#default|v-slot(?!=)/.test(attrs)) names.add("default");
+  const slots = new Map();
+  for (const match of template.matchAll(/(?:<!--([\s\S]*?)-->\s*)?<slot\b([^>]*)>/g)) {
+    const comment = match[1] ? match[1].replace(/\s+/g, " ").trim() : undefined;
+    const attrs = match[2];
+    if (/[:@]name\s*=/.test(attrs)) continue; // nombre dinámico: no inferible
+    const literal = attrs.match(/\bname\s*=\s*["']([\w-]+)["']/);
+    const name = literal ? literal[1] : "default";
+    if (!slots.has(name) || comment) slots.set(name, comment);
   }
-  for (const match of template.matchAll(/<slot\b([^>]*)>/g)) {
-    const attrs = match[1];
-    const named = attrs.match(/name\s*=\s*["']([\w-]+)["']/);
-    if (named) names.add(named[1]);
-    else if (!/\bname=/.test(attrs)) names.add("default");
-  }
-  return [...names].map((name) => ({ name }));
+  return [...slots].map(([name, description]) => ({
+    name,
+    ...(description ? { description } : {}),
+  }));
 }
 
 // ── Tokens (CSS vars) ───────────────────────────────────────────────────────
@@ -431,15 +437,29 @@ export function parseComponent(filePath, source = readFileSync(filePath, "utf-8"
   const props = parseProps(script, compiled, docs);
   const emits = parseEmits(script, compiled, docs);
 
-  // `defineModel` agrega una prop `modelValue` y un emit `update:modelValue`
-  // que no aparecen en `defineProps`/`defineEmits`.
+  // `defineModel` agrega una prop y un emit `update:...` que no aparecen en
+  // `defineProps`/`defineEmits`. El nombre sale del primer argumento
+  // (`defineModel('query')` → `query`) y la descripción del JSDoc.
   if (/defineModel\b/.test(script)) {
-    const model = /defineModel\s*<([^>]*)>/.exec(script);
-    if (!props.some((prop) => prop.name === "modelValue")) {
-      props.unshift({ name: "modelValue", type: model?.[1]?.trim() || "unknown", kind: "unknown" });
+    const call = /defineModel\s*(?:<([^>]*)>)?\s*\(\s*(?:['"]([\w$]+)['"])?/.exec(script);
+    const modelType = call?.[1]?.trim() || "unknown";
+    const modelName = call?.[2] || "modelValue";
+    const assigned = /(?:const|let|var)\s+([\w$]+)\s*=\s*defineModel/.exec(script);
+    const modelDoc = (assigned?.[1] && docs.get(assigned[1])) || docs.get(modelName);
+    if (!props.some((prop) => prop.name === modelName)) {
+      props.unshift({
+        name: modelName,
+        type: modelType,
+        kind: "unknown",
+        ...(modelDoc ? { description: modelDoc } : {}),
+      });
     }
-    if (!emits.some((emit) => emit.name === "update:modelValue")) {
-      emits.unshift({ name: "update:modelValue", type: "(value) => void" });
+    if (!emits.some((emit) => emit.name === `update:${modelName}`)) {
+      emits.unshift({
+        name: `update:${modelName}`,
+        type: "(value) => void",
+        ...(modelDoc ? { description: modelDoc } : {}),
+      });
     }
   }
 

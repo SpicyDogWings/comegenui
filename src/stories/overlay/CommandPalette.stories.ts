@@ -384,7 +384,8 @@ export const cuCommandPaletteStories: ComponentStory = {
       },
       {
         "name": "run()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Ejecuta el comando con ese id."
       },
       {
         "name": "getCommands()",
@@ -402,7 +403,7 @@ export const cuCommandPaletteStories: ComponentStory = {
         "description": "Ejecuta el comando con ese id desde afuera (sin abrir)"
       }
     ],
-    "interfaceCode": `interface CommandItem {
+    "interfaceCode": `export interface CommandItem {
     id: string;
     label: string;
     description?: string;

@@ -68,12 +68,6 @@ export const cuModalStories: ComponentStory = {
     "cu-modal-title",
     "cu-modal-title-row"
   ],
-  subComponents: [
-    {
-      "label": "Button",
-      "path": "/playground/components/button#style"
-    }
-  ],
   api: {
     "components": [
       {
@@ -130,14 +124,14 @@ export const cuModalStories: ComponentStory = {
       },
       {
         "name": "footer",
-        "description": "Acciones del footer. Sin slot → botón \"Cerrar\" por defecto (emite cancel/accept)"
+        "description": "Acciones del footer. Sin slot → botón \\\\\\\\\\\\\\\"Cerrar\\\\\\\\\\\\\\\" por defecto (emite cancel/accept)"
       }
     ],
     "events": [
       {
         "name": "close",
         "type": "() => void",
-        "description": "El modal pide cerrarse (backdrop, Escape o botón)"
+        "description": "Cierra el modal."
       },
       {
         "name": "opened",
@@ -163,39 +157,23 @@ export const cuModalStories: ComponentStory = {
     "exposes": [
       {
         "name": "open()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Abre el modal."
       },
       {
         "name": "close()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Cierra el modal."
       },
       {
         "name": "toggle()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Alterna la visibilidad del modal."
       },
       {
         "name": "isOpen()",
-        "type": "() => void"
-      },
-      {
-        "name": "open",
         "type": "() => void",
-        "description": "Abre el modal"
-      },
-      {
-        "name": "close",
-        "type": "() => void",
-        "description": "Cierra el modal"
-      },
-      {
-        "name": "toggle",
-        "type": "() => void",
-        "description": "Abre/cierra el modal"
-      },
-      {
-        "name": "isOpen",
-        "type": "() => boolean",
-        "description": "Estado del modal"
+        "description": "Devuelve true si el modal está abierto."
       }
     ]
   },

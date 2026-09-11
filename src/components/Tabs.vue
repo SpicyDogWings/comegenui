@@ -43,6 +43,7 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["change"]);
+/** Clave del tab activo (v-model). */
 const active = defineModel<string>({ default: "" });
 
 const activeKey = computed(() => {
@@ -98,9 +99,13 @@ function onKeydown(e: KeyboardEvent) {
   else if (e.key === "End") { e.preventDefault(); const last = [...props.tabs].reverse().find((t) => !t.disabled); if (last) { select(last.key); focusTab(last.key); } }
 }
 
+/** Devuelve la clave del tab activo. */
 function getActive() { return activeKey.value; }
+/** Activa el tab con la clave indicada. */
 function setActive(key: string) { select(key); }
+/** Avanza al siguiente tab habilitado. */
 function next() { move(1); }
+/** Retrocede al tab habilitado anterior. */
 function prev() { move(-1); }
 
 defineExpose({ getActive, setActive, next, prev });

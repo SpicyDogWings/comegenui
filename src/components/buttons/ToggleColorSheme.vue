@@ -8,11 +8,13 @@ import LucideMoon from '../icons/LucideMoon.vue'
 const store = useThemeStore()
 
 const props = defineProps({
+  /** Variante visual del botón. */
   variant: {
     type: String as PropType<'solid' | 'outlined' | 'soft' | 'ghost' | 'subtle' | 'link' | 'none'>,
     required: false,
     default: 'ghost',
   },
+  /** Tamaño en px del ícono (ancho y alto). */
   size: {
     type: Number,
     default: 20,

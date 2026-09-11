@@ -24,12 +24,6 @@ export const cuColorPickerStories: ComponentStory = {
     "cu-color-picker-swatch",
     "cu-color-picker-swatch-color"
   ],
-  subComponents: [
-    {
-      "label": "Input",
-      "path": "/playground/components/input#style"
-    }
-  ],
   api: {
     "components": [
       {
@@ -71,39 +65,23 @@ export const cuColorPickerStories: ComponentStory = {
     "exposes": [
       {
         "name": "get()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Devuelve el color actual en formato hex."
       },
       {
         "name": "set()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Setea el color actual en formato hex."
       },
       {
         "name": "reset()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Restaura el color al negro (#000000)."
       },
       {
         "name": "focus()",
-        "type": "() => void"
-      },
-      {
-        "name": "get",
-        "type": "() => string",
-        "description": "Devuelve el hex actual"
-      },
-      {
-        "name": "set",
-        "type": "(value: string) => void",
-        "description": "Setea el color programáticamente"
-      },
-      {
-        "name": "reset",
         "type": "() => void",
-        "description": "Vuelve al valor por defecto (#000000)"
-      },
-      {
-        "name": "focus",
-        "type": "() => void",
-        "description": "Enfoca el input hex"
+        "description": "Enfoca el input de texto del color."
       }
     ]
   },

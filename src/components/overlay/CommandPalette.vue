@@ -96,6 +96,7 @@ function select(cmd: CommandItem) {
   close();
 }
 
+/** Ejecuta el comando con ese id. */
 function run(id: string): CommandItem | null {
   const cmd = props.commands.find((c) => c.id === id);
   if (!cmd) return null;

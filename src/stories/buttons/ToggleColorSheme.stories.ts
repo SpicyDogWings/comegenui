@@ -19,12 +19,14 @@ export const cuToggleColorShemeStories: ComponentStory = {
       {
         "name": "variant",
         "type": "solid | outlined | soft | ghost | subtle | link | none",
-        "default": "ghost"
+        "default": "ghost",
+        "description": "Variante visual del botón."
       },
       {
         "name": "size",
         "type": "number",
-        "default": "20"
+        "default": "20",
+        "description": "Tamaño en px del ícono (ancho y alto)."
       }
     ]
   },

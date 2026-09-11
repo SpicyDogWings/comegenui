@@ -164,6 +164,7 @@ interface Column {
 }
 
 const props = defineProps({
+  /** Tema activo de la tabla: light, dark o sigacadv2. */
   theme: { type: String, required: false, default: "light" },
   columns: { type: Array as () => Column[], required: false, default: () => [] },
   data: { type: Array as () => Record<string, any>[], required: false, default: () => [] },
@@ -346,7 +347,20 @@ const tableStyles = computed(() => ({
 const inputVariant = computed(() => props.variant === 'solid' ? 'soft' : props.variant);
 const paginationVariant = computed(() => props.variant === 'solid' ? 'soft' : props.variant);
 
-defineExpose({ updateRow, getData, getRow, removeRow, addRow, pushData });
+defineExpose({
+  /** Actualiza una fila por índice con los campos indicados. */
+  updateRow,
+  /** Devuelve una copia de las filas actuales, opcionalmente filtradas. */
+  getData,
+  /** Devuelve una copia de la fila en el índice indicado. */
+  getRow,
+  /** Elimina la fila en el índice indicado. */
+  removeRow,
+  /** Agrega una fila al final si respeta las columnas existentes. */
+  addRow,
+  /** Agrega varias filas al final si respetan las columnas existentes. */
+  pushData,
+});
 </script>
 
 <template>

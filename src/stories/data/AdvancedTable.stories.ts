@@ -34,32 +34,6 @@ export const cuAdvancedTableStories: ComponentStory = {
     "cu-advanced-table-pagination",
     "cu-advanced-table-search"
   ],
-  subComponents: [
-    {
-      "label": "Table",
-      "path": "/playground/components/table#style"
-    },
-    {
-      "label": "Pagination",
-      "path": "/playground/components/pagination#style"
-    },
-    {
-      "label": "Input",
-      "path": "/playground/components/input#style"
-    },
-    {
-      "label": "Button",
-      "path": "/playground/components/button#style"
-    },
-    {
-      "label": "Badge",
-      "path": "/playground/components/badge#style"
-    },
-    {
-      "label": "DropdownMenu",
-      "path": "/playground/components/dropdown-menu#style"
-    }
-  ],
   api: {
     "components": [
       {
@@ -95,7 +69,8 @@ export const cuAdvancedTableStories: ComponentStory = {
       {
         "name": "theme",
         "type": "string",
-        "default": "light"
+        "default": "light",
+        "description": "Tema activo de la tabla: light, dark o sigacadv2."
       },
       {
         "name": "columns",
@@ -219,25 +194,8 @@ export const cuAdvancedTableStories: ComponentStory = {
     ],
     "slots": [
       {
-        "name": "default"
-      },
-      {
-        "name": "toggle"
-      },
-      {
         "name": "search",
         "description": "Buscador custom (scoped: query, update)"
-      },
-      {
-        "name": "slotName"
-      },
-      {
-        "name": "empty",
-        "description": "Contenido custom del estado vacío"
-      },
-      {
-        "name": "footer",
-        "description": "Filas de pie (scoped: columns)"
       }
     ],
     "events": [
@@ -295,110 +253,144 @@ export const cuAdvancedTableStories: ComponentStory = {
     "exposes": [
       {
         "name": "updateRow()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Actualiza una fila por índice con los campos indicados."
       },
       {
         "name": "getData()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Devuelve una copia de las filas actuales, opcionalmente filtradas."
       },
       {
         "name": "getRow()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Devuelve una copia de la fila en el índice indicado."
       },
       {
         "name": "removeRow()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Elimina la fila en el índice indicado."
       },
       {
         "name": "addRow()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Agrega una fila al final si respeta las columnas existentes."
       },
       {
         "name": "pushData()",
-        "type": "() => void"
-      },
-      {
-        "name": "updateRow",
-        "type": "(index: number, patch: Record<string, any>) => void",
-        "description": "Actualiza una fila"
-      },
-      {
-        "name": "getData",
-        "type": "() => Record<string, any>[]",
-        "description": "Devuelve las filas actuales"
-      },
-      {
-        "name": "getRow",
-        "type": "(index: number) => Record<string, any>",
-        "description": "Devuelve una fila"
-      },
-      {
-        "name": "removeRow",
-        "type": "(index: number) => void",
-        "description": "Elimina una fila"
-      },
-      {
-        "name": "addRow",
-        "type": "(row: Record<string, any>) => void",
-        "description": "Agrega una fila"
-      },
-      {
-        "name": "pushData",
-        "type": "(rows: Record<string, any>[]) => void",
-        "description": "Agrega varias filas"
+        "type": "() => void",
+        "description": "Agrega varias filas al final si respetan las columnas existentes."
       }
     ],
-    "interfaceCode": `interface Column {
-    key: string
-    label?: string
-    width?: string
-    align?: "left" | "center" | "right"
-    editorAlign?: "start" | "center" | "end"
-    cell?: (row: Record<string, any>) => string | string[]
-    sortable?: boolean | "string" | "number" | "boolean"
-    badges?: (row: Record<string, any>) => BadgeConfig[]
-    buttons?: (row: Record<string, any>) => ButtonConfig[]
-    editable?: boolean | RegExp | ((row: Record<string, any>) => boolean)
-    inlineEdit?: boolean
-    inputType?: "input" | "textarea" | "select" | "autocomplete" | "date" | "switch"
-    disabled?: boolean | ((row: Record<string, any>) => boolean)
-    cellDisabled?: (row: Record<string, any>) => boolean
-    date?: {
-      format?: string
-      min?: string | number | Date
-      max?: string | number | Date
-      yearNavigation?: boolean
-      disabledWeekdays?: number[] | string
-      disabledDates?: (string | Date)[] | string
-      position?: string
-      align?: string
-      fixed?: boolean
-    }
-    select?: { options: SelectOption[]; color?: string; variant?: string }
-    autocomplete?: { items: AutocompleteItem[]; minChars?: number }
-    textarea?: { rows?: number; noResize?: boolean }
-    input?: { type?: string; startValue?: string }
-    switch?: { size?: "sm" | "md"; color?: string }
-  }
-  
-  interface BadgeConfig {
-    value: string
-    color?: string
-    variant?: string
+    "interfaceCode": `interface BadgeConfig {
+    value: string;
+    color?: string;
+    variant?: string;
   }
   
   interface ButtonConfig {
-    label?: string
-    icon?: string | Component
-    onClick?: (row: Record<string, any>) => void
-    to?: string
-    target?: string
-    color?: string
-    variant?: string
-    disabled?: boolean
+    label?: string;
+    icon?: string | Component;
+    onClick?: (row: Record<string, any>) => void;
+    to?: string;
+    target?: string;
+    color?: string;
+    variant?: string;
+    disabled?: boolean;
   }
   
-  // FooterRow/FooterCell: ver la página Table (Base) → API → Interfaces`
+  interface AutocompleteItem {
+    label: string;
+    value?: string;
+    icon?: string;
+  }
+  
+  interface SelectOption {
+    value: string;
+    label: string;
+    disabled?: boolean;
+    color?: string;
+    variant?: string;
+  }
+  
+  interface FooterCell {
+    value: string;
+    colspan?: number;
+    align?: "left" | "center" | "right";
+  }
+  
+  interface FooterRow {
+    cells: FooterCell[];
+  }
+  
+  interface Column {
+    key: string;
+    label?: string;
+    width?: string;
+    align?: "left" | "center" | "right";
+    editorAlign?: "start" | "center" | "end"; // Alineación del editor en la celda (para celdas que no ocupan todo el ancho, ej. switch)
+    cell?: (row: Record<string, any>) => string | string[];
+    editable?: boolean | RegExp | ((row: Record<string, any>) => boolean);
+    inputType?: "input" | "textarea" | "select" | "autocomplete" | "date" | "switch";
+    color?: string;
+    variant?: string;
+    // Las sub-key de date/select/autocomplete/textarea/input se pasan tal cual a
+    // EditableTableCell, que las forwardea al editor correspondiente.
+    date?: {
+      format?: string;
+      min?: string | number | Date;
+      max?: string | number | Date;
+      yearNavigation?: boolean;
+      disabledWeekdays?: number[] | string;
+      disabledDates?: (string | Date)[] | string;
+      color?: string;
+      variant?: string;
+      placement?: string;
+      position?: string; // "bottom" | "top" | "left" | "right" — posición del panel del calendario
+      align?: string; // "start" | "center" | "end"
+      fixed?: boolean;
+    };
+    select?: {
+      options: SelectOption[];
+      color?: string;
+      variant?: string;
+      position?: string;
+      align?: string;
+      placeholderWrap?: boolean;
+    };
+    autocomplete?: {
+      items: AutocompleteItem[];
+      minChars?: number;
+      color?: string;
+      variant?: string;
+    };
+    textarea?: {
+      rows?: number;
+      noResize?: boolean;
+      color?: string;
+      variant?: string;
+    };
+    input?: {
+      type?: string;
+      startValue?: string;
+      color?: string;
+      variant?: string;
+    };
+    switch?: {
+      size?: "sm" | "md";
+      color?: string;
+    };
+    selectOptions?: SelectOption[] | ((row: Record<string, any>) => SelectOption[]);
+    autocompleteItems?: AutocompleteItem[] | ((row: Record<string, any>) => AutocompleteItem[]);
+    validator?: (value: string, row: Record<string, any>) => boolean;
+    singleClick?: boolean;
+    inlineEdit?: boolean; // Estado por columna: renderiza el editor directo
+    sortable?: boolean | "string" | "number" | "boolean";
+    badges?: (row: Record<string, any>) => BadgeConfig[];
+    buttons?: (row: Record<string, any>) => ButtonConfig[];
+    disabled?: boolean | ((row: Record<string, any>) => boolean); // Columna deshabilitada (opcional por fila)
+    cellDisabled?: (row: Record<string, any>) => boolean; // Celda deshabilitada (intersección fila × columna)
+  }`
   },
   extras,
   sections: [

@@ -17,26 +17,36 @@ interface ThemeConfig {
 }
 
 const props = defineProps<{
+  /** Nombre del tema que se está editando. */
   themeName: string
+  /** CSS generado del tema, para previsualizar y exportar. */
   cssOutput: string
 }>()
 
 const emit = defineEmits<{
+  /** Actualiza el nombre del tema. */
   (e: 'update:themeName', value: string): void
+  /** Importa una configuración de tema desde JSON. */
   (e: 'import', config: ThemeConfig): void
+  /** Exporta la configuración actual del tema. */
   (e: 'export'): void
+  /** Restablece el tema a sus valores por defecto. */
   (e: 'reset'): void
+  /** Copia el CSS generado al portapapeles. */
   (e: 'copy-css'): void
+  /** Descarga el CSS generado como archivo. */
   (e: 'download-css'): void
 }>()
 
 const modalRef = ref<InstanceType<typeof Modal> | null>(null)
 const fileInputRef = ref<InstanceType<typeof FileInput> | null>(null)
 
+/** Abre el modal. */
 function open() {
   modalRef.value?.open()
 }
 
+/** Cierra el modal. */
 function close() {
   modalRef.value?.close()
 }

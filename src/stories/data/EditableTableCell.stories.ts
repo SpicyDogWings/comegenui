@@ -52,61 +52,74 @@ export const cuEditableTableCellStories: ComponentStory = {
     "props": [
       {
         "name": "value",
-        "type": "[String"
+        "type": "[String",
+        "description": "Valor actual de la celda."
       },
       {
         "name": "row",
-        "type": "Object as () => Record<string"
+        "type": "Object as () => Record<string",
+        "description": "Fila completa a la que pertenece la celda."
       },
       {
         "name": "column",
-        "type": "Object as () => Column"
+        "type": "Object as () => Column",
+        "description": "Configuración de la columna: editor, validación y alineación."
       },
       {
         "name": "index",
-        "type": "number"
+        "type": "number",
+        "description": "Índice de la fila en los datos."
       },
       {
         "name": "color",
         "type": "string",
-        "default": "neutral"
+        "default": "neutral",
+        "description": "Color semántico del editor."
       },
       {
         "name": "variant",
         "type": "string",
-        "default": "ghost"
+        "default": "ghost",
+        "description": "Variante visual del editor."
       },
       {
         "name": "validation",
-        "type": "Object as () => { success: boolean; error: string | null }"
+        "type": "Object as () => { success: boolean; error: string | null }",
+        "description": "Estado de validación: success y mensaje de error."
       },
       {
         "name": "inlineEdit",
         "type": "boolean",
-        "default": "false"
+        "default": "false",
+        "description": "Muestra el editor directo en toda la tabla, sin lápiz."
       },
       {
         "name": "disabled",
         "type": "boolean",
-        "default": "false"
+        "default": "false",
+        "description": "Deshabilita la edición de la celda."
       }
     ],
     "events": [
       {
         "name": "edit-start",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Se inicia la edición de la celda."
       },
       {
         "name": "edit-save",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Se guarda el nuevo valor de la celda."
       },
       {
         "name": "edit-cancel",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Se cancela la edición de la celda."
       },
       {
         "name": "edit-error",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "El valor no pasa la validación de la columna."
       }
     ],
     "interfaceCode": `interface AutocompleteItem {

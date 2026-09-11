@@ -72,7 +72,7 @@ export const cuPopoverStories: ComponentStory = {
       {
         "name": "panelWidth",
         "type": "string",
-        "default": "\"\"",
+        "default": "\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\"",
         "description": "Ancho del panel (CSS). Vacío = width:100% del trigger"
       },
       {
@@ -84,7 +84,7 @@ export const cuPopoverStories: ComponentStory = {
       {
         "name": "role",
         "type": "string",
-        "default": "\"\"",
+        "default": "\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\"",
         "description": "role del panel (menu, tooltip, dialog…)"
       }
     ],

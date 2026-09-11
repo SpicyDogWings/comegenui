@@ -113,39 +113,23 @@ export const cuSwitchStories: ComponentStory = {
     "exposes": [
       {
         "name": "get()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Devuelve el estado actual del switch."
       },
       {
         "name": "set()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Setea el estado del switch y emite change."
       },
       {
         "name": "reset()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Apaga el switch y emite change."
       },
       {
         "name": "focus()",
-        "type": "() => void"
-      },
-      {
-        "name": "get",
-        "type": "() => boolean",
-        "description": "Devuelve el estado actual (checked)"
-      },
-      {
-        "name": "set",
-        "type": "(value: boolean) => void",
-        "description": "Setea el estado y emite change"
-      },
-      {
-        "name": "reset",
         "type": "() => void",
-        "description": "Restaura el estado a false y emite change"
-      },
-      {
-        "name": "focus",
-        "type": "() => void",
-        "description": "Pone el foco en el input interno"
+        "description": "Enfoca el input nativo."
       }
     ]
   },

@@ -43,47 +43,57 @@ export const cuThemeManagerModalStories: ComponentStory = {
     "props": [
       {
         "name": "themeName",
-        "type": "string"
+        "type": "string",
+        "description": "Nombre del tema que se está editando."
       },
       {
         "name": "cssOutput",
-        "type": "string"
+        "type": "string",
+        "description": "CSS generado del tema, para previsualizar y exportar."
       }
     ],
     "events": [
       {
         "name": "update:themeName",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Actualiza el nombre del tema."
       },
       {
         "name": "import",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Importa una configuración de tema desde JSON."
       },
       {
         "name": "export",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Exporta la configuración actual del tema."
       },
       {
         "name": "reset",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Restablece el tema a sus valores por defecto."
       },
       {
         "name": "copy-css",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Copia el CSS generado al portapapeles."
       },
       {
         "name": "download-css",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Descarga el CSS generado como archivo."
       }
     ],
     "exposes": [
       {
         "name": "open()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Abre el modal."
       },
       {
         "name": "close()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Cierra el modal."
       }
     ],
     "interfaceCode": `interface ThemeConfig {

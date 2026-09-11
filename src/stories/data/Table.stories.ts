@@ -69,12 +69,6 @@ export const cuTableStories: ComponentStory = {
     "cu-table-th",
     "cu-table-th-content"
   ],
-  subComponents: [
-    {
-      "label": "Loader",
-      "path": "/playground/components/loader#style"
-    }
-  ],
   api: {
     "components": [
       {
@@ -149,7 +143,8 @@ export const cuTableStories: ComponentStory = {
     ],
     "slots": [
       {
-        "name": "template"
+        "name": "template",
+        "description": "Fila completa custom; scoped: { row, rowIndex, columns, getCellValue }."
       },
       {
         "name": "empty",
@@ -158,31 +153,23 @@ export const cuTableStories: ComponentStory = {
       {
         "name": "footer",
         "description": "Filas de pie (scoped: columns). Sin slot ni prop footer → no renderiza tfoot"
-      },
-      {
-        "name": "header-{key}",
-        "description": "Contenido del header de la columna"
-      },
-      {
-        "name": "cell-{key}",
-        "description": "Contenido de la celda (por columna)"
       }
     ],
     "interfaceCode": `interface Column {
-    key: string
-    label?: string
-    width?: string
-    align?: "left" | "center" | "right"
+    key: string;
+    label?: string;
+    width?: string;
+    align?: "left" | "center" | "right";
   }
   
   interface FooterCell {
-    value: string
-    colspan?: number
-    align?: "left" | "center" | "right"
+    value: string;
+    colspan?: number;
+    align?: "left" | "center" | "right";
   }
   
   interface FooterRow {
-    cells: FooterCell[]
+    cells: FooterCell[];
   }`
   },
   sections: [

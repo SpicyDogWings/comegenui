@@ -37,15 +37,19 @@ const checkboxStyles = computed(() => ({
 }));
 
 defineExpose({
+  /** Devuelve si el checkbox está marcado. */
   get: () => checked.value,
+  /** Setea el estado marcado y emite change. */
   set: (value: boolean) => {
     checked.value = value;
     emit("change", { target: { checked: value } });
   },
+  /** Desmarca el checkbox y emite change. */
   reset: () => {
     checked.value = false;
     emit("change", { target: { checked: false } });
   },
+  /** Enfoca el input nativo. */
   focus: () => inputRef.value?.focus(),
 });
 </script>

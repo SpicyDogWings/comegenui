@@ -90,6 +90,7 @@ onMounted(() => {
 })
 
 defineExpose({
+  /** Devuelve los ids generados para los encabezados parseados. */
   headingIds: () => headingIds.value
 })
 </script>

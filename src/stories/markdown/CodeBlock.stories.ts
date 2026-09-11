@@ -68,12 +68,6 @@ export const cuCodeBlockStories: ComponentStory = {
     "cu-code-block-line-number",
     "cu-code-block-pre"
   ],
-  subComponents: [
-    {
-      "label": "Badge",
-      "path": "/playground/components/badge#style"
-    }
-  ],
   api: {
     "components": [
       {

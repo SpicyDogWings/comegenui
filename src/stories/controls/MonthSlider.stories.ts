@@ -21,12 +21,6 @@ export const cuMonthSliderStories: ComponentStory = {
   classes: [
     "cu-month-slider"
   ],
-  subComponents: [
-    {
-      "label": "MonthSliderLabel",
-      "path": "/playground/components/month-slider#style"
-    }
-  ],
   api: {
     "components": [
       {
@@ -115,66 +109,38 @@ export const cuMonthSliderStories: ComponentStory = {
     "exposes": [
       {
         "name": "nextMonth()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Avanza un mes (respetando max)."
       },
       {
         "name": "prevMonth()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Retrocede un mes (respetando min)."
       },
       {
         "name": "nextYear()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Avanza un año manteniendo el mes."
       },
       {
         "name": "prevYear()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Retrocede un año manteniendo el mes."
       },
       {
         "name": "goToMonth()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Navega al mes de la fecha indicada."
       },
       {
         "name": "getValue()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Devuelve el mes visible."
       },
       {
         "name": "setValue()",
-        "type": "() => void"
-      },
-      {
-        "name": "nextMonth",
         "type": "() => void",
-        "description": "Avanza un mes"
-      },
-      {
-        "name": "prevMonth",
-        "type": "() => void",
-        "description": "Retrocede un mes"
-      },
-      {
-        "name": "nextYear",
-        "type": "() => void",
-        "description": "Avanza un año"
-      },
-      {
-        "name": "prevYear",
-        "type": "() => void",
-        "description": "Retrocede un año"
-      },
-      {
-        "name": "goToMonth",
-        "type": "(value: string | number | Date) => void",
-        "description": "Va al mes indicado"
-      },
-      {
-        "name": "getValue",
-        "type": "() => Date | null",
-        "description": "Devuelve el valor actual"
-      },
-      {
-        "name": "setValue",
-        "type": "(value: string | number | Date) => void",
-        "description": "Setea el valor"
+        "description": "Establece el mes desde una fecha, timestamp o string."
       }
     ]
   },

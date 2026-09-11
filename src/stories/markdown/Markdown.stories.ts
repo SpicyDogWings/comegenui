@@ -169,12 +169,8 @@ export const cuMarkdownStories: ComponentStory = {
     "exposes": [
       {
         "name": "headingIds()",
-        "type": "() => void"
-      },
-      {
-        "name": "headingIds",
-        "type": "() => string[]",
-        "description": "Devuelve los ids de los headings parseados"
+        "type": "() => void",
+        "description": "Devuelve los ids generados para los encabezados parseados."
       }
     ]
   },

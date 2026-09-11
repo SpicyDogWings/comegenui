@@ -8,8 +8,6 @@ import { setup, global } from "./ThemeDropdown.stories.runtime";
 export const cuThemeDropdownStories: ComponentStory = {
   component: "cu-theme-dropdown",
   vue: ThemeDropdown,
-  setup,
-  global,
   tokens: [
     "--cu-border-color",
     "--cu-border-thin",
@@ -38,13 +36,10 @@ export const cuThemeDropdownStories: ComponentStory = {
         "label": "Input",
         "path": "/playground/components/input"
       }
-    ],
-    "slots": [
-      {
-        "name": "toggle"
-      }
     ]
   },
+  setup,
+  global,
   sections: [
     {
       id: "default",

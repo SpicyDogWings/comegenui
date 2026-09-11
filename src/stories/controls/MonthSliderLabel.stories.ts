@@ -51,38 +51,45 @@ export const cuMonthSliderLabelStories: ComponentStory = {
     "props": [
       {
         "name": "label",
-        "type": "string"
+        "type": "string",
+        "description": "Texto principal del label (mes o año)."
       },
       {
         "name": "year",
         "type": "string",
-        "default": ""
+        "default": "",
+        "description": "Texto del año mostrado como badge al lado del label."
       },
       {
         "name": "disabled",
         "type": "boolean",
-        "default": "false"
+        "default": "false",
+        "description": "Deshabilita la interacción del label."
       },
       {
         "name": "color",
         "type": "primary | secondary | neutral | success | warning | danger",
-        "default": "primary"
+        "default": "primary",
+        "description": "Color semántico del label."
       },
       {
         "name": "variant",
         "type": "solid | outlined | soft | ghost | subtle",
-        "default": "soft"
+        "default": "soft",
+        "description": "Variante visual del label."
       },
       {
         "name": "canNavigateNext",
         "type": "boolean",
-        "default": "true"
+        "default": "true",
+        "description": "Indica si se puede navegar al paso siguiente."
       }
     ],
     "events": [
       {
         "name": "navigate",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Emite la dirección de navegación (positiva = paso siguiente)."
       }
     ]
   },

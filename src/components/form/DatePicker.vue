@@ -159,6 +159,7 @@ function goToday() {
   dropdownRef.value?.close()
 }
 
+/** Limpia la fecha seleccionada. */
 function clear() {
   selectedValue.value = null
   emit('update:modelValue', null)
@@ -168,10 +169,12 @@ function clear() {
 
 // ── API programática ──
 
+/** Devuelve la fecha seleccionada. */
 function getValue(): Date | null {
   return selectedValue.value
 }
 
+/** Setea la fecha seleccionada y emite change. */
 function setValue(value: string | number | Date | null) {
   const parsed = parseDateInput(value)
   if (parsed === null) return
@@ -180,11 +183,14 @@ function setValue(value: string | number | Date | null) {
   emit('change', parsed)
 }
 
+/** Abre el panel del calendario. */
 function open() { dropdownRef.value?.open() }
+/** Cierra el panel del calendario. */
 function close() { dropdownRef.value?.close() }
+/** Alterna el panel del calendario. */
 function toggle() { dropdownRef.value?.toggle() }
 
-defineExpose({ open, close, toggle, getValue, setValue, clear, isOpen: () => dropdownRef.value?.isOpen || false })
+defineExpose({ open, close, toggle, getValue, setValue, clear, /** Indica si el panel está abierto. */ isOpen: () => dropdownRef.value?.isOpen || false })
 </script>
 
 <template>

@@ -50,24 +50,6 @@ export const cuDatePickerStories: ComponentStory = {
     "cu-date-picker-toggle",
     "cu-dropdown"
   ],
-  subComponents: [
-    {
-      "label": "Dropdown",
-      "path": "/playground/components/dropdown#style"
-    },
-    {
-      "label": "Button",
-      "path": "/playground/components/button#style"
-    },
-    {
-      "label": "Calendar",
-      "path": "/playground/components/calendar#style"
-    },
-    {
-      "label": "Label",
-      "path": "/playground/components/label#style"
-    }
-  ],
   api: {
     "components": [
       {
@@ -152,7 +134,7 @@ export const cuDatePickerStories: ComponentStory = {
         "name": "disabledDates",
         "type": "[Array",
         "default": "",
-        "description": "Fechas puntuales deshabilitadas. Acepta array o \"2026-08-15,2026-08-16\""
+        "description": "Fechas puntuales deshabilitadas. Acepta array o \\\\\\\\\\\\\\\"2026-08-15,2026-08-16\\\\\\\\\\\\\\\""
       },
       {
         "name": "events",
@@ -211,12 +193,12 @@ export const cuDatePickerStories: ComponentStory = {
         "name": "modelValue",
         "type": "string | number | Date | null",
         "default": "null",
-        "description": "Fecha seleccionada (v-model). Acepta Date, timestamp o \"YYYY-MM-DD\""
+        "description": "Fecha seleccionada (v-model). Acepta Date, timestamp o \\\\\\\\\\\\\\\"YYYY-MM-DD\\\\\\\\\\\\\\\""
       },
       {
         "name": "format",
         "type": "string",
-        "default": "\"dd/MM/yyyy\"",
+        "default": "\\\\\\\\\\\\\\\"dd/MM/yyyy\\\\\\\\\\\\\\\"",
         "description": "Formato de la fecha en el trigger. Tokens: dd, MM, MMM, MMMM, yy, yyyy"
       },
       {
@@ -228,16 +210,8 @@ export const cuDatePickerStories: ComponentStory = {
       {
         "name": "disabledWeekdays",
         "type": "number[] | string",
-        "default": "\"\"",
-        "description": "Días de semana deshabilitados (0=domingo). Acepta array o \"0,6\""
-      }
-    ],
-    "slots": [
-      {
-        "name": "toggle"
-      },
-      {
-        "name": "default"
+        "default": "\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\"",
+        "description": "Días de semana deshabilitados (0=domingo). Acepta array o \\\\\\\\\\\\\\\"0,6\\\\\\\\\\\\\\\""
       }
     ],
     "events": [
@@ -259,84 +233,49 @@ export const cuDatePickerStories: ComponentStory = {
       {
         "name": "open",
         "type": "() => void",
-        "description": "El panel se abrió"
+        "description": "Abre el panel del calendario."
       },
       {
         "name": "close",
         "type": "() => void",
-        "description": "El panel se cerró"
+        "description": "Cierra el panel del calendario."
       }
     ],
     "exposes": [
       {
         "name": "open()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Abre el panel del calendario."
       },
       {
         "name": "close()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Cierra el panel del calendario."
       },
       {
         "name": "toggle()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Alterna el panel del calendario."
       },
       {
         "name": "getValue()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Devuelve la fecha seleccionada."
       },
       {
         "name": "setValue()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Setea la fecha seleccionada y emite change."
       },
       {
         "name": "clear()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Limpia la fecha seleccionada."
       },
       {
         "name": "isOpen()",
-        "type": "() => void"
-      },
-      {
-        "name": "open",
         "type": "() => void",
-        "default": "—",
-        "description": "Abre el panel"
-      },
-      {
-        "name": "close",
-        "type": "() => void",
-        "default": "—",
-        "description": "Cierra el panel"
-      },
-      {
-        "name": "toggle",
-        "type": "() => void",
-        "default": "—",
-        "description": "Abre/cierra el panel"
-      },
-      {
-        "name": "getValue",
-        "type": "() => Date | null",
-        "default": "—",
-        "description": "Devuelve la fecha seleccionada"
-      },
-      {
-        "name": "setValue",
-        "type": "(value: string | number | Date) => void",
-        "default": "—",
-        "description": "Setea la fecha programáticamente"
-      },
-      {
-        "name": "clear",
-        "type": "() => void",
-        "default": "—",
-        "description": "Limpia la selección"
-      },
-      {
-        "name": "isOpen",
-        "type": "() => boolean",
-        "default": "—",
-        "description": "Indica si el panel está abierto"
+        "description": "Indica si el panel está abierto."
       }
     ],
     "interfaceCode": `interface CalendarEvent {

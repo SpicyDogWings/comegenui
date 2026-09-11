@@ -75,12 +75,6 @@ export const cuCalendarStories: ComponentStory = {
     "cu-calendar-weekday",
     "cu-calendar-weekdays"
   ],
-  subComponents: [
-    {
-      "label": "MonthSlider",
-      "path": "/playground/components/month-slider#style"
-    }
-  ],
   api: {
     "components": [
       {
@@ -212,48 +206,28 @@ export const cuCalendarStories: ComponentStory = {
     "exposes": [
       {
         "name": "nextMonth()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Avanza al mes siguiente (respetando max)."
       },
       {
         "name": "prevMonth()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Retrocede al mes anterior (respetando min)."
       },
       {
         "name": "goToMonth()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Navega al mes de la fecha indicada."
       },
       {
         "name": "getValue()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Devuelve la fecha seleccionada."
       },
       {
         "name": "setValue()",
-        "type": "() => void"
-      },
-      {
-        "name": "nextMonth",
         "type": "() => void",
-        "description": "Avanza un mes"
-      },
-      {
-        "name": "prevMonth",
-        "type": "() => void",
-        "description": "Retrocede un mes"
-      },
-      {
-        "name": "goToMonth",
-        "type": "(value: string | number | Date) => void",
-        "description": "Va al mes indicado"
-      },
-      {
-        "name": "getValue",
-        "type": "() => Date | null",
-        "description": "Devuelve la fecha actual"
-      },
-      {
-        "name": "setValue",
-        "type": "(value: string | number | Date) => void",
-        "description": "Setea la fecha"
+        "description": "Establece la fecha seleccionada y emite los eventos de cambio."
       }
     ],
     "interfaceCode": `interface CalendarEvent {

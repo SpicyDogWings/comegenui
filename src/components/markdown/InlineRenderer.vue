@@ -2,6 +2,7 @@
 import Button from '@/components/buttons/Button.vue'
 
 const props = defineProps({
+  /** Tokens inline de marked a renderizar. */
   tokens: { type: Array as () => any[], required: true },
 })
 

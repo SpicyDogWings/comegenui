@@ -44,7 +44,8 @@ export const cuTextareaStories: ComponentStory = {
     "props": [
       {
         "name": "modelValue",
-        "type": "string"
+        "type": "string",
+        "description": "Valor actual del textarea (v-model)."
       },
       {
         "name": "startValue",
@@ -95,7 +96,7 @@ export const cuTextareaStories: ComponentStory = {
       {
         "name": "v-model",
         "type": "string",
-        "default": "\"\"",
+        "default": "\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\"",
         "description": "Valor del textarea (defineModel)"
       }
     ],
@@ -114,39 +115,23 @@ export const cuTextareaStories: ComponentStory = {
     "exposes": [
       {
         "name": "get()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Devuelve el valor actual del textarea."
       },
       {
         "name": "set()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Setea el valor del textarea."
       },
       {
         "name": "reset()",
-        "type": "() => void"
+        "type": "() => void",
+        "description": "Limpia el textarea."
       },
       {
         "name": "focus()",
-        "type": "() => void"
-      },
-      {
-        "name": "get",
-        "type": "() => string",
-        "description": "Devuelve el valor actual"
-      },
-      {
-        "name": "set",
-        "type": "(value: string | number) => void",
-        "description": "Setea el valor"
-      },
-      {
-        "name": "reset",
         "type": "() => void",
-        "description": "Limpia el valor"
-      },
-      {
-        "name": "focus",
-        "type": "() => void",
-        "description": "Pone el foco en el textarea"
+        "description": "Enfoca el textarea."
       }
     ]
   },

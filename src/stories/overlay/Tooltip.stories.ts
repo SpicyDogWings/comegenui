@@ -109,7 +109,7 @@ export const cuTooltipStories: ComponentStory = {
       {
         "name": "text",
         "type": "string",
-        "default": "\"\"",
+        "default": "\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\"",
         "description": "Texto del tooltip. El slot #content tiene prioridad"
       },
       {
@@ -120,9 +120,6 @@ export const cuTooltipStories: ComponentStory = {
       }
     ],
     "slots": [
-      {
-        "name": "toggle"
-      },
       {
         "name": "default",
         "description": "Trigger del tooltip (se le hace hover)"
