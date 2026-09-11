@@ -1,9 +1,9 @@
 <script lang="ts">
-import { defineComponent, h, type PropType, type VNodeChild } from "vue";
-import Badge from "@/components/information/Badge.vue";
+import { defineComponent, h, inject, type PropType, type VNodeChild } from "vue";
+import { chromeKey } from "../chrome";
 import SectionDemo from "./SectionDemo.vue";
 import TestResultBadge from "./TestResultBadge.vue";
-import type { ComponentStory, Section, StoryExtra, Variant } from "@/stories/types";
+import type { ComponentStory, Section, StoryExtra, Variant } from "../contract";
 
 function slotFns(variant: Variant): Record<string, () => VNodeChild> {
   const slots: Record<string, () => VNodeChild> = {};
@@ -24,6 +24,8 @@ export default defineComponent({
     story: { type: Object as PropType<ComponentStory>, required: true },
   },
   setup(props) {
+    const chrome = inject(chromeKey)!;
+
     function renderVariant(variant: Variant): VNodeChild {
       return h(
         props.story.vue,
@@ -46,7 +48,7 @@ export default defineComponent({
           h("h2", null, section.title),
           h(TestResultBadge, { component: props.story.component, section: section.id }),
           section.badge
-            ? h(Badge, { color: "neutral", title: section.badgeTitle }, () => section.badge ?? "")
+            ? h(chrome.badge, { color: "neutral", title: section.badgeTitle }, () => section.badge ?? "")
             : null,
         ]),
         section.description

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import Badge from "@/components/information/Badge.vue";
-import { useTestResults } from "@/composables/useTestResults";
+import { computed, inject } from "vue";
+import { chromeKey } from "../chrome";
+import { useTestResults } from "./useTestResults";
 
 const props = defineProps<{
   /** tag del componente: 'cu-button' */
@@ -9,6 +9,8 @@ const props = defineProps<{
   /** id de la sección: 'colors' */
   section: string;
 }>();
+
+const chrome = inject(chromeKey)!;
 
 const { results, loaded, available } = useTestResults();
 
@@ -64,5 +66,5 @@ const title = computed(() => {
 </script>
 
 <template>
-  <Badge :color="color" variant="soft" :title="title">{{ label }}</Badge>
+  <component :is="chrome.badge" :color="color" variant="soft" :title="title">{{ label }}</component>
 </template>

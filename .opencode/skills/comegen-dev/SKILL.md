@@ -98,8 +98,8 @@ Todo el devkit está separado por responsabilidad:
 | Extras: Programmatic / Events (opcional) | `src/stories/{category}/X.stories.extras.ts` |
 | Test L1 | `src/stories/{category}/X.l1.test.ts` |
 | Entry point (build) | `src/lib/{category}/x.ts` |
-| Tipos de stories / runner | `src/stories/types.ts` · `src/stories/runner.l1.ts` |
-| Playground (genérico) | Plugin `src/plugins/cu-playground/` (runtime en `runtime/`, nav automático) |
+| Tipos de stories / runner | Contrato `src/plugins/cu-playground/contract.ts` · runner `src/plugins/cu-playground/tests/runner.l1.ts` (`src/stories/types.ts` y `runner.l1.ts` son shims backwards-compat) |
+| Playground (genérico) | Plugin `src/plugins/cu-playground/` (runtime en `runtime/`, chrome fallback en `runtime/chrome/`, nav automático) |
 | Página física (opcional) | `src/playground/X.vue` (override; la crea `--pages`) |
 | Config del playground | `cu-playground.config.json` (raíz) |
 | Páginas legacy (backup) | `backups/legacy-playground-pages/X.vue` (ya no se compilan) |

@@ -5,7 +5,7 @@ import PlaygroundLayout from "./PlaygroundLayout.vue";
 import StoryBody from "./StoryBody.vue";
 import { buildOutline } from "./outline";
 import { playgroundKey, type PlaygroundRegistry } from "../keys";
-import type { ComponentStory } from "@/stories/types";
+import type { ComponentStory } from "../contract";
 
 const route = useRoute();
 const registry = inject<PlaygroundRegistry | null>(playgroundKey, null);

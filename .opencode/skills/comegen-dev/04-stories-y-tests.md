@@ -52,9 +52,13 @@ Refiná con **`X.stories.config.json`** (hermano de la story):
 
 El generador importa el archivo de extras si existe y lo agrega a la story sin pisarlo. El generador **no** toca estos archivos ni el config.
 
-## Contrato (`src/stories/types.ts`)
+## Contrato (dueño: `src/plugins/cu-playground/contract.ts`)
+
+El contrato vive **dentro del plugin** para que sea portable. En el repo,
+`src/stories/types.ts` lo re-exporta (backwards compat):
 
 ```ts
+// src/stories/types.ts → export * from "@/plugins/cu-playground/contract"
 export type SlotContent = string | number | (() => VNodeChild);
 
 export interface Variant {
@@ -88,14 +92,18 @@ export interface ComponentStory {
 }
 ```
 
-Los contextos (`L1Context`, `CeContext`, `UmdContext`) traen `expect` inyectado: **las stories no importan `vitest`** (así el archivo se puede importar desde el playground sin arrastrar vitest).
+Las stories pueden importar de `@/stories/types` (shim) o directo de
+`@/plugins/cu-playground/contract` (el generador usa este último). Los contextos
+(`L1Context`, `CeContext`, `UmdContext`) traen `expect` inyectado: **las stories
+no importan `vitest`** (así el archivo se puede importar desde el playground sin
+arrastrar vitest).
 
 ## Escribir una story
 
 ```ts
 // src/stories/buttons/Button.stories.ts
 import Button from "./Button.vue";
-import type { ComponentStory } from "@/stories/types";
+import type { ComponentStory } from "@/plugins/cu-playground/contract";
 
 export const cuButtonStories: ComponentStory = {
   component: "cu-button",
@@ -141,12 +149,14 @@ Buenas prácticas:
 ```ts
 // src/stories/buttons/Button.l1.test.ts
 import { cuButtonStories } from "./Button.stories";
-import { runL1Story } from "@/stories/runner.l1";
+import { runL1Story } from "@/plugins/cu-playground/tests/runner.l1";
 
 runL1Story(cuButtonStories);
 ```
 
-`runner.l1.ts` monta el `.vue` con `@vue/test-utils` por cada `variant × check`, corre el check y desmonta. El nombre del test es:
+`runner.l1.ts` (dueño: `src/plugins/cu-playground/tests/runner.l1.ts`;
+`src/stories/runner.l1.ts` lo re-exporta) monta el `.vue` con `@vue/test-utils`
+por cada `variant × check`, corre el check y desmonta. El nombre del test es:
 
 ```
 [cu-button] Colors › primary › resuelve --btn-bg al token --cu-color-{color}

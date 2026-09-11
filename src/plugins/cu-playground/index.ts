@@ -1,19 +1,23 @@
 import type { App } from "vue";
 import type { Router } from "vue-router";
 import StoryPage from "./runtime/StoryPage.vue";
-import type { ComponentStory } from "@/stories/types";
+import type { ComponentStory } from "./contract";
+import { chromeKey, defaultTokenDescription, resolveChrome, type PlaygroundChrome } from "./chrome";
 import {
   playgroundKey,
   type NavGroup,
+  type PlaygroundLibStatus,
   type PlaygroundRegistry,
   type StoryEntry,
 } from "./keys";
 import { resolvePlaygroundConfig, type PlaygroundConfig } from "./config";
 
 export type { PlaygroundConfig } from "./config";
-export type { NavGroup, NavLeaf, PlaygroundRegistry, StoryEntry } from "./keys";
+export type { NavGroup, NavLeaf, PlaygroundRegistry, PlaygroundLibStatus, StoryEntry } from "./keys";
 export { playgroundKey } from "./keys";
 export { resolvePlaygroundConfig } from "./config";
+export type { PlaygroundChrome, ResolvedChrome } from "./chrome";
+export { chromeKey, DEFAULT_CHROME, resolveChrome, defaultTokenDescription } from "./chrome";
 
 export interface CuPlaygroundOptions {
   /** Router de la app (el plugin agrega la ruta `components/:name`). */
@@ -30,6 +34,12 @@ export interface CuPlaygroundOptions {
   pages?: Record<string, unknown>;
   /** Configuración (`cu-playground.config.json`). */
   config?: PlaygroundConfig;
+  /** Componentes de chrome (UI) del runtime. Sin esto se usan fallbacks. */
+  chrome?: PlaygroundChrome;
+  /** Resuelve la descripción de un token CSS. Default: genérica. */
+  getTokenDescription?: (name: string) => string;
+  /** Estado "En lib / No en lib" del layout. Sin esto, no se muestra el badge. */
+  libStatus?: PlaygroundLibStatus;
   /** Base de las rutas de componentes. Override de `config.base`. */
   base?: string;
   /** Nombre de la ruta generada. Default: 'Component playground'. */
@@ -148,6 +158,11 @@ const CuPlayground = {
     const base = (options.base ?? config.base).replace(/\/+$/, "");
     const entries = buildStoryEntries(options.stories, base);
 
+    const chrome = resolveChrome(options.chrome ?? config.chrome);
+    const getTokenDescription =
+      options.getTokenDescription ?? config.getTokenDescription ?? defaultTokenDescription;
+    const libStatus = options.libStatus ?? config.libStatus;
+
     const byKey = new Map<string, StoryEntry>();
     for (const entry of entries) {
       for (const key of [entry.name, entry.name.toLowerCase(), entry.kebab, normalize(entry.name)]) {
@@ -169,9 +184,12 @@ const CuPlayground = {
       entries: () => entries,
       nav: () => buildNav(entries, config),
       getPage: (name) => pagesByName.get(normalize(name)) ?? pagesByName.get(kebab(name)),
+      getTokenDescription,
+      libStatus,
     };
 
     app.provide(playgroundKey, registry);
+    app.provide(chromeKey, chrome);
     app.component("StoryPage", StoryPage);
     options.router.addRoute({
       path: `${base}/:name`,

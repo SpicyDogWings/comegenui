@@ -1,4 +1,4 @@
-import type { ComponentStory } from "@/stories/types";
+import type { ComponentStory } from "../contract";
 
 export interface OutlineItem {
   label: string;
