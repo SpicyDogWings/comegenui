@@ -31,60 +31,167 @@ export const cuButtonStories: ComponentStory = {
   component: "cu-button",
   vue: Button,
   tokens: [
-    '--btn-bg',
-    '--btn-bg-hover',
-    '--btn-bg-active',
-    '--btn-soft',
-    '--btn-soft-hover',
-    '--btn-soft-active',
-    '--btn-subtle',
-    '--btn-subtle-hover',
-    '--btn-subtle-active',
-    '--btn-subtle-border',
-    '--btn-ghost-hover',
-    '--btn-ghost-active',
-    '--cu-font-sans',
-    '--cu-font-size-sm',
-    '--cu-font-size-xs',
-    '--cu-font-size-lg',
-    '--cu-font-weight-medium',
-    '--cu-radius',
-    '--cu-border-thin',
-    '--cu-space-2xs',
-    '--cu-space-xs',
-    '--cu-space-sm',
-    '--cu-space-md',
-    '--cu-space-lg',
-    '--cu-space-xl',
+    "--btn-bg",
+    "--btn-bg-active",
+    "--btn-bg-hover",
+    "--btn-ghost-active",
+    "--btn-ghost-hover",
+    "--btn-soft",
+    "--btn-soft-active",
+    "--btn-soft-hover",
+    "--btn-subtle",
+    "--btn-subtle-active",
+    "--btn-subtle-border",
+    "--btn-subtle-hover",
+    "--cu-border-thin",
+    "--cu-color-surface",
+    "--cu-font-sans",
+    "--cu-font-size-lg",
+    "--cu-font-size-sm",
+    "--cu-font-size-xs",
+    "--cu-font-weight-medium",
+    "--cu-radius",
+    "--cu-space-2xs",
+    "--cu-space-lg",
+    "--cu-space-md",
+    "--cu-space-sm",
+    "--cu-space-xl",
+    "--cu-space-xs"
+  ],
+  classes: [
+    "cu-button",
+    "cu-button--disabled",
+    "cu-button--ghost",
+    "cu-button--icon-only",
+    "cu-button--lg",
+    "cu-button--link",
+    "cu-button--none",
+    "cu-button--outlined",
+    "cu-button--sm",
+    "cu-button--soft",
+    "cu-button--solid",
+    "cu-button--subtle",
+    "cu-button-link",
+    "cu-button-spinner"
   ],
   api: {
-    props: [
-      { name: 'color', type: 'string', default: '"neutral"', description: 'Color semántico: primary, secondary, neutral, success, warning, danger' },
-      { name: 'variant', type: 'string', default: '"ghost"', description: 'solid, outlined, soft, ghost, subtle, link, none' },
-      { name: 'size', type: 'string', default: '"md"', description: 'Tamaño del botón: sm, md, lg' },
-      { name: 'type', type: 'string', default: '"button"', description: 'Tipo del button: button, submit, reset' },
-      { name: 'disabled', type: 'boolean', default: 'false', description: 'Estado deshabilitado' },
-      { name: 'loading', type: 'boolean', default: 'false', description: 'Spinner en lugar del contenido; deshabilita mientras está activo' },
-      { name: 'to', type: 'string', default: '—', description: 'Si se define, el botón se renderiza como link (<a>)' },
-      { name: 'target', type: 'string', default: '"_self"', description: 'Target del link cuando to está definido: _self, _blank, _parent, _top' },
+    "props": [
+      {
+        "name": "color",
+        "type": "primary | secondary | neutral | success | warning | danger",
+        "default": "neutral",
+        "description": "Color semántico: primary, secondary, neutral, success, warning, danger"
+      },
+      {
+        "name": "variant",
+        "type": "solid | outlined | soft | ghost | subtle | link | none",
+        "default": "ghost",
+        "description": "solid, outlined, soft, ghost, subtle, link, none"
+      },
+      {
+        "name": "size",
+        "type": "sm | md | lg",
+        "default": "md",
+        "description": "Tamaño del botón: sm, md, lg"
+      },
+      {
+        "name": "to",
+        "type": "string",
+        "description": "Si se define, el botón se renderiza como link (<a>)"
+      },
+      {
+        "name": "target",
+        "type": "_self | _blank | _parent | _top",
+        "default": "_self",
+        "description": "Target del link cuando to está definido: _self, _blank, _parent, _top"
+      },
+      {
+        "name": "type",
+        "type": "button | submit | reset",
+        "default": "button",
+        "description": "Tipo del button: button, submit, reset"
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "Estado deshabilitado"
+      },
+      {
+        "name": "loading",
+        "type": "boolean",
+        "default": "false",
+        "description": "Spinner en lugar del contenido; deshabilita mientras está activo"
+      }
     ],
-    slots: [
-      { name: 'default', type: 'slot', description: 'Contenido del botón: label y/o iconos SVG inline' },
+    "slots": [
+      {
+        "name": "default",
+        "description": "Contenido del botón: label y/o iconos SVG inline"
+      }
     ],
-    events: [
-      { name: 'loading-change', type: '(value: boolean) => void', description: 'Cambió el estado loading (emit propio del componente; detail: boolean)' },
-      { name: 'click', type: 'nativo', description: 'Activación del botón (mouse o teclado)' },
-      { name: 'dblclick', type: 'nativo', description: 'Doble click' },
-      { name: 'focus', type: 'nativo', description: 'El botón recibe foco' },
-      { name: 'blur', type: 'nativo', description: 'El botón pierde el foco' },
-      { name: 'mousedown', type: 'nativo', description: 'Botón del mouse presionado' },
-      { name: 'mouseup', type: 'nativo', description: 'Botón del mouse soltado' },
-      { name: 'mouseenter', type: 'nativo', description: 'El puntero entra al botón' },
-      { name: 'mouseleave', type: 'nativo', description: 'El puntero sale del botón' },
-      { name: 'keydown', type: 'nativo', description: 'Tecla presionada con foco en el botón' },
-      { name: 'keyup', type: 'nativo', description: 'Tecla soltada con foco en el botón' },
-      { name: 'contextmenu', type: 'nativo', description: 'Menú contextual (click derecho)' },
-    ],
+    "events": [
+      {
+        "name": "loading-change",
+        "type": "() => void",
+        "description": "Cambió el estado loading (emit propio del componente; detail: boolean)"
+      },
+      {
+        "name": "click",
+        "type": "nativo",
+        "description": "Activación del botón (mouse o teclado)"
+      },
+      {
+        "name": "dblclick",
+        "type": "nativo",
+        "description": "Doble click"
+      },
+      {
+        "name": "focus",
+        "type": "nativo",
+        "description": "El botón recibe foco"
+      },
+      {
+        "name": "blur",
+        "type": "nativo",
+        "description": "El botón pierde el foco"
+      },
+      {
+        "name": "mousedown",
+        "type": "nativo",
+        "description": "Botón del mouse presionado"
+      },
+      {
+        "name": "mouseup",
+        "type": "nativo",
+        "description": "Botón del mouse soltado"
+      },
+      {
+        "name": "mouseenter",
+        "type": "nativo",
+        "description": "El puntero entra al botón"
+      },
+      {
+        "name": "mouseleave",
+        "type": "nativo",
+        "description": "El puntero sale del botón"
+      },
+      {
+        "name": "keydown",
+        "type": "nativo",
+        "description": "Tecla presionada con foco en el botón"
+      },
+      {
+        "name": "keyup",
+        "type": "nativo",
+        "description": "Tecla soltada con foco en el botón"
+      },
+      {
+        "name": "contextmenu",
+        "type": "nativo",
+        "description": "Menú contextual (click derecho)"
+      }
+    ]
   },
   sections: [
     {

@@ -8,61 +8,211 @@ const UMD = `<script src="dist/CuFileInputZone.umd.js"><\/script>`;
 export const cuFileInputZoneStories: ComponentStory = {
   component: "cu-file-input-zone",
   vue: FileInputZone,
-  extras,
   tokens: [
-    '--zone-bg',
-    '--zone-text',
-    '--zone-ghost-hover',
-    '--cu-font-sans',
-    '--cu-font-size-sm',
-    '--cu-font-size-xs',
-    '--cu-font-weight-medium',
-    '--cu-radius',
-    '--cu-border-thin',
-    '--cu-border-thick',
-    '--cu-border-color',
-    '--cu-space-2xs',
-    '--cu-space-md',
-    '--cu-space-xl',
-    '--cu-space-2xl',
+    "--cu-border-color",
+    "--cu-border-thick",
+    "--cu-border-thin",
+    "--cu-font-sans",
+    "--cu-font-size-sm",
+    "--cu-font-size-xs",
+    "--cu-font-weight-medium",
+    "--cu-radius",
+    "--cu-space-2xl",
+    "--cu-space-2xs",
+    "--cu-space-md",
+    "--cu-space-xl",
+    "--zone-bg",
+    "--zone-ghost-hover",
+    "--zone-text"
+  ],
+  classes: [
+    "cu-file-zone",
+    "cu-file-zone--disabled",
+    "cu-file-zone--drag-over",
+    "cu-file-zone--empty",
+    "cu-file-zone--has-files",
+    "cu-file-zone-formats",
+    "cu-file-zone-hidden",
+    "cu-file-zone-icon",
+    "cu-file-zone-placeholder",
+    "cu-file-zone-reject",
+    "cu-file-zone-reject-item",
+    "cu-file-zone-text",
+    "cu-file-zone-wrap"
   ],
   subComponents: [
-    { label: 'FileList', path: '/playground/components/advanced-table#style' }
+    {
+      "label": "FileList",
+      "path": "/playground/components/advanced-table#style"
+    }
   ],
   api: {
-    components: [
-      { label: 'FileList', path: '/playground/components/advanced-table' }
+    "components": [
+      {
+        "label": "FileList",
+        "path": "/playground/components/file-list"
+      },
+      {
+        "label": "Alert",
+        "path": "/playground/components/alert"
+      }
     ],
-    props: [
-      { name: 'v-model', type: 'File | File[] | null', default: 'null', description: 'Archivo(s) seleccionado(s)' },
-      { name: 'color', type: 'string', default: '"neutral"', description: 'primary, secondary, neutral, success, warning, danger' },
-      { name: 'placeholder', type: 'string', default: '"Selecciona un archivo o arrastra aquí"', description: 'Texto cuando la zona está vacía' },
-      { name: 'disabled', type: 'boolean', default: 'false', description: 'Deshabilita la zona' },
-      { name: 'readOnly', type: 'boolean', default: 'false', description: 'Solo lectura: bloquea click, teclado y drag & drop' },
-      { name: 'accept', type: 'string', default: '—', description: 'Formatos aceptados; se listan bajo el placeholder y se validan al seleccionar/soltar' },
-      { name: 'multiple', type: 'boolean', default: 'false', description: 'Permite seleccionar múltiples archivos' },
-      { name: 'maxSize', type: 'number', default: '—', description: 'Tamaño máximo por archivo en bytes' },
-      { name: 'directory', type: 'boolean', default: 'false', description: 'Selección de carpetas (webkitdirectory); implica multiple' },
-      { name: 'directoryDeep', type: 'number', default: '0', description: 'Profundidad de subcarpetas incluidas; -1 = ilimitada' },
-      { name: 'maxHeight', type: 'string', default: '""', description: 'Altura máxima (CSS) de la lista de archivos' },
+    "props": [
+      {
+        "name": "modelValue",
+        "type": "File | File[] | null"
+      },
+      {
+        "name": "color",
+        "type": "primary | secondary | neutral | success | warning | danger",
+        "default": "neutral",
+        "description": "primary, secondary, neutral, success, warning, danger"
+      },
+      {
+        "name": "placeholder",
+        "type": "string",
+        "default": "Selecciona un archivo o arrastra aquí",
+        "description": "Texto cuando la zona está vacía"
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "Deshabilita la zona"
+      },
+      {
+        "name": "readOnly",
+        "type": "boolean",
+        "default": "false",
+        "description": "Solo lectura: bloquea click, teclado y drag & drop"
+      },
+      {
+        "name": "accept",
+        "type": "string",
+        "description": "Formatos aceptados; se listan bajo el placeholder y se validan al seleccionar/soltar"
+      },
+      {
+        "name": "multiple",
+        "type": "boolean",
+        "default": "false",
+        "description": "Permite seleccionar múltiples archivos"
+      },
+      {
+        "name": "maxSize",
+        "type": "number",
+        "description": "Tamaño máximo por archivo en bytes"
+      },
+      {
+        "name": "directory",
+        "type": "boolean",
+        "default": "false",
+        "description": "Selección de carpetas (webkitdirectory); implica multiple"
+      },
+      {
+        "name": "directoryDeep",
+        "type": "number",
+        "default": "0",
+        "description": "Profundidad de subcarpetas incluidas; -1 = ilimitada"
+      },
+      {
+        "name": "maxHeight",
+        "type": "string",
+        "default": "",
+        "description": "Altura máxima (CSS) de la lista de archivos"
+      },
+      {
+        "name": "v-model",
+        "type": "File | File[] | null",
+        "default": "null",
+        "description": "Archivo(s) seleccionado(s)"
+      }
     ],
-    events: [
-      { name: 'update:modelValue', type: 'custom', description: 'v-model: emite File | File[] | null según la selección' },
-      { name: 'click', type: 'nativo', description: 'Click sobre la zona (abre el selector de archivos)' },
-      { name: 'keydown', type: 'nativo', description: 'Enter o Space abren el selector de archivos' },
-      { name: 'focus', type: 'nativo', description: 'La zona recibe foco' },
-      { name: 'blur', type: 'nativo', description: 'La zona pierde foco' },
-      { name: 'dragover', type: 'nativo', description: 'Archivos se arrastran sobre la zona' },
-      { name: 'drop', type: 'nativo', description: 'Se sueltan archivos o carpetas sobre la zona' },
+    "events": [
+      {
+        "name": "update:modelValue",
+        "type": "() => void",
+        "description": "v-model: emite File | File[] | null según la selección"
+      },
+      {
+        "name": "click",
+        "type": "nativo",
+        "description": "Click sobre la zona (abre el selector de archivos)"
+      },
+      {
+        "name": "keydown",
+        "type": "nativo",
+        "description": "Enter o Space abren el selector de archivos"
+      },
+      {
+        "name": "focus",
+        "type": "nativo",
+        "description": "La zona recibe foco"
+      },
+      {
+        "name": "blur",
+        "type": "nativo",
+        "description": "La zona pierde foco"
+      },
+      {
+        "name": "dragover",
+        "type": "nativo",
+        "description": "Archivos se arrastran sobre la zona"
+      },
+      {
+        "name": "drop",
+        "type": "nativo",
+        "description": "Se sueltan archivos o carpetas sobre la zona"
+      }
     ],
-    exposes: [
-      { name: 'get', type: 'method', description: 'Devuelve File | File[] | null según la selección' },
-      { name: 'set', type: 'method', description: 'set(files: File | File[] | null): establece los archivos' },
-      { name: 'reset', type: 'method', description: 'Limpia la selección' },
-      { name: 'focus', type: 'method', description: 'Pone el foco en la zona' },
-      { name: 'trigger', type: 'method', description: 'Abre el diálogo de selección de archivos' },
-    ],
+    "exposes": [
+      {
+        "name": "get()",
+        "type": "() => void"
+      },
+      {
+        "name": "set()",
+        "type": "() => void"
+      },
+      {
+        "name": "reset()",
+        "type": "() => void"
+      },
+      {
+        "name": "focus()",
+        "type": "() => void"
+      },
+      {
+        "name": "trigger()",
+        "type": "() => void"
+      },
+      {
+        "name": "get",
+        "type": "method",
+        "description": "Devuelve File | File[] | null según la selección"
+      },
+      {
+        "name": "set",
+        "type": "method",
+        "description": "set(files: File | File[] | null): establece los archivos"
+      },
+      {
+        "name": "reset",
+        "type": "method",
+        "description": "Limpia la selección"
+      },
+      {
+        "name": "focus",
+        "type": "method",
+        "description": "Pone el foco en la zona"
+      },
+      {
+        "name": "trigger",
+        "type": "method",
+        "description": "Abre el diálogo de selección de archivos"
+      }
+    ]
   },
+  extras,
   sections: [
     {
       id: "default",

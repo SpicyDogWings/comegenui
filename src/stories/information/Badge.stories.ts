@@ -35,33 +35,51 @@ export const cuBadgeStories: ComponentStory = {
   component: "cu-badge",
   vue: Badge,
   tokens: [
-    '--badge-bg',
-    '--badge-text',
-    '--badge-soft',
-    '--badge-soft-hover',
-    '--badge-subtle',
-    '--badge-subtle-border',
-    '--badge-ghost-hover',
-    '--cu-font-sans',
-    '--cu-font-size-xs',
-    '--cu-font-weight-medium',
-    '--cu-line-height-tight',
-    '--cu-radius',
-    '--cu-border-thin',
-    '--cu-space-2xs',
-    '--cu-space-xs',
-    '--cu-space-sm',
+    "--badge-bg",
+    "--badge-soft",
+    "--badge-subtle",
+    "--badge-subtle-border",
+    "--badge-text",
+    "--cu-border-thin",
+    "--cu-color-surface",
+    "--cu-font-sans",
+    "--cu-font-size-xs",
+    "--cu-font-weight-medium",
+    "--cu-line-height-tight",
+    "--cu-radius",
+    "--cu-space-2xs",
+    "--cu-space-sm",
+    "--cu-space-xs"
+  ],
+  classes: [
+    "cu-badge",
+    "cu-badge--ghost",
+    "cu-badge--outlined",
+    "cu-badge--soft",
+    "cu-badge--solid",
+    "cu-badge--subtle"
   ],
   api: {
-    props: [
-      { name: 'color', type: 'string', default: '"neutral"', description: 'primary, secondary, neutral, success, warning, danger' },
-      { name: 'variant', type: 'string', default: '"soft"', description: 'solid, outlined, soft, ghost, subtle' },
+    "props": [
+      {
+        "name": "color",
+        "type": "primary | secondary | neutral | success | warning | danger",
+        "default": "neutral",
+        "description": "primary, secondary, neutral, success, warning, danger"
+      },
+      {
+        "name": "variant",
+        "type": "solid | outlined | soft | subtle | ghost",
+        "default": "soft",
+        "description": "solid, outlined, soft, ghost, subtle"
+      }
     ],
-    slots: [
-      { name: 'default', description: 'Texto del badge' },
-    ],
-    events: [],
-    exposes: [],
+    "slots": [
+      {
+        "name": "default",
+        "description": "Texto del badge"
+      }
+    ]
   },
   sections: [
     {

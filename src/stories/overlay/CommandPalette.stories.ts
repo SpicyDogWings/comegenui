@@ -282,52 +282,136 @@ export const cuCommandPaletteStories: ComponentStory = {
   component: "cu-command-palette",
   vue: CommandPalette,
   tokens: [
-    '--cu-font-sans',
-    '--cu-font-mono',
-    '--cu-font-size-xs',
-    '--cu-font-size-sm',
-    '--cu-radius-sm',
-    '--cu-border-thin',
-    '--cu-border-color',
-    '--cu-color-neutral',
-    '--cu-color-neutral-ghost-hover',
-    '--cu-color-surface',
+    "--cu-border-color",
+    "--cu-border-thin",
+    "--cu-color-neutral",
+    "--cu-color-neutral-ghost-hover",
+    "--cu-font-mono",
+    "--cu-font-size-sm",
+    "--cu-font-size-xs",
+    "--cu-font-weight-semibold",
+    "--cu-radius-sm"
+  ],
+  classes: [
+    "cu-command-palette",
+    "cu-command-palette-empty",
+    "cu-command-palette-group-label",
+    "cu-command-palette-input",
+    "cu-command-palette-item",
+    "cu-command-palette-item--active",
+    "cu-command-palette-item-badge",
+    "cu-command-palette-item-desc",
+    "cu-command-palette-item-icon",
+    "cu-command-palette-item-label",
+    "cu-command-palette-item-shortcut",
+    "cu-command-palette-results",
+    "cu-command-palette-search"
   ],
   api: {
-    components: [
-      { label: 'Modal', path: '/playground/components/modal' },
-      { label: 'Input', path: '/playground/components/input' },
-      { label: 'Badge', path: '/playground/components/badge' },
+    "components": [
+      {
+        "label": "Modal",
+        "path": "/playground/components/modal"
+      },
+      {
+        "label": "Input",
+        "path": "/playground/components/input"
+      },
+      {
+        "label": "Button",
+        "path": "/playground/components/button"
+      }
     ],
-    props: [
-      { name: 'color', type: 'string', default: '"neutral"', description: 'primary, secondary, neutral, success, warning, danger' },
-      { name: 'title', type: 'string', default: '""', description: 'Título del modal' },
-      { name: 'placeholder', type: 'string', default: '"Buscar comandos…"', description: 'Texto del input de búsqueda' },
-      { name: 'size', type: 'string', default: '"auto"', description: 'auto, sm, md, lg, xl, full' },
-      { name: 'height', type: 'string', default: '"auto"', description: 'auto, sm, md, lg, xl, full' },
-      { name: 'commands', type: 'CommandItem[]', default: '[]', description: 'Lista de comandos (ver interfaz)' },
+    "props": [
+      {
+        "name": "color",
+        "type": "string",
+        "default": "neutral",
+        "description": "primary, secondary, neutral, success, warning, danger"
+      },
+      {
+        "name": "title",
+        "type": "string",
+        "default": "",
+        "description": "Título del modal"
+      },
+      {
+        "name": "placeholder",
+        "type": "string",
+        "default": "Buscar comandos…",
+        "description": "Texto del input de búsqueda"
+      },
+      {
+        "name": "size",
+        "type": "auto | sm | md | lg | xl | full",
+        "default": "auto",
+        "description": "auto, sm, md, lg, xl, full"
+      },
+      {
+        "name": "height",
+        "type": "auto | sm | md | lg | xl | full",
+        "default": "auto",
+        "description": "auto, sm, md, lg, xl, full"
+      },
+      {
+        "name": "commands",
+        "type": "Array as () => CommandItem[]",
+        "description": "Lista de comandos (ver interfaz)"
+      }
     ],
-    events: [
-      { name: 'select', type: '(cmd: CommandItem) => void', description: 'Se seleccionó un comando' },
-      { name: 'close', type: '() => void', description: 'Se cerró el palette' },
+    "events": [
+      {
+        "name": "select",
+        "type": "() => void",
+        "description": "Se seleccionó un comando"
+      },
+      {
+        "name": "close",
+        "type": "() => void",
+        "description": "Se cerró el palette"
+      }
     ],
-    exposes: [
-      { name: 'open()', type: '() => void', description: 'Abre el command palette' },
-      { name: 'close()', type: '() => void', description: 'Cierra el command palette' },
-      { name: 'run(id)', type: '(id: string) => CommandItem | null', description: 'Ejecuta el comando con ese id desde afuera (sin abrir)' },
-      { name: 'getCommands()', type: '() => CommandItem[]', description: 'Devuelve la lista actual de comandos' },
-      { name: 'isOpen()', type: '() => boolean', description: 'Estado actual' },
+    "exposes": [
+      {
+        "name": "open()",
+        "type": "() => void",
+        "description": "Abre el command palette"
+      },
+      {
+        "name": "close()",
+        "type": "() => void",
+        "description": "Cierra el command palette"
+      },
+      {
+        "name": "run()",
+        "type": "() => void"
+      },
+      {
+        "name": "getCommands()",
+        "type": "() => void",
+        "description": "Devuelve la lista actual de comandos"
+      },
+      {
+        "name": "isOpen()",
+        "type": "() => void",
+        "description": "Estado actual"
+      },
+      {
+        "name": "run(id)",
+        "type": "(id: string) => CommandItem | null",
+        "description": "Ejecuta el comando con ese id desde afuera (sin abrir)"
+      }
     ],
-    interfaceCode: `interface CommandItem {
-  id: string;
-  label: string;
-  description?: string;
-  category?: string;
-  badges?: string[];
-  icon?: string;
-  shortcut?: string;
-  action: () => void;
-}`,
+    "interfaceCode": `interface CommandItem {
+    id: string;
+    label: string;
+    description?: string;
+    category?: string;
+    badges?: string[];
+    icon?: string;
+    shortcut?: string;
+    action: () => void;
+  }`
   },
   extras,
   sections: [

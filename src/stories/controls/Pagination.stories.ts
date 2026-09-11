@@ -28,40 +28,111 @@ export const cuPaginationStories: ComponentStory = {
   component: "cu-pagination",
   vue: Pagination,
   tokens: [
-    '--cu-font-sans',
-    '--cu-font-size-sm',
-    '--cu-color-neutral-text',
-    '--cu-space-xs',
-    '--cu-space-sm',
-    '--cu-space-md',
-    '--cu-space-3xl',
+    "--cu-color-neutral-text",
+    "--cu-font-sans",
+    "--cu-font-size-sm",
+    "--cu-space-3xl",
+    "--cu-space-md",
+    "--cu-space-sm",
+    "--cu-space-xs"
+  ],
+  classes: [
+    "cu-pagination",
+    "cu-pagination-controls",
+    "cu-pagination-ellipsis",
+    "cu-pagination-info",
+    "cu-pagination-label",
+    "cu-pagination-page-size",
+    "cu-pagination-pages"
   ],
   subComponents: [
-    { label: 'Button', path: '/playground/components/button#style' },
-    { label: 'Select', path: '/playground/components/select#style' },
+    {
+      "label": "Button",
+      "path": "/playground/components/button#style"
+    },
+    {
+      "label": "Select",
+      "path": "/playground/components/select#style"
+    }
   ],
   api: {
-    components: [
-      { label: 'Button', path: '/playground/components/button' },
-      { label: 'Select', path: '/playground/components/select' },
+    "components": [
+      {
+        "label": "Button",
+        "path": "/playground/components/button"
+      },
+      {
+        "label": "Select",
+        "path": "/playground/components/select"
+      }
     ],
-    props: [
-      { name: 'color', type: 'string', default: '"neutral"', description: 'primary, secondary, neutral, success, warning, danger' },
-      { name: 'variant', type: 'string', default: '"soft"', description: 'outlined, soft, ghost, subtle, none' },
-      { name: 'currentPage', type: 'number', default: '1', description: 'Página actual (v-model:current-page)' },
-      { name: 'totalPages', type: 'number', default: '1', description: 'Total de páginas' },
-      { name: 'totalItems', type: 'number', default: '0', description: 'Total de items (texto "X–Y de Z")' },
-      { name: 'itemsPerPage', type: 'number', default: '10', description: 'Items por página (v-model:items-per-page)' },
-      { name: 'showPageSize', type: 'boolean', default: 'false', description: 'Muestra el select de items por página' },
-      { name: 'pageSizeOptions', type: 'number[]', default: '[5, 10, 20, 50]', description: 'Opciones del select de items por página' },
-      { name: 'showFirstAndLast', type: 'boolean', default: 'false', description: 'Fija la primera y la última página en la lista' },
+    "props": [
+      {
+        "name": "color",
+        "type": "string",
+        "default": "neutral",
+        "description": "primary, secondary, neutral, success, warning, danger"
+      },
+      {
+        "name": "variant",
+        "type": "outlined | soft | ghost | subtle | none",
+        "default": "soft",
+        "description": "outlined, soft, ghost, subtle, none"
+      },
+      {
+        "name": "currentPage",
+        "type": "number",
+        "default": "1",
+        "description": "Página actual (v-model:current-page)"
+      },
+      {
+        "name": "totalPages",
+        "type": "number",
+        "default": "1",
+        "description": "Total de páginas"
+      },
+      {
+        "name": "totalItems",
+        "type": "number",
+        "default": "0",
+        "description": "Total de items (texto \"X–Y de Z\")"
+      },
+      {
+        "name": "itemsPerPage",
+        "type": "number",
+        "default": "10",
+        "description": "Items por página (v-model:items-per-page)"
+      },
+      {
+        "name": "showPageSize",
+        "type": "boolean",
+        "default": "false",
+        "description": "Muestra el select de items por página"
+      },
+      {
+        "name": "pageSizeOptions",
+        "type": "Array as () => number[]",
+        "description": "Opciones del select de items por página"
+      },
+      {
+        "name": "showFirstAndLast",
+        "type": "boolean",
+        "default": "false",
+        "description": "Fija la primera y la última página en la lista"
+      }
     ],
-    slots: [],
-    events: [
-      { name: 'update:currentPage', type: '(page: number) => void', description: 'Cambia la página (v-model:current-page)' },
-      { name: 'update:itemsPerPage', type: '(n: number) => void', description: 'Cambia items por página (v-model:items-per-page)' },
-    ],
-    exposes: [],
+    "events": [
+      {
+        "name": "update:currentPage",
+        "type": "() => void",
+        "description": "Cambia la página (v-model:current-page)"
+      },
+      {
+        "name": "update:itemsPerPage",
+        "type": "() => void",
+        "description": "Cambia items por página (v-model:items-per-page)"
+      }
+    ]
   },
   global: () => ({ stubs: { Select: SelectStub } }),
   sections: [

@@ -29,7 +29,7 @@ const apiColumns = [
     <StoryRenderer :story="story" />
 
     <hr class="playground-separator" />
-    <PlaygroundStyle :tokens="story.tokens ?? []" :sub-components="story.subComponents" />
+    <PlaygroundStyle :tokens="story.tokens ?? []" :classes="story.classes" :sub-components="story.subComponents" />
 
     <section id="api" class="playground-section">
       <h2>API</h2>

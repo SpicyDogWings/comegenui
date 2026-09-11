@@ -8,6 +8,26 @@ import { setup, global } from "./ToggleColorSheme.stories.runtime";
 export const cuToggleColorShemeStories: ComponentStory = {
   component: "cu-toggle-color-sheme",
   vue: ToggleColorSheme,
+  api: {
+    "components": [
+      {
+        "label": "Button",
+        "path": "/playground/components/button"
+      }
+    ],
+    "props": [
+      {
+        "name": "variant",
+        "type": "solid | outlined | soft | ghost | subtle | link | none",
+        "default": "ghost"
+      },
+      {
+        "name": "size",
+        "type": "number",
+        "default": "20"
+      }
+    ]
+  },
   setup,
   global,
   sections: [

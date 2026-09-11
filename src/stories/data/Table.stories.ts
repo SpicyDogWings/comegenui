@@ -34,67 +34,156 @@ export const cuTableStories: ComponentStory = {
   component: "cu-table",
   vue: Table,
   tokens: [
-    '--table-bg-hover',
-    '--table-bd',
-    '--cu-font-sans',
-    '--cu-font-weight-medium',
-    '--cu-font-weight-semibold',
-    '--cu-radius-md',
-    '--cu-border-thin',
-    '--cu-border-medium',
-    '--cu-space-xs',
-    '--cu-space-sm',
-    '--cu-space-md',
-    '--cu-space-xl',
-    '--cu-color-surface',
-    '--cu-color-neutral-soft',
-    '--cu-color-neutral-subtle-border',
-    '--cu-color-neutral-text',
+    "--cu-border-medium",
+    "--cu-border-thin",
+    "--cu-color-neutral-soft",
+    "--cu-color-neutral-subtle-border",
+    "--cu-color-neutral-text",
+    "--cu-color-surface",
+    "--cu-font-sans",
+    "--cu-font-weight-medium",
+    "--cu-font-weight-semibold",
+    "--cu-radius-md",
+    "--cu-space-md",
+    "--cu-space-sm",
+    "--cu-space-xl",
+    "--cu-space-xs",
+    "--table-bd",
+    "--table-bg-hover"
+  ],
+  classes: [
+    "cu-table",
+    "cu-table--compact",
+    "cu-table--outlined",
+    "cu-table-element",
+    "cu-table-empty",
+    "cu-table-loading",
+    "cu-table-row",
+    "cu-table-row--disabled",
+    "cu-table-scroll",
+    "cu-table-td",
+    "cu-table-td--center",
+    "cu-table-td--footer",
+    "cu-table-td--left",
+    "cu-table-td--right",
+    "cu-table-th",
+    "cu-table-th-content"
   ],
   subComponents: [
-    { label: 'Loader', path: '/playground/components/loader#style' },
+    {
+      "label": "Loader",
+      "path": "/playground/components/loader#style"
+    }
   ],
   api: {
-    components: [
-      { label: 'Loader', path: '/playground/components/loader' },
+    "components": [
+      {
+        "label": "Loader",
+        "path": "/playground/components/loader"
+      }
     ],
-    props: [
-      { name: 'columns', type: 'Column[]', default: '[]', description: 'Definición de columnas' },
-      { name: 'data', type: 'Record<string, any>[]', default: '[]', description: 'Filas: objetos key → valor' },
-      { name: 'empty', type: 'string', default: '"No hay datos que mostrar"', description: 'Mensaje sin datos' },
-      { name: 'color', type: 'string', default: '"neutral"', description: 'primary, secondary, neutral, success, warning, danger' },
-      { name: 'variant', type: 'string', default: '"soft"', description: 'solid, outlined, soft, ghost, subtle, none' },
-      { name: 'loading', type: 'boolean', default: 'false', description: 'Muestra loader en el body' },
-      { name: 'maxHeight', type: 'string', default: '""', description: 'Altura máxima con scroll (ej: 300px)' },
-      { name: 'rowDisabled', type: 'boolean', default: 'false', description: 'Deshabilita la interacción de filas' },
-      { name: 'htmlCells', type: 'boolean', default: 'false', description: 'Renderiza los valores como HTML' },
-      { name: 'footer', type: 'FooterRow[]', default: '[]', description: 'Filas de pie programáticas' },
-      { name: 'compact', type: 'boolean', default: 'false', description: 'Densidad compacta' },
+    "props": [
+      {
+        "name": "columns",
+        "type": "Array as () => Column[]",
+        "description": "Definición de columnas"
+      },
+      {
+        "name": "data",
+        "type": "Array as () => Record<string",
+        "description": "Filas: objetos key → valor"
+      },
+      {
+        "name": "empty",
+        "type": "string",
+        "default": "No hay datos que mostrar",
+        "description": "Mensaje sin datos"
+      },
+      {
+        "name": "color",
+        "type": "primary | secondary | neutral | success | warning | danger",
+        "default": "neutral",
+        "description": "primary, secondary, neutral, success, warning, danger"
+      },
+      {
+        "name": "variant",
+        "type": "solid | outlined | soft | ghost | subtle",
+        "default": "soft",
+        "description": "solid, outlined, soft, ghost, subtle, none"
+      },
+      {
+        "name": "loading",
+        "type": "boolean",
+        "default": "false",
+        "description": "Muestra loader en el body"
+      },
+      {
+        "name": "maxHeight",
+        "type": "string",
+        "default": "",
+        "description": "Altura máxima con scroll (ej: 300px)"
+      },
+      {
+        "name": "rowDisabled",
+        "type": "[Boolean",
+        "default": "false",
+        "description": "Deshabilita la interacción de filas"
+      },
+      {
+        "name": "htmlCells",
+        "type": "boolean",
+        "default": "false",
+        "description": "Renderiza los valores como HTML"
+      },
+      {
+        "name": "footer",
+        "type": "Array as () => FooterRow[]",
+        "description": "Filas de pie programáticas"
+      },
+      {
+        "name": "compact",
+        "type": "boolean",
+        "default": "false",
+        "description": "Densidad compacta"
+      }
     ],
-    slots: [
-      { name: 'header-{key}', description: 'Contenido del header de la columna' },
-      { name: 'cell-{key}', description: 'Contenido de la celda (por columna)' },
-      { name: 'footer', description: 'Filas de pie (scoped: columns). Sin slot ni prop footer → no renderiza tfoot' },
-      { name: 'empty', description: 'Contenido custom del estado vacío' },
+    "slots": [
+      {
+        "name": "template"
+      },
+      {
+        "name": "empty",
+        "description": "Contenido custom del estado vacío"
+      },
+      {
+        "name": "footer",
+        "description": "Filas de pie (scoped: columns). Sin slot ni prop footer → no renderiza tfoot"
+      },
+      {
+        "name": "header-{key}",
+        "description": "Contenido del header de la columna"
+      },
+      {
+        "name": "cell-{key}",
+        "description": "Contenido de la celda (por columna)"
+      }
     ],
-    events: [],
-    exposes: [],
-    interfaceCode: `interface Column {
-  key: string
-  label?: string
-  width?: string
-  align?: "left" | "center" | "right"
-}
-
-interface FooterCell {
-  value: string
-  colspan?: number
-  align?: "left" | "center" | "right"
-}
-
-interface FooterRow {
-  cells: FooterCell[]
-}`,
+    "interfaceCode": `interface Column {
+    key: string
+    label?: string
+    width?: string
+    align?: "left" | "center" | "right"
+  }
+  
+  interface FooterCell {
+    value: string
+    colspan?: number
+    align?: "left" | "center" | "right"
+  }
+  
+  interface FooterRow {
+    cells: FooterCell[]
+  }`
   },
   sections: [
     {

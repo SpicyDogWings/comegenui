@@ -55,37 +55,119 @@ export const cuNavbarStories: ComponentStory = {
   component: "cu-navbar",
   vue: Navbar,
   tokens: [
-    '--cu-font-size-sm',
-    '--cu-space-2xs',
-    '--cu-space-xs',
-    '--cu-space-sm',
-    '--cu-space-md',
+    "--cu-border-color",
+    "--cu-border-thin",
+    "--cu-color-neutral",
+    "--cu-color-neutral-ghost-hover",
+    "--cu-radius-sm",
+    "--cu-space-xs"
+  ],
+  classes: [
+    "cu-navbar-responsive",
+    "cu-navbar-responsive-toggle"
   ],
   api: {
-    props: [
-      { name: 'items', type: 'NavItem[]', default: '—', description: 'Árbol de navegación: { label, path?, icon?, children? }. Los items con children se renderizan como Collapse' },
-      { name: 'compact', type: 'boolean', default: 'false', description: 'Modo compacto: solo iconos (o la inicial); los submenús pasan a Dropdown flyout como en el horizontal' },
-      { name: 'compactable', type: 'boolean', default: 'false', description: 'Agrega un botón nativo en la misma row que el search para alternar el modo compact' },
-      { name: 'collapsed', type: 'boolean', default: 'false', description: 'Los submenús (Collapse) arrancan colapsados en lugar de expandidos' },
-      { name: 'trigger', type: '"click" | "hover"', default: '"click"', description: 'Cómo abren los flyout de submenú en modo compact: click (default) o hover' },
-      { name: 'activePath', type: 'string', default: '""', description: 'Path del item activo (manual). Sin esto, en apps Vue se toma de useRoute(); en vanilla/PHP setealo vos' },
-      { name: 'responsive', type: 'boolean', default: 'false', description: 'Modo manual: reemplaza la nav inline por un botón hamburguesa que abre el menú en un SideOver' },
-      { name: 'responsiveMode', type: '"auto" | "side" | "fullscreen"', default: '"auto"', description: 'Cómo se muestra el SideOver: auto = fullscreen en <480px y lateral en el resto; side = siempre lateral; fullscreen = siempre pantalla completa' },
-      { name: 'sideOverPosition', type: '"left" | "right" | "top" | "bottom"', default: '"left"', description: 'Desde qué borde desliza el SideOver del responsive' },
-      { name: 'search', type: 'boolean', default: 'false', description: 'Activa el input de búsqueda arriba del menú; filtra/resalta items automáticamente' },
-      { name: 'searchPlaceholder', type: 'string', default: '"Buscar..."', description: 'Placeholder del input de búsqueda' },
-      { name: 'searchMode', type: 'string', default: '"filter"', description: 'filter: oculta lo que no matchea. scroll: deja el árbol completo y resalta + scrollea al primer match' },
-      { name: 'searchFields', type: 'string[]', default: '[]', description: 'Campos a buscar. Vacío = toda la interfaz del item (todos los campos menos children)' },
+    "components": [
+      {
+        "label": "SideOver",
+        "path": "/playground/components/side-over"
+      },
+      {
+        "label": "NavbarList",
+        "path": "/playground/components/navbar-list"
+      }
     ],
-    events: [
-      { name: 'search', type: 'string', description: 'Se emite al escribir; payload con el query actual' },
+    "props": [
+      {
+        "name": "items",
+        "type": "Array as () => NavItem[]",
+        "description": "Árbol de navegación: { label, path?, icon?, children? }. Los items con children se renderizan como Collapse"
+      },
+      {
+        "name": "search",
+        "type": "boolean",
+        "default": "false",
+        "description": "Activa el input de búsqueda arriba del menú; filtra/resalta items automáticamente"
+      },
+      {
+        "name": "searchPlaceholder",
+        "type": "string",
+        "default": "Buscar...",
+        "description": "Placeholder del input de búsqueda"
+      },
+      {
+        "name": "searchMode",
+        "type": "filter | scroll",
+        "default": "filter",
+        "description": "filter: oculta lo que no matchea. scroll: deja el árbol completo y resalta + scrollea al primer match"
+      },
+      {
+        "name": "searchFields",
+        "type": "Array as () => string[]",
+        "description": "Campos a buscar. Vacío = toda la interfaz del item (todos los campos menos children)"
+      },
+      {
+        "name": "compact",
+        "type": "boolean",
+        "default": "false",
+        "description": "Modo compacto: solo iconos (o la inicial); los submenús pasan a Dropdown flyout como en el horizontal"
+      },
+      {
+        "name": "compactable",
+        "type": "boolean",
+        "default": "false",
+        "description": "Agrega un botón nativo en la misma row que el search para alternar el modo compact"
+      },
+      {
+        "name": "collapsed",
+        "type": "boolean",
+        "default": "false",
+        "description": "Los submenús (Collapse) arrancan colapsados en lugar de expandidos"
+      },
+      {
+        "name": "trigger",
+        "type": "\"click\" | \"hover\"",
+        "default": "\"click\"",
+        "description": "Cómo abren los flyout de submenú en modo compact: click (default) o hover"
+      },
+      {
+        "name": "activePath",
+        "type": "string",
+        "default": "\"\"",
+        "description": "Path del item activo (manual). Sin esto, en apps Vue se toma de useRoute(); en vanilla/PHP setealo vos"
+      },
+      {
+        "name": "responsive",
+        "type": "boolean",
+        "default": "false",
+        "description": "Modo manual: reemplaza la nav inline por un botón hamburguesa que abre el menú en un SideOver"
+      },
+      {
+        "name": "responsiveMode",
+        "type": "\"auto\" | \"side\" | \"fullscreen\"",
+        "default": "\"auto\"",
+        "description": "Cómo se muestra el SideOver: auto = fullscreen en <480px y lateral en el resto; side = siempre lateral; fullscreen = siempre pantalla completa"
+      },
+      {
+        "name": "sideOverPosition",
+        "type": "\"left\" | \"right\" | \"top\" | \"bottom\"",
+        "default": "\"left\"",
+        "description": "Desde qué borde desliza el SideOver del responsive"
+      }
     ],
-    interfaceCode: `interface NavItem {
-  label: string
-  path?: string
-  icon?: string
-  children?: NavItem[]
-}`,
+    "events": [
+      {
+        "name": "search",
+        "type": "() => void",
+        "description": "Se emite al escribir; payload con el query actual"
+      }
+    ],
+    "interfaceCode": `interface NavItem {
+    label: string
+    path?: string
+    icon?: string
+    children?: NavItem[]
+  }`
   },
   extras,
   setup: () => {

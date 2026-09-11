@@ -14,46 +14,131 @@ function colorVariants(): Variant[] {
 export const cuCheckboxStories: ComponentStory = {
   component: "cu-checkbox",
   vue: Checkbox,
-  extras,
   tokens: [
-    '--cb-bg',
-    '--cb-ghost-hover',
-    '--cb-soft',
-    '--cb-text',
-    '--cu-font-sans',
-    '--cu-font-size-sm',
-    '--cu-font-size-xs',
-    '--cu-radius-sm',
-    '--cu-border-color',
-    '--cu-border-medium',
-    '--cu-space-xs',
-    '--cu-space-sm',
-    '--cu-space-md',
-    '--cu-space-lg',
+    "--cb-bg",
+    "--cb-ghost-hover",
+    "--cu-border-color",
+    "--cu-border-medium",
+    "--cu-color-neutral",
+    "--cu-color-surface",
+    "--cu-font-sans",
+    "--cu-font-size-sm",
+    "--cu-font-size-xs",
+    "--cu-radius-sm",
+    "--cu-space-lg",
+    "--cu-space-md",
+    "--cu-space-sm",
+    "--cu-space-xs"
+  ],
+  classes: [
+    "cu-checkbox",
+    "cu-checkbox--disabled",
+    "cu-checkbox--md",
+    "cu-checkbox--sm",
+    "cu-checkbox-box",
+    "cu-checkbox-box--checked",
+    "cu-checkbox-icon",
+    "cu-checkbox-input",
+    "cu-checkbox-label"
   ],
   api: {
-    props: [
-      { name: 'modelValue', type: 'boolean', default: 'false', description: 'Estado del checkbox (v-model)' },
-      { name: 'color', type: 'string', default: '"neutral"', description: 'Color semántico: primary, secondary, neutral, success, warning, danger' },
-      { name: 'size', type: 'string', default: '"md"', description: 'Tamaño del checkbox: sm, md' },
-      { name: 'disabled', type: 'boolean', default: 'false', description: 'Deshabilita la interacción y atenúa el componente' },
-      { name: 'label', type: 'string', default: '—', description: 'Texto mostrado a la derecha del checkbox' },
+    "props": [
+      {
+        "name": "modelValue",
+        "type": "boolean",
+        "description": "Estado del checkbox (v-model)"
+      },
+      {
+        "name": "color",
+        "type": "primary | secondary | neutral | success | warning | danger",
+        "default": "neutral",
+        "description": "Color semántico: primary, secondary, neutral, success, warning, danger"
+      },
+      {
+        "name": "size",
+        "type": "sm | md",
+        "default": "md",
+        "description": "Tamaño del checkbox: sm, md"
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "Deshabilita la interacción y atenúa el componente"
+      },
+      {
+        "name": "label",
+        "type": "string",
+        "description": "Texto mostrado a la derecha del checkbox"
+      }
     ],
-    slots: [],
-    events: [
-      { name: 'update:modelValue', type: 'custom', description: 'Se emite al cambiar (v-model). detail: boolean' },
-      { name: 'change', type: 'custom', description: 'Cambio de estado. detail: Event nativo del input, o { target: { checked } } al usar set()/reset()' },
-      { name: 'click', type: 'nativo', description: 'Click sobre el label (alterna el estado)' },
-      { name: 'focus', type: 'nativo', description: 'El input interno recibe foco' },
-      { name: 'blur', type: 'nativo', description: 'El input interno pierde el foco' },
+    "events": [
+      {
+        "name": "update:modelValue",
+        "type": "(value) => void",
+        "description": "Se emite al cambiar (v-model). detail: boolean"
+      },
+      {
+        "name": "change",
+        "type": "() => void",
+        "description": "Cambio de estado. detail: Event nativo del input, o { target: { checked } } al usar set()/reset()"
+      },
+      {
+        "name": "click",
+        "type": "nativo",
+        "description": "Click sobre el label (alterna el estado)"
+      },
+      {
+        "name": "focus",
+        "type": "nativo",
+        "description": "El input interno recibe foco"
+      },
+      {
+        "name": "blur",
+        "type": "nativo",
+        "description": "El input interno pierde el foco"
+      }
     ],
-    exposes: [
-      { name: 'get', type: '() => boolean', description: 'Devuelve el estado actual (checked)' },
-      { name: 'set', type: '(value: boolean) => void', description: 'Setea el estado y emite change' },
-      { name: 'reset', type: '() => void', description: 'Restaura el estado a false y emite change' },
-      { name: 'focus', type: '() => void', description: 'Pone el foco en el input interno' },
-    ],
+    "exposes": [
+      {
+        "name": "get()",
+        "type": "() => void"
+      },
+      {
+        "name": "set()",
+        "type": "() => void"
+      },
+      {
+        "name": "reset()",
+        "type": "() => void"
+      },
+      {
+        "name": "focus()",
+        "type": "() => void"
+      },
+      {
+        "name": "get",
+        "type": "() => boolean",
+        "description": "Devuelve el estado actual (checked)"
+      },
+      {
+        "name": "set",
+        "type": "(value: boolean) => void",
+        "description": "Setea el estado y emite change"
+      },
+      {
+        "name": "reset",
+        "type": "() => void",
+        "description": "Restaura el estado a false y emite change"
+      },
+      {
+        "name": "focus",
+        "type": "() => void",
+        "description": "Pone el foco en el input interno"
+      }
+    ]
   },
+  extras,
   sections: [
     {
       id: "default",

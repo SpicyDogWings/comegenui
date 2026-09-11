@@ -29,57 +29,249 @@ async function openDropdown(wrapper: { find: (s: string) => { trigger: (e: strin
 export const cuDropdownStories: ComponentStory = {
   component: "cu-dropdown",
   vue: Dropdown,
-  extras,
   tokens: [
+    "--cu-border-color",
+    "--cu-border-thin",
+    "--cu-color-neutral",
+    "--cu-color-neutral-ghost-hover",
     "--cu-font-sans",
-    "--cu-radius-md",
-    "--cu-shadow-xl",
-    "--cu-space-sm",
-    "--cu-color-surface",
+    "--cu-font-size-sm",
+    "--cu-popover-min-width",
+    "--cu-popover-width",
+    "--cu-radius-sm",
+    "--cu-space-2xs",
+    "--cu-space-md",
+    "--cu-space-sm"
+  ],
+  classes: [
+    "cu-dropdown",
+    "cu-dropdown--nested",
+    "cu-dropdown-menu-divider",
+    "cu-dropdown-menu-item",
+    "cu-dropdown-menu-item--disabled",
+    "cu-dropdown-menu-item-chevron",
+    "cu-dropdown-menu-item-icon",
+    "cu-dropdown-menu-item-label",
+    "cu-dropdown-panel--loading",
+    "cu-dropdown-panel--nested",
+    "cu-popover"
   ],
   subComponents: [
-    { label: "Button", path: "/playground/components/button#style" },
-    { label: "Loader", path: "/playground/components/loader#style" },
+    {
+      "label": "Button",
+      "path": "/playground/components/button#style"
+    },
+    {
+      "label": "Loader",
+      "path": "/playground/components/loader#style"
+    }
   ],
   api: {
-    components: [
-      { label: "Popover", path: "/playground/components/popover" },
-      { label: "Button", path: "/playground/components/button" },
-      { label: "Loader", path: "/playground/components/loader" },
+    "components": [
+      {
+        "label": "Button",
+        "path": "/playground/components/button"
+      },
+      {
+        "label": "Loader",
+        "path": "/playground/components/loader"
+      },
+      {
+        "label": "Popover",
+        "path": "/playground/components/popover"
+      }
     ],
-    props: [
-      { name: "color", type: "string", default: '"neutral"', description: "primary, secondary, neutral, success, warning, danger" },
-      { name: "variant", type: "string", default: '"ghost"', description: "solid, outlined, soft, ghost, subtle, link, none" },
-      { name: "disabled", type: "boolean", default: "false", description: "Deshabilita el trigger" },
-      { name: "label", type: "string", default: '""', description: "Texto del trigger (si no hay slot #toggle)" },
-      { name: "position", type: "string", default: '"bottom"', description: "bottom, top, left, right" },
-      { name: "align", type: "string", default: '"start"', description: "start, center, end" },
-      { name: "offset", type: "number", default: "4", description: "Separación del panel (px)" },
-      { name: "fixed", type: "boolean", default: "false", description: "Panel position: fixed (viewport, via getBoundingClientRect)" },
-      { name: "panelWidth", type: "string", default: '""', description: 'Ancho del panel (CSS, ej: "280px"). Vacío = 100% del trigger' },
-      { name: "loading", type: "boolean", default: "false", description: "Estado de carga del trigger" },
-      { name: "cooldown", type: "boolean", default: "false", description: "Cooldown tras cerrar el panel" },
-      { name: "cooldownKey", type: "number", default: "0", description: "Key para reiniciar el cooldown" },
-      { name: "delay", type: "number", default: "2000", description: "Duración del cooldown (ms)" },
+    "props": [
+      {
+        "name": "modelValue",
+        "type": "string"
+      },
+      {
+        "name": "color",
+        "type": "primary | secondary | neutral | success | warning | danger",
+        "default": "neutral",
+        "description": "primary, secondary, neutral, success, warning, danger"
+      },
+      {
+        "name": "variant",
+        "type": "solid | outlined | soft | ghost | subtle | link | none",
+        "default": "ghost",
+        "description": "solid, outlined, soft, ghost, subtle, link, none"
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "Deshabilita el trigger"
+      },
+      {
+        "name": "label",
+        "type": "string",
+        "default": "",
+        "description": "Texto del trigger (si no hay slot #toggle)"
+      },
+      {
+        "name": "icon",
+        "type": "string",
+        "default": ""
+      },
+      {
+        "name": "position",
+        "type": "bottom | top | left | right",
+        "default": "bottom",
+        "description": "bottom, top, left, right"
+      },
+      {
+        "name": "align",
+        "type": "start | center | end",
+        "default": "start",
+        "description": "start, center, end"
+      },
+      {
+        "name": "offset",
+        "type": "number",
+        "default": "4",
+        "description": "Separación del panel (px)"
+      },
+      {
+        "name": "fixed",
+        "type": "boolean",
+        "default": "false",
+        "description": "Panel position: fixed (viewport, via getBoundingClientRect)"
+      },
+      {
+        "name": "loading",
+        "type": "boolean",
+        "default": "false",
+        "description": "Estado de carga del trigger"
+      },
+      {
+        "name": "cooldown",
+        "type": "boolean",
+        "default": "false",
+        "description": "Cooldown tras cerrar el panel"
+      },
+      {
+        "name": "cooldownKey",
+        "type": "number",
+        "default": "0",
+        "description": "Key para reiniciar el cooldown"
+      },
+      {
+        "name": "delay",
+        "type": "number",
+        "default": "2000",
+        "description": "Duración del cooldown (ms)"
+      },
+      {
+        "name": "panelWidth",
+        "type": "string",
+        "default": "\"\"",
+        "description": "Ancho del panel (CSS, ej: \"280px\"). Vacío = 100% del trigger"
+      }
     ],
-    slots: [
-      { name: "default", description: "Contenido del panel (cualquier cosa: items, form, calendario…)" },
-      { name: "toggle", description: "Trigger custom (scoped: toggle, isOpen)" },
+    "slots": [
+      {
+        "name": "toggle",
+        "description": "Trigger custom (scoped: toggle, isOpen)"
+      },
+      {
+        "name": "default",
+        "description": "Contenido del panel (cualquier cosa: items, form, calendario…)"
+      }
     ],
-    events: [
-      { name: "open", type: "() => void", description: "Se abre el panel" },
-      { name: "close", type: "() => void", description: "Se cierra el panel" },
+    "events": [
+      {
+        "name": "update:modelValue",
+        "type": "(value) => void"
+      },
+      {
+        "name": "open",
+        "type": "() => void",
+        "description": "Se abre el panel"
+      },
+      {
+        "name": "close",
+        "type": "() => void",
+        "description": "Se cierra el panel"
+      }
     ],
-    exposes: [
-      { name: "open", type: "() => void", description: "Abre el panel" },
-      { name: "close", type: "() => void", description: "Cierra el panel" },
-      { name: "toggle", type: "() => void", description: "Abre/cierra el panel" },
-      { name: "get", type: "() => boolean", description: "Estado del panel" },
-      { name: "set", type: "(value: boolean) => void", description: "Setea el estado" },
-      { name: "reset", type: "() => void", description: "Resetea el estado" },
-      { name: "isOpen", type: "() => boolean", description: "Estado del panel" },
+    "exposes": [
+      {
+        "name": "open()",
+        "type": "() => void"
+      },
+      {
+        "name": "close()",
+        "type": "() => void"
+      },
+      {
+        "name": "toggle()",
+        "type": "() => void"
+      },
+      {
+        "name": "get()",
+        "type": "() => void"
+      },
+      {
+        "name": "set()",
+        "type": "() => void"
+      },
+      {
+        "name": "reset()",
+        "type": "() => void"
+      },
+      {
+        "name": "isOpen()",
+        "type": "() => void"
+      },
+      {
+        "name": "open",
+        "type": "() => void",
+        "description": "Abre el panel"
+      },
+      {
+        "name": "close",
+        "type": "() => void",
+        "description": "Cierra el panel"
+      },
+      {
+        "name": "toggle",
+        "type": "() => void",
+        "description": "Abre/cierra el panel"
+      },
+      {
+        "name": "get",
+        "type": "() => boolean",
+        "description": "Estado del panel"
+      },
+      {
+        "name": "set",
+        "type": "(value: boolean) => void",
+        "description": "Setea el estado"
+      },
+      {
+        "name": "reset",
+        "type": "() => void",
+        "description": "Resetea el estado"
+      },
+      {
+        "name": "isOpen",
+        "type": "() => boolean",
+        "description": "Estado del panel"
+      }
     ],
+    "interfaceCode": `export interface DropdownMenuItem {
+    label?: string;
+    to?: string;
+    href?: string;
+    icon?: string;
+    disabled?: boolean;
+    divider?: boolean;
+    onClick?: () => void;
+  }`
   },
+  extras,
   sections: [
     {
       id: "variants",

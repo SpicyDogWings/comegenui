@@ -21,42 +21,98 @@ export const cuCardStories: ComponentStory = {
   component: "cu-card",
   vue: Card,
   tokens: [
-    '--card-bg',
-    '--card-text',
-    '--card-soft',
-    '--card-subtle',
-    '--card-subtle-border',
-    '--cu-font-sans',
-    '--cu-font-size-sm',
-    '--cu-font-size-lg',
-    '--cu-font-weight-bold',
-    '--cu-line-height-relaxed',
-    '--cu-radius-lg',
-    '--cu-shadow-md',
-    '--cu-border-thin',
-    '--cu-border-color',
-    '--cu-space-2xs',
-    '--cu-space-sm',
-    '--cu-space-md',
-    '--cu-space-lg',
+    "--card-bg",
+    "--card-soft",
+    "--card-subtle",
+    "--card-subtle-border",
+    "--card-text",
+    "--cu-border-color",
+    "--cu-border-thin",
+    "--cu-color-neutral",
+    "--cu-color-surface",
+    "--cu-font-sans",
+    "--cu-font-size-lg",
+    "--cu-font-size-sm",
+    "--cu-font-weight-bold",
+    "--cu-line-height-relaxed",
+    "--cu-radius-lg",
+    "--cu-shadow-md",
+    "--cu-space-2xs",
+    "--cu-space-lg",
+    "--cu-space-md",
+    "--cu-space-sm"
+  ],
+  classes: [
+    "cu-card",
+    "cu-card--ghost",
+    "cu-card--horizontal",
+    "cu-card--outlined",
+    "cu-card--soft",
+    "cu-card--solid",
+    "cu-card--subtle",
+    "cu-card-body",
+    "cu-card-content",
+    "cu-card-footer",
+    "cu-card-header",
+    "cu-card-image",
+    "cu-card-media",
+    "cu-card-subtitle",
+    "cu-card-title"
   ],
   api: {
-    props: [
-      { name: 'color', type: 'string', default: '"neutral"', description: 'primary, secondary, neutral, success, warning, danger' },
-      { name: 'variant', type: 'string', default: '"ghost"', description: 'ghost, outlined, soft, subtle, solid' },
-      { name: 'layout', type: 'string', default: '"vertical"', description: 'vertical (media arriba) | horizontal (media al costado)' },
-      { name: 'title', type: 'string', default: '—', description: 'Título (reemplazado por el slot #header)' },
-      { name: 'subtitle', type: 'string', default: '—', description: 'Subtítulo bajo el title' },
-      { name: 'image', type: 'string', default: '—', description: 'URL de imagen de la media (alternativa al slot #media)' },
+    "props": [
+      {
+        "name": "color",
+        "type": "primary | secondary | neutral | success | warning | danger",
+        "default": "neutral",
+        "description": "primary, secondary, neutral, success, warning, danger"
+      },
+      {
+        "name": "variant",
+        "type": "ghost | outlined | soft | subtle | solid",
+        "default": "ghost",
+        "description": "ghost, outlined, soft, subtle, solid"
+      },
+      {
+        "name": "layout",
+        "type": "vertical | horizontal",
+        "default": "vertical",
+        "description": "vertical (media arriba) | horizontal (media al costado)"
+      },
+      {
+        "name": "title",
+        "type": "string",
+        "description": "Título (reemplazado por el slot #header)"
+      },
+      {
+        "name": "subtitle",
+        "type": "string",
+        "description": "Subtítulo bajo el title"
+      },
+      {
+        "name": "image",
+        "type": "string",
+        "description": "URL de imagen de la media (alternativa al slot #media)"
+      }
     ],
-    slots: [
-      { name: 'default', description: 'Contenido principal' },
-      { name: 'media', description: 'Media personalizada (reemplaza image)' },
-      { name: 'header', description: 'Reemplaza title/subtitle' },
-      { name: 'footer', description: 'Acciones o info adicional' },
-    ],
-    events: [],
-    exposes: [],
+    "slots": [
+      {
+        "name": "media",
+        "description": "Media personalizada (reemplaza image)"
+      },
+      {
+        "name": "header",
+        "description": "Reemplaza title/subtitle"
+      },
+      {
+        "name": "default",
+        "description": "Contenido principal"
+      },
+      {
+        "name": "footer",
+        "description": "Acciones o info adicional"
+      }
+    ]
   },
   sections: [
     {

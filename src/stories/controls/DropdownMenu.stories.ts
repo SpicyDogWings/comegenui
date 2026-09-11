@@ -87,54 +87,170 @@ export const cuDropdownMenuStories: ComponentStory = {
   component: "cu-dropdown-menu",
   vue: DropdownMenu,
   tokens: [
-    '--cu-border-color',
-    '--cu-border-thin',
-    '--cu-space-md',
-    '--cu-space-xs',
+    "--cu-border-color",
+    "--cu-border-thin",
+    "--cu-space-md",
+    "--cu-space-xs"
+  ],
+  classes: [
+    "cu-dropdown-chevron",
+    "cu-dropdown-chevron--open",
+    "cu-dropdown-divider",
+    "cu-dropdown-icon",
+    "cu-dropdown-item",
+    "cu-dropdown-toggle"
   ],
   subComponents: [
-    { label: 'Dropdown', path: '/playground/components/dropdown#style' },
-    { label: 'Button', path: '/playground/components/button#style' },
+    {
+      "label": "Dropdown",
+      "path": "/playground/components/dropdown#style"
+    },
+    {
+      "label": "Button",
+      "path": "/playground/components/button#style"
+    }
   ],
   api: {
-    components: [
-      { label: 'Dropdown', path: '/playground/components/dropdown' },
-      { label: 'Button', path: '/playground/components/button' },
+    "components": [
+      {
+        "label": "Dropdown",
+        "path": "/playground/components/dropdown"
+      },
+      {
+        "label": "Button",
+        "path": "/playground/components/button"
+      }
     ],
-    props: [
-      { name: 'color', type: 'string', default: '"neutral"', description: 'primary, secondary, neutral, success, warning, danger' },
-      { name: 'variant', type: 'string', default: '"ghost"', description: 'solid, outlined, soft, ghost, subtle, link, none' },
-      { name: 'disabled', type: 'boolean', default: 'false', description: 'Deshabilita el trigger' },
-      { name: 'label', type: 'string', default: '""', description: 'Texto del trigger (si no hay slot)' },
-      { name: 'position', type: 'string', default: '"bottom"', description: 'bottom, top, left, right' },
-      { name: 'align', type: 'string', default: '"start"', description: 'start, center, end' },
-      { name: 'textAlign', type: 'string', default: '"left"', description: 'Alineación del texto de los items' },
-      { name: 'offset', type: 'number', default: '4', description: 'Separación del panel (px)' },
-      { name: 'fixed', type: 'boolean', default: 'false', description: 'Panel position: fixed (viewport)' },
-      { name: 'items', type: 'DropdownItem[]', default: '[]', description: 'Items del menú' },
+    "props": [
+      {
+        "name": "color",
+        "type": "primary | secondary | neutral | success | warning | danger",
+        "default": "neutral",
+        "description": "primary, secondary, neutral, success, warning, danger"
+      },
+      {
+        "name": "variant",
+        "type": "solid | outlined | soft | ghost | subtle | link | none",
+        "default": "ghost",
+        "description": "solid, outlined, soft, ghost, subtle, link, none"
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "Deshabilita el trigger"
+      },
+      {
+        "name": "label",
+        "type": "string",
+        "default": "",
+        "description": "Texto del trigger (si no hay slot)"
+      },
+      {
+        "name": "position",
+        "type": "bottom | top | left | right",
+        "default": "bottom",
+        "description": "bottom, top, left, right"
+      },
+      {
+        "name": "align",
+        "type": "start | center | end",
+        "default": "start",
+        "description": "start, center, end"
+      },
+      {
+        "name": "textAlign",
+        "type": "left | center | right",
+        "default": "left",
+        "description": "Alineación del texto de los items"
+      },
+      {
+        "name": "offset",
+        "type": "number",
+        "default": "4",
+        "description": "Separación del panel (px)"
+      },
+      {
+        "name": "fixed",
+        "type": "boolean",
+        "default": "false",
+        "description": "Panel position: fixed (viewport)"
+      },
+      {
+        "name": "items",
+        "type": "Array as () => DropdownItem[]",
+        "description": "Items del menú"
+      }
     ],
-    slots: [],
-    events: [
-      { name: 'open', type: '() => void', description: 'Se abre el panel' },
-      { name: 'close', type: '() => void', description: 'Se cierra el panel' },
+    "slots": [
+      {
+        "name": "toggle"
+      },
+      {
+        "name": "default"
+      }
     ],
-    exposes: [
-      { name: 'open', type: '() => void', description: 'Abre el panel' },
-      { name: 'close', type: '() => void', description: 'Cierra el panel' },
-      { name: 'toggle', type: '() => void', description: 'Abre/cierra el panel' },
-      { name: 'isOpen', type: '() => boolean', description: 'Estado del panel' },
+    "events": [
+      {
+        "name": "open",
+        "type": "() => void",
+        "description": "Se abre el panel"
+      },
+      {
+        "name": "close",
+        "type": "() => void",
+        "description": "Se cierra el panel"
+      }
     ],
-    interfaceCode: `interface DropdownItem {
-  label?: string
-  icon?: string
-  href?: string
-  onClick?: () => void
-  color?: string
-  variant?: string
-  disabled?: boolean
-  divider?: boolean
-  target?: string
-}`,
+    "exposes": [
+      {
+        "name": "open()",
+        "type": "() => void"
+      },
+      {
+        "name": "close()",
+        "type": "() => void"
+      },
+      {
+        "name": "toggle()",
+        "type": "() => void"
+      },
+      {
+        "name": "isOpen()",
+        "type": "() => void"
+      },
+      {
+        "name": "open",
+        "type": "() => void",
+        "description": "Abre el panel"
+      },
+      {
+        "name": "close",
+        "type": "() => void",
+        "description": "Cierra el panel"
+      },
+      {
+        "name": "toggle",
+        "type": "() => void",
+        "description": "Abre/cierra el panel"
+      },
+      {
+        "name": "isOpen",
+        "type": "() => boolean",
+        "description": "Estado del panel"
+      }
+    ],
+    "interfaceCode": `interface DropdownItem {
+    label?: string
+    icon?: string
+    href?: string
+    onClick?: () => void
+    color?: string
+    variant?: string
+    disabled?: boolean
+    divider?: boolean
+    target?: string
+  }`
   },
   extras,
   sections: [

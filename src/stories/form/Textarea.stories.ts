@@ -14,47 +14,143 @@ function colorVariants(extra: Record<string, unknown> = {}): Variant[] {
 export const cuTextareaStories: ComponentStory = {
   component: "cu-textarea",
   vue: Textarea,
-  extras,
   tokens: [
-    '--btn-bg',
-    '--btn-bg-hover',
-    '--btn-soft',
-    '--btn-soft-hover',
-    '--btn-subtle',
-    '--btn-subtle-hover',
-    '--btn-subtle-border',
-    '--cu-font-sans',
-    '--cu-font-size-sm',
-    '--cu-font-weight-medium',
-    '--cu-radius-md',
-    '--cu-border-thin',
-    '--cu-space-md',
-    '--cu-space-lg',
+    "--btn-bg",
+    "--btn-bg-hover",
+    "--btn-soft",
+    "--btn-soft-hover",
+    "--btn-subtle",
+    "--btn-subtle-border",
+    "--btn-subtle-hover",
+    "--cu-border-thin",
+    "--cu-color-neutral-text",
+    "--cu-font-sans",
+    "--cu-font-size-sm",
+    "--cu-font-weight-medium",
+    "--cu-radius-md",
+    "--cu-space-lg",
+    "--cu-space-md"
+  ],
+  classes: [
+    "cu-textarea",
+    "cu-textarea--disabled",
+    "cu-textarea--ghost",
+    "cu-textarea--no-resize",
+    "cu-textarea--outlined",
+    "cu-textarea--soft",
+    "cu-textarea--subtle"
   ],
   api: {
-    props: [
-      { name: 'v-model', type: 'string', default: '""', description: 'Valor del textarea (defineModel)' },
-      { name: 'startValue', type: 'string', default: '—', description: 'Valor inicial alternativo (declarado pero sin efecto actualmente; usar v-model)' },
-      { name: 'color', type: 'string', default: '"neutral"', description: 'Color semántico: primary, secondary, neutral, success, warning, danger' },
-      { name: 'variant', type: 'string', default: '"soft"', description: 'outlined, soft, ghost, subtle' },
-      { name: 'placeholder', type: 'string', default: '—', description: 'Texto de ayuda cuando está vacío' },
-      { name: 'disabled', type: 'boolean', default: 'false', description: 'Deshabilita el textarea' },
-      { name: 'readOnly', type: 'boolean', default: 'false', description: 'Solo lectura (seleccionable, no editable)' },
-      { name: 'rows', type: 'number', default: '3', description: 'Cantidad de filas visibles' },
-      { name: 'noResize', type: 'boolean', default: 'false', description: 'Desactiva el redimensionado manual' },
+    "props": [
+      {
+        "name": "modelValue",
+        "type": "string"
+      },
+      {
+        "name": "startValue",
+        "type": "string",
+        "description": "Valor inicial alternativo (declarado pero sin efecto actualmente; usar v-model)"
+      },
+      {
+        "name": "color",
+        "type": "primary | secondary | neutral | success | warning | danger",
+        "default": "neutral",
+        "description": "Color semántico: primary, secondary, neutral, success, warning, danger"
+      },
+      {
+        "name": "variant",
+        "type": "outlined | soft | ghost | subtle",
+        "default": "soft",
+        "description": "outlined, soft, ghost, subtle"
+      },
+      {
+        "name": "placeholder",
+        "type": "string",
+        "description": "Texto de ayuda cuando está vacío"
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "Deshabilita el textarea"
+      },
+      {
+        "name": "readOnly",
+        "type": "boolean",
+        "default": "false",
+        "description": "Solo lectura (seleccionable, no editable)"
+      },
+      {
+        "name": "rows",
+        "type": "number",
+        "default": "3",
+        "description": "Cantidad de filas visibles"
+      },
+      {
+        "name": "noResize",
+        "type": "boolean",
+        "default": "false",
+        "description": "Desactiva el redimensionado manual"
+      },
+      {
+        "name": "v-model",
+        "type": "string",
+        "default": "\"\"",
+        "description": "Valor del textarea (defineModel)"
+      }
     ],
-    slots: [],
-    events: [
-      { name: 'update:modelValue', type: 'custom', description: 'Emite el valor actualizado en detail al escribir (v-model)' },
-      { name: 'input', type: 'nativo', description: 'Evento input nativo del textarea interno (compone hacia el host)' },
+    "events": [
+      {
+        "name": "update:modelValue",
+        "type": "() => void",
+        "description": "Emite el valor actualizado en detail al escribir (v-model)"
+      },
+      {
+        "name": "input",
+        "type": "nativo",
+        "description": "Evento input nativo del textarea interno (compone hacia el host)"
+      }
     ],
-    exposes: [
-      { name: 'get', type: '() => string', description: 'Devuelve el valor actual' },
-      { name: 'set', type: '(value: string | number) => void', description: 'Setea el valor' },
-      { name: 'reset', type: '() => void', description: 'Limpia el valor' },
-      { name: 'focus', type: '() => void', description: 'Pone el foco en el textarea' },
-    ],
+    "exposes": [
+      {
+        "name": "get()",
+        "type": "() => void"
+      },
+      {
+        "name": "set()",
+        "type": "() => void"
+      },
+      {
+        "name": "reset()",
+        "type": "() => void"
+      },
+      {
+        "name": "focus()",
+        "type": "() => void"
+      },
+      {
+        "name": "get",
+        "type": "() => string",
+        "description": "Devuelve el valor actual"
+      },
+      {
+        "name": "set",
+        "type": "(value: string | number) => void",
+        "description": "Setea el valor"
+      },
+      {
+        "name": "reset",
+        "type": "() => void",
+        "description": "Limpia el valor"
+      },
+      {
+        "name": "focus",
+        "type": "() => void",
+        "description": "Pone el foco en el textarea"
+      }
+    ]
   },
+  extras,
   sections: [
     {
       id: "variants",

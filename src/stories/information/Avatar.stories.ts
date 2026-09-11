@@ -9,22 +9,52 @@ export const cuAvatarStories: ComponentStory = {
   component: "cu-avatar",
   vue: Avatar,
   tokens: [
-    '--avatar-bg',
-    '--cu-font-weight-semibold',
-    '--cu-font-size-xs',
-    '--cu-font-size-sm',
-    '--cu-font-size-md',
+    "--avatar-bg",
+    "--cu-font-size-md",
+    "--cu-font-size-sm",
+    "--cu-font-size-xs",
+    "--cu-font-weight-semibold"
+  ],
+  classes: [
+    "cu-avatar",
+    "cu-avatar--lg",
+    "cu-avatar--md",
+    "cu-avatar--sm",
+    "cu-avatar-img",
+    "cu-avatar-initials"
   ],
   api: {
-    props: [
-      { name: 'initials', type: 'string', default: '""', description: 'Iniciales a mostrar (2 chars)' },
-      { name: 'color', type: 'string', default: '""', description: 'primary, secondary, neutral, success, warning, danger. Si no se pasa, se resuelve por hash de las iniciales' },
-      { name: 'size', type: 'string', default: '"md"', description: 'sm | md | lg' },
-      { name: 'src', type: 'string', default: '""', description: 'URL de imagen (muestra foto en vez de iniciales)' },
+    "props": [
+      {
+        "name": "color",
+        "type": "primary | secondary | neutral | success | warning | danger",
+        "default": "",
+        "description": "primary, secondary, neutral, success, warning, danger. Si no se pasa, se resuelve por hash de las iniciales"
+      },
+      {
+        "name": "size",
+        "type": "sm | md | lg",
+        "default": "md",
+        "description": "sm | md | lg"
+      },
+      {
+        "name": "initials",
+        "type": "string",
+        "default": "",
+        "description": "Iniciales a mostrar (2 chars)"
+      },
+      {
+        "name": "src",
+        "type": "string",
+        "default": "",
+        "description": "URL de imagen (muestra foto en vez de iniciales)"
+      }
     ],
-    slots: [],
-    events: [],
-    exposes: [],
+    "slots": [
+      {
+        "name": "default"
+      }
+    ]
   },
   sections: [
     {

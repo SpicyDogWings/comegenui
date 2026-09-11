@@ -7,6 +7,14 @@ import type { ComponentStory } from "@/stories/types";
 export const cuCopyButtonStories: ComponentStory = {
   component: "cu-copy-button",
   vue: CopyButton,
+  classes: [
+    "cu-copy-button-icon",
+    "cu-copy-button-text",
+    "cu-copy-fade-enter-active",
+    "cu-copy-fade-enter-from",
+    "cu-copy-fade-leave-active",
+    "cu-copy-fade-leave-to"
+  ],
   api: {
     "components": [
       {
@@ -90,19 +98,19 @@ export const cuCopyButtonStories: ComponentStory = {
       badge: "neutral",
       badgeTitle: "Default: neutral",
       variants: [
-        { id: "primary", props: {"text":"CopyButton","color":"primary"} },
-        { id: "secondary", props: {"text":"CopyButton","color":"secondary"} },
-        { id: "neutral", props: {"text":"CopyButton","color":"neutral"} },
-        { id: "success", props: {"text":"CopyButton","color":"success"} },
-        { id: "warning", props: {"text":"CopyButton","color":"warning"} },
-        { id: "danger", props: {"text":"CopyButton","color":"danger"} },
+        { id: "primary", props: {"text":"CopyButton","color":"primary","label":"Copiar"} },
+        { id: "secondary", props: {"text":"CopyButton","color":"secondary","label":"Copiar"} },
+        { id: "neutral", props: {"text":"CopyButton","color":"neutral","label":"Copiar"} },
+        { id: "success", props: {"text":"CopyButton","color":"success","label":"Copiar"} },
+        { id: "warning", props: {"text":"CopyButton","color":"warning","label":"Copiar"} },
+        { id: "danger", props: {"text":"CopyButton","color":"danger","label":"Copiar"} },
       ],
-      vue: `  <CopyButton text="CopyButton" color="primary"></CopyButton>
-  <CopyButton text="CopyButton" color="secondary"></CopyButton>
-  <CopyButton text="CopyButton" color="neutral"></CopyButton>
-  <CopyButton text="CopyButton" color="success"></CopyButton>
-  <CopyButton text="CopyButton" color="warning"></CopyButton>
-  <CopyButton text="CopyButton" color="danger"></CopyButton>`,
+      vue: `  <CopyButton text="CopyButton" color="primary" label="Copiar"></CopyButton>
+  <CopyButton text="CopyButton" color="secondary" label="Copiar"></CopyButton>
+  <CopyButton text="CopyButton" color="neutral" label="Copiar"></CopyButton>
+  <CopyButton text="CopyButton" color="success" label="Copiar"></CopyButton>
+  <CopyButton text="CopyButton" color="warning" label="Copiar"></CopyButton>
+  <CopyButton text="CopyButton" color="danger" label="Copiar"></CopyButton>`,
       checks: {
         l1: [
           {
@@ -130,21 +138,21 @@ export const cuCopyButtonStories: ComponentStory = {
       badge: "soft",
       badgeTitle: "Default: soft",
       variants: [
-        { id: "solid", props: {"text":"CopyButton","variant":"solid"} },
-        { id: "outlined", props: {"text":"CopyButton","variant":"outlined"} },
-        { id: "soft", props: {"text":"CopyButton","variant":"soft"} },
-        { id: "ghost", props: {"text":"CopyButton","variant":"ghost"} },
-        { id: "subtle", props: {"text":"CopyButton","variant":"subtle"} },
-        { id: "link", props: {"text":"CopyButton","variant":"link"} },
-        { id: "none", props: {"text":"CopyButton","variant":"none"} },
+        { id: "solid", props: {"text":"CopyButton","variant":"solid","label":"Copiar"} },
+        { id: "outlined", props: {"text":"CopyButton","variant":"outlined","label":"Copiar"} },
+        { id: "soft", props: {"text":"CopyButton","variant":"soft","label":"Copiar"} },
+        { id: "ghost", props: {"text":"CopyButton","variant":"ghost","label":"Copiar"} },
+        { id: "subtle", props: {"text":"CopyButton","variant":"subtle","label":"Copiar"} },
+        { id: "link", props: {"text":"CopyButton","variant":"link","label":"Copiar"} },
+        { id: "none", props: {"text":"CopyButton","variant":"none","label":"Copiar"} },
       ],
-      vue: `  <CopyButton text="CopyButton" variant="solid"></CopyButton>
-  <CopyButton text="CopyButton" variant="outlined"></CopyButton>
-  <CopyButton text="CopyButton" variant="soft"></CopyButton>
-  <CopyButton text="CopyButton" variant="ghost"></CopyButton>
-  <CopyButton text="CopyButton" variant="subtle"></CopyButton>
-  <CopyButton text="CopyButton" variant="link"></CopyButton>
-  <CopyButton text="CopyButton" variant="none"></CopyButton>`,
+      vue: `  <CopyButton text="CopyButton" variant="solid" label="Copiar"></CopyButton>
+  <CopyButton text="CopyButton" variant="outlined" label="Copiar"></CopyButton>
+  <CopyButton text="CopyButton" variant="soft" label="Copiar"></CopyButton>
+  <CopyButton text="CopyButton" variant="ghost" label="Copiar"></CopyButton>
+  <CopyButton text="CopyButton" variant="subtle" label="Copiar"></CopyButton>
+  <CopyButton text="CopyButton" variant="link" label="Copiar"></CopyButton>
+  <CopyButton text="CopyButton" variant="none" label="Copiar"></CopyButton>`,
       checks: {
         l1: [
           {

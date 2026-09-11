@@ -15,51 +15,167 @@ import { extras } from "./Input.stories.extras";
 export const cuInputStories: ComponentStory = {
   component: "cu-input",
   vue: Input,
-  extras,
   tokens: [
-    '--btn-bg',
-    '--btn-bg-hover',
-    '--btn-soft',
-    '--btn-soft-hover',
-    '--btn-subtle',
-    '--btn-subtle-hover',
-    '--btn-subtle-border',
-    '--cu-font-sans',
-    '--cu-font-size-sm',
-    '--cu-font-weight-medium',
-    '--cu-radius-md',
-    '--cu-border-thin',
-    '--cu-space-md',
-    '--cu-space-lg',
+    "--btn-bg",
+    "--btn-bg-hover",
+    "--btn-soft",
+    "--btn-soft-hover",
+    "--btn-subtle",
+    "--btn-subtle-border",
+    "--btn-subtle-hover",
+    "--cu-border-thin",
+    "--cu-color-neutral-text",
+    "--cu-font-sans",
+    "--cu-font-size-md",
+    "--cu-font-size-sm",
+    "--cu-font-size-xs",
+    "--cu-font-weight-medium",
+    "--cu-radius-md",
+    "--cu-space-lg",
+    "--cu-space-md",
+    "--cu-space-sm",
+    "--cu-space-xl"
+  ],
+  classes: [
+    "cu-input",
+    "cu-input--disabled",
+    "cu-input--ghost",
+    "cu-input--lg",
+    "cu-input--outlined",
+    "cu-input--sm",
+    "cu-input--soft",
+    "cu-input--subtle"
   ],
   api: {
-    props: [
-      { name: 'modelValue', type: 'string', default: '""', description: 'Valor del input (v-model)' },
-      { name: 'startValue', type: 'string', default: '—', description: 'Declarado en el componente pero actualmente sin efecto' },
-      { name: 'color', type: 'string', default: '"neutral"', description: 'Color semántico del foco: primary, secondary, neutral, success, warning, danger' },
-      { name: 'variant', type: 'string', default: '"soft"', description: 'Estilo visual: outlined, soft, ghost, subtle' },
-      { name: 'type', type: 'string', default: '"text"', description: 'Tipo del input: text, password, email, number, tel, url, search' },
-      { name: 'placeholder', type: 'string', default: '—', description: 'Texto de ayuda cuando el input está vacío' },
-      { name: 'disabled', type: 'boolean', default: 'false', description: 'Deshabilita el input' },
-      { name: 'readOnly', type: 'boolean', default: 'false', description: 'Muestra el valor pero no permite editarlo' },
+    "props": [
+      {
+        "name": "modelValue",
+        "type": "string",
+        "description": "Valor del input (v-model)"
+      },
+      {
+        "name": "startValue",
+        "type": "string",
+        "description": "Declarado en el componente pero actualmente sin efecto"
+      },
+      {
+        "name": "color",
+        "type": "primary | secondary | neutral | success | warning | danger",
+        "default": "neutral",
+        "description": "Color semántico del foco: primary, secondary, neutral, success, warning, danger"
+      },
+      {
+        "name": "variant",
+        "type": "outlined | soft | ghost | subtle",
+        "default": "soft",
+        "description": "Estilo visual: outlined, soft, ghost, subtle"
+      },
+      {
+        "name": "type",
+        "type": "text | password | email | number | tel | url | search",
+        "default": "text",
+        "description": "Tipo del input: text, password, email, number, tel, url, search"
+      },
+      {
+        "name": "placeholder",
+        "type": "string",
+        "description": "Texto de ayuda cuando el input está vacío"
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "Deshabilita el input"
+      },
+      {
+        "name": "readOnly",
+        "type": "boolean",
+        "default": "false",
+        "description": "Muestra el valor pero no permite editarlo"
+      },
+      {
+        "name": "size",
+        "type": "sm | md | lg",
+        "default": "md"
+      }
     ],
-    slots: [],
-    events: [
-      { name: 'update:modelValue', type: 'custom', description: 'Se emite al escribir (v-model). detail: string' },
-      { name: 'input', type: 'nativo', description: 'El usuario escribe; el componente usa este evento para actualizar el modelo' },
-      { name: 'change', type: 'nativo', description: 'El valor se confirma (blur o Enter)' },
-      { name: 'focus', type: 'nativo', description: 'El input recibe foco' },
-      { name: 'blur', type: 'nativo', description: 'El input pierde el foco' },
-      { name: 'keydown', type: 'nativo', description: 'Tecla presionada con foco en el input' },
-      { name: 'keyup', type: 'nativo', description: 'Tecla soltada con foco en el input' },
+    "events": [
+      {
+        "name": "update:modelValue",
+        "type": "() => void",
+        "description": "Se emite al escribir (v-model). detail: string"
+      },
+      {
+        "name": "input",
+        "type": "nativo",
+        "description": "El usuario escribe; el componente usa este evento para actualizar el modelo"
+      },
+      {
+        "name": "change",
+        "type": "nativo",
+        "description": "El valor se confirma (blur o Enter)"
+      },
+      {
+        "name": "focus",
+        "type": "nativo",
+        "description": "El input recibe foco"
+      },
+      {
+        "name": "blur",
+        "type": "nativo",
+        "description": "El input pierde el foco"
+      },
+      {
+        "name": "keydown",
+        "type": "nativo",
+        "description": "Tecla presionada con foco en el input"
+      },
+      {
+        "name": "keyup",
+        "type": "nativo",
+        "description": "Tecla soltada con foco en el input"
+      }
     ],
-    exposes: [
-      { name: 'get', type: '() => string', description: 'Devuelve el valor actual' },
-      { name: 'set', type: '(value: string | number) => void', description: 'Setea el valor (convertido a string)' },
-      { name: 'reset', type: '() => void', description: 'Vacía el campo' },
-      { name: 'focus', type: '() => void', description: 'Pone el foco en el input' },
-    ],
+    "exposes": [
+      {
+        "name": "get()",
+        "type": "() => void"
+      },
+      {
+        "name": "set()",
+        "type": "() => void"
+      },
+      {
+        "name": "reset()",
+        "type": "() => void"
+      },
+      {
+        "name": "focus()",
+        "type": "() => void"
+      },
+      {
+        "name": "get",
+        "type": "() => string",
+        "description": "Devuelve el valor actual"
+      },
+      {
+        "name": "set",
+        "type": "(value: string | number) => void",
+        "description": "Setea el valor (convertido a string)"
+      },
+      {
+        "name": "reset",
+        "type": "() => void",
+        "description": "Vacía el campo"
+      },
+      {
+        "name": "focus",
+        "type": "() => void",
+        "description": "Pone el foco en el input"
+      }
+    ]
   },
+  extras,
   sections: [
     {
       id: "variants",

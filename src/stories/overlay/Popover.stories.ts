@@ -11,38 +11,127 @@ export const cuPopoverStories: ComponentStory = {
   component: "cu-popover",
   vue: Popover,
   tokens: [
-    '--cu-color-surface',
-    '--cu-shadow-xl',
-    '--cu-radius-md',
-    '--cu-space-sm',
+    "--cu-color-surface",
+    "--cu-font-sans",
+    "--cu-popover-bg",
+    "--cu-popover-max-width",
+    "--cu-popover-min-width",
+    "--cu-popover-width",
+    "--cu-radius-md",
+    "--cu-shadow-xl",
+    "--cu-space-sm"
+  ],
+  classes: [
+    "cu-popover",
+    "cu-popover-panel"
   ],
   api: {
-    props: [
-      { name: 'position', type: 'string', default: '"bottom"', description: 'bottom, top, left, right' },
-      { name: 'align', type: 'string', default: '"start"', description: 'start, center, end' },
-      { name: 'offset', type: 'number', default: '4', description: 'Distancia del panel al trigger (px)' },
-      { name: 'fixed', type: 'boolean', default: 'false', description: 'Panel en position:fixed con coordenadas de viewport (sigue al trigger en scroll)' },
-      { name: 'panelWidth', type: 'string', default: '""', description: 'Ancho del panel (CSS). Vacío = width:100% del trigger' },
-      { name: 'disabled', type: 'boolean', default: 'false', description: 'No abre ni hace toggle' },
-      { name: 'hover', type: 'boolean', default: 'false', description: 'Abre con mouseenter, cierra con mouseleave' },
-      { name: 'hoverDelay', type: 'number', default: '200', description: 'Delay del hover en ms' },
-      { name: 'role', type: 'string', default: '""', description: 'role del panel (menu, tooltip, dialog…)' },
-      { name: 'panelClass', type: 'string | string[] | Record', default: '""', description: 'Clase(s) extra del panel' },
+    "props": [
+      {
+        "name": "position",
+        "type": "bottom | top | left | right",
+        "default": "bottom",
+        "description": "bottom, top, left, right"
+      },
+      {
+        "name": "align",
+        "type": "start | center | end",
+        "default": "start",
+        "description": "start, center, end"
+      },
+      {
+        "name": "offset",
+        "type": "number",
+        "default": "4",
+        "description": "Distancia del panel al trigger (px)"
+      },
+      {
+        "name": "fixed",
+        "type": "boolean",
+        "default": "false",
+        "description": "Panel en position:fixed con coordenadas de viewport (sigue al trigger en scroll)"
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "No abre ni hace toggle"
+      },
+      {
+        "name": "hoverDelay",
+        "type": "number",
+        "default": "200",
+        "description": "Delay del hover en ms"
+      },
+      {
+        "name": "panelClass",
+        "type": "[String",
+        "default": "",
+        "description": "Clase(s) extra del panel"
+      },
+      {
+        "name": "panelWidth",
+        "type": "string",
+        "default": "\"\"",
+        "description": "Ancho del panel (CSS). Vacío = width:100% del trigger"
+      },
+      {
+        "name": "hover",
+        "type": "boolean",
+        "default": "false",
+        "description": "Abre con mouseenter, cierra con mouseleave"
+      },
+      {
+        "name": "role",
+        "type": "string",
+        "default": "\"\"",
+        "description": "role del panel (menu, tooltip, dialog…)"
+      }
     ],
-    slots: [
-      { name: 'toggle', description: 'Trigger. Scoped: { toggle, isOpen }. Si no se usa, renderiza el panel sin trigger propio' },
-      { name: 'default', description: 'Contenido del panel' },
+    "slots": [
+      {
+        "name": "toggle",
+        "description": "Trigger. Scoped: { toggle, isOpen }. Si no se usa, renderiza el panel sin trigger propio"
+      },
+      {
+        "name": "default",
+        "description": "Contenido del panel"
+      }
     ],
-    events: [
-      { name: 'open', type: '() => void', description: 'Se abrió el panel' },
-      { name: 'close', type: '() => void', description: 'Se cerró el panel' },
+    "events": [
+      {
+        "name": "open",
+        "type": "() => void",
+        "description": "Se abrió el panel"
+      },
+      {
+        "name": "close",
+        "type": "() => void",
+        "description": "Se cerró el panel"
+      }
     ],
-    exposes: [
-      { name: 'open()', type: '() => void', description: 'Abre el panel' },
-      { name: 'close()', type: '() => void', description: 'Cierra el panel' },
-      { name: 'toggle()', type: '() => void', description: 'Alterna abierto/cerrado' },
-      { name: 'isOpen()', type: '() => boolean', description: 'Estado actual' },
-    ],
+    "exposes": [
+      {
+        "name": "open()",
+        "type": "() => void",
+        "description": "Abre el panel"
+      },
+      {
+        "name": "close()",
+        "type": "() => void",
+        "description": "Cierra el panel"
+      },
+      {
+        "name": "toggle()",
+        "type": "() => void",
+        "description": "Alterna abierto/cerrado"
+      },
+      {
+        "name": "isOpen()",
+        "type": "() => void",
+        "description": "Estado actual"
+      }
+    ]
   },
   extras,
   sections: [

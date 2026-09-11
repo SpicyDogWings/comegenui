@@ -74,75 +74,343 @@ export const cuDatePickerRangeStories: ComponentStory = {
   component: "cu-date-picker-range",
   vue: DatePickerRange,
   tokens: [
-    '--cu-border-color',
-    '--cu-border-thin',
-    '--cu-space-md',
-    '--cu-space-sm',
+    "--cu-border-color",
+    "--cu-border-thin",
+    "--cu-space-md",
+    "--cu-space-sm"
+  ],
+  classes: [
+    "cu-calendar",
+    "cu-date-picker-chevron",
+    "cu-date-picker-range",
+    "cu-date-picker-range-calendars",
+    "cu-date-picker-range-calendars--dual",
+    "cu-date-picker-range-footer",
+    "cu-date-picker-range-label",
+    "cu-date-picker-range-panel",
+    "cu-date-picker-range-toggle",
+    "cu-dropdown"
   ],
   subComponents: [
-    { label: 'Dropdown', path: '/playground/components/dropdown#style' },
-    { label: 'Button', path: '/playground/components/button#style' },
-    { label: 'Calendar', path: '/playground/components/calendar#style' },
-    { label: 'Label', path: '/playground/components/label#style' },
+    {
+      "label": "Dropdown",
+      "path": "/playground/components/dropdown#style"
+    },
+    {
+      "label": "Button",
+      "path": "/playground/components/button#style"
+    },
+    {
+      "label": "Calendar",
+      "path": "/playground/components/calendar#style"
+    },
+    {
+      "label": "Label",
+      "path": "/playground/components/label#style"
+    }
   ],
   api: {
-    components: [
-      { label: 'Dropdown', path: '/playground/components/dropdown' },
-      { label: 'Button', path: '/playground/components/button' },
-      { label: 'Calendar', path: '/playground/components/calendar' },
-      { label: 'Label', path: '/playground/components/label' },
+    "components": [
+      {
+        "label": "Dropdown",
+        "path": "/playground/components/dropdown"
+      },
+      {
+        "label": "Button",
+        "path": "/playground/components/button"
+      },
+      {
+        "label": "Calendar",
+        "path": "/playground/components/calendar"
+      },
+      {
+        "label": "Label",
+        "path": "/playground/components/label"
+      }
     ],
-    props: [
-      { name: 'startDate', type: 'string | number | Date | null', default: 'null', description: 'Inicio del rango (v-model:start-date). Acepta Date, timestamp o "YYYY-MM-DD"' },
-      { name: 'endDate', type: 'string | number | Date | null', default: 'null', description: 'Fin del rango (v-model:end-date)' },
-      { name: 'min', type: 'string | number | Date | null', default: 'null', description: 'Fecha mínima seleccionable' },
-      { name: 'max', type: 'string | number | Date | null', default: 'null', description: 'Fecha máxima seleccionable' },
-      { name: 'color', type: 'string', default: '"neutral"', description: 'Color semántico: primary, secondary, neutral, success, warning, danger' },
-      { name: 'variant', type: 'string', default: '"soft"', description: 'Variante del trigger: outlined, soft, ghost, subtle' },
-      { name: 'disabled', type: 'boolean', default: 'false', description: 'Deshabilita trigger y calendarios' },
-      { name: 'placeholder', type: 'string', default: '""', description: 'Texto del trigger cuando no hay rango' },
-      { name: 'locale', type: 'string', default: '"es"', description: 'Locale para nombres de mes/día (Intl)' },
-      { name: 'weekStart', type: 'number', default: '1', description: 'Día de inicio de semana: 0=domingo … 6=sábado' },
-      { name: 'format', type: 'string', default: '"dd/MM/yyyy"', description: 'Formato del rango en el trigger. Tokens: dd, MM, MMM, MMMM, yy, yyyy' },
-      { name: 'yearNavigation', type: 'boolean | string', default: 'false', description: 'Botones « » para saltar de año en los calendarios' },
-      { name: 'monthFormat', type: 'string', default: '"MMMM"', description: 'Formato del mes en el header de los calendarios' },
-      { name: 'yearFormat', type: 'string', default: '"yyyy"', description: 'Formato del año en el header de los calendarios' },
-      { name: 'disabledWeekdays', type: 'number[] | string', default: '""', description: 'Días de semana deshabilitados (0=domingo). Acepta array o "0,6"' },
-      { name: 'disabledDates', type: '(string | Date)[] | string', default: '""', description: 'Fechas puntuales deshabilitadas. Acepta array o "2026-09-15,2026-09-16"' },
-      { name: 'events', type: 'CalendarEvent[]', default: '[]', description: 'Puntos bajo las fechas: { date, color? }. Compatible con rangos' },
-      { name: 'grid', type: 'boolean', default: 'false', description: 'Líneas interiores entre los días de los calendarios internos' },
-      { name: 'border', type: 'boolean', default: 'false', description: 'Marco exterior alrededor de la cuadrícula de días' },
-      { name: 'dualCalendar', type: 'boolean', default: 'false', description: 'Dos meses lado a lado (ideal para rangos que cruzan meses)' },
-      { name: 'position', type: 'string', default: '"bottom"', description: 'Posición del panel: bottom, top, left, right' },
-      { name: 'align', type: 'string', default: '"start"', description: 'Alineación del panel: start, center, end' },
-      { name: 'fixed', type: 'boolean', default: 'false', description: 'Fija el panel al viewport' },
-      { name: 'clearable', type: 'boolean', default: 'true', description: 'Botón Limpiar en el footer del panel' },
-      { name: 'todayButton', type: 'boolean', default: 'false', description: 'Reservado: hoy no agrega botón en el footer' },
-      { name: 'label', type: 'string', default: '""', description: 'Label sobre el trigger (click abre el panel)' },
+    "props": [
+      {
+        "name": "startDate",
+        "type": "[String",
+        "default": "null",
+        "description": "Inicio del rango (v-model:start-date). Acepta Date, timestamp o \"YYYY-MM-DD\""
+      },
+      {
+        "name": "endDate",
+        "type": "[String",
+        "default": "null",
+        "description": "Fin del rango (v-model:end-date)"
+      },
+      {
+        "name": "min",
+        "type": "[String",
+        "default": "null",
+        "description": "Fecha mínima seleccionable"
+      },
+      {
+        "name": "max",
+        "type": "[String",
+        "default": "null",
+        "description": "Fecha máxima seleccionable"
+      },
+      {
+        "name": "color",
+        "type": "primary | secondary | neutral | success | warning | danger",
+        "default": "neutral",
+        "description": "Color semántico: primary, secondary, neutral, success, warning, danger"
+      },
+      {
+        "name": "variant",
+        "type": "outlined | soft | ghost | subtle",
+        "default": "soft",
+        "description": "Variante del trigger: outlined, soft, ghost, subtle"
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "Deshabilita trigger y calendarios"
+      },
+      {
+        "name": "placeholder",
+        "type": "string",
+        "default": "",
+        "description": "Texto del trigger cuando no hay rango"
+      },
+      {
+        "name": "locale",
+        "type": "string",
+        "default": "es",
+        "description": "Locale para nombres de mes/día (Intl)"
+      },
+      {
+        "name": "weekStart",
+        "type": "number",
+        "default": "1",
+        "description": "Día de inicio de semana: 0=domingo … 6=sábado"
+      },
+      {
+        "name": "format",
+        "type": "string",
+        "default": "dd/MM/yyyy",
+        "description": "Formato del rango en el trigger. Tokens: dd, MM, MMM, MMMM, yy, yyyy"
+      },
+      {
+        "name": "yearNavigation",
+        "type": "[Boolean",
+        "default": "false",
+        "description": "Botones « » para saltar de año en los calendarios"
+      },
+      {
+        "name": "monthFormat",
+        "type": "string",
+        "default": "MMMM",
+        "description": "Formato del mes en el header de los calendarios"
+      },
+      {
+        "name": "yearFormat",
+        "type": "string",
+        "default": "yyyy",
+        "description": "Formato del año en el header de los calendarios"
+      },
+      {
+        "name": "disabledWeekdays",
+        "type": "[Array",
+        "default": "",
+        "description": "Días de semana deshabilitados (0=domingo). Acepta array o \"0,6\""
+      },
+      {
+        "name": "disabledDates",
+        "type": "[Array",
+        "default": "",
+        "description": "Fechas puntuales deshabilitadas. Acepta array o \"2026-09-15,2026-09-16\""
+      },
+      {
+        "name": "events",
+        "type": "Array as PropType<CalendarEvent[]>",
+        "description": "Puntos bajo las fechas: { date, color? }. Compatible con rangos"
+      },
+      {
+        "name": "grid",
+        "type": "boolean",
+        "default": "false",
+        "description": "Líneas interiores entre los días de los calendarios internos"
+      },
+      {
+        "name": "border",
+        "type": "boolean",
+        "default": "false",
+        "description": "Marco exterior alrededor de la cuadrícula de días"
+      },
+      {
+        "name": "dualCalendar",
+        "type": "boolean",
+        "default": "false",
+        "description": "Dos meses lado a lado (ideal para rangos que cruzan meses)"
+      },
+      {
+        "name": "position",
+        "type": "string",
+        "default": "bottom",
+        "description": "Posición del panel: bottom, top, left, right"
+      },
+      {
+        "name": "align",
+        "type": "string",
+        "default": "start",
+        "description": "Alineación del panel: start, center, end"
+      },
+      {
+        "name": "fixed",
+        "type": "boolean",
+        "default": "false",
+        "description": "Fija el panel al viewport"
+      },
+      {
+        "name": "clearable",
+        "type": "boolean",
+        "default": "true",
+        "description": "Botón Limpiar en el footer del panel"
+      },
+      {
+        "name": "todayButton",
+        "type": "boolean",
+        "default": "false",
+        "description": "Reservado: hoy no agrega botón en el footer"
+      },
+      {
+        "name": "label",
+        "type": "string",
+        "default": "",
+        "description": "Label sobre el trigger (click abre el panel)"
+      }
     ],
-    slots: [],
-    events: [
-      { name: 'update:startDate', type: 'custom', description: 'v-model:start-date: se emite al elegir el inicio (Date | null)' },
-      { name: 'update:endDate', type: 'custom', description: 'v-model:end-date: se emite al elegir el fin (Date | null)' },
-      { name: 'change', type: 'custom', description: 'Rango completo al cerrar la selección: { start, end }' },
-      { name: 'select', type: 'custom', description: 'Rango al completar los dos clicks: { start, end }' },
-      { name: 'open', type: 'custom', description: 'El panel se abrió' },
-      { name: 'close', type: 'custom', description: 'El panel se cerró' },
+    "slots": [
+      {
+        "name": "toggle"
+      },
+      {
+        "name": "default"
+      }
     ],
-    exposes: [
-      { name: 'open', type: '() => void', default: '—', description: 'Abre el panel' },
-      { name: 'close', type: '() => void', default: '—', description: 'Cierra el panel' },
-      { name: 'toggle', type: '() => void', default: '—', description: 'Abre/cierra el panel' },
-      { name: 'getStartDate', type: '() => Date | null', default: '—', description: 'Devuelve el inicio del rango' },
-      { name: 'getEndDate', type: '() => Date | null', default: '—', description: 'Devuelve el fin del rango' },
-      { name: 'setRange', type: '(start, end: string | number | Date | null) => void', default: '—', description: 'Setea el rango programáticamente' },
-      { name: 'clear', type: '() => void', default: '—', description: 'Limpia el rango' },
-      { name: 'isOpen', type: '() => boolean', default: '—', description: 'Indica si el panel está abierto' },
+    "events": [
+      {
+        "name": "update:startDate",
+        "type": "() => void",
+        "description": "v-model:start-date: se emite al elegir el inicio (Date | null)"
+      },
+      {
+        "name": "update:endDate",
+        "type": "() => void",
+        "description": "v-model:end-date: se emite al elegir el fin (Date | null)"
+      },
+      {
+        "name": "change",
+        "type": "() => void",
+        "description": "Rango completo al cerrar la selección: { start, end }"
+      },
+      {
+        "name": "select",
+        "type": "() => void",
+        "description": "Rango al completar los dos clicks: { start, end }"
+      },
+      {
+        "name": "open",
+        "type": "() => void",
+        "description": "El panel se abrió"
+      },
+      {
+        "name": "close",
+        "type": "() => void",
+        "description": "El panel se cerró"
+      }
     ],
-    interfaceCode: `interface CalendarEvent {
-  date: string | number | Date
-  color?: string
-}`,
+    "exposes": [
+      {
+        "name": "open()",
+        "type": "() => void"
+      },
+      {
+        "name": "close()",
+        "type": "() => void"
+      },
+      {
+        "name": "toggle()",
+        "type": "() => void"
+      },
+      {
+        "name": "getStartDate()",
+        "type": "() => void"
+      },
+      {
+        "name": "getEndDate()",
+        "type": "() => void"
+      },
+      {
+        "name": "setRange()",
+        "type": "() => void"
+      },
+      {
+        "name": "clear()",
+        "type": "() => void"
+      },
+      {
+        "name": "isOpen()",
+        "type": "() => void"
+      },
+      {
+        "name": "open",
+        "type": "() => void",
+        "default": "—",
+        "description": "Abre el panel"
+      },
+      {
+        "name": "close",
+        "type": "() => void",
+        "default": "—",
+        "description": "Cierra el panel"
+      },
+      {
+        "name": "toggle",
+        "type": "() => void",
+        "default": "—",
+        "description": "Abre/cierra el panel"
+      },
+      {
+        "name": "getStartDate",
+        "type": "() => Date | null",
+        "default": "—",
+        "description": "Devuelve el inicio del rango"
+      },
+      {
+        "name": "getEndDate",
+        "type": "() => Date | null",
+        "default": "—",
+        "description": "Devuelve el fin del rango"
+      },
+      {
+        "name": "setRange",
+        "type": "(start, end: string | number | Date | null) => void",
+        "default": "—",
+        "description": "Setea el rango programáticamente"
+      },
+      {
+        "name": "clear",
+        "type": "() => void",
+        "default": "—",
+        "description": "Limpia el rango"
+      },
+      {
+        "name": "isOpen",
+        "type": "() => boolean",
+        "default": "—",
+        "description": "Indica si el panel está abierto"
+      }
+    ],
+    "interfaceCode": `interface CalendarEvent {
+    date: string | number | Date
+    color?: string
+  }`
   },
   extras,
   sections: [

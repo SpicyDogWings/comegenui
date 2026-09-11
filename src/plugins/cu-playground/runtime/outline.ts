@@ -20,11 +20,11 @@ export function buildOutline(story: ComponentStory): OutlineItem[] {
     items.push({ label: extra.title, id: extra.id });
   }
 
-  items.push({
-    label: "Style",
-    id: "style",
-    children: [{ label: "CSS Variables", id: "style-variables" }],
-  });
+  const styleChildren: { label: string; id: string }[] = [
+    { label: "CSS Variables", id: "style-variables" },
+  ];
+  if (story.classes?.length) styleChildren.push({ label: "CSS Classes", id: "style-classes" });
+  items.push({ label: "Style", id: "style", children: styleChildren });
 
   const apiChildren: { label: string; id: string }[] = [];
   if (story.api?.components?.length) apiChildren.push({ label: "Components", id: "api-components" });

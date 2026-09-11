@@ -297,24 +297,74 @@ export const cuNavbarHorizontalStories: ComponentStory = {
   component: "cu-navbar-horizontal",
   vue: NavbarHorizontal,
   tokens: [
-    '--cu-font-size-sm',
-    '--cu-space-2xs',
-    '--cu-space-xs',
-    '--cu-space-sm',
-    '--cu-space-md',
+    "--cu-color-neutral",
+    "--cu-color-neutral-ghost-hover",
+    "--cu-color-primary-soft",
+    "--cu-font-sans",
+    "--cu-font-size-sm",
+    "--cu-radius-sm",
+    "--cu-space-2xs",
+    "--cu-space-md",
+    "--cu-space-sm",
+    "--cu-space-xs"
+  ],
+  classes: [
+    "cu-button",
+    "cu-dropdown-panel",
+    "cu-navbar",
+    "cu-navbar-chevron",
+    "cu-navbar-dropdown-trigger",
+    "cu-navbar-icon",
+    "cu-navbar-item--match"
   ],
   api: {
-    props: [
-      { name: 'items', type: 'NavItem[]', default: '—', description: 'Árbol de navegación: { label, path?, icon?, children? }. Los padres se renderizan como Dropdown en cascada (anidamiento infinito), las hojas como items de menú nativos' },
-      { name: 'trigger', type: '"click" | "hover"', default: '"click"', description: 'Cómo abren los submenús: click (default) o hover' },
-      { name: 'activePath', type: 'string', default: '""', description: 'Path del item activo (manual). En apps Vue se toma de useRoute() si no se pasa; en vanilla/PHP setealo vos' },
+    "components": [
+      {
+        "label": "Dropdown",
+        "path": "/playground/components/dropdown"
+      },
+      {
+        "label": "NavbarMenu",
+        "path": "/playground/components/navbar-menu"
+      },
+      {
+        "label": "Button",
+        "path": "/playground/components/button"
+      }
     ],
-    interfaceCode: `interface NavItem {
-  label: string
-  path?: string
-  icon?: string
-  children?: NavItem[]
-}`,
+    "props": [
+      {
+        "name": "items",
+        "type": "Array as () => NavItem[]",
+        "description": "Árbol de navegación: { label, path?, icon?, children? }. Los padres se renderizan como Dropdown en cascada (anidamiento infinito), las hojas como items de menú nativos"
+      },
+      {
+        "name": "trigger",
+        "type": "\"click\" | \"hover\"",
+        "default": "\"click\"",
+        "description": "Cómo abren los submenús: click (default) o hover"
+      },
+      {
+        "name": "activePath",
+        "type": "string",
+        "default": "\"\"",
+        "description": "Path del item activo (manual). En apps Vue se toma de useRoute() si no se pasa; en vanilla/PHP setealo vos"
+      }
+    ],
+    "slots": [
+      {
+        "name": "toggle"
+      },
+      {
+        "name": "default"
+      }
+    ],
+    "interfaceCode": `interface NavItem {
+    label: string
+    path?: string
+    icon?: string
+    children?: NavItem[]
+  }`
   },
   setup() {
     // jsdom no implementa scrollIntoView y useNavbar lo llama al montar con un

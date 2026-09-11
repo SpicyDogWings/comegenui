@@ -19,30 +19,100 @@ async function flush(): Promise<void> {
 export const cuCollapseStories: ComponentStory = {
   component: "cu-collapse",
   vue: Collapse,
-  extras,
   tokens: [
-    '--cu-space-2xs',
-    '--cu-space-lg',
+    "--cu-space-2xs",
+    "--cu-space-lg"
+  ],
+  classes: [
+    "cu-collapse",
+    "cu-collapse-chevron",
+    "cu-collapse-content",
+    "cu-collapse-trigger"
   ],
   api: {
-    props: [
-      { name: 'label', type: 'string', default: '(required)', description: 'Texto del trigger (required)' },
-      { name: 'defaultOpen', type: 'boolean', default: 'false', description: 'Renderiza el contenido expandido al montar' },
-      { name: 'color', type: 'string', default: '"neutral"', description: 'primary, secondary, neutral, success, warning, danger' },
+    "components": [
+      {
+        "label": "Button",
+        "path": "/playground/components/button"
+      }
     ],
-    slots: [
-      { name: 'default', description: 'Contenido colapsable' },
+    "props": [
+      {
+        "name": "label",
+        "type": "string",
+        "description": "Texto del trigger (required)"
+      },
+      {
+        "name": "icon",
+        "type": "string",
+        "default": ""
+      },
+      {
+        "name": "defaultOpen",
+        "type": "boolean",
+        "default": "false",
+        "description": "Renderiza el contenido expandido al montar"
+      },
+      {
+        "name": "color",
+        "type": "primary | secondary | neutral | success | warning | danger",
+        "default": "neutral",
+        "description": "primary, secondary, neutral, success, warning, danger"
+      }
     ],
-    events: [
-      { name: 'toggle', type: '(value: boolean) => void', description: 'Cambia el estado (payload: isOpen)' },
+    "slots": [
+      {
+        "name": "default",
+        "description": "Contenido colapsable"
+      }
     ],
-    exposes: [
-      { name: 'open', type: '() => void', description: 'Expande el contenido' },
-      { name: 'close', type: '() => void', description: 'Colapsa el contenido' },
-      { name: 'toggle', type: '() => void', description: 'Expande/colapsa' },
-      { name: 'isOpen', type: '() => boolean', description: 'Estado del collapse' },
+    "events": [
+      {
+        "name": "toggle",
+        "type": "() => void",
+        "description": "Cambia el estado (payload: isOpen)"
+      }
     ],
+    "exposes": [
+      {
+        "name": "open()",
+        "type": "() => void"
+      },
+      {
+        "name": "close()",
+        "type": "() => void"
+      },
+      {
+        "name": "toggle()",
+        "type": "() => void"
+      },
+      {
+        "name": "isOpen()",
+        "type": "() => void"
+      },
+      {
+        "name": "open",
+        "type": "() => void",
+        "description": "Expande el contenido"
+      },
+      {
+        "name": "close",
+        "type": "() => void",
+        "description": "Colapsa el contenido"
+      },
+      {
+        "name": "toggle",
+        "type": "() => void",
+        "description": "Expande/colapsa"
+      },
+      {
+        "name": "isOpen",
+        "type": "() => boolean",
+        "description": "Estado del collapse"
+      }
+    ]
   },
+  extras,
   sections: [
     {
       id: "default",

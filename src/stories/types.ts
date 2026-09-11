@@ -130,6 +130,8 @@ export interface ComponentStory {
   ce?: Component;
   /** Tokens CSS que usa el componente (sección Style). */
   tokens?: string[];
+  /** Clases CSS que define el componente (sección Style). */
+  classes?: string[];
   /** Sub-componentes con estilos propios (sección Style). */
   subComponents?: { label: string; path: string }[];
   /** API declarada: la página genérica la pinta como tablas. */

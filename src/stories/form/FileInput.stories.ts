@@ -26,57 +26,195 @@ export const cuFileInputStories: ComponentStory = {
   component: "cu-file-input",
   vue: FileInput,
   tokens: [
-    '--input-bg',
-    '--input-text',
-    '--input-soft',
-    '--input-soft-hover',
-    '--input-ghost-hover',
-    '--cu-font-sans',
-    '--cu-font-size-sm',
-    '--cu-font-size-xs',
-    '--cu-font-weight-medium',
-    '--cu-radius',
-    '--cu-border-thin',
-    '--cu-border-color',
-    '--cu-space-2xs',
-    '--cu-space-sm',
-    '--cu-space-md',
-    '--cu-space-lg',
-    '--cu-color-surface',
+    "--cu-border-color",
+    "--cu-border-thin",
+    "--cu-color-surface",
+    "--cu-font-sans",
+    "--cu-font-size-sm",
+    "--cu-font-size-xs",
+    "--cu-font-weight-medium",
+    "--cu-radius",
+    "--cu-space-2xs",
+    "--cu-space-lg",
+    "--cu-space-md",
+    "--cu-space-sm",
+    "--input-bg",
+    "--input-ghost-hover",
+    "--input-soft",
+    "--input-soft-hover",
+    "--input-text"
+  ],
+  classes: [
+    "cu-file-input",
+    "cu-file-input--disabled",
+    "cu-file-input--drag-over",
+    "cu-file-input--ghost",
+    "cu-file-input--outlined",
+    "cu-file-input--soft",
+    "cu-file-input--subtle",
+    "cu-file-input-hidden",
+    "cu-file-input-icon",
+    "cu-file-input-link",
+    "cu-file-input-name",
+    "cu-file-input-placeholder",
+    "cu-file-input-reject",
+    "cu-file-input-remove",
+    "cu-file-input-size",
+    "cu-file-input-wrap"
   ],
   subComponents: [
-    { label: 'Button', path: '/playground/components/button#style' },
+    {
+      "label": "Button",
+      "path": "/playground/components/button#style"
+    }
   ],
   api: {
-    components: [
-      { label: 'Button', path: '/playground/components/button' },
+    "components": [
+      {
+        "label": "Button",
+        "path": "/playground/components/button"
+      },
+      {
+        "label": "Alert",
+        "path": "/playground/components/alert"
+      }
     ],
-    props: [
-      { name: 'v-model', type: 'File | null', default: 'null', description: 'Archivo seleccionado (defineModel)' },
-      { name: 'color', type: 'string', default: '"neutral"', description: 'primary, secondary, neutral, success, warning, danger' },
-      { name: 'variant', type: 'string', default: '"outlined"', description: 'outlined, soft, ghost, subtle' },
-      { name: 'placeholder', type: 'string', default: '"Seleccionar archivo"', description: 'Texto cuando no hay archivo; agrega formatos aceptados y tamaño máximo si aplican' },
-      { name: 'disabled', type: 'boolean', default: 'false', description: 'Deshabilita la selección' },
-      { name: 'readOnly', type: 'boolean', default: 'false', description: 'Solo lectura: bloquea click, teclado y drag & drop' },
-      { name: 'accept', type: 'string', default: '—', description: 'Tipos aceptados (attr accept): .pdf, image/*, etc; rechaza los que no coinciden' },
-      { name: 'maxSize', type: 'number', default: '—', description: 'Tamaño máximo en bytes; rechaza archivos mayores' },
+    "props": [
+      {
+        "name": "modelValue",
+        "type": "File | null"
+      },
+      {
+        "name": "color",
+        "type": "primary | secondary | neutral | success | warning | danger",
+        "default": "neutral",
+        "description": "primary, secondary, neutral, success, warning, danger"
+      },
+      {
+        "name": "variant",
+        "type": "outlined | soft | ghost | subtle",
+        "default": "outlined",
+        "description": "outlined, soft, ghost, subtle"
+      },
+      {
+        "name": "placeholder",
+        "type": "string",
+        "default": "Seleccionar archivo",
+        "description": "Texto cuando no hay archivo; agrega formatos aceptados y tamaño máximo si aplican"
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "Deshabilita la selección"
+      },
+      {
+        "name": "readOnly",
+        "type": "boolean",
+        "default": "false",
+        "description": "Solo lectura: bloquea click, teclado y drag & drop"
+      },
+      {
+        "name": "accept",
+        "type": "string",
+        "description": "Tipos aceptados (attr accept): .pdf, image/*, etc; rechaza los que no coinciden"
+      },
+      {
+        "name": "maxSize",
+        "type": "number",
+        "description": "Tamaño máximo en bytes; rechaza archivos mayores"
+      },
+      {
+        "name": "v-model",
+        "type": "File | null",
+        "default": "null",
+        "description": "Archivo seleccionado (defineModel)"
+      }
     ],
-    events: [
-      { name: 'update:modelValue', type: 'custom', description: 'v-model: emite el File seleccionado o null al quitarlo' },
-      { name: 'click', type: 'nativo', description: 'Click sobre el control (abre el selector de archivos)' },
-      { name: 'keydown', type: 'nativo', description: 'Enter o Space abren el selector de archivos' },
-      { name: 'focus', type: 'nativo', description: 'El control recibe foco' },
-      { name: 'blur', type: 'nativo', description: 'El control pierde foco' },
-      { name: 'dragover', type: 'nativo', description: 'Un archivo se arrastra sobre el control' },
-      { name: 'drop', type: 'nativo', description: 'Se suelta un archivo sobre el control' },
+    "events": [
+      {
+        "name": "update:modelValue",
+        "type": "() => void",
+        "description": "v-model: emite el File seleccionado o null al quitarlo"
+      },
+      {
+        "name": "click",
+        "type": "nativo",
+        "description": "Click sobre el control (abre el selector de archivos)"
+      },
+      {
+        "name": "keydown",
+        "type": "nativo",
+        "description": "Enter o Space abren el selector de archivos"
+      },
+      {
+        "name": "focus",
+        "type": "nativo",
+        "description": "El control recibe foco"
+      },
+      {
+        "name": "blur",
+        "type": "nativo",
+        "description": "El control pierde foco"
+      },
+      {
+        "name": "dragover",
+        "type": "nativo",
+        "description": "Un archivo se arrastra sobre el control"
+      },
+      {
+        "name": "drop",
+        "type": "nativo",
+        "description": "Se suelta un archivo sobre el control"
+      }
     ],
-    exposes: [
-      { name: 'get', type: 'method', description: 'Devuelve el File seleccionado o null' },
-      { name: 'set', type: 'method', description: 'set(file: File | null): establece el archivo programáticamente' },
-      { name: 'reset', type: 'method', description: 'Limpia la selección' },
-      { name: 'focus', type: 'method', description: 'Pone el foco en el control' },
-      { name: 'trigger', type: 'method', description: 'Abre el diálogo de selección de archivos' },
-    ],
+    "exposes": [
+      {
+        "name": "get()",
+        "type": "() => void"
+      },
+      {
+        "name": "set()",
+        "type": "() => void"
+      },
+      {
+        "name": "reset()",
+        "type": "() => void"
+      },
+      {
+        "name": "focus()",
+        "type": "() => void"
+      },
+      {
+        "name": "trigger()",
+        "type": "() => void"
+      },
+      {
+        "name": "get",
+        "type": "method",
+        "description": "Devuelve el File seleccionado o null"
+      },
+      {
+        "name": "set",
+        "type": "method",
+        "description": "set(file: File | null): establece el archivo programáticamente"
+      },
+      {
+        "name": "reset",
+        "type": "method",
+        "description": "Limpia la selección"
+      },
+      {
+        "name": "focus",
+        "type": "method",
+        "description": "Pone el foco en el control"
+      },
+      {
+        "name": "trigger",
+        "type": "method",
+        "description": "Abre el diálogo de selección de archivos"
+      }
+    ]
   },
   extras,
   sections: [

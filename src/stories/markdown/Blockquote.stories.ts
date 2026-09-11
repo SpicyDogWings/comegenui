@@ -7,20 +7,48 @@ export const cuBlockquoteStories: ComponentStory = {
   component: "cu-blockquote",
   vue: Blockquote,
   tokens: [
-    '--cu-border-thick',
-    '--cu-space-sm',
-    '--cu-space-md',
+    "--cu-border-thick",
+    "--cu-color-danger",
+    "--cu-color-neutral",
+    "--cu-color-neutral-text",
+    "--cu-color-primary",
+    "--cu-color-secondary",
+    "--cu-color-success",
+    "--cu-color-warning",
+    "--cu-space-md",
+    "--cu-space-sm"
+  ],
+  classes: [
+    "cu-blockquote",
+    "cu-blockquote--danger",
+    "cu-blockquote--neutral",
+    "cu-blockquote--primary",
+    "cu-blockquote--secondary",
+    "cu-blockquote--success",
+    "cu-blockquote--warning",
+    "cu-blockquote-content"
   ],
   api: {
-    props: [
-      { name: 'color', type: 'string', default: '"primary"', description: 'primary, secondary, neutral, success, warning, danger' },
-      { name: 'html', type: 'string', default: '""', description: 'Contenido HTML de la cita. Si se omite, usa el slot default' },
+    "props": [
+      {
+        "name": "color",
+        "type": "string",
+        "default": "primary",
+        "description": "primary, secondary, neutral, success, warning, danger"
+      },
+      {
+        "name": "html",
+        "type": "string",
+        "default": "",
+        "description": "Contenido HTML de la cita. Si se omite, usa el slot default"
+      }
     ],
-    slots: [
-      { name: 'default', description: 'Contenido de la cita cuando no se pasa html' },
-    ],
-    events: [],
-    exposes: [],
+    "slots": [
+      {
+        "name": "default",
+        "description": "Contenido de la cita cuando no se pasa html"
+      }
+    ]
   },
   sections: [
     {

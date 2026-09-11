@@ -1,4 +1,4 @@
-// Generado por src/plugins/cu-playground/cli/generate.mjs a partir de las props de FloatingButton.vue.
+// Generado por src/plugins/cu-playground/cli/generate.mjs a partir del contrato de FloatingButton.vue.
 // Eventos detectados: click
 
 import FloatingButton from "@/components/buttons/FloatingButton.vue";
@@ -8,26 +8,50 @@ export const cuFloatingButtonStories: ComponentStory = {
   component: "cu-floating-button",
   vue: FloatingButton,
   tokens: [
-    '--fab-bg',
-    '--fab-bg-hover',
-    '--fab-bg-active',
-    '--cu-radius-full',
-    '--cu-shadow-lg',
-    '--cu-shadow-xl',
-    '--cu-space-lg',
-    '--cu-space-3xl',
+    "--cu-color-surface",
+    "--cu-font-sans",
+    "--cu-font-size-xl",
+    "--cu-radius-full",
+    "--cu-shadow-lg",
+    "--cu-shadow-xl",
+    "--cu-space-3xl",
+    "--cu-space-lg",
+    "--fab-bg",
+    "--fab-bg-active",
+    "--fab-bg-hover"
+  ],
+  classes: [
+    "cu-floating-button",
+    "cu-floating-button--disabled"
   ],
   api: {
-    props: [
-      { name: 'color', type: 'string', default: '"primary"', description: 'Color semántico: primary, secondary, neutral, success, warning, danger' },
-      { name: 'disabled', type: 'boolean', default: 'false', description: 'Estado deshabilitado' },
+    "props": [
+      {
+        "name": "color",
+        "type": "primary | secondary | neutral | success | warning | danger",
+        "default": "primary",
+        "description": "Color semántico: primary, secondary, neutral, success, warning, danger"
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "Estado deshabilitado"
+      }
     ],
-    slots: [
-      { name: 'default', type: 'slot', description: 'Contenido del FAB: ícono SVG inline' },
+    "slots": [
+      {
+        "name": "default",
+        "description": "Contenido del FAB: ícono SVG inline"
+      }
     ],
-    events: [
-      { name: 'click', type: 'custom', description: 'Emitido al hacer click; no se emite si está disabled' },
-    ],
+    "events": [
+      {
+        "name": "click",
+        "type": "() => void",
+        "description": "Emitido al hacer click; no se emite si está disabled"
+      }
+    ]
   },
   sections: [
     {
@@ -65,25 +89,25 @@ export const cuFloatingButtonStories: ComponentStory = {
       badge: "primary",
       badgeTitle: "Default: primary",
       variants: [
-        { id: "primary", props: {"color":"primary"}, attrs: {"style":"position: static"}, slots: {"default":"Primary"} },
-        { id: "secondary", props: {"color":"secondary"}, attrs: {"style":"position: static"}, slots: {"default":"Secondary"} },
-        { id: "neutral", props: {"color":"neutral"}, attrs: {"style":"position: static"}, slots: {"default":"Neutral"} },
-        { id: "success", props: {"color":"success"}, attrs: {"style":"position: static"}, slots: {"default":"Success"} },
-        { id: "warning", props: {"color":"warning"}, attrs: {"style":"position: static"}, slots: {"default":"Warning"} },
-        { id: "danger", props: {"color":"danger"}, attrs: {"style":"position: static"}, slots: {"default":"Danger"} },
+        { id: "primary", props: {"color":"primary"}, attrs: {"style":"position: static"}, slots: {"default":"+"} },
+        { id: "secondary", props: {"color":"secondary"}, attrs: {"style":"position: static"}, slots: {"default":"+"} },
+        { id: "neutral", props: {"color":"neutral"}, attrs: {"style":"position: static"}, slots: {"default":"+"} },
+        { id: "success", props: {"color":"success"}, attrs: {"style":"position: static"}, slots: {"default":"+"} },
+        { id: "warning", props: {"color":"warning"}, attrs: {"style":"position: static"}, slots: {"default":"+"} },
+        { id: "danger", props: {"color":"danger"}, attrs: {"style":"position: static"}, slots: {"default":"+"} },
       ],
-      vue: `  <FloatingButton color="primary">Primary</FloatingButton>
-  <FloatingButton color="secondary">Secondary</FloatingButton>
-  <FloatingButton color="neutral">Neutral</FloatingButton>
-  <FloatingButton color="success">Success</FloatingButton>
-  <FloatingButton color="warning">Warning</FloatingButton>
-  <FloatingButton color="danger">Danger</FloatingButton>`,
-      vanilla: `  <cu-floating-button color="primary">Primary</cu-floating-button>
-  <cu-floating-button color="secondary">Secondary</cu-floating-button>
-  <cu-floating-button color="neutral">Neutral</cu-floating-button>
-  <cu-floating-button color="success">Success</cu-floating-button>
-  <cu-floating-button color="warning">Warning</cu-floating-button>
-  <cu-floating-button color="danger">Danger</cu-floating-button>`,
+      vue: `  <FloatingButton color="primary">+</FloatingButton>
+  <FloatingButton color="secondary">+</FloatingButton>
+  <FloatingButton color="neutral">+</FloatingButton>
+  <FloatingButton color="success">+</FloatingButton>
+  <FloatingButton color="warning">+</FloatingButton>
+  <FloatingButton color="danger">+</FloatingButton>`,
+      vanilla: `  <cu-floating-button color="primary">+</cu-floating-button>
+  <cu-floating-button color="secondary">+</cu-floating-button>
+  <cu-floating-button color="neutral">+</cu-floating-button>
+  <cu-floating-button color="success">+</cu-floating-button>
+  <cu-floating-button color="warning">+</cu-floating-button>
+  <cu-floating-button color="danger">+</cu-floating-button>`,
       checks: {
         l1: [
           {

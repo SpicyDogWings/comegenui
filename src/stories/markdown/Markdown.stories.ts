@@ -94,53 +94,91 @@ const vanillaSnippet = [
 export const cuMarkdownStories: ComponentStory = {
   component: "cu-markdown",
   vue: Markdown,
-  extras,
   tokens: [
+    "--cu-border-thin",
+    "--cu-color-neutral-subtle-border",
+    "--cu-color-neutral-text",
     "--cu-font-sans",
-    "--cu-font-size-xs",
-    "--cu-font-size-sm",
-    "--cu-font-size-xl",
     "--cu-font-size-2xl",
     "--cu-font-size-3xl",
     "--cu-font-size-4xl",
+    "--cu-font-size-xl",
     "--cu-font-weight-bold",
-    "--cu-line-height-tight",
     "--cu-line-height-relaxed",
+    "--cu-line-height-tight",
     "--cu-radius-sm",
-    "--cu-border-thin",
-    "--cu-space-xs",
-    "--cu-space-sm",
-    "--cu-space-md",
     "--cu-space-lg",
+    "--cu-space-md",
+    "--cu-space-sm",
     "--cu-space-xl",
-    "--cu-color-neutral-text",
-    "--cu-color-neutral-subtle-border",
+    "--cu-space-xs"
+  ],
+  classes: [
+    "cu-markdown",
+    "cu-md-del",
+    "cu-md-em",
+    "cu-md-heading",
+    "cu-md-heading-1",
+    "cu-md-heading-2",
+    "cu-md-heading-3",
+    "cu-md-heading-4",
+    "cu-md-heading-5",
+    "cu-md-heading-6",
+    "cu-md-hr",
+    "cu-md-image",
+    "cu-md-list",
+    "cu-md-list--ordered",
+    "cu-md-list--unordered",
+    "cu-md-list-item",
+    "cu-md-paragraph",
+    "cu-md-slot",
+    "cu-md-strong"
   ],
   api: {
-    props: [],
-    slots: [
+    "components": [
       {
-        name: "default",
-        description:
-          "Contenido Markdown a parsear y renderizar (headings, listas, tablas, código, blockquotes, links…)",
+        "label": "Table",
+        "path": "/playground/components/table"
       },
-    ],
-    events: [
       {
-        name: "parsed",
-        type: "(headingIds: string[]) => void",
-        description:
-          "Emite los ids de los headings tras parsear (para construir outlines). Nota: el Custom Element (cu-markdown) no lo puentea",
+        "label": "CodeBlock",
+        "path": "/playground/components/code-block"
       },
-    ],
-    exposes: [
       {
-        name: "headingIds",
-        type: "() => string[]",
-        description: "Devuelve los ids de los headings parseados",
+        "label": "Blockquote",
+        "path": "/playground/components/blockquote"
       },
+      {
+        "label": "InlineRenderer",
+        "path": "/playground/components/inline-renderer"
+      }
     ],
+    "slots": [
+      {
+        "name": "default",
+        "description": "Contenido Markdown a parsear y renderizar (headings, listas, tablas, código, blockquotes, links…)"
+      }
+    ],
+    "events": [
+      {
+        "name": "parsed",
+        "type": "() => void",
+        "description": "Emite los ids de los headings tras parsear (para construir outlines). Nota: el Custom Element (cu-markdown) no lo puentea"
+      }
+    ],
+    "exposes": [
+      {
+        "name": "headingIds()",
+        "type": "() => void"
+      },
+      {
+        "name": "headingIds",
+        "type": "() => string[]",
+        "description": "Devuelve los ids de los headings parseados"
+      }
+    ]
   },
+  extras,
   sections: [
     {
       id: "full-demo",

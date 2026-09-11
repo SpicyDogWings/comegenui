@@ -335,30 +335,109 @@ export const cuSideOverStories: ComponentStory = {
   component: "cu-side-over",
   vue: SideOver,
   tokens: [
-    '--cu-color-surface',
-    '--cu-shadow-xl',
-    '--cu-radius-md',
-    '--cu-font-sans',
-    '--cu-border-color',
-    '--cu-sideover-size-md',
+    "--cu-border-color",
+    "--cu-border-thin",
+    "--cu-color-neutral",
+    "--cu-color-neutral-subtle-hover",
+    "--cu-color-primary",
+    "--cu-color-surface",
+    "--cu-font-sans",
+    "--cu-font-size-lg",
+    "--cu-font-weight-bold",
+    "--cu-radius-sm",
+    "--cu-shadow-xl",
+    "--cu-sideover-dimension",
+    "--cu-sideover-size-full",
+    "--cu-sideover-size-lg",
+    "--cu-sideover-size-md",
+    "--cu-sideover-size-sm",
+    "--cu-sideover-size-xl",
+    "--cu-space-2xs",
+    "--cu-space-lg",
+    "--cu-space-md",
+    "--cu-space-sm"
+  ],
+  classes: [
+    "cu-sideover",
+    "cu-sideover-backdrop",
+    "cu-sideover-body",
+    "cu-sideover-close",
+    "cu-sideover-enter-active",
+    "cu-sideover-enter-from",
+    "cu-sideover-header",
+    "cu-sideover-leave-active",
+    "cu-sideover-leave-to",
+    "cu-sideover-panel",
+    "cu-sideover-panel--bottom",
+    "cu-sideover-panel--fullscreen",
+    "cu-sideover-panel--left",
+    "cu-sideover-panel--right",
+    "cu-sideover-panel--top",
+    "cu-sideover-title"
   ],
   api: {
-    props: [
-      { name: 'modelValue', type: 'boolean', default: 'false', description: 'Abre/cierra el panel (v-model)' },
-      { name: 'title', type: 'string', default: '""', description: 'Título del panel. Se muestra en el header junto al botón de cerrar' },
-      { name: 'position', type: '"left" | "right" | "top" | "bottom"', default: '"right"', description: 'Desde qué borde desliza el panel' },
-      { name: 'size', type: 'string', default: '"300px"', description: 'Ancho (left/right) o alto (top/bottom) del panel. Acepta CSS ("300px", "40vw") o preset "sm" | "md" | "lg" | "xl" | "full". Ignorado en fullscreen' },
-      { name: 'fullscreen', type: 'boolean', default: 'false', description: 'Ocupa toda la pantalla (inset 0)' },
-      { name: 'persistent', type: 'boolean', default: 'false', description: 'No se cierra por backdrop, Escape ni el botón de cerrar (que se oculta)' },
-      { name: 'zIndex', type: 'number', default: '1100', description: 'Z-index del overlay' },
+    "props": [
+      {
+        "name": "modelValue",
+        "type": "boolean",
+        "default": "false",
+        "description": "Abre/cierra el panel (v-model)"
+      },
+      {
+        "name": "title",
+        "type": "string",
+        "default": "",
+        "description": "Título del panel. Se muestra en el header junto al botón de cerrar"
+      },
+      {
+        "name": "position",
+        "type": "left | right | top | bottom",
+        "default": "right",
+        "description": "Desde qué borde desliza el panel"
+      },
+      {
+        "name": "fullscreen",
+        "type": "boolean",
+        "default": "false",
+        "description": "Ocupa toda la pantalla (inset 0)"
+      },
+      {
+        "name": "zIndex",
+        "type": "number",
+        "default": "1100",
+        "description": "Z-index del overlay"
+      },
+      {
+        "name": "size",
+        "type": "string",
+        "default": "\"300px\"",
+        "description": "Ancho (left/right) o alto (top/bottom) del panel. Acepta CSS (\"300px\", \"40vw\") o preset \"sm\" | \"md\" | \"lg\" | \"xl\" | \"full\". Ignorado en fullscreen"
+      },
+      {
+        "name": "persistent",
+        "type": "boolean",
+        "default": "false",
+        "description": "No se cierra por backdrop, Escape ni el botón de cerrar (que se oculta)"
+      }
     ],
-    slots: [
-      { name: 'default', type: 'contenido', default: '—', description: 'Contenido del panel' },
+    "slots": [
+      {
+        "name": "default",
+        "description": "Contenido del panel"
+      }
     ],
-    events: [
-      { name: 'update:modelValue', type: 'boolean', description: 'Se emite al abrir/cerrar' },
-      { name: 'close', type: '—', description: 'Se emite cuando se cierra (backdrop/Escape)' },
-    ],
+    "events": [
+      {
+        "name": "update:modelValue",
+        "type": "() => void",
+        "description": "Se emite al abrir/cerrar"
+      },
+      {
+        "name": "close",
+        "type": "() => void",
+        "description": "Se emite cuando se cierra (backdrop/Escape)"
+      }
+    ]
   },
   // El panel se teleporta a body; con el stub los checks pueden buscarlo en el wrapper.
   global: () => ({ stubs: { teleport: true } }),

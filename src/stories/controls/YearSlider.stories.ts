@@ -11,46 +11,127 @@ export const cuYearSliderStories: ComponentStory = {
   component: "cu-year-slider",
   vue: YearSlider,
   tokens: [
-    '--ms-accent',
-    '--ms-accent-hover',
-    '--ms-accent-text',
-    '--ms-soft',
-    '--ms-soft-hover',
-    '--ms-subtle',
-    '--ms-subtle-border',
-    '--ms-subtle-hover',
-    '--ms-ghost-hover',
-    '--ms-surface',
-    '--cu-font-sans',
-    '--cu-space-2xs',
+    "--cu-color-surface",
+    "--cu-font-sans",
+    "--cu-space-2xs"
+  ],
+  classes: [
+    "cu-year-slider"
   ],
   subComponents: [
-    { label: 'MonthSliderLabel', path: '/playground/components/year-slider#style' }
+    {
+      "label": "MonthSliderLabel",
+      "path": "/playground/components/year-slider#style"
+    }
   ],
   api: {
-    components: [
-      { label: 'MonthSliderLabel', path: '/playground/components/year-slider' }
+    "components": [
+      {
+        "label": "Button",
+        "path": "/playground/components/button"
+      },
+      {
+        "label": "MonthSliderLabel",
+        "path": "/playground/components/month-slider-label"
+      }
     ],
-    props: [
-      { name: 'modelValue', type: 'number | string | null', default: 'null', description: 'Año (v-model)' },
-      { name: 'variant', type: 'string', default: '"soft"', description: 'solid, outlined, soft, ghost, subtle' },
-      { name: 'min', type: 'number | string | null', default: 'null', description: 'Año mínimo' },
-      { name: 'max', type: 'number | string | null', default: 'null', description: 'Año máximo' },
-      { name: 'color', type: 'string', default: '"primary"', description: 'primary, secondary, neutral, success, warning, danger' },
-      { name: 'disabled', type: 'boolean', default: 'false', description: 'Deshabilita el control' },
+    "props": [
+      {
+        "name": "variant",
+        "type": "solid | outlined | soft | ghost | subtle",
+        "default": "soft",
+        "description": "solid, outlined, soft, ghost, subtle"
+      },
+      {
+        "name": "min",
+        "type": "[Number",
+        "default": "null",
+        "description": "Año mínimo"
+      },
+      {
+        "name": "max",
+        "type": "[Number",
+        "default": "null",
+        "description": "Año máximo"
+      },
+      {
+        "name": "color",
+        "type": "primary | secondary | neutral | success | warning | danger",
+        "default": "primary",
+        "description": "primary, secondary, neutral, success, warning, danger"
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "Deshabilita el control"
+      },
+      {
+        "name": "modelValue",
+        "type": "number | string | null",
+        "default": "null",
+        "description": "Año (v-model)"
+      }
     ],
-    slots: [],
-    events: [
-      { name: 'update:modelValue', type: '(value: number) => void', description: 'Al cambiar el año (v-model)' },
-      { name: 'change', type: '(value: number) => void', description: 'Al cambiar el año' },
+    "events": [
+      {
+        "name": "update:modelValue",
+        "type": "() => void",
+        "description": "Al cambiar el año (v-model)"
+      },
+      {
+        "name": "change",
+        "type": "() => void",
+        "description": "Al cambiar el año"
+      }
     ],
-    exposes: [
-      { name: 'nextYear', type: '() => void', description: 'Avanza un año' },
-      { name: 'prevYear', type: '() => void', description: 'Retrocede un año' },
-      { name: 'goToYear', type: '(value: number | string) => void', description: 'Va al año indicado' },
-      { name: 'getValue', type: '() => number | null', description: 'Devuelve el año actual' },
-      { name: 'setValue', type: '(value: number | string) => void', description: 'Setea el año' },
-    ],
+    "exposes": [
+      {
+        "name": "nextYear()",
+        "type": "() => void"
+      },
+      {
+        "name": "prevYear()",
+        "type": "() => void"
+      },
+      {
+        "name": "goToYear()",
+        "type": "() => void"
+      },
+      {
+        "name": "getValue()",
+        "type": "() => void"
+      },
+      {
+        "name": "setValue()",
+        "type": "() => void"
+      },
+      {
+        "name": "nextYear",
+        "type": "() => void",
+        "description": "Avanza un año"
+      },
+      {
+        "name": "prevYear",
+        "type": "() => void",
+        "description": "Retrocede un año"
+      },
+      {
+        "name": "goToYear",
+        "type": "(value: number | string) => void",
+        "description": "Va al año indicado"
+      },
+      {
+        "name": "getValue",
+        "type": "() => number | null",
+        "description": "Devuelve el año actual"
+      },
+      {
+        "name": "setValue",
+        "type": "(value: number | string) => void",
+        "description": "Setea el año"
+      }
+    ]
   },
   extras,
   sections: [

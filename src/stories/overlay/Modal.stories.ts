@@ -26,54 +26,180 @@ async function openModal(wrapper: { vm: unknown }) {
 export const cuModalStories: ComponentStory = {
   component: "cu-modal",
   vue: Modal,
-  extras,
   tokens: [
-    "--modal-color",
+    "--cu-border-color",
+    "--cu-border-thin",
+    "--cu-color-neutral",
+    "--cu-color-surface",
     "--cu-font-sans",
-    "--cu-font-size-sm",
     "--cu-font-size-lg",
+    "--cu-font-size-sm",
     "--cu-font-weight-bold",
+    "--cu-modal-height-auto",
+    "--cu-modal-height-full",
+    "--cu-modal-height-lg",
+    "--cu-modal-height-md",
+    "--cu-modal-height-sm",
+    "--cu-modal-height-xl",
+    "--cu-modal-size-auto",
+    "--cu-modal-size-full",
+    "--cu-modal-size-lg",
+    "--cu-modal-size-md",
+    "--cu-modal-size-sm",
+    "--cu-modal-size-xl",
     "--cu-radius",
     "--cu-shadow-xl",
-    "--cu-border-thin",
-    "--cu-border-color",
     "--cu-space-2xs",
-    "--cu-space-sm",
-    "--cu-space-md",
     "--cu-space-lg",
-    "--cu-color-surface",
-    "--cu-color-neutral",
+    "--cu-space-md",
+    "--cu-space-sm",
+    "--modal-color"
   ],
-  subComponents: [{ label: "Button", path: "/playground/components/button#style" }],
+  classes: [
+    "cu-modal",
+    "cu-modal-backdrop",
+    "cu-modal-body",
+    "cu-modal-close",
+    "cu-modal-description",
+    "cu-modal-footer",
+    "cu-modal-footer-default",
+    "cu-modal-header",
+    "cu-modal-header-text",
+    "cu-modal-title",
+    "cu-modal-title-row"
+  ],
+  subComponents: [
+    {
+      "label": "Button",
+      "path": "/playground/components/button#style"
+    }
+  ],
   api: {
-    components: [{ label: "Button", path: "/playground/components/button" }],
-    props: [
-      { name: "color", type: "string", default: '"neutral"', description: "primary, secondary, neutral, success, warning, danger" },
-      { name: "title", type: "string", default: '""', description: "Título del modal" },
-      { name: "description", type: "string", default: '""', description: "Descripción bajo el título" },
-      { name: "persistent", type: "boolean", default: "false", description: "No cierra con click-afuera ni Escape" },
-      { name: "size", type: "string", default: '"auto"', description: "auto, sm, md, lg, xl, full" },
-      { name: "height", type: "string", default: '"auto"', description: "auto, sm, md, lg, xl, full" },
+    "components": [
+      {
+        "label": "Button",
+        "path": "/playground/components/button"
+      }
     ],
-    slots: [
-      { name: "default", description: "Contenido del modal" },
-      { name: "icon", description: "Icono junto al título" },
-      { name: "footer", description: 'Acciones del footer. Sin slot → botón "Cerrar" por defecto (emite cancel/accept)' },
+    "props": [
+      {
+        "name": "color",
+        "type": "primary | secondary | neutral | success | warning | danger",
+        "default": "neutral",
+        "description": "primary, secondary, neutral, success, warning, danger"
+      },
+      {
+        "name": "title",
+        "type": "string",
+        "default": "",
+        "description": "Título del modal"
+      },
+      {
+        "name": "description",
+        "type": "string",
+        "default": "",
+        "description": "Descripción bajo el título"
+      },
+      {
+        "name": "persistent",
+        "type": "boolean",
+        "default": "false",
+        "description": "No cierra con click-afuera ni Escape"
+      },
+      {
+        "name": "size",
+        "type": "auto | sm | md | lg | xl | full",
+        "default": "auto",
+        "description": "auto, sm, md, lg, xl, full"
+      },
+      {
+        "name": "height",
+        "type": "auto | sm | md | lg | xl | full",
+        "default": "auto",
+        "description": "auto, sm, md, lg, xl, full"
+      }
     ],
-    events: [
-      { name: "close", type: "(value: boolean) => void", description: "El modal pide cerrarse (backdrop, Escape o botón)" },
-      { name: "opened", type: "(value: boolean) => void", description: "El modal se abrió" },
-      { name: "closed", type: "(value: boolean) => void", description: "El modal se cerró" },
-      { name: "cancel", type: "() => void", description: "Botón Cancelar del footer por defecto" },
-      { name: "accept", type: "() => void", description: "Botón Aceptar del footer por defecto" },
+    "slots": [
+      {
+        "name": "icon",
+        "description": "Icono junto al título"
+      },
+      {
+        "name": "default",
+        "description": "Contenido del modal"
+      },
+      {
+        "name": "footer",
+        "description": "Acciones del footer. Sin slot → botón \"Cerrar\" por defecto (emite cancel/accept)"
+      }
     ],
-    exposes: [
-      { name: "open", type: "() => void", description: "Abre el modal" },
-      { name: "close", type: "() => void", description: "Cierra el modal" },
-      { name: "toggle", type: "() => void", description: "Abre/cierra el modal" },
-      { name: "isOpen", type: "() => boolean", description: "Estado del modal" },
+    "events": [
+      {
+        "name": "close",
+        "type": "() => void",
+        "description": "El modal pide cerrarse (backdrop, Escape o botón)"
+      },
+      {
+        "name": "opened",
+        "type": "() => void",
+        "description": "El modal se abrió"
+      },
+      {
+        "name": "closed",
+        "type": "() => void",
+        "description": "El modal se cerró"
+      },
+      {
+        "name": "cancel",
+        "type": "() => void",
+        "description": "Botón Cancelar del footer por defecto"
+      },
+      {
+        "name": "accept",
+        "type": "() => void",
+        "description": "Botón Aceptar del footer por defecto"
+      }
     ],
+    "exposes": [
+      {
+        "name": "open()",
+        "type": "() => void"
+      },
+      {
+        "name": "close()",
+        "type": "() => void"
+      },
+      {
+        "name": "toggle()",
+        "type": "() => void"
+      },
+      {
+        "name": "isOpen()",
+        "type": "() => void"
+      },
+      {
+        "name": "open",
+        "type": "() => void",
+        "description": "Abre el modal"
+      },
+      {
+        "name": "close",
+        "type": "() => void",
+        "description": "Cierra el modal"
+      },
+      {
+        "name": "toggle",
+        "type": "() => void",
+        "description": "Abre/cierra el modal"
+      },
+      {
+        "name": "isOpen",
+        "type": "() => boolean",
+        "description": "Estado del modal"
+      }
+    ]
   },
+  extras,
   sections: [
     {
       id: "default",

@@ -15,6 +15,7 @@ export interface SubComponentRef {
 
 const props = defineProps<{
   tokens: string[];
+  classes?: string[];
   subComponents?: SubComponentRef[];
 }>();
 
@@ -23,12 +24,16 @@ const styleColumns = [
   { key: "description", label: "Uso" },
 ];
 
+const classColumns = [{ key: "name", label: "Clase" }];
+
 const styleData = computed(() =>
   props.tokens.map((name) => ({
     name,
     description: getTokenDescription(name),
   }))
 );
+
+const classData = computed(() => (props.classes ?? []).map((name) => ({ name })));
 </script>
 
 <template>
@@ -43,6 +48,15 @@ const styleData = computed(() =>
     <template v-if="!tokens.length && (!subComponents || !subComponents.length)">
       <h3 id="style-variables">CSS Variables</h3>
       <p class="playground-desc">No define tokens propios — usa los tokens compartidos del sistema.</p>
+    </template>
+
+    <template v-if="classes && classes.length">
+      <h3 id="style-classes">CSS Classes</h3>
+      <Table :columns="classColumns" :data="classData" variant="ghost" compact>
+        <template #cell-name="{ row }">
+          <code class="playground-code">{{ row.name }}</code>
+        </template>
+      </Table>
     </template>
 
     <template v-if="subComponents && subComponents.length">

@@ -89,60 +89,221 @@ export const cuAutocompleteStories: ComponentStory = {
   component: "cu-autocomplete",
   vue: Autocomplete,
   tokens: [
-    '--cu-font-sans',
-    '--cu-font-size-sm',
-    '--cu-radius-md',
-    '--cu-border-thin',
-    '--cu-space-sm',
-    '--cu-space-md',
-    '--cu-shadow-md',
-    '--cu-color-surface',
-    '--cu-color-neutral-text',
+    "--cu-font-sans",
+    "--cu-font-size-sm",
+    "--cu-radius-md",
+    "--cu-border-thin",
+    "--cu-space-sm",
+    "--cu-space-md",
+    "--cu-shadow-md",
+    "--cu-color-surface",
+    "--cu-color-neutral-text"
+  ],
+  classes: [
+    "cu-autocomplete",
+    "cu-autocomplete-icon",
+    "cu-autocomplete-option",
+    "cu-autocomplete-option--disabled",
+    "cu-autocomplete-options"
   ],
   subComponents: [
-    { label: 'Dropdown', path: '/playground/components/dropdown#style' },
-    { label: 'Input', path: '/playground/components/input#style' },
-    { label: 'Button', path: '/playground/components/button#style' },
+    {
+      "label": "Dropdown",
+      "path": "/playground/components/dropdown#style"
+    },
+    {
+      "label": "Input",
+      "path": "/playground/components/input#style"
+    },
+    {
+      "label": "Button",
+      "path": "/playground/components/button#style"
+    }
   ],
   api: {
-    components: [
-      { label: 'Dropdown', path: '/playground/components/dropdown' },
-      { label: 'Input', path: '/playground/components/input' },
-      { label: 'Button', path: '/playground/components/button' },
+    "components": [
+      {
+        "label": "Dropdown",
+        "path": "/playground/components/dropdown"
+      },
+      {
+        "label": "Input",
+        "path": "/playground/components/input"
+      },
+      {
+        "label": "Button",
+        "path": "/playground/components/button"
+      }
     ],
-    props: [
-      { name: 'v-model', type: 'string', default: '""', description: 'Texto/value actual (defineModel)' },
-      { name: 'items', type: 'AutocompleteItem[]', default: '[]', description: 'Items: { label, value?, icon? }; icon es un string HTML/SVG (v-html)' },
-      { name: 'color', type: 'string', default: '"neutral"', description: 'Color semántico: primary, secondary, neutral, success, warning, danger' },
-      { name: 'variant', type: 'string', default: '"soft"', description: 'outlined, soft, ghost, subtle' },
-      { name: 'type', type: 'string', default: '"text"', description: 'Tipo del input: text, email, password, etc.' },
-      { name: 'placeholder', type: 'string', default: '""', description: 'Texto de ayuda cuando está vacío' },
-      { name: 'disabled', type: 'boolean', default: 'false', description: 'Deshabilita el input y el panel' },
-      { name: 'readOnly', type: 'boolean', default: 'false', description: 'Solo lectura (seleccionable, no editable)' },
-      { name: 'minChars', type: 'number', default: '0', description: 'Mínimo de caracteres antes de abrir el panel' },
-      { name: 'position', type: 'string', default: '"bottom"', description: 'Posición del panel: bottom, top, left, right' },
-      { name: 'align', type: 'string', default: '"start"', description: 'Alineación del panel: start, center, end' },
-      { name: 'fixed', type: 'boolean', default: 'false', description: 'Posiciona el panel con position: fixed (útil dentro de contenedores con overflow)' },
+    "props": [
+      {
+        "name": "modelValue",
+        "type": "string"
+      },
+      {
+        "name": "color",
+        "type": "primary | secondary | neutral | success | warning | danger",
+        "default": "neutral",
+        "description": "Color semántico: primary, secondary, neutral, success, warning, danger"
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "Deshabilita el input y el panel"
+      },
+      {
+        "name": "readOnly",
+        "type": "boolean",
+        "default": "false",
+        "description": "Solo lectura (seleccionable, no editable)"
+      },
+      {
+        "name": "placeholder",
+        "type": "string",
+        "default": "",
+        "description": "Texto de ayuda cuando está vacío"
+      },
+      {
+        "name": "variant",
+        "type": "outlined | soft | ghost | subtle",
+        "default": "soft",
+        "description": "outlined, soft, ghost, subtle"
+      },
+      {
+        "name": "type",
+        "type": "string",
+        "default": "text",
+        "description": "Tipo del input: text, email, password, etc."
+      },
+      {
+        "name": "minChars",
+        "type": "number",
+        "default": "0",
+        "description": "Mínimo de caracteres antes de abrir el panel"
+      },
+      {
+        "name": "items",
+        "type": "Array as () => AutocompleteItem[]",
+        "description": "Items: { label, value?, icon? }; icon es un string HTML/SVG (v-html)"
+      },
+      {
+        "name": "position",
+        "type": "bottom | top | left | right",
+        "default": "bottom",
+        "description": "Posición del panel: bottom, top, left, right"
+      },
+      {
+        "name": "align",
+        "type": "start | center | end",
+        "default": "start",
+        "description": "Alineación del panel: start, center, end"
+      },
+      {
+        "name": "fixed",
+        "type": "boolean",
+        "default": "false",
+        "description": "Posiciona el panel con position: fixed (útil dentro de contenedores con overflow)"
+      },
+      {
+        "name": "v-model",
+        "type": "string",
+        "default": "\"\"",
+        "description": "Texto/value actual (defineModel)"
+      }
     ],
-    slots: [],
-    events: [
-      { name: 'update:modelValue', type: 'custom', description: 'Texto actualizado en detail (v-model)' },
-      { name: 'select', type: 'custom', description: 'Emite el item seleccionado completo en detail' },
-      { name: 'blur', type: 'custom', description: 'El componente perdió el foco (focusout fuera del root)' },
+    "slots": [
+      {
+        "name": "toggle"
+      },
+      {
+        "name": "default"
+      }
     ],
-    exposes: [
-      { name: 'get', type: '() => string', default: '—', description: 'Devuelve el texto actual' },
-      { name: 'set', type: '(val: string) => void', default: '—', description: 'Setea el texto (input y modelo)' },
-      { name: 'reset', type: '() => void', default: '—', description: 'Limpia el texto' },
-      { name: 'focus', type: '() => void', default: '—', description: 'Pone el foco en el input' },
-      { name: 'isOpen', type: '() => boolean', default: '—', description: 'Indica si el panel está abierto' },
-      { name: 'selectedItem', type: '() => AutocompleteItem | null', default: '—', description: 'Último item seleccionado' },
+    "events": [
+      {
+        "name": "update:modelValue",
+        "type": "(value) => void",
+        "description": "Texto actualizado en detail (v-model)"
+      },
+      {
+        "name": "select",
+        "type": "() => void",
+        "description": "Emite el item seleccionado completo en detail"
+      },
+      {
+        "name": "blur",
+        "type": "() => void",
+        "description": "El componente perdió el foco (focusout fuera del root)"
+      }
     ],
-    interfaceCode: `interface AutocompleteItem {
-  label: string;
-  icon?: string;
-  value?: string;
-}`,
+    "exposes": [
+      {
+        "name": "get()",
+        "type": "() => void"
+      },
+      {
+        "name": "set()",
+        "type": "() => void"
+      },
+      {
+        "name": "reset()",
+        "type": "() => void"
+      },
+      {
+        "name": "focus()",
+        "type": "() => void"
+      },
+      {
+        "name": "isOpen()",
+        "type": "() => void"
+      },
+      {
+        "name": "selectedItem()",
+        "type": "() => void"
+      },
+      {
+        "name": "get",
+        "type": "() => string",
+        "default": "—",
+        "description": "Devuelve el texto actual"
+      },
+      {
+        "name": "set",
+        "type": "(val: string) => void",
+        "default": "—",
+        "description": "Setea el texto (input y modelo)"
+      },
+      {
+        "name": "reset",
+        "type": "() => void",
+        "default": "—",
+        "description": "Limpia el texto"
+      },
+      {
+        "name": "focus",
+        "type": "() => void",
+        "default": "—",
+        "description": "Pone el foco en el input"
+      },
+      {
+        "name": "isOpen",
+        "type": "() => boolean",
+        "default": "—",
+        "description": "Indica si el panel está abierto"
+      },
+      {
+        "name": "selectedItem",
+        "type": "() => AutocompleteItem | null",
+        "default": "—",
+        "description": "Último item seleccionado"
+      }
+    ],
+    "interfaceCode": `interface AutocompleteItem {
+    label: string;
+    icon?: string;
+    value?: string;
+  }`
   },
   extras,
   sections: [

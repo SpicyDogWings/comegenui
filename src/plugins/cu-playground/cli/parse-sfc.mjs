@@ -104,6 +104,118 @@ function optionValue(rest, key) {
   return rest.slice(valueStart).split(/[,\n}]/)[0].trim();
 }
 
+// ── JSDoc ───────────────────────────────────────────────────────────────────
+
+/** Limpia un bloque JSDoc: saca `*`, tags y colapsa el primer párrafo. */
+function cleanJsDoc(raw) {
+  const lines = raw.split("\n").map((line) => line.replace(/^\s*\*+\s?/, "").trim());
+  const paragraph = [];
+  for (const line of lines) {
+    if (/^@\w/.test(line)) break;
+    if (!line) {
+      if (paragraph.length) break;
+      continue;
+    }
+    paragraph.push(line);
+  }
+  return paragraph.join(" ").trim();
+}
+
+/**
+ * Mapa nombre → descripción JSDoc. Cubre miembros de objeto/TS
+ * (`/** … *​/ color?:`), firmas de emit (`/** … *​/ (e: 'save')`) y
+ * declaraciones (`/** … *​/ export interface X`).
+ */
+function parseJsDocs(script) {
+  const docs = new Map();
+  const put = (raw, name) => {
+    const text = cleanJsDoc(raw);
+    if (text && name && !docs.has(name)) docs.set(name, text);
+  };
+  const member =
+    /\*\*((?:(?!\*\/)[\s\S])*)\*\/\s*(?:export\s+)?(?:function\s+|const\s+|let\s+|var\s+)?(?:readonly\s+)?([\w$]+)\s*[?:(:=,}]/g;
+  for (const match of script.matchAll(member)) put(match[1], match[2]);
+  const emitSig = /\*\*((?:(?!\*\/)[\s\S])*)\*\/\s*\(\s*e\s*:\s*['"]([^'"]+)['"]/g;
+  for (const match of script.matchAll(emitSig)) put(match[1], match[2]);
+  const decl = /\*\*((?:(?!\*\/)[\s\S])*)\*\/\s*(?:export\s+)?(?:interface|type)\s+([\w$]+)/g;
+  for (const match of script.matchAll(decl)) put(match[1], match[2]);
+  return docs;
+}
+
+// ── Interfaces / types ───────────────────────────────────────────────────────
+
+/** Texto de los macros de API (`defineProps`/`defineEmits`/…) para saber qué tipos son públicos. */
+function apiSurfaceText(script) {
+  const parts = [];
+  for (const match of script.matchAll(/define(Props|Emits|Model|Expose|Slots)\b/g)) {
+    const brace = script.indexOf("{", match.index);
+    const paren = script.indexOf("(", match.index);
+    const candidates = [brace, paren].filter((i) => i >= 0 && i < match.index + 800);
+    if (!candidates.length) continue;
+    const balanced = readBalanced(script, Math.min(...candidates));
+    if (balanced) parts.push(balanced);
+  }
+  return parts.join("\n");
+}
+
+/** Interfaces y type-aliases con cuerpo de objeto, en orden de aparición. */
+function parseInterfaces(script, docs) {
+  const surface = apiSurfaceText(script);
+  const decls = [];
+  const seen = new Set();
+  const re = /(?:^|\n)[ \t]*(export[ \t]+)?(interface|type)[ \t]+([\w$]+)/g;
+  for (const match of script.matchAll(re)) {
+    const name = match[3];
+    if (seen.has(name)) continue;
+    const declStart = match.index + (match[0].startsWith("\n") ? 1 : 0) + (match[0].match(/^[ \t]*/)?.[0].length ?? 0);
+    const open = script.indexOf("{", match.index);
+    if (open < 0) continue;
+    const head = script.slice(declStart, open).trimEnd();
+    const isInterface = /^(?:export\s+)?interface\s+[\w$]+/.test(head);
+    const isObjectType = /^(?:export\s+)?type\s+[\w$]+\s*(?:<[^>]*>)?\s*=\s*$/.test(head);
+    if (!isInterface && !isObjectType) continue;
+    const body = readBalanced(script, open);
+    if (!body) continue;
+    seen.add(name);
+    decls.push({
+      name,
+      code: `${head} ${body}`,
+      description: docs.get(name),
+      exported: /^export\b/.test(head),
+    });
+  }
+
+  // Solo tipos que son parte de la API: exportados, documentados o usados en un
+  // macro; se expande a los tipos referenciados por esos (ej. FooterCell).
+  const included = new Set();
+  const queue = decls.filter(
+    (item) =>
+      item.exported || item.description || new RegExp(`\\b${item.name}\\b`).test(surface),
+  );
+  while (queue.length) {
+    const item = queue.shift();
+    if (included.has(item.name)) continue;
+    included.add(item.name);
+    for (const other of decls) {
+      if (!included.has(other.name) && new RegExp(`\\b${other.name}\\b`).test(item.code)) {
+        queue.push(other);
+      }
+    }
+  }
+  return decls.filter((item) => included.has(item.name));
+}
+
+// ── Clases CSS ───────────────────────────────────────────────────────────────
+
+/** Clases `cu-*` definidas en los `<style>` del componente. */
+function parseClasses(descriptor) {
+  const classes = new Set();
+  for (const style of descriptor.styles ?? []) {
+    for (const match of (style.content ?? "").matchAll(/\.(-?cu-[\w-]+)/g)) classes.add(match[1]);
+  }
+  return [...classes].sort();
+}
+
 // ── Props ───────────────────────────────────────────────────────────────────
 
 function propKind(rest, values) {
@@ -116,7 +228,7 @@ function propKind(rest, values) {
   return "unknown";
 }
 
-function parseProps(source, compiled) {
+function parseProps(source, compiled, docs) {
   let block = null;
   const compiledMatch = compiled ? /props\s*:\s*\{/.exec(compiled) : null;
   if (compiledMatch) {
@@ -134,6 +246,7 @@ function parseProps(source, compiled) {
     }
   }
   if (!block) return [];
+  block = block.replace(/\/\*[\s\S]*?\*\//g, "");
 
   const props = [];
   for (const entry of splitTopLevel(block)) {
@@ -144,6 +257,8 @@ function parseProps(source, compiled) {
     const union = rest.match(/PropType\s*<([^>]*)>/);
     const values = valuesOf(validator?.[1] ?? union?.[1] ?? "").filter(Boolean);
     const prop = { name, type: values.length ? values.join(" | ") : "—", kind: propKind(rest, values) };
+    const description = docs?.get(name);
+    if (description) prop.description = description;
     if (values.length) prop.values = values;
     if (/required\s*:\s*true/.test(rest)) prop.required = true;
     const def = optionValue(rest, "default");
@@ -162,7 +277,7 @@ function parseProps(source, compiled) {
 
 // ── Emits ───────────────────────────────────────────────────────────────────
 
-function parseEmits(source, compiled) {
+function parseEmits(source, compiled, docs) {
   const emits = new Map();
   const add = (name, payload) => {
     if (name && !emits.has(name)) emits.set(name, payload);
@@ -197,24 +312,34 @@ function parseEmits(source, compiled) {
   const arrays = /defineEmits(?!\s*<)\s*\(\s*\[([^\]]*)\]/.exec(source);
   if (arrays) valuesOf(arrays[1]).forEach((name) => add(name));
 
-  return [...emits].map(([name, payload]) => ({ name, type: payload || "() => void" }));
+  return [...emits].map(([name, payload]) => {
+    const row = { name, type: payload || "() => void" };
+    const description = docs?.get(name);
+    if (description) row.description = description;
+    return row;
+  });
 }
 
 // ── Exposes ─────────────────────────────────────────────────────────────────
 
-function parseExposes(source) {
+function parseExposes(source, docs) {
   const match = /defineExpose\s*\(/.exec(source);
   if (!match) return [];
   const start = source.indexOf("{", match.index);
   const balanced = start >= 0 ? readBalanced(source, start) : null;
   if (!balanced) return [];
-  const inner = balanced.slice(1, -1);
+  const inner = balanced.slice(1, -1).replace(/\/\*[\s\S]*?\*\//g, "");
   const names = new Set();
   for (const entry of splitTopLevel(inner)) {
     const key = entry.match(/^\s*(?:\.\.\.)?([\w$]+)/);
     if (key) names.add(key[1]);
   }
-  return [...names].map((name) => ({ name: `${name}()`, type: "() => void" }));
+  return [...names].map((name) => {
+    const row = { name: `${name}()`, type: "() => void" };
+    const description = docs?.get(name);
+    if (description) row.description = description;
+    return row;
+  });
 }
 
 // ── Slots ───────────────────────────────────────────────────────────────────
@@ -300,8 +425,9 @@ export function parseComponent(filePath, source = readFileSync(filePath, "utf-8"
   }
 
   const slots = parseSlots(descriptor);
-  const props = parseProps(script, compiled);
-  const emits = parseEmits(script, compiled);
+  const docs = parseJsDocs(script);
+  const props = parseProps(script, compiled, docs);
+  const emits = parseEmits(script, compiled, docs);
 
   // `defineModel` agrega una prop `modelValue` y un emit `update:modelValue`
   // que no aparecen en `defineProps`/`defineEmits`.
@@ -318,8 +444,10 @@ export function parseComponent(filePath, source = readFileSync(filePath, "utf-8"
   return {
     props,
     emits,
-    exposes: parseExposes(script),
+    exposes: parseExposes(script, docs),
     slots,
+    interfaces: parseInterfaces(script, docs),
+    classes: parseClasses(descriptor),
     tokens: parseTokens(descriptor, source),
     components: parseComponentImports(script),
     hasDefaultSlot: slots.some((slot) => slot.name === "default"),

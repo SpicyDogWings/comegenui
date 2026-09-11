@@ -15,49 +15,63 @@ function initialsOf(name: string): string {
 export const cuAuthorCardStories: ComponentStory = {
   component: "cu-author-card",
   vue: AuthorCard,
+  tokens: [
+    "--cu-color-neutral",
+    "--cu-font-size-sm",
+    "--cu-font-size-xs",
+    "--cu-font-weight-medium",
+    "--cu-line-height-tight"
+  ],
+  classes: [
+    "cu-author",
+    "cu-author-info",
+    "cu-author-name",
+    "cu-author-role"
+  ],
   subComponents: [
-    { label: "Avatar", path: "/playground/components/avatar#style" },
+    {
+      "label": "Avatar",
+      "path": "/playground/components/avatar#style"
+    }
   ],
   api: {
-    components: [
-      { label: "Avatar", path: "/playground/components/avatar" },
+    "components": [
+      {
+        "label": "Avatar",
+        "path": "/playground/components/avatar"
+      }
     ],
-    props: [
+    "props": [
       {
-        name: "name",
-        type: "string",
-        default: "—",
-        description: "Nombre del autor (requerido)",
+        "name": "name",
+        "type": "string",
+        "description": "Nombre del autor (requerido)"
       },
       {
-        name: "role",
-        type: "string",
-        default: '""',
-        description: "Rol o cargo del autor",
+        "name": "role",
+        "type": "string",
+        "default": "",
+        "description": "Rol o cargo del autor"
       },
       {
-        name: "color",
-        type: "string",
-        default: '""',
-        description:
-          "primary, secondary, neutral, success, warning, danger. Si no se pasa, se resuelve por hash del nombre",
+        "name": "color",
+        "type": "primary | secondary | neutral | success | warning | danger",
+        "default": "",
+        "description": "primary, secondary, neutral, success, warning, danger. Si no se pasa, se resuelve por hash del nombre"
       },
       {
-        name: "size",
-        type: "string",
-        default: '"md"',
-        description: "sm | md | lg",
+        "name": "size",
+        "type": "sm | md | lg",
+        "default": "md",
+        "description": "sm | md | lg"
       },
       {
-        name: "src",
-        type: "string",
-        default: '""',
-        description: "URL de imagen (muestra foto en vez de iniciales)",
-      },
-    ],
-    slots: [],
-    events: [],
-    exposes: [],
+        "name": "src",
+        "type": "string",
+        "default": "",
+        "description": "URL de imagen (muestra foto en vez de iniciales)"
+      }
+    ]
   },
   sections: [
     {

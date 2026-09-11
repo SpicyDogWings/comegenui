@@ -14,52 +14,169 @@ export const cuMonthSliderStories: ComponentStory = {
   component: "cu-month-slider",
   vue: MonthSlider,
   tokens: [
-    '--ms-accent',
-    '--ms-accent-hover',
-    '--ms-accent-text',
-    '--ms-soft',
-    '--ms-soft-hover',
-    '--ms-subtle',
-    '--ms-subtle-border',
-    '--ms-subtle-hover',
-    '--ms-ghost-hover',
-    '--ms-surface',
-    '--cu-font-sans',
-    '--cu-space-2xs',
+    "--cu-color-surface",
+    "--cu-font-sans",
+    "--cu-space-2xs"
+  ],
+  classes: [
+    "cu-month-slider"
   ],
   subComponents: [
-    { label: 'MonthSliderLabel', path: '/playground/components/month-slider#style' }
+    {
+      "label": "MonthSliderLabel",
+      "path": "/playground/components/month-slider#style"
+    }
   ],
   api: {
-    components: [
-      { label: 'MonthSliderLabel', path: '/playground/components/month-slider' }
+    "components": [
+      {
+        "label": "Button",
+        "path": "/playground/components/button"
+      },
+      {
+        "label": "MonthSliderLabel",
+        "path": "/playground/components/month-slider-label"
+      }
     ],
-    props: [
-      { name: 'modelValue', type: 'string | number | Date | null', default: 'null', description: 'Valor (v-model)' },
-      { name: 'monthFormat', type: 'string', default: '"MMMM"', description: 'Formato del mes (tokens MM MMM MMMM)' },
-      { name: 'yearFormat', type: 'string', default: '"yyyy"', description: 'Formato del año (tokens yy yyyy)' },
-      { name: 'locale', type: 'string', default: '"es"', description: 'Locale de los nombres' },
-      { name: 'yearNavigation', type: 'boolean', default: 'true', description: 'Habilita navegación de años (‹ ‹‹)' },
-      { name: 'variant', type: 'string', default: '"soft"', description: 'solid, outlined, soft, ghost, subtle' },
-      { name: 'min', type: 'string | number | Date | null', default: 'null', description: 'Mes mínimo' },
-      { name: 'max', type: 'string | number | Date | null', default: 'null', description: 'Mes máximo' },
-      { name: 'color', type: 'string', default: '"primary"', description: 'primary, secondary, neutral, success, warning, danger' },
-      { name: 'disabled', type: 'boolean', default: 'false', description: 'Deshabilita el control' },
+    "props": [
+      {
+        "name": "modelValue",
+        "type": "[String",
+        "default": "null",
+        "description": "Valor (v-model)"
+      },
+      {
+        "name": "monthFormat",
+        "type": "string",
+        "default": "MMMM",
+        "description": "Formato del mes (tokens MM MMM MMMM)"
+      },
+      {
+        "name": "yearFormat",
+        "type": "string",
+        "default": "yyyy",
+        "description": "Formato del año (tokens yy yyyy)"
+      },
+      {
+        "name": "locale",
+        "type": "string",
+        "default": "es",
+        "description": "Locale de los nombres"
+      },
+      {
+        "name": "yearNavigation",
+        "type": "[Boolean",
+        "default": "true",
+        "description": "Habilita navegación de años (‹ ‹‹)"
+      },
+      {
+        "name": "variant",
+        "type": "solid | outlined | soft | ghost | subtle",
+        "default": "soft",
+        "description": "solid, outlined, soft, ghost, subtle"
+      },
+      {
+        "name": "min",
+        "type": "[String",
+        "default": "null",
+        "description": "Mes mínimo"
+      },
+      {
+        "name": "max",
+        "type": "[String",
+        "default": "null",
+        "description": "Mes máximo"
+      },
+      {
+        "name": "color",
+        "type": "primary | secondary | neutral | success | warning | danger",
+        "default": "primary",
+        "description": "primary, secondary, neutral, success, warning, danger"
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "Deshabilita el control"
+      }
     ],
-    slots: [],
-    events: [
-      { name: 'update:modelValue', type: '(value: Date) => void', description: 'Al cambiar el mes (v-model)' },
-      { name: 'change', type: '(value: Date) => void', description: 'Al cambiar el mes' },
+    "events": [
+      {
+        "name": "update:modelValue",
+        "type": "() => void",
+        "description": "Al cambiar el mes (v-model)"
+      },
+      {
+        "name": "change",
+        "type": "() => void",
+        "description": "Al cambiar el mes"
+      }
     ],
-    exposes: [
-      { name: 'nextMonth', type: '() => void', description: 'Avanza un mes' },
-      { name: 'prevMonth', type: '() => void', description: 'Retrocede un mes' },
-      { name: 'nextYear', type: '() => void', description: 'Avanza un año' },
-      { name: 'prevYear', type: '() => void', description: 'Retrocede un año' },
-      { name: 'goToMonth', type: '(value: string | number | Date) => void', description: 'Va al mes indicado' },
-      { name: 'getValue', type: '() => Date | null', description: 'Devuelve el valor actual' },
-      { name: 'setValue', type: '(value: string | number | Date) => void', description: 'Setea el valor' },
-    ],
+    "exposes": [
+      {
+        "name": "nextMonth()",
+        "type": "() => void"
+      },
+      {
+        "name": "prevMonth()",
+        "type": "() => void"
+      },
+      {
+        "name": "nextYear()",
+        "type": "() => void"
+      },
+      {
+        "name": "prevYear()",
+        "type": "() => void"
+      },
+      {
+        "name": "goToMonth()",
+        "type": "() => void"
+      },
+      {
+        "name": "getValue()",
+        "type": "() => void"
+      },
+      {
+        "name": "setValue()",
+        "type": "() => void"
+      },
+      {
+        "name": "nextMonth",
+        "type": "() => void",
+        "description": "Avanza un mes"
+      },
+      {
+        "name": "prevMonth",
+        "type": "() => void",
+        "description": "Retrocede un mes"
+      },
+      {
+        "name": "nextYear",
+        "type": "() => void",
+        "description": "Avanza un año"
+      },
+      {
+        "name": "prevYear",
+        "type": "() => void",
+        "description": "Retrocede un año"
+      },
+      {
+        "name": "goToMonth",
+        "type": "(value: string | number | Date) => void",
+        "description": "Va al mes indicado"
+      },
+      {
+        "name": "getValue",
+        "type": "() => Date | null",
+        "description": "Devuelve el valor actual"
+      },
+      {
+        "name": "setValue",
+        "type": "(value: string | number | Date) => void",
+        "description": "Setea el valor"
+      }
+    ]
   },
   extras,
   sections: [

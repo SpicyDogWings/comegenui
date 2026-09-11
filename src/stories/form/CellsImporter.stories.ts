@@ -79,80 +79,271 @@ const CellsImporterValidationPreview = defineComponent({
 export const cuCellsImporterStories: ComponentStory = {
   component: "cu-cells-importer",
   vue: CellsImporter,
-  extras,
   tokens: [
-    '--ci-accent',
-    '--cu-color-neutral-text',
-    '--cu-color-success',
-    '--cu-color-warning',
-    '--cu-color-warning-soft',
-    '--cu-color-danger',
-    '--cu-font-sans',
-    '--cu-font-size-xs',
-    '--cu-font-size-sm',
-    '--cu-radius',
-    '--cu-space-2xs',
-    '--cu-space-sm',
+    "--ci-accent",
+    "--cu-color-danger",
+    "--cu-color-neutral-text",
+    "--cu-color-success",
+    "--cu-color-warning",
+    "--cu-color-warning-soft",
+    "--cu-font-sans",
+    "--cu-font-size-sm",
+    "--cu-font-size-xs",
+    "--cu-radius",
+    "--cu-space-2xs",
+    "--cu-space-sm"
+  ],
+  classes: [
+    "cu-cells-importer",
+    "cu-cells-importer-status",
+    "cu-cells-importer-status--error",
+    "cu-cells-importer-status--parsing",
+    "cu-cells-importer-summary",
+    "cu-cells-importer-summary-bad",
+    "cu-cells-importer-summary-ok",
+    "cu-cells-importer-toolbar",
+    "cu-cells-importer-warning"
   ],
   api: {
-    props: [
-      { name: 'columns', type: 'CellColumn[]', default: '[]', description: 'Esquema de columnas (header esperado, tipo, reglas). Obligatorio.' },
-      { name: 'formats', type: 'string[]', default: '[".xlsx", ".csv"]', description: 'Formatos deseados; se propagan al input (accept) y se muestran al usuario' },
-      { name: 'delimiter', type: 'string', default: '","', description: 'Delimitador para archivos CSV' },
-      { name: 'hasHeader', type: 'boolean', default: 'true', description: 'La primera fila del archivo es el encabezado' },
-      { name: 'strict', type: 'boolean', default: 'false', description: 'false = las columnas se matchean por label sin importar el orden; true = respeta el orden del schema' },
-      { name: 'sheet', type: 'string | number', default: '0', description: 'Hoja a leer en .xlsx (índice o nombre)' },
-      { name: 'template', type: '{ enabled, type, filename }', default: '{ enabled: false, type: "csv", filename: "template" }', description: 'Configura el botón de descarga de plantilla (csv | xlsx)' },
-      { name: 'color', type: 'string', default: '"neutral"', description: 'primary, secondary, neutral, success, warning, danger' },
-      { name: 'variant', type: 'string', default: '"outlined"', description: 'outlined, soft, ghost, subtle' },
-      { name: 'placeholder', type: 'string', default: '"Seleccionar archivo"', description: 'Texto cuando no hay archivo' },
-      { name: 'disabled', type: 'boolean', default: 'false', description: 'Deshabilita la selección' },
-      { name: 'readOnly', type: 'boolean', default: 'false', description: 'Solo lectura: bloquea selección' },
-      { name: 'maxSize', type: 'number', default: '—', description: 'Tamaño máximo en bytes' },
-      { name: 'inputType', type: 'string', default: '"input"', description: 'Control de selección: input o zone (drag & drop)' },
+    "components": [
+      {
+        "label": "FileInput",
+        "path": "/playground/components/file-input"
+      },
+      {
+        "label": "FileInputZone",
+        "path": "/playground/components/file-input-zone"
+      },
+      {
+        "label": "Button",
+        "path": "/playground/components/button"
+      },
+      {
+        "label": "Collapse",
+        "path": "/playground/components/collapse"
+      },
+      {
+        "label": "AdvancedTable",
+        "path": "/playground/components/advanced-table"
+      }
     ],
-    events: [
-      { name: 'parse', type: 'custom', description: '{ rows, headers, fileName } al leer correctamente un archivo' },
-      { name: 'error', type: 'custom', description: 'CellError[] con los errores de validación del contenido' },
-      { name: 'change', type: 'custom', description: 'File | null al seleccionar o quitar archivo' },
+    "props": [
+      {
+        "name": "columns",
+        "type": "Array as PropType<CellColumn[]>",
+        "description": "Esquema de columnas (header esperado, tipo, reglas). Obligatorio."
+      },
+      {
+        "name": "formats",
+        "type": "Array as PropType<string[]>",
+        "description": "Formatos deseados; se propagan al input (accept) y se muestran al usuario"
+      },
+      {
+        "name": "delimiter",
+        "type": "string",
+        "default": ",",
+        "description": "Delimitador para archivos CSV"
+      },
+      {
+        "name": "hasHeader",
+        "type": "boolean",
+        "default": "true",
+        "description": "La primera fila del archivo es el encabezado"
+      },
+      {
+        "name": "strict",
+        "type": "boolean",
+        "default": "false",
+        "description": "false = las columnas se matchean por label sin importar el orden; true = respeta el orden del schema"
+      },
+      {
+        "name": "sheet",
+        "type": "[String",
+        "default": "0",
+        "description": "Hoja a leer en .xlsx (índice o nombre)"
+      },
+      {
+        "name": "template",
+        "type": "xlsx | csv",
+        "description": "Configura el botón de descarga de plantilla (csv | xlsx)"
+      },
+      {
+        "name": "color",
+        "type": "primary | secondary | neutral | success | warning | danger",
+        "default": "neutral",
+        "description": "primary, secondary, neutral, success, warning, danger"
+      },
+      {
+        "name": "variant",
+        "type": "string",
+        "default": "outlined",
+        "description": "outlined, soft, ghost, subtle"
+      },
+      {
+        "name": "placeholder",
+        "type": "string",
+        "default": "Seleccionar archivo",
+        "description": "Texto cuando no hay archivo"
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "Deshabilita la selección"
+      },
+      {
+        "name": "readOnly",
+        "type": "boolean",
+        "default": "false",
+        "description": "Solo lectura: bloquea selección"
+      },
+      {
+        "name": "maxSize",
+        "type": "number",
+        "description": "Tamaño máximo en bytes"
+      },
+      {
+        "name": "inputType",
+        "type": "input | zone",
+        "default": "input",
+        "description": "Control de selección: input o zone (drag & drop)"
+      }
     ],
-    exposes: [
-      { name: 'getRows', type: '() => Record<string, unknown>[]', description: 'Devuelve las filas parseadas' },
-      { name: 'getHeaders', type: '() => string[]', description: 'Devuelve los encabezados del archivo' },
-      { name: 'getErrors', type: '() => CellError[]', description: 'Devuelve los errores de validación' },
-      { name: 'getFile', type: '() => File | null', description: 'Devuelve el File seleccionado o null' },
-      { name: 'validate', type: '() => CellError[]', description: 'Re-valida las filas actuales y devuelve los errores' },
-      { name: 'downloadTemplate', type: '() => void', description: 'Descarga la plantilla configurada (csv/xlsx)' },
-      { name: 'reset', type: '() => void', description: 'Limpia archivo, filas y errores' },
-      { name: 'set', type: '(file: File | null) => void', description: 'Establece el archivo programáticamente' },
-      { name: 'trigger', type: '() => void', description: 'Abre el diálogo de selección de archivos' },
-      { name: 'focus', type: '() => void', description: 'Pone el foco en el control' },
+    "events": [
+      {
+        "name": "parse",
+        "type": "() => void",
+        "description": "{ rows, headers, fileName } al leer correctamente un archivo"
+      },
+      {
+        "name": "error",
+        "type": "() => void",
+        "description": "CellError[] con los errores de validación del contenido"
+      },
+      {
+        "name": "change",
+        "type": "() => void",
+        "description": "File | null al seleccionar o quitar archivo"
+      }
     ],
-    interfaceCode: `// CellColumn
-interface CellColumn {
-  key: string                       // identificador de la columna
-  label: string                     // header esperado en el archivo
-  type?: 'string' | 'integer' | 'number' | 'date' | 'boolean' | 'email'
-  required?: boolean                // rechaza celdas vacías
-  min?: number                      // valor mínimo (number/integer)
-  max?: number                      // valor máximo (number/integer)
-  minLength?: number                // largo mínimo (string)
-  maxLength?: number                // largo máximo (string)
-  pattern?: string | RegExp         // regex de formato (string)
-  enum?: (string | number)[]        // valores permitidos
-  unique?: boolean                  // rechaza duplicados en la columna
-  validate?: (value: unknown, row: Record<string, unknown>)
-    => string | boolean | undefined // regla custom
-}
-
-// CellError
-interface CellError {
-  row: number          // índice de la fila (0-based)
-  columnKey: string
-  columnLabel: string
-  message: string
-}`,
+    "exposes": [
+      {
+        "name": "getRows()",
+        "type": "() => void"
+      },
+      {
+        "name": "getHeaders()",
+        "type": "() => void"
+      },
+      {
+        "name": "getErrors()",
+        "type": "() => void"
+      },
+      {
+        "name": "getFile()",
+        "type": "() => void"
+      },
+      {
+        "name": "validate()",
+        "type": "() => void"
+      },
+      {
+        "name": "downloadTemplate()",
+        "type": "() => void"
+      },
+      {
+        "name": "reset()",
+        "type": "() => void"
+      },
+      {
+        "name": "set()",
+        "type": "() => void"
+      },
+      {
+        "name": "trigger()",
+        "type": "() => void"
+      },
+      {
+        "name": "focus()",
+        "type": "() => void"
+      },
+      {
+        "name": "getRows",
+        "type": "() => Record<string, unknown>[]",
+        "description": "Devuelve las filas parseadas"
+      },
+      {
+        "name": "getHeaders",
+        "type": "() => string[]",
+        "description": "Devuelve los encabezados del archivo"
+      },
+      {
+        "name": "getErrors",
+        "type": "() => CellError[]",
+        "description": "Devuelve los errores de validación"
+      },
+      {
+        "name": "getFile",
+        "type": "() => File | null",
+        "description": "Devuelve el File seleccionado o null"
+      },
+      {
+        "name": "validate",
+        "type": "() => CellError[]",
+        "description": "Re-valida las filas actuales y devuelve los errores"
+      },
+      {
+        "name": "downloadTemplate",
+        "type": "() => void",
+        "description": "Descarga la plantilla configurada (csv/xlsx)"
+      },
+      {
+        "name": "reset",
+        "type": "() => void",
+        "description": "Limpia archivo, filas y errores"
+      },
+      {
+        "name": "set",
+        "type": "(file: File | null) => void",
+        "description": "Establece el archivo programáticamente"
+      },
+      {
+        "name": "trigger",
+        "type": "() => void",
+        "description": "Abre el diálogo de selección de archivos"
+      },
+      {
+        "name": "focus",
+        "type": "() => void",
+        "description": "Pone el foco en el control"
+      }
+    ],
+    "interfaceCode": `// CellColumn
+  interface CellColumn {
+    key: string                       // identificador de la columna
+    label: string                     // header esperado en el archivo
+    type?: 'string' | 'integer' | 'number' | 'date' | 'boolean' | 'email'
+    required?: boolean                // rechaza celdas vacías
+    min?: number                      // valor mínimo (number/integer)
+    max?: number                      // valor máximo (number/integer)
+    minLength?: number                // largo mínimo (string)
+    maxLength?: number                // largo máximo (string)
+    pattern?: string | RegExp         // regex de formato (string)
+    enum?: (string | number)[]        // valores permitidos
+    unique?: boolean                  // rechaza duplicados en la columna
+    validate?: (value: unknown, row: Record<string, unknown>)
+      => string | boolean | undefined // regla custom
+  }
+  
+  // CellError
+  interface CellError {
+    row: number          // índice de la fila (0-based)
+    columnKey: string
+    columnLabel: string
+    message: string
+  }`
   },
+  extras,
   sections: [
     {
       id: "default",

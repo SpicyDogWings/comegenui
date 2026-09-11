@@ -100,6 +100,22 @@ function field(name, value, level = 1) {
   );
 }
 
+/** Serializa `api` manteniendo `interfaceCode` como template literal legible. */
+function apiField(api) {
+  const json = JSON.stringify(api, null, 2);
+  const pretty = json.replace(/"interfaceCode": "((?:[^"\\]|\\.)*)"/, (_match, escaped) => {
+    let code = escaped;
+    try {
+      code = JSON.parse(`"${escaped}"`);
+    } catch {
+      /* deja el string tal cual */
+    }
+    return `"interfaceCode": \`${code}\``;
+  });
+  const lines = pretty.split("\n");
+  return lines.map((line, index) => (index === 0 ? `  api: ${line}` : `  ${line}`)).join("\n") + ",";
+}
+
 /** Lee un valor balanceado (`[...]`, `{...}`, `(...)` o backtick) desde `start`. */
 function readValue(src, start) {
   const first = src[start];
@@ -185,13 +201,24 @@ function quotedAfter(text, key) {
  * Descripciones existentes por sub-array de `api` (para no pisarlas al
  * regenerar). Devuelve `{ props, slots, events, exposes }` → Map(name → desc).
  */
+/** Texto del objeto `api: {...}` de una story (o "" si no hay). */
+function apiBlock(src) {
+  const match = /(?:^|[\s{,])["']?api["']?\s*:\s*\{/.exec(src);
+  if (!match) return "";
+  const start = src.indexOf("{", match.index);
+  return readValue(src, start) ?? "";
+}
+
+/** Descripciones curadas de las filas de `api` (para no perderlas al regenerar). */
 function existingApiRows(src) {
   const result = { props: new Map(), slots: new Map(), events: new Map(), exposes: new Map() };
+  const api = apiBlock(src);
+  if (!api) return result;
   for (const key of Object.keys(result)) {
-    const match = new RegExp(`(?:^|[\\s{,])["']?${key}["']?\\s*:\\s*\\[`).exec(src);
+    const match = new RegExp(`(?:^|[\\s{,])["']?${key}["']?\\s*:\\s*\\[`).exec(api);
     if (!match) continue;
-    const start = src.indexOf("[", match.index);
-    const block = readValue(src, start);
+    const start = api.indexOf("[", match.index);
+    const block = readValue(api, start);
     if (!block) continue;
     for (const entry of splitTopLevel(block.slice(1, -1))) {
       const name = quotedAfter(entry, "name");
@@ -202,12 +229,41 @@ function existingApiRows(src) {
   return result;
 }
 
+/** `interfaceCode` curado de una story (backtick legado o string JSON). */
+function existingInterfaceCode(src) {
+  const template = /interfaceCode\s*:\s*`([\s\S]*?)`\s*,?/.exec(src);
+  if (template) return template[1];
+  const json = /"interfaceCode"\s*:\s*"((?:[^"\\]|\\.)*)"/.exec(src);
+  if (json) {
+    try {
+      return JSON.parse(`"${json[1]}"`);
+    } catch {
+      return undefined;
+    }
+  }
+  return undefined;
+}
+
+/** `classes: [...]` existentes en una story, para no perderlos. */
+function existingClasses(src) {
+  const match = /["']?classes["']?\s*:\s*\[([\s\S]*?)\]/.exec(src);
+  if (!match) return [];
+  try {
+    const parsed = JSON.parse(`[${match[1]}]`);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
 /** Filas existentes de un sub-array de `api` (fallback si el parser no detecta). */
 function existingRows(src, key) {
-  const match = new RegExp(`(?:^|[\\s{,])["']?${key}["']?\\s*:\\s*\\[`).exec(src);
+  const api = apiBlock(src);
+  if (!api) return [];
+  const match = new RegExp(`(?:^|[\\s{,])["']?${key}["']?\\s*:\\s*\\[`).exec(api);
   if (!match) return [];
-  const start = src.indexOf("[", match.index);
-  const block = readValue(src, start);
+  const start = api.indexOf("[", match.index);
+  const block = readValue(api, start);
   if (!block) return [];
   const rows = [];
   for (const entry of splitTopLevel(block.slice(1, -1))) {
@@ -241,12 +297,14 @@ function existingTokens(src) {
   return [...block.matchAll(/['"`]([^'"`]+)['"`]/g)].map((m) => m[1]);
 }
 
-/** Extrae un array `{ label, path }` (components/subComponents) de una story. */
+/** Extrae un array `{ label, path }` (components en `api`, subComponents top-level). */
 function existingDeps(src, key) {
-  const match = new RegExp(`${key}\\s*:\\s*\\[`).exec(src);
+  const scope = key === "components" ? apiBlock(src) : src;
+  if (!scope) return [];
+  const match = new RegExp(`["']?${key}["']?\\s*:\\s*\\[`).exec(scope);
   if (!match) return [];
-  const start = src.indexOf("[", match.index);
-  const block = readValue(src, start);
+  const start = scope.indexOf("[", match.index);
+  const block = readValue(scope, start);
   if (!block) return [];
   return [...block.matchAll(/\{\s*label:\s*['"]([^'"]+)['"][^}]*?path:\s*['"]([^'"]+)['"]/g)].map(
     (m) => ({ label: m[1], path: m[2] }),
@@ -256,7 +314,7 @@ function existingDeps(src, key) {
 // ── Generación de una story ─────────────────────────────────────────────────
 function generateOne(componentName) {
   const componentPath = fg.sync(`${componentsDir}/**/${componentName}.vue`, {
-    ignore: ["**/customElements/**"],
+    ignore: ["**/customElements/**", "**/legacy/**"],
   })[0];
   if (!componentPath) {
     console.error(`❌ No se encontró ${componentsDir}/**/${componentName}.vue`);
@@ -305,7 +363,7 @@ function generateOne(componentName) {
 
   const propsRows = props.map((prop) => {
     const override = asOverride(apiConfig.props?.[prop.name]);
-    const description = override.description ?? existing.props.get(prop.name);
+    const description = override.description ?? prop.description ?? existing.props.get(prop.name);
     return {
       name: prop.name,
       type: override.type ?? prop.type,
@@ -317,12 +375,12 @@ function generateOne(componentName) {
   });
   const slotsRows = contract.slots.map((slot) => {
     const override = asOverride(apiConfig.slots?.[slot.name]);
-    const description = override.description ?? existing.slots.get(slot.name);
+    const description = override.description ?? slot.description ?? existing.slots.get(slot.name);
     return { name: slot.name, ...(description ? { description } : {}) };
   });
   const eventsRows = emits.map((emit) => {
     const override = asOverride(apiConfig.events?.[emit.name]);
-    const description = override.description ?? existing.events.get(emit.name);
+    const description = override.description ?? emit.description ?? existing.events.get(emit.name);
     return {
       name: emit.name,
       type: override.type ?? emit.type,
@@ -331,7 +389,7 @@ function generateOne(componentName) {
   });
   const exposesRows = contract.exposes.map((expose) => {
     const override = asOverride(apiConfig.exposes?.[expose.name]);
-    const description = override.description ?? existing.exposes.get(expose.name);
+    const description = override.description ?? expose.description ?? existing.exposes.get(expose.name);
     return {
       name: expose.name,
       type: override.type ?? expose.type,
@@ -345,6 +403,9 @@ function generateOne(componentName) {
     storyConfig.tokens ??
     (contract.tokens.length ? contract.tokens : existingTokens(existingSource));
   const subComponentRows = storyConfig.subComponents ?? existingDeps(existingSource, "subComponents");
+  const classRows =
+    storyConfig.classes ??
+    (contract.classes.length ? contract.classes : existingClasses(existingSource));
 
   const allProps = mergeRows(propsRows, existingRows(existingSource, "props"));
   const allSlots = mergeRows(slotsRows, existingRows(existingSource, "slots"));
@@ -357,12 +418,19 @@ function generateOne(componentName) {
   if (allSlots.length) api.slots = allSlots;
   if (allEvents.length) api.events = allEvents;
   if (allExposes.length) api.exposes = allExposes;
-  if (storyConfig.interfaceCode) api.interfaceCode = storyConfig.interfaceCode;
+  // Interfaces: config > curado en la story > inferido del `.vue`.
+  const interfaceCode =
+    storyConfig.interfaceCode !== undefined
+      ? storyConfig.interfaceCode
+      : existingInterfaceCode(existingSource) ||
+        contract.interfaces.map((item) => item.code).join("\n\n");
+  if (interfaceCode) api.interfaceCode = interfaceCode;
 
   const metaLines = [];
   if (tokenRows.length) metaLines.push(field("tokens", tokenRows));
+  if (classRows.length) metaLines.push(field("classes", classRows));
   if (subComponentRows.length) metaLines.push(field("subComponents", subComponentRows));
-  if (Object.keys(api).length) metaLines.push(field("api", api));
+  if (Object.keys(api).length) metaLines.push(apiField(api));
 
   /** Emite la página física opcional (la usa el plugin como override). */
   function emitPage() {
@@ -408,18 +476,22 @@ const outlineItems = buildOutline(${`cu${componentName}Stories`});
       return false;
     }
     function removeField(src, fieldName) {
-      const match = new RegExp(`\\n  ${fieldName}: `).exec(src);
-      if (!match) return src;
-      const valueStart = match.index + match[0].length;
-      const value = readValue(src, valueStart);
-      if (!value) return src;
-      let end = valueStart + value.length;
-      if (src[end] === ",") end++;
-      return src.slice(0, match.index) + src.slice(end);
+      const re = new RegExp(`\\n  ${fieldName}: `);
+      let out = src;
+      let match;
+      while ((match = re.exec(out))) {
+        const valueStart = match.index + match[0].length;
+        const value = readValue(out, valueStart);
+        if (!value) break;
+        let end = valueStart + value.length;
+        if (out[end] === ",") end++;
+        out = out.slice(0, match.index) + out.slice(end);
+      }
+      return out;
     }
 
     let updated = readFileSync(resolve(ROOT, storyPath), "utf-8");
-    for (const f of ["tokens", "subComponents", "api"]) updated = removeField(updated, f);
+    for (const f of ["tokens", "classes", "subComponents", "api"]) updated = removeField(updated, f);
     const anchor = new RegExp(`(vue:\\s*${componentName},)`);
     if (!anchor.test(updated)) {
       console.error(`⚠️  No se encontró 'vue: ${componentName},' en ${storyPath}; no se insertó metadata.`);
@@ -440,7 +512,7 @@ const outlineItems = buildOutline(${`cu${componentName}Stories`});
   }
 
   // ── Story completa ────────────────────────────────────────────────────────
-  if (!force && existsSync(resolve(ROOT, storyPath))) {
+  if (!force && !dryRun && existsSync(resolve(ROOT, storyPath))) {
     console.error(`❌ Ya existe ${storyPath}. Usá --force para regenerar.`);
     return false;
   }
@@ -563,6 +635,14 @@ const outlineItems = buildOutline(${`cu${componentName}Stories`});
       section.variants = section.variants.map((variant) => ({
         ...variant,
         attrs: { ...(variant.attrs ?? {}), ...overrides.extraAttrs },
+      }));
+    }
+    // Contenido del slot default para toda la sección: pisa el label derivado
+    // (ej. el nombre del color) por el contenido real del componente (ej. "+").
+    if (overrides.slot !== undefined) {
+      section.variants = section.variants.map((variant) => ({
+        ...variant,
+        slots: { ...(variant.slots ?? {}), default: overrides.slot },
       }));
     }
   }
@@ -706,14 +786,14 @@ const outlineItems = buildOutline(${`cu${componentName}Stories`});
     const preview = storyConfig.sections?.[section.id]?.preview;
     if (!preview || preview.recipe !== "async-click") return null;
     const append = preview.mode !== "replace";
-    const componentName = `${componentName}${capital(section.id)}${append ? "Extra" : "Preview"}`;
+    const previewName = `${componentName}${capital(section.id)}${append ? "Extra" : "Preview"}`;
     const prop = preview.prop ?? "loading";
     const duration = preview.duration ?? 1500;
     const entries = preview.entries?.length
       ? preview.entries
       : [{ idle: preview.idleLabel ?? sample, active: preview.activeLabel ?? "Cargando…", props: preview.props ?? {} }];
-    previews.push(`const ${componentName} = defineComponent({
-  name: ${JSON.stringify(componentName)},
+    previews.push(`const ${previewName} = defineComponent({
+  name: ${JSON.stringify(previewName)},
   setup() {
     const entries: Array<{ idle: string; active: string; props?: Record<string, unknown> }> = ${JSON.stringify(entries)};
     const loading = ref(entries.map(() => false));
@@ -733,7 +813,7 @@ const outlineItems = buildOutline(${`cu${componentName}Stories`});
       );
   },
 });`);
-    return { componentName, append };
+    return { componentName: previewName, append };
   }
 
   const sectionsSource = sections

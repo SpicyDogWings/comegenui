@@ -21,61 +21,244 @@ export const cuSelectStories: ComponentStory = {
   component: "cu-select",
   vue: Select,
   tokens: [
-    '--btn-subtle-border',
-    '--cu-font-sans',
-    '--cu-font-size-sm',
-    '--cu-border-thin',
-    '--cu-space-md',
+    "--btn-subtle-border",
+    "--cu-border-thin",
+    "--cu-font-sans",
+    "--cu-font-size-sm",
+    "--cu-space-md"
+  ],
+  classes: [
+    "cu-dropdown",
+    "cu-input",
+    "cu-select",
+    "cu-select-chevron",
+    "cu-select-chevron--open",
+    "cu-select-empty",
+    "cu-select-hidden-input",
+    "cu-select-label",
+    "cu-select-label--wrap",
+    "cu-select-option",
+    "cu-select-option--disabled",
+    "cu-select-options",
+    "cu-select-toggle"
   ],
   subComponents: [
-    { label: 'Dropdown', path: '/playground/components/dropdown#style' },
-    { label: 'Button', path: '/playground/components/button#style' },
+    {
+      "label": "Dropdown",
+      "path": "/playground/components/dropdown#style"
+    },
+    {
+      "label": "Button",
+      "path": "/playground/components/button#style"
+    }
   ],
   api: {
-    components: [
-      { label: 'Dropdown', path: '/playground/components/dropdown' },
-      { label: 'Button', path: '/playground/components/button' },
+    "components": [
+      {
+        "label": "Dropdown",
+        "path": "/playground/components/dropdown"
+      },
+      {
+        "label": "Button",
+        "path": "/playground/components/button"
+      }
     ],
-    props: [
-      { name: 'modelValue', type: 'string', default: '""', description: 'Valor seleccionado (v-model)' },
-      { name: 'options', type: 'SelectOption[]', default: '[]', description: 'Array de opciones: { value, label, disabled?, color?, variant? }' },
-      { name: 'color', type: 'string', default: '"neutral"', description: 'Color semántico: primary, secondary, neutral, success, warning, danger' },
-      { name: 'variant', type: 'string', default: '"soft"', description: 'outlined, soft, ghost, subtle' },
-      { name: 'placeholder', type: 'string', default: '""', description: 'Texto cuando no hay selección' },
-      { name: 'placeholderWrap', type: 'boolean', default: 'false', description: 'Permite que el label del toggle haga wrap en vez de ellipsis' },
-      { name: 'disabled', type: 'boolean', default: 'false', description: 'Deshabilita el select' },
-      { name: 'position', type: 'string', default: '"bottom"', description: 'Posición del panel: bottom, top, left, right' },
-      { name: 'align', type: 'string', default: '"start"', description: 'Alineación del panel: start, center, end' },
-      { name: 'textAlign', type: 'string', default: '"left"', description: 'Alineación del texto de las opciones: left, center, right' },
-      { name: 'fixed', type: 'boolean', default: 'false', description: 'Posiciona el panel con position: fixed (útil dentro de contenedores con overflow)' },
-      { name: 'searchEnabled', type: 'boolean', default: 'false', description: 'Búsqueda por teclado como select nativo; hace scroll a la opción que coincide' },
-      { name: 'searchMode', type: 'string', default: '"startsWith"', description: 'Modo de coincidencia: startsWith (inicia con) o includes (contiene)' },
-      { name: 'searchResetDelay', type: 'number', default: '1000', description: 'Ms antes de resetear el texto de búsqueda' },
-      { name: 'loading', type: 'boolean', default: 'false', description: 'Muestra estado de carga en el panel (delegado al Dropdown interno)' },
-      { name: 'cooldownVariant', type: 'string', default: '"ghost-hover"', description: 'Variante de la barra de cooldown de la búsqueda' },
+    "props": [
+      {
+        "name": "color",
+        "type": "primary | secondary | neutral | success | warning | danger",
+        "default": "neutral",
+        "description": "Color semántico: primary, secondary, neutral, success, warning, danger"
+      },
+      {
+        "name": "variant",
+        "type": "outlined | soft | ghost | subtle",
+        "default": "soft",
+        "description": "outlined, soft, ghost, subtle"
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "Deshabilita el select"
+      },
+      {
+        "name": "placeholder",
+        "type": "string",
+        "default": "",
+        "description": "Texto cuando no hay selección"
+      },
+      {
+        "name": "placeholderWrap",
+        "type": "boolean",
+        "default": "false",
+        "description": "Permite que el label del toggle haga wrap en vez de ellipsis"
+      },
+      {
+        "name": "position",
+        "type": "string",
+        "default": "bottom",
+        "description": "Posición del panel: bottom, top, left, right"
+      },
+      {
+        "name": "align",
+        "type": "string",
+        "default": "start",
+        "description": "Alineación del panel: start, center, end"
+      },
+      {
+        "name": "textAlign",
+        "type": "left | center | right",
+        "default": "left",
+        "description": "Alineación del texto de las opciones: left, center, right"
+      },
+      {
+        "name": "fixed",
+        "type": "boolean",
+        "default": "false",
+        "description": "Posiciona el panel con position: fixed (útil dentro de contenedores con overflow)"
+      },
+      {
+        "name": "modelValue",
+        "type": "string",
+        "default": "",
+        "description": "Valor seleccionado (v-model)"
+      },
+      {
+        "name": "options",
+        "type": "Array as () => SelectOption[]",
+        "description": "Array de opciones: { value, label, disabled?, color?, variant? }"
+      },
+      {
+        "name": "searchEnabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "Búsqueda por teclado como select nativo; hace scroll a la opción que coincide"
+      },
+      {
+        "name": "searchMode",
+        "type": "startsWith | includes",
+        "default": "startsWith",
+        "description": "Modo de coincidencia: startsWith (inicia con) o includes (contiene)"
+      },
+      {
+        "name": "searchResetDelay",
+        "type": "number",
+        "default": "1000",
+        "description": "Ms antes de resetear el texto de búsqueda"
+      },
+      {
+        "name": "loading",
+        "type": "boolean",
+        "default": "false",
+        "description": "Muestra estado de carga en el panel (delegado al Dropdown interno)"
+      },
+      {
+        "name": "cooldownVariant",
+        "type": "string",
+        "default": "ghost-hover",
+        "description": "Variante de la barra de cooldown de la búsqueda"
+      }
     ],
-    slots: [],
-    events: [
-      { name: 'update:modelValue', type: 'custom', description: 'Nuevo valor seleccionado en detail (v-model)' },
-      { name: 'select', type: 'custom', description: 'Emite la opción seleccionada completa en detail' },
-      { name: 'close', type: 'custom', description: 'El panel se cerró' },
-      { name: 'blur', type: 'custom', description: 'El select perdió el foco (focusout fuera del root)' },
+    "slots": [
+      {
+        "name": "toggle"
+      },
+      {
+        "name": "default"
+      }
     ],
-    exposes: [
-      { name: 'get', type: '() => string', default: '—', description: 'Devuelve el valor seleccionado' },
-      { name: 'set', type: '(value: string) => void', default: '—', description: 'Setea el valor seleccionado' },
-      { name: 'reset', type: '() => void', default: '—', description: 'Limpia la selección' },
-      { name: 'focus', type: '() => void', default: '—', description: 'Pone el foco en el select' },
-      { name: 'isOpen', type: '() => boolean', default: '—', description: 'Indica si el panel está abierto' },
-      { name: 'selectedItem', type: '() => SelectOption | null', default: '—', description: 'Opción seleccionada actualmente' },
+    "events": [
+      {
+        "name": "update:modelValue",
+        "type": "() => void",
+        "description": "Nuevo valor seleccionado en detail (v-model)"
+      },
+      {
+        "name": "select",
+        "type": "() => void",
+        "description": "Emite la opción seleccionada completa en detail"
+      },
+      {
+        "name": "close",
+        "type": "() => void",
+        "description": "El panel se cerró"
+      },
+      {
+        "name": "blur",
+        "type": "() => void",
+        "description": "El select perdió el foco (focusout fuera del root)"
+      }
     ],
-    interfaceCode: `interface SelectOption {
-  value: string;
-  label: string;
-  disabled?: boolean;
-  color?: string;
-  variant?: string;
-}`,
+    "exposes": [
+      {
+        "name": "get()",
+        "type": "() => void"
+      },
+      {
+        "name": "set()",
+        "type": "() => void"
+      },
+      {
+        "name": "reset()",
+        "type": "() => void"
+      },
+      {
+        "name": "focus()",
+        "type": "() => void"
+      },
+      {
+        "name": "isOpen()",
+        "type": "() => void"
+      },
+      {
+        "name": "selectedItem()",
+        "type": "() => void"
+      },
+      {
+        "name": "get",
+        "type": "() => string",
+        "default": "—",
+        "description": "Devuelve el valor seleccionado"
+      },
+      {
+        "name": "set",
+        "type": "(value: string) => void",
+        "default": "—",
+        "description": "Setea el valor seleccionado"
+      },
+      {
+        "name": "reset",
+        "type": "() => void",
+        "default": "—",
+        "description": "Limpia la selección"
+      },
+      {
+        "name": "focus",
+        "type": "() => void",
+        "default": "—",
+        "description": "Pone el foco en el select"
+      },
+      {
+        "name": "isOpen",
+        "type": "() => boolean",
+        "default": "—",
+        "description": "Indica si el panel está abierto"
+      },
+      {
+        "name": "selectedItem",
+        "type": "() => SelectOption | null",
+        "default": "—",
+        "description": "Opción seleccionada actualmente"
+      }
+    ],
+    "interfaceCode": `interface SelectOption {
+    value: string;
+    label: string;
+    disabled?: boolean;
+    color?: string;
+    variant?: string;
+  }`
   },
   extras,
   setup: () => {

@@ -30,69 +30,236 @@ export const cuCalendarStories: ComponentStory = {
   component: "cu-calendar",
   vue: Calendar,
   tokens: [
-    '--cal-accent',
-    '--cal-accent-hover',
-    '--cal-soft',
-    '--cal-soft-hover',
-    '--cal-subtle',
-    '--cal-subtle-border',
-    '--cal-ghost-hover',
-    '--cu-font-sans',
-    '--cu-font-size-sm',
-    '--cu-font-size-xs',
-    '--cu-font-weight-medium',
-    '--cu-font-weight-semibold',
-    '--cu-radius-sm',
-    '--cu-space-2xs',
-    '--cu-space-xs',
-    '--cu-space-sm',
-    '--cu-border-thin',
-    '--cu-border-color',
-    '--cu-color-surface',
+    "--cal-accent",
+    "--cal-accent-hover",
+    "--cal-ghost-hover",
+    "--cal-soft",
+    "--cal-soft-hover",
+    "--cal-subtle",
+    "--cal-subtle-border",
+    "--cu-border-color",
+    "--cu-border-thin",
+    "--cu-color-surface",
+    "--cu-font-sans",
+    "--cu-font-size-sm",
+    "--cu-font-size-xs",
+    "--cu-font-weight-medium",
+    "--cu-font-weight-semibold",
+    "--cu-radius-sm",
+    "--cu-space-2xs",
+    "--cu-space-sm",
+    "--cu-space-xs",
+    "--dot-color"
+  ],
+  classes: [
+    "cu-calendar",
+    "cu-calendar--border",
+    "cu-calendar--grid",
+    "cu-calendar--year-nav",
+    "cu-calendar-day",
+    "cu-calendar-day--empty",
+    "cu-calendar-day--outlined",
+    "cu-calendar-day--range",
+    "cu-calendar-day--range-end",
+    "cu-calendar-day--range-start",
+    "cu-calendar-day--selected",
+    "cu-calendar-day--soft",
+    "cu-calendar-day--solid",
+    "cu-calendar-day--subtle",
+    "cu-calendar-day--today",
+    "cu-calendar-dot",
+    "cu-calendar-dots",
+    "cu-calendar-grid",
+    "cu-calendar-header",
+    "cu-calendar-week",
+    "cu-calendar-weekday",
+    "cu-calendar-weekdays"
   ],
   subComponents: [
-    { label: 'MonthSlider', path: '/playground/components/month-slider#style' },
+    {
+      "label": "MonthSlider",
+      "path": "/playground/components/month-slider#style"
+    }
   ],
   api: {
-    components: [
-      { label: 'MonthSlider', path: '/playground/components/month-slider' },
+    "components": [
+      {
+        "label": "MonthSlider",
+        "path": "/playground/components/month-slider"
+      }
     ],
-    props: [
-      { name: 'modelValue', type: 'string | number | Date | null', default: 'null', description: 'Fecha seleccionada (v-model)' },
-      { name: 'min', type: 'string | number | Date | null', default: 'null', description: 'Fecha mínima' },
-      { name: 'max', type: 'string | number | Date | null', default: 'null', description: 'Fecha máxima' },
-      { name: 'color', type: 'string', default: '"primary"', description: 'primary, secondary, neutral, success, warning, danger' },
-      { name: 'variant', type: 'string', default: '"soft"', description: 'solid, outlined, soft, subtle' },
-      { name: 'disabled', type: 'boolean', default: 'false', description: 'Deshabilita la selección' },
-      { name: 'disabledWeekdays', type: 'number[]', default: '[]', description: 'Días de semana deshabilitados (0=domingo)' },
-      { name: 'disabledDates', type: '(string | number | Date)[]', default: '[]', description: 'Fechas puntuales deshabilitadas' },
-      { name: 'locale', type: 'string', default: '"es"', description: 'Locale de los nombres' },
-      { name: 'weekStart', type: 'number', default: '1', description: 'Primer día de la semana (0=domingo, 1=lunes)' },
-      { name: 'monthFormat', type: 'string', default: '"MMMM"', description: 'Formato del mes' },
-      { name: 'yearFormat', type: 'string', default: '"yyyy"', description: 'Formato del año' },
-      { name: 'events', type: 'CalendarEvent[]', default: '[]', description: 'Puntos bajo las fechas' },
-      { name: 'rangeStart', type: 'string | number | Date | null', default: 'null', description: 'Inicio de rango resaltado' },
-      { name: 'rangeEnd', type: 'string | number | Date | null', default: 'null', description: 'Fin de rango resaltado' },
-      { name: 'grid', type: 'boolean', default: 'false', description: 'Líneas interiores entre los días (cuadrícula)' },
-      { name: 'border', type: 'boolean', default: 'false', description: 'Marco exterior alrededor de la cuadrícula de días' },
+    "props": [
+      {
+        "name": "min",
+        "type": "[String",
+        "default": "null",
+        "description": "Fecha mínima"
+      },
+      {
+        "name": "max",
+        "type": "[String",
+        "default": "null",
+        "description": "Fecha máxima"
+      },
+      {
+        "name": "color",
+        "type": "primary | secondary | neutral | success | warning | danger",
+        "default": "primary",
+        "description": "primary, secondary, neutral, success, warning, danger"
+      },
+      {
+        "name": "variant",
+        "type": "solid | outlined | soft | subtle",
+        "default": "soft",
+        "description": "solid, outlined, soft, subtle"
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "Deshabilita la selección"
+      },
+      {
+        "name": "locale",
+        "type": "string",
+        "default": "es",
+        "description": "Locale de los nombres"
+      },
+      {
+        "name": "monthFormat",
+        "type": "string",
+        "default": "MMMM",
+        "description": "Formato del mes"
+      },
+      {
+        "name": "yearFormat",
+        "type": "string",
+        "default": "yyyy",
+        "description": "Formato del año"
+      },
+      {
+        "name": "rangeEnd",
+        "type": "[String",
+        "default": "null",
+        "description": "Fin de rango resaltado"
+      },
+      {
+        "name": "grid",
+        "type": "boolean",
+        "default": "false",
+        "description": "Líneas interiores entre los días (cuadrícula)"
+      },
+      {
+        "name": "border",
+        "type": "boolean",
+        "default": "false",
+        "description": "Marco exterior alrededor de la cuadrícula de días"
+      },
+      {
+        "name": "modelValue",
+        "type": "string | number | Date | null",
+        "default": "null",
+        "description": "Fecha seleccionada (v-model)"
+      },
+      {
+        "name": "disabledWeekdays",
+        "type": "number[]",
+        "default": "[]",
+        "description": "Días de semana deshabilitados (0=domingo)"
+      },
+      {
+        "name": "disabledDates",
+        "type": "(string | number | Date)[]",
+        "default": "[]",
+        "description": "Fechas puntuales deshabilitadas"
+      },
+      {
+        "name": "weekStart",
+        "type": "number",
+        "default": "1",
+        "description": "Primer día de la semana (0=domingo, 1=lunes)"
+      },
+      {
+        "name": "events",
+        "type": "CalendarEvent[]",
+        "default": "[]",
+        "description": "Puntos bajo las fechas"
+      },
+      {
+        "name": "rangeStart",
+        "type": "string | number | Date | null",
+        "default": "null",
+        "description": "Inicio de rango resaltado"
+      }
     ],
-    slots: [],
-    events: [
-      { name: 'update:modelValue', type: '(value: Date) => void', description: 'Fecha seleccionada (v-model)' },
-      { name: 'change', type: '(value: Date) => void', description: 'Cambia la selección' },
-      { name: 'select', type: '(value: Date) => void', description: 'Click en un día' },
+    "events": [
+      {
+        "name": "update:modelValue",
+        "type": "() => void",
+        "description": "Fecha seleccionada (v-model)"
+      },
+      {
+        "name": "change",
+        "type": "() => void",
+        "description": "Cambia la selección"
+      },
+      {
+        "name": "select",
+        "type": "() => void",
+        "description": "Click en un día"
+      }
     ],
-    exposes: [
-      { name: 'nextMonth', type: '() => void', description: 'Avanza un mes' },
-      { name: 'prevMonth', type: '() => void', description: 'Retrocede un mes' },
-      { name: 'goToMonth', type: '(value: string | number | Date) => void', description: 'Va al mes indicado' },
-      { name: 'getValue', type: '() => Date | null', description: 'Devuelve la fecha actual' },
-      { name: 'setValue', type: '(value: string | number | Date) => void', description: 'Setea la fecha' },
+    "exposes": [
+      {
+        "name": "nextMonth()",
+        "type": "() => void"
+      },
+      {
+        "name": "prevMonth()",
+        "type": "() => void"
+      },
+      {
+        "name": "goToMonth()",
+        "type": "() => void"
+      },
+      {
+        "name": "getValue()",
+        "type": "() => void"
+      },
+      {
+        "name": "setValue()",
+        "type": "() => void"
+      },
+      {
+        "name": "nextMonth",
+        "type": "() => void",
+        "description": "Avanza un mes"
+      },
+      {
+        "name": "prevMonth",
+        "type": "() => void",
+        "description": "Retrocede un mes"
+      },
+      {
+        "name": "goToMonth",
+        "type": "(value: string | number | Date) => void",
+        "description": "Va al mes indicado"
+      },
+      {
+        "name": "getValue",
+        "type": "() => Date | null",
+        "description": "Devuelve la fecha actual"
+      },
+      {
+        "name": "setValue",
+        "type": "(value: string | number | Date) => void",
+        "description": "Setea la fecha"
+      }
     ],
-    interfaceCode: `interface CalendarEvent {
-  date: string | number | Date
-  color?: string
-}`,
+    "interfaceCode": `interface CalendarEvent {
+    date: string | number | Date
+    color?: string
+  }`
   },
   extras,
   sections: [

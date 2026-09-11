@@ -12,51 +12,104 @@ export const cuCodeBlockStories: ComponentStory = {
   component: "cu-code-block",
   vue: CodeBlock,
   tokens: [
-    '--cb-text',
-    '--cb-hl-keyword',
-    '--cb-hl-string',
-    '--cb-hl-number',
-    '--cb-hl-title',
-    '--cb-hl-tag',
-    '--cb-hl-attr',
-    '--cb-hl-meta',
-    '--cb-hl-comment',
-    '--cu-font-mono',
-    '--cu-font-size-sm',
-    '--cu-font-weight-bold',
-    '--cu-font-weight-medium',
-    '--cu-line-height-relaxed',
-    '--cu-radius-sm',
-    '--cu-border-thin',
-    '--cu-space-xs',
-    '--cu-space-sm',
-    '--cu-space-md',
-    '--cu-space-lg',
-    '--cu-space-xl',
-    '--cu-space-2xl',
-    '--cu-code-bg',
-    '--cu-code-text',
-    '--cu-code-faded',
-    '--cu-color-neutral-soft',
-    '--cu-color-neutral-subtle-border',
-    '--cu-color-neutral-text',
+    "--cb-hl-attr",
+    "--cb-hl-comment",
+    "--cb-hl-keyword",
+    "--cb-hl-meta",
+    "--cb-hl-number",
+    "--cb-hl-string",
+    "--cb-hl-tag",
+    "--cb-hl-title",
+    "--cb-text",
+    "--cu-border-thin",
+    "--cu-code-bg",
+    "--cu-code-faded",
+    "--cu-code-text",
+    "--cu-color-danger",
+    "--cu-color-danger-code",
+    "--cu-color-neutral-soft",
+    "--cu-color-neutral-subtle-border",
+    "--cu-color-neutral-text",
+    "--cu-color-primary",
+    "--cu-color-primary-code",
+    "--cu-color-secondary",
+    "--cu-color-secondary-code",
+    "--cu-color-success",
+    "--cu-color-success-code",
+    "--cu-color-warning",
+    "--cu-color-warning-code",
+    "--cu-font-mono",
+    "--cu-font-size-sm",
+    "--cu-font-weight-bold",
+    "--cu-font-weight-medium",
+    "--cu-line-height-relaxed",
+    "--cu-radius-sm",
+    "--cu-space-2xl",
+    "--cu-space-lg",
+    "--cu-space-md",
+    "--cu-space-sm",
+    "--cu-space-xl",
+    "--cu-space-xs"
+  ],
+  classes: [
+    "cu-badge",
+    "cu-code-block",
+    "cu-code-block--default",
+    "cu-code-block--outlined",
+    "cu-code-block--solid",
+    "cu-code-block-code",
+    "cu-code-block-code--gutter",
+    "cu-code-block-copy",
+    "cu-code-block-gutter",
+    "cu-code-block-hl",
+    "cu-code-block-lang",
+    "cu-code-block-line",
+    "cu-code-block-line-content",
+    "cu-code-block-line-number",
+    "cu-code-block-pre"
   ],
   subComponents: [
-    { label: 'Badge', path: '/playground/components/badge#style' },
+    {
+      "label": "Badge",
+      "path": "/playground/components/badge#style"
+    }
   ],
   api: {
-    components: [
-      { label: 'Badge', path: '/playground/components/badge' },
+    "components": [
+      {
+        "label": "Badge",
+        "path": "/playground/components/badge"
+      },
+      {
+        "label": "CopyButton",
+        "path": "/playground/components/copy-button"
+      }
     ],
-    props: [
-      { name: 'code', type: 'string', default: '(required)', description: 'Código a renderizar (required)' },
-      { name: 'language', type: 'string', default: '""', description: 'Lenguaje para highlight.js (js, py, bash, html, css, ts…). Vacío = texto plano' },
-      { name: 'variant', type: 'string', default: '"default"', description: 'default, outlined, solid' },
-      { name: 'lineNumbers', type: 'boolean', default: 'false', description: 'Muestra números de línea' },
-    ],
-    slots: [],
-    events: [],
-    exposes: [],
+    "props": [
+      {
+        "name": "code",
+        "type": "string",
+        "description": "Código a renderizar (required)"
+      },
+      {
+        "name": "language",
+        "type": "string",
+        "default": "",
+        "description": "Lenguaje para highlight.js (js, py, bash, html, css, ts…). Vacío = texto plano"
+      },
+      {
+        "name": "variant",
+        "type": "string",
+        "default": "default",
+        "description": "default, outlined, solid"
+      },
+      {
+        "name": "lineNumbers",
+        "type": "boolean",
+        "default": "false",
+        "description": "Muestra números de línea"
+      }
+    ]
   },
   sections: [
     {

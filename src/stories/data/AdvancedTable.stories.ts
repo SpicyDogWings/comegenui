@@ -17,130 +17,388 @@ export const cuAdvancedTableStories: ComponentStory = {
   component: "cu-advanced-table",
   vue: AdvancedTable,
   tokens: [
-    '--cu-font-sans',
-    '--cu-space-2xs',
-    '--cu-space-sm',
-    '--cu-space-md',
-    '--cu-space-lg',
-    '--cu-space-2xl',
-    '--cu-color-surface',
+    "--cu-color-surface",
+    "--cu-space-2xl",
+    "--cu-space-2xs",
+    "--cu-space-lg",
+    "--cu-space-md",
+    "--cu-space-sm"
+  ],
+  classes: [
+    "cu-advanced-table",
+    "cu-advanced-table-actions",
+    "cu-advanced-table-actions-btn",
+    "cu-advanced-table-cell-badges",
+    "cu-advanced-table-cell-buttons",
+    "cu-advanced-table-icon",
+    "cu-advanced-table-pagination",
+    "cu-advanced-table-search"
   ],
   subComponents: [
-    { label: 'Table', path: '/playground/components/table#style' },
-    { label: 'Pagination', path: '/playground/components/pagination#style' },
-    { label: 'Input', path: '/playground/components/input#style' },
-    { label: 'Button', path: '/playground/components/button#style' },
-    { label: 'Badge', path: '/playground/components/badge#style' },
-    { label: 'DropdownMenu', path: '/playground/components/dropdown-menu#style' },
+    {
+      "label": "Table",
+      "path": "/playground/components/table#style"
+    },
+    {
+      "label": "Pagination",
+      "path": "/playground/components/pagination#style"
+    },
+    {
+      "label": "Input",
+      "path": "/playground/components/input#style"
+    },
+    {
+      "label": "Button",
+      "path": "/playground/components/button#style"
+    },
+    {
+      "label": "Badge",
+      "path": "/playground/components/badge#style"
+    },
+    {
+      "label": "DropdownMenu",
+      "path": "/playground/components/dropdown-menu#style"
+    }
   ],
   api: {
-    components: [
-      { label: 'Table', path: '/playground/components/table' },
-      { label: 'Pagination', path: '/playground/components/pagination' },
-      { label: 'Input', path: '/playground/components/input' },
-      { label: 'Button', path: '/playground/components/button' },
-      { label: 'Badge', path: '/playground/components/badge' },
-      { label: 'DropdownMenu', path: '/playground/components/dropdown-menu' },
+    "components": [
+      {
+        "label": "Table",
+        "path": "/playground/components/table"
+      },
+      {
+        "label": "Pagination",
+        "path": "/playground/components/pagination"
+      },
+      {
+        "label": "Input",
+        "path": "/playground/components/input"
+      },
+      {
+        "label": "EditableTableCell",
+        "path": "/playground/components/editable-table-cell"
+      },
+      {
+        "label": "Button",
+        "path": "/playground/components/button"
+      },
+      {
+        "label": "Badge",
+        "path": "/playground/components/badge"
+      },
+      {
+        "label": "DropdownMenu",
+        "path": "/playground/components/dropdown-menu"
+      }
     ],
-    props: [
-      { name: 'columns', type: 'Column[]', default: '[]', description: 'Definición de columnas (ver Interfaces)' },
-      { name: 'data', type: 'Record<string, any>[]', default: '[]', description: 'Filas: objetos key → valor' },
-      { name: 'empty', type: 'string', default: '"No hay datos que mostrar"', description: 'Mensaje sin datos' },
-      { name: 'pagination', type: 'boolean', default: 'true', description: 'Paginación client-side' },
-      { name: 'itemsPerPage', type: 'number', default: '10', description: 'Items por página (v-model:items-per-page)' },
-      { name: 'showPageSize', type: 'boolean', default: 'false', description: 'Select de items por página' },
-      { name: 'pageSizeOptions', type: 'number[]', default: '[5, 10, 20, 50]', description: 'Opciones del select' },
-      { name: 'color', type: 'string', default: '"neutral"', description: 'primary, secondary, neutral, success, warning, danger' },
-      { name: 'variant', type: 'string', default: '"soft"', description: 'solid, outlined, soft, ghost, subtle' },
-      { name: 'searchEnabled', type: 'boolean', default: 'false', description: 'Buscador sobre los datos' },
-      { name: 'searchPlaceholder', type: 'string', default: '"Buscar..."', description: 'Placeholder del buscador' },
-      { name: 'searchFields', type: 'string[]', default: '[]', description: 'Campos donde buscar (vacío = todos)' },
-      { name: 'searchValue', type: 'string', default: '""', description: 'Valor inicial del buscador (v-model:search)' },
-      { name: 'tableMaxHeight', type: 'string', default: '""', description: 'Altura máxima con scroll' },
-      { name: 'filters', type: 'Record<string, any>', default: '{}', description: 'Filtros a aplicar sobre los datos' },
-      { name: 'loading', type: 'boolean', default: 'false', description: 'Muestra loader en el body' },
-      { name: 'actions', type: 'ButtonConfig[]', default: '[]', description: 'Acciones bajo la tabla' },
-      { name: 'inlineEditing', type: 'boolean', default: 'false', description: 'Editores directos (sin lápiz) en todas las columnas editables' },
-      { name: 'rowDisabled', type: 'boolean | (row) => boolean', default: 'false', description: 'Deshabilita filas completas' },
-      { name: 'footer', type: 'FooterRow[]', default: '[]', description: 'Filas de pie programáticas' },
-      { name: 'compact', type: 'boolean', default: 'false', description: 'Densidad compacta' },
+    "props": [
+      {
+        "name": "theme",
+        "type": "string",
+        "default": "light"
+      },
+      {
+        "name": "columns",
+        "type": "Array as () => Column[]",
+        "description": "Definición de columnas (ver Interfaces)"
+      },
+      {
+        "name": "data",
+        "type": "Array as () => Record<string",
+        "description": "Filas: objetos key → valor"
+      },
+      {
+        "name": "empty",
+        "type": "string",
+        "default": "No hay datos que mostrar",
+        "description": "Mensaje sin datos"
+      },
+      {
+        "name": "pagination",
+        "type": "boolean",
+        "default": "true",
+        "description": "Paginación client-side"
+      },
+      {
+        "name": "itemsPerPage",
+        "type": "number",
+        "default": "10",
+        "description": "Items por página (v-model:items-per-page)"
+      },
+      {
+        "name": "showPageSize",
+        "type": "boolean",
+        "default": "false",
+        "description": "Select de items por página"
+      },
+      {
+        "name": "pageSizeOptions",
+        "type": "Array as () => number[]",
+        "description": "Opciones del select"
+      },
+      {
+        "name": "color",
+        "type": "primary | secondary | neutral | success | warning | danger",
+        "default": "neutral",
+        "description": "primary, secondary, neutral, success, warning, danger"
+      },
+      {
+        "name": "variant",
+        "type": "solid | outlined | soft | ghost | subtle",
+        "default": "soft",
+        "description": "solid, outlined, soft, ghost, subtle"
+      },
+      {
+        "name": "searchEnabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "Buscador sobre los datos"
+      },
+      {
+        "name": "searchPlaceholder",
+        "type": "string",
+        "default": "Buscar...",
+        "description": "Placeholder del buscador"
+      },
+      {
+        "name": "searchFields",
+        "type": "Array as () => string[]",
+        "description": "Campos donde buscar (vacío = todos)"
+      },
+      {
+        "name": "searchValue",
+        "type": "string",
+        "default": "",
+        "description": "Valor inicial del buscador (v-model:search)"
+      },
+      {
+        "name": "tableMaxHeight",
+        "type": "string",
+        "default": "",
+        "description": "Altura máxima con scroll"
+      },
+      {
+        "name": "filters",
+        "type": "Object as () => Record<string",
+        "description": "Filtros a aplicar sobre los datos"
+      },
+      {
+        "name": "loading",
+        "type": "boolean",
+        "default": "false",
+        "description": "Muestra loader en el body"
+      },
+      {
+        "name": "actions",
+        "type": "Array as () => ButtonConfig[]",
+        "description": "Acciones bajo la tabla"
+      },
+      {
+        "name": "rowDisabled",
+        "type": "[Boolean",
+        "default": "false",
+        "description": "Deshabilita filas completas"
+      },
+      {
+        "name": "footer",
+        "type": "Array as () => FooterRow[]",
+        "description": "Filas de pie programáticas"
+      },
+      {
+        "name": "compact",
+        "type": "boolean",
+        "default": "false",
+        "description": "Densidad compacta"
+      },
+      {
+        "name": "inlineEditing",
+        "type": "boolean",
+        "default": "false",
+        "description": "Editores directos (sin lápiz) en todas las columnas editables"
+      }
     ],
-    slots: [
-      { name: 'search', description: 'Buscador custom (scoped: query, update)' },
-      { name: 'empty', description: 'Contenido custom del estado vacío' },
-      { name: 'footer', description: 'Filas de pie (scoped: columns)' },
+    "slots": [
+      {
+        "name": "default"
+      },
+      {
+        "name": "toggle"
+      },
+      {
+        "name": "search",
+        "description": "Buscador custom (scoped: query, update)"
+      },
+      {
+        "name": "slotName"
+      },
+      {
+        "name": "empty",
+        "description": "Contenido custom del estado vacío"
+      },
+      {
+        "name": "footer",
+        "description": "Filas de pie (scoped: columns)"
+      }
     ],
-    events: [
-      { name: 'update:currentPage', type: '(page: number) => void', description: 'Cambia la página (v-model:current-page)' },
-      { name: 'update:itemsPerPage', type: '(n: number) => void', description: 'Cambia items por página (v-model:items-per-page)' },
-      { name: 'update:search', type: '(q: string) => void', description: 'Cambia la búsqueda (v-model:search)' },
-      { name: 'row-click', type: '(e: { row, index, event }) => void', description: 'Click en una fila' },
-      { name: 'row-dblclick', type: '(e: { row, index, event }) => void', description: 'Doble click en una fila' },
-      { name: 'cell-click', type: '(e: { row, column, value, event }) => void', description: 'Click en una celda' },
-      { name: 'edit-start', type: '(e: { index, column }) => void', description: 'Se abre el editor de una celda' },
-      { name: 'edit-save', type: '(e: { index, column, value }) => void', description: 'Se guarda el valor editado' },
-      { name: 'edit-cancel', type: '(e: { index, column }) => void', description: 'Se cancela la edición' },
-      { name: 'edit-error', type: '(e: { index, column, value }) => void', description: 'Validación falló (input en rojo)' },
+    "events": [
+      {
+        "name": "update:currentPage",
+        "type": "() => void",
+        "description": "Cambia la página (v-model:current-page)"
+      },
+      {
+        "name": "update:itemsPerPage",
+        "type": "() => void",
+        "description": "Cambia items por página (v-model:items-per-page)"
+      },
+      {
+        "name": "update:search",
+        "type": "() => void",
+        "description": "Cambia la búsqueda (v-model:search)"
+      },
+      {
+        "name": "row-click",
+        "type": "() => void",
+        "description": "Click en una fila"
+      },
+      {
+        "name": "row-dblclick",
+        "type": "() => void",
+        "description": "Doble click en una fila"
+      },
+      {
+        "name": "cell-click",
+        "type": "() => void",
+        "description": "Click en una celda"
+      },
+      {
+        "name": "edit-start",
+        "type": "() => void",
+        "description": "Se abre el editor de una celda"
+      },
+      {
+        "name": "edit-save",
+        "type": "() => void",
+        "description": "Se guarda el valor editado"
+      },
+      {
+        "name": "edit-cancel",
+        "type": "() => void",
+        "description": "Se cancela la edición"
+      },
+      {
+        "name": "edit-error",
+        "type": "() => void",
+        "description": "Validación falló (input en rojo)"
+      }
     ],
-    exposes: [
-      { name: 'updateRow', type: '(index: number, patch: Record<string, any>) => void', description: 'Actualiza una fila' },
-      { name: 'getData', type: '() => Record<string, any>[]', description: 'Devuelve las filas actuales' },
-      { name: 'getRow', type: '(index: number) => Record<string, any>', description: 'Devuelve una fila' },
-      { name: 'removeRow', type: '(index: number) => void', description: 'Elimina una fila' },
-      { name: 'addRow', type: '(row: Record<string, any>) => void', description: 'Agrega una fila' },
-      { name: 'pushData', type: '(rows: Record<string, any>[]) => void', description: 'Agrega varias filas' },
+    "exposes": [
+      {
+        "name": "updateRow()",
+        "type": "() => void"
+      },
+      {
+        "name": "getData()",
+        "type": "() => void"
+      },
+      {
+        "name": "getRow()",
+        "type": "() => void"
+      },
+      {
+        "name": "removeRow()",
+        "type": "() => void"
+      },
+      {
+        "name": "addRow()",
+        "type": "() => void"
+      },
+      {
+        "name": "pushData()",
+        "type": "() => void"
+      },
+      {
+        "name": "updateRow",
+        "type": "(index: number, patch: Record<string, any>) => void",
+        "description": "Actualiza una fila"
+      },
+      {
+        "name": "getData",
+        "type": "() => Record<string, any>[]",
+        "description": "Devuelve las filas actuales"
+      },
+      {
+        "name": "getRow",
+        "type": "(index: number) => Record<string, any>",
+        "description": "Devuelve una fila"
+      },
+      {
+        "name": "removeRow",
+        "type": "(index: number) => void",
+        "description": "Elimina una fila"
+      },
+      {
+        "name": "addRow",
+        "type": "(row: Record<string, any>) => void",
+        "description": "Agrega una fila"
+      },
+      {
+        "name": "pushData",
+        "type": "(rows: Record<string, any>[]) => void",
+        "description": "Agrega varias filas"
+      }
     ],
-    interfaceCode: `interface Column {
-  key: string
-  label?: string
-  width?: string
-  align?: "left" | "center" | "right"
-  editorAlign?: "start" | "center" | "end"
-  cell?: (row: Record<string, any>) => string | string[]
-  sortable?: boolean | "string" | "number" | "boolean"
-  badges?: (row: Record<string, any>) => BadgeConfig[]
-  buttons?: (row: Record<string, any>) => ButtonConfig[]
-  editable?: boolean | RegExp | ((row: Record<string, any>) => boolean)
-  inlineEdit?: boolean
-  inputType?: "input" | "textarea" | "select" | "autocomplete" | "date" | "switch"
-  disabled?: boolean | ((row: Record<string, any>) => boolean)
-  cellDisabled?: (row: Record<string, any>) => boolean
-  date?: {
-    format?: string
-    min?: string | number | Date
-    max?: string | number | Date
-    yearNavigation?: boolean
-    disabledWeekdays?: number[] | string
-    disabledDates?: (string | Date)[] | string
-    position?: string
-    align?: string
-    fixed?: boolean
+    "interfaceCode": `interface Column {
+    key: string
+    label?: string
+    width?: string
+    align?: "left" | "center" | "right"
+    editorAlign?: "start" | "center" | "end"
+    cell?: (row: Record<string, any>) => string | string[]
+    sortable?: boolean | "string" | "number" | "boolean"
+    badges?: (row: Record<string, any>) => BadgeConfig[]
+    buttons?: (row: Record<string, any>) => ButtonConfig[]
+    editable?: boolean | RegExp | ((row: Record<string, any>) => boolean)
+    inlineEdit?: boolean
+    inputType?: "input" | "textarea" | "select" | "autocomplete" | "date" | "switch"
+    disabled?: boolean | ((row: Record<string, any>) => boolean)
+    cellDisabled?: (row: Record<string, any>) => boolean
+    date?: {
+      format?: string
+      min?: string | number | Date
+      max?: string | number | Date
+      yearNavigation?: boolean
+      disabledWeekdays?: number[] | string
+      disabledDates?: (string | Date)[] | string
+      position?: string
+      align?: string
+      fixed?: boolean
+    }
+    select?: { options: SelectOption[]; color?: string; variant?: string }
+    autocomplete?: { items: AutocompleteItem[]; minChars?: number }
+    textarea?: { rows?: number; noResize?: boolean }
+    input?: { type?: string; startValue?: string }
+    switch?: { size?: "sm" | "md"; color?: string }
   }
-  select?: { options: SelectOption[]; color?: string; variant?: string }
-  autocomplete?: { items: AutocompleteItem[]; minChars?: number }
-  textarea?: { rows?: number; noResize?: boolean }
-  input?: { type?: string; startValue?: string }
-  switch?: { size?: "sm" | "md"; color?: string }
-}
-
-interface BadgeConfig {
-  value: string
-  color?: string
-  variant?: string
-}
-
-interface ButtonConfig {
-  label?: string
-  icon?: string | Component
-  onClick?: (row: Record<string, any>) => void
-  to?: string
-  target?: string
-  color?: string
-  variant?: string
-  disabled?: boolean
-}
-
-// FooterRow/FooterCell: ver la página Table (Base) → API → Interfaces`,
+  
+  interface BadgeConfig {
+    value: string
+    color?: string
+    variant?: string
+  }
+  
+  interface ButtonConfig {
+    label?: string
+    icon?: string | Component
+    onClick?: (row: Record<string, any>) => void
+    to?: string
+    target?: string
+    color?: string
+    variant?: string
+    disabled?: boolean
+  }
+  
+  // FooterRow/FooterCell: ver la página Table (Base) → API → Interfaces`
   },
   extras,
   sections: [

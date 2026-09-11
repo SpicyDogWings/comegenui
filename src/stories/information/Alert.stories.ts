@@ -44,58 +44,136 @@ function colorVariants(): Variant[] {
 export const cuAlertStories: ComponentStory = {
   component: "cu-alert",
   vue: Alert,
-  extras,
   tokens: [
-    '--alert-bg',
-    '--alert-text',
-    '--alert-soft',
-    '--alert-subtle',
-    '--alert-subtle-border',
-    '--alert-ghost-hover',
-    '--alert-ghost-active',
-    '--cu-font-sans',
-    '--cu-font-size-sm',
-    '--cu-font-size-lg',
-    '--cu-font-weight-bold',
-    '--cu-radius',
-    '--cu-radius-sm',
-    '--cu-border-thin',
-    '--cu-space-2xs',
-    '--cu-space-sm',
-    '--cu-space-md',
-    '--cu-space-lg',
-    '--cu-color-surface',
+    "--alert-bg",
+    "--alert-ghost-active",
+    "--alert-ghost-hover",
+    "--alert-soft",
+    "--alert-subtle",
+    "--alert-subtle-border",
+    "--alert-text",
+    "--cu-border-thin",
+    "--cu-color-surface",
+    "--cu-font-sans",
+    "--cu-font-size-lg",
+    "--cu-font-size-sm",
+    "--cu-font-weight-bold",
+    "--cu-radius",
+    "--cu-radius-sm",
+    "--cu-space-2xs",
+    "--cu-space-lg",
+    "--cu-space-md",
+    "--cu-space-sm"
+  ],
+  classes: [
+    "cu-alert",
+    "cu-alert--ghost",
+    "cu-alert--outlined",
+    "cu-alert--soft",
+    "cu-alert--solid",
+    "cu-alert--subtle",
+    "cu-alert-close",
+    "cu-alert-content",
+    "cu-alert-header",
+    "cu-alert-icon-detect",
+    "cu-alert-title",
+    "cu-alert-title-text"
   ],
   subComponents: [
-    { label: 'Button', path: '/playground/components/button#style' },
+    {
+      "label": "Button",
+      "path": "/playground/components/button#style"
+    }
   ],
   api: {
-    components: [
-      { label: 'Button', path: '/playground/components/button' },
+    "components": [
+      {
+        "label": "Button",
+        "path": "/playground/components/button"
+      }
     ],
-    props: [
-      { name: 'color', type: 'string', default: '"neutral"', description: 'primary, secondary, neutral, success, warning, danger' },
-      { name: 'variant', type: 'string', default: '"soft"', description: 'solid, outlined, soft, ghost, subtle' },
-      { name: 'title', type: 'string', default: '—', description: 'Título del alert' },
-      { name: 'close', type: 'boolean', default: 'false', description: 'Muestra el botón X para cerrar' },
-      { name: 'show', type: 'boolean', default: 'true', description: 'Visibilidad (v-model:show)' },
+    "props": [
+      {
+        "name": "color",
+        "type": "primary | secondary | neutral | success | warning | danger",
+        "default": "neutral",
+        "description": "primary, secondary, neutral, success, warning, danger"
+      },
+      {
+        "name": "variant",
+        "type": "solid | outlined | soft | ghost | subtle",
+        "default": "soft",
+        "description": "solid, outlined, soft, ghost, subtle"
+      },
+      {
+        "name": "title",
+        "type": "string",
+        "description": "Título del alert"
+      },
+      {
+        "name": "close",
+        "type": "boolean",
+        "default": "false",
+        "description": "Muestra el botón X para cerrar"
+      },
+      {
+        "name": "show",
+        "type": "boolean",
+        "default": "true",
+        "description": "Visibilidad (v-model:show)"
+      }
     ],
-    slots: [
-      { name: 'default', description: 'Contenido del alert' },
-      { name: 'icon', description: 'Icono junto al título' },
+    "slots": [
+      {
+        "name": "icon",
+        "description": "Icono junto al título"
+      },
+      {
+        "name": "default",
+        "description": "Contenido del alert"
+      }
     ],
-    events: [
-      { name: 'close', type: '() => void', description: 'Se cerró el alert' },
-      { name: 'open', type: '() => void', description: 'Se abrió el alert' },
-      { name: 'update:show', type: '(value: boolean) => void', description: 'Cambió la visibilidad (v-model:show)' },
+    "events": [
+      {
+        "name": "close",
+        "type": "() => void",
+        "description": "Se cerró el alert"
+      },
+      {
+        "name": "open",
+        "type": "() => void",
+        "description": "Se abrió el alert"
+      },
+      {
+        "name": "update:show",
+        "type": "() => void",
+        "description": "Cambió la visibilidad (v-model:show)"
+      }
     ],
-    exposes: [
-      { name: 'open()', type: '() => void', description: 'Abre el alert' },
-      { name: 'close()', type: '() => void', description: 'Cierra el alert' },
-      { name: 'toggle()', type: '() => void', description: 'Alterna abierto/cerrado' },
-      { name: 'isOpen()', type: '() => boolean', description: 'Estado actual' },
-    ],
+    "exposes": [
+      {
+        "name": "open()",
+        "type": "() => void",
+        "description": "Abre el alert"
+      },
+      {
+        "name": "close()",
+        "type": "() => void",
+        "description": "Cierra el alert"
+      },
+      {
+        "name": "toggle()",
+        "type": "() => void",
+        "description": "Alterna abierto/cerrado"
+      },
+      {
+        "name": "isOpen()",
+        "type": "() => void",
+        "description": "Estado actual"
+      }
+    ]
   },
+  extras,
   sections: [
     {
       id: "variants",

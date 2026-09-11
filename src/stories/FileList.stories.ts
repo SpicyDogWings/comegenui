@@ -21,28 +21,70 @@ export const cuFileListStories: ComponentStory = {
   component: "cu-file-list",
   vue: FileList,
   tokens: [
-    '--list-ghost-hover',
-    '--list-text',
-    '--cu-font-size-sm',
-    '--cu-font-size-xs',
-    '--cu-font-weight-medium',
-    '--cu-radius',
-    '--cu-space-2xs',
-    '--cu-space-xs',
-    '--cu-space-sm',
-    '--cu-space-md',
+    "--cu-font-size-sm",
+    "--cu-font-size-xs",
+    "--cu-font-weight-medium",
+    "--cu-radius",
+    "--cu-space-2xs",
+    "--cu-space-md",
+    "--cu-space-sm",
+    "--cu-space-xs",
+    "--list-ghost-hover",
+    "--list-text"
+  ],
+  classes: [
+    "cu-file-list",
+    "cu-file-list-icon",
+    "cu-file-list-item",
+    "cu-file-list-name",
+    "cu-file-list-remove",
+    "cu-file-list-size"
   ],
   api: {
-    props: [
-      { name: 'files', type: 'File | File[] | null', default: 'null', description: 'Archivo o lista de archivos a mostrar; null no renderiza nada' },
-      { name: 'color', type: 'string', default: '"neutral"', description: 'primary, secondary, neutral, success, warning, danger' },
-      { name: 'disabled', type: 'boolean', default: 'false', description: 'Oculta los botones de remover' },
-      { name: 'maxHeight', type: 'string', default: '""', description: 'Altura máxima del contenedor (activa overflow-y: auto)' },
+    "components": [
+      {
+        "label": "Button",
+        "path": "/playground/components/button"
+      }
     ],
-    events: [
-      { name: 'select', type: '(index: number) => void', description: 'Click en un item (índice)' },
-      { name: 'remove', type: '(index: number) => void', description: 'Click en el botón remover (índice)' },
+    "props": [
+      {
+        "name": "files",
+        "type": "null as any",
+        "default": "null",
+        "description": "Archivo o lista de archivos a mostrar; null no renderiza nada"
+      },
+      {
+        "name": "color",
+        "type": "primary | secondary | neutral | success | warning | danger",
+        "default": "neutral",
+        "description": "primary, secondary, neutral, success, warning, danger"
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "Oculta los botones de remover"
+      },
+      {
+        "name": "maxHeight",
+        "type": "string",
+        "default": "",
+        "description": "Altura máxima del contenedor (activa overflow-y: auto)"
+      }
     ],
+    "events": [
+      {
+        "name": "remove",
+        "type": "() => void",
+        "description": "Click en el botón remover (índice)"
+      },
+      {
+        "name": "select",
+        "type": "() => void",
+        "description": "Click en un item (índice)"
+      }
+    ]
   },
   sections: [
     {

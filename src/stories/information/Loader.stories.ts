@@ -37,18 +37,36 @@ export const cuLoaderStories: ComponentStory = {
   component: "cu-loader",
   vue: Loader,
   tokens: [
-    '--cu-loader-color',
-    '--cu-loader-delay',
+    "--cu-loader-color",
+    "--cu-loader-delay"
+  ],
+  classes: [
+    "cu-loader",
+    "cu-loader-bar",
+    "cu-loader-bar--cooldown",
+    "cu-loader-bar--loading"
   ],
   api: {
-    props: [
-      { name: 'color', type: 'string', default: '"primary"', description: 'primary, secondary, neutral, success, warning, danger' },
-      { name: 'animation', type: 'string', default: '"loading"', description: 'loading (slide infinito) | cooldown (se vacía en `delay` ms)' },
-      { name: 'delay', type: 'number', default: '2000', description: 'Duración del cooldown en ms (solo animation="cooldown")' },
-    ],
-    slots: [],
-    events: [],
-    exposes: [],
+    "props": [
+      {
+        "name": "color",
+        "type": "string",
+        "default": "primary",
+        "description": "primary, secondary, neutral, success, warning, danger"
+      },
+      {
+        "name": "animation",
+        "type": "string",
+        "default": "loading",
+        "description": "loading (slide infinito) | cooldown (se vacía en `delay` ms)"
+      },
+      {
+        "name": "delay",
+        "type": "number",
+        "default": "2000",
+        "description": "Duración del cooldown en ms (solo animation=\"cooldown\")"
+      }
+    ]
   },
   sections: [
     {

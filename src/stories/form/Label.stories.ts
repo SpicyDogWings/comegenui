@@ -29,23 +29,54 @@ export const cuLabelStories: ComponentStory = {
   component: "cu-label",
   vue: Label,
   tokens: [
-    '--label-fg',
-    '--cu-font-sans',
-    '--cu-space-xs',
+    "--cu-font-sans",
+    "--cu-space-xs",
+    "--label-fg"
+  ],
+  classes: [
+    "cu-label",
+    "cu-label-text"
   ],
   api: {
-    props: [
-      { name: 'for', type: 'string', default: '""', description: 'ID del elemento a enfocar al hacer click en el texto del label' },
-      { name: 'label', type: 'string', default: '""', description: 'Texto del label; si está vacío no se renderiza el span' },
-      { name: 'color', type: 'string', default: '"#2c2c2c"', description: 'Color del texto (valor CSS). En cu-label acepta nombres semánticos: primary, neutral, success, warning, danger' },
-      { name: 'hightContrast', type: 'boolean', default: 'false', description: 'Alto contraste. Typo persistente del codebase (documentado tal cual); declarado pero sin efecto visual en la versión actual' },
+    "props": [
+      {
+        "name": "for",
+        "type": "string",
+        "default": "",
+        "description": "ID del elemento a enfocar al hacer click en el texto del label"
+      },
+      {
+        "name": "label",
+        "type": "string",
+        "default": "",
+        "description": "Texto del label; si está vacío no se renderiza el span"
+      },
+      {
+        "name": "color",
+        "type": "string",
+        "default": "#2c2c2c",
+        "description": "Color del texto (valor CSS). En cu-label acepta nombres semánticos: primary, neutral, success, warning, danger"
+      },
+      {
+        "name": "hightContrast",
+        "type": "boolean",
+        "default": "false",
+        "description": "Alto contraste. Typo persistente del codebase (documentado tal cual); declarado pero sin efecto visual en la versión actual"
+      }
     ],
-    slots: [
-      { name: 'default', type: 'slot', description: 'Contenido bajo el texto del label: inputs, selects, textareas, etc.' },
+    "slots": [
+      {
+        "name": "default",
+        "description": "Contenido bajo el texto del label: inputs, selects, textareas, etc."
+      }
     ],
-    events: [
-      { name: 'click', type: 'custom', description: 'Click en el texto del label; antes enfoca el elemento for si está definido' },
-    ],
+    "events": [
+      {
+        "name": "click",
+        "type": "() => void",
+        "description": "Click en el texto del label; antes enfoca el elemento for si está definido"
+      }
+    ]
   },
   sections: [
     {

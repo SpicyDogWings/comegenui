@@ -51,6 +51,8 @@ function onClick() {
   width: var(--cu-space-3xl);
   height: var(--cu-space-3xl);
   padding: 0;
+  font-family: var(--cu-font-sans);
+  font-size: var(--cu-font-size-xl);
   border: none;
   border-radius: var(--cu-radius-full);
   background-color: var(--fab-bg);
