@@ -44,7 +44,7 @@ const componentsDir = (userConfig.componentsDir ?? "src/components").replace(/\/
 const storiesDirBase = (userConfig.storiesDir ?? "src/stories").replace(/\/+$/, "");
 const playgroundDir = (userConfig.playgroundDir ?? "src/playground").replace(/\/+$/, "");
 const base = (userConfig.base ?? "/playground/components").replace(/\/+$/, "");
-const libDir = userConfig.libDir ? String(userConfig.libDir).replace(/\/+$/, "") : null;
+const libDir = String(userConfig.libDir ?? "src/lib").replace(/\/+$/, "");
 const configExclude = new Set(userConfig.exclude ?? []);
 const generatePages = withPages || (!noPages && userConfig.pages === true);
 

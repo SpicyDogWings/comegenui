@@ -112,6 +112,7 @@ Precedencia al regenerar: descripciones → **config > JSDoc > story previa**;
   "componentsDir": "src/components",
   "storiesDir": "src/stories",
   "playgroundDir": "src/playground",
+  "libDir": "src/lib",
   "base": "/playground/components",
   "pages": false,
   "exclude": [],
