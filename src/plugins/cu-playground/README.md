@@ -113,6 +113,7 @@ Precedencia al regenerar: descripciones → **config > JSDoc > story previa**;
   "storiesDir": "src/stories",
   "playgroundDir": "src/playground",
   "libDir": "src/lib",
+  "vanilla": true,
   "base": "/playground/components",
   "pages": false,
   "exclude": [],
@@ -125,6 +126,17 @@ Precedencia al regenerar: descripciones → **config > JSDoc > story previa**;
 ```
 
 El runtime la recibe desde `main.ts`; el CLI la lee del archivo.
+
+### Convenciones opcionales del host
+
+Dos features dependen de convenciones del proyecto y se pueden apagar:
+
+- **Tab Vanilla** (snippets de custom elements): el generador lo emite solo si
+  el componente tiene entry UMD en `libDir` (`src/lib/<kebab>.ts`). Con
+  `"vanilla": false` no se emite nunca. Si tu proyecto no publica UMD, apagalo.
+- **Badge "En lib / No en lib"**: es opt-in del host vía `libStatus` en
+  `main.ts` (`{ entries: import.meta.glob('@/lib/**/*.ts'), aliases }`). Sin
+  `libStatus`, el badge no se muestra.
 
 ## Runtime
 

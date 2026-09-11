@@ -2,6 +2,8 @@
   "componentsDir": "src/components",
   "storiesDir": "src/stories",
   "playgroundDir": "src/playground",
+  "libDir": "src/lib",
+  "vanilla": true,
   "base": "/playground/components",
   "pages": false,
   "nav": {

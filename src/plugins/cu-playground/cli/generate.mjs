@@ -45,6 +45,7 @@ const storiesDirBase = (userConfig.storiesDir ?? "src/stories").replace(/\/+$/, 
 const playgroundDir = (userConfig.playgroundDir ?? "src/playground").replace(/\/+$/, "");
 const base = (userConfig.base ?? "/playground/components").replace(/\/+$/, "");
 const libDir = String(userConfig.libDir ?? "src/lib").replace(/\/+$/, "");
+const vanillaSnippets = userConfig.vanilla !== false;
 const configExclude = new Set(userConfig.exclude ?? []);
 const generatePages = withPages || (!noPages && userConfig.pages === true);
 
@@ -860,7 +861,7 @@ const outlineItems = buildOutline(${`cu${componentName}Stories`});
       );
       lines.push(`      ],`);
       lines.push(`      vue: ${tpl(snippetFor(section.variants, false))},`);
-      if (isPublic) lines.push(`      vanilla: ${tpl(snippetFor(section.variants, true))},`);
+      if (isPublic && vanillaSnippets) lines.push(`      vanilla: ${tpl(snippetFor(section.variants, true))},`);
       lines.push(`      checks: {`);
       lines.push(`        l1: [`);
       const checks = section.checks

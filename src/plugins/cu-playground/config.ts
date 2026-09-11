@@ -23,6 +23,11 @@ export interface PlaygroundConfig {
   pages?: boolean;
   /** Directorio de entry points de la lib (para snippets vanilla). Default: 'src/lib'. */
   libDir?: string;
+  /**
+   * Emitir snippets Vanilla (custom elements) al generar las stories. Se emiten
+   * solo si el componente tiene entry UMD en `libDir`. Default: true.
+   */
+  vanilla?: boolean;
   /** Nombres/categorías a excluir del generador y del nav. */
   exclude?: string[];
   /** Componentes de chrome (UI) del runtime. Sin esto se usan fallbacks. */
@@ -48,6 +53,7 @@ export const PLAYGROUND_DEFAULTS = {
   playgroundDir: "src/playground",
   base: "/playground/components",
   libDir: "src/lib",
+  vanilla: true,
   pages: false,
 } as const;
 
@@ -58,6 +64,7 @@ export function resolvePlaygroundConfig(config: PlaygroundConfig = {}) {
     playgroundDir: config.playgroundDir ?? PLAYGROUND_DEFAULTS.playgroundDir,
     base: config.base ?? PLAYGROUND_DEFAULTS.base,
     libDir: config.libDir ?? PLAYGROUND_DEFAULTS.libDir,
+    vanilla: config.vanilla ?? PLAYGROUND_DEFAULTS.vanilla,
     pages: config.pages ?? PLAYGROUND_DEFAULTS.pages,
     exclude: config.exclude ?? [],
     chrome: config.chrome,
