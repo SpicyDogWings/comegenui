@@ -168,6 +168,7 @@ En `X.stories.config.json`, `sections.<id>` ajusta una sección generada:
 | `extraProps` | Agrega props a **todas** las variantes (ej. `{ "label": "Copiar" }`). |
 | `extraAttrs` | Agrega atributos HTML a todas las variantes. |
 | `slot` | Pisa el contenido del slot `default` de todas las variantes (ej. `"+"`). Útil en componentes icon-only donde el label derivado (nombre del color) no entra. |
+| `skipChecks` | Saca checks L1 generados que no aplican (ej. `["disabled"]` en una celda que solo renderiza el control al editar). |
 
 Ejemplo (FloatingButton, sección `color` con el `+` del FAB en vez del nombre del color):
 

@@ -646,6 +646,12 @@ const outlineItems = buildOutline(${`cu${componentName}Stories`});
         slots: { ...(variant.slots ?? {}), default: overrides.slot },
       }));
     }
+    // Saca checks generados que no aplican (ej. `disabled` en una celda que
+    // recién renderiza el control al entrar en edición).
+    if (overrides.skipChecks) {
+      const skip = new Set(overrides.skipChecks);
+      section.checks = section.checks.filter((key) => !skip.has(key));
+    }
   }
 
   for (const custom of storyConfig.custom ?? []) {

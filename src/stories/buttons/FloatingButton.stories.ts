@@ -30,13 +30,13 @@ export const cuFloatingButtonStories: ComponentStory = {
         "name": "color",
         "type": "primary | secondary | neutral | success | warning | danger",
         "default": "primary",
-        "description": "Color semántico: primary, secondary, neutral, success, warning, danger"
+        "description": "Color semántico del FAB: primary, secondary, neutral, success, warning, danger."
       },
       {
         "name": "disabled",
         "type": "boolean",
         "default": "false",
-        "description": "Estado deshabilitado"
+        "description": "Deshabilita el botón: atenúa el FAB y no emite `click`."
       }
     ],
     "slots": [
