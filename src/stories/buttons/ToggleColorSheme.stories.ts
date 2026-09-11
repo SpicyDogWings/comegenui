@@ -1,13 +1,15 @@
-// Generado por src/plugins/cu-playground/cli/generate.mjs a partir de las props de ToggleColorSheme.vue.
+// Generado por src/plugins/cu-playground/cli/generate.mjs a partir del contrato de ToggleColorSheme.vue.
 // (sin eventos declarados)
 
 import ToggleColorSheme from "@/components/buttons/ToggleColorSheme.vue";
-import type { ComponentStory } from "@/stories/types";
+import type { ComponentStory } from "@/plugins/cu-playground/contract";
 import { setup, global } from "./ToggleColorSheme.stories.runtime";
 
 export const cuToggleColorShemeStories: ComponentStory = {
   component: "cu-toggle-color-sheme",
   vue: ToggleColorSheme,
+  setup,
+  global,
   api: {
     "components": [
       {
@@ -30,8 +32,6 @@ export const cuToggleColorShemeStories: ComponentStory = {
       }
     ]
   },
-  setup,
-  global,
   sections: [
     {
       id: "default",

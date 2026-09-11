@@ -1,9 +1,9 @@
-// Generado por src/plugins/cu-playground/cli/generate.mjs a partir de las props de Button.vue.
-// (sin eventos declarados)
+// Generado por src/plugins/cu-playground/cli/generate.mjs a partir del contrato de Button.vue.
+// Eventos detectados: loading-change
 
 import { defineComponent, h, ref } from "vue";
 import Button from "@/components/buttons/Button.vue";
-import type { ComponentStory } from "@/stories/types";
+import type { ComponentStory } from "@/plugins/cu-playground/contract";
 
 const ButtonLoadingExtra = defineComponent({
   name: "ButtonLoadingExtra",
@@ -218,7 +218,7 @@ export const cuButtonStories: ComponentStory = {
               expect(wrapper.text()).toContain(text);
             },
           },
-          // TODO: checks específicos (eventos, exposes).
+          // TODO: checks específicos (eventos, exposes) — emite: loading-change.
         ],
       },
     },
@@ -272,7 +272,7 @@ export const cuButtonStories: ComponentStory = {
               expect(wrapper.html()).toContain(`var(--cu-color-${color}`);
             },
           },
-          // TODO: checks específicos (eventos, exposes).
+          // TODO: checks específicos (eventos, exposes) — emite: loading-change.
         ],
       },
     },
@@ -329,7 +329,7 @@ export const cuButtonStories: ComponentStory = {
               expect(wrapper.find(".cu-button").classes()).toContain(`cu-button--${value}`);
             },
           },
-          // TODO: checks específicos (eventos, exposes).
+          // TODO: checks específicos (eventos, exposes) — emite: loading-change.
         ],
       },
     },
@@ -374,7 +374,7 @@ export const cuButtonStories: ComponentStory = {
               expect(wrapper.find(".cu-button").classes()).toContain(`cu-button--${value}`);
             },
           },
-          // TODO: checks específicos (eventos, exposes).
+          // TODO: checks específicos (eventos, exposes) — emite: loading-change.
         ],
       },
     },
@@ -416,7 +416,7 @@ export const cuButtonStories: ComponentStory = {
               expect(link.attributes("href")).toBe(value);
             },
           },
-          // TODO: checks específicos (eventos, exposes).
+          // TODO: checks específicos (eventos, exposes) — emite: loading-change.
         ],
       },
     },
@@ -466,7 +466,7 @@ export const cuButtonStories: ComponentStory = {
               expect(link.attributes("href")).toBe(value);
             },
           },
-          // TODO: checks específicos (eventos, exposes).
+          // TODO: checks específicos (eventos, exposes) — emite: loading-change.
         ],
       },
     },
@@ -503,7 +503,7 @@ export const cuButtonStories: ComponentStory = {
               expect(wrapper.text()).toContain(text);
             },
           },
-          // TODO: checks específicos (eventos, exposes).
+          // TODO: checks específicos (eventos, exposes) — emite: loading-change.
         ],
       },
     },
@@ -545,7 +545,7 @@ export const cuButtonStories: ComponentStory = {
               else expect(control.attributes("disabled")).toBeUndefined();
             },
           },
-          // TODO: checks específicos (eventos, exposes).
+          // TODO: checks específicos (eventos, exposes) — emite: loading-change.
         ],
       },
     },
@@ -587,7 +587,7 @@ export const cuButtonStories: ComponentStory = {
               else expect(wrapper.find(".cu-button-spinner").exists()).toBe(false);
             },
           },
-          // TODO: checks específicos (eventos, exposes).
+          // TODO: checks específicos (eventos, exposes) — emite: loading-change.
         ],
       },
     },
