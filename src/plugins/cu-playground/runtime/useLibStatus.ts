@@ -1,38 +1,40 @@
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
-
-// Source of truth: los mismos entry points que construye build-lib.ts
-// (src/lib/**/*.ts, excluyendo index.ts y tokens.ts). Si se agrega o quita
-// un entry point, el badge de los playgrounds se actualiza solo.
-const LIB_ENTRIES = import.meta.glob('@/lib/**/*.ts')
-
-const LIB_NAMES = new Set(
-  Object.keys(LIB_ENTRIES)
-    .map((file) => file.split('/').pop()?.replace(/\.ts$/, '') ?? '')
-    .filter((name) => name !== 'index' && name !== 'tokens'),
-)
-
-// Rutas cuyo componente se publica en la lib bajo OTRO nombre de entry point.
-// AdvancedTable se publica como cu-table (lib/data/table.ts → Table.ce.vue → AdvancedTable.vue).
-const LIB_KEY_ALIASES: Record<string, string> = {
-  'advanced-table': 'table',
-}
+import { computed } from "vue";
+import { useRoute } from "vue-router";
+import type { PlaygroundLibStatus } from "../keys";
 
 /**
  * Estado dinámico de "inclusión en la lib" para los playgrounds.
  *
- * - `libKey`: nombre del entry point en src/lib, derivado de la ruta actual
+ * - `libKey`: nombre del entry point en la lib, derivado de la ruta actual
  *   (último segmento, ej. /playground/components/date-picker → "date-picker").
- * - `inLib`: si ese entry point existe realmente en src/lib (verdict calculado,
- *   no hardcodeado por página).
+ * - `inLib`: si ese entry point existe realmente en la lib (verdict calculado
+ *   a partir de los `entries` inyectados por el host, no hardcodeado por página).
+ *
+ * El host inyecta el glob de sus entry points (`libStatus`). Sin config, el
+ * badge queda deshabilitado (`enabled === false`).
  */
-export function useLibStatus() {
-  const route = useRoute()
+export function useLibStatus(config: PlaygroundLibStatus | undefined) {
+  const route = useRoute();
+
+  const names = computed(() => {
+    const set = new Set<string>();
+    for (const file of Object.keys(config?.entries ?? {})) {
+      const name = file.split("/").pop()?.replace(/\.ts$/, "") ?? "";
+      if (name !== "index" && name !== "tokens") set.add(name);
+    }
+    return set;
+  });
+
+  const aliases = config?.aliases ?? {};
+
   const libKey = computed(() => {
-    const segments = route.path.split('/').filter(Boolean)
-    const last = segments[segments.length - 1] ?? ''
-    return LIB_KEY_ALIASES[last] ?? last
-  })
-  const inLib = computed(() => LIB_NAMES.has(libKey.value))
-  return { libKey, inLib }
+    const segments = route.path.split("/").filter(Boolean);
+    const last = segments[segments.length - 1] ?? "";
+    return aliases[last] ?? last;
+  });
+
+  const inLib = computed(() => names.value.has(libKey.value));
+  const enabled = computed(() => Boolean(config));
+
+  return { libKey, inLib, enabled };
 }

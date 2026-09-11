@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import Table from "@/components/data/Table.vue";
-import Button from "@/components/buttons/Button.vue";
-import { getTokenDescription } from "@/config/css-tokens";
+import { computed, inject } from "vue";
+import { chromeKey } from "../chrome";
+import { playgroundKey } from "../keys";
 
 export interface StyleToken {
   name: string;
@@ -18,6 +17,9 @@ const props = defineProps<{
   subComponents?: SubComponentRef[];
 }>();
 
+const chrome = inject(chromeKey)!;
+const registry = inject(playgroundKey, null);
+
 const styleColumns = [
   { key: "name", label: "Variable" },
   { key: "description", label: "Uso" },
@@ -26,7 +28,7 @@ const styleColumns = [
 const styleData = computed(() =>
   props.tokens.map((name) => ({
     name,
-    description: getTokenDescription(name),
+    description: registry?.getTokenDescription(name) ?? name,
   }))
 );
 </script>
@@ -37,7 +39,7 @@ const styleData = computed(() =>
 
     <template v-if="tokens.length">
       <h3 id="style-variables">CSS Variables</h3>
-      <Table :columns="styleColumns" :data="styleData" variant="ghost" compact />
+      <component :is="chrome.table" :columns="styleColumns" :data="styleData" variant="ghost" compact />
     </template>
 
     <template v-if="!tokens.length && (!subComponents || !subComponents.length)">
@@ -48,16 +50,17 @@ const styleData = computed(() =>
     <template v-if="subComponents && subComponents.length">
       <h4 v-if="tokens.length">Sub-componentes con estilos propios</h4>
       <h3 v-else id="style-variables">Estilos de sub-componentes</h3>
-      <Table
+      <component
+        :is="chrome.table"
         :columns="[{ key: 'label', label: 'Componente' }, { key: 'path', label: 'Estilos' }]"
         :data="subComponents"
         variant="ghost"
         compact
       >
         <template #cell-path="{ row }">
-          <Button :to="row.path" variant="link" size="sm">Ver estilos</Button>
+          <component :is="chrome.button" :to="row.path" variant="link" size="sm">Ver estilos</component>
         </template>
-      </Table>
+      </component>
     </template>
   </section>
 </template>

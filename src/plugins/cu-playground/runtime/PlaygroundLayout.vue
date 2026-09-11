@@ -1,55 +1,61 @@
 <script setup lang="ts">
 import { computed, inject } from 'vue'
-import AppLayout from '@/layouts/AppLayout.vue'
-import Navbar from '@/components/navigation/Navbar.vue'
-import Outline from '@/components/lab/collapse/navigation/Outline.vue'
-import type { OutlineItem } from '@/components/lab/collapse/navigation/Outline.vue'
-import Badge from '@/components/information/Badge.vue'
-import { useLibStatus } from './useLibStatus'
+import { chromeKey, type NavItem } from '../chrome'
 import { playgroundKey } from '../keys'
-import type { NavItem } from '@/composables/useNavbar'
+import { useLibStatus } from './useLibStatus'
+import type { OutlineItem } from './outline'
 
 defineProps<{
   title?: string
   outlineItems?: OutlineItem[]
 }>()
 
-// Badge "En lib / No en lib": derivado de la ruta + entry points reales de src/lib
-const { libKey, inLib } = useLibStatus()
+// Chrome inyectado por el plugin (fallbacks mínimos si el host no pasa nada).
+const chrome = inject(chromeKey)!
+
+// Badge "En lib / No en lib": solo si el host configura libStatus.
+const registry = inject(playgroundKey, null)
+const { libKey, inLib, enabled } = useLibStatus(registry?.libStatus)
 
 // Nav derivado del registry del plugin (categorías → componentes). Sin
 // hardcodear entradas: se sincroniza solo con las stories registradas.
-const registry = inject(playgroundKey, null)
 const navItems = computed<NavItem[]>(() => [
   { label: 'Components', children: registry?.nav() ?? [] },
 ])
 </script>
 
 <template>
-  <AppLayout>
+  <component :is="chrome.appLayout">
     <template #title>
       <span class="playground-topbar-divider" aria-hidden="true"></span>
       <span class="playground-topbar-title">{{ title || 'Playground' }}</span>
     </template>
     <template #actions>
-      <Badge
+      <component
+        :is="chrome.badge"
+        v-if="enabled"
         :color="inLib ? 'success' : 'neutral'"
         variant="subtle"
         :title="`Entry point en src/lib: ${libKey}`"
       >
         {{ inLib ? 'En lib' : 'No en lib' }}
-      </Badge>
+      </component>
     </template>
     <div class="playground">
       <aside class="playground-sidebar">
-        <Navbar :items="navItems" search />
+        <component :is="chrome.navbar" :items="navItems" search />
       </aside>
       <div class="playground-box">
-        <Outline v-if="outlineItems" :items="outlineItems" class="playground-outline" />
+        <component
+          :is="chrome.outline"
+          v-if="outlineItems"
+          :items="outlineItems"
+          class="playground-outline"
+        />
         <slot />
       </div>
     </div>
-  </AppLayout>
+  </component>
 </template>
 
 <style scoped>

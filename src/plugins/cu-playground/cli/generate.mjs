@@ -44,6 +44,7 @@ const componentsDir = (userConfig.componentsDir ?? "src/components").replace(/\/
 const storiesDirBase = (userConfig.storiesDir ?? "src/stories").replace(/\/+$/, "");
 const playgroundDir = (userConfig.playgroundDir ?? "src/playground").replace(/\/+$/, "");
 const base = (userConfig.base ?? "/playground/components").replace(/\/+$/, "");
+const libDir = userConfig.libDir ? String(userConfig.libDir).replace(/\/+$/, "") : null;
 const configExclude = new Set(userConfig.exclude ?? []);
 const generatePages = withPages || (!noPages && userConfig.pages === true);
 
@@ -271,11 +272,11 @@ function generateOne(componentName) {
   const tag = `cu-${kebab}`;
   const storyPath = `${storyDir}/${componentName}.stories.ts`;
   const testPath = `${storyDir}/${componentName}.l1.test.ts`;
-  const libEntry = fg.sync(`src/lib/**/${kebab}.ts`)[0];
+  const libEntry = libDir ? fg.sync(`${libDir}/**/${kebab}.ts`)[0] : null;
   const isPublic = Boolean(libEntry);
 
   // Contrato del componente, leído del `.vue` real.
-  const contract = parseComponent(resolve(ROOT, componentPath), source);
+  const contract = parseComponent(resolve(ROOT, componentPath), source, base);
   const props = contract.props;
   const emits = contract.emits;
   const sample = SLOT_SAMPLES[componentName] ?? componentName;
@@ -706,14 +707,14 @@ const outlineItems = buildOutline(${`cu${componentName}Stories`});
     const preview = storyConfig.sections?.[section.id]?.preview;
     if (!preview || preview.recipe !== "async-click") return null;
     const append = preview.mode !== "replace";
-    const componentName = `${componentName}${capital(section.id)}${append ? "Extra" : "Preview"}`;
+    const previewName = `${componentName}${capital(section.id)}${append ? "Extra" : "Preview"}`;
     const prop = preview.prop ?? "loading";
     const duration = preview.duration ?? 1500;
     const entries = preview.entries?.length
       ? preview.entries
       : [{ idle: preview.idleLabel ?? sample, active: preview.activeLabel ?? "Cargando…", props: preview.props ?? {} }];
-    previews.push(`const ${componentName} = defineComponent({
-  name: ${JSON.stringify(componentName)},
+    previews.push(`const ${previewName} = defineComponent({
+  name: ${JSON.stringify(previewName)},
   setup() {
     const entries: Array<{ idle: string; active: string; props?: Record<string, unknown> }> = ${JSON.stringify(entries)};
     const loading = ref(entries.map(() => false));
@@ -733,7 +734,7 @@ const outlineItems = buildOutline(${`cu${componentName}Stories`});
       );
   },
 });`);
-    return { componentName, append };
+    return { componentName: previewName, append };
   }
 
   const sectionsSource = sections
@@ -790,7 +791,7 @@ const outlineItems = buildOutline(${`cu${componentName}Stories`});
 
   const story = `${header}
 ${previews.length ? 'import { defineComponent, h, ref } from "vue";\n' : ""}import ${componentName} from "${`@/${componentPath.replace(/^src\//, "")}`}";
-import type { ComponentStory } from "@/stories/types";
+import type { ComponentStory } from "@/plugins/cu-playground/contract";
 ${hasExtras ? `import { extras } from "./${componentName}.stories.extras";\n` : ""}${hasRuntime ? `import { setup, global } from "./${componentName}.stories.runtime";\n` : ""}
 ${previews.join("\n\n")}${previews.length ? "\n\n" : ""}export const ${`cu${componentName}Stories`}: ComponentStory = {
   component: ${JSON.stringify(tag)},
@@ -802,7 +803,7 @@ ${sectionsSource}
 `;
 
   const test = `import { ${`cu${componentName}Stories`} } from "./${componentName}.stories";
-import { runL1Story } from "@/stories/runner.l1";
+import { runL1Story } from "@/plugins/cu-playground/tests/runner.l1";
 
 runL1Story(${`cu${componentName}Stories`});
 `;

@@ -1,5 +1,5 @@
 import type { InjectionKey } from "vue";
-import type { ComponentStory } from "@/stories/types";
+import type { ComponentStory } from "./contract";
 
 /** Un componente registrado en el playground. */
 export interface StoryEntry {
@@ -45,6 +45,18 @@ export interface PlaygroundRegistry {
   nav(): NavGroup[];
   /** Página física de override para un componente (si existe). */
   getPage(name: string): (() => Promise<unknown>) | undefined;
+  /** Resuelve la descripción de un token CSS (sección Style). */
+  getTokenDescription(name: string): string;
+  /** Estado "En lib / No en lib" (opcional; si no se configura, sin badge). */
+  libStatus?: PlaygroundLibStatus;
+}
+
+/** Config del badge "En lib / No en lib" del layout del playground. */
+export interface PlaygroundLibStatus {
+  /** Entry points de la lib (glob), con los que se deriva `inLib`. */
+  entries: Record<string, unknown>;
+  /** Alias ruta → entry point (ej: 'advanced-table' → 'table'). */
+  aliases?: Record<string, string>;
 }
 
 /** Inyección del registry del playground. */

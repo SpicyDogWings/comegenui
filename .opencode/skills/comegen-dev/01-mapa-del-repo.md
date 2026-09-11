@@ -12,25 +12,26 @@ src/
 │   ├── icons/ · theme/ · lab/ · legacy/ · archived/  # no públicos / internos
 ├── lib/{category}/x.ts                 # Entry point UMD (defineCustomElement + registro)
 ├── stories/                            # Verificación/demo: NO vive junto al componente
-│   ├── types.ts                        # Contrato ComponentStory/Section/Variant/checks
-│   ├── runner.l1.ts                    # Runner capa L1 (.vue, jsdom)
+│   ├── types.ts                        # Shim → @/plugins/cu-playground/contract (contrato)
+│   ├── runner.l1.ts                    # Shim → @/plugins/cu-playground/tests/runner.l1
 │   └── {category}/X.stories.ts         # Story (secciones + checks); espeja la categoría
 │       {category}/X.l1.test.ts         # Test L1 (runner de stories)
 ├── pages/playground/
-│   ├── StoryPage.vue                   # Página genérica (la pinta el plugin)
-│   ├── StoryRenderer.vue               # Renderiza una story (preview + badges)
-│   ├── TestResultBadge.vue             # Badge ✅/❌ por sección
-│   └── SectionDemo.vue                 # Tabs Preview / Vue / Vanilla
-├── composables/useTestResults.ts       # Lee public/test-results.json
+│   └── ThemeBuilder.vue                # Página física (usa PlaygroundLayout del plugin)
+├── composables/useTestResults.ts       # Shim → plugin runtime/useTestResults
 ├── plugins/
 │   ├── cu-tokens/                      # Sistema de tokens CSS
-│   └── cu-playground/               # Plugin de stories (runtime + generate + reporter)
-│       ├── index.ts · keys.ts          # Vue plugin (ruta components/:name + registry)
+│   └── cu-playground/                  # Plugin de stories SELF-CONTAINED (runtime + generate + reporter)
+│       ├── index.ts                    # Vue plugin (ruta components/:name + registry)
+│       ├── contract.ts                 # DUEÑO del contrato ComponentStory/Section/Variant/checks
+│       ├── chrome.ts · runtime/chrome/ # Chrome (UI) con fallbacks mínimos + inyección del host
+│       ├── keys.ts · config.ts         # Registry/nav/config
+│       ├── runtime/                    # StoryPage, StoryBody, StoryRenderer, PlaygroundLayout, useTestResults…
+│       ├── tests/runner.l1.ts          # DUEÑO del runner capa L1 (.vue, jsdom)
 │       ├── cli/generate.mjs            # Generador prop-driven (genérico)
 │       └── vitest/reporter.ts          # Escribe public/test-results.json
 ├── config/theme.ts                     # Temas estáticos
 ├── router/index.ts                     # Rutas (Home/Playground; la dinámica la agrega el plugin)
-├── layouts/PlaygroundLayout.vue        # Nav lateral del playground
 └── utils/                              # getHostTheme, palette, fileIcons, search…
 
 tools/migrate.mjs                       # Migración desde páginas (específico del repo)

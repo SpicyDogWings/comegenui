@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import Table from "@/components/data/Table.vue";
-import Button from "@/components/buttons/Button.vue";
+import { inject } from "vue";
+import { chromeKey } from "../chrome";
 
 export interface ComponentDep {
   label: string;
@@ -11,6 +11,8 @@ defineProps<{
   deps: ComponentDep[];
 }>();
 
+const chrome = inject(chromeKey)!;
+
 const componentColumns = [
   { key: "label", label: "Componente" },
   { key: "path", label: "Playground" },
@@ -19,11 +21,11 @@ const componentColumns = [
 
 <template>
   <h3 id="api-components">Components</h3>
-  <Table :columns="componentColumns" :data="deps" variant="ghost" compact>
+  <component :is="chrome.table" :columns="componentColumns" :data="deps" variant="ghost" compact>
     <template #cell-path="{ row }">
-      <Button :to="row.path" variant="link" size="sm">{{ row.label }}</Button>
+      <component :is="chrome.button" :to="row.path" variant="link" size="sm">{{ row.label }}</component>
     </template>
-  </Table>
+  </component>
   <p class="playground-desc">
     Hacé clic en el componente para ir a su playground.
   </p>

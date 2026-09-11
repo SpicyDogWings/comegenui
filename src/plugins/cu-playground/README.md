@@ -5,17 +5,71 @@ Plugin de desarrollo de ComegenUI. Toma un `.vue`, le lee el **contrato**
 story y sirve la página del playground en runtime (con nav automático y
 posibilidad de páginas físicas de override).
 
+Es **self-contained**: el contrato, el runner de tests y el chrome (UI) viven
+dentro del plugin, así que se copia a otro proyecto y anda sin depender de
+archivos del host. El host solo inyecta su propia piel vía la opción `chrome`.
+
 ## Entry points
 
 | Archivo | Tipo | Qué hace |
 |---|---|---|
-| `index.ts` | Vue plugin | `app.use(CuPlayground, { router, stories, pages, config })`: registra la ruta `components/:name`, provee el registry (stories + nav + páginas) y arma el nav desde las stories. **Instalar antes de `app.use(router)`**. |
-| `keys.ts` | Tipos + `InjectionKey` | `playgroundKey`, `PlaygroundRegistry`, `StoryEntry`, `NavGroup`. Lo consume el runtime. |
+| `index.ts` | Vue plugin | `app.use(CuPlayground, { router, stories, pages, config, chrome, getTokenDescription, libStatus })`: registra la ruta `components/:name`, provee el registry (stories + nav + páginas) y arma el nav desde las stories. **Instalar antes de `app.use(router)`**. |
+| `contract.ts` | Tipos | **Dueño del contrato** de una story (`ComponentStory`, `Section`, `Variant`, `SectionCheck`…). `src/stories/types.ts` lo re-exporta (backwards compat). |
+| `chrome.ts` | Tipos + defaults | `PlaygroundChrome`/`ResolvedChrome`, `resolveChrome()` (merge host + fallbacks), `chromeKey` y `defaultTokenDescription()`. |
+| `keys.ts` | Tipos + `InjectionKey` | `playgroundKey`, `PlaygroundRegistry`, `StoryEntry`, `NavGroup`, `PlaygroundLibStatus`. Lo consume el runtime. |
 | `config.ts` | Tipos | `PlaygroundConfig` + `resolvePlaygroundConfig` (defaults). |
-| `runtime/` | Vue SFCs | `StoryPage`, `StoryBody`, `StoryRenderer`, `PlaygroundLayout`, `PlaygroundStyle`, `PlaygroundApiComponents`, `SectionDemo`, `TestResultBadge`, `outline.ts`. |
+| `runtime/` | Vue SFCs | `StoryPage`, `StoryBody`, `StoryRenderer`, `PlaygroundLayout`, `PlaygroundStyle`, `PlaygroundApiComponents`, `SectionDemo`, `TestResultBadge`, `outline.ts`, `useLibStatus.ts`, `useTestResults.ts`. |
+| `runtime/chrome/` | Vue SFCs fallback | Chrome mínimo (solo CSS vars): `AppLayout`, `Navbar`, `Outline`, `Badge`, `Table`, `Button`, `Tabs`, `CodeBlock`. |
+| `tests/runner.l1.ts` | Vitest runner | **Dueño del runner L1** (monta el `.vue` con `@vue/test-utils`). `src/stories/runner.l1.ts` lo re-exporta. |
 | `cli/generate.mjs` | Node CLI | Genera/actualiza la story desde el contrato del `.vue`. |
 | `cli/parse-sfc.mjs` | Node CLI | Parser del `.vue` (props/emits/exposes/slots/tokens/sub-componentes). |
 | `vitest/reporter.ts` | Reporter | Escribe `public/test-results.json` (badges ✅/❌). |
+
+## Opciones del plugin
+
+Todas opcionales; sin ellas el plugin anda con fallbacks:
+
+| Opción | Tipo | Si no se pasa |
+|---|---|---|
+| `router` | `Router` | **Requerida** — el plugin agrega la ruta `components/:name`. |
+| `stories` | glob de `.stories.ts` | **Requerida** — registry del nav y de páginas. |
+| `pages` | glob de `.vue` físicos | Página genérica para todos. |
+| `config` | `PlaygroundConfig` | Defaults. |
+| `chrome` | `PlaygroundChrome` | Chrome fallback mínimo (`runtime/chrome/`). |
+| `getTokenDescription` | `(name) => string` | `defaultTokenDescription()` genérica. |
+| `libStatus` | `{ entries, aliases }` | Sin badge "En lib / No en lib". |
+| `base` / `routeName` | string | `config.base` / `'Component playground'`. |
+
+## Chrome: la piel del runtime
+
+El runtime no importa componentes del host: los recibe inyectados por el plugin
+vía `chromeKey` (`chrome.ts`). El host puede:
+
+- no pasar nada → se usan los fallbacks mínimos de `runtime/chrome/` (estilo
+  solo con CSS vars `--cu-*`, así funcionan en cualquier proyecto);
+- pasar algunos → se mergean sobre los fallbacks (`resolveChrome`);
+- pasar todos → el playground se ve con el sistema de componentes del host.
+
+En `main.ts` de ComegenUI:
+
+```ts
+app.use(CuPlayground, {
+  router,
+  config: playgroundConfig,
+  stories: import.meta.glob("./stories/**/*.stories.ts"),
+  pages: import.meta.glob("./playground/**/*.vue"),
+  chrome: {
+    appLayout: AppLayout, navbar: Navbar, outline: Outline,
+    badge: Badge, table: Table, button: Button,
+    tabs: Tabs, codeBlock: CodeBlock,
+  },
+  getTokenDescription,
+  libStatus: {
+    entries: import.meta.glob('@/lib/**/*.ts'),
+    aliases: { 'advanced-table': 'table' },
+  },
+})
+```
 
 ## Comandos
 
@@ -112,5 +166,15 @@ Reglas:
    **antes** de `app.use(router)`.
 4. En `vitest.config.ts`: `reporters: ["default", "./src/plugins/cu-playground/vitest/reporter.ts"]`.
 
-> El runtime usa componentes de ComegenUI (`Navbar`, `Outline`, `Badge`, `Table`,
-> `CodeBlock`, `Tabs`). Al llevarlo, copiá esos archivos o parametrizalos.
+> El plugin es self-contained: contrato, runner y chrome fallback viajan con él.
+> Para que se vea como en ComegenUI, inyectá el `chrome` del host (ver arriba);
+> sin eso el playground anda con los fallbacks mínimos de `runtime/chrome/`.
+
+## Dependencias
+
+| Dependencia | Para qué |
+|---|---|
+| `vue` (^3) + `vue-router` | Runtime del plugin (registra rutas; el `Navbar` fallback usa `RouterLink`). |
+| `vue/compiler-sfc` | CLI (`parse-sfc.mjs`). |
+| `vitest` + `@vue/test-utils` | Runner L1 + reporter (`tests/`, `vitest/`). |
+| `fast-glob` | CLI (`generate.mjs`). |
