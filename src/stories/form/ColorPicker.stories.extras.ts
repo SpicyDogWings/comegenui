@@ -59,6 +59,49 @@ const ColorPickerProgrammatic = defineComponent({
   },
 });
 
+/** Demo v-model: ColorPicker atado a un ref, con el valor en vivo abajo. */
+const ColorPickerModel = defineComponent({
+  name: "ColorPickerModel",
+  setup() {
+    const color = ref("#3b82f6");
+    return () =>
+      h("div", { class: "playground-col" }, [
+        h(ColorPicker, {
+          modelValue: color.value,
+          "onUpdate:modelValue": (value: string) => (color.value = value),
+        }),
+        h("p", { class: "playground-state" }, ["Seleccionado: ", h("strong", color.value)]),
+      ]);
+  },
+});
+
+const modelVue = `<script setup>
+import { ref } from 'vue'
+import ColorPicker from '@/components/form/ColorPicker.vue'
+
+const color = ref('#3b82f6')
+<\/script>
+
+<template>
+  <ColorPicker v-model="color" />
+  <p>Seleccionado: {{ color }}</p>
+</template>`;
+
+const modelVanilla = `<script src="dist/CuColorPicker.umd.js"><\/script>
+
+<cu-color-picker id="cp" model-value="#3b82f6"></cu-color-picker>
+<p id="cp-out">Seleccionado: #3b82f6</p>
+
+<script>
+  customElements.whenDefined('cu-color-picker').then(() => {
+    const picker = document.getElementById('cp');
+    picker.addEventListener('change', (e) => {
+      document.getElementById('cp-out').textContent = 'Seleccionado: ' + e.detail;
+    });
+    // picker.modelValue = '#00ff00'; // setear programáticamente
+  });
+<\/script>`;
+
 const programmaticVue = `<script setup>
 import { ref } from 'vue'
 import ColorPicker from '@/components/form/ColorPicker.vue'
@@ -132,6 +175,49 @@ const programmaticVanilla = `<script src="dist/CuColorPicker.umd.js"><\/script>
 <\/script>`;
 
 export const extras: StoryExtra[] = [
+  {
+    id: "v-model",
+    title: "v-model",
+    badge: "#000000",
+    badgeTitle: "Valor por defecto",
+    layout: "col",
+    render: () => h(ColorPickerModel),
+    variants: [{ id: "with-value", props: { modelValue: "#3b82f6" } }],
+    vue: modelVue,
+    vanilla: modelVanilla,
+    checks: {
+      l1: [
+        {
+          name: "muestra el valor inicial en el input de texto",
+          run({ wrapper, expect }, variant) {
+            const input = wrapper.find("input.cu-color-picker-input").element as HTMLInputElement;
+            expect(input.value).toBe(String(variant.props?.modelValue));
+          },
+        },
+        {
+          name: "al tipear un hex válido emite change + update:modelValue",
+          async run({ wrapper, expect }) {
+            await wrapper.find("input.cu-color-picker-input").setValue("#ff0000");
+
+            const change = wrapper.emitted("change") as unknown[][] | undefined;
+            expect(change).toBeTruthy();
+            expect(change![0]![0]).toBe("#ff0000");
+
+            const model = wrapper.emitted("update:modelValue") as unknown[][] | undefined;
+            expect(model).toBeTruthy();
+            expect(model![0]![0]).toBe("#ff0000");
+          },
+        },
+        {
+          name: "no emite change con un hex inválido",
+          async run({ wrapper, expect }) {
+            await wrapper.find("input.cu-color-picker-input").setValue("#zzz");
+            expect(wrapper.emitted("change")).toBeUndefined();
+          },
+        },
+      ],
+    },
+  },
   {
     id: "programmatic",
     title: "Programmatic",

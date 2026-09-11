@@ -1,4 +1,4 @@
 import { cuColorPickerStories } from "./ColorPicker.stories";
-import { runL1Story } from "@/stories/runner.l1";
+import { runL1Story } from "@/plugins/cu-playground/tests/runner.l1";
 
 runL1Story(cuColorPickerStories);

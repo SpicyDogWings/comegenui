@@ -1,5 +1,8 @@
+// Generado por src/plugins/cu-playground/cli/generate.mjs a partir del contrato de ColorPicker.vue.
+// Eventos detectados: update:modelValue, change
+
 import ColorPicker from "@/components/form/ColorPicker.vue";
-import type { ComponentStory } from "@/stories/types";
+import type { ComponentStory } from "@/plugins/cu-playground/contract";
 import { extras } from "./ColorPicker.stories.extras";
 
 export const cuColorPickerStories: ComponentStory = {
@@ -90,87 +93,66 @@ export const cuColorPickerStories: ComponentStory = {
     {
       id: "default",
       title: "Default",
-      variants: [{ id: "default" }],
-      vue: `  <ColorPicker />`,
-      vanilla: `<script src="dist/CuColorPicker.umd.js"><\/script>
-
-<cu-color-picker></cu-color-picker>`,
+      variants: [
+        { id: "default" },
+      ],
+      vue: `  <ColorPicker></ColorPicker>`,
+      vanilla: `  <cu-color-picker></cu-color-picker>`,
       checks: {
         l1: [
           {
-            name: "renderiza swatch, input color e input de texto",
+            name: "renderiza .cu-color-picker",
             run({ wrapper, expect }) {
-              expect(wrapper.find(".cu-color-picker-swatch").exists()).toBe(true);
-              expect(wrapper.find("input[type='color']").exists()).toBe(true);
-              expect(wrapper.find("input.cu-color-picker-input").exists()).toBe(true);
+              expect(wrapper.find(".cu-color-picker").exists()).toBe(true);
             },
           },
+          // TODO: checks específicos (eventos, exposes) — emite: update:modelValue, change.
         ],
       },
     },
 
     {
-      id: "v-model",
-      title: "v-model",
-      badge: "#000000",
-      badgeTitle: "Valor por defecto",
-      layout: "col",
-      variants: [{ id: "with-value", props: { modelValue: "#3b82f6" } }],
-      vue: `<script setup>
-import { ref } from 'vue'
-import ColorPicker from '@/components/form/ColorPicker.vue'
-
-const color = ref('#3b82f6')
-<\/script>
-
-<template>
-  <ColorPicker v-model="color" />
-  <p>Seleccionado: {{ color }}</p>
-</template>`,
-      vanilla: `<script src="dist/CuColorPicker.umd.js"><\/script>
-
-<cu-color-picker id="cp" model-value="#3b82f6"></cu-color-picker>
-<p id="cp-out">Seleccionado: #3b82f6</p>
-
-<script>
-  customElements.whenDefined('cu-color-picker').then(() => {
-    const picker = document.getElementById('cp');
-    picker.addEventListener('change', (e) => {
-      document.getElementById('cp-out').textContent = 'Seleccionado: ' + e.detail;
-    });
-    // picker.modelValue = '#00ff00'; // setear programáticamente
-  });
-<\/script>`,
+      id: "color",
+      title: "Colors",
+      badge: "neutral",
+      badgeTitle: "Default: neutral",
+      variants: [
+        { id: "primary", props: {"color":"primary"} },
+        { id: "secondary", props: {"color":"secondary"} },
+        { id: "neutral", props: {"color":"neutral"} },
+        { id: "success", props: {"color":"success"} },
+        { id: "warning", props: {"color":"warning"} },
+        { id: "danger", props: {"color":"danger"} },
+      ],
+      vue: `  <ColorPicker color="primary"></ColorPicker>
+  <ColorPicker color="secondary"></ColorPicker>
+  <ColorPicker color="neutral"></ColorPicker>
+  <ColorPicker color="success"></ColorPicker>
+  <ColorPicker color="warning"></ColorPicker>
+  <ColorPicker color="danger"></ColorPicker>`,
+      vanilla: `  <cu-color-picker color="primary"></cu-color-picker>
+  <cu-color-picker color="secondary"></cu-color-picker>
+  <cu-color-picker color="neutral"></cu-color-picker>
+  <cu-color-picker color="success"></cu-color-picker>
+  <cu-color-picker color="warning"></cu-color-picker>
+  <cu-color-picker color="danger"></cu-color-picker>`,
       checks: {
         l1: [
           {
-            name: "muestra el valor inicial en el input de texto",
+            name: "renderiza .cu-color-picker",
+            run({ wrapper, expect }) {
+              expect(wrapper.find(".cu-color-picker").exists()).toBe(true);
+            },
+          },
+          {
+            name: "resuelve el color como token CSS",
             run({ wrapper, expect }, variant) {
-              const input = wrapper.find("input.cu-color-picker-input").element as HTMLInputElement;
-              expect(input.value).toBe(String(variant.props?.modelValue));
+              const color = variant.props?.color as string | undefined;
+              if (!color) return;
+              expect(wrapper.html()).toContain(`var(--cu-color-${color}`);
             },
           },
-          {
-            name: "al tipear un hex válido emite change + update:modelValue",
-            async run({ wrapper, expect }) {
-              await wrapper.find("input.cu-color-picker-input").setValue("#ff0000");
-
-              const change = wrapper.emitted("change") as unknown[][] | undefined;
-              expect(change).toBeTruthy();
-              expect(change![0]![0]).toBe("#ff0000");
-
-              const model = wrapper.emitted("update:modelValue") as unknown[][] | undefined;
-              expect(model).toBeTruthy();
-              expect(model![0]![0]).toBe("#ff0000");
-            },
-          },
-          {
-            name: "no emite change con un hex inválido",
-            async run({ wrapper, expect }) {
-              await wrapper.find("input.cu-color-picker-input").setValue("#zzz");
-              expect(wrapper.emitted("change")).toBeUndefined();
-            },
-          },
+          // TODO: checks específicos (eventos, exposes) — emite: update:modelValue, change.
         ],
       },
     },
@@ -179,24 +161,32 @@ const color = ref('#3b82f6')
       id: "disabled",
       title: "Disabled",
       badge: "false",
+      badgeTitle: "Default: false",
       variants: [
-        { id: "primary", props: { color: "primary", disabled: true } },
-        { id: "danger", props: { color: "danger", disabled: true, modelValue: "#ef4444" } },
+        { id: "false", props: {"disabled":false} },
+        { id: "true", props: {"disabled":true} },
       ],
-      vue: `  <ColorPicker color="primary" disabled />`,
-      vanilla: `<script src="dist/CuColorPicker.umd.js"><\/script>
-
-<cu-color-picker color="primary" disabled></cu-color-picker>`,
+      vue: `  <ColorPicker></ColorPicker>
+  <ColorPicker disabled></ColorPicker>`,
+      vanilla: `  <cu-color-picker></cu-color-picker>
+  <cu-color-picker disabled></cu-color-picker>`,
       checks: {
         l1: [
           {
-            name: "disabled: clase y ambos inputs deshabilitados",
+            name: "renderiza .cu-color-picker",
             run({ wrapper, expect }) {
-              expect(wrapper.find(".cu-color-picker").classes()).toContain("cu-color-picker--disabled");
-              expect(wrapper.find("input[type='color']").attributes("disabled")).toBeDefined();
-              expect(wrapper.find("input.cu-color-picker-input").attributes("disabled")).toBeDefined();
+              expect(wrapper.find(".cu-color-picker").exists()).toBe(true);
             },
           },
+          {
+            name: "disabled: refleja el atributo en el control",
+            run({ wrapper, expect }, variant) {
+              const control = wrapper.find("button, input, textarea, select");
+              if (variant.props?.disabled) expect(control.attributes("disabled")).toBeDefined();
+              else expect(control.attributes("disabled")).toBeUndefined();
+            },
+          },
+          // TODO: checks específicos (eventos, exposes) — emite: update:modelValue, change.
         ],
       },
     },

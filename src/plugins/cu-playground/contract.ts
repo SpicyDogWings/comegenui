@@ -117,12 +117,22 @@ export interface StoryExtra {
   title: string;
   /** párrafo descriptivo opcional. */
   description?: string;
+  /** texto del Badge del heading (opcional). */
+  badge?: string;
+  /** title/tooltip del Badge (opcional). */
+  badgeTitle?: string;
+  /** layout del wrapper de la demo (opcional). */
+  layout?: "row" | "col";
   /** demo en vivo. */
   render: () => VNodeChild;
   /** snippet de uso en Vue (opcional). */
   vue?: string;
   /** snippet de uso en vanilla (opcional). */
   vanilla?: string;
+  /** variantes para los checks (la demo las ignora; default `[{ id: 'default' }]`). */
+  variants?: Variant[];
+  /** checks por capa de la extra (mismo contrato que una sección). */
+  checks?: SectionChecks;
 }
 
 export interface ComponentStory {

@@ -61,10 +61,19 @@ export default defineComponent({
     }
 
     function renderExtra(extra: StoryExtra): VNodeChild {
+      const layoutClass = extra.layout === "col" ? "playground-col" : "playground-row";
+      const demo = extra.render();
+      const preview = extra.layout ? h("div", { class: layoutClass }, [demo]) : demo;
       return h("section", { id: extra.id, class: "playground-section", key: extra.id }, [
-        h("div", { class: "playground-heading" }, [h("h2", null, extra.title)]),
+        h("div", { class: "playground-heading" }, [
+          h("h2", null, extra.title),
+          h(TestResultBadge, { component: props.story.component, section: extra.id }),
+          extra.badge
+            ? h(chrome.badge, { color: "neutral", title: extra.badgeTitle }, () => extra.badge ?? "")
+            : null,
+        ]),
         extra.description ? h("p", { class: "playground-desc" }, extra.description) : null,
-        h(SectionDemo, { vueCode: extra.vue, vanillaCode: extra.vanilla }, () => extra.render()),
+        h(SectionDemo, { vueCode: extra.vue, vanillaCode: extra.vanilla }, () => preview),
       ]);
     }
 

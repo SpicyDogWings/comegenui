@@ -156,8 +156,13 @@ que nunca se pisan**:
 | `X.stories.ts` | **Sí** | generado (secciones + tokens/api) |
 | `X.l1.test.ts` | **Sí** | generado (runner) |
 | `X.stories.config.json` | No | include/exclude/order, `sections`, `custom[]`, `attrs`, `api`, `tokens`, `classes` |
-| `X.stories.extras.ts` | No | extras (Programmatic/Events/render custom) |
+| `X.stories.extras.ts` | No | extras: demos custom que `--force` no pisa (con `render`, `vue`/`vanilla`, y opcional `variants`/`checks`/`badge`/`layout`) |
 | `X.stories.runtime.ts` | No | setup/global de la story |
+
+> **Migrar una sección custom a extra**: si una sección escrita a mano no la
+> genera el contrato (ej. un demo con estado), movela a `extras` con su
+> `render()`, `variants` y `checks`. Sus tests L1 siguen corriendo (el runner
+> recorre secciones **y** extras) y el playground le pinta el badge de tests.
 
 ### Overrides por sección (`sections`)
 
