@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, type PropType } from 'vue'
 import { useThemeStore } from '@/stores/theme'
 import Button from './Button.vue'
 import LucideSun from '../icons/LucideSun.vue'
@@ -8,10 +8,13 @@ import LucideMoon from '../icons/LucideMoon.vue'
 const store = useThemeStore()
 
 const props = defineProps({
+  /** Variante visual del botón. */
   variant: {
-    type: String,
+    type: String as PropType<'solid' | 'outlined' | 'soft' | 'ghost' | 'subtle' | 'link' | 'none'>,
+    required: false,
     default: 'ghost',
   },
+  /** Tamaño en px del ícono (ancho y alto). */
   size: {
     type: Number,
     default: 20,

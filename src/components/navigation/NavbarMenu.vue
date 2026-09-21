@@ -7,7 +7,9 @@ import type { NavItem } from '@/composables/useNavbar'
 // columna de items de menú. Cada item con children es un Dropdown anidado cuyo
 // panel vuelve a renderizar NavbarMenu → anidamiento infinito.
 const props = defineProps({
+  /** Items del nivel de menú. */
   items: { type: Array as () => NavItem[], required: true },
+  /** Disparador de los submenús: click o hover. */
   trigger: {
     type: String as PropType<'click' | 'hover'>,
     required: false,

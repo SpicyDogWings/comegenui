@@ -1,6 +1,6 @@
 {
   "name": "comegenui",
-  "version": "4.0.1",
+  "version": "5.0.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -10,7 +10,16 @@
     "build-only": "vite build",
     "build:lib": "pnpm exec tsx --tsconfig tsconfig.build-lib.json build-lib.ts",
     "build:labs": " build-labs.ts",
-    "type-check": "vue-tsc --build"
+    "type-check": "vue-tsc --build",
+    "test": "vitest run",
+    "test:l1": "vitest run --project l1",
+    "test:watch": "vitest",
+    "preflight": "bash scripts/preflight.sh",
+    "stories:status": "node tools/status.mjs",
+    "stories:migrate": "node tools/migrate.mjs",
+    "cu-playground:generate": "node src/plugins/cu-playground/cli/generate.mjs",
+    "stories:generate": "node src/plugins/cu-playground/cli/generate.mjs",
+    "new:component": "node tools/scaffold-component.mjs"
   },
   "dependencies": {
     "@vueuse/core": "^14.2.1",

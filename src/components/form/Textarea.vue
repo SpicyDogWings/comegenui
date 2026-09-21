@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, defineModel, useTemplateRef } from "vue";
 
+/** Valor actual del textarea (v-model). */
 const value = defineModel<string>({ default: "" });
 
 const props = defineProps({
@@ -60,9 +61,13 @@ const textareaStyles = computed(() => ({
   '--btn-subtle-border': `var(--cu-color-${props.color}-subtle-border)`,
 }));
 
+/** Devuelve el valor actual del textarea. */
 const get = () => value.value;
+/** Setea el valor del textarea. */
 const set = (newValue: string | number) => { value.value = String(newValue); };
+/** Limpia el textarea. */
 const reset = () => { value.value = ""; };
+/** Enfoca el textarea. */
 const focus = () => { textareaRef.value?.focus(); };
 
 defineExpose({ get, set, reset, focus });

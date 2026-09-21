@@ -48,6 +48,7 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["select", "blur"]);
+/** Valor del texto de búsqueda (v-model). */
 const searchValue = defineModel<string>({ default: "" });
 
 const dropdownRef = ref<InstanceType<typeof Dropdown> | null>(null);
@@ -99,18 +100,24 @@ function onFocusOut(e: FocusEvent) {
   }
 }
 
+/** Devuelve el texto actual. */
 function get() { return searchValue.value; }
+/** Setea el texto actual en el input. */
 function set(val: string) {
   searchValue.value = val;
   searchText.value = val;
   if (inputRef.value) inputRef.value.set(val);
 }
+/** Limpia el texto de búsqueda. */
 function reset() { searchValue.value = ""; searchText.value = ""; }
+/** Enfoca el input. */
 function focus() { inputRef.value?.focus(); }
 
 defineExpose({
   get, set, reset, focus,
+  /** Indica si el panel está abierto. */
   isOpen: () => dropdownRef.value?.isOpen || false,
+  /** Devuelve el item seleccionado o null. */
   selectedItem: () => selectedItem.value,
 });
 </script>

@@ -5,6 +5,7 @@ import Button from "../buttons/Button.vue";
 import Alert from "../information/Alert.vue";
 import { getFileIconSvg, formatFileSize } from "../../utils/fileIcons";
 
+/** Archivo seleccionado (v-model). */
 const value = defineModel<File | null>({ default: null });
 
 const fileUrl = ref("");
@@ -157,6 +158,7 @@ function onDrop(e: DragEvent) {
   }
 }
 
+/** Abre el selector de archivos. */
 function trigger() {
   if (props.disabled || props.readOnly) return;
   fileInputRef.value?.click();
@@ -166,13 +168,17 @@ watch(value, (file) => {
   if (file) rejectMessage.value = "";
 });
 
+/** Devuelve el archivo actual. */
 const get = () => value.value;
+/** Setea el archivo actual. */
 const set = (file: File | null) => { value.value = file; rejectMessage.value = ""; };
+/** Quita el archivo seleccionado. */
 const reset = () => {
   value.value = null;
   rejectMessage.value = "";
   if (fileInputRef.value) fileInputRef.value.value = "";
 };
+/** Enfoca el contenedor del input. */
 const focus = () => { containerFocus.value = true; };
 
 defineExpose({ get, set, reset, focus, trigger });

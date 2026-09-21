@@ -8,6 +8,7 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  /** Ícono del trigger (SVG/HTML). */
   icon: {
     type: String,
     required: false,
@@ -36,14 +37,17 @@ function setOpen(value: boolean) {
   emit('toggle', value)
 }
 
+/** Alterna el estado del collapse. */
 function toggle() {
   setOpen(!isOpen.value)
 }
 
+/** Abre el collapse. */
 function open() {
   setOpen(true)
 }
 
+/** Cierra el collapse. */
 function close() {
   setOpen(false)
 }
@@ -94,6 +98,7 @@ defineExpose({
   open,
   close,
   toggle,
+  /** Devuelve true si el collapse está abierto. */
   isOpen: () => isOpen.value,
 })
 </script>

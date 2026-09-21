@@ -153,9 +153,13 @@ function onSelect(option: SelectOption) {
 
 const optionStyle = computed(() => ({ textAlign: props.textAlign }));
 
+/** Devuelve el valor seleccionado. */
 function get() { return selectedValue.value; }
+/** Setea el valor seleccionado. */
 function set(value: string) { selectedValue.value = value; }
+/** Limpia la selección. */
 function reset() { selectedValue.value = ""; }
+/** Enfoca el trigger del select. */
 function focus() {
   // Enfoca el trigger real (el botón), no el wrapper: el div es tabindex -1,
   // se enfoca sin ningún feedback visible y sin soporte de teclado
@@ -170,7 +174,9 @@ function onFocusOut(e: FocusEvent) {
 
 defineExpose({
   get, set, reset, focus,
+  /** Indica si el panel está abierto. */
   isOpen: () => dropdownRef.value?.isOpen || false,
+  /** Devuelve la opción seleccionada o null. */
   selectedItem: () => props.options.find(o => o.value === selectedValue.value) || null,
 });
 </script>

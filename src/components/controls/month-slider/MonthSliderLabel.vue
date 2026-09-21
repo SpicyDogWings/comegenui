@@ -3,14 +3,17 @@ import { computed, ref, type PropType } from 'vue'
 import Badge from '@/components/information/Badge.vue'
 
 const props = defineProps({
+  /** Texto principal del label (mes o año). */
   label: {
     type: String,
     required: true,
   },
+  /** Texto del año mostrado como badge al lado del label. */
   year: {
     type: String,
     default: '',
   },
+  /** Deshabilita la interacción del label. */
   disabled: {
     type: Boolean,
     default: false,
@@ -20,10 +23,12 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  /** Color semántico del label. */
   color: {
     type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     default: 'primary',
   },
+  /** Variante visual del label. */
   variant: {
     type: String as PropType<'solid' | 'outlined' | 'soft' | 'ghost' | 'subtle'>,
     default: 'soft',
@@ -46,6 +51,7 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  /** Indica si se puede navegar al paso siguiente. */
   canNavigateNext: {
     type: Boolean,
     default: true,
@@ -54,6 +60,7 @@ const props = defineProps({
 
 const emit = defineEmits<{
   // Positivo = mes siguiente (swipe a la izquierda), negativo = mes anterior
+  /** Emite la dirección de navegación (positiva = paso siguiente). */
   (e: 'navigate', direction: number): void
 }>()
 

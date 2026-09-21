@@ -44,6 +44,7 @@ const props = defineProps({
     required: false,
     default: false,
   },
+  /** Tamaño del input (sm | md | lg). */
   size: {
     type: String,
     required: false,
@@ -68,14 +69,18 @@ const inputStyles = computed(() => ({
   '--btn-subtle-border': `var(--cu-color-${props.color}-subtle-border)`,
 }));
 
+/** Devuelve el valor actual del input. */
 const get = () => value.value;
+/** Setea el valor del input. */
 const set = (newValue: string | number) => { value.value = String(newValue); };
+/** Limpia el input. */
 const reset = () => { value.value = ""; };
 
 defineExpose({
   get,
   set,
   reset,
+  /** Enfoca el input. */
   focus: () => inputFocus.value = true,
 });
 </script>

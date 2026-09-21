@@ -49,12 +49,15 @@ const colorStyles = computed(() => ({
   '--modal-color': `var(--cu-color-${props.color})`,
 }));
 
+/** Abre el modal. */
 function open() {
   isOpen.value = true;
 }
+/** Cierra el modal. */
 function close() {
   isOpen.value = false;
 }
+/** Alterna la visibilidad del modal. */
 function toggle() {
   isOpen.value = !isOpen.value;
 }
@@ -85,6 +88,7 @@ defineExpose({
   open,
   close,
   toggle,
+  /** Devuelve true si el modal está abierto. */
   isOpen: () => isOpen.value,
 });
 </script>

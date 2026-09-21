@@ -1,15 +1,28 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, type PropType } from "vue";
 import Button from "./Button.vue";
 import LucideCopy from "@/components/icons/LucideCopy.vue";
 import LucideCheck from "@/components/icons/LucideCheck.vue";
 
 const props = defineProps({
+  /** Texto que se copia al portapapeles. */
   text: { type: String, required: true },
+  /** Etiqueta visible junto al ícono de copiar. */
   label: { type: String, default: "" },
+  /** Etiqueta que reemplaza a `label` durante la confirmación de copia. */
   copiedLabel: { type: String, default: "Copiado" },
-  color: { type: String, default: "neutral" },
-  variant: { type: String, default: "soft" },
+  /** Color semántico del botón. */
+  color: {
+    type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
+    required: false,
+    default: "neutral",
+  },
+  /** Variante visual del botón. */
+  variant: {
+    type: String as PropType<'solid' | 'outlined' | 'soft' | 'ghost' | 'subtle' | 'link' | 'none'>,
+    required: false,
+    default: "soft",
+  },
 });
 
 const copied = ref(false);

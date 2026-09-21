@@ -1,0 +1,38 @@
+{
+  "order": ["default", "color", "variant", "size", "links", "target", "type", "disabled", "loading"],
+  "sections": {
+    "target": {
+      "title": "Targets",
+      "badge": "_self",
+      "extraProps": { "to": "https://example.com" }
+    },
+    "loading": {
+      "preview": {
+        "recipe": "async-click",
+        "mode": "append",
+        "duration": 1500,
+        "entries": [
+          { "idle": "Click to Load", "active": "Loading...", "props": { "color": "primary", "variant": "solid" } }
+        ]
+      }
+    }
+  },
+  "custom": [
+    {
+      "id": "links",
+      "title": "Links",
+      "prop": "to",
+      "values": [
+        {
+          "value": "https://example.com",
+          "label": "External",
+          "extraProps": { "target": "_blank" }
+        },
+        {
+          "value": "/playground/components/button",
+          "label": "Internal"
+        }
+      ]
+    }
+  ]
+}

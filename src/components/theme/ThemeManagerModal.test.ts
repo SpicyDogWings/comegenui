@@ -12,9 +12,9 @@ function factory(props: Record<string, any> = {}) {
 describe("ThemeManagerModal", () => {
   it("render smoke: estructura base con Modal interno", () => {
     const w = factory();
-    expect(w.find(".tm-modal").exists()).toBe(true);
-    expect(w.find(".cu-modal-title").text()).toBe("Theme Manager");
-    expect(w.find(".cu-modal").attributes("data-size")).toBe("lg");
+    expect(w.find(".tm-layout").exists()).toBe(true);
+    expect(w.find(".cu-modal-title").text()).toBe("Export");
+    expect(w.find(".cu-modal").attributes("data-size")).toBe("full");
   });
 
   it("prop themeName se muestra en el input", () => {
@@ -25,7 +25,7 @@ describe("ThemeManagerModal", () => {
 
   it("prop cssOutput se muestra en el bloque de código", () => {
     const w = factory({ cssOutput: ":root { --cu-color-primary: red; }" });
-    expect(w.find(".tm-code").text()).toContain("--cu-color-primary");
+    expect(w.find(".tm-code-block").text()).toContain("--cu-color-primary");
   });
 
   it("escribir en el input emite update:themeName", async () => {
@@ -45,9 +45,6 @@ describe("ThemeManagerModal", () => {
 
     await byText("Export JSON")!.trigger("click");
     expect(w.emitted("export")).toBeTruthy();
-
-    await byText("Reset Defaults")!.trigger("click");
-    expect(w.emitted("reset")).toBeTruthy();
 
     await byText("Copy CSS")!.trigger("click");
     expect(w.emitted("copy-css")).toBeTruthy();

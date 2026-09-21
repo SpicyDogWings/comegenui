@@ -30,6 +30,7 @@ const props = defineProps({
   },
   disabled: { type: Boolean, required: false, default: false },
   label: { type: String, required: false, default: "" },
+  /** Ícono del trigger (SVG/HTML). */
   icon: { type: String, required: false, default: "" },
   // Cómo se abre el panel: "click" (por defecto) o "hover" (abre al pasar el
   // mouse por el trigger y cierra al salir, con un pequeño delay).
@@ -65,6 +66,7 @@ const props = defineProps({
   items: { type: Array as () => DropdownMenuItem[], required: false, default: () => [] },
 });
 
+/** Valor seleccionado (v-model). */
 const selectedValue = defineModel<string>({ default: "" });
 
 const emit = defineEmits(["open", "close"]);
@@ -116,17 +118,24 @@ function onItemClick(item: DropdownMenuItem) {
   popoverRef.value?.close();
 }
 
+/** Devuelve el valor seleccionado. */
 function get() { return selectedValue.value; }
+/** Setea el valor seleccionado. */
 function set(val: string) { selectedValue.value = val; }
+/** Limpia el valor seleccionado. */
 function reset() { selectedValue.value = ""; }
 
 defineExpose({
+  /** Abre el panel. */
   open: () => popoverRef.value?.open(),
+  /** Cierra el panel. */
   close: () => popoverRef.value?.close(),
+  /** Alterna la visibilidad del panel. */
   toggle: () => popoverRef.value?.toggle(),
   get,
   set,
   reset,
+  /** Devuelve true si el panel está abierto. */
   isOpen: () => popoverRef.value?.isOpen() ?? false,
 });
 </script>

@@ -64,6 +64,7 @@ const sizeClass = computed(() => `cu-avatar--${props.size}`);
   <div :class="['cu-avatar', sizeClass]" :style="avatarStyles">
     <img v-if="props.src" :src="props.src" class="cu-avatar-img" alt="" />
     <span v-else-if="props.initials" class="cu-avatar-initials">{{ props.initials }}</span>
+    <!-- Iniciales o contenido del avatar. -->
     <slot />
   </div>
 </template>

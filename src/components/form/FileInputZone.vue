@@ -5,6 +5,7 @@ import FileList from "../FileList.vue";
 import Alert from "../information/Alert.vue";
 import { formatFileSize } from "../../utils/fileIcons";
 
+/** Archivo o archivos seleccionados (v-model). */
 const value = defineModel<File | File[] | null>({ default: null });
 
 const props = defineProps({
@@ -249,6 +250,7 @@ async function onDrop(e: DragEvent) {
   }
 }
 
+/** Abre el selector de archivos. */
 function trigger() {
   if (props.disabled || props.readOnly) return;
   fileInputRef.value?.click();
@@ -269,13 +271,17 @@ function removeFile(index: number) {
   }
 }
 
+/** Devuelve el archivo o archivos actuales. */
 const get = () => value.value;
+/** Setea el archivo o archivos actuales. */
 const set = (files: File | File[] | null) => { value.value = files as any; rejectMessages.value = []; };
+/** Quita los archivos seleccionados. */
 const reset = () => {
   value.value = null;
   rejectMessages.value = [];
   if (fileInputRef.value) fileInputRef.value.value = "";
 };
+/** Enfoca la zona de carga. */
 const focus = () => { dropFocus.value = true; };
 
 defineExpose({ get, set, reset, focus, trigger });

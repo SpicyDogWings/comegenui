@@ -178,22 +178,32 @@ function removeFile() {
   emit('change', null);
 }
 
+/** Devuelve las filas parseadas. */
 const getRows = () => rows.value;
+/** Devuelve los encabezados parseados. */
 const getHeaders = () => headers.value;
+/** Devuelve los errores de validación. */
 const getErrors = () => errors.value;
+/** Devuelve el archivo cargado. */
 const getFile = () => file.value;
+/** Revalida las filas y emite los errores. */
 const validate = () => {
   errors.value = validateRows(rows.value, props.columns);
   emit('error', errors.value);
   return errors.value;
 };
+/** Descarga la plantilla con las columnas definidas. */
 const downloadTemplateFile = () => {
   if (props.columns.length === 0) return;
   downloadTemplate(props.columns, props.template);
 };
+/** Limpia el archivo y los resultados. */
 const reset = () => removeFile();
+/** Setea el archivo y lo propaga al input. */
 const set = (f: File | null) => { fileInputRef.value?.set(f); file.value = f; };
+/** Abre el selector de archivos. */
 const trigger = () => fileInputRef.value?.trigger();
+/** Enfoca el input de archivo. */
 const focus = () => fileInputRef.value?.focus();
 
 defineExpose({
@@ -202,6 +212,7 @@ defineExpose({
   getErrors,
   getFile,
   validate,
+  /** Descarga la plantilla configurada (csv/xlsx). */
   downloadTemplate: downloadTemplateFile,
   reset,
   set,

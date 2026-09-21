@@ -63,11 +63,14 @@ function onTextInputBlur() {
   }
 }
 
+/** Devuelve el color actual en formato hex. */
 function get() { return value.value; }
+/** Setea el color actual en formato hex. */
 function set(v: string) { value.value = v; localHex.value = v; }
+/** Restaura el color al negro (#000000). */
 function reset() { value.value = "#000000"; localHex.value = "#000000"; }
 
-defineExpose({ get, set, reset, focus: () => inputRef.value?.focus() });
+defineExpose({ get, set, reset, /** Enfoca el input de texto del color. */ focus: () => inputRef.value?.focus() });
 </script>
 
 <template>

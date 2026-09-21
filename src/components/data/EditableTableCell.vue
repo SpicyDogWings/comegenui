@@ -87,42 +87,51 @@ interface Column {
 }
 
 const props = defineProps({
+  /** Valor actual de la celda. */
   value: {
     type: [String, Number, Boolean] as PropType<string | number | boolean>,
     required: true,
   },
+  /** Fila completa a la que pertenece la celda. */
   row: {
     type: Object as () => Record<string, any>,
     required: true,
   },
+  /** Configuración de la columna: editor, validación y alineación. */
   column: {
     type: Object as () => Column,
     required: true,
   },
+  /** Índice de la fila en los datos. */
   index: {
     type: Number,
     required: true,
   },
+  /** Color semántico del editor. */
   color: {
     type: String,
     required: false,
     default: "neutral",
   },
+  /** Variante visual del editor. */
   variant: {
     type: String,
     required: false,
     default: "ghost",
   },
+  /** Estado de validación: success y mensaje de error. */
   validation: {
     type: Object as () => { success: boolean; error: string | null },
     required: true,
     default: () => ({ success: false, error: null })
   },
+  /** Muestra el editor directo en toda la tabla, sin lápiz. */
   inlineEdit: {
     type: Boolean,
     required: false,
     default: false,
   },
+  /** Deshabilita la edición de la celda. */
   disabled: {
     type: Boolean,
     required: false,
@@ -131,9 +140,13 @@ const props = defineProps({
 });
 
 const emit = defineEmits([
+  /** Se inicia la edición de la celda. */
   "edit-start",
+  /** Se guarda el nuevo valor de la celda. */
   "edit-save",
+  /** Se cancela la edición de la celda. */
   "edit-cancel",
+  /** El valor no pasa la validación de la columna. */
   "edit-error",
 ]);
 

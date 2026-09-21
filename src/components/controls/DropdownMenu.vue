@@ -67,9 +67,13 @@ function handleItemClick(item: DropdownItem) {
 }
 
 defineExpose({
+  /** Abre el menú. */
   open: () => dropdownRef.value?.open(),
+  /** Cierra el menú. */
   close: () => dropdownRef.value?.close(),
+  /** Alterna la visibilidad del menú. */
   toggle: () => dropdownRef.value?.toggle(),
+  /** Devuelve true si el menú está abierto. */
   isOpen: () => dropdownRef.value?.isOpen || false,
 });
 </script>
@@ -89,6 +93,7 @@ defineExpose({
     @close="emit('close')"
   >
     <template #toggle>
+      <!-- Contenido del trigger; scoped: { toggle, isOpen }. -->
       <slot name="toggle" :toggle="dropdownRef?.toggle" :isOpen="dropdownRef?.isOpen">
         <Button
           :color="color"
@@ -136,6 +141,7 @@ defineExpose({
           </Button>
         </template>
       </template>
+      <!-- Contenido del panel. -->
       <slot v-else></slot>
     </template>
   </Dropdown>

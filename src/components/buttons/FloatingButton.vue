@@ -2,11 +2,13 @@
 import { computed, type PropType } from "vue";
 
 const props = defineProps({
+  /** Color semántico del FAB: primary, secondary, neutral, success, warning, danger. */
   color: {
     type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     required: false,
     default: "primary",
   },
+  /** Deshabilita el botón: atenúa el FAB y no emite `click`. */
   disabled: {
     type: Boolean,
     required: false,
@@ -51,6 +53,8 @@ function onClick() {
   width: var(--cu-space-3xl);
   height: var(--cu-space-3xl);
   padding: 0;
+  font-family: var(--cu-font-sans);
+  font-size: var(--cu-font-size-xl);
   border: none;
   border-radius: var(--cu-radius-full);
   background-color: var(--fab-bg);

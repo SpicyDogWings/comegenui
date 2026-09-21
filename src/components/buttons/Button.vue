@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, type PropType } from "vue";
+import { computed, watch, type PropType } from "vue";
 import LucideLoader from "@/components/icons/LucideLoader.vue";
 
 const props = defineProps({
@@ -50,6 +50,14 @@ const props = defineProps({
 });
 
 const isDisabled = computed(() => props.disabled || props.loading)
+
+const emit = defineEmits<{
+  (e: 'loading-change', value: boolean): void
+}>()
+
+// Notifica los cambios de estado de `loading` (el host CE lo recibe como
+// CustomEvent `loading-change` con detail: boolean).
+watch(() => props.loading, (value) => emit('loading-change', value))
 
 const colorStyles = computed(() => ({
   '--btn-bg': `var(--cu-color-${props.color})`,
