@@ -53,9 +53,9 @@ export const cuLabelStories: ComponentStory = {
       },
       {
         "name": "color",
-        "type": "string",
-        "default": "#2c2c2c",
-        "description": "Color del texto (valor CSS). En cu-label acepta nombres semánticos: primary, neutral, success, warning, danger"
+        "type": "'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'",
+        "default": "neutral",
+        "description": "Color semántico del texto; se resuelve vía el token --cu-color-{color}"
       },
       {
         "name": "hightContrast",
@@ -195,34 +195,40 @@ import Input from '@/components/form/Input.vue'
     {
       id: "colors",
       title: "Colors",
-      badge: "#2c2c2c",
+      badge: "neutral",
       badgeTitle: "Color por defecto",
       layout: "row",
       variants: [
         { id: "default", props: { label: "Default" } },
-        { id: "azul", props: { label: "Azul", color: "#2563eb" } },
-        { id: "verde", props: { label: "Verde", color: "#16a34a" } },
-        { id: "rojo", props: { label: "Rojo", color: "#dc2626" } },
+        { id: "primary", props: { label: "Primary", color: "primary" } },
+        { id: "secondary", props: { label: "Secondary", color: "secondary" } },
+        { id: "success", props: { label: "Success", color: "success" } },
+        { id: "warning", props: { label: "Warning", color: "warning" } },
+        { id: "danger", props: { label: "Danger", color: "danger" } },
       ],
       vue: `  <Label label="Default" />
-  <Label label="Azul" color="#2563eb" />
-  <Label label="Verde" color="#16a34a" />
-  <Label label="Rojo" color="#dc2626" />`,
+  <Label label="Primary" color="primary" />
+  <Label label="Secondary" color="secondary" />
+  <Label label="Success" color="success" />
+  <Label label="Warning" color="warning" />
+  <Label label="Danger" color="danger" />`,
       vanilla: `<script src="dist/CuLabel.umd.js"><\/script>
 
+<cu-label label="Default"></cu-label>
 <cu-label label="Primary" color="primary"></cu-label>
-<cu-label label="Neutral" color="neutral"></cu-label>
+<cu-label label="Secondary" color="secondary"></cu-label>
 <cu-label label="Success" color="success"></cu-label>
 <cu-label label="Warning" color="warning"></cu-label>
 <cu-label label="Danger" color="danger"></cu-label>`,
       checks: {
         l1: [
           {
-            name: "aplica el color como variable CSS --label-fg",
+            name: "resuelve --label-fg al token --cu-color-{color} (default: neutral)",
             run({ wrapper, expect }, variant) {
-              const color = (variant.props?.color as string) ?? "#2c2c2c";
-              const style = (wrapper.find("label.cu-label").attributes("style") ?? "").replace(/\s/g, "");
-              expect(style).toContain(`--label-fg:${color}`);
+              const color = (variant.props?.color as string) ?? "neutral";
+              expect(wrapper.find("label.cu-label").attributes("style")).toContain(
+                `--label-fg: var(--cu-color-${color})`,
+              );
             },
           },
         ],

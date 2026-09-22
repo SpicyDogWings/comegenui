@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { computed, type PropType } from "vue";
+
 const props = defineProps({
   for: {
     type: String,
@@ -11,9 +13,9 @@ const props = defineProps({
     default: "",
   },
   color: {
-    type: String,
+    type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     required: false,
-    default: "#2c2c2c",
+    default: "neutral",
   },
   hightContrast: {
     type: Boolean,
@@ -21,6 +23,10 @@ const props = defineProps({
     default: false,
   },
 });
+
+const colorStyles = computed(() => ({
+  '--label-fg': `var(--cu-color-${props.color})`,
+}));
 
 const emit = defineEmits<{
   (e: 'click'): void
@@ -37,7 +43,7 @@ const handleClick = () => {
 
 <template>
   <label
-    :style="{ '--label-fg': props.color }"
+    :style="colorStyles"
     class="cu-label"
   >
     <span v-if="props.label" @click="handleClick" class="cu-label-text">{{ props.label }}</span>
@@ -51,12 +57,19 @@ const handleClick = () => {
   flex-direction: column;
   gap: var(--cu-space-xs);
   font-family: var(--cu-font-sans);
-  color: var(--label-fg);
 }
 
 .cu-label-text {
   width: fit-content;
   cursor: pointer;
   font-family: var(--cu-font-sans);
+}
+
+/* Clases duplicadas a propósito: le ganan a las reglas globales del
+   consumidor que fuerzan color en label/span (p. ej. el playground:
+   `.playground :is(..., span, label)` → (0,2,1)). Scoped compila a (0,3,0). */
+.cu-label.cu-label,
+.cu-label-text.cu-label-text {
+  color: var(--label-fg);
 }
 </style>
