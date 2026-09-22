@@ -13,7 +13,7 @@ Label con color semántico. Al hacer clic, enfoca el input hijo o, si se define 
 | `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
 | `for` | `string` | `""` | ID del elemento a enfocar al hacer clic (atributo HTML `for`) |
 | `label` | `string` | `""` | Texto del label (modo declarativo) |
-| `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `color` | `'primary' \| 'secondary' \| 'neutral' \| 'success' \| 'warning' \| 'danger'` | `"neutral"` | Color semántico del texto; se resuelve vía el token `--cu-color-{color}` |
 | `hightContrast` | `boolean` | `false` | Modo de alto contraste para el texto |
 
 ## Slots
