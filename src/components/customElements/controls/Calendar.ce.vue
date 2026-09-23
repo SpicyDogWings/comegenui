@@ -7,74 +7,92 @@ initTokens()
 
 const props = defineProps({
   // API espejo de MonthSlider/YearSlider: acepta Date, timestamp o fecha "YYYY-MM-DD"
+  /** Fecha seleccionada. Acepta `Date`, timestamp o `"YYYY-MM-DD"` (ver [Formato de fechas](#formato-de-fechas)) */
   modelValue: {
     type: [String, Number, Date] as PropType<string | number | Date | null>,
     default: null,
   },
+  /** Fecha mínima seleccionable (días anteriores quedan deshabilitados) */
   min: {
     type: [String, Number, Date] as PropType<string | number | Date | null>,
     default: null,
   },
+  /** Fecha máxima seleccionable */
   max: {
     type: [String, Number, Date] as PropType<string | number | Date | null>,
     default: null,
   },
+  /** Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` */
   color: {
     type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     default: 'primary',
   },
+  /** Variante del día seleccionado: `solid`, `outlined`, `soft`, `subtle` (sin `ghost`: se confunde con el día de hoy) */
   variant: {
     type: String as PropType<'solid' | 'outlined' | 'soft' | 'subtle'>,
     default: 'soft',
   },
+  /** Deshabilita todo el calendario */
   disabled: {
     type: Boolean,
     default: false,
   },
+  /** Días de la semana no seleccionables (`0`=domingo … `6`=sábado). En HTML plano: `disabled-weekdays="0,6"` */
   disabledWeekdays: {
     type: [Array, String] as PropType<number[] | string>,
     default: '',
   },
+  /** Fechas puntuales no seleccionables `"YYYY-MM-DD"`. En HTML plano: `disabled-dates="2026-08-15,2026-08-16"` */
   disabledDates: {
     type: [Array, String] as PropType<(string | Date)[] | string>,
     default: '',
   },
+  /** Locale para nombres de mes y días de la semana */
   locale: {
     type: String,
     default: 'es',
   },
+  /** Día en que arranca la semana: `0` = domingo, `1` = lunes */
   weekStart: {
     type: Number,
     default: 1,
   },
+  /** Muestra botones `«`/`»` para saltar de año en el header */
   yearNavigation: {
     type: [Boolean, String] as PropType<boolean | string>,
     default: false,
   },
+  /** Formato del mes en el header (tokens como MonthSlider) */
   monthFormat: {
     type: String,
     default: 'MMMM',
   },
+  /** Formato del año en el header */
   yearFormat: {
     type: String,
     default: 'yyyy',
   },
+  /** Eventos a señalar con puntos bajo la fecha (ver [Eventos](#eventos-puntos)). Se asigna como propiedad JS */
   events: {
     type: Array as PropType<CalendarEvent[]>,
     default: () => [],
   },
+  /** Inicio del rango (resalta los días entre inicio y fin). Se asigna como propiedad JS */
   rangeStart: {
     type: [String, Number, Date] as PropType<string | number | Date | null>,
     default: null,
   },
+  /** Fin del rango. Se asigna como propiedad JS */
   rangeEnd: {
     type: [String, Number, Date] as PropType<string | number | Date | null>,
     default: null,
   },
+  /** Dibuja líneas **interiores** (cuadrícula) entre los días. En HTML plano: `<cu-calendar grid>` */
   grid: {
     type: Boolean,
     default: false,
   },
+  /** Dibuja el **marco exterior** alrededor de la cuadrícula de días. Combinable con `grid` */
   border: {
     type: Boolean,
     default: false,

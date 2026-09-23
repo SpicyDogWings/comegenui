@@ -6,13 +6,18 @@ import { initTokens } from "@/plugins/cu-tokens/css";
 initTokens();
 
 const props = defineProps({
+  /** Estado del checkbox (controlado) */
   modelValue: { type: Boolean, default: false },
+  /** Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` */
   color: {
     type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     default: "neutral",
   },
+  /** Tamaño del checkbox: `sm`, `md` */
   size: { type: String, default: "md" },
+  /** Estado deshabilitado */
   disabled: Boolean,
+  /** Texto visible junto al checkbox */
   label: String,
 });
 

@@ -3,55 +3,66 @@ import { ref, watch, getCurrentInstance } from "vue";
 import Textarea from "../../form/Textarea.vue";
 
 const props = defineProps({
+  /** Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) */
   theme: {
     type: String,
     required: false,
     default: "",
   },
+  /** Valor controlado */
   modelValue: {
     type: String,
     required: false,
     default: "",
   },
+  /** Valor inicial usado por `.reset()` */
   startValue: {
     type: String,
     required: false,
   },
+  /** Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` */
   color: {
     type: String,
     required: false,
     default: "neutral",
   },
+  /** `outlined`, `soft`, `ghost`, `subtle` */
   variant: {
     type: String,
     required: false,
     default: "soft",
     validator: (value: string) => ["outlined", "soft", "ghost", "subtle"].includes(value),
   },
+  /** Placeholder del textarea */
   placeholder: {
     type: String,
     required: false,
   },
+  /** Estado deshabilitado */
   disabled: {
     type: Boolean,
     required: false,
     default: false,
   },
+  /** Solo lectura (en HTML se usa como `readonly`) */
   readOnly: {
     type: Boolean,
     required: false,
     default: false,
   },
+  /** Cantidad de filas visibles */
   rows: {
     type: Number,
     required: false,
     default: 3,
   },
+  /** Desactiva el redimensionado manual (atributo HTML: `no-resize`) */
   noResize: {
     type: Boolean,
     required: false,
     default: false,
   },
+  /** Modo de alto contraste para el texto */
   hightContrast: {
     type: Boolean,
     required: false,

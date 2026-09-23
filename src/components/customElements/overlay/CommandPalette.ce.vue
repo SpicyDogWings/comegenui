@@ -5,10 +5,15 @@ import { initTokens } from "@/plugins/cu-tokens/css";
 initTokens();
 
 const props = defineProps({
+  /** Color semántico del modal: `primary`, `neutral`, `success`, `warning`, `danger` */
   color: { type: String, default: "neutral" },
+  /** Título del modal */
   title: { type: String, default: "" },
+  /** Placeholder del input de búsqueda */
   placeholder: { type: String, default: "Buscar comandos…" },
+  /** Ancho del modal: `auto`, `sm`, `md`, `lg`, `xl`, `full` */
   size: { type: String, default: "auto" },
+  /** Alto del modal: `auto`, `sm`, `md`, `lg`, `xl`, `full` */
   height: { type: String, default: "auto" },
 });
 

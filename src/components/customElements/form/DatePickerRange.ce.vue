@@ -6,52 +6,74 @@ import { initTokens } from '@/plugins/cu-tokens/css'
 initTokens()
 
 const props = defineProps({
+  /** Fecha de inicio del rango */
   startDate: {
     type: [String, Number, Date] as PropType<string | number | Date | null>,
     default: null,
   },
+  /** Fecha de fin del rango */
   endDate: {
     type: [String, Number, Date] as PropType<string | number | Date | null>,
     default: null,
   },
+  /** Fecha mínima seleccionable */
   min: {
     type: [String, Number, Date] as PropType<string | number | Date | null>,
     default: null,
   },
+  /** Fecha máxima seleccionable */
   max: {
     type: [String, Number, Date] as PropType<string | number | Date | null>,
     default: null,
   },
+  /** Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` */
   color: {
     type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     default: 'neutral',
   },
+  /** Variante del trigger: `outlined`, `soft`, `ghost`, `subtle` */
   variant: {
     type: String as PropType<'outlined' | 'soft' | 'ghost' | 'subtle'>,
     default: 'soft',
   },
+  /** Deshabilita el picker */
   disabled: { type: Boolean, default: false },
+  /** Texto cuando no hay rango seleccionado */
   placeholder: { type: String, default: '' },
+  /** Locale para nombres de mes y días */
   locale: { type: String, default: 'es' },
+  /** Día en que arranca la semana: `0` = domingo, `1` = lunes */
   weekStart: { type: Number, default: 1 },
+  /** Formato del rango en el trigger (tokens: `dd` `MM` `MMM` `MMMM` `yy` `yyyy`) */
   format: { type: String, default: 'dd/MM/yyyy' },
+  /** Muestra botones `«`/`»` para saltar de año */
   yearNavigation: { type: [Boolean, String] as PropType<boolean | string>, default: false },
+  /** Formato del mes en el header */
   monthFormat: { type: String, default: 'MMMM' },
+  /** Formato del año en el header */
   yearFormat: { type: String, default: 'yyyy' },
+  /** Días de la semana no seleccionables (`0`=domingo … `6`=sábado) */
   disabledWeekdays: { type: [Array, String] as PropType<number[] | string>, default: '' },
+  /** Fechas puntuales no seleccionables */
   disabledDates: { type: [Array, String] as PropType<(string | Date)[] | string>, default: '' },
+  /** Eventos a señalar con puntos bajo la fecha (ver [cu-calendar](cu-calendar.md#eventos-puntos)) */
   events: {
     type: Array as PropType<CalendarEvent[]>,
     default: () => [],
   },
+  /** Líneas **interiores** (cuadrícula) entre los días de los calendarios internos */
   grid: { type: Boolean, default: false },
+  /** **Marco exterior** alrededor de la cuadrícula de días */
   border: { type: Boolean, default: false },
+  /** Muestra dos meses lado a lado */
   dualCalendar: { type: Boolean, default: false },
   position: { type: String, default: 'bottom' },
   align: { type: String, default: 'start' },
   fixed: { type: Boolean, default: false },
+  /** Muestra botón "Limpiar" */
   clearable: { type: Boolean, default: true },
   todayButton: { type: Boolean, default: false },
+  /** Texto del label sobre el picker */
   label: { type: String, default: '' },
 })
 

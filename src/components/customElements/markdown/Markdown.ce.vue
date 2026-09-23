@@ -5,6 +5,7 @@ import { DEFAULTS, extractColors, extractShared } from '@/plugins/cu-tokens/defa
 import { darken, toHex, lighten, transparentize } from 'color2k'
 
 const props = defineProps({
+  /** Tema de colores (`light`, `dark`, `sigacadv2`) */
   theme: { type: String, default: 'light' },
 })
 

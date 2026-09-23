@@ -96,7 +96,8 @@ function propRow(prop, override, fallback) {
   };
   const def = override.default ?? cleanDefault(prop.default);
   if (def !== undefined) row.default = def;
-  const description = override.description || prop.description;
+  // JSDoc primario (vive en el SFC); el sidecar solo como fallback.
+  const description = prop.description || override.description;
   if (description) row.description = description;
   if (prop.tags?.length) row.tags = prop.tags;
   return row;

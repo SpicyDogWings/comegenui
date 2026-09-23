@@ -6,20 +6,26 @@ import { initTokens } from "@/plugins/cu-tokens/css";
 initTokens();
 
 const props = defineProps({
+  /** Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` */
   color: {
     type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     default: "neutral",
   },
+  /** `ghost` (default), `outlined`, `soft`, `subtle`, `solid` */
   variant: {
     type: String,
     default: "ghost",
   },
+  /** `vertical` (media arriba) o `horizontal` (media al costado) */
   layout: {
     type: String as PropType<'vertical' | 'horizontal'>,
     default: "vertical",
   },
+  /** Título del header */
   title: String,
+  /** Subtítulo bajo el título */
   subtitle: String,
+  /** URL de imagen que se muestra como media en la parte superior (o al costado con `layout="horizontal"`) */
   image: String,
 });
 

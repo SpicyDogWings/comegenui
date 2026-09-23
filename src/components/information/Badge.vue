@@ -2,11 +2,13 @@
 import { computed, type PropType } from "vue";
 
 const props = defineProps({
+  /** Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` */
   color: {
     type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     required: false,
     default: "neutral",
   },
+  /** `solid`, `outlined`, `soft`, `ghost`, `subtle` */
   variant: {
     type: String,
     required: false,

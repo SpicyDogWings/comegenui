@@ -3,11 +3,13 @@ import { computed, watch, type PropType } from "vue";
 import LucideLoader from "@/components/icons/LucideLoader.vue";
 
 const props = defineProps({
+  /** Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` */
   color: {
     type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     required: false,
     default: "neutral",
   },
+  /** `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` */
   variant: {
     type: String,
     required: false,
@@ -15,16 +17,19 @@ const props = defineProps({
     validator: (value: string) =>
       ["solid", "outlined", "soft", "ghost", "subtle", "link", "none"].includes(value),
   },
+  /** Tamaño: `sm`, `md`, `lg` */
   size: {
     type: String as PropType<'sm' | 'md' | 'lg'>,
     required: false,
     default: 'md',
     validator: (value: string) => ['sm', 'md', 'lg'].includes(value),
   },
+  /** Si se especifica, el botón se renderiza como `<a>` */
   to: {
     type: String,
     required: false,
   },
+  /** Target del link cuando `to` está definido: `_self`, `_blank`, `_parent`, `_top` */
   target: {
     type: String,
     required: false,
@@ -32,16 +37,19 @@ const props = defineProps({
     validator: (value: string) =>
       ["_self", "_blank", "_parent", "_top"].includes(value),
   },
+  /** Tipo del `<button>`: `button`, `submit`, `reset` */
   type: {
     type: String as PropType<'button' | 'submit' | 'reset'>,
     required: false,
     default: 'button',
   },
+  /** Estado deshabilitado */
   disabled: {
     type: Boolean,
     required: false,
     default: false,
   },
+  /** Muestra un spinner en lugar del contenido. Deshabilita el botón mientras está activo */
   loading: {
     type: Boolean,
     required: false,

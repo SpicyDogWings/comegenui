@@ -64,64 +64,83 @@ interface Column {
 }
 
 const props = defineProps({
+  /** Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) */
   theme: {
     type: String,
     required: false,
     default: "",
   },
+  /** Definición de columnas (ver [Interfaz de columna](#interfaz-de-columna)). Se asigna como propiedad JS */
   columns: {
     type: Array as () => Column[],
     required: false,
     default: () => [],
   },
+  /** Filas de la tabla. Se asigna como propiedad JS */
   data: {
     type: Array as () => Record<string, any>[],
     required: false,
     default: () => [],
   },
+  /** Texto a mostrar cuando no hay datos. Si se omite, usa `"No hay datos que mostrar"` */
   empty: {
     type: String,
     required: false,
     default: "",
   },
+  /** Habilita paginación interna */
   pagination: {
     type: Boolean,
     required: false,
     default: false,
   },
+  /** Tamaño de página (atributo HTML: `items-per-page`) */
   itemsPerPage: {
     type: Number,
     required: false,
     default: 10,
   },
+  /** Muestra selector de items por página (atributo HTML: `show-page-size`) */
   showPageSize: {
     type: Boolean,
     required: false,
     default: false,
   },
+  /** Opciones del selector (atributo HTML: `page-size-options`). Se asigna como propiedad JS */
   pageSizeOptions: {
     type: Array as () => number[],
     required: false,
     default: () => [5, 10, 20, 50],
   },
+  /** Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` */
   color: {
     type: String,
     required: false,
     default: "neutral",
   },
+  /** `solid`, `outlined`, `soft`, `ghost`, `subtle` */
   variant: {
     type: String,
     required: false,
     default: "soft",
   },
+  /** Habilita barra de búsqueda (atributo HTML: `search-enabled`) */
   searchEnabled: { type: Boolean, required: false, default: false },
+  /** Placeholder del input de búsqueda (atributo HTML: `search-placeholder`) */
   searchPlaceholder: { type: String, required: false, default: "Buscar..." },
+  /** Columnas donde buscar (atributo HTML: `search-fields`). Vacío = todas */
   searchFields: { type: Array as () => string[], required: false, default: () => [] },
+  /** Valor controlado del buscador (atributo HTML: `search-value`) */
   searchValue: { type: String, required: false, default: "" },
+  /** Filtros por columna. Se asigna como propiedad JS */
   filters: { type: Object as () => Record<string, any>, required: false, default: () => ({}) },
+  /** Muestra una barra de carga animada en el tope */
   loading: { type: Boolean, required: false, default: false },
+  /** Acciones de fila (botón "..." al final de cada fila). Se asigna como propiedad JS */
   actions: { type: Array, required: false, default: () => [] },
+  /** Deshabilita filas (ver [Deshabilitar filas, columnas y celdas](#deshabilitar-filas-columnas-y-celdas)). Se asigna como propiedad JS */
   rowDisabled: { type: [Boolean, Function] as PropType<boolean | ((row: Record<string, any>) => boolean)>, required: false, default: false },
+  /** Filas de footer (ver [Footer (API programática)](#footer-api-programática)). Se asigna como propiedad JS */
   footer: { type: Array as () => FooterRow[], required: false, default: () => [] },
 });
 

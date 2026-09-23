@@ -6,16 +6,24 @@ import { initTokens } from "@/plugins/cu-tokens/css";
 initTokens();
 
 const props = defineProps({
+  /** Archivo seleccionado (vía JS, no HTML) */
   modelValue: { type: Object as PropType<File | null>, default: null },
+  /** Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` */
   color: {
     type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     default: "neutral",
   },
+  /** `outlined`, `soft`, `ghost`, `subtle` */
   variant: { type: String, default: "outlined" },
+  /** Texto cuando no hay archivo */
   placeholder: { type: String, default: "Seleccionar archivo" },
+  /** Deshabilita click, drag y drop */
   disabled: Boolean,
+  /** Modo solo lectura */
   readOnly: Boolean,
+  /** Tipos aceptados (ej: `"image/*"`, `".pdf,.doc"`) */
   accept: String,
+  /** Tamaño máximo en bytes */
   maxSize: Number,
 });
 

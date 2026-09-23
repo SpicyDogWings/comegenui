@@ -3,8 +3,11 @@ import { ref, getCurrentInstance } from "vue";
 import ColorPicker from "../../form/ColorPicker.vue";
 
 const props = defineProps({
+  /** Valor del color en formato hex (`#RRGGBB`) */
   modelValue: { type: String, default: "#000000" },
+  /** Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` (define el acento del borde/foco) */
   color: { type: String, default: "neutral" },
+  /** Deshabilita el control */
   disabled: { type: Boolean, default: false },
 });
 

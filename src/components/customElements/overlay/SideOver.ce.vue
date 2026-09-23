@@ -6,12 +6,19 @@ import { initTokens } from "@/plugins/cu-tokens/css";
 initTokens();
 
 const props = defineProps({
+  /** Estado de visibilidad (v-model). Ver nota de atributo abajo */
   open: { type: Boolean, default: false },
+  /** Título de la cabecera (si está vacío y no es `persistent`, igual muestra el botón de cerrar) */
   title: { type: String, default: "" },
+  /** Borde desde donde desliza: `left`, `right`, `top`, `bottom` */
   position: { type: String, default: "right" },
+  /** Ancho (`left`/`right`) o alto (`top`/`bottom`) del panel. Valor CSS (`300px`, `40vw`) o preset: `sm`, `md`, `lg`, `xl`, `full`. Ignorado con `fullscreen` */
   size: { type: String, default: "300px" },
+  /** Ocupa toda la pantalla */
   fullscreen: { type: Boolean, default: false },
+  /** Si es `true`, no se cierra por backdrop, `Escape` ni el botón de cerrar */
   persistent: { type: Boolean, default: false },
+  /** Z-index del overlay (en HTML se usa como `z-index`) */
   zIndex: { type: Number, default: 1100 },
 });
 

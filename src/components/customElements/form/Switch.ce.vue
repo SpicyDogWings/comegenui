@@ -6,12 +6,16 @@ import { initTokens } from "@/plugins/cu-tokens/css";
 initTokens();
 
 const props = defineProps({
+  /** Estado del toggle (controlado) */
   modelValue: { type: Boolean, default: false },
+  /** Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` */
   color: {
     type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     default: "neutral",
   },
+  /** Tamaño del switch: `sm`, `md` */
   size: { type: String, default: "md" },
+  /** Estado deshabilitado */
   disabled: Boolean,
   label: { type: String, default: "" },
 });

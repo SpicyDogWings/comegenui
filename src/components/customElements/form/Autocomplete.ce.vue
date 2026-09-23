@@ -3,31 +3,45 @@ import { ref, watch, getCurrentInstance } from "vue";
 import Autocomplete from "../../form/Autocomplete.vue";
 
 const props = defineProps({
+  /** Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) */
   theme: { type: String, required: false, default: "" },
+  /** Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` */
   color: {
     type: String,
     required: false,
     default: "neutral",
   },
+  /** `outlined`, `soft`, `ghost`, `subtle` */
   variant: {
     type: String,
     required: false,
     default: "soft",
   },
+  /** `text`, `password`, `email`, `number`, `tel`, `url`, `search` */
   type: {
     type: String,
     required: false,
     default: "text",
   },
+  /** Estado deshabilitado */
   disabled: { type: Boolean, required: false, default: false },
+  /** Solo lectura (en HTML se usa como `readonly`) */
   readOnly: { type: Boolean, required: false, default: false },
+  /** Modo de alto contraste */
   hightContrast: { type: Boolean, required: false, default: false },
+  /** Placeholder del input */
   placeholder: { type: String, required: false, default: "" },
+  /** Caracteres mínimos para abrir el menú (atributo HTML: `min-chars`) */
   minChars: { type: Number, required: false, default: 0 },
+  /** Posición del dropdown: `bottom`, `top` */
   position: { type: String, required: false, default: "bottom" },
+  /** Alineación: `start`, `center`, `end` */
   align: { type: String, required: false, default: "start" },
+  /** Opciones del menú (ver abajo). Se asigna como propiedad JS */
   items: { type: Array, required: false, default: () => [] },
+  /** Valor controlado */
   modelValue: { type: String, required: false, default: "" },
+  /** Texto del label sobre el input */
   label: { type: String, required: false, default: "" },
 });
 

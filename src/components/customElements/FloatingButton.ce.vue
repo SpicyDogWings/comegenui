@@ -3,7 +3,9 @@ import { getCurrentInstance } from "vue";
 import FloatingButton from "@/components/buttons/FloatingButton.vue";
 
 const props = defineProps({
+  /** Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` */
   color: { type: String, default: "primary" as string },
+  /** Deshabilita el botón */
   disabled: { type: Boolean, default: false },
 });
 

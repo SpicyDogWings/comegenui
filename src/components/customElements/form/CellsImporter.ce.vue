@@ -7,19 +7,33 @@ import type { CellColumn, CellError } from "@/utils/cellsImporter";
 initTokens();
 
 const props = defineProps({
+  /** Esquema de columnas (header esperado, tipo y reglas). **Obligatorio.** */
   columns: { type: Array as PropType<CellColumn[]>, required: true, default: () => [] },
+  /** Formatos deseados; se propagan al input y se muestran al usuario */
   formats: { type: Array as PropType<string[]>, default: () => [".xlsx", ".csv"] },
+  /** Delimitador para CSV */
   delimiter: { type: String, default: "," },
+  /** La primera fila del archivo es el encabezado */
   hasHeader: { type: Boolean, default: true },
+  /** `false` = match por label en cualquier orden; `true` = respeta el orden del schema */
   strict: { type: Boolean, default: false },
+  /** Hoja a leer en `.xlsx` (índice o nombre) */
   sheet: { type: [String, Number] as PropType<string | number>, default: 0 },
+  /** "xlsx"` */
   template: { type: Object as PropType<{ enabled?: boolean; type?: "xlsx" | "csv"; filename?: string }>, default: () => ({ enabled: false, type: "csv", filename: "template" }) },
+  /** `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` */
   color: { type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>, default: "neutral" },
+  /** `outlined`, `soft`, `ghost`, `subtle` */
   variant: { type: String, default: "outlined" },
+  /** Texto cuando no hay archivo */
   placeholder: { type: String, default: "Seleccionar archivo" },
+  /** Deshabilita la selección */
   disabled: Boolean,
+  /** Modo solo lectura */
   readOnly: Boolean,
+  /** Tamaño máximo en bytes */
   maxSize: Number,
+  /** `"input"` = `<cu-file-input>` compacto; `"zone"` = zona drag & drop (`<cu-file-input-zone>`). Single file en ambos */
   inputType: { type: String, default: "input" },
 });
 

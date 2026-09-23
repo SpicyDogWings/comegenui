@@ -5,12 +5,19 @@ import { initTokens } from "@/plugins/cu-tokens/css";
 initTokens();
 
 const props = defineProps({
+  /** Texto del tooltip. Si se usa el slot `content`, tiene prioridad */
   text: { type: String, default: "" },
+  /** Color semántico del fondo: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` */
   color: { type: String, default: "neutral" },
+  /** Lado donde aparece: `top`, `bottom`, `left`, `right` */
   position: { type: String, default: "top" },
+  /** Alineación respecto al elemento: `start`, `center`, `end` */
   align: { type: String, default: "center" },
+  /** Distancia (px) entre el elemento y el tooltip */
   offset: { type: Number, default: 6 },
+  /** Retardo (ms) antes de mostrar el tooltip al hacer hover */
   delay: { type: Number, default: 200 },
+  /** Deshabilita el tooltip (no se muestra) */
   disabled: { type: Boolean, default: false },
 });
 </script>

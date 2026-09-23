@@ -3,44 +3,53 @@ import { ref, watch, getCurrentInstance } from "vue";
 import Input from "../../form/Input.vue";
 
 const props = defineProps({
+  /** Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) */
   theme: {
     type: String,
     required: false,
     default: "",
   },
+  /** Valor controlado */
   modelValue: {
     type: String,
     required: false,
     default: "",
   },
+  /** Valor inicial usado por `.reset()` */
   startValue: {
     type: String,
     required: false,
   },
+  /** Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` */
   color: {
     type: String,
     required: false,
     default: "neutral",
   },
+  /** `outlined`, `soft`, `ghost`, `subtle` */
   variant: {
     type: String,
     required: false,
     default: "soft",
   },
+  /** `text`, `password`, `email`, `number`, `tel`, `url`, `search` */
   type: {
     type: String,
     required: false,
     default: "text",
   },
+  /** Placeholder del input */
   placeholder: {
     type: String,
     required: false,
   },
+  /** Estado deshabilitado */
   disabled: {
     type: Boolean,
     required: false,
     default: false,
   },
+  /** Solo lectura (en HTML se usa como `readonly`) */
   readOnly: {
     type: Boolean,
     required: false,

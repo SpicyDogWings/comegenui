@@ -6,16 +6,21 @@ import { initTokens } from "@/plugins/cu-tokens/css";
 initTokens();
 
 const props = defineProps({
+  /** Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` */
   color: {
     type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     default: "neutral",
   },
+  /** `solid`, `outlined`, `soft`, `ghost`, `subtle` */
   variant: {
     type: String,
     default: "soft",
   },
+  /** Título visible en la cabecera */
   title: String,
+  /** Muestra el botón de cerrar (X) */
   close: Boolean,
+  /** Controla visibilidad. Cambiar este atributo emite `update:show` */
   show: { type: Boolean, default: true },
 });
 

@@ -6,6 +6,7 @@ import { initTokens } from "@/plugins/cu-tokens/css";
 initTokens();
 
 const props = defineProps({
+  /** Texto del trigger */
   label: {
     type: String,
     required: true,
@@ -14,6 +15,7 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  /** Color semántico del trigger: `primary`, `neutral`, `success`, `warning`, `danger` */
   color: {
     type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     default: "neutral",

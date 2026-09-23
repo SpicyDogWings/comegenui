@@ -6,19 +6,30 @@ import { initTokens } from "@/plugins/cu-tokens/css";
 initTokens();
 
 const props = defineProps({
+  /** Archivo/s seleccionados */
   modelValue: { type: Object as PropType<File | File[] | null>, default: null },
+  /** Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` */
   color: {
     type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     default: "neutral",
   },
+  /** Texto cuando no hay archivos */
   placeholder: { type: String, default: "Selecciona un archivo o arrastra aquí" },
+  /** Deshabilita interacción */
   disabled: Boolean,
+  /** Modo solo lectura */
   readOnly: Boolean,
+  /** Tipos aceptados (ej: `"image/*"`) */
   accept: String,
+  /** Permite múltiples archivos */
   multiple: Boolean,
+  /** Tamaño máximo en bytes */
   maxSize: Number,
+  /** Activa modo carpeta (incluye `multiple` implícitamente) */
   directory: Boolean,
+  /** Niveles de recursión en carpetas: `0` = solo raíz, `1` = +1 subnivel, `-1` = sin límite */
   directoryDeep: { type: Number, default: 0 },
+  /** Altura máxima del listado (ej: `"200px"`). Sin scroll si se omite. */
   maxHeight: { type: String, default: "" },
 });
 
