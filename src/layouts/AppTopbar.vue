@@ -2,7 +2,8 @@
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import { version } from "../../package.json";
 import Badge from "@/components/information/Badge.vue";
-import LucideGitLab from "@/components/icons/LucideGitLab.vue";
+import LucideForm from "@/components/icons/LucideForm.vue";
+import LucideGitHub from "@/components/icons/LucideGitHub.vue";
 import LucidePalette from "@/components/icons/LucidePalette.vue";
 import ThemeDropdown from "@/components/theme/ThemeDropdown.vue";
 import CommandPalette from "@/components/overlay/CommandPalette.vue";
@@ -50,6 +51,14 @@ onBeforeUnmount(() => {
       </Badge>
       <slot name="actions" />
       <a
+        href="/componentes/cu-button"
+        class="app-topbar-icon"
+        aria-label="Componentes"
+        title="Componentes"
+      >
+        <LucideForm />
+      </a>
+      <a
         href="/theme-builder"
         class="app-topbar-icon"
         aria-label="Theme Builder"
@@ -59,13 +68,13 @@ onBeforeUnmount(() => {
       </a>
       <a
         class="app-topbar-icon"
-        href="https://gitlab.com/SpicyDogWings/comegen-ui"
+        href="https://github.com/SpicyDogWings/comegenui"
         target="_blank"
         rel="noopener"
-        aria-label="Repositorio en GitLab"
-        title="GitLab"
+        aria-label="Repositorio en GitHub"
+        title="GitHub"
       >
-        <LucideGitLab />
+        <LucideGitHub />
       </a>
     </div>
   </header>
