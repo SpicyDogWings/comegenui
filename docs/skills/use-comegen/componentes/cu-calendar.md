@@ -10,8 +10,8 @@ Calendario de mes: muestra el mes actual y/o seleccionado con sus días distribu
 
 | Prop | Tipo | Default | Descripción |
 |------|------|------|------|
-| `min` | `string \| number \| Date \| null` | — | Fecha mínima seleccionable (días anteriores quedan deshabilitados) |
-| `max` | `string \| number \| Date \| null` | — | Fecha máxima seleccionable |
+| `min` | `string \| number \| Date \| null` | `null` | Fecha mínima seleccionable (días anteriores quedan deshabilitados) |
+| `max` | `string \| number \| Date \| null` | `null` | Fecha máxima seleccionable |
 | `color` | `primary \| secondary \| neutral \| success \| warning \| danger` | `"primary"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
 | `variant` | `solid \| outlined \| soft \| subtle` | `"soft"` | Variante del día seleccionado: `solid`, `outlined`, `soft`, `subtle` (sin `ghost`: se confunde con el día de hoy) |
 | `disabled` | `boolean` | `false` | Deshabilita todo el calendario |
@@ -23,8 +23,8 @@ Calendario de mes: muestra el mes actual y/o seleccionado con sus días distribu
 | `monthFormat` | `string` | `"MMMM"` | Formato del mes en el header (tokens como MonthSlider) |
 | `yearFormat` | `string` | `"yyyy"` | Formato del año en el header |
 | `events` | `CalendarEvent[]` | `[]` | Eventos a señalar con puntos bajo la fecha (ver [Eventos](#eventos-puntos)). Se asigna como propiedad JS |
-| `rangeStart` | `string \| number \| Date \| null` | — | Inicio del rango (resalta los días entre inicio y fin). Se asigna como propiedad JS |
-| `rangeEnd` | `string \| number \| Date \| null` | — | Fin del rango. Se asigna como propiedad JS |
+| `rangeStart` | `string \| number \| Date \| null` | `null` | Inicio del rango (resalta los días entre inicio y fin). Se asigna como propiedad JS |
+| `rangeEnd` | `string \| number \| Date \| null` | `null` | Fin del rango. Se asigna como propiedad JS |
 | `grid` | `boolean` | `false` | Dibuja líneas **interiores** (cuadrícula) entre los días. En HTML plano: `<cu-calendar grid>` |
 | `border` | `boolean` | `false` | Dibuja el **marco exterior** alrededor de la cuadrícula de días. Combinable con `grid` |
 

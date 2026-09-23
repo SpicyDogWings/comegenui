@@ -74,12 +74,14 @@ export const cuAdvancedTableStories: ComponentStory = {
       },
       {
         "name": "columns",
-        "type": "Array as () => Column[]",
+        "type": "Column[]",
+        "default": "[]",
         "description": "Definición de columnas (ver Interfaces)"
       },
       {
         "name": "data",
-        "type": "Array as () => Record<string",
+        "type": "Record<string, any>[]",
+        "default": "[]",
         "description": "Filas: objetos key → valor"
       },
       {
@@ -108,7 +110,8 @@ export const cuAdvancedTableStories: ComponentStory = {
       },
       {
         "name": "pageSizeOptions",
-        "type": "Array as () => number[]",
+        "type": "number[]",
+        "default": "[5, 10, 20, 50]",
         "description": "Opciones del select"
       },
       {
@@ -137,7 +140,8 @@ export const cuAdvancedTableStories: ComponentStory = {
       },
       {
         "name": "searchFields",
-        "type": "Array as () => string[]",
+        "type": "string[]",
+        "default": "[]",
         "description": "Campos donde buscar (vacío = todos)"
       },
       {
@@ -154,7 +158,7 @@ export const cuAdvancedTableStories: ComponentStory = {
       },
       {
         "name": "filters",
-        "type": "Object as () => Record<string",
+        "type": "Record<string, any>",
         "description": "Filtros a aplicar sobre los datos"
       },
       {
@@ -165,18 +169,20 @@ export const cuAdvancedTableStories: ComponentStory = {
       },
       {
         "name": "actions",
-        "type": "Array as () => ButtonConfig[]",
+        "type": "ButtonConfig[]",
+        "default": "[]",
         "description": "Acciones bajo la tabla"
       },
       {
         "name": "rowDisabled",
-        "type": "[Boolean",
+        "type": "boolean | ((row: Record<string, any>) => boolean)",
         "default": "false",
         "description": "Deshabilita filas completas"
       },
       {
         "name": "footer",
-        "type": "Array as () => FooterRow[]",
+        "type": "FooterRow[]",
+        "default": "[]",
         "description": "Filas de pie programáticas"
       },
       {

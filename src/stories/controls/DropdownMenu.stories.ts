@@ -169,7 +169,8 @@ export const cuDropdownMenuStories: ComponentStory = {
       },
       {
         "name": "items",
-        "type": "Array as () => DropdownItem[]",
+        "type": "DropdownItem[]",
+        "default": "[]",
         "description": "Items del menú"
       }
     ],

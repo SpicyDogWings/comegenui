@@ -79,12 +79,14 @@ export const cuTableStories: ComponentStory = {
     "props": [
       {
         "name": "columns",
-        "type": "Array as () => Column[]",
+        "type": "Column[]",
+        "default": "[]",
         "description": "Definición de columnas"
       },
       {
         "name": "data",
-        "type": "Array as () => Record<string",
+        "type": "Record<string, any>[]",
+        "default": "[]",
         "description": "Filas: objetos key → valor"
       },
       {
@@ -119,7 +121,7 @@ export const cuTableStories: ComponentStory = {
       },
       {
         "name": "rowDisabled",
-        "type": "[Boolean",
+        "type": "boolean | ((row: Record<string, any>) => boolean)",
         "default": "false",
         "description": "Deshabilita la interacción de filas"
       },
@@ -131,7 +133,8 @@ export const cuTableStories: ComponentStory = {
       },
       {
         "name": "footer",
-        "type": "Array as () => FooterRow[]",
+        "type": "FooterRow[]",
+        "default": "[]",
         "description": "Filas de pie programáticas"
       },
       {

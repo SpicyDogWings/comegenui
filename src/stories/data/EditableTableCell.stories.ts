@@ -52,17 +52,17 @@ export const cuEditableTableCellStories: ComponentStory = {
     "props": [
       {
         "name": "value",
-        "type": "[String",
+        "type": "string | number | boolean",
         "description": "Valor actual de la celda."
       },
       {
         "name": "row",
-        "type": "Object as () => Record<string",
+        "type": "Record<string, any>",
         "description": "Fila completa a la que pertenece la celda."
       },
       {
         "name": "column",
-        "type": "Object as () => Column",
+        "type": "Column",
         "description": "Configuración de la columna: editor, validación y alineación."
       },
       {
@@ -84,7 +84,7 @@ export const cuEditableTableCellStories: ComponentStory = {
       },
       {
         "name": "validation",
-        "type": "Object as () => { success: boolean; error: string | null }",
+        "type": "{ success: boolean; error: string | null }",
         "description": "Estado de validación: success y mensaje de error."
       },
       {

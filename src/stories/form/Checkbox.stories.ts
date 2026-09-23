@@ -106,7 +106,7 @@ export const cuCheckboxStories: ComponentStory = {
         "description": "Devuelve si el checkbox está marcado."
       },
       {
-        "name": "set()",
+        "name": "set(value)",
         "type": "() => void",
         "description": "Setea el estado marcado y emite change."
       },

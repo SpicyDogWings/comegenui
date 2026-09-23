@@ -10,10 +10,10 @@ Selector de rango de fechas: dos fechas (inicio + fin) con resaltado del períod
 
 | Prop | Tipo | Default | Descripción |
 |------|------|------|------|
-| `startDate` | `string \| number \| Date \| null` | — | Fecha de inicio del rango |
-| `endDate` | `string \| number \| Date \| null` | — | Fecha de fin del rango |
-| `min` | `string \| number \| Date \| null` | — | Fecha mínima seleccionable |
-| `max` | `string \| number \| Date \| null` | — | Fecha máxima seleccionable |
+| `startDate` | `string \| number \| Date \| null` | `null` | Fecha de inicio del rango |
+| `endDate` | `string \| number \| Date \| null` | `null` | Fecha de fin del rango |
+| `min` | `string \| number \| Date \| null` | `null` | Fecha mínima seleccionable |
+| `max` | `string \| number \| Date \| null` | `null` | Fecha máxima seleccionable |
 | `color` | `primary \| secondary \| neutral \| success \| warning \| danger` | `"neutral"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
 | `variant` | `outlined \| soft \| ghost \| subtle` | `"soft"` | Variante del trigger: `outlined`, `soft`, `ghost`, `subtle` |
 | `disabled` | `boolean` | `false` | Deshabilita el picker |

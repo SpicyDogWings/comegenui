@@ -337,7 +337,7 @@ function parseProps(source, compiled, docs) {
       if (factory) value = factory[1].trim().replace(/^\(([\s\S]*)\)$/, "$1").trim();
       const isLiteral =
         /^["'`]/.test(value) ||
-        /^(true|false|-?\d+(\.\d+)?)$/.test(value) ||
+        /^(true|false|null|-?\d+(\.\d+)?)$/.test(value) ||
         /^\[[\s\S]*\]$/.test(value) ||
         /^\{[\s\S]*\}$/.test(value);
       if (isLiteral) prop.default = value.replace(/^["'`]|["'`]$/g, "");

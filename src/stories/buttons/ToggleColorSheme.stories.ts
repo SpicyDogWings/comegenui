@@ -8,8 +8,6 @@ import { setup, global } from "./ToggleColorSheme.stories.runtime";
 export const cuToggleColorShemeStories: ComponentStory = {
   component: "cu-toggle-color-sheme",
   vue: ToggleColorSheme,
-  setup,
-  global,
   api: {
     "components": [
       {
@@ -32,6 +30,8 @@ export const cuToggleColorShemeStories: ComponentStory = {
       }
     ]
   },
+  setup,
+  global,
   sections: [
     {
       id: "default",

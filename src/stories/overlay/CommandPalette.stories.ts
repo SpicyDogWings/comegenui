@@ -355,7 +355,8 @@ export const cuCommandPaletteStories: ComponentStory = {
       },
       {
         "name": "commands",
-        "type": "Array as () => CommandItem[]",
+        "type": "CommandItem[]",
+        "default": "[]",
         "description": "Lista de comandos (ver interfaz)"
       }
     ],
@@ -396,11 +397,6 @@ export const cuCommandPaletteStories: ComponentStory = {
         "name": "isOpen()",
         "type": "() => void",
         "description": "Estado actual"
-      },
-      {
-        "name": "run(id)",
-        "type": "(id: string) => CommandItem | null",
-        "description": "Ejecuta el comando con ese id desde afuera (sin abrir)"
       }
     ],
     "interfaceCode": `export interface CommandItem {

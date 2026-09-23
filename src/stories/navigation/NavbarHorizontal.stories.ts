@@ -335,7 +335,7 @@ export const cuNavbarHorizontalStories: ComponentStory = {
     "props": [
       {
         "name": "items",
-        "type": "Array as () => NavItem[]",
+        "type": "NavItem[]",
         "description": "Árbol de navegación: { label, path?, icon?, children? }. Los padres se renderizan como Dropdown en cascada (anidamiento infinito), las hojas como items de menú nativos"
       },
       {

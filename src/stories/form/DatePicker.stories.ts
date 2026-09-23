@@ -72,13 +72,13 @@ export const cuDatePickerStories: ComponentStory = {
     "props": [
       {
         "name": "min",
-        "type": "[String",
+        "type": "string | number | Date | null",
         "default": "null",
         "description": "Fecha mínima seleccionable"
       },
       {
         "name": "max",
-        "type": "[String",
+        "type": "string | number | Date | null",
         "default": "null",
         "description": "Fecha máxima seleccionable"
       },
@@ -132,13 +132,14 @@ export const cuDatePickerStories: ComponentStory = {
       },
       {
         "name": "disabledDates",
-        "type": "[Array",
+        "type": "(string | Date)[] | string",
         "default": "",
         "description": "Fechas puntuales deshabilitadas. Acepta array o \\\\\\\\\\\\\\\"2026-08-15,2026-08-16\\\\\\\\\\\\\\\""
       },
       {
         "name": "events",
-        "type": "Array as PropType<CalendarEvent[]>",
+        "type": "CalendarEvent[]",
+        "default": "[]",
         "description": "Puntos bajo las fechas: { date, color? }"
       },
       {

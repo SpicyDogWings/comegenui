@@ -38,13 +38,13 @@ export const cuYearSliderStories: ComponentStory = {
       },
       {
         "name": "min",
-        "type": "[Number",
+        "type": "number | string | null",
         "default": "null",
         "description": "Año mínimo"
       },
       {
         "name": "max",
-        "type": "[Number",
+        "type": "number | string | null",
         "default": "null",
         "description": "Año máximo"
       },

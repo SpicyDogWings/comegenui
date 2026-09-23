@@ -77,7 +77,7 @@ export const cuTabsStories: ComponentStory = {
       },
       {
         "name": "tabs",
-        "type": "Array as PropType<TabItem[]>",
+        "type": "TabItem[]",
         "description": "Pestañas"
       },
       {

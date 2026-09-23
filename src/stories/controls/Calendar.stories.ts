@@ -85,13 +85,13 @@ export const cuCalendarStories: ComponentStory = {
     "props": [
       {
         "name": "min",
-        "type": "[String",
+        "type": "string | number | Date | null",
         "default": "null",
         "description": "Fecha mínima"
       },
       {
         "name": "max",
-        "type": "[String",
+        "type": "string | number | Date | null",
         "default": "null",
         "description": "Fecha máxima"
       },
@@ -133,7 +133,7 @@ export const cuCalendarStories: ComponentStory = {
       },
       {
         "name": "rangeEnd",
-        "type": "[String",
+        "type": "string | number | Date | null",
         "default": "null",
         "description": "Fin de rango resaltado"
       },

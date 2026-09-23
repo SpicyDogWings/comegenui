@@ -35,7 +35,7 @@ export const cuMonthSliderStories: ComponentStory = {
     "props": [
       {
         "name": "modelValue",
-        "type": "[String",
+        "type": "string | number | Date | null",
         "default": "null",
         "description": "Valor (v-model)"
       },
@@ -59,7 +59,7 @@ export const cuMonthSliderStories: ComponentStory = {
       },
       {
         "name": "yearNavigation",
-        "type": "[Boolean",
+        "type": "boolean | string",
         "default": "true",
         "description": "Habilita navegación de años (‹ ‹‹)"
       },
@@ -71,13 +71,13 @@ export const cuMonthSliderStories: ComponentStory = {
       },
       {
         "name": "min",
-        "type": "[String",
+        "type": "string | number | Date | null",
         "default": "null",
         "description": "Mes mínimo"
       },
       {
         "name": "max",
-        "type": "[String",
+        "type": "string | number | Date | null",
         "default": "null",
         "description": "Mes máximo"
       },

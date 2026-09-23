@@ -94,7 +94,9 @@ function fmtType(value) {
 function fmtDefault(prop) {
   if (prop.default === undefined) return "—";
   const value = String(prop.default);
-  if (value === "true" || value === "false" || /^-?\d+(\.\d+)?$/.test(value)) return `\`${value}\``;
+  if (value === "true" || value === "false" || value === "null" || /^-?\d+(\.\d+)?$/.test(value)) {
+    return `\`${value}\``;
+  }
   if (/^[[{]/.test(value)) return `\`${value}\``;
   return `\`"${value}"\``;
 }

@@ -33,7 +33,7 @@ export const cuInlineRendererStories: ComponentStory = {
     "props": [
       {
         "name": "tokens",
-        "type": "Array as () => any[]",
+        "type": "any[]",
         "description": "Tokens inline de marked a renderizar."
       }
     ]

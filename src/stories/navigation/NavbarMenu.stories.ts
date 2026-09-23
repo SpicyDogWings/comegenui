@@ -34,7 +34,7 @@ export const cuNavbarMenuStories: ComponentStory = {
     "props": [
       {
         "name": "items",
-        "type": "Array as () => NavItem[]",
+        "type": "NavItem[]",
         "description": "Items del nivel de menú."
       },
       {

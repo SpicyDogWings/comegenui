@@ -10,7 +10,7 @@ Selector de archivos con zona de drag & drop amplia, soporte para carpetas (recu
 
 | Prop | Tipo | Default | Descripción |
 |------|------|------|------|
-| `modelValue` | `File \| File[] \| null` | — | Archivo/s seleccionados |
+| `modelValue` | `File \| File[] \| null` | `null` | Archivo/s seleccionados |
 | `color` | `primary \| secondary \| neutral \| success \| warning \| danger` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `placeholder` | `string` | `"Selecciona un archivo o arrastra aquí"` | Texto cuando no hay archivos |
 | `disabled` | — | — | Deshabilita interacción |

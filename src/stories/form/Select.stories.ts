@@ -116,7 +116,8 @@ export const cuSelectStories: ComponentStory = {
       },
       {
         "name": "options",
-        "type": "Array as () => SelectOption[]",
+        "type": "SelectOption[]",
+        "default": "[]",
         "description": "Array de opciones: { value, label, disabled?, color?, variant? }"
       },
       {

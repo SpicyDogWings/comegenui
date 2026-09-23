@@ -10,7 +10,7 @@ Input de archivo compacto con drag & drop, estilo idéntico a `<cu-input>`. Sing
 
 | Prop | Tipo | Default | Descripción |
 |------|------|------|------|
-| `modelValue` | `File \| null` | — | Archivo seleccionado (vía JS, no HTML) |
+| `modelValue` | `File \| null` | `null` | Archivo seleccionado (vía JS, no HTML) |
 | `color` | `primary \| secondary \| neutral \| success \| warning \| danger` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `variant` | `string` | `"outlined"` | `outlined`, `soft`, `ghost`, `subtle` |
 | `placeholder` | `string` | `"Seleccionar archivo"` | Texto cuando no hay archivo |

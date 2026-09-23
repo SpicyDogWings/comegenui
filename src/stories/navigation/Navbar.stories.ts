@@ -80,7 +80,7 @@ export const cuNavbarStories: ComponentStory = {
     "props": [
       {
         "name": "items",
-        "type": "Array as () => NavItem[]",
+        "type": "NavItem[]",
         "description": "Árbol de navegación: { label, path?, icon?, children? }. Los items con children se renderizan como Collapse"
       },
       {
@@ -103,7 +103,8 @@ export const cuNavbarStories: ComponentStory = {
       },
       {
         "name": "searchFields",
-        "type": "Array as () => string[]",
+        "type": "string[]",
+        "default": "[]",
         "description": "Campos a buscar. Vacío = toda la interfaz del item (todos los campos menos children)"
       },
       {

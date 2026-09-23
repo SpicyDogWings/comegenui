@@ -101,7 +101,8 @@ export const cuPaginationStories: ComponentStory = {
       },
       {
         "name": "pageSizeOptions",
-        "type": "Array as () => number[]",
+        "type": "number[]",
+        "default": "[5, 10, 20, 50]",
         "description": "Opciones del select de items por página"
       },
       {

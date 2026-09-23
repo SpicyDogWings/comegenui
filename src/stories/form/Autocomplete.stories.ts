@@ -171,7 +171,8 @@ export const cuAutocompleteStories: ComponentStory = {
       },
       {
         "name": "items",
-        "type": "Array as () => AutocompleteItem[]",
+        "type": "AutocompleteItem[]",
+        "default": "[]",
         "description": "Items: { label, value?, icon? }; icon es un string HTML/SVG (v-html)"
       },
       {

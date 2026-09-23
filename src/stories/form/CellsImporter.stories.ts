@@ -130,12 +130,14 @@ export const cuCellsImporterStories: ComponentStory = {
     "props": [
       {
         "name": "columns",
-        "type": "Array as PropType<CellColumn[]>",
+        "type": "CellColumn[]",
+        "default": "[]",
         "description": "Esquema de columnas (header esperado, tipo, reglas). Obligatorio."
       },
       {
         "name": "formats",
-        "type": "Array as PropType<string[]>",
+        "type": "string[]",
+        "default": "[\".xlsx\", \".csv\"]",
         "description": "Formatos deseados; se propagan al input (accept) y se muestran al usuario"
       },
       {
@@ -158,7 +160,7 @@ export const cuCellsImporterStories: ComponentStory = {
       },
       {
         "name": "sheet",
-        "type": "[String",
+        "type": "string | number",
         "default": "0",
         "description": "Hoja a leer en .xlsx (índice o nombre)"
       },

@@ -10,9 +10,9 @@ Selector de fecha: un botón-trigger que abre un **dropdown con un calendario ad
 
 | Prop | Tipo | Default | Descripción |
 |------|------|------|------|
-| `modelValue` | `string \| number \| Date \| null` | — | Fecha seleccionada |
-| `min` | `string \| number \| Date \| null` | — | Fecha mínima seleccionable |
-| `max` | `string \| number \| Date \| null` | — | Fecha máxima seleccionable |
+| `modelValue` | `string \| number \| Date \| null` | `null` | Fecha seleccionada |
+| `min` | `string \| number \| Date \| null` | `null` | Fecha mínima seleccionable |
+| `max` | `string \| number \| Date \| null` | `null` | Fecha máxima seleccionable |
 | `color` | `primary \| secondary \| neutral \| success \| warning \| danger` | `"neutral"` | Color semántico del trigger y del día seleccionado del calendario interno (se pasa tal cual; `neutral` = neutral, ya no mapea a primary) |
 | `variant` | `outlined \| soft \| ghost \| subtle` | `"soft"` | Variante del trigger: `outlined`, `soft`, `ghost`, `subtle`. En el calendario interno `ghost` se mapea a `soft` (el calendario ya no tiene ghost) |
 | `disabled` | `boolean` | `false` | Deshabilita el picker completo |

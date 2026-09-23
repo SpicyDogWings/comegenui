@@ -113,25 +113,25 @@ export const cuDatePickerRangeStories: ComponentStory = {
     "props": [
       {
         "name": "startDate",
-        "type": "[String",
+        "type": "string | number | Date | null",
         "default": "null",
         "description": "Inicio del rango (v-model:start-date). Acepta Date, timestamp o \\\\\\\\\\\\\\\"YYYY-MM-DD\\\\\\\\\\\\\\\""
       },
       {
         "name": "endDate",
-        "type": "[String",
+        "type": "string | number | Date | null",
         "default": "null",
         "description": "Fin del rango (v-model:end-date)"
       },
       {
         "name": "min",
-        "type": "[String",
+        "type": "string | number | Date | null",
         "default": "null",
         "description": "Fecha mínima seleccionable"
       },
       {
         "name": "max",
-        "type": "[String",
+        "type": "string | number | Date | null",
         "default": "null",
         "description": "Fecha máxima seleccionable"
       },
@@ -179,7 +179,7 @@ export const cuDatePickerRangeStories: ComponentStory = {
       },
       {
         "name": "yearNavigation",
-        "type": "[Boolean",
+        "type": "boolean | string",
         "default": "false",
         "description": "Botones « » para saltar de año en los calendarios"
       },
@@ -197,19 +197,20 @@ export const cuDatePickerRangeStories: ComponentStory = {
       },
       {
         "name": "disabledWeekdays",
-        "type": "[Array",
+        "type": "number[] | string",
         "default": "",
         "description": "Días de semana deshabilitados (0=domingo). Acepta array o \\\\\\\\\\\\\\\"0,6\\\\\\\\\\\\\\\""
       },
       {
         "name": "disabledDates",
-        "type": "[Array",
+        "type": "(string | Date)[] | string",
         "default": "",
         "description": "Fechas puntuales deshabilitadas. Acepta array o \\\\\\\\\\\\\\\"2026-09-15,2026-09-16\\\\\\\\\\\\\\\""
       },
       {
         "name": "events",
-        "type": "Array as PropType<CalendarEvent[]>",
+        "type": "CalendarEvent[]",
+        "default": "[]",
         "description": "Puntos bajo las fechas: { date, color? }. Compatible con rangos"
       },
       {

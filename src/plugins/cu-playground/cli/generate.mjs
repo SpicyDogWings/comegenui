@@ -204,7 +204,18 @@ function quotedAfter(text, key) {
       i++;
       continue;
     }
-    if (text[i] === quote) return text.slice(start, i);
+    if (text[i] === quote) {
+      const raw = text.slice(start, i);
+      // Desescapa para que el valor sobreviva al round-trip (evita duplicar `\`).
+      if (quote === '"') {
+        try {
+          return JSON.parse(`"${raw}"`);
+        } catch {
+          return raw;
+        }
+      }
+      return raw.replace(/\\(['"\\/])/g, "$1").replace(/\\n/g, "\n").replace(/\\t/g, "\t");
+    }
   }
   return undefined;
 }
@@ -294,9 +305,9 @@ function existingRows(src, key) {
 }
 
 /** Fusiona filas generadas con las existentes (las generated mandan por name). */
-function mergeRows(generated, existing) {
-  const names = new Set(generated.map((row) => row.name));
-  return [...generated, ...existing.filter((row) => !names.has(row.name))];
+function mergeRows(generated, existing, keyOf = (row) => row.name) {
+  const names = new Set(generated.map(keyOf));
+  return [...generated, ...existing.filter((row) => !names.has(keyOf(row)))];
 }
 
 /** Deduplica filas por clave normalizada (la primera gana). */
@@ -434,8 +445,10 @@ function generateOne(componentName) {
   const allSlots = mergeRows(slotsRows, existingRows(existingSource, "slots"));
   const allEvents = mergeRows(eventsRows, existingRows(existingSource, "events"));
   const allExposes = dedupeBy(
-    mergeRows(exposesRows, existingRows(existingSource, "exposes")),
-    (row) => row.name.replace(/\(\)$/, ""),
+    mergeRows(exposesRows, existingRows(existingSource, "exposes"), (row) =>
+      row.name.replace(/\(.*$/, ""),
+    ),
+    (row) => row.name.replace(/\(.*$/, ""),
   );
 
   const api = {};

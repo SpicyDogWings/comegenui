@@ -53,7 +53,7 @@ export const cuLabelStories: ComponentStory = {
       },
       {
         "name": "color",
-        "type": "'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'",
+        "type": "primary | secondary | neutral | success | warning | danger",
         "default": "neutral",
         "description": "Color semántico del texto; se resuelve vía el token --cu-color-{color}"
       },

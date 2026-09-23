@@ -65,7 +65,7 @@ export const cuPopoverStories: ComponentStory = {
       },
       {
         "name": "panelClass",
-        "type": "[String",
+        "type": "string | string[] | Record<string, boolean>",
         "default": "",
         "description": "Clase(s) extra del panel"
       },

@@ -71,7 +71,7 @@ export const cuNavbarListStories: ComponentStory = {
       },
       {
         "name": "items",
-        "type": "Array as () => NavItem[]",
+        "type": "NavItem[]",
         "description": "Items del menú."
       },
       {
@@ -94,7 +94,8 @@ export const cuNavbarListStories: ComponentStory = {
       },
       {
         "name": "searchFields",
-        "type": "Array as () => string[]",
+        "type": "string[]",
+        "default": "[]",
         "description": "Campos sobre los que busca el filtro."
       },
       {
@@ -129,13 +130,13 @@ export const cuNavbarListStories: ComponentStory = {
       },
       {
         "name": "highlightTarget",
-        "type": "Object as () => NavItem | null",
+        "type": "NavItem | null",
         "default": "null",
         "description": "Item a resaltar por búsqueda en modo scroll."
       },
       {
         "name": "activeItem",
-        "type": "Object as () => NavItem | null",
+        "type": "NavItem | null",
         "default": "null",
         "description": "Item activo según la ruta actual."
       }
