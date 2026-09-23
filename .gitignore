@@ -40,6 +40,12 @@ public/test-results.json
 # Khadgar (JSON de API generado)
 public/khadgar.json
 
+# VitePress (fichas copiadas + build)
+docs/site/componentes/
+docs/site/.vitepress/dist/
+docs/site/.vitepress/cache/
+docs/site/.vitepress/.temp/
+
 # Vite
 *.timestamp-*-*.mjs
 

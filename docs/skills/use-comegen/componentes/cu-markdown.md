@@ -30,7 +30,7 @@ dist/CuMarkdown.umd.js
 
 ## Uso
 
-```html
+````html
 <cu-markdown>
 # Título
 
@@ -51,7 +51,7 @@ const x = 1;
 </cu-markdown>
 
 <script src="dist/CuMarkdown.umd.js"></script>
-```
+````
 
 El contenido se pasa como **texto dentro del tag** (no como prop). El componente lo parsea al montarse.
 

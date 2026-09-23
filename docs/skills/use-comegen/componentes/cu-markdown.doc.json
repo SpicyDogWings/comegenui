@@ -15,7 +15,7 @@
     },
     {
       "title": "Uso",
-      "body": "```html\n<cu-markdown>\n# Título\n\nPárrafo con **negrita**, *cita*, y `código inline`.\n\n- Item 1\n- Item 2\n\n> Blockquote\n\n```js\nconst x = 1;\n```\n\n| Col A | Col B |\n|-------|-------|\n| a     | b     |\n</cu-markdown>\n\n<script src=\"dist/CuMarkdown.umd.js\"></script>\n```\n\nEl contenido se pasa como **texto dentro del tag** (no como prop). El componente lo parsea al montarse."
+      "body": "````html\n<cu-markdown>\n# Título\n\nPárrafo con **negrita**, *cita*, y `código inline`.\n\n- Item 1\n- Item 2\n\n> Blockquote\n\n```js\nconst x = 1;\n```\n\n| Col A | Col B |\n|-------|-------|\n| a     | b     |\n</cu-markdown>\n\n<script src=\"dist/CuMarkdown.umd.js\"></script>\n````\n\nEl contenido se pasa como **texto dentro del tag** (no como prop). El componente lo parsea al montarse."
     },
     {
       "title": "Notas",

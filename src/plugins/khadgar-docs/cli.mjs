@@ -11,15 +11,16 @@ import { buildIndex } from "../khadgar/extract/index.mjs";
 import { renderDoc } from "./render.mjs";
 
 function parseArgs(argv) {
-  const args = { check: false, only: null, config: null, source: "lib" };
+  const args = { check: false, only: null, config: null, source: "lib", site: null };
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
     if (arg === "--check") args.check = true;
     else if (arg === "--only") args.only = argv[++i];
     else if (arg === "--config") args.config = argv[++i];
     else if (arg === "--source") args.source = argv[++i];
+    else if (arg === "--site") args.site = argv[++i];
     else if (arg === "--help" || arg === "-h") {
-      console.log("khadgar-docs [--check] [--only A,B] [--source vue|lib] [--config <file>]");
+      console.log("khadgar-docs [--check] [--only A,B] [--source vue|lib] [--site <dir>] [--config <file>]");
       process.exit(0);
     }
   }
@@ -41,6 +42,9 @@ if (args.only) {
 // lib (`.ce.vue`), no el `.vue` interno.
 const index = buildIndex({ root, config, components, source: args.source });
 const docsDir = resolve(root, config.docsDir ?? "docs/skills/use-comegen", "componentes");
+// Copia para el sitio VitePress (mismas fichas, bajo su `srcDir`, para que los
+// links relativos entre fichas resuelvan).
+const siteDir = args.site ? resolve(root, args.site, "componentes") : null;
 const drift = [];
 let written = 0;
 
@@ -54,6 +58,10 @@ for (const component of index.components) {
   } else {
     mkdirSync(docsDir, { recursive: true });
     writeFileSync(file, markdown);
+    if (siteDir) {
+      mkdirSync(siteDir, { recursive: true });
+      writeFileSync(resolve(siteDir, `${component.tag}.md`), markdown);
+    }
     written++;
   }
 }
