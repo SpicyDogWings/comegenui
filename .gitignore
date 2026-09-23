@@ -37,6 +37,9 @@ coverage
 __screenshots__/
 public/test-results.json
 
+# Khadgar (JSON de API generado)
+public/khadgar.json
+
 # Vite
 *.timestamp-*-*.mjs
 

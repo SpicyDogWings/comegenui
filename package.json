@@ -18,6 +18,7 @@
     "stories:status": "node tools/status.mjs",
     "stories:migrate": "node tools/migrate.mjs",
     "khadgar:generate": "node src/plugins/khadgar/cli/generate.mjs",
+    "khadgar:extract": "node src/plugins/khadgar/cli/extract.mjs",
     "stories:generate": "node src/plugins/khadgar/cli/generate.mjs",
     "new:component": "node tools/scaffold-component.mjs"
   },
