@@ -99,11 +99,15 @@ function ceEmit(event: string, payload: unknown) {
   }
 }
 
+/** Abre, cierra o alterna el panel */
 function open() { pickerRef.value?.open() }
 function close() { pickerRef.value?.close() }
 function toggle() { pickerRef.value?.toggle() }
+/** null` con la fecha seleccionada */
 function getValue(): Date | null { return pickerRef.value?.getValue() ?? null }
+/** Selecciona una fecha (string/number/Date) */
 function setValue(value: string | number | Date | null) { pickerRef.value?.setValue(value) }
+/** Limpia la selección (emite `null`) */
 function clear() { pickerRef.value?.clear() }
 
 defineExpose({ open, close, toggle, getValue, setValue, clear, isOpen: () => pickerRef.value?.isOpen() || false })

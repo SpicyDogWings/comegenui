@@ -35,9 +35,13 @@ function ceEmit(event: string, payload: unknown) {
   }
 }
 
+/** Devuelve el estado actual (`boolean`) */
 function get() { return switchRef.value?.get() ?? false; }
+/** Asigna el estado */
 function set(val: boolean) { switchRef.value?.set(val); }
+/** Pone el estado en `false` */
 function reset() { switchRef.value?.reset(); }
+/** Enfoca el switch */
 function focus() { switchRef.value?.focus(); }
 
 defineExpose({ get, set, reset, focus });

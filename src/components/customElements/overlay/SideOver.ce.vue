@@ -22,6 +22,7 @@ const props = defineProps({
   zIndex: { type: Number, default: 1100 },
 });
 
+/** Devuelve el estado actual (`boolean`) */
 const isOpen = ref(props.open);
 watch(() => props.open, (value) => {
   isOpen.value = value;
@@ -45,8 +46,11 @@ function onUpdate(value: boolean) {
   ceEmit("update:open", value);
 }
 
+/** Abre el panel */
 function open() { isOpen.value = true; }
+/** Cierra el panel */
 function close() { isOpen.value = false; }
+/** Alterna visibilidad */
 function toggle() { isOpen.value = !isOpen.value; }
 function isOpenValue() { return isOpen.value; }
 
@@ -65,6 +69,7 @@ defineExpose({ open, close, toggle, isOpen: isOpenValue });
     @update:model-value="onUpdate"
     @close="ceEmit('close', $event)"
   >
+    <!-- Contenido del cuerpo del panel -->
     <slot></slot>
   </SideOver>
 </template>

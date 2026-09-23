@@ -54,14 +54,18 @@ function ceEmit(event: string, payload: unknown) {
     @click="ceEmit('click', $event)"
   >
     <template #media>
+      <!-- Contenido de la parte superior (si no se usa el prop `image`). Reemplaza la imagen -->
       <slot name="media"></slot>
     </template>
     <template #header>
+      <!-- Reemplaza el título/subtítulo por defecto -->
       <slot name="header"></slot>
     </template>
     <template #footer>
+      <!-- Contenido al pie de la tarjeta (se separa con una línea) -->
       <slot name="footer"></slot>
     </template>
+    <!-- Contenido principal del cuerpo de la tarjeta -->
     <slot></slot>
   </Card>
 </template>

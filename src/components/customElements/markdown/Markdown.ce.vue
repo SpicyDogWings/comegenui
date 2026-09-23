@@ -104,6 +104,7 @@ onMounted(() => {
 
 <template>
   <Markdown ref="markdownRef">
+    <!-- Contenido markdown a renderizar. Se pasa como texto dentro del tag. -->
     <slot />
   </Markdown>
 </template>

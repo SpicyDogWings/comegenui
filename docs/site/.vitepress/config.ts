@@ -29,6 +29,13 @@ const generated: Generated = existsSync(genPath)
       components: [],
     };
 
+if (!existsSync(genPath)) {
+  console.warn(
+    "[khadgar] Falta docs/site/.vitepress/khadgar.gen.json (nav/sidebar vacíos). " +
+      "Corré `pnpm khadgar:site:sync` o `pnpm dev`.",
+  );
+}
+
 export default defineConfig({
   title: generated.title,
   description: generated.description,

@@ -52,9 +52,13 @@ function onUpdate(val: string) {
   ceEmit('update:modelValue', val);
 }
 
+/** Devuelve la key del tab activo */
 function getActive() { return tabsRef.value?.getActive() ?? ""; }
+/** Activa el tab con esa key */
 function setActive(key: string) { tabsRef.value?.setActive(key); }
+/** Activa el próximo tab habilitado */
 function next() { tabsRef.value?.next(); }
+/** Activa el tab anterior habilitado */
 function prev() { tabsRef.value?.prev(); }
 
 defineExpose({ getActive, setActive, next, prev });

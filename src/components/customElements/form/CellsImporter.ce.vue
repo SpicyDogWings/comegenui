@@ -52,15 +52,25 @@ function ceEmit(event: string, payload: unknown) {
   }
 }
 
+/** Filas parseadas */
 function getRows() { return importerRef.value?.getRows() ?? []; }
+/** Encabezados del archivo */
 function getHeaders() { return importerRef.value?.getHeaders() ?? []; }
+/** Errores de validación */
 function getErrors() { return importerRef.value?.getErrors() ?? []; }
+/** `File` actual o `null` */
 function getFile() { return importerRef.value?.getFile() ?? null; }
+/** Re-valida y devuelve errores */
 function validate() { return importerRef.value?.validate() ?? []; }
+/** Descarga la plantilla configurada */
 function downloadTemplate() { importerRef.value?.downloadTemplate(); }
+/** Limpia archivo, filas y errores */
 function reset() { importerRef.value?.reset(); }
+/** Asigna un archivo programáticamente */
 function set(val: File | null) { importerRef.value?.set(val); }
+/** Abre el diálogo de selección */
 function trigger() { importerRef.value?.trigger(); }
+/** Enfoca el input */
 function focus() { importerRef.value?.focus(); }
 
 defineExpose({ getRows, getHeaders, getErrors, getFile, validate, downloadTemplate, reset, set, trigger, focus });

@@ -188,6 +188,7 @@ defineExpose({
   >
     <!-- Header slots -->
     <template #header="{ column }">
+      <!-- Personaliza el header completo (todas las columnas) -->
       <slot name="header" :column="column" :color="props.color" :variant="props.variant">
         <slot :name="`header-${column.key}`" :column="column" :color="props.color" :variant="props.variant">
           {{ column.label || column.key }}
@@ -197,6 +198,7 @@ defineExpose({
 
     <!-- Empty slot -->
     <template #empty>
+      <!-- Contenido cuando no hay datos (override del texto `empty`) -->
       <slot name="empty">{{ props.empty || "No hay datos que mostrar" }}</slot>
     </template>
 

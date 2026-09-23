@@ -105,6 +105,7 @@ const colorStyles = computed(() => ({
       :disabled="isDisabled"
     >
       <LucideLoader v-if="props.loading" class="cu-button-spinner" />
+      <!-- Contenido del botón (label y/o íconos SVG inline) -->
       <slot></slot>
     </button>
   </a>
@@ -121,6 +122,7 @@ const colorStyles = computed(() => ({
     :disabled="isDisabled"
   >
     <LucideLoader v-if="props.loading" class="cu-button-spinner" />
+    <!-- Contenido del botón (label y/o íconos SVG inline) -->
     <slot></slot>
   </button>
 </template>

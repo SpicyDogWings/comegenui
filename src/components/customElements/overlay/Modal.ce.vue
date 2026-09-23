@@ -38,9 +38,13 @@ function ceEmit(event: string, payload: unknown) {
   }
 }
 
+/** Abre el modal */
 function open() { modalRef.value?.open(); }
+/** Cierra el modal */
 function close() { modalRef.value?.close(); }
+/** Alterna visibilidad */
 function toggle() { modalRef.value?.toggle(); }
+/** Devuelve el estado actual (`boolean`) */
 function isOpen() { return modalRef.value?.isOpen() ?? false; }
 
 defineExpose({ open, close, toggle, isOpen });
@@ -62,10 +66,13 @@ defineExpose({ open, close, toggle, isOpen });
     @accept="ceEmit('accept', $event)"
   >
     <template #icon>
+      <!-- Ícono en la cabecera (junto al título) -->
       <slot name="icon"></slot>
     </template>
+    <!-- Cuerpo del modal -->
     <slot></slot>
     <template #footer>
+      <!-- Pie del modal (típicamente botones de acción) -->
       <slot name="footer"></slot>
     </template>
   </Modal>

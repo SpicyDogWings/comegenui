@@ -56,8 +56,8 @@ Tabla avanzada con búsqueda, paginación, edición inline, ordenamiento, badges
 
 | Slot | Descripción |
 |------|------|
-| `header` | Personaliza el header completo (todas las columnas) |
-| `empty` | Contenido cuando no hay datos (override del texto `empty`) |
+| `header` | Header slots --> <template #header="{ column }"> <!-- Personaliza el header completo (todas las columnas) |
+| `empty` | Empty slot --> <template #empty> <!-- Contenido cuando no hay datos (override del texto `empty`) |
 
 > **Importante:** Los slots `cell-{key}`, `search` y `footer` que aparecen en algunos ejemplos **no están expuestos** por el `<cu-table>` (el `.ce.vue` no los reenvía). Solo `header`, `header-{key}` y `empty`. Para footer en HTML plano, usá la [API programática](#footer-api-programática) (prop `footer` vía JS).
 

@@ -125,8 +125,10 @@ defineExpose({
     @close="emit('close')"
   >
     <template v-if="hasToggleSlot" #toggle>
+      <!-- Reemplaza el botón toggle (sintaxis HTML `slot="toggle"`) -->
       <slot name="toggle"></slot>
     </template>
+    <!-- Contenido del panel. Se usa solo si `items` está vacío o no se provee -->
     <slot></slot>
   </DropdownMenu>
 </template>

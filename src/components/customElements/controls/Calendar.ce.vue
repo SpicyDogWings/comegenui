@@ -119,10 +119,15 @@ function ceEmit(event: string, payload: unknown) {
   }
 }
 
+/** Va al mes siguiente (respeta `max`) */
 function nextMonth() { calendarRef.value?.nextMonth() }
+/** Va al mes anterior (respeta `min`) */
 function prevMonth() { calendarRef.value?.prevMonth() }
+/** Navega al mes de la fecha dada */
 function goToMonth(value: string | number | Date) { calendarRef.value?.goToMonth(value) }
+/** null` con la fecha seleccionada */
 function getValue(): Date | null { return calendarRef.value?.getValue() ?? null }
+/** Selecciona una fecha (acepta string/number/Date) */
 function setValue(value: string | number | Date | null) { calendarRef.value?.setValue(value) }
 
 defineExpose({ nextMonth, prevMonth, goToMonth, getValue, setValue })

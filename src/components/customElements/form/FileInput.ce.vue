@@ -42,10 +42,15 @@ function ceEmit(event: string, payload: unknown) {
   }
 }
 
+/** Devuelve el `File` actual o `null` */
 function get() { return fileInputRef.value?.get() ?? null; }
+/** Asigna un archivo programáticamente */
 function set(val: File | null) { fileInputRef.value?.set(val); }
+/** Limpia la selección */
 function reset() { fileInputRef.value?.reset(); }
+/** Enfoca el input */
 function focus() { fileInputRef.value?.focus(); }
+/** Abre el diálogo nativo de selección de archivos */
 function trigger() { fileInputRef.value?.trigger(); }
 
 defineExpose({ get, set, reset, focus, trigger });

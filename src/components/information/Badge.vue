@@ -31,6 +31,7 @@ const badgeStyles = computed(() => ({
 
 <template>
   <span :class="['cu-badge', `cu-badge--${props.variant}`]" :style="badgeStyles">
+    <!-- Contenido textual o ícono del badge -->
     <slot />
   </span>
 </template>

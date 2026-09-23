@@ -39,9 +39,13 @@ function ceEmit(event: string, payload: unknown) {
   }
 }
 
+/** Muestra la alerta */
 function open() { alertRef.value?.open(); }
+/** Oculta la alerta */
 function close() { alertRef.value?.close(); }
+/** Alterna visibilidad */
 function toggle() { alertRef.value?.toggle(); }
+/** Devuelve `true`/`false` según la visibilidad actual */
 function isOpen() { return alertRef.value?.isOpen() ?? false; }
 
 defineExpose({ open, close, toggle, isOpen });
@@ -60,8 +64,10 @@ defineExpose({ open, close, toggle, isOpen });
     @update:show="ceEmit('update:show', $event)"
   >
     <template #icon>
+      <!-- Ícono junto al título (slot HTML nativo) -->
       <slot name="icon"></slot>
     </template>
+    <!-- Cuerpo principal de la alerta -->
     <slot></slot>
   </Alert>
 </template>

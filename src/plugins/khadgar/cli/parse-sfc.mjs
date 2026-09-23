@@ -406,6 +406,15 @@ function parseEmits(source, compiled, docs, fullSource = source) {
 
 // ── Exposes ─────────────────────────────────────────────────────────────────
 
+/** JSDoc inmediatamente anterior a la declaración de `name`. */
+function jsDocBefore(script, name) {
+  const re = new RegExp(
+    `/\\*\\*((?:(?!\\*/)[\\s\\S])*)\\*/\\s*(?:export\\s+)?(?:async\\s+)?(?:function\\s+|const\\s+|let\\s+|var\\s+)${name}\\b`,
+  );
+  const match = re.exec(script);
+  return match ? cleanJsDoc(match[1]) : undefined;
+}
+
 function parseExposes(source, docs) {
   const match = /defineExpose\s*\(/.exec(source);
   if (!match) return [];
@@ -427,7 +436,8 @@ function parseExposes(source, docs) {
   }
   return entries.map(({ name, signature }) => {
     const row = { name: signature, type: "() => void" };
-    const description = docs?.get(name);
+    // Preferir el JSDoc pegado a la declaración (evita colisiones con props).
+    const description = jsDocBefore(source, name) ?? docs?.get(name);
     if (description) row.description = description;
     return row;
   });

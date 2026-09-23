@@ -123,15 +123,6 @@ function complementEventRow(event, override) {
   return row;
 }
 
-function slotRow(slot, override) {
-  const row = { name: slot.name };
-  const type = override.type ?? (slot.type && slot.type !== "{}" ? slot.type : undefined);
-  if (type) row.type = type;
-  const description = override.description || slot.description;
-  if (description) row.description = description;
-  return row;
-}
-
 /** Base name de un expose de parse-sfc (`set(value)` → `set`). */
 function exposeName(name) {
   return name.replace(/\(.*$/, "").trim();
@@ -159,12 +150,44 @@ function exposeRows(metaExposed, compExposes, overrides, item) {
     push(
       name,
       override.type ?? meta?.type ?? entry.type,
-      override.description || meta?.description || entry.description,
+      entry.description || meta?.description || override.description,
     );
   }
   for (const meta of metaExposed) {
     const override = overrideOf(overrides[meta.name]);
-    push(meta.name, override.type ?? meta.type, override.description || meta.description);
+    push(meta.name, override.type ?? meta.type, meta.description || override.description);
+  }
+  return filterRows(rows, item);
+}
+
+/**
+ * Filas de `slots`: la lista fiable es la de parse-sfc (comentario HTML antes
+ * del `<slot>`); vcm aporta el tipo del slot prop. Se agregan los de vcm que falten.
+ */
+function slotRows(metaSlots, compSlots, overrides, item) {
+  const byName = new Map(metaSlots.map((slot) => [slot.name, slot]));
+  const rows = [];
+  const seen = new Set();
+  const push = (name, type, description) => {
+    if (!name || seen.has(name)) return;
+    seen.add(name);
+    const row = { name };
+    if (type && type !== "{}") row.type = type;
+    if (description) row.description = description;
+    rows.push(row);
+  };
+  for (const entry of compSlots) {
+    const meta = byName.get(entry.name);
+    const override = overrideOf(overrides[entry.name]);
+    push(
+      entry.name,
+      override.type ?? meta?.type,
+      entry.description || meta?.description || override.description,
+    );
+  }
+  for (const meta of metaSlots) {
+    const override = overrideOf(overrides[meta.name]);
+    push(meta.name, override.type ?? meta.type, meta.description || override.description);
   }
   return filterRows(rows, item);
 }
@@ -254,10 +277,7 @@ export function extractComponent(filePath, options = {}) {
     ],
     item,
   );
-  const slots = filterRows(
-    meta.slots.map((s) => slotRow(s, overrideOf(overrides.slots?.[s.name]))),
-    item,
-  );
+  const slots = slotRows(meta.slots, comp.slots, overrides.slots ?? {}, item);
   const exposed = exposeRows(meta.exposed, comp.exposes, overrides.exposes ?? {}, item);
 
   const deps = extract.deps

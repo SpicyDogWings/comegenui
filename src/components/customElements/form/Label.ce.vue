@@ -43,6 +43,7 @@ const props = defineProps({
     :color="props.color"
     :hightContrast="props.hightContrast"
   >
+    <!-- Contenido asociado (input, checkbox, etc.) -->
     <slot></slot>
   </Label>
 </template>

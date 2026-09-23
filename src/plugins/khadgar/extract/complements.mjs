@@ -30,5 +30,7 @@ export function complements(filePath, source, base) {
     // vcm pierde nombres de `defineExpose` que colisionan con props (ej: `close`);
     // parse-sfc lee el objeto literal y es la lista fiable.
     exposes: parsed.exposes.map(({ name, type, description }) => ({ name, type, description })),
+    // Los slots se documentan con un comentario HTML antes del `<slot>` (parse-sfc).
+    slots: parsed.slots.map(({ name, description }) => ({ name, description })),
   };
 }

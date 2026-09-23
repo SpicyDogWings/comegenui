@@ -37,9 +37,13 @@ function ceEmit(event: string, payload: unknown) {
   }
 }
 
+/** Abre el collapse */
 function open() { collapseRef.value?.open(); }
+/** Cierra el collapse */
 function close() { collapseRef.value?.close(); }
+/** Alterna el estado */
 function toggle() { collapseRef.value?.toggle(); }
+/** Devuelve el estado actual (`boolean`) */
 function isOpen() { return collapseRef.value?.isOpen() ?? false; }
 
 defineExpose({ open, close, toggle, isOpen });
@@ -53,6 +57,7 @@ defineExpose({ open, close, toggle, isOpen });
     :color="props.color"
     @toggle="ceEmit('toggle', $event)"
   >
+    <!-- Contenido colapsable -->
     <slot></slot>
   </Collapse>
 </template>

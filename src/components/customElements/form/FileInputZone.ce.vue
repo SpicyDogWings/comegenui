@@ -48,10 +48,15 @@ function ceEmit(event: string, payload: unknown) {
   }
 }
 
+/** Devuelve el/los archivo/s actual/es */
 function get() { return zoneRef.value?.get() ?? null; }
+/** Asigna archivos programáticamente */
 function set(val: File | File[] | null) { zoneRef.value?.set(val); }
+/** Limpia la selección */
 function reset() { zoneRef.value?.reset(); }
+/** Enfoca la zona */
 function focus() { zoneRef.value?.focus(); }
+/** Abre el diálogo nativo */
 function trigger() { zoneRef.value?.trigger(); }
 
 defineExpose({ get, set, reset, focus, trigger });

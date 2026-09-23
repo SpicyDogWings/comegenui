@@ -36,9 +36,13 @@ function ceEmit(event: string, payload: unknown) {
   }
 }
 
+/** Devuelve el estado actual (`boolean`) */
 function get() { return checkboxRef.value?.get() ?? false; }
+/** Asigna el estado (programáticamente) */
 function set(val: boolean) { checkboxRef.value?.set(val); }
+/** Pone el estado en `false` */
 function reset() { checkboxRef.value?.reset(); }
+/** Enfoca el checkbox */
 function focus() { checkboxRef.value?.focus(); }
 
 defineExpose({ get, set, reset, focus });

@@ -32,6 +32,7 @@ const props = defineProps({
     :delay="props.delay"
     :disabled="props.disabled"
   >
+    <!-- El elemento que dispara el tooltip al hacer hover -->
     <slot></slot>
   </Tooltip>
 </template>

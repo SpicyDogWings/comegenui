@@ -97,14 +97,21 @@ function ceEmit(event: string, payload: unknown) {
   }
 }
 
+/** Abre el panel */
 function open() { pickerRef.value?.open() }
+/** Cierra el panel */
 function close() { pickerRef.value?.close() }
+/** Abre/cierra el panel */
 function toggle() { pickerRef.value?.toggle() }
+/** null` con la fecha de inicio */
 function getStartDate(): Date | null { return pickerRef.value?.getStartDate() ?? null }
+/** null` con la fecha de fin */
 function getEndDate(): Date | null { return pickerRef.value?.getEndDate() ?? null }
+/** Define el rango (acepta string/number/Date) */
 function setRange(start: string | number | Date | null, end: string | number | Date | null) {
   pickerRef.value?.setRange(start, end)
 }
+/** Limpia el rango */
 function clear() { pickerRef.value?.clear() }
 
 defineExpose({

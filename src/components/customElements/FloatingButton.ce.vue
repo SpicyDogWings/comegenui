@@ -25,6 +25,7 @@ function onClick() {
     :disabled="props.disabled"
     @click="onClick"
   >
+    <!-- Ícono o contenido del botón (normalmente un SVG) -->
     <slot />
   </FloatingButton>
 </template>
