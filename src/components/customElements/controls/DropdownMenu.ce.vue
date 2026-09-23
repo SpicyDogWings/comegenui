@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, getCurrentInstance, onMounted, onBeforeUnmount } from "vue";
 import DropdownMenu from "../../controls/DropdownMenu.vue";
 
 const props = defineProps({
@@ -54,6 +54,41 @@ const resolvedItems = computed(() =>
 
 const dropdownRef = ref<InstanceType<typeof DropdownMenu> | null>(null);
 
+// El slot `toggle` es light DOM. Solo lo reenviamos a DropdownMenu si el host
+// trae contenido con slot="toggle"; si no, un slot provisto pero vacío pisaría
+// el botón por defecto del componente. En shadow DOM el contenido no llega por
+// `$slots`, hay que mirarlo en el DOM del host.
+const instance = getCurrentInstance();
+
+function hostElement(): HTMLElement | null {
+  const ce = (instance as unknown as { ce?: HTMLElement } | null)?.ce;
+  if (ce) return ce;
+  const el = instance?.vnode.el as HTMLElement | null;
+  return ((el?.getRootNode() as ShadowRoot | null)?.host as HTMLElement | null) ?? el;
+}
+
+function hasToggleContent(): boolean {
+  return !!hostElement()?.querySelector('[slot="toggle"]');
+}
+
+const hasToggleSlot = ref(hasToggleContent());
+
+let observer: MutationObserver | null = null;
+onMounted(() => {
+  hasToggleSlot.value = hasToggleContent();
+  const host = hostElement();
+  if (host && typeof MutationObserver !== "undefined") {
+    observer = new MutationObserver(() => {
+      hasToggleSlot.value = hasToggleContent();
+    });
+    observer.observe(host, { childList: true, attributes: true, attributeFilter: ["slot"] });
+  }
+});
+onBeforeUnmount(() => {
+  observer?.disconnect();
+  observer = null;
+});
+
 defineExpose({
   open: () => dropdownRef.value?.open(),
   close: () => dropdownRef.value?.close(),
@@ -78,9 +113,9 @@ defineExpose({
     @open="emit('open')"
     @close="emit('close')"
   >
-    <div slot="toggle">
+    <template v-if="hasToggleSlot" #toggle>
       <slot name="toggle"></slot>
-    </div>
+    </template>
     <slot></slot>
   </DropdownMenu>
 </template>

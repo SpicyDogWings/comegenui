@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="es" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dropdown Toggle Slot — Playground Vanilla</title>
+    <link rel="stylesheet" href="../../style.css" />
+    <link rel="stylesheet" href="../../public/css/comegen-sigfi-theme.css" />
+    <script src="../../../dist-lib/CuDropdownMenu.umd.js"></script>
+    <script src="../../../dist-lib/CuButton.umd.js"></script>
+    <style>
+      .card--wide {
+        align-items: flex-start;
+        max-width: 1000px;
+      }
+
+      .dd-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+        width: 100%;
+        align-items: start;
+      }
+
+      .dd-block {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+      }
+
+      .dd-label {
+        font-size: 12px;
+        font-weight: 500;
+        opacity: .5;
+      }
+
+      .dd-state {
+        font-family: ui-monospace, monospace;
+        font-size: 12px;
+        opacity: .7;
+      }
+
+      .dd-toggle-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        border: none;
+        border-radius: 8px;
+        background: var(--cu-color-primary, #e73f1e);
+        color: var(--cu-color-primary-text, #fff);
+        font: inherit;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <h1 style="font-size:16px;font-weight:600">Dropdown Toggle Slot</h1>
+      <div class="topbar-actions">
+        <button class="topbar-btn" id="btnTheme" title="Toggle theme">🌙</button>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="card card--wide">
+        <h2>Slot <code>toggle</code> — Custom Elements</h2>
+        <p style="font-size:13px;opacity:.65;line-height:1.5;margin:0">
+          El slot <code>toggle</code> reemplaza el botón por defecto. En HTML plano el
+          contenido es light DOM, así que el click se cablea con
+          <code>onclick</code>/<code>addEventListener</code> llamando a
+          <code>.toggle()</code> del host.
+        </p>
+
+        <div class="dd-grid">
+          <div class="dd-block">
+            <p class="dd-label">&lt;button slot="toggle"&gt; + onclick</p>
+            <cu-dropdown-menu id="dd-plain">
+              <button
+                class="dd-toggle-btn"
+                slot="toggle"
+                onclick="document.getElementById('dd-plain').toggle()"
+              >
+                ☰ Abrir
+              </button>
+            </cu-dropdown-menu>
+            <span class="dd-state" id="dd-plain-state">isOpen: false</span>
+          </div>
+          <div class="dd-block">
+            <p class="dd-label">&lt;cu-button slot="toggle"&gt; + addEventListener</p>
+            <cu-dropdown-menu id="dd-button">
+              <cu-button slot="toggle" color="secondary" variant="solid">
+                Acciones
+              </cu-button>
+            </cu-dropdown-menu>
+            <span class="dd-state" id="dd-button-state">isOpen: false</span>
+          </div>
+
+          <div class="dd-block">
+            <p class="dd-label">Toggle por defecto (label)</p>
+            <cu-dropdown-menu id="dd-default" label="Menú" variant="soft" color="primary"></cu-dropdown-menu>
+            <span class="dd-state" id="dd-default-state">isOpen: false</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ── items: array por property DOM, no por atributo ──
+      const items = [
+        { label: 'Editar' },
+        { label: 'Duplicar' },
+        { label: 'Archivar' },
+      ];
+
+      customElements.whenDefined('cu-dropdown-menu').then(() => {
+        const plain = document.getElementById('dd-plain');
+        const button = document.getElementById('dd-button');
+        const fallback = document.getElementById('dd-default');
+
+        plain.items = items;
+        button.items = items;
+        fallback.items = items;
+
+        // Toggle custom con <cu-button>: el click burbujea hasta el host.
+        document
+          .getElementById('dd-button')
+          .querySelector('cu-button')
+          .addEventListener('click', () => button.toggle());
+
+        // Estado en vivo desde los eventos open/close.
+        const track = (el, stateId) => {
+          const state = document.getElementById(stateId);
+          el.addEventListener('open', () => (state.textContent = 'isOpen: true'));
+          el.addEventListener('close', () => (state.textContent = 'isOpen: false'));
+        };
+
+        track(plain, 'dd-plain-state');
+        track(button, 'dd-button-state');
+        track(fallback, 'dd-default-state');
+      });
+    </script>
+
+    <script src="../../playground.js"></script>
+  </body>
+</html>
