@@ -198,7 +198,7 @@ Mientras el usuario escribe (con `searchEnabled`), aparece una barra de cooldown
 
 ## Props
 
-| Prop | Tipo | Default | Descripción |
+| Atributo | Tipo | Default | Descripción |
 |------|------|------|------|
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | `outlined`, `soft`, `ghost`, `subtle` |

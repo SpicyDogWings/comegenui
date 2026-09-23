@@ -116,7 +116,7 @@ modal.addEventListener('closed', () => console.log('cierre completo'));
 
 ## Props
 
-| Prop | Tipo | Default | Descripción |
+| Atributo | Tipo | Default | Descripción |
 |------|------|------|------|
 | `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `title` | `string` | `""` | Título del modal (se muestra en la cabecera) |

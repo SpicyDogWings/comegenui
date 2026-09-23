@@ -35,7 +35,7 @@ Tooltip que aparece al hacer hover sobre el elemento contenido, con posición, a
 
 ## Props
 
-| Prop | Tipo | Default | Descripción |
+| Atributo | Tipo | Default | Descripción |
 |------|------|------|------|
 | `text` | `string` | `""` | Texto del tooltip. Si se usa el slot `content`, tiene prioridad |
 | `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico del fondo: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |

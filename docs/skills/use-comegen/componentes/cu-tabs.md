@@ -118,7 +118,7 @@ El repositorio incluye una demo en HTML plano: [`playground/pages/tabs/tabs.html
 
 ## Props
 
-| Prop | Tipo | Default | Descripción |
+| Atributo | Tipo | Default | Descripción |
 |------|------|------|------|
 | `tabs` | `TabItem[]` | — | Definición de las pestañas |
 | `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"primary"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |

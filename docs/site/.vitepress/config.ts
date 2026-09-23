@@ -16,7 +16,7 @@ interface Generated {
   routeBase: string;
   nav: unknown[];
   sidebar: unknown[];
-  components: { tag: string; name: string; group: string }[];
+  components: { tag: string; name: string; group: string; vanilla?: boolean }[];
 }
 
 const generated: Generated = existsSync(genPath)
@@ -62,10 +62,22 @@ export default defineConfig({
     server: { fs: { allow: [repoRoot] } },
   },
   transformPageData(pageData) {
-    const match = /componentes\/(cu-[\w-]+)\.md$/.exec(pageData.relativePath);
+    const match = /componentes\/(cu-[\w-]+?)(-vanilla)?\.md$/.exec(pageData.relativePath);
     if (!match) return;
-    const component = generated.components.find((item) => item.tag === match[1]);
+    const tag = match[1];
+    const component = generated.components.find((item) => item.tag === tag);
     if (!component) return;
-    return { frontmatter: { ...pageData.frontmatter, demo: component.name } };
+    const view = match[2] ? "vanilla" : "vue";
+    return {
+      frontmatter: {
+        ...pageData.frontmatter,
+        demo: component.name,
+        // Datos de la tab Vanilla/Vue (solo si el componente tiene vanilla).
+        componentTag: tag,
+        componentName: component.name,
+        componentView: view,
+        hasVanilla: component.vanilla === true,
+      },
+    };
   },
 });

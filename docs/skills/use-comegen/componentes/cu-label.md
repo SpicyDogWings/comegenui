@@ -53,7 +53,7 @@ Al hacer clic en el label, el control hijo se enfoca automáticamente. Si pasás
 
 ## Props
 
-| Prop | Tipo | Default | Descripción |
+| Atributo | Tipo | Default | Descripción |
 |------|------|------|------|
 | `for` | `string` | `""` | ID del elemento a enfocar al hacer clic (atributo HTML `for`) |
 | `label` | `string` | `""` | Texto del label (modo declarativo) |

@@ -50,6 +50,7 @@ export function buildVitepressConfig(index, docs = {}) {
       tag: component.tag,
       name: component.name,
       group: component.group,
+      vanilla: component.vanilla === true,
     })),
   };
 }

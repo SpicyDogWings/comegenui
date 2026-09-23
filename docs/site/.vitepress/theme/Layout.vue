@@ -3,6 +3,7 @@ import { useData } from "vitepress";
 import DefaultTheme from "vitepress/theme";
 import AppTopbar from "@/layouts/AppTopbar.vue";
 import Demo from "./Demo.vue";
+import ViewTabs from "./ViewTabs.vue";
 
 const { frontmatter } = useData();
 </script>
@@ -14,6 +15,12 @@ const { frontmatter } = useData();
   <DefaultTheme.Layout>
     <template #doc-before>
       <Demo v-if="frontmatter.demo" :name="String(frontmatter.demo)" />
+      <ViewTabs
+        v-if="frontmatter.componentTag"
+        :tag="String(frontmatter.componentTag)"
+        :view="frontmatter.componentView === 'vanilla' ? 'vanilla' : 'vue'"
+        :has-vanilla="Boolean(frontmatter.hasVanilla)"
+      />
     </template>
   </DefaultTheme.Layout>
 </template>

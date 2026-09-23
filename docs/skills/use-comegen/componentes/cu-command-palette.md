@@ -22,7 +22,7 @@ Paleta de comandos (búsqueda + lista) en un modal, con agrupado por categoría 
 
 ## Props
 
-| Prop | Tipo | Default | Descripción |
+| Atributo | Tipo | Default | Descripción |
 |------|------|------|------|
 | `color` | `string` | `"neutral"` | Color semántico del modal: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `title` | `string` | `""` | Título del modal |

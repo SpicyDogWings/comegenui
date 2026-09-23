@@ -54,7 +54,7 @@ side.addEventListener('close', () => console.log('cerrando'));
 
 ## Props
 
-| Prop | Tipo | Default | Descripción |
+| Atributo | Tipo | Default | Descripción |
 |------|------|------|------|
 | `modelValue` | `boolean` | `false` |  |
 | `title` | `string` | `""` | Título de la cabecera (si está vacío y no es `persistent`, igual muestra el botón de cerrar) |

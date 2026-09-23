@@ -43,7 +43,7 @@ interface NavItem {
 
 ## Props
 
-| Prop | Tipo | Default | Descripción |
+| Atributo | Tipo | Default | Descripción |
 |------|------|------|------|
 | `items` | `NavItem[]` | — | Estructura de navegación. **Se asigna como propiedad JS** |
 | `trigger` | `"click" \| "hover"` | `"click"` | Cómo abren los submenús: `click` o `hover` |

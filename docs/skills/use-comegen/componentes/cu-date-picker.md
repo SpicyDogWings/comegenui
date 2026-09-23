@@ -76,7 +76,7 @@ El label se muestra sobre el picker y es clickeable — hace foco en el input y 
 
 ## Props
 
-| Prop | Tipo | Default | Descripción |
+| Atributo | Tipo | Default | Descripción |
 |------|------|------|------|
 | `modelValue` | `string \| number \| Date \| null` | `null` | Fecha seleccionada |
 | `min` | `string \| number \| Date \| null` | `null` | Fecha mínima seleccionable |

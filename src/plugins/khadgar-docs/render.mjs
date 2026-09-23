@@ -65,19 +65,35 @@ function apiSection(title, body, note) {
  * Renderiza la ficha de un componente.
  *
  * @param {import("../khadgar/api").KhadgarComponent} component
+ * @param {object} [options]
+ * @param {"vue"|"vanilla"} [options.mode] Tipo de ficha. `vanilla` incluye las
+ *   secciones curadas (ej. "Uso en HTML plano"); `vue` solo la API.
+ * @param {string} [options.backlink] Link "volver". `null` lo omite.
+ *   Default: `../SKILL.md`.
+ * @param {boolean} [options.includeSections] Forzar secciones. Default: `mode === "vanilla"`.
  * @returns {string} markdown
  */
-export function renderDoc(component) {
+export function renderDoc(component, options = {}) {
+  const mode = options.mode ?? "vanilla";
+  const includeSections = options.includeSections ?? mode === "vanilla";
+  const backlink = options.backlink === undefined ? "../SKILL.md" : options.backlink;
   const out = [];
   const notes = component.notes ?? {};
 
-  out.push(`# \`<${component.tag}>\``, "");
+  const title = mode === "vue" ? component.name : `<${component.tag}>`;
+  out.push(`# \`${title}\``, "");
   if (component.description) out.push(component.description, "");
-  out.push("[← Volver](../SKILL.md)", "", "---", "");
+  if (backlink) out.push(`[← Volver](${backlink})`, "");
+  out.push("---", "");
 
-  for (const section of component.sections ?? []) {
-    out.push("---", "", `## ${section.title}`, "", section.body.trim(), "");
+  if (includeSections) {
+    for (const section of component.sections ?? []) {
+      out.push("---", "", `## ${section.title}`, "", section.body.trim(), "");
+    }
   }
+
+  const payloadHeader = mode === "vanilla" ? "Payload (`e.detail`)" : "Payload";
+  const propsHeader = mode === "vanilla" ? "Atributo" : "Prop";
 
   if (component.props.length) {
     const rows = component.props.map((prop) => [
@@ -86,7 +102,7 @@ export function renderDoc(component) {
       fmtDefault(prop.default),
       prop.description ?? "",
     ]);
-    out.push(apiSection("Props", table(["Prop", "Tipo", "Default", "Descripción"], rows), notes.props), "");
+    out.push(apiSection("Props", table([propsHeader, "Tipo", "Default", "Descripción"], rows), notes.props), "");
   } else if (notes.props) {
     out.push(apiSection("Props", notes.props), "");
   }
@@ -98,7 +114,7 @@ export function renderDoc(component) {
       event.description ?? "",
     ]);
     out.push(
-      apiSection("Eventos", table(["Evento", "Payload (`e.detail`)", "Descripción"], rows), notes.events),
+      apiSection("Eventos", table(["Evento", payloadHeader, "Descripción"], rows), notes.events),
       "",
     );
   } else if (notes.events) {

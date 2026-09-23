@@ -58,7 +58,7 @@ Selector de color con swatch y campo de texto hex. Al hacer click en el swatch s
 
 ## Props
 
-| Prop | Tipo | Default | Descripción |
+| Atributo | Tipo | Default | Descripción |
 |------|------|------|------|
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` (define el acento del borde/foco) |
 | `disabled` | `boolean` | `false` | Deshabilita el control |

@@ -71,7 +71,7 @@ El panel del datepicker solo se renderiza cuando está abierto. Si asignás `sta
 
 ## Props
 
-| Prop | Tipo | Default | Descripción |
+| Atributo | Tipo | Default | Descripción |
 |------|------|------|------|
 | `startDate` | `string \| number \| Date \| null` | `null` | Fecha de inicio del rango |
 | `endDate` | `string \| number \| Date \| null` | `null` | Fecha de fin del rango |

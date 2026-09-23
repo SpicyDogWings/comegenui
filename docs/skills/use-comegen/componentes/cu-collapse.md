@@ -121,7 +121,7 @@ collapse.addEventListener('toggle', (e) => {
 
 ## Props
 
-| Prop | Tipo | Default | Descripción |
+| Atributo | Tipo | Default | Descripción |
 |------|------|------|------|
 | `label` | `string` | — | Texto del trigger |
 | `icon` | `string` | `""` | Ícono del trigger (SVG/HTML). |

@@ -68,7 +68,7 @@ Paginación numérica con soporte para selector de tamaño de página y botones 
 
 ## Props
 
-| Prop | Tipo | Default | Descripción |
+| Atributo | Tipo | Default | Descripción |
 |------|------|------|------|
 | `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle" \| "none"` | `"soft"` | `outlined`, `soft`, `ghost`, `subtle`, `none` |

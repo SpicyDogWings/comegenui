@@ -829,7 +829,7 @@ En variantes transparentes (`outlined`, `ghost`) se aplica `backdrop-filter: blu
 
 ## Props
 
-| Prop | Tipo | Default | Descripción |
+| Atributo | Tipo | Default | Descripción |
 |------|------|------|------|
 | `theme` | `string` | `"light"` | Tema activo de la tabla: light, dark o sigacadv2. |
 | `columns` | `Column[]` | `[]` | Definición de columnas (ver [Interfaz de columna](#interfaz-de-columna)). Se asigna como propiedad JS |

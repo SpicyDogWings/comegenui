@@ -55,7 +55,7 @@ interface NavItem {
 
 ## Props
 
-| Prop | Tipo | Default | Descripción |
+| Atributo | Tipo | Default | Descripción |
 |------|------|------|------|
 | `items` | `NavItem[]` | — | Estructura de navegación. **Se asigna como propiedad JS** |
 | `search` | `boolean` | `false` | Muestra el input de búsqueda |

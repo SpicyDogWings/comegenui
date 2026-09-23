@@ -121,7 +121,7 @@ Por defecto el menú se abre al recibir foco. Con `min-chars="2"` solo se abre t
 
 ## Props
 
-| Prop | Tipo | Default | Descripción |
+| Atributo | Tipo | Default | Descripción |
 |------|------|------|------|
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `disabled` | `boolean` | `false` | Estado deshabilitado |

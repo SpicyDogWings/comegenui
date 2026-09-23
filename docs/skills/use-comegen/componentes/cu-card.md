@@ -79,7 +79,7 @@ Media (imagen o slot `media`) al costado del contenido:
 
 ## Props
 
-| Prop | Tipo | Default | Descripción |
+| Atributo | Tipo | Default | Descripción |
 |------|------|------|------|
 | `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
 | `variant` | `"ghost" \| "outlined" \| "soft" \| "subtle" \| "solid"` | `"ghost"` | `ghost` (default), `outlined`, `soft`, `subtle`, `solid` |

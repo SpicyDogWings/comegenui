@@ -73,7 +73,7 @@ El switch no incluye label propio. Combinalo con `<cu-label>` para tener un áre
 
 ## Props
 
-| Prop | Tipo | Default | Descripción |
+| Atributo | Tipo | Default | Descripción |
 |------|------|------|------|
 | `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `size` | `"sm" \| "md"` | `"md"` | Tamaño del switch: `sm`, `md` |

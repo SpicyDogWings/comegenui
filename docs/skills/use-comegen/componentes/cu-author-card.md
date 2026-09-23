@@ -31,7 +31,7 @@ Tarjeta de autor con avatar (imagen o iniciales generadas del nombre), nombre y 
 
 ## Props
 
-| Prop | Tipo | Default | Descripción |
+| Atributo | Tipo | Default | Descripción |
 |------|------|------|------|
 | `name` | `string` | — | Nombre del autor. Genera las iniciales automáticamente (primeras letras del primero y último nombre) |
 | `role` | `string` | `""` | Rol o cargo que se muestra bajo el nombre (se oculta si está vacío) |

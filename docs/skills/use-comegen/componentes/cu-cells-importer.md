@@ -81,7 +81,7 @@ El botón solo aparece si `enabled: true` **y** `columns.length > 0`. También s
 
 ## Props
 
-| Prop | Tipo | Default | Descripción |
+| Atributo | Tipo | Default | Descripción |
 |------|------|------|------|
 | `columns` | `CellColumn[]` | `[]` | Esquema de columnas (header esperado, tipo y reglas). **Obligatorio.** |
 | `formats` | `string[]` | `[".xlsx", ".csv"]` | Formatos deseados; se propagan al input y se muestran al usuario |

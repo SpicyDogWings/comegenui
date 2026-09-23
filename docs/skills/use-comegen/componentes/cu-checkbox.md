@@ -66,7 +66,7 @@ Hay dos formas equivalentes de escuchar cambios:
 
 ## Props
 
-| Prop | Tipo | Default | Descripción |
+| Atributo | Tipo | Default | Descripción |
 |------|------|------|------|
 | `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `size` | `"sm" \| "md"` | `"md"` | Tamaño del checkbox: `sm`, `md` |

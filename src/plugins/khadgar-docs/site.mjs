@@ -10,6 +10,7 @@ import { buildIndex } from "../khadgar/extract/index.mjs";
 import { renderDoc } from "./render.mjs";
 import { buildVitepressConfig } from "./vitepress.mjs";
 import { buildThemesCss, buildVitePressBridgeCss, buildShikiThemes } from "./theme.mjs";
+import { buildVanillaDocs } from "../khadgar-docs-vanilla/index.mjs";
 
 const root = process.cwd();
 const configPath = resolve(root, "khadgar.config.json");
@@ -19,19 +20,34 @@ const siteRoot = resolve(root, docs.site ?? "docs/site");
 const vpDir = resolve(siteRoot, ".vitepress");
 const themeDir = resolve(vpDir, "theme");
 
-// 1. Fichas (fuente: el `.vue` real de cada entrada).
+// 1. Fichas. Vue (fuente: el `.vue` real) → `cu-<tag>.md`; vanilla (custom
+// element) → `cu-<tag>-vanilla.md`. Canónicas bajo `docsDir`, copia para el sitio.
 const index = buildIndex({ root, config });
 const docsDir = resolve(root, config.docsDir ?? "docs/skills/use-comegen", "componentes");
 const siteDocsDir = resolve(siteRoot, "componentes");
+mkdirSync(docsDir, { recursive: true });
+mkdirSync(siteDocsDir, { recursive: true });
+
+// `canonical` = ficha de la skill (vanilla/UMD). La ficha Vue siempre es copia
+// del sitio.
+function writeDoc(fileName, markdown, { canonical = false } = {}) {
+  if (canonical) writeFileSync(resolve(docsDir, fileName), markdown);
+  writeFileSync(resolve(siteDocsDir, fileName), markdown);
+}
+
 let written = 0;
 for (const component of index.components) {
   if (!component.tag) continue;
-  const markdown = renderDoc(component);
-  mkdirSync(docsDir, { recursive: true });
-  writeFileSync(resolve(docsDir, `${component.tag}.md`), markdown);
-  mkdirSync(siteDocsDir, { recursive: true });
-  writeFileSync(resolve(siteDocsDir, `${component.tag}.md`), markdown);
+  writeDoc(`${component.tag}.md`, renderDoc(component, { mode: "vue", backlink: null }));
   written++;
+}
+// La skill (canónica) documenta el uso vanilla/UMD: solo los `vanilla: true`.
+// La canónica es `docsDir/cu-<tag>.md`; en el sitio va como `cu-<tag>-vanilla.md`
+// para no chocar con la ficha Vue (`cu-<tag>.md`).
+const vanillaDocs = buildVanillaDocs(root, config);
+for (const doc of vanillaDocs) {
+  writeFileSync(resolve(docsDir, `${doc.tag}.md`), doc.markdown);
+  writeFileSync(resolve(siteDocsDir, `${doc.tag}-vanilla.md`), doc.markdown);
 }
 
 // 2. Config de VitePress + data completa para el tema.
