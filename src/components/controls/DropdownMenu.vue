@@ -74,7 +74,7 @@ defineExpose({
   /** Alterna la visibilidad del menú. */
   toggle: () => dropdownRef.value?.toggle(),
   /** Devuelve true si el menú está abierto. */
-  isOpen: () => dropdownRef.value?.isOpen || false,
+  isOpen: () => dropdownRef.value?.isOpen() ?? false,
 });
 </script>
 
@@ -92,15 +92,15 @@ defineExpose({
     @open="emit('open')"
     @close="emit('close')"
   >
-    <template #toggle>
+    <template #toggle="{ toggle, isOpen }">
       <!-- Contenido del trigger; scoped: { toggle, isOpen }. -->
-      <slot name="toggle" :toggle="dropdownRef?.toggle" :isOpen="dropdownRef?.isOpen">
+      <slot name="toggle" :toggle="toggle" :isOpen="isOpen">
         <Button
           :color="color"
           :variant="variant"
           :disabled="disabled"
           class="cu-dropdown-toggle"
-          @click="dropdownRef?.toggle"
+          @click="toggle"
         >
           {{ label || "Menú" }}
           <svg
@@ -114,9 +114,9 @@ defineExpose({
             stroke-linecap="round"
             stroke-linejoin="round"
             class="cu-dropdown-chevron"
-            :class="{ 'cu-dropdown-chevron--open': dropdownRef?.isOpen }"
+            :class="{ 'cu-dropdown-chevron--open': isOpen }"
           >
-            <path d="m6 9 6 6 6-6"/>
+            <path d="m18 15-6-6-6 6"/>
           </svg>
         </Button>
       </slot>
@@ -174,6 +174,6 @@ defineExpose({
 }
 
 .cu-dropdown-chevron--open {
-  transform: rotate(180deg);
+  transform: rotate(90deg);
 }
 </style>

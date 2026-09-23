@@ -28,8 +28,7 @@ const programmaticItems: DropdownItem[] = [
 /**
  * Programmatic: patio de juegos de los **exposes** de DropdownMenu
  * (open/close/toggle) sobre una instancia en vivo. El estado se lee de los
- * eventos open/close porque `isOpen()` del componente devuelve la función
- * interna del Dropdown (bug conocido, no se usa acá).
+ * eventos open/close para reflejarlo en vivo.
  */
 const DropdownMenuProgrammatic = defineComponent({
   name: "DropdownMenuProgrammatic",
