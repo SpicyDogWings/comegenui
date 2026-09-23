@@ -6,31 +6,6 @@ Botón flotante (FAB) fijo en la esquina inferior derecha, de forma circular. Pe
 
 ---
 
-## Props
-
-| Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `color` | `string` | `""primary" as string"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `disabled` | `boolean` | `false` | Deshabilita el botón |
-
-> El Custom Element **no expone** prop `theme`, `variant` ni `hightContrast`.
-
-## Eventos
-
-| Evento | Payload (`e.detail`) | Descripción |
-|------|------|------|
-| `click` | — | Se emite al hacer click. Es un `CustomEvent` (`bubbles: true, composed: true`), se escucha con `addEventListener` |
-
-## Slots
-
-| Slot | Descripción |
-|------|------|
-| `default` | Ícono o contenido del botón (normalmente un SVG) |
-
-## Métodos expuestos
-
-No expone métodos.
-
 ---
 
 ## Uso en HTML plano
@@ -66,3 +41,28 @@ No expone métodos.
 - Posición fija (`position: fixed`) en `bottom: 1.5rem; right: 1.5rem`, con `z-index: 1000`.
 - Tamaño fijo de 48×48 px, forma circular y sombra elevada.
 - El color de fondo usa el color semántico del tema activo; el ícono debe usar `stroke="currentColor"`/`fill="currentColor"` para heredarlo.
+
+## Props
+
+| Prop | Tipo | Default | Descripción |
+|------|------|------|------|
+| `color` | `string` | `""primary" as string"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `disabled` | `boolean` | `false` | Deshabilita el botón |
+
+> El Custom Element **no expone** prop `theme`, `variant` ni `hightContrast`.
+
+## Eventos
+
+| Evento | Payload (`e.detail`) | Descripción |
+|------|------|------|
+| `click` | — | Se emite al hacer click. Es un `CustomEvent` (`bubbles: true, composed: true`), se escucha con `addEventListener` |
+
+## Slots
+
+| Slot | Descripción |
+|------|------|
+| `default` | Ícono o contenido del botón (normalmente un SVG) |
+
+## Métodos expuestos
+
+No expone métodos.

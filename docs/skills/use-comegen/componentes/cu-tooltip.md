@@ -6,32 +6,6 @@ Tooltip que aparece al hacer hover sobre el elemento contenido, con posición, a
 
 ---
 
-## Props
-
-| Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `text` | `string` | `""` | Texto del tooltip. Si se usa el slot `content`, tiene prioridad |
-| `color` | `string` | `"neutral"` | Color semántico del fondo: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
-| `position` | `string` | `"top"` | Lado donde aparece: `top`, `bottom`, `left`, `right` |
-| `align` | `string` | `"center"` | Alineación respecto al elemento: `start`, `center`, `end` |
-| `offset` | `number` | `6` | Distancia (px) entre el elemento y el tooltip |
-| `delay` | `number` | `200` | Retardo (ms) antes de mostrar el tooltip al hacer hover |
-| `disabled` | `boolean` | `false` | Deshabilita el tooltip (no se muestra) |
-
-## Eventos
-
-Ninguno (los eventos nativos del DOM como `mouseenter`/`mouseleave` burbujean desde el Shadow DOM).
-
-## Slots
-
-| Slot | Descripción |
-|------|------|
-| `default` | El elemento que dispara el tooltip al hacer hover |
-
-## Métodos expuestos
-
-Ninguno.
-
 ---
 
 ## Uso en HTML plano
@@ -58,3 +32,29 @@ Ninguno.
   </span>
 </cu-tooltip>
 ```
+
+## Props
+
+| Prop | Tipo | Default | Descripción |
+|------|------|------|------|
+| `text` | `string` | `""` | Texto del tooltip. Si se usa el slot `content`, tiene prioridad |
+| `color` | `string` | `"neutral"` | Color semántico del fondo: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
+| `position` | `string` | `"top"` | Lado donde aparece: `top`, `bottom`, `left`, `right` |
+| `align` | `string` | `"center"` | Alineación respecto al elemento: `start`, `center`, `end` |
+| `offset` | `number` | `6` | Distancia (px) entre el elemento y el tooltip |
+| `delay` | `number` | `200` | Retardo (ms) antes de mostrar el tooltip al hacer hover |
+| `disabled` | `boolean` | `false` | Deshabilita el tooltip (no se muestra) |
+
+## Eventos
+
+Ninguno (los eventos nativos del DOM como `mouseenter`/`mouseleave` burbujean desde el Shadow DOM).
+
+## Slots
+
+| Slot | Descripción |
+|------|------|
+| `default` | El elemento que dispara el tooltip al hacer hover |
+
+## Métodos expuestos
+
+Ninguno.

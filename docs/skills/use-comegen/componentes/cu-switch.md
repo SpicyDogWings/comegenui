@@ -6,42 +6,6 @@ Toggle switch con color semántico y dos tamaños. Controlable via `modelValue` 
 
 ---
 
-## Props
-
-| Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `modelValue` | `boolean` | `false` | Estado del toggle (controlado) |
-| `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `size` | `string` | `"md"` | Tamaño del switch: `sm`, `md` |
-| `disabled` | `boolean` | — | Estado deshabilitado |
-| `label` | `string` | `""` |  |
-
-> El Custom Element **no expone** una prop `checked` separada. El control se hace únicamente con `modelValue`. Tampoco tiene props `variant`, `theme` ni `hightContrast`; el tamaño se controla con `size`.
-
-## Eventos
-
-| Evento | Payload (`e.detail`) | Descripción |
-|------|------|------|
-| `update:modelValue` | `boolean` | Se emite cuando cambia el estado |
-| `change` | `boolean` | Se emite en cada cambio (payload directo = boolean) |
-
-## Slots
-
-| Slot | Descripción |
-|------|------|
-| `default` |  |
-
-Ninguno.
-
-## Métodos expuestos
-
-| Método | Descripción |
-|------|------|
-| `.get()` | Devuelve el estado actual (`boolean`) |
-| `.set(val: boolean)` | Asigna el estado |
-| `.reset()` | Pone el estado en `false` |
-| `.focus()` | Enfoca el switch |
-
 ---
 
 ## Uso en HTML plano
@@ -106,3 +70,39 @@ El switch no incluye label propio. Combinalo con `<cu-label>` para tener un áre
   <cu-switch id="notif" color="primary"></cu-switch>
 </cu-label>
 ```
+
+## Props
+
+| Prop | Tipo | Default | Descripción |
+|------|------|------|------|
+| `modelValue` | `boolean` | `false` | Estado del toggle (controlado) |
+| `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `size` | `string` | `"md"` | Tamaño del switch: `sm`, `md` |
+| `disabled` | `boolean` | — | Estado deshabilitado |
+| `label` | `string` | `""` |  |
+
+> El Custom Element **no expone** una prop `checked` separada. El control se hace únicamente con `modelValue`. Tampoco tiene props `variant`, `theme` ni `hightContrast`; el tamaño se controla con `size`.
+
+## Eventos
+
+| Evento | Payload (`e.detail`) | Descripción |
+|------|------|------|
+| `update:modelValue` | `boolean` | Se emite cuando cambia el estado |
+| `change` | `boolean` | Se emite en cada cambio (payload directo = boolean) |
+
+## Slots
+
+| Slot | Descripción |
+|------|------|
+| `default` |  |
+
+Ninguno.
+
+## Métodos expuestos
+
+| Método | Descripción |
+|------|------|
+| `.get()` | Devuelve el estado actual (`boolean`) |
+| `.set(val: boolean)` | Asigna el estado |
+| `.reset()` | Pone el estado en `false` |
+| `.focus()` | Enfoca el switch |

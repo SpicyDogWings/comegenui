@@ -8,6 +8,18 @@ Paleta de comandos (búsqueda + lista) en un modal, con agrupado por categoría 
 
 ---
 
+---
+
+## Uso en HTML plano
+
+```html
+<script src="dist/CuCommandPalette.umd.js"></script>
+
+<cu-command-palette id="palette" title="Comandos" color="primary"></cu-command-palette>
+```
+
+> El componente requiere la prop `commands` para mostrar resultados, pero el wrapper CE todavía no la expone (ver nota al inicio). Mientras tanto, la paleta solo abre como modal vacío.
+
 ## Props
 
 | Prop | Tipo | Default | Descripción |
@@ -32,15 +44,3 @@ Ninguno.
 ## Métodos expuestos
 
 Ninguno (el wrapper CE no llama a `defineExpose`).
-
----
-
-## Uso en HTML plano
-
-```html
-<script src="dist/CuCommandPalette.umd.js"></script>
-
-<cu-command-palette id="palette" title="Comandos" color="primary"></cu-command-palette>
-```
-
-> El componente requiere la prop `commands` para mostrar resultados, pero el wrapper CE todavía no la expone (ver nota al inicio). Mientras tanto, la paleta solo abre como modal vacío.

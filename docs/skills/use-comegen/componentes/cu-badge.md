@@ -6,27 +6,6 @@ Etiqueta o badge pequeño para estados, categorías o metadata. Componente de pr
 
 ---
 
-## Props
-
-| Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `"solid" \| "outlined" \| "soft" \| "subtle" \| "ghost"` | `"soft"` | `solid`, `outlined`, `soft`, `ghost`, `subtle` |
-
-## Eventos
-
-Ninguno.
-
-## Slots
-
-| Slot | Descripción |
-|------|------|
-| `default` | Contenido textual o ícono del badge |
-
-## Métodos expuestos
-
-Ninguno.
-
 ---
 
 ## Uso en HTML plano
@@ -64,3 +43,24 @@ Ninguno.
   Verificado
 </cu-badge>
 ```
+
+## Props
+
+| Prop | Tipo | Default | Descripción |
+|------|------|------|------|
+| `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `variant` | `"solid" \| "outlined" \| "soft" \| "subtle" \| "ghost"` | `"soft"` | `solid`, `outlined`, `soft`, `ghost`, `subtle` |
+
+## Eventos
+
+Ninguno.
+
+## Slots
+
+| Slot | Descripción |
+|------|------|
+| `default` | Contenido textual o ícono del badge |
+
+## Métodos expuestos
+
+Ninguno.

@@ -6,37 +6,6 @@ Sección colapsable con trigger (botón + chevron animado). El contenido se mues
 
 ---
 
-## Props
-
-| Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `label` | `string` | — | Texto del trigger |
-| `defaultOpen` | `boolean` | `false` |  |
-| `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico del trigger: `primary`, `neutral`, `success`, `warning`, `danger` |
-
-> El Custom Element **no expone** prop `variant` ni `theme`. El trigger siempre usa la variante `ghost` y el color se controla con `color`.
-
-## Eventos
-
-| Evento | Payload (`e.detail`) | Descripción |
-|------|------|------|
-| `toggle` | `boolean` | Se emite al cambiar el estado abierto/cerrado. El payload es el nuevo estado (`true` = abierto) |
-
-## Slots
-
-| Slot | Descripción |
-|------|------|
-| `default` | Contenido colapsable |
-
-## Métodos expuestos
-
-| Método | Descripción |
-|------|------|
-| `.open()` | Abre el collapse |
-| `.close()` | Cierra el collapse |
-| `.toggle()` | Alterna el estado |
-| `.isOpen()` | Devuelve el estado actual (`boolean`) |
-
 ---
 
 ## Uso en HTML plano
@@ -149,3 +118,34 @@ collapse.addEventListener('toggle', (e) => {
 </body>
 </html>
 ```
+
+## Props
+
+| Prop | Tipo | Default | Descripción |
+|------|------|------|------|
+| `label` | `string` | — | Texto del trigger |
+| `defaultOpen` | `boolean` | `false` |  |
+| `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico del trigger: `primary`, `neutral`, `success`, `warning`, `danger` |
+
+> El Custom Element **no expone** prop `variant` ni `theme`. El trigger siempre usa la variante `ghost` y el color se controla con `color`.
+
+## Eventos
+
+| Evento | Payload (`e.detail`) | Descripción |
+|------|------|------|
+| `toggle` | `boolean` | Se emite al cambiar el estado abierto/cerrado. El payload es el nuevo estado (`true` = abierto) |
+
+## Slots
+
+| Slot | Descripción |
+|------|------|
+| `default` | Contenido colapsable |
+
+## Métodos expuestos
+
+| Método | Descripción |
+|------|------|
+| `.open()` | Abre el collapse |
+| `.close()` | Cierra el collapse |
+| `.toggle()` | Alterna el estado |
+| `.isOpen()` | Devuelve el estado actual (`boolean`) |

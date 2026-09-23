@@ -6,61 +6,6 @@ Menú desplegable con items declarativos (label, ícono, color, divisor, link). 
 
 ---
 
-## Props
-
-| Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico del toggle: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle" \| "link" \| "none"` | `"ghost"` | Variante del toggle: `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` |
-| `disabled` | `boolean` | `false` | Deshabilita el toggle |
-| `label` | `string` | `""` | Texto del toggle (se ignora si se provee slot `toggle`) |
-| `position` | `"bottom" \| "top"` | `"bottom"` | Posición preferida del panel: `bottom`, `top` |
-| `align` | `"start" \| "center" \| "end"` | `"start"` | Alineación del panel: `start`, `center`, `end` |
-| `textAlign` | `"left" \| "center" \| "right"` | `"left"` | Alineación del texto del toggle: `left`, `center`, `right` |
-| `offset` | `number` | `4` | Separación en píxeles entre el toggle y el panel |
-| `fixed` | `boolean` | `false` | Si es `true`, el panel usa `position: fixed` en vez de absoluto |
-| `items` | `unknown[]` | `[]` | Lista de items (ver abajo). Se asigna como propiedad JS, no como atributo HTML |
-
-### Items
-
-Cada item del array `items` puede tener:
-
-| Campo | Tipo | Default | Descripción |
-|-------|------|---------|-------------|
-| `label` | `string` | `""` | Texto visible del item |
-| `icon` | `string` | — | SVG completo inline (`<svg>...</svg>`) |
-| `onClick` | `function` | — | Callback al hacer clic |
-| `color` | `string` | hereda del toggle | Color semántico del item |
-| `variant` | `string` | `"ghost"` | Variante del item |
-| `disabled` | `boolean` | `false` | Item deshabilitado (no clickeable, atenuado) |
-| `divider` | `boolean` | `false` | Si es `true`, renderiza una línea divisoria en vez de un item |
-| `href` | `string` | — | Convierte el item en un link (`<a>`) |
-| `target` | `string` | `"_self"` | Target del link cuando hay `href` |
-
-## Eventos
-
-| Evento | Payload (`e.detail`) | Descripción |
-|------|------|------|
-| `close` | — | Se emite cuando se cierra el menú |
-| `open` | — | Se emite cuando se abre el menú |
-
-## Slots
-
-| Slot | Descripción |
-|------|------|
-| `toggle` | Reemplaza el botón toggle (sintaxis HTML `slot="toggle"`) |
-| `default` | Contenido del panel. Se usa solo si `items` está vacío o no se provee |
-
-## Métodos expuestos
-
-| Método | Descripción |
-|------|------|
-| `.open()` | Abre el menú |
-| `.close()` | Cierra el menú |
-| `.toggle()` | Alterna visibilidad |
-| `.isOpen()` | Devuelve el estado actual (`boolean`) |
-
 ---
 
 ## Uso en HTML plano
@@ -162,3 +107,58 @@ El dropdown usa tres props combinables:
   dd.addEventListener('close', () => console.log('cerrado'));
 </script>
 ```
+
+## Props
+
+| Prop | Tipo | Default | Descripción |
+|------|------|------|------|
+| `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico del toggle: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle" \| "link" \| "none"` | `"ghost"` | Variante del toggle: `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` |
+| `disabled` | `boolean` | `false` | Deshabilita el toggle |
+| `label` | `string` | `""` | Texto del toggle (se ignora si se provee slot `toggle`) |
+| `position` | `"bottom" \| "top"` | `"bottom"` | Posición preferida del panel: `bottom`, `top` |
+| `align` | `"start" \| "center" \| "end"` | `"start"` | Alineación del panel: `start`, `center`, `end` |
+| `textAlign` | `"left" \| "center" \| "right"` | `"left"` | Alineación del texto del toggle: `left`, `center`, `right` |
+| `offset` | `number` | `4` | Separación en píxeles entre el toggle y el panel |
+| `fixed` | `boolean` | `false` | Si es `true`, el panel usa `position: fixed` en vez de absoluto |
+| `items` | `unknown[]` | `[]` | Lista de items (ver abajo). Se asigna como propiedad JS, no como atributo HTML |
+
+### Items
+
+Cada item del array `items` puede tener:
+
+| Campo | Tipo | Default | Descripción |
+|-------|------|---------|-------------|
+| `label` | `string` | `""` | Texto visible del item |
+| `icon` | `string` | — | SVG completo inline (`<svg>...</svg>`) |
+| `onClick` | `function` | — | Callback al hacer clic |
+| `color` | `string` | hereda del toggle | Color semántico del item |
+| `variant` | `string` | `"ghost"` | Variante del item |
+| `disabled` | `boolean` | `false` | Item deshabilitado (no clickeable, atenuado) |
+| `divider` | `boolean` | `false` | Si es `true`, renderiza una línea divisoria en vez de un item |
+| `href` | `string` | — | Convierte el item en un link (`<a>`) |
+| `target` | `string` | `"_self"` | Target del link cuando hay `href` |
+
+## Eventos
+
+| Evento | Payload (`e.detail`) | Descripción |
+|------|------|------|
+| `close` | — | Se emite cuando se cierra el menú |
+| `open` | — | Se emite cuando se abre el menú |
+
+## Slots
+
+| Slot | Descripción |
+|------|------|
+| `toggle` | Reemplaza el botón toggle (sintaxis HTML `slot="toggle"`) |
+| `default` | Contenido del panel. Se usa solo si `items` está vacío o no se provee |
+
+## Métodos expuestos
+
+| Método | Descripción |
+|------|------|
+| `.open()` | Abre el menú |
+| `.close()` | Cierra el menú |
+| `.toggle()` | Alterna visibilidad |
+| `.isOpen()` | Devuelve el estado actual (`boolean`) |

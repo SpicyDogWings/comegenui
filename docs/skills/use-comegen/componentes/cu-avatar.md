@@ -6,27 +6,6 @@ Avatar circular (imagen o iniciales) con color semántico y tres tamaños. Si no
 
 ---
 
-## Props
-
-| Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `color` | `string` | `""` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger`. Si se omite, se elige por hash de las iniciales |
-| `size` | `string` | `"md"` | Tamaño: `sm`, `md`, `lg` |
-| `initials` | `string` | `""` | Texto que se muestra como iniciales cuando no hay `src` |
-| `src` | `string` | `""` | URL de la imagen. **Nota:** el wrapper CE declara la prop pero no la forwardea al componente interno (ver `docs/notes/05-wrappers-ce-incompletos.md`); por ahora la imagen no se renderiza vía Custom Element |
-
-## Eventos
-
-Ninguno.
-
-## Slots
-
-Ninguno (el wrapper CE no forwardea slots).
-
-## Métodos expuestos
-
-Ninguno.
-
 ---
 
 ## Uso en HTML plano
@@ -48,3 +27,24 @@ Ninguno.
 <cu-avatar initials="A" size="md"></cu-avatar>
 <cu-avatar initials="A" size="lg"></cu-avatar>
 ```
+
+## Props
+
+| Prop | Tipo | Default | Descripción |
+|------|------|------|------|
+| `color` | `string` | `""` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger`. Si se omite, se elige por hash de las iniciales |
+| `size` | `string` | `"md"` | Tamaño: `sm`, `md`, `lg` |
+| `initials` | `string` | `""` | Texto que se muestra como iniciales cuando no hay `src` |
+| `src` | `string` | `""` | URL de la imagen. **Nota:** el wrapper CE declara la prop pero no la forwardea al componente interno (ver `docs/notes/05-wrappers-ce-incompletos.md`); por ahora la imagen no se renderiza vía Custom Element |
+
+## Eventos
+
+Ninguno.
+
+## Slots
+
+Ninguno (el wrapper CE no forwardea slots).
+
+## Métodos expuestos
+
+Ninguno.

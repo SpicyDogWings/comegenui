@@ -6,28 +6,6 @@ Tarjeta de autor con avatar (imagen o iniciales generadas del nombre), nombre y 
 
 ---
 
-## Props
-
-| Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `name` | `string` | — | Nombre del autor. Genera las iniciales automáticamente (primeras letras del primero y último nombre) |
-| `role` | `string` | `""` | Rol o cargo que se muestra bajo el nombre (se oculta si está vacío) |
-| `color` | `string` | `""` | Color semántico del avatar: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger`. Si se omite, se elige por hash de las iniciales |
-| `size` | `string` | `"md"` | Tamaño del avatar: `sm`, `md`, `lg` |
-| `src` | `string` | `""` | URL de la imagen del avatar (reemplaza las iniciales) |
-
-## Eventos
-
-Ninguno.
-
-## Slots
-
-Ninguno.
-
-## Métodos expuestos
-
-Ninguno.
-
 ---
 
 ## Uso en HTML plano
@@ -50,3 +28,25 @@ Ninguno.
   src="https://example.com/avatar.jpg"
 ></cu-author-card>
 ```
+
+## Props
+
+| Prop | Tipo | Default | Descripción |
+|------|------|------|------|
+| `name` | `string` | — | Nombre del autor. Genera las iniciales automáticamente (primeras letras del primero y último nombre) |
+| `role` | `string` | `""` | Rol o cargo que se muestra bajo el nombre (se oculta si está vacío) |
+| `color` | `string` | `""` | Color semántico del avatar: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger`. Si se omite, se elige por hash de las iniciales |
+| `size` | `string` | `"md"` | Tamaño del avatar: `sm`, `md`, `lg` |
+| `src` | `string` | `""` | URL de la imagen del avatar (reemplaza las iniciales) |
+
+## Eventos
+
+Ninguno.
+
+## Slots
+
+Ninguno.
+
+## Métodos expuestos
+
+Ninguno.

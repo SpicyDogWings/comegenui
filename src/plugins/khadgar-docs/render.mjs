@@ -75,6 +75,10 @@ export function renderDoc(component) {
   if (component.description) out.push(component.description, "");
   out.push("[← Volver](../SKILL.md)", "", "---", "");
 
+  for (const section of component.sections ?? []) {
+    out.push("---", "", `## ${section.title}`, "", section.body.trim(), "");
+  }
+
   if (component.props.length) {
     const rows = component.props.map((prop) => [
       `\`${prop.name}\``,
@@ -116,10 +120,6 @@ export function renderDoc(component) {
     );
   } else if (notes.exposes) {
     out.push(apiSection("Métodos expuestos", notes.exposes), "");
-  }
-
-  for (const section of component.sections ?? []) {
-    out.push("---", "", `## ${section.title}`, "", section.body.trim(), "");
   }
 
   return `${out.join("\n").replace(/\n{3,}/g, "\n\n").trimEnd()}\n`;

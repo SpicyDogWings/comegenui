@@ -6,59 +6,6 @@ Selector de fecha: un botón-trigger que abre un **dropdown con un calendario ad
 
 ---
 
-## Props
-
-| Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `modelValue` | `string \| number \| Date \| null` | `null` | Fecha seleccionada |
-| `min` | `string \| number \| Date \| null` | `null` | Fecha mínima seleccionable |
-| `max` | `string \| number \| Date \| null` | `null` | Fecha máxima seleccionable |
-| `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico del trigger y del día seleccionado del calendario interno (se pasa tal cual; `neutral` = neutral, ya no mapea a primary) |
-| `variant` | `"soft" \| "outlined" \| "ghost" \| "subtle"` | `"soft"` | Variante del trigger: `outlined`, `soft`, `ghost`, `subtle`. En el calendario interno `ghost` se mapea a `soft` (el calendario ya no tiene ghost) |
-| `disabled` | `boolean` | `false` | Deshabilita el picker completo |
-| `placeholder` | `string` | `""` | Texto cuando no hay fecha (default: `"Seleccionar fecha..."`) |
-| `locale` | `string` | `"es"` | Locale del calendario y nombres de mes |
-| `weekStart` | `number` | `1` | Primer día de la semana (`0` domingo, `1` lunes) |
-| `format` | `string` | `"dd/MM/yyyy"` | Formato de la fecha en el trigger (ver [Formato](#formato)) |
-| `yearNavigation` | `string \| boolean` | `false` | Controles de mes del calendario interno: botones `«`/`»` de año |
-| `monthFormat` | `string` | `"MMMM"` | Formato del mes en el header del calendario interno |
-| `yearFormat` | `string` | `"yyyy"` | Formato del año en el header del calendario interno |
-| `disabledWeekdays` | `string \| number[]` | `""` | Días de la semana no seleccionables (`0`=domingo … `6`=sábado). En HTML: `disabled-weekdays="0,6"` |
-| `disabledDates` | `string \| (string \| Date)[]` | `""` | Fechas puntuales no seleccionables. En HTML: `disabled-dates="2026-08-15,2026-08-16"` |
-| `events` | `CalendarEvent[]` | `[]` | Eventos a señalar con puntos bajo la fecha en el calendario interno (ver [Eventos](cu-calendar.md#eventos-puntos)). Se asigna como propiedad JS |
-| `grid` | `boolean` | `false` | Líneas **interiores** (cuadrícula) entre los días del calendario interno |
-| `border` | `boolean` | `false` | **Marco exterior** alrededor de la cuadrícula de días del calendario interno |
-| `position` | `string` | `"bottom"` | `right` |
-| `align` | `string` | `"start"` | `end` |
-| `fixed` | `boolean` | `false` | Panel en `position: fixed` (útil en contenedores con overflow) |
-| `clearable` | `boolean` | `true` | Muestra el botón "Limpiar" en el footer del panel |
-| `todayButton` | `boolean` | `true` | Muestra el botón "Hoy" en el footer del panel |
-| `label` | `string` | `""` | Texto del label sobre el picker |
-
-## Eventos
-
-| Evento | Payload (`e.detail`) | Descripción |
-|------|------|------|
-| `select` | `Date` | Día clickeado en el calendario |
-| `change` | `null` | Alias de `update:modelValue` |
-| `open` | — | El panel se abrió |
-| `close` | — | El panel se cerró |
-| `update:modelValue` | `null` | Cambio de fecha (al seleccionar, ir a "Hoy" o limpiar) |
-
-> Al limpiar, `update:modelValue`/`change` emiten `null`.
-
-## Métodos expuestos
-
-| Método | Descripción |
-|------|------|
-| `.open()` | Abre, cierra o alterna el panel |
-| `.close()` |  |
-| `.toggle()` |  |
-| `.getValue()` | null` con la fecha seleccionada |
-| `.setValue(value: string \| number \| Date \| null)` | Selecciona una fecha (string/number/Date) |
-| `.clear()` | Limpia la selección (emite `null`) |
-| `.isOpen()` | Estado del panel |
-
 ---
 
 ## Formato
@@ -126,3 +73,56 @@ El label se muestra sobre el picker y es clickeable — hace foco en el input y 
 ## Nota de implementación
 
 `<cu-date-picker>` **compone** el `Dropdown.vue` genérico (slot `#toggle` con el botón-trigger + slot `#default` con el calendario) — exactamente como lo hace `<cu-select>` con sus opciones. No requiere modificar el componente de dropdown.
+
+## Props
+
+| Prop | Tipo | Default | Descripción |
+|------|------|------|------|
+| `modelValue` | `string \| number \| Date \| null` | `null` | Fecha seleccionada |
+| `min` | `string \| number \| Date \| null` | `null` | Fecha mínima seleccionable |
+| `max` | `string \| number \| Date \| null` | `null` | Fecha máxima seleccionable |
+| `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico del trigger y del día seleccionado del calendario interno (se pasa tal cual; `neutral` = neutral, ya no mapea a primary) |
+| `variant` | `"soft" \| "outlined" \| "ghost" \| "subtle"` | `"soft"` | Variante del trigger: `outlined`, `soft`, `ghost`, `subtle`. En el calendario interno `ghost` se mapea a `soft` (el calendario ya no tiene ghost) |
+| `disabled` | `boolean` | `false` | Deshabilita el picker completo |
+| `placeholder` | `string` | `""` | Texto cuando no hay fecha (default: `"Seleccionar fecha..."`) |
+| `locale` | `string` | `"es"` | Locale del calendario y nombres de mes |
+| `weekStart` | `number` | `1` | Primer día de la semana (`0` domingo, `1` lunes) |
+| `format` | `string` | `"dd/MM/yyyy"` | Formato de la fecha en el trigger (ver [Formato](#formato)) |
+| `yearNavigation` | `string \| boolean` | `false` | Controles de mes del calendario interno: botones `«`/`»` de año |
+| `monthFormat` | `string` | `"MMMM"` | Formato del mes en el header del calendario interno |
+| `yearFormat` | `string` | `"yyyy"` | Formato del año en el header del calendario interno |
+| `disabledWeekdays` | `string \| number[]` | `""` | Días de la semana no seleccionables (`0`=domingo … `6`=sábado). En HTML: `disabled-weekdays="0,6"` |
+| `disabledDates` | `string \| (string \| Date)[]` | `""` | Fechas puntuales no seleccionables. En HTML: `disabled-dates="2026-08-15,2026-08-16"` |
+| `events` | `CalendarEvent[]` | `[]` | Eventos a señalar con puntos bajo la fecha en el calendario interno (ver [Eventos](cu-calendar.md#eventos-puntos)). Se asigna como propiedad JS |
+| `grid` | `boolean` | `false` | Líneas **interiores** (cuadrícula) entre los días del calendario interno |
+| `border` | `boolean` | `false` | **Marco exterior** alrededor de la cuadrícula de días del calendario interno |
+| `position` | `string` | `"bottom"` | `right` |
+| `align` | `string` | `"start"` | `end` |
+| `fixed` | `boolean` | `false` | Panel en `position: fixed` (útil en contenedores con overflow) |
+| `clearable` | `boolean` | `true` | Muestra el botón "Limpiar" en el footer del panel |
+| `todayButton` | `boolean` | `true` | Muestra el botón "Hoy" en el footer del panel |
+| `label` | `string` | `""` | Texto del label sobre el picker |
+
+## Eventos
+
+| Evento | Payload (`e.detail`) | Descripción |
+|------|------|------|
+| `select` | `Date` | Día clickeado en el calendario |
+| `change` | `null` | Alias de `update:modelValue` |
+| `open` | — | El panel se abrió |
+| `close` | — | El panel se cerró |
+| `update:modelValue` | `null` | Cambio de fecha (al seleccionar, ir a "Hoy" o limpiar) |
+
+> Al limpiar, `update:modelValue`/`change` emiten `null`.
+
+## Métodos expuestos
+
+| Método | Descripción |
+|------|------|
+| `.open()` | Abre, cierra o alterna el panel |
+| `.close()` |  |
+| `.toggle()` |  |
+| `.getValue()` | null` con la fecha seleccionada |
+| `.setValue(value: string \| number \| Date \| null)` | Selecciona una fecha (string/number/Date) |
+| `.clear()` | Limpia la selección (emite `null`) |
+| `.isOpen()` | Estado del panel |

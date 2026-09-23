@@ -6,51 +6,6 @@ Botón con soporte de color, variante, link y estados. Si se define `to`, se ren
 
 ---
 
-## Props
-
-| Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle" \| "link" \| "none"` | `"ghost"` | `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` |
-| `size` | `"md" \| "sm" \| "lg"` | `"md"` | Tamaño: `sm`, `md`, `lg` |
-| `to` | `string` | — | Si se especifica, el botón se renderiza como `<a>` |
-| `target` | `"_self" \| "_blank" \| "_parent" \| "_top"` | `"_self"` | Target del link cuando `to` está definido: `_self`, `_blank`, `_parent`, `_top` |
-| `type` | `"reset" \| "button" \| "submit"` | `"button"` | Tipo del `<button>`: `button`, `submit`, `reset` |
-| `disabled` | `boolean` | `false` | Estado deshabilitado |
-| `loading` | `boolean` | `false` | Muestra un spinner en lugar del contenido. Deshabilita el botón mientras está activo |
-
-## Eventos
-
-| Evento | Payload (`e.detail`) | Descripción |
-|------|------|------|
-| `loading-change` | `boolean` | Se emite cuando `loading` pasa a `true` o `false` (también al setear `el.loading = true` por propiedad) |
-
-Los eventos nativos del DOM (`click`, `focus`, `blur`, `mouseenter`, etc.) burbujean automáticamente al host:
-
-```js
-boton.addEventListener('click', (e) => {
-  // e.detail es undefined; usá e.target normalmente
-});
-```
-
-Además emite un evento propio cuando cambia el estado `loading`:
-
-```js
-boton.addEventListener('loading-change', (e) => {
-  console.log('loading:', e.detail) // true | false
-});
-```
-
-## Slots
-
-| Slot | Descripción |
-|------|------|
-| `default` | Contenido del botón (label y/o íconos SVG inline) |
-
-## Métodos expuestos
-
-No expone métodos.
-
 ---
 
 ## Uso en HTML plano
@@ -142,3 +97,48 @@ Usá `type` cuando el botón viva dentro de un `<form>`:
   });
 </script>
 ```
+
+## Props
+
+| Prop | Tipo | Default | Descripción |
+|------|------|------|------|
+| `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle" \| "link" \| "none"` | `"ghost"` | `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` |
+| `size` | `"md" \| "sm" \| "lg"` | `"md"` | Tamaño: `sm`, `md`, `lg` |
+| `to` | `string` | — | Si se especifica, el botón se renderiza como `<a>` |
+| `target` | `"_self" \| "_blank" \| "_parent" \| "_top"` | `"_self"` | Target del link cuando `to` está definido: `_self`, `_blank`, `_parent`, `_top` |
+| `type` | `"reset" \| "button" \| "submit"` | `"button"` | Tipo del `<button>`: `button`, `submit`, `reset` |
+| `disabled` | `boolean` | `false` | Estado deshabilitado |
+| `loading` | `boolean` | `false` | Muestra un spinner en lugar del contenido. Deshabilita el botón mientras está activo |
+
+## Eventos
+
+| Evento | Payload (`e.detail`) | Descripción |
+|------|------|------|
+| `loading-change` | `boolean` | Se emite cuando `loading` pasa a `true` o `false` (también al setear `el.loading = true` por propiedad) |
+
+Los eventos nativos del DOM (`click`, `focus`, `blur`, `mouseenter`, etc.) burbujean automáticamente al host:
+
+```js
+boton.addEventListener('click', (e) => {
+  // e.detail es undefined; usá e.target normalmente
+});
+```
+
+Además emite un evento propio cuando cambia el estado `loading`:
+
+```js
+boton.addEventListener('loading-change', (e) => {
+  console.log('loading:', e.detail) // true | false
+});
+```
+
+## Slots
+
+| Slot | Descripción |
+|------|------|
+| `default` | Contenido del botón (label y/o íconos SVG inline) |
+
+## Métodos expuestos
+
+No expone métodos.

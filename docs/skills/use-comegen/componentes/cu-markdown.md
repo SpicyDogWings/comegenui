@@ -6,18 +6,6 @@ Renderizador de Markdown como Custom Element. Convierte markdown en HTML semánt
 
 ---
 
-## Props
-
-| Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `theme` | `string` | `"light"` | Tema de colores (`light`, `dark`, `sigacadv2`) |
-
-## Slots
-
-| Slot | Descripción |
-|------|------|
-| `default` | Contenido markdown a renderizar. Se pasa como texto dentro del tag. |
-
 ---
 
 ## UMD
@@ -65,3 +53,15 @@ El contenido se pasa como **texto dentro del tag** (no como prop). El componente
 - El HTML se sanitiza con DOMPurify antes de renderizar.
 - Los tokens CSS se inyectan automáticamente en el shadow DOM.
 - **El wrapper CE actual no re-emite `parsed` ni expone `headingIds()`**: esos eventos/métodos existen en el `.vue` interno pero no atraviesan el `.ce.vue`. Ver `docs/notes/06-cu-markdown-api.md`.
+
+## Props
+
+| Prop | Tipo | Default | Descripción |
+|------|------|------|------|
+| `theme` | `string` | `"light"` | Tema de colores (`light`, `dark`, `sigacadv2`) |
+
+## Slots
+
+| Slot | Descripción |
+|------|------|
+| `default` | Contenido markdown a renderizar. Se pasa como texto dentro del tag. |

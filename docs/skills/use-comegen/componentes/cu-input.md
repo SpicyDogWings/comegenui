@@ -6,43 +6,6 @@ Input de texto con color, variante, tipos de input HTML5 y métodos `get`/`set`/
 
 ---
 
-## Props
-
-| Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
-| `modelValue` | `string` | `""` | Valor controlado |
-| `startValue` | `string` | — | Valor inicial usado por `.reset()` |
-| `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `string` | `"soft"` | `outlined`, `soft`, `ghost`, `subtle` |
-| `type` | `string` | `"text"` | `text`, `password`, `email`, `number`, `tel`, `url`, `search` |
-| `placeholder` | `string` | — | Placeholder del input |
-| `disabled` | `boolean` | `false` | Estado deshabilitado |
-| `readOnly` | `boolean` | `false` | Solo lectura (en HTML se usa como `readonly`) |
-
-> **Atributos en HTML:** `readOnly` se escribe como `readonly` (convención HTML). Ej.: `<cu-input readonly>`
-
-## Eventos
-
-| Evento | Payload (`e.detail`) | Descripción |
-|------|------|------|
-| `update:modelValue` | `string` | Se emite en cada cambio de valor (mientras el usuario escribe) |
-
-> Los eventos nativos del DOM (`input`, `change`, `focus`, `blur`) **burbujean automáticamente** al host desde el Shadow DOM. Podés escucharlos con `addEventListener`, pero no se re-emiten como eventos custom (no hay `input`/`change` propios en el Custom Element).
-
-## Slots
-
-Ninguno.
-
-## Métodos expuestos
-
-| Método | Descripción |
-|------|------|
-| `.get()` | Devuelve el valor actual (`string`) |
-| `.set(value: string \| number)` | Asigna un valor |
-| `.reset()` | Vuelve al `startValue` (o `""` si no se definió) |
-| `.focus()` | Enfoca el input |
-
 ---
 
 ## Uso en HTML plano
@@ -99,3 +62,40 @@ Ninguno.
 <cu-input type="url" placeholder="https://..."></cu-input>
 <cu-input type="search" placeholder="Buscar..."></cu-input>
 ```
+
+## Props
+
+| Prop | Tipo | Default | Descripción |
+|------|------|------|------|
+| `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
+| `modelValue` | `string` | `""` | Valor controlado |
+| `startValue` | `string` | — | Valor inicial usado por `.reset()` |
+| `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `variant` | `string` | `"soft"` | `outlined`, `soft`, `ghost`, `subtle` |
+| `type` | `string` | `"text"` | `text`, `password`, `email`, `number`, `tel`, `url`, `search` |
+| `placeholder` | `string` | — | Placeholder del input |
+| `disabled` | `boolean` | `false` | Estado deshabilitado |
+| `readOnly` | `boolean` | `false` | Solo lectura (en HTML se usa como `readonly`) |
+
+> **Atributos en HTML:** `readOnly` se escribe como `readonly` (convención HTML). Ej.: `<cu-input readonly>`
+
+## Eventos
+
+| Evento | Payload (`e.detail`) | Descripción |
+|------|------|------|
+| `update:modelValue` | `string` | Se emite en cada cambio de valor (mientras el usuario escribe) |
+
+> Los eventos nativos del DOM (`input`, `change`, `focus`, `blur`) **burbujean automáticamente** al host desde el Shadow DOM. Podés escucharlos con `addEventListener`, pero no se re-emiten como eventos custom (no hay `input`/`change` propios en el Custom Element).
+
+## Slots
+
+Ninguno.
+
+## Métodos expuestos
+
+| Método | Descripción |
+|------|------|
+| `.get()` | Devuelve el valor actual (`string`) |
+| `.set(value: string \| number)` | Asigna un valor |
+| `.reset()` | Vuelve al `startValue` (o `""` si no se definió) |
+| `.focus()` | Enfoca el input |

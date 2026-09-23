@@ -6,6 +6,53 @@ Barra de navegación vertical (tipo sidebar) con submenús, búsqueda (`filter`/
 
 ---
 
+---
+
+## Uso en HTML plano
+
+```html
+<script src="dist/CuNavbar.umd.js"></script>
+
+<cu-navbar id="nav" search active-path="/usuarios"></cu-navbar>
+
+<script>
+  const nav = document.getElementById('nav');
+  await customElements.whenDefined('cu-navbar');
+  nav.items = [
+    { label: 'Inicio', path: '/' },
+    { label: 'Usuarios', children: [
+      { label: 'Lista', path: '/usuarios' },
+      { label: 'Roles', path: '/roles' },
+    ]},
+    { label: 'Ajustes', path: '/ajustes' },
+  ];
+
+  nav.addEventListener('search', (e) => console.log('buscando:', e.detail));
+</script>
+```
+
+---
+
+## Estructura de `items`
+
+```ts
+interface NavItem {
+  label: string;
+  path?: string;        // enlaces y detección de activo
+  icon?: string;        // string HTML (puede ser un SVG inline)
+  children?: NavItem[]; // submenús
+}
+```
+
+---
+
+## Modo compacto y responsive
+
+```html
+<cu-navbar id="nav2" compact trigger="hover"></cu-navbar>
+<cu-navbar id="nav3" responsive responsive-mode="side" side-over-position="right"></cu-navbar>
+```
+
 ## Props
 
 | Prop | Tipo | Default | Descripción |
@@ -54,50 +101,3 @@ Ninguno.
 ## Métodos expuestos
 
 Ninguno.
-
----
-
-## Uso en HTML plano
-
-```html
-<script src="dist/CuNavbar.umd.js"></script>
-
-<cu-navbar id="nav" search active-path="/usuarios"></cu-navbar>
-
-<script>
-  const nav = document.getElementById('nav');
-  await customElements.whenDefined('cu-navbar');
-  nav.items = [
-    { label: 'Inicio', path: '/' },
-    { label: 'Usuarios', children: [
-      { label: 'Lista', path: '/usuarios' },
-      { label: 'Roles', path: '/roles' },
-    ]},
-    { label: 'Ajustes', path: '/ajustes' },
-  ];
-
-  nav.addEventListener('search', (e) => console.log('buscando:', e.detail));
-</script>
-```
-
----
-
-## Estructura de `items`
-
-```ts
-interface NavItem {
-  label: string;
-  path?: string;        // enlaces y detección de activo
-  icon?: string;        // string HTML (puede ser un SVG inline)
-  children?: NavItem[]; // submenús
-}
-```
-
----
-
-## Modo compacto y responsive
-
-```html
-<cu-navbar id="nav2" compact trigger="hover"></cu-navbar>
-<cu-navbar id="nav3" responsive responsive-mode="side" side-over-position="right"></cu-navbar>
-```

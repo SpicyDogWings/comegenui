@@ -6,66 +6,6 @@ Campo de texto con sugerencias en menú desplegable. Filtra los `items` en vivo 
 
 ---
 
-## Props
-
-| Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
-| `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `string` | `"soft"` | `outlined`, `soft`, `ghost`, `subtle` |
-| `type` | `string` | `"text"` | `text`, `password`, `email`, `number`, `tel`, `url`, `search` |
-| `disabled` | `boolean` | `false` | Estado deshabilitado |
-| `readOnly` | `boolean` | `false` | Solo lectura (en HTML se usa como `readonly`) |
-| `hightContrast` | `boolean` | `false` | Modo de alto contraste |
-| `placeholder` | `string` | `""` | Placeholder del input |
-| `minChars` | `number` | `0` | Caracteres mínimos para abrir el menú (atributo HTML: `min-chars`) |
-| `position` | `string` | `"bottom"` | Posición del dropdown: `bottom`, `top` |
-| `align` | `string` | `"start"` | Alineación: `start`, `center`, `end` |
-| `items` | `unknown[]` | `[]` | Opciones del menú (ver abajo). Se asigna como propiedad JS |
-| `modelValue` | `string` | `""` | Valor controlado |
-| `label` | `string` | `""` | Texto del label sobre el input |
-
-### Items
-
-Cada item del array `items` puede tener:
-
-| Campo | Tipo | Default | Descripción |
-|-------|------|---------|-------------|
-| `label` | `string` | — | Texto que se muestra y sobre el que se busca |
-| `value` | `string` | `label` | Valor que se asigna al input al seleccionar el item |
-| `icon` | `string` | — | SVG completo inline (`<svg>...</svg>`) |
-| `disabled` | `boolean` | `false` | Opción deshabilitada (no clickeable, atenuada) |
-
-> La búsqueda se hace sobre `label` y `value` (cuando existe). Es **case-insensitive** y **acento-insensitive**: buscar `"matricula"` encuentra `"Matrícula"`.
-
-> **Importante:** `items` se asigna como propiedad JS (`ac.items = [...]`), no como atributo HTML.
-
-## Eventos
-
-| Evento | Payload (`e.detail`) | Descripción |
-|------|------|------|
-| `update:modelValue` | `string` | Se emite en cada cambio de valor (al escribir) |
-| `select` | `{ label, value?, icon? }` | Se emite al elegir un item de la lista |
-| `blur` | `FocusEvent` | Pérdida de foco (útil en celdas editables) |
-
-> Los eventos nativos del DOM (`input`, `change`, `focus`, `blur`) **burbujean automáticamente** al host desde el Shadow DOM. No se re-emiten como eventos custom con esos nombres.
-
-## Slots
-
-Ninguno.
-
-## Métodos expuestos
-
-| Método | Descripción |
-|------|------|
-| `.get()` | Texto actual del input |
-| `.set(val: string)` | Asigna texto al input |
-| `.focus()` | Enfoca el input |
-| `.isOpen()` | Estado del menú (`boolean`) |
-| `.selectedItem()` | Último item seleccionado o `null` |
-
-> El componente **no expone** `.reset()`. Si necesitás limpiar programáticamente, usá `.set('')`.
-
 ---
 
 ## Uso en HTML plano
@@ -178,3 +118,63 @@ Por defecto el menú se abre al recibir foco. Con `min-chars="2"` solo se abre t
 <cu-autocomplete type="search" placeholder="Buscar..."></cu-autocomplete>
 <cu-autocomplete type="email" placeholder="Email..."></cu-autocomplete>
 ```
+
+## Props
+
+| Prop | Tipo | Default | Descripción |
+|------|------|------|------|
+| `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
+| `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `variant` | `string` | `"soft"` | `outlined`, `soft`, `ghost`, `subtle` |
+| `type` | `string` | `"text"` | `text`, `password`, `email`, `number`, `tel`, `url`, `search` |
+| `disabled` | `boolean` | `false` | Estado deshabilitado |
+| `readOnly` | `boolean` | `false` | Solo lectura (en HTML se usa como `readonly`) |
+| `hightContrast` | `boolean` | `false` | Modo de alto contraste |
+| `placeholder` | `string` | `""` | Placeholder del input |
+| `minChars` | `number` | `0` | Caracteres mínimos para abrir el menú (atributo HTML: `min-chars`) |
+| `position` | `string` | `"bottom"` | Posición del dropdown: `bottom`, `top` |
+| `align` | `string` | `"start"` | Alineación: `start`, `center`, `end` |
+| `items` | `unknown[]` | `[]` | Opciones del menú (ver abajo). Se asigna como propiedad JS |
+| `modelValue` | `string` | `""` | Valor controlado |
+| `label` | `string` | `""` | Texto del label sobre el input |
+
+### Items
+
+Cada item del array `items` puede tener:
+
+| Campo | Tipo | Default | Descripción |
+|-------|------|---------|-------------|
+| `label` | `string` | — | Texto que se muestra y sobre el que se busca |
+| `value` | `string` | `label` | Valor que se asigna al input al seleccionar el item |
+| `icon` | `string` | — | SVG completo inline (`<svg>...</svg>`) |
+| `disabled` | `boolean` | `false` | Opción deshabilitada (no clickeable, atenuada) |
+
+> La búsqueda se hace sobre `label` y `value` (cuando existe). Es **case-insensitive** y **acento-insensitive**: buscar `"matricula"` encuentra `"Matrícula"`.
+
+> **Importante:** `items` se asigna como propiedad JS (`ac.items = [...]`), no como atributo HTML.
+
+## Eventos
+
+| Evento | Payload (`e.detail`) | Descripción |
+|------|------|------|
+| `update:modelValue` | `string` | Se emite en cada cambio de valor (al escribir) |
+| `select` | `{ label, value?, icon? }` | Se emite al elegir un item de la lista |
+| `blur` | `FocusEvent` | Pérdida de foco (útil en celdas editables) |
+
+> Los eventos nativos del DOM (`input`, `change`, `focus`, `blur`) **burbujean automáticamente** al host desde el Shadow DOM. No se re-emiten como eventos custom con esos nombres.
+
+## Slots
+
+Ninguno.
+
+## Métodos expuestos
+
+| Método | Descripción |
+|------|------|
+| `.get()` | Texto actual del input |
+| `.set(val: string)` | Asigna texto al input |
+| `.focus()` | Enfoca el input |
+| `.isOpen()` | Estado del menú (`boolean`) |
+| `.selectedItem()` | Último item seleccionado o `null` |
+
+> El componente **no expone** `.reset()`. Si necesitás limpiar programáticamente, usá `.set('')`.

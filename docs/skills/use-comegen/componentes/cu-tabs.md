@@ -6,51 +6,6 @@ Pestañas con variantes, iconos, tabs deshabilitadas individuales y control prog
 
 ---
 
-## Props
-
-| Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `tabs` | `{ key: string; label: string; icon?: string; disabled?: boolean; keepAlive?: boolean; }[]` | `[]` | Definición de las pestañas |
-| `modelValue` | `string` | `""` | Key del tab activo (controlado) |
-| `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"primary"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `"soft" \| "solid" \| "ghost" \| "boxed"` | `"ghost"` | `ghost`, `solid`, `boxed`, `soft` |
-| `size` | `"md" \| "sm" \| "lg"` | `"md"` | `sm`, `md`, `lg` |
-| `disabled` | `boolean` | — | Deshabilita todas las pestañas |
-
-### Prop `tabs`
-
-Cada item es un objeto con:
-
-| Campo | Tipo | Requerido | Descripción |
-|-------|------|-----------|-------------|
-| `key` | `string` | ✓ | Identificador único (se usa para el tab activo y los slots) |
-| `label` | `string` | ✓ | Texto visible del tab |
-| `disabled` | `boolean` | — | Deshabilita solo esa pestaña |
-
-> Los arrays/objetos se asignan **via JavaScript como propiedad DOM**, no como atributo HTML. Ver [Arrays y objetos](../SKILL.md#arrays-y-objetos-props-complejas).
-
-## Eventos
-
-| Evento | Payload (`e.detail`) | Descripción |
-|------|------|------|
-| `update:modelValue` | `string` | Key del tab activo al cambiar |
-| `change` | `string` | Se emite en cada cambio de tab (payload = key) |
-
-## Slots
-
-Los paneles y los iconos usan **slots nombrados** con el key de cada tab.
-
-En HTML plano se usan con el atributo `slot="..."` sobre el elemento hijo.
-
-## Métodos expuestos
-
-| Método | Descripción |
-|------|------|
-| `.getActive()` | Devuelve la key del tab activo |
-| `.setActive(key: string)` | Activa el tab con esa key |
-| `.next()` | Activa el próximo tab habilitado |
-| `.prev()` | Activa el tab anterior habilitado |
-
 ---
 
 ## Uso en HTML plano
@@ -160,3 +115,48 @@ Cada tab puede llevar un icono con el slot `tab-icon-{key}`. El SVG debe usar `c
 ## Ejemplo completo (playground vanilla)
 
 El repositorio incluye una demo en HTML plano: [`playground/pages/tabs/tabs.html`](../../playground/pages/tabs/tabs.html) — abrí el archivo directamente en el navegador (sin server).
+
+## Props
+
+| Prop | Tipo | Default | Descripción |
+|------|------|------|------|
+| `tabs` | `{ key: string; label: string; icon?: string; disabled?: boolean; keepAlive?: boolean; }[]` | `[]` | Definición de las pestañas |
+| `modelValue` | `string` | `""` | Key del tab activo (controlado) |
+| `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"primary"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
+| `variant` | `"soft" \| "solid" \| "ghost" \| "boxed"` | `"ghost"` | `ghost`, `solid`, `boxed`, `soft` |
+| `size` | `"md" \| "sm" \| "lg"` | `"md"` | `sm`, `md`, `lg` |
+| `disabled` | `boolean` | — | Deshabilita todas las pestañas |
+
+### Prop `tabs`
+
+Cada item es un objeto con:
+
+| Campo | Tipo | Requerido | Descripción |
+|-------|------|-----------|-------------|
+| `key` | `string` | ✓ | Identificador único (se usa para el tab activo y los slots) |
+| `label` | `string` | ✓ | Texto visible del tab |
+| `disabled` | `boolean` | — | Deshabilita solo esa pestaña |
+
+> Los arrays/objetos se asignan **via JavaScript como propiedad DOM**, no como atributo HTML. Ver [Arrays y objetos](../SKILL.md#arrays-y-objetos-props-complejas).
+
+## Eventos
+
+| Evento | Payload (`e.detail`) | Descripción |
+|------|------|------|
+| `update:modelValue` | `string` | Key del tab activo al cambiar |
+| `change` | `string` | Se emite en cada cambio de tab (payload = key) |
+
+## Slots
+
+Los paneles y los iconos usan **slots nombrados** con el key de cada tab.
+
+En HTML plano se usan con el atributo `slot="..."` sobre el elemento hijo.
+
+## Métodos expuestos
+
+| Método | Descripción |
+|------|------|
+| `.getActive()` | Devuelve la key del tab activo |
+| `.setActive(key: string)` | Activa el tab con esa key |
+| `.next()` | Activa el próximo tab habilitado |
+| `.prev()` | Activa el tab anterior habilitado |
