@@ -1,6 +1,0 @@
-{
-  "attrs": { "style": "position: static" },
-  "sections": {
-    "color": { "slot": "+" }
-  }
-}

@@ -10,8 +10,17 @@ export default defineConfig({
     },
   },
   test: {
-    environment: "jsdom",
-    globals: true,
-    include: ["src/**/*.test.ts"],
+    reporters: ["default", "./src/plugins/khadgar/vitest/reporter.ts"],
+    projects: [
+      {
+        extends: true,
+        test: {
+          name: "l1",
+          environment: "jsdom",
+          globals: true,
+          include: ["src/**/*.test.ts"],
+        },
+      },
+    ],
   },
 });
