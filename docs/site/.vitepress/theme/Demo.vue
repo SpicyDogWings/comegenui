@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, shallowRef } from "vue";
+import { computed, ref, shallowRef, watch } from "vue";
 import type { KhadgarRow } from "@/plugins/khadgar/api";
 import { byName } from "./data";
 import { loadComponent } from "./registry";
@@ -43,26 +43,34 @@ function kind(prop: KhadgarRow): "enum" | "boolean" | "number" | "text" {
   return "text";
 }
 
-onMounted(async () => {
+async function load() {
+  const name = props.name;
   const next: Record<string, unknown> = {};
   for (const prop of meta.value?.props ?? []) {
     if (prop.default !== undefined) next[prop.name] = parseDefault(prop.default);
   }
   values.value = next;
-  const loader = loadComponent(props.name);
-  if (loader) comp.value = await loader();
-});
+  comp.value = null; // evita que quede el componente anterior
+  const loader = loadComponent(name);
+  const loaded = loader ? await loader() : null;
+  // Ignora respuestas viejas si ya se navegó a otro componente.
+  if (props.name === name) comp.value = loaded;
+}
+
+// El `<Demo>` vive en el layout (persiste entre navegaciones SPA), así que hay
+// que reaccionar al cambio de `name` en vez de cargar una sola vez en `onMounted`.
+watch(() => props.name, load, { immediate: true });
 </script>
 
 <template>
   <ClientOnly>
-    <div class="cu-demo">
-      <div class="cu-demo__stage">
-        <component :is="comp" v-if="comp" v-bind="values">{{ name }}</component>
-        <span v-else class="cu-demo__loading">Cargando demo…</span>
+    <div class="khadgar-demo">
+      <div class="khadgar-demo__stage">
+        <component :is="comp" :key="name" v-if="comp" v-bind="values">{{ name }}</component>
+        <span v-else class="khadgar-demo__loading">Cargando demo…</span>
       </div>
-      <div v-if="meta?.props.length" class="cu-demo__controls">
-        <label v-for="prop in meta.props" :key="prop.name" class="cu-demo__control">
+      <div v-if="meta?.props.length" class="khadgar-demo__controls">
+        <label v-for="prop in meta.props" :key="prop.name" class="khadgar-demo__control">
           <code>{{ prop.name }}</code>
           <select v-if="kind(prop) === 'enum'" v-model="values[prop.name]">
             <option v-for="value in enumValues(prop.type)" :key="value" :value="value">
@@ -87,13 +95,13 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.cu-demo {
+.khadgar-demo {
   border: 1px solid var(--vp-c-divider);
   border-radius: 10px;
   margin: 20px 0;
   overflow: hidden;
 }
-.cu-demo__stage {
+.khadgar-demo__stage {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
@@ -102,29 +110,29 @@ onMounted(async () => {
   padding: 28px 16px;
   background: var(--vp-c-bg-soft);
 }
-.cu-demo__loading {
+.khadgar-demo__loading {
   color: var(--vp-c-text-3);
   font-size: 13px;
 }
-.cu-demo__controls {
+.khadgar-demo__controls {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
   padding: 12px 16px;
   border-top: 1px solid var(--vp-c-divider);
 }
-.cu-demo__control {
+.khadgar-demo__control {
   display: flex;
   flex-direction: column;
   gap: 4px;
   font-size: 12px;
 }
-.cu-demo__control code {
+.khadgar-demo__control code {
   color: var(--vp-c-text-2);
 }
-.cu-demo__control input[type="text"],
-.cu-demo__control input[type="number"],
-.cu-demo__control select {
+.khadgar-demo__control input[type="text"],
+.khadgar-demo__control input[type="number"],
+.khadgar-demo__control select {
   border: 1px solid var(--vp-c-divider);
   border-radius: 6px;
   padding: 3px 6px;
