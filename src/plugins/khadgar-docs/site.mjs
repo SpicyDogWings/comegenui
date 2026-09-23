@@ -40,10 +40,19 @@ const vitepressConfig = buildVitepressConfig(index, docs);
 writeFileSync(resolve(vpDir, "khadgar.gen.json"), `${JSON.stringify(vitepressConfig, null, 2)}\n`);
 writeFileSync(resolve(vpDir, "khadgar.json"), `${JSON.stringify(index, null, 2)}\n`);
 
-// 3. Tema (tokens CU → VitePress).
+// 3. Tema (tokens CU → VitePress). La fuente de verdad es `comegen.config.json`.
+const cuConfigPath = resolve(root, "comegen.config.json");
+const cuConfig = existsSync(cuConfigPath)
+  ? JSON.parse(readFileSync(cuConfigPath, "utf-8"))
+  : {};
 mkdirSync(themeDir, { recursive: true });
-writeFileSync(resolve(themeDir, "themes.gen.css"), buildThemesCss());
+writeFileSync(resolve(themeDir, "themes.gen.css"), buildThemesCss(cuConfig));
 writeFileSync(resolve(themeDir, "vitepress.gen.css"), buildVitePressBridgeCss());
+
+// El runtime de `cu-tokens` (ThemeBuilder) lee `/comegen.config.json`.
+const publicDir = resolve(siteRoot, "public");
+mkdirSync(publicDir, { recursive: true });
+writeFileSync(resolve(publicDir, "comegen.config.json"), `${JSON.stringify(cuConfig, null, 2)}\n`);
 
 console.log(
   `khadgar-docs: ${written} fichas + config/tema de VitePress en ${docs.site ?? "docs/site"}`,

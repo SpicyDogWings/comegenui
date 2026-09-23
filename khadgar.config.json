@@ -20,6 +20,7 @@
     "description": "Componentes web de ComegenUI (API autogenerada con Khadgar).",
     "routeBase": "/componentes",
     "navLabel": "Componentes",
+    "navExtra": [{ "text": "Theme Builder", "link": "/theme-builder" }],
     "groups": {
       "buttons": "Buttons",
       "form": "Formularios",

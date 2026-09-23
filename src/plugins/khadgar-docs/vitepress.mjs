@@ -33,11 +33,12 @@ export function buildVitepressConfig(index, docs = {}) {
         .map((component) => ({ text: component.name, link: `${routeBase}/${component.tag}` })),
     }));
 
-  const nav = docs.nav ?? [
+  const nav = [
     {
       text: docs.navLabel ?? "Componentes",
       link: sidebar[0]?.items[0]?.link ?? routeBase,
     },
+    ...(docs.navExtra ?? []),
   ];
 
   return {

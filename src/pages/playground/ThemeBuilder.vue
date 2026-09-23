@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, computed, watch, nextTick } from 'vue'
-import PlaygroundLayout from '@/plugins/khadgar/runtime/PlaygroundLayout.vue'
 import Button from '@/components/buttons/Button.vue'
 import Alert from '@/components/information/Alert.vue'
 import Badge from '@/components/information/Badge.vue'
@@ -38,10 +37,6 @@ import CodeBlock from '@/components/markdown/CodeBlock.vue'
 import Blockquote from '@/components/markdown/Blockquote.vue'
 import CopyButton from '@/components/buttons/CopyButton.vue'
 import AdvancedTable from '@/components/data/AdvancedTable.vue'
-import Navbar from '@/components/navigation/Navbar.vue'
-import Outline from '@/components/lab/collapse/navigation/Outline.vue'
-import type { NavItem } from '@/composables/useNavbar'
-import type { OutlineItem } from '@/components/lab/collapse/navigation/Outline.vue'
 import Modal from '@/components/overlay/Modal.vue'
 import ThemeDashboard from '@/templates/playground/ThemeDashboard.vue'
 import ThemeSettings from '@/templates/playground/ThemeSettings.vue'
@@ -255,7 +250,7 @@ function handleImport(config: any) {
 </script>
 
 <template>
-  <PlaygroundLayout title="Theme Builder">
+  <div class="tb-page">
     <div class="tb-layout">
       <aside class="tb-controls">
         <div class="tb-controls-header">
@@ -475,7 +470,7 @@ function handleImport(config: any) {
       </div>
     </Modal>
     </div>
-  </PlaygroundLayout>
+  </div>
 </template>
 
 <style scoped>
@@ -1419,4 +1414,13 @@ function handleImport(config: any) {
   width: 100%;
 }
 
+.tb-page {
+  width: 100%;
+}
+
+.playground-separator {
+  border: none;
+  border-top: 1px solid var(--cu-border-color);
+  margin: 0;
+}
 </style>

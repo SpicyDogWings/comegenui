@@ -1,34 +1,30 @@
 // src/plugins/khadgar-docs/theme.mjs — Traduce los tokens de diseño de
-// ComegenUI al formato de tema de VitePress.
+// ComegenUI (fuente de verdad: `comegen.config.json`) al formato de tema de
+// VitePress.
 //
-// - `buildThemesCss`: los temas CU (light/dark/sigacadv2) con selectores que
-//   VitePress entiende (`:root`, `html.dark`, `[data-theme=...]`).
+// - `buildThemesCss`: los temas CU con selectores que VitePress entiende
+//   (`:root`, `html.dark`, `[data-theme=...]`).
 // - `buildVitePressBridgeCss`: puente de variables `--vp-*` → `--cu-*`, para que
 //   el chrome de VitePress use la paleta/tipografía de ComegenUI.
 //
-// Se ejecuta con `tsx` (importa módulos TS de `cu-tokens`).
-import { generateThemeCSS } from "@/plugins/cu-tokens/css";
-import { themes } from "@/config/theme";
+// Se ejecuta con `tsx` (importa el generador TS de `cu-tokens`).
+import { generateThemesCSS } from "@/plugins/cu-tokens/css";
 import { DEFAULTS, DEFAULT_OPACITIES, extractColors, extractShared } from "@/plugins/cu-tokens/defaults";
 
-const THEME_SELECTORS = {
-  light: ":root",
-  dark: 'html.dark, [data-theme="dark"]',
-  sigacadv2: '[data-theme="sigacadv2"]',
-};
-
 /** CSS de los temas CU con selectores compatibles con VitePress. */
-export function buildThemesCss({ themeColors = themes, defaults = DEFAULTS } = {}) {
-  const shared = extractShared({ ...defaults });
-  const defaultColors = extractColors(defaults);
-  const blocks = [];
-  for (const [name, colors] of Object.entries(themeColors)) {
-    const tokens = { colors: { ...defaultColors, ...colors } };
-    const block = generateThemeCSS(name, tokens, shared, DEFAULT_OPACITIES);
-    const selector = THEME_SELECTORS[name] ?? `[data-theme="${name}"]`;
-    blocks.push(block.replace(/^\[data-theme="[^"]+"\]/, selector));
+export function buildThemesCss(cuConfig = {}) {
+  const shared = extractShared({ ...DEFAULTS, ...cuConfig });
+  const opacities = { ...DEFAULT_OPACITIES, ...(cuConfig.opacities ?? {}) };
+  const defaultColors = extractColors(DEFAULTS);
+  const themes = {};
+  for (const [name, tokens] of Object.entries(cuConfig.themes ?? {})) {
+    const colors = tokens?.colors ?? tokens;
+    themes[name] = { colors: { ...defaultColors, ...colors } };
   }
-  return `${blocks.join("\n\n")}\n`;
+  const css = generateThemesCSS(themes, shared, opacities);
+  // VitePress marca el modo oscuro con la clase `dark` en <html>; el resto de los
+  // temas se siguen activando por `data-theme` (ThemeBuilder / prop `theme`).
+  return `${css.replace(/\[data-theme="dark"\]/g, 'html.dark, [data-theme="dark"]')}\n`;
 }
 
 /** Puente `--vp-*` → `--cu-*`. */
