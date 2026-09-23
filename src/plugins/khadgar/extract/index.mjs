@@ -240,7 +240,7 @@ export function extractComponent(filePath, options = {}) {
   const checker = options.checker ?? getChecker(root, config.tsconfig);
   const meta = checker.getComponentMeta(abs);
   const source = readFileSync(abs, "utf-8");
-  const comp = complements(abs, source, config.base);
+  const comp = complements(abs, source);
 
   const extract = {
     tokens: true,
@@ -286,7 +286,7 @@ export function extractComponent(filePath, options = {}) {
 
   const component = {
     name,
-    category: options.category ?? categoryOf(abs, root, config.componentsDir),
+    group: options.group ?? categoryOf(abs, root, config.componentsDir),
     file: posix(relative(root, abs)),
     description: overrides.intro || meta.description || "",
     props,
@@ -384,7 +384,7 @@ export function buildIndex(options = {}) {
       checker,
       name: item.name,
       tag,
-      category: categoryOf(vueAbs, root, config.componentsDir),
+      group: item.group ?? categoryOf(vueAbs, root, config.componentsDir),
     });
   });
 

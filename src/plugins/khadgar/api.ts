@@ -46,8 +46,8 @@ export interface KhadgarComponent {
   name: string;
   /** Tag del custom element (`cu-button`). Ausente en componentes internos. */
   tag?: string;
-  /** Subcarpeta bajo `componentsDir` (ej: `buttons`). */
-  category: string;
+  /** Grupo visible en el sitio (declarado o la subcarpeta bajo `componentsDir`). */
+  group: string;
   /** Ruta del `.vue` relativa a la raíz. */
   file: string;
   /** Descripción corta (intro curada o JSDoc). */

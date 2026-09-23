@@ -5,29 +5,28 @@
 const DEFAULT_ROUTE_BASE = "/componentes";
 
 /**
- * @param {{ components: Array<{ name: string, tag?: string, category: string }> }} index
+ * @param {{ components: Array<{ name: string, tag?: string, group: string }> }} index
  * @param {object} [docs] scope `docs` de `khadgar.config.json`
  */
 export function buildVitepressConfig(index, docs = {}) {
   const routeBase = (docs.routeBase ?? DEFAULT_ROUTE_BASE).replace(/\/+$/, "");
-  const groups = docs.groups ?? {};
-  const order = docs.order ?? Object.keys(groups);
-  const rank = (category) => {
-    const position = order.indexOf(category);
+  const order = docs.order ?? [];
+  const rank = (group) => {
+    const position = order.indexOf(group);
     return position < 0 ? order.length : position;
   };
 
   const publicComponents = index.components.filter((component) => component.tag);
-  const byCategory = new Map();
+  const byGroup = new Map();
   for (const component of publicComponents) {
-    const key = component.category || "otros";
-    (byCategory.get(key) ?? byCategory.set(key, []).get(key)).push(component);
+    const key = component.group || "Otros";
+    (byGroup.get(key) ?? byGroup.set(key, []).get(key)).push(component);
   }
 
-  const sidebar = [...byCategory.entries()]
+  const sidebar = [...byGroup.entries()]
     .sort((a, b) => rank(a[0]) - rank(b[0]) || a[0].localeCompare(b[0]))
-    .map(([category, items]) => ({
-      text: groups[category] ?? category,
+    .map(([group, items]) => ({
+      text: group,
       items: [...items]
         .sort((a, b) => a.name.localeCompare(b.name))
         .map((component) => ({ text: component.name, link: `${routeBase}/${component.tag}` })),
@@ -35,10 +34,10 @@ export function buildVitepressConfig(index, docs = {}) {
 
   const nav = [
     {
-      text: docs.navLabel ?? "Componentes",
+      text: docs.nav?.label ?? "Componentes",
       link: sidebar[0]?.items[0]?.link ?? routeBase,
     },
-    ...(docs.navExtra ?? []),
+    ...(docs.nav?.extras ?? []),
   ];
 
   return {
@@ -50,7 +49,7 @@ export function buildVitepressConfig(index, docs = {}) {
     components: publicComponents.map((component) => ({
       tag: component.tag,
       name: component.name,
-      category: component.category,
+      group: component.group,
     })),
   };
 }

@@ -20,7 +20,7 @@ Cargala cuando la tarea sea alguna de:
 - **Auditar** la documentación contra el código (revisar que el `.md` refleje lo que el `.ce.vue` expone).
 - **Comparar** dos componentes para unificar estilo o extraer patrones.
 
-Si la tarea es **modificar el código fuente** de un componente (`.ce.vue`, `.vue`, `.ts`), esta skill no aplica — usá la skill de desarrollo del proyecto.
+Si la tarea es **modificar el código fuente** de un componente (`.ce.vue`, `.vue`, `.ts`), esta skill no aplica — seguí `AGENTS.md` (arquitectura y patrón de 3 archivos).
 
 ---
 
@@ -50,14 +50,14 @@ Si la tarea es **modificar el código fuente** de un componente (`.ce.vue`, `.vu
 
 ### Destinos de la documentación
 
-La ficha del componente es **una sola** (canonical: la leen agentes y humanos) más los índices:
+La ficha del componente es **una sola** (canonical: la leen agentes y humanos) y el sitio la publica:
 
 | Destino | Ubicación | Audiencia |
 |---|---|---|
 | **Ficha del componente** | `docs/skills/use-comegen/componentes/cu-<nombre>.md` (canonical; `.opencode/skills/comegen-ui/` y `.agents/skills/use-comegen/` son symlinks) | Agentes IA (viaja con el zip) + humanos |
-| **Índices humanos** | `docs/DOCS.md`, `COMPONENTS-GUIDE.md` | Humanos |
+| **Sitio** | `docs/site/componentes/cu-<nombre>.md` (copia generada, la publica VitePress) | Humanos |
 
-> La ficha **no se edita a mano**: la genera `pnpm khadgar:generate <X> --docs` desde el SFC que distribuye la lib. La prosa curada vive en `componentes/cu-<nombre>.doc.json`.
+> La ficha **no se edita a mano**: la genera `pnpm site:sync` desde el SFC que distribuye la lib. La prosa curada vive en `componentes/cu-<nombre>.doc.json`.
 
 ### Índices a actualizar — Skill (agentes)
 
@@ -68,19 +68,13 @@ La ficha del componente es **una sola** (canonical: la leen agentes y humanos) m
     - Si corresponde, la tabla de "Variantes disponibles" y la de "Tamaño de los bundles" (los tamaños salen del `pnpm build:lib`).
 2. **`docs/skills/use-comegen/componentes/<nombre>.md`** (canonical) — el archivo de API del componente.
 
-### Índices a actualizar — Docs (humanos)
-
-1. **`docs/DOCS.md`** — tabla "Componentes disponibles" (agregar fila con link al `.md`).
-2. **`COMPONENTS-GUIDE.md`** (raíz del repo) — índice, listado de `<script>` de instalación, tabla "Archivos disponibles", y una sección `### <cu-xxx>` completa con props/slots/uso.
-3. **`docs/desarrollar-comegen-ui/convenciones-desarrollo.md`** — solo si el componente introduce una convención nueva.
-
-> Regla de oro: **el tag `<cu-xxx>` debe aparecer en TODOS los índices o en ninguno.** Si solo lo agregás al `.md` y al skill, el componente queda "documentado pero invisible" para humanos.
+> El nav/sidebar del sitio y su copia de las fichas los genera `khadgar-docs`: no se editan a mano.
 
 ### Validación post-documentación
 
-Después de documentar, auditar con **skill-auditor** para verificar:
-- La ficha refleja el SFC de la lib (`pnpm khadgar:generate --all --docs --check`).
-- El tag aparece en todos los índices.
+Después de documentar, verificá:
+- La ficha refleja el SFC de la lib (`node src/plugins/khadgar-docs/cli.mjs --check`, o `./scripts/preflight.sh`).
+- El tag aparece en los índices de `docs/skills/use-comegen/SKILL.md`.
 
 ### Para auditar un `.md` existente
 
@@ -118,7 +112,6 @@ Esto es importante porque:
 - `.opencode/skills/comegen-ui/` → symlink al canonical (lo lee opencode).
 - `.agents/skills/use-comegen/` → symlink al canonical (lo lee el agente del huésped).
 
-**Destino — Índices (humanos):**
-- `docs/DOCS.md` — índice principal.
-- `COMPONENTS-GUIDE.md` — guía de componentes (raíz del repo).
+**Destino — Índices:**
+- `docs/skills/use-comegen/SKILL.md` — índice de la skill de uso.
 - `docs/notes/` — notas internas sobre problemas pendientes.

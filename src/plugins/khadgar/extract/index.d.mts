@@ -30,8 +30,8 @@ export interface ExtractComponentOptions {
   name?: string;
   /** Tag a usar (si el SFC no está en `libIndex`). */
   tag?: string;
-  /** Categoría a usar. */
-  category?: string;
+  /** Grupo a usar. */
+  group?: string;
   /** Checker de `vue-component-meta` (default: singleton). */
   checker?: unknown;
 }

@@ -243,7 +243,7 @@ Desde `.opencode/skills/comegen-ui/SKILL.md`:
 
 ## Evitar
 
-- ❌ Explicar cómo se compila (eso está en `docs/DOCS.md` raíz).
+- ❌ Explicar cómo se compila (eso es de desarrollo, no de la doc de uso).
 - ❌ Mencionar que está hecho con Vue 3 (irrelevante para el consumidor).
 - ❌ Tablas de tamaños de bundle en cada `.md` (está en `SKILL.md`).
 - ❌ Links a archivos del código fuente.

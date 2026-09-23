@@ -19,8 +19,8 @@ export interface ComponentConfig {
   name: string;
   /** Ruta explícita al `.vue` (si no está en `componentsDir`). */
   file?: string;
-  /** Categoría forzada (si no, la subcarpeta). */
-  category?: string;
+  /** Grupo visible del componente en el sitio (si no, la subcarpeta). */
+  group?: string;
   /**
    * Deps a incluir (componentes usados): `true` = todos los detectados,
    * `string[]` = solo esos, `false` = ninguno.
@@ -56,13 +56,12 @@ export interface DocsConfig {
   description?: string;
   /** Base de las rutas de las fichas. Default: `/componentes`. */
   routeBase?: string;
-  /** Label del primer item del nav. Default: `Componentes`. */
-  navLabel?: string;
-  /** Items extra del nav (ej: Theme Builder). */
-  navExtra?: Array<{ text: string; link: string }>;
-  /** Mapa categoría → label visible. */
-  groups?: Record<string, string>;
-  /** Orden de los grupos. */
+  /** Nav del sitio: label del primer item (default `Componentes`) + items extra. */
+  nav?: {
+    label?: string;
+    extras?: Array<{ text: string; link: string }>;
+  };
+  /** Orden de los grupos (por su nombre). Los no listados van al final, alfabéticos. */
   order?: string[];
 }
 
@@ -78,14 +77,10 @@ export interface KhadgarConfig {
   libDir?: string;
   /** Directorio de salida de las fichas `.md`. Default: `docs/skills/use-comegen`. */
   docsDir?: string;
-  /** Directorio del build estático del JSON. Default: `public`. */
-  outDir?: string;
   /** tsconfig del proyecto (para `vue-component-meta`). Default: `tsconfig.app.json`. */
   tsconfig?: string;
   /** Flags globales de extracción (default: todo true). */
   extract?: { tokens?: boolean; classes?: boolean; interfaces?: boolean; deps?: boolean };
-  /** Nombres/categorías a excluir. */
-  exclude?: string[];
   /** Configuración del sitio de documentación. */
   docs?: DocsConfig;
 }

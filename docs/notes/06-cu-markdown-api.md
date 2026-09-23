@@ -18,7 +18,7 @@ Pero el wrapper `src/components/customElements/markdown/Markdown.ce.vue` **no lo
 
 Es decir: en el UMD, `md.addEventListener('parsed', ...)` y `md.headingIds()` **no funcionan**. El `.vue` interno sí los provee, pero no atraviesan el wrapper CE.
 
-Detectado por el generador de fichas (`pnpm khadgar:generate --all --docs`), que resuelve la API desde el SFC que distribuye la lib (el `.ce.vue`).
+Detectado por el generador de fichas (`pnpm site:sync`), que resuelve la API desde el SFC que distribuye la lib (el `.ce.vue`).
 
 ## Impacto
 

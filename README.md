@@ -131,10 +131,10 @@ pnpm install
 pnpm build:lib
 ```
 
-El output queda en `dist/`:
+El output queda en `dist-lib/`:
 
 ```
-dist/
+dist-lib/
 ├── CuAlert.umd.js
 ├── CuButton.umd.js
 ├── ...
@@ -154,11 +154,14 @@ Para usar en tu proyecto, copiá los `.umd.js` que necesités y el CSS:
 
 | Comando | Descripción |
 |---------|-------------|
-| `pnpm dev` | Dev server con hot-reload |
-| `pnpm build` | Type-check + build para producción (app) |
-| `pnpm build:lib` | Build de la librería UMD (Web Components) |
-| `pnpm storybook` | Storybook en `localhost:6006` |
+| `pnpm dev` | Dev server del sitio de docs (VitePress) con hot-reload |
+| `pnpm build` | Build del sitio de docs |
+| `pnpm preview` | Preview del sitio buildeado |
+| `pnpm site:sync` | Regenera fichas + config/tema de VitePress |
+| `pnpm build:lib` | Build de la librería UMD (Web Components) + zip |
 | `pnpm type-check` | Type-check con `vue-tsc` |
+| `pnpm test` | Tests unitarios (Vitest) |
+| `pnpm preflight` | Gate local antes de un MR |
 
 ## Build de la librería
 
@@ -166,10 +169,10 @@ Para usar en tu proyecto, copiá los `.umd.js` que necesités y el CSS:
 pnpm build:lib
 ```
 
-Compila cada componente en `src/lib/` como UMD independiente. Output en `dist/`:
+Compila cada componente en `src/lib/` como UMD independiente. Output en `dist-lib/`:
 
 ```
-dist/
+dist-lib/
 ├── CuAlert.umd.js
 ├── CuButton.umd.js
 ├── CuBadge.umd.js

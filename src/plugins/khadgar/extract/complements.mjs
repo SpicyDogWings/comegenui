@@ -10,10 +10,9 @@ import { parseComponent } from "../cli/parse-sfc.mjs";
  *
  * @param {string} filePath ruta del `.vue`.
  * @param {string} [source] contenido (si ya se leyó).
- * @param {string} [base] base de las rutas del playground (para deps).
  */
-export function complements(filePath, source, base) {
-  const parsed = parseComponent(filePath, source, base);
+export function complements(filePath, source) {
+  const parsed = parseComponent(filePath, source);
   return {
     tokens: parsed.tokens,
     classes: parsed.classes,

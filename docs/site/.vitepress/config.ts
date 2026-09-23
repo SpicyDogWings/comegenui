@@ -15,7 +15,7 @@ interface Generated {
   routeBase: string;
   nav: unknown[];
   sidebar: unknown[];
-  components: { tag: string; name: string; category: string }[];
+  components: { tag: string; name: string; group: string }[];
 }
 
 const generated: Generated = existsSync(genPath)
@@ -32,7 +32,7 @@ const generated: Generated = existsSync(genPath)
 if (!existsSync(genPath)) {
   console.warn(
     "[khadgar] Falta docs/site/.vitepress/khadgar.gen.json (nav/sidebar vacíos). " +
-      "Corré `pnpm khadgar:site:sync` o `pnpm dev`.",
+      "Corré `pnpm site:sync` o `pnpm dev`.",
   );
 }
 

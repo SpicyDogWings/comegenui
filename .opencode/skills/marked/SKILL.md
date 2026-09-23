@@ -18,8 +18,8 @@ Receta para parsear y renderizar markdown usando `marked` (npm) + el componente 
 
 ## Cuándo NO se activa
 
-- Documentar el componente markdown → `documentar-comegen-ui`.
-- Modificar el componente markdown → `comegen-ui-dev`.
+- Documentar el componente markdown → `comegen-ui-docs`.
+- Modificar el componente markdown → seguí `AGENTS.md`.
 
 ---
 
@@ -104,4 +104,4 @@ else if (token.type === 'nuevo_tipo') {
 
 ## Referencia
 
-Para arquitectura completa del componente → [`docs/desarrollar-comegen-ui/arquitectura.md`](../../docs/desarrollar-comegen-ui/arquitectura.md).
+Para arquitectura completa del componente → [`AGENTS.md`](../../AGENTS.md).

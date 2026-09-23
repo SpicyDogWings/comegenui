@@ -482,18 +482,9 @@ function parseTokens(descriptor, source) {
 
 // ── Sub-componentes importados ──────────────────────────────────────────────
 
-function kebab(value) {
-  return value
-    .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
-    .replace(/[^a-zA-Z0-9]+/g, "-")
-    .replace(/^-|-$/g, "")
-    .toLowerCase();
-}
-
-function parseComponentImports(source, base) {
+function parseComponentImports(source) {
   const deps = [];
   const seen = new Set();
-  const routeBase = (base ?? "/playground/components").replace(/\/+$/, "");
   // Imports locales de componentes: `@/components/...` o relativos (`./Button.vue`).
   const re = /import\s+(\w+)\s+from\s+["'](?:@\/components\/|\.{1,2}\/)([^"']+)\.vue["']/g;
   let match;
@@ -503,7 +494,7 @@ function parseComponentImports(source, base) {
     const fileBase = spec.split("/").pop();
     if (!fileBase || name === "Icon" || seen.has(name)) continue;
     seen.add(name);
-    deps.push({ label: name, path: `${routeBase}/${kebab(fileBase)}` });
+    deps.push({ label: name });
   }
   return deps;
 }
@@ -515,9 +506,8 @@ function parseComponentImports(source, base) {
  *
  * @param {string} filePath ruta del `.vue`
  * @param {string} [source] contenido (si ya se leyó)
- * @param {string} [base] base de las rutas del playground (para deps)
  */
-export function parseComponent(filePath, source = readFileSync(filePath, "utf-8"), base) {
+export function parseComponent(filePath, source = readFileSync(filePath, "utf-8")) {
   const { descriptor } = parse(source, { filename: filePath });
   const script = [
     descriptor.script?.content ?? "",
@@ -570,7 +560,7 @@ export function parseComponent(filePath, source = readFileSync(filePath, "utf-8"
     interfaces: parseInterfaces(script, docs),
     classes: parseClasses(descriptor),
     tokens: parseTokens(descriptor, source),
-    components: parseComponentImports(script, base),
+    components: parseComponentImports(script),
     hasDefaultSlot: slots.some((slot) => slot.name === "default"),
   };
 }

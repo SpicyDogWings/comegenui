@@ -1,6 +1,6 @@
 # AGENTS.md — Arquitectura de Componentes ComegenUI
 
-> **Para desarrollar componentes, seguí el playbook `.opencode/skills/comegen-dev/SKILL.md`** (flujo de 8 pasos + Definición de terminado). Gate local: `./scripts/preflight.sh`. Documentar: skill `comegen-ui-docs`. Consumir la lib en otro proyecto: skill de uso `comegen-ui`.
+> **Para desarrollar componentes**, seguí la estructura de 3 archivos de abajo (componente `.vue` + wrapper `.ce.vue` + entry `lib/`), documentá con la skill `comegen-ui-docs` y validá con el gate local `./scripts/preflight.sh`. Consumir la lib en otro proyecto: skill de uso `comegen-ui`.
 
 ## Estructura de directorios
 
@@ -12,23 +12,21 @@ src/
 │   └── ...otrascarpetas (icons, theme, lab, archived, legacy)
 ├── lib/
 │   └── {category}/mi-componente.ts        # Entry point: defineCustomElement + registro
-├── stories/
-│   ├── types.ts                           # Contrato ComponentStory/Section/Variant
-│   ├── runner.l1.ts                       # Runner capa L1 (.vue, jsdom)
-│   └── {category}/MiComponente.stories.ts # Story (secciones + checks); espeja la categoría
-│       {category}/MiComponente.l1.test.ts # Test capa L1 (runner de stories)
-├── playground/                            # Páginas físicas opcionales (override; default vacío)
-├── pages/playground/                      # ThemeBuilder + resto del proyecto
-├── config/
-│   └── theme.ts                           # Definiciones estáticas de temas
 ├── plugins/
 │   ├── cu-tokens/                         # Sistema de tokens CSS
-│   └── khadgar/                     # Plugin del playground (runtime + runtime/, cli/, vitest/)
+│   ├── khadgar/                           # Fábrica: `.vue` → contrato JSON (extract/, cli/, config.ts, api.ts)
+│   └── khadgar-docs/                      # Consumidor: JSON → fichas `.md` + config/tema de VitePress
+├── layouts/                               # AppTopbar + AppLayout (header propio del sitio)
+├── pages/                                 # Home.vue + playground/ThemeBuilder.vue (páginas del sitio)
 ├── composables/                           # Composables reutilizables
 └── utils/                                 # Utilidades (getHostTheme, palette, fileIcons)
+
+docs/
+├── site/                                  # Sitio VitePress (consume khadgar.gen.json + las fichas)
+└── skills/use-comegen/                    # Skill de uso (SKILL.md + fichas `cu-*.md` generadas)
 ```
 
-Config del playground: `khadgar.config.json` (raíz): `componentsDir`, `storiesDir`, `playgroundDir`, `base`, `pages`, `nav`.
+Config de la fábrica: `khadgar.config.json` (raíz): `componentsDir`, `libDir`, `docsDir`, `extract`, `docs` + la lista `components`.
 
 Donde `{category}` es uno de: `form/`, `information/`, `overlay/`, `navigation/`, `data/`, `buttons/`, o raíz.
 
@@ -235,9 +233,8 @@ Tokens compartidos: tipografía, spacing, border-radius, shadows, borders.
 
 ### Tests y preflight
 
-- Los tests salen de las **stories** (`X.stories.ts`) por capa; la capa L1 corre en jsdom (`pnpm run test:l1`). Ver `.opencode/skills/comegen-dev/04-stories-y-tests.md`.
-- Gate local antes de un MR: `./scripts/preflight.sh` (type-check contra baseline + L1).
-- El reporter escribe `public/test-results.json`, que el playground pinta como badges ✅/❌ por sección.
+- Tests unitarios con Vitest (`pnpm test`), junto al componente (`X.test.ts`).
+- Gate local antes de un MR: `./scripts/preflight.sh` (type-check contra baseline + tests + drift de las fichas).
 
 ---
 
