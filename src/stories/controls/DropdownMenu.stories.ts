@@ -1,8 +1,9 @@
 // Story de DropdownMenu (componente público cu-dropdown-menu).
 // Secciones espejo de la página legacy; los checks migran DropdownMenu.test.ts.
-import { nextTick } from "vue";
+import { h, nextTick } from "vue";
 import DropdownMenu from "@/components/controls/DropdownMenu.vue";
-import type { ComponentStory } from "@/stories/types";
+import Button from "@/components/buttons/Button.vue";
+import type { ComponentStory, SlotContent } from "@/stories/types";
 import { extras } from "./DropdownMenu.stories.extras";
 
 interface DropdownItem {
@@ -620,19 +621,50 @@ const items = [
         {
           id: "custom",
           props: { label: "Ignorado" },
-          slots: { toggle: '<button id="custom-toggle">Abrir</button>' },
+          slots: {
+            toggle: (({ toggle }: { toggle: () => void }) =>
+              h(Button, { color: "neutral", onClick: toggle, id: "custom-toggle" }, () => "Abrir")) as unknown as SlotContent,
+          },
         },
       ],
-      vue: `  <DropdownMenu :items="items">
-    <template #toggle>
-      <Button color="neutral">Abrir</Button>
+      vue: `<script setup>
+import DropdownMenu from '@/components/controls/DropdownMenu.vue'
+import Button from '@/components/buttons/Button.vue'
+
+const items = [
+  { label: 'Edit' },
+  { label: 'Duplicate' },
+  { label: 'Archive' },
+]
+<\/script>
+
+<template>
+  <DropdownMenu :items="items">
+    <template #toggle="{ toggle, isOpen }">
+      <Button color="neutral" @click="toggle">
+        Abrir {{ isOpen ? '▲' : '▼' }}
+      </Button>
     </template>
-  </DropdownMenu>`,
+  </DropdownMenu>
+</template>`,
       vanilla: `<script src="dist/CuDropdownMenu.umd.js"><\/script>
 
 <cu-dropdown-menu id="menu-custom">
-  <button slot="toggle">Abrir</button>
-</cu-dropdown-menu>`,
+  <button slot="toggle"
+          onclick="document.getElementById('menu-custom').toggle()">
+    Abrir
+  </button>
+</cu-dropdown-menu>
+
+<script>
+  customElements.whenDefined('cu-dropdown-menu').then(() => {
+    document.getElementById('menu-custom').items = [
+      { label: 'Edit' },
+      { label: 'Duplicate' },
+      { label: 'Archive' },
+    ];
+  });
+<\/script>`,
       checks: {
         l1: [
           {
