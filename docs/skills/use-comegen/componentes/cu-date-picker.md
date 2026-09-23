@@ -108,10 +108,10 @@ El label se muestra sobre el picker y es clickeable — hace foco en el input y 
 | Evento | Payload (`e.detail`) | Descripción |
 |------|------|------|
 | `select` | `Date` | Día clickeado en el calendario |
-| `change` | `null` | Alias de `update:modelValue` |
-| `open` | — | El panel se abrió |
 | `close` | — | El panel se cerró |
+| `open` | — | El panel se abrió |
 | `update:modelValue` | `null` | Cambio de fecha (al seleccionar, ir a "Hoy" o limpiar) |
+| `change` | `null` | Alias de `update:modelValue` |
 
 > Al limpiar, `update:modelValue`/`change` emiten `null`.
 
@@ -119,10 +119,10 @@ El label se muestra sobre el picker y es clickeable — hace foco en el input y 
 
 | Método | Descripción |
 |------|------|
-| `.open()` | Abre, cierra o alterna el panel |
-| `.close()` |  |
-| `.toggle()` |  |
-| `.getValue()` | null` con la fecha seleccionada |
-| `.setValue(value: string \| number \| Date \| null)` | Selecciona una fecha (string/number/Date) |
-| `.clear()` | Limpia la selección (emite `null`) |
-| `.isOpen()` | Estado del panel |
+| `.open()` | Abre el panel del calendario. |
+| `.close()` | Cierra el panel del calendario. |
+| `.toggle()` | Alterna el panel del calendario. |
+| `.getValue()` | Devuelve la fecha seleccionada. |
+| `.setValue(value: string \| number \| Date \| null)` | Setea la fecha seleccionada y emite change. |
+| `.clear()` | Limpia la fecha seleccionada. |
+| `.isOpen()` | Indica si el panel está abierto. |

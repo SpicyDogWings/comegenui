@@ -67,15 +67,15 @@ Input de texto con color, variante, tipos de input HTML5 y métodos `get`/`set`/
 
 | Prop | Tipo | Default | Descripción |
 |------|------|------|------|
-| `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
-| `modelValue` | `string` | `""` | Valor controlado |
 | `startValue` | `string` | — | Valor inicial usado por `.reset()` |
-| `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `string` | `"soft"` | `outlined`, `soft`, `ghost`, `subtle` |
-| `type` | `string` | `"text"` | `text`, `password`, `email`, `number`, `tel`, `url`, `search` |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | `outlined`, `soft`, `ghost`, `subtle` |
+| `type` | `"text" \| "password" \| "email" \| "number" \| "tel" \| "url" \| "search"` | `"text"` | `text`, `password`, `email`, `number`, `tel`, `url`, `search` |
 | `placeholder` | `string` | — | Placeholder del input |
 | `disabled` | `boolean` | `false` | Estado deshabilitado |
 | `readOnly` | `boolean` | `false` | Solo lectura (en HTML se usa como `readonly`) |
+| `size` | `"sm" \| "md" \| "lg"` | `"md"` | Tamaño del input (sm \| md \| lg). |
+| `modelValue` | `string` | `""` | Valor controlado |
 
 > **Atributos en HTML:** `readOnly` se escribe como `readonly` (convención HTML). Ej.: `<cu-input readonly>`
 
@@ -95,7 +95,7 @@ Ninguno.
 
 | Método | Descripción |
 |------|------|
-| `.get()` | Devuelve el valor actual (`string`) |
-| `.set(value: string \| number)` | Asigna un valor |
-| `.reset()` | Vuelve al `startValue` (o `""` si no se definió) |
-| `.focus()` | Enfoca el input |
+| `.get()` | Devuelve el valor actual del input. |
+| `.set(newValue: string \| number)` | Setea el valor del input. |
+| `.reset()` | Limpia el input. |
+| `.focus()` | Enfoca el input. |

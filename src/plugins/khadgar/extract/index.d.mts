@@ -32,6 +32,8 @@ export interface ExtractComponentOptions {
   tag?: string;
   /** Grupo a usar. */
   group?: string;
+  /** Marcar el componente como documentable en vanilla/UMD. */
+  vanilla?: boolean;
   /** Checker de `vue-component-meta` (default: singleton). */
   checker?: unknown;
 }
@@ -40,13 +42,7 @@ export interface BuildIndexOptions {
   root?: string;
   config?: Record<string, unknown>;
   components?: Array<Record<string, unknown>>;
-  /**
-   * `vue` = componente real; `lib` = SFC que distribuye la lib (`.ce.vue` si existe).
-   * Default: `vue`.
-   */
-  source?: "vue" | "lib";
   libIndex?: Map<string, string>;
-  targets?: Map<string, { tag: string; sfc: string; vue: string }>;
   checker?: unknown;
 }
 

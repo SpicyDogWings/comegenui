@@ -119,11 +119,11 @@ modal.addEventListener('closed', () => console.log('cierre completo'));
 | Prop | Tipo | Default | Descripción |
 |------|------|------|------|
 | `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `title` | `string` | — | Título del modal (se muestra en la cabecera) |
-| `description` | `string` | — | Descripción bajo el título (texto secundario) |
-| `persistent` | `boolean` | — | Si es `true`, no se cierra con click en el backdrop ni con `Escape` |
-| `size` | `string` | `"auto"` | Ancho del modal: `auto`, `sm`, `md`, `lg`, `xl`, `full` |
-| `height` | `string` | `"auto"` | Alto del modal: `auto`, `sm`, `md`, `lg`, `xl`, `full` |
+| `title` | `string` | `""` | Título del modal (se muestra en la cabecera) |
+| `description` | `string` | `""` | Descripción bajo el título (texto secundario) |
+| `persistent` | `boolean` | `false` | Si es `true`, no se cierra con click en el backdrop ni con `Escape` |
+| `size` | `"auto" \| "sm" \| "md" \| "lg" \| "xl" \| "full"` | `"auto"` | Ancho del modal: `auto`, `sm`, `md`, `lg`, `xl`, `full` |
+| `height` | `"auto" \| "sm" \| "md" \| "lg" \| "xl" \| "full"` | `"auto"` | Alto del modal: `auto`, `sm`, `md`, `lg`, `xl`, `full` |
 
 > El Custom Element **no expone** prop `variant` ni `theme`. El estilo se controla con `color`.
 
@@ -132,10 +132,10 @@ modal.addEventListener('closed', () => console.log('cierre completo'));
 | Evento | Payload (`e.detail`) | Descripción |
 |------|------|------|
 | `close` | — | Se inicia el cierre (click en backdrop, Escape, llamada a `.close()`) |
+| `accept` | — | Se emite con el footer por defecto de un modal `persistent` al pulsar "Aceptar" (luego cierra el modal) |
 | `opened` | — | El modal pasó a `isOpen = true` (animación de apertura completa) |
 | `closed` | — | La animación de cierre terminó y `isOpen = false` |
 | `cancel` | — | Se emite con el footer por defecto de un modal `persistent` al pulsar "Cancelar" (luego cierra el modal) |
-| `accept` | — | Se emite con el footer por defecto de un modal `persistent` al pulsar "Aceptar" (luego cierra el modal) |
 
 > Si el modal es `persistent`, no se emiten `close`/`closed`/`cancel` por click en backdrop o `Escape`. Solo se emiten cuando llamás a `.close()` programáticamente.
 
@@ -151,7 +151,7 @@ modal.addEventListener('closed', () => console.log('cierre completo'));
 
 | Método | Descripción |
 |------|------|
-| `.open()` | Abre el modal |
-| `.close()` | Cierra el modal |
-| `.toggle()` | Alterna visibilidad |
-| `.isOpen()` | Devuelve el estado actual (`boolean`) |
+| `.open()` | Abre el modal. |
+| `.close()` | Cierra el modal. |
+| `.toggle()` | Alterna la visibilidad del modal. |
+| `.isOpen()` | Devuelve true si el modal está abierto. |

@@ -82,17 +82,11 @@ Media (imagen o slot `media`) al costado del contenido:
 | Prop | Tipo | Default | Descripción |
 |------|------|------|------|
 | `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `string` | `"ghost"` | `ghost` (default), `outlined`, `soft`, `subtle`, `solid` |
+| `variant` | `"ghost" \| "outlined" \| "soft" \| "subtle" \| "solid"` | `"ghost"` | `ghost` (default), `outlined`, `soft`, `subtle`, `solid` |
 | `layout` | `"vertical" \| "horizontal"` | `"vertical"` | `vertical` (media arriba) o `horizontal` (media al costado) |
 | `title` | `string` | — | Título del header |
 | `subtitle` | `string` | — | Subtítulo bajo el título |
 | `image` | `string` | — | URL de imagen que se muestra como media en la parte superior (o al costado con `layout="horizontal"`) |
-
-## Eventos
-
-| Evento | Payload (`e.detail`) | Descripción |
-|------|------|------|
-| `click` | `MouseEvent` | Click en la tarjeta (re-emitido por el wrapper) |
 
 ## Slots
 
@@ -100,8 +94,8 @@ Media (imagen o slot `media`) al costado del contenido:
 |------|------|
 | `media` | Contenido de la parte superior (si no se usa el prop `image`). Reemplaza la imagen |
 | `header` | Reemplaza el título/subtítulo por defecto |
-| `footer` | Contenido al pie de la tarjeta (se separa con una línea) |
 | `default` | Contenido principal del cuerpo de la tarjeta |
+| `footer` | Contenido al pie de la tarjeta (se separa con una línea) |
 
 ## Métodos expuestos
 

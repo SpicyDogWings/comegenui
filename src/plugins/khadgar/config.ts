@@ -15,12 +15,14 @@ export interface RowOverride {
 
 /** Configuración de un componente en la "fábrica" de Khadgar. */
 export interface ComponentConfig {
-  /** Nombre del componente (archivo `.vue` sin extensión). Requerido. */
+  /** Nombre lógico del componente (label en el sitio y las fichas). Requerido. */
   name: string;
-  /** Ruta explícita al `.vue` (si no está en `componentsDir`). */
-  file?: string;
-  /** Grupo visible del componente en el sitio (si no, la subcarpeta). */
+  /** Ruta del `.vue` real, relativa a la raíz. Requerido. */
+  file: string;
+  /** Grupo visible del componente en el sitio. Default: `""` (→ "Otros"). */
   group?: string;
+  /** Si tiene custom element (tag en `src/lib`), habilitar la doc vanilla. */
+  vanilla?: boolean;
   /**
    * Deps a incluir (componentes usados): `true` = todos los detectados,
    * `string[]` = solo esos, `false` = ninguno.
@@ -68,11 +70,9 @@ export interface DocsConfig {
 export interface KhadgarConfig {
   /**
    * Lista explícita de componentes a procesar (la entrada de la fábrica).
-   * Si se omite/vacía, el CLI cae al glob de `componentsDir`.
+   * Cada entrada apunta a un `.vue` real via `file`.
    */
   components?: ComponentConfig[];
-  /** Directorio de componentes reales. Default: `src/components`. */
-  componentsDir?: string;
   /** Directorio de entry points de la lib (para el tag). Default: `src/lib`. */
   libDir?: string;
   /** Directorio de salida de las fichas `.md`. Default: `docs/skills/use-comegen`. */

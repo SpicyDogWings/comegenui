@@ -19,8 +19,8 @@ const siteRoot = resolve(root, docs.site ?? "docs/site");
 const vpDir = resolve(siteRoot, ".vitepress");
 const themeDir = resolve(vpDir, "theme");
 
-// 1. Fichas (fuente: el SFC que distribuye la lib).
-const index = buildIndex({ root, config, source: "lib" });
+// 1. Fichas (fuente: el `.vue` real de cada entrada).
+const index = buildIndex({ root, config });
 const docsDir = resolve(root, config.docsDir ?? "docs/skills/use-comegen", "componentes");
 const siteDocsDir = resolve(siteRoot, "componentes");
 let written = 0;

@@ -831,25 +831,28 @@ En variantes transparentes (`outlined`, `ghost`) se aplica `backdrop-filter: blu
 
 | Prop | Tipo | Default | Descripción |
 |------|------|------|------|
-| `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
+| `theme` | `string` | `"light"` | Tema activo de la tabla: light, dark o sigacadv2. |
 | `columns` | `Column[]` | `[]` | Definición de columnas (ver [Interfaz de columna](#interfaz-de-columna)). Se asigna como propiedad JS |
 | `data` | `Record<string, any>[]` | `[]` | Filas de la tabla. Se asigna como propiedad JS |
-| `empty` | `string` | `""` | Texto a mostrar cuando no hay datos. Si se omite, usa `"No hay datos que mostrar"` |
-| `pagination` | `boolean` | `false` | Habilita paginación interna |
+| `empty` | `string` | `"No hay datos que mostrar"` | Texto a mostrar cuando no hay datos. Si se omite, usa `"No hay datos que mostrar"` |
+| `pagination` | `boolean` | `true` | Habilita paginación interna |
 | `itemsPerPage` | `number` | `10` | Tamaño de página (atributo HTML: `items-per-page`) |
 | `showPageSize` | `boolean` | `false` | Muestra selector de items por página (atributo HTML: `show-page-size`) |
 | `pageSizeOptions` | `number[]` | `[5, 10, 20, 50]` | Opciones del selector (atributo HTML: `page-size-options`). Se asigna como propiedad JS |
-| `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `string` | `"soft"` | `solid`, `outlined`, `soft`, `ghost`, `subtle` |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | `solid`, `outlined`, `soft`, `ghost`, `subtle` |
 | `searchEnabled` | `boolean` | `false` | Habilita barra de búsqueda (atributo HTML: `search-enabled`) |
 | `searchPlaceholder` | `string` | `"Buscar..."` | Placeholder del input de búsqueda (atributo HTML: `search-placeholder`) |
 | `searchFields` | `string[]` | `[]` | Columnas donde buscar (atributo HTML: `search-fields`). Vacío = todas |
 | `searchValue` | `string` | `""` | Valor controlado del buscador (atributo HTML: `search-value`) |
+| `tableMaxHeight` | `string` | `""` |  |
 | `filters` | `Record<string, any>` | `{}` | Filtros por columna. Se asigna como propiedad JS |
 | `loading` | `boolean` | `false` | Muestra una barra de carga animada en el tope |
-| `actions` | `unknown[]` | `[]` | Acciones de fila (botón "..." al final de cada fila). Se asigna como propiedad JS |
+| `actions` | `ButtonConfig[]` | `[]` | Acciones de fila (botón "..." al final de cada fila). Se asigna como propiedad JS |
+| `inlineEditing` | `boolean` | `false` |  |
 | `rowDisabled` | `boolean \| ((row: Record<string, any>) => boolean)` | `false` | Deshabilita filas (ver [Deshabilitar filas, columnas y celdas](#deshabilitar-filas-columnas-y-celdas)). Se asigna como propiedad JS |
 | `footer` | `FooterRow[]` | `[]` | Filas de footer (ver [Footer (API programática)](#footer-api-programática)). Se asigna como propiedad JS |
+| `compact` | `boolean` | `false` |  |
 
 > **Pipeline interno:** `data → search → filters → sort → pagination`. El ordenamiento y la paginación operan sobre los datos ya filtrados.
 
@@ -866,6 +869,9 @@ En variantes transparentes (`outlined`, `ghost`) se aplica `backdrop-filter: blu
 | `update:currentPage` | `number` | Cambio de página (tras búsqueda, filtro, sort o click) |
 | `update:itemsPerPage` | `number` | Cambio del tamaño de página |
 | `update:search` | `string` | Cambio en la query de búsqueda |
+| `row-click` | — |  |
+| `row-dblclick` | — |  |
+| `cell-click` | — |  |
 | `edit-start` | `{ row, column, index }` | Inicia edición de celda |
 | `edit-save` | `{ row, column, value, index }` | Celda editada y guardada. La tabla ya actualizó `row[key]` antes de emitir |
 | `edit-cancel` | `{ row, column, index }` | Edición cancelada |
@@ -877,8 +883,7 @@ En variantes transparentes (`outlined`, `ghost`) se aplica `backdrop-filter: blu
 
 | Slot | Descripción |
 |------|------|
-| `header` | Header slots --> <template #header="{ column }"> <!-- Personaliza el header completo (todas las columnas) |
-| `empty` | Empty slot --> <template #empty> <!-- Contenido cuando no hay datos (override del texto `empty`) |
+| `search` |  |
 
 > **Importante:** Los slots `cell-{key}`, `search` y `footer` que aparecen en algunos ejemplos **no están expuestos** por el `<cu-table>` (el `.ce.vue` no los reenvía). Solo `header`, `header-{key}` y `empty`. Para footer en HTML plano, usá la [API programática](#footer-api-programática) (prop `footer` vía JS).
 
@@ -905,9 +910,9 @@ En variantes transparentes (`outlined`, `ghost`) se aplica `backdrop-filter: blu
 
 | Método | Descripción |
 |------|------|
-| `.updateRow(rowIndex: number, newData: Record<string, any>)` | Actualiza una fila por índice. Hace **merge** del objeto, no reemplazo total |
-| `.getData()` | Devuelve copia de todos los datos |
-| `.getRow(rowIndex: number)` | Devuelve copia de una fila |
-| `.removeRow(rowIndex: number)` | Elimina una fila por índice |
-| `.addRow(newRow: Record<string, any>)` | Agrega una fila al final |
-| `.pushData(newData: Record<string, any>[])` | Agrega múltiples filas al final |
+| `.updateRow(index: number, newData: Partial<Record<string, any>>)` | Actualiza una fila por índice con los campos indicados. |
+| `.getData(filterFn?: ((item: Record<string, any>) => boolean) \| undefined)` | Devuelve una copia de las filas actuales, opcionalmente filtradas. |
+| `.getRow(index: number)` | Devuelve una copia de la fila en el índice indicado. |
+| `.removeRow(index: number)` | Elimina la fila en el índice indicado. |
+| `.addRow(newItem: Record<string, any>)` | Agrega una fila al final si respeta las columnas existentes. |
+| `.pushData(items: Record<string, any>[])` | Agrega varias filas al final si respetan las columnas existentes. |

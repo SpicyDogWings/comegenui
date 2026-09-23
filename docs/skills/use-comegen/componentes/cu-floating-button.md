@@ -46,8 +46,8 @@ Botón flotante (FAB) fijo en la esquina inferior derecha, de forma circular. Pe
 
 | Prop | Tipo | Default | Descripción |
 |------|------|------|------|
-| `color` | `string` | `""primary" as string"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `disabled` | `boolean` | `false` | Deshabilita el botón |
+| `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"primary"` | Color semántico del FAB: primary, secondary, neutral, success, warning, danger. |
+| `disabled` | `boolean` | `false` | Deshabilita el botón: atenúa el FAB y no emite `click`. |
 
 > El Custom Element **no expone** prop `theme`, `variant` ni `hightContrast`.
 

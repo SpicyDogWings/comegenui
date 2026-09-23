@@ -45,7 +45,7 @@ interface NavItem {
 
 | Prop | Tipo | Default | Descripción |
 |------|------|------|------|
-| `items` | `unknown[]` | — | Estructura de navegación. **Se asigna como propiedad JS** |
+| `items` | `NavItem[]` | — | Estructura de navegación. **Se asigna como propiedad JS** |
 | `trigger` | `"click" \| "hover"` | `"click"` | Cómo abren los submenús: `click` o `hover` |
 | `activePath` | `string` | `""` | Path activo manual. Si se omite, se toma de la ruta (cuando hay router) |
 

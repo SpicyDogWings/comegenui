@@ -200,21 +200,19 @@ Mientras el usuario escribe (con `searchEnabled`), aparece una barra de cooldown
 
 | Prop | Tipo | Default | Descripción |
 |------|------|------|------|
-| `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
-| `modelValue` | `string` | `""` | Valor seleccionado |
-| `options` | `SelectOption[]` | `[]` | Opciones del select (ver abajo). Se asigna como propiedad JS |
-| `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `string` | `"soft"` | `outlined`, `soft`, `ghost`, `subtle` |
-| `placeholder` | `string` | — | Texto mostrado cuando no hay selección |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | `outlined`, `soft`, `ghost`, `subtle` |
+| `disabled` | `boolean` | `false` | Estado deshabilitado |
+| `placeholder` | `string` | `""` | Texto mostrado cuando no hay selección |
 | `placeholderWrap` | `boolean` | `false` | Si `true`, el texto wrappea; si `false`, se trunca con `...` (atributo HTML: `placeholder-wrap`) |
 | `position` | `string` | `"bottom"` | Posición del dropdown: `bottom`, `top` |
 | `align` | `string` | `"start"` | Alineación: `start`, `center`, `end` |
 | `textAlign` | `"left" \| "center" \| "right"` | `"left"` | Alineación del texto seleccionado: `left`, `center`, `right` |
-| `disabled` | `boolean` | `false` | Estado deshabilitado |
 | `fixed` | `boolean` | `false` | Si es `true`, el dropdown usa `position: fixed` en vez de absoluto |
-| `hightContrast` | `boolean` | `false` | Modo de alto contraste para el texto |
+| `modelValue` | `string` | `""` | Valor seleccionado |
+| `options` | `SelectOption[]` | `[]` | Opciones del select (ver abajo). Se asigna como propiedad JS |
 | `searchEnabled` | `boolean` | `false` | Activa búsqueda por teclado (estilo select nativo: escribir hace scroll al match) |
-| `searchMode` | `string` | `"startsWith"` | Modo de coincidencia: `startsWith` (solo al inicio del label) o `includes` (en cualquier parte) |
+| `searchMode` | `"startsWith" \| "includes"` | `"startsWith"` | Modo de coincidencia: `startsWith` (solo al inicio del label) o `includes` (en cualquier parte) |
 | `searchResetDelay` | `number` | `1000` | Tiempo (ms) antes de resetear el texto de búsqueda. Se reinicia con cada tecla |
 | `loading` | `boolean` | `false` | Muestra una barra de progreso animada en el dropdown |
 | `cooldownVariant` | `string` | `"ghost-hover"` | Estilo de la barra de cooldown: `ghost` (suave) o `solid` (color lleno). No se muestra si `loading` está activo |
@@ -237,9 +235,9 @@ Cada opción del array `options` puede tener:
 
 | Evento | Payload (`e.detail`) | Descripción |
 |------|------|------|
-| `update:modelValue` | `string` | Se emite cuando cambia el valor seleccionado |
 | `select` | `{ value, label }` | Se emite al elegir una opción |
 | `close` | — | Se emite cuando se cierra el dropdown |
+| `update:modelValue` | `string` | Se emite cuando cambia el valor seleccionado |
 | `blur` | `FocusEvent` | Pérdida de foco |
 
 ## Slots
@@ -250,9 +248,9 @@ Ninguno.
 
 | Método | Descripción |
 |------|------|
-| `.get()` | Devuelve el valor seleccionado |
-| `.set(val: string)` | Asigna un valor (debe existir en `options`) |
-| `.reset()` | Limpia la selección |
-| `.focus()` | Enfoca el select |
-| `.isOpen()` | Estado del dropdown (`boolean`) |
-| `.selectedItem()` | Objeto `{ value, label }` de la opción seleccionada o `null` |
+| `.get()` | Devuelve el valor seleccionado. |
+| `.set(value: string)` | Setea el valor seleccionado. |
+| `.reset()` | Limpia la selección. |
+| `.focus()` | Enfoca el trigger del select. |
+| `.isOpen()` | Indica si el panel está abierto. |
+| `.selectedItem()` | Devuelve la opción seleccionada o null. |

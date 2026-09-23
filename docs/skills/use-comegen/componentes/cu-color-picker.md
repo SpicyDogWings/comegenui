@@ -60,9 +60,9 @@ Selector de color con swatch y campo de texto hex. Al hacer click en el swatch s
 
 | Prop | Tipo | Default | Descripción |
 |------|------|------|------|
-| `modelValue` | `string` | `"#000000"` | Valor del color en formato hex (`#RRGGBB`) |
-| `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` (define el acento del borde/foco) |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` (define el acento del borde/foco) |
 | `disabled` | `boolean` | `false` | Deshabilita el control |
+| `modelValue` | `string` | `"#000000"` | Valor del color en formato hex (`#RRGGBB`) |
 
 > El Custom Element **no expone** prop `theme`, `variant` ni `hightContrast`.
 
@@ -81,7 +81,7 @@ Ninguno.
 
 | Método | Descripción |
 |------|------|
-| `.get()` | Devuelve el color actual (`string` hex) |
-| `.set(val: string)` | Asigna un color programáticamente |
-| `.reset()` | Vuelve al valor por defecto `#000000` |
-| `.focus()` | Enfoca el campo de texto |
+| `.get()` | Devuelve el color actual en formato hex. |
+| `.set(v: string)` | Setea el color actual en formato hex. |
+| `.reset()` | Restaura el color al negro (#000000). |
+| `.focus()` | Enfoca el input de texto del color. |

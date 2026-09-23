@@ -62,17 +62,17 @@ El listado de archivos se renderiza con `<cu-file-list>` (componente interno) qu
 
 | Prop | Tipo | Default | Descripción |
 |------|------|------|------|
-| `modelValue` | `File \| File[] \| null` | `null` | Archivo/s seleccionados |
 | `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `placeholder` | `string` | `"Selecciona un archivo o arrastra aquí"` | Texto cuando no hay archivos |
-| `disabled` | `boolean` | — | Deshabilita interacción |
-| `readOnly` | `boolean` | — | Modo solo lectura |
+| `disabled` | `boolean` | `false` | Deshabilita interacción |
+| `readOnly` | `boolean` | `false` | Modo solo lectura |
 | `accept` | `string` | — | Tipos aceptados (ej: `"image/*"`) |
-| `multiple` | `boolean` | — | Permite múltiples archivos |
+| `multiple` | `boolean` | `false` | Permite múltiples archivos |
 | `maxSize` | `number` | — | Tamaño máximo en bytes |
-| `directory` | `boolean` | — | Activa modo carpeta (incluye `multiple` implícitamente) |
+| `directory` | `boolean` | `false` | Activa modo carpeta (incluye `multiple` implícitamente) |
 | `directoryDeep` | `number` | `0` | Niveles de recursión en carpetas: `0` = solo raíz, `1` = +1 subnivel, `-1` = sin límite |
 | `maxHeight` | `string` | `""` | Altura máxima del listado (ej: `"200px"`). Sin scroll si se omite. |
+| `modelValue` | `File \| File[] \| null` | `null` | Archivo o archivos seleccionados (v-model). |
 
 > **Atributos en HTML:** `readOnly` → `readonly`, `maxSize` → `max-size`, `directoryDeep` → `directory-deep`, `maxHeight` → `max-height`.
 
@@ -92,8 +92,8 @@ Ninguno.
 
 | Método | Descripción |
 |------|------|
-| `.get()` | Devuelve el/los archivo/s actual/es |
-| `.set(val: File \| File[] \| null)` | Asigna archivos programáticamente |
-| `.reset()` | Limpia la selección |
-| `.focus()` | Enfoca la zona |
-| `.trigger()` | Abre el diálogo nativo |
+| `.get()` | Devuelve el archivo o archivos actuales. |
+| `.set(files: File \| File[] \| null)` | Setea el archivo o archivos actuales. |
+| `.reset()` | Quita los archivos seleccionados. |
+| `.focus()` | Enfoca la zona de carga. |
+| `.trigger()` | Abre el selector de archivos. |

@@ -55,13 +55,16 @@ Al hacer clic en el label, el control hijo se enfoca automáticamente. Si pasás
 
 | Prop | Tipo | Default | Descripción |
 |------|------|------|------|
-| `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
 | `for` | `string` | `""` | ID del elemento a enfocar al hacer clic (atributo HTML `for`) |
 | `label` | `string` | `""` | Texto del label (modo declarativo) |
 | `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico del texto; se resuelve vía el token `--cu-color-{color}` |
 | `hightContrast` | `boolean` | `false` | Modo de alto contraste para el texto |
 
 ## Eventos
+
+| Evento | Payload (`e.detail`) | Descripción |
+|------|------|------|
+| `click` | — |  |
 
 Ninguno.
 

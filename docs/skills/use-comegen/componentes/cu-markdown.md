@@ -54,14 +54,20 @@ El contenido se pasa como **texto dentro del tag** (no como prop). El componente
 - Los tokens CSS se inyectan automáticamente en el shadow DOM.
 - **El wrapper CE actual no re-emite `parsed` ni expone `headingIds()`**: esos eventos/métodos existen en el `.vue` interno pero no atraviesan el `.ce.vue`. Ver `docs/notes/06-cu-markdown-api.md`.
 
-## Props
+## Eventos
 
-| Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `theme` | `string` | `"light"` | Tema de colores (`light`, `dark`, `sigacadv2`) |
+| Evento | Payload (`e.detail`) | Descripción |
+|------|------|------|
+| `parsed` | `headingIds: string[]` |  |
 
 ## Slots
 
 | Slot | Descripción |
 |------|------|
 | `default` | Contenido markdown a renderizar. Se pasa como texto dentro del tag. |
+
+## Métodos expuestos
+
+| Método | Descripción |
+|------|------|
+| `.headingIds()` | Devuelve los ids generados para los encabezados parseados. |

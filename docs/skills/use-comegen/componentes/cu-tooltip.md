@@ -38,9 +38,9 @@ Tooltip que aparece al hacer hover sobre el elemento contenido, con posición, a
 | Prop | Tipo | Default | Descripción |
 |------|------|------|------|
 | `text` | `string` | `""` | Texto del tooltip. Si se usa el slot `content`, tiene prioridad |
-| `color` | `string` | `"neutral"` | Color semántico del fondo: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
-| `position` | `string` | `"top"` | Lado donde aparece: `top`, `bottom`, `left`, `right` |
-| `align` | `string` | `"center"` | Alineación respecto al elemento: `start`, `center`, `end` |
+| `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico del fondo: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
+| `position` | `"bottom" \| "top" \| "left" \| "right"` | `"top"` | Lado donde aparece: `top`, `bottom`, `left`, `right` |
+| `align` | `"start" \| "center" \| "end"` | `"center"` | Alineación respecto al elemento: `start`, `center`, `end` |
 | `offset` | `number` | `6` | Distancia (px) entre el elemento y el tooltip |
 | `delay` | `number` | `200` | Retardo (ms) antes de mostrar el tooltip al hacer hover |
 | `disabled` | `boolean` | `false` | Deshabilita el tooltip (no se muestra) |
@@ -54,6 +54,7 @@ Ninguno (los eventos nativos del DOM como `mouseenter`/`mouseleave` burbujean de
 | Slot | Descripción |
 |------|------|
 | `default` | El elemento que dispara el tooltip al hacer hover |
+| `content` | Contenido del tooltip (reemplaza el prop `text`) |
 
 ## Métodos expuestos
 

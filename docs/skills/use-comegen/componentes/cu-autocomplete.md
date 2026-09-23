@@ -123,20 +123,18 @@ Por defecto el menú se abre al recibir foco. Con `min-chars="2"` solo se abre t
 
 | Prop | Tipo | Default | Descripción |
 |------|------|------|------|
-| `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
-| `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `string` | `"soft"` | `outlined`, `soft`, `ghost`, `subtle` |
-| `type` | `string` | `"text"` | `text`, `password`, `email`, `number`, `tel`, `url`, `search` |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `disabled` | `boolean` | `false` | Estado deshabilitado |
 | `readOnly` | `boolean` | `false` | Solo lectura (en HTML se usa como `readonly`) |
-| `hightContrast` | `boolean` | `false` | Modo de alto contraste |
 | `placeholder` | `string` | `""` | Placeholder del input |
+| `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | `outlined`, `soft`, `ghost`, `subtle` |
+| `type` | `string` | `"text"` | `text`, `password`, `email`, `number`, `tel`, `url`, `search` |
 | `minChars` | `number` | `0` | Caracteres mínimos para abrir el menú (atributo HTML: `min-chars`) |
-| `position` | `string` | `"bottom"` | Posición del dropdown: `bottom`, `top` |
-| `align` | `string` | `"start"` | Alineación: `start`, `center`, `end` |
-| `items` | `unknown[]` | `[]` | Opciones del menú (ver abajo). Se asigna como propiedad JS |
-| `modelValue` | `string` | `""` | Valor controlado |
-| `label` | `string` | `""` | Texto del label sobre el input |
+| `items` | `AutocompleteItem[]` | `[]` | Opciones del menú (ver abajo). Se asigna como propiedad JS |
+| `position` | `"bottom" \| "top" \| "left" \| "right"` | `"bottom"` | Posición del dropdown: `bottom`, `top` |
+| `align` | `"start" \| "center" \| "end"` | `"start"` | Alineación: `start`, `center`, `end` |
+| `fixed` | `boolean` | `false` |  |
+| `modelValue` | `string` | `""` | Valor del texto de búsqueda (v-model). |
 
 ### Items
 
@@ -171,10 +169,11 @@ Ninguno.
 
 | Método | Descripción |
 |------|------|
-| `.get()` | Texto actual del input |
-| `.set(val: string)` | Asigna texto al input |
-| `.focus()` | Enfoca el input |
-| `.isOpen()` | Estado del menú (`boolean`) |
-| `.selectedItem()` | Último item seleccionado o `null` |
+| `.get()` | Devuelve el texto actual. |
+| `.set(val: string)` | Setea el texto actual en el input. |
+| `.reset()` | Limpia el texto de búsqueda. |
+| `.focus()` | Enfoca el input. |
+| `.isOpen()` | Indica si el panel está abierto. |
+| `.selectedItem()` | Devuelve el item seleccionado o null. |
 
 > El componente **no expone** `.reset()`. Si necesitás limpiar programáticamente, usá `.set('')`.

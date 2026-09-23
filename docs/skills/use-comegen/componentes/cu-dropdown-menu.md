@@ -112,17 +112,16 @@ El dropdown usa tres props combinables:
 
 | Prop | Tipo | Default | Descripción |
 |------|------|------|------|
-| `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico del toggle: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle" \| "link" \| "none"` | `"ghost"` | Variante del toggle: `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` |
 | `disabled` | `boolean` | `false` | Deshabilita el toggle |
 | `label` | `string` | `""` | Texto del toggle (se ignora si se provee slot `toggle`) |
-| `position` | `"bottom" \| "top"` | `"bottom"` | Posición preferida del panel: `bottom`, `top` |
+| `position` | `"bottom" \| "top" \| "left" \| "right"` | `"bottom"` | Posición preferida del panel: `bottom`, `top` |
 | `align` | `"start" \| "center" \| "end"` | `"start"` | Alineación del panel: `start`, `center`, `end` |
 | `textAlign` | `"left" \| "center" \| "right"` | `"left"` | Alineación del texto del toggle: `left`, `center`, `right` |
 | `offset` | `number` | `4` | Separación en píxeles entre el toggle y el panel |
 | `fixed` | `boolean` | `false` | Si es `true`, el panel usa `position: fixed` en vez de absoluto |
-| `items` | `unknown[]` | `[]` | Lista de items (ver abajo). Se asigna como propiedad JS, no como atributo HTML |
+| `items` | `DropdownItem[]` | `[]` | Lista de items (ver abajo). Se asigna como propiedad JS, no como atributo HTML |
 
 ### Items
 
@@ -151,14 +150,14 @@ Cada item del array `items` puede tener:
 
 | Slot | Descripción |
 |------|------|
-| `toggle` | Reemplaza el botón toggle (sintaxis HTML `slot="toggle"`) |
-| `default` | Contenido del panel. Se usa solo si `items` está vacío o no se provee |
+| `toggle` | Contenido del trigger; scoped: { toggle, isOpen }. |
+| `default` | Contenido del panel. |
 
 ## Métodos expuestos
 
 | Método | Descripción |
 |------|------|
-| `.open()` | Abre el menú |
-| `.close()` | Cierra el menú |
-| `.toggle()` | Alterna visibilidad |
-| `.isOpen()` | Devuelve el estado actual (`boolean`) |
+| `.open()` | Abre el menú. |
+| `.close()` | Cierra el menú. |
+| `.toggle()` | Alterna la visibilidad del menú. |
+| `.isOpen()` | Devuelve true si el menú está abierto. |

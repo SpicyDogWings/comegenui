@@ -1,5 +1,4 @@
 {
-  "componentsDir": "src/components",
   "libDir": "src/lib",
   "docsDir": "docs/skills/use-comegen",
   "extract": {
@@ -15,7 +14,12 @@
     "routeBase": "/componentes",
     "nav": {
       "label": "Componentes",
-      "extras": [{ "text": "Theme Builder", "link": "/theme-builder" }]
+      "extras": [
+        {
+          "text": "Theme Builder",
+          "link": "/theme-builder"
+        }
+      ]
     },
     "order": [
       "Buttons",
@@ -30,56 +34,275 @@
     ]
   },
   "components": [
-    { "name": "AdvancedTable", "group": "Datos" },
-    { "name": "Alert", "group": "Información" },
-    { "name": "AuthorCard", "group": "Información" },
-    { "name": "Autocomplete", "group": "Formularios" },
-    { "name": "Avatar", "group": "Información" },
-    { "name": "Badge", "group": "Información" },
-    { "name": "Blockquote" },
-    { "name": "Button", "group": "Buttons" },
-    { "name": "Calendar", "group": "Controles" },
-    { "name": "Card", "group": "Información" },
-    { "name": "CellsImporter", "group": "Formularios" },
-    { "name": "Checkbox", "group": "Formularios" },
-    { "name": "CodeBlock" },
-    { "name": "Collapse", "group": "Overlay" },
-    { "name": "ColorPicker", "group": "Formularios" },
-    { "name": "CommandPalette", "group": "Overlay" },
-    { "name": "CopyButton" },
-    { "name": "DatePicker", "group": "Formularios" },
-    { "name": "DatePickerRange", "group": "Formularios" },
-    { "name": "Dropdown" },
-    { "name": "DropdownMenu", "group": "Controles" },
-    { "name": "EditableTableCell" },
-    { "name": "FileInput", "group": "Formularios" },
-    { "name": "FileInputZone", "group": "Formularios" },
-    { "name": "FileList" },
-    { "name": "FloatingButton", "group": "Buttons" },
-    { "name": "InlineRenderer" },
-    { "name": "Input", "group": "Formularios" },
-    { "name": "Label", "group": "Formularios" },
-    { "name": "Loader" },
-    { "name": "Markdown", "group": "Markdown" },
-    { "name": "Modal", "group": "Overlay" },
-    { "name": "MonthSlider" },
-    { "name": "MonthSliderLabel" },
-    { "name": "Navbar", "group": "Navegación" },
-    { "name": "NavbarHorizontal", "group": "Navegación" },
-    { "name": "NavbarList" },
-    { "name": "NavbarMenu" },
-    { "name": "Pagination", "group": "Controles" },
-    { "name": "Popover" },
-    { "name": "Select", "group": "Formularios" },
-    { "name": "SideOver", "group": "Overlay" },
-    { "name": "Switch", "group": "Formularios" },
-    { "name": "Table" },
-    { "name": "Tabs", "group": "Otros" },
-    { "name": "Textarea", "group": "Formularios" },
-    { "name": "ThemeDropdown" },
-    { "name": "ThemeManagerModal" },
-    { "name": "ToggleColorSheme" },
-    { "name": "Tooltip", "group": "Overlay" },
-    { "name": "YearSlider" }
+    {
+      "name": "AdvancedTable",
+      "file": "src/components/data/AdvancedTable.vue",
+      "group": "Datos",
+      "vanilla": true
+    },
+    {
+      "name": "Alert",
+      "file": "src/components/information/Alert.vue",
+      "group": "Información",
+      "vanilla": true
+    },
+    {
+      "name": "AuthorCard",
+      "file": "src/components/information/AuthorCard.vue",
+      "group": "Información",
+      "vanilla": true
+    },
+    {
+      "name": "Autocomplete",
+      "file": "src/components/form/Autocomplete.vue",
+      "group": "Formularios",
+      "vanilla": true
+    },
+    {
+      "name": "Avatar",
+      "file": "src/components/information/Avatar.vue",
+      "group": "Información",
+      "vanilla": true
+    },
+    {
+      "name": "Badge",
+      "file": "src/components/information/Badge.vue",
+      "group": "Información",
+      "vanilla": true
+    },
+    {
+      "name": "Blockquote",
+      "file": "src/components/markdown/Blockquote.vue"
+    },
+    {
+      "name": "Button",
+      "file": "src/components/buttons/Button.vue",
+      "group": "Buttons",
+      "vanilla": true
+    },
+    {
+      "name": "Calendar",
+      "file": "src/components/controls/Calendar.vue",
+      "group": "Controles",
+      "vanilla": true
+    },
+    {
+      "name": "Card",
+      "file": "src/components/information/Card.vue",
+      "group": "Información",
+      "vanilla": true
+    },
+    {
+      "name": "CellsImporter",
+      "file": "src/components/form/CellsImporter.vue",
+      "group": "Formularios",
+      "vanilla": true
+    },
+    {
+      "name": "Checkbox",
+      "file": "src/components/form/Checkbox.vue",
+      "group": "Formularios",
+      "vanilla": true
+    },
+    {
+      "name": "CodeBlock",
+      "file": "src/components/markdown/CodeBlock.vue"
+    },
+    {
+      "name": "Collapse",
+      "file": "src/components/overlay/Collapse.vue",
+      "group": "Overlay",
+      "vanilla": true
+    },
+    {
+      "name": "ColorPicker",
+      "file": "src/components/form/ColorPicker.vue",
+      "group": "Formularios",
+      "vanilla": true
+    },
+    {
+      "name": "CommandPalette",
+      "file": "src/components/overlay/CommandPalette.vue",
+      "group": "Overlay",
+      "vanilla": true
+    },
+    {
+      "name": "CopyButton",
+      "file": "src/components/buttons/CopyButton.vue"
+    },
+    {
+      "name": "DatePicker",
+      "file": "src/components/form/DatePicker.vue",
+      "group": "Formularios",
+      "vanilla": true
+    },
+    {
+      "name": "DatePickerRange",
+      "file": "src/components/form/DatePickerRange.vue",
+      "group": "Formularios",
+      "vanilla": true
+    },
+    {
+      "name": "Dropdown",
+      "file": "src/components/overlay/Dropdown.vue"
+    },
+    {
+      "name": "DropdownMenu",
+      "file": "src/components/controls/DropdownMenu.vue",
+      "group": "Controles",
+      "vanilla": true
+    },
+    {
+      "name": "EditableTableCell",
+      "file": "src/components/data/EditableTableCell.vue"
+    },
+    {
+      "name": "FileInput",
+      "file": "src/components/form/FileInput.vue",
+      "group": "Formularios",
+      "vanilla": true
+    },
+    {
+      "name": "FileInputZone",
+      "file": "src/components/form/FileInputZone.vue",
+      "group": "Formularios",
+      "vanilla": true
+    },
+    {
+      "name": "FileList",
+      "file": "src/components/FileList.vue"
+    },
+    {
+      "name": "FloatingButton",
+      "file": "src/components/buttons/FloatingButton.vue",
+      "group": "Buttons",
+      "vanilla": true
+    },
+    {
+      "name": "InlineRenderer",
+      "file": "src/components/markdown/InlineRenderer.vue"
+    },
+    {
+      "name": "Input",
+      "file": "src/components/form/Input.vue",
+      "group": "Formularios",
+      "vanilla": true
+    },
+    {
+      "name": "Label",
+      "file": "src/components/form/Label.vue",
+      "group": "Formularios",
+      "vanilla": true
+    },
+    {
+      "name": "Loader",
+      "file": "src/components/information/Loader.vue"
+    },
+    {
+      "name": "Markdown",
+      "file": "src/components/markdown/Markdown.vue",
+      "group": "Markdown",
+      "vanilla": true
+    },
+    {
+      "name": "Modal",
+      "file": "src/components/overlay/Modal.vue",
+      "group": "Overlay",
+      "vanilla": true
+    },
+    {
+      "name": "MonthSlider",
+      "file": "src/components/controls/MonthSlider.vue"
+    },
+    {
+      "name": "MonthSliderLabel",
+      "file": "src/components/controls/month-slider/MonthSliderLabel.vue"
+    },
+    {
+      "name": "Navbar",
+      "file": "src/components/navigation/Navbar.vue",
+      "group": "Navegación",
+      "vanilla": true
+    },
+    {
+      "name": "NavbarHorizontal",
+      "file": "src/components/navigation/NavbarHorizontal.vue",
+      "group": "Navegación",
+      "vanilla": true
+    },
+    {
+      "name": "NavbarList",
+      "file": "src/components/navigation/NavbarList.vue"
+    },
+    {
+      "name": "NavbarMenu",
+      "file": "src/components/navigation/NavbarMenu.vue"
+    },
+    {
+      "name": "Pagination",
+      "file": "src/components/controls/Pagination.vue",
+      "group": "Controles",
+      "vanilla": true
+    },
+    {
+      "name": "Popover",
+      "file": "src/components/overlay/Popover.vue"
+    },
+    {
+      "name": "Select",
+      "file": "src/components/form/Select.vue",
+      "group": "Formularios",
+      "vanilla": true
+    },
+    {
+      "name": "SideOver",
+      "file": "src/components/overlay/SideOver.vue",
+      "group": "Overlay",
+      "vanilla": true
+    },
+    {
+      "name": "Switch",
+      "file": "src/components/form/Switch.vue",
+      "group": "Formularios",
+      "vanilla": true
+    },
+    {
+      "name": "Table",
+      "file": "src/components/data/Table.vue"
+    },
+    {
+      "name": "Tabs",
+      "file": "src/components/Tabs.vue",
+      "group": "Otros",
+      "vanilla": true
+    },
+    {
+      "name": "Textarea",
+      "file": "src/components/form/Textarea.vue",
+      "group": "Formularios",
+      "vanilla": true
+    },
+    {
+      "name": "ThemeDropdown",
+      "file": "src/components/theme/ThemeDropdown.vue"
+    },
+    {
+      "name": "ThemeManagerModal",
+      "file": "src/components/theme/ThemeManagerModal.vue"
+    },
+    {
+      "name": "ToggleColorSheme",
+      "file": "src/components/buttons/ToggleColorSheme.vue"
+    },
+    {
+      "name": "Tooltip",
+      "file": "src/components/overlay/Tooltip.vue",
+      "group": "Overlay",
+      "vanilla": true
+    },
+    {
+      "name": "YearSlider",
+      "file": "src/components/controls/YearSlider.vue"
+    }
   ]
 }

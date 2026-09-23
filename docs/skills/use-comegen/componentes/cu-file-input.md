@@ -45,14 +45,14 @@ Soporta arrastrar un solo archivo sobre el componente. Durante el drag se ilumin
 
 | Prop | Tipo | Default | Descripción |
 |------|------|------|------|
-| `modelValue` | `File \| null` | `null` | Archivo seleccionado (vía JS, no HTML) |
 | `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `string` | `"outlined"` | `outlined`, `soft`, `ghost`, `subtle` |
+| `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `"outlined"` | `outlined`, `soft`, `ghost`, `subtle` |
 | `placeholder` | `string` | `"Seleccionar archivo"` | Texto cuando no hay archivo |
-| `disabled` | `boolean` | — | Deshabilita click, drag y drop |
-| `readOnly` | `boolean` | — | Modo solo lectura |
+| `disabled` | `boolean` | `false` | Deshabilita click, drag y drop |
+| `readOnly` | `boolean` | `false` | Modo solo lectura |
 | `accept` | `string` | — | Tipos aceptados (ej: `"image/*"`, `".pdf,.doc"`) |
 | `maxSize` | `number` | — | Tamaño máximo en bytes |
+| `modelValue` | `File \| null` | `null` | Archivo seleccionado (v-model). |
 
 > **Atributos en HTML:** `readOnly` se escribe como `readonly`, `maxSize` como `max-size`.
 
@@ -70,8 +70,8 @@ Ninguno.
 
 | Método | Descripción |
 |------|------|
-| `.get()` | Devuelve el `File` actual o `null` |
-| `.set(val: File \| null)` | Asigna un archivo programáticamente |
-| `.reset()` | Limpia la selección |
-| `.focus()` | Enfoca el input |
-| `.trigger()` | Abre el diálogo nativo de selección de archivos |
+| `.get()` | Devuelve el archivo actual. |
+| `.set(file: File \| null)` | Setea el archivo actual. |
+| `.reset()` | Quita el archivo seleccionado. |
+| `.focus()` | Enfoca el contenedor del input. |
+| `.trigger()` | Abre el selector de archivos. |

@@ -120,12 +120,12 @@ El repositorio incluye una demo en HTML plano: [`playground/pages/tabs/tabs.html
 
 | Prop | Tipo | Default | Descripción |
 |------|------|------|------|
-| `tabs` | `{ key: string; label: string; icon?: string; disabled?: boolean; keepAlive?: boolean; }[]` | `[]` | Definición de las pestañas |
-| `modelValue` | `string` | `""` | Key del tab activo (controlado) |
+| `tabs` | `TabItem[]` | — | Definición de las pestañas |
 | `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"primary"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
 | `variant` | `"soft" \| "solid" \| "ghost" \| "boxed"` | `"ghost"` | `ghost`, `solid`, `boxed`, `soft` |
 | `size` | `"md" \| "sm" \| "lg"` | `"md"` | `sm`, `md`, `lg` |
-| `disabled` | `boolean` | — | Deshabilita todas las pestañas |
+| `disabled` | `boolean` | `false` | Deshabilita todas las pestañas |
+| `modelValue` | `string` | `""` | Clave del tab activo (v-model). |
 
 ### Prop `tabs`
 
@@ -156,7 +156,7 @@ En HTML plano se usan con el atributo `slot="..."` sobre el elemento hijo.
 
 | Método | Descripción |
 |------|------|
-| `.getActive()` | Devuelve la key del tab activo |
-| `.setActive(key: string)` | Activa el tab con esa key |
-| `.next()` | Activa el próximo tab habilitado |
-| `.prev()` | Activa el tab anterior habilitado |
+| `.getActive()` | Devuelve la clave del tab activo. |
+| `.setActive(key: string)` | Activa el tab con la clave indicada. |
+| `.next()` | Avanza al siguiente tab habilitado. |
+| `.prev()` | Retrocede al tab habilitado anterior. |

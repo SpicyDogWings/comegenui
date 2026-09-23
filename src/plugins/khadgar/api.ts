@@ -42,14 +42,16 @@ export interface KhadgarSection {
 
 /** El contrato completo de un componente `.vue`. */
 export interface KhadgarComponent {
-  /** Nombre del archivo sin `.vue` (ej: `Button`). */
+  /** Nombre lógico del componente (label en el sitio y las fichas). */
   name: string;
   /** Tag del custom element (`cu-button`). Ausente en componentes internos. */
   tag?: string;
-  /** Grupo visible en el sitio (declarado o la subcarpeta bajo `componentsDir`). */
+  /** Grupo visible en el sitio (declarado en la config). */
   group: string;
   /** Ruta del `.vue` relativa a la raíz. */
   file: string;
+  /** Si tiene custom element y se documenta el uso vanilla/UMD. */
+  vanilla: boolean;
   /** Descripción corta (intro curada o JSDoc). */
   description: string;
   props: KhadgarRow[];

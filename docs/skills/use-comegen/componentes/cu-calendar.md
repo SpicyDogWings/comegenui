@@ -201,8 +201,8 @@ cal.rangeEnd = '2026-09-15';
 | `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"primary"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
 | `variant` | `"soft" \| "solid" \| "outlined" \| "subtle"` | `"soft"` | Variante del día seleccionado: `solid`, `outlined`, `soft`, `subtle` (sin `ghost`: se confunde con el día de hoy) |
 | `disabled` | `boolean` | `false` | Deshabilita todo el calendario |
-| `disabledWeekdays` | `string \| number[]` | `""` | Días de la semana no seleccionables (`0`=domingo … `6`=sábado). En HTML plano: `disabled-weekdays="0,6"` |
-| `disabledDates` | `string \| (string \| Date)[]` | `""` | Fechas puntuales no seleccionables `"YYYY-MM-DD"`. En HTML plano: `disabled-dates="2026-08-15,2026-08-16"` |
+| `disabledWeekdays` | `string \| number[]` | `[]` | Días de la semana no seleccionables (`0`=domingo … `6`=sábado). En HTML plano: `disabled-weekdays="0,6"` |
+| `disabledDates` | `string \| (string \| Date)[]` | `[]` | Fechas puntuales no seleccionables `"YYYY-MM-DD"`. En HTML plano: `disabled-dates="2026-08-15,2026-08-16"` |
 | `locale` | `string` | `"es"` | Locale para nombres de mes y días de la semana |
 | `weekStart` | `number` | `1` | Día en que arranca la semana: `0` = domingo, `1` = lunes |
 | `yearNavigation` | `string \| boolean` | `false` | Muestra botones `«`/`»` para saltar de año en el header |
@@ -221,8 +221,8 @@ cal.rangeEnd = '2026-09-15';
 | Evento | Payload (`e.detail`) | Descripción |
 |------|------|------|
 | `select` | `Date` | Click en un día válido |
-| `change` | `Date` | Fecha seleccionada (alias de `update:modelValue`) |
 | `update:modelValue` | `Date` | Cambio de la fecha seleccionada |
+| `change` | `Date` | Fecha seleccionada (alias de `update:modelValue`) |
 
 > Los tres emiten un objeto `Date` normalizado a medianoche local.
 
@@ -230,8 +230,8 @@ cal.rangeEnd = '2026-09-15';
 
 | Método | Descripción |
 |------|------|
-| `.nextMonth()` | Va al mes siguiente (respeta `max`) |
-| `.prevMonth()` | Va al mes anterior (respeta `min`) |
-| `.goToMonth(value: string \| number \| Date)` | Navega al mes de la fecha dada |
-| `.getValue()` | null` con la fecha seleccionada |
-| `.setValue(value: string \| number \| Date \| null)` | Selecciona una fecha (acepta string/number/Date) |
+| `.nextMonth()` | Avanza al mes siguiente (respetando max). |
+| `.prevMonth()` | Retrocede al mes anterior (respetando min). |
+| `.goToMonth(value: string \| number \| Date)` | Navega al mes de la fecha indicada. |
+| `.getValue()` | Devuelve la fecha seleccionada. |
+| `.setValue(value: string \| number \| Date \| null)` | Establece la fecha seleccionada y emite los eventos de cambio. |

@@ -7,32 +7,14 @@
 // Es puro: no renderiza, no genera `.md`, no conoce el playground.
 import { existsSync, readFileSync } from "node:fs";
 import { basename, relative, resolve, sep } from "node:path";
-import fg from "fast-glob";
 import { getChecker } from "./checker.mjs";
-import { buildLibIndex, buildLibTargets } from "./lib-index.mjs";
+import { buildLibIndex } from "./lib-index.mjs";
 import { complements } from "./complements.mjs";
 
 /** Versión del contrato JSON. */
 export const CONTRACT_VERSION = "2.0.0";
 
-const IGNORE = [
-  "**/customElements/**",
-  "**/icons/**",
-  "**/lab/**",
-  "**/legacy/**",
-  "**/archived/**",
-];
-
 const posix = (p) => p.split(sep).join("/");
-
-/** `Button` → `button`, `DatePicker` → `date-picker`. */
-function kebab(value) {
-  return value
-    .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
-    .replace(/[^a-zA-Z0-9]+/g, "-")
-    .replace(/^-|-$/g, "")
-    .toLowerCase();
-}
 
 /** Saca `| undefined` de un tipo opcional. */
 function stripUndefined(type) {
@@ -192,13 +174,6 @@ function slotRows(metaSlots, compSlots, overrides, item) {
   return filterRows(rows, item);
 }
 
-/** Categoría = subcarpeta inmediata bajo `componentsDir` (o "" en la raíz). */
-function categoryOf(abs, root, componentsDir) {
-  const rel = posix(relative(resolve(root, componentsDir ?? "src/components"), abs));
-  const parts = rel.split("/");
-  return parts.length > 1 ? parts[0] : "";
-}
-
 /** Aplica `include`/`exclude` (por nombre) a una lista de filas. */
 function filterRows(rows, item) {
   let out = rows;
@@ -286,9 +261,10 @@ export function extractComponent(filePath, options = {}) {
 
   const component = {
     name,
-    group: options.group ?? categoryOf(abs, root, config.componentsDir),
+    group: options.group ?? "",
     file: posix(relative(root, abs)),
     description: overrides.intro || meta.description || "",
+    vanilla: options.vanilla === true,
     props,
     events,
     slots,
@@ -306,30 +282,13 @@ export function extractComponent(filePath, options = {}) {
   return component;
 }
 
-/** Busca el `.vue` de un componente por nombre dentro de `componentsDir`. */
-function findFile(root, componentsDir, name) {
-  const matches = fg.sync(`${componentsDir}/**/${name}.vue`, {
-    cwd: root,
-    absolute: true,
-    ignore: IGNORE,
-  });
-  return matches[0] ?? null;
-}
-
-/** Lista de componentes a procesar (config explícita o glob de fallback). */
+/** Lista de componentes a procesar (cada entrada apunta a un `.vue` via `file`). */
 function resolveList(root, config, components) {
-  const componentsDir = config.componentsDir ?? "src/components";
   const configured = components ?? config.components ?? [];
-  if (!configured.length) {
-    return fg
-      .sync(`${componentsDir}/**/*.vue`, { cwd: root, absolute: true, ignore: IGNORE })
-      .map((file) => ({ name: basename(file).replace(/\.vue$/, ""), file }))
-      .sort((a, b) => a.name.localeCompare(b.name));
-  }
   const out = [];
   for (const entry of configured) {
     if (entry.json === false) continue;
-    const file = entry.file ? resolve(root, entry.file) : findFile(root, componentsDir, entry.name);
+    const file = entry.file ? resolve(root, entry.file) : null;
     if (file && existsSync(file)) out.push({ ...entry, file });
   }
   return out;
@@ -355,16 +314,10 @@ function loadSidecar(root, config, tag) {
  * @param {string} [options.root] raíz del proyecto.
  * @param {object} [options.config] config resuelta.
  * @param {Array<object>} [options.components] lista explícita (si no, `config.components`).
- * @param {"vue"|"lib"} [options.source] `vue` = componente real; `lib` = SFC que
- *   distribuye la lib (`.ce.vue` si existe). Default: `vue`.
  */
 export function buildIndex(options = {}) {
-  const { root = process.cwd(), config = {}, source = "vue" } = options;
+  const { root = process.cwd(), config = {} } = options;
   const libIndex = options.libIndex ?? buildLibIndex(root, config.libDir ?? "src/lib");
-  const targets =
-    source === "lib"
-      ? (options.targets ?? buildLibTargets(root, config.libDir ?? "src/lib"))
-      : null;
   const checker = options.checker ?? getChecker(root, config.tsconfig);
   const list = resolveList(root, config, options.components);
   const componentNames = new Set(list.map((item) => item.name));
@@ -372,9 +325,8 @@ export function buildIndex(options = {}) {
   const components = list.map((item) => {
     const vueAbs = resolve(root, item.file);
     const tag = libIndex.get(vueAbs);
-    const target = targets && tag ? targets.get(tag) : null;
     const sidecar = item.sidecar ?? loadSidecar(root, config, tag);
-    return extractComponent(target?.sfc ?? vueAbs, {
+    return extractComponent(vueAbs, {
       root,
       config,
       libIndex,
@@ -384,7 +336,8 @@ export function buildIndex(options = {}) {
       checker,
       name: item.name,
       tag,
-      group: item.group ?? categoryOf(vueAbs, root, config.componentsDir),
+      group: item.group ?? "",
+      vanilla: item.vanilla === true,
     });
   });
 

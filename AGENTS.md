@@ -26,7 +26,7 @@ docs/
 └── skills/use-comegen/                    # Skill de uso (SKILL.md + fichas `cu-*.md` generadas)
 ```
 
-Config de la fábrica: `khadgar.config.json` (raíz): `componentsDir`, `libDir`, `docsDir`, `extract`, `docs` + la lista `components`.
+Config de la fábrica: `khadgar.config.json` (raíz): `libDir`, `docsDir`, `extract`, `docs` + la lista `components` (cada uno con `name`, `file` —path del `.vue`—, `group` y `vanilla`).
 
 Donde `{category}` es uno de: `form/`, `information/`, `overlay/`, `navigation/`, `data/`, `buttons/`, o raíz.
 

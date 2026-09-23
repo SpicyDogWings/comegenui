@@ -11,15 +11,14 @@ import { buildIndex } from "../khadgar/extract/index.mjs";
 import { renderDoc } from "./render.mjs";
 
 function parseArgs(argv) {
-  const args = { check: false, only: null, config: null, source: "lib" };
+  const args = { check: false, only: null, config: null };
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
     if (arg === "--check") args.check = true;
     else if (arg === "--only") args.only = argv[++i];
     else if (arg === "--config") args.config = argv[++i];
-    else if (arg === "--source") args.source = argv[++i];
     else if (arg === "--help" || arg === "-h") {
-      console.log("khadgar-docs [--check] [--only A,B] [--source vue|lib] [--config <file>]");
+      console.log("khadgar-docs [--check] [--only A,B] [--config <file>]");
       process.exit(0);
     }
   }
@@ -37,9 +36,8 @@ if (args.only) {
   components = (config.components ?? []).filter((item) => names.has(item.name));
 }
 
-// Las fichas de la skill documentan el uso vanilla/UMD → SFC que distribuye la
-// lib (`.ce.vue`), no el `.vue` interno.
-const index = buildIndex({ root, config, components, source: args.source });
+// Las fichas documentan el `.vue` real de cada entrada.
+const index = buildIndex({ root, config, components });
 const docsDir = resolve(root, config.docsDir ?? "docs/skills/use-comegen", "componentes");
 const drift = [];
 let written = 0;
