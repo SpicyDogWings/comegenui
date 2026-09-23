@@ -254,3 +254,17 @@ Ninguno.
 | `.focus()` | Enfoca el trigger del select. |
 | `.isOpen()` | Indica si el panel está abierto. |
 | `.selectedItem()` | Devuelve la opción seleccionada o null. |
+
+## Interfaces
+
+### `SelectOption`
+
+```ts
+interface SelectOption {
+  value: string;
+  label: string;
+  disabled?: boolean;
+  color?: string;
+  variant?: string;
+}
+```

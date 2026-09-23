@@ -138,5 +138,14 @@ export function renderDoc(component, options = {}) {
     out.push(apiSection("Métodos expuestos", notes.exposes), "");
   }
 
+  if (component.interfaces?.length) {
+    out.push("## Interfaces", "");
+    for (const item of component.interfaces) {
+      out.push(`### \`${item.name}\``, "");
+      if (item.description) out.push(item.description, "");
+      out.push("```ts", item.code.trim(), "```", "");
+    }
+  }
+
   return `${out.join("\n").replace(/\n{3,}/g, "\n\n").trimEnd()}\n`;
 }

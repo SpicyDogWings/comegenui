@@ -38,37 +38,43 @@
       "name": "AdvancedTable",
       "file": "src/components/data/AdvancedTable.vue",
       "group": "Datos",
-      "vanilla": true
+      "customElement": true,
+      "skill": true
     },
     {
       "name": "Alert",
       "file": "src/components/information/Alert.vue",
       "group": "Información",
-      "vanilla": true
+      "customElement": true,
+      "skill": true
     },
     {
       "name": "AuthorCard",
       "file": "src/components/information/AuthorCard.vue",
       "group": "Información",
-      "vanilla": true
+      "customElement": true,
+      "skill": true
     },
     {
       "name": "Autocomplete",
       "file": "src/components/form/Autocomplete.vue",
       "group": "Formularios",
-      "vanilla": true
+      "customElement": true,
+      "skill": true
     },
     {
       "name": "Avatar",
       "file": "src/components/information/Avatar.vue",
       "group": "Información",
-      "vanilla": true
+      "customElement": true,
+      "skill": true
     },
     {
       "name": "Badge",
       "file": "src/components/information/Badge.vue",
       "group": "Información",
-      "vanilla": true
+      "customElement": true,
+      "skill": true
     },
     {
       "name": "Blockquote",
@@ -78,31 +84,36 @@
       "name": "Button",
       "file": "src/components/buttons/Button.vue",
       "group": "Buttons",
-      "vanilla": true
+      "customElement": true,
+      "skill": true
     },
     {
       "name": "Calendar",
       "file": "src/components/controls/Calendar.vue",
       "group": "Controles",
-      "vanilla": true
+      "customElement": true,
+      "skill": true
     },
     {
       "name": "Card",
       "file": "src/components/information/Card.vue",
       "group": "Información",
-      "vanilla": true
+      "customElement": true,
+      "skill": true
     },
     {
       "name": "CellsImporter",
       "file": "src/components/form/CellsImporter.vue",
       "group": "Formularios",
-      "vanilla": true
+      "customElement": true,
+      "skill": true
     },
     {
       "name": "Checkbox",
       "file": "src/components/form/Checkbox.vue",
       "group": "Formularios",
-      "vanilla": true
+      "customElement": true,
+      "skill": true
     },
     {
       "name": "CodeBlock",
@@ -112,19 +123,22 @@
       "name": "Collapse",
       "file": "src/components/overlay/Collapse.vue",
       "group": "Overlay",
-      "vanilla": true
+      "customElement": true,
+      "skill": true
     },
     {
       "name": "ColorPicker",
       "file": "src/components/form/ColorPicker.vue",
       "group": "Formularios",
-      "vanilla": true
+      "customElement": true,
+      "skill": true
     },
     {
       "name": "CommandPalette",
       "file": "src/components/overlay/CommandPalette.vue",
       "group": "Overlay",
-      "vanilla": true
+      "customElement": true,
+      "skill": true
     },
     {
       "name": "CopyButton",
@@ -134,23 +148,27 @@
       "name": "DatePicker",
       "file": "src/components/form/DatePicker.vue",
       "group": "Formularios",
-      "vanilla": true
+      "customElement": true,
+      "skill": true
     },
     {
       "name": "DatePickerRange",
       "file": "src/components/form/DatePickerRange.vue",
       "group": "Formularios",
-      "vanilla": true
+      "customElement": true,
+      "skill": true
     },
     {
       "name": "Dropdown",
-      "file": "src/components/overlay/Dropdown.vue"
+      "file": "src/components/overlay/Dropdown.vue",
+      "skill": true
     },
     {
       "name": "DropdownMenu",
       "file": "src/components/controls/DropdownMenu.vue",
       "group": "Controles",
-      "vanilla": true
+      "customElement": true,
+      "skill": true
     },
     {
       "name": "EditableTableCell",
@@ -160,13 +178,15 @@
       "name": "FileInput",
       "file": "src/components/form/FileInput.vue",
       "group": "Formularios",
-      "vanilla": true
+      "customElement": true,
+      "skill": true
     },
     {
       "name": "FileInputZone",
       "file": "src/components/form/FileInputZone.vue",
       "group": "Formularios",
-      "vanilla": true
+      "customElement": true,
+      "skill": true
     },
     {
       "name": "FileList",
@@ -176,7 +196,8 @@
       "name": "FloatingButton",
       "file": "src/components/buttons/FloatingButton.vue",
       "group": "Buttons",
-      "vanilla": true
+      "customElement": true,
+      "skill": true
     },
     {
       "name": "InlineRenderer",
@@ -186,13 +207,15 @@
       "name": "Input",
       "file": "src/components/form/Input.vue",
       "group": "Formularios",
-      "vanilla": true
+      "customElement": true,
+      "skill": true
     },
     {
       "name": "Label",
       "file": "src/components/form/Label.vue",
       "group": "Formularios",
-      "vanilla": true
+      "customElement": true,
+      "skill": true
     },
     {
       "name": "Loader",
@@ -202,13 +225,15 @@
       "name": "Markdown",
       "file": "src/components/markdown/Markdown.vue",
       "group": "Markdown",
-      "vanilla": true
+      "customElement": true,
+      "skill": true
     },
     {
       "name": "Modal",
       "file": "src/components/overlay/Modal.vue",
       "group": "Overlay",
-      "vanilla": true
+      "customElement": true,
+      "skill": true
     },
     {
       "name": "MonthSlider",
@@ -222,13 +247,15 @@
       "name": "Navbar",
       "file": "src/components/navigation/Navbar.vue",
       "group": "Navegación",
-      "vanilla": true
+      "customElement": true,
+      "skill": true
     },
     {
       "name": "NavbarHorizontal",
       "file": "src/components/navigation/NavbarHorizontal.vue",
       "group": "Navegación",
-      "vanilla": true
+      "customElement": true,
+      "skill": true
     },
     {
       "name": "NavbarList",
@@ -242,7 +269,8 @@
       "name": "Pagination",
       "file": "src/components/controls/Pagination.vue",
       "group": "Controles",
-      "vanilla": true
+      "customElement": true,
+      "skill": true
     },
     {
       "name": "Popover",
@@ -252,19 +280,22 @@
       "name": "Select",
       "file": "src/components/form/Select.vue",
       "group": "Formularios",
-      "vanilla": true
+      "customElement": true,
+      "skill": true
     },
     {
       "name": "SideOver",
       "file": "src/components/overlay/SideOver.vue",
       "group": "Overlay",
-      "vanilla": true
+      "customElement": true,
+      "skill": true
     },
     {
       "name": "Switch",
       "file": "src/components/form/Switch.vue",
       "group": "Formularios",
-      "vanilla": true
+      "customElement": true,
+      "skill": true
     },
     {
       "name": "Table",
@@ -274,13 +305,15 @@
       "name": "Tabs",
       "file": "src/components/Tabs.vue",
       "group": "Otros",
-      "vanilla": true
+      "customElement": true,
+      "skill": true
     },
     {
       "name": "Textarea",
       "file": "src/components/form/Textarea.vue",
       "group": "Formularios",
-      "vanilla": true
+      "customElement": true,
+      "skill": true
     },
     {
       "name": "ThemeDropdown",
@@ -298,7 +331,8 @@
       "name": "Tooltip",
       "file": "src/components/overlay/Tooltip.vue",
       "group": "Overlay",
-      "vanilla": true
+      "customElement": true,
+      "skill": true
     },
     {
       "name": "YearSlider",

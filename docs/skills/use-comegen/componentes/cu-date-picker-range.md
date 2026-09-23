@@ -123,3 +123,14 @@ El panel del datepicker solo se renderiza cuando está abierto. Si asignás `sta
 | `.setRange(start: string \| number \| Date \| null, end: string \| number \| Date \| null)` | Setea el rango de fechas y emite change. |
 | `.clear()` | Limpia el rango de fechas. |
 | `.isOpen()` | Indica si el panel está abierto. |
+
+## Interfaces
+
+### `CalendarEvent`
+
+```ts
+interface CalendarEvent {
+  date: string | number | Date
+  color?: string
+}
+```

@@ -73,3 +73,11 @@ Ninguno.
 ## Métodos expuestos
 
 Ninguno.
+
+## Interfaces
+
+### `NavbarHorizontalItem`
+
+```ts
+export interface NavbarHorizontalItem extends NavItem {}
+```

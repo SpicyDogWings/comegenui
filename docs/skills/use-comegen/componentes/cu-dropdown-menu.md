@@ -161,3 +161,21 @@ Cada item del array `items` puede tener:
 | `.close()` | Cierra el menú. |
 | `.toggle()` | Alterna la visibilidad del menú. |
 | `.isOpen()` | Devuelve true si el menú está abierto. |
+
+## Interfaces
+
+### `DropdownItem`
+
+```ts
+interface DropdownItem {
+  label?: string;
+  icon?: string;
+  href?: string;
+  onClick?: () => void;
+  color?: string;
+  variant?: string;
+  disabled?: boolean;
+  divider?: boolean;
+  target?: string;
+}
+```

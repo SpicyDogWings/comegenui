@@ -51,7 +51,11 @@ export interface KhadgarComponent {
   /** Ruta del `.vue` relativa a la raíz. */
   file: string;
   /** Si tiene custom element y se documenta el uso vanilla/UMD. */
-  vanilla: boolean;
+  customElement: boolean;
+  /** Emitir la ficha de uso pública (skill). */
+  skill: boolean;
+  /** Slug de la página del sitio (tag si es custom element; si no, kebab del nombre). */
+  slug: string;
   /** Descripción corta (intro curada o JSDoc). */
   description: string;
   props: KhadgarRow[];

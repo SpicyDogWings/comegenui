@@ -102,3 +102,11 @@ Ninguno.
 ## Métodos expuestos
 
 Ninguno.
+
+## Interfaces
+
+### `NavbarItem`
+
+```ts
+export interface NavbarItem extends NavItem {}
+```

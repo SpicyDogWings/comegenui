@@ -177,3 +177,15 @@ Ninguno.
 | `.selectedItem()` | Devuelve el item seleccionado o null. |
 
 > El componente **no expone** `.reset()`. Si necesitás limpiar programáticamente, usá `.set('')`.
+
+## Interfaces
+
+### `AutocompleteItem`
+
+```ts
+interface AutocompleteItem {
+  label: string;
+  icon?: string;
+  value?: string;
+}
+```

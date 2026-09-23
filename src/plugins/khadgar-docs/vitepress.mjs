@@ -16,9 +16,9 @@ export function buildVitepressConfig(index, docs = {}) {
     return position < 0 ? order.length : position;
   };
 
-  const publicComponents = index.components.filter((component) => component.tag);
+  const components = index.components;
   const byGroup = new Map();
-  for (const component of publicComponents) {
+  for (const component of components) {
     const key = component.group || "Otros";
     (byGroup.get(key) ?? byGroup.set(key, []).get(key)).push(component);
   }
@@ -29,7 +29,7 @@ export function buildVitepressConfig(index, docs = {}) {
       text: group,
       items: [...items]
         .sort((a, b) => a.name.localeCompare(b.name))
-        .map((component) => ({ text: component.name, link: `${routeBase}/${component.tag}` })),
+        .map((component) => ({ text: component.name, link: `${routeBase}/${component.slug}` })),
     }));
 
   const nav = [
@@ -46,11 +46,12 @@ export function buildVitepressConfig(index, docs = {}) {
     routeBase,
     nav,
     sidebar,
-    components: publicComponents.map((component) => ({
+    components: components.map((component) => ({
       tag: component.tag,
       name: component.name,
+      slug: component.slug,
       group: component.group,
-      vanilla: component.vanilla === true,
+      customElement: component.customElement === true,
     })),
   };
 }

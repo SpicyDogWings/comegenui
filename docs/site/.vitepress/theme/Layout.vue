@@ -16,8 +16,8 @@ const { frontmatter } = useData();
     <template #doc-before>
       <Demo v-if="frontmatter.demo" :name="String(frontmatter.demo)" />
       <ViewTabs
-        v-if="frontmatter.componentTag"
-        :tag="String(frontmatter.componentTag)"
+        v-if="frontmatter.componentSlug"
+        :slug="String(frontmatter.componentSlug)"
         :view="frontmatter.componentView === 'vanilla' ? 'vanilla' : 'vue'"
         :has-vanilla="Boolean(frontmatter.hasVanilla)"
       />

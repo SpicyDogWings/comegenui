@@ -16,6 +16,15 @@ export const CONTRACT_VERSION = "2.0.0";
 
 const posix = (p) => p.split(sep).join("/");
 
+/** `DatePicker` → `date-picker`. */
+function kebab(value) {
+  return value
+    .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
+    .replace(/[^a-zA-Z0-9]+/g, "-")
+    .replace(/^-|-$/g, "")
+    .toLowerCase();
+}
+
 /** Saca `| undefined` de un tipo opcional. */
 function stripUndefined(type) {
   if (!type) return "unknown";
@@ -261,10 +270,12 @@ export function extractComponent(filePath, options = {}) {
 
   const component = {
     name,
+    slug: tag ?? kebab(name),
     group: options.group ?? "",
     file: posix(relative(root, abs)),
     description: overrides.intro || meta.description || "",
-    vanilla: options.vanilla === true,
+    customElement: options.customElement ?? Boolean(tag),
+    skill: options.skill === true,
     props,
     events,
     slots,
@@ -337,7 +348,8 @@ export function buildIndex(options = {}) {
       name: item.name,
       tag,
       group: item.group ?? "",
-      vanilla: item.vanilla === true,
+      customElement: Boolean(tag),
+      skill: item.skill === true,
     });
   });
 

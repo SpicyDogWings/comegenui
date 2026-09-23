@@ -53,3 +53,20 @@ Ninguno.
 | `.isOpen()` |  |
 
 Ninguno (el wrapper CE no llama a `defineExpose`).
+
+## Interfaces
+
+### `CommandItem`
+
+```ts
+export interface CommandItem {
+  id: string;
+  label: string;
+  description?: string;
+  category?: string;
+  badges?: string[];
+  icon?: string;
+  shortcut?: string;
+  action: () => void;
+}
+```

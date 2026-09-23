@@ -126,3 +126,14 @@ El label se muestra sobre el picker y es clickeable — hace foco en el input y 
 | `.setValue(value: string \| number \| Date \| null)` | Setea la fecha seleccionada y emite change. |
 | `.clear()` | Limpia la fecha seleccionada. |
 | `.isOpen()` | Indica si el panel está abierto. |
+
+## Interfaces
+
+### `CalendarEvent`
+
+```ts
+interface CalendarEvent {
+  date: string | number | Date
+  color?: string
+}
+```

@@ -3,24 +3,24 @@ import { computed } from "vue";
 import { withBase } from "vitepress";
 
 const props = defineProps<{
-  tag: string;
+  slug: string;
   view: "vue" | "vanilla";
   hasVanilla: boolean;
 }>();
 
 const tabs = computed(() => {
   const items = [
-    { key: "vue", label: "Vue", link: `/componentes/${props.tag}` },
+    { key: "vue", label: "Vue", link: `/componentes/${props.slug}` },
   ];
   if (props.hasVanilla) {
-    items.push({ key: "vanilla", label: "Vanilla", link: `/componentes/${props.tag}-vanilla` });
+    items.push({ key: "vanilla", label: "Vanilla", link: `/componentes/${props.slug}-vanilla` });
   }
   return items;
 });
 </script>
 
 <template>
-  <nav v-if="hasVanilla" class="khadgar-views" aria-label="Vista">
+  <nav class="khadgar-views" aria-label="Vista">
     <a
       v-for="tab in tabs"
       :key="tab.key"

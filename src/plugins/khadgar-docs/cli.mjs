@@ -1,8 +1,9 @@
-// src/plugins/khadgar-docs/cli.mjs — Genera las fichas `.md` de la skill de uso
-// (vanilla/UMD) a partir de Khadgar + la prosa curada.
+// src/plugins/khadgar-docs/cli.mjs — Genera las fichas de la **skill de uso**
+// (las que viajan en el zip): los componentes con `skill: true`.
 //
-// La skill es la documentación **vanilla** de los custom elements (`vanilla: true`).
-// La ficha Vue del sitio la produce `site.mjs` (modo `vue`).
+// El render depende del caso: vanilla/UMD si el componente tiene custom element,
+// Vue si no. La ficha Vue del sitio (todos) y la vanilla (custom elements) las
+// produce `site.mjs`.
 //
 // Uso:
 //   node src/plugins/khadgar-docs/cli.mjs              # escribe todas las fichas
@@ -10,7 +11,8 @@
 //   node src/plugins/khadgar-docs/cli.mjs --only Alert,Button
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { buildVanillaDocs } from "../khadgar-docs-vanilla/index.mjs";
+import { buildIndex } from "../khadgar/extract/index.mjs";
+import { renderDoc } from "./render.mjs";
 
 function parseArgs(argv) {
   const args = { check: false, only: null, config: null };
@@ -37,19 +39,23 @@ if (args.only) {
   config.components = (config.components ?? []).filter((item) => names.has(item.name));
 }
 
-const docs = buildVanillaDocs(root, config);
+const index = buildIndex({ root, config });
+const docs = index.components.filter((component) => component.skill);
 const docsDir = resolve(root, config.docsDir ?? "docs/skills/use-comegen", "componentes");
 const drift = [];
 let written = 0;
 
-for (const doc of docs) {
-  const file = resolve(docsDir, `${doc.tag}.md`);
+for (const component of docs) {
+  const markdown = renderDoc(component, {
+    mode: component.customElement ? "vanilla" : "vue",
+  });
+  const file = resolve(docsDir, `${component.tag ?? component.slug}.md`);
   if (args.check) {
     const current = existsSync(file) ? readFileSync(file, "utf-8") : null;
-    if (current !== doc.markdown) drift.push(doc.tag);
+    if (current !== markdown) drift.push(component.tag ?? component.slug);
   } else {
     mkdirSync(docsDir, { recursive: true });
-    writeFileSync(file, doc.markdown);
+    writeFileSync(file, markdown);
     written++;
   }
 }

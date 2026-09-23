@@ -160,3 +160,21 @@ En HTML plano se usan con el atributo `slot="..."` sobre el elemento hijo.
 | `.setActive(key: string)` | Activa el tab con la clave indicada. |
 | `.next()` | Avanza al siguiente tab habilitado. |
 | `.prev()` | Retrocede al tab habilitado anterior. |
+
+## Interfaces
+
+### `TabItem`
+
+```ts
+interface TabItem {
+  key: string;
+  label: string;
+  // Icono del tab como HTML/SVG string (render con v-html), consistente con
+  // label. Si la tab no trae icon, se usa el slot dinámico tab-icon-{key}.
+  icon?: string;
+  disabled?: boolean;
+  // Mantiene el panel montado aunque no esté activo (v-show, no v-if):
+  // el estado de los componentes internos sobrevive al cambio de tab.
+  keepAlive?: boolean;
+}
+```

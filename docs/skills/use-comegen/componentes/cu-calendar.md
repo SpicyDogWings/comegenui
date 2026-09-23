@@ -235,3 +235,14 @@ cal.rangeEnd = '2026-09-15';
 | `.goToMonth(value: string \| number \| Date)` | Navega al mes de la fecha indicada. |
 | `.getValue()` | Devuelve la fecha seleccionada. |
 | `.setValue(value: string \| number \| Date \| null)` | Establece la fecha seleccionada y emite los eventos de cambio. |
+
+## Interfaces
+
+### `CalendarEvent`
+
+```ts
+interface CalendarEvent {
+  date: string | number | Date
+  color?: string
+}
+```

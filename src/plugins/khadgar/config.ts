@@ -21,8 +21,10 @@ export interface ComponentConfig {
   file: string;
   /** Grupo visible del componente en el sitio. Default: `""` (→ "Otros"). */
   group?: string;
-  /** Si tiene custom element (tag en `src/lib`), habilitar la doc vanilla. */
-  vanilla?: boolean;
+  /** Si tiene custom element (tag en `src/lib`): ficha vanilla/UMD en el sitio. */
+  customElement?: boolean;
+  /** Emitir la ficha de uso pública (skill). Independiente de `customElement`. */
+  skill?: boolean;
   /**
    * Deps a incluir (componentes usados): `true` = todos los detectados,
    * `string[]` = solo esos, `false` = ninguno.

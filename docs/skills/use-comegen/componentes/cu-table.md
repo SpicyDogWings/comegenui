@@ -916,3 +916,143 @@ En variantes transparentes (`outlined`, `ghost`) se aplica `backdrop-filter: blu
 | `.removeRow(index: number)` | Elimina la fila en el índice indicado. |
 | `.addRow(newItem: Record<string, any>)` | Agrega una fila al final si respeta las columnas existentes. |
 | `.pushData(items: Record<string, any>[])` | Agrega varias filas al final si respetan las columnas existentes. |
+
+## Interfaces
+
+### `BadgeConfig`
+
+```ts
+interface BadgeConfig {
+  value: string;
+  color?: string;
+  variant?: string;
+}
+```
+
+### `ButtonConfig`
+
+```ts
+interface ButtonConfig {
+  label?: string;
+  icon?: string | Component;
+  onClick?: (row: Record<string, any>) => void;
+  to?: string;
+  target?: string;
+  color?: string;
+  variant?: string;
+  disabled?: boolean;
+}
+```
+
+### `AutocompleteItem`
+
+```ts
+interface AutocompleteItem {
+  label: string;
+  value?: string;
+  icon?: string;
+}
+```
+
+### `SelectOption`
+
+```ts
+interface SelectOption {
+  value: string;
+  label: string;
+  disabled?: boolean;
+  color?: string;
+  variant?: string;
+}
+```
+
+### `FooterCell`
+
+```ts
+interface FooterCell {
+  value: string;
+  colspan?: number;
+  align?: "left" | "center" | "right";
+}
+```
+
+### `FooterRow`
+
+```ts
+interface FooterRow {
+  cells: FooterCell[];
+}
+```
+
+### `Column`
+
+```ts
+interface Column {
+  key: string;
+  label?: string;
+  width?: string;
+  align?: "left" | "center" | "right";
+  editorAlign?: "start" | "center" | "end"; // Alineación del editor en la celda (para celdas que no ocupan todo el ancho, ej. switch)
+  cell?: (row: Record<string, any>) => string | string[];
+  editable?: boolean | RegExp | ((row: Record<string, any>) => boolean);
+  inputType?: "input" | "textarea" | "select" | "autocomplete" | "date" | "switch";
+  color?: string;
+  variant?: string;
+  // Las sub-key de date/select/autocomplete/textarea/input se pasan tal cual a
+  // EditableTableCell, que las forwardea al editor correspondiente.
+  date?: {
+    format?: string;
+    min?: string | number | Date;
+    max?: string | number | Date;
+    yearNavigation?: boolean;
+    disabledWeekdays?: number[] | string;
+    disabledDates?: (string | Date)[] | string;
+    color?: string;
+    variant?: string;
+    placement?: string;
+    position?: string; // "bottom" | "top" | "left" | "right" — posición del panel del calendario
+    align?: string; // "start" | "center" | "end"
+    fixed?: boolean;
+  };
+  select?: {
+    options: SelectOption[];
+    color?: string;
+    variant?: string;
+    position?: string;
+    align?: string;
+    placeholderWrap?: boolean;
+  };
+  autocomplete?: {
+    items: AutocompleteItem[];
+    minChars?: number;
+    color?: string;
+    variant?: string;
+  };
+  textarea?: {
+    rows?: number;
+    noResize?: boolean;
+    color?: string;
+    variant?: string;
+  };
+  input?: {
+    type?: string;
+    startValue?: string;
+    color?: string;
+    variant?: string;
+  };
+  switch?: {
+    size?: "sm" | "md";
+    color?: string;
+  };
+  selectOptions?: SelectOption[] | ((row: Record<string, any>) => SelectOption[]);
+  autocompleteItems?: AutocompleteItem[] | ((row: Record<string, any>) => AutocompleteItem[]);
+  validator?: (value: string, row: Record<string, any>) => boolean;
+  singleClick?: boolean;
+  inlineEdit?: boolean; // Estado por columna: renderiza el editor directo
+  sortable?: boolean | "string" | "number" | "boolean";
+  badges?: (row: Record<string, any>) => BadgeConfig[];
+  buttons?: (row: Record<string, any>) => ButtonConfig[];
+  disabled?: boolean | ((row: Record<string, any>) => boolean); // Columna deshabilitada (opcional por fila)
+  cellDisabled?: (row: Record<string, any>) => boolean; // Celda deshabilitada (intersección fila × columna)
+}
+```
