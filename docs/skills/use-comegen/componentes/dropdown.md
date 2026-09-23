@@ -4,6 +4,24 @@
 
 ---
 
+## Uso en Vue
+
+```vue
+<script setup lang="ts">
+import Dropdown from "@/components/overlay/Dropdown.vue";
+import { ref } from "vue";
+
+const value = ref("");
+// props: items
+</script>
+
+<template>
+  <Dropdown v-model="value" color="neutral" variant="ghost" trigger="click" position="bottom" align="start">
+    Dropdown
+  </Dropdown>
+</template>
+```
+
 ## Props
 
 | Prop | Tipo | Default | Descripción |

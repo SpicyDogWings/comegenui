@@ -289,6 +289,7 @@ export function extractComponent(filePath, options = {}) {
   if (tag) component.tag = tag;
   if (overrides.notes && Object.keys(overrides.notes).length) component.notes = overrides.notes;
   if (overrides.sections?.length) component.sections = overrides.sections;
+  if (overrides.sectionsVue?.length) component.sectionsVue = overrides.sectionsVue;
 
   return component;
 }

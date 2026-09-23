@@ -71,8 +71,10 @@ export interface KhadgarComponent {
   deps: string[];
   /** Notas curadas por sección (`events`, `exposes`, …). */
   notes?: Record<string, string>;
-  /** Secciones de prosa curada. */
+  /** Secciones de prosa curada (vista vanilla/custom element). */
   sections?: KhadgarSection[];
+  /** Secciones de prosa curada para la vista Vue. */
+  sectionsVue?: KhadgarSection[];
 }
 
 /** Índice completo: metadata + todos los componentes. */
