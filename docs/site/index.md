@@ -2,6 +2,7 @@
 layout: page
 navbar: false
 sidebar: false
+standalone: true
 ---
 
 <script setup>

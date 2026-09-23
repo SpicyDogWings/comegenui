@@ -70,7 +70,7 @@ function handleAccept() {
   close();
 }
 
-const keys = useMagicKeys({ target: window });
+const keys = useMagicKeys({ target: typeof window !== "undefined" ? window : undefined });
 whenever(() => keys.Escape?.value, () => !props.persistent && isOpen.value && close());
 
 function handleBackdropClick(event: MouseEvent) {
