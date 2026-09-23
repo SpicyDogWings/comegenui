@@ -16,15 +16,15 @@ const active = ref(props.tabs[0]?.key ?? "");
 </script>
 
 <template>
-  <div class="cu-playground-tabs">
-    <div class="cu-playground-tabs__list" role="tablist">
+  <div class="khadgar-tabs">
+    <div class="khadgar-tabs__list" role="tablist">
       <button
         v-for="tab in tabs"
         :key="tab.key"
         type="button"
         role="tab"
-        class="cu-playground-tabs__tab"
-        :class="{ 'cu-playground-tabs__tab--active': active === tab.key }"
+        class="khadgar-tabs__tab"
+        :class="{ 'khadgar-tabs__tab--active': active === tab.key }"
         :aria-selected="active === tab.key"
         @click="active = tab.key"
       >
@@ -35,7 +35,7 @@ const active = ref(props.tabs[0]?.key ?? "");
       v-for="tab in tabs"
       v-show="active === tab.key"
       :key="tab.key"
-      class="cu-playground-tabs__panel"
+      class="khadgar-tabs__panel"
       role="tabpanel"
     >
       <slot :name="tab.key" />
@@ -44,19 +44,19 @@ const active = ref(props.tabs[0]?.key ?? "");
 </template>
 
 <style scoped>
-.cu-playground-tabs {
+.khadgar-tabs {
   display: flex;
   flex-direction: column;
   gap: var(--cu-space-sm);
 }
 
-.cu-playground-tabs__list {
+.khadgar-tabs__list {
   display: flex;
   gap: var(--cu-space-xs);
   border-bottom: var(--cu-border-thin) solid var(--cu-border-color);
 }
 
-.cu-playground-tabs__tab {
+.khadgar-tabs__tab {
   border: none;
   background: none;
   cursor: pointer;
@@ -67,12 +67,12 @@ const active = ref(props.tabs[0]?.key ?? "");
   border-bottom: var(--cu-border-medium) solid transparent;
 }
 
-.cu-playground-tabs__tab--active {
+.khadgar-tabs__tab--active {
   opacity: 1;
   border-bottom-color: var(--cu-color-neutral);
 }
 
-.cu-playground-tabs__panel {
+.khadgar-tabs__panel {
   min-width: 0;
 }
 </style>

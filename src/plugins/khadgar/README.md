@@ -1,4 +1,4 @@
-# `cu-playground` — plugin de playground
+# `khadgar` — plugin de playground
 
 Plugin de desarrollo de ComegenUI. Toma un `.vue`, le lee el **contrato**
 (props, emits, exposes, slots, tokens, clases CSS e interfaces) con
@@ -13,7 +13,7 @@ archivos del host. El host solo inyecta su propia piel vía la opción `chrome`.
 
 | Archivo | Tipo | Qué hace |
 |---|---|---|
-| `index.ts` | Vue plugin | `app.use(CuPlayground, { router, stories, pages, config, chrome, getTokenDescription, libStatus })`: registra la ruta `components/:name`, provee el registry (stories + nav + páginas) y arma el nav desde las stories. **Instalar antes de `app.use(router)`**. |
+| `index.ts` | Vue plugin | `app.use(Khadgar, { router, stories, pages, config, chrome, getTokenDescription, libStatus })`: registra la ruta `components/:name`, provee el registry (stories + nav + páginas) y arma el nav desde las stories. **Instalar antes de `app.use(router)`**. |
 | `contract.ts` | Tipos | **Dueño del contrato** de una story (`ComponentStory`, `Section`, `Variant`, `SectionCheck`…). `src/stories/types.ts` lo re-exporta (backwards compat). |
 | `chrome.ts` | Tipos + defaults | `PlaygroundChrome`/`ResolvedChrome`, `resolveChrome()` (merge host + fallbacks), `chromeKey` y `defaultTokenDescription()`. |
 | `keys.ts` | Tipos + `InjectionKey` | `playgroundKey`, `PlaygroundRegistry`, `StoryEntry`, `NavGroup`, `PlaygroundLibStatus`. Lo consume el runtime. |
@@ -54,7 +54,7 @@ vía `chromeKey` (`chrome.ts`). El host puede:
 En `main.ts` de ComegenUI:
 
 ```ts
-app.use(CuPlayground, {
+app.use(Khadgar, {
   router,
   config: playgroundConfig,
   stories: import.meta.glob("./stories/**/*.stories.ts"),
@@ -75,20 +75,20 @@ app.use(CuPlayground, {
 ## Comandos
 
 ```bash
-pnpm cu-playground:generate Button             # story + test desde el contrato
-pnpm cu-playground:generate Button --meta-only # solo metadata (tokens/clases/api), sin tocar secciones
-pnpm cu-playground:generate Button --pages     # + página física editable
-pnpm cu-playground:generate Button --dry-run   # previsualiza sin escribir
-pnpm cu-playground:generate --all              # barre componentsDir
-pnpm cu-playground:generate Button --force     # pisa story existente (reconstruye secciones)
-pnpm cu-playground:generate Button --docs      # ficha de API (componentes/cu-button.md)
-pnpm cu-playground:generate --all --docs       # todas las fichas de componentes públicos
-pnpm cu-playground:generate --all --docs --check  # falla si alguna ficha está desactualizada
-pnpm cu-playground:generate Button --docs --seed  # siembra el sidecar desde la ficha existente
+pnpm khadgar:generate Button             # story + test desde el contrato
+pnpm khadgar:generate Button --meta-only # solo metadata (tokens/clases/api), sin tocar secciones
+pnpm khadgar:generate Button --pages     # + página física editable
+pnpm khadgar:generate Button --dry-run   # previsualiza sin escribir
+pnpm khadgar:generate --all              # barre componentsDir
+pnpm khadgar:generate Button --force     # pisa story existente (reconstruye secciones)
+pnpm khadgar:generate Button --docs      # ficha de API (componentes/cu-button.md)
+pnpm khadgar:generate --all --docs       # todas las fichas de componentes públicos
+pnpm khadgar:generate --all --docs --check  # falla si alguna ficha está desactualizada
+pnpm khadgar:generate Button --docs --seed  # siembra el sidecar desde la ficha existente
 ```
 
 > Para actualizar metadata de todas las stories sin perder secciones custom:
-> `pnpm cu-playground:generate --all --meta-only`. `--force` sí reconstruye las
+> `pnpm khadgar:generate --all --meta-only`. `--force` sí reconstruye las
 > secciones y solo es seguro si tus customizaciones viven en config/extras/runtime.
 
 > `stories:generate` sigue como alias del mismo comando.
@@ -127,7 +127,7 @@ existe, si no el `X.vue`), lo parsea y renderiza `componentes/cu-x.md`.
 Precedencia al regenerar: descripciones → **config > JSDoc > story previa**;
 `interfaceCode` → **config > curado > inferido**; tokens/clases → **config > `.vue` > story previa**.
 
-## Configuración: `cu-playground.config.json` (raíz)
+## Configuración: `khadgar.config.json` (raíz)
 
 ```json
 {
@@ -230,17 +230,17 @@ Reglas:
 3. Previsualizá antes de pisar: `--dry-run` (no escribe; con un solo componente
    imprime la story resultante).
 4. Para que `--all` no toque un componente (o una categoría): `exclude` en
-   `cu-playground.config.json`.
+   `khadgar.config.json`.
 5. Página custom de un componente: `--pages` (o escribila a mano en
    `playgroundDir`); el plugin la usa como override.
 
 ## Llevarlo a otro proyecto
 
-1. Copiá `src/plugins/cu-playground/` al `src/plugins/` del destino.
-2. Copiá `cu-playground.config.json` y ajustá rutas.
+1. Copiá `src/plugins/khadgar/` al `src/plugins/` del destino.
+2. Copiá `khadgar.config.json` y ajustá rutas.
 3. En `main.ts`:
    ```ts
-   app.use(CuPlayground, {
+   app.use(Khadgar, {
      router,
      config: playgroundConfig,
      stories: import.meta.glob("./stories/**/*.stories.ts"),
@@ -248,7 +248,7 @@ Reglas:
    })
    ```
    **antes** de `app.use(router)`.
-4. En `vitest.config.ts`: `reporters: ["default", "./src/plugins/cu-playground/vitest/reporter.ts"]`.
+4. En `vitest.config.ts`: `reporters: ["default", "./src/plugins/khadgar/vitest/reporter.ts"]`.
 
 > El plugin es self-contained: contrato, runner y chrome fallback viajan con él.
 > Para que se vea como en ComegenUI, inyectá el `chrome` del host (ver arriba);

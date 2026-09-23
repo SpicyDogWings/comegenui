@@ -9,12 +9,12 @@ defineProps<{
 </script>
 
 <template>
-  <nav class="cu-playground-nav">
-    <div v-for="item in items" :key="item.label" class="cu-playground-nav__group">
-      <span class="cu-playground-nav__group-label">{{ item.label }}</span>
-      <ul class="cu-playground-nav__list">
+  <nav class="khadgar-nav">
+    <div v-for="item in items" :key="item.label" class="khadgar-nav__group">
+      <span class="khadgar-nav__group-label">{{ item.label }}</span>
+      <ul class="khadgar-nav__list">
         <li v-for="leaf in item.children ?? []" :key="leaf.label">
-          <RouterLink class="cu-playground-nav__link" :to="leaf.path ?? '#'">
+          <RouterLink class="khadgar-nav__link" :to="leaf.path ?? '#'">
             {{ leaf.label }}
           </RouterLink>
         </li>
@@ -24,13 +24,13 @@ defineProps<{
 </template>
 
 <style scoped>
-.cu-playground-nav {
+.khadgar-nav {
   display: flex;
   flex-direction: column;
   gap: var(--cu-space-lg);
 }
 
-.cu-playground-nav__group-label {
+.khadgar-nav__group-label {
   display: block;
   margin-bottom: var(--cu-space-xs);
   font-size: var(--cu-font-size-xs);
@@ -41,7 +41,7 @@ defineProps<{
   opacity: 0.5;
 }
 
-.cu-playground-nav__list {
+.khadgar-nav__list {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -50,7 +50,7 @@ defineProps<{
   gap: 0.125rem;
 }
 
-.cu-playground-nav__link {
+.khadgar-nav__link {
   display: block;
   padding: var(--cu-space-xs) var(--cu-space-sm);
   border-radius: var(--cu-radius-sm);
@@ -59,11 +59,11 @@ defineProps<{
   font-size: var(--cu-font-size-sm);
 }
 
-.cu-playground-nav__link:hover {
+.khadgar-nav__link:hover {
   background: var(--cu-color-neutral-ghost-hover);
 }
 
-.cu-playground-nav__link.router-link-active {
+.khadgar-nav__link.router-link-active {
   background: var(--cu-color-neutral-subtle);
   font-weight: var(--cu-font-weight-medium);
 }

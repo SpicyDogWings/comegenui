@@ -1,4 +1,4 @@
-// src/plugins/cu-playground/cli/parse-sfc.mjs — Parser de un componente `.vue`.
+// src/plugins/khadgar/cli/parse-sfc.mjs — Parser de un componente `.vue`.
 //
 // Extrae props, emits, exposes, slots, tokens (CSS vars) y sub-componentes
 // importados. Usa `vue/compiler-sfc` para resolver los macros (`defineProps`,
@@ -516,7 +516,7 @@ export function parseComponent(filePath, source = readFileSync(filePath, "utf-8"
 
   let compiled = "";
   try {
-    compiled = compileScript(descriptor, { id: "cu-playground" }).content;
+    compiled = compileScript(descriptor, { id: "khadgar" }).content;
   } catch {
     compiled = "";
   }

@@ -1,4 +1,4 @@
-// Generado por src/plugins/cu-playground/cli/generate.mjs a partir del contrato de FloatingButton.vue.
+// Generado por src/plugins/khadgar/cli/generate.mjs a partir del contrato de FloatingButton.vue.
 // Eventos detectados: click
 
 import FloatingButton from "@/components/buttons/FloatingButton.vue";

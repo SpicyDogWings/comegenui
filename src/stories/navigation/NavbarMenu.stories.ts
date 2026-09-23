@@ -1,8 +1,8 @@
-// Generado por src/plugins/cu-playground/cli/generate.mjs a partir del contrato de NavbarMenu.vue.
+// Generado por src/plugins/khadgar/cli/generate.mjs a partir del contrato de NavbarMenu.vue.
 // (sin eventos declarados)
 
 import NavbarMenu from "@/components/navigation/NavbarMenu.vue";
-import type { ComponentStory } from "@/plugins/cu-playground/contract";
+import type { ComponentStory } from "@/plugins/khadgar/contract";
 
 export const cuNavbarMenuStories: ComponentStory = {
   component: "cu-navbar-menu",

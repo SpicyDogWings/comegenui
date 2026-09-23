@@ -17,8 +17,8 @@
     "preflight": "bash scripts/preflight.sh",
     "stories:status": "node tools/status.mjs",
     "stories:migrate": "node tools/migrate.mjs",
-    "cu-playground:generate": "node src/plugins/cu-playground/cli/generate.mjs",
-    "stories:generate": "node src/plugins/cu-playground/cli/generate.mjs",
+    "khadgar:generate": "node src/plugins/khadgar/cli/generate.mjs",
+    "stories:generate": "node src/plugins/khadgar/cli/generate.mjs",
     "new:component": "node tools/scaffold-component.mjs"
   },
   "dependencies": {
@@ -58,6 +58,7 @@
     "vite": "^8.0.8",
     "vite-plugin-vue-devtools": "^8.1.5",
     "vitest": "^4.1.9",
+    "vue-component-meta": "^3.3.11",
     "vue-tsc": "^3.2.6"
   },
   "engines": {

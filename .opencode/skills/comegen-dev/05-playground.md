@@ -4,11 +4,11 @@ Iterar con `pnpm dev` (hot reload).
 
 ## Playground genérico (actual)
 
-El plugin `src/plugins/cu-playground/` registra la ruta dinámica `/playground/components/:name` y `StoryPage.vue` pinta la story completa: **secciones + extras (Programmatic/Events) + Style + API**. No se escribe una página por componente.
+El plugin `src/plugins/khadgar/` registra la ruta dinámica `/playground/components/:name` y `StoryPage.vue` pinta la story completa: **secciones + extras (Programmatic/Events) + Style + API**. No se escribe una página por componente.
 
-- **Nav automático**: `PlaygroundLayout.vue` ya no hardcodea entradas; lo deriva del registry (categoría = subcarpeta de `src/stories`). Para ocultar/ordenar/renombrar: `cu-playground.config.json` → `nav`.
-- **Registry lazy**: las stories se cargan al navegar (code-splitting). Para que exista la página, la story necesita `tokens`/`api`: `pnpm cu-playground:generate X --meta-only` (o `--all`).
-- **Páginas físicas (opcional)**: `pnpm cu-playground:generate X --pages` crea `src/playground/X.vue` editable; si existe (la haya generado el plugin o no), **override** de la página genérica.
+- **Nav automático**: `PlaygroundLayout.vue` ya no hardcodea entradas; lo deriva del registry (categoría = subcarpeta de `src/stories`). Para ocultar/ordenar/renombrar: `khadgar.config.json` → `nav`.
+- **Registry lazy**: las stories se cargan al navegar (code-splitting). Para que exista la página, la story necesita `tokens`/`api`: `pnpm khadgar:generate X --meta-only` (o `--all`).
+- **Páginas físicas (opcional)**: `pnpm khadgar:generate X --pages` crea `src/playground/X.vue` editable; si existe (la haya generado el plugin o no), **override** de la página genérica.
 - Config por componente: `X.stories.config.json` (order/include/exclude, `sections`, `custom[]`, `attrs`, `api`, `tokens`, `subComponents`, `components`, `interfaceCode`). Extras: `X.stories.extras.ts` (Programmatic = exposes/v-model; Events = eventos).
 
 ### Extras (patio de juegos)
@@ -23,7 +23,7 @@ El plugin `src/plugins/cu-playground/` registra la ruta dinámica `/playground/c
 
 La página genérica alcanza para el 99%. Si necesitás una sección custom que la
 story no puede expresar, generá una página física con
-`pnpm cu-playground:generate X --pages`. El plugin la detecta (por nombre) y la
+`pnpm khadgar:generate X --pages`. El plugin la detecta (por nombre) y la
 usa en lugar de la genérica.
 
 El scaffold **reusa el runtime del plugin**: `StoryBody` pinta todo lo genérico y
@@ -31,9 +31,9 @@ El scaffold **reusa el runtime del plugin**: `StoryBody` pinta todo lo genérico
 
 ```vue
 <script setup lang="ts">
-import PlaygroundLayout from "@/plugins/cu-playground/runtime/PlaygroundLayout.vue";
-import StoryBody from "@/plugins/cu-playground/runtime/StoryBody.vue";
-import { buildOutline } from "@/plugins/cu-playground/runtime/outline";
+import PlaygroundLayout from "@/plugins/khadgar/runtime/PlaygroundLayout.vue";
+import StoryBody from "@/plugins/khadgar/runtime/StoryBody.vue";
+import { buildOutline } from "@/plugins/khadgar/runtime/outline";
 import { cuXStories } from "@/stories/{category}/X.stories";
 
 const outlineItems = buildOutline(cuXStories);
@@ -98,10 +98,10 @@ Ya **no** hay que registrar nada a mano: el plugin deriva la ruta y el nav del
 glob de stories.
 
 1. **Story** — `src/stories/{category}/X.stories.ts` (la crea
-   `pnpm cu-playground:generate X`, o `--all`).
+   `pnpm khadgar:generate X`, o `--all`).
 2. **Ruta** — la agrega el plugin (`/playground/components/:name`).
 3. **Nav** — lo deriva el plugin de la subcarpeta de la story (categoría). Para
-   ordenar/renombrar/ocultar: `cu-playground.config.json` → `nav`.
+   ordenar/renombrar/ocultar: `khadgar.config.json` → `nav`.
 
 **Validación:** abrir `/playground/components/x` — aparece en el nav solo, el
 outline salta a las secciones, tabs ok, badge de tests visible.
@@ -111,7 +111,7 @@ outline salta a las secciones, tabs ok, badge de tests visible.
 Un grupo del nav = una **subcarpeta de `src/stories/`** (y de
 `src/components/`). Al crear `src/stories/{category}/X.stories.ts`, el grupo
 aparece solo. Para ubicarlo en un orden puntual, agregalo a
-`nav.order` en `cu-playground.config.json`. Si la categoría es nueva, actualizá
+`nav.order` en `khadgar.config.json`. Si la categoría es nueva, actualizá
 el árbol de `AGENTS.md`.
 
 ## Sincronizar
@@ -120,7 +120,7 @@ El nav espeja `src/stories/` 1:1 (label = archivo sin `.stories.ts`, orden
 alfabético). Para ver qué falta:
 
 ```bash
-pnpm cu-playground:generate --all   # crea/actualiza stories y metadata
+pnpm khadgar:generate --all   # crea/actualiza stories y metadata
 ```
 
 > Ya no existe el concepto de "página legacy". Las viejas quedaron en

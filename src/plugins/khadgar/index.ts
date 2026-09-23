@@ -19,7 +19,7 @@ export { resolvePlaygroundConfig } from "./config";
 export type { PlaygroundChrome, ResolvedChrome } from "./chrome";
 export { chromeKey, DEFAULT_CHROME, resolveChrome, defaultTokenDescription } from "./chrome";
 
-export interface CuPlaygroundOptions {
+export interface KhadgarOptions {
   /** Router de la app (el plugin agrega la ruta `components/:name`). */
   router: Router;
   /**
@@ -32,7 +32,7 @@ export interface CuPlaygroundOptions {
    * `import.meta.glob("./playground/**\/*.vue")`.
    */
   pages?: Record<string, unknown>;
-  /** Configuración (`cu-playground.config.json`). */
+  /** Configuración (`khadgar.config.json`). */
   config?: PlaygroundConfig;
   /** Componentes de chrome (UI) del runtime. Sin esto se usan fallbacks. */
   chrome?: PlaygroundChrome;
@@ -150,10 +150,10 @@ export function buildNav(entries: StoryEntry[], config: PlaygroundConfig): NavGr
  * Plugin Vue del playground: registra la ruta genérica `components/:name`,
  * provee el registry (stories, nav y páginas físicas de override).
  *
- * Uso: `app.use(CuPlayground, { router, stories, pages, config })`.
+ * Uso: `app.use(Khadgar, { router, stories, pages, config })`.
  */
-const CuPlayground = {
-  install(app: App, options: CuPlaygroundOptions): void {
+const Khadgar = {
+  install(app: App, options: KhadgarOptions): void {
     const config = resolvePlaygroundConfig(options.config);
     const base = (options.base ?? config.base).replace(/\/+$/, "");
     const entries = buildStoryEntries(options.stories, base);
@@ -199,4 +199,4 @@ const CuPlayground = {
   },
 };
 
-export default CuPlayground;
+export default Khadgar;

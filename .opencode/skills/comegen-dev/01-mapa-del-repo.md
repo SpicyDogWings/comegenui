@@ -12,8 +12,8 @@ src/
 │   ├── icons/ · theme/ · lab/ · legacy/ · archived/  # no públicos / internos
 ├── lib/{category}/x.ts                 # Entry point UMD (defineCustomElement + registro)
 ├── stories/                            # Verificación/demo: NO vive junto al componente
-│   ├── types.ts                        # Shim → @/plugins/cu-playground/contract (contrato)
-│   ├── runner.l1.ts                    # Shim → @/plugins/cu-playground/tests/runner.l1
+│   ├── types.ts                        # Shim → @/plugins/khadgar/contract (contrato)
+│   ├── runner.l1.ts                    # Shim → @/plugins/khadgar/tests/runner.l1
 │   └── {category}/X.stories.ts         # Story (secciones + checks); espeja la categoría
 │       {category}/X.l1.test.ts         # Test L1 (runner de stories)
 ├── pages/playground/
@@ -21,7 +21,7 @@ src/
 ├── composables/useTestResults.ts       # Shim → plugin runtime/useTestResults
 ├── plugins/
 │   ├── cu-tokens/                      # Sistema de tokens CSS
-│   └── cu-playground/                  # Plugin de stories SELF-CONTAINED (runtime + generate + reporter)
+│   └── khadgar/                  # Plugin de stories SELF-CONTAINED (runtime + generate + reporter)
 │       ├── index.ts                    # Vue plugin (ruta components/:name + registry)
 │       ├── contract.ts                 # DUEÑO del contrato ComponentStory/Section/Variant/checks
 │       ├── chrome.ts · runtime/chrome/ # Chrome (UI) con fallbacks mínimos + inyección del host

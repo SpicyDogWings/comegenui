@@ -1,1 +1,1 @@
-export * from "@/plugins/cu-playground/runtime/useTestResults";
+export * from "@/plugins/khadgar/runtime/useTestResults";

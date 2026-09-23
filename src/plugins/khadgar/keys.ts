@@ -28,7 +28,7 @@ export interface NavGroup {
 }
 
 /**
- * Registry que provee el plugin `cu-playground` al runtime del playground.
+ * Registry que provee el plugin `khadgar` al runtime del playground.
  *
  * El nav y el listado se derivan de la ruta de cada story (sin cargar su
  * contenido). El contenido de la story se resuelve de forma perezosa en la
@@ -60,4 +60,4 @@ export interface PlaygroundLibStatus {
 }
 
 /** Inyección del registry del playground. */
-export const playgroundKey: InjectionKey<PlaygroundRegistry> = Symbol("cu-playground-registry");
+export const playgroundKey: InjectionKey<PlaygroundRegistry> = Symbol("khadgar-registry");

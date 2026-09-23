@@ -33,5 +33,5 @@ Las fases 2 y 3 agregan tests **L2** (`.ce`, browser) y **L3** (`.umd`, browser)
 
 ## Notas
 
-- Los tests de stories viven junto al componente (`X.stories.ts`) y se generan por capa desde el contrato (`src/plugins/cu-playground/contract.ts`).
-- El naming de los tests es `[cu-button] colors › primary › nombre del check`; el reporter (`src/plugins/cu-playground/vitest/reporter.ts`) lo mapea a sección/variante.
+- Los tests de stories viven junto al componente (`X.stories.ts`) y se generan por capa desde el contrato (`src/plugins/khadgar/contract.ts`).
+- El naming de los tests es `[cu-button] colors › primary › nombre del check`; el reporter (`src/plugins/khadgar/vitest/reporter.ts`) lo mapea a sección/variante.

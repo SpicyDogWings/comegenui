@@ -23,12 +23,12 @@ src/
 │   └── theme.ts                           # Definiciones estáticas de temas
 ├── plugins/
 │   ├── cu-tokens/                         # Sistema de tokens CSS
-│   └── cu-playground/                     # Plugin del playground (runtime + runtime/, cli/, vitest/)
+│   └── khadgar/                     # Plugin del playground (runtime + runtime/, cli/, vitest/)
 ├── composables/                           # Composables reutilizables
 └── utils/                                 # Utilidades (getHostTheme, palette, fileIcons)
 ```
 
-Config del playground: `cu-playground.config.json` (raíz): `componentsDir`, `storiesDir`, `playgroundDir`, `base`, `pages`, `nav`.
+Config del playground: `khadgar.config.json` (raíz): `componentsDir`, `storiesDir`, `playgroundDir`, `base`, `pages`, `nav`.
 
 Donde `{category}` es uno de: `form/`, `information/`, `overlay/`, `navigation/`, `data/`, `buttons/`, o raíz.
 

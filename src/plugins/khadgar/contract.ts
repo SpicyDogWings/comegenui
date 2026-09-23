@@ -3,7 +3,7 @@ import type { VueWrapper } from "@vue/test-utils";
 import type { ExpectStatic } from "vitest";
 
 /**
- * Contrato de una story del playground de cu-playground.
+ * Contrato de una story del playground de khadgar.
  *
  * Una story es la fuente única de un componente: alimenta el preview del
  * playground (`StoryRenderer`), los snippets de código, y los tests de las

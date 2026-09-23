@@ -57,7 +57,7 @@ La ficha del componente es **una sola** (canonical: la leen agentes y humanos) m
 | **Ficha del componente** | `docs/skills/use-comegen/componentes/cu-<nombre>.md` (canonical; `.opencode/skills/comegen-ui/` y `.agents/skills/use-comegen/` son symlinks) | Agentes IA (viaja con el zip) + humanos |
 | **Índices humanos** | `docs/DOCS.md`, `COMPONENTS-GUIDE.md` | Humanos |
 
-> La ficha **no se edita a mano**: la genera `pnpm cu-playground:generate <X> --docs` desde el SFC que distribuye la lib. La prosa curada vive en `componentes/cu-<nombre>.doc.json`.
+> La ficha **no se edita a mano**: la genera `pnpm khadgar:generate <X> --docs` desde el SFC que distribuye la lib. La prosa curada vive en `componentes/cu-<nombre>.doc.json`.
 
 ### Índices a actualizar — Skill (agentes)
 
@@ -79,7 +79,7 @@ La ficha del componente es **una sola** (canonical: la leen agentes y humanos) m
 ### Validación post-documentación
 
 Después de documentar, auditar con **skill-auditor** para verificar:
-- La ficha refleja el SFC de la lib (`pnpm cu-playground:generate --all --docs --check`).
+- La ficha refleja el SFC de la lib (`pnpm khadgar:generate --all --docs --check`).
 - El tag aparece en todos los índices.
 
 ### Para auditar un `.md` existente

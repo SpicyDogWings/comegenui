@@ -1,8 +1,8 @@
-// Generado por src/plugins/cu-playground/cli/generate.mjs a partir del contrato de NavbarList.vue.
+// Generado por src/plugins/khadgar/cli/generate.mjs a partir del contrato de NavbarList.vue.
 // Eventos detectados: update:modelValue, toggle-compact
 
 import NavbarList from "@/components/navigation/NavbarList.vue";
-import type { ComponentStory } from "@/plugins/cu-playground/contract";
+import type { ComponentStory } from "@/plugins/khadgar/contract";
 
 export const cuNavbarListStories: ComponentStory = {
   component: "cu-navbar-list",

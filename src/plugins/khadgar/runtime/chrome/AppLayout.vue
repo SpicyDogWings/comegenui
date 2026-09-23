@@ -1,21 +1,21 @@
 <template>
-  <section class="cu-playground-app-layout">
-    <header class="cu-playground-app-layout__topbar">
-      <div class="cu-playground-app-layout__left">
+  <section class="khadgar-app-layout">
+    <header class="khadgar-app-layout__topbar">
+      <div class="khadgar-app-layout__left">
         <slot name="title" />
       </div>
-      <div class="cu-playground-app-layout__actions">
+      <div class="khadgar-app-layout__actions">
         <slot name="actions" />
       </div>
     </header>
-    <main class="cu-playground-app-layout__body">
+    <main class="khadgar-app-layout__body">
       <slot />
     </main>
   </section>
 </template>
 
 <style scoped>
-.cu-playground-app-layout {
+.khadgar-app-layout {
   width: 100dvw;
   height: 100dvh;
   display: flex;
@@ -25,7 +25,7 @@
   font-family: var(--cu-font-sans);
 }
 
-.cu-playground-app-layout__topbar {
+.khadgar-app-layout__topbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -34,14 +34,14 @@
   border-bottom: var(--cu-border-thin) solid var(--cu-border-color);
 }
 
-.cu-playground-app-layout__left,
-.cu-playground-app-layout__actions {
+.khadgar-app-layout__left,
+.khadgar-app-layout__actions {
   display: flex;
   align-items: center;
   gap: var(--cu-space-md);
 }
 
-.cu-playground-app-layout__body {
+.khadgar-app-layout__body {
   flex: 1;
   min-height: 0;
   display: flex;

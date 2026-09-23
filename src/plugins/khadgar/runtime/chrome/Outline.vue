@@ -7,13 +7,13 @@ defineProps<{
 </script>
 
 <template>
-  <nav class="cu-playground-outline">
-    <ul class="cu-playground-outline__list">
+  <nav class="khadgar-outline">
+    <ul class="khadgar-outline__list">
       <li v-for="item in items" :key="item.id">
-        <a class="cu-playground-outline__link" :href="`#${item.id}`">{{ item.label }}</a>
-        <ul v-if="item.children?.length" class="cu-playground-outline__list cu-playground-outline__list--nested">
+        <a class="khadgar-outline__link" :href="`#${item.id}`">{{ item.label }}</a>
+        <ul v-if="item.children?.length" class="khadgar-outline__list khadgar-outline__list--nested">
           <li v-for="child in item.children" :key="child.id">
-            <a class="cu-playground-outline__link" :href="`#${child.id}`">{{ child.label }}</a>
+            <a class="khadgar-outline__link" :href="`#${child.id}`">{{ child.label }}</a>
           </li>
         </ul>
       </li>
@@ -22,7 +22,7 @@ defineProps<{
 </template>
 
 <style scoped>
-.cu-playground-outline__list {
+.khadgar-outline__list {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -31,13 +31,13 @@ defineProps<{
   gap: 0.25rem;
 }
 
-.cu-playground-outline__list--nested {
+.khadgar-outline__list--nested {
   margin-left: var(--cu-space-sm);
   padding-left: var(--cu-space-sm);
   border-left: var(--cu-border-thin) solid var(--cu-border-color);
 }
 
-.cu-playground-outline__link {
+.khadgar-outline__link {
   display: block;
   font-size: var(--cu-font-size-sm);
   color: var(--cu-color-neutral);
@@ -45,7 +45,7 @@ defineProps<{
   text-decoration: none;
 }
 
-.cu-playground-outline__link:hover {
+.khadgar-outline__link:hover {
   opacity: 1;
 }
 </style>

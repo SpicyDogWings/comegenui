@@ -99,14 +99,14 @@ Receta completa y schema en [`04-stories-y-tests.md`](04-stories-y-tests.md).
 
 ## 6. Playground
 
-**No hay que escribir página**: el plugin `cu-playground` (`src/plugins/cu-playground/`) pinta cualquier story en `/playground/components/:name` (`StoryPage` genérica: secciones + extras + Style + API) y **deriva el nav solo** (categoría = subcarpeta de `src/stories`).
+**No hay que escribir página**: el plugin `khadgar` (`src/plugins/khadgar/`) pinta cualquier story en `/playground/components/:name` (`StoryPage` genérica: secciones + extras + Style + API) y **deriva el nav solo** (categoría = subcarpeta de `src/stories`).
 
-- Para que use `Style`/`API`, la story necesita `tokens`/`api`: `pnpm cu-playground:generate X --meta-only`.
+- Para que use `Style`/`API`, la story necesita `tokens`/`api`: `pnpm khadgar:generate X --meta-only`.
 - **Extras** (`X.stories.extras.ts`):
   - **Programmatic**: **solo si el componente usa `defineExpose`** (si no expone métodos, no se crea).
   - **Events**: si emite eventos propios (`ceEmit`) o nativos relevantes.
-- Ruta y nav son automáticos. Página física de override (opcional): `pnpm cu-playground:generate X --pages` → `src/playground/X.vue`.
-- Config de rutas/nav: `cu-playground.config.json` (raíz).
+- Ruta y nav son automáticos. Página física de override (opcional): `pnpm khadgar:generate X --pages` → `src/playground/X.vue`.
+- Config de rutas/nav: `khadgar.config.json` (raíz).
 
 Detalle en [`05-playground.md`](05-playground.md).
 

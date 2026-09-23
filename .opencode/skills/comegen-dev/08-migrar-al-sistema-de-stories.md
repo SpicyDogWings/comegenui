@@ -1,7 +1,7 @@
 # 08 — Migrar un componente al sistema de stories (1f)
 
-> **Histórico.** Con el plugin `cu-playground` la creación de stories es
-> automática: `pnpm cu-playground:generate X` (o `--all`) lee el contrato del
+> **Histórico.** Con el plugin `khadgar` la creación de stories es
+> automática: `pnpm khadgar:generate X` (o `--all`) lee el contrato del
 > `.vue`. Este documento queda como referencia del flujo viejo (páginas legacy
 > en `src/pages/playground/components/`, hoy movidas a `backups/`).
 
@@ -60,7 +60,7 @@ Si un test viejo no mapea a una sección (interacción rara), agregá una secci�
 ```ts
 // src/stories/information/Badge.l1.test.ts
 import { cuBadgeStories } from "./Badge.stories";
-import { runL1Story } from "@/plugins/cu-playground/tests/runner.l1";
+import { runL1Story } from "@/plugins/khadgar/tests/runner.l1";
 
 runL1Story(cuBadgeStories);
 ```
@@ -110,7 +110,7 @@ git commit -m "test(l1/badge): migrar Badge al sistema de stories"
 // src/stories/information/Badge.stories.ts
 import { defineComponent, h } from "vue";
 import Badge from "./Badge.vue";
-import type { ComponentStory } from "@/plugins/cu-playground/contract";
+import type { ComponentStory } from "@/plugins/khadgar/contract";
 
 const COLORS = ["primary", "secondary", "neutral", "success", "warning", "danger"] as const;
 const VARIANTS = ["solid", "soft", "ghost", "subtle", "outlined"] as const;

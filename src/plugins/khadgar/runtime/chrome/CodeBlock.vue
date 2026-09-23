@@ -6,11 +6,11 @@ defineProps<{
 </script>
 
 <template>
-  <pre class="cu-playground-code"><code :class="language ? `language-${language}` : undefined">{{ code }}</code></pre>
+  <pre class="khadgar-code"><code :class="language ? `language-${language}` : undefined">{{ code }}</code></pre>
 </template>
 
 <style scoped>
-.cu-playground-code {
+.khadgar-code {
   margin: 0;
   padding: var(--cu-space-md);
   border-radius: var(--cu-radius);

@@ -52,13 +52,13 @@ Refiná con **`X.stories.config.json`** (hermano de la story):
 
 El generador importa el archivo de extras si existe y lo agrega a la story sin pisarlo. El generador **no** toca estos archivos ni el config.
 
-## Contrato (dueño: `src/plugins/cu-playground/contract.ts`)
+## Contrato (dueño: `src/plugins/khadgar/contract.ts`)
 
 El contrato vive **dentro del plugin** para que sea portable. En el repo,
 `src/stories/types.ts` lo re-exporta (backwards compat):
 
 ```ts
-// src/stories/types.ts → export * from "@/plugins/cu-playground/contract"
+// src/stories/types.ts → export * from "@/plugins/khadgar/contract"
 export type SlotContent = string | number | (() => VNodeChild);
 
 export interface Variant {
@@ -93,7 +93,7 @@ export interface ComponentStory {
 ```
 
 Las stories pueden importar de `@/stories/types` (shim) o directo de
-`@/plugins/cu-playground/contract` (el generador usa este último). Los contextos
+`@/plugins/khadgar/contract` (el generador usa este último). Los contextos
 (`L1Context`, `CeContext`, `UmdContext`) traen `expect` inyectado: **las stories
 no importan `vitest`** (así el archivo se puede importar desde el playground sin
 arrastrar vitest).
@@ -103,7 +103,7 @@ arrastrar vitest).
 ```ts
 // src/stories/buttons/Button.stories.ts
 import Button from "./Button.vue";
-import type { ComponentStory } from "@/plugins/cu-playground/contract";
+import type { ComponentStory } from "@/plugins/khadgar/contract";
 
 export const cuButtonStories: ComponentStory = {
   component: "cu-button",
@@ -149,12 +149,12 @@ Buenas prácticas:
 ```ts
 // src/stories/buttons/Button.l1.test.ts
 import { cuButtonStories } from "./Button.stories";
-import { runL1Story } from "@/plugins/cu-playground/tests/runner.l1";
+import { runL1Story } from "@/plugins/khadgar/tests/runner.l1";
 
 runL1Story(cuButtonStories);
 ```
 
-`runner.l1.ts` (dueño: `src/plugins/cu-playground/tests/runner.l1.ts`;
+`runner.l1.ts` (dueño: `src/plugins/khadgar/tests/runner.l1.ts`;
 `src/stories/runner.l1.ts` lo re-exporta) monta el `.vue` con `@vue/test-utils`
 por cada `variant × check`, corre el check y desmonta. El nombre del test es:
 
@@ -180,7 +180,7 @@ pnpm exec vitest run --project l1 src/stories/buttons/Button.l1.test.ts
 
 ## Reporter y playground
 
-`src/plugins/cu-playground/vitest/reporter.ts` (configurado en `vitest.config.ts`) escribe `public/test-results.json`:
+`src/plugins/khadgar/vitest/reporter.ts` (configurado en `vitest.config.ts`) escribe `public/test-results.json`:
 
 ```jsonc
 {

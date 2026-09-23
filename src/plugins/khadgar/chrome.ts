@@ -56,7 +56,7 @@ export function resolveChrome(chrome?: PlaygroundChrome): ResolvedChrome {
 }
 
 /** Inyección del chrome resuelto. */
-export const chromeKey: InjectionKey<ResolvedChrome> = Symbol("cu-playground-chrome");
+export const chromeKey: InjectionKey<ResolvedChrome> = Symbol("khadgar-chrome");
 
 export type { NavItem };
 

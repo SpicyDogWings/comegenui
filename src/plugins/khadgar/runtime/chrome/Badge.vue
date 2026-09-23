@@ -18,8 +18,8 @@ const styles = computed(() => ({
 
 <template>
   <span
-    class="cu-playground-badge"
-    :class="`cu-playground-badge--${variant ?? 'soft'}`"
+    class="khadgar-badge"
+    :class="`khadgar-badge--${variant ?? 'soft'}`"
     :title="title"
     :style="styles"
   >
@@ -28,7 +28,7 @@ const styles = computed(() => ({
 </template>
 
 <style scoped>
-.cu-playground-badge {
+.khadgar-badge {
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
@@ -40,17 +40,17 @@ const styles = computed(() => ({
   white-space: nowrap;
 }
 
-.cu-playground-badge--solid {
+.khadgar-badge--solid {
   background: var(--badge-bg);
   color: var(--badge-text);
 }
 
-.cu-playground-badge--soft {
+.khadgar-badge--soft {
   background: var(--badge-soft);
   color: var(--cu-color-neutral);
 }
 
-.cu-playground-badge--subtle {
+.khadgar-badge--subtle {
   background: var(--badge-subtle);
   color: var(--cu-color-neutral);
   border: var(--cu-border-thin) solid var(--badge-subtle-border);

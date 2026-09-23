@@ -1,1 +1,1 @@
-export { runL1Story } from "@/plugins/cu-playground/tests/runner.l1";
+export { runL1Story } from "@/plugins/khadgar/tests/runner.l1";

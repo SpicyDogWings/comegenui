@@ -1,1 +1,1 @@
-export * from "@/plugins/cu-playground/contract";
+export * from "@/plugins/khadgar/contract";

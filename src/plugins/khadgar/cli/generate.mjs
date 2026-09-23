@@ -1,14 +1,14 @@
 #!/usr/bin/env node
-// src/plugins/cu-playground/cli/generate.mjs — Genera/actualiza la story de un
+// src/plugins/khadgar/cli/generate.mjs — Genera/actualiza la story de un
 // componente leyendo su contrato directo del `.vue` (props, emits, exposes,
 // slots, tokens y sub-componentes) vía `vue/compiler-sfc`.
 //
 // Uso:
-//   pnpm cu-playground:generate Button            # story + test desde el contrato
-//   pnpm cu-playground:generate Button --meta-only # solo tokens/api (no toca secciones)
-//   pnpm cu-playground:generate Button --dry-run   # previsualiza sin escribir
-//   pnpm cu-playground:generate --all              # todos los componentes
-//   pnpm cu-playground:generate Button --pages     # + página física editable
+//   pnpm khadgar:generate Button            # story + test desde el contrato
+//   pnpm khadgar:generate Button --meta-only # solo tokens/api (no toca secciones)
+//   pnpm khadgar:generate Button --dry-run   # previsualiza sin escribir
+//   pnpm khadgar:generate --all              # todos los componentes
+//   pnpm khadgar:generate Button --pages     # + página física editable
 //
 // La story (`X.stories.ts`) y su test se generan; tus custom viven en los
 // sidecars que NUNCA se pisan: `X.stories.config.json`, `X.stories.extras.ts`
@@ -39,14 +39,14 @@ const pageIndex = args.indexOf("--page");
 const pageName = pageIndex >= 0 ? args[pageIndex + 1] : undefined;
 const name = args.find((a) => !a.startsWith("--") && a !== pageName);
 
-// ── Configuración (cu-playground.config.json) ───────────────────────────────
-const globalConfigPath = resolve(ROOT, "cu-playground.config.json");
+// ── Configuración (khadgar.config.json) ───────────────────────────────
+const globalConfigPath = resolve(ROOT, "khadgar.config.json");
 let userConfig = {};
 if (existsSync(globalConfigPath)) {
   try {
     userConfig = JSON.parse(readFileSync(globalConfigPath, "utf-8"));
   } catch (error) {
-    console.error(`⚠️  cu-playground.config.json inválido: ${error.message}`);
+    console.error(`⚠️  khadgar.config.json inválido: ${error.message}`);
   }
 }
 const componentsDir = (userConfig.componentsDir ?? "src/components").replace(/\/+$/, "");
@@ -480,12 +480,12 @@ function generateOne(componentName) {
       console.log(`• ${pagePath} ya existe (no se pisa; usá --force)`);
       return;
     }
-    const page = `<!-- Página física generada por cu-playground. Editala a gusto:
+    const page = `<!-- Página física generada por khadgar. Editala a gusto:
      si existe, el plugin la usa en lugar de la página genérica. -->
 <script setup lang="ts">
-import PlaygroundLayout from "@/plugins/cu-playground/runtime/PlaygroundLayout.vue";
-import StoryBody from "@/plugins/cu-playground/runtime/StoryBody.vue";
-import { buildOutline } from "@/plugins/cu-playground/runtime/outline";
+import PlaygroundLayout from "@/plugins/khadgar/runtime/PlaygroundLayout.vue";
+import StoryBody from "@/plugins/khadgar/runtime/StoryBody.vue";
+import { buildOutline } from "@/plugins/khadgar/runtime/outline";
 import { ${`cu${componentName}Stories`} } from "${storyImport}";
 
 const outlineItems = buildOutline(${`cu${componentName}Stories`});
@@ -908,14 +908,14 @@ const outlineItems = buildOutline(${`cu${componentName}Stories`});
   const hasRuntime = existsSync(runtimePath);
 
   const header = [
-    `// Generado por src/plugins/cu-playground/cli/generate.mjs a partir del contrato de ${componentName}.vue.`,
+    `// Generado por src/plugins/khadgar/cli/generate.mjs a partir del contrato de ${componentName}.vue.`,
     emits.length ? `// Eventos detectados: ${emits.map((e) => e.name).join(", ")}` : "// (sin eventos declarados)",
     "",
   ].join("\n");
 
   const story = `${header}
 ${previews.length ? 'import { defineComponent, h, ref } from "vue";\n' : ""}import ${componentName} from "${`@/${componentPath.replace(/^src\//, "")}`}";
-import type { ComponentStory } from "@/plugins/cu-playground/contract";
+import type { ComponentStory } from "@/plugins/khadgar/contract";
 ${hasExtras ? `import { extras } from "./${componentName}.stories.extras";\n` : ""}${hasRuntime ? `import { setup, global } from "./${componentName}.stories.runtime";\n` : ""}
 ${previews.join("\n\n")}${previews.length ? "\n\n" : ""}export const ${`cu${componentName}Stories`}: ComponentStory = {
   component: ${JSON.stringify(tag)},
@@ -927,7 +927,7 @@ ${sectionsSource}
 `;
 
   const test = `import { ${`cu${componentName}Stories`} } from "./${componentName}.stories";
-import { runL1Story } from "@/plugins/cu-playground/tests/runner.l1";
+import { runL1Story } from "@/plugins/khadgar/tests/runner.l1";
 
 runL1Story(${`cu${componentName}Stories`});
 `;
@@ -1001,7 +1001,7 @@ function generateDoc(componentName, { check = false, seed = false, quiet = false
   if (check) {
     if (current !== md) {
       console.error(
-        `❌ ${mdPath} desactualizado (corré: pnpm cu-playground:generate ${componentName} --docs)`,
+        `❌ ${mdPath} desactualizado (corré: pnpm khadgar:generate ${componentName} --docs)`,
       );
       return false;
     }
@@ -1048,7 +1048,7 @@ if (withDocs && all) {
   generateOne(name);
 } else {
   console.error(
-    "Uso: cu-playground generate <Componente> [--force] [--meta-only] [--pages] [--dry-run] [--all] [--docs [--check] [--seed]]",
+    "Uso: khadgar generate <Componente> [--force] [--meta-only] [--pages] [--dry-run] [--all] [--docs [--check] [--seed]]",
   );
   process.exit(1);
 }

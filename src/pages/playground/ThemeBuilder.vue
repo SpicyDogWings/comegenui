@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch, nextTick } from 'vue'
-import PlaygroundLayout from '@/plugins/cu-playground/runtime/PlaygroundLayout.vue'
+import PlaygroundLayout from '@/plugins/khadgar/runtime/PlaygroundLayout.vue'
 import Button from '@/components/buttons/Button.vue'
 import Alert from '@/components/information/Alert.vue'
 import Badge from '@/components/information/Badge.vue'

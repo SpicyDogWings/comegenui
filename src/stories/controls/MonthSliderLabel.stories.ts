@@ -1,8 +1,8 @@
-// Generado por src/plugins/cu-playground/cli/generate.mjs a partir del contrato de MonthSliderLabel.vue.
+// Generado por src/plugins/khadgar/cli/generate.mjs a partir del contrato de MonthSliderLabel.vue.
 // Eventos detectados: navigate
 
 import MonthSliderLabel from "@/components/controls/month-slider/MonthSliderLabel.vue";
-import type { ComponentStory } from "@/plugins/cu-playground/contract";
+import type { ComponentStory } from "@/plugins/khadgar/contract";
 
 export const cuMonthSliderLabelStories: ComponentStory = {
   component: "cu-month-slider-label",

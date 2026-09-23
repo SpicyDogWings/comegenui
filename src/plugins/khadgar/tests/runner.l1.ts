@@ -12,7 +12,7 @@ import type {
  * corre los `checks.l1` de cada sección y extra de la story.
  *
  * El nombre del test sigue `[componente] bloque › variante › check` y el
- * reporter custom (`src/plugins/cu-playground/vitest/reporter.ts`) lee el `meta`
+ * reporter custom (`src/plugins/khadgar/vitest/reporter.ts`) lee el `meta`
  * para pintar los resultados en el playground.
  *
  * `src/stories/runner.l1.ts` re-exporta este runner (backwards compat).

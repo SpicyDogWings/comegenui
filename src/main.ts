@@ -3,8 +3,8 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import router from "./router/index"
 import CuTokens from "./plugins/cu-tokens"
-import CuPlayground from "./plugins/cu-playground"
-import playgroundConfig from "../cu-playground.config.json"
+import Khadgar from "./plugins/khadgar"
+import playgroundConfig from "../khadgar.config.json"
 import App from './App.vue'
 
 // Chrome real de ComegenUI para el playground (sin esto usa los fallbacks del plugin).
@@ -20,7 +20,7 @@ import { getTokenDescription } from '@/config/css-tokens'
 
 const app = createApp(App)
 app.use(createPinia())
-app.use(CuPlayground, {
+app.use(Khadgar, {
   router,
   config: playgroundConfig,
   stories: import.meta.glob("./stories/**/*.stories.ts"),

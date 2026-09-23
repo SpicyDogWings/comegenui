@@ -1,4 +1,4 @@
-// src/plugins/cu-playground/cli/doc.mjs — Fichas de API de la skill de uso.
+// src/plugins/khadgar/cli/doc.mjs — Fichas de API de la skill de uso.
 //
 // El plugin es el único que consulta al componente: resuelve el SFC que
 // distribuye la lib (`X.ce.vue` si existe, si no el `X.vue`), lo parsea con

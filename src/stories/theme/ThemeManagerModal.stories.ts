@@ -1,8 +1,8 @@
-// Generado por src/plugins/cu-playground/cli/generate.mjs a partir del contrato de ThemeManagerModal.vue.
+// Generado por src/plugins/khadgar/cli/generate.mjs a partir del contrato de ThemeManagerModal.vue.
 // Eventos detectados: update:themeName, import, export, reset, copy-css, download-css
 
 import ThemeManagerModal from "@/components/theme/ThemeManagerModal.vue";
-import type { ComponentStory } from "@/plugins/cu-playground/contract";
+import type { ComponentStory } from "@/plugins/khadgar/contract";
 
 export const cuThemeManagerModalStories: ComponentStory = {
   component: "cu-theme-manager-modal",

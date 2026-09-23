@@ -1,8 +1,8 @@
-// Generado por src/plugins/cu-playground/cli/generate.mjs a partir del contrato de ToggleColorSheme.vue.
+// Generado por src/plugins/khadgar/cli/generate.mjs a partir del contrato de ToggleColorSheme.vue.
 // (sin eventos declarados)
 
 import ToggleColorSheme from "@/components/buttons/ToggleColorSheme.vue";
-import type { ComponentStory } from "@/plugins/cu-playground/contract";
+import type { ComponentStory } from "@/plugins/khadgar/contract";
 import { setup, global } from "./ToggleColorSheme.stories.runtime";
 
 export const cuToggleColorShemeStories: ComponentStory = {

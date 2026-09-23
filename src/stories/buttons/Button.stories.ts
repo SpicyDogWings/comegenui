@@ -1,9 +1,9 @@
-// Generado por src/plugins/cu-playground/cli/generate.mjs a partir del contrato de Button.vue.
+// Generado por src/plugins/khadgar/cli/generate.mjs a partir del contrato de Button.vue.
 // Eventos detectados: loading-change
 
 import { defineComponent, h, ref } from "vue";
 import Button from "@/components/buttons/Button.vue";
-import type { ComponentStory } from "@/plugins/cu-playground/contract";
+import type { ComponentStory } from "@/plugins/khadgar/contract";
 
 const ButtonLoadingExtra = defineComponent({
   name: "ButtonLoadingExtra",

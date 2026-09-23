@@ -1,8 +1,8 @@
-// Generado por src/plugins/cu-playground/cli/generate.mjs a partir del contrato de ColorPicker.vue.
+// Generado por src/plugins/khadgar/cli/generate.mjs a partir del contrato de ColorPicker.vue.
 // Eventos detectados: update:modelValue, change
 
 import ColorPicker from "@/components/form/ColorPicker.vue";
-import type { ComponentStory } from "@/plugins/cu-playground/contract";
+import type { ComponentStory } from "@/plugins/khadgar/contract";
 import { extras } from "./ColorPicker.stories.extras";
 
 export const cuColorPickerStories: ComponentStory = {

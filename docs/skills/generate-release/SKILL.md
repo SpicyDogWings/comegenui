@@ -46,7 +46,7 @@ Anotá la versión: el zip se llama `comegenui-v<version>.zip`. Si hay que bumpe
 
 ```bash
 pnpm stories:status        # inventario: qué tiene story/test/badges
-pnpm cu-playground:generate --all
+pnpm khadgar:generate --all
 ```
 
 `--all` **crea solo las stories que faltan**; a las existentes las saltea con "ya existe" (es esperado, no es error).
@@ -54,7 +54,7 @@ pnpm cu-playground:generate --all
 ### 2. Refrescar metadata de las stories
 
 ```bash
-pnpm cu-playground:generate --all --meta-only
+pnpm khadgar:generate --all --meta-only
 ```
 
 Actualiza `tokens`/`classes`/`api` de cada story sin tocar secciones/checks/extras curados.
@@ -62,7 +62,7 @@ Actualiza `tokens`/`classes`/`api` de cada story sin tocar secciones/checks/extr
 ### 3. Regenerar las fichas de la skill (docs)
 
 ```bash
-pnpm cu-playground:generate --all --docs
+pnpm khadgar:generate --all --docs
 ```
 
 Regenera `docs/skills/use-comegen/componentes/cu-*.md` desde el **SFC que distribuye la lib** (`.ce.vue` si existe, si no el `.vue`). La prosa curada vive en los sidecars `*.doc.json` (nunca se pisan).
@@ -122,7 +122,7 @@ Revisá el diff antes. **Nunca** `git add -A` a ciegas.
 ## Checklist final
 
 - [ ] `pnpm stories:status` → **0 sin story**.
-- [ ] `pnpm cu-playground:generate --all --docs --check` → **33/33 ok** (fichas sincronizadas).
+- [ ] `pnpm khadgar:generate --all --docs --check` → **33/33 ok** (fichas sincronizadas).
 - [ ] `pnpm test` verde.
 - [ ] `./scripts/preflight.sh` verde (sin errores nuevos de type-check).
 - [ ] `pnpm build-only` OK.
@@ -136,7 +136,7 @@ Si algo falta, decilo explícitamente en el reporte; no lo tapes con "quedó fun
 
 | Síntoma | Causa / qué hacer |
 |---|---|
-| `ficha desactualizada` en preflight | Corré `pnpm cu-playground:generate --all --docs` y volvé a chequear. |
+| `ficha desactualizada` en preflight | Corré `pnpm khadgar:generate --all --docs` y volvé a chequear. |
 | `Ya existe .../X.stories.ts` | Esperado en `--all`: solo genera las faltantes. Usá `--force` solo si querés reconstruir una story (pierde secciones custom). |
 | Errores de type-check "nuevos" | Compará con `scripts/typecheck-baseline`; arreglá los nuevos, no bajes el baseline. |
 | Una ficha no cambia tras tocar la API | Verificá que estés tocando el SFC que importa el entry de `src/lib/**/<kebab>.ts`. |

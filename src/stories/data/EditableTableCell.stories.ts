@@ -1,8 +1,8 @@
-// Generado por src/plugins/cu-playground/cli/generate.mjs a partir del contrato de EditableTableCell.vue.
+// Generado por src/plugins/khadgar/cli/generate.mjs a partir del contrato de EditableTableCell.vue.
 // Eventos detectados: edit-start, edit-save, edit-cancel, edit-error
 
 import EditableTableCell from "@/components/data/EditableTableCell.vue";
-import type { ComponentStory } from "@/plugins/cu-playground/contract";
+import type { ComponentStory } from "@/plugins/khadgar/contract";
 
 export const cuEditableTableCellStories: ComponentStory = {
   component: "cu-editable-table-cell",

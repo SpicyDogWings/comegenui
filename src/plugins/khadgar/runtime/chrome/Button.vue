@@ -15,8 +15,8 @@ function stopIfDisabled(event: Event, disabled?: boolean) {
 <template>
   <a
     v-if="to || href"
-    class="cu-playground-button"
-    :class="[`cu-playground-button--${variant ?? 'solid'}`, `cu-playground-button--${size ?? 'md'}`]"
+    class="khadgar-button"
+    :class="[`khadgar-button--${variant ?? 'solid'}`, `khadgar-button--${size ?? 'md'}`]"
     :href="to ?? href"
     @click="stopIfDisabled($event, disabled)"
   >
@@ -25,8 +25,8 @@ function stopIfDisabled(event: Event, disabled?: boolean) {
   <button
     v-else
     type="button"
-    class="cu-playground-button"
-    :class="[`cu-playground-button--${variant ?? 'solid'}`, `cu-playground-button--${size ?? 'md'}`]"
+    class="khadgar-button"
+    :class="[`khadgar-button--${variant ?? 'solid'}`, `khadgar-button--${size ?? 'md'}`]"
     :disabled="disabled"
   >
     <slot />
@@ -34,7 +34,7 @@ function stopIfDisabled(event: Event, disabled?: boolean) {
 </template>
 
 <style scoped>
-.cu-playground-button {
+.khadgar-button {
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
@@ -46,19 +46,19 @@ function stopIfDisabled(event: Event, disabled?: boolean) {
   padding: 0;
 }
 
-.cu-playground-button--link {
+.khadgar-button--link {
   text-decoration: none;
 }
 
-.cu-playground-button--link:hover {
+.khadgar-button--link:hover {
   text-decoration: underline;
 }
 
-.cu-playground-button--sm {
+.khadgar-button--sm {
   font-size: var(--cu-font-size-sm);
 }
 
-.cu-playground-button--solid {
+.khadgar-button--solid {
   background: var(--cu-color-primary);
   color: var(--cu-color-primary-text);
   padding: var(--cu-space-xs) var(--cu-space-md);

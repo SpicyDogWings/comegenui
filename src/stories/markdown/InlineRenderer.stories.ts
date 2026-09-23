@@ -1,8 +1,8 @@
-// Generado por src/plugins/cu-playground/cli/generate.mjs a partir del contrato de InlineRenderer.vue.
+// Generado por src/plugins/khadgar/cli/generate.mjs a partir del contrato de InlineRenderer.vue.
 // (sin eventos declarados)
 
 import InlineRenderer from "@/components/markdown/InlineRenderer.vue";
-import type { ComponentStory } from "@/plugins/cu-playground/contract";
+import type { ComponentStory } from "@/plugins/khadgar/contract";
 
 export const cuInlineRendererStories: ComponentStory = {
   component: "cu-inline-renderer",
