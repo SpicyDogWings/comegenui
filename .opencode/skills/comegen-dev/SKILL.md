@@ -23,6 +23,7 @@ Desarrollo de componentes **comegen-ui** (Vue 3 + Custom Elements + UnoCSS, UMD 
 
 - Consumir comegen-ui en **otro** proyecto → skill de uso `comegen-ui` (viaja con el zip).
 - Documentar un componente → skill [`comegen-ui-docs`](../comegen-ui-docs/SKILL.md).
+- Preparar una **release completa** (stories faltantes + fichas + todos los tests + build del zip) → skill `generate-release`.
 - Modificar el build system (`build-lib.ts`, `vite.config.ts`, `vitest.config.ts`) salvo que la tarea sea exactamente eso.
 
 ## Flujo

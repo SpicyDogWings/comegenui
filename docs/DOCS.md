@@ -20,6 +20,7 @@ Si vas a modificar o agregar componentes a la librería:
 - **[DEV.md](DEV.md)** — guía práctica de desarrollo (setup, crear componentes, playground, build).
 - **[Skill `desarrollar-comegen-ui`](desarrollar-comegen-ui/SKILL.md)** — guía detallada (para agentes y contribuidores).
 - **[Skill `documentar-comegen-ui`](documentar-comegen-ui/SKILL.md)** — cómo documentar componentes.
+- **[Skill `generate-release`](skills/generate-release/SKILL.md)** — preparar la próxima release (stories faltantes, fichas, todos los tests, build del zip).
 
 ### Quiero ver el **estado del proyecto**
 
