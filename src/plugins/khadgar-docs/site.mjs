@@ -9,7 +9,7 @@ import { resolve } from "node:path";
 import { buildIndex } from "../khadgar/extract/index.mjs";
 import { renderDoc } from "./render.mjs";
 import { buildVitepressConfig } from "./vitepress.mjs";
-import { buildThemesCss, buildVitePressBridgeCss } from "./theme.mjs";
+import { buildThemesCss, buildVitePressBridgeCss, buildShikiThemes } from "./theme.mjs";
 
 const root = process.cwd();
 const configPath = resolve(root, "khadgar.config.json");
@@ -48,6 +48,13 @@ const cuConfig = existsSync(cuConfigPath)
 mkdirSync(themeDir, { recursive: true });
 writeFileSync(resolve(themeDir, "themes.gen.css"), buildThemesCss(cuConfig));
 writeFileSync(resolve(themeDir, "vitepress.gen.css"), buildVitePressBridgeCss());
+
+// Tema de syntax highlighting (Shiki) generado por `cu-tokens`. El `.mjs` lleva
+// los temas resueltos (no re-ejecuta el plugin en el config de VitePress).
+writeFileSync(
+  resolve(themeDir, "shiki.gen.mjs"),
+  `// Generado por khadgar-docs desde comegen.config.json. No editar.\nexport default ${JSON.stringify(buildShikiThemes(cuConfig), null, 2)}\n`,
+);
 
 // El runtime de `cu-tokens` (ThemeBuilder) lee `/comegen.config.json`.
 const publicDir = resolve(siteRoot, "public");

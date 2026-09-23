@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "vitepress";
+import shikiThemes from "./theme/shiki.gen.mjs";
 
 // La config del sitio (nav/sidebar/componentes) la genera khadgar-docs en
 // `khadgar.gen.json`. Este archivo solo la consume.
@@ -40,6 +41,10 @@ export default defineConfig({
   title: generated.title,
   description: generated.description,
   cleanUrls: true,
+  // Syntax highlighting con la paleta CU (generado por cu-tokens).
+  markdown: {
+    theme: (shikiThemes as { vitepress: { light: unknown; dark: unknown } }).vitepress as never,
+  },
   // Las fichas son compartidas con la skill: `../SKILL.md` y links al playground
   // no existen como páginas del sitio (todavía).
   ignoreDeadLinks: [/SKILL/, /playground/],

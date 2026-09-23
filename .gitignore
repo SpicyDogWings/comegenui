@@ -49,6 +49,7 @@ docs/site/public/favicon.ico
 docs/site/.vitepress/khadgar.gen.json
 docs/site/.vitepress/khadgar.json
 docs/site/.vitepress/theme/*.gen.css
+docs/site/.vitepress/theme/*.gen.mjs
 docs/site/.vitepress/dist/
 docs/site/.vitepress/cache/
 docs/site/.vitepress/.temp/

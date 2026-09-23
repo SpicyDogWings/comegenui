@@ -9,6 +9,7 @@
 //
 // Se ejecuta con `tsx` (importa el generador TS de `cu-tokens`).
 import { generateThemesCSS } from "@/plugins/cu-tokens/css";
+import { generateShikiThemes } from "@/plugins/cu-tokens/shiki";
 import { DEFAULTS, DEFAULT_OPACITIES, extractColors, extractShared } from "@/plugins/cu-tokens/defaults";
 
 /** CSS de los temas CU con selectores compatibles con VitePress. */
@@ -27,8 +28,26 @@ export function buildThemesCss(cuConfig = {}) {
   return `${css.replace(/\[data-theme="dark"\]/g, 'html.dark, [data-theme="dark"]')}\n`;
 }
 
-/** Puente `--vp-*` → `--cu-*`. */
-export function buildVitePressBridgeCss() {
+/**
+ * Tema de syntax highlighting de VitePress (Shiki), derivado de los mismos
+ * colores CU. VitePress elige `--shiki-light` o `--shiki-dark` según la clase
+ * `html.dark`, que `buildThemesCss` ata al tema CU `dark`; por eso el par se
+ * arma por nombre (`light` / `dark`).
+ */
+export function buildShikiThemes(cuConfig = {}) {
+  const themes = generateShikiThemes(cuConfig);
+  const names = Object.keys(themes);
+  const pick = (name) =>
+    themes[name] ?? themes[names.find((n) => n.includes(name))] ?? themes[names[0]];
+  return {
+    /** Los 16 temas (ej: `light`, `dark`, `nord-frost`). */
+    themes,
+    /** Par que espera `markdown.theme` de VitePress. */
+    vitepress: { light: pick("light"), dark: pick("dark") },
+  };
+}
+
+/** Puente `--vp-*` → `--cu-*`. */export function buildVitePressBridgeCss() {
   return `/* Generado por khadgar-docs: puente VitePress → tokens de ComegenUI. */
 html:root {
   --vp-font-family-base: var(--cu-font-sans);
@@ -93,6 +112,7 @@ html:root {
   --vp-button-brand-active-bg: var(--cu-color-primary-active);
 
   --vp-code-block-bg: var(--cu-code-bg);
+  --vp-code-block-color: var(--cu-code-text);
   --vp-code-color: var(--cu-color-primary);
   --vp-code-line-highlight-color: var(--cu-color-neutral-soft);
 
