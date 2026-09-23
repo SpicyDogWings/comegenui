@@ -30,6 +30,7 @@
       "Overlay",
       "Navegación",
       "Datos",
+      "Theme",
       "Otros"
     ]
   },
@@ -78,7 +79,8 @@
     },
     {
       "name": "Blockquote",
-      "file": "src/components/markdown/Blockquote.vue"
+      "file": "src/components/markdown/Blockquote.vue",
+      "group": "Markdown"
     },
     {
       "name": "Button",
@@ -117,7 +119,8 @@
     },
     {
       "name": "CodeBlock",
-      "file": "src/components/markdown/CodeBlock.vue"
+      "file": "src/components/markdown/CodeBlock.vue",
+      "group": "Markdown"
     },
     {
       "name": "Collapse",
@@ -142,7 +145,8 @@
     },
     {
       "name": "CopyButton",
-      "file": "src/components/buttons/CopyButton.vue"
+      "file": "src/components/buttons/CopyButton.vue",
+      "group": "Buttons"
     },
     {
       "name": "DatePicker",
@@ -161,7 +165,8 @@
     {
       "name": "Dropdown",
       "file": "src/components/overlay/Dropdown.vue",
-      "skill": true
+      "skill": true,
+      "group": "Controles"
     },
     {
       "name": "DropdownMenu",
@@ -172,7 +177,8 @@
     },
     {
       "name": "EditableTableCell",
-      "file": "src/components/data/EditableTableCell.vue"
+      "file": "src/components/data/EditableTableCell.vue",
+      "group": "Datos"
     },
     {
       "name": "FileInput",
@@ -190,7 +196,8 @@
     },
     {
       "name": "FileList",
-      "file": "src/components/FileList.vue"
+      "file": "src/components/FileList.vue",
+      "group": "Información"
     },
     {
       "name": "FloatingButton",
@@ -201,7 +208,8 @@
     },
     {
       "name": "InlineRenderer",
-      "file": "src/components/markdown/InlineRenderer.vue"
+      "file": "src/components/markdown/InlineRenderer.vue",
+      "group": "Markdown"
     },
     {
       "name": "Input",
@@ -219,7 +227,8 @@
     },
     {
       "name": "Loader",
-      "file": "src/components/information/Loader.vue"
+      "file": "src/components/information/Loader.vue",
+      "group": "Información"
     },
     {
       "name": "Markdown",
@@ -237,11 +246,13 @@
     },
     {
       "name": "MonthSlider",
-      "file": "src/components/controls/MonthSlider.vue"
+      "file": "src/components/controls/MonthSlider.vue",
+      "group": "Controles"
     },
     {
       "name": "MonthSliderLabel",
-      "file": "src/components/controls/month-slider/MonthSliderLabel.vue"
+      "file": "src/components/controls/month-slider/MonthSliderLabel.vue",
+      "group": "Controles"
     },
     {
       "name": "Navbar",
@@ -259,11 +270,13 @@
     },
     {
       "name": "NavbarList",
-      "file": "src/components/navigation/NavbarList.vue"
+      "file": "src/components/navigation/NavbarList.vue",
+      "group": "Navegación"
     },
     {
       "name": "NavbarMenu",
-      "file": "src/components/navigation/NavbarMenu.vue"
+      "file": "src/components/navigation/NavbarMenu.vue",
+      "group": "Navegación"
     },
     {
       "name": "Pagination",
@@ -274,7 +287,8 @@
     },
     {
       "name": "Popover",
-      "file": "src/components/overlay/Popover.vue"
+      "file": "src/components/overlay/Popover.vue",
+      "group": "Overlay"
     },
     {
       "name": "Select",
@@ -299,12 +313,13 @@
     },
     {
       "name": "Table",
-      "file": "src/components/data/Table.vue"
+      "file": "src/components/data/Table.vue",
+      "group": "Datos"
     },
     {
       "name": "Tabs",
       "file": "src/components/Tabs.vue",
-      "group": "Otros",
+      "group": "Navegación",
       "customElement": true,
       "skill": true
     },
@@ -317,15 +332,18 @@
     },
     {
       "name": "ThemeDropdown",
-      "file": "src/components/theme/ThemeDropdown.vue"
+      "file": "src/components/theme/ThemeDropdown.vue",
+      "group": "Theme"
     },
     {
       "name": "ThemeManagerModal",
-      "file": "src/components/theme/ThemeManagerModal.vue"
+      "file": "src/components/theme/ThemeManagerModal.vue",
+      "group": "Theme"
     },
     {
       "name": "ToggleColorSheme",
-      "file": "src/components/buttons/ToggleColorSheme.vue"
+      "file": "src/components/buttons/ToggleColorSheme.vue",
+      "group": "Buttons"
     },
     {
       "name": "Tooltip",
@@ -336,7 +354,8 @@
     },
     {
       "name": "YearSlider",
-      "file": "src/components/controls/YearSlider.vue"
+      "file": "src/components/controls/YearSlider.vue",
+      "group": "Controles"
     }
   ]
 }
