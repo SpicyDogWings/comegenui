@@ -10,16 +10,17 @@ Calendario de mes: muestra el mes actual y/o seleccionado con sus días distribu
 
 | Prop | Tipo | Default | Descripción |
 |------|------|------|------|
+| `modelValue` | `string \| number \| Date \| null` | `null` | Fecha seleccionada. Acepta `Date`, timestamp o `"YYYY-MM-DD"` (ver [Formato de fechas](#formato-de-fechas)) |
 | `min` | `string \| number \| Date \| null` | `null` | Fecha mínima seleccionable (días anteriores quedan deshabilitados) |
 | `max` | `string \| number \| Date \| null` | `null` | Fecha máxima seleccionable |
-| `color` | `primary \| secondary \| neutral \| success \| warning \| danger` | `"primary"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `solid \| outlined \| soft \| subtle` | `"soft"` | Variante del día seleccionado: `solid`, `outlined`, `soft`, `subtle` (sin `ghost`: se confunde con el día de hoy) |
+| `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"primary"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
+| `variant` | `"soft" \| "solid" \| "outlined" \| "subtle"` | `"soft"` | Variante del día seleccionado: `solid`, `outlined`, `soft`, `subtle` (sin `ghost`: se confunde con el día de hoy) |
 | `disabled` | `boolean` | `false` | Deshabilita todo el calendario |
-| `disabledWeekdays` | `number[] \| string` | `""` | Días de la semana no seleccionables (`0`=domingo … `6`=sábado). En HTML plano: `disabled-weekdays="0,6"` |
-| `disabledDates` | `(string \| Date)[] \| string` | `""` | Fechas puntuales no seleccionables `"YYYY-MM-DD"`. En HTML plano: `disabled-dates="2026-08-15,2026-08-16"` |
+| `disabledWeekdays` | `string \| number[]` | `""` | Días de la semana no seleccionables (`0`=domingo … `6`=sábado). En HTML plano: `disabled-weekdays="0,6"` |
+| `disabledDates` | `string \| (string \| Date)[]` | `""` | Fechas puntuales no seleccionables `"YYYY-MM-DD"`. En HTML plano: `disabled-dates="2026-08-15,2026-08-16"` |
 | `locale` | `string` | `"es"` | Locale para nombres de mes y días de la semana |
 | `weekStart` | `number` | `1` | Día en que arranca la semana: `0` = domingo, `1` = lunes |
-| `yearNavigation` | `boolean \| string` | `false` | Muestra botones `«`/`»` para saltar de año en el header |
+| `yearNavigation` | `string \| boolean` | `false` | Muestra botones `«`/`»` para saltar de año en el header |
 | `monthFormat` | `string` | `"MMMM"` | Formato del mes en el header (tokens como MonthSlider) |
 | `yearFormat` | `string` | `"yyyy"` | Formato del año en el header |
 | `events` | `CalendarEvent[]` | `[]` | Eventos a señalar con puntos bajo la fecha (ver [Eventos](#eventos-puntos)). Se asigna como propiedad JS |
@@ -46,9 +47,9 @@ Calendario de mes: muestra el mes actual y/o seleccionado con sus días distribu
 |------|------|
 | `.nextMonth()` | Va al mes siguiente (respeta `max`) |
 | `.prevMonth()` | Va al mes anterior (respeta `min`) |
-| `.goToMonth()` | Navega al mes de la fecha dada |
+| `.goToMonth(value: string \| number \| Date)` | Navega al mes de la fecha dada |
 | `.getValue()` | null` con la fecha seleccionada |
-| `.setValue()` | Selecciona una fecha (acepta string/number/Date) |
+| `.setValue(value: string \| number \| Date \| null)` | Selecciona una fecha (acepta string/number/Date) |
 
 ---
 

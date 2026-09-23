@@ -21,7 +21,7 @@ Campo de texto con sugerencias en menú desplegable. Filtra los `items` en vivo 
 | `minChars` | `number` | `0` | Caracteres mínimos para abrir el menú (atributo HTML: `min-chars`) |
 | `position` | `string` | `"bottom"` | Posición del dropdown: `bottom`, `top` |
 | `align` | `string` | `"start"` | Alineación: `start`, `center`, `end` |
-| `items` | `array` | `[]` | Opciones del menú (ver abajo). Se asigna como propiedad JS |
+| `items` | `unknown[]` | `[]` | Opciones del menú (ver abajo). Se asigna como propiedad JS |
 | `modelValue` | `string` | `""` | Valor controlado |
 | `label` | `string` | `""` | Texto del label sobre el input |
 
@@ -59,7 +59,7 @@ Ninguno.
 | Método | Descripción |
 |------|------|
 | `.get()` | Texto actual del input |
-| `.set(val)` | Asigna texto al input |
+| `.set(val: string)` | Asigna texto al input |
 | `.focus()` | Enfoca el input |
 | `.isOpen()` | Estado del menú (`boolean`) |
 | `.selectedItem()` | Último item seleccionado o `null` |

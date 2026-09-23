@@ -10,12 +10,12 @@ Tarjeta para mostrar información agrupada con jerarquía visual: media, header 
 
 | Prop | Tipo | Default | Descripción |
 |------|------|------|------|
-| `color` | `primary \| secondary \| neutral \| success \| warning \| danger` | `"neutral"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
+| `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
 | `variant` | `string` | `"ghost"` | `ghost` (default), `outlined`, `soft`, `subtle`, `solid` |
-| `layout` | `vertical \| horizontal` | `"vertical"` | `vertical` (media arriba) o `horizontal` (media al costado) |
-| `title` | — | — | Título del header |
-| `subtitle` | — | — | Subtítulo bajo el título |
-| `image` | — | — | URL de imagen que se muestra como media en la parte superior (o al costado con `layout="horizontal"`) |
+| `layout` | `"vertical" \| "horizontal"` | `"vertical"` | `vertical` (media arriba) o `horizontal` (media al costado) |
+| `title` | `string` | — | Título del header |
+| `subtitle` | `string` | — | Subtítulo bajo el título |
+| `image` | `string` | — | URL de imagen que se muestra como media en la parte superior (o al costado con `layout="horizontal"`) |
 
 ## Eventos
 

@@ -24,9 +24,9 @@ Tabla avanzada con búsqueda, paginación, edición inline, ordenamiento, badges
 | `searchPlaceholder` | `string` | `"Buscar..."` | Placeholder del input de búsqueda (atributo HTML: `search-placeholder`) |
 | `searchFields` | `string[]` | `[]` | Columnas donde buscar (atributo HTML: `search-fields`). Vacío = todas |
 | `searchValue` | `string` | `""` | Valor controlado del buscador (atributo HTML: `search-value`) |
-| `filters` | `Record<string, any>` | — | Filtros por columna. Se asigna como propiedad JS |
+| `filters` | `Record<string, any>` | `{}` | Filtros por columna. Se asigna como propiedad JS |
 | `loading` | `boolean` | `false` | Muestra una barra de carga animada en el tope |
-| `actions` | `array` | `[]` | Acciones de fila (botón "..." al final de cada fila). Se asigna como propiedad JS |
+| `actions` | `unknown[]` | `[]` | Acciones de fila (botón "..." al final de cada fila). Se asigna como propiedad JS |
 | `rowDisabled` | `boolean \| ((row: Record<string, any>) => boolean)` | `false` | Deshabilita filas (ver [Deshabilitar filas, columnas y celdas](#deshabilitar-filas-columnas-y-celdas)). Se asigna como propiedad JS |
 | `footer` | `FooterRow[]` | `[]` | Filas de footer (ver [Footer (API programática)](#footer-api-programática)). Se asigna como propiedad JS |
 
@@ -84,12 +84,12 @@ Tabla avanzada con búsqueda, paginación, edición inline, ordenamiento, badges
 
 | Método | Descripción |
 |------|------|
-| `.updateRow(rowIndex, newData)` | Actualiza una fila por índice. Hace **merge** del objeto, no reemplazo total |
+| `.updateRow(rowIndex: number, newData: Record<string, any>)` | Actualiza una fila por índice. Hace **merge** del objeto, no reemplazo total |
 | `.getData()` | Devuelve copia de todos los datos |
-| `.getRow(rowIndex)` | Devuelve copia de una fila |
-| `.removeRow(rowIndex)` | Elimina una fila por índice |
-| `.addRow(newRow)` | Agrega una fila al final |
-| `.pushData(newData)` | Agrega múltiples filas al final |
+| `.getRow(rowIndex: number)` | Devuelve copia de una fila |
+| `.removeRow(rowIndex: number)` | Elimina una fila por índice |
+| `.addRow(newRow: Record<string, any>)` | Agrega una fila al final |
+| `.pushData(newData: Record<string, any>[])` | Agrega múltiples filas al final |
 
 ---
 

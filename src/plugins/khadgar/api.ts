@@ -14,7 +14,10 @@ export interface KhadgarTag {
 /** Una fila de la API (prop, event, slot o exposed). */
 export interface KhadgarRow {
   name: string;
-  /** Firma/tipo. En events es la firma de handler `(payload) => void`. */
+  /**
+   * Tipo/firma. En props el tipo de la prop; en events el payload
+   * (`e.detail`); en exposed la firma del método; en slots el tipo del slot prop.
+   */
   type?: string;
   /** Default serializado (props). */
   default?: string;

@@ -23,5 +23,12 @@ export function complements(filePath, source, base) {
       ...(description ? { description } : {}),
     })),
     deps: parsed.components.map((dep) => dep.label),
+    // vcm no ve los `validator`; parse-sfc sí. Se usa como fallback del tipo.
+    props: parsed.props.map(({ name, type, values }) => ({ name, type, values })),
+    // vcm no ve los eventos del wrapper CE (`ceEmit`/`CustomEvent`); parse-sfc sí.
+    emits: parsed.emits.map(({ name, type, description }) => ({ name, type, description })),
+    // vcm pierde nombres de `defineExpose` que colisionan con props (ej: `close`);
+    // parse-sfc lee el objeto literal y es la lista fiable.
+    exposes: parsed.exposes.map(({ name, type, description }) => ({ name, type, description })),
   };
 }

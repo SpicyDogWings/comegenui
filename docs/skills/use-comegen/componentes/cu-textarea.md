@@ -14,7 +14,7 @@
 | `modelValue` | `string` | `""` | Valor controlado |
 | `startValue` | `string` | — | Valor inicial usado por `.reset()` |
 | `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `outlined \| soft \| ghost \| subtle` | `"soft"` | `outlined`, `soft`, `ghost`, `subtle` |
+| `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | `outlined`, `soft`, `ghost`, `subtle` |
 | `placeholder` | `string` | — | Placeholder del textarea |
 | `disabled` | `boolean` | `false` | Estado deshabilitado |
 | `readOnly` | `boolean` | `false` | Solo lectura (en HTML se usa como `readonly`) |
@@ -41,7 +41,7 @@ Ninguno.
 | Método | Descripción |
 |------|------|
 | `.get()` | Devuelve el valor actual (`string`) |
-| `.set(value)` | Asigna un valor |
+| `.set(value: string \| number)` | Asigna un valor |
 | `.reset()` | Vuelve al `startValue` (o `""` si no se definió) |
 | `.focus()` | Enfoca el textarea |
 

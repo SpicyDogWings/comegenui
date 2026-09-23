@@ -26,6 +26,12 @@ export interface ExtractComponentOptions {
   sidecar?: Record<string, unknown> | null;
   /** `ComponentConfig` (include/exclude/extract). */
   item?: Record<string, unknown>;
+  /** Nombre a usar (si el SFC no es el `.vue` real). */
+  name?: string;
+  /** Tag a usar (si el SFC no está en `libIndex`). */
+  tag?: string;
+  /** Categoría a usar. */
+  category?: string;
   /** Checker de `vue-component-meta` (default: singleton). */
   checker?: unknown;
 }
@@ -34,7 +40,13 @@ export interface BuildIndexOptions {
   root?: string;
   config?: Record<string, unknown>;
   components?: Array<Record<string, unknown>>;
+  /**
+   * `vue` = componente real; `lib` = SFC que distribuye la lib (`.ce.vue` si existe).
+   * Default: `vue`.
+   */
+  source?: "vue" | "lib";
   libIndex?: Map<string, string>;
+  targets?: Map<string, { tag: string; sfc: string; vue: string }>;
   checker?: unknown;
 }
 

@@ -11,16 +11,16 @@ Menú desplegable con items declarativos (label, ícono, color, divisor, link). 
 | Prop | Tipo | Default | Descripción |
 |------|------|------|------|
 | `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
-| `color` | `primary \| secondary \| neutral \| success \| warning \| danger` | `"neutral"` | Color semántico del toggle: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `solid \| outlined \| soft \| ghost \| subtle \| link \| none` | `"ghost"` | Variante del toggle: `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico del toggle: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle" \| "link" \| "none"` | `"ghost"` | Variante del toggle: `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` |
 | `disabled` | `boolean` | `false` | Deshabilita el toggle |
 | `label` | `string` | `""` | Texto del toggle (se ignora si se provee slot `toggle`) |
-| `position` | `bottom \| top` | `"bottom"` | Posición preferida del panel: `bottom`, `top` |
-| `align` | `start \| center \| end` | `"start"` | Alineación del panel: `start`, `center`, `end` |
-| `textAlign` | `left \| center \| right` | `"left"` | Alineación del texto del toggle: `left`, `center`, `right` |
+| `position` | `"bottom" \| "top"` | `"bottom"` | Posición preferida del panel: `bottom`, `top` |
+| `align` | `"start" \| "center" \| "end"` | `"start"` | Alineación del panel: `start`, `center`, `end` |
+| `textAlign` | `"left" \| "center" \| "right"` | `"left"` | Alineación del texto del toggle: `left`, `center`, `right` |
 | `offset` | `number` | `4` | Separación en píxeles entre el toggle y el panel |
 | `fixed` | `boolean` | `false` | Si es `true`, el panel usa `position: fixed` en vez de absoluto |
-| `items` | `array` | `[]` | Lista de items (ver abajo). Se asigna como propiedad JS, no como atributo HTML |
+| `items` | `unknown[]` | `[]` | Lista de items (ver abajo). Se asigna como propiedad JS, no como atributo HTML |
 
 ### Items
 
@@ -42,8 +42,8 @@ Cada item del array `items` puede tener:
 
 | Evento | Payload (`e.detail`) | Descripción |
 |------|------|------|
-| `open` | — | Se emite cuando se abre el menú |
 | `close` | — | Se emite cuando se cierra el menú |
+| `open` | — | Se emite cuando se abre el menú |
 
 ## Slots
 

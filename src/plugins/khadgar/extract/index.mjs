@@ -9,7 +9,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { basename, relative, resolve, sep } from "node:path";
 import fg from "fast-glob";
 import { getChecker } from "./checker.mjs";
-import { buildLibIndex } from "./lib-index.mjs";
+import { buildLibIndex, buildLibTargets } from "./lib-index.mjs";
 import { complements } from "./complements.mjs";
 
 /** Versión del contrato JSON. */
@@ -52,21 +52,12 @@ function cleanDefault(value) {
   return out;
 }
 
-/** Deriva el tipo de un evento a partir de la firma de vcm. */
-function eventType(event) {
+/** Payload de un evento (vcm da `[payload]` para tipados y `any[]` para sueltos). */
+function eventPayload(event) {
   const type = event.type ?? "";
-  if (!type || type === "any[]") return "() => void";
+  if (!type || type === "any[]") return undefined;
   const inner = type.replace(/^\[|\]$/g, "").trim();
-  return inner ? `(${inner}) => void` : "() => void";
-}
-
-/** Normaliza el `type` de un evento a firma de handler: `boolean` → `(boolean) => void`. */
-function asSignature(type) {
-  const t = String(type ?? "").trim();
-  if (!t) return "() => void";
-  if (t.includes("=>") || /^function\b/.test(t)) return t;
-  if (t === "void" || t === "undefined") return "() => void";
-  return `(${t}) => void`;
+  return inner || undefined;
 }
 
 /** Normaliza una entrada del sidecar: string → `{ description }`. */
@@ -76,14 +67,35 @@ function overrideOf(entry) {
   return entry;
 }
 
-function propRow(prop, override) {
+/** Posición de la declaración de una prop en el SFC (respeta el orden fuente). */
+function declPos(prop, file) {
+  try {
+    const decl = prop.getDeclarations?.().find((item) => item.file === file);
+    return decl?.range?.[0] ?? Number.MAX_SAFE_INTEGER;
+  } catch {
+    return Number.MAX_SAFE_INTEGER;
+  }
+}
+
+/** Tipos primitivos que vcm devuelve cuando no puede resolver un `validator`. */
+function isBare(type) {
+  return type === "string" || type === "number" || type === "boolean";
+}
+
+function propRow(prop, override, fallback) {
+  let type = override.type ?? stripUndefined(prop.type);
+  // vcm no ve los `validator`; si el tipo quedó primitivo y parse-sfc tiene la
+  // unión de valores válidos, se prefiere esa.
+  if (!override.type && isBare(type) && fallback?.values?.length) {
+    type = fallback.values.map((value) => `"${value}"`).join(" | ");
+  }
   const row = {
     name: prop.name,
-    type: override.type ?? stripUndefined(prop.type),
+    type,
     required: Boolean(prop.required),
   };
   const def = override.default ?? cleanDefault(prop.default);
-  if (def !== undefined && def !== "") row.default = def;
+  if (def !== undefined) row.default = def;
   const description = override.description || prop.description;
   if (description) row.description = description;
   if (prop.tags?.length) row.tags = prop.tags;
@@ -91,10 +103,22 @@ function propRow(prop, override) {
 }
 
 function eventRow(event, override) {
-  const row = { name: event.name, type: override.type ? asSignature(override.type) : eventType(event) };
+  const payload = override.type ?? eventPayload(event);
+  const row = { name: event.name };
+  if (payload) row.type = payload;
   const description = override.description || event.description;
   if (description) row.description = description;
   if (event.tags?.length) row.tags = event.tags;
+  return row;
+}
+
+/** Fila de un evento detectado por parse-sfc (wrapper CE: `ceEmit`), no por vcm. */
+function complementEventRow(event, override) {
+  const payload = override.type ?? (event.type && event.type !== "() => void" ? event.type : undefined);
+  const row = { name: event.name };
+  if (payload) row.type = payload;
+  const description = override.description || event.description;
+  if (description) row.description = description;
   return row;
 }
 
@@ -107,11 +131,41 @@ function slotRow(slot, override) {
   return row;
 }
 
-function exposeRow(expose, override) {
-  const row = { name: expose.name, type: override.type ?? expose.type };
-  const description = override.description || expose.description;
-  if (description) row.description = description;
-  return row;
+/** Base name de un expose de parse-sfc (`set(value)` → `set`). */
+function exposeName(name) {
+  return name.replace(/\(.*$/, "").trim();
+}
+
+/**
+ * Filas de `exposed`: la lista fiable es la de parse-sfc (lee el objeto
+ * `defineExpose`); vcm aporta el tipo. Se agregan los de vcm que falten.
+ */
+function exposeRows(metaExposed, compExposes, overrides, item) {
+  const byName = new Map(metaExposed.map((entry) => [entry.name, entry]));
+  const rows = [];
+  const seen = new Set();
+  const push = (name, type, description) => {
+    if (!name || seen.has(name)) return;
+    seen.add(name);
+    const row = { name, type: type ?? "() => void" };
+    if (description) row.description = description;
+    rows.push(row);
+  };
+  for (const entry of compExposes) {
+    const name = exposeName(entry.name);
+    const meta = byName.get(name);
+    const override = overrideOf(overrides[name]);
+    push(
+      name,
+      override.type ?? meta?.type ?? entry.type,
+      override.description || meta?.description || entry.description,
+    );
+  }
+  for (const meta of metaExposed) {
+    const override = overrideOf(overrides[meta.name]);
+    push(meta.name, override.type ?? meta.type, override.description || meta.description);
+  }
+  return filterRows(rows, item);
 }
 
 /** Categoría = subcarpeta inmediata bajo `componentsDir` (o "" en la raíz). */
@@ -173,26 +227,37 @@ export function extractComponent(filePath, options = {}) {
     ...(item.extract ?? {}),
   };
 
-  const name = basename(abs).replace(/\.vue$/, "");
-  const tag = libIndex.get(abs);
+  const name =
+    options.name ?? basename(abs).replace(/\.ce\.vue$/, "").replace(/\.vue$/, "");
+  const tag = options.tag ?? libIndex.get(abs);
   const overrides = sidecar ?? {};
 
+  const fallbackProps = new Map(comp.props.map((prop) => [prop.name, prop]));
   const props = filterRows(
-    meta.props.filter((p) => !p.global).map((p) => propRow(p, overrideOf(overrides.props?.[p.name]))),
+    meta.props
+      .filter((prop) => !prop.global)
+      .slice()
+      .sort((a, b) => declPos(a, abs) - declPos(b, abs))
+      .map((prop) =>
+        propRow(prop, overrideOf(overrides.props?.[prop.name]), fallbackProps.get(prop.name)),
+      ),
     item,
   );
+  const seenEvents = new Set(meta.events.map((event) => event.name));
   const events = filterRows(
-    meta.events.map((e) => eventRow(e, overrideOf(overrides.events?.[e.name]))),
+    [
+      ...meta.events.map((event) => eventRow(event, overrideOf(overrides.events?.[event.name]))),
+      ...comp.emits
+        .filter((event) => !seenEvents.has(event.name))
+        .map((event) => complementEventRow(event, overrideOf(overrides.events?.[event.name]))),
+    ],
     item,
   );
   const slots = filterRows(
     meta.slots.map((s) => slotRow(s, overrideOf(overrides.slots?.[s.name]))),
     item,
   );
-  const exposed = filterRows(
-    meta.exposed.map((x) => exposeRow(x, overrideOf(overrides.exposes?.[x.name]))),
-    item,
-  );
+  const exposed = exposeRows(meta.exposed, comp.exposes, overrides.exposes ?? {}, item);
 
   const deps = extract.deps
     ? comp.deps.filter((dep) => dep !== name && componentNames.has(dep))
@@ -200,7 +265,7 @@ export function extractComponent(filePath, options = {}) {
 
   const component = {
     name,
-    category: categoryOf(abs, root, config.componentsDir),
+    category: options.category ?? categoryOf(abs, root, config.componentsDir),
     file: posix(relative(root, abs)),
     description: overrides.intro || meta.description || "",
     props,
@@ -269,18 +334,26 @@ function loadSidecar(root, config, tag) {
  * @param {string} [options.root] raíz del proyecto.
  * @param {object} [options.config] config resuelta.
  * @param {Array<object>} [options.components] lista explícita (si no, `config.components`).
+ * @param {"vue"|"lib"} [options.source] `vue` = componente real; `lib` = SFC que
+ *   distribuye la lib (`.ce.vue` si existe). Default: `vue`.
  */
 export function buildIndex(options = {}) {
-  const { root = process.cwd(), config = {} } = options;
+  const { root = process.cwd(), config = {}, source = "vue" } = options;
   const libIndex = options.libIndex ?? buildLibIndex(root, config.libDir ?? "src/lib");
+  const targets =
+    source === "lib"
+      ? (options.targets ?? buildLibTargets(root, config.libDir ?? "src/lib"))
+      : null;
   const checker = options.checker ?? getChecker(root, config.tsconfig);
   const list = resolveList(root, config, options.components);
   const componentNames = new Set(list.map((item) => item.name));
 
   const components = list.map((item) => {
-    const abs = resolve(root, item.file);
-    const sidecar = item.sidecar ?? loadSidecar(root, config, libIndex.get(abs));
-    return extractComponent(item.file, {
+    const vueAbs = resolve(root, item.file);
+    const tag = libIndex.get(vueAbs);
+    const target = targets && tag ? targets.get(tag) : null;
+    const sidecar = item.sidecar ?? loadSidecar(root, config, tag);
+    return extractComponent(target?.sfc ?? vueAbs, {
       root,
       config,
       libIndex,
@@ -288,6 +361,9 @@ export function buildIndex(options = {}) {
       sidecar,
       item,
       checker,
+      name: item.name,
+      tag,
+      category: categoryOf(vueAbs, root, config.componentsDir),
     });
   });
 

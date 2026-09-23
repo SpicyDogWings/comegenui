@@ -18,13 +18,13 @@ Soporta matching de columnas **por label sin importar el orden** (`strict=false`
 | `hasHeader` | `boolean` | `true` | La primera fila del archivo es el encabezado |
 | `strict` | `boolean` | `false` | `false` = match por label en cualquier orden; `true` = respeta el orden del schema |
 | `sheet` | `string \| number` | `0` | Hoja a leer en `.xlsx` (índice o nombre) |
-| `template` | `xlsx \| csv` | — | "xlsx"` |
-| `color` | `primary \| secondary \| neutral \| success \| warning \| danger` | `"neutral"` | `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
+| `template` | `{ enabled?: boolean; type?: "xlsx" \| "csv"; filename?: string; }` | `{ enabled: false, type: "csv", filename: "template" }` | "xlsx"` |
+| `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
 | `variant` | `string` | `"outlined"` | `outlined`, `soft`, `ghost`, `subtle` |
 | `placeholder` | `string` | `"Seleccionar archivo"` | Texto cuando no hay archivo |
-| `disabled` | — | — | Deshabilita la selección |
-| `readOnly` | — | — | Modo solo lectura |
-| `maxSize` | — | — | Tamaño máximo en bytes |
+| `disabled` | `boolean` | — | Deshabilita la selección |
+| `readOnly` | `boolean` | — | Modo solo lectura |
+| `maxSize` | `number` | — | Tamaño máximo en bytes |
 | `inputType` | `string` | `"input"` | `"input"` = `<cu-file-input>` compacto; `"zone"` = zona drag & drop (`<cu-file-input-zone>`). Single file en ambos |
 
 > **Atributos en HTML:** `hasHeader` se escribe `has-header`, `readOnly` → `readonly`, `maxSize` → `max-size`. Los arrays y objetos (`columns`, `template`, `formats`, `sheet`) se asignan por JS.
@@ -71,7 +71,7 @@ Ninguno.
 | `.validate()` | Re-valida y devuelve errores |
 | `.downloadTemplate()` | Descarga la plantilla configurada |
 | `.reset()` | Limpia archivo, filas y errores |
-| `.set()` | Asigna un archivo programáticamente |
+| `.set(val: File \| null)` | Asigna un archivo programáticamente |
 | `.trigger()` | Abre el diálogo de selección |
 | `.focus()` | Enfoca el input |
 

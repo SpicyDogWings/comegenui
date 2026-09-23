@@ -10,12 +10,12 @@ Botón con soporte de color, variante, link y estados. Si se define `to`, se ren
 
 | Prop | Tipo | Default | Descripción |
 |------|------|------|------|
-| `color` | `primary \| secondary \| neutral \| success \| warning \| danger` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `solid \| outlined \| soft \| ghost \| subtle \| link \| none` | `"ghost"` | `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` |
-| `size` | `sm \| md \| lg` | `"md"` | Tamaño: `sm`, `md`, `lg` |
+| `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle" \| "link" \| "none"` | `"ghost"` | `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` |
+| `size` | `"md" \| "sm" \| "lg"` | `"md"` | Tamaño: `sm`, `md`, `lg` |
 | `to` | `string` | — | Si se especifica, el botón se renderiza como `<a>` |
-| `target` | `_self \| _blank \| _parent \| _top` | `"_self"` | Target del link cuando `to` está definido: `_self`, `_blank`, `_parent`, `_top` |
-| `type` | `button \| submit \| reset` | `"button"` | Tipo del `<button>`: `button`, `submit`, `reset` |
+| `target` | `"_self" \| "_blank" \| "_parent" \| "_top"` | `"_self"` | Target del link cuando `to` está definido: `_self`, `_blank`, `_parent`, `_top` |
+| `type` | `"reset" \| "button" \| "submit"` | `"button"` | Tipo del `<button>`: `button`, `submit`, `reset` |
 | `disabled` | `boolean` | `false` | Estado deshabilitado |
 | `loading` | `boolean` | `false` | Muestra un spinner en lugar del contenido. Deshabilita el botón mientras está activo |
 

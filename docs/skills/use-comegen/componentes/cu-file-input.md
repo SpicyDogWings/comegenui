@@ -11,13 +11,13 @@ Input de archivo compacto con drag & drop, estilo idéntico a `<cu-input>`. Sing
 | Prop | Tipo | Default | Descripción |
 |------|------|------|------|
 | `modelValue` | `File \| null` | `null` | Archivo seleccionado (vía JS, no HTML) |
-| `color` | `primary \| secondary \| neutral \| success \| warning \| danger` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `variant` | `string` | `"outlined"` | `outlined`, `soft`, `ghost`, `subtle` |
 | `placeholder` | `string` | `"Seleccionar archivo"` | Texto cuando no hay archivo |
-| `disabled` | — | — | Deshabilita click, drag y drop |
-| `readOnly` | — | — | Modo solo lectura |
-| `accept` | — | — | Tipos aceptados (ej: `"image/*"`, `".pdf,.doc"`) |
-| `maxSize` | — | — | Tamaño máximo en bytes |
+| `disabled` | `boolean` | — | Deshabilita click, drag y drop |
+| `readOnly` | `boolean` | — | Modo solo lectura |
+| `accept` | `string` | — | Tipos aceptados (ej: `"image/*"`, `".pdf,.doc"`) |
+| `maxSize` | `number` | — | Tamaño máximo en bytes |
 
 > **Atributos en HTML:** `readOnly` se escribe como `readonly`, `maxSize` como `max-size`.
 
@@ -36,7 +36,7 @@ Ninguno.
 | Método | Descripción |
 |------|------|
 | `.get()` | Devuelve el `File` actual o `null` |
-| `.set()` | Asigna un archivo programáticamente |
+| `.set(val: File \| null)` | Asigna un archivo programáticamente |
 | `.reset()` | Limpia la selección |
 | `.focus()` | Enfoca el input |
 | `.trigger()` | Abre el diálogo nativo de selección de archivos |

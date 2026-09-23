@@ -14,18 +14,18 @@ Selector de rango de fechas: dos fechas (inicio + fin) con resaltado del períod
 | `endDate` | `string \| number \| Date \| null` | `null` | Fecha de fin del rango |
 | `min` | `string \| number \| Date \| null` | `null` | Fecha mínima seleccionable |
 | `max` | `string \| number \| Date \| null` | `null` | Fecha máxima seleccionable |
-| `color` | `primary \| secondary \| neutral \| success \| warning \| danger` | `"neutral"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `outlined \| soft \| ghost \| subtle` | `"soft"` | Variante del trigger: `outlined`, `soft`, `ghost`, `subtle` |
+| `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
+| `variant` | `"soft" \| "outlined" \| "ghost" \| "subtle"` | `"soft"` | Variante del trigger: `outlined`, `soft`, `ghost`, `subtle` |
 | `disabled` | `boolean` | `false` | Deshabilita el picker |
 | `placeholder` | `string` | `""` | Texto cuando no hay rango seleccionado |
 | `locale` | `string` | `"es"` | Locale para nombres de mes y días |
 | `weekStart` | `number` | `1` | Día en que arranca la semana: `0` = domingo, `1` = lunes |
 | `format` | `string` | `"dd/MM/yyyy"` | Formato del rango en el trigger (tokens: `dd` `MM` `MMM` `MMMM` `yy` `yyyy`) |
-| `yearNavigation` | `boolean \| string` | `false` | Muestra botones `«`/`»` para saltar de año |
+| `yearNavigation` | `string \| boolean` | `false` | Muestra botones `«`/`»` para saltar de año |
 | `monthFormat` | `string` | `"MMMM"` | Formato del mes en el header |
 | `yearFormat` | `string` | `"yyyy"` | Formato del año en el header |
-| `disabledWeekdays` | `number[] \| string` | `""` | Días de la semana no seleccionables (`0`=domingo … `6`=sábado) |
-| `disabledDates` | `(string \| Date)[] \| string` | `""` | Fechas puntuales no seleccionables |
+| `disabledWeekdays` | `string \| number[]` | `""` | Días de la semana no seleccionables (`0`=domingo … `6`=sábado) |
+| `disabledDates` | `string \| (string \| Date)[]` | `""` | Fechas puntuales no seleccionables |
 | `events` | `CalendarEvent[]` | `[]` | Eventos a señalar con puntos bajo la fecha (ver [cu-calendar](cu-calendar.md#eventos-puntos)) |
 | `grid` | `boolean` | `false` | Líneas **interiores** (cuadrícula) entre los días de los calendarios internos |
 | `border` | `boolean` | `false` | **Marco exterior** alrededor de la cuadrícula de días |
@@ -57,7 +57,7 @@ Selector de rango de fechas: dos fechas (inicio + fin) con resaltado del períod
 | `.toggle()` | Abre/cierra el panel |
 | `.getStartDate()` | null` con la fecha de inicio |
 | `.getEndDate()` | null` con la fecha de fin |
-| `.setRange()` | Define el rango (acepta string/number/Date) |
+| `.setRange(start: string \| number \| Date \| null, end: string \| number \| Date \| null)` | Define el rango (acepta string/number/Date) |
 | `.clear()` | Limpia el rango |
 | `.isOpen()` | Devuelve `boolean` |
 

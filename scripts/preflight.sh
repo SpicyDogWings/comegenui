@@ -73,9 +73,9 @@ fi
 
 # ── 3. drift de las fichas de API de la skill ────────────────────────────────
 if [ -n "$COMPONENT" ]; then
-  step "docs de la skill (${COMPONENT})" node src/plugins/khadgar/cli/generate.mjs "$COMPONENT" --docs --check
+  step "docs de la skill (${COMPONENT})" node src/plugins/khadgar-docs/cli.mjs --only "$COMPONENT" --check
 else
-  step "docs de la skill" node src/plugins/khadgar/cli/generate.mjs --all --docs --check
+  step "docs de la skill" node src/plugins/khadgar-docs/cli.mjs --check
 fi
 
 echo ""

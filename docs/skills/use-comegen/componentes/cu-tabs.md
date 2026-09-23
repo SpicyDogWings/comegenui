@@ -10,12 +10,12 @@ Pestañas con variantes, iconos, tabs deshabilitadas individuales y control prog
 
 | Prop | Tipo | Default | Descripción |
 |------|------|------|------|
-| `tabs` | `{ key: string; label: string; icon?: string; disabled?: boolean; keepAlive?: boolean }[]` | `[]` | Definición de las pestañas |
+| `tabs` | `{ key: string; label: string; icon?: string; disabled?: boolean; keepAlive?: boolean; }[]` | `[]` | Definición de las pestañas |
 | `modelValue` | `string` | `""` | Key del tab activo (controlado) |
-| `color` | `primary \| secondary \| neutral \| success \| warning \| danger` | `"primary"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `ghost \| solid \| boxed \| soft` | `"ghost"` | `ghost`, `solid`, `boxed`, `soft` |
-| `size` | `sm \| md \| lg` | `"md"` | `sm`, `md`, `lg` |
-| `disabled` | — | — | Deshabilita todas las pestañas |
+| `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"primary"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
+| `variant` | `"soft" \| "solid" \| "ghost" \| "boxed"` | `"ghost"` | `ghost`, `solid`, `boxed`, `soft` |
+| `size` | `"md" \| "sm" \| "lg"` | `"md"` | `sm`, `md`, `lg` |
+| `disabled` | `boolean` | — | Deshabilita todas las pestañas |
 
 ### Prop `tabs`
 
@@ -47,7 +47,7 @@ En HTML plano se usan con el atributo `slot="..."` sobre el elemento hijo.
 | Método | Descripción |
 |------|------|
 | `.getActive()` | Devuelve la key del tab activo |
-| `.setActive()` | Activa el tab con esa key |
+| `.setActive(key: string)` | Activa el tab con esa key |
 | `.next()` | Activa el próximo tab habilitado |
 | `.prev()` | Activa el tab anterior habilitado |
 

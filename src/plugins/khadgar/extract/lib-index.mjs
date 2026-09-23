@@ -32,13 +32,14 @@ function pickVueImport(src, base) {
 }
 
 /**
- * Construye el índice `.vue` (absoluto) → tag (`cu-x`).
+ * Entradas de la lib: `tag → { sfc, vue }`, donde `sfc` es el SFC que
+ * distribuye el entry (`.ce.vue` o `.vue`) y `vue` el componente real.
  *
  * @param {string} root raíz del proyecto.
  * @param {string} [libDir] dir de entry points. Default: `src/lib`.
- * @returns {Map<string, string>}
+ * @returns {Map<string, { tag: string, sfc: string, vue: string }>}
  */
-export function buildLibIndex(root, libDir = "src/lib") {
+export function buildLibTargets(root, libDir = "src/lib") {
   const map = new Map();
   const files = fg.sync(`${libDir}/**/*.ts`, { cwd: root, absolute: true, ignore: EXCLUDE });
   for (const file of files) {
@@ -46,17 +47,32 @@ export function buildLibIndex(root, libDir = "src/lib") {
     const tag = src.match(TAG_DEFINE)?.[1];
     const imp = vueImports(src)[0];
     if (!tag || !imp) continue;
+    const sfc = resolveImport(root, file, imp);
+    if (!sfc) continue;
 
-    let abs = resolveImport(root, file, imp);
+    let vue = sfc;
     // Los entry points suelen importar el wrapper `.ce.vue`; el componente real
     // es el `.vue` que ese wrapper importa (mismo basename sin `.ce`).
-    if (abs && imp.endsWith(".ce.vue")) {
-      const base = basename(abs).replace(/\.ce\.vue$/, "");
-      const inner = pickVueImport(readFileSync(abs, "utf-8"), base);
-      if (inner) abs = resolveImport(root, abs, inner);
+    if (imp.endsWith(".ce.vue")) {
+      const base = basename(sfc).replace(/\.ce\.vue$/, "");
+      const inner = pickVueImport(readFileSync(sfc, "utf-8"), base);
+      if (inner) vue = resolveImport(root, sfc, inner);
     }
-    if (abs) map.set(abs, tag);
+    map.set(tag, { tag, sfc, vue });
   }
+  return map;
+}
+
+/**
+ * Índice `.vue` (absoluto) → tag (`cu-x`).
+ *
+ * @param {string} root raíz del proyecto.
+ * @param {string} [libDir] dir de entry points. Default: `src/lib`.
+ * @returns {Map<string, string>}
+ */
+export function buildLibIndex(root, libDir = "src/lib") {
+  const map = new Map();
+  for (const target of buildLibTargets(root, libDir).values()) map.set(target.vue, target.tag);
   return map;
 }
 

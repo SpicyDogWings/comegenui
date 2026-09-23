@@ -10,10 +10,10 @@ Alerta con color semántico, título opcional y botón de cerrar. Puede controla
 
 | Prop | Tipo | Default | Descripción |
 |------|------|------|------|
-| `color` | `primary \| secondary \| neutral \| success \| warning \| danger` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `variant` | `string` | `"soft"` | `solid`, `outlined`, `soft`, `ghost`, `subtle` |
-| `title` | — | — | Título visible en la cabecera |
-| `close` | — | — | Muestra el botón de cerrar (X) |
+| `title` | `string` | — | Título visible en la cabecera |
+| `close` | `boolean` | — | Muestra el botón de cerrar (X) |
 | `show` | `boolean` | `true` | Controla visibilidad. Cambiar este atributo emite `update:show` |
 
 > **Atributos booleanos:** en HTML se usan sin valor: `<cu-alert close show>...`

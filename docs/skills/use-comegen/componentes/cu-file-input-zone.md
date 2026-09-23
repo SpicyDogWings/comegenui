@@ -11,14 +11,14 @@ Selector de archivos con zona de drag & drop amplia, soporte para carpetas (recu
 | Prop | Tipo | Default | Descripción |
 |------|------|------|------|
 | `modelValue` | `File \| File[] \| null` | `null` | Archivo/s seleccionados |
-| `color` | `primary \| secondary \| neutral \| success \| warning \| danger` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `placeholder` | `string` | `"Selecciona un archivo o arrastra aquí"` | Texto cuando no hay archivos |
-| `disabled` | — | — | Deshabilita interacción |
-| `readOnly` | — | — | Modo solo lectura |
-| `accept` | — | — | Tipos aceptados (ej: `"image/*"`) |
-| `multiple` | — | — | Permite múltiples archivos |
-| `maxSize` | — | — | Tamaño máximo en bytes |
-| `directory` | — | — | Activa modo carpeta (incluye `multiple` implícitamente) |
+| `disabled` | `boolean` | — | Deshabilita interacción |
+| `readOnly` | `boolean` | — | Modo solo lectura |
+| `accept` | `string` | — | Tipos aceptados (ej: `"image/*"`) |
+| `multiple` | `boolean` | — | Permite múltiples archivos |
+| `maxSize` | `number` | — | Tamaño máximo en bytes |
+| `directory` | `boolean` | — | Activa modo carpeta (incluye `multiple` implícitamente) |
 | `directoryDeep` | `number` | `0` | Niveles de recursión en carpetas: `0` = solo raíz, `1` = +1 subnivel, `-1` = sin límite |
 | `maxHeight` | `string` | `""` | Altura máxima del listado (ej: `"200px"`). Sin scroll si se omite. |
 
@@ -41,7 +41,7 @@ Ninguno.
 | Método | Descripción |
 |------|------|
 | `.get()` | Devuelve el/los archivo/s actual/es |
-| `.set()` | Asigna archivos programáticamente |
+| `.set(val: File \| File[] \| null)` | Asigna archivos programáticamente |
 | `.reset()` | Limpia la selección |
 | `.focus()` | Enfoca la zona |
 | `.trigger()` | Abre el diálogo nativo |

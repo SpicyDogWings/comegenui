@@ -10,15 +10,16 @@ import { dirname, resolve } from "node:path";
 import { buildIndex } from "../extract/index.mjs";
 
 function parseArgs(argv) {
-  const args = { only: null, out: null, stdout: false, config: null };
+  const args = { only: null, out: null, stdout: false, config: null, source: "vue" };
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
     if (arg === "--stdout") args.stdout = true;
     else if (arg === "--out") args.out = argv[++i];
     else if (arg === "--only") args.only = argv[++i];
     else if (arg === "--config") args.config = argv[++i];
+    else if (arg === "--source") args.source = argv[++i];
     else if (arg === "--help" || arg === "-h") {
-      console.log("khadgar extract [--stdout] [--out <file>] [--only A,B] [--config <file>]");
+      console.log("khadgar extract [--stdout] [--out <file>] [--only A,B] [--source vue|lib] [--config <file>]");
       process.exit(0);
     }
   }
@@ -36,7 +37,7 @@ if (args.only) {
   components = (config.components ?? []).filter((item) => names.has(item.name));
 }
 
-const index = buildIndex({ root, config, components });
+const index = buildIndex({ root, config, components, source: args.source });
 
 if (args.stdout) {
   process.stdout.write(JSON.stringify(index, null, 2));

@@ -10,8 +10,8 @@ Etiqueta o badge pequeño para estados, categorías o metadata. Componente de pr
 
 | Prop | Tipo | Default | Descripción |
 |------|------|------|------|
-| `color` | `primary \| secondary \| neutral \| success \| warning \| danger` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `solid \| outlined \| soft \| subtle \| ghost` | `"soft"` | `solid`, `outlined`, `soft`, `ghost`, `subtle` |
+| `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `variant` | `"solid" \| "outlined" \| "soft" \| "subtle" \| "ghost"` | `"soft"` | `solid`, `outlined`, `soft`, `ghost`, `subtle` |
 
 ## Eventos
 

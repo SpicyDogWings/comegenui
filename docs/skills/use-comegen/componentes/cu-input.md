@@ -39,7 +39,7 @@ Ninguno.
 | Método | Descripción |
 |------|------|
 | `.get()` | Devuelve el valor actual (`string`) |
-| `.set(value)` | Asigna un valor |
+| `.set(value: string \| number)` | Asigna un valor |
 | `.reset()` | Vuelve al `startValue` (o `""` si no se definió) |
 | `.focus()` | Enfoca el input |
 

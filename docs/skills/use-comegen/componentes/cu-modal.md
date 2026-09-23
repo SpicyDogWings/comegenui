@@ -10,10 +10,10 @@ Modal/diálogo con backdrop, animación, soporte para `size`/`height` y slot `fo
 
 | Prop | Tipo | Default | Descripción |
 |------|------|------|------|
-| `color` | `primary \| secondary \| neutral \| success \| warning \| danger` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `title` | — | — | Título del modal (se muestra en la cabecera) |
-| `description` | — | — | Descripción bajo el título (texto secundario) |
-| `persistent` | — | — | Si es `true`, no se cierra con click en el backdrop ni con `Escape` |
+| `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `title` | `string` | — | Título del modal (se muestra en la cabecera) |
+| `description` | `string` | — | Descripción bajo el título (texto secundario) |
+| `persistent` | `boolean` | — | Si es `true`, no se cierra con click en el backdrop ni con `Escape` |
 | `size` | `string` | `"auto"` | Ancho del modal: `auto`, `sm`, `md`, `lg`, `xl`, `full` |
 | `height` | `string` | `"auto"` | Alto del modal: `auto`, `sm`, `md`, `lg`, `xl`, `full` |
 

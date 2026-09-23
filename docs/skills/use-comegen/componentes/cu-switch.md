@@ -11,9 +11,9 @@ Toggle switch con color semántico y dos tamaños. Controlable via `modelValue` 
 | Prop | Tipo | Default | Descripción |
 |------|------|------|------|
 | `modelValue` | `boolean` | `false` | Estado del toggle (controlado) |
-| `color` | `primary \| secondary \| neutral \| success \| warning \| danger` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `size` | `string` | `"md"` | Tamaño del switch: `sm`, `md` |
-| `disabled` | — | — | Estado deshabilitado |
+| `disabled` | `boolean` | — | Estado deshabilitado |
 | `label` | `string` | `""` |  |
 
 > El Custom Element **no expone** una prop `checked` separada. El control se hace únicamente con `modelValue`. Tampoco tiene props `variant`, `theme` ni `hightContrast`; el tamaño se controla con `size`.
@@ -38,7 +38,7 @@ Ninguno.
 | Método | Descripción |
 |------|------|
 | `.get()` | Devuelve el estado actual (`boolean`) |
-| `.set()` | Asigna el estado |
+| `.set(val: boolean)` | Asigna el estado |
 | `.reset()` | Pone el estado en `false` |
 | `.focus()` | Enfoca el switch |
 
