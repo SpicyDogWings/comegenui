@@ -7,7 +7,7 @@ description: Guía para desarrollar y contribuir a ComegenUI 2.x (librería de W
 
 Skill de **desarrollo** para ComegenUI 2.x. Cubre la arquitectura de componentes, el pipeline de build, cómo usar el playground, las convenciones de código, y el workflow para crear componentes nuevos.
 
-> **Audiencia:** contribuidores al proyecto (humanos o agentes). No es la doc de uso de la librería — eso está en la skill [`comegen-ui`](../comegen-ui/SKILL.md).
+> **Audiencia:** contribuidores al proyecto (humanos o agentes). No es la doc de uso de la librería — eso está en la skill [`comegen-ui`](../skills/use-comegen/SKILL.md).
 
 ---
 

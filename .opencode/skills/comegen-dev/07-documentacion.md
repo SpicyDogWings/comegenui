@@ -9,7 +9,7 @@ La doc pública de un componente es **obligatoria** en la DoD. El trabajo de esc
    - Props (kebab-case), eventos, slots, métodos expuestos y ejemplos de uso en **HTML plano** (no Vue).
 2. **Índices** (el tag `<cu-x>` debe aparecer en TODOS o en ninguno):
    - `docs/skills/use-comegen/SKILL.md` (tablas de archivos/variantes/índice).
-   - `docs/DOCS.md`, `COMPONENTS-GUIDE.md` y `docs/comegen-ui/` (docs para humanos).
+   - `docs/DOCS.md`, `COMPONENTS-GUIDE.md` y `docs/skills/use-comegen/` (docs para humanos).
    - `.opencode/skills/comegen-ui/` y `.agents/skills/use-comegen/` son symlinks del canonical: no se editan aparte.
 
 ## Regla de oro

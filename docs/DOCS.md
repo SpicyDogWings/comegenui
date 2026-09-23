@@ -10,8 +10,8 @@ Bienvenido a la documentación del proyecto **ComegenUI 2.0** (librería de Web 
 
 Si querés consumir los componentes en tu proyecto (HTML plano, React, Vue, etc.):
 
-- **[Guía de uso de ComegenUI](comegen-ui/SKILL.md)** — instalación, temas, variantes, API de cada componente.
-- **[Documentación por componente](comegen-ui/componentes/)** — referencia detallada de la API.
+- **[Guía de uso de ComegenUI](skills/use-comegen/SKILL.md)** — instalación, temas, variantes, API de cada componente.
+- **[Documentación por componente](skills/use-comegen/componentes/)** — referencia detallada de la API.
 
 ### Quiero **contribuir / desarrollar**
 
@@ -32,39 +32,39 @@ Si vas a modificar o agregar componentes a la librería:
 
 | Componente | Documentación |
 |------------|---------------|
-| `<cu-alert>` | [Ver docs](comegen-ui/componentes/cu-alert.md) |
-| `<cu-author-card>` | [Ver docs](comegen-ui/componentes/cu-author-card.md) |
-| `<cu-autocomplete>` | [Ver docs](comegen-ui/componentes/cu-autocomplete.md) |
-| `<cu-avatar>` | [Ver docs](comegen-ui/componentes/cu-avatar.md) |
-| `<cu-badge>` | [Ver docs](comegen-ui/componentes/cu-badge.md) |
-| `<cu-button>` | [Ver docs](comegen-ui/componentes/cu-button.md) |
-| `<cu-calendar>` | [Ver docs](comegen-ui/componentes/cu-calendar.md) |
-| `<cu-card>` | [Ver docs](comegen-ui/componentes/cu-card.md) |
-| `<cu-cells-importer>` | [Ver docs](comegen-ui/componentes/cu-cells-importer.md) |
-| `<cu-checkbox>` | [Ver docs](comegen-ui/componentes/cu-checkbox.md) |
-| `<cu-collapse>` | [Ver docs](comegen-ui/componentes/cu-collapse.md) |
-| `<cu-command-palette>` | [Ver docs](comegen-ui/componentes/cu-command-palette.md) |
-| `<cu-color-picker>` | [Ver docs](comegen-ui/componentes/cu-color-picker.md) |
-| `<cu-date-picker>` | [Ver docs](comegen-ui/componentes/cu-date-picker.md) |
-| `<cu-date-picker-range>` | [Ver docs](comegen-ui/componentes/cu-date-picker-range.md) |
-| `<cu-dropdown-menu>` | [Ver docs](comegen-ui/componentes/cu-dropdown-menu.md) |
-| `<cu-file-input>` | [Ver docs](comegen-ui/componentes/cu-file-input.md) |
-| `<cu-file-input-zone>` | [Ver docs](comegen-ui/componentes/cu-file-input-zone.md) |
-| `<cu-floating-button>` | [Ver docs](comegen-ui/componentes/cu-floating-button.md) |
-| `<cu-input>` | [Ver docs](comegen-ui/componentes/cu-input.md) |
-| `<cu-label>` | [Ver docs](comegen-ui/componentes/cu-label.md) |
-| `<cu-markdown>` | [Ver docs](comegen-ui/componentes/cu-markdown.md) |
-| `<cu-modal>` | [Ver docs](comegen-ui/componentes/cu-modal.md) |
-| `<cu-navbar>` | [Ver docs](comegen-ui/componentes/cu-navbar.md) |
-| `<cu-navbar-horizontal>` | [Ver docs](comegen-ui/componentes/cu-navbar-horizontal.md) |
-| `<cu-pagination>` | [Ver docs](comegen-ui/componentes/cu-pagination.md) |
-| `<cu-select>` | [Ver docs](comegen-ui/componentes/cu-select.md) |
-| `<cu-side-over>` | [Ver docs](comegen-ui/componentes/cu-side-over.md) |
-| `<cu-switch>` | [Ver docs](comegen-ui/componentes/cu-switch.md) |
-| `<cu-tabs>` | [Ver docs](comegen-ui/componentes/cu-tabs.md) |
-| `<cu-table>` | [Ver docs](comegen-ui/componentes/cu-table.md) |
-| `<cu-textarea>` | [Ver docs](comegen-ui/componentes/cu-textarea.md) |
-| `<cu-tooltip>` | [Ver docs](comegen-ui/componentes/cu-tooltip.md) |
+| `<cu-alert>` | [Ver docs](skills/use-comegen/componentes/cu-alert.md) |
+| `<cu-author-card>` | [Ver docs](skills/use-comegen/componentes/cu-author-card.md) |
+| `<cu-autocomplete>` | [Ver docs](skills/use-comegen/componentes/cu-autocomplete.md) |
+| `<cu-avatar>` | [Ver docs](skills/use-comegen/componentes/cu-avatar.md) |
+| `<cu-badge>` | [Ver docs](skills/use-comegen/componentes/cu-badge.md) |
+| `<cu-button>` | [Ver docs](skills/use-comegen/componentes/cu-button.md) |
+| `<cu-calendar>` | [Ver docs](skills/use-comegen/componentes/cu-calendar.md) |
+| `<cu-card>` | [Ver docs](skills/use-comegen/componentes/cu-card.md) |
+| `<cu-cells-importer>` | [Ver docs](skills/use-comegen/componentes/cu-cells-importer.md) |
+| `<cu-checkbox>` | [Ver docs](skills/use-comegen/componentes/cu-checkbox.md) |
+| `<cu-collapse>` | [Ver docs](skills/use-comegen/componentes/cu-collapse.md) |
+| `<cu-command-palette>` | [Ver docs](skills/use-comegen/componentes/cu-command-palette.md) |
+| `<cu-color-picker>` | [Ver docs](skills/use-comegen/componentes/cu-color-picker.md) |
+| `<cu-date-picker>` | [Ver docs](skills/use-comegen/componentes/cu-date-picker.md) |
+| `<cu-date-picker-range>` | [Ver docs](skills/use-comegen/componentes/cu-date-picker-range.md) |
+| `<cu-dropdown-menu>` | [Ver docs](skills/use-comegen/componentes/cu-dropdown-menu.md) |
+| `<cu-file-input>` | [Ver docs](skills/use-comegen/componentes/cu-file-input.md) |
+| `<cu-file-input-zone>` | [Ver docs](skills/use-comegen/componentes/cu-file-input-zone.md) |
+| `<cu-floating-button>` | [Ver docs](skills/use-comegen/componentes/cu-floating-button.md) |
+| `<cu-input>` | [Ver docs](skills/use-comegen/componentes/cu-input.md) |
+| `<cu-label>` | [Ver docs](skills/use-comegen/componentes/cu-label.md) |
+| `<cu-markdown>` | [Ver docs](skills/use-comegen/componentes/cu-markdown.md) |
+| `<cu-modal>` | [Ver docs](skills/use-comegen/componentes/cu-modal.md) |
+| `<cu-navbar>` | [Ver docs](skills/use-comegen/componentes/cu-navbar.md) |
+| `<cu-navbar-horizontal>` | [Ver docs](skills/use-comegen/componentes/cu-navbar-horizontal.md) |
+| `<cu-pagination>` | [Ver docs](skills/use-comegen/componentes/cu-pagination.md) |
+| `<cu-select>` | [Ver docs](skills/use-comegen/componentes/cu-select.md) |
+| `<cu-side-over>` | [Ver docs](skills/use-comegen/componentes/cu-side-over.md) |
+| `<cu-switch>` | [Ver docs](skills/use-comegen/componentes/cu-switch.md) |
+| `<cu-tabs>` | [Ver docs](skills/use-comegen/componentes/cu-tabs.md) |
+| `<cu-table>` | [Ver docs](skills/use-comegen/componentes/cu-table.md) |
+| `<cu-textarea>` | [Ver docs](skills/use-comegen/componentes/cu-textarea.md) |
+| `<cu-tooltip>` | [Ver docs](skills/use-comegen/componentes/cu-tooltip.md) |
 
 ---
 

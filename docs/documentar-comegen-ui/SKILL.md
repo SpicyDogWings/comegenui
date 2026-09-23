@@ -1,6 +1,6 @@
 ---
 name: documentar-comegen-ui
-description: Guía para documentar componentes de ComegenUI 2.x. Úsala cuando se pida crear, actualizar o auditar la documentación de un Custom Element de ComegenUI (los archivos en `docs/comegen-ui/componentes/cu-*.md`).
+description: Guía para documentar componentes de ComegenUI 2.x. Úsala cuando se pida crear, actualizar o auditar la documentación de un Custom Element de ComegenUI (los archivos en `docs/skills/use-comegen/componentes/cu-*.md`).
 ---
 
 # Documentar ComegenUI
@@ -52,7 +52,7 @@ Si la tarea es **modificar el código fuente** de un componente (`.ce.vue`, `.vu
 
 Un componente nuevo **no está documentado solo con su `.md`**. Cuando se crea uno (ej. `<cu-card>`), hay que actualizar **todos** los índices que listan componentes. Verificarlos con `grep` por el tag del componente:
 
-1. **`docs/comegen-ui/SKILL.md`** (usuario final) — 3 lugares:
+1. **`docs/skills/use-comegen/SKILL.md`** (usuario final) — 3 lugares:
    - Tabla "Archivos disponibles" (agregar `Cu<Nombre>.umd.js` / `<cu-xxx>` / descripción).
    - Tabla "Default de `variant` por componente" (si tiene variant).
    - Índice "Componentes" (link a `componentes/cu-xxx.md`).
@@ -91,6 +91,6 @@ Esto es importante porque:
 - `src/components/**/<Nombre>.ce.vue` — fuente de verdad de la API.
 - `src/components/**/<Nombre>.vue` — implementación interna (referencia, no para docs).
 - `src/components/**/<Nombre>.ts` — punto de entrada del build (no suele afectar docs).
-- `docs/comegen-ui/SKILL.md` — la skill que consume el usuario final.
-- `docs/comegen-ui/componentes/<nombre>.md` — el archivo a crear/actualizar/auditar.
+- `docs/skills/use-comegen/SKILL.md` — la skill que consume el usuario final.
+- `docs/skills/use-comegen/componentes/<nombre>.md` — el archivo a crear/actualizar/auditar.
 - `docs/notes/` — notas internas sobre problemas pendientes.

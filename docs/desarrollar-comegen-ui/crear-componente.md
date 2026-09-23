@@ -255,13 +255,13 @@ Después, abrir el playground en el navegador y verificar que el nuevo tag funci
 
 ## 7. Documentar
 
-Usá la skill [`documentar-comegen-ui`](../documentar-comegen-ui/SKILL.md) para crear el archivo `cu-<nombre>.md` en `docs/comegen-ui/componentes/`.
+Usá la skill [`documentar-comegen-ui`](../documentar-comegen-ui/SKILL.md) para crear el archivo `cu-<nombre>.md` en `docs/skills/use-comegen/componentes/`.
 
 ## 8. Actualizar SKILL.md e índices
 
 Un componente nuevo **no está completo con solo su `.md`**. Hay que actualizar **todos** los índices que listan componentes (verificar con `grep` por el tag `<cu-xxx>`):
 
-1. **`docs/comegen-ui/SKILL.md`** (usuario final) — 3 lugares:
+1. **`docs/skills/use-comegen/SKILL.md`** (usuario final) — 3 lugares:
    - Tabla "Archivos disponibles" (agregar `Cu<Nombre>.umd.js` / `<cu-xxx>` / descripción).
    - Tabla "Default de `variant` por componente" (si tiene variant).
    - Índice "Componentes" (link a `componentes/cu-xxx.md`).
@@ -282,7 +282,7 @@ Un componente nuevo **no está completo con solo su `.md`**. Hay que actualizar 
 - [ ] (Opcional) Preset en `playground/examples/`.
 - [ ] Build UMD funciona: `pnpm build:lib`.
 - [ ] Documentación `cu-<nombre>.md` existe.
-- [ ] `docs/comegen-ui/SKILL.md` actualizado (tabla UMD, default variant, índice).
+- [ ] `docs/skills/use-comegen/SKILL.md` actualizado (tabla UMD, default variant, índice).
 - [ ] `docs/DOCS.md` actualizado (tabla "Componentes disponibles").
 - [ ] `COMPONENTS-GUIDE.md` actualizado (índice + sección `<cu-xxx>`).
 - [ ] Skill local `~/.agents/skills/use-comegen/` (instalada por update.sh/ps1, copia de `docs/skills/use-comegen/`).

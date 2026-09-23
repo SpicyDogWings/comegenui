@@ -9,7 +9,7 @@
 //
 //  En el <cu-table> (Custom Element) el estado inline se activa POR COLUMNA.
 //  La prop global `inlineEditing` solo existe en el componente Vue
-//  AdvancedTable, no en el CE. Ver docs/comegen-ui/componentes/cu-table.md.
+//  AdvancedTable, no en el CE. Ver docs/skills/use-comegen/componentes/cu-table.md.
 //
 //  Uso: <cu-table id="tabla-estados"></cu-table> (ver index.html del playground)
 

@@ -91,7 +91,7 @@ Puntos clave:
 - **`minify: false`** — los UMD no se minifican (el consumidor puede minificar si quiere). Esto los hace más grandes pero más fáciles de debuggear.
 - **Vue NO está externalizado** — está incluido en cada bundle. Por eso cada `.umd.js` pesa ~180-250 kB.
 
-> **Tradeoff:** incluir Vue en cada bundle hace que el usuario final no tenga que cargar Vue por separado, pero duplica el runtime si carga varios componentes. Ver [SKILL.md principal](../../comegen-ui/SKILL.md#tamaños-de-los-bundles) para los tamaños.
+> **Tradeoff:** incluir Vue en cada bundle hace que el usuario final no tenga que cargar Vue por separado, pero duplica el runtime si carga varios componentes. Ver [SKILL.md principal](../../skills/use-comegen/SKILL.md#tamaños-de-los-bundles) para los tamaños.
 
 ## Versión
 

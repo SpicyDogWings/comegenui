@@ -16,7 +16,7 @@ pnpm dev
 ### Opción 1: Descargar build de CI (recomendado)
 
 GitLab CI compila la librería automáticamente y publica un artifact con los
-archivos listos para usar: `Cu*.umd.js`, `css/`, `comegen-ui/` (skill de uso)
+archivos listos para usar: `Cu*.umd.js`, `css/`, `use-comegen/` (skill de uso)
 y los scripts de actualización.
 
 **Linux / macOS:**

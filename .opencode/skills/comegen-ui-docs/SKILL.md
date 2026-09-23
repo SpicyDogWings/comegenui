@@ -50,14 +50,14 @@ Si la tarea es **modificar el código fuente** de un componente (`.ce.vue`, `.vu
 
 ### Destinos de la documentación
 
-Documentar un componente significa actualizar **2 destinos distintos**:
+La ficha del componente es **una sola** (canonical: la leen agentes y humanos) más los índices:
 
-| Destino | Ubicación | Tipo | Audiencia |
-|---|---|---|---|
-| **Skill** | `docs/skills/use-comegen/` (canonical; `.opencode/skills/comegen-ui/` es un symlink) | Skill (receta) | Agentes IA (viaja con el zip) |
-| **Docs** | `docs/comegen-ui/`, `docs/DOCS.md`, `COMPONENTS-GUIDE.md` | Documentación | Humanos |
+| Destino | Ubicación | Audiencia |
+|---|---|---|
+| **Ficha del componente** | `docs/skills/use-comegen/componentes/cu-<nombre>.md` (canonical; `.opencode/skills/comegen-ui/` y `.agents/skills/use-comegen/` son symlinks) | Agentes IA (viaja con el zip) + humanos |
+| **Índices humanos** | `docs/DOCS.md`, `COMPONENTS-GUIDE.md` | Humanos |
 
-> La skill de uso (`use-comegen`) es una **receta para el agente**, no documentación. La documentación real vive en `docs/comegen-ui/`.
+> La ficha **no se edita a mano**: la genera `pnpm cu-playground:generate <X> --docs` desde el SFC que distribuye la lib. La prosa curada vive en `componentes/cu-<nombre>.doc.json`.
 
 ### Índices a actualizar — Skill (agentes)
 
@@ -70,19 +70,17 @@ Documentar un componente significa actualizar **2 destinos distintos**:
 
 ### Índices a actualizar — Docs (humanos)
 
-1. **`docs/comegen-ui/componentes/<nombre>.md`** — copia del `.md` de la skill (verificar con `diff`).
-2. **`docs/DOCS.md`** — tabla "Componentes disponibles" (agregar fila con link al `.md`).
-3. **`COMPONENTS-GUIDE.md`** (raíz del repo) — índice, listado de `<script>` de instalación, tabla "Archivos disponibles", y una sección `### <cu-xxx>` completa con props/slots/uso.
-4. **`docs/desarrollar-comegen-ui/convenciones-desarrollo.md`** — solo si el componente introduce una convención nueva.
+1. **`docs/DOCS.md`** — tabla "Componentes disponibles" (agregar fila con link al `.md`).
+2. **`COMPONENTS-GUIDE.md`** (raíz del repo) — índice, listado de `<script>` de instalación, tabla "Archivos disponibles", y una sección `### <cu-xxx>` completa con props/slots/uso.
+3. **`docs/desarrollar-comegen-ui/convenciones-desarrollo.md`** — solo si el componente introduce una convención nueva.
 
 > Regla de oro: **el tag `<cu-xxx>` debe aparecer en TODOS los índices o en ninguno.** Si solo lo agregás al `.md` y al skill, el componente queda "documentado pero invisible" para humanos.
 
 ### Validación post-documentación
 
 Después de documentar, auditar con **skill-auditor** para verificar:
-- Los `.md` en skill y docs son idénticos (`diff`).
+- La ficha refleja el SFC de la lib (`pnpm cu-playground:generate --all --docs --check`).
 - El tag aparece en todos los índices.
-- No hay ruido documental (la skill sigue siendo receta, no doc).
 
 ### Para auditar un `.md` existente
 
@@ -113,14 +111,14 @@ Esto es importante porque:
 - `src/components/**/<Nombre>.vue` — implementación interna (referencia, no para docs).
 - `src/components/**/<Nombre>.ts` — punto de entrada del build.
 
-**Destino — Skill (agentes):**
+**Destino — Ficha (canonical):**
 - `docs/skills/use-comegen/SKILL.md` (canonical) — skill de uso.
 - `docs/skills/use-comegen/componentes/<nombre>.md` (canonical) — API del componente.
+- `docs/skills/use-comegen/componentes/<nombre>.doc.json` — prosa curada (fuente del generador).
 - `.opencode/skills/comegen-ui/` → symlink al canonical (lo lee opencode).
 - `.agents/skills/use-comegen/` → symlink al canonical (lo lee el agente del huésped).
 
-**Destino — Docs (humanos):**
-- `docs/comegen-ui/` — documentación para humanos.
+**Destino — Índices (humanos):**
 - `docs/DOCS.md` — índice principal.
 - `COMPONENTS-GUIDE.md` — guía de componentes (raíz del repo).
 - `docs/notes/` — notas internas sobre problemas pendientes.

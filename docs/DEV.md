@@ -1,6 +1,6 @@
 # Guía de desarrollo de ComegenUI
 
-Esta guía es para **contribuidores** al proyecto ComegenUI 2.x. Si solo querés **usar** los componentes, mirá la [guía de uso](comegen-ui/SKILL.md) en su lugar.
+Esta guía es para **contribuidores** al proyecto ComegenUI 2.x. Si solo querés **usar** los componentes, mirá la [guía de uso](skills/use-comegen/SKILL.md) en su lugar.
 
 > Para una referencia más detallada, consultá la skill [`desarrollar-comegen-ui`](desarrollar-comegen-ui/SKILL.md) que está pensada para agentes.
 
@@ -225,7 +225,7 @@ Después abrí el playground (ver siguiente sección) y verificá que el nuevo t
 
 ### 5. Documentar
 
-Usá la skill [`documentar-comegen-ui`](documentar-comegen-ui/SKILL.md) para crear el archivo `cu-<nombre>.md` en `docs/comegen-ui/componentes/`.
+Usá la skill [`documentar-comegen-ui`](documentar-comegen-ui/SKILL.md) para crear el archivo `cu-<nombre>.md` en `docs/skills/use-comegen/componentes/`.
 
 ---
 
@@ -395,8 +395,8 @@ Más detalles en [desarrollar-comegen-ui/build.md](desarrollar-comegen-ui/build.
 
 ### Documentación de uso
 
-- [Guía de uso](comegen-ui/SKILL.md) — para usuarios finales de los componentes.
-- [Documentación por componente](comegen-ui/componentes/) — referencia de la API.
+- [Guía de uso](skills/use-comegen/SKILL.md) — para usuarios finales de los componentes.
+- [Documentación por componente](skills/use-comegen/componentes/) — referencia de la API.
 
 ### Skills del sistema
 
