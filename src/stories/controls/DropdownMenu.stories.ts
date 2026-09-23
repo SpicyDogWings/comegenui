@@ -234,9 +234,21 @@ export const cuDropdownMenuStories: ComponentStory = {
     {
       id: "default",
       title: "Default",
-      variants: [{ id: "default", props: {} }],
+      variants: [{ id: "default", props: { items: basicItems } }],
       vue: `  <DropdownMenu label="Menú" :items="items" />`,
-      vanilla: `  <cu-dropdown-menu label="Menú"></cu-dropdown-menu>`,
+      vanilla: `<script src="dist/CuDropdownMenu.umd.js"><\/script>
+
+<cu-dropdown-menu id="menu-default" label="Menú"></cu-dropdown-menu>
+
+<script>
+  customElements.whenDefined('cu-dropdown-menu').then(() => {
+    document.getElementById('menu-default').items = [
+      { label: 'Edit' },
+      { label: 'Duplicate' },
+      { label: 'Archive' },
+    ];
+  });
+<\/script>`,
       checks: {
         l1: [
           {
@@ -268,11 +280,11 @@ export const cuDropdownMenuStories: ComponentStory = {
       badge: "ghost",
       badgeTitle: "Variante por defecto",
       variants: [
-        { id: "solid", props: { variant: "solid", label: "Solid" } },
-        { id: "soft", props: { variant: "soft", label: "Soft" } },
-        { id: "ghost", props: { variant: "ghost", label: "Ghost" } },
-        { id: "outlined", props: { variant: "outlined", label: "Outlined" } },
-        { id: "subtle", props: { variant: "subtle", label: "Subtle" } },
+        { id: "solid", props: { variant: "solid", label: "Solid", items: basicItems } },
+        { id: "soft", props: { variant: "soft", label: "Soft", items: basicItems } },
+        { id: "ghost", props: { variant: "ghost", label: "Ghost", items: basicItems } },
+        { id: "outlined", props: { variant: "outlined", label: "Outlined", items: basicItems } },
+        { id: "subtle", props: { variant: "subtle", label: "Subtle", items: basicItems } },
       ],
       vue: `  <DropdownMenu variant="solid" label="Solid" :items="items" />
   <DropdownMenu variant="soft" label="Soft" :items="items" />
@@ -317,12 +329,12 @@ export const cuDropdownMenuStories: ComponentStory = {
       badge: "neutral",
       badgeTitle: "Color por defecto",
       variants: [
-        { id: "primary", props: { color: "primary", label: "Primary" } },
-        { id: "secondary", props: { color: "secondary", label: "Secondary" } },
-        { id: "neutral", props: { color: "neutral", label: "Neutral" } },
-        { id: "success", props: { color: "success", label: "Success" } },
-        { id: "warning", props: { color: "warning", label: "Warning" } },
-        { id: "danger", props: { color: "danger", label: "Danger" } },
+        { id: "primary", props: { color: "primary", label: "Primary", items: basicItems } },
+        { id: "secondary", props: { color: "secondary", label: "Secondary", items: basicItems } },
+        { id: "neutral", props: { color: "neutral", label: "Neutral", items: basicItems } },
+        { id: "success", props: { color: "success", label: "Success", items: basicItems } },
+        { id: "warning", props: { color: "warning", label: "Warning", items: basicItems } },
+        { id: "danger", props: { color: "danger", label: "Danger", items: basicItems } },
       ],
       vue: `  <DropdownMenu color="primary" label="Primary" :items="items" />
   <DropdownMenu color="secondary" label="Secondary" :items="items" />
@@ -370,10 +382,10 @@ export const cuDropdownMenuStories: ComponentStory = {
       badge: "bottom",
       badgeTitle: "Posición por defecto",
       variants: [
-        { id: "bottom", props: { position: "bottom", label: "Bottom" } },
-        { id: "top", props: { position: "top", label: "Top" } },
-        { id: "left", props: { position: "left", label: "Left" } },
-        { id: "right", props: { position: "right", label: "Right" } },
+        { id: "bottom", props: { position: "bottom", label: "Bottom", items: basicItems } },
+        { id: "top", props: { position: "top", label: "Top", items: basicItems } },
+        { id: "left", props: { position: "left", label: "Left", items: basicItems } },
+        { id: "right", props: { position: "right", label: "Right", items: basicItems } },
       ],
       vue: `  <DropdownMenu label="Bottom" position="bottom" :items="items" />
   <DropdownMenu label="Top" position="top" :items="items" />
@@ -417,9 +429,9 @@ export const cuDropdownMenuStories: ComponentStory = {
       badge: "start",
       badgeTitle: "Alineación por defecto",
       variants: [
-        { id: "start", props: { align: "start", label: "Start" } },
-        { id: "center", props: { align: "center", label: "Center" } },
-        { id: "end", props: { align: "end", label: "End" } },
+        { id: "start", props: { align: "start", label: "Start", items: basicItems } },
+        { id: "center", props: { align: "center", label: "Center", items: basicItems } },
+        { id: "end", props: { align: "end", label: "End", items: basicItems } },
       ],
       vue: `  <DropdownMenu label="Start" align="start" :items="items" />
   <DropdownMenu label="Center" align="center" :items="items" />
@@ -459,8 +471,8 @@ export const cuDropdownMenuStories: ComponentStory = {
       id: "label",
       title: "Labels",
       variants: [
-        { id: "with-value", props: { label: "Acciones" } },
-        { id: "empty", props: {} },
+        { id: "with-value", props: { label: "Acciones", items: basicItems } },
+        { id: "empty", props: { items: basicItems } },
       ],
       vue: `  <DropdownMenu label="Acciones" :items="items" />
   <DropdownMenu :items="items" />`,
@@ -579,8 +591,8 @@ const items = [
       badge: "false",
       badgeTitle: "Default: false",
       variants: [
-        { id: "false", props: { disabled: false, label: "Enabled" } },
-        { id: "true", props: { disabled: true, label: "Disabled" } },
+        { id: "false", props: { disabled: false, label: "Enabled", items: basicItems } },
+        { id: "true", props: { disabled: true, label: "Disabled", items: basicItems } },
       ],
       vue: `  <DropdownMenu label="Enabled" :items="items" />
   <DropdownMenu label="Disabled" disabled :items="items" />`,
@@ -620,7 +632,7 @@ const items = [
       variants: [
         {
           id: "custom",
-          props: { label: "Ignorado" },
+          props: { label: "Ignorado", items: basicItems },
           slots: {
             toggle: (({ toggle }: { toggle: () => void }) =>
               h(Button, { color: "neutral", onClick: toggle, id: "custom-toggle" }, () => "Abrir")) as unknown as SlotContent,
