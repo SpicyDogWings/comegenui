@@ -20,9 +20,9 @@
     "khadgar:generate": "node src/plugins/khadgar/cli/generate.mjs",
     "khadgar:extract": "node src/plugins/khadgar/cli/extract.mjs",
     "khadgar:docs": "node src/plugins/khadgar-docs/cli.mjs",
-    "khadgar:site:sync": "node src/plugins/khadgar-docs/cli.mjs --site docs/site",
-    "khadgar:site:dev": "pnpm khadgar:extract && pnpm khadgar:site:sync && vitepress dev docs/site",
-    "khadgar:site:build": "pnpm khadgar:extract && pnpm khadgar:site:sync && vitepress build docs/site",
+    "khadgar:site:sync": "tsx --tsconfig tsconfig.app.json src/plugins/khadgar-docs/site.mjs",
+    "khadgar:site:dev": "pnpm khadgar:site:sync && vitepress dev docs/site",
+    "khadgar:site:build": "pnpm khadgar:site:sync && vitepress build docs/site",
     "khadgar:site:preview": "vitepress preview docs/site",
     "stories:generate": "node src/plugins/khadgar/cli/generate.mjs",
     "new:component": "node tools/scaffold-component.mjs"

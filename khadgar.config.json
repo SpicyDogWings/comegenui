@@ -14,7 +14,22 @@
   "vanilla": true,
   "base": "/playground/components",
   "pages": false,
-  "nav": {
+  "docs": {
+    "site": "docs/site",
+    "title": "ComegenUI",
+    "description": "Componentes web de ComegenUI (API autogenerada con Khadgar).",
+    "routeBase": "/componentes",
+    "navLabel": "Componentes",
+    "groups": {
+      "buttons": "Buttons",
+      "form": "Formularios",
+      "controls": "Controles",
+      "information": "Información",
+      "markdown": "Markdown",
+      "overlay": "Overlay",
+      "navigation": "Navegación",
+      "data": "Datos"
+    },
     "order": [
       "buttons",
       "form",

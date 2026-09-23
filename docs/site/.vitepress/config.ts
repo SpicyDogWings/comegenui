@@ -3,77 +3,48 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "vitepress";
 
+// La config del sitio (nav/sidebar/componentes) la genera khadgar-docs en
+// `khadgar.gen.json`. Este archivo solo la consume.
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, "../../..");
-const dataPath = resolve(repoRoot, "public/khadgar.json");
+const genPath = resolve(here, "khadgar.gen.json");
 
-interface Row {
-  name: string;
-  type?: string;
-  default?: string;
-  description?: string;
-}
-interface Component {
-  name: string;
-  tag?: string;
-  category: string;
+interface Generated {
+  title: string;
   description: string;
-  props: Row[];
+  routeBase: string;
+  nav: unknown[];
+  sidebar: unknown[];
+  components: { tag: string; name: string; category: string }[];
 }
 
-const index: { components: Component[] } = existsSync(dataPath)
-  ? JSON.parse(readFileSync(dataPath, "utf-8"))
-  : { components: [] };
-const publicComponents = index.components.filter((component) => component.tag);
-
-const GROUP_LABELS: Record<string, string> = {
-  buttons: "Buttons",
-  form: "Formularios",
-  controls: "Controles",
-  information: "Información",
-  markdown: "Markdown",
-  overlay: "Overlay",
-  navigation: "Navegación",
-  data: "Datos",
-};
-
-const GROUP_ORDER = Object.keys(GROUP_LABELS);
-const rank = (category: string) => {
-  const index = GROUP_ORDER.indexOf(category);
-  return index < 0 ? GROUP_ORDER.length : index;
-};
-
-const groups = new Map<string, Component[]>();
-for (const component of publicComponents) {
-  const key = component.category || "otros";
-  (groups.get(key) ?? groups.set(key, []).get(key)!).push(component);
-}
-
-const sidebar = [...groups.entries()]
-  .sort((a, b) => rank(a[0]) - rank(b[0]) || a[0].localeCompare(b[0]))
-  .map(([category, items]) => ({
-    text: GROUP_LABELS[category] ?? category,
-    items: [...items]
-      .sort((a, b) => a.name.localeCompare(b.name))
-      .map((component) => ({ text: component.name, link: `/componentes/${component.tag}` })),
-  }));
+const generated: Generated = existsSync(genPath)
+  ? JSON.parse(readFileSync(genPath, "utf-8"))
+  : {
+      title: "ComegenUI",
+      description: "",
+      routeBase: "/componentes",
+      nav: [],
+      sidebar: [],
+      components: [],
+    };
 
 export default defineConfig({
-  title: "ComegenUI",
-  description: "Componentes web de ComegenUI (API autogenerada con Khadgar).",
+  title: generated.title,
+  description: generated.description,
   cleanUrls: true,
   // Las fichas son compartidas con la skill: `../SKILL.md` y links al playground
   // no existen como páginas del sitio (todavía).
   ignoreDeadLinks: [/SKILL/, /playground/],
   themeConfig: {
-    nav: [{ text: "Componentes", link: "/componentes/cu-button" }],
-    sidebar,
+    nav: generated.nav,
+    sidebar: generated.sidebar,
   },
   vite: {
     resolve: {
       alias: {
         "@": resolve(repoRoot, "src"),
-        "#khadgar-data": dataPath,
+        "#khadgar-data": resolve(here, "khadgar.json"),
       },
     },
     server: { fs: { allow: [repoRoot] } },
@@ -81,7 +52,7 @@ export default defineConfig({
   transformPageData(pageData) {
     const match = /componentes\/(cu-[\w-]+)\.md$/.exec(pageData.relativePath);
     if (!match) return;
-    const component = publicComponents.find((item) => item.tag === match[1]);
+    const component = generated.components.find((item) => item.tag === match[1]);
     if (!component) return;
     return { frontmatter: { ...pageData.frontmatter, demo: component.name } };
   },
