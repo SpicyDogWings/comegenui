@@ -1,0 +1,45 @@
+{
+  "props": {
+    "modelValue": "Archivo seleccionado (vía JS, no HTML)",
+    "color": "Color semántico: `primary`, `neutral`, `success`, `warning`, `danger`",
+    "variant": "`outlined`, `soft`, `ghost`, `subtle`",
+    "placeholder": "Texto cuando no hay archivo",
+    "disabled": "Deshabilita click, drag y drop",
+    "readOnly": "Modo solo lectura",
+    "accept": "Tipos aceptados (ej: `\"image/*\"`, `\".pdf,.doc\"`)",
+    "maxSize": "Tamaño máximo en bytes"
+  },
+  "events": {
+    "update:modelValue": {
+      "type": "null",
+      "description": "Se emite al seleccionar, soltar o limpiar un archivo"
+    }
+  },
+  "slots": {},
+  "exposes": {
+    "get": "Devuelve el `File` actual o `null`",
+    "set": "Asigna un archivo programáticamente",
+    "reset": "Limpia la selección",
+    "focus": "Enfoca el input",
+    "trigger": "Abre el diálogo nativo de selección de archivos"
+  },
+  "notes": {
+    "props": "> **Atributos en HTML:** `readOnly` se escribe como `readonly`, `maxSize` como `max-size`.",
+    "slots": "Ninguno."
+  },
+  "sections": [
+    {
+      "title": "Uso en HTML plano",
+      "body": "```html\n<script src=\"dist/CuFileInput.umd.js\"></script>\n\n<cu-file-input placeholder=\"Elige un archivo...\" color=\"primary\"></cu-file-input>\n<cu-file-input accept=\"image/*\" variant=\"outlined\" id=\"miInput\"></cu-file-input>\n<cu-file-input disabled placeholder=\"Deshabilitado\"></cu-file-input>\n\n<script>\n  const input = document.getElementById('miInput');\n  input.addEventListener('update:modelValue', (e) => {\n    console.log('Archivo:', e.detail?.name);\n  });\n  input.set(new File(['contenido'], 'ejemplo.txt'));\n  console.log(input.get()?.name);\n</script>\n```"
+    },
+    {
+      "title": "Drag & drop",
+      "body": "Soporta arrastrar un solo archivo sobre el componente. Durante el drag se ilumina el borde y fondo. Los directorios se descartan automáticamente (`size === 0 && !type`)."
+    },
+    {
+      "title": "Notas",
+      "body": "- No soporta `multiple`, `directory` ni `directory-deep` — usá `<cu-file-input-zone>` para esos casos.\n- Al hacer click en el nombre del archivo seleccionado se abre en una nueva pestaña.\n- La validación por `accept` y `maxSize` se aplica tanto en el diálogo nativo como al soltar archivos por drag."
+    }
+  ],
+  "intro": "Input de archivo compacto con drag & drop, estilo idéntico a `<cu-input>`. Single file, sin directorio, con validación de tipo y tamaño."
+}

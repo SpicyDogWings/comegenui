@@ -9,21 +9,21 @@ Etiqueta o badge pequeño para estados, categorías o metadata. Componente de pr
 ## Props
 
 | Prop | Tipo | Default | Descripción |
-|------|------|---------|-------------|
-| `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `string` | `"soft"` | `solid`, `outlined`, `soft`, `ghost`, `subtle` |
-
-## Slots
-
-| Slot | Descripción |
-|------|-------------|
-| `default` | Contenido textual o ícono del badge |
+|------|------|------|------|
+| `color` | `primary \| secondary \| neutral \| success \| warning \| danger` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `variant` | `solid \| outlined \| soft \| subtle \| ghost` | `"soft"` | `solid`, `outlined`, `soft`, `ghost`, `subtle` |
 
 ## Eventos
 
 Ninguno.
 
-## Métodos
+## Slots
+
+| Slot | Descripción |
+|------|------|
+| `default` | Contenido textual o ícono del badge |
+
+## Métodos expuestos
 
 Ninguno.
 
@@ -40,6 +40,8 @@ Ninguno.
 <cu-badge color="danger" variant="subtle">Error</cu-badge>
 ```
 
+---
+
 ## Variantes visuales
 
 ```html
@@ -49,6 +51,8 @@ Ninguno.
 <cu-badge color="primary" variant="ghost">ghost</cu-badge>
 <cu-badge color="primary" variant="subtle">subtle</cu-badge>
 ```
+
+---
 
 ## Con ícono
 

@@ -1,0 +1,47 @@
+{
+  "props": {
+    "modelValue": "Valor del color en formato hex (`#RRGGBB`)",
+    "color": "Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` (define el acento del borde/foco)",
+    "disabled": "Deshabilita el control"
+  },
+  "events": {
+    "update:modelValue": {
+      "type": "string",
+      "description": "Se emite al cambiar el color (vía swatch o texto válido)"
+    },
+    "change": {
+      "type": "string",
+      "description": "Se emite en cada cambio de color confirmado (mismo payload que `update:modelValue`)"
+    }
+  },
+  "slots": {},
+  "exposes": {
+    "get": "Devuelve el color actual (`string` hex)",
+    "set": "Asigna un color programáticamente",
+    "reset": "Vuelve al valor por defecto `#000000`",
+    "focus": "Enfoca el campo de texto"
+  },
+  "notes": {
+    "props": "> El Custom Element **no expone** prop `theme`, `variant` ni `hightContrast`.",
+    "slots": "Ninguno."
+  },
+  "sections": [
+    {
+      "title": "Uso en HTML plano",
+      "body": "```html\n<script src=\"dist/CuColorPicker.umd.js\"></script>\n\n<cu-color-picker id=\"miColor\" color=\"primary\"></cu-color-picker>\n\n<script>\n  const cp = document.getElementById('miColor');\n  cp.set('#ff5733');\n  console.log(cp.get()); // \"#ff5733\"\n\n  cp.addEventListener('change', (e) => {\n    console.log('Color elegido:', e.detail);\n  });\n</script>\n```"
+    },
+    {
+      "title": "Valor controlado",
+      "body": "```html\n<cu-color-picker value=\"#1774A4\" id=\"colorForm\"></cu-color-picker>\n\n<script>\n  const cp = document.getElementById('colorForm');\n  cp.addEventListener('update:modelValue', (e) => {\n    document.body.style.borderColor = e.detail;\n  });\n</script>\n```"
+    },
+    {
+      "title": "Deshabilitado",
+      "body": "```html\n<cu-color-picker disabled value=\"#dc3545\"></cu-color-picker>\n```"
+    },
+    {
+      "title": "Notas",
+      "body": "- El campo de texto solo confirma el valor cuando es un hex válido (`#RRGGBB`). Si el valor no es válido al perder el foco, se restaura el último color válido.\n- El swatch muestra el color actual de `modelValue`."
+    }
+  ],
+  "intro": "Selector de color con swatch y campo de texto hex. Al hacer click en el swatch se abre el color picker nativo del navegador; el campo de texto permite escribir un `#RRGGBB` manualmente."
+}

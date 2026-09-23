@@ -9,11 +9,11 @@ Alerta con color semántico, título opcional y botón de cerrar. Puede controla
 ## Props
 
 | Prop | Tipo | Default | Descripción |
-|------|------|---------|-------------|
-| `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+|------|------|------|------|
+| `color` | `primary \| secondary \| neutral \| success \| warning \| danger` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `variant` | `string` | `"soft"` | `solid`, `outlined`, `soft`, `ghost`, `subtle` |
-| `close` | `boolean` | `false` | Muestra el botón de cerrar (X) |
-| `title` | `string` | — | Título visible en la cabecera |
+| `title` | — | — | Título visible en la cabecera |
+| `close` | — | — | Muestra el botón de cerrar (X) |
 | `show` | `boolean` | `true` | Controla visibilidad. Cambiar este atributo emite `update:show` |
 
 > **Atributos booleanos:** en HTML se usan sin valor: `<cu-alert close show>...`
@@ -21,7 +21,7 @@ Alerta con color semántico, título opcional y botón de cerrar. Puede controla
 ## Eventos
 
 | Evento | Payload (`e.detail`) | Descripción |
-|--------|----------------------|-------------|
+|------|------|------|
 | `close` | — | Se emite cuando se cierra la alerta (vía botón X) |
 | `open` | — | Se emite cuando la alerta pasa a mostrarse |
 | `update:show` | `boolean` | Se emite cuando cambia `show` (vía prop o interacción) |
@@ -31,9 +31,9 @@ Alerta con color semántico, título opcional y botón de cerrar. Puede controla
 ## Slots
 
 | Slot | Descripción |
-|------|-------------|
-| `default` | Cuerpo principal de la alerta |
+|------|------|
 | `icon` | Ícono junto al título (slot HTML nativo) |
+| `default` | Cuerpo principal de la alerta |
 
 ```html
 <cu-alert color="success" title="Listo">
@@ -49,7 +49,7 @@ Alerta con color semántico, título opcional y botón de cerrar. Puede controla
 ## Métodos expuestos
 
 | Método | Descripción |
-|--------|-------------|
+|------|------|
 | `.open()` | Muestra la alerta |
 | `.close()` | Oculta la alerta |
 | `.toggle()` | Alterna visibilidad |
@@ -85,6 +85,8 @@ El control también puede hacerse via el atributo `show` o escuchando los evento
   });
 </script>
 ```
+
+---
 
 ## Ejemplo completo
 

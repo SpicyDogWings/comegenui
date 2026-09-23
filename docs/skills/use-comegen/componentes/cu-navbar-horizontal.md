@@ -9,9 +9,9 @@ Barra de navegación horizontal con submenús desplegables (Dropdown) y detecci�
 ## Props
 
 | Prop | Tipo | Default | Descripción |
-|------|------|---------|-------------|
-| `items` | `array` | **requerido** | Estructura de navegación. **Se asigna como propiedad JS** |
-| `trigger` | `string` | `"click"` | Cómo abren los submenús: `click` o `hover` |
+|------|------|------|------|
+| `items` | `unknown[]` | — | Estructura de navegación. **Se asigna como propiedad JS** |
+| `trigger` | `click \| hover` | `"click"` | Cómo abren los submenús: `click` o `hover` |
 | `activePath` | `string` | `""` | Path activo manual. Si se omite, se toma de la ruta (cuando hay router) |
 
 > **`items` se asigna como propiedad JS**, no como atributo HTML:
@@ -35,7 +35,7 @@ Ninguno.
 
 Ninguno.
 
-## Métodos
+## Métodos expuestos
 
 Ninguno.
 
@@ -60,6 +60,8 @@ Ninguno.
   ];
 </script>
 ```
+
+---
 
 ## Estructura de `items`
 

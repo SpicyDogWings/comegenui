@@ -1,0 +1,77 @@
+{
+  "props": {
+    "theme": "Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite)",
+    "color": "Color semántico: `primary`, `neutral`, `success`, `warning`, `danger`",
+    "variant": "`outlined`, `soft`, `ghost`, `subtle`",
+    "type": "`text`, `password`, `email`, `number`, `tel`, `url`, `search`",
+    "placeholder": "Placeholder del input",
+    "minChars": "Caracteres mínimos para abrir el menú (atributo HTML: `min-chars`)",
+    "position": "Posición del dropdown: `bottom`, `top`",
+    "align": "Alineación: `start`, `center`, `end`",
+    "disabled": "Estado deshabilitado",
+    "readOnly": "Solo lectura (en HTML se usa como `readonly`)",
+    "hightContrast": "Modo de alto contraste",
+    "items": "Opciones del menú (ver abajo). Se asigna como propiedad JS",
+    "modelValue": "Valor controlado",
+    "label": "Texto del label sobre el input"
+  },
+  "events": {
+    "update:modelValue": {
+      "type": "string",
+      "description": "Se emite en cada cambio de valor (al escribir)"
+    },
+    "select": {
+      "type": "{ label, value?, icon? }",
+      "description": "Se emite al elegir un item de la lista"
+    },
+    "blur": {
+      "type": "FocusEvent",
+      "description": "Pérdida de foco (útil en celdas editables)"
+    }
+  },
+  "slots": {},
+  "exposes": {
+    "get": "Texto actual del input",
+    "set": "Asigna texto al input",
+    "focus": "Enfoca el input",
+    "isOpen": "Estado del menú (`boolean`)",
+    "selectedItem": "Último item seleccionado o `null`"
+  },
+  "notes": {
+    "props": "### Items\n\nCada item del array `items` puede tener:\n\n| Campo | Tipo | Default | Descripción |\n|-------|------|---------|-------------|\n| `label` | `string` | — | Texto que se muestra y sobre el que se busca |\n| `value` | `string` | `label` | Valor que se asigna al input al seleccionar el item |\n| `icon` | `string` | — | SVG completo inline (`<svg>...</svg>`) |\n| `disabled` | `boolean` | `false` | Opción deshabilitada (no clickeable, atenuada) |\n\n> La búsqueda se hace sobre `label` y `value` (cuando existe). Es **case-insensitive** y **acento-insensitive**: buscar `\"matricula\"` encuentra `\"Matrícula\"`.\n\n> **Importante:** `items` se asigna como propiedad JS (`ac.items = [...]`), no como atributo HTML.",
+    "events": "> Los eventos nativos del DOM (`input`, `change`, `focus`, `blur`) **burbujean automáticamente** al host desde el Shadow DOM. No se re-emiten como eventos custom con esos nombres.",
+    "slots": "Ninguno.",
+    "exposes": "> El componente **no expone** `.reset()`. Si necesitás limpiar programáticamente, usá `.set('')`."
+  },
+  "sections": [
+    {
+      "title": "Uso en HTML plano",
+      "body": "```html\n<script src=\"dist/CuAutocomplete.umd.js\"></script>\n\n<cu-autocomplete id=\"ac\" placeholder=\"Buscá un rol...\" color=\"primary\"></cu-autocomplete>\n\n<script>\n  const ac = document.getElementById('ac');\n  ac.items = [\n    { label: 'Administrador' },\n    { label: 'Editor de contenido' },\n    { label: 'Visor de reportes' },\n    { label: 'Invitado externo' },\n    { label: 'Supervisor' },\n    { label: 'Analista de datos' },\n    { label: 'Gestor de usuarios' },\n  ];\n\n  ac.addEventListener('select', (e) => {\n    console.log('Seleccionado:', e.detail.label);\n  });\n</script>\n```\n\n### Con label\n\nEl label se muestra sobre el input:\n\n```html\n<cu-autocomplete id=\"ac\" label=\"Buscar rol\" placeholder=\"Escriba para buscar...\"></cu-autocomplete>\n```"
+    },
+    {
+      "title": "Items con ícono",
+      "body": "```js\nconst icon = '<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"11\" cy=\"11\" r=\"8\"/><path d=\"m21 21-4.3-4.3\"/></svg>';\n\nac.items = [\n  { label: 'Administrador', icon },\n  { label: 'Editor de contenido', icon },\n];\n```"
+    },
+    {
+      "title": "Items con `value` distinto del `label`",
+      "body": "Útil cuando querés mostrar más contexto (ej. email) pero asignar un valor más corto:\n\n```js\nac.items = [\n  { label: 'Juan Pérez (juan@mail.com)', value: 'Juan Pérez' },\n  { label: 'María García (maria@mail.com)', value: 'María García' },\n];\n```\n\nAl seleccionar, el input se completa con el `value` en vez del `label`."
+    },
+    {
+      "title": "Mínimo de caracteres",
+      "body": "Por defecto el menú se abre al recibir foco. Con `min-chars=\"2\"` solo se abre tras escribir 2+ caracteres:\n\n```html\n<cu-autocomplete min-chars=\"2\" placeholder=\"Escribí al menos 2 letras...\"></cu-autocomplete>\n```"
+    },
+    {
+      "title": "Posicionamiento",
+      "body": "```html\n<!-- Con position + align -->\n<cu-autocomplete position=\"top\" align=\"end\"></cu-autocomplete>\n\n<cu-autocomplete position=\"bottom\" align=\"end\"></cu-autocomplete>\n```"
+    },
+    {
+      "title": "Control programático",
+      "body": "```html\n<cu-autocomplete id=\"ac\" placeholder=\"Buscá...\" color=\"primary\"></cu-autocomplete>\n\n<script>\n  const ac = document.getElementById('ac');\n  ac.items = [/* ... */];\n\n  ac.set('Admin');             // asigna texto\n  console.log(ac.get());       // \"Admin\"\n  ac.focus();                  // enfoca\n  console.log(ac.selectedItem()); // último item seleccionado\n  console.log(ac.isOpen());      // true / false\n</script>\n```"
+    },
+    {
+      "title": "Tipos de input",
+      "body": "```html\n<cu-autocomplete type=\"text\" placeholder=\"Buscar...\"></cu-autocomplete>\n<cu-autocomplete type=\"search\" placeholder=\"Buscar...\"></cu-autocomplete>\n<cu-autocomplete type=\"email\" placeholder=\"Email...\"></cu-autocomplete>\n```"
+    }
+  ],
+  "intro": "Campo de texto con sugerencias en menú desplegable. Filtra los `items` en vivo según lo que escribe el usuario."
+}

@@ -9,7 +9,7 @@ Panel overlay que desliza desde un borde sobre el contenido, con scrim, cierre p
 ## Props
 
 | Prop | Tipo | Default | Descripción |
-|------|------|---------|-------------|
+|------|------|------|------|
 | `open` | `boolean` | `false` | Estado de visibilidad (v-model). Ver nota de atributo abajo |
 | `title` | `string` | `""` | Título de la cabecera (si está vacío y no es `persistent`, igual muestra el botón de cerrar) |
 | `position` | `string` | `"right"` | Borde desde donde desliza: `left`, `right`, `top`, `bottom` |
@@ -23,20 +23,20 @@ Panel overlay que desliza desde un borde sobre el contenido, con scrim, cierre p
 ## Eventos
 
 | Evento | Payload (`e.detail`) | Descripción |
-|--------|----------------------|-------------|
+|------|------|------|
 | `update:open` | `boolean` | Nuevo estado de visibilidad (cambia al abrir/cerrar) |
 | `close` | — | Se inició el cierre (backdrop, Escape, `.close()`) |
 
 ## Slots
 
 | Slot | Descripción |
-|------|-------------|
+|------|------|
 | `default` | Contenido del cuerpo del panel |
 
 ## Métodos expuestos
 
 | Método | Descripción |
-|--------|-------------|
+|------|------|
 | `.open()` | Abre el panel |
 | `.close()` | Cierra el panel |
 | `.toggle()` | Alterna visibilidad |
@@ -59,6 +59,8 @@ Panel overlay que desliza desde un borde sobre el contenido, con scrim, cierre p
 </cu-button>
 ```
 
+---
+
 ## Control programático
 
 ```js
@@ -72,6 +74,8 @@ console.log(side.isOpen());
 side.addEventListener('update:open', (e) => console.log('estado:', e.detail));
 side.addEventListener('close', () => console.log('cerrando'));
 ```
+
+---
 
 ## Presets de tamaño
 

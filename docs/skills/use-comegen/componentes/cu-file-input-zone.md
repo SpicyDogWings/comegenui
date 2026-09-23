@@ -9,16 +9,16 @@ Selector de archivos con zona de drag & drop amplia, soporte para carpetas (recu
 ## Props
 
 | Prop | Tipo | Default | Descripción |
-|------|------|---------|-------------|
-| `modelValue` | `File \| File[] \| null` | `null` | Archivo/s seleccionados |
-| `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+|------|------|------|------|
+| `modelValue` | `File \| File[] \| null` | — | Archivo/s seleccionados |
+| `color` | `primary \| secondary \| neutral \| success \| warning \| danger` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `placeholder` | `string` | `"Selecciona un archivo o arrastra aquí"` | Texto cuando no hay archivos |
-| `disabled` | `boolean` | `false` | Deshabilita interacción |
-| `readOnly` | `boolean` | `false` | Modo solo lectura |
-| `accept` | `string` | — | Tipos aceptados (ej: `"image/*"`) |
-| `multiple` | `boolean` | `false` | Permite múltiples archivos |
-| `maxSize` | `number` | — | Tamaño máximo en bytes |
-| `directory` | `boolean` | `false` | Activa modo carpeta (incluye `multiple` implícitamente) |
+| `disabled` | — | — | Deshabilita interacción |
+| `readOnly` | — | — | Modo solo lectura |
+| `accept` | — | — | Tipos aceptados (ej: `"image/*"`) |
+| `multiple` | — | — | Permite múltiples archivos |
+| `maxSize` | — | — | Tamaño máximo en bytes |
+| `directory` | — | — | Activa modo carpeta (incluye `multiple` implícitamente) |
 | `directoryDeep` | `number` | `0` | Niveles de recursión en carpetas: `0` = solo raíz, `1` = +1 subnivel, `-1` = sin límite |
 | `maxHeight` | `string` | `""` | Altura máxima del listado (ej: `"200px"`). Sin scroll si se omite. |
 
@@ -29,8 +29,8 @@ Selector de archivos con zona de drag & drop amplia, soporte para carpetas (recu
 ## Eventos
 
 | Evento | Payload (`e.detail`) | Descripción |
-|--------|----------------------|-------------|
-| `update:modelValue` | `File \| File[] \| null` | Se emite al cambiar la selección |
+|------|------|------|
+| `update:modelValue` | `null` | Se emite al cambiar la selección |
 
 ## Slots
 
@@ -39,9 +39,9 @@ Ninguno.
 ## Métodos expuestos
 
 | Método | Descripción |
-|--------|-------------|
+|------|------|
 | `.get()` | Devuelve el/los archivo/s actual/es |
-| `.set(files)` | Asigna archivos programáticamente |
+| `.set()` | Asigna archivos programáticamente |
 | `.reset()` | Limpia la selección |
 | `.focus()` | Enfoca la zona |
 | `.trigger()` | Abre el diálogo nativo |
@@ -75,6 +75,8 @@ Ninguno.
 </script>
 ```
 
+---
+
 ## Directorio recursivo
 
 Con `directory` activo, se puede controlar la profundidad con `directory-deep`:
@@ -87,6 +89,8 @@ Con `directory` activo, se puede controlar la profundidad con `directory-deep`:
 | `-1` | Sin límite (recursión completa) |
 
 El listado de archivos se renderiza con `<cu-file-list>` (componente interno) que muestra icono por extensión, nombre, tamaño y botón X para quitar archivos individuales. Al hacer click en un archivo se abre en una nueva pestaña.
+
+---
 
 ## Notas
 

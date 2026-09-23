@@ -1,0 +1,47 @@
+{
+  "props": {
+    "open": "Estado de visibilidad (v-model). Ver nota de atributo abajo",
+    "title": "Título de la cabecera (si está vacío y no es `persistent`, igual muestra el botón de cerrar)",
+    "position": "Borde desde donde desliza: `left`, `right`, `top`, `bottom`",
+    "size": "Ancho (`left`/`right`) o alto (`top`/`bottom`) del panel. Valor CSS (`300px`, `40vw`) o preset: `sm`, `md`, `lg`, `xl`, `full`. Ignorado con `fullscreen`",
+    "fullscreen": "Ocupa toda la pantalla",
+    "persistent": "Si es `true`, no se cierra por backdrop, `Escape` ni el botón de cerrar",
+    "zIndex": "Z-index del overlay (en HTML se usa como `z-index`)"
+  },
+  "events": {
+    "update:open": {
+      "type": "boolean",
+      "description": "Nuevo estado de visibilidad (cambia al abrir/cerrar)"
+    },
+    "close": {
+      "description": "Se inició el cierre (backdrop, Escape, `.close()`)"
+    }
+  },
+  "slots": {
+    "default": "Contenido del cuerpo del panel"
+  },
+  "exposes": {
+    "open": "Abre el panel",
+    "close": "Cierra el panel",
+    "toggle": "Alterna visibilidad",
+    "isOpen": "Devuelve el estado actual (`boolean`)"
+  },
+  "notes": {
+    "props": "> **Atributo `open`:** como `open` es un atributo HTML nativo, para controlarlo desde HTML usalo con valor booleano: `<cu-side-over open>` abre el panel. El estado también se maneja por método."
+  },
+  "sections": [
+    {
+      "title": "Uso en HTML plano",
+      "body": "```html\n<script src=\"dist/CuSideOver.umd.js\"></script>\n\n<cu-side-over id=\"side\" title=\"Filtros\" position=\"right\">\n  <p>Contenido del panel.</p>\n</cu-side-over>\n\n<cu-button color=\"primary\" variant=\"solid\"\n  onclick=\"document.getElementById('side').open()\">\n  Abrir panel\n</cu-button>\n```"
+    },
+    {
+      "title": "Control programático",
+      "body": "```js\nconst side = document.getElementById('side');\n\nside.open();\nside.close();\nside.toggle();\nconsole.log(side.isOpen());\n\nside.addEventListener('update:open', (e) => console.log('estado:', e.detail));\nside.addEventListener('close', () => console.log('cerrando'));\n```"
+    },
+    {
+      "title": "Presets de tamaño",
+      "body": "```html\n<cu-side-over position=\"right\" size=\"sm\" title=\"Angosto\"></cu-side-over>\n<cu-side-over position=\"left\" size=\"lg\" title=\"Ancho\"></cu-side-over>\n<cu-side-over position=\"top\" size=\"md\" title=\"Desde arriba\"></cu-side-over>\n<cu-side-over position=\"bottom\" fullscreen title=\"Pantalla completa\"></cu-side-over>\n```\n\n> Los presets (`sm`/`md`/`lg`/`xl`/`full`) se pueden sobrescribir con las custom properties `--cu-sideover-size-{sm|md|lg|xl|full}` sobre el host."
+    }
+  ],
+  "intro": "Panel overlay que desliza desde un borde sobre el contenido, con scrim, cierre por backdrop/Escape, opción `fullscreen` y control programático. Bloquea el scroll del body mientras está abierto."
+}

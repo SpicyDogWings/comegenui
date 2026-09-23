@@ -9,16 +9,15 @@ Menú desplegable con items declarativos (label, ícono, color, divisor, link). 
 ## Props
 
 | Prop | Tipo | Default | Descripción |
-|------|------|---------|-------------|
+|------|------|------|------|
 | `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
-| `color` | `string` | `"neutral"` | Color semántico del toggle: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `string` | `"ghost"` | Variante del toggle: `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` |
+| `color` | `primary \| secondary \| neutral \| success \| warning \| danger` | `"neutral"` | Color semántico del toggle: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `variant` | `solid \| outlined \| soft \| ghost \| subtle \| link \| none` | `"ghost"` | Variante del toggle: `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` |
 | `disabled` | `boolean` | `false` | Deshabilita el toggle |
 | `label` | `string` | `""` | Texto del toggle (se ignora si se provee slot `toggle`) |
-| `position` | `string` | `"bottom"` | Posición preferida del panel: `bottom`, `top` |
-| `align` | `string` | `"start"` | Alineación del panel: `start`, `center`, `end` |
-| `textAlign` | `string` | `"left"` | Alineación del texto del toggle: `left`, `center`, `right` |
-
+| `position` | `bottom \| top` | `"bottom"` | Posición preferida del panel: `bottom`, `top` |
+| `align` | `start \| center \| end` | `"start"` | Alineación del panel: `start`, `center`, `end` |
+| `textAlign` | `left \| center \| right` | `"left"` | Alineación del texto del toggle: `left`, `center`, `right` |
 | `offset` | `number` | `4` | Separación en píxeles entre el toggle y el panel |
 | `fixed` | `boolean` | `false` | Si es `true`, el panel usa `position: fixed` en vez de absoluto |
 | `items` | `array` | `[]` | Lista de items (ver abajo). Se asigna como propiedad JS, no como atributo HTML |
@@ -42,21 +41,21 @@ Cada item del array `items` puede tener:
 ## Eventos
 
 | Evento | Payload (`e.detail`) | Descripción |
-|--------|----------------------|-------------|
+|------|------|------|
 | `open` | — | Se emite cuando se abre el menú |
 | `close` | — | Se emite cuando se cierra el menú |
 
 ## Slots
 
 | Slot | Descripción |
-|------|-------------|
+|------|------|
 | `toggle` | Reemplaza el botón toggle (sintaxis HTML `slot="toggle"`) |
 | `default` | Contenido del panel. Se usa solo si `items` está vacío o no se provee |
 
 ## Métodos expuestos
 
 | Método | Descripción |
-|--------|-------------|
+|------|------|
 | `.open()` | Abre el menú |
 | `.close()` | Cierra el menú |
 | `.toggle()` | Alterna visibilidad |
@@ -88,6 +87,8 @@ Cada item del array `items` puede tener:
 
 > **Importante:** `items` se asigna como propiedad JS (`dd.items = [...]`), no como atributo HTML.
 
+---
+
 ## Items con link
 
 ```js
@@ -97,6 +98,8 @@ dd.items = [
   { label: 'Cerrar sesión', href: '/logout', color: 'danger' },
 ];
 ```
+
+---
 
 ## Toggle personalizado
 
@@ -112,6 +115,8 @@ Reemplaza el botón toggle con un slot HTML nativo:
 </cu-dropdown-menu>
 ```
 
+---
+
 ## Contenido libre en el panel (sin `items`)
 
 Si pasás contenido en el slot por defecto, el panel ignora `items` y muestra lo que definas:
@@ -125,6 +130,8 @@ Si pasás contenido en el slot por defecto, el panel ignora `items` y muestra lo
 </cu-dropdown-menu>
 ```
 
+---
+
 ## Posicionamiento
 
 El dropdown usa tres props combinables:
@@ -135,6 +142,8 @@ El dropdown usa tres props combinables:
 <cu-dropdown-menu label="Arriba" position="top" align="end"></cu-dropdown-menu>
 <cu-dropdown-menu label="Alineado" position="bottom" align="end" offset="8"></cu-dropdown-menu>
 ```
+
+---
 
 ## Control programático
 

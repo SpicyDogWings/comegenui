@@ -1,0 +1,45 @@
+{
+  "props": {
+    "modelValue": "Estado del checkbox (controlado)",
+    "color": "Color semántico: `primary`, `neutral`, `success`, `warning`, `danger`",
+    "size": "Tamaño del checkbox: `sm`, `md`",
+    "disabled": "Estado deshabilitado",
+    "label": "Texto visible junto al checkbox"
+  },
+  "events": {
+    "update:modelValue": {
+      "type": "boolean",
+      "description": "Se emite cuando cambia el estado"
+    },
+    "change": {
+      "type": "boolean",
+      "description": "Se emite en cada cambio, útil para listeners simples"
+    }
+  },
+  "slots": {},
+  "exposes": {
+    "get": "Devuelve el estado actual (`boolean`)",
+    "set": "Asigna el estado (programáticamente)",
+    "reset": "Pone el estado en `false`",
+    "focus": "Enfoca el checkbox"
+  },
+  "notes": {
+    "props": "> El Custom Element **no expone** una prop `checked` separada (el control se hace únicamente con `modelValue`), ni una prop `variant` (el estilo se fija con `size` y `color`).",
+    "slots": "Ninguno (el texto se pasa via `label`)."
+  },
+  "sections": [
+    {
+      "title": "Uso en HTML plano",
+      "body": "```html\n<script src=\"dist/CuCheckbox.umd.js\"></script>\n\n<cu-checkbox label=\"Acepto los términos\" color=\"primary\"></cu-checkbox>\n<cu-checkbox label=\"Opción deshabilitada\" disabled></cu-checkbox>\n\n<script>\n  const chk = document.querySelector('cu-checkbox');\n  chk.set(true);\n  console.log(chk.get()); // true\n</script>\n```"
+    },
+    {
+      "title": "Escuchar cambios",
+      "body": "Hay dos formas equivalentes de escuchar cambios:\n\n```html\n<cu-checkbox label=\"Notificaciones\" id=\"notif\"></cu-checkbox>\n\n<script>\n  const cb = document.getElementById('notif');\n\n  // Vía update:modelValue (convención Vue)\n  cb.addEventListener('update:modelValue', (e) => {\n    console.log('Valor:', e.detail);\n  });\n\n  // Vía change (payload = boolean)\n  cb.addEventListener('change', (e) => {\n    console.log('Cambió a:', e.detail);\n  });\n</script>\n```"
+    },
+    {
+      "title": "Control programático",
+      "body": "```html\n<cu-checkbox id=\"auto\" label=\"Acepto\"></cu-checkbox>\n\n<script>\n  const cb = document.getElementById('auto');\n  cb.set(true);     // marcar\n  cb.set(false);    // desmarcar\n  cb.reset();       // equivale a cb.set(false)\n  cb.focus();       // foco\n  console.log(cb.get()); // estado actual\n</script>\n```"
+    }
+  ],
+  "intro": "Checkbox con label, controlable via `modelValue` o métodos `get`/`set`."
+}

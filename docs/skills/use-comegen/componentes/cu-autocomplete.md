@@ -9,19 +9,18 @@ Campo de texto con sugerencias en menú desplegable. Filtra los `items` en vivo 
 ## Props
 
 | Prop | Tipo | Default | Descripción |
-|------|------|---------|-------------|
+|------|------|------|------|
 | `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
 | `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `variant` | `string` | `"soft"` | `outlined`, `soft`, `ghost`, `subtle` |
 | `type` | `string` | `"text"` | `text`, `password`, `email`, `number`, `tel`, `url`, `search` |
+| `disabled` | `boolean` | `false` | Estado deshabilitado |
+| `readOnly` | `boolean` | `false` | Solo lectura (en HTML se usa como `readonly`) |
+| `hightContrast` | `boolean` | `false` | Modo de alto contraste |
 | `placeholder` | `string` | `""` | Placeholder del input |
 | `minChars` | `number` | `0` | Caracteres mínimos para abrir el menú (atributo HTML: `min-chars`) |
 | `position` | `string` | `"bottom"` | Posición del dropdown: `bottom`, `top` |
 | `align` | `string` | `"start"` | Alineación: `start`, `center`, `end` |
-
-| `disabled` | `boolean` | `false` | Estado deshabilitado |
-| `readOnly` | `boolean` | `false` | Solo lectura (en HTML se usa como `readonly`) |
-| `hightContrast` | `boolean` | `false` | Modo de alto contraste |
 | `items` | `array` | `[]` | Opciones del menú (ver abajo). Se asigna como propiedad JS |
 | `modelValue` | `string` | `""` | Valor controlado |
 | `label` | `string` | `""` | Texto del label sobre el input |
@@ -44,7 +43,7 @@ Cada item del array `items` puede tener:
 ## Eventos
 
 | Evento | Payload (`e.detail`) | Descripción |
-|--------|----------------------|-------------|
+|------|------|------|
 | `update:modelValue` | `string` | Se emite en cada cambio de valor (al escribir) |
 | `select` | `{ label, value?, icon? }` | Se emite al elegir un item de la lista |
 | `blur` | `FocusEvent` | Pérdida de foco (útil en celdas editables) |
@@ -58,9 +57,9 @@ Ninguno.
 ## Métodos expuestos
 
 | Método | Descripción |
-|--------|-------------|
+|------|------|
 | `.get()` | Texto actual del input |
-| `.set(value)` | Asigna texto al input |
+| `.set(val)` | Asigna texto al input |
 | `.focus()` | Enfoca el input |
 | `.isOpen()` | Estado del menú (`boolean`) |
 | `.selectedItem()` | Último item seleccionado o `null` |
@@ -102,6 +101,8 @@ El label se muestra sobre el input:
 <cu-autocomplete id="ac" label="Buscar rol" placeholder="Escriba para buscar..."></cu-autocomplete>
 ```
 
+---
+
 ## Items con ícono
 
 ```js
@@ -112,6 +113,8 @@ ac.items = [
   { label: 'Editor de contenido', icon },
 ];
 ```
+
+---
 
 ## Items con `value` distinto del `label`
 
@@ -126,6 +129,8 @@ ac.items = [
 
 Al seleccionar, el input se completa con el `value` en vez del `label`.
 
+---
+
 ## Mínimo de caracteres
 
 Por defecto el menú se abre al recibir foco. Con `min-chars="2"` solo se abre tras escribir 2+ caracteres:
@@ -133,6 +138,8 @@ Por defecto el menú se abre al recibir foco. Con `min-chars="2"` solo se abre t
 ```html
 <cu-autocomplete min-chars="2" placeholder="Escribí al menos 2 letras..."></cu-autocomplete>
 ```
+
+---
 
 ## Posicionamiento
 
@@ -142,6 +149,8 @@ Por defecto el menú se abre al recibir foco. Con `min-chars="2"` solo se abre t
 
 <cu-autocomplete position="bottom" align="end"></cu-autocomplete>
 ```
+
+---
 
 ## Control programático
 
@@ -159,6 +168,8 @@ Por defecto el menú se abre al recibir foco. Con `min-chars="2"` solo se abre t
   console.log(ac.isOpen());      // true / false
 </script>
 ```
+
+---
 
 ## Tipos de input
 

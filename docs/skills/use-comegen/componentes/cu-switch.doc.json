@@ -1,0 +1,48 @@
+{
+  "props": {
+    "modelValue": "Estado del toggle (controlado)",
+    "color": "Color semántico: `primary`, `neutral`, `success`, `warning`, `danger`",
+    "size": "Tamaño del switch: `sm`, `md`",
+    "disabled": "Estado deshabilitado"
+  },
+  "events": {
+    "update:modelValue": {
+      "type": "boolean",
+      "description": "Se emite cuando cambia el estado"
+    },
+    "change": {
+      "type": "boolean",
+      "description": "Se emite en cada cambio (payload directo = boolean)"
+    }
+  },
+  "slots": {},
+  "exposes": {
+    "get": "Devuelve el estado actual (`boolean`)",
+    "set": "Asigna el estado",
+    "reset": "Pone el estado en `false`",
+    "focus": "Enfoca el switch"
+  },
+  "notes": {
+    "props": "> El Custom Element **no expone** una prop `checked` separada. El control se hace únicamente con `modelValue`. Tampoco tiene props `variant`, `theme` ni `hightContrast`; el tamaño se controla con `size`.",
+    "slots": "Ninguno."
+  },
+  "sections": [
+    {
+      "title": "Uso en HTML plano",
+      "body": "```html\n<script src=\"dist/CuSwitch.umd.js\"></script>\n\n<cu-switch id=\"miSwitch\" color=\"primary\" size=\"md\"></cu-switch>\n\n<script>\n  const sw = document.getElementById('miSwitch');\n  sw.set(true);\n  console.log(sw.get()); // true\n  sw.reset();\n</script>\n```"
+    },
+    {
+      "title": "Tamaños",
+      "body": "```html\n<cu-switch size=\"sm\" color=\"primary\"></cu-switch>\n<cu-switch size=\"md\" color=\"primary\"></cu-switch>\n```\n\n- `sm`: 32×20px\n- `md`: 48×32px"
+    },
+    {
+      "title": "Escuchar cambios",
+      "body": "Hay dos formas equivalentes:\n\n```html\n<cu-switch id=\"toggle\"></cu-switch>\n\n<script>\n  const sw = document.getElementById('toggle');\n\n  // update:modelValue (convención Vue)\n  sw.addEventListener('update:modelValue', (e) => {\n    console.log('Estado:', e.detail);\n  });\n\n  // change (payload = boolean)\n  sw.addEventListener('change', (e) => {\n    console.log('Toggle a:', e.detail);\n  });\n</script>\n```"
+    },
+    {
+      "title": "Uso con label",
+      "body": "El switch no incluye label propio. Combinalo con `<cu-label>` para tener un área clickeable extendida:\n\n```html\n<cu-label label=\"Notificaciones activas\">\n  <cu-switch id=\"notif\" color=\"primary\"></cu-switch>\n</cu-label>\n```"
+    }
+  ],
+  "intro": "Toggle switch con color semántico y dos tamaños. Controlable via `modelValue` o métodos `get`/`set`."
+}

@@ -1,0 +1,32 @@
+{
+  "props": {
+    "text": "Texto del tooltip. Si se usa el slot `content`, tiene prioridad",
+    "color": "Color semántico del fondo: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger`",
+    "position": "Lado donde aparece: `top`, `bottom`, `left`, `right`",
+    "align": "Alineación respecto al elemento: `start`, `center`, `end`",
+    "offset": "Distancia (px) entre el elemento y el tooltip",
+    "delay": "Retardo (ms) antes de mostrar el tooltip al hacer hover",
+    "disabled": "Deshabilita el tooltip (no se muestra)"
+  },
+  "events": {},
+  "slots": {
+    "default": "El elemento que dispara el tooltip al hacer hover",
+    "content": "Contenido del tooltip (reemplaza el prop `text`)"
+  },
+  "exposes": {},
+  "notes": {
+    "events": "Ninguno (los eventos nativos del DOM como `mouseenter`/`mouseleave` burbujean desde el Shadow DOM).",
+    "exposes": "Ninguno."
+  },
+  "sections": [
+    {
+      "title": "Uso en HTML plano",
+      "body": "```html\n<script src=\"dist/CuTooltip.umd.js\"></script>\n\n<cu-tooltip text=\"Guardar cambios\" color=\"primary\">\n  <cu-button color=\"primary\" variant=\"soft\">Guardar</cu-button>\n</cu-tooltip>\n```"
+    },
+    {
+      "title": "Posición y contenido custom",
+      "body": "```html\n<cu-tooltip text=\"Texto simple\" position=\"bottom\"></cu-tooltip>\n\n<cu-tooltip position=\"right\" align=\"start\" delay=\"300\">\n  <span>Elemento con tooltip rico</span>\n  <span slot=\"content\">\n    <strong>Más contexto</strong> con HTML\n  </span>\n</cu-tooltip>\n```"
+    }
+  ],
+  "intro": "Tooltip que aparece al hacer hover sobre el elemento contenido, con posición, alineación, offset y delay configurables."
+}

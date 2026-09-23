@@ -1,0 +1,45 @@
+{
+  "props": {
+    "items": "Estructura de navegación. **Se asigna como propiedad JS**",
+    "search": "Muestra el input de búsqueda",
+    "searchPlaceholder": "Placeholder del input de búsqueda",
+    "searchMode": "`filter` (oculta los que no matchean) o `scroll` (resalta y hace scroll al primero que matchea)",
+    "searchFields": "Campos del item a buscar. **Se asigna como propiedad JS.** Vacío = busca en todos los campos string",
+    "compact": "Modo compacto: muestra solo iconos (o la inicial del label)",
+    "compactable": "Agrega un botón nativo que alterna el modo compacto",
+    "collapsed": "Los submenús arrancan colapsados en lugar de expandidos",
+    "trigger": "Cómo abren los submenús en modo compact (flyout): `click` o `hover`",
+    "responsive": "En lugar de la nav inline, muestra una hamburguesa que abre el menú en un panel lateral",
+    "responsiveMode": "`auto` (fullscreen en pantallas muy chicas, lateral en el resto), `side` (siempre lateral) o `fullscreen` (siempre pantalla completa)",
+    "sideOverPosition": "Borde desde donde desliza el panel del responsive: `left`, `right`, `top`, `bottom`",
+    "activePath": "Path activo manual. Si se omite, se toma de la ruta (cuando hay router)"
+  },
+  "events": {
+    "search": {
+      "type": "string",
+      "description": "La consulta de búsqueda (se emite en cada cambio del input)"
+    }
+  },
+  "slots": {},
+  "exposes": {},
+  "notes": {
+    "props": "> **`items` se asigna como propiedad JS**, no como atributo HTML:\n\n```js\nconst nav = document.getElementById('nav');\nnav.items = [\n  { label: 'Inicio', path: '/' },\n  {\n    label: 'Usuarios',\n    icon: '👤',\n    children: [\n      { label: 'Lista', path: '/usuarios' },\n      { label: 'Roles', path: '/roles' },\n    ],\n  },\n];\n```",
+    "slots": "Ninguno.",
+    "exposes": "Ninguno."
+  },
+  "sections": [
+    {
+      "title": "Uso en HTML plano",
+      "body": "```html\n<script src=\"dist/CuNavbar.umd.js\"></script>\n\n<cu-navbar id=\"nav\" search active-path=\"/usuarios\"></cu-navbar>\n\n<script>\n  const nav = document.getElementById('nav');\n  await customElements.whenDefined('cu-navbar');\n  nav.items = [\n    { label: 'Inicio', path: '/' },\n    { label: 'Usuarios', children: [\n      { label: 'Lista', path: '/usuarios' },\n      { label: 'Roles', path: '/roles' },\n    ]},\n    { label: 'Ajustes', path: '/ajustes' },\n  ];\n\n  nav.addEventListener('search', (e) => console.log('buscando:', e.detail));\n</script>\n```"
+    },
+    {
+      "title": "Estructura de `items`",
+      "body": "```ts\ninterface NavItem {\n  label: string;\n  path?: string;        // enlaces y detección de activo\n  icon?: string;        // string HTML (puede ser un SVG inline)\n  children?: NavItem[]; // submenús\n}\n```"
+    },
+    {
+      "title": "Modo compacto y responsive",
+      "body": "```html\n<cu-navbar id=\"nav2\" compact trigger=\"hover\"></cu-navbar>\n<cu-navbar id=\"nav3\" responsive responsive-mode=\"side\" side-over-position=\"right\"></cu-navbar>\n```"
+    }
+  ],
+  "intro": "Barra de navegación vertical (tipo sidebar) con submenús, búsqueda (`filter`/`scroll`), modo compacto y opción responsive con hamburguesa + panel lateral."
+}

@@ -9,13 +9,13 @@ Pestañas con variantes, iconos, tabs deshabilitadas individuales y control prog
 ## Props
 
 | Prop | Tipo | Default | Descripción |
-|------|------|---------|-------------|
-| `tabs` | `{key, label, disabled?}[]` | `[]` | Definición de las pestañas |
+|------|------|------|------|
+| `tabs` | `{ key: string; label: string; icon?: string; disabled?: boolean; keepAlive?: boolean }[]` | `[]` | Definición de las pestañas |
 | `modelValue` | `string` | `""` | Key del tab activo (controlado) |
-| `color` | `string` | `"primary"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `string` | `"ghost"` | `ghost`, `solid`, `boxed`, `soft` |
-| `size` | `string` | `"md"` | `sm`, `md`, `lg` |
-| `disabled` | `boolean` | `false` | Deshabilita todas las pestañas |
+| `color` | `primary \| secondary \| neutral \| success \| warning \| danger` | `"primary"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
+| `variant` | `ghost \| solid \| boxed \| soft` | `"ghost"` | `ghost`, `solid`, `boxed`, `soft` |
+| `size` | `sm \| md \| lg` | `"md"` | `sm`, `md`, `lg` |
+| `disabled` | — | — | Deshabilita todas las pestañas |
 
 ### Prop `tabs`
 
@@ -32,7 +32,7 @@ Cada item es un objeto con:
 ## Eventos
 
 | Evento | Payload (`e.detail`) | Descripción |
-|--------|----------------------|-------------|
+|------|------|------|
 | `update:modelValue` | `string` | Key del tab activo al cambiar |
 | `change` | `string` | Se emite en cada cambio de tab (payload = key) |
 
@@ -40,19 +40,14 @@ Cada item es un objeto con:
 
 Los paneles y los iconos usan **slots nombrados** con el key de cada tab.
 
-| Slot | Contenido |
-|------|-----------|
-| `{key}` | Panel de contenido de la pestaña `{key}` |
-| `tab-icon-{key}` | Icono de la pestaña `{key}` (se renderiza antes del label) |
-
 En HTML plano se usan con el atributo `slot="..."` sobre el elemento hijo.
 
 ## Métodos expuestos
 
 | Método | Descripción |
-|--------|-------------|
+|------|------|
 | `.getActive()` | Devuelve la key del tab activo |
-| `.setActive(key)` | Activa el tab con esa key |
+| `.setActive()` | Activa el tab con esa key |
 | `.next()` | Activa el próximo tab habilitado |
 | `.prev()` | Activa el tab anterior habilitado |
 
@@ -83,6 +78,8 @@ En HTML plano se usan con el atributo `slot="..."` sobre el elemento hijo.
 
 > Las `tabs` se asignan después de `customElements.whenDefined('cu-tabs')` porque es una prop compleja.
 
+---
+
 ## Variantes
 
 ```html
@@ -93,6 +90,8 @@ En HTML plano se usan con el atributo `slot="..."` sobre el elemento hijo.
 ```
 
 > El array `tabs` se asigna vía JavaScript (ver [Uso en HTML plano](#uso-en-html-plano)).
+
+---
 
 ## Iconos
 
@@ -116,6 +115,8 @@ Cada tab puede llevar un icono con el slot `tab-icon-{key}`. El SVG debe usar `c
   });
 </script>
 ```
+
+---
 
 ## Escuchar cambios y control programático
 
@@ -146,11 +147,15 @@ Cada tab puede llevar un icono con el slot `tab-icon-{key}`. El SVG debe usar `c
 </script>
 ```
 
+---
+
 ## Accesibilidad y navegación
 
 - Roles ARIA: `tablist`, `tab`, `tabpanel`, con `aria-selected`, `aria-controls` y `aria-labelledby`.
 - Navegación con teclado: flechas ←/→ para cambiar de tab, `Home` y `End` para ir al primero/último.
 - Las tabs deshabilitadas se saltean en la navegación y en `setActive`.
+
+---
 
 ## Ejemplo completo (playground vanilla)
 

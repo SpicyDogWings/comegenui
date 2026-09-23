@@ -47,6 +47,7 @@ function readBalanced(src, start) {
 function splitTopLevel(block) {
   const parts = [];
   let depth = 0;
+  let angle = 0;
   let current = "";
   let quote = null;
   for (let i = 0; i < block.length; i++) {
@@ -65,9 +66,12 @@ function splitTopLevel(block) {
       current += char;
       continue;
     }
+    // Genéricos TS (`Record<string, unknown>`): la coma interna no separa.
+    if (char === "<" && /[\w$>)\]]/.test(block[i - 1] ?? "")) angle++;
+    else if (char === ">" && angle > 0) angle--;
     if (PAIRS[char]) depth++;
     else if ("}])".includes(char)) depth--;
-    if (char === "," && depth === 0) {
+    if (char === "," && depth === 0 && angle === 0) {
       parts.push(current);
       current = "";
     } else {
@@ -91,8 +95,21 @@ function optionValue(rest, key) {
   const trimmed = rest.slice(start);
   const offset = trimmed.search(/\S/);
   if (offset < 0) return undefined;
-  const valueStart = start + offset;
-  const first = rest[valueStart];
+  let valueStart = start + offset;
+  let first = rest[valueStart];
+  // Factory: `() => X` / `(x) => X` → devolvé el cuerpo `X`.
+  if (first === "(") {
+    const params = readBalanced(rest, valueStart);
+    const arrow = params ? /^\s*=>\s*/.exec(rest.slice(valueStart + params.length)) : null;
+    if (arrow) {
+      const bodyStart = valueStart + params.length + arrow[0].length;
+      const bodyOffset = rest.slice(bodyStart).search(/\S/);
+      if (bodyOffset >= 0) {
+        valueStart = bodyStart + bodyOffset;
+        first = rest[valueStart];
+      }
+    }
+  }
   if (first === '"' || first === "'" || first === "`") {
     const end = skipQuoted(rest, valueStart, first);
     return rest.slice(valueStart, end + 1);
@@ -230,6 +247,55 @@ function propKind(rest, values) {
   return "unknown";
 }
 
+const VUE_TYPES = {
+  String: "string",
+  Number: "number",
+  Boolean: "boolean",
+  Array: "array",
+  Object: "object",
+  Function: "function",
+};
+
+/** Limpia el `type:` de una prop: `Array as PropType<Column[]>` → `Column[]`. */
+function cleanPropType(raw) {
+  let value = raw.trim();
+  const propType = value.match(/PropType\s*<([\s\S]*)>/);
+  if (propType) return propType[1].trim();
+  const arrow = value.match(/as\s*(?:\(\s*\)\s*)?=>\s*([\s\S]+)$/);
+  if (arrow) value = arrow[1].trim();
+  value = value.replace(/^as\s+/, "").trim();
+  if (/^\[/.test(value)) {
+    return value
+      .replace(/^\[|\]$/g, "")
+      .split(",")
+      .map((part) => VUE_TYPES[part.trim()] ?? part.trim())
+      .filter(Boolean)
+      .join(" | ");
+  }
+  return VUE_TYPES[value] ?? value;
+}
+
+/** Valor de `type:` respetando genéricos/paréntesis (corta en la coma de primer nivel). */
+function typeValue(rest) {
+  const match = /type\s*:\s*/.exec(rest);
+  if (!match) return undefined;
+  const start = match.index + match[0].length;
+  let depth = 0;
+  let angle = 0;
+  let i = start;
+  for (; i < rest.length; i++) {
+    const char = rest[i];
+    if ("[{(".includes(char)) depth++;
+    else if ("}])".includes(char)) {
+      if (depth === 0) break;
+      depth--;
+    } else if (char === "<" && /[\w$>)\]]/.test(rest[i - 1] ?? "")) angle++;
+    else if (char === ">" && angle > 0) angle--;
+    else if (char === "," && depth === 0 && angle === 0) break;
+  }
+  return rest.slice(start, i).trim();
+}
+
 function parseProps(source, compiled, docs) {
   let block = null;
   const compiledMatch = compiled ? /props\s*:\s*\{/.exec(compiled) : null;
@@ -264,14 +330,20 @@ function parseProps(source, compiled, docs) {
     if (values.length) prop.values = values;
     if (/required\s*:\s*true/.test(rest)) prop.required = true;
     const def = optionValue(rest, "default");
-    if (def !== undefined && !def.startsWith("(")) {
-      prop.default = def.replace(/^["'`]|["'`]$/g, "");
+    if (def !== undefined) {
+      let value = def.trim();
+      // `default: () => []` → `[]`, `() => "x"` → `"x"`.
+      const factory = value.match(/^\([^)]*\)\s*=>\s*([\s\S]+)$/);
+      if (factory) value = factory[1].trim().replace(/^\(([\s\S]*)\)$/, "$1").trim();
+      const isLiteral =
+        /^["'`]/.test(value) ||
+        /^(true|false|-?\d+(\.\d+)?)$/.test(value) ||
+        /^\[[\s\S]*\]$/.test(value) ||
+        /^\{[\s\S]*\}$/.test(value);
+      if (isLiteral) prop.default = value.replace(/^["'`]|["'`]$/g, "");
     }
-    const type = rest.match(/type\s*:\s*([^,\n]+)/);
-    if (type && !values.length) {
-      const raw = type[1].trim();
-      prop.type = { String: "string", Number: "number", Boolean: "boolean", Array: "array", Object: "object" }[raw] ?? raw;
-    }
+    const type = typeValue(rest);
+    if (type && !values.length) prop.type = cleanPropType(type);
     props.push(prop);
   }
   return props;
@@ -279,7 +351,7 @@ function parseProps(source, compiled, docs) {
 
 // ── Emits ───────────────────────────────────────────────────────────────────
 
-function parseEmits(source, compiled, docs) {
+function parseEmits(source, compiled, docs, fullSource = source) {
   const emits = new Map();
   const add = (name, payload) => {
     if (name && !emits.has(name)) emits.set(name, payload);
@@ -314,6 +386,16 @@ function parseEmits(source, compiled, docs) {
   const arrays = /defineEmits(?!\s*<)\s*\(\s*\[([^\]]*)\]/.exec(source);
   if (arrays) valuesOf(arrays[1]).forEach((name) => add(name));
 
+  // Wrappers CE: `ceEmit('nombre', $event)` en el template reenvía eventos del
+  // `.vue` interno al host. No están en `defineEmits`, pero son API pública.
+  for (const match of fullSource.matchAll(/ceEmit\(\s*['"]([\w:.-]+)['"]/g)) add(match[1]);
+  // Algunos wrappers despachan el CustomEvent a mano.
+  for (const match of fullSource.matchAll(
+    /dispatchEvent\(\s*new\s+CustomEvent\(\s*['"]([\w:.-]+)['"]/g,
+  )) {
+    add(match[1]);
+  }
+
   return [...emits].map(([name, payload]) => {
     const row = { name, type: payload || "() => void" };
     const description = docs?.get(name);
@@ -331,13 +413,20 @@ function parseExposes(source, docs) {
   const balanced = start >= 0 ? readBalanced(source, start) : null;
   if (!balanced) return [];
   const inner = balanced.slice(1, -1).replace(/\/\*[\s\S]*?\*\//g, "");
-  const names = new Set();
+  const entries = [];
+  const seen = new Set();
   for (const entry of splitTopLevel(inner)) {
-    const key = entry.match(/^\s*(?:\.\.\.)?([\w$]+)/);
-    if (key) names.add(key[1]);
+    const key = entry.match(/^\s*(?:\.\.\.)?([\w$]+)\s*(?::\s*\(([^)]*)\))?/);
+    if (!key || seen.has(key[1])) continue;
+    seen.add(key[1]);
+    const params = splitTopLevel(key[2] ?? "")
+      .map((part) => part.trim().split(":")[0].trim())
+      .filter(Boolean)
+      .join(", ");
+    entries.push({ name: key[1], signature: `${key[1]}(${params})` });
   }
-  return [...names].map((name) => {
-    const row = { name: `${name}()`, type: "() => void" };
+  return entries.map(({ name, signature }) => {
+    const row = { name: signature, type: "() => void" };
     const description = docs?.get(name);
     if (description) row.description = description;
     return row;
@@ -435,7 +524,7 @@ export function parseComponent(filePath, source = readFileSync(filePath, "utf-8"
   const slots = parseSlots(descriptor);
   const docs = parseJsDocs(script);
   const props = parseProps(script, compiled, docs);
-  const emits = parseEmits(script, compiled, docs);
+  const emits = parseEmits(script, compiled, docs, source);
 
   // `defineModel` agrega una prop y un emit `update:...` que no aparecen en
   // `defineProps`/`defineEmits`. El nombre sale del primer argumento

@@ -71,5 +71,12 @@ else
   step "tests L1 (.vue)" pnpm run --silent test:l1
 fi
 
+# ── 3. drift de las fichas de API de la skill ────────────────────────────────
+if [ -n "$COMPONENT" ]; then
+  step "docs de la skill (${COMPONENT})" node src/plugins/cu-playground/cli/generate.mjs "$COMPONENT" --docs --check
+else
+  step "docs de la skill" node src/plugins/cu-playground/cli/generate.mjs --all --docs --check
+fi
+
 echo ""
 echo "✅ Preflight OK"

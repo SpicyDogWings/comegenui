@@ -23,6 +23,7 @@ archivos del host. El host solo inyecta su propia piel vía la opción `chrome`.
 | `tests/runner.l1.ts` | Vitest runner | **Dueño del runner L1** (monta el `.vue` con `@vue/test-utils`). `src/stories/runner.l1.ts` lo re-exporta. |
 | `cli/generate.mjs` | Node CLI | Genera/actualiza la story desde el contrato del `.vue`. |
 | `cli/parse-sfc.mjs` | Node CLI | Parser del `.vue` (props/emits/exposes/slots + JSDoc, interfaces, tokens, clases CSS, sub-componentes). |
+| `cli/doc.mjs` | Node CLI | Genera la ficha de API de la skill (`componentes/cu-x.md`) desde el SFC que distribuye la lib, con prosa curada en un sidecar `*.doc.json`. |
 | `vitest/reporter.ts` | Reporter | Escribe `public/test-results.json` (badges ✅/❌). |
 
 ## Opciones del plugin
@@ -80,6 +81,10 @@ pnpm cu-playground:generate Button --pages     # + página física editable
 pnpm cu-playground:generate Button --dry-run   # previsualiza sin escribir
 pnpm cu-playground:generate --all              # barre componentsDir
 pnpm cu-playground:generate Button --force     # pisa story existente (reconstruye secciones)
+pnpm cu-playground:generate Button --docs      # ficha de API (componentes/cu-button.md)
+pnpm cu-playground:generate --all --docs       # todas las fichas de componentes públicos
+pnpm cu-playground:generate --all --docs --check  # falla si alguna ficha está desactualizada
+pnpm cu-playground:generate Button --docs --seed  # siembra el sidecar desde la ficha existente
 ```
 
 > Para actualizar metadata de todas las stories sin perder secciones custom:
@@ -87,6 +92,23 @@ pnpm cu-playground:generate Button --force     # pisa story existente (reconstru
 > secciones y solo es seguro si tus customizaciones viven en config/extras/runtime.
 
 > `stories:generate` sigue como alias del mismo comando.
+
+## Fichas de API de la skill (`--docs`)
+
+El plugin es el único que consulta al componente: resuelve el **SFC que
+distribuye la lib** (el que importa `src/lib/**​/<kebab>.ts`; `X.ce.vue` si
+existe, si no el `X.vue`), lo parsea y renderiza `componentes/cu-x.md`.
+
+- **Fuente de verdad:** el componente. La ficha se regenera; no se edita a mano.
+- **Prosa curada:** vive en `componentes/cu-x.doc.json` (sidecar que nunca se
+  pisa): `intro`, descripciones por fila, `notes` y `sections` libres. El `.md`
+  = contrato + sidecar.
+- **Solo públicos:** `--all --docs` recorre los entry points de `libDir`; los
+  componentes internos no tienen ficha en la skill.
+- **Drift:** `--check` compara y falla si el `.md` no refleja el SFC. Está
+  enganchado en `scripts/preflight.sh`.
+- **Migración:** `--seed` convierte una ficha existente en sidecar (una sola
+  vez).
 
 ## Qué infiere del `.vue` (y qué se cura)
 
@@ -113,6 +135,7 @@ Precedencia al regenerar: descripciones → **config > JSDoc > story previa**;
   "storiesDir": "src/stories",
   "playgroundDir": "src/playground",
   "libDir": "src/lib",
+  "docsDir": "docs/skills/use-comegen",
   "vanilla": true,
   "base": "/playground/components",
   "pages": false,

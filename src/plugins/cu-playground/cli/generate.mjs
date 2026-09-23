@@ -17,6 +17,12 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import fg from "fast-glob";
 import { parseComponent } from "./parse-sfc.mjs";
+import {
+  resolveDocTarget,
+  listPublicComponents,
+  renderDoc,
+  parseDocToSidecar,
+} from "./doc.mjs";
 
 const ROOT = process.cwd();
 const args = process.argv.slice(2);
@@ -26,6 +32,9 @@ const all = args.includes("--all");
 const dryRun = args.includes("--dry-run");
 const withPages = args.includes("--pages");
 const noPages = args.includes("--no-pages");
+const withDocs = args.includes("--docs");
+const checkDocs = args.includes("--check");
+const seedDocs = args.includes("--seed");
 const pageIndex = args.indexOf("--page");
 const pageName = pageIndex >= 0 ? args[pageIndex + 1] : undefined;
 const name = args.find((a) => !a.startsWith("--") && a !== pageName);
@@ -45,6 +54,7 @@ const storiesDirBase = (userConfig.storiesDir ?? "src/stories").replace(/\/+$/, 
 const playgroundDir = (userConfig.playgroundDir ?? "src/playground").replace(/\/+$/, "");
 const base = (userConfig.base ?? "/playground/components").replace(/\/+$/, "");
 const libDir = String(userConfig.libDir ?? "src/lib").replace(/\/+$/, "");
+const docsDir = String(userConfig.docsDir ?? "docs/skills/use-comegen").replace(/\/+$/, "");
 const vanillaSnippets = userConfig.vanilla !== false;
 const configExclude = new Set(userConfig.exclude ?? []);
 const generatePages = withPages || (!noPages && userConfig.pages === true);
@@ -931,8 +941,85 @@ runL1Story(${`cu${componentName}Stories`});
   return true;
 }
 
+// ── Ficha de API de la skill ─────────────────────────────────────────────────
+/**
+ * Genera la ficha `componentes/cu-x.md` consultando el SFC que distribuye la
+ * lib (`X.ce.vue` si existe, si no el `X.vue`). La prosa curada vive en el
+ * sidecar `componentes/cu-x.doc.json` (nunca se pisa).
+ */
+function generateDoc(componentName, { check = false, seed = false, quiet = false } = {}) {
+  const target = resolveDocTarget({ ROOT, componentName, componentsDir, libDir });
+  if (!target.sfcPath) {
+    console.error(`❌ No se encontró el SFC de ${componentName}`);
+    return false;
+  }
+  // Los componentes internos no tienen ficha en la skill: nada que chequear.
+  if (check && !target.inLib) {
+    if (!quiet) console.log(`⏭  ${componentName}: no está en la lib, sin ficha`);
+    return true;
+  }
+
+  const contract = parseComponent(resolve(ROOT, target.sfcPath));
+  const docDir = `${docsDir}/componentes`;
+  const mdPath = `${docDir}/${target.tag}.md`;
+  const sidecarPath = `${docDir}/${target.tag}.doc.json`;
+
+  let sidecar = {};
+  if (existsSync(resolve(ROOT, sidecarPath))) {
+    try {
+      sidecar = JSON.parse(readFileSync(resolve(ROOT, sidecarPath), "utf-8"));
+    } catch (error) {
+      console.error(`⚠️  ${sidecarPath} inválido: ${error.message}`);
+    }
+  } else if (seed && existsSync(resolve(ROOT, mdPath))) {
+    sidecar = parseDocToSidecar(readFileSync(resolve(ROOT, mdPath), "utf-8"));
+    if (!dryRun) {
+      mkdirSync(resolve(ROOT, docDir), { recursive: true });
+      writeFileSync(resolve(ROOT, sidecarPath), `${JSON.stringify(sidecar, null, 2)}\n`);
+    }
+    console.log(`🌱 ${sidecarPath}`);
+  }
+
+  const md = renderDoc({ tag: target.tag, inLib: target.inLib, contract, sidecar });
+  const current = existsSync(resolve(ROOT, mdPath))
+    ? readFileSync(resolve(ROOT, mdPath), "utf-8")
+    : "";
+
+  if (check) {
+    if (current !== md) {
+      console.error(
+        `❌ ${mdPath} desactualizado (corré: pnpm cu-playground:generate ${componentName} --docs)`,
+      );
+      return false;
+    }
+    if (!quiet) console.log(`✔ ${mdPath}`);
+    return true;
+  }
+  if (dryRun) {
+    console.log(`[dry-run] escribiría ${mdPath}`);
+    if (!all) console.log(md);
+    return true;
+  }
+
+  mkdirSync(resolve(ROOT, docDir), { recursive: true });
+  writeFileSync(resolve(ROOT, mdPath), md);
+  if (!quiet) console.log(`✅ ${mdPath}`);
+  return true;
+}
+
 // ── Entry point ─────────────────────────────────────────────────────────────
-if (all) {
+if (withDocs && all) {
+  const names = listPublicComponents({ ROOT, libDir });
+  console.log(`▶ Documentando ${names.length} componentes públicos…\n`);
+  const results = names.map((n) =>
+    generateDoc(n, { check: checkDocs, seed: seedDocs, quiet: true }),
+  );
+  const ok = results.filter(Boolean).length;
+  console.log(`\n✔ ${ok}/${names.length} ok`);
+  if (checkDocs && ok !== names.length) process.exit(1);
+} else if (withDocs && name) {
+  if (!generateDoc(name, { check: checkDocs, seed: seedDocs })) process.exit(1);
+} else if (all) {
   const files = fg.sync(`${componentsDir}/**/*.vue`, {
     ignore: ["**/customElements/**", "**/icons/**", "**/lab/**", "**/legacy/**", "**/archived/**"],
   });
@@ -947,6 +1034,8 @@ if (all) {
 } else if (name) {
   generateOne(name);
 } else {
-  console.error("Uso: cu-playground generate <Componente> [--force] [--meta-only] [--pages] [--dry-run] [--all]");
+  console.error(
+    "Uso: cu-playground generate <Componente> [--force] [--meta-only] [--pages] [--dry-run] [--all] [--docs [--check] [--seed]]",
+  );
   process.exit(1);
 }

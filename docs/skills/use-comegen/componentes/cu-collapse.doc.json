@@ -1,0 +1,56 @@
+{
+  "props": {
+    "label": "Texto del trigger",
+    "default-open": "Si es `true`, el contenido arranca visible",
+    "color": "Color semántico del trigger: `primary`, `neutral`, `success`, `warning`, `danger`"
+  },
+  "events": {
+    "toggle": {
+      "type": "boolean",
+      "description": "Se emite al cambiar el estado abierto/cerrado. El payload es el nuevo estado (`true` = abierto)"
+    }
+  },
+  "slots": {
+    "default": "Contenido colapsable"
+  },
+  "exposes": {
+    "open": "Abre el collapse",
+    "close": "Cierra el collapse",
+    "toggle": "Alterna el estado",
+    "isOpen": "Devuelve el estado actual (`boolean`)"
+  },
+  "notes": {
+    "props": "> El Custom Element **no expone** prop `variant` ni `theme`. El trigger siempre usa la variante `ghost` y el color se controla con `color`."
+  },
+  "sections": [
+    {
+      "title": "Uso en HTML plano",
+      "body": "```html\n<script src=\"dist/CuCollapse.umd.js\"></script>\n\n<cu-collapse label=\"Más información\">\n  <p>Este contenido está oculto por defecto.</p>\n</cu-collapse>\n```"
+    },
+    {
+      "title": "Abierto por defecto",
+      "body": "```html\n<cu-collapse label=\"Opciones avanzadas\" default-open>\n  <p>Visible desde el inicio gracias a <code>default-open</code>.</p>\n</cu-collapse>\n```"
+    },
+    {
+      "title": "Colores",
+      "body": "```html\n<cu-collapse label=\"Información\" color=\"primary\">...</cu-collapse>\n<cu-collapse label=\"Éxito\" color=\"success\">...</cu-collapse>\n<cu-collapse label=\"Advertencia\" color=\"warning\">...</cu-collapse>\n<cu-collapse label=\"Peligro\" color=\"danger\">...</cu-collapse>\n```"
+    },
+    {
+      "title": "Anidados",
+      "body": "Los collapses se pueden anidar para construir árboles de menú:\n\n```html\n<cu-collapse label=\"Sección padre\" color=\"primary\" default-open>\n  <p>Contenido de nivel superior.</p>\n  <cu-collapse label=\"Hijo\">\n    <p>Contenido anidado con su propio toggle.</p>\n  </cu-collapse>\n</cu-collapse>\n```"
+    },
+    {
+      "title": "Escuchar eventos",
+      "body": "```js\nconst collapse = document.getElementById('miCollapse');\n\ncollapse.addEventListener('toggle', (e) => {\n  console.log('abierto:', e.detail); // true | false\n});\n```"
+    },
+    {
+      "title": "Control programático",
+      "body": "```html\n<cu-collapse id=\"miCollapse\" label=\"Programático\">\n  <p>Controlado desde JS con open()/close()/toggle().</p>\n</cu-collapse>\n\n<script>\n  const c = document.getElementById('miCollapse');\n  c.open();\n  c.close();\n  c.toggle();\n  c.isOpen(); // boolean\n</script>\n```"
+    },
+    {
+      "title": "Ejemplo completo",
+      "body": "```html\n<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\" />\n  <title>Collapse Demo</title>\n</head>\n<body>\n  <cu-collapse id=\"faq\" label=\"¿Qué es ComegenUI?\" color=\"primary\">\n    <p>Una librería de componentes UI como Custom Elements nativos.</p>\n  </cu-collapse>\n\n  <cu-button onclick=\"toggleFaq()\">Alternar FAQ</cu-button>\n\n  <script src=\"dist/CuCollapse.umd.js\"></script>\n  <script src=\"dist/CuButton.umd.js\"></script>\n  <script>\n    const faq = document.getElementById('faq');\n\n    faq.addEventListener('toggle', (e) => {\n      console.log('FAQ abierto:', e.detail);\n    });\n\n    function toggleFaq() {\n      faq.toggle();\n    }\n  </script>\n</body>\n</html>\n```"
+    }
+  ],
+  "intro": "Sección colapsable con trigger (botón + chevron animado). El contenido se muestra/oculta con una transición de altura. Útil para acordeones, menús anidados o secciones \"más información\"."
+}

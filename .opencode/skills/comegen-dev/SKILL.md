@@ -38,7 +38,7 @@ Seguí los pasos **en orden**. No saltees el 3 (story) ni el 4 (tests): ahí es 
 | 4 | **Tests** | `src/stories/{category}/X.l1.test.ts` con el runner de stories. Migrar tests viejos si existían. | [`04`](04-stories-y-tests.md) |
 | 5 | **Metadata + extras** | `pnpm cu-playground:generate X --meta-only` (`tokens`/`api` → Style/API en la página genérica). Extra **Programmatic** solo si el componente usa `defineExpose`; **Events** si emite eventos. | [`04`](04-stories-y-tests.md) · [`05`](05-playground.md) |
 | 6 | **Playground** | **Automático**: el plugin `cu-playground` registra la ruta y el nav desde la story. Página genérica en `/playground/components/:name`; página física opcional con `--pages`. | [`05`](05-playground.md) |
-| 7 | **Docs** | `docs/skills/use-comegen/componentes/cu-x.md` (+ índices). | [`07`](07-documentacion.md) + skill `comegen-ui-docs` |
+| 7 | **Docs** | Ficha generada con `pnpm cu-playground:generate <X> --docs` desde el SFC de la lib (+ sidecar `cu-x.doc.json` con la prosa curada) y su entrada en los índices. | [`07`](07-documentacion.md) + skill `comegen-ui-docs` |
 | 8 | **Validar y commitear** | `./scripts/preflight.sh` verde; commit atómico (nunca `git add -A`). | [`06`](06-build-y-validacion.md) |
 
 ## Definición de terminado (DoD)
@@ -51,7 +51,7 @@ Un componente nuevo está terminado cuando **todo** esto existe y pasa:
 - [ ] **Metadata**: `tokens` + `api` en la story (`--meta-only`) → la página genérica pinta **Style** y **API**.
 - [ ] **Extras**: **Programmatic** solo si usa `defineExpose`; **Events** si emite eventos propios. En archivo hermano `X.stories.extras.ts`.
 - [ ] **Playground**: entrada en el nav (`PlaygroundLayout.vue`); la ruta y la página las provee el plugin (no hay `X.vue` de página).
-- [ ] **Docs**: `docs/skills/use-comegen/componentes/cu-x.md` con props/slots/events/methods.
+- [ ] **Docs**: ficha `docs/skills/use-comegen/componentes/cu-x.md` **generada** con `pnpm cu-playground:generate <X> --docs` (fuente de verdad = el componente) + sidecar `cu-x.doc.json` con la prosa curada.
 - [ ] **Verde**: `./scripts/preflight.sh` sin errores nuevos de type-check y con los tests en verde.
 - [ ] **Badges**: el playground muestra ✅ en cada sección (lo pinta `TestResultBadge` desde `public/test-results.json`).
 - [ ] **Commit atómico** con su entrada en el plan/bitácora (`git status --short` antes de stagear).
@@ -82,6 +82,7 @@ Todo el devkit está separado por responsabilidad:
 | `pnpm cu-playground:generate <X> --meta-only` | Actualiza solo `tokens`/`api` de una story existente sin tocar secciones/checks/extras; preserva descripciones curadas. |
 | `pnpm cu-playground:generate --all` | Barre `componentsDir` y genera/actualiza todas las stories (metadata). |
 | `pnpm cu-playground:generate <X> --pages` | Además emite una página física editable en `playgroundDir` (override de la genérica). |
+| `pnpm cu-playground:generate <X> --docs` | Genera/actualiza la ficha `componentes/cu-x.md` desde el SFC que distribuye la lib (`.ce.vue` o `.vue`); prosa curada en el sidecar `cu-x.doc.json`. `--all --docs` para todas; `--docs --check` detecta drift (lo corre el preflight). |
 | `pnpm run stories:migrate <X>` | (Legacy) Genera story + test desde la **página** vieja. Las páginas legacy están en `backups/`. |
 | `pnpm run new:component <X> <category> [--internal]` | Scaffold de componente nuevo: `.vue` + `.ce.vue` + `lib/` + story + test. |
 | `./scripts/preflight.sh` | Gate local completo (type-check contra baseline + todos los tests L1). |

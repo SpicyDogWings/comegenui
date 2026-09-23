@@ -171,9 +171,18 @@ async function createZip() {
 
   // Add skill de uso (SKILL.md + componentes/) — SIEMPRE en el zip, al lado de
   // los archivos de la lib. Solo la de uso; no la de desarrollo ni documentar.
+  // Los sidecars `*.doc.json` son fuente para regenerar la doc, no van al zip.
   const docsDir = resolve(__dirname, 'docs/skills/use-comegen')
   if (fs.existsSync(docsDir)) {
-    archive.directory(docsDir, 'use-comegen')
+    const skillFiles = fg.sync('**/*', {
+      cwd: docsDir,
+      onlyFiles: true,
+      dot: false,
+      ignore: ['**/*.doc.json'],
+    })
+    for (const rel of skillFiles) {
+      archive.file(resolve(docsDir, rel), { name: `use-comegen/${rel}` })
+    }
     console.log('📚 Skill de uso agregada al zip: use-comegen/')
   } else {
     console.log('⚠️  docs/skills/use-comegen no encontrada, se omite del zip')

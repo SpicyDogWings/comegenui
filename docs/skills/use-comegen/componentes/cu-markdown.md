@@ -4,11 +4,29 @@ Renderizador de Markdown como Custom Element. Convierte markdown en HTML semánt
 
 [← Volver](../SKILL.md)
 
+---
+
+## Props
+
+| Prop | Tipo | Default | Descripción |
+|------|------|------|------|
+| `theme` | `string` | `"light"` | Tema de colores (`light`, `dark`, `sigacadv2`) |
+
+## Slots
+
+| Slot | Descripción |
+|------|------|
+| `default` | Contenido markdown a renderizar. Se pasa como texto dentro del tag. |
+
+---
+
 ## UMD
 
 ```
 dist/CuMarkdown.umd.js
 ```
+
+---
 
 ## Uso
 
@@ -37,41 +55,7 @@ const x = 1;
 
 El contenido se pasa como **texto dentro del tag** (no como prop). El componente lo parsea al montarse.
 
-## Props
-
-| Prop | Tipo | Default | Descripción |
-|------|------|---------|-------------|
-| `theme` | `string` | `'light'` | Tema de colores (`light`, `dark`, `sigacadv2`) |
-
-## Slots
-
-| Slot | Descripción |
-|------|-------------|
-| `default` | Contenido markdown a renderizar. Se pasa como texto dentro del tag. |
-
-## Eventos
-
-| Evento | Payload | Descripción |
-|--------|---------|-------------|
-| `parsed` | `string[]` | IDs de headings extraídos (útil para generar tabla de contenidos) |
-
-```js
-const md = document.getElementById('miMarkdown');
-md.addEventListener('parsed', (e) => {
-  console.log(e.detail); // ['titulo', 'subtitulo', ...]
-});
-```
-
-## API
-
-| Método | Descripción |
-|--------|-------------|
-| `headingIds()` | Retorna los IDs de headings extraídos del markdown parseado |
-
-```js
-const md = document.getElementById('miMarkdown');
-console.log(md.headingIds()); // ['titulo', 'subtitulo', ...]
-```
+---
 
 ## Notas
 
@@ -80,3 +64,4 @@ console.log(md.headingIds()); // ['titulo', 'subtitulo', ...]
 - Los code blocks usan `<cu-code-block>` con resaltado de sintaxis.
 - El HTML se sanitiza con DOMPurify antes de renderizar.
 - Los tokens CSS se inyectan automáticamente en el shadow DOM.
+- **El wrapper CE actual no re-emite `parsed` ni expone `headingIds()`**: esos eventos/métodos existen en el `.vue` interno pero no atraviesan el `.ce.vue`. Ver `docs/notes/06-cu-markdown-api.md`.

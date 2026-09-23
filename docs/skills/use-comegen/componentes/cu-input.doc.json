@@ -1,0 +1,50 @@
+{
+  "props": {
+    "theme": "Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite)",
+    "modelValue": "Valor controlado",
+    "startValue": "Valor inicial usado por `.reset()`",
+    "color": "Color semántico: `primary`, `neutral`, `success`, `warning`, `danger`",
+    "variant": "`outlined`, `soft`, `ghost`, `subtle`",
+    "type": "`text`, `password`, `email`, `number`, `tel`, `url`, `search`",
+    "placeholder": "Placeholder del input",
+    "disabled": "Estado deshabilitado",
+    "readOnly": "Solo lectura (en HTML se usa como `readonly`)"
+  },
+  "events": {
+    "update:modelValue": {
+      "type": "string",
+      "description": "Se emite en cada cambio de valor (mientras el usuario escribe)"
+    }
+  },
+  "slots": {},
+  "exposes": {
+    "get": "Devuelve el valor actual (`string`)",
+    "set": "Asigna un valor",
+    "reset": "Vuelve al `startValue` (o `\"\"` si no se definió)",
+    "focus": "Enfoca el input"
+  },
+  "notes": {
+    "props": "> **Atributos en HTML:** `readOnly` se escribe como `readonly` (convención HTML). Ej.: `<cu-input readonly>`",
+    "events": "> Los eventos nativos del DOM (`input`, `change`, `focus`, `blur`) **burbujean automáticamente** al host desde el Shadow DOM. Podés escucharlos con `addEventListener`, pero no se re-emiten como eventos custom (no hay `input`/`change` propios en el Custom Element).",
+    "slots": "Ninguno."
+  },
+  "sections": [
+    {
+      "title": "Uso en HTML plano",
+      "body": "```html\n<script src=\"dist/CuInput.umd.js\"></script>\n\n<cu-input placeholder=\"Nombre\" color=\"primary\" variant=\"outlined\"></cu-input>\n<cu-input type=\"email\" placeholder=\"correo@ejemplo.com\" variant=\"soft\" id=\"email\"></cu-input>\n<cu-input type=\"number\" disabled value=\"42\"></cu-input>\n\n<script>\n  const input = document.getElementById('email');\n  input.set('usuario@dominio.com');\n  console.log(input.get());\n  input.focus();\n</script>\n```"
+    },
+    {
+      "title": "Escuchar cambios",
+      "body": "```html\n<cu-input id=\"nombre\" placeholder=\"Tu nombre\"></cu-input>\n\n<script>\n  document.getElementById('nombre').addEventListener('update:modelValue', (e) => {\n    console.log('Valor actual:', e.detail);\n  });\n</script>\n```"
+    },
+    {
+      "title": "Reset",
+      "body": "```html\n<cu-input id=\"campo\" start-value=\"Texto inicial\" value=\"Texto inicial\"></cu-input>\n\n<button onclick=\"document.getElementById('campo').reset()\">Resetear</button>\n```"
+    },
+    {
+      "title": "Tipos soportados",
+      "body": "```html\n<cu-input type=\"text\" placeholder=\"Texto\"></cu-input>\n<cu-input type=\"password\" placeholder=\"Contraseña\"></cu-input>\n<cu-input type=\"email\" placeholder=\"correo@ejemplo.com\"></cu-input>\n<cu-input type=\"number\" placeholder=\"0\"></cu-input>\n<cu-input type=\"tel\" placeholder=\"+54 11 1234-5678\"></cu-input>\n<cu-input type=\"url\" placeholder=\"https://...\"></cu-input>\n<cu-input type=\"search\" placeholder=\"Buscar...\"></cu-input>\n```"
+    }
+  ],
+  "intro": "Input de texto con color, variante, tipos de input HTML5 y métodos `get`/`set`/`reset`."
+}

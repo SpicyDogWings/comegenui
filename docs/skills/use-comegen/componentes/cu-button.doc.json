@@ -1,0 +1,53 @@
+{
+  "props": {
+    "color": "Color semántico: `primary`, `neutral`, `success`, `warning`, `danger`",
+    "variant": "`solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none`",
+    "size": "Tamaño: `sm`, `md`, `lg`",
+    "type": "Tipo del `<button>`: `button`, `submit`, `reset`",
+    "disabled": "Estado deshabilitado",
+    "loading": "Muestra un spinner en lugar del contenido. Deshabilita el botón mientras está activo",
+    "to": "Si se especifica, el botón se renderiza como `<a>`",
+    "target": "Target del link cuando `to` está definido: `_self`, `_blank`, `_parent`, `_top`"
+  },
+  "events": {
+    "loading-change": {
+      "type": "boolean",
+      "description": "Se emite cuando `loading` pasa a `true` o `false` (también al setear `el.loading = true` por propiedad)"
+    }
+  },
+  "slots": {
+    "default": "Contenido del botón (label y/o íconos SVG inline)"
+  },
+  "exposes": {},
+  "notes": {
+    "events": "Los eventos nativos del DOM (`click`, `focus`, `blur`, `mouseenter`, etc.) burbujean automáticamente al host:\n\n```js\nboton.addEventListener('click', (e) => {\n  // e.detail es undefined; usá e.target normalmente\n});\n```\n\nAdemás emite un evento propio cuando cambia el estado `loading`:\n\n```js\nboton.addEventListener('loading-change', (e) => {\n  console.log('loading:', e.detail) // true | false\n});\n```",
+    "exposes": "No expone métodos."
+  },
+  "sections": [
+    {
+      "title": "Uso en HTML plano",
+      "body": "```html\n<script src=\"dist/CuButton.umd.js\"></script>\n\n<cu-button color=\"primary\" variant=\"solid\">Guardar</cu-button>\n<cu-button color=\"danger\" variant=\"outlined\" disabled>Eliminar</cu-button>\n<cu-button color=\"success\" variant=\"soft\">\n  <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" style=\"vertical-align:middle;margin-right:6px\">\n    <path d=\"M20 6 9 17l-5-5\"/>\n  </svg>\n  Aceptar\n</cu-button>\n<cu-button to=\"/inicio\" variant=\"link\">Volver al inicio</cu-button>\n<cu-button to=\"https://ejemplo.com\" target=\"_blank\" variant=\"link\">Sitio externo</cu-button>\n```"
+    },
+    {
+      "title": "Variantes",
+      "body": "```html\n<cu-button color=\"primary\" variant=\"solid\">solid</cu-button>\n<cu-button color=\"primary\" variant=\"outlined\">outlined</cu-button>\n<cu-button color=\"primary\" variant=\"soft\">soft</cu-button>\n<cu-button color=\"primary\" variant=\"ghost\">ghost</cu-button>\n<cu-button color=\"primary\" variant=\"subtle\">subtle</cu-button>\n<cu-button color=\"primary\" variant=\"link\">link</cu-button>\n```"
+    },
+    {
+      "title": "Tamaños",
+      "body": "```html\n<cu-button size=\"sm\">Chico</cu-button>\n<cu-button size=\"md\">Medio (default)</cu-button>\n<cu-button size=\"lg\">Grande</cu-button>\n```\n\n> En la variante `link` el padding queda fijo en 0 (el `size` no lo pisa)."
+    },
+    {
+      "title": "Estado de carga",
+      "body": "Con `loading` el botón muestra un spinner animado y queda deshabilitado hasta que se apague:\n\n```html\n<cu-button color=\"primary\" variant=\"solid\" loading id=\"guardar\">Guardar</cu-button>\n\n<script>\n  const btn = document.getElementById('guardar');\n  btn.addEventListener('click', async () => {\n    btn.loading = true;\n    await fetch('/api/guardar', { method: 'POST' });\n    btn.loading = false;\n  });\n</script>\n```"
+    },
+    {
+      "title": "Tipo submit/reset",
+      "body": "Usá `type` cuando el botón viva dentro de un `<form>`:\n\n```html\n<form>\n  <cu-button type=\"submit\" color=\"primary\" variant=\"solid\">Enviar</cu-button>\n  <cu-button type=\"reset\" variant=\"ghost\">Limpiar</cu-button>\n</form>\n```"
+    },
+    {
+      "title": "Escuchar clicks",
+      "body": "```html\n<cu-button color=\"primary\" variant=\"solid\" id=\"miBoton\">\n  Haz clic\n</cu-button>\n\n<script>\n  document.getElementById('miBoton').addEventListener('click', () => {\n    alert('¡Click!');\n  });\n</script>\n```"
+    }
+  ],
+  "intro": "Botón con soporte de color, variante, link y estados. Si se define `to`, se renderiza como un `<a>` en vez de un `<button>`."
+}

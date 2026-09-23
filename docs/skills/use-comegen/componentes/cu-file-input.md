@@ -9,23 +9,23 @@ Input de archivo compacto con drag & drop, estilo idéntico a `<cu-input>`. Sing
 ## Props
 
 | Prop | Tipo | Default | Descripción |
-|------|------|---------|-------------|
-| `modelValue` | `File \| null` | `null` | Archivo seleccionado (vía JS, no HTML) |
-| `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+|------|------|------|------|
+| `modelValue` | `File \| null` | — | Archivo seleccionado (vía JS, no HTML) |
+| `color` | `primary \| secondary \| neutral \| success \| warning \| danger` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `variant` | `string` | `"outlined"` | `outlined`, `soft`, `ghost`, `subtle` |
 | `placeholder` | `string` | `"Seleccionar archivo"` | Texto cuando no hay archivo |
-| `disabled` | `boolean` | `false` | Deshabilita click, drag y drop |
-| `readOnly` | `boolean` | `false` | Modo solo lectura |
-| `accept` | `string` | — | Tipos aceptados (ej: `"image/*"`, `".pdf,.doc"`) |
-| `maxSize` | `number` | — | Tamaño máximo en bytes |
+| `disabled` | — | — | Deshabilita click, drag y drop |
+| `readOnly` | — | — | Modo solo lectura |
+| `accept` | — | — | Tipos aceptados (ej: `"image/*"`, `".pdf,.doc"`) |
+| `maxSize` | — | — | Tamaño máximo en bytes |
 
 > **Atributos en HTML:** `readOnly` se escribe como `readonly`, `maxSize` como `max-size`.
 
 ## Eventos
 
 | Evento | Payload (`e.detail`) | Descripción |
-|--------|----------------------|-------------|
-| `update:modelValue` | `File \| null` | Se emite al seleccionar, soltar o limpiar un archivo |
+|------|------|------|
+| `update:modelValue` | `null` | Se emite al seleccionar, soltar o limpiar un archivo |
 
 ## Slots
 
@@ -34,9 +34,9 @@ Ninguno.
 ## Métodos expuestos
 
 | Método | Descripción |
-|--------|-------------|
+|------|------|
 | `.get()` | Devuelve el `File` actual o `null` |
-| `.set(file)` | Asigna un archivo programáticamente |
+| `.set()` | Asigna un archivo programáticamente |
 | `.reset()` | Limpia la selección |
 | `.focus()` | Enfoca el input |
 | `.trigger()` | Abre el diálogo nativo de selección de archivos |
@@ -62,9 +62,13 @@ Ninguno.
 </script>
 ```
 
+---
+
 ## Drag & drop
 
 Soporta arrastrar un solo archivo sobre el componente. Durante el drag se ilumina el borde y fondo. Los directorios se descartan automáticamente (`size === 0 && !type`).
+
+---
 
 ## Notas
 

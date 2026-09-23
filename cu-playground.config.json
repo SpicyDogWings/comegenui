@@ -3,6 +3,7 @@
   "storiesDir": "src/stories",
   "playgroundDir": "src/playground",
   "libDir": "src/lib",
+  "docsDir": "docs/skills/use-comegen",
   "vanilla": true,
   "base": "/playground/components",
   "pages": false,

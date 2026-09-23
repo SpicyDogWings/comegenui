@@ -15,6 +15,7 @@ Los archivos son notas internas — **no** se exponen a usuarios finales de la l
 | [03](./03-table-ce-passthrough.md) | Interface `Column` del `<cu-table>` no incluye los campos extendidos que `AdvancedTable.vue` sí procesa | Info | Ya documentado en `componentes/cu-table.md` (sección "Campos extendidos") |
 | [04](./04-eventos-no-reemitidos.md) | Eventos nativos del DOM burbujean por Shadow DOM pero el `.ce.vue` no los re-emite como eventos custom | Info | Ya documentado en `SKILL.md` (sección "Notas técnicas") |
 | [05](./05-wrappers-ce-incompletos.md) | `cu-avatar` no forwardea `src`; `cu-command-palette` sin prop `commands` ni métodos expuestos | Media/Alta | Forwardear `src` y exponer `commands` + `defineExpose` en los wrappers |
+| [06](./06-cu-markdown-api.md) | `cu-markdown` documentaba `parsed` y `headingIds()` que el `.ce.vue` no re-emite ni expone | Media | Agregar `ceEmit('parsed')` + `defineExpose({ headingIds })` o dejar la ficha sin ellos |
 
 ---
 

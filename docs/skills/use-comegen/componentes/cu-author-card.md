@@ -9,8 +9,8 @@ Tarjeta de autor con avatar (imagen o iniciales generadas del nombre), nombre y 
 ## Props
 
 | Prop | Tipo | Default | Descripción |
-|------|------|---------|-------------|
-| `name` | `string` | **requerido** | Nombre del autor. Genera las iniciales automáticamente (primeras letras del primero y último nombre) |
+|------|------|------|------|
+| `name` | `string` | — | Nombre del autor. Genera las iniciales automáticamente (primeras letras del primero y último nombre) |
 | `role` | `string` | `""` | Rol o cargo que se muestra bajo el nombre (se oculta si está vacío) |
 | `color` | `string` | `""` | Color semántico del avatar: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger`. Si se omite, se elige por hash de las iniciales |
 | `size` | `string` | `"md"` | Tamaño del avatar: `sm`, `md`, `lg` |
@@ -24,7 +24,7 @@ Ninguno.
 
 Ninguno.
 
-## Métodos
+## Métodos expuestos
 
 Ninguno.
 
@@ -38,6 +38,8 @@ Ninguno.
 <cu-author-card name="Ana Pérez" role="Desarrolladora" color="primary"></cu-author-card>
 <cu-author-card name="Marcos Ruiz" color="success" size="lg"></cu-author-card>
 ```
+
+---
 
 ## Con imagen
 

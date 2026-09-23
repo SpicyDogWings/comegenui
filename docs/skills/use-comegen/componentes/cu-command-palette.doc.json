@@ -1,0 +1,31 @@
+{
+  "props": {
+    "color": "Color semántico del modal: `primary`, `neutral`, `success`, `warning`, `danger`",
+    "title": "Título del modal",
+    "placeholder": "Placeholder del input de búsqueda",
+    "size": "Ancho del modal: `auto`, `sm`, `md`, `lg`, `xl`, `full`",
+    "height": "Alto del modal: `auto`, `sm`, `md`, `lg`, `xl`, `full`"
+  },
+  "events": {
+    "select": {
+      "type": "CommandItem",
+      "description": "Se seleccionó un comando (por click o `Enter`)"
+    },
+    "close": {
+      "description": "Se cerró el modal"
+    }
+  },
+  "slots": {},
+  "exposes": {},
+  "notes": {
+    "slots": "Ninguno.",
+    "exposes": "Ninguno (el wrapper CE no llama a `defineExpose`)."
+  },
+  "sections": [
+    {
+      "title": "Uso en HTML plano",
+      "body": "```html\n<script src=\"dist/CuCommandPalette.umd.js\"></script>\n\n<cu-command-palette id=\"palette\" title=\"Comandos\" color=\"primary\"></cu-command-palette>\n```\n\n> El componente requiere la prop `commands` para mostrar resultados, pero el wrapper CE todavía no la expone (ver nota al inicio). Mientras tanto, la paleta solo abre como modal vacío."
+    }
+  ],
+  "intro": "Paleta de comandos (búsqueda + lista) en un modal, con agrupado por categoría y selección por teclado o click.\n\n> **Nota:** el wrapper CE actual no expone la prop `commands` ni métodos (`open`/`close`) — sin `commands` el componente no tiene datos. Ver `docs/notes/05-wrappers-ce-incompletos.md`. La API pública documentada acá es la que el `.ce.vue` expone hoy."
+}

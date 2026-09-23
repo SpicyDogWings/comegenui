@@ -1,0 +1,28 @@
+{
+  "props": {
+    "name": "Nombre del autor. Genera las iniciales automáticamente (primeras letras del primero y último nombre)",
+    "role": "Rol o cargo que se muestra bajo el nombre (se oculta si está vacío)",
+    "color": "Color semántico del avatar: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger`. Si se omite, se elige por hash de las iniciales",
+    "size": "Tamaño del avatar: `sm`, `md`, `lg`",
+    "src": "URL de la imagen del avatar (reemplaza las iniciales)"
+  },
+  "events": {},
+  "slots": {},
+  "exposes": {},
+  "notes": {
+    "events": "Ninguno.",
+    "slots": "Ninguno.",
+    "exposes": "Ninguno."
+  },
+  "sections": [
+    {
+      "title": "Uso en HTML plano",
+      "body": "```html\n<script src=\"dist/CuAuthorCard.umd.js\"></script>\n\n<cu-author-card name=\"Ana Pérez\" role=\"Desarrolladora\" color=\"primary\"></cu-author-card>\n<cu-author-card name=\"Marcos Ruiz\" color=\"success\" size=\"lg\"></cu-author-card>\n```"
+    },
+    {
+      "title": "Con imagen",
+      "body": "```html\n<cu-author-card\n  name=\"Laura Gómez\"\n  role=\"Diseñadora\"\n  src=\"https://example.com/avatar.jpg\"\n></cu-author-card>\n```"
+    }
+  ],
+  "intro": "Tarjeta de autor con avatar (imagen o iniciales generadas del nombre), nombre y rol. Componente de presentación: no emite eventos ni expone métodos."
+}

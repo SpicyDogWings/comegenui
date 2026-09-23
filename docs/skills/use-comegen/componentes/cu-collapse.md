@@ -9,29 +9,29 @@ Sección colapsable con trigger (botón + chevron animado). El contenido se mues
 ## Props
 
 | Prop | Tipo | Default | Descripción |
-|------|------|---------|-------------|
-| `label` | `string` | *(requerido)* | Texto del trigger |
-| `default-open` | `boolean` | `false` | Si es `true`, el contenido arranca visible |
-| `color` | `string` | `"neutral"` | Color semántico del trigger: `primary`, `neutral`, `success`, `warning`, `danger` |
+|------|------|------|------|
+| `label` | `string` | — | Texto del trigger |
+| `defaultOpen` | `boolean` | `false` |  |
+| `color` | `primary \| secondary \| neutral \| success \| warning \| danger` | `"neutral"` | Color semántico del trigger: `primary`, `neutral`, `success`, `warning`, `danger` |
 
 > El Custom Element **no expone** prop `variant` ni `theme`. El trigger siempre usa la variante `ghost` y el color se controla con `color`.
 
 ## Eventos
 
 | Evento | Payload (`e.detail`) | Descripción |
-|--------|----------------------|-------------|
+|------|------|------|
 | `toggle` | `boolean` | Se emite al cambiar el estado abierto/cerrado. El payload es el nuevo estado (`true` = abierto) |
 
 ## Slots
 
 | Slot | Descripción |
-|------|-------------|
+|------|------|
 | `default` | Contenido colapsable |
 
 ## Métodos expuestos
 
 | Método | Descripción |
-|--------|-------------|
+|------|------|
 | `.open()` | Abre el collapse |
 | `.close()` | Cierra el collapse |
 | `.toggle()` | Alterna el estado |
@@ -49,6 +49,8 @@ Sección colapsable con trigger (botón + chevron animado). El contenido se mues
 </cu-collapse>
 ```
 
+---
+
 ## Abierto por defecto
 
 ```html
@@ -56,6 +58,8 @@ Sección colapsable con trigger (botón + chevron animado). El contenido se mues
   <p>Visible desde el inicio gracias a <code>default-open</code>.</p>
 </cu-collapse>
 ```
+
+---
 
 ## Colores
 
@@ -65,6 +69,8 @@ Sección colapsable con trigger (botón + chevron animado). El contenido se mues
 <cu-collapse label="Advertencia" color="warning">...</cu-collapse>
 <cu-collapse label="Peligro" color="danger">...</cu-collapse>
 ```
+
+---
 
 ## Anidados
 
@@ -79,6 +85,8 @@ Los collapses se pueden anidar para construir árboles de menú:
 </cu-collapse>
 ```
 
+---
+
 ## Escuchar eventos
 
 ```js
@@ -88,6 +96,8 @@ collapse.addEventListener('toggle', (e) => {
   console.log('abierto:', e.detail); // true | false
 });
 ```
+
+---
 
 ## Control programático
 
@@ -104,6 +114,8 @@ collapse.addEventListener('toggle', (e) => {
   c.isOpen(); // boolean
 </script>
 ```
+
+---
 
 ## Ejemplo completo
 

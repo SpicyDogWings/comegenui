@@ -9,7 +9,7 @@ Input de texto con color, variante, tipos de input HTML5 y métodos `get`/`set`/
 ## Props
 
 | Prop | Tipo | Default | Descripción |
-|------|------|---------|-------------|
+|------|------|------|------|
 | `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
 | `modelValue` | `string` | `""` | Valor controlado |
 | `startValue` | `string` | — | Valor inicial usado por `.reset()` |
@@ -25,7 +25,7 @@ Input de texto con color, variante, tipos de input HTML5 y métodos `get`/`set`/
 ## Eventos
 
 | Evento | Payload (`e.detail`) | Descripción |
-|--------|----------------------|-------------|
+|------|------|------|
 | `update:modelValue` | `string` | Se emite en cada cambio de valor (mientras el usuario escribe) |
 
 > Los eventos nativos del DOM (`input`, `change`, `focus`, `blur`) **burbujean automáticamente** al host desde el Shadow DOM. Podés escucharlos con `addEventListener`, pero no se re-emiten como eventos custom (no hay `input`/`change` propios en el Custom Element).
@@ -37,7 +37,7 @@ Ninguno.
 ## Métodos expuestos
 
 | Método | Descripción |
-|--------|-------------|
+|------|------|
 | `.get()` | Devuelve el valor actual (`string`) |
 | `.set(value)` | Asigna un valor |
 | `.reset()` | Vuelve al `startValue` (o `""` si no se definió) |
@@ -62,6 +62,8 @@ Ninguno.
 </script>
 ```
 
+---
+
 ## Escuchar cambios
 
 ```html
@@ -74,6 +76,8 @@ Ninguno.
 </script>
 ```
 
+---
+
 ## Reset
 
 ```html
@@ -81,6 +85,8 @@ Ninguno.
 
 <button onclick="document.getElementById('campo').reset()">Resetear</button>
 ```
+
+---
 
 ## Tipos soportados
 

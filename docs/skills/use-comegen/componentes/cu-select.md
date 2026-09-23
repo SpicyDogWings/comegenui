@@ -9,25 +9,25 @@ Selector de opciones con color, variante, ícono chevron, opciones deshabilitada
 ## Props
 
 | Prop | Tipo | Default | Descripción |
-|------|------|---------|-------------|
+|------|------|------|------|
 | `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
 | `modelValue` | `string` | `""` | Valor seleccionado |
-| `options` | `array` | `[]` | Opciones del select (ver abajo). Se asigna como propiedad JS |
+| `options` | `SelectOption[]` | `[]` | Opciones del select (ver abajo). Se asigna como propiedad JS |
 | `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `variant` | `string` | `"soft"` | `outlined`, `soft`, `ghost`, `subtle` |
 | `placeholder` | `string` | — | Texto mostrado cuando no hay selección |
 | `placeholderWrap` | `boolean` | `false` | Si `true`, el texto wrappea; si `false`, se trunca con `...` (atributo HTML: `placeholder-wrap`) |
 | `position` | `string` | `"bottom"` | Posición del dropdown: `bottom`, `top` |
 | `align` | `string` | `"start"` | Alineación: `start`, `center`, `end` |
-| `textAlign` | `string` | `"left"` | Alineación del texto seleccionado: `left`, `center`, `right` |
-| `fixed` | `boolean` | `false` | Si es `true`, el dropdown usa `position: fixed` en vez de absoluto |
+| `textAlign` | `left \| center \| right` | `"left"` | Alineación del texto seleccionado: `left`, `center`, `right` |
 | `disabled` | `boolean` | `false` | Estado deshabilitado |
+| `fixed` | `boolean` | `false` | Si es `true`, el dropdown usa `position: fixed` en vez de absoluto |
 | `hightContrast` | `boolean` | `false` | Modo de alto contraste para el texto |
 | `searchEnabled` | `boolean` | `false` | Activa búsqueda por teclado (estilo select nativo: escribir hace scroll al match) |
 | `searchMode` | `string` | `"startsWith"` | Modo de coincidencia: `startsWith` (solo al inicio del label) o `includes` (en cualquier parte) |
 | `searchResetDelay` | `number` | `1000` | Tiempo (ms) antes de resetear el texto de búsqueda. Se reinicia con cada tecla |
 | `loading` | `boolean` | `false` | Muestra una barra de progreso animada en el dropdown |
-| `cooldownVariant` | `string` | `"ghost"` | Estilo de la barra de cooldown: `ghost` (suave) o `solid` (color lleno). No se muestra si `loading` está activo |
+| `cooldownVariant` | `string` | `"ghost-hover"` | Estilo de la barra de cooldown: `ghost` (suave) o `solid` (color lleno). No se muestra si `loading` está activo |
 
 ### Opciones (`options`)
 
@@ -46,7 +46,7 @@ Cada opción del array `options` puede tener:
 ## Eventos
 
 | Evento | Payload (`e.detail`) | Descripción |
-|--------|----------------------|-------------|
+|------|------|------|
 | `update:modelValue` | `string` | Se emite cuando cambia el valor seleccionado |
 | `select` | `{ value, label }` | Se emite al elegir una opción |
 | `close` | — | Se emite cuando se cierra el dropdown |
@@ -59,9 +59,9 @@ Ninguno.
 ## Métodos expuestos
 
 | Método | Descripción |
-|--------|-------------|
+|------|------|
 | `.get()` | Devuelve el valor seleccionado |
-| `.set(value)` | Asigna un valor (debe existir en `options`) |
+| `.set(val)` | Asigna un valor (debe existir en `options`) |
 | `.reset()` | Limpia la selección |
 | `.focus()` | Enfoca el select |
 | `.isOpen()` | Estado del dropdown (`boolean`) |
@@ -88,6 +88,8 @@ Ninguno.
 </script>
 ```
 
+---
+
 ## Opciones deshabilitadas
 
 ```html
@@ -106,6 +108,8 @@ Ninguno.
 
 Las opciones con `disabled: true` se ven atenuadas y no responden al click.
 
+---
+
 ## Opciones con color y variante individual
 
 ```html
@@ -122,6 +126,8 @@ Las opciones con `disabled: true` se ven atenuadas y no responden al click.
 ```
 
 Si una opción no especifica `color` ni `variant`, hereda los valores del `<cu-select>`.
+
+---
 
 ## Escuchar cambios
 
@@ -144,6 +150,8 @@ Si una opción no especifica `color` ni `variant`, hereda los valores del `<cu-s
   });
 </script>
 ```
+
+---
 
 ## Búsqueda por teclado (searchEnabled)
 
@@ -172,6 +180,8 @@ Cuando `searchEnabled` es `true`, el select acepta entrada por teclado (como un 
 - Backspace borra el último carácter
 - Escape y Tab no afectan la búsqueda
 
+---
+
 ## Estado de carga (loading)
 
 Cuando `loading` es `true`, se muestra una barra animada en el tope del dropdown y el panel se atenúa (sin interacción):
@@ -188,6 +198,8 @@ select.loading = false;  // ocultar
 ```
 
 **Nota:** Si `loading` está activo, la barra de cooldown (del `searchEnabled`) **no se muestra**.
+
+---
 
 ## Barra de cooldown
 
@@ -209,6 +221,8 @@ Mientras el usuario escribe (con `searchEnabled`), aparece una barra de cooldown
 | `ghost` (default) | Color suave (`--cu-color-{color}-ghost-hover`) |
 | `solid` | Color lleno (`--cu-color-{color}`) |
 
+---
+
 ## Control programático
 
 ```html
@@ -229,6 +243,8 @@ Mientras el usuario escribe (con `searchEnabled`), aparece una barra de cooldown
   s.focus();              // foco
 </script>
 ```
+
+---
 
 ## Posicionamiento
 

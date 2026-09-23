@@ -9,7 +9,7 @@ Paginación numérica con soporte para selector de tamaño de página y botones 
 ## Props
 
 | Prop | Tipo | Default | Descripción |
-|------|------|---------|-------------|
+|------|------|------|------|
 | `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
 | `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `variant` | `string` | `"soft"` | `outlined`, `soft`, `ghost`, `subtle`, `none` |
@@ -18,7 +18,7 @@ Paginación numérica con soporte para selector de tamaño de página y botones 
 | `totalItems` | `number` | `0` | Total de items, útil para mostrar "X–Y de Z" (atributo HTML: `total-items`) |
 | `itemsPerPage` | `number` | `10` | Items por página (atributo HTML: `items-per-page`) |
 | `showPageSize` | `boolean` | `false` | Muestra el selector de tamaño de página (atributo HTML: `show-page-size`) |
-| `pageSizeOptions` | `array` | `[5, 10, 20, 50]` | Opciones del selector (atributo HTML: `page-size-options`) |
+| `pageSizeOptions` | `number[]` | `[5, 10, 20, 50]` | Opciones del selector (atributo HTML: `page-size-options`) |
 | `showFirstAndLast` | `boolean` | `false` | Muestra botones "primera" y "última" página (atributo HTML: `show-first-and-last`) |
 | `hightContrast` | `boolean` | `false` | Modo de alto contraste |
 
@@ -29,7 +29,7 @@ Paginación numérica con soporte para selector de tamaño de página y botones 
 ## Eventos
 
 | Evento | Payload (`e.detail`) | Descripción |
-|--------|----------------------|-------------|
+|------|------|------|
 | `update:currentPage` | `number` | Se emite cuando cambia la página actual |
 | `update:itemsPerPage` | `number` | Se emite cuando cambia el tamaño de página |
 
@@ -39,7 +39,7 @@ Paginación numérica con soporte para selector de tamaño de página y botones 
 
 Ninguno.
 
-## Métodos
+## Métodos expuestos
 
 No expone métodos. El control se hace via props y eventos.
 
@@ -74,6 +74,8 @@ No expone métodos. El control se hace via props y eventos.
 </script>
 ```
 
+---
+
 ## Ejemplo con todos los controles
 
 ```html
@@ -88,6 +90,8 @@ No expone métodos. El control se hace via props y eventos.
   variant="outlined"
 ></cu-pagination>
 ```
+
+---
 
 ## Atributos booleanos en HTML
 

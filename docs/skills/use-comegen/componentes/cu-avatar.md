@@ -9,7 +9,7 @@ Avatar circular (imagen o iniciales) con color semántico y tres tamaños. Si no
 ## Props
 
 | Prop | Tipo | Default | Descripción |
-|------|------|---------|-------------|
+|------|------|------|------|
 | `color` | `string` | `""` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger`. Si se omite, se elige por hash de las iniciales |
 | `size` | `string` | `"md"` | Tamaño: `sm`, `md`, `lg` |
 | `initials` | `string` | `""` | Texto que se muestra como iniciales cuando no hay `src` |
@@ -23,7 +23,7 @@ Ninguno.
 
 Ninguno (el wrapper CE no forwardea slots).
 
-## Métodos
+## Métodos expuestos
 
 Ninguno.
 
@@ -38,6 +38,8 @@ Ninguno.
 <cu-avatar initials="MR" color="success" size="lg"></cu-avatar>
 <cu-avatar initials="CD" size="sm"></cu-avatar>
 ```
+
+---
 
 ## Tamaños
 

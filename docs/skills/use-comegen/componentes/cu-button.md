@@ -9,23 +9,21 @@ Botón con soporte de color, variante, link y estados. Si se define `to`, se ren
 ## Props
 
 | Prop | Tipo | Default | Descripción |
-|------|------|---------|-------------|
-| `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `string` | `"ghost"` | `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` |
-| `size` | `string` | `"md"` | Tamaño: `sm`, `md`, `lg` |
-| `type` | `string` | `"button"` | Tipo del `<button>`: `button`, `submit`, `reset` |
+|------|------|------|------|
+| `color` | `primary \| secondary \| neutral \| success \| warning \| danger` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `variant` | `solid \| outlined \| soft \| ghost \| subtle \| link \| none` | `"ghost"` | `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` |
+| `size` | `sm \| md \| lg` | `"md"` | Tamaño: `sm`, `md`, `lg` |
+| `to` | `string` | — | Si se especifica, el botón se renderiza como `<a>` |
+| `target` | `_self \| _blank \| _parent \| _top` | `"_self"` | Target del link cuando `to` está definido: `_self`, `_blank`, `_parent`, `_top` |
+| `type` | `button \| submit \| reset` | `"button"` | Tipo del `<button>`: `button`, `submit`, `reset` |
 | `disabled` | `boolean` | `false` | Estado deshabilitado |
 | `loading` | `boolean` | `false` | Muestra un spinner en lugar del contenido. Deshabilita el botón mientras está activo |
-| `to` | `string` | — | Si se especifica, el botón se renderiza como `<a>` |
-| `target` | `string` | `"_self"` | Target del link cuando `to` está definido: `_self`, `_blank`, `_parent`, `_top` |
-
-## Slots
-
-| Slot | Descripción |
-|------|-------------|
-| `default` | Contenido del botón (label y/o íconos SVG inline) |
 
 ## Eventos
+
+| Evento | Payload (`e.detail`) | Descripción |
+|------|------|------|
+| `loading-change` | `boolean` | Se emite cuando `loading` pasa a `true` o `false` (también al setear `el.loading = true` por propiedad) |
 
 Los eventos nativos del DOM (`click`, `focus`, `blur`, `mouseenter`, etc.) burbujean automáticamente al host:
 
@@ -37,17 +35,19 @@ boton.addEventListener('click', (e) => {
 
 Además emite un evento propio cuando cambia el estado `loading`:
 
-| Evento | Detalle | Descripción |
-|--------|---------|-------------|
-| `loading-change` | `boolean` | Se emite cuando `loading` pasa a `true` o `false` (también al setear `el.loading = true` por propiedad) |
-
 ```js
 boton.addEventListener('loading-change', (e) => {
   console.log('loading:', e.detail) // true | false
 });
 ```
 
-## Métodos
+## Slots
+
+| Slot | Descripción |
+|------|------|
+| `default` | Contenido del botón (label y/o íconos SVG inline) |
+
+## Métodos expuestos
 
 No expone métodos.
 
@@ -70,6 +70,8 @@ No expone métodos.
 <cu-button to="https://ejemplo.com" target="_blank" variant="link">Sitio externo</cu-button>
 ```
 
+---
+
 ## Variantes
 
 ```html
@@ -81,6 +83,8 @@ No expone métodos.
 <cu-button color="primary" variant="link">link</cu-button>
 ```
 
+---
+
 ## Tamaños
 
 ```html
@@ -90,6 +94,8 @@ No expone métodos.
 ```
 
 > En la variante `link` el padding queda fijo en 0 (el `size` no lo pisa).
+
+---
 
 ## Estado de carga
 
@@ -108,6 +114,8 @@ Con `loading` el botón muestra un spinner animado y queda deshabilitado hasta q
 </script>
 ```
 
+---
+
 ## Tipo submit/reset
 
 Usá `type` cuando el botón viva dentro de un `<form>`:
@@ -118,6 +126,8 @@ Usá `type` cuando el botón viva dentro de un `<form>`:
   <cu-button type="reset" variant="ghost">Limpiar</cu-button>
 </form>
 ```
+
+---
 
 ## Escuchar clicks
 

@@ -9,26 +9,26 @@ Tabla avanzada con búsqueda, paginación, edición inline, ordenamiento, badges
 ## Props
 
 | Prop | Tipo | Default | Descripción |
-|------|------|---------|-------------|
+|------|------|------|------|
 | `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
-| `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `string` | `"soft"` | `solid`, `outlined`, `soft`, `ghost`, `subtle` |
-| `columns` | `array` | `[]` | Definición de columnas (ver [Interfaz de columna](#interfaz-de-columna)). Se asigna como propiedad JS |
-| `data` | `array` | `[]` | Filas de la tabla. Se asigna como propiedad JS |
+| `columns` | `Column[]` | `[]` | Definición de columnas (ver [Interfaz de columna](#interfaz-de-columna)). Se asigna como propiedad JS |
+| `data` | `Record<string, any>[]` | `[]` | Filas de la tabla. Se asigna como propiedad JS |
 | `empty` | `string` | `""` | Texto a mostrar cuando no hay datos. Si se omite, usa `"No hay datos que mostrar"` |
 | `pagination` | `boolean` | `false` | Habilita paginación interna |
 | `itemsPerPage` | `number` | `10` | Tamaño de página (atributo HTML: `items-per-page`) |
 | `showPageSize` | `boolean` | `false` | Muestra selector de items por página (atributo HTML: `show-page-size`) |
-| `pageSizeOptions` | `array` | `[5, 10, 20, 50]` | Opciones del selector (atributo HTML: `page-size-options`). Se asigna como propiedad JS |
+| `pageSizeOptions` | `number[]` | `[5, 10, 20, 50]` | Opciones del selector (atributo HTML: `page-size-options`). Se asigna como propiedad JS |
+| `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `variant` | `string` | `"soft"` | `solid`, `outlined`, `soft`, `ghost`, `subtle` |
 | `searchEnabled` | `boolean` | `false` | Habilita barra de búsqueda (atributo HTML: `search-enabled`) |
 | `searchPlaceholder` | `string` | `"Buscar..."` | Placeholder del input de búsqueda (atributo HTML: `search-placeholder`) |
-| `searchFields` | `array` | `[]` | Columnas donde buscar (atributo HTML: `search-fields`). Vacío = todas |
+| `searchFields` | `string[]` | `[]` | Columnas donde buscar (atributo HTML: `search-fields`). Vacío = todas |
 | `searchValue` | `string` | `""` | Valor controlado del buscador (atributo HTML: `search-value`) |
-| `filters` | `object` | `{}` | Filtros por columna. Se asigna como propiedad JS |
+| `filters` | `Record<string, any>` | — | Filtros por columna. Se asigna como propiedad JS |
 | `loading` | `boolean` | `false` | Muestra una barra de carga animada en el tope |
 | `actions` | `array` | `[]` | Acciones de fila (botón "..." al final de cada fila). Se asigna como propiedad JS |
-| `rowDisabled` | `boolean \| (row) => boolean` | `false` | Deshabilita filas (ver [Deshabilitar filas, columnas y celdas](#deshabilitar-filas-columnas-y-celdas)). Se asigna como propiedad JS |
-| `footer` | `array` | `[]` | Filas de footer (ver [Footer (API programática)](#footer-api-programática)). Se asigna como propiedad JS |
+| `rowDisabled` | `boolean \| ((row: Record<string, any>) => boolean)` | `false` | Deshabilita filas (ver [Deshabilitar filas, columnas y celdas](#deshabilitar-filas-columnas-y-celdas)). Se asigna como propiedad JS |
+| `footer` | `FooterRow[]` | `[]` | Filas de footer (ver [Footer (API programática)](#footer-api-programática)). Se asigna como propiedad JS |
 
 > **Pipeline interno:** `data → search → filters → sort → pagination`. El ordenamiento y la paginación operan sobre los datos ya filtrados.
 
@@ -37,6 +37,59 @@ Tabla avanzada con búsqueda, paginación, edición inline, ordenamiento, badges
 > <cu-table search-fields='["nombre","tipo"]'></cu-table>
 > ```
 > Equivalente por JS: `tabla.searchFields = ["nombre", "tipo"]`.
+
+## Eventos
+
+| Evento | Payload (`e.detail`) | Descripción |
+|------|------|------|
+| `update:currentPage` | `number` | Cambio de página (tras búsqueda, filtro, sort o click) |
+| `update:itemsPerPage` | `number` | Cambio del tamaño de página |
+| `update:search` | `string` | Cambio en la query de búsqueda |
+| `edit-start` | `{ row, column, index }` | Inicia edición de celda |
+| `edit-save` | `{ row, column, value, index }` | Celda editada y guardada. La tabla ya actualizó `row[key]` antes de emitir |
+| `edit-cancel` | `{ row, column, index }` | Edición cancelada |
+| `edit-error` | `{ row, column, value, index }` | Validación falló (regex o `validator`): el valor **no** se guarda y el editor se tiñe de rojo (`color: danger`) |
+
+> El Custom Element **no re-emite** los eventos `row-click`, `row-dblclick` ni `cell-click` (existen internamente pero no atraviesan el wrapper). Si necesitás reaccionar a clicks en filas, agregá un `ButtonConfig` o `BadgeConfig` a la columna correspondiente.
+
+## Slots
+
+| Slot | Descripción |
+|------|------|
+| `header` | Personaliza el header completo (todas las columnas) |
+| `empty` | Contenido cuando no hay datos (override del texto `empty`) |
+
+> **Importante:** Los slots `cell-{key}`, `search` y `footer` que aparecen en algunos ejemplos **no están expuestos** por el `<cu-table>` (el `.ce.vue` no los reenvía). Solo `header`, `header-{key}` y `empty`. Para footer en HTML plano, usá la [API programática](#footer-api-programática) (prop `footer` vía JS).
+
+### Ejemplo de slot header
+
+```html
+<cu-table id="miTabla">
+  <span slot="header-rol" style="color: var(--primary)">ROL</span>
+</cu-table>
+```
+
+### Ejemplo de slot empty
+
+```html
+<cu-table id="miTabla">
+  <div slot="empty" style="padding: 24px; text-align: center;">
+    <p>No hay datos para mostrar.</p>
+    <cu-button color="primary" variant="soft">Crear registro</cu-button>
+  </div>
+</cu-table>
+```
+
+## Métodos expuestos
+
+| Método | Descripción |
+|------|------|
+| `.updateRow(rowIndex, newData)` | Actualiza una fila por índice. Hace **merge** del objeto, no reemplazo total |
+| `.getData()` | Devuelve copia de todos los datos |
+| `.getRow(rowIndex)` | Devuelve copia de una fila |
+| `.removeRow(rowIndex)` | Elimina una fila por índice |
+| `.addRow(newRow)` | Agrega una fila al final |
+| `.pushData(newData)` | Agrega múltiples filas al final |
 
 ---
 
@@ -145,66 +198,6 @@ Como `columns` se pasa sin filtrar al `AdvancedTable.vue` interno, podés usar e
 | `width` | `string` | Ancho de la columna (CSS, ej. `"120px"`, `"20%"`) |
 | `align` | `"left" \| "center" \| "right"` | Alineación del contenido |
 | `sortable` | `boolean \| "string" \| "number" \| "boolean"` | Habilita ordenamiento. Ver [Ordenamiento](#ordenamiento) |
-
----
-
-## Eventos
-
-| Evento | Payload (`e.detail`) | Descripción |
-|--------|----------------------|-------------|
-| `update:currentPage` | `number` | Cambio de página (tras búsqueda, filtro, sort o click) |
-| `update:itemsPerPage` | `number` | Cambio del tamaño de página |
-| `update:search` | `string` | Cambio en la query de búsqueda |
-| `edit-start` | `{ row, column, index }` | Inicia edición de celda |
-| `edit-save` | `{ row, column, value, index }` | Celda editada y guardada. La tabla ya actualizó `row[key]` antes de emitir |
-| `edit-cancel` | `{ row, column, index }` | Edición cancelada |
-| `edit-error` | `{ row, column, value, index }` | Validación falló (regex o `validator`): el valor **no** se guarda y el editor se tiñe de rojo (`color: danger`) |
-
-> El Custom Element **no re-emite** los eventos `row-click`, `row-dblclick` ni `cell-click` (existen internamente pero no atraviesan el wrapper). Si necesitás reaccionar a clicks en filas, agregá un `ButtonConfig` o `BadgeConfig` a la columna correspondiente.
-
----
-
-## Slots
-
-| Slot | Bindings | Descripción |
-|------|----------|-------------|
-| `header` | `{ column, color, variant }` | Personaliza el header completo (todas las columnas) |
-| `header-{key}` | `{ column, color, variant }` | Header de una columna específica (key dinámico) |
-| `empty` | — | Contenido cuando no hay datos (override del texto `empty`) |
-
-> **Importante:** Los slots `cell-{key}`, `search` y `footer` que aparecen en algunos ejemplos **no están expuestos** por el `<cu-table>` (el `.ce.vue` no los reenvía). Solo `header`, `header-{key}` y `empty`. Para footer en HTML plano, usá la [API programática](#footer-api-programática) (prop `footer` vía JS).
-
-### Ejemplo de slot header
-
-```html
-<cu-table id="miTabla">
-  <span slot="header-rol" style="color: var(--primary)">ROL</span>
-</cu-table>
-```
-
-### Ejemplo de slot empty
-
-```html
-<cu-table id="miTabla">
-  <div slot="empty" style="padding: 24px; text-align: center;">
-    <p>No hay datos para mostrar.</p>
-    <cu-button color="primary" variant="soft">Crear registro</cu-button>
-  </div>
-</cu-table>
-```
-
----
-
-## Métodos expuestos
-
-| Método | Descripción |
-|--------|-------------|
-| `.updateRow(index, newData)` | Actualiza una fila por índice. Hace **merge** del objeto, no reemplazo total |
-| `.getData()` | Devuelve copia de todos los datos |
-| `.getRow(index)` | Devuelve copia de una fila |
-| `.removeRow(index)` | Elimina una fila por índice |
-| `.addRow(newRow)` | Agrega una fila al final |
-| `.pushData(items[])` | Agrega múltiples filas al final |
 
 ---
 
@@ -670,6 +663,8 @@ t.loading = true;   // mostrar
 // ...fetch...
 t.loading = false;  // ocultar
 ```
+
+---
 
 ## Footer (API programática)
 

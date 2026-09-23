@@ -1,0 +1,48 @@
+{
+  "props": {
+    "color": "Color semántico: `primary`, `neutral`, `success`, `warning`, `danger`",
+    "variant": "`solid`, `outlined`, `soft`, `ghost`, `subtle`",
+    "close": "Muestra el botón de cerrar (X)",
+    "title": "Título visible en la cabecera",
+    "show": "Controla visibilidad. Cambiar este atributo emite `update:show`"
+  },
+  "events": {
+    "close": {
+      "description": "Se emite cuando se cierra la alerta (vía botón X)"
+    },
+    "open": {
+      "description": "Se emite cuando la alerta pasa a mostrarse"
+    },
+    "update:show": {
+      "type": "boolean",
+      "description": "Se emite cuando cambia `show` (vía prop o interacción)"
+    }
+  },
+  "slots": {
+    "default": "Cuerpo principal de la alerta",
+    "icon": "Ícono junto al título (slot HTML nativo)"
+  },
+  "exposes": {
+    "open": "Muestra la alerta",
+    "close": "Oculta la alerta",
+    "toggle": "Alterna visibilidad",
+    "isOpen": "Devuelve `true`/`false` según la visibilidad actual"
+  },
+  "notes": {
+    "props": "> **Atributos booleanos:** en HTML se usan sin valor: `<cu-alert close show>...`",
+    "events": "> Los eventos custom se escuchan con `addEventListener` y el payload está en `e.detail`.",
+    "slots": "```html\n<cu-alert color=\"success\" title=\"Listo\">\n  <span slot=\"icon\">\n    <svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">\n      <path d=\"M20 6 9 17l-5-5\"/>\n    </svg>\n  </span>\n  Operación completada.\n</cu-alert>\n```",
+    "exposes": "El control también puede hacerse via el atributo `show` o escuchando los eventos `open`/`close`."
+  },
+  "sections": [
+    {
+      "title": "Uso en HTML plano",
+      "body": "```html\n<script src=\"dist/CuAlert.umd.js\"></script>\n\n<cu-alert color=\"success\" variant=\"solid\" title=\"Operación exitosa\" close>\n  Los datos se guardaron correctamente.\n</cu-alert>\n\n<cu-alert color=\"danger\" variant=\"outlined\" id=\"miAlerta\">\n  <span slot=\"icon\">\n    <svg><!-- icono --></svg>\n  </span>\n  Ha ocurrido un error.\n</cu-alert>\n\n<script>\n  const alerta = document.getElementById('miAlerta');\n  alerta.show = true;   // mostrar\n  alerta.show = false;  // ocultar\n\n  alerta.addEventListener('update:show', (e) => {\n    console.log('show es ahora:', e.detail);\n  });\n</script>\n```"
+    },
+    {
+      "title": "Ejemplo completo",
+      "body": "```html\n<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\" />\n  <title>Alerts Demo</title>\n</head>\n<body>\n  <button id=\"btnMostrar\">Mostrar alerta</button>\n  <button id=\"btnOcultar\">Ocultar alerta</button>\n\n  <cu-alert id=\"miAlerta\" color=\"warning\" title=\"Atención\" close show>\n    Este es un mensaje de advertencia.\n  </cu-alert>\n\n  <script src=\"dist/CuAlert.umd.js\"></script>\n  <script>\n    const alerta = document.getElementById('miAlerta');\n    document.getElementById('btnMostrar').onclick = () => alerta.show = true;\n    document.getElementById('btnOcultar').onclick = () => alerta.show = false;\n\n    alerta.addEventListener('close', () => console.log('Alerta cerrada'));\n  </script>\n</body>\n</html>\n```"
+    }
+  ],
+  "intro": "Alerta con color semántico, título opcional y botón de cerrar. Puede controlarse por atributo `show` o programáticamente."
+}

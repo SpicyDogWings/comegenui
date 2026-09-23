@@ -1,0 +1,95 @@
+{
+  "props": {
+    "modelValue": "Fecha seleccionada. Acepta `Date`, timestamp o `\"YYYY-MM-DD\"` (ver [Formato de fechas](#formato-de-fechas))",
+    "min": "Fecha mínima seleccionable (días anteriores quedan deshabilitados)",
+    "max": "Fecha máxima seleccionable",
+    "color": "Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger`",
+    "variant": "Variante del día seleccionado: `solid`, `outlined`, `soft`, `subtle` (sin `ghost`: se confunde con el día de hoy)",
+    "disabledWeekdays": "Días de la semana no seleccionables (`0`=domingo … `6`=sábado). En HTML plano: `disabled-weekdays=\"0,6\"`",
+    "disabledDates": "Fechas puntuales no seleccionables `\"YYYY-MM-DD\"`. En HTML plano: `disabled-dates=\"2026-08-15,2026-08-16\"`",
+    "disabled": "Deshabilita todo el calendario",
+    "locale": "Locale para nombres de mes y días de la semana",
+    "weekStart": "Día en que arranca la semana: `0` = domingo, `1` = lunes",
+    "yearNavigation": "Muestra botones `«`/`»` para saltar de año en el header",
+    "monthFormat": "Formato del mes en el header (tokens como MonthSlider)",
+    "yearFormat": "Formato del año en el header",
+    "events": "Eventos a señalar con puntos bajo la fecha (ver [Eventos](#eventos-puntos)). Se asigna como propiedad JS",
+    "rangeStart": "Inicio del rango (resalta los días entre inicio y fin). Se asigna como propiedad JS",
+    "rangeEnd": "Fin del rango. Se asigna como propiedad JS",
+    "grid": "Dibuja líneas **interiores** (cuadrícula) entre los días. En HTML plano: `<cu-calendar grid>`",
+    "border": "Dibuja el **marco exterior** alrededor de la cuadrícula de días. Combinable con `grid`"
+  },
+  "events": {
+    "update:modelValue": {
+      "type": "Date",
+      "description": "Cambio de la fecha seleccionada"
+    },
+    "change": {
+      "type": "Date",
+      "description": "Fecha seleccionada (alias de `update:modelValue`)"
+    },
+    "select": {
+      "type": "Date",
+      "description": "Click en un día válido"
+    }
+  },
+  "slots": {},
+  "exposes": {
+    "nextMonth": "Va al mes siguiente (respeta `max`)",
+    "prevMonth": "Va al mes anterior (respeta `min`)",
+    "goToMonth": "Navega al mes de la fecha dada",
+    "getValue": "null` con la fecha seleccionada",
+    "setValue": "Selecciona una fecha (acepta string/number/Date)"
+  },
+  "notes": {
+    "props": "> **API espejo de los sliders:** las fechas aceptan `Date`, timestamp numérico o string `\"YYYY-MM-DD\"`. En HTML plano los atributos llegan como string; `modelValue=\"2026-08-11\"` funciona directo.",
+    "events": "> Los tres emiten un objeto `Date` normalizado a medianoche local."
+  },
+  "sections": [
+    {
+      "title": "Formato de fechas",
+      "body": "Igual que `MonthSlider` / `YearSlider`: `\"\"`, valores inválidos (`NaN`) y entradas vacías se tratan como **sin fecha**. El string `\"YYYY-MM-DD\"` se parsea como **fecha local** (evita el desfase UTC).\n\n```js\n// Válidos\n'2026-08-11'   // fecha completa\n'2026-08'      // mes (se normaliza al día 1)\n2026           // ⚠️ número = timestamp (Date(2026) ≈ 1970), NO es un año\n```\n\n> A diferencia de los sliders (que ignoran el día), el calendario **conserva el día** de `modelValue`."
+    },
+    {
+      "title": "Uso básico",
+      "body": "```html\n<script src=\"dist/CuCalendar.umd.js\"></script>\n\n<cu-calendar id=\"miCalendario\" color=\"primary\"></cu-calendar>\n\n<script>\n  const cal = document.getElementById('miCalendario');\n\n  // Seleccionar una fecha (string \"YYYY-MM-DD\")\n  cal.modelValue = '2026-08-11';\n\n  cal.addEventListener('select', (e) => {\n    console.log('Seleccionado:', e.detail.toISOString().slice(0, 10));\n  });\n</script>\n```\n\n### Grilla de 7 columnas\n\nLos días se distribuyen en `grid-template-columns: repeat(7, 1fr)`: **7 columnas iguales que se reparten el ancho que mida el contenedor** (los \"7 width\"). Si el contenedor es de 280px cada columna mide 40px; si es de 500px, ~71px. Cada día usa `aspect-ratio: 1` para mantenerse cuadrado.\n\n```html\n<!-- Ocupa todo el ancho disponible -->\n<cu-calendar id=\"cal\" style=\"width: 100%; max-width: 420px;\"></cu-calendar>\n\n<!-- Ancho fijo -->\n<cu-calendar id=\"cal2\" style=\"width: 280px;\"></cu-calendar>\n```"
+    },
+    {
+      "title": "Controles de mes (reutiliza `MonthSlider`)",
+      "body": "El header del calendario **reutiliza el componente `MonthSlider` del repo**: chevrons prev/next mes, label con **drag** para navegar meses, año automático cuando navegás a otro año, y navegación de año opcional. Las props `monthFormat`, `yearFormat` y `locale` se delegan tal cual al slider.\n\n```html\n<!-- Con saltos de año (botones « ») y mes abreviado -->\n<cu-calendar year-navigation month-format=\"MMM yyyy\"></cu-calendar>\n\n<!-- Solo mes: drag sobre el label para navegar -->\n<cu-calendar></cu-calendar>\n```\n\n- **`year-navigation`** (default `false`): agrega los botones `«` / `»` para saltar de año (atributo booleano en HTML plano: `year-navigation`).\n- **Drag** sobre el label del mes navega meses (misma lógica que el slider).\n- **Año automático:** con `month-format=\"MMMM\"` y el mes del año en curso, el año se oculta; al navegar a otro año aparece al lado del mes.\n- La navegación respeta `min`/`max` (los botones se deshabilitan en el borde).\n- El label del header usa la misma `variant` y `color` del calendario."
+    },
+    {
+      "title": "Límites min / max",
+      "body": "Los días fuera del rango se renderizan deshabilitados (opacidad reducida, sin click) y la navegación se recorta al mes del límite (los chevrons se deshabilitan en el borde, como en los sliders):\n\n```js\ncal.min = '2026-01-10';\ncal.max = '2026-12-24';\n```\n\n```html\n<cu-calendar min=\"2026-01-10\" max=\"2026-12-24\"></cu-calendar>\n```\n\n> El mes visible se re-ajusta automáticamente si `modelValue`, `min` o `max` cambian en runtime."
+    },
+    {
+      "title": "Semana y locale",
+      "body": "```html\n<!-- Semana que empieza en domingo -->\n<cu-calendar week-start=\"0\"></cu-calendar>\n\n<!-- Mes en inglés -->\n<cu-calendar locale=\"en\"></cu-calendar>\n```"
+    },
+    {
+      "title": "Variantes del día seleccionado",
+      "body": "El día seleccionado usa la variante elegida (`solid`, `outlined`, `soft`, `subtle`). **La variante `ghost` se eliminó**: su look (transparente + número en color) es el mismo que el del día de hoy y confundía.\n\nEl **día de hoy** se muestra como ghost: número en el color accent, sin fondo (si hoy coincide con la selección, gana la variante de seleccionado):\n\n```html\n<cu-calendar model-value=\"2026-08-11\" variant=\"solid\"></cu-calendar>\n<cu-calendar model-value=\"2026-08-11\" variant=\"outlined\"></cu-calendar>\n<cu-calendar model-value=\"2026-08-11\" variant=\"soft\"></cu-calendar>\n```"
+    },
+    {
+      "title": "Días deshabilitados",
+      "body": "Además de `min`/`max`, podés deshabilitar días de la semana o fechas puntuales. Se complementan entre sí:\n\n```html\n<!-- De → hasta (10 al 25) + fines de semana deshabilitados en el medio -->\n<cu-calendar min=\"2026-08-10\" max=\"2026-08-25\" disabled-weekdays=\"0,6\"></cu-calendar>\n\n<!-- Ventana + un feriado puntual -->\n<cu-calendar min=\"2026-08-10\" max=\"2026-08-25\" disabled-dates=\"2026-08-15,2026-08-16\"></cu-calendar>\n\n<!-- Solo fines de semana, todo el mes -->\n<cu-calendar disabled-weekdays=\"0,6\"></cu-calendar>\n```\n\n> Los días deshabilitados no se pueden seleccionar (ni con click ni con `setValue`) y se ven atenuados."
+    },
+    {
+      "title": "Eventos (puntos)",
+      "body": "Puntos bajo las fechas para señalar eventos (entradas a bodega, vencimientos, etc.). Cada evento es un objeto con `date` (fecha) y opcional `color` (nombre semántico: `primary`, `success`, `warning`, `danger`…).\n\n> **Importante:** `events` se asigna como **propiedad JS** (`cal.events = [...]`), no como atributo HTML.\n\n```js\nconst cal = document.getElementById('miCalendario');\n\ncal.events = [\n  { date: '2026-08-03', color: 'primary' },   // entrada a bodega\n  { date: '2026-08-07', color: 'success' },   // recepción\n  { date: '2026-08-11', color: 'warning' },   // vencimiento\n  { date: '2026-08-15', color: 'danger' },    // urgente\n];\n\n// Múltiples puntos en un mismo día:\ncal.events.push({ date: '2026-08-11', color: 'primary' });\n```\n\n- Los puntos se muestran centrados bajo el número del día.\n- Si un día tiene varios eventos, se muestran varios puntos en fila.\n- Si no se especifica `color`, usa el `color` del calendario (`--cal-accent`)."
+    },
+    {
+      "title": "Rango (resaltado de días)",
+      "body": "Las props `rangeStart` y `rangeEnd` resaltan visualmente los días entre dos fechas. Útil para mostrar períodos selecciónados o rangos en un `<cu-date-picker-range>`.\n\n```js\nconst cal = document.getElementById('miCalendario');\n\ncal.rangeStart = '2026-09-03';\ncal.rangeEnd = '2026-09-15';\n```\n\n- Los días entre inicio y fin se resaltan con fondo soft.\n- Los extremos (inicio y fin) se resaltan con fondo accent.\n- Se asignan como **propiedad JS** (`cal.rangeStart = [...]`, no como atributo HTML)."
+    },
+    {
+      "title": "Disabled",
+      "body": ""
+    },
+    {
+      "title": "Disabled",
+      "body": "```html\n<cu-calendar disabled></cu-calendar>\n```"
+    }
+  ],
+  "intro": "Calendario de mes: muestra el mes actual y/o seleccionado con sus días distribuidos en **7 columnas** que se reparten todo el ancho disponible del contenedor. Navegación por meses, día de hoy, día seleccionado y límites `min`/`max`."
+}

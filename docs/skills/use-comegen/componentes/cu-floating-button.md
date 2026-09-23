@@ -9,7 +9,7 @@ Botón flotante (FAB) fijo en la esquina inferior derecha, de forma circular. Pe
 ## Props
 
 | Prop | Tipo | Default | Descripción |
-|------|------|---------|-------------|
+|------|------|------|------|
 | `color` | `string` | `"primary"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `disabled` | `boolean` | `false` | Deshabilita el botón |
 
@@ -18,16 +18,16 @@ Botón flotante (FAB) fijo en la esquina inferior derecha, de forma circular. Pe
 ## Eventos
 
 | Evento | Payload (`e.detail`) | Descripción |
-|--------|----------------------|-------------|
+|------|------|------|
 | `click` | — | Se emite al hacer click. Es un `CustomEvent` (`bubbles: true, composed: true`), se escucha con `addEventListener` |
 
 ## Slots
 
 | Slot | Descripción |
-|------|-------------|
+|------|------|
 | `default` | Ícono o contenido del botón (normalmente un SVG) |
 
-## Métodos
+## Métodos expuestos
 
 No expone métodos.
 
@@ -49,6 +49,8 @@ No expone métodos.
 </script>
 ```
 
+---
+
 ## Deshabilitado
 
 ```html
@@ -56,6 +58,8 @@ No expone métodos.
   <svg><!-- ícono --></svg>
 </cu-floating-button>
 ```
+
+---
 
 ## Notas
 

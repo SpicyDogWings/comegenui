@@ -9,11 +9,11 @@ Modal/diálogo con backdrop, animación, soporte para `size`/`height` y slot `fo
 ## Props
 
 | Prop | Tipo | Default | Descripción |
-|------|------|---------|-------------|
-| `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `title` | `string` | `""` | Título del modal (se muestra en la cabecera) |
-| `description` | `string` | `""` | Descripción bajo el título (texto secundario) |
-| `persistent` | `boolean` | `false` | Si es `true`, no se cierra con click en el backdrop ni con `Escape` |
+|------|------|------|------|
+| `color` | `primary \| secondary \| neutral \| success \| warning \| danger` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `title` | — | — | Título del modal (se muestra en la cabecera) |
+| `description` | — | — | Descripción bajo el título (texto secundario) |
+| `persistent` | — | — | Si es `true`, no se cierra con click en el backdrop ni con `Escape` |
 | `size` | `string` | `"auto"` | Ancho del modal: `auto`, `sm`, `md`, `lg`, `xl`, `full` |
 | `height` | `string` | `"auto"` | Alto del modal: `auto`, `sm`, `md`, `lg`, `xl`, `full` |
 
@@ -22,7 +22,7 @@ Modal/diálogo con backdrop, animación, soporte para `size`/`height` y slot `fo
 ## Eventos
 
 | Evento | Payload (`e.detail`) | Descripción |
-|--------|----------------------|-------------|
+|------|------|------|
 | `close` | — | Se inicia el cierre (click en backdrop, Escape, llamada a `.close()`) |
 | `opened` | — | El modal pasó a `isOpen = true` (animación de apertura completa) |
 | `closed` | — | La animación de cierre terminó y `isOpen = false` |
@@ -34,15 +34,15 @@ Modal/diálogo con backdrop, animación, soporte para `size`/`height` y slot `fo
 ## Slots
 
 | Slot | Descripción |
-|------|-------------|
-| `default` | Cuerpo del modal |
+|------|------|
 | `icon` | Ícono en la cabecera (junto al título) |
+| `default` | Cuerpo del modal |
 | `footer` | Pie del modal (típicamente botones de acción) |
 
 ## Métodos expuestos
 
 | Método | Descripción |
-|--------|-------------|
+|------|------|
 | `.open()` | Abre el modal |
 | `.close()` | Cierra el modal |
 | `.toggle()` | Alterna visibilidad |
@@ -75,6 +75,8 @@ Modal/diálogo con backdrop, animación, soporte para `size`/`height` y slot `fo
 </button>
 ```
 
+---
+
 ## Sizes
 
 ```html
@@ -86,6 +88,8 @@ Modal/diálogo con backdrop, animación, soporte para `size`/`height` y slot `fo
 ```
 
 `size` controla el ancho; `height` controla el alto. Aceptan los mismos valores.
+
+---
 
 ## Modal persistente
 
@@ -103,6 +107,8 @@ Modal/diálogo con backdrop, animación, soporte para `size`/`height` y slot `fo
 </cu-modal>
 ```
 
+---
+
 ## Escuchar eventos
 
 ```js
@@ -112,6 +118,8 @@ modal.addEventListener('opened', () => console.log('modal abierto'));
 modal.addEventListener('close', () => console.log('iniciando cierre'));
 modal.addEventListener('closed', () => console.log('cierre completo'));
 ```
+
+---
 
 ## Ejemplo completo
 

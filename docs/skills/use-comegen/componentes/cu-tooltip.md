@@ -9,7 +9,7 @@ Tooltip que aparece al hacer hover sobre el elemento contenido, con posición, a
 ## Props
 
 | Prop | Tipo | Default | Descripción |
-|------|------|---------|-------------|
+|------|------|------|------|
 | `text` | `string` | `""` | Texto del tooltip. Si se usa el slot `content`, tiene prioridad |
 | `color` | `string` | `"neutral"` | Color semántico del fondo: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
 | `position` | `string` | `"top"` | Lado donde aparece: `top`, `bottom`, `left`, `right` |
@@ -18,18 +18,17 @@ Tooltip que aparece al hacer hover sobre el elemento contenido, con posición, a
 | `delay` | `number` | `200` | Retardo (ms) antes de mostrar el tooltip al hacer hover |
 | `disabled` | `boolean` | `false` | Deshabilita el tooltip (no se muestra) |
 
-## Slots
-
-| Slot | Descripción |
-|------|-------------|
-| `default` | El elemento que dispara el tooltip al hacer hover |
-| `content` | Contenido del tooltip (reemplaza el prop `text`) |
-
 ## Eventos
 
 Ninguno (los eventos nativos del DOM como `mouseenter`/`mouseleave` burbujean desde el Shadow DOM).
 
-## Métodos
+## Slots
+
+| Slot | Descripción |
+|------|------|
+| `default` | El elemento que dispara el tooltip al hacer hover |
+
+## Métodos expuestos
 
 Ninguno.
 
@@ -44,6 +43,8 @@ Ninguno.
   <cu-button color="primary" variant="soft">Guardar</cu-button>
 </cu-tooltip>
 ```
+
+---
 
 ## Posición y contenido custom
 

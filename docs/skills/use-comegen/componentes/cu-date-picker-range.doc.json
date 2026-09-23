@@ -1,0 +1,85 @@
+{
+  "props": {
+    "startDate": "Fecha de inicio del rango",
+    "endDate": "Fecha de fin del rango",
+    "min": "Fecha mínima seleccionable",
+    "max": "Fecha máxima seleccionable",
+    "color": "Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger`",
+    "variant": "Variante del trigger: `outlined`, `soft`, `ghost`, `subtle`",
+    "disabled": "Deshabilita el picker",
+    "placeholder": "Texto cuando no hay rango seleccionado",
+    "locale": "Locale para nombres de mes y días",
+    "weekStart": "Día en que arranca la semana: `0` = domingo, `1` = lunes",
+    "format": "Formato del rango en el trigger (tokens: `dd` `MM` `MMM` `MMMM` `yy` `yyyy`)",
+    "yearNavigation": "Muestra botones `«`/`»` para saltar de año",
+    "monthFormat": "Formato del mes en el header",
+    "yearFormat": "Formato del año en el header",
+    "disabledWeekdays": "Días de la semana no seleccionables (`0`=domingo … `6`=sábado)",
+    "disabledDates": "Fechas puntuales no seleccionables",
+    "events": "Eventos a señalar con puntos bajo la fecha (ver [cu-calendar](cu-calendar.md#eventos-puntos))",
+    "grid": "Líneas **interiores** (cuadrícula) entre los días de los calendarios internos",
+    "border": "**Marco exterior** alrededor de la cuadrícula de días",
+    "dualCalendar": "Muestra dos meses lado a lado",
+    "clearable": "Muestra botón \"Limpiar\"",
+    "label": "Texto del label sobre el picker"
+  },
+  "events": {
+    "update:startDate": {
+      "type": "null",
+      "description": "Cambia la fecha de inicio"
+    },
+    "update:endDate": {
+      "type": "null",
+      "description": "Cambia la fecha de fin"
+    },
+    "select": {
+      "type": "null }",
+      "description": "Rango completo seleccionado"
+    },
+    "change": {
+      "type": "null }",
+      "description": "Alias de `select`"
+    },
+    "open": {
+      "description": "El panel se abre"
+    },
+    "close": {
+      "description": "El panel se cierra"
+    }
+  },
+  "slots": {},
+  "exposes": {
+    "getStartDate": "null` con la fecha de inicio",
+    "getEndDate": "null` con la fecha de fin",
+    "setRange": "Define el rango (acepta string/number/Date)",
+    "clear": "Limpia el rango",
+    "open": "Abre el panel",
+    "close": "Cierra el panel",
+    "toggle": "Abre/cierra el panel",
+    "isOpen": "Devuelve `boolean`"
+  },
+  "notes": {},
+  "sections": [
+    {
+      "title": "Uso básico",
+      "body": "```html\n<script src=\"dist/CuDatePickerRange.umd.js\"></script>\n\n<cu-date-picker-range id=\"rango\" label=\"Período\"></cu-date-picker-range>\n\n<script>\n  const r = document.getElementById('rango');\n\n  // Definir rango\n  r.startDate = '2026-09-03';\n  r.endDate = '2026-09-15';\n\n  // Escuchar cambios\n  r.addEventListener('select', (e) => {\n    const { start, end } = e.detail;\n    console.log('Rango:', start?.toISOString().slice(0, 10), '→', end?.toISOString().slice(0, 10));\n  });\n</script>\n```"
+    },
+    {
+      "title": "Selección de rango",
+      "body": "El primer click define el **inicio**, el segundo define el **fin**. Si el segundo click es anterior al inicio, se swapea automáticamente:\n\n```js\n// Click 1: 2026-09-10 → startDate = 2026-09-10\n// Click 2: 2026-09-05 → swapea: startDate = 2026-09-05, endDate = 2026-09-10\n// Click 3: reinicia → startDate = nuevo día, endDate = null\n```"
+    },
+    {
+      "title": "Dual Calendar",
+      "body": "Con `dual-calendar`, se muestran dos meses lado a lado para visualizar mejor rangos que cruzan meses:\n\n```html\n<cu-date-picker-range dual-calendar></cu-date-picker-range>\n```"
+    },
+    {
+      "title": "Control programático",
+      "body": "```js\nr.setRange('2026-09-01', '2026-09-30');\nconsole.log(r.getStartDate().toISOString().slice(0, 10)); // \"2026-09-01\"\nconsole.log(r.getEndDate().toISOString().slice(0, 10));   // \"2026-09-30\"\nr.clear();\n```"
+    },
+    {
+      "title": "Nota sobre el renderizado condicional",
+      "body": "El panel del datepicker solo se renderiza cuando está abierto. Si asignás `startDate`/`endDate` con el panel cerrado, el resaltado del rango aparece la próxima vez que se abre el calendario (mount fresco del Calendar interno)."
+    }
+  ],
+  "intro": "Selector de rango de fechas: dos fechas (inicio + fin) con resaltado del período en el calendario. API espejo de [`cu-date-picker`](cu-date-picker.md) pero para rangos."
+}

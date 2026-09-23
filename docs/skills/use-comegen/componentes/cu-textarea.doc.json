@@ -1,0 +1,52 @@
+{
+  "props": {
+    "theme": "Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite)",
+    "modelValue": "Valor controlado",
+    "startValue": "Valor inicial usado por `.reset()`",
+    "color": "Color semántico: `primary`, `neutral`, `success`, `warning`, `danger`",
+    "variant": "`outlined`, `soft`, `ghost`, `subtle`",
+    "placeholder": "Placeholder del textarea",
+    "disabled": "Estado deshabilitado",
+    "readOnly": "Solo lectura (en HTML se usa como `readonly`)",
+    "rows": "Cantidad de filas visibles",
+    "noResize": "Desactiva el redimensionado manual (atributo HTML: `no-resize`)",
+    "hightContrast": "Modo de alto contraste para el texto"
+  },
+  "events": {
+    "update:modelValue": {
+      "type": "string",
+      "description": "Se emite en cada cambio de valor"
+    }
+  },
+  "slots": {},
+  "exposes": {
+    "get": "Devuelve el valor actual (`string`)",
+    "set": "Asigna un valor",
+    "reset": "Vuelve al `startValue` (o `\"\"` si no se definió)",
+    "focus": "Enfoca el textarea"
+  },
+  "notes": {
+    "props": "> **Atributos en HTML:** `readOnly` → `readonly`, `noResize` → `no-resize`.",
+    "events": "> Los eventos nativos del DOM (`input`, `change`, `focus`, `blur`) **burbujean automáticamente** al host desde el Shadow DOM. No se re-emiten como eventos custom.",
+    "slots": "Ninguno."
+  },
+  "sections": [
+    {
+      "title": "Uso en HTML plano",
+      "body": "```html\n<script src=\"dist/CuTextarea.umd.js\"></script>\n\n<cu-textarea placeholder=\"Escribe aquí...\" rows=\"5\" color=\"primary\" variant=\"outlined\"></cu-textarea>\n<cu-textarea no-resize variant=\"soft\" id=\"comentarios\"></cu-textarea>\n\n<script>\n  const ta = document.getElementById('comentarios');\n  ta.set('Texto predefinido');\n  console.log(ta.get());\n</script>\n```"
+    },
+    {
+      "title": "Escuchar cambios",
+      "body": "```html\n<cu-textarea id=\"bio\" placeholder=\"Biografía\"></cu-textarea>\n\n<script>\n  document.getElementById('bio').addEventListener('update:modelValue', (e) => {\n    console.log('Bio:', e.detail);\n  });\n</script>\n```"
+    },
+    {
+      "title": "Reset",
+      "body": "```html\n<cu-textarea id=\"notas\" start-value=\"Plantilla inicial\">Plantilla inicial</cu-textarea>\n\n<button onclick=\"document.getElementById('notas').reset()\">Restaurar plantilla</button>\n```"
+    },
+    {
+      "title": "Deshabilitar redimensionado",
+      "body": "```html\n<cu-textarea no-resize placeholder=\"Tamaño fijo\" rows=\"4\"></cu-textarea>\n```\n\nÚtil cuando querés controlar el alto de forma externa (con CSS o de manera responsiva)."
+    }
+  ],
+  "intro": "Área de texto multilínea con color, variante, control de filas y opción de deshabilitar el redimensionado."
+}

@@ -9,27 +9,46 @@ Calendario de mes: muestra el mes actual y/o seleccionado con sus días distribu
 ## Props
 
 | Prop | Tipo | Default | Descripción |
-|------|------|---------|-------------|
-| `modelValue` | `string \| number \| Date \| null` | `null` | Fecha seleccionada. Acepta `Date`, timestamp o `"YYYY-MM-DD"` (ver [Formato de fechas](#formato-de-fechas)) |
-| `min` | `string \| number \| Date \| null` | `null` | Fecha mínima seleccionable (días anteriores quedan deshabilitados) |
-| `max` | `string \| number \| Date \| null` | `null` | Fecha máxima seleccionable |
-| `color` | `string` | `"primary"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `string` | `"soft"` | Variante del día seleccionado: `solid`, `outlined`, `soft`, `subtle` (sin `ghost`: se confunde con el día de hoy) |
+|------|------|------|------|
+| `min` | `string \| number \| Date \| null` | — | Fecha mínima seleccionable (días anteriores quedan deshabilitados) |
+| `max` | `string \| number \| Date \| null` | — | Fecha máxima seleccionable |
+| `color` | `primary \| secondary \| neutral \| success \| warning \| danger` | `"primary"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
+| `variant` | `solid \| outlined \| soft \| subtle` | `"soft"` | Variante del día seleccionado: `solid`, `outlined`, `soft`, `subtle` (sin `ghost`: se confunde con el día de hoy) |
+| `disabled` | `boolean` | `false` | Deshabilita todo el calendario |
 | `disabledWeekdays` | `number[] \| string` | `""` | Días de la semana no seleccionables (`0`=domingo … `6`=sábado). En HTML plano: `disabled-weekdays="0,6"` |
 | `disabledDates` | `(string \| Date)[] \| string` | `""` | Fechas puntuales no seleccionables `"YYYY-MM-DD"`. En HTML plano: `disabled-dates="2026-08-15,2026-08-16"` |
-| `disabled` | `boolean` | `false` | Deshabilita todo el calendario |
 | `locale` | `string` | `"es"` | Locale para nombres de mes y días de la semana |
 | `weekStart` | `number` | `1` | Día en que arranca la semana: `0` = domingo, `1` = lunes |
-| `yearNavigation` | `boolean` | `false` | Muestra botones `«`/`»` para saltar de año en el header |
+| `yearNavigation` | `boolean \| string` | `false` | Muestra botones `«`/`»` para saltar de año en el header |
 | `monthFormat` | `string` | `"MMMM"` | Formato del mes en el header (tokens como MonthSlider) |
 | `yearFormat` | `string` | `"yyyy"` | Formato del año en el header |
-| `events` | `array` | `[]` | Eventos a señalar con puntos bajo la fecha (ver [Eventos](#eventos-puntos)). Se asigna como propiedad JS |
-| `rangeStart` | `string \| number \| Date \| null` | `null` | Inicio del rango (resalta los días entre inicio y fin). Se asigna como propiedad JS |
-| `rangeEnd` | `string \| number \| Date \| null` | `null` | Fin del rango. Se asigna como propiedad JS |
+| `events` | `CalendarEvent[]` | `[]` | Eventos a señalar con puntos bajo la fecha (ver [Eventos](#eventos-puntos)). Se asigna como propiedad JS |
+| `rangeStart` | `string \| number \| Date \| null` | — | Inicio del rango (resalta los días entre inicio y fin). Se asigna como propiedad JS |
+| `rangeEnd` | `string \| number \| Date \| null` | — | Fin del rango. Se asigna como propiedad JS |
 | `grid` | `boolean` | `false` | Dibuja líneas **interiores** (cuadrícula) entre los días. En HTML plano: `<cu-calendar grid>` |
 | `border` | `boolean` | `false` | Dibuja el **marco exterior** alrededor de la cuadrícula de días. Combinable con `grid` |
 
 > **API espejo de los sliders:** las fechas aceptan `Date`, timestamp numérico o string `"YYYY-MM-DD"`. En HTML plano los atributos llegan como string; `modelValue="2026-08-11"` funciona directo.
+
+## Eventos
+
+| Evento | Payload (`e.detail`) | Descripción |
+|------|------|------|
+| `select` | `Date` | Click en un día válido |
+| `change` | `Date` | Fecha seleccionada (alias de `update:modelValue`) |
+| `update:modelValue` | `Date` | Cambio de la fecha seleccionada |
+
+> Los tres emiten un objeto `Date` normalizado a medianoche local.
+
+## Métodos expuestos
+
+| Método | Descripción |
+|------|------|
+| `.nextMonth()` | Va al mes siguiente (respeta `max`) |
+| `.prevMonth()` | Va al mes anterior (respeta `min`) |
+| `.goToMonth()` | Navega al mes de la fecha dada |
+| `.getValue()` | null` con la fecha seleccionada |
+| `.setValue()` | Selecciona una fecha (acepta string/number/Date) |
 
 ---
 
@@ -45,30 +64,6 @@ Igual que `MonthSlider` / `YearSlider`: `""`, valores inválidos (`NaN`) y entra
 ```
 
 > A diferencia de los sliders (que ignoran el día), el calendario **conserva el día** de `modelValue`.
-
----
-
-## Eventos
-
-| Evento | Payload (`e.detail`) | Descripción |
-|--------|----------------------|-------------|
-| `update:modelValue` | `Date` | Cambio de la fecha seleccionada |
-| `change` | `Date` | Fecha seleccionada (alias de `update:modelValue`) |
-| `select` | `Date` | Click en un día válido |
-
-> Los tres emiten un objeto `Date` normalizado a medianoche local.
-
----
-
-## Métodos expuestos
-
-| Método | Descripción |
-|--------|-------------|
-| `.nextMonth()` | Va al mes siguiente (respeta `max`) |
-| `.prevMonth()` | Va al mes anterior (respeta `min`) |
-| `.goToMonth(value)` | Navega al mes de la fecha dada |
-| `.getValue()` | Devuelve `Date \| null` con la fecha seleccionada |
-| `.setValue(value)` | Selecciona una fecha (acepta string/number/Date) |
 
 ---
 
@@ -231,6 +226,8 @@ cal.rangeEnd = '2026-09-15';
 ---
 
 ## Disabled
+
+---
 
 ## Disabled
 

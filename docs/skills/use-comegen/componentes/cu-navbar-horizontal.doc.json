@@ -1,0 +1,27 @@
+{
+  "props": {
+    "items": "Estructura de navegación. **Se asigna como propiedad JS**",
+    "trigger": "Cómo abren los submenús: `click` o `hover`",
+    "activePath": "Path activo manual. Si se omite, se toma de la ruta (cuando hay router)"
+  },
+  "events": {},
+  "slots": {},
+  "exposes": {},
+  "notes": {
+    "props": "> **`items` se asigna como propiedad JS**, no como atributo HTML:\n\n```js\nconst nav = document.getElementById('nav');\nnav.items = [\n  { label: 'Inicio', path: '/' },\n  { label: 'Equipo', children: [\n    { label: 'Desarrollo', path: '/equipo/dev' },\n    { label: 'Diseño', path: '/equipo/diseno' },\n  ]},\n];\n```",
+    "events": "Ninguno.",
+    "slots": "Ninguno.",
+    "exposes": "Ninguno."
+  },
+  "sections": [
+    {
+      "title": "Uso en HTML plano",
+      "body": "```html\n<script src=\"dist/CuNavbarHorizontal.umd.js\"></script>\n\n<cu-navbar-horizontal id=\"nav\" trigger=\"hover\" active-path=\"/equipo/dev\"></cu-navbar-horizontal>\n\n<script>\n  const nav = document.getElementById('nav');\n  await customElements.whenDefined('cu-navbar-horizontal');\n  nav.items = [\n    { label: 'Inicio', path: '/' },\n    { label: 'Equipo', children: [\n      { label: 'Desarrollo', path: '/equipo/dev' },\n      { label: 'Diseño', path: '/equipo/diseno' },\n    ]},\n  ];\n</script>\n```"
+    },
+    {
+      "title": "Estructura de `items`",
+      "body": "```ts\ninterface NavItem {\n  label: string;\n  path?: string;        // enlaces y detección de activo\n  icon?: string;        // string HTML (puede ser un SVG inline)\n  children?: NavItem[]; // submenús desplegables\n}\n```"
+    }
+  ],
+  "intro": "Barra de navegación horizontal con submenús desplegables (Dropdown) y detección de ítem activo por ruta."
+}

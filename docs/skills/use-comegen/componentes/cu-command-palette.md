@@ -11,7 +11,7 @@ Paleta de comandos (búsqueda + lista) en un modal, con agrupado por categoría 
 ## Props
 
 | Prop | Tipo | Default | Descripción |
-|------|------|---------|-------------|
+|------|------|------|------|
 | `color` | `string` | `"neutral"` | Color semántico del modal: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `title` | `string` | `""` | Título del modal |
 | `placeholder` | `string` | `"Buscar comandos…"` | Placeholder del input de búsqueda |
@@ -21,7 +21,7 @@ Paleta de comandos (búsqueda + lista) en un modal, con agrupado por categoría 
 ## Eventos
 
 | Evento | Payload (`e.detail`) | Descripción |
-|--------|----------------------|-------------|
+|------|------|------|
 | `select` | `CommandItem` | Se seleccionó un comando (por click o `Enter`) |
 | `close` | — | Se cerró el modal |
 
@@ -29,7 +29,7 @@ Paleta de comandos (búsqueda + lista) en un modal, con agrupado por categoría 
 
 Ninguno.
 
-## Métodos
+## Métodos expuestos
 
 Ninguno (el wrapper CE no llama a `defineExpose`).
 
