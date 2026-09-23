@@ -43,6 +43,9 @@ public/khadgar.json
 # VitePress (fichas copiadas + generados + build)
 docs/site/componentes/
 docs/site/public/comegen.config.json
+docs/site/public/img/
+docs/site/public/comegen.ico
+docs/site/public/favicon.ico
 docs/site/.vitepress/khadgar.gen.json
 docs/site/.vitepress/khadgar.json
 docs/site/.vitepress/theme/*.gen.css

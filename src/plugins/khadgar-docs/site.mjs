@@ -4,7 +4,7 @@
 //   3. genera el tema (tokens CU → VitePress).
 //
 // Se ejecuta con `tsx --tsconfig tsconfig.app.json` (importa módulos TS).
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { buildIndex } from "../khadgar/extract/index.mjs";
 import { renderDoc } from "./render.mjs";
@@ -53,6 +53,13 @@ writeFileSync(resolve(themeDir, "vitepress.gen.css"), buildVitePressBridgeCss())
 const publicDir = resolve(siteRoot, "public");
 mkdirSync(publicDir, { recursive: true });
 writeFileSync(resolve(publicDir, "comegen.config.json"), `${JSON.stringify(cuConfig, null, 2)}\n`);
+
+// Assets estáticos del consumidor (imágenes, favicons) → public del sitio.
+const repoPublic = resolve(root, "public");
+for (const asset of ["img", "comegen.ico", "favicon.ico"]) {
+  const from = resolve(repoPublic, asset);
+  if (existsSync(from)) cpSync(from, resolve(publicDir, asset), { recursive: true });
+}
 
 console.log(
   `khadgar-docs: ${written} fichas + config/tema de VitePress en ${docs.site ?? "docs/site"}`,

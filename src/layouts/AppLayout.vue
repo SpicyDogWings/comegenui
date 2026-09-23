@@ -29,10 +29,10 @@ onBeforeUnmount(() => {
   <section class="app-layout">
     <header class="app-topbar">
       <div class="app-topbar-left">
-        <RouterLink to="/" class="app-topbar-brand">
+        <a href="/" class="app-topbar-brand">
           <img src="/img/comegen.webp" alt="ComegenUI" class="app-topbar-logo" />
           ComegenUI
-        </RouterLink>
+        </a>
         <Badge color="neutral" variant="subtle">v{{ version }}</Badge>
         <slot name="title" />
       </div>
@@ -48,14 +48,14 @@ onBeforeUnmount(() => {
           CTRL+K comandos
         </Badge>
         <slot name="actions" />
-        <RouterLink
-          to="/playground/theme-builder"
+        <a
+          href="/theme-builder"
           class="app-topbar-icon"
           aria-label="Theme Builder"
           title="Theme Builder"
         >
           <LucidePalette />
-        </RouterLink>
+        </a>
         <a
           class="app-topbar-icon"
           href="https://gitlab.com/SpicyDogWings/comegen-ui"
