@@ -88,12 +88,15 @@ describe('useDateRange', () => {
     expect(spy.change.at(-1)?.start?.getDate()).toBe(1)
   })
 
-  it('reset no toca las fechas, solo el estado de selección', () => {
+  it('pickingEnd se deriva de los valores (inicio sin fin)', () => {
     const { range } = setup()
-    range.select(d(10))
-    range.reset()
     expect(range.pickingEnd.value).toBe(false)
-    expect(range.startValue.value?.getDate()).toBe(10)
+    range.select(d(10))
+    expect(range.pickingEnd.value).toBe(true)
+    range.select(d(20))
+    expect(range.pickingEnd.value).toBe(false)
+    range.setRange(d(1), null)
+    expect(range.pickingEnd.value).toBe(true)
   })
 
   it('se sincroniza cuando cambian las props desde afuera', async () => {

@@ -4,28 +4,28 @@ import Button from '../buttons/Button.vue'
 import Calendar from '../controls/Calendar.vue'
 import DualCalendar from '../controls/DualCalendar.vue'
 import DatePickerShell from './DatePickerShell.vue'
-import { useDateRange } from '@/composables/useDateRange'
+import type { DateRange } from '@/composables/useDateRange'
 import { formatDate, normalizeDate, parseDate, type CalendarEvent } from '@/utils/date'
 
 const props = defineProps({
-  /** Modo de selección: `single` (una fecha) o `range` (inicio + fin). */
+  /** Tipo de calendario: `single` (una fecha, `Calendar`) o `range` (inicio + fin, `Calendar` en modo rango). Con `dualCalendar` el tipo es dual (range, 2 meses) */
   mode: {
     type: String as PropType<'single' | 'range'>,
     default: 'single',
     validator: (value: string) => ['single', 'range'].includes(value),
   },
   // API espejo de MonthSlider/YearSlider: acepta Date, timestamp o fecha "YYYY-MM-DD"
-  /** Fecha seleccionada (modo `single`) */
+  /** Fecha seleccionada (calendario `single`) */
   modelValue: {
     type: [String, Number, Date] as PropType<string | number | Date | null>,
     default: null,
   },
-  /** Inicio del rango (modo `range`) */
+  /** Inicio del rango. Solo con calendario de rango (`mode="range"` o `dualCalendar`); en `single` se ignora */
   startDate: {
     type: [String, Number, Date] as PropType<string | number | Date | null>,
     default: null,
   },
-  /** Fin del rango (modo `range`) */
+  /** Fin del rango. Solo con calendario de rango (`mode="range"` o `dualCalendar`); en `single` se ignora */
   endDate: {
     type: [String, Number, Date] as PropType<string | number | Date | null>,
     default: null,
@@ -72,7 +72,7 @@ const props = defineProps({
   },
   grid: { type: Boolean, required: false, default: false },
   border: { type: Boolean, required: false, default: false },
-  /** Modo `range`: muestra dos meses lado a lado (dual) */
+  /** Activa el rango a dos meses (dual). **Implica `range`**: aunque `mode` sea `single`, el picker selecciona un rango */
   dualCalendar: { type: Boolean, required: false, default: false },
   position: { type: String, required: false, default: 'bottom' },
   align: { type: String, required: false, default: 'start' },
@@ -95,7 +95,9 @@ const emit = defineEmits<{
 
 const shellRef = ref<InstanceType<typeof DatePickerShell> | null>(null)
 
-const isRange = computed(() => props.mode === 'range')
+// `dualCalendar` implica rango: el picker maneja range siempre que el dual
+// esté activo, aunque `mode` sea `single`.
+const isRange = computed(() => props.mode === 'range' || props.dualCalendar)
 
 // ── Estado (single) ──
 
@@ -109,22 +111,68 @@ watch(
 )
 
 // ── Estado (range) ──
+// DatePicker administra los valores: los espeja desde las props y los pasa a
+// los hijos (`Calendar mode="range"` o `DualCalendar`). Los hijos corren la FSM
+// de 2 clicks y emiten; acá se actualizan los espejos y se re-emite la API.
 
-const {
-  startValue: rangeStart,
-  endValue: rangeEnd,
-  select: selectRange,
-  clear: clearRange,
-  setRange,
-  reset: resetRange,
-} = useDateRange({
-  start: () => props.startDate,
-  end: () => props.endDate,
-  onStartChange: (value) => emit('update:startDate', value),
-  onEndChange: (value) => emit('update:endDate', value),
-  onChange: (value) => emit('change', value),
-  onSelect: (value) => emit('select', value),
-})
+const rangeStart = ref<Date | null>(parseDate(props.startDate))
+const rangeEnd = ref<Date | null>(parseDate(props.endDate))
+
+watch(
+  () => props.startDate,
+  (value) => {
+    rangeStart.value = parseDate(value)
+  },
+)
+watch(
+  () => props.endDate,
+  (value) => {
+    rangeEnd.value = parseDate(value)
+  },
+)
+
+function onRangeStart(value: Date | null) {
+  rangeStart.value = value
+  emit('update:startDate', value)
+}
+
+function onRangeEnd(value: Date | null) {
+  rangeEnd.value = value
+  emit('update:endDate', value)
+}
+
+function onRangeChange(value: Date | DateRange) {
+  if (value instanceof Date) return
+  rangeStart.value = value.start
+  rangeEnd.value = value.end
+  emit('change', value)
+}
+
+function onRangeSelect(value: Date | DateRange) {
+  if (value instanceof Date) return
+  rangeStart.value = value.start
+  rangeEnd.value = value.end
+  emit('select', value)
+}
+
+/** Setea el rango completo y emite los cambios (solo con calendario de rango). */
+function setRange(start: string | number | Date | null, end: string | number | Date | null) {
+  if (!isRange.value) return
+  rangeStart.value = parseDate(start)
+  rangeEnd.value = parseDate(end)
+  emit('update:startDate', rangeStart.value)
+  emit('update:endDate', rangeEnd.value)
+  emit('change', { start: rangeStart.value, end: rangeEnd.value })
+}
+
+/** Limpia el rango (modo rango). */
+function clearRange() {
+  rangeStart.value = null
+  rangeEnd.value = null
+  emit('update:startDate', null)
+  emit('update:endDate', null)
+  emit('change', { start: null, end: null })
+}
 
 // ── Label del trigger ──
 
@@ -156,11 +204,12 @@ const panelWidth = computed(() => {
 
 // ── Interacción ──
 
-function onSelectSingle(day: Date) {
-  selectedValue.value = day
-  emit('update:modelValue', day)
-  emit('change', day)
-  emit('select', day)
+function onSelectSingle(value: Date | DateRange) {
+  if (!(value instanceof Date)) return
+  selectedValue.value = value
+  emit('update:modelValue', value)
+  emit('change', value)
+  emit('select', value)
   shellRef.value?.close()
 }
 
@@ -191,8 +240,6 @@ function clear() {
 }
 
 function onClose() {
-  // Evita que un rango a medio elegir sobreviva al cierre del panel.
-  resetRange()
   emit('close')
 }
 
@@ -213,14 +260,14 @@ function setValue(value: string | number | Date | null) {
   emit('change', parsed)
 }
 
-/** Devuelve la fecha de inicio (modo rango). */
+/** Devuelve la fecha de inicio (solo con calendario de rango). */
 function getStartDate(): Date | null {
-  return rangeStart.value
+  return isRange.value ? rangeStart.value : null
 }
 
-/** Devuelve la fecha de fin (modo rango). */
+/** Devuelve la fecha de fin (solo con calendario de rango). */
 function getEndDate(): Date | null {
-  return rangeEnd.value
+  return isRange.value ? rangeEnd.value : null
 }
 
 /** Abre el panel. */
@@ -281,11 +328,11 @@ defineExpose({
         :border="border"
         @select="onSelectSingle"
       />
-      <DualCalendar
-        v-else
-        :start-date="rangeStart"
-        :end-date="rangeEnd"
-        :months="dualCalendar ? 2 : 1"
+      <Calendar
+        v-else-if="!dualCalendar"
+        mode="range"
+        :range-start="rangeStart"
+        :range-end="rangeEnd"
         :min="min"
         :max="max"
         :color="color"
@@ -301,7 +348,34 @@ defineExpose({
         :events="events"
         :grid="grid"
         :border="border"
-        @select="selectRange"
+        @update:range-start="onRangeStart"
+        @update:range-end="onRangeEnd"
+        @change="onRangeChange"
+        @select="onRangeSelect"
+      />
+      <DualCalendar
+        v-else
+        :start-date="rangeStart"
+        :end-date="rangeEnd"
+        :min="min"
+        :max="max"
+        :color="color"
+        :variant="calendarVariant"
+        :locale="locale"
+        :week-start="weekStart"
+        :year-navigation="yearNavigation"
+        :month-format="monthFormat"
+        :year-format="yearFormat"
+        :disabled="disabled"
+        :disabled-weekdays="disabledWeekdays"
+        :disabled-dates="disabledDates"
+        :events="events"
+        :grid="grid"
+        :border="border"
+        @update:start-date="onRangeStart"
+        @update:end-date="onRangeEnd"
+        @change="onRangeChange"
+        @select="onRangeSelect"
       />
       <div v-if="showToday || clearable" class="cu-date-picker-footer">
         <Button

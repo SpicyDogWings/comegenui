@@ -34,6 +34,19 @@ describe('DatePicker — single', () => {
     await flushPromises()
     expect(w.text()).toContain('Hoy')
   })
+
+  it('ignora startDate/endDate y setRange (no hay rango en single)', async () => {
+    const w = mount(DatePicker, { props: { startDate: '2026-09-03', endDate: '2026-09-15' } })
+    vm(w).open()
+    await flushPromises()
+    expect(w.findAll('.cu-calendar-day--range')).toHaveLength(0)
+    ;(w.vm as unknown as { setRange: (a: string, b: string) => void }).setRange(
+      '2026-09-01',
+      '2026-09-30',
+    )
+    await flushPromises()
+    expect(w.emitted('update:startDate')).toBeFalsy()
+  })
 })
 
 describe('DatePicker — range', () => {
@@ -68,7 +81,19 @@ describe('DatePicker — range', () => {
     expect(w.findAll('.cu-calendar')).toHaveLength(2)
   })
 
-  it('un rango a medio elegir no sobrevive al cierre del panel', async () => {
+  it('dualCalendar fuerza range aunque mode sea single', async () => {
+    const w = mount(DatePicker, { props: { dualCalendar: true } })
+    vm(w).open()
+    await flushPromises()
+    expect(w.findAll('.cu-calendar')).toHaveLength(2)
+    await dayButton(w, 10)!.trigger('click')
+    await flushPromises()
+    expect(w.emitted('update:startDate')).toBeTruthy()
+    // no cierra el panel: sigue range a la espera del fin
+    expect(vm(w).isOpen()).toBe(true)
+  })
+
+  it('un rango a medio elegir sobrevive al cierre y el próximo click lo completa', async () => {
     const w = mount(DatePicker, { props: { mode: 'range' } })
     vm(w).open()
     await flushPromises()
@@ -78,10 +103,12 @@ describe('DatePicker — range', () => {
     await flushPromises()
     vm(w).open()
     await flushPromises()
-    // el próximo click debe iniciar de nuevo (no completar el rango previo)
     await dayButton(w, 25)!.trigger('click')
     await flushPromises()
-    expect(w.emitted('select')).toBeFalsy()
-    expect((w.emitted('update:startDate') as Date[][]).length).toBe(2)
+    const selected = w.emitted('select')
+    expect(selected).toBeTruthy()
+    const range = selected![0]![0] as { start: Date; end: Date }
+    expect(range.start.getDate()).toBe(10)
+    expect(range.end.getDate()).toBe(25)
   })
 })

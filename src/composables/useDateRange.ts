@@ -1,9 +1,13 @@
 // src/composables/useDateRange.ts
-// Máquina de estados de selección de rango (2 clicks): primer click = inicio,
-// segundo = fin (con swap si el fin es anterior). Compartida por DatePicker en
-// modo rango para no duplicar la lógica que hoy vive pegada al componente.
+// FSM de selección de rango (2 clicks): primer click = inicio, segundo = fin
+// (con swap si el fin es anterior). La usan Calendar (modo `range`) y el
+// DualCalendar (que sólo comparte el mismo rango entre sus 2 Calendar).
+//
+// `pickingEnd` se deriva del valor (`start` seteado y `end` vacío) en lugar de
+// ser un flag aparte: así dos Calendar que comparten `rangeStart`/`rangeEnd`
+// cooperan (el segundo click, en cualquiera de los dos, completa el rango).
 
-import { ref, watch, type Ref } from 'vue'
+import { computed, ref, watch, type ComputedRef, type Ref } from 'vue'
 import { parseDate } from '@/utils/date'
 
 export interface DateRange {
@@ -12,13 +16,13 @@ export interface DateRange {
 }
 
 export interface UseDateRangeOptions {
-  /** Getter de la prop `startDate` (para sincronizar desde afuera). */
+  /** Getter de la prop de inicio (para sincronizar desde afuera). */
   start?: () => string | number | Date | null
-  /** Getter de la prop `endDate` (para sincronizar desde afuera). */
+  /** Getter de la prop de fin (para sincronizar desde afuera). */
   end?: () => string | number | Date | null
-  /** Se dispara cuando cambia el inicio (→ `update:startDate`). */
+  /** Se dispara cuando cambia el inicio (→ `update:rangeStart`). */
   onStartChange?: (value: Date | null) => void
-  /** Se dispara cuando cambia el fin (→ `update:endDate`). */
+  /** Se dispara cuando cambia el fin (→ `update:rangeEnd`). */
   onEndChange?: (value: Date | null) => void
   /** Rango completo (→ `change`). También al limpiar y al `setRange`. */
   onChange?: (range: DateRange) => void
@@ -29,21 +33,21 @@ export interface UseDateRangeOptions {
 export interface UseDateRange {
   startValue: Ref<Date | null>
   endValue: Ref<Date | null>
-  pickingEnd: Ref<boolean>
+  /** `true` cuando hay inicio pero falta el fin: el próximo click completa. */
+  pickingEnd: ComputedRef<boolean>
   /** Click en un día: inicia o completa el rango. */
   select: (day: Date) => void
   /** Limpia el rango y emite el cambio. */
   clear: () => void
   /** Setea el rango completo y emite el cambio. */
   setRange: (start: string | number | Date | null, end: string | number | Date | null) => void
-  /** Reinicia el estado de selección sin tocar las fechas. */
-  reset: () => void
 }
 
 export function useDateRange(options: UseDateRangeOptions = {}): UseDateRange {
   const startValue = ref<Date | null>(parseDate(options.start?.() ?? null))
   const endValue = ref<Date | null>(parseDate(options.end?.() ?? null))
-  const pickingEnd = ref(false)
+
+  const pickingEnd = computed(() => startValue.value !== null && endValue.value === null)
 
   watch(
     () => options.start?.(),
@@ -59,19 +63,19 @@ export function useDateRange(options: UseDateRangeOptions = {}): UseDateRange {
   )
 
   function select(day: Date) {
-    if (!pickingEnd.value || !startValue.value) {
-      // Primer click: arranca el rango. Si había un fin previo, se descarta.
+    if (!pickingEnd.value) {
+      // Primer click (o reinicio tras un rango completo): arranca el rango.
+      // Si había un fin previo, se descarta.
       const hadEnd = endValue.value !== null
       startValue.value = day
       endValue.value = null
-      pickingEnd.value = true
       options.onStartChange?.(day)
       if (hadEnd) options.onEndChange?.(null)
       return
     }
 
     // Segundo click: cierra el rango (con swap si el fin es anterior).
-    if (day.getTime() < startValue.value.getTime()) {
+    if (day.getTime() < (startValue.value as Date).getTime()) {
       endValue.value = startValue.value
       startValue.value = day
       options.onStartChange?.(day)
@@ -80,7 +84,6 @@ export function useDateRange(options: UseDateRangeOptions = {}): UseDateRange {
       endValue.value = day
       options.onEndChange?.(day)
     }
-    pickingEnd.value = false
     const range = { start: startValue.value, end: endValue.value }
     options.onSelect?.(range)
     options.onChange?.(range)
@@ -89,7 +92,6 @@ export function useDateRange(options: UseDateRangeOptions = {}): UseDateRange {
   function clear() {
     startValue.value = null
     endValue.value = null
-    pickingEnd.value = false
     options.onStartChange?.(null)
     options.onEndChange?.(null)
     options.onChange?.({ start: null, end: null })
@@ -101,15 +103,10 @@ export function useDateRange(options: UseDateRangeOptions = {}): UseDateRange {
   ) {
     startValue.value = parseDate(start)
     endValue.value = parseDate(end)
-    pickingEnd.value = false
     options.onStartChange?.(startValue.value)
     options.onEndChange?.(endValue.value)
     options.onChange?.({ start: startValue.value, end: endValue.value })
   }
 
-  function reset() {
-    pickingEnd.value = false
-  }
-
-  return { startValue, endValue, pickingEnd, select, clear, setRange, reset }
+  return { startValue, endValue, pickingEnd, select, clear, setRange }
 }

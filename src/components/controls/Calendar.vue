@@ -8,6 +8,7 @@ import {
   startOfCurrentMonth,
   type CalendarEvent,
 } from '@/utils/date'
+import { useDateRange } from '@/composables/useDateRange'
 
 const props = defineProps({
   // API espejo de MonthSlider/YearSlider: acepta Date, timestamp o fecha "YYYY-MM-DD".
@@ -103,13 +104,23 @@ const props = defineProps({
     type: [String, Number, Date] as PropType<string | number | Date | null>,
     default: null,
   },
+  /** Modo de selección: `single` (una fecha) o `range` (inicio + fin). */
+  mode: {
+    type: String as PropType<'single' | 'range'>,
+    default: 'single',
+    validator: (value: string) => ['single', 'range'].includes(value),
+  },
 })
+
+type CalendarChange = Date | { start: Date | null; end: Date | null }
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: Date): void
-  (e: 'change', value: Date): void
-  (e: 'select', value: Date): void
   (e: 'update:viewMonth', value: Date): void
+  (e: 'update:rangeStart', value: Date | null): void
+  (e: 'update:rangeEnd', value: Date | null): void
+  (e: 'change', value: CalendarChange): void
+  (e: 'select', value: CalendarChange): void
 }>()
 
 const WEEK_LENGTH = 7
@@ -193,6 +204,25 @@ watch(
 watch([minDate, maxDate], () => {
   if (isViewMonthControlled.value) return
   internalViewMonth.value = clampMonth(internalViewMonth.value)
+})
+
+// ── Modo rango (selección de inicio + fin) ──
+
+const isRange = computed(() => props.mode === 'range')
+
+const {
+  startValue: rangeValueStart,
+  endValue: rangeValueEnd,
+  select: selectRange,
+  clear: clearRange,
+  setRange: setRangeValue,
+} = useDateRange({
+  start: () => props.rangeStart,
+  end: () => props.rangeEnd,
+  onStartChange: (value) => emit('update:rangeStart', value),
+  onEndChange: (value) => emit('update:rangeEnd', value),
+  onChange: (value) => emit('change', value),
+  onSelect: (value) => emit('select', value),
 })
 
 // ── Navegación ──
@@ -297,6 +327,11 @@ function isDisabledDay(day: Date): boolean {
 
 function selectDay(day: Date) {
   if (isDisabledDay(day)) return
+  if (isRange.value) {
+    // La FSM de 2 clicks vive en `useDateRange`: primer click inicio, segundo fin.
+    selectRange(day)
+    return
+  }
   selectedValue.value = day
   emit('update:modelValue', day)
   emit('change', day)
@@ -304,7 +339,8 @@ function selectDay(day: Date) {
 }
 
 function dayClasses(day: Date): Record<string, boolean> {
-  const selected = selectedValue.value !== null && sameDay(day, selectedValue.value)
+  const selected =
+    !isRange.value && selectedValue.value !== null && sameDay(day, selectedValue.value)
   const inRange = isInRange(day)
   return {
     'cu-calendar-day--selected': selected,
@@ -316,10 +352,14 @@ function dayClasses(day: Date): Record<string, boolean> {
   }
 }
 
-const rangeStartVal = computed(() => parseDate(props.rangeStart))
-const rangeEndVal = computed(() => parseDate(props.rangeEnd))
+// El rango solo existe en `mode="range"` (ahí `rangeStart`/`rangeEnd` son el
+// valor, administrado por la FSM). En `single` se ignoran por completo: la
+// única selección es el click simple (`modelValue`).
+const rangeStartVal = computed(() => (isRange.value ? rangeValueStart.value : null))
+const rangeEndVal = computed(() => (isRange.value ? rangeValueEnd.value : null))
 
 function isInRange(day: Date): boolean {
+  if (!isRange.value) return false
   const start = rangeStartVal.value
   const end = rangeEndVal.value
   if (!start || !end) return false
@@ -331,12 +371,12 @@ function isInRange(day: Date): boolean {
 
 // ── API programática ──
 
-/** Devuelve la fecha seleccionada. */
+/** Devuelve la fecha seleccionada (modo `single`). */
 function getValue(): Date | null {
   return selectedValue.value
 }
 
-/** Establece la fecha seleccionada y emite los eventos de cambio. */
+/** Establece la fecha seleccionada y emite los eventos de cambio (modo `single`). */
 function setValue(value: string | number | Date | null) {
   const parsed = parseDate(value)
   if (parsed === null) return
@@ -346,7 +386,31 @@ function setValue(value: string | number | Date | null) {
   emit('change', parsed)
 }
 
-defineExpose({ nextMonth, prevMonth, goToMonth, getValue, setValue })
+/** Devuelve el rango seleccionado (modo `range`). */
+function getRange(): { start: Date | null; end: Date | null } {
+  return { start: rangeValueStart.value, end: rangeValueEnd.value }
+}
+
+/** Setea el rango y emite los eventos de cambio (modo `range`). */
+function setRange(start: string | number | Date | null, end: string | number | Date | null) {
+  setRangeValue(start, end)
+}
+
+/** Limpia el rango seleccionado (modo `range`). */
+function clear() {
+  clearRange()
+}
+
+defineExpose({
+  nextMonth,
+  prevMonth,
+  goToMonth,
+  getValue,
+  setValue,
+  getRange,
+  setRange,
+  clear,
+})
 
 // ── Estilos por color semántico (CSS custom properties) ──
 

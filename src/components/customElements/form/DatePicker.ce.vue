@@ -6,22 +6,22 @@ import { initTokens } from '@/plugins/cu-tokens/css'
 initTokens()
 
 const props = defineProps({
-  /** Modo de selección: `single` (una fecha) o `range` (inicio + fin) */
+  /** Tipo de calendario: `single` (una fecha) o `range` (inicio + fin). Con `dual-calendar` el tipo es dual (range, 2 meses) */
   mode: {
     type: String as PropType<'single' | 'range'>,
     default: 'single',
   },
-  /** Fecha seleccionada (modo `single`) */
+  /** Fecha seleccionada (calendario `single`) */
   modelValue: {
     type: [String, Number, Date] as PropType<string | number | Date | null>,
     default: null,
   },
-  /** Inicio del rango (modo `range`). En HTML: `start-date="2026-08-01"` */
+  /** Inicio del rango. Solo con calendario de rango (`mode="range"` o `dual-calendar`); en `single` se ignora. En HTML: `start-date="2026-08-01"` */
   startDate: {
     type: [String, Number, Date] as PropType<string | number | Date | null>,
     default: null,
   },
-  /** Fin del rango (modo `range`). En HTML: `end-date="2026-08-31"` */
+  /** Fin del rango. Solo con calendario de rango (`mode="range"` o `dual-calendar`); en `single` se ignora. En HTML: `end-date="2026-08-31"` */
   endDate: {
     type: [String, Number, Date] as PropType<string | number | Date | null>,
     default: null,
@@ -75,7 +75,7 @@ const props = defineProps({
   grid: { type: Boolean, default: false },
   /** **Marco exterior** alrededor de la cuadrícula de días del calendario interno */
   border: { type: Boolean, default: false },
-  /** Modo `range`: muestra dos meses lado a lado */
+  /** Activa el rango a dos meses (dual). **Implica `range`**: aunque `mode` sea `single`, el picker selecciona un rango */
   dualCalendar: { type: Boolean, default: false },
   /** `right` */
   position: { type: String, default: 'bottom' },

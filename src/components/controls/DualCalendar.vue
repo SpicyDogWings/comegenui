@@ -1,9 +1,13 @@
 <script setup lang="ts">
-// DualCalendar (interno) — composición de 1 o 2 `Calendar` con meses
-// consecutivos al abrir y navegación independiente por calendario. No se
-// registra como Custom Element: lo consume `DatePicker` en modo rango.
-import { computed, ref, type PropType } from 'vue'
+// DualCalendar (interno) — dos `Calendar` en modo `range`, con meses
+// consecutivos al abrir y navegación independiente. NO tiene lógica de rango
+// propia: el rango lo administra `Calendar` y acá sólo se comparte el valor
+// entre los dos (primer click en cualquiera inicia, segundo completa). No se
+// registra como Custom Element ni se publica en la lib: lo consumen
+// `DatePicker` (dualCalendar) y el playground.
+import { ref, type PropType } from 'vue'
 import Calendar from './Calendar.vue'
+import type { DateRange } from '@/composables/useDateRange'
 import { addMonths, parseDate, type CalendarEvent } from '@/utils/date'
 
 const props = defineProps({
@@ -33,7 +37,11 @@ const props = defineProps({
   },
   disabled: { type: Boolean, default: false },
   locale: { type: String, default: 'es' },
-  weekStart: { type: Number, default: 1 },
+  weekStart: {
+    type: Number,
+    default: 1,
+    validator: (value: number) => value >= 0 && value <= 6,
+  },
   yearNavigation: { type: [Boolean, String] as PropType<boolean | string>, default: false },
   monthFormat: { type: String, default: 'MMMM' },
   yearFormat: { type: String, default: 'yyyy' },
@@ -45,15 +53,48 @@ const props = defineProps({
   },
   grid: { type: Boolean, default: false },
   border: { type: Boolean, default: false },
-  /** Cantidad de meses visibles (1 = rango simple, 2 = dual). */
-  months: { type: Number, default: 2, validator: (v: number) => v === 1 || v === 2 },
 })
 
 const emit = defineEmits<{
-  (e: 'select', value: Date): void
+  (e: 'update:startDate', value: Date | null): void
+  (e: 'update:endDate', value: Date | null): void
+  (e: 'change', value: DateRange): void
+  (e: 'select', value: DateRange): void
 }>()
 
-// Primer mes: el del `startDate` si existe, si no el mes actual.
+// ── Espejo del rango: el valor lo administra cada Calendar (modo range) y acá
+// se comparte el mismo `rangeStart`/`rangeEnd` entre los dos. ──
+
+const rangeStart = ref<Date | null>(parseDate(props.startDate))
+const rangeEnd = ref<Date | null>(parseDate(props.endDate))
+
+function onRangeStart(value: Date | null) {
+  rangeStart.value = value
+  emit('update:startDate', value)
+}
+
+function onRangeEnd(value: Date | null) {
+  rangeEnd.value = value
+  emit('update:endDate', value)
+}
+
+function onRangeChange(value: Date | DateRange) {
+  if (value instanceof Date) return
+  rangeStart.value = value.start
+  rangeEnd.value = value.end
+  emit('change', value)
+}
+
+function onRangeSelect(value: Date | DateRange) {
+  if (value instanceof Date) return
+  rangeStart.value = value.start
+  rangeEnd.value = value.end
+  emit('select', value)
+}
+
+// ── Meses: el primero arranca en el mes del `startDate` (o el actual) y el
+// segundo es el siguiente. Cada Calendar navega su propio mes. ──
+
 function initialMonth(): Date {
   const start = parseDate(props.startDate)
   const base = start ?? new Date()
@@ -63,18 +104,43 @@ function initialMonth(): Date {
 const firstMonth = ref<Date>(initialMonth())
 const secondMonth = ref<Date>(addMonths(firstMonth.value, 1))
 
-const showSecond = computed(() => props.months === 2)
+// ── API programática ──
 
-const rangeStart = computed(() => parseDate(props.startDate))
-const rangeEnd = computed(() => parseDate(props.endDate))
+/** Devuelve la fecha de inicio del rango. */
+function getStartDate(): Date | null {
+  return rangeStart.value
+}
+
+/** Devuelve la fecha de fin del rango. */
+function getEndDate(): Date | null {
+  return rangeEnd.value
+}
+
+/** Setea el rango completo y emite los cambios. */
+function setRange(start: string | number | Date | null, end: string | number | Date | null) {
+  rangeStart.value = parseDate(start)
+  rangeEnd.value = parseDate(end)
+  emit('update:startDate', rangeStart.value)
+  emit('update:endDate', rangeEnd.value)
+  emit('change', { start: rangeStart.value, end: rangeEnd.value })
+}
+
+/** Limpia el rango. */
+function clear() {
+  rangeStart.value = null
+  rangeEnd.value = null
+  emit('update:startDate', null)
+  emit('update:endDate', null)
+  emit('change', { start: null, end: null })
+}
+
+defineExpose({ getStartDate, getEndDate, setRange, clear })
 </script>
 
 <template>
-  <div
-    class="cu-dual-calendar"
-    :class="{ 'cu-dual-calendar--dual': showSecond }"
-  >
+  <div class="cu-dual-calendar">
     <Calendar
+      mode="range"
       :view-month="firstMonth"
       :range-start="rangeStart"
       :range-end="rangeEnd"
@@ -94,10 +160,13 @@ const rangeEnd = computed(() => parseDate(props.endDate))
       :grid="props.grid"
       :border="props.border"
       @update:view-month="firstMonth = $event"
-      @select="emit('select', $event)"
+      @update:range-start="onRangeStart"
+      @update:range-end="onRangeEnd"
+      @change="onRangeChange"
+      @select="onRangeSelect"
     />
     <Calendar
-      v-if="showSecond"
+      mode="range"
       :view-month="secondMonth"
       :range-start="rangeStart"
       :range-end="rangeEnd"
@@ -117,7 +186,10 @@ const rangeEnd = computed(() => parseDate(props.endDate))
       :grid="props.grid"
       :border="props.border"
       @update:view-month="secondMonth = $event"
-      @select="emit('select', $event)"
+      @update:range-start="onRangeStart"
+      @update:range-end="onRangeEnd"
+      @change="onRangeChange"
+      @select="onRangeSelect"
     />
   </div>
 </template>
@@ -125,15 +197,11 @@ const rangeEnd = computed(() => parseDate(props.endDate))
 <style scoped>
 .cu-dual-calendar {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: var(--cu-space-md);
 }
 
-.cu-dual-calendar--dual {
-  flex-direction: row;
-}
-
-.cu-dual-calendar--dual :deep(.cu-calendar) {
+.cu-dual-calendar :deep(.cu-calendar) {
   flex: 1;
   min-width: 0;
 }

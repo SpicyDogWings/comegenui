@@ -102,6 +102,11 @@ const props = defineProps({
     type: [String, Number, Date] as PropType<string | number | Date | null>,
     default: null,
   },
+  /** Modo de selección: `single` (una fecha) o `range` (inicio + fin) */
+  mode: {
+    type: String as PropType<'single' | 'range'>,
+    default: 'single',
+  },
 })
 
 interface CalendarEvent {
@@ -134,8 +139,18 @@ function goToMonth(value: string | number | Date) { calendarRef.value?.goToMonth
 function getValue(): Date | null { return calendarRef.value?.getValue() ?? null }
 /** Selecciona una fecha (acepta string/number/Date) */
 function setValue(value: string | number | Date | null) { calendarRef.value?.setValue(value) }
+/** null` con el rango seleccionado (modo `range`) */
+function getRange(): { start: Date | null; end: Date | null } {
+  return calendarRef.value?.getRange() ?? { start: null, end: null }
+}
+/** Setea el rango (acepta string/number/Date) (modo `range`) */
+function setRange(start: string | number | Date | null, end: string | number | Date | null) {
+  calendarRef.value?.setRange(start, end)
+}
+/** Limpia el rango seleccionado (modo `range`) */
+function clear() { calendarRef.value?.clear() }
 
-defineExpose({ nextMonth, prevMonth, goToMonth, getValue, setValue })
+defineExpose({ nextMonth, prevMonth, goToMonth, getValue, setValue, getRange, setRange, clear })
 </script>
 
 <template>
@@ -160,10 +175,13 @@ defineExpose({ nextMonth, prevMonth, goToMonth, getValue, setValue })
     :grid="props.grid"
     :border="props.border"
     :view-month="props.viewMonth"
+    :mode="props.mode"
     @select="ceEmit('select', $event)"
     @change="ceEmit('change', $event)"
     @update:modelValue="ceEmit('update:modelValue', $event)"
     @update:viewMonth="ceEmit('update:viewMonth', $event)"
+    @update:rangeStart="ceEmit('update:rangeStart', $event)"
+    @update:rangeEnd="ceEmit('update:rangeEnd', $event)"
   />
 </template>
 

@@ -28,6 +28,49 @@ describe('Calendar — selección', () => {
   })
 })
 
+describe('Calendar — modo rango', () => {
+  it('primer click inicio, segundo fin, y emite el rango', async () => {
+    const w = mount(Calendar, { props: { mode: 'range', modelValue: '2026-08-01' } })
+    await dayButton(w, 10)!.trigger('click')
+    expect(w.emitted('update:rangeStart')).toBeTruthy()
+    expect(w.emitted('select')).toBeFalsy()
+    await dayButton(w, 20)!.trigger('click')
+    expect(w.emitted('update:rangeEnd')).toBeTruthy()
+    const selected = w.emitted('select')
+    expect(selected).toBeTruthy()
+    expect((selected![0]![0] as { start: Date; end: Date }).start.getDate()).toBe(10)
+    expect((selected![0]![0] as { start: Date; end: Date }).end.getDate()).toBe(20)
+    expect(w.emitted('change')).toBeTruthy()
+  })
+
+  it('no emite update:modelValue al clickear en modo rango', async () => {
+    const w = mount(Calendar, { props: { mode: 'range', modelValue: '2026-08-01' } })
+    await dayButton(w, 10)!.trigger('click')
+    expect(w.emitted('update:modelValue')).toBeFalsy()
+  })
+
+  it('pinta el rango con range-start/range-end', async () => {
+    const w = mount(Calendar, { props: { mode: 'range', modelValue: '2026-08-01' } })
+    await dayButton(w, 10)!.trigger('click')
+    expect(w.findAll('.cu-calendar-day--range-start')).toHaveLength(1)
+    await dayButton(w, 20)!.trigger('click')
+    expect(w.findAll('.cu-calendar-day--range-start')).toHaveLength(1)
+    expect(w.findAll('.cu-calendar-day--range-end')).toHaveLength(1)
+    expect(w.findAll('.cu-calendar-day--range').length).toBeGreaterThan(1)
+  })
+})
+
+describe('Calendar — single ignora el rango', () => {
+  it('no pinta clases de rango con rangeStart/rangeEnd', () => {
+    const w = mount(Calendar, {
+      props: { modelValue: '2026-08-01', rangeStart: '2026-08-05', rangeEnd: '2026-08-20' },
+    })
+    expect(w.findAll('.cu-calendar-day--range')).toHaveLength(0)
+    expect(w.findAll('.cu-calendar-day--range-start')).toHaveLength(0)
+    expect(w.findAll('.cu-calendar-day--range-end')).toHaveLength(0)
+  })
+})
+
 describe('Calendar — viewMonth', () => {
   it('modo controlado: navegar emite update:viewMonth', async () => {
     const w = mount(Calendar, { props: { viewMonth: '2026-03-15' } })
