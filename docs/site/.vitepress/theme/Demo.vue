@@ -6,9 +6,12 @@ import Label from "@/components/form/Label.vue";
 import Select from "@/components/form/Select.vue";
 import Switch from "@/components/form/Switch.vue";
 import Card from "@/components/information/Card.vue";
+import Collapse from "@/components/overlay/Collapse.vue";
+import CodeBlock from "@/components/markdown/CodeBlock.vue";
 import LucidePlus from "@/components/icons/LucidePlus.vue";
 import { byName } from "./data";
 import { loadComponent } from "./registry";
+import { samples } from "./samples";
 
 const props = defineProps<{ name: string }>();
 
@@ -50,11 +53,49 @@ function enumOptions(prop: KhadgarRow) {
   return (enumValues(prop.type) ?? []).map((value) => ({ value, label: value }));
 }
 
-function kind(prop: KhadgarRow): "enum" | "boolean" | "number" | "text" {
+// Tipos primitivos/escalares que NO convierten una unión en "objeto".
+const SCALAR_TYPES = new Set([
+  "String", "Number", "Boolean", "Date", "File", "Array", "Object",
+  "Record", "RegExp", "Component", "Promise", "Partial", "null", "undefined",
+]);
+
+// Props complejas que igual no queremos tratar como JSON (estilo/genéricas, o
+// interfaces que exigen funciones como `CommandItem.action`).
+const JSON_EXCLUDE = new Set([
+  "Popover.panelClass",
+  "InlineRenderer.tokens",
+  "CommandPalette.commands",
+]);
+
+/** ¿La prop es un objeto/array (JSON-able)? Excluye funciones y `File`. */
+function isJson(prop: KhadgarRow): boolean {
+  const type = prop.type ?? "";
+  if (/=>/.test(type) || /\bFile\b/.test(type) || /^any(\[\])?$/.test(type)) return false;
+  if (JSON_EXCLUDE.has(`${props.name}.${prop.name}`)) return false;
+  if (/\[\]|Record</.test(type)) return true;
+  const ids = type.match(/\b[A-Z][A-Za-z0-9_]*\b/g) ?? [];
+  return ids.some((id) => !SCALAR_TYPES.has(id));
+}
+
+/** Objeto de ejemplo curado para una prop compleja (si existe). */
+function sampleFor(prop: KhadgarRow): unknown {
+  return samples[props.name]?.[prop.name];
+}
+
+function kind(prop: KhadgarRow): "enum" | "boolean" | "number" | "json" | "text" {
+  if (isJson(prop)) return "json";
   if (enumValues(prop.type)) return "enum";
   if (prop.type === "boolean") return "boolean";
   if (prop.type === "number") return "number";
   return "text";
+}
+
+/** Props complejas que se muestran como JSON en la sección de datos. */
+const jsonProps = computed(() => (meta.value?.props ?? []).filter(isJson));
+
+/** JSON serializado del valor actual de una prop compleja. */
+function jsonOf(prop: KhadgarRow): string {
+  return JSON.stringify(values.value[prop.name] ?? null, null, 2);
 }
 
 /** Valor textual para el `Input`. Coerciona props complejas (arrays/objetos,
@@ -98,7 +139,20 @@ async function load() {
   const name = props.name;
   const next: Record<string, unknown> = {};
   for (const prop of meta.value?.props ?? []) {
-    if (prop.default !== undefined) next[prop.name] = parseDefault(prop.default);
+    if (isJson(prop)) {
+      // Objeto de ejemplo curado; si no hay, el default declarado (o []/{});
+      // se clona para no mutar la muestra compartida entre navegaciones.
+      const sample = sampleFor(prop);
+      const fallback =
+        prop.default !== undefined
+          ? parseDefault(prop.default)
+          : (prop.type ?? "").includes("[]")
+            ? []
+            : {};
+      next[prop.name] = structuredClone(sample !== undefined ? sample : fallback);
+    } else if (prop.default !== undefined) {
+      next[prop.name] = parseDefault(prop.default);
+    }
   }
   values.value = next;
   comp.value = null; // evita que quede el componente anterior
@@ -130,6 +184,7 @@ watch(() => props.name, load, { immediate: true });
       </div>
 
       <template v-if="meta?.props.length" #footer>
+        <div class="khadgar-demo__footer">
         <div class="khadgar-demo__controls">
           <section v-for="group in controlGroups" :key="group.id" class="khadgar-demo__group">
             <span class="khadgar-demo__group-label">{{ group.label }}</span>
@@ -160,6 +215,19 @@ watch(() => props.name, load, { immediate: true });
               </Label>
             </div>
           </section>
+        </div>
+
+        <div v-if="jsonProps.length" class="khadgar-demo__data">
+          <span class="khadgar-demo__group-label">Datos</span>
+          <Collapse
+            v-for="prop in jsonProps"
+            :key="prop.name"
+            :label="prop.name"
+            class="khadgar-demo__data-item"
+          >
+            <CodeBlock :code="jsonOf(prop)" language="json" />
+          </Collapse>
+        </div>
         </div>
       </template>
     </Card>
@@ -200,12 +268,29 @@ watch(() => props.name, load, { immediate: true });
 .khadgar-demo__outside-icon {
   font-size: 28px;
 }
+.khadgar-demo__footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cu-space-lg);
+  width: 100%;
+  min-width: 0;
+}
 /* Los grupos (select → input → boolean) se apilan en columna. */
 .khadgar-demo__controls {
   display: flex;
   flex-direction: column;
   gap: var(--cu-space-lg);
   width: 100%;
+}
+/* Props complejas: un Collapse por prop con el JSON cargado (solo lectura). */
+.khadgar-demo__data {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cu-space-sm);
+  width: 100%;
+}
+.khadgar-demo__data-item :deep(.cu-code-block) {
+  margin-bottom: 0;
 }
 .khadgar-demo__group {
   display: flex;
