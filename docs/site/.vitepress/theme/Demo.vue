@@ -5,6 +5,7 @@ import Input from "@/components/form/Input.vue";
 import Label from "@/components/form/Label.vue";
 import Select from "@/components/form/Select.vue";
 import Switch from "@/components/form/Switch.vue";
+import DatePicker from "@/components/form/DatePicker.vue";
 import Card from "@/components/information/Card.vue";
 import Collapse from "@/components/overlay/Collapse.vue";
 import CodeBlock from "@/components/markdown/CodeBlock.vue";
@@ -135,20 +136,6 @@ function onTextInput(prop: KhadgarRow, value: string) {
   controls.value[prop.name] = value;
 }
 
-/** Valor `YYYY-MM-DD` para el `<input type="date">`. */
-function dateValue(prop: KhadgarRow): string {
-  const raw = controls.value[prop.name];
-  if (raw instanceof Date && !Number.isNaN(raw.getTime())) {
-    const pad = (n: number) => String(n).padStart(2, "0");
-    return `${raw.getFullYear()}-${pad(raw.getMonth() + 1)}-${pad(raw.getDate())}`;
-  }
-  return typeof raw === "string" ? raw : "";
-}
-
-function onDateInput(prop: KhadgarRow, event: Event) {
-  controls.value[prop.name] = (event.target as HTMLInputElement).value;
-}
-
 /** Valor textual de una lista de primitivos (`0, 6`). */
 function listValue(prop: KhadgarRow): string {
   const raw = controls.value[prop.name];
@@ -163,12 +150,14 @@ function onListInput(prop: KhadgarRow, value: string) {
     : parts;
 }
 
-// Agrupa los props por tipo de control (select → input → boolean), conservando
-// el orden de declaración dentro de cada grupo. Los grupos vacíos no se pintan.
+// Agrupa los props por tipo de control (select → input → fecha → boolean),
+// conservando el orden de declaración dentro de cada grupo. Los grupos vacíos
+// no se pintan.
 const controlGroups = computed(() =>
   [
     { id: "enum", label: "Opciones", kinds: ["enum"] },
-    { id: "input", label: "Entrada", kinds: ["text", "number", "date", "list"] },
+    { id: "input", label: "Entradas", kinds: ["text", "number", "list"] },
+    { id: "date", label: "Fechas", kinds: ["date"] },
     { id: "boolean", label: "Booleanos", kinds: ["boolean"] },
   ]
     .map((group) => ({
@@ -265,11 +254,12 @@ watch(() => props.name, load, { immediate: true });
                   type="number"
                   v-model.number="controls[prop.name]"
                 />
-                <input
+                <DatePicker
                   v-else-if="kind(prop) === 'date'"
-                  type="date"
-                  :value="dateValue(prop)"
-                  @input="onDateInput(prop, $event)"
+                  v-model="controls[prop.name]"
+                  fixed
+                  position="top"
+                  placeholder="—"
                 />
                 <Input
                   v-else-if="kind(prop) === 'list'"
@@ -398,8 +388,7 @@ watch(() => props.name, load, { immediate: true });
 }
 /* El input numérico no tiene componente en la lib: se conserva nativo, pero
    con la piel del `Input` (variante soft) para no desentonar. */
-.khadgar-demo__control input[type="number"],
-.khadgar-demo__control input[type="date"] {
+.khadgar-demo__control input[type="number"] {
   font-family: var(--cu-font-sans);
   font-size: var(--cu-font-size-sm);
   font-weight: var(--cu-font-weight-medium);
