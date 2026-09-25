@@ -19,8 +19,8 @@ const props = defineProps({
   label: { type: String, default: '' },
   /** Texto que muestra el trigger (fecha formateada o placeholder). */
   labelText: { type: String, default: '' },
-  position: { type: String, default: 'bottom' },
-  align: { type: String, default: 'start' },
+  position: { type: String as PropType<'bottom' | 'top' | 'left' | 'right'>, default: 'bottom' },
+  align: { type: String as PropType<'start' | 'center' | 'end'>, default: 'start' },
   fixed: { type: Boolean, default: false },
   panelWidth: { type: String, default: '' },
 })

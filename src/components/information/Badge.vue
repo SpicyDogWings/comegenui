@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, type PropType } from "vue";
+import { isVariant } from '@/utils/validators'
 
 const props = defineProps({
   /** Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` */
@@ -10,11 +11,10 @@ const props = defineProps({
   },
   /** `solid`, `outlined`, `soft`, `ghost`, `subtle` */
   variant: {
-    type: String,
+    type: String as PropType<'solid' | 'outlined' | 'soft' | 'ghost' | 'subtle'>,
     required: false,
     default: "soft",
-    validator: (value: string) =>
-      ["solid", "outlined", "soft", "subtle", "ghost"].includes(value),
+    validator: isVariant,
   },
 });
 

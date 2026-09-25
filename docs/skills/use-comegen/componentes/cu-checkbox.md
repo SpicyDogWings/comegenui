@@ -143,8 +143,8 @@ function demo() {
 | Atributo | Tipo | Default | Descripción |
 |------|------|------|------|
 | `modelValue` | `boolean` | `false` | Estado del checkbox (controlado) |
-| `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `size` | `string` | `"md"` | Tamaño del checkbox: `sm`, `md` |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `size` | `"sm" \| "md"` | `"md"` | Tamaño del checkbox: `sm`, `md` |
 | `disabled` | `boolean` | — | Estado deshabilitado |
 | `label` | `string` | — | Texto visible junto al checkbox |
 

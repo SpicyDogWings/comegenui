@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch, onUnmounted, useTemplateRef, type PropType } from "vue";
+import { isFieldVariant } from '@/utils/validators'
 import { useFocus } from "@vueuse/core";
 import Button from "../buttons/Button.vue";
 import Alert from "../information/Alert.vue";
@@ -22,10 +23,10 @@ const props = defineProps({
     default: "neutral",
   },
   variant: {
-    type: String,
+    type: String as PropType<'outlined' | 'soft' | 'ghost' | 'subtle'>,
     required: false,
     default: "outlined",
-    validator: (value: string) => ["outlined", "soft", "ghost", "subtle"].includes(value),
+    validator: isFieldVariant,
   },
   placeholder: {
     type: String,

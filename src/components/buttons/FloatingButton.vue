@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { type PropType } from "vue";
+import { isSize, isVariantFull } from '@/utils/validators'
 import Button from "./Button.vue";
 
 const props = defineProps({
@@ -11,18 +12,17 @@ const props = defineProps({
   },
   /** Variante visual, heredada de `Button`: `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` */
   variant: {
-    type: String,
+    type: String as PropType<'solid' | 'outlined' | 'soft' | 'ghost' | 'subtle' | 'link' | 'none'>,
     required: false,
     default: "solid",
-    validator: (value: string) =>
-      ["solid", "outlined", "soft", "ghost", "subtle", "link", "none"].includes(value),
+    validator: isVariantFull,
   },
   /** Tamaño, heredado de `Button`: `sm`, `md`, `lg` */
   size: {
     type: String as PropType<'sm' | 'md' | 'lg'>,
     required: false,
     default: "lg",
-    validator: (value: string) => ["sm", "md", "lg"].includes(value),
+    validator: isSize,
   },
   /** Deshabilita el botón. */
   disabled: {

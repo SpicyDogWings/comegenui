@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, computed, getCurrentInstance, onMounted, onBeforeUnmount } from "vue";
+import { ref, computed, getCurrentInstance, onMounted, onBeforeUnmount, type PropType } from 'vue';
+import { isAlign, isColor, isPositionVertical, isTextAlign, isVariantFull } from '@/utils/validators'
 import DropdownMenu from "../../controls/DropdownMenu.vue";
 
 const props = defineProps({
@@ -7,19 +8,17 @@ const props = defineProps({
   theme: { type: String, required: false, default: "" },
   /** Color semántico del toggle: `primary`, `neutral`, `success`, `warning`, `danger` */
   color: {
-    type: String,
+    type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     required: false,
     default: "neutral",
-    validator: (value: string) =>
-      ["primary", "secondary", "neutral", "success", "warning", "danger"].includes(value),
+    validator: isColor,
   },
   /** Variante del toggle: `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` */
   variant: {
-    type: String,
+    type: String as PropType<'solid' | 'outlined' | 'soft' | 'ghost' | 'subtle' | 'link' | 'none'>,
     required: false,
     default: "ghost",
-    validator: (value: string) =>
-      ["solid", "outlined", "soft", "ghost", "subtle", "link", "none"].includes(value),
+    validator: isVariantFull,
   },
   /** Deshabilita el toggle */
   disabled: { type: Boolean, required: false, default: false },
@@ -27,24 +26,24 @@ const props = defineProps({
   label: { type: String, required: false, default: "" },
   /** Posición preferida del panel: `bottom`, `top` */
   position: {
-    type: String,
+    type: String as PropType<'bottom' | 'top'>,
     required: false,
     default: "bottom",
-    validator: (value: string) => ["bottom", "top"].includes(value),
+    validator: isPositionVertical,
   },
   /** Alineación del panel: `start`, `center`, `end` */
   align: {
-    type: String,
+    type: String as PropType<'start' | 'center' | 'end'>,
     required: false,
     default: "start",
-    validator: (value: string) => ["start", "center", "end"].includes(value),
+    validator: isAlign,
   },
   /** Alineación del texto del toggle: `left`, `center`, `right` */
   textAlign: {
-    type: String,
+    type: String as PropType<'left' | 'center' | 'right'>,
     required: false,
     default: "left",
-    validator: (value: string) => ["left", "center", "right"].includes(value),
+    validator: isTextAlign,
   },
   /** Separación en píxeles entre el toggle y el panel */
   offset: { type: Number, required: false, default: 4 },

@@ -26,14 +26,14 @@ const value = ref("");
 
 | Prop | Tipo | Default | Descripción |
 |------|------|------|------|
-| `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` |  |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` |  |
 | `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle" \| "link" \| "none"` | `"ghost"` |  |
 | `disabled` | `boolean` | `false` |  |
 | `label` | `string` | `""` |  |
 | `icon` | `string` | `""` | Ícono del trigger (SVG/HTML). |
 | `trigger` | `"click" \| "hover"` | `"click"` |  |
-| `position` | `"bottom" \| "top" \| "left" \| "right"` | `"bottom"` |  |
-| `align` | `"start" \| "center" \| "end"` | `"start"` |  |
+| `position` | `"left" \| "right" \| "bottom" \| "top"` | `"bottom"` |  |
+| `align` | `"center" \| "start" \| "end"` | `"start"` |  |
 | `offset` | `number` | `4` |  |
 | `fixed` | `boolean` | `false` |  |
 | `panelWidth` | `string` | `""` |  |

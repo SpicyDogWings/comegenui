@@ -120,7 +120,7 @@ import SideOver from "@/components/overlay/SideOver.vue";
 |------|------|------|------|
 | `open` | `boolean` | `false` | Estado de visibilidad (v-model). Ver nota de atributo abajo |
 | `title` | `string` | `""` | Título de la cabecera (si está vacío y no es `persistent`, igual muestra el botón de cerrar) |
-| `position` | `string` | `"right"` | Borde desde donde desliza: `left`, `right`, `top`, `bottom` |
+| `position` | `"left" \| "right" \| "bottom" \| "top"` | `"right"` | Borde desde donde desliza: `left`, `right`, `top`, `bottom` |
 | `size` | `string` | `"300px"` | Ancho (`left`/`right`) o alto (`top`/`bottom`) del panel. Valor CSS (`300px`, `40vw`) o preset: `sm`, `md`, `lg`, `xl`, `full`. Ignorado con `fullscreen` |
 | `fullscreen` | `boolean` | `false` | Ocupa toda la pantalla |
 | `persistent` | `boolean` | `false` | Si es `true`, no se cierra por backdrop, `Escape` ni el botón de cerrar |

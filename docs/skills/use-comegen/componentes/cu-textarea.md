@@ -128,7 +128,7 @@ const campo = useTemplateRef("campo");
 | `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
 | `modelValue` | `string` | `""` | Valor controlado |
 | `startValue` | `string` | — | Valor inicial usado por `.reset()` |
-| `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | `outlined`, `soft`, `ghost`, `subtle` |
 | `placeholder` | `string` | — | Placeholder del textarea |
 | `disabled` | `boolean` | `false` | Estado deshabilitado |

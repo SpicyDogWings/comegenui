@@ -1867,8 +1867,8 @@ En variantes transparentes (`outlined`, `ghost`) se aplica `backdrop-filter: blu
 | `itemsPerPage` | `number` | `10` | Tamaño de página (atributo HTML: `items-per-page`) |
 | `showPageSize` | `boolean` | `false` | Muestra selector de items por página (atributo HTML: `show-page-size`) |
 | `pageSizeOptions` | `number[]` | `[5, 10, 20, 50]` | Opciones del selector (atributo HTML: `page-size-options`). Se asigna como propiedad JS |
-| `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `string` | `"soft"` | `solid`, `outlined`, `soft`, `ghost`, `subtle` |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | `solid`, `outlined`, `soft`, `ghost`, `subtle` |
 | `searchEnabled` | `boolean` | `false` | Habilita barra de búsqueda (atributo HTML: `search-enabled`) |
 | `searchPlaceholder` | `string` | `"Buscar..."` | Placeholder del input de búsqueda (atributo HTML: `search-placeholder`) |
 | `searchFields` | `string[]` | `[]` | Columnas donde buscar (atributo HTML: `search-fields`). Vacío = todas |

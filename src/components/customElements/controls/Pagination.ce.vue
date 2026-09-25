@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Pagination from "../../controls/Pagination.vue";
+import type { PropType } from "vue";
 
 const props = defineProps({
   /** Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) */
@@ -10,13 +11,13 @@ const props = defineProps({
   },
   /** Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` */
   color: {
-    type: String,
+    type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     required: false,
     default: "neutral",
   },
   /** `outlined`, `soft`, `ghost`, `subtle`, `none` */
   variant: {
-    type: String,
+    type: String as PropType<'outlined' | 'soft' | 'ghost' | 'subtle' | 'none'>,
     required: false,
     default: "soft",
   },

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, type PropType } from "vue";
+import { isSize } from '@/utils/validators'
 import Avatar from "./Avatar.vue";
 
 const props = defineProps({
@@ -18,10 +19,10 @@ const props = defineProps({
     default: "",
   },
   size: {
-    type: String,
+    type: String as PropType<'sm' | 'md' | 'lg'>,
     required: false,
     default: "md",
-    validator: (value: string) => ["sm", "md", "lg"].includes(value),
+    validator: isSize,
   },
   src: {
     type: String,

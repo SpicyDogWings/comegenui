@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch, useSlots, type PropType } from "vue";
+import { isModalSize } from '@/utils/validators'
 import { useMagicKeys, whenever } from "@vueuse/core";
 import Button from "../buttons/Button.vue";
 
@@ -25,16 +26,16 @@ const props = defineProps({
     default: false,
   },
   size: {
-    type: String,
+    type: String as PropType<'auto' | 'sm' | 'md' | 'lg' | 'xl' | 'full'>,
     required: false,
     default: "auto",
-    validator: (value: string) => ["auto", "sm", "md", "lg", "xl", "full"].includes(value),
+    validator: isModalSize,
   },
   height: {
-    type: String,
+    type: String as PropType<'auto' | 'sm' | 'md' | 'lg' | 'xl' | 'full'>,
     required: false,
     default: "auto",
-    validator: (value: string) => ["auto", "sm", "md", "lg", "xl", "full"].includes(value),
+    validator: isModalSize,
   },
 });
 

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, useTemplateRef, watch, type PropType } from "vue";
+import { isCellsImporterInputType } from '@/utils/validators'
 import FileInput from "./FileInput.vue";
 import FileInputZone from "./FileInputZone.vue";
 import Button from "../buttons/Button.vue";
@@ -82,7 +83,7 @@ const props = defineProps({
     type: String as PropType<'input' | 'zone'>,
     required: false,
     default: "input",
-    validator: (value: string) => ["input", "zone"].includes(value),
+    validator: isCellsImporterInputType,
   },
 });
 

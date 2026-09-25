@@ -422,8 +422,8 @@ const canEdit = computed(() => {
         :rows="column.textarea?.rows ?? 3"
         :disabled="props.disabled"
         class="cu-editable-cell-input"
-        :color="elementColor"
-        :variant="elementVariant"
+        :color="(elementColor as any)"
+        :variant="(elementVariant as any)"
       />
       <Select
         v-else-if="column.inputType === 'select'"
@@ -439,8 +439,8 @@ const canEdit = computed(() => {
         @blur="saveEdit"
         :disabled="props.disabled"
         class="cu-editable-cell-input"
-        :color="elementColor"
-        :variant="elementVariant"
+        :color="(elementColor as any)"
+        :variant="(elementVariant as any)"
       />
       <Autocomplete
         v-else-if="column.inputType === 'autocomplete'"
@@ -453,8 +453,8 @@ const canEdit = computed(() => {
         @blur="saveEdit"
         @select="(item) => { if (item.value) editValue = item.value; saveEdit(); }"
         class="cu-editable-cell-input"
-        :color="elementColor"
-        :variant="elementVariant"
+        :color="(elementColor as any)"
+        :variant="(elementVariant as any)"
       />
       <DatePicker
         v-else-if="column.inputType === 'date'"
@@ -468,8 +468,8 @@ const canEdit = computed(() => {
         :disabled-dates="column.date?.disabledDates"
         :color="(elementColor as any)"
         :variant="(elementVariant as any)"
-        :position="column.date?.position"
-        :align="column.date?.align"
+        :position="(column.date?.position as any)"
+        :align="(column.date?.align as any)"
         :fixed="column.date?.fixed ?? true"
         :disabled="props.disabled"
         @change="onDateChange"
@@ -479,7 +479,7 @@ const canEdit = computed(() => {
       <Switch
         v-else-if="column.inputType === 'switch'"
         :model-value="switchValue"
-        :color="elementColor"
+        :color="(elementColor as any)"
         :size="column.switch?.size || 'md'"
         :disabled="props.disabled"
         @change="onSwitchChange"
@@ -489,14 +489,14 @@ const canEdit = computed(() => {
         v-else
         ref="inputRef"
         v-model="editValue"
-        :type="column.input?.type || 'text'"
+        :type="(column.input?.type || 'text') as any"
         :start-value="column.input?.startValue"
         :disabled="props.disabled"
         @blur="saveEdit"
         @keydown="handleKeyDown"
         class="cu-editable-cell-input"
-        :color="elementColor"
-        :variant="elementVariant"
+        :color="(elementColor as any)"
+        :variant="(elementVariant as any)"
       />
     </template>
 

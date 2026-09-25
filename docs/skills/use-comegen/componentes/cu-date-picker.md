@@ -209,8 +209,8 @@ picker.clear();
 | `endDate` | `string \| number \| Date \| null` | `null` | Fin del rango. Solo con calendario de rango (`mode="range"` o `dual-calendar`); en `single` se ignora. En HTML: `end-date="2026-08-31"` |
 | `min` | `string \| number \| Date \| null` | `null` | Fecha mínima seleccionable |
 | `max` | `string \| number \| Date \| null` | `null` | Fecha máxima seleccionable |
-| `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico del trigger y del día seleccionado del calendario interno (se pasa tal cual; `neutral` = neutral, ya no mapea a primary) |
-| `variant` | `"soft" \| "outlined" \| "ghost" \| "subtle"` | `"soft"` | Variante del trigger: `outlined`, `soft`, `ghost`, `subtle`. En el calendario interno `ghost` se mapea a `soft` (el calendario ya no tiene ghost) |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico del trigger y del día seleccionado del calendario interno (se pasa tal cual; `neutral` = neutral, ya no mapea a primary) |
+| `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | Variante del trigger: `outlined`, `soft`, `ghost`, `subtle`. En el calendario interno `ghost` se mapea a `soft` (el calendario ya no tiene ghost) |
 | `disabled` | `boolean` | `false` | Deshabilita el picker completo |
 | `placeholder` | `string` | `""` | Texto cuando no hay fecha (default: `"Seleccionar fecha..."`, rango: `"Seleccionar rango..."`) |
 | `locale` | `string` | `"es"` | Locale del calendario y nombres de mes |
@@ -225,8 +225,8 @@ picker.clear();
 | `grid` | `boolean` | `false` | Líneas **interiores** (cuadrícula) entre los días del calendario interno |
 | `border` | `boolean` | `false` | **Marco exterior** alrededor de la cuadrícula de días del calendario interno |
 | `dualCalendar` | `boolean` | `false` | Activa el rango a dos meses (dual). **Implica `range`**: aunque `mode` sea `single`, el picker selecciona un rango |
-| `position` | `string` | `"bottom"` | `right` |
-| `align` | `string` | `"start"` | `end` |
+| `position` | `"left" \| "right" \| "bottom" \| "top"` | `"bottom"` | `right` |
+| `align` | `"center" \| "start" \| "end"` | `"start"` | `end` |
 | `fixed` | `boolean` | `false` | Panel en `position: fixed` (útil en contenedores con overflow) |
 | `clearable` | `boolean` | `true` | Muestra el botón "Limpiar" en el footer del panel |
 | `todayButton` | `boolean` | `"undefined"` | Muestra el botón "Hoy" en el footer del panel (default: `true` en `single`, `false` en `range`) |

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, defineModel, type PropType } from "vue";
+import { isSize, isTabsVariant } from '@/utils/validators'
 
 interface TabItem {
   key: string;
@@ -27,13 +28,13 @@ const props = defineProps({
     type: String as PropType<'ghost' | 'solid' | 'boxed' | 'soft'>,
     required: false,
     default: "ghost",
-    validator: (value: string) => ["ghost", "solid", "boxed", "soft"].includes(value),
+    validator: isTabsVariant,
   },
   size: {
     type: String as PropType<'sm' | 'md' | 'lg'>,
     required: false,
     default: "md",
-    validator: (value: string) => ["sm", "md", "lg"].includes(value),
+    validator: isSize,
   },
   disabled: {
     type: Boolean,

@@ -240,9 +240,9 @@ El repositorio incluye una demo en HTML plano: [`playground/pages/tabs/tabs.html
 |------|------|------|------|
 | `tabs` | `{ key: string; label: string; icon?: string; disabled?: boolean; keepAlive?: boolean; }[]` | `[]` | Definición de las pestañas |
 | `modelValue` | `string` | `""` | Key del tab activo (controlado) |
-| `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"primary"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `"soft" \| "solid" \| "ghost" \| "boxed"` | `"ghost"` | `ghost`, `solid`, `boxed`, `soft` |
-| `size` | `"md" \| "sm" \| "lg"` | `"md"` | `sm`, `md`, `lg` |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"primary"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
+| `variant` | `"solid" \| "soft" \| "ghost" \| "boxed"` | `"ghost"` | `ghost`, `solid`, `boxed`, `soft` |
+| `size` | `"sm" \| "md" \| "lg"` | `"md"` | `sm`, `md`, `lg` |
 | `disabled` | `boolean` | — | Deshabilita todas las pestañas |
 
 ### Prop `tabs`

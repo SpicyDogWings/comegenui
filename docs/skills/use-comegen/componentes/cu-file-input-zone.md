@@ -124,7 +124,7 @@ El listado de archivos se renderiza con `<cu-file-list>` (componente interno) qu
 | Atributo | Tipo | Default | Descripción |
 |------|------|------|------|
 | `modelValue` | `File \| File[] \| null` | `null` | Archivo/s seleccionados |
-| `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `placeholder` | `string` | `"Selecciona un archivo o arrastra aquí"` | Texto cuando no hay archivos |
 | `disabled` | `boolean` | — | Deshabilita interacción |
 | `readOnly` | `boolean` | — | Modo solo lectura |

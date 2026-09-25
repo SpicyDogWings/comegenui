@@ -13,7 +13,7 @@ const props = defineProps({
   },
   /** `ghost` (default), `outlined`, `soft`, `subtle`, `solid` */
   variant: {
-    type: String,
+    type: String as PropType<'solid' | 'outlined' | 'soft' | 'ghost' | 'subtle'>,
     default: "ghost",
   },
   /** `vertical` (media arriba) o `horizontal` (media al costado) */

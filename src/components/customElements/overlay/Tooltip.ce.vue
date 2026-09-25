@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Tooltip from "../../overlay/Tooltip.vue";
 import { initTokens } from "@/plugins/cu-tokens/css";
+import type { PropType } from "vue";
 
 initTokens();
 
@@ -8,11 +9,11 @@ const props = defineProps({
   /** Texto del tooltip. Si se usa el slot `content`, tiene prioridad */
   text: { type: String, default: "" },
   /** Color semántico del fondo: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` */
-  color: { type: String, default: "neutral" },
+  color: { type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>, default: "neutral" },
   /** Lado donde aparece: `top`, `bottom`, `left`, `right` */
-  position: { type: String, default: "top" },
+  position: { type: String as PropType<'bottom' | 'top' | 'left' | 'right'>, default: "top" },
   /** Alineación respecto al elemento: `start`, `center`, `end` */
-  align: { type: String, default: "center" },
+  align: { type: String as PropType<'start' | 'center' | 'end'>, default: "center" },
   /** Distancia (px) entre el elemento y el tooltip */
   offset: { type: Number, default: 6 },
   /** Retardo (ms) antes de mostrar el tooltip al hacer hover */

@@ -14,7 +14,7 @@ const props = defineProps({
     default: "neutral",
   },
   /** Tamaño del checkbox: `sm`, `md` */
-  size: { type: String, default: "md" },
+  size: { type: String as PropType<'sm' | 'md'>, default: "md" },
   /** Estado deshabilitado */
   disabled: Boolean,
   /** Texto visible junto al checkbox */

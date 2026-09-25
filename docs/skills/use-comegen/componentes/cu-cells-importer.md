@@ -184,8 +184,8 @@ onMounted(() => {
 | `strict` | `boolean` | `false` | `false` = match por label en cualquier orden; `true` = respeta el orden del schema |
 | `sheet` | `string \| number` | `0` | Hoja a leer en `.xlsx` (índice o nombre) |
 | `template` | `{ enabled?: boolean; type?: "xlsx" \| "csv"; filename?: string; }` | `{ enabled: false, type: "csv", filename: "template" }` | "xlsx"` |
-| `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `"soft" \| "outlined" \| "ghost" \| "subtle"` | `"outlined"` | `outlined`, `soft`, `ghost`, `subtle` |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
+| `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `"outlined"` | `outlined`, `soft`, `ghost`, `subtle` |
 | `placeholder` | `string` | `"Seleccionar archivo"` | Texto cuando no hay archivo |
 | `disabled` | `boolean` | — | Deshabilita la selección |
 | `readOnly` | `boolean` | — | Modo solo lectura |

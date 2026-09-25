@@ -250,8 +250,8 @@ function onClose() { console.log('cerrado'); }
 | `disabled` | `boolean` | `false` | Deshabilita el toggle |
 | `label` | `string` | `""` | Texto del toggle (se ignora si se provee slot `toggle`) |
 | `position` | `"bottom" \| "top"` | `"bottom"` | Posición preferida del panel: `bottom`, `top` |
-| `align` | `"start" \| "center" \| "end"` | `"start"` | Alineación del panel: `start`, `center`, `end` |
-| `textAlign` | `"left" \| "center" \| "right"` | `"left"` | Alineación del texto del toggle: `left`, `center`, `right` |
+| `align` | `"center" \| "start" \| "end"` | `"start"` | Alineación del panel: `start`, `center`, `end` |
+| `textAlign` | `"center" \| "left" \| "right"` | `"left"` | Alineación del texto del toggle: `left`, `center`, `right` |
 | `offset` | `number` | `4` | Separación en píxeles entre el toggle y el panel |
 | `fixed` | `boolean` | `false` | Si es `true`, el panel usa `position: fixed` en vez de absoluto |
 | `items` | `unknown[]` | `[]` | Lista de items (ver abajo). Se asigna como propiedad JS, no como atributo HTML |

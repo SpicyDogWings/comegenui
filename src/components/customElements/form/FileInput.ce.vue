@@ -14,7 +14,7 @@ const props = defineProps({
     default: "neutral",
   },
   /** `outlined`, `soft`, `ghost`, `subtle` */
-  variant: { type: String, default: "outlined" },
+  variant: { type: String as PropType<'outlined' | 'soft' | 'ghost' | 'subtle'>, default: "outlined" },
   /** Texto cuando no hay archivo */
   placeholder: { type: String, default: "Seleccionar archivo" },
   /** Deshabilita click, drag y drop */

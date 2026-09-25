@@ -253,6 +253,7 @@ Tokens compartidos: tipografía, spacing, border-radius, shadows, borders.
 9. Los entry points van en `src/lib/{category}/mi-componente.ts`
 10. `hightContrast` es el nombre correcto del prop (typo persistente en todo el codebase)
 11. **Creá ramas solo cuando corresponde, no a cada rato.** Creá una rama nueva **solo cuando la rama base es `main`** y la tarea es una feature, fix, docs o tests con entidad propia (ej: `feat/x`, `fix/x`, `docs/x`, `test/x`). **Si ya estás trabajando en una rama (base ≠ `main`), NO crees otra rama** salvo que el usuario lo pida explícitamente — trabajá sobre la rama actual. `main` solo recibe merges.
+12. **Validadores de props:** usá los compartidos de `src/utils/validators.ts` (`validator: isColor`, `isSize`, …) en vez de repetir el array inline. Mantené igual la **unión inline en `PropType<...>`** (khadgar la extrae para la doc y el playground; un alias con nombre la rompe). Los formatos de mes/año viven en `src/utils/date.ts` (`isMonthFormat`/`isYearFormat`).
 
 ---
 

@@ -140,8 +140,8 @@ import Pagination from "@/components/controls/Pagination.vue";
 | Atributo | Tipo | Default | Descripción |
 |------|------|------|------|
 | `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
-| `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `string` | `"soft"` | `outlined`, `soft`, `ghost`, `subtle`, `none` |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle" \| "none"` | `"soft"` | `outlined`, `soft`, `ghost`, `subtle`, `none` |
 | `currentPage` | `number` | `1` | Página actual (atributo HTML: `current-page`) |
 | `totalPages` | `number` | `1` | Total de páginas (atributo HTML: `total-pages`) |
 | `totalItems` | `number` | `0` | Total de items, útil para mostrar "X–Y de Z" (atributo HTML: `total-items`) |

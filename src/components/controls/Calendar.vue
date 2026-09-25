@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch, type PropType } from 'vue'
+import { isDateMode, isVariantNoGhost } from '@/utils/validators'
 import MonthSlider from './MonthSlider.vue'
 import {
   addMonths,
@@ -35,8 +36,7 @@ const props = defineProps({
     // ghost se quita: el día de hoy (transparente + color accent) se confundía con el seleccionado ghost
     type: String as PropType<'solid' | 'outlined' | 'soft' | 'subtle'>,
     default: 'soft',
-    validator: (value: string) =>
-      ['solid', 'outlined', 'soft', 'subtle'].includes(value),
+    validator: isVariantNoGhost,
   },
   disabled: {
     type: Boolean,
@@ -114,7 +114,7 @@ const props = defineProps({
   mode: {
     type: String as PropType<'single' | 'range'>,
     default: 'single',
-    validator: (value: string) => ['single', 'range'].includes(value),
+    validator: isDateMode,
   },
 })
 

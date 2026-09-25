@@ -162,8 +162,8 @@ import Badge from "@/components/information/Badge.vue";
 
 | Atributo | Tipo | Default | Descripción |
 |------|------|------|------|
-| `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `string` | `"ghost"` | `ghost` (default), `outlined`, `soft`, `subtle`, `solid` |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
+| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle"` | `"ghost"` | `ghost` (default), `outlined`, `soft`, `subtle`, `solid` |
 | `layout` | `"vertical" \| "horizontal"` | `"vertical"` | `vertical` (media arriba) o `horizontal` (media al costado) |
 | `title` | `string` | — | Título del header |
 | `subtitle` | `string` | — | Subtítulo bajo el título |

@@ -84,8 +84,8 @@ Soporta arrastrar un solo archivo sobre el componente. Durante el drag se ilumin
 | Atributo | Tipo | Default | Descripción |
 |------|------|------|------|
 | `modelValue` | `File \| null` | `null` | Archivo seleccionado (vía JS, no HTML) |
-| `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `string` | `"outlined"` | `outlined`, `soft`, `ghost`, `subtle` |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `"outlined"` | `outlined`, `soft`, `ghost`, `subtle` |
 | `placeholder` | `string` | `"Seleccionar archivo"` | Texto cuando no hay archivo |
 | `disabled` | `boolean` | — | Deshabilita click, drag y drop |
 | `readOnly` | `boolean` | — | Modo solo lectura |

@@ -1,20 +1,20 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, ref, watch, type PropType } from 'vue';
+import { isFieldVariantNone } from '@/utils/validators'
 import Button from "../buttons/Button.vue";
 import Select from "../form/Select.vue";
 
 const props = defineProps({
   color: {
-    type: String,
+    type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     required: false,
     default: "neutral",
   },
   variant: {
-    type: String,
+    type: String as PropType<'outlined' | 'soft' | 'ghost' | 'subtle' | 'none'>,
     required: false,
     default: "soft",
-    validator: (value: string) =>
-      ["outlined", "soft", "ghost", "subtle", "none"].includes(value),
+    validator: isFieldVariantNone,
   },
   currentPage: {
     type: Number,

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, watch, onMounted, onUnmounted } from 'vue'
+import { computed, watch, onMounted, onUnmounted, type PropType } from 'vue'
+import { isPosition } from '@/utils/validators'
 
 // SideOver: panel overlay que desliza desde un borde (izquierda/derecha/arriba/
 // abajo) sobre el contenido, con scrim y cierre por backdrop/Escape. Opción
@@ -8,10 +9,10 @@ const props = defineProps({
   modelValue: { type: Boolean, required: false, default: false },
   title: { type: String, required: false, default: '' },
   position: {
-    type: String,
+    type: String as PropType<'bottom' | 'top' | 'left' | 'right'>,
     required: false,
     default: 'right',
-    validator: (value: string) => ['left', 'right', 'top', 'bottom'].includes(value),
+    validator: isPosition,
   },
   // Ancho (left/right) o alto (top/bottom) del panel. Ignorado en fullscreen.
   // Acepta un valor CSS ('300px', '40vw') o un preset: 'sm' | 'md' | 'lg' | 'xl' | 'full'.

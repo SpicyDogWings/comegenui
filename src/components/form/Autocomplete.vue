@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, computed, watch, defineModel } from "vue";
+import { ref, computed, watch, defineModel, type PropType } from 'vue';
+import { isAlign, isColor, isFieldVariant, isPosition } from '@/utils/validators'
 import Dropdown from "../overlay/Dropdown.vue";
 import Input from "./Input.vue";
 import Button from "../buttons/Button.vue";
@@ -13,36 +14,34 @@ interface AutocompleteItem {
 
 const props = defineProps({
   color: {
-    type: String,
+    type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     required: false,
     default: "neutral",
-    validator: (value: string) =>
-      ["primary", "secondary", "neutral", "success", "warning", "danger"].includes(value),
+    validator: isColor,
   },
   disabled: { type: Boolean, required: false, default: false },
   readOnly: { type: Boolean, required: false, default: false },
   placeholder: { type: String, required: false, default: "" },
   variant: {
-    type: String,
+    type: String as PropType<'outlined' | 'soft' | 'ghost' | 'subtle'>,
     required: false,
     default: "soft",
-    validator: (value: string) =>
-      ["outlined", "soft", "ghost", "subtle"].includes(value),
+    validator: isFieldVariant,
   },
   type: { type: String, required: false, default: "text" },
   minChars: { type: Number, required: false, default: 0 },
   items: { type: Array as () => AutocompleteItem[], required: false, default: () => [] },
   position: {
-    type: String,
+    type: String as PropType<'bottom' | 'top' | 'left' | 'right'>,
     required: false,
     default: "bottom",
-    validator: (value: string) => ["bottom", "top", "left", "right"].includes(value),
+    validator: isPosition,
   },
   align: {
-    type: String,
+    type: String as PropType<'start' | 'center' | 'end'>,
     required: false,
     default: "start",
-    validator: (value: string) => ["start", "center", "end"].includes(value),
+    validator: isAlign,
   },
   fixed: { type: Boolean, required: false, default: false },
 });

@@ -18,9 +18,9 @@ const props = defineProps({
   /** Si es `true`, no se cierra con click en el backdrop ni con `Escape` */
   persistent: Boolean,
   /** Ancho del modal: `auto`, `sm`, `md`, `lg`, `xl`, `full` */
-  size: { type: String, default: "auto" },
+  size: { type: String as PropType<'auto' | 'sm' | 'md' | 'lg' | 'xl' | 'full'>, default: "auto" },
   /** Alto del modal: `auto`, `sm`, `md`, `lg`, `xl`, `full` */
-  height: { type: String, default: "auto" },
+  height: { type: String as PropType<'auto' | 'sm' | 'md' | 'lg' | 'xl' | 'full'>, default: "auto" },
 });
 
 const modalRef = ref<InstanceType<typeof Modal> | null>(null);

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, type PropType } from "vue";
+import { isColor, isVariant } from '@/utils/validators'
 import Loader from "../information/Loader.vue";
 
 interface Column {
@@ -36,18 +37,16 @@ const props = defineProps({
     default: "No hay datos que mostrar",
   },
   color: {
-    type: String,
+    type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     required: false,
     default: "neutral",
-    validator: (value: string) =>
-      ["primary", "secondary", "neutral", "success", "warning", "danger"].includes(value),
+    validator: isColor,
   },
   variant: {
-    type: String,
+    type: String as PropType<'solid' | 'outlined' | 'soft' | 'ghost' | 'subtle'>,
     required: false,
     default: "soft",
-    validator: (value: string) =>
-      ["solid", "outlined", "soft", "ghost", "subtle"].includes(value),
+    validator: isVariant,
   },
   loading: {
     type: Boolean,

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, useSlots, type PropType, type VNode } from "vue";
+import { isCardLayout, isVariant } from '@/utils/validators'
 
 const slots = useSlots();
 
@@ -21,17 +22,16 @@ const props = defineProps({
     default: "neutral",
   },
   variant: {
-    type: String,
+    type: String as PropType<'solid' | 'outlined' | 'soft' | 'ghost' | 'subtle'>,
     required: false,
     default: "ghost",
-    validator: (value: string) =>
-      ["ghost", "outlined", "soft", "subtle", "solid"].includes(value),
+    validator: isVariant,
   },
   layout: {
     type: String as PropType<'vertical' | 'horizontal'>,
     required: false,
     default: "vertical",
-    validator: (value: string) => ["vertical", "horizontal"].includes(value),
+    validator: isCardLayout,
   },
   title: {
     type: String,

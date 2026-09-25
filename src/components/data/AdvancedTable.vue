@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch, toRef, type Component, type PropType } from "vue";
+import { isColor, isVariant, type Color, type Target, type Variant, type VariantFull } from '@/utils/validators';
 import Table from "./Table.vue";
 import Pagination from "../controls/Pagination.vue";
 import Input from "../form/Input.vue";
@@ -55,8 +56,8 @@ const isCellDisabled = (col: Column, row: Record<string, any>): boolean => {
 
 interface BadgeConfig {
   value: string;
-  color?: string;
-  variant?: string;
+  color?: Color;
+  variant?: Variant;
 }
 
 interface ButtonConfig {
@@ -64,9 +65,9 @@ interface ButtonConfig {
   icon?: string | Component;
   onClick?: (row: Record<string, any>) => void;
   to?: string;
-  target?: string;
-  color?: string;
-  variant?: string;
+  target?: Target;
+  color?: Color;
+  variant?: VariantFull;
   disabled?: boolean;
 }
 
@@ -174,18 +175,16 @@ const props = defineProps({
   showPageSize: { type: Boolean, required: false, default: false },
   pageSizeOptions: { type: Array as () => number[], required: false, default: () => [5, 10, 20, 50] },
   color: {
-    type: String,
+    type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     required: false,
     default: "neutral",
-    validator: (value: string) =>
-      ["primary", "secondary", "neutral", "success", "warning", "danger"].includes(value),
+    validator: isColor,
   },
   variant: {
-    type: String,
+    type: String as PropType<'solid' | 'outlined' | 'soft' | 'ghost' | 'subtle'>,
     required: false,
     default: "soft",
-    validator: (value: string) =>
-      ["solid", "outlined", "soft", "ghost", "subtle"].includes(value),
+    validator: isVariant,
   },
   searchEnabled: { type: Boolean, required: false, default: false },
   searchPlaceholder: { type: String, required: false, default: "Buscar..." },

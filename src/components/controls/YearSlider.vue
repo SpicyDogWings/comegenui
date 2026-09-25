@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch, type PropType } from 'vue'
+import { isVariant } from '@/utils/validators'
 import Button from '@/components/buttons/Button.vue'
 import LucideChevronLeft from '@/components/icons/LucideChevronLeft.vue'
 import LucideChevronRight from '@/components/icons/LucideChevronRight.vue'
@@ -15,8 +16,7 @@ const props = defineProps({
   variant: {
     type: String as PropType<'solid' | 'outlined' | 'soft' | 'ghost' | 'subtle'>,
     default: 'soft',
-    validator: (value: string) =>
-      ['solid', 'outlined', 'soft', 'ghost', 'subtle'].includes(value),
+    validator: isVariant,
   },
   min: {
     type: [Number, String] as PropType<number | string | null>,

@@ -13,7 +13,7 @@ const props = defineProps({
   },
   /** `solid`, `outlined`, `soft`, `ghost`, `subtle` */
   variant: {
-    type: String,
+    type: String as PropType<'solid' | 'outlined' | 'soft' | 'ghost' | 'subtle'>,
     default: "soft",
   },
   /** Título visible en la cabecera */

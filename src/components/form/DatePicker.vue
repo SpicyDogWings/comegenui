@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch, type PropType } from 'vue'
+import { isAlign, isDateMode, isPosition } from '@/utils/validators'
 import Button from '../buttons/Button.vue'
 import Calendar from '../controls/Calendar.vue'
 import DualCalendar from '../controls/DualCalendar.vue'
@@ -12,7 +13,7 @@ const props = defineProps({
   mode: {
     type: String as PropType<'single' | 'range'>,
     default: 'single',
-    validator: (value: string) => ['single', 'range'].includes(value),
+    validator: isDateMode,
   },
   // API espejo de MonthSlider/YearSlider: acepta Date, timestamp o fecha "YYYY-MM-DD"
   /** Fecha seleccionada (calendario `single`) */
@@ -86,8 +87,18 @@ const props = defineProps({
   border: { type: Boolean, required: false, default: false },
   /** Activa el rango a dos meses (dual). **Implica `range`**: aunque `mode` sea `single`, el picker selecciona un rango */
   dualCalendar: { type: Boolean, required: false, default: false },
-  position: { type: String, required: false, default: 'bottom' },
-  align: { type: String, required: false, default: 'start' },
+  position: {
+    type: String as PropType<'bottom' | 'top' | 'left' | 'right'>,
+    required: false,
+    default: 'bottom',
+    validator: isPosition,
+  },
+  align: {
+    type: String as PropType<'start' | 'center' | 'end'>,
+    required: false,
+    default: 'start',
+    validator: isAlign,
+  },
   fixed: { type: Boolean, required: false, default: false },
   clearable: { type: Boolean, required: false, default: true },
   // Default por modo (single: true, range: false) resuelto en `showToday`

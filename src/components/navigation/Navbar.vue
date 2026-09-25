@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch, type PropType } from 'vue'
+import { isNavbarResponsiveMode, isNavbarSearchMode, isPosition } from '@/utils/validators'
 import { useRoute } from 'vue-router'
 import SideOver from '@/components/overlay/SideOver.vue'
 import NavbarList from '@/components/navigation/NavbarList.vue'
@@ -15,7 +16,7 @@ const props = defineProps({
     type: String as PropType<'filter' | 'scroll'>,
     required: false,
     default: 'filter',
-    validator: (value: string) => ['filter', 'scroll'].includes(value),
+    validator: isNavbarSearchMode,
   },
   searchFields: { type: Array as () => string[], required: false, default: () => [] },
   // Compact: muestra solo los iconos (o la inicial del label si no hay icono).
@@ -42,14 +43,14 @@ const props = defineProps({
     type: String as PropType<'auto' | 'side' | 'fullscreen'>,
     required: false,
     default: 'auto',
-    validator: (value: string) => ['auto', 'side', 'fullscreen'].includes(value),
+    validator: isNavbarResponsiveMode,
   },
   // Desde qué borde desliza el SideOver del responsive.
   sideOverPosition: {
     type: String as PropType<'left' | 'right' | 'top' | 'bottom'>,
     required: false,
     default: 'left',
-    validator: (value: string) => ['left', 'right', 'top', 'bottom'].includes(value),
+    validator: isPosition,
   },
   // Path activo manual (para vanilla/CE sin vue-router). Si se omite, se toma
   // de useRoute() cuando hay router.

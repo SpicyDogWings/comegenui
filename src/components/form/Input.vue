@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, defineModel, useTemplateRef } from "vue";
+import { computed, defineModel, useTemplateRef, type PropType } from 'vue';
+import { isColor, isFieldVariant, isInputType, isSize } from '@/utils/validators'
 import { useFocus } from "@vueuse/core";
 
 const value = defineModel<string>({ default: "" });
@@ -10,25 +11,22 @@ const props = defineProps({
     required: false,
   },
   color: {
-    type: String,
+    type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     required: false,
     default: "neutral",
-    validator: (value: string) =>
-      ["primary", "secondary", "neutral", "success", "warning", "danger"].includes(value),
+    validator: isColor,
   },
   variant: {
-    type: String,
+    type: String as PropType<'outlined' | 'soft' | 'ghost' | 'subtle'>,
     required: false,
     default: "soft",
-    validator: (value: string) =>
-      ["outlined", "soft", "ghost", "subtle"].includes(value),
+    validator: isFieldVariant,
   },
   type: {
-    type: String,
+    type: String as PropType<'text' | 'password' | 'email' | 'number' | 'tel' | 'url' | 'search'>,
     required: false,
     default: "text",
-    validator: (value: string) =>
-      ["text", "password", "email", "number", "tel", "url", "search"].includes(value),
+    validator: isInputType,
   },
   placeholder: {
     type: String,
@@ -46,10 +44,10 @@ const props = defineProps({
   },
   /** Tamaño del input (sm | md | lg). */
   size: {
-    type: String,
+    type: String as PropType<'sm' | 'md' | 'lg'>,
     required: false,
     default: "md",
-    validator: (value: string) => ["sm", "md", "lg"].includes(value),
+    validator: isSize,
   },
 });
 

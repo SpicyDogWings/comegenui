@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, computed, watch, nextTick } from "vue";
+import { ref, computed, watch, nextTick, type PropType } from 'vue';
+import { isColor, isFieldVariant, isSelectSearchMode, isTextAlign } from '@/utils/validators'
 import Dropdown from "../overlay/Dropdown.vue";
 import Button from "../buttons/Button.vue";
 import { matchesQuery } from "@/utils/search";
@@ -14,18 +15,16 @@ interface SelectOption {
 
 const props = defineProps({
   color: {
-    type: String,
+    type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     required: false,
     default: "neutral",
-    validator: (value: string) =>
-      ["primary", "secondary", "neutral", "success", "warning", "danger"].includes(value),
+    validator: isColor,
   },
   variant: {
-    type: String,
+    type: String as PropType<'outlined' | 'soft' | 'ghost' | 'subtle'>,
     required: false,
     default: "soft",
-    validator: (value: string) =>
-      ["outlined", "soft", "ghost", "subtle"].includes(value),
+    validator: isFieldVariant,
   },
   disabled: { type: Boolean, required: false, default: false },
   placeholder: { type: String, required: false, default: "" },
@@ -33,20 +32,20 @@ const props = defineProps({
   position: { type: String, required: false, default: "bottom" },
   align: { type: String, required: false, default: "start" },
   textAlign: {
-    type: String,
+    type: String as PropType<'left' | 'center' | 'right'>,
     required: false,
     default: "left",
-    validator: (value: string) => ["left", "center", "right"].includes(value),
+    validator: isTextAlign,
   },
   fixed: { type: Boolean, required: false, default: false },
   modelValue: { type: String, required: false, default: "" },
   options: { type: Array as () => SelectOption[], required: false, default: () => [] },
   searchEnabled: { type: Boolean, required: false, default: false },
   searchMode: {
-    type: String,
+    type: String as PropType<'startsWith' | 'includes'>,
     required: false,
     default: "startsWith",
-    validator: (value: string) => ["startsWith", "includes"].includes(value),
+    validator: isSelectSearchMode,
   },
   searchResetDelay: { type: Number, required: false, default: 1000 },
   loading: { type: Boolean, required: false, default: false },

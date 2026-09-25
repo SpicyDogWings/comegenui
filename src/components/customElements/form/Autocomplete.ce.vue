@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, getCurrentInstance } from "vue";
+import { ref, watch, getCurrentInstance, type PropType } from "vue";
 import Autocomplete from "../../form/Autocomplete.vue";
 
 const props = defineProps({
@@ -7,13 +7,13 @@ const props = defineProps({
   theme: { type: String, required: false, default: "" },
   /** Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` */
   color: {
-    type: String,
+    type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     required: false,
     default: "neutral",
   },
   /** `outlined`, `soft`, `ghost`, `subtle` */
   variant: {
-    type: String,
+    type: String as PropType<'outlined' | 'soft' | 'ghost' | 'subtle'>,
     required: false,
     default: "soft",
   },
@@ -34,9 +34,9 @@ const props = defineProps({
   /** Caracteres mínimos para abrir el menú (atributo HTML: `min-chars`) */
   minChars: { type: Number, required: false, default: 0 },
   /** Posición del dropdown: `bottom`, `top` */
-  position: { type: String, required: false, default: "bottom" },
+  position: { type: String as PropType<'bottom' | 'top' | 'left' | 'right'>, required: false, default: "bottom" },
   /** Alineación: `start`, `center`, `end` */
-  align: { type: String, required: false, default: "start" },
+  align: { type: String as PropType<'start' | 'center' | 'end'>, required: false, default: "start" },
   /** Opciones del menú (ver abajo). Se asigna como propiedad JS */
   items: { type: Array, required: false, default: () => [] },
   /** Valor controlado */

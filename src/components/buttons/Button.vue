@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, watch, type PropType } from "vue";
+import { isSize, isTarget, isVariantFull } from '@/utils/validators'
 import LucideLoader from "@/components/icons/LucideLoader.vue";
 
 const props = defineProps({
@@ -11,18 +12,17 @@ const props = defineProps({
   },
   /** `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` */
   variant: {
-    type: String,
+    type: String as PropType<'solid' | 'outlined' | 'soft' | 'ghost' | 'subtle' | 'link' | 'none'>,
     required: false,
     default: "ghost",
-    validator: (value: string) =>
-      ["solid", "outlined", "soft", "ghost", "subtle", "link", "none"].includes(value),
+    validator: isVariantFull,
   },
   /** Tamaño: `sm`, `md`, `lg` */
   size: {
     type: String as PropType<'sm' | 'md' | 'lg'>,
     required: false,
     default: 'md',
-    validator: (value: string) => ['sm', 'md', 'lg'].includes(value),
+    validator: isSize,
   },
   /** Si se especifica, el botón se renderiza como `<a>` */
   to: {
@@ -31,11 +31,10 @@ const props = defineProps({
   },
   /** Target del link cuando `to` está definido: `_self`, `_blank`, `_parent`, `_top` */
   target: {
-    type: String,
+    type: String as PropType<'_self' | '_blank' | '_parent' | '_top'>,
     required: false,
     default: "_self",
-    validator: (value: string) =>
-      ["_self", "_blank", "_parent", "_top"].includes(value),
+    validator: isTarget,
   },
   /** Tipo del `<button>`: `button`, `submit`, `reset` */
   type: {

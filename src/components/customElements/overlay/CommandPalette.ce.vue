@@ -1,20 +1,21 @@
 <script setup lang="ts">
 import CommandPalette from "../../overlay/CommandPalette.vue";
 import { initTokens } from "@/plugins/cu-tokens/css";
+import type { PropType } from "vue";
 
 initTokens();
 
 const props = defineProps({
   /** Color semántico del modal: `primary`, `neutral`, `success`, `warning`, `danger` */
-  color: { type: String, default: "neutral" },
+  color: { type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>, default: "neutral" },
   /** Título del modal */
   title: { type: String, default: "" },
   /** Placeholder del input de búsqueda */
   placeholder: { type: String, default: "Buscar comandos…" },
   /** Ancho del modal: `auto`, `sm`, `md`, `lg`, `xl`, `full` */
-  size: { type: String, default: "auto" },
+  size: { type: String as PropType<'auto' | 'sm' | 'md' | 'lg' | 'xl' | 'full'>, default: "auto" },
   /** Alto del modal: `auto`, `sm`, `md`, `lg`, `xl`, `full` */
-  height: { type: String, default: "auto" },
+  height: { type: String as PropType<'auto' | 'sm' | 'md' | 'lg' | 'xl' | 'full'>, default: "auto" },
 });
 
 const paletteRef = ref(null);

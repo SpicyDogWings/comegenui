@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, defineModel, useTemplateRef } from "vue";
+import { computed, defineModel, useTemplateRef, type PropType } from 'vue';
+import { isColor, isFieldVariant } from '@/utils/validators'
 
 /** Valor actual del textarea (v-model). */
 const value = defineModel<string>({ default: "" });
@@ -10,17 +11,16 @@ const props = defineProps({
     required: false,
   },
   color: {
-    type: String,
+    type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     required: false,
     default: "neutral",
-    validator: (value: string) =>
-      ["primary", "secondary", "neutral", "success", "warning", "danger"].includes(value),
+    validator: isColor,
   },
   variant: {
-    type: String,
+    type: String as PropType<'outlined' | 'soft' | 'ghost' | 'subtle'>,
     required: false,
     default: "soft",
-    validator: (value: string) => ["outlined", "soft", "ghost", "subtle"].includes(value),
+    validator: isFieldVariant,
   },
   placeholder: {
     type: String,

@@ -70,9 +70,9 @@ import Button from "@/components/buttons/Button.vue";
 | Atributo | Tipo | Default | Descripción |
 |------|------|------|------|
 | `text` | `string` | `""` | Texto del tooltip. Si se usa el slot `content`, tiene prioridad |
-| `color` | `string` | `"neutral"` | Color semántico del fondo: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
-| `position` | `string` | `"top"` | Lado donde aparece: `top`, `bottom`, `left`, `right` |
-| `align` | `string` | `"center"` | Alineación respecto al elemento: `start`, `center`, `end` |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico del fondo: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
+| `position` | `"left" \| "right" \| "bottom" \| "top"` | `"top"` | Lado donde aparece: `top`, `bottom`, `left`, `right` |
+| `align` | `"center" \| "start" \| "end"` | `"center"` | Alineación respecto al elemento: `start`, `center`, `end` |
 | `offset` | `number` | `6` | Distancia (px) entre el elemento y el tooltip |
 | `delay` | `number` | `200` | Retardo (ms) antes de mostrar el tooltip al hacer hover |
 | `disabled` | `boolean` | `false` | Deshabilita el tooltip (no se muestra) |

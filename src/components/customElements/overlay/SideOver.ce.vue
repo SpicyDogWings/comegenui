@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, getCurrentInstance } from "vue";
+import { ref, watch, getCurrentInstance, type PropType } from "vue";
 import SideOver from "../../overlay/SideOver.vue";
 import { initTokens } from "@/plugins/cu-tokens/css";
 
@@ -11,7 +11,7 @@ const props = defineProps({
   /** Título de la cabecera (si está vacío y no es `persistent`, igual muestra el botón de cerrar) */
   title: { type: String, default: "" },
   /** Borde desde donde desliza: `left`, `right`, `top`, `bottom` */
-  position: { type: String, default: "right" },
+  position: { type: String as PropType<'bottom' | 'top' | 'left' | 'right'>, default: "right" },
   /** Ancho (`left`/`right`) o alto (`top`/`bottom`) del panel. Valor CSS (`300px`, `40vw`) o preset: `sm`, `md`, `lg`, `xl`, `full`. Ignorado con `fullscreen` */
   size: { type: String, default: "300px" },
   /** Ocupa toda la pantalla */

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, ref, watch, getCurrentInstance } from "vue";
+import { computed, ref, watch, getCurrentInstance, type PropType } from 'vue';
+import { isTextAlign } from '@/utils/validators'
 import Select from "../../form/Select.vue";
 
 interface SelectOption {
@@ -19,13 +20,13 @@ const props = defineProps({
   options: { type: Array as () => SelectOption[], required: false, default: () => [] },
   /** Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` */
   color: {
-    type: String,
+    type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     required: false,
     default: "neutral",
   },
   /** `outlined`, `soft`, `ghost`, `subtle` */
   variant: {
-    type: String,
+    type: String as PropType<'outlined' | 'soft' | 'ghost' | 'subtle'>,
     required: false,
     default: "soft",
   },
@@ -39,10 +40,10 @@ const props = defineProps({
   align: { type: String, required: false, default: "start" },
   /** Alineación del texto seleccionado: `left`, `center`, `right` */
   textAlign: {
-    type: String,
+    type: String as PropType<'left' | 'center' | 'right'>,
     required: false,
     default: "left",
-    validator: (value: string) => ["left", "center", "right"].includes(value),
+    validator: isTextAlign,
   },
   /** Estado deshabilitado */
   disabled: { type: Boolean, required: false, default: false },
@@ -53,7 +54,7 @@ const props = defineProps({
   /** Activa búsqueda por teclado (estilo select nativo: escribir hace scroll al match) */
   searchEnabled: { type: Boolean, required: false, default: false },
   /** Modo de coincidencia: `startsWith` (solo al inicio del label) o `includes` (en cualquier parte) */
-  searchMode: { type: String, required: false, default: "startsWith" },
+  searchMode: { type: String as PropType<'startsWith' | 'includes'>, required: false, default: "startsWith" },
   /** Tiempo (ms) antes de resetear el texto de búsqueda. Se reinicia con cada tecla */
   searchResetDelay: { type: Number, required: false, default: 1000 },
   /** Muestra una barra de progreso animada en el dropdown */

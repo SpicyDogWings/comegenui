@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, getCurrentInstance, type PropType } from "vue";
+import { isAlign, isPosition, isVariantFull } from '@/utils/validators'
 import Button from "../buttons/Button.vue";
 import Loader from "../information/Loader.vue";
 import Popover from "./Popover.vue";
@@ -22,11 +23,10 @@ const props = defineProps({
     default: "neutral",
   },
   variant: {
-    type: String,
+    type: String as PropType<'solid' | 'outlined' | 'soft' | 'ghost' | 'subtle' | 'link' | 'none'>,
     required: false,
     default: "ghost",
-    validator: (value: string) =>
-      ["solid", "outlined", "soft", "ghost", "subtle", "link", "none"].includes(value),
+    validator: isVariantFull,
   },
   disabled: { type: Boolean, required: false, default: false },
   label: { type: String, required: false, default: "" },
@@ -40,16 +40,16 @@ const props = defineProps({
     default: 'click',
   },
   position: {
-    type: String,
+    type: String as PropType<'bottom' | 'top' | 'left' | 'right'>,
     required: false,
     default: "bottom",
-    validator: (value: string) => ["bottom", "top", "left", "right"].includes(value),
+    validator: isPosition,
   },
   align: {
-    type: String,
+    type: String as PropType<'start' | 'center' | 'end'>,
     required: false,
     default: "start",
-    validator: (value: string) => ["start", "center", "end"].includes(value),
+    validator: isAlign,
   },
   offset: { type: Number, required: false, default: 4 },
   fixed: { type: Boolean, required: false, default: false },

@@ -152,8 +152,8 @@ const activo = ref(false);
 | Atributo | Tipo | Default | Descripción |
 |------|------|------|------|
 | `modelValue` | `boolean` | `false` | Estado del toggle (controlado) |
-| `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `size` | `string` | `"md"` | Tamaño del switch: `sm`, `md` |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `size` | `"sm" \| "md"` | `"md"` | Tamaño del switch: `sm`, `md` |
 | `disabled` | `boolean` | — | Estado deshabilitado |
 | `label` | `string` | `""` |  |
 

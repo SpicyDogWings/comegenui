@@ -87,9 +87,9 @@ const props = defineProps({
   /** Activa el rango a dos meses (dual). **Implica `range`**: aunque `mode` sea `single`, el picker selecciona un rango */
   dualCalendar: { type: Boolean, default: false },
   /** `right` */
-  position: { type: String, default: 'bottom' },
+  position: { type: String as PropType<'bottom' | 'top' | 'left' | 'right'>, default: 'bottom' },
   /** `end` */
-  align: { type: String, default: 'start' },
+  align: { type: String as PropType<'start' | 'center' | 'end'>, default: 'start' },
   /** Panel en `position: fixed` (útil en contenedores con overflow) */
   fixed: { type: Boolean, default: false },
   /** Muestra el botón "Limpiar" en el footer del panel */

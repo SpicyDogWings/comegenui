@@ -14,7 +14,7 @@ const props = defineProps({
     default: "neutral",
   },
   /** Tamaño del switch: `sm`, `md` */
-  size: { type: String, default: "md" },
+  size: { type: String as PropType<'sm' | 'md'>, default: "md" },
   /** Estado deshabilitado */
   disabled: Boolean,
   label: { type: String, default: "" },
