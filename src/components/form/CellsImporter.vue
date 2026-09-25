@@ -55,7 +55,7 @@ const props = defineProps({
     default: "neutral",
   },
   variant: {
-    type: String,
+    type: String as PropType<'outlined' | 'soft' | 'ghost' | 'subtle'>,
     required: false,
     default: "outlined",
   },
@@ -79,7 +79,7 @@ const props = defineProps({
     required: false,
   },
   inputType: {
-    type: String,
+    type: String as PropType<'input' | 'zone'>,
     required: false,
     default: "input",
     validator: (value: string) => ["input", "zone"].includes(value),
@@ -101,7 +101,14 @@ const status = ref<'idle' | 'parsing' | 'ready' | 'error'>('idle');
 
 const fileInputRef = useTemplateRef<InstanceType<typeof FileInput> | InstanceType<typeof FileInputZone>>("fileInput");
 
-const accept = computed(() => props.formats.join(","));
+// Tolera extensiones sin punto (`xlsx`) además de `.xlsx` o MIME (`image/png`).
+const accept = computed(() =>
+  props.formats
+    .map((format) =>
+      format.startsWith(".") || format.includes("/") || format === "*" ? format : `.${format}`,
+    )
+    .join(","),
+);
 
 const summary = computed(() => ({
   ok: rows.value.length - errorRowCount.value,

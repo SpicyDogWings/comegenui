@@ -72,7 +72,7 @@ function isJson(prop: KhadgarRow): boolean {
   const type = prop.type ?? "";
   if (/=>/.test(type) || /\bFile\b/.test(type) || /^any(\[\])?$/.test(type)) return false;
   if (JSON_EXCLUDE.has(`${props.name}.${prop.name}`)) return false;
-  if (/\[\]|Record</.test(type)) return true;
+  if (/\[\]|Record</.test(type) || /^\{/.test(type.trim())) return true;
   const ids = type.match(/\b[A-Z][A-Za-z0-9_]*\b/g) ?? [];
   return ids.some((id) => !SCALAR_TYPES.has(id));
 }

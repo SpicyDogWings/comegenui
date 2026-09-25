@@ -150,7 +150,8 @@ export const samples: Record<string, Record<string, unknown>> = {
       { key: "nombre", label: "Nombre", type: "string", required: true },
       { key: "edad", label: "Edad", type: "integer" },
     ],
-    formats: ["xlsx", "csv"],
+    formats: [".xlsx", ".csv"],
+    template: { enabled: true, type: "xlsx", filename: "plantilla" },
   },
   EditableTableCell: {
     row: { nombre: "Ana" },

@@ -185,12 +185,12 @@ onMounted(() => {
 | `sheet` | `string \| number` | `0` | Hoja a leer en `.xlsx` (índice o nombre) |
 | `template` | `{ enabled?: boolean; type?: "xlsx" \| "csv"; filename?: string; }` | `{ enabled: false, type: "csv", filename: "template" }` | "xlsx"` |
 | `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `string` | `"outlined"` | `outlined`, `soft`, `ghost`, `subtle` |
+| `variant` | `"soft" \| "outlined" \| "ghost" \| "subtle"` | `"outlined"` | `outlined`, `soft`, `ghost`, `subtle` |
 | `placeholder` | `string` | `"Seleccionar archivo"` | Texto cuando no hay archivo |
 | `disabled` | `boolean` | — | Deshabilita la selección |
 | `readOnly` | `boolean` | — | Modo solo lectura |
 | `maxSize` | `number` | — | Tamaño máximo en bytes |
-| `inputType` | `string` | `"input"` | `"input"` = `<cu-file-input>` compacto; `"zone"` = zona drag & drop (`<cu-file-input-zone>`). Single file en ambos |
+| `inputType` | `"input" \| "zone"` | `"input"` | `"input"` = `<cu-file-input>` compacto; `"zone"` = zona drag & drop (`<cu-file-input-zone>`). Single file en ambos |
 
 > **Atributos en HTML:** `hasHeader` se escribe `has-header`, `readOnly` → `readonly`, `maxSize` → `max-size`. Los arrays y objetos (`columns`, `template`, `formats`, `sheet`) se asignan por JS.
 

@@ -24,7 +24,7 @@ const props = defineProps({
   /** `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` */
   color: { type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>, default: "neutral" },
   /** `outlined`, `soft`, `ghost`, `subtle` */
-  variant: { type: String, default: "outlined" },
+  variant: { type: String as PropType<'outlined' | 'soft' | 'ghost' | 'subtle'>, default: "outlined" },
   /** Texto cuando no hay archivo */
   placeholder: { type: String, default: "Seleccionar archivo" },
   /** Deshabilita la selección */
@@ -34,7 +34,7 @@ const props = defineProps({
   /** Tamaño máximo en bytes */
   maxSize: Number,
   /** `"input"` = `<cu-file-input>` compacto; `"zone"` = zona drag & drop (`<cu-file-input-zone>`). Single file en ambos */
-  inputType: { type: String, default: "input" },
+  inputType: { type: String as PropType<'input' | 'zone'>, default: "input" },
 });
 
 const importerRef = ref<InstanceType<typeof CellsImporter> | null>(null);
