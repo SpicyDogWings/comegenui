@@ -289,7 +289,6 @@ export function extractComponent(filePath, options = {}) {
   if (tag) component.tag = tag;
   if (overrides.notes && Object.keys(overrides.notes).length) component.notes = overrides.notes;
   if (overrides.sections?.length) component.sections = overrides.sections;
-  if (overrides.sectionsVue?.length) component.sectionsVue = overrides.sectionsVue;
 
   return component;
 }
@@ -306,11 +305,15 @@ function resolveList(root, config, components) {
   return out;
 }
 
-/** Carga el sidecar curado de un componente (`docsDir/componentes/<tag>.doc.json`). */
-function loadSidecar(root, config, tag) {
-  if (!tag) return null;
+/**
+ * Carga el sidecar curado de un componente (`docsDir/componentes/<slug>.doc.json`).
+ * El `slug` es el tag (`cu-button`) si tiene custom element, o el kebab del nombre
+ * (`dropdown`) para los componentes internos.
+ */
+function loadSidecar(root, config, slug) {
+  if (!slug) return null;
   const docsDir = config.docsDir ?? "docs/skills/use-comegen";
-  const file = resolve(root, docsDir, "componentes", `${tag}.doc.json`);
+  const file = resolve(root, docsDir, "componentes", `${slug}.doc.json`);
   if (!existsSync(file)) return null;
   try {
     return JSON.parse(readFileSync(file, "utf-8"));
@@ -337,7 +340,16 @@ export function buildIndex(options = {}) {
   const components = list.map((item) => {
     const vueAbs = resolve(root, item.file);
     const tag = libIndex.get(vueAbs);
-    const sidecar = item.sidecar ?? loadSidecar(root, config, tag);
+    const slug = tag ?? kebab(item.name);
+    const sidecar = item.sidecar ?? loadSidecar(root, config, slug);
+    // `customElement` del config es override; si se omite, se deriva del tag.
+    let customElement = item.customElement ?? Boolean(tag);
+    if (item.customElement === true && !tag) {
+      console.warn(
+        `khadgar: ${item.name} declara customElement:true pero no tiene tag en ${config.libDir ?? "src/lib"}; se ignora.`,
+      );
+      customElement = false;
+    }
     return extractComponent(vueAbs, {
       root,
       config,
@@ -349,7 +361,7 @@ export function buildIndex(options = {}) {
       name: item.name,
       tag,
       group: item.group ?? "",
-      customElement: Boolean(tag),
+      customElement,
       skill: item.skill === true,
     });
   });

@@ -25,31 +25,39 @@
   "sections": [
     {
       "title": "Uso en HTML plano",
-      "body": "```html\n<script src=\"dist/CuCollapse.umd.js\"></script>\n\n<cu-collapse label=\"Más información\">\n  <p>Este contenido está oculto por defecto.</p>\n</cu-collapse>\n```"
+      "titleVue": "Uso en Vue",
+      "body": "```html\n<script src=\"dist/CuCollapse.umd.js\"></script>\n\n<cu-collapse label=\"Más información\">\n  <p>Este contenido está oculto por defecto.</p>\n</cu-collapse>\n```",
+      "bodyVue": "```vue\n<script setup lang=\"ts\">\nimport Collapse from \"@/components/overlay/Collapse.vue\";\n</script>\n\n<template>\n  <Collapse label=\"Más información\">\n    <p>Este contenido está oculto por defecto.</p>\n  </Collapse>\n</template>\n```"
     },
     {
       "title": "Abierto por defecto",
-      "body": "```html\n<cu-collapse label=\"Opciones avanzadas\" default-open>\n  <p>Visible desde el inicio gracias a <code>default-open</code>.</p>\n</cu-collapse>\n```"
+      "body": "```html\n<cu-collapse label=\"Opciones avanzadas\" default-open>\n  <p>Visible desde el inicio gracias a <code>default-open</code>.</p>\n</cu-collapse>\n```",
+      "bodyVue": "```vue\n<template>\n  <Collapse label=\"Opciones avanzadas\" default-open>\n    <p>Visible desde el inicio gracias a <code>default-open</code>.</p>\n  </Collapse>\n</template>\n```"
     },
     {
       "title": "Colores",
-      "body": "```html\n<cu-collapse label=\"Información\" color=\"primary\">...</cu-collapse>\n<cu-collapse label=\"Éxito\" color=\"success\">...</cu-collapse>\n<cu-collapse label=\"Advertencia\" color=\"warning\">...</cu-collapse>\n<cu-collapse label=\"Peligro\" color=\"danger\">...</cu-collapse>\n```"
+      "body": "```html\n<cu-collapse label=\"Información\" color=\"primary\">...</cu-collapse>\n<cu-collapse label=\"Éxito\" color=\"success\">...</cu-collapse>\n<cu-collapse label=\"Advertencia\" color=\"warning\">...</cu-collapse>\n<cu-collapse label=\"Peligro\" color=\"danger\">...</cu-collapse>\n```",
+      "bodyVue": "```vue\n<template>\n  <Collapse label=\"Información\" color=\"primary\">...</Collapse>\n  <Collapse label=\"Éxito\" color=\"success\">...</Collapse>\n  <Collapse label=\"Advertencia\" color=\"warning\">...</Collapse>\n  <Collapse label=\"Peligro\" color=\"danger\">...</Collapse>\n</template>\n```"
     },
     {
       "title": "Anidados",
-      "body": "Los collapses se pueden anidar para construir árboles de menú:\n\n```html\n<cu-collapse label=\"Sección padre\" color=\"primary\" default-open>\n  <p>Contenido de nivel superior.</p>\n  <cu-collapse label=\"Hijo\">\n    <p>Contenido anidado con su propio toggle.</p>\n  </cu-collapse>\n</cu-collapse>\n```"
+      "body": "Los collapses se pueden anidar para construir árboles de menú:\n\n```html\n<cu-collapse label=\"Sección padre\" color=\"primary\" default-open>\n  <p>Contenido de nivel superior.</p>\n  <cu-collapse label=\"Hijo\">\n    <p>Contenido anidado con su propio toggle.</p>\n  </cu-collapse>\n</cu-collapse>\n```",
+      "bodyVue": "Los collapses se pueden anidar para construir árboles de menú:\n\n```vue\n<template>\n  <Collapse label=\"Sección padre\" color=\"primary\" default-open>\n    <p>Contenido de nivel superior.</p>\n    <Collapse label=\"Hijo\">\n      <p>Contenido anidado con su propio toggle.</p>\n    </Collapse>\n  </Collapse>\n</template>\n```"
     },
     {
       "title": "Escuchar eventos",
-      "body": "```js\nconst collapse = document.getElementById('miCollapse');\n\ncollapse.addEventListener('toggle', (e) => {\n  console.log('abierto:', e.detail); // true | false\n});\n```"
+      "body": "```js\nconst collapse = document.getElementById('miCollapse');\n\ncollapse.addEventListener('toggle', (e) => {\n  console.log('abierto:', e.detail); // true | false\n});\n```",
+      "bodyVue": "```vue\n<script setup lang=\"ts\">\nimport Collapse from \"@/components/overlay/Collapse.vue\";\n\nfunction onToggle(abierto: boolean) {\n  console.log(\"abierto:\", abierto); // true | false\n}\n</script>\n\n<template>\n  <Collapse label=\"Mi collapse\" @toggle=\"onToggle\">\n    ...\n  </Collapse>\n</template>\n```"
     },
     {
       "title": "Control programático",
-      "body": "```html\n<cu-collapse id=\"miCollapse\" label=\"Programático\">\n  <p>Controlado desde JS con open()/close()/toggle().</p>\n</cu-collapse>\n\n<script>\n  const c = document.getElementById('miCollapse');\n  c.open();\n  c.close();\n  c.toggle();\n  c.isOpen(); // boolean\n</script>\n```"
+      "body": "```html\n<cu-collapse id=\"miCollapse\" label=\"Programático\">\n  <p>Controlado desde JS con open()/close()/toggle().</p>\n</cu-collapse>\n\n<script>\n  const c = document.getElementById('miCollapse');\n  c.open();\n  c.close();\n  c.toggle();\n  c.isOpen(); // boolean\n</script>\n```",
+      "bodyVue": "```vue\n<script setup lang=\"ts\">\nimport Collapse from \"@/components/overlay/Collapse.vue\";\nimport { useTemplateRef } from \"vue\";\n\nconst c = useTemplateRef(\"c\");\n\nfunction demo() {\n  c.value?.open();\n  c.value?.close();\n  c.value?.toggle();\n  console.log(c.value?.isOpen()); // boolean\n}\n</script>\n\n<template>\n  <Collapse ref=\"c\" label=\"Programático\">\n    <p>Controlado desde JS con open()/close()/toggle().</p>\n  </Collapse>\n</template>\n```"
     },
     {
       "title": "Ejemplo completo",
-      "body": "```html\n<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\" />\n  <title>Collapse Demo</title>\n</head>\n<body>\n  <cu-collapse id=\"faq\" label=\"¿Qué es ComegenUI?\" color=\"primary\">\n    <p>Una librería de componentes UI como Custom Elements nativos.</p>\n  </cu-collapse>\n\n  <cu-button onclick=\"toggleFaq()\">Alternar FAQ</cu-button>\n\n  <script src=\"dist/CuCollapse.umd.js\"></script>\n  <script src=\"dist/CuButton.umd.js\"></script>\n  <script>\n    const faq = document.getElementById('faq');\n\n    faq.addEventListener('toggle', (e) => {\n      console.log('FAQ abierto:', e.detail);\n    });\n\n    function toggleFaq() {\n      faq.toggle();\n    }\n  </script>\n</body>\n</html>\n```"
+      "body": "```html\n<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\" />\n  <title>Collapse Demo</title>\n</head>\n<body>\n  <cu-collapse id=\"faq\" label=\"¿Qué es ComegenUI?\" color=\"primary\">\n    <p>Una librería de componentes UI como Custom Elements nativos.</p>\n  </cu-collapse>\n\n  <cu-button onclick=\"toggleFaq()\">Alternar FAQ</cu-button>\n\n  <script src=\"dist/CuCollapse.umd.js\"></script>\n  <script src=\"dist/CuButton.umd.js\"></script>\n  <script>\n    const faq = document.getElementById('faq');\n\n    faq.addEventListener('toggle', (e) => {\n      console.log('FAQ abierto:', e.detail);\n    });\n\n    function toggleFaq() {\n      faq.toggle();\n    }\n  </script>\n</body>\n</html>\n```",
+      "bodyVue": "```vue\n<script setup lang=\"ts\">\nimport Button from \"@/components/buttons/Button.vue\";\nimport Collapse from \"@/components/overlay/Collapse.vue\";\nimport { useTemplateRef } from \"vue\";\n\nconst faq = useTemplateRef(\"faq\");\n\nfunction onToggle(abierto: boolean) {\n  console.log(\"FAQ abierto:\", abierto);\n}\n\nfunction toggleFaq() {\n  faq.value?.toggle();\n}\n</script>\n\n<template>\n  <Collapse ref=\"faq\" label=\"¿Qué es ComegenUI?\" color=\"primary\" @toggle=\"onToggle\">\n    <p>Una librería de componentes UI como Custom Elements nativos.</p>\n  </Collapse>\n\n  <Button @click=\"toggleFaq\">Alternar FAQ</Button>\n</template>\n```"
     }
   ],
   "intro": "Sección colapsable con trigger (botón + chevron animado). El contenido se muestra/oculta con una transición de altura. Útil para acordeones, menús anidados o secciones \"más información\"."

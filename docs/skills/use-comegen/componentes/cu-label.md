@@ -51,6 +51,77 @@ Al hacer clic en el label, el control hijo se enfoca automáticamente. Si pasás
 </cu-label>
 ```
 
+---
+
+## Vista Vue
+
+### Uso en Vue
+
+### Modo declarativo (prop `label`)
+
+```vue
+<script setup lang="ts">
+import Label from "@/components/form/Label.vue";
+import Input from "@/components/form/Input.vue";
+</script>
+
+<template>
+  <Label label="Correo electrónico" color="primary">
+    <Input type="email" placeholder="correo@ejemplo.com" />
+  </Label>
+</template>
+```
+
+### Con `for` apuntando a un input externo
+
+```vue
+<script setup lang="ts">
+import Label from "@/components/form/Label.vue";
+</script>
+
+<template>
+  <Label for="miInput" label="Nombre" />
+  <input id="miInput" type="text" />
+</template>
+```
+
+### Con cualquier control como hijo
+
+```vue
+<script setup lang="ts">
+import Label from "@/components/form/Label.vue";
+import Checkbox from "@/components/form/Checkbox.vue";
+import Switch from "@/components/form/Switch.vue";
+</script>
+
+<template>
+  <Label label="Acepto los términos">
+    <Checkbox />
+  </Label>
+
+  <Label label="Suscripción">
+    <Switch />
+  </Label>
+</template>
+```
+
+Al hacer clic en el label, el control hijo se enfoca automáticamente. Si pasás `for`, se enfoca el elemento con ese id en lugar del hijo.
+
+### Combinación con `<cu-input>`
+
+```vue
+<script setup lang="ts">
+import Label from "@/components/form/Label.vue";
+import Input from "@/components/form/Input.vue";
+</script>
+
+<template>
+  <Label label="Búsqueda">
+    <Input type="search" placeholder="Buscar..." />
+  </Label>
+</template>
+```
+
 ## Props
 
 | Atributo | Tipo | Default | Descripción |

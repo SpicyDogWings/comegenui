@@ -19,11 +19,14 @@
   "sections": [
     {
       "title": "Uso en HTML plano",
-      "body": "```html\n<script src=\"dist/CuFloatingButton.umd.js\"></script>\n\n<cu-floating-button color=\"primary\" id=\"fab\">\n  <svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12h14\"/><path d=\"M12 5v14\"/></svg>\n</cu-floating-button>\n\n<script>\n  document.getElementById('fab').addEventListener('click', () => {\n    console.log('FAB clickeado');\n  });\n</script>\n```"
+      "titleVue": "Uso en Vue",
+      "body": "```html\n<script src=\"dist/CuFloatingButton.umd.js\"></script>\n\n<cu-floating-button color=\"primary\" id=\"fab\">\n  <svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12h14\"/><path d=\"M12 5v14\"/></svg>\n</cu-floating-button>\n\n<script>\n  document.getElementById('fab').addEventListener('click', () => {\n    console.log('FAB clickeado');\n  });\n</script>\n```",
+      "bodyVue": "```vue\n<script setup lang=\"ts\">\nimport FloatingButton from \"@/components/buttons/FloatingButton.vue\";\n\nfunction onClick() {\n  console.log(\"FAB clickeado\");\n}\n</script>\n\n<template>\n  <FloatingButton color=\"primary\" @click=\"onClick\">\n    <svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12h14\"/><path d=\"M12 5v14\"/></svg>\n  </FloatingButton>\n</template>\n```"
     },
     {
       "title": "Deshabilitado",
-      "body": "```html\n<cu-floating-button disabled>\n  <svg><!-- ícono --></svg>\n</cu-floating-button>\n```"
+      "body": "```html\n<cu-floating-button disabled>\n  <svg><!-- ícono --></svg>\n</cu-floating-button>\n```",
+      "bodyVue": "```vue\n<template>\n  <FloatingButton disabled>\n    <svg><!-- ícono --></svg>\n  </FloatingButton>\n</template>\n```"
     },
     {
       "title": "Notas",

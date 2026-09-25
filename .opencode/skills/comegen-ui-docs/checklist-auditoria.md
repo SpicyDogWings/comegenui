@@ -142,12 +142,14 @@ Para **cada** método listado, verificar:
 
 ---
 
-## 7. Ejemplos de uso
+## 7. Ejemplos de uso (dos vistas)
 
-- [ ] Hay al menos un ejemplo de uso en HTML plano con `<script src="dist/...">`.
-- [ ] Los ejemplos **no** importan Vue ni usan sintaxis Vue (template, ref, reactive, etc.).
-- [ ] Si hay props complejas (arrays/objetos), el ejemplo las asigna con `element.property = ...` (no como atributo).
-- [ ] Si hay eventos, el ejemplo usa `addEventListener` con `e.detail`.
+- [ ] Hay al menos un ejemplo vanilla (`body`) con `<script src="dist/...">`.
+- [ ] Hay al menos un ejemplo Vue (`bodyVue`) con `<script setup lang="ts">` + `<template>` e import del `.vue` real (`@/components/...`).
+- [ ] Cada cuerpo usa **una sola** forma: `body` no importa Vue ni usa `<template>`; `bodyVue` no usa `<script src>` ni `document.getElementById`.
+- [ ] Toda sección con bloques de código trae `bodyVue` (si falta, se omite de la vista Vue).
+- [ ] Si hay props complejas (arrays/objetos), `body` las asigna con `element.property = ...` (no como atributo) y `bodyVue` con `v-bind`/`:prop`.
+- [ ] Si hay eventos, `body` usa `addEventListener` con `e.detail` y `bodyVue` usa `@evento`.
 - [ ] Los ejemplos son copy-pasteables (sin partes truncadas con `...` sin contexto).
 
 ---
@@ -160,7 +162,7 @@ Para **cada** método listado, verificar:
 - [ ] Sin links a archivos del código fuente.
 - [ ] Las props booleanas tienen nota sobre el uso sin valor en HTML.
 - [ ] Las props `array`/`object` tienen nota sobre asignación como propiedad JS.
-- [ ] Los slots usan sintaxis HTML `slot="nombre"` (no `#nombre` de Vue) en los ejemplos.
+- [ ] En `body` los slots usan `slot="nombre"` (HTML nativo); en `bodyVue` usan `<template #nombre>`.
 
 ---
 

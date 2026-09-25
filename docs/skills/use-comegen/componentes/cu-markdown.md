@@ -54,6 +54,62 @@ El contenido se pasa como **texto dentro del tag** (no como prop). El componente
 - Los tokens CSS se inyectan automáticamente en el shadow DOM.
 - **El wrapper CE actual no re-emite `parsed` ni expone `headingIds()`**: esos eventos/métodos existen en el `.vue` interno pero no atraviesan el `.ce.vue`. Ver `docs/notes/06-cu-markdown-api.md`.
 
+---
+
+## Vista Vue
+
+### UMD
+
+```vue
+<script setup lang="ts">
+import Markdown from "@/components/markdown/Markdown.vue";
+</script>
+```
+
+### Uso en Vue
+
+````vue
+<script setup lang="ts">
+import Markdown from "@/components/markdown/Markdown.vue";
+</script>
+
+<template>
+  <Markdown>
+# Título
+
+Párrafo con **negrita**, *cita*, y `código inline`.
+
+- Item 1
+- Item 2
+
+> Blockquote
+
+```js
+const x = 1;
+```
+
+| Col A | Col B |
+|-------|-------|
+| a     | b     |
+  </Markdown>
+</template>
+````
+
+El contenido se pasa como **texto dentro del tag** (no como prop). El componente lo parsea al montarse.
+
+### Notas
+
+- El markdown se parsea una vez al montarse. Para actualizar el contenido, reemplazar el texto interno y volver a montar el componente.
+- Las tablas se renderizan con `<cu-table>` internamente.
+- Los code blocks usan `<cu-code-block>` con resaltado de sintaxis.
+- El HTML se sanitiza con DOMPurify antes de renderizar.
+- Los tokens CSS se inyectan automáticamente en el shadow DOM.
+- **El wrapper CE actual no re-emite `parsed` ni expone `headingIds()`**: esos eventos/métodos existen en el `.vue` interno pero no atraviesan el `.ce.vue`. Ver `docs/notes/06-cu-markdown-api.md`.
+
+## Props
+
+Ninguno.
+
 ## Eventos
 
 | Evento | Payload (`e.detail`) | Descripción |

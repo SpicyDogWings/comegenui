@@ -66,6 +66,77 @@ Paginación numérica con soporte para selector de tamaño de página y botones 
 ></cu-pagination>
 ```
 
+---
+
+## Vista Vue
+
+### Uso en Vue
+
+```vue
+<script setup lang="ts">
+import Pagination from "@/components/controls/Pagination.vue";
+import { ref } from "vue";
+
+const currentPage = ref(1);
+const itemsPerPage = ref(10);
+const pageSizeOptions = ref([10, 25, 50, 100]);
+</script>
+
+<template>
+  <Pagination
+    v-model:current-page="currentPage"
+    v-model:items-per-page="itemsPerPage"
+    :total-pages="10"
+    :total-items="100"
+    color="primary"
+    variant="soft"
+    show-page-size
+    :page-size-options="pageSizeOptions"
+  />
+</template>
+```
+
+### Ejemplo con todos los controles
+
+```vue
+<script setup lang="ts">
+import Pagination from "@/components/controls/Pagination.vue";
+import { ref } from "vue";
+
+const currentPage = ref(1);
+const itemsPerPage = ref(10);
+</script>
+
+<template>
+  <Pagination
+    v-model:current-page="currentPage"
+    v-model:items-per-page="itemsPerPage"
+    :total-pages="20"
+    :total-items="195"
+    show-page-size
+    show-first-and-last
+    color="primary"
+    variant="outlined"
+  />
+</template>
+```
+
+### Atributos booleanos en HTML
+
+```vue
+<script setup lang="ts">
+import Pagination from "@/components/controls/Pagination.vue";
+</script>
+
+<template>
+  <Pagination
+    show-page-size
+    show-first-and-last
+    :total-pages="5"
+  />
+</template>
+```
+
 ## Props
 
 | Atributo | Tipo | Default | Descripción |

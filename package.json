@@ -8,6 +8,7 @@
     "build": "pnpm site:sync && vitepress build docs/site",
     "preview": "vitepress preview docs/site",
     "site:sync": "tsx --tsconfig tsconfig.app.json src/plugins/khadgar-docs/site.mjs",
+    "docs:scaffold": "node src/plugins/khadgar-docs/cli.mjs --scaffold",
     "build:lib": "pnpm exec tsx --tsconfig tsconfig.build-lib.json build-lib.ts",
     "type-check": "vue-tsc --build",
     "test": "vitest run",

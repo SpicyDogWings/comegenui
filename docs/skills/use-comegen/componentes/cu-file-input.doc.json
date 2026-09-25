@@ -30,7 +30,9 @@
   "sections": [
     {
       "title": "Uso en HTML plano",
-      "body": "```html\n<script src=\"dist/CuFileInput.umd.js\"></script>\n\n<cu-file-input placeholder=\"Elige un archivo...\" color=\"primary\"></cu-file-input>\n<cu-file-input accept=\"image/*\" variant=\"outlined\" id=\"miInput\"></cu-file-input>\n<cu-file-input disabled placeholder=\"Deshabilitado\"></cu-file-input>\n\n<script>\n  const input = document.getElementById('miInput');\n  input.addEventListener('update:modelValue', (e) => {\n    console.log('Archivo:', e.detail?.name);\n  });\n  input.set(new File(['contenido'], 'ejemplo.txt'));\n  console.log(input.get()?.name);\n</script>\n```"
+      "titleVue": "Uso en Vue",
+      "body": "```html\n<script src=\"dist/CuFileInput.umd.js\"></script>\n\n<cu-file-input placeholder=\"Elige un archivo...\" color=\"primary\"></cu-file-input>\n<cu-file-input accept=\"image/*\" variant=\"outlined\" id=\"miInput\"></cu-file-input>\n<cu-file-input disabled placeholder=\"Deshabilitado\"></cu-file-input>\n\n<script>\n  const input = document.getElementById('miInput');\n  input.addEventListener('update:modelValue', (e) => {\n    console.log('Archivo:', e.detail?.name);\n  });\n  input.set(new File(['contenido'], 'ejemplo.txt'));\n  console.log(input.get()?.name);\n</script>\n```",
+      "bodyVue": "```vue\n<script setup lang=\"ts\">\nimport FileInput from \"@/components/form/FileInput.vue\";\nimport { ref } from \"vue\";\n\nconst archivo = ref<File | null>(null);\n\nfunction onUpdate(file: File | null) {\n  console.log(\"Archivo:\", file?.name);\n}\n</script>\n\n<template>\n  <FileInput v-model=\"archivo\" placeholder=\"Elige un archivo...\" color=\"primary\" />\n  <FileInput\n    v-model=\"archivo\"\n    accept=\"image/*\"\n    variant=\"outlined\"\n    @update:model-value=\"onUpdate\"\n  />\n  <FileInput disabled placeholder=\"Deshabilitado\" />\n</template>\n```"
     },
     {
       "title": "Drag & drop",

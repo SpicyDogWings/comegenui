@@ -20,6 +20,45 @@ Paleta de comandos (búsqueda + lista) en un modal, con agrupado por categoría 
 
 > El componente requiere la prop `commands` para mostrar resultados, pero el wrapper CE todavía no la expone (ver nota al inicio). Mientras tanto, la paleta solo abre como modal vacío.
 
+---
+
+## Vista Vue
+
+### Uso en Vue
+
+```vue
+<script setup lang="ts">
+import CommandPalette from "@/components/overlay/CommandPalette.vue";
+import Button from "@/components/buttons/Button.vue";
+import { useTemplateRef } from "vue";
+
+const palette = useTemplateRef("palette");
+
+const commands = [
+  { id: "guardar", label: "Guardar", category: "Archivo", shortcut: "⌘S", action: () => console.log("guardar") },
+  { id: "buscar", label: "Buscar", category: "Navegación", shortcut: "⌘K", action: () => console.log("buscar") },
+];
+
+function onSelect(cmd: { label: string }) {
+  console.log("Seleccionado:", cmd.label);
+}
+</script>
+
+<template>
+  <Button @click="palette?.open()">Abrir comandos</Button>
+
+  <CommandPalette
+    ref="palette"
+    title="Comandos"
+    color="primary"
+    :commands="commands"
+    @select="onSelect"
+  />
+</template>
+```
+
+> En Vue la prop `commands` provee los comandos y el modal se controla con `open()` / `close()` sobre la ref.
+
 ## Props
 
 | Atributo | Tipo | Default | Descripción |

@@ -2,6 +2,10 @@
 
 Copiá esta plantilla y llená cada sección con los datos extraídos del `.ce.vue`. Las secciones entre `[corchetes]` son optativas según el componente.
 
+> **El `.md` no se edita a mano:** lo genera `pnpm site:sync`. La prosa curada vive
+> en el sidecar `componentes/cu-<tag>.doc.json`, en el array `sections` (mode-aware).
+> Ver [convenciones.md](convenciones.md#secciones-curadas-del-sidecar-mode-aware).
+
 ```markdown
 # `<cu-NOMBRE>`
 
@@ -74,6 +78,26 @@ Descripción corta (1 línea, funcional, no técnica).
 
 [Aclaraciones sobre posicionamiento, búsqueda, edición, etc. Una sección por feature importante.]
 ```
+
+---
+
+## Sidecar: sección mode-aware
+
+Cada sección del body del `.md` sale de un objeto del array `sections` del sidecar
+`componentes/cu-<tag>.doc.json`:
+
+```json
+{
+  "title": "Uso en HTML plano",
+  "titleVue": "Uso en Vue",
+  "body": "```html\n<script src=\"dist/CuNOMBRE.umd.js\"></script>\n<cu-NOMBRE color=\"primary\" variant=\"soft\">Contenido</cu-NOMBRE>\n```",
+  "bodyVue": "```vue\n<script setup lang=\"ts\">\nimport NOMBRE from \"@/components/{category}/NOMBRE.vue\";\n</script>\n\n<template>\n  <NOMBRE color=\"primary\" variant=\"soft\">Contenido</NOMBRE>\n</template>\n```"
+}
+```
+
+- Vanilla (ficha de custom element) pinta `title`/`body`; Vue (sitio) pinta `titleVue`/`bodyVue`.
+- Toda sección con bloques de código debe traer `bodyVue`; las de pura prosa pueden omitirlo.
+- Las secciones se listan en el mismo orden en ambas vistas (misma cantidad de secciones).
 
 ---
 

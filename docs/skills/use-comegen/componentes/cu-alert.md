@@ -66,6 +66,65 @@ Alerta con color semántico, título opcional y botón de cerrar. Puede controla
 </html>
 ```
 
+---
+
+## Vista Vue
+
+### Uso en Vue
+
+```vue
+<script setup lang="ts">
+import Alert from "@/components/information/Alert.vue";
+import { ref } from "vue";
+
+const show = ref(true);
+</script>
+
+<template>
+  <Alert
+    v-model:show="show"
+    color="success"
+    variant="solid"
+    title="Operación exitosa"
+    close
+  >
+    Los datos se guardaron correctamente.
+  </Alert>
+
+  <Alert color="danger" variant="outlined">
+    <template #icon>
+      <svg><!-- icono --></svg>
+    </template>
+    Ha ocurrido un error.
+  </Alert>
+</template>
+```
+
+### Ejemplo completo
+
+```vue
+<script setup lang="ts">
+import Alert from "@/components/information/Alert.vue";
+import Button from "@/components/buttons/Button.vue";
+import { ref } from "vue";
+
+const show = ref(true);
+
+function onClose() {
+  console.log("Alerta cerrada");
+}
+</script>
+
+<template>
+  <Button @click="show = true">Mostrar alerta</Button>
+  <Button @click="show = false">Ocultar alerta</Button>
+
+  <Alert v-model:show="show" color="warning" title="Atención" close @close="onClose">
+    Este es un mensaje de advertencia.
+  </Alert>
+</template>
+```
+
 ## Props
 
 | Atributo | Tipo | Default | Descripción |

@@ -31,19 +31,24 @@
   "sections": [
     {
       "title": "Uso en HTML plano",
-      "body": "```html\n<script src=\"dist/CuInput.umd.js\"></script>\n\n<cu-input placeholder=\"Nombre\" color=\"primary\" variant=\"outlined\"></cu-input>\n<cu-input type=\"email\" placeholder=\"correo@ejemplo.com\" variant=\"soft\" id=\"email\"></cu-input>\n<cu-input type=\"number\" disabled value=\"42\"></cu-input>\n\n<script>\n  const input = document.getElementById('email');\n  input.set('usuario@dominio.com');\n  console.log(input.get());\n  input.focus();\n</script>\n```"
+      "titleVue": "Uso en Vue",
+      "body": "```html\n<script src=\"dist/CuInput.umd.js\"></script>\n\n<cu-input placeholder=\"Nombre\" color=\"primary\" variant=\"outlined\"></cu-input>\n<cu-input type=\"email\" placeholder=\"correo@ejemplo.com\" variant=\"soft\" id=\"email\"></cu-input>\n<cu-input type=\"number\" disabled value=\"42\"></cu-input>\n\n<script>\n  const input = document.getElementById('email');\n  input.set('usuario@dominio.com');\n  console.log(input.get());\n  input.focus();\n</script>\n```",
+      "bodyVue": "```vue\n<script setup lang=\"ts\">\nimport Input from \"@/components/form/Input.vue\";\nimport { ref } from \"vue\";\n\nconst email = ref(\"usuario@dominio.com\");\n</script>\n\n<template>\n  <Input v-model=\"email\" placeholder=\"Nombre\" color=\"primary\" variant=\"outlined\" />\n  <Input v-model=\"email\" type=\"email\" placeholder=\"correo@ejemplo.com\" variant=\"soft\" />\n  <Input type=\"number\" disabled :model-value=\"42\" />\n</template>\n```"
     },
     {
       "title": "Escuchar cambios",
-      "body": "```html\n<cu-input id=\"nombre\" placeholder=\"Tu nombre\"></cu-input>\n\n<script>\n  document.getElementById('nombre').addEventListener('update:modelValue', (e) => {\n    console.log('Valor actual:', e.detail);\n  });\n</script>\n```"
+      "body": "```html\n<cu-input id=\"nombre\" placeholder=\"Tu nombre\"></cu-input>\n\n<script>\n  document.getElementById('nombre').addEventListener('update:modelValue', (e) => {\n    console.log('Valor actual:', e.detail);\n  });\n</script>\n```",
+      "bodyVue": "```vue\n<script setup lang=\"ts\">\nimport Input from \"@/components/form/Input.vue\";\nimport { ref } from \"vue\";\n\nconst nombre = ref(\"\");\n\nfunction onInput(valor: string) {\n  console.log(\"Valor actual:\", valor);\n}\n</script>\n\n<template>\n  <Input v-model=\"nombre\" placeholder=\"Tu nombre\" @update:model-value=\"onInput\" />\n</template>\n```"
     },
     {
       "title": "Reset",
-      "body": "```html\n<cu-input id=\"campo\" start-value=\"Texto inicial\" value=\"Texto inicial\"></cu-input>\n\n<button onclick=\"document.getElementById('campo').reset()\">Resetear</button>\n```"
+      "body": "```html\n<cu-input id=\"campo\" start-value=\"Texto inicial\" value=\"Texto inicial\"></cu-input>\n\n<button onclick=\"document.getElementById('campo').reset()\">Resetear</button>\n```",
+      "bodyVue": "```vue\n<script setup lang=\"ts\">\nimport Input from \"@/components/form/Input.vue\";\nimport { ref, useTemplateRef } from \"vue\";\n\nconst valor = ref(\"Texto inicial\");\nconst campo = useTemplateRef(\"campo\");\n</script>\n\n<template>\n  <Input ref=\"campo\" v-model=\"valor\" />\n  <button @click=\"campo?.reset()\">Resetear</button>\n</template>\n```"
     },
     {
       "title": "Tipos soportados",
-      "body": "```html\n<cu-input type=\"text\" placeholder=\"Texto\"></cu-input>\n<cu-input type=\"password\" placeholder=\"Contraseña\"></cu-input>\n<cu-input type=\"email\" placeholder=\"correo@ejemplo.com\"></cu-input>\n<cu-input type=\"number\" placeholder=\"0\"></cu-input>\n<cu-input type=\"tel\" placeholder=\"+54 11 1234-5678\"></cu-input>\n<cu-input type=\"url\" placeholder=\"https://...\"></cu-input>\n<cu-input type=\"search\" placeholder=\"Buscar...\"></cu-input>\n```"
+      "body": "```html\n<cu-input type=\"text\" placeholder=\"Texto\"></cu-input>\n<cu-input type=\"password\" placeholder=\"Contraseña\"></cu-input>\n<cu-input type=\"email\" placeholder=\"correo@ejemplo.com\"></cu-input>\n<cu-input type=\"number\" placeholder=\"0\"></cu-input>\n<cu-input type=\"tel\" placeholder=\"+54 11 1234-5678\"></cu-input>\n<cu-input type=\"url\" placeholder=\"https://...\"></cu-input>\n<cu-input type=\"search\" placeholder=\"Buscar...\"></cu-input>\n```",
+      "bodyVue": "```vue\n<template>\n  <Input type=\"text\" placeholder=\"Texto\" />\n  <Input type=\"password\" placeholder=\"Contraseña\" />\n  <Input type=\"email\" placeholder=\"correo@ejemplo.com\" />\n  <Input type=\"number\" placeholder=\"0\" />\n  <Input type=\"tel\" placeholder=\"+54 11 1234-5678\" />\n  <Input type=\"url\" placeholder=\"https://...\" />\n  <Input type=\"search\" placeholder=\"Buscar...\" />\n</template>\n```"
     }
   ],
   "intro": "Input de texto con color, variante, tipos de input HTML5 y métodos `get`/`set`/`reset`."

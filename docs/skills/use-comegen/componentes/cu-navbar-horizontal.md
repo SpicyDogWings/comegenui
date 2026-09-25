@@ -41,6 +41,42 @@ interface NavItem {
 }
 ```
 
+---
+
+## Vista Vue
+
+### Uso en Vue
+
+```vue
+<script setup lang="ts">
+import NavbarHorizontal from "@/components/navigation/NavbarHorizontal.vue";
+import { ref } from "vue";
+
+const items = ref([
+  { label: 'Inicio', path: '/' },
+  { label: 'Equipo', children: [
+    { label: 'Desarrollo', path: '/equipo/dev' },
+    { label: 'Diseño', path: '/equipo/diseno' },
+  ]},
+]);
+</script>
+
+<template>
+  <NavbarHorizontal trigger="hover" active-path="/equipo/dev" :items="items" />
+</template>
+```
+
+### Estructura de `items`
+
+```ts
+interface NavItem {
+  label: string;
+  path?: string;        // enlaces y detección de activo
+  icon?: string;        // string HTML (puede ser un SVG inline)
+  children?: NavItem[]; // submenús desplegables
+}
+```
+
 ## Props
 
 | Atributo | Tipo | Default | Descripción |

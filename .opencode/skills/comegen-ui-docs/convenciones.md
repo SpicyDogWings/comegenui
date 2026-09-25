@@ -35,6 +35,50 @@ Orden recomendado (omití las que no apliquen):
 5. **Uso en HTML plano** — al menos un ejemplo mínimo.
 6. Secciones adicionales específicas del componente (ej: "Posicionamiento" en Select, "Búsqueda" en Table).
 
+> Las secciones **no se editan en el `.md`**: lo genera `pnpm site:sync`. La prosa
+> curada vive en el sidecar `componentes/cu-<tag>.doc.json` (ver abajo).
+>
+> La API (`Props`, `Eventos`, `Slots`, `Métodos expuestos`) se extrae del SFC y el
+> render **siempre** la incluye, con `Ninguno.` si no hay filas. No se escribe a mano.
+
+## Secciones curadas del sidecar (mode-aware)
+
+El array `sections` del sidecar `componentes/cu-<tag>.doc.json` es la **única fuente
+de las secciones**, compartida por las dos vistas:
+
+- **Ficha vanilla/UMD** (custom elements): pinta `title` + `body`.
+- **Página Vue** (sitio): pinta `titleVue ?? title` + `bodyVue ?? body`.
+
+```json
+{
+  "title": "Uso en HTML plano",
+  "titleVue": "Uso en Vue",
+  "body": "```html\n<script src=\"dist/CuButton.umd.js\"></script>\n<cu-button color=\"primary\" variant=\"solid\">Guardar</cu-button>\n```",
+  "bodyVue": "```vue\n<script setup lang=\"ts\">\nimport Button from \"@/components/buttons/Button.vue\";\n</script>\n\n<template>\n  <Button color=\"primary\" variant=\"solid\">Guardar</Button>\n</template>\n```"
+}
+```
+
+Reglas:
+
+- `title`/`body`: forma vanilla (tag HTML + `<script src="dist/...">` + JS plano).
+- `titleVue`/`bodyVue`: forma Vue (`<script setup lang="ts">` + `<template>`, props
+  en vez de atributos, `ref`/`v-model`/composables en vez de `document.getElementById`).
+  El import apunta al `.vue` real: `import Button from "@/components/buttons/Button.vue"`.
+- **Paridad:** la vista Vue debe tener las **mismas secciones** que la vanilla. Toda
+  sección con bloques de código (```) **debe** traer `bodyVue`; sin él se omite de la
+  vista Vue. Las secciones de pura prosa (sin código) pueden omitirlo: se reutiliza
+  el texto.
+- El título de la primera sección de uso es `"Uso en HTML plano"` con
+  `titleVue: "Uso en Vue"`.
+- Los componentes **sin custom element** también pueden tener sidecar: el archivo se
+  llama `<slug>.doc.json` (kebab del nombre, ej: `dropdown.doc.json`).
+- **Sidecar base:** `pnpm docs:scaffold` crea `componentes/<tag|slug>.doc.json` para
+  todo componente que no tenga uno (no pisa los existentes). Arranca con la sección
+  "Uso en Vue".
+- **`body` es opcional:** una sección puede ser Vue-only (`title` + `bodyVue` sin
+  `body`). El render vanilla la pintaría vacía, pero los componentes sin CE no tienen
+  vista vanilla.
+
 ## Tabla de Props
 
 ```markdown
@@ -225,8 +269,8 @@ Documentá los cuatro si existen.
 - **Español** en todas las descripciones y prosa.
 - **Tono:** directo, conciso, sin marketing.
 - **Cero emojis** salvo que el usuario lo pida.
-- **No uses "Vue" en ejemplos de uso**: la doc es para HTML plano + UMD. No importa Vue, no se hace `new Vue({...})`, no se hace `import CuButton from ...`. Solo `<script src="dist/CuButton.umd.js"></script>` y uso directo del tag.
-- **No muestres código Vue** (template, ref, reactive, etc.) en los ejemplos. Si necesitás mostrar cómo setear un valor, hacelo con `addEventListener` o asignación a propiedad del DOM.
+- **Dos formas de código, una por vista:** `body` usa HTML plano + UMD (`<script src="dist/CuButton.umd.js"></script>` + tag + JS con `addEventListener`/`element.property`); `bodyVue` usa Vue (`<script setup lang="ts">` + `<template>`, props, `ref`/`v-model`, import del `.vue`). No mezcles las dos formas dentro del mismo cuerpo.
+- No uses `new Vue({...})` ni `createApp` en `bodyVue`: es la doc de los componentes, no la app.
 - Los ejemplos de iconos SVG son OK (los `<cu-button>` aceptan SVG inline), pero no abuses.
 
 ## Links relativos

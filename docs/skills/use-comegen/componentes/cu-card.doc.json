@@ -26,23 +26,29 @@
   "sections": [
     {
       "title": "Uso en HTML plano",
-      "body": "```html\n<script src=\"dist/CuCard.umd.js\"></script>\n\n<cu-card title=\"Resumen\" subtitle=\"Último corte\" color=\"primary\">\n  Contenido principal de la tarjeta.\n  <div slot=\"footer\">\n    <cu-button color=\"primary\" variant=\"soft\">Ver más</cu-button>\n  </div>\n</cu-card>\n```"
+      "titleVue": "Uso en Vue",
+      "body": "```html\n<script src=\"dist/CuCard.umd.js\"></script>\n\n<cu-card title=\"Resumen\" subtitle=\"Último corte\" color=\"primary\">\n  Contenido principal de la tarjeta.\n  <div slot=\"footer\">\n    <cu-button color=\"primary\" variant=\"soft\">Ver más</cu-button>\n  </div>\n</cu-card>\n```",
+      "bodyVue": "```vue\n<script setup lang=\"ts\">\nimport Card from \"@/components/information/Card.vue\";\nimport Button from \"@/components/buttons/Button.vue\";\n</script>\n\n<template>\n  <Card title=\"Resumen\" subtitle=\"Último corte\" color=\"primary\">\n    Contenido principal de la tarjeta.\n    <template #footer>\n      <Button color=\"primary\" variant=\"soft\">Ver más</Button>\n    </template>\n  </Card>\n</template>\n```"
     },
     {
       "title": "Variantes visuales",
-      "body": "```html\n<cu-card title=\"Ghost\">ghost (default)</cu-card>\n<cu-card title=\"Outlined\" variant=\"outlined\" color=\"primary\">outlined</cu-card>\n<cu-card title=\"Soft\" variant=\"soft\" color=\"primary\">soft</cu-card>\n<cu-card title=\"Subtle\" variant=\"subtle\" color=\"primary\">subtle</cu-card>\n<cu-card title=\"Solid\" variant=\"solid\" color=\"primary\">solid</cu-card>\n```"
+      "body": "```html\n<cu-card title=\"Ghost\">ghost (default)</cu-card>\n<cu-card title=\"Outlined\" variant=\"outlined\" color=\"primary\">outlined</cu-card>\n<cu-card title=\"Soft\" variant=\"soft\" color=\"primary\">soft</cu-card>\n<cu-card title=\"Subtle\" variant=\"subtle\" color=\"primary\">subtle</cu-card>\n<cu-card title=\"Solid\" variant=\"solid\" color=\"primary\">solid</cu-card>\n```",
+      "bodyVue": "```vue\n<template>\n  <Card title=\"Ghost\">ghost (default)</Card>\n  <Card title=\"Outlined\" variant=\"outlined\" color=\"primary\">outlined</Card>\n  <Card title=\"Soft\" variant=\"soft\" color=\"primary\">soft</Card>\n  <Card title=\"Subtle\" variant=\"subtle\" color=\"primary\">subtle</Card>\n  <Card title=\"Solid\" variant=\"solid\" color=\"primary\">solid</Card>\n</template>\n```"
     },
     {
       "title": "Con imagen",
-      "body": "```html\n<cu-card\n  title=\"Proyecto\"\n  subtitle=\"Equipo de desarrollo\"\n  image=\"https://example.com/cover.jpg\"\n  color=\"success\"\n>\n  Descripción del proyecto.\n</cu-card>\n```"
+      "body": "```html\n<cu-card\n  title=\"Proyecto\"\n  subtitle=\"Equipo de desarrollo\"\n  image=\"https://example.com/cover.jpg\"\n  color=\"success\"\n>\n  Descripción del proyecto.\n</cu-card>\n```",
+      "bodyVue": "```vue\n<template>\n  <Card\n    title=\"Proyecto\"\n    subtitle=\"Equipo de desarrollo\"\n    image=\"https://example.com/cover.jpg\"\n    color=\"success\"\n  >\n    Descripción del proyecto.\n  </Card>\n</template>\n```"
     },
     {
       "title": "Layout horizontal",
-      "body": "Media (imagen o slot `media`) al costado del contenido:\n\n```html\n<cu-card layout=\"horizontal\" title=\"Perfil\" subtitle=\"Información del usuario\" image=\"https://example.com/avatar.jpg\">\n  Datos del perfil.\n</cu-card>\n```"
+      "body": "Media (imagen o slot `media`) al costado del contenido:\n\n```html\n<cu-card layout=\"horizontal\" title=\"Perfil\" subtitle=\"Información del usuario\" image=\"https://example.com/avatar.jpg\">\n  Datos del perfil.\n</cu-card>\n```",
+      "bodyVue": "Media (imagen o slot `media`) al costado del contenido:\n\n```vue\n<template>\n  <Card layout=\"horizontal\" title=\"Perfil\" subtitle=\"Información del usuario\" image=\"https://example.com/avatar.jpg\">\n    Datos del perfil.\n  </Card>\n</template>\n```"
     },
     {
       "title": "Slots custom",
-      "body": "```html\n<cu-card color=\"neutral\">\n  <div slot=\"media\">\n    <img src=\"https://example.com/banner.jpg\" alt=\"Banner\" style=\"width:100%;display:block\" />\n  </div>\n  <h3 style=\"margin:0\">Título custom</h3>\n  <p style=\"margin:0\">Contenido.</p>\n  <div slot=\"footer\">\n    <cu-badge color=\"success\" variant=\"solid\">Activo</cu-badge>\n  </div>\n</cu-card>\n```"
+      "body": "```html\n<cu-card color=\"neutral\">\n  <div slot=\"media\">\n    <img src=\"https://example.com/banner.jpg\" alt=\"Banner\" style=\"width:100%;display:block\" />\n  </div>\n  <h3 style=\"margin:0\">Título custom</h3>\n  <p style=\"margin:0\">Contenido.</p>\n  <div slot=\"footer\">\n    <cu-badge color=\"success\" variant=\"solid\">Activo</cu-badge>\n  </div>\n</cu-card>\n```",
+      "bodyVue": "```vue\n<script setup lang=\"ts\">\nimport Card from \"@/components/information/Card.vue\";\nimport Badge from \"@/components/information/Badge.vue\";\n</script>\n\n<template>\n  <Card color=\"neutral\">\n    <template #media>\n      <img src=\"https://example.com/banner.jpg\" alt=\"Banner\" style=\"width:100%;display:block\" />\n    </template>\n    <h3 style=\"margin:0\">Título custom</h3>\n    <p style=\"margin:0\">Contenido.</p>\n    <template #footer>\n      <Badge color=\"success\" variant=\"solid\">Activo</Badge>\n    </template>\n  </Card>\n</template>\n```"
     }
   ],
   "intro": "Tarjeta para mostrar información agrupada con jerarquía visual: media, header (título + subtítulo), contenido y footer. Componente de presentación: no emite eventos ni expone métodos."

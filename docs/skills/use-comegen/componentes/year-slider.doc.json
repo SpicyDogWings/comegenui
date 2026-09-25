@@ -1,0 +1,13 @@
+{
+  "props": {},
+  "events": {},
+  "slots": {},
+  "exposes": {},
+  "notes": {},
+  "sections": [
+    {
+      "title": "Uso en Vue",
+      "bodyVue": "```vue\n<script setup lang=\"ts\">\nimport YearSlider from \"@/components/controls/YearSlider.vue\";\nimport { ref } from \"vue\";\n\nconst value = ref(\"\");\n</script>\n\n<template>\n  <YearSlider v-model=\"value\" variant=\"soft\" color=\"primary\">\n    YearSlider\n  </YearSlider>\n</template>\n```"
+    }
+  ]
+}

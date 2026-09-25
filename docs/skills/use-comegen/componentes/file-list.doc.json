@@ -1,0 +1,13 @@
+{
+  "props": {},
+  "events": {},
+  "slots": {},
+  "exposes": {},
+  "notes": {},
+  "sections": [
+    {
+      "title": "Uso en Vue",
+      "bodyVue": "```vue\n<script setup lang=\"ts\">\nimport FileList from \"@/components/FileList.vue/FileList.vue\";\n</script>\n\n<template>\n  <FileList color=\"neutral\">\n    FileList\n  </FileList>\n</template>\n```"
+    }
+  ]
+}

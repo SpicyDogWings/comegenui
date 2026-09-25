@@ -52,6 +52,70 @@ side.addEventListener('close', () => console.log('cerrando'));
 
 > Los presets (`sm`/`md`/`lg`/`xl`/`full`) se pueden sobrescribir con las custom properties `--cu-sideover-size-{sm|md|lg|xl|full}` sobre el host.
 
+---
+
+## Vista Vue
+
+### Uso en Vue
+
+```vue
+<script setup lang="ts">
+import SideOver from "@/components/overlay/SideOver.vue";
+import Button from "@/components/buttons/Button.vue";
+import { ref } from "vue";
+
+const open = ref(false);
+</script>
+
+<template>
+  <SideOver v-model="open" title="Filtros" position="right">
+    <p>Contenido del panel.</p>
+  </SideOver>
+
+  <Button color="primary" variant="solid" @click="open = true">Abrir panel</Button>
+</template>
+```
+
+### Control programático
+
+```vue
+<script setup lang="ts">
+import SideOver from "@/components/overlay/SideOver.vue";
+import { ref } from "vue";
+
+const open = ref(false);
+
+function abrir() { open.value = true; }
+function cerrar() { open.value = false; }
+function alternar() { open.value = !open.value; }
+</script>
+
+<template>
+  <SideOver
+    v-model="open"
+    @update:model-value="(val) => console.log('estado:', val)"
+    @close="() => console.log('cerrando')"
+  />
+</template>
+```
+
+### Presets de tamaño
+
+```vue
+<script setup lang="ts">
+import SideOver from "@/components/overlay/SideOver.vue";
+</script>
+
+<template>
+  <SideOver position="right" size="sm" title="Angosto"></SideOver>
+  <SideOver position="left" size="lg" title="Ancho"></SideOver>
+  <SideOver position="top" size="md" title="Desde arriba"></SideOver>
+  <SideOver position="bottom" fullscreen title="Pantalla completa"></SideOver>
+</template>
+```
+
+> Los presets (`sm`/`md`/`lg`/`xl`/`full`) se pueden sobrescribir con las custom properties `--cu-sideover-size-{sm|md|lg|xl|full}` sobre el host.
+
 ## Props
 
 | Atributo | Tipo | Default | Descripción |
@@ -78,3 +142,7 @@ side.addEventListener('close', () => console.log('cerrando'));
 | Slot | Descripción |
 |------|------|
 | `default` | Contenido del cuerpo del panel |
+
+## Métodos expuestos
+
+Ninguno.

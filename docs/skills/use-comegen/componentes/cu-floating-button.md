@@ -42,6 +42,44 @@ Botón flotante (FAB) fijo en la esquina inferior derecha, de forma circular. Pe
 - Tamaño fijo de 48×48 px, forma circular y sombra elevada.
 - El color de fondo usa el color semántico del tema activo; el ícono debe usar `stroke="currentColor"`/`fill="currentColor"` para heredarlo.
 
+---
+
+## Vista Vue
+
+### Uso en Vue
+
+```vue
+<script setup lang="ts">
+import FloatingButton from "@/components/buttons/FloatingButton.vue";
+
+function onClick() {
+  console.log("FAB clickeado");
+}
+</script>
+
+<template>
+  <FloatingButton color="primary" @click="onClick">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+  </FloatingButton>
+</template>
+```
+
+### Deshabilitado
+
+```vue
+<template>
+  <FloatingButton disabled>
+    <svg><!-- ícono --></svg>
+  </FloatingButton>
+</template>
+```
+
+### Notas
+
+- Posición fija (`position: fixed`) en `bottom: 1.5rem; right: 1.5rem`, con `z-index: 1000`.
+- Tamaño fijo de 48×48 px, forma circular y sombra elevada.
+- El color de fondo usa el color semántico del tema activo; el ícono debe usar `stroke="currentColor"`/`fill="currentColor"` para heredarlo.
+
 ## Props
 
 | Atributo | Tipo | Default | Descripción |

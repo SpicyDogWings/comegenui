@@ -1,0 +1,13 @@
+{
+  "props": {},
+  "events": {},
+  "slots": {},
+  "exposes": {},
+  "notes": {},
+  "sections": [
+    {
+      "title": "Uso en Vue",
+      "bodyVue": "```vue\n<script setup lang=\"ts\">\nimport NavbarList from \"@/components/navigation/NavbarList.vue\";\n// props: items, searchFields\n</script>\n\n<template>\n  <NavbarList trigger=\"click\">\n    NavbarList\n  </NavbarList>\n</template>\n```"
+    }
+  ]
+}

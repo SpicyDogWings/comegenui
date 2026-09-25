@@ -1,0 +1,13 @@
+{
+  "props": {},
+  "events": {},
+  "slots": {},
+  "exposes": {},
+  "notes": {},
+  "sections": [
+    {
+      "title": "Uso en Vue",
+      "bodyVue": "```vue\n<script setup lang=\"ts\">\nimport MonthSlider from \"@/components/controls/MonthSlider.vue\";\nimport { ref } from \"vue\";\n\nconst value = ref(\"\");\n</script>\n\n<template>\n  <MonthSlider v-model=\"value\" variant=\"soft\" color=\"primary\">\n    MonthSlider\n  </MonthSlider>\n</template>\n```"
+    }
+  ]
+}

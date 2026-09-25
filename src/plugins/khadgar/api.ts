@@ -34,10 +34,17 @@ export interface KhadgarInterface {
   description?: string;
 }
 
-/** Sección de prosa curada (ejemplos de uso). */
+/** Sección de prosa curada (ejemplos de uso). Mode-aware: el render elige
+ *  `title`/`body` en vanilla y `titleVue`/`bodyVue` en la vista Vue. */
 export interface KhadgarSection {
+  /** Título en la vista vanilla/UMD. */
   title: string;
-  body: string;
+  /** Título en la vista Vue. Default: `title`. */
+  titleVue?: string;
+  /** Cuerpo markdown en la vista vanilla/UMD. Opcional en secciones Vue-only. */
+  body?: string;
+  /** Cuerpo markdown en la vista Vue. Default: `body`. */
+  bodyVue?: string;
 }
 
 /** El contrato completo de un componente `.vue`. */
@@ -71,10 +78,11 @@ export interface KhadgarComponent {
   deps: string[];
   /** Notas curadas por sección (`events`, `exposes`, …). */
   notes?: Record<string, string>;
-  /** Secciones de prosa curada (vista vanilla/custom element). */
+  /**
+   * Secciones de prosa curada, compartidas por ambas vistas. Vanilla pinta
+   * `title`/`body`; Vue pinta `titleVue ?? title` / `bodyVue ?? body`.
+   */
   sections?: KhadgarSection[];
-  /** Secciones de prosa curada para la vista Vue. */
-  sectionsVue?: KhadgarSection[];
 }
 
 /** Índice completo: metadata + todos los componentes. */

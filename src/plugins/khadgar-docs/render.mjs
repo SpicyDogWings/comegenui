@@ -80,10 +80,45 @@ function isComplex(type) {
 }
 
 /**
- * Bloque "Uso en Vue" autogenerado: import + ejemplo con props mínimas. Se
- * combina con las secciones `sectionsVue` curadas del sidecar.
+ * Resuelve una sección para una vista. `vanilla` usa `title`/`body`; `vue` usa
+ * `titleVue`/`bodyVue` con fallback a los de vanilla.
  */
-function vueUsage(component) {
+function sectionFor(section, view) {
+  if (view === "vue") {
+    return {
+      title: section.titleVue ?? section.title,
+      body: section.bodyVue ?? section.body,
+    };
+  }
+  return { title: section.title, body: section.body };
+}
+
+/**
+ * ¿La sección se pinta en la vista Vue? Sí si trae variante propia
+ * (`titleVue`/`bodyVue`) o si es prosa sin bloques de código (donde el cuerpo
+ * vanilla sirve igual). Las secciones con código y sin `bodyVue` se omiten, así
+ * una ficha sin migrar no filtra ejemplos HTML.
+ */
+function hasVueVariant(section) {
+  if (section.bodyVue || section.titleVue) return true;
+  return !/```/.test(section.body ?? "");
+}
+
+/** ¿Alguna sección trae cuerpo Vue? Si no, la vista Vue usa el uso autogenerado. */
+function isMigrated(sections) {
+  return sections.some((section) => Boolean(section.bodyVue));
+}
+
+/** Secciones resueltas para la vista Vue. */
+function vueSectionsOf(sections) {
+  return sections.filter(hasVueVariant).map((section) => sectionFor(section, "vue"));
+}
+
+/**
+ * Bloque ```vue de uso autogenerado: import + ejemplo con props mínimas. Solo se
+ * usa como fallback cuando el componente no trae secciones Vue curadas.
+ */
+export function vueUsageBlock(component) {
   const file = component.file ?? "";
   const dir = file.replace(/^src\/components\//, "").replace(/\/[^/]+\.vue$/, "");
   const importPath = `@/components/${dir ? `${dir}/` : ""}${component.name}.vue`;
@@ -126,7 +161,12 @@ function vueUsage(component) {
     `  </${component.name}>`,
     `</template>`,
   );
-  return ["## Uso en Vue", "", "```vue", ...lines, "```"].join("\n");
+  return ["```vue", ...lines, "```"].join("\n");
+}
+
+/** Sección "Uso en Vue" autogenerada. */
+function vueUsage(component) {
+  return ["## Uso en Vue", "", vueUsageBlock(component)].join("\n");
 }
 
 function table(headers, rows) {
@@ -143,87 +183,122 @@ function apiSection(title, body, note) {
 }
 
 /**
+ * Sección de API: tabla si hay filas; si no, la nota curada o "Ninguno.". Así la
+ * ficha siempre trae la plantilla base completa aunque falten filas.
+ */
+function apiOrEmpty(title, rows, tableMarkdown, note, empty = "Ninguno.") {
+  if (rows.length) return apiSection(title, tableMarkdown, note);
+  return apiSection(title, note ?? empty);
+}
+
+/**
  * Renderiza la ficha de un componente.
  *
  * @param {import("../khadgar/api").KhadgarComponent} component
  * @param {object} [options]
- * @param {"vue"|"vanilla"} [options.mode] Tipo de ficha. `vanilla` incluye las
- *   secciones curadas (ej. "Uso en HTML plano"); `vue` solo la API.
+ * @param {"vue"|"vanilla"|"vanilla+vue"} [options.mode] Tipo de ficha. `vanilla`
+ *   pinta las secciones curadas en su forma UMD; `vue` pinta la vista Vue (uso
+ *   autogenerado como fallback + `bodyVue`/`titleVue`); `vanilla+vue` pinta
+ *   vanilla y agrega un apartado "Vista Vue" (ficha canónica del zip).
  * @param {string} [options.backlink] Link "volver". `null` lo omite.
  *   Default: `../SKILL.md`.
- * @param {boolean} [options.includeSections] Forzar secciones. Default: `mode === "vanilla"`.
+ * @param {boolean} [options.includeSections] Forzar secciones. Default: `mode !== "vue"`.
  * @returns {string} markdown
  */
 export function renderDoc(component, options = {}) {
   const mode = options.mode ?? "vanilla";
-  const includeSections = options.includeSections ?? mode === "vanilla";
+  const vueView = mode === "vue";
+  const includeSections = options.includeSections ?? mode !== "vue";
   const backlink = options.backlink === undefined ? "../SKILL.md" : options.backlink;
   const out = [];
   const notes = component.notes ?? {};
+  const sections = component.sections ?? [];
 
-  const title = mode === "vue" ? component.name : `<${component.tag}>`;
+  const title = vueView ? component.name : `<${component.tag}>`;
   out.push(`# \`${title}\``, "");
   if (component.description) out.push(component.description, "");
   if (backlink) out.push(`[← Volver](${backlink})`, "");
   out.push("---", "");
 
-  if (includeSections) {
-    for (const section of component.sections ?? []) {
-      out.push("---", "", `## ${section.title}`, "", section.body.trim(), "");
+  if (!includeSections) {
+    // Vista Vue: secciones curadas en su forma Vue. Si la ficha aún no tiene
+    // ningún `bodyVue`, se usa el uso autogenerado (no se filtra prosa suelta).
+    if (isMigrated(sections)) {
+      for (const view of vueSectionsOf(sections)) {
+        out.push("---", "", `## ${view.title}`, "", (view.body ?? "").trim(), "");
+      }
+    } else {
+      out.push(vueUsage(component), "");
     }
   } else {
-    // Vista Vue: bloque de uso autogenerado + secciones curadas de Vue.
-    out.push(vueUsage(component), "");
-    for (const section of component.sectionsVue ?? []) {
-      out.push("---", "", `## ${section.title}`, "", section.body.trim(), "");
+    // Vanilla: secciones curadas en su forma UMD.
+    for (const section of sections) {
+      out.push("---", "", `## ${section.title}`, "", (section.body ?? "").trim(), "");
+    }
+    // Modo combinado (ficha canónica del zip): apartado Vue con las variantes Vue.
+    if (mode === "vanilla+vue") {
+      out.push("---", "");
+      if (isMigrated(sections)) {
+        out.push("## Vista Vue", "");
+        for (const view of vueSectionsOf(sections)) {
+          out.push(`### ${view.title}`, "", (view.body ?? "").trim(), "");
+        }
+      } else {
+        out.push(vueUsage(component), "");
+      }
     }
   }
 
-  const payloadHeader = mode === "vanilla" ? "Payload (`e.detail`)" : "Payload";
-  const propsHeader = mode === "vanilla" ? "Atributo" : "Prop";
+  const payloadHeader = vueView ? "Payload" : "Payload (`e.detail`)";
+  const propsHeader = vueView ? "Prop" : "Atributo";
 
-  if (component.props.length) {
-    const rows = component.props.map((prop) => [
-      `\`${prop.name}\``,
-      fmtType(prop.type),
-      fmtDefault(prop.default),
-      prop.description ?? "",
-    ]);
-    out.push(apiSection("Props", table([propsHeader, "Tipo", "Default", "Descripción"], rows), notes.props), "");
-  } else if (notes.props) {
-    out.push(apiSection("Props", notes.props), "");
-  }
+  const propRows = component.props.map((prop) => [
+    `\`${prop.name}\``,
+    fmtType(prop.type),
+    fmtDefault(prop.default),
+    prop.description ?? "",
+  ]);
+  out.push(
+    apiOrEmpty(
+      "Props",
+      component.props,
+      table([propsHeader, "Tipo", "Default", "Descripción"], propRows),
+      notes.props,
+    ),
+    "",
+  );
 
-  if (component.events.length) {
-    const rows = component.events.map((event) => [
-      `\`${event.name}\``,
-      fmtPayload(event.type),
-      event.description ?? "",
-    ]);
-    out.push(
-      apiSection("Eventos", table(["Evento", payloadHeader, "Descripción"], rows), notes.events),
-      "",
-    );
-  } else if (notes.events) {
-    out.push(apiSection("Eventos", notes.events), "");
-  }
+  const eventRows = component.events.map((event) => [
+    `\`${event.name}\``,
+    fmtPayload(event.type),
+    event.description ?? "",
+  ]);
+  out.push(
+    apiOrEmpty(
+      "Eventos",
+      component.events,
+      table(["Evento", payloadHeader, "Descripción"], eventRows),
+      notes.events,
+    ),
+    "",
+  );
 
-  if (component.slots.length) {
-    const rows = component.slots.map((slot) => [`\`${slot.name}\``, slot.description ?? ""]);
-    out.push(apiSection("Slots", table(["Slot", "Descripción"], rows), notes.slots), "");
-  } else if (notes.slots) {
-    out.push(apiSection("Slots", notes.slots), "");
-  }
+  const slotRows = component.slots.map((slot) => [`\`${slot.name}\``, slot.description ?? ""]);
+  out.push(
+    apiOrEmpty("Slots", component.slots, table(["Slot", "Descripción"], slotRows), notes.slots),
+    "",
+  );
 
-  if (component.exposed.length) {
-    const rows = component.exposed.map((item) => [methodLabel(item), item.description ?? ""]);
-    out.push(
-      apiSection("Métodos expuestos", table(["Método", "Descripción"], rows), notes.exposes),
-      "",
-    );
-  } else if (notes.exposes) {
-    out.push(apiSection("Métodos expuestos", notes.exposes), "");
-  }
+  const exposedRows = component.exposed.map((item) => [methodLabel(item), item.description ?? ""]);
+  out.push(
+    apiOrEmpty(
+      "Métodos expuestos",
+      component.exposed,
+      table(["Método", "Descripción"], exposedRows),
+      notes.exposes,
+    ),
+    "",
+  );
 
   if (component.interfaces?.length) {
     out.push("## Interfaces", "");

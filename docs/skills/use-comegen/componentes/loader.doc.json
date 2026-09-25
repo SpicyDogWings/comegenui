@@ -1,0 +1,13 @@
+{
+  "props": {},
+  "events": {},
+  "slots": {},
+  "exposes": {},
+  "notes": {},
+  "sections": [
+    {
+      "title": "Uso en Vue",
+      "bodyVue": "```vue\n<script setup lang=\"ts\">\nimport Loader from \"@/components/information/Loader.vue\";\n</script>\n\n<template>\n  <Loader>\n    Loader\n  </Loader>\n</template>\n```"
+    }
+  ]
+}

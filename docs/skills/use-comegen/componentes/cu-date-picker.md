@@ -74,6 +74,80 @@ El label se muestra sobre el picker y es clickeable — hace foco en el input y 
 
 `<cu-date-picker>` **compone** el `Dropdown.vue` genérico (slot `#toggle` con el botón-trigger + slot `#default` con el calendario) — exactamente como lo hace `<cu-select>` con sus opciones. No requiere modificar el componente de dropdown.
 
+---
+
+## Vista Vue
+
+### Formato
+
+Tokens soportados en `format` (con `locale`):
+
+| Token | Ejemplo (`es`) |
+|-------|----------------|
+| `dd` | `11` |
+| `MM` | `08` |
+| `MMM` | `ago` |
+| `MMMM` | `Agosto` |
+| `yy` | `26` |
+| `yyyy` | `2026` |
+
+```vue
+<script setup lang="ts">
+import { ref } from "vue";
+
+const format = ref("MMMM yyyy"); // "Agosto 2026"
+format.value = "dd-MM-yy"; // "11-08-26"
+</script>
+```
+
+### Uso en Vue
+
+```vue
+<script setup lang="ts">
+import DatePicker from "@/components/form/DatePicker.vue";
+import { ref } from "vue";
+
+const fecha = ref<Date | null>(null);
+
+function onChange(d: Date | null) {
+  console.log(d ? d.toISOString().slice(0, 10) : "— sin fecha");
+}
+</script>
+
+<template>
+  <DatePicker v-model="fecha" placeholder="Elegí una fecha" @change="onChange" />
+</template>
+```
+
+### Con fecha inicial y límites
+
+```vue
+<template>
+  <DatePicker model-value="2026-08-11" min="2026-01-01" max="2026-12-31" format="dd/MM/yyyy" />
+</template>
+```
+
+### Con label
+
+El label se muestra sobre el picker y es clickeable — hace foco en el input y abre el panel:
+
+```vue
+<template>
+  <DatePicker label="Fecha de nacimiento" />
+</template>
+```
+
+### Comportamiento
+
+- **Trigger:** botón con ícono de calendario + fecha formateada (o placeholder) + chevron que rota al abrir.
+- **Panel:** box con el `cu-calendar` adentro (ancho ~280px, o ~330px cuando `year-navigation` está activo — el header con botones de año necesita más espacio) y footer con "Hoy" y "Limpiar" (configurables con `today-button` y `clearable`).
+- **Fuera del rango:** los días deshabilitados no se pueden elegir; "Hoy" y la selección manual respetan `min`/`max` del calendario.
+- **Cierre:** al elegir un día, ir a "Hoy" o limpiar, el panel se cierra. También con click afuera o `Escape` (lo maneja el dropdown interno).
+
+### Nota de implementación
+
+`<cu-date-picker>` **compone** el `Dropdown.vue` genérico (slot `#toggle` con el botón-trigger + slot `#default` con el calendario) — exactamente como lo hace `<cu-select>` con sus opciones. No requiere modificar el componente de dropdown.
+
 ## Props
 
 | Atributo | Tipo | Default | Descripción |
@@ -114,6 +188,10 @@ El label se muestra sobre el picker y es clickeable — hace foco en el input y 
 | `change` | `null` | Alias de `update:modelValue` |
 
 > Al limpiar, `update:modelValue`/`change` emiten `null`.
+
+## Slots
+
+Ninguno.
 
 ## Métodos expuestos
 

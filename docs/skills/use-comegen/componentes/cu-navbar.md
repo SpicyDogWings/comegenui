@@ -53,6 +53,63 @@ interface NavItem {
 <cu-navbar id="nav3" responsive responsive-mode="side" side-over-position="right"></cu-navbar>
 ```
 
+---
+
+## Vista Vue
+
+### Uso en Vue
+
+```vue
+<script setup lang="ts">
+import Navbar from "@/components/navigation/Navbar.vue";
+import { ref } from "vue";
+
+const items = ref([
+  { label: 'Inicio', path: '/' },
+  { label: 'Usuarios', children: [
+    { label: 'Lista', path: '/usuarios' },
+    { label: 'Roles', path: '/roles' },
+  ]},
+  { label: 'Ajustes', path: '/ajustes' },
+]);
+
+function onSearch(query: string) {
+  console.log('buscando:', query);
+}
+</script>
+
+<template>
+  <Navbar search active-path="/usuarios" :items="items" @search="onSearch" />
+</template>
+```
+
+### Estructura de `items`
+
+```ts
+interface NavItem {
+  label: string;
+  path?: string;        // enlaces y detección de activo
+  icon?: string;        // string HTML (puede ser un SVG inline)
+  children?: NavItem[]; // submenús
+}
+```
+
+### Modo compacto y responsive
+
+```vue
+<script setup lang="ts">
+import Navbar from "@/components/navigation/Navbar.vue";
+import { ref } from "vue";
+
+const items = ref([/* ... */]);
+</script>
+
+<template>
+  <Navbar :items="items" compact trigger="hover" />
+  <Navbar :items="items" responsive responsive-mode="side" side-over-position="right" />
+</template>
+```
+
 ## Props
 
 | Atributo | Tipo | Default | Descripción |

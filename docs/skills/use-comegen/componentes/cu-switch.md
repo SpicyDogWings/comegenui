@@ -71,6 +71,84 @@ El switch no incluye label propio. Combinalo con `<cu-label>` para tener un áre
 </cu-label>
 ```
 
+---
+
+## Vista Vue
+
+### Uso en Vue
+
+```vue
+<script setup lang="ts">
+import Switch from "@/components/form/Switch.vue";
+import { ref } from "vue";
+
+const activo = ref(true);
+</script>
+
+<template>
+  <Switch v-model="activo" color="primary" size="md" />
+</template>
+```
+
+### Tamaños
+
+```vue
+<template>
+  <Switch size="sm" color="primary" />
+  <Switch size="md" color="primary" />
+</template>
+```
+
+- `sm`: 32×20px
+- `md`: 48×32px
+
+### Escuchar cambios
+
+Hay dos formas equivalentes:
+
+```vue
+<script setup lang="ts">
+import Switch from "@/components/form/Switch.vue";
+import { ref } from "vue";
+
+const activo = ref(false);
+
+// update:modelValue (convención Vue)
+function onUpdate(estado: boolean) {
+  console.log("Estado:", estado);
+}
+
+// change (payload = boolean)
+function onChange(estado: boolean) {
+  console.log("Toggle a:", estado);
+}
+</script>
+
+<template>
+  <Switch v-model="activo" @update:model-value="onUpdate" @change="onChange" />
+</template>
+```
+
+### Uso con label
+
+El switch no incluye label propio. Combinalo con `<Label>` para tener un área clickeable extendida:
+
+```vue
+<script setup lang="ts">
+import Label from "@/components/form/Label.vue";
+import Switch from "@/components/form/Switch.vue";
+import { ref } from "vue";
+
+const activo = ref(false);
+</script>
+
+<template>
+  <Label label="Notificaciones activas">
+    <Switch v-model="activo" color="primary" />
+  </Label>
+</template>
+```
+
 ## Props
 
 | Atributo | Tipo | Default | Descripción |

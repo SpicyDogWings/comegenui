@@ -1,0 +1,13 @@
+{
+  "props": {},
+  "events": {},
+  "slots": {},
+  "exposes": {},
+  "notes": {},
+  "sections": [
+    {
+      "title": "Uso en Vue",
+      "bodyVue": "```vue\n<script setup lang=\"ts\">\nimport Blockquote from \"@/components/markdown/Blockquote.vue\";\n</script>\n\n<template>\n  <Blockquote>\n    Blockquote\n  </Blockquote>\n</template>\n```"
+    }
+  ]
+}

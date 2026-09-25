@@ -50,7 +50,7 @@ for (const doc of customElementDocs) {
 for (const component of index.components) {
   if (!component.skill) continue;
   const markdown = renderDoc(component, {
-    mode: component.customElement ? "vanilla" : "vue",
+    mode: component.customElement ? "vanilla+vue" : "vue",
   });
   writeFileSync(resolve(docsDir, `${component.tag ?? component.slug}.md`), markdown);
 }

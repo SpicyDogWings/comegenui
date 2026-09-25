@@ -1,0 +1,13 @@
+{
+  "props": {},
+  "events": {},
+  "slots": {},
+  "exposes": {},
+  "notes": {},
+  "sections": [
+    {
+      "title": "Uso en Vue",
+      "bodyVue": "```vue\n<script setup lang=\"ts\">\nimport CodeBlock from \"@/components/markdown/CodeBlock.vue\";\n</script>\n\n<template>\n  <CodeBlock code=\"…\">\n    CodeBlock\n  </CodeBlock>\n</template>\n```"
+    }
+  ]
+}

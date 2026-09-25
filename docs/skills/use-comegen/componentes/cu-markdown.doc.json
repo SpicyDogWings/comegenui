@@ -11,11 +11,14 @@
   "sections": [
     {
       "title": "UMD",
-      "body": "```\ndist/CuMarkdown.umd.js\n```"
+      "body": "```\ndist/CuMarkdown.umd.js\n```",
+      "bodyVue": "```vue\n<script setup lang=\"ts\">\nimport Markdown from \"@/components/markdown/Markdown.vue\";\n</script>\n```"
     },
     {
       "title": "Uso",
-      "body": "````html\n<cu-markdown>\n# Título\n\nPárrafo con **negrita**, *cita*, y `código inline`.\n\n- Item 1\n- Item 2\n\n> Blockquote\n\n```js\nconst x = 1;\n```\n\n| Col A | Col B |\n|-------|-------|\n| a     | b     |\n</cu-markdown>\n\n<script src=\"dist/CuMarkdown.umd.js\"></script>\n````\n\nEl contenido se pasa como **texto dentro del tag** (no como prop). El componente lo parsea al montarse."
+      "body": "````html\n<cu-markdown>\n# Título\n\nPárrafo con **negrita**, *cita*, y `código inline`.\n\n- Item 1\n- Item 2\n\n> Blockquote\n\n```js\nconst x = 1;\n```\n\n| Col A | Col B |\n|-------|-------|\n| a     | b     |\n</cu-markdown>\n\n<script src=\"dist/CuMarkdown.umd.js\"></script>\n````\n\nEl contenido se pasa como **texto dentro del tag** (no como prop). El componente lo parsea al montarse.",
+      "titleVue": "Uso en Vue",
+      "bodyVue": "````vue\n<script setup lang=\"ts\">\nimport Markdown from \"@/components/markdown/Markdown.vue\";\n</script>\n\n<template>\n  <Markdown>\n# Título\n\nPárrafo con **negrita**, *cita*, y `código inline`.\n\n- Item 1\n- Item 2\n\n> Blockquote\n\n```js\nconst x = 1;\n```\n\n| Col A | Col B |\n|-------|-------|\n| a     | b     |\n  </Markdown>\n</template>\n````\n\nEl contenido se pasa como **texto dentro del tag** (no como prop). El componente lo parsea al montarse."
     },
     {
       "title": "Notas",

@@ -39,11 +39,12 @@ Si la tarea es **modificar el código fuente** de un componente (`.ce.vue`, `.vu
 
 ### Para crear o actualizar un `.md`
 
+0. Si el componente no tiene sidecar, generá el base con `pnpm docs:scaffold` (crea `componentes/<tag|slug>.doc.json` con la sección "Uso en Vue"; no pisa los existentes).
 1. Leer el archivo `<Componente>.ce.vue` y aplicar la [guía de extracción](guia-extraccion.md).
 2. Anotar props, eventos, slots, métodos y variantes.
 3. Consultar las [convenciones](convenciones.md) para nombres kebab-case, defaults, eventos nativos vs custom.
 4. Llenar la [plantilla](plantilla.md) con los datos extraídos.
-5. Escribir ejemplos de uso en HTML plano (no Vue).
+5. Escribir las secciones del sidecar en el array `sections` del `.doc.json`: cada sección con `body` (HTML plano/UMD) y `bodyVue` (Vue) — modelo mode-aware.
 6. Si es componente con props complejas (arrays/objetos), recordar la sección "Asignar como propiedad JS".
 7. Si el componente hereda props del tema (`theme`, `color`, `variant`, `hightContrast`), documentarlas en bloque.
 8. Pasar el [checklist de auditoría](checklist-auditoria.md) sobre el `.md` resultante.
@@ -58,6 +59,10 @@ La ficha del componente es **una sola** (canonical: la leen agentes y humanos) y
 | **Sitio** | `docs/site/componentes/cu-<nombre>.md` (copia generada, la publica VitePress) | Humanos |
 
 > La ficha **no se edita a mano**: la genera `pnpm site:sync` desde el SFC que distribuye la lib. La prosa curada vive en `componentes/cu-<nombre>.doc.json`.
+>
+> El sidecar declara las `sections` en forma **mode-aware** (`title`/`body` vanilla, `titleVue`/`bodyVue` Vue): las dos vistas pintan las **mismas secciones**. La ficha canónica de un custom element es vanilla + un apartado "Vista Vue"; el sitio publica las dos pestañas por separado. Ver [convenciones.md](convenciones.md#secciones-curadas-del-sidecar-mode-aware).
+>
+> Los flags de la fábrica se declaran en `khadgar.config.json`: `skill` (opt-in, default `false`) y `customElement` (override; si se omite, se deriva del tag en `src/lib`).
 
 ### Índices a actualizar — Skill (agentes)
 

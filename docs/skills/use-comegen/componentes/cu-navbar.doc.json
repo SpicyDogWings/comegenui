@@ -30,15 +30,19 @@
   "sections": [
     {
       "title": "Uso en HTML plano",
-      "body": "```html\n<script src=\"dist/CuNavbar.umd.js\"></script>\n\n<cu-navbar id=\"nav\" search active-path=\"/usuarios\"></cu-navbar>\n\n<script>\n  const nav = document.getElementById('nav');\n  await customElements.whenDefined('cu-navbar');\n  nav.items = [\n    { label: 'Inicio', path: '/' },\n    { label: 'Usuarios', children: [\n      { label: 'Lista', path: '/usuarios' },\n      { label: 'Roles', path: '/roles' },\n    ]},\n    { label: 'Ajustes', path: '/ajustes' },\n  ];\n\n  nav.addEventListener('search', (e) => console.log('buscando:', e.detail));\n</script>\n```"
+      "titleVue": "Uso en Vue",
+      "body": "```html\n<script src=\"dist/CuNavbar.umd.js\"></script>\n\n<cu-navbar id=\"nav\" search active-path=\"/usuarios\"></cu-navbar>\n\n<script>\n  const nav = document.getElementById('nav');\n  await customElements.whenDefined('cu-navbar');\n  nav.items = [\n    { label: 'Inicio', path: '/' },\n    { label: 'Usuarios', children: [\n      { label: 'Lista', path: '/usuarios' },\n      { label: 'Roles', path: '/roles' },\n    ]},\n    { label: 'Ajustes', path: '/ajustes' },\n  ];\n\n  nav.addEventListener('search', (e) => console.log('buscando:', e.detail));\n</script>\n```",
+      "bodyVue": "```vue\n<script setup lang=\"ts\">\nimport Navbar from \"@/components/navigation/Navbar.vue\";\nimport { ref } from \"vue\";\n\nconst items = ref([\n  { label: 'Inicio', path: '/' },\n  { label: 'Usuarios', children: [\n    { label: 'Lista', path: '/usuarios' },\n    { label: 'Roles', path: '/roles' },\n  ]},\n  { label: 'Ajustes', path: '/ajustes' },\n]);\n\nfunction onSearch(query: string) {\n  console.log('buscando:', query);\n}\n</script>\n\n<template>\n  <Navbar search active-path=\"/usuarios\" :items=\"items\" @search=\"onSearch\" />\n</template>\n```"
     },
     {
       "title": "Estructura de `items`",
-      "body": "```ts\ninterface NavItem {\n  label: string;\n  path?: string;        // enlaces y detección de activo\n  icon?: string;        // string HTML (puede ser un SVG inline)\n  children?: NavItem[]; // submenús\n}\n```"
+      "body": "```ts\ninterface NavItem {\n  label: string;\n  path?: string;        // enlaces y detección de activo\n  icon?: string;        // string HTML (puede ser un SVG inline)\n  children?: NavItem[]; // submenús\n}\n```",
+      "bodyVue": "```ts\ninterface NavItem {\n  label: string;\n  path?: string;        // enlaces y detección de activo\n  icon?: string;        // string HTML (puede ser un SVG inline)\n  children?: NavItem[]; // submenús\n}\n```"
     },
     {
       "title": "Modo compacto y responsive",
-      "body": "```html\n<cu-navbar id=\"nav2\" compact trigger=\"hover\"></cu-navbar>\n<cu-navbar id=\"nav3\" responsive responsive-mode=\"side\" side-over-position=\"right\"></cu-navbar>\n```"
+      "body": "```html\n<cu-navbar id=\"nav2\" compact trigger=\"hover\"></cu-navbar>\n<cu-navbar id=\"nav3\" responsive responsive-mode=\"side\" side-over-position=\"right\"></cu-navbar>\n```",
+      "bodyVue": "```vue\n<script setup lang=\"ts\">\nimport Navbar from \"@/components/navigation/Navbar.vue\";\nimport { ref } from \"vue\";\n\nconst items = ref([/* ... */]);\n</script>\n\n<template>\n  <Navbar :items=\"items\" compact trigger=\"hover\" />\n  <Navbar :items=\"items\" responsive responsive-mode=\"side\" side-over-position=\"right\" />\n</template>\n```"
     }
   ],
   "intro": "Barra de navegación vertical (tipo sidebar) con submenús, búsqueda (`filter`/`scroll`), modo compacto y opción responsive con hamburguesa + panel lateral."

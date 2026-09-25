@@ -33,15 +33,19 @@
   "sections": [
     {
       "title": "Uso en HTML plano",
-      "body": "```html\n<script src=\"dist/CuPagination.umd.js\"></script>\n\n<cu-pagination\n  current-page=\"1\"\n  total-pages=\"10\"\n  total-items=\"100\"\n  color=\"primary\"\n  variant=\"soft\"\n  show-page-size\n  id=\"paginacion\"\n></cu-pagination>\n\n<script>\n  // Cambiar opciones del selector dinámicamente\n  const p = document.getElementById('paginacion');\n  p.pageSizeOptions = [10, 25, 50, 100];\n\n  p.addEventListener('update:currentPage', (e) => {\n    console.log('Página:', e.detail);\n  });\n  p.addEventListener('update:itemsPerPage', (e) => {\n    console.log('Items por página:', e.detail);\n  });\n</script>\n```"
+      "titleVue": "Uso en Vue",
+      "body": "```html\n<script src=\"dist/CuPagination.umd.js\"></script>\n\n<cu-pagination\n  current-page=\"1\"\n  total-pages=\"10\"\n  total-items=\"100\"\n  color=\"primary\"\n  variant=\"soft\"\n  show-page-size\n  id=\"paginacion\"\n></cu-pagination>\n\n<script>\n  // Cambiar opciones del selector dinámicamente\n  const p = document.getElementById('paginacion');\n  p.pageSizeOptions = [10, 25, 50, 100];\n\n  p.addEventListener('update:currentPage', (e) => {\n    console.log('Página:', e.detail);\n  });\n  p.addEventListener('update:itemsPerPage', (e) => {\n    console.log('Items por página:', e.detail);\n  });\n</script>\n```",
+      "bodyVue": "```vue\n<script setup lang=\"ts\">\nimport Pagination from \"@/components/controls/Pagination.vue\";\nimport { ref } from \"vue\";\n\nconst currentPage = ref(1);\nconst itemsPerPage = ref(10);\nconst pageSizeOptions = ref([10, 25, 50, 100]);\n</script>\n\n<template>\n  <Pagination\n    v-model:current-page=\"currentPage\"\n    v-model:items-per-page=\"itemsPerPage\"\n    :total-pages=\"10\"\n    :total-items=\"100\"\n    color=\"primary\"\n    variant=\"soft\"\n    show-page-size\n    :page-size-options=\"pageSizeOptions\"\n  />\n</template>\n```"
     },
     {
       "title": "Ejemplo con todos los controles",
-      "body": "```html\n<cu-pagination\n  current-page=\"1\"\n  total-pages=\"20\"\n  total-items=\"195\"\n  items-per-page=\"10\"\n  show-page-size\n  show-first-and-last\n  color=\"primary\"\n  variant=\"outlined\"\n></cu-pagination>\n```"
+      "body": "```html\n<cu-pagination\n  current-page=\"1\"\n  total-pages=\"20\"\n  total-items=\"195\"\n  items-per-page=\"10\"\n  show-page-size\n  show-first-and-last\n  color=\"primary\"\n  variant=\"outlined\"\n></cu-pagination>\n```",
+      "bodyVue": "```vue\n<script setup lang=\"ts\">\nimport Pagination from \"@/components/controls/Pagination.vue\";\nimport { ref } from \"vue\";\n\nconst currentPage = ref(1);\nconst itemsPerPage = ref(10);\n</script>\n\n<template>\n  <Pagination\n    v-model:current-page=\"currentPage\"\n    v-model:items-per-page=\"itemsPerPage\"\n    :total-pages=\"20\"\n    :total-items=\"195\"\n    show-page-size\n    show-first-and-last\n    color=\"primary\"\n    variant=\"outlined\"\n  />\n</template>\n```"
     },
     {
       "title": "Atributos booleanos en HTML",
-      "body": "```html\n<cu-pagination\n  show-page-size\n  show-first-and-last\n  total-pages=\"5\"\n></cu-pagination>\n```"
+      "body": "```html\n<cu-pagination\n  show-page-size\n  show-first-and-last\n  total-pages=\"5\"\n></cu-pagination>\n```",
+      "bodyVue": "```vue\n<script setup lang=\"ts\">\nimport Pagination from \"@/components/controls/Pagination.vue\";\n</script>\n\n<template>\n  <Pagination\n    show-page-size\n    show-first-and-last\n    :total-pages=\"5\"\n  />\n</template>\n```"
     }
   ],
   "intro": "Paginación numérica con soporte para selector de tamaño de página y botones de primera/última. Pensado para usarse dentro de tablas o listas."

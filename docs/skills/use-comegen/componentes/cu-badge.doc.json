@@ -15,15 +15,19 @@
   "sections": [
     {
       "title": "Uso en HTML plano",
-      "body": "```html\n<script src=\"dist/CuBadge.umd.js\"></script>\n\n<cu-badge color=\"primary\" variant=\"solid\">Nuevo</cu-badge>\n<cu-badge color=\"success\" variant=\"soft\">Activo</cu-badge>\n<cu-badge color=\"warning\" variant=\"outlined\">Pendiente</cu-badge>\n<cu-badge color=\"danger\" variant=\"subtle\">Error</cu-badge>\n```"
+      "titleVue": "Uso en Vue",
+      "body": "```html\n<script src=\"dist/CuBadge.umd.js\"></script>\n\n<cu-badge color=\"primary\" variant=\"solid\">Nuevo</cu-badge>\n<cu-badge color=\"success\" variant=\"soft\">Activo</cu-badge>\n<cu-badge color=\"warning\" variant=\"outlined\">Pendiente</cu-badge>\n<cu-badge color=\"danger\" variant=\"subtle\">Error</cu-badge>\n```",
+      "bodyVue": "```vue\n<script setup lang=\"ts\">\nimport Badge from \"@/components/information/Badge.vue\";\n</script>\n\n<template>\n  <Badge color=\"primary\" variant=\"solid\">Nuevo</Badge>\n  <Badge color=\"success\" variant=\"soft\">Activo</Badge>\n  <Badge color=\"warning\" variant=\"outlined\">Pendiente</Badge>\n  <Badge color=\"danger\" variant=\"subtle\">Error</Badge>\n</template>\n```"
     },
     {
       "title": "Variantes visuales",
-      "body": "```html\n<cu-badge color=\"primary\" variant=\"solid\">solid</cu-badge>\n<cu-badge color=\"primary\" variant=\"outlined\">outlined</cu-badge>\n<cu-badge color=\"primary\" variant=\"soft\">soft</cu-badge>\n<cu-badge color=\"primary\" variant=\"ghost\">ghost</cu-badge>\n<cu-badge color=\"primary\" variant=\"subtle\">subtle</cu-badge>\n```"
+      "body": "```html\n<cu-badge color=\"primary\" variant=\"solid\">solid</cu-badge>\n<cu-badge color=\"primary\" variant=\"outlined\">outlined</cu-badge>\n<cu-badge color=\"primary\" variant=\"soft\">soft</cu-badge>\n<cu-badge color=\"primary\" variant=\"ghost\">ghost</cu-badge>\n<cu-badge color=\"primary\" variant=\"subtle\">subtle</cu-badge>\n```",
+      "bodyVue": "```vue\n<template>\n  <Badge color=\"primary\" variant=\"solid\">solid</Badge>\n  <Badge color=\"primary\" variant=\"outlined\">outlined</Badge>\n  <Badge color=\"primary\" variant=\"soft\">soft</Badge>\n  <Badge color=\"primary\" variant=\"ghost\">ghost</Badge>\n  <Badge color=\"primary\" variant=\"subtle\">subtle</Badge>\n</template>\n```"
     },
     {
       "title": "Con ícono",
-      "body": "```html\n<cu-badge color=\"success\" variant=\"soft\">\n  <svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\" style=\"display:inline-block;vertical-align:middle;margin-right:4px\">\n    <path d=\"M20 6 9 17l-5-5\"/>\n  </svg>\n  Verificado\n</cu-badge>\n```"
+      "body": "```html\n<cu-badge color=\"success\" variant=\"soft\">\n  <svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\" style=\"display:inline-block;vertical-align:middle;margin-right:4px\">\n    <path d=\"M20 6 9 17l-5-5\"/>\n  </svg>\n  Verificado\n</cu-badge>\n```",
+      "bodyVue": "```vue\n<template>\n  <Badge color=\"success\" variant=\"soft\">\n    <svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\" style=\"display:inline-block;vertical-align:middle;margin-right:4px\">\n      <path d=\"M20 6 9 17l-5-5\"/>\n    </svg>\n    Verificado\n  </Badge>\n</template>\n```"
     }
   ],
   "intro": "Etiqueta o badge pequeño para estados, categorías o metadata. Componente de presentación pura: no emite eventos ni expone métodos."

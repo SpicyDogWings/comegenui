@@ -90,13 +90,13 @@ Lista de errores frecuentes al crear o actualizar la documentación de un compon
 
 **Cómo evitarlo:** siempre incluir la columna "Payload (`e.detail`)" en la tabla de eventos, con la forma del objeto.
 
-## 12. Poner ejemplos de uso en Vue
+## 12. Mezclar HTML y Vue en un mismo cuerpo, o no dar `bodyVue`
 
-**Síntoma:** el ejemplo dice `import CuButton from 'comegenui'` o `new Vue({...})` o `<template>` con refs.
+**Síntoma:** la sección mete `<cu-button>` dentro de un `<template>` de Vue, o el `body` vanilla importa el `.vue`, o una sección con código desaparece de la vista Vue.
 
-**Por qué pasa:** tentación de usar la sintaxis con la que el componente fue construido.
+**Por qué pasa:** cada sección tiene dos formas (vanilla en `body`, Vue en `bodyVue`) y es fácil mezclarlas u olvidar la segunda.
 
-**Cómo evitarlo:** la doc es para consumo UMD en HTML plano. Todos los ejemplos son `<script src="dist/...">` + tag HTML + script plano con `addEventListener` o asignación a `element.property`.
+**Cómo evitarlo:** cada cuerpo usa **una sola** forma. `body` = HTML plano + UMD (`<script src="dist/...">`); `bodyVue` = `<script setup lang="ts">` + `<template>` con el import del `.vue` (`@/components/...`). Toda sección con bloques de código (```) **debe** traer `bodyVue`: si falta, se omite de la página Vue. Ver [convenciones.md](convenciones.md#secciones-curadas-del-sidecar-mode-aware).
 
 ## 13. Asumir que un componente en `archived/` o `labs/` no se distribuye
 

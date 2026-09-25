@@ -28,6 +28,34 @@ Avatar circular (imagen o iniciales) con color semántico y tres tamaños. Si no
 <cu-avatar initials="A" size="lg"></cu-avatar>
 ```
 
+---
+
+## Vista Vue
+
+### Uso en Vue
+
+```vue
+<script setup lang="ts">
+import Avatar from "@/components/information/Avatar.vue";
+</script>
+
+<template>
+  <Avatar initials="JP" color="primary" />
+  <Avatar initials="MR" color="success" size="lg" />
+  <Avatar initials="CD" size="sm" />
+</template>
+```
+
+### Tamaños
+
+```vue
+<template>
+  <Avatar initials="A" size="sm" />
+  <Avatar initials="A" size="md" />
+  <Avatar initials="A" size="lg" />
+</template>
+```
+
 ## Props
 
 | Atributo | Tipo | Default | Descripción |

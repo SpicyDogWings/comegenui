@@ -16,11 +16,14 @@
   "sections": [
     {
       "title": "Uso en HTML plano",
-      "body": "```html\n<script src=\"dist/CuNavbarHorizontal.umd.js\"></script>\n\n<cu-navbar-horizontal id=\"nav\" trigger=\"hover\" active-path=\"/equipo/dev\"></cu-navbar-horizontal>\n\n<script>\n  const nav = document.getElementById('nav');\n  await customElements.whenDefined('cu-navbar-horizontal');\n  nav.items = [\n    { label: 'Inicio', path: '/' },\n    { label: 'Equipo', children: [\n      { label: 'Desarrollo', path: '/equipo/dev' },\n      { label: 'Diseño', path: '/equipo/diseno' },\n    ]},\n  ];\n</script>\n```"
+      "titleVue": "Uso en Vue",
+      "body": "```html\n<script src=\"dist/CuNavbarHorizontal.umd.js\"></script>\n\n<cu-navbar-horizontal id=\"nav\" trigger=\"hover\" active-path=\"/equipo/dev\"></cu-navbar-horizontal>\n\n<script>\n  const nav = document.getElementById('nav');\n  await customElements.whenDefined('cu-navbar-horizontal');\n  nav.items = [\n    { label: 'Inicio', path: '/' },\n    { label: 'Equipo', children: [\n      { label: 'Desarrollo', path: '/equipo/dev' },\n      { label: 'Diseño', path: '/equipo/diseno' },\n    ]},\n  ];\n</script>\n```",
+      "bodyVue": "```vue\n<script setup lang=\"ts\">\nimport NavbarHorizontal from \"@/components/navigation/NavbarHorizontal.vue\";\nimport { ref } from \"vue\";\n\nconst items = ref([\n  { label: 'Inicio', path: '/' },\n  { label: 'Equipo', children: [\n    { label: 'Desarrollo', path: '/equipo/dev' },\n    { label: 'Diseño', path: '/equipo/diseno' },\n  ]},\n]);\n</script>\n\n<template>\n  <NavbarHorizontal trigger=\"hover\" active-path=\"/equipo/dev\" :items=\"items\" />\n</template>\n```"
     },
     {
       "title": "Estructura de `items`",
-      "body": "```ts\ninterface NavItem {\n  label: string;\n  path?: string;        // enlaces y detección de activo\n  icon?: string;        // string HTML (puede ser un SVG inline)\n  children?: NavItem[]; // submenús desplegables\n}\n```"
+      "body": "```ts\ninterface NavItem {\n  label: string;\n  path?: string;        // enlaces y detección de activo\n  icon?: string;        // string HTML (puede ser un SVG inline)\n  children?: NavItem[]; // submenús desplegables\n}\n```",
+      "bodyVue": "```ts\ninterface NavItem {\n  label: string;\n  path?: string;        // enlaces y detección de activo\n  icon?: string;        // string HTML (puede ser un SVG inline)\n  children?: NavItem[]; // submenús desplegables\n}\n```"
     }
   ],
   "intro": "Barra de navegación horizontal con submenús desplegables (Dropdown) y detección de ítem activo por ruta."

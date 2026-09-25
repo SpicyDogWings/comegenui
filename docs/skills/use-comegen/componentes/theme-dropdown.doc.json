@@ -1,0 +1,13 @@
+{
+  "props": {},
+  "events": {},
+  "slots": {},
+  "exposes": {},
+  "notes": {},
+  "sections": [
+    {
+      "title": "Uso en Vue",
+      "bodyVue": "```vue\n<script setup lang=\"ts\">\nimport ThemeDropdown from \"@/components/theme/ThemeDropdown.vue\";\n</script>\n\n<template>\n  <ThemeDropdown>\n    ThemeDropdown\n  </ThemeDropdown>\n</template>\n```"
+    }
+  ]
+}

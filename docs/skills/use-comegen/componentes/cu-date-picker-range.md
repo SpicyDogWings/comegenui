@@ -69,6 +69,84 @@ r.clear();
 
 El panel del datepicker solo se renderiza cuando está abierto. Si asignás `startDate`/`endDate` con el panel cerrado, el resaltado del rango aparece la próxima vez que se abre el calendario (mount fresco del Calendar interno).
 
+---
+
+## Vista Vue
+
+### Uso en Vue
+
+```vue
+<script setup lang="ts">
+import DatePickerRange from "@/components/form/DatePickerRange.vue";
+import { ref } from "vue";
+
+const startDate = ref("2026-09-03");
+const endDate = ref("2026-09-15");
+
+function onSelect(rango: { start: Date | null; end: Date | null }) {
+  const { start, end } = rango;
+  console.log("Rango:", start?.toISOString().slice(0, 10), "→", end?.toISOString().slice(0, 10));
+}
+</script>
+
+<template>
+  <DatePickerRange
+    v-model:startDate="startDate"
+    v-model:endDate="endDate"
+    label="Período"
+    @select="onSelect"
+  />
+</template>
+```
+
+### Selección de rango
+
+El primer click define el **inicio**, el segundo define el **fin**. Si el segundo click es anterior al inicio, se swapea automáticamente:
+
+```vue
+<script setup lang="ts">
+// Click 1: 2026-09-10 → startDate = 2026-09-10
+// Click 2: 2026-09-05 → swapea: startDate = 2026-09-05, endDate = 2026-09-10
+// Click 3: reinicia → startDate = nuevo día, endDate = null
+</script>
+```
+
+### Dual Calendar
+
+Con `dual-calendar`, se muestran dos meses lado a lado para visualizar mejor rangos que cruzan meses:
+
+```vue
+<template>
+  <DatePickerRange dual-calendar />
+</template>
+```
+
+### Control programático
+
+```vue
+<script setup lang="ts">
+import DatePickerRange from "@/components/form/DatePickerRange.vue";
+import { useTemplateRef } from "vue";
+
+const r = useTemplateRef("r");
+
+function demo() {
+  r.value?.setRange("2026-09-01", "2026-09-30");
+  console.log(r.value?.getStartDate()?.toISOString().slice(0, 10)); // "2026-09-01"
+  console.log(r.value?.getEndDate()?.toISOString().slice(0, 10)); // "2026-09-30"
+  r.value?.clear();
+}
+</script>
+
+<template>
+  <DatePickerRange ref="r" label="Período" />
+</template>
+```
+
+### Nota sobre el renderizado condicional
+
+El panel del datepicker solo se renderiza cuando está abierto. Si asignás `startDate`/`endDate` con el panel cerrado, el resaltado del rango aparece la próxima vez que se abre el calendario (mount fresco del Calendar interno).
+
 ## Props
 
 | Atributo | Tipo | Default | Descripción |
@@ -110,6 +188,10 @@ El panel del datepicker solo se renderiza cuando está abierto. Si asignás `sta
 | `change` | `null }` | Alias de `select` |
 | `update:startDate` | `null` | Cambia la fecha de inicio |
 | `update:endDate` | `null` | Cambia la fecha de fin |
+
+## Slots
+
+Ninguno.
 
 ## Métodos expuestos
 

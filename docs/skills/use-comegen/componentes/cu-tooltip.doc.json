@@ -21,11 +21,14 @@
   "sections": [
     {
       "title": "Uso en HTML plano",
-      "body": "```html\n<script src=\"dist/CuTooltip.umd.js\"></script>\n\n<cu-tooltip text=\"Guardar cambios\" color=\"primary\">\n  <cu-button color=\"primary\" variant=\"soft\">Guardar</cu-button>\n</cu-tooltip>\n```"
+      "titleVue": "Uso en Vue",
+      "body": "```html\n<script src=\"dist/CuTooltip.umd.js\"></script>\n\n<cu-tooltip text=\"Guardar cambios\" color=\"primary\">\n  <cu-button color=\"primary\" variant=\"soft\">Guardar</cu-button>\n</cu-tooltip>\n```",
+      "bodyVue": "```vue\n<script setup lang=\"ts\">\nimport Tooltip from \"@/components/overlay/Tooltip.vue\";\nimport Button from \"@/components/buttons/Button.vue\";\n</script>\n\n<template>\n  <Tooltip text=\"Guardar cambios\" color=\"primary\">\n    <Button color=\"primary\" variant=\"soft\">Guardar</Button>\n  </Tooltip>\n</template>\n```"
     },
     {
       "title": "Posición y contenido custom",
-      "body": "```html\n<cu-tooltip text=\"Texto simple\" position=\"bottom\"></cu-tooltip>\n\n<cu-tooltip position=\"right\" align=\"start\" delay=\"300\">\n  <span>Elemento con tooltip rico</span>\n  <span slot=\"content\">\n    <strong>Más contexto</strong> con HTML\n  </span>\n</cu-tooltip>\n```"
+      "body": "```html\n<cu-tooltip text=\"Texto simple\" position=\"bottom\"></cu-tooltip>\n\n<cu-tooltip position=\"right\" align=\"start\" delay=\"300\">\n  <span>Elemento con tooltip rico</span>\n  <span slot=\"content\">\n    <strong>Más contexto</strong> con HTML\n  </span>\n</cu-tooltip>\n```",
+      "bodyVue": "```vue\n<template>\n  <Tooltip text=\"Texto simple\" position=\"bottom\" />\n\n  <Tooltip position=\"right\" align=\"start\" :delay=\"300\">\n    <span>Elemento con tooltip rico</span>\n    <template #content>\n      <strong>Más contexto</strong> con HTML\n    </template>\n  </Tooltip>\n</template>\n```"
     }
   ],
   "intro": "Tooltip que aparece al hacer hover sobre el elemento contenido, con posición, alineación, offset y delay configurables."

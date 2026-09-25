@@ -62,19 +62,24 @@
   "sections": [
     {
       "title": "Uso básico",
-      "body": "```html\n<script src=\"dist/CuDatePickerRange.umd.js\"></script>\n\n<cu-date-picker-range id=\"rango\" label=\"Período\"></cu-date-picker-range>\n\n<script>\n  const r = document.getElementById('rango');\n\n  // Definir rango\n  r.startDate = '2026-09-03';\n  r.endDate = '2026-09-15';\n\n  // Escuchar cambios\n  r.addEventListener('select', (e) => {\n    const { start, end } = e.detail;\n    console.log('Rango:', start?.toISOString().slice(0, 10), '→', end?.toISOString().slice(0, 10));\n  });\n</script>\n```"
+      "titleVue": "Uso en Vue",
+      "body": "```html\n<script src=\"dist/CuDatePickerRange.umd.js\"></script>\n\n<cu-date-picker-range id=\"rango\" label=\"Período\"></cu-date-picker-range>\n\n<script>\n  const r = document.getElementById('rango');\n\n  // Definir rango\n  r.startDate = '2026-09-03';\n  r.endDate = '2026-09-15';\n\n  // Escuchar cambios\n  r.addEventListener('select', (e) => {\n    const { start, end } = e.detail;\n    console.log('Rango:', start?.toISOString().slice(0, 10), '→', end?.toISOString().slice(0, 10));\n  });\n</script>\n```",
+      "bodyVue": "```vue\n<script setup lang=\"ts\">\nimport DatePickerRange from \"@/components/form/DatePickerRange.vue\";\nimport { ref } from \"vue\";\n\nconst startDate = ref(\"2026-09-03\");\nconst endDate = ref(\"2026-09-15\");\n\nfunction onSelect(rango: { start: Date | null; end: Date | null }) {\n  const { start, end } = rango;\n  console.log(\"Rango:\", start?.toISOString().slice(0, 10), \"→\", end?.toISOString().slice(0, 10));\n}\n</script>\n\n<template>\n  <DatePickerRange\n    v-model:startDate=\"startDate\"\n    v-model:endDate=\"endDate\"\n    label=\"Período\"\n    @select=\"onSelect\"\n  />\n</template>\n```"
     },
     {
       "title": "Selección de rango",
-      "body": "El primer click define el **inicio**, el segundo define el **fin**. Si el segundo click es anterior al inicio, se swapea automáticamente:\n\n```js\n// Click 1: 2026-09-10 → startDate = 2026-09-10\n// Click 2: 2026-09-05 → swapea: startDate = 2026-09-05, endDate = 2026-09-10\n// Click 3: reinicia → startDate = nuevo día, endDate = null\n```"
+      "body": "El primer click define el **inicio**, el segundo define el **fin**. Si el segundo click es anterior al inicio, se swapea automáticamente:\n\n```js\n// Click 1: 2026-09-10 → startDate = 2026-09-10\n// Click 2: 2026-09-05 → swapea: startDate = 2026-09-05, endDate = 2026-09-10\n// Click 3: reinicia → startDate = nuevo día, endDate = null\n```",
+      "bodyVue": "El primer click define el **inicio**, el segundo define el **fin**. Si el segundo click es anterior al inicio, se swapea automáticamente:\n\n```vue\n<script setup lang=\"ts\">\n// Click 1: 2026-09-10 → startDate = 2026-09-10\n// Click 2: 2026-09-05 → swapea: startDate = 2026-09-05, endDate = 2026-09-10\n// Click 3: reinicia → startDate = nuevo día, endDate = null\n</script>\n```"
     },
     {
       "title": "Dual Calendar",
-      "body": "Con `dual-calendar`, se muestran dos meses lado a lado para visualizar mejor rangos que cruzan meses:\n\n```html\n<cu-date-picker-range dual-calendar></cu-date-picker-range>\n```"
+      "body": "Con `dual-calendar`, se muestran dos meses lado a lado para visualizar mejor rangos que cruzan meses:\n\n```html\n<cu-date-picker-range dual-calendar></cu-date-picker-range>\n```",
+      "bodyVue": "Con `dual-calendar`, se muestran dos meses lado a lado para visualizar mejor rangos que cruzan meses:\n\n```vue\n<template>\n  <DatePickerRange dual-calendar />\n</template>\n```"
     },
     {
       "title": "Control programático",
-      "body": "```js\nr.setRange('2026-09-01', '2026-09-30');\nconsole.log(r.getStartDate().toISOString().slice(0, 10)); // \"2026-09-01\"\nconsole.log(r.getEndDate().toISOString().slice(0, 10));   // \"2026-09-30\"\nr.clear();\n```"
+      "body": "```js\nr.setRange('2026-09-01', '2026-09-30');\nconsole.log(r.getStartDate().toISOString().slice(0, 10)); // \"2026-09-01\"\nconsole.log(r.getEndDate().toISOString().slice(0, 10));   // \"2026-09-30\"\nr.clear();\n```",
+      "bodyVue": "```vue\n<script setup lang=\"ts\">\nimport DatePickerRange from \"@/components/form/DatePickerRange.vue\";\nimport { useTemplateRef } from \"vue\";\n\nconst r = useTemplateRef(\"r\");\n\nfunction demo() {\n  r.value?.setRange(\"2026-09-01\", \"2026-09-30\");\n  console.log(r.value?.getStartDate()?.toISOString().slice(0, 10)); // \"2026-09-01\"\n  console.log(r.value?.getEndDate()?.toISOString().slice(0, 10)); // \"2026-09-30\"\n  r.value?.clear();\n}\n</script>\n\n<template>\n  <DatePickerRange ref=\"r\" label=\"Período\" />\n</template>\n```"
     },
     {
       "title": "Nota sobre el renderizado condicional",

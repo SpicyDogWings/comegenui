@@ -21,7 +21,11 @@ export interface ComponentConfig {
   file: string;
   /** Grupo visible del componente en el sitio. Default: `""` (→ "Otros"). */
   group?: string;
-  /** Si tiene custom element (tag en `src/lib`): ficha vanilla/UMD en el sitio. */
+  /**
+   * Override de custom element. `true` exige un tag en `src/lib` (si no hay,
+   * warning y se ignora); `false` lo desactiva aunque exista el tag. Si se omite,
+   * se deriva de la presencia del tag.
+   */
   customElement?: boolean;
   /** Emitir la ficha de uso pública (skill). Independiente de `customElement`. */
   skill?: boolean;
@@ -30,8 +34,6 @@ export interface ComponentConfig {
    * `string[]` = solo esos, `false` = ninguno.
    */
   deps?: boolean | string[];
-  /** Emitir la ficha `.md` de este componente. */
-  md?: boolean;
   /** Incluir este componente en el JSON. */
   json?: boolean;
   /** Override de los flags globales de extracción. */
