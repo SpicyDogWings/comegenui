@@ -156,13 +156,6 @@
       "skill": true
     },
     {
-      "name": "DatePickerRange",
-      "file": "src/components/form/DatePickerRange.vue",
-      "group": "Formularios",
-      "customElement": true,
-      "skill": true
-    },
-    {
       "name": "Dropdown",
       "file": "src/components/overlay/Dropdown.vue",
       "skill": true,

@@ -408,14 +408,18 @@ Ejemplos copy-pasteables de todos los componentes en HTML plano. Para la guía d
 ### Date Picker Range
 
 ```html
-<cu-date-picker-range id="rango"></cu-date-picker-range>
-<script src="dist/CuDatePickerRange.umd.js"></script>
+<cu-date-picker id="rango" mode="range" dual-calendar></cu-date-picker>
+<script src="dist/CuDatePicker.umd.js"></script>
 <script>
   const rango = document.getElementById('rango');
-  await customElements.whenDefined('cu-date-picker-range');
+  await customElements.whenDefined('cu-date-picker');
+  rango.startDate = '2026-09-03';
+  rango.endDate = '2026-09-15';
   rango.addEventListener('change', (e) => console.log(e.detail)); // { start, end }
 </script>
 ```
+
+> `CuDatePickerRange.umd.js` / `<cu-date-picker-range>` sigue existiendo como alias **deprecado** de `mode="range"`.
 
 ---
 

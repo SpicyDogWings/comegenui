@@ -1,6 +1,9 @@
 <script setup lang="ts">
+// Shim de compatibilidad: `<cu-date-picker-range>` sigue registrado pero ahora
+// delega en el `DatePicker` unificado con `mode="range"`. Deprecado: preferir
+// `<cu-date-picker mode="range">`. Mismos props/eventos que antes.
 import { ref, getCurrentInstance, type PropType } from 'vue'
-import DatePickerRange from '../../form/DatePickerRange.vue'
+import DatePicker from '../../form/DatePicker.vue'
 import { initTokens } from '@/plugins/cu-tokens/css'
 
 initTokens()
@@ -16,64 +19,44 @@ const props = defineProps({
     type: [String, Number, Date] as PropType<string | number | Date | null>,
     default: null,
   },
-  /** Fecha mínima seleccionable */
   min: {
     type: [String, Number, Date] as PropType<string | number | Date | null>,
     default: null,
   },
-  /** Fecha máxima seleccionable */
   max: {
     type: [String, Number, Date] as PropType<string | number | Date | null>,
     default: null,
   },
-  /** Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` */
   color: {
     type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     default: 'neutral',
   },
-  /** Variante del trigger: `outlined`, `soft`, `ghost`, `subtle` */
   variant: {
     type: String as PropType<'outlined' | 'soft' | 'ghost' | 'subtle'>,
     default: 'soft',
   },
-  /** Deshabilita el picker */
   disabled: { type: Boolean, default: false },
-  /** Texto cuando no hay rango seleccionado */
   placeholder: { type: String, default: '' },
-  /** Locale para nombres de mes y días */
   locale: { type: String, default: 'es' },
-  /** Día en que arranca la semana: `0` = domingo, `1` = lunes */
   weekStart: { type: Number, default: 1 },
-  /** Formato del rango en el trigger (tokens: `dd` `MM` `MMM` `MMMM` `yy` `yyyy`) */
   format: { type: String, default: 'dd/MM/yyyy' },
-  /** Muestra botones `«`/`»` para saltar de año */
   yearNavigation: { type: [Boolean, String] as PropType<boolean | string>, default: false },
-  /** Formato del mes en el header */
   monthFormat: { type: String, default: 'MMMM' },
-  /** Formato del año en el header */
   yearFormat: { type: String, default: 'yyyy' },
-  /** Días de la semana no seleccionables (`0`=domingo … `6`=sábado) */
   disabledWeekdays: { type: [Array, String] as PropType<number[] | string>, default: '' },
-  /** Fechas puntuales no seleccionables */
   disabledDates: { type: [Array, String] as PropType<(string | Date)[] | string>, default: '' },
-  /** Eventos a señalar con puntos bajo la fecha (ver [cu-calendar](cu-calendar.md#eventos-puntos)) */
   events: {
     type: Array as PropType<CalendarEvent[]>,
     default: () => [],
   },
-  /** Líneas **interiores** (cuadrícula) entre los días de los calendarios internos */
   grid: { type: Boolean, default: false },
-  /** **Marco exterior** alrededor de la cuadrícula de días */
   border: { type: Boolean, default: false },
-  /** Muestra dos meses lado a lado */
   dualCalendar: { type: Boolean, default: false },
   position: { type: String, default: 'bottom' },
   align: { type: String, default: 'start' },
   fixed: { type: Boolean, default: false },
-  /** Muestra botón "Limpiar" */
   clearable: { type: Boolean, default: true },
   todayButton: { type: Boolean, default: false },
-  /** Texto del label sobre el picker */
   label: { type: String, default: '' },
 })
 
@@ -82,7 +65,7 @@ interface CalendarEvent {
   color?: string
 }
 
-const pickerRef = ref<InstanceType<typeof DatePickerRange> | null>(null)
+const pickerRef = ref<InstanceType<typeof DatePicker> | null>(null)
 
 const instance = getCurrentInstance()
 function ceEmit(event: string, payload: unknown) {
@@ -103,9 +86,9 @@ function open() { pickerRef.value?.open() }
 function close() { pickerRef.value?.close() }
 /** Abre/cierra el panel */
 function toggle() { pickerRef.value?.toggle() }
-/** null` con la fecha de inicio */
+/** Devuelve la fecha de inicio */
 function getStartDate(): Date | null { return pickerRef.value?.getStartDate() ?? null }
-/** null` con la fecha de fin */
+/** Devuelve la fecha de fin */
 function getEndDate(): Date | null { return pickerRef.value?.getEndDate() ?? null }
 /** Define el rango (acepta string/number/Date) */
 function setRange(start: string | number | Date | null, end: string | number | Date | null) {
@@ -116,13 +99,14 @@ function clear() { pickerRef.value?.clear() }
 
 defineExpose({
   open, close, toggle, getStartDate, getEndDate, setRange, clear,
-  isOpen: () => pickerRef.value?.isOpen || false,
+  isOpen: () => pickerRef.value?.isOpen() ?? false,
 })
 </script>
 
 <template>
-  <DatePickerRange
+  <DatePicker
     ref="pickerRef"
+    mode="range"
     :start-date="props.startDate"
     :end-date="props.endDate"
     :min="props.min"

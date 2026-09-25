@@ -21,8 +21,8 @@ Tablas de referencia completas. Para la guía de uso ver [`SKILL.md`](SKILL.md).
 | `CuCollapse.umd.js` | `<cu-collapse>` | Colapsable |
 | `CuColorPicker.umd.js` | `<cu-color-picker>` | Selector de color |
 | `CuCommandPalette.umd.js` | `<cu-command-palette>` | Paleta de comandos |
-| `CuDatePicker.umd.js` | `<cu-date-picker>` | Selector de fecha (dropdown + calendario) |
-| `CuDatePickerRange.umd.js` | `<cu-date-picker-range>` | Selector de rango de fechas |
+| `CuDatePicker.umd.js` | `<cu-date-picker>` | Selector de fecha o rango (`mode="range"`) |
+| `CuDatePickerRange.umd.js` | `<cu-date-picker-range>` | Deprecado: alias de `<cu-date-picker mode="range">` |
 | `CuDropdownMenu.umd.js` | `<cu-dropdown-menu>` | Menú desplegable |
 | `CuFileInput.umd.js` | `<cu-file-input>` | Input de archivo compacto |
 | `CuFileInputZone.umd.js` | `<cu-file-input-zone>` | Zona de drag & drop para archivos |

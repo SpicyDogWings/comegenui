@@ -97,6 +97,11 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  /** Mes visible (primer día) controlado desde afuera. Navegar emite `update:viewMonth`. Se asigna como propiedad JS */
+  viewMonth: {
+    type: [String, Number, Date] as PropType<string | number | Date | null>,
+    default: null,
+  },
 })
 
 interface CalendarEvent {
@@ -154,9 +159,11 @@ defineExpose({ nextMonth, prevMonth, goToMonth, getValue, setValue })
     :range-end="props.rangeEnd"
     :grid="props.grid"
     :border="props.border"
+    :view-month="props.viewMonth"
     @select="ceEmit('select', $event)"
     @change="ceEmit('change', $event)"
     @update:modelValue="ceEmit('update:modelValue', $event)"
+    @update:viewMonth="ceEmit('update:viewMonth', $event)"
   />
 </template>
 

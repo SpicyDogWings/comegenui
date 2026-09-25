@@ -207,8 +207,7 @@ Para tablas completas de archivos, colores por tema, variantes por componente, d
 - [\<cu-collapse\>](componentes/cu-collapse.md) — Colapsable
 - [\<cu-command-palette\>](componentes/cu-command-palette.md) — Paleta de comandos
 - [\<cu-color-picker\>](componentes/cu-color-picker.md) — Selector de color
-- [\<cu-date-picker\>](componentes/cu-date-picker.md) — Selector de fecha
-- [\<cu-date-picker-range\>](componentes/cu-date-picker-range.md) — Rango de fechas
+- [\<cu-date-picker\>](componentes/cu-date-picker.md) — Selector de fecha o rango (`mode="range"`)
 - [\<cu-dropdown-menu\>](componentes/cu-dropdown-menu.md) — Menú desplegable
 - [\<cu-file-input\>](componentes/cu-file-input.md) — Input de archivo
 - [\<cu-file-input-zone\>](componentes/cu-file-input-zone.md) — Zona drag & drop

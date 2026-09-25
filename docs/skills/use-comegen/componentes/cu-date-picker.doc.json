@@ -1,12 +1,15 @@
 {
   "props": {
-    "modelValue": "Fecha seleccionada",
+    "mode": "Modo de selección: `single` (una fecha) o `range` (inicio + fin). En HTML: `mode=\"range\"`",
+    "modelValue": "Fecha seleccionada (modo `single`)",
+    "startDate": "Inicio del rango (modo `range`). En HTML: `start-date=\"2026-09-03\"`",
+    "endDate": "Fin del rango (modo `range`). En HTML: `end-date=\"2026-09-15\"`",
     "min": "Fecha mínima seleccionable",
     "max": "Fecha máxima seleccionable",
     "color": "Color semántico del trigger y del día seleccionado del calendario interno (se pasa tal cual; `neutral` = neutral, ya no mapea a primary)",
     "variant": "Variante del trigger: `outlined`, `soft`, `ghost`, `subtle`. En el calendario interno `ghost` se mapea a `soft` (el calendario ya no tiene ghost)",
     "disabled": "Deshabilita el picker completo",
-    "placeholder": "Texto cuando no hay fecha (default: `\"Seleccionar fecha...\"`)",
+    "placeholder": "Texto cuando no hay fecha (default: `\"Seleccionar fecha...\"`, rango: `\"Seleccionar rango...\"`)",
     "format": "Formato de la fecha en el trigger (ver [Formato](#formato))",
     "locale": "Locale del calendario y nombres de mes",
     "weekStart": "Primer día de la semana (`0` domingo, `1` lunes)",
@@ -14,7 +17,7 @@
     "align": "`end`",
     "fixed": "Panel en `position: fixed` (útil en contenedores con overflow)",
     "clearable": "Muestra el botón \"Limpiar\" en el footer del panel",
-    "todayButton": "Muestra el botón \"Hoy\" en el footer del panel",
+    "todayButton": "Muestra el botón \"Hoy\" en el footer del panel (default: `true` en `single`, `false` en `range`)",
     "yearNavigation": "Controles de mes del calendario interno: botones `«`/`»` de año",
     "monthFormat": "Formato del mes en el header del calendario interno",
     "yearFormat": "Formato del año en el header del calendario interno",
@@ -23,20 +26,29 @@
     "label": "Texto del label sobre el picker",
     "events": "Eventos a señalar con puntos bajo la fecha en el calendario interno (ver [Eventos](cu-calendar.md#eventos-puntos)). Se asigna como propiedad JS",
     "grid": "Líneas **interiores** (cuadrícula) entre los días del calendario interno",
-    "border": "**Marco exterior** alrededor de la cuadrícula de días del calendario interno"
+    "border": "**Marco exterior** alrededor de la cuadrícula de días del calendario interno",
+    "dualCalendar": "Modo `range`: muestra dos meses lado a lado (dual). En HTML: `dual-calendar`"
   },
   "events": {
     "update:modelValue": {
       "type": "null",
-      "description": "Cambio de fecha (al seleccionar, ir a \"Hoy\" o limpiar)"
+      "description": "Cambio de fecha en modo `single` (al seleccionar, ir a \"Hoy\" o limpiar)"
     },
     "change": {
-      "type": "null",
-      "description": "Alias de `update:modelValue`"
+      "type": "null }",
+      "description": "Fecha (single) o `{ start, end }` (range). También al limpiar"
     },
     "select": {
       "type": "Date",
-      "description": "Día clickeado en el calendario"
+      "description": "Día clickeado en el calendario (single) o rango completo `{ start, end }` (range)"
+    },
+    "update:startDate": {
+      "type": "null",
+      "description": "Cambia la fecha de inicio (modo `range`)"
+    },
+    "update:endDate": {
+      "type": "null",
+      "description": "Cambia la fecha de fin (modo `range`)"
     },
     "open": {
       "description": "El panel se abrió"
@@ -48,13 +60,17 @@
   "slots": {},
   "exposes": {
     "open": "Abre, cierra o alterna el panel",
-    "getValue": "null` con la fecha seleccionada",
-    "setValue": "Selecciona una fecha (string/number/Date)",
+    "getValue": "null` con la fecha seleccionada (modo `single`)",
+    "setValue": "Selecciona una fecha (string/number/Date) (modo `single`)",
+    "getStartDate": "null` con la fecha de inicio (modo `range`)",
+    "getEndDate": "null` con la fecha de fin (modo `range`)",
+    "setRange": "Define el rango (acepta string/number/Date) (modo `range`)",
     "clear": "Limpia la selección (emite `null`)",
+    "toggle": "Abre/cierra el panel",
     "isOpen": "Estado del panel"
   },
   "notes": {
-    "events": "> Al limpiar, `update:modelValue`/`change` emiten `null`."
+    "events": "> Al limpiar, `change` emite `null` (single) o `{ start: null, end: null }` (range)."
   },
   "sections": [
     {
@@ -69,6 +85,11 @@
       "bodyVue": "```vue\n<script setup lang=\"ts\">\nimport DatePicker from \"@/components/form/DatePicker.vue\";\nimport { ref } from \"vue\";\n\nconst fecha = ref<Date | null>(null);\n\nfunction onChange(d: Date | null) {\n  console.log(d ? d.toISOString().slice(0, 10) : \"— sin fecha\");\n}\n</script>\n\n<template>\n  <DatePicker v-model=\"fecha\" placeholder=\"Elegí una fecha\" @change=\"onChange\" />\n</template>\n```\n\n### Con fecha inicial y límites\n\n```vue\n<template>\n  <DatePicker model-value=\"2026-08-11\" min=\"2026-01-01\" max=\"2026-12-31\" format=\"dd/MM/yyyy\" />\n</template>\n```\n\n### Con label\n\nEl label se muestra sobre el picker y es clickeable — hace foco en el input y abre el panel:\n\n```vue\n<template>\n  <DatePicker label=\"Fecha de nacimiento\" />\n</template>\n```"
     },
     {
+      "title": "Modo rango",
+      "body": "Con `mode=\"range\"` el picker selecciona un rango: el primer click define el **inicio**, el segundo el **fin** (con swap automático si el fin es anterior). El panel queda abierto entre ambos clicks para ver el resaltado.\n\n```html\n<script src=\"dist/CuDatePicker.umd.js\"></script>\n\n<cu-date-picker id=\"rango\" mode=\"range\" label=\"Período\" dual-calendar></cu-date-picker>\n\n<script>\n  const r = document.getElementById('rango');\n  r.startDate = '2026-09-03';\n  r.endDate = '2026-09-15';\n  r.addEventListener('select', (e) => {\n    const { start, end } = e.detail;\n    console.log(start, end);\n  });\n</script>\n```",
+      "bodyVue": "```vue\n<script setup lang=\"ts\">\nimport DatePicker from \"@/components/form/DatePicker.vue\";\nimport { ref } from \"vue\";\n\nconst startDate = ref(\"2026-09-03\");\nconst endDate = ref(\"2026-09-15\");\n</script>\n\n<template>\n  <DatePicker\n    mode=\"range\"\n    v-model:startDate=\"startDate\"\n    v-model:endDate=\"endDate\"\n    label=\"Período\"\n    dual-calendar\n  />\n</template>\n```\n\n### Control programático (range)\n\n```js\npicker.setRange('2026-09-01', '2026-09-30');\npicker.getStartDate(); // \"2026-09-01\"\npicker.getEndDate();   // \"2026-09-30\"\npicker.clear();\n```"
+    },
+    {
       "title": "Comportamiento",
       "body": "- **Trigger:** botón con ícono de calendario + fecha formateada (o placeholder) + chevron que rota al abrir.\n- **Panel:** box con el `cu-calendar` adentro (ancho ~280px, o ~330px cuando `year-navigation` está activo — el header con botones de año necesita más espacio) y footer con \"Hoy\" y \"Limpiar\" (configurables con `today-button` y `clearable`).\n- **Fuera del rango:** los días deshabilitados no se pueden elegir; \"Hoy\" y la selección manual respetan `min`/`max` del calendario.\n- **Cierre:** al elegir un día, ir a \"Hoy\" o limpiar, el panel se cierra. También con click afuera o `Escape` (lo maneja el dropdown interno)."
     },
@@ -77,5 +98,5 @@
       "body": "`<cu-date-picker>` **compone** el `Dropdown.vue` genérico (slot `#toggle` con el botón-trigger + slot `#default` con el calendario) — exactamente como lo hace `<cu-select>` con sus opciones. No requiere modificar el componente de dropdown."
     }
   ],
-  "intro": "Selector de fecha: un botón-trigger que abre un **dropdown con un calendario adentro** (no es una lista de items seleccionables, es un box con el calendario). Usa `cu-calendar` internamente."
+  "intro": "Selector de fecha: un botón-trigger que abre un **dropdown con un calendario adentro** (no es una lista de items seleccionables, es un box con el calendario). Usa `cu-calendar` internamente. Con `mode=\"range\"` selecciona un rango (inicio + fin) y puede mostrar uno o dos meses (dual)."
 }

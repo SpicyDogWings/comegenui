@@ -1,13 +1,32 @@
 <script setup lang="ts">
 import { computed, ref, watch, type PropType } from 'vue'
-import Dropdown from '../overlay/Dropdown.vue'
 import Button from '../buttons/Button.vue'
 import Calendar from '../controls/Calendar.vue'
-import Label from './Label.vue'
+import DualCalendar from '../controls/DualCalendar.vue'
+import DatePickerShell from './DatePickerShell.vue'
+import { useDateRange } from '@/composables/useDateRange'
+import { formatDate, normalizeDate, parseDate, type CalendarEvent } from '@/utils/date'
 
 const props = defineProps({
+  /** Modo de selección: `single` (una fecha) o `range` (inicio + fin). */
+  mode: {
+    type: String as PropType<'single' | 'range'>,
+    default: 'single',
+    validator: (value: string) => ['single', 'range'].includes(value),
+  },
   // API espejo de MonthSlider/YearSlider: acepta Date, timestamp o fecha "YYYY-MM-DD"
+  /** Fecha seleccionada (modo `single`) */
   modelValue: {
+    type: [String, Number, Date] as PropType<string | number | Date | null>,
+    default: null,
+  },
+  /** Inicio del rango (modo `range`) */
+  startDate: {
+    type: [String, Number, Date] as PropType<string | number | Date | null>,
+    default: null,
+  },
+  /** Fin del rango (modo `range`) */
+  endDate: {
     type: [String, Number, Date] as PropType<string | number | Date | null>,
     default: null,
   },
@@ -53,296 +72,262 @@ const props = defineProps({
   },
   grid: { type: Boolean, required: false, default: false },
   border: { type: Boolean, required: false, default: false },
+  /** Modo `range`: muestra dos meses lado a lado (dual) */
+  dualCalendar: { type: Boolean, required: false, default: false },
   position: { type: String, required: false, default: 'bottom' },
   align: { type: String, required: false, default: 'start' },
   fixed: { type: Boolean, required: false, default: false },
   clearable: { type: Boolean, required: false, default: true },
-  todayButton: { type: Boolean, required: false, default: true },
+  // Default por modo (single: true, range: false) resuelto en `showToday`
+  todayButton: { type: Boolean, required: false, default: undefined },
   label: { type: String, required: false, default: '' },
 })
 
-interface CalendarEvent {
-  date: string | number | Date
-  color?: string
-}
-
 const emit = defineEmits<{
   (e: 'update:modelValue', value: Date | null): void
-  (e: 'change', value: Date | null): void
-  (e: 'select', value: Date): void
+  (e: 'update:startDate', value: Date | null): void
+  (e: 'update:endDate', value: Date | null): void
+  (e: 'change', value: Date | { start: Date | null; end: Date | null } | null): void
+  (e: 'select', value: Date | { start: Date | null; end: Date | null }): void
   (e: 'open'): void
   (e: 'close'): void
 }>()
 
-const dropdownRef = ref<InstanceType<typeof Dropdown> | null>(null)
+const shellRef = ref<InstanceType<typeof DatePickerShell> | null>(null)
 
-// ── Utilidades de fecha (mismas reglas que Calendar/sliders) ──
+const isRange = computed(() => props.mode === 'range')
 
-function normalize(date: Date): Date {
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate())
-}
+// ── Estado (single) ──
 
-function parseDateInput(value: string | number | Date | null | undefined): Date | null {
-  if (value === null || value === undefined || value === '') return null
-  if (value instanceof Date) {
-    return Number.isNaN(value.getTime()) ? null : normalize(value)
-  }
-  if (typeof value === 'number') {
-    if (!Number.isFinite(value)) return null
-    const d = new Date(value)
-    return Number.isNaN(d.getTime()) ? null : normalize(d)
-  }
-  const m = value.trim().match(/^(\d{4})-(\d{2})(?:-(\d{2}))?$/)
-  const parsed = m
-    ? new Date(Number(m[1] ?? 0), Number(m[2] ?? 1) - 1, m[3] ? Number(m[3]) : 1)
-    : new Date(value)
-  if (Number.isNaN(parsed.getTime())) return null
-  return normalize(parsed)
-}
-
-function formatDate(date: Date, format: string, locale: string): string {
-  const pad = (n: number) => String(n).padStart(2, '0')
-  const monthName = (long: boolean) => {
-    const label = new Intl.DateTimeFormat(locale, { month: long ? 'long' : 'short' }).format(date)
-    return label.charAt(0).toUpperCase() + label.slice(1)
-  }
-  const tokens: Record<string, () => string> = {
-    yyyy: () => String(date.getFullYear()),
-    yy: () => String(date.getFullYear()).slice(-2),
-    MMMM: () => monthName(true),
-    MMM: () => monthName(false),
-    MM: () => pad(date.getMonth() + 1),
-    dd: () => pad(date.getDate()),
-  }
-  return format.replace(/yyyy|MMMM|MMM|yy|MM|dd/g, (token) => tokens[token]?.() ?? token)
-}
-
-// ── Estado y label ──
-
-// Estado interno (como Select): se actualiza al seleccionar y se sincroniza
-// con la prop modelValue desde afuera. Sin esto, en el CE el valor emitido
-// no volvía como prop y el trigger/calendario no reflejaban la selección.
-const selectedValue = ref<Date | null>(parseDateInput(props.modelValue))
+const selectedValue = ref<Date | null>(parseDate(props.modelValue))
 
 watch(
   () => props.modelValue,
   (value) => {
-    selectedValue.value = parseDateInput(value)
+    selectedValue.value = parseDate(value)
   },
 )
 
-const selectedLabel = computed(() => {
-  if (selectedValue.value === null) return props.placeholder || 'Seleccionar fecha...'
-  return formatDate(selectedValue.value, props.format, props.locale)
+// ── Estado (range) ──
+
+const {
+  startValue: rangeStart,
+  endValue: rangeEnd,
+  select: selectRange,
+  clear: clearRange,
+  setRange,
+  reset: resetRange,
+} = useDateRange({
+  start: () => props.startDate,
+  end: () => props.endDate,
+  onStartChange: (value) => emit('update:startDate', value),
+  onEndChange: (value) => emit('update:endDate', value),
+  onChange: (value) => emit('change', value),
+  onSelect: (value) => emit('select', value),
 })
 
-// Panel: más ancho cuando el calendario interno tiene navegación de año
-// (header del MonthSlider con 4 botones necesita ~300-310px).
-const panelWidth = computed(() => (props.yearNavigation ? '330px' : '280px'))
+// ── Label del trigger ──
+
+const selectedLabel = computed(() => {
+  if (!isRange.value) {
+    if (selectedValue.value === null) return props.placeholder || 'Seleccionar fecha...'
+    return formatDate(selectedValue.value, props.format, props.locale)
+  }
+  const fmt = (date: Date) => formatDate(date, props.format, props.locale)
+  if (rangeStart.value && rangeEnd.value) return `${fmt(rangeStart.value)} - ${fmt(rangeEnd.value)}`
+  if (rangeStart.value) return `${fmt(rangeStart.value)} - ...`
+  return props.placeholder || 'Seleccionar rango...'
+})
+
+// El Calendar no tiene variante `ghost` (se confunde con el día de hoy)
+const calendarVariant = computed<'solid' | 'outlined' | 'soft' | 'subtle'>(() =>
+  props.variant === 'ghost' ? 'soft' : props.variant,
+)
+
+const showToday = computed(() => props.todayButton ?? !isRange.value)
+
+// Panel: más ancho con navegación de año (4 botones) y con dual (2 meses)
+const panelWidth = computed(() => {
+  if (isRange.value && props.dualCalendar) {
+    return props.yearNavigation ? '700px' : '580px'
+  }
+  return props.yearNavigation ? '330px' : '280px'
+})
 
 // ── Interacción ──
 
-function onSelect(day: Date) {
+function onSelectSingle(day: Date) {
   selectedValue.value = day
   emit('update:modelValue', day)
   emit('change', day)
   emit('select', day)
-  dropdownRef.value?.close()
+  shellRef.value?.close()
 }
 
 function goToday() {
-  const now = normalize(new Date())
+  const now = normalizeDate(new Date())
+  if (isRange.value) {
+    setRange(now, now)
+    shellRef.value?.close()
+    return
+  }
   selectedValue.value = now
   emit('update:modelValue', now)
   emit('change', now)
   emit('select', now)
-  dropdownRef.value?.close()
+  shellRef.value?.close()
 }
 
-/** Limpia la fecha seleccionada. */
+/** Limpia la selección. En modo simple cierra el panel; en rango lo deja abierto. */
 function clear() {
+  if (isRange.value) {
+    clearRange()
+    return
+  }
   selectedValue.value = null
   emit('update:modelValue', null)
   emit('change', null)
-  dropdownRef.value?.close()
+  shellRef.value?.close()
+}
+
+function onClose() {
+  // Evita que un rango a medio elegir sobreviva al cierre del panel.
+  resetRange()
+  emit('close')
 }
 
 // ── API programática ──
 
-/** Devuelve la fecha seleccionada. */
+/** Devuelve la fecha seleccionada (modo simple). */
 function getValue(): Date | null {
   return selectedValue.value
 }
 
-/** Setea la fecha seleccionada y emite change. */
+/** Setea la fecha seleccionada y emite change (modo simple). */
 function setValue(value: string | number | Date | null) {
-  const parsed = parseDateInput(value)
+  if (isRange.value) return
+  const parsed = parseDate(value)
   if (parsed === null) return
   selectedValue.value = parsed
   emit('update:modelValue', parsed)
   emit('change', parsed)
 }
 
-/** Abre el panel del calendario. */
-function open() { dropdownRef.value?.open() }
-/** Cierra el panel del calendario. */
-function close() { dropdownRef.value?.close() }
-/** Alterna el panel del calendario. */
-function toggle() { dropdownRef.value?.toggle() }
+/** Devuelve la fecha de inicio (modo rango). */
+function getStartDate(): Date | null {
+  return rangeStart.value
+}
 
-defineExpose({ open, close, toggle, getValue, setValue, clear, /** Indica si el panel está abierto. */ isOpen: () => dropdownRef.value?.isOpen || false })
+/** Devuelve la fecha de fin (modo rango). */
+function getEndDate(): Date | null {
+  return rangeEnd.value
+}
+
+/** Abre el panel. */
+function open() { shellRef.value?.open() }
+/** Cierra el panel. */
+function close() { shellRef.value?.close() }
+/** Alterna el panel. */
+function toggle() { shellRef.value?.toggle() }
+
+defineExpose({
+  open,
+  close,
+  toggle,
+  getValue,
+  setValue,
+  clear,
+  getStartDate,
+  getEndDate,
+  setRange,
+  /** Indica si el panel está abierto. */
+  isOpen: () => shellRef.value?.isOpen() ?? false,
+})
 </script>
 
 <template>
-  <div class="cu-date-picker">
-    <Label v-if="label" :label="label" @click="open" />
-    <Dropdown
-      ref="dropdownRef"
-      :color="color"
-      :disabled="disabled"
-      :position="position"
-      :align="align"
-      :fixed="fixed"
-      :offset="4"
-      :panel-width="panelWidth"
-      @open="emit('open')"
-      @close="emit('close')"
-    >
-      <!-- Trigger: un botón tipo Select con ícono de calendario -->
-      <template #toggle="{ toggle, isOpen }">
+  <DatePickerShell
+    ref="shellRef"
+    :color="color"
+    :variant="variant"
+    :disabled="disabled"
+    :label="label"
+    :label-text="selectedLabel"
+    :position="position"
+    :align="align"
+    :fixed="fixed"
+    :panel-width="panelWidth"
+    @open="emit('open')"
+    @close="onClose"
+  >
+    <div class="cu-date-picker-panel">
+      <Calendar
+        v-if="!isRange"
+        :model-value="selectedValue"
+        :min="min"
+        :max="max"
+        :color="color"
+        :variant="calendarVariant"
+        :locale="locale"
+        :week-start="weekStart"
+        :year-navigation="yearNavigation"
+        :month-format="monthFormat"
+        :year-format="yearFormat"
+        :disabled="disabled"
+        :disabled-weekdays="disabledWeekdays"
+        :disabled-dates="disabledDates"
+        :events="events"
+        :grid="grid"
+        :border="border"
+        @select="onSelectSingle"
+      />
+      <DualCalendar
+        v-else
+        :start-date="rangeStart"
+        :end-date="rangeEnd"
+        :months="dualCalendar ? 2 : 1"
+        :min="min"
+        :max="max"
+        :color="color"
+        :variant="calendarVariant"
+        :locale="locale"
+        :week-start="weekStart"
+        :year-navigation="yearNavigation"
+        :month-format="monthFormat"
+        :year-format="yearFormat"
+        :disabled="disabled"
+        :disabled-weekdays="disabledWeekdays"
+        :disabled-dates="disabledDates"
+        :events="events"
+        :grid="grid"
+        :border="border"
+        @select="selectRange"
+      />
+      <div v-if="showToday || clearable" class="cu-date-picker-footer">
         <Button
+          v-if="showToday"
+          variant="ghost"
           :color="color"
-          :variant="variant"
-          :disabled="disabled"
-          class="cu-date-picker-toggle"
-          @click="toggle"
+          class="cu-date-picker-footer-btn"
+          @click="goToday()"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            class="cu-date-picker-icon"
-          >
-            <path d="M8 2v4" />
-            <path d="M16 2v4" />
-            <rect width="18" height="18" x="3" y="4" rx="2" />
-            <path d="M3 10h18" />
-          </svg>
-          <span class="cu-date-picker-label">{{ selectedLabel }}</span>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            class="cu-date-picker-chevron"
-            :class="{ 'cu-date-picker-chevron--open': isOpen }"
-          >
-            <path d="m6 9 6 6 6-6" />
-          </svg>
+          Hoy
         </Button>
-      </template>
-
-      <!-- Panel: el calendario adentro (no es un item seleccionable, es un box) -->
-      <template #default>
-        <div class="cu-date-picker-panel">
-          <Calendar
-            :model-value="selectedValue"
-            :min="min"
-            :max="max"
-            :color="color"
-            :variant="variant === 'ghost' ? 'soft' : variant"
-            :locale="locale"
-            :week-start="weekStart"
-            :year-navigation="yearNavigation"
-            :month-format="monthFormat"
-            :year-format="yearFormat"
-            :disabled="disabled"
-            :disabled-weekdays="disabledWeekdays"
-            :disabled-dates="disabledDates"
-            :events="events"
-            :grid="grid"
-            :border="border"
-            @select="onSelect"
-          />
-          <div v-if="todayButton || clearable" class="cu-date-picker-footer">
-            <Button
-              v-if="todayButton"
-              variant="ghost"
-              :color="color"
-              class="cu-date-picker-footer-btn"
-              @click="goToday()"
-            >
-              Hoy
-            </Button>
-            <Button
-              v-if="clearable"
-              variant="ghost"
-              :color="color"
-              class="cu-date-picker-footer-btn"
-              @click="clear()"
-            >
-              Limpiar
-            </Button>
-          </div>
-        </div>
-      </template>
-    </Dropdown>
-  </div>
+        <Button
+          v-if="clearable"
+          variant="ghost"
+          :color="color"
+          class="cu-date-picker-footer-btn"
+          @click="clear()"
+        >
+          Limpiar
+        </Button>
+      </div>
+    </div>
+  </DatePickerShell>
 </template>
 
 <style scoped>
-.cu-date-picker {
-  width: 100%;
-  outline: none;
-  display: flex;
-  flex-direction: column;
-  gap: var(--cu-space-sm);
-}
-
-.cu-date-picker :deep(.cu-dropdown) {
-  width: 100%;
-}
-
-.cu-date-picker-toggle {
-  width: 100%;
-  justify-content: space-between;
-  gap: var(--cu-space-md);
-  box-sizing: border-box;
-}
-
-.cu-date-picker-icon {
-  flex-shrink: 0;
-}
-
-.cu-date-picker-label {
-  flex: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  min-width: 0;
-  text-align: left;
-}
-
-.cu-date-picker-chevron {
-  transition: transform 200ms ease;
-  flex-shrink: 0;
-}
-
-.cu-date-picker-chevron--open {
-  transform: rotate(180deg);
-}
-
 .cu-date-picker-panel {
   display: flex;
   flex-direction: column;

@@ -1,6 +1,6 @@
 # `<cu-date-picker>`
 
-Selector de fecha: un botón-trigger que abre un **dropdown con un calendario adentro** (no es una lista de items seleccionables, es un box con el calendario). Usa `cu-calendar` internamente.
+Selector de fecha: un botón-trigger que abre un **dropdown con un calendario adentro** (no es una lista de items seleccionables, es un box con el calendario). Usa `cu-calendar` internamente. Con `mode="range"` selecciona un rango (inicio + fin) y puede mostrar uno o dos meses (dual).
 
 [← Volver](../SKILL.md)
 
@@ -55,6 +55,28 @@ El label se muestra sobre el picker y es clickeable — hace foco en el input y 
 
 ```html
 <cu-date-picker id="miPicker" label="Fecha de nacimiento"></cu-date-picker>
+```
+
+---
+
+## Modo rango
+
+Con `mode="range"` el picker selecciona un rango: el primer click define el **inicio**, el segundo el **fin** (con swap automático si el fin es anterior). El panel queda abierto entre ambos clicks para ver el resaltado.
+
+```html
+<script src="dist/CuDatePicker.umd.js"></script>
+
+<cu-date-picker id="rango" mode="range" label="Período" dual-calendar></cu-date-picker>
+
+<script>
+  const r = document.getElementById('rango');
+  r.startDate = '2026-09-03';
+  r.endDate = '2026-09-15';
+  r.addEventListener('select', (e) => {
+    const { start, end } = e.detail;
+    console.log(start, end);
+  });
+</script>
 ```
 
 ---
@@ -135,6 +157,37 @@ El label se muestra sobre el picker y es clickeable — hace foco en el input y 
 </template>
 ```
 
+### Modo rango
+
+```vue
+<script setup lang="ts">
+import DatePicker from "@/components/form/DatePicker.vue";
+import { ref } from "vue";
+
+const startDate = ref("2026-09-03");
+const endDate = ref("2026-09-15");
+</script>
+
+<template>
+  <DatePicker
+    mode="range"
+    v-model:startDate="startDate"
+    v-model:endDate="endDate"
+    label="Período"
+    dual-calendar
+  />
+</template>
+```
+
+### Control programático (range)
+
+```js
+picker.setRange('2026-09-01', '2026-09-30');
+picker.getStartDate(); // "2026-09-01"
+picker.getEndDate();   // "2026-09-30"
+picker.clear();
+```
+
 ### Comportamiento
 
 - **Trigger:** botón con ícono de calendario + fecha formateada (o placeholder) + chevron que rota al abrir.
@@ -150,13 +203,16 @@ El label se muestra sobre el picker y es clickeable — hace foco en el input y 
 
 | Atributo | Tipo | Default | Descripción |
 |------|------|------|------|
-| `modelValue` | `string \| number \| Date \| null` | `null` | Fecha seleccionada |
+| `mode` | `"single" \| "range"` | `"single"` | Modo de selección: `single` (una fecha) o `range` (inicio + fin) |
+| `modelValue` | `string \| number \| Date \| null` | `null` | Fecha seleccionada (modo `single`) |
+| `startDate` | `string \| number \| Date \| null` | `null` | Inicio del rango (modo `range`). En HTML: `start-date="2026-08-01"` |
+| `endDate` | `string \| number \| Date \| null` | `null` | Fin del rango (modo `range`). En HTML: `end-date="2026-08-31"` |
 | `min` | `string \| number \| Date \| null` | `null` | Fecha mínima seleccionable |
 | `max` | `string \| number \| Date \| null` | `null` | Fecha máxima seleccionable |
 | `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico del trigger y del día seleccionado del calendario interno (se pasa tal cual; `neutral` = neutral, ya no mapea a primary) |
 | `variant` | `"soft" \| "outlined" \| "ghost" \| "subtle"` | `"soft"` | Variante del trigger: `outlined`, `soft`, `ghost`, `subtle`. En el calendario interno `ghost` se mapea a `soft` (el calendario ya no tiene ghost) |
 | `disabled` | `boolean` | `false` | Deshabilita el picker completo |
-| `placeholder` | `string` | `""` | Texto cuando no hay fecha (default: `"Seleccionar fecha..."`) |
+| `placeholder` | `string` | `""` | Texto cuando no hay fecha (default: `"Seleccionar fecha..."`, rango: `"Seleccionar rango..."`) |
 | `locale` | `string` | `"es"` | Locale del calendario y nombres de mes |
 | `weekStart` | `number` | `1` | Primer día de la semana (`0` domingo, `1` lunes) |
 | `format` | `string` | `"dd/MM/yyyy"` | Formato de la fecha en el trigger (ver [Formato](#formato)) |
@@ -168,24 +224,27 @@ El label se muestra sobre el picker y es clickeable — hace foco en el input y 
 | `events` | `CalendarEvent[]` | `[]` | Eventos a señalar con puntos bajo la fecha en el calendario interno (ver [Eventos](cu-calendar.md#eventos-puntos)). Se asigna como propiedad JS |
 | `grid` | `boolean` | `false` | Líneas **interiores** (cuadrícula) entre los días del calendario interno |
 | `border` | `boolean` | `false` | **Marco exterior** alrededor de la cuadrícula de días del calendario interno |
+| `dualCalendar` | `boolean` | `false` | Modo `range`: muestra dos meses lado a lado |
 | `position` | `string` | `"bottom"` | `right` |
 | `align` | `string` | `"start"` | `end` |
 | `fixed` | `boolean` | `false` | Panel en `position: fixed` (útil en contenedores con overflow) |
 | `clearable` | `boolean` | `true` | Muestra el botón "Limpiar" en el footer del panel |
-| `todayButton` | `boolean` | `true` | Muestra el botón "Hoy" en el footer del panel |
+| `todayButton` | `boolean` | `"undefined"` | Muestra el botón "Hoy" en el footer del panel (default: `true` en `single`, `false` en `range`) |
 | `label` | `string` | `""` | Texto del label sobre el picker |
 
 ## Eventos
 
 | Evento | Payload (`e.detail`) | Descripción |
 |------|------|------|
-| `select` | `Date` | Día clickeado en el calendario |
-| `change` | `null` | Alias de `update:modelValue` |
+| `select` | `Date` | Día clickeado en el calendario (single) o rango completo `{ start, end }` (range) |
+| `change` | `null }` | Fecha (single) o `{ start, end }` (range). También al limpiar |
 | `open` | — | El panel se abrió |
 | `close` | — | El panel se cerró |
-| `update:modelValue` | `null` | Cambio de fecha (al seleccionar, ir a "Hoy" o limpiar) |
+| `update:modelValue` | `null` | Cambio de fecha en modo `single` (al seleccionar, ir a "Hoy" o limpiar) |
+| `update:startDate` | `null` | Cambia la fecha de inicio (modo `range`) |
+| `update:endDate` | `null` | Cambia la fecha de fin (modo `range`) |
 
-> Al limpiar, `update:modelValue`/`change` emiten `null`.
+> Al limpiar, `change` emite `null` (single) o `{ start: null, end: null }` (range).
 
 ## Slots
 
@@ -197,9 +256,12 @@ Ninguno.
 |------|------|
 | `.open()` | Abre, cierra o alterna el panel |
 | `.close()` |  |
-| `.toggle()` |  |
-| `.getValue()` | null` con la fecha seleccionada |
-| `.setValue(value: string \| number \| Date \| null)` | Selecciona una fecha (string/number/Date) |
+| `.toggle()` | Abre/cierra el panel |
+| `.getValue()` | Devuelve la fecha seleccionada (modo `single`) |
+| `.setValue(value: string \| number \| Date \| null)` | Selecciona una fecha (string/number/Date) (modo `single`) |
+| `.getStartDate()` | Devuelve la fecha de inicio (modo `range`) |
+| `.getEndDate()` | Devuelve la fecha de fin (modo `range`) |
+| `.setRange(start: string \| number \| Date \| null, end: string \| number \| Date \| null)` | Setea el rango (string/number/Date) (modo `range`) |
 | `.clear()` | Limpia la selección (emite `null`) |
 | `.isOpen()` | Estado del panel |
 

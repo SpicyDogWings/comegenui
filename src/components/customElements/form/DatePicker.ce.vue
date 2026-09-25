@@ -6,8 +6,23 @@ import { initTokens } from '@/plugins/cu-tokens/css'
 initTokens()
 
 const props = defineProps({
-  /** Fecha seleccionada */
+  /** Modo de selección: `single` (una fecha) o `range` (inicio + fin) */
+  mode: {
+    type: String as PropType<'single' | 'range'>,
+    default: 'single',
+  },
+  /** Fecha seleccionada (modo `single`) */
   modelValue: {
+    type: [String, Number, Date] as PropType<string | number | Date | null>,
+    default: null,
+  },
+  /** Inicio del rango (modo `range`). En HTML: `start-date="2026-08-01"` */
+  startDate: {
+    type: [String, Number, Date] as PropType<string | number | Date | null>,
+    default: null,
+  },
+  /** Fin del rango (modo `range`). En HTML: `end-date="2026-08-31"` */
+  endDate: {
     type: [String, Number, Date] as PropType<string | number | Date | null>,
     default: null,
   },
@@ -33,7 +48,7 @@ const props = defineProps({
   },
   /** Deshabilita el picker completo */
   disabled: { type: Boolean, default: false },
-  /** Texto cuando no hay fecha (default: `"Seleccionar fecha..."`) */
+  /** Texto cuando no hay fecha (default: `"Seleccionar fecha..."`, rango: `"Seleccionar rango..."`) */
   placeholder: { type: String, default: '' },
   /** Locale del calendario y nombres de mes */
   locale: { type: String, default: 'es' },
@@ -60,6 +75,8 @@ const props = defineProps({
   grid: { type: Boolean, default: false },
   /** **Marco exterior** alrededor de la cuadrícula de días del calendario interno */
   border: { type: Boolean, default: false },
+  /** Modo `range`: muestra dos meses lado a lado */
+  dualCalendar: { type: Boolean, default: false },
   /** `right` */
   position: { type: String, default: 'bottom' },
   /** `end` */
@@ -68,8 +85,8 @@ const props = defineProps({
   fixed: { type: Boolean, default: false },
   /** Muestra el botón "Limpiar" en el footer del panel */
   clearable: { type: Boolean, default: true },
-  /** Muestra el botón "Hoy" en el footer del panel */
-  todayButton: { type: Boolean, default: true },
+  /** Muestra el botón "Hoy" en el footer del panel (default: `true` en `single`, `false` en `range`) */
+  todayButton: { type: Boolean, default: undefined },
   /** Texto del label sobre el picker */
   label: { type: String, default: '' },
 })
@@ -103,20 +120,42 @@ function ceEmit(event: string, payload: unknown) {
 function open() { pickerRef.value?.open() }
 function close() { pickerRef.value?.close() }
 function toggle() { pickerRef.value?.toggle() }
-/** null` con la fecha seleccionada */
+/** Devuelve la fecha seleccionada (modo `single`) */
 function getValue(): Date | null { return pickerRef.value?.getValue() ?? null }
-/** Selecciona una fecha (string/number/Date) */
+/** Selecciona una fecha (string/number/Date) (modo `single`) */
 function setValue(value: string | number | Date | null) { pickerRef.value?.setValue(value) }
+/** Devuelve la fecha de inicio (modo `range`) */
+function getStartDate(): Date | null { return pickerRef.value?.getStartDate() ?? null }
+/** Devuelve la fecha de fin (modo `range`) */
+function getEndDate(): Date | null { return pickerRef.value?.getEndDate() ?? null }
+/** Setea el rango (string/number/Date) (modo `range`) */
+function setRange(start: string | number | Date | null, end: string | number | Date | null) {
+  pickerRef.value?.setRange(start, end)
+}
 /** Limpia la selección (emite `null`) */
 function clear() { pickerRef.value?.clear() }
 
-defineExpose({ open, close, toggle, getValue, setValue, clear, isOpen: () => pickerRef.value?.isOpen() || false })
+defineExpose({
+  open,
+  close,
+  toggle,
+  getValue,
+  setValue,
+  getStartDate,
+  getEndDate,
+  setRange,
+  clear,
+  isOpen: () => pickerRef.value?.isOpen() ?? false,
+})
 </script>
 
 <template>
   <DatePicker
     ref="pickerRef"
+    :mode="props.mode"
     :model-value="innerValue"
+    :start-date="props.startDate"
+    :end-date="props.endDate"
     :min="props.min"
     :max="props.max"
     :color="props.color"
@@ -134,6 +173,7 @@ defineExpose({ open, close, toggle, getValue, setValue, clear, isOpen: () => pic
     :events="props.events"
     :grid="props.grid"
     :border="props.border"
+    :dual-calendar="props.dualCalendar"
     :position="props.position"
     :align="props.align"
     :fixed="props.fixed"
@@ -145,6 +185,8 @@ defineExpose({ open, close, toggle, getValue, setValue, clear, isOpen: () => pic
     @open="ceEmit('open', $event)"
     @close="ceEmit('close', $event)"
     @update:modelValue="ceEmit('update:modelValue', $event)"
+    @update:startDate="ceEmit('update:startDate', $event)"
+    @update:endDate="ceEmit('update:endDate', $event)"
   />
 </template>
 

@@ -429,6 +429,7 @@ import Calendar from "@/components/controls/Calendar.vue";
 | `rangeEnd` | `string \| number \| Date \| null` | `null` | Fin del rango. Se asigna como propiedad JS |
 | `grid` | `boolean` | `false` | Dibuja líneas **interiores** (cuadrícula) entre los días. En HTML plano: `<cu-calendar grid>` |
 | `border` | `boolean` | `false` | Dibuja el **marco exterior** alrededor de la cuadrícula de días. Combinable con `grid` |
+| `viewMonth` | `string \| number \| Date \| null` | `null` | Mes visible (primer día) controlado desde afuera. Navegar emite `update:viewMonth`. Se asigna como propiedad JS |
 
 > **API espejo de los sliders:** las fechas aceptan `Date`, timestamp numérico o string `"YYYY-MM-DD"`. En HTML plano los atributos llegan como string; `modelValue="2026-08-11"` funciona directo.
 
@@ -439,6 +440,7 @@ import Calendar from "@/components/controls/Calendar.vue";
 | `select` | `Date` | Click en un día válido |
 | `change` | `Date` | Fecha seleccionada (alias de `update:modelValue`) |
 | `update:modelValue` | `Date` | Cambio de la fecha seleccionada |
+| `update:viewMonth` | — |  |
 
 > Los tres emiten un objeto `Date` normalizado a medianoche local.
 

@@ -1,6 +1,13 @@
 <script setup lang="ts">
 import { computed, ref, watch, type PropType } from 'vue'
 import MonthSlider from './MonthSlider.vue'
+import {
+  addMonths,
+  parseDate,
+  sameDay,
+  startOfCurrentMonth,
+  type CalendarEvent,
+} from '@/utils/date'
 
 const props = defineProps({
   // API espejo de MonthSlider/YearSlider: acepta Date, timestamp o fecha "YYYY-MM-DD".
@@ -90,66 +97,27 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  // Mes visible (primer día). Si se pasa, el calendario queda controlado por
+  // el consumidor (DualCalendar) y navega emitiendo `update:viewMonth`.
+  viewMonth: {
+    type: [String, Number, Date] as PropType<string | number | Date | null>,
+    default: null,
+  },
 })
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: Date): void
   (e: 'change', value: Date): void
   (e: 'select', value: Date): void
+  (e: 'update:viewMonth', value: Date): void
 }>()
-
-interface CalendarEvent {
-  date: string | number | Date
-  color?: string
-}
 
 const WEEK_LENGTH = 7
 
-// ── Utilidades de fecha (sin librerías externas) ──
-
-function startOfCurrentMonth(): Date {
-  const now = new Date()
-  return new Date(now.getFullYear(), now.getMonth(), 1)
-}
-
-// Normaliza cualquier entrada a medianoche local (evita el desfase UTC de
-// "YYYY-MM-DD"). '' e inválidos = null (mismo criterio que los sliders).
-function parseDateInput(value: string | number | Date | null | undefined): Date | null {
-  if (value === null || value === undefined || value === '') return null
-  if (value instanceof Date) {
-    if (Number.isNaN(value.getTime())) return null
-    return new Date(value.getFullYear(), value.getMonth(), value.getDate())
-  }
-  if (typeof value === 'number') {
-    if (!Number.isFinite(value)) return null
-    const d = new Date(value)
-    if (Number.isNaN(d.getTime())) return null
-    return new Date(d.getFullYear(), d.getMonth(), d.getDate())
-  }
-  const m = value.trim().match(/^(\d{4})-(\d{2})(?:-(\d{2}))?$/)
-  const parsed = m
-    ? new Date(Number(m[1] ?? 0), Number(m[2] ?? 1) - 1, m[3] ? Number(m[3]) : 1)
-    : new Date(value)
-  if (Number.isNaN(parsed.getTime())) return null
-  return new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate())
-}
-
-function sameDay(a: Date, b: Date): boolean {
-  return (
-    a.getFullYear() === b.getFullYear() &&
-    a.getMonth() === b.getMonth() &&
-    a.getDate() === b.getDate()
-  )
-}
-
-function addMonths(date: Date, delta: number): Date {
-  return new Date(date.getFullYear(), date.getMonth() + delta, 1)
-}
-
 // ── Límites (min / max) ──
 
-const minDate = computed<Date | null>(() => parseDateInput(props.min))
-const maxDate = computed<Date | null>(() => parseDateInput(props.max))
+const minDate = computed<Date | null>(() => parseDate(props.min))
+const maxDate = computed<Date | null>(() => parseDate(props.max))
 
 // Normaliza disabledWeekdays ("0,6" en CE o [0,6] en Vue)
 const disabledWeekdayList = computed<number[]>(() => {
@@ -171,7 +139,7 @@ const disabledDateList = computed<Date[]>(() => {
       ? props.disabledDates.split(',')
       : []
   return raw
-    .map((d) => parseDateInput(String(d).trim()))
+    .map((d) => parseDate(String(d).trim()))
     .filter((d): d is Date => d !== null)
 })
 
@@ -191,25 +159,40 @@ function clampMonth(date: Date): Date {
 // ── Estado ──
 
 const today = new Date()
-const viewMonth = ref<Date>(clampMonth(parseDateInput(props.modelValue) ?? startOfCurrentMonth()))
+
+// Mes interno (modo no controlado). Si llega `viewMonth` por prop, manda esa.
+const internalViewMonth = ref<Date>(
+  clampMonth(parseDate(props.modelValue) ?? startOfCurrentMonth()),
+)
+const viewMonthProp = computed<Date | null>(() => parseDate(props.viewMonth))
+const viewMonth = computed<Date>(() => viewMonthProp.value ?? internalViewMonth.value)
+const isViewMonthControlled = computed(() => viewMonthProp.value !== null)
+
+/** Cambia el mes visible (respeta el consumidor si `viewMonth` está controlado). */
+function setViewMonth(next: Date) {
+  const target = clampMonth(new Date(next.getFullYear(), next.getMonth(), 1))
+  if (isViewMonthControlled.value) emit('update:viewMonth', target)
+  else internalViewMonth.value = target
+}
 
 // Estado interno de la selección (como Select/sliders): se actualiza al
 // clickear y se sincroniza cuando cambia la prop modelValue desde afuera.
-const selectedValue = ref<Date | null>(parseDateInput(props.modelValue))
+const selectedValue = ref<Date | null>(parseDate(props.modelValue))
 
 watch(
   () => props.modelValue,
   (value) => {
-    const parsed = parseDateInput(value)
+    const parsed = parseDate(value)
     selectedValue.value = parsed
-    if (parsed === null) return
-    viewMonth.value = clampMonth(new Date(parsed.getFullYear(), parsed.getMonth(), 1))
+    if (parsed === null || isViewMonthControlled.value) return
+    internalViewMonth.value = clampMonth(new Date(parsed.getFullYear(), parsed.getMonth(), 1))
   },
 )
 
 // Si min/max cambian en runtime y dejan el mes fuera del rango, se re-ajusta
 watch([minDate, maxDate], () => {
-  viewMonth.value = clampMonth(viewMonth.value)
+  if (isViewMonthControlled.value) return
+  internalViewMonth.value = clampMonth(internalViewMonth.value)
 })
 
 // ── Navegación ──
@@ -229,25 +212,25 @@ const canNextMonth = computed(() => {
 /** Avanza al mes siguiente (respetando max). */
 function nextMonth() {
   if (props.disabled || !canNextMonth.value) return
-  viewMonth.value = addMonths(viewMonth.value, 1)
+  setViewMonth(addMonths(viewMonth.value, 1))
 }
 
 /** Retrocede al mes anterior (respetando min). */
 function prevMonth() {
   if (props.disabled || !canPrevMonth.value) return
-  viewMonth.value = addMonths(viewMonth.value, -1)
+  setViewMonth(addMonths(viewMonth.value, -1))
 }
 
 /** Navega al mes de la fecha indicada. */
 function goToMonth(value: string | number | Date) {
-  const parsed = parseDateInput(value)
+  const parsed = parseDate(value)
   if (parsed === null) return
-  viewMonth.value = clampMonth(new Date(parsed.getFullYear(), parsed.getMonth(), 1))
+  setViewMonth(new Date(parsed.getFullYear(), parsed.getMonth(), 1))
 }
 
 // El MonthSlider navega solo (botones + drag); acá solo seguimos su mes
 function onMonthChange(date: Date) {
-  viewMonth.value = new Date(date.getFullYear(), date.getMonth(), 1)
+  setViewMonth(new Date(date.getFullYear(), date.getMonth(), 1))
 }
 
 // ── Grilla (7 columnas que se reparten el ancho disponible) ──
@@ -298,7 +281,7 @@ const monthLabel = computed(() => {
 // ── Eventos ──
 
 function getEventsForDay(day: Date): CalendarEvent[] {
-  return props.events.filter((ev) => sameDay(parseDateInput(ev.date) as Date, day))
+  return props.events.filter((ev) => sameDay(parseDate(ev.date) as Date, day))
 }
 
 // ── Selección ──
@@ -333,8 +316,8 @@ function dayClasses(day: Date): Record<string, boolean> {
   }
 }
 
-const rangeStartVal = computed(() => parseDateInput(props.rangeStart))
-const rangeEndVal = computed(() => parseDateInput(props.rangeEnd))
+const rangeStartVal = computed(() => parseDate(props.rangeStart))
+const rangeEndVal = computed(() => parseDate(props.rangeEnd))
 
 function isInRange(day: Date): boolean {
   const start = rangeStartVal.value
@@ -355,10 +338,10 @@ function getValue(): Date | null {
 
 /** Establece la fecha seleccionada y emite los eventos de cambio. */
 function setValue(value: string | number | Date | null) {
-  const parsed = parseDateInput(value)
+  const parsed = parseDate(value)
   if (parsed === null) return
   selectedValue.value = parsed
-  viewMonth.value = clampMonth(new Date(parsed.getFullYear(), parsed.getMonth(), 1))
+  setViewMonth(new Date(parsed.getFullYear(), parsed.getMonth(), 1))
   emit('update:modelValue', parsed)
   emit('change', parsed)
 }

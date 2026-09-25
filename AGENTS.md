@@ -90,11 +90,13 @@ table.footer = [
 
 #### DatePicker — Calendar condicional
 
-El `<cu-date-picker>` renderiza el `<Calendar>` interno solo cuando el panel está abierto (`Dropdown.vue` usa `v-if="isOpen"`). Esto significa:
+El `<cu-date-picker>` renderiza el calendario interno solo cuando el panel está abierto (`Dropdown.vue` usa `v-if="isOpen"`). Esto significa:
 
 - Asignar `picker.events = [...]` con el panel cerrado: los puntos aparecen la próxima vez que se abre (mount fresco)
 - Cambiar `events` con el panel abierto: el Calendar recibe el prop actualizado y re-renderiza
 - Para forzar re-render con el panel abierto: `picker.close(); picker.open()`
+
+El picker está **unificado**: `mode="single"` (fecha, `modelValue`) o `mode="range"` (`startDate`/`endDate`, con `dualCalendar`). En rango usa `DualCalendar.vue` (interno: 1 o 2 `Calendar` con `viewMonth` controlado y navegación independiente) y la FSM de dos clicks vive en `src/composables/useDateRange.ts`. El markup del trigger lo comparte `DatePickerShell.vue`. `<cu-date-picker-range>` (`DatePickerRange.ce.vue` + `lib/form/date-picker-range.ts`) queda como **shim deprecado** de `mode="range"`.
 
 ---
 
