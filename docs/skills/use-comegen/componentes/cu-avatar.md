@@ -6,8 +6,6 @@ Avatar circular (imagen o iniciales) con color semántico y tres tamaños. Si no
 
 ---
 
----
-
 ## Uso en HTML plano
 
 ```html

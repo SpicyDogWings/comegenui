@@ -6,8 +6,6 @@ Sección colapsable con trigger (botón + chevron animado). El contenido se mues
 
 ---
 
----
-
 ## Uso en HTML plano
 
 ```html

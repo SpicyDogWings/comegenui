@@ -8,8 +8,6 @@ Paleta de comandos (búsqueda + lista) en un modal, con agrupado por categoría 
 
 ---
 
----
-
 ## Uso en HTML plano
 
 ```html

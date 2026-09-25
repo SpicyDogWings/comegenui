@@ -6,8 +6,6 @@ Label con color semántico. Al hacer clic, enfoca el input hijo o, si se define 
 
 ---
 
----
-
 ## Uso en HTML plano
 
 ### Modo declarativo (prop `label`)

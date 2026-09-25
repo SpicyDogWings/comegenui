@@ -6,8 +6,6 @@ Selector de fecha: un botón-trigger que abre un **dropdown con un calendario ad
 
 ---
 
----
-
 ## Formato
 
 Tokens soportados en `format` (con `locale`):

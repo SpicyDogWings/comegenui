@@ -6,8 +6,6 @@ Tarjeta para mostrar información agrupada con jerarquía visual: media, header 
 
 ---
 
----
-
 ## Uso en HTML plano
 
 ```html

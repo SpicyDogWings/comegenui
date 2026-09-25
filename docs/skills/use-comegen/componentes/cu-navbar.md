@@ -6,8 +6,6 @@ Barra de navegación vertical (tipo sidebar) con submenús, búsqueda (`filter`/
 
 ---
 
----
-
 ## Uso en HTML plano
 
 ```html

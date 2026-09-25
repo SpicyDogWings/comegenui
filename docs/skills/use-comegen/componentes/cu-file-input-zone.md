@@ -6,8 +6,6 @@ Selector de archivos con zona de drag & drop amplia, soporte para carpetas (recu
 
 ---
 
----
-
 ## Uso en HTML plano
 
 ```html

@@ -6,8 +6,6 @@ Botón flotante (FAB) fijo en la esquina inferior derecha. Es un `Button` (hered
 
 ---
 
----
-
 ## Uso en HTML plano
 
 ```html

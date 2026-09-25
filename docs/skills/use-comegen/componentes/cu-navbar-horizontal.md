@@ -6,8 +6,6 @@ Barra de navegación horizontal con submenús desplegables (Dropdown) y detecci�
 
 ---
 
----
-
 ## Uso en HTML plano
 
 ```html

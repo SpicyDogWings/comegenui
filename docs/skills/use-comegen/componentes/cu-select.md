@@ -6,8 +6,6 @@ Selector de opciones con color, variante, ícono chevron, opciones deshabilitada
 
 ---
 
----
-
 ## Uso en HTML plano
 
 ```html

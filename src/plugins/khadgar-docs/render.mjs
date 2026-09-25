@@ -203,10 +203,14 @@ function apiOrEmpty(title, rows, tableMarkdown, note, empty = "Ninguno.") {
  * @param {string} [options.backlink] Link "volver". `null` lo omite.
  *   Default: `../SKILL.md`.
  * @param {boolean} [options.includeSections] Forzar secciones. Default: `mode !== "vue"`.
+ * @param {boolean} [options.separator] Emitir separadores `---` entre bloques.
+ *   Los sitios con VitePress ya dibujan una línea sobre cada `<h2>`, así que ahí
+ *   conviene `false` para no duplicarla. Default: `true`.
  * @returns {string} markdown
  */
 export function renderDoc(component, options = {}) {
   const mode = options.mode ?? "vanilla";
+  const separator = options.separator ?? true;
   const vueView = mode === "vue";
   // La vista Vue usa la API del `.vue`; la vanilla, la del custom element
   // (`.ce.vue`) cuando existe. Si no hay `.vanilla`, comparten la del `.vue`.
@@ -221,14 +225,18 @@ export function renderDoc(component, options = {}) {
   out.push(`# \`${title}\``, "");
   if (component.description) out.push(component.description, "");
   if (backlink) out.push(`[← Volver](${backlink})`, "");
-  out.push("---", "");
+  // Separador de introducción: solo si hay separadores y el primer bloque no
+  // trae el suyo (las secciones curadas ya emiten `---`).
+  const willPushLeadingSep = separator && (includeSections ? sections.length > 0 : isMigrated(sections));
+  if (separator && !willPushLeadingSep) out.push("---", "");
 
   if (!includeSections) {
     // Vista Vue: secciones curadas en su forma Vue. Si la ficha aún no tiene
     // ningún `bodyVue`, se usa el uso autogenerado (no se filtra prosa suelta).
     if (isMigrated(sections)) {
       for (const view of vueSectionsOf(sections)) {
-        out.push("---", "", `## ${view.title}`, "", (view.body ?? "").trim(), "");
+        if (separator) out.push("---", "");
+        out.push(`## ${view.title}`, "", (view.body ?? "").trim(), "");
       }
     } else {
       out.push(vueUsage(component), "");
@@ -236,11 +244,12 @@ export function renderDoc(component, options = {}) {
   } else {
     // Vanilla: secciones curadas en su forma UMD.
     for (const section of sections) {
-      out.push("---", "", `## ${section.title}`, "", (section.body ?? "").trim(), "");
+      if (separator) out.push("---", "");
+      out.push(`## ${section.title}`, "", (section.body ?? "").trim(), "");
     }
     // Modo combinado (ficha canónica del zip): apartado Vue con las variantes Vue.
     if (mode === "vanilla+vue") {
-      out.push("---", "");
+      if (separator) out.push("---", "");
       if (isMigrated(sections)) {
         out.push("## Vista Vue", "");
         for (const view of vueSectionsOf(sections)) {

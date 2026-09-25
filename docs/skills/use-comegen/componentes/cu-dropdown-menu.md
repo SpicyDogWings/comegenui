@@ -6,8 +6,6 @@ Menú desplegable con items declarativos (label, ícono, color, divisor, link). 
 
 ---
 
----
-
 ## Uso en HTML plano
 
 ```html

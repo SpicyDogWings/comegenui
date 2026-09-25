@@ -6,8 +6,6 @@ Tabla avanzada con búsqueda, paginación, edición inline, ordenamiento, badges
 
 ---
 
----
-
 ## Interfaz de columna
 
 Esta es la interface declarada en el `.ce.vue`. **La prop `columns` se pasa tal cual al componente interno `AdvancedTable.vue`**, que acepta además los campos `width`, `align` y `sortable` (ver [Campos extendidos](#campos-extendidos-forwarded)).

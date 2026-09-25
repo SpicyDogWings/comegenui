@@ -6,8 +6,6 @@ Input de texto con color, variante, tipos de input HTML5 y métodos `get`/`set`/
 
 ---
 
----
-
 ## Uso en HTML plano
 
 ```html

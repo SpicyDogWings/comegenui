@@ -6,8 +6,6 @@ Checkbox con label, controlable via `modelValue` o métodos `get`/`set`.
 
 ---
 
----
-
 ## Uso en HTML plano
 
 ```html

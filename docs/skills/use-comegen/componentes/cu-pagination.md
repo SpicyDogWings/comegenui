@@ -6,8 +6,6 @@ Paginación numérica con soporte para selector de tamaño de página y botones 
 
 ---
 
----
-
 ## Uso en HTML plano
 
 ```html

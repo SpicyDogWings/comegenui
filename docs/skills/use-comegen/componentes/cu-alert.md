@@ -6,8 +6,6 @@ Alerta con color semántico, título opcional y botón de cerrar. Puede controla
 
 ---
 
----
-
 ## Uso en HTML plano
 
 ```html

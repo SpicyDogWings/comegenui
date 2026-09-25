@@ -6,8 +6,6 @@ Toggle switch con color semántico y dos tamaños. Controlable via `modelValue` 
 
 ---
 
----
-
 ## Uso en HTML plano
 
 ```html

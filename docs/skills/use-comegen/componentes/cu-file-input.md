@@ -6,8 +6,6 @@ Input de archivo compacto con drag & drop, estilo idéntico a `<cu-input>`. Sing
 
 ---
 
----
-
 ## Uso en HTML plano
 
 ```html

@@ -6,8 +6,6 @@ Campo de texto con sugerencias en menú desplegable. Filtra los `items` en vivo 
 
 ---
 
----
-
 ## Uso en HTML plano
 
 ```html

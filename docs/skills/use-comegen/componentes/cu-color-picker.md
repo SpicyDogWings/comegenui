@@ -6,8 +6,6 @@ Selector de color con swatch y campo de texto hex. Al hacer click en el swatch s
 
 ---
 
----
-
 ## Uso en HTML plano
 
 ```html

@@ -33,13 +33,13 @@ let written = 0;
 for (const component of index.components) {
   writeFileSync(
     resolve(siteDocsDir, `${component.slug}.md`),
-    renderDoc(component, { mode: "vue", backlink: null }),
+    renderDoc(component, { mode: "vue", backlink: null, separator: false }),
   );
   written++;
 }
 
 // Vanilla en el sitio (custom elements).
-const customElementDocs = buildCustomElementDocs(root, config);
+const customElementDocs = buildCustomElementDocs(root, config, { separator: false });
 for (const doc of customElementDocs) {
   const component = index.components.find((item) => item.tag === doc.tag);
   writeFileSync(resolve(siteDocsDir, `${component.slug}-vanilla.md`), doc.markdown);

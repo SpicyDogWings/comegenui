@@ -6,8 +6,6 @@ Modal/diálogo con backdrop, animación, soporte para `size`/`height` y slot `fo
 
 ---
 
----
-
 ## Uso en HTML plano
 
 ```html

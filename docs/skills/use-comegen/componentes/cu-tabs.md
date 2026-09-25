@@ -6,8 +6,6 @@ Pestañas con variantes, iconos, tabs deshabilitadas individuales y control prog
 
 ---
 
----
-
 ## Uso en HTML plano
 
 ```html

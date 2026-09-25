@@ -6,8 +6,6 @@ Tooltip que aparece al hacer hover sobre el elemento contenido, con posición, a
 
 ---
 
----
-
 ## Uso en HTML plano
 
 ```html

@@ -6,8 +6,6 @@ Selector de rango de fechas: dos fechas (inicio + fin) con resaltado del períod
 
 ---
 
----
-
 ## Uso básico
 
 ```html

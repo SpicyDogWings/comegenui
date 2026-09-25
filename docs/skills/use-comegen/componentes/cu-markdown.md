@@ -6,8 +6,6 @@ Renderizador de Markdown como Custom Element. Convierte markdown en HTML semánt
 
 ---
 
----
-
 ## UMD
 
 ```

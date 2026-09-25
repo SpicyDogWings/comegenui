@@ -6,8 +6,6 @@ Botón con soporte de color, variante, link y estados. Si se define `to`, se ren
 
 ---
 
----
-
 ## Uso en HTML plano
 
 ```html

@@ -8,8 +8,6 @@ Soporta matching de columnas **por label sin importar el orden** (`strict=false`
 
 ---
 
----
-
 ## Plantilla
 
 La prop `template` activa el botón **Descargar plantilla** y define el formato del archivo generado. La plantilla se construye **siempre desde `columns`** (usa `label` de cada columna como encabezado).

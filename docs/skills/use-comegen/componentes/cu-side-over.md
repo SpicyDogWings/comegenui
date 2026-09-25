@@ -6,8 +6,6 @@ Panel overlay que desliza desde un borde sobre el contenido, con scrim, cierre p
 
 ---
 
----
-
 ## Uso en HTML plano
 
 ```html

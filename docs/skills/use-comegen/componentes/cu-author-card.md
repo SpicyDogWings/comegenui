@@ -6,8 +6,6 @@ Tarjeta de autor con avatar (imagen o iniciales generadas del nombre), nombre y 
 
 ---
 
----
-
 ## Uso en HTML plano
 
 ```html

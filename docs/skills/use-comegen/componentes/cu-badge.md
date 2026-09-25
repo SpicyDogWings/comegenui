@@ -6,8 +6,6 @@ Etiqueta o badge pequeño para estados, categorías o metadata. Componente de pr
 
 ---
 
----
-
 ## Uso en HTML plano
 
 ```html

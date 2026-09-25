@@ -6,8 +6,6 @@ Calendario de mes: muestra el mes actual y/o seleccionado con sus días distribu
 
 ---
 
----
-
 ## Formato de fechas
 
 Igual que `MonthSlider` / `YearSlider`: `""`, valores inválidos (`NaN`) y entradas vacías se tratan como **sin fecha**. El string `"YYYY-MM-DD"` se parsea como **fecha local** (evita el desfase UTC).
