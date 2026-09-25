@@ -14,23 +14,37 @@
     "monthFormat": "Formato del mes en el header (tokens como MonthSlider)",
     "yearFormat": "Formato del año en el header",
     "events": "Eventos a señalar con puntos bajo la fecha (ver [Eventos](#eventos-puntos)). Se asigna como propiedad JS",
-    "rangeStart": "Inicio del rango (resalta los días entre inicio y fin). Se asigna como propiedad JS",
-    "rangeEnd": "Fin del rango. Se asigna como propiedad JS",
+    "rangeStart": "Inicio del rango. **Solo en `mode=\"range\"`**: es el valor administrado por la FSM (en `single` se ignora)",
+    "rangeEnd": "Fin del rango. **Solo en `mode=\"range\"`** (en `single` se ignora)",
     "grid": "Dibuja líneas **interiores** (cuadrícula) entre los días. En HTML plano: `<cu-calendar grid>`",
-    "border": "Dibuja el **marco exterior** alrededor de la cuadrícula de días. Combinable con `grid`"
+    "border": "Dibuja el **marco exterior** alrededor de la cuadrícula de días. Combinable con `grid`",
+    "viewMonth": "Mes visible (primer día) controlado desde afuera. Navegar emite `update:viewMonth`",
+    "mode": "Modo de selección: `single` (una fecha) o `range` (inicio + fin)"
   },
   "events": {
     "update:modelValue": {
       "type": "Date",
-      "description": "Cambio de la fecha seleccionada"
+      "description": "Cambio de la fecha seleccionada (modo `single`)"
     },
     "change": {
       "type": "Date",
-      "description": "Fecha seleccionada (alias de `update:modelValue`)"
+      "description": "Fecha (single) o `{ start, end }` (range)"
     },
     "select": {
       "type": "Date",
-      "description": "Click en un día válido"
+      "description": "Click en un día válido (single) o rango completo `{ start, end }` (range)"
+    },
+    "update:rangeStart": {
+      "type": "Date",
+      "description": "Cambia el inicio del rango (modo `range`)"
+    },
+    "update:rangeEnd": {
+      "type": "Date",
+      "description": "Cambia el fin del rango (modo `range`)"
+    },
+    "update:viewMonth": {
+      "type": "Date",
+      "description": "Cambia el mes visible cuando `viewMonth` está controlado"
     }
   },
   "slots": {},
@@ -38,12 +52,15 @@
     "nextMonth": "Va al mes siguiente (respeta `max`)",
     "prevMonth": "Va al mes anterior (respeta `min`)",
     "goToMonth": "Navega al mes de la fecha dada",
-    "getValue": "null` con la fecha seleccionada",
-    "setValue": "Selecciona una fecha (acepta string/number/Date)"
+    "getValue": "null` con la fecha seleccionada (modo `single`)",
+    "setValue": "Selecciona una fecha (acepta string/number/Date) (modo `single`)",
+    "getRange": "null` con el rango `{ start, end }` (modo `range`)",
+    "setRange": "Setea el rango (acepta string/number/Date) (modo `range`)",
+    "clear": "Limpia el rango seleccionado (modo `range`)"
   },
   "notes": {
     "props": "> **API espejo de los sliders:** las fechas aceptan `Date`, timestamp numérico o string `\"YYYY-MM-DD\"`. En HTML plano los atributos llegan como string; `modelValue=\"2026-08-11\"` funciona directo.",
-    "events": "> Los tres emiten un objeto `Date` normalizado a medianoche local."
+    "events": "> En modo `single` los eventos emiten un `Date` normalizado a medianoche local; en `range`, un objeto `{ start, end }`."
   },
   "sections": [
     {
@@ -88,13 +105,9 @@
       "bodyVue": "Puntos bajo las fechas para señalar eventos (entradas a bodega, vencimientos, etc.). Cada evento es un objeto con `date` (fecha) y opcional `color` (nombre semántico: `primary`, `success`, `warning`, `danger`…).\n\n> **Importante:** en Vue, `events` se pasa como prop (`:events=\"events\"`).\n\n```vue\n<script setup lang=\"ts\">\nimport Calendar from \"@/components/controls/Calendar.vue\";\nimport { ref } from \"vue\";\n\nconst events = ref([\n  { date: '2026-08-03', color: 'primary' },   // entrada a bodega\n  { date: '2026-08-07', color: 'success' },   // recepción\n  { date: '2026-08-11', color: 'warning' },   // vencimiento\n  { date: '2026-08-15', color: 'danger' },    // urgente\n]);\n\n// Múltiples puntos en un mismo día:\nevents.value.push({ date: '2026-08-11', color: 'primary' });\n</script>\n\n<template>\n  <Calendar :events=\"events\" />\n</template>\n```\n\n- Los puntos se muestran centrados bajo el número del día.\n- Si un día tiene varios eventos, se muestran varios puntos en fila.\n- Si no se especifica `color`, usa el `color` del calendario (`--cal-accent`)."
     },
     {
-      "title": "Rango (resaltado de días)",
-      "body": "Las props `rangeStart` y `rangeEnd` resaltan visualmente los días entre dos fechas. Útil para mostrar períodos selecciónados o rangos en un `<cu-date-picker-range>`.\n\n```js\nconst cal = document.getElementById('miCalendario');\n\ncal.rangeStart = '2026-09-03';\ncal.rangeEnd = '2026-09-15';\n```\n\n- Los días entre inicio y fin se resaltan con fondo soft.\n- Los extremos (inicio y fin) se resaltan con fondo accent.\n- Se asignan como **propiedad JS** (`cal.rangeStart = [...]`, no como atributo HTML).",
-      "bodyVue": "Las props `rangeStart` y `rangeEnd` resaltan visualmente los días entre dos fechas. Útil para mostrar períodos seleccionados o rangos en un `<cu-date-picker-range>`.\n\n```vue\n<script setup lang=\"ts\">\nimport Calendar from \"@/components/controls/Calendar.vue\";\nimport { ref } from \"vue\";\n\nconst rangeStart = ref('2026-09-03');\nconst rangeEnd = ref('2026-09-15');\n</script>\n\n<template>\n  <Calendar :range-start=\"rangeStart\" :range-end=\"rangeEnd\" />\n</template>\n```\n\n- Los días entre inicio y fin se resaltan con fondo soft.\n- Los extremos (inicio y fin) se resaltan con fondo accent.\n- Se pasan como props (`:range-start` / `:range-end`)."
-    },
-    {
-      "title": "Disabled",
-      "body": ""
+      "title": "Rango (modo `range`)",
+      "body": "El rango es un **modo** (`mode=\"range\"`). Ahí `rangeStart`/`rangeEnd` son el **valor**: el primer click define el inicio, el segundo el fin (con swap si el fin es anterior) y la FSM vive en el propio calendar. **En `mode=\"single\"` `rangeStart`/`rangeEnd` se ignoran por completo**: la única selección es el click simple.\n\n```html\n<cu-calendar id=\"cal\" mode=\"range\"></cu-calendar>\n\n<script>\n  const cal = document.getElementById('cal');\n  cal.addEventListener('select', (e) => {\n    const { start, end } = e.detail;   // rango completo\n    console.log(start, end);\n  });\n  // Programático: cal.setRange('2026-09-03', '2026-09-15');\n</script>\n```\n\n- Clickear/navegar emite `update:rangeStart`/`update:rangeEnd`; `change`/`select` emiten `{ start, end }` al completar el rango.\n- `getRange()` / `setRange()` / `clear()` manejan el rango por código.\n- En `single`, para una fecha puntual usá `modelValue` (con `rangeStart`/`rangeEnd` presentes, se ignoran).",
+      "bodyVue": "El rango es un **modo** (`mode=\"range\"`). Ahí `rangeStart`/`rangeEnd` son el **valor**: el primer click define el inicio, el segundo el fin (con swap si el fin es anterior) y la FSM vive en el propio calendar. **En `mode=\"single\"` `rangeStart`/`rangeEnd` se ignoran por completo**: la única selección es el click simple.\n\n```vue\n<script setup lang=\"ts\">\nimport Calendar from \"@/components/controls/Calendar.vue\";\nimport { ref } from \"vue\";\n\nconst rangeStart = ref('2026-09-03');\nconst rangeEnd = ref('2026-09-15');\n</script>\n\n<template>\n  <Calendar\n    mode=\"range\"\n    v-model:range-start=\"rangeStart\"\n    v-model:range-end=\"rangeEnd\"\n  />\n</template>\n```\n\n- Clickear/navegar emite `update:rangeStart`/`update:rangeEnd`; `change`/`select` emiten `{ start, end }` al completar el rango.\n- `getRange()` / `setRange()` / `clear()` manejan el rango por código.\n- En `single`, para una fecha puntual usá `modelValue` (con `rangeStart`/`rangeEnd` presentes, se ignoran)."
     },
     {
       "title": "Disabled",
@@ -102,5 +115,5 @@
       "bodyVue": "```vue\n<script setup lang=\"ts\">\nimport Calendar from \"@/components/controls/Calendar.vue\";\n</script>\n\n<template>\n  <Calendar disabled />\n</template>\n```"
     }
   ],
-  "intro": "Calendario de mes: muestra el mes actual y/o seleccionado con sus días distribuidos en **7 columnas** que se reparten todo el ancho disponible del contenedor. Navegación por meses, día de hoy, día seleccionado y límites `min`/`max`."
+  "intro": "Calendario de mes: muestra el mes actual y/o seleccionado con sus días distribuidos en **7 columnas** que se reparten todo el ancho disponible del contenedor. Navegación por meses, día de hoy, límites `min`/`max` y dos modos de selección: `single` (una fecha) o `range` (inicio + fin con FSM propia)."
 }

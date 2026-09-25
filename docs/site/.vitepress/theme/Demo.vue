@@ -59,6 +59,9 @@ const SCALAR_TYPES = new Set([
   "Record", "RegExp", "Component", "Promise", "Partial", "null", "undefined",
 ]);
 
+// Interfaces primitivas que sí pueden ser una "lista" editable como texto.
+const PRIMITIVE_IDS = new Set(["String", "Number", "Boolean", "Date"]);
+
 // Props complejas que igual no queremos tratar como JSON (estilo/genéricas, o
 // interfaces que exigen funciones como `CommandItem.action`).
 const JSON_EXCLUDE = new Set([
@@ -77,21 +80,45 @@ function isJson(prop: KhadgarRow): boolean {
   return ids.some((id) => !SCALAR_TYPES.has(id));
 }
 
+/** ¿Es una lista de primitivos (`number[]`, `string[]`, `(string | Date)[]`)? */
+function isPrimitiveList(prop: KhadgarRow): boolean {
+  const type = prop.type ?? "";
+  if (!/\[\]/.test(type)) return false;
+  const ids = type.match(/\b[A-Z][A-Za-z0-9_]*\b/g) ?? [];
+  return ids.every((id) => PRIMITIVE_IDS.has(id));
+}
+
+/** ¿La unión incluye `boolean` (`boolean` o `string | boolean`)? */
+function hasBoolean(type?: string): boolean {
+  if (!type) return false;
+  return type.split("|").some((part) => part.trim() === "boolean");
+}
+
+/** ¿La unión incluye `Date` y no es un array? */
+function isDateType(type?: string): boolean {
+  if (!type || /\[\]/.test(type)) return false;
+  return /\bDate\b/.test(type);
+}
+
 /** Objeto de ejemplo curado para una prop compleja (si existe). */
 function sampleFor(prop: KhadgarRow): unknown {
   return samples[props.name]?.[prop.name];
 }
 
-function kind(prop: KhadgarRow): "enum" | "boolean" | "number" | "json" | "text" {
+function kind(prop: KhadgarRow): "enum" | "boolean" | "number" | "json" | "date" | "list" | "text" {
+  const type = prop.type ?? "";
+  // Las listas de primitivos se editan como texto separado por comas.
+  if (isPrimitiveList(prop)) return "list";
   if (isJson(prop)) return "json";
-  if (enumValues(prop.type)) return "enum";
-  if (prop.type === "boolean") return "boolean";
-  if (prop.type === "number") return "number";
+  if (enumValues(type)) return "enum";
+  if (hasBoolean(type)) return "boolean";
+  if (isDateType(type)) return "date";
+  if (type === "number") return "number";
   return "text";
 }
 
 /** Props complejas que se muestran como JSON en la sección de datos. */
-const jsonProps = computed(() => (meta.value?.props ?? []).filter(isJson));
+const jsonProps = computed(() => (meta.value?.props ?? []).filter((prop) => kind(prop) === "json"));
 
 /** JSON serializado del valor actual de una prop compleja. */
 function jsonOf(prop: KhadgarRow): string {
@@ -108,12 +135,40 @@ function onTextInput(prop: KhadgarRow, value: string) {
   controls.value[prop.name] = value;
 }
 
+/** Valor `YYYY-MM-DD` para el `<input type="date">`. */
+function dateValue(prop: KhadgarRow): string {
+  const raw = controls.value[prop.name];
+  if (raw instanceof Date && !Number.isNaN(raw.getTime())) {
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `${raw.getFullYear()}-${pad(raw.getMonth() + 1)}-${pad(raw.getDate())}`;
+  }
+  return typeof raw === "string" ? raw : "";
+}
+
+function onDateInput(prop: KhadgarRow, event: Event) {
+  controls.value[prop.name] = (event.target as HTMLInputElement).value;
+}
+
+/** Valor textual de una lista de primitivos (`0, 6`). */
+function listValue(prop: KhadgarRow): string {
+  const raw = controls.value[prop.name];
+  if (Array.isArray(raw)) return raw.join(", ");
+  return typeof raw === "string" ? raw : "";
+}
+
+function onListInput(prop: KhadgarRow, value: string) {
+  const parts = value.split(",").map((part) => part.trim()).filter(Boolean);
+  controls.value[prop.name] = /number/.test(prop.type ?? "")
+    ? parts.map(Number).filter((n) => !Number.isNaN(n))
+    : parts;
+}
+
 // Agrupa los props por tipo de control (select → input → boolean), conservando
 // el orden de declaración dentro de cada grupo. Los grupos vacíos no se pintan.
 const controlGroups = computed(() =>
   [
     { id: "enum", label: "Opciones", kinds: ["enum"] },
-    { id: "input", label: "Entrada", kinds: ["text", "number"] },
+    { id: "input", label: "Entrada", kinds: ["text", "number", "date", "list"] },
     { id: "boolean", label: "Booleanos", kinds: ["boolean"] },
   ]
     .map((group) => ({
@@ -139,17 +194,20 @@ async function load() {
   const name = props.name;
   const next: Record<string, unknown> = {};
   for (const prop of meta.value?.props ?? []) {
-    if (isJson(prop)) {
-      // Objeto de ejemplo curado; si no hay, el default declarado (o []/{});
-      // se clona para no mutar la muestra compartida entre navegaciones.
-      const sample = sampleFor(prop);
+    const sample = sampleFor(prop);
+    if (sample !== undefined) {
+      // Objeto/valor de ejemplo curado; se clona para no mutar la muestra
+      // compartida entre navegaciones.
+      next[prop.name] = structuredClone(sample);
+    } else if (isJson(prop)) {
+      // Sin muestra: el default declarado (o []/{});
       const fallback =
         prop.default !== undefined
           ? parseDefault(prop.default)
           : (prop.type ?? "").includes("[]")
             ? []
             : {};
-      next[prop.name] = structuredClone(sample !== undefined ? sample : fallback);
+      next[prop.name] = structuredClone(fallback);
     } else if (prop.default !== undefined) {
       next[prop.name] = parseDefault(prop.default);
     }
@@ -206,6 +264,17 @@ watch(() => props.name, load, { immediate: true });
                   v-else-if="kind(prop) === 'number'"
                   type="number"
                   v-model.number="controls[prop.name]"
+                />
+                <input
+                  v-else-if="kind(prop) === 'date'"
+                  type="date"
+                  :value="dateValue(prop)"
+                  @input="onDateInput(prop, $event)"
+                />
+                <Input
+                  v-else-if="kind(prop) === 'list'"
+                  :model-value="listValue(prop)"
+                  @update:model-value="(value: string) => onListInput(prop, value)"
                 />
                 <Input
                   v-else
@@ -329,7 +398,8 @@ watch(() => props.name, load, { immediate: true });
 }
 /* El input numérico no tiene componente en la lib: se conserva nativo, pero
    con la piel del `Input` (variante soft) para no desentonar. */
-.khadgar-demo__control input[type="number"] {
+.khadgar-demo__control input[type="number"],
+.khadgar-demo__control input[type="date"] {
   font-family: var(--cu-font-sans);
   font-size: var(--cu-font-size-sm);
   font-weight: var(--cu-font-weight-medium);

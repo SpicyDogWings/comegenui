@@ -1,6 +1,6 @@
 # `<cu-calendar>`
 
-Calendario de mes: muestra el mes actual y/o seleccionado con sus días distribuidos en **7 columnas** que se reparten todo el ancho disponible del contenedor. Navegación por meses, día de hoy, día seleccionado y límites `min`/`max`.
+Calendario de mes: muestra el mes actual y/o seleccionado con sus días distribuidos en **7 columnas** que se reparten todo el ancho disponible del contenedor. Navegación por meses, día de hoy, límites `min`/`max` y dos modos de selección: `single` (una fecha) o `range` (inicio + fin con FSM propia).
 
 [← Volver](../SKILL.md)
 
@@ -162,24 +162,26 @@ cal.events.push({ date: '2026-08-11', color: 'primary' });
 
 ---
 
-## Rango (resaltado de días)
+## Rango (modo `range`)
 
-Las props `rangeStart` y `rangeEnd` resaltan visualmente los días entre dos fechas. Útil para mostrar períodos selecciónados o rangos en un `<cu-date-picker-range>`.
+El rango es un **modo** (`mode="range"`). Ahí `rangeStart`/`rangeEnd` son el **valor**: el primer click define el inicio, el segundo el fin (con swap si el fin es anterior) y la FSM vive en el propio calendar. **En `mode="single"` `rangeStart`/`rangeEnd` se ignoran por completo**: la única selección es el click simple.
 
-```js
-const cal = document.getElementById('miCalendario');
+```html
+<cu-calendar id="cal" mode="range"></cu-calendar>
 
-cal.rangeStart = '2026-09-03';
-cal.rangeEnd = '2026-09-15';
+<script>
+  const cal = document.getElementById('cal');
+  cal.addEventListener('select', (e) => {
+    const { start, end } = e.detail;   // rango completo
+    console.log(start, end);
+  });
+  // Programático: cal.setRange('2026-09-03', '2026-09-15');
+</script>
 ```
 
-- Los días entre inicio y fin se resaltan con fondo soft.
-- Los extremos (inicio y fin) se resaltan con fondo accent.
-- Se asignan como **propiedad JS** (`cal.rangeStart = [...]`, no como atributo HTML).
-
----
-
-## Disabled
+- Clickear/navegar emite `update:rangeStart`/`update:rangeEnd`; `change`/`select` emiten `{ start, end }` al completar el rango.
+- `getRange()` / `setRange()` / `clear()` manejan el rango por código.
+- En `single`, para una fecha puntual usá `modelValue` (con `rangeStart`/`rangeEnd` presentes, se ignoran).
 
 ---
 
@@ -371,9 +373,9 @@ events.value.push({ date: '2026-08-11', color: 'primary' });
 - Si un día tiene varios eventos, se muestran varios puntos en fila.
 - Si no se especifica `color`, usa el `color` del calendario (`--cal-accent`).
 
-### Rango (resaltado de días)
+### Rango (modo `range`)
 
-Las props `rangeStart` y `rangeEnd` resaltan visualmente los días entre dos fechas. Útil para mostrar períodos seleccionados o rangos en un `<cu-date-picker-range>`.
+El rango es un **modo** (`mode="range"`). Ahí `rangeStart`/`rangeEnd` son el **valor**: el primer click define el inicio, el segundo el fin (con swap si el fin es anterior) y la FSM vive en el propio calendar. **En `mode="single"` `rangeStart`/`rangeEnd` se ignoran por completo**: la única selección es el click simple.
 
 ```vue
 <script setup lang="ts">
@@ -385,15 +387,17 @@ const rangeEnd = ref('2026-09-15');
 </script>
 
 <template>
-  <Calendar :range-start="rangeStart" :range-end="rangeEnd" />
+  <Calendar
+    mode="range"
+    v-model:range-start="rangeStart"
+    v-model:range-end="rangeEnd"
+  />
 </template>
 ```
 
-- Los días entre inicio y fin se resaltan con fondo soft.
-- Los extremos (inicio y fin) se resaltan con fondo accent.
-- Se pasan como props (`:range-start` / `:range-end`).
-
-### Disabled
+- Clickear/navegar emite `update:rangeStart`/`update:rangeEnd`; `change`/`select` emiten `{ start, end }` al completar el rango.
+- `getRange()` / `setRange()` / `clear()` manejan el rango por código.
+- En `single`, para una fecha puntual usá `modelValue` (con `rangeStart`/`rangeEnd` presentes, se ignoran).
 
 ### Disabled
 
@@ -430,6 +434,7 @@ import Calendar from "@/components/controls/Calendar.vue";
 | `grid` | `boolean` | `false` | Dibuja líneas **interiores** (cuadrícula) entre los días. En HTML plano: `<cu-calendar grid>` |
 | `border` | `boolean` | `false` | Dibuja el **marco exterior** alrededor de la cuadrícula de días. Combinable con `grid` |
 | `viewMonth` | `string \| number \| Date \| null` | `null` | Mes visible (primer día) controlado desde afuera. Navegar emite `update:viewMonth`. Se asigna como propiedad JS |
+| `mode` | `"single" \| "range"` | `"single"` | Modo de selección: `single` (una fecha) o `range` (inicio + fin) |
 
 > **API espejo de los sliders:** las fechas aceptan `Date`, timestamp numérico o string `"YYYY-MM-DD"`. En HTML plano los atributos llegan como string; `modelValue="2026-08-11"` funciona directo.
 
@@ -437,12 +442,14 @@ import Calendar from "@/components/controls/Calendar.vue";
 
 | Evento | Payload (`e.detail`) | Descripción |
 |------|------|------|
-| `select` | `Date` | Click en un día válido |
-| `change` | `Date` | Fecha seleccionada (alias de `update:modelValue`) |
-| `update:modelValue` | `Date` | Cambio de la fecha seleccionada |
-| `update:viewMonth` | — |  |
+| `select` | `Date` | Click en un día válido (single) o rango completo `{ start, end }` (range) |
+| `change` | `Date` | Fecha (single) o `{ start, end }` (range) |
+| `update:modelValue` | `Date` | Cambio de la fecha seleccionada (modo `single`) |
+| `update:viewMonth` | `Date` | Cambia el mes visible cuando `viewMonth` está controlado |
+| `update:rangeStart` | `Date` | Cambia el inicio del rango (modo `range`) |
+| `update:rangeEnd` | `Date` | Cambia el fin del rango (modo `range`) |
 
-> Los tres emiten un objeto `Date` normalizado a medianoche local.
+> En modo `single` los eventos emiten un `Date` normalizado a medianoche local; en `range`, un objeto `{ start, end }`.
 
 ## Slots
 
@@ -457,6 +464,9 @@ Ninguno.
 | `.goToMonth(value: string \| number \| Date)` | Navega al mes de la fecha dada |
 | `.getValue()` | null` con la fecha seleccionada |
 | `.setValue(value: string \| number \| Date \| null)` | Selecciona una fecha (acepta string/number/Date) |
+| `.getRange()` | null` con el rango seleccionado (modo `range`) |
+| `.setRange(start: string \| number \| Date \| null, end: string \| number \| Date \| null)` | Setea el rango (acepta string/number/Date) (modo `range`) |
+| `.clear()` | Limpia el rango seleccionado (modo `range`) |
 
 ## Interfaces
 

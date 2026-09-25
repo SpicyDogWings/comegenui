@@ -60,7 +60,20 @@ export const samples: Record<string, Record<string, unknown>> = {
     disabledWeekdays: [0, 6],
     disabledDates: ["2026-09-15"],
   },
+  DualCalendar: {
+    startDate: "2026-09-03",
+    endDate: "2026-09-15",
+    events: [
+      { date: "2026-09-10", color: "primary" },
+      { date: "2026-09-20", color: "success" },
+    ],
+    disabledWeekdays: [0, 6],
+    disabledDates: ["2026-09-15"],
+  },
   DatePicker: {
+    mode: "range",
+    startDate: "2026-09-03",
+    endDate: "2026-09-15",
     events: [
       { date: "2026-09-10", color: "primary" },
       { date: "2026-09-20", color: "success" },

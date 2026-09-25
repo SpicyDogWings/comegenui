@@ -1,6 +1,6 @@
 # `<cu-date-picker>`
 
-Selector de fecha: un botón-trigger que abre un **dropdown con un calendario adentro** (no es una lista de items seleccionables, es un box con el calendario). Usa `cu-calendar` internamente. Con `mode="range"` selecciona un rango (inicio + fin) y puede mostrar uno o dos meses (dual).
+Selector de fecha: un botón-trigger que abre un **dropdown con un calendario adentro** (no es una lista de items seleccionables, es un box con el calendario). `mode="single"` selecciona una fecha; `mode="range"` (o `dual-calendar`) un rango, con uno o dos meses. Compone `cu-calendar` (single o range) y el `DualCalendar` interno (2 meses en range), y administra los valores de ambos.
 
 [← Volver](../SKILL.md)
 
@@ -84,15 +84,15 @@ Con `mode="range"` el picker selecciona un rango: el primer click define el **in
 ## Comportamiento
 
 - **Trigger:** botón con ícono de calendario + fecha formateada (o placeholder) + chevron que rota al abrir.
-- **Panel:** box con el `cu-calendar` adentro (ancho ~280px, o ~330px cuando `year-navigation` está activo — el header con botones de año necesita más espacio) y footer con "Hoy" y "Limpiar" (configurables con `today-button` y `clearable`).
+- **Panel:** box con el calendario adentro (ancho ~280px, o ~330px cuando `year-navigation` está activo — el header con botones de año necesita más espacio) y footer con "Hoy" y "Limpiar" (configurables con `today-button` y `clearable`). En `mode="range"` con `dual-calendar` el panel mide ~580px (o ~700px con year-navigation) y muestra dos meses.
 - **Fuera del rango:** los días deshabilitados no se pueden elegir; "Hoy" y la selección manual respetan `min`/`max` del calendario.
-- **Cierre:** al elegir un día, ir a "Hoy" o limpiar, el panel se cierra. También con click afuera o `Escape` (lo maneja el dropdown interno).
+- **Cierre:** al elegir un día en `single`, ir a "Hoy" o limpiar, el panel se cierra. En `range` queda abierto entre el primer y el segundo click para ver el resaltado. También cierra con click afuera o `Escape` (lo maneja el dropdown interno).
 
 ---
 
 ## Nota de implementación
 
-`<cu-date-picker>` **compone** el `Dropdown.vue` genérico (slot `#toggle` con el botón-trigger + slot `#default` con el calendario) — exactamente como lo hace `<cu-select>` con sus opciones. No requiere modificar el componente de dropdown.
+`<cu-date-picker>` **compone** el `Dropdown.vue` genérico (slot `#toggle` con el botón-trigger + slot `#default` con el calendario). En `single` usa `cu-calendar`; en `range` usa `cu-calendar mode="range"` (un mes) o el `DualCalendar` interno (dos meses, navegación independiente). El DatePicker espeja los valores de sus hijos y re-emite la API pública (`start-date`/`end-date`, `setRange`, etc.). No requiere modificar el componente de dropdown.
 
 ---
 
@@ -191,22 +191,22 @@ picker.clear();
 ### Comportamiento
 
 - **Trigger:** botón con ícono de calendario + fecha formateada (o placeholder) + chevron que rota al abrir.
-- **Panel:** box con el `cu-calendar` adentro (ancho ~280px, o ~330px cuando `year-navigation` está activo — el header con botones de año necesita más espacio) y footer con "Hoy" y "Limpiar" (configurables con `today-button` y `clearable`).
+- **Panel:** box con el calendario adentro (ancho ~280px, o ~330px cuando `year-navigation` está activo — el header con botones de año necesita más espacio) y footer con "Hoy" y "Limpiar" (configurables con `today-button` y `clearable`). En `mode="range"` con `dual-calendar` el panel mide ~580px (o ~700px con year-navigation) y muestra dos meses.
 - **Fuera del rango:** los días deshabilitados no se pueden elegir; "Hoy" y la selección manual respetan `min`/`max` del calendario.
-- **Cierre:** al elegir un día, ir a "Hoy" o limpiar, el panel se cierra. También con click afuera o `Escape` (lo maneja el dropdown interno).
+- **Cierre:** al elegir un día en `single`, ir a "Hoy" o limpiar, el panel se cierra. En `range` queda abierto entre el primer y el segundo click para ver el resaltado. También cierra con click afuera o `Escape` (lo maneja el dropdown interno).
 
 ### Nota de implementación
 
-`<cu-date-picker>` **compone** el `Dropdown.vue` genérico (slot `#toggle` con el botón-trigger + slot `#default` con el calendario) — exactamente como lo hace `<cu-select>` con sus opciones. No requiere modificar el componente de dropdown.
+`<cu-date-picker>` **compone** el `Dropdown.vue` genérico (slot `#toggle` con el botón-trigger + slot `#default` con el calendario). En `single` usa `cu-calendar`; en `range` usa `cu-calendar mode="range"` (un mes) o el `DualCalendar` interno (dos meses, navegación independiente). El DatePicker espeja los valores de sus hijos y re-emite la API pública (`start-date`/`end-date`, `setRange`, etc.). No requiere modificar el componente de dropdown.
 
 ## Props
 
 | Atributo | Tipo | Default | Descripción |
 |------|------|------|------|
-| `mode` | `"single" \| "range"` | `"single"` | Modo de selección: `single` (una fecha) o `range` (inicio + fin) |
-| `modelValue` | `string \| number \| Date \| null` | `null` | Fecha seleccionada (modo `single`) |
-| `startDate` | `string \| number \| Date \| null` | `null` | Inicio del rango (modo `range`). En HTML: `start-date="2026-08-01"` |
-| `endDate` | `string \| number \| Date \| null` | `null` | Fin del rango (modo `range`). En HTML: `end-date="2026-08-31"` |
+| `mode` | `"single" \| "range"` | `"single"` | Tipo de calendario: `single` (una fecha) o `range` (inicio + fin). Con `dual-calendar` el tipo es dual (range, 2 meses) |
+| `modelValue` | `string \| number \| Date \| null` | `null` | Fecha seleccionada (calendario `single`) |
+| `startDate` | `string \| number \| Date \| null` | `null` | Inicio del rango. Solo con calendario de rango (`mode="range"` o `dual-calendar`); en `single` se ignora. En HTML: `start-date="2026-08-01"` |
+| `endDate` | `string \| number \| Date \| null` | `null` | Fin del rango. Solo con calendario de rango (`mode="range"` o `dual-calendar`); en `single` se ignora. En HTML: `end-date="2026-08-31"` |
 | `min` | `string \| number \| Date \| null` | `null` | Fecha mínima seleccionable |
 | `max` | `string \| number \| Date \| null` | `null` | Fecha máxima seleccionable |
 | `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico del trigger y del día seleccionado del calendario interno (se pasa tal cual; `neutral` = neutral, ya no mapea a primary) |
@@ -224,7 +224,7 @@ picker.clear();
 | `events` | `CalendarEvent[]` | `[]` | Eventos a señalar con puntos bajo la fecha en el calendario interno (ver [Eventos](cu-calendar.md#eventos-puntos)). Se asigna como propiedad JS |
 | `grid` | `boolean` | `false` | Líneas **interiores** (cuadrícula) entre los días del calendario interno |
 | `border` | `boolean` | `false` | **Marco exterior** alrededor de la cuadrícula de días del calendario interno |
-| `dualCalendar` | `boolean` | `false` | Modo `range`: muestra dos meses lado a lado |
+| `dualCalendar` | `boolean` | `false` | Activa el rango a dos meses (dual). **Implica `range`**: aunque `mode` sea `single`, el picker selecciona un rango |
 | `position` | `string` | `"bottom"` | `right` |
 | `align` | `string` | `"start"` | `end` |
 | `fixed` | `boolean` | `false` | Panel en `position: fixed` (útil en contenedores con overflow) |

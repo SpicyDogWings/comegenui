@@ -97,6 +97,11 @@
       "skill": true
     },
     {
+      "name": "DualCalendar",
+      "file": "src/components/controls/DualCalendar.vue",
+      "group": "Controles"
+    },
+    {
       "name": "Card",
       "file": "src/components/information/Card.vue",
       "group": "Información",
