@@ -453,7 +453,10 @@ function parseExposes(source, docs) {
 function parseSlots(descriptor) {
   const template = descriptor.template?.content ?? "";
   const slots = new Map();
-  for (const match of template.matchAll(/(?:<!--([\s\S]*?)-->\s*)?<slot\b([^>]*)>/g)) {
+  // El cuerpo del comentario no puede contener `-->`: si no, con un
+  // `<template #x>` entre el comentario y el `<slot>` (wrappers CE) el no
+  // goloso se estira hasta el `-->` siguiente y se traga el markup intermedio.
+  for (const match of template.matchAll(/(?:<!--((?:(?!-->)[\s\S])*?)-->\s*)?<slot\b([^>]*)>/g)) {
     const comment = match[1] ? match[1].replace(/\s+/g, " ").trim() : undefined;
     const attrs = match[2];
     if (/[:@]name\s*=/.test(attrs)) continue; // nombre dinámico: no inferible
