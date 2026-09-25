@@ -1,19 +1,19 @@
 {
   "props": {
-    "color": "Color semántico: `primary`, `neutral`, `success`, `warning`, `danger`",
-    "disabled": "Deshabilita el botón"
+    "color": "Color semántico del FAB: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger`",
+    "variant": "Variante visual, heredada de `Button`: `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none`",
+    "size": "Tamaño, heredado de `Button`: `sm`, `md`, `lg`",
+    "disabled": "Deshabilita el botón",
+    "loading": "Muestra un spinner y deshabilita el botón mientras está activo."
   },
-  "events": {
-    "click": {
-      "description": "Se emite al hacer click. Es un `CustomEvent` (`bubbles: true, composed: true`), se escucha con `addEventListener`"
-    }
-  },
+  "events": {},
   "slots": {
     "default": "Ícono o contenido del botón (normalmente un SVG)"
   },
   "exposes": {},
   "notes": {
-    "props": "> El Custom Element **no expone** prop `theme`, `variant` ni `hightContrast`.",
+    "props": "> El Custom Element **no expone** prop `theme` ni `hightContrast`.",
+    "events": "No emite eventos propios: el `click` es el evento nativo del `<button>` (burbujea y cruza el shadow DOM).",
     "exposes": "No expone métodos."
   },
   "sections": [
@@ -24,14 +24,19 @@
       "bodyVue": "```vue\n<script setup lang=\"ts\">\nimport FloatingButton from \"@/components/buttons/FloatingButton.vue\";\n\nfunction onClick() {\n  console.log(\"FAB clickeado\");\n}\n</script>\n\n<template>\n  <FloatingButton color=\"primary\" @click=\"onClick\">\n    <svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12h14\"/><path d=\"M12 5v14\"/></svg>\n  </FloatingButton>\n</template>\n```"
     },
     {
+      "title": "Variantes y tamaños",
+      "body": "```html\n<cu-floating-button color=\"success\" variant=\"soft\" size=\"lg\">\n  <svg><!-- ícono --></svg>\n</cu-floating-button>\n```",
+      "bodyVue": "```vue\n<template>\n  <FloatingButton color=\"success\" variant=\"soft\" size=\"lg\">\n    <svg><!-- ícono --></svg>\n  </FloatingButton>\n</template>\n```"
+    },
+    {
       "title": "Deshabilitado",
       "body": "```html\n<cu-floating-button disabled>\n  <svg><!-- ícono --></svg>\n</cu-floating-button>\n```",
       "bodyVue": "```vue\n<template>\n  <FloatingButton disabled>\n    <svg><!-- ícono --></svg>\n  </FloatingButton>\n</template>\n```"
     },
     {
       "title": "Notas",
-      "body": "- Posición fija (`position: fixed`) en `bottom: 1.5rem; right: 1.5rem`, con `z-index: 1000`.\n- Tamaño fijo de 48×48 px, forma circular y sombra elevada.\n- El color de fondo usa el color semántico del tema activo; el ícono debe usar `stroke=\"currentColor\"`/`fill=\"currentColor\"` para heredarlo."
+      "body": "- Es un `Button` posicionado de forma flotante: `position: fixed` en la esquina inferior derecha (`bottom` y `right`: `var(--cu-space-lg)`) con `z-index: 1000` y sombra elevada.\n- **No** fija tamaño ni forma: hereda de `Button` el `padding`, el `size` (default `lg`) y el `border-radius`, y crece con su contenido.\n- Hereda de `Button` las props `variant` y `size` (además del estado `loading`); el color semántico se define con `color`.\n- El contenido (normalmente un SVG) debe usar `stroke=\"currentColor\"`/`fill=\"currentColor\"` para heredar el color."
     }
   ],
-  "intro": "Botón flotante (FAB) fijo en la esquina inferior derecha, de forma circular. Pensado para acciones primarias rápidas (agregar, flotante de guardar, etc.). Normalmente se usa con un ícono en el slot."
+  "intro": "Botón flotante (FAB) fijo en la esquina inferior derecha. Es un `Button` (hereda color, variante, tamaño y estados) posicionado de forma flotante. Pensado para acciones primarias rápidas (agregar, flotante de guardar, etc.). Normalmente se usa con un ícono en el slot."
 }

@@ -1,6 +1,6 @@
 # `<cu-floating-button>`
 
-Botón flotante (FAB) fijo en la esquina inferior derecha, de forma circular. Pensado para acciones primarias rápidas (agregar, flotante de guardar, etc.). Normalmente se usa con un ícono en el slot.
+Botón flotante (FAB) fijo en la esquina inferior derecha. Es un `Button` (hereda color, variante, tamaño y estados) posicionado de forma flotante. Pensado para acciones primarias rápidas (agregar, flotante de guardar, etc.). Normalmente se usa con un ícono en el slot.
 
 [← Volver](../SKILL.md)
 
@@ -26,6 +26,16 @@ Botón flotante (FAB) fijo en la esquina inferior derecha, de forma circular. Pe
 
 ---
 
+## Variantes y tamaños
+
+```html
+<cu-floating-button color="success" variant="soft" size="lg">
+  <svg><!-- ícono --></svg>
+</cu-floating-button>
+```
+
+---
+
 ## Deshabilitado
 
 ```html
@@ -38,9 +48,10 @@ Botón flotante (FAB) fijo en la esquina inferior derecha, de forma circular. Pe
 
 ## Notas
 
-- Posición fija (`position: fixed`) en `bottom: 1.5rem; right: 1.5rem`, con `z-index: 1000`.
-- Tamaño fijo de 48×48 px, forma circular y sombra elevada.
-- El color de fondo usa el color semántico del tema activo; el ícono debe usar `stroke="currentColor"`/`fill="currentColor"` para heredarlo.
+- Es un `Button` posicionado de forma flotante: `position: fixed` en la esquina inferior derecha (`bottom` y `right`: `var(--cu-space-lg)`) con `z-index: 1000` y sombra elevada.
+- **No** fija tamaño ni forma: hereda de `Button` el `padding`, el `size` (default `lg`) y el `border-radius`, y crece con su contenido.
+- Hereda de `Button` las props `variant` y `size` (además del estado `loading`); el color semántico se define con `color`.
+- El contenido (normalmente un SVG) debe usar `stroke="currentColor"`/`fill="currentColor"` para heredar el color.
 
 ---
 
@@ -64,6 +75,16 @@ function onClick() {
 </template>
 ```
 
+### Variantes y tamaños
+
+```vue
+<template>
+  <FloatingButton color="success" variant="soft" size="lg">
+    <svg><!-- ícono --></svg>
+  </FloatingButton>
+</template>
+```
+
 ### Deshabilitado
 
 ```vue
@@ -76,24 +97,26 @@ function onClick() {
 
 ### Notas
 
-- Posición fija (`position: fixed`) en `bottom: 1.5rem; right: 1.5rem`, con `z-index: 1000`.
-- Tamaño fijo de 48×48 px, forma circular y sombra elevada.
-- El color de fondo usa el color semántico del tema activo; el ícono debe usar `stroke="currentColor"`/`fill="currentColor"` para heredarlo.
+- Es un `Button` posicionado de forma flotante: `position: fixed` en la esquina inferior derecha (`bottom` y `right`: `var(--cu-space-lg)`) con `z-index: 1000` y sombra elevada.
+- **No** fija tamaño ni forma: hereda de `Button` el `padding`, el `size` (default `lg`) y el `border-radius`, y crece con su contenido.
+- Hereda de `Button` las props `variant` y `size` (además del estado `loading`); el color semántico se define con `color`.
+- El contenido (normalmente un SVG) debe usar `stroke="currentColor"`/`fill="currentColor"` para heredar el color.
 
 ## Props
 
 | Atributo | Tipo | Default | Descripción |
 |------|------|------|------|
-| `color` | `string` | `""primary" as string"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `disabled` | `boolean` | `false` | Deshabilita el botón |
+| `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"primary"` | Color semántico del FAB: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
+| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle" \| "link" \| "none"` | `"solid"` | Variante visual, heredada de `Button`: `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` |
+| `size` | `"md" \| "sm" \| "lg"` | `"lg"` | Tamaño, heredado de `Button`: `sm`, `md`, `lg` |
+| `disabled` | `boolean` | `false` | Deshabilita el botón. |
+| `loading` | `boolean` | `false` | Muestra un spinner y deshabilita el botón mientras está activo. |
 
-> El Custom Element **no expone** prop `theme`, `variant` ni `hightContrast`.
+> El Custom Element **no expone** prop `theme` ni `hightContrast`.
 
 ## Eventos
 
-| Evento | Payload (`e.detail`) | Descripción |
-|------|------|------|
-| `click` | — | Se emite al hacer click. Es un `CustomEvent` (`bubbles: true, composed: true`), se escucha con `addEventListener` |
+No emite eventos propios: el `click` es el evento nativo del `<button>` (burbujea y cruza el shadow DOM).
 
 ## Slots
 

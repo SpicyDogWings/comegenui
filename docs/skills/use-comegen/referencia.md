@@ -63,19 +63,19 @@ Tablas de referencia completas. Para la guía de uso ver [`SKILL.md`](SKILL.md).
 
 ## Variantes disponibles por componente
 
-Refleja los validadores reales de cada `.ce.vue`. `—` significa que la variante no es aceptada.
+Refleja los validadores reales de cada componente (su `.ce.vue` o, si no tiene wrapper, el `.vue`). `—` significa que la variante no es aceptada.
 
 | Variante | Button | Alert | Badge | Input | FileInput | FileInputZone | CellsImporter | Checkbox | Textarea | Pagination | Table | DropdownMenu | Autocomplete | Select | Modal | ColorPicker | Collapse | FloatingButton | Label | Switch
 |----------|--------|-------|-------|-------|-----------|---------------|---------------|----------|----------|------------|-------|--------------|--------------|--------|-------|-------------|----------|----------------|-------|--------|----------|----------|
-| `solid` | ✓ | ✓ | ✓ | — | — | — | — | — | — | — | ✓ | ✓ | — | — | — | — | — | — | — | ✓ | ✓ |
-| `outlined` | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — | — | — | ✓ | ✓ |
-| `soft` | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — | — | — | ✓ | ✓ |
-| `ghost` | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — | — | — | ✓ | ✓ |
-| `subtle` | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — | — | — | ✓ | ✓ |
-| `link` | ✓ | — | — | — | — | — | — | — | — | — | ✓ | — | — | — | — | — | — | — | — | — | — |
-| `none` | ✓ | — | — | — | — | — | — | — | — | ✓ | — | ✓ | — | — | — | — | — | — | — | — | — |
+| `solid` | ✓ | ✓ | ✓ | — | — | — | — | — | — | — | ✓ | ✓ | — | — | — | — | — | ✓ | — | ✓ | ✓ |
+| `outlined` | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ | — | ✓ | ✓ |
+| `soft` | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ | — | ✓ | ✓ |
+| `ghost` | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ | — | ✓ | ✓ |
+| `subtle` | ✓ | ✓ | ✓ | ✓ | ✓ | — | ✓ | — | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ | — | ✓ | ✓ |
+| `link` | ✓ | — | — | — | — | — | — | — | — | — | ✓ | — | — | — | — | — | — | ✓ | — | — | — |
+| `none` | ✓ | — | — | — | — | — | — | — | — | ✓ | — | ✓ | — | — | — | — | — | ✓ | — | — | — |
 
-> Checkbox, FileInputZone, Modal, ColorPicker, Collapse, FloatingButton, Label, Switch, AuthorCard, Avatar, CommandPalette, Navbar, NavbarHorizontal, SideOver y Tooltip **no tienen prop `variant`**. Badge acepta `ghost`; Alert acepta `ghost` pero no `none`. Input, Textarea, Autocomplete, Select y FileInput aceptan solo `outlined`/`soft`/`ghost`/`subtle`. Table acepta `solid`/`outlined`/`soft`/`ghost`/`subtle`. Pagination acepta además `none`. `<cu-tabs>` usa su propio set: `tabs`, `pills`, `boxed`, `soft`.
+> Checkbox, FileInputZone, Modal, ColorPicker, Collapse, Label, Switch, AuthorCard, Avatar, CommandPalette, Navbar, NavbarHorizontal, SideOver y Tooltip **no tienen prop `variant`**. Badge acepta `ghost`; Alert acepta `ghost` pero no `none`. Input, Textarea, Autocomplete, Select y FileInput aceptan solo `outlined`/`soft`/`ghost`/`subtle`. Table acepta `solid`/`outlined`/`soft`/`ghost`/`subtle`. Pagination acepta además `none`. `<cu-tabs>` usa su propio set: `tabs`, `pills`, `boxed`, `soft`.
 
 > **Calendar / DatePicker:** `<cu-calendar>` acepta `solid`/`outlined`/`soft`/`subtle` (aplica al **día seleccionado**; `ghost` se eliminó porque se confundía con el día de hoy). `<cu-date-picker>` acepta `outlined`/`soft`/`ghost`/`subtle` en el **trigger**.
 
@@ -102,7 +102,7 @@ Refleja los validadores reales de cada `.ce.vue`. `—` significa que la variant
 | `<cu-dropdown-menu>` | `ghost` |
 | `<cu-file-input>` | `outlined` |
 | `<cu-file-input-zone>` | — (sin variant) |
-| `<cu-floating-button>` | — (sin variant) |
+| `<cu-floating-button>` | `solid` |
 | `<cu-input>` | `soft` |
 | `<cu-label>` | — (sin variant) |
 | `<cu-modal>` | — (sin variant) |

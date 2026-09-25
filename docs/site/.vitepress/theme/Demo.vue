@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { computed, ref, shallowRef, watch } from "vue";
+import { computed, ref, shallowRef, watch, type Component } from "vue";
 import type { KhadgarRow } from "@/plugins/khadgar/api";
 import Input from "@/components/form/Input.vue";
 import Label from "@/components/form/Label.vue";
 import Select from "@/components/form/Select.vue";
 import Switch from "@/components/form/Switch.vue";
 import Card from "@/components/information/Card.vue";
+import LucidePlus from "@/components/icons/LucidePlus.vue";
 import { byName } from "./data";
 import { loadComponent } from "./registry";
 
@@ -83,6 +84,16 @@ const controlGroups = computed(() =>
     .filter((group) => group.props.length > 0),
 );
 
+// Contenido del slot por componente: si no hay ícono, se usa el nombre.
+const slotIcons: Record<string, Component> = { FloatingButton: LucidePlus };
+const slotIcon = computed(() => slotIcons[props.name] ?? null);
+
+// Componentes que se renderizan fuera del preview (ej. `position: fixed`): el
+// stage queda vacío, así que se muestra un placeholder para que no parezca que
+// nunca cargó. El componente igual se monta y se ve en vivo.
+const outsidePreview = new Set(["FloatingButton"]);
+const showOutside = computed(() => Boolean(comp.value) && outsidePreview.has(props.name));
+
 async function load() {
   const name = props.name;
   const next: Record<string, unknown> = {};
@@ -106,8 +117,16 @@ watch(() => props.name, load, { immediate: true });
   <ClientOnly>
     <Card class="khadgar-demo" variant="ghost">
       <div class="khadgar-demo__stage">
-        <component :is="comp" :key="name" v-if="comp" v-bind="values">{{ name }}</component>
+        <component :is="comp" :key="name" v-if="comp" v-bind="values">
+          <component :is="slotIcon" v-if="slotIcon" />
+          <template v-else>{{ name }}</template>
+        </component>
         <span v-else class="khadgar-demo__loading">Cargando demo…</span>
+
+        <div v-if="showOutside" class="khadgar-demo__outside">
+          <component :is="slotIcon" class="khadgar-demo__outside-icon" v-if="slotIcon" />
+          <span>Se renderiza flotando, en la esquina inferior derecha</span>
+        </div>
       </div>
 
       <template v-if="meta?.props.length" #footer>
@@ -164,6 +183,22 @@ watch(() => props.name, load, { immediate: true });
   color: var(--cu-color-neutral);
   opacity: 0.6;
   font-size: 13px;
+}
+/* Placeholder para componentes que se renderizan fuera del stage (fixed): así
+   el preview no queda vacío y no parece que el componente no cargó. */
+.khadgar-demo__outside {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--cu-space-sm);
+  color: var(--cu-color-neutral);
+  opacity: 0.55;
+  font-family: var(--cu-font-sans);
+  font-size: var(--cu-font-size-sm);
+  text-align: center;
+}
+.khadgar-demo__outside-icon {
+  font-size: 28px;
 }
 /* Los grupos (select → input → boolean) se apilan en columna. */
 .khadgar-demo__controls {
