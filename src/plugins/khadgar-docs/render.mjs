@@ -208,6 +208,9 @@ function apiOrEmpty(title, rows, tableMarkdown, note, empty = "Ninguno.") {
 export function renderDoc(component, options = {}) {
   const mode = options.mode ?? "vanilla";
   const vueView = mode === "vue";
+  // La vista Vue usa la API del `.vue`; la vanilla, la del custom element
+  // (`.ce.vue`) cuando existe. Si no hay `.vanilla`, comparten la del `.vue`.
+  const api = vueView ? component : (component.vanilla ?? component);
   const includeSections = options.includeSections ?? mode !== "vue";
   const backlink = options.backlink === undefined ? "../SKILL.md" : options.backlink;
   const out = [];
@@ -252,7 +255,7 @@ export function renderDoc(component, options = {}) {
   const payloadHeader = vueView ? "Payload" : "Payload (`e.detail`)";
   const propsHeader = vueView ? "Prop" : "Atributo";
 
-  const propRows = component.props.map((prop) => [
+  const propRows = api.props.map((prop) => [
     `\`${prop.name}\``,
     fmtType(prop.type),
     fmtDefault(prop.default),
@@ -261,14 +264,14 @@ export function renderDoc(component, options = {}) {
   out.push(
     apiOrEmpty(
       "Props",
-      component.props,
+      api.props,
       table([propsHeader, "Tipo", "Default", "Descripción"], propRows),
       notes.props,
     ),
     "",
   );
 
-  const eventRows = component.events.map((event) => [
+  const eventRows = api.events.map((event) => [
     `\`${event.name}\``,
     fmtPayload(event.type),
     event.description ?? "",
@@ -276,33 +279,33 @@ export function renderDoc(component, options = {}) {
   out.push(
     apiOrEmpty(
       "Eventos",
-      component.events,
+      api.events,
       table(["Evento", payloadHeader, "Descripción"], eventRows),
       notes.events,
     ),
     "",
   );
 
-  const slotRows = component.slots.map((slot) => [`\`${slot.name}\``, slot.description ?? ""]);
+  const slotRows = api.slots.map((slot) => [`\`${slot.name}\``, slot.description ?? ""]);
   out.push(
-    apiOrEmpty("Slots", component.slots, table(["Slot", "Descripción"], slotRows), notes.slots),
+    apiOrEmpty("Slots", api.slots, table(["Slot", "Descripción"], slotRows), notes.slots),
     "",
   );
 
-  const exposedRows = component.exposed.map((item) => [methodLabel(item), item.description ?? ""]);
+  const exposedRows = api.exposed.map((item) => [methodLabel(item), item.description ?? ""]);
   out.push(
     apiOrEmpty(
       "Métodos expuestos",
-      component.exposed,
+      api.exposed,
       table(["Método", "Descripción"], exposedRows),
       notes.exposes,
     ),
     "",
   );
 
-  if (component.interfaces?.length) {
+  if (api.interfaces?.length) {
     out.push("## Interfaces", "");
-    for (const item of component.interfaces) {
+    for (const item of api.interfaces) {
       out.push(`### \`${item.name}\``, "");
       if (item.description) out.push(item.description, "");
       out.push("```ts", item.code.trim(), "```", "");

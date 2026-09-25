@@ -182,12 +182,12 @@ El panel del datepicker solo se renderiza cuando está abierto. Si asignás `sta
 
 | Evento | Payload (`e.detail`) | Descripción |
 |------|------|------|
-| `select` | `null }` | Rango completo seleccionado |
-| `close` | — | El panel se cierra |
-| `open` | — | El panel se abre |
-| `change` | `null }` | Alias de `select` |
 | `update:startDate` | `null` | Cambia la fecha de inicio |
 | `update:endDate` | `null` | Cambia la fecha de fin |
+| `select` | `null }` | Rango completo seleccionado |
+| `change` | `null }` | Alias de `select` |
+| `open` | — | El panel se abre |
+| `close` | — | El panel se cierra |
 
 ## Slots
 
@@ -197,14 +197,14 @@ Ninguno.
 
 | Método | Descripción |
 |------|------|
-| `.open()` | Abre el panel del calendario. |
-| `.close()` | Cierra el panel del calendario. |
-| `.toggle()` | Alterna el panel del calendario. |
-| `.getStartDate()` | Devuelve la fecha de inicio. |
-| `.getEndDate()` | Devuelve la fecha de fin. |
-| `.setRange(start: string \| number \| Date \| null, end: string \| number \| Date \| null)` | Setea el rango de fechas y emite change. |
-| `.clear()` | Limpia el rango de fechas. |
-| `.isOpen()` | Indica si el panel está abierto. |
+| `.open()` | Abre el panel |
+| `.close()` | Cierra el panel |
+| `.toggle()` | Abre/cierra el panel |
+| `.getStartDate()` | null` con la fecha de inicio |
+| `.getEndDate()` | null` con la fecha de fin |
+| `.setRange(start: string \| number \| Date \| null, end: string \| number \| Date \| null)` | Define el rango (acepta string/number/Date) |
+| `.clear()` | Limpia el rango |
+| `.isOpen()` | Devuelve `boolean` |
 
 ## Interfaces
 

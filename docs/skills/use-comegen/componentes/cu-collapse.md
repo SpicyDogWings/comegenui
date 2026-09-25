@@ -248,7 +248,6 @@ function toggleFaq() {
 | Atributo | Tipo | Default | Descripción |
 |------|------|------|------|
 | `label` | `string` | — | Texto del trigger |
-| `icon` | `string` | `""` | Ícono del trigger (SVG/HTML). |
 | `defaultOpen` | `boolean` | `false` |  |
 | `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico del trigger: `primary`, `neutral`, `success`, `warning`, `danger` |
 
@@ -270,7 +269,7 @@ function toggleFaq() {
 
 | Método | Descripción |
 |------|------|
-| `.open()` | Abre el collapse. |
-| `.close()` | Cierra el collapse. |
-| `.toggle()` | Alterna el estado del collapse. |
-| `.isOpen()` | Devuelve true si el collapse está abierto. |
+| `.open()` | Abre el collapse |
+| `.close()` | Cierra el collapse |
+| `.toggle()` | Alterna el estado |
+| `.isOpen()` | Devuelve el estado actual (`boolean`) |

@@ -130,9 +130,9 @@ function onClose() {
 | Atributo | Tipo | Default | Descripción |
 |------|------|------|------|
 | `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | `solid`, `outlined`, `soft`, `ghost`, `subtle` |
+| `variant` | `string` | `"soft"` | `solid`, `outlined`, `soft`, `ghost`, `subtle` |
 | `title` | `string` | — | Título visible en la cabecera |
-| `close` | `boolean` | `false` | Muestra el botón de cerrar (X) |
+| `close` | `boolean` | — | Muestra el botón de cerrar (X) |
 | `show` | `boolean` | `true` | Controla visibilidad. Cambiar este atributo emite `update:show` |
 
 > **Atributos booleanos:** en HTML se usan sin valor: `<cu-alert close show>...`

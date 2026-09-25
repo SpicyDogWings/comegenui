@@ -8,7 +8,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { basename, relative, resolve, sep } from "node:path";
 import { getChecker } from "./checker.mjs";
-import { buildLibIndex } from "./lib-index.mjs";
+import { buildLibTargetsByVue } from "./lib-index.mjs";
 import { complements } from "./complements.mjs";
 
 /** Versión del contrato JSON. */
@@ -332,13 +332,19 @@ function loadSidecar(root, config, slug) {
  */
 export function buildIndex(options = {}) {
   const { root = process.cwd(), config = {} } = options;
-  const libIndex = options.libIndex ?? buildLibIndex(root, config.libDir ?? "src/lib");
+  const libDir = config.libDir ?? "src/lib";
+  // `targetsByVue` guarda también el `sfc` distribuido (`.ce.vue` cuando existe):
+  // de ahí sale el contrato vanilla, distinto del contrato Vue del `.vue`.
+  const targetsByVue = options.targetsByVue ?? buildLibTargetsByVue(root, libDir);
+  const libIndex =
+    options.libIndex ?? new Map([...targetsByVue].map(([vue, target]) => [vue, target.tag]));
   const checker = options.checker ?? getChecker(root, config.tsconfig);
   const list = resolveList(root, config, options.components);
   const componentNames = new Set(list.map((item) => item.name));
 
   const components = list.map((item) => {
     const vueAbs = resolve(root, item.file);
+    const target = targetsByVue.get(vueAbs);
     const tag = libIndex.get(vueAbs);
     const slug = tag ?? kebab(item.name);
     const sidecar = item.sidecar ?? loadSidecar(root, config, slug);
@@ -346,11 +352,11 @@ export function buildIndex(options = {}) {
     let customElement = item.customElement ?? Boolean(tag);
     if (item.customElement === true && !tag) {
       console.warn(
-        `khadgar: ${item.name} declara customElement:true pero no tiene tag en ${config.libDir ?? "src/lib"}; se ignora.`,
+        `khadgar: ${item.name} declara customElement:true pero no tiene tag en ${libDir}; se ignora.`,
       );
       customElement = false;
     }
-    return extractComponent(vueAbs, {
+    const component = extractComponent(vueAbs, {
       root,
       config,
       libIndex,
@@ -364,6 +370,35 @@ export function buildIndex(options = {}) {
       customElement,
       skill: item.skill === true,
     });
+
+    // El entry de la lib puede distribuir un `.ce.vue` distinto del `.vue` real
+    // (otro ecosistema, otra API). Ese es el contrato vanilla.
+    const sfc = target?.sfc;
+    if (sfc && sfc !== vueAbs) {
+      const vanilla = extractComponent(sfc, {
+        root,
+        config,
+        libIndex,
+        componentNames,
+        sidecar,
+        item,
+        checker,
+        name: item.name,
+        tag,
+        group: item.group ?? "",
+        customElement: true,
+        skill: false,
+      });
+      component.vanilla = {
+        props: vanilla.props,
+        events: vanilla.events,
+        slots: vanilla.slots,
+        exposed: vanilla.exposed,
+        interfaces: vanilla.interfaces,
+      };
+    }
+
+    return component;
   });
 
   return {

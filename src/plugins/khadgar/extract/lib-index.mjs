@@ -64,6 +64,23 @@ export function buildLibTargets(root, libDir = "src/lib") {
 }
 
 /**
+ * Índice `.vue` (absoluto) → entrada completa de la lib (`{ tag, sfc, vue }`).
+ *
+ * A diferencia de `buildLibIndex`, conserva `sfc`: el SFC que **distribuye** el
+ * entry point (`Table.ce.vue`, o el `.vue` si no hay wrapper). Ese `sfc` es la
+ * fuente de verdad del contrato vanilla/CE.
+ *
+ * @param {string} root raíz del proyecto.
+ * @param {string} [libDir] dir de entry points. Default: `src/lib`.
+ * @returns {Map<string, { tag: string, sfc: string, vue: string }>}
+ */
+export function buildLibTargetsByVue(root, libDir = "src/lib") {
+  const map = new Map();
+  for (const target of buildLibTargets(root, libDir).values()) map.set(target.vue, target);
+  return map;
+}
+
+/**
  * Índice `.vue` (absoluto) → tag (`cu-x`).
  *
  * @param {string} root raíz del proyecto.

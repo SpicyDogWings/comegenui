@@ -108,13 +108,13 @@ El contenido se pasa como **texto dentro del tag** (no como prop). El componente
 
 ## Props
 
-Ninguno.
+| Atributo | Tipo | Default | Descripción |
+|------|------|------|------|
+| `theme` | `string` | `"light"` | Tema de colores (`light`, `dark`, `sigacadv2`) |
 
 ## Eventos
 
-| Evento | Payload (`e.detail`) | Descripción |
-|------|------|------|
-| `parsed` | `headingIds: string[]` |  |
+Ninguno.
 
 ## Slots
 
@@ -124,6 +124,4 @@ Ninguno.
 
 ## Métodos expuestos
 
-| Método | Descripción |
-|------|------|
-| `.headingIds()` | Devuelve los ids generados para los encabezados parseados. |
+Ninguno.

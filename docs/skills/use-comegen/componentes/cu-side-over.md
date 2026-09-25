@@ -120,9 +120,9 @@ import SideOver from "@/components/overlay/SideOver.vue";
 
 | Atributo | Tipo | Default | Descripción |
 |------|------|------|------|
-| `modelValue` | `boolean` | `false` |  |
+| `open` | `boolean` | `false` | Estado de visibilidad (v-model). Ver nota de atributo abajo |
 | `title` | `string` | `""` | Título de la cabecera (si está vacío y no es `persistent`, igual muestra el botón de cerrar) |
-| `position` | `"left" \| "right" \| "top" \| "bottom"` | `"right"` | Borde desde donde desliza: `left`, `right`, `top`, `bottom` |
+| `position` | `string` | `"right"` | Borde desde donde desliza: `left`, `right`, `top`, `bottom` |
 | `size` | `string` | `"300px"` | Ancho (`left`/`right`) o alto (`top`/`bottom`) del panel. Valor CSS (`300px`, `40vw`) o preset: `sm`, `md`, `lg`, `xl`, `full`. Ignorado con `fullscreen` |
 | `fullscreen` | `boolean` | `false` | Ocupa toda la pantalla |
 | `persistent` | `boolean` | `false` | Si es `true`, no se cierra por backdrop, `Escape` ni el botón de cerrar |
@@ -134,8 +134,8 @@ import SideOver from "@/components/overlay/SideOver.vue";
 
 | Evento | Payload (`e.detail`) | Descripción |
 |------|------|------|
+| `update:open` | `boolean` | Nuevo estado de visibilidad (cambia al abrir/cerrar) |
 | `close` | — | Se inició el cierre (backdrop, Escape, `.close()`) |
-| `update:modelValue` | `value: boolean` |  |
 
 ## Slots
 
@@ -145,4 +145,9 @@ import SideOver from "@/components/overlay/SideOver.vue";
 
 ## Métodos expuestos
 
-Ninguno.
+| Método | Descripción |
+|------|------|
+| `.open()` | Abre el panel |
+| `.close()` | Cierra el panel |
+| `.toggle()` | Alterna visibilidad |
+| `.isOpen()` | Devuelve el estado actual (`boolean`) |

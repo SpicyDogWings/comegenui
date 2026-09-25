@@ -66,9 +66,8 @@ function onSelect(cmd: { label: string }) {
 | `color` | `string` | `"neutral"` | Color semántico del modal: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `title` | `string` | `""` | Título del modal |
 | `placeholder` | `string` | `"Buscar comandos…"` | Placeholder del input de búsqueda |
-| `size` | `"auto" \| "sm" \| "md" \| "lg" \| "xl" \| "full"` | `"auto"` | Ancho del modal: `auto`, `sm`, `md`, `lg`, `xl`, `full` |
-| `height` | `"auto" \| "sm" \| "md" \| "lg" \| "xl" \| "full"` | `"auto"` | Alto del modal: `auto`, `sm`, `md`, `lg`, `xl`, `full` |
-| `commands` | `CommandItem[]` | `[]` |  |
+| `size` | `string` | `"auto"` | Ancho del modal: `auto`, `sm`, `md`, `lg`, `xl`, `full` |
+| `height` | `string` | `"auto"` | Alto del modal: `auto`, `sm`, `md`, `lg`, `xl`, `full` |
 
 ## Eventos
 
@@ -83,29 +82,4 @@ Ninguno.
 
 ## Métodos expuestos
 
-| Método | Descripción |
-|------|------|
-| `.open()` |  |
-| `.close()` |  |
-| `.run(id: string)` | Ejecuta el comando con ese id. |
-| `.getCommands()` |  |
-| `.isOpen()` |  |
-
 Ninguno (el wrapper CE no llama a `defineExpose`).
-
-## Interfaces
-
-### `CommandItem`
-
-```ts
-export interface CommandItem {
-  id: string;
-  label: string;
-  description?: string;
-  category?: string;
-  badges?: string[];
-  icon?: string;
-  shortcut?: string;
-  action: () => void;
-}
-```

@@ -127,15 +127,17 @@ const campo = useTemplateRef("campo");
 
 | Atributo | Tipo | Default | Descripción |
 |------|------|------|------|
+| `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
+| `modelValue` | `string` | `""` | Valor controlado |
 | `startValue` | `string` | — | Valor inicial usado por `.reset()` |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | `outlined`, `soft`, `ghost`, `subtle` |
 | `placeholder` | `string` | — | Placeholder del textarea |
 | `disabled` | `boolean` | `false` | Estado deshabilitado |
 | `readOnly` | `boolean` | `false` | Solo lectura (en HTML se usa como `readonly`) |
 | `rows` | `number` | `3` | Cantidad de filas visibles |
 | `noResize` | `boolean` | `false` | Desactiva el redimensionado manual (atributo HTML: `no-resize`) |
-| `modelValue` | `string` | `""` | Valor actual del textarea (v-model). |
+| `hightContrast` | `boolean` | `false` | Modo de alto contraste para el texto |
 
 > **Atributos en HTML:** `readOnly` → `readonly`, `noResize` → `no-resize`.
 
@@ -155,7 +157,7 @@ Ninguno.
 
 | Método | Descripción |
 |------|------|
-| `.get()` | Devuelve el valor actual del textarea. |
-| `.set(newValue: string \| number)` | Setea el valor del textarea. |
-| `.reset()` | Limpia el textarea. |
-| `.focus()` | Enfoca el textarea. |
+| `.get()` | Devuelve el valor actual (`string`) |
+| `.set(value: string \| number)` | Asigna un valor |
+| `.reset()` | Vuelve al `startValue` (o `""` si no se definió) |
+| `.focus()` | Enfoca el textarea |

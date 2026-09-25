@@ -47,6 +47,18 @@ export interface KhadgarSection {
   bodyVue?: string;
 }
 
+/**
+ * Bloque de API de un componente (las cuatro secciones + interfaces).
+ * Se usa para el contrato del custom element cuando difiere del `.vue`.
+ */
+export interface KhadgarApi {
+  props: KhadgarRow[];
+  events: KhadgarRow[];
+  slots: KhadgarRow[];
+  exposed: KhadgarRow[];
+  interfaces?: KhadgarInterface[];
+}
+
 /** El contrato completo de un componente `.vue`. */
 export interface KhadgarComponent {
   /** Nombre lógico del componente (label en el sitio y las fichas). */
@@ -74,6 +86,12 @@ export interface KhadgarComponent {
   /** Clases CSS `cu-*` que define. */
   classes: string[];
   interfaces: KhadgarInterface[];
+  /**
+   * Contrato del custom element (`.ce.vue`) cuando difiere del `.vue`. Presente
+   * sólo si el entry point de la lib distribuye un wrapper `.ce.vue`; si no, el
+   * vanilla se documenta con la misma API del `.vue`.
+   */
+  vanilla?: KhadgarApi;
   /** Sub-componentes propios que usa (nombres). */
   deps: string[];
   /** Notas curadas por sección (`events`, `exposes`, …). */

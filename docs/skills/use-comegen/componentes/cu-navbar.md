@@ -114,7 +114,7 @@ const items = ref([/* ... */]);
 
 | Atributo | Tipo | Default | Descripción |
 |------|------|------|------|
-| `items` | `NavItem[]` | — | Estructura de navegación. **Se asigna como propiedad JS** |
+| `items` | `unknown[]` | — | Estructura de navegación. **Se asigna como propiedad JS** |
 | `search` | `boolean` | `false` | Muestra el input de búsqueda |
 | `searchPlaceholder` | `string` | `"Buscar..."` | Placeholder del input de búsqueda |
 | `searchMode` | `"filter" \| "scroll"` | `"filter"` | `filter` (oculta los que no matchean) o `scroll` (resalta y hace scroll al primero que matchea) |
@@ -127,7 +127,6 @@ const items = ref([/* ... */]);
 | `responsiveMode` | `"auto" \| "side" \| "fullscreen"` | `"auto"` | `auto` (fullscreen en pantallas muy chicas, lateral en el resto), `side` (siempre lateral) o `fullscreen` (siempre pantalla completa) |
 | `sideOverPosition` | `"left" \| "right" \| "bottom" \| "top"` | `"left"` | Borde desde donde desliza el panel del responsive: `left`, `right`, `top`, `bottom` |
 | `activePath` | `string` | `""` | Path activo manual. Si se omite, se toma de la ruta (cuando hay router) |
-| `highlightItem` | `NavItem \| null` | `null` |  |
 
 > **`items` se asigna como propiedad JS**, no como atributo HTML:
 
@@ -159,11 +158,3 @@ Ninguno.
 ## Métodos expuestos
 
 Ninguno.
-
-## Interfaces
-
-### `NavbarItem`
-
-```ts
-export interface NavbarItem extends NavItem {}
-```

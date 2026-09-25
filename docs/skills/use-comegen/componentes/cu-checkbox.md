@@ -144,11 +144,11 @@ function demo() {
 
 | Atributo | Tipo | Default | Descripción |
 |------|------|------|------|
-| `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `size` | `"sm" \| "md"` | `"md"` | Tamaño del checkbox: `sm`, `md` |
-| `disabled` | `boolean` | `false` | Estado deshabilitado |
-| `label` | `string` | — | Texto visible junto al checkbox |
 | `modelValue` | `boolean` | `false` | Estado del checkbox (controlado) |
+| `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `size` | `string` | `"md"` | Tamaño del checkbox: `sm`, `md` |
+| `disabled` | `boolean` | — | Estado deshabilitado |
+| `label` | `string` | — | Texto visible junto al checkbox |
 
 > El Custom Element **no expone** una prop `checked` separada (el control se hace únicamente con `modelValue`), ni una prop `variant` (el estilo se fija con `size` y `color`).
 
@@ -167,7 +167,7 @@ Ninguno (el texto se pasa via `label`).
 
 | Método | Descripción |
 |------|------|
-| `.get()` | Devuelve si el checkbox está marcado. |
-| `.set(value: boolean)` | Setea el estado marcado y emite change. |
-| `.reset()` | Desmarca el checkbox y emite change. |
-| `.focus()` | Enfoca el input nativo. |
+| `.get()` | Devuelve el estado actual (`boolean`) |
+| `.set(val: boolean)` | Asigna el estado (programáticamente) |
+| `.reset()` | Pone el estado en `false` |
+| `.focus()` | Enfoca el checkbox |

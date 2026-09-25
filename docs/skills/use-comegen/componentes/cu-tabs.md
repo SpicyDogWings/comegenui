@@ -240,12 +240,12 @@ El repositorio incluye una demo en HTML plano: [`playground/pages/tabs/tabs.html
 
 | Atributo | Tipo | Default | Descripción |
 |------|------|------|------|
-| `tabs` | `TabItem[]` | — | Definición de las pestañas |
+| `tabs` | `{ key: string; label: string; icon?: string; disabled?: boolean; keepAlive?: boolean; }[]` | `[]` | Definición de las pestañas |
+| `modelValue` | `string` | `""` | Key del tab activo (controlado) |
 | `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"primary"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
 | `variant` | `"soft" \| "solid" \| "ghost" \| "boxed"` | `"ghost"` | `ghost`, `solid`, `boxed`, `soft` |
 | `size` | `"md" \| "sm" \| "lg"` | `"md"` | `sm`, `md`, `lg` |
-| `disabled` | `boolean` | `false` | Deshabilita todas las pestañas |
-| `modelValue` | `string` | `""` | Clave del tab activo (v-model). |
+| `disabled` | `boolean` | — | Deshabilita todas las pestañas |
 
 ### Prop `tabs`
 
@@ -276,25 +276,7 @@ En HTML plano se usan con el atributo `slot="..."` sobre el elemento hijo.
 
 | Método | Descripción |
 |------|------|
-| `.getActive()` | Devuelve la clave del tab activo. |
-| `.setActive(key: string)` | Activa el tab con la clave indicada. |
-| `.next()` | Avanza al siguiente tab habilitado. |
-| `.prev()` | Retrocede al tab habilitado anterior. |
-
-## Interfaces
-
-### `TabItem`
-
-```ts
-interface TabItem {
-  key: string;
-  label: string;
-  // Icono del tab como HTML/SVG string (render con v-html), consistente con
-  // label. Si la tab no trae icon, se usa el slot dinámico tab-icon-{key}.
-  icon?: string;
-  disabled?: boolean;
-  // Mantiene el panel montado aunque no esté activo (v-show, no v-if):
-  // el estado de los componentes internos sobrevive al cambio de tab.
-  keepAlive?: boolean;
-}
-```
+| `.getActive()` | Devuelve la key del tab activo |
+| `.setActive(key: string)` | Activa el tab con esa key |
+| `.next()` | Activa el próximo tab habilitado |
+| `.prev()` | Activa el tab anterior habilitado |

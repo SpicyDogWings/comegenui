@@ -153,11 +153,11 @@ const activo = ref(false);
 
 | Atributo | Tipo | Default | Descripción |
 |------|------|------|------|
-| `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `size` | `"sm" \| "md"` | `"md"` | Tamaño del switch: `sm`, `md` |
-| `disabled` | `boolean` | `false` | Estado deshabilitado |
-| `label` | `string` | `""` |  |
 | `modelValue` | `boolean` | `false` | Estado del toggle (controlado) |
+| `color` | `"neutral" \| "primary" \| "secondary" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `size` | `string` | `"md"` | Tamaño del switch: `sm`, `md` |
+| `disabled` | `boolean` | — | Estado deshabilitado |
+| `label` | `string` | `""` |  |
 
 > El Custom Element **no expone** una prop `checked` separada. El control se hace únicamente con `modelValue`. Tampoco tiene props `variant`, `theme` ni `hightContrast`; el tamaño se controla con `size`.
 
@@ -180,7 +180,7 @@ Ninguno.
 
 | Método | Descripción |
 |------|------|
-| `.get()` | Devuelve el estado actual del switch. |
-| `.set(value: boolean)` | Setea el estado del switch y emite change. |
-| `.reset()` | Apaga el switch y emite change. |
-| `.focus()` | Enfoca el input nativo. |
+| `.get()` | Devuelve el estado actual (`boolean`) |
+| `.set(val: boolean)` | Asigna el estado |
+| `.reset()` | Pone el estado en `false` |
+| `.focus()` | Enfoca el switch |
