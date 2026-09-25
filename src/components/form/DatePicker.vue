@@ -5,7 +5,7 @@ import Calendar from '../controls/Calendar.vue'
 import DualCalendar from '../controls/DualCalendar.vue'
 import DatePickerShell from './DatePickerShell.vue'
 import type { DateRange } from '@/composables/useDateRange'
-import { formatDate, normalizeDate, parseDate, type CalendarEvent } from '@/utils/date'
+import { formatDate, isMonthFormat, isYearFormat, normalizeDate, parseDate, type CalendarEvent } from '@/utils/date'
 
 const props = defineProps({
   /** Tipo de calendario: `single` (una fecha, `Calendar`) o `range` (inicio + fin, `Calendar` en modo rango). Con `dualCalendar` el tipo es dual (range, 2 meses) */
@@ -61,8 +61,20 @@ const props = defineProps({
   format: { type: String, required: false, default: 'dd/MM/yyyy' },
   // Controles de mes del calendario interno (delegan al MonthSlider)
   yearNavigation: { type: [Boolean, String] as PropType<boolean | string>, required: false, default: false },
-  monthFormat: { type: String, required: false, default: 'MMMM' },
-  yearFormat: { type: String, required: false, default: 'yyyy' },
+  /** Formato del mes en el header del calendario interno: `MMMM` (septiembre), `MMM` (sept), `MM` (09) o `M` (9). Un valor no soportado cae a `MMMM` */
+  monthFormat: {
+    type: String as PropType<'MMMM' | 'MMM' | 'MM' | 'M'>,
+    required: false,
+    default: 'MMMM',
+    validator: isMonthFormat,
+  },
+  /** Formato del año (badge cuando el mes no es del año actual): `yyyy` (2026) o `yy` (26). Un valor no soportado cae a `yyyy` */
+  yearFormat: {
+    type: String as PropType<'yyyy' | 'yy'>,
+    required: false,
+    default: 'yyyy',
+    validator: isYearFormat,
+  },
   // Días deshabilitados del calendario interno (además de min/max)
   disabledWeekdays: { type: [Array, String] as PropType<number[] | string>, required: false, default: '' },
   disabledDates: { type: [Array, String] as PropType<(string | Date)[] | string>, required: false, default: '' },

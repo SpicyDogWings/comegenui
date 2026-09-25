@@ -1,5 +1,8 @@
 {
-  "props": {},
+  "props": {
+    "monthFormat": "Formato del mes: `MMMM` (septiembre), `MMM` (sept), `MM` (09) o `M` (9). Un valor no soportado cae a `MMMM`",
+    "yearFormat": "Formato del año (badge cuando el mes no es del año actual): `yyyy` (2026) o `yy` (26). Un valor no soportado cae a `yyyy`"
+  },
   "events": {},
   "slots": {},
   "exposes": {},

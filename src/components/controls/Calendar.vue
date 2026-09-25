@@ -3,6 +3,8 @@ import { computed, ref, watch, type PropType } from 'vue'
 import MonthSlider from './MonthSlider.vue'
 import {
   addMonths,
+  isMonthFormat,
+  isYearFormat,
   parseDate,
   sameDay,
   startOfCurrentMonth,
@@ -68,13 +70,17 @@ const props = defineProps({
     type: [Boolean, String] as PropType<boolean | string>,
     default: false,
   },
+  /** Formato del mes en el header: `MMMM` (septiembre), `MMM` (sept), `MM` (09) o `M` (9). Un valor no soportado cae a `MMMM` */
   monthFormat: {
-    type: String,
+    type: String as PropType<'MMMM' | 'MMM' | 'MM' | 'M'>,
     default: 'MMMM',
+    validator: isMonthFormat,
   },
+  /** Formato del año (badge cuando el mes no es del año actual): `yyyy` (2026) o `yy` (26). Un valor no soportado cae a `yyyy` */
   yearFormat: {
-    type: String,
+    type: String as PropType<'yyyy' | 'yy'>,
     default: 'yyyy',
+    validator: isYearFormat,
   },
   // ── Eventos (puntos bajo la fecha) ──
   events: {

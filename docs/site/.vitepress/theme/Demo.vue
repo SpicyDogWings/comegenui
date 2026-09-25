@@ -77,7 +77,7 @@ function isJson(prop: KhadgarRow): boolean {
   if (/=>/.test(type) || /\bFile\b/.test(type) || /^any(\[\])?$/.test(type)) return false;
   if (JSON_EXCLUDE.has(`${props.name}.${prop.name}`)) return false;
   if (/\[\]|Record</.test(type) || /^\{/.test(type.trim())) return true;
-  const ids = type.match(/\b[A-Z][A-Za-z0-9_]*\b/g) ?? [];
+  const ids = type.replace(/"[^"]*"/g, "").match(/\b[A-Z][A-Za-z0-9_]*\b/g) ?? [];
   return ids.some((id) => !SCALAR_TYPES.has(id));
 }
 
@@ -110,8 +110,10 @@ function kind(prop: KhadgarRow): "enum" | "boolean" | "number" | "json" | "date"
   const type = prop.type ?? "";
   // Las listas de primitivos se editan como texto separado por comas.
   if (isPrimitiveList(prop)) return "list";
-  if (isJson(prop)) return "json";
+  // Una unión de literales siempre es un `<Select>` (antes que JSON: sus
+  // miembros pueden ser identificadores-like, ej. "M" | "MM" | "MMM" | "MMMM").
   if (enumValues(type)) return "enum";
+  if (isJson(prop)) return "json";
   if (hasBoolean(type)) return "boolean";
   if (isDateType(type)) return "date";
   if (type === "number") return "number";

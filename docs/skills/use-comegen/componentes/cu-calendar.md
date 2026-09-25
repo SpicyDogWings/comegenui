@@ -60,7 +60,7 @@ El header del calendario **reutiliza el componente `MonthSlider` del repo**: che
 
 ```html
 <!-- Con saltos de año (botones « ») y mes abreviado -->
-<cu-calendar year-navigation month-format="MMM yyyy"></cu-calendar>
+<cu-calendar year-navigation month-format="MMM" year-format="yy"></cu-calendar>
 
 <!-- Solo mes: drag sobre el label para navegar -->
 <cu-calendar></cu-calendar>
@@ -68,7 +68,8 @@ El header del calendario **reutiliza el componente `MonthSlider` del repo**: che
 
 - **`year-navigation`** (default `false`): agrega los botones `«` / `»` para saltar de año (atributo booleano en HTML plano: `year-navigation`).
 - **Drag** sobre el label del mes navega meses (misma lógica que el slider).
-- **Año automático:** con `month-format="MMMM"` y el mes del año en curso, el año se oculta; al navegar a otro año aparece al lado del mes.
+- **Formato cerrado:** `month-format` acepta `MMMM`, `MMM`, `MM` o `M`; `year-format` acepta `yyyy` o `yy`. Un valor no soportado cae al default (`MMMM` / `yyyy`).
+- **Año automático:** cuando el mes no es del año en curso, el año aparece al lado del mes con `year-format`; con `MMMM` y el año actual, se oculta.
 - La navegación respeta `min`/`max` (los botones se deshabilitan en el borde).
 - El label del header usa la misma `variant` y `color` del calendario.
 
@@ -252,7 +253,7 @@ import Calendar from "@/components/controls/Calendar.vue";
 
 <template>
   <!-- Con saltos de año (botones « ») y mes abreviado -->
-  <Calendar year-navigation month-format="MMM yyyy" />
+  <Calendar year-navigation month-format="MMM" year-format="yy" />
 
   <!-- Solo mes: drag sobre el label para navegar -->
   <Calendar />
@@ -261,7 +262,8 @@ import Calendar from "@/components/controls/Calendar.vue";
 
 - **`year-navigation`** (default `false`): agrega los botones `«` / `»` para saltar de año (atributo booleano en HTML plano: `year-navigation`).
 - **Drag** sobre el label del mes navega meses (misma lógica que el slider).
-- **Año automático:** con `month-format="MMMM"` y el mes del año en curso, el año se oculta; al navegar a otro año aparece al lado del mes.
+- **Formato cerrado:** `month-format` acepta `MMMM`, `MMM`, `MM` o `M`; `year-format` acepta `yyyy` o `yy`. Un valor no soportado cae al default (`MMMM` / `yyyy`).
+- **Año automático:** cuando el mes no es del año en curso, el año aparece al lado del mes con `year-format`; con `MMMM` y el año actual, se oculta.
 - La navegación respeta `min`/`max` (los botones se deshabilitan en el borde).
 - El label del header usa la misma `variant` y `color` del calendario.
 
@@ -426,8 +428,8 @@ import Calendar from "@/components/controls/Calendar.vue";
 | `locale` | `string` | `"es"` | Locale para nombres de mes y días de la semana |
 | `weekStart` | `number` | `1` | Día en que arranca la semana: `0` = domingo, `1` = lunes |
 | `yearNavigation` | `string \| boolean` | `false` | Muestra botones `«`/`»` para saltar de año en el header |
-| `monthFormat` | `string` | `"MMMM"` | Formato del mes en el header (tokens como MonthSlider) |
-| `yearFormat` | `string` | `"yyyy"` | Formato del año en el header |
+| `monthFormat` | `"M" \| "MMMM" \| "MMM" \| "MM"` | `"MMMM"` | Formato del mes en el header: `MMMM` (septiembre), `MMM` (sept), `MM` (09) o `M` (9). Un valor no soportado cae a `MMMM` |
+| `yearFormat` | `"yyyy" \| "yy"` | `"yyyy"` | Formato del año (badge cuando el mes no es del año actual): `yyyy` (2026) o `yy` (26). Un valor no soportado cae a `yyyy` |
 | `events` | `CalendarEvent[]` | `[]` | Eventos a señalar con puntos bajo la fecha (ver [Eventos](#eventos-puntos)). Se asigna como propiedad JS |
 | `rangeStart` | `string \| number \| Date \| null` | `null` | Inicio del rango (resalta los días entre inicio y fin). Se asigna como propiedad JS |
 | `rangeEnd` | `string \| number \| Date \| null` | `null` | Fin del rango. Se asigna como propiedad JS |

@@ -2,12 +2,16 @@ import { describe, it, expect } from 'vitest'
 import {
   addMonths,
   formatDate,
+  isMonthFormat,
+  isYearFormat,
   normalizeDate,
   normalizeMonth,
   parseDate,
   parseMonth,
   sameDay,
   sameMonth,
+  sanitizeMonthFormat,
+  sanitizeYearFormat,
   startOfCurrentMonth,
 } from './date'
 
@@ -102,5 +106,32 @@ describe('utils/date — formatDate', () => {
 
   it('yy devuelve dos dígitos', () => {
     expect(formatDate(date, 'yy', 'es')).toBe('26')
+  })
+})
+
+describe('utils/date — formatos de mes/año (enums cerrados)', () => {
+  it('isMonthFormat acepta solo los tokens de mes', () => {
+    for (const value of ['MMMM', 'MMM', 'MM', 'M']) {
+      expect(isMonthFormat(value)).toBe(true)
+    }
+    for (const value of ['MMM yyyy', 'MM/yyyy', 'dd', '', null, 7]) {
+      expect(isMonthFormat(value)).toBe(false)
+    }
+  })
+
+  it('isYearFormat acepta solo los tokens de año', () => {
+    expect(isYearFormat('yyyy')).toBe(true)
+    expect(isYearFormat('yy')).toBe(true)
+    for (const value of ['y', 'YYYY', 'dd/MM/yyyy', '', null]) {
+      expect(isYearFormat(value)).toBe(false)
+    }
+  })
+
+  it('sanitize cae al default con valores no soportados', () => {
+    expect(sanitizeMonthFormat('MMM')).toBe('MMM')
+    expect(sanitizeMonthFormat('MMM yyyy')).toBe('MMMM')
+    expect(sanitizeMonthFormat(undefined)).toBe('MMMM')
+    expect(sanitizeYearFormat('yy')).toBe('yy')
+    expect(sanitizeYearFormat('YYYY')).toBe('yyyy')
   })
 })

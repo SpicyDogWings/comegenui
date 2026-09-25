@@ -8,7 +8,7 @@
 import { ref, type PropType } from 'vue'
 import Calendar from './Calendar.vue'
 import type { DateRange } from '@/composables/useDateRange'
-import { addMonths, parseDate, type CalendarEvent } from '@/utils/date'
+import { addMonths, isMonthFormat, isYearFormat, parseDate, type CalendarEvent } from '@/utils/date'
 
 const props = defineProps({
   startDate: {
@@ -43,8 +43,18 @@ const props = defineProps({
     validator: (value: number) => value >= 0 && value <= 6,
   },
   yearNavigation: { type: [Boolean, String] as PropType<boolean | string>, default: false },
-  monthFormat: { type: String, default: 'MMMM' },
-  yearFormat: { type: String, default: 'yyyy' },
+  /** Formato del mes en el header: `MMMM` (septiembre), `MMM` (sept), `MM` (09) o `M` (9). Un valor no soportado cae a `MMMM` */
+  monthFormat: {
+    type: String as PropType<'MMMM' | 'MMM' | 'MM' | 'M'>,
+    default: 'MMMM',
+    validator: isMonthFormat,
+  },
+  /** Formato del año (badge cuando el mes no es del año actual): `yyyy` (2026) o `yy` (26). Un valor no soportado cae a `yyyy` */
+  yearFormat: {
+    type: String as PropType<'yyyy' | 'yy'>,
+    default: 'yyyy',
+    validator: isYearFormat,
+  },
   disabledWeekdays: { type: [Array, String] as PropType<number[] | string>, default: '' },
   disabledDates: { type: [Array, String] as PropType<(string | Date)[] | string>, default: '' },
   events: {

@@ -71,6 +71,37 @@ export function addMonths(date: Date, delta: number): Date {
   return new Date(date.getFullYear(), date.getMonth() + delta, 1)
 }
 
+/** Tokens de mes soportados por el header del calendario/slider. */
+export const MONTH_FORMATS = ['MMMM', 'MMM', 'MM', 'M'] as const
+export type MonthFormat = (typeof MONTH_FORMATS)[number]
+
+/** Tokens de año soportados por el badge del slider. */
+export const YEAR_FORMATS = ['yyyy', 'yy'] as const
+export type YearFormat = (typeof YEAR_FORMATS)[number]
+
+export const DEFAULT_MONTH_FORMAT: MonthFormat = 'MMMM'
+export const DEFAULT_YEAR_FORMAT: YearFormat = 'yyyy'
+
+/** ¿`value` es un formato de mes soportado? */
+export function isMonthFormat(value: unknown): value is MonthFormat {
+  return typeof value === 'string' && (MONTH_FORMATS as readonly string[]).includes(value)
+}
+
+/** ¿`value` es un formato de año soportado? */
+export function isYearFormat(value: unknown): value is YearFormat {
+  return typeof value === 'string' && (YEAR_FORMATS as readonly string[]).includes(value)
+}
+
+/** Formato de mes válido o el default si no se soporta (enforcement runtime). */
+export function sanitizeMonthFormat(value: unknown): MonthFormat {
+  return isMonthFormat(value) ? value : DEFAULT_MONTH_FORMAT
+}
+
+/** Formato de año válido o el default si no se soporta (enforcement runtime). */
+export function sanitizeYearFormat(value: unknown): YearFormat {
+  return isYearFormat(value) ? value : DEFAULT_YEAR_FORMAT
+}
+
 export interface FormatDateOptions {
   /** Capitaliza la primera letra de `MMMM`/`MMM` (default `true`). */
   capitalizeMonths?: boolean

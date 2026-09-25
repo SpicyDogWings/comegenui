@@ -217,8 +217,8 @@ picker.clear();
 | `weekStart` | `number` | `1` | Primer día de la semana (`0` domingo, `1` lunes) |
 | `format` | `string` | `"dd/MM/yyyy"` | Formato de la fecha en el trigger (ver [Formato](#formato)) |
 | `yearNavigation` | `string \| boolean` | `false` | Controles de mes del calendario interno: botones `«`/`»` de año |
-| `monthFormat` | `string` | `"MMMM"` | Formato del mes en el header del calendario interno |
-| `yearFormat` | `string` | `"yyyy"` | Formato del año en el header del calendario interno |
+| `monthFormat` | `"M" \| "MMMM" \| "MMM" \| "MM"` | `"MMMM"` | Formato del mes en el header del calendario interno: `MMMM` (septiembre), `MMM` (sept), `MM` (09) o `M` (9). Un valor no soportado cae a `MMMM` |
+| `yearFormat` | `"yyyy" \| "yy"` | `"yyyy"` | Formato del año (badge cuando el mes no es del año actual): `yyyy` (2026) o `yy` (26). Un valor no soportado cae a `yyyy` |
 | `disabledWeekdays` | `string \| number[]` | `""` | Días de la semana no seleccionables (`0`=domingo … `6`=sábado). En HTML: `disabled-weekdays="0,6"` |
 | `disabledDates` | `string \| (string \| Date)[]` | `""` | Fechas puntuales no seleccionables. En HTML: `disabled-dates="2026-08-15,2026-08-16"` |
 | `events` | `CalendarEvent[]` | `[]` | Eventos a señalar con puntos bajo la fecha en el calendario interno (ver [Eventos](cu-calendar.md#eventos-puntos)). Se asigna como propiedad JS |

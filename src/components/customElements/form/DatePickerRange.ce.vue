@@ -5,6 +5,7 @@
 import { ref, getCurrentInstance, type PropType } from 'vue'
 import DatePicker from '../../form/DatePicker.vue'
 import { initTokens } from '@/plugins/cu-tokens/css'
+import { isMonthFormat, isYearFormat } from '@/utils/date'
 
 initTokens()
 
@@ -41,8 +42,16 @@ const props = defineProps({
   weekStart: { type: Number, default: 1 },
   format: { type: String, default: 'dd/MM/yyyy' },
   yearNavigation: { type: [Boolean, String] as PropType<boolean | string>, default: false },
-  monthFormat: { type: String, default: 'MMMM' },
-  yearFormat: { type: String, default: 'yyyy' },
+  monthFormat: {
+    type: String as PropType<'MMMM' | 'MMM' | 'MM' | 'M'>,
+    default: 'MMMM',
+    validator: isMonthFormat,
+  },
+  yearFormat: {
+    type: String as PropType<'yyyy' | 'yy'>,
+    default: 'yyyy',
+    validator: isYearFormat,
+  },
   disabledWeekdays: { type: [Array, String] as PropType<number[] | string>, default: '' },
   disabledDates: { type: [Array, String] as PropType<(string | Date)[] | string>, default: '' },
   events: {

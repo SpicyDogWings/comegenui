@@ -2,6 +2,7 @@
 import { ref, watch, getCurrentInstance, type PropType } from 'vue'
 import DatePicker from '../../form/DatePicker.vue'
 import { initTokens } from '@/plugins/cu-tokens/css'
+import { isMonthFormat, isYearFormat } from '@/utils/date'
 
 initTokens()
 
@@ -58,10 +59,18 @@ const props = defineProps({
   format: { type: String, default: 'dd/MM/yyyy' },
   /** Controles de mes del calendario interno: botones `«`/`»` de año */
   yearNavigation: { type: [Boolean, String] as PropType<boolean | string>, default: false },
-  /** Formato del mes en el header del calendario interno */
-  monthFormat: { type: String, default: 'MMMM' },
-  /** Formato del año en el header del calendario interno */
-  yearFormat: { type: String, default: 'yyyy' },
+  /** Formato del mes en el header del calendario interno: `MMMM` (septiembre), `MMM` (sept), `MM` (09) o `M` (9). Un valor no soportado cae a `MMMM` */
+  monthFormat: {
+    type: String as PropType<'MMMM' | 'MMM' | 'MM' | 'M'>,
+    default: 'MMMM',
+    validator: isMonthFormat,
+  },
+  /** Formato del año (badge cuando el mes no es del año actual): `yyyy` (2026) o `yy` (26). Un valor no soportado cae a `yyyy` */
+  yearFormat: {
+    type: String as PropType<'yyyy' | 'yy'>,
+    default: 'yyyy',
+    validator: isYearFormat,
+  },
   /** Días de la semana no seleccionables (`0`=domingo … `6`=sábado). En HTML: `disabled-weekdays="0,6"` */
   disabledWeekdays: { type: [Array, String] as PropType<number[] | string>, default: '' },
   /** Fechas puntuales no seleccionables. En HTML: `disabled-dates="2026-08-15,2026-08-16"` */

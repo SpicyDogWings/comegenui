@@ -6,20 +6,34 @@ import LucideChevronRight from '@/components/icons/LucideChevronRight.vue'
 import LucideChevronsLeft from '@/components/icons/LucideChevronsLeft.vue'
 import LucideChevronsRight from '@/components/icons/LucideChevronsRight.vue'
 import MonthSliderLabel from './month-slider/MonthSliderLabel.vue'
-import { addMonths, formatDate, parseMonth, sameMonth, startOfCurrentMonth } from '@/utils/date'
+import {
+  addMonths,
+  formatDate,
+  isMonthFormat,
+  isYearFormat,
+  parseMonth,
+  sameMonth,
+  sanitizeMonthFormat,
+  sanitizeYearFormat,
+  startOfCurrentMonth,
+} from '@/utils/date'
 
 const props = defineProps({
   modelValue: {
     type: [String, Number, Date] as PropType<string | number | Date | null>,
     default: null,
   },
+  /** Formato del mes: `MMMM` (septiembre), `MMM` (sept), `MM` (09) o `M` (9). Un valor no soportado cae a `MMMM` */
   monthFormat: {
-    type: String,
+    type: String as PropType<'MMMM' | 'MMM' | 'MM' | 'M'>,
     default: 'MMMM',
+    validator: isMonthFormat,
   },
+  /** Formato del año (badge cuando el mes no es del año actual): `yyyy` (2026) o `yy` (26). Un valor no soportado cae a `yyyy` */
   yearFormat: {
-    type: String,
+    type: String as PropType<'yyyy' | 'yy'>,
     default: 'yyyy',
+    validator: isYearFormat,
   },
   locale: {
     type: String,
@@ -93,6 +107,11 @@ watch([minDate, maxDate], () => {
 })
 
 // ── Formato con tokens (Intl nativo, compartido con Calendar/DatePicker) ──
+// `monthFormat`/`yearFormat` son enums cerrados: un valor no soportado cae al
+// default acá (enforcement runtime, también para los Custom Elements).
+
+const monthFormatValue = computed(() => sanitizeMonthFormat(props.monthFormat))
+const yearFormatValue = computed(() => sanitizeYearFormat(props.yearFormat))
 
 const formatMonth = (date: Date, format: string) =>
   formatDate(date, format, props.locale, { capitalizeMonths: false })
@@ -102,13 +121,12 @@ const showYearNavigation = computed(
   () => props.yearNavigation !== false && props.yearNavigation !== 'false' && props.yearNavigation !== '0',
 )
 
-// Si el formato no incluye año y el mes no es del año actual, se muestra el año al lado
-const hasYearToken = computed(() => /[yY]/.test(props.monthFormat))
+// El formato de mes es solo mes: el año se muestra al lado cuando no es el actual
 const currentYear = computed(() => new Date().getFullYear())
-const showAutoYear = computed(() => !hasYearToken.value && month.value.getFullYear() !== currentYear.value)
+const showAutoYear = computed(() => month.value.getFullYear() !== currentYear.value)
 
-const monthLabel = computed(() => formatMonth(month.value, props.monthFormat))
-const yearLabel = computed(() => formatMonth(month.value, props.yearFormat))
+const monthLabel = computed(() => formatMonth(month.value, monthFormatValue.value))
+const yearLabel = computed(() => formatMonth(month.value, yearFormatValue.value))
 
 // ── Navegación (con límites) ──
 
