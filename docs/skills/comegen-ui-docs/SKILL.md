@@ -209,3 +209,40 @@ Si agregás un componente nuevo, sumalo también al índice `docs/componentes/RE
 | `references/convenciones.md` | Colores, variantes, naming, eventos |
 | `references/errores-comunes.md` | Qué evitar al escribir docs |
 | `references/checklist-auditoria.md` | Revisar una ficha existente contra el código |
+
+## Mantenimiento de las tablas de API (son generadas)
+
+Las cuatro secciones de API **no se escriben a mano**: se generan desde los SFC y se
+inyectan entre marcadores. La prosa (cuándo usarlo, qué puede y qué no, ejemplos) sí va a
+mano, y **fuera** de los marcadores.
+
+```md
+## Atributos
+
+<!-- @api:atributos -->
+| Atributo | Tipo | Default | Descripción |
+|------|------|------|------|
+<!-- /@api:atributos -->
+
+<la prosa, si hace falta, va acá afuera>
+```
+
+Marcadores: `atributos` / `eventos` / `slots` / `metodos` (ficha vanilla), `props` / `emits`
+/ `slots` / `expose` (ficha Vue). En la receta de la skill van con `###`.
+
+```bash
+node scripts/gen-api.mjs                  # escribe las tablas
+node scripts/gen-api.mjs --check          # no escribe: falla si el código cambió y la doc no
+node scripts/gen-api.mjs --print button   # ver la salida de un componente sin escribir
+```
+
+Reglas:
+
+- **No edites dentro de los marcadores**: se sobreescribe en la próxima corrida.
+- Si un dato está mal, se corrige en el SFC. La descripción sale del `/** … */` de la prop,
+  así que un JSDoc pobre da una tabla pobre (y un JSDoc bueno documenta solo).
+- El extractor lee el `.ce.vue` para la ficha vanilla (o el `.vue` cuando el CE es directo)
+  y el `.vue` para la ficha Vue.
+- `cu-date-picker-range` se saltea: su `.vue` no entra en el tsconfig del checker.
+
+Pendiente conocido: `docs/componentes/vue/navbar-list.md` no converge en `--check`.
