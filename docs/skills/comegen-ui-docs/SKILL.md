@@ -12,6 +12,7 @@ Cada componente tiene **hasta tres archivos**, y no dicen lo mismo:
 | `docs/componentes/<tag>.md` | el **custom element** (vanilla): atributos, `CustomEvent`s, slots, métodos del host | `src/components/customElements/.../X.ce.vue` (o el `.vue` directo si no hay wrapper) |
 | `docs/componentes/vue/<kebab>.md` | el componente **Vue**: props, emits, slots, `expose` | `src/components/<cat>/X.vue` |
 | `docs/site/componentes/<slug>.md` | la **página del sitio**: frontmatter + `@include` de una ficha | — |
+| `skills/use-comegen/references/<kebab>.md` | la **receta del componente** para quien consume la lib: cuándo usarlo, qué puede y qué no, ejemplos y las dos APIs | las dos fichas + el SFC |
 
 `<kebab>` es el kebab del **nombre del componente Vue** (`AdvancedTable` → `advanced-table`),
 no del tag. Por eso `cu-table` (vanilla) ↔ `vue/advanced-table` (Vue) y el interno
@@ -155,7 +156,28 @@ import X from "@/components/<cat>/X.vue";
 </ClientOnly>
 ```
 
-7. **Validar**:
+7. **Escribí la receta del componente en la skill** (`skills/use-comegen/references/<kebab>.md`).
+   Es el archivo que se lleva quien consume la lib (viaja con `skills add`), así que tiene
+   que ser autosuficiente y **no puede ser un symlink**:
+
+   ```md
+   # <Componente> — `<cu-x>` / `<X>`
+
+   <qué es, en una línea>
+
+   ## Cuándo usarlo
+   ## Receta                    ← pasos + ejemplo HTML plano + ejemplo Vue
+   ## Qué puede y qué no puede
+   ## API del custom element    → Atributos / Eventos / Slots / Métodos expuestos
+   ## API del componente Vue    → Props / Emits / Slots / Expose
+   ```
+
+   Las cuatro secciones de API son **las mismas** que las de las fichas, con los mismos
+   datos: si una dice algo distinto, gana el código y se corrigen las tres. Las
+   **limitaciones** van también acá: es lo que evita que el consumidor codee a ciegas.
+   Modelo a copiar: `skills/use-comegen/references/button.md`.
+
+8. **Validar**:
 
 ```bash
 node scripts/check-docs.mjs   # tag↔ficha, @include sano, secciones obligatorias
