@@ -2,6 +2,7 @@
 import { useData } from "vitepress";
 import DefaultTheme from "vitepress/theme";
 import AppTopbar from "@/layouts/AppTopbar.vue";
+import DocsModeSelect from "./DocsModeSelect.vue";
 
 const { frontmatter } = useData();
 </script>
@@ -9,7 +10,11 @@ const { frontmatter } = useData();
 <template>
   <!-- Header propio del sitio (reemplaza el navbar de VitePress). Las páginas
        `standalone` (ej. la home) traen su propio layout. -->
-  <AppTopbar v-if="!frontmatter.standalone" fixed />
+  <AppTopbar v-if="!frontmatter.standalone" fixed>
+    <template #mode>
+      <DocsModeSelect />
+    </template>
+  </AppTopbar>
   <DefaultTheme.Layout />
 </template>
 

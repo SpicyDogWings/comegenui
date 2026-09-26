@@ -3,4 +3,4 @@ title: Pagination
 group: Controles
 ---
 
-<!--@include: ../../skills/use-comegen/componentes/cu-pagination.md-->
+<!--@include: ../../componentes/cu-pagination.md-->

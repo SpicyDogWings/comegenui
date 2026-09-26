@@ -3,4 +3,4 @@ title: Textarea
 group: Formularios
 ---
 
-<!--@include: ../../skills/use-comegen/componentes/cu-textarea.md-->
+<!--@include: ../../componentes/cu-textarea.md-->

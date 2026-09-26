@@ -3,4 +3,4 @@ title: SideOver
 group: Overlay
 ---
 
-<!--@include: ../../skills/use-comegen/componentes/cu-side-over.md-->
+<!--@include: ../../componentes/cu-side-over.md-->

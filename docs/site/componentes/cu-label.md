@@ -3,4 +3,4 @@ title: Label
 group: Formularios
 ---
 
-<!--@include: ../../skills/use-comegen/componentes/cu-label.md-->
+<!--@include: ../../componentes/cu-label.md-->

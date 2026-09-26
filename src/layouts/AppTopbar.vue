@@ -39,6 +39,7 @@ onBeforeUnmount(() => {
       <slot name="title" />
     </div>
     <div class="app-topbar-actions">
+      <slot name="mode" />
       <ThemeDropdown />
       <Badge
         color="neutral"
