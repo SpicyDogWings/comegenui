@@ -4,7 +4,8 @@ import { isAlign, isDateMode, isPosition } from '@/utils/validators'
 import Button from '../buttons/Button.vue'
 import Calendar from '../controls/Calendar.vue'
 import DualCalendar from '../controls/DualCalendar.vue'
-import DatePickerShell from './DatePickerShell.vue'
+import Dropdown from '../overlay/Dropdown.vue'
+import Label from './Label.vue'
 import type { DateRange } from '@/composables/useDateRange'
 import { formatDate, isMonthFormat, isYearFormat, normalizeDate, parseDate, type CalendarEvent } from '@/utils/date'
 
@@ -116,7 +117,7 @@ const emit = defineEmits<{
   (e: 'close'): void
 }>()
 
-const shellRef = ref<InstanceType<typeof DatePickerShell> | null>(null)
+const dropdownRef = ref<InstanceType<typeof Dropdown> | null>(null)
 
 // `dualCalendar` implica rango: el picker maneja range siempre que el dual
 // esté activo, aunque `mode` sea `single`.
@@ -233,21 +234,21 @@ function onSelectSingle(value: Date | DateRange) {
   emit('update:modelValue', value)
   emit('change', value)
   emit('select', value)
-  shellRef.value?.close()
+  dropdownRef.value?.close()
 }
 
 function goToday() {
   const now = normalizeDate(new Date())
   if (isRange.value) {
     setRange(now, now)
-    shellRef.value?.close()
+    dropdownRef.value?.close()
     return
   }
   selectedValue.value = now
   emit('update:modelValue', now)
   emit('change', now)
   emit('select', now)
-  shellRef.value?.close()
+  dropdownRef.value?.close()
 }
 
 /** Limpia la selección. En modo simple cierra el panel; en rango lo deja abierto. */
@@ -259,7 +260,7 @@ function clear() {
   selectedValue.value = null
   emit('update:modelValue', null)
   emit('change', null)
-  shellRef.value?.close()
+  dropdownRef.value?.close()
 }
 
 function onClose() {
@@ -294,11 +295,11 @@ function getEndDate(): Date | null {
 }
 
 /** Abre el panel. */
-function open() { shellRef.value?.open() }
+function open() { dropdownRef.value?.open() }
 /** Cierra el panel. */
-function close() { shellRef.value?.close() }
+function close() { dropdownRef.value?.close() }
 /** Alterna el panel. */
-function toggle() { shellRef.value?.toggle() }
+function toggle() { dropdownRef.value?.toggle() }
 
 defineExpose({
   open,
@@ -311,120 +312,201 @@ defineExpose({
   getEndDate,
   setRange,
   /** Indica si el panel está abierto. */
-  isOpen: () => shellRef.value?.isOpen() ?? false,
+  isOpen: () => dropdownRef.value?.isOpen() ?? false,
 })
 </script>
 
 <template>
-  <DatePickerShell
-    ref="shellRef"
-    :color="color"
-    :variant="variant"
-    :disabled="disabled"
-    :label="label"
-    :label-text="selectedLabel"
-    :position="position"
-    :align="align"
-    :fixed="fixed"
-    :panel-width="panelWidth"
-    @open="emit('open')"
-    @close="onClose"
-  >
-    <div class="cu-date-picker-panel">
-      <Calendar
-        v-if="!isRange"
-        :model-value="selectedValue"
-        :min="min"
-        :max="max"
-        :color="color"
-        :variant="calendarVariant"
-        :locale="locale"
-        :week-start="weekStart"
-        :year-navigation="yearNavigation"
-        :month-format="monthFormat"
-        :year-format="yearFormat"
-        :disabled="disabled"
-        :disabled-weekdays="disabledWeekdays"
-        :disabled-dates="disabledDates"
-        :events="events"
-        :grid="grid"
-        :border="border"
-        @select="onSelectSingle"
-      />
-      <Calendar
-        v-else-if="!dualCalendar"
-        mode="range"
-        :range-start="rangeStart"
-        :range-end="rangeEnd"
-        :min="min"
-        :max="max"
-        :color="color"
-        :variant="calendarVariant"
-        :locale="locale"
-        :week-start="weekStart"
-        :year-navigation="yearNavigation"
-        :month-format="monthFormat"
-        :year-format="yearFormat"
-        :disabled="disabled"
-        :disabled-weekdays="disabledWeekdays"
-        :disabled-dates="disabledDates"
-        :events="events"
-        :grid="grid"
-        :border="border"
-        @update:range-start="onRangeStart"
-        @update:range-end="onRangeEnd"
-        @change="onRangeChange"
-        @select="onRangeSelect"
-      />
-      <DualCalendar
-        v-else
-        :start-date="rangeStart"
-        :end-date="rangeEnd"
-        :min="min"
-        :max="max"
-        :color="color"
-        :variant="calendarVariant"
-        :locale="locale"
-        :week-start="weekStart"
-        :year-navigation="yearNavigation"
-        :month-format="monthFormat"
-        :year-format="yearFormat"
-        :disabled="disabled"
-        :disabled-weekdays="disabledWeekdays"
-        :disabled-dates="disabledDates"
-        :events="events"
-        :grid="grid"
-        :border="border"
-        @update:start-date="onRangeStart"
-        @update:end-date="onRangeEnd"
-        @change="onRangeChange"
-        @select="onRangeSelect"
-      />
-      <div v-if="showToday || clearable" class="cu-date-picker-footer">
+  <div class="cu-date-picker">
+    <Label v-if="label" :label="label" @click="open" />
+    <Dropdown
+      ref="dropdownRef"
+      :color="color"
+      :disabled="disabled"
+      :position="position"
+      :align="align"
+      :fixed="fixed"
+      :offset="4"
+      :panel-width="panelWidth"
+      @open="emit('open')"
+      @close="onClose"
+    >
+      <template #toggle="{ toggle }">
         <Button
-          v-if="showToday"
-          variant="ghost"
           :color="color"
-          class="cu-date-picker-footer-btn"
-          @click="goToday()"
+          :variant="variant"
+          :disabled="disabled"
+          class="cu-date-picker-toggle"
+          @click="toggle"
         >
-          Hoy
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="cu-date-picker-icon"
+          >
+            <path d="M8 2v4" />
+            <path d="M16 2v4" />
+            <rect width="18" height="18" x="3" y="4" rx="2" />
+            <path d="M3 10h18" />
+          </svg>
+          <span class="cu-date-picker-label">{{ selectedLabel }}</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="cu-date-picker-chevron"
+          >
+            <path d="m6 9 6 6 6-6" />
+          </svg>
         </Button>
-        <Button
-          v-if="clearable"
-          variant="ghost"
+      </template>
+
+      <div class="cu-date-picker-panel">
+        <Calendar
+          v-if="!isRange"
+          :model-value="selectedValue"
+          :min="min"
+          :max="max"
           :color="color"
-          class="cu-date-picker-footer-btn"
-          @click="clear()"
-        >
-          Limpiar
-        </Button>
+          :variant="calendarVariant"
+          :locale="locale"
+          :week-start="weekStart"
+          :year-navigation="yearNavigation"
+          :month-format="monthFormat"
+          :year-format="yearFormat"
+          :disabled="disabled"
+          :disabled-weekdays="disabledWeekdays"
+          :disabled-dates="disabledDates"
+          :events="events"
+          :grid="grid"
+          :border="border"
+          @select="onSelectSingle"
+        />
+        <Calendar
+          v-else-if="!dualCalendar"
+          mode="range"
+          :range-start="rangeStart"
+          :range-end="rangeEnd"
+          :min="min"
+          :max="max"
+          :color="color"
+          :variant="calendarVariant"
+          :locale="locale"
+          :week-start="weekStart"
+          :year-navigation="yearNavigation"
+          :month-format="monthFormat"
+          :year-format="yearFormat"
+          :disabled="disabled"
+          :disabled-weekdays="disabledWeekdays"
+          :disabled-dates="disabledDates"
+          :events="events"
+          :grid="grid"
+          :border="border"
+          @update:range-start="onRangeStart"
+          @update:range-end="onRangeEnd"
+          @change="onRangeChange"
+          @select="onRangeSelect"
+        />
+        <DualCalendar
+          v-else
+          :start-date="rangeStart"
+          :end-date="rangeEnd"
+          :min="min"
+          :max="max"
+          :color="color"
+          :variant="calendarVariant"
+          :locale="locale"
+          :week-start="weekStart"
+          :year-navigation="yearNavigation"
+          :month-format="monthFormat"
+          :year-format="yearFormat"
+          :disabled="disabled"
+          :disabled-weekdays="disabledWeekdays"
+          :disabled-dates="disabledDates"
+          :events="events"
+          :grid="grid"
+          :border="border"
+          @update:start-date="onRangeStart"
+          @update:end-date="onRangeEnd"
+          @change="onRangeChange"
+          @select="onRangeSelect"
+        />
+        <div v-if="showToday || clearable" class="cu-date-picker-footer">
+          <Button
+            v-if="showToday"
+            variant="ghost"
+            :color="color"
+            class="cu-date-picker-footer-btn"
+            @click="goToday()"
+          >
+            Hoy
+          </Button>
+          <Button
+            v-if="clearable"
+            variant="ghost"
+            :color="color"
+            class="cu-date-picker-footer-btn"
+            @click="clear()"
+          >
+            Limpiar
+          </Button>
+        </div>
       </div>
-    </div>
-  </DatePickerShell>
+    </Dropdown>
+  </div>
 </template>
 
 <style scoped>
+.cu-date-picker {
+  width: 100%;
+  outline: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--cu-space-sm);
+}
+
+.cu-date-picker :deep(.cu-dropdown) {
+  width: 100%;
+}
+
+.cu-date-picker-toggle {
+  width: 100%;
+  justify-content: space-between;
+  gap: var(--cu-space-md);
+  box-sizing: border-box;
+}
+
+.cu-date-picker-icon {
+  flex-shrink: 0;
+}
+
+.cu-date-picker-label {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  text-align: left;
+}
+
+.cu-date-picker-chevron {
+  transition: transform 200ms ease;
+  flex-shrink: 0;
+}
+
 .cu-date-picker-panel {
   display: flex;
   flex-direction: column;
