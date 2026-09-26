@@ -24,8 +24,10 @@ andá directo al paso que te falta.
 
 ## 1. Elegir el componente
 
-- `references/api-por-componente.md` lista cada tag, su `.umd.js`, su categoría, las
-  props que **sólo se pueden setear por JS** y sus eventos custom.
+- `references/componentes.md` es el **catálogo**: qué hace cada componente y qué **no**
+  puede hacer (límites), agrupado por categoría.
+- `references/api-por-componente.md` tiene los datos mecánicos del custom element: su
+  `.umd.js`, las props que **sólo van por JS** y sus eventos/métodos.
 - Detalle completo de la API:
   - custom element → `docs/componentes/<tag>.md`
   - Vue → `docs/componentes/vue/<kebab>.md`
@@ -78,8 +80,8 @@ tabla.compact = true;                                  // boolean también por p
 
 - Los booleanos funcionan por presencia: `disabled` = `true`, ausente = `false`.
 - Vue no tiene esta distinción: pasás todo por `:prop` (camelCase en JS, kebab en el template).
-- Para saber si una prop necesita JS, mirala en `references/api-por-componente.md`
-  (columna "props por JS") o en la ficha del componente.
+- Para saber si una prop necesita JS, mirala en `references/api-por-componente.md`, en
+  `references/componentes.md` o en la ficha del componente (columna "props por JS").
 
 ## 5. Escuchar eventos
 
@@ -124,13 +126,28 @@ picker.open();
 - El componente aparece en el HTML con el tag exacto (`cu-*`).
 - Si es una prop compleja, se asignó **después** de que el UMD esté cargado
   (sino el elemento todavía no existe).
-- El evento que esperás figura en `references/api-por-componente.md`.
+- El evento que esperás figura en `references/api-por-componente.md`; si el componente
+  tiene una limitación, está en `references/componentes.md`.
+
+## Instalar esta receta en otro proyecto
+
+Esta skill es texto: no hay nada que compilar, se copia la carpeta.
+
+1. Copiá `use-comegen/` a donde tu agente lea skills (por ejemplo
+   `.opencode/skills/use-comegen/` en tu proyecto).
+2. Copiá la lib: los `Cu*.umd.js` + `css/` del zip de ComegenUI, en ese orden
+   (`references/instalacion.md`).
+3. Usala nombrándola ("usá use-comegen para…") o directamente pidiendo el componente.
+
+El zip **no** trae esta skill ni las fichas: el detalle completo de la API de cada
+componente vive en el repo de ComegenUI, en `docs/componentes/`.
 
 ## Archivos de esta skill
 
 | Archivo | Cuándo leerlo |
 |---|---|
-| `references/api-por-componente.md` | Elegir componente, saber qué va por JS y qué eventos emite |
+| `references/componentes.md` | Elegir componente y saber qué puede y qué **no** puede hacer |
+| `references/api-por-componente.md` | Datos del CE: `.umd.js`, props por JS, eventos y métodos |
 | `references/instalacion.md` | Instalar/actualizar la lib y el CSS |
 | `references/theming.md` | Cambiar tema, colores, variantes, tokens |
 | `references/gotchas.md` | Atributo vs propiedad, eventos nativos, slots, rarezas |

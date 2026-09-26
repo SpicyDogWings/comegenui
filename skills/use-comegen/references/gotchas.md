@@ -19,7 +19,8 @@ va por **propiedad JS**, después de que el UMD esté cargado:
 <cu-select options="[{'value':'a'}]"></cu-select>  <!-- ❌ no parsea: llega el string -->
 ```
 
-Qué props son "sólo por JS" en cada componente: `references/api-por-componente.md`.
+Qué props son "sólo por JS" en cada componente: `references/api-por-componente.md`; los
+límites de cada uno (qué no puede hacer), en `references/componentes.md`.
 
 ## 2. `modelValue` es controlado
 
