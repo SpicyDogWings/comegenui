@@ -3,12 +3,6 @@ import { type PropType } from "vue";
 import Label from "../../form/Label.vue";
 
 const props = defineProps({
-  /** Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) */
-  theme: {
-    type: String,
-    required: false,
-    default: "",
-  },
   /** ID del elemento a enfocar al hacer clic (atributo HTML `for`) */
   for: {
     type: String,
@@ -41,7 +35,7 @@ const props = defineProps({
     :for="props.for"
     :label="props.label"
     :color="props.color"
-    :hightContrast="props.hightContrast"
+    :hight-contrast="props.hightContrast"
   >
     <!-- Contenido asociado (input, checkbox, etc.) -->
     <slot></slot>

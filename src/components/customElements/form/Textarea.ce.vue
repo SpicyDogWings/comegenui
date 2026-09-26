@@ -4,12 +4,6 @@ import { isFieldVariant } from '@/utils/validators'
 import Textarea from "../../form/Textarea.vue";
 
 const props = defineProps({
-  /** Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) */
-  theme: {
-    type: String,
-    required: false,
-    default: "",
-  },
   /** Valor controlado */
   modelValue: {
     type: String,
@@ -59,12 +53,6 @@ const props = defineProps({
   },
   /** Desactiva el redimensionado manual (atributo HTML: `no-resize`) */
   noResize: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
-  /** Modo de alto contraste para el texto */
-  hightContrast: {
     type: Boolean,
     required: false,
     default: false,

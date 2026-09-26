@@ -3,12 +3,6 @@ import { ref, watch, getCurrentInstance, type PropType } from "vue";
 import Input from "../../form/Input.vue";
 
 const props = defineProps({
-  /** Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) */
-  theme: {
-    type: String,
-    required: false,
-    default: "",
-  },
   /** Valor controlado */
   modelValue: {
     type: String,
@@ -55,7 +49,12 @@ const props = defineProps({
     required: false,
     default: false,
   },
-
+  /** Tamaño: `sm`, `md`, `lg` */
+  size: {
+    type: String as PropType<'sm' | 'md' | 'lg'>,
+    required: false,
+    default: "md",
+  },
 });
 
 const innerValue = ref(props.modelValue);
@@ -102,7 +101,7 @@ defineExpose({
     :placeholder="props.placeholder"
     :disabled="props.disabled"
     :read-only="props.readOnly"
-
+    :size="props.size"
     :start-value="props.startValue"
     :model-value="innerValue"
   />

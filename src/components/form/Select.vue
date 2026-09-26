@@ -174,7 +174,7 @@ function onFocusOut(e: FocusEvent) {
 defineExpose({
   get, set, reset, focus,
   /** Indica si el panel está abierto. */
-  isOpen: () => dropdownRef.value?.isOpen || false,
+  isOpen: () => dropdownRef.value?.isOpen() ?? false,
   /** Devuelve la opción seleccionada o null. */
   selectedItem: () => props.options.find(o => o.value === selectedValue.value) || null,
 });

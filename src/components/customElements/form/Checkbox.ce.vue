@@ -51,12 +51,12 @@ defineExpose({ get, set, reset, focus });
 <template>
   <Checkbox
     ref="checkboxRef"
-    :modelValue="props.modelValue"
+    :model-value="props.modelValue"
     :color="props.color"
     :size="props.size"
     :disabled="props.disabled"
     :label="props.label"
-    @update:modelValue="ceEmit('update:modelValue', $event)"
+    @update:model-value="ceEmit('update:modelValue', $event)"
     @change="ceEmit('change', $event)"
   />
 </template>

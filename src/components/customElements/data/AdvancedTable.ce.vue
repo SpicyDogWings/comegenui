@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, getCurrentInstance, type Component, type PropType } from "vue";
-import Table from "../../data/AdvancedTable.vue";
+import AdvancedTable from "../../data/AdvancedTable.vue";
 
 const instance = getCurrentInstance();
 function ceEmit(event: string, payload: unknown) {
@@ -64,12 +64,6 @@ interface Column {
 }
 
 const props = defineProps({
-  /** Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) */
-  theme: {
-    type: String,
-    required: false,
-    default: "",
-  },
   /** Definición de columnas (ver [Interfaz de columna](#interfaz-de-columna)). Se asigna como propiedad JS */
   columns: {
     type: Array as () => Column[],
@@ -142,9 +136,15 @@ const props = defineProps({
   rowDisabled: { type: [Boolean, Function] as PropType<boolean | ((row: Record<string, any>) => boolean)>, required: false, default: false },
   /** Filas de footer (ver [Footer (API programática)](#footer-api-programática)). Se asigna como propiedad JS */
   footer: { type: Array as () => FooterRow[], required: false, default: () => [] },
+  /** Alto máximo del área scrolleable (CSS, ej. `40rem`). Atributo HTML: `table-max-height` */
+  tableMaxHeight: { type: String, required: false, default: "" },
+  /** Editor visible siempre en las celdas editables, sin el lápiz (atributo HTML: `inline-editing`) */
+  inlineEditing: { type: Boolean, required: false, default: false },
+  /** Filas más compactas */
+  compact: { type: Boolean, required: false, default: false },
 });
 
-const tableRef = ref<InstanceType<typeof Table> | null>(null);
+const tableRef = ref<InstanceType<typeof AdvancedTable> | null>(null);
 
 defineExpose({
   updateRow: (rowIndex: number, newData: Record<string, any>) => tableRef.value?.updateRow(rowIndex, newData),
@@ -157,7 +157,7 @@ defineExpose({
 </script>
 
 <template>
-  <Table
+  <AdvancedTable
     ref="tableRef"
     :columns="props.columns"
     :data="props.data"
@@ -177,32 +177,28 @@ defineExpose({
     :actions="props.actions"
     :row-disabled="props.rowDisabled"
     :footer="props.footer"
+    :table-max-height="props.tableMaxHeight"
+    :inline-editing="props.inlineEditing"
+    :compact="props.compact"
 
     @update:current-page="ceEmit('update:currentPage', $event)"
     @update:items-per-page="ceEmit('update:itemsPerPage', $event)"
     @update:search="ceEmit('update:search', $event)"
+    @row-click="ceEmit('row-click', $event)"
+    @row-dblclick="ceEmit('row-dblclick', $event)"
+    @cell-click="ceEmit('cell-click', $event)"
     @edit-start="ceEmit('edit-start', $event)"
     @edit-save="ceEmit('edit-save', $event)"
     @edit-cancel="ceEmit('edit-cancel', $event)"
     @edit-error="ceEmit('edit-error', $event)"
   >
-    <!-- Header slots -->
-    <template #header="{ column }">
-      <!-- Personaliza el header completo (todas las columnas) -->
-      <slot name="header" :column="column" :color="props.color" :variant="props.variant">
-        <slot :name="`header-${column.key}`" :column="column" :color="props.color" :variant="props.variant">
-          {{ column.label || column.key }}
-        </slot>
-      </slot>
+    <!-- Todos los slots del host se reenvían tal cual: `search` (scoped: `query`
+         y `update`), `template`, `cell-{key}`, `header-{key}`, `empty` y `footer`.
+         El `AdvancedTable` interno los pasa al `Table` que renderiza las filas. -->
+    <template v-for="(_, slotName) in $slots" v-slot:[slotName]="slotProps">
+      <slot :name="slotName" v-bind="slotProps"></slot>
     </template>
-
-    <!-- Empty slot -->
-    <template #empty>
-      <!-- Contenido cuando no hay datos (override del texto `empty`) -->
-      <slot name="empty">{{ props.empty || "No hay datos que mostrar" }}</slot>
-    </template>
-
-  </Table>
+  </AdvancedTable>
 </template>
 
 <style scoped>

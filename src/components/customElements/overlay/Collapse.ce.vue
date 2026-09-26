@@ -11,6 +11,12 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  /** Ícono del trigger (SVG/HTML) */
+  icon: {
+    type: String,
+    required: false,
+    default: "",
+  },
   defaultOpen: {
     type: Boolean,
     default: false,
@@ -53,6 +59,7 @@ defineExpose({ open, close, toggle, isOpen });
   <Collapse
     ref="collapseRef"
     :label="props.label"
+    :icon="props.icon"
     :default-open="props.defaultOpen"
     :color="props.color"
     @toggle="ceEmit('toggle', $event)"

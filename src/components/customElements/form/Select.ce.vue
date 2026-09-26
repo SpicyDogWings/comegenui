@@ -12,8 +12,6 @@ interface SelectOption {
 }
 
 const props = defineProps({
-  /** Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) */
-  theme: { type: String, required: false, default: "" },
   /** Valor seleccionado */
   modelValue: { type: String, required: false, default: "" },
   /** Opciones del select (ver abajo). Se asigna como propiedad JS */
@@ -49,8 +47,6 @@ const props = defineProps({
   disabled: { type: Boolean, required: false, default: false },
   /** Si es `true`, el dropdown usa `position: fixed` en vez de absoluto */
   fixed: { type: Boolean, required: false, default: false },
-  /** Modo de alto contraste para el texto */
-  hightContrast: { type: Boolean, required: false, default: false },
   /** Activa búsqueda por teclado (estilo select nativo: escribir hace scroll al match) */
   searchEnabled: { type: Boolean, required: false, default: false },
   /** Modo de coincidencia: `startsWith` (solo al inicio del label) o `includes` (en cualquier parte) */
@@ -102,7 +98,7 @@ defineExpose({
   set: (val: string) => selectRef.value?.set(val),
   reset: () => selectRef.value?.reset(),
   focus: () => selectRef.value?.focus(),
-  isOpen: () => selectRef.value?.isOpen || false,
+  isOpen: () => selectRef.value?.isOpen() ?? false,
   selectedItem: () => selectRef.value?.selectedItem || null,
 });
 </script>
@@ -113,7 +109,6 @@ defineExpose({
     :color="props.color"
     :variant="props.variant"
     :disabled="props.disabled"
-    :hight-contrast="props.hightContrast"
     :placeholder="props.placeholder"
     :placeholder-wrap="props.placeholderWrap"
     :position="props.position"

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Tooltip from "../../overlay/Tooltip.vue";
 import { initTokens } from "@/plugins/cu-tokens/css";
-import type { PropType } from "vue";
+import { computed, useSlots, type PropType } from "vue";
 
 initTokens();
 
@@ -21,6 +21,11 @@ const props = defineProps({
   /** Deshabilita el tooltip (no se muestra) */
   disabled: { type: Boolean, default: false },
 });
+
+const slots = useSlots();
+// El slot `content` del `.vue` tiene fallback a `text`: sólo se forwardea si el
+// host realmente lo trae; si no, un slot vacío pisaría el fallback.
+const hasContent = computed(() => !!slots.content);
 </script>
 
 <template>
@@ -35,5 +40,8 @@ const props = defineProps({
   >
     <!-- El elemento que dispara el tooltip al hacer hover -->
     <slot></slot>
+    <template v-if="hasContent" #content>
+      <slot name="content"></slot>
+    </template>
   </Tooltip>
 </template>

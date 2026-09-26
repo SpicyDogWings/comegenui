@@ -65,18 +65,18 @@ defineExpose({ get, set, reset, focus, trigger });
 <template>
   <FileInputZone
     ref="zoneRef"
-    :modelValue="props.modelValue"
+    :model-value="props.modelValue"
     :color="props.color"
     :placeholder="props.placeholder"
     :disabled="props.disabled"
-    :readOnly="props.readOnly"
+    :read-only="props.readOnly"
     :accept="props.accept"
     :multiple="props.multiple"
-    :maxSize="props.maxSize"
+    :max-size="props.maxSize"
     :directory="props.directory"
-    :directoryDeep="props.directoryDeep"
-    :maxHeight="props.maxHeight"
-    @update:modelValue="ceEmit('update:modelValue', $event)"
+    :directory-deep="props.directoryDeep"
+    :max-height="props.maxHeight"
+    @update:model-value="ceEmit('update:modelValue', $event)"
   />
 </template>
 

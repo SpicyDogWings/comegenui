@@ -4,8 +4,6 @@ import { isAlign, isColor, isPositionVertical, isTextAlign, isVariantFull } from
 import DropdownMenu from "../../controls/DropdownMenu.vue";
 
 const props = defineProps({
-  /** Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) */
-  theme: { type: String, required: false, default: "" },
   /** Color semántico del toggle: `primary`, `neutral`, `success`, `warning`, `danger` */
   color: {
     type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
@@ -53,8 +51,6 @@ const props = defineProps({
   items: { type: Array, required: false, default: () => [] },
 });
 
-const emit = defineEmits(["open", "close"]);
-
 const resolvedItems = computed(() =>
   (props.items || []).map((item: any) => ({
     ...item,
@@ -81,6 +77,17 @@ function hasToggleContent(): boolean {
   return !!hostElement()?.querySelector('[slot="toggle"]');
 }
 
+function ceEmit(event: string, payload?: unknown) {
+  const host = hostElement();
+  if (host) {
+    host.dispatchEvent(new CustomEvent(event, {
+      detail: payload,
+      bubbles: true,
+      composed: true,
+    }));
+  }
+}
+
 const hasToggleSlot = ref(hasToggleContent());
 
 let observer: MutationObserver | null = null;
@@ -103,7 +110,7 @@ defineExpose({
   open: () => dropdownRef.value?.open(),
   close: () => dropdownRef.value?.close(),
   toggle: () => dropdownRef.value?.toggle(),
-  isOpen: () => dropdownRef.value?.isOpen || false,
+  isOpen: () => dropdownRef.value?.isOpen() ?? false,
 });
 </script>
 
@@ -120,8 +127,8 @@ defineExpose({
     :fixed="props.fixed"
     :offset="props.offset"
     :items="resolvedItems"
-    @open="emit('open')"
-    @close="emit('close')"
+    @open="ceEmit('open')"
+    @close="ceEmit('close')"
   >
     <template v-if="hasToggleSlot" #toggle>
       <!-- Reemplaza el botón toggle (sintaxis HTML `slot="toggle"`) -->

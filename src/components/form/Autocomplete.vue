@@ -115,7 +115,7 @@ function focus() { inputRef.value?.focus(); }
 defineExpose({
   get, set, reset, focus,
   /** Indica si el panel está abierto. */
-  isOpen: () => dropdownRef.value?.isOpen || false,
+  isOpen: () => dropdownRef.value?.isOpen() ?? false,
   /** Devuelve el item seleccionado o null. */
   selectedItem: () => selectedItem.value,
 });

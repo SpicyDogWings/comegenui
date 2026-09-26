@@ -1,14 +1,8 @@
 <script setup lang="ts">
 import Pagination from "../../controls/Pagination.vue";
-import type { PropType } from "vue";
+import { getCurrentInstance, type PropType } from "vue";
 
 const props = defineProps({
-  /** Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) */
-  theme: {
-    type: String,
-    required: false,
-    default: "",
-  },
   /** Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` */
   color: {
     type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
@@ -63,31 +57,35 @@ const props = defineProps({
     required: false,
     default: false,
   },
-  /** Modo de alto contraste */
-  hightContrast: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
 });
 
-const emit = defineEmits(["update:currentPage", "update:itemsPerPage"]);
+const instance = getCurrentInstance();
+function ceEmit(event: string, payload: unknown) {
+  const el = instance?.vnode.el as HTMLElement | null;
+  const host = el?.getRootNode()?.host || el;
+  if (host) {
+    host.dispatchEvent(new CustomEvent(event, {
+      detail: payload,
+      bubbles: true,
+      composed: true,
+    }));
+  }
+}
 </script>
 
 <template>
   <Pagination
     :color="props.color"
     :variant="props.variant"
-    :currentPage="props.currentPage"
-    :totalPages="props.totalPages"
-    :totalItems="props.totalItems"
-    :itemsPerPage="props.itemsPerPage"
-    :showPageSize="props.showPageSize"
-    :pageSizeOptions="props.pageSizeOptions"
-    :showFirstAndLast="props.showFirstAndLast"
-    :hight-contrast="props.hightContrast"
-    @update:currentPage="emit('update:currentPage', $event)"
-    @update:itemsPerPage="emit('update:itemsPerPage', $event)"
+    :current-page="props.currentPage"
+    :total-pages="props.totalPages"
+    :total-items="props.totalItems"
+    :items-per-page="props.itemsPerPage"
+    :show-page-size="props.showPageSize"
+    :page-size-options="props.pageSizeOptions"
+    :show-first-and-last="props.showFirstAndLast"
+    @update:current-page="ceEmit('update:currentPage', $event)"
+    @update:items-per-page="ceEmit('update:itemsPerPage', $event)"
   />
 </template>
 

@@ -59,15 +59,15 @@ defineExpose({ get, set, reset, focus, trigger });
 <template>
   <FileInput
     ref="fileInputRef"
-    :modelValue="props.modelValue"
+    :model-value="props.modelValue"
     :color="props.color"
     :variant="props.variant"
     :placeholder="props.placeholder"
     :disabled="props.disabled"
-    :readOnly="props.readOnly"
+    :read-only="props.readOnly"
     :accept="props.accept"
-    :maxSize="props.maxSize"
-    @update:modelValue="ceEmit('update:modelValue', $event)"
+    :max-size="props.maxSize"
+    @update:model-value="ceEmit('update:modelValue', $event)"
   />
 </template>
 
