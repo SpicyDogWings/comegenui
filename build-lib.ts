@@ -149,8 +149,8 @@ async function createZip() {
 
   archive.pipe(output)
 
-  // La salida final ES el zip: los archivos de la lib + el folder de la skill
-  // de uso, al mismo nivel (sin dist/, sin docs/, sin zip anidado).
+  // La salida final ES el zip: sólo los archivos de la lib, al mismo nivel
+  // (sin dist/, sin docs/, sin zip anidado).
   // Add all UMD files (raíz del zip)
   const umdFiles = fs.readdirSync(outDir).filter(f => f.endsWith('.umd.js'))
   for (const file of umdFiles) {
@@ -167,40 +167,6 @@ async function createZip() {
   const readmePath = resolve(outDir, 'README-BUILD.md')
   if (fs.existsSync(readmePath)) {
     archive.file(readmePath, { name: 'README-BUILD.md' })
-  }
-
-  // Add skill de uso (SKILL.md + componentes/) — SIEMPRE en el zip, al lado de
-  // los archivos de la lib. Solo la de uso; no la de desarrollo ni documentar.
-  const docsDir = resolve(__dirname, 'docs/skills/use-comegen')
-  if (fs.existsSync(docsDir)) {
-    const skillFiles = fg.sync('**/*', {
-      cwd: docsDir,
-      onlyFiles: true,
-      dot: false,
-    })
-    for (const rel of skillFiles) {
-      archive.file(resolve(docsDir, rel), { name: `use-comegen/${rel}` })
-    }
-    console.log('📚 Skill de uso agregada al zip: use-comegen/')
-  } else {
-    console.log('⚠️  docs/skills/use-comegen no encontrada, se omite del zip')
-  }
-
-  // Add update.sh / update.ps1 (actualizador del proyecto huésped) — SIEMPRE en el zip
-  const updateSh = resolve(__dirname, 'update.sh')
-  if (fs.existsSync(updateSh)) {
-    archive.file(updateSh, { name: 'update.sh' })
-    console.log('🔁 update.sh agregado al zip')
-  }
-  const updatePs1 = resolve(__dirname, 'update.ps1')
-  if (fs.existsSync(updatePs1)) {
-    archive.file(updatePs1, { name: 'update.ps1' })
-    console.log('🔁 update.ps1 agregado al zip')
-  }
-  const updateBat = resolve(__dirname, 'update.bat')
-  if (fs.existsSync(updateBat)) {
-    archive.file(updateBat, { name: 'update.bat' })
-    console.log('🔁 update.bat agregado al zip')
   }
 
   await archive.finalize()

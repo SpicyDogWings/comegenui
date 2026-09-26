@@ -1,6 +1,6 @@
 # AGENTS.md — Arquitectura de Componentes ComegenUI
 
-> **Para desarrollar componentes**, seguí la estructura de 3 archivos de abajo (componente `.vue` + wrapper `.ce.vue` + entry `lib/`), documentá con la skill `comegen-ui-docs` y validá con el gate local `./scripts/preflight.sh`. Consumir la lib en otro proyecto: skill de uso `comegen-ui`.
+> **Para desarrollar componentes**, seguí la estructura de 3 archivos de abajo (componente `.vue` + wrapper `.ce.vue` + entry `lib/`), documentá con la skill `comegen-ui-docs` y validá con el gate local `./scripts/preflight.sh`. Consumir la lib en otro proyecto: skill de uso `use-comegen` (`.opencode/skills/use-comegen/`, no viaja en el zip).
 
 ## Estructura de directorios
 
@@ -20,8 +20,13 @@ src/
 └── utils/                                 # Utilidades (getHostTheme, palette, fileIcons)
 
 docs/
-├── site/                                  # Sitio VitePress (páginas a mano + fichas incluidas)
-└── skills/use-comegen/                    # Skill de uso (SKILL.md + fichas `cu-*.md`, fuente de verdad)
+├── componentes/                           # FICHAS (fuente de verdad de la API, a mano)
+│   ├── <tag>.md                           #   custom element (vanilla)
+│   ├── vue/<kebab>.md                     #   componente Vue
+│   └── README.md                          #   índice de fichas
+├── site/                                  # Sitio VitePress (páginas a mano + ficha incluida)
+├── notes/                                 # Notas internas de deuda/decisión
+└── skills/generate-release/               # Skill de release (dev, no viaja en el zip)
 ```
 
 Sin pipeline de extracción: las fichas y las páginas se escriben a mano (las mantiene el agente
@@ -231,7 +236,7 @@ Tokens compartidos: tipografía, spacing, border-radius, shadows, borders.
 - `UnoCSS({ mode: "shadow-dom" })`
 - Genera `dist/css/themes.css` + `dist/css/{theme}.css`
 - Crea zip versionado: `comegenui-v{version}.zip`
-- **El zip SIEMPRE incluye la skill de uso** `use-comegen/` (`SKILL.md` + `componentes/`) al lado de los archivos de la lib — viaja con la lib para que los agentes del proyecto consumidor tengan la doc. Solo la de uso; no la de desarrollo ni la de documentar. Incluye también `update.sh` (Linux/macOS: `./update.sh`), `update.bat` (Windows: `update.bat` — doble clic o desde cmd, evade ExecutionPolicy) y `update.ps1` (alternativa PowerShell: `.\update.ps1`) — actualizadores del proyecto huésped que además instalan la skill de uso en `.agents/skills/` del proyecto. Los tres aceptan `--only`/`-Only CuX[,CuY]` (alias `-o`) para actualizar solo algunos componentes: sin esa opción reemplazan toda la carpeta de forma atómica; con ella copian únicamente los UMD elegidos + su doc (`use-comegen/componentes/cu-*.md`), sin tocar `css/themes.css` ni el resto
+- **El zip lleva SOLO la lib**: los `Cu*.umd.js` + `css/` + `README-BUILD.md`. No incluye documentación (vive en `docs/componentes/`), ni skill, ni updaters (los `update.sh`/`.ps1`/`.bat` se eliminaron: la instalación es manual, descomprimir el zip).
 
 ### Tests y preflight
 
@@ -254,7 +259,7 @@ Tokens compartidos: tipografía, spacing, border-radius, shadows, borders.
 10. `hightContrast` es el nombre correcto del prop (typo persistente en todo el codebase)
 11. **Creá ramas solo cuando corresponde, no a cada rato.** Creá una rama nueva **solo cuando la rama base es `main`** y la tarea es una feature, fix, docs o tests con entidad propia (ej: `feat/x`, `fix/x`, `docs/x`, `test/x`). **Si ya estás trabajando en una rama (base ≠ `main`), NO crees otra rama** salvo que el usuario lo pida explícitamente — trabajá sobre la rama actual. `main` solo recibe merges.
 12. **Validadores de props:** usá los compartidos de `src/utils/validators.ts` (`validator: isColor`, `isSize`, …) en vez de repetir el array inline. Mantené la **unión inline en `PropType<...>`** (convención del repo: la ficha se lee sin saltar a un alias). Los formatos de mes/año viven en `src/utils/date.ts` (`isMonthFormat`/`isYearFormat`).
-13. **Docs a mano:** cada componente público tiene **ficha** (`docs/skills/use-comegen/componentes/<tag>.md`, viaja en el zip) y **página** (`docs/site/componentes/<slug>.md`: frontmatter `title`/`group`, `<!--@include-->` de la ficha y demos `<ClientOnly>`). No hay generación: si cambiás el componente, actualizá las dos. `scripts/check-docs.mjs` valida existencia y frontmatter, no contenido.
+13. **Docs a mano (dos fichas por componente):** cada componente tiene la **ficha Vue** (`docs/componentes/vue/<kebab>.md`: props, emits, slots, expose) y, si `src/lib/**/*.ts` lo registra como custom element, además la **ficha vanilla** (`docs/componentes/<tag>.md`: atributos, eventos, slots, métodos). Las **páginas** van en dos familias por ruta: `docs/site/componentes/<tag>.md` (vanilla) y `docs/site/componentes/vue/<kebab>.md` (Vue), con el **mismo `title`** (el select de modo del topbar encuentra la contraparte comparando títulos) y su `group`, cada una con `<!--@include-->` de su ficha. El sidebar se arma por prefijo de ruta (`buildSidebars()` en `.vitepress/sidebar.ts`), así que queda filtrado por modo sin JS; los demos `<ClientOnly>` van en la página Vue. Lo único en runtime es el redirect pre-paint del `<head>` (`transformHead` en `config.ts`) que respeta la preferencia guardada. No hay generación: si cambiás el componente, actualizá fichas + páginas + el índice `docs/componentes/README.md`. `scripts/check-docs.mjs` valida existencia, `@include` y secciones obligatorias — no contenido.
 
 ---
 

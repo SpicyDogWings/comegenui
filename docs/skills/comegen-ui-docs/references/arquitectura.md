@@ -62,9 +62,9 @@ No todos los componentes viven en la raíz de `src/components/`:
 | `src/components/form/` | Componentes de formulario (inputs, controles) | `Autocomplete`, `Checkbox`, `Input`, `Label`, `Switch`, `Textarea` |
 | `src/components/data/` | Componentes de datos (tablas, listas) | `Table` |
 | `src/components/labs/` | Componentes en experimentación, **sí se distribuyen** | `Select` |
-| `src/components/archived/` | Componentes retirados, **se siguen distribuyendo** (ver `doc/notes/01-build-glob.md`) | `SelectNative` |
+| `src/components/archived/` | Componentes retirados, **se siguen distribuyendo** (ver `docs/notes/01-build-glob.md`) | `SelectNative` |
 
-> **Atención:** `labs/` y `archived/` **sí compilan a UMD** (ver `build-libs.ts`). No asumas que un componente "archivado" no se distribuye.
+> **Atención:** el build toma `src/lib/**/*.ts` (un entry por componente registrado). Si un componente no tiene entry, **no** se distribuye. `archived/` y `labs/` no se compilan salvo que tengan su entry en `src/lib`.
 
 ## Ejemplo: el caso especial de `DropdownMenu`
 

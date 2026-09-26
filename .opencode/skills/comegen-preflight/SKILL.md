@@ -24,8 +24,9 @@ El script corre, en orden y cortando al primer fallo:
    *nuevos* respecto de esa cifra (el repo arrastra deuda vieja).
 2. **tests unitarios** (`vitest run`).
 3. **gate de docs** (`node scripts/check-docs.mjs`): cada tag definido en `src/lib/**/*.ts` tiene
-   ficha en `docs/skills/use-comegen/componentes/` y página en `docs/site/componentes/` con
-   `title`/`group` en el frontmatter.
+   ficha en `docs/componentes/` y página en `docs/site/componentes/` con `title`/`group`; cada
+   `@include` apunta a una ficha existente, cada ficha se incluye una sola vez y tiene sus
+   secciones obligatorias.
 
 Flags: `--no-typecheck` y `--no-tests` saltean los dos primeros pasos.
 

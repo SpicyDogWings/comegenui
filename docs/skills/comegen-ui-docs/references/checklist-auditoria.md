@@ -15,8 +15,8 @@ Usá esta lista cada vez que revises un `.md` contra su `.ce.vue`. Marcar cada �
 
 - [ ] El título del `.md` es `# \`<cu-xxx>\`` con el tag correcto (verificar en `.ts`).
 - [ ] El archivo se llama `cu-xxx.md` (kebab-case, igual que el tag).
-- [ ] El archivo está en `.opencode/skills/comegen-ui/componentes/`.
-- [ ] Hay un link `[← Volver](../SKILL.md)` después de la descripción.
+- [ ] El archivo está en `docs/componentes/` (custom element) o `docs/componentes/vue/` (Vue).
+- [ ] Hay un link `[← Volver](../README.md)` después de la descripción.
 - [ ] Hay un `---` separando encabezado del cuerpo.
 - [ ] La descripción es funcional (1 línea), no técnica.
 
@@ -100,8 +100,11 @@ Para **cada** slot listado, verificar:
 
 ### Slots forwarded (caso `<cu-table>`)
 
-- [ ] `<cu-table>` solo forwardea: `header`, `header-{key}`, `empty`. Verificar que no se listen `cell-{key}` ni `search`.
-- [ ] Si aparecen `cell-{key}` o `search`, agregar advertencia de que no funcionan vía el `.ce.vue`.
+- [ ] `<cu-table>` reenvía **todos** los slots del host al `AdvancedTable` (passthrough con
+      `v-for` sobre `$slots`): `search` (scoped), `template`, `cell-{key}`, `header-{key}`,
+      `empty`, `footer`. Verificar que estén listados.
+- [ ] Si aparecen slots dinámicos (`header-{key}`, `cell-{key}`, `search`), el `.ce.vue` los
+      reenvía (passthrough) y están listados.
 
 ---
 
@@ -133,23 +136,19 @@ Para **cada** método listado, verificar:
 - [ ] La columna "Default" de `variant` en la tabla de props coincide con el `default` del `.ce.vue`.
 - [ ] Los valores válidos de `variant` en la descripción coinciden con el `validator` del `.ce.vue` (si lo hay).
 - [ ] Si el `.ce.vue` no tiene `validator` para `variant` (caso de `<cu-dropdown-menu>`), la doc debe aclarar que pasa por defecto al `Button` interno.
-- [ ] La tabla de variantes en `SKILL.md` está sincronizada con lo que dice cada `.md`.
-
-### Tabla matriz de `SKILL.md`
-
-- [ ] Las celdas de la matriz de `SKILL.md` reflejan los validadores reales de cada `.ce.vue`.
-- [ ] Los defaults de `variant` por componente están en la tabla de `SKILL.md`.
+- [ ] La tabla de defaults/validadores de `variant` de la ficha coincide con el `default` real
+      (no hay matriz central: cada ficha dice lo suyo).
 
 ---
 
-## 7. Ejemplos de uso (dos vistas)
+## 7. Ejemplos de uso (una forma por archivo)
 
-- [ ] Hay al menos un ejemplo vanilla (`body`) con `<script src="dist/...">`.
-- [ ] Hay al menos un ejemplo Vue (`bodyVue`) con `<script setup lang="ts">` + `<template>` e import del `.vue` real (`@/components/...`).
-- [ ] Cada cuerpo usa **una sola** forma: `body` no importa Vue ni usa `<template>`; `bodyVue` no usa `<script src>` ni `document.getElementById`.
-- [ ] Toda sección con bloques de código trae `bodyVue` (si falta, se omite de la vista Vue).
-- [ ] Si hay props complejas (arrays/objetos), `body` las asigna con `element.property = ...` (no como atributo) y `bodyVue` con `v-bind`/`:prop`.
-- [ ] Si hay eventos, `body` usa `addEventListener` con `e.detail` y `bodyVue` usa `@evento`.
+- [ ] Hay al menos un ejemplo vanilla (ficha del custom element) con `<script src="dist/...">`.
+- [ ] En la ficha Vue hay al menos un ejemplo con `<script setup lang="ts">` + `<template>` e import del `.vue` real (`@/components/...`).
+- [ ] Cada archivo usa **una sola** forma: la ficha vanilla no importa Vue ni usa `<template>`; la ficha Vue no usa `<script src>` ni `document.getElementById`.
+- [ ] Las secciones curadas están en las **dos** fichas, cada una en su forma (no se duplica el mismo bloque).
+- [ ] Si hay props complejas (arrays/objetos), la ficha vanilla las asigna con `element.property = ...` (no como atributo) y la Vue con `:prop`.
+- [ ] Si hay eventos, la ficha vanilla usa `addEventListener` con `e.detail` y la Vue `@evento`.
 - [ ] Los ejemplos son copy-pasteables (sin partes truncadas con `...` sin contexto).
 
 ---
@@ -162,15 +161,15 @@ Para **cada** método listado, verificar:
 - [ ] Sin links a archivos del código fuente.
 - [ ] Las props booleanas tienen nota sobre el uso sin valor en HTML.
 - [ ] Las props `array`/`object` tienen nota sobre asignación como propiedad JS.
-- [ ] En `body` los slots usan `slot="nombre"` (HTML nativo); en `bodyVue` usan `<template #nombre>`.
+- [ ] En la ficha vanilla los slots usan `slot="nombre"` (HTML nativo); en la Vue `<template #nombre>`.
 
 ---
 
-## 9. Verificación cruzada con `SKILL.md`
+## 9. Verificación cruzada con el índice
 
-- [ ] El componente está listado en el índice de `SKILL.md`.
-- [ ] El nombre del tag en `SKILL.md` coincide con el del archivo `.ts`.
-- [ ] El tamaño de bundle en `SKILL.md` (si está) coincide aproximadamente con el real (puede ser aproximado).
+- [ ] El componente está listado en `docs/componentes/README.md` (ficha vanilla **y** ficha Vue).
+- [ ] El tag de la ficha coincide con el del archivo `.ts` (`customElements.define`).
+- [ ] La ficha vanilla y la ficha Vue existen y comparten el `title` de la página del sitio.
 
 ---
 
@@ -187,7 +186,7 @@ Para **cada** método listado, verificar:
 
 Si marcaste todas las casillas, el `.md` está alineado con el `.ce.vue`.
 
-Si encontraste discrepancias, **el `.md` se corrige**, no el `.ce.vue` (salvo que el `.ce.vue` tenga un bug real, lo cual se registra en `doc/notes/`).
+Si encontraste discrepancias, **la ficha se corrige**, no el `.ce.vue` (salvo que el `.ce.vue` tenga un bug real: se arregla el wrapper y se anota en `docs/notes/`).
 
 ## Resumen rápido por componente
 

@@ -14,7 +14,7 @@ Reglas que aplican a **todos** los `.md` de la skill `comegen-ui`. Cuando docume
 
 Descripción corta (1 línea) de qué hace el componente.
 
-[← Volver](../SKILL.md)
+[← Volver](../README.md)
 
 ---
 ```
@@ -30,54 +30,34 @@ Orden de la ficha (omití las que no apliquen) — así están las fichas actual
 
 1. **Uso en HTML plano** — al menos un ejemplo mínimo, con `<script src="dist/...">`.
 2. **Secciones específicas del componente** (ej: "Variantes", "Tamaños", "Posicionamiento" en Select).
-3. **`## Vista Vue`** — las mismas secciones en su forma Vue.
-4. **Tablas de API al final**: `## Props`, `## Eventos`, `## Slots`, `## Métodos expuestos` (con
-   `Ninguno.` si no hay filas).
+3. **Tablas de API al final**: `## Atributos`, `## Propiedades JS` (si hay arrays/objetos),
+   `## Eventos`, `## Slots`, `## Métodos expuestos` (con `Ninguno.` si no hay filas).
 
 > Todo el cuerpo de la ficha se escribe a mano: no hay generación.
 >
 > Las tablas de API (`Props`, `Eventos`, `Slots`, `Métodos expuestos`) salen de leer el
 > SFC; si no hay filas, se escribe `Ninguno.`.
 
-## Secciones curadas: vanilla + Vista Vue
+## Secciones curadas: dos archivos
 
-La ficha de un custom element trae cada feature dos veces: en **vanilla/UMD** (secciones de arriba,
-con `<script src="dist/CuX.umd.js">` y JS plano) y en el apartado `## Vista Vue` (las **mismas**
-secciones, con `<script setup>` + `<template>`, props en vez de atributos y `ref`/`v-model`/
-composables en vez de `document.getElementById`). El import apunta al `.vue` real:
-`import Button from "@/components/buttons/Button.vue"`.
+El ejemplo **no se duplica**: la parte vanilla va en la ficha del custom element
+(`docs/componentes/<tag>.md`) y la de Vue en la ficha del componente
+(`docs/componentes/vue/<kebab>.md`). Cada una en su forma:
 
-```markdown
-## Uso en HTML plano
-
-```html
-<script src="dist/CuButton.umd.js"></script>
-<cu-button color="primary" variant="solid">Guardar</cu-button>
-```
-
-## Vista Vue
-
-### Uso en Vue
-
-```vue
-<script setup lang="ts">
-import Button from "@/components/buttons/Button.vue";
-</script>
-
-<template>
-  <Button color="primary" variant="solid">Guardar</Button>
-</template>
-```
-```
+| | Ficha vanilla | Ficha Vue |
+|---|---|---|
+| Ejemplos | bloque `html` (tag + `<script src="dist/...">`) | bloque `vue` (`<script setup>` + `<template>`) |
+| Props | `## Atributos` (columna `Atributo`) | `## Props` (columna `Prop`) |
+| Eventos | `## Eventos` (`CustomEvent`, payload en `e.detail`) | `## Emits` |
+| Métodos | `## Métodos expuestos` | `## Expose` |
+| Slots | `slot="nombre"` (light DOM) | `<template #nombre>` |
 
 Reglas:
 
-- La parte vanilla es la de arriba (tag HTML + `<script src="dist/...">` + JS plano).
-- `## Vista Vue` repite las **mismas secciones** en el mismo orden, con props en vez de atributos y
-  `ref`/`v-model`/composables en vez de `document.getElementById`.
-- **Paridad:** toda sección de la parte vanilla tiene su equivalente en `## Vista Vue`.
-- El título de la primera sección de uso es `## Uso en HTML plano`; en la vista Vue, `### Uso en Vue`.
-- Los componentes **sin custom element** no tienen forma vanilla: van directo al uso en Vue.
+- Cada ficha dice las cosas **una sola vez**, en su forma: atributo vs prop,
+  `addEventListener` + `e.detail` vs `@evento`, `el.prop = …` vs `:prop`.
+- Los componentes **sin custom element** (internos) sólo tienen ficha Vue.
+- Las plantillas completas están en `SKILL.md` (pasos 4 y 5).
 
 ## Tabla de Props
 
@@ -139,10 +119,10 @@ Los componentes que tienen color semántico (`Alert`, `Badge`, `Button`, `Checkb
 
 | Prop | Comportamiento |
 |------|----------------|
-| `theme` | Hereda de `<html data-theme>`. Valores: `light`, `dark`, `sigacadv2` |
+| `theme` | No es prop: el tema sale de `<html data-theme="...">` (16 temas, ver `comegen.config.json`) |
 | `color` | Semántico: `primary`, `neutral`, `success`, `warning`, `danger`. Se traduce a hex según el tema |
-| `variant` | Estilo visual (varía por componente, ver [tabla en SKILL.md](../../SKILL.md#sistema-de-color-y-variantes)) |
-| `hightContrast` | Modo de alto contraste (typo intencional, ver `doc/notes/02-hightcontrast.md`) |
+| `variant` | Estilo visual (varía por componente: el `default` y el validador salen de su `.ce.vue`) |
+| `hightContrast` | Modo de alto contraste (typo intencional, hoy sólo en `<cu-label>`; ver `docs/notes/02-hightcontrast.md`) |
 
 Usá este bloque cuando aplique, no copies de otros archivos sin verificar el default real.
 
@@ -260,7 +240,7 @@ Los componentes con overlay (`Modal`, `DropdownMenu`) exponen:
 - `.open()` — abre.
 - `.close()` — cierra.
 - `.toggle()` — alterna.
-- `.isOpen` (getter) — estado.
+- `.isOpen()` — estado (`boolean`), se llama como método.
 
 Documentá los cuatro si existen.
 
@@ -269,26 +249,26 @@ Documentá los cuatro si existen.
 - **Español** en todas las descripciones y prosa.
 - **Tono:** directo, conciso, sin marketing.
 - **Cero emojis** salvo que el usuario lo pida.
-- **Dos formas de código, una por vista:** `body` usa HTML plano + UMD (`<script src="dist/CuButton.umd.js"></script>` + tag + JS con `addEventListener`/`element.property`); `bodyVue` usa Vue (`<script setup lang="ts">` + `<template>`, props, `ref`/`v-model`, import del `.vue`). No mezcles las dos formas dentro del mismo cuerpo.
-- No uses `new Vue({...})` ni `createApp` en `bodyVue`: es la doc de los componentes, no la app.
+- **Una forma por archivo:** la ficha vanilla usa HTML plano + UMD (`<script src="dist/CuButton.umd.js"></script>` + tag + JS con `addEventListener`/`element.property`); la ficha Vue usa Vue (`<script setup lang="ts">` + `<template>`, props, `ref`/`v-model`, import del `.vue`). No mezcles las dos formas en el mismo archivo.
+- No uses `new Vue({...})` ni `createApp` en la ficha Vue: es la doc de los componentes, no de la app.
 - Los ejemplos de iconos SVG son OK (los `<cu-button>` aceptan SVG inline), pero no abuses.
 
 ## Links relativos
 
-Desde `.opencode/skills/comegen-ui/componentes/cu-xxx.md`:
+Desde `docs/componentes/cu-xxx.md` (o `docs/componentes/vue/xxx.md`):
 
-- Volver a la skill principal: `[← Volver](../SKILL.md)`
-- Link a otro componente: `[`<cu-alert>`](cu-alert.md)`
+- Volver al índice de fichas: `[← Volver](../README.md)`
+- Link a la ficha de otro componente: `[`<cu-alert>`](cu-alert.md)`
 
-Desde `.opencode/skills/comegen-ui/SKILL.md`:
+Desde `docs/componentes/README.md` (el índice de fichas):
 
-- Link a un componente: `[`<cu-alert>`](componentes/cu-alert.md)`
+- Link a una ficha: `[`<cu-alert>`](cu-alert.md)`
 - Link a una sección interna: `[Sistema de Temas](#sistema-de-temas)`
 
 ## Evitar
 
 - ❌ Explicar cómo se compila (eso es de desarrollo, no de la doc de uso).
 - ❌ Mencionar que está hecho con Vue 3 (irrelevante para el consumidor).
-- ❌ Tablas de tamaños de bundle en cada `.md` (está en `SKILL.md`).
+- ❌ Tablas de tamaños de bundle en cada ficha (eso va en el README de la lib).
 - ❌ Links a archivos del código fuente.
 - ❌ Información sobre el motor de temas interno (`getColorMap`, `getHostTheme`).

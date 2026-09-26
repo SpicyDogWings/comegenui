@@ -44,7 +44,7 @@ Para cada prop, anotá:
 
 > **Prop `startValue`:** existe en componentes de formulario (`Input`, `Textarea`, `Checkbox`, `Switch`). Sirve para el método `.reset()`. Documentá su rol.
 
-> **Prop `hightContrast` (typo intencional):** está mal escrita, pero es la que está expuesta. Documentá con `hightContrast`, no con `highContrast`. Ver `doc/notes/02-hightcontrast.md` en la skill principal.
+> **Prop `hightContrast` (typo intencional):** está mal escrita, pero es la que está expuesta donde existe (hoy sólo `<cu-label>`). Documentá con `hightContrast`, no con `highContrast`. Ver `docs/notes/02-hightcontrast.md`.
 
 ### Props que se pasan pero no se documentan
 
@@ -149,7 +149,7 @@ color: { type: String, required: false, default: "neutral" },
 variant: { type: String, required: false, default: "soft" },
 ```
 
-Anotá ambos. Son necesarios para la tabla de variantes en `SKILL.md`.
+Anotá ambos: van en la tabla de props de la ficha (no hay matriz central).
 
 ## Paso 7 — Verificar props forwardeadas (slots y Column)
 
@@ -158,7 +158,7 @@ Algunos `.ce.vue` reenvían **todo** sin filtrar (ej: `<cu-table>` pasa `columns
 1. Documentá la interface que está **tipada en el `.ce.vue`**.
 2. Si el `.vue` interno acepta campos adicionales, **mencionálos en una sección separada** ("Campos extendidos / forwarded") con la advertencia de que no están tipados en el `.ce.vue` pero funcionan.
 
-Ver `componentes/cu-table.md` para el ejemplo concreto de cómo se documenta esto.
+Ver `docs/componentes/cu-table.md` para el ejemplo concreto de cómo se documenta esto.
 
 ## Paso 8 — Verificar tipos de props complejas
 
@@ -192,7 +192,8 @@ No copies ciegamente: si el `.md` viejo tiene datos incorrectos (verificado en p
 
 ## Paso 10 — Escribir el `.md`
 
-Usá la [plantilla](plantilla.md). Llená cada sección con los datos extraídos. Después, pasá el [checklist de auditoría](checklist-auditoria.md).
+Usá las plantillas de `SKILL.md` (pasos 4 y 5). Llená cada sección con los datos extraídos. Después, pasá el [checklist de auditoría](checklist-auditoria.md).
+Para la ficha Vue, el mismo trabajo pero leyendo el `.vue` (props, `defineEmits`, slots, `defineExpose`).
 
 ---
 

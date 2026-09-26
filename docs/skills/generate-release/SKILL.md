@@ -43,7 +43,7 @@ Anotá la versión: el zip se llama `comegenui-v<version>.zip`. Si hay que bumpe
 
 ### 1. Revisar que la doc esté al día
 
-No hay generación: las fichas (`docs/skills/use-comegen/componentes/cu-*.md`) y las páginas
+No hay generación: las fichas (`docs/componentes/<tag>.md` y `docs/componentes/vue/<kebab>.md`) y las páginas
 (`docs/site/componentes/<slug>.md`) se mantienen a mano. Mirá qué componentes cambiaron desde la
 última release y verificá que su ficha y su página lo reflejen:
 
@@ -81,7 +81,7 @@ pnpm build
 pnpm build:lib
 ```
 
-Genera `dist-lib/` con los UMD, `css/themes.css` y el zip `dist-lib/comegenui-v<version>.zip`. El zip incluye los UMD, `css/`, `README-BUILD.md`, la skill `use-comegen/` y `update.sh`/`.ps1`/`.bat`.
+Genera `dist-lib/` con los UMD, `css/themes.css` y el zip `dist-lib/comegenui-v<version>.zip`. El zip incluye **sólo la lib**: los UMD, `css/` y `README-BUILD.md` (sin docs, sin skill y sin updaters).
 
 ### 6. Verificar el zip
 
@@ -89,7 +89,7 @@ Genera `dist-lib/` con los UMD, `css/themes.css` y el zip `dist-lib/comegenui-v<
 unzip -l dist-lib/comegenui-v<version>.zip
 ```
 
-Debe contener: los `Cu*.umd.js`, `css/themes.css`, `use-comegen/SKILL.md` + `use-comegen/componentes/cu-*.md`, y `update.sh`/`update.ps1`/`update.bat`.
+Debe contener: los `Cu*.umd.js`, `css/themes.css` (+ un `css/<tema>.css` por tema) y `README-BUILD.md`. Nada más.
 
 ### 7. Commit de lo que haya cambiado
 
@@ -100,7 +100,7 @@ git status --short
 Staggeá solo lo que corresponde (doc, versión) y commiteá, p. ej.:
 
 ```bash
-git add docs/skills/use-comegen/componentes docs/site/componentes
+git add docs/componentes docs/site/componentes
 git commit -m "chore(release): preparar v<version>"
 ```
 

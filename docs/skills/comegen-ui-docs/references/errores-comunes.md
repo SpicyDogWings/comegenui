@@ -90,25 +90,25 @@ Lista de errores frecuentes al crear o actualizar la documentación de un compon
 
 **Cómo evitarlo:** siempre incluir la columna "Payload (`e.detail`)" en la tabla de eventos, con la forma del objeto.
 
-## 12. Mezclar HTML y Vue en un mismo cuerpo
+## 12. Mezclar HTML y Vue en el archivo equivocado
 
-**Síntoma:** la sección vanilla mete `<cu-button>` dentro de un `<template>` de Vue, o el ejemplo vanilla importa el `.vue`.
+**Síntoma:** la ficha vanilla mete `<cu-button>` dentro de un `<template>` de Vue, o importa el `.vue`; la ficha Vue usa `<script src="dist/...">`.
 
-**Por qué pasa:** la ficha trae cada feature dos veces (vanilla arriba, Vue en `## Vista Vue`) y es fácil mezclarlas.
+**Por qué pasa:** son dos archivos del mismo componente y es fácil escribir la forma del otro.
 
-**Cómo evitarlo:** cada parte usa **una sola** forma. Vanilla = HTML plano + UMD (`<script src="dist/...">` + `<cu-x>`); `## Vista Vue` = `<script setup lang="ts">` + `<template>` con el import del `.vue` (`@/components/...`). Ver [convenciones.md](convenciones.md#secciones-curadas-vanilla--vista-vue).
+**Cómo evitarlo:** una forma por archivo. Vanilla (`docs/componentes/<tag>.md`) = HTML plano + UMD (`<script src="dist/...">` + `<cu-x>`); Vue (`docs/componentes/vue/<kebab>.md`) = `<script setup lang="ts">` + `<template>` con el import del `.vue` (`@/components/...`). Ver [convenciones.md](convenciones.md#secciones-curadas-dos-archivos).
 
 ## 13. Asumir que un componente en `archived/` o `labs/` no se distribuye
 
 **Síntoma:** la doc no incluye `<cu-select>` (en `labs/`) o incluye `<cu-select-native>` (en `archived/`) como si no existieran.
 
-**Cómo evitarlo:** `build-libs.ts` usa `fast-glob("./src/components/**/*.ts")` sin filtros. **Todo** se compila. Ver `doc/notes/01-build-glob.md` en la skill principal.
+**Cómo evitarlo:** el build toma `src/lib/**/*.ts` (un entry por componente). Si no hay entry, no se distribuye. Ver `docs/notes/01-build-glob.md`.
 
-## 14. Duplicar información entre `SKILL.md` y el `.md` del componente
+## 14. Duplicar la ficha dentro de la página del sitio
 
-**Síntoma:** el `.md` de `<cu-button>` repite la tabla de variantes de `SKILL.md`.
+**Síntoma:** la página (`docs/site/componentes/...`) repite el contenido de la ficha en vez de incluirla.
 
-**Cómo evitarlo:** la tabla de variantes está solo en `SKILL.md`. Cada `.md` individual lista solo las variantes que acepta **ese** componente, no la matriz completa.
+**Cómo evitarlo:** la página sólo tiene frontmatter (`title`/`group`) + `<!--@include-->` de **una** ficha (y los demos, si es la de Vue). El cuerpo vive en un solo lugar: la ficha.
 
 ## 15. Olvidar documentar variantes que sí acepta el componente
 
@@ -116,7 +116,7 @@ Lista de errores frecuentes al crear o actualizar la documentación de un compon
 
 **Cómo evitarlo:** copiar los valores del `validator` del `.ce.vue`. Si el validador dice `["outlined", "soft", "ghost", "subtle", "none"]`, listar las cinco.
 
-**Caso real:** `<cu-checkbox>` acepta `none`, pero la doc de la skill principal no la incluía en la matriz.
+**Caso real:** `<cu-checkbox>` acepta `none`, pero algunas fichas viejas no la listaban.
 
 ## 16. Confundir `event` nativo con `evento` custom en el payload
 
@@ -134,9 +134,9 @@ Lista de errores frecuentes al crear o actualizar la documentación de un compon
 
 ## 18. No documentar el default de `variant` y `color`
 
-**Síntoma:** la tabla de `SKILL.md` no puede mostrar el default por componente.
+**Síntoma:** la ficha lista la prop pero no su default real (que varía por componente).
 
-**Cómo evitarlo:** cada `.md` debe listar el default de `color` y `variant` en la tabla de props. Después, se consolidan en la tabla de defaults de `SKILL.md`.
+**Cómo evitarlo:** cada ficha lista el default de `color` y `variant` en su tabla de props, tal como está en el `.ce.vue`/`.vue`. No hay matriz central.
 
 ## 19. Documentar props que vienen de `interface Column` del `AdvancedTable.vue`
 

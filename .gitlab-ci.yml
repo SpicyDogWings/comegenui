@@ -42,23 +42,16 @@ build:
   script:
     - pnpm install --frozen-lockfile
     - pnpm run build:lib
-    # La salida final ES el zip descargable: los archivos de la lib + el folder
-    # de la skill de uso, al mismo nivel (sin dist/, sin docs/, sin zip anidado).
-    # update.sh ya está en la raíz del repo (workspace del job) y el artifact lo
-    # incluye — NO copiarlo (cp update.sh . falla: 'same file').
+    # La salida final ES el zip descargable: sólo los archivos de la lib, al
+    # mismo nivel (sin dist/, sin docs/, sin zip anidado).
     - cp dist-lib/*.umd.js dist-lib/README-BUILD.md .
     - cp -r dist-lib/css .
-    - cp -r docs/skills/use-comegen .
   artifacts:
     name: "comegenui"
     paths:
       - '*.umd.js'
       - css/
       - README-BUILD.md
-      - update.sh
-      - update.ps1
-      - update.bat
-      - use-comegen/   # skill de uso de comegen — nada más (no desarrollar/documentar)
     expire_in: never
     when: on_success
 
@@ -75,7 +68,7 @@ release:
     description: |
       Release generado automáticamente por GitLab CI.
 
-      **Contenido:** los archivos de la lib (`Cu*.umd.js`, `css/`, `README-BUILD.md`) + el folder de la skill de uso `use-comegen/` (SKILL + docs por componente) — al mismo nivel, sin `docs/` ni zip anidado.
+      **Contenido:** los archivos de la lib (`Cu*.umd.js`, `css/`, `README-BUILD.md`) — al mismo nivel, sin `docs/` ni zip anidado.
 
       **Instalación:**
       ```sh
