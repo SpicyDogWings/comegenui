@@ -28,12 +28,12 @@ import Table from "@/components/data/Table.vue";
 | `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | — |
 | `loading` | `boolean` | `false` | — |
 | `columns` | `Column[]` | `[]` | — |
-| `maxHeight` | `string` | `""` | — |
 | `data` | `Record<string, any>[]` | `[]` | — |
 | `empty` | `string` | `"No hay datos que mostrar"` | — |
 | `rowDisabled` | `boolean \| ((row: Record<string, any>) => boolean)` | `false` | — |
 | `footer` | `FooterRow[]` | `[]` | — |
 | `compact` | `boolean` | `false` | — |
+| `maxHeight` | `string` | `""` | — |
 | `htmlCells` | `boolean` | `false` | — |
 <!-- /@api:props -->
 

@@ -67,11 +67,11 @@ const items = ref([/* ... */]);
 | Prop | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `trigger` | `"click" \| "hover"` | `'click'` | — |
-| `search` | `boolean` | `false` | — |
-| `searchMode` | `"filter" \| "scroll"` | `'filter'` | — |
 | `searchPlaceholder` | `string` | `'Buscar...'` | — |
 | `searchFields` | `string[]` | `[]` | — |
 | `compact` | `boolean` | `false` | — |
+| `search` | `boolean` | `false` | — |
+| `searchMode` | `"filter" \| "scroll"` | `'filter'` | — |
 | `activePath` | `string` | `''` | — |
 | `compactable` | `boolean` | `false` | — |
 | `collapsed` | `boolean` | `false` | — |

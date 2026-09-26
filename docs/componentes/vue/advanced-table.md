@@ -1046,10 +1046,10 @@ En variantes transparentes (`outlined`, `ghost`) se aplica `backdrop-filter: blu
 | `showPageSize` | `boolean` | `false` | — |
 | `pageSizeOptions` | `number[]` | `[5, 10, 20, 50]` | — |
 | `columns` | `Column[]` | `[]` | — |
-| `searchEnabled` | `boolean` | `false` | — |
 | `data` | `Record<string, any>[]` | `[]` | — |
 | `empty` | `string` | `"No hay datos que mostrar"` | — |
 | `pagination` | `boolean` | `true` | — |
+| `searchEnabled` | `boolean` | `false` | — |
 | `searchPlaceholder` | `string` | `"Buscar..."` | — |
 | `searchFields` | `string[]` | `[]` | — |
 | `searchValue` | `string` | `""` | — |

@@ -76,10 +76,6 @@ pisaste con un `slot` mal nombrado).
 El prop existe con ese typo histórico (`hight`, no `high`) y hoy **sólo** lo expone
 `<cu-label>`. No inventes `hightContrast` en otros componentes.
 
-## 7. `<cu-date-picker-range>` está deprecado
-
-Es un shim viejo. Usá `<cu-date-picker mode="range">` (o `dual-calendar` para dos meses).
-
 ## 8. Varios componentes se componen entre sí
 
 `<cu-date-picker>` compone el dropdown + calendario; `<cu-table>` es el `AdvancedTable`;

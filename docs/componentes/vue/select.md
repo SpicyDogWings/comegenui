@@ -264,10 +264,10 @@ const opciones = [/* ... */];
 | `align` | `string` | `"start"` | — |
 | `textAlign` | `"center" \| "left" \| "right"` | `"left"` | — |
 | `fixed` | `boolean` | `false` | — |
+| `searchEnabled` | `boolean` | `false` | — |
 | `placeholder` | `string` | `""` | — |
 | `options` | `SelectOption[]` | `[]` | — |
 | `placeholderWrap` | `boolean` | `false` | — |
-| `searchEnabled` | `boolean` | `false` | — |
 | `searchMode` | `"includes" \| "startsWith"` | `"startsWith"` | — |
 | `searchResetDelay` | `number` | `1000` | — |
 | `cooldownVariant` | `string` | `"ghost-hover"` | — |

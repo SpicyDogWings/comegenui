@@ -837,10 +837,10 @@ En variantes transparentes (`outlined`, `ghost`) se aplica `backdrop-filter: blu
 | `show-page-size` | `boolean` | `false` | Muestra selector de items por página (atributo HTML: `show-page-size`) |
 | `page-size-options` | `number[]` | `[5, 10, 20, 50]` | Opciones del selector (atributo HTML: `page-size-options`). Se asigna como propiedad JS |
 | `columns` | `Column[]` | `[]` | Definición de columnas (ver [Interfaz de columna](#interfaz-de-columna)). Se asigna como propiedad JS |
-| `search-enabled` | `boolean` | `false` | Habilita barra de búsqueda (atributo HTML: `search-enabled`) |
 | `data` | `Record<string, any>[]` | `[]` | Filas de la tabla. Se asigna como propiedad JS |
 | `empty` | `string` | `""` | Texto a mostrar cuando no hay datos. Si se omite, usa `"No hay datos que mostrar"` |
 | `pagination` | `boolean` | `false` | Habilita paginación interna |
+| `search-enabled` | `boolean` | `false` | Habilita barra de búsqueda (atributo HTML: `search-enabled`) |
 | `search-placeholder` | `string` | `"Buscar..."` | Placeholder del input de búsqueda (atributo HTML: `search-placeholder`) |
 | `search-fields` | `string[]` | `[]` | Columnas donde buscar (atributo HTML: `search-fields`). Vacío = todas |
 | `search-value` | `string` | `""` | Valor controlado del buscador (atributo HTML: `search-value`) |

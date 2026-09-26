@@ -64,12 +64,12 @@ El listado de archivos se renderiza con `<cu-file-list>` (componente interno) qu
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `disabled` | `boolean` | `—` | Deshabilita interacción |
 | `model-value` | `File \| File[] \| null` | `null` | Archivo/s seleccionados |
+| `max-height` | `string` | `""` | Altura máxima del listado (ej: `"200px"`). Sin scroll si se omite. |
 | `read-only` | `boolean` | `—` | Modo solo lectura |
 | `placeholder` | `string` | `"Selecciona un archivo o arrastra aquí"` | Texto cuando no hay archivos |
 | `multiple` | `boolean` | `—` | Permite múltiples archivos |
 | `directory` | `boolean` | `—` | Activa modo carpeta (incluye `multiple` implícitamente) |
 | `directory-deep` | `number` | `0` | Niveles de recursión en carpetas: `0` = solo raíz, `1` = +1 subnivel, `-1` = sin límite |
-| `max-height` | `string` | `""` | Altura máxima del listado (ej: `"200px"`). Sin scroll si se omite. |
 | `max-size` | `number` | `—` | Tamaño máximo en bytes |
 | `accept` | `string` | `—` | Tipos aceptados (ej: `"image/*"`) |
 <!-- /@api:atributos -->

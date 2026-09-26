@@ -25,11 +25,11 @@ import NavbarList from "@/components/navigation/NavbarList.vue";
 | Prop | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `trigger` | `"click" \| "hover"` | `'click'` | Disparador de los submenús: click o hover. |
-| `search` | `boolean` | `false` | Habilita el buscador de items. |
-| `searchMode` | `string` | `'filter'` | Modo de búsqueda: filter (filtra items) o scroll (resalta y desplaza). |
 | `searchPlaceholder` | `string` | `'Buscar...'` | Placeholder del buscador. |
 | `searchFields` | `string[]` | `[]` | Campos sobre los que busca el filtro. |
 | `compact` | `boolean` | `false` | Modo compacto: solo iconos o la inicial. |
+| `search` | `boolean` | `false` | Habilita el buscador de items. |
+| `searchMode` | `string` | `'filter'` | Modo de búsqueda: filter (filtra items) o scroll (resalta y desplaza). |
 | `activePath` | `string` | `''` | Path activo para resaltar el item correspondiente. |
 | `compactable` | `boolean` | `false` | Muestra el botón para compactar y expandir. |
 | `collapsed` | `boolean` | `false` | Inicia los submenús colapsados. |

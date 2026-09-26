@@ -108,16 +108,16 @@ onMounted(() => {
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
 | `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `"outlined"` | — |
 | `disabled` | `boolean` | `false` | — |
+| `columns` | `CellColumn[]` | `[]` | — |
+| `inputType` | `"input" \| "zone"` | `"input"` | — |
 | `readOnly` | `boolean` | `false` | — |
 | `placeholder` | `string` | `"Seleccionar archivo"` | — |
-| `columns` | `CellColumn[]` | `[]` | — |
 | `formats` | `string[]` | `[".xlsx", ".csv"]` | — |
 | `delimiter` | `string` | `","` | — |
 | `hasHeader` | `boolean` | `true` | — |
 | `strict` | `boolean` | `false` | — |
 | `sheet` | `string \| number` | `0` | — |
 | `template` | `{ enabled?: boolean \| undefined; type?: "xlsx" \| "csv" \| undefined; filename?: string \| undefined; }` | `{ enabled: false, type: "csv", filename: "template" }` | — |
-| `inputType` | `"input" \| "zone"` | `"input"` | — |
 | `maxSize` | `number` | `—` | — |
 <!-- /@api:props -->
 

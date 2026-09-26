@@ -25,7 +25,7 @@ const FICHA_VUE_DIR = resolve(FICHA_DIR, "vue");
 const SITE_DIR = resolve(root, "docs/site/componentes");
 
 // Tags que definen un custom element pero no se documentan (shim deprecado).
-const IGNORED_TAGS = new Set(["cu-date-picker-range"]);
+const IGNORED_TAGS = new Set([]);
 
 // Secciones obligatorias de cada tipo de ficha.
 const VANILLA_SECTIONS = ["## Atributos", "## Eventos", "## Slots", "## Métodos expuestos"];

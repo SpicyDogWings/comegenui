@@ -243,6 +243,5 @@ Reglas:
   así que un JSDoc pobre da una tabla pobre (y un JSDoc bueno documenta solo).
 - El extractor lee el `.ce.vue` para la ficha vanilla (o el `.vue` cuando el CE es directo)
   y el `.vue` para la ficha Vue.
-- `cu-date-picker-range` se saltea: su `.vue` no entra en el tsconfig del checker.
 
 Pendiente conocido: `docs/componentes/vue/navbar-list.md` no converge en `--check`.
