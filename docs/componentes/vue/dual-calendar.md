@@ -48,8 +48,8 @@ import DualCalendar from "@/components/controls/DualCalendar.vue";
 <!-- @api:emits -->
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
-| `change` | `DateRange` | — |
 | `select` | `DateRange` | — |
+| `change` | `DateRange` | — |
 | `update:startDate` | `Date \\| null` | — |
 | `update:endDate` | `Date \\| null` | — |
 <!-- /@api:emits -->

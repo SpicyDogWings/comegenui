@@ -122,18 +122,18 @@ Por defecto el menú se abre al recibir foco. Con `min-chars="2"` solo se abre t
 <!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
+| `type` | `string` | `"text"` | `text`, `password`, `email`, `number`, `tel`, `url`, `search` |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | `outlined`, `soft`, `ghost`, `subtle` |
 | `disabled` | `boolean` | `false` | Estado deshabilitado |
-| `type` | `string` | `"text"` | `text`, `password`, `email`, `number`, `tel`, `url`, `search` |
-| `model-value` | `string` | `""` | Valor controlado |
-| `position` | `"bottom" \| "top" \| "left" \| "right"` | `"bottom"` | Posición del dropdown: `bottom`, `top` |
-| `align` | `"start" \| "center" \| "end"` | `"start"` | Alineación: `start`, `center`, `end` |
-| `fixed` | `boolean` | `false` | Panel en `position: fixed` (útil en contenedores con overflow) |
-| `items` | `unknown[]` | `[]` | Opciones del menú (ver abajo). Se asigna como propiedad JS |
 | `read-only` | `boolean` | `false` | Solo lectura (en HTML se usa como `readonly`) |
 | `placeholder` | `string` | `""` | Placeholder del input |
 | `min-chars` | `number` | `0` | Caracteres mínimos para abrir el menú (atributo HTML: `min-chars`) |
+| `position` | `"left" \| "right" \| "bottom" \| "top"` | `"bottom"` | Posición del dropdown: `bottom`, `top` |
+| `align` | `"center" \| "start" \| "end"` | `"start"` | Alineación: `start`, `center`, `end` |
+| `fixed` | `boolean` | `false` | Panel en `position: fixed` (útil en contenedores con overflow) |
+| `items` | `unknown[]` | `[]` | Opciones del menú (ver abajo). Se asigna como propiedad JS |
+| `model-value` | `string` | `""` | Valor controlado |
 <!-- /@api:atributos -->
 
 ### Items

@@ -199,6 +199,7 @@ El rango es un **modo** (`mode="range"`). Ahí `rangeStart`/`rangeEnd` son el **
 | ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `'primary'` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
 | `variant` | `"solid" \| "outlined" \| "soft" \| "subtle"` | `'soft'` | Variante del día seleccionado: `solid`, `outlined`, `soft`, `subtle` (sin `ghost`: se confunde con el día de hoy) |
+| `mode` | `"single" \| "range"` | `'single'` | Modo de selección: `single` (una fecha) o `range` (inicio + fin) |
 | `disabled` | `boolean` | `false` | Deshabilita todo el calendario |
 | `model-value` | `string \| number \| Date \| null` | `null` | Fecha seleccionada. Acepta `Date`, timestamp o `"YYYY-MM-DD"` (ver [Formato de fechas](#formato-de-fechas)) |
 | `min` | `string \| number \| Date \| null` | `null` | Fecha mínima seleccionable (días anteriores quedan deshabilitados) |
@@ -216,7 +217,6 @@ El rango es un **modo** (`mode="range"`). Ahí `rangeStart`/`rangeEnd` son el **
 | `grid` | `boolean` | `false` | Dibuja líneas **interiores** (cuadrícula) entre los días. En HTML plano: `<cu-calendar grid>` |
 | `border` | `boolean` | `false` | Dibuja el **marco exterior** alrededor de la cuadrícula de días. Combinable con `grid` |
 | `view-month` | `string \| number \| Date \| null` | `null` | Mes visible (primer día) controlado desde afuera. Navegar emite `update:viewMonth`. Se asigna como propiedad JS |
-| `mode` | `"single" \| "range"` | `'single'` | Modo de selección: `single` (una fecha) o `range` (inicio + fin) |
 <!-- /@api:atributos -->
 
 > **API espejo de los sliders:** las fechas aceptan `Date`, timestamp numérico o string `"YYYY-MM-DD"`. En HTML plano los atributos llegan como string; `modelValue="2026-08-11"` funciona directo.

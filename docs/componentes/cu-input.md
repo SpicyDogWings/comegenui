@@ -66,13 +66,13 @@ Input de texto con color, variante, tipos de input HTML5 y métodos `get`/`set`/
 <!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
+| `type` | `"number" \| "text" \| "password" \| "email" \| "tel" \| "url" \| "search"` | `"text"` | `text`, `password`, `email`, `number`, `tel`, `url`, `search` |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | `outlined`, `soft`, `ghost`, `subtle` |
 | `size` | `"sm" \| "md" \| "lg"` | `"md"` | Tamaño: `sm`, `md`, `lg` |
 | `disabled` | `boolean` | `false` | Estado deshabilitado |
-| `type` | `"number" \| "text" \| "password" \| "email" \| "tel" \| "url" \| "search"` | `"text"` | `text`, `password`, `email`, `number`, `tel`, `url`, `search` |
-| `model-value` | `string` | `""` | Valor controlado |
 | `read-only` | `boolean` | `false` | Solo lectura (en HTML se usa como `readonly`) |
+| `model-value` | `string` | `""` | Valor controlado |
 | `placeholder` | `string` | `—` | Placeholder del input |
 | `start-value` | `string` | `—` | Valor inicial usado por `.reset()` |
 <!-- /@api:atributos -->

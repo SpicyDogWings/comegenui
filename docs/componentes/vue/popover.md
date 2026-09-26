@@ -24,15 +24,15 @@ import Popover from "@/components/overlay/Popover.vue";
 <!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
+| `role` | `string` | `""` | — |
 | `disabled` | `boolean` | `false` | — |
-| `position` | `"bottom" \| "top" \| "left" \| "right"` | `"bottom"` | — |
-| `align` | `"start" \| "center" \| "end"` | `"start"` | — |
-| `offset` | `number` | `4` | — |
+| `position` | `"left" \| "right" \| "bottom" \| "top"` | `"bottom"` | — |
+| `align` | `"center" \| "start" \| "end"` | `"start"` | — |
 | `fixed` | `boolean` | `false` | — |
 | `hover` | `boolean` | `false` | — |
+| `offset` | `number` | `4` | — |
 | `panelWidth` | `string` | `""` | — |
 | `hoverDelay` | `number` | `200` | — |
-| `role` | `string` | `""` | — |
 | `panelClass` | `string \| string[] \| Record<string, boolean>` | `""` | — |
 <!-- /@api:props -->
 
@@ -41,8 +41,8 @@ import Popover from "@/components/overlay/Popover.vue";
 <!-- @api:emits -->
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
-| `open` | `any[` | — |
 | `close` | `any[` | — |
+| `open` | `any[` | — |
 <!-- /@api:emits -->
 
 ## Slots

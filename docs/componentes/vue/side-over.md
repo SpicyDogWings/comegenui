@@ -74,12 +74,12 @@ import SideOver from "@/components/overlay/SideOver.vue";
 | Prop | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `size` | `string` | `'300px'` | — |
-| `modelValue` | `boolean` | `false` | — |
-| `position` | `"bottom" \| "top" \| "left" \| "right"` | `'right'` | — |
-| `zIndex` | `number` | `1100` | — |
 | `title` | `string` | `''` | — |
-| `fullscreen` | `boolean` | `false` | — |
+| `position` | `"left" \| "right" \| "bottom" \| "top"` | `'right'` | — |
+| `modelValue` | `boolean` | `false` | — |
 | `persistent` | `boolean` | `false` | — |
+| `zIndex` | `number` | `1100` | — |
+| `fullscreen` | `boolean` | `false` | — |
 <!-- /@api:props -->
 
 > **Atributo `open`:** como `open` es un atributo HTML nativo, para controlarlo desde HTML usalo con valor booleano: `<cu-side-over open>` abre el panel. El estado también se maneja por método.
@@ -89,8 +89,8 @@ import SideOver from "@/components/overlay/SideOver.vue";
 <!-- @api:emits -->
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
-| `update:modelValue` | `boolean` | — |
 | `close` | `` | — |
+| `update:modelValue` | `boolean` | — |
 <!-- /@api:emits -->
 
 ## Slots

@@ -92,7 +92,9 @@ async function collect() {
     if (out.has(name)) continue
     out.set(name, { tag: null, ce: null, vue: v })
   }
-  return out
+  // Orden determinista: el checker comparte estado entre componentes, asi que el
+  // resultado del mismo componente depende de que se resolvio antes.
+  return new Map([...out].sort(([a], [b]) => a.localeCompare(b)))
 }
 
 /* ── bloques generados ───────────────────────────────────────────────────── */

@@ -257,18 +257,18 @@ const opciones = [/* ... */];
 | ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
 | `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | — |
-| `disabled` | `boolean` | `false` | — |
+| `searchEnabled` | `boolean` | `false` | — |
 | `loading` | `boolean` | `false` | — |
-| `modelValue` | `string` | `""` | — |
+| `disabled` | `boolean` | `false` | — |
+| `placeholder` | `string` | `""` | — |
 | `position` | `string` | `"bottom"` | — |
 | `align` | `string` | `"start"` | — |
-| `textAlign` | `"center" \| "left" \| "right"` | `"left"` | — |
 | `fixed` | `boolean` | `false` | — |
-| `placeholder` | `string` | `""` | — |
+| `modelValue` | `string` | `""` | — |
+| `textAlign` | `"center" \| "left" \| "right"` | `"left"` | — |
+| `searchMode` | `"includes" \| "startsWith"` | `"startsWith"` | — |
 | `options` | `SelectOption[]` | `[]` | — |
 | `placeholderWrap` | `boolean` | `false` | — |
-| `searchEnabled` | `boolean` | `false` | — |
-| `searchMode` | `"includes" \| "startsWith"` | `"startsWith"` | — |
 | `searchResetDelay` | `number` | `1000` | — |
 | `cooldownVariant` | `string` | `"ghost-hover"` | — |
 <!-- /@api:props -->
@@ -292,9 +292,9 @@ Cada opción del array `options` puede tener:
 <!-- @api:emits -->
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
-| `update:modelValue` | `any[` | — |
 | `select` | `any[` | — |
 | `close` | `any[` | — |
+| `update:modelValue` | `any[` | — |
 | `blur` | `any[` | — |
 <!-- /@api:emits -->
 

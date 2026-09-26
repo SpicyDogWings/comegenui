@@ -232,6 +232,7 @@ import Calendar from "@/components/controls/Calendar.vue";
 | ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `'primary'` | — |
 | `variant` | `"solid" \| "outlined" \| "soft" \| "subtle"` | `'soft'` | — |
+| `mode` | `"single" \| "range"` | `'single'` | Modo de selección: `single` (una fecha) o `range` (inicio + fin). |
 | `disabled` | `boolean` | `false` | — |
 | `modelValue` | `string \| number \| Date \| null` | `null` | — |
 | `min` | `string \| number \| Date \| null` | `null` | — |
@@ -249,7 +250,6 @@ import Calendar from "@/components/controls/Calendar.vue";
 | `grid` | `boolean` | `false` | — |
 | `border` | `boolean` | `false` | — |
 | `viewMonth` | `string \| number \| Date \| null` | `null` | — |
-| `mode` | `"single" \| "range"` | `'single'` | Modo de selección: `single` (una fecha) o `range` (inicio + fin). |
 <!-- /@api:props -->
 
 ## Emits
@@ -257,12 +257,12 @@ import Calendar from "@/components/controls/Calendar.vue";
 <!-- @api:emits -->
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
+| `select` | `CalendarChange` | — |
 | `update:modelValue` | `Date` | — |
 | `update:viewMonth` | `Date` | — |
 | `update:rangeStart` | `Date \\| null` | — |
 | `update:rangeEnd` | `Date \\| null` | — |
 | `change` | `CalendarChange` | — |
-| `select` | `CalendarChange` | — |
 <!-- /@api:emits -->
 
 > En modo `single` los eventos emiten un `Date` normalizado a medianoche local; en `range`, un objeto `{ start, end }`.

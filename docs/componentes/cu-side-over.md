@@ -56,12 +56,12 @@ side.addEventListener('close', () => console.log('cerrando'));
 | Atributo | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `size` | `string` | `"300px"` | Ancho (`left`/`right`) o alto (`top`/`bottom`) del panel. Valor CSS (`300px`, `40vw`) o preset: `sm`, `md`, `lg`, `xl`, `full`. Ignorado con `fullscreen` |
-| `position` | `"bottom" \| "top" \| "left" \| "right"` | `"right"` | Borde desde donde desliza: `left`, `right`, `top`, `bottom` |
-| `open` | `boolean` | `false` | Estado de visibilidad (v-model). Ver nota de atributo abajo |
-| `z-index` | `number` | `1100` | Z-index del overlay (en HTML se usa como `z-index`) |
 | `title` | `string` | `""` | Título de la cabecera (si está vacío y no es `persistent`, igual muestra el botón de cerrar) |
-| `fullscreen` | `boolean` | `false` | Ocupa toda la pantalla |
+| `open` | `boolean` | `false` | Estado de visibilidad (v-model). Ver nota de atributo abajo |
+| `position` | `"left" \| "right" \| "bottom" \| "top"` | `"right"` | Borde desde donde desliza: `left`, `right`, `top`, `bottom` |
 | `persistent` | `boolean` | `false` | Si es `true`, no se cierra por backdrop, `Escape` ni el botón de cerrar |
+| `z-index` | `number` | `1100` | Z-index del overlay (en HTML se usa como `z-index`) |
+| `fullscreen` | `boolean` | `false` | Ocupa toda la pantalla |
 <!-- /@api:atributos -->
 
 > **Atributo `open`:** como `open` es un atributo HTML nativo, para controlarlo desde HTML usalo con valor booleano: `<cu-side-over open>` abre el panel. El estado también se maneja por método.

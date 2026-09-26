@@ -82,8 +82,8 @@ function onClose() {
 <!-- @api:emits -->
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
-| `open` | `any[` | — |
 | `close` | `any[` | — |
+| `open` | `any[` | — |
 | `update:show` | `any[` | — |
 <!-- /@api:emits -->
 

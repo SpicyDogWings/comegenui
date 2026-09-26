@@ -101,8 +101,14 @@ Con `mode="range"` el picker selecciona un rango: el primer click define el **in
 | ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `'neutral'` | Color semántico del trigger y del día seleccionado del calendario interno (se pasa tal cual; `neutral` = neutral, ya no mapea a primary) |
 | `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `'soft'` | Variante del trigger: `outlined`, `soft`, `ghost`, `subtle`. En el calendario interno `ghost` se mapea a `soft` (el calendario ya no tiene ghost) |
+| `mode` | `"single" \| "range"` | `'single'` | Tipo de calendario: `single` (una fecha) o `range` (inicio + fin). Con `dual-calendar` el tipo es dual (range, 2 meses) |
 | `disabled` | `boolean` | `false` | Deshabilita el picker completo |
+| `placeholder` | `string` | `''` | Texto cuando no hay fecha (default: `"Seleccionar fecha..."`, rango: `"Seleccionar rango..."`) |
+| `position` | `"left" \| "right" \| "bottom" \| "top"` | `'bottom'` | `right` |
+| `align` | `"center" \| "start" \| "end"` | `'start'` | `end` |
+| `fixed` | `boolean` | `false` | Panel en `position: fixed` (útil en contenedores con overflow) |
 | `model-value` | `string \| number \| Date \| null` | `null` | Fecha seleccionada (calendario `single`) |
+| `label` | `string` | `''` | Texto del label sobre el picker |
 | `min` | `string \| number \| Date \| null` | `null` | Fecha mínima seleccionable |
 | `max` | `string \| number \| Date \| null` | `null` | Fecha máxima seleccionable |
 | `disabled-weekdays` | `string \| number[]` | `''` | Días de la semana no seleccionables (`0`=domingo … `6`=sábado). En HTML: `disabled-weekdays="0,6"` |
@@ -115,12 +121,6 @@ Con `mode="range"` el picker selecciona un rango: el primer click define el **in
 | `events` | `CalendarEvent[]` | `[]` | Eventos a señalar con puntos bajo la fecha en el calendario interno (ver [Eventos](cu-calendar.md#eventos-puntos)). Se asigna como propiedad JS |
 | `grid` | `boolean` | `false` | Líneas **interiores** (cuadrícula) entre los días del calendario interno |
 | `border` | `boolean` | `false` | **Marco exterior** alrededor de la cuadrícula de días del calendario interno |
-| `mode` | `"single" \| "range"` | `'single'` | Tipo de calendario: `single` (una fecha) o `range` (inicio + fin). Con `dual-calendar` el tipo es dual (range, 2 meses) |
-| `label` | `string` | `''` | Texto del label sobre el picker |
-| `position` | `"bottom" \| "top" \| "left" \| "right"` | `'bottom'` | `right` |
-| `align` | `"start" \| "center" \| "end"` | `'start'` | `end` |
-| `fixed` | `boolean` | `false` | Panel en `position: fixed` (útil en contenedores con overflow) |
-| `placeholder` | `string` | `''` | Texto cuando no hay fecha (default: `"Seleccionar fecha..."`, rango: `"Seleccionar rango..."`) |
 | `start-date` | `string \| number \| Date \| null` | `null` | Inicio del rango. Solo con calendario de rango (`mode="range"` o `dual-calendar`); en `single` se ignora. En HTML: `start-date="2026-08-01"` |
 | `end-date` | `string \| number \| Date \| null` | `null` | Fin del rango. Solo con calendario de rango (`mode="range"` o `dual-calendar`); en `single` se ignora. En HTML: `end-date="2026-08-31"` |
 | `format` | `string` | `'dd/MM/yyyy'` | Formato de la fecha en el trigger (ver [Formato](#formato)) |

@@ -116,8 +116,14 @@ picker.clear();
 | ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `'neutral'` | — |
 | `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `'soft'` | — |
+| `mode` | `"single" \| "range"` | `'single'` | Tipo de calendario: `single` (una fecha, `Calendar`) o `range` (inicio + fin, `Calendar` en modo rango). Con `dualCalendar` el tipo es dual (range, 2 meses) |
 | `disabled` | `boolean` | `false` | — |
+| `placeholder` | `string` | `''` | — |
+| `position` | `"left" \| "right" \| "bottom" \| "top"` | `'bottom'` | — |
+| `align` | `"center" \| "start" \| "end"` | `'start'` | — |
+| `fixed` | `boolean` | `false` | — |
 | `modelValue` | `string \| number \| Date \| null` | `null` | Fecha seleccionada (calendario `single`) |
+| `label` | `string` | `''` | — |
 | `min` | `string \| number \| Date \| null` | `null` | — |
 | `max` | `string \| number \| Date \| null` | `null` | — |
 | `disabledWeekdays` | `string \| number[]` | `''` | — |
@@ -130,12 +136,6 @@ picker.clear();
 | `events` | `CalendarEvent[]` | `[]` | — |
 | `grid` | `boolean` | `false` | — |
 | `border` | `boolean` | `false` | — |
-| `mode` | `"single" \| "range"` | `'single'` | Tipo de calendario: `single` (una fecha, `Calendar`) o `range` (inicio + fin, `Calendar` en modo rango). Con `dualCalendar` el tipo es dual (range, 2 meses) |
-| `label` | `string` | `''` | — |
-| `position` | `"bottom" \| "top" \| "left" \| "right"` | `'bottom'` | — |
-| `align` | `"start" \| "center" \| "end"` | `'start'` | — |
-| `fixed` | `boolean` | `false` | — |
-| `placeholder` | `string` | `''` | — |
 | `startDate` | `string \| number \| Date \| null` | `null` | Inicio del rango. Solo con calendario de rango (`mode="range"` o `dualCalendar`); en `single` se ignora |
 | `endDate` | `string \| number \| Date \| null` | `null` | Fin del rango. Solo con calendario de rango (`mode="range"` o `dualCalendar`); en `single` se ignora |
 | `format` | `string` | `'dd/MM/yyyy'` | — |
@@ -149,11 +149,11 @@ picker.clear();
 <!-- @api:emits -->
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
+| `select` | `Date \\| { start: Date \\| null; end: Date \\| null; }` | — |
+| `close` | `` | — |
+| `open` | `` | — |
 | `update:modelValue` | `Date \\| null` | — |
 | `change` | `Date \\| { start: Date \\| null; end: Date \\| null; } \\| null` | — |
-| `select` | `Date \\| { start: Date \\| null; end: Date \\| null; }` | — |
-| `open` | `` | — |
-| `close` | `` | — |
 | `update:startDate` | `Date \\| null` | — |
 | `update:endDate` | `Date \\| null` | — |
 <!-- /@api:emits -->

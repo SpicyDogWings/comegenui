@@ -1039,28 +1039,28 @@ En variantes transparentes (`outlined`, `ghost`) se aplica `backdrop-filter: blu
 <!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
-| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | — |
-| `loading` | `boolean` | `false` | — |
-| `itemsPerPage` | `number` | `10` | — |
-| `showPageSize` | `boolean` | `false` | — |
-| `pageSizeOptions` | `number[]` | `[5, 10, 20, 50]` | — |
 | `columns` | `Column[]` | `[]` | — |
-| `searchEnabled` | `boolean` | `false` | — |
-| `theme` | `string` | `"light"` | Tema activo de la tabla: light, dark o sigacadv2. |
 | `data` | `Record<string, any>[]` | `[]` | — |
 | `empty` | `string` | `"No hay datos que mostrar"` | — |
 | `pagination` | `boolean` | `true` | — |
+| `itemsPerPage` | `number` | `10` | — |
+| `showPageSize` | `boolean` | `false` | — |
+| `pageSizeOptions` | `number[]` | `[5, 10, 20, 50]` | — |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
+| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | — |
+| `searchEnabled` | `boolean` | `false` | — |
 | `searchPlaceholder` | `string` | `"Buscar..."` | — |
 | `searchFields` | `string[]` | `[]` | — |
 | `searchValue` | `string` | `""` | — |
 | `filters` | `Record<string, any>` | `{}` | — |
+| `loading` | `boolean` | `false` | — |
 | `actions` | `ButtonConfig[]` | `[]` | — |
 | `rowDisabled` | `boolean \| ((row: Record<string, any>) => boolean)` | `false` | — |
 | `footer` | `FooterRow[]` | `[]` | — |
 | `tableMaxHeight` | `string` | `""` | — |
 | `inlineEditing` | `boolean` | `false` | — |
 | `compact` | `boolean` | `false` | — |
+| `theme` | `string` | `"light"` | Tema activo de la tabla: light, dark o sigacadv2. |
 <!-- /@api:props -->
 
 > **Pipeline interno:** `data → search → filters → sort → pagination`. El ordenamiento y la paginación operan sobre los datos ya filtrados.

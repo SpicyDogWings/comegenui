@@ -146,13 +146,13 @@ function onClose() { console.log('cerrado'); }
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
 | `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle" \| "link" \| "none"` | `"ghost"` | — |
 | `disabled` | `boolean` | `false` | — |
-| `label` | `string` | `""` | — |
-| `position` | `"bottom" \| "top" \| "left" \| "right"` | `"bottom"` | — |
-| `align` | `"start" \| "center" \| "end"` | `"start"` | — |
-| `textAlign` | `"center" \| "left" \| "right"` | `"left"` | — |
-| `offset` | `number` | `4` | — |
+| `position` | `"left" \| "right" \| "bottom" \| "top"` | `"bottom"` | — |
+| `align` | `"center" \| "start" \| "end"` | `"start"` | — |
 | `fixed` | `boolean` | `false` | — |
 | `items` | `DropdownItem[]` | `[]` | — |
+| `label` | `string` | `""` | — |
+| `offset` | `number` | `4` | — |
+| `textAlign` | `"center" \| "left" \| "right"` | `"left"` | — |
 <!-- /@api:props -->
 
 ### Items
@@ -176,8 +176,8 @@ Cada item del array `items` puede tener:
 <!-- @api:emits -->
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
-| `open` | `any[` | — |
 | `close` | `any[` | — |
+| `open` | `any[` | — |
 <!-- /@api:emits -->
 
 ## Slots

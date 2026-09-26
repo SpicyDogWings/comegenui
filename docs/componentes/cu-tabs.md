@@ -123,8 +123,8 @@ El repositorio incluye una demo en HTML plano: [`playground/pages/tabs/tabs.html
 | `variant` | `"solid" \| "soft" \| "ghost" \| "boxed"` | `"ghost"` | `ghost`, `solid`, `boxed`, `soft` |
 | `size` | `"sm" \| "md" \| "lg"` | `"md"` | `sm`, `md`, `lg` |
 | `disabled` | `boolean` | `—` | Deshabilita todas las pestañas |
-| `tabs` | `{ key: string; label: string; icon?: string \| undefined; disabled?: boolean \| undefined; keepAlive?: boolean \| undefined; }[]` | `[]` | Definición de las pestañas |
 | `model-value` | `string` | `""` | Key del tab activo (controlado) |
+| `tabs` | `{ key: string; label: string; icon?: string \| undefined; disabled?: boolean \| undefined; keepAlive?: boolean \| undefined; }[]` | `[]` | Definición de las pestañas |
 <!-- /@api:atributos -->
 
 ### Prop `tabs`

@@ -66,18 +66,18 @@ const items = ref([/* ... */]);
 <!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
-| `trigger` | `"click" \| "hover"` | `'click'` | — |
-| `search` | `boolean` | `false` | — |
-| `searchMode` | `"filter" \| "scroll"` | `'filter'` | — |
 | `searchPlaceholder` | `string` | `'Buscar...'` | — |
 | `searchFields` | `string[]` | `[]` | — |
 | `compact` | `boolean` | `false` | — |
-| `activePath` | `string` | `''` | — |
+| `trigger` | `"click" \| "hover"` | `'click'` | — |
+| `search` | `boolean` | `false` | — |
+| `searchMode` | `"filter" \| "scroll"` | `'filter'` | — |
 | `compactable` | `boolean` | `false` | — |
 | `collapsed` | `boolean` | `false` | — |
 | `responsive` | `boolean` | `false` | — |
 | `responsiveMode` | `"auto" \| "side" \| "fullscreen"` | `'auto'` | — |
-| `sideOverPosition` | `"bottom" \| "top" \| "left" \| "right"` | `'left'` | — |
+| `sideOverPosition` | `"left" \| "right" \| "bottom" \| "top"` | `'left'` | — |
+| `activePath` | `string` | `''` | — |
 | `highlightItem` | `NavItem \| null` | `null` | — |
 | `items` | `NavItem[]` | `—` | — |
 <!-- /@api:props -->
