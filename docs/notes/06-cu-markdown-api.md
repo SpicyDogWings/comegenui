@@ -18,7 +18,7 @@ Pero el wrapper `src/components/customElements/markdown/Markdown.ce.vue` **no lo
 
 Es decir: en el UMD, `md.addEventListener('parsed', ...)` y `md.headingIds()` **no funcionan**. El `.vue` interno sí los provee, pero no atraviesan el wrapper CE.
 
-Detectado por el generador de fichas (`pnpm site:sync`), que resuelve la API desde el SFC que distribuye la lib (el `.ce.vue`).
+Detectado al comparar la ficha con el `.ce.vue` que distribuye la lib.
 
 ## Impacto
 
@@ -33,6 +33,6 @@ Si se quiere mantener la funcionalidad, agregar en `Markdown.ce.vue`:
 defineExpose({ headingIds: () => markdownRef.value?.headingIds() });
 ```
 
-y reenviar el evento con `@parsed="ceEmit('parsed', $event)"`. Después, regenerar la ficha (`--all --docs`).
+y reenviar el evento con `@parsed="ceEmit('parsed', $event)"`. Después, actualizar la ficha `componentes/cu-markdown.md`.
 
 Si no, dejar la ficha como está (sin `parsed`/`headingIds()`).

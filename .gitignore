@@ -37,17 +37,12 @@ coverage
 __screenshots__/
 public/test-results.json
 
-# Khadgar (JSON de API generado)
-public/khadgar.json
-
-# VitePress (fichas copiadas + generados + build)
-docs/site/componentes/
+# VitePress (generados + build). Las páginas de `componentes/` SÍ se versionan:
+# son la fuente de verdad de la doc, escritas a mano.
 docs/site/public/comegen.config.json
 docs/site/public/img/
 docs/site/public/comegen.ico
 docs/site/public/favicon.ico
-docs/site/.vitepress/khadgar.gen.json
-docs/site/.vitepress/khadgar.json
 docs/site/.vitepress/theme/*.gen.css
 docs/site/.vitepress/theme/*.gen.mjs
 docs/site/.vitepress/dist/
@@ -70,6 +65,8 @@ scripts/config
 !.opencode/skills/**/*
 !.opencode/plans/
 !.opencode/plans/**/*
+!.opencode/agent/
+!.opencode/agent/**/*
 graphify-out
 
 # Pesonal

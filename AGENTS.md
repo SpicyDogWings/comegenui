@@ -13,20 +13,20 @@ src/
 ├── lib/
 │   └── {category}/mi-componente.ts        # Entry point: defineCustomElement + registro
 ├── plugins/
-│   ├── cu-tokens/                         # Sistema de tokens CSS
-│   ├── khadgar/                           # Fábrica: `.vue` → contrato JSON (extract/, cli/, config.ts, api.ts)
-│   └── khadgar-docs/                      # Consumidor: JSON → fichas `.md` + config/tema de VitePress
+│   └── cu-tokens/                         # Sistema de tokens CSS + tema de VitePress (vitepress.ts, cli/)
 ├── layouts/                               # AppTopbar + AppLayout (header propio del sitio)
 ├── pages/                                 # Home.vue + playground/ThemeBuilder.vue (páginas del sitio)
 ├── composables/                           # Composables reutilizables
 └── utils/                                 # Utilidades (getHostTheme, palette, fileIcons)
 
 docs/
-├── site/                                  # Sitio VitePress (consume khadgar.gen.json + las fichas)
-└── skills/use-comegen/                    # Skill de uso (SKILL.md + fichas `cu-*.md` generadas)
+├── site/                                  # Sitio VitePress (páginas a mano + fichas incluidas)
+└── skills/use-comegen/                    # Skill de uso (SKILL.md + fichas `cu-*.md`, fuente de verdad)
 ```
 
-Config de la fábrica: `khadgar.config.json` (raíz): `libDir`, `docsDir`, `extract`, `docs` + la lista `components` (cada uno con `name`, `file` —path del `.vue`—, `group` y `vanilla`).
+Sin pipeline de extracción: las fichas y las páginas se escriben a mano (las mantiene el agente
+`.opencode/agent/comegen-docs.md`). `pnpm site:sync` sólo genera el tema de VitePress (tokens CU
+→ `docs/site/.vitepress/theme/*.gen.*`) desde `comegen.config.json`.
 
 Donde `{category}` es uno de: `form/`, `information/`, `overlay/`, `navigation/`, `data/`, `buttons/`, o raíz.
 
@@ -96,7 +96,7 @@ El `<cu-date-picker>` renderiza el calendario interno solo cuando el panel está
 - Cambiar `events` con el panel abierto: el Calendar recibe el prop actualizado y re-renderiza
 - Para forzar re-render con el panel abierto: `picker.close(); picker.open()`
 
-El picker está **unificado**: `mode="single"` (fecha, `modelValue`) o `mode="range"` (`startDate`/`endDate`). El rango lo administra `Calendar` con `mode="single" | "range"` y la FSM compartida `src/composables/useDateRange.ts` (en rango el valor son `rangeStart`/`rangeEnd`; **en `single` se ignoran**, la única selección es el click simple); `DualCalendar.vue` **solo range**: compone 2 `Calendar` en modo range con navegación independiente y comparte el mismo rango entre ambos (no tiene FSM propia). `DatePicker` elige el **tipo de calendario** (`dual=false` → `Calendar` single/range; `dual=true` → `DualCalendar`, forzando range aunque `mode` sea single), administra los valores (espeja y re-emite) y comparte el trigger en `DatePickerShell.vue`; en `single` ignora `startDate`/`endDate` (`setRange` no-op). `DualCalendar` es interno (sin CE, sin entry en `lib/`, sin ficha de skill) pero **sí aparece en el playground** vía una entrada en `khadgar.config.json` sin `customElement` ni `skill`. `<cu-date-picker-range>` (`DatePickerRange.ce.vue` + `lib/form/date-picker-range.ts`) queda como **shim deprecado** de `mode="range"`.
+El picker está **unificado**: `mode="single"` (fecha, `modelValue`) o `mode="range"` (`startDate`/`endDate`). El rango lo administra `Calendar` con `mode="single" | "range"` y la FSM compartida `src/composables/useDateRange.ts` (en rango el valor son `rangeStart`/`rangeEnd`; **en `single` se ignoran**, la única selección es el click simple); `DualCalendar.vue` **solo range**: compone 2 `Calendar` en modo range con navegación independiente y comparte el mismo rango entre ambos (no tiene FSM propia). `DatePicker` elige el **tipo de calendario** (`dual=false` → `Calendar` single/range; `dual=true` → `DualCalendar`, forzando range aunque `mode` sea single), administra los valores (espeja y re-emite) y comparte el trigger en `DatePickerShell.vue`; en `single` ignora `startDate`/`endDate` (`setRange` no-op). `DualCalendar` es interno: no tiene wrapper CE, ni entry en `src/lib/`, ni ficha de skill — su página del sitio es de contenido congelado. `<cu-date-picker-range>` (`DatePickerRange.ce.vue` + `lib/form/date-picker-range.ts`) queda como **shim deprecado** de `mode="range"`.
 
 ---
 
@@ -253,7 +253,8 @@ Tokens compartidos: tipografía, spacing, border-radius, shadows, borders.
 9. Los entry points van en `src/lib/{category}/mi-componente.ts`
 10. `hightContrast` es el nombre correcto del prop (typo persistente en todo el codebase)
 11. **Creá ramas solo cuando corresponde, no a cada rato.** Creá una rama nueva **solo cuando la rama base es `main`** y la tarea es una feature, fix, docs o tests con entidad propia (ej: `feat/x`, `fix/x`, `docs/x`, `test/x`). **Si ya estás trabajando en una rama (base ≠ `main`), NO crees otra rama** salvo que el usuario lo pida explícitamente — trabajá sobre la rama actual. `main` solo recibe merges.
-12. **Validadores de props:** usá los compartidos de `src/utils/validators.ts` (`validator: isColor`, `isSize`, …) en vez de repetir el array inline. Mantené igual la **unión inline en `PropType<...>`** (khadgar la extrae para la doc y el playground; un alias con nombre la rompe). Los formatos de mes/año viven en `src/utils/date.ts` (`isMonthFormat`/`isYearFormat`).
+12. **Validadores de props:** usá los compartidos de `src/utils/validators.ts` (`validator: isColor`, `isSize`, …) en vez de repetir el array inline. Mantené la **unión inline en `PropType<...>`** (convención del repo: la ficha se lee sin saltar a un alias). Los formatos de mes/año viven en `src/utils/date.ts` (`isMonthFormat`/`isYearFormat`).
+13. **Docs a mano:** cada componente público tiene **ficha** (`docs/skills/use-comegen/componentes/<tag>.md`, viaja en el zip) y **página** (`docs/site/componentes/<slug>.md`: frontmatter `title`/`group`, `<!--@include-->` de la ficha y demos `<ClientOnly>`). No hay generación: si cambiás el componente, actualizá las dos. `scripts/check-docs.mjs` valida existencia y frontmatter, no contenido.
 
 ---
 

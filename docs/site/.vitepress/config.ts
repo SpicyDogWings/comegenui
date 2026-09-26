@@ -1,83 +1,40 @@
-import { existsSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "vitepress";
+import { buildSidebar } from "./sidebar";
 import shikiThemes from "./theme/shiki.gen.mjs";
 
-// La config del sitio (nav/sidebar/componentes) la genera khadgar-docs en
-// `khadgar.gen.json`. Este archivo solo la consume.
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, "../../..");
-const genPath = resolve(here, "khadgar.gen.json");
 
-interface Generated {
-  title: string;
-  description: string;
-  routeBase: string;
-  nav: unknown[];
-  sidebar: unknown[];
-  components: { tag?: string; name: string; slug: string; group: string; customElement?: boolean }[];
-}
-
-const generated: Generated = existsSync(genPath)
-  ? JSON.parse(readFileSync(genPath, "utf-8"))
-  : {
-      title: "ComegenUI",
-      description: "",
-      routeBase: "/componentes",
-      nav: [],
-      sidebar: [],
-      components: [],
-    };
-
-if (!existsSync(genPath)) {
-  console.warn(
-    "[khadgar] Falta docs/site/.vitepress/khadgar.gen.json (nav/sidebar vacíos). " +
-      "Corré `pnpm site:sync` o `pnpm dev`.",
-  );
-}
+const ROUTE_BASE = "/componentes";
+// El nav/sidebar sale del frontmatter de `docs/site/componentes/*.md`.
+const sidebar = buildSidebar(ROUTE_BASE);
 
 export default defineConfig({
-  title: generated.title,
-  description: generated.description,
+  title: "ComegenUI",
+  description: "Componentes web de ComegenUI.",
   cleanUrls: true,
   // Syntax highlighting con la paleta CU (generado por cu-tokens).
   markdown: {
     theme: (shikiThemes as { vitepress: { light: unknown; dark: unknown } }).vitepress as never,
   },
-  // Las fichas son compartidas con la skill: `../SKILL.md` y links al playground
-  // no existen como páginas del sitio (todavía).
+  // Las fichas de la skill se incluyen tal cual en las páginas: sus links al
+  // `SKILL.md` y al playground no existen como rutas del sitio.
   ignoreDeadLinks: [/SKILL/, /playground/],
   themeConfig: {
-    nav: generated.nav,
-    sidebar: generated.sidebar,
+    nav: [
+      { text: "Componentes", link: sidebar[0]?.items[0]?.link ?? ROUTE_BASE },
+      { text: "Theme Builder", link: "/theme-builder" },
+    ],
+    sidebar,
   },
   vite: {
     resolve: {
       alias: {
         "@": resolve(repoRoot, "src"),
-        "#khadgar-data": resolve(here, "khadgar.json"),
       },
     },
     server: { fs: { allow: [repoRoot] } },
-  },
-  transformPageData(pageData) {
-    const match = /componentes\/([\w-]+?)(-vanilla)?\.md$/.exec(pageData.relativePath);
-    if (!match) return;
-    const slug = match[1];
-    const component = generated.components.find((item) => item.slug === slug);
-    if (!component) return;
-    const view = match[2] ? "vanilla" : "vue";
-    return {
-      frontmatter: {
-        ...pageData.frontmatter,
-        demo: component.name,
-        // Datos de la tab Vue/Vanilla (vanilla solo si tiene custom element).
-        componentSlug: slug,
-        componentName: component.name,
-        componentView: view,
-        hasVanilla: component.customElement === true,
-      },
-    };
   },
 });

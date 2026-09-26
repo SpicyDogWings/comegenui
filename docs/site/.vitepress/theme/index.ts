@@ -3,9 +3,11 @@ import DefaultTheme from "vitepress/theme";
 import { createPinia } from "pinia";
 import { nextTick, watch } from "vue";
 import CuTokens, { loaded as cuLoaded, theme as cuTheme } from "@/plugins/cu-tokens";
-// Generados por khadgar-docs: tokens de ComegenUI + puente `--vp-*` → `--cu-*`.
+// Generados por cu-tokens: tokens de ComegenUI + puente `--vp-*` → `--cu-*`.
 import "./themes.gen.css";
 import "./vitepress.gen.css";
+// Helpers de layout para los demos en vivo de las fichas.
+import "./demos.css";
 import Layout from "./Layout.vue";
 
 // VitePress decide `--shiki-light` / `--shiki-dark` (y sus propias vars) por la

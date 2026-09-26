@@ -1,6 +1,6 @@
 // src/utils/validators.ts — Validadores compartidos de props (patrón único de la
-// lib). Cada componente declara la unión inline en `PropType<...>` (khadgar la
-// extrae para la doc y el playground) y acá vive el validador, una sola vez.
+// lib). Cada componente declara la unión inline en `PropType<...>` y acá vive el
+// validador, una sola vez.
 //
 // Uso: `validator: isColor`.
 

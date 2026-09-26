@@ -5,9 +5,11 @@ description: Guía para documentar componentes de ComegenUI 2.x. Úsala cuando s
 
 # Documentar ComegenUI
 
-Skill de **documentación** para ComegenUI 2.x. Cubre cómo extraer la API pública de un componente desde su `.ce.vue`, cómo escribir el archivo `.md` correspondiente, y cómo auditar documentación existente contra el código.
+Skill de **documentación** para ComegenUI 2.x. Cubre cómo derivar la API pública de un componente desde su `.ce.vue`, cómo escribir la ficha `.md`, cómo armar su página en el sitio y cómo auditar documentación existente contra el código.
 
-> **Premisa clave:** la documentación es para **consumo en HTML plano con UMD**, no para entornos Vue. El archivo fuente de verdad siempre es el `.ce.vue` (el wrapper de Custom Element). El `.vue` interno y la `interface Column` de `AdvancedTable.vue` **no son** la API pública — solo lo que el `.ce.vue` expone al host.
+> **Premisa clave:** la API que se documenta es la del **custom element** (lo que el `.ce.vue` expone al host), porque es lo que viaja en el UMD. La ficha suma un apartado **Vista Vue** con el uso desde Vue, pero el `.vue` interno y la `interface Column` de `AdvancedTable.vue` **no son** la API pública — solo lo que el `.ce.vue` expone.
+
+> **No hay generación automática:** la ficha y la página se escriben a mano. Si tocás un componente, actualizá las dos.
 
 ---
 
@@ -37,32 +39,31 @@ Si la tarea es **modificar el código fuente** de un componente (`.ce.vue`, `.vu
 
 ## Workflow general
 
-### Para crear o actualizar un `.md`
+### Para crear o actualizar una ficha + su página
 
-0. Si el componente no tiene sidecar, generá el base con `pnpm docs:scaffold` (crea `componentes/<tag|slug>.doc.json` con la sección "Uso en Vue"; no pisa los existentes).
-1. Leer el archivo `<Componente>.ce.vue` y aplicar la [guía de extracción](guia-extraccion.md).
+1. Leer el `<Componente>.ce.vue` (si existe) y el `<Componente>.vue` real, y aplicar la [guía de extracción](guia-extraccion.md).
 2. Anotar props, eventos, slots, métodos y variantes.
 3. Consultar las [convenciones](convenciones.md) para nombres kebab-case, defaults, eventos nativos vs custom.
-4. Llenar la [plantilla](plantilla.md) con los datos extraídos.
-5. Escribir las secciones del sidecar en el array `sections` del `.doc.json`: cada sección con `body` (HTML plano/UMD) y `bodyVue` (Vue) — modelo mode-aware.
+4. Escribir la **ficha** con la [plantilla](plantilla.md): secciones vanilla (`## Uso en HTML plano`, ejemplos `html`), el apartado `## Vista Vue` y las tablas de API (`Props`, `Eventos`, `Slots`, `Métodos expuestos`) al final. Todo a mano.
+5. Crear/actualizar la **página del sitio** `docs/site/componentes/<slug>.md`: frontmatter `title`/`group`, `<!--@include: ../../skills/use-comegen/componentes/<tag>.md-->` y demos en vivo (`<ClientOnly>` + `<div class="cu-demo">`). Si el componente es interno (sin ficha), la página lleva el contenido completo.
 6. Si es componente con props complejas (arrays/objetos), recordar la sección "Asignar como propiedad JS".
 7. Si el componente hereda props del tema (`theme`, `color`, `variant`, `hightContrast`), documentarlas en bloque.
-8. Pasar el [checklist de auditoría](checklist-auditoria.md) sobre el `.md` resultante.
+8. Pasar el [checklist de auditoría](checklist-auditoria.md) y correr `./scripts/preflight.sh`.
 
 ### Destinos de la documentación
 
-La ficha del componente es **una sola** (canonical: la leen agentes y humanos) y el sitio la publica:
-
 | Destino | Ubicación | Audiencia |
 |---|---|---|
-| **Ficha del componente** | `docs/skills/use-comegen/componentes/cu-<nombre>.md` (canonical; `.opencode/skills/comegen-ui/` y `.agents/skills/use-comegen/` son symlinks) | Agentes IA (viaja con el zip) + humanos |
-| **Sitio** | `docs/site/componentes/cu-<nombre>.md` (copia generada, la publica VitePress) | Humanos |
+| **Ficha del componente** | `docs/skills/use-comegen/componentes/cu-<tag>.md` (canonical; viaja en el zip) | Agentes IA + humanos |
+| **Página del sitio** | `docs/site/componentes/<slug>.md` (versionada; **incluye** la ficha + demos) | Humanos |
 
-> La ficha **no se edita a mano**: la genera `pnpm site:sync` desde el SFC que distribuye la lib. La prosa curada vive en `componentes/cu-<nombre>.doc.json`.
->
-> El sidecar declara las `sections` en forma **mode-aware** (`title`/`body` vanilla, `titleVue`/`bodyVue` Vue): las dos vistas pintan las **mismas secciones**. La ficha canónica de un custom element es vanilla + un apartado "Vista Vue"; el sitio publica las dos pestañas por separado. Ver [convenciones.md](convenciones.md#secciones-curadas-del-sidecar-mode-aware).
->
-> Los flags de la fábrica se declaran en `khadgar.config.json`: `skill` (opt-in, default `false`) y `customElement` (override; si se omite, se deriva del tag en `src/lib`).
+> La **ficha** es la única fuente del cuerpo: la página no la duplica, la incluye con
+> `<!--@include: ../../skills/use-comegen/componentes/<tag>.md-->` y le agrega demos. Así la
+> misma prosa sirve al zip y al sitio.
+
+> `slug` = el tag (`cu-button`) para los custom elements, y el kebab del nombre (`dropdown`,
+> `loader`) para el resto. Los componentes internos (sin ficha) llevan el contenido completo en
+> la página.
 
 ### Índices a actualizar — Skill (agentes)
 
@@ -71,15 +72,17 @@ La ficha del componente es **una sola** (canonical: la leen agentes y humanos) y
     - Tabla "Default de `variant` por componente" (si tiene variant).
     - Índice "Componentes" (link a `componentes/cu-xxx.md`).
     - Si corresponde, la tabla de "Variantes disponibles" y la de "Tamaño de los bundles" (los tamaños salen del `pnpm build:lib`).
-2. **`docs/skills/use-comegen/componentes/<nombre>.md`** (canonical) — el archivo de API del componente.
+2. **`docs/skills/use-comegen/componentes/cu-<tag>.md`** (canonical) — la ficha del componente.
 
-> El nav/sidebar del sitio y su copia de las fichas los genera `khadgar-docs`: no se editan a mano.
+> El nav/sidebar del sitio se arma solo: `docs/site/.vitepress/sidebar.ts` lee `title`/`group` del
+> frontmatter de cada página.
 
 ### Validación post-documentación
 
 Después de documentar, verificá:
-- La ficha refleja el SFC de la lib (`node src/plugins/khadgar-docs/cli.mjs --check`, o `./scripts/preflight.sh`).
-- El tag aparece en los índices de `docs/skills/use-comegen/SKILL.md`.
+- `./scripts/preflight.sh` (el gate `check-docs` valida que cada tag tenga ficha y página, y que la página tenga `title`/`group`).
+- Que la ficha y la página digan lo mismo que el SFC — el gate **no** compara contenido.
+- Que el tag aparezca en los índices de `docs/skills/use-comegen/SKILL.md`.
 
 ### Para auditar un `.md` existente
 
@@ -108,14 +111,17 @@ Esto es importante porque:
 **Fuente de verdad:**
 - `src/components/**/<Nombre>.ce.vue` — API pública (la fuente de verdad).
 - `src/components/**/<Nombre>.vue` — implementación interna (referencia, no para docs).
-- `src/components/**/<Nombre>.ts` — punto de entrada del build.
+- `src/lib/**/<kebab>.ts` — punto de entrada del build (define el tag del custom element).
 
 **Destino — Ficha (canonical):**
 - `docs/skills/use-comegen/SKILL.md` (canonical) — skill de uso.
-- `docs/skills/use-comegen/componentes/<nombre>.md` (canonical) — API del componente.
-- `docs/skills/use-comegen/componentes/<nombre>.doc.json` — prosa curada (fuente del generador).
+- `docs/skills/use-comegen/componentes/<tag>.md` — ficha del componente (viaja en el zip).
 - `.opencode/skills/comegen-ui/` → symlink al canonical (lo lee opencode).
 - `.agents/skills/use-comegen/` → symlink al canonical (lo lee el agente del huésped).
+
+**Destino — Sitio:**
+- `docs/site/componentes/<slug>.md` — página (frontmatter + include de la ficha + demos).
+- `docs/site/.vitepress/sidebar.ts` — arma el sidebar desde `title`/`group`.
 
 **Destino — Índices:**
 - `docs/skills/use-comegen/SKILL.md` — índice de la skill de uso.

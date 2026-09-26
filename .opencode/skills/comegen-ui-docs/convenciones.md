@@ -26,58 +26,58 @@ Descripción corta (1 línea) de qué hace el componente.
 
 ## Secciones del cuerpo
 
-Orden recomendado (omití las que no apliquen):
+Orden de la ficha (omití las que no apliquen) — así están las fichas actuales:
 
-1. **Props** — siempre primero si hay props.
-2. **Eventos** — solo si hay eventos custom.
-3. **Slots** — solo si hay slots.
-4. **Métodos expuestos** — solo si `defineExpose` está en el `.ce.vue`.
-5. **Uso en HTML plano** — al menos un ejemplo mínimo.
-6. Secciones adicionales específicas del componente (ej: "Posicionamiento" en Select, "Búsqueda" en Table).
+1. **Uso en HTML plano** — al menos un ejemplo mínimo, con `<script src="dist/...">`.
+2. **Secciones específicas del componente** (ej: "Variantes", "Tamaños", "Posicionamiento" en Select).
+3. **`## Vista Vue`** — las mismas secciones en su forma Vue.
+4. **Tablas de API al final**: `## Props`, `## Eventos`, `## Slots`, `## Métodos expuestos` (con
+   `Ninguno.` si no hay filas).
 
-> Las secciones **no se editan en el `.md`**: lo genera `pnpm site:sync`. La prosa
-> curada vive en el sidecar `componentes/cu-<tag>.doc.json` (ver abajo).
+> Todo el cuerpo de la ficha se escribe a mano: no hay generación.
 >
-> La API (`Props`, `Eventos`, `Slots`, `Métodos expuestos`) se extrae del SFC y el
-> render **siempre** la incluye, con `Ninguno.` si no hay filas. No se escribe a mano.
+> Las tablas de API (`Props`, `Eventos`, `Slots`, `Métodos expuestos`) salen de leer el
+> SFC; si no hay filas, se escribe `Ninguno.`.
 
-## Secciones curadas del sidecar (mode-aware)
+## Secciones curadas: vanilla + Vista Vue
 
-El array `sections` del sidecar `componentes/cu-<tag>.doc.json` es la **única fuente
-de las secciones**, compartida por las dos vistas:
+La ficha de un custom element trae cada feature dos veces: en **vanilla/UMD** (secciones de arriba,
+con `<script src="dist/CuX.umd.js">` y JS plano) y en el apartado `## Vista Vue` (las **mismas**
+secciones, con `<script setup>` + `<template>`, props en vez de atributos y `ref`/`v-model`/
+composables en vez de `document.getElementById`). El import apunta al `.vue` real:
+`import Button from "@/components/buttons/Button.vue"`.
 
-- **Ficha vanilla/UMD** (custom elements): pinta `title` + `body`.
-- **Página Vue** (sitio): pinta `titleVue ?? title` + `bodyVue ?? body`.
+```markdown
+## Uso en HTML plano
 
-```json
-{
-  "title": "Uso en HTML plano",
-  "titleVue": "Uso en Vue",
-  "body": "```html\n<script src=\"dist/CuButton.umd.js\"></script>\n<cu-button color=\"primary\" variant=\"solid\">Guardar</cu-button>\n```",
-  "bodyVue": "```vue\n<script setup lang=\"ts\">\nimport Button from \"@/components/buttons/Button.vue\";\n</script>\n\n<template>\n  <Button color=\"primary\" variant=\"solid\">Guardar</Button>\n</template>\n```"
-}
+```html
+<script src="dist/CuButton.umd.js"></script>
+<cu-button color="primary" variant="solid">Guardar</cu-button>
+```
+
+## Vista Vue
+
+### Uso en Vue
+
+```vue
+<script setup lang="ts">
+import Button from "@/components/buttons/Button.vue";
+</script>
+
+<template>
+  <Button color="primary" variant="solid">Guardar</Button>
+</template>
+```
 ```
 
 Reglas:
 
-- `title`/`body`: forma vanilla (tag HTML + `<script src="dist/...">` + JS plano).
-- `titleVue`/`bodyVue`: forma Vue (`<script setup lang="ts">` + `<template>`, props
-  en vez de atributos, `ref`/`v-model`/composables en vez de `document.getElementById`).
-  El import apunta al `.vue` real: `import Button from "@/components/buttons/Button.vue"`.
-- **Paridad:** la vista Vue debe tener las **mismas secciones** que la vanilla. Toda
-  sección con bloques de código (```) **debe** traer `bodyVue`; sin él se omite de la
-  vista Vue. Las secciones de pura prosa (sin código) pueden omitirlo: se reutiliza
-  el texto.
-- El título de la primera sección de uso es `"Uso en HTML plano"` con
-  `titleVue: "Uso en Vue"`.
-- Los componentes **sin custom element** también pueden tener sidecar: el archivo se
-  llama `<slug>.doc.json` (kebab del nombre, ej: `dropdown.doc.json`).
-- **Sidecar base:** `pnpm docs:scaffold` crea `componentes/<tag|slug>.doc.json` para
-  todo componente que no tenga uno (no pisa los existentes). Arranca con la sección
-  "Uso en Vue".
-- **`body` es opcional:** una sección puede ser Vue-only (`title` + `bodyVue` sin
-  `body`). El render vanilla la pintaría vacía, pero los componentes sin CE no tienen
-  vista vanilla.
+- La parte vanilla es la de arriba (tag HTML + `<script src="dist/...">` + JS plano).
+- `## Vista Vue` repite las **mismas secciones** en el mismo orden, con props en vez de atributos y
+  `ref`/`v-model`/composables en vez de `document.getElementById`.
+- **Paridad:** toda sección de la parte vanilla tiene su equivalente en `## Vista Vue`.
+- El título de la primera sección de uso es `## Uso en HTML plano`; en la vista Vue, `### Uso en Vue`.
+- Los componentes **sin custom element** no tienen forma vanilla: van directo al uso en Vue.
 
 ## Tabla de Props
 

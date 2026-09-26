@@ -65,8 +65,8 @@ else
   step "tests unitarios" pnpm run --silent test
 fi
 
-# ── 3. drift de las fichas de API de la skill ────────────────────────────────
-step "docs de la skill" node src/plugins/khadgar-docs/cli.mjs --check
+# ── 3. consistencia de las fichas y páginas de docs ──────────────────────────
+step "docs (fichas + páginas)" node scripts/check-docs.mjs
 
 echo ""
 echo "✅ Preflight OK"

@@ -1,0 +1,20 @@
+/* docs/site/.vitepress/theme/demos.css
+   Helpers para los demos en vivo de las páginas de componentes: un contenedor
+   con el mismo lenguaje visual que el resto del sitio (tokens CU). */
+.cu-demo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+  padding: 20px 16px;
+  border: 1px solid var(--cu-border-color);
+  border-radius: var(--cu-radius-md);
+  background-color: var(--cu-color-surface);
+}
+
+.cu-demo--stack {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 16px;
+}

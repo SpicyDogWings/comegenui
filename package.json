@@ -7,8 +7,7 @@
     "dev": "pnpm site:sync && vitepress dev docs/site",
     "build": "pnpm site:sync && vitepress build docs/site",
     "preview": "vitepress preview docs/site",
-    "site:sync": "tsx --tsconfig tsconfig.app.json src/plugins/khadgar-docs/site.mjs",
-    "docs:scaffold": "node src/plugins/khadgar-docs/cli.mjs --scaffold",
+    "site:sync": "tsx --tsconfig tsconfig.app.json src/plugins/cu-tokens/cli/vitepress.mjs",
     "build:lib": "pnpm exec tsx --tsconfig tsconfig.build-lib.json build-lib.ts",
     "type-check": "vue-tsc --build",
     "test": "vitest run",
@@ -54,7 +53,6 @@
     "vite-plugin-vue-devtools": "^8.1.5",
     "vitepress": "^1.6.4",
     "vitest": "^4.1.9",
-    "vue-component-meta": "^3.3.11",
     "vue-tsc": "^3.2.6"
   },
   "engines": {

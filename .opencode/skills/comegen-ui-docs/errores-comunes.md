@@ -90,13 +90,13 @@ Lista de errores frecuentes al crear o actualizar la documentación de un compon
 
 **Cómo evitarlo:** siempre incluir la columna "Payload (`e.detail`)" en la tabla de eventos, con la forma del objeto.
 
-## 12. Mezclar HTML y Vue en un mismo cuerpo, o no dar `bodyVue`
+## 12. Mezclar HTML y Vue en un mismo cuerpo
 
-**Síntoma:** la sección mete `<cu-button>` dentro de un `<template>` de Vue, o el `body` vanilla importa el `.vue`, o una sección con código desaparece de la vista Vue.
+**Síntoma:** la sección vanilla mete `<cu-button>` dentro de un `<template>` de Vue, o el ejemplo vanilla importa el `.vue`.
 
-**Por qué pasa:** cada sección tiene dos formas (vanilla en `body`, Vue en `bodyVue`) y es fácil mezclarlas u olvidar la segunda.
+**Por qué pasa:** la ficha trae cada feature dos veces (vanilla arriba, Vue en `## Vista Vue`) y es fácil mezclarlas.
 
-**Cómo evitarlo:** cada cuerpo usa **una sola** forma. `body` = HTML plano + UMD (`<script src="dist/...">`); `bodyVue` = `<script setup lang="ts">` + `<template>` con el import del `.vue` (`@/components/...`). Toda sección con bloques de código (```) **debe** traer `bodyVue`: si falta, se omite de la página Vue. Ver [convenciones.md](convenciones.md#secciones-curadas-del-sidecar-mode-aware).
+**Cómo evitarlo:** cada parte usa **una sola** forma. Vanilla = HTML plano + UMD (`<script src="dist/...">` + `<cu-x>`); `## Vista Vue` = `<script setup lang="ts">` + `<template>` con el import del `.vue` (`@/components/...`). Ver [convenciones.md](convenciones.md#secciones-curadas-vanilla--vista-vue).
 
 ## 13. Asumir que un componente en `archived/` o `labs/` no se distribuye
 

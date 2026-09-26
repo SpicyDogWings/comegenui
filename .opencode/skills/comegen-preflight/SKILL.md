@@ -1,6 +1,6 @@
 ---
 name: comegen-preflight
-description: 'Corre el preflight local de comegen-ui antes de un merge request (type-check + tests por capa). Usar cuando el usuario pida "prepará el merge request", "preparar MR", "correr tests antes del MR", "preflight", "chequear que no rompí nada", "validar antes de commitear".'
+description: 'Corre el preflight local de comegen-ui antes de un merge request (type-check contra baseline + tests + gate de docs). Usar cuando el usuario pida "prepará el merge request", "preparar MR", "correr tests antes del MR", "preflight", "chequear que no rompí nada", "validar antes de commitear".'
 ---
 
 # `comegen-preflight`
@@ -20,18 +20,23 @@ bash scripts/preflight.sh
 
 El script corre, en orden y cortando al primer fallo:
 
-1. `type-check` (`vue-tsc --build`)
-2. tests **L1** (`.vue`) — `vitest run --project l1`
+1. **type-check** (`vue-tsc --build`) contra `scripts/typecheck-baseline`: falla sólo si hay errores
+   *nuevos* respecto de esa cifra (el repo arrastra deuda vieja).
+2. **tests unitarios** (`vitest run`).
+3. **gate de docs** (`node scripts/check-docs.mjs`): cada tag definido en `src/lib/**/*.ts` tiene
+   ficha en `docs/skills/use-comegen/componentes/` y página en `docs/site/componentes/` con
+   `title`/`group` en el frontmatter.
 
-Las fases 2 y 3 agregan tests **L2** (`.ce`, browser) y **L3** (`.umd`, browser) al mismo script.
+Flags: `--no-typecheck` y `--no-tests` saltean los dos primeros pasos.
 
 ## Cómo reportar
 
 - Si termina con `✅ Preflight OK`: informar que está en verde y continuar (commit / MR).
 - Si falla: mostrar el step que falló y el error. **No** commitear ni preparar el MR hasta resolverlo.
-- Los resultados de los tests de stories se escriben en `public/test-results.json`; el playground los muestra como badges ✅/❌ por sección.
 
 ## Notas
 
-- Los tests de stories viven junto al componente (`X.stories.ts`) y se generan por capa desde el contrato (`src/plugins/khadgar/contract.ts`).
-- El naming de los tests es `[cu-button] colors › primary › nombre del check`; el reporter (`src/plugins/khadgar/vitest/reporter.ts`) lo mapea a sección/variante.
+- El repo tiene tests que **ya** fallan por deuda vieja. Antes de atribuirte un fallo, compará con el
+  estado previo (`git stash` + `pnpm test` + `git stash pop`).
+- El gate de docs **no valida contenido**, sólo existencia y frontmatter. Si cambiaste un componente,
+  actualizá a mano su ficha y su página (ver el agente `.opencode/agent/comegen-docs.md`).
