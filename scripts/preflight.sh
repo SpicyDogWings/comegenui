@@ -68,5 +68,11 @@ fi
 # ── 3. consistencia de las fichas y páginas de docs ──────────────────────────
 step "docs (fichas + páginas)" node scripts/check-docs.mjs
 
+# ── 4. las tablas de API generadas están al día ───────────────────────────────
+step "API generada (gen-api --check)" node scripts/gen-api.mjs --check
+
+# ── 5. build del sitio: dead links y que los ejemplos compilen ───────────────
+step "build del sitio" pnpm build
+
 echo ""
 echo "✅ Preflight OK"
