@@ -33,7 +33,7 @@ Avatar circular (imagen o iniciales) con color semántico y tres tamaños. Si no
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `""` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger`. Si se omite, se elige por hash de las iniciales |
 | `size` | `"sm" \| "md" \| "lg"` | `"md"` | Tamaño: `sm`, `md`, `lg` |
 | `initials` | `string` | `""` | Texto que se muestra como iniciales cuando no hay `src` |
-| `src` | `string` | `""` | URL de la imagen. **Nota:** el wrapper CE declara la prop pero no la forwardea al componente interno (ver `docs/notes/05-wrappers-ce-incompletos.md`); por ahora la imagen no se renderiza vía Custom Element |
+| `src` | `string` | `""` | URL de la imagen. Si se omite, se muestran las `initials` |
 
 ## Eventos
 
@@ -41,7 +41,9 @@ Ninguno.
 
 ## Slots
 
-Ninguno (el wrapper CE no forwardea slots).
+| Slot | Descripción |
+|------|------|
+| `default` | Contenido propio en lugar de las iniciales. |
 
 ## Métodos expuestos
 

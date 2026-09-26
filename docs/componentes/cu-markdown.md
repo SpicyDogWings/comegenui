@@ -48,7 +48,7 @@ El contenido se pasa como **texto dentro del tag** (no como prop). El componente
 - Los code blocks usan `<cu-code-block>` con resaltado de sintaxis.
 - El HTML se sanitiza con DOMPurify antes de renderizar.
 - Los tokens CSS se inyectan automáticamente en el shadow DOM.
-- **El wrapper CE actual no re-emite `parsed` ni expone `headingIds()`**: esos eventos/métodos existen en el `.vue` interno pero no atraviesan el `.ce.vue`. Ver `docs/notes/06-cu-markdown-api.md`.
+- El evento `parsed` y el método `headingIds()` sí atraviesan el wrapper CE.
 
 ---
 
@@ -60,7 +60,9 @@ El contenido se pasa como **texto dentro del tag** (no como prop). El componente
 
 ## Eventos
 
-Ninguno.
+| Evento | Payload (`e.detail`) | Descripción |
+|------|------|------|
+| `parsed` | `string[]` | Ids de los headings extraídos, al terminar de parsear |
 
 ## Slots
 
@@ -70,4 +72,6 @@ Ninguno.
 
 ## Métodos expuestos
 
-Ninguno.
+| Método | Descripción |
+|------|------|
+| `.headingIds()` | Devuelve los ids de los headings del contenido parseado (`string[]`) |

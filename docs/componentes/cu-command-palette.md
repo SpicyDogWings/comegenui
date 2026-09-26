@@ -2,7 +2,7 @@
 
 Paleta de comandos (búsqueda + lista) en un modal, con agrupado por categoría y selección por teclado o click.
 
-> **Nota:** el wrapper CE actual no expone la prop `commands` ni métodos (`open`/`close`) — sin `commands` el componente no tiene datos. Ver `docs/notes/05-wrappers-ce-incompletos.md`. La API pública documentada acá es la que el `.ce.vue` expone hoy.
+> **Ojo:** `commands` es obligatoria (array de `CommandItem`) y se asigna como **propiedad JS**: sin ella la paleta abre vacía. Ver `docs/notes/05-wrappers-ce-incompletos.md`.
 
 [← Volver](../README.md)
 
@@ -14,7 +14,7 @@ Paleta de comandos (búsqueda + lista) en un modal, con agrupado por categoría 
 <cu-command-palette id="palette" title="Comandos" color="primary"></cu-command-palette>
 ```
 
-> El componente requiere la prop `commands` para mostrar resultados, pero el wrapper CE todavía no la expone (ver nota al inicio). Mientras tanto, la paleta solo abre como modal vacío.
+> El componente requiere `commands` para mostrar resultados: asignala como propiedad JS después de cargar el UMD.
 
 ---
 
@@ -22,6 +22,7 @@ Paleta de comandos (búsqueda + lista) en un modal, con agrupado por categoría 
 
 | Atributo | Tipo | Default | Descripción |
 |------|------|------|------|
+| `commands` | `CommandItem[]` | `[]` | Comandos a mostrar (se agrupan por `category`). **Obligatoria**; se asigna como propiedad JS: `palette.commands = [...]` |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico del modal: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `title` | `string` | `""` | Título del modal |
 | `placeholder` | `string` | `"Buscar comandos…"` | Placeholder del input de búsqueda |
@@ -41,4 +42,10 @@ Ninguno.
 
 ## Métodos expuestos
 
-Ninguno (el wrapper CE no llama a `defineExpose`).
+| Método | Descripción |
+|------|------|
+| `.open()` | Abre la paleta |
+| `.close()` | Cierra la paleta |
+| `.run(command)` | Ejecuta el `onSelect` de un comando |
+| `.getCommands()` | Devuelve los comandos actuales |
+| `.isOpen()` | `true` si está abierta |

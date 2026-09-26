@@ -73,7 +73,7 @@ La celda renderiza el editor (input / select / textarea / autocomplete) **direct
 <AdvancedTable :columns="columns" :data="data" :inline-editing="inlineEditing" />
 ```
 
-> ⚠️ **En HTML plano:** el `<cu-table>` (Custom Element) **no expone** la prop `inlineEditing`. Para celdas siempre editables con UMD usá `inlineEdit: true` en cada columna (las `columns` se reenvían tal cual al interno).
+> **En HTML plano:** `inlineEditing` se expone como el atributo `inline-editing` (aplica a todas las celdas editables); también podés activarlo por columna con `inlineEdit: true`.
 
 | Acción | Comportamiento en estado inline |
 |--------|---------------------------------|
@@ -694,7 +694,7 @@ const columns = [
 
 ### Receta 2 — Columna siempre editable en HTML plano (`<cu-table>`)
 
-El Custom Element no expone `inlineEditing`, así que el estado inline se activa **por columna**:
+En HTML plano tenés las dos vías: el atributo `inline-editing` (todas las celdas editables) o activarlo **por columna**:
 
 ```html
 <script src="dist/CuTable.umd.js"></script>
@@ -848,6 +848,9 @@ En variantes transparentes (`outlined`, `ghost`) se aplica `backdrop-filter: blu
 | `actions` | `unknown[]` | `[]` | Acciones de fila (botón "..." al final de cada fila). Se asigna como propiedad JS |
 | `rowDisabled` | `boolean \| ((row: Record<string, any>) => boolean)` | `false` | Deshabilita filas (ver [Deshabilitar filas, columnas y celdas](#deshabilitar-filas-columnas-y-celdas)). Se asigna como propiedad JS |
 | `footer` | `FooterRow[]` | `[]` | Filas de footer (ver [Footer (API programática)](#footer-api-programática)). Se asigna como propiedad JS |
+| `tableMaxHeight` | `string` | `""` | Alto máximo del área scrolleable, en CSS (atributo HTML: `table-max-height`) |
+| `inlineEditing` | `boolean` | `false` | Editor siempre visible en las celdas editables, sin el lápiz (atributo HTML: `inline-editing`) |
+| `compact` | `boolean` | `false` | Filas más compactas |
 
 > **Pipeline interno:** `data → search → filters → sort → pagination`. El ordenamiento y la paginación operan sobre los datos ya filtrados.
 
@@ -869,16 +872,21 @@ En variantes transparentes (`outlined`, `ghost`) se aplica `backdrop-filter: blu
 | `edit-cancel` | `{ row, column, index }` | Edición cancelada |
 | `edit-error` | `{ row, column, value, index }` | Validación falló (regex o `validator`): el valor **no** se guarda y el editor se tiñe de rojo (`color: danger`) |
 
-> El Custom Element **no re-emite** los eventos `row-click`, `row-dblclick` ni `cell-click` (existen internamente pero no atraviesan el wrapper). Si necesitás reaccionar a clicks en filas, agregá un `ButtonConfig` o `BadgeConfig` a la columna correspondiente.
+> **Clicks de fila:** `row-click`, `row-dblclick` y `cell-click` figuran en los emits del componente pero **hoy no se emiten** (ninguna parte del código los dispara). Para reaccionar a un click usá el `click` nativo (burbujea desde el shadow DOM) con `e.composedPath()`, o poné un `ButtonConfig`/`BadgeConfig` en la columna.
 
 ## Slots
 
 | Slot | Descripción |
 |------|------|
 | `header` | Personaliza el header completo (todas las columnas) |
+| `header-{key}` | Personaliza el header de una columna |
+| `cell-{key}` | Personaliza el render de una celda (scoped: `row`, `value`, `index`) |
 | `empty` | Contenido cuando no hay datos (override del texto `empty`) |
+| `footer` | Filas de pie; tiene prioridad sobre la prop `footer` |
+| `search` | Personaliza el buscador (scoped: `query`, `update`) |
+| `template` | Render propio de una columna |
 
-> **Importante:** Los slots `cell-{key}`, `search` y `footer` que aparecen en algunos ejemplos **no están expuestos** por el `<cu-table>` (el `.ce.vue` no los reenvía). Solo `header`, `header-{key}` y `empty`. Para footer en HTML plano, usá la [API programática](#footer-api-programática) (prop `footer` vía JS).
+> El `<cu-table>` reenvía **todos** los slots del host, así que podés usar cualquiera de los que documenta la [ficha Vue](../vue/advanced-table.md).
 
 ### Ejemplo de slot header
 
