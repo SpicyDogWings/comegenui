@@ -25,7 +25,7 @@
     "marked": "^18.0.11",
     "pinia": "^4.0.3",
     "vite-plugin-inspect": "^11.4.1",
-    "vue": "^3.5.32",
+    "vue": "3.6.0-rc.9",
     "vue-router": "^5.2.0",
     "xlsx": "^0.18.5"
   },
@@ -47,13 +47,14 @@
     "rollup-plugin-visualizer": "^7.0.1",
     "shiki": "^2.1.0",
     "tsx": "^4.23.1",
-    "typescript": "~6.0.0",
+    "typescript": "npm:@typescript/typescript6@^6.0.2",
+    "typescript-7": "npm:typescript@^7.0.2",
     "unocss": "^66.6.8",
     "vite": "^8.0.8",
     "vite-plugin-vue-devtools": "^8.1.5",
     "vitepress": "^1.6.4",
     "vitest": "^4.1.9",
-    "vue-tsc": "^3.2.6"
+    "vue-tsc": "^3.3.11"
   },
   "engines": {
     "node": "^20.19.0 || >=22.12.0"

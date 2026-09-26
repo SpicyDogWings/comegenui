@@ -1,1 +1,0 @@
-export * from "@/plugins/khadgar/runtime/useTestResults";

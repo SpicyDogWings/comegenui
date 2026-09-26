@@ -1,2 +1,8 @@
 allowBuilds:
   esbuild: true
+
+# pnpm 12 lee `overrides` desde acá (ya no desde `package.json#pnpm`).
+# VitePress 1.6.4 depende de `vue: ^3.5.13` y no acepta un prerelease: sin esto
+# instala su propia copia de Vue 3.5 y el sitio queda con dos runtimes.
+overrides:
+  vue: 3.6.0-rc.9
