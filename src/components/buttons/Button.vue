@@ -4,7 +4,7 @@ import { isSize, isTarget, isVariantFull } from '@/utils/validators'
 import LucideLoader from "@/components/icons/LucideLoader.vue";
 
 const props = defineProps({
-  /** Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` */
+  /** Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` */
   color: {
     type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     required: false,
@@ -48,7 +48,7 @@ const props = defineProps({
     required: false,
     default: false,
   },
-  /** Muestra un spinner en lugar del contenido. Deshabilita el botón mientras está activo */
+  /** Antepone un spinner al contenido. Deshabilita el botón mientras está activo */
   loading: {
     type: Boolean,
     required: false,

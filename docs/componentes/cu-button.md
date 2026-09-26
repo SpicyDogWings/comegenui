@@ -49,7 +49,7 @@ los demás, así que si algo se ve raro en otro componente, suele venir de acá.
   con `:not(.cu-button--link)`.
 - **No emite un evento custom `click`.** El que escuchás es el nativo del DOM, que burbujea
   desde el shadow DOM: `e.detail` es `undefined` y el `e.target` es el elemento interno.
-- `disabled` y `loading` deshabilitan igual; `loading` además cambia el contenido por el spinner.
+- `disabled` y `loading` deshabilitan igual; `loading` además antepone un spinner: el contenido sigue visible.
 - `target` sólo tiene efecto si hay `to`.
 
 ## Variantes
@@ -130,12 +130,12 @@ Usá `type` cuando el botón viva dentro de un `<form>`:
 <!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
 | `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle" \| "link" \| "none"` | `"ghost"` | `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` |
 | `size` | `"sm" \| "md" \| "lg"` | `'md'` | Tamaño: `sm`, `md`, `lg` |
 | `disabled` | `boolean` | `false` | Estado deshabilitado |
 | `type` | `"button" \| "submit" \| "reset"` | `'button'` | Tipo del `<button>`: `button`, `submit`, `reset` |
-| `loading` | `boolean` | `false` | Muestra un spinner en lugar del contenido. Deshabilita el botón mientras está activo |
+| `loading` | `boolean` | `false` | Antepone un spinner al contenido. Deshabilita el botón mientras está activo |
 | `target` | `"_self" \| "_blank" \| "_parent" \| "_top"` | `"_self"` | Target del link cuando `to` está definido: `_self`, `_blank`, `_parent`, `_top` |
 | `to` | `string` | `—` | Si se especifica, el botón se renderiza como `<a>` |
 <!-- /@api:atributos -->

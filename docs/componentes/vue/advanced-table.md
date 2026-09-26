@@ -1046,10 +1046,11 @@ En variantes transparentes (`outlined`, `ghost`) se aplica `backdrop-filter: blu
 | `showPageSize` | `boolean` | `false` | — |
 | `pageSizeOptions` | `number[]` | `[5, 10, 20, 50]` | — |
 | `columns` | `Column[]` | `[]` | — |
+| `searchEnabled` | `boolean` | `false` | — |
+| `theme` | `string` | `"light"` | Tema activo de la tabla: light, dark o sigacadv2. |
 | `data` | `Record<string, any>[]` | `[]` | — |
 | `empty` | `string` | `"No hay datos que mostrar"` | — |
 | `pagination` | `boolean` | `true` | — |
-| `searchEnabled` | `boolean` | `false` | — |
 | `searchPlaceholder` | `string` | `"Buscar..."` | — |
 | `searchFields` | `string[]` | `[]` | — |
 | `searchValue` | `string` | `""` | — |
@@ -1060,7 +1061,6 @@ En variantes transparentes (`outlined`, `ghost`) se aplica `backdrop-filter: blu
 | `tableMaxHeight` | `string` | `""` | — |
 | `inlineEditing` | `boolean` | `false` | — |
 | `compact` | `boolean` | `false` | — |
-| `theme` | `string` | `"light"` | Tema activo de la tabla: light, dark o sigacadv2. |
 <!-- /@api:props -->
 
 > **Pipeline interno:** `data → search → filters → sort → pagination`. El ordenamiento y la paginación operan sobre los datos ya filtrados.

@@ -4,28 +4,71 @@ group: Buttons
 ---
 
 <script setup lang="ts">
-import Button from "@/components/buttons/Button.vue";
+import ButtonVariantsExample from "../../examples/button/ButtonVariantsExample.vue";
+import ButtonSizesExample from "../../examples/button/ButtonSizesExample.vue";
+import ButtonLoadingExample from "../../examples/button/ButtonLoadingExample.vue";
+import ButtonLinkExample from "../../examples/button/ButtonLinkExample.vue";
+import ButtonIconsExample from "../../examples/button/ButtonIconsExample.vue";
+import ButtonFormExample from "../../examples/button/ButtonFormExample.vue";
+import ButtonDisabledExample from "../../examples/button/ButtonDisabledExample.vue";
 </script>
 
 <!--@include: ../../../componentes/vue/button.md-->
 
 ## Demos en vivo
 
+### Variantes
+
 <ClientOnly>
   <div class="cu-demo">
-    <Button color="primary" variant="solid">solid</Button>
-    <Button color="primary" variant="outlined">outlined</Button>
-    <Button color="primary" variant="soft">soft</Button>
-    <Button color="primary" variant="ghost">ghost</Button>
-    <Button color="primary" variant="subtle">subtle</Button>
-    <Button color="primary" variant="link">link</Button>
+    <ButtonVariantsExample />
   </div>
+</ClientOnly>
 
+### Tamaños
+
+<ClientOnly>
   <div class="cu-demo">
-    <Button size="sm">Chico</Button>
-    <Button size="md">Medio</Button>
-    <Button size="lg">Grande</Button>
-    <Button color="danger" variant="solid" disabled>Deshabilitado</Button>
-    <Button color="success" variant="solid" loading>Guardando…</Button>
+    <ButtonSizesExample />
+  </div>
+</ClientOnly>
+
+### Estado de carga
+
+<ClientOnly>
+  <div class="cu-demo">
+    <ButtonLoadingExample />
+  </div>
+</ClientOnly>
+
+### Link (interno y externo)
+
+<ClientOnly>
+  <div class="cu-demo">
+    <ButtonLinkExample />
+  </div>
+</ClientOnly>
+
+### Íconos por slot
+
+<ClientOnly>
+  <div class="cu-demo">
+    <ButtonIconsExample />
+  </div>
+</ClientOnly>
+
+### Formulario (submit / reset)
+
+<ClientOnly>
+  <div class="cu-demo">
+    <ButtonFormExample />
+  </div>
+</ClientOnly>
+
+### Deshabilitado
+
+<ClientOnly>
+  <div class="cu-demo">
+    <ButtonDisabledExample />
   </div>
 </ClientOnly>

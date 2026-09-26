@@ -74,12 +74,12 @@ El listado de archivos se renderiza con `<cu-file-list>` (componente interno) qu
 | ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
 | `disabled` | `boolean` | `false` | — |
-| `maxHeight` | `string` | `""` | — |
 | `readOnly` | `boolean` | `false` | — |
 | `placeholder` | `string` | `"Selecciona un archivo o arrastra aquí"` | — |
 | `multiple` | `boolean` | `false` | — |
 | `directory` | `boolean` | `false` | — |
 | `directoryDeep` | `number` | `0` | — |
+| `maxHeight` | `string` | `""` | — |
 | `maxSize` | `number` | `—` | — |
 | `accept` | `string` | `—` | — |
 <!-- /@api:props -->
