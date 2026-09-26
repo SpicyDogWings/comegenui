@@ -23,6 +23,35 @@ Botón con soporte de color, variante, link y estados. Si se define `to`, se ren
 
 ---
 
+## Cuándo usarlo
+
+Para cualquier acción o navegación: es el componente con el que están hechos casi todos
+los demás, así que si algo se ve raro en otro componente, suele venir de acá.
+
+| Querés… | Usá |
+|------|------|
+| Disparar una acción | `<cu-button>` + `addEventListener('click')` |
+| Navegar a una ruta | `to="/ruta"` (se renderiza como `<a>` con un `<button>` adentro) |
+| Ir a un sitio externo | `to="https://…"` + `target="_blank"` |
+| Una acción asincrónica | `loading` (spinner + deshabilitado mientras dura) |
+| Enviar un formulario | `type="submit"` (el default es `type="button"`, que **no** envía) |
+
+## Qué puede y qué no puede
+
+**Puede:** 6 colores, 7 variantes, 3 tamaños, link (`to`/`target`), `type`, `disabled` y
+`loading` con evento `loading-change`.
+
+**No puede:**
+
+- **No expone métodos.** No hay `.focus()` ni `.click()` propios: usá la API del DOM.
+- **No acepta `theme`.** El tema se define en `<html data-theme="…">`.
+- **Con `variant="link"` el padding queda en `0` y `size` no lo cambia** — el CSS lo fuerza
+  con `:not(.cu-button--link)`.
+- **No emite un evento custom `click`.** El que escuchás es el nativo del DOM, que burbujea
+  desde el shadow DOM: `e.detail` es `undefined` y el `e.target` es el elemento interno.
+- `disabled` y `loading` deshabilitan igual; `loading` además cambia el contenido por el spinner.
+- `target` sólo tiene efecto si hay `to`.
+
 ## Variantes
 
 ```html
