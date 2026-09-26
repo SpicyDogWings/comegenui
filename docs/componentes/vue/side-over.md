@@ -70,36 +70,39 @@ import SideOver from "@/components/overlay/SideOver.vue";
 
 ## Props
 
+<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `open` | `boolean` | `false` | Estado de visibilidad (v-model). Ver nota de atributo abajo |
-| `title` | `string` | `""` | Título de la cabecera (si está vacío y no es `persistent`, igual muestra el botón de cerrar) |
-| `position` | `"left" \| "right" \| "bottom" \| "top"` | `"right"` | Borde desde donde desliza: `left`, `right`, `top`, `bottom` |
-| `size` | `string` | `"300px"` | Ancho (`left`/`right`) o alto (`top`/`bottom`) del panel. Valor CSS (`300px`, `40vw`) o preset: `sm`, `md`, `lg`, `xl`, `full`. Ignorado con `fullscreen` |
-| `fullscreen` | `boolean` | `false` | Ocupa toda la pantalla |
-| `persistent` | `boolean` | `false` | Si es `true`, no se cierra por backdrop, `Escape` ni el botón de cerrar |
-| `zIndex` | `number` | `1100` | Z-index del overlay (en HTML se usa como `z-index`) |
+| ------ | ------ | ------ | ------ |
+| `size` | `string` | `'300px'` | — |
+| `modelValue` | `boolean` | `false` | — |
+| `position` | `"bottom" \| "top" \| "left" \| "right"` | `'right'` | — |
+| `zIndex` | `number` | `1100` | — |
+| `title` | `string` | `''` | — |
+| `fullscreen` | `boolean` | `false` | — |
+| `persistent` | `boolean` | `false` | — |
+<!-- /@api:props -->
 
 > **Atributo `open`:** como `open` es un atributo HTML nativo, para controlarlo desde HTML usalo con valor booleano: `<cu-side-over open>` abre el panel. El estado también se maneja por método.
 
 ## Emits
 
+<!-- @api:emits -->
 | Evento | Payload | Descripción |
-|------|------|------|
-| `update:open` | `boolean` | Nuevo estado de visibilidad (cambia al abrir/cerrar) |
-| `close` | — | Se inició el cierre (backdrop, Escape, `.close()`) |
+| ------ | ------ | ------ |
+| `update:modelValue` | `boolean` | — |
+| `close` | `` | — |
+<!-- /@api:emits -->
 
 ## Slots
 
+<!-- @api:slots -->
 | Slot | Descripción |
-|------|------|
-| `default` | Contenido del cuerpo del panel |
+| ------ | ------ |
+| `default` | — |
+<!-- /@api:slots -->
 
 ## Expose
 
-| Método | Descripción |
-|------|------|
-| `.open()` | Abre el panel |
-| `.close()` | Cierra el panel |
-| `.toggle()` | Alterna visibilidad |
-| `.isOpen()` | Devuelve el estado actual (`boolean`) |
+<!-- @api:expose -->
+No expone métodos.
+<!-- /@api:expose -->

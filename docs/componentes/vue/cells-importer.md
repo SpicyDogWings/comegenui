@@ -102,22 +102,24 @@ onMounted(() => {
 
 ## Props
 
+<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `columns` | `CellColumn[]` | `[]` | Esquema de columnas (header esperado, tipo y reglas). **Obligatorio.** |
-| `formats` | `string[]` | `[".xlsx", ".csv"]` | Formatos deseados; se propagan al input y se muestran al usuario |
-| `delimiter` | `string` | `","` | Delimitador para CSV |
-| `hasHeader` | `boolean` | `true` | La primera fila del archivo es el encabezado |
-| `strict` | `boolean` | `false` | `false` = match por label en cualquier orden; `true` = respeta el orden del schema |
-| `sheet` | `string \| number` | `0` | Hoja a leer en `.xlsx` (índice o nombre) |
-| `template` | `{ enabled?: boolean; type?: "xlsx" \| "csv"; filename?: string; }` | `{ enabled: false, type: "csv", filename: "template" }` | "xlsx"` |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `"outlined"` | `outlined`, `soft`, `ghost`, `subtle` |
-| `placeholder` | `string` | `"Seleccionar archivo"` | Texto cuando no hay archivo |
-| `disabled` | `boolean` | — | Deshabilita la selección |
-| `readOnly` | `boolean` | — | Modo solo lectura |
-| `maxSize` | `number` | — | Tamaño máximo en bytes |
-| `inputType` | `"input" \| "zone"` | `"input"` | `"input"` = `<cu-file-input>` compacto; `"zone"` = zona drag & drop (`<cu-file-input-zone>`). Single file en ambos |
+| ------ | ------ | ------ | ------ |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
+| `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `"outlined"` | — |
+| `disabled` | `boolean` | `false` | — |
+| `readOnly` | `boolean` | `false` | — |
+| `placeholder` | `string` | `"Seleccionar archivo"` | — |
+| `columns` | `CellColumn[]` | `[]` | — |
+| `formats` | `string[]` | `[".xlsx", ".csv"]` | — |
+| `delimiter` | `string` | `","` | — |
+| `hasHeader` | `boolean` | `true` | — |
+| `strict` | `boolean` | `false` | — |
+| `sheet` | `string \| number` | `0` | — |
+| `template` | `{ enabled?: boolean \| undefined; type?: "xlsx" \| "csv" \| undefined; filename?: string \| undefined; }` | `{ enabled: false, type: "csv", filename: "template" }` | — |
+| `inputType` | `"input" \| "zone"` | `"input"` | — |
+| `maxSize` | `number` | `—` | — |
+<!-- /@api:props -->
 
 ### `CellColumn`
 
@@ -138,29 +140,35 @@ onMounted(() => {
 
 ## Emits
 
+<!-- @api:emits -->
 | Evento | Payload | Descripción |
-|------|------|------|
-| `parse` | `{ rows, headers, fileName }` | Al leer correctamente un archivo |
-| `error` | `CellError[]` | Errores de validación del contenido |
-| `change` | `null` | Al seleccionar o quitar archivo |
+| ------ | ------ | ------ |
+| `change` | `File \\| null` | — |
+| `parse` | `{ rows: Record<string, unknown>[]; headers: string[]; fileName: string; }` | — |
+| `error` | `CellError[]` | — |
+<!-- /@api:emits -->
 
 `CellError`: `{ row, columnKey, columnLabel, message }`.
 
 ## Slots
 
+<!-- @api:slots -->
 Ninguno.
+<!-- /@api:slots -->
 
 ## Expose
 
+<!-- @api:expose -->
 | Método | Descripción |
-|------|------|
-| `.getRows()` | Filas parseadas |
-| `.getHeaders()` | Encabezados del archivo |
-| `.getErrors()` | Errores de validación |
-| `.getFile()` | `File` actual o `null` |
-| `.validate()` | Re-valida y devuelve errores |
-| `.downloadTemplate()` | Descarga la plantilla configurada |
-| `.reset()` | Limpia archivo, filas y errores |
-| `.set(val: File \| null)` | Asigna un archivo programáticamente |
-| `.trigger()` | Abre el diálogo de selección |
-| `.focus()` | Enfoca el input |
+| ------ | ------ |
+| `getRows` | — |
+| `getHeaders` | — |
+| `getErrors` | — |
+| `getFile` | — |
+| `validate` | — |
+| `downloadTemplate` | Descarga la plantilla configurada (csv/xlsx). |
+| `reset` | — |
+| `set` | — |
+| `trigger` | — |
+| `focus` | — |
+<!-- /@api:expose -->

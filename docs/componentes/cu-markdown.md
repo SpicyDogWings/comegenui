@@ -54,24 +54,30 @@ El contenido se pasa como **texto dentro del tag** (no como prop). El componente
 
 ## Atributos
 
+<!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
-|------|------|------|------|
-| `theme` | `string` | `"light"` | Tema de colores (`light`, `dark`, `sigacadv2`) |
+| ------ | ------ | ------ | ------ |
+| `theme` | `string` | `'light'` | Tema de colores (`light`, `dark`, `sigacadv2`) |
+<!-- /@api:atributos -->
 
 ## Eventos
 
-| Evento | Payload (`e.detail`) | Descripción |
-|------|------|------|
-| `parsed` | `string[]` | Ids de los headings extraídos, al terminar de parsear |
+<!-- @api:eventos -->
+Ninguno.
+<!-- /@api:eventos -->
 
 ## Slots
 
+<!-- @api:slots -->
 | Slot | Descripción |
-|------|------|
-| `default` | Contenido markdown a renderizar. Se pasa como texto dentro del tag. |
+| ------ | ------ |
+| `default` | — |
+<!-- /@api:slots -->
 
 ## Métodos expuestos
 
+<!-- @api:metodos -->
 | Método | Descripción |
-|------|------|
-| `.headingIds()` | Devuelve los ids de los headings del contenido parseado (`string[]`) |
+| ------ | ------ |
+| `headingIds` | — |
+<!-- /@api:metodos -->

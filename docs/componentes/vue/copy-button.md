@@ -20,22 +20,30 @@ import CopyButton from "@/components/buttons/CopyButton.vue";
 
 ## Props
 
+<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `text` | `string` | — | Texto que se copia al portapapeles. |
-| `label` | `string` | `""` | Etiqueta visible junto al ícono de copiar. |
-| `copiedLabel` | `string` | `"Copiado"` | Etiqueta que reemplaza a `label` durante la confirmación de copia. |
+| ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico del botón. |
 | `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle" \| "link" \| "none"` | `"soft"` | Variante visual del botón. |
+| `label` | `string` | `""` | Etiqueta visible junto al ícono de copiar. |
+| `copiedLabel` | `string` | `"Copiado"` | Etiqueta que reemplaza a `label` durante la confirmación de copia. |
+| `text` | `string` | `—` | Texto que se copia al portapapeles. |
+<!-- /@api:props -->
 
 ## Emits
 
+<!-- @api:emits -->
 Ninguno.
+<!-- /@api:emits -->
 
 ## Slots
 
+<!-- @api:slots -->
 Ninguno.
+<!-- /@api:slots -->
 
 ## Expose
 
-Ninguno.
+<!-- @api:expose -->
+No expone métodos.
+<!-- /@api:expose -->

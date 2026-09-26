@@ -21,38 +21,46 @@ import Popover from "@/components/overlay/Popover.vue";
 
 ## Props
 
+<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `position` | `"left" \| "right" \| "bottom" \| "top"` | `"bottom"` |  |
-| `align` | `"center" \| "start" \| "end"` | `"start"` |  |
-| `offset` | `number` | `4` |  |
-| `fixed` | `boolean` | `false` |  |
-| `panelWidth` | `string` | `""` |  |
-| `disabled` | `boolean` | `false` |  |
-| `hover` | `boolean` | `false` |  |
-| `hoverDelay` | `number` | `200` |  |
-| `role` | `string` | `""` |  |
-| `panelClass` | `string \| string[] \| Record<string, boolean>` | `""` |  |
+| ------ | ------ | ------ | ------ |
+| `disabled` | `boolean` | `false` | — |
+| `position` | `"bottom" \| "top" \| "left" \| "right"` | `"bottom"` | — |
+| `align` | `"start" \| "center" \| "end"` | `"start"` | — |
+| `offset` | `number` | `4` | — |
+| `fixed` | `boolean` | `false` | — |
+| `hover` | `boolean` | `false` | — |
+| `panelWidth` | `string` | `""` | — |
+| `hoverDelay` | `number` | `200` | — |
+| `role` | `string` | `""` | — |
+| `panelClass` | `string \| string[] \| Record<string, boolean>` | `""` | — |
+<!-- /@api:props -->
 
 ## Emits
 
+<!-- @api:emits -->
 | Evento | Payload | Descripción |
-|------|------|------|
-| `close` | — |  |
-| `open` | — |  |
+| ------ | ------ | ------ |
+| `open` | `any[` | — |
+| `close` | `any[` | — |
+<!-- /@api:emits -->
 
 ## Slots
 
+<!-- @api:slots -->
 | Slot | Descripción |
-|------|------|
-| `toggle` |  |
-| `default` |  |
+| ------ | ------ |
+| `toggle` | — |
+| `default` | — |
+<!-- /@api:slots -->
 
 ## Expose
 
+<!-- @api:expose -->
 | Método | Descripción |
-|------|------|
-| `.open()` |  |
-| `.close()` |  |
-| `.toggle()` |  |
-| `.isOpen()` |  |
+| ------ | ------ |
+| `open` | — |
+| `close` | — |
+| `toggle` | — |
+| `isOpen` | — |
+<!-- /@api:expose -->

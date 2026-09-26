@@ -23,32 +23,40 @@ const value = ref("");
 
 ## Props
 
+<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `modelValue` | `string \| number \| null` | `null` |  |
-| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` |  |
-| `min` | `string \| number \| null` | `null` |  |
-| `max` | `string \| number \| null` | `null` |  |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"primary"` |  |
-| `disabled` | `boolean` | `false` |  |
+| ------ | ------ | ------ | ------ |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `'primary'` | — |
+| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle"` | `'soft'` | — |
+| `disabled` | `boolean` | `false` | — |
+| `modelValue` | `string \| number \| null` | `null` | — |
+| `min` | `string \| number \| null` | `null` | — |
+| `max` | `string \| number \| null` | `null` | — |
+<!-- /@api:props -->
 
 ## Emits
 
+<!-- @api:emits -->
 | Evento | Payload | Descripción |
-|------|------|------|
-| `update:modelValue` | `value: number` |  |
-| `change` | `value: number` |  |
+| ------ | ------ | ------ |
+| `update:modelValue` | `number` | — |
+| `change` | `number` | — |
+<!-- /@api:emits -->
 
 ## Slots
 
+<!-- @api:slots -->
 Ninguno.
+<!-- /@api:slots -->
 
 ## Expose
 
+<!-- @api:expose -->
 | Método | Descripción |
-|------|------|
-| `.nextYear()` | Avanza al año siguiente (respetando max). |
-| `.prevYear()` | Retrocede al año anterior (respetando min). |
-| `.goToYear(value: string \| number)` | Navega al año indicado. |
-| `.getValue()` | Devuelve el año actual. |
-| `.setValue(value: string \| number \| null)` | Establece el año desde un número o string. |
+| ------ | ------ |
+| `nextYear` | — |
+| `prevYear` | — |
+| `goToYear` | — |
+| `getValue` | — |
+| `setValue` | — |
+<!-- /@api:expose -->

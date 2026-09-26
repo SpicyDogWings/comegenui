@@ -39,11 +39,17 @@ const table = (headers, rows) => [
   ...rows.map(row),
 ].join('\n')
 
+/** Props que Vue agrega solo y no son API del componente. */
+const SKIP_PROPS = new Set(['key', 'ref', 'ref_for', 'ref_key', 'class', 'style'])
+const cleanType = (t) => String(t).replace(/ \| undefined$/, '')
+
 function meta(file) {
   const m = checker.getComponentMeta(resolve(ROOT, file))
   return {
-    props: m.props ?? [],
-    events: m.events ?? [],
+    props: (m.props ?? [])
+      .filter((p) => !SKIP_PROPS.has(p.name) && !kebab(p.name).startsWith('on-vue:'))
+      .map((p) => ({ ...p, type: cleanType(p.type) })),
+    events: (m.events ?? []).map((e) => ({ ...e, type: cleanType(e.type) })),
     slots: m.slots ?? [],
     exposed: m.exposed ?? [],
   }
@@ -69,11 +75,10 @@ async function collect() {
       ?? src.match(/from\s+['"]@\/(components\/[^'"]+\.vue)['"]/)?.[1])
     if (!sfc) continue
     const vueName = sfc.split('/').pop().replace(/\.ce\.vue$|\.vue$/, '')
-    const cePath = `src/${sfc}`
     out.set(kebab(vueName), {
       tag,
-      ce: cePath,
-      vue: `src/components/${sfc.replace(/^components\/customElements\//, '').replace(/\.ce\.vue$/, '.vue')}`,
+      ce: `src/${sfc}`,
+      vue: `src/${sfc.replace('components/customElements/', 'components/').replace(/\.ce\.vue$/, '.vue')}`,
     })
   }
 
@@ -100,7 +105,7 @@ function ceBlocks({ ce, tag }) {
     : 'Ninguno.'
   const events = m.events.length
     ? table(['Evento', 'Payload (`e.detail`)', 'Descripción'],
-        m.events.map((e) => [`\`${e.name}\``, `\`${cell(e.type.replace(/^\[|\]$/g, ''))}\``, e.description || '—']))
+        m.events.map((e) => [`\`${e.name}\``, `\`${cell(e.type.replace(/^\[|\]$/g, '').replace(/^[A-Za-z_$][\w$]*\s*:\s*/, ''))}\``, e.description || '—']))
     : 'Ninguno.'
   const slots = m.slots.length
     ? table(['Slot', 'Descripción'], m.slots.map((s) => [s.name === 'default' ? '`default`' : `\`${s.name}\``, s.description || '—']))
@@ -119,7 +124,7 @@ function vueBlocks({ vue }) {
     : 'Ninguna.'
   const emits = m.events.length
     ? table(['Evento', 'Payload', 'Descripción'],
-        m.events.map((e) => [`\`${e.name}\``, `\`${cell(e.type.replace(/^\[|\]$/g, ''))}\``, e.description || '—']))
+        m.events.map((e) => [`\`${e.name}\``, `\`${cell(e.type.replace(/^\[|\]$/g, '').replace(/^[A-Za-z_$][\w$]*\s*:\s*/, ''))}\``, e.description || '—']))
     : 'Ninguno.'
   const slots = m.slots.length
     ? table(['Slot', 'Descripción'], m.slots.map((s) => [s.name === 'default' ? '`default`' : `\`${s.name}\``, s.description || '—']))
@@ -138,7 +143,7 @@ function inject(file, blocks) {
   try { text = readFileSync(resolve(ROOT, file), 'utf8') } catch { return false }
   let next = text
   for (const [name, content] of Object.entries(blocks)) {
-    const re = new RegExp(`(<!-- @api:${name} -->)([\\s\\S]*?)(<!-- /@api:${name} -->)`)
+    const re = new RegExp(`(<!-- @api:${name} -->)([\\s\\S]*?)(<!-- /@api:${name} -->)`, 'g')
     if (!re.test(next)) continue
     next = next.replace(re, `$1\n${content}\n$3`)
   }
@@ -175,8 +180,15 @@ for (const [name, comp] of components) {
     vue: `docs/componentes/vue/${name}.md`,
     skill: `skills/use-comegen/references/${name}.md`,
   }
-  const ce = comp.ce ? ceBlocks(comp) : null
-  const vue = vueBlocks(comp)
+  let ce = null
+  let vue = null
+  try {
+    ce = comp.ce ? ceBlocks(comp) : null
+    vue = vueBlocks(comp)
+  } catch (e) {
+    console.warn(`gen-api: salteo ${name} — ${String(e.message).split('\n')[0]}`)
+    continue
+  }
 
   const changed = [
     comp.ce && inject(targets.ce, ce) && drifted.push(targets.ce),

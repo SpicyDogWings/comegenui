@@ -21,18 +21,26 @@ import InlineRenderer from "@/components/markdown/InlineRenderer.vue";
 
 ## Props
 
+<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `tokens` | `any[]` | — | Tokens inline de marked a renderizar. |
+| ------ | ------ | ------ | ------ |
+| `tokens` | `any[]` | `—` | Tokens inline de marked a renderizar. |
+<!-- /@api:props -->
 
 ## Emits
 
+<!-- @api:emits -->
 Ninguno.
+<!-- /@api:emits -->
 
 ## Slots
 
+<!-- @api:slots -->
 Ninguno.
+<!-- /@api:slots -->
 
 ## Expose
 
-Ninguno.
+<!-- @api:expose -->
+No expone métodos.
+<!-- /@api:expose -->

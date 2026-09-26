@@ -21,19 +21,27 @@ import NavbarMenu from "@/components/navigation/NavbarMenu.vue";
 
 ## Props
 
+<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `items` | `NavItem[]` | — | Items del nivel de menú. |
-| `trigger` | `"click" \| "hover"` | `"click"` | Disparador de los submenús: click o hover. |
+| ------ | ------ | ------ | ------ |
+| `trigger` | `"click" \| "hover"` | `'click'` | Disparador de los submenús: click o hover. |
+| `items` | `NavItem[]` | `—` | Items del nivel de menú. |
+<!-- /@api:props -->
 
 ## Emits
 
+<!-- @api:emits -->
 Ninguno.
+<!-- /@api:emits -->
 
 ## Slots
 
+<!-- @api:slots -->
 Ninguno.
+<!-- /@api:slots -->
 
 ## Expose
 
-Ninguno.
+<!-- @api:expose -->
+No expone métodos.
+<!-- /@api:expose -->

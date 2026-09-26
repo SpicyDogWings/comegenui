@@ -40,26 +40,35 @@ import Button from "@/components/buttons/Button.vue";
 
 ## Props
 
+<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `text` | `string` | `""` | Texto del tooltip. Si se usa el slot `content`, tiene prioridad |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico del fondo: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
-| `position` | `"left" \| "right" \| "bottom" \| "top"` | `"top"` | Lado donde aparece: `top`, `bottom`, `left`, `right` |
-| `align` | `"center" \| "start" \| "end"` | `"center"` | Alineación respecto al elemento: `start`, `center`, `end` |
-| `offset` | `number` | `6` | Distancia (px) entre el elemento y el tooltip |
-| `delay` | `number` | `200` | Retardo (ms) antes de mostrar el tooltip al hacer hover |
-| `disabled` | `boolean` | `false` | Deshabilita el tooltip (no se muestra) |
+| ------ | ------ | ------ | ------ |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
+| `disabled` | `boolean` | `false` | — |
+| `position` | `"bottom" \| "top" \| "left" \| "right"` | `"top"` | — |
+| `align` | `"start" \| "center" \| "end"` | `"center"` | — |
+| `offset` | `number` | `6` | — |
+| `delay` | `number` | `200` | — |
+| `text` | `string` | `""` | — |
+<!-- /@api:props -->
 
 ## Emits
 
-Ninguno (los eventos nativos del DOM como `mouseenter`/`mouseleave` burbujean desde el Shadow DOM).
+<!-- @api:emits -->
+Ninguno.
+<!-- /@api:emits -->
 
 ## Slots
 
+<!-- @api:slots -->
 | Slot | Descripción |
-|------|------|
-| `default` | El elemento que dispara el tooltip al hacer hover |
+| ------ | ------ |
+| `default` | — |
+| `content` | — |
+<!-- /@api:slots -->
 
 ## Expose
 
-Ninguno.
+<!-- @api:expose -->
+No expone métodos.
+<!-- /@api:expose -->

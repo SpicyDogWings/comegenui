@@ -45,25 +45,40 @@ function onSelect(cmd: { label: string }) {
 
 ## Props
 
+<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico del modal: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `title` | `string` | `""` | Título del modal |
-| `placeholder` | `string` | `"Buscar comandos…"` | Placeholder del input de búsqueda |
-| `size` | `"sm" \| "md" \| "lg" \| "auto" \| "xl" \| "full"` | `"auto"` | Ancho del modal: `auto`, `sm`, `md`, `lg`, `xl`, `full` |
-| `height` | `"sm" \| "md" \| "lg" \| "auto" \| "xl" \| "full"` | `"auto"` | Alto del modal: `auto`, `sm`, `md`, `lg`, `xl`, `full` |
+| ------ | ------ | ------ | ------ |
+| `color` | `string` | `"neutral"` | — |
+| `size` | `"sm" \| "md" \| "lg" \| "auto" \| "xl" \| "full"` | `"auto"` | — |
+| `placeholder` | `string` | `"Buscar comandos…"` | — |
+| `title` | `string` | `""` | — |
+| `height` | `"sm" \| "md" \| "lg" \| "auto" \| "xl" \| "full"` | `"auto"` | — |
+| `commands` | `CommandItem[]` | `[]` | — |
+<!-- /@api:props -->
 
 ## Emits
 
+<!-- @api:emits -->
 | Evento | Payload | Descripción |
-|------|------|------|
-| `select` | `CommandItem` | Se seleccionó un comando (por click o `Enter`) |
-| `close` | — | Se cerró el modal |
+| ------ | ------ | ------ |
+| `select` | `any[` | — |
+| `close` | `any[` | — |
+<!-- /@api:emits -->
 
 ## Slots
 
+<!-- @api:slots -->
 Ninguno.
+<!-- /@api:slots -->
 
 ## Expose
 
-Ninguno (el wrapper CE no llama a `defineExpose`).
+<!-- @api:expose -->
+| Método | Descripción |
+| ------ | ------ |
+| `open` | — |
+| `close` | — |
+| `run` | — |
+| `getCommands` | — |
+| `isOpen` | — |
+<!-- /@api:expose -->

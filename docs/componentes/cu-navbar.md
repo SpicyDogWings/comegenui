@@ -53,21 +53,23 @@ interface NavItem {
 
 ## Atributos
 
+<!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
-|------|------|------|------|
-| `items` | `unknown[]` | — | Estructura de navegación. **Se asigna como propiedad JS** |
+| ------ | ------ | ------ | ------ |
+| `trigger` | `"click" \| "hover"` | `'click'` | Cómo abren los submenús en modo compact (flyout): `click` o `hover` |
 | `search` | `boolean` | `false` | Muestra el input de búsqueda |
-| `searchPlaceholder` | `string` | `"Buscar..."` | Placeholder del input de búsqueda |
-| `searchMode` | `"filter" \| "scroll"` | `"filter"` | `filter` (oculta los que no matchean) o `scroll` (resalta y hace scroll al primero que matchea) |
-| `searchFields` | `string[]` | `[]` | Campos del item a buscar. **Se asigna como propiedad JS.** Vacío = busca en todos los campos string |
+| `search-mode` | `"filter" \| "scroll"` | `'filter'` | `filter` (oculta los que no matchean) o `scroll` (resalta y hace scroll al primero que matchea) |
+| `search-placeholder` | `string` | `'Buscar...'` | Placeholder del input de búsqueda |
+| `search-fields` | `string[]` | `[]` | Campos del item a buscar. **Se asigna como propiedad JS.** Vacío = busca en todos los campos string |
 | `compact` | `boolean` | `false` | Modo compacto: muestra solo iconos (o la inicial del label) |
+| `active-path` | `string` | `''` | Path activo manual. Si se omite, se toma de la ruta (cuando hay router) |
 | `compactable` | `boolean` | `false` | Agrega un botón nativo que alterna el modo compacto |
 | `collapsed` | `boolean` | `false` | Los submenús arrancan colapsados en lugar de expandidos |
-| `trigger` | `"click" \| "hover"` | `"click"` | Cómo abren los submenús en modo compact (flyout): `click` o `hover` |
 | `responsive` | `boolean` | `false` | En lugar de la nav inline, muestra una hamburguesa que abre el menú en un panel lateral |
-| `responsiveMode` | `"auto" \| "side" \| "fullscreen"` | `"auto"` | `auto` (fullscreen en pantallas muy chicas, lateral en el resto), `side` (siempre lateral) o `fullscreen` (siempre pantalla completa) |
-| `sideOverPosition` | `"left" \| "right" \| "bottom" \| "top"` | `"left"` | Borde desde donde desliza el panel del responsive: `left`, `right`, `top`, `bottom` |
-| `activePath` | `string` | `""` | Path activo manual. Si se omite, se toma de la ruta (cuando hay router) |
+| `responsive-mode` | `"auto" \| "side" \| "fullscreen"` | `'auto'` | `auto` (fullscreen en pantallas muy chicas, lateral en el resto), `side` (siempre lateral) o `fullscreen` (siempre pantalla completa) |
+| `side-over-position` | `"bottom" \| "top" \| "left" \| "right"` | `'left'` | Borde desde donde desliza el panel del responsive: `left`, `right`, `top`, `bottom` |
+| `items` | `unknown[]` | `—` | Estructura de navegación. **Se asigna como propiedad JS** |
+<!-- /@api:atributos -->
 
 > **`items` se asigna como propiedad JS**, no como atributo HTML:
 
@@ -88,14 +90,18 @@ nav.items = [
 
 ## Eventos
 
-| Evento | Payload (`e.detail`) | Descripción |
-|------|------|------|
-| `search` | `string` | La consulta de búsqueda (se emite en cada cambio del input) |
+<!-- @api:eventos -->
+Ninguno.
+<!-- /@api:eventos -->
 
 ## Slots
 
+<!-- @api:slots -->
 Ninguno.
+<!-- /@api:slots -->
 
 ## Métodos expuestos
 
-Ninguno.
+<!-- @api:metodos -->
+No expone métodos.
+<!-- /@api:metodos -->

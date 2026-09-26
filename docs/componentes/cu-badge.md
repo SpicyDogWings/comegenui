@@ -44,21 +44,29 @@ Etiqueta o badge pequeño para estados, categorías o metadata. Componente de pr
 
 ## Atributos
 
+<!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
-|------|------|------|------|
+| ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | `solid`, `outlined`, `soft`, `ghost`, `subtle` |
+<!-- /@api:atributos -->
 
 ## Eventos
 
+<!-- @api:eventos -->
 Ninguno.
+<!-- /@api:eventos -->
 
 ## Slots
 
+<!-- @api:slots -->
 | Slot | Descripción |
-|------|------|
-| `default` | Contenido textual o ícono del badge |
+| ------ | ------ |
+| `default` | — |
+<!-- /@api:slots -->
 
 ## Métodos expuestos
 
-Ninguno.
+<!-- @api:metodos -->
+No expone métodos.
+<!-- /@api:metodos -->

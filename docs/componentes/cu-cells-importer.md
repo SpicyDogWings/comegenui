@@ -79,22 +79,24 @@ El botón solo aparece si `enabled: true` **y** `columns.length > 0`. También s
 
 ## Atributos
 
+<!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
-|------|------|------|------|
+| ------ | ------ | ------ | ------ |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
+| `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `"outlined"` | `outlined`, `soft`, `ghost`, `subtle` |
+| `disabled` | `boolean` | `—` | Deshabilita la selección |
+| `read-only` | `boolean` | `—` | Modo solo lectura |
+| `placeholder` | `string` | `"Seleccionar archivo"` | Texto cuando no hay archivo |
 | `columns` | `CellColumn[]` | `[]` | Esquema de columnas (header esperado, tipo y reglas). **Obligatorio.** |
 | `formats` | `string[]` | `[".xlsx", ".csv"]` | Formatos deseados; se propagan al input y se muestran al usuario |
 | `delimiter` | `string` | `","` | Delimitador para CSV |
-| `hasHeader` | `boolean` | `true` | La primera fila del archivo es el encabezado |
+| `has-header` | `boolean` | `true` | La primera fila del archivo es el encabezado |
 | `strict` | `boolean` | `false` | `false` = match por label en cualquier orden; `true` = respeta el orden del schema |
 | `sheet` | `string \| number` | `0` | Hoja a leer en `.xlsx` (índice o nombre) |
-| `template` | `{ enabled?: boolean; type?: "xlsx" \| "csv"; filename?: string; }` | `{ enabled: false, type: "csv", filename: "template" }` | "xlsx"` |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `"outlined"` | `outlined`, `soft`, `ghost`, `subtle` |
-| `placeholder` | `string` | `"Seleccionar archivo"` | Texto cuando no hay archivo |
-| `disabled` | `boolean` | — | Deshabilita la selección |
-| `readOnly` | `boolean` | — | Modo solo lectura |
-| `maxSize` | `number` | — | Tamaño máximo en bytes |
-| `inputType` | `"input" \| "zone"` | `"input"` | `"input"` = `<cu-file-input>` compacto; `"zone"` = zona drag & drop (`<cu-file-input-zone>`). Single file en ambos |
+| `template` | `{ enabled?: boolean \| undefined; type?: "xlsx" \| "csv" \| undefined; filename?: string \| undefined; }` | `{ enabled: false, type: "csv", filename: "template" }` | "xlsx"` |
+| `input-type` | `"input" \| "zone"` | `"input"` | `"input"` = `<cu-file-input>` compacto; `"zone"` = zona drag & drop (`<cu-file-input-zone>`). Single file en ambos |
+| `max-size` | `number` | `—` | Tamaño máximo en bytes |
+<!-- /@api:atributos -->
 
 > **Atributos en HTML:** `hasHeader` se escribe `has-header`, `readOnly` → `readonly`, `maxSize` → `max-size`. Los arrays y objetos (`columns`, `template`, `formats`, `sheet`) se asignan por JS.
 
@@ -117,29 +119,31 @@ El botón solo aparece si `enabled: true` **y** `columns.length > 0`. También s
 
 ## Eventos
 
-| Evento | Payload (`e.detail`) | Descripción |
-|------|------|------|
-| `parse` | `{ rows, headers, fileName }` | Al leer correctamente un archivo |
-| `error` | `CellError[]` | Errores de validación del contenido |
-| `change` | `null` | Al seleccionar o quitar archivo |
+<!-- @api:eventos -->
+Ninguno.
+<!-- /@api:eventos -->
 
 `CellError`: `{ row, columnKey, columnLabel, message }`.
 
 ## Slots
 
+<!-- @api:slots -->
 Ninguno.
+<!-- /@api:slots -->
 
 ## Métodos expuestos
 
+<!-- @api:metodos -->
 | Método | Descripción |
-|------|------|
-| `.getRows()` | Filas parseadas |
-| `.getHeaders()` | Encabezados del archivo |
-| `.getErrors()` | Errores de validación |
-| `.getFile()` | `File` actual o `null` |
-| `.validate()` | Re-valida y devuelve errores |
-| `.downloadTemplate()` | Descarga la plantilla configurada |
-| `.reset()` | Limpia archivo, filas y errores |
-| `.set(val: File \| null)` | Asigna un archivo programáticamente |
-| `.trigger()` | Abre el diálogo de selección |
-| `.focus()` | Enfoca el input |
+| ------ | ------ |
+| `getRows` | — |
+| `getHeaders` | — |
+| `getErrors` | — |
+| `getFile` | — |
+| `validate` | — |
+| `downloadTemplate` | — |
+| `reset` | — |
+| `set` | — |
+| `trigger` | — |
+| `focus` | — |
+<!-- /@api:metodos -->

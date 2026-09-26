@@ -66,19 +66,19 @@ Paginación numérica con soporte para selector de tamaño de página y botones 
 
 ## Atributos
 
+<!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
-|------|------|------|------|
-| `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
+| ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle" \| "none"` | `"soft"` | `outlined`, `soft`, `ghost`, `subtle`, `none` |
-| `currentPage` | `number` | `1` | Página actual (atributo HTML: `current-page`) |
-| `totalPages` | `number` | `1` | Total de páginas (atributo HTML: `total-pages`) |
-| `totalItems` | `number` | `0` | Total de items, útil para mostrar "X–Y de Z" (atributo HTML: `total-items`) |
-| `itemsPerPage` | `number` | `10` | Items por página (atributo HTML: `items-per-page`) |
-| `showPageSize` | `boolean` | `false` | Muestra el selector de tamaño de página (atributo HTML: `show-page-size`) |
-| `pageSizeOptions` | `number[]` | `[5, 10, 20, 50]` | Opciones del selector (atributo HTML: `page-size-options`) |
-| `showFirstAndLast` | `boolean` | `false` | Muestra botones "primera" y "última" página (atributo HTML: `show-first-and-last`) |
-| `hightContrast` | `boolean` | `false` | Modo de alto contraste |
+| `current-page` | `number` | `1` | Página actual (atributo HTML: `current-page`) |
+| `total-pages` | `number` | `1` | Total de páginas (atributo HTML: `total-pages`) |
+| `total-items` | `number` | `0` | Total de items, útil para mostrar "X–Y de Z" (atributo HTML: `total-items`) |
+| `items-per-page` | `number` | `10` | Items por página (atributo HTML: `items-per-page`) |
+| `show-page-size` | `boolean` | `false` | Muestra el selector de tamaño de página (atributo HTML: `show-page-size`) |
+| `page-size-options` | `number[]` | `[5, 10, 20, 50]` | Opciones del selector (atributo HTML: `page-size-options`) |
+| `show-first-and-last` | `boolean` | `false` | Muestra botones "primera" y "última" página (atributo HTML: `show-first-and-last`) |
+<!-- /@api:atributos -->
 
 > **Atributos en HTML:** Todas las props se convierten a kebab-case. Ej.: `current-page`, `items-per-page`, `page-size-options`, `show-page-size`, `show-first-and-last`.
 
@@ -86,17 +86,20 @@ Paginación numérica con soporte para selector de tamaño de página y botones 
 
 ## Eventos
 
-| Evento | Payload (`e.detail`) | Descripción |
-|------|------|------|
-| `update:currentPage` | `number` | Se emite cuando cambia la página actual |
-| `update:itemsPerPage` | `number` | Se emite cuando cambia el tamaño de página |
+<!-- @api:eventos -->
+Ninguno.
+<!-- /@api:eventos -->
 
 > Los eventos custom se escuchan con `addEventListener` y el payload está en `e.detail`.
 
 ## Slots
 
+<!-- @api:slots -->
 Ninguno.
+<!-- /@api:slots -->
 
 ## Métodos expuestos
 
-No expone métodos. El control se hace via props y eventos.
+<!-- @api:metodos -->
+No expone métodos.
+<!-- /@api:metodos -->

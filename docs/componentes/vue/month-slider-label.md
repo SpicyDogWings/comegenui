@@ -20,6 +20,7 @@ import MonthSliderLabel from "@/components/controls/month-slider/MonthSliderLabe
 
 ## Props
 
+<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
 |------|------|------|------|
 | `label` | `string` | — | Texto principal del label (mes o año). |
@@ -32,17 +33,24 @@ import MonthSliderLabel from "@/components/controls/month-slider/MonthSliderLabe
 | `steps` | `number` | `1` |  |
 | `canNavigatePrev` | `boolean` | `true` |  |
 | `canNavigateNext` | `boolean` | `true` | Indica si se puede navegar al paso siguiente. |
+<!-- /@api:props -->
 
 ## Emits
 
+<!-- @api:emits -->
 | Evento | Payload | Descripción |
 |------|------|------|
 | `navigate` | `direction: number` |  |
+<!-- /@api:emits -->
 
 ## Slots
 
+<!-- @api:slots -->
 Ninguno.
+<!-- /@api:slots -->
 
 ## Expose
 
+<!-- @api:expose -->
 Ninguno.
+<!-- /@api:expose -->

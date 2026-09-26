@@ -56,30 +56,35 @@ Selector de color con swatch y campo de texto hex. Al hacer click en el swatch s
 
 ## Atributos
 
+<!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
-|------|------|------|------|
-| `modelValue` | `string` | `"#000000"` | Valor del color en formato hex (`#RRGGBB`) |
+| ------ | ------ | ------ | ------ |
 | `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` (define el acento del borde/foco) |
 | `disabled` | `boolean` | `false` | Deshabilita el control |
+| `model-value` | `string` | `"#000000"` | Valor del color en formato hex (`#RRGGBB`) |
+<!-- /@api:atributos -->
 
 > El Custom Element **no expone** prop `theme`, `variant` ni `hightContrast`.
 
 ## Eventos
 
-| Evento | Payload (`e.detail`) | Descripción |
-|------|------|------|
-| `update:modelValue` | `string` | Se emite al cambiar el color (vía swatch o texto válido) |
-| `change` | `string` | Se emite en cada cambio de color confirmado (mismo payload que `update:modelValue`) |
+<!-- @api:eventos -->
+Ninguno.
+<!-- /@api:eventos -->
 
 ## Slots
 
+<!-- @api:slots -->
 Ninguno.
+<!-- /@api:slots -->
 
 ## Métodos expuestos
 
+<!-- @api:metodos -->
 | Método | Descripción |
-|------|------|
-| `.get()` | Devuelve el color actual (`string` hex) |
-| `.set(val: string)` | Asigna un color programáticamente |
-| `.reset()` | Vuelve al valor por defecto `#000000` |
-| `.focus()` | Enfoca el campo de texto |
+| ------ | ------ |
+| `get` | — |
+| `set` | — |
+| `reset` | — |
+| `focus` | — |
+<!-- /@api:metodos -->

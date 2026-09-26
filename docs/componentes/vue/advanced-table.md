@@ -1036,27 +1036,32 @@ En variantes transparentes (`outlined`, `ghost`) se aplica `backdrop-filter: blu
 
 ## Props
 
+<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
-| `columns` | `Column[]` | `[]` | Definición de columnas (ver [Interfaz de columna](#interfaz-de-columna)). Se asigna como propiedad JS |
-| `data` | `Record<string, any>[]` | `[]` | Filas de la tabla. Se asigna como propiedad JS |
-| `empty` | `string` | `""` | Texto a mostrar cuando no hay datos. Si se omite, usa `"No hay datos que mostrar"` |
-| `pagination` | `boolean` | `false` | Habilita paginación interna |
-| `itemsPerPage` | `number` | `10` | Tamaño de página (atributo HTML: `items-per-page`) |
-| `showPageSize` | `boolean` | `false` | Muestra selector de items por página (atributo HTML: `show-page-size`) |
-| `pageSizeOptions` | `number[]` | `[5, 10, 20, 50]` | Opciones del selector (atributo HTML: `page-size-options`). Se asigna como propiedad JS |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | `solid`, `outlined`, `soft`, `ghost`, `subtle` |
-| `searchEnabled` | `boolean` | `false` | Habilita barra de búsqueda (atributo HTML: `search-enabled`) |
-| `searchPlaceholder` | `string` | `"Buscar..."` | Placeholder del input de búsqueda (atributo HTML: `search-placeholder`) |
-| `searchFields` | `string[]` | `[]` | Columnas donde buscar (atributo HTML: `search-fields`). Vacío = todas |
-| `searchValue` | `string` | `""` | Valor controlado del buscador (atributo HTML: `search-value`) |
-| `filters` | `Record<string, any>` | `{}` | Filtros por columna. Se asigna como propiedad JS |
-| `loading` | `boolean` | `false` | Muestra una barra de carga animada en el tope |
-| `actions` | `unknown[]` | `[]` | Acciones de fila (botón "..." al final de cada fila). Se asigna como propiedad JS |
-| `rowDisabled` | `boolean \| ((row: Record<string, any>) => boolean)` | `false` | Deshabilita filas (ver [Deshabilitar filas, columnas y celdas](#deshabilitar-filas-columnas-y-celdas)). Se asigna como propiedad JS |
-| `footer` | `FooterRow[]` | `[]` | Filas de footer (ver [Footer (API programática)](#footer-api-programática)). Se asigna como propiedad JS |
+| ------ | ------ | ------ | ------ |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
+| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | — |
+| `loading` | `boolean` | `false` | — |
+| `itemsPerPage` | `number` | `10` | — |
+| `showPageSize` | `boolean` | `false` | — |
+| `pageSizeOptions` | `number[]` | `[5, 10, 20, 50]` | — |
+| `columns` | `Column[]` | `[]` | — |
+| `searchEnabled` | `boolean` | `false` | — |
+| `data` | `Record<string, any>[]` | `[]` | — |
+| `empty` | `string` | `"No hay datos que mostrar"` | — |
+| `pagination` | `boolean` | `true` | — |
+| `searchPlaceholder` | `string` | `"Buscar..."` | — |
+| `searchFields` | `string[]` | `[]` | — |
+| `searchValue` | `string` | `""` | — |
+| `filters` | `Record<string, any>` | `{}` | — |
+| `actions` | `ButtonConfig[]` | `[]` | — |
+| `rowDisabled` | `boolean \| ((row: Record<string, any>) => boolean)` | `false` | — |
+| `footer` | `FooterRow[]` | `[]` | — |
+| `tableMaxHeight` | `string` | `""` | — |
+| `inlineEditing` | `boolean` | `false` | — |
+| `compact` | `boolean` | `false` | — |
+| `theme` | `string` | `"light"` | Tema activo de la tabla: light, dark o sigacadv2. |
+<!-- /@api:props -->
 
 > **Pipeline interno:** `data → search → filters → sort → pagination`. El ordenamiento y la paginación operan sobre los datos ya filtrados.
 
@@ -1068,22 +1073,28 @@ En variantes transparentes (`outlined`, `ghost`) se aplica `backdrop-filter: blu
 
 ## Emits
 
+<!-- @api:emits -->
 | Evento | Payload | Descripción |
-|------|------|------|
-| `update:currentPage` | `number` | Cambio de página (tras búsqueda, filtro, sort o click) |
-| `update:itemsPerPage` | `number` | Cambio del tamaño de página |
-| `update:search` | `string` | Cambio en la query de búsqueda |
-| `edit-start` | `{ row, column, index }` | Inicia edición de celda |
-| `edit-save` | `{ row, column, value, index }` | Celda editada y guardada. La tabla ya actualizó `row[key]` antes de emitir |
-| `edit-cancel` | `{ row, column, index }` | Edición cancelada |
-| `edit-error` | `{ row, column, value, index }` | Validación falló (regex o `validator`): el valor **no** se guarda y el editor se tiñe de rojo (`color: danger`) |
+| ------ | ------ | ------ |
+| `update:currentPage` | `any[` | — |
+| `update:itemsPerPage` | `any[` | — |
+| `update:search` | `any[` | — |
+| `row-click` | `any[` | — |
+| `row-dblclick` | `any[` | — |
+| `cell-click` | `any[` | — |
+| `edit-start` | `any[` | — |
+| `edit-save` | `any[` | — |
+| `edit-cancel` | `any[` | — |
+| `edit-error` | `any[` | — |
+<!-- /@api:emits -->
 
 ## Slots
 
+<!-- @api:slots -->
 | Slot | Descripción |
-|------|------|
-| `header` | Personaliza el header completo (todas las columnas) |
-| `empty` | Contenido cuando no hay datos (override del texto `empty`) |
+| ------ | ------ |
+| `search` | — |
+<!-- /@api:slots -->
 
 ### Ejemplo de slot header
 
@@ -1106,14 +1117,16 @@ En variantes transparentes (`outlined`, `ghost`) se aplica `backdrop-filter: blu
 
 ## Expose
 
+<!-- @api:expose -->
 | Método | Descripción |
-|------|------|
-| `.updateRow(rowIndex: number, newData: Record<string, any>)` | Actualiza una fila por índice. Hace **merge** del objeto, no reemplazo total |
-| `.getData()` | Devuelve copia de todos los datos |
-| `.getRow(rowIndex: number)` | Devuelve copia de una fila |
-| `.removeRow(rowIndex: number)` | Elimina una fila por índice |
-| `.addRow(newRow: Record<string, any>)` | Agrega una fila al final |
-| `.pushData(newData: Record<string, any>[])` | Agrega múltiples filas al final |
+| ------ | ------ |
+| `updateRow` | Actualiza una fila por índice con los campos indicados. |
+| `getData` | Devuelve una copia de las filas actuales, opcionalmente filtradas. |
+| `getRow` | Devuelve una copia de la fila en el índice indicado. |
+| `removeRow` | Elimina la fila en el índice indicado. |
+| `addRow` | Agrega una fila al final si respeta las columnas existentes. |
+| `pushData` | Agrega varias filas al final si respetan las columnas existentes. |
+<!-- /@api:expose -->
 
 ## Interfaces
 

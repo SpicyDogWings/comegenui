@@ -65,32 +65,38 @@ function onClose() {
 
 ## Props
 
+<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | `solid`, `outlined`, `soft`, `ghost`, `subtle` |
-| `title` | `string` | — | Título visible en la cabecera |
-| `close` | `boolean` | — | Muestra el botón de cerrar (X) |
-| `show` | `boolean` | `true` | Controla visibilidad. Cambiar este atributo emite `update:show` |
+| ------ | ------ | ------ | ------ |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
+| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | — |
+| `close` | `boolean` | `false` | — |
+| `show` | `boolean` | `true` | — |
+| `title` | `string` | `—` | — |
+<!-- /@api:props -->
 
 > **Atributos booleanos:** en HTML se usan sin valor: `<cu-alert close show>...`
 
 ## Emits
 
+<!-- @api:emits -->
 | Evento | Payload | Descripción |
-|------|------|------|
-| `close` | — | Se emite cuando se cierra la alerta (vía botón X) |
-| `open` | — | Se emite cuando la alerta pasa a mostrarse |
-| `update:show` | `boolean` | Se emite cuando cambia `show` (vía prop o interacción) |
+| ------ | ------ | ------ |
+| `open` | `any[` | — |
+| `close` | `any[` | — |
+| `update:show` | `any[` | — |
+<!-- /@api:emits -->
 
 > Los eventos custom se escuchan con `addEventListener` y el payload está en `e.detail`.
 
 ## Slots
 
+<!-- @api:slots -->
 | Slot | Descripción |
-|------|------|
-| `icon` | Ícono junto al título (slot HTML nativo) |
-| `default` | Cuerpo principal de la alerta |
+| ------ | ------ |
+| `icon` | — |
+| `default` | — |
+<!-- /@api:slots -->
 
 ```html
 <cu-alert color="success" title="Listo">
@@ -105,11 +111,12 @@ function onClose() {
 
 ## Expose
 
+<!-- @api:expose -->
 | Método | Descripción |
-|------|------|
-| `.open()` | Muestra la alerta |
-| `.close()` | Oculta la alerta |
-| `.toggle()` | Alterna visibilidad |
-| `.isOpen()` | Devuelve `true`/`false` según la visibilidad actual |
+| ------ | ------ |
+| `open` | — |
+| `toggle` | — |
+| `isOpen` | — |
+<!-- /@api:expose -->
 
 El control también puede hacerse via el atributo `show` o escuchando los eventos `open`/`close`.

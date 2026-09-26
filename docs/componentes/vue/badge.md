@@ -50,21 +50,29 @@ import Badge from "@/components/information/Badge.vue";
 
 ## Props
 
+<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
-|------|------|------|------|
+| ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | `solid`, `outlined`, `soft`, `ghost`, `subtle` |
+<!-- /@api:props -->
 
 ## Emits
 
+<!-- @api:emits -->
 Ninguno.
+<!-- /@api:emits -->
 
 ## Slots
 
+<!-- @api:slots -->
 | Slot | Descripción |
-|------|------|
-| `default` | Contenido textual o ícono del badge |
+| ------ | ------ |
+| `default` | — |
+<!-- /@api:slots -->
 
 ## Expose
 
-Ninguno.
+<!-- @api:expose -->
+No expone métodos.
+<!-- /@api:expose -->

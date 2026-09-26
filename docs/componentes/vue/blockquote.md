@@ -20,21 +20,29 @@ import Blockquote from "@/components/markdown/Blockquote.vue";
 
 ## Props
 
+<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `color` | `string` | `"primary"` |  |
-| `html` | `string` | `""` |  |
+| ------ | ------ | ------ | ------ |
+| `color` | `string` | `'primary'` | — |
+| `html` | `string` | `''` | — |
+<!-- /@api:props -->
 
 ## Emits
 
+<!-- @api:emits -->
 Ninguno.
+<!-- /@api:emits -->
 
 ## Slots
 
+<!-- @api:slots -->
 | Slot | Descripción |
-|------|------|
-| `default` |  |
+| ------ | ------ |
+| `default` | — |
+<!-- /@api:slots -->
 
 ## Expose
 
-Ninguno.
+<!-- @api:expose -->
+No expone métodos.
+<!-- /@api:expose -->

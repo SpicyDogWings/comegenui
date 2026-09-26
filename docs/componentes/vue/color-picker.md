@@ -61,28 +61,34 @@ function onUpdate(valor: string) {
 
 ## Props
 
+<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `modelValue` | `string` | `"#000000"` | Valor del color en formato hex (`#RRGGBB`) |
-| `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` (define el acento del borde/foco) |
-| `disabled` | `boolean` | `false` | Deshabilita el control |
+| ------ | ------ | ------ | ------ |
+| `color` | `string` | `"neutral"` | — |
+| `disabled` | `boolean` | `false` | — |
+<!-- /@api:props -->
 
 ## Emits
 
+<!-- @api:emits -->
 | Evento | Payload | Descripción |
-|------|------|------|
-| `update:modelValue` | `string` | Se emite al cambiar el color (vía swatch o texto válido) |
-| `change` | `string` | Se emite en cada cambio de color confirmado (mismo payload que `update:modelValue`) |
+| ------ | ------ | ------ |
+| `update:modelValue` | `string` | — |
+<!-- /@api:emits -->
 
 ## Slots
 
+<!-- @api:slots -->
 Ninguno.
+<!-- /@api:slots -->
 
 ## Expose
 
+<!-- @api:expose -->
 | Método | Descripción |
-|------|------|
-| `.get()` | Devuelve el color actual (`string` hex) |
-| `.set(val: string)` | Asigna un color programáticamente |
-| `.reset()` | Vuelve al valor por defecto `#000000` |
-| `.focus()` | Enfoca el campo de texto |
+| ------ | ------ |
+| `get` | — |
+| `set` | — |
+| `reset` | — |
+| `focus` | — |
+<!-- /@api:expose -->

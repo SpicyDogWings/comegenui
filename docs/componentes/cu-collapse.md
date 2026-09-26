@@ -119,31 +119,38 @@ collapse.addEventListener('toggle', (e) => {
 
 ## Atributos
 
+<!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
-|------|------|------|------|
-| `label` | `string` | — | Texto del trigger |
-| `defaultOpen` | `boolean` | `false` |  |
+| ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico del trigger: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `icon` | `string` | `""` | Ícono del trigger (SVG/HTML) |
+| `default-open` | `boolean` | `false` | — |
+| `label` | `string` | `—` | Texto del trigger |
+<!-- /@api:atributos -->
 
 > El Custom Element **no expone** prop `variant` ni `theme`. El trigger siempre usa la variante `ghost` y el color se controla con `color`.
 
 ## Eventos
 
-| Evento | Payload (`e.detail`) | Descripción |
-|------|------|------|
-| `toggle` | `boolean` | Se emite al cambiar el estado abierto/cerrado. El payload es el nuevo estado (`true` = abierto) |
+<!-- @api:eventos -->
+Ninguno.
+<!-- /@api:eventos -->
 
 ## Slots
 
+<!-- @api:slots -->
 | Slot | Descripción |
-|------|------|
-| `default` | Contenido colapsable |
+| ------ | ------ |
+| `default` | — |
+<!-- /@api:slots -->
 
 ## Métodos expuestos
 
+<!-- @api:metodos -->
 | Método | Descripción |
-|------|------|
-| `.open()` | Abre el collapse |
-| `.close()` | Cierra el collapse |
-| `.toggle()` | Alterna el estado |
-| `.isOpen()` | Devuelve el estado actual (`boolean`) |
+| ------ | ------ |
+| `open` | — |
+| `close` | — |
+| `toggle` | — |
+| `isOpen` | — |
+<!-- /@api:metodos -->

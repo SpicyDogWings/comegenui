@@ -827,30 +827,31 @@ En variantes transparentes (`outlined`, `ghost`) se aplica `backdrop-filter: blu
 
 ## Atributos
 
+<!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
-|------|------|------|------|
-| `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
+| ------ | ------ | ------ | ------ |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | `solid`, `outlined`, `soft`, `ghost`, `subtle` |
+| `loading` | `boolean` | `false` | Muestra una barra de carga animada en el tope |
+| `items-per-page` | `number` | `10` | Tamaño de página (atributo HTML: `items-per-page`) |
+| `show-page-size` | `boolean` | `false` | Muestra selector de items por página (atributo HTML: `show-page-size`) |
+| `page-size-options` | `number[]` | `[5, 10, 20, 50]` | Opciones del selector (atributo HTML: `page-size-options`). Se asigna como propiedad JS |
 | `columns` | `Column[]` | `[]` | Definición de columnas (ver [Interfaz de columna](#interfaz-de-columna)). Se asigna como propiedad JS |
+| `search-enabled` | `boolean` | `false` | Habilita barra de búsqueda (atributo HTML: `search-enabled`) |
 | `data` | `Record<string, any>[]` | `[]` | Filas de la tabla. Se asigna como propiedad JS |
 | `empty` | `string` | `""` | Texto a mostrar cuando no hay datos. Si se omite, usa `"No hay datos que mostrar"` |
 | `pagination` | `boolean` | `false` | Habilita paginación interna |
-| `itemsPerPage` | `number` | `10` | Tamaño de página (atributo HTML: `items-per-page`) |
-| `showPageSize` | `boolean` | `false` | Muestra selector de items por página (atributo HTML: `show-page-size`) |
-| `pageSizeOptions` | `number[]` | `[5, 10, 20, 50]` | Opciones del selector (atributo HTML: `page-size-options`). Se asigna como propiedad JS |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | `solid`, `outlined`, `soft`, `ghost`, `subtle` |
-| `searchEnabled` | `boolean` | `false` | Habilita barra de búsqueda (atributo HTML: `search-enabled`) |
-| `searchPlaceholder` | `string` | `"Buscar..."` | Placeholder del input de búsqueda (atributo HTML: `search-placeholder`) |
-| `searchFields` | `string[]` | `[]` | Columnas donde buscar (atributo HTML: `search-fields`). Vacío = todas |
-| `searchValue` | `string` | `""` | Valor controlado del buscador (atributo HTML: `search-value`) |
+| `search-placeholder` | `string` | `"Buscar..."` | Placeholder del input de búsqueda (atributo HTML: `search-placeholder`) |
+| `search-fields` | `string[]` | `[]` | Columnas donde buscar (atributo HTML: `search-fields`). Vacío = todas |
+| `search-value` | `string` | `""` | Valor controlado del buscador (atributo HTML: `search-value`) |
 | `filters` | `Record<string, any>` | `{}` | Filtros por columna. Se asigna como propiedad JS |
-| `loading` | `boolean` | `false` | Muestra una barra de carga animada en el tope |
 | `actions` | `unknown[]` | `[]` | Acciones de fila (botón "..." al final de cada fila). Se asigna como propiedad JS |
-| `rowDisabled` | `boolean \| ((row: Record<string, any>) => boolean)` | `false` | Deshabilita filas (ver [Deshabilitar filas, columnas y celdas](#deshabilitar-filas-columnas-y-celdas)). Se asigna como propiedad JS |
+| `row-disabled` | `boolean \| ((row: Record<string, any>) => boolean)` | `false` | Deshabilita filas (ver [Deshabilitar filas, columnas y celdas](#deshabilitar-filas-columnas-y-celdas)). Se asigna como propiedad JS |
 | `footer` | `FooterRow[]` | `[]` | Filas de footer (ver [Footer (API programática)](#footer-api-programática)). Se asigna como propiedad JS |
-| `tableMaxHeight` | `string` | `""` | Alto máximo del área scrolleable, en CSS (atributo HTML: `table-max-height`) |
-| `inlineEditing` | `boolean` | `false` | Editor siempre visible en las celdas editables, sin el lápiz (atributo HTML: `inline-editing`) |
+| `table-max-height` | `string` | `""` | Alto máximo del área scrolleable (CSS, ej. `40rem`). Atributo HTML: `table-max-height` |
+| `inline-editing` | `boolean` | `false` | Editor visible siempre en las celdas editables, sin el lápiz (atributo HTML: `inline-editing`) |
 | `compact` | `boolean` | `false` | Filas más compactas |
+<!-- /@api:atributos -->
 
 > **Pipeline interno:** `data → search → filters → sort → pagination`. El ordenamiento y la paginación operan sobre los datos ya filtrados.
 
@@ -862,29 +863,17 @@ En variantes transparentes (`outlined`, `ghost`) se aplica `backdrop-filter: blu
 
 ## Eventos
 
-| Evento | Payload (`e.detail`) | Descripción |
-|------|------|------|
-| `update:currentPage` | `number` | Cambio de página (tras búsqueda, filtro, sort o click) |
-| `update:itemsPerPage` | `number` | Cambio del tamaño de página |
-| `update:search` | `string` | Cambio en la query de búsqueda |
-| `edit-start` | `{ row, column, index }` | Inicia edición de celda |
-| `edit-save` | `{ row, column, value, index }` | Celda editada y guardada. La tabla ya actualizó `row[key]` antes de emitir |
-| `edit-cancel` | `{ row, column, index }` | Edición cancelada |
-| `edit-error` | `{ row, column, value, index }` | Validación falló (regex o `validator`): el valor **no** se guarda y el editor se tiñe de rojo (`color: danger`) |
+<!-- @api:eventos -->
+Ninguno.
+<!-- /@api:eventos -->
 
 > **Clicks de fila:** `row-click`, `row-dblclick` y `cell-click` figuran en los emits del componente pero **hoy no se emiten** (ninguna parte del código los dispara). Para reaccionar a un click usá el `click` nativo (burbujea desde el shadow DOM) con `e.composedPath()`, o poné un `ButtonConfig`/`BadgeConfig` en la columna.
 
 ## Slots
 
-| Slot | Descripción |
-|------|------|
-| `header` | Personaliza el header completo (todas las columnas) |
-| `header-{key}` | Personaliza el header de una columna |
-| `cell-{key}` | Personaliza el render de una celda (scoped: `row`, `value`, `index`) |
-| `empty` | Contenido cuando no hay datos (override del texto `empty`) |
-| `footer` | Filas de pie; tiene prioridad sobre la prop `footer` |
-| `search` | Personaliza el buscador (scoped: `query`, `update`) |
-| `template` | Render propio de una columna |
+<!-- @api:slots -->
+Ninguno.
+<!-- /@api:slots -->
 
 > El `<cu-table>` reenvía **todos** los slots del host, así que podés usar cualquiera de los que documenta la [ficha Vue](../vue/advanced-table.md).
 
@@ -909,14 +898,16 @@ En variantes transparentes (`outlined`, `ghost`) se aplica `backdrop-filter: blu
 
 ## Métodos expuestos
 
+<!-- @api:metodos -->
 | Método | Descripción |
-|------|------|
-| `.updateRow(rowIndex: number, newData: Record<string, any>)` | Actualiza una fila por índice. Hace **merge** del objeto, no reemplazo total |
-| `.getData()` | Devuelve copia de todos los datos |
-| `.getRow(rowIndex: number)` | Devuelve copia de una fila |
-| `.removeRow(rowIndex: number)` | Elimina una fila por índice |
-| `.addRow(newRow: Record<string, any>)` | Agrega una fila al final |
-| `.pushData(newData: Record<string, any>[])` | Agrega múltiples filas al final |
+| ------ | ------ |
+| `updateRow` | — |
+| `getData` | — |
+| `getRow` | — |
+| `removeRow` | — |
+| `addRow` | — |
+| `pushData` | — |
+<!-- /@api:metodos -->
 
 ## Interfaces
 

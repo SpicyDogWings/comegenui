@@ -20,16 +20,24 @@ import ThemeDropdown from "@/components/theme/ThemeDropdown.vue";
 
 ## Props
 
-Ninguno.
+<!-- @api:props -->
+Ninguna.
+<!-- /@api:props -->
 
 ## Emits
 
+<!-- @api:emits -->
 Ninguno.
+<!-- /@api:emits -->
 
 ## Slots
 
+<!-- @api:slots -->
 Ninguno.
+<!-- /@api:slots -->
 
 ## Expose
 
-Ninguno.
+<!-- @api:expose -->
+No expone métodos.
+<!-- /@api:expose -->

@@ -142,22 +142,21 @@ function demo() {
 
 ## Props
 
+<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | `outlined`, `soft`, `ghost`, `subtle` |
-| `type` | `string` | `"text"` | `text`, `password`, `email`, `number`, `tel`, `url`, `search` |
-| `disabled` | `boolean` | `false` | Estado deshabilitado |
-| `readOnly` | `boolean` | `false` | Solo lectura (en HTML se usa como `readonly`) |
-| `hightContrast` | `boolean` | `false` | Modo de alto contraste |
-| `placeholder` | `string` | `""` | Placeholder del input |
-| `minChars` | `number` | `0` | Caracteres mínimos para abrir el menú (atributo HTML: `min-chars`) |
-| `position` | `"left" \| "right" \| "bottom" \| "top"` | `"bottom"` | Posición del dropdown: `bottom`, `top` |
-| `align` | `"center" \| "start" \| "end"` | `"start"` | Alineación: `start`, `center`, `end` |
-| `items` | `unknown[]` | `[]` | Opciones del menú (ver abajo). Se asigna como propiedad JS |
-| `modelValue` | `string` | `""` | Valor controlado |
-| `label` | `string` | `""` | Texto del label sobre el input |
+| ------ | ------ | ------ | ------ |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
+| `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | — |
+| `disabled` | `boolean` | `false` | — |
+| `type` | `string` | `"text"` | — |
+| `position` | `"bottom" \| "top" \| "left" \| "right"` | `"bottom"` | — |
+| `align` | `"start" \| "center" \| "end"` | `"start"` | — |
+| `fixed` | `boolean` | `false` | — |
+| `items` | `AutocompleteItem[]` | `[]` | — |
+| `readOnly` | `boolean` | `false` | — |
+| `placeholder` | `string` | `""` | — |
+| `minChars` | `number` | `0` | — |
+<!-- /@api:props -->
 
 ### Items
 
@@ -176,24 +175,29 @@ Cada item del array `items` puede tener:
 
 ## Emits
 
+<!-- @api:emits -->
 | Evento | Payload | Descripción |
-|------|------|------|
-| `update:modelValue` | `string` | Se emite en cada cambio de valor (al escribir) |
-| `select` | `{ label, value?, icon? }` | Se emite al elegir un item de la lista |
-| `blur` | `FocusEvent` | Pérdida de foco (útil en celdas editables) |
+| ------ | ------ | ------ |
+| `update:modelValue` | `string` | — |
+<!-- /@api:emits -->
 
 ## Slots
 
+<!-- @api:slots -->
 Ninguno.
+<!-- /@api:slots -->
 
 ## Expose
 
+<!-- @api:expose -->
 | Método | Descripción |
-|------|------|
-| `.get()` | Texto actual del input |
-| `.set(val: string)` | Asigna texto al input |
-| `.focus()` | Enfoca el input |
-| `.isOpen()` | Estado del menú (`boolean`) |
-| `.selectedItem()` | Último item seleccionado o `null` |
+| ------ | ------ |
+| `get` | — |
+| `set` | — |
+| `reset` | — |
+| `focus` | — |
+| `isOpen` | Indica si el panel está abierto. |
+| `selectedItem` | Devuelve el item seleccionado o null. |
+<!-- /@api:expose -->
 
 > El componente **no expone** `.reset()`. Si necesitás limpiar programáticamente, usá `.set('')`.

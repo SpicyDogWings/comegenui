@@ -140,19 +140,20 @@ function onClose() { console.log('cerrado'); }
 
 ## Props
 
+<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico del toggle: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle" \| "link" \| "none"` | `"ghost"` | Variante del toggle: `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` |
-| `disabled` | `boolean` | `false` | Deshabilita el toggle |
-| `label` | `string` | `""` | Texto del toggle (se ignora si se provee slot `toggle`) |
-| `position` | `"bottom" \| "top"` | `"bottom"` | Posición preferida del panel: `bottom`, `top` |
-| `align` | `"center" \| "start" \| "end"` | `"start"` | Alineación del panel: `start`, `center`, `end` |
-| `textAlign` | `"center" \| "left" \| "right"` | `"left"` | Alineación del texto del toggle: `left`, `center`, `right` |
-| `offset` | `number` | `4` | Separación en píxeles entre el toggle y el panel |
-| `fixed` | `boolean` | `false` | Si es `true`, el panel usa `position: fixed` en vez de absoluto |
-| `items` | `unknown[]` | `[]` | Lista de items (ver abajo). Se asigna como propiedad JS, no como atributo HTML |
+| ------ | ------ | ------ | ------ |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
+| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle" \| "link" \| "none"` | `"ghost"` | — |
+| `disabled` | `boolean` | `false` | — |
+| `label` | `string` | `""` | — |
+| `position` | `"bottom" \| "top" \| "left" \| "right"` | `"bottom"` | — |
+| `align` | `"start" \| "center" \| "end"` | `"start"` | — |
+| `textAlign` | `"center" \| "left" \| "right"` | `"left"` | — |
+| `offset` | `number` | `4` | — |
+| `fixed` | `boolean` | `false` | — |
+| `items` | `DropdownItem[]` | `[]` | — |
+<!-- /@api:props -->
 
 ### Items
 
@@ -172,23 +173,29 @@ Cada item del array `items` puede tener:
 
 ## Emits
 
+<!-- @api:emits -->
 | Evento | Payload | Descripción |
-|------|------|------|
-| `close` | — | Se emite cuando se cierra el menú |
-| `open` | — | Se emite cuando se abre el menú |
+| ------ | ------ | ------ |
+| `open` | `any[` | — |
+| `close` | `any[` | — |
+<!-- /@api:emits -->
 
 ## Slots
 
+<!-- @api:slots -->
 | Slot | Descripción |
-|------|------|
-| `toggle` | Reemplaza el botón toggle (sintaxis HTML `slot="toggle"`) |
-| `default` | Contenido del panel. Se usa solo si `items` está vacío o no se provee |
+| ------ | ------ |
+| `toggle` | — |
+| `default` | — |
+<!-- /@api:slots -->
 
 ## Expose
 
+<!-- @api:expose -->
 | Método | Descripción |
-|------|------|
-| `.open()` | Abre el menú |
-| `.close()` | Cierra el menú |
-| `.toggle()` | Alterna visibilidad |
-| `.isOpen()` | Devuelve el estado actual (`boolean`) |
+| ------ | ------ |
+| `open` | Abre el menú. |
+| `close` | Cierra el menú. |
+| `toggle` | Alterna la visibilidad del menú. |
+| `isOpen` | Devuelve true si el menú está abierto. |
+<!-- /@api:expose -->

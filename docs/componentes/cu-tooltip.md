@@ -33,26 +33,35 @@ Tooltip que aparece al hacer hover sobre el elemento contenido, con posición, a
 
 ## Atributos
 
+<!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
-|------|------|------|------|
-| `text` | `string` | `""` | Texto del tooltip. Si se usa el slot `content`, tiene prioridad |
+| ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico del fondo: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
-| `position` | `"left" \| "right" \| "bottom" \| "top"` | `"top"` | Lado donde aparece: `top`, `bottom`, `left`, `right` |
-| `align` | `"center" \| "start" \| "end"` | `"center"` | Alineación respecto al elemento: `start`, `center`, `end` |
+| `disabled` | `boolean` | `false` | Deshabilita el tooltip (no se muestra) |
+| `position` | `"bottom" \| "top" \| "left" \| "right"` | `"top"` | Lado donde aparece: `top`, `bottom`, `left`, `right` |
+| `align` | `"start" \| "center" \| "end"` | `"center"` | Alineación respecto al elemento: `start`, `center`, `end` |
 | `offset` | `number` | `6` | Distancia (px) entre el elemento y el tooltip |
 | `delay` | `number` | `200` | Retardo (ms) antes de mostrar el tooltip al hacer hover |
-| `disabled` | `boolean` | `false` | Deshabilita el tooltip (no se muestra) |
+| `text` | `string` | `""` | Texto del tooltip. Si se usa el slot `content`, tiene prioridad |
+<!-- /@api:atributos -->
 
 ## Eventos
 
-Ninguno (los eventos nativos del DOM como `mouseenter`/`mouseleave` burbujean desde el Shadow DOM).
+<!-- @api:eventos -->
+Ninguno.
+<!-- /@api:eventos -->
 
 ## Slots
 
+<!-- @api:slots -->
 | Slot | Descripción |
-|------|------|
-| `default` | El elemento que dispara el tooltip al hacer hover |
+| ------ | ------ |
+| `default` | — |
+| `content` | — |
+<!-- /@api:slots -->
 
 ## Métodos expuestos
 
-Ninguno.
+<!-- @api:metodos -->
+No expone métodos.
+<!-- /@api:metodos -->

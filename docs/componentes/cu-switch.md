@@ -71,36 +71,41 @@ El switch no incluye label propio. Combinalo con `<cu-label>` para tener un áre
 
 ## Atributos
 
+<!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
-|------|------|------|------|
-| `modelValue` | `boolean` | `false` | Estado del toggle (controlado) |
+| ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `size` | `"sm" \| "md"` | `"md"` | Tamaño del switch: `sm`, `md` |
-| `disabled` | `boolean` | — | Estado deshabilitado |
-| `label` | `string` | `""` |  |
+| `disabled` | `boolean` | `—` | Estado deshabilitado |
+| `model-value` | `boolean` | `false` | Estado del toggle (controlado) |
+| `label` | `string` | `""` | — |
+<!-- /@api:atributos -->
 
 > El Custom Element **no expone** una prop `checked` separada. El control se hace únicamente con `modelValue`. Tampoco tiene props `variant`, `theme` ni `hightContrast`; el tamaño se controla con `size`.
 
 ## Eventos
 
-| Evento | Payload (`e.detail`) | Descripción |
-|------|------|------|
-| `update:modelValue` | `boolean` | Se emite cuando cambia el estado |
-| `change` | `boolean` | Se emite en cada cambio (payload directo = boolean) |
+<!-- @api:eventos -->
+Ninguno.
+<!-- /@api:eventos -->
 
 ## Slots
 
+<!-- @api:slots -->
 | Slot | Descripción |
-|------|------|
-| `default` |  |
+| ------ | ------ |
+| `default` | — |
+<!-- /@api:slots -->
 
 Ninguno.
 
 ## Métodos expuestos
 
+<!-- @api:metodos -->
 | Método | Descripción |
-|------|------|
-| `.get()` | Devuelve el estado actual (`boolean`) |
-| `.set(val: boolean)` | Asigna el estado |
-| `.reset()` | Pone el estado en `false` |
-| `.focus()` | Enfoca el switch |
+| ------ | ------ |
+| `get` | — |
+| `set` | — |
+| `reset` | — |
+| `focus` | — |
+<!-- /@api:metodos -->

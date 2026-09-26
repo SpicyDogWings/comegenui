@@ -20,32 +20,40 @@ import ThemeManagerModal from "@/components/theme/ThemeManagerModal.vue";
 
 ## Props
 
+<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `themeName` | `string` | — | Nombre del tema que se está editando. |
-| `cssOutput` | `string` | — | CSS generado del tema, para previsualizar y exportar. |
+| ------ | ------ | ------ | ------ |
+| `themeName` | `string` | `—` | Nombre del tema que se está editando. |
+| `cssOutput` | `string` | `—` | CSS generado del tema, para previsualizar y exportar. |
+<!-- /@api:props -->
 
 ## Emits
 
+<!-- @api:emits -->
 | Evento | Payload | Descripción |
-|------|------|------|
-| `reset` | — |  |
-| `update:themeName` | `value: string` |  |
-| `import` | `config: ThemeConfig` |  |
-| `export` | — |  |
-| `copy-css` | — |  |
-| `download-css` | — |  |
+| ------ | ------ | ------ |
+| `reset` | `` | — |
+| `update:themeName` | `string` | — |
+| `import` | `ThemeConfig` | — |
+| `export` | `` | — |
+| `copy-css` | `` | — |
+| `download-css` | `` | — |
+<!-- /@api:emits -->
 
 ## Slots
 
+<!-- @api:slots -->
 Ninguno.
+<!-- /@api:slots -->
 
 ## Expose
 
+<!-- @api:expose -->
 | Método | Descripción |
-|------|------|
-| `.open()` | Abre el modal. |
-| `.close()` | Cierra el modal. |
+| ------ | ------ |
+| `open` | — |
+| `close` | — |
+<!-- /@api:expose -->
 
 ## Interfaces
 

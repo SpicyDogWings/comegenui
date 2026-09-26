@@ -21,34 +21,42 @@ import EditableTableCell from "@/components/data/EditableTableCell.vue";
 
 ## Props
 
+<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `value` | `string \| number \| boolean` | — | Valor actual de la celda. |
-| `row` | `Record<string, any>` | — | Fila completa a la que pertenece la celda. |
-| `column` | `Column` | — | Configuración de la columna: editor, validación y alineación. |
-| `index` | `number` | — | Índice de la fila en los datos. |
+| ------ | ------ | ------ | ------ |
 | `color` | `string` | `"neutral"` | Color semántico del editor. |
 | `variant` | `string` | `"ghost"` | Variante visual del editor. |
+| `disabled` | `boolean` | `false` | Deshabilita la edición de la celda. |
 | `validation` | `{ success: boolean; error: string \| null; }` | `{ success: false, error: null }` | Estado de validación: success y mensaje de error. |
 | `inlineEdit` | `boolean` | `false` | Muestra el editor directo en toda la tabla, sin lápiz. |
-| `disabled` | `boolean` | `false` | Deshabilita la edición de la celda. |
+| `value` | `string \| number \| boolean` | `—` | Valor actual de la celda. |
+| `row` | `Record<string, any>` | `—` | Fila completa a la que pertenece la celda. |
+| `column` | `Column` | `—` | Configuración de la columna: editor, validación y alineación. |
+| `index` | `number` | `—` | Índice de la fila en los datos. |
+<!-- /@api:props -->
 
 ## Emits
 
+<!-- @api:emits -->
 | Evento | Payload | Descripción |
-|------|------|------|
-| `edit-start` | — |  |
-| `edit-save` | — |  |
-| `edit-cancel` | — |  |
-| `edit-error` | — |  |
+| ------ | ------ | ------ |
+| `edit-start` | `any[` | — |
+| `edit-save` | `any[` | — |
+| `edit-cancel` | `any[` | — |
+| `edit-error` | `any[` | — |
+<!-- /@api:emits -->
 
 ## Slots
 
+<!-- @api:slots -->
 Ninguno.
+<!-- /@api:slots -->
 
 ## Expose
 
-Ninguno.
+<!-- @api:expose -->
+No expone métodos.
+<!-- /@api:expose -->
 
 ## Interfaces
 

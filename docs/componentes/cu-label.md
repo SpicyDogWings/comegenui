@@ -51,24 +51,31 @@ Al hacer clic en el label, el control hijo se enfoca automáticamente. Si pasás
 
 ## Atributos
 
+<!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
-|------|------|------|------|
-| `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
-| `for` | `string` | `""` | ID del elemento a enfocar al hacer clic (atributo HTML `for`) |
-| `label` | `string` | `""` | Texto del label (modo declarativo) |
+| ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico del texto; se resuelve vía el token `--cu-color-{color}` |
-| `hightContrast` | `boolean` | `false` | Modo de alto contraste para el texto |
+| `label` | `string` | `""` | Texto del label (modo declarativo) |
+| `for` | `string` | `""` | ID del elemento a enfocar al hacer clic (atributo HTML `for`) |
+| `hight-contrast` | `boolean` | `false` | Modo de alto contraste para el texto |
+<!-- /@api:atributos -->
 
 ## Eventos
 
+<!-- @api:eventos -->
 Ninguno.
+<!-- /@api:eventos -->
 
 ## Slots
 
+<!-- @api:slots -->
 | Slot | Descripción |
-|------|------|
-| `default` | Contenido asociado (input, checkbox, etc.) |
+| ------ | ------ |
+| `default` | — |
+<!-- /@api:slots -->
 
 ## Métodos expuestos
 
-Ninguno.
+<!-- @api:metodos -->
+No expone métodos.
+<!-- /@api:metodos -->

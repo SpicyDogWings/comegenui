@@ -41,35 +41,41 @@ Soporta arrastrar un solo archivo sobre el componente. Durante el drag se ilumin
 
 ## Atributos
 
+<!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
-|------|------|------|------|
-| `modelValue` | `File \| null` | `null` | Archivo seleccionado (vía JS, no HTML) |
+| ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `"outlined"` | `outlined`, `soft`, `ghost`, `subtle` |
+| `disabled` | `boolean` | `—` | Deshabilita click, drag y drop |
+| `model-value` | `File \| null` | `null` | Archivo seleccionado (vía JS, no HTML) |
+| `read-only` | `boolean` | `—` | Modo solo lectura |
 | `placeholder` | `string` | `"Seleccionar archivo"` | Texto cuando no hay archivo |
-| `disabled` | `boolean` | — | Deshabilita click, drag y drop |
-| `readOnly` | `boolean` | — | Modo solo lectura |
-| `accept` | `string` | — | Tipos aceptados (ej: `"image/*"`, `".pdf,.doc"`) |
-| `maxSize` | `number` | — | Tamaño máximo en bytes |
+| `max-size` | `number` | `—` | Tamaño máximo en bytes |
+| `accept` | `string` | `—` | Tipos aceptados (ej: `"image/*"`, `".pdf,.doc"`) |
+<!-- /@api:atributos -->
 
 > **Atributos en HTML:** `readOnly` se escribe como `readonly`, `maxSize` como `max-size`.
 
 ## Eventos
 
-| Evento | Payload (`e.detail`) | Descripción |
-|------|------|------|
-| `update:modelValue` | `null` | Se emite al seleccionar, soltar o limpiar un archivo |
+<!-- @api:eventos -->
+Ninguno.
+<!-- /@api:eventos -->
 
 ## Slots
 
+<!-- @api:slots -->
 Ninguno.
+<!-- /@api:slots -->
 
 ## Métodos expuestos
 
+<!-- @api:metodos -->
 | Método | Descripción |
-|------|------|
-| `.get()` | Devuelve el `File` actual o `null` |
-| `.set(val: File \| null)` | Asigna un archivo programáticamente |
-| `.reset()` | Limpia la selección |
-| `.focus()` | Enfoca el input |
-| `.trigger()` | Abre el diálogo nativo de selección de archivos |
+| ------ | ------ |
+| `get` | — |
+| `set` | — |
+| `reset` | — |
+| `focus` | — |
+| `trigger` | — |
+<!-- /@api:metodos -->

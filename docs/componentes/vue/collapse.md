@@ -130,29 +130,38 @@ function toggleFaq() {
 
 ## Props
 
+<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `label` | `string` | — | Texto del trigger |
-| `defaultOpen` | `boolean` | `false` |  |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico del trigger: `primary`, `neutral`, `success`, `warning`, `danger` |
+| ------ | ------ | ------ | ------ |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `'neutral'` | — |
+| `icon` | `string` | `''` | Ícono del trigger (SVG/HTML). |
+| `defaultOpen` | `boolean` | `false` | — |
+| `label` | `string` | `—` | — |
+<!-- /@api:props -->
 
 ## Emits
 
+<!-- @api:emits -->
 | Evento | Payload | Descripción |
-|------|------|------|
-| `toggle` | `boolean` | Se emite al cambiar el estado abierto/cerrado. El payload es el nuevo estado (`true` = abierto) |
+| ------ | ------ | ------ |
+| `toggle` | `boolean` | — |
+<!-- /@api:emits -->
 
 ## Slots
 
+<!-- @api:slots -->
 | Slot | Descripción |
-|------|------|
-| `default` | Contenido colapsable |
+| ------ | ------ |
+| `default` | — |
+<!-- /@api:slots -->
 
 ## Expose
 
+<!-- @api:expose -->
 | Método | Descripción |
-|------|------|
-| `.open()` | Abre el collapse |
-| `.close()` | Cierra el collapse |
-| `.toggle()` | Alterna el estado |
-| `.isOpen()` | Devuelve el estado actual (`boolean`) |
+| ------ | ------ |
+| `open` | — |
+| `close` | — |
+| `toggle` | — |
+| `isOpen` | Devuelve true si el collapse está abierto. |
+<!-- /@api:expose -->

@@ -119,22 +119,22 @@ Por defecto el menú se abre al recibir foco. Con `min-chars="2"` solo se abre t
 
 ## Atributos
 
+<!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
-|------|------|------|------|
-| `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
+| ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | `outlined`, `soft`, `ghost`, `subtle` |
-| `type` | `string` | `"text"` | `text`, `password`, `email`, `number`, `tel`, `url`, `search` |
 | `disabled` | `boolean` | `false` | Estado deshabilitado |
-| `readOnly` | `boolean` | `false` | Solo lectura (en HTML se usa como `readonly`) |
-| `hightContrast` | `boolean` | `false` | Modo de alto contraste |
-| `placeholder` | `string` | `""` | Placeholder del input |
-| `minChars` | `number` | `0` | Caracteres mínimos para abrir el menú (atributo HTML: `min-chars`) |
-| `position` | `"left" \| "right" \| "bottom" \| "top"` | `"bottom"` | Posición del dropdown: `bottom`, `top` |
-| `align` | `"center" \| "start" \| "end"` | `"start"` | Alineación: `start`, `center`, `end` |
+| `type` | `string` | `"text"` | `text`, `password`, `email`, `number`, `tel`, `url`, `search` |
+| `model-value` | `string` | `""` | Valor controlado |
+| `position` | `"bottom" \| "top" \| "left" \| "right"` | `"bottom"` | Posición del dropdown: `bottom`, `top` |
+| `align` | `"start" \| "center" \| "end"` | `"start"` | Alineación: `start`, `center`, `end` |
+| `fixed` | `boolean` | `false` | Panel en `position: fixed` (útil en contenedores con overflow) |
 | `items` | `unknown[]` | `[]` | Opciones del menú (ver abajo). Se asigna como propiedad JS |
-| `modelValue` | `string` | `""` | Valor controlado |
-| `label` | `string` | `""` | Texto del label sobre el input |
+| `read-only` | `boolean` | `false` | Solo lectura (en HTML se usa como `readonly`) |
+| `placeholder` | `string` | `""` | Placeholder del input |
+| `min-chars` | `number` | `0` | Caracteres mínimos para abrir el menú (atributo HTML: `min-chars`) |
+<!-- /@api:atributos -->
 
 ### Items
 
@@ -153,26 +153,29 @@ Cada item del array `items` puede tener:
 
 ## Eventos
 
-| Evento | Payload (`e.detail`) | Descripción |
-|------|------|------|
-| `update:modelValue` | `string` | Se emite en cada cambio de valor (al escribir) |
-| `select` | `{ label, value?, icon? }` | Se emite al elegir un item de la lista |
-| `blur` | `FocusEvent` | Pérdida de foco (útil en celdas editables) |
+<!-- @api:eventos -->
+Ninguno.
+<!-- /@api:eventos -->
 
 > Los eventos nativos del DOM (`input`, `change`, `focus`, `blur`) **burbujean automáticamente** al host desde el Shadow DOM. No se re-emiten como eventos custom con esos nombres.
 
 ## Slots
 
+<!-- @api:slots -->
 Ninguno.
+<!-- /@api:slots -->
 
 ## Métodos expuestos
 
+<!-- @api:metodos -->
 | Método | Descripción |
-|------|------|
-| `.get()` | Texto actual del input |
-| `.set(val: string)` | Asigna texto al input |
-| `.focus()` | Enfoca el input |
-| `.isOpen()` | Estado del menú (`boolean`) |
-| `.selectedItem()` | Último item seleccionado o `null` |
+| ------ | ------ |
+| `get` | — |
+| `set` | — |
+| `focus` | — |
+| `reset` | — |
+| `isOpen` | — |
+| `selectedItem` | — |
+<!-- /@api:metodos -->
 
 > El componente **no expone** `.reset()`. Si necesitás limpiar programáticamente, usá `.set('')`.

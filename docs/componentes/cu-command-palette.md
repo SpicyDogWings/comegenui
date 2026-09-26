@@ -20,32 +20,37 @@ Paleta de comandos (búsqueda + lista) en un modal, con agrupado por categoría 
 
 ## Atributos
 
+<!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
-|------|------|------|------|
-| `commands` | `CommandItem[]` | `[]` | Comandos a mostrar (se agrupan por `category`). **Obligatoria**; se asigna como propiedad JS: `palette.commands = [...]` |
+| ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico del modal: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `title` | `string` | `""` | Título del modal |
-| `placeholder` | `string` | `"Buscar comandos…"` | Placeholder del input de búsqueda |
 | `size` | `"sm" \| "md" \| "lg" \| "auto" \| "xl" \| "full"` | `"auto"` | Ancho del modal: `auto`, `sm`, `md`, `lg`, `xl`, `full` |
+| `placeholder` | `string` | `"Buscar comandos…"` | Placeholder del input de búsqueda |
+| `title` | `string` | `""` | Título del modal |
 | `height` | `"sm" \| "md" \| "lg" \| "auto" \| "xl" \| "full"` | `"auto"` | Alto del modal: `auto`, `sm`, `md`, `lg`, `xl`, `full` |
+| `commands` | `CommandItem[]` | `[]` | Comandos disponibles: `{ id, label, action, description?, category?, badges?, icon?, shortcut? }[]`. Se asigna como propiedad JS |
+<!-- /@api:atributos -->
 
 ## Eventos
 
-| Evento | Payload (`e.detail`) | Descripción |
-|------|------|------|
-| `select` | `CommandItem` | Se seleccionó un comando (por click o `Enter`) |
-| `close` | — | Se cerró el modal |
+<!-- @api:eventos -->
+Ninguno.
+<!-- /@api:eventos -->
 
 ## Slots
 
+<!-- @api:slots -->
 Ninguno.
+<!-- /@api:slots -->
 
 ## Métodos expuestos
 
+<!-- @api:metodos -->
 | Método | Descripción |
-|------|------|
-| `.open()` | Abre la paleta |
-| `.close()` | Cierra la paleta |
-| `.run(command)` | Ejecuta el `onSelect` de un comando |
-| `.getCommands()` | Devuelve los comandos actuales |
-| `.isOpen()` | `true` si está abierta |
+| ------ | ------ |
+| `open` | — |
+| `close` | — |
+| `run` | — |
+| `getCommands` | — |
+| `isOpen` | — |
+<!-- /@api:metodos -->

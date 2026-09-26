@@ -20,20 +20,28 @@ import Loader from "@/components/information/Loader.vue";
 
 ## Props
 
+<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `color` | `string` | `"primary"` |  |
-| `animation` | `string` | `"loading"` |  |
-| `delay` | `number` | `2000` |  |
+| ------ | ------ | ------ | ------ |
+| `color` | `string` | `"primary"` | — |
+| `delay` | `number` | `2000` | — |
+| `animation` | `string` | `"loading"` | — |
+<!-- /@api:props -->
 
 ## Emits
 
+<!-- @api:emits -->
 Ninguno.
+<!-- /@api:emits -->
 
 ## Slots
 
+<!-- @api:slots -->
 Ninguno.
+<!-- /@api:slots -->
 
 ## Expose
 
-Ninguno.
+<!-- @api:expose -->
+No expone métodos.
+<!-- /@api:expose -->

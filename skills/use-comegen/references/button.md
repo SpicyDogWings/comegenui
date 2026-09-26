@@ -71,55 +71,80 @@ spinner + `loading-change`.
 
 ### Atributos
 
+<!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
-|------|------|------|------|
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico |
-| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle" \| "link" \| "none"` | `"ghost"` | Estilo visual |
-| `size` | `"sm" \| "md" \| "lg"` | `"md"` | Tamaño (no aplica a `link`) |
-| `to` | `string` | — | Si está, se renderiza como `<a>` |
-| `target` | `"_self" \| "_blank" \| "_parent" \| "_top"` | `"_self"` | Target del link (sólo con `to`) |
-| `type` | `"button" \| "submit" \| "reset"` | `"button"` | Tipo del `<button>` |
-| `disabled` | `boolean` | `false` | Deshabilitado (en HTML: `<cu-button disabled>`) |
-| `loading` | `boolean` | `false` | Spinner + deshabilitado mientras está activo |
+| ------ | ------ | ------ | ------ |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle" \| "link" \| "none"` | `"ghost"` | `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` |
+| `size` | `"sm" \| "md" \| "lg"` | `'md'` | Tamaño: `sm`, `md`, `lg` |
+| `disabled` | `boolean` | `false` | Estado deshabilitado |
+| `type` | `"button" \| "submit" \| "reset"` | `'button'` | Tipo del `<button>`: `button`, `submit`, `reset` |
+| `loading` | `boolean` | `false` | Muestra un spinner en lugar del contenido. Deshabilita el botón mientras está activo |
+| `target` | `"_self" \| "_blank" \| "_parent" \| "_top"` | `"_self"` | Target del link cuando `to` está definido: `_self`, `_blank`, `_parent`, `_top` |
+| `to` | `string` | `—` | Si se especifica, el botón se renderiza como `<a>` |
+<!-- /@api:atributos -->
 
 ### Eventos
 
+<!-- @api:eventos -->
 | Evento | Payload (`e.detail`) | Descripción |
-|------|------|------|
-| `loading-change` | `boolean` | Cambió `loading` (también al setear `el.loading = true` por propiedad) |
+| ------ | ------ | ------ |
+| `loading-change` | `boolean` | — |
+<!-- /@api:eventos -->
 
 Los nativos (`click`, `focus`, `blur`, `mouseenter`…) burbujean al host sin hacer nada.
 
 ### Slots
 
+<!-- @api:slots -->
 | Slot | Descripción |
-|------|------|
-| `default` | Contenido del botón: label y/o íconos SVG inline |
+| ------ | ------ |
+| `default` | — |
+<!-- /@api:slots -->
 
 ### Métodos expuestos
 
-Ninguno.
+<!-- @api:metodos -->
+No expone métodos.
+<!-- /@api:metodos -->
 
 ## API del componente Vue
 
 ### Props
 
-Las mismas ocho de arriba, en camelCase y con estos defaults: `color` `"neutral"`,
+<!-- @api:props -->
+| Prop | Tipo | Default | Descripción |
+| ------ | ------ | ------ | ------ |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle" \| "link" \| "none"` | `"ghost"` | `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` |
+| `size` | `"sm" \| "md" \| "lg"` | `'md'` | Tamaño: `sm`, `md`, `lg` |
+| `disabled` | `boolean` | `false` | Estado deshabilitado |
+| `type` | `"button" \| "submit" \| "reset"` | `'button'` | Tipo del `<button>`: `button`, `submit`, `reset` |
+| `loading` | `boolean` | `false` | Muestra un spinner en lugar del contenido. Deshabilita el botón mientras está activo |
+| `target` | `"_self" \| "_blank" \| "_parent" \| "_top"` | `"_self"` | Target del link cuando `to` está definido: `_self`, `_blank`, `_parent`, `_top` |
+| `to` | `string` | `—` | Si se especifica, el botón se renderiza como `<a>` |
+<!-- /@api:props -->
 `variant` `"ghost"`, `size` `"md"`, `to` `—`, `target` `"_self"`, `type` `"button"`,
 `disabled` `false`, `loading` `false`.
 
 ### Emits
 
+<!-- @api:emits -->
 | Evento | Payload | Descripción |
-|------|------|------|
-| `loading-change` | `boolean` | Cambió `loading` |
+| ------ | ------ | ------ |
+| `loading-change` | `boolean` | — |
+<!-- /@api:emits -->
 
 ### Slots
 
+<!-- @api:slots -->
 | Slot | Descripción |
-|------|------|
-| `default` | Contenido del botón |
+| ------ | ------ |
+| `default` | — |
+<!-- /@api:slots -->
 
 ### Expose
 
-Ninguno.
+<!-- @api:expose -->
+No expone métodos.
+<!-- /@api:expose -->

@@ -46,33 +46,40 @@ Soporta arrastrar un solo archivo sobre el componente. Durante el drag se ilumin
 
 ## Props
 
+<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `modelValue` | `File \| null` | `null` | Archivo seleccionado (vía JS, no HTML) |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `"outlined"` | `outlined`, `soft`, `ghost`, `subtle` |
-| `placeholder` | `string` | `"Seleccionar archivo"` | Texto cuando no hay archivo |
-| `disabled` | `boolean` | — | Deshabilita click, drag y drop |
-| `readOnly` | `boolean` | — | Modo solo lectura |
-| `accept` | `string` | — | Tipos aceptados (ej: `"image/*"`, `".pdf,.doc"`) |
-| `maxSize` | `number` | — | Tamaño máximo en bytes |
+| ------ | ------ | ------ | ------ |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
+| `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `"outlined"` | — |
+| `disabled` | `boolean` | `false` | — |
+| `readOnly` | `boolean` | `false` | — |
+| `placeholder` | `string` | `"Seleccionar archivo"` | — |
+| `maxSize` | `number` | `—` | — |
+| `accept` | `string` | `—` | — |
+<!-- /@api:props -->
 
 ## Emits
 
+<!-- @api:emits -->
 | Evento | Payload | Descripción |
-|------|------|------|
-| `update:modelValue` | `null` | Se emite al seleccionar, soltar o limpiar un archivo |
+| ------ | ------ | ------ |
+| `update:modelValue` | `File \\| null` | — |
+<!-- /@api:emits -->
 
 ## Slots
 
+<!-- @api:slots -->
 Ninguno.
+<!-- /@api:slots -->
 
 ## Expose
 
+<!-- @api:expose -->
 | Método | Descripción |
-|------|------|
-| `.get()` | Devuelve el `File` actual o `null` |
-| `.set(val: File \| null)` | Asigna un archivo programáticamente |
-| `.reset()` | Limpia la selección |
-| `.focus()` | Enfoca el input |
-| `.trigger()` | Abre el diálogo nativo de selección de archivos |
+| ------ | ------ |
+| `get` | — |
+| `set` | — |
+| `reset` | — |
+| `focus` | — |
+| `trigger` | — |
+<!-- /@api:expose -->

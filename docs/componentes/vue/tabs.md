@@ -126,14 +126,15 @@ El repositorio incluye una demo en HTML plano: [`playground/pages/tabs/tabs.html
 
 ## Props
 
+<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `tabs` | `{ key: string; label: string; icon?: string; disabled?: boolean; keepAlive?: boolean; }[]` | `[]` | Definición de las pestañas |
-| `modelValue` | `string` | `""` | Key del tab activo (controlado) |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"primary"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `"solid" \| "soft" \| "ghost" \| "boxed"` | `"ghost"` | `ghost`, `solid`, `boxed`, `soft` |
-| `size` | `"sm" \| "md" \| "lg"` | `"md"` | `sm`, `md`, `lg` |
-| `disabled` | `boolean` | — | Deshabilita todas las pestañas |
+| ------ | ------ | ------ | ------ |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"primary"` | — |
+| `variant` | `"solid" \| "soft" \| "ghost" \| "boxed"` | `"ghost"` | — |
+| `size` | `"sm" \| "md" \| "lg"` | `"md"` | — |
+| `disabled` | `boolean` | `false` | — |
+| `tabs` | `TabItem[]` | `—` | — |
+<!-- /@api:props -->
 
 ### Prop `tabs`
 
@@ -149,22 +150,27 @@ Cada item es un objeto con:
 
 ## Emits
 
+<!-- @api:emits -->
 | Evento | Payload | Descripción |
-|------|------|------|
-| `update:modelValue` | `string` | Key del tab activo al cambiar |
-| `change` | `string` | Se emite en cada cambio de tab (payload = key) |
+| ------ | ------ | ------ |
+| `update:modelValue` | `string` | — |
+<!-- /@api:emits -->
 
 ## Slots
 
-Los paneles y los iconos usan **slots nombrados** con el key de cada tab.
+<!-- @api:slots -->
+Ninguno.
+<!-- /@api:slots -->
 
 En HTML plano se usan con el atributo `slot="..."` sobre el elemento hijo.
 
 ## Expose
 
+<!-- @api:expose -->
 | Método | Descripción |
-|------|------|
-| `.getActive()` | Devuelve la key del tab activo |
-| `.setActive(key: string)` | Activa el tab con esa key |
-| `.next()` | Activa el próximo tab habilitado |
-| `.prev()` | Activa el tab anterior habilitado |
+| ------ | ------ |
+| `getActive` | — |
+| `setActive` | — |
+| `next` | — |
+| `prev` | — |
+<!-- /@api:expose -->

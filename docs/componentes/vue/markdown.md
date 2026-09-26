@@ -58,20 +58,30 @@ El contenido se pasa como **texto dentro del tag** (no como prop). El componente
 
 ## Props
 
-| Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `theme` | `string` | `"light"` | Tema de colores (`light`, `dark`, `sigacadv2`) |
+<!-- @api:props -->
+Ninguna.
+<!-- /@api:props -->
 
 ## Emits
 
-Ninguno.
+<!-- @api:emits -->
+| Evento | Payload | Descripción |
+| ------ | ------ | ------ |
+| `parsed` | `string[]` | — |
+<!-- /@api:emits -->
 
 ## Slots
 
+<!-- @api:slots -->
 | Slot | Descripción |
-|------|------|
-| `default` | Contenido markdown a renderizar. Se pasa como texto dentro del tag. |
+| ------ | ------ |
+| `default` | — |
+<!-- /@api:slots -->
 
 ## Expose
 
-Ninguno.
+<!-- @api:expose -->
+| Método | Descripción |
+| ------ | ------ |
+| `headingIds` | Devuelve los ids generados para los encabezados parseados. |
+<!-- /@api:expose -->

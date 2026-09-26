@@ -72,35 +72,40 @@ const campo = useTemplateRef("campo");
 
 ## Props
 
+<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
-| `modelValue` | `string` | `""` | Valor controlado |
-| `startValue` | `string` | — | Valor inicial usado por `.reset()` |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | `outlined`, `soft`, `ghost`, `subtle` |
-| `placeholder` | `string` | — | Placeholder del textarea |
-| `disabled` | `boolean` | `false` | Estado deshabilitado |
-| `readOnly` | `boolean` | `false` | Solo lectura (en HTML se usa como `readonly`) |
-| `rows` | `number` | `3` | Cantidad de filas visibles |
-| `noResize` | `boolean` | `false` | Desactiva el redimensionado manual (atributo HTML: `no-resize`) |
-| `hightContrast` | `boolean` | `false` | Modo de alto contraste para el texto |
+| ------ | ------ | ------ | ------ |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
+| `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | — |
+| `disabled` | `boolean` | `false` | — |
+| `readOnly` | `boolean` | `false` | — |
+| `rows` | `number` | `3` | — |
+| `noResize` | `boolean` | `false` | — |
+| `placeholder` | `string` | `—` | — |
+| `startValue` | `string` | `—` | — |
+<!-- /@api:props -->
 
 ## Emits
 
+<!-- @api:emits -->
 | Evento | Payload | Descripción |
-|------|------|------|
-| `update:modelValue` | `string` | Se emite en cada cambio de valor |
+| ------ | ------ | ------ |
+| `update:modelValue` | `string` | — |
+<!-- /@api:emits -->
 
 ## Slots
 
+<!-- @api:slots -->
 Ninguno.
+<!-- /@api:slots -->
 
 ## Expose
 
+<!-- @api:expose -->
 | Método | Descripción |
-|------|------|
-| `.get()` | Devuelve el valor actual (`string`) |
-| `.set(value: string \| number)` | Asigna un valor |
-| `.reset()` | Vuelve al `startValue` (o `""` si no se definió) |
-| `.focus()` | Enfoca el textarea |
+| ------ | ------ |
+| `get` | — |
+| `set` | — |
+| `reset` | — |
+| `focus` | — |
+<!-- /@api:expose -->

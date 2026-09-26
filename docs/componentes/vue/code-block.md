@@ -20,21 +20,29 @@ import CodeBlock from "@/components/markdown/CodeBlock.vue";
 
 ## Props
 
+<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `code` | `string` | — |  |
-| `language` | `string` | `""` |  |
-| `variant` | `string` | `"default"` |  |
-| `lineNumbers` | `boolean` | `false` |  |
+| ------ | ------ | ------ | ------ |
+| `variant` | `string` | `'default'` | — |
+| `language` | `string` | `''` | — |
+| `lineNumbers` | `boolean` | `false` | — |
+| `code` | `string` | `—` | — |
+<!-- /@api:props -->
 
 ## Emits
 
+<!-- @api:emits -->
 Ninguno.
+<!-- /@api:emits -->
 
 ## Slots
 
+<!-- @api:slots -->
 Ninguno.
+<!-- /@api:slots -->
 
 ## Expose
 
-Ninguno.
+<!-- @api:expose -->
+No expone métodos.
+<!-- /@api:expose -->

@@ -77,24 +77,33 @@ import Input from "@/components/form/Input.vue";
 
 ## Props
 
+<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
-| `for` | `string` | `""` | ID del elemento a enfocar al hacer clic (atributo HTML `for`) |
-| `label` | `string` | `""` | Texto del label (modo declarativo) |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico del texto; se resuelve vía el token `--cu-color-{color}` |
-| `hightContrast` | `boolean` | `false` | Modo de alto contraste para el texto |
+| ------ | ------ | ------ | ------ |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
+| `label` | `string` | `""` | — |
+| `for` | `string` | `""` | — |
+| `hightContrast` | `boolean` | `false` | — |
+<!-- /@api:props -->
 
 ## Emits
 
-Ninguno.
+<!-- @api:emits -->
+| Evento | Payload | Descripción |
+| ------ | ------ | ------ |
+| `click` | `` | — |
+<!-- /@api:emits -->
 
 ## Slots
 
+<!-- @api:slots -->
 | Slot | Descripción |
-|------|------|
-| `default` | Contenido asociado (input, checkbox, etc.) |
+| ------ | ------ |
+| `default` | — |
+<!-- /@api:slots -->
 
 ## Expose
 
-Ninguno.
+<!-- @api:expose -->
+No expone métodos.
+<!-- /@api:expose -->

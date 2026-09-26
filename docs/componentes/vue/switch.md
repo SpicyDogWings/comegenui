@@ -84,34 +84,40 @@ const activo = ref(false);
 
 ## Props
 
+<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `modelValue` | `boolean` | `false` | Estado del toggle (controlado) |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `size` | `"sm" \| "md"` | `"md"` | Tamaño del switch: `sm`, `md` |
-| `disabled` | `boolean` | — | Estado deshabilitado |
-| `label` | `string` | `""` |  |
+| ------ | ------ | ------ | ------ |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
+| `size` | `"sm" \| "md"` | `"md"` | — |
+| `disabled` | `boolean` | `false` | — |
+| `label` | `string` | `""` | — |
+<!-- /@api:props -->
 
 ## Emits
 
+<!-- @api:emits -->
 | Evento | Payload | Descripción |
-|------|------|------|
-| `update:modelValue` | `boolean` | Se emite cuando cambia el estado |
-| `change` | `boolean` | Se emite en cada cambio (payload directo = boolean) |
+| ------ | ------ | ------ |
+| `update:modelValue` | `boolean` | — |
+<!-- /@api:emits -->
 
 ## Slots
 
+<!-- @api:slots -->
 | Slot | Descripción |
-|------|------|
-| `default` |  |
+| ------ | ------ |
+| `default` | — |
+<!-- /@api:slots -->
 
 Ninguno.
 
 ## Expose
 
+<!-- @api:expose -->
 | Método | Descripción |
-|------|------|
-| `.get()` | Devuelve el estado actual (`boolean`) |
-| `.set(val: boolean)` | Asigna el estado |
-| `.reset()` | Pone el estado en `false` |
-| `.focus()` | Enfoca el switch |
+| ------ | ------ |
+| `get` | — |
+| `set` | — |
+| `reset` | — |
+| `focus` | Enfoca el input nativo. |
+<!-- /@api:expose -->

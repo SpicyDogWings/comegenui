@@ -82,30 +82,36 @@ function demo() {
 
 ## Props
 
+<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `modelValue` | `boolean` | `false` | Estado del checkbox (controlado) |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `size` | `"sm" \| "md"` | `"md"` | Tamaño del checkbox: `sm`, `md` |
-| `disabled` | `boolean` | — | Estado deshabilitado |
-| `label` | `string` | — | Texto visible junto al checkbox |
+| ------ | ------ | ------ | ------ |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
+| `size` | `"sm" \| "md"` | `"md"` | — |
+| `disabled` | `boolean` | `false` | — |
+| `label` | `string` | `—` | — |
+<!-- /@api:props -->
 
 ## Emits
 
+<!-- @api:emits -->
 | Evento | Payload | Descripción |
-|------|------|------|
-| `update:modelValue` | `boolean` | Se emite cuando cambia el estado |
-| `change` | `boolean` | Se emite en cada cambio, útil para listeners simples |
+| ------ | ------ | ------ |
+| `update:modelValue` | `boolean` | — |
+<!-- /@api:emits -->
 
 ## Slots
 
-Ninguno (el texto se pasa via `label`).
+<!-- @api:slots -->
+Ninguno.
+<!-- /@api:slots -->
 
 ## Expose
 
+<!-- @api:expose -->
 | Método | Descripción |
-|------|------|
-| `.get()` | Devuelve el estado actual (`boolean`) |
-| `.set(val: boolean)` | Asigna el estado (programáticamente) |
-| `.reset()` | Pone el estado en `false` |
-| `.focus()` | Enfoca el checkbox |
+| ------ | ------ |
+| `get` | Devuelve si el checkbox está marcado. |
+| `set` | Setea el estado marcado y emite change. |
+| `reset` | Desmarca el checkbox y emite change. |
+| `focus` | Enfoca el input nativo. |
+<!-- /@api:expose -->

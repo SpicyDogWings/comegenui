@@ -64,32 +64,37 @@ Hay dos formas equivalentes de escuchar cambios:
 
 ## Atributos
 
+<!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
-|------|------|------|------|
-| `modelValue` | `boolean` | `false` | Estado del checkbox (controlado) |
+| ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `size` | `"sm" \| "md"` | `"md"` | Tamaño del checkbox: `sm`, `md` |
-| `disabled` | `boolean` | — | Estado deshabilitado |
-| `label` | `string` | — | Texto visible junto al checkbox |
+| `disabled` | `boolean` | `—` | Estado deshabilitado |
+| `model-value` | `boolean` | `false` | Estado del checkbox (controlado) |
+| `label` | `string` | `—` | Texto visible junto al checkbox |
+<!-- /@api:atributos -->
 
 > El Custom Element **no expone** una prop `checked` separada (el control se hace únicamente con `modelValue`), ni una prop `variant` (el estilo se fija con `size` y `color`).
 
 ## Eventos
 
-| Evento | Payload (`e.detail`) | Descripción |
-|------|------|------|
-| `update:modelValue` | `boolean` | Se emite cuando cambia el estado |
-| `change` | `boolean` | Se emite en cada cambio, útil para listeners simples |
+<!-- @api:eventos -->
+Ninguno.
+<!-- /@api:eventos -->
 
 ## Slots
 
-Ninguno (el texto se pasa via `label`).
+<!-- @api:slots -->
+Ninguno.
+<!-- /@api:slots -->
 
 ## Métodos expuestos
 
+<!-- @api:metodos -->
 | Método | Descripción |
-|------|------|
-| `.get()` | Devuelve el estado actual (`boolean`) |
-| `.set(val: boolean)` | Asigna el estado (programáticamente) |
-| `.reset()` | Pone el estado en `false` |
-| `.focus()` | Enfoca el checkbox |
+| ------ | ------ |
+| `get` | — |
+| `set` | — |
+| `reset` | — |
+| `focus` | — |
+<!-- /@api:metodos -->

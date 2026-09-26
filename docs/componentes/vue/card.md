@@ -89,30 +89,36 @@ import Badge from "@/components/information/Badge.vue";
 
 ## Props
 
+<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle"` | `"ghost"` | `ghost` (default), `outlined`, `soft`, `subtle`, `solid` |
-| `layout` | `"vertical" \| "horizontal"` | `"vertical"` | `vertical` (media arriba) o `horizontal` (media al costado) |
-| `title` | `string` | — | Título del header |
-| `subtitle` | `string` | — | Subtítulo bajo el título |
-| `image` | `string` | — | URL de imagen que se muestra como media en la parte superior (o al costado con `layout="horizontal"`) |
+| ------ | ------ | ------ | ------ |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
+| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle"` | `"ghost"` | — |
+| `layout` | `"vertical" \| "horizontal"` | `"vertical"` | — |
+| `title` | `string` | `—` | — |
+| `subtitle` | `string` | `—` | — |
+| `image` | `string` | `—` | — |
+<!-- /@api:props -->
 
 ## Emits
 
-| Evento | Payload | Descripción |
-|------|------|------|
-| `click` | `MouseEvent` | Click en la tarjeta (re-emitido por el wrapper) |
+<!-- @api:emits -->
+Ninguno.
+<!-- /@api:emits -->
 
 ## Slots
 
+<!-- @api:slots -->
 | Slot | Descripción |
-|------|------|
-| `media` | Contenido de la parte superior (si no se usa el prop `image`). Reemplaza la imagen |
-| `header` | Reemplaza el título/subtítulo por defecto |
-| `footer` | Contenido al pie de la tarjeta (se separa con una línea) |
-| `default` | Contenido principal del cuerpo de la tarjeta |
+| ------ | ------ |
+| `media` | — |
+| `header` | — |
+| `default` | — |
+| `footer` | — |
+<!-- /@api:slots -->
 
 ## Expose
 
-Ninguno.
+<!-- @api:expose -->
+No expone métodos.
+<!-- /@api:expose -->

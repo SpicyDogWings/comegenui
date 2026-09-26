@@ -66,32 +66,34 @@ Alerta con color semántico, título opcional y botón de cerrar. Puede controla
 
 ## Atributos
 
+<!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
-|------|------|------|------|
+| ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | `solid`, `outlined`, `soft`, `ghost`, `subtle` |
-| `title` | `string` | — | Título visible en la cabecera |
-| `close` | `boolean` | — | Muestra el botón de cerrar (X) |
+| `close` | `boolean` | `—` | Muestra el botón de cerrar (X) |
 | `show` | `boolean` | `true` | Controla visibilidad. Cambiar este atributo emite `update:show` |
+| `title` | `string` | `—` | Título visible en la cabecera |
+<!-- /@api:atributos -->
 
 > **Atributos booleanos:** en HTML se usan sin valor: `<cu-alert close show>...`
 
 ## Eventos
 
-| Evento | Payload (`e.detail`) | Descripción |
-|------|------|------|
-| `close` | — | Se emite cuando se cierra la alerta (vía botón X) |
-| `open` | — | Se emite cuando la alerta pasa a mostrarse |
-| `update:show` | `boolean` | Se emite cuando cambia `show` (vía prop o interacción) |
+<!-- @api:eventos -->
+Ninguno.
+<!-- /@api:eventos -->
 
 > Los eventos custom se escuchan con `addEventListener` y el payload está en `e.detail`.
 
 ## Slots
 
+<!-- @api:slots -->
 | Slot | Descripción |
-|------|------|
-| `icon` | Ícono junto al título (slot HTML nativo) |
-| `default` | Cuerpo principal de la alerta |
+| ------ | ------ |
+| `icon` | — |
+| `default` | — |
+<!-- /@api:slots -->
 
 ```html
 <cu-alert color="success" title="Listo">
@@ -106,11 +108,12 @@ Alerta con color semántico, título opcional y botón de cerrar. Puede controla
 
 ## Métodos expuestos
 
+<!-- @api:metodos -->
 | Método | Descripción |
-|------|------|
-| `.open()` | Muestra la alerta |
-| `.close()` | Oculta la alerta |
-| `.toggle()` | Alterna visibilidad |
-| `.isOpen()` | Devuelve `true`/`false` según la visibilidad actual |
+| ------ | ------ |
+| `open` | — |
+| `toggle` | — |
+| `isOpen` | — |
+<!-- /@api:metodos -->
 
 El control también puede hacerse via el atributo `show` o escuchando los eventos `open`/`close`.

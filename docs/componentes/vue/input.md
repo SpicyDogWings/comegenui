@@ -77,33 +77,40 @@ const campo = useTemplateRef("campo");
 
 ## Props
 
+<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
-| `modelValue` | `string` | `""` | Valor controlado |
-| `startValue` | `string` | — | Valor inicial usado por `.reset()` |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | `outlined`, `soft`, `ghost`, `subtle` |
-| `type` | `"number" \| "text" \| "password" \| "email" \| "tel" \| "url" \| "search"` | `"text"` | `text`, `password`, `email`, `number`, `tel`, `url`, `search` |
-| `placeholder` | `string` | — | Placeholder del input |
-| `disabled` | `boolean` | `false` | Estado deshabilitado |
-| `readOnly` | `boolean` | `false` | Solo lectura (en HTML se usa como `readonly`) |
+| ------ | ------ | ------ | ------ |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
+| `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | — |
+| `size` | `"sm" \| "md" \| "lg"` | `"md"` | Tamaño del input (sm \| md \| lg). |
+| `disabled` | `boolean` | `false` | — |
+| `type` | `"number" \| "text" \| "password" \| "email" \| "tel" \| "url" \| "search"` | `"text"` | — |
+| `readOnly` | `boolean` | `false` | — |
+| `placeholder` | `string` | `—` | — |
+| `startValue` | `string` | `—` | — |
+<!-- /@api:props -->
 
 ## Emits
 
+<!-- @api:emits -->
 | Evento | Payload | Descripción |
-|------|------|------|
-| `update:modelValue` | `string` | Se emite en cada cambio de valor (mientras el usuario escribe) |
+| ------ | ------ | ------ |
+| `update:modelValue` | `string` | — |
+<!-- /@api:emits -->
 
 ## Slots
 
+<!-- @api:slots -->
 Ninguno.
+<!-- /@api:slots -->
 
 ## Expose
 
+<!-- @api:expose -->
 | Método | Descripción |
-|------|------|
-| `.get()` | Devuelve el valor actual (`string`) |
-| `.set(value: string \| number)` | Asigna un valor |
-| `.reset()` | Vuelve al `startValue` (o `""` si no se definió) |
-| `.focus()` | Enfoca el input |
+| ------ | ------ |
+| `get` | — |
+| `set` | — |
+| `reset` | — |
+| `focus` | Enfoca el input. |
+<!-- /@api:expose -->

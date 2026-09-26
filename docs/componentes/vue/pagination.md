@@ -77,35 +77,41 @@ import Pagination from "@/components/controls/Pagination.vue";
 
 ## Props
 
+<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` (hereda de `<html data-theme>` si se omite) |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle" \| "none"` | `"soft"` | `outlined`, `soft`, `ghost`, `subtle`, `none` |
-| `currentPage` | `number` | `1` | Página actual (atributo HTML: `current-page`) |
-| `totalPages` | `number` | `1` | Total de páginas (atributo HTML: `total-pages`) |
-| `totalItems` | `number` | `0` | Total de items, útil para mostrar "X–Y de Z" (atributo HTML: `total-items`) |
-| `itemsPerPage` | `number` | `10` | Items por página (atributo HTML: `items-per-page`) |
-| `showPageSize` | `boolean` | `false` | Muestra el selector de tamaño de página (atributo HTML: `show-page-size`) |
-| `pageSizeOptions` | `number[]` | `[5, 10, 20, 50]` | Opciones del selector (atributo HTML: `page-size-options`) |
-| `showFirstAndLast` | `boolean` | `false` | Muestra botones "primera" y "última" página (atributo HTML: `show-first-and-last`) |
-| `hightContrast` | `boolean` | `false` | Modo de alto contraste |
+| ------ | ------ | ------ | ------ |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
+| `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle" \| "none"` | `"soft"` | — |
+| `currentPage` | `number` | `1` | — |
+| `totalPages` | `number` | `1` | — |
+| `totalItems` | `number` | `0` | — |
+| `itemsPerPage` | `number` | `10` | — |
+| `showPageSize` | `boolean` | `false` | — |
+| `pageSizeOptions` | `number[]` | `[5, 10, 20, 50]` | — |
+| `showFirstAndLast` | `boolean` | `false` | — |
+<!-- /@api:props -->
 
 > **`pageSizeOptions`:** se asigna como propiedad JS (`pagination.pageSizeOptions = [10, 25, 50]`). Como atributo HTML no se soporta (es un array).
 
 ## Emits
 
+<!-- @api:emits -->
 | Evento | Payload | Descripción |
-|------|------|------|
-| `update:currentPage` | `number` | Se emite cuando cambia la página actual |
-| `update:itemsPerPage` | `number` | Se emite cuando cambia el tamaño de página |
+| ------ | ------ | ------ |
+| `update:currentPage` | `any[` | — |
+| `update:itemsPerPage` | `any[` | — |
+<!-- /@api:emits -->
 
 > Los eventos custom se escuchan con `addEventListener` y el payload está en `e.detail`.
 
 ## Slots
 
+<!-- @api:slots -->
 Ninguno.
+<!-- /@api:slots -->
 
 ## Expose
 
-No expone métodos. El control se hace via props y eventos.
+<!-- @api:expose -->
+No expone métodos.
+<!-- /@api:expose -->

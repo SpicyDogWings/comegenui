@@ -58,19 +58,21 @@ El listado de archivos se renderiza con `<cu-file-list>` (componente interno) qu
 
 ## Atributos
 
+<!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
-|------|------|------|------|
-| `modelValue` | `File \| File[] \| null` | `null` | Archivo/s seleccionados |
+| ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `disabled` | `boolean` | `—` | Deshabilita interacción |
+| `model-value` | `File \| File[] \| null` | `null` | Archivo/s seleccionados |
+| `read-only` | `boolean` | `—` | Modo solo lectura |
 | `placeholder` | `string` | `"Selecciona un archivo o arrastra aquí"` | Texto cuando no hay archivos |
-| `disabled` | `boolean` | — | Deshabilita interacción |
-| `readOnly` | `boolean` | — | Modo solo lectura |
-| `accept` | `string` | — | Tipos aceptados (ej: `"image/*"`) |
-| `multiple` | `boolean` | — | Permite múltiples archivos |
-| `maxSize` | `number` | — | Tamaño máximo en bytes |
-| `directory` | `boolean` | — | Activa modo carpeta (incluye `multiple` implícitamente) |
-| `directoryDeep` | `number` | `0` | Niveles de recursión en carpetas: `0` = solo raíz, `1` = +1 subnivel, `-1` = sin límite |
-| `maxHeight` | `string` | `""` | Altura máxima del listado (ej: `"200px"`). Sin scroll si se omite. |
+| `multiple` | `boolean` | `—` | Permite múltiples archivos |
+| `directory` | `boolean` | `—` | Activa modo carpeta (incluye `multiple` implícitamente) |
+| `directory-deep` | `number` | `0` | Niveles de recursión en carpetas: `0` = solo raíz, `1` = +1 subnivel, `-1` = sin límite |
+| `max-height` | `string` | `""` | Altura máxima del listado (ej: `"200px"`). Sin scroll si se omite. |
+| `max-size` | `number` | `—` | Tamaño máximo en bytes |
+| `accept` | `string` | `—` | Tipos aceptados (ej: `"image/*"`) |
+<!-- /@api:atributos -->
 
 > **Atributos en HTML:** `readOnly` → `readonly`, `maxSize` → `max-size`, `directoryDeep` → `directory-deep`, `maxHeight` → `max-height`.
 
@@ -78,20 +80,24 @@ El listado de archivos se renderiza con `<cu-file-list>` (componente interno) qu
 
 ## Eventos
 
-| Evento | Payload (`e.detail`) | Descripción |
-|------|------|------|
-| `update:modelValue` | `null` | Se emite al cambiar la selección |
+<!-- @api:eventos -->
+Ninguno.
+<!-- /@api:eventos -->
 
 ## Slots
 
+<!-- @api:slots -->
 Ninguno.
+<!-- /@api:slots -->
 
 ## Métodos expuestos
 
+<!-- @api:metodos -->
 | Método | Descripción |
-|------|------|
-| `.get()` | Devuelve el/los archivo/s actual/es |
-| `.set(val: File \| File[] \| null)` | Asigna archivos programáticamente |
-| `.reset()` | Limpia la selección |
-| `.focus()` | Enfoca la zona |
-| `.trigger()` | Abre el diálogo nativo |
+| ------ | ------ |
+| `get` | — |
+| `set` | — |
+| `reset` | — |
+| `focus` | — |
+| `trigger` | — |
+<!-- /@api:metodos -->

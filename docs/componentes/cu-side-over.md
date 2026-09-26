@@ -52,36 +52,40 @@ side.addEventListener('close', () => console.log('cerrando'));
 
 ## Atributos
 
+<!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
-|------|------|------|------|
-| `open` | `boolean` | `false` | Estado de visibilidad (v-model). Ver nota de atributo abajo |
-| `title` | `string` | `""` | Título de la cabecera (si está vacío y no es `persistent`, igual muestra el botón de cerrar) |
-| `position` | `"left" \| "right" \| "bottom" \| "top"` | `"right"` | Borde desde donde desliza: `left`, `right`, `top`, `bottom` |
+| ------ | ------ | ------ | ------ |
 | `size` | `string` | `"300px"` | Ancho (`left`/`right`) o alto (`top`/`bottom`) del panel. Valor CSS (`300px`, `40vw`) o preset: `sm`, `md`, `lg`, `xl`, `full`. Ignorado con `fullscreen` |
+| `position` | `"bottom" \| "top" \| "left" \| "right"` | `"right"` | Borde desde donde desliza: `left`, `right`, `top`, `bottom` |
+| `open` | `boolean` | `false` | Estado de visibilidad (v-model). Ver nota de atributo abajo |
+| `z-index` | `number` | `1100` | Z-index del overlay (en HTML se usa como `z-index`) |
+| `title` | `string` | `""` | Título de la cabecera (si está vacío y no es `persistent`, igual muestra el botón de cerrar) |
 | `fullscreen` | `boolean` | `false` | Ocupa toda la pantalla |
 | `persistent` | `boolean` | `false` | Si es `true`, no se cierra por backdrop, `Escape` ni el botón de cerrar |
-| `zIndex` | `number` | `1100` | Z-index del overlay (en HTML se usa como `z-index`) |
+<!-- /@api:atributos -->
 
 > **Atributo `open`:** como `open` es un atributo HTML nativo, para controlarlo desde HTML usalo con valor booleano: `<cu-side-over open>` abre el panel. El estado también se maneja por método.
 
 ## Eventos
 
-| Evento | Payload (`e.detail`) | Descripción |
-|------|------|------|
-| `update:open` | `boolean` | Nuevo estado de visibilidad (cambia al abrir/cerrar) |
-| `close` | — | Se inició el cierre (backdrop, Escape, `.close()`) |
+<!-- @api:eventos -->
+Ninguno.
+<!-- /@api:eventos -->
 
 ## Slots
 
+<!-- @api:slots -->
 | Slot | Descripción |
-|------|------|
-| `default` | Contenido del cuerpo del panel |
+| ------ | ------ |
+| `default` | — |
+<!-- /@api:slots -->
 
 ## Métodos expuestos
 
+<!-- @api:metodos -->
 | Método | Descripción |
-|------|------|
-| `.open()` | Abre el panel |
-| `.close()` | Cierra el panel |
-| `.toggle()` | Alterna visibilidad |
-| `.isOpen()` | Devuelve el estado actual (`boolean`) |
+| ------ | ------ |
+| `close` | — |
+| `toggle` | — |
+| `isOpen` | — |
+<!-- /@api:metodos -->

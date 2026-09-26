@@ -227,58 +227,66 @@ import Calendar from "@/components/controls/Calendar.vue";
 
 ## Props
 
+<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `modelValue` | `string \| number \| Date \| null` | `null` | Fecha seleccionada. Acepta `Date`, timestamp o `"YYYY-MM-DD"` (ver [Formato de fechas](#formato-de-fechas)) |
-| `min` | `string \| number \| Date \| null` | `null` | Fecha mínima seleccionable (días anteriores quedan deshabilitados) |
-| `max` | `string \| number \| Date \| null` | `null` | Fecha máxima seleccionable |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"primary"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `"solid" \| "outlined" \| "soft" \| "subtle"` | `"soft"` | Variante del día seleccionado: `solid`, `outlined`, `soft`, `subtle` (sin `ghost`: se confunde con el día de hoy) |
-| `disabled` | `boolean` | `false` | Deshabilita todo el calendario |
-| `disabledWeekdays` | `string \| number[]` | `""` | Días de la semana no seleccionables (`0`=domingo … `6`=sábado). En HTML plano: `disabled-weekdays="0,6"` |
-| `disabledDates` | `string \| (string \| Date)[]` | `""` | Fechas puntuales no seleccionables `"YYYY-MM-DD"`. En HTML plano: `disabled-dates="2026-08-15,2026-08-16"` |
-| `locale` | `string` | `"es"` | Locale para nombres de mes y días de la semana |
-| `weekStart` | `number` | `1` | Día en que arranca la semana: `0` = domingo, `1` = lunes |
-| `yearNavigation` | `string \| boolean` | `false` | Muestra botones `«`/`»` para saltar de año en el header |
-| `monthFormat` | `"M" \| "MMMM" \| "MMM" \| "MM"` | `"MMMM"` | Formato del mes en el header: `MMMM` (septiembre), `MMM` (sept), `MM` (09) o `M` (9). Un valor no soportado cae a `MMMM` |
-| `yearFormat` | `"yyyy" \| "yy"` | `"yyyy"` | Formato del año (badge cuando el mes no es del año actual): `yyyy` (2026) o `yy` (26). Un valor no soportado cae a `yyyy` |
-| `events` | `CalendarEvent[]` | `[]` | Eventos a señalar con puntos bajo la fecha (ver [Eventos](#eventos-puntos)). Se asigna como propiedad JS |
-| `rangeStart` | `string \| number \| Date \| null` | `null` | Inicio del rango (resalta los días entre inicio y fin). Se asigna como propiedad JS |
-| `rangeEnd` | `string \| number \| Date \| null` | `null` | Fin del rango. Se asigna como propiedad JS |
-| `grid` | `boolean` | `false` | Dibuja líneas **interiores** (cuadrícula) entre los días. En HTML plano: `<cu-calendar grid>` |
-| `border` | `boolean` | `false` | Dibuja el **marco exterior** alrededor de la cuadrícula de días. Combinable con `grid` |
-| `viewMonth` | `string \| number \| Date \| null` | `null` | Mes visible (primer día) controlado desde afuera. Navegar emite `update:viewMonth`. Se asigna como propiedad JS |
-| `mode` | `"single" \| "range"` | `"single"` | Modo de selección: `single` (una fecha) o `range` (inicio + fin) |
+| ------ | ------ | ------ | ------ |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `'primary'` | — |
+| `variant` | `"solid" \| "outlined" \| "soft" \| "subtle"` | `'soft'` | — |
+| `disabled` | `boolean` | `false` | — |
+| `modelValue` | `string \| number \| Date \| null` | `null` | — |
+| `min` | `string \| number \| Date \| null` | `null` | — |
+| `max` | `string \| number \| Date \| null` | `null` | — |
+| `disabledWeekdays` | `string \| number[]` | `[]` | — |
+| `disabledDates` | `string \| (string \| Date)[]` | `[]` | — |
+| `locale` | `string` | `'es'` | — |
+| `weekStart` | `number` | `1` | — |
+| `yearNavigation` | `string \| boolean` | `false` | — |
+| `monthFormat` | `"M" \| "MMMM" \| "MMM" \| "MM"` | `'MMMM'` | Formato del mes en el header: `MMMM` (septiembre), `MMM` (sept), `MM` (09) o `M` (9). Un valor no soportado cae a `MMMM` |
+| `yearFormat` | `"yyyy" \| "yy"` | `'yyyy'` | Formato del año (badge cuando el mes no es del año actual): `yyyy` (2026) o `yy` (26). Un valor no soportado cae a `yyyy` |
+| `events` | `CalendarEvent[]` | `[]` | — |
+| `rangeStart` | `string \| number \| Date \| null` | `null` | — |
+| `rangeEnd` | `string \| number \| Date \| null` | `null` | — |
+| `grid` | `boolean` | `false` | — |
+| `border` | `boolean` | `false` | — |
+| `viewMonth` | `string \| number \| Date \| null` | `null` | — |
+| `mode` | `"single" \| "range"` | `'single'` | Modo de selección: `single` (una fecha) o `range` (inicio + fin). |
+<!-- /@api:props -->
 
 ## Emits
 
+<!-- @api:emits -->
 | Evento | Payload | Descripción |
-|------|------|------|
-| `select` | `Date` | Click en un día válido (single) o rango completo `{ start, end }` (range) |
-| `change` | `Date` | Fecha (single) o `{ start, end }` (range) |
-| `update:modelValue` | `Date` | Cambio de la fecha seleccionada (modo `single`) |
-| `update:viewMonth` | `Date` | Cambia el mes visible cuando `viewMonth` está controlado |
-| `update:rangeStart` | `Date` | Cambia el inicio del rango (modo `range`) |
-| `update:rangeEnd` | `Date` | Cambia el fin del rango (modo `range`) |
+| ------ | ------ | ------ |
+| `update:modelValue` | `Date` | — |
+| `update:viewMonth` | `Date` | — |
+| `update:rangeStart` | `Date \\| null` | — |
+| `update:rangeEnd` | `Date \\| null` | — |
+| `change` | `CalendarChange` | — |
+| `select` | `CalendarChange` | — |
+<!-- /@api:emits -->
 
 > En modo `single` los eventos emiten un `Date` normalizado a medianoche local; en `range`, un objeto `{ start, end }`.
 
 ## Slots
 
+<!-- @api:slots -->
 Ninguno.
+<!-- /@api:slots -->
 
 ## Expose
 
+<!-- @api:expose -->
 | Método | Descripción |
-|------|------|
-| `.nextMonth()` | Va al mes siguiente (respeta `max`) |
-| `.prevMonth()` | Va al mes anterior (respeta `min`) |
-| `.goToMonth(value: string \| number \| Date)` | Navega al mes de la fecha dada |
-| `.getValue()` | null` con la fecha seleccionada |
-| `.setValue(value: string \| number \| Date \| null)` | Selecciona una fecha (acepta string/number/Date) |
-| `.getRange()` | null` con el rango seleccionado (modo `range`) |
-| `.setRange(start: string \| number \| Date \| null, end: string \| number \| Date \| null)` | Setea el rango (acepta string/number/Date) (modo `range`) |
-| `.clear()` | Limpia el rango seleccionado (modo `range`) |
+| ------ | ------ |
+| `nextMonth` | — |
+| `prevMonth` | — |
+| `goToMonth` | — |
+| `getValue` | — |
+| `setValue` | — |
+| `getRange` | — |
+| `setRange` | — |
+| `clear` | — |
+<!-- /@api:expose -->
 
 ## Interfaces
 

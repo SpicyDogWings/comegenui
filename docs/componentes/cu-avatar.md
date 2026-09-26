@@ -28,23 +28,31 @@ Avatar circular (imagen o iniciales) con color semántico y tres tamaños. Si no
 
 ## Atributos
 
+<!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
-|------|------|------|------|
+| ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `""` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger`. Si se omite, se elige por hash de las iniciales |
 | `size` | `"sm" \| "md" \| "lg"` | `"md"` | Tamaño: `sm`, `md`, `lg` |
+| `src` | `string` | `""` | URL de la imagen |
 | `initials` | `string` | `""` | Texto que se muestra como iniciales cuando no hay `src` |
-| `src` | `string` | `""` | URL de la imagen. Si se omite, se muestran las `initials` |
+<!-- /@api:atributos -->
 
 ## Eventos
 
+<!-- @api:eventos -->
 Ninguno.
+<!-- /@api:eventos -->
 
 ## Slots
 
+<!-- @api:slots -->
 | Slot | Descripción |
-|------|------|
-| `default` | Contenido propio en lugar de las iniciales. |
+| ------ | ------ |
+| `default` | — |
+<!-- /@api:slots -->
 
 ## Métodos expuestos
 
-Ninguno.
+<!-- @api:metodos -->
+No expone métodos.
+<!-- /@api:metodos -->

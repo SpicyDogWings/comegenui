@@ -53,26 +53,34 @@ Botón flotante (FAB) fijo en la esquina inferior derecha. Es un `Button` (hered
 
 ## Atributos
 
+<!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
-|------|------|------|------|
+| ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"primary"` | Color semántico del FAB: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
 | `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle" \| "link" \| "none"` | `"solid"` | Variante visual, heredada de `Button`: `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` |
 | `size` | `"sm" \| "md" \| "lg"` | `"lg"` | Tamaño, heredado de `Button`: `sm`, `md`, `lg` |
 | `disabled` | `boolean` | `false` | Deshabilita el botón. |
 | `loading` | `boolean` | `false` | Muestra un spinner y deshabilita el botón mientras está activo. |
+<!-- /@api:atributos -->
 
 > El Custom Element **no expone** prop `theme` ni `hightContrast`.
 
 ## Eventos
 
-No emite eventos propios: el `click` es el evento nativo del `<button>` (burbujea y cruza el shadow DOM).
+<!-- @api:eventos -->
+Ninguno.
+<!-- /@api:eventos -->
 
 ## Slots
 
+<!-- @api:slots -->
 | Slot | Descripción |
-|------|------|
-| `default` | Ícono o contenido del botón (normalmente un SVG) |
+| ------ | ------ |
+| `default` | — |
+<!-- /@api:slots -->
 
 ## Métodos expuestos
 
+<!-- @api:metodos -->
 No expone métodos.
+<!-- /@api:metodos -->

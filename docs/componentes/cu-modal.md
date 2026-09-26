@@ -114,42 +114,44 @@ modal.addEventListener('closed', () => console.log('cierre completo'));
 
 ## Atributos
 
+<!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
-|------|------|------|------|
+| ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `title` | `string` | — | Título del modal (se muestra en la cabecera) |
-| `description` | `string` | — | Descripción bajo el título (texto secundario) |
-| `persistent` | `boolean` | — | Si es `true`, no se cierra con click en el backdrop ni con `Escape` |
 | `size` | `"sm" \| "md" \| "lg" \| "auto" \| "xl" \| "full"` | `"auto"` | Ancho del modal: `auto`, `sm`, `md`, `lg`, `xl`, `full` |
 | `height` | `"sm" \| "md" \| "lg" \| "auto" \| "xl" \| "full"` | `"auto"` | Alto del modal: `auto`, `sm`, `md`, `lg`, `xl`, `full` |
+| `persistent` | `boolean` | `—` | Si es `true`, no se cierra con click en el backdrop ni con `Escape` |
+| `title` | `string` | `—` | Título del modal (se muestra en la cabecera) |
+| `description` | `string` | `—` | Descripción bajo el título (texto secundario) |
+<!-- /@api:atributos -->
 
 > El Custom Element **no expone** prop `variant` ni `theme`. El estilo se controla con `color`.
 
 ## Eventos
 
-| Evento | Payload (`e.detail`) | Descripción |
-|------|------|------|
-| `close` | — | Se inicia el cierre (click en backdrop, Escape, llamada a `.close()`) |
-| `opened` | — | El modal pasó a `isOpen = true` (animación de apertura completa) |
-| `closed` | — | La animación de cierre terminó y `isOpen = false` |
-| `cancel` | — | Se emite con el footer por defecto de un modal `persistent` al pulsar "Cancelar" (luego cierra el modal) |
-| `accept` | — | Se emite con el footer por defecto de un modal `persistent` al pulsar "Aceptar" (luego cierra el modal) |
+<!-- @api:eventos -->
+Ninguno.
+<!-- /@api:eventos -->
 
 > Si el modal es `persistent`, no se emiten `close`/`closed`/`cancel` por click en backdrop o `Escape`. Solo se emiten cuando llamás a `.close()` programáticamente.
 
 ## Slots
 
+<!-- @api:slots -->
 | Slot | Descripción |
-|------|------|
-| `icon` | Ícono en la cabecera (junto al título) |
-| `default` | Cuerpo del modal |
-| `footer` | Pie del modal (típicamente botones de acción) |
+| ------ | ------ |
+| `icon` | — |
+| `default` | — |
+| `footer` | — |
+<!-- /@api:slots -->
 
 ## Métodos expuestos
 
+<!-- @api:metodos -->
 | Método | Descripción |
-|------|------|
-| `.open()` | Abre el modal |
-| `.close()` | Cierra el modal |
-| `.toggle()` | Alterna visibilidad |
-| `.isOpen()` | Devuelve el estado actual (`boolean`) |
+| ------ | ------ |
+| `open` | — |
+| `close` | — |
+| `toggle` | — |
+| `isOpen` | — |
+<!-- /@api:metodos -->

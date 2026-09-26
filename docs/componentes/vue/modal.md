@@ -124,40 +124,48 @@ function handleAction() {
 
 ## Props
 
+<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `title` | `string` | — | Título del modal (se muestra en la cabecera) |
-| `description` | `string` | — | Descripción bajo el título (texto secundario) |
-| `persistent` | `boolean` | — | Si es `true`, no se cierra con click en el backdrop ni con `Escape` |
-| `size` | `"sm" \| "md" \| "lg" \| "auto" \| "xl" \| "full"` | `"auto"` | Ancho del modal: `auto`, `sm`, `md`, `lg`, `xl`, `full` |
-| `height` | `"sm" \| "md" \| "lg" \| "auto" \| "xl" \| "full"` | `"auto"` | Alto del modal: `auto`, `sm`, `md`, `lg`, `xl`, `full` |
+| ------ | ------ | ------ | ------ |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
+| `size` | `"sm" \| "md" \| "lg" \| "auto" \| "xl" \| "full"` | `"auto"` | — |
+| `title` | `string` | `""` | — |
+| `height` | `"sm" \| "md" \| "lg" \| "auto" \| "xl" \| "full"` | `"auto"` | — |
+| `description` | `string` | `""` | — |
+| `persistent` | `boolean` | `false` | — |
+<!-- /@api:props -->
 
 ## Emits
 
+<!-- @api:emits -->
 | Evento | Payload | Descripción |
-|------|------|------|
-| `close` | — | Se inicia el cierre (click en backdrop, Escape, llamada a `.close()`) |
-| `opened` | — | El modal pasó a `isOpen = true` (animación de apertura completa) |
-| `closed` | — | La animación de cierre terminó y `isOpen = false` |
-| `cancel` | — | Se emite con el footer por defecto de un modal `persistent` al pulsar "Cancelar" (luego cierra el modal) |
-| `accept` | — | Se emite con el footer por defecto de un modal `persistent` al pulsar "Aceptar" (luego cierra el modal) |
+| ------ | ------ | ------ |
+| `close` | `any[` | — |
+| `accept` | `any[` | — |
+| `opened` | `any[` | — |
+| `closed` | `any[` | — |
+| `cancel` | `any[` | — |
+<!-- /@api:emits -->
 
 > Si el modal es `persistent`, no se emiten `close`/`closed`/`cancel` por click en backdrop o `Escape`. Solo se emiten cuando llamás a `.close()` programáticamente.
 
 ## Slots
 
+<!-- @api:slots -->
 | Slot | Descripción |
-|------|------|
-| `icon` | Ícono en la cabecera (junto al título) |
-| `default` | Cuerpo del modal |
-| `footer` | Pie del modal (típicamente botones de acción) |
+| ------ | ------ |
+| `icon` | — |
+| `default` | — |
+| `footer` | — |
+<!-- /@api:slots -->
 
 ## Expose
 
+<!-- @api:expose -->
 | Método | Descripción |
-|------|------|
-| `.open()` | Abre el modal |
-| `.close()` | Cierra el modal |
-| `.toggle()` | Alterna visibilidad |
-| `.isOpen()` | Devuelve el estado actual (`boolean`) |
+| ------ | ------ |
+| `open` | — |
+| `close` | — |
+| `toggle` | — |
+| `isOpen` | Devuelve true si el modal está abierto. |
+<!-- /@api:expose -->

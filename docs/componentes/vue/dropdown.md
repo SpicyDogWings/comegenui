@@ -28,52 +28,57 @@ const value = ref("");
 
 ## Props
 
+<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` |  |
-| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle" \| "link" \| "none"` | `"ghost"` |  |
-| `disabled` | `boolean` | `false` |  |
-| `label` | `string` | `""` |  |
+| ------ | ------ | ------ | ------ |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
+| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle" \| "link" \| "none"` | `"ghost"` | — |
+| `disabled` | `boolean` | `false` | — |
+| `loading` | `boolean` | `false` | — |
+| `label` | `string` | `""` | — |
+| `position` | `"bottom" \| "top" \| "left" \| "right"` | `"bottom"` | — |
+| `align` | `"start" \| "center" \| "end"` | `"start"` | — |
+| `offset` | `number` | `4` | — |
+| `fixed` | `boolean` | `false` | — |
+| `items` | `DropdownMenuItem[]` | `[]` | — |
 | `icon` | `string` | `""` | Ícono del trigger (SVG/HTML). |
-| `trigger` | `"click" \| "hover"` | `"click"` |  |
-| `position` | `"left" \| "right" \| "bottom" \| "top"` | `"bottom"` |  |
-| `align` | `"center" \| "start" \| "end"` | `"start"` |  |
-| `offset` | `number` | `4` |  |
-| `fixed` | `boolean` | `false` |  |
-| `panelWidth` | `string` | `""` |  |
-| `loading` | `boolean` | `false` |  |
-| `cooldown` | `boolean` | `false` |  |
-| `cooldownKey` | `number` | `0` |  |
-| `delay` | `number` | `2000` |  |
-| `items` | `DropdownMenuItem[]` | `[]` |  |
-| `modelValue` | `string` | `""` | Valor seleccionado (v-model). |
+| `trigger` | `"click" \| "hover"` | `'click'` | — |
+| `panelWidth` | `string` | `""` | — |
+| `cooldown` | `boolean` | `false` | — |
+| `cooldownKey` | `number` | `0` | — |
+| `delay` | `number` | `2000` | — |
+<!-- /@api:props -->
 
 ## Emits
 
+<!-- @api:emits -->
 | Evento | Payload | Descripción |
-|------|------|------|
-| `update:modelValue` | `value: string` |  |
-| `open` | — | Abre el panel. |
-| `close` | — | Cierra el panel. |
+| ------ | ------ | ------ |
+| `update:modelValue` | `string` | — |
+<!-- /@api:emits -->
 
 ## Slots
 
+<!-- @api:slots -->
 | Slot | Descripción |
-|------|------|
-| `toggle` |  |
-| `default` |  |
+| ------ | ------ |
+| `toggle` | — |
+| `default` | — |
+<!-- /@api:slots -->
 
 ## Expose
 
+<!-- @api:expose -->
 | Método | Descripción |
-|------|------|
-| `.open()` | Abre el panel. |
-| `.close()` | Cierra el panel. |
-| `.toggle()` | Alterna la visibilidad del panel. |
-| `.get()` | Devuelve el valor seleccionado. |
-| `.set(val: string)` | Setea el valor seleccionado. |
-| `.reset()` | Limpia el valor seleccionado. |
-| `.isOpen()` | Devuelve true si el panel está abierto. |
+| ------ | ------ |
+| `open` | Abre el panel. |
+| `close` | Cierra el panel. |
+| `toggle` | Alterna la visibilidad del panel. |
+| `get` | — |
+| `set` | — |
+| `reset` | — |
+| `isOpen` | Devuelve true si el panel está abierto. |
+<!-- /@api:expose -->
 
 ## Interfaces
 

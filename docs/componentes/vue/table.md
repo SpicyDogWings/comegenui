@@ -21,35 +21,43 @@ import Table from "@/components/data/Table.vue";
 
 ## Props
 
+<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `columns` | `Column[]` | `[]` |  |
-| `data` | `Record<string, any>[]` | `[]` |  |
-| `empty` | `string` | `"No hay datos que mostrar"` |  |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` |  |
-| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` |  |
-| `loading` | `boolean` | `false` |  |
-| `maxHeight` | `string` | `""` |  |
-| `rowDisabled` | `boolean \| ((row: Record<string, any>) => boolean)` | `false` |  |
-| `htmlCells` | `boolean` | `false` |  |
-| `footer` | `FooterRow[]` | `[]` |  |
-| `compact` | `boolean` | `false` |  |
+| ------ | ------ | ------ | ------ |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
+| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | — |
+| `loading` | `boolean` | `false` | — |
+| `columns` | `Column[]` | `[]` | — |
+| `maxHeight` | `string` | `""` | — |
+| `data` | `Record<string, any>[]` | `[]` | — |
+| `empty` | `string` | `"No hay datos que mostrar"` | — |
+| `rowDisabled` | `boolean \| ((row: Record<string, any>) => boolean)` | `false` | — |
+| `footer` | `FooterRow[]` | `[]` | — |
+| `compact` | `boolean` | `false` | — |
+| `htmlCells` | `boolean` | `false` | — |
+<!-- /@api:props -->
 
 ## Emits
 
+<!-- @api:emits -->
 Ninguno.
+<!-- /@api:emits -->
 
 ## Slots
 
+<!-- @api:slots -->
 | Slot | Descripción |
-|------|------|
-| `template` | Fila completa custom; scoped: { row, rowIndex, columns, getCellValue }. |
-| `empty` |  |
-| `footer` |  |
+| ------ | ------ |
+| `template` | — |
+| `empty` | — |
+| `footer` | — |
+<!-- /@api:slots -->
 
 ## Expose
 
-Ninguno.
+<!-- @api:expose -->
+No expone métodos.
+<!-- /@api:expose -->
 
 ## Interfaces
 

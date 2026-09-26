@@ -41,11 +41,13 @@ interface NavItem {
 
 ## Atributos
 
+<!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
-|------|------|------|------|
-| `items` | `unknown[]` | — | Estructura de navegación. **Se asigna como propiedad JS** |
-| `trigger` | `"click" \| "hover"` | `"click"` | Cómo abren los submenús: `click` o `hover` |
-| `activePath` | `string` | `""` | Path activo manual. Si se omite, se toma de la ruta (cuando hay router) |
+| ------ | ------ | ------ | ------ |
+| `trigger` | `"click" \| "hover"` | `'click'` | Cómo abren los submenús: `click` o `hover` |
+| `active-path` | `string` | `''` | Path activo manual. Si se omite, se toma de la ruta (cuando hay router) |
+| `items` | `unknown[]` | `—` | Estructura de navegación. **Se asigna como propiedad JS** |
+<!-- /@api:atributos -->
 
 > **`items` se asigna como propiedad JS**, no como atributo HTML:
 
@@ -62,12 +64,18 @@ nav.items = [
 
 ## Eventos
 
+<!-- @api:eventos -->
 Ninguno.
+<!-- /@api:eventos -->
 
 ## Slots
 
+<!-- @api:slots -->
 Ninguno.
+<!-- /@api:slots -->
 
 ## Métodos expuestos
 
-Ninguno.
+<!-- @api:metodos -->
+No expone métodos.
+<!-- /@api:metodos -->
