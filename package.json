@@ -54,6 +54,7 @@
     "vite-plugin-vue-devtools": "^8.1.5",
     "vitepress": "^1.6.4",
     "vitest": "^4.1.9",
+    "vue-component-meta": "^3.3.11",
     "vue-tsc": "^3.3.11"
   },
   "engines": {
