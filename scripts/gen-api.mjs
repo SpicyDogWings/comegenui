@@ -43,6 +43,113 @@ const table = (headers, rows) => [
 const SKIP_PROPS = new Set(['key', 'ref', 'ref_for', 'ref_key', 'class', 'style'])
 const cleanType = (t) => String(t).replace(/ \| undefined$/, '')
 
+function readSfc(file) {
+  if (!file) return ''
+  try { return readFileSync(resolve(ROOT, file), 'utf8') } catch { return '' }
+}
+
+/**
+ * Eventos que el wrapper reenvía con `ceEmit('evento', …)`. Vue no los ve como
+ * `defineEmits`, así que son la única fuente real de los `CustomEvent`s del host.
+ */
+function ceEmitNames(file) {
+  const names = []
+  for (const m of readSfc(file).matchAll(/ceEmit\(\s*['"]([^'"]+)['"]/g)) {
+    if (!names.includes(m[1])) names.push(m[1])
+  }
+  return names
+}
+
+/** Trozo de objeto entre las llaves que siguen a `defineExpose(` (balanceado). */
+function exposedBody(source) {
+  const start = source.indexOf('defineExpose(')
+  if (start === -1) return null
+  const braceStart = source.indexOf('{', start)
+  if (braceStart === -1) return null
+  let depth = 0
+  let quote = null
+  for (let i = braceStart; i < source.length; i++) {
+    const char = source[i]
+    if (quote) {
+      if (char === '\\') { i++; continue }
+      if (char === quote) quote = null
+      continue
+    }
+    if (char === '"' || char === "'" || char === '`') { quote = char; continue }
+    if (char === '{') depth++
+    else if (char === '}' && --depth === 0) return source.slice(braceStart + 1, i)
+  }
+  return null
+}
+
+/** Parte por comas de primer nivel, ignorando strings y anidamiento. */
+function splitTopLevel(source) {
+  const parts = []
+  let depth = 0
+  let current = ''
+  let quote = null
+  for (let i = 0; i < source.length; i++) {
+    const char = source[i]
+    if (quote) {
+      current += char
+      if (char === '\\') { current += source[++i] ?? ''; continue }
+      if (char === quote) quote = null
+      continue
+    }
+    if (char === '"' || char === "'" || char === '`') { quote = char; current += char; continue }
+    if (char === '(' || char === '[' || char === '{') depth++
+    else if (char === ')' || char === ']' || char === '}') depth--
+    if (char === ',' && depth === 0) { parts.push(current); current = ''; continue }
+    current += char
+  }
+  if (current.trim()) parts.push(current)
+  return parts
+}
+
+/**
+ * Claves de `defineExpose({ … })`, en orden. No se usa `m.exposed` solo porque
+ * vue-component-meta pierde las que chocan con una prop (p. ej. `close` en Alert).
+ */
+function exposedKeys(file) {
+  const body = exposedBody(readSfc(file))
+  if (!body) return []
+  const clean = body.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/[^\n]*/g, '')
+  const keys = []
+  for (const part of splitTopLevel(clean)) {
+    const text = part.trim()
+    if (!text) continue
+    const colon = text.indexOf(':')
+    const key = (colon === -1 ? text : text.slice(0, colon)).trim()
+    if (/^[A-Za-z_$][\w$]*$/.test(key) && !keys.includes(key)) keys.push(key)
+  }
+  return keys
+}
+
+/** JSDoc inmediatamente anterior a la definición de `name` (function o comentario inline). */
+function jsdocFor(file, name) {
+  const source = readSfc(file)
+  const esc = name.replace(/[$]/g, '\\$&')
+  const comment = String.raw`/\*\*((?:(?!\*/)[\s\S])*)\*/`
+  for (const re of [
+    new RegExp(`${comment}\\s*(?:async\\s+)?function\\s+${esc}\\b`),
+    new RegExp(`${comment}\\s*${esc}\\s*[:,(}]`),
+  ]) {
+    const m = re.exec(source)
+    if (m) return m[1].split('\n').map((l) => l.replace(/^\s*\*?\s?/, '')).join(' ').trim()
+  }
+  return ''
+}
+
+/** Payload legible del `e.detail`; `any[]` (emits sin tipar) y los vacíos van como `—`. */
+function payloadCell(type) {
+  const raw = String(type ?? '').trim()
+  if (!raw || raw === 'any' || raw === 'any[]' || raw === 'unknown') return '—'
+  const tuple = /^\[([\s\S]*)\]$/.exec(raw)
+  if (!tuple) return `\`${raw}\``
+  const label = tuple[1].trim().replace(/^[A-Za-z_$][\w$]*\s*:\s*/, '')
+  return label ? `\`${label}\`` : '—'
+}
+
 function meta(file) {
   const m = checker.getComponentMeta(resolve(ROOT, file))
   return {
@@ -83,7 +190,11 @@ async function collect() {
   }
 
   // componentes sólo Vue (sin entry en src/lib)
-  const vues = await fg('src/components/{buttons,controls,data,form,information,markdown,navigation,overlay,theme}/*.vue', {
+  const vues = await fg([
+    'src/components/{buttons,controls,data,form,information,markdown,navigation,overlay,theme}/*.vue',
+    'src/components/*.vue',
+    'src/components/controls/month-slider/*.vue',
+  ], {
     cwd: ROOT,
     ignore: ['**/*.test.ts', '**/*.spec.ts'],
   })
@@ -99,21 +210,37 @@ async function collect() {
 
 /* ── bloques generados ───────────────────────────────────────────────────── */
 
-function ceBlocks({ ce, tag }) {
+function ceBlocks({ ce, vue, tag }) {
   const m = meta(ce)
+  const vueMeta = vue ? meta(vue) : { events: [], exposed: [] }
+  const vueEventByName = new Map(vueMeta.events.map((e) => [e.name, e]))
+  const vueExposedByName = new Map(vueMeta.exposed.map((x) => [x.name, x]))
+
   const attrs = m.props.length
     ? table(['Atributo', 'Tipo', 'Default', 'Descripción'],
         m.props.map((p) => [`\`${kebab(p.name)}\``, `\`${p.type}\``, `\`${defaultOf(p)}\``, p.description || '—']))
     : 'Ninguno.'
-  const events = m.events.length
+
+  const emitNames = ceEmitNames(ce)
+  const eventList = emitNames.length
+    ? emitNames.map((name) => ({ name, ...vueEventByName.get(name) }))
+    : m.events
+  const events = eventList.length
     ? table(['Evento', 'Payload (`e.detail`)', 'Descripción'],
-        m.events.map((e) => [`\`${e.name}\``, `\`${cell(e.type.replace(/^\[|\]$/g, '').replace(/^[A-Za-z_$][\w$]*\s*:\s*/, ''))}\``, e.description || '—']))
+        eventList.map((e) => [`\`${e.name}\``, payloadCell(e.type), e.description || '—']))
     : 'Ninguno.'
+
   const slots = m.slots.length
     ? table(['Slot', 'Descripción'], m.slots.map((s) => [s.name === 'default' ? '`default`' : `\`${s.name}\``, s.description || '—']))
     : 'Ninguno.'
-  const metodos = m.exposed.length
-    ? table(['Método', 'Descripción'], m.exposed.map((x) => [`\`${x.name}\``, x.description || '—']))
+
+  const metodosList = exposedKeys(ce).map((name) => ({
+    name,
+    description: jsdocFor(ce, name) || vueExposedByName.get(name)?.description,
+  }))
+  for (const x of m.exposed) if (!metodosList.some((e) => e.name === x.name)) metodosList.push(x)
+  const metodos = metodosList.length
+    ? table(['Método', 'Descripción'], metodosList.map((x) => [`\`${x.name}\``, x.description || '—']))
     : 'No expone métodos.'
   return { atributos: attrs, eventos: events, slots, metodos }
 }
@@ -126,13 +253,18 @@ function vueBlocks({ vue }) {
     : 'Ninguna.'
   const emits = m.events.length
     ? table(['Evento', 'Payload', 'Descripción'],
-        m.events.map((e) => [`\`${e.name}\``, `\`${cell(e.type.replace(/^\[|\]$/g, '').replace(/^[A-Za-z_$][\w$]*\s*:\s*/, ''))}\``, e.description || '—']))
+        m.events.map((e) => [`\`${e.name}\``, payloadCell(e.type), e.description || '—']))
     : 'Ninguno.'
   const slots = m.slots.length
     ? table(['Slot', 'Descripción'], m.slots.map((s) => [s.name === 'default' ? '`default`' : `\`${s.name}\``, s.description || '—']))
     : 'Ninguno.'
-  const expose = m.exposed.length
-    ? table(['Método', 'Descripción'], m.exposed.map((x) => [`\`${x.name}\``, x.description || '—']))
+  const exposeList = exposedKeys(vue).map((name) => ({
+    name,
+    description: jsdocFor(vue, name) || m.exposed.find((x) => x.name === name)?.description,
+  }))
+  for (const x of m.exposed) if (!exposeList.some((e) => e.name === x.name)) exposeList.push(x)
+  const expose = exposeList.length
+    ? table(['Método', 'Descripción'], exposeList.map((x) => [`\`${x.name}\``, x.description || '—']))
     : 'No expone métodos.'
   return { props, emits, slots, expose }
 }
@@ -152,6 +284,24 @@ function inject(file, blocks) {
   if (next === text) return false
   if (!CHECK) writeFileSync(resolve(ROOT, file), next)
   return true
+}
+
+/**
+ * La receta de la skill junta las dos APIs en un archivo: los slots del CE y los
+ * de Vue necesitan marcadores distintos (`@api:slots` y `@api:slots-vue`).
+ */
+function skillBlocks(ce, vue) {
+  if (!ce) return vue
+  return {
+    atributos: ce.atributos,
+    eventos: ce.eventos,
+    slots: ce.slots,
+    metodos: ce.metodos,
+    props: vue.props,
+    emits: vue.emits,
+    'slots-vue': vue.slots,
+    expose: vue.expose,
+  }
 }
 
 const components = await collect()
@@ -195,7 +345,7 @@ for (const [name, comp] of components) {
   const changed = [
     comp.ce && inject(targets.ce, ce) && drifted.push(targets.ce),
     inject(targets.vue, vue) && drifted.push(targets.vue),
-    inject(targets.skill, { ...ce, ...vue }) && drifted.push(targets.skill),
+    inject(targets.skill, skillBlocks(ce, vue)) && drifted.push(targets.skill),
   ].filter(Boolean).length
   touched += changed
 }

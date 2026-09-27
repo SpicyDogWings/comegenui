@@ -27,6 +27,9 @@ const SITE_DIR = resolve(root, "docs/site/componentes");
 // Tags que definen un custom element pero no se documentan (shim deprecado).
 const IGNORED_TAGS = new Set([]);
 
+// Componentes sin custom element que NO se documentan (experimentales/internos).
+const UNDOCUMENTED_VUE = new Set(["lab/collapse/navigation/Outline"]);
+
 // Secciones obligatorias de cada tipo de ficha.
 const VANILLA_SECTIONS = ["## Atributos", "## Eventos", "## Slots", "## Métodos expuestos"];
 const VUE_SECTIONS = ["## Props", "## Emits", "## Slots", "## Expose"];
@@ -73,6 +76,7 @@ function pageSlugs() {
 
 const problems = [];
 const rel = (p) => relative(root, p);
+const kebab = (s) => s.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
 
 // ── fichas ───────────────────────────────────────────────────────────────────
 const vanillaFichas = slugs(FICHA_DIR).filter((s) => s !== "README");
@@ -93,6 +97,27 @@ function checkFicha(file, sections) {
 for (const slug of vanillaFichas) checkFicha(resolve(FICHA_DIR, `${slug}.md`), VANILLA_SECTIONS);
 for (const kebab of vueFichas) checkFicha(resolve(FICHA_VUE_DIR, `${kebab}.md`), VUE_SECTIONS);
 
+// ── componentes Vue ↔ ficha Vue ──────────────────────────────────────────────
+const VUE_CATEGORIES = ["buttons", "controls", "data", "form", "information", "markdown", "navigation", "overlay", "theme"];
+function documentedVueComponents() {
+  const found = new Map(); // kebab → ruta relativa (para el mensaje)
+  for (const category of VUE_CATEGORIES) {
+    const dir = resolve(root, "src/components", category);
+    if (!existsSync(dir)) continue;
+    for (const file of walk(dir, ".vue")) {
+      if (file.endsWith(".ce.vue")) continue;
+      const slug = relative(resolve(root, "src/components"), file).replace(/\.vue$/, "").replaceAll("\\", "/");
+      if (UNDOCUMENTED_VUE.has(slug)) continue;
+      const base = file.split("/").pop().replace(/\.vue$/, "");
+      found.set(kebab(base), `src/components/${slug}.vue`);
+    }
+  }
+  return found;
+}
+for (const [name, file] of documentedVueComponents()) {
+  if (!vueFichas.includes(name)) problems.push(`componente Vue ${file}: falta docs/componentes/vue/${name}.md`);
+}
+
 // ── páginas: frontmatter + include ───────────────────────────────────────────
 const pages = pageSlugs();
 const includedBy = new Map(); // ruta de ficha → cantidad de páginas que la incluyen
@@ -106,6 +131,11 @@ for (const page of pages) {
   } else {
     if (!/^title:\s*\S/m.test(block[1])) problems.push(`página ${page}.md: sin 'title'`);
     if (!/^group:\s*\S/m.test(block[1])) problems.push(`página ${page}.md: sin 'group'`);
+  }
+
+  // Toda página Vue del sitio debe traer demos en vivo (los vanilla no).
+  if (page.startsWith("vue/") && !/^## Demos en vivo\s*$/m.test(source)) {
+    problems.push(`página ${page}.md: sin sección "## Demos en vivo"`);
   }
 
   const include = /<!--@include:\s*(\S+?)\s*-->/.exec(source);

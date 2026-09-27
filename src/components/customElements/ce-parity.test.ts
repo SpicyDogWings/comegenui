@@ -1,6 +1,5 @@
 // Paridad de los wrappers CE con su `.vue`: props que no llegaban al componente
-// interno, eventos y slots que no se reenviaban, y métodos que no se exponían
-// (ver docs/notes/05-wrappers-ce-incompletos.md y 06-cu-markdown-api.md).
+// interno, eventos y slots que no se reenviaban, y métodos que no se exponían.
 import { describe, expect, it, vi } from "vitest";
 import { flushPromises, mount } from "@vue/test-utils";
 
@@ -119,6 +118,10 @@ describe("Markdown.ce", () => {
     expect(onParsed).toHaveBeenCalled();
     expect(w.vm.headingIds().length).toBeGreaterThan(0);
   });
+
+  it("no declara la prop muerta `theme`", () => {
+    expect(Object.keys(MarkdownCe.props ?? {})).not.toContain("theme");
+  });
 });
 
 describe("AdvancedTable.ce (cu-table)", () => {
@@ -142,5 +145,13 @@ describe("AdvancedTable.ce (cu-table)", () => {
 
   it("no declara la prop muerta `theme`", () => {
     expect(Object.keys(TableCe.props ?? {})).not.toContain("theme");
+    expect(Object.keys(AdvancedTable.props ?? {})).not.toContain("theme");
+  });
+
+  it("no declara los eventos de fila que nadie emite", () => {
+    const emits = (AdvancedTable.emits ?? []) as string[];
+    expect(emits).not.toContain("row-click");
+    expect(emits).not.toContain("row-dblclick");
+    expect(emits).not.toContain("cell-click");
   });
 });

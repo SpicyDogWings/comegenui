@@ -165,8 +165,6 @@ interface Column {
 }
 
 const props = defineProps({
-  /** Tema activo de la tabla: light, dark o sigacadv2. */
-  theme: { type: String, required: false, default: "light" },
   columns: { type: Array as () => Column[], required: false, default: () => [] },
   data: { type: Array as () => Record<string, any>[], required: false, default: () => [] },
   empty: { type: String, required: false, default: "No hay datos que mostrar" },
@@ -216,7 +214,6 @@ const props = defineProps({
 
 const emit = defineEmits([
   "update:currentPage", "update:itemsPerPage", "update:search",
-  "row-click", "row-dblclick", "cell-click",
   "edit-start", "edit-save", "edit-cancel", "edit-error",
 ]);
 

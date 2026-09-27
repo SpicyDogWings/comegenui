@@ -4,11 +4,6 @@ import Markdown from '../../markdown/Markdown.vue'
 import { DEFAULTS, extractColors, extractShared } from '@/plugins/cu-tokens/defaults'
 import { darken, toHex, lighten, transparentize } from 'color2k'
 
-const props = defineProps({
-  /** Tema de colores (`light`, `dark`, `sigacadv2`) */
-  theme: { type: String, default: 'light' },
-})
-
 const instance = getCurrentInstance();
 function ceEmit(event: string, payload: unknown) {
   const el = instance?.vnode.el as HTMLElement | null;
