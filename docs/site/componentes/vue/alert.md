@@ -4,21 +4,52 @@ group: Información
 ---
 
 <script setup lang="ts">
-import Alert from "@/components/information/Alert.vue";
+import AlertVariantsExample from "../../examples/alert/AlertVariantsExample.vue";
+import AlertSlotsExample from "../../examples/alert/AlertSlotsExample.vue";
+import AlertImperativeExample from "../../examples/alert/AlertImperativeExample.vue";
+import AlertEventsExample from "../../examples/alert/AlertEventsExample.vue";
 </script>
 
 <!--@include: ../../../componentes/vue/alert.md-->
 
 ## Demos en vivo
 
+### Variantes y color
+
+Las cinco variantes (color primary) y los seis colores (variante soft).
+
 <ClientOnly>
   <div class="cu-demo cu-demo--stack">
-    <Alert color="success" title="Todo listo">Los cambios se guardaron.</Alert>
-    <Alert color="warning" title="Atención" variant="outlined">
-      Revisá los datos antes de continuar.
-    </Alert>
-    <Alert color="danger" title="Error" variant="solid">
-      No se pudo conectar con el servidor.
-    </Alert>
+    <AlertVariantsExample />
+  </div>
+</ClientOnly>
+
+### Título, icono y cierre
+
+`close` agrega el botón de cierre y el slot `icon` el ícono del header.
+
+<ClientOnly>
+  <div class="cu-demo cu-demo--stack">
+    <AlertSlotsExample />
+  </div>
+</ClientOnly>
+
+### API imperativa
+
+Con un `ref` se llaman `open()`, `close()`, `toggle()` e `isOpen()`.
+
+<ClientOnly>
+  <div class="cu-demo cu-demo--stack">
+    <AlertImperativeExample />
+  </div>
+</ClientOnly>
+
+### Eventos
+
+`v-model:show` + `update:show`, `open` y `close`.
+
+<ClientOnly>
+  <div class="cu-demo cu-demo--stack">
+    <AlertEventsExample />
   </div>
 </ClientOnly>

@@ -5,70 +5,42 @@ group: Buttons
 
 <script setup lang="ts">
 import ButtonVariantsExample from "../../examples/button/ButtonVariantsExample.vue";
-import ButtonSizesExample from "../../examples/button/ButtonSizesExample.vue";
-import ButtonLoadingExample from "../../examples/button/ButtonLoadingExample.vue";
-import ButtonLinkExample from "../../examples/button/ButtonLinkExample.vue";
-import ButtonIconsExample from "../../examples/button/ButtonIconsExample.vue";
+import ButtonStatesExample from "../../examples/button/ButtonStatesExample.vue";
 import ButtonFormExample from "../../examples/button/ButtonFormExample.vue";
-import ButtonDisabledExample from "../../examples/button/ButtonDisabledExample.vue";
 </script>
 
 <!--@include: ../../../componentes/vue/button.md-->
 
 ## Demos en vivo
 
-### Variantes
+### Variantes, tamaños y color
+
+Matriz completa: una fila por variante con los seis colores semánticos, más los tres tamaños.
 
 <ClientOnly>
-  <div class="cu-demo">
+  <div class="cu-demo cu-demo--stack">
     <ButtonVariantsExample />
   </div>
 </ClientOnly>
 
-### Tamaños
+### Estados: loading, disabled y link
+
+El botón con `loading` se deshabilita solo y emite `loading-change`; `to` lo convierte en
+`<a>` y `target` sólo aplica con `to`.
 
 <ClientOnly>
-  <div class="cu-demo">
-    <ButtonSizesExample />
+  <div class="cu-demo cu-demo--stack">
+    <ButtonStatesExample />
   </div>
 </ClientOnly>
 
-### Estado de carga
+### Slots y formulario
+
+El único slot es `default` (los íconos son SVG inline). Con `type="submit"`/`type="reset"`
+el botón participa del formulario, y `loading-change` avisa el estado de la acción.
 
 <ClientOnly>
-  <div class="cu-demo">
-    <ButtonLoadingExample />
-  </div>
-</ClientOnly>
-
-### Link (interno y externo)
-
-<ClientOnly>
-  <div class="cu-demo">
-    <ButtonLinkExample />
-  </div>
-</ClientOnly>
-
-### Íconos por slot
-
-<ClientOnly>
-  <div class="cu-demo">
-    <ButtonIconsExample />
-  </div>
-</ClientOnly>
-
-### Formulario (submit / reset)
-
-<ClientOnly>
-  <div class="cu-demo">
+  <div class="cu-demo cu-demo--stack">
     <ButtonFormExample />
-  </div>
-</ClientOnly>
-
-### Deshabilitado
-
-<ClientOnly>
-  <div class="cu-demo">
-    <ButtonDisabledExample />
   </div>
 </ClientOnly>
