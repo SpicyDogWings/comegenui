@@ -69,7 +69,10 @@ side.addEventListener('close', () => console.log('cerrando'));
 ## Eventos
 
 <!-- @api:eventos -->
-Ninguno.
+| Evento | Payload (`e.detail`) | Descripción |
+| ------ | ------ | ------ |
+| `update:open` | — | — |
+| `close` | — | — |
 <!-- /@api:eventos -->
 
 ## Slots
@@ -85,7 +88,8 @@ Ninguno.
 <!-- @api:metodos -->
 | Método | Descripción |
 | ------ | ------ |
-| `close` | — |
-| `toggle` | — |
+| `open` | Abre el panel |
+| `close` | Cierra el panel |
+| `toggle` | Alterna visibilidad |
 | `isOpen` | — |
 <!-- /@api:metodos -->

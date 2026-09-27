@@ -59,7 +59,9 @@ Soporta arrastrar un solo archivo sobre el componente. Durante el drag se ilumin
 ## Eventos
 
 <!-- @api:eventos -->
-Ninguno.
+| Evento | Payload (`e.detail`) | Descripción |
+| ------ | ------ | ------ |
+| `update:modelValue` | `File \| null` | — |
 <!-- /@api:eventos -->
 
 ## Slots
@@ -73,9 +75,9 @@ Ninguno.
 <!-- @api:metodos -->
 | Método | Descripción |
 | ------ | ------ |
-| `get` | — |
-| `set` | — |
-| `reset` | — |
-| `focus` | — |
-| `trigger` | — |
+| `get` | Devuelve el `File` actual o `null` |
+| `set` | Asigna un archivo programáticamente |
+| `reset` | Limpia la selección |
+| `focus` | Enfoca el input |
+| `trigger` | Abre el diálogo nativo de selección de archivos |
 <!-- /@api:metodos -->

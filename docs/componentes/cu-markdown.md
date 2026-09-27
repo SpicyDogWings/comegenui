@@ -55,15 +55,15 @@ El contenido se pasa como **texto dentro del tag** (no como prop). El componente
 ## Atributos
 
 <!-- @api:atributos -->
-| Atributo | Tipo | Default | Descripción |
-| ------ | ------ | ------ | ------ |
-| `theme` | `string` | `'light'` | Tema de colores (`light`, `dark`, `sigacadv2`) |
+Ninguno.
 <!-- /@api:atributos -->
 
 ## Eventos
 
 <!-- @api:eventos -->
-Ninguno.
+| Evento | Payload (`e.detail`) | Descripción |
+| ------ | ------ | ------ |
+| `parsed` | `string[]` | — |
 <!-- /@api:eventos -->
 
 ## Slots
@@ -79,5 +79,5 @@ Ninguno.
 <!-- @api:metodos -->
 | Método | Descripción |
 | ------ | ------ |
-| `headingIds` | — |
+| `headingIds` | Devuelve los ids generados para los encabezados parseados. |
 <!-- /@api:metodos -->

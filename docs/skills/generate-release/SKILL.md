@@ -113,7 +113,7 @@ Revisá el diff antes. **Nunca** `git add -A` a ciegas.
 - [ ] `./scripts/preflight.sh` verde (sin errores nuevos de type-check).
 - [ ] `pnpm build` OK.
 - [ ] `pnpm build:lib` OK.
-- [ ] `dist-lib/comegenui-v<version>.zip` con UMDs, css, skill y update scripts.
+- [ ] `dist-lib/comegenui-v<version>.zip` con los UMD, `css/` y `README-BUILD.md` (sólo la lib).
 - [ ] Cambios commiteados.
 
 Si algo falta, decilo explícitamente en el reporte; no lo tapes con "quedó funcionando".
@@ -125,7 +125,7 @@ Si algo falta, decilo explícitamente en el reporte; no lo tapes con "quedó fun
 | `check-docs` falla en preflight | Un tag de `src/lib` no tiene ficha o página, o a una página le falta `title`/`group`. |
 | Errores de type-check "nuevos" | Compará con `scripts/typecheck-baseline`; arreglá los nuevos, no bajes el baseline. |
 | Tests rojos que no tocaste | El repo arrastra fallos viejos: compará con el estado previo (`git stash` + `pnpm test`). |
-| La doc de un componente quedó vieja | Actualizá su ficha (`docs/skills/use-comegen/componentes/`) y su página (`docs/site/componentes/`). |
+| La doc de un componente quedó vieja | Actualizá su ficha vanilla (`docs/componentes/<tag>.md`), su ficha Vue (`docs/componentes/vue/<kebab>.md`), su receta (`skills/use-comegen/references/<kebab>.md`) y su página (`docs/site/componentes/`). |
 | El zip no incluye un componente | Debe existir su entry en `src/lib/**/*.ts` (los internos no van a la lib ni a la skill). |
 | La versión del zip no es la esperada | Sale de `version` en `package.json`; bumpéala y re-corré `pnpm build:lib`. |
 
@@ -133,7 +133,8 @@ Si algo falta, decilo explícitamente en el reporte; no lo tapes con "quedó fun
 
 | Artefacto | Ruta |
 |---|---|
-| Fichas de la skill | `docs/skills/use-comegen/componentes/cu-*.md` |
+| Fichas | `docs/componentes/<tag>.md` y `docs/componentes/vue/<kebab>.md` |
+| Recetas de la skill de uso | `skills/use-comegen/references/<kebab>.md` |
 | Páginas del sitio | `docs/site/componentes/<slug>.md` (versionadas) |
 | Tema del sitio | `docs/site/.vitepress/theme/*.gen.*` (generados, gitignored) |
 | Build de la lib | `dist-lib/` (gitignored) + `dist-lib/comegenui-v<version>.zip` |

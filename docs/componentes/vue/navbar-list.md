@@ -44,7 +44,7 @@ import NavbarList from "@/components/navigation/NavbarList.vue";
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
 | `update:query` | `string` | — |
-| `toggle-compact` | `` | — |
+| `toggle-compact` | — | — |
 <!-- /@api:emits -->
 
 ## Slots

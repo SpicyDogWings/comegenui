@@ -81,7 +81,11 @@ Alerta con color semántico, título opcional y botón de cerrar. Puede controla
 ## Eventos
 
 <!-- @api:eventos -->
-Ninguno.
+| Evento | Payload (`e.detail`) | Descripción |
+| ------ | ------ | ------ |
+| `close` | — | — |
+| `open` | — | — |
+| `update:show` | — | — |
 <!-- /@api:eventos -->
 
 > Los eventos custom se escuchan con `addEventListener` y el payload está en `e.detail`.
@@ -111,9 +115,10 @@ Ninguno.
 <!-- @api:metodos -->
 | Método | Descripción |
 | ------ | ------ |
-| `open` | — |
-| `toggle` | — |
-| `isOpen` | — |
+| `open` | Muestra la alerta |
+| `close` | Oculta la alerta |
+| `toggle` | Alterna visibilidad |
+| `isOpen` | Devuelve `true`/`false` según la visibilidad actual |
 <!-- /@api:metodos -->
 
 El control también puede hacerse via el atributo `show` o escuchando los eventos `open`/`close`.

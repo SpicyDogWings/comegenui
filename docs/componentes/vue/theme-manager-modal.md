@@ -32,12 +32,12 @@ import ThemeManagerModal from "@/components/theme/ThemeManagerModal.vue";
 <!-- @api:emits -->
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
-| `reset` | `` | — |
+| `reset` | — | — |
 | `update:themeName` | `string` | — |
 | `import` | `ThemeConfig` | — |
-| `export` | `` | — |
-| `copy-css` | `` | — |
-| `download-css` | `` | — |
+| `export` | — | — |
+| `copy-css` | — | — |
+| `download-css` | — | — |
 <!-- /@api:emits -->
 
 ## Slots
@@ -51,8 +51,8 @@ Ninguno.
 <!-- @api:expose -->
 | Método | Descripción |
 | ------ | ------ |
-| `open` | — |
-| `close` | — |
+| `open` | Abre el modal. |
+| `close` | Cierra el modal. |
 <!-- /@api:expose -->
 
 ## Interfaces

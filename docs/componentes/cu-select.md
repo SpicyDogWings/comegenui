@@ -234,7 +234,12 @@ Cada opción del array `options` puede tener:
 ## Eventos
 
 <!-- @api:eventos -->
-Ninguno.
+| Evento | Payload (`e.detail`) | Descripción |
+| ------ | ------ | ------ |
+| `update:modelValue` | — | — |
+| `select` | — | — |
+| `close` | — | — |
+| `blur` | — | — |
 <!-- /@api:eventos -->
 
 ## Slots
@@ -252,8 +257,8 @@ Ninguno.
 | `set` | — |
 | `reset` | — |
 | `focus` | — |
-| `isOpen` | — |
-| `selectedItem` | — |
+| `isOpen` | Indica si el panel está abierto. |
+| `selectedItem` | Devuelve la opción seleccionada o null. |
 <!-- /@api:metodos -->
 
 ## Interfaces

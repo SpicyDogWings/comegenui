@@ -22,20 +22,20 @@ import FileList from "@/components/FileList.vue/FileList.vue";
 
 <!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `files` | `any` | `null` |  |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` |  |
-| `disabled` | `boolean` | `false` |  |
-| `maxHeight` | `string` | `""` |  |
+| ------ | ------ | ------ | ------ |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
+| `maxHeight` | `string` | `""` | — |
+| `disabled` | `boolean` | `false` | — |
+| `files` | `any` | `null` | — |
 <!-- /@api:props -->
 
 ## Emits
 
 <!-- @api:emits -->
 | Evento | Payload | Descripción |
-|------|------|------|
-| `select` | `index: number` |  |
-| `remove` | `index: number` |  |
+| ------ | ------ | ------ |
+| `select` | `number` | — |
+| `remove` | `number` | — |
 <!-- /@api:emits -->
 
 ## Slots
@@ -47,5 +47,5 @@ Ninguno.
 ## Expose
 
 <!-- @api:expose -->
-Ninguno.
+No expone métodos.
 <!-- /@api:expose -->

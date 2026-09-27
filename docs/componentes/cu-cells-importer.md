@@ -120,7 +120,11 @@ El botón solo aparece si `enabled: true` **y** `columns.length > 0`. También s
 ## Eventos
 
 <!-- @api:eventos -->
-Ninguno.
+| Evento | Payload (`e.detail`) | Descripción |
+| ------ | ------ | ------ |
+| `parse` | `{ rows: Record<string, unknown>[]; headers: string[]; fileName: string; }` | — |
+| `error` | `CellError[]` | — |
+| `change` | `File \| null` | — |
 <!-- /@api:eventos -->
 
 `CellError`: `{ row, columnKey, columnLabel, message }`.
@@ -136,14 +140,14 @@ Ninguno.
 <!-- @api:metodos -->
 | Método | Descripción |
 | ------ | ------ |
-| `getRows` | — |
-| `getHeaders` | — |
-| `getErrors` | — |
-| `getFile` | — |
-| `validate` | — |
-| `downloadTemplate` | — |
-| `reset` | — |
-| `set` | — |
-| `trigger` | — |
-| `focus` | — |
+| `getRows` | Filas parseadas |
+| `getHeaders` | Encabezados del archivo |
+| `getErrors` | Errores de validación |
+| `getFile` | `File` actual o `null` |
+| `validate` | Re-valida y devuelve errores |
+| `downloadTemplate` | Descarga la plantilla configurada |
+| `reset` | Limpia archivo, filas y errores |
+| `set` | Asigna un archivo programáticamente |
+| `trigger` | Abre el diálogo de selección |
+| `focus` | Enfoca el input |
 <!-- /@api:metodos -->

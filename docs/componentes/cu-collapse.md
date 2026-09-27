@@ -133,7 +133,9 @@ collapse.addEventListener('toggle', (e) => {
 ## Eventos
 
 <!-- @api:eventos -->
-Ninguno.
+| Evento | Payload (`e.detail`) | Descripción |
+| ------ | ------ | ------ |
+| `toggle` | `boolean` | — |
 <!-- /@api:eventos -->
 
 ## Slots
@@ -149,8 +151,8 @@ Ninguno.
 <!-- @api:metodos -->
 | Método | Descripción |
 | ------ | ------ |
-| `open` | — |
-| `close` | — |
-| `toggle` | — |
-| `isOpen` | — |
+| `open` | Abre el collapse |
+| `close` | Cierra el collapse |
+| `toggle` | Alterna el estado |
+| `isOpen` | Devuelve el estado actual (`boolean`) |
 <!-- /@api:metodos -->

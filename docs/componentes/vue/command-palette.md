@@ -61,8 +61,8 @@ function onSelect(cmd: { label: string }) {
 <!-- @api:emits -->
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
-| `select` | `any[` | — |
-| `close` | `any[` | — |
+| `select` | — | — |
+| `close` | — | — |
 <!-- /@api:emits -->
 
 ## Slots
@@ -78,7 +78,7 @@ Ninguno.
 | ------ | ------ |
 | `open` | — |
 | `close` | — |
-| `run` | — |
+| `run` | Ejecuta el comando con ese id. |
 | `getCommands` | — |
 | `isOpen` | — |
 <!-- /@api:expose -->

@@ -224,7 +224,14 @@ El rango es un **modo** (`mode="range"`). Ahí `rangeStart`/`rangeEnd` son el **
 ## Eventos
 
 <!-- @api:eventos -->
-Ninguno.
+| Evento | Payload (`e.detail`) | Descripción |
+| ------ | ------ | ------ |
+| `select` | `CalendarChange` | — |
+| `change` | `CalendarChange` | — |
+| `update:modelValue` | `Date` | — |
+| `update:viewMonth` | `Date` | — |
+| `update:rangeStart` | `Date \| null` | — |
+| `update:rangeEnd` | `Date \| null` | — |
 <!-- /@api:eventos -->
 
 > En modo `single` los eventos emiten un `Date` normalizado a medianoche local; en `range`, un objeto `{ start, end }`.
@@ -240,14 +247,14 @@ Ninguno.
 <!-- @api:metodos -->
 | Método | Descripción |
 | ------ | ------ |
-| `nextMonth` | — |
-| `prevMonth` | — |
-| `goToMonth` | — |
-| `getValue` | — |
-| `setValue` | — |
-| `getRange` | — |
-| `setRange` | — |
-| `clear` | — |
+| `nextMonth` | Va al mes siguiente (respeta `max`) |
+| `prevMonth` | Va al mes anterior (respeta `min`) |
+| `goToMonth` | Navega al mes de la fecha dada |
+| `getValue` | null` con la fecha seleccionada |
+| `setValue` | Selecciona una fecha (acepta string/number/Date) |
+| `getRange` | null` con el rango seleccionado (modo `range`) |
+| `setRange` | Setea el rango (acepta string/number/Date) (modo `range`) |
+| `clear` | Limpia el rango seleccionado (modo `range`) |
 <!-- /@api:metodos -->
 
 ## Interfaces

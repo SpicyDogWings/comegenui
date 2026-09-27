@@ -64,7 +64,7 @@ Reglas:
 ```markdown
 | Prop | Tipo | Default | Descripción |
 |------|------|---------|-------------|
-| `theme` | `string` | `""` | Tema: `light`, `dark`, `sigacadv2` |
+| `size` | `string` | `"md"` | Tamaño: `sm`, `md`, `lg` |
 | `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `variant` | `string` | `"soft"` | `solid`, `outlined`, `soft`, `subtle` |
 ```
@@ -231,7 +231,7 @@ Los componentes de formulario (`Input`, `Checkbox`, `Switch`, `Textarea`, `Selec
 - `.reset()` — vuelve al `startValue` (o `""`/valor inicial).
 - `.focus()` — pone el foco.
 
-`Autocomplete` no expone `.reset()` (es un caso particular). Verificá en el `.ce.vue`.
+Verificá siempre en el `.ce.vue` si el método está en su `defineExpose` antes de documentarlo.
 
 ## Métodos: `open`/`close`/`toggle` para overlays
 

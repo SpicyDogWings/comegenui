@@ -192,12 +192,12 @@ Ninguno.
 <!-- @api:expose -->
 | Método | Descripción |
 | ------ | ------ |
-| `get` | — |
-| `set` | — |
-| `reset` | — |
-| `focus` | — |
+| `get` | Devuelve el texto actual. |
+| `set` | Setea el texto actual en el input. |
+| `reset` | Limpia el texto de búsqueda. |
+| `focus` | Enfoca el input. |
 | `isOpen` | Indica si el panel está abierto. |
 | `selectedItem` | Devuelve el item seleccionado o null. |
 <!-- /@api:expose -->
 
-> El componente **no expone** `.reset()`. Si necesitás limpiar programáticamente, usá `.set('')`.
+> `.reset()` limpia el texto de búsqueda; `.set('')` deja el input vacío sin tocar el estado de búsqueda.

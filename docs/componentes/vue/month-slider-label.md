@@ -22,25 +22,25 @@ import MonthSliderLabel from "@/components/controls/month-slider/MonthSliderLabe
 
 <!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
-|------|------|------|------|
-| `label` | `string` | — | Texto principal del label (mes o año). |
-| `year` | `string` | `""` | Texto del año mostrado como badge al lado del label. |
+| ------ | ------ | ------ | ------ |
+| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `'primary'` | Color semántico del label. |
+| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle"` | `'soft'` | Variante visual del label. |
 | `disabled` | `boolean` | `false` | Deshabilita la interacción del label. |
-| `draggable` | `boolean` | `true` |  |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"primary"` | Color semántico del label. |
-| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | Variante visual del label. |
-| `threshold` | `number` | `96` |  |
-| `steps` | `number` | `1` |  |
-| `canNavigatePrev` | `boolean` | `true` |  |
+| `year` | `string` | `''` | Texto del año mostrado como badge al lado del label. |
+| `draggable` | `boolean` | `true` | — |
+| `threshold` | `number` | `96` | — |
+| `steps` | `number` | `1` | — |
+| `canNavigatePrev` | `boolean` | `true` | — |
 | `canNavigateNext` | `boolean` | `true` | Indica si se puede navegar al paso siguiente. |
+| `label` | `string` | `—` | Texto principal del label (mes o año). |
 <!-- /@api:props -->
 
 ## Emits
 
 <!-- @api:emits -->
 | Evento | Payload | Descripción |
-|------|------|------|
-| `navigate` | `direction: number` |  |
+| ------ | ------ | ------ |
+| `navigate` | `number` | — |
 <!-- /@api:emits -->
 
 ## Slots
@@ -52,5 +52,5 @@ Ninguno.
 ## Expose
 
 <!-- @api:expose -->
-Ninguno.
+No expone métodos.
 <!-- /@api:expose -->

@@ -34,7 +34,10 @@ Paleta de comandos (búsqueda + lista) en un modal, con agrupado por categoría 
 ## Eventos
 
 <!-- @api:eventos -->
-Ninguno.
+| Evento | Payload (`e.detail`) | Descripción |
+| ------ | ------ | ------ |
+| `select` | — | — |
+| `close` | — | — |
 <!-- /@api:eventos -->
 
 ## Slots

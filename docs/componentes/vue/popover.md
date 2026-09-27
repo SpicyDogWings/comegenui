@@ -41,8 +41,8 @@ import Popover from "@/components/overlay/Popover.vue";
 <!-- @api:emits -->
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
-| `close` | `any[` | — |
-| `open` | `any[` | — |
+| `close` | — | — |
+| `open` | — | — |
 <!-- /@api:emits -->
 
 ## Slots

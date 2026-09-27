@@ -87,7 +87,10 @@ Paginación numérica con soporte para selector de tamaño de página y botones 
 ## Eventos
 
 <!-- @api:eventos -->
-Ninguno.
+| Evento | Payload (`e.detail`) | Descripción |
+| ------ | ------ | ------ |
+| `update:currentPage` | — | — |
+| `update:itemsPerPage` | — | — |
 <!-- /@api:eventos -->
 
 > Los eventos custom se escuchan con `addEventListener` y el payload está en `e.detail`.

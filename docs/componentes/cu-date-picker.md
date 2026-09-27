@@ -132,7 +132,15 @@ Con `mode="range"` el picker selecciona un rango: el primer click define el **in
 ## Eventos
 
 <!-- @api:eventos -->
-Ninguno.
+| Evento | Payload (`e.detail`) | Descripción |
+| ------ | ------ | ------ |
+| `select` | `Date \| { start: Date \| null; end: Date \| null; }` | — |
+| `change` | `Date \| { start: Date \| null; end: Date \| null; } \| null` | — |
+| `open` | — | — |
+| `close` | — | — |
+| `update:modelValue` | `Date \| null` | — |
+| `update:startDate` | `Date \| null` | — |
+| `update:endDate` | `Date \| null` | — |
 <!-- /@api:eventos -->
 
 > Al limpiar, `change` emite `null` (single) o `{ start: null, end: null }` (range).
@@ -148,16 +156,16 @@ Ninguno.
 <!-- @api:metodos -->
 | Método | Descripción |
 | ------ | ------ |
-| `open` | — |
+| `open` | Abre, cierra o alterna el panel |
 | `close` | — |
 | `toggle` | — |
-| `getValue` | — |
-| `setValue` | — |
-| `getStartDate` | — |
-| `getEndDate` | — |
-| `setRange` | — |
-| `clear` | — |
-| `isOpen` | — |
+| `getValue` | Devuelve la fecha seleccionada (modo `single`) |
+| `setValue` | Selecciona una fecha (string/number/Date) (modo `single`) |
+| `getStartDate` | Devuelve la fecha de inicio (modo `range`) |
+| `getEndDate` | Devuelve la fecha de fin (modo `range`) |
+| `setRange` | Setea el rango (string/number/Date) (modo `range`) |
+| `clear` | Limpia la selección (emite `null`) |
+| `isOpen` | Indica si el panel está abierto. |
 <!-- /@api:metodos -->
 
 ## Interfaces

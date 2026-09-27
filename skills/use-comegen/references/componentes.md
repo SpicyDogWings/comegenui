@@ -73,7 +73,7 @@ más se consulta— **qué no se puede esperar de él**.
 
 **Límites**
 
-- `cu-autocomplete`: no expone `.reset()` (limpiá con `.set('')`); `items` por JS; sin slots; los eventos nativos no se re-emiten como custom.
+- `cu-autocomplete`: expone `.reset()` (además de `.set('')`); `items` por JS; sin slots; los eventos nativos no se re-emiten como custom.
 - `cu-cells-importer`: `columns` es **obligatorio**; `columns`/`formats`/`template`/`sheet` por JS; sin slots; el botón de plantilla sólo aparece con `enabled: true` y `columns.length > 0`; con `inputType="zone"` la prop `variant` no aplica.
 - `cu-checkbox`: no tiene `checked` (se usa `modelValue`) ni `variant`; sin slots (el texto va por `label`).
 - `cu-color-picker`: no acepta `theme`, `variant` ni `hightContrast`; el campo de texto sólo acepta un hex válido `#RRGGBB`; sin slots.
@@ -233,8 +233,8 @@ filas, sin `search-enabled` no hay buscador):
    Los nombres con `:` (`update:modelValue`) se escuchan igual.
 4. **Eventos nativos** (`click`, `input`, `change`, `focus`, `blur`): atraviesan el shadow DOM
    solos. Los CE **no** los re-emiten como eventos custom con esos nombres.
-5. **Tema**: por `<html data-theme="...">` (todos) o por la prop `theme` donde exista
-   (Button, Input, Select, Modal no lo exponen: ver los límites de cada uno).
+5. **Tema**: siempre por `<html data-theme="...">` (o un ancestro con `data-theme`); ningún
+   componente expone una prop `theme` propia.
 6. **Métodos**: en CE sobre el host (`el.open()`, `el.set(v)`), en Vue por template ref
    (`ref.value?.open()`). No todos exponen: Button, Badge, AuthorCard, Navbar y Pagination no.
 7. **Mismo componente, dos entornos**: el CE vive en **shadow DOM** (estilos y tokens

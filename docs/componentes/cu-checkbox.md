@@ -79,7 +79,10 @@ Hay dos formas equivalentes de escuchar cambios:
 ## Eventos
 
 <!-- @api:eventos -->
-Ninguno.
+| Evento | Payload (`e.detail`) | Descripción |
+| ------ | ------ | ------ |
+| `update:modelValue` | `boolean` | — |
+| `change` | — | — |
 <!-- /@api:eventos -->
 
 ## Slots
@@ -93,8 +96,8 @@ Ninguno.
 <!-- @api:metodos -->
 | Método | Descripción |
 | ------ | ------ |
-| `get` | — |
-| `set` | — |
-| `reset` | — |
-| `focus` | — |
+| `get` | Devuelve el estado actual (`boolean`) |
+| `set` | Asigna el estado (programáticamente) |
+| `reset` | Pone el estado en `false` |
+| `focus` | Enfoca el checkbox |
 <!-- /@api:metodos -->

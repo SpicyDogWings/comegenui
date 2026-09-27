@@ -63,7 +63,7 @@ Soporta arrastrar un solo archivo sobre el componente. Durante el drag se ilumin
 <!-- @api:emits -->
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
-| `update:modelValue` | `File \\| null` | — |
+| `update:modelValue` | `File \| null` | — |
 <!-- /@api:emits -->
 
 ## Slots
@@ -81,5 +81,5 @@ Ninguno.
 | `set` | — |
 | `reset` | — |
 | `focus` | — |
-| `trigger` | — |
+| `trigger` | Abre el selector de archivos. |
 <!-- /@api:expose -->

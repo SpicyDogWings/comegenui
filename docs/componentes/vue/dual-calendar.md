@@ -50,8 +50,8 @@ import DualCalendar from "@/components/controls/DualCalendar.vue";
 | ------ | ------ | ------ |
 | `select` | `DateRange` | — |
 | `change` | `DateRange` | — |
-| `update:startDate` | `Date \\| null` | — |
-| `update:endDate` | `Date \\| null` | — |
+| `update:startDate` | `Date \| null` | — |
+| `update:endDate` | `Date \| null` | — |
 <!-- /@api:emits -->
 
 ## Slots
@@ -65,8 +65,8 @@ Ninguno.
 <!-- @api:expose -->
 | Método | Descripción |
 | ------ | ------ |
-| `getStartDate` | — |
-| `getEndDate` | — |
-| `setRange` | — |
-| `clear` | — |
+| `getStartDate` | Devuelve la fecha de inicio del rango. |
+| `getEndDate` | Devuelve la fecha de fin del rango. |
+| `setRange` | Setea el rango completo y emite los cambios. |
+| `clear` | Limpia el rango. |
 <!-- /@api:expose -->

@@ -89,7 +89,7 @@ El listado de archivos se renderiza con `<cu-file-list>` (componente interno) qu
 <!-- @api:emits -->
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
-| `update:modelValue` | `File \\| File[] \\| null` | — |
+| `update:modelValue` | `File \| File[] \| null` | — |
 <!-- /@api:emits -->
 
 ## Slots
@@ -107,5 +107,5 @@ Ninguno.
 | `set` | — |
 | `reset` | — |
 | `focus` | — |
-| `trigger` | — |
+| `trigger` | Abre el selector de archivos. |
 <!-- /@api:expose -->

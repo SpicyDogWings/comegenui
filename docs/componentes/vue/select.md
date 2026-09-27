@@ -292,10 +292,10 @@ Cada opción del array `options` puede tener:
 <!-- @api:emits -->
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
-| `select` | `any[` | — |
-| `close` | `any[` | — |
-| `update:modelValue` | `any[` | — |
-| `blur` | `any[` | — |
+| `select` | — | — |
+| `close` | — | — |
+| `update:modelValue` | — | — |
+| `blur` | — | — |
 <!-- /@api:emits -->
 
 ## Slots
@@ -309,10 +309,10 @@ Ninguno.
 <!-- @api:expose -->
 | Método | Descripción |
 | ------ | ------ |
-| `get` | — |
-| `set` | — |
-| `reset` | — |
-| `focus` | — |
+| `get` | Devuelve el valor seleccionado. |
+| `set` | Setea el valor seleccionado. |
+| `reset` | Limpia la selección. |
+| `focus` | Enfoca el trigger del select. |
 | `isOpen` | Indica si el panel está abierto. |
 | `selectedItem` | Devuelve la opción seleccionada o null. |
 <!-- /@api:expose -->

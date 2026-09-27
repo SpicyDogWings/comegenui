@@ -10,7 +10,7 @@ Lista de errores frecuentes al crear o actualizar la documentación de un compon
 
 **Cómo evitarlo:** siempre empezar leyendo `MiComponente.ce.vue`. Si una prop no está en `defineProps` del `.ce.vue`, no la documentes.
 
-**Caso real:** `<cu-table>` no re-emite `row-click`, `row-dblclick`, `cell-click` aunque `AdvancedTable.vue` los emita. La doc anterior los listaba por error.
+**Caso real:** `<cu-table>` documentaba `row-click`, `row-dblclick` y `cell-click`, pero `AdvancedTable.vue` los declaraba en `defineEmits` y **nunca los emitía**; se quitaron del componente y de la ficha.
 
 ## 2. Listar eventos que el `.ce.vue` no re-emite
 

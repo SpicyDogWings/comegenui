@@ -140,11 +140,11 @@ function handleAction() {
 <!-- @api:emits -->
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
-| `close` | `any[` | — |
-| `accept` | `any[` | — |
-| `opened` | `any[` | — |
-| `closed` | `any[` | — |
-| `cancel` | `any[` | — |
+| `close` | — | — |
+| `accept` | — | — |
+| `opened` | — | — |
+| `closed` | — | — |
+| `cancel` | — | — |
 <!-- /@api:emits -->
 
 > Si el modal es `persistent`, no se emiten `close`/`closed`/`cancel` por click en backdrop o `Escape`. Solo se emiten cuando llamás a `.close()` programáticamente.
@@ -164,8 +164,8 @@ function handleAction() {
 <!-- @api:expose -->
 | Método | Descripción |
 | ------ | ------ |
-| `open` | — |
-| `close` | — |
-| `toggle` | — |
+| `open` | Abre el modal. |
+| `close` | Cierra el modal. |
+| `toggle` | Alterna la visibilidad del modal. |
 | `isOpen` | Devuelve true si el modal está abierto. |
 <!-- /@api:expose -->

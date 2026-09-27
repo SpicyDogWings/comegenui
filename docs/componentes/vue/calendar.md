@@ -260,8 +260,8 @@ import Calendar from "@/components/controls/Calendar.vue";
 | `select` | `CalendarChange` | — |
 | `update:modelValue` | `Date` | — |
 | `update:viewMonth` | `Date` | — |
-| `update:rangeStart` | `Date \\| null` | — |
-| `update:rangeEnd` | `Date \\| null` | — |
+| `update:rangeStart` | `Date \| null` | — |
+| `update:rangeEnd` | `Date \| null` | — |
 | `change` | `CalendarChange` | — |
 <!-- /@api:emits -->
 
@@ -278,14 +278,14 @@ Ninguno.
 <!-- @api:expose -->
 | Método | Descripción |
 | ------ | ------ |
-| `nextMonth` | — |
-| `prevMonth` | — |
-| `goToMonth` | — |
-| `getValue` | — |
-| `setValue` | — |
-| `getRange` | — |
-| `setRange` | — |
-| `clear` | — |
+| `nextMonth` | Avanza al mes siguiente (respetando max). |
+| `prevMonth` | Retrocede al mes anterior (respetando min). |
+| `goToMonth` | Navega al mes de la fecha indicada. |
+| `getValue` | Devuelve la fecha seleccionada (modo `single`). |
+| `setValue` | Establece la fecha seleccionada y emite los eventos de cambio (modo `single`). |
+| `getRange` | Devuelve el rango seleccionado (modo `range`). |
+| `setRange` | Setea el rango y emite los eventos de cambio (modo `range`). |
+| `clear` | Limpia el rango seleccionado (modo `range`). |
 <!-- /@api:expose -->
 
 ## Interfaces

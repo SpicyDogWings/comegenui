@@ -154,7 +154,11 @@ Cada item del array `items` puede tener:
 ## Eventos
 
 <!-- @api:eventos -->
-Ninguno.
+| Evento | Payload (`e.detail`) | Descripción |
+| ------ | ------ | ------ |
+| `update:modelValue` | `string` | — |
+| `select` | — | — |
+| `blur` | — | — |
 <!-- /@api:eventos -->
 
 > Los eventos nativos del DOM (`input`, `change`, `focus`, `blur`) **burbujean automáticamente** al host desde el Shadow DOM. No se re-emiten como eventos custom con esos nombres.
@@ -174,8 +178,8 @@ Ninguno.
 | `set` | — |
 | `focus` | — |
 | `reset` | — |
-| `isOpen` | — |
-| `selectedItem` | — |
+| `isOpen` | Indica si el panel está abierto. |
+| `selectedItem` | Devuelve el item seleccionado o null. |
 <!-- /@api:metodos -->
 
-> El componente **no expone** `.reset()`. Si necesitás limpiar programáticamente, usá `.set('')`.
+> `.reset()` limpia el texto de búsqueda; `.set('')` deja el input vacío sin tocar el estado de búsqueda.

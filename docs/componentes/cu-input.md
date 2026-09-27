@@ -82,7 +82,9 @@ Input de texto con color, variante, tipos de input HTML5 y métodos `get`/`set`/
 ## Eventos
 
 <!-- @api:eventos -->
-Ninguno.
+| Evento | Payload (`e.detail`) | Descripción |
+| ------ | ------ | ------ |
+| `update:modelValue` | `string` | — |
 <!-- /@api:eventos -->
 
 > Los eventos nativos del DOM (`input`, `change`, `focus`, `blur`) **burbujean automáticamente** al host desde el Shadow DOM. Podés escucharlos con `addEventListener`, pero no se re-emiten como eventos custom (no hay `input`/`change` propios en el Custom Element).
@@ -101,5 +103,5 @@ Ninguno.
 | `get` | — |
 | `set` | — |
 | `reset` | — |
-| `focus` | — |
+| `focus` | Enfoca el input. |
 <!-- /@api:metodos -->

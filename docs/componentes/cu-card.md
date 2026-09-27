@@ -91,7 +91,9 @@ Media (imagen o slot `media`) al costado del contenido:
 ## Eventos
 
 <!-- @api:eventos -->
-Ninguno.
+| Evento | Payload (`e.detail`) | Descripción |
+| ------ | ------ | ------ |
+| `click` | — | — |
 <!-- /@api:eventos -->
 
 ## Slots

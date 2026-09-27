@@ -130,7 +130,13 @@ modal.addEventListener('closed', () => console.log('cierre completo'));
 ## Eventos
 
 <!-- @api:eventos -->
-Ninguno.
+| Evento | Payload (`e.detail`) | Descripción |
+| ------ | ------ | ------ |
+| `close` | — | — |
+| `opened` | — | — |
+| `closed` | — | — |
+| `cancel` | — | — |
+| `accept` | — | — |
 <!-- /@api:eventos -->
 
 > Si el modal es `persistent`, no se emiten `close`/`closed`/`cancel` por click en backdrop o `Escape`. Solo se emiten cuando llamás a `.close()` programáticamente.
@@ -150,8 +156,8 @@ Ninguno.
 <!-- @api:metodos -->
 | Método | Descripción |
 | ------ | ------ |
-| `open` | — |
-| `close` | — |
-| `toggle` | — |
-| `isOpen` | — |
+| `open` | Abre el modal |
+| `close` | Cierra el modal |
+| `toggle` | Alterna visibilidad |
+| `isOpen` | Devuelve el estado actual (`boolean`) |
 <!-- /@api:metodos -->

@@ -52,7 +52,7 @@ El contenido se pasa como **texto dentro del tag** (no como prop). El componente
 - Los code blocks usan `<cu-code-block>` con resaltado de sintaxis.
 - El HTML se sanitiza con DOMPurify antes de renderizar.
 - Los tokens CSS se inyectan automáticamente en el shadow DOM.
-- **El wrapper CE actual no re-emite `parsed` ni expone `headingIds()`**: esos eventos/métodos existen en el `.vue` interno pero no atraviesan el `.ce.vue`. Ver `docs/notes/06-cu-markdown-api.md`.
+- **El wrapper CE re-emite `parsed` y expone `headingIds()`**: el evento y el método atraviesan el `.ce.vue`.
 
 ---
 

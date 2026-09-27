@@ -864,10 +864,18 @@ En variantes transparentes (`outlined`, `ghost`) se aplica `backdrop-filter: blu
 ## Eventos
 
 <!-- @api:eventos -->
-Ninguno.
+| Evento | Payload (`e.detail`) | Descripción |
+| ------ | ------ | ------ |
+| `update:currentPage` | — | — |
+| `update:itemsPerPage` | — | — |
+| `update:search` | — | — |
+| `edit-start` | — | — |
+| `edit-save` | — | — |
+| `edit-cancel` | — | — |
+| `edit-error` | — | — |
 <!-- /@api:eventos -->
 
-> **Clicks de fila:** `row-click`, `row-dblclick` y `cell-click` figuran en los emits del componente pero **hoy no se emiten** (ninguna parte del código los dispara). Para reaccionar a un click usá el `click` nativo (burbujea desde el shadow DOM) con `e.composedPath()`, o poné un `ButtonConfig`/`BadgeConfig` en la columna.
+> **Clicks de fila:** no hay eventos `row-click`/`row-dblclick`/`cell-click` (no se emiten). Para reaccionar a un click usá el `click` nativo (burbujea desde el shadow DOM) con `e.composedPath()`, o poné un `ButtonConfig`/`BadgeConfig` en la columna.
 
 ## Slots
 
@@ -901,12 +909,12 @@ Ninguno.
 <!-- @api:metodos -->
 | Método | Descripción |
 | ------ | ------ |
-| `updateRow` | — |
-| `getData` | — |
-| `getRow` | — |
-| `removeRow` | — |
-| `addRow` | — |
-| `pushData` | — |
+| `updateRow` | Actualiza una fila por índice con los campos indicados. |
+| `getData` | Devuelve una copia de las filas actuales, opcionalmente filtradas. |
+| `getRow` | Devuelve una copia de la fila en el índice indicado. |
+| `removeRow` | Elimina la fila en el índice indicado. |
+| `addRow` | Agrega una fila al final si respeta las columnas existentes. |
+| `pushData` | Agrega varias filas al final si respetan las columnas existentes. |
 <!-- /@api:metodos -->
 
 ## Interfaces

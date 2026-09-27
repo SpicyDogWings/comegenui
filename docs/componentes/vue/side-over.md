@@ -89,7 +89,7 @@ import SideOver from "@/components/overlay/SideOver.vue";
 <!-- @api:emits -->
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
-| `close` | `` | — |
+| `close` | — | — |
 | `update:modelValue` | `boolean` | — |
 <!-- /@api:emits -->
 

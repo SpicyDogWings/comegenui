@@ -142,7 +142,10 @@ Cada item del array `items` puede tener:
 ## Eventos
 
 <!-- @api:eventos -->
-Ninguno.
+| Evento | Payload (`e.detail`) | Descripción |
+| ------ | ------ | ------ |
+| `open` | — | — |
+| `close` | — | — |
 <!-- /@api:eventos -->
 
 ## Slots
@@ -159,8 +162,8 @@ Ninguno.
 <!-- @api:metodos -->
 | Método | Descripción |
 | ------ | ------ |
-| `open` | — |
-| `close` | — |
-| `toggle` | — |
-| `isOpen` | — |
+| `open` | Abre el menú. |
+| `close` | Cierra el menú. |
+| `toggle` | Alterna la visibilidad del menú. |
+| `isOpen` | Devuelve true si el menú está abierto. |
 <!-- /@api:metodos -->

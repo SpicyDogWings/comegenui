@@ -149,13 +149,13 @@ picker.clear();
 <!-- @api:emits -->
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
-| `select` | `Date \\| { start: Date \\| null; end: Date \\| null; }` | — |
-| `close` | `` | — |
-| `open` | `` | — |
-| `update:modelValue` | `Date \\| null` | — |
-| `change` | `Date \\| { start: Date \\| null; end: Date \\| null; } \\| null` | — |
-| `update:startDate` | `Date \\| null` | — |
-| `update:endDate` | `Date \\| null` | — |
+| `select` | `Date \| { start: Date \| null; end: Date \| null; }` | — |
+| `close` | — | — |
+| `open` | — | — |
+| `update:modelValue` | `Date \| null` | — |
+| `change` | `Date \| { start: Date \| null; end: Date \| null; } \| null` | — |
+| `update:startDate` | `Date \| null` | — |
+| `update:endDate` | `Date \| null` | — |
 <!-- /@api:emits -->
 
 > Al limpiar, `change` emite `null` (single) o `{ start: null, end: null }` (range).
@@ -171,15 +171,15 @@ Ninguno.
 <!-- @api:expose -->
 | Método | Descripción |
 | ------ | ------ |
-| `open` | — |
-| `close` | — |
-| `toggle` | — |
-| `getValue` | — |
-| `setValue` | — |
-| `clear` | — |
-| `getStartDate` | — |
-| `getEndDate` | — |
-| `setRange` | — |
+| `open` | Abre el panel. |
+| `close` | Cierra el panel. |
+| `toggle` | Alterna el panel. |
+| `getValue` | Devuelve la fecha seleccionada (modo simple). |
+| `setValue` | Setea la fecha seleccionada y emite change (modo simple). |
+| `clear` | Limpia la selección. En modo simple cierra el panel; en rango lo deja abierto. |
+| `getStartDate` | Devuelve la fecha de inicio (solo con calendario de rango). |
+| `getEndDate` | Devuelve la fecha de fin (solo con calendario de rango). |
+| `setRange` | Setea el rango completo y emite los cambios (solo con calendario de rango). |
 | `isOpen` | Indica si el panel está abierto. |
 <!-- /@api:expose -->
 

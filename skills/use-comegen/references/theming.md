@@ -11,7 +11,7 @@ Prioridad: **`data-theme` en `<html>` → `prefers-color-scheme`** (si no hay `d
 No hay prop `theme` por componente: el tema lo define el host. Para tener varios temas en
 la misma página, envolvé la parte que quieras en un contenedor con `data-theme`.
 
-## Temas disponibles (16)
+## Temas disponibles (15)
 
 `light` (default), `dark`, `nord-frost`, `nord-aurora`, `nord-snow-storm`,
 `nord-polar-night`, `gruvbox-dark`, `gruvbox-light`, `rose-pine`, `rose-pine-moon`,

@@ -40,10 +40,10 @@ import EditableTableCell from "@/components/data/EditableTableCell.vue";
 <!-- @api:emits -->
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
-| `edit-start` | `any[` | — |
-| `edit-save` | `any[` | — |
-| `edit-cancel` | `any[` | — |
-| `edit-error` | `any[` | — |
+| `edit-start` | — | — |
+| `edit-save` | — | — |
+| `edit-cancel` | — | — |
+| `edit-error` | — | — |
 <!-- /@api:emits -->
 
 ## Slots

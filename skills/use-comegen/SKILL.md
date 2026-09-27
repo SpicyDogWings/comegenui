@@ -28,6 +28,9 @@ andá directo al paso que te falta.
   puede hacer (límites), agrupado por categoría.
 - `references/api-por-componente.md` tiene los datos mecánicos del custom element: su
   `.umd.js`, las props que **sólo van por JS** y sus eventos/métodos.
+- **`references/<kebab>.md` es la receta completa de cada custom element** (cuándo usarlo,
+  receta con ejemplos HTML y Vue, límites y las dos APIs). Es la fuente recomendada para
+  consumir un componente: p. ej. `references/button.md` para `<cu-button>`.
 - Detalle completo de la API:
   - custom element → `docs/componentes/<tag>.md`
   - Vue → `docs/componentes/vue/<kebab>.md`
@@ -148,6 +151,7 @@ componente vive en el repo de ComegenUI, en `docs/componentes/`.
 |---|---|
 | `references/componentes.md` | Elegir componente y saber qué puede y qué **no** puede hacer |
 | `references/api-por-componente.md` | Datos del CE: `.umd.js`, props por JS, eventos y métodos |
+| `references/<kebab>.md` | Receta completa de un custom element (ejemplos, límites, API) |
 | `references/instalacion.md` | Instalar/actualizar la lib y el CSS |
 | `references/theming.md` | Cambiar tema, colores, variantes, tokens |
 | `references/gotchas.md` | Atributo vs propiedad, eventos nativos, slots, rarezas |

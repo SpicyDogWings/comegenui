@@ -86,7 +86,10 @@ El switch no incluye label propio. Combinalo con `<cu-label>` para tener un áre
 ## Eventos
 
 <!-- @api:eventos -->
-Ninguno.
+| Evento | Payload (`e.detail`) | Descripción |
+| ------ | ------ | ------ |
+| `update:modelValue` | `boolean` | — |
+| `change` | — | — |
 <!-- /@api:eventos -->
 
 ## Slots
@@ -104,8 +107,8 @@ Ninguno.
 <!-- @api:metodos -->
 | Método | Descripción |
 | ------ | ------ |
-| `get` | — |
-| `set` | — |
-| `reset` | — |
-| `focus` | — |
+| `get` | Devuelve el estado actual (`boolean`) |
+| `set` | Asigna el estado |
+| `reset` | Pone el estado en `false` |
+| `focus` | Enfoca el switch |
 <!-- /@api:metodos -->

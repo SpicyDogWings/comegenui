@@ -162,24 +162,62 @@ import X from "@/components/<cat>/X.vue";
 
 6. **Escribir la receta en la skill** (`skills/use-comegen/references/<kebab>.md`). Es el archivo
    que se lleva quien consume la lib (viaja con `skills add`), así que tiene que ser
-   **autosuficiente** y **no puede ser un symlink**:
+   **autosuficiente** y **no puede ser un symlink**. Estructura y marcadores exactos:
 
-   ```md
+   ````md
    # <Componente> — `<cu-x>` / `<X>`
 
    <qué es, en una línea>
 
    ## Cuándo usarlo
-   ## Receta                    ← pasos + ejemplo HTML plano + ejemplo Vue
-   ## Qué puede y qué no puede  ← la lista COMPLETA de límites: es el lugar canónico
-   ## API del custom element    → Atributos / Eventos / Slots / Métodos expuestos
-   ## API del componente Vue    → Props / Emits / Slots / Expose
-   ```
 
-   En la receta los bloques de API van con `###` y con marcadores (→ «Mantenimiento de las tablas de
-   API (son generadas)»). Son **las mismas** secciones de las fichas, con los mismos datos: si una
-   dice algo distinto, gana el código y se corrigen las tres. Modelo a copiar:
-   `skills/use-comegen/references/button.md`.
+   <una línea>
+
+   ## Receta                    ← pasos + ejemplo HTML plano + ejemplo Vue
+
+   ## Qué puede y qué no puede  ← la lista COMPLETA de límites: es el lugar canónico
+
+   ## API del custom element
+
+   ### Atributos
+   <!-- @api:atributos -->
+   <!-- /@api:atributos -->
+
+   ### Eventos
+   <!-- @api:eventos -->
+   <!-- /@api:eventos -->
+
+   ### Slots
+   <!-- @api:slots -->
+   <!-- /@api:slots -->
+
+   ### Métodos expuestos
+   <!-- @api:metodos -->
+   <!-- /@api:metodos -->
+
+   ## API del componente Vue
+
+   ### Props
+   <!-- @api:props -->
+   <!-- /@api:props -->
+
+   ### Emits
+   <!-- @api:emits -->
+   <!-- /@api:emits -->
+
+   ### Slots
+   <!-- @api:slots-vue -->
+   <!-- /@api:slots-vue -->
+
+   ### Expose
+   <!-- @api:expose -->
+   <!-- /@api:expose -->
+   ````
+
+   Importante: como la receta junta las dos APIs en un archivo, los slots del CE usan
+   `@api:slots` y los de Vue `@api:slots-vue` (no repetir `@api:slots`). Son **las mismas**
+   secciones de las fichas, con los mismos datos: si una dice algo distinto, gana el código y se
+   corrigen las tres. Modelo a copiar: `skills/use-comegen/references/button.md`.
 
 7. **NUEVO — Demos reales** (van en la **página Vue**: usan la API de Vue). **Un archivo `.vue` por
    feature** en `docs/site/examples/<componente>/`, con nombre `Componente<Feature>Example.vue`
@@ -305,9 +343,6 @@ Reglas:
 - Si un dato está mal, se corrige en el SFC. La descripción sale del `/** … */` de la prop,
   así que un JSDoc pobre da una tabla pobre (y un JSDoc bueno documenta solo).
 - El extractor lee el `.ce.vue` para la ficha vanilla (o el `.vue` cuando el CE es directo)
-  y el `.vue` para la ficha Vue.
-
-Pendiente conocido: el extractor **no es determinista** — `--check` reporta drift en 12–24 archivos
-que nadie tocó (y también con los cambios stasheados, o sea que el drift ya existía). Por eso
-`node scripts/gen-api.mjs --check` **todavía no está en el preflight**; hacerlo determinista es
-requisito antes de sumarlo.
+  y el `.vue` para la ficha Vue. Los eventos del CE salen de los `ceEmit('evento', …)` del
+  wrapper (no de `defineEmits`), y los métodos expuestos del `defineExpose` del SFC.
+- El extractor es determinista: `--check` da estable y está en el preflight.

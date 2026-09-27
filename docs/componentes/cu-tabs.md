@@ -142,7 +142,10 @@ Cada item es un objeto con:
 ## Eventos
 
 <!-- @api:eventos -->
-Ninguno.
+| Evento | Payload (`e.detail`) | Descripción |
+| ------ | ------ | ------ |
+| `update:modelValue` | `string` | — |
+| `change` | — | — |
 <!-- /@api:eventos -->
 
 ## Slots
@@ -158,8 +161,8 @@ En HTML plano se usan con el atributo `slot="..."` sobre el elemento hijo.
 <!-- @api:metodos -->
 | Método | Descripción |
 | ------ | ------ |
-| `getActive` | — |
-| `setActive` | — |
-| `next` | — |
-| `prev` | — |
+| `getActive` | Devuelve la key del tab activo |
+| `setActive` | Activa el tab con esa key |
+| `next` | Activa el próximo tab habilitado |
+| `prev` | Activa el tab anterior habilitado |
 <!-- /@api:metodos -->

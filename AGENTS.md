@@ -26,11 +26,12 @@ docs/
 │   └── README.md                          #   índice de fichas
 ├── site/                                  # Sitio VitePress (páginas a mano + ficha incluida)
 ├── notes/                                 # Notas internas de deuda/decisión
-└── skills/generate-release/               # Skill de release (dev, no viaja en el zip)
+└── skills/                                # Skills de dev (docs, preflight, release, marked)
 ```
 
-Sin pipeline de extracción: las fichas y las páginas se escriben a mano (las mantiene el agente
-`.opencode/agent/comegen-docs.md`). `pnpm site:sync` sólo genera el tema de VitePress (tokens CU
+Sin pipeline de extracción: las fichas y las páginas se escriben a mano. La receta vive en la skill
+`comegen-ui-docs` y la ejecuta el subagente `.opencode/agent/comegen-docs.md` (`@comegen-docs`).
+`pnpm site:sync` sólo genera el tema de VitePress (tokens CU
 → `docs/site/.vitepress/theme/*.gen.*`) desde `comegen.config.json`.
 
 Donde `{category}` es uno de: `form/`, `information/`, `overlay/`, `navigation/`, `data/`, `buttons/`, o raíz.
@@ -199,14 +200,18 @@ CSS tokens (inyectados por initTokens o themes.css) resuelven el hex según el t
 
 ### Sistema de temas
 
-Tres temas: `light` (default), `dark`, `sigacadv2`.
+15 temas en `comegen.config.json` (fuente de verdad): `light` (default), `dark`, `nord-frost`,
+`nord-aurora`, `nord-snow-storm`, `nord-polar-night`, `gruvbox-dark`, `gruvbox-light`, `rose-pine`,
+`rose-pine-moon`, `rose-pine-dawn`, `catppuccin-latte`, `catppuccin-frappe`,
+`catppuccin-macchiato`, `catppuccin-mocha`.
 
 ```html
 <html data-theme="dark">              <!-- Global -->
-<cu-button theme="sigacadv2">         <!-- Por componente -->
+<div data-theme="nord-frost">…</div>  <!-- Por contenedor -->
 ```
 
-Prioridad: `theme` prop → `data-theme` en `<html>` → `prefers-color-scheme` (OS).
+No hay prop `theme` por componente: el tema lo define el host (`data-theme`). Prioridad:
+`data-theme` (host o `<html>`) → `prefers-color-scheme` (OS).
 
 ### Tokens CSS
 

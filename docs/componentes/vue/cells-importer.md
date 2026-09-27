@@ -143,7 +143,7 @@ onMounted(() => {
 <!-- @api:emits -->
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
-| `change` | `File \\| null` | — |
+| `change` | `File \| null` | — |
 | `parse` | `{ rows: Record<string, unknown>[]; headers: string[]; fileName: string; }` | — |
 | `error` | `CellError[]` | — |
 <!-- /@api:emits -->

@@ -98,8 +98,8 @@ import Pagination from "@/components/controls/Pagination.vue";
 <!-- @api:emits -->
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
-| `update:currentPage` | `any[` | — |
-| `update:itemsPerPage` | `any[` | — |
+| `update:currentPage` | — | — |
+| `update:itemsPerPage` | — | — |
 <!-- /@api:emits -->
 
 > Los eventos custom se escuchan con `addEventListener` y el payload está en `e.detail`.

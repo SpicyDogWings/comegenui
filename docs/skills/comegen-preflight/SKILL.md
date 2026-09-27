@@ -27,6 +27,9 @@ El script corre, en orden y cortando al primer fallo:
    ficha en `docs/componentes/` y página en `docs/site/componentes/` con `title`/`group`; cada
    `@include` apunta a una ficha existente, cada ficha se incluye una sola vez y tiene sus
    secciones obligatorias.
+4. **API generada** (`node scripts/gen-api.mjs --check`): las tablas de API entre marcadores están
+   al día respecto de los SFC.
+5. **build del sitio** (`pnpm build`): caza dead links y verifica que los ejemplos `.vue` compilen.
 
 Flags: `--no-typecheck` y `--no-tests` saltean los dos primeros pasos.
 

@@ -91,7 +91,7 @@ import Input from "@/components/form/Input.vue";
 <!-- @api:emits -->
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
-| `click` | `` | — |
+| `click` | — | — |
 <!-- /@api:emits -->
 
 ## Slots

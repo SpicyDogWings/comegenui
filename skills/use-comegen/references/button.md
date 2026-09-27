@@ -137,11 +137,11 @@ No expone métodos.
 
 ### Slots
 
-<!-- @api:slots -->
+<!-- @api:slots-vue -->
 | Slot | Descripción |
 | ------ | ------ |
 | `default` | — |
-<!-- /@api:slots -->
+<!-- /@api:slots-vue -->
 
 ### Expose
 

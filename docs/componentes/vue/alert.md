@@ -82,9 +82,9 @@ function onClose() {
 <!-- @api:emits -->
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
-| `close` | `any[` | — |
-| `open` | `any[` | — |
-| `update:show` | `any[` | — |
+| `close` | — | — |
+| `open` | — | — |
+| `update:show` | — | — |
 <!-- /@api:emits -->
 
 > Los eventos custom se escuchan con `addEventListener` y el payload está en `e.detail`.
@@ -115,6 +115,7 @@ function onClose() {
 | Método | Descripción |
 | ------ | ------ |
 | `open` | — |
+| `close` | — |
 | `toggle` | — |
 | `isOpen` | — |
 <!-- /@api:expose -->

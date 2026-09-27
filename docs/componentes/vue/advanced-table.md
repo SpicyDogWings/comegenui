@@ -75,7 +75,7 @@ La celda renderiza el editor (input / select / textarea / autocomplete) **direct
 <AdvancedTable :columns="columns" :data="data" :inline-editing="inlineEditing" />
 ```
 
-> ⚠️ **En HTML plano:** el `<cu-table>` (Custom Element) **no expone** la prop `inlineEditing`. Para celdas siempre editables con UMD usá `inlineEdit: true` en cada columna (las `columns` se reenvían tal cual al interno).
+> **En HTML plano:** el `<cu-table>` (Custom Element) **también** acepta `inline-editing` (se reenvía al interno). Una columna con `inlineEdit: true` gana sobre ese global.
 
 | Acción | Comportamiento en estado inline |
 |--------|---------------------------------|
@@ -1060,7 +1060,6 @@ En variantes transparentes (`outlined`, `ghost`) se aplica `backdrop-filter: blu
 | `tableMaxHeight` | `string` | `""` | — |
 | `inlineEditing` | `boolean` | `false` | — |
 | `compact` | `boolean` | `false` | — |
-| `theme` | `string` | `"light"` | Tema activo de la tabla: light, dark o sigacadv2. |
 <!-- /@api:props -->
 
 > **Pipeline interno:** `data → search → filters → sort → pagination`. El ordenamiento y la paginación operan sobre los datos ya filtrados.
@@ -1076,16 +1075,13 @@ En variantes transparentes (`outlined`, `ghost`) se aplica `backdrop-filter: blu
 <!-- @api:emits -->
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
-| `update:currentPage` | `any[` | — |
-| `update:itemsPerPage` | `any[` | — |
-| `update:search` | `any[` | — |
-| `row-click` | `any[` | — |
-| `row-dblclick` | `any[` | — |
-| `cell-click` | `any[` | — |
-| `edit-start` | `any[` | — |
-| `edit-save` | `any[` | — |
-| `edit-cancel` | `any[` | — |
-| `edit-error` | `any[` | — |
+| `update:currentPage` | — | — |
+| `update:itemsPerPage` | — | — |
+| `update:search` | — | — |
+| `edit-start` | — | — |
+| `edit-save` | — | — |
+| `edit-cancel` | — | — |
+| `edit-error` | — | — |
 <!-- /@api:emits -->
 
 ## Slots
