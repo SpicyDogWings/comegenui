@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, ref, watch, nextTick } from "vue";
+import { computed, ref, watch, nextTick, type PropType } from 'vue';
+import { isModalSize } from '@/utils/validators'
 import Modal from "../overlay/Modal.vue";
 import Input from "../form/Input.vue";
 import Button from "../buttons/Button.vue";
@@ -30,14 +31,14 @@ const props = defineProps({
     default: "Buscar comandos…",
   },
   size: {
-    type: String,
+    type: String as PropType<'auto' | 'sm' | 'md' | 'lg' | 'xl' | 'full'>,
     default: "auto",
-    validator: (value: string) => ["auto", "sm", "md", "lg", "xl", "full"].includes(value),
+    validator: isModalSize,
   },
   height: {
-    type: String,
+    type: String as PropType<'auto' | 'sm' | 'md' | 'lg' | 'xl' | 'full'>,
     default: "auto",
-    validator: (value: string) => ["auto", "sm", "md", "lg", "xl", "full"].includes(value),
+    validator: isModalSize,
   },
   commands: {
     type: Array as () => CommandItem[],

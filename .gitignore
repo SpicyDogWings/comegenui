@@ -37,6 +37,18 @@ coverage
 __screenshots__/
 public/test-results.json
 
+# VitePress (generados + build). Las páginas de `componentes/` SÍ se versionan:
+# son la fuente de verdad de la doc, escritas a mano.
+docs/site/public/comegen.config.json
+docs/site/public/img/
+docs/site/public/comegen.ico
+docs/site/public/favicon.ico
+docs/site/.vitepress/theme/*.gen.css
+docs/site/.vitepress/theme/*.gen.mjs
+docs/site/.vitepress/dist/
+docs/site/.vitepress/cache/
+docs/site/.vitepress/.temp/
+
 # Vite
 *.timestamp-*-*.mjs
 
@@ -53,6 +65,8 @@ scripts/config
 !.opencode/skills/**/*
 !.opencode/plans/
 !.opencode/plans/**/*
+!.opencode/agent/
+!.opencode/agent/**/*
 graphify-out
 
 # Pesonal

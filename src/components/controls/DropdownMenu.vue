@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, type PropType } from 'vue';
+import { isAlign, isColor, isPosition, isTextAlign, isVariantFull } from '@/utils/validators'
 import Dropdown from "../overlay/Dropdown.vue";
 import Button from "../buttons/Button.vue";
 
@@ -17,38 +18,36 @@ interface DropdownItem {
 
 const props = defineProps({
   color: {
-    type: String,
+    type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     required: false,
     default: "neutral",
-    validator: (value: string) =>
-      ["primary", "secondary", "neutral", "success", "warning", "danger"].includes(value),
+    validator: isColor,
   },
   variant: {
-    type: String,
+    type: String as PropType<'solid' | 'outlined' | 'soft' | 'ghost' | 'subtle' | 'link' | 'none'>,
     required: false,
     default: "ghost",
-    validator: (value: string) =>
-      ["solid", "outlined", "soft", "ghost", "subtle", "link", "none"].includes(value),
+    validator: isVariantFull,
   },
   disabled: { type: Boolean, required: false, default: false },
   label: { type: String, required: false, default: "" },
   position: {
-    type: String,
+    type: String as PropType<'bottom' | 'top' | 'left' | 'right'>,
     required: false,
     default: "bottom",
-    validator: (value: string) => ["bottom", "top", "left", "right"].includes(value),
+    validator: isPosition,
   },
   align: {
-    type: String,
+    type: String as PropType<'start' | 'center' | 'end'>,
     required: false,
     default: "start",
-    validator: (value: string) => ["start", "center", "end"].includes(value),
+    validator: isAlign,
   },
   textAlign: {
-    type: String,
+    type: String as PropType<'left' | 'center' | 'right'>,
     required: false,
     default: "left",
-    validator: (value: string) => ["left", "center", "right"].includes(value),
+    validator: isTextAlign,
   },
   offset: { type: Number, required: false, default: 4 },
   fixed: { type: Boolean, required: false, default: false },
@@ -74,7 +73,7 @@ defineExpose({
   /** Alterna la visibilidad del menú. */
   toggle: () => dropdownRef.value?.toggle(),
   /** Devuelve true si el menú está abierto. */
-  isOpen: () => dropdownRef.value?.isOpen || false,
+  isOpen: () => dropdownRef.value?.isOpen() ?? false,
 });
 </script>
 
@@ -92,15 +91,15 @@ defineExpose({
     @open="emit('open')"
     @close="emit('close')"
   >
-    <template #toggle>
+    <template #toggle="{ toggle, isOpen }">
       <!-- Contenido del trigger; scoped: { toggle, isOpen }. -->
-      <slot name="toggle" :toggle="dropdownRef?.toggle" :isOpen="dropdownRef?.isOpen">
+      <slot name="toggle" :toggle="toggle" :isOpen="isOpen">
         <Button
           :color="color"
           :variant="variant"
           :disabled="disabled"
           class="cu-dropdown-toggle"
-          @click="dropdownRef?.toggle"
+          @click="toggle"
         >
           {{ label || "Menú" }}
           <svg
@@ -114,9 +113,9 @@ defineExpose({
             stroke-linecap="round"
             stroke-linejoin="round"
             class="cu-dropdown-chevron"
-            :class="{ 'cu-dropdown-chevron--open': dropdownRef?.isOpen }"
+            :class="{ 'cu-dropdown-chevron--open': isOpen }"
           >
-            <path d="m6 9 6 6 6-6"/>
+            <path d="m18 15-6-6-6 6"/>
           </svg>
         </Button>
       </slot>
@@ -174,6 +173,6 @@ defineExpose({
 }
 
 .cu-dropdown-chevron--open {
-  transform: rotate(180deg);
+  transform: rotate(90deg);
 }
 </style>

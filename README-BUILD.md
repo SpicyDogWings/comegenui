@@ -36,22 +36,16 @@ Librería de componentes UI como Web Components (Custom Elements) construidos co
 
 ## Temas
 
-### Cambiar tema global
+### Cambiar tema
 
 ```html
 <html data-theme="dark">
 ```
 
-### Cambiar tema por componente
-
-```html
-<cu-button theme="sigacadv2" color="primary">Botón</cu-button>
-```
-
 ### Prioridad
 
 ```
-theme prop → data-theme (<html>) → prefers-color-scheme (OS)
+data-theme (<html>) → prefers-color-scheme (OS)
 ```
 
 ## Colores disponibles
@@ -76,11 +70,11 @@ Los componentes soportan variantes via el prop `variant`:
 | `variant` | `String` | `"solid"` | Variante visual |
 | `size` | `String` | `"md"` | Tamaño (`sm`, `md`, `lg`) |
 | `disabled` | `Boolean` | `false` | Deshabilitado |
-| `theme` | `String` | — | Override de tema |
 
 ## Estructura del zip
 
-La salida final es el zip con los archivos de la lib y el folder de la skill de uso, al mismo nivel:
+La salida final es el zip con los archivos de la lib, al mismo nivel. La instalación es manual:
+descomprimí el zip y copiá los archivos a tu proyecto.
 
 ```
 comegenui-v{version}.zip
@@ -89,10 +83,5 @@ comegenui-v{version}.zip
 │   ├── themes.css      ← Todos los temas
 │   ├── light.css       ← Tema light
 │   └── dark.css        ← Tema dark
-├── use-comegen/        ← Skill de uso: SKILL.md + docs por componente
-├── update.sh           ← Actualizador Linux/macOS (./update.sh [--only CuX] [tag])
-├── update.bat          ← Actualizador Windows (doble clic o update.bat [-Only CuX] [tag])
-├── update.ps1          ← Alternativa PowerShell (.\update.ps1 [-Only CuX] [tag])
-                       (todos instalan/actualizan la skill en .agents/skills/)
 └── README-BUILD.md     ← Este archivo
 ```

@@ -37,12 +37,12 @@ export function useThemeBuilder() {
   initColorsFromTheme('light')
 
   const shadowOpacityRaw = ref(String(opacities.value.default?.shadow ?? 10))
-  const typography = ref({ ...store.getShared()?.typography })
-  const spacing = ref({ ...store.getShared()?.spacing })
-  const borderRadius = ref({ ...store.getShared()?.borderRadius })
+  const typography = ref({ ...DEFAULTS.typography, ...store.getShared()?.typography })
+  const spacing = ref({ ...DEFAULTS.spacing, ...store.getShared()?.spacing })
+  const borderRadius = ref({ ...DEFAULTS.borderRadius, ...store.getShared()?.borderRadius })
   const borders = ref({
-    width: { ...store.getShared()?.borders?.width },
-    color: { ...store.getShared()?.borders?.color },
+    width: { ...DEFAULTS.borders.width, ...store.getShared()?.borders?.width },
+    color: { ...(DEFAULTS.borders.color ?? {}), ...store.getShared()?.borders?.color },
   })
 
   const shadowPreview = computed(() =>

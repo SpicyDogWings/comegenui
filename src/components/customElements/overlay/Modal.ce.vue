@@ -6,15 +6,21 @@ import { initTokens } from "@/plugins/cu-tokens/css";
 initTokens();
 
 const props = defineProps({
+  /** Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` */
   color: {
     type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     default: "neutral",
   },
+  /** Título del modal (se muestra en la cabecera) */
   title: String,
+  /** Descripción bajo el título (texto secundario) */
   description: String,
+  /** Si es `true`, no se cierra con click en el backdrop ni con `Escape` */
   persistent: Boolean,
-  size: { type: String, default: "auto" },
-  height: { type: String, default: "auto" },
+  /** Ancho del modal: `auto`, `sm`, `md`, `lg`, `xl`, `full` */
+  size: { type: String as PropType<'auto' | 'sm' | 'md' | 'lg' | 'xl' | 'full'>, default: "auto" },
+  /** Alto del modal: `auto`, `sm`, `md`, `lg`, `xl`, `full` */
+  height: { type: String as PropType<'auto' | 'sm' | 'md' | 'lg' | 'xl' | 'full'>, default: "auto" },
 });
 
 const modalRef = ref<InstanceType<typeof Modal> | null>(null);
@@ -32,9 +38,13 @@ function ceEmit(event: string, payload: unknown) {
   }
 }
 
+/** Abre el modal */
 function open() { modalRef.value?.open(); }
+/** Cierra el modal */
 function close() { modalRef.value?.close(); }
+/** Alterna visibilidad */
 function toggle() { modalRef.value?.toggle(); }
+/** Devuelve el estado actual (`boolean`) */
 function isOpen() { return modalRef.value?.isOpen() ?? false; }
 
 defineExpose({ open, close, toggle, isOpen });
@@ -56,10 +66,13 @@ defineExpose({ open, close, toggle, isOpen });
     @accept="ceEmit('accept', $event)"
   >
     <template #icon>
+      <!-- Ícono en la cabecera (junto al título) -->
       <slot name="icon"></slot>
     </template>
+    <!-- Cuerpo del modal -->
     <slot></slot>
     <template #footer>
+      <!-- Pie del modal (típicamente botones de acción) -->
       <slot name="footer"></slot>
     </template>
   </Modal>

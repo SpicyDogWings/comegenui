@@ -1,0 +1,41 @@
+/* docs/site/.vitepress/theme/demos.css
+   Helpers para los demos en vivo de las páginas de componentes: un contenedor
+   con el mismo lenguaje visual que el resto del sitio (tokens CU). */
+.cu-demo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+  padding: 20px 16px;
+  border: 1px solid var(--cu-border-color);
+  border-radius: var(--cu-radius-md);
+  background-color: var(--cu-color-surface);
+}
+
+.cu-demo--stack {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 16px;
+}
+
+/* Salida del último evento/estado en los demos interactivos. */
+.cu-demo-output {
+  width: 100%;
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: var(--cu-radius-sm);
+  background-color: var(--cu-color-neutral-soft);
+  color: var(--cu-color-neutral);
+  font-family: var(--cu-font-mono);
+  font-size: var(--cu-font-size-xs);
+  white-space: pre-wrap;
+}
+
+/* Grupo de controles dentro de un demo (rueda de ref + botones). */
+.cu-demo-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}

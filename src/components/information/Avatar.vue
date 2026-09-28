@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, type PropType } from "vue";
+import { isSize } from '@/utils/validators'
 
 const PALETTE: Array<'primary' | 'secondary' | 'success' | 'neutral'> = [
   'primary', 'secondary', 'success', 'neutral',
@@ -21,10 +22,10 @@ const props = defineProps({
     default: "",
   },
   size: {
-    type: String,
+    type: String as PropType<'sm' | 'md' | 'lg'>,
     required: false,
     default: "md",
-    validator: (value: string) => ["sm", "md", "lg"].includes(value),
+    validator: isSize,
   },
   initials: {
     type: String,

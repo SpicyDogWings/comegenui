@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-06-18
 **Severidad:** Info (confusión común, ya documentada en `SKILL.md`)
-**Estado:** Documentado
+**Estado:** Documentado (parcialmente superado el 2026-09-26: `cu-modal` suma `cancel`/`accept`; los `row-*` de `cu-table` se eliminaron por ser emits muertos)
 
 ## Problema
 
@@ -22,18 +22,19 @@ Los **eventos custom** (`update:modelValue`, `select`, `open`, `close`, etc.) NO
 | `<cu-dropdown-menu>` | `click` en items | `open`, `close` |
 | `<cu-input>` | `input`, `change`, `focus`, `blur` | `update:modelValue` |
 | `<cu-label>` | `click` | (ninguno) |
-| `<cu-modal>` | (no escucha nativos) | `close`, `opened`, `closed` |
+| `<cu-modal>` | (no escucha nativos) | `close`, `opened`, `closed`, `cancel`, `accept` |
 | `<cu-pagination>` | `click` en botones | `update:currentPage`, `update:itemsPerPage` |
 | `<cu-select>` | `focus`, `blur` | `update:modelValue`, `select`, `close`, `blur` |
 | `<cu-switch>` | `click`, `focus`, `blur` | `update:modelValue`, `change` |
-| `<cu-table>` | (clicks en celdas/filas NO se re-emiten como custom) | `update:currentPage`, `update:itemsPerPage`, `update:search`, `edit-start`, `edit-save`, `edit-cancel` |
+| `<cu-table>` | (clicks en celdas/filas NO se re-emiten como custom) | `update:currentPage`, `update:itemsPerPage`, `update:search`, `edit-start`, `edit-save`, `edit-cancel`, `edit-error` |
 | `<cu-textarea>` | `input`, `change`, `focus`, `blur` | `update:modelValue` |
 
-## Caso especial: `<cu-table>`
+## Caso especial: `<cu-table>` (resuelto)
 
-El `AdvancedTable.vue` interno emite `row-click`, `row-dblclick`, `cell-click`, pero `Table.ce.vue` **no los re-emite** al host. Esto es por diseño (simplificar la API del Web Component) pero puede sorprender a usuarios que esperan esos eventos.
-
-Si en el futuro se decide exponerlos, hay que agregar los `ceEmit` correspondientes en `Table.ce.vue`.
+El `AdvancedTable.vue` interno **declaraba** `row-click`, `row-dblclick` y `cell-click` en
+`defineEmits` pero nunca los emitía; el wrapper los reenviaba y la ficha los listaba por error. El
+2026-09-26 se eliminaron del `.vue` y del `.ce.vue`, y las tablas generadas ya no los muestran. Para
+clicks usá el `click` nativo (burbujea desde el shadow DOM) con `e.composedPath()`.
 
 ## Cómo se documenta actualmente
 

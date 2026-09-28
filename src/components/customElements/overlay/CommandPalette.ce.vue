@@ -1,25 +1,45 @@
 <script setup lang="ts">
 import CommandPalette from "../../overlay/CommandPalette.vue";
 import { initTokens } from "@/plugins/cu-tokens/css";
+import { ref, type PropType } from "vue";
 
 initTokens();
 
+interface CommandItem {
+  id: string;
+  label: string;
+  description?: string;
+  category?: string;
+  badges?: string[];
+  icon?: string;
+  shortcut?: string;
+  action: () => void;
+}
+
 const props = defineProps({
-  color: { type: String, default: "neutral" },
+  /** Color semántico del modal: `primary`, `neutral`, `success`, `warning`, `danger` */
+  color: { type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>, default: "neutral" },
+  /** Título del modal */
   title: { type: String, default: "" },
+  /** Placeholder del input de búsqueda */
   placeholder: { type: String, default: "Buscar comandos…" },
-  size: { type: String, default: "auto" },
-  height: { type: String, default: "auto" },
+  /** Ancho del modal: `auto`, `sm`, `md`, `lg`, `xl`, `full` */
+  size: { type: String as PropType<'auto' | 'sm' | 'md' | 'lg' | 'xl' | 'full'>, default: "auto" },
+  /** Alto del modal: `auto`, `sm`, `md`, `lg`, `xl`, `full` */
+  height: { type: String as PropType<'auto' | 'sm' | 'md' | 'lg' | 'xl' | 'full'>, default: "auto" },
+  /** Comandos disponibles: `{ id, label, action, description?, category?, badges?, icon?, shortcut? }[]`. Se asigna como propiedad JS */
+  commands: { type: Array as PropType<CommandItem[]>, default: () => [] },
 });
 
-const paletteRef = ref(null);
+const paletteRef = ref<InstanceType<typeof CommandPalette> | null>(null);
 
-function open() {
-  paletteRef.value?.open();
-}
-function close() {
-  paletteRef.value?.close();
-}
+defineExpose({
+  open: () => paletteRef.value?.open(),
+  close: () => paletteRef.value?.close(),
+  run: (id: string) => paletteRef.value?.run(id),
+  getCommands: () => paletteRef.value?.getCommands(),
+  isOpen: () => paletteRef.value?.isOpen() ?? false,
+});
 
 function ceEmit(event: string, payload: unknown) {
   const el = paletteRef.value?.$el;
@@ -44,6 +64,7 @@ function ceEmit(event: string, payload: unknown) {
     :placeholder="props.placeholder"
     :size="props.size"
     :height="props.height"
+    :commands="props.commands"
     @select="(cmd) => ceEmit('select', cmd)"
     @close="ceEmit('close')"
   />

@@ -1,58 +1,58 @@
 <script setup lang="ts">
-import { ref, watch, getCurrentInstance } from "vue";
+import { ref, watch, getCurrentInstance, type PropType } from 'vue';
+import { isFieldVariant } from '@/utils/validators'
 import Textarea from "../../form/Textarea.vue";
 
 const props = defineProps({
-  theme: {
-    type: String,
-    required: false,
-    default: "",
-  },
+  /** Valor controlado */
   modelValue: {
     type: String,
     required: false,
     default: "",
   },
+  /** Valor inicial usado por `.reset()` */
   startValue: {
     type: String,
     required: false,
   },
+  /** Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` */
   color: {
-    type: String,
+    type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     required: false,
     default: "neutral",
   },
+  /** `outlined`, `soft`, `ghost`, `subtle` */
   variant: {
-    type: String,
+    type: String as PropType<'outlined' | 'soft' | 'ghost' | 'subtle'>,
     required: false,
     default: "soft",
-    validator: (value: string) => ["outlined", "soft", "ghost", "subtle"].includes(value),
+    validator: isFieldVariant,
   },
+  /** Placeholder del textarea */
   placeholder: {
     type: String,
     required: false,
   },
+  /** Estado deshabilitado */
   disabled: {
     type: Boolean,
     required: false,
     default: false,
   },
+  /** Solo lectura (en HTML se usa como `readonly`) */
   readOnly: {
     type: Boolean,
     required: false,
     default: false,
   },
+  /** Cantidad de filas visibles */
   rows: {
     type: Number,
     required: false,
     default: 3,
   },
+  /** Desactiva el redimensionado manual (atributo HTML: `no-resize`) */
   noResize: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
-  hightContrast: {
     type: Boolean,
     required: false,
     default: false,

@@ -68,7 +68,7 @@ function updateActive() {
 }
 
 const routeActiveId = computed(() => {
-  const hash = route.hash.replace('#', '')
+  const hash = route?.hash?.replace('#', '') ?? ''
   return hash && flatItems.value.some(i => i.id === hash) ? hash : ''
 })
 

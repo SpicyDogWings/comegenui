@@ -4,9 +4,13 @@
 **Severidad:** Info (no es bug, es discrepancia entre tipado y runtime)
 **Estado:** Documentado en `componentes/cu-table.md`, sin acción pendiente
 
+> **Nota (2026-09-26):** el wrapper público se renombró de `Table.ce.vue` a
+> `AdvancedTable.ce.vue` (`src/components/customElements/data/`). Los paths de abajo se
+> actualizaron; la observación sigue vigente.
+
 ## Problema
 
-La prop `columns` del `<cu-table>` está tipada en `src/components/data/Table.ce.vue` con una interface `Column` **mínima**:
+La prop `columns` del `<cu-table>` está tipada en `src/components/customElements/data/AdvancedTable.ce.vue` con una interface `Column` **mínima**:
 
 ```ts
 interface Column {
@@ -23,7 +27,7 @@ interface Column {
 }
 ```
 
-Sin embargo, `Table.ce.vue` pasa `columns` **tal cual** al `AdvancedTable.vue` interno, que sí acepta campos adicionales:
+Sin embargo, `AdvancedTable.ce.vue` pasa `columns` **tal cual** al `AdvancedTable.vue` interno, que sí acepta campos adicionales:
 
 ```ts
 // AdvancedTable.vue (extracto de su interface Column)
@@ -53,7 +57,7 @@ En `componentes/cu-table.md`, los campos `width`, `align` y `sortable` están li
 ### A. Ampliar la interface en el `.ce.vue`
 
 ```ts
-// Table.ce.vue
+// AdvancedTable.ce.vue
 interface Column {
   key: string;
   label?: string;

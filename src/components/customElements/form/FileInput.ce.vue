@@ -6,16 +6,24 @@ import { initTokens } from "@/plugins/cu-tokens/css";
 initTokens();
 
 const props = defineProps({
+  /** Archivo seleccionado (vía JS, no HTML) */
   modelValue: { type: Object as PropType<File | null>, default: null },
+  /** Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` */
   color: {
     type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     default: "neutral",
   },
-  variant: { type: String, default: "outlined" },
+  /** `outlined`, `soft`, `ghost`, `subtle` */
+  variant: { type: String as PropType<'outlined' | 'soft' | 'ghost' | 'subtle'>, default: "outlined" },
+  /** Texto cuando no hay archivo */
   placeholder: { type: String, default: "Seleccionar archivo" },
+  /** Deshabilita click, drag y drop */
   disabled: Boolean,
+  /** Modo solo lectura */
   readOnly: Boolean,
+  /** Tipos aceptados (ej: `"image/*"`, `".pdf,.doc"`) */
   accept: String,
+  /** Tamaño máximo en bytes */
   maxSize: Number,
 });
 
@@ -34,10 +42,15 @@ function ceEmit(event: string, payload: unknown) {
   }
 }
 
+/** Devuelve el `File` actual o `null` */
 function get() { return fileInputRef.value?.get() ?? null; }
+/** Asigna un archivo programáticamente */
 function set(val: File | null) { fileInputRef.value?.set(val); }
+/** Limpia la selección */
 function reset() { fileInputRef.value?.reset(); }
+/** Enfoca el input */
 function focus() { fileInputRef.value?.focus(); }
+/** Abre el diálogo nativo de selección de archivos */
 function trigger() { fileInputRef.value?.trigger(); }
 
 defineExpose({ get, set, reset, focus, trigger });
@@ -46,15 +59,15 @@ defineExpose({ get, set, reset, focus, trigger });
 <template>
   <FileInput
     ref="fileInputRef"
-    :modelValue="props.modelValue"
+    :model-value="props.modelValue"
     :color="props.color"
     :variant="props.variant"
     :placeholder="props.placeholder"
     :disabled="props.disabled"
-    :readOnly="props.readOnly"
+    :read-only="props.readOnly"
     :accept="props.accept"
-    :maxSize="props.maxSize"
-    @update:modelValue="ceEmit('update:modelValue', $event)"
+    :max-size="props.maxSize"
+    @update:model-value="ceEmit('update:modelValue', $event)"
   />
 </template>
 

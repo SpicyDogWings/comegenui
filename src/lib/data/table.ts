@@ -1,5 +1,5 @@
 import { defineCustomElement } from "vue";
-import Table from "@/components/customElements/data/Table.ce.vue";
+import Table from "@/components/customElements/data/AdvancedTable.ce.vue";
 import { initTokens } from "@/plugins/cu-tokens/css";
 
 initTokens();

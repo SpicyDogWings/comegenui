@@ -1,24 +1,40 @@
 <script setup lang="ts">
 import { computed, ref, watch, type PropType } from 'vue'
+import { isVariant } from '@/utils/validators'
 import Button from '@/components/buttons/Button.vue'
 import LucideChevronLeft from '@/components/icons/LucideChevronLeft.vue'
 import LucideChevronRight from '@/components/icons/LucideChevronRight.vue'
 import LucideChevronsLeft from '@/components/icons/LucideChevronsLeft.vue'
 import LucideChevronsRight from '@/components/icons/LucideChevronsRight.vue'
 import MonthSliderLabel from './month-slider/MonthSliderLabel.vue'
+import {
+  addMonths,
+  formatDate,
+  isMonthFormat,
+  isYearFormat,
+  parseMonth,
+  sameMonth,
+  sanitizeMonthFormat,
+  sanitizeYearFormat,
+  startOfCurrentMonth,
+} from '@/utils/date'
 
 const props = defineProps({
   modelValue: {
     type: [String, Number, Date] as PropType<string | number | Date | null>,
     default: null,
   },
+  /** Formato del mes: `MMMM` (septiembre), `MMM` (sept), `MM` (09) o `M` (9). Un valor no soportado cae a `MMMM` */
   monthFormat: {
-    type: String,
+    type: String as PropType<'MMMM' | 'MMM' | 'MM' | 'M'>,
     default: 'MMMM',
+    validator: isMonthFormat,
   },
+  /** Formato del año (badge cuando el mes no es del año actual): `yyyy` (2026) o `yy` (26). Un valor no soportado cae a `yyyy` */
   yearFormat: {
-    type: String,
+    type: String as PropType<'yyyy' | 'yy'>,
     default: 'yyyy',
+    validator: isYearFormat,
   },
   locale: {
     type: String,
@@ -31,8 +47,7 @@ const props = defineProps({
   variant: {
     type: String as PropType<'solid' | 'outlined' | 'soft' | 'ghost' | 'subtle'>,
     default: 'soft',
-    validator: (value: string) =>
-      ['solid', 'outlined', 'soft', 'ghost', 'subtle'].includes(value),
+    validator: isVariant,
   },
   min: {
     type: [String, Number, Date] as PropType<string | number | Date | null>,
@@ -57,46 +72,10 @@ const emit = defineEmits<{
   (e: 'change', value: Date): void
 }>()
 
-// ── Utilidades de fecha (sin librerías externas) ──
-
-function startOfCurrentMonth(): Date {
-  const now = new Date()
-  return new Date(now.getFullYear(), now.getMonth(), 1)
-}
-
-// Normaliza cualquier entrada al primer día del mes (hora local, 00:00)
-function parseDateInput(value: string | number | Date | null | undefined): Date {
-  if (value instanceof Date) {
-    return new Date(value.getFullYear(), value.getMonth(), 1)
-  }
-  if (typeof value === 'number') {
-    const d = new Date(value)
-    return new Date(d.getFullYear(), d.getMonth(), 1)
-  }
-  if (typeof value === 'string') {
-    // "2026-03-01" se parsea como fecha local (evita el desfase UTC)
-    const m = value.match(/^(\d{4})-(\d{2})(?:-(\d{2}))?$/)
-    const parsed = m
-      ? new Date(Number(m[1] ?? 0), Number(m[2] ?? 1) - 1, m[3] ? Number(m[3]) : 1)
-      : new Date(value)
-    if (Number.isNaN(parsed.getTime())) return startOfCurrentMonth()
-    return new Date(parsed.getFullYear(), parsed.getMonth(), 1)
-  }
-  return startOfCurrentMonth()
-}
-
-function sameMonth(a: Date, b: Date): boolean {
-  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth()
-}
-
-function addMonths(date: Date, delta: number): Date {
-  return new Date(date.getFullYear(), date.getMonth() + delta, 1)
-}
-
 // ── Límites (min / max) ──
 
-const minDate = computed(() => (props.min === null || props.min === undefined || props.min === '' ? null : parseDateInput(props.min)))
-const maxDate = computed(() => (props.max === null || props.max === undefined || props.max === '' ? null : parseDateInput(props.max)))
+const minDate = computed(() => parseMonth(props.min))
+const maxDate = computed(() => parseMonth(props.max))
 
 function clampDate(date: Date): Date {
   if (minDate.value && date < minDate.value) return minDate.value
@@ -106,13 +85,13 @@ function clampDate(date: Date): Date {
 
 // ── Estado ──
 
-const month = ref<Date>(clampDate(parseDateInput(props.modelValue)))
+const month = ref<Date>(clampDate(parseMonth(props.modelValue) ?? startOfCurrentMonth()))
 
 watch(
   () => props.modelValue,
   (value) => {
     if (value === null || value === undefined || value === '') return
-    const parsed = clampDate(parseDateInput(value))
+    const parsed = clampDate(parseMonth(value) ?? startOfCurrentMonth())
     if (!sameMonth(parsed, month.value)) {
       month.value = parsed
     }
@@ -127,56 +106,27 @@ watch([minDate, maxDate], () => {
   }
 })
 
-// ── Formato con tokens (Intl nativo) ──
+// ── Formato con tokens (Intl nativo, compartido con Calendar/DatePicker) ──
+// `monthFormat`/`yearFormat` son enums cerrados: un valor no soportado cae al
+// default acá (enforcement runtime, también para los Custom Elements).
 
-// Orden importa: se escanea de mayor a menor longitud
-const MONTH_TOKENS = ['MMMM', 'MMM', 'MM', 'yyyy', 'M', 'yy'] as const
+const monthFormatValue = computed(() => sanitizeMonthFormat(props.monthFormat))
+const yearFormatValue = computed(() => sanitizeYearFormat(props.yearFormat))
 
-function formatMonth(date: Date, format: string): string {
-  const locale = props.locale
-  const monthFull = new Intl.DateTimeFormat(locale, { month: 'long' }).format(date)
-  const monthShort = new Intl.DateTimeFormat(locale, { month: 'short' }).format(date)
-  const pad = (n: number) => String(n).padStart(2, '0')
-  const values: Record<string, string> = {
-    MMMM: monthFull,
-    MMM: monthShort,
-    MM: pad(date.getMonth() + 1),
-    M: String(date.getMonth() + 1),
-    yyyy: String(date.getFullYear()),
-    yy: String(date.getFullYear()).slice(-2),
-  }
-  let out = ''
-  let i = 0
-  while (i < format.length) {
-    let matched = false
-    for (const token of MONTH_TOKENS) {
-      if (format.startsWith(token, i)) {
-        out += values[token]
-        i += token.length
-        matched = true
-        break
-      }
-    }
-    if (!matched) {
-      out += format[i]
-      i += 1
-    }
-  }
-  return out
-}
+const formatMonth = (date: Date, format: string) =>
+  formatDate(date, format, props.locale, { capitalizeMonths: false })
 
 // En Custom Elements los atributos booleanos llegan como string: "false"/"0" = desactivado
 const showYearNavigation = computed(
   () => props.yearNavigation !== false && props.yearNavigation !== 'false' && props.yearNavigation !== '0',
 )
 
-// Si el formato no incluye año y el mes no es del año actual, se muestra el año al lado
-const hasYearToken = computed(() => /[yY]/.test(props.monthFormat))
+// El formato de mes es solo mes: el año se muestra al lado cuando no es el actual
 const currentYear = computed(() => new Date().getFullYear())
-const showAutoYear = computed(() => !hasYearToken.value && month.value.getFullYear() !== currentYear.value)
+const showAutoYear = computed(() => month.value.getFullYear() !== currentYear.value)
 
-const monthLabel = computed(() => formatMonth(month.value, props.monthFormat))
-const yearLabel = computed(() => formatMonth(month.value, props.yearFormat))
+const monthLabel = computed(() => formatMonth(month.value, monthFormatValue.value))
+const yearLabel = computed(() => formatMonth(month.value, yearFormatValue.value))
 
 // ── Navegación (con límites) ──
 
@@ -211,7 +161,7 @@ function prevYear() {
 
 /** Navega al mes de la fecha indicada. */
 function goToMonth(value: string | number | Date) {
-  setMonth(parseDateInput(value))
+  setMonth(parseMonth(value) ?? startOfCurrentMonth())
 }
 
 /** Devuelve el mes visible. */
@@ -222,7 +172,7 @@ function getValue(): Date {
 /** Establece el mes desde una fecha, timestamp o string. */
 function setValue(value: string | number | Date | null) {
   if (value === null || value === undefined || value === '') return
-  setMonth(parseDateInput(value))
+  setMonth(parseMonth(value) ?? startOfCurrentMonth())
 }
 
 defineExpose({

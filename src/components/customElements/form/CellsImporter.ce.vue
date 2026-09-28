@@ -7,20 +7,34 @@ import type { CellColumn, CellError } from "@/utils/cellsImporter";
 initTokens();
 
 const props = defineProps({
+  /** Esquema de columnas (header esperado, tipo y reglas). **Obligatorio.** */
   columns: { type: Array as PropType<CellColumn[]>, required: true, default: () => [] },
+  /** Formatos deseados; se propagan al input y se muestran al usuario */
   formats: { type: Array as PropType<string[]>, default: () => [".xlsx", ".csv"] },
+  /** Delimitador para CSV */
   delimiter: { type: String, default: "," },
+  /** La primera fila del archivo es el encabezado */
   hasHeader: { type: Boolean, default: true },
+  /** `false` = match por label en cualquier orden; `true` = respeta el orden del schema */
   strict: { type: Boolean, default: false },
+  /** Hoja a leer en `.xlsx` (índice o nombre) */
   sheet: { type: [String, Number] as PropType<string | number>, default: 0 },
+  /** "xlsx"` */
   template: { type: Object as PropType<{ enabled?: boolean; type?: "xlsx" | "csv"; filename?: string }>, default: () => ({ enabled: false, type: "csv", filename: "template" }) },
+  /** `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` */
   color: { type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>, default: "neutral" },
-  variant: { type: String, default: "outlined" },
+  /** `outlined`, `soft`, `ghost`, `subtle` */
+  variant: { type: String as PropType<'outlined' | 'soft' | 'ghost' | 'subtle'>, default: "outlined" },
+  /** Texto cuando no hay archivo */
   placeholder: { type: String, default: "Seleccionar archivo" },
+  /** Deshabilita la selección */
   disabled: Boolean,
+  /** Modo solo lectura */
   readOnly: Boolean,
+  /** Tamaño máximo en bytes */
   maxSize: Number,
-  inputType: { type: String, default: "input" },
+  /** `"input"` = `<cu-file-input>` compacto; `"zone"` = zona drag & drop (`<cu-file-input-zone>`). Single file en ambos */
+  inputType: { type: String as PropType<'input' | 'zone'>, default: "input" },
 });
 
 const importerRef = ref<InstanceType<typeof CellsImporter> | null>(null);
@@ -38,15 +52,25 @@ function ceEmit(event: string, payload: unknown) {
   }
 }
 
+/** Filas parseadas */
 function getRows() { return importerRef.value?.getRows() ?? []; }
+/** Encabezados del archivo */
 function getHeaders() { return importerRef.value?.getHeaders() ?? []; }
+/** Errores de validación */
 function getErrors() { return importerRef.value?.getErrors() ?? []; }
+/** `File` actual o `null` */
 function getFile() { return importerRef.value?.getFile() ?? null; }
+/** Re-valida y devuelve errores */
 function validate() { return importerRef.value?.validate() ?? []; }
+/** Descarga la plantilla configurada */
 function downloadTemplate() { importerRef.value?.downloadTemplate(); }
+/** Limpia archivo, filas y errores */
 function reset() { importerRef.value?.reset(); }
+/** Asigna un archivo programáticamente */
 function set(val: File | null) { importerRef.value?.set(val); }
+/** Abre el diálogo de selección */
 function trigger() { importerRef.value?.trigger(); }
+/** Enfoca el input */
 function focus() { importerRef.value?.focus(); }
 
 defineExpose({ getRows, getHeaders, getErrors, getFile, validate, downloadTemplate, reset, set, trigger, focus });
@@ -58,7 +82,7 @@ defineExpose({ getRows, getHeaders, getErrors, getFile, validate, downloadTempla
     :columns="props.columns"
     :formats="props.formats"
     :delimiter="props.delimiter"
-    :hasHeader="props.hasHeader"
+    :has-header="props.hasHeader"
     :strict="props.strict"
     :sheet="props.sheet"
     :template="props.template"
@@ -66,9 +90,9 @@ defineExpose({ getRows, getHeaders, getErrors, getFile, validate, downloadTempla
     :variant="props.variant"
     :placeholder="props.placeholder"
     :disabled="props.disabled"
-    :readOnly="props.readOnly"
-    :maxSize="props.maxSize"
-    :inputType="props.inputType"
+    :read-only="props.readOnly"
+    :max-size="props.maxSize"
+    :input-type="props.inputType"
     @parse="ceEmit('parse', $event)"
     @error="ceEmit('error', $event as CellError[])"
     @change="ceEmit('change', $event)"

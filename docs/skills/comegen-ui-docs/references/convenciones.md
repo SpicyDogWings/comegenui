@@ -1,0 +1,274 @@
+# Convenciones del proyecto
+
+Reglas que aplican a **todos** los `.md` de la skill `comegen-ui`. Cuando documentes un componente nuevo, respetalas.
+
+## Tag y nombre del archivo
+
+- El archivo `.md` se nombra igual que el tag pero con guiones: `<cu-button>` → `cu-button.md`.
+- Va en la carpeta `.opencode/skills/comegen-ui/componentes/`.
+
+## Encabezado
+
+```markdown
+# `<cu-button>`
+
+Descripción corta (1 línea) de qué hace el componente.
+
+[← Volver](../README.md)
+
+---
+```
+
+- El título usa el tag con backticks.
+- La descripción es funcional, no técnica ("Botón con soporte de color, variante y link", no "Componente Vue que renderiza un button con props...").
+- El link "← Volver" es relativo y va en la línea siguiente a la descripción.
+- El `---` separa el encabezado del cuerpo.
+
+## Secciones del cuerpo
+
+Orden de la ficha (omití las que no apliquen) — así están las fichas actuales:
+
+1. **Uso en HTML plano** — al menos un ejemplo mínimo, con `<script src="dist/...">`.
+2. **Secciones específicas del componente** (ej: "Variantes", "Tamaños", "Posicionamiento" en Select).
+3. **Tablas de API al final**: `## Atributos`, `## Propiedades JS` (si hay arrays/objetos),
+   `## Eventos`, `## Slots`, `## Métodos expuestos` (con `Ninguno.` si no hay filas).
+
+> Todo el cuerpo de la ficha se escribe a mano: no hay generación.
+>
+> Las tablas de API (`Props`, `Eventos`, `Slots`, `Métodos expuestos`) salen de leer el
+> SFC; si no hay filas, se escribe `Ninguno.`.
+
+## Secciones curadas: dos archivos
+
+El ejemplo **no se duplica**: la parte vanilla va en la ficha del custom element
+(`docs/componentes/<tag>.md`) y la de Vue en la ficha del componente
+(`docs/componentes/vue/<kebab>.md`). Cada una en su forma:
+
+| | Ficha vanilla | Ficha Vue |
+|---|---|---|
+| Ejemplos | bloque `html` (tag + `<script src="dist/...">`) | bloque `vue` (`<script setup>` + `<template>`) |
+| Props | `## Atributos` (columna `Atributo`) | `## Props` (columna `Prop`) |
+| Eventos | `## Eventos` (`CustomEvent`, payload en `e.detail`) | `## Emits` |
+| Métodos | `## Métodos expuestos` | `## Expose` |
+| Slots | `slot="nombre"` (light DOM) | `<template #nombre>` |
+
+Reglas:
+
+- Cada ficha dice las cosas **una sola vez**, en su forma: atributo vs prop,
+  `addEventListener` + `e.detail` vs `@evento`, `el.prop = …` vs `:prop`.
+- Los componentes **sin custom element** (internos) sólo tienen ficha Vue.
+- Las plantillas completas están en `SKILL.md` (pasos 4 y 5).
+
+## Tabla de Props
+
+```markdown
+| Prop | Tipo | Default | Descripción |
+|------|------|---------|-------------|
+| `size` | `string` | `"md"` | Tamaño: `sm`, `md`, `lg` |
+| `color` | `string` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `variant` | `string` | `"soft"` | `solid`, `outlined`, `soft`, `subtle` |
+```
+
+- Los nombres de props en backticks.
+- Los tipos en backticks con tipos JS/TS legibles (`string`, `number`, `boolean`, `array`, `object`).
+- Los valores válidos en línea con backticks: `` `solid`, `outlined`, `soft`, `subtle` ``.
+- Si una prop es específica del componente (no estándar), explicá brevemente en la columna "Descripción".
+- Si una prop tiene `validator` en el `.ce.vue`, **mostrá los valores aceptados** (no los inventes).
+
+## Tabla de Eventos
+
+```markdown
+| Evento | Payload (`e.detail`) | Descripción |
+|--------|----------------------|-------------|
+| `update:modelValue` | `string` | Cambio de valor |
+| `select` | `{ value, label }` | Opción seleccionada |
+```
+
+- **Solo se listan eventos custom** re-emitidos por el `.ce.vue`.
+- Los eventos nativos (`click`, `input`, `change`, etc.) **no se listan** salvo que se aclaren abajo en una nota.
+- La columna "Payload" debe indicar el tipo del `e.detail` cuando lo emite el `.ce.vue`. Si es `—`, significa que no hay payload.
+
+## Tabla de Slots
+
+```markdown
+| Slot | Descripción |
+|------|-------------|
+| `default` | Contenido del botón |
+| `toggle` | Botón disparador (slot HTML nativo) |
+```
+
+- El nombre del slot entre backticks.
+- Si el slot tiene bindings (caso de `<cu-table>` con `header-{key}`), agregar columna "Bindings".
+
+## Tabla de Métodos
+
+```markdown
+| Método | Descripción |
+|--------|-------------|
+| `.open()` | Abre el modal |
+| `.isOpen` (getter) | Estado actual (`boolean`) |
+```
+
+- Solo si el `.ce.vue` llama a `defineExpose`.
+- Distinguir métodos `()` de getters (sin paréntesis, indicar `(getter)`).
+- Incluir args en la descripción si los tiene: `updateRow(index, newData)`.
+
+## Props de tema: convenciones especiales
+
+Los componentes que tienen color semántico (`Alert`, `Badge`, `Button`, `Checkbox`, `Input`, `Switch`, `Textarea`, `Select`, `Autocomplete`, `DropdownMenu`, `Pagination`, `Table`) suelen tener este bloque de props:
+
+| Prop | Comportamiento |
+|------|----------------|
+| `theme` | No es prop: el tema sale de `<html data-theme="...">` (16 temas, ver `comegen.config.json`) |
+| `color` | Semántico: `primary`, `neutral`, `success`, `warning`, `danger`. Se traduce a hex según el tema |
+| `variant` | Estilo visual (varía por componente: el `default` y el validador salen de su `.ce.vue`) |
+| `hightContrast` | Modo de alto contraste (typo intencional, hoy sólo en `<cu-label>`; ver `docs/notes/02-hightcontrast.md`) |
+
+Usá este bloque cuando aplique, no copies de otros archivos sin verificar el default real.
+
+## Arrays y objetos como propiedades JS
+
+Para props que son `array` u `object`, agregá una nota explícita:
+
+```markdown
+> **`items` se asigna como propiedad JS**, no como atributo HTML:
+>
+> ```js
+> const ac = document.getElementById('ac');
+> ac.items = [{ label: 'Admin' }];
+> ```
+```
+
+Aplicá a: `items`, `options`, `columns`, `data`, `filters`, `pageSizeOptions`, `actions`, etc.
+
+**Excepción:** `<cu-table>` acepta `search-fields` como atributo HTML en formato JSON. Documentá esto como caso especial.
+
+## camelCase → kebab-case en HTML
+
+Las props de Vue se declaran en `camelCase` y se exponen en HTML como `kebab-case`. Documentá la forma HTML cuando difiera de la JS:
+
+| camelCase (JS) | kebab-case (HTML) |
+|----------------|-------------------|
+| `hightContrast` | `hight-contrast` |
+| `readOnly` | `readonly` |
+| `noResize` | `no-resize` |
+| `itemsPerPage` | `items-per-page` |
+| `currentPage` | `current-page` |
+| `totalPages` | `total-pages` |
+| `totalItems` | `total-items` |
+| `showPageSize` | `show-page-size` |
+| `pageSizeOptions` | `page-size-options` |
+| `showFirstAndLast` | `show-first-and-last` |
+| `searchEnabled` | `search-enabled` |
+| `searchPlaceholder` | `search-placeholder` |
+| `searchFields` | `search-fields` |
+| `searchValue` | `search-value` |
+| `placeholderWrap` | `placeholder-wrap` |
+| `modelValue` | `model-value` (en select, input, etc. no se suele usar como atributo) |
+
+> **Convención:** en las tablas del `.md` mostrá la prop en `camelCase` (como está en el `.ce.vue`) y, si difiere, agregá una nota sobre la forma HTML.
+
+## Booleanos en HTML
+
+Los booleanos se usan sin valor o con el nombre del atributo:
+
+```html
+<cu-button disabled>...</cu-button>
+<cu-alert close>...</cu-alert>
+<cu-table pagination search-enabled>...</cu-table>
+```
+
+En JS se asignan como boolean:
+
+```js
+boton.disabled = true;
+tabla.searchEnabled = true;
+```
+
+## Atributos booleanos por componente
+
+Lista de props booleanas que existen en los `.ce.vue`:
+
+- `Alert`: `close`, `show`, `hightContrast`
+- `Badge`: `hightContrast`
+- `Button`: `disabled`, `hightContrast`
+- `Checkbox`: `disabled`, `hightContrast`
+- `DropdownMenu`: `disabled`, `hightContrast`
+- `Input`: `disabled`, `readOnly`, `hightContrast`
+- `Label`: `hightContrast`
+- `Pagination`: `showPageSize`, `showFirstAndLast`
+- `Select`: `placeholderWrap`, `disabled`, `hightContrast`
+- `Switch`: `disabled`, `hightContrast`
+- `Table`: `pagination`, `showPageSize`, `searchEnabled`, `loading`
+- `Textarea`: `disabled`, `readOnly`, `noResize`, `hightContrast`
+- `Autocomplete`: `disabled`, `readOnly`, `hightContrast`
+
+## Eventos: nativos vs custom
+
+- **Eventos nativos** del DOM (`click`, `input`, `change`, `focus`, `blur`, `mouseenter`, `keydown`) **burbujean automáticamente** desde el Shadow DOM al host. Se pueden escuchar con `addEventListener` sobre el host sin configuración.
+- **Eventos custom** (`update:modelValue`, `select`, `open`, `close`, `edit-save`, etc.) deben ser re-emitidos explícitamente por el `.ce.vue` con `composed: true` para cruzar el Shadow DOM.
+
+> Si documentás que un componente emite `input` o `change`, asegurate de que el `.ce.vue` lo re-emite. Si no, aclará que el evento nativo burbujea pero no hay un evento custom con ese nombre.
+
+## Atribución de `e.detail`
+
+Los eventos custom exponen su payload en `e.detail`:
+
+```js
+element.addEventListener('edit-save', (e) => {
+  console.log(e.detail); // { row, column, value, index }
+});
+```
+
+En la tabla de eventos, indicá la forma de `e.detail` en la columna "Payload" o "Payload (`e.detail`)".
+
+## Métodos: `get`/`set`/`reset`/`focus` para forms
+
+Los componentes de formulario (`Input`, `Checkbox`, `Switch`, `Textarea`, `Select`, `Autocomplete`) suelen exponer:
+
+- `.get()` — devuelve el valor actual.
+- `.set(value)` — asigna valor.
+- `.reset()` — vuelve al `startValue` (o `""`/valor inicial).
+- `.focus()` — pone el foco.
+
+Verificá siempre en el `.ce.vue` si el método está en su `defineExpose` antes de documentarlo.
+
+## Métodos: `open`/`close`/`toggle` para overlays
+
+Los componentes con overlay (`Modal`, `DropdownMenu`) exponen:
+
+- `.open()` — abre.
+- `.close()` — cierra.
+- `.toggle()` — alterna.
+- `.isOpen()` — estado (`boolean`), se llama como método.
+
+Documentá los cuatro si existen.
+
+## Lenguaje y estilo
+
+- **Español** en todas las descripciones y prosa.
+- **Tono:** directo, conciso, sin marketing.
+- **Cero emojis** salvo que el usuario lo pida.
+- **Una forma por archivo:** la ficha vanilla usa HTML plano + UMD (`<script src="dist/CuButton.umd.js"></script>` + tag + JS con `addEventListener`/`element.property`); la ficha Vue usa Vue (`<script setup lang="ts">` + `<template>`, props, `ref`/`v-model`, import del `.vue`). No mezcles las dos formas en el mismo archivo.
+- No uses `new Vue({...})` ni `createApp` en la ficha Vue: es la doc de los componentes, no de la app.
+- Los ejemplos de iconos SVG son OK (los `<cu-button>` aceptan SVG inline), pero no abuses.
+
+## Links relativos
+
+Desde `docs/componentes/cu-xxx.md` (o `docs/componentes/vue/xxx.md`):
+
+- Volver al índice de fichas: `[← Volver](../README.md)`
+- Link a la ficha de otro componente: `[`<cu-alert>`](cu-alert.md)`
+
+Desde `docs/componentes/README.md` (el índice de fichas):
+
+- Link a una ficha: `[`<cu-alert>`](cu-alert.md)`
+- Link a una sección interna: `[Sistema de Temas](#sistema-de-temas)`
+
+## Evitar
+
+- ❌ Explicar cómo se compila (eso es de desarrollo, no de la doc de uso).
+- ❌ Mencionar que está hecho con Vue 3 (irrelevante para el consumidor).
+- ❌ Tablas de tamaños de bundle en cada ficha (eso va en el README de la lib).
+- ❌ Links a archivos del código fuente.
+- ❌ Información sobre el motor de temas interno (`getColorMap`, `getHostTheme`).

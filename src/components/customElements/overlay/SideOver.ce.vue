@@ -1,20 +1,28 @@
 <script setup lang="ts">
-import { ref, watch, getCurrentInstance } from "vue";
+import { ref, watch, getCurrentInstance, type PropType } from "vue";
 import SideOver from "../../overlay/SideOver.vue";
 import { initTokens } from "@/plugins/cu-tokens/css";
 
 initTokens();
 
 const props = defineProps({
+  /** Estado de visibilidad (v-model). Ver nota de atributo abajo */
   open: { type: Boolean, default: false },
+  /** Título de la cabecera (si está vacío y no es `persistent`, igual muestra el botón de cerrar) */
   title: { type: String, default: "" },
-  position: { type: String, default: "right" },
+  /** Borde desde donde desliza: `left`, `right`, `top`, `bottom` */
+  position: { type: String as PropType<'bottom' | 'top' | 'left' | 'right'>, default: "right" },
+  /** Ancho (`left`/`right`) o alto (`top`/`bottom`) del panel. Valor CSS (`300px`, `40vw`) o preset: `sm`, `md`, `lg`, `xl`, `full`. Ignorado con `fullscreen` */
   size: { type: String, default: "300px" },
+  /** Ocupa toda la pantalla */
   fullscreen: { type: Boolean, default: false },
+  /** Si es `true`, no se cierra por backdrop, `Escape` ni el botón de cerrar */
   persistent: { type: Boolean, default: false },
+  /** Z-index del overlay (en HTML se usa como `z-index`) */
   zIndex: { type: Number, default: 1100 },
 });
 
+/** Devuelve el estado actual (`boolean`) */
 const isOpen = ref(props.open);
 watch(() => props.open, (value) => {
   isOpen.value = value;
@@ -38,8 +46,11 @@ function onUpdate(value: boolean) {
   ceEmit("update:open", value);
 }
 
+/** Abre el panel */
 function open() { isOpen.value = true; }
+/** Cierra el panel */
 function close() { isOpen.value = false; }
+/** Alterna visibilidad */
 function toggle() { isOpen.value = !isOpen.value; }
 function isOpenValue() { return isOpen.value; }
 
@@ -58,6 +69,7 @@ defineExpose({ open, close, toggle, isOpen: isOpenValue });
     @update:model-value="onUpdate"
     @close="ceEmit('close', $event)"
   >
+    <!-- Contenido del cuerpo del panel -->
     <slot></slot>
   </SideOver>
 </template>

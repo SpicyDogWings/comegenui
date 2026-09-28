@@ -66,10 +66,10 @@ function prettyTheme(value: string) {
             Vue o soltalos como custom elements en HTML plano. Temas incluidos.
           </p>
           <div class="home-hero-actions">
-            <Button color="primary" variant="solid" to="/playground/components/button">
+            <Button color="primary" variant="solid" to="/componentes/cu-button">
               Ver la documentación
             </Button>
-            <Button color="neutral" variant="outlined" to="/playground/theme-builder">
+            <Button color="neutral" variant="outlined" to="/theme-builder">
               Theme Builder
             </Button>
           </div>
@@ -135,7 +135,7 @@ function prettyTheme(value: string) {
 
           Este bloque lo renderiza el componente **Markdown** de la lib: el
           texto va crudo en el slot y sale parseado — headings, **negritas**,
-          `código inline`, [links](/playground/components/markdown) y listas
+          `código inline`, [links](/componentes/cu-markdown) y listas
           como esta.
 
           - Sanitizado con DOMPurify.

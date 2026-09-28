@@ -1,52 +1,60 @@
 <script setup lang="ts">
-import { ref, watch, getCurrentInstance } from "vue";
+import { ref, watch, getCurrentInstance, type PropType } from "vue";
 import Input from "../../form/Input.vue";
 
 const props = defineProps({
-  theme: {
-    type: String,
-    required: false,
-    default: "",
-  },
+  /** Valor controlado */
   modelValue: {
     type: String,
     required: false,
     default: "",
   },
+  /** Valor inicial usado por `.reset()` */
   startValue: {
     type: String,
     required: false,
   },
+  /** Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` */
   color: {
-    type: String,
+    type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     required: false,
     default: "neutral",
   },
+  /** `outlined`, `soft`, `ghost`, `subtle` */
   variant: {
-    type: String,
+    type: String as PropType<'outlined' | 'soft' | 'ghost' | 'subtle'>,
     required: false,
     default: "soft",
   },
+  /** `text`, `password`, `email`, `number`, `tel`, `url`, `search` */
   type: {
-    type: String,
+    type: String as PropType<'text' | 'password' | 'email' | 'number' | 'tel' | 'url' | 'search'>,
     required: false,
     default: "text",
   },
+  /** Placeholder del input */
   placeholder: {
     type: String,
     required: false,
   },
+  /** Estado deshabilitado */
   disabled: {
     type: Boolean,
     required: false,
     default: false,
   },
+  /** Solo lectura (en HTML se usa como `readonly`) */
   readOnly: {
     type: Boolean,
     required: false,
     default: false,
   },
-
+  /** Tamaño: `sm`, `md`, `lg` */
+  size: {
+    type: String as PropType<'sm' | 'md' | 'lg'>,
+    required: false,
+    default: "md",
+  },
 });
 
 const innerValue = ref(props.modelValue);
@@ -93,7 +101,7 @@ defineExpose({
     :placeholder="props.placeholder"
     :disabled="props.disabled"
     :read-only="props.readOnly"
-
+    :size="props.size"
     :start-value="props.startValue"
     :model-value="innerValue"
   />
