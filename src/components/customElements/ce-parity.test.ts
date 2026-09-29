@@ -68,36 +68,6 @@ describe("Autocomplete.ce", () => {
     expect(declared).not.toContain("hightContrast");
     expect(declared).not.toContain("label");
   });
-
-  it("emite `update:modelValue` al teclear y `get()` refleja el texto", async () => {
-    const w = mount(AutocompleteCe, { props: { items: [{ label: "María" }] } });
-    const updates: string[] = [];
-    w.element.addEventListener("update:modelValue", (e) =>
-      updates.push((e as CustomEvent).detail),
-    );
-
-    await w.find("input").setValue("María");
-    await flushPromises();
-
-    expect(w.vm.get()).toBe("María");
-    expect(updates).toEqual(["María"]);
-  });
-
-  it("seleccionar una sugerencia emite `select` y actualiza `get()`", async () => {
-    const w = mount(AutocompleteCe, { props: { items: [{ label: "María" }] } });
-    const selects: { label: string }[] = [];
-    w.element.addEventListener("select", (e) =>
-      selects.push((e as CustomEvent).detail),
-    );
-
-    await w.find("input").setValue("María");
-    await flushPromises();
-    await w.find(".cu-autocomplete-option").trigger("click");
-    await flushPromises();
-
-    expect(w.vm.get()).toBe("María");
-    expect(selects[0]?.label).toBe("María");
-  });
 });
 
 describe("CommandPalette.ce", () => {

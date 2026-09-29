@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, defineModel, type PropType } from 'vue';
+import { ref, computed, watch, defineModel, type PropType } from 'vue';
 import { isAlign, isColor, isFieldVariant, isPosition } from '@/utils/validators'
 import Dropdown from "../overlay/Dropdown.vue";
 import Input from "./Input.vue";
@@ -53,11 +53,16 @@ const searchValue = defineModel<string>({ default: "" });
 const dropdownRef = ref<InstanceType<typeof Dropdown> | null>(null);
 const inputRef = ref<InstanceType<typeof Input> | null>(null);
 const rootRef = ref<HTMLElement | null>(null);
+const searchText = ref(searchValue.value);
 const selectedItem = ref<AutocompleteItem | null>(null);
+
+watch(() => searchValue.value, (val) => {
+  searchText.value = val;
+}, { immediate: true });
 
 const searchItems = computed(() => props.items);
 const { filteredData: filteredItems } = useSearch(searchItems, {
-  searchQuery: searchValue,
+  searchQuery: searchText,
   searchFields: ["label", "value"],
 });
 
@@ -69,9 +74,9 @@ function onFocus() {
 }
 
 function onInput(val: string) {
-  searchValue.value = val;
+  searchText.value = val;
 
-  if (val.length < props.minChars || filteredItems.value.length === 0) {
+  if (searchText.value.length < props.minChars || filteredItems.value.length === 0) {
     dropdownRef.value?.close();
     return;
   }
@@ -81,6 +86,7 @@ function onInput(val: string) {
 
 function onItemClick(item: AutocompleteItem) {
   const val = item.label || item.value;
+  searchText.value = val;
   searchValue.value = val;
   selectedItem.value = item;
   emit("select", item);
@@ -98,10 +104,11 @@ function get() { return searchValue.value; }
 /** Setea el texto actual en el input. */
 function set(val: string) {
   searchValue.value = val;
+  searchText.value = val;
   if (inputRef.value) inputRef.value.set(val);
 }
 /** Limpia el texto de búsqueda. */
-function reset() { searchValue.value = ""; }
+function reset() { searchValue.value = ""; searchText.value = ""; }
 /** Enfoca el input. */
 function focus() { inputRef.value?.focus(); }
 
@@ -129,7 +136,7 @@ defineExpose({
     <template #toggle>
       <Input
         ref="inputRef"
-        :model-value="searchValue"
+        :model-value="searchText"
         :placeholder="placeholder"
         :disabled="disabled"
         :read-only="readOnly"
