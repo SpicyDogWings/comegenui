@@ -37,6 +37,22 @@ onBeforeUnmount(() => {
         ComegenUI
       </a>
       <Badge color="neutral" variant="subtle">v{{ version }}</Badge>
+      <a
+        href="/componentes/cu-button"
+        class="app-topbar-icon"
+        aria-label="Componentes"
+        title="Componentes"
+      >
+        <LucideForm />
+      </a>
+      <a
+        href="/versionado"
+        class="app-topbar-icon"
+        aria-label="Versionado y metadatos"
+        title="Versionado y metadatos"
+      >
+        <LucideTag />
+      </a>
       <slot name="title" />
     </div>
     <div class="app-topbar-actions">
@@ -53,28 +69,12 @@ onBeforeUnmount(() => {
       </Badge>
       <slot name="actions" />
       <a
-        href="/componentes/cu-button"
-        class="app-topbar-icon"
-        aria-label="Componentes"
-        title="Componentes"
-      >
-        <LucideForm />
-      </a>
-      <a
         href="/theme-builder"
         class="app-topbar-icon"
         aria-label="Theme Builder"
         title="Theme Builder"
       >
         <LucidePalette />
-      </a>
-      <a
-        href="/versionado"
-        class="app-topbar-icon"
-        aria-label="Versionado y metadatos"
-        title="Versionado y metadatos"
-      >
-        <LucideTag />
       </a>
       <a
         class="app-topbar-icon"
