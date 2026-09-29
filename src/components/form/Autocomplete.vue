@@ -74,6 +74,7 @@ function onFocus() {
 }
 
 function onInput(val: string) {
+  searchValue.value = val;
   searchText.value = val;
 
   if (searchText.value.length < props.minChars || filteredItems.value.length === 0) {
