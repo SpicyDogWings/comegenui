@@ -34,6 +34,36 @@ Librería de componentes UI como Web Components (Custom Elements) construidos co
 <cu-badge color="neutral">12</cu-badge>
 ```
 
+## Versión y metadatos
+
+Cada UMD viaja con la versión del bundle con la que se construyó. El archivo arranca con un
+banner y, en runtime, cada componente la expone como metadata:
+
+```js
+// banner del archivo: /*! comegenui v5.0.0-alpha.3 · CuAlert (cu-alert) */
+
+// en runtime, desde la clase o desde el elemento
+customElements.get('cu-alert').comegen
+document.querySelector('cu-alert').comegen
+// { lib: 'comegenui', name: 'CuAlert', tag: 'cu-alert',
+//   version: '5.0.0-alpha.3', versionedTag: 'cu-alert--v5-0-0-alpha-3' }
+```
+
+### Convivir varias versiones
+
+Además del tag normal, cada componente registra un **tag versionado**
+(`<cu-alert--v5-0-0-alpha-3>`). El tag normal se lo queda la primera versión que se cargue; si
+después se carga otra, se avisa por consola y la nueva queda disponible sólo con su tag
+versionado. Cargar dos veces el mismo UMD no rompe: el registro es idempotente.
+
+```html
+<script src="vendor/5.0.0/CuAlert.umd.js"></script>
+<script src="vendor/5.1.0/CuAlert.umd.js"></script>
+
+<cu-alert>…</cu-alert>                  <!-- 5.0.0 (primera cargada) -->
+<cu-alert--v5-1-0>…</cu-alert--v5-1-0>  <!-- 5.1.0 -->
+```
+
 ## Temas
 
 ### Cambiar tema

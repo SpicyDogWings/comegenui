@@ -176,7 +176,7 @@ async function collect() {
 
   for (const entry of entries) {
     const src = readFileSync(resolve(ROOT, entry), 'utf8')
-    const tag = src.match(/customElements\.define\(\s*['"]([^'"]+)['"]/)?.[1]
+    const tag = src.match(/(?:customElements\.define|defineComegenElement)\(\s*['"]([^'"]+)['"]/)?.[1]
     if (!tag) continue
     const sfc = (src.match(/from\s+['"]@\/(components\/[^'"]+\.ce\.vue)['"]/)?.[1]
       ?? src.match(/from\s+['"]@\/(components\/[^'"]+\.vue)['"]/)?.[1])

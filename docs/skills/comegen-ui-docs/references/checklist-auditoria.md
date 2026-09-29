@@ -168,7 +168,7 @@ Para **cada** método listado, verificar:
 ## 9. Verificación cruzada con el índice
 
 - [ ] El componente está listado en `docs/componentes/README.md` (ficha vanilla **y** ficha Vue).
-- [ ] El tag de la ficha coincide con el del archivo `.ts` (`customElements.define`).
+- [ ] El tag de la ficha coincide con el del archivo `.ts` (`defineComegenElement`).
 - [ ] La ficha vanilla y la ficha Vue existen y comparten el `title` de la página del sitio.
 
 ---

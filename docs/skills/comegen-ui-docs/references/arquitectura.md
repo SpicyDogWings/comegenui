@@ -40,12 +40,10 @@ Un componente puede ser **solo `.vue`** si es interno (no se expone como Custom 
 Siempre tiene la misma forma:
 
 ```ts
-import { defineCustomElement } from "vue";
+import { defineComegenElement } from "@/utils/comegen-element";
 import MiComponente from "./MiComponente.ce.vue";
 
-const ComegenMiComponente = defineCustomElement(MiComponente);
-
-customElements.define("cu-mi-componente", ComegenMiComponente);
+const ComegenMiComponente = defineComegenElement("cu-mi-componente", MiComponente);
 
 export { ComegenMiComponente };
 ```

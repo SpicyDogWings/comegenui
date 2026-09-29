@@ -14,6 +14,9 @@ const { DEFAULTS, extractColors, extractShared } = await import('./src/plugins/c
 
 const configPath = resolve(__dirname, 'comegen.config.json')
 const packageJson = JSON.parse(fs.readFileSync(resolve(__dirname, 'package.json'), 'utf-8'))
+// Versión del bundle: `pnpm build:lib v5.0.0` la fuerza; si no, package.json.
+// Viaja inyectada en cada UMD (`__COMEGEN_META__`) y en el banner del archivo.
+const version: string = process.argv[2] || packageJson.version
 
 let config: any
 try {
@@ -47,6 +50,50 @@ const files = fg.sync('./src/lib/**/*.ts', {
   ignore: ['./src/lib/**/index.ts', './src/lib/tokens.ts'],
 })
 
+interface Bundle {
+  file: string
+  /** PascalCase real: date-picker → CuDatePicker (los snippets y las páginas
+   * huésped cargan dist/CuDatePicker.umd.js; con solo capitalizar la primera
+   * letra quedaba CuDate-picker.umd.js y el HTML viejo cargaba 404/stale). */
+  name: string
+  tag: string
+}
+
+const bundles: Bundle[] = files.map((file) => {
+  const baseName = basename(file, extname(file))
+  const name = 'Cu' + baseName
+    .split('-')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join('')
+  return { file, name, tag: `cu-${baseName}` }
+})
+
+/** Escapa un texto para usarlo dentro de un `RegExp`. */
+function escapeRe(text: string): string {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+/**
+ * Verifica que cada UMD de un entry de componente haya quedado con los
+ * metadatos de versión inyectados (`<cu-x>.comegen`). Falla el build si no.
+ */
+function assertBundleMeta(outDir: string) {
+  const missing: string[] = []
+  for (const { file, name } of bundles) {
+    const source = fs.readFileSync(file, 'utf-8')
+    const registers =
+      source.includes('defineComegenElement') || source.includes('customElements.define')
+    if (!registers) continue
+    const code = fs.readFileSync(resolve(outDir, `${name}.umd.js`), 'utf-8')
+    const hasVersion = new RegExp(`"version"\\s*:\\s*"${escapeRe(version)}"`).test(code)
+    if (!code.includes('comegen') || !hasVersion) missing.push(`${name}.umd.js`)
+  }
+  if (missing.length) {
+    console.error(`❌ metadata de versión ausente en: ${missing.join(', ')}`)
+    process.exit(1)
+  }
+}
+
 async function runBuilds() {
   console.log('🧹 Limpiando directorio dist-lib...')
   const outDir = resolve(__dirname, 'dist-lib')
@@ -55,23 +102,18 @@ async function runBuilds() {
   }
   fs.mkdirSync(outDir, { recursive: true })
 
-  console.log(`🚀 Building ${files.length} component(s)...`)
+  console.log(`🚀 Building ${bundles.length} component(s)...`)
 
-  for (const file of files) {
-    const baseName = basename(file, extname(file))
-    // PascalCase real: date-picker → CuDatePicker (los snippets y las páginas
-    // huésped cargan dist/CuDatePicker.umd.js; con solo capitalizar la primera
-    // letra quedaba CuDate-picker.umd.js y el HTML viejo cargaba 404/stale)
-    const name = 'Cu' + baseName
-      .split('-')
-      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-      .join('')
-
+  for (const { file, name, tag } of bundles) {
     console.log(`📦 Building ${name}...`)
 
     await build({
       configFile: false,
-      define: { 'process.env.NODE_ENV': JSON.stringify('production') },
+      define: {
+        'process.env.NODE_ENV': JSON.stringify('production'),
+        // Metadata del bundle: `defineComegenElement` la adjunta al componente.
+        __COMEGEN_META__: JSON.stringify({ version }),
+      },
       resolve: {
         alias: {
           '@': resolve(__dirname, 'src'),
@@ -86,11 +128,20 @@ async function runBuilds() {
           fileName: (format) => `${name}.${format}.js`,
           formats: ['umd'],
         },
+        rollupOptions: {
+          output: {
+            // El banner deja la identidad en el archivo: si alguien copia un solo
+            // UMD, sabe qué componente y qué versión es sin ejecutarlo.
+            banner: `/*! comegenui v${version} · ${name} (${tag}) */`,
+          },
+        },
         minify: false,
         outDir: outDir,
       },
     })
   }
+
+  assertBundleMeta(outDir)
 
   console.log('🎨 Generating CSS files...')
 
@@ -122,7 +173,6 @@ async function runBuilds() {
   const readmeDest = resolve(outDir, 'README-BUILD.md')
   if (fs.existsSync(readmeSource)) {
     let readmeContent = fs.readFileSync(readmeSource, 'utf-8')
-    const version = process.argv[2] || packageJson.version
     readmeContent = readmeContent.replace(/version:\s*$/m, `version: ${version}`)
     fs.writeFileSync(readmeDest, readmeContent)
     console.log('📄 README-BUILD.md copiado')
@@ -132,7 +182,6 @@ async function runBuilds() {
 async function createZip() {
   console.log('\n📦 Creando zip...')
   const outDir = resolve(__dirname, 'dist-lib')
-  const version = process.argv[2] || packageJson.version
   const zipName = `comegenui-v${version}.zip`
   const outputPath = resolve(outDir, zipName)
 

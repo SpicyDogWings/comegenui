@@ -73,6 +73,7 @@ export default defineConfig({
     nav: [
       { text: "Componentes", link: firstVanilla },
       { text: "Theme Builder", link: "/theme-builder" },
+      { text: "Versionado", link: "/versionado" },
     ],
     sidebar,
   },

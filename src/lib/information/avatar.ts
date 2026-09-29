@@ -1,7 +1,6 @@
-import { defineCustomElement } from 'vue'
+import { defineComegenElement } from '@/utils/comegen-element'
 import Avatar from '@/components/customElements/information/Avatar.ce.vue'
 
-const CuAvatar = defineCustomElement(Avatar)
-customElements.define('cu-avatar', CuAvatar)
+const CuAvatar = defineComegenElement('cu-avatar', Avatar)
 
 export default CuAvatar
