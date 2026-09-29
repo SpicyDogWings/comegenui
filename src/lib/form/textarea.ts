@@ -1,10 +1,9 @@
-import { defineCustomElement } from "vue";
+import { defineComegenElement } from "@/utils/comegen-element";
 import Textarea from "@/components/customElements/form/Textarea.ce.vue";
 import { initTokens } from "@/plugins/cu-tokens/css";
 
 initTokens();
 
-const CuTextarea = defineCustomElement(Textarea);
-customElements.define("cu-textarea", CuTextarea);
+const CuTextarea = defineComegenElement("cu-textarea", Textarea);
 
 export default CuTextarea;

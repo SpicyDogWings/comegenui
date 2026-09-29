@@ -1,10 +1,9 @@
-import { defineCustomElement } from "vue";
+import { defineComegenElement } from "@/utils/comegen-element";
 import DropdownMenu from "@/components/customElements/controls/DropdownMenu.ce.vue";
 import { initTokens } from "@/plugins/cu-tokens/css";
 
 initTokens();
 
-const CuDropdownMenu = defineCustomElement(DropdownMenu);
-customElements.define("cu-dropdown-menu", CuDropdownMenu);
+const CuDropdownMenu = defineComegenElement("cu-dropdown-menu", DropdownMenu);
 
 export default CuDropdownMenu;

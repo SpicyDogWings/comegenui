@@ -44,7 +44,8 @@ andá directo al paso que te falta.
 - Qué trae el zip y cómo copiarlo: `references/instalacion.md`.
 - Regla: el CSS del tema se carga **antes** que los UMD.
 - Si el componente ya está instalado y "no cambia nada", casi siempre es un UMD viejo:
-  volvé a copiar el `.umd.js` y el `css/themes.css`.
+  volvé a copiar el `.umd.js` y el `css/themes.css`. Para confirmarlo, leé
+  `customElements.get('cu-x').comegen.version` (`references/versionado.md`).
 
 ## 3. Declarar el componente
 
@@ -153,5 +154,6 @@ componente vive en el repo de ComegenUI, en `docs/componentes/`.
 | `references/api-por-componente.md` | Datos del CE: `.umd.js`, props por JS, eventos y métodos |
 | `references/<kebab>.md` | Receta completa de un custom element (ejemplos, límites, API) |
 | `references/instalacion.md` | Instalar/actualizar la lib y el CSS |
+| `references/versionado.md` | Leer la versión de un UMD y hacer convivir versiones distintas |
 | `references/theming.md` | Cambiar tema, colores, variantes, tokens |
 | `references/gotchas.md` | Atributo vs propiedad, eventos nativos, slots, rarezas |

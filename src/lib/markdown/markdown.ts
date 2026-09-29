@@ -1,7 +1,6 @@
-import { defineCustomElement } from 'vue'
+import { defineComegenElement } from '@/utils/comegen-element'
 import Markdown from '@/components/customElements/markdown/Markdown.ce.vue'
 
-const CuMarkdown = defineCustomElement(Markdown)
-customElements.define('cu-markdown', CuMarkdown)
+const CuMarkdown = defineComegenElement('cu-markdown', Markdown)
 
 export default CuMarkdown

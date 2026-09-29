@@ -1,7 +1,6 @@
-import { defineCustomElement } from 'vue'
+import { defineComegenElement } from '@/utils/comegen-element'
 import Switch from '@/components/customElements/form/Switch.ce.vue'
 
-const CuSwitch = defineCustomElement(Switch)
-customElements.define('cu-switch', CuSwitch)
+const CuSwitch = defineComegenElement('cu-switch', Switch)
 
 export default CuSwitch

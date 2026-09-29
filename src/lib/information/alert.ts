@@ -1,7 +1,6 @@
-import { defineCustomElement } from 'vue'
+import { defineComegenElement } from '@/utils/comegen-element'
 import Alert from '@/components/customElements/information/Alert.ce.vue'
 
-const CuAlert = defineCustomElement(Alert)
-customElements.define('cu-alert', CuAlert)
+const CuAlert = defineComegenElement('cu-alert', Alert)
 
 export default CuAlert

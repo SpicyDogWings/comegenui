@@ -23,7 +23,7 @@ no del tag. Por eso `cu-table` (vanilla) ↔ `vue/advanced-table` (Vue) y el int
 ## Pasos
 
 1. **Identificar el componente y si tiene custom element.**
-   - ¿Hay `customElements.define('cu-x', …)` en `src/lib/**/*.ts`? → tiene vanilla.
+   - ¿Hay `defineComegenElement('cu-x', …)` en `src/lib/**/*.ts`? → tiene vanilla.
    - ¿Existe `src/components/customElements/.../X.ce.vue`? → la API pública del CE es **ese**
      wrapper. Si no existe, el CE es el `.vue` directo (casos: `cu-button`,
      `cu-floating-button`, `cu-badge`).
