@@ -64,6 +64,18 @@ describe('Autocomplete — texto y modelo', () => {
     expect(inputValue(w)).toBe('')
   })
 
+  it('refleja un modelValue externo y emite al teclear', async () => {
+    const w = mount(Autocomplete, { props: { items, modelValue: 'Juan' } })
+    await flushPromises()
+    expect(inputValue(w)).toBe('Juan')
+
+    await w.find('input').setValue('María')
+    await flushPromises()
+
+    expect(vm(w).get()).toBe('María')
+    expect(w.emitted('update:modelValue')?.at(-1)).toEqual(['María'])
+  })
+
   it('limpiar el texto emite el valor vacío', async () => {
     const w = mount(Autocomplete, { props: { items } })
     await w.find('input').setValue('J')
