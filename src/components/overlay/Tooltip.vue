@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, type PropType } from "vue";
+import { isAlign, isPosition } from '@/utils/validators'
 import Popover from "./Popover.vue";
 
 const props = defineProps({
@@ -11,16 +12,16 @@ const props = defineProps({
     default: "neutral",
   },
   position: {
-    type: String,
+    type: String as PropType<'bottom' | 'top' | 'left' | 'right'>,
     required: false,
     default: "top",
-    validator: (value: string) => ["bottom", "top", "left", "right"].includes(value),
+    validator: isPosition,
   },
   align: {
-    type: String,
+    type: String as PropType<'start' | 'center' | 'end'>,
     required: false,
     default: "center",
-    validator: (value: string) => ["start", "center", "end"].includes(value),
+    validator: isAlign,
   },
   offset: { type: Number, required: false, default: 6 },
   // Delay (ms) hasta que aparece el tooltip al hacer hover.

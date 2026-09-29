@@ -1,30 +1,31 @@
-import router from "@/router";
 import type { CommandItem } from "@/components/overlay/CommandPalette.vue";
 
-function prettyLabel(name: string): string {
-  return name
-    .replace(/\s+playground$/i, "")
-    .replace(/([a-z])([A-Z])/g, "$1 $2")
-    .trim();
-}
-
-function categoryOf(path: string): string {
-  if (path === "/") return "Páginas";
-  if (path === "/playground/theme-builder") return "Herramientas";
-  if (path.startsWith("/playground/components")) return "Playground";
-  return "Otras";
+/**
+ * Comandos de navegación del CommandPalette del layout.
+ *
+ * En el sitio VitePress no hay un router propio del SPA: la lista es estática
+ * (Home, componentes, Theme Builder). La navegación es por URL.
+ */
+function go(path: string) {
+  if (typeof window !== "undefined") window.location.href = path;
 }
 
 export function navigationCommands(): CommandItem[] {
-  const routes = router.getRoutes();
-
-  return routes
-    .filter((r) => r.name && r.path && r.path !== "/:pathMatch(.*)*" && r.path !== "/playground" && r.path !== "/playground/components")
-    .map((r) => ({
-      id: String(r.name),
-      label: prettyLabel(String(r.name)),
-      description: r.path,
-      category: categoryOf(r.path),
-      action: () => router.push(r.path),
-    }));
+  return [
+    { id: "home", label: "Inicio", description: "/", category: "Páginas", action: () => go("/") },
+    {
+      id: "components",
+      label: "Componentes",
+      description: "/componentes",
+      category: "Playground",
+      action: () => go("/componentes/cu-button"),
+    },
+    {
+      id: "theme-builder",
+      label: "Theme Builder",
+      description: "/theme-builder",
+      category: "Herramientas",
+      action: () => go("/theme-builder"),
+    },
+  ];
 }

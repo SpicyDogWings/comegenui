@@ -1,12 +1,21 @@
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, nextTick, getCurrentInstance } from 'vue'
 import Markdown from '../../markdown/Markdown.vue'
 import { DEFAULTS, extractColors, extractShared } from '@/plugins/cu-tokens/defaults'
 import { darken, toHex, lighten, transparentize } from 'color2k'
 
-const props = defineProps({
-  theme: { type: String, default: 'light' },
-})
+const instance = getCurrentInstance();
+function ceEmit(event: string, payload: unknown) {
+  const el = instance?.vnode.el as HTMLElement | null;
+  const host = el?.getRootNode()?.host || el;
+  if (host) {
+    host.dispatchEvent(new CustomEvent(event, {
+      detail: payload,
+      bubbles: true,
+      composed: true,
+    }));
+  }
+}
 
 function colorVar(name: string, value: string) {
   return `--cu-color-${name}: ${value};
@@ -86,6 +95,10 @@ function generateTokensCSS(): string {
 
 const markdownRef = ref<InstanceType<typeof Markdown> | null>(null)
 
+defineExpose({
+  headingIds: () => markdownRef.value?.headingIds() ?? [],
+})
+
 onMounted(() => {
   nextTick(() => {
     const el = markdownRef.value?.$el as HTMLElement
@@ -102,7 +115,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <Markdown ref="markdownRef">
+  <Markdown ref="markdownRef" @parsed="ceEmit('parsed', $event)">
+    <!-- Contenido markdown a renderizar. Se pasa como texto dentro del tag. -->
     <slot />
   </Markdown>
 </template>

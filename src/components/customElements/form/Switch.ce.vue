@@ -6,12 +6,16 @@ import { initTokens } from "@/plugins/cu-tokens/css";
 initTokens();
 
 const props = defineProps({
+  /** Estado del toggle (controlado) */
   modelValue: { type: Boolean, default: false },
+  /** Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` */
   color: {
     type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     default: "neutral",
   },
-  size: { type: String, default: "md" },
+  /** Tamaño del switch: `sm`, `md` */
+  size: { type: String as PropType<'sm' | 'md'>, default: "md" },
+  /** Estado deshabilitado */
   disabled: Boolean,
   label: { type: String, default: "" },
 });
@@ -31,9 +35,13 @@ function ceEmit(event: string, payload: unknown) {
   }
 }
 
+/** Devuelve el estado actual (`boolean`) */
 function get() { return switchRef.value?.get() ?? false; }
+/** Asigna el estado */
 function set(val: boolean) { switchRef.value?.set(val); }
+/** Pone el estado en `false` */
 function reset() { switchRef.value?.reset(); }
+/** Enfoca el switch */
 function focus() { switchRef.value?.focus(); }
 
 defineExpose({ get, set, reset, focus });
@@ -42,12 +50,12 @@ defineExpose({ get, set, reset, focus });
 <template>
   <Switch
     ref="switchRef"
-    :modelValue="props.modelValue"
+    :model-value="props.modelValue"
     :color="props.color"
     :size="props.size"
     :disabled="props.disabled"
     :label="props.label"
-    @update:modelValue="ceEmit('update:modelValue', $event)"
+    @update:model-value="ceEmit('update:modelValue', $event)"
     @change="ceEmit('change', $event)"
   >
     <slot></slot>

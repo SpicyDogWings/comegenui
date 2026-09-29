@@ -6,19 +6,30 @@ import { initTokens } from "@/plugins/cu-tokens/css";
 initTokens();
 
 const props = defineProps({
+  /** Archivo/s seleccionados */
   modelValue: { type: Object as PropType<File | File[] | null>, default: null },
+  /** Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` */
   color: {
     type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     default: "neutral",
   },
+  /** Texto cuando no hay archivos */
   placeholder: { type: String, default: "Selecciona un archivo o arrastra aquí" },
+  /** Deshabilita interacción */
   disabled: Boolean,
+  /** Modo solo lectura */
   readOnly: Boolean,
+  /** Tipos aceptados (ej: `"image/*"`) */
   accept: String,
+  /** Permite múltiples archivos */
   multiple: Boolean,
+  /** Tamaño máximo en bytes */
   maxSize: Number,
+  /** Activa modo carpeta (incluye `multiple` implícitamente) */
   directory: Boolean,
+  /** Niveles de recursión en carpetas: `0` = solo raíz, `1` = +1 subnivel, `-1` = sin límite */
   directoryDeep: { type: Number, default: 0 },
+  /** Altura máxima del listado (ej: `"200px"`). Sin scroll si se omite. */
   maxHeight: { type: String, default: "" },
 });
 
@@ -37,10 +48,15 @@ function ceEmit(event: string, payload: unknown) {
   }
 }
 
+/** Devuelve el/los archivo/s actual/es */
 function get() { return zoneRef.value?.get() ?? null; }
+/** Asigna archivos programáticamente */
 function set(val: File | File[] | null) { zoneRef.value?.set(val); }
+/** Limpia la selección */
 function reset() { zoneRef.value?.reset(); }
+/** Enfoca la zona */
 function focus() { zoneRef.value?.focus(); }
+/** Abre el diálogo nativo */
 function trigger() { zoneRef.value?.trigger(); }
 
 defineExpose({ get, set, reset, focus, trigger });
@@ -49,18 +65,18 @@ defineExpose({ get, set, reset, focus, trigger });
 <template>
   <FileInputZone
     ref="zoneRef"
-    :modelValue="props.modelValue"
+    :model-value="props.modelValue"
     :color="props.color"
     :placeholder="props.placeholder"
     :disabled="props.disabled"
-    :readOnly="props.readOnly"
+    :read-only="props.readOnly"
     :accept="props.accept"
     :multiple="props.multiple"
-    :maxSize="props.maxSize"
+    :max-size="props.maxSize"
     :directory="props.directory"
-    :directoryDeep="props.directoryDeep"
-    :maxHeight="props.maxHeight"
-    @update:modelValue="ceEmit('update:modelValue', $event)"
+    :directory-deep="props.directoryDeep"
+    :max-height="props.maxHeight"
+    @update:model-value="ceEmit('update:modelValue', $event)"
   />
 </template>
 

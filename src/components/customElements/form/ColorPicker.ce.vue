@@ -3,8 +3,11 @@ import { ref, getCurrentInstance } from "vue";
 import ColorPicker from "../../form/ColorPicker.vue";
 
 const props = defineProps({
+  /** Valor del color en formato hex (`#RRGGBB`) */
   modelValue: { type: String, default: "#000000" },
+  /** Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` (define el acento del borde/foco) */
   color: { type: String, default: "neutral" },
+  /** Deshabilita el control */
   disabled: { type: Boolean, default: false },
 });
 
@@ -23,9 +26,13 @@ function ceEmit(event: string, payload: unknown) {
   }
 }
 
+/** Devuelve el color actual (`string` hex) */
 function get() { return pickerRef.value?.get() ?? "#000000"; }
+/** Asigna un color programáticamente */
 function set(val: string) { pickerRef.value?.set(val); }
+/** Vuelve al valor por defecto `#000000` */
 function reset() { pickerRef.value?.reset(); }
+/** Enfoca el campo de texto */
 function focus() { pickerRef.value?.focus(); }
 
 defineExpose({ get, set, reset, focus });

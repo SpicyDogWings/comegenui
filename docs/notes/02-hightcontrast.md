@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-06-18
 **Severidad:** Baja (cambio breaking si se corrige sin cuidado)
-**Estado:** Pendiente de decisión
+**Estado:** Resuelto en su mayor parte. Hoy **sólo** lo expone `<cu-label>`; en el resto era prop muerta y se eliminó.
 
 ## Problema
 

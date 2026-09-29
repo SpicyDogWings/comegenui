@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, ref, watch, getCurrentInstance } from "vue";
+import { computed, ref, watch, getCurrentInstance, type PropType } from 'vue';
+import { isTextAlign } from '@/utils/validators'
 import Select from "../../form/Select.vue";
 
 interface SelectOption {
@@ -11,36 +12,50 @@ interface SelectOption {
 }
 
 const props = defineProps({
-  theme: { type: String, required: false, default: "" },
+  /** Valor seleccionado */
   modelValue: { type: String, required: false, default: "" },
+  /** Opciones del select (ver abajo). Se asigna como propiedad JS */
   options: { type: Array as () => SelectOption[], required: false, default: () => [] },
+  /** Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` */
   color: {
-    type: String,
+    type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     required: false,
     default: "neutral",
   },
+  /** `outlined`, `soft`, `ghost`, `subtle` */
   variant: {
-    type: String,
+    type: String as PropType<'outlined' | 'soft' | 'ghost' | 'subtle'>,
     required: false,
     default: "soft",
   },
+  /** Texto mostrado cuando no hay selección */
   placeholder: { type: String, required: false },
+  /** Si `true`, el texto wrappea; si `false`, se trunca con `...` (atributo HTML: `placeholder-wrap`) */
   placeholderWrap: { type: Boolean, required: false, default: false },
+  /** Posición del dropdown: `bottom`, `top` */
   position: { type: String, required: false, default: "bottom" },
+  /** Alineación: `start`, `center`, `end` */
   align: { type: String, required: false, default: "start" },
+  /** Alineación del texto seleccionado: `left`, `center`, `right` */
   textAlign: {
-    type: String,
+    type: String as PropType<'left' | 'center' | 'right'>,
     required: false,
     default: "left",
-    validator: (value: string) => ["left", "center", "right"].includes(value),
+    validator: isTextAlign,
   },
+  /** Estado deshabilitado */
   disabled: { type: Boolean, required: false, default: false },
+  /** Si es `true`, el dropdown usa `position: fixed` en vez de absoluto */
   fixed: { type: Boolean, required: false, default: false },
-  hightContrast: { type: Boolean, required: false, default: false },
+  /** Activa búsqueda por teclado (estilo select nativo: escribir hace scroll al match) */
   searchEnabled: { type: Boolean, required: false, default: false },
-  searchMode: { type: String, required: false, default: "startsWith" },
+  /** Modo de coincidencia: `startsWith` (solo al inicio del label) o `includes` (en cualquier parte) */
+  searchMode: { type: String as PropType<'startsWith' | 'includes'>, required: false, default: "startsWith" },
+  /** Tiempo (ms) antes de resetear el texto de búsqueda. Se reinicia con cada tecla */
   searchResetDelay: { type: Number, required: false, default: 1000 },
+  /** Muestra una barra de progreso animada en el dropdown */
   loading: { type: Boolean, required: false, default: false },
+  /** Estilo de la barra de cooldown: `ghost` (suave) o `solid` (color lleno). No se muestra si `loading` está activo */
   cooldownVariant: { type: String, required: false, default: "ghost-hover" },
 });
 
@@ -83,7 +98,7 @@ defineExpose({
   set: (val: string) => selectRef.value?.set(val),
   reset: () => selectRef.value?.reset(),
   focus: () => selectRef.value?.focus(),
-  isOpen: () => selectRef.value?.isOpen || false,
+  isOpen: () => selectRef.value?.isOpen() ?? false,
   selectedItem: () => selectRef.value?.selectedItem || null,
 });
 </script>
@@ -94,7 +109,6 @@ defineExpose({
     :color="props.color"
     :variant="props.variant"
     :disabled="props.disabled"
-    :hight-contrast="props.hightContrast"
     :placeholder="props.placeholder"
     :placeholder-wrap="props.placeholderWrap"
     :position="props.position"

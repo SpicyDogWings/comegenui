@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, defineModel, type PropType } from "vue";
+import { isSizeSm } from '@/utils/validators'
 
 const checked = defineModel<boolean>({ default: false });
 
@@ -10,10 +11,10 @@ const props = defineProps({
     default: "neutral",
   },
   size: {
-    type: String,
+    type: String as PropType<'sm' | 'md'>,
     required: false,
     default: "md",
-    validator: (value: string) => ["sm", "md"].includes(value),
+    validator: isSizeSm,
   },
   disabled: {
     type: Boolean,

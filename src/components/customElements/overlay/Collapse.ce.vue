@@ -6,14 +6,22 @@ import { initTokens } from "@/plugins/cu-tokens/css";
 initTokens();
 
 const props = defineProps({
+  /** Texto del trigger */
   label: {
     type: String,
     required: true,
+  },
+  /** Ícono del trigger (SVG/HTML) */
+  icon: {
+    type: String,
+    required: false,
+    default: "",
   },
   defaultOpen: {
     type: Boolean,
     default: false,
   },
+  /** Color semántico del trigger: `primary`, `neutral`, `success`, `warning`, `danger` */
   color: {
     type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     default: "neutral",
@@ -35,9 +43,13 @@ function ceEmit(event: string, payload: unknown) {
   }
 }
 
+/** Abre el collapse */
 function open() { collapseRef.value?.open(); }
+/** Cierra el collapse */
 function close() { collapseRef.value?.close(); }
+/** Alterna el estado */
 function toggle() { collapseRef.value?.toggle(); }
+/** Devuelve el estado actual (`boolean`) */
 function isOpen() { return collapseRef.value?.isOpen() ?? false; }
 
 defineExpose({ open, close, toggle, isOpen });
@@ -47,10 +59,12 @@ defineExpose({ open, close, toggle, isOpen });
   <Collapse
     ref="collapseRef"
     :label="props.label"
+    :icon="props.icon"
     :default-open="props.defaultOpen"
     :color="props.color"
     @toggle="ceEmit('toggle', $event)"
   >
+    <!-- Contenido colapsable -->
     <slot></slot>
   </Collapse>
 </template>
