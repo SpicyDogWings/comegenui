@@ -29,13 +29,7 @@ Campo de texto con sugerencias en menú desplegable. Filtra los `items` en vivo 
 </script>
 ```
 
-### Con label
-
-El label se muestra sobre el input:
-
-```html
-<cu-autocomplete id="ac" label="Buscar rol" placeholder="Escriba para buscar..."></cu-autocomplete>
-```
+> **No existe la prop `label`.** Para mostrar un rótulo sobre el campo, combiná con `<cu-label>`.
 
 ---
 
@@ -63,17 +57,29 @@ ac.items = [
 ];
 ```
 
-Al seleccionar, el input se completa con el `value` en vez del `label`.
+Al seleccionar, el input se completa con el `label` del item (o con su `value` si el item no tiene `label`).
 
 ---
 
 ## Mínimo de caracteres
 
-Por defecto el menú se abre al recibir foco. Con `min-chars="2"` solo se abre tras escribir 2+ caracteres:
+Por defecto el menú se abre al recibir foco. Con `min-chars="2"` solo se abre tras escribir 2+ caracteres, **o al enfocar un campo cuyo texto ya tenga esos 2+ caracteres** (por ejemplo, precargado con `set()`).
 
 ```html
-<cu-autocomplete min-chars="2" placeholder="Escribí al menos 2 letras..."></cu-autocomplete>
+<cu-autocomplete id="ac" min-chars="2" placeholder="Escribí al menos 2 letras..."></cu-autocomplete>
+
+<script>
+  const ac = document.getElementById('ac');
+  ac.items = [/* ... */];
+
+  ac.set('Chile'); // texto precargado (5 caracteres, cumple min-chars)
+  ac.focus();      // al enfocar, el panel se abre
+
+  ac.open();       // abrelo por código sin importar min-chars
+</script>
 ```
+
+> `open()` ignora `min-chars`: es la salida programática. Lo que sí lo bloquea es `disabled`.
 
 ---
 
@@ -99,9 +105,12 @@ Por defecto el menú se abre al recibir foco. Con `min-chars="2"` solo se abre t
 
   ac.set('Admin');             // asigna texto
   console.log(ac.get());       // "Admin"
-  ac.focus();                  // enfoca
+  ac.focus();                  // enfoca (abre si el texto cumple min-chars)
   console.log(ac.selectedItem()); // último item seleccionado
   console.log(ac.isOpen());      // true / false
+  ac.open();                   // abre el panel (ignora min-chars)
+  ac.close();                  // lo cierra
+  ac.toggle();                 // alterna abierto/cerrado
 </script>
 ```
 
@@ -128,7 +137,7 @@ Por defecto el menú se abre al recibir foco. Con `min-chars="2"` solo se abre t
 | `disabled` | `boolean` | `false` | Estado deshabilitado |
 | `read-only` | `boolean` | `false` | Solo lectura (en HTML se usa como `readonly`) |
 | `placeholder` | `string` | `""` | Placeholder del input |
-| `min-chars` | `number` | `0` | Caracteres mínimos para abrir el menú (atributo HTML: `min-chars`) |
+| `min-chars` | `number` | `0` | Caracteres mínimos para que el menú se abra al tipear o al enfocar (atributo HTML: `min-chars`) |
 | `position` | `"left" \| "right" \| "bottom" \| "top"` | `"bottom"` | Posición del dropdown: `bottom`, `top` |
 | `align` | `"center" \| "start" \| "end"` | `"start"` | Alineación: `start`, `center`, `end` |
 | `fixed` | `boolean` | `false` | Panel en `position: fixed` (útil en contenedores con overflow) |
@@ -178,6 +187,9 @@ Ninguno.
 | `set` | — |
 | `focus` | — |
 | `reset` | — |
+| `open` | Abre el panel de sugerencias (ignora `min-chars`). |
+| `close` | Cierra el panel de sugerencias. |
+| `toggle` | Alterna la visibilidad del panel de sugerencias. |
 | `isOpen` | Indica si el panel está abierto. |
 | `selectedItem` | Devuelve el item seleccionado o null. |
 <!-- /@api:metodos -->

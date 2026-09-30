@@ -27,7 +27,7 @@ const props = defineProps({
   readOnly: { type: Boolean, required: false, default: false },
   /** Placeholder del input */
   placeholder: { type: String, required: false, default: "" },
-  /** Caracteres mínimos para abrir el menú (atributo HTML: `min-chars`) */
+  /** Caracteres mínimos para que el menú se abra al tipear o al enfocar (atributo HTML: `min-chars`) */
   minChars: { type: Number, required: false, default: 0 },
   /** Posición del dropdown: `bottom`, `top` */
   position: { type: String as PropType<'bottom' | 'top' | 'left' | 'right'>, required: false, default: "bottom" },
@@ -73,6 +73,12 @@ defineExpose({
   set: (val: string) => autocompleteRef.value?.set(val),
   focus: () => autocompleteRef.value?.focus(),
   reset: () => autocompleteRef.value?.reset(),
+  /** Abre el panel de sugerencias (ignora `min-chars`). */
+  open: () => autocompleteRef.value?.open(),
+  /** Cierra el panel de sugerencias. */
+  close: () => autocompleteRef.value?.close(),
+  /** Alterna la visibilidad del panel de sugerencias. */
+  toggle: () => autocompleteRef.value?.toggle(),
   isOpen: () => autocompleteRef.value?.isOpen() ?? false,
   selectedItem: () => autocompleteRef.value?.selectedItem || null,
 });

@@ -62,7 +62,8 @@ const { filteredData: filteredItems } = useSearch(searchItems, {
 });
 
 function onFocus() {
-  if (props.disabled || props.minChars > 0) return;
+  if (props.disabled) return;
+  if (searchValue.value.length < props.minChars) return;
   if (filteredItems.value.length > 0) {
     dropdownRef.value?.open();
   }
@@ -104,9 +105,15 @@ function set(val: string) {
 function reset() { searchValue.value = ""; }
 /** Enfoca el input. */
 function focus() { inputRef.value?.focus(); }
+/** Abre el panel de sugerencias (ignora `minChars`). */
+function open() { dropdownRef.value?.open(); }
+/** Cierra el panel de sugerencias. */
+function close() { dropdownRef.value?.close(); }
+/** Alterna la visibilidad del panel de sugerencias. */
+function toggle() { dropdownRef.value?.toggle(); }
 
 defineExpose({
-  get, set, reset, focus,
+  get, set, reset, focus, open, close, toggle,
   /** Indica si el panel está abierto. */
   isOpen: () => dropdownRef.value?.isOpen() ?? false,
   /** Devuelve el item seleccionado o null. */
