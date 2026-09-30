@@ -8,6 +8,10 @@ type AcVm = {
   get: () => string
   set: (v: string) => void
   reset: () => void
+  open: () => void
+  close: () => void
+  toggle: () => void
+  isOpen: () => boolean
   selectedItem: () => { label: string } | null
 }
 
@@ -86,5 +90,59 @@ describe('Autocomplete — texto y modelo', () => {
     expect(vm(w).get()).toBe('')
     const emitted = w.emitted('update:modelValue')!
     expect(emitted[emitted.length - 1]).toEqual([''])
+  })
+})
+
+describe('Autocomplete — apertura del panel', () => {
+  it('abre al enfocar si el texto ya cumple minChars y hay items', async () => {
+    const w = mount(Autocomplete, { props: { items, minChars: 2 } })
+    await w.find('input').trigger('focus')
+    await flushPromises()
+    expect(vm(w).isOpen()).toBe(false)
+
+    vm(w).set('María')
+    await flushPromises()
+    await w.find('input').trigger('focus')
+    await flushPromises()
+    expect(vm(w).isOpen()).toBe(true)
+  })
+
+  it('no abre al enfocar si el texto no llega a minChars', async () => {
+    const w = mount(Autocomplete, { props: { items, minChars: 2 } })
+    await w.find('input').setValue('M')
+    await flushPromises()
+    await w.find('input').trigger('focus')
+    await flushPromises()
+    expect(vm(w).isOpen()).toBe(false)
+  })
+
+  it('open() abre el panel sin importar minChars', async () => {
+    const w = mount(Autocomplete, { props: { items, minChars: 3 } })
+    vm(w).open()
+    await flushPromises()
+    expect(vm(w).isOpen()).toBe(true)
+  })
+
+  it('close() y toggle() controlan el panel', async () => {
+    const w = mount(Autocomplete, { props: { items } })
+
+    vm(w).open()
+    await flushPromises()
+    expect(vm(w).isOpen()).toBe(true)
+
+    vm(w).close()
+    await flushPromises()
+    expect(vm(w).isOpen()).toBe(false)
+
+    vm(w).toggle()
+    await flushPromises()
+    expect(vm(w).isOpen()).toBe(true)
+  })
+
+  it('open() no abre si está disabled', async () => {
+    const w = mount(Autocomplete, { props: { items, disabled: true } })
+    vm(w).open()
+    await flushPromises()
+    expect(vm(w).isOpen()).toBe(false)
   })
 })

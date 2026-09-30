@@ -62,6 +62,25 @@ describe("Autocomplete.ce", () => {
     expect(w.vm.isOpen()).toBe(false);
   });
 
+  it("expone `open`, `close` y `toggle` y controlan el panel", async () => {
+    const w = mount(AutocompleteCe, { props: { items: [{ label: "María" }] } });
+    expect(typeof w.vm.open).toBe("function");
+    expect(typeof w.vm.close).toBe("function");
+    expect(typeof w.vm.toggle).toBe("function");
+
+    w.vm.open();
+    await flushPromises();
+    expect(w.vm.isOpen()).toBe(true);
+
+    w.vm.close();
+    await flushPromises();
+    expect(w.vm.isOpen()).toBe(false);
+
+    w.vm.toggle();
+    await flushPromises();
+    expect(w.vm.isOpen()).toBe(true);
+  });
+
   it("no declara props que el `.vue` no tiene (`theme`, `hightContrast`, `label`)", () => {
     const declared = Object.keys(AutocompleteCe.props ?? {});
     expect(declared).not.toContain("theme");

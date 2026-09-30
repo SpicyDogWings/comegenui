@@ -11,12 +11,15 @@ ciudades). Para listas cortas y cerradas, `cu-select`; para texto libre sin suge
 
 1. Cargá `items` **como propiedad JS**: `[{ label, value?, icon?, disabled? }]`. `label` es lo que se
    ve y sobre lo que se busca.
-2. El menú se abre al recibir foco; `min-chars="2"` lo abre recién a partir de 2 caracteres.
+2. El menú se abre al recibir foco; `min-chars="2"` lo abre recién a partir de 2 caracteres
+   tipeados, o al enfocar el campo si el texto ya tiene esos 2+ caracteres. Para abrirlo por código
+   sin importar `min-chars`, usá `open()`.
 3. El texto se controla con `model-value` (CE) o `v-model` (Vue) y se escucha `update:modelValue`.
    `select` recibe el item completo elegido.
 4. Posicionamiento: `position` (`bottom`, `top`, `left`, `right`), `align` (`start`, `center`, `end`)
    y `fixed` para paneles dentro de contenedores con `overflow`.
-5. Por código: `get()`, `set(v)`, `reset()`, `focus()`, `isOpen()`, `selectedItem()`.
+5. Por código: `get()`, `set(v)`, `reset()`, `focus()`, `open()`, `close()`, `toggle()`, `isOpen()`,
+   `selectedItem()`.
 
 ```html
 <!-- HTML plano (UMD) -->
@@ -37,6 +40,10 @@ ciudades). Para listas cortas y cerradas, `cu-select`; para texto libre sin suge
 
   ac.set('Admin');
   console.log(ac.get(), ac.selectedItem());
+
+  ac.open(); // abre el panel sin importar min-chars
+  ac.close();
+  ac.toggle();
 </script>
 ```
 
@@ -72,15 +79,18 @@ const items = ref([
 de campo (`outlined`, `soft`, `ghost`, `subtle`), tipos HTML5 (`text`, `password`, `email`, `number`,
 `tel`, `url`, `search`), `disabled`, `readOnly`, `placeholder`, `minChars`, `position`, `align`,
 `fixed` e `items` con `label`/`value`/`icon` (SVG inline)/`disabled`. Emite `update:modelValue`,
-`select` y `blur`, y expone `get`, `set`, `reset`, `focus`, `isOpen` y `selectedItem`.
+`select` y `blur`, y expone `get`, `set`, `reset`, `focus`, `open`, `close`, `toggle`, `isOpen` y
+`selectedItem`.
 
 **No puede:**
 
 - **`items` va sólo por JS** (es un array): `ac.items = [...]`, nunca como atributo.
 - **No existe la prop `label`.** Aunque las fichas viejas la mencionan, el SFC no la declara. Para
   poner un rótulo, combiná con `cu-label`.
+- **`open()` ignora `min-chars`** (es la salida programática; `disabled` sí la bloquea). `onFocus`,
+  en cambio, sólo abre si el texto actual ya cumple `min-chars` y hay items que matcheen.
 - **Al seleccionar, el input se completa con el `label` del item** (y sólo si no hay `label`, con su
-  `value`). Es lo contrario de lo que dice la ficha (`value` primero).
+  `value`).
 - **`reset()` sí existe** (deja el texto en `""`), contra lo que decía la ficha y el checklist.
 - **No tiene slots.**
 - **Los eventos nativos no son custom:** `input`, `change` y `focus` burbujean desde el shadow DOM;
@@ -104,7 +114,7 @@ de campo (`outlined`, `soft`, `ghost`, `subtle`), tipos HTML5 (`text`, `password
 | `disabled` | `boolean` | `false` | Estado deshabilitado |
 | `read-only` | `boolean` | `false` | Solo lectura (en HTML se usa como `readonly`) |
 | `placeholder` | `string` | `""` | Placeholder del input |
-| `min-chars` | `number` | `0` | Caracteres mínimos para abrir el menú (atributo HTML: `min-chars`) |
+| `min-chars` | `number` | `0` | Caracteres mínimos para que el menú se abra al tipear o al enfocar (atributo HTML: `min-chars`) |
 | `position` | `"left" \| "right" \| "bottom" \| "top"` | `"bottom"` | Posición del dropdown: `bottom`, `top` |
 | `align` | `"center" \| "start" \| "end"` | `"start"` | Alineación: `start`, `center`, `end` |
 | `fixed` | `boolean` | `false` | Panel en `position: fixed` (útil en contenedores con overflow) |
@@ -137,6 +147,9 @@ Ninguno.
 | `set` | — |
 | `focus` | — |
 | `reset` | — |
+| `open` | Abre el panel de sugerencias (ignora `min-chars`). |
+| `close` | Cierra el panel de sugerencias. |
+| `toggle` | Alterna la visibilidad del panel de sugerencias. |
 | `isOpen` | Indica si el panel está abierto. |
 | `selectedItem` | Devuelve el item seleccionado o null. |
 <!-- /@api:metodos -->
@@ -184,6 +197,9 @@ Ninguno.
 | `set` | Setea el texto actual en el input. |
 | `reset` | Limpia el texto de búsqueda. |
 | `focus` | Enfoca el input. |
+| `open` | Abre el panel de sugerencias (ignora `minChars`). |
+| `close` | Cierra el panel de sugerencias. |
+| `toggle` | Alterna la visibilidad del panel de sugerencias. |
 | `isOpen` | Indica si el panel está abierto. |
 | `selectedItem` | Devuelve el item seleccionado o null. |
 <!-- /@api:expose -->

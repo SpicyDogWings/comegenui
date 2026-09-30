@@ -27,7 +27,22 @@ function limpiar() {
 
 function enfocar() {
   ac.value?.focus();
-  salida.value = "focus() → el input tomó foco";
+  salida.value = `focus() → isOpen() = ${ac.value?.isOpen()}`;
+}
+
+function abrir() {
+  ac.value?.open();
+  leer();
+}
+
+function cerrar() {
+  ac.value?.close();
+  leer();
+}
+
+function alternar() {
+  ac.value?.toggle();
+  leer();
 }
 </script>
 
@@ -38,6 +53,9 @@ function enfocar() {
     <button type="button" @click="setear">set('Chile')</button>
     <button type="button" @click="limpiar">reset()</button>
     <button type="button" @click="enfocar">focus()</button>
+    <button type="button" @click="abrir">open()</button>
+    <button type="button" @click="cerrar">close()</button>
+    <button type="button" @click="alternar">toggle()</button>
   </div>
   <pre class="cu-demo-output">{{ salida }}</pre>
 </template>

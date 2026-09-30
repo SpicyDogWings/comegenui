@@ -40,16 +40,6 @@ function onSelect(item: { label: string }) {
 </template>
 ```
 
-## Con label
-
-El label se muestra sobre el input:
-
-```vue
-<template>
-  <Autocomplete label="Buscar rol" placeholder="Escriba para buscar..." />
-</template>
-```
-
 ## Items con ícono
 
 ```vue
@@ -80,17 +70,36 @@ const items = ref([
 </script>
 ```
 
-Al seleccionar, el input se completa con el `value` en vez del `label`.
+Al seleccionar, el input se completa con el `label` del item (o con su `value` si el item no tiene `label`).
 
 ## Mínimo de caracteres
 
-Por defecto el menú se abre al recibir foco. Con `:min-chars="2"` solo se abre tras escribir 2+ caracteres:
+Por defecto el menú se abre al recibir foco. Con `:min-chars="2"` solo se abre tras escribir 2+ caracteres, **o al enfocar un campo cuyo texto ya tenga esos 2+ caracteres** (por ejemplo, precargado con `set()`).
 
 ```vue
+<script setup lang="ts">
+import Autocomplete from "@/components/form/Autocomplete.vue";
+import { ref } from "vue";
+
+const ac = ref<InstanceType<typeof Autocomplete> | null>(null);
+const items = ref([/* ... */]);
+
+function precargarYEnfocar() {
+  ac.value?.set("Chile"); // texto precargado (5 caracteres, cumple min-chars)
+  ac.value?.focus(); // al enfocar, el panel se abre
+}
+
+function abrir() {
+  ac.value?.open(); // abre el panel sin importar min-chars
+}
+</script>
+
 <template>
-  <Autocomplete :min-chars="2" placeholder="Escribí al menos 2 letras..." />
+  <Autocomplete ref="ac" :items="items" :min-chars="2" placeholder="Escribí al menos 2 letras..." />
 </template>
 ```
+
+> `open()` ignora `min-chars`: es la salida programática. Lo que sí lo bloquea es `disabled`.
 
 ## Posicionamiento
 
@@ -117,9 +126,12 @@ const ac = useTemplateRef("ac");
 function demo() {
   ac.value?.set("Admin"); // asigna texto
   console.log(ac.value?.get()); // "Admin"
-  ac.value?.focus(); // enfoca
+  ac.value?.focus(); // enfoca (abre si el texto cumple min-chars)
   console.log(ac.value?.selectedItem()); // último item seleccionado
   console.log(ac.value?.isOpen()); // true / false
+  ac.value?.open(); // abre el panel (ignora min-chars)
+  ac.value?.close(); // lo cierra
+  ac.value?.toggle(); // alterna abierto/cerrado
 }
 </script>
 
@@ -196,6 +208,9 @@ Ninguno.
 | `set` | Setea el texto actual en el input. |
 | `reset` | Limpia el texto de búsqueda. |
 | `focus` | Enfoca el input. |
+| `open` | Abre el panel de sugerencias (ignora `minChars`). |
+| `close` | Cierra el panel de sugerencias. |
+| `toggle` | Alterna la visibilidad del panel de sugerencias. |
 | `isOpen` | Indica si el panel está abierto. |
 | `selectedItem` | Devuelve el item seleccionado o null. |
 <!-- /@api:expose -->
