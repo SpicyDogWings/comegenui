@@ -73,8 +73,22 @@ Se reemplazan archivos, no hay instalador:
 
 ## Skill de uso `use-comegen` (para agentes)
 
-La skill de uso **no viaja en el zip**: se baja del repo oficial, eligiendo el `ref`
-(`main` o una rama/tag concreto).
+La skill de uso **no viaja en el zip**: se instala desde el repo oficial con el CLI
+[`skills`](https://github.com/vercel-labs/skills) (Vercel), que la deja en el directorio
+de tu agente y registra el origen en `skills-lock.json`.
+
+```sh
+# último `main` (autodetecta el agente; forzá con -a opencode, -a claude-code, …)
+npx skills add SpicyDogWings/comegenui --skill use-comegen
+
+# fijar una rama/tag concreto
+npx skills add "https://github.com/SpicyDogWings/comegenui/tree/v5.0.0-alpha.3/skills/use-comegen"
+
+# actualizar
+npx skills update use-comegen
+```
+
+Requiere Node 24+. Si no podés usar el CLI, bajá la carpeta a mano:
 
 **Con git (sparse-checkout, sin bajar el resto del repo):**
 
@@ -101,9 +115,8 @@ curl -L https://github.com/SpicyDogWings/comegenui/archive/refs/heads/main.tar.g
 Para un tag: `archive/refs/tags/v5.0.0-alpha.3.tar.gz` con el prefijo
 `comegenui-5.0.0-alpha.3/` (GitHub quita la `v` inicial del ref al nombrar la carpeta).
 
-**Actualizar:** repetí el paso con el mismo `ref`. El detalle completo y la
-correspondencia de versión están en `skills/use-comegen/SKILL.md`. OpenCode también lee
-las skills desde `.agents/skills/` y `.claude/skills/`.
+El detalle completo y la correspondencia de versión están en
+`skills/use-comegen/SKILL.md`.
 
 ---
 

@@ -145,12 +145,27 @@ picker.open();
 - **Versión de esta copia:** `5.0.0-alpha.3` (el `metadata.version` del frontmatter).
 
 La skill es texto: no hay nada que compilar. **No viaja en el zip** (el zip lleva sólo
-la lib). Se baja del repo oficial, y la versión de la lib y la de la skill pueden no
-coincidir (`references/versionado.md`).
+la lib). Se instala desde el repo oficial, y la versión de la lib y la de la skill pueden
+no coincidir (`references/versionado.md`).
 
 ## Instalar o actualizar esta receta en otro proyecto
 
-Elegí el `ref`: `main` (último) o una rama/tag concreto (ej. `v5.0.0-alpha.3`).
+El CLI [`skills`](https://github.com/vercel-labs/skills) (Vercel) la instala en el
+directorio de tu agente y deja el origen registrado en `skills-lock.json` (Node 24+):
+
+```sh
+# último `main` (autodetecta el agente; forzá con -a opencode, -a claude-code, …)
+npx skills add SpicyDogWings/comegenui --skill use-comegen
+
+# fijar una rama/tag concreto
+npx skills add "https://github.com/SpicyDogWings/comegenui/tree/v5.0.0-alpha.3/skills/use-comegen"
+
+# actualizar
+npx skills update use-comegen
+```
+
+Si no podés usar el CLI, bajá la carpeta a mano eligiendo el `ref` (`main` o una
+rama/tag concreto, ej. `v5.0.0-alpha.3`):
 
 **Con git (sparse-checkout: no baja el resto del repo):**
 
@@ -176,10 +191,9 @@ curl -L https://github.com/SpicyDogWings/comegenui/archive/refs/heads/main.tar.g
 
 Para un tag, usá `archive/refs/tags/v5.0.0-alpha.3.tar.gz` y el prefijo
 `comegenui-5.0.0-alpha.3/` (GitHub quita la `v` inicial del ref al nombrar la carpeta).
-
-**Actualizar:** repetí el paso con el mismo `ref` (o `git pull` en el clone y volvé a
-copiar). Destinos válidos para el agente: `.opencode/skills/`, `.agents/skills/` o
-`.claude/skills/` (OpenCode lee los tres; ver `references/instalacion.md` para la lib).
+Para actualizar a mano, repetí el paso con el mismo `ref` (o `git pull` en el clone y
+volvé a copiar). Destinos válidos para el agente: `.agents/skills/`, `.opencode/skills/`
+o `.claude/skills/` (OpenCode lee los tres; ver `references/instalacion.md` para la lib).
 
 ## Archivos de esta skill
 
