@@ -52,5 +52,5 @@ pnpm build:lib v5.0.0     # fuerza la versión del zip
 ```
 
 El zip sale de `build-lib.ts`: los UMD + `css/` + `README-BUILD.md`. **No** incluye la
-documentación ni los updaters (se eliminaron): la doc vive en el repo
-(`docs/componentes/`).
+documentación ni la skill: la doc vive en el repo (`docs/componentes/`) y la skill se
+baja aparte (ver `SKILL.md`).
