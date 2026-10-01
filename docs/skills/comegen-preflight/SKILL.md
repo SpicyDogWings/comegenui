@@ -51,8 +51,11 @@ Con el preflight en verde, generá el PR a partir de las plantillas del repo:
 2. **Descripción:** partí de [.github/PULL_REQUEST_TEMPLATE.md](../../../.github/PULL_REQUEST_TEMPLATE.md)
    (GitHub la precarga) y completá `Qué`, `Issue relacionada` y `Verificación`.
 3. **Issue:** tiene que existir y estar referenciada con un closing keyword (`Closes #N`, o
-   `Fixes`/`Resolves`) para que GitHub la cierre al mergear. La issue se pide con
+   `Fixes`/`Resolves`). La issue se pide con
    [.github/ISSUE_TEMPLATE/issue.md](../../../.github/ISSUE_TEMPLATE/issue.md).
+   **El autocierre solo ocurre si el PR va a `main`** (rama por defecto); si el PR apunta a una
+   rama de integración (ej. `v5.0.0-alpha.3`), la issue queda abierta y hay que cerrarla a mano.
+   Avisá de esto al reportar el PR.
 4. Devolvé título y cuerpo listos para pegar, o creá el PR:
 
    ```bash

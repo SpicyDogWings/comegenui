@@ -6,6 +6,9 @@
 
   Referenciá la issue con un closing keyword para que se cierre al mergear:
     Closes #N   (también sirven Fixes / Resolves)
+  Ojo: el autocierre solo funciona si la rama base es `main` (la por defecto).
+  Si el PR va a una rama de integración (ej. v5.0.0-alpha.3), la issue queda
+  abierta y hay que cerrarla a mano.
 -->
 
 ## Qué
