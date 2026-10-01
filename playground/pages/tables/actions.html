@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="es" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Table Actions Header — Playground Vanilla</title>
+    <link rel="stylesheet" href="../../style.css" />
+    <link rel="stylesheet" href="../../public/css/comegen-sigfi-theme.css" />
+    <script src="../../../dist-lib/CuTable.umd.js"></script>
+    <style>
+      .card--wide { align-items: flex-start; max-width: 1100px; }
+      .section-title { font-size: 14px; font-weight: 600; opacity: .7; margin-top: 8px; }
+      .preset-bar {
+        display: flex; gap: 8px; flex-wrap: wrap; width: 100%;
+        padding: 12px; background: #f8f9fa; border-radius: 8px; border: 1px solid #e9ecef;
+      }
+      .dark .preset-bar { background: #1f1f1f; border-color: #333; }
+      .preset-btn {
+        padding: 6px 14px; border-radius: 6px; border: 1px solid #dee2e6;
+        background: #fff; color: #333; font-size: 13px; cursor: pointer; transition: all .2s;
+      }
+      .preset-btn:hover { background: #e9ecef; }
+      .preset-btn.active { background: #3b82f6; color: #fff; border-color: #3b82f6; }
+      .dark .preset-btn { background: #2a2a2a; border-color: #444; color: #ddd; }
+      .readout {
+        width: 100%; font-family: ui-monospace, monospace; font-size: 12px;
+        background: #1e1e1e; color: #d4d4d4; padding: 12px 16px; border-radius: 8px;
+        white-space: pre-wrap; line-height: 1.6;
+      }
+      .table-wrapper { width: 100%; }
+      .hint { font-size: 13px; opacity: .65; line-height: 1.5; }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <h1 style="font-size:16px;font-weight:600">Table Actions Header — Playground</h1>
+      <div class="topbar-actions">
+        <button class="topbar-btn" id="btnTheme" title="Toggle theme">🌙</button>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="card card--wide">
+        <h2>Header de la columna <code>__actions__</code></h2>
+        <p class="hint">
+          Con <code>actions</code> definido, <code>cu-table</code> agrega la columna final.
+          Objetivo: poder fijar su header desde vanilla con <code>actions-label</code> /
+          <code>tabla.actionsLabel</code>. Default: vacío.
+        </p>
+
+        <div class="preset-bar">
+          <button class="preset-btn active" data-preset="default">Default (sin actionsLabel)</button>
+          <button class="preset-btn" data-preset="attr">actions-label="Acciones" (atributo)</button>
+          <button class="preset-btn" data-preset="prop">tabla.actionsLabel = "Operaciones" (propiedad)</button>
+          <button class="preset-btn" data-preset="clear">Limpiar</button>
+        </div>
+
+        <p class="section-title">1) Tabla normal</p>
+        <div class="table-wrapper">
+          <cu-table id="demoTable" color="primary" variant="soft"></cu-table>
+        </div>
+
+        <p class="section-title">2) Slot <code>header-__actions__</code> en el host</p>
+        <div class="table-wrapper">
+          <cu-table id="slotTable" color="primary" variant="soft">
+            <span slot="header-__actions__">SLOT ACCIONES</span>
+          </cu-table>
+        </div>
+
+        <p class="section-title">Header observado (texto del último <code>&lt;th&gt;</code>)</p>
+        <div class="readout" id="readout">…</div>
+
+        <p class="section-title">Código</p>
+        <div class="readout">// Vanilla
+const t = document.getElementById('demoTable');
+t.columns = [...];
+t.data = [...];
+t.actions = [{ label: 'Editar', onClick: (row) => {} }];
+
+t.actionsLabel = 'Acciones';        // propiedad
+// o  &lt;cu-table actions-label="Acciones"&gt;</div>
+      </div>
+    </div>
+
+    <script src="../../playground.js"></script>
+    <script>
+      const columns = [
+        { key: 'producto', label: 'Producto' },
+        { key: 'categoria', label: 'Categoría' },
+        { key: 'precio', label: 'Precio', align: 'right' },
+      ];
+
+      const data = [
+        { producto: 'Widget A', categoria: 'Electrónica', precio: 250.0 },
+        { producto: 'Widget B', categoria: 'Hogar', precio: 175.5 },
+        { producto: 'Widget C', categoria: 'Hogar', precio: 89.9 },
+      ];
+
+      const actions = [
+        { label: 'Editar', color: 'primary', variant: 'ghost', onClick: () => {} },
+        { label: 'Eliminar', color: 'danger', variant: 'ghost', onClick: () => {} },
+      ];
+
+      const demoTable = document.getElementById('demoTable');
+      const slotTable = document.getElementById('slotTable');
+      const readout = document.getElementById('readout');
+      const presetBar = document.querySelector('.preset-bar');
+
+      function lastHeaderText(table) {
+        const ths = table.shadowRoot?.querySelectorAll('thead th');
+        if (!ths || !ths.length) return '(sin header)';
+        const th = ths[ths.length - 1];
+        // `textContent` no ve el contenido proyectado en un <slot>; lo leemos aparte.
+        const outlet = th.querySelector('slot');
+        const projected = outlet
+          ? outlet.assignedNodes({ flatten: true }).map((n) => n.textContent).join('').trim()
+          : '';
+        return JSON.stringify(projected || th.textContent.trim());
+      }
+
+      function updateReadout() {
+        readout.textContent =
+          `tabla normal      → ${lastHeaderText(demoTable)}\n` +
+          `slot header-__...  → ${lastHeaderText(slotTable)}`;
+      }
+
+      async function applyPreset(name) {
+        // Vue CE procesa atributo y propiedad por vías distintas: dejamos asentar
+        // una mutación antes de tocar la otra, para no pisarnos.
+        await new Promise((r) => setTimeout(r, 0));
+
+        if (name === 'attr') {
+          demoTable.setAttribute('actions-label', 'Acciones');
+        } else {
+          demoTable.removeAttribute('actions-label');
+          await new Promise((r) => setTimeout(r, 0));
+          demoTable.actionsLabel = name === 'prop' ? 'Operaciones' : '';
+        }
+
+        presetBar.querySelectorAll('.preset-btn').forEach((btn) => {
+          btn.classList.toggle('active', btn.dataset.preset === name);
+        });
+        // El MutationObserver de Vue procesa el atributo en un microtask:
+        // esperamos un tick antes de leer el DOM del shadow root.
+        setTimeout(updateReadout, 0);
+      }
+
+      presetBar.addEventListener('click', (e) => {
+        const btn = e.target.closest('.preset-btn');
+        if (btn) applyPreset(btn.dataset.preset);
+      });
+
+      customElements.whenDefined('cu-table').then(() => {
+        for (const t of [demoTable, slotTable]) {
+          t.columns = columns;
+          t.data = data;
+          t.actions = actions;
+        }
+        applyPreset('default');
+      });
+    </script>
+  </body>
+</html>

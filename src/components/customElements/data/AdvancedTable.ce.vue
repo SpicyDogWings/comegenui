@@ -1,8 +1,55 @@
 <script setup lang="ts">
-import { ref, getCurrentInstance, type Component, type PropType } from "vue";
+import { ref, computed, getCurrentInstance, onBeforeUnmount, onMounted, useSlots, type Component, type PropType } from "vue";
 import AdvancedTable from "../../data/AdvancedTable.vue";
 
 const instance = getCurrentInstance();
+
+/**
+ * En un custom element con shadow DOM, Vue **no** expone el light DOM como
+ * `$slots`: para que los `<x slot="…">` del host se proyecten hay que renderizar
+ * un outlet `<slot name="…">` real (Vue lo emite así cuando `instance.ce` está
+ * seteado). Como los nombres son dinámicos (`header-{key}`, `cell-{key}`), los
+ * descubrimos del host. Cuando el wrapper se monta como componente Vue (tests,
+ * uso interno), no hay `instance.ce` y alcanza con `$slots`.
+ */
+type SlotHost = HTMLElement & { childNodes: NodeListOf<ChildNode> };
+const vueSlots = useSlots();
+const hostSlotNames = ref<string[]>([]);
+let slotObserver: MutationObserver | null = null;
+
+const getHostEl = () => (instance?.ce as unknown as SlotHost | undefined) ?? null;
+
+function collectHostSlots() {
+  const el = getHostEl();
+  if (!el) return;
+  const names = new Set<string>();
+  el.childNodes.forEach((node) => {
+    if (node.nodeType === 1) {
+      names.add((node as Element).getAttribute("slot") || "default");
+    }
+  });
+  hostSlotNames.value = [...names];
+}
+
+onMounted(() => {
+  collectHostSlots();
+  const el = getHostEl();
+  if (el && typeof MutationObserver !== "undefined") {
+    slotObserver = new MutationObserver(collectHostSlots);
+    slotObserver.observe(el, { childList: true });
+  }
+});
+
+onBeforeUnmount(() => slotObserver?.disconnect());
+
+const forwardedSlots = computed(() => {
+  const names = new Set<string>(Object.keys(vueSlots));
+  for (const name of hostSlotNames.value) names.add(name);
+  return [...names];
+});
+
+const isVueSlot = (name: string) => name in vueSlots;
+
 function ceEmit(event: string, payload: unknown) {
   const el = instance?.vnode.el as HTMLElement | null;
   const root = el?.getRootNode() as ShadowRoot | Document | null;
@@ -132,6 +179,8 @@ const props = defineProps({
   loading: { type: Boolean, required: false, default: false },
   /** Acciones de fila (botón "..." al final de cada fila). Se asigna como propiedad JS */
   actions: { type: Array, required: false, default: () => [] },
+  /** Texto del header de la columna de acciones. Default vacío. Atributo HTML: `actions-label` */
+  actionsLabel: { type: String, required: false, default: "" },
   /** Deshabilita filas (ver [Deshabilitar filas, columnas y celdas](#deshabilitar-filas-columnas-y-celdas)). Se asigna como propiedad JS */
   rowDisabled: { type: [Boolean, Function] as PropType<boolean | ((row: Record<string, any>) => boolean)>, required: false, default: false },
   /** Filas de footer (ver [Footer (API programática)](#footer-api-programática)). Se asigna como propiedad JS */
@@ -175,6 +224,7 @@ defineExpose({
     :filters="props.filters"
     :loading="props.loading"
     :actions="props.actions"
+    :actions-label="props.actionsLabel"
     :row-disabled="props.rowDisabled"
     :footer="props.footer"
     :table-max-height="props.tableMaxHeight"
@@ -189,11 +239,12 @@ defineExpose({
     @edit-cancel="ceEmit('edit-cancel', $event)"
     @edit-error="ceEmit('edit-error', $event)"
   >
-    <!-- Todos los slots del host se reenvían tal cual: `search` (scoped: `query`
-         y `update`), `template`, `cell-{key}`, `header-{key}`, `empty` y `footer`.
-         El `AdvancedTable` interno los pasa al `Table` que renderiza las filas. -->
-    <template v-for="(_, slotName) in $slots" v-slot:[slotName]="slotProps">
-      <slot :name="slotName" v-bind="slotProps"></slot>
+    <!-- Slots del host: `search` (scoped: `query` y `update`), `template`,
+         `cell-{key}`, `header-{key}`, `empty` y `footer`. Los nombres salen de
+         `$slots` (uso como componente Vue) y/o del light DOM del host (custom
+         element real). El `AdvancedTable` interno los pasa al `Table`. -->
+    <template v-for="slotName in forwardedSlots" v-slot:[slotName]="slotProps">
+      <slot :name="slotName" v-bind="isVueSlot(slotName) ? slotProps : undefined"></slot>
     </template>
   </AdvancedTable>
 </template>
