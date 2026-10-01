@@ -497,7 +497,7 @@ function handleImport(config: any) {
 }
 
 .tb-controls {
-  flex: 0 0 400px;
+  flex: 0 0 18rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -1366,7 +1366,7 @@ function handleImport(config: any) {
 
 .tb-colors-list {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1fr;
   gap: 0.5rem;
 }
 
@@ -1412,12 +1412,27 @@ function handleImport(config: any) {
 }
 
 .tb-page {
-  width: 100%;
+  width: 95vw;
+  margin: 0 auto;
+  padding: 4rem 2.5rem 5rem;
+  box-sizing: border-box;
 }
 
 .playground-separator {
   border: none;
   border-top: 1px solid var(--cu-border-color);
   margin: 0;
+}
+
+@media (max-width: 56rem) {
+  .tb-page {
+    padding: 3rem 1.5rem 4rem;
+  }
+  .tb-layout {
+    flex-direction: column;
+  }
+  .tb-controls {
+    flex: 0 0 auto;
+  }
 }
 </style>
