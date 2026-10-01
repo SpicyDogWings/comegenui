@@ -220,7 +220,9 @@
       "md": "1rem",
       "lg": "1.125rem",
       "xl": "1.25rem",
-      "2xl": "1.5rem"
+      "2xl": "1.5rem",
+      "3xl": "1.75rem",
+      "4xl": "2rem"
     },
     "fontWeight": {
       "normal": "400",
@@ -242,7 +244,9 @@
     "lg": "16px",
     "xl": "24px",
     "2xl": "32px",
-    "3xl": "48px"
+    "3xl": "48px",
+    "4xl": "64px",
+    "5xl": "80px"
   },
   "borderRadius": {
     "default": "8px",
@@ -264,11 +268,6 @@
       "thin": "1px",
       "medium": "2px",
       "thick": "4px"
-    },
-    "color": {
-      "default": "#d1d5db",
-      "strong": "#6b7280",
-      "focus": "#1774A4"
     }
   }
 }

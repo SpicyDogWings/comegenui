@@ -74,75 +74,93 @@ function shadowVar(name: string, value: string, color?: string) {
 }
 
 function sharedBlock(shared: any) {
+  // Cada grupo se completa sobre DEFAULTS: una config parcial (o que omita
+  // claves como `fontSize.3xl`) igual emite todos los tokens, sin `undefined`.
+  const fontFamily = { ...DEFAULTS.typography.fontFamily, ...(shared.typography?.fontFamily ?? {}) }
+  const fontSize = { ...DEFAULTS.typography.fontSize, ...(shared.typography?.fontSize ?? {}) }
+  const fontWeight = { ...DEFAULTS.typography.fontWeight, ...(shared.typography?.fontWeight ?? {}) }
+  const lineHeight = { ...DEFAULTS.typography.lineHeight, ...(shared.typography?.lineHeight ?? {}) }
+  const spacing = { ...DEFAULTS.spacing, ...(shared.spacing ?? {}) }
+  const borderRadius = { ...DEFAULTS.borderRadius, ...(shared.borderRadius ?? {}) }
+  const shadows = { ...DEFAULTS.shadows, ...(shared.shadows ?? {}) }
+  const borders = { width: { ...DEFAULTS.borders.width, ...(shared.borders?.width ?? {}) } }
+  const modal = {
+    size: { ...DEFAULTS.modal.size, ...(shared.modal?.size ?? {}) },
+    height: { ...DEFAULTS.modal.height, ...(shared.modal?.height ?? {}) },
+  }
+  const sideover = { size: { ...DEFAULTS.sideover.size, ...(shared.sideover?.size ?? {}) } }
+
   return `/* Typography */
-    --cu-font-sans: ${shared.typography.fontFamily.sans};
-    --cu-font-mono: ${shared.typography.fontFamily.mono};
-    --cu-font-size-xs: ${shared.typography.fontSize.xs};
-    --cu-font-size-sm: ${shared.typography.fontSize.sm};
-    --cu-font-size-md: ${shared.typography.fontSize.md};
-    --cu-font-size-lg: ${shared.typography.fontSize.lg};
-    --cu-font-size-xl: ${shared.typography.fontSize.xl};
-    --cu-font-size-2xl: ${shared.typography.fontSize['2xl']};
-    --cu-font-weight-normal: ${shared.typography.fontWeight.normal};
-    --cu-font-weight-medium: ${shared.typography.fontWeight.medium};
-    --cu-font-weight-semibold: ${shared.typography.fontWeight.semibold};
-    --cu-font-weight-bold: ${shared.typography.fontWeight.bold};
-    --cu-line-height-tight: ${shared.typography.lineHeight.tight};
-    --cu-line-height-normal: ${shared.typography.lineHeight.normal};
-    --cu-line-height-relaxed: ${shared.typography.lineHeight.relaxed};
+    --cu-font-sans: ${fontFamily.sans};
+    --cu-font-mono: ${fontFamily.mono};
+    --cu-font-size-xs: ${fontSize.xs};
+    --cu-font-size-sm: ${fontSize.sm};
+    --cu-font-size-md: ${fontSize.md};
+    --cu-font-size-lg: ${fontSize.lg};
+    --cu-font-size-xl: ${fontSize.xl};
+    --cu-font-size-2xl: ${fontSize['2xl']};
+    --cu-font-size-3xl: ${fontSize['3xl']};
+    --cu-font-size-4xl: ${fontSize['4xl']};
+    --cu-font-weight-normal: ${fontWeight.normal};
+    --cu-font-weight-medium: ${fontWeight.medium};
+    --cu-font-weight-semibold: ${fontWeight.semibold};
+    --cu-font-weight-bold: ${fontWeight.bold};
+    --cu-line-height-tight: ${lineHeight.tight};
+    --cu-line-height-normal: ${lineHeight.normal};
+    --cu-line-height-relaxed: ${lineHeight.relaxed};
 
     /* Spacing */
-    --cu-space-2xs: ${shared.spacing['2xs']};
-    --cu-space-xs: ${shared.spacing.xs};
-    --cu-space-sm: ${shared.spacing.sm};
-    --cu-space-md: ${shared.spacing.md};
-    --cu-space-lg: ${shared.spacing.lg};
-    --cu-space-xl: ${shared.spacing.xl};
-    --cu-space-2xl: ${shared.spacing['2xl']};
-    --cu-space-3xl: ${shared.spacing['3xl']};
-    --cu-space-4xl: ${shared.spacing['4xl']};
-    --cu-space-5xl: ${shared.spacing['5xl']};
+    --cu-space-2xs: ${spacing['2xs']};
+    --cu-space-xs: ${spacing.xs};
+    --cu-space-sm: ${spacing.sm};
+    --cu-space-md: ${spacing.md};
+    --cu-space-lg: ${spacing.lg};
+    --cu-space-xl: ${spacing.xl};
+    --cu-space-2xl: ${spacing['2xl']};
+    --cu-space-3xl: ${spacing['3xl']};
+    --cu-space-4xl: ${spacing['4xl']};
+    --cu-space-5xl: ${spacing['5xl']};
 
     /* Border Radius */
-    --cu-radius: ${shared.borderRadius.default};
-    --cu-radius-none: ${shared.borderRadius.none};
-    --cu-radius-sm: ${shared.borderRadius.sm};
-    --cu-radius-md: ${shared.borderRadius.md};
-    --cu-radius-lg: ${shared.borderRadius.lg};
-    --cu-radius-full: ${shared.borderRadius.full};
+    --cu-radius: ${borderRadius.default};
+    --cu-radius-none: ${borderRadius.none};
+    --cu-radius-sm: ${borderRadius.sm};
+    --cu-radius-md: ${borderRadius.md};
+    --cu-radius-lg: ${borderRadius.lg};
+    --cu-radius-full: ${borderRadius.full};
 
     /* Shadows (sizes only — color is per-theme) */
-    ${shadowVar('sm', shared.shadows.sm, 'currentColor')}
-    ${shadowVar('md', shared.shadows.md, 'currentColor')}
-    ${shadowVar('lg', shared.shadows.lg, 'currentColor')}
-    ${shadowVar('xl', shared.shadows.xl, 'currentColor')}
+    ${shadowVar('sm', shadows.sm, 'currentColor')}
+    ${shadowVar('md', shadows.md, 'currentColor')}
+    ${shadowVar('lg', shadows.lg, 'currentColor')}
+    ${shadowVar('xl', shadows.xl, 'currentColor')}
 
     /* Borders (widths only — colors are per-theme) */
-    --cu-border-none: ${shared.borders.width.none};
-    --cu-border-thin: ${shared.borders.width.thin};
-    --cu-border-medium: ${shared.borders.width.medium};
-    --cu-border-thick: ${shared.borders.width.thick};
+    --cu-border-none: ${borders.width.none};
+    --cu-border-thin: ${borders.width.thin};
+    --cu-border-medium: ${borders.width.medium};
+    --cu-border-thick: ${borders.width.thick};
 
     /* Modal */
-    --cu-modal-size-sm: ${shared.modal.size.sm};
-    --cu-modal-size-md: ${shared.modal.size.md};
-    --cu-modal-size-lg: ${shared.modal.size.lg};
-    --cu-modal-size-xl: ${shared.modal.size.xl};
-    --cu-modal-size-auto: ${shared.modal.size.auto};
-    --cu-modal-size-full: ${shared.modal.size.full};
-    --cu-modal-height-sm: ${shared.modal.height.sm};
-    --cu-modal-height-md: ${shared.modal.height.md};
-    --cu-modal-height-lg: ${shared.modal.height.lg};
-    --cu-modal-height-xl: ${shared.modal.height.xl};
-    --cu-modal-height-auto: ${shared.modal.height.auto};
-    --cu-modal-height-full: ${shared.modal.height.full};
+    --cu-modal-size-sm: ${modal.size.sm};
+    --cu-modal-size-md: ${modal.size.md};
+    --cu-modal-size-lg: ${modal.size.lg};
+    --cu-modal-size-xl: ${modal.size.xl};
+    --cu-modal-size-auto: ${modal.size.auto};
+    --cu-modal-size-full: ${modal.size.full};
+    --cu-modal-height-sm: ${modal.height.sm};
+    --cu-modal-height-md: ${modal.height.md};
+    --cu-modal-height-lg: ${modal.height.lg};
+    --cu-modal-height-xl: ${modal.height.xl};
+    --cu-modal-height-auto: ${modal.height.auto};
+    --cu-modal-height-full: ${modal.height.full};
 
     /* SideOver */
-    --cu-sideover-size-sm: ${shared.sideover.size.sm};
-    --cu-sideover-size-md: ${shared.sideover.size.md};
-    --cu-sideover-size-lg: ${shared.sideover.size.lg};
-    --cu-sideover-size-xl: ${shared.sideover.size.xl};
-    --cu-sideover-size-full: ${shared.sideover.size.full};`
+    --cu-sideover-size-sm: ${sideover.size.sm};
+    --cu-sideover-size-md: ${sideover.size.md};
+    --cu-sideover-size-lg: ${sideover.size.lg};
+    --cu-sideover-size-xl: ${sideover.size.xl};
+    --cu-sideover-size-full: ${sideover.size.full};`
 }
 
 function themeBlock(tokens: any, themeName: string, opacities: Record<string, { shadow: number }>) {

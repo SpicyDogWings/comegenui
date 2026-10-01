@@ -42,7 +42,6 @@ export function useThemeBuilder() {
   const borderRadius = ref({ ...DEFAULTS.borderRadius, ...store.getShared()?.borderRadius })
   const borders = ref({
     width: { ...DEFAULTS.borders.width, ...store.getShared()?.borders?.width },
-    color: { ...(DEFAULTS.borders.color ?? {}), ...store.getShared()?.borders?.color },
   })
 
   const shadowPreview = computed(() =>

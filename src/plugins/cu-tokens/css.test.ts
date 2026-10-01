@@ -107,3 +107,28 @@ describe('generateThemesCSS / generateThemeCSS', () => {
     expect(css).toContain('--cu-code-faded:')
   })
 })
+
+describe('sharedBlock: tokens completos', () => {
+  const themes = { light: { colors: COLORS } }
+
+  it('emite fontSize 3xl/4xl (los consumen Markdown h1/h2)', () => {
+    const css = generateThemesCSS(themes, extractShared(DEFAULTS), OPACITIES)
+    expect(css).toMatch(/--cu-font-size-3xl: [^;]+;/)
+    expect(css).toMatch(/--cu-font-size-4xl: [^;]+;/)
+  })
+
+  it('completa las claves faltantes sobre DEFAULTS sin emitir undefined', () => {
+    const partial = {
+      ...extractShared(DEFAULTS),
+      typography: { ...DEFAULTS.typography, fontSize: { xs: '0.5rem' } },
+      spacing: { '2xs': '1px' },
+    }
+    const css = generateThemesCSS(themes, partial, OPACITIES)
+    expect(css).not.toContain('undefined')
+    expect(css).toContain('--cu-font-size-xs: 0.5rem')
+    expect(css).toContain('--cu-font-size-3xl: 1.75rem')
+    expect(css).toContain('--cu-space-2xs: 1px')
+    expect(css).toContain('--cu-space-4xl: 64px')
+    expect(css).toContain('--cu-space-5xl: 80px')
+  })
+})
