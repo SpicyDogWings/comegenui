@@ -44,11 +44,18 @@ import { useThemeBuilder } from '@/composables/useThemeBuilder'
 const {
   themeName, showEditBtn, isEditing, enableEditing,
   colors, shadowOpacityRaw, typography, spacing, borderRadius, borders,
-  shadows, modal, sideover,
+  shadowRows, updateShadow, modal, sideover,
   cssExport, resetToDefaults,
   importConfig, importedThemes, showImportPicker, lastImportedConfig, applyImportedTheme,
   handleExport, handleCopyCSS, handleDownloadCSS,
 } = useThemeBuilder()
+
+const shadowColumns = [
+  { key: 'size', label: 'Shadow', width: '4.5rem' },
+  { key: 'x', label: 'X' },
+  { key: 'y', label: 'Y' },
+  { key: 'blur', label: 'Blur' },
+]
 
 const tableData = [
   { name: 'Alice Johnson', status: 'Active', role: 'Admin' },
@@ -349,12 +356,42 @@ function handleImport(config: any) {
         </Collapse>
 
         <Collapse label="Shadows" :default-open="false">
-          <div class="tb-grid">
-            <div v-for="(value, key) in shadows" :key="key" class="tb-field">
-              <Label :label="key" color="var(--cu-color-neutral)" />
-              <Input v-model="shadows[key]" :disabled="!isEditing" />
-            </div>
-          </div>
+          <AdvancedTable
+            :columns="shadowColumns"
+            :data="shadowRows"
+            :pagination="false"
+            compact
+            color="neutral"
+            variant="ghost"
+          >
+            <template #template="{ row }">
+              <td class="cu-table-td tb-shadow-size">{{ row.size }}</td>
+              <td class="cu-table-td">
+                <Input
+                  size="sm"
+                  :model-value="row.x"
+                  :disabled="!isEditing"
+                  @update:model-value="updateShadow(row.size, 'x', $event)"
+                />
+              </td>
+              <td class="cu-table-td">
+                <Input
+                  size="sm"
+                  :model-value="row.y"
+                  :disabled="!isEditing"
+                  @update:model-value="updateShadow(row.size, 'y', $event)"
+                />
+              </td>
+              <td class="cu-table-td">
+                <Input
+                  size="sm"
+                  :model-value="row.blur"
+                  :disabled="!isEditing"
+                  @update:model-value="updateShadow(row.size, 'blur', $event)"
+                />
+              </td>
+            </template>
+          </AdvancedTable>
         </Collapse>
 
         <Collapse label="Modal" :default-open="false">
@@ -537,7 +574,7 @@ function handleImport(config: any) {
 }
 
 .tb-controls {
-  flex: 0 0 18rem;
+  flex: 0 0 21rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -1428,6 +1465,16 @@ function handleImport(config: any) {
   display: flex;
   flex-direction: column;
   gap: 0.125rem;
+}
+
+.tb-shadow-size {
+  font-size: var(--cu-font-size-xs);
+  font-weight: var(--cu-font-weight-semibold);
+  color: var(--cu-color-neutral);
+  opacity: 0.7;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
 }
 
 .tb-import-picker {

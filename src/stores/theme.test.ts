@@ -129,7 +129,7 @@ describe('persistencia del tema custom (store)', () => {
 
     store.registerCustom({ primary: '#123456' }, {
       ...FULL_SHARED,
-      shadows: { ...DEFAULTS.shadows, md: '0 0 8px red' },
+      shadows: { ...DEFAULTS.shadows, md: '0 0 8px' },
       modal: {
         size: { ...DEFAULTS.modal.size, lg: '42vw' },
         height: { ...DEFAULTS.modal.height, lg: '42vh' },
@@ -138,7 +138,7 @@ describe('persistencia del tema custom (store)', () => {
     }, 10)
 
     const raw = JSON.parse(localStorage.getItem('cu-custom-themes') as string)
-    expect(raw.custom.shared.shadows.md).toBe('0 0 8px red')
+    expect(raw.custom.shared.shadows.md).toBe('0 0 8px')
     expect(raw.custom.shared.modal.size.lg).toBe('42vw')
     expect(raw.custom.shared.sideover.size.md).toBe('480px')
 
@@ -152,9 +152,27 @@ describe('persistencia del tema custom (store)', () => {
     await reloaded.init()
     await nextTick()
 
-    expect(store2.customConfig?.shared.shadows.md).toBe('0 0 8px red')
+    expect(store2.customConfig?.shared.shadows.md).toBe('0 0 8px')
     expect(reloaded.getShared().modal.size.lg).toBe('42vw')
     expect(reloaded.getShared().sideover.size.md).toBe('480px')
+  })
+
+  it('migra sombras legacy con color embebido (deja geometría)', async () => {
+    localStorage.setItem('cu-theme', 'custom')
+    localStorage.setItem(
+      'cu-custom-themes',
+      JSON.stringify({
+        custom: {
+          colors: { primary: '#123456' },
+          shared: { shadows: { sm: '0 1px 2px rgba(0,0,0,0.1)' } },
+        },
+      }),
+    )
+
+    const { plugin, store } = await boot()
+
+    expect(store.customConfig?.shared.shadows.sm).toBe('0 1px 2px')
+    expect(plugin.getShared().shadows.sm).toBe('0 1px 2px')
   })
 
   it('migra el formato legacy (mapa plano de colores)', async () => {

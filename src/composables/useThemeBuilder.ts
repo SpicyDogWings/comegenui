@@ -1,10 +1,9 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import {
-  allThemes, opacities, loaded,
+  allThemes, opacities, loaded, parseShadow, composeShadow, stripShadowColor,
 } from '@/plugins/cu-tokens'
 import { useThemeStore } from '@/stores/theme'
 import { DEFAULTS, DEFAULT_COLORS } from '@/plugins/cu-tokens/defaults'
-import { hexToRgba } from '@/lib/colors'
 
 // Motor del ThemeBuilder: estado editable (colors/shared/opacity), modo edición,
 // import/export y la persistencia vía el store/plugin de temas.
@@ -43,14 +42,30 @@ export function useThemeBuilder() {
   const borders = ref({
     width: { ...DEFAULTS.borders.width, ...store.getShared()?.borders?.width },
   })
-  // Colores de borde: los resuelve el componente desde los tokens de color
-  // (`default`/`strong`/`focus`), no hay grupo editable aparte.
+  // Sombras: el valor es solo geometría (`x y blur`); el color/alfa lo aporta
+  // el plugin por tema (`--cu-shadow-color` = color shadow + opacidad).
   const shadowSizes = ['sm', 'md', 'lg', 'xl'] as const
-  const shadows = ref(
-    Object.fromEntries(
-      shadowSizes.map((key) => [key, store.getShared()?.shadows?.[key] ?? DEFAULTS.shadows[key]]),
-    ) as Record<(typeof shadowSizes)[number], string>,
+  type ShadowSize = (typeof shadowSizes)[number]
+  type ShadowField = 'x' | 'y' | 'blur'
+
+  function normalizeShadows(source: Record<string, string | undefined> | undefined): Record<ShadowSize, string> {
+    return Object.fromEntries(
+      shadowSizes.map((key) => [key, stripShadowColor(source?.[key] ?? DEFAULTS.shadows[key])]),
+    ) as Record<ShadowSize, string>
+  }
+
+  const shadows = ref(normalizeShadows(store.getShared()?.shadows))
+
+  // Filas para la tabla del panel: una por tamaño, con los 3 campos separados.
+  const shadowRows = computed(() =>
+    shadowSizes.map((size) => ({ size, ...parseShadow(shadows.value[size]) })),
   )
+
+  function updateShadow(size: ShadowSize, field: ShadowField, value: string) {
+    const current = parseShadow(shadows.value[size])
+    shadows.value = { ...shadows.value, [size]: composeShadow({ ...current, [field]: value }) }
+  }
+
   const modal = ref({
     size: { ...DEFAULTS.modal.size, ...store.getShared()?.modal?.size },
     height: { ...DEFAULTS.modal.height, ...store.getShared()?.modal?.height },
@@ -58,10 +73,6 @@ export function useThemeBuilder() {
   const sideover = ref({
     size: { ...DEFAULTS.sideover.size, ...store.getShared()?.sideover?.size },
   })
-
-  const shadowPreview = computed(() =>
-    hexToRgba(colors.value.shadow || '#000000', parseInt(shadowOpacityRaw.value) || 10),
-  )
 
   // CSS de export: lo genera el plugin (colores + shared) — sin duplicación.
   const cssExport = computed(() => store.getCSS(themeName.value))
@@ -130,10 +141,10 @@ export function useThemeBuilder() {
     borderRadius.value = { default: '8px', none: '0', sm: '4px', md: '8px', lg: '12px', full: '9999px' }
     borders.value = { width: { none: '0', thin: '1px', medium: '2px', thick: '4px' } }
     shadows.value = {
-      sm: '0 1px 2px rgba(0,0,0,0.05)',
-      md: '0 4px 6px rgba(0,0,0,0.1)',
-      lg: '0 10px 15px rgba(0,0,0,0.1)',
-      xl: '0 20px 25px rgba(0,0,0,0.1)',
+      sm: '0 1px 2px',
+      md: '0 4px 6px',
+      lg: '0 10px 15px',
+      xl: '0 20px 25px',
     }
     modal.value = {
       size: { sm: '25vw', md: '30vw', lg: '35vw', xl: '40vw', auto: '50vw', full: '90vw' },
@@ -158,7 +169,7 @@ export function useThemeBuilder() {
     if (s.spacing) spacing.value = { ...spacing.value, ...s.spacing }
     if (s.borderRadius) borderRadius.value = { ...borderRadius.value, ...s.borderRadius }
     if (s.borders?.width) borders.value = { width: { ...borders.value.width, ...s.borders.width } }
-    if (s.shadows) shadows.value = { ...shadows.value, ...s.shadows }
+    if (s.shadows) shadows.value = normalizeShadows({ ...shadows.value, ...s.shadows })
     if (s.modal?.size) modal.value = { ...modal.value, size: { ...modal.value.size, ...s.modal.size } }
     if (s.modal?.height) modal.value = { ...modal.value, height: { ...modal.value.height, ...s.modal.height } }
     if (s.sideover?.size) sideover.value = { size: { ...sideover.value.size, ...s.sideover.size } }
@@ -224,7 +235,7 @@ export function useThemeBuilder() {
       spacing: { ...DEFAULTS.spacing, ...(cfg?.spacing ?? {}) },
       borderRadius: { ...DEFAULTS.borderRadius, ...(cfg?.borderRadius ?? {}) },
       borders: { width: { ...DEFAULTS.borders.width, ...(cfg?.borders?.width ?? {}) } },
-      shadows: { ...shadows.value, ...(cfg?.shadows ?? {}) },
+      shadows: normalizeShadows({ ...shadows.value, ...(cfg?.shadows ?? {}) }),
       modal: {
         size: { ...DEFAULTS.modal.size, ...(cfg?.modal?.size ?? {}) },
         height: { ...DEFAULTS.modal.height, ...(cfg?.modal?.height ?? {}) },
@@ -316,9 +327,10 @@ export function useThemeBuilder() {
     borderRadius,
     borders,
     shadows,
+    shadowRows,
+    updateShadow,
     modal,
     sideover,
-    shadowPreview,
     cssExport,
     exportConfig,
     importConfig,

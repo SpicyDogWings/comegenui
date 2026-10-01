@@ -12,6 +12,7 @@ import {
   getShared as pluginGetShared,
   setShared as pluginSetShared,
   applyFullConfig as pluginApplyFullConfig,
+  stripShadowColor,
 } from '@/plugins/cu-tokens'
 import { DEFAULTS, DEFAULT_OPACITIES, extractColors } from '@/plugins/cu-tokens/defaults'
 
@@ -62,7 +63,12 @@ function normalizeConfig(input: ThemeEntryLike | null | undefined): CustomThemeC
       spacing: { ...DEFAULTS.spacing, ...(s.spacing ?? {}) },
       borderRadius: { ...DEFAULTS.borderRadius, ...(s.borderRadius ?? {}) },
       borders: { width: { ...DEFAULTS.borders.width, ...(s.borders?.width ?? {}) } },
-      shadows: { ...DEFAULTS.shadows, ...(s.shadows ?? {}) },
+      shadows: Object.fromEntries(
+        Object.entries({ ...DEFAULTS.shadows, ...(s.shadows ?? {}) }).map(([key, value]) => [
+          key,
+          stripShadowColor(value),
+        ]),
+      ),
       modal: {
         size: { ...DEFAULTS.modal.size, ...(s.modal?.size ?? {}) },
         height: { ...DEFAULTS.modal.height, ...(s.modal?.height ?? {}) },
