@@ -9,9 +9,15 @@ const shared = ref<any>({})
 const opacities = ref<Record<string, { shadow: number }>>({ ...DEFAULT_OPACITIES })
 const themeNames = ref<string[]>([])
 const builtInNames = ref<string[]>([])
-// Temas registrados en runtime (ej: el import del ThemeBuilder) — persisten
-// en localStorage para sobrevivir recargas.
-const customThemes = ref<Record<string, Record<string, string>>>({})
+// Temas registrados en runtime (ej: el ThemeBuilder). Persisten en localStorage
+// con su config completa (colores + opacidad de sombra + tokens compartidos)
+// para sobrevivir recargas; no solo los colores.
+interface CustomThemeEntry {
+  colors: Record<string, string>
+  opacity?: number
+  shared?: any
+}
+const customThemes = ref<Record<string, CustomThemeEntry>>({})
 const CUSTOM_KEY = 'cu-custom-themes'
 
 function detectTheme(): string {
@@ -110,7 +116,10 @@ function getThemeNames() {
 // opacity: per-theme shadow opacity (1-100). shared: typography/spacing/radius/borders.
 function registerTheme(name: string, colors: Record<string, string>, opts?: { opacity?: number; shared?: any }) {
   const merged = { ...extractColors(DEFAULTS), ...colors }
-  customThemes.value = { ...customThemes.value, [name]: colors }
+  const entry: CustomThemeEntry = { ...(customThemes.value[name] ?? {}), colors }
+  if (opts?.opacity !== undefined) entry.opacity = opts.opacity
+  if (opts?.shared) entry.shared = opts.shared
+  customThemes.value = { ...customThemes.value, [name]: entry }
   themes.value[name] = { colors: merged }
   if (!themeNames.value.includes(name)) themeNames.value = [...themeNames.value, name]
   if (opts?.opacity !== undefined) {
@@ -119,15 +128,20 @@ function registerTheme(name: string, colors: Record<string, string>, opts?: { op
   if (opts?.shared) {
     shared.value = { ...shared.value, ...opts.shared }
   }
-  try {
-    localStorage.setItem(CUSTOM_KEY, JSON.stringify(customThemes.value))
-  } catch {}
+  persistCustomThemes()
   regenerateCSS()
 }
 
 // Actualiza los tokens compartidos (tipografía, spacing, etc) y regenera CSS.
 function setShared(patch: any) {
   shared.value = { ...shared.value, ...patch }
+  // Reflejarlo en cada tema custom para que el cambio sobreviva la recarga.
+  for (const name of Object.keys(customThemes.value)) {
+    const entry = customThemes.value[name]
+    if (!entry) continue
+    customThemes.value[name] = { ...entry, shared: shared.value }
+  }
+  persistCustomThemes()
   regenerateCSS()
 }
 
@@ -158,6 +172,11 @@ function applyFullConfig(config: {
       if (!themeNames.value.includes(name)) {
         themeNames.value = [...themeNames.value, name]
       }
+      const entry: CustomThemeEntry = { ...(customThemes.value[name] ?? {}), colors }
+      const opacity = config.opacities?.[name]?.shadow
+      if (opacity !== undefined) entry.opacity = opacity
+      if (config.shared) entry.shared = config.shared
+      customThemes.value = { ...customThemes.value, [name]: entry }
     }
   }
 
@@ -169,18 +188,35 @@ function applyFullConfig(config: {
     shared.value = { ...shared.value, ...config.shared }
   }
 
+  persistCustomThemes()
   regenerateCSS()
+}
+
+// Serializa el estado custom completo (colores + opacidad + shared) en localStorage.
+function persistCustomThemes() {
+  try {
+    localStorage.setItem(CUSTOM_KEY, JSON.stringify(customThemes.value))
+  } catch {}
 }
 
 function restoreCustomThemes() {
   try {
     const raw = localStorage.getItem(CUSTOM_KEY)
     if (!raw) return
-    const stored = JSON.parse(raw) as Record<string, Record<string, string>>
-    for (const [name, colors] of Object.entries(stored)) {
-      customThemes.value = { ...customThemes.value, [name]: colors }
-      themes.value[name] = { colors: { ...extractColors(DEFAULTS), ...colors } }
+    const stored = JSON.parse(raw) as Record<string, any>
+    for (const [name, value] of Object.entries(stored)) {
+      // v2: { colors, opacity?, shared? } — legacy: el mapa plano de colores.
+      const entry: CustomThemeEntry =
+        value && typeof value === 'object' && 'colors' in value ? value : { colors: value }
+      customThemes.value = { ...customThemes.value, [name]: entry }
+      themes.value[name] = { colors: { ...extractColors(DEFAULTS), ...entry.colors } }
       if (!themeNames.value.includes(name)) themeNames.value = [...themeNames.value, name]
+      if (entry.opacity !== undefined) {
+        opacities.value = { ...opacities.value, [name]: { shadow: entry.opacity } }
+      }
+      if (entry.shared) {
+        shared.value = { ...shared.value, ...entry.shared }
+      }
     }
   } catch {}
 }

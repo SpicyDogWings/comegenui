@@ -1,6 +1,6 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import {
-  allThemes, opacities,
+  allThemes, opacities, loaded,
 } from '@/plugins/cu-tokens'
 import { useThemeStore, type CustomThemeConfig } from '@/stores/theme'
 import { DEFAULTS, DEFAULT_COLORS } from '@/plugins/cu-tokens/defaults'
@@ -110,6 +110,13 @@ export function useThemeBuilder() {
     spacing.value = { '2xs': '2px', xs: '4px', sm: '8px', md: '12px', lg: '16px', xl: '24px', '2xl': '32px', '3xl': '48px', '4xl': '64px', '5xl': '80px' }
     borderRadius.value = { default: '8px', none: '0', sm: '4px', md: '8px', lg: '12px', full: '9999px' }
     borders.value = { width: { none: '0', thin: '1px', medium: '2px', thick: '4px' } }
+    // Reset explícito: persistir los defaults para que la recarga no recupere
+    // la configuración anterior.
+    store.registerCustom(
+      { ...colors.value },
+      sharedSnapshot(),
+      parseInt(shadowOpacityRaw.value) || 10,
+    )
   }
 
   function syncSharedFromPlugin() {
@@ -224,11 +231,19 @@ export function useThemeBuilder() {
     URL.revokeObjectURL(url)
   }
 
-  onMounted(() => {
+  // El plugin carga comegen.config.json de forma asíncrona; recién entonces
+  // existen el tema custom restaurado de localStorage y su shared persistido.
+  // Sin esto el form arranca en defaults aunque el tema ya esté aplicado.
+  function syncFromPlugin() {
     syncSharedFromPlugin()
-    initColorsFromTheme(themeName.value)
+    initColorsFromTheme(themeName.value || 'light')
     shadowOpacityRaw.value = String(resolveOpacity(themeName.value))
     isEditing.value = store.isCustom
+  }
+
+  onMounted(syncFromPlugin)
+  watch(loaded, (value) => {
+    if (value) syncFromPlugin()
   })
 
   // Detectar cambios → solo cuando está editando (isEditing)
