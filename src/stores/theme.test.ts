@@ -25,6 +25,9 @@ const FULL_SHARED = {
   spacing: DEFAULTS.spacing,
   borderRadius: DEFAULTS.borderRadius,
   borders: { width: DEFAULTS.borders.width },
+  shadows: DEFAULTS.shadows,
+  modal: DEFAULTS.modal,
+  sideover: DEFAULTS.sideover,
 }
 
 function stubEnv() {
@@ -119,6 +122,39 @@ describe('persistencia del tema custom (store)', () => {
     expect(raw.custom.opacity).toBe(25)
     expect(raw.custom.shared.spacing.md).toBe('20px')
     expect(plugin.opacities.value.custom?.shadow).toBe(25)
+  })
+
+  it('persiste e hidrata shadows, modal y sideover', async () => {
+    const { store } = await boot()
+
+    store.registerCustom({ primary: '#123456' }, {
+      ...FULL_SHARED,
+      shadows: { ...DEFAULTS.shadows, md: '0 0 8px red' },
+      modal: {
+        size: { ...DEFAULTS.modal.size, lg: '42vw' },
+        height: { ...DEFAULTS.modal.height, lg: '42vh' },
+      },
+      sideover: { size: { ...DEFAULTS.sideover.size, md: '480px' } },
+    }, 10)
+
+    const raw = JSON.parse(localStorage.getItem('cu-custom-themes') as string)
+    expect(raw.custom.shared.shadows.md).toBe('0 0 8px red')
+    expect(raw.custom.shared.modal.size.lg).toBe('42vw')
+    expect(raw.custom.shared.sideover.size.md).toBe('480px')
+
+    // Recarga: módulo nuevo sobre el mismo localStorage.
+    vi.resetModules()
+    stubEnv()
+    const reloaded = await import('@/plugins/cu-tokens')
+    const { useThemeStore } = await import('@/stores/theme')
+    setActivePinia(createPinia())
+    const store2 = useThemeStore()
+    await reloaded.init()
+    await nextTick()
+
+    expect(store2.customConfig?.shared.shadows.md).toBe('0 0 8px red')
+    expect(reloaded.getShared().modal.size.lg).toBe('42vw')
+    expect(reloaded.getShared().sideover.size.md).toBe('480px')
   })
 
   it('migra el formato legacy (mapa plano de colores)', async () => {

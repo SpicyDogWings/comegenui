@@ -22,6 +22,9 @@ export interface CustomThemeConfig {
     spacing: Record<string, string>
     borderRadius: Record<string, string>
     borders: { width: Record<string, string>, color?: Record<string, string> }
+    shadows: Record<string, string>
+    modal: { size: Record<string, string>, height: Record<string, string> }
+    sideover: { size: Record<string, string> }
   }
   opacities: { shadow: number }
 }
@@ -50,14 +53,21 @@ function normalizeConfig(input: ThemeEntryLike | null | undefined): CustomThemeC
   if (Object.keys(clean).length === 0) return null
 
   const shadow = Number(raw.opacity)
+  const s = raw.shared ?? {}
 
   return {
     colors: { ...extractColors(DEFAULTS), ...clean },
     shared: {
-      typography: { ...DEFAULTS.typography, ...(raw.shared?.typography ?? {}) },
-      spacing: { ...DEFAULTS.spacing, ...(raw.shared?.spacing ?? {}) },
-      borderRadius: { ...DEFAULTS.borderRadius, ...(raw.shared?.borderRadius ?? {}) },
-      borders: { width: { ...DEFAULTS.borders.width, ...(raw.shared?.borders?.width ?? {}) } },
+      typography: { ...DEFAULTS.typography, ...(s.typography ?? {}) },
+      spacing: { ...DEFAULTS.spacing, ...(s.spacing ?? {}) },
+      borderRadius: { ...DEFAULTS.borderRadius, ...(s.borderRadius ?? {}) },
+      borders: { width: { ...DEFAULTS.borders.width, ...(s.borders?.width ?? {}) } },
+      shadows: { ...DEFAULTS.shadows, ...(s.shadows ?? {}) },
+      modal: {
+        size: { ...DEFAULTS.modal.size, ...(s.modal?.size ?? {}) },
+        height: { ...DEFAULTS.modal.height, ...(s.modal?.height ?? {}) },
+      },
+      sideover: { size: { ...DEFAULTS.sideover.size, ...(s.sideover?.size ?? {}) } },
     },
     opacities: {
       shadow: Number.isFinite(shadow) ? shadow : DEFAULT_OPACITIES.default.shadow,
