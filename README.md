@@ -181,7 +181,6 @@ dist-lib/
 │   ├── themes.css      ← Todos los temas combinados
 │   ├── light.css       ← Solo tema light
 │   └── dark.css        ← Solo tema dark
-├── README-BUILD.md
 └── comegenui-v{version}.zip
 ```
 

@@ -25,9 +25,9 @@ Ahora son cosas separadas:
 
 ## Consecuencias
 
-- El zip `comegenui-v{version}.zip` pasó a llevar **sólo la lib** (UMDs + `css/` +
-  `README-BUILD.md`). Los updaters (`update.sh`/`.ps1`/`.bat`) se eliminaron: la instalación
-  es manual (descomprimir y copiar).
+- El zip `comegenui-v{version}.zip` pasó a llevar **sólo la lib** (UMDs + `css/`). Los
+  updaters (`update.sh`/`.ps1`/`.bat`) se eliminaron: la instalación es manual (descomprimir
+  y copiar).
 - Cada componente tiene **dos fichas** (vanilla y Vue) y **dos páginas**: la API del custom
   element y la del componente `.vue` no son la misma y ya no se mezclan en una tabla.
 - Las páginas Vue se nombran por el **nombre del componente** (`vue/advanced-table`), no por
