@@ -30,8 +30,8 @@ import EditableTableCell from "@/components/data/EditableTableCell.vue";
 | `validation` | `{ success: boolean; error: string \| null; }` | `{ success: false, error: null }` | Estado de validación: success y mensaje de error. |
 | `inlineEdit` | `boolean` | `false` | Muestra el editor directo en toda la tabla, sin lápiz. |
 | `value` | `string \| number \| boolean` | `—` | Valor actual de la celda. |
-| `row` | `Record<string, any>` | `—` | Fila completa a la que pertenece la celda. |
 | `column` | `Column` | `—` | Configuración de la columna: editor, validación y alineación. |
+| `row` | `Record<string, any>` | `—` | Fila completa a la que pertenece la celda. |
 | `index` | `number` | `—` | Índice de la fila en los datos. |
 <!-- /@api:props -->
 
