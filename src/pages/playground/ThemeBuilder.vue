@@ -45,7 +45,7 @@ const {
   themeName, showEditBtn, isEditing, enableEditing,
   colors, shadowOpacityRaw, typography, spacing, borderRadius, borders,
   shadows, modal, sideover,
-  shadowPreview, cssExport, resetToDefaults,
+  cssExport, resetToDefaults,
   importConfig, importedThemes, showImportPicker, lastImportedConfig, applyImportedTheme,
   handleExport, handleCopyCSS, handleDownloadCSS,
 } = useThemeBuilder()
@@ -393,13 +393,10 @@ function handleImport(config: any) {
         <Collapse label="Opacities" :default-open="false">
           <div class="tb-colors-list">
             <div class="tb-field">
-              <Label label="shadow" color="var(--cu-color-neutral)" />
+              <Label label="shadow opacity" color="var(--cu-color-neutral)" />
               <Input v-model="shadowOpacityRaw" :disabled="!isEditing" />
             </div>
           </div>
-          <p class="tb-hint">
-            <code>shadow</code>: {{ colors.shadow }} con opacidad {{ shadowOpacityRaw }}% → <code>{{ shadowPreview }}</code>
-          </p>
         </Collapse>
       </aside>
 
