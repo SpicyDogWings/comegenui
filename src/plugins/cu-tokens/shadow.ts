@@ -32,3 +32,19 @@ export function parseShadow(value: unknown): ShadowGeometry {
 export function composeShadow({ x, y, blur }: Partial<ShadowGeometry>): string {
   return `${x || '0'} ${y || '0'} ${blur || '0'}`
 }
+
+/** Si no trae unidad, asume px (`0` → `0px`; `0rem` queda igual). */
+export function normalizeShadowLength(value: unknown): string {
+  const v = String(value ?? '').trim()
+  return /^-?(?:\d+|\d*\.\d+)$/.test(v) ? `${v}px` : v
+}
+
+/** Deja la sombra canónica: sin color y con las longitudes en px si faltaba unidad. */
+export function normalizeShadow(value: unknown): string {
+  const { x, y, blur } = parseShadow(value)
+  return composeShadow({
+    x: normalizeShadowLength(x),
+    y: normalizeShadowLength(y),
+    blur: normalizeShadowLength(blur),
+  })
+}

@@ -61,6 +61,23 @@ pnpm dev
   docs(button): aclarar la variante ghost
   ```
 
+## Pull requests
+
+Todo PR nace de una issue y la **referencia con un closing keyword** (`Closes #N`, o `Fixes`/`Resolves`).
+Escribí:
+
+- **Título:** Conventional Commits en español, igual que los commits
+  (`fix(tokens): emitir font-size 3xl/4xl`).
+- **Descripción:** usá la [plantilla de PR](./.github/PULL_REQUEST_TEMPLATE.md) (GitHub la precarga):
+  qué cambia y por qué, la issue (`Closes #N`) y cómo lo verificaste.
+
+> **Ojo con la rama base:** el closing keyword autocierra la issue **solo si el PR mergea a la rama
+> por defecto (`main`)**. Si el PR va a una rama de integración (ej. `v5.0.0-alpha.3`), GitHub la
+> linkea pero **no la cierra**: cerrala a mano o dejá el `Closes #N` en el PR que llegue a `main`.
+
+Los agentes generan el título y la descripción a partir de esa plantilla: la skill
+`comegen-preflight` corre el gate local y arma el cuerpo del PR.
+
 ## Componentes
 
 Antes de tocar un componente, leé la arquitectura y las reglas del repo en

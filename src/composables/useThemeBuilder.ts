@@ -1,10 +1,9 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import {
-  allThemes, opacities,
+  allThemes, opacities, loaded, parseShadow, composeShadow, normalizeShadow,
 } from '@/plugins/cu-tokens'
-import { useThemeStore, type CustomThemeConfig } from '@/stores/theme'
+import { useThemeStore } from '@/stores/theme'
 import { DEFAULTS, DEFAULT_COLORS } from '@/plugins/cu-tokens/defaults'
-import { hexToRgba } from '@/lib/colors'
 
 // Motor del ThemeBuilder: estado editable (colors/shared/opacity), modo edición,
 // import/export y la persistencia vía el store/plugin de temas.
@@ -43,10 +42,42 @@ export function useThemeBuilder() {
   const borders = ref({
     width: { ...DEFAULTS.borders.width, ...store.getShared()?.borders?.width },
   })
+  // Sombras: el valor es solo geometría (`x y blur`); el color/alfa lo aporta
+  // el plugin por tema (`--cu-shadow-color` = color shadow + opacidad).
+  const shadowSizes = ['sm', 'md', 'lg', 'xl'] as const
+  type ShadowSize = (typeof shadowSizes)[number]
+  type ShadowField = 'x' | 'y' | 'blur'
 
-  const shadowPreview = computed(() =>
-    hexToRgba(colors.value.shadow || '#000000', parseInt(shadowOpacityRaw.value) || 10),
+  function normalizeShadows(source: Record<string, string | undefined> | undefined): Record<ShadowSize, string> {
+    return Object.fromEntries(
+      shadowSizes.map((key) => [key, normalizeShadow(source?.[key] ?? DEFAULTS.shadows[key])]),
+    ) as Record<ShadowSize, string>
+  }
+
+  const shadows = ref(normalizeShadows(store.getShared()?.shadows))
+
+  // Filas para la tabla del panel: una por tamaño, con los 3 campos separados.
+  const shadowRows = computed(() =>
+    shadowSizes.map((size) => ({ size, ...parseShadow(shadows.value[size]) })),
   )
+
+  function updateShadow(size: ShadowSize, field: ShadowField, value: string) {
+    const current = parseShadow(shadows.value[size])
+    shadows.value = { ...shadows.value, [size]: composeShadow({ ...current, [field]: value }) }
+  }
+
+  // Al salir del campo: completa la unidad que falte (`0` → `0px`, `0rem` queda igual).
+  function commitShadow(size: ShadowSize) {
+    shadows.value = { ...shadows.value, [size]: normalizeShadow(shadows.value[size]) }
+  }
+
+  const modal = ref({
+    size: { ...DEFAULTS.modal.size, ...store.getShared()?.modal?.size },
+    height: { ...DEFAULTS.modal.height, ...store.getShared()?.modal?.height },
+  })
+  const sideover = ref({
+    size: { ...DEFAULTS.sideover.size, ...store.getShared()?.sideover?.size },
+  })
 
   // CSS de export: lo genera el plugin (colores + shared) — sin duplicación.
   const cssExport = computed(() => store.getCSS(themeName.value))
@@ -57,10 +88,15 @@ export function useThemeBuilder() {
       spacing: JSON.parse(JSON.stringify(spacing.value)),
       borderRadius: JSON.parse(JSON.stringify(borderRadius.value)),
       borders: { width: JSON.parse(JSON.stringify(borders.value.width)) },
+      shadows: JSON.parse(JSON.stringify(shadows.value)),
+      modal: JSON.parse(JSON.stringify(modal.value)),
+      sideover: JSON.parse(JSON.stringify(sideover.value)),
     }
   }
 
-  function exportConfig(): CustomThemeConfig {
+  // Formato plano (colores + opacidad + shared en la raíz): es el que consume
+  // `applySingleTheme` al importar y el que se descarga/exporta.
+  function exportConfig() {
     return {
       colors: { ...colors.value },
       opacities: { shadow: parseInt(shadowOpacityRaw.value) || 10 },
@@ -109,6 +145,26 @@ export function useThemeBuilder() {
     spacing.value = { '2xs': '2px', xs: '4px', sm: '8px', md: '12px', lg: '16px', xl: '24px', '2xl': '32px', '3xl': '48px', '4xl': '64px', '5xl': '80px' }
     borderRadius.value = { default: '8px', none: '0', sm: '4px', md: '8px', lg: '12px', full: '9999px' }
     borders.value = { width: { none: '0', thin: '1px', medium: '2px', thick: '4px' } }
+    shadows.value = {
+      sm: '0px 1px 2px',
+      md: '0px 4px 6px',
+      lg: '0px 10px 15px',
+      xl: '0px 20px 25px',
+    }
+    modal.value = {
+      size: { sm: '25vw', md: '30vw', lg: '35vw', xl: '40vw', auto: '50vw', full: '90vw' },
+      height: { sm: '30vh', md: '40vh', lg: '50vh', xl: '60vh', auto: '50vh', full: '90vh' },
+    }
+    sideover.value = {
+      size: { sm: '320px', md: '400px', lg: '512px', xl: '640px', full: '100%' },
+    }
+    // Reset explícito: persistir los defaults para que la recarga no recupere
+    // la configuración anterior.
+    store.registerCustom(
+      { ...colors.value },
+      sharedSnapshot(),
+      parseInt(shadowOpacityRaw.value) || 10,
+    )
   }
 
   function syncSharedFromPlugin() {
@@ -117,7 +173,11 @@ export function useThemeBuilder() {
     if (s.typography) typography.value = { ...typography.value, ...s.typography }
     if (s.spacing) spacing.value = { ...spacing.value, ...s.spacing }
     if (s.borderRadius) borderRadius.value = { ...borderRadius.value, ...s.borderRadius }
-    if (s.borders) borders.value = { ...borders.value, ...s.borders }
+    if (s.borders?.width) borders.value = { width: { ...borders.value.width, ...s.borders.width } }
+    if (s.shadows) shadows.value = normalizeShadows({ ...shadows.value, ...s.shadows })
+    if (s.modal?.size) modal.value = { ...modal.value, size: { ...modal.value.size, ...s.modal.size } }
+    if (s.modal?.height) modal.value = { ...modal.value, height: { ...modal.value.height, ...s.modal.height } }
+    if (s.sideover?.size) sideover.value = { size: { ...sideover.value.size, ...s.sideover.size } }
   }
 
   const importedThemes = ref<string[]>([])
@@ -160,7 +220,7 @@ export function useThemeBuilder() {
     store.applyCustomFromImport({
       colors: { ...rest },
       opacities: { shadow: cfg?.opacities?.[name]?.shadow ?? cfg?.opacities?.default?.shadow ?? 10 },
-      ...sharedSnapshot(),
+      shared: sharedSnapshot(),
     })
 
     isEditing.value = true
@@ -180,6 +240,12 @@ export function useThemeBuilder() {
       spacing: { ...DEFAULTS.spacing, ...(cfg?.spacing ?? {}) },
       borderRadius: { ...DEFAULTS.borderRadius, ...(cfg?.borderRadius ?? {}) },
       borders: { width: { ...DEFAULTS.borders.width, ...(cfg?.borders?.width ?? {}) } },
+      shadows: normalizeShadows({ ...shadows.value, ...(cfg?.shadows ?? {}) }),
+      modal: {
+        size: { ...DEFAULTS.modal.size, ...(cfg?.modal?.size ?? {}) },
+        height: { ...DEFAULTS.modal.height, ...(cfg?.modal?.height ?? {}) },
+      },
+      sideover: { size: { ...DEFAULTS.sideover.size, ...(cfg?.sideover?.size ?? {}) } },
     }
 
     store.applyCustomFromImport({
@@ -195,6 +261,9 @@ export function useThemeBuilder() {
     spacing.value = merged.spacing
     borderRadius.value = merged.borderRadius
     borders.value = { ...borders.value, width: merged.borders.width }
+    shadows.value = merged.shadows
+    modal.value = merged.modal
+    sideover.value = merged.sideover
     showImportPicker.value = false
   }
 
@@ -223,15 +292,23 @@ export function useThemeBuilder() {
     URL.revokeObjectURL(url)
   }
 
-  onMounted(() => {
+  // El plugin carga comegen.config.json de forma asíncrona; recién entonces
+  // existen el tema custom restaurado de localStorage y su shared persistido.
+  // Sin esto el form arranca en defaults aunque el tema ya esté aplicado.
+  function syncFromPlugin() {
     syncSharedFromPlugin()
-    initColorsFromTheme(themeName.value)
+    initColorsFromTheme(themeName.value || 'light')
     shadowOpacityRaw.value = String(resolveOpacity(themeName.value))
     isEditing.value = store.isCustom
+  }
+
+  onMounted(syncFromPlugin)
+  watch(loaded, (value) => {
+    if (value) syncFromPlugin()
   })
 
   // Detectar cambios → solo cuando está editando (isEditing)
-  watch([colors, shadowOpacityRaw, typography, spacing, borderRadius, borders], () => {
+  watch([colors, shadowOpacityRaw, typography, spacing, borderRadius, borders, shadows, modal, sideover], () => {
     if (!isEditing.value) return
     store.registerCustom(
       { ...colors.value },
@@ -254,7 +331,12 @@ export function useThemeBuilder() {
     spacing,
     borderRadius,
     borders,
-    shadowPreview,
+    shadows,
+    shadowRows,
+    updateShadow,
+    commitShadow,
+    modal,
+    sideover,
     cssExport,
     exportConfig,
     importConfig,

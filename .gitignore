@@ -74,3 +74,7 @@ graphify-out
 
 # Playwright MCP (artefactos de sesión)
 .playwright-mcp/
+.commandcode/
+.delta/
+.opencode/
+.vscode/

@@ -76,10 +76,10 @@ export const DEFAULTS = {
     full: '9999px'
   },
   shadows: {
-    sm: '0 1px 2px',
-    md: '0 4px 6px',
-    lg: '0 10px 15px',
-    xl: '0 20px 25px'
+    sm: '0px 1px 2px',
+    md: '0px 4px 6px',
+    lg: '0px 10px 15px',
+    xl: '0px 20px 25px'
   },
   borders: {
     width: {
