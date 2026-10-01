@@ -53,6 +53,8 @@ function sharedBlock(shared: any) {
     --cu-font-size-lg: ${shared.typography.fontSize.lg};
     --cu-font-size-xl: ${shared.typography.fontSize.xl};
     --cu-font-size-2xl: ${shared.typography.fontSize['2xl']};
+    --cu-font-size-3xl: ${shared.typography.fontSize['3xl']};
+    --cu-font-size-4xl: ${shared.typography.fontSize['4xl']};
     --cu-font-weight-normal: ${shared.typography.fontWeight.normal};
     --cu-font-weight-medium: ${shared.typography.fontWeight.medium};
     --cu-font-weight-semibold: ${shared.typography.fontWeight.semibold};
@@ -70,6 +72,8 @@ function sharedBlock(shared: any) {
     --cu-space-xl: ${shared.spacing.xl};
     --cu-space-2xl: ${shared.spacing['2xl']};
     --cu-space-3xl: ${shared.spacing['3xl']};
+    --cu-space-4xl: ${shared.spacing['4xl']};
+    --cu-space-5xl: ${shared.spacing['5xl']};
 
     /* Border Radius */
     --cu-radius: ${shared.borderRadius.default};
@@ -84,7 +88,7 @@ function sharedBlock(shared: any) {
     --cu-border-thin: ${shared.borders.width.thin};
     --cu-border-medium: ${shared.borders.width.medium};
     --cu-border-thick: ${shared.borders.width.thick};
-    --cu-border-color: ${shared.borders.color.default};`
+    --cu-border-color: ${DEFAULTS.default};`
 }
 
 function generateTokensCSS(): string {
