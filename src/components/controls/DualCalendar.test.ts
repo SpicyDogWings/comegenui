@@ -57,7 +57,9 @@ describe('DualCalendar', () => {
   })
 
   it('setRange/clear actualizan el pintado de ambos calendarios', async () => {
-    const w = mount(DualCalendar)
+    // `startDate` fija los meses visibles (sept/oct) para que el rango hardcodeado
+    // quede a la vista sin depender del mes actual.
+    const w = mount(DualCalendar, { props: { startDate: '2026-09-01' } })
     ;(w.vm as unknown as { setRange: (a: string, b: string) => void }).setRange(
       '2026-09-10',
       '2026-10-05',
