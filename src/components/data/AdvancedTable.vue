@@ -334,6 +334,7 @@ const tableProps = computed(() => ({
   rowDisabled: props.rowDisabled,
   footer: props.footer,
   compact: props.compact,
+  maxHeight: props.tableMaxHeight,
 }));
 
 const tableStyles = computed(() => ({

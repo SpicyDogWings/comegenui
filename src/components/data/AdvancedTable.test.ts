@@ -3,6 +3,7 @@ import { flushPromises, mount } from "@vue/test-utils";
 import { defineCustomElement, nextTick } from "vue";
 
 import AdvancedTable from "@/components/data/AdvancedTable.vue";
+import Table from "@/components/data/Table.vue";
 import AdvancedTableCe from "@/components/customElements/data/AdvancedTable.ce.vue";
 
 const columns = [
@@ -44,6 +45,13 @@ describe("AdvancedTable (Vue)", () => {
     });
     expect(w.find(".mi-header").exists()).toBe(true);
     expect(w.find(".mi-header").text()).toBe("ROL!");
+  });
+
+  it("forwardea `tableMaxHeight` al Table interno", () => {
+    const w = mount(AdvancedTable, {
+      props: { columns, data, tableMaxHeight: "20rem" },
+    });
+    expect(w.findComponent(Table).props("maxHeight")).toBe("20rem");
   });
 });
 
