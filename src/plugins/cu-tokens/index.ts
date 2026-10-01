@@ -171,3 +171,5 @@ export default {
 }
 
 export { theme, loaded, setTheme, getThemeNames, registerTheme, setShared, getShared, getThemeCSS, applyFullConfig, themes as allThemes, builtInNames, opacities, init }
+export { stripShadowColor, parseShadow, composeShadow } from './shadow'
+export type { ShadowGeometry } from './shadow'
