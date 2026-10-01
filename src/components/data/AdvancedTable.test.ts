@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { flushPromises, mount } from "@vue/test-utils";
-import { defineCustomElement } from "vue";
+import { defineCustomElement, nextTick } from "vue";
 
 import AdvancedTable from "@/components/data/AdvancedTable.vue";
 import AdvancedTableCe from "@/components/customElements/data/AdvancedTable.ce.vue";
@@ -93,6 +93,27 @@ describe("AdvancedTable.ce (cu-table vanilla)", () => {
     await flushPromises();
     const ths = el.shadowRoot.querySelectorAll("thead th");
     expect(ths[ths.length - 1].textContent.trim()).toBe("");
+    el.remove();
+  });
+
+  it("renderiza outlets `<slot>` nativos para los slots del host", async () => {
+    const el = document.createElement(TAG) as any;
+    el.columns = columns;
+    el.data = data;
+    el.actions = actions;
+    const footer = document.createElement("span");
+    footer.setAttribute("slot", "footer");
+    footer.textContent = "total";
+    const header = document.createElement("span");
+    header.setAttribute("slot", "header-__actions__");
+    header.textContent = "SLOT ACCIONES";
+    el.append(footer, header);
+    document.body.appendChild(el);
+    await nextTick();
+    await flushPromises();
+
+    expect(el.shadowRoot.querySelector('slot[name="footer"]')).not.toBeNull();
+    expect(el.shadowRoot.querySelector('slot[name="header-__actions__"]')).not.toBeNull();
     el.remove();
   });
 });

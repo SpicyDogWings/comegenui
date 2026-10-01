@@ -124,7 +124,9 @@ o slot), `compact`, `tableMaxHeight` y los métodos `updateRow`, `getData`, `get
   edita y sus botones/acciones se deshabilitan.
 - **Slots por columna:** `header-{key}` (scoped `{ column, color, variant }`), `cell-{key}` (scoped
   `{ row, column, index, value }`), `template` (fila completa), `search` (scoped `{ query, update }`),
-  `empty` y `footer`. El CE reenvía **todos** los slots del host.
+  `empty` y `footer`. En `<cu-table>` se pasan como **slots nativos** (`<span slot="header-rol">…`):
+  el CE los descubre del host, pero **no reciben el scope** (los scoped slots no existen en custom
+  elements). En `<AdvancedTable>` (Vue) sí reciben el scope.
 - **No hay eventos custom `input`/`change`** de la tabla; los nativos burbujean solos.
 
 ## API del custom element
