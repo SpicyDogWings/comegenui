@@ -44,6 +44,7 @@ import { useThemeBuilder } from '@/composables/useThemeBuilder'
 const {
   themeName, showEditBtn, isEditing, enableEditing,
   colors, shadowOpacityRaw, typography, spacing, borderRadius, borders,
+  shadows, modal, sideover,
   shadowPreview, cssExport, resetToDefaults,
   importConfig, importedThemes, showImportPicker, lastImportedConfig, applyImportedTheme,
   handleExport, handleCopyCSS, handleDownloadCSS,
@@ -347,6 +348,48 @@ function handleImport(config: any) {
           </div>
         </Collapse>
 
+        <Collapse label="Shadows" :default-open="false">
+          <div class="tb-grid">
+            <div v-for="(value, key) in shadows" :key="key" class="tb-field">
+              <Label :label="key" color="var(--cu-color-neutral)" />
+              <Input v-model="shadows[key]" :disabled="!isEditing" />
+            </div>
+          </div>
+        </Collapse>
+
+        <Collapse label="Modal" :default-open="false">
+          <div class="tb-group">
+            <h3>Size</h3>
+            <div class="tb-grid">
+              <div v-for="(value, key) in modal.size" :key="key" class="tb-field">
+                <Label :label="key" color="var(--cu-color-neutral)" />
+                <Input v-model="modal.size[key]" :disabled="!isEditing" />
+              </div>
+            </div>
+          </div>
+          <div class="tb-group">
+            <h3>Height</h3>
+            <div class="tb-grid">
+              <div v-for="(value, key) in modal.height" :key="key" class="tb-field">
+                <Label :label="key" color="var(--cu-color-neutral)" />
+                <Input v-model="modal.height[key]" :disabled="!isEditing" />
+              </div>
+            </div>
+          </div>
+        </Collapse>
+
+        <Collapse label="Side Over" :default-open="false">
+          <div class="tb-group">
+            <h3>Size</h3>
+            <div class="tb-grid">
+              <div v-for="(value, key) in sideover.size" :key="key" class="tb-field">
+                <Label :label="key" color="var(--cu-color-neutral)" />
+                <Input v-model="sideover.size[key]" :disabled="!isEditing" />
+              </div>
+            </div>
+          </div>
+        </Collapse>
+
         <Collapse label="Opacities" :default-open="false">
           <div class="tb-colors-list">
             <div class="tb-field">
@@ -473,7 +516,8 @@ function handleImport(config: any) {
 <style scoped>
 /* Colores del form: heredan el tema activo (resolveInk en colorsBlock es la
    única fuente de verdad). Acá solo lo estructural — la tipografía y los
-   espacios quedan fijos para que el form no se mueva. */
+   espacios quedan fijos para que el form no se mueva. El radio NO se fija:
+   los controles (incluido el trigger del Collapse) siguen el tema activo. */
 .tb-controls {
   --cu-font-sans: Inter, system-ui, sans-serif;
   --cu-font-mono: Fira Code, monospace;
@@ -483,7 +527,6 @@ function handleImport(config: any) {
   --cu-font-weight-semibold: 600;
   --cu-space-xs: 4px;
   --cu-space-sm: 8px;
-  --cu-radius: 8px;
   --cu-border-thin: 1px;
   display: flex;
   flex-direction: column;
@@ -497,7 +540,7 @@ function handleImport(config: any) {
 }
 
 .tb-controls {
-  flex: 0 0 400px;
+  flex: 0 0 18rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -1366,7 +1409,7 @@ function handleImport(config: any) {
 
 .tb-colors-list {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1fr;
   gap: 0.5rem;
 }
 
@@ -1412,12 +1455,27 @@ function handleImport(config: any) {
 }
 
 .tb-page {
-  width: 100%;
+  width: 95vw;
+  margin: 0 auto;
+  padding: 4rem 2.5rem 5rem;
+  box-sizing: border-box;
 }
 
 .playground-separator {
   border: none;
   border-top: 1px solid var(--cu-border-color);
   margin: 0;
+}
+
+@media (max-width: 56rem) {
+  .tb-page {
+    padding: 3rem 1.5rem 4rem;
+  }
+  .tb-layout {
+    flex-direction: column;
+  }
+  .tb-controls {
+    flex: 0 0 auto;
+  }
 }
 </style>

@@ -9,10 +9,6 @@ const shared = ref<any>({})
 const opacities = ref<Record<string, { shadow: number }>>({ ...DEFAULT_OPACITIES })
 const themeNames = ref<string[]>([])
 const builtInNames = ref<string[]>([])
-// Temas registrados en runtime (ej: el import del ThemeBuilder) — persisten
-// en localStorage para sobrevivir recargas.
-const customThemes = ref<Record<string, Record<string, string>>>({})
-const CUSTOM_KEY = 'cu-custom-themes'
 
 function detectTheme(): string {
   const saved = localStorage.getItem('cu-theme')
@@ -77,7 +73,6 @@ async function init() {
     themeNames.value = ['light']
     builtInNames.value = ['light']
   } finally {
-    restoreCustomThemes()
     ensureCustomTheme()
     loaded.value = true
     theme.value = detectTheme()
@@ -105,12 +100,12 @@ function getThemeNames() {
   return themeNames.value
 }
 
-// Registra (o actualiza) un tema en runtime: queda en el theme chooser, su CSS
-// se regenera con el resto y persiste en localStorage.
+// Registra (o actualiza) un tema en runtime: queda en el theme chooser y su CSS
+// se regenera con el resto. La persistencia es responsabilidad del store (que
+// guarda los valores custom en localStorage); el plugin es la fuente de verdad.
 // opacity: per-theme shadow opacity (1-100). shared: typography/spacing/radius/borders.
 function registerTheme(name: string, colors: Record<string, string>, opts?: { opacity?: number; shared?: any }) {
   const merged = { ...extractColors(DEFAULTS), ...colors }
-  customThemes.value = { ...customThemes.value, [name]: colors }
   themes.value[name] = { colors: merged }
   if (!themeNames.value.includes(name)) themeNames.value = [...themeNames.value, name]
   if (opts?.opacity !== undefined) {
@@ -119,9 +114,6 @@ function registerTheme(name: string, colors: Record<string, string>, opts?: { op
   if (opts?.shared) {
     shared.value = { ...shared.value, ...opts.shared }
   }
-  try {
-    localStorage.setItem(CUSTOM_KEY, JSON.stringify(customThemes.value))
-  } catch {}
   regenerateCSS()
 }
 
@@ -170,19 +162,6 @@ function applyFullConfig(config: {
   }
 
   regenerateCSS()
-}
-
-function restoreCustomThemes() {
-  try {
-    const raw = localStorage.getItem(CUSTOM_KEY)
-    if (!raw) return
-    const stored = JSON.parse(raw) as Record<string, Record<string, string>>
-    for (const [name, colors] of Object.entries(stored)) {
-      customThemes.value = { ...customThemes.value, [name]: colors }
-      themes.value[name] = { colors: { ...extractColors(DEFAULTS), ...colors } }
-      if (!themeNames.value.includes(name)) themeNames.value = [...themeNames.value, name]
-    }
-  } catch {}
 }
 
 export default {
