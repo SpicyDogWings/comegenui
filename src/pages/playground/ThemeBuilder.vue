@@ -473,7 +473,8 @@ function handleImport(config: any) {
 <style scoped>
 /* Colores del form: heredan el tema activo (resolveInk en colorsBlock es la
    única fuente de verdad). Acá solo lo estructural — la tipografía y los
-   espacios quedan fijos para que el form no se mueva. */
+   espacios quedan fijos para que el form no se mueva. El radio NO se fija:
+   los controles (incluido el trigger del Collapse) siguen el tema activo. */
 .tb-controls {
   --cu-font-sans: Inter, system-ui, sans-serif;
   --cu-font-mono: Fira Code, monospace;
@@ -483,7 +484,6 @@ function handleImport(config: any) {
   --cu-font-weight-semibold: 600;
   --cu-space-xs: 4px;
   --cu-space-sm: 8px;
-  --cu-radius: 8px;
   --cu-border-thin: 1px;
   display: flex;
   flex-direction: column;
