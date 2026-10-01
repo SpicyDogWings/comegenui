@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { colorsBlock, colorVar, generateThemeCSS, generateThemesCSS, resolveInk } from './css'
 import { DEFAULTS, extractShared } from './defaults'
+import { stripShadowColor, parseShadow, composeShadow } from './shadow'
 
 const COLORS = {
   primary: '#E73F1E',
@@ -130,5 +131,31 @@ describe('sharedBlock: tokens completos', () => {
     expect(css).toContain('--cu-space-2xs: 1px')
     expect(css).toContain('--cu-space-4xl: 64px')
     expect(css).toContain('--cu-space-5xl: 80px')
+  })
+})
+
+describe('sombras: geometría + var(--cu-shadow-color)', () => {
+  it('emite la geometría con el color del tema, sin rgba embebido', () => {
+    const css = generateThemesCSS({ light: { colors: COLORS } }, extractShared(DEFAULTS), OPACITIES)
+    expect(css).toContain('--cu-shadow-sm: 0 1px 2px var(--cu-shadow-color')
+    expect(css).toContain('--cu-shadow-xl: 0 20px 25px var(--cu-shadow-color')
+    expect(css).not.toMatch(/--cu-shadow-(?:sm|md|lg|xl):[^;]*(?:rgba|#)/)
+  })
+
+  it('--cu-shadow-color sale del color shadow + la opacidad del tema', () => {
+    const themes = { light: { colors: { ...COLORS, shadow: '#102030' } } }
+    const css = generateThemesCSS(themes, extractShared(DEFAULTS), { default: { shadow: 25 } })
+    expect(css).toContain('--cu-shadow-color: rgba(16, 32, 48, 0.25)')
+  })
+
+  it('stripShadowColor saca el color legacy', () => {
+    expect(stripShadowColor('0 4px 6px rgba(0,0,0,0.1)')).toBe('0 4px 6px')
+    expect(stripShadowColor('0 1px 2px #000')).toBe('0 1px 2px')
+  })
+
+  it('parseShadow/composeShadow hacen round-trip', () => {
+    expect(parseShadow('0 4px 6px rgba(0,0,0,0.1)')).toEqual({ x: '0', y: '4px', blur: '6px' })
+    expect(parseShadow('')).toEqual({ x: '0', y: '0', blur: '0' })
+    expect(composeShadow({ x: '0', y: '4px', blur: '6px' })).toBe('0 4px 6px')
   })
 })
