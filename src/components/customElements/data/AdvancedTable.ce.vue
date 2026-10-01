@@ -132,6 +132,8 @@ const props = defineProps({
   loading: { type: Boolean, required: false, default: false },
   /** Acciones de fila (botón "..." al final de cada fila). Se asigna como propiedad JS */
   actions: { type: Array, required: false, default: () => [] },
+  /** Texto del header de la columna de acciones. Default vacío. Atributo HTML: `actions-label` */
+  actionsLabel: { type: String, required: false, default: "" },
   /** Deshabilita filas (ver [Deshabilitar filas, columnas y celdas](#deshabilitar-filas-columnas-y-celdas)). Se asigna como propiedad JS */
   rowDisabled: { type: [Boolean, Function] as PropType<boolean | ((row: Record<string, any>) => boolean)>, required: false, default: false },
   /** Filas de footer (ver [Footer (API programática)](#footer-api-programática)). Se asigna como propiedad JS */
@@ -175,6 +177,7 @@ defineExpose({
     :filters="props.filters"
     :loading="props.loading"
     :actions="props.actions"
+    :actions-label="props.actionsLabel"
     :row-disabled="props.rowDisabled"
     :footer="props.footer"
     :table-max-height="props.tableMaxHeight"

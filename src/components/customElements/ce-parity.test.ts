@@ -289,17 +289,18 @@ describe("Markdown.ce", () => {
 });
 
 describe("AdvancedTable.ce (cu-table)", () => {
-  it("forwardea `compact`, `inlineEditing` y `tableMaxHeight`", () => {
+  it("forwardea `compact`, `inlineEditing`, `tableMaxHeight` y `actionsLabel`", () => {
     const w = mount(TableCe, {
-      props: { compact: true, inlineEditing: true, tableMaxHeight: "20rem" },
+      props: { compact: true, inlineEditing: true, tableMaxHeight: "20rem", actionsLabel: "Acciones" },
     });
     const inner = w.findComponent(AdvancedTable);
     expect(inner.props("compact")).toBe(true);
     expect(inner.props("inlineEditing")).toBe(true);
     expect(inner.props("tableMaxHeight")).toBe("20rem");
+    expect(inner.props("actionsLabel")).toBe("Acciones");
   });
 
-  it("reenvía los slots del host", () => {
+  it("reenvía los slots del host (montado como componente Vue)", () => {
     const w = mount(TableCe, {
       props: { data: [], columns: [] },
       slots: { footer: '<span class="mi-footer">total</span>' },

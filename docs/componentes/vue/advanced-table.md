@@ -93,6 +93,8 @@ La celda renderiza el editor (input / select / textarea / autocomplete) **direct
 
 Es un array de `ButtonConfig`. Cuando se asigna, la tabla agrega automáticamente una columna al final con un dropdown "..." que muestra las acciones. El `onClick` recibe la fila completa.
 
+El header de esa columna queda **vacío** por defecto; podés ponerle texto con la prop `actionsLabel` (en el custom element, atributo `actions-label`):
+
 ```vue
 <script setup lang="ts">
 import AdvancedTable from "@/components/data/AdvancedTable.vue";
@@ -105,7 +107,7 @@ const actions = ref([
 </script>
 
 <template>
-  <AdvancedTable :columns="columns" :data="data" :actions="actions" />
+  <AdvancedTable :columns="columns" :data="data" :actions="actions" actions-label="Acciones" />
 </template>
 ```
 
@@ -1055,6 +1057,7 @@ En variantes transparentes (`outlined`, `ghost`) se aplica `backdrop-filter: blu
 | `filters` | `Record<string, any>` | `{}` | — |
 | `loading` | `boolean` | `false` | — |
 | `actions` | `ButtonConfig[]` | `[]` | — |
+| `actionsLabel` | `string` | `""` | — |
 | `rowDisabled` | `boolean \| ((row: Record<string, any>) => boolean)` | `false` | — |
 | `footer` | `FooterRow[]` | `[]` | — |
 | `tableMaxHeight` | `string` | `""` | — |

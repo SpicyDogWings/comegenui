@@ -92,9 +92,10 @@ variantes (`solid`, `outlined`, `soft`, `ghost`, `subtle`), búsqueda (`searchEn
 (`sortable`: `true`, `'string'`, `'number'`, `'boolean'`), paginación (`pagination`, `itemsPerPage`,
 `showPageSize`, `pageSizeOptions`), edición por celda (`editable`, `inlineEdit`, `singleClick`,
 `inputType`, `selectOptions`, `date`, `switch`, `validator`), badges y botones por celda, `actions`
-(dropdown "..." automático al final), `rowDisabled` / `column.disabled` / `column.cellDisabled`,
-`loading`, `footer` (prop o slot), `compact`, `tableMaxHeight` y los métodos `updateRow`, `getData`,
-`getRow`, `removeRow`, `addRow`, `pushData`.
+(dropdown "..." automático al final) con header configurable (`actionsLabel` / `actions-label`,
+default vacío), `rowDisabled` / `column.disabled` / `column.cellDisabled`, `loading`, `footer` (prop
+o slot), `compact`, `tableMaxHeight` y los métodos `updateRow`, `getData`, `getRow`, `removeRow`,
+`addRow`, `pushData`.
 
 **No puede:**
 
@@ -149,6 +150,7 @@ variantes (`solid`, `outlined`, `soft`, `ghost`, `subtle`), búsqueda (`searchEn
 | `filters` | `Record<string, any>` | `{}` | Filtros por columna. Se asigna como propiedad JS |
 | `loading` | `boolean` | `false` | Muestra una barra de carga animada en el tope |
 | `actions` | `unknown[]` | `[]` | Acciones de fila (botón "..." al final de cada fila). Se asigna como propiedad JS |
+| `actions-label` | `string` | `""` | Texto del header de la columna de acciones. Default vacío. Atributo HTML: `actions-label` |
 | `row-disabled` | `boolean \| ((row: Record<string, any>) => boolean)` | `false` | Deshabilita filas (ver [Deshabilitar filas, columnas y celdas](#deshabilitar-filas-columnas-y-celdas)). Se asigna como propiedad JS |
 | `footer` | `FooterRow[]` | `[]` | Filas de footer (ver [Footer (API programática)](#footer-api-programática)). Se asigna como propiedad JS |
 | `table-max-height` | `string` | `""` | Alto máximo del área scrolleable (CSS, ej. `40rem`). Atributo HTML: `table-max-height` |
@@ -212,6 +214,7 @@ Ninguno.
 | `filters` | `Record<string, any>` | `{}` | — |
 | `loading` | `boolean` | `false` | — |
 | `actions` | `ButtonConfig[]` | `[]` | — |
+| `actionsLabel` | `string` | `""` | — |
 | `rowDisabled` | `boolean \| ((row: Record<string, any>) => boolean)` | `false` | — |
 | `footer` | `FooterRow[]` | `[]` | — |
 | `tableMaxHeight` | `string` | `""` | — |
