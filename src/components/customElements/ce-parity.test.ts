@@ -1,12 +1,17 @@
 // Paridad de los wrappers CE con su `.vue`: props que no llegaban al componente
 // interno, eventos y slots que no se reenviaban, y métodos que no se exponían.
-import { describe, expect, it, vi } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 import { flushPromises, mount } from "@vue/test-utils";
 
 import AvatarCe from "@/components/customElements/information/Avatar.ce.vue";
 import CollapseCe from "@/components/customElements/overlay/Collapse.ce.vue";
 import InputCe from "@/components/customElements/form/Input.ce.vue";
 import AutocompleteCe from "@/components/customElements/form/Autocomplete.ce.vue";
+import FileInputCe from "@/components/customElements/form/FileInput.ce.vue";
+import FileInputZoneCe from "@/components/customElements/form/FileInputZone.ce.vue";
+import SwitchCe from "@/components/customElements/form/Switch.ce.vue";
+import CheckboxCe from "@/components/customElements/form/Checkbox.ce.vue";
+import ColorPickerCe from "@/components/customElements/form/ColorPicker.ce.vue";
 import CommandPaletteCe from "@/components/customElements/overlay/CommandPalette.ce.vue";
 import TooltipCe from "@/components/customElements/overlay/Tooltip.ce.vue";
 import MarkdownCe from "@/components/customElements/markdown/Markdown.ce.vue";
@@ -47,6 +52,116 @@ describe("Input.ce", () => {
     const w = mount(InputCe, { props: { size: "lg" } });
     expect(w.findComponent(Input).props("size")).toBe("lg");
     expect(w.find("input").classes()).toContain("cu-input--lg");
+  });
+});
+
+describe("FileInput.ce", () => {
+  beforeAll(() => {
+    // jsdom no implementa createObjectURL, que `FileInput.vue` usa para el link.
+    URL.createObjectURL = vi.fn(() => "blob:mock");
+    URL.revokeObjectURL = vi.fn();
+  });
+
+  it("set() actualiza el archivo interno y get() lo refleja", async () => {
+    const w = mount(FileInputCe);
+    const file = new File(["hola"], "hola.txt", { type: "text/plain" });
+    w.vm.set(file);
+    await flushPromises();
+    expect(w.vm.get()).toBe(file);
+  });
+
+  it("emite `update:modelValue` al setear", async () => {
+    const w = mount(FileInputCe);
+    const updates: (File | null)[] = [];
+    w.element.addEventListener("update:modelValue", (e) =>
+      updates.push((e as CustomEvent).detail),
+    );
+    const file = new File(["hola"], "hola.txt", { type: "text/plain" });
+    w.vm.set(file);
+    await flushPromises();
+    expect(updates).toEqual([file]);
+  });
+});
+
+describe("FileInputZone.ce", () => {
+  it("set() actualiza los archivos internos y get() los refleja", async () => {
+    const w = mount(FileInputZoneCe);
+    const files = [new File(["a"], "a.txt", { type: "text/plain" })];
+    w.vm.set(files);
+    await flushPromises();
+    expect(w.vm.get()).toEqual(files);
+  });
+
+  it("emite `update:modelValue` al setear", async () => {
+    const w = mount(FileInputZoneCe);
+    const updates: unknown[] = [];
+    w.element.addEventListener("update:modelValue", (e) =>
+      updates.push((e as CustomEvent).detail),
+    );
+    const files = [new File(["a"], "a.txt", { type: "text/plain" })];
+    w.vm.set(files);
+    await flushPromises();
+    expect(updates).toEqual([files]);
+  });
+});
+
+describe("Switch.ce", () => {
+  it("set() actualiza el estado interno y get() lo refleja", async () => {
+    const w = mount(SwitchCe);
+    w.vm.set(true);
+    await flushPromises();
+    expect(w.vm.get()).toBe(true);
+  });
+
+  it("emite `update:modelValue` al cambiar", async () => {
+    const w = mount(SwitchCe);
+    const updates: boolean[] = [];
+    w.element.addEventListener("update:modelValue", (e) =>
+      updates.push((e as CustomEvent).detail),
+    );
+    w.vm.set(true);
+    await flushPromises();
+    expect(updates).toEqual([true]);
+  });
+});
+
+describe("Checkbox.ce", () => {
+  it("set() actualiza el estado interno y get() lo refleja", async () => {
+    const w = mount(CheckboxCe);
+    w.vm.set(true);
+    await flushPromises();
+    expect(w.vm.get()).toBe(true);
+  });
+
+  it("emite `update:modelValue` al cambiar", async () => {
+    const w = mount(CheckboxCe);
+    const updates: boolean[] = [];
+    w.element.addEventListener("update:modelValue", (e) =>
+      updates.push((e as CustomEvent).detail),
+    );
+    w.vm.set(true);
+    await flushPromises();
+    expect(updates).toEqual([true]);
+  });
+});
+
+describe("ColorPicker.ce", () => {
+  it("set() actualiza el color interno y get() lo refleja", async () => {
+    const w = mount(ColorPickerCe);
+    w.vm.set("#ff0000");
+    await flushPromises();
+    expect(w.vm.get()).toBe("#ff0000");
+  });
+
+  it("emite `update:modelValue` al cambiar", async () => {
+    const w = mount(ColorPickerCe);
+    const updates: string[] = [];
+    w.element.addEventListener("update:modelValue", (e) =>
+      updates.push((e as CustomEvent).detail),
+    );
+    w.vm.set("#ff0000");
+    await flushPromises();
+    expect(updates).toEqual(["#ff0000"]);
   });
 });
 

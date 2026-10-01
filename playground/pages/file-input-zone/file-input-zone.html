@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="es" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>File Input Zone — Playground Vanilla</title>
+    <link rel="stylesheet" href="../../style.css" />
+    <link rel="stylesheet" href="../../public/css/comegen-sigfi-theme.css" />
+    <script src="../../../dist-lib/CuFileInputZone.umd.js"></script>
+    <style>
+      .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end; margin: 12px 0; }
+      .field { display: flex; flex-direction: column; gap: 4px; font-size: 12px; opacity: .7; min-width: 280px; flex: 1; }
+      .demo-btn {
+        border: 1px solid var(--cu-border-color, #cbd5e1);
+        background: transparent;
+        color: inherit;
+        border-radius: 6px;
+        padding: 6px 12px;
+        font-size: 13px;
+        cursor: pointer;
+      }
+      .demo-btn:hover { background: var(--cu-color-neutral-soft, #f1f5f9); }
+      .log {
+        width: 100%;
+        margin-top: 12px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        background: var(--cu-color-neutral-soft, #f1f5f9);
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 12px;
+        line-height: 1.6;
+        white-space: pre-wrap;
+        max-height: 220px;
+        overflow: auto;
+        box-sizing: border-box;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <h1 style="font-size:16px;font-weight:600">File Input Zone Labs</h1>
+      <div class="topbar-actions">
+        <button class="topbar-btn" id="btnTheme" title="Toggle theme">🌙</button>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="card">
+        <h2>cu-file-input-zone — Custom Element</h2>
+        <p style="font-size:13px;opacity:.65;line-height:1.5;margin:0">
+          <code>get()</code>/<code>set()</code> con archivos múltiples, <code>directory</code> y
+          eventos <code>update:modelValue</code>.
+        </p>
+
+        <div class="row">
+          <div class="field">
+            <span>multiple · accept="image/*"</span>
+            <cu-file-input-zone id="fz" color="primary" multiple accept="image/*" placeholder="Arrastrá imágenes aquí"></cu-file-input-zone>
+          </div>
+          <div class="field">
+            <span>directory · multiple</span>
+            <cu-file-input-zone id="fz-dir" color="neutral" multiple directory placeholder="Arrastrá una carpeta"></cu-file-input-zone>
+          </div>
+        </div>
+
+        <div class="row">
+          <button class="demo-btn" id="btn-get">get()</button>
+          <button class="demo-btn" id="btn-set">set([File, File])</button>
+          <button class="demo-btn" id="btn-reset">reset()</button>
+          <button class="demo-btn" id="btn-trigger">trigger()</button>
+        </div>
+
+        <pre class="log" id="log">—</pre>
+      </div>
+    </div>
+
+    <script>
+      const logEl = document.getElementById('log');
+      const lines = [];
+      function log(msg) {
+        lines.push(msg);
+        logEl.textContent = lines.join('\n');
+        logEl.scrollTop = logEl.scrollHeight;
+      }
+
+      const fz = document.getElementById('fz');
+      const fzDir = document.getElementById('fz-dir');
+
+      function names(value) {
+        if (!value) return 'null';
+        return Array.isArray(value) ? value.map((f) => f.name).join(', ') : value.name;
+      }
+
+      fz.addEventListener('update:modelValue', (e) => log(`[fz] update:modelValue → ${names(e.detail)}`));
+      fzDir.addEventListener('update:modelValue', (e) => log(`[fz-dir] update:modelValue → ${names(e.detail)}`));
+
+      document.getElementById('btn-get').onclick = () => log(`[fz] get() → ${names(fz.get())}`);
+      document.getElementById('btn-set').onclick = () =>
+        fz.set([
+          new File(['a'], 'a.png', { type: 'image/png' }),
+          new File(['b'], 'b.png', { type: 'image/png' }),
+        ]);
+      document.getElementById('btn-reset').onclick = () => fz.reset();
+      document.getElementById('btn-trigger').onclick = () => fz.trigger();
+
+      customElements.whenDefined('cu-file-input-zone').then(() => {
+        fz.set([new File(['a'], 'a.png', { type: 'image/png' })]);
+        log(`[fz] set() inicial → get() = ${names(fz.get())}`);
+      });
+    </script>
+
+    <script src="../../playground.js"></script>
+  </body>
+</html>

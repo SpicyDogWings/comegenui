@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, getCurrentInstance, type PropType } from "vue";
+import { ref, watch, getCurrentInstance, type PropType } from "vue";
 import FileInput from "../../form/FileInput.vue";
 import { initTokens } from "@/plugins/cu-tokens/css";
 
@@ -28,6 +28,11 @@ const props = defineProps({
 });
 
 const fileInputRef = ref<InstanceType<typeof FileInput> | null>(null);
+const localModel = ref<File | null>(props.modelValue);
+
+watch(() => props.modelValue, (val) => {
+  localModel.value = val;
+});
 
 const instance = getCurrentInstance();
 function ceEmit(event: string, payload: unknown) {
@@ -40,6 +45,11 @@ function ceEmit(event: string, payload: unknown) {
       composed: true,
     }));
   }
+}
+
+function onUpdate(val: File | null) {
+  localModel.value = val;
+  ceEmit("update:modelValue", val);
 }
 
 /** Devuelve el `File` actual o `null` */
@@ -59,7 +69,7 @@ defineExpose({ get, set, reset, focus, trigger });
 <template>
   <FileInput
     ref="fileInputRef"
-    :model-value="props.modelValue"
+    :model-value="localModel"
     :color="props.color"
     :variant="props.variant"
     :placeholder="props.placeholder"
@@ -67,7 +77,7 @@ defineExpose({ get, set, reset, focus, trigger });
     :read-only="props.readOnly"
     :accept="props.accept"
     :max-size="props.maxSize"
-    @update:model-value="ceEmit('update:modelValue', $event)"
+    @update:model-value="onUpdate"
   />
 </template>
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, getCurrentInstance } from "vue";
+import { ref, watch, getCurrentInstance } from "vue";
 import ColorPicker from "../../form/ColorPicker.vue";
 
 const props = defineProps({
@@ -12,6 +12,12 @@ const props = defineProps({
 });
 
 const pickerRef = ref<InstanceType<typeof ColorPicker> | null>(null);
+const localModel = ref(props.modelValue);
+
+watch(() => props.modelValue, (val) => {
+  localModel.value = val;
+});
+
 const instance = getCurrentInstance();
 
 function ceEmit(event: string, payload: unknown) {
@@ -24,6 +30,11 @@ function ceEmit(event: string, payload: unknown) {
       composed: true,
     }));
   }
+}
+
+function onUpdate(val: string) {
+  localModel.value = val;
+  ceEmit("update:modelValue", val);
 }
 
 /** Devuelve el color actual (`string` hex) */
@@ -41,10 +52,10 @@ defineExpose({ get, set, reset, focus });
 <template>
   <ColorPicker
     ref="pickerRef"
-    :model-value="props.modelValue"
+    :model-value="localModel"
     :color="props.color"
     :disabled="props.disabled"
-    @update:modelValue="ceEmit('update:modelValue', $event)"
+    @update:model-value="onUpdate"
     @change="ceEmit('change', $event)"
   />
 </template>
