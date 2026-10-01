@@ -1,7 +1,7 @@
 import { darken, toHex, lighten, transparentize, mix } from 'color2k'
 import { DEFAULTS, DEFAULT_COLORS, DEFAULT_OPACITIES, extractColors, extractShared } from './defaults'
 import { hexToRgba } from '@/lib/colors'
-import { stripShadowColor } from './shadow'
+import { normalizeShadow } from './shadow'
 
 let styleEl: HTMLStyleElement | null = null
 
@@ -70,7 +70,7 @@ export function colorsBlock(colors: any, themeName: string, opacities: Record<st
 function shadowVar(name: string, value: string, color?: string) {
   // La sombra guarda solo geometría; el color/alfa sale de `--cu-shadow-color`
   // (color `shadow` + opacidad del tema). Se limpia cualquier color legacy.
-  return `--cu-shadow-${name}: ${stripShadowColor(value)} var(--cu-shadow-color, ${color || '#000000'});`
+  return `--cu-shadow-${name}: ${normalizeShadow(value)} var(--cu-shadow-color, ${color || '#000000'});`
 }
 
 function sharedBlock(shared: any) {

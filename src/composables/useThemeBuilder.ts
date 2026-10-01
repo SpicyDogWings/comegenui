@@ -1,6 +1,6 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import {
-  allThemes, opacities, loaded, parseShadow, composeShadow, stripShadowColor,
+  allThemes, opacities, loaded, parseShadow, composeShadow, normalizeShadow,
 } from '@/plugins/cu-tokens'
 import { useThemeStore } from '@/stores/theme'
 import { DEFAULTS, DEFAULT_COLORS } from '@/plugins/cu-tokens/defaults'
@@ -50,7 +50,7 @@ export function useThemeBuilder() {
 
   function normalizeShadows(source: Record<string, string | undefined> | undefined): Record<ShadowSize, string> {
     return Object.fromEntries(
-      shadowSizes.map((key) => [key, stripShadowColor(source?.[key] ?? DEFAULTS.shadows[key])]),
+      shadowSizes.map((key) => [key, normalizeShadow(source?.[key] ?? DEFAULTS.shadows[key])]),
     ) as Record<ShadowSize, string>
   }
 
@@ -64,6 +64,11 @@ export function useThemeBuilder() {
   function updateShadow(size: ShadowSize, field: ShadowField, value: string) {
     const current = parseShadow(shadows.value[size])
     shadows.value = { ...shadows.value, [size]: composeShadow({ ...current, [field]: value }) }
+  }
+
+  // Al salir del campo: completa la unidad que falte (`0` → `0px`, `0rem` queda igual).
+  function commitShadow(size: ShadowSize) {
+    shadows.value = { ...shadows.value, [size]: normalizeShadow(shadows.value[size]) }
   }
 
   const modal = ref({
@@ -141,10 +146,10 @@ export function useThemeBuilder() {
     borderRadius.value = { default: '8px', none: '0', sm: '4px', md: '8px', lg: '12px', full: '9999px' }
     borders.value = { width: { none: '0', thin: '1px', medium: '2px', thick: '4px' } }
     shadows.value = {
-      sm: '0 1px 2px',
-      md: '0 4px 6px',
-      lg: '0 10px 15px',
-      xl: '0 20px 25px',
+      sm: '0px 1px 2px',
+      md: '0px 4px 6px',
+      lg: '0px 10px 15px',
+      xl: '0px 20px 25px',
     }
     modal.value = {
       size: { sm: '25vw', md: '30vw', lg: '35vw', xl: '40vw', auto: '50vw', full: '90vw' },
@@ -329,6 +334,7 @@ export function useThemeBuilder() {
     shadows,
     shadowRows,
     updateShadow,
+    commitShadow,
     modal,
     sideover,
     cssExport,

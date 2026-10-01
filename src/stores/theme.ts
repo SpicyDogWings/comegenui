@@ -12,7 +12,7 @@ import {
   getShared as pluginGetShared,
   setShared as pluginSetShared,
   applyFullConfig as pluginApplyFullConfig,
-  stripShadowColor,
+  normalizeShadow,
 } from '@/plugins/cu-tokens'
 import { DEFAULTS, DEFAULT_OPACITIES, extractColors } from '@/plugins/cu-tokens/defaults'
 
@@ -40,6 +40,16 @@ type ThemeEntryLike =
   | Record<string, string>
   | { colors?: Record<string, string>; opacity?: unknown; shared?: any }
 
+/** Sombras canónicas: geometría con unidad (sin color), completadas sobre DEFAULTS. */
+function normalizeShadowMap(source: Record<string, string | undefined> | undefined): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries({ ...DEFAULTS.shadows, ...(source ?? {}) }).map(([key, value]) => [
+      key,
+      normalizeShadow(value),
+    ]),
+  )
+}
+
 /** Normaliza/valida una entrada (v2 `{colors,opacity,shared}` o legacy plano). */
 function normalizeConfig(input: ThemeEntryLike | null | undefined): CustomThemeConfig | null {
   if (!input || typeof input !== 'object') return null
@@ -63,12 +73,7 @@ function normalizeConfig(input: ThemeEntryLike | null | undefined): CustomThemeC
       spacing: { ...DEFAULTS.spacing, ...(s.spacing ?? {}) },
       borderRadius: { ...DEFAULTS.borderRadius, ...(s.borderRadius ?? {}) },
       borders: { width: { ...DEFAULTS.borders.width, ...(s.borders?.width ?? {}) } },
-      shadows: Object.fromEntries(
-        Object.entries({ ...DEFAULTS.shadows, ...(s.shadows ?? {}) }).map(([key, value]) => [
-          key,
-          stripShadowColor(value),
-        ]),
-      ),
+      shadows: normalizeShadowMap(s.shadows),
       modal: {
         size: { ...DEFAULTS.modal.size, ...(s.modal?.size ?? {}) },
         height: { ...DEFAULTS.modal.height, ...(s.modal?.height ?? {}) },
@@ -165,16 +170,17 @@ export const useThemeStore = defineStore('theme', () => {
     shared: CustomThemeConfig['shared'],
     opacity: number,
   ) {
+    const normalizedShared = { ...shared, shadows: normalizeShadowMap(shared.shadows) }
     const config: CustomThemeConfig = {
       colors: { ...extractColors(DEFAULTS), ...colors },
-      shared,
+      shared: normalizedShared,
       opacities: { shadow: opacity },
     }
     customConfig.value = config
 
     pluginRegisterTheme('custom', colors, {
       opacity,
-      shared: shared as any,
+      shared: normalizedShared as any,
     })
 
     pluginSetTheme('custom')

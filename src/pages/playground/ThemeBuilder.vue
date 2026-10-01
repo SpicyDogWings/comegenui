@@ -44,7 +44,7 @@ import { useThemeBuilder } from '@/composables/useThemeBuilder'
 const {
   themeName, showEditBtn, isEditing, enableEditing,
   colors, shadowOpacityRaw, typography, spacing, borderRadius, borders,
-  shadowRows, updateShadow, modal, sideover,
+  shadowRows, updateShadow, commitShadow, modal, sideover,
   cssExport, resetToDefaults,
   importConfig, importedThemes, showImportPicker, lastImportedConfig, applyImportedTheme,
   handleExport, handleCopyCSS, handleDownloadCSS,
@@ -372,6 +372,7 @@ function handleImport(config: any) {
                   :model-value="row.x"
                   :disabled="!isEditing"
                   @update:model-value="updateShadow(row.size, 'x', $event)"
+                  @blur="commitShadow(row.size)"
                 />
               </td>
               <td class="cu-table-td">
@@ -380,6 +381,7 @@ function handleImport(config: any) {
                   :model-value="row.y"
                   :disabled="!isEditing"
                   @update:model-value="updateShadow(row.size, 'y', $event)"
+                  @blur="commitShadow(row.size)"
                 />
               </td>
               <td class="cu-table-td">
@@ -388,6 +390,7 @@ function handleImport(config: any) {
                   :model-value="row.blur"
                   :disabled="!isEditing"
                   @update:model-value="updateShadow(row.size, 'blur', $event)"
+                  @blur="commitShadow(row.size)"
                 />
               </td>
             </template>

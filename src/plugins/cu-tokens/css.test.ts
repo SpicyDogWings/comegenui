@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { colorsBlock, colorVar, generateThemeCSS, generateThemesCSS, resolveInk } from './css'
 import { DEFAULTS, extractShared } from './defaults'
-import { stripShadowColor, parseShadow, composeShadow } from './shadow'
+import { stripShadowColor, parseShadow, composeShadow, normalizeShadow, normalizeShadowLength } from './shadow'
 
 const COLORS = {
   primary: '#E73F1E',
@@ -137,8 +137,8 @@ describe('sharedBlock: tokens completos', () => {
 describe('sombras: geometría + var(--cu-shadow-color)', () => {
   it('emite la geometría con el color del tema, sin rgba embebido', () => {
     const css = generateThemesCSS({ light: { colors: COLORS } }, extractShared(DEFAULTS), OPACITIES)
-    expect(css).toContain('--cu-shadow-sm: 0 1px 2px var(--cu-shadow-color')
-    expect(css).toContain('--cu-shadow-xl: 0 20px 25px var(--cu-shadow-color')
+    expect(css).toContain('--cu-shadow-sm: 0px 1px 2px var(--cu-shadow-color')
+    expect(css).toContain('--cu-shadow-xl: 0px 20px 25px var(--cu-shadow-color')
     expect(css).not.toMatch(/--cu-shadow-(?:sm|md|lg|xl):[^;]*(?:rgba|#)/)
   })
 
@@ -157,5 +157,18 @@ describe('sombras: geometría + var(--cu-shadow-color)', () => {
     expect(parseShadow('0 4px 6px rgba(0,0,0,0.1)')).toEqual({ x: '0', y: '4px', blur: '6px' })
     expect(parseShadow('')).toEqual({ x: '0', y: '0', blur: '0' })
     expect(composeShadow({ x: '0', y: '4px', blur: '6px' })).toBe('0 4px 6px')
+  })
+
+  it('normalizeShadowLength asume px cuando no hay unidad', () => {
+    expect(normalizeShadowLength('0')).toBe('0px')
+    expect(normalizeShadowLength('4')).toBe('4px')
+    expect(normalizeShadowLength('.5')).toBe('.5px')
+    expect(normalizeShadowLength('0rem')).toBe('0rem')
+    expect(normalizeShadowLength('2em')).toBe('2em')
+  })
+
+  it('normalizeShadow deja geometría con unidad y sin color', () => {
+    expect(normalizeShadow('0 4px 6px rgba(0,0,0,0.1)')).toBe('0px 4px 6px')
+    expect(normalizeShadow('0rem 0 8')).toBe('0rem 0px 8px')
   })
 })

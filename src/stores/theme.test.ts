@@ -138,7 +138,7 @@ describe('persistencia del tema custom (store)', () => {
     }, 10)
 
     const raw = JSON.parse(localStorage.getItem('cu-custom-themes') as string)
-    expect(raw.custom.shared.shadows.md).toBe('0 0 8px')
+    expect(raw.custom.shared.shadows.md).toBe('0px 0px 8px')
     expect(raw.custom.shared.modal.size.lg).toBe('42vw')
     expect(raw.custom.shared.sideover.size.md).toBe('480px')
 
@@ -152,7 +152,7 @@ describe('persistencia del tema custom (store)', () => {
     await reloaded.init()
     await nextTick()
 
-    expect(store2.customConfig?.shared.shadows.md).toBe('0 0 8px')
+    expect(store2.customConfig?.shared.shadows.md).toBe('0px 0px 8px')
     expect(reloaded.getShared().modal.size.lg).toBe('42vw')
     expect(reloaded.getShared().sideover.size.md).toBe('480px')
   })
@@ -171,8 +171,8 @@ describe('persistencia del tema custom (store)', () => {
 
     const { plugin, store } = await boot()
 
-    expect(store.customConfig?.shared.shadows.sm).toBe('0 1px 2px')
-    expect(plugin.getShared().shadows.sm).toBe('0 1px 2px')
+    expect(store.customConfig?.shared.shadows.sm).toBe('0px 1px 2px')
+    expect(plugin.getShared().shadows.sm).toBe('0px 1px 2px')
   })
 
   it('migra el formato legacy (mapa plano de colores)', async () => {
