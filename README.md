@@ -13,104 +13,110 @@ pnpm dev
 
 > **Para desarrollo** (modificar componentes, contribuir) ver [Instalación desde source](#instalación-desde-source-build-local).
 
-### Opción 1: Descargar build de CI (recomendado)
+Repo oficial: [`github.com/SpicyDogWings/comegenui`](https://github.com/SpicyDogWings/comegenui).
 
-GitLab CI compila la librería automáticamente y publica un artifact con los
-archivos listos para usar: `Cu*.umd.js`, `css/`, `use-comegen/` (skill de uso)
-y los scripts de actualización.
+### Opción 1: Bajar el zip de una Release (recomendado)
 
-**Linux / macOS:**
-```sh
-curl -L -o comegenui.zip "https://gitlab.com/SpicyDogWings/comegen-ui/-/jobs/artifacts/main/download?job=build"
-```
+Cada release de GitHub publica el zip de la lib como asset:
 
-**Windows (PowerShell):**
-```powershell
-Invoke-WebRequest -Uri "https://gitlab.com/SpicyDogWings/comegen-ui/-/jobs/artifacts/main/download?job=build" -OutFile "comegenui.zip"
-```
+1. Ir a [Releases](https://github.com/SpicyDogWings/comegenui/releases).
+2. Descargar el `comegenui-v{version}.zip` del release deseado.
+3. Descomprimirlo en tu proyecto.
 
-**Versión específica (tag/release):** reemplazá `main` por el tag (ej. `v3.0.0`) en la URL.
-
-Cada tag publica una [Release](https://gitlab.com/SpicyDogWings/comegen-ui/-/releases) con el build como asset.
-
-**Descomprimí** en tu proyecto. Los archivos quedan al mismo nivel:
+El zip trae **sólo la lib**:
 
 ```
 tu-proyecto/
 ├── CuButton.umd.js
 ├── CuAlert.umd.js
 ├── ...
-├── css/themes.css
-├── use-comegen/       ← skill de uso (para agentes)
-├── update.sh            ← actualizador Linux/macOS
-├── update.bat           ← actualizador Windows
-└── update.ps1           ← actualizador PowerShell
+├── css/
+│   ├── themes.css      ← todos los temas
+│   └── {tema}.css      ← un archivo por tema (light, dark, …)
+└── README-BUILD.md
+```
+
+> El zip trae **sólo la lib**: no incluye documentación, ni la skill de uso
+> `use-comegen`, ni ningún instalador/actualizador. La instalación es manual:
+> descomprimir y copiar.
+
+### Opción 2: Build desde source (cualquier ref)
+
+Para una versión exacta (rama o tag):
+
+```sh
+git clone https://github.com/SpicyDogWings/comegenui.git
+cd comegenui
+git checkout <ref>          # main, v5.0.0-alpha.3, …
+pnpm install
+pnpm build:lib              # → dist-lib/comegenui-v{version}.zip
 ```
 
 **Uso en HTML:**
+
 ```html
 <link rel="stylesheet" href="css/themes.css">
 <script src="CuButton.umd.js"></script>
 <cu-button color="primary">Guardar</cu-button>
 ```
 
-### Opción 2: Instalación manual (zip del release)
+### Actualizar la lib
 
-1. Ir a [Releases](https://gitlab.com/SpicyDogWings/comegen-ui/-/releases)
-2. Descargar el `.zip` del tag deseado
-3. Extraer en tu proyecto
-4. Cargar los `.umd.js` que necesités con `<script>` y el CSS con `<link>`
+Se reemplazan archivos, no hay instalador:
 
-### Scripts incluidos en el zip
+1. Bajá el zip del ref nuevo (Opción 1 u 2).
+2. **Backup** de tu carpeta actual (opcional pero recomendado).
+3. Copiá los `Cu*.umd.js` nuevos (podés copiar sólo los que usás) y, si cambió el
+   tema, `css/`.
+4. Para confirmar qué versión quedó cargada: `customElements.get('cu-x').comegen.version`
+   (ver [Versionado](docs/site/versionado.md) y `skills/use-comegen/references/versionado.md`).
 
-| Script | Plataforma | Descripción |
-|--------|-----------|-------------|
-| `update.sh` | Linux/macOS | Descarga e instala el último build (o un tag específico) |
-| `update.bat` | Windows (cmd) | Idem, evade ExecutionPolicy |
-| `update.ps1` | Windows (PowerShell) | Idem, versión PowerShell |
+## Skill de uso `use-comegen` (para agentes)
 
-**Uso:**
+La skill de uso **no viaja en el zip**: se instala desde el repo oficial con el CLI
+[`skills`](https://github.com/vercel-labs/skills) (Vercel), que la deja en el directorio
+de tu agente y registra el origen en `skills-lock.json`.
+
 ```sh
-./update.sh                          # actualiza TODA la lib (main)
-./update.sh v3.0.0                   # actualiza TODA la lib (tag específico)
-./update.sh --only CuButton          # actualiza SOLO CuButton
-./update.sh --only CuButton,CuAlert  # actualiza solo esos componentes
-./update.sh --only CuButton v3.0.0   # solo CuButton, desde un tag
+# último `main` (autodetecta el agente; forzá con -a opencode, -a claude-code, …)
+npx skills add SpicyDogWings/comegenui --skill use-comegen
+
+# fijar una rama/tag concreto
+npx skills add "https://github.com/SpicyDogWings/comegenui/tree/v5.0.0-alpha.3/skills/use-comegen"
+
+# actualizar
+npx skills update use-comegen
 ```
 
-```cmd
-update.bat
-update.bat v3.0.0
-update.bat -Only CuButton
-update.bat -Only CuButton,CuAlert v3.0.0
+Requiere Node 24+. Si no podés usar el CLI, bajá la carpeta a mano:
+
+**Con git (sparse-checkout, sin bajar el resto del repo):**
+
+```sh
+git clone --filter=blob:none --sparse --branch main \
+  https://github.com/SpicyDogWings/comegenui.git /tmp/comegenui
+cd /tmp/comegenui
+git sparse-checkout set skills/use-comegen
+mkdir -p <proyecto>/.opencode/skills
+cp -r skills/use-comegen <proyecto>/.opencode/skills/
 ```
 
-```powershell
-.\update.ps1
-.\update.ps1 v3.0.0
-.\update.ps1 -Only CuButton
-.\update.ps1 -Only CuButton,CuAlert v3.0.0
+Cambiá `--branch main` por la rama o tag que quieras (`--branch v5.0.0-alpha.3`).
+
+**Sin git (tarball del ref):**
+
+```sh
+mkdir -p <proyecto>/.opencode/skills
+curl -L https://github.com/SpicyDogWings/comegenui/archive/refs/heads/main.tar.gz \
+  | tar -xz --strip-components=2 -C <proyecto>/.opencode/skills \
+    'comegenui-main/skills/use-comegen'
 ```
 
-`--only` / `-Only` acepta el nombre como `CuButton`, `button`, `cu-button` o
-`CuButton.umd.js` (sin distinguir mayúsculas ni guiones). `-o` es alias.
+Para un tag: `archive/refs/tags/v5.0.0-alpha.3.tar.gz` con el prefijo
+`comegenui-5.0.0-alpha.3/` (GitHub quita la `v` inicial del ref al nombrar la carpeta).
 
-**Qué hacen:**
-1. Descargan el artifact de GitLab (según tag o `main`)
-2. **Sin `--only`:** reemplazan la carpeta de forma **atómica** (si falla, lo anterior queda intacto).
-   **Con `--only`:** copian solo los `.umd.js` elegidos y su doc (`use-comegen/componentes/cu-*.md`), dejando el resto de los componentes intactos (y sin tocar `css/themes.css`)
-3. Actualizan la skill de uso en `.agents/skills/use-comegen/` del proyecto huésped (completa o solo los docs elegidos)
-
-**Variables opcionales:**
-- `CG_URL` / `$env:CG_URL` — override de URL (para probar con archivo local)
-- `CG_PROJECT_ROOT` / `$env:CG_PROJECT_ROOT` — forzar raíz del proyecto
-
-### Actualización manual
-
-1. Descargá el nuevo zip (ver Opción 1)
-2. **Backup** de tu carpeta actual (opcional pero recomendado)
-3. Extraé el contenido sobreescribiendo los archivos anteriores
-4. Los archivos que hayas personalizado (ej. `comegen.config.json`) se pierden — respaldalos antes
+El detalle completo y la correspondencia de versión están en
+`skills/use-comegen/SKILL.md`.
 
 ---
 
@@ -121,8 +127,8 @@ update.bat -Only CuButton,CuAlert v3.0.0
 
 ```sh
 # 1. Clonar el repo
-git clone https://gitlab.com/SpicyDogWings/comegen-ui.git
-cd comegen-ui
+git clone https://github.com/SpicyDogWings/comegenui.git
+cd comegenui
 
 # 2. Instalar dependencias
 pnpm install
@@ -145,8 +151,8 @@ dist-lib/
 Para usar en tu proyecto, copiá los `.umd.js` que necesités y el CSS:
 
 ```html
-<link rel="stylesheet" href="dist/css/themes.css">
-<script src="dist/CuButton.umd.js"></script>
+<link rel="stylesheet" href="dist-lib/css/themes.css">
+<script src="dist-lib/CuButton.umd.js"></script>
 <cu-button color="primary">Guardar</cu-button>
 ```
 

@@ -1,11 +1,15 @@
 ---
 name: comegen-preflight
 description: 'Corre el preflight local de comegen-ui antes de un merge request (type-check contra baseline + tests + gate de docs). Usar cuando el usuario pida "prepará el merge request", "preparar MR", "correr tests antes del MR", "preflight", "chequear que no rompí nada", "validar antes de commitear".'
+metadata:
+  repository: https://github.com/SpicyDogWings/comegenui
+  path: docs/skills/comegen-preflight
+  version: 5.0.0-alpha.3
 ---
 
 # `comegen-preflight`
 
-Chequeo local previo al merge request. **No usa GitLab CI**: corre en la máquina del que desarrolla.
+Chequeo local previo al merge request. **No usa CI**: corre en la máquina del que desarrolla.
 
 ## Cuándo se activa
 
