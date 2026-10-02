@@ -1,78 +1,8 @@
 #!/bin/bash
-# preflight.sh — Chequeos locales previos al merge request de ComegenUI.
+# preflight.sh — ALIAS de `scripts/guard.sh` (el gate nuevo, con veredicto por
+# componente). Se mantiene sólo por compatibilidad: usá `./scripts/guard.sh`.
 #
-# Uso:
-#   ./scripts/preflight.sh                 # type-check + tests + drift de docs
-#   ./scripts/preflight.sh --no-typecheck
-#   ./scripts/preflight.sh --no-tests
-#
-# type-check: no bloquea por deuda vieja, pero falla si hay errores NUEVOS
-# respecto de scripts/typecheck-baseline.
-set -euo pipefail
-
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-cd "$ROOT"
-
-SKIP_TYPECHECK=""
-SKIP_TESTS=""
-for arg in "$@"; do
-  case "$arg" in
-    --no-typecheck) SKIP_TYPECHECK=1 ;;
-    --no-tests) SKIP_TESTS=1 ;;
-    -*) echo "⚠️  Opción desconocida: $arg" >&2 ;;
-  esac
-done
-
-TMP="$(mktemp -d)"
-trap 'rm -rf "$TMP"' EXIT
-
-step() {
-  echo ""
-  echo "▶ $1"
-  shift
-  "$@"
-}
-
-echo "🛫 Preflight ComegenUI ($(git branch --show-current 2>/dev/null || echo 'sin rama'))"
-
-# ── 1. type-check contra baseline ────────────────────────────────────────────
-if [ -n "$SKIP_TYPECHECK" ]; then
-  echo ""
-  echo "⏭  type-check omitido (--no-typecheck)"
-else
-  set +e
-  pnpm run --silent type-check >"$TMP/typecheck.log" 2>&1
-  set -e
-  TC_COUNT="$(grep -cE 'error TS[0-9]+' "$TMP/typecheck.log" || true)"
-  TC_BASELINE="$(tr -dc '0-9' <"$ROOT/scripts/typecheck-baseline" 2>/dev/null || true)"
-  TC_BASELINE="${TC_BASELINE:-0}"
-
-  if [ "$TC_COUNT" -gt "$TC_BASELINE" ]; then
-    echo ""
-    echo "❌ type-check: $TC_COUNT errores (baseline $TC_BASELINE) — hay errores NUEVOS:" >&2
-    grep -E 'error TS[0-9]+' "$TMP/typecheck.log" | head -30 >&2
-    exit 1
-  fi
-  echo ""
-  echo "✔ type-check: $TC_COUNT errores preexistentes (baseline $TC_BASELINE) — sin regresión"
-fi
-
-# ── 2. tests unitarios ───────────────────────────────────────────────────────
-if [ -n "$SKIP_TESTS" ]; then
-  echo ""
-  echo "⏭  tests omitidos (--no-tests)"
-else
-  step "tests unitarios" pnpm run --silent test
-fi
-
-# ── 3. consistencia de las fichas y páginas de docs ──────────────────────────
-step "docs (fichas + páginas)" node scripts/check-docs.mjs
-
-# ── 4. las tablas de API generadas están al día ───────────────────────────────
-step "API generada (gen-api --check)" node scripts/gen-api.mjs --check
-
-# ── 5. build del sitio: dead links y que los ejemplos compilen ───────────────
-step "build del sitio" pnpm build
-
-echo ""
-echo "✅ Preflight OK"
+# La versión vieja contaba errores de tipo contra un número mágico y nunca
+# compilaba la lib; eso se reemplazó por `guard.sh` (impacto + contrato + build
+# real + tipos por identidad). Este archivo se borra en la próxima release.
+exec "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/guard.sh" "$@"

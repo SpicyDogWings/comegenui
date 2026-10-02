@@ -1,0 +1,12 @@
+{
+  "tag": "cu-floating-button",
+  "props": [
+    "color",
+    "disabled",
+    "loading",
+    "size",
+    "variant"
+  ],
+  "methods": [],
+  "shadow": "button.cu-button.cu-button--lg.cu-button--solid.cu-floating-button[data-v-c683ce48,data-v-db13565e,style,type]\n  slot[data-v-db13565e]"
+}

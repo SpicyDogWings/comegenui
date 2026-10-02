@@ -1,0 +1,32 @@
+{
+  "tag": "cu-cells-importer",
+  "props": [
+    "color",
+    "columns",
+    "delimiter",
+    "disabled",
+    "formats",
+    "hasHeader",
+    "inputType",
+    "maxSize",
+    "placeholder",
+    "readOnly",
+    "sheet",
+    "strict",
+    "template",
+    "variant"
+  ],
+  "methods": [
+    "downloadTemplate",
+    "focus",
+    "getErrors",
+    "getFile",
+    "getHeaders",
+    "getRows",
+    "reset",
+    "set",
+    "trigger",
+    "validate"
+  ],
+  "shadow": "div.cu-cells-importer[style]\n  div.cu-cells-importer-input\n    div.cu-file-input-wrap\n      div.cu-file-input.cu-file-input--outlined[aria-disabled,role,style,tabindex]\n        input.cu-file-input-hidden[accept,type]\n        svg.cu-file-input-icon[fill,height,stroke,stroke-linecap,stroke-linejoin,stroke-width,viewBox,width,xmlns]\n          path[d]\n          path[d]\n          path[d]\n        span.cu-file-input-placeholder\n  div.cu-cells-importer-toolbar"
+}

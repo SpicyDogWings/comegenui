@@ -1,0 +1,10 @@
+{
+  "tag": "cu-navbar-horizontal",
+  "props": [
+    "activePath",
+    "items",
+    "trigger"
+  ],
+  "methods": [],
+  "shadow": "nav.cu-navbar[data-v-ddf6528a]"
+}

@@ -1,6 +1,6 @@
 {
   "name": "comegenui",
-  "version": "5.0.1-alpha",
+  "version": "5.0.2-alpha",
   "private": true,
   "type": "module",
   "scripts": {
@@ -12,7 +12,12 @@
     "type-check": "vue-tsc --build",
     "test": "vitest run",
     "test:watch": "vitest",
-    "preflight": "bash scripts/preflight.sh"
+    "guard": "bash scripts/guard.sh",
+    "mutation": "node scripts/mutation-check.mjs",
+    "contract": "node scripts/contract.mjs",
+    "contract:update": "node scripts/contract.mjs --update",
+    "impact": "node scripts/impact.mjs",
+    "preflight": "bash scripts/guard.sh"
   },
   "dependencies": {
     "@vueuse/core": "^14.2.1",

@@ -1,0 +1,18 @@
+{
+  "tag": "cu-side-over",
+  "props": [
+    "fullscreen",
+    "open",
+    "persistent",
+    "position",
+    "size",
+    "title",
+    "zIndex"
+  ],
+  "methods": [
+    "close",
+    "isOpen",
+    "toggle"
+  ],
+  "shadow": ""
+}

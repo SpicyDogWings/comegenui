@@ -1,10 +1,10 @@
 ---
 name: comegen-preflight
-description: 'Corre el preflight local de comegen-ui antes de un merge request (type-check contra baseline + tests + gate de docs) y arma el título y la descripción del PR desde la plantilla. Usar cuando el usuario pida "prepará el merge request", "preparar MR", "correr tests antes del MR", "preflight", "chequear que no rompí nada", "validar antes de commitear", "armá el PR", "generá el título/descripción del PR".'
+description: 'Corre el gate local de comegen-ui (guard.sh) antes de un merge request — impacto, tipos sin regresión, contrato de cada custom element, build de la lib, tests y docs — y arma el título y la descripción del PR desde la plantilla. Usar cuando el usuario pida "prepará el merge request", "preparar MR", "correr tests antes del MR", "preflight", "chequear que no rompí nada", "¿dañé un componente?", "validar antes de commitear", "armá el PR", "generá el título/descripción del PR".'
 metadata:
   repository: https://github.com/SpicyDogWings/comegenui
   path: docs/skills/comegen-preflight
-  version: 5.0.1-alpha
+  version: 5.0.2-alpha
 ---
 
 # `comegen-preflight`
@@ -19,28 +19,33 @@ Chequeo local previo al merge request. **No usa CI**: corre en la máquina del q
 ## Qué correr
 
 ```bash
-bash scripts/preflight.sh
+./scripts/guard.sh --full
 ```
 
-El script corre, en orden y cortando al primer fallo:
+El gate corre, en orden, y por cada paso imprime un veredicto en criollo:
 
-1. **type-check** (`vue-tsc --build`) contra `scripts/typecheck-baseline`: falla sólo si hay errores
-   *nuevos* respecto de esa cifra (el repo arrastra deuda vieja).
-2. **tests unitarios** (`vitest run`).
-3. **gate de docs** (`node scripts/check-docs.mjs`): cada tag definido en `src/lib/**/*.ts` tiene
-   ficha en `docs/componentes/` y página en `docs/site/componentes/` con `title`/`group`; cada
-   `@include` apunta a una ficha existente, cada ficha se incluye una sola vez y tiene sus
-   secciones obligatorias.
-4. **API generada** (`node scripts/gen-api.mjs --check`): las tablas de API entre marcadores están
-   al día respecto de los SFC.
-5. **build del sitio** (`pnpm build`): caza dead links y verifica que los ejemplos `.vue` compilen.
+1. **impacto** (`scripts/impact.mjs`): qué componentes dependen de los archivos que cambiaste.
+2. **tipos** (`vue-tsc --build` + `scripts/typecheck-diff.mjs`): errores de TypeScript **nuevos por
+   identidad** contra `scripts/typecheck-baseline.txt` (no por conteo: el baseline viejo sólo contaba).
+3. **contrato** (`scripts/contract.mjs`): carga cada `dist-lib/Cu*.umd.js` en jsdom y compara props
+   declaradas, métodos expuestos, metadata `comegen` y estructura del shadow DOM contra
+   `scripts/contract-baseline/<tag>.json`. Reporta `❌ <tag> ROTO: ...`.
+4. **build de la lib** (`build:lib`): compila los UMD reales — lo que antes ningún gate miraba.
+5. **tests unitarios** (`vitest run`).
+6. **docs**: `check-docs.mjs` + `gen-api.mjs --check`; con `--full` además el build del sitio
+   (dead links + que los ejemplos `.vue` compilen).
 
-Flags: `--no-typecheck` y `--no-tests` saltean los dos primeros pasos.
+Flags: `--solo <tag>` (loop rápido), `--explicar` (qué hace y por qué cada paso), `--update`
+(regenera el baseline de contratos), `--no-typecheck`, `--no-build`, `--no-tests`.
+
+Termina con `✅ RESULTADO: nada roto` o `❌ RESULTADO: hay componentes rotos o fallos. NO mergear.`
 
 ## Cómo reportar
 
-- Si termina con `✅ Preflight OK`: informar que está en verde y continuar (commit / MR).
-- Si falla: mostrar el step que falló y el error. **No** commitear ni preparar el MR hasta resolverlo.
+- Si termina en `✅`: informar que está en verde y continuar (commit / MR).
+- Si falla: mostrar el paso y el componente/error concreto. **No** commitear ni preparar el MR.
+- Si un **contrato** cambió a propósito (nueva prop/método/clase): regenerá el baseline con
+  `./scripts/guard.sh --update` y commitealo en el mismo PR.
 
 ## Armar el MR
 
@@ -64,7 +69,8 @@ Con el preflight en verde, generá el PR a partir de las plantillas del repo:
 
 ## Notas
 
-- El repo tiene tests que **ya** fallan por deuda vieja. Antes de atribuirte un fallo, compará con el
-  estado previo (`git stash` + `pnpm test` + `git stash pop`).
+- El repo arrastra deuda de tipos vieja: el gate **sólo** te atribuye errores *nuevos* (por identidad).
+  Si aparece uno, es tuyo.
 - El gate de docs **no valida contenido**, sólo existencia y frontmatter. Si cambiaste un componente,
   actualizá a mano su ficha y su página (ver el agente `.opencode/agent/comegen-docs.md`).
+- `scripts/preflight.sh` sigue existiendo pero es un alias de `scripts/guard.sh`.

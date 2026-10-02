@@ -1,0 +1,15 @@
+{
+  "tag": "cu-button",
+  "props": [
+    "color",
+    "disabled",
+    "loading",
+    "size",
+    "target",
+    "to",
+    "type",
+    "variant"
+  ],
+  "methods": [],
+  "shadow": "button.cu-button.cu-button--ghost.cu-button--md[data-v-c683ce48,style,type]\n  slot[data-v-c683ce48]"
+}

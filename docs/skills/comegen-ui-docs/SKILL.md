@@ -4,7 +4,7 @@ description: 'Receta para documentar o revisar la documentación de un component
 metadata:
   repository: https://github.com/SpicyDogWings/comegenui
   path: docs/skills/comegen-ui-docs
-  version: 5.0.1-alpha
+  version: 5.0.2-alpha
 ---
 
 # Documentar un componente
@@ -280,7 +280,7 @@ import X from "@/components/<cat>/X.vue";
 ```bash
 node scripts/check-docs.mjs     # tag↔ficha, @include sano, secciones obligatorias
 node scripts/gen-api.mjs --check # las tablas de API generadas están al día
-./scripts/preflight.sh          # type-check + tests + gate
+./scripts/guard.sh --full     # impacto + tipos nuevos + contrato CE + build lib + tests + docs
 pnpm build                      # el sitio: caza dead links y que los ejemplos compilen
 pnpm dev                        # mirar el sitio (sidebar sale del frontmatter)
 ```
