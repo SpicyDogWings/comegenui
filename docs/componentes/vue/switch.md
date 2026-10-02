@@ -1,6 +1,6 @@
 # `Switch`
 
-Toggle switch con color semántico y dos tamaños. Controlable via `modelValue` o métodos `get`/`set`.
+Toggle switch con color semántico y dos tamaños. Mantiene su estado y también se controla via `modelValue` o métodos `get`/`set`.
 
 [← Volver](../README.md)
 

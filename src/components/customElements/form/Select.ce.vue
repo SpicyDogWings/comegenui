@@ -12,7 +12,7 @@ interface SelectOption {
 }
 
 const props = defineProps({
-  /** Valor seleccionado */
+  /** Valor seleccionado. El CE sincroniza su estado; asigná `modelValue` sólo si querés controlarlo */
   modelValue: { type: String, required: false, default: "" },
   /** Opciones del select (ver abajo). Se asigna como propiedad JS */
   options: { type: Array as () => SelectOption[], required: false, default: () => [] },
@@ -68,17 +68,11 @@ const resolvedOptions = computed(() =>
 
 const selectRef = ref<InstanceType<typeof Select> | null>(null);
 const instance = getCurrentInstance();
-const innerValue = ref(props.modelValue);
+/** El valor se espeja localmente: el CE manda su estado y `update:modelValue` avisa al host. */
+const localModel = ref(props.modelValue);
 
 watch(() => props.modelValue, (val) => {
-  innerValue.value = val;
-});
-
-watch(() => selectRef.value?.get(), (val) => {
-  if (val !== undefined && val !== null && val !== innerValue.value) {
-    innerValue.value = val;
-    ceEmit("update:modelValue", val);
-  }
+  localModel.value = val;
 });
 
 function ceEmit(event: string, payload: unknown) {
@@ -93,10 +87,24 @@ function ceEmit(event: string, payload: unknown) {
   }
 }
 
+/** El `.vue` guarda el valor pero no emite en `set()`; el CE lo propaga igual. */
+function onUpdate(val: string) {
+  localModel.value = val;
+  ceEmit("update:modelValue", val);
+}
+
 defineExpose({
   get: () => selectRef.value?.get(),
-  set: (val: string) => selectRef.value?.set(val),
-  reset: () => selectRef.value?.reset(),
+  set: (val: string) => {
+    selectRef.value?.set(val);
+    localModel.value = val;
+    ceEmit("update:modelValue", val);
+  },
+  reset: () => {
+    selectRef.value?.reset();
+    localModel.value = "";
+    ceEmit("update:modelValue", "");
+  },
   focus: () => selectRef.value?.focus(),
   isOpen: () => selectRef.value?.isOpen() ?? false,
   selectedItem: () => selectRef.value?.selectedItem || null,
@@ -115,7 +123,7 @@ defineExpose({
     :align="props.align"
     :text-align="props.textAlign"
     :fixed="props.fixed"
-    :model-value="innerValue"
+    :model-value="localModel"
     :options="resolvedOptions"
     :search-enabled="props.searchEnabled"
     :search-mode="props.searchMode"
@@ -123,6 +131,7 @@ defineExpose({
     :loading="props.loading"
     :cooldown-variant="props.cooldownVariant"
     @select="ceEmit('select', $event)"
+    @update:model-value="onUpdate"
     @close="ceEmit('close', $event)"
     @blur="ceEmit('blur', $event)"
   />

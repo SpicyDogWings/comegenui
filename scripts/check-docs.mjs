@@ -48,7 +48,7 @@ function walk(dir, ext) {
 /** Tags de custom element definidos en las entradas de la lib. */
 function definedTags() {
   const tags = new Set();
-  const tagRE = /customElements\.define\(\s*["']([^"']+)["']/g;
+  const tagRE = /(?:customElements\.define|defineComegenElement)\(\s*["']([^"']+)["']/g;
   for (const file of walk(LIB_DIR, ".ts")) {
     const base = file.split("/").pop();
     if (base === "index.ts" || base === "tokens.ts") continue;

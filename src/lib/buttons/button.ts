@@ -1,10 +1,9 @@
-import { defineCustomElement } from 'vue'
+import { defineComegenElement } from '@/utils/comegen-element'
 import Button from '@/components/buttons/Button.vue'
 import { initTokens } from '@/plugins/cu-tokens/css'
 
 initTokens()
 
-const CuButton = defineCustomElement(Button)
-customElements.define('cu-button', CuButton)
+const CuButton = defineComegenElement('cu-button', Button)
 
 export default CuButton

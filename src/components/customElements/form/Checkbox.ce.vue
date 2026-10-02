@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { ref, getCurrentInstance, type PropType } from "vue";
+import { ref, watch, getCurrentInstance, type PropType } from "vue";
 import Checkbox from "../../form/Checkbox.vue";
 import { initTokens } from "@/plugins/cu-tokens/css";
 
 initTokens();
 
 const props = defineProps({
-  /** Estado del checkbox (controlado) */
+  /** Estado del checkbox. El CE sincroniza su estado; asigná `modelValue` sólo si querés controlarlo */
   modelValue: { type: Boolean, default: false },
   /** Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` */
   color: {
@@ -22,6 +22,11 @@ const props = defineProps({
 });
 
 const checkboxRef = ref<InstanceType<typeof Checkbox> | null>(null);
+const localModel = ref(props.modelValue);
+
+watch(() => props.modelValue, (val) => {
+  localModel.value = val;
+});
 
 const instance = getCurrentInstance();
 function ceEmit(event: string, payload: unknown) {
@@ -34,6 +39,11 @@ function ceEmit(event: string, payload: unknown) {
       composed: true,
     }));
   }
+}
+
+function onUpdate(val: boolean) {
+  localModel.value = val;
+  ceEmit("update:modelValue", val);
 }
 
 /** Devuelve el estado actual (`boolean`) */
@@ -51,12 +61,12 @@ defineExpose({ get, set, reset, focus });
 <template>
   <Checkbox
     ref="checkboxRef"
-    :model-value="props.modelValue"
+    :model-value="localModel"
     :color="props.color"
     :size="props.size"
     :disabled="props.disabled"
     :label="props.label"
-    @update:model-value="ceEmit('update:modelValue', $event)"
+    @update:model-value="onUpdate"
     @change="ceEmit('change', $event)"
   />
 </template>

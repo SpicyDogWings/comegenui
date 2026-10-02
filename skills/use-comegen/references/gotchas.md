@@ -22,20 +22,37 @@ va por **propiedad JS**, después de que el UMD esté cargado:
 Qué props son "sólo por JS" en cada componente: `references/api-por-componente.md`; los
 límites de cada uno (qué no puede hacer), en `references/componentes.md`.
 
-## 2. `modelValue` es controlado
+## 2. `modelValue`: el componente mantiene su estado
 
-El componente **no** cambia su valor solo: emite el cambio y vos lo asignás (o lo escuchás).
+El custom element **sincroniza su estado solo**: al clickear/tipear/seleccionar, actualiza
+la UI y su valor interno, y además emite `update:modelValue` para avisarte. **No hace falta
+reasignar `modelValue`** para que el control se mueva.
 
 ```js
 const input = document.querySelector('cu-input');
+// Escuchás el cambio para reaccionar; el campo ya refleja lo que el usuario escribió.
+input.addEventListener('update:modelValue', (e) => console.log(e.detail));
+```
+
+Reasignar `modelValue` es **opcional** y sólo sirve para el modo controlado: cuando vos
+decidís el valor (por ejemplo, para descartar entradas inválidas o reponer un valor tras
+un reset). Ahí sí, cerrá el ciclo:
+
+```js
+const input = document.querySelector('cu-input');
+// Modo controlado: forzás el valor que querés conservar.
 input.addEventListener('update:modelValue', (e) => {
-  input.modelValue = e.detail;   // cerrar el ciclo
+  input.modelValue = sanitizar(e.detail);
 });
 ```
 
-Si ves que "se escribe y vuelve atrás", es esto: falta reasignar el valor.
+En Vue es `v-model` y maneja los dos modos solo: sin `v-model` (o con `:model-value` y un
+`@update:model-value`) el componente es dueño de su estado y refleja los cambios igual.
 
-En Vue es `v-model` y no hay que hacer nada.
+> Los CE que **siguen** actualizando su valor interno aunque el host no lo reasigne son los
+> de campo: `cu-input`, `cu-textarea`, `cu-select`, `cu-autocomplete`, `cu-switch`,
+> `cu-checkbox`, `cu-color-picker`, `cu-file-input` y `cu-file-input-zone`. Los
+> seleccionadores con estado propio (calendario, dropdown, tabs) también.
 
 ## 3. Booleanos por presencia
 

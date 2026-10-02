@@ -10,8 +10,8 @@ Para capturar texto, números, email, teléfono, URL o búsqueda en una línea. 
 
 ## Receta
 
-1. Enlazá el valor con `v-model` en Vue o con `model-value` + `update:modelValue` en vanilla. El
-   valor es un **string** (también con `type="number"`).
+1. El valor lo maneja el propio campo al tipear; enlazá `v-model` en Vue o `model-value` en
+   vanilla sólo si querés controlarlo. El valor es un **string** (también con `type="number"`).
 2. Elegí el `type` (`text`, `password`, `email`, `number`, `tel`, `url`, `search`).
 3. Estilá con `color` (default `neutral`), `variant` (default `soft`) y `size` (`sm`/`md`/`lg`,
    default `md`).
@@ -100,7 +100,7 @@ const email = ref("");
 | `size` | `"sm" \| "md" \| "lg"` | `"md"` | Tamaño: `sm`, `md`, `lg` |
 | `disabled` | `boolean` | `false` | Estado deshabilitado |
 | `read-only` | `boolean` | `false` | Solo lectura (en HTML se usa como `readonly`) |
-| `model-value` | `string` | `""` | Valor controlado |
+| `model-value` | `string` | `""` | Valor actual del input. El CE sincroniza su estado; asigná `modelValue` sólo si querés controlarlo |
 | `placeholder` | `string` | `—` | Placeholder del input |
 | `start-value` | `string` | `—` | Valor inicial usado por `.reset()` |
 <!-- /@api:atributos -->

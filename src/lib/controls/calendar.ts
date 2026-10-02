@@ -1,10 +1,9 @@
-import { defineCustomElement } from 'vue'
+import { defineComegenElement } from '@/utils/comegen-element'
 import Calendar from '@/components/customElements/controls/Calendar.ce.vue'
 import { initTokens } from '@/plugins/cu-tokens/css'
 
 initTokens()
 
-const CuCalendar = defineCustomElement(Calendar)
-customElements.define('cu-calendar', CuCalendar)
+const CuCalendar = defineComegenElement('cu-calendar', Calendar)
 
 export default CuCalendar

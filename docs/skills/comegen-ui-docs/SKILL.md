@@ -1,6 +1,10 @@
 ---
 name: comegen-ui-docs
 description: 'Receta para documentar o revisar la documentación de un componente de ComegenUI de punta a punta: auditar el SFC contra lo que se va a escribir, escribir/actualizar la ficha del custom element, la ficha Vue, la receta que viaja con `skills add` (`skills/use-comegen/references/<kebab>.md`), las demos reales como archivos `.vue` (`docs/site/examples/<componente>/*.vue`) y la página del sitio, generar las tablas de API entre marcadores y validar con check-docs, gen-api, preflight y el build del sitio. Usar cuando se pida "documentá el componente", "actualizá la doc de cu-x", "revisá que la doc coincida con el código", "agregar un componente nuevo a la doc", "por qué falla check-docs".'
+metadata:
+  repository: https://github.com/SpicyDogWings/comegenui
+  path: docs/skills/comegen-ui-docs
+  version: 5.0.0-alpha.3
 ---
 
 # Documentar un componente
@@ -23,7 +27,7 @@ no del tag. Por eso `cu-table` (vanilla) ↔ `vue/advanced-table` (Vue) y el int
 ## Pasos
 
 1. **Identificar el componente y si tiene custom element.**
-   - ¿Hay `customElements.define('cu-x', …)` en `src/lib/**/*.ts`? → tiene vanilla.
+   - ¿Hay `defineComegenElement('cu-x', …)` en `src/lib/**/*.ts`? → tiene vanilla.
    - ¿Existe `src/components/customElements/.../X.ce.vue`? → la API pública del CE es **ese**
      wrapper. Si no existe, el CE es el `.vue` directo (casos: `cu-button`,
      `cu-floating-button`, `cu-badge`).

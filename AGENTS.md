@@ -11,7 +11,7 @@ src/
 │   ├── customElements/{category}/MiComponente.ce.vue  # Wrapper CE (thin)
 │   └── ...otrascarpetas (icons, theme, lab, archived, legacy)
 ├── lib/
-│   └── {category}/mi-componente.ts        # Entry point: defineCustomElement + registro
+│   └── {category}/mi-componente.ts        # Entry point: defineComegenElement + registro
 ├── plugins/
 │   └── cu-tokens/                         # Sistema de tokens CSS + tema de VitePress (vitepress.ts, cli/)
 ├── layouts/                               # AppTopbar + AppLayout (header propio del sitio)
@@ -159,24 +159,28 @@ function ceEmit(event: string, payload: unknown) {
 
 ### `mi-componente.ts` — Entry point para el build
 
-- Importa `defineCustomElement` de Vue
+- Importa `defineComegenElement` de `@/utils/comegen-element`
 - Importa el `.ce.vue` (o `.vue` si no hay wrapper CE)
 - Llama `initTokens()` si el `.ce.vue` no lo hace
-- Registra el Custom Element
+- Registra el Custom Element (y le adjunta los metadatos de bundle)
 - Exporta el componente
 
 ```ts
-import { defineCustomElement } from 'vue'
 import Component from '@/components/customElements/{category}/Component.ce.vue'
 import { initTokens } from '@/plugins/cu-tokens/css'
+import { defineComegenElement } from '@/utils/comegen-element'
 
 initTokens()
 
-const CuComponent = defineCustomElement(Component)
-customElements.define('cu-component', CuComponent)
+const CuComponent = defineComegenElement('cu-component', Component)
 
 export default CuComponent
 ```
+
+> **`defineComegenElement(tag, componente)`** reemplaza al par `defineCustomElement` + `customElements.define`:
+> resuelve el tag base con guarda (la primera versión cargada gana), registra el tag versionado
+> `<cu-x--v…>` para que convivan versiones distintas, y expone `CuX.comegen` / `el.comegen`
+> (`{ lib, name, tag, version, versionedTag }`). El `version` lo inyecta `build-lib.ts` en cada UMD.
 
 > **`initTokens()`** inyecta un `<style>` con los CSS custom properties del tema activo. Debe llamarse una vez por componente UMD, ya sea en el `.ce.vue` o en el `.ts`.
 
@@ -241,7 +245,7 @@ Tokens compartidos: tipografía, spacing, border-radius, shadows, borders.
 - `UnoCSS({ mode: "shadow-dom" })`
 - Genera `dist/css/themes.css` + `dist/css/{theme}.css`
 - Crea zip versionado: `comegenui-v{version}.zip`
-- **El zip lleva SOLO la lib**: los `Cu*.umd.js` + `css/` + `README-BUILD.md`. No incluye documentación (vive en `docs/componentes/`), ni skill, ni updaters (los `update.sh`/`.ps1`/`.bat` se eliminaron: la instalación es manual, descomprimir el zip).
+- **El zip lleva SOLO la lib**: los `Cu*.umd.js` + `css/` + `README-BUILD.md`. No incluye documentación (vive en `docs/componentes/`), ni skill, ni instalador/actualizador (la instalación es manual: descomprimir el zip).
 
 ### Tests y preflight
 
@@ -327,11 +331,10 @@ const alertRef = ref(null);
 ### `src/lib/information/alert.ts`
 
 ```ts
-import { defineCustomElement } from 'vue'
 import Alert from '@/components/customElements/information/Alert.ce.vue'
+import { defineComegenElement } from '@/utils/comegen-element'
 
-const CuAlert = defineCustomElement(Alert)
-customElements.define('cu-alert', CuAlert)
+const CuAlert = defineComegenElement('cu-alert', Alert)
 
 export default CuAlert
 ```

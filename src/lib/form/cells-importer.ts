@@ -1,7 +1,6 @@
-import { defineCustomElement } from 'vue'
+import { defineComegenElement } from '@/utils/comegen-element'
 import CellsImporter from '@/components/customElements/form/CellsImporter.ce.vue'
 
-const CuCellsImporter = defineCustomElement(CellsImporter)
-customElements.define('cu-cells-importer', CuCellsImporter)
+const CuCellsImporter = defineComegenElement('cu-cells-importer', CellsImporter)
 
 export default CuCellsImporter

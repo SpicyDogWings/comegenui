@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, defineModel, type PropType } from 'vue';
+import { ref, computed, defineModel, type PropType } from 'vue';
 import { isAlign, isColor, isFieldVariant, isPosition } from '@/utils/validators'
 import Dropdown from "../overlay/Dropdown.vue";
 import Input from "./Input.vue";
@@ -53,30 +53,26 @@ const searchValue = defineModel<string>({ default: "" });
 const dropdownRef = ref<InstanceType<typeof Dropdown> | null>(null);
 const inputRef = ref<InstanceType<typeof Input> | null>(null);
 const rootRef = ref<HTMLElement | null>(null);
-const searchText = ref(searchValue.value);
 const selectedItem = ref<AutocompleteItem | null>(null);
-
-watch(() => searchValue.value, (val) => {
-  searchText.value = val;
-}, { immediate: true });
 
 const searchItems = computed(() => props.items);
 const { filteredData: filteredItems } = useSearch(searchItems, {
-  searchQuery: searchText,
+  searchQuery: searchValue,
   searchFields: ["label", "value"],
 });
 
 function onFocus() {
-  if (props.disabled || props.minChars > 0) return;
+  if (props.disabled) return;
+  if (searchValue.value.length < props.minChars) return;
   if (filteredItems.value.length > 0) {
     dropdownRef.value?.open();
   }
 }
 
 function onInput(val: string) {
-  searchText.value = val;
+  searchValue.value = val;
 
-  if (searchText.value.length < props.minChars || filteredItems.value.length === 0) {
+  if (val.length < props.minChars || filteredItems.value.length === 0) {
     dropdownRef.value?.close();
     return;
   }
@@ -86,7 +82,6 @@ function onInput(val: string) {
 
 function onItemClick(item: AutocompleteItem) {
   const val = item.label || item.value;
-  searchText.value = val;
   searchValue.value = val;
   selectedItem.value = item;
   emit("select", item);
@@ -104,16 +99,21 @@ function get() { return searchValue.value; }
 /** Setea el texto actual en el input. */
 function set(val: string) {
   searchValue.value = val;
-  searchText.value = val;
   if (inputRef.value) inputRef.value.set(val);
 }
 /** Limpia el texto de búsqueda. */
-function reset() { searchValue.value = ""; searchText.value = ""; }
+function reset() { searchValue.value = ""; }
 /** Enfoca el input. */
 function focus() { inputRef.value?.focus(); }
+/** Abre el panel de sugerencias (ignora `minChars`). */
+function open() { dropdownRef.value?.open(); }
+/** Cierra el panel de sugerencias. */
+function close() { dropdownRef.value?.close(); }
+/** Alterna la visibilidad del panel de sugerencias. */
+function toggle() { dropdownRef.value?.toggle(); }
 
 defineExpose({
-  get, set, reset, focus,
+  get, set, reset, focus, open, close, toggle,
   /** Indica si el panel está abierto. */
   isOpen: () => dropdownRef.value?.isOpen() ?? false,
   /** Devuelve el item seleccionado o null. */
@@ -136,7 +136,7 @@ defineExpose({
     <template #toggle>
       <Input
         ref="inputRef"
-        :model-value="searchText"
+        :model-value="searchValue"
         :placeholder="placeholder"
         :disabled="disabled"
         :read-only="readOnly"

@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="es" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Color Picker — Playground Vanilla</title>
+    <link rel="stylesheet" href="../../style.css" />
+    <link rel="stylesheet" href="../../public/css/comegen-sigfi-theme.css" />
+    <script src="../../../dist-lib/CuColorPicker.umd.js"></script>
+    <style>
+      .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end; margin: 12px 0; }
+      .field { display: flex; flex-direction: column; gap: 4px; font-size: 12px; opacity: .7; min-width: 280px; flex: 1; }
+      .demo-btn {
+        border: 1px solid var(--cu-border-color, #cbd5e1);
+        background: transparent;
+        color: inherit;
+        border-radius: 6px;
+        padding: 6px 12px;
+        font-size: 13px;
+        cursor: pointer;
+      }
+      .demo-btn:hover { background: var(--cu-color-neutral-soft, #f1f5f9); }
+      .log {
+        width: 100%;
+        margin-top: 12px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        background: var(--cu-color-neutral-soft, #f1f5f9);
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 12px;
+        line-height: 1.6;
+        white-space: pre-wrap;
+        max-height: 220px;
+        overflow: auto;
+        box-sizing: border-box;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <h1 style="font-size:16px;font-weight:600">Color Picker Labs</h1>
+      <div class="topbar-actions">
+        <button class="topbar-btn" id="btnTheme" title="Toggle theme">🌙</button>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="card">
+        <h2>cu-color-picker — Custom Element</h2>
+        <p style="font-size:13px;opacity:.65;line-height:1.5;margin:0">
+          <code>set()</code>/<code>get()</code> debe reflejar el color en la UI, y
+          <code>update:modelValue</code> emitirse en cada cambio.
+        </p>
+
+        <div class="row">
+          <div class="field">
+            <span>color primary</span>
+            <cu-color-picker id="cp" color="primary"></cu-color-picker>
+          </div>
+          <div class="field">
+            <span>color success</span>
+            <cu-color-picker id="cp-success" color="success"></cu-color-picker>
+          </div>
+        </div>
+
+        <div class="row">
+          <button class="demo-btn" id="btn-get">get()</button>
+          <button class="demo-btn" id="btn-set-red">set("#ff0000")</button>
+          <button class="demo-btn" id="btn-reset">reset()</button>
+        </div>
+
+        <pre class="log" id="log">—</pre>
+      </div>
+    </div>
+
+    <script>
+      const logEl = document.getElementById('log');
+      const lines = [];
+      function log(msg) {
+        lines.push(msg);
+        logEl.textContent = lines.join('\n');
+        logEl.scrollTop = logEl.scrollHeight;
+      }
+
+      const cp = document.getElementById('cp');
+
+      cp.addEventListener('update:modelValue', (e) => log(`update:modelValue → ${e.detail}`));
+      cp.addEventListener('change', (e) => log(`change → ${e.detail}`));
+
+      document.getElementById('btn-get').onclick = () => log(`get() → ${cp.get()}`);
+      document.getElementById('btn-set-red').onclick = () => cp.set('#ff0000');
+      document.getElementById('btn-reset').onclick = () => cp.reset();
+    </script>
+
+    <script src="../../playground.js"></script>
+  </body>
+</html>

@@ -1,7 +1,6 @@
-import { defineCustomElement } from 'vue'
+import { defineComegenElement } from '@/utils/comegen-element'
 import ColorPicker from '@/components/customElements/form/ColorPicker.ce.vue'
 
-const CuColorPicker = defineCustomElement(ColorPicker)
-customElements.define('cu-color-picker', CuColorPicker)
+const CuColorPicker = defineComegenElement('cu-color-picker', ColorPicker)
 
 export default CuColorPicker

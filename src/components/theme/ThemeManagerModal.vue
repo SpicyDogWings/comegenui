@@ -95,6 +95,13 @@ defineExpose({ open, close })
         </div>
 
         <div class="tm-section">
+          <h3>Reset</h3>
+          <Button color="danger" variant="ghost" @click="emit('reset')">
+            Restaurar defaults
+          </Button>
+        </div>
+
+        <div class="tm-section">
           <h3>Export</h3>
           <div class="tm-actions">
             <Button color="secondary" @click="emit('export')">

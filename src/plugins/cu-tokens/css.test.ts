@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { colorsBlock, colorVar, generateThemeCSS, generateThemesCSS, resolveInk } from './css'
 import { DEFAULTS, extractShared } from './defaults'
+import { stripShadowColor, parseShadow, composeShadow, normalizeShadow, normalizeShadowLength } from './shadow'
 
 const COLORS = {
   primary: '#E73F1E',
@@ -105,5 +106,69 @@ describe('generateThemesCSS / generateThemeCSS', () => {
     expect(css).toContain('[data-theme="light"]')
     expect(css).toContain('--cu-color-danger-code:')
     expect(css).toContain('--cu-code-faded:')
+  })
+})
+
+describe('sharedBlock: tokens completos', () => {
+  const themes = { light: { colors: COLORS } }
+
+  it('emite fontSize 3xl/4xl (los consumen Markdown h1/h2)', () => {
+    const css = generateThemesCSS(themes, extractShared(DEFAULTS), OPACITIES)
+    expect(css).toMatch(/--cu-font-size-3xl: [^;]+;/)
+    expect(css).toMatch(/--cu-font-size-4xl: [^;]+;/)
+  })
+
+  it('completa las claves faltantes sobre DEFAULTS sin emitir undefined', () => {
+    const partial = {
+      ...extractShared(DEFAULTS),
+      typography: { ...DEFAULTS.typography, fontSize: { xs: '0.5rem' } },
+      spacing: { '2xs': '1px' },
+    }
+    const css = generateThemesCSS(themes, partial, OPACITIES)
+    expect(css).not.toContain('undefined')
+    expect(css).toContain('--cu-font-size-xs: 0.5rem')
+    expect(css).toContain('--cu-font-size-3xl: 1.75rem')
+    expect(css).toContain('--cu-space-2xs: 1px')
+    expect(css).toContain('--cu-space-4xl: 64px')
+    expect(css).toContain('--cu-space-5xl: 80px')
+  })
+})
+
+describe('sombras: geometría + var(--cu-shadow-color)', () => {
+  it('emite la geometría con el color del tema, sin rgba embebido', () => {
+    const css = generateThemesCSS({ light: { colors: COLORS } }, extractShared(DEFAULTS), OPACITIES)
+    expect(css).toContain('--cu-shadow-sm: 0px 1px 2px var(--cu-shadow-color')
+    expect(css).toContain('--cu-shadow-xl: 0px 20px 25px var(--cu-shadow-color')
+    expect(css).not.toMatch(/--cu-shadow-(?:sm|md|lg|xl):[^;]*(?:rgba|#)/)
+  })
+
+  it('--cu-shadow-color sale del color shadow + la opacidad del tema', () => {
+    const themes = { light: { colors: { ...COLORS, shadow: '#102030' } } }
+    const css = generateThemesCSS(themes, extractShared(DEFAULTS), { default: { shadow: 25 } })
+    expect(css).toContain('--cu-shadow-color: rgba(16, 32, 48, 0.25)')
+  })
+
+  it('stripShadowColor saca el color legacy', () => {
+    expect(stripShadowColor('0 4px 6px rgba(0,0,0,0.1)')).toBe('0 4px 6px')
+    expect(stripShadowColor('0 1px 2px #000')).toBe('0 1px 2px')
+  })
+
+  it('parseShadow/composeShadow hacen round-trip', () => {
+    expect(parseShadow('0 4px 6px rgba(0,0,0,0.1)')).toEqual({ x: '0', y: '4px', blur: '6px' })
+    expect(parseShadow('')).toEqual({ x: '0', y: '0', blur: '0' })
+    expect(composeShadow({ x: '0', y: '4px', blur: '6px' })).toBe('0 4px 6px')
+  })
+
+  it('normalizeShadowLength asume px cuando no hay unidad', () => {
+    expect(normalizeShadowLength('0')).toBe('0px')
+    expect(normalizeShadowLength('4')).toBe('4px')
+    expect(normalizeShadowLength('.5')).toBe('.5px')
+    expect(normalizeShadowLength('0rem')).toBe('0rem')
+    expect(normalizeShadowLength('2em')).toBe('2em')
+  })
+
+  it('normalizeShadow deja geometría con unidad y sin color', () => {
+    expect(normalizeShadow('0 4px 6px rgba(0,0,0,0.1)')).toBe('0px 4px 6px')
+    expect(normalizeShadow('0rem 0 8')).toBe('0rem 0px 8px')
   })
 })

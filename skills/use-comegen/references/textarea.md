@@ -8,7 +8,8 @@ Para texto libre de varias líneas. Para una sola línea usá `cu-input`.
 
 ## Receta
 
-1. Controlá el valor con `v-model` (Vue) o `model-value` + `update:modelValue` (CE).
+1. El valor lo maneja el propio textarea al tipear; enlazá `v-model` (Vue) o `model-value` (CE)
+   sólo si querés controlarlo.
 2. Ajustá `rows`, `placeholder`, `disabled`, `read-only` (HTML `readonly`) y `no-resize`.
 3. `color` y `variant` (`outlined`/`soft`/`ghost`/`subtle`) definen el estilo.
 4. Programático: `get()`, `set(v)`, `reset()`, `focus()`.
@@ -77,7 +78,7 @@ en cada input; y los métodos `get`/`set`/`reset`/`focus`.
 | `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | `outlined`, `soft`, `ghost`, `subtle` |
 | `disabled` | `boolean` | `false` | Estado deshabilitado |
 | `read-only` | `boolean` | `false` | Solo lectura (en HTML se usa como `readonly`) |
-| `model-value` | `string` | `""` | Valor controlado |
+| `model-value` | `string` | `""` | Valor actual del textarea. El CE sincroniza su estado; asigná `modelValue` sólo si querés controlarlo |
 | `rows` | `number` | `3` | Cantidad de filas visibles |
 | `no-resize` | `boolean` | `false` | Desactiva el redimensionado manual (atributo HTML: `no-resize`) |
 | `placeholder` | `string` | `—` | Placeholder del textarea |

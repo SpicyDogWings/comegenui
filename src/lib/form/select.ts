@@ -1,10 +1,9 @@
-import { defineCustomElement } from "vue";
+import { defineComegenElement } from "@/utils/comegen-element";
 import Select from "@/components/customElements/form/Select.ce.vue";
 import { initTokens } from "@/plugins/cu-tokens/css";
 
 initTokens();
 
-const CuSelect = defineCustomElement(Select);
-customElements.define("cu-select", CuSelect);
+const CuSelect = defineComegenElement("cu-select", Select);
 
 export default CuSelect;

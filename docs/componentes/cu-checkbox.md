@@ -1,6 +1,6 @@
 # `<cu-checkbox>`
 
-Checkbox con label, controlable via `modelValue` o métodos `get`/`set`.
+Checkbox con label. Mantiene su estado y también se controla via `modelValue` o métodos `get`/`set`.
 
 [← Volver](../README.md)
 
@@ -23,7 +23,8 @@ Checkbox con label, controlable via `modelValue` o métodos `get`/`set`.
 
 ## Escuchar cambios
 
-Hay dos formas equivalentes de escuchar cambios:
+Hay dos formas equivalentes de escuchar cambios (el checkbox ya se mueve solo; estos
+listeners son para reaccionar):
 
 ```html
 <cu-checkbox label="Notificaciones" id="notif"></cu-checkbox>
@@ -70,7 +71,7 @@ Hay dos formas equivalentes de escuchar cambios:
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `size` | `"sm" \| "md"` | `"md"` | Tamaño del checkbox: `sm`, `md` |
 | `disabled` | `boolean` | `—` | Estado deshabilitado |
-| `model-value` | `boolean` | `false` | Estado del checkbox (controlado) |
+| `model-value` | `boolean` | `false` | Estado del checkbox. El CE sincroniza su estado; asigná `modelValue` sólo si querés controlarlo |
 | `label` | `string` | `—` | Texto visible junto al checkbox |
 <!-- /@api:atributos -->
 

@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="es" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>File Input — Playground Vanilla</title>
+    <link rel="stylesheet" href="../../style.css" />
+    <link rel="stylesheet" href="../../public/css/comegen-sigfi-theme.css" />
+    <script src="../../../dist-lib/CuFileInput.umd.js"></script>
+    <style>
+      .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end; margin: 12px 0; }
+      .field { display: flex; flex-direction: column; gap: 4px; font-size: 12px; opacity: .7; min-width: 280px; flex: 1; }
+      .demo-btn {
+        border: 1px solid var(--cu-border-color, #cbd5e1);
+        background: transparent;
+        color: inherit;
+        border-radius: 6px;
+        padding: 6px 12px;
+        font-size: 13px;
+        cursor: pointer;
+      }
+      .demo-btn:hover { background: var(--cu-color-neutral-soft, #f1f5f9); }
+      .log {
+        width: 100%;
+        margin-top: 12px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        background: var(--cu-color-neutral-soft, #f1f5f9);
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 12px;
+        line-height: 1.6;
+        white-space: pre-wrap;
+        max-height: 220px;
+        overflow: auto;
+        box-sizing: border-box;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <h1 style="font-size:16px;font-weight:600">File Input Labs</h1>
+      <div class="topbar-actions">
+        <button class="topbar-btn" id="btnTheme" title="Toggle theme">🌙</button>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="card">
+        <h2>cu-file-input — Custom Element</h2>
+        <p style="font-size:13px;opacity:.65;line-height:1.5;margin:0">
+          Probá <code>set()</code>/<code>get()</code>/<code>reset()</code> y escuchá
+          <code>update:modelValue</code>. El archivo debe reflejarse en la UI al instante.
+        </p>
+
+        <div class="row">
+          <div class="field">
+            <span>variant outlined · color primary</span>
+            <cu-file-input id="fi" color="primary" placeholder="Elegí un archivo..."></cu-file-input>
+          </div>
+          <div class="field">
+            <span>accept="image/*" · max-size 1 MB</span>
+            <cu-file-input id="fi-image" color="success" accept="image/*" max-size="1048576" placeholder="Solo imágenes"></cu-file-input>
+          </div>
+        </div>
+
+        <div class="row">
+          <button class="demo-btn" id="btn-get">get()</button>
+          <button class="demo-btn" id="btn-set">set(File demo)</button>
+          <button class="demo-btn" id="btn-reset">reset()</button>
+          <button class="demo-btn" id="btn-trigger">trigger()</button>
+        </div>
+
+        <pre class="log" id="log">—</pre>
+      </div>
+    </div>
+
+    <script>
+      const logEl = document.getElementById('log');
+      const lines = [];
+      function log(msg) {
+        lines.push(msg);
+        logEl.textContent = lines.join('\n');
+        logEl.scrollTop = logEl.scrollHeight;
+      }
+
+      const fi = document.getElementById('fi');
+      const fiImage = document.getElementById('fi-image');
+
+      fi.addEventListener('update:modelValue', (e) => {
+        const f = e.detail;
+        log(`[fi] update:modelValue → ${f ? `${f.name} (${f.size} bytes)` : 'null'}`);
+      });
+      fiImage.addEventListener('update:modelValue', (e) => {
+        const f = e.detail;
+        log(`[fi-image] update:modelValue → ${f ? `${f.name} (${f.size} bytes)` : 'null'}`);
+      });
+
+      document.getElementById('btn-get').onclick = () => log(`[fi] get() → ${fi.get()?.name ?? 'null'}`);
+      document.getElementById('btn-set').onclick = () =>
+        fi.set(new File(['hola mundo'], 'demo.txt', { type: 'text/plain' }));
+      document.getElementById('btn-reset').onclick = () => fi.reset();
+      document.getElementById('btn-trigger').onclick = () => fi.trigger();
+
+      customElements.whenDefined('cu-file-input').then(() => {
+        fi.set(new File(['hola mundo'], 'demo.txt', { type: 'text/plain' }));
+        log(`[fi] set() inicial → get() = ${fi.get()?.name ?? 'null'}`);
+      });
+    </script>
+
+    <script src="../../playground.js"></script>
+  </body>
+</html>
