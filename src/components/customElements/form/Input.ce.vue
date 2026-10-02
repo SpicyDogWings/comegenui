@@ -3,7 +3,7 @@ import { ref, watch, getCurrentInstance, type PropType } from "vue";
 import Input from "../../form/Input.vue";
 
 const props = defineProps({
-  /** Valor controlado */
+  /** Valor actual del input. El CE sincroniza su estado; asigná `modelValue` sólo si querés controlarlo */
   modelValue: {
     type: String,
     required: false,
@@ -57,19 +57,12 @@ const props = defineProps({
   },
 });
 
-const innerValue = ref(props.modelValue);
 const inputRef = ref<InstanceType<typeof Input> | null>(null);
 const instance = getCurrentInstance();
+const localModel = ref(props.modelValue);
 
 watch(() => props.modelValue, (val) => {
-  innerValue.value = val;
-});
-
-watch(() => inputRef.value?.get(), (val) => {
-  if (val !== undefined && val !== null && val !== innerValue.value) {
-    innerValue.value = val;
-    ceEmit("update:modelValue", val);
-  }
+  localModel.value = val;
 });
 
 function ceEmit(event: string, payload: unknown) {
@@ -84,12 +77,21 @@ function ceEmit(event: string, payload: unknown) {
   }
 }
 
-defineExpose({
-  get: () => inputRef.value?.get(),
-  set: (value: string | number) => inputRef.value?.set(value),
-  reset: () => inputRef.value?.reset(),
-  focus: () => inputRef.value?.focus(),
-});
+function onUpdate(val: string) {
+  localModel.value = val;
+  ceEmit("update:modelValue", val);
+}
+
+/** Devuelve el valor actual del input. */
+const get = () => inputRef.value?.get();
+/** Setea el valor del input (acepta `string | number`). */
+const set = (value: string | number) => inputRef.value?.set(value);
+/** Limpia el campo. */
+const reset = () => inputRef.value?.reset();
+/** Enfoca el input. */
+const focus = () => inputRef.value?.focus();
+
+defineExpose({ get, set, reset, focus });
 </script>
 
 <template>
@@ -103,7 +105,8 @@ defineExpose({
     :read-only="props.readOnly"
     :size="props.size"
     :start-value="props.startValue"
-    :model-value="innerValue"
+    :model-value="localModel"
+    @update:model-value="onUpdate"
   />
 </template>
 

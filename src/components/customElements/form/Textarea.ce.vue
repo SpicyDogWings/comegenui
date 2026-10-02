@@ -4,7 +4,7 @@ import { isFieldVariant } from '@/utils/validators'
 import Textarea from "../../form/Textarea.vue";
 
 const props = defineProps({
-  /** Valor controlado */
+  /** Valor actual del textarea. El CE sincroniza su estado; asigná `modelValue` sólo si querés controlarlo */
   modelValue: {
     type: String,
     required: false,
@@ -59,19 +59,12 @@ const props = defineProps({
   },
 });
 
-const innerValue = ref(props.modelValue);
 const textareaRef = ref<InstanceType<typeof Textarea> | null>(null);
 const instance = getCurrentInstance();
+const localModel = ref(props.modelValue);
 
 watch(() => props.modelValue, (val) => {
-  innerValue.value = val;
-});
-
-watch(() => textareaRef.value?.get(), (val) => {
-  if (val !== undefined && val !== null && val !== innerValue.value) {
-    innerValue.value = val;
-    ceEmit("update:modelValue", val);
-  }
+  localModel.value = val;
 });
 
 function ceEmit(event: string, payload: unknown) {
@@ -86,12 +79,21 @@ function ceEmit(event: string, payload: unknown) {
   }
 }
 
-defineExpose({
-  get: () => textareaRef.value?.get(),
-  set: (value: string | number) => textareaRef.value?.set(value),
-  reset: () => textareaRef.value?.reset(),
-  focus: () => textareaRef.value?.focus(),
-});
+function onUpdate(val: string) {
+  localModel.value = val;
+  ceEmit("update:modelValue", val);
+}
+
+/** Devuelve el valor actual del textarea. */
+const get = () => textareaRef.value?.get();
+/** Setea el valor (acepta `string | number`). */
+const set = (value: string | number) => textareaRef.value?.set(value);
+/** Limpia el campo. */
+const reset = () => textareaRef.value?.reset();
+/** Enfoca el textarea. */
+const focus = () => textareaRef.value?.focus();
+
+defineExpose({ get, set, reset, focus });
 </script>
 
 <template>
@@ -105,7 +107,8 @@ defineExpose({
     :rows="props.rows"
     :no-resize="props.noResize"
     :start-value="props.startValue"
-    :model-value="innerValue"
+    :model-value="localModel"
+    @update:model-value="onUpdate"
   />
 </template>
 

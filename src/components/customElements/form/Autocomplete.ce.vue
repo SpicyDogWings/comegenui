@@ -37,23 +37,16 @@ const props = defineProps({
   fixed: { type: Boolean, required: false, default: false },
   /** Opciones del menú (ver abajo). Se asigna como propiedad JS */
   items: { type: Array, required: false, default: () => [] },
-  /** Valor controlado */
+  /** Valor actual del texto. El CE sincroniza su estado; asigná `modelValue` sólo si querés controlarlo */
   modelValue: { type: String, required: false, default: "" },
 });
 
 const autocompleteRef = ref<InstanceType<typeof Autocomplete> | null>(null);
 const instance = getCurrentInstance();
-const innerValue = ref(props.modelValue);
+const localModel = ref(props.modelValue);
 
 watch(() => props.modelValue, (val) => {
-  innerValue.value = val;
-});
-
-watch(() => autocompleteRef.value?.get(), (val) => {
-  if (val !== undefined && val !== null && val !== innerValue.value) {
-    innerValue.value = val;
-    ceEmit("update:modelValue", val);
-  }
+  localModel.value = val;
 });
 
 function ceEmit(event: string, payload: unknown) {
@@ -66,6 +59,11 @@ function ceEmit(event: string, payload: unknown) {
       composed: true,
     }));
   }
+}
+
+function onUpdate(val: string) {
+  localModel.value = val;
+  ceEmit("update:modelValue", val);
 }
 
 defineExpose({
@@ -98,7 +96,8 @@ defineExpose({
     :align="props.align"
     :fixed="props.fixed"
     :items="props.items"
-    :model-value="innerValue"
+    :model-value="localModel"
+    @update:model-value="onUpdate"
     @select="ceEmit('select', $event)"
     @blur="ceEmit('blur', $event)"
   />

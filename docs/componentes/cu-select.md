@@ -207,7 +207,7 @@ Mientras el usuario escribe (con `searchEnabled`), aparece una barra de cooldown
 | `position` | `string` | `"bottom"` | Posición del dropdown: `bottom`, `top` |
 | `align` | `string` | `"start"` | Alineación: `start`, `center`, `end` |
 | `fixed` | `boolean` | `false` | Si es `true`, el dropdown usa `position: fixed` en vez de absoluto |
-| `model-value` | `string` | `""` | Valor seleccionado |
+| `model-value` | `string` | `""` | Valor seleccionado. El CE sincroniza su estado; asigná `modelValue` sólo si querés controlarlo |
 | `text-align` | `"center" \| "left" \| "right"` | `"left"` | Alineación del texto seleccionado: `left`, `center`, `right` |
 | `search-mode` | `"includes" \| "startsWith"` | `"startsWith"` | Modo de coincidencia: `startsWith` (solo al inicio del label) o `includes` (en cualquier parte) |
 | `options` | `SelectOption[]` | `[]` | Opciones del select (ver abajo). Se asigna como propiedad JS |

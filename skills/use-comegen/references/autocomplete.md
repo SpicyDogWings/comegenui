@@ -119,7 +119,7 @@ de campo (`outlined`, `soft`, `ghost`, `subtle`), tipos HTML5 (`text`, `password
 | `align` | `"center" \| "start" \| "end"` | `"start"` | Alineación: `start`, `center`, `end` |
 | `fixed` | `boolean` | `false` | Panel en `position: fixed` (útil en contenedores con overflow) |
 | `items` | `unknown[]` | `[]` | Opciones del menú (ver abajo). Se asigna como propiedad JS |
-| `model-value` | `string` | `""` | Valor controlado |
+| `model-value` | `string` | `""` | Valor actual del texto. El CE sincroniza su estado; asigná `modelValue` sólo si querés controlarlo |
 <!-- /@api:atributos -->
 
 ### Eventos

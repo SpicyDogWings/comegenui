@@ -72,7 +72,7 @@ Input de texto con color, variante, tipos de input HTML5 y métodos `get`/`set`/
 | `size` | `"sm" \| "md" \| "lg"` | `"md"` | Tamaño: `sm`, `md`, `lg` |
 | `disabled` | `boolean` | `false` | Estado deshabilitado |
 | `read-only` | `boolean` | `false` | Solo lectura (en HTML se usa como `readonly`) |
-| `model-value` | `string` | `""` | Valor controlado |
+| `model-value` | `string` | `""` | Valor actual del input. El CE sincroniza su estado; asigná `modelValue` sólo si querés controlarlo |
 | `placeholder` | `string` | `—` | Placeholder del input |
 | `start-value` | `string` | `—` | Valor inicial usado por `.reset()` |
 <!-- /@api:atributos -->
