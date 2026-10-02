@@ -142,7 +142,7 @@ Por defecto el menú se abre al recibir foco. Con `min-chars="2"` solo se abre t
 | `align` | `"center" \| "start" \| "end"` | `"start"` | Alineación: `start`, `center`, `end` |
 | `fixed` | `boolean` | `false` | Panel en `position: fixed` (útil en contenedores con overflow) |
 | `items` | `unknown[]` | `[]` | Opciones del menú (ver abajo). Se asigna como propiedad JS |
-| `model-value` | `string` | `""` | Valor controlado |
+| `model-value` | `string` | `""` | Valor actual del texto. El CE sincroniza su estado; asigná `modelValue` sólo si querés controlarlo |
 <!-- /@api:atributos -->
 
 ### Items
