@@ -9,7 +9,8 @@ aplica: el switch sólo maneja `true`/`false`.
 
 ## Receta
 
-1. Controlá el estado con `v-model` (Vue) o `model-value` + `update:modelValue` (CE).
+1. El estado lo maneja el propio switch: al clickearlo se mueve solo. Enlazá `modelValue`
+   sólo si querés controlarlo (`v-model` en Vue).
 2. Escuchá `change` para reaccionar al toggle (payload `boolean`); se emite tanto por
    interacción como al llamar `set()`/`reset()`.
 3. El texto va en `label` o en el slot default; el label nativo hace que el texto sea
@@ -82,7 +83,7 @@ default como texto, `change` con el boolean nuevo, y los métodos `get`/`set`/`r
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `size` | `"sm" \| "md"` | `"md"` | Tamaño del switch: `sm`, `md` |
 | `disabled` | `boolean` | `—` | Estado deshabilitado |
-| `model-value` | `boolean` | `false` | Estado del toggle (controlado) |
+| `model-value` | `boolean` | `false` | Estado del toggle. El CE sincroniza su estado; asigná `modelValue` sólo si querés controlarlo |
 | `label` | `string` | `""` | — |
 <!-- /@api:atributos -->
 

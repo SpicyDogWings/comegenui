@@ -8,7 +8,8 @@ Para texto libre de varias líneas. Para una sola línea usá `cu-input`.
 
 ## Receta
 
-1. Controlá el valor con `v-model` (Vue) o `model-value` + `update:modelValue` (CE).
+1. El valor lo maneja el propio textarea al tipear; enlazá `v-model` (Vue) o `model-value` (CE)
+   sólo si querés controlarlo.
 2. Ajustá `rows`, `placeholder`, `disabled`, `read-only` (HTML `readonly`) y `no-resize`.
 3. `color` y `variant` (`outlined`/`soft`/`ghost`/`subtle`) definen el estilo.
 4. Programático: `get()`, `set(v)`, `reset()`, `focus()`.

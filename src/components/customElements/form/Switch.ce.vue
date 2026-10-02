@@ -6,7 +6,7 @@ import { initTokens } from "@/plugins/cu-tokens/css";
 initTokens();
 
 const props = defineProps({
-  /** Estado del toggle (controlado) */
+  /** Estado del toggle. El CE sincroniza su estado; asigná `modelValue` sólo si querés controlarlo */
   modelValue: { type: Boolean, default: false },
   /** Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` */
   color: {

@@ -24,13 +24,17 @@ Selector de color con swatch y campo de texto hex. Al hacer click en el swatch s
 
 ---
 
-## Valor controlado
+## Valor y modo controlado
+
+Por defecto el control mantiene su color al elegir. Si querés decidir el valor vos, reasigná
+`modelValue` en el evento:
 
 ```html
-<cu-color-picker value="#1774A4" id="colorForm"></cu-color-picker>
+<cu-color-picker id="colorForm"></cu-color-picker>
 
 <script>
   const cp = document.getElementById('colorForm');
+  // Modo controlado: escuchás el cambio y decidís qué color queda.
   cp.addEventListener('update:modelValue', (e) => {
     document.body.style.borderColor = e.detail;
   });
@@ -42,7 +46,7 @@ Selector de color con swatch y campo de texto hex. Al hacer click en el swatch s
 ## Deshabilitado
 
 ```html
-<cu-color-picker disabled value="#dc3545"></cu-color-picker>
+<cu-color-picker disabled model-value="#dc3545"></cu-color-picker>
 ```
 
 ---

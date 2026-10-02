@@ -10,7 +10,8 @@ encendido/apagado usá `cu-switch`; si es una opción entre varias, usá `cu-sel
 
 ## Receta
 
-1. Controlá el valor con `v-model` (Vue) o `modelValue` + `update:modelValue` (CE).
+1. El valor lo maneja el propio checkbox: al clickearlo cambia solo. Enlazá `modelValue`
+   sólo si querés controlarlo (`v-model` en Vue).
 2. Escuchá `change` para reaccionar al toggle.
 3. Por código: `set(true/false)`, `reset()`, `get()` (devuelve el estado) y `focus()`.
 4. `color` tiñe el check y `size` (`sm`/`md`) cambia el tamaño; `label` es el texto y
@@ -72,7 +73,7 @@ const acepto = ref(false);
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `size` | `"sm" \| "md"` | `"md"` | Tamaño del checkbox: `sm`, `md` |
 | `disabled` | `boolean` | `—` | Estado deshabilitado |
-| `model-value` | `boolean` | `false` | Estado del checkbox (controlado) |
+| `model-value` | `boolean` | `false` | Estado del checkbox. El CE sincroniza su estado; asigná `modelValue` sólo si querés controlarlo |
 | `label` | `string` | `—` | Texto visible junto al checkbox |
 <!-- /@api:atributos -->
 
