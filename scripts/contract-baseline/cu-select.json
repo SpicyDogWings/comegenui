@@ -1,0 +1,30 @@
+{
+  "tag": "cu-select",
+  "props": [
+    "align",
+    "color",
+    "cooldownVariant",
+    "disabled",
+    "fixed",
+    "loading",
+    "modelValue",
+    "options",
+    "placeholder",
+    "placeholderWrap",
+    "position",
+    "searchEnabled",
+    "searchMode",
+    "searchResetDelay",
+    "textAlign",
+    "variant"
+  ],
+  "methods": [
+    "focus",
+    "get",
+    "isOpen",
+    "reset",
+    "selectedItem",
+    "set"
+  ],
+  "shadow": "div.cu-select[data-v-1127154b,tabindex]\n  div.cu-dropdown.cu-popover[cooldown-variant,data-v-1127154b,data-v-24340070,data-v-42c69ad7]\n    button.cu-button.cu-button--md.cu-button--soft.cu-select-toggle[data-v-1127154b,data-v-c683ce48,style,type]\n      span.cu-select-label[data-v-1127154b]\n      svg.cu-select-chevron[data-v-1127154b,fill,height,stroke,stroke-linecap,stroke-linejoin,stroke-width,viewBox,width,xmlns]\n        path[d,data-v-1127154b]"
+}

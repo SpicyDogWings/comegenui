@@ -45,7 +45,22 @@ pnpm dev
 | `pnpm build:lib` | Build de la librería UMD (Web Components) + zip |
 | `pnpm type-check` | Type-check con `vue-tsc` |
 | `pnpm test` | Tests unitarios (Vitest) |
-| `pnpm preflight` | Gate local antes de un PR (type-check + tests + docs + build del sitio) |
+| `pnpm guard` | Gate local antes de un PR: impacto + tipos nuevos + contrato de componentes + build de la lib (`--full` suma tests, docs y build del sitio) |
+| `pnpm guard --solo cu-x` | Verifica un solo componente (loop rápido) |
+| `pnpm contract:update` | Regenera el baseline de contratos cuando un cambio de API es intencional |
+
+### Hooks locales (recomendado)
+
+Las pruebas corren en **local** (no hay CI automático). Activá los hooks una vez por clon:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+- `pre-commit` → `./scripts/guard.sh --fast` (impacto + tipos + contrato + build de la lib).
+- `pre-push` → `./scripts/guard.sh --full` (agrega tests, docs y build del sitio).
+
+Saltear de forma puntual: `git commit --no-verify` o `git push --no-verify`.
 
 ## Flujo de ramas y commits
 
@@ -96,7 +111,8 @@ Si el cambio altera la API, actualizá también las fichas de documentación
 ## Checklist antes del PR
 
 - [ ] Hay una issue abierta y el PR la referencia (`Closes #N`).
-- [ ] `pnpm preflight` pasa (type-check, tests, docs y build del sitio).
+- [ ] `./scripts/guard.sh --full` pasa (impacto, tipos sin regresión, contratos de los custom elements, build de la lib, tests, docs y build del sitio).
+- [ ] Si el contrato de un componente cambió a propósito, el baseline (`scripts/contract-baseline/`) va actualizado en el PR.
 - [ ] Las fichas y páginas de docs reflejan el cambio si tocaste la API.
 - [ ] Los commits siguen Conventional Commits.
 - [ ] No se colaron secretos, tokens ni credenciales.

@@ -1,0 +1,25 @@
+name: guard (manual)
+
+# Las pruebas de ComegenUI corren en LOCAL (scripts/guard.sh + hooks de .githooks).
+# Este workflow queda desactivado a propósito: no se dispara con push ni PR, sólo
+# si alguien lo lanza a mano desde la pestaña Actions. Así no consume cuota.
+on:
+  workflow_dispatch:
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Guard (impacto + tipos + contrato + lib + tests + docs)
+        run: ./scripts/guard.sh --full

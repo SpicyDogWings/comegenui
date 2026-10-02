@@ -222,4 +222,5 @@ async function createZip() {
 }
 
 await runBuilds()
-await createZip()
+// El gate local no necesita el zip: `COMEGEN_NO_ZIP=1` saltea el empaquetado.
+if (!process.env.COMEGEN_NO_ZIP) await createZip()

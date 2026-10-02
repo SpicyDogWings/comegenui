@@ -1,0 +1,11 @@
+{
+  "tag": "cu-avatar",
+  "props": [
+    "color",
+    "initials",
+    "size",
+    "src"
+  ],
+  "methods": [],
+  "shadow": "div.cu-avatar.cu-avatar--md[data-v-116b6a17,style]\n  slot"
+}

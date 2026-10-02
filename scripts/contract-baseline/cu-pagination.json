@@ -1,0 +1,16 @@
+{
+  "tag": "cu-pagination",
+  "props": [
+    "color",
+    "currentPage",
+    "itemsPerPage",
+    "pageSizeOptions",
+    "showFirstAndLast",
+    "showPageSize",
+    "totalItems",
+    "totalPages",
+    "variant"
+  ],
+  "methods": [],
+  "shadow": ""
+}

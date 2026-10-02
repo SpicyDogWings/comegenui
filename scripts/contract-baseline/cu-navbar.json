@@ -1,0 +1,20 @@
+{
+  "tag": "cu-navbar",
+  "props": [
+    "activePath",
+    "collapsed",
+    "compact",
+    "compactable",
+    "items",
+    "responsive",
+    "responsiveMode",
+    "search",
+    "searchFields",
+    "searchMode",
+    "searchPlaceholder",
+    "sideOverPosition",
+    "trigger"
+  ],
+  "methods": [],
+  "shadow": "div.cu-navbar-responsive[data-v-fd188859]\n  nav.cu-navbar[data-v-63054d7b,data-v-fd188859]"
+}

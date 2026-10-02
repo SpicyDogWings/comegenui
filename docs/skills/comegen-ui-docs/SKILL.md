@@ -280,7 +280,7 @@ import X from "@/components/<cat>/X.vue";
 ```bash
 node scripts/check-docs.mjs     # tag↔ficha, @include sano, secciones obligatorias
 node scripts/gen-api.mjs --check # las tablas de API generadas están al día
-./scripts/preflight.sh          # type-check + tests + gate
+./scripts/guard.sh --full     # impacto + tipos nuevos + contrato CE + build lib + tests + docs
 pnpm build                      # el sitio: caza dead links y que los ejemplos compilen
 pnpm dev                        # mirar el sitio (sidebar sale del frontmatter)
 ```

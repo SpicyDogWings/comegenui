@@ -1,0 +1,18 @@
+{
+  "tag": "cu-tabs",
+  "props": [
+    "color",
+    "disabled",
+    "modelValue",
+    "size",
+    "tabs",
+    "variant"
+  ],
+  "methods": [
+    "getActive",
+    "next",
+    "prev",
+    "setActive"
+  ],
+  "shadow": "div.cu-tabs.cu-tabs--ghost.cu-tabs--md[data-v-cf895022,style]\n  div.cu-tabs-header[aria-orientation,data-v-cf895022,role]"
+}

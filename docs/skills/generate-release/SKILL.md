@@ -11,7 +11,7 @@ metadata:
 
 Deja el repo listo para publicar: doc al día, tests verdes, y el zip de la lib generado.
 
-> **Regla:** la release está lista solo si el [checklist final](#checklist-final) está completo y `./scripts/preflight.sh` da verde. No declares "listo" sin eso.
+> **Regla:** la release está lista solo si el [checklist final](#checklist-final) está completo y `./scripts/guard.sh --full` da verde. No declares "listo" sin eso.
 
 ## Cuándo se activa
 
@@ -71,11 +71,13 @@ pnpm test          # unitarios (Vitest)
 ### 3. Gate (type-check + tests + consistencia de docs)
 
 ```bash
-./scripts/preflight.sh
+./scripts/guard.sh --full
 ```
 
-Falla si hay **errores de type-check nuevos** (respecto de `scripts/typecheck-baseline`), tests rojos,
-o tags/componentes sin ficha o sin página. No bajes el baseline sin arreglar la causa.
+Falla si hay **errores de type-check nuevos por identidad** (respecto de `scripts/typecheck-baseline.txt`),
+algún **contrato de custom element roto** (props/métodos/shadow DOM vs `scripts/contract-baseline/`),
+tests rojos, o tags/componentes sin ficha o sin página. No bajes ningún baseline sin arreglar la causa;
+si un cambio de API fue intencional, regenerá el contrato con `./scripts/guard.sh --update`.
 
 ### 4. Build del sitio (que la doc no rompa)
 
@@ -119,7 +121,7 @@ Revisá el diff antes. **Nunca** `git add -A` a ciegas.
 - [ ] Fichas y páginas de los componentes que cambiaron, al día.
 - [ ] `metadata.version` de las cinco `SKILL.md` coincide con `package.json`.
 - [ ] `pnpm test` verde.
-- [ ] `./scripts/preflight.sh` verde (sin errores nuevos de type-check).
+- [ ] `./scripts/guard.sh --full` verde (sin tipos nuevos, sin contratos rotos, docs al día).
 - [ ] `pnpm build` OK.
 - [ ] `pnpm build:lib` OK.
 - [ ] `dist-lib/comegenui-v<version>.zip` con los UMD, `css/` y `README-BUILD.md` (sólo la lib).
@@ -131,8 +133,9 @@ Si algo falta, decilo explícitamente en el reporte; no lo tapes con "quedó fun
 
 | Síntoma | Causa / qué hacer |
 |---|---|
-| `check-docs` falla en preflight | Un tag de `src/lib` no tiene ficha o página, o a una página le falta `title`/`group`. |
-| Errores de type-check "nuevos" | Compará con `scripts/typecheck-baseline`; arreglá los nuevos, no bajes el baseline. |
+| `check-docs` falla en el guard | Un tag de `src/lib` no tiene ficha o página, o a una página le falta `title`/`group`. |
+| Errores de type-check "nuevos" | Compará con `scripts/typecheck-baseline.txt` (por identidad); arreglá los nuevos, no bajes el baseline. |
+| `❌ <tag> ROTO` en el paso de contrato | Un prop/método/estructura del custom element cambió. Si fue a propósito: `./scripts/guard.sh --update`. |
 | Tests rojos que no tocaste | El repo arrastra fallos viejos: compará con el estado previo (`git stash` + `pnpm test`). |
 | La doc de un componente quedó vieja | Actualizá su ficha vanilla (`docs/componentes/<tag>.md`), su ficha Vue (`docs/componentes/vue/<kebab>.md`), su receta (`skills/use-comegen/references/<kebab>.md`) y su página (`docs/site/componentes/`). |
 | El zip no incluye un componente | Debe existir su entry en `src/lib/**/*.ts` (los internos no van a la lib ni a la skill). |

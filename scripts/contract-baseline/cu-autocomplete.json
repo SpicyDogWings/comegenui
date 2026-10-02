@@ -1,0 +1,29 @@
+{
+  "tag": "cu-autocomplete",
+  "props": [
+    "align",
+    "color",
+    "disabled",
+    "fixed",
+    "items",
+    "minChars",
+    "modelValue",
+    "placeholder",
+    "position",
+    "readOnly",
+    "type",
+    "variant"
+  ],
+  "methods": [
+    "close",
+    "focus",
+    "get",
+    "isOpen",
+    "open",
+    "reset",
+    "selectedItem",
+    "set",
+    "toggle"
+  ],
+  "shadow": "div[data-v-806f0a01,tabindex]\n  div.cu-dropdown.cu-popover[data-v-24340070,data-v-42c69ad7,data-v-806f0a01,style]\n    input.cu-input.cu-input--soft[data-v-646ec9df,data-v-806f0a01,placeholder,style,type,value]"
+}

@@ -167,7 +167,14 @@ Para usar en tu proyecto, copiá los `.umd.js` que necesités y el CSS:
 | `pnpm build:lib` | Build de la librería UMD (Web Components) + zip |
 | `pnpm type-check` | Type-check con `vue-tsc` |
 | `pnpm test` | Tests unitarios (Vitest) |
-| `pnpm preflight` | Gate local antes de un MR |
+| `pnpm guard` | Gate local con veredicto por componente (`--full`, `--solo <tag>`, `--explicar`) |
+| `pnpm contract` | Verifica el contrato de cada custom element (`contract:update` regenera el baseline) |
+| `pnpm impact` | Qué componentes dependen de los archivos que cambiaste |
+| `pnpm preflight` | Alias deprecado de `guard` |
+
+> **Hooks locales:** activá el gate automático una vez por clon con
+> `git config core.hooksPath .githooks`. `pre-commit` corre rápido (`guard.sh --fast`)
+> y `pre-push` corre completo (`guard.sh --full`). Las pruebas corren en local: no hay CI automático.
 
 ## Build de la librería
 

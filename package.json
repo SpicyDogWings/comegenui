@@ -12,7 +12,11 @@
     "type-check": "vue-tsc --build",
     "test": "vitest run",
     "test:watch": "vitest",
-    "preflight": "bash scripts/preflight.sh"
+    "guard": "bash scripts/guard.sh",
+    "contract": "node scripts/contract.mjs",
+    "contract:update": "node scripts/contract.mjs --update",
+    "impact": "node scripts/impact.mjs",
+    "preflight": "bash scripts/guard.sh"
   },
   "dependencies": {
     "@vueuse/core": "^14.2.1",
