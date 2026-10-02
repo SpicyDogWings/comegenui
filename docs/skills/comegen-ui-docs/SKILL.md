@@ -4,7 +4,7 @@ description: 'Receta para documentar o revisar la documentación de un component
 metadata:
   repository: https://github.com/SpicyDogWings/comegenui
   path: docs/skills/comegen-ui-docs
-  version: 5.0.0-alpha.3
+  version: 5.0.1-alpha
 ---
 
 # Documentar un componente
