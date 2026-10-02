@@ -239,6 +239,33 @@ describe("Switch.ce", () => {
     await flushPromises();
     expect(updates).toEqual([true]);
   });
+
+  it("el CLICK mantiene el estado sin que el host reasigne modelValue", async () => {
+    // El caso del reporte: se escucha el evento pero no se escribe `modelValue`.
+    const w = mount(SwitchCe);
+    const updates: boolean[] = [];
+    w.element.addEventListener("update:modelValue", (e) =>
+      updates.push((e as CustomEvent).detail),
+    );
+
+    await w.find('input[type="checkbox"]').setValue(true);
+    await flushPromises();
+
+    expect(w.vm.get()).toBe(true);
+    expect(w.find(".cu-switch-track").classes()).toContain("cu-switch--checked");
+    expect(updates).toEqual([true]);
+  });
+
+  it("`reset()` apaga la UI y `get()`", async () => {
+    const w = mount(SwitchCe);
+    w.vm.set(true);
+    await flushPromises();
+    w.vm.reset();
+    await flushPromises();
+
+    expect(w.vm.get()).toBe(false);
+    expect(w.find(".cu-switch-track").classes()).not.toContain("cu-switch--checked");
+  });
 });
 
 describe("Checkbox.ce", () => {
@@ -257,6 +284,21 @@ describe("Checkbox.ce", () => {
     );
     w.vm.set(true);
     await flushPromises();
+    expect(updates).toEqual([true]);
+  });
+
+  it("el CLICK mantiene el estado sin que el host reasigne modelValue", async () => {
+    const w = mount(CheckboxCe);
+    const updates: boolean[] = [];
+    w.element.addEventListener("update:modelValue", (e) =>
+      updates.push((e as CustomEvent).detail),
+    );
+
+    await w.find('input[type="checkbox"]').setValue(true);
+    await flushPromises();
+
+    expect(w.vm.get()).toBe(true);
+    expect(w.find("input").element.checked).toBe(true);
     expect(updates).toEqual([true]);
   });
 });
