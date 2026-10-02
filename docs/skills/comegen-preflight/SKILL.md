@@ -4,7 +4,7 @@ description: 'Corre el gate local de comegen-ui (guard.sh) antes de un merge req
 metadata:
   repository: https://github.com/SpicyDogWings/comegenui
   path: docs/skills/comegen-preflight
-  version: 5.0.1-alpha
+  version: 5.0.2-alpha
 ---
 
 # `comegen-preflight`
