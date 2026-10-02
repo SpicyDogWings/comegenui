@@ -4,7 +4,7 @@ description: 'Corre el preflight local de comegen-ui antes de un merge request (
 metadata:
   repository: https://github.com/SpicyDogWings/comegenui
   path: docs/skills/comegen-preflight
-  version: 5.0.0-alpha.3
+  version: 5.0.1-alpha
 ---
 
 # `comegen-preflight`

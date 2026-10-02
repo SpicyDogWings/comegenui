@@ -1,6 +1,6 @@
 {
   "name": "comegenui",
-  "version": "5.0.0-alpha.3",
+  "version": "5.0.1-alpha",
   "private": true,
   "type": "module",
   "scripts": {
