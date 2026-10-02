@@ -14,7 +14,8 @@ ciudades). Para listas cortas y cerradas, `cu-select`; para texto libre sin suge
 2. El menú se abre al recibir foco; `min-chars="2"` lo abre recién a partir de 2 caracteres
    tipeados, o al enfocar el campo si el texto ya tiene esos 2+ caracteres. Para abrirlo por código
    sin importar `min-chars`, usá `open()`.
-3. El texto se controla con `model-value` (CE) o `v-model` (Vue) y se escucha `update:modelValue`.
+3. El texto lo maneja el propio campo al tipear; enlazá `model-value` (CE) o `v-model` (Vue)
+   sólo si querés controlarlo y escuchá `update:modelValue`.
    `select` recibe el item completo elegido.
 4. Posicionamiento: `position` (`bottom`, `top`, `left`, `right`), `align` (`start`, `center`, `end`)
    y `fixed` para paneles dentro de contenedores con `overflow`.

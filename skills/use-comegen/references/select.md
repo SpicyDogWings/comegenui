@@ -11,7 +11,8 @@ escritura sobre un input visible, usá `cu-autocomplete`.
 
 1. Definí `options` como array de `{ value, label, disabled?, color?, variant? }` y asignalo
    como propiedad JS.
-2. Controlá el valor con `v-model` (Vue) o `model-value` + `update:modelValue` (CE). Escuchá
+2. El valor lo maneja el propio select: al elegir una opción se refleja solo. Enlazá
+   `modelValue` sólo si querés controlarlo (`v-model` en Vue). Escuchá
    `select` para recibir la opción completa (`{ value, label, ... }`).
 3. `placeholder` se muestra cuando no hay selección; `placeholder-wrap` decide si el texto
    wrappea o se trunca con `...`.

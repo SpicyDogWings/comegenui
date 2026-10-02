@@ -1,6 +1,6 @@
 # `<cu-switch>`
 
-Toggle switch con color semántico y dos tamaños. Controlable via `modelValue` o métodos `get`/`set`.
+Toggle switch con color semántico y dos tamaños. Mantiene su estado y también se controla via `modelValue` o métodos `get`/`set`.
 
 [← Volver](../README.md)
 
@@ -35,7 +35,7 @@ Toggle switch con color semántico y dos tamaños. Controlable via `modelValue` 
 
 ## Escuchar cambios
 
-Hay dos formas equivalentes:
+Hay dos formas equivalentes (el switch se mueve solo; estos listeners son para reaccionar):
 
 ```html
 <cu-switch id="toggle"></cu-switch>
@@ -43,7 +43,8 @@ Hay dos formas equivalentes:
 <script>
   const sw = document.getElementById('toggle');
 
-  // update:modelValue (convención Vue)
+  // update:modelValue (convención Vue). El switch ya cambió su estado solo;
+  // este listener es para reaccionar, no para moverlo.
   sw.addEventListener('update:modelValue', (e) => {
     console.log('Estado:', e.detail);
   });
@@ -51,6 +52,27 @@ Hay dos formas equivalentes:
   // change (payload = boolean)
   sw.addEventListener('change', (e) => {
     console.log('Toggle a:', e.detail);
+  });
+</script>
+```
+
+---
+
+## Estado y modo controlado
+
+El switch **mantiene su propio estado**: al clickearlo (o llamar `set()`/`reset()`) se mueve
+la UI y `get()` devuelve el valor nuevo, sin que tengas que reasignar `modelValue`.
+
+Si necesitás que **vos** decidas el valor, reasignalo en el evento (modo controlado):
+
+```html
+<cu-switch id="guardado"></cu-switch>
+
+<script>
+  const sw = document.getElementById('guardado');
+  // Ejemplo: sólo permite activarlo una vez; si el usuario lo apaga, lo volvemos a encender.
+  sw.addEventListener('update:modelValue', (e) => {
+    if (!e.detail) sw.modelValue = true;
   });
 </script>
 ```
@@ -77,7 +99,7 @@ El switch no incluye label propio. Combinalo con `<cu-label>` para tener un áre
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `size` | `"sm" \| "md"` | `"md"` | Tamaño del switch: `sm`, `md` |
 | `disabled` | `boolean` | `—` | Estado deshabilitado |
-| `model-value` | `boolean` | `false` | Estado del toggle (controlado) |
+| `model-value` | `boolean` | `false` | Estado del toggle. El CE sincroniza su estado; asigná `modelValue` sólo si querés controlarlo |
 | `label` | `string` | `""` | — |
 <!-- /@api:atributos -->
 

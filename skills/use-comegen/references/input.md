@@ -10,8 +10,8 @@ Para capturar texto, números, email, teléfono, URL o búsqueda en una línea. 
 
 ## Receta
 
-1. Enlazá el valor con `v-model` en Vue o con `model-value` + `update:modelValue` en vanilla. El
-   valor es un **string** (también con `type="number"`).
+1. El valor lo maneja el propio campo al tipear; enlazá `v-model` en Vue o `model-value` en
+   vanilla sólo si querés controlarlo. El valor es un **string** (también con `type="number"`).
 2. Elegí el `type` (`text`, `password`, `email`, `number`, `tel`, `url`, `search`).
 3. Estilá con `color` (default `neutral`), `variant` (default `soft`) y `size` (`sm`/`md`/`lg`,
    default `md`).
