@@ -13,17 +13,26 @@ git config core.hooksPath .githooks   # una sola vez por clon
 ```
 
 - **pre-commit** → `guard.sh --fast` (impacto + tipos + contrato + build de la lib, sin tests ni docs). Aborta el commit si un componente se dañó. Saltear puntualmente: `git commit --no-verify`.
-- **pre-push** → `guard.sh --full` (agrega tests, docs y build del sitio). Bloquea el push si algo está roto. Saltear: `git push --no-verify`.
+- **pre-push** → `guard.sh --full` (agrega tests, docs y mutación). Bloquea el push si algo está roto. Saltear: `git push --no-verify`.
 
 - `./scripts/guard.sh --solo cu-input` — loop rápido sobre un componente.
-- `./scripts/guard.sh` — impacto + tipos + contrato + build de la lib (`build:lib`) sobre lo que tocaste.
-- `./scripts/guard.sh --full` — además tests completos, docs y build del sitio.
+- `./scripts/guard.sh` — impacto + tipos + build de la lib + contrato, sobre lo que tocaste.
+- `./scripts/guard.sh --full` — además tests completos, docs y **mutación**.
 - `./scripts/guard.sh --explicar` — imprime qué hace y por qué cada paso.
+- **Cada paso tiene su flag**: `--impacto`, `--tipos`, `--build`, `--contrato`, `--tests`, `--docs`, `--mutacion`. Combinables: `./scripts/guard.sh --contrato --tipos` corre solo esos dos.
+- **`--mutacion` es la prueba de falsos verdes**: aplica bugs conocidos a los componentes y falla si algún test sigue en verde (ver abajo).
 - Si tocás un compartido (`overlay/Dropdown.vue`, `AdvancedTable.vue`, `useDateRange.ts`, tokens), el paso de **impacto** lista todos los componentes que dependen de él y sus contratos se verifican: **si aparece un consumidor que no esperabas, revisá antes de seguir**.
 - Contrato cambiado a propósito (agregaste una prop, un método o una clase): `./scripts/guard.sh --update` regenera `scripts/contract-baseline/<tag>.json`. Un cambio de contrato intencional va con su baseline en el mismo PR.
 - Nunca bajes un baseline “para que pase”: el baseline es el contrato que ve el consumidor del zip.
 
 **Qué mira el gate** (y qué no): compila los UMD reales y los carga en jsdom, y compara por componente props declaradas / métodos expuestos / metadata `comegen` / estructura del shadow DOM. **No** cubre CSS ni layout reales (eso queda para E2E con navegador). Tipos: el gate reporta **errores nuevos por identidad** contra `scripts/typecheck-baseline.txt`, no por conteo (el viejo `preflight.sh` sólo contaba y dejaba pasar un error nuevo si arreglabas otro).
+
+**Dos capas de tests, y por qué importan las dos:**
+
+- **Contrato de API** (`src/contracts/ficha-api.test.ts`): por cada ficha Vue verifica que la API documentada exista (props/emits/slots/expose). Detecta **regresiones de API**. Ojo: la ficha la genera `gen-api` desde el mismo SFC, así que esto **no pesca bugs de comportamiento** (compararía el componente contra sí mismo).
+- **Comportamiento** (`X.test.ts` junto al componente): aserciones escritas **a mano desde la prosa de la ficha**. Estas sí pueden fallar por un bug real.
+
+**La prueba de fuego**: `scripts/mutation-check.mjs` (`pnpm mutation`) aplica bugs conocidos y **falla si algún test sigue verde**. Cada test de comportamiento nuevo debe venir con su mutación en `scripts/mutation-check.mjs`. Correr `./scripts/guard.sh --mutacion` después de agregar un test.
 
 ## Estructura de directorios
 

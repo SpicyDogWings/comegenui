@@ -168,6 +168,7 @@ Para usar en tu proyecto, copiá los `.umd.js` que necesités y el CSS:
 | `pnpm type-check` | Type-check con `vue-tsc` |
 | `pnpm test` | Tests unitarios (Vitest) |
 | `pnpm guard` | Gate local con veredicto por componente (`--full`, `--solo <tag>`, `--explicar`) |
+| `pnpm mutation` | Prueba de falsos verdes: aplica bugs y verifica que los tests los detecten |
 | `pnpm contract` | Verifica el contrato de cada custom element (`contract:update` regenera el baseline) |
 | `pnpm impact` | Qué componentes dependen de los archivos que cambiaste |
 | `pnpm preflight` | Alias deprecado de `guard` |

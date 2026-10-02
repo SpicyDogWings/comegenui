@@ -64,6 +64,15 @@ export function componentMap() {
       if (!out.has(name)) out.set(name, rel);
     }
   }
+
+  // Componentes sueltos en la raíz de `components/` que sí tienen ficha (FileList).
+  for (const file of walk(resolve(ROOT, "src/components"), ".vue")) {
+    const rel = file.replace(ROOT + "/", "");
+    if (rel.split("/").length !== 3) continue; // sólo src/components/X.vue
+    if (file.endsWith(".ce.vue")) continue;
+    const name = kebab(file.split("/").pop().replace(/\.vue$/, ""));
+    if (!out.has(name)) out.set(name, rel);
+  }
   return out;
 }
 

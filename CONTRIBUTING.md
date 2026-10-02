@@ -47,7 +47,11 @@ pnpm dev
 | `pnpm test` | Tests unitarios (Vitest) |
 | `pnpm guard` | Gate local antes de un PR: impacto + tipos nuevos + contrato de componentes + build de la lib (`--full` suma tests, docs y build del sitio) |
 | `pnpm guard --solo cu-x` | Verifica un solo componente (loop rápido) |
+| `pnpm mutation` | Prueba de falsos verdes: aplica bugs conocidos y verifica que algún test falle |
 | `pnpm contract:update` | Regenera el baseline de contratos cuando un cambio de API es intencional |
+
+Cada paso de `guard.sh` tiene su flag para correrlo aislado: `--impacto`, `--tipos`, `--build`,
+`--contrato`, `--tests`, `--docs`, `--mutacion`.
 
 ### Hooks locales (recomendado)
 
@@ -111,7 +115,8 @@ Si el cambio altera la API, actualizá también las fichas de documentación
 ## Checklist antes del PR
 
 - [ ] Hay una issue abierta y el PR la referencia (`Closes #N`).
-- [ ] `./scripts/guard.sh --full` pasa (impacto, tipos sin regresión, contratos de los custom elements, build de la lib, tests, docs y build del sitio).
+- [ ] `./scripts/guard.sh --full` pasa (impacto, tipos sin regresión, contratos de los custom elements, build de la lib, tests, mutación, docs y build del sitio).
+- [ ] Si agregaste un test de comportamiento, tiene su mutación en `scripts/mutation-check.mjs` (probaste que un bug la ponga en rojo).
 - [ ] Si el contrato de un componente cambió a propósito, el baseline (`scripts/contract-baseline/`) va actualizado en el PR.
 - [ ] Las fichas y páginas de docs reflejan el cambio si tocaste la API.
 - [ ] Los commits siguen Conventional Commits.
