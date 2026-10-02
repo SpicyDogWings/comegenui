@@ -13,6 +13,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "guard": "bash scripts/guard.sh",
+    "mutation": "node scripts/mutation-check.mjs",
     "contract": "node scripts/contract.mjs",
     "contract:update": "node scripts/contract.mjs --update",
     "impact": "node scripts/impact.mjs",
