@@ -133,7 +133,6 @@ if has tipos; then
   why "busco errores de TypeScript NUEVOS que hayas introducido (no cuento los viejos)"
   set +e
   pnpm run --silent type-check >"$TMP/tc.log" 2>&1
-  set -e
   node "$ROOT/scripts/typecheck-diff.mjs" "$TMP/tc.log" "$ROOT/scripts/typecheck-baseline.txt" >"$TMP/tc-diff.txt" 2>&1
   TC_EXIT=$?
   NEW_COUNT="$(head -1 "$TMP/tc-diff.txt")"
