@@ -12,5 +12,5 @@
     "open",
     "toggle"
   ],
-  "shadow": "div.cu-alert.cu-alert--soft[data-v-39291c7d,role,style]\n  span.cu-alert-icon-detect[data-v-39291c7d]\n    slot[name]\n  div.cu-alert-content[data-v-39291c7d]\n    slot"
+  "shadow": "div.cu-alert.cu-alert--soft[data-v-bfdcbd99,role,style]\n  span.cu-alert-icon-detect[data-v-bfdcbd99]\n    slot[name]\n  div.cu-alert-content[data-v-bfdcbd99]\n    slot"
 }

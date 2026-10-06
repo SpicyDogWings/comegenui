@@ -104,12 +104,12 @@ defineExpose({
 <template>
   <div
     v-show="internalShow"
-    :class="['cu-alert', `cu-alert--${props.variant}`]"
+    :class="['cu-alert', `cu-alert--${props.variant}`, { 'cu-alert--floating-close': props.close && !props.title && !hasIcon }]"
     :style="colorStyles"
     role="alert"
   >
     <span ref="iconWrap" class="cu-alert-icon-detect"><slot name="icon" /></span>
-    <div v-if="props.title || props.close || hasIcon" class="cu-alert-header">
+    <div v-if="props.title || hasIcon" class="cu-alert-header">
       <div class="cu-alert-title">
         <slot name="icon" />
         <span v-if="props.title" class="cu-alert-title-text">{{ props.title }}</span>
@@ -123,6 +123,14 @@ defineExpose({
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"> <path d="M18 6 6 18"/> <path d="m6 6 12 12"/> </svg>
       </button>
     </div>
+    <button
+      v-else-if="props.close"
+      @click="close"
+      class="cu-alert-close cu-alert-close--floating"
+      aria-label="Cerrar alerta"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"> <path d="M18 6 6 18"/> <path d="m6 6 12 12"/> </svg>
+    </button>
     <div class="cu-alert-content">
       <slot />
     </div>
@@ -143,6 +151,7 @@ defineExpose({
   flex-direction: column;
   gap: var(--cu-space-sm);
   box-sizing: border-box;
+  position: relative;
 }
 
 /* solid */
@@ -226,6 +235,18 @@ defineExpose({
 
 .cu-alert-close:active {
   background-color: var(--alert-ghost-active);
+}
+
+/* Sin título ni ícono: el close acompaña a la primera fila del cuerpo en vez
+   de ocupar una cabecera propia. */
+.cu-alert-close--floating {
+  position: absolute;
+  top: var(--cu-space-md);
+  right: var(--cu-space-lg);
+}
+
+.cu-alert--floating-close .cu-alert-content {
+  padding-right: var(--cu-space-xl);
 }
 
 .cu-alert-content {
