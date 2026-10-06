@@ -24,7 +24,7 @@ Los **eventos custom** (`update:modelValue`, `select`, `open`, `close`, etc.) NO
 | `<cu-label>` | `click` | (ninguno) |
 | `<cu-modal>` | (no escucha nativos) | `close`, `opened`, `closed`, `cancel`, `accept` |
 | `<cu-pagination>` | `click` en botones | `update:currentPage`, `update:itemsPerPage` |
-| `<cu-select>` | `focus`, `blur` | `update:modelValue`, `select`, `close`, `blur` |
+| `<cu-select>` | `focus`, `blur` | `update:modelValue`, `select`, `change`, `close`, `blur` |
 | `<cu-switch>` | `click`, `focus`, `blur` | `update:modelValue`, `change` |
 | `<cu-table>` | (clicks en celdas/filas NO se re-emiten como custom) | `update:currentPage`, `update:itemsPerPage`, `update:search`, `edit-start`, `edit-save`, `edit-cancel`, `edit-error` |
 | `<cu-textarea>` | `input`, `change`, `focus`, `blur` | `update:modelValue` |
@@ -49,6 +49,10 @@ Y en cada `.md` se aclara por componente qué eventos custom existen y qué nati
 ### A. Estandarizar la convención de re-emitir `change`
 
 Algunos componentes (Input, Textarea) NO re-emiten `change` aunque internamente lo escuchen. Si se decide estandarizar, agregar `@change="ceEmit('change', $event)"` en cada `.ce.vue` correspondiente.
+
+> **2026-10-06:** `<cu-select>` ya lo hace — emite `change` (valor nuevo) al elegir una
+> opción y en `set()`/`reset()`, y el `.ce.vue` lo forwardea. Sirve de referencia para el
+> resto de los componentes que aún no lo hacen.
 
 ### B. Re-emitir `click` en `<cu-button>`
 
