@@ -33,7 +33,6 @@ tu-proyecto/
 ├── css/
 │   ├── themes.css      ← todos los temas
 │   └── {tema}.css      ← un archivo por tema (light, dark, …)
-└── README-BUILD.md
 ```
 
 > El zip trae **sólo la lib**: no incluye documentación, ni la skill de uso
@@ -195,7 +194,6 @@ dist-lib/
 │   ├── themes.css      ← Todos los temas combinados
 │   ├── light.css       ← Solo tema light
 │   └── dark.css        ← Solo tema dark
-├── README-BUILD.md
 └── comegenui-v{version}.zip
 ```
 

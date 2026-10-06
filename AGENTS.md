@@ -277,7 +277,7 @@ Tokens compartidos: tipografía, spacing, border-radius, shadows, borders.
 - `UnoCSS({ mode: "shadow-dom" })`
 - Genera `dist/css/themes.css` + `dist/css/{theme}.css`
 - Crea zip versionado: `comegenui-v{version}.zip`
-- **El zip lleva SOLO la lib**: los `Cu*.umd.js` + `css/` + `README-BUILD.md`. No incluye documentación (vive en `docs/componentes/`), ni skill, ni instalador/actualizador (la instalación es manual: descomprimir el zip).
+- **El zip lleva SOLO la lib**: los `Cu*.umd.js` + `css/`. No incluye documentación (vive en `docs/componentes/`), ni skill, ni instalador/actualizador (la instalación es manual: descomprimir el zip).
 
 ### Tests y guard
 

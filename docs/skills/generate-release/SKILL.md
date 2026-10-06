@@ -91,7 +91,7 @@ pnpm build
 pnpm build:lib
 ```
 
-Genera `dist-lib/` con los UMD, `css/themes.css` y el zip `dist-lib/comegenui-v<version>.zip`. El zip incluye **sólo la lib**: los UMD, `css/` y `README-BUILD.md`.
+Genera `dist-lib/` con los UMD, `css/themes.css` y el zip `dist-lib/comegenui-v<version>.zip`. El zip incluye **sólo la lib**: los UMD y `css/`.
 
 ### 6. Verificar el zip
 
@@ -99,7 +99,7 @@ Genera `dist-lib/` con los UMD, `css/themes.css` y el zip `dist-lib/comegenui-v<
 unzip -l dist-lib/comegenui-v<version>.zip
 ```
 
-Debe contener: los `Cu*.umd.js`, `css/themes.css` (+ un `css/<tema>.css` por tema) y `README-BUILD.md`. Nada más.
+Debe contener: los `Cu*.umd.js` y `css/themes.css` (+ un `css/<tema>.css` por tema). Nada más.
 
 ### 7. Commit de lo que haya cambiado
 
@@ -124,7 +124,7 @@ Revisá el diff antes. **Nunca** `git add -A` a ciegas.
 - [ ] `./scripts/guard.sh --full` verde (sin tipos nuevos, sin contratos rotos, docs al día).
 - [ ] `pnpm build` OK.
 - [ ] `pnpm build:lib` OK.
-- [ ] `dist-lib/comegenui-v<version>.zip` con los UMD, `css/` y `README-BUILD.md` (sólo la lib).
+- [ ] `dist-lib/comegenui-v<version>.zip` con los UMD y `css/` (sólo la lib).
 - [ ] Cambios commiteados.
 
 Si algo falta, decilo explícitamente en el reporte; no lo tapes con "quedó funcionando".

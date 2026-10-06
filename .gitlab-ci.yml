@@ -44,15 +44,14 @@ build:
     - pnpm run build:lib
     # La salida final ES el zip descargable: sólo los archivos de la lib, al
     # mismo nivel (sin dist/, sin docs/, sin zip anidado).
-    - cp dist-lib/*.umd.js dist-lib/README-BUILD.md .
+    - cp dist-lib/*.umd.js .
     - cp -r dist-lib/css .
   artifacts:
     name: "comegenui"
     paths:
       - '*.umd.js'
       - css/
-      - README-BUILD.md
-    expire_in: never
+      expire_in: never
     when: on_success
 
 # En tags: crea la página de Release con el build como asset descargable.
@@ -68,7 +67,7 @@ release:
     description: |
       Release generado automáticamente por GitLab CI.
 
-      **Contenido:** los archivos de la lib (`Cu*.umd.js`, `css/`, `README-BUILD.md`) — al mismo nivel, sin `docs/` ni zip anidado.
+      **Contenido:** los archivos de la lib (`Cu*.umd.js`, `css/`) — al mismo nivel, sin `docs/` ni zip anidado.
 
       **Instalación:**
       ```sh

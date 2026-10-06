@@ -8,7 +8,6 @@ comegenui-v{version}.zip
 ├── css/
 │   ├── themes.css  ← todos los temas
 │   └── {tema}.css  ← un archivo por tema (light, dark, nord-frost, …)
-└── README-BUILD.md
 ```
 
 No hay dependencias que instalar: cada `.umd.js` se auto-registra
@@ -51,6 +50,6 @@ pnpm build:lib            # dist-lib/*.umd.js + dist-lib/css + dist-lib/comegenu
 pnpm build:lib v5.0.0     # fuerza la versión del zip
 ```
 
-El zip sale de `build-lib.ts`: los UMD + `css/` + `README-BUILD.md`. **No** incluye la
+El zip sale de `build-lib.ts`: los UMD + `css/`. **No** incluye la
 documentación ni la skill: la doc vive en el repo (`docs/componentes/`) y la skill se
 baja aparte (ver `SKILL.md`).

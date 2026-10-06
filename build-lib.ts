@@ -167,16 +167,6 @@ async function runBuilds() {
   for (const name of Object.keys(themes)) {
     console.log(`   - css/${name}.css`)
   }
-
-  // Copy README-BUILD.md
-  const readmeSource = resolve(__dirname, 'README-BUILD.md')
-  const readmeDest = resolve(outDir, 'README-BUILD.md')
-  if (fs.existsSync(readmeSource)) {
-    let readmeContent = fs.readFileSync(readmeSource, 'utf-8')
-    readmeContent = readmeContent.replace(/version:\s*$/m, `version: ${version}`)
-    fs.writeFileSync(readmeDest, readmeContent)
-    console.log('📄 README-BUILD.md copiado')
-  }
 }
 
 async function createZip() {
@@ -210,12 +200,6 @@ async function createZip() {
   const cssDir = resolve(outDir, 'css')
   if (fs.existsSync(cssDir)) {
     archive.directory(cssDir, 'css')
-  }
-
-  // Add README
-  const readmePath = resolve(outDir, 'README-BUILD.md')
-  if (fs.existsSync(readmePath)) {
-    archive.file(readmePath, { name: 'README-BUILD.md' })
   }
 
   await archive.finalize()
