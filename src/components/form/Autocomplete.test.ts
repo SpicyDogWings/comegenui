@@ -123,6 +123,18 @@ describe('Autocomplete — apertura del panel', () => {
     expect(vm(w).isOpen()).toBe(true)
   })
 
+  it('set() no abre el panel aunque el valor matchee (open() sí)', async () => {
+    const w = mount(Autocomplete, { props: { items } })
+
+    vm(w).set('María')
+    await flushPromises()
+    expect(vm(w).isOpen()).toBe(false)
+
+    vm(w).open()
+    await flushPromises()
+    expect(vm(w).isOpen()).toBe(true)
+  })
+
   it('close() y toggle() controlan el panel', async () => {
     const w = mount(Autocomplete, { props: { items } })
 

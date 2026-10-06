@@ -354,6 +354,14 @@ describe("Autocomplete.ce", () => {
     expect(w.vm.isOpen()).toBe(true);
   });
 
+  it("set() refleja el texto y no abre el panel", async () => {
+    const w = mount(AutocompleteCe, { props: { items: [{ label: "María" }] } });
+    w.vm.set("María");
+    await flushPromises();
+    expect(w.vm.get()).toBe("María");
+    expect(w.vm.isOpen()).toBe(false);
+  });
+
   it("no declara props que el `.vue` no tiene (`theme`, `hightContrast`, `label`)", () => {
     const declared = Object.keys(AutocompleteCe.props ?? {});
     expect(declared).not.toContain("theme");

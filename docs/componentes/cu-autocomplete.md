@@ -184,7 +184,7 @@ Ninguno.
 | Método | Descripción |
 | ------ | ------ |
 | `get` | — |
-| `set` | — |
+| `set` | Setea el texto actual sin abrir el panel (para ver sugerencias usá `open()`). |
 | `focus` | — |
 | `reset` | — |
 | `open` | Abre el panel de sugerencias (ignora `min-chars`). |

@@ -68,6 +68,7 @@ function onUpdate(val: string) {
 
 defineExpose({
   get: () => autocompleteRef.value?.get(),
+  /** Setea el texto actual sin abrir el panel (para ver sugerencias usá `open()`). */
   set: (val: string) => autocompleteRef.value?.set(val),
   focus: () => autocompleteRef.value?.focus(),
   reset: () => autocompleteRef.value?.reset(),
