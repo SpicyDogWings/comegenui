@@ -132,6 +132,7 @@ defineExpose({
     :cooldown-variant="props.cooldownVariant"
     @select="ceEmit('select', $event)"
     @update:model-value="onUpdate"
+    @change="ceEmit('change', $event)"
     @close="ceEmit('close', $event)"
     @blur="ceEmit('blur', $event)"
   />

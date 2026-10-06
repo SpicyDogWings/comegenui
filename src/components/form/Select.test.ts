@@ -51,7 +51,7 @@ describe("Select — estado y v-model", () => {
     );
   });
 
-  it("seleccionar una opción emite update:modelValue + select y cierra el panel", async () => {
+  it("seleccionar una opción emite update:modelValue + select + change y cierra el panel", async () => {
     const w = mount(Select, { props: { options: OPTIONS } });
     await toggle(w).trigger("click");
     await flushPromises();
@@ -65,6 +65,7 @@ describe("Select — estado y v-model", () => {
     expect(vm(w).selectedItem()).toMatchObject({ value: "b", label: "B" });
     expect(w.emitted("update:modelValue")?.at(-1)).toEqual(["b"]);
     expect(w.emitted("select")?.[0]?.[0]).toMatchObject({ value: "b", label: "B" });
+    expect(w.emitted("change")?.at(-1)).toEqual(["b"]);
     expect(vm(w).isOpen()).toBe(false);
   });
 
@@ -92,6 +93,17 @@ describe("Select — estado y v-model", () => {
     await flushPromises();
     expect(vm(w).get()).toBe("");
     expect(vm(w).selectedItem()).toBeNull();
+  });
+
+  it("set()/reset() emiten change con el valor nuevo", async () => {
+    const w = mount(Select, { props: { options: OPTIONS } });
+    vm(w).set("a");
+    await flushPromises();
+    expect(w.emitted("change")?.at(-1)).toEqual(["a"]);
+
+    vm(w).reset();
+    await flushPromises();
+    expect(w.emitted("change")?.at(-1)).toEqual([""]);
   });
 
   it("isOpen() refleja el estado del panel con click en el toggle", async () => {

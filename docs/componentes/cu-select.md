@@ -83,6 +83,11 @@ Si una opción no especifica `color` ni `variant`, hereda los valores del `<cu-s
   sel.addEventListener('update:modelValue', (e) => {
     console.log('Valor:', e.detail); // string
   });
+
+  // Igual que un <select> nativo: dispara al elegir una opción (y en set()/reset())
+  sel.addEventListener('change', (e) => {
+    console.log('Cambió a:', e.detail); // string (valor nuevo)
+  });
 </script>
 ```
 
@@ -238,6 +243,7 @@ Cada opción del array `options` puede tener:
 | ------ | ------ | ------ |
 | `update:modelValue` | — | — |
 | `select` | — | — |
+| `change` | — | — |
 | `close` | — | — |
 | `blur` | — | — |
 <!-- /@api:eventos -->
