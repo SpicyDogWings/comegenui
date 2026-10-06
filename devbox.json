@@ -1,0 +1,27 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.18.4/.schema/devbox.schema.json",
+  "packages": [
+    "nodejs@24",
+    "pnpm@12"
+  ],
+  "shell": {
+    "init_hook": [
+      "if [ ! -d node_modules ]; then echo '📦 Instalando dependencias…'; pnpm install --frozen-lockfile; fi"
+    ],
+    "scripts": {
+      "install": "pnpm install --frozen-lockfile",
+      "dev": "pnpm dev",
+      "build": "pnpm build",
+      "build:lib": "pnpm build:lib",
+      "preview": "pnpm preview",
+      "site:sync": "pnpm site:sync",
+      "test": "pnpm test",
+      "test:watch": "pnpm test:watch",
+      "type-check": "pnpm type-check",
+      "guard": "./scripts/guard.sh",
+      "guard:full": "./scripts/guard.sh --full",
+      "mutation": "pnpm mutation",
+      "contract": "pnpm contract"
+    }
+  }
+}
