@@ -14,5 +14,5 @@
     "prev",
     "setActive"
   ],
-  "shadow": "div.cu-tabs.cu-tabs--ghost.cu-tabs--md[data-v-cf895022,style]\n  div.cu-tabs-header[aria-orientation,data-v-cf895022,role]"
+  "shadow": "div.cu-tabs.cu-tabs--ghost.cu-tabs--md[style]\n  div.cu-tabs-header[aria-orientation,role]"
 }

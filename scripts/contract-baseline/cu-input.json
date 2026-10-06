@@ -17,5 +17,5 @@
     "reset",
     "set"
   ],
-  "shadow": "input.cu-input.cu-input--soft[data-v-646ec9df,style,type,value]"
+  "shadow": "input.cu-input.cu-input--soft[style,type,value]"
 }

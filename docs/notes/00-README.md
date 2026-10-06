@@ -15,7 +15,7 @@ Los archivos son notas internas — **no** se exponen a usuarios finales de la l
 | [03](./03-table-ce-passthrough.md) | Interface `Column` del `<cu-table>` no incluye los campos extendidos que `AdvancedTable.vue` sí procesa | Info | Ya documentado en `docs/componentes/cu-table.md` |
 | [04](./04-eventos-no-reemitidos.md) | Los eventos nativos del DOM burbujean por Shadow DOM; el `.ce.vue` no los re-emite como eventos custom | Info | Ya documentado en las fichas vanilla (`docs/componentes/<tag>.md`, sección `## Eventos`) |
 | [07](./07-docs-vs-skill.md) | Docs y skill dejaron de ser lo mismo: fichas en `docs/componentes/`, receta en `.opencode/skills/use-comegen/`, y el zip pasa a llevar sólo la lib | Info | Ya aplicado (decisión registrada) |
-| [08](./08-contrato-scope-hash.md) | El contrato de componentes incluye el hash de scope `data-v-*`: toda edición de un SFC marca "ROTO" | Baja | Filtrar `data-v-*` en `fingerprint()` y regenerar los baselines |
+| [08](./08-contrato-scope-hash.md) | El contrato incluía el hash de scope `data-v-*`: toda edición de un SFC marcaba "ROTO" | Baja | **Resuelto** (2026-10-06): se filtra `data-v-*` y se regeneraron los baselines |
 
 > Las notas **05** (`cu-avatar` sin `src`, `cu-command-palette` sin `commands`) y **06**
 > (`cu-markdown` sin `parsed` ni `headingIds`) quedaron **resueltas**: se arreglaron los

@@ -207,5 +207,6 @@ const colorStyles = computed(() => ({
 
 .cu-year-slider.is-disabled {
   opacity: 0.7;
+  cursor: not-allowed;
 }
 </style>

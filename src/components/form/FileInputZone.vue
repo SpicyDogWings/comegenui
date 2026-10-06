@@ -398,7 +398,6 @@ defineExpose({ get, set, reset, focus, trigger });
 .cu-file-zone--disabled {
   opacity: 0.7;
   cursor: not-allowed;
-  pointer-events: none;
 }
 
 .cu-file-zone--drag-over {

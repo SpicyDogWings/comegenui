@@ -131,7 +131,7 @@ defineExpose({ get, set, reset, /** Enfoca el input de texto del color. */ focus
   transition: border-color 150ms ease;
 }
 
-.cu-color-picker-swatch:hover {
+.cu-color-picker-swatch:hover:not(:disabled) {
   border-color: var(--cp-subtle-border);
 }
 
@@ -155,6 +155,6 @@ defineExpose({ get, set, reset, /** Enfoca el input de texto del color. */ focus
 
 .cu-color-picker--disabled {
   opacity: 0.5;
-  pointer-events: none;
+  cursor: not-allowed;
 }
 </style>

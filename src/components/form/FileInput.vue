@@ -356,6 +356,10 @@ defineExpose({ get, set, reset, focus, trigger });
 .cu-file-input--disabled {
   opacity: 0.7;
   cursor: not-allowed;
+}
+
+/* Deshabilitado: el nombre del archivo no abre en nueva pestaña. */
+.cu-file-input--disabled .cu-file-input-link {
   pointer-events: none;
 }
 

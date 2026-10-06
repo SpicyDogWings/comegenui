@@ -12,5 +12,5 @@
     "open",
     "toggle"
   ],
-  "shadow": "div.cu-collapse[data-v-bf8a9f69]\n  button.cu-button.cu-button--ghost.cu-button--md.cu-collapse-trigger[data-v-bf8a9f69,data-v-c683ce48,style,type]\n    svg.cu-collapse-chevron[data-v-bf8a9f69,height,viewBox,width,xmlns]\n      path[d,fill,stroke,stroke-linecap,stroke-linejoin,stroke-width]\n    span.cu-collapse-label[data-v-bf8a9f69]\n  div.cu-collapse-content[data-v-bf8a9f69,style]\n    slot"
+  "shadow": "div.cu-collapse\n  button.cu-button.cu-button--ghost.cu-button--md.cu-collapse-trigger[style,type]\n    svg.cu-collapse-chevron[height,viewBox,width,xmlns]\n      path[d,fill,stroke,stroke-linecap,stroke-linejoin,stroke-width]\n    span.cu-collapse-label\n  div.cu-collapse-content[style]\n    slot"
 }

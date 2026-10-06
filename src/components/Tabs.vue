@@ -327,7 +327,6 @@ defineExpose({ getActive, setActive, next, prev });
 }
 
 .cu-tabs--disabled {
-  pointer-events: none;
   opacity: 0.7;
 }
 </style>
