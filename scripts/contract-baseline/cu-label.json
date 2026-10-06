@@ -7,5 +7,5 @@
     "label"
   ],
   "methods": [],
-  "shadow": "label.cu-label[data-v-0c41c7b0,style]\n  slot"
+  "shadow": "label.cu-label[style]\n  slot"
 }

@@ -42,5 +42,5 @@
     "setValue",
     "toggle"
   ],
-  "shadow": "div.cu-date-picker[data-v-48261d93]\n  div.cu-dropdown.cu-popover[data-v-24340070,data-v-42c69ad7,data-v-48261d93]\n    button.cu-button.cu-button--md.cu-button--soft.cu-date-picker-toggle[data-v-1a187aa7,data-v-48261d93,style,type]\n      svg.cu-date-picker-icon[data-v-48261d93,fill,height,stroke,stroke-linecap,stroke-linejoin,stroke-width,viewBox,width,xmlns]\n        path[d,data-v-48261d93]\n        path[d,data-v-48261d93]\n        rect[data-v-48261d93,height,rx,width,x,y]\n        path[d,data-v-48261d93]\n      span.cu-date-picker-label[data-v-48261d93]\n      svg.cu-date-picker-chevron[data-v-48261d93,fill,height,stroke,stroke-linecap,stroke-linejoin,stroke-width,viewBox,width,xmlns]\n        path[d,data-v-48261d93]"
+  "shadow": "div.cu-date-picker\n  div.cu-dropdown.cu-popover\n    button.cu-button.cu-button--md.cu-button--soft.cu-date-picker-toggle[style,type]\n      svg.cu-date-picker-icon[fill,height,stroke,stroke-linecap,stroke-linejoin,stroke-width,viewBox,width,xmlns]\n        path[d]\n        path[d]\n        rect[height,rx,width,x,y]\n        path[d]\n      span.cu-date-picker-label\n      svg.cu-date-picker-chevron[fill,height,stroke,stroke-linecap,stroke-linejoin,stroke-width,viewBox,width,xmlns]\n        path[d]"
 }

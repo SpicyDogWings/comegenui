@@ -5,5 +5,5 @@
     "variant"
   ],
   "methods": [],
-  "shadow": "span.cu-badge.cu-badge--soft[data-v-1bc2eb6a,style]\n  slot[data-v-1bc2eb6a]"
+  "shadow": "span.cu-badge.cu-badge--soft[style]\n  slot"
 }

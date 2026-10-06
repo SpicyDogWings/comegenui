@@ -17,5 +17,5 @@
     "reset",
     "set"
   ],
-  "shadow": "textarea.cu-textarea.cu-textarea--soft[data-v-ad868633,rows,style,value]"
+  "shadow": "textarea.cu-textarea.cu-textarea--soft[rows,style,value]"
 }

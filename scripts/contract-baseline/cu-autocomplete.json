@@ -25,5 +25,5 @@
     "set",
     "toggle"
   ],
-  "shadow": "div[data-v-806f0a01,tabindex]\n  div.cu-dropdown.cu-popover[data-v-24340070,data-v-42c69ad7,data-v-806f0a01,style]\n    input.cu-input.cu-input--soft[data-v-806f0a01,data-v-f89084d7,placeholder,style,type,value]"
+  "shadow": "div[tabindex]\n  div.cu-dropdown.cu-popover[style]\n    input.cu-input.cu-input--soft[placeholder,style,type,value]"
 }

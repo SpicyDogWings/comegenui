@@ -11,5 +11,5 @@
     "reset",
     "set"
   ],
-  "shadow": "div.cu-color-picker[style]\n  button.cu-color-picker-swatch[type]\n    span.cu-color-picker-swatch-color[style]\n  input.cu-color-picker-native[tabindex,type,value]\n  input.cu-color-picker-input.cu-input.cu-input--soft[data-v-f89084d7,maxlength,spellcheck,style,type,value]"
+  "shadow": "div.cu-color-picker[style]\n  button.cu-color-picker-swatch[type]\n    span.cu-color-picker-swatch-color[style]\n  input.cu-color-picker-native[tabindex,type,value]\n  input.cu-color-picker-input.cu-input.cu-input--soft[maxlength,spellcheck,style,type,value]"
 }

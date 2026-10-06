@@ -16,5 +16,5 @@
     "trigger"
   ],
   "methods": [],
-  "shadow": "div.cu-navbar-responsive[data-v-fd188859]\n  nav.cu-navbar[data-v-63054d7b,data-v-fd188859]"
+  "shadow": "div.cu-navbar-responsive\n  nav.cu-navbar"
 }

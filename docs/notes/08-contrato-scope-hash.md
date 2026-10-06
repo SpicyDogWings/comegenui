@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-10-06
 **Severidad:** Baja (ruido en el gate, no rompe nada)
-**Estado:** Documentado (no resuelto)
+**Estado:** Resuelto (2026-10-06)
 
 ## Problema
 
@@ -28,9 +28,9 @@ depende del **contenido del SFC**. Entonces:
 - Riesgo de "regenerar para que pase": si se hace a ciegas, un cambio **real** de
   estructura en el mismo commit puede pasar desapercibido. Hay que revisar el diff.
 
-## Posible mejora
+## Resolución (2026-10-06)
 
-Excluir los atributos de scope del fingerprint (los `data-v-*` son internos de Vue, no
+Se excluyen los atributos de scope del fingerprint (los `data-v-*` son internos de Vue, no
 parte del contrato que ve el consumidor del zip):
 
 ```js
@@ -39,5 +39,6 @@ const attrs = [...el.attributes].map((a) => a.name)
   .sort();
 ```
 
-Como hoy **todos** los baselines contienen el hash, la mejora requiere una regeneración
-única de todo `scripts/contract-baseline/` en el mismo PR.
+Se regeneró todo `scripts/contract-baseline/` una única vez (los baselines dejan de
+contener el hash). A partir de ahora, editar un SFC **no** marca su contrato como `ROTO`
+salvo que cambie de verdad la estructura (tags / clases / atributos).

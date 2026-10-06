@@ -13,5 +13,5 @@
     "reset",
     "set"
   ],
-  "shadow": "label.cu-checkbox.cu-checkbox--md[data-v-c884e20d]\n  input.cu-checkbox-input[data-v-c884e20d,tabindex,type]\n  div.cu-checkbox-box[data-v-c884e20d,style]"
+  "shadow": "label.cu-checkbox.cu-checkbox--md\n  input.cu-checkbox-input[tabindex,type]\n  div.cu-checkbox-box[style]"
 }

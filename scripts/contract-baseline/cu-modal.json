@@ -14,5 +14,5 @@
     "open",
     "toggle"
   ],
-  "shadow": "div.cu-modal-backdrop[aria-modal,role,style,tabindex]\n  div.cu-modal[data-height,data-size,style]\n    header.cu-modal-header\n      div.cu-modal-header-text\n      button.cu-button.cu-button--ghost.cu-button--md.cu-modal-close[aria-label,data-v-1a187aa7,style,type]\n        svg[fill,height,stroke,stroke-linecap,stroke-linejoin,stroke-width,viewBox,width,xmlns]\n          path[d]\n          path[d]\n    main.cu-modal-body\n      slot\n    footer.cu-modal-footer\n      slot[name]"
+  "shadow": "div.cu-modal-backdrop[aria-modal,role,style,tabindex]\n  div.cu-modal[data-height,data-size,style]\n    header.cu-modal-header\n      div.cu-modal-header-text\n      button.cu-button.cu-button--ghost.cu-button--md.cu-modal-close[aria-label,style,type]\n        svg[fill,height,stroke,stroke-linecap,stroke-linejoin,stroke-width,viewBox,width,xmlns]\n          path[d]\n          path[d]\n    main.cu-modal-body\n      slot\n    footer.cu-modal-footer\n      slot[name]"
 }

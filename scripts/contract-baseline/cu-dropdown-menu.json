@@ -18,5 +18,5 @@
     "open",
     "toggle"
   ],
-  "shadow": "div.cu-dropdown.cu-popover[data-v-1f9ce292,data-v-24340070,data-v-42c69ad7]\n  button.cu-button.cu-button--ghost.cu-button--md.cu-dropdown-toggle[data-v-1a187aa7,data-v-1f9ce292,style,type]\n    svg.cu-dropdown-chevron[data-v-1f9ce292,fill,height,stroke,stroke-linecap,stroke-linejoin,stroke-width,viewBox,width,xmlns]\n      path[d,data-v-1f9ce292]"
+  "shadow": "div.cu-dropdown.cu-popover\n  button.cu-button.cu-button--ghost.cu-button--md.cu-dropdown-toggle[style,type]\n    svg.cu-dropdown-chevron[fill,height,stroke,stroke-linecap,stroke-linejoin,stroke-width,viewBox,width,xmlns]\n      path[d]"
 }

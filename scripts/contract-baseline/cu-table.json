@@ -32,5 +32,5 @@
     "removeRow",
     "updateRow"
   ],
-  "shadow": "div.cu-advanced-table[data-v-aa47ebb0,style]\n  div.cu-table[data-v-aa47ebb0,data-v-bc7c9a2b,style]\n    div.cu-table-scroll[data-v-bc7c9a2b]\n      table.cu-table-element[data-v-bc7c9a2b]\n        thead[data-v-bc7c9a2b]\n          tr[data-v-bc7c9a2b]\n        tbody[data-v-bc7c9a2b]\n          tr[data-v-bc7c9a2b]\n            td.cu-table-empty[colspan,data-v-bc7c9a2b]"
+  "shadow": "div.cu-advanced-table[style]\n  div.cu-table[style]\n    div.cu-table-scroll\n      table.cu-table-element\n        thead\n          tr\n        tbody\n          tr\n            td.cu-table-empty[colspan]"
 }

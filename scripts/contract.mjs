@@ -84,7 +84,8 @@ function fingerprint(node) {
     const tag = el.tagName.toLowerCase();
     if (tag === "style" || tag === "script") return;
     const classes = (el.getAttribute("class") ?? "").split(/\s+/).filter(Boolean).sort().join(".");
-    const attrs = [...el.attributes].map((a) => a.name).filter((n) => n !== "class").sort();
+    const attrs = [...el.attributes].map((a) => a.name)
+      .filter((n) => n !== "class" && !/^data-v-/.test(n)).sort();
     lines.push(`${"  ".repeat(depth)}${tag}${classes ? "." + classes : ""}${attrs.length ? "[" + attrs.join(",") + "]" : ""}`);
     for (const child of el.children) walkEl(child, depth + 1);
   };
