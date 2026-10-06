@@ -417,6 +417,18 @@ const MUTATIONS = [
     find: `@click.stop="emit('remove', i)"`,
     replace: `@click.stop="emit('remove', i + 1)"`,
   },
+  {
+    id: "autocomplete-set-abre-panel",
+    file: "src/components/form/Autocomplete.vue",
+    expect: "set() setea el texto sin abrir el panel",
+    find: `function set(val: string) {
+  searchValue.value = val;
+}`,
+    replace: `function set(val: string) {
+  searchValue.value = val;
+  if (inputRef.value) inputRef.value.set(val);
+}`,
+  },
 ];
 
 export { MUTATIONS };

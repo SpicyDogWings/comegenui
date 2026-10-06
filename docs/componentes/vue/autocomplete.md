@@ -205,7 +205,7 @@ Ninguno.
 | Método | Descripción |
 | ------ | ------ |
 | `get` | Devuelve el texto actual. |
-| `set` | Setea el texto actual en el input. |
+| `set` | Setea el texto actual en el input sin abrir el panel (para ver sugerencias usá `open()`). |
 | `reset` | Limpia el texto de búsqueda. |
 | `focus` | Enfoca el input. |
 | `open` | Abre el panel de sugerencias (ignora `minChars`). |

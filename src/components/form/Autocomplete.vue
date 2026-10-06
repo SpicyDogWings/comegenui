@@ -96,10 +96,9 @@ function onFocusOut(e: FocusEvent) {
 
 /** Devuelve el texto actual. */
 function get() { return searchValue.value; }
-/** Setea el texto actual en el input. */
+/** Setea el texto actual en el input sin abrir el panel (para ver sugerencias usá `open()`). */
 function set(val: string) {
   searchValue.value = val;
-  if (inputRef.value) inputRef.value.set(val);
 }
 /** Limpia el texto de búsqueda. */
 function reset() { searchValue.value = ""; }

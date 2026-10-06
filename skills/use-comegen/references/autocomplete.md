@@ -93,6 +93,9 @@ de campo (`outlined`, `soft`, `ghost`, `subtle`), tipos HTML5 (`text`, `password
 - **Al seleccionar, el input se completa con el `label` del item** (y sólo si no hay `label`, con su
   `value`).
 - **`reset()` sí existe** (deja el texto en `""`), contra lo que decía la ficha y el checklist.
+- **`set()` es silencioso**: setea el texto y **no abre el panel** (aunque el valor matchee). El panel
+  sólo se abre al tipear/enfocar o con `open()`/`toggle()`; si querés ver sugerencias después de un
+  `set()`, llamá `open()`.
 - **No tiene slots.**
 - **Los eventos nativos no son custom:** `input`, `change` y `focus` burbujean desde el shadow DOM;
   `blur` además se re-emite como `CustomEvent`.
@@ -145,7 +148,7 @@ Ninguno.
 | Método | Descripción |
 | ------ | ------ |
 | `get` | — |
-| `set` | — |
+| `set` | Setea el texto actual sin abrir el panel (para ver sugerencias usá `open()`). |
 | `focus` | — |
 | `reset` | — |
 | `open` | Abre el panel de sugerencias (ignora `min-chars`). |
@@ -195,7 +198,7 @@ Ninguno.
 | Método | Descripción |
 | ------ | ------ |
 | `get` | Devuelve el texto actual. |
-| `set` | Setea el texto actual en el input. |
+| `set` | Setea el texto actual en el input sin abrir el panel (para ver sugerencias usá `open()`). |
 | `reset` | Limpia el texto de búsqueda. |
 | `focus` | Enfoca el input. |
 | `open` | Abre el panel de sugerencias (ignora `minChars`). |
