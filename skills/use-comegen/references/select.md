@@ -13,7 +13,8 @@ escritura sobre un input visible, usá `cu-autocomplete`.
    como propiedad JS.
 2. El valor lo maneja el propio select: al elegir una opción se refleja solo. Enlazá
    `modelValue` sólo si querés controlarlo (`v-model` en Vue). Escuchá
-   `select` para recibir la opción completa (`{ value, label, ... }`).
+   `select` para recibir la opción completa (`{ value, label, ... }`), o `change`
+   para el valor nuevo (string, como un `<select>` nativo).
 3. `placeholder` se muestra cuando no hay selección; `placeholder-wrap` decide si el texto
    wrappea o se trunca con `...`.
 4. Para la búsqueda estilo `<select>` nativo activá `search-enabled`; `search-mode` elige
@@ -128,6 +129,7 @@ barra animada, y los métodos `get`/`set`/`reset`/`focus`/`isOpen`/`selectedItem
 | ------ | ------ | ------ |
 | `update:modelValue` | — | — |
 | `select` | — | — |
+| `change` | — | — |
 | `close` | — | — |
 | `blur` | — | — |
 <!-- /@api:eventos -->
@@ -184,6 +186,7 @@ Ninguno.
 | `select` | — | — |
 | `close` | — | — |
 | `update:modelValue` | — | — |
+| `change` | — | — |
 | `blur` | — | — |
 <!-- /@api:emits -->
 
@@ -199,8 +202,8 @@ Ninguno.
 | Método | Descripción |
 | ------ | ------ |
 | `get` | Devuelve el valor seleccionado. |
-| `set` | Setea el valor seleccionado. |
-| `reset` | Limpia la selección. |
+| `set` | Setea el valor seleccionado y emite `change`. |
+| `reset` | Limpia la selección y emite `change`. |
 | `focus` | Enfoca el trigger del select. |
 | `isOpen` | Indica si el panel está abierto. |
 | `selectedItem` | Devuelve la opción seleccionada o null. |

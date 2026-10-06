@@ -26,5 +26,5 @@
     "selectedItem",
     "set"
   ],
-  "shadow": "div.cu-select[data-v-1127154b,tabindex]\n  div.cu-dropdown.cu-popover[cooldown-variant,data-v-1127154b,data-v-24340070,data-v-42c69ad7]\n    button.cu-button.cu-button--md.cu-button--soft.cu-select-toggle[data-v-1127154b,data-v-c683ce48,style,type]\n      span.cu-select-label[data-v-1127154b]\n      svg.cu-select-chevron[data-v-1127154b,fill,height,stroke,stroke-linecap,stroke-linejoin,stroke-width,viewBox,width,xmlns]\n        path[d,data-v-1127154b]"
+  "shadow": "div.cu-select[data-v-8681a419,tabindex]\n  div.cu-dropdown.cu-popover[cooldown-variant,data-v-24340070,data-v-42c69ad7,data-v-8681a419]\n    button.cu-button.cu-button--md.cu-button--soft.cu-select-toggle[data-v-8681a419,data-v-c683ce48,style,type]\n      span.cu-select-label[data-v-8681a419]\n      svg.cu-select-chevron[data-v-8681a419,fill,height,stroke,stroke-linecap,stroke-linejoin,stroke-width,viewBox,width,xmlns]\n        path[d,data-v-8681a419]"
 }

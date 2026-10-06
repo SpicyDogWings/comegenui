@@ -151,6 +151,7 @@ const MUTATIONS = [
   selectedValue.value = option.value;
   emit("update:modelValue", option.value);
   emit("select", option);
+  emit("change", option.value);
   dropdownRef.value?.close();
 }`,
     replace: `function onSelect(option: SelectOption) {
@@ -158,6 +159,28 @@ const MUTATIONS = [
   selectedValue.value = option.value;
   dropdownRef.value?.close();
 }`,
+  },
+  {
+    id: "select-on-select-no-change",
+    file: "src/components/form/Select.vue",
+    expect: "seleccionar una opción emite change",
+    find: `  emit("select", option);
+  emit("change", option.value);`,
+    replace: `  emit("select", option);`,
+  },
+  {
+    id: "select-set-no-change",
+    file: "src/components/form/Select.vue",
+    expect: "set() emite change",
+    find: `function set(value: string) { selectedValue.value = value; emit("change", value); }`,
+    replace: `function set(value: string) { selectedValue.value = value; }`,
+  },
+  {
+    id: "select-reset-no-change",
+    file: "src/components/form/Select.vue",
+    expect: "reset() emite change",
+    find: `function reset() { selectedValue.value = ""; emit("change", ""); }`,
+    replace: `function reset() { selectedValue.value = ""; }`,
   },
   {
     id: "checkbox-set-not-emit-change",

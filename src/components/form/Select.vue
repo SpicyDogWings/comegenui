@@ -52,7 +52,7 @@ const props = defineProps({
   cooldownVariant: { type: String, required: false, default: "ghost-hover" },
 });
 
-const emit = defineEmits(["update:modelValue", "select", "close", "blur"]);
+const emit = defineEmits(["update:modelValue", "select", "change", "close", "blur"]);
 const selectedValue = ref(props.modelValue);
 const dropdownRef = ref<InstanceType<typeof Dropdown> | null>(null);
 const selectRoot = ref<HTMLElement | null>(null);
@@ -147,6 +147,7 @@ function onSelect(option: SelectOption) {
   selectedValue.value = option.value;
   emit("update:modelValue", option.value);
   emit("select", option);
+  emit("change", option.value);
   dropdownRef.value?.close();
 }
 
@@ -154,10 +155,10 @@ const optionStyle = computed(() => ({ textAlign: props.textAlign }));
 
 /** Devuelve el valor seleccionado. */
 function get() { return selectedValue.value; }
-/** Setea el valor seleccionado. */
-function set(value: string) { selectedValue.value = value; }
-/** Limpia la selección. */
-function reset() { selectedValue.value = ""; }
+/** Setea el valor seleccionado y emite `change`. */
+function set(value: string) { selectedValue.value = value; emit("change", value); }
+/** Limpia la selección y emite `change`. */
+function reset() { selectedValue.value = ""; emit("change", ""); }
 /** Enfoca el trigger del select. */
 function focus() {
   // Enfoca el trigger real (el botón), no el wrapper: el div es tabindex -1,
