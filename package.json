@@ -16,8 +16,7 @@
     "mutation": "node scripts/mutation-check.mjs",
     "contract": "node scripts/contract.mjs",
     "contract:update": "node scripts/contract.mjs --update",
-    "impact": "node scripts/impact.mjs",
-    "preflight": "bash scripts/guard.sh"
+    "impact": "node scripts/impact.mjs"
   },
   "dependencies": {
     "@vueuse/core": "^14.2.1",
