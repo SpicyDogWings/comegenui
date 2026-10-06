@@ -27,5 +27,12 @@ export function navigationCommands(): CommandItem[] {
       category: "Herramientas",
       action: () => go("/theme-builder"),
     },
+    {
+      id: "versionado",
+      label: "Versionado y metadatos",
+      description: "/versionado",
+      category: "Páginas",
+      action: () => go("/versionado"),
+    },
   ];
 }

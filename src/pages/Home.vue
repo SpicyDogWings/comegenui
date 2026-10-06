@@ -124,8 +124,8 @@ function prettyTheme(value: string) {
           </div>
         </div>
         <Alert color="primary" variant="subtle">
-          Hecha para agentes: el zip de la lib viaja con la skill de uso y
-          ./update.sh la instala en .agents/skills/ de tu proyecto.
+          Hecha para agentes: la skill de uso <code>use-comegen</code> se baja del repo
+          y se copia a <code>.opencode/skills/</code> de tu proyecto. No viaja en el zip.
         </Alert>
       </section>
 

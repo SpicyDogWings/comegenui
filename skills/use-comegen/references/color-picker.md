@@ -10,8 +10,9 @@ componente no alcanza.
 
 ## Receta
 
-1. Controlá el valor con `v-model` (Vue) o `modelValue` + `update:modelValue` (CE). El valor
-   siempre es un hex `#RRGGBB`.
+1. El valor lo maneja el propio control: al elegir un color se refleja solo. Enlazá
+   `modelValue` sólo si querés controlarlo (`v-model` en Vue). El valor siempre es un hex
+   `#RRGGBB`.
 2. Escuchá `change` para reaccionar a cada confirmación.
 3. Por código: `get()`, `set('#ff5733')`, `reset()` (vuelve a `#000000`) y `focus()`.
 4. `color` define el acento de borde/foco del control y `disabled` lo deshabilita.

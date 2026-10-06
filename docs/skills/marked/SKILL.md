@@ -1,6 +1,10 @@
 ---
 name: marked
 description: 'Receta para usar marked (npm) con el componente Markdown de comegen-ui. Usar cuando el usuario pida parsear markdown, renderizar markdown, usar el composable useMarkdown, o resolver errores de marked v15+ (Promise, tokens, parseInline). Frases: "parsear markdown", "renderizar markdown", "usar markdown", "markdown a HTML", "useMarkdown", "parseToBlocks", "error marked Promise".'
+metadata:
+  repository: https://github.com/SpicyDogWings/comegenui
+  path: docs/skills/marked
+  version: 5.0.2-alpha
 ---
 
 # Marked + ComegenUI Markdown

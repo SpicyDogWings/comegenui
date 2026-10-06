@@ -1,7 +1,6 @@
-import { defineCustomElement } from 'vue'
+import { defineComegenElement } from '@/utils/comegen-element'
 import FileInput from '@/components/customElements/form/FileInput.ce.vue'
 
-const CuFileInput = defineCustomElement(FileInput)
-customElements.define('cu-file-input', CuFileInput)
+const CuFileInput = defineComegenElement('cu-file-input', FileInput)
 
 export default CuFileInput

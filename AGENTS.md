@@ -1,6 +1,38 @@
 # AGENTS.md — Arquitectura de Componentes ComegenUI
 
-> **Para desarrollar componentes**, seguí la estructura de 3 archivos de abajo (componente `.vue` + wrapper `.ce.vue` + entry `lib/`), documentá con la skill `comegen-ui-docs` y validá con el gate local `./scripts/preflight.sh`. Consumir la lib en otro proyecto: skill de uso `use-comegen` (`.opencode/skills/use-comegen/`, no viaja en el zip).
+> **Para desarrollar componentes**, seguí la estructura de 3 archivos de abajo (componente `.vue` + wrapper `.ce.vue` + entry `lib/`), documentá con la skill `comegen-ui-docs` y validá con el gate local `./scripts/guard.sh`. Consumir la lib en otro proyecto: skill de uso `use-comegen` (`.opencode/skills/use-comegen/`, no viaja en el zip).
+
+## Regla dura: no terminás sin veredicto verde
+
+`./scripts/guard.sh` es la red de seguridad. Responde **"¿dañé o no dañé un componente?"** y una tarea **no está terminada** hasta que dé `✅ RESULTADO: nada roto`.
+
+**Las pruebas corren en local, no en la nube.** No hay CI automático (el workflow `guard.yml` sólo se puede lanzar a mano). Para que el gate no se pueda saltear sin querer, los hooks de git están versionados en `.githooks/`:
+
+```bash
+git config core.hooksPath .githooks   # una sola vez por clon
+```
+
+- **pre-commit** → `guard.sh --fast` (impacto + tipos + contrato + build de la lib, sin tests ni docs). Aborta el commit si un componente se dañó. Saltear puntualmente: `git commit --no-verify`.
+- **pre-push** → `guard.sh --full` (agrega tests, docs y mutación). Bloquea el push si algo está roto. Saltear: `git push --no-verify`.
+
+- `./scripts/guard.sh --solo cu-input` — loop rápido sobre un componente.
+- `./scripts/guard.sh` — impacto + tipos + build de la lib + contrato, sobre lo que tocaste.
+- `./scripts/guard.sh --full` — además tests completos, docs y **mutación**.
+- `./scripts/guard.sh --explicar` — imprime qué hace y por qué cada paso.
+- **Cada paso tiene su flag**: `--impacto`, `--tipos`, `--build`, `--contrato`, `--tests`, `--docs`, `--mutacion`. Combinables: `./scripts/guard.sh --contrato --tipos` corre solo esos dos.
+- **`--mutacion` es la prueba de falsos verdes**: aplica bugs conocidos a los componentes y falla si algún test sigue en verde (ver abajo).
+- Si tocás un compartido (`overlay/Dropdown.vue`, `AdvancedTable.vue`, `useDateRange.ts`, tokens), el paso de **impacto** lista todos los componentes que dependen de él y sus contratos se verifican: **si aparece un consumidor que no esperabas, revisá antes de seguir**.
+- Contrato cambiado a propósito (agregaste una prop, un método o una clase): `./scripts/guard.sh --update` regenera `scripts/contract-baseline/<tag>.json`. Un cambio de contrato intencional va con su baseline en el mismo PR.
+- Nunca bajes un baseline “para que pase”: el baseline es el contrato que ve el consumidor del zip.
+
+**Qué mira el gate** (y qué no): compila los UMD reales y los carga en jsdom, y compara por componente props declaradas / métodos expuestos / metadata `comegen` / estructura del shadow DOM. **No** cubre CSS ni layout reales (eso queda para E2E con navegador). Tipos: el gate reporta **errores nuevos por identidad** contra `scripts/typecheck-baseline.txt`, no por conteo (el viejo `preflight.sh` sólo contaba y dejaba pasar un error nuevo si arreglabas otro).
+
+**Dos capas de tests, y por qué importan las dos:**
+
+- **Contrato de API** (`src/contracts/ficha-api.test.ts`): por cada ficha Vue verifica que la API documentada exista (props/emits/slots/expose). Detecta **regresiones de API**. Ojo: la ficha la genera `gen-api` desde el mismo SFC, así que esto **no pesca bugs de comportamiento** (compararía el componente contra sí mismo).
+- **Comportamiento** (`X.test.ts` junto al componente): aserciones escritas **a mano desde la prosa de la ficha**. Estas sí pueden fallar por un bug real.
+
+**La prueba de fuego**: `scripts/mutation-check.mjs` (`pnpm mutation`) aplica bugs conocidos y **falla si algún test sigue verde**. Cada test de comportamiento nuevo debe venir con su mutación en `scripts/mutation-check.mjs`. Correr `./scripts/guard.sh --mutacion` después de agregar un test.
 
 ## Estructura de directorios
 
@@ -11,7 +43,7 @@ src/
 │   ├── customElements/{category}/MiComponente.ce.vue  # Wrapper CE (thin)
 │   └── ...otrascarpetas (icons, theme, lab, archived, legacy)
 ├── lib/
-│   └── {category}/mi-componente.ts        # Entry point: defineCustomElement + registro
+│   └── {category}/mi-componente.ts        # Entry point: defineComegenElement + registro
 ├── plugins/
 │   └── cu-tokens/                         # Sistema de tokens CSS + tema de VitePress (vitepress.ts, cli/)
 ├── layouts/                               # AppTopbar + AppLayout (header propio del sitio)
@@ -159,24 +191,28 @@ function ceEmit(event: string, payload: unknown) {
 
 ### `mi-componente.ts` — Entry point para el build
 
-- Importa `defineCustomElement` de Vue
+- Importa `defineComegenElement` de `@/utils/comegen-element`
 - Importa el `.ce.vue` (o `.vue` si no hay wrapper CE)
 - Llama `initTokens()` si el `.ce.vue` no lo hace
-- Registra el Custom Element
+- Registra el Custom Element (y le adjunta los metadatos de bundle)
 - Exporta el componente
 
 ```ts
-import { defineCustomElement } from 'vue'
 import Component from '@/components/customElements/{category}/Component.ce.vue'
 import { initTokens } from '@/plugins/cu-tokens/css'
+import { defineComegenElement } from '@/utils/comegen-element'
 
 initTokens()
 
-const CuComponent = defineCustomElement(Component)
-customElements.define('cu-component', CuComponent)
+const CuComponent = defineComegenElement('cu-component', Component)
 
 export default CuComponent
 ```
+
+> **`defineComegenElement(tag, componente)`** reemplaza al par `defineCustomElement` + `customElements.define`:
+> resuelve el tag base con guarda (la primera versión cargada gana), registra el tag versionado
+> `<cu-x--v…>` para que convivan versiones distintas, y expone `CuX.comegen` / `el.comegen`
+> (`{ lib, name, tag, version, versionedTag }`). El `version` lo inyecta `build-lib.ts` en cada UMD.
 
 > **`initTokens()`** inyecta un `<style>` con los CSS custom properties del tema activo. Debe llamarse una vez por componente UMD, ya sea en el `.ce.vue` o en el `.ts`.
 
@@ -241,12 +277,16 @@ Tokens compartidos: tipografía, spacing, border-radius, shadows, borders.
 - `UnoCSS({ mode: "shadow-dom" })`
 - Genera `dist/css/themes.css` + `dist/css/{theme}.css`
 - Crea zip versionado: `comegenui-v{version}.zip`
-- **El zip lleva SOLO la lib**: los `Cu*.umd.js` + `css/`. No incluye documentación (vive en `docs/componentes/`), ni skill, ni updaters (los `update.sh`/`.ps1`/`.bat` se eliminaron: la instalación es manual, descomprimir el zip).
+- **El zip lleva SOLO la lib**: los `Cu*.umd.js` + `css/`. No incluye documentación (vive en `docs/componentes/`), ni skill, ni instalador/actualizador (la instalación es manual: descomprimir el zip).
 
-### Tests y preflight
+### Tests y guard
 
 - Tests unitarios con Vitest (`pnpm test`), junto al componente (`X.test.ts`).
-- Gate local antes de un MR: `./scripts/preflight.sh` (type-check contra baseline + tests + drift de las fichas).
+- Gate local antes de un MR: `./scripts/guard.sh` — impacto + tipos por identidad + contrato de cada custom element + build real de la lib. Con `--full` agrega tests completos, docs y build del sitio.
+- Los hooks de `.githooks/` (`pre-commit` → `--fast`, `pre-push` → `--full`) corren el gate automáticamente. Activación por clon: `git config core.hooksPath .githooks`.
+- No hay CI automático: las pruebas corren en local (el workflow `.github/workflows/guard.yml` sólo se dispara a mano).
+- Contrato por componente en `scripts/contract-baseline/<tag>.json` (`pnpm contract:update` para regenerarlo a propósito); tipos conocidos en `scripts/typecheck-baseline.txt`. Detalle en la sección [Regla dura](#regla-dura-no-terminás-sin-veredicto-verde).
+- `scripts/preflight.sh` es un alias deprecado de `guard.sh`.
 
 ---
 
@@ -327,11 +367,10 @@ const alertRef = ref(null);
 ### `src/lib/information/alert.ts`
 
 ```ts
-import { defineCustomElement } from 'vue'
 import Alert from '@/components/customElements/information/Alert.ce.vue'
+import { defineComegenElement } from '@/utils/comegen-element'
 
-const CuAlert = defineCustomElement(Alert)
-customElements.define('cu-alert', CuAlert)
+const CuAlert = defineComegenElement('cu-alert', Alert)
 
 export default CuAlert
 ```

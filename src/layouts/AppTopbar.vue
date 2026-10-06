@@ -5,6 +5,7 @@ import Badge from "@/components/information/Badge.vue";
 import LucideForm from "@/components/icons/LucideForm.vue";
 import LucideGitHub from "@/components/icons/LucideGitHub.vue";
 import LucidePalette from "@/components/icons/LucidePalette.vue";
+import LucideTag from "@/components/icons/LucideTag.vue";
 import ThemeDropdown from "@/components/theme/ThemeDropdown.vue";
 import CommandPalette from "@/components/overlay/CommandPalette.vue";
 import { navigationCommands } from "@/utils/command-routes";
@@ -36,6 +37,22 @@ onBeforeUnmount(() => {
         ComegenUI
       </a>
       <Badge color="neutral" variant="subtle">v{{ version }}</Badge>
+      <a
+        href="/componentes/cu-button"
+        class="app-topbar-icon"
+        aria-label="Componentes"
+        title="Componentes"
+      >
+        <LucideForm />
+      </a>
+      <a
+        href="/versionado"
+        class="app-topbar-icon"
+        aria-label="Versionado y metadatos"
+        title="Versionado y metadatos"
+      >
+        <LucideTag />
+      </a>
       <slot name="title" />
     </div>
     <div class="app-topbar-actions">
@@ -51,14 +68,6 @@ onBeforeUnmount(() => {
         CTRL+K comandos
       </Badge>
       <slot name="actions" />
-      <a
-        href="/componentes/cu-button"
-        class="app-topbar-icon"
-        aria-label="Componentes"
-        title="Componentes"
-      >
-        <LucideForm />
-      </a>
       <a
         href="/theme-builder"
         class="app-topbar-icon"

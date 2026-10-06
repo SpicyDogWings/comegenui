@@ -1,0 +1,17 @@
+{
+  "tag": "cu-switch",
+  "props": [
+    "color",
+    "disabled",
+    "label",
+    "modelValue",
+    "size"
+  ],
+  "methods": [
+    "focus",
+    "get",
+    "reset",
+    "set"
+  ],
+  "shadow": "label.cu-switch.cu-switch--md\n  span.cu-switch-track[aria-checked,role,style]\n    span.cu-switch-thumb\n    input.cu-switch-input[tabindex,type]\n  span.cu-switch-label\n    slot"
+}

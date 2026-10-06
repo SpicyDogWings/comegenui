@@ -1,0 +1,8 @@
+{
+  "tag": "cu-markdown",
+  "props": [],
+  "methods": [
+    "headingIds"
+  ],
+  "shadow": "div.cu-markdown[data-v-a160560d]\n  div.cu-md-slot[data-v-a160560d]\n    slot\n  div.cu-md-output[data-v-a160560d]"
+}

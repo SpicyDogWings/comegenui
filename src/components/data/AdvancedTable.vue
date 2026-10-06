@@ -192,6 +192,9 @@ const props = defineProps({
   filters: { type: Object as () => Record<string, any>, required: false, default: () => ({}) },
   loading: { type: Boolean, required: false, default: false },
   actions: { type: Array as () => ButtonConfig[], required: false, default: () => [] },
+  // Texto del header de la columna automática de acciones. Default vacío:
+  // el header queda sin texto (antes caía a la key `__actions__`).
+  actionsLabel: { type: String, required: false, default: "" },
   // Estado reactivo: cuando es true, todas las columnas editables renderizan
   // el editor (input/select/textarea) directamente, sin lápiz.
   inlineEditing: { type: Boolean, required: false, default: false },
@@ -317,7 +320,7 @@ const handlePageSizeChange = (size: number) => { pagination.setItemsPerPage(size
 
 const augmentedColumns = computed(() =>
   props.actions?.length
-    ? [...props.columns, { key: '__actions__', label: '', width: '1%', align: 'center' as const, sortable: false }]
+    ? [...props.columns, { key: '__actions__', label: props.actionsLabel, width: '1%', align: 'center' as const, sortable: false }]
     : props.columns
 );
 
@@ -331,6 +334,7 @@ const tableProps = computed(() => ({
   rowDisabled: props.rowDisabled,
   footer: props.footer,
   compact: props.compact,
+  maxHeight: props.tableMaxHeight,
 }));
 
 const tableStyles = computed(() => ({
@@ -378,27 +382,29 @@ defineExpose({
         <slot :name="slotName" v-bind="slotProps"></slot>
       </template>
 
-      <template v-for="col in augmentedColumns" v-slot:[`header-${col.key}`]="{ column }">
-        <span class="cu-table-th-content">
-          <Button
-            v-if="column.sortable"
-            :color="props.color"
-            :style="props.variant === 'solid' ? { '--btn-bg': 'var(--cu-color-surface)' } : {}"
-            variant="ghost"
-            @click.stop="handleSort(column.key)"
-          >
-            <template v-if="sortBy === column.key && sortDir === 'asc'">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6L12 2L16 6"/><path d="M12 2V22"/></svg>
-            </template>
-            <template v-else-if="sortBy === column.key && sortDir === 'desc'">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 18L12 22L16 18"/><path d="M12 2V22"/></svg>
-            </template>
-            <template v-else>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="m8 18 4 4 4-4"/><path d="m8 6 4-4 4 4"/></svg>
-            </template>
-          </Button>
-          {{ column.label || column.key }}
-        </span>
+      <template v-for="col in augmentedColumns" v-slot:[`header-${col.key}`]="{ column, color, variant }">
+        <slot :name="`header-${col.key}`" v-bind="{ column, color, variant }">
+          <span class="cu-table-th-content">
+            <Button
+              v-if="column.sortable"
+              :color="props.color"
+              :style="props.variant === 'solid' ? { '--btn-bg': 'var(--cu-color-surface)' } : {}"
+              variant="ghost"
+              @click.stop="handleSort(column.key)"
+            >
+              <template v-if="sortBy === column.key && sortDir === 'asc'">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6L12 2L16 6"/><path d="M12 2V22"/></svg>
+              </template>
+              <template v-else-if="sortBy === column.key && sortDir === 'desc'">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 18L12 22L16 18"/><path d="M12 2V22"/></svg>
+              </template>
+              <template v-else>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="m8 18 4 4 4-4"/><path d="m8 6 4-4 4 4"/></svg>
+              </template>
+            </Button>
+            {{ column.label ?? column.key }}
+          </span>
+        </slot>
       </template>
 
       <template v-for="col in augmentedColumns" v-slot:[`cell-${col.key}`]="{ row, value, index }">

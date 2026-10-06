@@ -178,6 +178,17 @@ describe("EditableTableCell — modo lápiz (default) y estado inline", () => {
     expect((saves![0]![0] as any).value).toBe(true);
   });
 
+  it("inputType 'switch': al alternar la UI queda encendida (no solo emite)", async () => {
+    // El emit no alcanza: si el wrapper del switch no refleja el estado, la
+    // celda se pinta apagada aunque `edit-save` haya salido. Cubre #40.
+    const w = factory({ inputType: "switch" }, false);
+    await w.find("input[type='checkbox']").setValue(true);
+    await flushPromises();
+
+    expect(w.find(".cu-switch-track").classes()).toContain("cu-switch--checked");
+    expect((w.find("input[type='checkbox']").element as HTMLInputElement).checked).toBe(true);
+  });
+
   it("inputType 'switch': NO usa width 100% (no se estira en la celda)", () => {
     const w = factory({ inputType: "switch" });
     const sw = w.find(".cu-switch");

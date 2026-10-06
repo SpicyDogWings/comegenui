@@ -1,0 +1,24 @@
+{
+  "tag": "cu-file-input-zone",
+  "props": [
+    "accept",
+    "color",
+    "directory",
+    "directoryDeep",
+    "disabled",
+    "maxHeight",
+    "maxSize",
+    "modelValue",
+    "multiple",
+    "placeholder",
+    "readOnly"
+  ],
+  "methods": [
+    "focus",
+    "get",
+    "reset",
+    "set",
+    "trigger"
+  ],
+  "shadow": "div.cu-file-zone-wrap\n  div.cu-file-zone.cu-file-zone--empty[aria-disabled,role,style,tabindex]\n    input.cu-file-zone-hidden[type]\n    svg.cu-file-zone-icon[fill,height,stroke,stroke-linecap,stroke-linejoin,stroke-width,viewBox,width,xmlns]\n      path[d]\n      path[d]\n      path[d]\n    div.cu-file-zone-text\n      p.cu-file-zone-placeholder"
+}

@@ -91,11 +91,16 @@ La celda renderiza el editor (input / select / textarea / autocomplete) **direct
 
 Es un array de `ButtonConfig`. Cuando se asigna, la tabla agrega automáticamente una columna al final con un dropdown "..." que muestra las acciones. El `onClick` recibe la fila completa.
 
+El header de esa columna queda **vacío** por defecto; podés ponerle texto con `actionsLabel` (atributo `actions-label`):
+
 ```ts
 tabla.actions = [
   { label: 'Editar',   color: 'primary', variant: 'ghost', onClick: (row) => editar(row) },
   { label: 'Eliminar', color: 'danger',  variant: 'ghost', onClick: (row) => eliminar(row) },
 ];
+
+tabla.actionsLabel = 'Acciones';
+// o  <cu-table actions-label="Acciones"></cu-table>
 ```
 
 ---
@@ -846,6 +851,7 @@ En variantes transparentes (`outlined`, `ghost`) se aplica `backdrop-filter: blu
 | `filters` | `Record<string, any>` | `{}` | Filtros por columna. Se asigna como propiedad JS |
 | `loading` | `boolean` | `false` | Muestra una barra de carga animada en el tope |
 | `actions` | `unknown[]` | `[]` | Acciones de fila (botón "..." al final de cada fila). Se asigna como propiedad JS |
+| `actions-label` | `string` | `""` | Texto del header de la columna de acciones. Default vacío. Atributo HTML: `actions-label` |
 | `row-disabled` | `boolean \| ((row: Record<string, any>) => boolean)` | `false` | Deshabilita filas (ver [Deshabilitar filas, columnas y celdas](#deshabilitar-filas-columnas-y-celdas)). Se asigna como propiedad JS |
 | `footer` | `FooterRow[]` | `[]` | Filas de footer (ver [Footer (API programática)](#footer-api-programática)). Se asigna como propiedad JS |
 | `table-max-height` | `string` | `""` | Alto máximo del área scrolleable (CSS, ej. `40rem`). Atributo HTML: `table-max-height` |

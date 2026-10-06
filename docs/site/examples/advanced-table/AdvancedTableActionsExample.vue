@@ -86,6 +86,13 @@ const actions = ref([
     <Button variant="soft" @click="onlyActive">filters = { estado: "Activo" }</Button>
     <Button variant="ghost" @click="clearFilters">Sin filtros</Button>
   </div>
-  <AdvancedTable :columns="columns" :data="data" :filters="filters" :actions="actions" :pagination="false" />
+  <AdvancedTable
+    :columns="columns"
+    :data="data"
+    :filters="filters"
+    :actions="actions"
+    actions-label="Acciones"
+    :pagination="false"
+  />
   <pre class="cu-demo-output">{{ lastAction }}</pre>
 </template>

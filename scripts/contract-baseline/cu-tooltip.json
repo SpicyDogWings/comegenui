@@ -1,0 +1,14 @@
+{
+  "tag": "cu-tooltip",
+  "props": [
+    "align",
+    "color",
+    "delay",
+    "disabled",
+    "offset",
+    "position",
+    "text"
+  ],
+  "methods": [],
+  "shadow": "div.cu-popover.cu-tooltip[data-v-42c69ad7,data-v-d647c158,style]\n  slot"
+}

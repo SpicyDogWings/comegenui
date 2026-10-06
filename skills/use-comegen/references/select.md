@@ -11,7 +11,8 @@ escritura sobre un input visible, usá `cu-autocomplete`.
 
 1. Definí `options` como array de `{ value, label, disabled?, color?, variant? }` y asignalo
    como propiedad JS.
-2. Controlá el valor con `v-model` (Vue) o `model-value` + `update:modelValue` (CE). Escuchá
+2. El valor lo maneja el propio select: al elegir una opción se refleja solo. Enlazá
+   `modelValue` sólo si querés controlarlo (`v-model` en Vue). Escuchá
    `select` para recibir la opción completa (`{ value, label, ... }`).
 3. `placeholder` se muestra cuando no hay selección; `placeholder-wrap` decide si el texto
    wrappea o se trunca con `...`.
@@ -110,7 +111,7 @@ barra animada, y los métodos `get`/`set`/`reset`/`focus`/`isOpen`/`selectedItem
 | `position` | `string` | `"bottom"` | Posición del dropdown: `bottom`, `top` |
 | `align` | `string` | `"start"` | Alineación: `start`, `center`, `end` |
 | `fixed` | `boolean` | `false` | Si es `true`, el dropdown usa `position: fixed` en vez de absoluto |
-| `model-value` | `string` | `""` | Valor seleccionado |
+| `model-value` | `string` | `""` | Valor seleccionado. El CE sincroniza su estado; asigná `modelValue` sólo si querés controlarlo |
 | `text-align` | `"center" \| "left" \| "right"` | `"left"` | Alineación del texto seleccionado: `left`, `center`, `right` |
 | `search-mode` | `"includes" \| "startsWith"` | `"startsWith"` | Modo de coincidencia: `startsWith` (solo al inicio del label) o `includes` (en cualquier parte) |
 | `options` | `SelectOption[]` | `[]` | Opciones del select (ver abajo). Se asigna como propiedad JS |

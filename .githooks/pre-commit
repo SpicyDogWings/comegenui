@@ -1,0 +1,15 @@
+#!/bin/bash
+# Hook pre-commit (versionado). Se activa una vez por clon:
+#   git config core.hooksPath .githooks
+#
+# Corre el gate rápido: impacto + tipos + contrato de componentes + build de la
+# lib. NO corre tests ni docs (eso es el pre-push). Aborta el commit si algo se
+# dañó. Saltear de forma puntual (ej. un WIP): `git commit --no-verify`.
+set -euo pipefail
+
+ROOT="$(git rev-parse --show-toplevel)"
+cd "$ROOT"
+
+# Sin tipo-texto (imágenes, lockfiles, etc.): el gate igual corre porque no
+# puede saber si el diff afecta la lib sin mirarla; el costo es bajo.
+./scripts/guard.sh --fast

@@ -76,11 +76,10 @@ export const DEFAULTS = {
     full: '9999px'
   },
   shadows: {
-    color: '#000000',
-    sm: '0 1px 2px rgba(0,0,0,0.05)',
-    md: '0 4px 6px rgba(0,0,0,0.1)',
-    lg: '0 10px 15px rgba(0,0,0,0.1)',
-    xl: '0 20px 25px rgba(0,0,0,0.1)'
+    sm: '0px 1px 2px',
+    md: '0px 4px 6px',
+    lg: '0px 10px 15px',
+    xl: '0px 20px 25px'
   },
   borders: {
     width: {
@@ -88,11 +87,6 @@ export const DEFAULTS = {
       thin: '1px',
       medium: '2px',
       thick: '4px'
-    },
-    color: {
-      default: '#d1d5db',
-      strong: '#6b7280',
-      focus: '#1774A4'
     }
   },
   modal: {

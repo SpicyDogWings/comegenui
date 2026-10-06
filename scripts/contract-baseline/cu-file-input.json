@@ -1,0 +1,21 @@
+{
+  "tag": "cu-file-input",
+  "props": [
+    "accept",
+    "color",
+    "disabled",
+    "maxSize",
+    "modelValue",
+    "placeholder",
+    "readOnly",
+    "variant"
+  ],
+  "methods": [
+    "focus",
+    "get",
+    "reset",
+    "set",
+    "trigger"
+  ],
+  "shadow": "div.cu-file-input-wrap\n  div.cu-file-input.cu-file-input--outlined[aria-disabled,role,style,tabindex]\n    input.cu-file-input-hidden[type]\n    svg.cu-file-input-icon[fill,height,stroke,stroke-linecap,stroke-linejoin,stroke-width,viewBox,width,xmlns]\n      path[d]\n      path[d]\n      path[d]\n    span.cu-file-input-placeholder"
+}

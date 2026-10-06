@@ -154,7 +154,7 @@ const isRowDisabled = (row: Record<string, any>): boolean => {
             >
               <slot :name="`header-${col.key}`" :column="col" :color="props.color" :variant="props.variant">
                 <span class="cu-table-th-content">
-                  {{ col.label || col.key }}
+                  {{ col.label ?? col.key }}
                 </span>
               </slot>
             </th>

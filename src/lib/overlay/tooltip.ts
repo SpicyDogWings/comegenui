@@ -1,7 +1,6 @@
-import { defineCustomElement } from "vue";
+import { defineComegenElement } from "@/utils/comegen-element";
 import Tooltip from "@/components/customElements/overlay/Tooltip.ce.vue";
 
-const CuTooltip = defineCustomElement(Tooltip);
-customElements.define("cu-tooltip", CuTooltip);
+const CuTooltip = defineComegenElement("cu-tooltip", Tooltip);
 
 export default CuTooltip;

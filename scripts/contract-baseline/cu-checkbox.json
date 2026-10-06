@@ -1,0 +1,17 @@
+{
+  "tag": "cu-checkbox",
+  "props": [
+    "color",
+    "disabled",
+    "label",
+    "modelValue",
+    "size"
+  ],
+  "methods": [
+    "focus",
+    "get",
+    "reset",
+    "set"
+  ],
+  "shadow": "label.cu-checkbox.cu-checkbox--md[data-v-39f20456]\n  input.cu-checkbox-input[data-v-39f20456,tabindex,type]\n  div.cu-checkbox-box[data-v-39f20456,style]"
+}

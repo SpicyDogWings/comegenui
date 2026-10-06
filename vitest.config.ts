@@ -13,5 +13,9 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     include: ["src/**/*.test.ts"],
+    // Limita los workers: sin esto vitest abre 1 fork por núcleo (12) y satura
+    // la máquina en corridas largas (guard/mutation). Con 4 queda usable.
+    // (minWorkers se quitó: en Vitest 4 ya no existe y rompía el type-check.)
+    maxWorkers: 4,
   },
 });

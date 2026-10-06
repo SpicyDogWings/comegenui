@@ -19,7 +19,7 @@ Ahora son cosas separadas:
 | | Docs | Skill |
 |---|---|---|
 | Qué es | referencia de API por componente | receta de pasos para usar la lib |
-| Dónde vive | `docs/componentes/<tag>.md` (CE) + `docs/componentes/vue/<kebab>.md` (Vue) | `.opencode/skills/use-comegen/` (`SKILL.md` + `references/`) |
+| Dónde vive | `docs/componentes/<tag>.md` (CE) + `docs/componentes/vue/<kebab>.md` (Vue) | `skills/use-comegen/` (`SKILL.md` + `references/`, symlinkeada en `.opencode/skills/use-comegen/`) |
 | ¿Viaja en el zip? | **No** | **No** (el zip lleva sólo la lib) |
 | Estructura | ficha: atributos/eventos/slots/métodos · ficha Vue: props/emits/slots/expose | pasos numerados + `references/` que se cargan on demand |
 

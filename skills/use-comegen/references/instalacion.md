@@ -11,7 +11,7 @@ comegenui-v{version}.zip
 ```
 
 No hay dependencias que instalar: cada `.umd.js` se auto-registra
-(`customElements.define('cu-x', …)`) cuando el `<script>` se carga.
+(`defineComegenElement('cu-x', …)`) cuando el `<script>` se carga.
 
 ## Instalar
 
@@ -41,6 +41,7 @@ Se reemplazan archivos, no hay instalador:
 - Si cambió el tema o la versión de tokens, copiá también `css/`.
 - Si un componente "no cambia nada" después de actualizar, casi siempre quedó el UMD
   viejo en la carpeta o el navegador lo tiene cacheado.
+- Para confirmar qué versión está cargada y cómo convivir versiones: `versionado.md`.
 
 ## Buildear la lib (sólo en el repo de ComegenUI)
 
@@ -50,5 +51,5 @@ pnpm build:lib v5.0.0     # fuerza la versión del zip
 ```
 
 El zip sale de `build-lib.ts`: los UMD + `css/`. **No** incluye la
-documentación ni los updaters (se eliminaron): la doc vive en el repo
-(`docs/componentes/`).
+documentación ni la skill: la doc vive en el repo (`docs/componentes/`) y la skill se
+baja aparte (ver `SKILL.md`).

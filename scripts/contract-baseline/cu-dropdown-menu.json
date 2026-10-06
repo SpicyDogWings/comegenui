@@ -1,0 +1,22 @@
+{
+  "tag": "cu-dropdown-menu",
+  "props": [
+    "align",
+    "color",
+    "disabled",
+    "fixed",
+    "items",
+    "label",
+    "offset",
+    "position",
+    "textAlign",
+    "variant"
+  ],
+  "methods": [
+    "close",
+    "isOpen",
+    "open",
+    "toggle"
+  ],
+  "shadow": "div.cu-dropdown.cu-popover[data-v-1f9ce292,data-v-24340070,data-v-42c69ad7]\n  button.cu-button.cu-button--ghost.cu-button--md.cu-dropdown-toggle[data-v-1f9ce292,data-v-c683ce48,style,type]\n    svg.cu-dropdown-chevron[data-v-1f9ce292,fill,height,stroke,stroke-linecap,stroke-linejoin,stroke-width,viewBox,width,xmlns]\n      path[d,data-v-1f9ce292]"
+}

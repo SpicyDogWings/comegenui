@@ -6,12 +6,12 @@ Esta guía explica paso a paso cómo leer un archivo `*.ce.vue` y obtener toda l
 
 ## Paso 1 — Identificar el tag
 
-Mirá el archivo `*.ts` correspondiente. El tag está en `customElements.define("...", ...)`.
+Mirá el archivo `*.ts` correspondiente. El tag es el primer argumento de `defineComegenElement("...", ...)`.
 
 ```ts
 // Alert.ts
-customElements.define("cu-alert", ...);
-//             ^^^^^^^^^
+defineComegenElement("cu-alert", Alert);
+//                   ^^^^^^^^^
 ```
 
 Anotá: `cu-alert`. Es el nombre del tag en HTML.

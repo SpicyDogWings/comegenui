@@ -1,0 +1,12 @@
+{
+  "tag": "cu-author-card",
+  "props": [
+    "color",
+    "name",
+    "role",
+    "size",
+    "src"
+  ],
+  "methods": [],
+  "shadow": ""
+}

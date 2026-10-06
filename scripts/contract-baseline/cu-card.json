@@ -1,0 +1,13 @@
+{
+  "tag": "cu-card",
+  "props": [
+    "color",
+    "image",
+    "layout",
+    "subtitle",
+    "title",
+    "variant"
+  ],
+  "methods": [],
+  "shadow": "article.cu-card.cu-card--ghost.cu-card--vertical[data-v-1da5cc99,style]\n  div.cu-card-body[data-v-1da5cc99]\n    div.cu-card-content[data-v-1da5cc99]\n      slot"
+}

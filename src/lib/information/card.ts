@@ -1,7 +1,6 @@
-import { defineCustomElement } from 'vue'
+import { defineComegenElement } from '@/utils/comegen-element'
 import Card from '@/components/customElements/information/Card.ce.vue'
 
-const CuCard = defineCustomElement(Card)
-customElements.define('cu-card', CuCard)
+const CuCard = defineComegenElement('cu-card', Card)
 
 export default CuCard

@@ -1,7 +1,6 @@
-import { defineCustomElement } from 'vue'
+import { defineComegenElement } from '@/utils/comegen-element'
 import Modal from '@/components/customElements/overlay/Modal.ce.vue'
 
-const CuModal = defineCustomElement(Modal)
-customElements.define('cu-modal', CuModal)
+const CuModal = defineComegenElement('cu-modal', Modal)
 
 export default CuModal
