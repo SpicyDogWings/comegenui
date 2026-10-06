@@ -42,6 +42,13 @@ const MUTATIONS = [
 }`,
   },
   {
+    id: "alert-close-cabecera-sin-titulo",
+    file: "src/components/information/Alert.vue",
+    expect: "sin título, el close no genera una cabecera propia",
+    find: `<div v-if="props.title || hasIcon" class="cu-alert-header">`,
+    replace: `<div v-if="props.title || props.close || hasIcon" class="cu-alert-header">`,
+  },
+  {
     id: "input-reset-no-clear",
     file: "src/components/form/Input.vue",
     expect: "reset() limpia el campo",

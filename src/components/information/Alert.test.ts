@@ -80,6 +80,20 @@ describe("Alert — botón de cerrar", () => {
     expect(vm(w).isOpen()).toBe(false);
     expect(root(w).attributes("style")).toContain("display: none");
   });
+
+  it("sin título ni ícono, el close acompaña al cuerpo (sin cabecera propia)", () => {
+    const w = mount(Alert, { props: { close: true }, slots: { default: "Contenido" } });
+    expect(w.find(".cu-alert-header").exists()).toBe(false);
+    const btn = w.find(".cu-alert-close");
+    expect(btn.exists()).toBe(true);
+    expect(btn.classes()).toContain("cu-alert-close--floating");
+  });
+
+  it("con título, el close queda en la cabecera (no flota)", () => {
+    const w = mount(Alert, { props: { close: true, title: "Atención" } });
+    expect(w.find(".cu-alert-header .cu-alert-close").exists()).toBe(true);
+    expect(w.find(".cu-alert-close--floating").exists()).toBe(false);
+  });
 });
 
 describe("Alert — contenido", () => {
