@@ -536,7 +536,6 @@ const canEdit = computed(() => {
 .cu-editable-cell--disabled {
   cursor: not-allowed;
   opacity: 0.5;
-  pointer-events: none;
 }
 
 .cu-editable-cell-input {

@@ -259,7 +259,6 @@ const colorStyles = computed(() => ({
 }
 .cu-button-link.cu-button--disabled {
   opacity: 0.7;
-  pointer-events: none;
 }
 
 /* icon-only */

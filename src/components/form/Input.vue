@@ -143,7 +143,7 @@ defineExpose({
   background-color: var(--btn-subtle);
   border: var(--cu-border-thin) solid var(--btn-subtle-border);
 }
-.cu-input--subtle:hover {
+.cu-input--subtle:hover:not(.cu-input--disabled) {
   background-color: var(--btn-subtle-hover);
 }
 
@@ -151,7 +151,7 @@ defineExpose({
 .cu-input--soft {
   background-color: var(--btn-soft);
 }
-.cu-input--soft:hover {
+.cu-input--soft:hover:not(.cu-input--disabled) {
   background-color: var(--btn-soft-hover);
 }
 
@@ -159,7 +159,7 @@ defineExpose({
 .cu-input--ghost {
   background-color: transparent;
 }
-.cu-input--ghost:hover {
+.cu-input--ghost:hover:not(.cu-input--disabled) {
   background-color: var(--btn-bg-hover);
 }
 
@@ -168,7 +168,7 @@ defineExpose({
   background-color: transparent;
   border: var(--cu-border-thin) solid var(--btn-subtle-border);
 }
-.cu-input--outlined:hover {
+.cu-input--outlined:hover:not(.cu-input--disabled) {
   background-color: var(--btn-bg-hover);
 }
 
@@ -176,6 +176,5 @@ defineExpose({
 .cu-input--disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  pointer-events: none;
 }
 </style>

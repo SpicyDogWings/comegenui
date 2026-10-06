@@ -126,7 +126,7 @@ defineExpose({ get, set, reset, focus });
   background-color: var(--btn-subtle);
   border: var(--cu-border-thin) solid var(--btn-subtle-border);
 }
-.cu-textarea--subtle:hover {
+.cu-textarea--subtle:hover:not(.cu-textarea--disabled) {
   background-color: var(--btn-subtle-hover);
 }
 
@@ -134,7 +134,7 @@ defineExpose({ get, set, reset, focus });
 .cu-textarea--soft {
   background-color: var(--btn-soft);
 }
-.cu-textarea--soft:hover {
+.cu-textarea--soft:hover:not(.cu-textarea--disabled) {
   background-color: var(--btn-soft-hover);
 }
 
@@ -142,7 +142,7 @@ defineExpose({ get, set, reset, focus });
 .cu-textarea--ghost {
   background-color: transparent;
 }
-.cu-textarea--ghost:hover {
+.cu-textarea--ghost:hover:not(.cu-textarea--disabled) {
   background-color: var(--btn-bg-hover);
 }
 
@@ -151,7 +151,7 @@ defineExpose({ get, set, reset, focus });
   background-color: transparent;
   border: var(--cu-border-thin) solid var(--btn-subtle-border);
 }
-.cu-textarea--outlined:hover {
+.cu-textarea--outlined:hover:not(.cu-textarea--disabled) {
   background-color: var(--btn-bg-hover);
 }
 
@@ -159,6 +159,5 @@ defineExpose({ get, set, reset, focus });
 .cu-textarea--disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  pointer-events: none;
 }
 </style>

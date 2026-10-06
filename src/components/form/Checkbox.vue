@@ -117,7 +117,7 @@ defineExpose({
 }
 
 .cu-checkbox--disabled {
-  pointer-events: none;
+  cursor: not-allowed;
   opacity: 0.7;
 }
 
@@ -157,12 +157,12 @@ defineExpose({
   border-color: var(--cb-bg);
 }
 
-.cu-checkbox-box:hover:not(.cu-checkbox--disabled) {
+.cu-checkbox:not(.cu-checkbox--disabled) .cu-checkbox-box:hover {
   border-color: var(--cb-bg);
   background-color: var(--cb-ghost-hover);
 }
 
-.cu-checkbox-box--checked:hover:not(.cu-checkbox--disabled) {
+.cu-checkbox:not(.cu-checkbox--disabled) .cu-checkbox-box--checked:hover {
   background-color: var(--cb-bg);
 }
 
