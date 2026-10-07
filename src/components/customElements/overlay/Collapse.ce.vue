@@ -17,6 +17,12 @@ const props = defineProps({
     required: false,
     default: "",
   },
+  /** Texto secundario que se muestra bajo el label en el trigger */
+  description: {
+    type: String,
+    required: false,
+    default: "",
+  },
   defaultOpen: {
     type: Boolean,
     default: false,
@@ -66,6 +72,7 @@ defineExpose({ open, close, toggle, isOpen });
     ref="collapseRef"
     :label="props.label"
     :icon="props.icon"
+    :description="props.description"
     :default-open="props.defaultOpen"
     :disabled="props.disabled"
     :color="props.color"

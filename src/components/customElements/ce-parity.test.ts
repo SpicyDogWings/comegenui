@@ -50,6 +50,12 @@ describe("Collapse.ce", () => {
     expect(w.find(".cu-collapse-icon").html()).toContain("<b>x</b>");
   });
 
+  it("forwardea `description` y la renderiza", () => {
+    const w = mount(CollapseCe, { props: { label: "Título", description: "Ayuda" } });
+    expect(w.findComponent(Collapse).props("description")).toBe("Ayuda");
+    expect(w.find(".cu-collapse-description").text()).toBe("Ayuda");
+  });
+
   it("forwardea `disabled` y no togglea al clickear", async () => {
     const w = mount(CollapseCe, { props: { label: "Título", disabled: true } });
     expect(w.findComponent(Collapse).props("disabled")).toBe(true);

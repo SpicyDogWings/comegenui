@@ -6,6 +6,7 @@ group: Overlay
 <script setup lang="ts">
 import CollapseBasicExample from "../../examples/collapse/CollapseBasicExample.vue";
 import CollapseColorsExample from "../../examples/collapse/CollapseColorsExample.vue";
+import CollapseDescriptionExample from "../../examples/collapse/CollapseDescriptionExample.vue";
 import CollapseDisabledExample from "../../examples/collapse/CollapseDisabledExample.vue";
 import CollapseIconExample from "../../examples/collapse/CollapseIconExample.vue";
 import CollapseEventsExample from "../../examples/collapse/CollapseEventsExample.vue";
@@ -46,6 +47,14 @@ import CollapseNestedExample from "../../examples/collapse/CollapseNestedExample
 <ClientOnly>
   <div class="cu-demo cu-demo--stack">
     <CollapseIconExample />
+  </div>
+</ClientOnly>
+
+### Descripción (description)
+
+<ClientOnly>
+  <div class="cu-demo cu-demo--stack">
+    <CollapseDescriptionExample />
   </div>
 </ClientOnly>
 

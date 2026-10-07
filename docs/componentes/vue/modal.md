@@ -130,8 +130,8 @@ function handleAction() {
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
 | `size` | `"sm" \| "md" \| "lg" \| "auto" \| "xl" \| "full"` | `"auto"` | — |
 | `title` | `string` | `""` | — |
-| `height` | `"sm" \| "md" \| "lg" \| "auto" \| "xl" \| "full"` | `"auto"` | — |
 | `description` | `string` | `""` | — |
+| `height` | `"sm" \| "md" \| "lg" \| "auto" \| "xl" \| "full"` | `"auto"` | — |
 | `persistent` | `boolean` | `false` | — |
 <!-- /@api:props -->
 

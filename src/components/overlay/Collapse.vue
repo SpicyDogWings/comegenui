@@ -14,6 +14,12 @@ const props = defineProps({
     required: false,
     default: '',
   },
+  /** Texto secundario que se muestra bajo el label en el trigger. */
+  description: {
+    type: String,
+    required: false,
+    default: '',
+  },
   defaultOpen: {
     type: Boolean,
     default: false,
@@ -122,7 +128,10 @@ defineExpose({
     >
       <LucideChevronRight class="cu-collapse-chevron" :class="{ 'is-open': isOpen }" :width="14" :height="14" />
       <span v-if="props.icon" class="cu-collapse-icon" v-html="props.icon"></span>
-      <span class="cu-collapse-label">{{ props.label }}</span>
+      <span class="cu-collapse-text">
+        <span class="cu-collapse-label">{{ props.label }}</span>
+        <p v-if="props.description" class="cu-collapse-description">{{ props.description }}</p>
+      </span>
     </Button>
     <Transition
       appear
@@ -159,6 +168,21 @@ defineExpose({
 
 .cu-collapse-chevron.is-open {
   transform: rotate(90deg);
+}
+
+.cu-collapse-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+  text-align: left;
+}
+
+.cu-collapse-description {
+  margin: 0;
+  font-size: var(--cu-font-size-xs);
+  font-weight: var(--cu-font-weight-normal);
+  opacity: 0.7;
 }
 
 .cu-collapse-content {

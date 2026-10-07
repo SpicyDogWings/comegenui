@@ -41,6 +41,18 @@ import Collapse from "@/components/overlay/Collapse.vue";
 </template>
 ```
 
+## Descripción
+
+`description` agrega una línea de texto secundario bajo el `label`, dentro del mismo trigger. Es opcional y, si queda vacía (default `''`), no se renderiza nada.
+
+```vue
+<template>
+  <Collapse label="Plan Pro" description="Facturación mensual, cancela cuando quieras">
+    <p>...</p>
+  </Collapse>
+</template>
+```
+
 ## Deshabilitado
 
 `disabled` deja el trigger inerte: no responde al click y muestra cursor `not-allowed`. `open()` y `toggle()` pasan a ser no-op; `close()` sí sigue funcionando (útil para colapsar desde código un collapse que arrancó con `default-open`).
@@ -152,6 +164,7 @@ function toggleFaq() {
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `'neutral'` | — |
 | `disabled` | `boolean` | `false` | Deshabilita el trigger: no responde al click del usuario. |
 | `icon` | `string` | `''` | Ícono del trigger (SVG/HTML). |
+| `description` | `string` | `''` | Texto secundario que se muestra bajo el label en el trigger. |
 | `defaultOpen` | `boolean` | `false` | — |
 | `label` | `string` | `—` | — |
 <!-- /@api:props -->
