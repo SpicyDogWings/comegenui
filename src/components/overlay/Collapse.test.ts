@@ -106,3 +106,33 @@ describe("Collapse — evento toggle", () => {
     expect(w.find(".cu-collapse-chevron").classes()).toContain("is-open");
   });
 });
+
+describe("Collapse — disabled", () => {
+  it("deshabilita el botón del trigger", () => {
+    const w = mount(Collapse, { props: { label: "L", disabled: true } });
+    expect(w.find(".cu-collapse-trigger").attributes("disabled")).toBeDefined();
+  });
+
+  it("no alterna al clickear el trigger y no emite toggle", async () => {
+    const w = mount(Collapse, { props: { label: "L", disabled: true } });
+    await w.find(".cu-collapse-trigger").trigger("click");
+    await flushPromises();
+    expect(vm(w).isOpen()).toBe(false);
+    expect(w.emitted("toggle")).toBeUndefined();
+  });
+
+  it("toggle() es no-op con disabled y no emite toggle", async () => {
+    const w = mount(Collapse, { props: { label: "L", disabled: true } });
+    vm(w).toggle();
+    await flushPromises();
+    expect(vm(w).isOpen()).toBe(false);
+    expect(w.emitted("toggle")).toBeUndefined();
+  });
+
+  it("open() es no-op con disabled", async () => {
+    const w = mount(Collapse, { props: { label: "L", disabled: true } });
+    vm(w).open();
+    await flushPromises();
+    expect(vm(w).isOpen()).toBe(false);
+  });
+});

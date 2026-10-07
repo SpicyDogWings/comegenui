@@ -7,6 +7,7 @@ group: Overlay
 import CollapseBasicExample from "../../examples/collapse/CollapseBasicExample.vue";
 import CollapseColorsExample from "../../examples/collapse/CollapseColorsExample.vue";
 import CollapseDescriptionExample from "../../examples/collapse/CollapseDescriptionExample.vue";
+import CollapseDisabledExample from "../../examples/collapse/CollapseDisabledExample.vue";
 import CollapseIconExample from "../../examples/collapse/CollapseIconExample.vue";
 import CollapseEventsExample from "../../examples/collapse/CollapseEventsExample.vue";
 import CollapseImperativeExample from "../../examples/collapse/CollapseImperativeExample.vue";
@@ -30,6 +31,14 @@ import CollapseNestedExample from "../../examples/collapse/CollapseNestedExample
 <ClientOnly>
   <div class="cu-demo cu-demo--stack">
     <CollapseColorsExample />
+  </div>
+</ClientOnly>
+
+### Deshabilitado (trigger inerte, `open()`/`toggle()` no-op)
+
+<ClientOnly>
+  <div class="cu-demo cu-demo--stack">
+    <CollapseDisabledExample />
   </div>
 </ClientOnly>
 

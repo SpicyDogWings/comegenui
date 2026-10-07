@@ -4,6 +4,7 @@
     "color",
     "defaultOpen",
     "description",
+    "disabled",
     "icon",
     "label"
   ],

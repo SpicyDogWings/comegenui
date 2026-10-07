@@ -24,6 +24,12 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  /** Deshabilita el trigger: no responde al click del usuario. */
+  disabled: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
   color: {
     type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     default: 'neutral',
@@ -45,11 +51,13 @@ function setOpen(value: boolean) {
 
 /** Alterna el estado del collapse. */
 function toggle() {
+  if (props.disabled) return
   setOpen(!isOpen.value)
 }
 
 /** Abre el collapse. */
 function open() {
+  if (props.disabled) return
   setOpen(true)
 }
 
@@ -115,6 +123,7 @@ defineExpose({
       class="cu-collapse-trigger"
       :color="props.color"
       variant="ghost"
+      :disabled="props.disabled"
       @click="toggle()"
     >
       <LucideChevronRight class="cu-collapse-chevron" :class="{ 'is-open': isOpen }" :width="14" :height="14" />
@@ -147,6 +156,10 @@ defineExpose({
 .cu-collapse-trigger {
   justify-content: flex-start;
   cursor: pointer;
+}
+
+.cu-collapse-trigger:disabled {
+  cursor: not-allowed;
 }
 
 .cu-collapse-chevron {
