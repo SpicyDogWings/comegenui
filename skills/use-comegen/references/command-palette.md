@@ -21,7 +21,7 @@ botón usá `cu-dropdown-menu`; si querés un modal de contenido, `cu-modal`.
 
 ```html
 <!-- HTML plano (UMD) -->
-<script src="dist/CuCommandPalette.umd.js"></script>
+<script src="dist/CuCommandPalette.core.umd.js"></script>
 
 <cu-command-palette id="palette" title="Comandos" color="primary"></cu-command-palette>
 

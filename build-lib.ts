@@ -1,6 +1,7 @@
 import { build } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import UnoCSS from 'unocss/vite'
+import esbuild from 'esbuild'
 import { resolve, dirname, basename, extname } from 'path'
 import { fileURLToPath } from 'url'
 import fg from 'fast-glob'
@@ -53,11 +54,23 @@ const files = fg.sync('./src/lib/**/*.ts', {
 interface Bundle {
   file: string
   /** PascalCase real: date-picker → CuDatePicker (los snippets y las páginas
-   * huésped cargan dist/CuDatePicker.umd.js; con solo capitalizar la primera
-   * letra quedaba CuDate-picker.umd.js y el HTML viejo cargaba 404/stale). */
+   * huésped cargan dist/CuDatePicker.core.umd.js; con solo capitalizar la
+   * primera letra quedaba CuDate-picker.umd.js y el HTML viejo cargaba
+   * 404/stale). */
   name: string
   tag: string
 }
+
+/**
+ * Cada componente se publica en dos variantes:
+ * - `core`:   Vue incluido en el UMD. Autocontenido, máxima compatibilidad:
+ *             un `<script src>` suelto funciona sin cargar nada más.
+ * - `shared`: Vue externo contra el global `__COMEGEN_VUE__`. Lo aporta
+ *             `comegen-vue.global.js` (también en el zip). Pensada para hosts
+ *             que cargan varios componentes y quieren un solo runtime.
+ */
+type Variant = 'core' | 'shared'
+const VARIANTS: Variant[] = ['core', 'shared']
 
 const bundles: Bundle[] = files.map((file) => {
   const baseName = basename(file, extname(file))
@@ -74,8 +87,8 @@ function escapeRe(text: string): string {
 }
 
 /**
- * Verifica que cada UMD de un entry de componente haya quedado con los
- * metadatos de versión inyectados (`<cu-x>.comegen`). Falla el build si no.
+ * Verifica que los UMD de cada componente (ambas variantes) hayan quedado con
+ * los metadatos de versión inyectados (`<cu-x>.comegen`). Falla el build si no.
  */
 function assertBundleMeta(outDir: string) {
   const missing: string[] = []
@@ -84,14 +97,92 @@ function assertBundleMeta(outDir: string) {
     const registers =
       source.includes('defineComegenElement') || source.includes('customElements.define')
     if (!registers) continue
-    const code = fs.readFileSync(resolve(outDir, `${name}.umd.js`), 'utf-8')
-    const hasVersion = new RegExp(`"version"\\s*:\\s*"${escapeRe(version)}"`).test(code)
-    if (!code.includes('comegen') || !hasVersion) missing.push(`${name}.umd.js`)
+    for (const variant of VARIANTS) {
+      const relative = `${name}.${variant}.umd.js`
+      const code = fs.readFileSync(resolve(outDir, relative), 'utf-8')
+      const hasVersion = new RegExp(`"version"\\s*:\\s*"${escapeRe(version)}"`).test(code)
+      if (!code.includes('comegen') || !hasVersion) missing.push(relative)
+    }
   }
   if (missing.length) {
     console.error(`❌ metadata de versión ausente en: ${missing.join(', ')}`)
     process.exit(1)
   }
+}
+
+/**
+ * Construye una variante (`core` o `shared`) de un componente.
+ * - `shared` marca `vue` como externo y lo resuelve contra el global
+ *   `__COMEGEN_VUE__`, que aporta `comegen-vue.global.js`.
+ */
+async function buildComponent({ file, name, tag }: Bundle, outDir: string, variant: Variant) {
+  const shared = variant === 'shared'
+  await build({
+    configFile: false,
+    define: {
+      'process.env.NODE_ENV': JSON.stringify('production'),
+      // Metadata del bundle: `defineComegenElement` la adjunta al componente.
+      __COMEGEN_META__: JSON.stringify({ version }),
+    },
+    resolve: {
+      alias: {
+        '@': resolve(__dirname, 'src'),
+      },
+    },
+    plugins: [vue({ features: { customElement: true } }), UnoCSS({ mode: 'shadow-dom' })],
+    build: {
+      emptyOutDir: false,
+      lib: {
+        entry: resolve(__dirname, file),
+        name: name,
+        fileName: () => `${name}.${variant}.umd.js`,
+        formats: ['umd'],
+      },
+      rollupOptions: {
+        // La variante shared no lleva Vue: lo resuelve el global `__COMEGEN_VUE__`.
+        external: shared ? ['vue'] : [],
+        output: {
+          globals: shared ? { vue: '__COMEGEN_VUE__' } : {},
+          // El banner deja la identidad en el archivo: si alguien copia un solo
+          // UMD, sabe qué componente, qué variante y qué versión es sin ejecutarlo.
+          banner: `/*! comegenui v${version} · ${name} (${tag}) · ${
+            shared ? 'shared · Vue externo __COMEGEN_VUE__' : 'core · Vue incluido'
+          } */`,
+        },
+      },
+      minify: false,
+      outDir: outDir,
+    },
+  })
+}
+
+/**
+ * Genera `comegen-vue.global.js`: el runtime de Vue que consume la variante
+ * `shared`. Se expone como `globalThis.__COMEGEN_VUE__` (namespace propio) para
+ * no pisar ni depender de un `window.Vue` del host.
+ */
+async function buildSharedRuntime(outDir: string) {
+  console.log('🧩 Generando runtime compartido (comegen-vue.global.js)...')
+  await esbuild.build({
+    stdin: {
+      contents: `import * as Vue from 'vue'\nglobalThis.__COMEGEN_VUE__ = Vue\n`,
+      resolveDir: __dirname,
+      loader: 'ts',
+    },
+    bundle: true,
+    format: 'iife',
+    platform: 'browser',
+    target: ['es2020'],
+    minify: true,
+    legalComments: 'inline',
+    define: {
+      'process.env.NODE_ENV': '"production"',
+      __VUE_OPTIONS_API__: 'true',
+      __VUE_PROD_DEVTOOLS__: 'false',
+      __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: 'false',
+    },
+    outfile: resolve(outDir, 'comegen-vue.global.js'),
+  })
 }
 
 async function runBuilds() {
@@ -102,44 +193,16 @@ async function runBuilds() {
   }
   fs.mkdirSync(outDir, { recursive: true })
 
-  console.log(`🚀 Building ${bundles.length} component(s)...`)
+  console.log(`🚀 Building ${bundles.length} component(s) × ${VARIANTS.length} variante(s)...`)
 
-  for (const { file, name, tag } of bundles) {
-    console.log(`📦 Building ${name}...`)
-
-    await build({
-      configFile: false,
-      define: {
-        'process.env.NODE_ENV': JSON.stringify('production'),
-        // Metadata del bundle: `defineComegenElement` la adjunta al componente.
-        __COMEGEN_META__: JSON.stringify({ version }),
-      },
-      resolve: {
-        alias: {
-          '@': resolve(__dirname, 'src'),
-        },
-      },
-      plugins: [vue({ features: { customElement: true } }), UnoCSS({ mode: 'shadow-dom' })],
-      build: {
-        emptyOutDir: false,
-        lib: {
-          entry: resolve(__dirname, file),
-          name: name,
-          fileName: (format) => `${name}.${format}.js`,
-          formats: ['umd'],
-        },
-        rollupOptions: {
-          output: {
-            // El banner deja la identidad en el archivo: si alguien copia un solo
-            // UMD, sabe qué componente y qué versión es sin ejecutarlo.
-            banner: `/*! comegenui v${version} · ${name} (${tag}) */`,
-          },
-        },
-        minify: false,
-        outDir: outDir,
-      },
-    })
+  for (const bundle of bundles) {
+    for (const variant of VARIANTS) {
+      console.log(`📦 Building ${bundle.name} (${variant})...`)
+      await buildComponent(bundle, outDir, variant)
+    }
   }
+
+  await buildSharedRuntime(outDir)
 
   assertBundleMeta(outDir)
 
@@ -159,10 +222,11 @@ async function runBuilds() {
   }
 
   console.log(`\n✅ Build complete! Output: dist-lib/`)
-  for (const file of files) {
-    const baseName = basename(file, extname(file))
-    console.log(`   - ${baseName}.umd.js`)
+  for (const { name } of bundles) {
+    console.log(`   - ${name}.core.umd.js`)
+    console.log(`   - ${name}.shared.umd.js`)
   }
+  console.log(`   - comegen-vue.global.js (runtime de la variante shared)`)
   console.log(`   - css/themes.css (${Object.keys(themes).length + 1} rules)`)
   for (const name of Object.keys(themes)) {
     console.log(`   - css/${name}.css`)
@@ -194,6 +258,12 @@ async function createZip() {
   const umdFiles = fs.readdirSync(outDir).filter(f => f.endsWith('.umd.js'))
   for (const file of umdFiles) {
     archive.file(resolve(outDir, file), { name: file })
+  }
+
+  // Runtime compartido de la variante `shared`
+  const runtime = resolve(outDir, 'comegen-vue.global.js')
+  if (fs.existsSync(runtime)) {
+    archive.file(runtime, { name: 'comegen-vue.global.js' })
   }
 
   // Add CSS folder

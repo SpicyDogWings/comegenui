@@ -3,12 +3,17 @@
 Cada `Cu*.umd.js` trae la versión del bundle con la que se construyó. Es lo que te permite
 saber qué archivo estás usando y hacer convivir componentes de versiones distintas.
 
+Cada componente viene en dos variantes, con la misma API y el mismo tag: `CuX.core.umd.js`
+(Vue incluido) y `CuX.shared.umd.js` (Vue externo, compartido en `comegen-vue.global.js`).
+Elegís una por componente; ver `instalacion.md`.
+
 ## Leer la versión
 
-El banner del archivo ya la muestra:
+El banner del archivo ya la muestra, incluida la variante:
 
 ```js
-/*! comegenui v5.0.0-alpha.3 · CuAlert (cu-alert) */
+/*! comegenui v5.0.0-alpha.3 · CuAlert (cu-alert) · core · Vue incluido */
+/*! comegenui v5.0.0-alpha.3 · CuAlert (cu-alert) · shared · Vue externo __COMEGEN_VUE__ */
 ```
 
 En runtime, cada componente expone `comegen` en la clase y en la instancia:
@@ -40,8 +45,8 @@ Cada componente se registra con su tag normal (`<cu-alert>`) y con un **tag vers
 
 ```html
 <!-- actualizás sólo el botón, la alerta sigue en la versión vieja -->
-<script src="vendor/comegenui/5.0.0/CuAlert.umd.js"></script>
-<script src="vendor/comegenui/5.1.0/CuButton.umd.js"></script>
+<script src="vendor/comegenui/5.0.0/CuAlert.core.umd.js"></script>
+<script src="vendor/comegenui/5.1.0/CuButton.core.umd.js"></script>
 
 <cu-alert>…</cu-alert>
 <cu-button color="primary">Guardar</cu-button>
@@ -50,8 +55,8 @@ Cada componente se registra con su tag normal (`<cu-alert>`) y con un **tag vers
 Para tener las dos versiones del **mismo** componente, usá el tag versionado de la segunda:
 
 ```html
-<script src="vendor/comegenui/5.0.0/CuAlert.umd.js"></script>
-<script src="vendor/comegenui/5.1.0/CuAlert.umd.js"></script>
+<script src="vendor/comegenui/5.0.0/CuAlert.core.umd.js"></script>
+<script src="vendor/comegenui/5.1.0/CuAlert.core.umd.js"></script>
 
 <cu-alert>…</cu-alert>                  <!-- 5.0.0 -->
 <cu-alert--v5-1-0>…</cu-alert--v5-1-0>  <!-- 5.1.0 -->

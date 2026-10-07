@@ -7,7 +7,7 @@ Input de texto con color, variante, tipos de input HTML5 y métodos `get`/`set`/
 ## Uso en HTML plano
 
 ```html
-<script src="dist/CuInput.umd.js"></script>
+<script src="dist/CuInput.core.umd.js"></script>
 
 <cu-input placeholder="Nombre" color="primary" variant="outlined"></cu-input>
 <cu-input type="email" placeholder="correo@ejemplo.com" variant="soft" id="email"></cu-input>

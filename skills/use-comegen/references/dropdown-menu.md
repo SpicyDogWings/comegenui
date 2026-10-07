@@ -23,7 +23,7 @@ acciones), seguí usándolo con el slot por defecto. Para una paleta de comandos
 
 ```html
 <!-- HTML plano (UMD) -->
-<script src="dist/CuDropdownMenu.umd.js"></script>
+<script src="dist/CuDropdownMenu.core.umd.js"></script>
 
 <cu-dropdown-menu id="dd" label="Acciones" color="primary" variant="soft" align="end" offset="8"></cu-dropdown-menu>
 

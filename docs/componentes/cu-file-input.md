@@ -7,7 +7,7 @@ Input de archivo compacto con drag & drop, estilo idéntico a `<cu-input>`. Sing
 ## Uso en HTML plano
 
 ```html
-<script src="dist/CuFileInput.umd.js"></script>
+<script src="dist/CuFileInput.core.umd.js"></script>
 
 <cu-file-input placeholder="Elige un archivo..." color="primary"></cu-file-input>
 <cu-file-input accept="image/*" variant="outlined" id="miInput"></cu-file-input>

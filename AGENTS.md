@@ -271,13 +271,16 @@ Tokens compartidos: tipografía, spacing, border-radius, shadows, borders.
 
 ## Build
 
-`build-lib.ts` busca `src/lib/**/*.ts` (excluyendo `index.ts` y `tokens.ts`) y construye cada uno como UMD:
+`build-lib.ts` busca `src/lib/**/*.ts` (excluyendo `index.ts` y `tokens.ts`) y construye cada uno en **dos variantes** UMD (misma API, mismo tag):
 
+- `CuX.core.umd.js` — Vue incluido (autocontenida, máximo compatibilidad).
+- `CuX.shared.umd.js` — `vue` externo contra el global `__COMEGEN_VUE__`.
 - `vue({ features: { customElement: true } })`
 - `UnoCSS({ mode: "shadow-dom" })`
+- Genera `comegen-vue.global.js` (runtime de Vue que consume la variante `shared`; namespace propio `__COMEGEN_VUE__`, no toca `window.Vue`).
 - Genera `dist/css/themes.css` + `dist/css/{theme}.css`
 - Crea zip versionado: `comegenui-v{version}.zip`
-- **El zip lleva SOLO la lib**: los `Cu*.umd.js` + `css/`. No incluye documentación (vive en `docs/componentes/`), ni skill, ni instalador/actualizador (la instalación es manual: descomprimir el zip).
+- **El zip lleva SOLO la lib**: `Cu*.core.umd.js` + `Cu*.shared.umd.js` + `comegen-vue.global.js` + `css/`. No incluye documentación (vive en `docs/componentes/`), ni skill, ni instalador/actualizador (la instalación es manual: descomprimir el zip).
 
 ### Tests y guard
 

@@ -7,7 +7,7 @@ Checkbox con label. Mantiene su estado y también se controla via `modelValue` o
 ## Uso en HTML plano
 
 ```html
-<script src="dist/CuCheckbox.umd.js"></script>
+<script src="dist/CuCheckbox.core.umd.js"></script>
 
 <cu-checkbox label="Acepto los términos" color="primary"></cu-checkbox>
 <cu-checkbox label="Opción deshabilitada" disabled></cu-checkbox>

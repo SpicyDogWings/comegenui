@@ -19,7 +19,7 @@ encendido/apagado usá `cu-switch`; si es una opción entre varias, usá `cu-sel
 
 ```html
 <!-- HTML plano (UMD) -->
-<script src="dist/CuCheckbox.umd.js"></script>
+<script src="dist/CuCheckbox.core.umd.js"></script>
 
 <cu-checkbox id="acepto" label="Acepto los términos" color="primary"></cu-checkbox>
 

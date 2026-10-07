@@ -24,7 +24,7 @@ ciudades). Para listas cortas y cerradas, `cu-select`; para texto libre sin suge
 
 ```html
 <!-- HTML plano (UMD) -->
-<script src="dist/CuAutocomplete.umd.js"></script>
+<script src="dist/CuAutocomplete.core.umd.js"></script>
 
 <cu-autocomplete id="ac" placeholder="Buscá un rol..." color="primary" min-chars="2"></cu-autocomplete>
 

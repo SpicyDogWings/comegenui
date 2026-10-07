@@ -8,35 +8,35 @@ como propiedad (`el.items = [...]`). Ver `gotchas.md`.
 
 | Tag | UMD | Grupo | Props sólo por JS | Eventos | Métodos |
 |---|---|---|---|---|---|
-| `cu-alert` | `CuAlert.umd.js` | Información | — | `close`, `open`, `update:show` | 4 |
-| `cu-author-card` | `CuAuthorCard.umd.js` | Información | — | — | — |
-| `cu-autocomplete` | `CuAutocomplete.umd.js` | Formularios | `items` | `update:modelValue`, `select`, `blur` | 6 |
-| `cu-avatar` | `CuAvatar.umd.js` | Información | — | — | — |
-| `cu-badge` | `CuBadge.umd.js` | Información | — | — | — |
-| `cu-button` | `CuButton.umd.js` | Buttons | — | `loading-change` | — |
-| `cu-calendar` | `CuCalendar.umd.js` | Controles | `events` | `select`, `change`, `update:modelValue`, `update:viewMonth`, `update:rangeStart`, `update:rangeEnd` | 8 |
-| `cu-card` | `CuCard.umd.js` | Información | — | `click` | — |
-| `cu-cells-importer` | `CuCellsImporter.umd.js` | Formularios | `columns`, `formats`, `template`, `sheet` | `parse`, `error`, `change` | 10 |
-| `cu-checkbox` | `CuCheckbox.umd.js` | Formularios | — | `update:modelValue`, `change` | 4 |
-| `cu-collapse` | `CuCollapse.umd.js` | Overlay | — | `toggle` | 4 |
-| `cu-color-picker` | `CuColorPicker.umd.js` | Formularios | — | `update:modelValue`, `change` | 4 |
-| `cu-command-palette` | `CuCommandPalette.umd.js` | Overlay | — | `select`, `close` | 5 |
-| `cu-date-picker` | `CuDatePicker.umd.js` | Formularios | `events` | `select`, `change`, `open`, `close`, `update:modelValue`, `update:startDate`, `update:endDate` | 10 |
-| `cu-dropdown-menu` | `CuDropdownMenu.umd.js` | Controles | `items` | `close`, `open` | 4 |
-| `cu-file-input` | `CuFileInput.umd.js` | Formularios | — | `update:modelValue` | 5 |
-| `cu-file-input-zone` | `CuFileInputZone.umd.js` | Formularios | — | `update:modelValue` | 5 |
-| `cu-floating-button` | `CuFloatingButton.umd.js` | Buttons | — | — | — |
-| `cu-input` | `CuInput.umd.js` | Formularios | — | `update:modelValue` | 4 |
-| `cu-label` | `CuLabel.umd.js` | Formularios | — | — | — |
-| `cu-markdown` | `CuMarkdown.umd.js` | Markdown | — | `parsed` | 1 |
-| `cu-modal` | `CuModal.umd.js` | Overlay | — | `close`, `opened`, `closed`, `cancel`, `accept` | 4 |
-| `cu-navbar` | `CuNavbar.umd.js` | Navegación | `items`, `searchFields` | `search` | — |
-| `cu-navbar-horizontal` | `CuNavbarHorizontal.umd.js` | Navegación | `items` | — | — |
-| `cu-pagination` | `CuPagination.umd.js` | Controles | `pageSizeOptions` | `update:currentPage`, `update:itemsPerPage` | — |
-| `cu-select` | `CuSelect.umd.js` | Formularios | `options` | `update:modelValue`, `select`, `close`, `blur` | 6 |
-| `cu-side-over` | `CuSideOver.umd.js` | Overlay | — | `update:open`, `close` | 4 |
-| `cu-switch` | `CuSwitch.umd.js` | Formularios | — | `update:modelValue`, `change` | 4 |
-| `cu-table` | `CuTable.umd.js` | Datos | `columns`, `data`, `pageSizeOptions`, `searchFields`, `filters`, `actions`, `footer`, `rowDisabled` | `update:currentPage`, `update:itemsPerPage`, `update:search`, `edit-start`, `edit-save`, `edit-cancel`, `edit-error` | 6 |
-| `cu-tabs` | `CuTabs.umd.js` | Navegación | `tabs` | `update:modelValue`, `change` | 4 |
-| `cu-textarea` | `CuTextarea.umd.js` | Formularios | — | `update:modelValue` | 4 |
-| `cu-tooltip` | `CuTooltip.umd.js` | Overlay | — | — | — |
+| `cu-alert` | `CuAlert.core.umd.js` | Información | — | `close`, `open`, `update:show` | 4 |
+| `cu-author-card` | `CuAuthorCard.core.umd.js` | Información | — | — | — |
+| `cu-autocomplete` | `CuAutocomplete.core.umd.js` | Formularios | `items` | `update:modelValue`, `select`, `blur` | 6 |
+| `cu-avatar` | `CuAvatar.core.umd.js` | Información | — | — | — |
+| `cu-badge` | `CuBadge.core.umd.js` | Información | — | — | — |
+| `cu-button` | `CuButton.core.umd.js` | Buttons | — | `loading-change` | — |
+| `cu-calendar` | `CuCalendar.core.umd.js` | Controles | `events` | `select`, `change`, `update:modelValue`, `update:viewMonth`, `update:rangeStart`, `update:rangeEnd` | 8 |
+| `cu-card` | `CuCard.core.umd.js` | Información | — | `click` | — |
+| `cu-cells-importer` | `CuCellsImporter.core.umd.js` | Formularios | `columns`, `formats`, `template`, `sheet` | `parse`, `error`, `change` | 10 |
+| `cu-checkbox` | `CuCheckbox.core.umd.js` | Formularios | — | `update:modelValue`, `change` | 4 |
+| `cu-collapse` | `CuCollapse.core.umd.js` | Overlay | — | `toggle` | 4 |
+| `cu-color-picker` | `CuColorPicker.core.umd.js` | Formularios | — | `update:modelValue`, `change` | 4 |
+| `cu-command-palette` | `CuCommandPalette.core.umd.js` | Overlay | — | `select`, `close` | 5 |
+| `cu-date-picker` | `CuDatePicker.core.umd.js` | Formularios | `events` | `select`, `change`, `open`, `close`, `update:modelValue`, `update:startDate`, `update:endDate` | 10 |
+| `cu-dropdown-menu` | `CuDropdownMenu.core.umd.js` | Controles | `items` | `close`, `open` | 4 |
+| `cu-file-input` | `CuFileInput.core.umd.js` | Formularios | — | `update:modelValue` | 5 |
+| `cu-file-input-zone` | `CuFileInputZone.core.umd.js` | Formularios | — | `update:modelValue` | 5 |
+| `cu-floating-button` | `CuFloatingButton.core.umd.js` | Buttons | — | — | — |
+| `cu-input` | `CuInput.core.umd.js` | Formularios | — | `update:modelValue` | 4 |
+| `cu-label` | `CuLabel.core.umd.js` | Formularios | — | — | — |
+| `cu-markdown` | `CuMarkdown.core.umd.js` | Markdown | — | `parsed` | 1 |
+| `cu-modal` | `CuModal.core.umd.js` | Overlay | — | `close`, `opened`, `closed`, `cancel`, `accept` | 4 |
+| `cu-navbar` | `CuNavbar.core.umd.js` | Navegación | `items`, `searchFields` | `search` | — |
+| `cu-navbar-horizontal` | `CuNavbarHorizontal.core.umd.js` | Navegación | `items` | — | — |
+| `cu-pagination` | `CuPagination.core.umd.js` | Controles | `pageSizeOptions` | `update:currentPage`, `update:itemsPerPage` | — |
+| `cu-select` | `CuSelect.core.umd.js` | Formularios | `options` | `update:modelValue`, `select`, `close`, `blur` | 6 |
+| `cu-side-over` | `CuSideOver.core.umd.js` | Overlay | — | `update:open`, `close` | 4 |
+| `cu-switch` | `CuSwitch.core.umd.js` | Formularios | — | `update:modelValue`, `change` | 4 |
+| `cu-table` | `CuTable.core.umd.js` | Datos | `columns`, `data`, `pageSizeOptions`, `searchFields`, `filters`, `actions`, `footer`, `rowDisabled` | `update:currentPage`, `update:itemsPerPage`, `update:search`, `edit-start`, `edit-save`, `edit-cancel`, `edit-error` | 6 |
+| `cu-tabs` | `CuTabs.core.umd.js` | Navegación | `tabs` | `update:modelValue`, `change` | 4 |
+| `cu-textarea` | `CuTextarea.core.umd.js` | Formularios | — | `update:modelValue` | 4 |
+| `cu-tooltip` | `CuTooltip.core.umd.js` | Overlay | — | — | — |

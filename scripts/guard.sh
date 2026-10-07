@@ -160,7 +160,9 @@ if has build; then
     RESUMEN+=("❌ build lib"); FAILED=1
   else
     UMD=$(ls "$ROOT"/dist-lib/Cu*.umd.js 2>/dev/null | wc -l)
-    ok "$UMD UMD generados"
+    CORE=$(ls "$ROOT"/dist-lib/Cu*.core.umd.js 2>/dev/null | wc -l)
+    SHARED=$(ls "$ROOT"/dist-lib/Cu*.shared.umd.js 2>/dev/null | wc -l)
+    ok "$UMD UMD generados ($CORE core + $SHARED shared)"
     RESUMEN+=("✅ build lib")
   fi
 fi

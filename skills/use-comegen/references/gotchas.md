@@ -7,7 +7,7 @@ va por **propiedad JS**, después de que el UMD esté cargado:
 
 ```html
 <cu-table id="t"></cu-table>
-<script src="CuTable.umd.js"></script>
+<script src="CuTable.core.umd.js"></script>
 <script>
   const t = document.getElementById('t');
   t.columns = [{ key: 'name', label: 'Nombre' }];  // ✅
