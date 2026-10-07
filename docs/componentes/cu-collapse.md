@@ -37,6 +37,18 @@ Sección colapsable con trigger (botón + chevron animado). El contenido se mues
 
 ---
 
+## Descripción
+
+`description` agrega una línea de texto secundario bajo el `label`, dentro del mismo trigger. En HTML plano va como atributo, es opcional y, si queda vacío, no se renderiza nada.
+
+```html
+<cu-collapse label="Plan Pro" description="Facturación mensual, cancela cuando quieras">
+  <p>...</p>
+</cu-collapse>
+```
+
+---
+
 ## Anidados
 
 Los collapses se pueden anidar para construir árboles de menú:
@@ -124,6 +136,7 @@ collapse.addEventListener('toggle', (e) => {
 | ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico del trigger: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `icon` | `string` | `""` | Ícono del trigger (SVG/HTML) |
+| `description` | `string` | `""` | Texto secundario que se muestra bajo el label en el trigger |
 | `default-open` | `boolean` | `false` | — |
 | `label` | `string` | `—` | Texto del trigger |
 <!-- /@api:atributos -->

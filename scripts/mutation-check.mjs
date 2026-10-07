@@ -133,6 +133,13 @@ const MUTATIONS = [
   /* mutado */`,
   },
   {
+    id: "collapse-description-no-render",
+    file: "src/components/overlay/Collapse.vue",
+    expect: "renderiza la descripción del trigger bajo el label",
+    find: `        <p v-if="props.description" class="cu-collapse-description">{{ props.description }}</p>`,
+    replace: `        <p v-if="false" class="cu-collapse-description">{{ props.description }}</p>`,
+  },
+  {
     id: "side-over-persistent-ignored",
     file: "src/components/overlay/SideOver.vue",
     expect: "persistent no se cierra por backdrop ni Escape",

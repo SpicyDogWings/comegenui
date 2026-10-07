@@ -41,6 +41,18 @@ import Collapse from "@/components/overlay/Collapse.vue";
 </template>
 ```
 
+## Descripción
+
+`description` agrega una línea de texto secundario bajo el `label`, dentro del mismo trigger. Es opcional y, si queda vacía (default `''`), no se renderiza nada.
+
+```vue
+<template>
+  <Collapse label="Plan Pro" description="Facturación mensual, cancela cuando quieras">
+    <p>...</p>
+  </Collapse>
+</template>
+```
+
 ## Anidados
 
 Los collapses se pueden anidar para construir árboles de menú:
@@ -135,6 +147,7 @@ function toggleFaq() {
 | ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `'neutral'` | — |
 | `icon` | `string` | `''` | Ícono del trigger (SVG/HTML). |
+| `description` | `string` | `''` | Texto secundario que se muestra bajo el label en el trigger. |
 | `defaultOpen` | `boolean` | `false` | — |
 | `label` | `string` | `—` | — |
 <!-- /@api:props -->

@@ -41,6 +41,21 @@ describe("Collapse — estado y visibilidad", () => {
   });
 });
 
+describe("Collapse — descripción del trigger", () => {
+  it("renderiza la descripción como <p> bajo el label", () => {
+    const w = mount(Collapse, { props: { label: "L", description: "Texto de ayuda" } });
+    const desc = w.find(".cu-collapse-description");
+    expect(desc.exists()).toBe(true);
+    expect(desc.element.tagName).toBe("P");
+    expect(desc.text()).toBe("Texto de ayuda");
+  });
+
+  it("no renderiza descripción si no se pasa", () => {
+    const w = mount(Collapse, { props: { label: "L" } });
+    expect(w.find(".cu-collapse-description").exists()).toBe(false);
+  });
+});
+
 describe("Collapse — control programático", () => {
   it("open()/close()/toggle() controlan isOpen()", async () => {
     const w = mount(Collapse, { props: { label: "L" } });

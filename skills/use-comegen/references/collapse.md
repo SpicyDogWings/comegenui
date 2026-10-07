@@ -10,7 +10,7 @@ modal, `cu-modal`.
 
 ## Receta
 
-1. El trigger lleva `label` (**obligatorio**) y, opcionalmente, `icon` (SVG/HTML como string).
+1. El trigger lleva `label` (**obligatorio**) y, opcionalmente, `icon` (SVG/HTML como string) y `description` (texto secundario bajo el label).
 2. El contenido va por el slot default.
 3. `default-open` arranca abierto.
 4. Escuchá `toggle` (boolean) o llamá `open()`, `close()`, `toggle()` e `isOpen()`.
@@ -20,7 +20,7 @@ modal, `cu-modal`.
 <!-- HTML plano (UMD) -->
 <script src="dist/CuCollapse.umd.js"></script>
 
-<cu-collapse id="faq" label="¿Qué es ComegenUI?" color="primary">
+<cu-collapse id="faq" label="¿Qué es ComegenUI?" description="Librería de Custom Elements" color="primary">
   <p>Una librería de componentes UI como Custom Elements nativos.</p>
 </cu-collapse>
 
@@ -41,7 +41,7 @@ const abierto = ref(false);
 </script>
 
 <template>
-  <Collapse label="¿Qué es ComegenUI?" color="primary" @toggle="abierto = $event">
+  <Collapse label="¿Qué es ComegenUI?" description="Librería de Custom Elements" color="primary" @toggle="abierto = $event">
     <p>Una librería de componentes UI como Custom Elements nativos.</p>
   </Collapse>
 </template>
@@ -50,7 +50,7 @@ const abierto = ref(false);
 ## Qué puede y qué no puede
 
 **Puede:** 6 colores (`primary`, `secondary`, `neutral`, `success`, `warning`, `danger`),
-`label`, `icon`, `default-open`, slot default, el evento `toggle` y los métodos
+`label`, `description`, `icon`, `default-open`, slot default, el evento `toggle` y los métodos
 `open`/`close`/`toggle`/`isOpen`. Se puede anidar.
 
 **No puede:**
@@ -75,6 +75,7 @@ const abierto = ref(false);
 | ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico del trigger: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `icon` | `string` | `""` | Ícono del trigger (SVG/HTML) |
+| `description` | `string` | `""` | Texto secundario que se muestra bajo el label en el trigger |
 | `default-open` | `boolean` | `false` | — |
 | `label` | `string` | `—` | Texto del trigger |
 <!-- /@api:atributos -->
@@ -115,6 +116,7 @@ const abierto = ref(false);
 | ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `'neutral'` | — |
 | `icon` | `string` | `''` | Ícono del trigger (SVG/HTML). |
+| `description` | `string` | `''` | Texto secundario que se muestra bajo el label en el trigger. |
 | `defaultOpen` | `boolean` | `false` | — |
 | `label` | `string` | `—` | — |
 <!-- /@api:props -->

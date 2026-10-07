@@ -49,6 +49,12 @@ describe("Collapse.ce", () => {
     expect(w.findComponent(Collapse).props("icon")).toBe("<b>x</b>");
     expect(w.find(".cu-collapse-icon").html()).toContain("<b>x</b>");
   });
+
+  it("forwardea `description` y la renderiza", () => {
+    const w = mount(CollapseCe, { props: { label: "Título", description: "Ayuda" } });
+    expect(w.findComponent(Collapse).props("description")).toBe("Ayuda");
+    expect(w.find(".cu-collapse-description").text()).toBe("Ayuda");
+  });
 });
 
 describe("Input.ce", () => {
