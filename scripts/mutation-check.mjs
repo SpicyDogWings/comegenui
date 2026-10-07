@@ -133,6 +133,37 @@ const MUTATIONS = [
   /* mutado */`,
   },
   {
+    id: "collapse-disabled-ignores-toggle-guard",
+    file: "src/components/overlay/Collapse.vue",
+    expect: "con disabled el trigger no alterna el estado",
+    find: `function toggle() {
+  if (props.disabled) return
+  setOpen(!isOpen.value)
+}`,
+    replace: `function toggle() {
+  setOpen(!isOpen.value)
+}`,
+  },
+  {
+    id: "collapse-disabled-ignores-open-guard",
+    file: "src/components/overlay/Collapse.vue",
+    expect: "con disabled open() no abre el collapse",
+    find: `function open() {
+  if (props.disabled) return
+  setOpen(true)
+}`,
+    replace: `function open() {
+  setOpen(true)
+}`,
+  },
+  {
+    id: "collapse-disabled-no-disabled-attr",
+    file: "src/components/overlay/Collapse.vue",
+    expect: "con disabled el trigger queda con el atributo disabled",
+    find: `      :disabled="props.disabled"`,
+    replace: `      :disabled="false"`,
+  },
+  {
     id: "side-over-persistent-ignored",
     file: "src/components/overlay/SideOver.vue",
     expect: "persistent no se cierra por backdrop ni Escape",

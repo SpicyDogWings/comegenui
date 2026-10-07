@@ -15,6 +15,8 @@ modal, `cu-modal`.
 3. `default-open` arranca abierto.
 4. Escuchá `toggle` (boolean) o llamá `open()`, `close()`, `toggle()` e `isOpen()`.
 5. `color` colorea el trigger.
+6. `disabled` deja el trigger inerte: no responde al click y `open()`/`toggle()` son no-op
+   (`close()` sigue funcionando). En HTML plano es el atributo booleano `disabled`.
 
 ```html
 <!-- HTML plano (UMD) -->
@@ -22,6 +24,10 @@ modal, `cu-modal`.
 
 <cu-collapse id="faq" label="¿Qué es ComegenUI?" color="primary">
   <p>Una librería de componentes UI como Custom Elements nativos.</p>
+</cu-collapse>
+
+<cu-collapse label="Sección bloqueada" disabled>
+  <p>El trigger no responde al click.</p>
 </cu-collapse>
 
 <script>
@@ -44,13 +50,17 @@ const abierto = ref(false);
   <Collapse label="¿Qué es ComegenUI?" color="primary" @toggle="abierto = $event">
     <p>Una librería de componentes UI como Custom Elements nativos.</p>
   </Collapse>
+
+  <Collapse label="Sección bloqueada" disabled>
+    <p>El trigger no responde al click.</p>
+  </Collapse>
 </template>
 ```
 
 ## Qué puede y qué no puede
 
 **Puede:** 6 colores (`primary`, `secondary`, `neutral`, `success`, `warning`, `danger`),
-`label`, `icon`, `default-open`, slot default, el evento `toggle` y los métodos
+`label`, `icon`, `default-open`, `disabled`, slot default, el evento `toggle` y los métodos
 `open`/`close`/`toggle`/`isOpen`. Se puede anidar.
 
 **No puede:**
@@ -59,7 +69,7 @@ const abierto = ref(false);
   `color`.
 - **No soporta `v-model` de apertura:** el estado inicial se fija con `default-open` y después
   sólo cambia por el trigger o por métodos (no hay `update:open`).
-- **No tiene `disabled`.**
+- **Con `disabled`, `open()` y `toggle()` son no-op**; sólo `close()` actúa.
 - **Un solo slot (`default`):** no se puede cambiar el trigger ni el chevron.
 - **`label` es obligatorio.**
 - **`toggle` sólo se emite cuando el estado cambia:** llamar `open()` estando abierto no
@@ -74,6 +84,7 @@ const abierto = ref(false);
 | Atributo | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico del trigger: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `disabled` | `boolean` | `false` | Deshabilita el trigger: no responde al click del usuario |
 | `icon` | `string` | `""` | Ícono del trigger (SVG/HTML) |
 | `default-open` | `boolean` | `false` | — |
 | `label` | `string` | `—` | Texto del trigger |
@@ -114,6 +125,7 @@ const abierto = ref(false);
 | Prop | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `'neutral'` | — |
+| `disabled` | `boolean` | `false` | Deshabilita el trigger: no responde al click del usuario. |
 | `icon` | `string` | `''` | Ícono del trigger (SVG/HTML). |
 | `defaultOpen` | `boolean` | `false` | — |
 | `label` | `string` | `—` | — |

@@ -3,6 +3,7 @@
   "props": [
     "color",
     "defaultOpen",
+    "disabled",
     "icon",
     "label"
   ],
