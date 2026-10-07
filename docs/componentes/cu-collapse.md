@@ -37,6 +37,18 @@ Sección colapsable con trigger (botón + chevron animado). El contenido se mues
 
 ---
 
+## Deshabilitado
+
+El atributo booleano `disabled` deja el trigger inerte: no responde al click y muestra cursor `not-allowed`. `open()` y `toggle()` pasan a ser no-op; `close()` sí sigue funcionando.
+
+```html
+<cu-collapse label="Sección bloqueada" disabled>
+  <p>El trigger no responde: probá a hacer click.</p>
+</cu-collapse>
+```
+
+---
+
 ## Anidados
 
 Los collapses se pueden anidar para construir árboles de menú:
@@ -123,6 +135,7 @@ collapse.addEventListener('toggle', (e) => {
 | Atributo | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico del trigger: `primary`, `neutral`, `success`, `warning`, `danger` |
+| `disabled` | `boolean` | `false` | Deshabilita el trigger: no responde al click del usuario |
 | `icon` | `string` | `""` | Ícono del trigger (SVG/HTML) |
 | `default-open` | `boolean` | `false` | — |
 | `label` | `string` | `—` | Texto del trigger |

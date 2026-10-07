@@ -21,6 +21,12 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  /** Deshabilita el trigger: no responde al click del usuario */
+  disabled: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
   /** Color semántico del trigger: `primary`, `neutral`, `success`, `warning`, `danger` */
   color: {
     type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
@@ -61,6 +67,7 @@ defineExpose({ open, close, toggle, isOpen });
     :label="props.label"
     :icon="props.icon"
     :default-open="props.defaultOpen"
+    :disabled="props.disabled"
     :color="props.color"
     @toggle="ceEmit('toggle', $event)"
   >

@@ -49,6 +49,14 @@ describe("Collapse.ce", () => {
     expect(w.findComponent(Collapse).props("icon")).toBe("<b>x</b>");
     expect(w.find(".cu-collapse-icon").html()).toContain("<b>x</b>");
   });
+
+  it("forwardea `disabled` y no togglea al clickear", async () => {
+    const w = mount(CollapseCe, { props: { label: "Título", disabled: true } });
+    expect(w.findComponent(Collapse).props("disabled")).toBe(true);
+    await w.find(".cu-collapse-trigger").trigger("click");
+    await flushPromises();
+    expect(w.vm.isOpen()).toBe(false);
+  });
 });
 
 describe("Input.ce", () => {

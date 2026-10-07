@@ -41,6 +41,22 @@ import Collapse from "@/components/overlay/Collapse.vue";
 </template>
 ```
 
+## Deshabilitado
+
+`disabled` deja el trigger inerte: no responde al click y muestra cursor `not-allowed`. `open()` y `toggle()` pasan a ser no-op; `close()` sí sigue funcionando (útil para colapsar desde código un collapse que arrancó con `default-open`).
+
+```vue
+<script setup lang="ts">
+import Collapse from "@/components/overlay/Collapse.vue";
+</script>
+
+<template>
+  <Collapse label="Sección bloqueada" disabled>
+    <p>El trigger no responde: probá a hacer click.</p>
+  </Collapse>
+</template>
+```
+
 ## Anidados
 
 Los collapses se pueden anidar para construir árboles de menú:
@@ -134,6 +150,7 @@ function toggleFaq() {
 | Prop | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `'neutral'` | — |
+| `disabled` | `boolean` | `false` | Deshabilita el trigger: no responde al click del usuario. |
 | `icon` | `string` | `''` | Ícono del trigger (SVG/HTML). |
 | `defaultOpen` | `boolean` | `false` | — |
 | `label` | `string` | `—` | — |
