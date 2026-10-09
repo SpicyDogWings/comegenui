@@ -20,7 +20,7 @@ aplica: el switch sólo maneja `true`/`false`.
 
 ```html
 <!-- HTML plano (UMD) -->
-<script src="dist/CuSwitch.core.umd.js"></script>
+<script src="dist-libs/umd-core/CuSwitch.umd.js"></script>
 
 <cu-switch id="miSwitch" color="primary" size="md"></cu-switch>
 

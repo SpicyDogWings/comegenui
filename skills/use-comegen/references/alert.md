@@ -18,7 +18,7 @@ y estático, usá `cu-badge`.
 
 ```html
 <!-- HTML plano (UMD) -->
-<script src="dist/CuAlert.core.umd.js"></script>
+<script src="dist-libs/umd-core/CuAlert.umd.js"></script>
 
 <cu-alert id="alerta" color="danger" variant="outlined" title="Atención" close show>
   Ha ocurrido un error.

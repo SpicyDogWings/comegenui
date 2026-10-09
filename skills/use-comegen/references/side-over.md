@@ -20,7 +20,7 @@ página. Para un diálogo centrado usá `cu-modal`.
 
 ```html
 <!-- HTML plano (UMD) -->
-<script src="dist/CuSideOver.core.umd.js"></script>
+<script src="dist-libs/umd-core/CuSideOver.umd.js"></script>
 
 <cu-side-over id="side" title="Filtros" position="right">
   <p>Contenido del panel.</p>

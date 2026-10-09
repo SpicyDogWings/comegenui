@@ -27,7 +27,7 @@ Para la navegación principal de una app, en una sidebar. Para una barra superio
 <!-- HTML plano (UMD) -->
 <cu-navbar id="nav" search active-path="/usuarios" search-placeholder="Buscar..."></cu-navbar>
 
-<script src="dist/CuNavbar.core.umd.js"></script>
+<script src="dist-libs/umd-core/CuNavbar.umd.js"></script>
 <script>
   const nav = document.getElementById('nav');
   nav.items = [

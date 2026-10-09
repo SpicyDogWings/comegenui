@@ -31,7 +31,7 @@ Párrafo con **negrita**, *cursiva* y `código inline`.
 > Blockquote
 </cu-markdown>
 
-<script src="dist/CuMarkdown.core.umd.js"></script>
+<script src="dist-libs/umd-core/CuMarkdown.umd.js"></script>
 <script>
   const md = document.getElementById('doc');
   md.addEventListener('parsed', (e) => console.log('headings:', e.detail));

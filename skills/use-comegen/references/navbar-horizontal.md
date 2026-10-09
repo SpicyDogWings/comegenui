@@ -20,7 +20,7 @@ modo scroll o colapso responsive, usá `cu-navbar`.
 
 ```html
 <!-- HTML plano (UMD) -->
-<script src="dist/CuNavbarHorizontal.core.umd.js"></script>
+<script src="dist-libs/umd-core/CuNavbarHorizontal.umd.js"></script>
 
 <cu-navbar-horizontal id="nav" trigger="hover" active-path="/equipo/dev"></cu-navbar-horizontal>
 

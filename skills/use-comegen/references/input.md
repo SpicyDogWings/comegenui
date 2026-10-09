@@ -31,7 +31,7 @@ Para capturar texto, números, email, teléfono, URL o búsqueda en una línea. 
   variant="outlined"
 ></cu-input>
 
-<script src="dist/CuInput.core.umd.js"></script>
+<script src="dist-libs/umd-core/CuInput.umd.js"></script>
 <script>
   const input = document.getElementById('email');
 

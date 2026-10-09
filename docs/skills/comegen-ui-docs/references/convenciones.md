@@ -249,7 +249,7 @@ Documentá los cuatro si existen.
 - **Español** en todas las descripciones y prosa.
 - **Tono:** directo, conciso, sin marketing.
 - **Cero emojis** salvo que el usuario lo pida.
-- **Una forma por archivo:** la ficha vanilla usa HTML plano + UMD (`<script src="dist/CuButton.core.umd.js"></script>` + tag + JS con `addEventListener`/`element.property`); la ficha Vue usa Vue (`<script setup lang="ts">` + `<template>`, props, `ref`/`v-model`, import del `.vue`). No mezcles las dos formas en el mismo archivo.
+- **Una forma por archivo:** la ficha vanilla usa HTML plano + UMD (`<script src="dist-libs/umd-core/CuButton.umd.js"></script>` + tag + JS con `addEventListener`/`element.property`); la ficha Vue usa Vue (`<script setup lang="ts">` + `<template>`, props, `ref`/`v-model`, import del `.vue`). No mezcles las dos formas en el mismo archivo.
 - No uses `new Vue({...})` ni `createApp` en la ficha Vue: es la doc de los componentes, no de la app.
 - Los ejemplos de iconos SVG son OK (los `<cu-button>` aceptan SVG inline), pero no abuses.
 

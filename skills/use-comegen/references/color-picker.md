@@ -19,7 +19,7 @@ componente no alcanza.
 
 ```html
 <!-- HTML plano (UMD) -->
-<script src="dist/CuColorPicker.core.umd.js"></script>
+<script src="dist-libs/umd-core/CuColorPicker.umd.js"></script>
 
 <cu-color-picker id="miColor" color="primary" model-value="#ff5733"></cu-color-picker>
 

@@ -17,7 +17,7 @@ andá directo al paso que te falta.
 >
 > | | Vue | Custom Element (vanilla) |
 > |---|---|---|
-> | Se importa de | `src/components/<cat>/X.vue` | `CuX.core.umd.js` (tag `<cu-x>`) |
+> | Se importa de | `src/components/<cat>/X.vue` | `CuX.umd.js` (config `umd-core`, tag `<cu-x>`) |
 > | Ficha | `docs/componentes/vue/<kebab>.md` | `docs/componentes/<tag>.md` |
 > | Entrada de build | — | `src/lib/<cat>/<kebab>.ts` |
 > | Props | camelCase | atributos kebab-case + propiedades JS |
@@ -46,17 +46,17 @@ andá directo al paso que te falta.
 
 ## 2. Instalar o actualizar
 
-- Qué trae el zip y cómo copiarlo: `references/instalacion.md`.
-- Regla: el CSS del tema se carga **antes** que los UMD.
-- Si el componente ya está instalado y "no cambia nada", casi siempre es un UMD viejo:
-  volvé a copiar el `.umd.js` y el `css/themes.css`. Para confirmarlo, leé
-  `customElements.get('cu-x').comegen.version` (`references/versionado.md`).
+- Cada release publica **4 configs** (`umd-core`, `umd-shared`, `esm-core`, `esm-shared`), cada
+  una en su zip. Qué trae cada una y cómo copiarla: `references/instalacion.md`.
+- No hay CSS que cargar: los tokens del tema se inyectan solos al cargar el primer componente.
+- Si el componente ya está instalado y "no cambia nada", casi siempre es un bundle viejo:
+  volvé a copiar el `.umd.js` / `.js`. Para confirmarlo, leé
+  `customElements.get('cu-x').comegen.version` (y `.type`) (`references/versionado.md`).
 
 ## 3. Declarar el componente
 
 ```html
-<link rel="stylesheet" href="css/themes.css">
-<script src="CuButton.core.umd.js"></script>
+<script src="CuButton.umd.js"></script>
 
 <cu-button color="primary" variant="solid">Guardar</cu-button>
 ```
@@ -127,8 +127,8 @@ picker.open();
    propiedad JS, no por atributo (paso 4).
 2. **"El valor no se actualiza"** → `modelValue` es controlado: asigná
    `el.modelValue = nuevo` o escuchá `update:modelValue` (paso 5).
-3. **"No se ve el estilo / se ve a medias"** → falta el `css/themes.css` o el UMD es
-   viejo (paso 2). Verificá también que el tema esté en `<html data-theme="...">`.
+3. **"No se ve el estilo / se ve a medias"** → el bundle es viejo o cargaste la config
+   equivocada (paso 2). Verificá también que el tema esté en `<html data-theme="...">`.
 
 ## Verificar antes de cerrar
 
@@ -202,7 +202,7 @@ o `.claude/skills/` (OpenCode lee los tres; ver `references/instalacion.md` para
 | `references/componentes.md` | Elegir componente y saber qué puede y qué **no** puede hacer |
 | `references/api-por-componente.md` | Datos del CE: `.umd.js`, props por JS, eventos y métodos |
 | `references/<kebab>.md` | Receta completa de un custom element (ejemplos, límites, API) |
-| `references/instalacion.md` | Instalar/actualizar la lib y el CSS |
+| `references/instalacion.md` | Instalar/actualizar la lib (las 4 configs) |
 | `references/versionado.md` | Leer la versión de un UMD y hacer convivir versiones distintas |
 | `references/theming.md` | Cambiar tema, colores, variantes, tokens |
 | `references/gotchas.md` | Atributo vs propiedad, eventos nativos, slots, rarezas |

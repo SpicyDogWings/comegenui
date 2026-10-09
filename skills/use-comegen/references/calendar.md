@@ -25,7 +25,7 @@ marcas de eventos. Para un trigger con dropdown, usá `cu-date-picker`, que envu
 
 ```html
 <!-- HTML plano (UMD) -->
-<script src="dist/CuCalendar.core.umd.js"></script>
+<script src="dist-libs/umd-core/CuCalendar.umd.js"></script>
 
 <cu-calendar id="cal" mode="range" color="primary" year-navigation
              min="2026-08-01" max="2026-12-31" month-format="MMM" year-format="yy"></cu-calendar>

@@ -18,11 +18,11 @@ la misma página, envolvé la parte que quieras en un contenedor con `data-theme
 `rose-pine-dawn`, `catppuccin-latte`, `catppuccin-frappe`, `catppuccin-macchiato`,
 `catppuccin-mocha`.
 
-- `css/themes.css` trae todos (cada uno bajo su `[data-theme]`).
-- `css/{tema}.css` trae uno solo.
+Los 15 temas viajan en la lib: al cargar el primer componente, `initTokens()` inyecta un
+`<style>` con todos (cada uno bajo su `[data-theme]`). No hay CSS que cargar aparte.
 
-La fuente de verdad de los temas es `comegen.config.json` (en el repo); el CSS se genera
-desde ahí (`pnpm build:lib`).
+La fuente de verdad de los temas es `comegen.config.json` (en el repo); los tokens se generan
+desde ahí en el build (`pnpm build:lib`).
 
 ## Colores semánticos
 
@@ -61,5 +61,5 @@ Compartidos: tipografía (`--cu-font-*`), espaciado (`--cu-space-*`), radios (`-
 bordes (`--cu-border-*`), sombras (`--cu-shadow-*`).
 
 > Los tokens se inyectan por componente (`initTokens()`), así que las custom properties
-> existen dentro del shadow DOM de cada uno. Si querés usarlas globalmente, cargá el
-> `css/themes.css` (define las mismas variables en `:root`).
+> existen dentro del shadow DOM de cada uno. El primer componente que cargues las define
+> también en `:root`, así que sirven globalmente sin cargar nada extra.

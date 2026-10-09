@@ -7,7 +7,7 @@ va por **propiedad JS**, después de que el UMD esté cargado:
 
 ```html
 <cu-table id="t"></cu-table>
-<script src="CuTable.core.umd.js"></script>
+<script src="CuTable.umd.js"></script>
 <script>
   const t = document.getElementById('t');
   t.columns = [{ key: 'name', label: 'Nombre' }];  // ✅
@@ -101,6 +101,7 @@ estar saliendo del hijo: mirá la sección "Nota de implementación" de la ficha
 
 ## 9. El estilo no aparece
 
-- Falta `css/themes.css` (o el tema) → cargalo **antes** de los UMD.
-- Estás en un `data-theme` distinto del que creés (revisá `<html>`).
-- El UMD quedó viejo después de actualizar la lib.
+- El tema no está donde esperás: revisá `<html data-theme="…">` (o el contenedor con `data-theme`).
+- Los tokens se inyectan con el primer componente; si no ves nada, verificá que cargaste el
+  bundle correcto (config) y que no quedó cacheado.
+- El bundle quedó viejo después de actualizar la lib (mirá `comegen.version`).
