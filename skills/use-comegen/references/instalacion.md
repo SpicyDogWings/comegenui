@@ -80,10 +80,11 @@ Se reemplazan archivos, no hay instalador:
 ## Buildear la lib (sólo en el repo de ComegenUI)
 
 ```bash
-pnpm build:lib            # dist-libs/<config>/ + un zip por config
+pnpm build:lib            # dist-libs/ (4 carpetas + 4 zips sueltos)
 pnpm build:lib v5.0.0     # fuerza la versión del zip
 ```
 
-Cada config sale en `dist-libs/<config>/` con su zip `comegenui-<config>-v{version}.zip`
-(los bundles + el runtime del `shared` si aplica). **No** incluye la documentación ni la
+Cada config sale en `dist-libs/<config>/`; los 4 zips (`comegenui-<config>-v{version}.zip`)
+quedan **sueltos en `dist-libs/`**, listos para arrastrar al release. Cada uno trae los
+bundles de su config + el runtime del `shared` si aplica. **No** incluye la documentación ni la
 skill: la doc vive en el repo (`docs/componentes/`) y la skill se baja aparte (ver `SKILL.md`).

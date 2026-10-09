@@ -280,7 +280,7 @@ Tokens compartidos: tipografía, spacing, border-radius, shadows, borders.
 - `vue({ features: { customElement: true } })`
 - `UnoCSS({ mode: "shadow-dom" })`
 - Genera el runtime de cada `shared`: `comegen-vue.global.js` (IIFE, namespace propio `__COMEGEN_VUE__`, no toca `window.Vue`) y `comegen-vue.js` (ESM, para import map del host).
-- Cada config sale en `dist-libs/<config>/` con su zip `comegenui-<config>-v{version}.zip`.
+- Cada config sale en `dist-libs/<config>/`; los 4 zips quedan sueltos en `dist-libs/` (`comegenui-<config>-v{version}.zip`).
 - **No genera CSS** ni copia `public/` (img/ico): los tokens del tema se inyectan en runtime (`initTokens()`).
 - **El zip lleva SOLO la lib**: los bundles de esa config + el runtime del `shared` si aplica. No incluye documentación (vive en `docs/componentes/`), ni skill, ni instalador/actualizador (la instalación es manual: descomprimir el zip).
 - **Cada bundle embebe el tipo de build**: además de `version`, `__COMEGEN_META__` lleva `format`, `variant` y `type` (p. ej. `esm-shared`), expuestos en `customElements.get('cu-x').comegen` / `el.comegen` (ver `docs/site/versionado.md`).

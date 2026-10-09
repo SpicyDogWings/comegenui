@@ -91,14 +91,14 @@ pnpm build
 pnpm build:lib
 ```
 
-Genera `dist-libs/<config>/` (una carpeta por config) y un zip por config:
-`dist-libs/<config>/comegenui-<config>-v<version>.zip`. Cada zip incluye **sólo la lib**: los
+Genera `dist-libs/<config>/` (una carpeta por config) y deja los 4 zips **sueltos** en
+`dist-libs/comegenui-<config>-v<version>.zip`. Cada zip incluye **sólo la lib**: los
 bundles de su config + el runtime del `shared` si aplica (sin CSS).
 
 ### 6. Verificar los zips
 
 ```bash
-unzip -l dist-libs/umd-core/comegenui-umd-core-v<version>.zip
+unzip -l dist-libs/comegenui-umd-core-v<version>.zip
 ```
 
 Deben existir los 4 zips (`umd-core`, `umd-shared`, `esm-core`, `esm-shared`) con los bundles
@@ -128,7 +128,7 @@ Revisá el diff antes. **Nunca** `git add -A` a ciegas.
 - [ ] `./scripts/guard.sh --full` verde (sin tipos nuevos, sin contratos rotos, docs al día).
 - [ ] `pnpm build` OK.
 - [ ] `pnpm build:lib` OK.
-- [ ] Los 4 `dist-libs/<config>/comegenui-<config>-v<version>.zip` con sus bundles (+ el runtime del `shared`).
+- [ ] Los 4 `dist-libs/comegenui-<config>-v<version>.zip` (sueltos) con sus bundles (+ el runtime del `shared`).
 - [ ] Cambios commiteados.
 
 Si algo falta, decilo explícitamente en el reporte; no lo tapes con "quedó funcionando".
@@ -153,4 +153,4 @@ Si algo falta, decilo explícitamente en el reporte; no lo tapes con "quedó fun
 | Recetas de la skill de uso | `skills/use-comegen/references/<kebab>.md` |
 | Páginas del sitio | `docs/site/componentes/<slug>.md` (versionadas) |
 | Tema del sitio | `docs/site/.vitepress/theme/*.gen.*` (generados, gitignored) |
-| Build de la lib | `dist-libs/<config>/` (gitignored) + un zip por config |
+| Build de la lib | `dist-libs/<config>/` (gitignored) + 4 zips sueltos en `dist-libs/` |
