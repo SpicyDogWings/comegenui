@@ -107,7 +107,7 @@ _Delta desde `<prev>` (<fecha>) · N commits._
 - …
 ```
 
-> Ejemplo real: `docs/changelog/v5.0.3-alpha.md`.
+> Ejemplo real: `docs/changelog/v5.1.0.md`.
 
 ## Reglas
 
