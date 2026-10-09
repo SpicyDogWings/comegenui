@@ -7,7 +7,7 @@ Barra de navegación horizontal con submenús desplegables (Dropdown) y detecci�
 ## Uso en HTML plano
 
 ```html
-<script src="dist/CuNavbarHorizontal.core.umd.js"></script>
+<script src="dist-libs/umd-core/CuNavbarHorizontal.umd.js"></script>
 
 <cu-navbar-horizontal id="nav" trigger="hover" active-path="/equipo/dev"></cu-navbar-horizontal>
 

@@ -7,7 +7,7 @@ Etiqueta o badge pequeño para estados, categorías o metadata. Componente de pr
 ## Uso en HTML plano
 
 ```html
-<script src="dist/CuBadge.core.umd.js"></script>
+<script src="dist-libs/umd-core/CuBadge.umd.js"></script>
 
 <cu-badge color="primary" variant="solid">Nuevo</cu-badge>
 <cu-badge color="success" variant="soft">Activo</cu-badge>

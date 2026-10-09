@@ -7,7 +7,7 @@ Sección colapsable con trigger (botón + chevron animado). El contenido se mues
 ## Uso en HTML plano
 
 ```html
-<script src="dist/CuCollapse.core.umd.js"></script>
+<script src="dist-libs/umd-core/CuCollapse.umd.js"></script>
 
 <cu-collapse label="Más información">
   <p>Este contenido está oculto por defecto.</p>
@@ -120,8 +120,8 @@ collapse.addEventListener('toggle', (e) => {
 
   <cu-button onclick="toggleFaq()">Alternar FAQ</cu-button>
 
-  <script src="dist/CuCollapse.core.umd.js"></script>
-  <script src="dist/CuButton.core.umd.js"></script>
+  <script src="dist-libs/umd-core/CuCollapse.umd.js"></script>
+  <script src="dist-libs/umd-core/CuButton.umd.js"></script>
   <script>
     const faq = document.getElementById('faq');
 

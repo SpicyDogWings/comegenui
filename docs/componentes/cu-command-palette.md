@@ -9,7 +9,7 @@ Paleta de comandos (búsqueda + lista) en un modal, con agrupado por categoría 
 ## Uso en HTML plano
 
 ```html
-<script src="dist/CuCommandPalette.core.umd.js"></script>
+<script src="dist-libs/umd-core/CuCommandPalette.umd.js"></script>
 
 <cu-command-palette id="palette" title="Comandos" color="primary"></cu-command-palette>
 ```

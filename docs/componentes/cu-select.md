@@ -7,7 +7,7 @@ Selector de opciones con color, variante, ícono chevron, opciones deshabilitada
 ## Uso en HTML plano
 
 ```html
-<script src="dist/CuSelect.core.umd.js"></script>
+<script src="dist-libs/umd-core/CuSelect.umd.js"></script>
 
 <cu-select id="miSelect" placeholder="Seleccione una opción" color="primary" variant="outlined"></cu-select>
 

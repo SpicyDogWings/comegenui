@@ -27,7 +27,7 @@ picker.format = 'dd-MM-yy';    // "11-08-26"
 ## Uso básico
 
 ```html
-<script src="dist/CuDatePicker.core.umd.js"></script>
+<script src="dist-libs/umd-core/CuDatePicker.umd.js"></script>
 
 <cu-date-picker id="miPicker" placeholder="Elegí una fecha"></cu-date-picker>
 
@@ -62,7 +62,7 @@ El label se muestra sobre el picker y es clickeable — hace foco en el input y 
 Con `mode="range"` el picker selecciona un rango: el primer click define el **inicio**, el segundo el **fin** (con swap automático si el fin es anterior). El panel queda abierto entre ambos clicks para ver el resaltado.
 
 ```html
-<script src="dist/CuDatePicker.core.umd.js"></script>
+<script src="dist-libs/umd-core/CuDatePicker.umd.js"></script>
 
 <cu-date-picker id="rango" mode="range" label="Período" dual-calendar></cu-date-picker>
 

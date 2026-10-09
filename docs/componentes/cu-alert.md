@@ -7,7 +7,7 @@ Alerta con color semántico, título opcional y botón de cerrar. Puede controla
 ## Uso en HTML plano
 
 ```html
-<script src="dist/CuAlert.core.umd.js"></script>
+<script src="dist-libs/umd-core/CuAlert.umd.js"></script>
 
 <cu-alert color="success" variant="solid" title="Operación exitosa" close>
   Los datos se guardaron correctamente.
@@ -50,7 +50,7 @@ Alerta con color semántico, título opcional y botón de cerrar. Puede controla
     Este es un mensaje de advertencia.
   </cu-alert>
 
-  <script src="dist/CuAlert.core.umd.js"></script>
+  <script src="dist-libs/umd-core/CuAlert.umd.js"></script>
   <script>
     const alerta = document.getElementById('miAlerta');
     document.getElementById('btnMostrar').onclick = () => alerta.show = true;

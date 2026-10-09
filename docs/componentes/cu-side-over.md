@@ -7,7 +7,7 @@ Panel overlay que desliza desde un borde sobre el contenido, con scrim, cierre p
 ## Uso en HTML plano
 
 ```html
-<script src="dist/CuSideOver.core.umd.js"></script>
+<script src="dist-libs/umd-core/CuSideOver.umd.js"></script>
 
 <cu-side-over id="side" title="Filtros" position="right">
   <p>Contenido del panel.</p>

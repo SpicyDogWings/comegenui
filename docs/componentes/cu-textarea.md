@@ -7,7 +7,7 @@
 ## Uso en HTML plano
 
 ```html
-<script src="dist/CuTextarea.core.umd.js"></script>
+<script src="dist-libs/umd-core/CuTextarea.umd.js"></script>
 
 <cu-textarea placeholder="Escribe aquí..." rows="5" color="primary" variant="outlined"></cu-textarea>
 <cu-textarea no-resize variant="soft" id="comentarios"></cu-textarea>

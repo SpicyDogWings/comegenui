@@ -7,7 +7,7 @@ Botón con soporte de color, variante, link y estados. Si se define `to`, se ren
 ## Uso en HTML plano
 
 ```html
-<script src="dist/CuButton.core.umd.js"></script>
+<script src="dist-libs/umd-core/CuButton.umd.js"></script>
 
 <cu-button color="primary" variant="solid">Guardar</cu-button>
 <cu-button color="danger" variant="outlined" disabled>Eliminar</cu-button>
