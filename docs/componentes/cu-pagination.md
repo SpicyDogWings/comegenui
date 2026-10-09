@@ -7,7 +7,7 @@ Paginación numérica con soporte para selector de tamaño de página y botones 
 ## Uso en HTML plano
 
 ```html
-<script src="dist/CuPagination.core.umd.js"></script>
+<script src="dist-libs/umd-core/CuPagination.umd.js"></script>
 
 <cu-pagination
   current-page="1"

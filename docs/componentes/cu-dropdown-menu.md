@@ -7,7 +7,7 @@ Menú desplegable con items declarativos (label, ícono, color, divisor, link). 
 ## Uso en HTML plano
 
 ```html
-<script src="dist/CuDropdownMenu.core.umd.js"></script>
+<script src="dist-libs/umd-core/CuDropdownMenu.umd.js"></script>
 
 <cu-dropdown-menu id="dd" label="Acciones" color="primary" variant="soft"></cu-dropdown-menu>
 

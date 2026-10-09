@@ -7,7 +7,7 @@ Modal/diálogo con backdrop, animación, soporte para `size`/`height` y slot `fo
 ## Uso en HTML plano
 
 ```html
-<script src="dist/CuModal.core.umd.js"></script>
+<script src="dist-libs/umd-core/CuModal.umd.js"></script>
 
 <cu-modal id="modalConfirm" title="Confirmar eliminación" description="¿Estás seguro?" size="md">
   <p>Esta acción no se puede deshacer.</p>
@@ -95,8 +95,8 @@ modal.addEventListener('closed', () => console.log('cierre completo'));
 
   <cu-button color="primary" variant="solid" onclick="openModal()">Abrir Modal</cu-button>
 
-  <script src="dist/CuModal.core.umd.js"></script>
-  <script src="dist/CuButton.core.umd.js"></script>
+  <script src="dist-libs/umd-core/CuModal.umd.js"></script>
+  <script src="dist-libs/umd-core/CuButton.umd.js"></script>
   <script>
     const m = document.getElementById('myModal');
     function openModal() { m.open(); }

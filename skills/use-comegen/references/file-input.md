@@ -30,7 +30,7 @@ input de texto. Si necesitás varios archivos o una carpeta completa, usá `<cu-
   max-size="2097152"
 ></cu-file-input>
 
-<script src="dist/CuFileInput.core.umd.js"></script>
+<script src="dist-libs/umd-core/CuFileInput.umd.js"></script>
 <script>
   const cv = document.getElementById('cv');
 

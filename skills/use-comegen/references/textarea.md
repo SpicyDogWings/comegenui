@@ -18,7 +18,7 @@ Para texto libre de varias líneas. Para una sola línea usá `cu-input`.
 
 ```html
 <!-- HTML plano (UMD) -->
-<script src="dist/CuTextarea.core.umd.js"></script>
+<script src="dist-libs/umd-core/CuTextarea.umd.js"></script>
 
 <cu-textarea id="comentarios" placeholder="Escribe aquí..." rows="5" color="primary" variant="outlined"></cu-textarea>
 

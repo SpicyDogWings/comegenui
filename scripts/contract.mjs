@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // scripts/contract.mjs — el contrato de cada custom element compilado.
 //
-// Carga cada `dist-lib/Cu*.core.umd.js` en jsdom, instancia el elemento y arma una
+// Carga cada `dist-libs/umd-core/Cu*.umd.js` en jsdom, instancia el elemento y arma una
 // "huella" estable: props declaradas, métodos expuestos, metadata `comegen` y la
 // estructura del shadow DOM (tags + clases + nombres de atributos). La compara
 // contra el baseline versionado en `scripts/contract-baseline/<tag>.json`.
@@ -16,11 +16,18 @@
 //   node scripts/contract.mjs --json
 import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, rmSync } from "node:fs";
 import { resolve, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
+import { tmpdir } from "node:os";
 import { JSDOM } from "jsdom";
 
 export const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const DIST = resolve(ROOT, "dist-lib");
+const OUT_ROOT = resolve(ROOT, "dist-libs");
+// La huella (baseline) se toma de `umd-core`: la API es la misma en las cuatro
+// configuraciones; las demás se verifican con un smoke test (abajo).
+const DIST = resolve(OUT_ROOT, "umd-core");
+const UMD_SHARED = resolve(OUT_ROOT, "umd-shared");
+const ESM_CORE = resolve(OUT_ROOT, "esm-core");
+const ESM_SHARED = resolve(OUT_ROOT, "esm-shared");
 const BASELINE = resolve(ROOT, "scripts/contract-baseline");
 
 // ── jsdom: un único entorno para todos los UMD ───────────────────────────────
@@ -47,6 +54,41 @@ let sharedWindow = null;
 function getWindow() {
   if (!sharedWindow) sharedWindow = makeWindow();
   return sharedWindow;
+}
+
+/**
+ * Entorno jsdom propio, rebindeando a mano los globals del DOM que Vue y
+ * `initTokens` consultan (a diferencia de `makeWindow`, que sólo copia los que
+ * aún no existen). Necesario para correr cada smoke ESM en un registro nuevo,
+ * sin chocar con los tags ya definidos por `umd-core` u otra config. NO toca
+ * globals propios de Node (performance, fetch…): hacerlo cuelga jsdom.
+ */
+const DOM_BINDINGS = [
+  "document", "customElements", "getComputedStyle", "matchMedia",
+  "HTMLElement", "SVGElement", "Element", "Node", "ShadowRoot",
+  "DocumentFragment", "Document", "CSSStyleSheet",
+  "HTMLStyleElement", "HTMLTemplateElement", "Text", "Comment",
+  "CustomEvent", "Event", "EventTarget",
+];
+function makeBoundWindow() {
+  const dom = new JSDOM("<!DOCTYPE html><html><body></body></html>", {
+    runScripts: "outside-only",
+    pretendToBeVisual: true,
+    url: "http://localhost/",
+  });
+  const { window } = dom;
+  globalThis.window = window;
+  globalThis.self = window;
+  for (const key of DOM_BINDINGS) {
+    if (!(key in window)) continue;
+    const value = typeof window[key] === "function" && key === "getComputedStyle"
+      ? window[key].bind(window)
+      : window[key];
+    try {
+      Object.defineProperty(globalThis, key, { value, configurable: true, writable: true });
+    } catch { /* propiedad no configurable */ }
+  }
+  return window;
 }
 
 /** Carga un UMD y devuelve el tag base recién registrado + su metadata. */
@@ -128,10 +170,10 @@ function contractOf(window, tag) {
 /** Lista de bundles del dist con su tag. */
 export function discoverTags() {
   if (!existsSync(DIST)) return [];
-  // sólo la variante `core`: la `shared` necesita el global __COMEGEN_VUE__ y
-  // registra el mismo tag; se verifica aparte (mismo componente, misma API).
+  // La huella se toma de `umd-core`: `shared` (mismo tag, mismo fuente) y las
+  // variantes ESM se verifican aparte con un smoke test.
   const files = readdirSync(DIST)
-    .filter((f) => f.endsWith(".umd.js") && !f.endsWith(".shared.umd.js"))
+    .filter((f) => f.endsWith(".umd.js"))
     .sort();
   const window = getWindow();
   const tags = [];
@@ -163,7 +205,7 @@ function diff(baseline, current) {
 /** Corre el contrato de los tags pedidos y compara contra el baseline. */
 export async function runContracts({ tags, update = false } = {}) {
   if (!existsSync(DIST)) {
-    return [{ tag: "(dist-lib)", status: "error", diffs: [`no existe ${DIST}; corré build:lib`] }];
+    return [{ tag: "(dist-libs/umd-core)", status: "error", diffs: [`no existe ${DIST}; corré build:lib`] }];
   }
   const window = getWindow();
   const all = discoverTags();
@@ -195,20 +237,48 @@ export function wipeBaseline() {
   if (existsSync(BASELINE)) rmSync(BASELINE, { recursive: true, force: true });
 }
 
-// ── variante shared: smoke test con el runtime compartido ────────────────────
+// ── configuraciones alternativas: smoke tests ────────────────────────────────
 /**
- * `shared` registra el mismo tag y la misma API que `core` (mismo fuente, sólo
- * cambia `vue` incluido vs externo), así que su contrato no se compara contra
- * el baseline. Lo que sí se verifica es que cargue de verdad:
- * `comegen-vue.global.js` + `CuX.shared.umd.js` registran el custom element con
- * su metadata de versión. Sin esto, un `shared` roto pasaría en verde.
+ * `umd-core` es la huella (baseline). Las otras tres configuraciones registran
+ * la misma API desde el mismo fuente: sólo cambia cómo resuelven Vue y el
+ * formato. Lo que se verifica es que carguen de verdad y queden marcadas con su
+ * `type` (`umd-shared`, `esm-core`, `esm-shared`). Sin esto, una config rota
+ * pasaría en verde.
  */
-function smokeShared() {
-  const runtime = resolve(DIST, "comegen-vue.global.js");
-  if (!existsSync(runtime)) {
-    return [{ file: "comegen-vue.global.js", ok: false, error: "no existe; corré build:lib" }];
+
+const registersCE = (code) =>
+  code.includes("defineComegenElement") || code.includes("customElements.define");
+
+/** Intercepta `customElements.define` para saber qué tags registra un bundle. */
+function interceptDefine(registry) {
+  const original = registry.define;
+  const defined = [];
+  registry.define = function (name, ctor, options) {
+    defined.push(name);
+    return original.call(this, name, ctor, options);
+  };
+  return { defined, restore: () => { registry.define = original; } };
+}
+
+/** Arma el resultado de un smoke: tag registrado + metadata con su `type`. */
+function smokeResult(registry, defined, file, label) {
+  const base = defined.find((k) => !k.includes("--v")) ?? defined[0] ?? null;
+  if (!base) return { file, tag: null, ok: false, error: "no registró tag" };
+  const meta = registry.get(base)?.comegen;
+  if (!meta?.version) return { file, tag: base, ok: false, error: "sin metadata comegen" };
+  if (meta.type !== label) {
+    return { file, tag: base, ok: false, error: `type="${meta.type}", esperado "${label}"` };
   }
-  const files = readdirSync(DIST).filter((f) => f.endsWith(".shared.umd.js")).sort();
+  return { file, tag: base, ok: true, error: null };
+}
+
+/** `umd-shared`: carga el runtime global (`__COMEGEN_VUE__`) + cada bundle. */
+function smokeUmdShared() {
+  const runtime = resolve(UMD_SHARED, "comegen-vue.global.js");
+  if (!existsSync(runtime) || !existsSync(UMD_SHARED)) {
+    return [{ file: "umd-shared/comegen-vue.global.js", ok: false, error: "no existe; corré build:lib" }];
+  }
+  const files = readdirSync(UMD_SHARED).filter((f) => f.endsWith(".umd.js")).sort();
   if (!files.length) return [];
   const dom = new JSDOM("<!DOCTYPE html><html><body></body></html>", {
     runScripts: "outside-only",
@@ -218,37 +288,64 @@ function smokeShared() {
   const { window } = dom;
   window.eval(readFileSync(runtime, "utf-8"));
   if (!window.__COMEGEN_VUE__) {
-    return [{ file: "comegen-vue.global.js", ok: false, error: "no expuso __COMEGEN_VUE__" }];
+    return [{ file: "umd-shared/comegen-vue.global.js", ok: false, error: "no expuso __COMEGEN_VUE__" }];
   }
   const out = [];
   for (const f of files) {
-    const code = readFileSync(resolve(DIST, f), "utf-8");
-    // Hay bundles que no registran custom element (p. ej. `CuColors`, sólo
-    // tokens): mismo criterio que `assertBundleMeta`, no se les exige tag.
-    if (!code.includes("defineComegenElement") && !code.includes("customElements.define")) {
-      continue;
-    }
-    const registry = window.customElements;
-    const original = registry.define;
-    const defined = [];
-    registry.define = function (name, ctor, options) {
-      defined.push(name);
-      return original.call(this, name, ctor, options);
-    };
+    const file = `umd-shared/${f}`;
+    const code = readFileSync(resolve(UMD_SHARED, f), "utf-8");
+    // Hay bundles que no registran CE (p. ej. `CuColors`, sólo tokens).
+    if (!registersCE(code)) continue;
+    const { defined, restore } = interceptDefine(window.customElements);
     try {
       window.eval(code);
-      const base = defined.find((k) => !k.includes("--v")) ?? defined[0];
-      const version = base && registry.get(base)?.comegen?.version;
-      out.push({
-        file: f,
-        tag: base ?? null,
-        ok: Boolean(base && version),
-        error: base ? (version ? null : "sin metadata comegen") : "no registró tag",
-      });
+      out.push(smokeResult(window.customElements, defined, file, "umd-shared"));
     } catch (err) {
-      out.push({ file: f, tag: null, ok: false, error: err.message });
+      out.push({ file, tag: null, ok: false, error: err.message });
     } finally {
-      registry.define = original;
+      restore();
+    }
+  }
+  return out;
+}
+
+/**
+ * `esm-core` / `esm-shared`: `import()` real. Los bundles se llaman `CuX.js`.
+ * `esm-shared` trae `import 'vue'` (bare) y su runtime `comegen-vue.js`; para
+ * importarlo en Node sin bundler se reescribe ese import al runtime del zip en
+ * una copia temporal, así se verifica el bundle real + el runtime real.
+ */
+async function smokeEsm(dir, label) {
+  if (!existsSync(dir)) return [];
+  const files = readdirSync(dir).filter((f) => f.endsWith(".js") && !f.endsWith(".umd.js")).sort();
+  if (!files.length) return [];
+  const window = makeBoundWindow();
+  const runtime = label === "esm-shared" ? pathToFileURL(resolve(dir, "comegen-vue.js")).href : null;
+  const out = [];
+  for (const f of files) {
+    const file = `${label}/${f}`;
+    let code = readFileSync(resolve(dir, f), "utf-8");
+    if (!registersCE(code)) continue;
+    let importPath = resolve(dir, f);
+    let tmp = null;
+    try {
+      if (runtime) {
+        code = code.replace(/from\s*(["'])vue\1/g, `from ${JSON.stringify(runtime)}`);
+        tmp = resolve(tmpdir(), `comegen-smoke-${label}-${f}-${process.pid}.mjs`);
+        writeFileSync(tmp, code);
+        importPath = tmp;
+      }
+      const { defined, restore } = interceptDefine(window.customElements);
+      try {
+        await import(pathToFileURL(importPath).href);
+        out.push(smokeResult(window.customElements, defined, file, label));
+      } finally {
+        restore();
+      }
+    } catch (err) {
+      out.push({ file, tag: null, ok: false, error: err.message });
+    } finally {
+      if (tmp) rmSync(tmp, { force: true });
     }
   }
   return out;
@@ -264,26 +361,32 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 
   if (update && argv.includes("--wipe")) wipeBaseline();
   const results = await runContracts({ tags: solo, update });
-  const shared = update ? [] : smokeShared();
+  const smokes = update
+    ? []
+    : [
+        ...smokeUmdShared(),
+        ...(await smokeEsm(ESM_CORE, "esm-core")),
+        ...(await smokeEsm(ESM_SHARED, "esm-shared")),
+      ];
 
   if (json) {
-    console.log(JSON.stringify({ contracts: results, shared }, null, 2));
+    console.log(JSON.stringify({ contracts: results, smokes }, null, 2));
   } else {
     const icon = { ok: "✅", updated: "🔄", created: "🆕", broken: "❌", error: "💥" };
     for (const r of results) {
       console.log(`${icon[r.status] ?? "•"} ${r.tag}${r.status === "broken" ? " — ROTO" : ""}`);
       for (const d of r.diffs ?? []) console.log(`     ${d}`);
     }
-    for (const s of shared) {
+    for (const s of smokes) {
       console.log(
         s.ok
           ? `✅ ${s.file} → ${s.tag}`
-          : `❌ ${s.file} (shared) — ROTO: ${s.error}`,
+          : `❌ ${s.file} — ROTO: ${s.error}`,
       );
     }
   }
-  const sharedBroken = shared.some((s) => !s.ok);
-  if (results.some((r) => r.status === "broken" || r.status === "error") || sharedBroken) {
+  const smokeBroken = smokes.some((s) => !s.ok);
+  if (results.some((r) => r.status === "broken" || r.status === "error") || smokeBroken) {
     process.exit(1);
   }
 }

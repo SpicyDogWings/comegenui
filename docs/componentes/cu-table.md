@@ -120,7 +120,7 @@ Como `columns` se pasa sin filtrar al `AdvancedTable.vue` interno, podés usar e
 ## Uso básico
 
 ```html
-<script src="dist/CuTable.core.umd.js"></script>
+<script src="dist-libs/umd-core/CuTable.umd.js"></script>
 
 <cu-table id="miTabla" color="primary" variant="soft" search-enabled pagination items-per-page="5"></cu-table>
 
@@ -702,7 +702,7 @@ const columns = [
 En HTML plano tenés las dos vías: el atributo `inline-editing` (todas las celdas editables) o activarlo **por columna**:
 
 ```html
-<script src="dist/CuTable.core.umd.js"></script>
+<script src="dist-libs/umd-core/CuTable.umd.js"></script>
 
 <cu-table id="tablaInline"></cu-table>
 

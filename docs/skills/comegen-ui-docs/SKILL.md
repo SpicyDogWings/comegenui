@@ -66,7 +66,7 @@ no del tag. Por eso `cu-table` (vanilla) ↔ `vue/advanced-table` (Vue) y el int
 ## Uso en HTML plano
 
 ```html
-<script src="dist/CuX.core.umd.js"></script>
+<script src="dist-libs/umd-core/CuX.umd.js"></script>
 <cu-x …>…</cu-x>
 ```
 

@@ -22,7 +22,7 @@ Igual que `MonthSlider` / `YearSlider`: `""`, valores inválidos (`NaN`) y entra
 ## Uso básico
 
 ```html
-<script src="dist/CuCalendar.core.umd.js"></script>
+<script src="dist-libs/umd-core/CuCalendar.umd.js"></script>
 
 <cu-calendar id="miCalendario" color="primary"></cu-calendar>
 

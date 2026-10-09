@@ -9,7 +9,7 @@ Label con color semántico. Al hacer clic, enfoca el input hijo o, si se define 
 ### Modo declarativo (prop `label`)
 
 ```html
-<script src="dist/CuLabel.core.umd.js"></script>
+<script src="dist-libs/umd-core/CuLabel.umd.js"></script>
 
 <cu-label label="Correo electrónico" color="primary">
   <cu-input type="email" placeholder="correo@ejemplo.com"></cu-input>

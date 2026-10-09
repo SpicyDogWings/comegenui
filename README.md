@@ -15,37 +15,38 @@ pnpm dev
 
 Repo oficial: [`github.com/SpicyDogWings/comegenui`](https://github.com/SpicyDogWings/comegenui).
 
-### Opción 1: Bajar el zip de una Release (recomendado)
+### Opción 1: Bajar los zips de una Release (recomendado)
 
-Cada release de GitHub publica el zip de la lib como asset:
+Cada release de GitHub publica la lib en **cuatro zips**, una configuración cada uno, según
+formato (UMD/ESM) y variante (core/shared):
+
+| Config | Asset del release | Formato | Vue |
+|---|---|---|---|
+| `umd-core` | `comegenui-umd-core-v{version}.zip` | UMD | incluido |
+| `umd-shared` | `comegenui-umd-shared-v{version}.zip` | UMD | externo (`__COMEGEN_VUE__`) |
+| `esm-core` | `comegenui-esm-core-v{version}.zip` | ESM | incluido |
+| `esm-shared` | `comegenui-esm-shared-v{version}.zip` | ESM | externo (`import 'vue'`) |
 
 1. Ir a [Releases](https://github.com/SpicyDogWings/comegenui/releases).
-2. Descargar el `comegenui-v{version}.zip` del release deseado.
-3. Descomprimirlo en tu proyecto.
+2. Bajá el zip de la configuración que uses y descomprimilo en tu proyecto.
 
-El zip trae **sólo la lib**, con dos variantes de cada componente:
+Dentro de cada zip, los bundles se llaman `CuX.umd.js` (UMD) o `CuX.js` (ESM). Los `shared`
+traen su runtime al lado: `comegen-vue.global.js` (UMD) o `comegen-vue.js` (ESM).
 
-```
-tu-proyecto/
-├── CuButton.core.umd.js        ← Vue incluido (autocontenida)
-├── CuButton.shared.umd.js      ← Vue externo (menos peso)
-├── CuAlert.core.umd.js
-├── CuAlert.shared.umd.js
-├── ...
-├── comegen-vue.global.js       ← runtime de Vue para la variante shared
-├── css/
-│   ├── themes.css              ← todos los temas
-│   └── {tema}.css              ← un archivo por tema (light, dark, …)
-```
+Elegí la configuración según cómo consumas:
 
-`core` trae Vue adentro: un `<script>` suelto funciona sin nada más. `shared` no lo trae y
-comparte el `comegen-vue.global.js` (se expone como `globalThis.__COMEGEN_VUE__`, sin tocar
-`window.Vue`): conviene cuando cargás 3 o más componentes. Detalle en
-[instalación](skills/use-comegen/references/instalacion.md).
+- **`umd-core`** — `<script>` suelto, 1–2 componentes, máxima compatibilidad.
+- **`umd-shared`** — varios componentes en HTML: Vue viaja una vez en `comegen-vue.global.js`
+  (se expone como `globalThis.__COMEGEN_VUE__`, sin tocar `window.Vue`).
+- **`esm-core` / `esm-shared`** — proyecto con bundler (Vite/webpack/Rollup). En `shared`, el
+  bundle hace `import 'vue'`: lo resuelve tu bundler (tenés Vue instalado) o un import map que
+  apunte a `comegen-vue.js` (para hosts sin bundler, p. ej. PHP/vanilla).
 
-> El zip trae **sólo la lib**: no incluye documentación, ni la skill de uso
-> `use-comegen`, ni ningún instalador/actualizador. La instalación es manual:
-> descomprimir y copiar.
+Detalle en [instalación](skills/use-comegen/references/instalacion.md).
+
+> Cada zip trae **sólo la lib** (los bundles + el runtime del `shared` si aplica): no incluye
+> documentación, ni la skill de uso `use-comegen`, ni CSS. Los tokens del tema se inyectan
+> solos al cargar el primer componente. La instalación es manual: descomprimir y copiar.
 
 ### Opción 2: Build desde source (cualquier ref)
 
@@ -56,14 +57,13 @@ git clone https://github.com/SpicyDogWings/comegenui.git
 cd comegenui
 git checkout <ref>          # main, v5.0.0-alpha.3, …
 pnpm install
-pnpm build:lib              # → dist-lib/comegenui-v{version}.zip
+pnpm build:lib              # → dist-libs/<config>/comegenui-<config>-v{version}.zip
 ```
 
 **Uso en HTML:**
 
 ```html
-<link rel="stylesheet" href="css/themes.css">
-<script src="CuButton.core.umd.js"></script>
+<script src="dist-libs/umd-core/CuButton.umd.js"></script>
 <cu-button color="primary">Guardar</cu-button>
 ```
 
@@ -73,8 +73,9 @@ Se reemplazan archivos, no hay instalador:
 
 1. Bajá el zip del ref nuevo (Opción 1 u 2).
 2. **Backup** de tu carpeta actual (opcional pero recomendado).
-3. Copiá los `Cu*.umd.js` nuevos (podés copiar sólo los que usás) y, si cambió el
-   tema, `css/`.
+3. Copiá los bundles nuevos (podés copiar sólo los que usás). En las configs `shared`, copiá
+   también el runtime. No hay CSS que copiar: los tokens se inyectan solos al cargar el
+   primer componente.
 4. Para confirmar qué versión quedó cargada: `customElements.get('cu-x').comegen.version`
    (ver [Versionado](docs/site/versionado.md) y `skills/use-comegen/references/versionado.md`).
 
@@ -144,25 +145,20 @@ pnpm install
 pnpm build:lib
 ```
 
-El output queda en `dist-lib/`:
+El output queda en `dist-libs/`: una carpeta por configuración, cada una con su zip.
 
 ```
-dist-lib/
-├── CuAlert.core.umd.js
-├── CuAlert.shared.umd.js
-├── CuButton.core.umd.js
-├── CuButton.shared.umd.js
-├── ...
-├── comegen-vue.global.js   ← runtime de la variante shared
-├── css/themes.css
-└── comegenui-v{version}.zip
+dist-libs/
+├── umd-core/    CuX.umd.js                             + comegenui-umd-core-v{version}.zip
+├── umd-shared/  CuX.umd.js + comegen-vue.global.js     + comegenui-umd-shared-v{version}.zip
+├── esm-core/    CuX.js                                 + comegenui-esm-core-v{version}.zip
+└── esm-shared/  CuX.js + comegen-vue.js                + comegenui-esm-shared-v{version}.zip
 ```
 
-Para usar en tu proyecto, copiá los `.umd.js` que necesités y el CSS:
+Para usar en tu proyecto, copiá los bundles que necesités (y el runtime del `shared` si lo usás):
 
 ```html
-<link rel="stylesheet" href="dist-lib/css/themes.css">
-<script src="dist-lib/CuButton.core.umd.js"></script>
+<script src="dist-libs/umd-core/CuButton.umd.js"></script>
 <cu-button color="primary">Guardar</cu-button>
 ```
 
@@ -174,7 +170,7 @@ Para usar en tu proyecto, copiá los `.umd.js` que necesités y el CSS:
 | `pnpm build` | Build del sitio de docs |
 | `pnpm preview` | Preview del sitio buildeado |
 | `pnpm site:sync` | Regenera el tema de VitePress (tokens CU → `*.gen.*`) |
-| `pnpm build:lib` | Build de la librería UMD (Web Components) + zip |
+| `pnpm build:lib` | Build de la librería (Web Components) en 4 configs + un zip por config |
 | `pnpm type-check` | Type-check con `vue-tsc` |
 | `pnpm test` | Tests unitarios (Vitest) |
 | `pnpm guard` | Gate local con veredicto por componente (`--full`, `--solo <tag>`, `--explicar`) |
@@ -192,34 +188,32 @@ Para usar en tu proyecto, copiá los `.umd.js` que necesités y el CSS:
 pnpm build:lib
 ```
 
-Compila cada componente en `src/lib/` como UMD independiente, en dos variantes (`core` con
-Vue incluido y `shared` con Vue externo). Output en `dist-lib/`:
+Compila cada componente en `src/lib/` como bundle independiente, en **cuatro configuraciones**
+(formato × variante). Output en `dist-libs/`, una carpeta por config con su propio zip:
 
 ```
-dist-lib/
-├── CuAlert.core.umd.js
-├── CuAlert.shared.umd.js
-├── CuButton.core.umd.js
-├── CuButton.shared.umd.js
-├── CuBadge.core.umd.js
-├── CuBadge.shared.umd.js
-├── ...
-├── comegen-vue.global.js   ← runtime compartido de la variante `shared`
-├── css/
-│   ├── themes.css      ← Todos los temas combinados
-│   ├── light.css       ← Solo tema light
-│   └── dark.css        ← Solo tema dark
-└── comegenui-v{version}.zip
+dist-libs/
+├── umd-core/    CuButton.umd.js  CuAlert.umd.js  …            + comegenui-umd-core-v{version}.zip
+├── umd-shared/  CuButton.umd.js  CuAlert.umd.js  …            + comegen-vue.global.js
+│                                                              + comegenui-umd-shared-v{version}.zip
+├── esm-core/    CuButton.js  CuAlert.js  …                    + comegenui-esm-core-v{version}.zip
+└── esm-shared/  CuButton.js  CuAlert.js  …                    + comegen-vue.js
+                                                               + comegenui-esm-shared-v{version}.zip
 ```
 
 ### Cómo funciona
 
 1. Busca todos los `src/lib/**/*.ts` (excluye `index.ts` y `tokens.ts`)
 2. Cada `.ts` es un entry point que define un Custom Element via `defineCustomElement`
-3. Compila **dos veces** cada componente como UMD con `vue({ features: { customElement: true } })` + `UnoCSS({ mode: "shadow-dom" })`: variante `core` (Vue incluido) y variante `shared` (`vue` externo, global `__COMEGEN_VUE__`)
-4. Genera `comegen-vue.global.js` (runtime de Vue para la variante `shared`)
-5. Genera los CSS del sistema de tokens
-6. Empaqueta todo en un zip versionado
+3. Compila **cuatro veces** cada componente con `vue({ features: { customElement: true } })` +
+   `UnoCSS({ mode: "shadow-dom" })`:
+   - `umd-core` / `esm-core`: UMD (`format: umd`) o ESM (`format: es`) con Vue incluido
+   - `umd-shared`: UMD con `vue` externo contra el global `__COMEGEN_VUE__`
+   - `esm-shared`: ESM con `vue` externo por bare import (`import 'vue'`)
+4. Genera el runtime de Vue de cada `shared`: `comegen-vue.global.js` (IIFE, UMD) y
+   `comegen-vue.js` (ESM)
+5. Empaqueta cada configuración en su zip `comegenui-<config>-v{version}.zip` (bundles +
+   runtime si es `shared`; sin CSS)`
 
 ### Agregar un componente nuevo
 
@@ -277,25 +271,36 @@ Para cada color (`primary`, `neutral`, `success`, etc.) se generan:
 ## Uso (HTML plano)
 
 ```html
-<!-- 1. Incluir CSS del tema -->
-<link rel="stylesheet" href="css/themes.css">
+<!-- 1. Incluir componentes UMD (config umd-core: Vue adentro) -->
+<script src="CuButton.umd.js"></script>
+<script src="CuAlert.umd.js"></script>
 
-<!-- 2. Incluir componentes UMD (variante core: Vue adentro) -->
-<script src="CuButton.core.umd.js"></script>
-<script src="CuAlert.core.umd.js"></script>
-
-<!-- 3. Usar -->
+<!-- 2. Usar -->
 <cu-button color="primary">Click me</cu-button>
 <cu-alert color="success" variant="soft">Guardado correctamente</cu-alert>
 ```
 
-Para la variante `shared`, cargá el runtime **antes** de los componentes:
+Para la config `umd-shared`, cargá el runtime **antes** de los componentes:
 
 ```html
-<link rel="stylesheet" href="css/themes.css">
 <script src="comegen-vue.global.js"></script>
-<script src="CuButton.shared.umd.js"></script>
-<script src="CuAlert.shared.umd.js"></script>
+<script src="CuButton.umd.js"></script>
+<script src="CuAlert.umd.js"></script>
+```
+
+Para `esm-core` / `esm-shared`, importá los módulos:
+
+```js
+import './comgenui/CuButton.js'
+```
+
+En `esm-shared`, el bundle hace `import 'vue'`; con un navegador sin bundler, resolvelo con un
+import map al runtime del zip:
+
+```html
+<script type="importmap">
+{ "imports": { "vue": "./comgenui/comegen-vue.js" } }
+</script>
 ```
 
 ## Estructura del proyecto

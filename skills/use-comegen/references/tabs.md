@@ -23,7 +23,7 @@ la URL o navegar a otra ruta, no es la herramienta.
 
 ```html
 <!-- HTML plano (UMD) -->
-<script src="dist/CuTabs.core.umd.js"></script>
+<script src="dist-libs/umd-core/CuTabs.umd.js"></script>
 
 <cu-tabs id="misTabs" variant="solid" color="primary">
   <div slot="general">Contenido General</div>

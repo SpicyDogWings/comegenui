@@ -26,7 +26,7 @@ usá `cu-calendar`.
 
 ```html
 <!-- HTML plano (UMD) -->
-<script src="dist/CuDatePicker.core.umd.js"></script>
+<script src="dist-libs/umd-core/CuDatePicker.umd.js"></script>
 
 <cu-date-picker id="rango" mode="range" label="Período" dual-calendar format="dd/MM/yyyy"></cu-date-picker>
 

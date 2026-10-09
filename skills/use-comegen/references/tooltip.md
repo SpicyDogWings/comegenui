@@ -19,7 +19,7 @@ Para aclarar qué hace un elemento al pasar el mouse. Si necesitás abrir conten
 
 ```html
 <!-- HTML plano (UMD) -->
-<script src="dist/CuTooltip.core.umd.js"></script>
+<script src="dist-libs/umd-core/CuTooltip.umd.js"></script>
 
 <cu-tooltip text="Guardar cambios" color="primary">
   <cu-button color="primary" variant="soft">Guardar</cu-button>

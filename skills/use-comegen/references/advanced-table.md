@@ -24,7 +24,7 @@ in-place o botones por fila. Si sólo necesitás una grilla estática, alcanza u
 
 ```html
 <!-- HTML plano (UMD) -->
-<script src="dist/CuTable.core.umd.js"></script>
+<script src="dist-libs/umd-core/CuTable.umd.js"></script>
 
 <cu-table id="t" color="primary" variant="soft" search-enabled pagination show-page-size items-per-page="5"></cu-table>
 

@@ -7,7 +7,7 @@ Renderizador de Markdown como Custom Element. Convierte markdown en HTML semánt
 ## UMD
 
 ```
-dist/CuMarkdown.core.umd.js
+dist-libs/umd-core/CuMarkdown.umd.js
 ```
 
 ---
@@ -34,7 +34,7 @@ const x = 1;
 | a     | b     |
 </cu-markdown>
 
-<script src="dist/CuMarkdown.core.umd.js"></script>
+<script src="dist-libs/umd-core/CuMarkdown.umd.js"></script>
 ````
 
 El contenido se pasa como **texto dentro del tag** (no como prop). El componente lo parsea al montarse.

@@ -7,7 +7,7 @@ Selector de archivos con zona de drag & drop amplia, soporte para carpetas (recu
 ## Uso en HTML plano
 
 ```html
-<script src="dist/CuFileInputZone.core.umd.js"></script>
+<script src="dist-libs/umd-core/CuFileInputZone.umd.js"></script>
 
 <!-- Básico -->
 <cu-file-input-zone placeholder="Arrastra un archivo"></cu-file-input-zone>

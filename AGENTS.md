@@ -229,7 +229,7 @@ Usuario pasa color="primary" (string semántico)
         ↓
 .vue resuelve via CSS: var(--cu-color-primary)
         ↓
-CSS tokens (inyectados por initTokens o themes.css) resuelven el hex según el tema activo
+CSS tokens (inyectados en runtime por `initTokens()`) resuelven el hex según el tema activo
 ```
 
 **Ya NO se usa `getHostTheme()` + `getColorMap()` para convertir a hex** (excepto en `Label.ce.vue` que es transicional). El patrón moderno usa CSS custom properties directamente.
@@ -271,16 +271,19 @@ Tokens compartidos: tipografía, spacing, border-radius, shadows, borders.
 
 ## Build
 
-`build-lib.ts` busca `src/lib/**/*.ts` (excluyendo `index.ts` y `tokens.ts`) y construye cada uno en **dos variantes** UMD (misma API, mismo tag):
+`build-lib.ts` busca `src/lib/**/*.ts` (excluyendo `index.ts` y `tokens.ts`) y construye cada uno en **cuatro configuraciones** (formato × variante; misma API, mismo tag):
 
-- `CuX.core.umd.js` — Vue incluido (autocontenida, máximo compatibilidad).
-- `CuX.shared.umd.js` — `vue` externo contra el global `__COMEGEN_VUE__`.
+- `umd-core` → `CuX.umd.js` — UMD con Vue incluido (autocontenida, máximo compatibilidad).
+- `umd-shared` → `CuX.umd.js` — UMD con `vue` externo contra el global `__COMEGEN_VUE__`.
+- `esm-core` → `CuX.js` — ESM con Vue incluido.
+- `esm-shared` → `CuX.js` — ESM con `vue` externo por bare import (`import 'vue'`).
 - `vue({ features: { customElement: true } })`
 - `UnoCSS({ mode: "shadow-dom" })`
-- Genera `comegen-vue.global.js` (runtime de Vue que consume la variante `shared`; namespace propio `__COMEGEN_VUE__`, no toca `window.Vue`).
-- Genera `dist/css/themes.css` + `dist/css/{theme}.css`
-- Crea zip versionado: `comegenui-v{version}.zip`
-- **El zip lleva SOLO la lib**: `Cu*.core.umd.js` + `Cu*.shared.umd.js` + `comegen-vue.global.js` + `css/`. No incluye documentación (vive en `docs/componentes/`), ni skill, ni instalador/actualizador (la instalación es manual: descomprimir el zip).
+- Genera el runtime de cada `shared`: `comegen-vue.global.js` (IIFE, namespace propio `__COMEGEN_VUE__`, no toca `window.Vue`) y `comegen-vue.js` (ESM, para import map del host).
+- Cada config sale en `dist-libs/<config>/` con su zip `comegenui-<config>-v{version}.zip`.
+- **No genera CSS** ni copia `public/` (img/ico): los tokens del tema se inyectan en runtime (`initTokens()`).
+- **El zip lleva SOLO la lib**: los bundles de esa config + el runtime del `shared` si aplica. No incluye documentación (vive en `docs/componentes/`), ni skill, ni instalador/actualizador (la instalación es manual: descomprimir el zip).
+- **Cada bundle embebe el tipo de build**: además de `version`, `__COMEGEN_META__` lleva `format`, `variant` y `type` (p. ej. `esm-shared`), expuestos en `customElements.get('cu-x').comegen` / `el.comegen` (ver `docs/site/versionado.md`).
 
 ### Tests y guard
 

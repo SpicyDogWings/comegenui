@@ -96,7 +96,7 @@ onMounted(() => {
 - **Feedback:** los errores (`danger`) se muestran en un `Collapse` expandible con una **tabla con paginación y buscador** (Fila/Columna/Error) — soporta un número ilimitado de errores. Las advertencias (`warning`) van en su propio `Collapse`. El resumen de filas OK / con errores queda siempre visible.
 - **Formato inválido / tamaño:** lo rechaza el `FileInput` interno (usa `accept` y `maxSize`).
 - **`inputType="zone"`:** el picker es la zona drag & drop (single file). `variant` no aplica en este modo (la zona no tiene variantes).
-- **Peso:** el parser de `.xlsx` (SheetJS) viaja solo en `CuCellsImporter.core.umd.js`; el resto de la lib no se ve afectado.
+- **Peso:** el parser de `.xlsx` (SheetJS) viaja solo en `CuCellsImporter.umd.js`; el resto de la lib no se ve afectado.
 
 ---
 

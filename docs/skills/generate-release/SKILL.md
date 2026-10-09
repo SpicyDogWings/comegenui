@@ -43,7 +43,7 @@ git status --short
 node -e "console.log(require('./package.json').version)"
 ```
 
-Anotá la versión: el zip se llama `comegenui-v<version>.zip`. Si hay que bumpear, editá `version` en `package.json` **antes** del paso 5.
+Anotá la versión: los zips se llaman `comegenui-<config>-v<version>.zip`. Si hay que bumpear, editá `version` en `package.json` **antes** del paso 5.
 
 Si bumpeás la versión, actualizá también `metadata.version` en las cinco `SKILL.md`
 (`skills/use-comegen/` y `docs/skills/{comegen-preflight,comegen-ui-docs,generate-release,marked}/`)
@@ -85,21 +85,25 @@ si un cambio de API fue intencional, regenerá el contrato con `./scripts/guard.
 pnpm build
 ```
 
-### 5. Build de la lib + zip versionado
+### 5. Build de la lib + zips versionados
 
 ```bash
 pnpm build:lib
 ```
 
-Genera `dist-lib/` con los UMD, `css/themes.css` y el zip `dist-lib/comegenui-v<version>.zip`. El zip incluye **sólo la lib**: los UMD y `css/`.
+Genera `dist-libs/<config>/` (una carpeta por config) y un zip por config:
+`dist-libs/<config>/comegenui-<config>-v<version>.zip`. Cada zip incluye **sólo la lib**: los
+bundles de su config + el runtime del `shared` si aplica (sin CSS).
 
-### 6. Verificar el zip
+### 6. Verificar los zips
 
 ```bash
-unzip -l dist-lib/comegenui-v<version>.zip
+unzip -l dist-libs/umd-core/comegenui-umd-core-v<version>.zip
 ```
 
-Debe contener: los `Cu*.umd.js` y `css/themes.css` (+ un `css/<tema>.css` por tema). Nada más.
+Deben existir los 4 zips (`umd-core`, `umd-shared`, `esm-core`, `esm-shared`) con los bundles
+de su formato (`Cu*.umd.js` o `Cu*.js`). Los `shared` agregan su runtime
+(`comegen-vue.global.js` o `comegen-vue.js`). Nada más.
 
 ### 7. Commit de lo que haya cambiado
 
@@ -124,7 +128,7 @@ Revisá el diff antes. **Nunca** `git add -A` a ciegas.
 - [ ] `./scripts/guard.sh --full` verde (sin tipos nuevos, sin contratos rotos, docs al día).
 - [ ] `pnpm build` OK.
 - [ ] `pnpm build:lib` OK.
-- [ ] `dist-lib/comegenui-v<version>.zip` con los UMD y `css/` (sólo la lib).
+- [ ] Los 4 `dist-libs/<config>/comegenui-<config>-v<version>.zip` con sus bundles (+ el runtime del `shared`).
 - [ ] Cambios commiteados.
 
 Si algo falta, decilo explícitamente en el reporte; no lo tapes con "quedó funcionando".
@@ -149,4 +153,4 @@ Si algo falta, decilo explícitamente en el reporte; no lo tapes con "quedó fun
 | Recetas de la skill de uso | `skills/use-comegen/references/<kebab>.md` |
 | Páginas del sitio | `docs/site/componentes/<slug>.md` (versionadas) |
 | Tema del sitio | `docs/site/.vitepress/theme/*.gen.*` (generados, gitignored) |
-| Build de la lib | `dist-lib/` (gitignored) + `dist-lib/comegenui-v<version>.zip` |
+| Build de la lib | `dist-libs/<config>/` (gitignored) + un zip por config |
