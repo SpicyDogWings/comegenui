@@ -159,10 +159,16 @@ if has build; then
     tail -20 "$TMP/build.log" | sed 's/^/      /'
     RESUMEN+=("❌ build lib"); FAILED=1
   else
-    UMD=$(ls "$ROOT"/dist-lib/Cu*.umd.js 2>/dev/null | wc -l)
-    CORE=$(ls "$ROOT"/dist-lib/Cu*.core.umd.js 2>/dev/null | wc -l)
-    SHARED=$(ls "$ROOT"/dist-lib/Cu*.shared.umd.js 2>/dev/null | wc -l)
-    ok "$UMD UMD generados ($CORE core + $SHARED shared)"
+    umd_core=$(ls "$ROOT"/dist-libs/umd-core/*.umd.js 2>/dev/null | wc -l || true)
+    umd_shared=$(ls "$ROOT"/dist-libs/umd-shared/*.umd.js 2>/dev/null | wc -l || true)
+    esm_core=$(ls "$ROOT"/dist-libs/esm-core/*.js 2>/dev/null | wc -l || true)
+    esm_shared=$(ls "$ROOT"/dist-libs/esm-shared/*.js 2>/dev/null | grep -v 'comegen-vue.js' | wc -l || true)
+    total=$((umd_core + umd_shared + esm_core + esm_shared))
+    ok "$total bundles generados"
+    detalle "• umd-core    : $umd_core"
+    detalle "• umd-shared  : $umd_shared  (+ comegen-vue.global.js)"
+    detalle "• esm-core    : $esm_core"
+    detalle "• esm-shared  : $esm_shared  (+ comegen-vue.js)"
     RESUMEN+=("✅ build lib")
   fi
 fi
@@ -177,8 +183,8 @@ if has contrato; then
   [ "${#TAGS[@]}" -gt 0 ] && CONTRACT_ARGS=(--solo "${TAGS[@]}")
   [ -n "$UPDATE" ] && CONTRACT_ARGS+=(--update)
 
-  if [ ! -d "$ROOT/dist-lib" ] || ! ls "$ROOT"/dist-lib/Cu*.umd.js >/dev/null 2>&1; then
-    bad "no hay UMD en dist-lib: no puedo verificar contratos"
+  if [ ! -d "$ROOT/dist-libs/umd-core" ] || ! ls "$ROOT"/dist-libs/umd-core/Cu*.umd.js >/dev/null 2>&1; then
+    bad "no hay UMD en dist-libs/umd-core: no puedo verificar contratos"
     RESUMEN+=("❌ contrato (sin dist)"); FAILED=1
   else
     set +e

@@ -2,20 +2,42 @@ import { defineCustomElement, type Component } from 'vue'
 
 /**
  * Metadatos de build que inyecta `build-lib.ts` con el `define` de Vite en cada
- * UMD. En dev/tests el identificador no existe: se cae al fallback `dev`.
+ * bundle. En dev/tests el identificador no existe: se cae al fallback `dev`.
  */
-declare const __COMEGEN_META__: { version?: string } | undefined
+declare const __COMEGEN_META__: BuildMeta | undefined
+
+/** Lo que `build-lib.ts` inyecta en cada bundle (versión + tipo de build). */
+interface BuildMeta {
+  version?: string
+  /** `umd` | `esm`. */
+  format?: string
+  /** `core` | `shared`. */
+  variant?: string
+  /** Nombre de la configuración: `umd-core`, `umd-shared`, `esm-core`, `esm-shared`. */
+  type?: string
+}
 
 export interface ComegenMeta {
   lib: 'comegenui'
   name: string
   tag: string
   version: string
+  /** Formato del bundle: `umd` | `esm` (o `dev` fuera de build). */
+  format: string
+  /** Variante: `core` | `shared` (o `dev` fuera de build). */
+  variant: string
+  /** Tipo de build completo: `umd-core`, `umd-shared`, `esm-core`, `esm-shared` (o `dev`). */
+  type: string
   versionedTag: string
 }
 
-const BUILD_META: { version?: string } =
+const BUILD_META: BuildMeta =
   typeof __COMEGEN_META__ === 'object' && __COMEGEN_META__ ? __COMEGEN_META__ : {}
+
+/** Valor de metadata con fallback `dev` (fuera de build no existe). */
+function metaText(value: string | undefined): string {
+  return typeof value === 'string' && value ? value : 'dev'
+}
 
 /** `cu-alert` → `CuAlert` (nombre del bundle / global de la UMD). */
 function pascalCase(tag: string): string {
@@ -91,6 +113,9 @@ export function defineComegenElement(tag: string, component: Component) {
     name: pascalCase(tag),
     tag,
     version,
+    format: metaText(BUILD_META.format),
+    variant: metaText(BUILD_META.variant),
+    type: metaText(BUILD_META.type),
     versionedTag: toVersionedTag(tag, version),
   })
 
