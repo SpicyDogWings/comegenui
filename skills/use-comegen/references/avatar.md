@@ -15,7 +15,7 @@ necesitás nombre y rol, usá `cu-author-card`.
 
 ```html
 <!-- HTML plano (UMD) -->
-<script src="dist/CuAvatar.umd.js"></script>
+<script src="dist/CuAvatar.core.umd.js"></script>
 
 <cu-avatar initials="JP" color="primary"></cu-avatar>
 <cu-avatar initials="MR" color="success" size="lg"></cu-avatar>

@@ -34,11 +34,12 @@ const roleOptions = [
 ];
 
 const scriptSnippet = `<body>
-  <script src="comegenui/CuButton.umd.js"><\/script>
+  <!-- core: Vue adentro, un solo script -->
+  <script src="comegenui/CuButton.core.umd.js"><\/script>
   <cu-button color="primary">Click me</cu-button>
 </body>`;
 
-const bundlerSnippet = `import "comegenui/CuButton.umd.js";
+const bundlerSnippet = `import "comegenui/CuButton.core.umd.js";
 // y en cualquier template:
 // <cu-button color="primary">Click me</cu-button>`;
 

@@ -7,7 +7,7 @@ Toggle switch con color semántico y dos tamaños. Mantiene su estado y también
 ## Uso en HTML plano
 
 ```html
-<script src="dist/CuSwitch.umd.js"></script>
+<script src="dist/CuSwitch.core.umd.js"></script>
 
 <cu-switch id="miSwitch" color="primary" size="md"></cu-switch>
 

@@ -31,7 +31,7 @@ visible. Para un único archivo compacto, usá `<cu-file-input>`.
   placeholder="Subí tus imágenes"
 ></cu-file-input-zone>
 
-<script src="dist/CuFileInputZone.umd.js"></script>
+<script src="dist/CuFileInputZone.core.umd.js"></script>
 <script>
   const zone = document.getElementById('zone');
 

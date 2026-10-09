@@ -20,7 +20,7 @@ muestran por página.
 
 ```html
 <!-- HTML plano (UMD) -->
-<script src="dist/CuPagination.umd.js"></script>
+<script src="dist/CuPagination.core.umd.js"></script>
 
 <cu-pagination
   id="paginacion"

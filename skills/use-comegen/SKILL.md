@@ -17,7 +17,7 @@ andá directo al paso que te falta.
 >
 > | | Vue | Custom Element (vanilla) |
 > |---|---|---|
-> | Se importa de | `src/components/<cat>/X.vue` | `CuX.umd.js` (tag `<cu-x>`) |
+> | Se importa de | `src/components/<cat>/X.vue` | `CuX.core.umd.js` (tag `<cu-x>`) |
 > | Ficha | `docs/componentes/vue/<kebab>.md` | `docs/componentes/<tag>.md` |
 > | Entrada de build | — | `src/lib/<cat>/<kebab>.ts` |
 > | Props | camelCase | atributos kebab-case + propiedades JS |
@@ -56,7 +56,7 @@ andá directo al paso que te falta.
 
 ```html
 <link rel="stylesheet" href="css/themes.css">
-<script src="CuButton.umd.js"></script>
+<script src="CuButton.core.umd.js"></script>
 
 <cu-button color="primary" variant="solid">Guardar</cu-button>
 ```

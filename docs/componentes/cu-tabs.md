@@ -7,7 +7,7 @@ Pestañas con variantes, iconos, tabs deshabilitadas individuales y control prog
 ## Uso en HTML plano
 
 ```html
-<script src="dist/CuTabs.umd.js"></script>
+<script src="dist/CuTabs.core.umd.js"></script>
 
 <cu-tabs id="misTabs" variant="solid" color="primary">
   <div slot="general">Contenido General</div>

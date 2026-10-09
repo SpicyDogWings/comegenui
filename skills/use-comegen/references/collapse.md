@@ -20,7 +20,7 @@ modal, `cu-modal`.
 
 ```html
 <!-- HTML plano (UMD) -->
-<script src="dist/CuCollapse.umd.js"></script>
+<script src="dist/CuCollapse.core.umd.js"></script>
 
 <cu-collapse id="faq" label="¿Qué es ComegenUI?" description="Librería de Custom Elements" color="primary">
   <p>Una librería de componentes UI como Custom Elements nativos.</p>

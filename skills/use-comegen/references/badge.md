@@ -15,7 +15,7 @@ navegación, usá `cu-button`; si es un aviso extenso, `cu-alert`.
 
 ```html
 <!-- HTML plano (UMD) -->
-<script src="dist/CuBadge.umd.js"></script>
+<script src="dist/CuBadge.core.umd.js"></script>
 
 <cu-badge color="primary" variant="solid">Nuevo</cu-badge>
 <cu-badge color="success" variant="soft">Activo</cu-badge>

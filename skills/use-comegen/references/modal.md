@@ -34,8 +34,8 @@ paneles laterales usá `<cu-side-over>`; para menús contextuales, `<cu-dropdown
 
 <cu-button onclick="document.getElementById('confirm').open()">Abrir modal</cu-button>
 
-<script src="dist/CuModal.umd.js"></script>
-<script src="dist/CuButton.umd.js"></script>
+<script src="dist/CuModal.core.umd.js"></script>
+<script src="dist/CuButton.core.umd.js"></script>
 <script>
   const m = document.getElementById('confirm');
   m.addEventListener('opened', () => console.log('modal abierto'));

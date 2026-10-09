@@ -15,7 +15,7 @@ necesitás sólo la foto o las iniciales, usá `cu-avatar`.
 
 ```html
 <!-- HTML plano (UMD) -->
-<script src="dist/CuAuthorCard.umd.js"></script>
+<script src="dist/CuAuthorCard.core.umd.js"></script>
 
 <cu-author-card name="Ana Pérez" role="Desarrolladora" color="primary"></cu-author-card>
 <cu-author-card name="Marcos Ruiz" color="success" size="lg"></cu-author-card>

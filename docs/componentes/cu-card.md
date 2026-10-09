@@ -7,7 +7,7 @@ Tarjeta para mostrar información agrupada con jerarquía visual: media, header 
 ## Uso en HTML plano
 
 ```html
-<script src="dist/CuCard.umd.js"></script>
+<script src="dist/CuCard.core.umd.js"></script>
 
 <cu-card title="Resumen" subtitle="Último corte" color="primary">
   Contenido principal de la tarjeta.

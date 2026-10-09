@@ -7,7 +7,7 @@ Selector de color con swatch y campo de texto hex. Al hacer click en el swatch s
 ## Uso en HTML plano
 
 ```html
-<script src="dist/CuColorPicker.umd.js"></script>
+<script src="dist/CuColorPicker.core.umd.js"></script>
 
 <cu-color-picker id="miColor" color="primary"></cu-color-picker>
 

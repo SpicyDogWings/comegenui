@@ -7,7 +7,7 @@ Tooltip que aparece al hacer hover sobre el elemento contenido, con posición, a
 ## Uso en HTML plano
 
 ```html
-<script src="dist/CuTooltip.umd.js"></script>
+<script src="dist/CuTooltip.core.umd.js"></script>
 
 <cu-tooltip text="Guardar cambios" color="primary">
   <cu-button color="primary" variant="soft">Guardar</cu-button>

@@ -21,7 +21,7 @@ interactivo adentro o envolvé todo vos.
 
 ```html
 <!-- HTML plano (UMD) -->
-<script src="dist/CuCard.umd.js"></script>
+<script src="dist/CuCard.core.umd.js"></script>
 
 <cu-card title="Resumen" subtitle="Último corte" color="primary" variant="soft">
   Contenido principal de la tarjeta.

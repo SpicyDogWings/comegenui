@@ -25,8 +25,8 @@ clickeable. No es para texto decorativo suelto.
 <cu-label for="nombre" label="Nombre"></cu-label>
 <input id="nombre" type="text" />
 
-<script src="dist/CuLabel.umd.js"></script>
-<script src="dist/CuInput.umd.js"></script>
+<script src="dist/CuLabel.core.umd.js"></script>
+<script src="dist/CuInput.core.umd.js"></script>
 ```
 
 ```vue

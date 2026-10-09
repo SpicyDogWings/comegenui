@@ -27,7 +27,7 @@ acciones en línea dentro de un formulario o una fila, usá `<cu-button>`.
   </svg>
 </cu-floating-button>
 
-<script src="dist/CuFloatingButton.umd.js"></script>
+<script src="dist/CuFloatingButton.core.umd.js"></script>
 <script>
   document.getElementById('fab').addEventListener('click', () => {
     console.log('FAB clickeado');

@@ -28,7 +28,7 @@ mano, no uses este componente.
 
 ```html
 <!-- HTML plano (UMD) -->
-<script src="dist/CuCellsImporter.umd.js"></script>
+<script src="dist/CuCellsImporter.core.umd.js"></script>
 
 <cu-cells-importer id="imp" color="primary"></cu-cells-importer>
 
@@ -95,7 +95,7 @@ CSV/XLSX y 10 métodos expuestos.
 - **No re-valida solo al cambiar `columns`:** hay que llamar `.validate()`.
 - **No expone un estado "listo para importar":** el resumen visual (filas OK / con errores) y
   `getErrors()` son toda la señal; la decisión de importar es tuya.
-- **El parser de `.xlsx` pesa:** SheetJS viaja dentro de `CuCellsImporter.umd.js`.
+- **El parser de `.xlsx` pesa:** SheetJS viaja dentro de `CuCellsImporter.core.umd.js`.
 
 ## API del custom element
 

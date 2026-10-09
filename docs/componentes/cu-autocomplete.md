@@ -7,7 +7,7 @@ Campo de texto con sugerencias en menú desplegable. Filtra los `items` en vivo 
 ## Uso en HTML plano
 
 ```html
-<script src="dist/CuAutocomplete.umd.js"></script>
+<script src="dist/CuAutocomplete.core.umd.js"></script>
 
 <cu-autocomplete id="ac" placeholder="Buscá un rol..." color="primary"></cu-autocomplete>
 

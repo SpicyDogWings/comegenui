@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // scripts/contract.mjs — el contrato de cada custom element compilado.
 //
-// Carga cada `dist-lib/Cu*.umd.js` en jsdom, instancia el elemento y arma una
+// Carga cada `dist-lib/Cu*.core.umd.js` en jsdom, instancia el elemento y arma una
 // "huella" estable: props declaradas, métodos expuestos, metadata `comegen` y la
 // estructura del shadow DOM (tags + clases + nombres de atributos). La compara
 // contra el baseline versionado en `scripts/contract-baseline/<tag>.json`.
@@ -128,7 +128,11 @@ function contractOf(window, tag) {
 /** Lista de bundles del dist con su tag. */
 export function discoverTags() {
   if (!existsSync(DIST)) return [];
-  const files = readdirSync(DIST).filter((f) => f.endsWith(".umd.js")).sort();
+  // sólo la variante `core`: la `shared` necesita el global __COMEGEN_VUE__ y
+  // registra el mismo tag; se verifica aparte (mismo componente, misma API).
+  const files = readdirSync(DIST)
+    .filter((f) => f.endsWith(".umd.js") && !f.endsWith(".shared.umd.js"))
+    .sort();
   const window = getWindow();
   const tags = [];
   for (const f of files) {
@@ -191,6 +195,65 @@ export function wipeBaseline() {
   if (existsSync(BASELINE)) rmSync(BASELINE, { recursive: true, force: true });
 }
 
+// ── variante shared: smoke test con el runtime compartido ────────────────────
+/**
+ * `shared` registra el mismo tag y la misma API que `core` (mismo fuente, sólo
+ * cambia `vue` incluido vs externo), así que su contrato no se compara contra
+ * el baseline. Lo que sí se verifica es que cargue de verdad:
+ * `comegen-vue.global.js` + `CuX.shared.umd.js` registran el custom element con
+ * su metadata de versión. Sin esto, un `shared` roto pasaría en verde.
+ */
+function smokeShared() {
+  const runtime = resolve(DIST, "comegen-vue.global.js");
+  if (!existsSync(runtime)) {
+    return [{ file: "comegen-vue.global.js", ok: false, error: "no existe; corré build:lib" }];
+  }
+  const files = readdirSync(DIST).filter((f) => f.endsWith(".shared.umd.js")).sort();
+  if (!files.length) return [];
+  const dom = new JSDOM("<!DOCTYPE html><html><body></body></html>", {
+    runScripts: "outside-only",
+    pretendToBeVisual: true,
+    url: "http://localhost/",
+  });
+  const { window } = dom;
+  window.eval(readFileSync(runtime, "utf-8"));
+  if (!window.__COMEGEN_VUE__) {
+    return [{ file: "comegen-vue.global.js", ok: false, error: "no expuso __COMEGEN_VUE__" }];
+  }
+  const out = [];
+  for (const f of files) {
+    const code = readFileSync(resolve(DIST, f), "utf-8");
+    // Hay bundles que no registran custom element (p. ej. `CuColors`, sólo
+    // tokens): mismo criterio que `assertBundleMeta`, no se les exige tag.
+    if (!code.includes("defineComegenElement") && !code.includes("customElements.define")) {
+      continue;
+    }
+    const registry = window.customElements;
+    const original = registry.define;
+    const defined = [];
+    registry.define = function (name, ctor, options) {
+      defined.push(name);
+      return original.call(this, name, ctor, options);
+    };
+    try {
+      window.eval(code);
+      const base = defined.find((k) => !k.includes("--v")) ?? defined[0];
+      const version = base && registry.get(base)?.comegen?.version;
+      out.push({
+        file: f,
+        tag: base ?? null,
+        ok: Boolean(base && version),
+        error: base ? (version ? null : "sin metadata comegen") : "no registró tag",
+      });
+    } catch (err) {
+      out.push({ file: f, tag: null, ok: false, error: err.message });
+    } finally {
+      registry.define = original;
+    }
+  }
+  return out;
+}
+
 // ── CLI ──────────────────────────────────────────────────────────────────────
 if (import.meta.url === `file://${process.argv[1]}`) {
   const argv = process.argv.slice(2);
@@ -201,15 +264,26 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 
   if (update && argv.includes("--wipe")) wipeBaseline();
   const results = await runContracts({ tags: solo, update });
+  const shared = update ? [] : smokeShared();
 
   if (json) {
-    console.log(JSON.stringify(results, null, 2));
+    console.log(JSON.stringify({ contracts: results, shared }, null, 2));
   } else {
     const icon = { ok: "✅", updated: "🔄", created: "🆕", broken: "❌", error: "💥" };
     for (const r of results) {
       console.log(`${icon[r.status] ?? "•"} ${r.tag}${r.status === "broken" ? " — ROTO" : ""}`);
       for (const d of r.diffs ?? []) console.log(`     ${d}`);
     }
+    for (const s of shared) {
+      console.log(
+        s.ok
+          ? `✅ ${s.file} → ${s.tag}`
+          : `❌ ${s.file} (shared) — ROTO: ${s.error}`,
+      );
+    }
   }
-  if (results.some((r) => r.status === "broken" || r.status === "error")) process.exit(1);
+  const sharedBroken = shared.some((s) => !s.ok);
+  if (results.some((r) => r.status === "broken" || r.status === "error") || sharedBroken) {
+    process.exit(1);
+  }
 }

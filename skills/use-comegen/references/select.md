@@ -26,7 +26,7 @@ escritura sobre un input visible, usá `cu-autocomplete`.
 
 ```html
 <!-- HTML plano (UMD) -->
-<script src="dist/CuSelect.umd.js"></script>
+<script src="dist/CuSelect.core.umd.js"></script>
 
 <cu-select id="miSelect" placeholder="Seleccione una opción" color="primary" variant="outlined"></cu-select>
 

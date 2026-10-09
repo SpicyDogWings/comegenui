@@ -7,7 +7,7 @@ Barra de navegación vertical (tipo sidebar) con submenús, búsqueda (`filter`/
 ## Uso en HTML plano
 
 ```html
-<script src="dist/CuNavbar.umd.js"></script>
+<script src="dist/CuNavbar.core.umd.js"></script>
 
 <cu-navbar id="nav" search active-path="/usuarios"></cu-navbar>
 

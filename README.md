@@ -23,17 +23,25 @@ Cada release de GitHub publica el zip de la lib como asset:
 2. Descargar el `comegenui-v{version}.zip` del release deseado.
 3. Descomprimirlo en tu proyecto.
 
-El zip trae **sólo la lib**:
+El zip trae **sólo la lib**, con dos variantes de cada componente:
 
 ```
 tu-proyecto/
-├── CuButton.umd.js
-├── CuAlert.umd.js
+├── CuButton.core.umd.js        ← Vue incluido (autocontenida)
+├── CuButton.shared.umd.js      ← Vue externo (menos peso)
+├── CuAlert.core.umd.js
+├── CuAlert.shared.umd.js
 ├── ...
+├── comegen-vue.global.js       ← runtime de Vue para la variante shared
 ├── css/
-│   ├── themes.css      ← todos los temas
-│   └── {tema}.css      ← un archivo por tema (light, dark, …)
+│   ├── themes.css              ← todos los temas
+│   └── {tema}.css              ← un archivo por tema (light, dark, …)
 ```
+
+`core` trae Vue adentro: un `<script>` suelto funciona sin nada más. `shared` no lo trae y
+comparte el `comegen-vue.global.js` (se expone como `globalThis.__COMEGEN_VUE__`, sin tocar
+`window.Vue`): conviene cuando cargás 3 o más componentes. Detalle en
+[instalación](skills/use-comegen/references/instalacion.md).
 
 > El zip trae **sólo la lib**: no incluye documentación, ni la skill de uso
 > `use-comegen`, ni ningún instalador/actualizador. La instalación es manual:
@@ -55,7 +63,7 @@ pnpm build:lib              # → dist-lib/comegenui-v{version}.zip
 
 ```html
 <link rel="stylesheet" href="css/themes.css">
-<script src="CuButton.umd.js"></script>
+<script src="CuButton.core.umd.js"></script>
 <cu-button color="primary">Guardar</cu-button>
 ```
 
@@ -140,9 +148,12 @@ El output queda en `dist-lib/`:
 
 ```
 dist-lib/
-├── CuAlert.umd.js
-├── CuButton.umd.js
+├── CuAlert.core.umd.js
+├── CuAlert.shared.umd.js
+├── CuButton.core.umd.js
+├── CuButton.shared.umd.js
 ├── ...
+├── comegen-vue.global.js   ← runtime de la variante shared
 ├── css/themes.css
 └── comegenui-v{version}.zip
 ```
@@ -151,7 +162,7 @@ Para usar en tu proyecto, copiá los `.umd.js` que necesités y el CSS:
 
 ```html
 <link rel="stylesheet" href="dist-lib/css/themes.css">
-<script src="dist-lib/CuButton.umd.js"></script>
+<script src="dist-lib/CuButton.core.umd.js"></script>
 <cu-button color="primary">Guardar</cu-button>
 ```
 
@@ -181,14 +192,19 @@ Para usar en tu proyecto, copiá los `.umd.js` que necesités y el CSS:
 pnpm build:lib
 ```
 
-Compila cada componente en `src/lib/` como UMD independiente. Output en `dist-lib/`:
+Compila cada componente en `src/lib/` como UMD independiente, en dos variantes (`core` con
+Vue incluido y `shared` con Vue externo). Output en `dist-lib/`:
 
 ```
 dist-lib/
-├── CuAlert.umd.js
-├── CuButton.umd.js
-├── CuBadge.umd.js
+├── CuAlert.core.umd.js
+├── CuAlert.shared.umd.js
+├── CuButton.core.umd.js
+├── CuButton.shared.umd.js
+├── CuBadge.core.umd.js
+├── CuBadge.shared.umd.js
 ├── ...
+├── comegen-vue.global.js   ← runtime compartido de la variante `shared`
 ├── css/
 │   ├── themes.css      ← Todos los temas combinados
 │   ├── light.css       ← Solo tema light
@@ -200,9 +216,10 @@ dist-lib/
 
 1. Busca todos los `src/lib/**/*.ts` (excluye `index.ts` y `tokens.ts`)
 2. Cada `.ts` es un entry point que define un Custom Element via `defineCustomElement`
-3. Compila cada uno como UMD con `vue({ features: { customElement: true } })` + `UnoCSS({ mode: "shadow-dom" })`
-4. Genera los CSS del sistema de tokens
-5. Empaqueta todo en un zip versionado
+3. Compila **dos veces** cada componente como UMD con `vue({ features: { customElement: true } })` + `UnoCSS({ mode: "shadow-dom" })`: variante `core` (Vue incluido) y variante `shared` (`vue` externo, global `__COMEGEN_VUE__`)
+4. Genera `comegen-vue.global.js` (runtime de Vue para la variante `shared`)
+5. Genera los CSS del sistema de tokens
+6. Empaqueta todo en un zip versionado
 
 ### Agregar un componente nuevo
 
@@ -263,13 +280,22 @@ Para cada color (`primary`, `neutral`, `success`, etc.) se generan:
 <!-- 1. Incluir CSS del tema -->
 <link rel="stylesheet" href="css/themes.css">
 
-<!-- 2. Incluir componentes UMD -->
-<script src="CuButton.umd.js"></script>
-<script src="CuAlert.umd.js"></script>
+<!-- 2. Incluir componentes UMD (variante core: Vue adentro) -->
+<script src="CuButton.core.umd.js"></script>
+<script src="CuAlert.core.umd.js"></script>
 
 <!-- 3. Usar -->
 <cu-button color="primary">Click me</cu-button>
 <cu-alert color="success" variant="soft">Guardado correctamente</cu-alert>
+```
+
+Para la variante `shared`, cargá el runtime **antes** de los componentes:
+
+```html
+<link rel="stylesheet" href="css/themes.css">
+<script src="comegen-vue.global.js"></script>
+<script src="CuButton.shared.umd.js"></script>
+<script src="CuAlert.shared.umd.js"></script>
 ```
 
 ## Estructura del proyecto
