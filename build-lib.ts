@@ -37,8 +37,8 @@ interface Bundle {
  *                 `comegen-vue.js` (runtime incluido en su carpeta, para hosts
  *                 sin bundler, p. ej. PHP/vanilla).
  *
- * Cada configuración sale en su propia carpeta `dist-libs/<config>/` con su
- * propio zip `comegenui-<config>-v<version>.zip`.
+ * Cada configuración sale en su propia carpeta `dist-libs/<config>/`; los zips
+ * quedan sueltos en `dist-libs/` (uno por config, `comegenui-<config>-v<version>.zip`).
  */
 type Format = 'umd' | 'esm'
 type Variant = 'core' | 'shared'
@@ -268,7 +268,7 @@ async function runBuilds() {
 async function createZip(config: Config) {
   const outDir = resolve(OUT_ROOT, config.name)
   const zipName = `comegenui-${config.name}-v${version}.zip`
-  const outputPath = resolve(outDir, zipName)
+  const outputPath = resolve(OUT_ROOT, zipName)
 
   const output = fs.createWriteStream(outputPath)
   const archive = archiver('zip', { zlib: { level: 9 } })

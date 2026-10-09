@@ -57,7 +57,7 @@ git clone https://github.com/SpicyDogWings/comegenui.git
 cd comegenui
 git checkout <ref>          # main, v5.0.0-alpha.3, …
 pnpm install
-pnpm build:lib              # → dist-libs/<config>/comegenui-<config>-v{version}.zip
+pnpm build:lib              # → dist-libs/ (4 carpetas + 4 zips sueltos)
 ```
 
 **Uso en HTML:**
@@ -145,14 +145,18 @@ pnpm install
 pnpm build:lib
 ```
 
-El output queda en `dist-libs/`: una carpeta por configuración, cada una con su zip.
+El output queda en `dist-libs/`: una carpeta por configuración **más los 4 zips sueltos** (listos para el release).
 
 ```
 dist-libs/
-├── umd-core/    CuX.umd.js                             + comegenui-umd-core-v{version}.zip
-├── umd-shared/  CuX.umd.js + comegen-vue.global.js     + comegenui-umd-shared-v{version}.zip
-├── esm-core/    CuX.js                                 + comegenui-esm-core-v{version}.zip
-└── esm-shared/  CuX.js + comegen-vue.js                + comegenui-esm-shared-v{version}.zip
+├── umd-core/    CuX.umd.js
+├── umd-shared/  CuX.umd.js + comegen-vue.global.js
+├── esm-core/    CuX.js
+├── esm-shared/  CuX.js + comegen-vue.js
+├── comegenui-umd-core-v{version}.zip      ← zips sueltos (fuera de las carpetas)
+├── comegenui-umd-shared-v{version}.zip
+├── comegenui-esm-core-v{version}.zip
+└── comegenui-esm-shared-v{version}.zip
 ```
 
 Para usar en tu proyecto, copiá los bundles que necesités (y el runtime del `shared` si lo usás):
@@ -170,7 +174,7 @@ Para usar en tu proyecto, copiá los bundles que necesités (y el runtime del `s
 | `pnpm build` | Build del sitio de docs |
 | `pnpm preview` | Preview del sitio buildeado |
 | `pnpm site:sync` | Regenera el tema de VitePress (tokens CU → `*.gen.*`) |
-| `pnpm build:lib` | Build de la librería (Web Components) en 4 configs + un zip por config |
+| `pnpm build:lib` | Build de la librería (Web Components) en 4 configs + 4 zips sueltos en `dist-libs/` |
 | `pnpm type-check` | Type-check con `vue-tsc` |
 | `pnpm test` | Tests unitarios (Vitest) |
 | `pnpm guard` | Gate local con veredicto por componente (`--full`, `--solo <tag>`, `--explicar`) |
@@ -193,12 +197,14 @@ Compila cada componente en `src/lib/` como bundle independiente, en **cuatro con
 
 ```
 dist-libs/
-├── umd-core/    CuButton.umd.js  CuAlert.umd.js  …            + comegenui-umd-core-v{version}.zip
-├── umd-shared/  CuButton.umd.js  CuAlert.umd.js  …            + comegen-vue.global.js
-│                                                              + comegenui-umd-shared-v{version}.zip
-├── esm-core/    CuButton.js  CuAlert.js  …                    + comegenui-esm-core-v{version}.zip
-└── esm-shared/  CuButton.js  CuAlert.js  …                    + comegen-vue.js
-                                                               + comegenui-esm-shared-v{version}.zip
+├── umd-core/    CuButton.umd.js  CuAlert.umd.js  …
+├── umd-shared/  CuButton.umd.js  CuAlert.umd.js  …  + comegen-vue.global.js
+├── esm-core/    CuButton.js  CuAlert.js  …
+├── esm-shared/  CuButton.js  CuAlert.js  …          + comegen-vue.js
+├── comegenui-umd-core-v{version}.zip
+├── comegenui-umd-shared-v{version}.zip
+├── comegenui-esm-core-v{version}.zip
+└── comegenui-esm-shared-v{version}.zip
 ```
 
 ### Cómo funciona
@@ -213,7 +219,7 @@ dist-libs/
 4. Genera el runtime de Vue de cada `shared`: `comegen-vue.global.js` (IIFE, UMD) y
    `comegen-vue.js` (ESM)
 5. Empaqueta cada configuración en su zip `comegenui-<config>-v{version}.zip` (bundles +
-   runtime si es `shared`; sin CSS)`
+   runtime si es `shared`; sin CSS) y deja los 4 zips **sueltos en `dist-libs/`**`
 
 ### Agregar un componente nuevo
 
