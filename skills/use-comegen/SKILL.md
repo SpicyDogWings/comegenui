@@ -4,7 +4,7 @@ description: 'Receta para usar los componentes de ComegenUI: los custom elements
 metadata:
   repository: https://github.com/SpicyDogWings/comegenui
   path: skills/use-comegen
-  version: 5.0.2-alpha
+  version: 5.1.0
 ---
 
 # Usar ComegenUI — receta
@@ -142,7 +142,7 @@ picker.open();
 
 - **Repositorio:** <https://github.com/SpicyDogWings/comegenui>
 - **Ruta en el repo:** `skills/use-comegen/`
-- **Versión de esta copia:** `5.0.2-alpha` (el `metadata.version` del frontmatter).
+- **Versión de esta copia:** `5.1.0` (el `metadata.version` del frontmatter).
 
 La skill es texto: no hay nada que compilar. **No viaja en el zip** (el zip lleva sólo
 la lib). Se instala desde el repo oficial, y la versión de la lib y la de la skill pueden
