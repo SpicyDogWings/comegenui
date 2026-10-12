@@ -184,8 +184,9 @@ Para usar en tu proyecto, copiá los bundles que necesités (y el runtime del `s
 | `pnpm impact` | Qué componentes dependen de los archivos que cambiaste |
 
 > **Hooks locales:** activá el gate automático una vez por clon con
-> `git config core.hooksPath .githooks`. `pre-commit` corre rápido (`guard.sh --fast`)
-> y `pre-push` corre completo (`guard.sh --full`). Las pruebas corren en local: no hay CI automático.
+> `git config core.hooksPath .githooks`. `pre-commit` corre el gate rápido (`guard.sh --fast`);
+> el completo (`guard.sh --full`) lo corrés **a mano antes de pushear** (no hay hook de `pre-push`).
+> Las pruebas corren en local: no hay CI automático.
 
 ## Build de la librería
 

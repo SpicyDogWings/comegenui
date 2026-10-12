@@ -13,7 +13,7 @@ git config core.hooksPath .githooks   # una sola vez por clon
 ```
 
 - **pre-commit** → `guard.sh --fast` (impacto + tipos + contrato + build de la lib, sin tests ni docs). Aborta el commit si un componente se dañó. Saltear puntualmente: `git commit --no-verify`.
-- **pre-push** → `guard.sh --full` (agrega tests, docs y mutación). Bloquea el push si algo está roto. Saltear: `git push --no-verify`.
+- **El gate completo (`guard.sh --full`) NO está enganchado a git**: correlo **a mano antes de pushear** (agrega tests, docs y mutación). No hay hook de `pre-push`: el push no debe pagar el gate.
 
 - `./scripts/guard.sh --solo cu-input` — loop rápido sobre un componente.
 - `./scripts/guard.sh` — impacto + tipos + build de la lib + contrato, sobre lo que tocaste.
@@ -290,7 +290,7 @@ Tokens compartidos: tipografía, spacing, border-radius, shadows, borders.
 
 - Tests unitarios con Vitest (`pnpm test`), junto al componente (`X.test.ts`).
 - Gate local antes de un MR: `./scripts/guard.sh` — impacto + tipos por identidad + contrato de cada custom element + build real de la lib. Con `--full` agrega tests completos, docs y build del sitio.
-- Los hooks de `.githooks/` (`pre-commit` → `--fast`, `pre-push` → `--full`) corren el gate automáticamente. Activación por clon: `git config core.hooksPath .githooks`.
+- El hook de `.githooks/` (`pre-commit` → `--fast`) corre el gate rápido al commitear. Activación por clon: `git config core.hooksPath .githooks`. El gate completo (`guard.sh --full`) se corre **a mano antes de pushear**: no hay hook de `pre-push`.
 - No hay CI automático: las pruebas corren en local (el workflow `.github/workflows/guard.yml` sólo se dispara a mano).
 - Contrato por componente en `scripts/contract-baseline/<tag>.json` (`pnpm contract:update` para regenerarlo a propósito); tipos conocidos en `scripts/typecheck-baseline.txt`. Detalle en la sección [Regla dura](#regla-dura-no-terminás-sin-veredicto-verde).
 - `scripts/preflight.sh` es un alias deprecado de `guard.sh`.
