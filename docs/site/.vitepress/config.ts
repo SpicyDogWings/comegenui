@@ -63,6 +63,12 @@ export default defineConfig({
   title: "ComegenUI",
   description: "Componentes web de ComegenUI.",
   cleanUrls: true,
+  // Favicon propio de ComegenUI (el default `/favicon.ico` también se reemplaza
+  // por el mismo ícono en `public/`).
+  head: [
+    ["link", { rel: "icon", href: "/comegen.ico" }],
+    ["link", { rel: "apple-touch-icon", href: "/comegen.ico" }],
+  ],
   // Syntax highlighting con la paleta CU (generado por cu-tokens).
   markdown: {
     theme: (shikiThemes as { vitepress: { light: unknown; dark: unknown } }).vitepress as never,
