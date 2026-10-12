@@ -14,6 +14,8 @@ Sección colapsable con trigger (botón + chevron animado). El contenido se mues
 </cu-collapse>
 ```
 
+<!-- demo:collapse-uso -->
+
 ---
 
 ## Abierto por defecto
@@ -23,6 +25,8 @@ Sección colapsable con trigger (botón + chevron animado). El contenido se mues
   <p>Visible desde el inicio gracias a <code>default-open</code>.</p>
 </cu-collapse>
 ```
+
+<!-- demo:collapse-abierto-por-defecto -->
 
 ---
 
@@ -34,6 +38,8 @@ Sección colapsable con trigger (botón + chevron animado). El contenido se mues
 <cu-collapse label="Advertencia" color="warning">...</cu-collapse>
 <cu-collapse label="Peligro" color="danger">...</cu-collapse>
 ```
+
+<!-- demo:collapse-colores -->
 
 ---
 
@@ -47,6 +53,8 @@ Sección colapsable con trigger (botón + chevron animado). El contenido se mues
 </cu-collapse>
 ```
 
+<!-- demo:collapse-descripcion -->
+
 ## Deshabilitado
 
 El atributo booleano `disabled` deja el trigger inerte: no responde al click y muestra cursor `not-allowed`. `open()` y `toggle()` pasan a ser no-op; `close()` sí sigue funcionando.
@@ -56,6 +64,8 @@ El atributo booleano `disabled` deja el trigger inerte: no responde al click y m
   <p>El trigger no responde: probá a hacer click.</p>
 </cu-collapse>
 ```
+
+<!-- demo:collapse-deshabilitado -->
 
 ---
 
@@ -72,6 +82,8 @@ Los collapses se pueden anidar para construir árboles de menú:
 </cu-collapse>
 ```
 
+<!-- demo:collapse-anidados -->
+
 ---
 
 ## Escuchar eventos
@@ -83,6 +95,8 @@ collapse.addEventListener('toggle', (e) => {
   console.log('abierto:', e.detail); // true | false
 });
 ```
+
+<!-- demo:collapse-eventos -->
 
 ---
 
@@ -101,6 +115,8 @@ collapse.addEventListener('toggle', (e) => {
   c.isOpen(); // boolean
 </script>
 ```
+
+<!-- demo:collapse-control-programatico -->
 
 ---
 
@@ -136,6 +152,8 @@ collapse.addEventListener('toggle', (e) => {
 </body>
 </html>
 ```
+
+<!-- demo:collapse-completo -->
 
 ---
 

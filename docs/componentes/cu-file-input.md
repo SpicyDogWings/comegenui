@@ -23,6 +23,8 @@ Input de archivo compacto con drag & drop, estilo idéntico a `<cu-input>`. Sing
 </script>
 ```
 
+<!-- demo:file-input-uso -->
+
 ---
 
 ## Drag & drop

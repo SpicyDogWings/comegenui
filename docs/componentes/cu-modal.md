@@ -29,6 +29,8 @@ Modal/diálogo con backdrop, animación, soporte para `size`/`height` y slot `fo
 </button>
 ```
 
+<!-- demo:modal-uso -->
+
 ---
 
 ## Sizes
@@ -40,6 +42,8 @@ Modal/diálogo con backdrop, animación, soporte para `size`/`height` y slot `fo
 <cu-modal size="xl" title="Extra grande">...</cu-modal>
 <cu-modal size="full" title="Pantalla completa">...</cu-modal>
 ```
+
+<!-- demo:modal-sizes -->
 
 `size` controla el ancho; `height` controla el alto. Aceptan los mismos valores.
 
@@ -60,6 +64,8 @@ Modal/diálogo con backdrop, animación, soporte para `size`/`height` y slot `fo
   </div>
 </cu-modal>
 ```
+
+<!-- demo:modal-persistente -->
 
 ---
 
@@ -109,6 +115,8 @@ modal.addEventListener('closed', () => console.log('cierre completo'));
 </body>
 </html>
 ```
+
+<!-- demo:modal-completo -->
 
 ---
 

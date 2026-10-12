@@ -17,6 +17,8 @@ Tarjeta para mostrar información agrupada con jerarquía visual: media, header 
 </cu-card>
 ```
 
+<!-- demo:card-uso -->
+
 ---
 
 ## Variantes visuales
@@ -28,6 +30,8 @@ Tarjeta para mostrar información agrupada con jerarquía visual: media, header 
 <cu-card title="Subtle" variant="subtle" color="primary">subtle</cu-card>
 <cu-card title="Solid" variant="solid" color="primary">solid</cu-card>
 ```
+
+<!-- demo:card-variantes -->
 
 ---
 
@@ -44,6 +48,8 @@ Tarjeta para mostrar información agrupada con jerarquía visual: media, header 
 </cu-card>
 ```
 
+<!-- demo:card-con-imagen -->
+
 ---
 
 ## Layout horizontal
@@ -55,6 +61,8 @@ Media (imagen o slot `media`) al costado del contenido:
   Datos del perfil.
 </cu-card>
 ```
+
+<!-- demo:card-layout-horizontal -->
 
 ---
 
@@ -72,6 +80,8 @@ Media (imagen o slot `media`) al costado del contenido:
   </div>
 </cu-card>
 ```
+
+<!-- demo:card-slots-custom -->
 
 ---
 

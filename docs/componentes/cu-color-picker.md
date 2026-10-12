@@ -22,6 +22,8 @@ Selector de color con swatch y campo de texto hex. Al hacer click en el swatch s
 </script>
 ```
 
+<!-- demo:color-picker-uso -->
+
 ---
 
 ## Valor y modo controlado
@@ -41,6 +43,8 @@ Por defecto el control mantiene su color al elegir. Si querés decidir el valor 
 </script>
 ```
 
+<!-- demo:color-picker-valor-y-modo-controlado -->
+
 ---
 
 ## Deshabilitado
@@ -48,6 +52,8 @@ Por defecto el control mantiene su color al elegir. Si querés decidir el valor 
 ```html
 <cu-color-picker disabled model-value="#dc3545"></cu-color-picker>
 ```
+
+<!-- demo:color-picker-deshabilitado -->
 
 ---
 

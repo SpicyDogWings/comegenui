@@ -31,6 +31,8 @@ Selector de archivos con zona de drag & drop amplia, soporte para carpetas (recu
 </script>
 ```
 
+<!-- demo:file-input-zone-uso -->
+
 ---
 
 ## Directorio recursivo

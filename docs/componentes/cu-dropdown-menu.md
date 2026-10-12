@@ -26,6 +26,8 @@ Menú desplegable con items declarativos (label, ícono, color, divisor, link). 
 </script>
 ```
 
+<!-- demo:dropdown-menu-uso -->
+
 > **Importante:** `items` se asigna como propiedad JS (`dd.items = [...]`), no como atributo HTML.
 
 ---
@@ -56,6 +58,8 @@ Reemplaza el botón toggle con un slot HTML nativo:
 </cu-dropdown-menu>
 ```
 
+<!-- demo:dropdown-menu-toggle-personalizado -->
+
 ---
 
 ## Contenido libre en el panel (sin `items`)
@@ -71,6 +75,8 @@ Si pasás contenido en el slot por defecto, el panel ignora `items` y muestra lo
 </cu-dropdown-menu>
 ```
 
+<!-- demo:dropdown-menu-contenido-libre -->
+
 ---
 
 ## Posicionamiento
@@ -83,6 +89,8 @@ El dropdown usa tres props combinables:
 <cu-dropdown-menu label="Arriba" position="top" align="end"></cu-dropdown-menu>
 <cu-dropdown-menu label="Alineado" position="bottom" align="end" offset="8"></cu-dropdown-menu>
 ```
+
+<!-- demo:dropdown-menu-posicionamiento -->
 
 ---
 
@@ -103,6 +111,8 @@ El dropdown usa tres props combinables:
   dd.addEventListener('close', () => console.log('cerrado'));
 </script>
 ```
+
+<!-- demo:dropdown-menu-control-programatico -->
 
 ---
 

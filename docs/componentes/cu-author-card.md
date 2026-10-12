@@ -13,6 +13,8 @@ Tarjeta de autor con avatar (imagen o iniciales generadas del nombre), nombre y 
 <cu-author-card name="Marcos Ruiz" color="success" size="lg"></cu-author-card>
 ```
 
+<!-- demo:author-card-uso -->
+
 ---
 
 ## Con imagen
@@ -24,6 +26,8 @@ Tarjeta de autor con avatar (imagen o iniciales generadas del nombre), nombre y 
   src="https://example.com/avatar.jpg"
 ></cu-author-card>
 ```
+
+<!-- demo:author-card-con-imagen -->
 
 ---
 

@@ -38,6 +38,8 @@ Igual que `MonthSlider` / `YearSlider`: `""`, valores inválidos (`NaN`) y entra
 </script>
 ```
 
+<!-- demo:calendar-uso -->
+
 ### Grilla de 7 columnas
 
 Los días se distribuyen en `grid-template-columns: repeat(7, 1fr)`: **7 columnas iguales que se reparten el ancho que mida el contenedor** (los "7 width"). Si el contenedor es de 280px cada columna mide 40px; si es de 500px, ~71px. Cada día usa `aspect-ratio: 1` para mantenerse cuadrado.
@@ -49,6 +51,8 @@ Los días se distribuyen en `grid-template-columns: repeat(7, 1fr)`: **7 columna
 <!-- Ancho fijo -->
 <cu-calendar id="cal2" style="width: 280px;"></cu-calendar>
 ```
+
+<!-- demo:calendar-grilla -->
 
 ---
 
@@ -63,6 +67,8 @@ El header del calendario **reutiliza el componente `MonthSlider` del repo**: che
 <!-- Solo mes: drag sobre el label para navegar -->
 <cu-calendar></cu-calendar>
 ```
+
+<!-- demo:calendar-controles-mes -->
 
 - **`year-navigation`** (default `false`): agrega los botones `«` / `»` para saltar de año (atributo booleano en HTML plano: `year-navigation`).
 - **Drag** sobre el label del mes navega meses (misma lógica que el slider).
@@ -86,6 +92,8 @@ cal.max = '2026-12-24';
 <cu-calendar min="2026-01-10" max="2026-12-24"></cu-calendar>
 ```
 
+<!-- demo:calendar-min-max -->
+
 > El mes visible se re-ajusta automáticamente si `modelValue`, `min` o `max` cambian en runtime.
 
 ---
@@ -100,6 +108,8 @@ cal.max = '2026-12-24';
 <cu-calendar locale="en"></cu-calendar>
 ```
 
+<!-- demo:calendar-semana-locale -->
+
 ---
 
 ## Variantes del día seleccionado
@@ -113,6 +123,8 @@ El **día de hoy** se muestra como ghost: número en el color accent, sin fondo 
 <cu-calendar model-value="2026-08-11" variant="outlined"></cu-calendar>
 <cu-calendar model-value="2026-08-11" variant="soft"></cu-calendar>
 ```
+
+<!-- demo:calendar-variantes -->
 
 ---
 
@@ -130,6 +142,8 @@ Además de `min`/`max`, podés deshabilitar días de la semana o fechas puntuale
 <!-- Solo fines de semana, todo el mes -->
 <cu-calendar disabled-weekdays="0,6"></cu-calendar>
 ```
+
+<!-- demo:calendar-deshabilitados -->
 
 > Los días deshabilitados no se pueden seleccionar (ni con click ni con `setValue`) y se ven atenuados.
 
@@ -159,6 +173,8 @@ cal.events.push({ date: '2026-08-11', color: 'primary' });
 - Si un día tiene varios eventos, se muestran varios puntos en fila.
 - Si no se especifica `color`, usa el `color` del calendario (`--cal-accent`).
 
+<!-- demo:calendar-eventos -->
+
 ---
 
 ## Rango (modo `range`)
@@ -178,6 +194,8 @@ El rango es un **modo** (`mode="range"`). Ahí `rangeStart`/`rangeEnd` son el **
 </script>
 ```
 
+<!-- demo:calendar-rango -->
+
 - Clickear/navegar emite `update:rangeStart`/`update:rangeEnd`; `change`/`select` emiten `{ start, end }` al completar el rango.
 - `getRange()` / `setRange()` / `clear()` manejan el rango por código.
 - En `single`, para una fecha puntual usá `modelValue` (con `rangeStart`/`rangeEnd` presentes, se ignoran).
@@ -189,6 +207,8 @@ El rango es un **modo** (`mode="range"`). Ahí `rangeStart`/`rangeEnd` son el **
 ```html
 <cu-calendar disabled></cu-calendar>
 ```
+
+<!-- demo:calendar-disabled -->
 
 ---
 

@@ -37,6 +37,8 @@ const x = 1;
 <script src="dist-libs/umd-core/CuMarkdown.umd.js"></script>
 ````
 
+<!-- demo:markdown-uso -->
+
 El contenido se pasa como **texto dentro del tag** (no como prop). El componente lo parsea al montarse.
 
 ---

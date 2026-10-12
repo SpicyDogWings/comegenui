@@ -14,6 +14,8 @@ Avatar circular (imagen o iniciales) con color semántico y tres tamaños. Si no
 <cu-avatar initials="CD" size="sm"></cu-avatar>
 ```
 
+<!-- demo:avatar-uso -->
+
 ---
 
 ## Tamaños
@@ -23,6 +25,8 @@ Avatar circular (imagen o iniciales) con color semántico y tres tamaños. Si no
 <cu-avatar initials="A" size="md"></cu-avatar>
 <cu-avatar initials="A" size="lg"></cu-avatar>
 ```
+
+<!-- demo:avatar-tamanos -->
 
 ---
 

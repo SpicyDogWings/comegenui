@@ -16,12 +16,16 @@ Label con color semántico. Al hacer clic, enfoca el input hijo o, si se define 
 </cu-label>
 ```
 
+<!-- demo:label-declarativo -->
+
 ### Con `for` apuntando a un input externo
 
 ```html
 <cu-label for="miInput" label="Nombre"></cu-label>
 <input id="miInput" type="text" />
 ```
+
+<!-- demo:label-for -->
 
 ### Con cualquier control como hijo
 
@@ -35,6 +39,8 @@ Label con color semántico. Al hacer clic, enfoca el input hijo o, si se define 
 </cu-label>
 ```
 
+<!-- demo:label-controles -->
+
 Al hacer clic en el label, el control hijo se enfoca automáticamente. Si pasás `for`, se enfoca el elemento con ese id en lugar del hijo.
 
 ---
@@ -46,6 +52,8 @@ Al hacer clic en el label, el control hijo se enfoca automáticamente. Si pasás
   <cu-input type="search" placeholder="Buscar..."></cu-input>
 </cu-label>
 ```
+
+<!-- demo:label-con-input -->
 
 ---
 

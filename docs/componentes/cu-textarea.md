@@ -19,6 +19,8 @@
 </script>
 ```
 
+<!-- demo:textarea-uso -->
+
 ---
 
 ## Escuchar cambios
@@ -33,6 +35,8 @@
 </script>
 ```
 
+<!-- demo:textarea-cambios -->
+
 ---
 
 ## Reset
@@ -43,6 +47,8 @@
 <button onclick="document.getElementById('notas').reset()">Restaurar plantilla</button>
 ```
 
+<!-- demo:textarea-reset -->
+
 ---
 
 ## Deshabilitar redimensionado
@@ -50,6 +56,8 @@
 ```html
 <cu-textarea no-resize placeholder="Tamaño fijo" rows="4"></cu-textarea>
 ```
+
+<!-- demo:textarea-no-resize -->
 
 Útil cuando querés controlar el alto de forma externa (con CSS o de manera responsiva).
 
