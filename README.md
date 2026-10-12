@@ -171,8 +171,9 @@ Para usar en tu proyecto, copiá los bundles que necesités (y el runtime del `s
 | Comando | Descripción |
 |---------|-------------|
 | `pnpm dev` | Dev server del sitio de docs (VitePress) con hot-reload |
-| `pnpm build` | Build del sitio de docs |
+| `pnpm build` | Build del sitio de docs (arma el `esm-shared` para los demos) |
 | `pnpm preview` | Preview del sitio buildeado |
+| `pnpm build:docs:lib` | Arma sólo `esm-shared` (lo que consumen los demos de la doc) |
 | `pnpm site:sync` | Regenera el tema de VitePress (tokens CU → `*.gen.*`) |
 | `pnpm build:lib` | Build de la librería (Web Components) en 4 configs + 4 zips sueltos en `dist-libs/` |
 | `pnpm type-check` | Type-check con `vue-tsc` |
