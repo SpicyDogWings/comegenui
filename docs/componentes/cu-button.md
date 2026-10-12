@@ -21,6 +21,8 @@ Botón con soporte de color, variante, link y estados. Si se define `to`, se ren
 <cu-button to="https://ejemplo.com" target="_blank" variant="link">Sitio externo</cu-button>
 ```
 
+<!-- demo:button-uso -->
+
 ---
 
 ## Cuándo usarlo
@@ -63,6 +65,8 @@ los demás, así que si algo se ve raro en otro componente, suele venir de acá.
 <cu-button color="primary" variant="link">link</cu-button>
 ```
 
+<!-- demo:button-variantes -->
+
 ---
 
 ## Tamaños
@@ -72,6 +76,8 @@ los demás, así que si algo se ve raro en otro componente, suele venir de acá.
 <cu-button size="md">Medio (default)</cu-button>
 <cu-button size="lg">Grande</cu-button>
 ```
+
+<!-- demo:button-tamanos -->
 
 > En la variante `link` el padding queda fijo en 0 (el `size` no lo pisa).
 
@@ -94,6 +100,8 @@ Con `loading` el botón muestra un spinner animado y queda deshabilitado hasta q
 </script>
 ```
 
+<!-- demo:button-loading -->
+
 ---
 
 ## Tipo submit/reset
@@ -106,6 +114,8 @@ Usá `type` cuando el botón viva dentro de un `<form>`:
   <cu-button type="reset" variant="ghost">Limpiar</cu-button>
 </form>
 ```
+
+<!-- demo:button-submit -->
 
 ---
 
@@ -122,6 +132,8 @@ Usá `type` cuando el botón viva dentro de un `<form>`:
   });
 </script>
 ```
+
+<!-- demo:button-click -->
 
 ---
 

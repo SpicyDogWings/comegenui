@@ -41,6 +41,24 @@ function buildModeMap(): Map<string, { counterpart: string; mode: "vue" | "vanil
 
 const modeMap = buildModeMap();
 
+/**
+ * Marcadores `<!-- demo:id -->` en las fichas (`docs/componentes/*.md`) → un
+ * `<ComegenDemo id="…" />` (componente global del theme) que renderiza el demo
+ * real de ese ejemplo. Así la ficha queda como fuente única y sin tags de Vue.
+ */
+function comejenDemoPlugin(md: {
+  core: { ruler: { push: (name: string, fn: (state: { tokens: { type: string; content: string }[] }) => void) => void } };
+}) {
+  md.core.ruler.push("comegen-demo", (state) => {
+    for (const token of state.tokens) {
+      if (token.type !== "html_block") continue;
+      const match = /^\s*<!--\s*demo:([\w-]+)\s*-->\s*$/.exec(token.content);
+      if (!match) continue;
+      token.content = `<ComegenDemo id="${match[1]}" />\n`;
+    }
+  });
+}
+
 export default defineConfig({
   title: "ComegenUI",
   description: "Componentes web de ComegenUI.",
@@ -48,10 +66,20 @@ export default defineConfig({
   // Syntax highlighting con la paleta CU (generado por cu-tokens).
   markdown: {
     theme: (shikiThemes as { vitepress: { light: unknown; dark: unknown } }).vitepress as never,
+    config: (md) => comejenDemoPlugin(md as never),
   },
   // Las fichas se incluyen tal cual en las páginas: sus links al índice de
   // fichas (`../README.md`) y al playground no existen como rutas del sitio.
-  ignoreDeadLinks: [/README/, /playground/],
+  ignoreDeadLinks: [/README/, /playground/, /skills\//],
+  // Los bundles `esm-shared` registran custom elements `<cu-*>`: Vue debe
+  // tratarlos como tales (no como componentes Vue).
+  vue: {
+    template: {
+      compilerOptions: {
+        isCustomElement: (tag: string) => tag.startsWith("cu-"),
+      },
+    },
+  },
   // Redirect antes del primer paint: si la preferencia guardada (`cu-docs-mode`,
   // la escribe el select del topbar) no coincide con el modo de esta página, el
   // browser salta a la contraparte sin pintar la página equivocada. Es lo único
@@ -81,6 +109,8 @@ export default defineConfig({
     resolve: {
       alias: {
         "@": resolve(repoRoot, "src"),
+        // Build `esm-shared` de la lib: lo consumen los demos vanilla.
+        "@comegen-shared": resolve(repoRoot, "dist-libs/esm-shared"),
       },
     },
     server: { fs: { allow: [repoRoot] } },
