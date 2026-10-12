@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from "vue";
+import { computed, ref, onMounted, onBeforeUnmount } from "vue";
+import { useData } from "vitepress";
 import { version } from "../../package.json";
 import Badge from "@/components/information/Badge.vue";
 import LucideForm from "@/components/icons/LucideForm.vue";
@@ -8,11 +9,23 @@ import LucidePalette from "@/components/icons/LucidePalette.vue";
 import LucideTag from "@/components/icons/LucideTag.vue";
 import ThemeDropdown from "@/components/theme/ThemeDropdown.vue";
 import CommandPalette from "@/components/overlay/CommandPalette.vue";
-import { navigationCommands } from "@/utils/command-routes";
+import { navigationCommands, componentCommands, type SidebarConfig } from "@/utils/command-routes";
 
 defineProps<{ fixed?: boolean }>();
 
+const { page, theme } = useData();
+
 const navPaletteRef = ref<InstanceType<typeof CommandPalette> | null>(null);
+
+// La paleta lista los comandos fijos más un comando por componente, derivado del
+// sidebar de VitePress (`theme.sidebar`) y del modo de la página actual.
+const commands = computed(() => [
+  ...navigationCommands(),
+  ...componentCommands(
+    (theme.value.sidebar ?? {}) as SidebarConfig,
+    `/${page.value.relativePath.replace(/\.md$/, "")}`,
+  ),
+]);
 
 function handleNavShortcut(event: KeyboardEvent) {
   if (event.ctrlKey && !event.altKey && !event.shiftKey && event.key.toLowerCase() === "k") {
@@ -92,7 +105,7 @@ onBeforeUnmount(() => {
     ref="navPaletteRef"
     title="Navegar"
     placeholder="Buscar página…"
-    :commands="navigationCommands()"
+    :commands="commands"
   />
 </template>
 
