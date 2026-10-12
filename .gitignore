@@ -72,6 +72,9 @@ graphify-out
 # Pesonal
 .octo
 
+# Vercel CLI (link del proyecto; el sitio se deploya como carpeta estática)
+.vercel
+
 # Playwright MCP (artefactos de sesión)
 .playwright-mcp/
 .commandcode/
