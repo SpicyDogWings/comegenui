@@ -467,6 +467,20 @@ const MUTATIONS = [
   if (inputRef.value) inputRef.value.set(val);
 }`,
   },
+  {
+    id: "code-scheme-invierte-fondo",
+    file: "src/plugins/cu-tokens/css.ts",
+    expect: "el fondo del code block es siempre oscuro (el polo oscuro del tema)",
+    find: `const bg = toHex(mix(darkPole, '#000000', 0.35))`,
+    replace: `const bg = lightPole`,
+  },
+  {
+    id: "code-accent-sin-contraste",
+    file: "src/plugins/cu-tokens/shiki.ts",
+    expect: "los acentos de sintaxis garantizan contraste WCAG >= 4.5:1 sobre el fondo",
+    find: `if (base) accents[key] = readable(base, code.bg)`,
+    replace: `if (base) accents[key] = base`,
+  },
 ];
 
 export { MUTATIONS };

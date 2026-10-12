@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { colorsBlock, colorVar, generateThemeCSS, generateThemesCSS, resolveInk } from './css'
+import { colorsBlock, colorVar, generateThemeCSS, generateThemesCSS, resolveCodeScheme, resolveInk } from './css'
 import { DEFAULTS, extractShared } from './defaults'
 import { stripShadowColor, parseShadow, composeShadow, normalizeShadow, normalizeShadowLength } from './shadow'
 
@@ -48,7 +48,7 @@ describe('colorsBlock', () => {
   })
 
   it('genera las 14 variantes por color', () => {
-    const css = colorVar('primary', COLORS.primary, COLORS.surface)
+    const css = colorVar('primary', COLORS.primary, COLORS.surface, resolveCodeScheme(COLORS.surface, COLORS.neutral).bg)
     for (const variant of [
       '',
       '-text',
@@ -69,9 +69,9 @@ describe('colorsBlock', () => {
     }
   })
 
-  it('genera el esquema de código --cu-code-* desde neutral/surface', () => {
+  it('genera el esquema de código --cu-code-* (editor siempre oscuro, derivado del tema)', () => {
     const css = colorsBlock(COLORS, 'light', OPACITIES)
-    expect(css).toContain('--cu-code-bg: #1a1a1a')
+    expect(css).toContain('--cu-code-bg: #111111')
     expect(css).toContain('--cu-code-text: #eeeeee')
     expect(css).toContain('--cu-code-faded: rgba(238,')
   })
@@ -94,11 +94,11 @@ describe('generateThemesCSS / generateThemeCSS', () => {
     const darkBlock = css.split('[data-theme="dark"')[1]
 
     expect(rootBlock).toContain('--cu-color-primary-code:')
-    expect(rootBlock).toContain('--cu-code-bg: #1a1a1a')
+    expect(rootBlock).toContain('--cu-code-bg: #111111')
     expect(rootBlock).toContain('--cu-code-text: #eeeeee')
     expect(darkBlock).toContain('--cu-color-primary-code:')
-    expect(darkBlock).toContain('--cu-code-bg: #e5e5e5')
-    expect(darkBlock).toContain('--cu-code-text: #1c1c1c')
+    expect(darkBlock).toContain('--cu-code-bg: #121212')
+    expect(darkBlock).toContain('--cu-code-text: #e5e5e5')
   })
 
   it('generateThemeCSS emite el bloque completo de un tema', () => {

@@ -27,7 +27,7 @@ describe('shikiTheme', () => {
   it('nombra el tema con prefijo cu- y hereda la polaridad del fondo', () => {
     const light = shikiTheme(COLORS, 'light')
     expect(light.name).toBe('cu-light')
-    expect(light.colors?.['editor.background']).toBe('#1a1a1a')
+    expect(light.colors?.['editor.background']).toBe('#111111')
     expect(light.colors?.['editor.foreground']).toBe('#eeeeee')
   })
 

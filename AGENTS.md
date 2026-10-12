@@ -258,12 +258,12 @@ El sistema de tokens (`cu-tokens`) genera para cada color:
 - `--cu-color-{name}-soft`, `-soft-hover`, `-soft-active` (variante soft)
 - `--cu-color-{name}-subtle`, `-subtle-hover`, `-subtle-active`, `-subtle-border` (variante subtle)
 - `--cu-color-{name}-ghost-hover`, `-ghost-active` (variante ghost)
-- `--cu-color-{name}-code` (acento para superficies de código: mezcla del color hacia surface — legible sobre `--cu-code-bg` en todos los temas)
+- `--cu-color-{name}-code` (acento para superficies de código: mezcla del color hacia blanco/negro hasta garantizar contraste WCAG ≥ 4.5:1 sobre `--cu-code-bg`; única fórmula, compartida con Shiki)
 
-Tokens del esquema de código (invierten con el tema, pensados para el contexto "inverso" de los code blocks):
-- `--cu-code-bg` (fondo de código, = neutral)
-- `--cu-code-text` (texto sobre código, = surface)
-- `--cu-code-faded` (atenuados: comentarios, meta, gutter = surface al 55%)
+Tokens del esquema de código (SIEMPRE un editor oscuro — fondo oscuro, texto claro — derivado del tema, no estático):
+- `--cu-code-bg` (fondo de código: polo oscuro del tema — el `surface` en temas oscuros, la tinta en claros — oscurecido ~35%)
+- `--cu-code-text` (texto sobre código: el polo claro, el complemento del anterior)
+- `--cu-code-faded` (atenuados: comentarios, meta, gutter = el texto del código al 55%)
 
 Tokens compartidos: tipografía, spacing, border-radius, shadows, borders.
 

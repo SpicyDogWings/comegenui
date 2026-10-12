@@ -5,7 +5,7 @@ import { normalizeShadow } from './shadow'
 
 let styleEl: HTMLStyleElement | null = null
 
-export function colorVar(name: string, value: string, surface: string) {
+export function colorVar(name: string, value: string, surface: string, codeBg: string) {
   return `--cu-color-${name}: ${value};
     --cu-color-${name}-text: ${toHex(darken(value, 0.25))};
     --cu-color-${name}-hover: ${toHex(darken(value, 0.1))};
@@ -19,7 +19,34 @@ export function colorVar(name: string, value: string, surface: string) {
     --cu-color-${name}-subtle-hover: ${toHex(transparentize(value, 0.8))};
     --cu-color-${name}-subtle-active: ${toHex(transparentize(value, 0.7))};
     --cu-color-${name}-subtle-border: ${transparentize(value, 0.5)};
-    --cu-color-${name}-code: ${toHex(mix(value, surface, 0.4))};`
+    --cu-color-${name}-code: ${readable(value, codeBg)};`
+}
+
+/** Luminancia relativa WCAG (para el contraste de los acentos de código). */
+function relLuma(hex: string): number {
+  const h = toHex(hex).replace('#', '')
+  const [r = 0, g = 0, b = 0] = [0, 2, 4]
+    .map((i) => parseInt(h.slice(i, i + 2), 16) / 255)
+    .map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4))
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b
+}
+
+function contrast(a: string, b: string): number {
+  const [hi, lo] = [relLuma(a), relLuma(b)].sort((x, y) => y - x)
+  return ((hi ?? 0) + 0.05) / ((lo ?? 0) + 0.05)
+}
+
+/** Acento legible sobre `bg`: mezcla hacia blanco/negro hasta alcanzar `min`
+ *  de contraste WCAG (4.5:1 por defecto). Única fuente de verdad de
+ *  `--cu-color-{name}-code` — la comparten css.ts y shiki.ts. */
+export function readable(color: string, bg: string, min = 4.5): string {
+  const target = luma01(bg) < 0.5 ? '#ffffff' : '#000000'
+  let best = color
+  for (let amount = 0.35; amount <= 1.0001; amount += 0.05) {
+    best = toHex(mix(color, target, amount))
+    if (contrast(best, bg) >= min) return best
+  }
+  return best
 }
 
 /* neutral es la tinta (texto/títulos del layout): debe contrastar con el
@@ -45,21 +72,37 @@ export function resolveInk(surface: string, neutral?: string): string {
   return surfaceDark ? toHex(mix(surface, '#ffffff', 0.88)) : toHex(mix(surface, '#000000', 0.88))
 }
 
+/* El bloque de código es SIEMPRE un editor oscuro (fondo oscuro, texto claro),
+   derivado del tema — nada fijo: el polo oscuro es el `surface` en temas oscuros
+   y la tinta en temas claros; el polo claro es el otro. Vale para los 16 temas y
+   para los custom. */
+export function resolveCodeScheme(surface: string, neutral?: string) {
+  const ink = resolveInk(surface, neutral)
+  const surfaceDark = luma01(surface) < 0.5
+  const darkPole = surfaceDark ? surface : ink
+  const lightPole = surfaceDark ? ink : surface
+  // Un poco más oscuro que el polo para despegar el bloque de la página.
+  const bg = toHex(mix(darkPole, '#000000', 0.35))
+  const text = lightPole
+  return { bg, text, faded: transparentize(text, 0.45) }
+}
+
 export function colorsBlock(colors: any, themeName: string, opacities: Record<string, { shadow: number }>) {
   const ink = resolveInk(colors.surface, colors.neutral)
+  const code = resolveCodeScheme(colors.surface, colors.neutral)
   const shadowOpacity = opacities[themeName]?.shadow ?? opacities.default?.shadow ?? 10
   const shadowRgba = hexToRgba(colors.shadow || '#000000', shadowOpacity)
-  return `${colorVar('primary', colors.primary, colors.surface)}
-    ${colorVar('secondary', colors.secondary, colors.surface)}
-    ${colorVar('neutral', ink, colors.surface)}
-    ${colorVar('success', colors.success, colors.surface)}
-    ${colorVar('warning', colors.warning, colors.surface)}
-    ${colorVar('danger', colors.danger, colors.surface)}
+  return `${colorVar('primary', colors.primary, colors.surface, code.bg)}
+    ${colorVar('secondary', colors.secondary, colors.surface, code.bg)}
+    ${colorVar('neutral', ink, colors.surface, code.bg)}
+    ${colorVar('success', colors.success, colors.surface, code.bg)}
+    ${colorVar('warning', colors.warning, colors.surface, code.bg)}
+    ${colorVar('danger', colors.danger, colors.surface, code.bg)}
     --cu-color-surface: ${colors.surface};
-    /* esquema de código: tokens dedicados (invierten con el tema) */
-    --cu-code-bg: ${ink};
-    --cu-code-text: ${colors.surface};
-    --cu-code-faded: ${transparentize(colors.surface, 0.45)};
+    /* esquema de código: editor SIEMPRE oscuro, derivado del tema */
+    --cu-code-bg: ${code.bg};
+    --cu-code-text: ${code.text};
+    --cu-code-faded: ${code.faded};
     /* per-theme shadow (color + opacidad 1-100) + border colors */
     --cu-shadow-color: ${shadowRgba};
     --cu-border-color: ${colors.default || '#d1d5db'};
