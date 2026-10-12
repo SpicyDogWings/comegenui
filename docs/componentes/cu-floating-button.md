@@ -20,6 +20,8 @@ Botón flotante (FAB) fijo en la esquina inferior derecha. Es un `Button` (hered
 </script>
 ```
 
+<!-- demo:floating-button-uso -->
+
 ---
 
 ## Variantes y tamaños
@@ -30,6 +32,8 @@ Botón flotante (FAB) fijo en la esquina inferior derecha. Es un `Button` (hered
 </cu-floating-button>
 ```
 
+<!-- demo:floating-button-variantes-tamanos -->
+
 ---
 
 ## Deshabilitado
@@ -39,6 +43,8 @@ Botón flotante (FAB) fijo en la esquina inferior derecha. Es un `Button` (hered
   <svg><!-- ícono --></svg>
 </cu-floating-button>
 ```
+
+<!-- demo:floating-button-deshabilitado -->
 
 ---
 

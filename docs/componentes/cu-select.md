@@ -23,6 +23,8 @@ Selector de opciones con color, variante, ícono chevron, opciones deshabilitada
 </script>
 ```
 
+<!-- demo:select-uso -->
+
 ---
 
 ## Opciones deshabilitadas
@@ -40,6 +42,8 @@ Selector de opciones con color, variante, ícono chevron, opciones deshabilitada
   ];
 </script>
 ```
+
+<!-- demo:select-opciones-deshabilitadas -->
 
 Las opciones con `disabled: true` se ven atenuadas y no responden al click.
 
@@ -59,6 +63,8 @@ Las opciones con `disabled: true` se ven atenuadas y no responden al click.
   ];
 </script>
 ```
+
+<!-- demo:select-opciones-color -->
 
 Si una opción no especifica `color` ni `variant`, hereda los valores del `<cu-select>`.
 
@@ -91,6 +97,8 @@ Si una opción no especifica `color` ni `variant`, hereda los valores del `<cu-s
 </script>
 ```
 
+<!-- demo:select-cambios -->
+
 ---
 
 ## Búsqueda por teclado (searchEnabled)
@@ -112,6 +120,8 @@ Cuando `searchEnabled` es `true`, el select acepta entrada por teclado (como un 
   ];
 </script>
 ```
+
+<!-- demo:select-search-enabled -->
 
 **Comportamiento:**
 - Al abrir el dropdown, el input oculto recibe foco
@@ -137,6 +147,8 @@ select.loading = true;   // mostrar
 select.loading = false;  // ocultar
 ```
 
+<!-- demo:select-loading -->
+
 **Nota:** Si `loading` está activo, la barra de cooldown (del `searchEnabled`) **no se muestra**.
 
 ---
@@ -155,6 +167,8 @@ Mientras el usuario escribe (con `searchEnabled`), aparece una barra de cooldown
 <!-- Cooldown personalizado: 3s -->
 <cu-select search-enabled search-reset-delay="3000"></cu-select>
 ```
+
+<!-- demo:select-cooldown -->
 
 | `cooldownVariant` | Apariencia |
 |-------------------|------------|
@@ -184,6 +198,8 @@ Mientras el usuario escribe (con `searchEnabled`), aparece una barra de cooldown
 </script>
 ```
 
+<!-- demo:select-control-programatico -->
+
 ---
 
 ## Posicionamiento
@@ -196,6 +212,8 @@ Mientras el usuario escribe (con `searchEnabled`), aparece una barra de cooldown
 <cu-select position="bottom" align="end"></cu-select>
 <cu-select position="top" align="start"></cu-select>
 ```
+
+<!-- demo:select-posicionamiento -->
 
 ---
 

@@ -1,11 +1,13 @@
 {
   "name": "comegenui",
-  "version": "5.1.0",
+  "version": "5.1.1",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "pnpm site:sync && vitepress dev docs/site",
-    "build": "pnpm site:sync && vitepress build docs/site",
+    "build:docs:lib": "COMEGEN_CONFIGS=esm-shared COMEGEN_NO_ZIP=1 pnpm build:lib",
+    "deploy:docs": "pnpm build && vercel link --cwd docs/site/.vitepress/dist --project comegenui-docs --yes && vercel --cwd docs/site/.vitepress/dist --prod --yes",
+    "dev": "pnpm build:docs:lib && pnpm site:sync && vitepress dev docs/site",
+    "build": "pnpm build:docs:lib && pnpm site:sync && vitepress build docs/site",
     "preview": "vitepress preview docs/site",
     "site:sync": "tsx --tsconfig tsconfig.app.json src/plugins/cu-tokens/cli/vitepress.mjs",
     "build:lib": "pnpm exec tsx --tsconfig tsconfig.build-lib.json build-lib.ts",

@@ -150,6 +150,8 @@ Para **cada** método listado, verificar:
 - [ ] Si hay props complejas (arrays/objetos), la ficha vanilla las asigna con `element.property = ...` (no como atributo) y la Vue con `:prop`.
 - [ ] Si hay eventos, la ficha vanilla usa `addEventListener` con `e.detail` y la Vue `@evento`.
 - [ ] Los ejemplos son copy-pasteables (sin partes truncadas con `...` sin contexto).
+- [ ] Cada bloque ` ```html ` de la ficha vanilla tiene su `<!-- demo:<id> -->` y el `.vue`
+      correspondiente en `docs/site/examples/<componente>/<id>.vue` (compila y refleja el bloque).
 
 ---
 

@@ -29,6 +29,8 @@ Campo de texto con sugerencias en menú desplegable. Filtra los `items` en vivo 
 </script>
 ```
 
+<!-- demo:autocomplete-uso -->
+
 > **No existe la prop `label`.** Para mostrar un rótulo sobre el campo, combiná con `<cu-label>`.
 
 ---
@@ -79,6 +81,8 @@ Por defecto el menú se abre al recibir foco. Con `min-chars="2"` solo se abre t
 </script>
 ```
 
+<!-- demo:autocomplete-minimo-caracteres -->
+
 > `open()` ignora `min-chars`: es la salida programática. Lo que sí lo bloquea es `disabled`.
 
 ---
@@ -91,6 +95,8 @@ Por defecto el menú se abre al recibir foco. Con `min-chars="2"` solo se abre t
 
 <cu-autocomplete position="bottom" align="end"></cu-autocomplete>
 ```
+
+<!-- demo:autocomplete-posicionamiento -->
 
 ---
 
@@ -114,6 +120,8 @@ Por defecto el menú se abre al recibir foco. Con `min-chars="2"` solo se abre t
 </script>
 ```
 
+<!-- demo:autocomplete-control-programatico -->
+
 ---
 
 ## Tipos de input
@@ -123,6 +131,8 @@ Por defecto el menú se abre al recibir foco. Con `min-chars="2"` solo se abre t
 <cu-autocomplete type="search" placeholder="Buscar..."></cu-autocomplete>
 <cu-autocomplete type="email" placeholder="Email..."></cu-autocomplete>
 ```
+
+<!-- demo:autocomplete-tipos-de-input -->
 
 ---
 

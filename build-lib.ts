@@ -49,12 +49,20 @@ interface Config {
   variant: Variant
 }
 
-const CONFIGS: Config[] = [
+const ALL_CONFIGS: Config[] = [
   { name: 'umd-core', format: 'umd', variant: 'core' },
   { name: 'umd-shared', format: 'umd', variant: 'shared' },
   { name: 'esm-core', format: 'esm', variant: 'core' },
   { name: 'esm-shared', format: 'esm', variant: 'shared' },
 ]
+
+// `COMEGEN_CONFIGS=esm-shared` limita el build a esas configs (lo usa el sitio
+// de docs, que sólo necesita el `esm-shared`). Sin la variable, se construyen las 4.
+const only = (process.env.COMEGEN_CONFIGS ?? '')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean)
+const CONFIGS: Config[] = only.length ? ALL_CONFIGS.filter((c) => only.includes(c.name)) : ALL_CONFIGS
 
 const OUT_ROOT = resolve(__dirname, 'dist-libs')
 
@@ -228,16 +236,14 @@ async function buildEsmRuntime(outDir: string) {
 }
 
 async function runBuilds() {
-  console.log('🧹 Limpiando dist-libs...')
-  if (fs.existsSync(OUT_ROOT)) {
-    fs.rmSync(OUT_ROOT, { recursive: true, force: true })
-  }
   fs.mkdirSync(OUT_ROOT, { recursive: true })
 
   console.log(`🚀 Building ${bundles.length} component(s) × ${CONFIGS.length} configuración(es)...`)
 
   for (const config of CONFIGS) {
     const outDir = resolve(OUT_ROOT, config.name)
+    // Se limpia sólo esta config (así un build parcial no borra las demás).
+    if (fs.existsSync(outDir)) fs.rmSync(outDir, { recursive: true, force: true })
     fs.mkdirSync(outDir, { recursive: true })
 
     for (const bundle of bundles) {

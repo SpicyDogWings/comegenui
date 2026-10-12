@@ -21,6 +21,8 @@ Input de texto con color, variante, tipos de input HTML5 y métodos `get`/`set`/
 </script>
 ```
 
+<!-- demo:input-uso -->
+
 ---
 
 ## Escuchar cambios
@@ -35,6 +37,8 @@ Input de texto con color, variante, tipos de input HTML5 y métodos `get`/`set`/
 </script>
 ```
 
+<!-- demo:input-cambios -->
+
 ---
 
 ## Reset
@@ -44,6 +48,8 @@ Input de texto con color, variante, tipos de input HTML5 y métodos `get`/`set`/
 
 <button onclick="document.getElementById('campo').reset()">Resetear</button>
 ```
+
+<!-- demo:input-reset -->
 
 ---
 
@@ -58,6 +64,8 @@ Input de texto con color, variante, tipos de input HTML5 y métodos `get`/`set`/
 <cu-input type="url" placeholder="https://..."></cu-input>
 <cu-input type="search" placeholder="Buscar..."></cu-input>
 ```
+
+<!-- demo:input-tipos -->
 
 ---
 

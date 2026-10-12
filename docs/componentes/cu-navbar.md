@@ -27,6 +27,8 @@ Barra de navegación vertical (tipo sidebar) con submenús, búsqueda (`filter`/
 </script>
 ```
 
+<!-- demo:navbar-uso -->
+
 ---
 
 ## Estructura de `items`
@@ -48,6 +50,8 @@ interface NavItem {
 <cu-navbar id="nav2" compact trigger="hover"></cu-navbar>
 <cu-navbar id="nav3" responsive responsive-mode="side" side-over-position="right"></cu-navbar>
 ```
+
+<!-- demo:navbar-compacto-responsive -->
 
 ---
 

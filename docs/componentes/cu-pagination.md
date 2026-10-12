@@ -33,6 +33,8 @@ Paginación numérica con soporte para selector de tamaño de página y botones 
 </script>
 ```
 
+<!-- demo:pagination-uso -->
+
 ---
 
 ## Ejemplo con todos los controles
@@ -50,6 +52,8 @@ Paginación numérica con soporte para selector de tamaño de página y botones 
 ></cu-pagination>
 ```
 
+<!-- demo:pagination-todos-los-controles -->
+
 ---
 
 ## Atributos booleanos en HTML
@@ -61,6 +65,8 @@ Paginación numérica con soporte para selector de tamaño de página y botones 
   total-pages="5"
 ></cu-pagination>
 ```
+
+<!-- demo:pagination-booleanos -->
 
 ---
 

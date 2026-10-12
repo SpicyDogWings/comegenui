@@ -41,11 +41,15 @@ picker.format = 'dd-MM-yy';    // "11-08-26"
 </script>
 ```
 
+<!-- demo:date-picker-uso-basico -->
+
 ### Con fecha inicial y límites
 
 ```html
 <cu-date-picker id="miPicker" model-value="2026-08-11" min="2026-01-01" max="2026-12-31" format="dd/MM/yyyy"></cu-date-picker>
 ```
+
+<!-- demo:date-picker-con-fecha-inicial-y-limites -->
 
 ### Con label
 
@@ -54,6 +58,8 @@ El label se muestra sobre el picker y es clickeable — hace foco en el input y 
 ```html
 <cu-date-picker id="miPicker" label="Fecha de nacimiento"></cu-date-picker>
 ```
+
+<!-- demo:date-picker-con-label -->
 
 ---
 
@@ -76,6 +82,8 @@ Con `mode="range"` el picker selecciona un rango: el primer click define el **in
   });
 </script>
 ```
+
+<!-- demo:date-picker-modo-rango -->
 
 ---
 

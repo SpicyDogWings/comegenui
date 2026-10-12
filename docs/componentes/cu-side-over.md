@@ -19,6 +19,8 @@ Panel overlay que desliza desde un borde sobre el contenido, con scrim, cierre p
 </cu-button>
 ```
 
+<!-- demo:side-over-uso -->
+
 ---
 
 ## Control programático
@@ -45,6 +47,8 @@ side.addEventListener('close', () => console.log('cerrando'));
 <cu-side-over position="top" size="md" title="Desde arriba"></cu-side-over>
 <cu-side-over position="bottom" fullscreen title="Pantalla completa"></cu-side-over>
 ```
+
+<!-- demo:side-over-presets-de-tamano -->
 
 > Los presets (`sm`/`md`/`lg`/`xl`/`full`) se pueden sobrescribir con las custom properties `--cu-sideover-size-{sm|md|lg|xl|full}` sobre el host.
 

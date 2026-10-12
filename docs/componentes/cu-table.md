@@ -146,6 +146,8 @@ Como `columns` se pasa sin filtrar al `AdvancedTable.vue` interno, podés usar e
 </script>
 ```
 
+<!-- demo:table-uso -->
+
 ---
 
 ## Búsqueda
@@ -165,6 +167,8 @@ Como `columns` se pasa sin filtrar al `AdvancedTable.vue` interno, podés usar e
   search-fields='["nombre","email"]'
 ></cu-table>
 ```
+
+<!-- demo:table-busqueda -->
 
 ### Como propiedad JS
 
@@ -228,6 +232,8 @@ tabla.filters = {
   t.filters = { estado: 'Activo' };
 </script>
 ```
+
+<!-- demo:table-filtros -->
 
 Pipeline: `data → search → filters → sort → pagination`.
 
@@ -733,6 +739,8 @@ En HTML plano tenés las dos vías: el atributo `inline-editing` (todas las celd
 </script>
 ```
 
+<!-- demo:table-inline-editing -->
+
 ### Receta 3 — Estados mixtos + validación y edición condicional
 
 Combiná lápiz e inline en la misma tabla, con validación por columna y celdas habilitadas según la fila:
@@ -828,6 +836,8 @@ En variantes transparentes (`outlined`, `ghost`) se aplica `backdrop-filter: blu
 ></cu-table>
 ```
 
+<!-- demo:table-sticky-header -->
+
 ---
 
 ## Atributos
@@ -899,6 +909,8 @@ Ninguno.
 </cu-table>
 ```
 
+<!-- demo:table-slot-header -->
+
 ### Ejemplo de slot empty
 
 ```html
@@ -909,6 +921,8 @@ Ninguno.
   </div>
 </cu-table>
 ```
+
+<!-- demo:table-slot-empty -->
 
 ## Métodos expuestos
 

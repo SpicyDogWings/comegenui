@@ -14,6 +14,8 @@ Paleta de comandos (búsqueda + lista) en un modal, con agrupado por categoría 
 <cu-command-palette id="palette" title="Comandos" color="primary"></cu-command-palette>
 ```
 
+<!-- demo:command-palette-uso -->
+
 > El componente requiere `commands` para mostrar resultados: asignala como propiedad JS después de cargar el UMD.
 
 ---

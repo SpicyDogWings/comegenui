@@ -259,6 +259,13 @@ import X from "@/components/<cat>/X.vue";
    (`../../examples/<componente>/X.vue`). Regla: **los ejemplos tienen que compilar** — un bloque de
    código en el `.md` puede mentir para siempre, un ejemplo real no.
 
+   **Demos vanilla (custom element).** Además de los demos Vue, la página vanilla debe mostrar
+   el componente **real** debajo de cada bloque ` ```html ` de la ficha del CE: en la ficha va un
+   marcador `<!-- demo:<comp>-<slug> -->` y en `docs/site/examples/<componente>/<comp>-<slug>.vue`
+   el `<cu-x>` real dentro de `<VanillaDemo :use="['CuX']">` (mismos atributos/slots que el
+   bloque). El registro es **automático** (el id = nombre del archivo). Receta completa:
+   `docs/notes/09-demos-vanilla.md`.
+
 8. **Crear/actualizar la página** con el **mismo `title`** que su contraparte y su `group`, y el
    `@include` correcto: `../../componentes/<tag>.md` para la página vanilla (dos niveles) y
    `../../../componentes/vue/<kebab>.md` para la Vue, que vive un nivel más adentro

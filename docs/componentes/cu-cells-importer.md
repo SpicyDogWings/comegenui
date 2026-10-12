@@ -64,6 +64,8 @@ El botón solo aparece si `enabled: true` **y** `columns.length > 0`. También s
 </script>
 ```
 
+<!-- demo:cells-importer-uso -->
+
 ---
 
 ## Notas

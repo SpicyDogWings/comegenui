@@ -27,6 +27,8 @@ Pestañas con variantes, iconos, tabs deshabilitadas individuales y control prog
 </script>
 ```
 
+<!-- demo:tabs-uso -->
+
 > Las `tabs` se asignan después de `customElements.whenDefined('cu-tabs')` porque es una prop compleja.
 
 ---
@@ -39,6 +41,8 @@ Pestañas con variantes, iconos, tabs deshabilitadas individuales y control prog
 <cu-tabs variant="boxed"><!-- contenedor con borde --></cu-tabs>
 <cu-tabs variant="soft"><!-- contenedor soft + activo solid --></cu-tabs>
 ```
+
+<!-- demo:tabs-variantes -->
 
 > El array `tabs` se asigna vía JavaScript (ver [Uso en HTML plano](#uso-en-html-plano)).
 
@@ -66,6 +70,8 @@ Cada tab puede llevar un icono con el slot `tab-icon-{key}`. El SVG debe usar `c
   });
 </script>
 ```
+
+<!-- demo:tabs-iconos -->
 
 ---
 
@@ -97,6 +103,8 @@ Cada tab puede llevar un icono con el slot `tab-icon-{key}`. El SVG debe usar `c
   });
 </script>
 ```
+
+<!-- demo:tabs-control-programatico -->
 
 ---
 

@@ -31,6 +31,8 @@ Alerta con color semántico, título opcional y botón de cerrar. Puede controla
 </script>
 ```
 
+<!-- demo:alert-uso -->
+
 ---
 
 ## Ejemplo completo
@@ -61,6 +63,8 @@ Alerta con color semántico, título opcional y botón de cerrar. Puede controla
 </body>
 </html>
 ```
+
+<!-- demo:alert-completo -->
 
 ---
 
@@ -109,6 +113,8 @@ Alerta con color semántico, título opcional y botón de cerrar. Puede controla
   Operación completada.
 </cu-alert>
 ```
+
+<!-- demo:alert-slots -->
 
 ## Métodos expuestos
 

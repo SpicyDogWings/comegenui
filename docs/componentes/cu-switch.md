@@ -19,6 +19,8 @@ Toggle switch con color semántico y dos tamaños. Mantiene su estado y también
 </script>
 ```
 
+<!-- demo:switch-uso -->
+
 ---
 
 ## Tamaños
@@ -27,6 +29,8 @@ Toggle switch con color semántico y dos tamaños. Mantiene su estado y también
 <cu-switch size="sm" color="primary"></cu-switch>
 <cu-switch size="md" color="primary"></cu-switch>
 ```
+
+<!-- demo:switch-tamanos -->
 
 - `sm`: 32×20px
 - `md`: 48×32px
@@ -56,6 +60,8 @@ Hay dos formas equivalentes (el switch se mueve solo; estos listeners son para r
 </script>
 ```
 
+<!-- demo:switch-cambios -->
+
 ---
 
 ## Estado y modo controlado
@@ -77,6 +83,8 @@ Si necesitás que **vos** decidas el valor, reasignalo en el evento (modo contro
 </script>
 ```
 
+<!-- demo:switch-controlado -->
+
 ---
 
 ## Uso con label
@@ -88,6 +96,8 @@ El switch no incluye label propio. Combinalo con `<cu-label>` para tener un áre
   <cu-switch id="notif" color="primary"></cu-switch>
 </cu-label>
 ```
+
+<!-- demo:switch-con-label -->
 
 ---
 

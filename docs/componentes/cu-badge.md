@@ -15,6 +15,8 @@ Etiqueta o badge pequeño para estados, categorías o metadata. Componente de pr
 <cu-badge color="danger" variant="subtle">Error</cu-badge>
 ```
 
+<!-- demo:badge-uso -->
+
 ---
 
 ## Variantes visuales
@@ -26,6 +28,8 @@ Etiqueta o badge pequeño para estados, categorías o metadata. Componente de pr
 <cu-badge color="primary" variant="ghost">ghost</cu-badge>
 <cu-badge color="primary" variant="subtle">subtle</cu-badge>
 ```
+
+<!-- demo:badge-variantes -->
 
 ---
 
@@ -39,6 +43,8 @@ Etiqueta o badge pequeño para estados, categorías o metadata. Componente de pr
   Verificado
 </cu-badge>
 ```
+
+<!-- demo:badge-con-icono -->
 
 ---
 

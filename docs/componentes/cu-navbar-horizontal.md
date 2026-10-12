@@ -24,6 +24,8 @@ Barra de navegación horizontal con submenús desplegables (Dropdown) y detecci�
 </script>
 ```
 
+<!-- demo:navbar-horizontal-uso -->
+
 ---
 
 ## Estructura de `items`

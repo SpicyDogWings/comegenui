@@ -14,6 +14,8 @@ Tooltip que aparece al hacer hover sobre el elemento contenido, con posición, a
 </cu-tooltip>
 ```
 
+<!-- demo:tooltip-uso -->
+
 ---
 
 ## Posición y contenido custom
@@ -28,6 +30,8 @@ Tooltip que aparece al hacer hover sobre el elemento contenido, con posición, a
   </span>
 </cu-tooltip>
 ```
+
+<!-- demo:tooltip-posicion-y-contenido-custom -->
 
 ---
 

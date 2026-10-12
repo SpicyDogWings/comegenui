@@ -19,6 +19,8 @@ Checkbox con label. Mantiene su estado y también se controla via `modelValue` o
 </script>
 ```
 
+<!-- demo:checkbox-uso -->
+
 ---
 
 ## Escuchar cambios
@@ -44,6 +46,8 @@ listeners son para reaccionar):
 </script>
 ```
 
+<!-- demo:checkbox-cambios -->
+
 ---
 
 ## Control programático
@@ -60,6 +64,8 @@ listeners son para reaccionar):
   console.log(cb.get()); // estado actual
 </script>
 ```
+
+<!-- demo:checkbox-control-programatico -->
 
 ---
 
