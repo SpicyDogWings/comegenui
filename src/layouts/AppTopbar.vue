@@ -6,6 +6,7 @@ import Badge from "@/components/information/Badge.vue";
 import LucideForm from "@/components/icons/LucideForm.vue";
 import LucideGitHub from "@/components/icons/LucideGitHub.vue";
 import LucidePalette from "@/components/icons/LucidePalette.vue";
+import LucideSearch from "@/components/icons/LucideSearch.vue";
 import LucideTag from "@/components/icons/LucideTag.vue";
 import ThemeDropdown from "@/components/theme/ThemeDropdown.vue";
 import CommandPalette from "@/components/overlay/CommandPalette.vue";
@@ -71,6 +72,15 @@ onBeforeUnmount(() => {
     <div class="app-topbar-actions">
       <slot name="mode" />
       <ThemeDropdown />
+      <button
+        type="button"
+        class="app-topbar-icon app-topbar-search"
+        title="Buscar (CTRL+K)"
+        aria-label="Buscar"
+        @click="navPaletteRef?.open()"
+      >
+        <LucideSearch />
+      </button>
       <Badge
         color="neutral"
         variant="subtle"
@@ -168,6 +178,14 @@ onBeforeUnmount(() => {
   cursor: pointer;
   user-select: none;
   transition: opacity 150ms ease;
+}
+
+/* Lupa fuera del badge de CTRL+K: señala que ahí se puede buscar. */
+.app-topbar-search {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
 }
 
 .app-topbar-shortcut:hover {
