@@ -1,8 +1,8 @@
+[← Volver](../README.md)
+
 # `Input`
 
 Input de texto con color, variante, tipos de input HTML5 y métodos `get`/`set`/`reset`.
-
-[← Volver](../README.md)
 
 ---
 

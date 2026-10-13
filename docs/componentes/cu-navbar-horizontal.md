@@ -1,8 +1,8 @@
+[← Volver](../README.md)
+
 # `<cu-navbar-horizontal>`
 
 Barra de navegación horizontal con submenús desplegables (Dropdown) y detección de ítem activo por ruta.
-
-[← Volver](../README.md)
 
 ## Uso en HTML plano
 

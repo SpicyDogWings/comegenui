@@ -1,8 +1,8 @@
+[← Volver](../README.md)
+
 # `<cu-file-input-zone>`
 
 Selector de archivos con zona de drag & drop amplia, soporte para carpetas (recursivo con control de profundidad), múltiples archivos y preview de lista.
-
-[← Volver](../README.md)
 
 ## Uso en HTML plano
 

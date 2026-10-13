@@ -1,8 +1,8 @@
+[← Volver](../README.md)
+
 # `ColorPicker`
 
 Selector de color con swatch y campo de texto hex. Al hacer click en el swatch se abre el color picker nativo del navegador; el campo de texto permite escribir un `#RRGGBB` manualmente.
-
-[← Volver](../README.md)
 
 ---
 

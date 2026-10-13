@@ -16,7 +16,7 @@ Usá esta lista cada vez que revises un `.md` contra su `.ce.vue`. Marcar cada �
 - [ ] El título del `.md` es `# \`<cu-xxx>\`` con el tag correcto (verificar en `.ts`).
 - [ ] El archivo se llama `cu-xxx.md` (kebab-case, igual que el tag).
 - [ ] El archivo está en `docs/componentes/` (custom element) o `docs/componentes/vue/` (Vue).
-- [ ] Hay un link `[← Volver](../README.md)` después de la descripción.
+- [ ] Hay un link `[← Volver](../README.md)` arriba del H1 (primera línea).
 - [ ] Hay un `---` separando encabezado del cuerpo.
 - [ ] La descripción es funcional (1 línea), no técnica.
 

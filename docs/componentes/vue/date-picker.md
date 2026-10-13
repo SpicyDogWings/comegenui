@@ -1,8 +1,8 @@
+[← Volver](../README.md)
+
 # `DatePicker`
 
 Selector de fecha: un botón-trigger que abre un **dropdown con un calendario adentro** (no es una lista de items seleccionables, es un box con el calendario). `mode="single"` selecciona una fecha; `mode="range"` (o `dual-calendar`) un rango, con uno o dos meses. Compone `cu-calendar` (single o range) y el `DualCalendar` interno (2 meses en range), y administra los valores de ambos.
-
-[← Volver](../README.md)
 
 ---
 

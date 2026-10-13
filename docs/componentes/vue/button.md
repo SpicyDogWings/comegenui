@@ -1,8 +1,8 @@
+[← Volver](../README.md)
+
 # `Button`
 
 Botón con soporte de color, variante, link y estados. Si se define `to`, se renderiza como un `<a>` en vez de un `<button>`.
-
-[← Volver](../README.md)
 
 ---
 

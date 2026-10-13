@@ -1,8 +1,8 @@
+[← Volver](../README.md)
+
 # `<cu-dropdown-menu>`
 
 Menú desplegable con items declarativos (label, ícono, color, divisor, link). El toggle se puede reemplazar con un slot, y el panel se puede llenar via `items` o con slot por defecto.
-
-[← Volver](../README.md)
 
 ## Uso en HTML plano
 

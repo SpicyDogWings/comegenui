@@ -1,8 +1,8 @@
+[← Volver](../README.md)
+
 # `Badge`
 
 Etiqueta o badge pequeño para estados, categorías o metadata. Componente de presentación pura: no emite eventos ni expone métodos.
-
-[← Volver](../README.md)
 
 ---
 

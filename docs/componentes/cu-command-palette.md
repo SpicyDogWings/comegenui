@@ -1,10 +1,10 @@
+[← Volver](../README.md)
+
 # `<cu-command-palette>`
 
 Paleta de comandos (búsqueda + lista) en un modal, con agrupado por categoría y selección por teclado o click.
 
 > **Ojo:** `commands` es obligatoria (array de `CommandItem`) y se asigna como **propiedad JS**: sin ella la paleta abre vacía. Ver `docs/notes/05-wrappers-ce-incompletos.md`.
-
-[← Volver](../README.md)
 
 ## Uso en HTML plano
 

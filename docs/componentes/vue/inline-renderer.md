@@ -1,6 +1,6 @@
-# `InlineRenderer`
-
 [← Volver](../README.md)
+
+# `InlineRenderer`
 
 ---
 

@@ -1,8 +1,8 @@
+[← Volver](../README.md)
+
 # `Label`
 
 Label con color semántico. Al hacer clic, enfoca el input hijo o, si se define `for`, el elemento con ese id. Útil para agrupar `<cu-input>`, `<cu-checkbox>`, etc. y ganar área clickeable.
-
-[← Volver](../README.md)
 
 ---
 

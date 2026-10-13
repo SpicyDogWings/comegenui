@@ -1,8 +1,8 @@
+[← Volver](../README.md)
+
 # `<cu-calendar>`
 
 Calendario de mes: muestra el mes actual y/o seleccionado con sus días distribuidos en **7 columnas** que se reparten todo el ancho disponible del contenedor. Navegación por meses, día de hoy, límites `min`/`max` y dos modos de selección: `single` (una fecha) o `range` (inicio + fin con FSM propia).
-
-[← Volver](../README.md)
 
 ## Formato de fechas
 

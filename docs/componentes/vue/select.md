@@ -1,8 +1,8 @@
+[← Volver](../README.md)
+
 # `Select`
 
 Selector de opciones con color, variante, ícono chevron, opciones deshabilitadas y posicionamiento configurable. Mantiene su estado y también se controla via `modelValue` o métodos `get`/`set`.
-
-[← Volver](../README.md)
 
 ---
 

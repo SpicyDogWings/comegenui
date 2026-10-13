@@ -1,8 +1,8 @@
+[← Volver](../README.md)
+
 # `Avatar`
 
 Avatar circular (imagen o iniciales) con color semántico y tres tamaños. Si no se pasa `color`, elige un color determinístico a partir de las iniciales.
-
-[← Volver](../README.md)
 
 ---
 

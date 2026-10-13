@@ -1,8 +1,8 @@
+[← Volver](../README.md)
+
 # `<cu-autocomplete>`
 
 Campo de texto con sugerencias en menú desplegable. Filtra los `items` en vivo según lo que escribe el usuario.
-
-[← Volver](../README.md)
 
 ## Uso en HTML plano
 

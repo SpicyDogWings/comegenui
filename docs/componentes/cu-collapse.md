@@ -1,8 +1,8 @@
+[← Volver](../README.md)
+
 # `<cu-collapse>`
 
 Sección colapsable con trigger (botón + chevron animado). El contenido se muestra/oculta con una transición de altura. Útil para acordeones, menús anidados o secciones "más información".
-
-[← Volver](../README.md)
 
 ## Uso en HTML plano
 

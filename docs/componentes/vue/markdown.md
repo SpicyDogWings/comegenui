@@ -1,8 +1,8 @@
+[← Volver](../README.md)
+
 # `Markdown`
 
 Renderizador de Markdown como Custom Element. Convierte markdown en HTML semántico usando los componentes internos de ComegenUI (tablas, code blocks, blockquotes, listas, headings, párrafos).
-
-[← Volver](../README.md)
 
 ---
 

@@ -1,8 +1,8 @@
+[← Volver](../README.md)
+
 # `<cu-navbar>`
 
 Barra de navegación vertical (tipo sidebar) con submenús, búsqueda (`filter`/`scroll`), modo compacto y opción responsive con hamburguesa + panel lateral.
-
-[← Volver](../README.md)
 
 ## Uso en HTML plano
 

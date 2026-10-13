@@ -1,8 +1,8 @@
+[← Volver](../README.md)
+
 # `Dropdown`
 
 Motor genérico de panel desplegable (toggle + panel + posicionamiento). Es interno: lo componen `Select`, `Autocomplete`, `DropdownMenu`, `DatePicker` y `Tooltip`.
-
-[← Volver](../README.md)
 
 ---
 

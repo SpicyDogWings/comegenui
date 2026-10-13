@@ -1,8 +1,8 @@
+[← Volver](../README.md)
+
 # `SideOver`
 
 Panel overlay que desliza desde un borde sobre el contenido, con scrim, cierre por backdrop/Escape, opción `fullscreen` y control programático. Bloquea el scroll del body mientras está abierto.
-
-[← Volver](../README.md)
 
 ---
 

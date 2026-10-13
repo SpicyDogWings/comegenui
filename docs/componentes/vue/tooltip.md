@@ -1,8 +1,8 @@
+[← Volver](../README.md)
+
 # `Tooltip`
 
 Tooltip que aparece al hacer hover sobre el elemento contenido, con posición, alineación, offset y delay configurables.
-
-[← Volver](../README.md)
 
 ---
 

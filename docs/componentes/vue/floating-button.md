@@ -1,8 +1,8 @@
+[← Volver](../README.md)
+
 # `FloatingButton`
 
 Botón flotante (FAB) fijo en la esquina inferior derecha. Es un `Button` (hereda color, variante, tamaño y estados) posicionado de forma flotante. Pensado para acciones primarias rápidas (agregar, flotante de guardar, etc.). Normalmente se usa con un ícono en el slot.
-
-[← Volver](../README.md)
 
 ---
 

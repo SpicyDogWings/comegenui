@@ -1,8 +1,8 @@
+[← Volver](../README.md)
+
 # `<cu-checkbox>`
 
 Checkbox con label. Mantiene su estado y también se controla via `modelValue` o métodos `get`/`set`.
-
-[← Volver](../README.md)
 
 ## Uso en HTML plano
 

@@ -1,8 +1,8 @@
+[← Volver](../README.md)
+
 # `Alert`
 
 Alerta con color semántico, título opcional y botón de cerrar. Puede controlarse por atributo `show` o programáticamente.
-
-[← Volver](../README.md)
 
 ---
 
