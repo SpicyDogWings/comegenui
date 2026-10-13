@@ -1,8 +1,8 @@
+[← Volver](../README.md)
+
 # `Textarea`
 
 Área de texto multilínea con color, variante, control de filas y opción de deshabilitar el redimensionado.
-
-[← Volver](../README.md)
 
 ---
 

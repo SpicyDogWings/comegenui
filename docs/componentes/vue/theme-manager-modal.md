@@ -1,6 +1,6 @@
-# `ThemeManagerModal`
-
 [← Volver](../README.md)
+
+# `ThemeManagerModal`
 
 ---
 

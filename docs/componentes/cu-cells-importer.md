@@ -1,10 +1,10 @@
+[← Volver](../README.md)
+
 # `<cu-cells-importer>`
 
 Importador de archivos tabulares (`.xlsx`, `.xls`, `.csv`) que parsea el contenido contra un esquema de columnas, valida cada celda y muestra los errores. Compone `<cu-file-input>` internamente.
 
 Soporta matching de columnas **por label sin importar el orden** (`strict=false`, default) o **respetando el orden** (`strict`), y descarga de plantilla opcional.
-
-[← Volver](../README.md)
 
 ## Plantilla
 

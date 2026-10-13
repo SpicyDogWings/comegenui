@@ -1,8 +1,8 @@
+[← Volver](../README.md)
+
 # `Checkbox`
 
 Checkbox con label, controlable via `modelValue` o métodos `get`/`set`.
-
-[← Volver](../README.md)
 
 ---
 

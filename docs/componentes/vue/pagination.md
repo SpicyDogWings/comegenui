@@ -1,8 +1,8 @@
+[← Volver](../README.md)
+
 # `Pagination`
 
 Paginación numérica con soporte para selector de tamaño de página y botones de primera/última. Pensado para usarse dentro de tablas o listas.
-
-[← Volver](../README.md)
 
 ---
 

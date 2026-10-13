@@ -1,8 +1,8 @@
+[← Volver](../README.md)
+
 # `<cu-card>`
 
 Tarjeta para mostrar información agrupada con jerarquía visual: media, header (título + subtítulo), contenido y footer. Componente de presentación: no emite eventos ni expone métodos.
-
-[← Volver](../README.md)
 
 ## Uso en HTML plano
 

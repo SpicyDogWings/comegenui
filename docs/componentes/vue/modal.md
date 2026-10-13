@@ -1,8 +1,8 @@
+[← Volver](../README.md)
+
 # `Modal`
 
 Modal/diálogo con backdrop, animación, soporte para `size`/`height` y slot `footer`. Distingue entre el evento de inicio de cierre (`close`) y la animación de cierre completa (`closed`).
-
-[← Volver](../README.md)
 
 ---
 

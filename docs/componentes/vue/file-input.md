@@ -1,8 +1,8 @@
+[← Volver](../README.md)
+
 # `FileInput`
 
 Input de archivo compacto con drag & drop, estilo idéntico a `<cu-input>`. Single file, sin directorio, con validación de tipo y tamaño.
-
-[← Volver](../README.md)
 
 ---
 

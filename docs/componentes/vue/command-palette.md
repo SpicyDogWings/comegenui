@@ -1,8 +1,8 @@
+[← Volver](../README.md)
+
 # `CommandPalette`
 
 Paleta de comandos (búsqueda + lista) en un modal, con agrupado por categoría y selección por teclado o click.
-
-[← Volver](../README.md)
 
 ---
 

@@ -1,8 +1,8 @@
+[← Volver](../README.md)
+
 # `NavbarHorizontal`
 
 Barra de navegación horizontal con submenús desplegables (Dropdown) y detección de ítem activo por ruta.
-
-[← Volver](../README.md)
 
 ---
 

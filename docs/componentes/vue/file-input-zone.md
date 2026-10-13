@@ -1,8 +1,8 @@
+[← Volver](../README.md)
+
 # `FileInputZone`
 
 Selector de archivos con zona de drag & drop amplia, soporte para carpetas (recursivo con control de profundidad), múltiples archivos y preview de lista.
-
-[← Volver](../README.md)
 
 ---
 

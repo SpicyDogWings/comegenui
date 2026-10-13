@@ -1,8 +1,8 @@
+[← Volver](../README.md)
+
 # `Collapse`
 
 Sección colapsable con trigger (botón + chevron animado). El contenido se muestra/oculta con una transición de altura. Útil para acordeones, menús anidados o secciones "más información".
-
-[← Volver](../README.md)
 
 ---
 

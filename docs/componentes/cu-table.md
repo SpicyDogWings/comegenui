@@ -1,8 +1,8 @@
+[← Volver](../README.md)
+
 # `<cu-table>`
 
 Tabla avanzada con búsqueda, paginación, edición inline, ordenamiento, badges y botones por celda. Pensada para reemplazar tablas HTML estáticas en apps con UMD.
-
-[← Volver](../README.md)
 
 ## Interfaz de columna
 

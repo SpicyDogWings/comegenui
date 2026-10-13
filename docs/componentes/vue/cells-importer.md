@@ -1,8 +1,8 @@
+[← Volver](../README.md)
+
 # `CellsImporter`
 
 Importador de archivos tabulares (`.xlsx`, `.xls`, `.csv`) que parsea el contenido contra un esquema de columnas, valida cada celda y muestra los errores. Compone `<cu-file-input>` internamente.
-
-[← Volver](../README.md)
 
 ---
 

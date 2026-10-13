@@ -1,8 +1,8 @@
+[← Volver](../README.md)
+
 # `AuthorCard`
 
 Tarjeta de autor con avatar (imagen o iniciales generadas del nombre), nombre y rol. Componente de presentación: no emite eventos ni expone métodos.
-
-[← Volver](../README.md)
 
 ---
 

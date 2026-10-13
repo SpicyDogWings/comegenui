@@ -57,11 +57,11 @@ no del tag. Por eso `cu-table` (vanilla) ↔ `vue/advanced-table` (Vue) y el int
 4. **Escribir la ficha vanilla** (sólo si hay entry en `src/lib`) con esta plantilla:
 
 ````md
+[← Volver](../README.md)
+
 # `<cu-x>`
 
 <una línea: qué hace>
-
-[← Volver](../README.md)
 
 ## Uso en HTML plano
 
@@ -105,21 +105,21 @@ no del tag. Por eso `cu-table` (vanilla) ↔ `vue/advanced-table` (Vue) y el int
 <!-- /@api:metodos -->
 ````
 
-   A mano va: la descripción de una línea, `[← Volver](../README.md)`, `## Uso en HTML plano` con un
-   ejemplo, las secciones curadas, `## Cuándo usarlo` (con la tabla "querés… → usá") y los límites
-   **como callouts inline donde importan** — la lista completa de límites va en la receta de la
-   skill (paso 6), no hace falta repetirla acá en una sección aparte. Las tablas de API al final van
-   **entre marcadores y no se escriben a mano**: detalle en «Mantenimiento de las tablas de API (son
-   generadas)».
+   A mano va: el link `[← Volver](../README.md)` **arriba del H1**, el título, la descripción de una
+   línea, `## Uso en HTML plano` con un ejemplo, las secciones curadas, `## Cuándo usarlo` (con la
+   tabla "querés… → usá") y los límites **como callouts inline donde importan** — la lista completa
+   de límites va en la receta de la skill (paso 6), no hace falta repetirla acá en una sección
+   aparte. Las tablas de API al final van **entre marcadores y no se escriben a mano**: detalle en
+   «Mantenimiento de las tablas de API (son generadas)».
 
 5. **Escribir la ficha Vue** — igual que el paso 4 pero en clave Vue:
 
 ````md
+[← Volver](../README.md)
+
 # `X`
 
 <la misma descripción, con el nombre Vue>
-
-[← Volver](../README.md)
 
 ## Uso en Vue
 

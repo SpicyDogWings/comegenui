@@ -1,8 +1,8 @@
+[← Volver](../README.md)
+
 # `<cu-tabs>`
 
 Pestañas con variantes, iconos, tabs deshabilitadas individuales y control programático. Acepta `tabs` como array de objetos y `v-model`/`modelValue` para el tab activo.
-
-[← Volver](../README.md)
 
 ## Uso en HTML plano
 
