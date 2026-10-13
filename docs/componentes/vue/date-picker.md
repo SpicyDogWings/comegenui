@@ -65,6 +65,27 @@ El label se muestra sobre el picker y es clickeable — hace foco en el input y 
 </template>
 ```
 
+## Valor formateado (`value-format`)
+
+`format` es solo lo que se **muestra**. Con `value-format`, además de los eventos con `Date` el picker emite los `*-formatted` (`update:formattedValue`, `change-formatted`, `select-formatted`) con el valor como string en ese formato:
+
+```vue
+<script setup lang="ts">
+import DatePicker from "@/components/form/DatePicker.vue";
+import { ref } from "vue";
+
+const fecha = ref<string | null>(null);
+
+function onFormatted(value: unknown) {
+  fecha.value = typeof value === "string" ? value : null;
+}
+</script>
+
+<template>
+  <DatePicker value-format="dd-MM-yyyy" @change-formatted="onFormatted" />
+</template>
+```
+
 ## Modo rango
 
 ```vue
@@ -139,6 +160,7 @@ picker.clear();
 | `startDate` | `string \| number \| Date \| null` | `null` | Inicio del rango. Solo con calendario de rango (`mode="range"` o `dualCalendar`); en `single` se ignora |
 | `endDate` | `string \| number \| Date \| null` | `null` | Fin del rango. Solo con calendario de rango (`mode="range"` o `dualCalendar`); en `single` se ignora |
 | `format` | `string` | `'dd/MM/yyyy'` | — |
+| `valueFormat` | `string` | `''` | Formato del **valor**: si se setea, el picker emite además los eventos `update:formattedValue` / `update:formattedStartDate` / `update:formattedEndDate` y `change-formatted` / `select-formatted` con el valor como **string** en este formato (mismos tokens que `format`). Vacío = deshabilitado (comportamiento actual). |
 | `dualCalendar` | `boolean` | `false` | Activa el rango a dos meses (dual). **Implica `range`**: aunque `mode` sea `single`, el picker selecciona un rango |
 | `clearable` | `boolean` | `true` | — |
 | `todayButton` | `boolean` | `undefined` | — |
@@ -156,6 +178,11 @@ picker.clear();
 | `change` | `Date \| { start: Date \| null; end: Date \| null; } \| null` | — |
 | `update:startDate` | `Date \| null` | — |
 | `update:endDate` | `Date \| null` | — |
+| `update:formattedValue` | `string \| null` | — |
+| `update:formattedStartDate` | `string \| null` | — |
+| `update:formattedEndDate` | `string \| null` | — |
+| `change-formatted` | `string \| { start: string \| null; end: string \| null; } \| null` | — |
+| `select-formatted` | `string \| { start: string \| null; end: string \| null; }` | — |
 <!-- /@api:emits -->
 
 > Al limpiar, `change` emite `null` (single) o `{ start: null, end: null }` (range).
@@ -180,6 +207,9 @@ Ninguno.
 | `getStartDate` | Devuelve la fecha de inicio (solo con calendario de rango). |
 | `getEndDate` | Devuelve la fecha de fin (solo con calendario de rango). |
 | `setRange` | Setea el rango completo y emite los cambios (solo con calendario de rango). |
+| `getFormattedValue` | Devuelve la fecha seleccionada formateada con `value-format` (modo simple); `null` sin `value-format` o sin fecha. |
+| `getFormattedStartDate` | Devuelve el inicio del rango formateado con `value-format` (modo rango). |
+| `getFormattedEndDate` | Devuelve el fin del rango formateado con `value-format` (modo rango). |
 | `isOpen` | Indica si el panel está abierto. |
 <!-- /@api:expose -->
 

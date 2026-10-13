@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { flushPromises, mount } from '@vue/test-utils'
 import DatePicker from './DatePicker.vue'
+import { formatDate } from '@/utils/date'
 
 type AnyVm = { open: () => void; close: () => void; isOpen: () => boolean; clear: () => void }
 
@@ -110,5 +111,50 @@ describe('DatePicker — range', () => {
     const range = selected![0]![0] as { start: Date; end: Date }
     expect(range.start.getDate()).toBe(10)
     expect(range.end.getDate()).toBe(25)
+  })
+})
+
+describe('DatePicker — value-format (eventos formateados)', () => {
+  it('single: con value-format emite los eventos formateados al elegir', async () => {
+    const w = mount(DatePicker, { props: { valueFormat: 'dd-MM-yyyy' } })
+    vm(w).open()
+    await flushPromises()
+    await dayButton(w, 15)!.trigger('click')
+    await flushPromises()
+    const date = w.emitted('update:modelValue')![0]![0] as Date
+    const expected = formatDate(date, 'dd-MM-yyyy')
+    expect(w.emitted('update:formattedValue')?.[0]?.[0]).toBe(expected)
+    expect(w.emitted('change-formatted')?.[0]?.[0]).toBe(expected)
+    expect(w.emitted('select-formatted')?.[0]?.[0]).toBe(expected)
+  })
+
+  it('single: sin value-format NO emite eventos formateados', async () => {
+    const w = mount(DatePicker)
+    vm(w).open()
+    await flushPromises()
+    await dayButton(w, 15)!.trigger('click')
+    await flushPromises()
+    expect(w.emitted('update:formattedValue')).toBeFalsy()
+    expect(w.emitted('change-formatted')).toBeFalsy()
+  })
+
+  it('single: getFormattedValue formatea con value-format', () => {
+    const w = mount(DatePicker, { props: { valueFormat: 'dd-MM-yyyy', modelValue: '2026-08-11' } })
+    const get = (w.vm as unknown as { getFormattedValue: () => string | null }).getFormattedValue
+    expect(get()).toBe('11-08-2026')
+  })
+
+  it('range: con value-format emite start/end y change-formatted { start, end }', async () => {
+    const w = mount(DatePicker, { props: { mode: 'range', valueFormat: 'yyyy-MM-dd' } })
+    vm(w).open()
+    await flushPromises()
+    await dayButton(w, 10)!.trigger('click')
+    await flushPromises()
+    expect(w.emitted('update:formattedStartDate')?.[0]?.[0]).toMatch(/^\d{4}-\d{2}-10$/)
+    await dayButton(w, 20)!.trigger('click')
+    await flushPromises()
+    const cf = w.emitted('change-formatted')?.[0]?.[0] as { start: string; end: string }
+    expect(cf.start).toMatch(/-10$/)
+    expect(cf.end).toMatch(/-20$/)
   })
 })

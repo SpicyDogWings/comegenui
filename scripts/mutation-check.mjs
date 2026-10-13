@@ -117,6 +117,25 @@ const MUTATIONS = [
     replace: `    if (target) { /* mutado */ }`,
   },
   {
+    id: "date-picker-value-format-no-format",
+    file: "src/components/form/DatePicker.vue",
+    expect: "con value-format, getFormattedValue y los eventos formateados devuelven el string",
+    find: `  if (!date || !props.valueFormat) return null
+  return formatDate(date, props.valueFormat, props.locale)`,
+    replace: `  if (!date || !props.valueFormat) return null
+  return null`,
+  },
+  {
+    id: "date-picker-value-format-no-range-start",
+    file: "src/components/form/DatePicker.vue",
+    expect: "con value-format, el rango emite update:formattedStartDate",
+    find: `  rangeStart.value = value
+  emit('update:startDate', value)
+  if (props.valueFormat) emit('update:formattedStartDate', fmt(value))`,
+    replace: `  rangeStart.value = value
+  emit('update:startDate', value)`,
+  },
+  {
     id: "tooltip-drops-text-fallback",
     file: "src/components/overlay/Tooltip.vue",
     expect: "usa la prop text cuando no hay slot content",

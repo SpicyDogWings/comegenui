@@ -61,6 +61,13 @@ const props = defineProps({
   },
   // Formato de la fecha mostrada en el trigger (tokens: dd MM MMM MMMM yy yyyy)
   format: { type: String, required: false, default: 'dd/MM/yyyy' },
+  /**
+   * Formato del **valor**: si se setea, el picker emite además los eventos
+   * `update:formattedValue` / `update:formattedStartDate` / `update:formattedEndDate`
+   * y `change-formatted` / `select-formatted` con el valor como **string** en este
+   * formato (mismos tokens que `format`). Vacío = deshabilitado (comportamiento actual).
+   */
+  valueFormat: { type: String, required: false, default: '' },
   // Controles de mes del calendario interno (delegan al MonthSlider)
   yearNavigation: { type: [Boolean, String] as PropType<boolean | string>, required: false, default: false },
   /** Formato del mes en el header del calendario interno: `MMMM` (septiembre), `MMM` (sept), `MM` (09) o `M` (9). Un valor no soportado cae a `MMMM` */
@@ -115,7 +122,19 @@ const emit = defineEmits<{
   (e: 'select', value: Date | { start: Date | null; end: Date | null }): void
   (e: 'open'): void
   (e: 'close'): void
+  // Compañeros formateados (solo si `value-format` está seteado).
+  (e: 'update:formattedValue', value: string | null): void
+  (e: 'update:formattedStartDate', value: string | null): void
+  (e: 'update:formattedEndDate', value: string | null): void
+  (e: 'change-formatted', value: string | { start: string | null; end: string | null } | null): void
+  (e: 'select-formatted', value: string | { start: string | null; end: string | null }): void
 }>()
+
+/** Formatea una fecha con `value-format`; `null` si no hay fecha o el formato está vacío. */
+function fmt(date: Date | null): string | null {
+  if (!date || !props.valueFormat) return null
+  return formatDate(date, props.valueFormat, props.locale)
+}
 
 const dropdownRef = ref<InstanceType<typeof Dropdown> | null>(null)
 
@@ -158,11 +177,13 @@ watch(
 function onRangeStart(value: Date | null) {
   rangeStart.value = value
   emit('update:startDate', value)
+  if (props.valueFormat) emit('update:formattedStartDate', fmt(value))
 }
 
 function onRangeEnd(value: Date | null) {
   rangeEnd.value = value
   emit('update:endDate', value)
+  if (props.valueFormat) emit('update:formattedEndDate', fmt(value))
 }
 
 function onRangeChange(value: Date | DateRange) {
@@ -170,6 +191,7 @@ function onRangeChange(value: Date | DateRange) {
   rangeStart.value = value.start
   rangeEnd.value = value.end
   emit('change', value)
+  if (props.valueFormat) emit('change-formatted', { start: fmt(value.start), end: fmt(value.end) })
 }
 
 function onRangeSelect(value: Date | DateRange) {
@@ -177,6 +199,7 @@ function onRangeSelect(value: Date | DateRange) {
   rangeStart.value = value.start
   rangeEnd.value = value.end
   emit('select', value)
+  if (props.valueFormat) emit('select-formatted', { start: fmt(value.start), end: fmt(value.end) })
 }
 
 /** Setea el rango completo y emite los cambios (solo con calendario de rango). */
@@ -187,6 +210,11 @@ function setRange(start: string | number | Date | null, end: string | number | D
   emit('update:startDate', rangeStart.value)
   emit('update:endDate', rangeEnd.value)
   emit('change', { start: rangeStart.value, end: rangeEnd.value })
+  if (props.valueFormat) {
+    emit('update:formattedStartDate', fmt(rangeStart.value))
+    emit('update:formattedEndDate', fmt(rangeEnd.value))
+    emit('change-formatted', { start: fmt(rangeStart.value), end: fmt(rangeEnd.value) })
+  }
 }
 
 /** Limpia el rango (modo rango). */
@@ -196,6 +224,11 @@ function clearRange() {
   emit('update:startDate', null)
   emit('update:endDate', null)
   emit('change', { start: null, end: null })
+  if (props.valueFormat) {
+    emit('update:formattedStartDate', null)
+    emit('update:formattedEndDate', null)
+    emit('change-formatted', { start: null, end: null })
+  }
 }
 
 // ── Label del trigger ──
@@ -234,6 +267,12 @@ function onSelectSingle(value: Date | DateRange) {
   emit('update:modelValue', value)
   emit('change', value)
   emit('select', value)
+  if (props.valueFormat) {
+    const formatted = fmt(value)!
+    emit('update:formattedValue', formatted)
+    emit('change-formatted', formatted)
+    emit('select-formatted', formatted)
+  }
   dropdownRef.value?.close()
 }
 
@@ -248,6 +287,12 @@ function goToday() {
   emit('update:modelValue', now)
   emit('change', now)
   emit('select', now)
+  if (props.valueFormat) {
+    const formatted = fmt(now)!
+    emit('update:formattedValue', formatted)
+    emit('change-formatted', formatted)
+    emit('select-formatted', formatted)
+  }
   dropdownRef.value?.close()
 }
 
@@ -260,6 +305,10 @@ function clear() {
   selectedValue.value = null
   emit('update:modelValue', null)
   emit('change', null)
+  if (props.valueFormat) {
+    emit('update:formattedValue', null)
+    emit('change-formatted', null)
+  }
   dropdownRef.value?.close()
 }
 
@@ -282,6 +331,10 @@ function setValue(value: string | number | Date | null) {
   selectedValue.value = parsed
   emit('update:modelValue', parsed)
   emit('change', parsed)
+  if (props.valueFormat) {
+    emit('update:formattedValue', fmt(parsed))
+    emit('change-formatted', fmt(parsed))
+  }
 }
 
 /** Devuelve la fecha de inicio (solo con calendario de rango). */
@@ -292,6 +345,21 @@ function getStartDate(): Date | null {
 /** Devuelve la fecha de fin (solo con calendario de rango). */
 function getEndDate(): Date | null {
   return isRange.value ? rangeEnd.value : null
+}
+
+/** Devuelve la fecha seleccionada formateada con `value-format` (modo simple); `null` sin `value-format` o sin fecha. */
+function getFormattedValue(): string | null {
+  return isRange.value ? null : fmt(selectedValue.value)
+}
+
+/** Devuelve el inicio del rango formateado con `value-format` (modo rango). */
+function getFormattedStartDate(): string | null {
+  return isRange.value ? fmt(rangeStart.value) : null
+}
+
+/** Devuelve el fin del rango formateado con `value-format` (modo rango). */
+function getFormattedEndDate(): string | null {
+  return isRange.value ? fmt(rangeEnd.value) : null
 }
 
 /** Abre el panel. */
@@ -311,6 +379,9 @@ defineExpose({
   getStartDate,
   getEndDate,
   setRange,
+  getFormattedValue,
+  getFormattedStartDate,
+  getFormattedEndDate,
   /** Indica si el panel está abierto. */
   isOpen: () => dropdownRef.value?.isOpen() ?? false,
 })

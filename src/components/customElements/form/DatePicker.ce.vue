@@ -57,6 +57,8 @@ const props = defineProps({
   weekStart: { type: Number, default: 1 },
   /** Formato de la fecha en el trigger (ver [Formato](#formato)) */
   format: { type: String, default: 'dd/MM/yyyy' },
+  /** Formato del **valor**: si se setea, además de los eventos con `Date` emite `update:formattedValue`/`update:formattedStartDate`/`update:formattedEndDate` y `change-formatted`/`select-formatted` con el valor como string (mismos tokens que `format`). Vacío = deshabilitado */
+  valueFormat: { type: String, default: '' },
   /** Controles de mes del calendario interno: botones `«`/`»` de año */
   yearNavigation: { type: [Boolean, String] as PropType<boolean | string>, default: false },
   /** Formato del mes en el header del calendario interno: `MMMM` (septiembre), `MMM` (sept), `MM` (09) o `M` (9). Un valor no soportado cae a `MMMM` */
@@ -137,6 +139,12 @@ function setValue(value: string | number | Date | null) { pickerRef.value?.setVa
 function getStartDate(): Date | null { return pickerRef.value?.getStartDate() ?? null }
 /** Devuelve la fecha de fin (modo `range`) */
 function getEndDate(): Date | null { return pickerRef.value?.getEndDate() ?? null }
+/** Devuelve la fecha seleccionada formateada con `value-format` (modo `single`) */
+function getFormattedValue(): string | null { return pickerRef.value?.getFormattedValue() ?? null }
+/** Devuelve el inicio del rango formateado con `value-format` (modo `range`) */
+function getFormattedStartDate(): string | null { return pickerRef.value?.getFormattedStartDate() ?? null }
+/** Devuelve el fin del rango formateado con `value-format` (modo `range`) */
+function getFormattedEndDate(): string | null { return pickerRef.value?.getFormattedEndDate() ?? null }
 /** Setea el rango (string/number/Date) (modo `range`) */
 function setRange(start: string | number | Date | null, end: string | number | Date | null) {
   pickerRef.value?.setRange(start, end)
@@ -152,6 +160,9 @@ defineExpose({
   setValue,
   getStartDate,
   getEndDate,
+  getFormattedValue,
+  getFormattedStartDate,
+  getFormattedEndDate,
   setRange,
   clear,
   isOpen: () => pickerRef.value?.isOpen() ?? false,
@@ -174,6 +185,7 @@ defineExpose({
     :locale="props.locale"
     :week-start="props.weekStart"
     :format="props.format"
+    :value-format="props.valueFormat"
     :year-navigation="props.yearNavigation"
     :month-format="props.monthFormat"
     :year-format="props.yearFormat"
@@ -196,6 +208,11 @@ defineExpose({
     @update:modelValue="ceEmit('update:modelValue', $event)"
     @update:startDate="ceEmit('update:startDate', $event)"
     @update:endDate="ceEmit('update:endDate', $event)"
+    @change-formatted="ceEmit('change-formatted', $event)"
+    @select-formatted="ceEmit('select-formatted', $event)"
+    @update:formattedValue="ceEmit('update:formattedValue', $event)"
+    @update:formattedStartDate="ceEmit('update:formattedStartDate', $event)"
+    @update:formattedEndDate="ceEmit('update:formattedEndDate', $event)"
   />
 </template>
 
