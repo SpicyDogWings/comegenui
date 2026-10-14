@@ -1,6 +1,8 @@
 # comegenui
 
-Librería de componentes UI como Web Components (Custom Elements) construidos con Vue 3.
+Librería de componentes UI en **Vue**, con una capa de **Web Components (Custom Elements)**
+encima para usarla en HTML plano. Los componentes nacen como `.vue`; los `.ce.vue` son el
+adaptador vanilla. Ver [Arquitectura](AGENTS.md).
 
 ## Quick Start
 
@@ -48,24 +50,11 @@ Detalle en [instalación](skills/use-comegen/references/instalacion.md).
 > documentación, ni la skill de uso `use-comegen`, ni CSS. Los tokens del tema se inyectan
 > solos al cargar el primer componente. La instalación es manual: descomprimir y copiar.
 
-### Opción 2: Build desde source (cualquier ref)
+### Opción 2: Build desde source
 
-Para una versión exacta (rama o tag):
-
-```sh
-git clone https://github.com/SpicyDogWings/comegenui.git
-cd comegenui
-git checkout <ref>          # main, v5.0.0-alpha.3, …
-pnpm install
-pnpm build:lib              # → dist-libs/ (4 carpetas + 4 zips sueltos)
-```
-
-**Uso en HTML:**
-
-```html
-<script src="dist-libs/umd-core/CuButton.umd.js"></script>
-<cu-button color="primary">Guardar</cu-button>
-```
+Clonás el repo y buildeás la lib (podés fijar una rama o tag con `git checkout`). Los pasos
+están en [Instalación desde source](#instalación-desde-source); cómo consumirlo, en
+[Uso (HTML plano)](#uso-html-plano).
 
 ### Actualizar la lib
 
@@ -145,26 +134,9 @@ pnpm install
 pnpm build:lib
 ```
 
-El output queda en `dist-libs/`: una carpeta por configuración **más los 4 zips sueltos** (listos para el release).
-
-```
-dist-libs/
-├── umd-core/    CuX.umd.js
-├── umd-shared/  CuX.umd.js + comegen-vue.global.js
-├── esm-core/    CuX.js
-├── esm-shared/  CuX.js + comegen-vue.js
-├── comegenui-umd-core-v{version}.zip      ← zips sueltos (fuera de las carpetas)
-├── comegenui-umd-shared-v{version}.zip
-├── comegenui-esm-core-v{version}.zip
-└── comegenui-esm-shared-v{version}.zip
-```
-
-Para usar en tu proyecto, copiá los bundles que necesités (y el runtime del `shared` si lo usás):
-
-```html
-<script src="dist-libs/umd-core/CuButton.umd.js"></script>
-<cu-button color="primary">Guardar</cu-button>
-```
+El output queda en `dist-libs/`: una carpeta por configuración **más los 4 zips sueltos**
+(listos para el release). El detalle de cada config está en *Build de la librería*, y cómo
+consumirlo en [Uso (HTML plano)](#uso-html-plano).
 
 ## Scripts
 

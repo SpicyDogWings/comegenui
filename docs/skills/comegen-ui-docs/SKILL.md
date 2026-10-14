@@ -316,7 +316,7 @@ pnpm dev                        # mirar el sitio (sidebar sale del frontmatter)
 
 | Archivo | Cuándo leerlo |
 |---|---|
-| `references/arquitectura.md` | Recordar el patrón de 3 archivos (`.vue` + `.ce.vue` + `lib/*.ts`) |
+| `references/arquitectura.md` | Las dos capas (`.vue` / `.ce.vue`): qué leer de cada archivo y desde dónde documentar |
 | `references/guia-extraccion.md` | Cómo derivar la API del `.ce.vue` paso a paso |
 | `references/convenciones.md` | Colores, variantes, naming, eventos |
 | `references/errores-comunes.md` | Qué evitar al escribir docs |

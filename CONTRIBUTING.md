@@ -36,22 +36,13 @@ pnpm dev
 
 ## Scripts
 
-| Comando | Descripción |
-|---------|-------------|
-| `pnpm dev` | Dev server del sitio de docs (VitePress) con hot-reload |
-| `pnpm build` | Build del sitio de docs |
-| `pnpm preview` | Preview del sitio buildeado |
-| `pnpm site:sync` | Regenera el tema de VitePress (tokens CU → `*.gen.*`) |
-| `pnpm build:lib` | Build de la librería UMD (Web Components) + zip |
-| `pnpm type-check` | Type-check con `vue-tsc` |
-| `pnpm test` | Tests unitarios (Vitest) |
-| `pnpm guard` | Gate local antes de un PR: impacto + tipos nuevos + contrato de componentes + build de la lib (`--full` suma tests, docs y build del sitio) |
-| `pnpm guard --solo cu-x` | Verifica un solo componente (loop rápido) |
-| `pnpm mutation` | Prueba de falsos verdes: aplica bugs conocidos y verifica que algún test falle |
-| `pnpm contract:update` | Regenera el baseline de contratos cuando un cambio de API es intencional |
+La tabla completa está en el [README](./README.md#scripts). Los que más vas a usar al contribuir:
 
-Cada paso de `guard.sh` tiene su flag para correrlo aislado: `--impacto`, `--tipos`, `--build`,
-`--contrato`, `--tests`, `--docs`, `--mutacion`.
+- `pnpm guard` — gate local (`--full` suma tests, mutación, docs y build del sitio; `--solo cu-x`
+  verifica un componente; cada paso tiene su flag: `--impacto`, `--tipos`, `--build`, `--contrato`,
+  `--tests`, `--docs`, `--mutacion`).
+- `pnpm contract:update` — regenera el baseline de contratos cuando el cambio de API es intencional.
+- `pnpm mutation` — prueba de falsos verdes: aplica bugs conocidos y verifica que algún test falle.
 
 ### Hooks locales (recomendado)
 
@@ -62,9 +53,10 @@ git config core.hooksPath .githooks
 ```
 
 - `pre-commit` → `./scripts/guard.sh --fast` (impacto + tipos + contrato + build de la lib).
-- `pre-push` → `./scripts/guard.sh --full` (agrega tests, docs y build del sitio).
 
-Saltear de forma puntual: `git commit --no-verify` o `git push --no-verify`.
+Saltear el hook de forma puntual: `git commit --no-verify`. El gate completo
+(`./scripts/guard.sh --full`, que agrega tests, mutación, docs y build del sitio) **no está
+enganchado a git**: correlo a mano antes de pushear (no hay hook de `pre-push`).
 
 ## Flujo de ramas y commits
 
@@ -100,13 +92,8 @@ Los agentes generan el título y la descripción a partir de esa plantilla: la s
 ## Componentes
 
 Antes de tocar un componente, leé la arquitectura y las reglas del repo en
-[`AGENTS.md`](./AGENTS.md). El patrón público es de **3 archivos**:
-
-```
-src/components/{category}/MiComponente.vue                    → componente real
-src/components/customElements/{category}/MiComponente.ce.vue  → wrapper CE
-src/lib/{category}/mi-componente.ts                           → entry point
-```
+[`AGENTS.md`](./AGENTS.md): ahí están las dos capas (`.vue` / `.ce.vue`) y el patrón de
+3 archivos.
 
 Si el cambio altera la API, actualizá también las fichas de documentación
 (`docs/componentes/…`) y las páginas del sitio. La receta completa está en la skill

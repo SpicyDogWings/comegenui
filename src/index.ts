@@ -1,12 +1,7 @@
 /**
- * Entry de la superficie **Vue** de ComegenUI (paquete npm).
- *
- * La lib es de Vue: todo componente nace como `.vue`. Los wrappers `.ce.vue`
- * son la capa **encima** para consumir la lib en vanilla (`<cu-x>`), y **no**
- * viajan en este paquete: emiten sus eventos con `ceEmit()` (vnode/VDOM) y
- * declaran props duplicadas.
- *
- * Regla: acá solo se exportan componentes `.vue`. Ver `docs/notes/11-dos-capas.md`.
+ * Entry de la superficie **Vue** (paquete npm): acá se exportan **solo** `.vue`.
+ * Los `.ce.vue` son la capa vanilla y no viajan en este paquete.
+ * Ver `docs/notes/11-dos-capas.md`.
  *
  * PoC: por ahora solo Button y Alert.
  */

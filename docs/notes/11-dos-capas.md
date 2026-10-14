@@ -17,12 +17,10 @@ implementación.
 
 ## Qué viaja en cada superficie
 
-| Superficie | Fuente | Salida | Consumidor | Vue |
-|---|---|---|---|---|
-| **Vue** (paquete npm) | `src/components/**/X.vue` **y nada más** | `dist-vue/` (ESM + `.d.ts` + `style.css`) | apps Vue con bundler | peer (lo pone el host) |
-| **CE** (zip) | `X.vue` **+** `customElements/**/X.ce.vue` | `dist-libs/` (UMD/ESM) | HTML plano (`<cu-x>`) | incluido (`*-core`) o global (`*-shared`) |
+La tabla de superficies (fuente, salida, consumidor y dónde va Vue) vive en
+[`AGENTS.md`](../../AGENTS.md#dos-capas-vue-vue-y-cevue-vanilla), que es la fuente operativa.
 
-La dependencia **siempre** va en un solo sentido:
+La dependencia va **siempre** en un solo sentido:
 
 ```
 X.ce.vue  ──importa──▶  X.vue        ✅

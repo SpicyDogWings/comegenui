@@ -1,101 +1,62 @@
-# Arquitectura de componentes
+# Arquitectura — recorte para documentar
 
-ComegenUI sigue un patrón de **3 archivos por componente público**, con separación estricta de responsabilidades.
+> La arquitectura del repo se explica **una sola vez**, en [`AGENTS.md`](../../../../AGENTS.md).
+> Acá va solo el recorte que necesitás para escribir o revisar fichas, así no hay dos
+> explicaciones que se desincronicen.
 
-## Estructura
+## Las dos capas
 
-```
-src/components/
-├── MiComponente.ce.vue   # Thin wrapper para Custom Element (UMD)
-├── MiComponente.vue      # Lógica real del componente
-└── MiComponente.ts       # defineCustomElement + registro
-```
+ComegenUI es una librería de **Vue**: el componente nace como `.vue`. Los `.ce.vue` son un
+adaptador **encima**, que existe solo para consumir la lib en vanilla (HTML plano).
+Decisión completa: [`docs/notes/11-dos-capas.md`](../../../notes/11-dos-capas.md).
 
-Un componente puede ser **solo `.vue`** si es interno (no se expone como Custom Element), como `Dropdown.vue` (motor genérico usado por `DropdownMenu.vue`).
+| Capa | Archivos | Ficha | Consumidor |
+|---|---|---|---|
+| Vue | `X.vue` | `docs/componentes/vue/<kebab>.md` | apps Vue |
+| Vanilla (CE) | `customElements/…/X.ce.vue` + `src/lib/…/x.ts` | `docs/componentes/<tag>.md` | HTML plano |
 
-## Responsabilidades
+## Qué leer para documentar
 
-### `MiComponente.ce.vue` — **El wrapper para Custom Element (fuente de verdad de la API)**
+| Archivo | Qué aporta | ¿Leerlo? |
+|---|---|---|
+| `X.vue` | Implementación (lógica, template, estilos) | **Sí** — de acá sale la API Vue |
+| `X.ce.vue` | API **pública** del custom element (atributos, eventos, métodos) | **Sí** — es lo que consume el usuario vanilla |
+| `src/lib/…/x.ts` | Solo registra el tag | No — alcanza con confirmar el `<cu-x>` |
 
-- Define la interfaz pública del componente (props, emits, exposes).
-- **Resuelve el tema activo** con `getHostTheme()` y convierte colores semánticos a hex con `getColorMap()`.
-- Pasa props explícitamente al `.vue` interno (NO usar `v-bind="{...props}"`).
-- Forwardea slots usando sintaxis HTML nativa `slot="nombre"` (no `#nombre` de Vue).
-- Re-emite eventos custom del `.vue` interno con `ceEmit()` o `defineEmits()`.
-- Expone métodos via `defineExpose()` delegando al ref interno.
+- **No documentes** el motor interno de temas (`getColorMap`, `getHostTheme`): es interno
+  y ya no se usa (ver `convenciones.md`).
+- Los colores son **nombres semánticos** (`primary`, `neutral`, …) resueltos por CSS custom
+  properties (`--cu-color-*`). El `.vue` **no** espera un hex.
 
-> **Cuando estés documentando, leé siempre este archivo primero.** Es lo que el usuario final consume.
+## Si el `.vue` y el `.ce.vue` no coinciden
 
-### `MiComponente.vue` — **La implementación real**
+El `.ce.vue` es un adaptador **thin**: puede no reenviar todo lo que el `.vue` emite. Eso es
+justo lo que define qué existe para el usuario vanilla.
 
-- Contiene toda la lógica de negocio, template y estilos.
-- Espera `color` como **hex string** (`#1774A4`), no como nombre semántico.
-- Usa sintaxis Vue `#nombre` para slots (ej: `<template #toggle>`).
-- Importa y usa sub-componentes `.vue` directamente.
+- Evento reenviado con `ceEmit()` en el `.ce.vue` → **sí** está disponible en el CE.
+- Evento del `.vue` que no aparece en el `.ce.vue` → **no** está disponible en el CE.
+- Para la ficha **Vue** vale, en cambio, lo que expone el `.vue` directamente.
 
-> **No documentes desde este archivo.** Lo que hace internamente puede no corresponder con la API pública. Ejemplo: `AdvancedTable.vue` (interno) emite `row-click`, pero el `<cu-table>` (`.ce.vue`) **no** lo re-emite.
+> Ejemplo: `AdvancedTable.vue` (interno) emite `row-click`, pero `<cu-table>` no lo re-emite.
 
-### `MiComponente.ts` — **Punto de entrada del build**
+## Ubicaciones
 
-Siempre tiene la misma forma:
+| Carpeta | Qué contiene |
+|---|---|
+| `src/components/` | Componentes que no son de formulario ni datos |
+| `src/components/form/` | Inputs y controles de formulario |
+| `src/components/data/` | Tablas y listas |
+| `src/components/lab/` | Experimentales |
+| `src/components/archived/` | Retirados; se siguen distribuyendo (ver `docs/notes/01-build-glob.md`) |
 
-```ts
-import { defineComegenElement } from "@/utils/comegen-element";
-import MiComponente from "./MiComponente.ce.vue";
+## Cadenas de wrappers
 
-const ComegenMiComponente = defineComegenElement("cu-mi-componente", MiComponente);
-
-export { ComegenMiComponente };
-```
-
-> **Para documentación, no necesitás leer este archivo**, solo confirmar el nombre del tag. Es trivial.
-
-## Ubicaciones especiales
-
-No todos los componentes viven en la raíz de `src/components/`:
-
-| Carpeta | Qué contiene | Ejemplos |
-|---------|--------------|----------|
-| `src/components/` (raíz) | Componentes que no son de formulario ni datos | `Alert`, `Badge`, `Button`, `DropdownMenu`, `Modal`, `Pagination` |
-| `src/components/form/` | Componentes de formulario (inputs, controles) | `Autocomplete`, `Checkbox`, `Input`, `Label`, `Switch`, `Textarea` |
-| `src/components/data/` | Componentes de datos (tablas, listas) | `Table` |
-| `src/components/labs/` | Componentes en experimentación, **sí se distribuyen** | `Select` |
-| `src/components/archived/` | Componentes retirados, **se siguen distribuyendo** (ver `docs/notes/01-build-glob.md`) | `SelectNative` |
-
-> **Atención:** el build toma `src/lib/**/*.ts` (un entry por componente registrado). Si un componente no tiene entry, **no** se distribuye. `archived/` y `labs/` no se compilan salvo que tengan su entry en `src/lib`.
-
-## Ejemplo: el caso especial de `DropdownMenu`
-
-`DropdownMenu` no es un wrapper sobre un único `.vue`. Tiene una cadena de wrappers:
+Algunos componentes no envuelven un único `.vue`:
 
 ```
-DropdownMenu.ce.vue       (Custom Element; fuente de verdad)
-  └─> DropdownMenu.vue   (wrapper con props semánticas para Dropdown.vue)
-        └─> Dropdown.vue (motor genérico: toggle + panel + posicionamiento)
+DropdownMenu.ce.vue   (custom element)
+  └─ DropdownMenu.vue (wrapper con props semánticas)
+       └─ Dropdown.vue (motor genérico: toggle + panel + posicionamiento)
 ```
 
-El `.ce.vue` es lo que documentás. Pero cuando hay un slot como `toggle`, la doc debe mostrar la sintaxis HTML `slot="toggle"`, no la sintaxis Vue `#toggle` (porque el `.ce.vue` reenvía con HTML nativo, no con Vue).
-
-## Patrón de eventos
-
-El `.ce.vue` suele tener un helper para re-emitir eventos custom a través del Shadow DOM:
-
-```ts
-const instance = getCurrentInstance();
-
-function ceEmit(event: string, payload: unknown) {
-  const el = instance?.vnode.el as HTMLElement | null;
-  const host = el?.getRootNode()?.host || el;
-  if (host) {
-    host.dispatchEvent(new CustomEvent(event, {
-      detail: payload,
-      bubbles: true,
-      composed: true,
-    }));
-  }
-}
-```
-
-Este helper es clave: los Custom Events creados dentro de Shadow DOM **no** burbujean al host por defecto, hay que hacerlos `composed: true` y `dispatchearlos` sobre el host (`getRootNode().host`).
-
-> Si en el `.ce.vue` ves un `@evento` re-envuelto con `ceEmit`, ese evento **sí** está disponible en el Web Component. Si ves un `@evento` en el `.vue` interno que no se reenvía en el `.ce.vue`, ese evento **no** está disponible para el usuario final.
+En esos casos, la ficha vanilla documenta el `.ce.vue` y la ficha Vue el `.vue` de arriba.
