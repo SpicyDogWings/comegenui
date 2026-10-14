@@ -16,6 +16,19 @@ tu proyecto:
 pnpm add comegenui
 ```
 
+Si todavía no está publicado, instalalo desde el tarball de la release:
+
+```bash
+pnpm add ./comegenui-5.1.1.tgz
+```
+
+> [!WARNING]
+> Antes de instalar por nombre, verificá el autor: el paquete `comegenui` que hoy está en el
+> registry **no es este** (figura a nombre de otro maintainer). Mientras se defina el nombre
+> final, usá el tarball o un scope propio.
+
+Importá el CSS **una vez**, en el entry de tu app (`main.ts`):
+
 ```ts
 import { CuButton, CuAlert } from 'comegenui'
 import 'comegenui/style.css'

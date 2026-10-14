@@ -13,6 +13,18 @@ ComegenUI tiene **dos superficies**: elegí según tu proyecto.
 pnpm add comegenui
 ```
 
+Si todavía no está publicado, instalalo desde el tarball de la release:
+
+```bash
+pnpm add ./comegenui-5.1.1.tgz
+```
+
+> Verificá el autor antes de instalar por nombre: el `comegenui` del registry hoy **no es este**
+> paquete (figura a nombre de otro maintainer). Mientras se defina el nombre final, usá el
+> tarball o un scope propio.
+
+Importá el CSS **una vez**, en el entry de tu app (`main.ts`):
+
 ```ts
 import { CuButton, CuAlert } from 'comegenui'
 import 'comegenui/style.css'
