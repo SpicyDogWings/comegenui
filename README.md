@@ -150,6 +150,7 @@ consumirlo en [Uso (HTML plano)](#uso-html-plano).
 | `pnpm build:lib` | Build de **las dos** superficies: vanilla (`dist-libs/`) + npm (`dist-vue/`) |
 | `pnpm build:vanilla` | Solo custom elements: 4 configs + 4 zips sueltos en `dist-libs/` |
 | `pnpm build:npm` | Solo el paquete npm (superficie Vue) en `dist-vue/` |
+| `pnpm pack:npm` | Empaqueta el tarball del paquete: `dist-vue/comegenui-{version}.tgz` |
 | `pnpm build:vanilla:<config>` | Una sola config: `umd-core`, `umd-shared`, `esm-core`, `esm-shared` |
 | `pnpm type-check` | Type-check con `vue-tsc` |
 | `pnpm test` | Tests unitarios (Vitest) |
@@ -217,7 +218,8 @@ dist-vue/
 ```
 
 El paquete lleva **solo `.vue`**: los `.ce.vue` son la capa vanilla y no viajan (ver
-[Arquitectura](AGENTS.md)). Para previsualizar el tarball: `cd dist-vue && pnpm pack`.
+[Arquitectura](AGENTS.md)). Para empaquetar el tarball: `pnpm pack:npm` →
+`dist-vue/comegenui-{version}.tgz`.
 
 ### Agregar un componente nuevo
 

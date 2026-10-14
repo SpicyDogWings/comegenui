@@ -17,6 +17,7 @@
     "build:vanilla:esm-core": "COMEGEN_CONFIGS=esm-core pnpm build:vanilla",
     "build:vanilla:esm-shared": "COMEGEN_CONFIGS=esm-shared pnpm build:vanilla",
     "build:npm": "pnpm exec tsx build-vue.ts",
+    "pack:npm": "cd dist-vue && pnpm pack",
     "type-check": "vue-tsc --build",
     "test": "vitest run",
     "test:watch": "vitest",

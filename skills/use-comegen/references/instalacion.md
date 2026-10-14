@@ -129,6 +129,7 @@ Se reemplazan archivos, no hay instalador:
 pnpm build:lib       # las dos superficies: vanilla (dist-libs/) + npm (dist-vue/)
 pnpm build:vanilla   # solo los zips: dist-libs/ (4 carpetas + 4 zips sueltos)
 pnpm build:npm       # solo el paquete npm: dist-vue/
+pnpm pack:npm        # empaqueta el tarball del paquete npm
 ```
 
 Una sola config cuando la necesitás suelta (y forzar la versión del zip):
