@@ -29,6 +29,44 @@ El bundle Vapor real (`dist-libs/esm-shared/CuAlert.js`) importa de `vue`:
 `defineVaporComponent` **y** `defineCustomElement` **y** `getCurrentInstance`.
 O sea: el build compila, pero mezcla los dos runtimes.
 
+## El experimento decisivo: ¿se puede migrar TODO a Vapor?
+
+Probado, no supuesto. Pasos y resultado:
+
+1. **La entry por defecto de `vue` no trae Vapor.** `node_modules/vue/dist/`
+   no expone `defineVaporComponent`; el runtime de Vapor vive aparte, en
+   `vue/dist/vue.runtime-with-vapor.esm-browser.js`. Por eso el primer intento
+   fallaba con `defineVaporComponent is not a function`. Con `resolve.alias` de
+   `vue` a esa build, el import ya no falla (ver `vitest.config.ts`).
+2. **Aun así, `defineCustomElement` NO monta componentes Vapor.** Con el runtime
+   correcto el error pasa a:
+
+   ```
+   processComponent → getVaporInterface(parentComponent, n2).mount(...)
+   TypeError: Cannot read properties of undefined (reading 'mount')
+     ❯ VueCustomElement._mountComponent
+   ```
+
+   `getVaporInterface()` devuelve `undefined`: el patcher VDOM no sabe delegar el
+   montaje de un componente Vapor cuando lo dispara el custom element.
+3. **Instalar el interop no alcanza.** `defineCustomElement` acepta
+   `configureApp`, así que se probó `configureApp: app => app.use(vaporInteropPlugin)`.
+   Resultado: sigue roto y Vue avisa
+   `Vapor component found in vdom tree but vapor-in-vdom interop was not installed`.
+   Además, con Vapor **`defineExpose` no se mapea al elemento**: `el.get` /
+   `el.set` **no son funciones** (cae toda la API pública de los CE).
+
+**Marcador:** `COMEGEN_VAPOR=1 pnpm vitest run src/components/customElements` →
+**54 fallan | 4 pasan (58)**.
+
+## Conclusión
+
+**Vapor y custom elements no son combinables hoy** (Vue 3.6 rc.11). Migrar *toda*
+la lib a Vapor implica **renunciar a `defineCustomElement`**, y por lo tanto al
+modo `<cu-*>`: props, métodos (`el.set`/`el.get`), eventos y el zip/UMD/ESM.
+Vapor sí es viable para un **entry Vue-native** (componentes consumidos dentro de
+una app Vue, sin custom elements) — otro build, no un flag sobre el de CE.
+
 ## Por qué no funciona el modo CE con Vapor
 
 1. **`ceEmit()` es VDOM.** Los 23 wrappers `.ce.vue` emiten sus CustomEvents con:
@@ -57,26 +95,27 @@ O sea: el build compila, pero mezcla los dos runtimes.
 ## Restricciones de Vapor que **no** nos afectan
 
 Medido en el repo: **no** usamos Options API, ni `v-memo`, ni directivas custom
-(los tres son incompatibles con Vapor). El único choque real es
-`getCurrentInstance`.
+(los tres son incompatibles con Vapor). Los choques reales son otros:
+`getCurrentInstance` (eventos CE), el mapeo de `defineExpose` al elemento, y el
+montaje del custom element.
 
 ## Camino recomendado
 
 - **CE (esta lib): seguir en VDOM.** El modo CE se define por
-  `defineCustomElement`; no hay soporte de Vapor para eso.
+  `defineCustomElement` y **no** hay soporte de Vapor para custom elements.
 - **Lib Vue nativa (futuro paquete npm): ahí sí Vapor es candidato**, porque no
   necesita `defineCustomElement` ni `ceEmit` (el consumidor usa props/eventos
   Vue normales). Sería un build/entry aparte, no un flag sobre el de CE.
-- Si algún día se quiere Vapor *también* en los CE, hay que reemplazar `ceEmit`
-  por una referencia al elemento raíz (template ref) en vez de `instance.vnode`,
-  y verificar `defineCustomElement` contra el runtime Vapor.
+- Si algún día se quiere Vapor *también* en los CE, hay que esperar soporte de
+  Vue (hoy no existe) o cambiar el modelo de distribución.
 
 ## Cómo probarlo
 
 ```bash
-# build en Vapor (hoy compila, pero rompe en runtime por ceEmit)
+# build en Vapor (hoy compila, pero rompe en runtime: montaje + eventos)
 COMEGEN_VAPOR=1 COMEGEN_CONFIGS=esm-shared COMEGEN_NO_ZIP=1 pnpm build:lib
 
-# tests en Vapor (hoy fallan: falta la entry de vue con runtime-vapor)
+# tests en Vapor (hoy: 54 fallan | 4 pasan). El alias de `vue` al runtime
+# with-vapor en `vitest.config.ts` es necesario para que al menos cargue.
 COMEGEN_VAPOR=1 pnpm test
 ```

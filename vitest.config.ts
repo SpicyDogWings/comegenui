@@ -12,6 +12,10 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
+      // La entry por defecto de `vue` NO incluye el runtime de Vapor (por eso
+      // `defineVaporComponent is not a function`). Para poder compilar/ejecutar
+      // en ese modo hay que apuntar al runtime "with-vapor".
+      ...(VAPOR ? { vue: "vue/dist/vue.runtime-with-vapor.esm-browser.js" } : {}),
     },
   },
   test: {
