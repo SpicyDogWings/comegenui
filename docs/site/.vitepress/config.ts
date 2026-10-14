@@ -105,6 +105,7 @@ export default defineConfig({
   },
   themeConfig: {
     nav: [
+      { text: "Instalación", link: "/instalacion" },
       { text: "Componentes", link: firstVanilla },
       { text: "Theme Builder", link: "/theme-builder" },
       { text: "Versionado", link: "/versionado" },

@@ -147,7 +147,10 @@ consumirlo en [Uso (HTML plano)](#uso-html-plano).
 | `pnpm preview` | Preview del sitio buildeado |
 | `pnpm build:docs:lib` | Arma sólo `esm-shared` (lo que consumen los demos de la doc) |
 | `pnpm site:sync` | Regenera el tema de VitePress (tokens CU → `*.gen.*`) |
-| `pnpm build:lib` | Build de la librería (Web Components) en 4 configs + 4 zips sueltos en `dist-libs/` |
+| `pnpm build:lib` | Build de **las dos** superficies: vanilla (`dist-libs/`) + npm (`dist-vue/`) |
+| `pnpm build:vanilla` | Solo custom elements: 4 configs + 4 zips sueltos en `dist-libs/` |
+| `pnpm build:npm` | Solo el paquete npm (superficie Vue) en `dist-vue/` |
+| `pnpm build:vanilla:<config>` | Una sola config: `umd-core`, `umd-shared`, `esm-core`, `esm-shared` |
 | `pnpm type-check` | Type-check con `vue-tsc` |
 | `pnpm test` | Tests unitarios (Vitest) |
 | `pnpm guard` | Gate local con veredicto por componente (`--full`, `--solo <tag>`, `--explicar`) |
@@ -160,11 +163,15 @@ consumirlo en [Uso (HTML plano)](#uso-html-plano).
 > el completo (`guard.sh --full`) lo corrés **a mano antes de pushear** (no hay hook de `pre-push`).
 > Las pruebas corren en local: no hay CI automático.
 
-## Build de la librería
+## Build
 
 ```sh
-pnpm build:lib
+pnpm build:lib        # las dos superficies
+pnpm build:vanilla    # custom elements  → dist-libs/
+pnpm build:npm        # paquete npm Vue  → dist-vue/
 ```
+
+### Vanilla (custom elements)
 
 Compila cada componente en `src/lib/` como bundle independiente, en **cuatro configuraciones**
 (formato × variante). Output en `dist-libs/`, una carpeta por config con su propio zip:
@@ -194,6 +201,23 @@ dist-libs/
    `comegen-vue.js` (ESM)
 5. Empaqueta cada configuración en su zip `comegenui-<config>-v{version}.zip` (bundles +
    runtime si es `shared`; sin CSS) y deja los 4 zips **sueltos en `dist-libs/`**`
+
+### npm (superficie Vue)
+
+`build:npm` compila `src/index.ts` a ESM con `vue` como **peer**, extrae los estilos a
+`style.css`, genera los `.d.ts` y escribe un `package.json` publicable + `README` en `dist-vue/`:
+
+```
+dist-vue/
+├── index.js        componentes compilados (ESM)
+├── index.d.ts      tipos
+├── style.css       estilos de los SFC
+├── package.json    el publicable (name, exports, peers)
+└── README.md
+```
+
+El paquete lleva **solo `.vue`**: los `.ce.vue` son la capa vanilla y no viajan (ver
+[Arquitectura](AGENTS.md)). Para previsualizar el tarball: `cd dist-vue && pnpm pack`.
 
 ### Agregar un componente nuevo
 

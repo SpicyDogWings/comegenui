@@ -1,6 +1,52 @@
 # Instalar y actualizar
 
-## Qué trae cada zip
+ComegenUI tiene **dos superficies**: elegí según tu proyecto.
+
+| Tu proyecto | Superficie | Se instala con |
+|---|---|---|
+| **Vue** (Vite, Nuxt, …) | componentes `.vue` | el paquete npm |
+| **Vanilla** (HTML plano, sin build) | custom elements `<cu-*>` | el zip de una de las 4 configs |
+
+## Vue — paquete npm
+
+```bash
+pnpm add comegenui
+```
+
+```ts
+import { CuButton, CuAlert } from 'comegenui'
+import 'comegenui/style.css'
+```
+
+```vue
+<template>
+  <CuButton color="primary">Guardar</CuButton>
+  <CuAlert variant="soft">Listo</CuAlert>
+</template>
+```
+
+Registro global de todos los componentes:
+
+```ts
+import ComegenUI from 'comegenui'
+import 'comegenui/style.css'
+
+createApp(App).use(ComegenUI).mount('#app')
+```
+
+- `vue` es **peer dependency**: lo aporta tu app (no se duplica).
+- Importá `comegenui/style.css` una vez; los tokens del tema los inyecta la propia lib.
+- **Dependencias opcionales** (no vienen incluidas; solo si usás el componente):
+
+  | Componente | Instalá |
+  |---|---|
+  | `CuMarkdown` | `marked`, `dompurify` |
+  | `CuMarkdown` (bloques de código) | `highlight.js` |
+  | `CuCellsImporter` | `xlsx` |
+
+- Actualizar: `pnpm update comegenui`.
+
+## Vanilla — los 4 zips
 
 La lib se publica en **cuatro configuraciones**, cada una en su propio zip: elegís una
 (formato × variante) según cómo consumas los componentes.
@@ -19,7 +65,7 @@ Dentro de cada zip, los bundles comparten nombre: `CuX.umd.js` (UMD) o `CuX.js` 
 No hay dependencias que instalar ni CSS que cargar: cada bundle se auto-registra
 (`defineComegenElement('cu-x', …)`) y los tokens del tema se inyectan solos (`initTokens()`).
 
-## UMD (navegador, sin bundler)
+### UMD (navegador, sin bundler)
 
 **`umd-core`** — un `<script>` por componente:
 
@@ -40,7 +86,7 @@ No hay dependencias que instalar ni CSS que cargar: cada bundle se auto-registra
 > toca ni depende de un `window.Vue` del host**. Si olvidás cargarlo, los componentes
 > `shared` fallan al registrarse.
 
-## ESM (bundler)
+### ESM (bundler)
 
 **`esm-core`** y **`esm-shared`** se importan como módulos:
 
@@ -59,14 +105,14 @@ instalado; así se dedupea con tu app) o, en un host sin bundler (p. ej. PHP/van
 <script type="module" src="vendor/comegenui/CuButton.js"></script>
 ```
 
-## Usar
+### Usar
 
 ```html
 <cu-button color="primary" variant="solid">Guardar</cu-button>
 <cu-alert color="success" variant="soft">Listo</cu-alert>
 ```
 
-## Actualizar
+### Actualizar
 
 Se reemplazan archivos, no hay instalador:
 
@@ -77,11 +123,20 @@ Se reemplazan archivos, no hay instalador:
 - Para confirmar qué versión y **tipo de build** está cargado: `customElements.get('cu-x').comegen`
   (`version`, `type`) — ver `versionado.md`.
 
-## Buildear la lib (sólo en el repo de ComegenUI)
+## Buildear las libs (sólo en el repo de ComegenUI)
 
 ```bash
-pnpm build:lib            # dist-libs/ (4 carpetas + 4 zips sueltos)
-pnpm build:lib v5.0.0     # fuerza la versión del zip
+pnpm build:lib       # las dos superficies: vanilla (dist-libs/) + npm (dist-vue/)
+pnpm build:vanilla   # solo los zips: dist-libs/ (4 carpetas + 4 zips sueltos)
+pnpm build:npm       # solo el paquete npm: dist-vue/
+```
+
+Una sola config cuando la necesitás suelta (y forzar la versión del zip):
+
+```bash
+pnpm build:vanilla:esm-shared         # solo esa config
+pnpm build:vanilla:umd-core
+pnpm build:vanilla v5.0.0             # fuerza la versión de los zips
 ```
 
 Cada config sale en `dist-libs/<config>/`; los 4 zips (`comegenui-<config>-v{version}.zip`)

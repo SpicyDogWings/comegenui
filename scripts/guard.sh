@@ -9,6 +9,7 @@
 #   --mutacion  aplica bugs conocidos y verifica que los tests los detecten
 #   --tests     tests unitarios
 #   --docs      fichas/páginas y tablas de API
+#   --paquete   empaquetado del paquete npm (superficie Vue) en dist-vue/
 #
 # Uso:
 #   ./scripts/guard.sh                  # loop rápido: impacto + tipos + build + contrato
@@ -31,7 +32,7 @@ UPDATE=""
 SOLO=()
 
 # Pasos: por defecto el loop rápido. Cualquier --<paso> activa modo "solo esos".
-DEFAULT_STEPS="impacto tipos build contrato"
+DEFAULT_STEPS="impacto tipos build contrato paquete"
 declare -a STEPS=()
 declare -a EXPLICIT=()
 add_step() {
@@ -53,8 +54,9 @@ while [ $# -gt 0 ]; do
     --mutacion|--mutación|--mutation) add_step mutacion ;;
     --tests) add_step tests ;;
     --docs) add_step docs ;;
+    --paquete|--package) add_step paquete ;;
     --no-typecheck|--no-build|--no-tests) ;; # compat: se ignoran en modo explícito
-    -h|--help) sed -n '2,23p' "$0"; exit 0 ;;
+    -h|--help) sed -n '2,24p' "$0"; exit 0 ;;
     *) echo "⚠️  Opción desconocida: $1" >&2 ;;
   esac
   shift
@@ -64,9 +66,9 @@ done
 if [ "${#EXPLICIT[@]}" -gt 0 ]; then
   STEPS=("${EXPLICIT[@]}")          # modo explícito: solo lo pedido
 elif [ -n "$FULL" ]; then
-  STEPS=(impacto tipos build contrato tests docs mutacion)
+  STEPS=(impacto tipos build contrato paquete tests docs mutacion)
 elif [ -n "$FAST" ]; then
-  STEPS=(impacto tipos build contrato)
+  STEPS=(impacto tipos build contrato paquete)
 else
   STEPS=($DEFAULT_STEPS)
 fi
@@ -148,28 +150,35 @@ fi
 
 # ── build lib ────────────────────────────────────────────────────────────────
 if has build; then
-  paso "Build de la librería"
-  why "compilo los UMD reales que publicás (esto es lo que ningún gate miraba)"
+  paso "Build de las librerías"
+  why "compilo lo que publicás: los custom elements (dist-libs/) y el paquete npm (dist-vue/)"
   set +e
   COMEGEN_NO_ZIP=1 pnpm run --silent build:lib >"$TMP/build.log" 2>&1
   BL_EXIT=$?
   set -e
   if [ "$BL_EXIT" -ne 0 ]; then
-    bad "el build de la lib falló:"
+    bad "el build falló (vanilla o npm):"
     tail -20 "$TMP/build.log" | sed 's/^/      /'
-    RESUMEN+=("❌ build lib"); FAILED=1
+    RESUMEN+=("❌ build"); FAILED=1
   else
     umd_core=$(ls "$ROOT"/dist-libs/umd-core/*.umd.js 2>/dev/null | wc -l || true)
     umd_shared=$(ls "$ROOT"/dist-libs/umd-shared/*.umd.js 2>/dev/null | wc -l || true)
     esm_core=$(ls "$ROOT"/dist-libs/esm-core/*.js 2>/dev/null | wc -l || true)
     esm_shared=$(ls "$ROOT"/dist-libs/esm-shared/*.js 2>/dev/null | grep -v 'comegen-vue.js' | wc -l || true)
     total=$((umd_core + umd_shared + esm_core + esm_shared))
-    ok "$total bundles generados"
+    npm_files=$(ls "$ROOT"/dist-vue/index.js "$ROOT"/dist-vue/index.d.ts "$ROOT"/dist-vue/style.css 2>/dev/null | wc -l || true)
+    ok "$total bundles (vanilla) + paquete npm"
     detalle "• umd-core    : $umd_core"
     detalle "• umd-shared  : $umd_shared  (+ comegen-vue.global.js)"
     detalle "• esm-core    : $esm_core"
     detalle "• esm-shared  : $esm_shared  (+ comegen-vue.js)"
-    RESUMEN+=("✅ build lib")
+    if [ "$npm_files" -eq 3 ]; then
+      detalle "• npm         : index.js + index.d.ts + style.css"
+      RESUMEN+=("✅ build")
+    else
+      bad "el paquete npm no generó index.js/index.d.ts/style.css en dist-vue/"
+      RESUMEN+=("❌ build (npm)"); FAILED=1
+    fi
   fi
 fi
 
@@ -200,6 +209,24 @@ if has contrato; then
       ok "todos los contratos intactos"
       RESUMEN+=("✅ contrato")
     fi
+  fi
+fi
+
+# ── paquete npm (superficie Vue) ─────────────────────────────────────────────
+if has paquete; then
+  paso "Paquete npm (superficie Vue)"
+  why "verifico dist-vue/: artefactos, exports del bundle y que no se cuelen fuentes"
+  set +e
+  node scripts/check-package.mjs >"$TMP/pkg.out" 2>&1
+  PKG_EXIT=$?
+  set -e
+  if [ "$PKG_EXIT" -ne 0 ]; then
+    bad "el paquete npm está mal:"
+    cat "$TMP/pkg.out" | sed 's/^/      /'
+    RESUMEN+=("❌ paquete npm"); FAILED=1
+  else
+    ok "$(tail -1 "$TMP/pkg.out" | sed 's/^✓ //')"
+    RESUMEN+=("✅ paquete npm")
   fi
 fi
 

@@ -8,7 +8,7 @@
  * - genera los `.d.ts` (vite-plugin-dts);
  * - escribe un `package.json` publicable en `dist-vue/`.
  *
- * Uso:  pnpm build:vue
+ * Uso:  pnpm build:npm
  *       cd dist-vue && pnpm pack     (previsualizar el tarball)
  */
 import { build } from 'vite'
@@ -26,7 +26,7 @@ const OUT = resolve(__dirname, 'dist-vue')
 /**
  * Nombre publicable. Por defecto `comegenui`; se puede sobreescribir para probar
  * con un scope sin publicar el nombre final:
- *   COMEGEN_VUE_NAME=@tu-scope/comegenui pnpm build:vue
+ *   COMEGEN_VUE_NAME=@tu-scope/comegenui pnpm build:npm
  */
 const NAME = process.env.COMEGEN_VUE_NAME || 'comegenui'
 

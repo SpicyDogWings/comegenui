@@ -27,12 +27,15 @@ El gate corre, en orden, y por cada paso imprime un veredicto en criollo:
 1. **impacto** (`scripts/impact.mjs`): qué componentes dependen de los archivos que cambiaste.
 2. **tipos** (`vue-tsc --build` + `scripts/typecheck-diff.mjs`): errores de TypeScript **nuevos por
    identidad** contra `scripts/typecheck-baseline.txt` (no por conteo: el baseline viejo sólo contaba).
-3. **contrato** (`scripts/contract.mjs`): carga cada `dist-libs/umd-core/Cu*.umd.js` en jsdom y compara props
+3. **build de las libs** (`build:lib` = `build:vanilla` + `build:npm`): compila lo que publicás —
+   los custom elements (`dist-libs/`) y el paquete npm (`dist-vue/`).
+4. **contrato** (`scripts/contract.mjs`): carga cada `dist-libs/umd-core/Cu*.umd.js` en jsdom y compara props
    declaradas, métodos expuestos, metadata `comegen` y estructura del shadow DOM contra
    `scripts/contract-baseline/<tag>.json`. Reporta `❌ <tag> ROTO: ...`.
-4. **build de la lib** (`build:lib`): compila los UMD reales — lo que antes ningún gate miraba.
-5. **tests unitarios** (`vitest run`).
-6. **docs**: `check-docs.mjs` + `gen-api.mjs --check`; con `--full` además el build del sitio
+5. **paquete npm** (`scripts/check-package.mjs`): artefactos de `dist-vue/`, campos del
+   `package.json` publicable y que el bundle exporte exactamente lo declarado en `src/index.ts`.
+6. **tests unitarios** (`vitest run`).
+7. **docs**: `check-docs.mjs` + `gen-api.mjs --check`; con `--full` además el build del sitio
    (dead links + que los ejemplos `.vue` compilen).
 
 Flags: `--solo <tag>` (loop rápido), `--explicar` (qué hace y por qué cada paso), `--update`

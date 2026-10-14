@@ -46,11 +46,13 @@ andá directo al paso que te falta.
 
 ## 2. Instalar o actualizar
 
-- Cada release publica **4 configs** (`umd-core`, `umd-shared`, `esm-core`, `esm-shared`), cada
-  una en su zip. Qué trae cada una y cómo copiarla: `references/instalacion.md`.
-- No hay CSS que cargar: los tokens del tema se inyectan solos al cargar el primer componente.
-- Si el componente ya está instalado y "no cambia nada", casi siempre es un bundle viejo:
-  volvé a copiar el `.umd.js` / `.js`. Para confirmarlo, leé
+- **Vue:** `pnpm add comegenui` + `import 'comegenui/style.css'`. `vue` va como **peer**
+  (lo aporta tu app). Detalle: `references/instalacion.md`.
+- **Vanilla:** cada release publica **4 configs** (`umd-core`, `umd-shared`, `esm-core`,
+  `esm-shared`), cada una en su zip. Cuál elegir y cómo copiarla: `references/instalacion.md`.
+  No hay CSS que cargar: los tokens se inyectan solos al cargar el primer componente.
+- Si el componente "no cambia nada" después de actualizar, casi siempre es un bundle viejo
+  (vanilla) o caché. Para confirmarlo, leé
   `customElements.get('cu-x').comegen.version` (y `.type`) (`references/versionado.md`).
 
 ## 3. Declarar el componente

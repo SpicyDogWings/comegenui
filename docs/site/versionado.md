@@ -17,7 +17,7 @@ Cada componente se publica en **cuatro configuraciones**, con la misma API y el 
 
 Los `shared` traen su runtime al lado: `comegen-vue.global.js` (UMD, global `__COMEGEN_VUE__`)
 o `comegen-vue.js` (ESM). Cada config sale en su carpeta `dist-libs/<config>/`; los 4 zips
-(`comegenui-<config>-v{version}.zip`) quedan sueltos en `dist-libs/` (ver [instalación](../skills/use-comegen/references/instalacion.md)).
+(`comegenui-<config>-v{version}.zip`) quedan sueltos en `dist-libs/` (ver [instalación](./instalacion.md)).
 
 ## Identidad del archivo
 

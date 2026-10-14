@@ -13,6 +13,8 @@
       "dev": "pnpm dev",
       "build": "pnpm build",
       "build:lib": "pnpm build:lib",
+      "build:vanilla": "pnpm build:vanilla",
+      "build:npm": "pnpm build:npm",
       "preview": "pnpm preview",
       "site:sync": "pnpm site:sync",
       "test": "pnpm test",

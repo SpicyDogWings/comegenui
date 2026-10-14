@@ -11,7 +11,7 @@ import archiver from 'archiver'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
 const packageJson = JSON.parse(fs.readFileSync(resolve(__dirname, 'package.json'), 'utf-8'))
-// Versión del bundle: `pnpm build:lib v5.0.0` la fuerza; si no, package.json.
+// Versión del bundle: `pnpm build:vanilla v5.0.0` la fuerza; si no, package.json.
 // Viaja inyectada en cada bundle (`__COMEGEN_META__`) y en el banner del archivo.
 const version: string = process.argv[2] || packageJson.version
 
