@@ -68,6 +68,24 @@ Sin pipeline de extracción: las fichas y las páginas se escriben a mano. La re
 
 Donde `{category}` es uno de: `form/`, `information/`, `overlay/`, `navigation/`, `data/`, `buttons/`, o raíz.
 
+### Dos capas: `.vue` (Vue) y `.ce.vue` (vanilla)
+
+ComegenUI es una **librería de Vue**: todo componente nace como SFC `.vue`.
+La capa de **custom elements** (`.ce.vue` + `defineCustomElement`) es un
+**adaptador** encima del `.vue`, que existe **solo** para poder consumir la lib
+en **vanilla** (HTML plano, sin build). No es un componente aparte.
+
+| Superficie | Fuente | Salida | Consumidor |
+|---|---|---|---|
+| **Vue (paquete npm)** | `src/components/**/X.vue` **y nada más** | `dist-vue/` (ESM + `.d.ts` + `style.css`) | Apps Vue con bundler |
+| **CE (zip)** | `X.vue` **+** `customElements/**/X.ce.vue` | `dist-libs/` (UMD/ESM) | HTML plano (`<cu-x>`) |
+
+**Regla dura: el paquete Vue no incluye ningún `.ce.vue`.** Los wrappers CE
+(`ceEmit()`, el puente de eventos vía `getCurrentInstance()?.vnode.el`,
+`initTokens()`) son exclusivos de la capa vanilla y **no** se exportan desde
+`src/index.ts`. El `.vue` nunca importa de un `.ce.vue`; la dependencia va al
+revés. Detalle y consecuencias: [`docs/notes/11-dos-capas.md`](./docs/notes/11-dos-capas.md).
+
 ### Patrón de 3 archivos (componentes públicos)
 
 ```
