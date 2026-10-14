@@ -64,6 +64,20 @@ const only = (process.env.COMEGEN_CONFIGS ?? '')
   .filter(Boolean)
 const CONFIGS: Config[] = only.length ? ALL_CONFIGS.filter((c) => only.includes(c.name)) : ALL_CONFIGS
 
+/**
+ * `COMEGEN_VAPOR=1` fuerza la compilación en modo Vapor (Vue 3.6+).
+ *
+ * EXPERIMENTAL y apagado por defecto. Ojo: **compila** igual (plugin-vue acepta
+ * ambos flags y emite `defineVaporComponent` + `defineCustomElement`), pero el
+ * resultado **rompe en runtime**: los wrappers `.ce.vue` emiten sus CustomEvents
+ * con `ceEmit()`, que lee `getCurrentInstance()?.vnode.el` — en Vapor
+ * `getCurrentInstance()` devuelve `null` y no hay `vnode`, así que los eventos
+ * no se disparan. El flag existe para explorar a propósito
+ * (ver `docs/notes/10-vapor-mode.md`); sin la variable el build queda
+ * exactamente como siempre (VDOM).
+ */
+const VAPOR = process.env.COMEGEN_VAPOR === '1'
+
 const OUT_ROOT = resolve(__dirname, 'dist-libs')
 
 const bundles: Bundle[] = files.map((file) => {
@@ -153,7 +167,7 @@ async function buildComponent(bundle: Bundle, outDir: string, config: Config) {
         '@': resolve(__dirname, 'src'),
       },
     },
-    plugins: [vue({ features: { customElement: true } }), UnoCSS({ mode: 'shadow-dom' })],
+    plugins: [vue({ features: { customElement: true, vapor: VAPOR } }), UnoCSS({ mode: 'shadow-dom' })],
     build: {
       emptyOutDir: false,
       lib: {
