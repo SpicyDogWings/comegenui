@@ -32,12 +32,12 @@ import ThemeManagerModal from "@/components/theme/ThemeManagerModal.vue";
 <!-- @api:emits -->
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
-| `reset` | — | — |
-| `update:themeName` | `string` | — |
-| `import` | `ThemeConfig` | — |
-| `export` | — | — |
-| `copy-css` | — | — |
-| `download-css` | — | — |
+| `reset` | — | Restablece el tema a sus valores por defecto. |
+| `update:themeName` | `string` | Actualiza el nombre del tema. |
+| `import` | `ThemeConfig` | Importa una configuración de tema desde JSON. |
+| `export` | — | Exporta la configuración actual del tema. |
+| `copy-css` | — | Copia el CSS generado al portapapeles. |
+| `download-css` | — | Descarga el CSS generado como archivo. |
 <!-- /@api:emits -->
 
 ## Slots

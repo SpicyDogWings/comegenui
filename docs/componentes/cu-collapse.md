@@ -177,7 +177,7 @@ collapse.addEventListener('toggle', (e) => {
 <!-- @api:eventos -->
 | Evento | Payload (`e.detail`) | Descripción |
 | ------ | ------ | ------ |
-| `toggle` | `boolean` | — |
+| `toggle` | `boolean` | Alterna el estado del collapse. |
 <!-- /@api:eventos -->
 
 ## Slots

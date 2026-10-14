@@ -140,7 +140,7 @@ function handleAction() {
 <!-- @api:emits -->
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
-| `close` | — | — |
+| `close` | — | Cierra el modal. |
 | `accept` | — | — |
 | `opened` | — | — |
 | `closed` | — | — |

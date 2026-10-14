@@ -140,7 +140,7 @@ modal.addEventListener('closed', () => console.log('cierre completo'));
 <!-- @api:eventos -->
 | Evento | Payload (`e.detail`) | Descripción |
 | ------ | ------ | ------ |
-| `close` | — | — |
+| `close` | — | Cierra el modal. |
 | `opened` | — | — |
 | `closed` | — | — |
 | `cancel` | — | — |

@@ -154,8 +154,8 @@ Cada item del array `items` puede tener:
 <!-- @api:eventos -->
 | Evento | Payload (`e.detail`) | Descripción |
 | ------ | ------ | ------ |
-| `open` | — | — |
-| `close` | — | — |
+| `open` | — | Abre el menú. |
+| `close` | — | Cierra el menú. |
 <!-- /@api:eventos -->
 
 ## Slots

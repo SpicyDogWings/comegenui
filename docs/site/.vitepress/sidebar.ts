@@ -7,13 +7,20 @@
 //   /componentes/vue/<kebab>  → la doc del componente Vue
 // Ambas familias usan el mismo `title` por componente, así que el switch de modo
 // puede encontrar la contraparte comparando títulos.
-import { readdirSync, readFileSync } from "node:fs";
+//
+// Con **ficha unificada** (ver `docs/notes/10-ficha-unificada.md`) sólo existe la página
+// vanilla, con las dos APIs en tabs: esa página se agrega también al sidebar Vue para que
+// el componente no desaparezca estando en modo Vue. El switch de modo la ignora (no tiene
+// contraparte: el título no está en la otra familia).
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const componentesDir = resolve(here, "../componentes");
 const vueDir = resolve(componentesDir, "vue");
+// Fichas (fuente de verdad de la API): `docs/componentes/<tag>.md`.
+const fichasDir = resolve(here, "../../componentes");
 
 /** Orden de los grupos en el sidebar (los no listados van al final, A-Z). */
 const GROUP_ORDER = [
@@ -34,6 +41,12 @@ export interface SidebarGroup {
   items: { text: string; link: string }[];
 }
 
+interface Entry {
+  text: string;
+  link: string;
+  group: string;
+}
+
 /** Lee un campo escalar del frontmatter (soporta `title`/`group` sin YAML). */
 function frontmatterField(source: string, field: string): string | null {
   const block = /^---\r?\n([\s\S]*?)\r?\n---/.exec(source);
@@ -42,9 +55,9 @@ function frontmatterField(source: string, field: string): string | null {
   return line ? line[1]!.replace(/^["']|["']$/g, "") : null;
 }
 
-/** Entradas de un directorio de páginas, agrupadas y ordenadas. */
-function buildFamily(dir: string, routeBase: string): SidebarGroup[] {
-  const entries: { text: string; link: string; group: string }[] = [];
+/** Entradas de un directorio de páginas. */
+function entriesOf(dir: string, routeBase: string): Entry[] {
+  const entries: Entry[] = [];
   for (const file of readdirSync(dir)) {
     if (!file.endsWith(".md")) continue;
     const source = readFileSync(resolve(dir, file), "utf-8");
@@ -56,12 +69,36 @@ function buildFamily(dir: string, routeBase: string): SidebarGroup[] {
     }
     entries.push({ text: title, link: `${routeBase}/${file.slice(0, -3)}`, group });
   }
+  return entries;
+}
 
+/**
+ * Páginas con ficha unificada: una sola página (en `/componentes/<tag>`) con las dos APIs.
+ * La marca es el marcador `@api:props` de la ficha, el mismo que valida `check-docs.mjs`.
+ */
+function unifiedEntries(): Entry[] {
+  const entries: Entry[] = [];
+  for (const file of readdirSync(fichasDir)) {
+    if (!file.endsWith(".md") || file === "README.md") continue;
+    if (!readFileSync(resolve(fichasDir, file), "utf-8").includes("<!-- @api:props -->")) continue;
+    const pageFile = resolve(componentesDir, file);
+    if (!existsSync(pageFile)) continue;
+    const source = readFileSync(pageFile, "utf-8");
+    const title = frontmatterField(source, "title");
+    const group = frontmatterField(source, "group");
+    if (!title || !group) continue;
+    entries.push({ text: title, link: `/componentes/${file.slice(0, -3)}`, group });
+  }
+  return entries;
+}
+
+/** Agrupa y ordena las entradas de una familia. */
+function assemble(entries: Entry[]): SidebarGroup[] {
   const rank = (group: string) => {
     const position = GROUP_ORDER.indexOf(group);
     return position < 0 ? GROUP_ORDER.length : position;
   };
-  const byGroup = new Map<string, typeof entries>();
+  const byGroup = new Map<string, Entry[]>();
   for (const entry of entries) {
     const list = byGroup.get(entry.group) ?? [];
     list.push(entry);
@@ -80,12 +117,12 @@ function buildFamily(dir: string, routeBase: string): SidebarGroup[] {
 
 /** Sidebar de la doc del Custom Element (`/componentes/cu-x`). */
 export function buildVanillaSidebar(routeBase = "/componentes"): SidebarGroup[] {
-  return buildFamily(componentesDir, routeBase);
+  return assemble(entriesOf(componentesDir, routeBase));
 }
 
-/** Sidebar de la doc Vue (`/componentes/vue/x`). */
+/** Sidebar de la doc Vue (`/componentes/vue/x`) + las fichas unificadas. */
 export function buildVueSidebar(routeBase = "/componentes/vue"): SidebarGroup[] {
-  return buildFamily(vueDir, routeBase);
+  return assemble([...entriesOf(vueDir, routeBase), ...unifiedEntries()]);
 }
 
 /**

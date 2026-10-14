@@ -176,8 +176,8 @@ Cada item del array `items` puede tener:
 <!-- @api:emits -->
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
-| `close` | — | — |
-| `open` | — | — |
+| `close` | — | Cierra el menú. |
+| `open` | — | Abre el menú. |
 <!-- /@api:emits -->
 
 ## Slots

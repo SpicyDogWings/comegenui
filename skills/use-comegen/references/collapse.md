@@ -96,7 +96,7 @@ const abierto = ref(false);
 <!-- @api:eventos -->
 | Evento | Payload (`e.detail`) | Descripción |
 | ------ | ------ | ------ |
-| `toggle` | `boolean` | — |
+| `toggle` | `boolean` | Alterna el estado del collapse. |
 <!-- /@api:eventos -->
 
 ### Slots
@@ -138,7 +138,7 @@ const abierto = ref(false);
 <!-- @api:emits -->
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
-| `toggle` | `boolean` | — |
+| `toggle` | `boolean` | Alterna el estado del collapse. |
 <!-- /@api:emits -->
 
 ### Slots

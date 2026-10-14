@@ -49,7 +49,13 @@ const context = computed(() => {
     const current = findByLink(families.value[mode], currentLink.value);
     if (!current) continue;
     const other = mode === "vue" ? "vanilla" : "vue";
-    return { mode, counterpart: findByText(families.value[other], current.text) };
+    const twin = findByText(families.value[other], current.text);
+    // Una ficha unificada está en las dos familias apuntando a la misma URL: no hay
+    // contraparte a la que saltar, así que el select se oculta (una sola opción).
+    return {
+      mode,
+      counterpart: twin && twin.link !== currentLink.value ? twin : null,
+    };
   }
   return null;
 });

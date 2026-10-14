@@ -40,7 +40,7 @@ import MonthSliderLabel from "@/components/controls/month-slider/MonthSliderLabe
 <!-- @api:emits -->
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
-| `navigate` | `number` | — |
+| `navigate` | `number` | Emite la dirección de navegación (positiva = paso siguiente). |
 <!-- /@api:emits -->
 
 ## Slots

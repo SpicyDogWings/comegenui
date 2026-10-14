@@ -1,6 +1,5 @@
 <script setup lang="ts">
-// Refleja el ejemplo "Estado de carga": `loading` mientras corre una acción
-// asincrónica (acá simulada; la doc usa `fetch`).
+// Refleja el ejemplo "Estados": `disabled` y `loading` (acá, con la acción simulada).
 import { ref } from "vue";
 
 const loading = ref(false);
@@ -15,8 +14,11 @@ async function guardar() {
 
 <template>
   <VanillaDemo :use="['CuButton']">
-    <cu-button color="primary" variant="solid" :loading="loading" @click="guardar">
-      Guardar
-    </cu-button>
+    <div class="cu-demo-controls">
+      <cu-button disabled>Deshabilitado</cu-button>
+      <cu-button color="primary" variant="solid" :loading="loading" @click="guardar">
+        Guardando…
+      </cu-button>
+    </div>
   </VanillaDemo>
 </template>

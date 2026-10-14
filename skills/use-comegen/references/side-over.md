@@ -110,7 +110,7 @@ const open = ref(false);
 | `open` | Abre el panel |
 | `close` | Cierra el panel |
 | `toggle` | Alterna visibilidad |
-| `isOpen` | — |
+| `isOpen` | Devuelve el estado actual (`boolean`) |
 <!-- /@api:metodos -->
 
 ## API del componente Vue

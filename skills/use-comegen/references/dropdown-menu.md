@@ -102,8 +102,8 @@ color/variante del toggle, `position`/`align`/`offset`/`fixed`/`text-align`, eve
 <!-- @api:eventos -->
 | Evento | Payload (`e.detail`) | Descripción |
 | ------ | ------ | ------ |
-| `open` | — | — |
-| `close` | — | — |
+| `open` | — | Abre el menú. |
+| `close` | — | Cierra el menú. |
 <!-- /@api:eventos -->
 
 ### Slots
@@ -150,8 +150,8 @@ color/variante del toggle, `position`/`align`/`offset`/`fixed`/`text-align`, eve
 <!-- @api:emits -->
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
-| `close` | — | — |
-| `open` | — | — |
+| `close` | — | Cierra el menú. |
+| `open` | — | Abre el menú. |
 <!-- /@api:emits -->
 
 ### Slots

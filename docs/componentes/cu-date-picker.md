@@ -144,8 +144,8 @@ Con `mode="range"` el picker selecciona un rango: el primer click define el **in
 | ------ | ------ | ------ |
 | `select` | `Date \| { start: Date \| null; end: Date \| null; }` | — |
 | `change` | `Date \| { start: Date \| null; end: Date \| null; } \| null` | — |
-| `open` | — | — |
-| `close` | — | — |
+| `open` | — | Abre el panel. |
+| `close` | — | Cierra el panel. |
 | `update:modelValue` | `Date \| null` | — |
 | `update:startDate` | `Date \| null` | — |
 | `update:endDate` | `Date \| null` | — |

@@ -95,5 +95,5 @@ side.addEventListener('close', () => console.log('cerrando'));
 | `open` | Abre el panel |
 | `close` | Cierra el panel |
 | `toggle` | Alterna visibilidad |
-| `isOpen` | — |
+| `isOpen` | Devuelve el estado actual (`boolean`) |
 <!-- /@api:metodos -->

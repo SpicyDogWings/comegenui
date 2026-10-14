@@ -19,7 +19,7 @@
  *   node scripts/gen-api.mjs --check    # no escribe: falla si hay drift (gate)
  *   node scripts/gen-api.mjs button     # limita a los componentes que matcheen
  */
-import { readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import fg from 'fast-glob'
 import { createChecker } from 'vue-component-meta'
@@ -132,7 +132,11 @@ function jsdocFor(file, name) {
   const comment = String.raw`/\*\*((?:(?!\*/)[\s\S])*)\*/`
   for (const re of [
     new RegExp(`${comment}\\s*(?:async\\s+)?function\\s+${esc}\\b`),
+    new RegExp(`${comment}\\s*(?:const|let|var)\\s+${esc}\\s*=`),
     new RegExp(`${comment}\\s*${esc}\\s*[:,(}]`),
+    // emits: miembro tipado `(e: 'name', …)` y forma array `'name',`
+    new RegExp(`${comment}\\s*\\(\\s*e\\s*:\\s*['"]${esc}['"]`),
+    new RegExp(`${comment}\\s*['"]${esc}['"]`),
   ]) {
     const m = re.exec(source)
     if (m) return m[1].split('\n').map((l) => l.replace(/^\s*\*?\s?/, '')).join(' ').trim()
@@ -160,6 +164,17 @@ function meta(file) {
     slots: m.slots ?? [],
     exposed: m.exposed ?? [],
   }
+}
+
+/**
+ * Eventos del componente Vue. El meta no llena la descripción de un emit ni con JSDoc, así
+ * que se resuelve del SFC (mismo criterio que los métodos expuestos).
+ */
+function vueEvents(vue) {
+  return meta(vue).events.map((e) => ({
+    ...e,
+    description: e.description || jsdocFor(vue, e.name),
+  }))
 }
 
 function defaultOf(p) {
@@ -212,7 +227,7 @@ async function collect() {
 
 function ceBlocks({ ce, vue, tag }) {
   const m = meta(ce)
-  const vueMeta = vue ? meta(vue) : { events: [], exposed: [] }
+  const vueMeta = vue ? { events: vueEvents(vue), exposed: meta(vue).exposed } : { events: [], exposed: [] }
   const vueEventByName = new Map(vueMeta.events.map((e) => [e.name, e]))
   const vueExposedByName = new Map(vueMeta.exposed.map((x) => [x.name, x]))
 
@@ -222,9 +237,11 @@ function ceBlocks({ ce, vue, tag }) {
     : 'Ninguno.'
 
   const emitNames = ceEmitNames(ce)
+  // Sin `ceEmit` (CE que es el `.vue` directo) los eventos salen del propio SFC del CE,
+  // con la misma resolución de descripción que los del componente Vue.
   const eventList = emitNames.length
     ? emitNames.map((name) => ({ name, ...vueEventByName.get(name) }))
-    : m.events
+    : vueEvents(ce)
   const events = eventList.length
     ? table(['Evento', 'Payload (`e.detail`)', 'Descripción'],
         eventList.map((e) => [`\`${e.name}\``, payloadCell(e.type), e.description || '—']))
@@ -251,9 +268,10 @@ function vueBlocks({ vue }) {
     ? table(['Prop', 'Tipo', 'Default', 'Descripción'],
         m.props.map((p) => [`\`${p.name}\``, `\`${p.type}\``, `\`${defaultOf(p)}\``, p.description || '—']))
     : 'Ninguna.'
-  const emits = m.events.length
+  const events = vueEvents(vue)
+  const emits = events.length
     ? table(['Evento', 'Payload', 'Descripción'],
-        m.events.map((e) => [`\`${e.name}\``, payloadCell(e.type), e.description || '—']))
+        events.map((e) => [`\`${e.name}\``, payloadCell(e.type), e.description || '—']))
     : 'Ninguno.'
   const slots = m.slots.length
     ? table(['Slot', 'Descripción'], m.slots.map((s) => [s.name === 'default' ? '`default`' : `\`${s.name}\``, s.description || '—']))
@@ -305,7 +323,7 @@ function skillBlocks(ce, vue) {
 }
 
 const components = await collect()
-const drifted = []
+const drifted = new Set()
 let touched = 0
 
 if (process.argv.includes('--print')) {
@@ -327,9 +345,14 @@ if (process.argv.includes('--print')) {
 
 for (const [name, comp] of components) {
   if (FILTER.length && !FILTER.some((f) => name.includes(f))) continue
+  // Ficha unificada: el componente no tiene ficha Vue propia y las dos APIs viven en
+  // la ficha del custom element (lleva los marcadores @api:props / @api:emits / @api:expose).
+  // Ver docs/notes/10-ficha-unificada.md.
+  const vueFicha = `docs/componentes/vue/${name}.md`
+  const unified = Boolean(comp.ce) && !existsSync(resolve(ROOT, vueFicha))
   const targets = {
     ce: `docs/componentes/${comp.tag}.md`,
-    vue: `docs/componentes/vue/${name}.md`,
+    vue: unified ? `docs/componentes/${comp.tag}.md` : vueFicha,
     skill: `skills/use-comegen/references/${name}.md`,
   }
   let ce = null
@@ -342,12 +365,19 @@ for (const [name, comp] of components) {
     continue
   }
 
-  const changed = [
-    comp.ce && inject(targets.ce, ce) && drifted.push(targets.ce),
-    inject(targets.vue, vue) && drifted.push(targets.vue),
-    inject(targets.skill, skillBlocks(ce, vue)) && drifted.push(targets.skill),
-  ].filter(Boolean).length
-  touched += changed
+  // En la ficha unificada los slots son UNA sección (`@api:slots`, la inyecta el CE con los
+  // slots que el wrapper forwardea); el bloque Vue los publica como `@api:slots-vue` por si la
+  // ficha quiere detallar los del componente, pero no puede pisar los del CE.
+  const vueSet = unified
+    ? { props: vue.props, emits: vue.emits, 'slots-vue': vue.slots, expose: vue.expose }
+    : vue
+
+  const changes = new Set()
+  if (comp.ce && inject(targets.ce, ce)) changes.add(targets.ce)
+  if (inject(targets.vue, vueSet)) changes.add(targets.vue)
+  if (inject(targets.skill, skillBlocks(ce, vue))) changes.add(targets.skill)
+  for (const file of changes) drifted.add(file)
+  touched += changes.size
 }
 
 if (CHECK && touched) {
