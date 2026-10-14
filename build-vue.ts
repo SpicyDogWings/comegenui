@@ -77,6 +77,9 @@ const publishable = {
   version: pkg.version,
   description: 'ComegenUI — componentes Vue con sistema de tokens y temas.',
   license: 'MIT',
+  repository: { type: 'git', url: 'git+https://github.com/SpicyDogWings/comegenui.git' },
+  homepage: 'https://github.com/SpicyDogWings/comegenui#readme',
+  keywords: ['vue', 'components', 'ui', 'design-system', 'custom-elements'],
   type: 'module',
   // `index.js` llama a `initTokens()` al importarse (side effect deliberado).
   sideEffects: ['./index.js', './style.css'],
