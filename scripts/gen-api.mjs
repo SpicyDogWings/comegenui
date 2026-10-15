@@ -27,6 +27,17 @@ import fg from 'fast-glob'
 import { createChecker } from 'vue-component-meta'
 
 const ROOT = resolve(import.meta.dirname, '..')
+
+// La doc es la fuente y está versionada: `docs/versiones/<id>/` (id = la `latest` del
+// manifiesto). El sitio compone las páginas desde ahí (ver nota 13).
+const DOC_ID = JSON.parse(readFileSync(resolve(ROOT, 'docs/versions.json'), 'utf-8')).versions.find(
+  (v) => v.latest,
+)?.id
+if (!DOC_ID) {
+  console.error('gen-api: el manifiesto (docs/versions.json) no tiene una versión latest')
+  process.exit(1)
+}
+const DOC = `docs/versiones/${DOC_ID}`
 const CHECK = process.argv.includes('--check')
 const UPDATE = process.argv.includes('--update')
 const FILTER = process.argv.slice(2).filter((a) => !a.startsWith('--'))
@@ -384,7 +395,7 @@ const SECTION_FILES = [
 const tableBody = (text) => (text ?? '').split('\n').slice(1).join('\n')
 
 function partialPlan(name, ce, vue) {
-  const dir = `docs/partials/${name}`
+  const dir = `${DOC}/partials/${name}`
   const plan = new Map() // archivo → { marcador: contenido }
   const add = (file, marker, content) => {
     const blocks = plan.get(file) ?? {}
@@ -524,8 +535,8 @@ if (process.argv.includes('--plan')) {
 for (const [name, comp] of components) {
   if (!selected(name)) continue
   const targets = {
-    ce: `docs/componentes/${comp.tag}.md`,
-    vue: `docs/componentes/vue/${name}.md`,
+    ce: `${DOC}/componentes/${comp.tag}.md`,
+    vue: `${DOC}/componentes/vue/${name}.md`,
     skill: `skills/use-comegen/references/${name}.md`,
   }
   let ce = null
@@ -540,7 +551,7 @@ for (const [name, comp] of components) {
   emptyCounts.set(name, vueEmptyDescriptions(vue))
 
   const changes = new Set()
-  if (existsSync(resolve(ROOT, `docs/partials/${name}`))) {
+  if (existsSync(resolve(ROOT, `${DOC}/partials/${name}`))) {
     // Fichas compuestas por partials.
     for (const [file, blocks] of partialPlan(name, ce, vue)) {
       const missing = !existsSync(resolve(ROOT, file))

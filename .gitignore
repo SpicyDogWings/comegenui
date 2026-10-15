@@ -84,3 +84,8 @@ graphify-out
 .vscode/
 /notes/
 /dist-lib
+
+# Doc compuesta (generada por scripts/docs-compose.mjs desde docs/versiones/)
+docs/componentes/
+docs/partials/
+docs/site/componentes/

@@ -17,9 +17,20 @@ import { fileURLToPath } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const LIB_DIR = resolve(root, "src/lib");
-const FICHA_DIR = resolve(root, "docs/componentes");
+
+// La doc es la fuente y está versionada: `docs/versiones/<id>/` (id = la `latest` del
+// manifiesto). El sitio compone sus páginas desde ahí (ver nota 13).
+const DOC_ID = JSON.parse(readFileSync(resolve(root, "docs/versions.json"), "utf-8")).versions.find(
+  (v) => v.latest,
+)?.id;
+if (!DOC_ID) {
+  console.error("check-docs: el manifiesto (docs/versions.json) no tiene una versión latest");
+  process.exit(1);
+}
+const DOC_DIR = resolve(root, "docs/versiones", DOC_ID);
+const FICHA_DIR = resolve(DOC_DIR, "componentes");
 const FICHA_VUE_DIR = resolve(FICHA_DIR, "vue");
-const SITE_DIR = resolve(root, "docs/site/componentes");
+const SITE_DIR = resolve(DOC_DIR, "paginas/componentes");
 
 // Tags que definen un custom element pero no se documentan.
 const IGNORED_TAGS = new Set([]);
