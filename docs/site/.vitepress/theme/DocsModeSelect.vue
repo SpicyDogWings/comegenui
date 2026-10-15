@@ -50,8 +50,8 @@ const context = computed(() => {
     if (!current) continue;
     const other = mode === "vue" ? "vanilla" : "vue";
     const twin = findByText(families.value[other], current.text);
-    // Una ficha unificada está en las dos familias apuntando a la misma URL: no hay
-    // contraparte a la que saltar, así que el select se oculta (una sola opción).
+    // La contraparte se busca por título; si apunta a la misma URL no hay a dónde
+    // saltar, así que el select se queda con una sola opción.
     return {
       mode,
       counterpart: twin && twin.link !== currentLink.value ? twin : null,
