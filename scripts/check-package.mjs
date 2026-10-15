@@ -21,7 +21,7 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = resolve(root, "dist-vue");
 const ENTRY = resolve(root, "src/index.ts");
 
-const REQUIRED_FILES = ["index.js", "index.d.ts", "style.css", "package.json"];
+const REQUIRED_FILES = ["index.js", "index.d.ts", "style.css", "package.json", "LICENSE"];
 // Lo único que puede quedar en `dist-vue/` (además del tarball que genera `pnpm pack`).
 const ALLOWED_ENTRIES = new Set([...REQUIRED_FILES, "README.md"]);
 
@@ -56,6 +56,13 @@ if (existsSync(resolve(OUT, "package.json"))) {
   if (!pkg.peerDependencies?.vue) fail("package.json: falta `peerDependencies.vue`");
   if (!pkg.sideEffects) fail("package.json: falta `sideEffects`");
   if (pkg.dependencies?.vue) fail("package.json: `vue` no puede ser dependency (va como peer)");
+  // Toda peer opcional (`peerDependenciesMeta`) tiene que existir como peer.
+  for (const name of Object.keys(pkg.peerDependenciesMeta || {})) {
+    if (!pkg.peerDependencies?.[name]) {
+      fail(`package.json: \`peerDependenciesMeta.${name}\` sin \`peerDependencies.${name}\``);
+    }
+  }
+  if (pkg.peerDependenciesMeta?.vue) fail("package.json: `vue` no puede ser una peer opcional");
 }
 
 // 3. exports reales vs. los declarados en src/index.ts

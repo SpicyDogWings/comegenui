@@ -83,7 +83,7 @@ const publishable = {
   type: 'module',
   // `index.js` llama a `initTokens()` al importarse (side effect deliberado).
   sideEffects: ['./index.js', './style.css'],
-  files: ['index.js', 'index.d.ts', 'style.css'],
+  files: ['index.js', 'index.d.ts', 'style.css', 'LICENSE'],
   main: './index.js',
   module: './index.js',
   types: './index.d.ts',
@@ -92,14 +92,25 @@ const publishable = {
     './style.css': './style.css',
     './package.json': './package.json',
   },
-  peerDependencies: { vue: '^3.5.0' },
-  // Deps pesadas y acotadas a componentes puntuales: opcionales.
+  // `vue` es la única peer obligatoria: la aporta el host.
+  peerDependencies: {
+    vue: '^3.5.0',
+    // Pesadas y acotadas a un componente puntual: **opcionales**. Sólo hay que
+    // instalarlas si usás el componente que las requiere (ver fichas de la doc:
+    // `Markdown` → marked + dompurify + highlight.js · `CellsImporter` → xlsx).
+    marked: '^18.0.0',
+    dompurify: '^3.0.0',
+    'highlight.js': '^11.0.0',
+    xlsx: '^0.18.5',
+  },
   peerDependenciesMeta: {
     marked: { optional: true },
     dompurify: { optional: true },
     'highlight.js': { optional: true },
     xlsx: { optional: true },
   },
+  // Base de la galería: la usa la mayoría de los componentes (y `initTokens()`
+  // usa `color2k` al importar el paquete), así que va como dependencia normal.
   dependencies: { '@vueuse/core': '^14.2.1', color2k: '^2.0.3' },
 }
 
@@ -168,10 +179,13 @@ const readme = [
 
 fs.writeFileSync(resolve(OUT, 'README.md'), readme)
 
+/** La licencia viaja en el tarball (npm la incluye siempre si está en la raíz del paquete). */
+fs.copyFileSync(resolve(__dirname, 'LICENSE'), resolve(OUT, 'LICENSE'))
+
 fs.writeFileSync(resolve(OUT, 'package.json'), `${JSON.stringify(publishable, null, 2)}\n`)
 
 /** Deja solo lo publicable: el árbol intermedio de `.d.ts` no viaja. */
-const KEEP = new Set(['index.js', 'index.d.ts', 'style.css', 'package.json', 'README.md'])
+const KEEP = new Set(['index.js', 'index.d.ts', 'style.css', 'package.json', 'README.md', 'LICENSE'])
 for (const entry of fs.readdirSync(OUT)) {
   if (KEEP.has(entry)) continue
   fs.rmSync(resolve(OUT, entry), { recursive: true, force: true })
@@ -179,4 +193,4 @@ for (const entry of fs.readdirSync(OUT)) {
 
 const cssFile = fs.existsSync(resolve(OUT, 'style.css')) ? 'style.css' : '(sin css)'
 console.log(`\n✅ Build Vue listo → dist-vue/  (${NAME}@${pkg.version})`)
-console.log(`   index.js · index.d.ts · ${cssFile} · package.json`)
+console.log(`   index.js · index.d.ts · ${cssFile} · package.json · LICENSE`)

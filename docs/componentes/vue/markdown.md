@@ -54,6 +54,24 @@ El contenido se pasa como **texto dentro del tag** (no como prop). El componente
 - Los tokens CSS se inyectan automáticamente en el shadow DOM.
 - **El wrapper CE re-emite `parsed` y expone `headingIds()`**: el evento y el método atraviesan el `.ce.vue`.
 
+## Dependencias opcionales
+
+Este componente usa librerías que **no** vienen incluidas en el paquete npm (para no inflar la
+instalación). Instalalas **solo si usás `Markdown`**:
+
+```bash
+pnpm add marked dompurify highlight.js
+```
+
+| Librería | Para qué |
+| --- | --- |
+| `marked` | parseo del Markdown |
+| `dompurify` | sanitiza el HTML generado |
+| `highlight.js` | resaltado de sintaxis en los bloques de código |
+
+> `vue` es la única peer **obligatoria**; estas tres son **opcionales** (no se instalan solas).
+> En los **zips vanilla** (`<cu-markdown>`) viajan dentro del bundle: no hay nada que instalar.
+
 ---
 
 ## Props

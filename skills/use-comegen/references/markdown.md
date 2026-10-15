@@ -60,6 +60,17 @@ Párrafo con **negrita**, *cursiva* y `código inline`.
 </template>
 ```
 
+## Dependencias opcionales (paquete npm)
+
+En el **paquete npm**, `<Markdown>` usa `marked`, `dompurify` y `highlight.js`, que **no** vienen
+incluidas. Instalalas solo si usás este componente:
+
+```bash
+pnpm add marked dompurify highlight.js
+```
+
+En los **zips vanilla** (`<cu-markdown>`) viajan dentro del bundle: no hay nada que instalar.
+
 ## Qué puede y qué no puede
 
 **Puede:** headings, párrafos, listas, blockquotes, tablas,

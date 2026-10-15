@@ -98,6 +98,19 @@ onMounted(() => {
 - **`inputType="zone"`:** el picker es la zona drag & drop (single file). `variant` no aplica en este modo (la zona no tiene variantes).
 - **Peso:** el parser de `.xlsx` (SheetJS) viaja solo en `CuCellsImporter.umd.js`; el resto de la lib no se ve afectado.
 
+## Dependencias opcionales
+
+Este componente usa **`xlsx`** (SheetJS) para parsear `.xlsx`/`.xls`. **No** viene incluida en el
+paquete npm; instalala **solo si usás `CellsImporter`**:
+
+```bash
+pnpm add xlsx
+```
+
+> `vue` es la única peer **obligatoria**; `xlsx` es **opcional** (no se instala sola).
+> En los **zips vanilla** (`<cu-cells-importer>`), SheetJS viaja dentro del bundle: no hay nada
+> que instalar.
+
 ---
 
 ## Props

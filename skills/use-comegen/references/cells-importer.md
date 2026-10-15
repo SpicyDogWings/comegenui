@@ -73,6 +73,18 @@ const template = ref({ enabled: true, type: "xlsx", filename: "plantilla" });
 </template>
 ```
 
+## Dependencias opcionales (paquete npm)
+
+En el **paquete npm**, `<CellsImporter>` usa `xlsx` (SheetJS), que **no** viene incluida.
+Instalala solo si usás este componente:
+
+```bash
+pnpm add xlsx
+```
+
+En los **zips vanilla** (`<cu-cells-importer>`), SheetJS viaja dentro del bundle: no hay nada que
+instalar.
+
 ## Qué puede y qué no puede
 
 **Puede:** validación con `required`, tipos (`string`, `integer`, `number`, `date`, `boolean`,
