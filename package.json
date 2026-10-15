@@ -22,7 +22,8 @@
     "contract": "node scripts/contract.mjs",
     "contract:update": "node scripts/contract.mjs --update",
     "impact": "node scripts/impact.mjs",
-    "docs:compose": "node scripts/docs-compose.mjs"
+    "docs:compose": "node scripts/docs-compose.mjs",
+    "docs:freeze": "node scripts/docs-freeze.mjs"
   },
   "dependencies": {
     "@vueuse/core": "^14.2.1",
