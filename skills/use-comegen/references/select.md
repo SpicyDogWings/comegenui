@@ -58,7 +58,7 @@ Los valores de `color` / `variant` / `position` / `align` están en «Atributos�
 | `options` | `SelectOption[]` | `[]` | Opciones del select (ver abajo). Se asigna como propiedad JS |
 | `placeholder-wrap` | `boolean` | `false` | Si `true`, el texto wrappea; si `false`, se trunca con `...` (atributo HTML: `placeholder-wrap`) |
 | `search-reset-delay` | `number` | `1000` | Tiempo (ms) antes de resetear el texto de búsqueda. Se reinicia con cada tecla |
-| `cooldown-variant` | `string` | `"ghost-hover"` | Estilo de la barra de cooldown: `ghost` (suave) o `solid` (color lleno). No se muestra si `loading` está activo |
+| `cooldown-variant` | `string` | `"ghost-hover"` | Estilo de la barra de cooldown: `ghost-hover` (default) o el `variant` que quieras, p. ej. `solid` (color lleno). No se muestra si `loading` está activo |
 | `placeholder` | `string` | `—` | Texto mostrado cuando no hay selección |
 <!-- /@api:atributos -->
 

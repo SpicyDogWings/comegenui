@@ -39,7 +39,7 @@ const props = defineProps({
     required: false,
     default: false,
   },
-  /** Solo lectura (en HTML se usa como `readonly`) */
+  /** Solo lectura (en HTML: `read-only`) */
   readOnly: {
     type: Boolean,
     required: false,
