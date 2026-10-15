@@ -53,12 +53,14 @@ cambiaron** (hash del árbol resuelto): sin `worktree`, sin `pnpm install`, sin 
 
 ## Migración (una vez)
 
-1. Mover la doc actual (`docs/componentes/**`, `docs/partials/**`, `docs/site/componentes/**`) a
-   `docs/versiones/<versión actual>/`.
-2. Apuntar `gen-api` / `check-docs` a la raíz nueva y a la resolución por overlays.
-3. Si se quiere historia: materializar las versiones viejas desde sus tags **una sola vez**.
-4. Los demos de cada versión necesitan **su** bundle de la lib: se arma una vez por versión, no en
-   cada build.
+1. ✅ **Mover** la doc: `docs/versiones/<id>/{componentes,partials,paginas/componentes}` (hecho con `5.1.1`;
+   las profundidades se preservaron, así que los `@include` no cambiaron).
+2. ✅ **Tooling**: `gen-api` y `check-docs` leen/escriben la fuente versionada; `pnpm docs:compose`
+   materializa el árbol resuelto para el sitio (lo corren `dev` y `build`; los destinos están gitignoreados).
+3. ⏳ **Rutas**: reescribir las ~40 referencias a `docs/componentes/…` que quedan en recetas, skills y notas.
+4. ⏳ **Overlays + `--freeze`**: el resolutor es "gana el último archivo del mismo path" (ya implementado en
+   `docs-compose`); falta materializar las tablas al cortar una versión.
+5. ⏳ **Deploy de versiones**: `docs-versions.mjs` con el modelo nuevo (componer en vez de reconstruir desde el tag).
 
 ## Límites conocidos
 

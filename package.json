@@ -9,8 +9,8 @@
     "deploy:docs": "pnpm build && vercel link --cwd docs/site/.vitepress/dist --project comegenui-docs --yes && vercel --cwd docs/site/.vitepress/dist --prod --yes",
     "docs:versions": "node scripts/docs-versions.mjs",
     "deploy:docs:versions": "pnpm docs:versions && vercel link --cwd docs/site/.vitepress/dist-versions --project comegenui-docs --yes && vercel --cwd docs/site/.vitepress/dist-versions --prod --yes",
-    "dev": "pnpm build:docs:lib && pnpm site:sync && vitepress dev docs/site",
-    "build": "pnpm build:docs:lib && pnpm site:sync && vitepress build docs/site",
+    "dev": "pnpm build:docs:lib && pnpm docs:compose && pnpm site:sync && vitepress dev docs/site",
+    "build": "pnpm build:docs:lib && pnpm docs:compose && pnpm site:sync && vitepress build docs/site",
     "preview": "vitepress preview docs/site",
     "site:sync": "tsx --tsconfig tsconfig.app.json src/plugins/cu-tokens/cli/vitepress.mjs",
     "build:lib": "pnpm exec tsx --tsconfig tsconfig.build-lib.json build-lib.ts",
@@ -21,7 +21,8 @@
     "mutation": "node scripts/mutation-check.mjs",
     "contract": "node scripts/contract.mjs",
     "contract:update": "node scripts/contract.mjs --update",
-    "impact": "node scripts/impact.mjs"
+    "impact": "node scripts/impact.mjs",
+    "docs:compose": "node scripts/docs-compose.mjs"
   },
   "dependencies": {
     "@vueuse/core": "^14.2.1",
