@@ -1,93 +1,36 @@
 # Tabs — `<cu-tabs>` / `<Tabs>`
 
-Pestañas con variantes, iconos, tabs deshabilitadas individuales y control programático, con paneles asociados por `key`.
-
-## Cuándo usarlo
-
-Para alternar entre paneles alternativos en el mismo lugar. Si cada pestaña tiene que cambiar
-la URL o navegar a otra ruta, no es la herramienta.
+Pestañas con variantes, iconos, tabs deshabilitadas y control programático. Cada panel se asocia a una
+tab por su `key`.
 
 ## Receta
 
-1. Pasá `tabs` (array requerido) de `{ key, label, icon?, disabled?, keepAlive? }`; en HTML
-   asignalo como propiedad JS.
-2. El contenido de cada panel va en un slot con el **nombre de la key**
-   (`slot="general"` en HTML, `<template #general>` en Vue).
-3. El ícono de cada tab puede venir del campo `icon` (string HTML) o del slot
-   `tab-icon-{key}`.
-4. Controlá el activo con `v-model`/`model-value` + `update:modelValue`; escuchá `change`
-   (payload = key).
-5. `keepAlive: true` en un tab mantiene su panel montado (con `v-show`) y conserva el estado
-   de los componentes internos.
-6. Programático: `getActive()`, `setActive(key)`, `next()`, `prev()`. Teclado: ←/→, `Home` y `End`.
+- `tabs` (array requerido) de `{ key, label, icon?, disabled?, keepAlive? }`; en HTML asignalo como propiedad JS.
+- El panel de cada tab va en un slot con el **nombre de la key** (`slot="<key>"` / `<template #<key>>`).
+- Icono por el campo `icon` (string HTML) o por el slot `tab-icon-<key>`.
+- Activo: `model-value` + `update:modelValue` (`v-model` en Vue); escuchá `change` (payload = key).
+- `keepAlive: true` mantiene el panel montado (`v-show`) y conserva el estado interno.
+- Programático: `getActive()`, `setActive(key)`, `next()`, `prev()`; teclado ←/→, `Home`, `End`.
 
 ```html
-<!-- HTML plano (UMD) -->
-<script src="dist-libs/umd-core/CuTabs.umd.js"></script>
-
-<cu-tabs id="misTabs" variant="solid" color="primary">
-  <div slot="general">Contenido General</div>
-  <div slot="advanced">Contenido Advanced</div>
-  <div slot="locked">Contenido Locked</div>
-</cu-tabs>
-
-<script>
-  customElements.whenDefined('cu-tabs').then(() => {
-    const tabs = document.getElementById('misTabs');
-    tabs.tabs = [
-      { key: 'general', label: 'General' },
-      { key: 'advanced', label: 'Advanced' },
-      { key: 'locked', label: 'Locked', disabled: true },
-    ];
-
-    tabs.addEventListener('change', (e) => console.log('Tab activo:', e.detail));
-    tabs.setActive('advanced');
-    console.log(tabs.getActive()); // "advanced"
-  });
-</script>
+<cu-tabs model-value="<key>" variant="<variant>" color="<color>" size="<size>"><div slot="<key>"><panel></div></cu-tabs>
 ```
 
 ```vue
-<!-- Vue -->
-<script setup lang="ts">
-import Tabs from "@/components/Tabs.vue";
-import { ref } from "vue";
-
-const active = ref("general");
-const tabs = [
-  { key: "general", label: "General" },
-  { key: "advanced", label: "Advanced", keepAlive: true },
-  { key: "locked", label: "Locked", disabled: true },
-];
-</script>
-
-<template>
-  <Tabs v-model="active" variant="solid" color="primary" :tabs="tabs" @change="(k) => console.log(k)">
-    <template #general>Contenido General</template>
-    <template #advanced>Contenido Advanced</template>
-    <template #locked>Contenido Locked</template>
-  </Tabs>
-</template>
+<Tabs v-model="<key>" :tabs="<items>" variant="<variant>" color="<color>" size="<size>"><template #<key>><panel></template></Tabs>
 ```
 
-## Qué puede y qué no puede
+Los valores de `variant` / `color` / `size` están en «Atributos» / «Props», abajo.
 
-**Puede:** 6 colores, 4 variantes (`ghost`, `solid`, `boxed`, `soft`) y 3 tamaños (`sm`, `md`,
-`lg`); icono por `icon` (string HTML) o slot `tab-icon-{key}`; tabs deshabilitadas por item y
-`disabled` global; `keepAlive` por tab; navegación accesible por teclado (flechas, Home, End)
-con roles ARIA; y `getActive`/`setActive`/`next`/`prev`.
+## Límites
 
-**No puede:**
-
-- **Sólo hay slots por key y `tab-icon-{key}`:** no existe header, footer, badge ni slot para
-  el contenido del encabezado.
-- **El slot del panel depende de la `key`:** si no coincide con ninguna tab, no se renderiza.
-- **`tabs` es un array:** se asigna como propiedad JS, no como atributo HTML.
-- **`setActive` ignora keys inexistentes y tabs deshabilitadas:** no cambia el activo.
-- **`keepAlive` usa `v-show`, no `<KeepAlive>`:** mantiene el panel montado, pero no es una
-  caché semántica de componentes.
-- **No expone el activo como propiedad reactiva:** se lee con `getActive()`.
-- **`icon` es HTML crudo** (`v-html`), no un componente ni un nodo Vue.
+- Sólo hay slots por key y `tab-icon-<key>`: no hay header, footer ni badge.
+- El slot del panel depende de la key: si no coincide con ninguna tab, no se renderiza.
+- `tabs` es un array: sólo como propiedad JS, no como atributo HTML.
+- `setActive` ignora keys inexistentes y tabs deshabilitadas.
+- `keepAlive` usa `v-show`, no `<KeepAlive>`: no es una caché semántica de componentes.
+- No expone el activo como propiedad reactiva: se lee con `getActive()`.
+- `icon` es HTML crudo (`v-html`), no un componente ni un nodo Vue.
 
 ## API del custom element
 

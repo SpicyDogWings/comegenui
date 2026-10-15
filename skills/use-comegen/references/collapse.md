@@ -1,80 +1,35 @@
 # Collapse — `<cu-collapse>` / `<Collapse>`
 
-Sección colapsable con trigger (botón + chevron animado) y transición de altura.
-
-## Cuándo usarlo
-
-Para acordeones, FAQ, "más información" u opciones avanzadas; también para árboles de menú
-anidando varios. Para un panel flotante anclado a un botón usá `cu-dropdown-menu`; para un
-modal, `cu-modal`.
+Sección colapsable con trigger (botón + chevron) y transición de altura. Para un panel flotante
+anclado usá `cu-dropdown-menu`; para un modal, `cu-modal`.
 
 ## Receta
 
-1. El trigger lleva `label` (**obligatorio**) y, opcionalmente, `icon` (SVG/HTML como string) y `description` (texto secundario bajo el label).
-2. El contenido va por el slot default.
-3. `default-open` arranca abierto.
-4. Escuchá `toggle` (boolean) o llamá `open()`, `close()`, `toggle()` e `isOpen()`.
-5. `color` colorea el trigger.
-6. `disabled` deja el trigger inerte: no responde al click y `open()`/`toggle()` son no-op
-   (`close()` sigue funcionando). En HTML plano es el atributo booleano `disabled`.
+- El trigger lleva `label` (**obligatorio**) y, opcionalmente, `icon` (HTML/SVG como string) y `description`.
+- Contenido por el slot default.
+- `default-open` arranca abierto; `color` colorea el trigger.
+- Escuchá `toggle` (boolean) o usá `open()`, `close()`, `toggle()`, `isOpen()`.
+- `disabled` deja el trigger inerte (atributo booleano en HTML plano).
 
 ```html
-<!-- HTML plano (UMD) -->
-<script src="dist-libs/umd-core/CuCollapse.umd.js"></script>
-
-<cu-collapse id="faq" label="¿Qué es ComegenUI?" description="Librería de Custom Elements" color="primary">
-  <p>Una librería de componentes UI como Custom Elements nativos.</p>
-</cu-collapse>
-
-<cu-collapse label="Sección bloqueada" disabled>
-  <p>El trigger no responde al click.</p>
-</cu-collapse>
-
-<script>
-  const faq = document.getElementById('faq');
-  faq.addEventListener('toggle', (e) => console.log('abierto:', e.detail));
-  faq.toggle();
-</script>
+<cu-collapse label="<label>" description="<description>" icon="<svg>" color="<color>" default-open><body></cu-collapse>
 ```
 
 ```vue
-<!-- Vue -->
-<script setup lang="ts">
-import Collapse from "@/components/overlay/Collapse.vue";
-import { ref } from "vue";
-
-const abierto = ref(false);
-</script>
-
-<template>
-  <Collapse label="¿Qué es ComegenUI?" description="Librería de Custom Elements" color="primary" @toggle="abierto = $event">
-    <p>Una librería de componentes UI como Custom Elements nativos.</p>
-  </Collapse>
-
-  <Collapse label="Sección bloqueada" disabled>
-    <p>El trigger no responde al click.</p>
-  </Collapse>
-</template>
+<Collapse label="<label>" description="<description>" icon="<svg>" color="<color>" default-open><body></Collapse>
 ```
 
-## Qué puede y qué no puede
+Los valores de `color` están en «Atributos» / «Props», abajo.
 
-**Puede:** 6 colores (`primary`, `secondary`, `neutral`, `success`, `warning`, `danger`),
-`label`, `description`, `icon`, `default-open`, `disabled`, slot default, el evento `toggle` y los métodos
-`open`/`close`/`toggle`/`isOpen`. Se puede anidar.
+## Límites
 
-**No puede:**
-
-- **No tiene `variant` ni `theme`:** el trigger siempre es `ghost` y el color se controla con
-  `color`.
-- **No soporta `v-model` de apertura:** el estado inicial se fija con `default-open` y después
-  sólo cambia por el trigger o por métodos (no hay `update:open`).
-- **Con `disabled`, `open()` y `toggle()` son no-op**; sólo `close()` actúa.
-- **Un solo slot (`default`):** no se puede cambiar el trigger ni el chevron.
-- **`label` es obligatorio.**
-- **`toggle` sólo se emite cuando el estado cambia:** llamar `open()` estando abierto no
-  re-emite.
-- **`icon` es un string HTML/SVG** (se inyecta crudo); no es un componente ni una URL.
+- No tiene `variant` (el trigger siempre es `ghost`) ni `theme`.
+- No soporta `v-model` de apertura ni emite `update:open`: el estado inicial es `default-open` y después sólo cambia por el trigger o por métodos.
+- Un solo slot (`default`): no se puede cambiar el trigger ni el chevron.
+- `label` es obligatorio.
+- Con `disabled`, `open()` y `toggle()` son no-op; `close()` sigue funcionando.
+- `toggle` sólo se emite cuando el estado cambia.
+- `icon` es un string HTML/SVG inyectado crudo; no es un componente ni una URL.
 
 ## API del custom element
 

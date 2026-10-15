@@ -1,101 +1,41 @@
 # Select — `<cu-select>` / `<Select>`
 
-Selector de opciones de lista cerrada con color, variante, color/variante por opción, búsqueda por teclado, estado de carga y control programático.
-
-## Cuándo usarlo
-
-Para elegir una opción de un conjunto fijo. Si el usuario tiene que filtrar resultados por
-escritura sobre un input visible, usá `cu-autocomplete`.
+Selector de una opción de lista cerrada, con color/variante (también por opción), búsqueda por
+teclado y estado de carga. Si el usuario filtra escribiendo sobre un input visible, usá
+`<cu-autocomplete>`.
 
 ## Receta
 
-1. Definí `options` como array de `{ value, label, disabled?, color?, variant? }` y asignalo
-   como propiedad JS.
-2. El valor lo maneja el propio select: al elegir una opción se refleja solo. Enlazá
-   `modelValue` sólo si querés controlarlo (`v-model` en Vue). Escuchá
-   `select` para recibir la opción completa (`{ value, label, ... }`), o `change`
-   para el valor nuevo (string, como un `<select>` nativo).
-3. `placeholder` se muestra cuando no hay selección; `placeholder-wrap` decide si el texto
-   wrappea o se trunca con `...`.
-4. Para la búsqueda estilo `<select>` nativo activá `search-enabled`; `search-mode` elige
-   `startsWith` (default) o `includes`, y `search-reset-delay` define el reset (1000 ms).
-5. Mientras cargás datos, `loading` muestra una barra animada y atenúa el panel; anula la
-   barra de cooldown del search.
-6. Programático: `get()`, `set(v)`, `reset()`, `focus()`, `isOpen()`, `selectedItem()`.
-7. Posicioná el dropdown con `position`, `align` y `fixed`.
+- `options` = `[{ value, label, disabled?, color?, variant? }]`, **propiedad JS**.
+- Valor: `update:modelValue` (valor), `select` (opción completa) o `change` (valor nuevo);
+  `v-model`/`model-value` sólo para controlarlo.
+- `placeholder` se muestra sin selección; `placeholder-wrap` decide truncar con `…` o wrappear.
+- Búsqueda estilo `<select>` nativo: `search-enabled` + `search-mode` (`startsWith` default |
+  `includes`) + `search-reset-delay` (default `1000` ms).
+- `loading` muestra una barra animada y anula la de cooldown.
+- Posición: `position` / `align` / `fixed`.
+- Programático: `get()` / `set(v)` / `reset()` / `focus()` / `isOpen()` / `selectedItem()`.
 
 ```html
-<!-- HTML plano (UMD) -->
-<script src="dist-libs/umd-core/CuSelect.umd.js"></script>
-
-<cu-select id="miSelect" placeholder="Seleccione una opción" color="primary" variant="outlined"></cu-select>
-
-<script>
-  const select = document.getElementById('miSelect');
-  select.options = [
-    { value: 'doc', label: 'Documento' },
-    { value: 'pdf', label: 'PDF', disabled: true },
-    { value: 'csv', label: 'CSV' },
-  ];
-
-  select.addEventListener('select', (e) => console.log('Opción:', e.detail));
-  select.addEventListener('update:modelValue', (e) => console.log('Valor:', e.detail));
-
-  select.set('csv');
-  console.log(select.get()); // "csv"
-</script>
+<cu-select placeholder="<texto>" color="<color>" variant="<variant>" loading></cu-select>
 ```
 
 ```vue
-<!-- Vue -->
-<script setup lang="ts">
-import Select from "@/components/form/Select.vue";
-import { ref } from "vue";
-
-const value = ref("doc");
-const opciones = [
-  { value: "doc", label: "Documento" },
-  { value: "pdf", label: "PDF", disabled: true },
-  { value: "csv", label: "CSV" },
-];
-
-function onSelect(option: { value: string; label: string }) {
-  console.log("Seleccionado:", option);
-}
-</script>
-
-<template>
-  <Select
-    v-model="value"
-    :options="opciones"
-    placeholder="Seleccione una opción"
-    color="primary"
-    variant="outlined"
-    @select="onSelect"
-  />
-</template>
+<Select v-model="<ref>" :options="<options>" placeholder="<texto>" color="<color>" variant="<variant>" />
 ```
 
-## Qué puede y qué no puede
+Los valores de `color` / `variant` / `position` / `align` están en «Atributos» / «Props», abajo.
 
-**Puede:** 6 colores y 4 variantes (`outlined`, `soft`, `ghost`, `subtle`), color y variante
-por opción (si no, hereda del select), `disabled` global y por opción, `placeholder` con
-truncado o wrap, posicionamiento (`position`, `align`, `fixed`), búsqueda por teclado
-(`searchEnabled` + `searchMode` + `searchResetDelay`) con barra de cooldown, `loading` con
-barra animada, y los métodos `get`/`set`/`reset`/`focus`/`isOpen`/`selectedItem`.
+## Límites
 
-**No puede:**
-
-- **No tiene slots:** las opciones son datos, no markup (el `label` se renderiza como texto).
-- **No hay una caja de búsqueda visible:** `searchEnabled` es type-ahead sobre un input oculto,
-  no un filtro escrito en el trigger; sólo hace scroll al primer match.
-- **`options` es un array:** se asigna como propiedad JS, no como atributo HTML.
-- **`variant` es de formulario:** no admite `solid`, `link` ni `none`.
-- **No expone `open()`/`close()`:** sólo `isOpen()` para consultar.
-- **`reset()` limpia a `""`**, no vuelve a un valor inicial.
-- **No es un `<select>`/`<input>` nativo con `name`:** no participa del submit de un `<form>`.
-- `cooldownVariant` acepta `ghost-hover` (default, barra suave) o `solid` (color lleno); no
-  tiene validador, así que un valor raro simplemente no cambia la barra.
+- No tiene slots: las opciones son datos y el `label` se renderiza como texto.
+- No hay una caja de búsqueda visible: `search-enabled` es type-ahead sobre un input oculto (sólo hace scroll al primer match).
+- `options` va por propiedad JS, nunca como atributo.
+- `variant` es de formulario: no admite `solid`, `link` ni `none`.
+- No expone `open()`/`close()`: sólo `isOpen()` para consultar.
+- `reset()` limpia a `""`, no vuelve a un valor inicial.
+- No es un `<select>`/`<input>` nativo con `name`: no participa del submit de un `<form>`.
+- `cooldown-variant` acepta `ghost-hover` (default) o `solid`, y no tiene validador.
 
 ## API del custom element
 

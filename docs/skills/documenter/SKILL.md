@@ -4,7 +4,7 @@ description: 'Receta para documentar un componente de ComegenUI: deja claro dón
 metadata:
   repository: https://github.com/SpicyDogWings/comegenui
   path: docs/skills/documenter
-  version: 0.5.0
+  version: 5.1.1
 ---
 
 # Documentar un componente
@@ -24,6 +24,8 @@ Siempre hay **2 fichas** (vanilla y Vue) y **1 receta**:
 - Cada **página** del sitio sólo **incluye** su ficha (`<!--@include-->`): la ficha es la fuente,
   la página no agrega API.
 - La **receta** no vive en el sitio: viaja con la lib (`skills add`) y es **autosuficiente**.
+- La **receta es del agente**: no lleva nada pensado para una persona (prosa, "por qué", pasos de
+  instalación de la skill). Eso vive en el README y en el sitio.
 - **Siempre 2 fichas**, nunca una unificada (esto revierte el piloto de `cu-button`,
   `docs/notes/10-ficha-unificada.md`).
 
@@ -241,6 +243,9 @@ Esto hace la **receta más compacta** y ahorra código. La regla:
 
 ## Reglas
 
+- **La receta es del agente.** `skills/use-comegen/**` es lo único que se le sirve al agente: sin
+  prosa para humanos (el "por qué", el catálogo de combinaciones, cómo instalar la skill). Eso vive
+  en el README y en el sitio. La receta lleva: procedimiento + patrón + referencia a la API.
 - **Gana el código.** Si la ficha y el `.vue`/`.ce.vue` no coinciden, la ficha está mal: corregila.
 - **No inventes APIs.** Todo sale del SFC: si no está en `defineProps` / `ceEmit` / `defineExpose`, no
   existe.

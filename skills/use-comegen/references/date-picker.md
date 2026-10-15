@@ -1,101 +1,43 @@
 # DatePicker — `<cu-date-picker>` / `<DatePicker>`
 
-Botón-trigger que abre un dropdown con un calendario adentro: `mode="single"` selecciona una
-fecha y `mode="range"` (o `dual-calendar`) un rango, con uno o dos meses.
-
-## Cuándo usarlo
-
-Para elegir una fecha o un período con calendario. Para un input de fecha nativo simple no hace
-falta; para horarios no sirve. Si ya tenés tu propio contenedor y querés el calendario suelto,
-usá `cu-calendar`.
+Botón-trigger que abre un dropdown con un calendario adentro: `single` selecciona una fecha y
+`range` (o `dual-calendar`) un rango, con uno o dos meses. Para el calendario suelto usá `cu-calendar`.
 
 ## Receta
 
-1. Elegí el modo: `single` (default, `v-model`/`model-value`) o `range`
-   (`start-date`/`end-date`).
-2. En range podés usar un mes (`mode="range"`) o dos (`dual-calendar`).
-3. Vinculá los valores: en Vue `v-model` y `v-model:startDate`/`v-model:endDate`; en el CE
-   `modelValue`, `startDate`, `endDate` + `update:*`.
-4. Escuchá `change` (fecha, rango, `null`/`{ start: null, end: null }` al limpiar) y `select`
-   (elección explícita); `open`/`close` avisan del panel.
-5. `min`/`max`, `disabled-weekdays` y `disabled-dates` restringen días; `events` marca días con
-   puntos y se asigna como **propiedad JS**.
-6. `format` controla el **texto del trigger** (tokens `dd`, `MM`, `MMM`, `MMMM`, `yy`, `yyyy`);
-   **no** cambia el valor: los eventos devuelven `Date`. Para el **valor como string**, seteá
-   `value-format` (mismos tokens) → el picker emite `update:formattedValue` /
-   `change-formatted` / `select-formatted` (y `update:formattedStartDate`/`update:formattedEndDate`
-   en range).
-7. Programático: `open()`, `close()`, `toggle()`, `getValue()`, `setValue()`, `getStartDate()`,
-   `getEndDate()`, `setRange()`, `clear()`, `getFormattedValue()`, `getFormattedStartDate()`,
-   `getFormattedEndDate()` e `isOpen()`.
+- Elegí el modo: `single` (default, `v-model`/`model-value`) o `range` (`start-date`/`end-date`); en range, un mes (`mode="range"`) o dos (`dual-calendar`).
+- Vinculá los valores: en Vue `v-model` y `v-model:startDate`/`v-model:endDate`; en el CE `modelValue`/`startDate`/`endDate` + `update:*`.
+- Restringen días `min`/`max`, `disabled-weekdays` y `disabled-dates`; `events` marca días con puntos y se asigna como **propiedad JS**.
+- Escuchá `change` (fecha, rango, `null`/`{ start: null, end: null }` al limpiar) y `select`; `open`/`close` avisan del panel.
+- `format` controla el **texto del trigger** (tokens `dd`, `MM`, `MMM`, `MMMM`, `yy`, `yyyy`) y **no** cambia el valor: los eventos devuelven `Date`.
+- Para el **valor como string** seteá `value-format` (mismos tokens) → emite `update:formattedValue` / `change-formatted` / `select-formatted` (y `update:formattedStartDate`/`update:formattedEndDate` en range).
+- Programático: `open()`, `close()`, `toggle()`, `getValue()`, `setValue()`, `getStartDate()`, `getEndDate()`, `setRange()`, `clear()`, `getFormattedValue()`, `getFormattedStartDate()`, `getFormattedEndDate()` e `isOpen()`.
 
 ```html
-<!-- HTML plano (UMD) -->
-<script src="dist-libs/umd-core/CuDatePicker.umd.js"></script>
-
-<cu-date-picker id="rango" mode="range" label="Período" dual-calendar format="dd/MM/yyyy"></cu-date-picker>
-
-<script>
-  const r = document.getElementById('rango');
-  r.startDate = '2026-09-03';
-  r.endDate = '2026-09-15';
-  r.addEventListener('change', (e) => console.log(e.detail));
-  r.setRange('2026-09-01', '2026-09-30');
-</script>
+<cu-date-picker id="<id>" mode="<mode>" label="<label>" format="<format>" dual-calendar></cu-date-picker>
 ```
 
 ```vue
-<!-- Vue -->
-<script setup lang="ts">
-import DatePicker from "@/components/form/DatePicker.vue";
-import { ref } from "vue";
-
-const startDate = ref<string | Date | null>(null);
-const endDate = ref<string | Date | null>(null);
-</script>
-
-<template>
-  <DatePicker
-    mode="range"
-    v-model:startDate="startDate"
-    v-model:endDate="endDate"
-    label="Período"
-    dual-calendar
-    @change="(v) => console.log(v)"
-  />
-</template>
+<DatePicker mode="<mode>" v-model:startDate="<start>" v-model:endDate="<end>" label="<label>" dual-calendar @change="<handler>" />
 ```
 
-## Qué puede y qué no puede
+Los valores de `color` / `variant` / `mode` / `position` / `align` están en «Atributos» / «Props», abajo.
 
-**Puede:** modo `single`/`range`, calendario dual (2 meses), `min`/`max`, días de la semana y
-fechas puntuales deshabilitadas, eventos con punto, `grid`/`border`, `locale` y `week-start`,
-formatos de fecha (`format`) y de mes/año (`month-format`/`year-format`), **valor formateado
-(`value-format`)**, navegación de año, `position`/`align`/`fixed`, botones "Hoy"/"Limpiar",
-`color`/`variant` y 13 métodos.
+## Límites
 
-**No puede:**
-
-- **No maneja hora:** sólo fecha (día).
-- **`startDate`/`endDate` se ignoran en `single`.**
-- **`dualCalendar` implica `range`:** aunque `mode` sea `single`, el picker selecciona un rango.
-- **`setValue()` es no-op en range y `setRange()` es no-op en single.**
-- **En range el panel queda abierto tras el primer click** (necesita el segundo para completar);
-  en single cierra al elegir.
-- **`clear()` en single cierra el panel; en range lo deja abierto.**
-- **`events` no va por atributo:** es un array de objetos, se asigna como propiedad JS. Con el
-  panel cerrado los puntos aparecen al abrir; para forzar el re-render con el panel abierto:
-  `close()` + `open()`.
-- **`variant="ghost"` no llega al calendario:** internamente se mapea a `soft`.
-- **`today-button` tiene default distinto por modo:** `true` en single y `false` en range.
-- **No tiene slots:** no se puede customizar el trigger ni el footer. Los botones son fijos
-  ("Hoy"/"Limpiar").
-- **No hay selector de mes/año desplegable** más allá de `year-navigation`.
-- **`format` sólo entiende sus tokens:** un patrón raro no se interpreta como esperás.
-- **`format` no cambia el valor:** es sólo el texto del trigger; los eventos devuelven `Date`.
-  Para el valor como string usá `value-format` (y `getFormattedValue()`).
-- **El CE posiciona con `position`/`align`** (en el CE, `position` acepta `bottom`, `top`,
-  `left`, `right`).
+- No maneja hora: sólo fecha (día).
+- `startDate`/`endDate` se ignoran en `single`.
+- `dualCalendar` implica `range`: aunque `mode` sea `single`, el picker selecciona un rango.
+- `setValue()` es no-op en range y `setRange()` es no-op en single.
+- En range el panel queda abierto tras el primer click (necesita el segundo); en single cierra al elegir.
+- `clear()` en single cierra el panel; en range lo deja abierto.
+- `events` no va por atributo (es un array de objetos): se asigna como propiedad JS; con el panel cerrado los puntos aparecen al abrir (para forzar el re-render con el panel abierto: `close()` + `open()`).
+- `variant="ghost"` no llega al calendario interno: se mapea a `soft`.
+- `today-button` tiene default distinto por modo: `true` en single y `false` en range.
+- No tiene slots: ni el trigger ni el footer se customizan (los botones "Hoy"/"Limpiar" son fijos).
+- No hay selector de mes/año desplegable más allá de `year-navigation`.
+- `format` sólo entiende sus tokens y no cambia el valor; para el valor como string usá `value-format`.
+- El CE posiciona con `position`/`align` (en el CE, `position` acepta `bottom`, `top`, `left`, `right`).
 
 ## API del custom element
 

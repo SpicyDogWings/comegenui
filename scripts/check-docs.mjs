@@ -153,6 +153,55 @@ for (const tag of [...tags].sort()) {
   if (!existsSync(ficha)) problems.push(`tag ${tag}: falta ${relative(root, ficha)}`);
 }
 
+// ── recetas de la skill: sólo para el agente ─────────────────────────────────
+// Las recetas de componente no son para humanos (procedimiento + patrón + API): este
+// chequeo evita que vuelvan a inflarse con código de ficha, catálogos en prosa o prosa
+// larga. Ver la skill `documenter`. Sólo aplica a recetas con API generada (`@api:*`):
+// las lib-level (`instalacion.md`, `versionado.md`, …) sí pueden tener bloques largos.
+const RECETAS_DIR = resolve(root, "skills/use-comegen/references");
+const PROSA_PROHIBIDA = [
+  ["## Cuándo usarlo", "ese heading se pliega en el intro"],
+  ["Qué puede y qué no puede", "usá «## Límites»"],
+  ["<script setup", "el código de ficha va en la ficha, no en la receta"],
+  ["dist-libs/", "el ejemplo es el patrón: sin rutas de build"],
+  ["**Puede:**", "los valores ya están en la tabla de API"],
+];
+const MAX_BLOQUES_CODIGO = 4; // HTML + Vue (+ margen para un snippet de «propiedad JS»)
+const MAX_LINEAS_CODIGO = 6; // un bloque de la receta es el patrón, no el ejemplo completo
+
+function checkRecetas() {
+  if (!existsSync(RECETAS_DIR)) return;
+  for (const file of walk(RECETAS_DIR, ".md")) {
+    const source = readFileSync(file, "utf-8");
+    const esDeComponente =
+      source.includes("<!-- @api:atributos -->") || source.includes("<!-- @api:props -->");
+    if (!esDeComponente) continue;
+
+    const corte = source.indexOf("## API del custom element");
+    const prosa = corte === -1 ? source : source.slice(0, corte);
+
+    // los patrones prohibidos se buscan en TODO el archivo: una regresión puede
+    // aparecer pegada al final, después de las secciones de API.
+    for (const [patron, sugerencia] of PROSA_PROHIBIDA) {
+      if (source.includes(patron)) problems.push(`${rel(file)}: receta con «${patron}» (${sugerencia})`);
+    }
+
+    const bloques = [...prosa.matchAll(/```[\s\S]*?```/g)].map((m) => m[0].split("\n").length - 2);
+    if (bloques.length > MAX_BLOQUES_CODIGO) {
+      problems.push(
+        `${rel(file)}: receta con ${bloques.length} bloques de código (máx ${MAX_BLOQUES_CODIGO})`,
+      );
+    }
+    const largo = Math.max(0, ...bloques);
+    if (largo > MAX_LINEAS_CODIGO) {
+      problems.push(
+        `${rel(file)}: receta con un bloque de código de ${largo} líneas (máx ${MAX_LINEAS_CODIGO})`,
+      );
+    }
+  }
+}
+checkRecetas();
+
 if (problems.length) {
   console.error(`check-docs: ${problems.length} problema(s)`);
   for (const problem of problems) console.error(`  ✗ ${problem}`);

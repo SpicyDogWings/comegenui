@@ -1,73 +1,34 @@
 # Alert — `<cu-alert>` / `<Alert>`
 
 Alerta con color semántico, título opcional y botón de cerrar; la visibilidad se controla por `show`
-o programáticamente.
-
-## Cuándo usarlo
-
-Para dar feedback al usuario: confirmaciones, advertencias, errores o avisos. Si es un rótulo corto
-y estático, usá `cu-badge`.
+o programáticamente. Para un rótulo corto y estático, usá `cu-badge`.
 
 ## Receta
 
-1. Elegí `color` (semántico) y `variant` (estilo). El contenido va por el slot default.
-2. `title` agrega la cabecera; el slot `icon` se muestra junto al título. `close` muestra la X.
-3. La visibilidad se controla con `show` (atributo) o con `v-model:show` en Vue. Al cerrar/abrir se
-   emiten `close`, `open` y `update:show` (con el boolean en `e.detail`).
-4. Por código: `open()`, `close()`, `toggle()` e `isOpen()`.
+- Contenido por el **slot default**; `title` arma la cabecera y el slot `icon` va junto al título.
+- `close` muestra la X.
+- Visibilidad: `show` (atributo) o `v-model:show` en Vue.
+- Al abrir/cerrar emite `close`, `open` y `update:show` (boolean en `e.detail`).
+- Por código: `open()`, `close()`, `toggle()`, `isOpen()`.
 
 ```html
-<!-- HTML plano (UMD) -->
-<script src="dist-libs/umd-core/CuAlert.umd.js"></script>
-
-<cu-alert id="alerta" color="danger" variant="outlined" title="Atención" close show>
-  Ha ocurrido un error.
-</cu-alert>
-
-<script>
-  const alerta = document.getElementById('alerta');
-
-  alerta.addEventListener('close', () => console.log('cerrada'));
-  alerta.addEventListener('update:show', (e) => console.log('show =', e.detail));
-
-  alerta.show = false;        // ocultar por propiedad
-  alerta.open();              // o por método
-</script>
+<cu-alert color="<color>" variant="<variant>" title="<title>" close show><label></cu-alert>
 ```
 
 ```vue
-<!-- Vue -->
-<script setup lang="ts">
-import Alert from "@/components/information/Alert.vue";
-import { ref } from "vue";
-
-const show = ref(true);
-</script>
-
-<template>
-  <Alert v-model:show="show" color="danger" variant="outlined" title="Atención" close>
-    Ha ocurrido un error.
-  </Alert>
-</template>
+<Alert v-model:show="<bool>" color="<color>" variant="<variant>" title="<title>" close><label></Alert>
 ```
 
-## Qué puede y qué no puede
+Los valores de `color` / `variant` están en «Atributos» / «Props», abajo.
 
-**Puede:** 6 colores (`primary`, `secondary`, `neutral`, `success`, `warning`, `danger`), 5 variantes
-(`solid`, `outlined`, `soft`, `ghost`, `subtle`), `title`, botón de cerrar (`close`), visibilidad
-controlada (`show`), slots `icon` y default. Emite `open`, `close` y `update:show`, y expone
-`open`, `close`, `toggle` e `isOpen`.
+## Límites
 
-**No puede:**
-
-- **No se autocierra ni tiene timer:** sin `close` no hay botón de cierre y sin manipular `show` (o
-  los métodos) la alerta queda visible siempre.
-- **El payload cambia según el evento:** `update:show` trae el boolean en `e.detail`; `open` y
-  `close` no traen payload.
-- **El header no es fijo:** sólo aparece si hay `title`, `close` o contenido en el slot `icon`.
-- **No acepta `variant="link"` ni `variant="none"`.** `color="secondary"` sí existe.
-- **No tiene `theme`, `size`, `dismissible` ni auto-dismiss.**
-- **Sin `title` el slot `icon` se renderiza igual en la cabecera**, pero sin texto de título al lado.
+- No se autocierra ni tiene timer: sin `close` no hay X y sin tocar `show` (o los métodos) queda visible.
+- `update:show` trae el boolean en `e.detail`; `open` y `close` no traen payload.
+- El header sólo aparece si hay `title`, `close` o slot `icon`.
+- No acepta `variant="link"` ni `variant="none"`.
+- Sin `title` el slot `icon` se renderiza igual en la cabecera, sin texto al lado.
+- No tiene `theme`, `size`, `dismissible` ni auto-dismiss.
 
 ## API del custom element
 

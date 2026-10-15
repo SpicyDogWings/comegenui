@@ -93,15 +93,15 @@ pisaste con un `slot` mal nombrado).
 El prop existe con ese typo histórico (`hight`, no `high`) y hoy **sólo** lo expone
 `<cu-label>`. No inventes `hightContrast` en otros componentes.
 
-## 8. Varios componentes se componen entre sí
+## 7. Varios componentes se componen entre sí
 
 `<cu-date-picker>` compone el dropdown + calendario; `<cu-table>` es el `AdvancedTable`;
 `<cu-cells-importer>` envuelve `cu-input`/`cu-file-input`. Si un evento no aparece, puede
 estar saliendo del hijo: mirá la sección "Nota de implementación" de la ficha.
 
-## 9. El estilo no aparece
+## 8. El estilo no aparece
 
 - El tema no está donde esperás: revisá `<html data-theme="…">` (o el contenedor con `data-theme`).
-- Los tokens se inyectan con el primer componente; si no ves nada, verificá que cargaste el
-  bundle correcto (config) y que no quedó cacheado.
+- Los tokens se inyectan con el primer componente, pero **sólo el tema default**: si pediste
+  `dark` o cualquier otro, sus tokens tienen que estar en el CSS del host (`references/theming.md`).
 - El bundle quedó viejo después de actualizar la lib (mirá `comegen.version`).

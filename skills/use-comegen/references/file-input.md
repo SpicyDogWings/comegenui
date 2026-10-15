@@ -1,91 +1,38 @@
 # FileInput — `<cu-file-input>` / `<FileInput>`
 
-Input de archivo compacto con drag & drop, estilo idéntico a `<cu-input>`. Single file, sin
-directorio, con validación de tipo (`accept`) y tamaño (`maxSize`).
-
-## Cuándo usarlo
-
-Para adjuntar **un solo archivo** en un formulario compacto, cuando querés el mismo look que un
-input de texto. Si necesitás varios archivos o una carpeta completa, usá `<cu-file-input-zone>`.
+Input de archivo compacto (un solo archivo, sin directorio) con drag & drop, `accept` y
+`max-size`, con el estilo de `<cu-input>`. Para varios archivos o carpetas usá
+`<cu-file-input-zone>`.
 
 ## Receta
 
-1. El valor es un `File | null` (no un string): enlazalo con `v-model` en Vue o con la propiedad JS
-   `modelValue` en vanilla.
-2. Limitá lo aceptado con `accept` (`"image/*"`, `".pdf,.doc"`) y el peso con `max-size` (en bytes).
-3. El usuario elige con el diálogo nativo o **arrastra** el archivo sobre el control. Para abrir el
-   diálogo desde código, llamá a `trigger()`.
-4. Leé/escribí el valor con `get()` / `set()` / `reset()`; el evento `update:modelValue` trae el
-   `File` o `null`.
-5. Un archivo rechazado (vacío, muy pesado o formato no permitido) muestra un `Alert` de error y no
-   cambia el valor.
+- Valor `File | null`: `v-model` en Vue o la propiedad JS `modelValue` / `set(file)` en vanilla.
+- `accept` (`"image/*"`, `".pdf,.doc"`) y `max-size` (bytes).
+- Selección: diálogo nativo, drag & drop, o `trigger()`.
+- `update:modelValue` trae el `File` o `null`; lectura con `get()` / `set()` / `reset()` / `focus()`.
+- Un archivo rechazado (vacío, muy pesado o formato no permitido) muestra un `Alert` de error y no
+  cambia el valor.
 
 ```html
-<!-- HTML plano (UMD) -->
-<cu-file-input
-  id="cv"
-  placeholder="Elige un archivo..."
-  color="primary"
-  accept=".pdf,.doc"
-  max-size="2097152"
-></cu-file-input>
-
-<script src="dist-libs/umd-core/CuFileInput.umd.js"></script>
-<script>
-  const cv = document.getElementById('cv');
-
-  cv.addEventListener('update:modelValue', (e) => {
-    console.log('Archivo:', e.detail?.name ?? 'ninguno');
-  });
-
-  cv.trigger();                 // abre el diálogo nativo
-  console.log(cv.get()?.name);  // lee el File actual
-</script>
+<cu-file-input placeholder="<texto>" color="<color>" variant="<variant>" accept="<tipos>" max-size="<bytes>"></cu-file-input>
 ```
 
 ```vue
-<!-- Vue -->
-<script setup lang="ts">
-import FileInput from "@/components/form/FileInput.vue";
-import { ref } from "vue";
-
-const archivo = ref<File | null>(null);
-</script>
-
-<template>
-  <FileInput
-    v-model="archivo"
-    placeholder="Elige un archivo..."
-    color="primary"
-    accept=".pdf,.doc"
-    :max-size="2097152"
-  />
-  <FileInput disabled placeholder="Deshabilitado" />
-</template>
+<FileInput v-model="<ref>" color="<color>" accept="<tipos>" :max-size="<bytes>" />
 ```
 
-## Qué puede y qué no puede
+Los valores de `color` / `variant` están en «Atributos» / «Props», abajo.
 
-**Puede:** 6 colores (`primary`, `secondary`, `neutral`, `success`, `warning`, `danger`), 4 variantes
-(`outlined`, `soft`, `ghost`, `subtle`), `placeholder`, `disabled`, `read-only`, `accept`, `max-size`
-(bytes) y drag & drop de un archivo. Expone `get`/`set`/`reset`/`focus`/`trigger` y emite
-`update:modelValue`.
+## Límites
 
-**No puede:**
-
-- **Un solo archivo.** No hay `multiple`, `directory` ni `directory-deep`: para eso usá
-  `<cu-file-input-zone>`.
-- **`modelValue` es un `File`, no un string.** No se puede setear como atributo HTML: asignalo por
-  propiedad JS (`input.modelValue = new File(...)`) o con `input.set(file)`.
-- **`max-size` va en bytes** (ej: 2 MB = `2097152`).
-- **No emite eventos de validación.** Un archivo rechazado sólo se ve (el `Alert` de error); no hay
-  evento custom que lo notifique.
-- **El `change` nativo del `<input type="file">` interno no se re-emite.** Escuchá
-  `update:modelValue`.
-- **`focus()` enfoca el contenedor** (que tiene `role="button"`), no el `<input type="file">`
-  oculto.
-- **`read-only` bloquea todo:** no abre el diálogo, no acepta drag ni drop.
-- **No acepta `theme`.** El tema se define en `<html data-theme="...">`.
+- Un solo archivo: no hay `multiple`, `directory` ni `directory-deep` (para eso, `<cu-file-input-zone>`).
+- `modelValue` es un `File`: va por propiedad JS o `set()`, no como atributo HTML.
+- `max-size` va en bytes (2 MB = `2097152`).
+- No emite eventos de validación: un archivo rechazado sólo se ve en el `Alert`.
+- El `change` nativo del `<input type="file">` interno no se re-emite: escuchá `update:modelValue`.
+- `focus()` enfoca el contenedor (`role="button"`), no el `<input type="file">` oculto.
+- `read-only` bloquea todo: no abre el diálogo ni acepta drag/drop.
+- No acepta `theme`: el tema se define en `<html data-theme="…">` (`theming.md`).
 - El nombre del archivo seleccionado se abre en una pestaña nueva al hacer clic.
 
 ## API del custom element

@@ -1,53 +1,33 @@
 # AuthorCard — `<cu-author-card>` / `<AuthorCard>`
 
-Tarjeta de autor: avatar (imagen o iniciales generadas del nombre), nombre y rol.
-
-## Cuándo usarlo
-
-Para firmar contenido o listar autores/equipo. Es la composición de `Avatar` + nombre + rol; si
-necesitás sólo la foto o las iniciales, usá `cu-avatar`.
+Tarjeta de autor: avatar (imagen o iniciales derivadas del nombre), nombre y rol. Para sólo la foto
+o las iniciales usá `cu-avatar`.
 
 ## Receta
 
-1. `name` es obligatorio: de ahí salen las iniciales del avatar.
-2. `role` se muestra debajo del nombre y se oculta si está vacío.
-3. `src` reemplaza las iniciales por una imagen; `color` y `size` se los pasa al avatar.
+- `name` es obligatorio: de ahí salen las iniciales del avatar.
+- `src` reemplaza las iniciales por una imagen.
+- `role` va debajo del nombre y se oculta si está vacío.
+- `color` y `size` se pasan al avatar.
 
 ```html
-<!-- HTML plano (UMD) -->
-<script src="dist-libs/umd-core/CuAuthorCard.umd.js"></script>
-
-<cu-author-card name="Ana Pérez" role="Desarrolladora" color="primary"></cu-author-card>
-<cu-author-card name="Marcos Ruiz" color="success" size="lg"></cu-author-card>
-<cu-author-card name="Laura Gómez" role="Diseñadora" src="https://example.com/avatar.jpg"></cu-author-card>
+<cu-author-card name="<name>" role="<role>" src="<url>" color="<color>" size="<size>"></cu-author-card>
 ```
 
 ```vue
-<!-- Vue -->
-<script setup lang="ts">
-import AuthorCard from "@/components/information/AuthorCard.vue";
-</script>
-
-<template>
-  <AuthorCard name="Ana Pérez" role="Desarrolladora" color="primary" />
-  <AuthorCard name="Marcos Ruiz" color="success" size="lg" />
-</template>
+<AuthorCard name="<name>" role="<role>" src="<url>" color="<color>" size="<size>" />
 ```
 
-## Qué puede y qué no puede
+Los valores de `color` / `size` están en «Atributos» / «Props», abajo.
 
-**Puede:** `name` (obligatorio), `role`, imagen (`src`), color del avatar (`color`) y tamaño del
-avatar (`size`: `sm`, `md`, `lg`).
+## Límites
 
-**No puede:**
-
-- **Presentación pura:** no emite eventos, no tiene slots y no expone métodos.
-- **Sin `name` no hay tarjeta útil:** es `required` y es lo que genera las iniciales.
-- **`src` manda sobre las iniciales:** si la imagen falla no hay fallback, queda la imagen rota.
-- **Iniciales acotadas:** con dos o más palabras toma la primera letra del primero y del último
-  nombre; con una sola palabra, sus dos primeras letras.
-- **No tiene `theme`** ni control de layout (siempre avatar a la izquierda, texto a la derecha).
-- **`role` vacío desaparece:** no hay placeholder ni línea vacía.
+- Presentación pura: no emite eventos, no tiene slots y no expone métodos.
+- `name` es `required`; sin él no hay tarjeta útil.
+- `src` manda sobre las iniciales y si la imagen falla no hay fallback (queda rota).
+- Iniciales: con dos o más palabras, primera del primero y del último nombre; con una, sus dos primeras letras.
+- Siempre avatar a la izquierda y texto a la derecha; no tiene `theme`.
+- `role` vacío desaparece: no hay placeholder ni línea vacía.
 
 ## API del custom element
 

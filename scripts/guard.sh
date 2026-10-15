@@ -9,6 +9,7 @@
 #   --mutacion  aplica bugs conocidos y verifica que los tests los detecten
 #   --tests     tests unitarios
 #   --docs      fichas/páginas y tablas de API
+#   --skills    las skills del repo están linkeadas en .opencode/skills (donde el agente las ve)
 #
 # Uso:
 #   ./scripts/guard.sh                  # loop rápido: impacto + tipos + build + contrato
@@ -53,8 +54,9 @@ while [ $# -gt 0 ]; do
     --mutacion|--mutación|--mutation) add_step mutacion ;;
     --tests) add_step tests ;;
     --docs) add_step docs ;;
+    --skills) add_step skills ;;
     --no-typecheck|--no-build|--no-tests) ;; # compat: se ignoran en modo explícito
-    -h|--help) sed -n '2,23p' "$0"; exit 0 ;;
+    -h|--help) sed -n '2,24p' "$0"; exit 0 ;;
     *) echo "⚠️  Opción desconocida: $1" >&2 ;;
   esac
   shift
@@ -273,6 +275,24 @@ if has docs; then
   else
     ok "fichas y API al día"
     RESUMEN+=("✅ docs")
+  fi
+fi
+
+# ── skills ───────────────────────────────────────────────────────────────────
+if has skills; then
+  paso "Skills linkeadas"
+  why "verifico que cada skill del repo tenga su link en .opencode/skills (donde el agente la ve)"
+  set +e
+  ./scripts/skills-link.sh --check >"$TMP/skills.log" 2>&1
+  SK_EXIT=$?
+  set -e
+  if [ "$SK_EXIT" -ne 0 ]; then
+    bad "hay skills sin linkear (o links obsoletos):"
+    sed 's/^/      /' "$TMP/skills.log" | tail -20
+    RESUMEN+=("❌ skills"); FAILED=1
+  else
+    ok "$(grep -oE '[0-9]+ skills linkeadas' "$TMP/skills.log" | head -1 || echo 'skills linkeadas')"
+    RESUMEN+=("✅ skills")
   fi
 fi
 
