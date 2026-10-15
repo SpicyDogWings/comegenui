@@ -1,7 +1,7 @@
 # API por componente (índice)
 
 Todo lo que se exporta como custom element. Los componentes que no figuran acá
-**no** tienen UMD: sólo se usan desde Vue (ver `docs/componentes/vue/`).
+**no** tienen UMD: sólo se usan desde Vue (ver `docs/versiones/5.1.1/componentes/vue/`).
 
 `props sólo por JS` = arrays/objetos/funciones: **no** van por atributo, se asignan
 como propiedad (`el.items = [...]`). Ver `gotchas.md`.

@@ -51,8 +51,8 @@ para que declaren de qué release salió cada receta.
 
 ### 1. Revisar que la doc esté al día
 
-No hay generación: las fichas (`docs/componentes/<tag>.md` y `docs/componentes/vue/<kebab>.md`) y las páginas
-(`docs/site/componentes/<slug>.md`) se mantienen a mano. Mirá qué componentes cambiaron desde la
+No hay generación: las fichas (`docs/versiones/5.1.1/componentes/<tag>.md` y `docs/versiones/5.1.1/componentes/vue/<kebab>.md`) y las páginas
+(`docs/versiones/5.1.1/paginas/componentes/<slug>.md`) se mantienen a mano. Mirá qué componentes cambiaron desde la
 última release y verificá que su ficha y su página lo reflejen:
 
 ```bash
@@ -114,7 +114,7 @@ git status --short
 Staggeá solo lo que corresponde (doc, versión) y commiteá, p. ej.:
 
 ```bash
-git add docs/componentes docs/site/componentes
+git add docs/versiones/5.1.1/componentes docs/versiones/5.1.1/paginas/componentes
 git commit -m "chore(release): preparar v<version>"
 ```
 
@@ -142,7 +142,7 @@ Si algo falta, decilo explícitamente en el reporte; no lo tapes con "quedó fun
 | Errores de type-check "nuevos" | Compará con `scripts/typecheck-baseline.txt` (por identidad); arreglá los nuevos, no bajes el baseline. |
 | `❌ <tag> ROTO` en el paso de contrato | Un prop/método/estructura del custom element cambió. Si fue a propósito: `./scripts/guard.sh --update`. |
 | Tests rojos que no tocaste | El repo arrastra fallos viejos: compará con el estado previo (`git stash` + `pnpm test`). |
-| La doc de un componente quedó vieja | Actualizá su ficha vanilla (`docs/componentes/<tag>.md`), su ficha Vue (`docs/componentes/vue/<kebab>.md`), su receta (`skills/use-comegen/references/<kebab>.md`) y su página (`docs/site/componentes/`). |
+| La doc de un componente quedó vieja | Actualizá su ficha vanilla (`docs/versiones/5.1.1/componentes/<tag>.md`), su ficha Vue (`docs/versiones/5.1.1/componentes/vue/<kebab>.md`), su receta (`skills/use-comegen/references/<kebab>.md`) y su página (`docs/versiones/5.1.1/paginas/componentes/`). |
 | El zip no incluye un componente | Debe existir su entry en `src/lib/**/*.ts` (los internos no van a la lib ni a la skill). |
 | La versión del zip no es la esperada | Sale de `version` en `package.json`; bumpéala y re-corré `pnpm build:lib`. |
 
@@ -150,8 +150,8 @@ Si algo falta, decilo explícitamente en el reporte; no lo tapes con "quedó fun
 
 | Artefacto | Ruta |
 |---|---|
-| Fichas | `docs/componentes/<tag>.md` y `docs/componentes/vue/<kebab>.md` |
+| Fichas | `docs/versiones/5.1.1/componentes/<tag>.md` y `docs/versiones/5.1.1/componentes/vue/<kebab>.md` |
 | Recetas de la skill de uso | `skills/use-comegen/references/<kebab>.md` |
-| Páginas del sitio | `docs/site/componentes/<slug>.md` (versionadas) |
+| Páginas del sitio | `docs/versiones/5.1.1/paginas/componentes/<slug>.md` (versionadas) |
 | Tema del sitio | `docs/site/.vitepress/theme/*.gen.*` (generados, gitignored) |
 | Build de la lib | `dist-libs/<config>/` (gitignored) + 4 zips sueltos en `dist-libs/` |

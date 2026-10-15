@@ -60,7 +60,7 @@ En Vue es el mismo valor: `<Button color="primary">`.
 ## Variantes
 
 Según el componente: `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none`. El default
-varía por componente: está en la tabla `variant` de su ficha (`docs/componentes/…`) o en
+varía por componente: está en la tabla `variant` de su ficha (`docs/versiones/5.1.1/componentes/…`) o en
 `references/<kebab>.md`.
 
 ## Tokens (para el CSS del host)

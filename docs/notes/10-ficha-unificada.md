@@ -4,7 +4,7 @@
 **Severidad:** Info (decisión de arquitectura, piloto con un solo componente)
 
 > **Estado: revertido (2026-10-15).** Button volvió a **dos fichas** (`cu-button.md` +
-> `vue/button.md`) y la API se comparte por **partials** (`docs/partials/button/`). El modelo
+> `vue/button.md`) y la API se comparte por **partials** (`docs/versiones/5.1.1/partials/button/`). El modelo
 > vigente es «siempre 2 fichas, compuestas por partials» — ver la skill `documenter` y la
 > **nota 11**. Lo de abajo queda como registro del piloto: el conteo de descripciones vacías que
 > menciona (469 en 64 fichas) ya no aplica — hoy lo mide `gen-api --check` sobre los partials,
@@ -12,8 +12,8 @@
 
 ## Decisión
 
-Hasta ahora cada componente tenía **dos fichas** (`docs/componentes/<tag>.md` y
-`docs/componentes/vue/<kebab>.md`) y **dos páginas**. En la práctica la ficha Vue era una copia
+Hasta ahora cada componente tenía **dos fichas** (`docs/versiones/5.1.1/componentes/<tag>.md` y
+`docs/versiones/5.1.1/componentes/vue/<kebab>.md`) y **dos páginas**. En la práctica la ficha Vue era una copia
 de la vanilla que se quedaba atrás: las tablas de API se generan del SFC, pero la prosa y los
 ejemplos había que mantenerlos dos veces, y la prosa "de uso" (cuándo usarlo, límites) no
 pertenece a ninguna de las dos.
@@ -36,7 +36,7 @@ Docs y recipe **dejan de decir lo mismo**: la ficha ya no lleva `## Uso en HTML 
   `@api:metodos` (custom element) y `@api:props` / `@api:emits` / `@api:expose` (Vue). `## Slots`
   es **una sola sección** (el wrapper forwardea los slots del componente) y la inyecta el bloque
   del CE.
-- **`scripts/gen-api.mjs`** detecta la ficha unificada (no existe `docs/componentes/vue/<kebab>.md`)
+- **`scripts/gen-api.mjs`** detecta la ficha unificada (no existe `docs/versiones/5.1.1/componentes/vue/<kebab>.md`)
   e inyecta las tablas Vue en la ficha del CE.
 - **`scripts/check-docs.mjs`** tiene `UNIFIED_VUE` (hoy `new Set(["button"])`). Un componente
   unificado: no necesita ficha Vue, no puede tener página `vue/<kebab>`, y su ficha vanilla
@@ -54,7 +54,7 @@ Docs y recipe **dejan de decir lo mismo**: la ficha ya no lleva `## Uso en HTML 
 
 ## Qué se borró con el piloto
 
-- `docs/componentes/vue/button.md` y `docs/site/componentes/vue/button.md`.
+- `docs/versiones/5.1.1/componentes/vue/button.md` y `docs/versiones/5.1.1/paginas/componentes/vue/button.md`.
 - Los ejemplos Vue de Button (`ButtonVariantsExample.vue`, `ButtonStatesExample.vue`,
   `ButtonFormExample.vue`): la página única muestra el CE real, así que quedaban sin uso.
 

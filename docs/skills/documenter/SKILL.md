@@ -15,8 +15,8 @@ Siempre hay **2 fichas** (vanilla y Vue) y **1 receta**:
 
 | Página (lado) | Scope | Archivo | Documenta |
 |---|---|---|---|
-| **vanilla** | ficha vanilla | `docs/componentes/<tag>.md` | la API del **custom element**: atributos, eventos, slots, métodos |
-| **Vue** | ficha Vue | `docs/componentes/vue/<kebab>.md` | la API del **componente Vue**: props, emits, slots, expose |
+| **vanilla** | ficha vanilla | `docs/versiones/5.1.1/componentes/<tag>.md` | la API del **custom element**: atributos, eventos, slots, métodos |
+| **Vue** | ficha Vue | `docs/versiones/5.1.1/componentes/vue/<kebab>.md` | la API del **componente Vue**: props, emits, slots, expose |
 | — (no está en el sitio) | receta de la skill | `skills/use-comegen/references/<kebab>.md` | **las dos APIs** juntas + receta de uso |
 
 - `<tag>` = tag del custom element (`cu-button`); `<kebab>` = nombre del componente Vue en kebab
@@ -35,7 +35,7 @@ Las 2 fichas **no repiten** lo que comparten: cada sección vive en un **partial
 **incluyen** (VitePress `<!--@include-->`, nativo; se expande antes de parsear, sin runtime).
 
 ```
-docs/partials/<kebab>/
+docs/versiones/5.1.1/partials/<kebab>/
   props.md          ← igual en vanilla y Vue → la incluyen las 2 fichas
   props-vue.md      ← divergió → sólo la ficha Vue
   props-vanilla.md  ← divergió → sólo la ficha vanilla
@@ -46,14 +46,14 @@ docs/partials/<kebab>/
   (`props-vue.md` + `props-vanilla.md`). Nunca se resuelve duplicando la ficha entera.
 - La **cabecera** (`## Props`, `## Atributos`, …) la escribe la **ficha**; el partial lleva **el
   cuerpo** (la tabla). Así una sección compartida sirve a las dos aunque el título cambie.
-- Los partials **no** van dentro de `docs/componentes/` ni `docs/componentes/vue/` (el gate los
+- Los partials **no** van dentro de `docs/versiones/5.1.1/componentes/` ni `docs/versiones/5.1.1/componentes/vue/` (el gate los
   tomaría por fichas).
 - El `@include` es **relativo al archivo que incluye**: la ruta cambia entre la ficha vanilla
   (`../../partials/…`) y la ficha Vue (`../../../partials/…`).
 
 ### Migrar un componente a partials
 
-1. `mkdir -p docs/partials/<kebab>`.
+1. `mkdir -p docs/versiones/5.1.1/partials/<kebab>`.
 2. `node scripts/gen-api.mjs --plan <kebab>` → lista los archivos **exactos** que va a usar:
    `<base>.md` si la sección es igual en las dos fichas, o `<base>-vanilla.md`/`<base>-vue.md` si
    difiere.
@@ -82,7 +82,7 @@ docs/partials/<kebab>/
    con valor de relleno + referencia) y la lista completa de límites.
 5. `node scripts/check-docs.mjs`, `node scripts/gen-api.mjs --check` y `pnpm build` en verde.
 
-Modelo completo: `docs/componentes/cu-button.md` + `docs/componentes/vue/button.md` +
+Modelo completo: `docs/versiones/5.1.1/componentes/cu-button.md` + `docs/versiones/5.1.1/componentes/vue/button.md` +
 `skills/use-comegen/references/button.md`.
 
 ## Regla dura: la API siempre está, y va al final
@@ -199,7 +199,7 @@ slot → **7 secciones**, porque `disabled`+`loading` comparten **Estados** y `t
 `to`), se documenta como **límite** (callout `>`), no como sección. La lista completa de límites vive
 en la receta (`## Qué puede y qué no puede`).
 
-Modelo real: `docs/componentes/cu-button.md` (Colores, Variantes, Tamaños, Estados, Navegación,
+Modelo real: `docs/versiones/5.1.1/componentes/cu-button.md` (Colores, Variantes, Tamaños, Estados, Navegación,
 Formulario, Contenido e iconos, Eventos).
 
 ## Paso 3 — Cómo usarlos
