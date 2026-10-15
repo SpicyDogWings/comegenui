@@ -58,8 +58,13 @@ El sitio se publica **estático, sin build en Vercel**: el `dist` ya trae todo (
 del `esm-shared`), así que se sube tal cual.
 
 ```bash
-pnpm deploy:docs   # = pnpm build && vercel --cwd docs/site/.vitepress/dist --prod
+pnpm deploy:docs            # sitio sólo latest (un solo build, base `/`)
+pnpm deploy:docs:versions   # salida agregada: `/` = alias de latest + `/<id>/` + `versions.json`
 ```
+
+Para publicar el sitio **con versiones** (el select del topbar), la que va es `deploy:docs:versions`
+(ver [nota 12](./12-versionado-docs.md)); `deploy:docs` sigue sirviendo para un deploy de una sola
+versión.
 
 - `docs/site/public/vercel.json` viaja al `dist` y activa `cleanUrls` (VitePress usa URLs sin
   `.html`; sin esto, Vercel da 404 en `/componentes/cu-x`).
