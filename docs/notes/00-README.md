@@ -17,6 +17,7 @@ Los archivos son notas internas — **no** se exponen a usuarios finales de la l
 | [07](./07-docs-vs-skill.md) | Docs y skill dejaron de ser lo mismo: fichas en `docs/componentes/`, receta en `.opencode/skills/use-comegen/`, y el zip pasa a llevar sólo la lib | Info | Ya aplicado (decisión registrada) |
 | [08](./08-contrato-scope-hash.md) | El contrato incluía el hash de scope `data-v-*`: toda edición de un SFC marcaba "ROTO" | Baja | **Resuelto** (2026-10-06): se filtra `data-v-*` y se regeneraron los baselines |
 | [09](./09-demos-vanilla.md) | Demos vanilla inline (marcadores `<!-- demo:id -->` + SFC del CE real) y deploy estático del sitio | Info | Receta vigente |
+| [12](./12-versionado-docs.md) | Versionado del sitio de documentación: snapshots congelados por versión (`docs/versions.json` + `scripts/docs-versions.mjs` + select en el topbar) | Info | Decisión registrada |
 
 > Las notas **05** (`cu-avatar` sin `src`, `cu-command-palette` sin `commands`) y **06**
 > (`cu-markdown` sin `parsed` ni `headingIds`) quedaron **resueltas**: se arreglaron los

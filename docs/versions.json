@@ -1,0 +1,12 @@
+{
+  "_comment": "Manifiesto de versiones de la documentación. Cada entrada se sirve bajo <base> = /<id>/. La única con `latest: true` sale del árbol de trabajo (HEAD); las demás, de un `ref` de git (idealmente un tag) construido en un worktree. Lo lee scripts/docs-versions.mjs — no lo lee el sitio. Al cortar una release, agregá su entrada acá.",
+  "rootAlias": true,
+  "versions": [
+    {
+      "id": "5.1.1",
+      "label": "5.1.1",
+      "ref": "HEAD",
+      "latest": true
+    }
+  ]
+}

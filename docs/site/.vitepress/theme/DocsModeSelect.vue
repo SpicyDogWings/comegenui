@@ -6,7 +6,7 @@
 // localStorage; de eso se encarga el script de `transformHead` (config.ts), que
 // redirige antes del primer paint si la preferencia no coincide con la página.
 import { computed, ref } from "vue";
-import { useData, useRouter } from "vitepress";
+import { useData, useRouter, withBase } from "vitepress";
 import Dropdown from "@/components/overlay/Dropdown.vue";
 import Button from "@/components/buttons/Button.vue";
 import LucideChevronDown from "@/components/icons/LucideChevronDown.vue";
@@ -83,7 +83,8 @@ const dropdownRef = ref<InstanceType<typeof Dropdown> | null>(null);
 function select(option: { mode: string; label: string; link: string }) {
   if (typeof localStorage !== "undefined") localStorage.setItem("cu-docs-mode", option.mode);
   dropdownRef.value?.close();
-  router.go(option.link);
+  // Los links del sidebar son base-less; `withBase` los mete en la versión actual.
+  router.go(withBase(option.link));
 }
 </script>
 
