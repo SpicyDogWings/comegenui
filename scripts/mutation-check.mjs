@@ -19,6 +19,12 @@ import { spawnSync } from "node:child_process";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
+// La doc es la fuente y está versionada: `docs/versiones/<id>/` (id = la `latest` del manifiesto).
+const DOC_ID = JSON.parse(readFileSync(resolve(ROOT, "docs/versions.json"), "utf-8")).versions.find(
+  (v) => v.latest,
+)?.id;
+const DOC = `docs/versiones/${DOC_ID}`;
+
 // Si nos matan a mitad de una mutación (SIGKILL no se puede atrapar y `spawnSync`
 // bloquea el event loop), dejamos el original acá para repararlo en la próxima corrida.
 const PENDING = resolve(ROOT, "node_modules/.cache/comegen-mutation-pending.json");
@@ -502,7 +508,7 @@ const MUTATIONS = [
   },
   {
     id: "ficha-api-default-mentiroso",
-    file: "docs/partials/alert/props-vue.md",
+    file: `${DOC}/partials/alert/props-vue.md`,
     test: "src/contracts/ficha-api.test.ts",
     expect:
       "el default documentado coincide con el del SFC (la ficha se lee siguiendo sus @include)",

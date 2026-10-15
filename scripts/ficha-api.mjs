@@ -22,7 +22,12 @@ import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 export const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const FICHA_DIR = resolve(ROOT, "docs/componentes/vue");
+
+// La doc es la fuente y está versionada: `docs/versiones/<id>/` (id = la `latest` del manifiesto).
+const DOC_ID = JSON.parse(readFileSync(resolve(ROOT, "docs/versions.json"), "utf-8")).versions.find(
+  (v) => v.latest,
+)?.id;
+const FICHA_DIR = resolve(ROOT, "docs/versiones", DOC_ID, "componentes/vue");
 
 /** Tope de recursión de `@include` (un partial que se incluya a sí mismo no cuelga la lectura). */
 const MAX_INCLUDE_DEPTH = 10;
