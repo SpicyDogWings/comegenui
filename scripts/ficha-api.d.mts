@@ -20,5 +20,6 @@ export interface FichaSpec {
 }
 
 export declare const ROOT: string;
+export declare function expandIncludes(file: string, depth?: number): string;
 export declare function fichaSpec(kebab: string): FichaSpec | null;
 export declare function fichaProse(kebab: string): string;

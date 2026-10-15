@@ -481,6 +481,15 @@ const MUTATIONS = [
     find: `if (base) accents[key] = readable(base, code.bg)`,
     replace: `if (base) accents[key] = base`,
   },
+  {
+    id: "ficha-api-default-mentiroso",
+    file: "docs/partials/alert/props-vue.md",
+    test: "src/contracts/ficha-api.test.ts",
+    expect:
+      "el default documentado coincide con el del SFC (la ficha se lee siguiendo sus @include)",
+    find: `| \`variant\` | \`"solid" \\| "outlined" \\| "soft" \\| "ghost" \\| "subtle"\` | \`"soft"\` | — |`,
+    replace: `| \`variant\` | \`"solid" \\| "outlined" \\| "soft" \\| "ghost" \\| "subtle"\` | \`"solid"\` | — |`,
+  },
 ];
 
 export { MUTATIONS };
