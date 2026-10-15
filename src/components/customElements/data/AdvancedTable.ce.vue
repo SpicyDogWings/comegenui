@@ -111,7 +111,7 @@ interface Column {
 }
 
 const props = defineProps({
-  /** Definición de columnas (ver [Interfaz de columna](#interfaz-de-columna)). Se asigna como propiedad JS */
+  /** Definición de columnas (ver «Interfaz de columna»). Se asigna como propiedad JS */
   columns: {
     type: Array as () => Column[],
     required: false,
@@ -181,9 +181,9 @@ const props = defineProps({
   actions: { type: Array, required: false, default: () => [] },
   /** Texto del header de la columna de acciones. Default vacío. Atributo HTML: `actions-label` */
   actionsLabel: { type: String, required: false, default: "" },
-  /** Deshabilita filas (ver [Deshabilitar filas, columnas y celdas](#deshabilitar-filas-columnas-y-celdas)). Se asigna como propiedad JS */
+  /** Deshabilita filas (ver «Deshabilitar filas, columnas y celdas»). Se asigna como propiedad JS */
   rowDisabled: { type: [Boolean, Function] as PropType<boolean | ((row: Record<string, any>) => boolean)>, required: false, default: false },
-  /** Filas de footer (ver [Footer (API programática)](#footer-api-programática)). Se asigna como propiedad JS */
+  /** Filas de footer (ver «Footer (API programática)»). Se asigna como propiedad JS */
   footer: { type: Array as () => FooterRow[], required: false, default: () => [] },
   /** Alto máximo del área scrolleable (CSS, ej. `40rem`). Atributo HTML: `table-max-height` */
   tableMaxHeight: { type: String, required: false, default: "" },

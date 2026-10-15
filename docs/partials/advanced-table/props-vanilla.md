@@ -1,7 +1,7 @@
 <!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
-| `columns` | `Column[]` | `[]` | Definición de columnas (ver [Interfaz de columna](#interfaz-de-columna)). Se asigna como propiedad JS |
+| `columns` | `Column[]` | `[]` | Definición de columnas (ver «Interfaz de columna»). Se asigna como propiedad JS |
 | `data` | `Record<string, any>[]` | `[]` | Filas de la tabla. Se asigna como propiedad JS |
 | `empty` | `string` | `""` | Texto a mostrar cuando no hay datos. Si se omite, usa `"No hay datos que mostrar"` |
 | `pagination` | `boolean` | `false` | Habilita paginación interna |
@@ -18,8 +18,8 @@
 | `loading` | `boolean` | `false` | Muestra una barra de carga animada en el tope |
 | `actions` | `unknown[]` | `[]` | Acciones de fila (botón "..." al final de cada fila). Se asigna como propiedad JS |
 | `actions-label` | `string` | `""` | Texto del header de la columna de acciones. Default vacío. Atributo HTML: `actions-label` |
-| `row-disabled` | `boolean \| ((row: Record<string, any>) => boolean)` | `false` | Deshabilita filas (ver [Deshabilitar filas, columnas y celdas](#deshabilitar-filas-columnas-y-celdas)). Se asigna como propiedad JS |
-| `footer` | `FooterRow[]` | `[]` | Filas de footer (ver [Footer (API programática)](#footer-api-programática)). Se asigna como propiedad JS |
+| `row-disabled` | `boolean \| ((row: Record<string, any>) => boolean)` | `false` | Deshabilita filas (ver «Deshabilitar filas, columnas y celdas»). Se asigna como propiedad JS |
+| `footer` | `FooterRow[]` | `[]` | Filas de footer (ver «Footer (API programática)»). Se asigna como propiedad JS |
 | `table-max-height` | `string` | `""` | Alto máximo del área scrolleable (CSS, ej. `40rem`). Atributo HTML: `table-max-height` |
 | `inline-editing` | `boolean` | `false` | Editor visible siempre en las celdas editables, sin el lápiz (atributo HTML: `inline-editing`) |
 | `compact` | `boolean` | `false` | Filas más compactas |

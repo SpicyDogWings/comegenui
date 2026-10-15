@@ -55,7 +55,7 @@ const props = defineProps({
   locale: { type: String, default: 'es' },
   /** Primer día de la semana (`0` domingo, `1` lunes) */
   weekStart: { type: Number, default: 1 },
-  /** Formato de la fecha en el trigger (ver [Formato](#formato)) */
+  /** Formato de la fecha en el trigger (ver «Formato») */
   format: { type: String, default: 'dd/MM/yyyy' },
   /** Formato del **valor**: si se setea, además de los eventos con `Date` emite `update:formattedValue`/`update:formattedStartDate`/`update:formattedEndDate` y `change-formatted`/`select-formatted` con el valor como string (mismos tokens que `format`). Vacío = deshabilitado */
   valueFormat: { type: String, default: '' },
