@@ -20,9 +20,14 @@ usá `cu-calendar`.
    (elección explícita); `open`/`close` avisan del panel.
 5. `min`/`max`, `disabled-weekdays` y `disabled-dates` restringen días; `events` marca días con
    puntos y se asigna como **propiedad JS**.
-6. `format` controla el texto del trigger con los tokens `dd`, `MM`, `MMM`, `MMMM`, `yy`, `yyyy`.
+6. `format` controla el **texto del trigger** (tokens `dd`, `MM`, `MMM`, `MMMM`, `yy`, `yyyy`);
+   **no** cambia el valor: los eventos devuelven `Date`. Para el **valor como string**, seteá
+   `value-format` (mismos tokens) → el picker emite `update:formattedValue` /
+   `change-formatted` / `select-formatted` (y `update:formattedStartDate`/`update:formattedEndDate`
+   en range).
 7. Programático: `open()`, `close()`, `toggle()`, `getValue()`, `setValue()`, `getStartDate()`,
-   `getEndDate()`, `setRange()`, `clear()` e `isOpen()`.
+   `getEndDate()`, `setRange()`, `clear()`, `getFormattedValue()`, `getFormattedStartDate()`,
+   `getFormattedEndDate()` e `isOpen()`.
 
 ```html
 <!-- HTML plano (UMD) -->
@@ -65,8 +70,9 @@ const endDate = ref<string | Date | null>(null);
 
 **Puede:** modo `single`/`range`, calendario dual (2 meses), `min`/`max`, días de la semana y
 fechas puntuales deshabilitadas, eventos con punto, `grid`/`border`, `locale` y `week-start`,
-formatos de fecha (`format`) y de mes/año (`month-format`/`year-format`), navegación de año,
-`position`/`align`/`fixed`, botones "Hoy"/"Limpiar", `color`/`variant` y 10 métodos.
+formatos de fecha (`format`) y de mes/año (`month-format`/`year-format`), **valor formateado
+(`value-format`)**, navegación de año, `position`/`align`/`fixed`, botones "Hoy"/"Limpiar",
+`color`/`variant` y 13 métodos.
 
 **No puede:**
 
@@ -86,6 +92,8 @@ formatos de fecha (`format`) y de mes/año (`month-format`/`year-format`), naveg
   ("Hoy"/"Limpiar").
 - **No hay selector de mes/año desplegable** más allá de `year-navigation`.
 - **`format` sólo entiende sus tokens:** un patrón raro no se interpreta como esperás.
+- **`format` no cambia el valor:** es sólo el texto del trigger; los eventos devuelven `Date`.
+  Para el valor como string usá `value-format` (y `getFormattedValue()`).
 - **El CE posiciona con `position`/`align`** (en el CE, `position` acepta `bottom`, `top`,
   `left`, `right`).
 
@@ -121,6 +129,7 @@ formatos de fecha (`format`) y de mes/año (`month-format`/`year-format`), naveg
 | `start-date` | `string \| number \| Date \| null` | `null` | Inicio del rango. Solo con calendario de rango (`mode="range"` o `dual-calendar`); en `single` se ignora. En HTML: `start-date="2026-08-01"` |
 | `end-date` | `string \| number \| Date \| null` | `null` | Fin del rango. Solo con calendario de rango (`mode="range"` o `dual-calendar`); en `single` se ignora. En HTML: `end-date="2026-08-31"` |
 | `format` | `string` | `'dd/MM/yyyy'` | Formato de la fecha en el trigger (ver [Formato](#formato)) |
+| `value-format` | `string` | `''` | Formato del **valor**: si se setea, además de los eventos con `Date` emite `update:formattedValue`/`update:formattedStartDate`/`update:formattedEndDate` y `change-formatted`/`select-formatted` con el valor como string (mismos tokens que `format`). Vacío = deshabilitado |
 | `dual-calendar` | `boolean` | `false` | Activa el rango a dos meses (dual). **Implica `range`**: aunque `mode` sea `single`, el picker selecciona un rango |
 | `clearable` | `boolean` | `true` | Muestra el botón "Limpiar" en el footer del panel |
 | `today-button` | `boolean` | `undefined` | Muestra el botón "Hoy" en el footer del panel (default: `true` en `single`, `false` en `range`) |
@@ -138,6 +147,11 @@ formatos de fecha (`format`) y de mes/año (`month-format`/`year-format`), naveg
 | `update:modelValue` | `Date \| null` | — |
 | `update:startDate` | `Date \| null` | — |
 | `update:endDate` | `Date \| null` | — |
+| `change-formatted` | `string \| { start: string \| null; end: string \| null; } \| null` | — |
+| `select-formatted` | `string \| { start: string \| null; end: string \| null; }` | — |
+| `update:formattedValue` | `string \| null` | — |
+| `update:formattedStartDate` | `string \| null` | — |
+| `update:formattedEndDate` | `string \| null` | — |
 <!-- /@api:eventos -->
 
 ### Slots
@@ -158,6 +172,9 @@ Ninguno.
 | `setValue` | Selecciona una fecha (string/number/Date) (modo `single`) |
 | `getStartDate` | Devuelve la fecha de inicio (modo `range`) |
 | `getEndDate` | Devuelve la fecha de fin (modo `range`) |
+| `getFormattedValue` | Devuelve la fecha seleccionada formateada con `value-format` (modo `single`) |
+| `getFormattedStartDate` | Devuelve el inicio del rango formateado con `value-format` (modo `range`) |
+| `getFormattedEndDate` | Devuelve el fin del rango formateado con `value-format` (modo `range`) |
 | `setRange` | Setea el rango (string/number/Date) (modo `range`) |
 | `clear` | Limpia la selección (emite `null`) |
 | `isOpen` | Indica si el panel está abierto. |
@@ -195,6 +212,7 @@ Ninguno.
 | `startDate` | `string \| number \| Date \| null` | `null` | Inicio del rango. Solo con calendario de rango (`mode="range"` o `dualCalendar`); en `single` se ignora |
 | `endDate` | `string \| number \| Date \| null` | `null` | Fin del rango. Solo con calendario de rango (`mode="range"` o `dualCalendar`); en `single` se ignora |
 | `format` | `string` | `'dd/MM/yyyy'` | — |
+| `valueFormat` | `string` | `''` | Formato del **valor**: si se setea, el picker emite además los eventos `update:formattedValue` / `update:formattedStartDate` / `update:formattedEndDate` y `change-formatted` / `select-formatted` con el valor como **string** en este formato (mismos tokens que `format`). Vacío = deshabilitado (comportamiento actual). |
 | `dualCalendar` | `boolean` | `false` | Activa el rango a dos meses (dual). **Implica `range`**: aunque `mode` sea `single`, el picker selecciona un rango |
 | `clearable` | `boolean` | `true` | — |
 | `todayButton` | `boolean` | `undefined` | — |
@@ -212,6 +230,11 @@ Ninguno.
 | `change` | `Date \| { start: Date \| null; end: Date \| null; } \| null` | — |
 | `update:startDate` | `Date \| null` | — |
 | `update:endDate` | `Date \| null` | — |
+| `update:formattedValue` | `string \| null` | — |
+| `update:formattedStartDate` | `string \| null` | — |
+| `update:formattedEndDate` | `string \| null` | — |
+| `change-formatted` | `string \| { start: string \| null; end: string \| null; } \| null` | — |
+| `select-formatted` | `string \| { start: string \| null; end: string \| null; }` | — |
 <!-- /@api:emits -->
 
 ### Slots
@@ -234,5 +257,8 @@ Ninguno.
 | `getStartDate` | Devuelve la fecha de inicio (solo con calendario de rango). |
 | `getEndDate` | Devuelve la fecha de fin (solo con calendario de rango). |
 | `setRange` | Setea el rango completo y emite los cambios (solo con calendario de rango). |
+| `getFormattedValue` | Devuelve la fecha seleccionada formateada con `value-format` (modo simple); `null` sin `value-format` o sin fecha. |
+| `getFormattedStartDate` | Devuelve el inicio del rango formateado con `value-format` (modo rango). |
+| `getFormattedEndDate` | Devuelve el fin del rango formateado con `value-format` (modo rango). |
 | `isOpen` | Indica si el panel está abierto. |
 <!-- /@api:expose -->

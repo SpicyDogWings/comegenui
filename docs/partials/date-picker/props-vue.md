@@ -26,6 +26,7 @@
 | `startDate` | `string \| number \| Date \| null` | `null` | Inicio del rango. Solo con calendario de rango (`mode="range"` o `dualCalendar`); en `single` se ignora |
 | `endDate` | `string \| number \| Date \| null` | `null` | Fin del rango. Solo con calendario de rango (`mode="range"` o `dualCalendar`); en `single` se ignora |
 | `format` | `string` | `'dd/MM/yyyy'` | — |
+| `valueFormat` | `string` | `''` | Formato del **valor**: si se setea, el picker emite además los eventos `update:formattedValue` / `update:formattedStartDate` / `update:formattedEndDate` y `change-formatted` / `select-formatted` con el valor como **string** en este formato (mismos tokens que `format`). Vacío = deshabilitado (comportamiento actual). |
 | `dualCalendar` | `boolean` | `false` | Activa el rango a dos meses (dual). **Implica `range`**: aunque `mode` sea `single`, el picker selecciona un rango |
 | `clearable` | `boolean` | `true` | — |
 | `todayButton` | `boolean` | `undefined` | — |

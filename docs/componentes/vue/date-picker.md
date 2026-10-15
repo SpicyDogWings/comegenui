@@ -183,6 +183,27 @@ const fechaEn = ref<Date | null>(null);
 </template>
 ```
 
+## Valor formateado (`value-format`)
+
+`format` es solo lo que se **muestra**. Con `value-format`, además de los eventos con `Date` el picker emite los `*-formatted` (`update:formattedValue`, `change-formatted`, `select-formatted`) y expone `getFormattedValue()`/`getFormattedStartDate()`/`getFormattedEndDate()`:
+
+```vue
+<script setup lang="ts">
+import DatePicker from "@/components/form/DatePicker.vue";
+import { ref } from "vue";
+
+const fecha = ref<string | null>(null);
+
+function onFormatted(value: unknown) {
+  fecha.value = typeof value === "string" ? value : null;
+}
+</script>
+
+<template>
+  <DatePicker value-format="dd-MM-yyyy" @change-formatted="onFormatted" />
+</template>
+```
+
 ## Eventos y grilla
 
 `events` pinta puntos bajo las fechas (array de `{ date, color? }`); `grid` dibuja las líneas

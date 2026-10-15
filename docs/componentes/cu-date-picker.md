@@ -170,6 +170,23 @@ default) y `year-navigation` muestra los botones de año.
 
 <!-- demo:date-picker-formato-y-locale -->
 
+## Valor formateado (`value-format`)
+
+`format` es solo lo que se **muestra**. Si además querés el **valor** como string (p. ej. para mandarlo a un backend), seteá `value-format` con los mismos tokens: el picker emite `update:formattedValue`, `change-formatted` y `select-formatted` con el string en ese formato, y los métodos `getFormattedValue()`/`getFormattedStartDate()`/`getFormattedEndDate()` lo devuelven. Los eventos con `Date` siguen igual.
+
+```html
+<cu-date-picker id="picker" value-format="dd-MM-yyyy"></cu-date-picker>
+
+<script>
+  const picker = document.getElementById('picker');
+  picker.addEventListener('change-formatted', (e) => {
+    console.log(e.detail); // "11-08-2026"
+  });
+</script>
+```
+
+<!-- demo:date-picker-value-format -->
+
 ## Eventos y grilla
 
 `events` pinta puntos bajo las fechas (se asigna como **propiedad JS**, array de

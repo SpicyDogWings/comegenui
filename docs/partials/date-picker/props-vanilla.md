@@ -26,6 +26,7 @@
 | `start-date` | `string \| number \| Date \| null` | `null` | Inicio del rango. Solo con calendario de rango (`mode="range"` o `dual-calendar`); en `single` se ignora. En HTML: `start-date="2026-08-01"` |
 | `end-date` | `string \| number \| Date \| null` | `null` | Fin del rango. Solo con calendario de rango (`mode="range"` o `dual-calendar`); en `single` se ignora. En HTML: `end-date="2026-08-31"` |
 | `format` | `string` | `'dd/MM/yyyy'` | Formato de la fecha en el trigger (ver [Formato](#formato)) |
+| `value-format` | `string` | `''` | Formato del **valor**: si se setea, además de los eventos con `Date` emite `update:formattedValue`/`update:formattedStartDate`/`update:formattedEndDate` y `change-formatted`/`select-formatted` con el valor como string (mismos tokens que `format`). Vacío = deshabilitado |
 | `dual-calendar` | `boolean` | `false` | Activa el rango a dos meses (dual). **Implica `range`**: aunque `mode` sea `single`, el picker selecciona un rango |
 | `clearable` | `boolean` | `true` | Muestra el botón "Limpiar" en el footer del panel |
 | `today-button` | `boolean` | `undefined` | Muestra el botón "Hoy" en el footer del panel (default: `true` en `single`, `false` en `range`) |
