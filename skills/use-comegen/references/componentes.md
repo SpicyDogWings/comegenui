@@ -226,7 +226,7 @@ filas, sin `search-enabled` no hay buscador):
    Afecta a: `items`, `options`, `columns`, `data`, `tabs`, `events`, `filters`, `actions`,
    `pageSizeOptions`, `rowDisabled`, `footer`, `commands`, `template`, `formats`, `sheet`,
    `searchFields`. **Única excepción**: `search-fields` de `<cu-table>` acepta JSON.
-2. **Atributos en kebab-case; booleanos sin valor**: `readOnly`→`readonly`,
+2. **Atributos en kebab-case; booleanos sin valor**: `readOnly`→`read-only`,
    `itemsPerPage`→`items-per-page`, `<cu-collapse default-open>`. Cuidado con los nombres que
    chocan con atributos nativos (`open`, `readonly`).
 3. **Eventos custom**: `addEventListener` (CE) o `@evento` (Vue); el payload está en `e.detail`.
