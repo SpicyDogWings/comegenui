@@ -38,3 +38,31 @@ ningún marcador `@api:` inline.
 | **Fichas vanilla** | 32 |
 | **Fichas Vue** | 51 |
 | **Dirs de partials** | 51 |
+
+## Lectores de la API
+
+La API ya no está en la ficha: vive en los partials. Cualquier consumidor que la lea tiene que
+componer la ficha primero.
+
+- **Contrato de runtime** (`src/contracts/ficha-api.test.ts`): `scripts/ficha-api.mjs` expande los
+  `<!--@include-->` de `docs/componentes/vue/<kebab>.md` (resolución relativa, igual que VitePress)
+  y recién ahí busca los marcadores. Un partial **compartido** conserva el nombre vanilla del
+  marcador, así que acepta los alias: `props`≡`atributos`, `emits`≡`eventos`, `expose`≡`metodos`.
+- **`gen-api --check`** valida las tablas contra el SFC; no lee las fichas.
+
+## Descripciones vacías (deuda visible)
+
+La columna «Descripción» sale del **JSDoc** del SFC, así que una prop/emit/slot/método sin JSDoc
+deja la celda en `—`. Es deuda de documentación, no un error:
+
+- `node scripts/gen-api.mjs --check` la reporta (`descripciones vacías: N (baseline M)`) y **avisa**
+  si algún componente supera su tope, sin hacer fallar el gate.
+- El tope vive en `scripts/docs-baseline.txt` (`<kebab>` + cantidad, más `total`), medido sobre la
+  **API Vue** (`props`/`emits`/`slots`/`expose`) de cada ficha. Hoy: **433 en 51 componentes**.
+- Cuando el número baja (se sumó JSDoc), conviene regenerarlo con `node scripts/gen-api.mjs --update`
+  (o `./scripts/guard.sh --update`) para dejar el tope ajustado.
+
+> El conteo es otro que el de la nota 10 (469 en 64 fichas): aquel medía las tablas de las **fichas**
+> —que duplicaban la API entre vanilla y Vue— y su chequeo vivía en el `check-docs` grande, que esta
+> migración reemplazó por el mínimo.
+

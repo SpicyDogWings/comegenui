@@ -5,8 +5,10 @@
 
 > **Estado: revertido (2026-10-15).** Button volvió a **dos fichas** (`cu-button.md` +
 > `vue/button.md`) y la API se comparte por **partials** (`docs/partials/button/`). El modelo
-> vigente es «siempre 2 fichas, compuestas por partials» — ver la skill `documenter`. Lo de abajo
-> queda como registro del piloto.
+> vigente es «siempre 2 fichas, compuestas por partials» — ver la skill `documenter` y la
+> **nota 11**. Lo de abajo queda como registro del piloto: el conteo de descripciones vacías que
+> menciona (469 en 64 fichas) ya no aplica — hoy lo mide `gen-api --check` sobre los partials,
+> con el tope en `scripts/docs-baseline.txt`.
 
 ## Decisión
 

@@ -16,7 +16,9 @@
  *   <!-- @api:expose -->      <!-- /@api:expose -->
  *
  *   node scripts/gen-api.mjs            # escribe
- *   node scripts/gen-api.mjs --check    # no escribe: falla si hay drift (gate)
+ *   node scripts/gen-api.mjs --check    # no escribe: falla si hay drift (gate) y avisa de las
+ *                                       # descripciones vacías contra scripts/docs-baseline.txt
+ *   node scripts/gen-api.mjs --update   # regenera ese baseline (tope: no puede empeorar)
  *   node scripts/gen-api.mjs button     # limita a los componentes que matcheen
  */
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
@@ -26,6 +28,7 @@ import { createChecker } from 'vue-component-meta'
 
 const ROOT = resolve(import.meta.dirname, '..')
 const CHECK = process.argv.includes('--check')
+const UPDATE = process.argv.includes('--update')
 const FILTER = process.argv.slice(2).filter((a) => !a.startsWith('--'))
 
 const checker = createChecker(resolve(ROOT, 'tsconfig.app.json'))
@@ -339,6 +342,7 @@ function skillBlocks(ce, vue) {
 
 const components = await collect()
 const drifted = new Set()
+const emptyCounts = new Map() // kebab → descripciones vacías de su API Vue
 let touched = 0
 
 /** Filtro por CLI: nombre exacto si matchea un componente; si no, substring. */
@@ -417,6 +421,83 @@ function ensureMarkers(file, blocks) {
   writeFileSync(resolve(ROOT, file), `${skeleton}\n`)
 }
 
+/* ── descripciones vacías (deuda de JSDoc, visible y acotada) ─────────────── */
+
+const BASELINE_FILE = 'scripts/docs-baseline.txt'
+
+/**
+ * Celdas de una fila `| a | b |`. Los `|` de un tipo llegan escapados (`\|`) y son contenido,
+ * no separador (mismo criterio que `scripts/ficha-api.mjs`).
+ */
+function splitCells(line) {
+  const inner = line.trim().replace(/^\||\|$/g, '')
+  const cells = []
+  let current = ''
+  for (let i = 0; i < inner.length; i++) {
+    const char = inner[i]
+    if (char === '\\' && inner[i + 1] === '|') { current += '|'; i++ }
+    else if (char === '|') { cells.push(current); current = '' }
+    else current += char
+  }
+  cells.push(current)
+  return cells.map((c) => c.trim())
+}
+
+/**
+ * Celdas `—` de la columna «Descripción» de una tabla generada: la descripción sale del JSDoc
+ * del SFC, así que una prop/emit/slot/método sin JSDoc deja la celda vacía (`—`).
+ */
+function emptyDescriptions(text) {
+  const lines = String(text ?? '')
+    .split('\n')
+    .map((l) => l.trim())
+    .filter((l) => l.startsWith('|') && !/^\|[\s\-:|]+\|$/.test(l))
+  if (lines.length < 2) return 0
+  const column = splitCells(lines[0]).indexOf('Descripción')
+  if (column === -1) return 0
+  return lines.slice(1).filter((l) => splitCells(l)[column] === '—').length
+}
+
+/** Descripciones vacías de la **API Vue** de un componente (props/emits/slots/expose). */
+const vueEmptyDescriptions = (vue) =>
+  ['props', 'emits', 'slots', 'expose'].reduce((n, key) => n + emptyDescriptions(vue[key]), 0)
+
+/** `nombre → celdas vacías`, tal como está en el baseline (vacío si todavía no existe). */
+function readBaseline() {
+  const counts = new Map()
+  const file = resolve(ROOT, BASELINE_FILE)
+  if (!existsSync(file)) return counts
+  for (const line of readFileSync(file, 'utf8').split('\n')) {
+    const m = /^([a-z0-9-]+)\t(\d+)$/.exec(line.trim())
+    if (m && m[1] !== 'total') counts.set(m[1], Number(m[2]))
+  }
+  return counts
+}
+
+/** Reescribe el baseline: el tope contra el que se compara la próxima corrida. */
+function writeBaseline(counts) {
+  const rows = [...counts].sort(([a], [b]) => a.localeCompare(b)).map(([name, n]) => `${name}\t${n}`)
+  const total = [...counts.values()].reduce((a, b) => a + b, 0)
+  writeFileSync(
+    resolve(ROOT, BASELINE_FILE),
+    [
+      '# scripts/docs-baseline.txt — descripciones vacías de la doc.',
+      '# Celdas «—» de la columna «Descripción» de la API Vue (props/emits/slots/expose) de cada',
+      '# ficha: el JSDoc del SFC es la fuente y todavía no está. Es deuda visible, no un error:',
+      '# `node scripts/gen-api.mjs --check` la reporta y avisa si sube por encima de este tope.',
+      '# Regenerar a propósito (después de documentar): node scripts/gen-api.mjs --update',
+      '# o ./scripts/guard.sh --update.',
+      '',
+      ...rows,
+      `total\t${total}`,
+      '',
+    ].join('\n'),
+  )
+  return total
+}
+
+/* ── fin descripciones vacías ─────────────────────────────────────────────── */
+
 if (process.argv.includes('--plan')) {
   // Se computan TODOS los componentes (en el mismo orden que la corrida completa) para que el
   // estado del checker —y por lo tanto la decisión shared/split— coincida con ella; sólo se
@@ -456,6 +537,7 @@ for (const [name, comp] of components) {
     console.warn(`gen-api: salteo ${name} — ${String(e.message).split('\n')[0]}`)
     continue
   }
+  emptyCounts.set(name, vueEmptyDescriptions(vue))
 
   const changes = new Set()
   if (existsSync(resolve(ROOT, `docs/partials/${name}`))) {
@@ -479,5 +561,28 @@ if (CHECK && touched) {
   for (const f of drifted) console.error(`  - ${f}`)
   console.error('Corré `node scripts/gen-api.mjs` y commiteá el resultado.')
   process.exit(1)
+}
+
+// El conteo sólo es comparable con el baseline si se procesaron todos los componentes.
+if (FILTER.length === 0) {
+  const total = [...emptyCounts.values()].reduce((a, b) => a + b, 0)
+  if (UPDATE) {
+    writeBaseline(emptyCounts)
+    console.log(`gen-api: baseline actualizado — ${total} descripción(es) vacía(s) en ${emptyCounts.size} componente(s) (${BASELINE_FILE})`)
+  } else {
+    const baseline = readBaseline()
+    const base = [...baseline.values()].reduce((a, b) => a + b, 0)
+    const worse = [...emptyCounts].filter(([name, n]) => n > (baseline.get(name) ?? 0))
+    if (!baseline.size) {
+      console.warn(`gen-api: sin baseline de descripciones vacías (${BASELINE_FILE}) — generá uno con --update.`)
+    } else if (worse.length) {
+      console.warn(`⚠ gen-api: ${worse.length} componente(s) con más descripciones vacías que el baseline:`)
+      for (const [name, n] of worse.slice(0, 12)) {
+        console.warn(`  - ${name}: ${n} (baseline ${baseline.get(name) ?? 0})`)
+      }
+      console.warn('  Sumá el JSDoc que falta en el SFC, o corré `node scripts/gen-api.mjs --update` si fue a propósito.')
+    }
+    console.log(`gen-api: descripciones vacías: ${total} (baseline ${base})`)
+  }
 }
 console.log(`gen-api: ${touched ? `${touched} archivo(s) ${CHECK ? 'desactualizados' : 'actualizados'}` : 'todo al día'} (${components.size} componentes)`)
