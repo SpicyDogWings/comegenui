@@ -1,0 +1,14 @@
+<script setup lang="ts">
+// Refleja el ejemplo "Ícono": `icon` acepta un string SVG/HTML que se inyecta
+// antes del label, dentro del trigger.
+const estrella =
+  '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.5 2.5 14 9l6.5.5-5 4.3 1.5 6.4-5.5-3.4L6 20.2l1.5-6.4-5-4.3L9 9z"/></svg>';
+</script>
+
+<template>
+  <VanillaDemo :use="['CuCollapse']">
+    <cu-collapse label="Con ícono" :icon="estrella" color="warning" default-open>
+      <p>El ícono se renderiza antes del label, dentro del trigger.</p>
+    </cu-collapse>
+  </VanillaDemo>
+</template>

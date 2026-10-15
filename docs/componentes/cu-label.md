@@ -1,12 +1,12 @@
-# `<cu-label>`
-
-Label con color semántico. Al hacer clic, enfoca el input hijo o, si se define `for`, el elemento con ese id. Útil para agrupar `<cu-input>`, `<cu-checkbox>`, etc. y ganar área clickeable.
-
 [← Volver](../README.md)
 
-## Uso en HTML plano
+# `<cu-label>`
 
-### Modo declarativo (prop `label`)
+Label con color semántico. Al hacer clic, enfoca el input hijo o, si se define `for`, el
+elemento con ese id. Útil para agrupar `<cu-input>`, `<cu-checkbox>`, etc. y ganar área
+clickeable.
+
+## Uso en HTML plano
 
 ```html
 <script src="dist-libs/umd-core/CuLabel.umd.js"></script>
@@ -18,16 +18,30 @@ Label con color semántico. Al hacer clic, enfoca el input hijo o, si se define 
 
 <!-- demo:label-declarativo -->
 
-### Con `for` apuntando a un input externo
+El texto va en el atributo `label` (modo declarativo) y el control, en el slot.
+
+## Colores
+
+`color` pinta el texto con el token del tema activo (`--cu-color-{color}`), así que el mismo
+nombre se ve distinto en cada tema.
 
 ```html
-<cu-label for="miInput" label="Nombre"></cu-label>
-<input id="miInput" type="text" />
+<cu-label label="primary" color="primary"></cu-label>
+<cu-label label="secondary" color="secondary"></cu-label>
+<cu-label label="neutral" color="neutral"></cu-label>
+<cu-label label="success" color="success"></cu-label>
+<cu-label label="warning" color="warning"></cu-label>
+<cu-label label="danger" color="danger"></cu-label>
 ```
 
-<!-- demo:label-for -->
+<!-- demo:label-colores -->
 
-### Con cualquier control como hijo
+> `hight-contrast` está declarado en el componente pero hoy **no cambia el render**: no tiene
+> sección propia (tampoco hace falta, porque el color ya se lee del tema activo).
+
+## Contenido (slot)
+
+El slot acepta cualquier control: al hacer clic en el label, el control hijo recibe el foco.
 
 ```html
 <cu-label label="Acepto los términos">
@@ -41,49 +55,31 @@ Label con color semántico. Al hacer clic, enfoca el input hijo o, si se define 
 
 <!-- demo:label-controles -->
 
-Al hacer clic en el label, el control hijo se enfoca automáticamente. Si pasás `for`, se enfoca el elemento con ese id en lugar del hijo.
+## Enfocar con `for`
 
----
-
-## Combinación con `<cu-input>`
+Con `for`, el foco va al elemento que tenga ese id, aunque esté fuera del label.
 
 ```html
-<cu-label label="Búsqueda">
-  <cu-input type="search" placeholder="Buscar..."></cu-input>
-</cu-label>
+<cu-label for="miInput" label="Nombre"></cu-label>
+<input id="miInput" type="text" />
 ```
 
-<!-- demo:label-con-input -->
-
----
+<!-- demo:label-for -->
 
 ## Atributos
 
-<!-- @api:atributos -->
-| Atributo | Tipo | Default | Descripción |
-| ------ | ------ | ------ | ------ |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico del texto; se resuelve vía el token `--cu-color-{color}` |
-| `label` | `string` | `""` | Texto del label (modo declarativo) |
-| `for` | `string` | `""` | ID del elemento a enfocar al hacer clic (atributo HTML `for`) |
-| `hight-contrast` | `boolean` | `false` | Modo de alto contraste para el texto |
-<!-- /@api:atributos -->
+<!--@include: ../partials/label/props-vanilla.md-->
 
 ## Eventos
 
-<!-- @api:eventos -->
-Ninguno.
-<!-- /@api:eventos -->
+<!--@include: ../partials/label/eventos-vanilla.md-->
+
+> El `click` del DOM burbujea al host desde el shadow DOM.
 
 ## Slots
 
-<!-- @api:slots -->
-| Slot | Descripción |
-| ------ | ------ |
-| `default` | — |
-<!-- /@api:slots -->
+<!--@include: ../partials/label/slots.md-->
 
 ## Métodos expuestos
 
-<!-- @api:metodos -->
-No expone métodos.
-<!-- /@api:metodos -->
+<!--@include: ../partials/label/metodos.md-->

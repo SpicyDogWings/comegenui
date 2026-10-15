@@ -1,8 +1,8 @@
+[← Volver](../README.md)
+
 # `<cu-file-input-zone>`
 
 Selector de archivos con zona de drag & drop amplia, soporte para carpetas (recursivo con control de profundidad), múltiples archivos y preview de lista.
-
-[← Volver](../README.md)
 
 ## Uso en HTML plano
 
@@ -33,11 +33,35 @@ Selector de archivos con zona de drag & drop amplia, soporte para carpetas (recu
 
 <!-- demo:file-input-zone-uso -->
 
----
+## Colores
 
-## Directorio recursivo
+`color` tiñe el borde, el texto y los íconos según el tema activo, con los 6 nombres semánticos.
 
-Con `directory` activo, se puede controlar la profundidad con `directory-deep`:
+```html
+<cu-file-input-zone color="primary" placeholder="primary"></cu-file-input-zone>
+<cu-file-input-zone color="secondary" placeholder="secondary"></cu-file-input-zone>
+<cu-file-input-zone color="neutral" placeholder="neutral"></cu-file-input-zone>
+<cu-file-input-zone color="success" placeholder="success"></cu-file-input-zone>
+<cu-file-input-zone color="warning" placeholder="warning"></cu-file-input-zone>
+<cu-file-input-zone color="danger" placeholder="danger"></cu-file-input-zone>
+```
+
+<!-- demo:file-input-zone-colores -->
+
+## Estados
+
+`disabled` y `read-only` cortan click, drag y drop; `disabled` además atenúa la zona y esconde el botón de quitar de cada archivo.
+
+```html
+<cu-file-input-zone disabled placeholder="Deshabilitado"></cu-file-input-zone>
+<cu-file-input-zone read-only placeholder="Solo lectura"></cu-file-input-zone>
+```
+
+<!-- demo:file-input-zone-estados -->
+
+## Múltiples archivos y carpetas
+
+`multiple` acepta varios archivos; `directory` activa el modo carpeta (e incluye `multiple` implícitamente) y `directory-deep` limita la recursión.
 
 | `directory-deep` | Archivos que entran |
 |-----------------|-------------------|
@@ -46,62 +70,84 @@ Con `directory` activo, se puede controlar la profundidad con `directory-deep`:
 | `5` | Hasta 5 subniveles |
 | `-1` | Sin límite (recursión completa) |
 
-El listado de archivos se renderiza con `<cu-file-list>` (componente interno) que muestra icono por extensión, nombre, tamaño y botón X para quitar archivos individuales. Al hacer click en un archivo se abre en una nueva pestaña.
+```html
+<cu-file-input-zone multiple accept=".txt,.pdf" placeholder="Varios archivos"></cu-file-input-zone>
+<cu-file-input-zone directory directory-deep="0" placeholder="Carpeta (sólo la raíz)"></cu-file-input-zone>
+<cu-file-input-zone directory directory-deep="1" placeholder="Carpeta hasta 1 subnivel"></cu-file-input-zone>
+<cu-file-input-zone directory directory-deep="-1" placeholder="Carpeta sin límite de profundidad"></cu-file-input-zone>
+```
 
----
+<!-- demo:file-input-zone-multiple-carpetas -->
 
-## Notas
+> Los archivos con `size === 0 && !type` (directorios sueltos) se filtran solos. El listado usa `<cu-file-list>` por dentro: icono por extensión, nombre, tamaño y botón X para quitar; al hacer click en un archivo se abre en una pestaña nueva.
 
-- `directory` activa automáticamente `multiple` internamente.
-- Los directorios (archivos con `size === 0 && !type`) se filtran automáticamente.
-- Con `max-height` activo, el listado tiene scroll vertical cuando excede esa altura.
+## Alto máximo
 
----
+Sin `max-height` el listado crece con los archivos; con `max-height` (ej. `"200px"`) scrollea al excederlo.
+
+```html
+<cu-file-input-zone multiple placeholder="Sin max-height"></cu-file-input-zone>
+<cu-file-input-zone multiple max-height="120px" placeholder="max-height: 120px"></cu-file-input-zone>
+```
+
+<!-- demo:file-input-zone-alto-maximo -->
+
+## Validación
+
+`accept` y `max-size` se anuncian en la zona y se aplican en el diálogo nativo y al soltar; cada archivo rechazado aparece listado en una `Alert` danger debajo.
+
+```html
+<cu-file-input-zone accept=".txt,.csv" placeholder="Sólo .txt y .csv"></cu-file-input-zone>
+<cu-file-input-zone multiple accept="image/*" max-size="2097152"
+  placeholder="Imágenes hasta 2 MB"></cu-file-input-zone>
+```
+
+<!-- demo:file-input-zone-validacion -->
+
+## Interacción
+
+`update:modelValue` avisa cada cambio (con un `File`, un `File[]` o `null`) y `get()`, `set()`, `reset()`, `focus()` y `trigger()` manejan la selección por código.
+
+```html
+<cu-file-input-zone id="miZona" multiple placeholder="Archivos por API"></cu-file-input-zone>
+
+<script>
+  const zona = document.getElementById('miZona');
+
+  zona.set([
+    new File(['uno'], 'a.txt', { type: 'text/plain' }),
+    new File(['dos'], 'b.txt', { type: 'text/plain' }),
+  ]);
+  console.log(zona.get());
+
+  zona.focus();     // enfoca la zona
+  zona.trigger();   // abre el selector nativo
+  zona.reset();     // limpia la selección
+
+  zona.addEventListener('update:modelValue', (e) => {
+    console.log('Archivos:', e.detail);
+  });
+</script>
+```
+
+<!-- demo:file-input-zone-metodos -->
 
 ## Atributos
 
-<!-- @api:atributos -->
-| Atributo | Tipo | Default | Descripción |
-| ------ | ------ | ------ | ------ |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `max-height` | `string` | `""` | Altura máxima del listado (ej: `"200px"`). Sin scroll si se omite. |
-| `disabled` | `boolean` | `—` | Deshabilita interacción |
-| `read-only` | `boolean` | `—` | Modo solo lectura |
-| `placeholder` | `string` | `"Selecciona un archivo o arrastra aquí"` | Texto cuando no hay archivos |
-| `model-value` | `File \| File[] \| null` | `null` | Archivo/s seleccionados |
-| `multiple` | `boolean` | `—` | Permite múltiples archivos |
-| `directory` | `boolean` | `—` | Activa modo carpeta (incluye `multiple` implícitamente) |
-| `directory-deep` | `number` | `0` | Niveles de recursión en carpetas: `0` = solo raíz, `1` = +1 subnivel, `-1` = sin límite |
-| `max-size` | `number` | `—` | Tamaño máximo en bytes |
-| `accept` | `string` | `—` | Tipos aceptados (ej: `"image/*"`) |
-<!-- /@api:atributos -->
+<!--@include: ../partials/file-input-zone/props-vanilla.md-->
 
-> **Atributos en HTML:** `readOnly` → `readonly`, `maxSize` → `max-size`, `directoryDeep` → `directory-deep`, `maxHeight` → `max-height`.
+> **Atributos en HTML:** van en kebab-case: `readOnly` → `read-only`, `maxSize` → `max-size`, `directoryDeep` → `directory-deep`, `maxHeight` → `max-height`.
 
 > **El Custom Element no expone prop `variant`.**
 
 ## Eventos
 
-<!-- @api:eventos -->
-| Evento | Payload (`e.detail`) | Descripción |
-| ------ | ------ | ------ |
-| `update:modelValue` | `File \| File[] \| null` | — |
-<!-- /@api:eventos -->
+<!--@include: ../partials/file-input-zone/eventos.md-->
 
 ## Slots
 
-<!-- @api:slots -->
-Ninguno.
-<!-- /@api:slots -->
+<!--@include: ../partials/file-input-zone/slots.md-->
 
 ## Métodos expuestos
 
-<!-- @api:metodos -->
-| Método | Descripción |
-| ------ | ------ |
-| `get` | Devuelve el/los archivo/s actual/es |
-| `set` | Asigna archivos programáticamente |
-| `reset` | Limpia la selección |
-| `focus` | Enfoca la zona |
-| `trigger` | Abre el diálogo nativo |
-<!-- /@api:metodos -->
+<!--@include: ../partials/file-input-zone/metodos-vanilla.md-->

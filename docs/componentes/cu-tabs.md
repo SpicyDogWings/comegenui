@@ -1,8 +1,10 @@
+[← Volver](../README.md)
+
 # `<cu-tabs>`
 
-Pestañas con variantes, iconos, tabs deshabilitadas individuales y control programático. Acepta `tabs` como array de objetos y `v-model`/`modelValue` para el tab activo.
-
-[← Volver](../README.md)
+Pestañas con variantes, tamaños, iconos, tabs deshabilitadas individuales y control programático.
+Las pestañas se definen con la propiedad `tabs` (array de objetos) y el tab activo viaja con
+`model-value`.
 
 ## Uso en HTML plano
 
@@ -29,28 +31,74 @@ Pestañas con variantes, iconos, tabs deshabilitadas individuales y control prog
 
 <!-- demo:tabs-uso -->
 
-> Las `tabs` se asignan después de `customElements.whenDefined('cu-tabs')` porque es una prop compleja.
+> `tabs` es una prop compleja: se asigna por JavaScript después de `customElements.whenDefined('cu-tabs')`, nunca como atributo.
 
----
+## Colores
+
+`color` es un nombre semántico, no un hex: tiñe el tab activo y, en `ghost`, la línea inferior.
+
+```html
+<cu-tabs class="mis-tabs" variant="solid" color="primary"></cu-tabs>
+<cu-tabs class="mis-tabs" variant="solid" color="secondary"></cu-tabs>
+<cu-tabs class="mis-tabs" variant="solid" color="neutral"></cu-tabs>
+<cu-tabs class="mis-tabs" variant="solid" color="success"></cu-tabs>
+<cu-tabs class="mis-tabs" variant="solid" color="warning"></cu-tabs>
+<cu-tabs class="mis-tabs" variant="solid" color="danger"></cu-tabs>
+
+<script>
+  customElements.whenDefined('cu-tabs').then(() => {
+    const tabs = [{ key: 'uno', label: 'Uno' }, { key: 'dos', label: 'Dos' }];
+    document.querySelectorAll('cu-tabs.mis-tabs').forEach((el) => { el.tabs = tabs; });
+  });
+</script>
+```
+
+<!-- demo:tabs-colores -->
 
 ## Variantes
 
+`variant` decide el aspecto: `ghost` (underline, **default**), `solid` (pills redondeadas),
+`boxed` (contenedor con borde) y `soft` (contenedor tenue con el activo sólido).
+
 ```html
-<cu-tabs variant="ghost"><!-- underline --></cu-tabs>
-<cu-tabs variant="solid"><!-- pills redondeadas --></cu-tabs>
-<cu-tabs variant="boxed"><!-- contenedor con borde --></cu-tabs>
-<cu-tabs variant="soft"><!-- contenedor soft + activo solid --></cu-tabs>
+<cu-tabs class="mis-variantes" variant="ghost" color="primary"></cu-tabs>
+<cu-tabs class="mis-variantes" variant="solid" color="primary"></cu-tabs>
+<cu-tabs class="mis-variantes" variant="boxed" color="primary"></cu-tabs>
+<cu-tabs class="mis-variantes" variant="soft" color="primary"></cu-tabs>
+
+<script>
+  customElements.whenDefined('cu-tabs').then(() => {
+    const tabs = [{ key: 'uno', label: 'Uno' }, { key: 'dos', label: 'Dos' }];
+    document.querySelectorAll('cu-tabs.mis-variantes').forEach((el) => { el.tabs = tabs; });
+  });
+</script>
 ```
 
 <!-- demo:tabs-variantes -->
 
-> El array `tabs` se asigna vía JavaScript (ver [Uso en HTML plano](#uso-en-html-plano)).
+## Tamaños
 
----
+`size` acepta `sm`, `md` (**default**) y `lg`, y cambia el padding y la tipografía del tab.
+
+```html
+<cu-tabs class="mis-tamanos" size="sm" variant="solid" color="primary"></cu-tabs>
+<cu-tabs class="mis-tamanos" size="md" variant="solid" color="primary"></cu-tabs>
+<cu-tabs class="mis-tamanos" size="lg" variant="solid" color="primary"></cu-tabs>
+
+<script>
+  customElements.whenDefined('cu-tabs').then(() => {
+    const tabs = [{ key: 'uno', label: 'Uno' }, { key: 'dos', label: 'Dos' }];
+    document.querySelectorAll('cu-tabs.mis-tamanos').forEach((el) => { el.tabs = tabs; });
+  });
+</script>
+```
+
+<!-- demo:tabs-tamanos -->
 
 ## Iconos
 
-Cada tab puede llevar un icono con el slot `tab-icon-{key}`. El SVG debe usar `currentColor` para heredar el color del tab:
+Cada tab lleva un ícono por el campo `icon` (string HTML/SVG) o por el slot `tab-icon-{key}`; el SVG
+debe usar `currentColor` para heredar el color del tab.
 
 ```html
 <cu-tabs id="iconos" variant="solid" color="primary">
@@ -60,12 +108,18 @@ Cada tab puede llevar un icono con el slot `tab-icon-{key}`. El SVG debe usar `c
     <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
   </svg>
   <div slot="home">Contenido Home</div>
+  <div slot="config">Contenido Config</div>
 </cu-tabs>
 
 <script>
   customElements.whenDefined('cu-tabs').then(() => {
     document.getElementById('iconos').tabs = [
-      { key: 'home', label: 'Home' },
+      { key: 'home', label: 'Home' },                                 // ícono por slot `tab-icon-{key}`
+      {
+        key: 'config',
+        label: 'Config',
+        icon: '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>',  // ícono por campo `icon`
+      },
     ];
   });
 </script>
@@ -73,9 +127,59 @@ Cada tab puede llevar un icono con el slot `tab-icon-{key}`. El SVG debe usar `c
 
 <!-- demo:tabs-iconos -->
 
----
+## Deshabilitado
 
-## Escuchar cambios y control programático
+`disabled` bloquea el grupo completo; `tabs[].disabled` bloquea una pestaña individual (se saltea en
+la navegación por teclado y en `setActive`).
+
+```html
+<cu-tabs id="parcial" variant="ghost" color="primary"></cu-tabs>
+<cu-tabs id="total" variant="soft" color="primary" disabled></cu-tabs>
+
+<script>
+  customElements.whenDefined('cu-tabs').then(() => {
+    document.getElementById('parcial').tabs = [
+      { key: 'a', label: 'Habilitada' },
+      { key: 'b', label: 'Deshabilitada', disabled: true },
+      { key: 'c', label: 'Habilitada' },
+    ];
+    document.getElementById('total').tabs = [
+      { key: 'a', label: 'Una' },
+      { key: 'b', label: 'Otra' },
+    ];
+  });
+</script>
+```
+
+<!-- demo:tabs-deshabilitado -->
+
+## Paneles persistentes
+
+Con `keepAlive: true` en un tab, su panel queda montado (`v-show` en vez de `v-if`) y conserva el
+estado de los componentes internos al cambiar de pestaña.
+
+```html
+<cu-tabs id="persistentes" variant="solid" color="primary">
+  <div slot="form"><input placeholder="Escribí algo y cambiá de tab" /></div>
+  <div slot="otro">Volvé: el formulario sigue como lo dejaste.</div>
+</cu-tabs>
+
+<script>
+  customElements.whenDefined('cu-tabs').then(() => {
+    document.getElementById('persistentes').tabs = [
+      { key: 'form', label: 'Formulario', keepAlive: true },
+      { key: 'otro', label: 'Otro' },
+    ];
+  });
+</script>
+```
+
+<!-- demo:tabs-keep-alive -->
+
+## Cambios y control programático
+
+`model-value` refleja el tab activo, el evento `change` avisa cada cambio y los métodos `setActive`,
+`getActive`, `next` y `prev` controlan las pestañas desde JavaScript.
 
 ```html
 <cu-tabs id="ctrl" variant="ghost" color="neutral">
@@ -106,34 +210,15 @@ Cada tab puede llevar un icono con el slot `tab-icon-{key}`. El SVG debe usar `c
 
 <!-- demo:tabs-control-programatico -->
 
----
-
 ## Accesibilidad y navegación
 
 - Roles ARIA: `tablist`, `tab`, `tabpanel`, con `aria-selected`, `aria-controls` y `aria-labelledby`.
-- Navegación con teclado: flechas ←/→ para cambiar de tab, `Home` y `End` para ir al primero/último.
+- Teclado: las flechas ←/→ cambian de tab; `Home` y `End` van al primero/último.
 - Las tabs deshabilitadas se saltean en la navegación y en `setActive`.
-
----
-
-## Ejemplo completo (playground vanilla)
-
-El repositorio incluye una demo en HTML plano: [`playground/pages/tabs/tabs.html`](../../playground/pages/tabs/tabs.html) — abrí el archivo directamente en el navegador (sin server).
-
----
 
 ## Atributos
 
-<!-- @api:atributos -->
-| Atributo | Tipo | Default | Descripción |
-| ------ | ------ | ------ | ------ |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"primary"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `"solid" \| "soft" \| "ghost" \| "boxed"` | `"ghost"` | `ghost`, `solid`, `boxed`, `soft` |
-| `size` | `"sm" \| "md" \| "lg"` | `"md"` | `sm`, `md`, `lg` |
-| `disabled` | `boolean` | `—` | Deshabilita todas las pestañas |
-| `model-value` | `string` | `""` | Key del tab activo (controlado) |
-| `tabs` | `{ key: string; label: string; icon?: string \| undefined; disabled?: boolean \| undefined; keepAlive?: boolean \| undefined; }[]` | `[]` | Definición de las pestañas |
-<!-- /@api:atributos -->
+<!--@include: ../partials/tabs/props-vanilla.md-->
 
 ### Prop `tabs`
 
@@ -143,34 +228,22 @@ Cada item es un objeto con:
 |-------|------|-----------|-------------|
 | `key` | `string` | ✓ | Identificador único (se usa para el tab activo y los slots) |
 | `label` | `string` | ✓ | Texto visible del tab |
+| `icon` | `string` | — | SVG/HTML del ícono (alternativa al slot `tab-icon-{key}`) |
 | `disabled` | `boolean` | — | Deshabilita solo esa pestaña |
+| `keepAlive` | `boolean` | — | Mantiene el panel montado al cambiar de tab |
 
 > Los arrays/objetos se asignan **via JavaScript como propiedad DOM**, no como atributo HTML (ver [Componentes](../README.md)).
 
 ## Eventos
 
-<!-- @api:eventos -->
-| Evento | Payload (`e.detail`) | Descripción |
-| ------ | ------ | ------ |
-| `update:modelValue` | `string` | — |
-| `change` | — | — |
-<!-- /@api:eventos -->
+<!--@include: ../partials/tabs/eventos.md-->
 
 ## Slots
 
-<!-- @api:slots -->
-Ninguno.
-<!-- /@api:slots -->
+<!--@include: ../partials/tabs/slots.md-->
 
 En HTML plano se usan con el atributo `slot="..."` sobre el elemento hijo.
 
 ## Métodos expuestos
 
-<!-- @api:metodos -->
-| Método | Descripción |
-| ------ | ------ |
-| `getActive` | Devuelve la key del tab activo |
-| `setActive` | Activa el tab con esa key |
-| `next` | Activa el próximo tab habilitado |
-| `prev` | Activa el tab anterior habilitado |
-<!-- /@api:metodos -->
+<!--@include: ../partials/tabs/metodos-vanilla.md-->

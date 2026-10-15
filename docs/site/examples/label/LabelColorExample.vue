@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import Label from "@/components/form/Label.vue";
+
+const colors = ["primary", "secondary", "neutral", "success", "warning", "danger"] as const;
 </script>
 
 <template>
-  <Label label="primary" color="primary" />
-  <Label label="success" color="success" />
-  <Label label="warning" color="warning" />
-  <Label label="danger" color="danger" />
-  <Label label="hightContrast (alta prioridad de texto)" color="neutral" :hight-contrast="true" />
+  <Label v-for="color in colors" :key="color" :label="color" :color="color" />
+  <!-- `hightContrast` está declarado en el componente, pero hoy no se aplica al render. -->
+  <Label label="hightContrast (declarado, sin efecto)" color="neutral" :hight-contrast="true" />
 </template>

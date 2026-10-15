@@ -12,16 +12,22 @@ const items = [
   },
   { label: "Ajustes", path: "#ajustes" },
 ];
+
+const modes = ["auto", "side", "fullscreen"] as const;
+const positions = ["left", "right", "top", "bottom"] as const;
 </script>
 
 <template>
-  <!-- responsive: muestra un botón hamburguesa que abre la nav en un SideOver.
-       responsiveMode: auto | side | fullscreen. sideOverPosition: left/right/top/bottom. -->
+  <!-- responsiveMode: auto (default) | side | fullscreen -->
+  <Navbar v-for="mode in modes" :key="mode" :items="items" responsive :responsive-mode="mode" />
+
+  <!-- sideOverPosition: left (default) | right | top | bottom (con responsiveMode="side") -->
   <Navbar
+    v-for="position in positions"
+    :key="position"
     :items="items"
     responsive
     responsive-mode="side"
-    side-over-position="right"
-    search
+    :side-over-position="position"
   />
 </template>

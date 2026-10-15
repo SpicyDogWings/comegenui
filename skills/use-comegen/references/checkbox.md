@@ -122,6 +122,7 @@ Ninguno.
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
 | `update:modelValue` | `boolean` | — |
+| `change` | — | — |
 <!-- /@api:emits -->
 
 ### Slots

@@ -82,3 +82,4 @@ graphify-out
 .opencode/
 .vscode/
 /notes/
+/dist-lib

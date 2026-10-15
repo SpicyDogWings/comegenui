@@ -1,8 +1,8 @@
+[← Volver](../README.md)
+
 # `<cu-table>`
 
 Tabla avanzada con búsqueda, paginación, edición inline, ordenamiento, badges y botones por celda. Pensada para reemplazar tablas HTML estáticas en apps con UMD.
-
-[← Volver](../README.md)
 
 ## Interfaz de columna
 
@@ -117,7 +117,7 @@ Como `columns` se pasa sin filtrar al `AdvancedTable.vue` interno, podés usar e
 
 ---
 
-## Uso básico
+## Uso en HTML plano
 
 ```html
 <script src="dist-libs/umd-core/CuTable.umd.js"></script>
@@ -150,6 +150,75 @@ Como `columns` se pasa sin filtrar al `AdvancedTable.vue` interno, podés usar e
 
 ---
 
+## Colores
+
+`color` es un nombre semántico (`primary`, `secondary`, `neutral`, `success`, `warning`, `danger`) que tiñe header, bordes y resaltados.
+
+```html
+<cu-table id="t1" color="primary" variant="soft"></cu-table>
+<cu-table id="t2" color="secondary" variant="soft"></cu-table>
+<cu-table id="t3" color="neutral" variant="soft"></cu-table>
+<cu-table id="t4" color="success" variant="soft"></cu-table>
+<cu-table id="t5" color="warning" variant="soft"></cu-table>
+<cu-table id="t6" color="danger" variant="soft"></cu-table>
+```
+
+<!-- demo:table-colores -->
+
+---
+
+## Variantes
+
+`variant` decide el aspecto: `solid` (relleno), `outlined` (borde), `soft` (**default**; fondo tenue), `ghost` (transparente) y `subtle` (tenue con borde).
+
+```html
+<cu-table id="v1" color="primary" variant="solid"></cu-table>
+<cu-table id="v2" color="primary" variant="outlined"></cu-table>
+<cu-table id="v3" color="primary" variant="soft"></cu-table>
+<cu-table id="v4" color="primary" variant="ghost"></cu-table>
+<cu-table id="v5" color="primary" variant="subtle"></cu-table>
+```
+
+<!-- demo:table-variantes -->
+
+---
+
+## Paginación
+
+`pagination` habilita el paginador interno, `items-per-page` (default `10`) fija el tamaño de página, `show-page-size` agrega el selector y `page-size-options` (prop JS, default `[5, 10, 20, 50]`) sus opciones.
+
+```html
+<cu-table id="tPag" pagination items-per-page="5" show-page-size></cu-table>
+
+<script>
+  const t = document.getElementById('tPag');
+  t.columns = [
+    { key: 'nombre', label: 'Nombre', sortable: 'string' },
+    { key: 'email', label: 'Correo' },
+    { key: 'rol', label: 'Rol' },
+  ];
+  t.data = [/* ... */];
+  t.pageSizeOptions = [5, 10, 20];
+</script>
+```
+
+<!-- demo:table-paginacion -->
+
+---
+
+## Compacta y alto máximo
+
+`compact` reduce el padding de las celdas. `table-max-height` limita el alto del área scrolleable, que es donde el header sticky se pega.
+
+```html
+<cu-table id="tc" compact></cu-table>
+<cu-table id="tm" table-max-height="220px"></cu-table>
+```
+
+<!-- demo:table-compacta -->
+
+---
+
 ## Búsqueda
 
 ### Comportamiento general
@@ -176,6 +245,7 @@ Como `columns` se pasa sin filtrar al `AdvancedTable.vue` interno, podés usar e
 const t = document.getElementById('miTabla');
 t.searchFields = ['nombre', 'email'];
 t.searchEnabled = true;
+t.searchValue = 'juan';   // valor controlado del buscador
 ```
 
 ### Búsqueda sobre columnas `select`
@@ -842,32 +912,7 @@ En variantes transparentes (`outlined`, `ghost`) se aplica `backdrop-filter: blu
 
 ## Atributos
 
-<!-- @api:atributos -->
-| Atributo | Tipo | Default | Descripción |
-| ------ | ------ | ------ | ------ |
-| `columns` | `Column[]` | `[]` | Definición de columnas (ver [Interfaz de columna](#interfaz-de-columna)). Se asigna como propiedad JS |
-| `data` | `Record<string, any>[]` | `[]` | Filas de la tabla. Se asigna como propiedad JS |
-| `empty` | `string` | `""` | Texto a mostrar cuando no hay datos. Si se omite, usa `"No hay datos que mostrar"` |
-| `pagination` | `boolean` | `false` | Habilita paginación interna |
-| `items-per-page` | `number` | `10` | Tamaño de página (atributo HTML: `items-per-page`) |
-| `show-page-size` | `boolean` | `false` | Muestra selector de items por página (atributo HTML: `show-page-size`) |
-| `page-size-options` | `number[]` | `[5, 10, 20, 50]` | Opciones del selector (atributo HTML: `page-size-options`). Se asigna como propiedad JS |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | `solid`, `outlined`, `soft`, `ghost`, `subtle` |
-| `search-enabled` | `boolean` | `false` | Habilita barra de búsqueda (atributo HTML: `search-enabled`) |
-| `search-placeholder` | `string` | `"Buscar..."` | Placeholder del input de búsqueda (atributo HTML: `search-placeholder`) |
-| `search-fields` | `string[]` | `[]` | Columnas donde buscar (atributo HTML: `search-fields`). Vacío = todas |
-| `search-value` | `string` | `""` | Valor controlado del buscador (atributo HTML: `search-value`) |
-| `filters` | `Record<string, any>` | `{}` | Filtros por columna. Se asigna como propiedad JS |
-| `loading` | `boolean` | `false` | Muestra una barra de carga animada en el tope |
-| `actions` | `unknown[]` | `[]` | Acciones de fila (botón "..." al final de cada fila). Se asigna como propiedad JS |
-| `actions-label` | `string` | `""` | Texto del header de la columna de acciones. Default vacío. Atributo HTML: `actions-label` |
-| `row-disabled` | `boolean \| ((row: Record<string, any>) => boolean)` | `false` | Deshabilita filas (ver [Deshabilitar filas, columnas y celdas](#deshabilitar-filas-columnas-y-celdas)). Se asigna como propiedad JS |
-| `footer` | `FooterRow[]` | `[]` | Filas de footer (ver [Footer (API programática)](#footer-api-programática)). Se asigna como propiedad JS |
-| `table-max-height` | `string` | `""` | Alto máximo del área scrolleable (CSS, ej. `40rem`). Atributo HTML: `table-max-height` |
-| `inline-editing` | `boolean` | `false` | Editor visible siempre en las celdas editables, sin el lápiz (atributo HTML: `inline-editing`) |
-| `compact` | `boolean` | `false` | Filas más compactas |
-<!-- /@api:atributos -->
+<!--@include: ../partials/advanced-table/props-vanilla.md-->
 
 > **Pipeline interno:** `data → search → filters → sort → pagination`. El ordenamiento y la paginación operan sobre los datos ya filtrados.
 
@@ -879,25 +924,13 @@ En variantes transparentes (`outlined`, `ghost`) se aplica `backdrop-filter: blu
 
 ## Eventos
 
-<!-- @api:eventos -->
-| Evento | Payload (`e.detail`) | Descripción |
-| ------ | ------ | ------ |
-| `update:currentPage` | — | — |
-| `update:itemsPerPage` | — | — |
-| `update:search` | — | — |
-| `edit-start` | — | — |
-| `edit-save` | — | — |
-| `edit-cancel` | — | — |
-| `edit-error` | — | — |
-<!-- /@api:eventos -->
+<!--@include: ../partials/advanced-table/eventos.md-->
 
 > **Clicks de fila:** no hay eventos `row-click`/`row-dblclick`/`cell-click` (no se emiten). Para reaccionar a un click usá el `click` nativo (burbujea desde el shadow DOM) con `e.composedPath()`, o poné un `ButtonConfig`/`BadgeConfig` en la columna.
 
 ## Slots
 
-<!-- @api:slots -->
-Ninguno.
-<!-- /@api:slots -->
+<!--@include: ../partials/advanced-table/slots-vanilla.md-->
 
 > El `<cu-table>` reenvía **todos** los slots del host, así que podés usar cualquiera de los que documenta la [ficha Vue](vue/advanced-table.md).
 
@@ -926,16 +959,7 @@ Ninguno.
 
 ## Métodos expuestos
 
-<!-- @api:metodos -->
-| Método | Descripción |
-| ------ | ------ |
-| `updateRow` | Actualiza una fila por índice con los campos indicados. |
-| `getData` | Devuelve una copia de las filas actuales, opcionalmente filtradas. |
-| `getRow` | Devuelve una copia de la fila en el índice indicado. |
-| `removeRow` | Elimina la fila en el índice indicado. |
-| `addRow` | Agrega una fila al final si respeta las columnas existentes. |
-| `pushData` | Agrega varias filas al final si respetan las columnas existentes. |
-<!-- /@api:metodos -->
+<!--@include: ../partials/advanced-table/metodos.md-->
 
 ## Interfaces
 

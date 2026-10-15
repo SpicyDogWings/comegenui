@@ -1,10 +1,8 @@
+[← Volver](../README.md)
+
 # `Card`
 
 Tarjeta para mostrar información agrupada con jerarquía visual: media, header (título + subtítulo), contenido y footer. Componente de presentación: no emite eventos ni expone métodos.
-
-[← Volver](../README.md)
-
----
 
 ## Uso en Vue
 
@@ -24,7 +22,11 @@ import Button from "@/components/buttons/Button.vue";
 </template>
 ```
 
+En HTML plano, cargá el bundle `CuCard` (ver [ficha vanilla](/componentes/cu-card)).
+
 ## Variantes visuales
+
+`variant` decide el aspecto: `ghost` (**default**; superficie + sombra), `outlined` (solo borde), `soft` (fondo tenue), `subtle` (tenue con borde) y `solid` (relleno con el color).
 
 ```vue
 <template>
@@ -36,7 +38,24 @@ import Button from "@/components/buttons/Button.vue";
 </template>
 ```
 
+## Colores
+
+`color` es un nombre semántico (`primary`, `secondary`, `neutral`, `success`, `warning`, `danger`). Se ve en las variantes que usan el color de fondo (`soft`, `subtle`, `solid`) y en el borde de `outlined`; `ghost` no lo usa.
+
+```vue
+<template>
+  <Card title="primary" color="primary" variant="solid">Contenido de la tarjeta.</Card>
+  <Card title="secondary" color="secondary" variant="solid">Contenido de la tarjeta.</Card>
+  <Card title="neutral" color="neutral" variant="solid">Contenido de la tarjeta.</Card>
+  <Card title="success" color="success" variant="solid">Contenido de la tarjeta.</Card>
+  <Card title="warning" color="warning" variant="solid">Contenido de la tarjeta.</Card>
+  <Card title="danger" color="danger" variant="solid">Contenido de la tarjeta.</Card>
+</template>
+```
+
 ## Con imagen
+
+`image` agrega la media arriba del cuerpo (o al costado con `layout="horizontal"`). El slot `media` tiene prioridad sobre `image`.
 
 ```vue
 <template>
@@ -53,7 +72,7 @@ import Button from "@/components/buttons/Button.vue";
 
 ## Layout horizontal
 
-Media (imagen o slot `media`) al costado del contenido:
+`layout` acepta `vertical` (**default**; media arriba) u `horizontal` (media al costado, contenido a la derecha).
 
 ```vue
 <template>
@@ -64,6 +83,8 @@ Media (imagen o slot `media`) al costado del contenido:
 ```
 
 ## Slots custom
+
+El contenido va por el slot `default`; los slots `media`, `header` y `footer` reemplazan la media, el header (título/subtítulo) y el pie. Si hay slot `header`, tiene prioridad sobre `title`/`subtitle`.
 
 ```vue
 <script setup lang="ts">
@@ -85,40 +106,18 @@ import Badge from "@/components/information/Badge.vue";
 </template>
 ```
 
----
-
 ## Props
 
-<!-- @api:props -->
-| Prop | Tipo | Default | Descripción |
-| ------ | ------ | ------ | ------ |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
-| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle"` | `"ghost"` | — |
-| `layout` | `"vertical" \| "horizontal"` | `"vertical"` | — |
-| `title` | `string` | `—` | — |
-| `subtitle` | `string` | `—` | — |
-| `image` | `string` | `—` | — |
-<!-- /@api:props -->
+<!--@include: ../../partials/card/props-vue.md-->
 
 ## Emits
 
-<!-- @api:emits -->
-Ninguno.
-<!-- /@api:emits -->
+<!--@include: ../../partials/card/eventos-vue.md-->
 
 ## Slots
 
-<!-- @api:slots -->
-| Slot | Descripción |
-| ------ | ------ |
-| `media` | — |
-| `header` | — |
-| `default` | — |
-| `footer` | — |
-<!-- /@api:slots -->
+<!--@include: ../../partials/card/slots-vue.md-->
 
 ## Expose
 
-<!-- @api:expose -->
-No expone métodos.
-<!-- /@api:expose -->
+<!--@include: ../../partials/card/metodos.md-->

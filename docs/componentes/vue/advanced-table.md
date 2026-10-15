@@ -1,10 +1,8 @@
+[← Volver](../README.md)
+
 # `AdvancedTable`
 
 Tabla avanzada con búsqueda, paginación, edición inline, ordenamiento, badges y botones por celda. Pensada para reemplazar tablas HTML estáticas en apps con UMD.
-
-[← Volver](../README.md)
-
----
 
 ## Interfaz de columna
 
@@ -45,7 +43,7 @@ interface ButtonConfig {
 }
 ```
 
-## Estados de las celdas editables
+### Estados de las celdas editables
 
 Una columna con `editable` tiene **dos estados** posibles. Ambos son **reactivos**: podés alternarlos en runtime (ej: un botón "lápiz" que togglea el estado global).
 
@@ -69,13 +67,13 @@ La celda renderiza el editor (input / select / textarea / autocomplete) **direct
 { key: "email", label: "Email", editable: true, inlineEdit: true }
 ```
 
-**Global en la tabla** (solo componente Vue `AdvancedTable`, por compatibilidad):
+**Global en la tabla**:
 
 ```vue
 <AdvancedTable :columns="columns" :data="data" :inline-editing="inlineEditing" />
 ```
 
-> **En HTML plano:** el `<cu-table>` (Custom Element) **también** acepta `inline-editing` (se reenvía al interno). Una columna con `inlineEdit: true` gana sobre ese global.
+> **En HTML plano:** el `<cu-table>` también acepta `inline-editing` (se reenvía al interno). Una columna con `inlineEdit: true` gana sobre ese global.
 
 | Acción | Comportamiento en estado inline |
 |--------|---------------------------------|
@@ -87,9 +85,7 @@ La celda renderiza el editor (input / select / textarea / autocomplete) **direct
 
 > 💡 **`inputType: 'switch'` es una excepción:** el switch **siempre** se renderiza visible, sin lápiz y sin depender de los estados lápiz/inline. Ver [Edición con switch](#edición-con-switch).
 
-> Ver [Recetas](#recetas) para ejemplos completos de cada estado, incluyendo el preset de playground `examples/table-inline-editing.js`.
-
-## Acciones de fila (`actions`)
+### Acciones de fila (`actions`)
 
 Es un array de `ButtonConfig`. Cuando se asigna, la tabla agrega automáticamente una columna al final con un dropdown "..." que muestra las acciones. El `onClick` recibe la fila completa.
 
@@ -159,15 +155,74 @@ const data = ref([
 </template>
 ```
 
+En HTML plano, cargá el bundle `CuTable` (ver [ficha vanilla](/componentes/cu-table)).
+
+## Colores
+
+`color` es un nombre semántico (`primary`, `secondary`, `neutral`, `success`, `warning`, `danger`) que tiñe header, bordes y resaltados.
+
+```vue
+<template>
+  <AdvancedTable :columns="columns" :data="data" color="primary" variant="soft" />
+  <AdvancedTable :columns="columns" :data="data" color="secondary" variant="soft" />
+  <AdvancedTable :columns="columns" :data="data" color="neutral" variant="soft" />
+  <AdvancedTable :columns="columns" :data="data" color="success" variant="soft" />
+  <AdvancedTable :columns="columns" :data="data" color="warning" variant="soft" />
+  <AdvancedTable :columns="columns" :data="data" color="danger" variant="soft" />
+</template>
+```
+
+## Variantes
+
+`variant` decide el aspecto: `solid` (relleno), `outlined` (borde), `soft` (**default**; fondo tenue), `ghost` (transparente) y `subtle` (tenue con borde).
+
+```vue
+<template>
+  <AdvancedTable :columns="columns" :data="data" color="primary" variant="solid" />
+  <AdvancedTable :columns="columns" :data="data" color="primary" variant="outlined" />
+  <AdvancedTable :columns="columns" :data="data" color="primary" variant="soft" />
+  <AdvancedTable :columns="columns" :data="data" color="primary" variant="ghost" />
+  <AdvancedTable :columns="columns" :data="data" color="primary" variant="subtle" />
+</template>
+```
+
+## Paginación
+
+`pagination` (default `true` en Vue) habilita el paginador interno, `itemsPerPage` (default `10`) fija el tamaño de página, `showPageSize` agrega el selector y `pageSizeOptions` (default `[5, 10, 20, 50]`) sus opciones.
+
+```vue
+<template>
+  <AdvancedTable
+    :columns="columns"
+    :data="data"
+    pagination
+    :items-per-page="5"
+    show-page-size
+    :page-size-options="[5, 10, 20]"
+  />
+</template>
+```
+
+## Compacta y alto máximo
+
+`compact` reduce el padding de las celdas. `tableMaxHeight` limita el alto del área scrolleable, que es donde el header sticky se pega.
+
+```vue
+<template>
+  <AdvancedTable :columns="columns" :data="data" compact />
+  <AdvancedTable :columns="columns" :data="data" table-max-height="220px" />
+</template>
+```
+
 ## Búsqueda
 
-## Comportamiento general
+### Comportamiento general
 
-- **Sin `search-fields`:** busca en **todas** las claves del objeto `row`.
-- **Con `search-fields`:** busca solo en las columnas indicadas.
+- **Sin `searchFields`:** busca en **todas** las claves del objeto `row`.
+- **Con `searchFields`:** busca solo en las columnas indicadas.
 - Búsqueda **case-insensitive** y **acento-insensitive** (`"matricula"` encuentra `"Matrícula"`).
 
-## En Vue
+### En Vue
 
 ```vue
 <template>
@@ -179,7 +234,7 @@ const data = ref([
 </template>
 ```
 
-## Búsqueda sobre columnas `select`
+### Búsqueda sobre columnas `select`
 
 Las columnas con `inputType: 'select'` se buscan por la **label** de la opción, no por el `value` guardado:
 
@@ -213,23 +268,6 @@ const data = ref([
 ## Filtros por columna
 
 Además del buscador, podés aplicar filtros exactos con la prop `filters`. Se combinan con la búsqueda (AND) y se aplican antes del ordenamiento:
-
-```vue
-<script setup lang="ts">
-import AdvancedTable from "@/components/data/AdvancedTable.vue";
-import { ref } from "vue";
-
-const filters = ref({
-  estado: "Activo",                     // match exacto
-  tipo: ["1", "3"],                     // match contra cualquier valor del array
-  nombre: (val, row) => val.length > 5, // función custom
-});
-</script>
-
-<template>
-  <AdvancedTable :columns="columns" :data="data" :filters="filters" />
-</template>
-```
 
 ```vue
 <script setup lang="ts">
@@ -333,7 +371,7 @@ const columns = ref([
 
 > Con `singleClick: true` la celda entra en modo edición con un solo click (default: doble click).
 
-> 💡 Si la validación falla, el editor se tiñe de rojo y se emite `edit-error`. Ver [Receta 4 — Validar formato con regex](#receta-4--validar-formato-con-regex-precio-con-2-decimales) para el patrón completo (con `inlineEdit` y feedback visible).
+> 💡 Si la validación falla, el editor se tiñe de rojo y se emite `edit-error`. Ver [Receta 4 — Validar formato con regex](#receta-4--validar-formato-con-regex-precio-con-2-decimales) para el patrón completo.
 
 ## Deshabilitar filas, columnas y celdas
 
@@ -385,7 +423,7 @@ const columns = ref([
 
 ## Edición con select
 
-`inputType: 'select'` + `selectOptions` para que la celda editable renderice un `<cu-select>`. En modo vista se muestra la **label**, no el `value`.
+`inputType: 'select'` + `selectOptions` para que la celda editable renderice un `<Select>`. En modo vista se muestra la **label**, no el `value`.
 
 ```vue
 <script setup lang="ts">
@@ -442,7 +480,7 @@ const columns = ref([
 
 ## Edición con fecha
 
-`inputType: 'date'` + `date.*` para que la celda editable renderice un `<cu-date-picker>` como editor. El valor se guarda como **string `"YYYY-MM-DD"`** (en modo vista se muestra con `date.format`, default `dd/MM/yyyy`):
+`inputType: 'date'` + `date.*` para que la celda editable renderice un `<DatePicker>` como editor. El valor se guarda como **string `"YYYY-MM-DD"`** (en modo vista se muestra con `date.format`, default `dd/MM/yyyy`):
 
 ```vue
 <script setup lang="ts">
@@ -458,7 +496,7 @@ const columns = ref([
     inputType: "date",
     singleClick: true,
     date: {
-      format: "dd/MM/yyyy",        // tokens iguales al <cu-date-picker>
+      format: "dd/MM/yyyy",        // tokens iguales al <DatePicker>
       min: "2026-01-01",           // límite inferior (desde)
       max: "2026-12-31",           // límite superior (hasta)
       yearNavigation: true,        // botones « » de año en el calendario
@@ -475,15 +513,14 @@ const columns = ref([
 </template>
 ```
 
-> El evento `edit-save` entrega el valor como `"YYYY-MM-DD"`. La config `date.*` acepta los mismos valores que las props del `<cu-date-picker>` (string `"0,6"` o array `[0,6]` para `disabledWeekdays`, etc.).
+> El evento `edit-save` entrega el valor como `"YYYY-MM-DD"`. La config `date.*` acepta los mismos valores que las props del `<DatePicker>` (string `"0,6"` o array `[0,6]` para `disabledWeekdays`, etc.).
 
-## Posición del panel (calendario arriba, etc.)
+### Posición del panel (calendario arriba, etc.)
 
-La config `date.*` acepta las props de posicionamiento del `<cu-date-picker>`:
+La config `date.*` acepta las props de posicionamiento del `<DatePicker>`:
 
 | Prop de `date.*` | Valores | Default | Descripción |
 |---|---|---|---|
-
 | `position` | `"bottom"` \| `"top"` \| `"left"` \| `"right"` | `"bottom"` | Panel debajo, arriba o a los costados del trigger |
 | `align` | `"start"` \| `"center"` \| `"end"` | `"start"` | Alineación horizontal del panel |
 | `fixed` | `boolean` | `true` | Panel en `position: fixed` (default `true` en celdas editables para no romper el layout de la tabla) |
@@ -508,7 +545,7 @@ const columns = ref([
 
 ## Edición con switch
 
-`inputType: 'switch'` + `switch.*` para que la celda editable renderice un `<cu-switch>` **directamente, sin lápiz** (el switch siempre está visible, como el estado inline). El valor de la fila es booleano (`true` / `false`).
+`inputType: 'switch'` + `switch.*` para que la celda editable renderice un `<Switch>` **directamente, sin lápiz** (el switch siempre está visible, como el estado inline). El valor de la fila es booleano (`true` / `false`).
 
 ```vue
 <script setup lang="ts">
@@ -582,7 +619,7 @@ function onEditSave(e: { index: number; value: boolean }) {
 
 ## Badges y botones por celda
 
-## Badges dinámicos
+### Badges dinámicos
 
 ```vue
 <script setup lang="ts">
@@ -607,7 +644,7 @@ const columns = ref([
 </template>
 ```
 
-## Multi-badge con wrap
+### Multi-badge con wrap
 
 Si la función `badges` devuelve **varios** badges, el contenedor usa `flex-wrap: wrap`: los badges **saltan de línea entre sí** en lugar de estirarse en una fila larga. Ideal para columnas con etiquetas/tags múltiples (skills, roles, permisos). Limitá el ancho de la columna con `width` para que el wrap se active a partir de ese ancho.
 
@@ -638,7 +675,7 @@ const columns = ref([
 </template>
 ```
 
-## Botones condicionales
+### Botones condicionales
 
 ```vue
 <script setup lang="ts">
@@ -838,7 +875,7 @@ function onEditSave(e: { index: number }) {
 
 ## Recetas: estados de las celdas editables
 
-## Receta 1 — Modo edición masiva con toggle (Vue)
+### Receta 1 — Modo edición masiva con toggle
 
 Un botón que alterna toda la tabla entre modo lápiz y modo inline (todos los editores visibles). Ideal para "editar en lote".
 
@@ -876,7 +913,7 @@ const columns = [
 
 > Al apagar el estado, todas las celdas vuelven al lápiz sin perder los valores ya guardados (cada `edit-save` actualizó `data` en el momento).
 
-## Receta 2 — Columna siempre editable (`inlineEdit`)
+### Receta 2 — Columna siempre editable (`inlineEdit`)
 
 El estado inline se activa **por columna**:
 
@@ -913,7 +950,7 @@ function onEditSave(e: { column: { key: string }; value: string; index: number }
 </template>
 ```
 
-## Receta 3 — Estados mixtos + validación y edición condicional
+### Receta 3 — Estados mixtos + validación y edición condicional
 
 Combiná lápiz e inline en la misma tabla, con validación por columna y celdas habilitadas según la fila:
 
@@ -952,14 +989,14 @@ const columns = ref([
 
 > **Nota:** `editable` como función controla el **modo lápiz** (habilita/deshabilita el click y atenúa la celda con `.cu-editable-cell-view--disabled`). En estado inline el editor se renderiza igual aunque la función devuelva `false`; usá `validator` para controlar qué se guarda.
 
-## Receta 4 — Validar formato con regex (precio con 2 decimales)
+### Receta 4 — Validar formato con regex (precio con 2 decimales)
 
-`editable` acepta un **`RegExp`** como validador (además de `boolean` y función). Es la forma más corta de validar formato al guardar: precios, emails, DNIs, códigos, etc. **Los agentes rara vez lo usan** — acá está el patrón completo.
+`editable` acepta un **`RegExp`** como validador (además de `boolean` y función). Es la forma más corta de validar formato al guardar: precios, emails, DNIs, códigos, etc.
 
 El regex se evalúa con `.test(value)` al guardar (Enter / blur / elegir opción en select). Si no matchea:
 
 - El valor **no se guarda** (no se emite `edit-save`).
-- Se emite [`edit-error`](#eventos) con `{ row, column, value, index }`.
+- Se emite [`edit-error`](#emits) con `{ row, column, value, index }`.
 - El editor se tiñe de rojo (prop `color: danger`) — aplica a **todos** los tipos de editor (input, textarea, select, autocomplete, date), no solo al input de texto.
 
 Ejemplo: tabla de productos donde `precio` solo acepta números con **exactamente 2 decimales**:
@@ -979,24 +1016,6 @@ const columns = ref([
 const columnsInline = ref([
   { key: "producto", label: "Producto" },
   { key: "precio", label: "Precio", editable: priceRegex, inlineEdit: true }, // modo inline
-]);
-</script>
-
-<template>
-  <AdvancedTable :columns="columns" :data="data" />
-</template>
-```
-
-Con el editor siempre visible (`inlineEdit`):
-
-```vue
-<script setup lang="ts">
-import AdvancedTable from "@/components/data/AdvancedTable.vue";
-import { ref } from "vue";
-
-const columns = ref([
-  { key: "producto", label: "Producto" },
-  { key: "precio", label: "Precio", editable: /^\d+\.\d{2}$/, inlineEdit: true },
 ]);
 </script>
 
@@ -1034,98 +1053,52 @@ En variantes transparentes (`outlined`, `ghost`) se aplica `backdrop-filter: blu
 </template>
 ```
 
----
-
 ## Props
 
-<!-- @api:props -->
-| Prop | Tipo | Default | Descripción |
-| ------ | ------ | ------ | ------ |
-| `columns` | `Column[]` | `[]` | — |
-| `data` | `Record<string, any>[]` | `[]` | — |
-| `empty` | `string` | `"No hay datos que mostrar"` | — |
-| `pagination` | `boolean` | `true` | — |
-| `itemsPerPage` | `number` | `10` | — |
-| `showPageSize` | `boolean` | `false` | — |
-| `pageSizeOptions` | `number[]` | `[5, 10, 20, 50]` | — |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
-| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | — |
-| `searchEnabled` | `boolean` | `false` | — |
-| `searchPlaceholder` | `string` | `"Buscar..."` | — |
-| `searchFields` | `string[]` | `[]` | — |
-| `searchValue` | `string` | `""` | — |
-| `filters` | `Record<string, any>` | `{}` | — |
-| `loading` | `boolean` | `false` | — |
-| `actions` | `ButtonConfig[]` | `[]` | — |
-| `actionsLabel` | `string` | `""` | — |
-| `rowDisabled` | `boolean \| ((row: Record<string, any>) => boolean)` | `false` | — |
-| `footer` | `FooterRow[]` | `[]` | — |
-| `tableMaxHeight` | `string` | `""` | — |
-| `inlineEditing` | `boolean` | `false` | — |
-| `compact` | `boolean` | `false` | — |
-<!-- /@api:props -->
+<!--@include: ../../partials/advanced-table/props-vue.md-->
 
 > **Pipeline interno:** `data → search → filters → sort → pagination`. El ordenamiento y la paginación operan sobre los datos ya filtrados.
 
-> **`search-fields` como atributo HTML:** Es el único caso donde podés pasar un array como atributo. Usá JSON válido:
-> ```html
-> <cu-table search-fields='["nombre","tipo"]'></cu-table>
-> ```
-> Equivalente por JS: `tabla.searchFields = ["nombre", "tipo"]`.
-
 ## Emits
 
-<!-- @api:emits -->
-| Evento | Payload | Descripción |
-| ------ | ------ | ------ |
-| `update:currentPage` | — | — |
-| `update:itemsPerPage` | — | — |
-| `update:search` | — | — |
-| `edit-start` | — | — |
-| `edit-save` | — | — |
-| `edit-cancel` | — | — |
-| `edit-error` | — | — |
-<!-- /@api:emits -->
+<!--@include: ../../partials/advanced-table/eventos.md-->
+
+> **Clicks de fila:** no hay eventos `row-click`/`row-dblclick`/`cell-click` (no se emiten). Para reaccionar a un click usá el `click` nativo (burbujea desde el shadow DOM) con `e.composedPath()`, o poné un `ButtonConfig`/`BadgeConfig` en la columna.
 
 ## Slots
 
-<!-- @api:slots -->
-| Slot | Descripción |
-| ------ | ------ |
-| `search` | — |
-<!-- /@api:slots -->
+<!--@include: ../../partials/advanced-table/slots-vue.md-->
 
 ### Ejemplo de slot header
 
-```html
-<cu-table id="miTabla">
-  <span slot="header-rol" style="color: var(--primary)">ROL</span>
-</cu-table>
+```vue
+<template>
+  <AdvancedTable :columns="columns" :data="data">
+    <template #header-rol="{ column }">
+      <span style="color: var(--cu-color-primary)">ROL</span>
+    </template>
+  </AdvancedTable>
+</template>
 ```
 
 ### Ejemplo de slot empty
 
-```html
-<cu-table id="miTabla">
-  <div slot="empty" style="padding: 24px; text-align: center;">
-    <p>No hay datos para mostrar.</p>
-    <cu-button color="primary" variant="soft">Crear registro</cu-button>
-  </div>
-</cu-table>
+```vue
+<template>
+  <AdvancedTable :columns="columns" :data="data">
+    <template #empty>
+      <div style="padding: 24px; text-align: center;">
+        <p>No hay datos para mostrar.</p>
+        <Button color="primary" variant="soft">Crear registro</Button>
+      </div>
+    </template>
+  </AdvancedTable>
+</template>
 ```
 
 ## Expose
 
-<!-- @api:expose -->
-| Método | Descripción |
-| ------ | ------ |
-| `updateRow` | Actualiza una fila por índice con los campos indicados. |
-| `getData` | Devuelve una copia de las filas actuales, opcionalmente filtradas. |
-| `getRow` | Devuelve una copia de la fila en el índice indicado. |
-| `removeRow` | Elimina la fila en el índice indicado. |
-| `addRow` | Agrega una fila al final si respeta las columnas existentes. |
-| `pushData` | Agrega varias filas al final si respetan las columnas existentes. |
-<!-- /@api:expose -->
+<!--@include: ../../partials/advanced-table/metodos.md-->
 
 ## Interfaces
 

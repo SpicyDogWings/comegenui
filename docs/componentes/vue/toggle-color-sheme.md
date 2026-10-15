@@ -1,8 +1,9 @@
-# `ToggleColorSheme`
-
 [← Volver](../README.md)
 
----
+# `ToggleColorSheme`
+
+Botón que alterna el tema claro/oscuro del store global. Muestra un sol cuando el tema activo es
+oscuro y una luna cuando es claro; no recibe contenido ni emite eventos propios.
 
 ## Uso en Vue
 
@@ -12,35 +13,47 @@ import ToggleColorSheme from "@/components/buttons/ToggleColorSheme.vue";
 </script>
 
 <template>
-  <ToggleColorSheme variant="ghost">
-    ToggleColorSheme
-  </ToggleColorSheme>
+  <ToggleColorSheme variant="ghost" :size="20" />
 </template>
+```
+
+## Variantes
+
+`variant` se pasa tal cual al `Button` interno: las 7 variantes del botón.
+
+```vue
+<ToggleColorSheme variant="solid" />
+<ToggleColorSheme variant="outlined" />
+<ToggleColorSheme variant="soft" />
+<ToggleColorSheme variant="ghost" />
+<ToggleColorSheme variant="subtle" />
+<ToggleColorSheme variant="link" />
+<ToggleColorSheme variant="none" />
+```
+
+## Tamaños
+
+`size` es el tamaño del ícono en px (ancho y alto); por defecto `20`.
+
+```vue
+<ToggleColorSheme :size="16" variant="outlined" />
+<ToggleColorSheme :size="24" variant="outlined" />
+<ToggleColorSheme :size="32" variant="outlined" />
+<ToggleColorSheme :size="40" variant="outlined" />
 ```
 
 ## Props
 
-<!-- @api:props -->
-| Prop | Tipo | Default | Descripción |
-| ------ | ------ | ------ | ------ |
-| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle" \| "link" \| "none"` | `'ghost'` | Variante visual del botón. |
-| `size` | `number` | `20` | Tamaño en px del ícono (ancho y alto). |
-<!-- /@api:props -->
+<!--@include: ../../partials/toggle-color-sheme/props.md-->
 
 ## Emits
 
-<!-- @api:emits -->
-Ninguno.
-<!-- /@api:emits -->
+<!--@include: ../../partials/toggle-color-sheme/eventos.md-->
 
 ## Slots
 
-<!-- @api:slots -->
-Ninguno.
-<!-- /@api:slots -->
+<!--@include: ../../partials/toggle-color-sheme/slots.md-->
 
 ## Expose
 
-<!-- @api:expose -->
-No expone métodos.
-<!-- /@api:expose -->
+<!--@include: ../../partials/toggle-color-sheme/metodos.md-->

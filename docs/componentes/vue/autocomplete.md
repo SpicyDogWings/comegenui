@@ -1,10 +1,8 @@
+[← Volver](../README.md)
+
 # `Autocomplete`
 
 Campo de texto con sugerencias en menú desplegable. Filtra los `items` en vivo según lo que escribe el usuario.
-
-[← Volver](../README.md)
-
----
 
 ## Uso en Vue
 
@@ -18,32 +16,65 @@ const items = ref([
   { label: "Administrador" },
   { label: "Editor de contenido" },
   { label: "Visor de reportes" },
-  { label: "Invitado externo" },
-  { label: "Supervisor" },
-  { label: "Analista de datos" },
-  { label: "Gestor de usuarios" },
 ]);
-
-function onSelect(item: { label: string }) {
-  console.log("Seleccionado:", item.label);
-}
 </script>
 
 <template>
-  <Autocomplete
-    v-model="value"
-    :items="items"
-    placeholder="Buscá un rol..."
-    color="primary"
-    @select="onSelect"
-  />
+  <Autocomplete v-model="value" :items="items" placeholder="Buscá un rol..." color="primary" />
 </template>
 ```
 
-## Items con ícono
+En HTML plano, cargá el bundle `CuAutocomplete` (ver [ficha vanilla](/componentes/cu-autocomplete)).
+
+> **No existe la prop `label`.** Para mostrar un rótulo sobre el campo, combiná con `<Label>`. Todos los ejemplos de abajo asumen `items` ya definido (ver arriba).
+
+## Colores
+
+`color` es un nombre semántico (`primary`, `secondary`, `neutral`, `success`, `warning`, `danger`) que tiñe el campo y el panel.
+
+```vue
+<template>
+  <Autocomplete color="primary" placeholder="primary" :items="items" />
+  <Autocomplete color="secondary" placeholder="secondary" :items="items" />
+  <Autocomplete color="neutral" placeholder="neutral" :items="items" />
+  <Autocomplete color="success" placeholder="success" :items="items" />
+  <Autocomplete color="warning" placeholder="warning" :items="items" />
+  <Autocomplete color="danger" placeholder="danger" :items="items" />
+</template>
+```
+
+## Variantes
+
+`variant` decide el aspecto del campo: `outlined` (borde), `soft` (**default**; fondo tenue), `ghost` (transparente) y `subtle` (tenue con borde).
+
+```vue
+<template>
+  <Autocomplete color="primary" variant="outlined" placeholder="outlined" :items="items" />
+  <Autocomplete color="primary" variant="soft" placeholder="soft" :items="items" />
+  <Autocomplete color="primary" variant="ghost" placeholder="ghost" :items="items" />
+  <Autocomplete color="primary" variant="subtle" placeholder="subtle" :items="items" />
+</template>
+```
+
+## Estados
+
+`disabled` bloquea el campo y no abre el panel. `readOnly` deja leer y abrir el panel, pero no escribir.
+
+```vue
+<template>
+  <Autocomplete placeholder="habilitado" :items="items" />
+  <Autocomplete disabled placeholder="disabled" :items="items" />
+  <Autocomplete read-only placeholder="readOnly" :items="items" />
+</template>
+```
+
+## Items del menú
+
+Cada item puede llevar un `icon` (SVG inline), un `value` distinto del `label`, o estar `disabled`.
 
 ```vue
 <script setup lang="ts">
+import Autocomplete from "@/components/form/Autocomplete.vue";
 import { ref } from "vue";
 
 const icon = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>';
@@ -51,26 +82,17 @@ const icon = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" vie
 const items = ref([
   { label: "Administrador", icon },
   { label: "Editor de contenido", icon },
-]);
-</script>
-```
-
-## Items con `value` distinto del `label`
-
-Útil cuando querés mostrar más contexto (ej. email) pero asignar un valor más corto:
-
-```vue
-<script setup lang="ts">
-import { ref } from "vue";
-
-const items = ref([
   { label: "Juan Pérez (juan@mail.com)", value: "Juan Pérez" },
-  { label: "María García (maria@mail.com)", value: "María García" },
+  { label: "Invitado externo", disabled: true },
 ]);
 </script>
+
+<template>
+  <Autocomplete placeholder="Elegí un item..." :items="items" @select="(item) => console.log(item)" />
+</template>
 ```
 
-Al seleccionar, el input se completa con el `label` del item (o con su `value` si el item no tiene `label`).
+Al seleccionar, el input se completa con el `label` (o con el `value` si el item no tiene `label`).
 
 ## Mínimo de caracteres
 
@@ -79,9 +101,9 @@ Por defecto el menú se abre al recibir foco. Con `:min-chars="2"` solo se abre 
 ```vue
 <script setup lang="ts">
 import Autocomplete from "@/components/form/Autocomplete.vue";
-import { ref } from "vue";
+import { ref, useTemplateRef } from "vue";
 
-const ac = ref<InstanceType<typeof Autocomplete> | null>(null);
+const ac = useTemplateRef("ac");
 const items = ref([/* ... */]);
 
 function precargarYEnfocar() {
@@ -103,12 +125,49 @@ function abrir() {
 
 ## Posicionamiento
 
+`position` (`bottom` **default**, `top`, `left`, `right`) y `align` (`start` **default**, `center`, `end`) ubican el panel respecto al campo. `fixed` lo posiciona en `position: fixed` (útil en contenedores con `overflow`).
+
 ```vue
 <template>
-  <!-- Con position + align -->
-  <Autocomplete position="top" align="end" />
+  <Autocomplete position="top" align="end" placeholder="position=top / align=end" :items="items" />
+  <Autocomplete position="bottom" align="end" placeholder="position=bottom / align=end" :items="items" />
+</template>
+```
 
-  <Autocomplete position="bottom" align="end" />
+## Tipos de input
+
+`type` es el tipo del `<input>` interno: `text` (**default**), `password`, `email`, `number`, `tel`, `url` o `search`.
+
+```vue
+<template>
+  <Autocomplete type="text" placeholder="Buscar..." :items="items" />
+  <Autocomplete type="search" placeholder="Buscar..." :items="items" />
+  <Autocomplete type="email" placeholder="Email..." :items="items" />
+</template>
+```
+
+## Selección
+
+`select` se dispara al elegir un item (con el item como payload) y `blur` al salir del campo.
+
+```vue
+<script setup lang="ts">
+import Autocomplete from "@/components/form/Autocomplete.vue";
+import { ref } from "vue";
+
+const items = ref([{ label: "Argentina" }, { label: "Brasil" }, { label: "Chile" }]);
+
+function onSelect(item: { label: string }) {
+  console.log("select:", item);
+}
+
+function onBlur() {
+  console.log("blur: el foco salió del campo");
+}
+</script>
+
+<template>
+  <Autocomplete placeholder="Buscá un país..." :items="items" @select="onSelect" @blur="onBlur" />
 </template>
 ```
 
@@ -140,35 +199,9 @@ function demo() {
 </template>
 ```
 
-## Tipos de input
-
-```vue
-<template>
-  <Autocomplete type="text" placeholder="Buscar..." />
-  <Autocomplete type="search" placeholder="Buscar..." />
-  <Autocomplete type="email" placeholder="Email..." />
-</template>
-```
-
----
-
 ## Props
 
-<!-- @api:props -->
-| Prop | Tipo | Default | Descripción |
-| ------ | ------ | ------ | ------ |
-| `type` | `string` | `"text"` | — |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
-| `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | — |
-| `disabled` | `boolean` | `false` | — |
-| `readOnly` | `boolean` | `false` | — |
-| `placeholder` | `string` | `""` | — |
-| `minChars` | `number` | `0` | — |
-| `position` | `"left" \| "right" \| "bottom" \| "top"` | `"bottom"` | — |
-| `align` | `"center" \| "start" \| "end"` | `"start"` | — |
-| `fixed` | `boolean` | `false` | — |
-| `items` | `AutocompleteItem[]` | `[]` | — |
-<!-- /@api:props -->
+<!--@include: ../../partials/autocomplete/props-vue.md-->
 
 ### Items
 
@@ -183,36 +216,16 @@ Cada item del array `items` puede tener:
 
 > La búsqueda se hace sobre `label` y `value` (cuando existe). Es **case-insensitive** y **acento-insensitive**: buscar `"matricula"` encuentra `"Matrícula"`.
 
-> **Importante:** `items` se asigna como propiedad JS (`ac.items = [...]`), no como atributo HTML.
-
 ## Emits
 
-<!-- @api:emits -->
-| Evento | Payload | Descripción |
-| ------ | ------ | ------ |
-| `update:modelValue` | `string` | — |
-<!-- /@api:emits -->
+<!--@include: ../../partials/autocomplete/eventos.md-->
 
 ## Slots
 
-<!-- @api:slots -->
-Ninguno.
-<!-- /@api:slots -->
+<!--@include: ../../partials/autocomplete/slots.md-->
 
 ## Expose
 
-<!-- @api:expose -->
-| Método | Descripción |
-| ------ | ------ |
-| `get` | Devuelve el texto actual. |
-| `set` | Setea el texto actual en el input sin abrir el panel (para ver sugerencias usá `open()`). |
-| `reset` | Limpia el texto de búsqueda. |
-| `focus` | Enfoca el input. |
-| `open` | Abre el panel de sugerencias (ignora `minChars`). |
-| `close` | Cierra el panel de sugerencias. |
-| `toggle` | Alterna la visibilidad del panel de sugerencias. |
-| `isOpen` | Indica si el panel está abierto. |
-| `selectedItem` | Devuelve el item seleccionado o null. |
-<!-- /@api:expose -->
+<!--@include: ../../partials/autocomplete/metodos-vue.md-->
 
 > `.reset()` limpia el texto de búsqueda; `.set('')` deja el input vacío sin tocar el estado de búsqueda.

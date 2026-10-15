@@ -150,6 +150,7 @@ Ninguno.
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
 | `update:modelValue` | `string` | — |
+| `change` | — | — |
 <!-- /@api:emits -->
 
 ### Slots

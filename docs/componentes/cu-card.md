@@ -1,8 +1,8 @@
+[← Volver](../README.md)
+
 # `<cu-card>`
 
 Tarjeta para mostrar información agrupada con jerarquía visual: media, header (título + subtítulo), contenido y footer. Componente de presentación: no emite eventos ni expone métodos.
-
-[← Volver](../README.md)
 
 ## Uso en HTML plano
 
@@ -17,11 +17,11 @@ Tarjeta para mostrar información agrupada con jerarquía visual: media, header 
 </cu-card>
 ```
 
-<!-- demo:card-uso -->
-
----
+En Vue, importá `Card` de `@/components/information/Card.vue` (ver [ficha Vue](/componentes/vue/card)).
 
 ## Variantes visuales
+
+`variant` decide el aspecto: `ghost` (**default**; superficie + sombra), `outlined` (solo borde), `soft` (fondo tenue), `subtle` (tenue con borde) y `solid` (relleno con el color).
 
 ```html
 <cu-card title="Ghost">ghost (default)</cu-card>
@@ -33,9 +33,24 @@ Tarjeta para mostrar información agrupada con jerarquía visual: media, header 
 
 <!-- demo:card-variantes -->
 
----
+## Colores
+
+`color` es un nombre semántico (`primary`, `secondary`, `neutral`, `success`, `warning`, `danger`). Se ve en las variantes que usan el color de fondo (`soft`, `subtle`, `solid`) y en el borde de `outlined`; `ghost` no lo usa.
+
+```html
+<cu-card title="primary" color="primary" variant="solid">Contenido de la tarjeta.</cu-card>
+<cu-card title="secondary" color="secondary" variant="solid">Contenido de la tarjeta.</cu-card>
+<cu-card title="neutral" color="neutral" variant="solid">Contenido de la tarjeta.</cu-card>
+<cu-card title="success" color="success" variant="solid">Contenido de la tarjeta.</cu-card>
+<cu-card title="warning" color="warning" variant="solid">Contenido de la tarjeta.</cu-card>
+<cu-card title="danger" color="danger" variant="solid">Contenido de la tarjeta.</cu-card>
+```
+
+<!-- demo:card-colores -->
 
 ## Con imagen
+
+`image` agrega la media arriba del cuerpo (o al costado con `layout="horizontal"`). El slot `media` tiene prioridad sobre `image`.
 
 ```html
 <cu-card
@@ -50,11 +65,9 @@ Tarjeta para mostrar información agrupada con jerarquía visual: media, header 
 
 <!-- demo:card-con-imagen -->
 
----
-
 ## Layout horizontal
 
-Media (imagen o slot `media`) al costado del contenido:
+`layout` acepta `vertical` (**default**; media arriba) u `horizontal` (media al costado, contenido a la derecha).
 
 ```html
 <cu-card layout="horizontal" title="Perfil" subtitle="Información del usuario" image="https://example.com/avatar.jpg">
@@ -64,9 +77,9 @@ Media (imagen o slot `media`) al costado del contenido:
 
 <!-- demo:card-layout-horizontal -->
 
----
-
 ## Slots custom
+
+El contenido va por el slot `default`; los slots `media`, `header` y `footer` reemplazan la media, el header (título/subtítulo) y el pie. Si hay slot `header`, tiene prioridad sobre `title`/`subtitle`.
 
 ```html
 <cu-card color="neutral">
@@ -83,42 +96,18 @@ Media (imagen o slot `media`) al costado del contenido:
 
 <!-- demo:card-slots-custom -->
 
----
-
 ## Atributos
 
-<!-- @api:atributos -->
-| Atributo | Tipo | Default | Descripción |
-| ------ | ------ | ------ | ------ |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle"` | `"ghost"` | `ghost` (default), `outlined`, `soft`, `subtle`, `solid` |
-| `layout` | `"vertical" \| "horizontal"` | `"vertical"` | `vertical` (media arriba) o `horizontal` (media al costado) |
-| `title` | `string` | `—` | Título del header |
-| `subtitle` | `string` | `—` | Subtítulo bajo el título |
-| `image` | `string` | `—` | URL de imagen que se muestra como media en la parte superior (o al costado con `layout="horizontal"`) |
-<!-- /@api:atributos -->
+<!--@include: ../partials/card/props-vanilla.md-->
 
 ## Eventos
 
-<!-- @api:eventos -->
-| Evento | Payload (`e.detail`) | Descripción |
-| ------ | ------ | ------ |
-| `click` | — | — |
-<!-- /@api:eventos -->
+<!--@include: ../partials/card/eventos-vanilla.md-->
 
 ## Slots
 
-<!-- @api:slots -->
-| Slot | Descripción |
-| ------ | ------ |
-| `media` | — |
-| `header` | — |
-| `footer` | — |
-| `default` | — |
-<!-- /@api:slots -->
+<!--@include: ../partials/card/slots-vanilla.md-->
 
 ## Métodos expuestos
 
-<!-- @api:metodos -->
-No expone métodos.
-<!-- /@api:metodos -->
+<!--@include: ../partials/card/metodos.md-->

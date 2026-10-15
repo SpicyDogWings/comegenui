@@ -63,6 +63,9 @@ spinner + `loading-change`.
   con `:not(.cu-button--link)`). Si necesitás un link con tamaño, no lo vas a tener.
 - **No hay un evento custom `click`.** El `click` que escuchás es el nativo del DOM, que
   burbujea desde el shadow DOM; `e.detail` es `undefined` y el `e.target` es el interno.
+- **No hay prop ni slot `icon`.** El icono es marcado del slot default (un `<svg>` inline, con
+  `stroke="currentColor"` para que herede el color del botón): no hay forma de pasar sólo el
+  nombre de un icono.
 - **`disabled` y `loading` son lo mismo para el usuario:** ambos deshabilitan, pero
   `loading` además cambia el contenido por el spinner.
 - `target` sólo tiene efecto si hay `to`.
@@ -89,7 +92,7 @@ spinner + `loading-change`.
 <!-- @api:eventos -->
 | Evento | Payload (`e.detail`) | Descripción |
 | ------ | ------ | ------ |
-| `loading-change` | `boolean` | — |
+| `loading-change` | `boolean` | Se dispara cuando cambia `loading`, con el estado nuevo. |
 <!-- /@api:eventos -->
 
 Los nativos (`click`, `focus`, `blur`, `mouseenter`…) burbujean al host sin hacer nada.
@@ -124,15 +127,13 @@ No expone métodos.
 | `target` | `"_self" \| "_blank" \| "_parent" \| "_top"` | `"_self"` | Target del link cuando `to` está definido: `_self`, `_blank`, `_parent`, `_top` |
 | `to` | `string` | `—` | Si se especifica, el botón se renderiza como `<a>` |
 <!-- /@api:props -->
-`variant` `"ghost"`, `size` `"md"`, `to` `—`, `target` `"_self"`, `type` `"button"`,
-`disabled` `false`, `loading` `false`.
 
 ### Emits
 
 <!-- @api:emits -->
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
-| `loading-change` | `boolean` | — |
+| `loading-change` | `boolean` | Se dispara cuando cambia `loading`, con el estado nuevo. |
 <!-- /@api:emits -->
 
 ### Slots

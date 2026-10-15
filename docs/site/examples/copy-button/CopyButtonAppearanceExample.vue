@@ -1,10 +1,25 @@
 <script setup lang="ts">
 import CopyButton from "@/components/buttons/CopyButton.vue";
+
+const colors = ["primary", "secondary", "neutral", "success", "warning", "danger"] as const;
+const variants = ["solid", "outlined", "soft", "ghost", "subtle", "link", "none"] as const;
 </script>
 
 <template>
-  <CopyButton text="primary" label="primary" color="primary" variant="solid" />
-  <CopyButton text="success" label="success" color="success" variant="soft" />
-  <CopyButton text="danger" label="danger" color="danger" variant="outlined" />
-  <CopyButton text="ghost" label="ghost" color="neutral" variant="ghost" />
+  <CopyButton
+    v-for="color in colors"
+    :key="color"
+    :text="color"
+    :label="color"
+    :color="color"
+    variant="solid"
+  />
+  <CopyButton
+    v-for="variant in variants"
+    :key="variant"
+    :text="variant"
+    :label="variant"
+    color="primary"
+    :variant="variant"
+  />
 </template>

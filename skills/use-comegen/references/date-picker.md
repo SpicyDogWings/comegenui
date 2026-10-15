@@ -134,8 +134,8 @@ formatos de fecha (`format`) y de mes/año (`month-format`/`year-format`), naveg
 | ------ | ------ | ------ |
 | `select` | `Date \| { start: Date \| null; end: Date \| null; }` | — |
 | `change` | `Date \| { start: Date \| null; end: Date \| null; } \| null` | — |
-| `open` | — | — |
-| `close` | — | — |
+| `open` | — | Abre el panel. |
+| `close` | — | Cierra el panel. |
 | `update:modelValue` | `Date \| null` | — |
 | `update:startDate` | `Date \| null` | — |
 | `update:endDate` | `Date \| null` | — |
@@ -216,8 +216,8 @@ Ninguno.
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
 | `select` | `Date \| { start: Date \| null; end: Date \| null; }` | — |
-| `close` | — | — |
-| `open` | — | — |
+| `close` | — | Cierra el panel. |
+| `open` | — | Abre el panel. |
 | `update:modelValue` | `Date \| null` | — |
 | `change` | `Date \| { start: Date \| null; end: Date \| null; } \| null` | — |
 | `update:startDate` | `Date \| null` | — |

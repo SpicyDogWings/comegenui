@@ -1,8 +1,9 @@
+[← Volver](../README.md)
+
 # `<cu-navbar>`
 
-Barra de navegación vertical (tipo sidebar) con submenús, búsqueda (`filter`/`scroll`), modo compacto y opción responsive con hamburguesa + panel lateral.
-
-[← Volver](../README.md)
+Barra de navegación vertical (tipo sidebar) con submenús, búsqueda (`filter`/`scroll`), modo
+compacto y opción responsive con hamburguesa + panel lateral.
 
 ## Uso en HTML plano
 
@@ -14,6 +15,7 @@ Barra de navegación vertical (tipo sidebar) con submenús, búsqueda (`filter`/
 <script>
   const nav = document.getElementById('nav');
   await customElements.whenDefined('cu-navbar');
+
   nav.items = [
     { label: 'Inicio', path: '/' },
     { label: 'Usuarios', children: [
@@ -29,9 +31,7 @@ Barra de navegación vertical (tipo sidebar) con submenús, búsqueda (`filter`/
 
 <!-- demo:navbar-uso -->
 
----
-
-## Estructura de `items`
+`items` es la estructura de navegación y **se asigna como propiedad JS**, no como atributo HTML:
 
 ```ts
 interface NavItem {
@@ -42,38 +42,90 @@ interface NavItem {
 }
 ```
 
----
+## Búsqueda
 
-## Modo compacto y responsive
+`search` muestra el input (`search-placeholder` cambia su texto). `search-mode` decide qué pasa
+con los items que no matchean: `filter` (**default**) los oculta y `scroll` los deja y resalta +
+desplaza al primero. `searchFields` limita en qué campos busca (vacío = todos los strings).
 
 ```html
-<cu-navbar id="nav2" compact trigger="hover"></cu-navbar>
-<cu-navbar id="nav3" responsive responsive-mode="side" side-over-position="right"></cu-navbar>
+<cu-navbar id="navFiltro" search search-placeholder="Buscar y filtrar…"></cu-navbar>
+<cu-navbar id="navScroll" search search-mode="scroll"
+  search-placeholder="Buscar y resaltar…"></cu-navbar>
+
+<script>
+  const items = [/* … */];
+
+  const filtro = document.getElementById('navFiltro');
+  filtro.items = items;
+  filtro.searchFields = ['label']; // si se omite, busca en todos los campos string
+
+  document.getElementById('navScroll').items = items;
+</script>
 ```
 
-<!-- demo:navbar-compacto-responsive -->
+<!-- demo:navbar-busqueda -->
 
----
+## Modo compacto
+
+`compact` deja sólo los iconos (o la inicial del label) y los submenús abren como flyout;
+`trigger` define si abren con `click` (**default**) o con `hover`.
+
+```html
+<cu-navbar id="navClick" compact trigger="click"></cu-navbar>
+<cu-navbar id="navHover" compact trigger="hover"></cu-navbar>
+```
+
+<!-- demo:navbar-compacto -->
+
+> `trigger` sólo aplica en modo compacto: con la nav expandida los submenús siempre abren con
+> click.
+
+## Compactable y colapsado
+
+`compactable` agrega el botón nativo que alterna el modo compacto (sin manejar estado afuera) y
+`collapsed` hace que los submenús arranquen cerrados.
+
+```html
+<cu-navbar id="navCompactable" compactable collapsed trigger="click"></cu-navbar>
+```
+
+<!-- demo:navbar-compactable -->
+
+## Responsive
+
+`responsive` reemplaza la nav inline por una hamburguesa que abre el menú en un panel lateral.
+`responsive-mode` acepta `auto` (**default**: fullscreen en pantallas muy chicas y lateral en el
+resto), `side` (siempre lateral) y `fullscreen`; `side-over-position` elige desde qué borde
+desliza (`left` —**default**—, `right`, `top`, `bottom`).
+
+```html
+<cu-navbar responsive responsive-mode="auto"></cu-navbar>
+<cu-navbar responsive responsive-mode="side"></cu-navbar>
+<cu-navbar responsive responsive-mode="fullscreen"></cu-navbar>
+
+<cu-navbar responsive responsive-mode="side" side-over-position="left"></cu-navbar>
+<cu-navbar responsive responsive-mode="side" side-over-position="right"></cu-navbar>
+<cu-navbar responsive responsive-mode="side" side-over-position="top"></cu-navbar>
+<cu-navbar responsive responsive-mode="side" side-over-position="bottom"></cu-navbar>
+```
+
+<!-- demo:navbar-responsive -->
+
+## Activo
+
+`active-path` marca qué item se ve como activo. Si se omite y hay router, se toma de la ruta
+actual.
+
+```html
+<cu-navbar active-path="#usuarios"></cu-navbar>
+```
+
+<!-- demo:navbar-activo -->
 
 ## Atributos
 
-<!-- @api:atributos -->
-| Atributo | Tipo | Default | Descripción |
-| ------ | ------ | ------ | ------ |
-| `search-placeholder` | `string` | `'Buscar...'` | Placeholder del input de búsqueda |
-| `search-fields` | `string[]` | `[]` | Campos del item a buscar. **Se asigna como propiedad JS.** Vacío = busca en todos los campos string |
-| `compact` | `boolean` | `false` | Modo compacto: muestra solo iconos (o la inicial del label) |
-| `trigger` | `"click" \| "hover"` | `'click'` | Cómo abren los submenús en modo compact (flyout): `click` o `hover` |
-| `search` | `boolean` | `false` | Muestra el input de búsqueda |
-| `search-mode` | `"filter" \| "scroll"` | `'filter'` | `filter` (oculta los que no matchean) o `scroll` (resalta y hace scroll al primero que matchea) |
-| `compactable` | `boolean` | `false` | Agrega un botón nativo que alterna el modo compacto |
-| `collapsed` | `boolean` | `false` | Los submenús arrancan colapsados en lugar de expandidos |
-| `responsive` | `boolean` | `false` | En lugar de la nav inline, muestra una hamburguesa que abre el menú en un panel lateral |
-| `responsive-mode` | `"auto" \| "side" \| "fullscreen"` | `'auto'` | `auto` (fullscreen en pantallas muy chicas, lateral en el resto), `side` (siempre lateral) o `fullscreen` (siempre pantalla completa) |
-| `side-over-position` | `"left" \| "right" \| "bottom" \| "top"` | `'left'` | Borde desde donde desliza el panel del responsive: `left`, `right`, `top`, `bottom` |
-| `active-path` | `string` | `''` | Path activo manual. Si se omite, se toma de la ruta (cuando hay router) |
-| `items` | `unknown[]` | `—` | Estructura de navegación. **Se asigna como propiedad JS** |
-<!-- /@api:atributos -->
+<!--@include: ../partials/navbar/props-vanilla.md-->
 
 > **`items` se asigna como propiedad JS**, no como atributo HTML:
 
@@ -94,20 +146,12 @@ nav.items = [
 
 ## Eventos
 
-<!-- @api:eventos -->
-| Evento | Payload (`e.detail`) | Descripción |
-| ------ | ------ | ------ |
-| `search` | `string` | — |
-<!-- /@api:eventos -->
+<!--@include: ../partials/navbar/eventos.md-->
 
 ## Slots
 
-<!-- @api:slots -->
-Ninguno.
-<!-- /@api:slots -->
+<!--@include: ../partials/navbar/slots.md-->
 
 ## Métodos expuestos
 
-<!-- @api:metodos -->
-No expone métodos.
-<!-- /@api:metodos -->
+<!--@include: ../partials/navbar/metodos.md-->

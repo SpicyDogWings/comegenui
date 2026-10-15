@@ -1,10 +1,8 @@
+[← Volver](../README.md)
+
 # `Collapse`
 
 Sección colapsable con trigger (botón + chevron animado). El contenido se muestra/oculta con una transición de altura. Útil para acordeones, menús anidados o secciones "más información".
-
-[← Volver](../README.md)
-
----
 
 ## Uso en Vue
 
@@ -20,35 +18,64 @@ import Collapse from "@/components/overlay/Collapse.vue";
 </template>
 ```
 
-## Abierto por defecto
-
-```vue
-<template>
-  <Collapse label="Opciones avanzadas" default-open>
-    <p>Visible desde el inicio gracias a <code>default-open</code>.</p>
-  </Collapse>
-</template>
-```
+En HTML plano, cargá el bundle `CuCollapse` (ver [ficha vanilla](/componentes/cu-collapse)).
 
 ## Colores
 
+`color` es un nombre semántico del trigger (`ghost`), resuelto con los tokens del tema
+activo. Los 6 valores son `primary`, `secondary`, `neutral` (**default**), `success`,
+`warning` y `danger`.
+
 ```vue
 <template>
-  <Collapse label="Información" color="primary">...</Collapse>
-  <Collapse label="Éxito" color="success">...</Collapse>
-  <Collapse label="Advertencia" color="warning">...</Collapse>
-  <Collapse label="Peligro" color="danger">...</Collapse>
+  <Collapse label="primary" color="primary" default-open><p>…</p></Collapse>
+  <Collapse label="secondary" color="secondary" default-open><p>…</p></Collapse>
+  <Collapse label="neutral" color="neutral" default-open><p>…</p></Collapse>
+  <Collapse label="success" color="success" default-open><p>…</p></Collapse>
+  <Collapse label="warning" color="warning" default-open><p>…</p></Collapse>
+  <Collapse label="danger" color="danger" default-open><p>…</p></Collapse>
 </template>
 ```
 
 ## Descripción
 
-`description` agrega una línea de texto secundario bajo el `label`, dentro del mismo trigger. Es opcional y, si queda vacía (default `''`), no se renderiza nada.
+`description` agrega una línea de texto secundario bajo el `label`, dentro del mismo trigger.
+Es opcional y, si queda vacía (default `''`), no se renderiza nada.
 
 ```vue
 <template>
   <Collapse label="Plan Pro" description="Facturación mensual, cancela cuando quieras">
-    <p>...</p>
+    <p>…</p>
+  </Collapse>
+</template>
+```
+
+## Ícono
+
+`icon` acepta un string SVG/HTML que se inyecta **antes del label**, dentro del trigger.
+
+```vue
+<script setup lang="ts">
+const estrella =
+  '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.5 2.5 14 9l6.5.5-5 4.3 1.5 6.4-5.5-3.4L6 20.2l1.5-6.4-5-4.3L9 9z"/></svg>';
+</script>
+
+<template>
+  <Collapse label="Con ícono" :icon="estrella" color="warning" default-open>
+    <p>El ícono se renderiza antes del label, dentro del trigger.</p>
+  </Collapse>
+</template>
+```
+
+## Abierto por defecto
+
+`default-open` arranca el collapse abierto, sin pasar por el evento `toggle` (sólo define el
+estado inicial).
+
+```vue
+<template>
+  <Collapse label="Opciones avanzadas" default-open>
+    <p>Visible desde el inicio gracias a <code>default-open</code>.</p>
   </Collapse>
 </template>
 ```
@@ -154,44 +181,18 @@ function toggleFaq() {
 </template>
 ```
 
----
-
 ## Props
 
-<!-- @api:props -->
-| Prop | Tipo | Default | Descripción |
-| ------ | ------ | ------ | ------ |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `'neutral'` | — |
-| `disabled` | `boolean` | `false` | Deshabilita el trigger: no responde al click del usuario. |
-| `icon` | `string` | `''` | Ícono del trigger (SVG/HTML). |
-| `description` | `string` | `''` | Texto secundario que se muestra bajo el label en el trigger. |
-| `defaultOpen` | `boolean` | `false` | — |
-| `label` | `string` | `—` | — |
-<!-- /@api:props -->
+<!--@include: ../../partials/collapse/props-vue.md-->
 
 ## Emits
 
-<!-- @api:emits -->
-| Evento | Payload | Descripción |
-| ------ | ------ | ------ |
-| `toggle` | `boolean` | — |
-<!-- /@api:emits -->
+<!--@include: ../../partials/collapse/eventos.md-->
 
 ## Slots
 
-<!-- @api:slots -->
-| Slot | Descripción |
-| ------ | ------ |
-| `default` | — |
-<!-- /@api:slots -->
+<!--@include: ../../partials/collapse/slots.md-->
 
 ## Expose
 
-<!-- @api:expose -->
-| Método | Descripción |
-| ------ | ------ |
-| `open` | Abre el collapse. |
-| `close` | Cierra el collapse. |
-| `toggle` | Alterna el estado del collapse. |
-| `isOpen` | Devuelve true si el collapse está abierto. |
-<!-- /@api:expose -->
+<!--@include: ../../partials/collapse/metodos-vue.md-->

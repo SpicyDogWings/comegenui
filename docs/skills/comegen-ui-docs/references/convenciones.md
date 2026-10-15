@@ -10,18 +10,18 @@ Reglas que aplican a **todos** los `.md` de la skill `comegen-ui`. Cuando docume
 ## Encabezado
 
 ```markdown
+[← Volver](../README.md)
+
 # `<cu-button>`
 
 Descripción corta (1 línea) de qué hace el componente.
-
-[← Volver](../README.md)
 
 ---
 ```
 
 - El título usa el tag con backticks.
 - La descripción es funcional, no técnica ("Botón con soporte de color, variante y link", no "Componente Vue que renderiza un button con props...").
-- El link "← Volver" es relativo y va en la línea siguiente a la descripción.
+- El link "← Volver" es relativo y va **arriba del H1** (primera línea del archivo).
 - El `---` separa el encabezado del cuerpo.
 
 ## Secciones del cuerpo
@@ -257,7 +257,7 @@ Documentá los cuatro si existen.
 
 Desde `docs/componentes/cu-xxx.md` (o `docs/componentes/vue/xxx.md`):
 
-- Volver al índice de fichas: `[← Volver](../README.md)`
+- Volver al índice de fichas: `[← Volver](../README.md)` (va **arriba del H1**)
 - Link a la ficha de otro componente: `[`<cu-alert>`](cu-alert.md)`
 
 Desde `docs/componentes/README.md` (el índice de fichas):

@@ -1,25 +1,42 @@
+[← Volver](../README.md)
+
 # `<cu-badge>`
 
-Etiqueta o badge pequeño para estados, categorías o metadata. Componente de presentación pura: no emite eventos ni expone métodos.
+Etiqueta pequeña para estados, categorías o metadata. `color` define el color semántico,
+`variant` el aspecto y el slot `default` el contenido (texto, un ícono o los dos).
 
-[← Volver](../README.md)
+Es de presentación pura: no emite eventos ni expone métodos.
 
 ## Uso en HTML plano
 
 ```html
 <script src="dist-libs/umd-core/CuBadge.umd.js"></script>
 
-<cu-badge color="primary" variant="solid">Nuevo</cu-badge>
-<cu-badge color="success" variant="soft">Activo</cu-badge>
-<cu-badge color="warning" variant="outlined">Pendiente</cu-badge>
-<cu-badge color="danger" variant="subtle">Error</cu-badge>
+<cu-badge color="primary" variant="soft">Nuevo</cu-badge>
 ```
 
-<!-- demo:badge-uso -->
+En Vue, importá `Badge` de `@/components/information/Badge.vue` (ver [ficha Vue](/componentes/vue/badge)).
 
----
+## Colores
 
-## Variantes visuales
+`color` es un nombre semántico, no un hex: se resuelve con los tokens del tema activo
+(`--cu-color-{color}*`), así que el mismo nombre se ve distinto en cada tema.
+
+```html
+<cu-badge color="primary" variant="soft">primary</cu-badge>
+<cu-badge color="secondary" variant="soft">secondary</cu-badge>
+<cu-badge color="neutral" variant="soft">neutral</cu-badge>
+<cu-badge color="success" variant="soft">success</cu-badge>
+<cu-badge color="warning" variant="soft">warning</cu-badge>
+<cu-badge color="danger" variant="soft">danger</cu-badge>
+```
+
+<!-- demo:badge-colores -->
+
+## Variantes
+
+`variant` decide el aspecto: `solid` (relleno), `outlined` (borde), `soft` (fondo tenue y el
+**default**), `ghost` (transparente) y `subtle` (tenue con borde).
 
 ```html
 <cu-badge color="primary" variant="solid">solid</cu-badge>
@@ -31,48 +48,45 @@ Etiqueta o badge pequeño para estados, categorías o metadata. Componente de pr
 
 <!-- demo:badge-variantes -->
 
----
+## Contenido
 
-## Con ícono
+El contenido va por el slot `default`: texto, un `<svg>` inline, o los dos. No hay prop ni
+slot `icon` — el ícono es el mismo marcado del slot, así que hereda el color del badge con
+`stroke="currentColor"`.
 
 ```html
+<cu-badge color="neutral" variant="outlined">Sólo texto</cu-badge>
+
 <cu-badge color="success" variant="soft">
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline-block;vertical-align:middle;margin-right:4px">
-    <path d="M20 6 9 17l-5-5"/>
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+    <path d="M20 6 9 17l-5-5" />
   </svg>
   Verificado
 </cu-badge>
+
+<cu-badge color="primary" variant="solid" aria-label="Nuevo">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+    <path d="M12 5v14M5 12h14" />
+  </svg>
+</cu-badge>
 ```
 
-<!-- demo:badge-con-icono -->
+<!-- demo:badge-contenido -->
 
----
+> Un badge sin texto necesita `aria-label` para no quedar sin nombre accesible.
 
 ## Atributos
 
-<!-- @api:atributos -->
-| Atributo | Tipo | Default | Descripción |
-| ------ | ------ | ------ | ------ |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | `solid`, `outlined`, `soft`, `ghost`, `subtle` |
-<!-- /@api:atributos -->
+<!--@include: ../partials/badge/props.md-->
 
 ## Eventos
 
-<!-- @api:eventos -->
-Ninguno.
-<!-- /@api:eventos -->
+<!--@include: ../partials/badge/eventos.md-->
 
 ## Slots
 
-<!-- @api:slots -->
-| Slot | Descripción |
-| ------ | ------ |
-| `default` | — |
-<!-- /@api:slots -->
+<!--@include: ../partials/badge/slots.md-->
 
 ## Métodos expuestos
 
-<!-- @api:metodos -->
-No expone métodos.
-<!-- /@api:metodos -->
+<!--@include: ../partials/badge/metodos.md-->

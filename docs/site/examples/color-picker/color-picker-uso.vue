@@ -1,42 +1,17 @@
 <script setup lang="ts">
-// Refleja el ejemplo "Uso en HTML plano": `set()` / `get()` y el evento `change`.
-import { onMounted, ref } from "vue";
+// Refleja el ejemplo "Uso en HTML plano": cargás el bundle y escuchás `change`.
+import { ref } from "vue";
 
-const cp = ref<HTMLElement | null>(null);
-const salida = ref("(sin llamadas todavía)");
-
-type CpEl = HTMLElement & { set: (val: string) => void; get: () => string };
-
-function el(): CpEl | null {
-  return cp.value as unknown as CpEl | null;
-}
+const ultimo = ref("(sin cambios todavía)");
 
 function onCambio(e: Event) {
-  salida.value = `change → ${(e as CustomEvent).detail}`;
+  ultimo.value = (e as CustomEvent<string>).detail;
 }
-
-function setear() {
-  el()?.set("#ff5733");
-  leer();
-}
-
-function leer() {
-  salida.value = `get() → ${el()?.get()}`;
-}
-
-onMounted(async () => {
-  await customElements.whenDefined("cu-color-picker");
-  el()?.set("#ff5733");
-});
 </script>
 
 <template>
   <VanillaDemo :use="['CuColorPicker']">
-    <cu-color-picker ref="cp" color="primary" @change="onCambio"></cu-color-picker>
-    <div class="cu-demo-controls">
-      <button type="button" @click="setear">set('#ff5733')</button>
-      <button type="button" @click="leer">get()</button>
-    </div>
-    <pre class="cu-demo-output">{{ salida }}</pre>
+    <cu-color-picker color="primary" @change="onCambio"></cu-color-picker>
+    <pre class="cu-demo-output">change → {{ ultimo }}</pre>
   </VanillaDemo>
 </template>

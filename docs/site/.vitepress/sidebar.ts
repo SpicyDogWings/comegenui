@@ -34,6 +34,12 @@ export interface SidebarGroup {
   items: { text: string; link: string }[];
 }
 
+interface Entry {
+  text: string;
+  link: string;
+  group: string;
+}
+
 /** Lee un campo escalar del frontmatter (soporta `title`/`group` sin YAML). */
 function frontmatterField(source: string, field: string): string | null {
   const block = /^---\r?\n([\s\S]*?)\r?\n---/.exec(source);
@@ -42,9 +48,9 @@ function frontmatterField(source: string, field: string): string | null {
   return line ? line[1]!.replace(/^["']|["']$/g, "") : null;
 }
 
-/** Entradas de un directorio de páginas, agrupadas y ordenadas. */
-function buildFamily(dir: string, routeBase: string): SidebarGroup[] {
-  const entries: { text: string; link: string; group: string }[] = [];
+/** Entradas de un directorio de páginas. */
+function entriesOf(dir: string, routeBase: string): Entry[] {
+  const entries: Entry[] = [];
   for (const file of readdirSync(dir)) {
     if (!file.endsWith(".md")) continue;
     const source = readFileSync(resolve(dir, file), "utf-8");
@@ -56,12 +62,16 @@ function buildFamily(dir: string, routeBase: string): SidebarGroup[] {
     }
     entries.push({ text: title, link: `${routeBase}/${file.slice(0, -3)}`, group });
   }
+  return entries;
+}
 
+/** Agrupa y ordena las entradas de una familia. */
+function assemble(entries: Entry[]): SidebarGroup[] {
   const rank = (group: string) => {
     const position = GROUP_ORDER.indexOf(group);
     return position < 0 ? GROUP_ORDER.length : position;
   };
-  const byGroup = new Map<string, typeof entries>();
+  const byGroup = new Map<string, Entry[]>();
   for (const entry of entries) {
     const list = byGroup.get(entry.group) ?? [];
     list.push(entry);
@@ -80,12 +90,12 @@ function buildFamily(dir: string, routeBase: string): SidebarGroup[] {
 
 /** Sidebar de la doc del Custom Element (`/componentes/cu-x`). */
 export function buildVanillaSidebar(routeBase = "/componentes"): SidebarGroup[] {
-  return buildFamily(componentesDir, routeBase);
+  return assemble(entriesOf(componentesDir, routeBase));
 }
 
 /** Sidebar de la doc Vue (`/componentes/vue/x`). */
 export function buildVueSidebar(routeBase = "/componentes/vue"): SidebarGroup[] {
-  return buildFamily(vueDir, routeBase);
+  return assemble(entriesOf(vueDir, routeBase));
 }
 
 /**

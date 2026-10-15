@@ -134,6 +134,7 @@ default como texto, `change` con el boolean nuevo, y los métodos `get`/`set`/`r
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
 | `update:modelValue` | `boolean` | — |
+| `change` | — | — |
 <!-- /@api:emits -->
 
 ### Slots
@@ -149,8 +150,8 @@ default como texto, `change` con el boolean nuevo, y los métodos `get`/`set`/`r
 <!-- @api:expose -->
 | Método | Descripción |
 | ------ | ------ |
-| `get` | — |
-| `set` | — |
-| `reset` | — |
+| `get` | Devuelve el estado actual del switch. |
+| `set` | Setea el estado del switch y emite change. |
+| `reset` | Apaga el switch y emite change. |
 | `focus` | Enfoca el input nativo. |
 <!-- /@api:expose -->

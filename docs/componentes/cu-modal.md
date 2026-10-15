@@ -1,8 +1,9 @@
+[← Volver](../README.md)
+
 # `<cu-modal>`
 
-Modal/diálogo con backdrop, animación, soporte para `size`/`height` y slot `footer`. Distingue entre el evento de inicio de cierre (`close`) y la animación de cierre completa (`closed`).
-
-[← Volver](../README.md)
+Modal/diálogo con backdrop, animación, `color`, `size`/`height` y slots `icon`/`default`/`footer`.
+Distingue el inicio del cierre (`close`) del final de la animación (`closed`).
 
 ## Uso en HTML plano
 
@@ -31,27 +32,51 @@ Modal/diálogo con backdrop, animación, soporte para `size`/`height` y slot `fo
 
 <!-- demo:modal-uso -->
 
----
+El modal no se monta ni se desmonta: se abre y se cierra con `open()`/`close()`. El contenido va
+en el slot `default` y la cabecera se arma con `title` + `description`.
 
-## Sizes
+## Colores
+
+`color` tiñe el título y el acento de la cabecera (`--cu-color-{color}`).
 
 ```html
-<cu-modal size="sm" title="Pequeño">...</cu-modal>
-<cu-modal size="md" title="Mediano">...</cu-modal>
-<cu-modal size="lg" title="Grande">...</cu-modal>
-<cu-modal size="xl" title="Extra grande">...</cu-modal>
-<cu-modal size="full" title="Pantalla completa">...</cu-modal>
+<cu-modal color="primary" title="primary">...</cu-modal>
+<cu-modal color="secondary" title="secondary">...</cu-modal>
+<cu-modal color="neutral" title="neutral">...</cu-modal>
+<cu-modal color="success" title="success">...</cu-modal>
+<cu-modal color="warning" title="warning">...</cu-modal>
+<cu-modal color="danger" title="danger">...</cu-modal>
+```
+
+<!-- demo:modal-colores -->
+
+## Tamaños
+
+`size` controla el ancho máximo y `height`, el alto: cada uno acepta `auto` (**default**), `sm`,
+`md`, `lg`, `xl` y `full`.
+
+```html
+<cu-modal size="auto" title="Ancho auto (default)">...</cu-modal>
+<cu-modal size="sm" title="Ancho sm">...</cu-modal>
+<cu-modal size="md" title="Ancho md">...</cu-modal>
+<cu-modal size="lg" title="Ancho lg">...</cu-modal>
+<cu-modal size="xl" title="Ancho xl">...</cu-modal>
+<cu-modal size="full" title="Ancho full">...</cu-modal>
+
+<cu-modal size="md" height="auto" title="Alto auto (default)">...</cu-modal>
+<cu-modal size="md" height="sm" title="Alto sm">...</cu-modal>
+<cu-modal size="md" height="md" title="Alto md">...</cu-modal>
+<cu-modal size="md" height="lg" title="Alto lg">...</cu-modal>
+<cu-modal size="md" height="xl" title="Alto xl">...</cu-modal>
+<cu-modal size="md" height="full" title="Alto full">...</cu-modal>
 ```
 
 <!-- demo:modal-sizes -->
 
-`size` controla el ancho; `height` controla el alto. Aceptan los mismos valores.
+## Persistente
 
----
-
-## Modal persistente
-
-Útil para formularios donde no querés perder datos por un click accidental:
+`persistent` saca la cruz de cierre y hace que el modal **no** se cierre con click en el backdrop
+ni con `Escape`: los datos de un formulario no se pierden por un click accidental.
 
 ```html
 <cu-modal id="modalForm" persistent title="Editar perfil">
@@ -67,19 +92,78 @@ Modal/diálogo con backdrop, animación, soporte para `size`/`height` y slot `fo
 
 <!-- demo:modal-persistente -->
 
----
+> En `persistent`, el footer por defecto muestra `Cancelar` y `Aceptar`, que emiten `cancel` y
+> `accept`.
 
-## Escuchar eventos
+## Contenido y pie
 
-```js
-const modal = document.getElementById('modalConfirm');
+`icon` va a la izquierda del título, `default` es el cuerpo y `footer` reemplaza los botones por
+defecto.
 
-modal.addEventListener('opened', () => console.log('modal abierto'));
-modal.addEventListener('close', () => console.log('iniciando cierre'));
-modal.addEventListener('closed', () => console.log('cierre completo'));
+```html
+<cu-modal id="modalSlots" title="Slots del modal" color="success">
+  <svg slot="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+       stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M20 6 9 17l-5-5" />
+  </svg>
+
+  <p>Este es el slot <code>default</code>.</p>
+
+  <div slot="footer">
+    <cu-button variant="ghost" onclick="document.getElementById('modalSlots').close()">
+      Cancelar
+    </cu-button>
+    <cu-button color="success" variant="solid" onclick="document.getElementById('modalSlots').close()">
+      Confirmar
+    </cu-button>
+  </div>
+</cu-modal>
 ```
 
----
+<!-- demo:modal-slots -->
+
+## Interacción
+
+`opened` avisa al abrir; al cerrar se emiten `close` (arranca el cierre) y `closed` (terminó la
+animación). `accept` y `cancel` sólo salen de los botones del footer por defecto.
+
+```html
+<cu-modal id="modalEventos" title="Todos los eventos">...</cu-modal>
+
+<script>
+  const modal = document.getElementById('modalEventos');
+
+  modal.addEventListener('opened', () => console.log('modal abierto'));
+  modal.addEventListener('close', () => console.log('iniciando cierre'));
+  modal.addEventListener('closed', () => console.log('cierre completo'));
+  modal.addEventListener('accept', () => console.log('aceptado'));
+  modal.addEventListener('cancel', () => console.log('cancelado'));
+</script>
+```
+
+<!-- demo:modal-eventos -->
+
+> Si el modal es `persistent`, no se emiten `close`/`closed`/`cancel` por click en backdrop o
+> `Escape`: sólo cuando llamás a `.close()` programáticamente.
+
+## API imperativa
+
+`open()` abre, `close()` cierra, `toggle()` alterna y `isOpen()` devuelve el estado actual.
+
+```html
+<cu-modal id="modalProgramatico" title="Control programático">...</cu-modal>
+
+<script>
+  const modal = document.getElementById('modalProgramatico');
+
+  modal.open();            // open()
+  modal.close();           // close()
+  modal.toggle();          // toggle()
+  console.log(modal.isOpen()); // isOpen() → true | false
+</script>
+```
+
+<!-- demo:modal-metodos -->
 
 ## Ejemplo completo
 
@@ -118,54 +202,22 @@ modal.addEventListener('closed', () => console.log('cierre completo'));
 
 <!-- demo:modal-completo -->
 
----
-
 ## Atributos
 
-<!-- @api:atributos -->
-| Atributo | Tipo | Default | Descripción |
-| ------ | ------ | ------ | ------ |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `size` | `"sm" \| "md" \| "lg" \| "auto" \| "xl" \| "full"` | `"auto"` | Ancho del modal: `auto`, `sm`, `md`, `lg`, `xl`, `full` |
-| `height` | `"sm" \| "md" \| "lg" \| "auto" \| "xl" \| "full"` | `"auto"` | Alto del modal: `auto`, `sm`, `md`, `lg`, `xl`, `full` |
-| `persistent` | `boolean` | `—` | Si es `true`, no se cierra con click en el backdrop ni con `Escape` |
-| `title` | `string` | `—` | Título del modal (se muestra en la cabecera) |
-| `description` | `string` | `—` | Descripción bajo el título (texto secundario) |
-<!-- /@api:atributos -->
+<!--@include: ../partials/modal/props-vanilla.md-->
 
 > El Custom Element **no expone** prop `variant` ni `theme`. El estilo se controla con `color`.
 
 ## Eventos
 
-<!-- @api:eventos -->
-| Evento | Payload (`e.detail`) | Descripción |
-| ------ | ------ | ------ |
-| `close` | — | — |
-| `opened` | — | — |
-| `closed` | — | — |
-| `cancel` | — | — |
-| `accept` | — | — |
-<!-- /@api:eventos -->
+<!--@include: ../partials/modal/eventos-vanilla.md-->
 
 > Si el modal es `persistent`, no se emiten `close`/`closed`/`cancel` por click en backdrop o `Escape`. Solo se emiten cuando llamás a `.close()` programáticamente.
 
 ## Slots
 
-<!-- @api:slots -->
-| Slot | Descripción |
-| ------ | ------ |
-| `icon` | — |
-| `default` | — |
-| `footer` | — |
-<!-- /@api:slots -->
+<!--@include: ../partials/modal/slots.md-->
 
 ## Métodos expuestos
 
-<!-- @api:metodos -->
-| Método | Descripción |
-| ------ | ------ |
-| `open` | Abre el modal |
-| `close` | Cierra el modal |
-| `toggle` | Alterna visibilidad |
-| `isOpen` | Devuelve el estado actual (`boolean`) |
-<!-- /@api:metodos -->
+<!--@include: ../partials/modal/metodos-vanilla.md-->
