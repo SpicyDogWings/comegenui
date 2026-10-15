@@ -75,7 +75,7 @@ collapse, modal, theme-manager-modal, …) sin tocar un solo componente.
 
 ## Pendiente (cuando se generalice)
 
-- `AGENTS.md` (regla 13) y la skill `comegen-ui-docs` siguen describiendo el esquema de **dos**
+- `AGENTS.md` (regla 13) y la skill `documenter` siguen describiendo el esquema de **dos**
   fichas: hay que actualizarlos cuando el piloto se extienda.
 - Quedan **469 celdas de descripción vacías en 64 fichas** (`scripts/docs-baseline.txt`): casi
   todas son props de los `.vue` **sin JSDoc** (el JSDoc es la fuente de la tabla). El chequeo

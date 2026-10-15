@@ -1,6 +1,6 @@
 # AGENTS.md — Arquitectura de Componentes ComegenUI
 
-> **Para desarrollar componentes**, seguí la estructura de 3 archivos de abajo (componente `.vue` + wrapper `.ce.vue` + entry `lib/`), documentá con la skill `comegen-ui-docs` y validá con el gate local `./scripts/guard.sh`. Consumir la lib en otro proyecto: skill de uso `use-comegen` (`.opencode/skills/use-comegen/`, no viaja en el zip).
+> **Para desarrollar componentes**, seguí la estructura de 3 archivos de abajo (componente `.vue` + wrapper `.ce.vue` + entry `lib/`), documentá con la skill `documenter` y validá con el gate local `./scripts/guard.sh`. Consumir la lib en otro proyecto: skill de uso `use-comegen` (`.opencode/skills/use-comegen/`, no viaja en el zip).
 
 ## Regla dura: no terminás sin veredicto verde
 
@@ -58,12 +58,13 @@ docs/
 │   └── README.md                          #   índice de fichas
 ├── partials/<kebab>/                      # Secciones de API compartidas entre las 2 fichas
 ├── site/                                  # Sitio VitePress (páginas a mano + ficha incluida)
+├── versiones/<id>/                        # DOC VERSIONADA: la doc es la fuente (ver nota 13)
 ├── notes/                                 # Notas internas de deuda/decisión
 └── skills/                                # Skills de dev (docs, preflight, release, marked)
 ```
 
 Sin pipeline de extracción: las fichas y las páginas se escriben a mano. La receta vive en la skill
-`comegen-ui-docs` y la ejecuta el subagente `.opencode/agent/comegen-docs.md` (`@comegen-docs`).
+`documenter` y la ejecuta el subagente `.opencode/agent/comegen-docs.md` (`@comegen-docs`).
 `pnpm site:sync` sólo genera el tema de VitePress (tokens CU
 → `docs/site/.vitepress/theme/*.gen.*`) desde `comegen.config.json`.
 
