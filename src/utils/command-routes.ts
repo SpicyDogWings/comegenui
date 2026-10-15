@@ -7,33 +7,33 @@ import { slugify } from "@/utils/slugify";
  * En el sitio VitePress no hay un router propio del SPA: la lista es estática
  * (Home, componentes, Theme Builder). La navegación es por URL.
  */
-function go(path: string) {
-  if (typeof window !== "undefined") window.location.href = path;
+function go(base: string, path: string) {
+  if (typeof window !== "undefined") window.location.href = `${base}${path}`;
 }
 
-export function navigationCommands(): CommandItem[] {
+export function navigationCommands(base = ""): CommandItem[] {
   return [
-    { id: "home", label: "Inicio", description: "/", category: "Páginas", action: () => go("/") },
+    { id: "home", label: "Inicio", description: "/", category: "Páginas", action: () => go(base, "/") },
     {
       id: "components",
       label: "Componentes",
       description: "/componentes",
       category: "Playground",
-      action: () => go("/componentes/cu-button"),
+      action: () => go(base, "/componentes/cu-button"),
     },
     {
       id: "theme-builder",
       label: "Theme Builder",
       description: "/theme-builder",
       category: "Herramientas",
-      action: () => go("/theme-builder"),
+      action: () => go(base, "/theme-builder"),
     },
     {
       id: "versionado",
       label: "Versionado y metadatos",
       description: "/versionado",
       category: "Páginas",
-      action: () => go("/versionado"),
+      action: () => go(base, "/versionado"),
     },
   ];
 }
@@ -67,6 +67,7 @@ const VANILLA_PREFIX = "/componentes/";
 export function componentCommands(
   sidebar: SidebarConfig | undefined | null,
   currentPath: string,
+  base = "",
 ): CommandItem[] {
   const config = sidebar ?? {};
   const mode = currentPath.startsWith(VUE_PREFIX) ? "vue" : "vanilla";
@@ -93,7 +94,7 @@ export function componentCommands(
       label: `Componente: ${text}`,
       description: link,
       category: "Componentes",
-      action: () => go(link),
+      action: () => go(base, link),
     });
   }
   return commands;

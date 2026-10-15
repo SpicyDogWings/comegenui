@@ -7,6 +7,14 @@ import shikiThemes from "./theme/shiki.gen.mjs";
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, "../../..");
 
+// Base del sitio. `scripts/docs-versions.mjs` la setea al construir una versión
+// congelada (`DOCS_BASE=/5.1.0/`); por defecto el sitio vive en la raíz.
+const BASE = (process.env.DOCS_BASE ?? "/").replace(/([^/])$/, "$1/");
+// Identidad de la versión que se está construyendo (la setea el mismo script).
+// Sin ella, el sitio es sólo "latest" y no se anuncia versión.
+const VERSION_ID = process.env.DOCS_VERSION_ID ?? "";
+const VERSION_LABEL = process.env.DOCS_VERSION_LABEL ?? VERSION_ID;
+
 const ROUTE_BASE = "/componentes";
 // El sidebar sale del frontmatter de `docs/site/componentes/**/*.md`, partido en
 // dos familias por prefijo de ruta: `/componentes/vue/` (doc Vue) y
@@ -63,9 +71,10 @@ function comejenDemoPlugin(md: {
 }
 
 export default defineConfig({
-  title: "ComegenUI",
+  title: VERSION_ID ? `ComegenUI ${VERSION_ID}` : "ComegenUI",
   description: "Componentes web de ComegenUI.",
   cleanUrls: true,
+  base: BASE,
   // Favicon propio de ComegenUI (el default `/favicon.ico` también se reemplaza
   // por el mismo ícono en `public/`).
   head: [
@@ -93,16 +102,18 @@ export default defineConfig({
   // la escribe el select del topbar) no coincide con el modo de esta página, el
   // browser salta a la contraparte sin pintar la página equivocada. Es lo único
   // en runtime y no decide qué se renderiza: el sidebar ya viene filtrado por
-  // prefijo de ruta en build.
+  // prefijo de ruta en build. La contraparte se prefija con `BASE` para que el
+  // salto quede dentro de la versión que se está viendo.
   transformHead({ pageData }) {
     const link = `/${pageData.relativePath.replace(/\.md$/, "")}`;
     const entry = modeMap.get(link);
     if (!entry) return;
+    const counterpart = `${BASE.replace(/\/$/, "")}${entry.counterpart}`;
     return [
       [
         "script",
         {},
-        `try{var m=localStorage.getItem("cu-docs-mode");if((m==="vue"||m==="vanilla")&&m!=="${entry.mode}")location.replace("${entry.counterpart}");}catch(e){}`,
+        `try{var m=localStorage.getItem("cu-docs-mode");if((m==="vue"||m==="vanilla")&&m!=="${entry.mode}")location.replace("${counterpart}");}catch(e){}`,
       ],
     ];
   },
@@ -113,6 +124,9 @@ export default defineConfig({
       { text: "Versionado", link: "/versionado" },
     ],
     sidebar,
+    // Identidad de esta versión para el select del topbar (el catálogo completo
+    // lo lee en runtime de `/versions.json`, que escribe `docs-versions.mjs`).
+    docsVersion: VERSION_ID ? { id: VERSION_ID, label: VERSION_LABEL } : undefined,
   },
   vite: {
     resolve: {

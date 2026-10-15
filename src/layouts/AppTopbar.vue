@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, onMounted, onBeforeUnmount } from "vue";
 import { useData } from "vitepress";
-import { version } from "../../package.json";
 import Badge from "@/components/information/Badge.vue";
 import LucideForm from "@/components/icons/LucideForm.vue";
 import LucideGitHub from "@/components/icons/LucideGitHub.vue";
@@ -9,22 +8,32 @@ import LucidePalette from "@/components/icons/LucidePalette.vue";
 import LucideSearch from "@/components/icons/LucideSearch.vue";
 import LucideTag from "@/components/icons/LucideTag.vue";
 import ThemeDropdown from "@/components/theme/ThemeDropdown.vue";
-import CommandPalette from "@/components/overlay/CommandPalette.vue";
+import CommandPalette, { type CommandItem } from "@/components/overlay/CommandPalette.vue";
 import { navigationCommands, componentCommands, type SidebarConfig } from "@/utils/command-routes";
 
-defineProps<{ fixed?: boolean }>();
+// `extraCommands`: comandos de contexto que aporta quien monta el topbar (el sitio
+// de docs inyecta los de versión). El app nativo no pasa ninguno.
+const props = defineProps<{ fixed?: boolean; extraCommands?: CommandItem[] }>();
 
-const { page, theme } = useData();
+const { page, site, theme } = useData();
+
+// El sitio puede vivir bajo una base (versiones de la doc: `/5.1.0/`). Los links
+// del topbar son absolutos, así que se prefijan con la base en vez de hardcodear.
+const base = computed(() => site.value.base.replace(/\/$/, ""));
+const href = (path: string) => `${base.value}${path}`;
 
 const navPaletteRef = ref<InstanceType<typeof CommandPalette> | null>(null);
 
 // La paleta lista los comandos fijos más un comando por componente, derivado del
 // sidebar de VitePress (`theme.sidebar`) y del modo de la página actual.
 const commands = computed(() => [
-  ...navigationCommands(),
+  ...navigationCommands(base.value),
+  // Contextuales (versión de la doc): antes de la lista larga de componentes.
+  ...(props.extraCommands ?? []),
   ...componentCommands(
     (theme.value.sidebar ?? {}) as SidebarConfig,
     `/${page.value.relativePath.replace(/\.md$/, "")}`,
+    base.value,
   ),
 ]);
 
@@ -46,13 +55,13 @@ onBeforeUnmount(() => {
 <template>
   <header class="app-topbar" :class="{ 'app-topbar--fixed': fixed }">
     <div class="app-topbar-left">
-      <a href="/" class="app-topbar-brand">
-        <img src="/img/comegen.webp" alt="ComegenUI" class="app-topbar-logo" />
+      <a :href="href('/')" class="app-topbar-brand">
+        <img :src="href('/img/comegen.webp')" alt="ComegenUI" class="app-topbar-logo" />
         ComegenUI
       </a>
-      <Badge color="neutral" variant="subtle">v{{ version }}</Badge>
+      <slot name="version" />
       <a
-        href="/componentes/cu-button"
+        :href="href('/componentes/cu-button')"
         class="app-topbar-icon"
         aria-label="Componentes"
         title="Componentes"
@@ -60,7 +69,7 @@ onBeforeUnmount(() => {
         <LucideForm />
       </a>
       <a
-        href="/versionado"
+        :href="href('/versionado')"
         class="app-topbar-icon"
         aria-label="Versionado y metadatos"
         title="Versionado y metadatos"
@@ -92,7 +101,7 @@ onBeforeUnmount(() => {
       </Badge>
       <slot name="actions" />
       <a
-        href="/theme-builder"
+        :href="href('/theme-builder')"
         class="app-topbar-icon"
         aria-label="Theme Builder"
         title="Theme Builder"

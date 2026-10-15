@@ -6,6 +6,8 @@
   "scripts": {
     "build:docs:lib": "COMEGEN_CONFIGS=esm-shared COMEGEN_NO_ZIP=1 pnpm build:lib",
     "deploy:docs": "pnpm build && vercel link --cwd docs/site/.vitepress/dist --project comegenui-docs --yes && vercel --cwd docs/site/.vitepress/dist --prod --yes",
+    "docs:versions": "node scripts/docs-versions.mjs",
+    "deploy:docs:versions": "pnpm docs:versions && vercel link --cwd docs/site/.vitepress/dist-versions --project comegenui-docs --yes && vercel --cwd docs/site/.vitepress/dist-versions --prod --yes",
     "dev": "pnpm build:docs:lib && pnpm site:sync && vitepress dev docs/site",
     "build": "pnpm build:docs:lib && pnpm site:sync && vitepress build docs/site",
     "preview": "vitepress preview docs/site",
