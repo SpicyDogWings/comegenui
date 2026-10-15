@@ -2,6 +2,7 @@
   "name": "comegenui",
   "version": "5.1.1",
   "private": true,
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "build:docs:lib": "COMEGEN_CONFIGS=esm-shared COMEGEN_NO_ZIP=1 pnpm build:lib",
