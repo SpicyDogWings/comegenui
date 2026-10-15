@@ -1,91 +1,39 @@
 # Input — `<cu-input>` / `<Input>`
 
-Input de texto con color, variante, tipos HTML5 y métodos `get`/`set`/`reset`. Es la base de los
-campos de formulario.
-
-## Cuándo usarlo
-
-Para capturar texto, números, email, teléfono, URL o búsqueda en una línea. Para multilínea usá
-`<cu-textarea>`; para elegir entre opciones, `<cu-select>`.
+Input de texto de una línea con color, variante, tipos HTML5 y `get`/`set`/`reset`. Para
+multilínea usá `<cu-textarea>`; para elegir entre opciones, `<cu-select>`.
 
 ## Receta
 
-1. El valor lo maneja el propio campo al tipear; enlazá `v-model` en Vue o `model-value` en
-   vanilla sólo si querés controlarlo. El valor es un **string** (también con `type="number"`).
-2. Elegí el `type` (`text`, `password`, `email`, `number`, `tel`, `url`, `search`).
-3. Estilá con `color` (default `neutral`), `variant` (default `soft`) y `size` (`sm`/`md`/`lg`,
-   default `md`).
-4. Leé/escribí con `get()` / `set()`; `reset()` limpia el campo y `focus()` lo enfoca.
-5. Los eventos nativos (`input`, `change`, `focus`, `blur`) burbujean desde el shadow DOM; el cambio
-   de valor custom llega por `update:modelValue`.
-6. `disabled` y `readonly` deshabilitan la edición; `readonly` en HTML se escribe con la convención
-   nativa.
+- Valor **string** (también con `type="number"`): el campo lo sincroniza al tipear; usá
+  `model-value`/`v-model` sólo para controlarlo.
+- Tipos: `text` (default), `password`, `email`, `number`, `tel`, `url`, `search`.
+- Estilo: `color` (default `neutral`), `variant` (default `soft`), `size` (default `md`).
+- Lectura/escritura: `get()` / `set()` / `reset()` / `focus()`.
+- Eventos: `update:modelValue` para el valor; `input` / `change` / `focus` / `blur` son nativos y
+  burbujean desde el shadow DOM.
+- `disabled` y `read-only` bloquean la edición.
 
 ```html
-<!-- HTML plano (UMD) -->
-<cu-input
-  id="email"
-  type="email"
-  placeholder="correo@ejemplo.com"
-  color="primary"
-  variant="outlined"
-></cu-input>
-
-<script src="dist-libs/umd-core/CuInput.umd.js"></script>
-<script>
-  const input = document.getElementById('email');
-
-  input.addEventListener('update:modelValue', (e) => {
-    console.log('Valor:', e.detail);
-  });
-
-  input.set('usuario@dominio.com');
-  console.log(input.get());
-  input.focus();
-</script>
+<cu-input type="<type>" placeholder="<texto>" color="<color>" variant="<variant>" size="<size>"></cu-input>
 ```
 
 ```vue
-<!-- Vue -->
-<script setup lang="ts">
-import Input from "@/components/form/Input.vue";
-import { ref } from "vue";
-
-const email = ref("");
-</script>
-
-<template>
-  <Input
-    v-model="email"
-    type="email"
-    placeholder="correo@ejemplo.com"
-    color="primary"
-    variant="outlined"
-  />
-  <Input v-model="email" type="search" size="sm" @update:model-value="(v: string) => console.log(v)" />
-</template>
+<Input v-model="<ref>" type="<type>" placeholder="<texto>" color="<color>" variant="<variant>" />
 ```
 
-## Qué puede y qué no puede
+Los valores de `type` / `color` / `variant` / `size` están en «Atributos» / «Props», abajo.
 
-**Puede:** 6 colores (`primary`, `secondary`, `neutral`, `success`, `warning`, `danger`), 4 variantes
-(`outlined`, `soft`, `ghost`, `subtle`), 3 tamaños (`sm`, `md`, `lg`), 7 tipos HTML5, `placeholder`,
-`disabled` y `read-only`. Expone `get`/`set`/`reset`/`focus` y emite `update:modelValue`.
+## Límites
 
-**No puede:**
-
-- **No hay evento custom `input` ni `change`.** Esos son nativos y burbujean; el evento custom de
-  valor es `update:modelValue`.
-- **`start-value` no funciona con `reset()`.** El CE lo declara y lo reenvía, pero el `.vue` no lo
-  usa: `reset()` deja el campo **vacío**, no vuelve al valor inicial.
-- **`model-value` no es el atributo `value`.** El CE no declara `value`; usá `model-value` (o
-  `v-model`, o `.set()`). Un `value="..."` suelto no se refleja.
-- **No hay slots.** No se puede inyectar un ícono o sufijo.
-- **No acepta `theme`.** El tema se define en `<html data-theme="...">`.
-- **El valor siempre es string:** con `type="number"`, `get()` devuelve un string, no un number.
-- **No hay variante `none`:** el default es `soft`.
-- `readOnly` en HTML se escribe `readonly`; `size` no se expone como kebab distinto (es un solo
-  token).
+- No hay evento custom `input` ni `change`: son nativos y burbujean; el custom de valor es `update:modelValue`.
+- `start-value` no tiene efecto: `reset()` deja el campo **vacío** (no vuelve al valor inicial).
+- El atributo es `model-value`, no `value`: un `value="…"` suelto no se refleja.
+- No tiene slots (no se puede inyectar ícono ni sufijo).
+- No acepta `theme`: el tema se define en `<html data-theme="…">` (`theming.md`).
+- El valor siempre es string: con `type="number"`, `get()` devuelve string.
+- No hay variante `none`: el default es `soft`.
+- `readOnly` en HTML se escribe `readonly`.
 
 ## API del custom element
 

@@ -1,97 +1,37 @@
 # Pagination — `<cu-pagination>` / `<Pagination>`
 
-Paginación numérica con selector de tamaño de página, botones de primera/última y rango visible ("Mostrando X - Y de Z").
-
-## Cuándo usarlo
-
-Debajo de una tabla o lista paginada, para moverte entre páginas y cambiar cuántos items se
-muestran por página.
+Paginación numérica con selector de tamaño de página, botones de primera/última y rango visible
+(«Mostrando X - Y de Z»). Va debajo de una tabla o lista paginada.
 
 ## Receta
 
-1. El componente es controlado: pasá `current-page`/`total-pages` (y `items-per-page`/
-   `total-items`) y actualizá tu estado con `update:currentPage` / `update:itemsPerPage`.
-2. `total-items` sólo alimenta el texto del rango; sin él no hay "Mostrando X - Y de Z".
-3. Para el selector de tamaño agregá `show-page-size` y, si querés otras opciones, asigná
-   `pageSizeOptions` como propiedad JS.
-4. `show-first-and-last` agrega los saltos a primera/última página.
-5. `color`/`variant` se aplican a los botones; la página activa siempre se pinta `solid`.
-6. Al cambiar el tamaño de página se emite `update:itemsPerPage` y además `update:currentPage` = 1.
+- Componente controlado: pasá `current-page`/`total-pages` y actualizá tu estado con `update:currentPage` / `update:itemsPerPage`.
+- `total-items` sólo alimenta el texto del rango.
+- Selector de tamaño: `show-page-size` + `pageSizeOptions` (propiedad JS).
+- `show-first-and-last` agrega los saltos a primera/última página.
+- `color`/`variant` se aplican a los botones; la página activa siempre se pinta `solid`.
+- Al cambiar el tamaño de página se emite `update:itemsPerPage` y además `update:currentPage` = 1.
 
 ```html
-<!-- HTML plano (UMD) -->
-<script src="dist-libs/umd-core/CuPagination.umd.js"></script>
-
-<cu-pagination
-  id="paginacion"
-  current-page="1"
-  total-pages="20"
-  total-items="195"
-  items-per-page="10"
-  show-page-size
-  show-first-and-last
-  color="primary"
-  variant="outlined"
-></cu-pagination>
-
-<script>
-  const p = document.getElementById('paginacion');
-  p.pageSizeOptions = [10, 25, 50, 100];
-
-  p.addEventListener('update:currentPage', (e) => {
-    console.log('Página:', e.detail);
-  });
-  p.addEventListener('update:itemsPerPage', (e) => {
-    console.log('Items por página:', e.detail);
-  });
-</script>
+<cu-pagination current-page="<number>" total-pages="<number>" total-items="<number>" items-per-page="<number>" show-page-size show-first-and-last></cu-pagination>
 ```
 
 ```vue
-<!-- Vue -->
-<script setup lang="ts">
-import Pagination from "@/components/controls/Pagination.vue";
-import { ref } from "vue";
-
-const currentPage = ref(1);
-const itemsPerPage = ref(10);
-const pageSizeOptions = [10, 25, 50, 100];
-</script>
-
-<template>
-  <Pagination
-    v-model:current-page="currentPage"
-    v-model:items-per-page="itemsPerPage"
-    :total-pages="20"
-    :total-items="195"
-    show-page-size
-    show-first-and-last
-    color="primary"
-    variant="outlined"
-    :page-size-options="pageSizeOptions"
-  />
-</template>
+<Pagination v-model:current-page="<number>" v-model:items-per-page="<number>" :total-pages="<number>" :total-items="<number>" show-page-size show-first-and-last :page-size-options="<items>" />
 ```
 
-## Qué puede y qué no puede
+Los valores de `color` / `variant` están en «Atributos» / «Props», abajo.
 
-**Puede:** 6 colores y 5 variantes (`outlined`, `soft`, `ghost`, `subtle`, `none`), selector de
-tamaño de página con opciones configurables (`showPageSize` + `pageSizeOptions`), botones de
-primera/última (`showFirstAndLast`) y el texto de rango (`totalItems`).
+## Límites
 
-**No puede:**
-
-- **No expone métodos ni slots.**
-- **Sólo emite `update:currentPage` y `update:itemsPerPage`.** No hay `change` ni un evento que
-  traiga página y tamaño juntos.
-- **No calcula `total-pages` por vos:** se lo pasás.
-- **`pageSizeOptions` es un array:** no se puede pasar como atributo HTML, sólo como propiedad
-  JS (`pagination.pageSizeOptions = [...]`).
-- **Si `totalPages <= 1` y `showPageSize` es `false`, no renderiza nada**, ni siquiera el texto
-  del rango.
-- **No hay input para saltar a una página arbitraria:** sólo botones y primera/última.
-- **La página activa ignora `variant`:** siempre se pinta `solid`.
-- No controla el contenido: sólo muestra y emite número de página y tamaño.
+- No expone métodos ni slots.
+- Sólo emite `update:currentPage` y `update:itemsPerPage`: no hay `change` ni un evento con página y tamaño juntos.
+- No calcula `total-pages`: se lo pasás.
+- `pageSizeOptions` es un array: sólo propiedad JS, no atributo HTML.
+- Si `totalPages <= 1` y `showPageSize` es `false` no renderiza nada, ni el texto del rango.
+- No hay input para saltar a una página arbitraria: sólo botones y primera/última.
+- La página activa ignora `variant`: siempre `solid`.
+- No controla el contenido: sólo muestra y emite página y tamaño.
 
 ## API del custom element
 

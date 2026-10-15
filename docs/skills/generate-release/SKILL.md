@@ -1,10 +1,10 @@
 ---
 name: generate-release
-description: 'Receta para preparar la próxima release de ComegenUI (este repo): verificar que las fichas de la skill y las páginas del sitio estén al día, correr TODOS los tests, validar con preflight y buildear la lib + zip versionado. Usá esta skill cuando el usuario pida "preparar la release", "generar release", "dejar todo listo para la release", "revisar la doc antes de releasear", "correr todos los tests antes de releasear" o "buildear la lib para publicar". Es solo para este proyecto (no es la skill de uso `use-comegen` que viaja en el zip, ni la de documentar `comegen-ui-docs`).'
+description: 'Receta para preparar la próxima release de ComegenUI (este repo): verificar que las fichas de la skill y las páginas del sitio estén al día, correr TODOS los tests, validar con preflight y buildear la lib + zip versionado. Usá esta skill cuando el usuario pida "preparar la release", "generar release", "dejar todo listo para la release", "revisar la doc antes de releasear", "correr todos los tests antes de releasear" o "buildear la lib para publicar". Es solo para este proyecto (no es la skill de uso `use-comegen` que viaja en el zip, ni la de documentar `documenter`).'
 metadata:
   repository: https://github.com/SpicyDogWings/comegenui
   path: docs/skills/generate-release
-  version: 5.1.0
+  version: 5.1.1
 ---
 
 # `generate-release` — preparar la próxima release
@@ -24,7 +24,7 @@ Deja el repo listo para publicar: doc al día, tests verdes, y el zip de la lib 
 
 - Consumir la lib en otro proyecto → skill de uso `comegen-ui` (`use-comegen`).
 - Desarrollar/modificar un componente puntual → `AGENTS.md` (arquitectura y patrón de 3 archivos).
-- Documentar un componente → `comegen-ui-docs` (o el agente `.opencode/agent/comegen-docs.md`).
+- Documentar un componente → `documenter` (o el agente `.opencode/agent/comegen-docs.md`).
 
 ## Precondiciones
 
@@ -45,8 +45,8 @@ node -e "console.log(require('./package.json').version)"
 
 Anotá la versión: los zips se llaman `comegenui-<config>-v<version>.zip`. Si hay que bumpear, editá `version` en `package.json` **antes** del paso 5.
 
-Si bumpeás la versión, actualizá también `metadata.version` en las cinco `SKILL.md`
-(`skills/use-comegen/` y `docs/skills/{comegen-preflight,comegen-ui-docs,generate-release,marked}/`)
+Si bumpeás la versión, actualizá también `metadata.version` en las seis `SKILL.md`
+(`skills/use-comegen/` y `docs/skills/{comegen-preflight,documenter,generate-release,marked,release-changelog}/`)
 para que declaren de qué release salió cada receta.
 
 ### 1. Revisar que la doc esté al día
@@ -59,7 +59,7 @@ No hay generación: las fichas (`docs/componentes/<tag>.md` y `docs/componentes/
 git log --oneline --name-only <ultima-release>..HEAD -- src/components src/lib
 ```
 
-Si un componente cambió y su doc no, actualizala (skill `comegen-ui-docs`). El gate del preflight
+Si un componente cambió y su doc no, actualizala (skill `documenter`). El gate del preflight
 sólo valida que existan la ficha y la página: el contenido lo revisás vos.
 
 ### 2. Tests
@@ -123,7 +123,8 @@ Revisá el diff antes. **Nunca** `git add -A` a ciegas.
 ## Checklist final
 
 - [ ] Fichas y páginas de los componentes que cambiaron, al día.
-- [ ] `metadata.version` de las cinco `SKILL.md` coincide con `package.json`.
+- [ ] `metadata.version` de las seis `SKILL.md` (`use-comegen` + `docs/skills/`, sin `documenter`)
+      coincide con `package.json`.
 - [ ] `pnpm test` verde.
 - [ ] `./scripts/guard.sh --full` verde (sin tipos nuevos, sin contratos rotos, docs al día).
 - [ ] `pnpm build` OK.

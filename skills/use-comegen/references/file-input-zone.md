@@ -1,97 +1,41 @@
 # FileInputZone — `<cu-file-input-zone>` / `<FileInputZone>`
 
-Selector de archivos con zona de drag & drop amplia, soporte para carpetas (recursivo con control de
-profundidad), múltiples archivos y preview de lista.
-
-## Cuándo usarlo
-
-Cuando el usuario sube **varios archivos** o una **carpeta completa** y querés una zona de carga
-visible. Para un único archivo compacto, usá `<cu-file-input>`.
+Zona amplia de drag & drop para varios archivos o carpetas (recursivo con `directory-deep`), con
+lista y preview. Para un único archivo compacto usá `<cu-file-input>`.
 
 ## Receta
 
-1. El valor es `File | File[] | null`: enlazalo con `v-model` en Vue o con la propiedad JS
-   `modelValue` en vanilla.
-2. Activá `multiple` para varios archivos; `directory` para carpetas (implica `multiple`) y
-   `directory-deep` para la profundidad (`0` = sólo raíz, `1` = +1 subnivel, `-1` = sin límite).
-3. Acotá con `accept` (tipos) y `max-size` (bytes); `max-height` da scroll vertical al listado.
-4. La lista (icono por extensión, nombre, tamaño y botón X por archivo) se maneja sola; los rechazos
-   se reportan en un `Alert`.
-5. Leé/escribí con `get()` / `set()` / `reset()`; `trigger()` abre el diálogo nativo. El evento
-   `update:modelValue` trae el/los archivos o `null`.
+- Valor `File | File[] | null`: `v-model` en Vue o la propiedad JS `modelValue` / `set(...)` en
+  vanilla.
+- `multiple` para varios archivos; `directory` (implica `multiple`) + `directory-deep` (`0` sólo
+  raíz, `1` un subnivel, `-1` sin límite).
+- Acotá con `accept` (tipos) y `max-size` (bytes); `max-height` da scroll al listado.
+- La lista (icono por extensión, nombre, tamaño, botón X) se maneja sola; los rechazos se reportan
+  en un `Alert`.
+- `update:modelValue` trae el/los archivos o `null`; lectura con `get()` / `set()` / `reset()` /
+  `focus()` / `trigger()`.
 
 ```html
-<!-- HTML plano (UMD) -->
-<cu-file-input-zone
-  id="zone"
-  color="primary"
-  multiple
-  accept="image/*"
-  max-height="200px"
-  placeholder="Subí tus imágenes"
-></cu-file-input-zone>
-
-<script src="dist-libs/umd-core/CuFileInputZone.umd.js"></script>
-<script>
-  const zone = document.getElementById('zone');
-
-  zone.addEventListener('update:modelValue', (e) => {
-    const files = e.detail;
-    if (Array.isArray(files)) console.log(`${files.length} archivos`);
-  });
-
-  zone.trigger();  // abre el diálogo nativo
-</script>
+<cu-file-input-zone color="<color>" multiple accept="<tipos>" max-height="<alto>" placeholder="<texto>"></cu-file-input-zone>
 ```
 
 ```vue
-<!-- Vue -->
-<script setup lang="ts">
-import FileInputZone from "@/components/form/FileInputZone.vue";
-import { ref } from "vue";
-
-const archivos = ref<File | File[] | null>(null);
-</script>
-
-<template>
-  <FileInputZone
-    v-model="archivos"
-    color="primary"
-    multiple
-    accept="image/*"
-    max-height="200px"
-    placeholder="Subí tus imágenes"
-  />
-  <FileInputZone
-    v-model="archivos"
-    directory
-    :directory-deep="-1"
-    placeholder="Carpeta completa"
-  />
-</template>
+<FileInputZone v-model="<ref>" color="<color>" multiple accept="<tipos>" max-height="<alto>" />
 ```
 
-## Qué puede y qué no puede
+Los valores de `color` están en «Atributos» / «Props», abajo.
 
-**Puede:** 6 colores (`primary`, `secondary`, `neutral`, `success`, `warning`, `danger`), `multiple`,
-`directory` + `directory-deep`, `accept`, `max-size`, `max-height`, `placeholder`, `disabled` y
-`read-only`; drag & drop de archivos y carpetas; lista con iconos, tamaño y borrado individual.
-Expone `get`/`set`/`reset`/`focus`/`trigger` y emite `update:modelValue`.
+## Límites
 
-**No puede:**
-
-- **No tiene `variant`.** El CE lo omite a propósito: el estilo de la zona es fijo.
-- **`modelValue` es `File | File[] | null`, no un string.** No se setea como atributo HTML: usá
-  `zone.set(...)` o asigná la propiedad JS.
-- **`directory` arrastra `multiple`:** en modo carpeta no hay forma de limitar a un solo archivo.
-- **`directory-deep` sólo aplica con `directory` activo.** `0` (default) es sólo la raíz y `-1` es
-  recursión sin límite.
-- **La recursión de carpetas depende del navegador** (`webkitGetAsEntry`): donde no esté soportada,
-  las carpetas se ignoran.
-- **No hay evento de rechazo.** Los archivos inválidos se listan en el `Alert`; no se emite nada.
-- **`read-only` bloquea todo:** no abre el diálogo, no acepta drag ni drop.
+- No tiene `variant`: el estilo de la zona es fijo.
+- `modelValue` es `File | File[] | null`: va por propiedad JS o `set()`, no como atributo HTML.
+- `directory` arrastra `multiple`: en modo carpeta no hay forma de limitar a un solo archivo.
+- `directory-deep` sólo aplica con `directory` activo.
+- La recursión de carpetas depende del navegador (`webkitGetAsEntry`): donde no esté soportada, las carpetas se ignoran.
+- No hay evento de rechazo: los archivos inválidos sólo se listan en el `Alert`.
+- `read-only` bloquea todo: no abre el diálogo ni acepta drag/drop.
 - El scroll del listado sólo aparece si `max-height` está seteado.
-- **No acepta `theme`.** El tema se define en `<html data-theme="...">`.
+- No acepta `theme`: el tema se define en `<html data-theme="…">` (`theming.md`).
 
 ## API del custom element
 

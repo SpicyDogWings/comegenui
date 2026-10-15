@@ -1,102 +1,39 @@
 # Calendar — `<cu-calendar>` / `<Calendar>`
 
 Calendario de un mes con navegación, modos `single`/`range`, límites `min`/`max`, días
-deshabilitados y puntos de eventos.
-
-## Cuándo usarlo
-
-Para elegir una fecha (`single`) o un rango (`range`) dentro de un mes, con restricciones de días y
-marcas de eventos. Para un trigger con dropdown, usá `cu-date-picker`, que envuelve este calendario.
+deshabilitados y puntos de eventos. Para un trigger con dropdown usá `cu-date-picker`, que lo envuelve.
 
 ## Receta
 
-1. La fecha va con `model-value` (`"YYYY-MM-DD"`, `Date` o timestamp):
-   `<cu-calendar model-value="2026-08-11">`; en Vue, `v-model`.
-2. `mode="single"` (default) selecciona una fecha con un click. `mode="range"` arma el rango con dos
-   clicks, reflejado en `rangeStart`/`rangeEnd`.
-3. `min`/`max` recortan la navegación y deshabilitan días. `disabled-weekdays="0,6"` y
-   `disabled-dates="2026-08-15,2026-08-16"` suman restricciones (strings CSV en HTML; array o string
-   en Vue).
-4. Los puntos se cargan con `events` **por JS**: `[{ date: '2026-08-03', color: 'primary' }]`.
-5. Encabezado/semana: `year-navigation`, `month-format` (`MMMM`/`MMM`/`MM`/`M`), `year-format`
-   (`yyyy`/`yy`), `locale` y `week-start` (`0` = domingo, `1` = lunes).
-6. Por código: `nextMonth()`, `prevMonth()`, `goToMonth(date)`, `getValue()`, `setValue(date)`,
-   `getRange()`, `setRange(start, end)`, `clear()`.
+- La fecha va con `model-value` (`"YYYY-MM-DD"`, `Date` o timestamp); en Vue, `v-model`.
+- `mode="single"` (default) selecciona con un click; `mode="range"` arma el rango con dos clicks, reflejado en `rangeStart`/`rangeEnd`.
+- Restricciones: `min`/`max`, `disabled-weekdays="0,6"` y `disabled-dates="2026-08-15,2026-08-16"`.
+- Los puntos se cargan con `events` **por propiedad JS**: `cal.events = [{ date: '2026-08-03', color: '<color>' }]`.
+- Encabezado/semana: `year-navigation`, `month-format`, `year-format`, `locale` y `week-start` (`0` = domingo, `1` = lunes).
+- Programático: `nextMonth()`, `prevMonth()`, `goToMonth(date)`, `getValue()`, `setValue(date)`, `getRange()`, `setRange(start, end)`, `clear()`.
 
 ```html
-<!-- HTML plano (UMD) -->
-<script src="dist-libs/umd-core/CuCalendar.umd.js"></script>
-
-<cu-calendar id="cal" mode="range" color="primary" year-navigation
-             min="2026-08-01" max="2026-12-31" month-format="MMM" year-format="yy"></cu-calendar>
-
-<script>
-  const cal = document.getElementById('cal');
-  cal.events = [
-    { date: '2026-08-03', color: 'primary' },
-    { date: '2026-08-11', color: 'warning' },
-  ];
-  cal.disabledWeekdays = '0,6';
-
-  cal.addEventListener('select', (e) => console.log('rango', e.detail)); // { start, end }
-  cal.setRange('2026-08-10', '2026-08-20');
-</script>
+<cu-calendar id="<id>" mode="<mode>" color="<color>" year-navigation min="<date>" max="<date>" disabled-weekdays="<n,n>"></cu-calendar>
 ```
 
 ```vue
-<!-- Vue -->
-<script setup lang="ts">
-import Calendar from "@/components/controls/Calendar.vue";
-import { ref } from "vue";
-
-const rangeStart = ref("2026-08-10");
-const rangeEnd = ref("2026-08-20");
-const events = ref([
-  { date: "2026-08-03", color: "primary" },
-  { date: "2026-08-11", color: "warning" },
-]);
-</script>
-
-<template>
-  <Calendar
-    mode="range"
-    v-model:range-start="rangeStart"
-    v-model:range-end="rangeEnd"
-    :events="events"
-    :disabled-weekdays="[0, 6]"
-    min="2026-08-01"
-    max="2026-12-31"
-  />
-</template>
+<Calendar mode="<mode>" v-model="<value>" :events="<events>" :disabled-weekdays="[<n>, <n>]" @select="<handler>" />
 ```
 
-## Qué puede y qué no puede
+Los valores de `color` / `variant` / `mode` / `month-format` / `year-format` están en «Atributos» / «Props», abajo.
 
-**Puede:** 6 colores (default `primary`), 4 variantes (`solid`, `outlined`, `soft`, `subtle`), `mode`
-(`single`/`range`), `min`/`max`, `disabledWeekdays`, `disabledDates`, `locale`, `weekStart`,
-`yearNavigation`, `monthFormat`, `yearFormat`, `events` (puntos por fecha con color),
-`rangeStart`/`rangeEnd`, `grid`/`border`, `viewMonth` controlado y `disabled`. Emite `select`,
-`change`, `update:modelValue`, `update:viewMonth`, `update:rangeStart` y `update:rangeEnd`, y expone
-8 métodos (`nextMonth`, `prevMonth`, `goToMonth`, `getValue`, `setValue`, `getRange`, `setRange`,
-`clear`).
+## Límites
 
-**No puede:**
-
-- **`events` va sólo por JS** (es un array): `cal.events = [...]`, nunca como atributo.
-- **En `mode="single"` se ignoran `rangeStart` y `rangeEnd`:** el rango sólo vive en
-  `mode="range"`. En `single`, la única selección es el click simple (`modelValue`).
-- **No acepta `variant="ghost"`** (se eliminó porque se confundía con el día de hoy). El día actual
-  se muestra con look ghost fijo.
-- **No tiene slots.**
-- **Un número en `modelValue` es un timestamp, no un año:** `2026` ≈ 1970. Usá `"YYYY-MM-DD"`.
-- **`disabledWeekdays`/`disabledDates` en HTML son strings CSV** (`"0,6"`); en Vue aceptan array.
-- **Defaults distintos entre CE y Vue:** `disabledWeekdays`/`disabledDates` son `''` en el CE y `[]`
-  en el `.vue`.
-- **`setValue`/`setRange` programáticos no validan** `min`/`max` ni días deshabilitados: el filtro se
-  aplica al click.
-- **No hay selección múltiple** ni varios rangos a la vez.
-- **El ancho lo decide el contenedor** (7 columnas `1fr`); con `year-navigation` el header pide un
-  `min-width` de ~330px.
+- `events` va sólo por JS (es un array): nunca como atributo.
+- En `mode="single"` se ignoran `rangeStart` y `rangeEnd`: el rango sólo vive en `mode="range"`.
+- No acepta `variant="ghost"`: el día de hoy se muestra con look ghost fijo.
+- No tiene slots.
+- Un número en `modelValue` es un timestamp, no un año (`2026` ≈ 1970): usá `"YYYY-MM-DD"`.
+- `disabledWeekdays`/`disabledDates` en HTML son strings CSV (`"0,6"`); en Vue aceptan array.
+- Defaults distintos entre CE y Vue: `disabledWeekdays`/`disabledDates` son `''` en el CE y `[]` en el `.vue`.
+- `setValue`/`setRange` programáticos no validan `min`/`max` ni días deshabilitados: el filtro se aplica al click.
+- No hay selección múltiple ni varios rangos a la vez.
+- El ancho lo decide el contenedor (7 columnas `1fr`); con `year-navigation` el header pide un `min-width` de ~330px.
 
 ## API del custom element
 

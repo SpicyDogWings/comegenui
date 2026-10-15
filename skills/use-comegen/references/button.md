@@ -3,71 +3,31 @@
 Botón con color, variante, tamaño, link y estados. Si definís `to`, se renderiza como un
 `<a>` (con un `<button>` adentro) en vez de un `<button>` suelto.
 
-## Cuándo usarlo
-
-Para cualquier acción o navegación. Es el componente con el que están construidos casi
-todos los demás, así que si algo se ve "raro" en otro componente, suele venir de acá.
-
 ## Receta
 
-1. El contenido va por el slot default: texto, un `<svg>` inline, o los dos.
-2. Para navegar: `to="/ruta"` (+ `target="_blank"` si es externo). Para un acción: `@click`.
-3. Si la acción es asincrónica, manejá `loading`: muestra un spinner y deshabilita el botón.
-4. Dentro de un `<form>`, poné `type="submit"` (el default es `type="button"`, que no envía).
+- Contenido por el **slot default**: texto, `<svg>` inline, o los dos.
+- Navegar: `to="/ruta"` (+ `target="_blank"` si es externo). Acción: `@click`.
+- Acción asincrónica: `loading` (spinner + deshabilitado).
+- Dentro de un `<form>`: `type="submit"` (el default, `button`, no envía).
 
 ```html
-<!-- HTML plano (UMD) -->
-<cu-button id="guardar" color="primary" variant="solid" loading>Guardar</cu-button>
-
-<script>
-  document.getElementById('guardar').addEventListener('click', async (e) => {
-    e.target.loading = true;          // propiedad: arranca el spinner
-    await fetch('/api/guardar', { method: 'POST' });
-    e.target.loading = false;
-  });
-</script>
+<cu-button color="<color>" variant="<variant>" size="<size>" loading><label></cu-button>
 ```
 
 ```vue
-<!-- Vue -->
-<script setup lang="ts">
-import Button from "@/components/buttons/Button.vue";
-import { ref } from "vue";
-
-const loading = ref(false);
-const guardar = async () => {
-  loading.value = true;
-  await fetch("/api/guardar", { method: "POST" });
-  loading.value = false;
-};
-</script>
-
-<template>
-  <Button color="primary" variant="solid" :loading="loading" @click="guardar">Guardar</Button>
-  <Button to="/inicio" variant="link">Volver</Button>
-</template>
+<Button color="<color>" variant="<variant>" :loading="<bool>" @click="<handler>"><label></Button>
 ```
 
-## Qué puede y qué no puede
+Los valores de `color` / `variant` / `size` están en «Atributos» / «Props», abajo.
 
-**Puede:** 6 colores (`primary`, `secondary`, `neutral`, `success`, `warning`, `danger`),
-7 variantes (`solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none`), 3 tamaños,
-link (`to` + `target`), `type` (`button`/`submit`/`reset`), `disabled` y `loading` con
-spinner + `loading-change`.
+## Límites
 
-**No puede:**
-
-- **No expone métodos.** Nada de `.focus()` ni `.click()` propios: usá la API del DOM.
-- **No acepta `theme`.** El tema se define en `<html data-theme="...">` (ver `theming.md`).
-- **Con `variant="link"` el padding queda en `0` y `size` no lo cambia** (el CSS lo fuerza
-  con `:not(.cu-button--link)`). Si necesitás un link con tamaño, no lo vas a tener.
-- **No hay un evento custom `click`.** El `click` que escuchás es el nativo del DOM, que
-  burbujea desde el shadow DOM; `e.detail` es `undefined` y el `e.target` es el interno.
-- **No hay prop ni slot `icon`.** El icono es marcado del slot default (un `<svg>` inline, con
-  `stroke="currentColor"` para que herede el color del botón): no hay forma de pasar sólo el
-  nombre de un icono.
-- **`disabled` y `loading` son lo mismo para el usuario:** ambos deshabilitan, pero
-  `loading` además cambia el contenido por el spinner.
+- No expone métodos: usá la API del DOM (`.focus()`, `.click()`).
+- No acepta `theme`: el tema se define en `<html data-theme="…">` (`theming.md`).
+- `variant="link"` fuerza `padding: 0` y **`size` no lo cambia**.
+- No hay evento custom `click`: el que burbujea es el nativo (sin `e.detail`; `e.target` es el interno).
+- No hay prop ni slot `icon`: el icono es marcado del slot default (`<svg>` con `stroke="currentColor"`).
+- `disabled` y `loading` deshabilitan igual; `loading` además cambia el contenido por el spinner.
 - `target` sólo tiene efecto si hay `to`.
 
 ## API del custom element

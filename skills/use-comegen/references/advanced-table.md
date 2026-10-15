@@ -1,133 +1,40 @@
 # AdvancedTable — `<cu-table>` / `<AdvancedTable>`
 
 Tabla de datos con búsqueda, filtros, ordenamiento, paginación, edición inline y badges/botones por
-celda.
-
-## Cuándo usarlo
-
-Para mostrar y operar colecciones de filas: listados con búsqueda/paginación, ordenamiento, edición
-in-place o botones por fila. Si sólo necesitás una grilla estática, alcanza un `<table>` de HTML.
+celda. Para una grilla estática alcanza un `<table>` de HTML.
 
 ## Receta
 
-1. Las columnas y las filas van **como propiedad JS**: `tabla.columns = [...]` y `tabla.data = [...]`.
-   No funcionan como atributo (la única excepción es `search-fields`, que sí acepta un JSON string).
-2. Búsqueda y paginación se habilitan **por atributo**: `search-enabled` y `pagination` (en el CE
-   vienen apagadas), más `show-page-size` / `items-per-page` si las querés.
-3. Cada columna es `{ key, label, ... }`. Para habilitar la edición: `editable: true` (se abre con
-   click) o `inlineEdit: true` (editor siempre visible). El editor se elige con `inputType`:
-   `'input' | 'textarea' | 'select' | 'autocomplete' | 'date' | 'switch'`.
-4. Escuchás `edit-save` para persistir y `edit-error` para validar. Los clicks de fila se leen del
-   `click` nativo (los eventos `row-click`/`cell-click` no se emiten).
-5. Por código: `updateRow(index, patch)`, `getData()`, `getRow(index)`, `removeRow(index)`,
-   `addRow(row)`, `pushData(rows)`.
+- `columns` y `data` van **por propiedad JS** (`tabla.columns = [...]`, `tabla.data = [...]`); la única excepción es `search-fields`, que acepta un JSON string.
+- Búsqueda y paginación se habilitan **por atributo**: `search-enabled` y `pagination` (en el CE vienen apagadas), más `show-page-size` / `items-per-page`.
+- Cada columna es `{ key, label, ... }`. Edición: `editable: true` (se abre con click) o `inlineEdit: true` (editor siempre visible); el editor se elige con `inputType` (`input`, `textarea`, `select`, `autocomplete`, `date`, `switch`).
+- Escuchá `edit-save` para persistir y `edit-error` para validar; los clicks de fila se leen del `click` nativo.
+- Programático: `updateRow(index, patch)`, `getData()`, `getRow(index)`, `removeRow(index)`, `addRow(row)`, `pushData(rows)`.
 
 ```html
-<!-- HTML plano (UMD) -->
-<script src="dist-libs/umd-core/CuTable.umd.js"></script>
-
-<cu-table id="t" color="primary" variant="soft" search-enabled pagination show-page-size items-per-page="5"></cu-table>
-
-<script>
-  const t = document.getElementById('t');
-
-  t.columns = [
-    { key: 'nombre', label: 'Nombre', editable: true },
-    { key: 'email',  label: 'Correo', editable: /^[^\s@]+@[^\s@]+\.[^\s@]+$/ },
-    { key: 'rol',    label: 'Rol', sortable: 'string' },
-    { key: 'acciones', label: '', buttons: (row) => [
-      { label: 'Eliminar', color: 'danger', variant: 'ghost', onClick: (r) => t.removeRow(t.getData().indexOf(r)) },
-    ]},
-  ];
-  t.data = [
-    { nombre: 'Juan Pérez', email: 'juan@ejemplo.com', rol: 'Admin' },
-    { nombre: 'María García', email: 'maria@ejemplo.com', rol: 'Usuario' },
-  ];
-
-  t.addEventListener('edit-save', (e) => console.log('guardar', e.detail));
-  t.addEventListener('edit-error', (e) => console.warn('inválido', e.detail));
-</script>
+<cu-table id="<id>" color="<color>" variant="<variant>" search-enabled pagination show-page-size items-per-page="<number>"></cu-table>
 ```
 
 ```vue
-<!-- Vue -->
-<script setup lang="ts">
-import AdvancedTable from "@/components/data/AdvancedTable.vue";
-import { ref } from "vue";
-
-const columns = ref([
-  { key: "nombre", label: "Nombre", editable: true },
-  { key: "email", label: "Correo", editable: /^[^\s@]+@[^\s@]+\.[^\s@]+$/ },
-  { key: "rol", label: "Rol", sortable: "string" },
-]);
-const data = ref([
-  { nombre: "Juan Pérez", email: "juan@ejemplo.com", rol: "Admin" },
-  { nombre: "María García", email: "maria@ejemplo.com", rol: "Usuario" },
-]);
-
-function onEditSave(e: { index: number; column: { key: string }; value: unknown }) {
-  console.log("guardar", e);
-}
-</script>
-
-<template>
-  <AdvancedTable
-    :columns="columns"
-    :data="data"
-    color="primary"
-    variant="soft"
-    search-enabled
-    pagination
-    :items-per-page="5"
-    @edit-save="onEditSave"
-  />
-</template>
+<AdvancedTable :columns="<columns>" :data="<items>" color="<color>" variant="<variant>" search-enabled pagination :items-per-page="<number>" @edit-save="<handler>" />
 ```
 
-## Qué puede y qué no puede
+Los valores de `color` / `variant` están en «Atributos» / «Props», abajo.
 
-**Puede:** 6 colores (`primary`, `secondary`, `neutral`, `success`, `warning`, `danger`), 5
-variantes (`solid`, `outlined`, `soft`, `ghost`, `subtle`), búsqueda (`searchEnabled`,
-`searchFields`, `searchPlaceholder`, `searchValue`), filtros (`filters`), ordenamiento por columna
-(`sortable`: `true`, `'string'`, `'number'`, `'boolean'`), paginación (`pagination`, `itemsPerPage`,
-`showPageSize`, `pageSizeOptions`), edición por celda (`editable`, `inlineEdit`, `singleClick`,
-`inputType`, `selectOptions`, `date`, `switch`, `validator`), badges y botones por celda, `actions`
-(dropdown "..." automático al final) con header configurable (`actionsLabel` / `actions-label`,
-default vacío), `rowDisabled` / `column.disabled` / `column.cellDisabled`, `loading`, `footer` (prop
-o slot), `compact`, `tableMaxHeight` y los métodos `updateRow`, `getData`, `getRow`, `removeRow`,
-`addRow`, `pushData`.
+## Límites
 
-**No puede:**
-
-- **Las props complejas van sólo por JS.** `columns`, `data`, `filters`, `actions`, `footer`,
-  `pageSizeOptions` y `rowDisabled` se asignan como propiedad, nunca como atributo. La **única**
-  excepción es `search-fields`, que acepta un JSON string: `search-fields='["nombre","email"]'`.
-- **Los eventos de click de fila no se emiten.** `row-click`, `row-dblclick` y `cell-click` están
-  declarados y el CE los bridgea, pero nadie los dispara. Usá el `click` nativo con
-  `e.composedPath()` o resolvé con `buttons`/`badges`/`actions`.
-- **No hay "lápiz".** La celda editable se abre con **click** (doble click si `singleClick: false`).
-  El estado inline no agrega ícono: sólo deja el editor siempre visible.
-- **`inputType: 'switch'` es la excepción:** el switch siempre está visible, no pasa por
-  lápiz/inline ni por `validator`/`regex`, y al alternarlo emite `edit-save` con `value` booleano.
-- **Campos no tipados pero funcionales:** `width`, `align`, `sortable` (y `inlineEdit`, `date`,
-  `switch`) no están en la interface `Column` del `.ce.vue`, pero funcionan porque `columns` se
-  reenvía tal cual al componente interno.
-- **Defaults distintos entre CE y Vue:** en el CE `pagination` es `false` y `empty` es `""`; en el
-  `.vue`, `pagination` es `true` y `empty` es `"No hay datos que mostrar"`. En HTML plano hay que
-  poner `pagination` a mano.
-- **No acepta `theme`** (ni el CE ni el `.vue`): el tema se define en `<html data-theme="...">`. El CE **sí** expone `inline-editing` global; una
-  columna con `inlineEdit: true` gana sobre ese global.
-- **El slot `footer` gana sobre la prop `footer`.**
-- **Búsqueda sobre columnas `inputType: 'select'`:** matchea por la `label` de la opción, no por el
-  `value` guardado.
-- **Deshabilitado con prioridad fila > columna > celda.** Con `rowDisabled` la fila se atenúa, no
-  edita y sus botones/acciones se deshabilitan.
-- **Slots por columna:** `header-{key}` (scoped `{ column, color, variant }`), `cell-{key}` (scoped
-  `{ row, column, index, value }`), `template` (fila completa), `search` (scoped `{ query, update }`),
-  `empty` y `footer`. En `<cu-table>` se pasan como **slots nativos** (`<span slot="header-rol">…`):
-  el CE los descubre del host, pero **no reciben el scope** (los scoped slots no existen en custom
-  elements). En `<AdvancedTable>` (Vue) sí reciben el scope.
-- **No hay eventos custom `input`/`change`** de la tabla; los nativos burbujean solos.
+- Las props complejas van sólo por JS (`columns`, `data`, `filters`, `actions`, `footer`, `pageSizeOptions`, `rowDisabled`); la única excepción es `search-fields` (JSON string: `search-fields='["nombre","email"]'`).
+- `row-click`, `row-dblclick` y `cell-click` están declarados y el CE los bridgea, pero nadie los dispara: usá el `click` nativo con `e.composedPath()` o resolvé con `buttons`/`badges`/`actions`.
+- No hay "lápiz": la celda editable se abre con click (doble click si `singleClick: false`); el estado inline sólo deja el editor siempre visible.
+- `inputType: 'switch'` es la excepción: siempre visible, sin pasar por `validator`/`regex`, y al alternarlo emite `edit-save` con `value` booleano.
+- `width`, `align` y `sortable` (y `inlineEdit`, `date`, `switch`) no están en la interface `Column` del `.ce.vue`, pero funcionan porque `columns` se reenvía tal cual.
+- Defaults distintos entre CE y Vue: `pagination` es `false` en el CE y `true` en el `.vue`; `empty` es `""` vs `"No hay datos que mostrar"` (en HTML plano poné `pagination` a mano).
+- No acepta `theme`: el tema se define en `<html data-theme="...">`; el CE **sí** expone `inline-editing` global, y una columna con `inlineEdit: true` gana sobre ese global.
+- El slot `footer` gana sobre la prop `footer`.
+- Búsqueda sobre columnas `inputType: 'select'`: matchea por la `label` de la opción, no por el `value` guardado.
+- Deshabilitado con prioridad fila > columna > celda; con `rowDisabled` la fila se atenúa, no edita y sus botones/acciones se deshabilitan.
+- Slots por columna `header-{key}` y `cell-{key}` (más `template`, `search`, `empty` y `footer`): en `<cu-table>` se pasan como slots nativos (`<span slot="header-rol">…`) y **no reciben el scope** (no hay scoped slots en custom elements); en `<AdvancedTable>` sí.
+- No hay eventos custom `input`/`change` de la tabla; los nativos burbujean solos.
 
 ## API del custom element
 

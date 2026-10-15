@@ -1,79 +1,36 @@
 # NavbarHorizontal — `<cu-navbar-horizontal>` / `<NavbarHorizontal>`
 
-Barra de navegación horizontal con submenús desplegables (Dropdown) y detección del ítem activo por ruta.
-
-## Cuándo usarlo
-
-Para una barra de navegación superior con items y submenús anidados. Si necesitás búsqueda,
-modo scroll o colapso responsive, usá `cu-navbar`.
+Barra de navegación horizontal con submenús desplegables y detección del ítem activo por ruta. Si
+necesitás búsqueda, modo scroll o colapso responsive, usá `cu-navbar`.
 
 ## Receta
 
-1. Definí `items`: un array de `{ label, path?, icon?, children? }`.
-2. Los items con `children` abren un submenú; los que tienen `path` son links; los que no
-   tienen ninguno de los dos no navegan.
-3. Elegí cómo abren los submenús con `trigger`: `click` (default) o `hover`.
-4. Marcá el activo con `active-path`. En vanilla no hay router, así que pasalo siempre; en
-   Vue, si hay vue-router, se toma de la ruta y `active-path` lo pisa.
-5. Si usás `icon`, pasalo como string de HTML/SVG con `currentColor`.
-6. Los submenús anidan a cualquier profundidad (recursivo).
+- Definí `items` (`{ label, path?, icon?, children? }`) como **propiedad JS**.
+- `children` abre un submenú; `path` hace link; sin ninguno de los dos el item se muestra atenuado y no navega.
+- `trigger` (`click` default o `hover`) define cómo abren los submenús.
+- Marcá el activo con `active-path`; en Vue con vue-router se toma de la ruta y `active-path` lo pisa.
+- `icon` es un string de HTML/SVG (usá `currentColor`).
+- Los submenús anidan a cualquier profundidad (recursivo).
 
 ```html
-<!-- HTML plano (UMD) -->
-<script src="dist-libs/umd-core/CuNavbarHorizontal.umd.js"></script>
-
-<cu-navbar-horizontal id="nav" trigger="hover" active-path="/equipo/dev"></cu-navbar-horizontal>
-
-<script>
-  const nav = document.getElementById('nav');
-  nav.items = [
-    { label: 'Inicio', path: '/' },
-    { label: 'Equipo', children: [
-      { label: 'Desarrollo', path: '/equipo/dev' },
-      { label: 'Diseño', path: '/equipo/diseno' },
-    ]},
-  ];
-</script>
+<cu-navbar-horizontal id="<id>" trigger="<trigger>" active-path="<path>"></cu-navbar-horizontal>
 ```
 
 ```vue
-<!-- Vue -->
-<script setup lang="ts">
-import NavbarHorizontal from "@/components/navigation/NavbarHorizontal.vue";
-
-const items = [
-  { label: 'Inicio', path: '/' },
-  { label: 'Equipo', children: [
-    { label: 'Desarrollo', path: '/equipo/dev' },
-    { label: 'Diseño', path: '/equipo/diseno' },
-  ]},
-];
-</script>
-
-<template>
-  <NavbarHorizontal trigger="hover" active-path="/equipo/dev" :items="items" />
-</template>
+<NavbarHorizontal :items="<items>" trigger="<trigger>" active-path="<path>" />
 ```
 
-## Qué puede y qué no puede
+Los valores de `trigger` están en «Atributos» / «Props», abajo.
 
-**Puede:** anidamiento recursivo de submenús (`children` en cualquier nivel), `trigger`
-(`click`/`hover`), ítem activo por `active-path` (o por ruta en Vue con vue-router), `icon`
-como string HTML/SVG, e items sin `path` que se muestran atenuados.
+## Límites
 
-**No puede:**
-
-- **No emite eventos custom.** No hay `select` ni `navigate`: la navegación es un link real
-  (`path`), no un callback.
-- **No tiene slots**, ni default ni por item: todo se define con `items`.
-- **No expone métodos.**
-- **No acepta `color`, `variant` ni `size`.** El ítem activo siempre se pinta `primary` +
-  `soft` y el resto va ghost.
-- **`items` es requerido y sólo se asigna como propiedad JS** (es un array); como atributo
-  HTML no funciona.
-- **`icon` es HTML crudo** (se inyecta con `v-html`): no acepta componentes ni slots.
-- Un item de primer nivel con `children` usa su `path` apenas como identificador: el toggle
-  es un botón que no navega.
+- No emite eventos custom: la navegación es un link real (`path`), no un callback (`select`/`navigate` no existen).
+- No tiene slots, ni default ni por item: todo se define con `items`.
+- No expone métodos.
+- No acepta `color`, `variant` ni `size`: el ítem activo siempre se pinta `primary` + `soft` y el resto ghost.
+- `items` es requerido y sólo se asigna como propiedad JS: como atributo HTML no funciona.
+- `icon` es HTML crudo (`v-html`): no acepta componentes ni slots.
+- Un item de primer nivel con `children` usa su `path` apenas como identificador: el toggle es un botón que no navega.
 - No tiene búsqueda, modo scroll ni colapso responsive.
 
 ## API del custom element

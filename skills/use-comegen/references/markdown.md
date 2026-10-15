@@ -1,82 +1,35 @@
 # Markdown — `<cu-markdown>` / `<Markdown>`
 
-Renderizador de Markdown que convierte texto en HTML semántico usando los componentes internos de
-ComegenUI (tablas, code blocks, blockquotes, listas, headings, párrafos).
-
-## Cuándo usarlo
-
-Para mostrar contenido Markdown ya renderizado y sanitizado (documentación, descripciones largas,
-notas). No es un editor ni un campo de entrada.
+Renderiza Markdown a HTML semántico con los componentes internos (tablas, code blocks, blockquotes,
+listas, headings, párrafos). No es un editor.
 
 ## Receta
 
-1. Pasá el markdown como **texto dentro del tag** (slot default): no hay prop de contenido.
-2. Se parsea **una sola vez al montar**. Para cambiar el contenido, reemplazá el texto y volvé a
-   montar el componente.
-3. El color sale del tema del host (`<html data-theme="...">`); no hay prop `theme`.
-4. Escuchá `parsed` (array de ids de headings) y usá `headingIds()` para armar anclas.
-5. El HTML se sanitiza con DOMPurify; las tablas y los code blocks se delegan a los componentes
-   internos.
+- El markdown va como **texto del slot default**: no hay prop de contenido.
+- Se parsea **una sola vez al montar**: para cambiar el contenido, remontá el componente.
+- El color sale del tema del host; no hay prop `theme`.
+- Escuchá `parsed` (ids de headings) y usá `headingIds()` para armar anclas.
+- El HTML se sanitiza con DOMPurify; tablas y code blocks los renderizan los componentes internos.
 
 ```html
-<!-- HTML plano (UMD) -->
-<cu-markdown id="doc">
-# Título
-
-Párrafo con **negrita**, *cursiva* y `código inline`.
-
-- Item 1
-- Item 2
-
-> Blockquote
-</cu-markdown>
-
-<script src="dist-libs/umd-core/CuMarkdown.umd.js"></script>
-<script>
-  const md = document.getElementById('doc');
-  md.addEventListener('parsed', (e) => console.log('headings:', e.detail));
-  console.log(md.headingIds());
-</script>
+<cu-markdown id="<id>"><markdown></cu-markdown>
 ```
 
 ```vue
-<!-- Vue -->
-<script setup lang="ts">
-import Markdown from "@/components/markdown/Markdown.vue";
-import { ref } from "vue";
-
-const doc = ref<InstanceType<typeof Markdown> | null>(null);
-</script>
-
-<template>
-  <Markdown ref="doc" @parsed="(ids: string[]) => console.log(ids)">
-# Título
-
-Párrafo con **negrita**, *cursiva* y `código inline`.
-
-- Item 1
-- Item 2
-  </Markdown>
-</template>
+<Markdown @parsed="<handler>"><markdown></Markdown>
 ```
 
-## Qué puede y qué no puede
+Sin atributos ni props: el contenido va por el slot default (ver «Atributos» / «Props», abajo).
 
-**Puede:** headings, párrafos, listas, blockquotes, tablas,
-code blocks con resaltado, links, imágenes y HTML sanitizado. Emite `parsed` y expone `headingIds()`
-(también en el CE).
+## Límites
 
-**No puede:**
-
-- **No hay prop de contenido** (`modelValue`/`content`): el markdown va como texto del slot.
-- **Se parsea una sola vez al montar.** No es reactivo: cambiar el texto no vuelve a renderizar;
-  hay que remontar el componente.
-- **No es un editor** ni emite eventos de edición.
-- **No acepta `color`, `variant` ni `size`.**
-- **No hay slots de renderers.** Sólo el slot default con el texto; no se pueden customizar tablas,
-  code blocks ni blockquotes.
-- **El idioma del code block sale del fence**, no de una prop.
-- **No acepta `theme`.** El tema se define en `<html data-theme="...">` (ver `theming.md`).
+- No hay prop de contenido (`modelValue`/`content`).
+- Se parsea una sola vez al montar: no es reactivo, hay que remontar.
+- No es un editor ni emite eventos de edición.
+- No acepta `color`, `variant` ni `size`.
+- Sin slots de renderers: no se pueden customizar tablas, code blocks ni blockquotes.
+- El idioma del code block sale del fence, no de una prop.
+- No acepta `theme`: se define en `<html data-theme="…">`.
 
 ## API del custom element
 

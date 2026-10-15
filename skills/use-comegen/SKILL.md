@@ -4,7 +4,7 @@ description: 'Receta para usar los componentes de ComegenUI: los custom elements
 metadata:
   repository: https://github.com/SpicyDogWings/comegenui
   path: skills/use-comegen
-  version: 5.1.0
+  version: 5.1.1
 ---
 
 # Usar ComegenUI — receta
@@ -17,11 +17,14 @@ andá directo al paso que te falta.
 >
 > | | Vue | Custom Element (vanilla) |
 > |---|---|---|
-> | Se importa de | `src/components/<cat>/X.vue` | `CuX.umd.js` (config `umd-core`, tag `<cu-x>`) |
+> | Se importa de | `src/components/<cat>/X.vue` (sólo con el repo) | `CuX.umd.js` (config `umd-core`, tag `<cu-x>`) |
 > | Ficha | `docs/componentes/vue/<kebab>.md` | `docs/componentes/<tag>.md` |
 > | Entrada de build | — | `src/lib/<cat>/<kebab>.ts` |
 > | Props | camelCase | atributos kebab-case + propiedades JS |
 > | Eventos | `@evento` / `v-model` | `CustomEvent` sobre el host |
+>
+> El zip lleva **sólo** los bundles (custom elements); los `.vue` están en el repo. Sin el repo,
+> usá el custom element también desde Vue.
 >
 > Si un componente **no** aparece en `src/lib/**/*.ts`, no existe como custom element:
 > sólo se puede usar desde Vue.
@@ -32,9 +35,9 @@ andá directo al paso que te falta.
   puede hacer (límites), agrupado por categoría.
 - `references/api-por-componente.md` tiene los datos mecánicos del custom element: su
   `.umd.js`, las props que **sólo van por JS** y sus eventos/métodos.
-- **`references/<kebab>.md` es la receta completa de cada custom element** (cuándo usarlo,
-  receta con ejemplos HTML y Vue, límites y las dos APIs). Es la fuente recomendada para
-  consumir un componente: p. ej. `references/button.md` para `<cu-button>`.
+- **`references/<kebab>.md` es la receta de cada custom element**: el patrón (ejemplo HTML y Vue
+  con valores de relleno), los límites y las dos APIs. Es la fuente recomendada para consumir un
+  componente: p. ej. `references/button.md` para `<cu-button>`.
 - Detalle completo de la API:
   - custom element → `docs/componentes/<tag>.md`
   - Vue → `docs/componentes/vue/<kebab>.md`
@@ -48,7 +51,8 @@ andá directo al paso que te falta.
 
 - Cada release publica **4 configs** (`umd-core`, `umd-shared`, `esm-core`, `esm-shared`), cada
   una en su zip. Qué trae cada una y cómo copiarla: `references/instalacion.md`.
-- No hay CSS que cargar: los tokens del tema se inyectan solos al cargar el primer componente.
+- No hay CSS que cargar: la lib inyecta los tokens del tema **default** al cargar el primer
+  componente (para los otros temas, paso 7).
 - Si el componente ya está instalado y "no cambia nada", casi siempre es un bundle viejo:
   volvé a copiar el `.umd.js` / `.js`. Para confirmarlo, leé
   `customElements.get('cu-x').comegen.version` (y `.type`) (`references/versionado.md`).
@@ -120,6 +124,8 @@ picker.open();
 ## 7. Tematizar
 
 - `references/theming.md`: temas, `data-theme`, colores, variantes y tokens.
+- La lib trae **sólo el tema default**: para `dark` o cualquiera de los otros 14 hay que aportar
+  los tokens (`--cu-color-*`) en el CSS del host.
 
 ## Errores frecuentes
 
@@ -138,62 +144,14 @@ picker.open();
 - El evento que esperás figura en `references/api-por-componente.md`; si el componente
   tiene una limitación, está en `references/componentes.md`.
 
-## Origen
+## Actualizar esta receta
 
-- **Repositorio:** <https://github.com/SpicyDogWings/comegenui>
-- **Ruta en el repo:** `skills/use-comegen/`
-- **Versión de esta copia:** `5.1.0` (el `metadata.version` del frontmatter).
-
-La skill es texto: no hay nada que compilar. **No viaja en el zip** (el zip lleva sólo
-la lib). Se instala desde el repo oficial, y la versión de la lib y la de la skill pueden
-no coincidir (`references/versionado.md`).
-
-## Instalar o actualizar esta receta en otro proyecto
-
-El CLI [`skills`](https://github.com/vercel-labs/skills) (Vercel) la instala en el
-directorio de tu agente y deja el origen registrado en `skills-lock.json` (Node 24+):
-
-```sh
-# último `main` (autodetecta el agente; forzá con -a opencode, -a claude-code, …)
-npx skills add SpicyDogWings/comegenui --skill use-comegen
-
-# fijar una rama/tag concreto
-npx skills add "https://github.com/SpicyDogWings/comegenui/tree/v5.0.0-alpha.3/skills/use-comegen"
-
-# actualizar
-npx skills update use-comegen
-```
-
-Si no podés usar el CLI, bajá la carpeta a mano eligiendo el `ref` (`main` o una
-rama/tag concreto, ej. `v5.0.0-alpha.3`):
-
-**Con git (sparse-checkout: no baja el resto del repo):**
-
-```sh
-git clone --filter=blob:none --sparse --branch main \
-  https://github.com/SpicyDogWings/comegenui.git /tmp/comegenui
-cd /tmp/comegenui
-git sparse-checkout set skills/use-comegen
-mkdir -p <proyecto>/.opencode/skills
-cp -r skills/use-comegen <proyecto>/.opencode/skills/
-```
-
-Cambiá `--branch main` por la rama o tag que quieras (`--branch v5.0.0-alpha.3`).
-
-**Sin git (tarball del ref):**
-
-```sh
-mkdir -p <proyecto>/.opencode/skills
-curl -L https://github.com/SpicyDogWings/comegenui/archive/refs/heads/main.tar.gz \
-  | tar -xz --strip-components=2 -C <proyecto>/.opencode/skills \
-    'comegenui-main/skills/use-comegen'
-```
-
-Para un tag, usá `archive/refs/tags/v5.0.0-alpha.3.tar.gz` y el prefijo
-`comegenui-5.0.0-alpha.3/` (GitHub quita la `v` inicial del ref al nombrar la carpeta).
-Para actualizar a mano, repetí el paso con el mismo `ref` (o `git pull` en el clone y
-volvé a copiar). Destinos válidos para el agente: `.agents/skills/`, `.opencode/skills/`
-o `.claude/skills/` (OpenCode lee los tres; ver `references/instalacion.md` para la lib).
+- Instalada con el CLI de skills: `npx skills update use-comegen`.
+- A mano: volvé a copiar `skills/use-comegen/` desde el `ref` que quieras
+  (`npx skills add "https://github.com/SpicyDogWings/comegenui/tree/<ref>/skills/use-comegen"`).
+- Destinos válidos (OpenCode lee los tres): `.agents/skills/`, `.opencode/skills/`, `.claude/skills/`.
+- Es texto: no hay nada que compilar. **No viaja en el zip** (el zip lleva sólo la lib), y la
+  versión de la lib y la de la skill pueden no coincidir (`references/versionado.md`).
 
 ## Archivos de esta skill
 

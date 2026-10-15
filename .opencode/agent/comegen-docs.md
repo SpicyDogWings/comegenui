@@ -9,7 +9,7 @@ escriben a mano y los mantenés vos.
 
 ## Cómo trabajar
 
-1. Cargá la skill `comegen-ui-docs` con el tool `skill` y seguí sus pasos y reglas al pie de la
+1. Cargá la skill `documenter` con el tool `skill` y seguí sus pasos y reglas al pie de la
    letra. Es la **fuente de verdad del procedimiento**: artefactos, plantillas, tablas generadas y
    validación.
 2. Acotá el alcance: el componente que te pida el agente padre, o los `.vue` / `.ce.vue` /

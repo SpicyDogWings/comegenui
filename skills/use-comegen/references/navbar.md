@@ -1,102 +1,39 @@
 # Navbar — `<cu-navbar>` / `<Navbar>`
 
-Barra de navegación vertical (tipo sidebar) con submenús, búsqueda (`filter`/`scroll`), modo compacto
-y opción responsive con hamburguesa + panel lateral.
-
-## Cuándo usarlo
-
-Para la navegación principal de una app, en una sidebar. Para una barra superior usá
-`<cu-navbar-horizontal>`.
+Barra de navegación vertical (sidebar) con submenús, búsqueda (`filter`/`scroll`), modo compacto y
+responsive con hamburguesa + panel lateral. Para una barra superior usá `<cu-navbar-horizontal>`.
 
 ## Receta
 
-1. Definí la estructura con `items` (`NavItem[]`). **Se asigna como propiedad JS**, no como atributo
-   HTML.
-2. Forma de un `NavItem`: `{ label, path?, icon?, children? }`. `icon` es un **string HTML** (podés
-   pasar un SVG inline); `children` arma submenús anidados.
-3. Marcá el activo con `active-path`. En vue-router, si se omite, se toma de la ruta.
-4. Activá la búsqueda con `search` (+ `search-placeholder`, `search-mode` `filter`/`scroll` y
-   `search-fields`, también por propiedad JS) y escuchá `search`.
-5. Modo compacto con `compact`; `compactable` agrega el botón nativo de toggle y `trigger`
-   (`click`/`hover`) define cómo abren los flyouts.
-6. Responsive: `responsive` reemplaza la nav por una hamburguesa que abre un panel
-   (`responsive-mode` y `side-over-position`).
-7. Los submenús arrancan expandidos; `collapsed` los arranca colapsados.
+- Definí `items` (`NavItem[]`): `{ label, path?, icon?, children? }`; `icon` es un string HTML y `children` arma submenús anidados.
+- `items` (y `search-fields`) se asignan como **propiedad JS**, nunca por atributo.
+- Marcá el activo con `active-path`; en Vue con vue-router, si se omite, se toma de la ruta.
+- Búsqueda: `search` + `search-placeholder` + `search-mode` (`filter`/`scroll`) + `search-fields`, y escuchá `search`.
+- Compacto: `compact` (sólo iconos), `compactable` (botón nativo de toggle) y `trigger` (`click`/`hover`) para los flyouts.
+- Responsive: `responsive` reemplaza la nav por una hamburguesa que abre un panel (`responsive-mode`, `side-over-position`).
+- Los submenús arrancan expandidos; `collapsed` los arranca colapsados.
 
 ```html
-<!-- HTML plano (UMD) -->
-<cu-navbar id="nav" search active-path="/usuarios" search-placeholder="Buscar..."></cu-navbar>
-
-<script src="dist-libs/umd-core/CuNavbar.umd.js"></script>
-<script>
-  const nav = document.getElementById('nav');
-  nav.items = [
-    { label: 'Inicio', path: '/' },
-    {
-      label: 'Usuarios',
-      icon: '<svg width="16" height="16" viewBox="0 0 24 24"></svg>',
-      children: [
-        { label: 'Lista', path: '/usuarios' },
-        { label: 'Roles', path: '/roles' },
-      ],
-    },
-    { label: 'Ajustes', path: '/ajustes' },
-  ];
-
-  nav.addEventListener('search', (e) => console.log('buscando:', e.detail));
-</script>
+<cu-navbar id="<id>" search search-placeholder="<placeholder>" active-path="<path>" compactable></cu-navbar>
 ```
 
 ```vue
-<!-- Vue -->
-<script setup lang="ts">
-import Navbar from "@/components/navigation/Navbar.vue";
-import { ref } from "vue";
-
-const items = ref([
-  { label: "Inicio", path: "/" },
-  {
-    label: "Usuarios",
-    children: [
-      { label: "Lista", path: "/usuarios" },
-      { label: "Roles", path: "/roles" },
-    ],
-  },
-  { label: "Ajustes", path: "/ajustes" },
-]);
-</script>
-
-<template>
-  <Navbar
-    :items="items"
-    search
-    active-path="/usuarios"
-    @search="(q: string) => console.log('buscando:', q)"
-  />
-</template>
+<Navbar :items="<items>" search active-path="<path>" compactable @search="<handler>" />
 ```
 
-## Qué puede y qué no puede
+Los valores de `search-mode` / `trigger` / `responsive-mode` / `side-over-position` están en «Atributos» / «Props», abajo.
 
-**Puede:** submenús anidados, búsqueda (`filter`/`scroll`), `search-fields`, `search-placeholder`,
-modo compacto (`compact`, `compactable`, `trigger`), `collapsed`, responsive (`responsive`,
-`responsive-mode`, `side-over-position`) y `active-path`. Emite `search`.
+## Límites
 
-**No puede:**
-
-- **`items` es obligatorio y se asigna como propiedad JS.** No se puede pasar como JSON por atributo
-  (a diferencia de otros CE): usá `nav.items = [...]`.
-- **`search-fields` también es propiedad JS**, no atributo.
-- **No expone métodos.**
-- **No navega por sí solo:** en vanilla manejás `path` + `active-path` y escuchás los clicks; en Vue
-  con vue-router se usa `path` y la ruta activa.
-- **No tiene slots.**
-- **`active-path` es manual en vanilla;** no hay detección de ruta sin router.
-- **`highlightItem` es interno** (lo calcula la raíz y lo propaga a las instancias recursivas): no
-  lo setees.
-- **`responsive` aplica a la instancia raíz**, no a las recursivas.
-- **No acepta `color`, `variant`, `size` ni `theme`.**
-- **No hay `v-model`:** la búsqueda se escucha por `search`.
+- `items` es obligatorio y se asigna como **propiedad JS** (`nav.items = [...]`): no se puede pasar como JSON por atributo.
+- `search-fields` también es propiedad JS, no atributo.
+- No expone métodos ni tiene slots.
+- No navega por sí solo: manejás `path` + `active-path` y escuchás los clicks; en Vue con vue-router sale de la ruta.
+- `active-path` es manual en vanilla: no hay detección de ruta sin router.
+- `highlightItem` es interno (lo calcula la raíz y lo propaga a las instancias recursivas): no lo setees.
+- `responsive` aplica a la instancia raíz, no a las recursivas.
+- No acepta `color`, `variant`, `size` ni `theme`.
+- No hay `v-model`: la búsqueda se escucha por `search`.
 
 ## API del custom element
 

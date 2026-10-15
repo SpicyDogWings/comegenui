@@ -1,69 +1,35 @@
 # Label — `<cu-label>` / `<Label>`
 
-Label con color semántico que enfoca el control hijo (o el elemento de `for`) al hacer clic, para
-ganar área clickeable.
-
-## Cuándo usarlo
-
-Para etiquetar un control de formulario (`Input`, `Checkbox`, `Switch`) y que todo el texto sea
+Label con color semántico que enfoca el control hijo (o el de `for`) al hacer clic, para ganar área
 clickeable. No es para texto decorativo suelto.
 
 ## Receta
 
-1. Poné el texto con `label` (modo declarativo) o pasalo por el slot default.
-2. Envolvé el control como hijo: al hacer clic en el label, el control se enfoca.
-3. Si el control está fuera del label, apuntá con `for="id"` al elemento a enfocar.
-4. Coloreá con `color` (default `neutral`).
-5. En Vue, `@click` escucha el click; en vanilla, el click nativo burbujea desde el shadow DOM.
+- Texto por `label` (declarativo) o por el slot default.
+- Envolvé el control como hijo: al clic en el label, se enfoca.
+- Control afuera del label: apuntá con `for="<id>"`.
+- `color` (default `neutral`).
+- En Vue el clic se escucha con `@click`; en vanilla burbujea el `click` nativo del shadow DOM.
 
 ```html
-<!-- HTML plano (UMD) -->
-<cu-label label="Correo electrónico" color="primary">
-  <cu-input type="email" placeholder="correo@ejemplo.com"></cu-input>
-</cu-label>
-
-<cu-label for="nombre" label="Nombre"></cu-label>
-<input id="nombre" type="text" />
-
-<script src="dist-libs/umd-core/CuLabel.umd.js"></script>
-<script src="dist-libs/umd-core/CuInput.umd.js"></script>
+<cu-label label="<label>" for="<id>" color="<color>"><cu-input></cu-input></cu-label>
 ```
 
 ```vue
-<!-- Vue -->
-<script setup lang="ts">
-import Label from "@/components/form/Label.vue";
-import Input from "@/components/form/Input.vue";
-</script>
-
-<template>
-  <Label label="Correo electrónico" color="primary">
-    <Input type="email" placeholder="correo@ejemplo.com" />
-  </Label>
-
-  <Label for="nombre" label="Nombre" />
-  <input id="nombre" type="text" />
-</template>
+<Label label="<label>" for="<id>" color="<color>"><Input /></Label>
 ```
 
-## Qué puede y qué no puede
+Los valores de `color` están en «Atributos» / «Props», abajo.
 
-**Puede:** 6 colores (`primary`, `secondary`, `neutral`, `success`, `warning`, `danger`), el texto
-por `label` o por slot, y `for` para apuntar a un elemento externo. El clic enfoca el hijo o el
-elemento apuntado.
+## Límites
 
-**No puede:**
-
-- **No tiene `variant` ni `size`.** Sólo se controla el color.
-- **`hight-contrast` no hace nada.** Está declarado y reenviado, pero el `.vue` no lo usa: no cambia
-  el contraste.
-- **No expone métodos.**
-- **No emite eventos custom en el CE.** El `click` que escuchás es el nativo; el `defineEmits('click')`
-  del `.vue` interno no se bridgea a un `CustomEvent`.
-- **No acepta `theme`.** El tema se define en `<html data-theme="...">`.
-- **El foco depende de que el hijo sea focusable.** Con contenido no focusable el clic no enfoca
-  nada.
-- **Con `for`, el foco es global al documento:** el id tiene que existir y ser único.
+- No tiene `variant` ni `size`; sólo se controla el color.
+- `hight-contrast` no hace nada: está declarado y reenviado, pero el `.vue` no lo usa.
+- No expone métodos.
+- El CE no emite eventos custom: el `click` es el nativo (el `defineEmits('click')` interno no se bridgea).
+- No acepta `theme`: se define en `<html data-theme="…">`.
+- El foco depende de que el hijo sea focusable.
+- Con `for`, el id tiene que existir y ser único (el foco es global al documento).
 
 ## API del custom element
 

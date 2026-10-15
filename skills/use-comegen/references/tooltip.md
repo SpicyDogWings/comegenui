@@ -1,72 +1,35 @@
 # Tooltip — `<cu-tooltip>` / `<Tooltip>`
 
-Tooltip que aparece al hacer hover sobre el elemento contenido, con posición, alineación, offset y delay configurables.
-
-## Cuándo usarlo
-
-Para aclarar qué hace un elemento al pasar el mouse. Si necesitás abrir contenido con click
-(o controlarlo por código), usá `cu-popover` o `cu-dropdown-menu`.
+Tooltip al hacer hover sobre el elemento del slot default, con posición, alineación, offset y
+delay configurables. Para abrir contenido con click (o controlarlo por código) usá
+`cu-popover` o `cu-dropdown-menu`.
 
 ## Receta
 
-1. Poné el elemento disparador en el slot default.
-2. Para texto simple usá `text`; para HTML usá el slot `content`, que tiene prioridad sobre
-   `text`.
-3. Elegí `position` (`top` default) y `align` (`center` default); separá el panel con
-   `offset` y esperá `delay` ms.
-4. `disabled` apaga el tooltip; `color` define el color de fondo (el texto siempre es
-   `surface`).
+- El disparador va en el **slot default**.
+- Texto simple: `text`. HTML: slot `content` (tiene prioridad sobre `text`).
+- `position` (`top`) + `align` (`center`); separá con `offset` (px) y esperá `delay` (ms).
+- `disabled` lo apaga. `color` es el **fondo** (el texto siempre es `surface`).
 
 ```html
-<!-- HTML plano (UMD) -->
-<script src="dist-libs/umd-core/CuTooltip.umd.js"></script>
-
-<cu-tooltip text="Guardar cambios" color="primary">
-  <cu-button color="primary" variant="soft">Guardar</cu-button>
-</cu-tooltip>
-
-<cu-tooltip position="right" align="start" delay="300">
-  <span>Elemento con tooltip rico</span>
-  <span slot="content"><strong>Más contexto</strong> con HTML</span>
-</cu-tooltip>
+<cu-tooltip text="<texto>" position="<position>" align="<align>" color="<color>"><trigger></cu-tooltip>
 ```
 
 ```vue
-<!-- Vue -->
-<script setup lang="ts">
-import Tooltip from "@/components/overlay/Tooltip.vue";
-import Button from "@/components/buttons/Button.vue";
-</script>
-
-<template>
-  <Tooltip text="Guardar cambios" color="primary">
-    <Button color="primary" variant="soft">Guardar</Button>
-  </Tooltip>
-
-  <Tooltip position="right" align="start" :delay="300">
-    <span>Elemento con tooltip rico</span>
-    <template #content><strong>Más contexto</strong> con HTML</template>
-  </Tooltip>
-</template>
+<Tooltip text="<texto>" position="<position>" align="<align>" :delay="<ms>"><Trigger /></Tooltip>
 ```
 
-## Qué puede y qué no puede
+Los valores de `color` / `position` / `align` están en «Atributos» / «Props», abajo.
 
-**Puede:** 6 colores de fondo, 4 posiciones (`top`, `bottom`, `left`, `right`), 3 alineaciones
-(`start`, `center`, `end`), `offset` (6 px) y `delay` (200 ms), `text` o slot `content` con
-HTML, y `disabled`.
+## Límites
 
-**No puede:**
-
-- **Sólo aparece con hover del mouse:** no hay trigger por click, no se muestra con foco de
-  teclado y no está pensado para touch.
-- **No emite eventos ni expone métodos.**
-- **No dibuja flecha** (arrow).
-- **`color` sólo cambia el fondo:** no hay prop de color del texto (siempre `surface`).
-- **No acepta contenido rico fuera del slot `content`:** el slot default es el trigger, no el
-  contenido.
+- Sólo hover del mouse: no hay trigger por click ni por foco de teclado, y no está pensado para touch.
+- No emite eventos ni expone métodos.
+- No dibuja flecha.
+- `color` sólo cambia el fondo: no hay prop de color del texto (siempre `surface`).
+- El slot default es el trigger, no el contenido: el contenido va por `content`.
 - El ancho está topeado a `18rem`, no es configurable por prop.
-- No expone props de posicionamiento tipo `fixed`: el panel se ubica con CSS relativo al trigger.
+- No hay props de posicionamiento tipo `fixed`: el panel se ubica con CSS relativo al trigger.
 
 ## API del custom element
 

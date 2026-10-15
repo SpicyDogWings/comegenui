@@ -1,93 +1,37 @@
 # CommandPalette — `<cu-command-palette>` / `<CommandPalette>`
 
-Paleta de comandos en un modal (búsqueda + lista agrupada por categoría), con selección por
-teclado o click.
-
-## Cuándo usarlo
-
-Para acciones rápidas tipo "⌘K": buscar y ejecutar comandos. Si querés un menú anclado a un
-botón usá `cu-dropdown-menu`; si querés un modal de contenido, `cu-modal`.
+Paleta de comandos en un modal: búsqueda + lista agrupada por categoría, con selección por teclado
+o click. Para un menú anclado a un botón usá `cu-dropdown-menu`; para un modal de contenido, `cu-modal`.
 
 ## Receta
 
-1. Definí `commands`: array de `CommandItem` (`id`, `label` y `action` obligatorios;
-   `description`, `category`, `badges`, `icon`, `shortcut` opcionales).
-2. En HTML plano asigná `palette.commands = [...]` como **propiedad JS**: `action` es una
-   función y no puede ir por atributo.
-3. Abrí y cerrá por código: `open()`, `close()`, `isOpen()`; o ejecutá un comando con `run(id)`.
-4. Escuchá `select` (recibe el `CommandItem`) y `close`.
-5. El atajo global (`⌘K`/`Ctrl+K`) lo cableás vos: el componente no registra ninguno.
-6. `title`, `placeholder`, `color`, `size` y `height` configuran el modal.
+- Definí `commands`: `{ id, label, action }` obligatorios; `description`, `category`, `badges`, `icon`, `shortcut` opcionales.
+- En el CE `commands` va como **propiedad JS** (`palette.commands = [...]`): `action` es una función.
+- Abrí y cerrá por código: `open()`, `close()`, `isOpen()`; ejecutá un comando con `run(id)`.
+- Escuchá `select` (payload: el `CommandItem`) y `close`.
+- El atajo global (`⌘K`/`Ctrl+K`) lo cableás vos: el componente no registra ninguno.
+- `title`, `placeholder`, `color`, `size` y `height` configuran el modal.
 
 ```html
-<!-- HTML plano (UMD) -->
-<script src="dist-libs/umd-core/CuCommandPalette.umd.js"></script>
-
-<cu-command-palette id="palette" title="Comandos" color="primary"></cu-command-palette>
-
-<script>
-  const palette = document.getElementById('palette');
-  palette.commands = [
-    { id: 'guardar', label: 'Guardar', category: 'Archivo', shortcut: '⌘S', action: () => console.log('guardar') },
-    { id: 'buscar',  label: 'Buscar',  category: 'Navegación', shortcut: '⌘K', action: () => console.log('buscar') },
-  ];
-  palette.addEventListener('select', (e) => console.log('elegido:', e.detail.label));
-
-  document.addEventListener('keydown', (e) => {
-    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
-      e.preventDefault();
-      palette.open();
-    }
-  });
-</script>
+<cu-command-palette id="<id>" title="<title>" placeholder="<placeholder>" color="<color>"></cu-command-palette>
 ```
 
 ```vue
-<!-- Vue -->
-<script setup lang="ts">
-import CommandPalette from "@/components/overlay/CommandPalette.vue";
-import Button from "@/components/buttons/Button.vue";
-import { useTemplateRef } from "vue";
-
-const palette = useTemplateRef("palette");
-const commands = [
-  { id: "guardar", label: "Guardar", category: "Archivo", shortcut: "⌘S", action: () => console.log("guardar") },
-  { id: "buscar", label: "Buscar", category: "Navegación", shortcut: "⌘K", action: () => console.log("buscar") },
-];
-</script>
-
-<template>
-  <Button @click="palette?.open()">Abrir comandos</Button>
-
-  <CommandPalette
-    ref="palette"
-    title="Comandos"
-    color="primary"
-    :commands="commands"
-    @select="(c) => console.log('elegido:', c.label)"
-  />
-</template>
+<CommandPalette ref="<ref>" title="<title>" color="<color>" :commands="<commands>" @select="<handler>" />
 ```
 
-## Qué puede y qué no puede
+Los valores de `color` / `size` / `height` están en «Atributos» / «Props», abajo.
 
-**Puede:** búsqueda sobre `label` y `category`, agrupado por `category`, navegación por teclado
-(↑/↓/Enter), `description`/`badges`/`shortcut`/`icon` por item, `color`, `title`, `placeholder`,
-`size`/`height` y los métodos `open`/`close`/`run`/`getCommands`/`isOpen`.
+## Límites
 
-**No puede:**
-
-- **`commands` es obligatorio y va por propiedad JS:** sin comandos la paleta abre vacía, y
-  `action` (función) nunca pasa por atributo.
-- **No registra atajo global:** el `⌘K`/`Ctrl+K` hay que cablearlo aparte.
-- **`run(id)` no cierra la paleta:** ejecuta `action` y emite `select`, pero no llama a `close()`;
-  el cierre lo hacen `select()` (click/Enter) o `close()` explícito.
-- **La búsqueda no mira `description`, `badges`, `shortcut` ni `id`** (sólo `label` y `category`).
-- **No tiene slots:** los items no se personalizan con markup (sólo `icon` como string).
-- **El payload de `select` incluye la función `action`:** no es serializable; en el CE viaja en
-  `e.detail`.
-- **No hay agrupado colapsable ni selección múltiple.**
-- **`toggle` no está expuesto:** sólo `open`/`close`.
+- `commands` es obligatorio y va por propiedad JS: sin comandos la paleta abre vacía.
+- No registra atajo global: el `⌘K`/`Ctrl+K` hay que cablearlo aparte.
+- `run(id)` no cierra la paleta: ejecuta `action` y emite `select`, sin llamar a `close()`.
+- La búsqueda sólo mira `label` y `category` (no `description`, `badges`, `shortcut` ni `id`).
+- No tiene slots: los items no se personalizan con markup (`icon` es un string).
+- El payload de `select` incluye la función `action` (no serializable; en el CE viaja en `e.detail`).
+- No hay agrupado colapsable ni selección múltiple.
+- `toggle` no está expuesto: sólo `open`/`close`.
 
 ## API del custom element
 
