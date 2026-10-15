@@ -16,16 +16,19 @@
  *   <!-- @api:expose -->      <!-- /@api:expose -->
  *
  *   node scripts/gen-api.mjs            # escribe
- *   node scripts/gen-api.mjs --check    # no escribe: falla si hay drift (gate)
+ *   node scripts/gen-api.mjs --check    # no escribe: falla si hay drift (gate) y avisa de las
+ *                                       # descripciones vacías contra scripts/docs-baseline.txt
+ *   node scripts/gen-api.mjs --update   # regenera ese baseline (tope: no puede empeorar)
  *   node scripts/gen-api.mjs button     # limita a los componentes que matcheen
  */
-import { readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import fg from 'fast-glob'
 import { createChecker } from 'vue-component-meta'
 
 const ROOT = resolve(import.meta.dirname, '..')
 const CHECK = process.argv.includes('--check')
+const UPDATE = process.argv.includes('--update')
 const FILTER = process.argv.slice(2).filter((a) => !a.startsWith('--'))
 
 const checker = createChecker(resolve(ROOT, 'tsconfig.app.json'))
@@ -132,7 +135,11 @@ function jsdocFor(file, name) {
   const comment = String.raw`/\*\*((?:(?!\*/)[\s\S])*)\*/`
   for (const re of [
     new RegExp(`${comment}\\s*(?:async\\s+)?function\\s+${esc}\\b`),
+    new RegExp(`${comment}\\s*(?:const|let|var)\\s+${esc}\\s*=`),
     new RegExp(`${comment}\\s*${esc}\\s*[:,(}]`),
+    // emits: miembro tipado `(e: 'name', …)` y forma array `'name',`
+    new RegExp(`${comment}\\s*\\(\\s*e\\s*:\\s*['"]${esc}['"]`),
+    new RegExp(`${comment}\\s*['"]${esc}['"]`),
   ]) {
     const m = re.exec(source)
     if (m) return m[1].split('\n').map((l) => l.replace(/^\s*\*?\s?/, '')).join(' ').trim()
@@ -160,6 +167,32 @@ function meta(file) {
     slots: m.slots ?? [],
     exposed: m.exposed ?? [],
   }
+}
+
+/**
+ * Eventos del componente Vue. El meta no llena la descripción de un emit ni con JSDoc, así
+ * que se resuelve del SFC (mismo criterio que los métodos expuestos). Además, `vue-component-meta`
+ * no expone los emits declarados en forma de array (`defineEmits(["change"])`), así que se
+ * completan con un fallback sobre el SFC.
+ */
+function arrayEmitNames(file) {
+  const names = []
+  for (const m of readSfc(file).matchAll(/defineEmits\s*\(\s*\[([\s\S]*?)\]\s*\)/g)) {
+    for (const s of m[1].matchAll(/['"]([^'"]+)['"]/g)) if (!names.includes(s[1])) names.push(s[1])
+  }
+  return names
+}
+
+function vueEvents(vue) {
+  const events = meta(vue).events.map((e) => ({
+    ...e,
+    description: e.description || jsdocFor(vue, e.name),
+  }))
+  const seen = new Set(events.map((e) => e.name))
+  for (const name of arrayEmitNames(vue)) {
+    if (!seen.has(name)) events.push({ name, type: '', description: jsdocFor(vue, name) })
+  }
+  return events
 }
 
 function defaultOf(p) {
@@ -212,7 +245,7 @@ async function collect() {
 
 function ceBlocks({ ce, vue, tag }) {
   const m = meta(ce)
-  const vueMeta = vue ? meta(vue) : { events: [], exposed: [] }
+  const vueMeta = vue ? { events: vueEvents(vue), exposed: meta(vue).exposed } : { events: [], exposed: [] }
   const vueEventByName = new Map(vueMeta.events.map((e) => [e.name, e]))
   const vueExposedByName = new Map(vueMeta.exposed.map((x) => [x.name, x]))
 
@@ -222,9 +255,11 @@ function ceBlocks({ ce, vue, tag }) {
     : 'Ninguno.'
 
   const emitNames = ceEmitNames(ce)
+  // Sin `ceEmit` (CE que es el `.vue` directo) los eventos salen del propio SFC del CE,
+  // con la misma resolución de descripción que los del componente Vue.
   const eventList = emitNames.length
     ? emitNames.map((name) => ({ name, ...vueEventByName.get(name) }))
-    : m.events
+    : vueEvents(ce)
   const events = eventList.length
     ? table(['Evento', 'Payload (`e.detail`)', 'Descripción'],
         eventList.map((e) => [`\`${e.name}\``, payloadCell(e.type), e.description || '—']))
@@ -251,9 +286,10 @@ function vueBlocks({ vue }) {
     ? table(['Prop', 'Tipo', 'Default', 'Descripción'],
         m.props.map((p) => [`\`${p.name}\``, `\`${p.type}\``, `\`${defaultOf(p)}\``, p.description || '—']))
     : 'Ninguna.'
-  const emits = m.events.length
+  const events = vueEvents(vue)
+  const emits = events.length
     ? table(['Evento', 'Payload', 'Descripción'],
-        m.events.map((e) => [`\`${e.name}\``, payloadCell(e.type), e.description || '—']))
+        events.map((e) => [`\`${e.name}\``, payloadCell(e.type), e.description || '—']))
     : 'Ninguno.'
   const slots = m.slots.length
     ? table(['Slot', 'Descripción'], m.slots.map((s) => [s.name === 'default' ? '`default`' : `\`${s.name}\``, s.description || '—']))
@@ -305,12 +341,18 @@ function skillBlocks(ce, vue) {
 }
 
 const components = await collect()
-const drifted = []
+const drifted = new Set()
+const emptyCounts = new Map() // kebab → descripciones vacías de su API Vue
 let touched = 0
+
+/** Filtro por CLI: nombre exacto si matchea un componente; si no, substring. */
+const selected = (name) =>
+  FILTER.length === 0 ||
+  FILTER.some((f) => (components.has(f) ? name === f : name.includes(f)))
 
 if (process.argv.includes('--print')) {
   for (const [name, comp] of components) {
-    if (FILTER.length && !FILTER.some((f) => name.includes(f))) continue
+    if (!selected(name)) continue
     console.log(`\n${'='.repeat(70)}\n${name}${comp.tag ? ` (<${comp.tag}>)` : ' (sólo Vue)'}\n${'='.repeat(70)}`)
     if (comp.ce) {
       console.log('\n#### CE · atributos\n', ceBlocks(comp).atributos)
@@ -325,8 +367,162 @@ if (process.argv.includes('--print')) {
   process.exit(0)
 }
 
+/**
+ * Modo partials (`docs/partials/<kebab>/`): las dos fichas comparten las secciones de API
+ * por `<!--@include-->`. Cada sección vive en un partial: `<base>.md` si la tabla del CE y la
+ * de Vue son idénticas, o `<base>-vanilla.md` / `<base>-vue.md` si difieren. Ver la skill
+ * `documenter`.
+ */
+const SECTION_FILES = [
+  { base: 'props', ce: 'atributos', vue: 'props' },
+  { base: 'eventos', ce: 'eventos', vue: 'emits' },
+  { base: 'slots', ce: 'slots', vue: 'slots' },
+  { base: 'metodos', ce: 'metodos', vue: 'expose' },
+]
+
+/** Cuerpo de la tabla sin la fila de encabezado («Atributo» vs «Prop» no cuenta). */
+const tableBody = (text) => (text ?? '').split('\n').slice(1).join('\n')
+
+function partialPlan(name, ce, vue) {
+  const dir = `docs/partials/${name}`
+  const plan = new Map() // archivo → { marcador: contenido }
+  const add = (file, marker, content) => {
+    const blocks = plan.get(file) ?? {}
+    blocks[marker] = content
+    plan.set(file, blocks)
+  }
+  for (const { base, ce: ceName, vue: vueName } of SECTION_FILES) {
+    const vueContent = vue[vueName]
+    // Sólo Vue: no hay nada que compartir.
+    if (!ce) {
+      add(`${dir}/${base}.md`, vueName, vueContent)
+      continue
+    }
+    const ceContent = ce[ceName]
+    // Compartida si las **filas** coinciden; se guarda el bloque del CE.
+    if (ceContent !== undefined && tableBody(ceContent) === tableBody(vueContent)) {
+      add(`${dir}/${base}.md`, ceName, ceContent) // compartida
+    } else {
+      if (ceContent !== undefined) add(`${dir}/${base}-vanilla.md`, ceName, ceContent)
+      add(`${dir}/${base}-vue.md`, vueName, vueContent)
+    }
+  }
+  return plan
+}
+
+/**
+ * Crea un partial que falta con sus marcadores vacíos (después `inject` lo llena). Sólo aplica
+ * a `docs/partials/`: las fichas y las recetas nunca se crean solas.
+ */
+function ensureMarkers(file, blocks) {
+  const skeleton = Object.keys(blocks)
+    .map((marker) => `<!-- @api:${marker} -->\n<!-- /@api:${marker} -->`)
+    .join('\n\n')
+  writeFileSync(resolve(ROOT, file), `${skeleton}\n`)
+}
+
+/* ── descripciones vacías (deuda de JSDoc, visible y acotada) ─────────────── */
+
+const BASELINE_FILE = 'scripts/docs-baseline.txt'
+
+/**
+ * Celdas de una fila `| a | b |`. Los `|` de un tipo llegan escapados (`\|`) y son contenido,
+ * no separador (mismo criterio que `scripts/ficha-api.mjs`).
+ */
+function splitCells(line) {
+  const inner = line.trim().replace(/^\||\|$/g, '')
+  const cells = []
+  let current = ''
+  for (let i = 0; i < inner.length; i++) {
+    const char = inner[i]
+    if (char === '\\' && inner[i + 1] === '|') { current += '|'; i++ }
+    else if (char === '|') { cells.push(current); current = '' }
+    else current += char
+  }
+  cells.push(current)
+  return cells.map((c) => c.trim())
+}
+
+/**
+ * Celdas `—` de la columna «Descripción» de una tabla generada: la descripción sale del JSDoc
+ * del SFC, así que una prop/emit/slot/método sin JSDoc deja la celda vacía (`—`).
+ */
+function emptyDescriptions(text) {
+  const lines = String(text ?? '')
+    .split('\n')
+    .map((l) => l.trim())
+    .filter((l) => l.startsWith('|') && !/^\|[\s\-:|]+\|$/.test(l))
+  if (lines.length < 2) return 0
+  const column = splitCells(lines[0]).indexOf('Descripción')
+  if (column === -1) return 0
+  return lines.slice(1).filter((l) => splitCells(l)[column] === '—').length
+}
+
+/** Descripciones vacías de la **API Vue** de un componente (props/emits/slots/expose). */
+const vueEmptyDescriptions = (vue) =>
+  ['props', 'emits', 'slots', 'expose'].reduce((n, key) => n + emptyDescriptions(vue[key]), 0)
+
+/** `nombre → celdas vacías`, tal como está en el baseline (vacío si todavía no existe). */
+function readBaseline() {
+  const counts = new Map()
+  const file = resolve(ROOT, BASELINE_FILE)
+  if (!existsSync(file)) return counts
+  for (const line of readFileSync(file, 'utf8').split('\n')) {
+    const m = /^([a-z0-9-]+)\t(\d+)$/.exec(line.trim())
+    if (m && m[1] !== 'total') counts.set(m[1], Number(m[2]))
+  }
+  return counts
+}
+
+/** Reescribe el baseline: el tope contra el que se compara la próxima corrida. */
+function writeBaseline(counts) {
+  const rows = [...counts].sort(([a], [b]) => a.localeCompare(b)).map(([name, n]) => `${name}\t${n}`)
+  const total = [...counts.values()].reduce((a, b) => a + b, 0)
+  writeFileSync(
+    resolve(ROOT, BASELINE_FILE),
+    [
+      '# scripts/docs-baseline.txt — descripciones vacías de la doc.',
+      '# Celdas «—» de la columna «Descripción» de la API Vue (props/emits/slots/expose) de cada',
+      '# ficha: el JSDoc del SFC es la fuente y todavía no está. Es deuda visible, no un error:',
+      '# `node scripts/gen-api.mjs --check` la reporta y avisa si sube por encima de este tope.',
+      '# Regenerar a propósito (después de documentar): node scripts/gen-api.mjs --update',
+      '# o ./scripts/guard.sh --update.',
+      '',
+      ...rows,
+      `total\t${total}`,
+      '',
+    ].join('\n'),
+  )
+  return total
+}
+
+/* ── fin descripciones vacías ─────────────────────────────────────────────── */
+
+if (process.argv.includes('--plan')) {
+  // Se computan TODOS los componentes (en el mismo orden que la corrida completa) para que el
+  // estado del checker —y por lo tanto la decisión shared/split— coincida con ella; sólo se
+  // imprime lo seleccionado.
+  for (const [name, comp] of components) {
+    let plan
+    try {
+      const ce = comp.ce ? ceBlocks(comp) : null
+      const vue = vueBlocks(comp)
+      plan = partialPlan(name, ce, vue)
+    } catch (e) {
+      console.warn(`gen-api: salteo ${name} — ${String(e.message).split('\n')[0]}`)
+      continue
+    }
+    if (!selected(name)) continue
+    console.log(`${name}${comp.tag ? ` (<${comp.tag}>)` : ' (sólo Vue)'}`)
+    for (const [file, blocks] of plan) {
+      console.log(`  ${file}  [${Object.keys(blocks).join(', ')}]`)
+    }
+  }
+  process.exit(0)
+}
+
 for (const [name, comp] of components) {
-  if (FILTER.length && !FILTER.some((f) => name.includes(f))) continue
+  if (!selected(name)) continue
   const targets = {
     ce: `docs/componentes/${comp.tag}.md`,
     vue: `docs/componentes/vue/${name}.md`,
@@ -341,13 +537,23 @@ for (const [name, comp] of components) {
     console.warn(`gen-api: salteo ${name} — ${String(e.message).split('\n')[0]}`)
     continue
   }
+  emptyCounts.set(name, vueEmptyDescriptions(vue))
 
-  const changed = [
-    comp.ce && inject(targets.ce, ce) && drifted.push(targets.ce),
-    inject(targets.vue, vue) && drifted.push(targets.vue),
-    inject(targets.skill, skillBlocks(ce, vue)) && drifted.push(targets.skill),
-  ].filter(Boolean).length
-  touched += changed
+  const changes = new Set()
+  if (existsSync(resolve(ROOT, `docs/partials/${name}`))) {
+    // Fichas compuestas por partials.
+    for (const [file, blocks] of partialPlan(name, ce, vue)) {
+      const missing = !existsSync(resolve(ROOT, file))
+      if (missing && !CHECK) ensureMarkers(file, blocks)
+      if (inject(file, blocks) || (missing && CHECK)) changes.add(file)
+    }
+  } else {
+    if (comp.ce && inject(targets.ce, ce)) changes.add(targets.ce)
+    if (inject(targets.vue, vue)) changes.add(targets.vue)
+  }
+  if (inject(targets.skill, skillBlocks(ce, vue))) changes.add(targets.skill)
+  for (const file of changes) drifted.add(file)
+  touched += changes.size
 }
 
 if (CHECK && touched) {
@@ -355,5 +561,28 @@ if (CHECK && touched) {
   for (const f of drifted) console.error(`  - ${f}`)
   console.error('Corré `node scripts/gen-api.mjs` y commiteá el resultado.')
   process.exit(1)
+}
+
+// El conteo sólo es comparable con el baseline si se procesaron todos los componentes.
+if (FILTER.length === 0) {
+  const total = [...emptyCounts.values()].reduce((a, b) => a + b, 0)
+  if (UPDATE) {
+    writeBaseline(emptyCounts)
+    console.log(`gen-api: baseline actualizado — ${total} descripción(es) vacía(s) en ${emptyCounts.size} componente(s) (${BASELINE_FILE})`)
+  } else {
+    const baseline = readBaseline()
+    const base = [...baseline.values()].reduce((a, b) => a + b, 0)
+    const worse = [...emptyCounts].filter(([name, n]) => n > (baseline.get(name) ?? 0))
+    if (!baseline.size) {
+      console.warn(`gen-api: sin baseline de descripciones vacías (${BASELINE_FILE}) — generá uno con --update.`)
+    } else if (worse.length) {
+      console.warn(`⚠ gen-api: ${worse.length} componente(s) con más descripciones vacías que el baseline:`)
+      for (const [name, n] of worse.slice(0, 12)) {
+        console.warn(`  - ${name}: ${n} (baseline ${baseline.get(name) ?? 0})`)
+      }
+      console.warn('  Sumá el JSDoc que falta en el SFC, o corré `node scripts/gen-api.mjs --update` si fue a propósito.')
+    }
+    console.log(`gen-api: descripciones vacías: ${total} (baseline ${base})`)
+  }
 }
 console.log(`gen-api: ${touched ? `${touched} archivo(s) ${CHECK ? 'desactualizados' : 'actualizados'}` : 'todo al día'} (${components.size} componentes)`)

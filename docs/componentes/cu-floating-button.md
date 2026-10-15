@@ -22,71 +22,70 @@ Botón flotante (FAB) fijo en la esquina inferior derecha. Es un `Button` (hered
 
 <!-- demo:floating-button-uso -->
 
----
+> Es `position: fixed` en la esquina inferior derecha (`bottom` y `right`: `var(--cu-space-lg)`), con `z-index: 1000` y sombra elevada. El contenido (normalmente un SVG) debe usar `stroke="currentColor"` para heredar el color; el `click` es el evento nativo del `Button` interno.
+
+## Colores
+
+`color` es el color semántico del FAB (`primary` es el default) y se resuelve con los tokens del tema activo.
+
+```html
+<cu-floating-button color="primary" variant="solid" size="sm"><svg><!-- ícono --></svg></cu-floating-button>
+<cu-floating-button color="secondary" variant="solid" size="sm"><svg><!-- ícono --></svg></cu-floating-button>
+<cu-floating-button color="neutral" variant="solid" size="sm"><svg><!-- ícono --></svg></cu-floating-button>
+<cu-floating-button color="success" variant="solid" size="sm"><svg><!-- ícono --></svg></cu-floating-button>
+<cu-floating-button color="warning" variant="solid" size="sm"><svg><!-- ícono --></svg></cu-floating-button>
+<cu-floating-button color="danger" variant="solid" size="sm"><svg><!-- ícono --></svg></cu-floating-button>
+```
+
+<!-- demo:floating-button-colores -->
 
 ## Variantes y tamaños
 
+`variant` y `size` se heredan de `Button`: las 7 variantes (`solid` es el default) y los 3 tamaños (`lg` es el default).
+
 ```html
-<cu-floating-button color="success" variant="soft" size="lg">
-  <svg><!-- ícono --></svg>
-</cu-floating-button>
+<cu-floating-button variant="solid" color="primary" size="md"><svg><!-- ícono --></svg></cu-floating-button>
+<cu-floating-button variant="outlined" color="primary" size="md"><svg><!-- ícono --></svg></cu-floating-button>
+<cu-floating-button variant="soft" color="primary" size="md"><svg><!-- ícono --></svg></cu-floating-button>
+<cu-floating-button variant="ghost" color="primary" size="md"><svg><!-- ícono --></svg></cu-floating-button>
+<cu-floating-button variant="subtle" color="primary" size="md"><svg><!-- ícono --></svg></cu-floating-button>
+<cu-floating-button variant="link" color="primary" size="md"><svg><!-- ícono --></svg></cu-floating-button>
+<cu-floating-button variant="none" color="primary" size="md"><svg><!-- ícono --></svg></cu-floating-button>
+
+<cu-floating-button size="sm" color="primary" variant="solid"><svg><!-- ícono --></svg></cu-floating-button>
+<cu-floating-button size="md" color="primary" variant="solid"><svg><!-- ícono --></svg></cu-floating-button>
+<cu-floating-button size="lg" color="primary" variant="solid"><svg><!-- ícono --></svg></cu-floating-button>
 ```
 
 <!-- demo:floating-button-variantes-tamanos -->
 
----
+> No fija tamaño ni forma: hereda de `Button` el `padding`, el `size` y el `border-radius`, y crece con su contenido.
 
-## Deshabilitado
+## Estados
+
+`disabled` atenúa el FAB y bloquea el click; `loading` lo deshabilita igual y antepone un spinner mientras está activo.
 
 ```html
-<cu-floating-button disabled>
-  <svg><!-- ícono --></svg>
-</cu-floating-button>
+<cu-floating-button disabled color="neutral" variant="soft" size="sm"><svg><!-- ícono --></svg></cu-floating-button>
+<cu-floating-button loading color="primary" variant="solid" size="sm"><svg><!-- ícono --></svg></cu-floating-button>
 ```
 
-<!-- demo:floating-button-deshabilitado -->
-
----
-
-## Notas
-
-- Es un `Button` posicionado de forma flotante: `position: fixed` en la esquina inferior derecha (`bottom` y `right`: `var(--cu-space-lg)`) con `z-index: 1000` y sombra elevada.
-- **No** fija tamaño ni forma: hereda de `Button` el `padding`, el `size` (default `lg`) y el `border-radius`, y crece con su contenido.
-- Hereda de `Button` las props `variant` y `size` (además del estado `loading`); el color semántico se define con `color`.
-- El contenido (normalmente un SVG) debe usar `stroke="currentColor"`/`fill="currentColor"` para heredar el color.
-
----
+<!-- demo:floating-button-estados -->
 
 ## Atributos
 
-<!-- @api:atributos -->
-| Atributo | Tipo | Default | Descripción |
-| ------ | ------ | ------ | ------ |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"primary"` | Color semántico del FAB: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle" \| "link" \| "none"` | `"solid"` | Variante visual, heredada de `Button`: `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` |
-| `loading` | `boolean` | `false` | Muestra un spinner y deshabilita el botón mientras está activo. |
-| `size` | `"sm" \| "md" \| "lg"` | `"lg"` | Tamaño, heredado de `Button`: `sm`, `md`, `lg` |
-| `disabled` | `boolean` | `false` | Deshabilita el botón. |
-<!-- /@api:atributos -->
+<!--@include: ../partials/floating-button/props.md-->
 
 > El Custom Element **no expone** prop `theme` ni `hightContrast`.
 
 ## Eventos
 
-<!-- @api:eventos -->
-Ninguno.
-<!-- /@api:eventos -->
+<!--@include: ../partials/floating-button/eventos.md-->
 
 ## Slots
 
-<!-- @api:slots -->
-| Slot | Descripción |
-| ------ | ------ |
-| `default` | — |
-<!-- /@api:slots -->
+<!--@include: ../partials/floating-button/slots.md-->
 
 ## Métodos expuestos
 
-<!-- @api:metodos -->
-No expone métodos.
-<!-- /@api:metodos -->
+<!--@include: ../partials/floating-button/metodos.md-->

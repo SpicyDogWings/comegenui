@@ -30,44 +30,121 @@ Menú desplegable con items declarativos (label, ícono, color, divisor, link). 
 
 > **Importante:** `items` se asigna como propiedad JS (`dd.items = [...]`), no como atributo HTML.
 
----
+## Colores
 
-## Items con link
+`color` pinta el toggle con los 6 nombres semánticos, que se resuelven con los tokens del tema activo.
 
-```js
-dd.items = [
-  { label: 'Perfil', href: '/perfil' },
-  { label: 'Configuración', href: '/config' },
-  { label: 'Cerrar sesión', href: '/logout', color: 'danger' },
-];
+```html
+<cu-dropdown-menu label="primary" color="primary" variant="solid"></cu-dropdown-menu>
+<cu-dropdown-menu label="secondary" color="secondary" variant="solid"></cu-dropdown-menu>
+<cu-dropdown-menu label="neutral" color="neutral" variant="solid"></cu-dropdown-menu>
+<cu-dropdown-menu label="success" color="success" variant="solid"></cu-dropdown-menu>
+<cu-dropdown-menu label="warning" color="warning" variant="solid"></cu-dropdown-menu>
+<cu-dropdown-menu label="danger" color="danger" variant="solid"></cu-dropdown-menu>
 ```
 
----
+<!-- demo:dropdown-menu-colores -->
 
-## Toggle personalizado
+> Las secciones de apariencia muestran sólo el toggle; el panel se llena igual que en «Uso en HTML plano»: con `items` por JS o con el slot por defecto.
 
-Reemplaza el botón toggle con un slot HTML nativo:
+## Variantes
+
+`variant` decide el aspecto del toggle con las 7 variantes de `Button`; `ghost` es el default.
+
+```html
+<cu-dropdown-menu label="solid" color="primary" variant="solid"></cu-dropdown-menu>
+<cu-dropdown-menu label="outlined" color="primary" variant="outlined"></cu-dropdown-menu>
+<cu-dropdown-menu label="soft" color="primary" variant="soft"></cu-dropdown-menu>
+<cu-dropdown-menu label="ghost" color="primary" variant="ghost"></cu-dropdown-menu>
+<cu-dropdown-menu label="subtle" color="primary" variant="subtle"></cu-dropdown-menu>
+<cu-dropdown-menu label="link" color="primary" variant="link"></cu-dropdown-menu>
+<cu-dropdown-menu label="none" color="primary" variant="none"></cu-dropdown-menu>
+```
+
+<!-- demo:dropdown-menu-variantes -->
+
+## Estados
+
+`disabled` atenúa el toggle y bloquea el menú: no abre ni por click ni por teclado.
+
+```html
+<cu-dropdown-menu label="Deshabilitado" color="primary" variant="solid" disabled></cu-dropdown-menu>
+```
+
+<!-- demo:dropdown-menu-deshabilitado -->
+
+## Posicionamiento
+
+`position` (`bottom` default, `top`) y `align` (`start` default, `center`, `end`) eligen dónde se abre el panel y cómo queda alineado con el toggle; `offset` (default `4`) es la separación en píxeles y `fixed` usa `position: fixed`.
+
+```html
+<cu-dropdown-menu label="bottom / start" position="bottom" align="start"></cu-dropdown-menu>
+<cu-dropdown-menu label="bottom / center" position="bottom" align="center"></cu-dropdown-menu>
+<cu-dropdown-menu label="bottom / end" position="bottom" align="end"></cu-dropdown-menu>
+<cu-dropdown-menu label="top / start" position="top" align="start"></cu-dropdown-menu>
+<cu-dropdown-menu label="top / center" position="top" align="center"></cu-dropdown-menu>
+<cu-dropdown-menu label="top / end" position="top" align="end"></cu-dropdown-menu>
+<cu-dropdown-menu label="offset 16" offset="16"></cu-dropdown-menu>
+<cu-dropdown-menu label="fixed" fixed></cu-dropdown-menu>
+```
+
+<!-- demo:dropdown-menu-posicionamiento -->
+
+> El custom element sólo acepta `position`: `bottom` o `top`; en la API Vue también existen `left` y `right`.
+
+## Alineación del texto
+
+`textAlign` (`left` default, `center`, `right`) alinea el texto de los items del panel.
+
+```html
+<cu-dropdown-menu label="left" color="primary" variant="outlined" text-align="left"></cu-dropdown-menu>
+<cu-dropdown-menu label="center" color="primary" variant="outlined" text-align="center"></cu-dropdown-menu>
+<cu-dropdown-menu label="right" color="primary" variant="outlined" text-align="right"></cu-dropdown-menu>
+```
+
+<!-- demo:dropdown-menu-text-align -->
+
+## Items
+
+`items` es el array declarativo: cada item puede llevar `label`, `icon` (SVG inline), `color`, `variant`, `disabled`, `divider`, `href` con `target`, y `onClick`, que se dispara al elegirlo.
+
+```html
+<cu-dropdown-menu id="ddItems" label="Acciones" color="neutral" variant="outlined"></cu-dropdown-menu>
+
+<script>
+  const pencil = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>';
+  const copy = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>';
+  const trash = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>';
+
+  document.getElementById('ddItems').items = [
+    { label: 'Editar', icon: pencil, onClick: () => console.log('editar') },
+    { label: 'Duplicar', icon: copy, variant: 'soft', onClick: () => console.log('duplicar') },
+    { label: 'Deshabilitado', disabled: true },
+    { divider: true },
+    { label: 'Sitio externo', href: 'https://developer.mozilla.org', target: '_blank' },
+    { label: 'Eliminar', icon: trash, color: 'danger', onClick: () => console.log('eliminar') },
+  ];
+</script>
+```
+
+<!-- demo:dropdown-menu-items -->
+
+## Slots
+
+El slot `toggle` reemplaza el botón del trigger.
 
 ```html
 <cu-dropdown-menu id="ddCustom" color="primary">
-  <button slot="toggle"
-          onclick="document.getElementById('ddCustom').toggle()"
-          style="background:#3b82f6;color:white;border:none;border-radius:6px;padding:8px 14px;cursor:pointer">
-    ☰ Menú
-  </button>
+  <button slot="toggle" onclick="document.getElementById('ddCustom').toggle()">☰ Menú</button>
 </cu-dropdown-menu>
 ```
 
 <!-- demo:dropdown-menu-toggle-personalizado -->
 
----
-
-## Contenido libre en el panel (sin `items`)
-
-Si pasás contenido en el slot por defecto, el panel ignora `items` y muestra lo que definas:
+El slot por defecto rellena el panel y sólo se usa cuando `items` está vacío.
 
 ```html
-<cu-dropdown-menu id="ddLibre" label="Opciones">
+<cu-dropdown-menu label="Opciones">
   <div style="padding: 12px; min-width: 200px;">
     <p style="margin: 0 0 8px;">Contenido arbitrario</p>
     <a href="/logout">Cerrar sesión</a>
@@ -77,31 +154,15 @@ Si pasás contenido en el slot por defecto, el panel ignora `items` y muestra lo
 
 <!-- demo:dropdown-menu-contenido-libre -->
 
----
+## Interacción
 
-## Posicionamiento
-
-El dropdown usa tres props combinables:
-
-- `position` + `align`: separados (`bottom` + `start`)
-
-```html
-<cu-dropdown-menu label="Arriba" position="top" align="end"></cu-dropdown-menu>
-<cu-dropdown-menu label="Alineado" position="bottom" align="end" offset="8"></cu-dropdown-menu>
-```
-
-<!-- demo:dropdown-menu-posicionamiento -->
-
----
-
-## Control programático
+`open` y `close` son los dos CustomEvents propios, y `open()`, `close()`, `toggle()` e `isOpen()` gobiernan el panel por código.
 
 ```html
 <cu-dropdown-menu id="ddAPI" label="Dropdown"></cu-dropdown-menu>
 
 <script>
   const dd = document.getElementById('ddAPI');
-  dd.items = [ /* ... */ ];
   dd.open();
   dd.close();
   dd.toggle();
@@ -114,24 +175,9 @@ El dropdown usa tres props combinables:
 
 <!-- demo:dropdown-menu-control-programatico -->
 
----
-
 ## Atributos
 
-<!-- @api:atributos -->
-| Atributo | Tipo | Default | Descripción |
-| ------ | ------ | ------ | ------ |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico del toggle: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle" \| "link" \| "none"` | `"ghost"` | Variante del toggle: `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` |
-| `disabled` | `boolean` | `false` | Deshabilita el toggle |
-| `position` | `"bottom" \| "top"` | `"bottom"` | Posición preferida del panel: `bottom`, `top` |
-| `align` | `"center" \| "start" \| "end"` | `"start"` | Alineación del panel: `start`, `center`, `end` |
-| `fixed` | `boolean` | `false` | Si es `true`, el panel usa `position: fixed` en vez de absoluto |
-| `items` | `unknown[]` | `[]` | Lista de items (ver abajo). Se asigna como propiedad JS, no como atributo HTML |
-| `label` | `string` | `""` | Texto del toggle (se ignora si se provee slot `toggle`) |
-| `offset` | `number` | `4` | Separación en píxeles entre el toggle y el panel |
-| `text-align` | `"center" \| "left" \| "right"` | `"left"` | Alineación del texto del toggle: `left`, `center`, `right` |
-<!-- /@api:atributos -->
+<!--@include: ../partials/dropdown-menu/props-vanilla.md-->
 
 ### Items
 
@@ -151,29 +197,12 @@ Cada item del array `items` puede tener:
 
 ## Eventos
 
-<!-- @api:eventos -->
-| Evento | Payload (`e.detail`) | Descripción |
-| ------ | ------ | ------ |
-| `open` | — | — |
-| `close` | — | — |
-<!-- /@api:eventos -->
+<!--@include: ../partials/dropdown-menu/eventos-vanilla.md-->
 
 ## Slots
 
-<!-- @api:slots -->
-| Slot | Descripción |
-| ------ | ------ |
-| `toggle` | — |
-| `default` | — |
-<!-- /@api:slots -->
+<!--@include: ../partials/dropdown-menu/slots.md-->
 
 ## Métodos expuestos
 
-<!-- @api:metodos -->
-| Método | Descripción |
-| ------ | ------ |
-| `open` | Abre el menú. |
-| `close` | Cierra el menú. |
-| `toggle` | Alterna la visibilidad del menú. |
-| `isOpen` | Devuelve true si el menú está abierto. |
-<!-- /@api:metodos -->
+<!--@include: ../partials/dropdown-menu/metodos.md-->

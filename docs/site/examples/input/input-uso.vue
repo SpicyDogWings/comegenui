@@ -31,7 +31,6 @@ function enfocar() {
   <VanillaDemo :use="['CuInput']">
     <cu-input placeholder="Nombre" color="primary" variant="outlined"></cu-input>
     <cu-input ref="email" type="email" placeholder="correo@ejemplo.com" variant="soft"></cu-input>
-    <!-- La ficha usa `value="42"`; el atributo que aplica el valor es `model-value`. -->
     <cu-input type="number" disabled model-value="42"></cu-input>
     <div class="cu-demo-controls">
       <button type="button" @click="setear">set()</button>

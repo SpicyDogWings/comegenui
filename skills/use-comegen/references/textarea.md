@@ -104,10 +104,10 @@ Ninguno.
 <!-- @api:metodos -->
 | Método | Descripción |
 | ------ | ------ |
-| `get` | — |
-| `set` | — |
-| `reset` | — |
-| `focus` | — |
+| `get` | Devuelve el valor actual del textarea. |
+| `set` | Setea el valor (acepta `string \| number`). |
+| `reset` | Limpia el campo. |
+| `focus` | Enfoca el textarea. |
 <!-- /@api:metodos -->
 
 ## API del componente Vue
@@ -146,8 +146,8 @@ Ninguno.
 <!-- @api:expose -->
 | Método | Descripción |
 | ------ | ------ |
-| `get` | — |
-| `set` | — |
-| `reset` | — |
-| `focus` | — |
+| `get` | Devuelve el valor actual del textarea. |
+| `set` | Setea el valor del textarea. |
+| `reset` | Limpia el textarea. |
+| `focus` | Enfoca el textarea. |
 <!-- /@api:expose -->

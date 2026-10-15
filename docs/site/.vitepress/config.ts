@@ -32,6 +32,9 @@ function buildModeMap(): Map<string, { counterpart: string; mode: "vue" | "vanil
     for (const item of group.items) {
       const twin = byText(vue, item.text);
       if (!twin) continue;
+      // Defensa: si la contraparte por título fuera la misma URL (no hay familia
+      // distinta), no hay a dónde saltar y el redirect se apuntaría a sí mismo.
+      if (twin.link === item.link) continue;
       map.set(item.link, { counterpart: twin.link, mode: "vanilla" });
       map.set(twin.link, { counterpart: item.link, mode: "vue" });
     }

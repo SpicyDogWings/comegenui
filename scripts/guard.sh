@@ -18,7 +18,7 @@
 #   ./scripts/guard.sh --contrato --tipos   # combinar pasos puntuales
 #   ./scripts/guard.sh --solo cu-input  # limita contrato/tests a un componente
 #   ./scripts/guard.sh --explicar       # agrega el "qué hace y por qué" de cada paso
-#   ./scripts/guard.sh --update         # regenera el baseline de contratos
+#   ./scripts/guard.sh --update         # regenera los baselines (contratos y docs)
 set -uo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -259,10 +259,12 @@ fi
 # ── docs ─────────────────────────────────────────────────────────────────────
 if has docs; then
   paso "Docs"
-  why "verifico fichas/páginas y que las tablas de API estén al día"
+  why "verifico fichas/páginas, las tablas de API y las descripciones vacías"
+  DOCS_ARGS=()
+  [ -n "$UPDATE" ] && DOCS_ARGS+=(--update)
   set +e
-  node scripts/check-docs.mjs >"$TMP/docs.log" 2>&1; D1=$?
-  node scripts/gen-api.mjs --check >>"$TMP/docs.log" 2>&1; D2=$?
+  node scripts/check-docs.mjs "${DOCS_ARGS[@]}" >"$TMP/docs.log" 2>&1; D1=$?
+  node scripts/gen-api.mjs --check "${DOCS_ARGS[@]}" >>"$TMP/docs.log" 2>&1; D2=$?
   set -e
   if [ "$D1" -ne 0 ] || [ "$D2" -ne 0 ]; then
     bad "$(grep -c '✗' "$TMP/docs.log" || true) problema(s) de docs:"

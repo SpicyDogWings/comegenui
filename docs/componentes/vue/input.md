@@ -2,9 +2,9 @@
 
 # `Input`
 
-Input de texto con color, variante, tipos de input HTML5 y métodos `get`/`set`/`reset`.
-
----
+Input de texto con color semántico, variante, tamaño, los tipos de input HTML5 y métodos
+`get`/`set`/`reset`/`focus`. El valor es un `v-model` (prop `modelValue` + emit
+`update:modelValue`).
 
 ## Uso en Vue
 
@@ -23,7 +23,73 @@ const email = ref("usuario@dominio.com");
 </template>
 ```
 
-## Escuchar cambios
+En HTML plano, cargá el bundle `CuInput` (ver [ficha vanilla](/componentes/cu-input)).
+
+## Colores
+
+`color` es un nombre semántico, no un hex: se resuelve con los tokens del tema activo
+(`--cu-color-{color}*`), así que el mismo nombre se ve distinto en cada tema.
+
+```vue
+<Input color="primary" placeholder="primary" />
+<Input color="secondary" placeholder="secondary" />
+<Input color="neutral" placeholder="neutral" />
+<Input color="success" placeholder="success" />
+<Input color="warning" placeholder="warning" />
+<Input color="danger" placeholder="danger" />
+```
+
+## Variantes
+
+`variant` decide el fondo y el borde: `outlined` (borde), `soft` (fondo tenue, **default**),
+`ghost` (transparente) y `subtle` (tenue con borde).
+
+```vue
+<Input color="primary" variant="outlined" placeholder="outlined" />
+<Input color="primary" variant="soft" placeholder="soft (default)" />
+<Input color="primary" variant="ghost" placeholder="ghost" />
+<Input color="primary" variant="subtle" placeholder="subtle" />
+```
+
+## Tamaños
+
+`size` acepta `sm`, `md` (**default**) y `lg`, y cambia el padding y el tamaño de fuente.
+
+```vue
+<Input size="sm" placeholder="sm" />
+<Input size="md" placeholder="md (default)" />
+<Input size="lg" placeholder="lg" />
+```
+
+## Tipos
+
+`type` es el `type` del `<input>` interno: los siete tipos HTML5 que acepta el validador.
+
+```vue
+<Input type="text" placeholder="Texto" />
+<Input type="password" placeholder="Contraseña" />
+<Input type="email" placeholder="correo@ejemplo.com" />
+<Input type="number" placeholder="0" />
+<Input type="tel" placeholder="+54 11 1234-5678" />
+<Input type="url" placeholder="https://..." />
+<Input type="search" placeholder="Buscar..." />
+```
+
+## Estados
+
+`disabled` bloquea la interacción y atenúa el campo; `readOnly` deja leer y seleccionar el texto,
+pero no editarlo.
+
+```vue
+<Input model-value="deshabilitado" disabled />
+<Input model-value="solo lectura (readOnly)" readOnly />
+<Input placeholder="habilitado" />
+```
+
+## Valor y cambios
+
+`v-model` cubre el ida y vuelta; escuchando `update:model-value` ves cada cambio (el valor llega
+como primer argumento).
 
 ```vue
 <script setup lang="ts">
@@ -32,85 +98,56 @@ import { ref } from "vue";
 
 const nombre = ref("");
 
-function onInput(valor: string) {
+function onUpdate(valor: string) {
   console.log("Valor actual:", valor);
 }
 </script>
 
 <template>
-  <Input v-model="nombre" placeholder="Tu nombre" @update:model-value="onInput" />
+  <Input v-model="nombre" placeholder="Tu nombre" @update:model-value="onUpdate" />
 </template>
 ```
 
-## Reset
+## API imperativa
+
+`get()`, `set(valor)`, `reset()` y `focus()` se llaman sobre la `ref` del componente.
 
 ```vue
 <script setup lang="ts">
 import Input from "@/components/form/Input.vue";
 import { ref, useTemplateRef } from "vue";
 
-const valor = ref("Texto inicial");
+const valor = ref("Valor por API");
 const campo = useTemplateRef("campo");
+
+function usar() {
+  campo.value?.set("Valor por API"); // set()
+  console.log(campo.value?.get());   // get() → "Valor por API"
+  campo.value?.reset();              // reset() → ""
+  campo.value?.focus();              // focus()
+}
 </script>
 
 <template>
-  <Input ref="campo" v-model="valor" />
-  <button @click="campo?.reset()">Resetear</button>
+  <Input ref="campo" v-model="valor" placeholder="Valor por API" />
 </template>
 ```
 
-## Tipos soportados
-
-```vue
-<template>
-  <Input type="text" placeholder="Texto" />
-  <Input type="password" placeholder="Contraseña" />
-  <Input type="email" placeholder="correo@ejemplo.com" />
-  <Input type="number" placeholder="0" />
-  <Input type="tel" placeholder="+54 11 1234-5678" />
-  <Input type="url" placeholder="https://..." />
-  <Input type="search" placeholder="Buscar..." />
-</template>
-```
-
----
+> `reset()` limpia a `""`: `startValue` está declarada en el componente pero **no se aplica**.
+> Para un valor inicial, usá `v-model`.
 
 ## Props
 
-<!-- @api:props -->
-| Prop | Tipo | Default | Descripción |
-| ------ | ------ | ------ | ------ |
-| `type` | `"number" \| "text" \| "password" \| "email" \| "tel" \| "url" \| "search"` | `"text"` | — |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
-| `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | — |
-| `size` | `"sm" \| "md" \| "lg"` | `"md"` | Tamaño del input (sm \| md \| lg). |
-| `disabled` | `boolean` | `false` | — |
-| `readOnly` | `boolean` | `false` | — |
-| `placeholder` | `string` | `—` | — |
-| `startValue` | `string` | `—` | — |
-<!-- /@api:props -->
+<!--@include: ../../partials/input/props-vue.md-->
 
 ## Emits
 
-<!-- @api:emits -->
-| Evento | Payload | Descripción |
-| ------ | ------ | ------ |
-| `update:modelValue` | `string` | — |
-<!-- /@api:emits -->
+<!--@include: ../../partials/input/eventos.md-->
 
 ## Slots
 
-<!-- @api:slots -->
-Ninguno.
-<!-- /@api:slots -->
+<!--@include: ../../partials/input/slots.md-->
 
 ## Expose
 
-<!-- @api:expose -->
-| Método | Descripción |
-| ------ | ------ |
-| `get` | — |
-| `set` | — |
-| `reset` | — |
-| `focus` | Enfoca el input. |
-<!-- /@api:expose -->
+<!--@include: ../../partials/input/metodos-vue.md-->

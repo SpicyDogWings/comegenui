@@ -4,8 +4,6 @@
 
 Botón flotante (FAB) fijo en la esquina inferior derecha. Es un `Button` (hereda color, variante, tamaño y estados) posicionado de forma flotante. Pensado para acciones primarias rápidas (agregar, flotante de guardar, etc.). Normalmente se usa con un ícono en el slot.
 
----
-
 ## Uso en Vue
 
 ```vue
@@ -24,63 +22,62 @@ function onClick() {
 </template>
 ```
 
+> Es `position: fixed` en la esquina inferior derecha (`bottom` y `right`: `var(--cu-space-lg)`), con `z-index: 1000` y sombra elevada. El contenido (normalmente un SVG) debe usar `stroke="currentColor"` para heredar el color; el `click` es el evento nativo.
+
+## Colores
+
+`color` es el color semántico del FAB (`primary` es el default) y se resuelve con los tokens del tema activo.
+
+```vue
+<FloatingButton color="primary" variant="solid" size="sm"><svg><!-- ícono --></svg></FloatingButton>
+<FloatingButton color="secondary" variant="solid" size="sm"><svg><!-- ícono --></svg></FloatingButton>
+<FloatingButton color="neutral" variant="solid" size="sm"><svg><!-- ícono --></svg></FloatingButton>
+<FloatingButton color="success" variant="solid" size="sm"><svg><!-- ícono --></svg></FloatingButton>
+<FloatingButton color="warning" variant="solid" size="sm"><svg><!-- ícono --></svg></FloatingButton>
+<FloatingButton color="danger" variant="solid" size="sm"><svg><!-- ícono --></svg></FloatingButton>
+```
+
 ## Variantes y tamaños
 
-```vue
-<template>
-  <FloatingButton color="success" variant="soft" size="lg">
-    <svg><!-- ícono --></svg>
-  </FloatingButton>
-</template>
-```
-
-## Deshabilitado
+`variant` y `size` se heredan de `Button`: las 7 variantes (`solid` es el default) y los 3 tamaños (`lg` es el default).
 
 ```vue
-<template>
-  <FloatingButton disabled>
-    <svg><!-- ícono --></svg>
-  </FloatingButton>
-</template>
+<FloatingButton variant="solid" color="primary" size="md"><svg><!-- ícono --></svg></FloatingButton>
+<FloatingButton variant="outlined" color="primary" size="md"><svg><!-- ícono --></svg></FloatingButton>
+<FloatingButton variant="soft" color="primary" size="md"><svg><!-- ícono --></svg></FloatingButton>
+<FloatingButton variant="ghost" color="primary" size="md"><svg><!-- ícono --></svg></FloatingButton>
+<FloatingButton variant="subtle" color="primary" size="md"><svg><!-- ícono --></svg></FloatingButton>
+<FloatingButton variant="link" color="primary" size="md"><svg><!-- ícono --></svg></FloatingButton>
+<FloatingButton variant="none" color="primary" size="md"><svg><!-- ícono --></svg></FloatingButton>
+
+<FloatingButton size="sm" color="primary" variant="solid"><svg><!-- ícono --></svg></FloatingButton>
+<FloatingButton size="md" color="primary" variant="solid"><svg><!-- ícono --></svg></FloatingButton>
+<FloatingButton size="lg" color="primary" variant="solid"><svg><!-- ícono --></svg></FloatingButton>
 ```
 
-## Notas
+> No fija tamaño ni forma: hereda de `Button` el `padding`, el `size` y el `border-radius`, y crece con su contenido.
 
-- Es un `Button` posicionado de forma flotante: `position: fixed` en la esquina inferior derecha (`bottom` y `right`: `var(--cu-space-lg)`) con `z-index: 1000` y sombra elevada.
-- **No** fija tamaño ni forma: hereda de `Button` el `padding`, el `size` (default `lg`) y el `border-radius`, y crece con su contenido.
-- Hereda de `Button` las props `variant` y `size` (además del estado `loading`); el color semántico se define con `color`.
-- El contenido (normalmente un SVG) debe usar `stroke="currentColor"`/`fill="currentColor"` para heredar el color.
+## Estados
 
----
+`disabled` atenúa el FAB y bloquea el click; `loading` lo deshabilita igual y antepone un spinner mientras está activo.
+
+```vue
+<FloatingButton disabled color="neutral" variant="soft" size="sm"><svg><!-- ícono --></svg></FloatingButton>
+<FloatingButton loading color="primary" variant="solid" size="sm"><svg><!-- ícono --></svg></FloatingButton>
+```
 
 ## Props
 
-<!-- @api:props -->
-| Prop | Tipo | Default | Descripción |
-| ------ | ------ | ------ | ------ |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"primary"` | Color semántico del FAB: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `"solid" \| "outlined" \| "soft" \| "ghost" \| "subtle" \| "link" \| "none"` | `"solid"` | Variante visual, heredada de `Button`: `solid`, `outlined`, `soft`, `ghost`, `subtle`, `link`, `none` |
-| `loading` | `boolean` | `false` | Muestra un spinner y deshabilita el botón mientras está activo. |
-| `size` | `"sm" \| "md" \| "lg"` | `"lg"` | Tamaño, heredado de `Button`: `sm`, `md`, `lg` |
-| `disabled` | `boolean` | `false` | Deshabilita el botón. |
-<!-- /@api:props -->
+<!--@include: ../../partials/floating-button/props.md-->
 
 ## Emits
 
-<!-- @api:emits -->
-Ninguno.
-<!-- /@api:emits -->
+<!--@include: ../../partials/floating-button/eventos.md-->
 
 ## Slots
 
-<!-- @api:slots -->
-| Slot | Descripción |
-| ------ | ------ |
-| `default` | — |
-<!-- /@api:slots -->
+<!--@include: ../../partials/floating-button/slots.md-->
 
 ## Expose
 
-<!-- @api:expose -->
-No expone métodos.
-<!-- /@api:expose -->
+<!--@include: ../../partials/floating-button/metodos.md-->

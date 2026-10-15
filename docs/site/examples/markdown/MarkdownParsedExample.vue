@@ -3,6 +3,16 @@ import { nextTick, onMounted, ref } from "vue";
 import Markdown from "@/components/markdown/Markdown.vue";
 import Button from "@/components/buttons/Button.vue";
 
+// El contenido va por interpolación (`{{ md }}`) para que el compilador de Vue no colapse los
+// saltos de línea del markdown.
+const md = `# Introducción
+
+Texto del documento.
+
+## Detalles
+
+Más texto.`;
+
 const markdownRef = ref<InstanceType<typeof Markdown> | null>(null);
 const emitidos = ref<string[]>([]);
 const leidos = ref<string[]>([]);
@@ -20,15 +30,7 @@ onMounted(leerHeadingIds);
 </script>
 
 <template>
-  <Markdown ref="markdownRef" @parsed="onParsed">
-# Introducción
-
-Texto del documento.
-
-## Detalles
-
-Más texto.
-  </Markdown>
+  <Markdown ref="markdownRef" @parsed="onParsed">{{ md }}</Markdown>
 
   <div class="cu-demo-controls">
     <Button variant="outlined" size="sm" @click="leerHeadingIds">Leer headingIds()</Button>

@@ -114,7 +114,7 @@ slots `icon`, `default` y `footer`. Emite `close`, `opened`, `closed`, `cancel`,
 <!-- @api:eventos -->
 | Evento | Payload (`e.detail`) | Descripción |
 | ------ | ------ | ------ |
-| `close` | — | — |
+| `close` | — | Cierra el modal. |
 | `opened` | — | — |
 | `closed` | — | — |
 | `cancel` | — | — |
@@ -162,7 +162,7 @@ slots `icon`, `default` y `footer`. Emite `close`, `opened`, `closed`, `cancel`,
 <!-- @api:emits -->
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
-| `close` | — | — |
+| `close` | — | Cierra el modal. |
 | `accept` | — | — |
 | `opened` | — | — |
 | `closed` | — | — |

@@ -2,9 +2,9 @@
 
 # `Select`
 
-Selector de opciones con color, variante, ícono chevron, opciones deshabilitadas y posicionamiento configurable. Mantiene su estado y también se controla via `modelValue` o métodos `get`/`set`.
-
----
+Selector de opciones con color, variante, búsqueda por teclado, barra de cooldown,
+posicionamiento configurable y estado de carga. Mantiene su estado y también se controla vía
+`modelValue` o los métodos `get`/`set`.
 
 ## Uso en Vue
 
@@ -32,7 +32,59 @@ const opciones = [
 </template>
 ```
 
+En HTML plano, cargá el bundle `CuSelect` (ver [ficha vanilla](/componentes/cu-select)).
+
+## Colores
+
+`color` es un nombre semántico, no un hex: se resuelve con los tokens del tema activo, así que
+el mismo nombre se ve distinto en cada tema.
+
+```vue
+<script setup lang="ts">
+import Select from "@/components/form/Select.vue";
+
+const opciones = [
+  { value: "ok", label: "Aprobado" },
+  { value: "pend", label: "Pendiente" },
+];
+</script>
+
+<template>
+  <Select :options="opciones" color="primary" placeholder="primary" />
+  <Select :options="opciones" color="secondary" placeholder="secondary" />
+  <Select :options="opciones" color="neutral" placeholder="neutral" />
+  <Select :options="opciones" color="success" placeholder="success" />
+  <Select :options="opciones" color="warning" placeholder="warning" />
+  <Select :options="opciones" color="danger" placeholder="danger" />
+</template>
+```
+
+## Variantes
+
+`variant` acepta `outlined` (borde), `soft` (fondo tenue, el **default**), `ghost`
+(transparente) y `subtle` (fondo tenue con borde).
+
+```vue
+<script setup lang="ts">
+import Select from "@/components/form/Select.vue";
+
+const opciones = [
+  { value: "a", label: "Opción A" },
+  { value: "b", label: "Opción B" },
+];
+</script>
+
+<template>
+  <Select :options="opciones" variant="outlined" placeholder="outlined" />
+  <Select :options="opciones" variant="soft" placeholder="soft (default)" />
+  <Select :options="opciones" variant="ghost" placeholder="ghost" />
+  <Select :options="opciones" variant="subtle" placeholder="subtle" />
+</template>
+```
+
 ## Opciones deshabilitadas
+
+Una opción con `disabled: true` se ve atenuada y no responde al click.
 
 ```vue
 <script setup lang="ts">
@@ -53,9 +105,10 @@ const opciones = [
 </template>
 ```
 
-Las opciones con `disabled: true` se ven atenuadas y no responden al click.
+## Opciones con color
 
-## Opciones con color y variante individual
+Una opción puede fijar su propio `color` (y `variant`); si no lo hace, hereda los valores del
+`<Select>`.
 
 ```vue
 <script setup lang="ts">
@@ -75,43 +128,37 @@ const opciones = [
 </template>
 ```
 
-Si una opción no especifica `color` ni `variant`, hereda los valores del `<cu-select>`.
+## Texto y alineación
 
-## Escuchar cambios
+`textAlign` alinea el texto (`left` **default**, `center`, `right`) y `placeholderWrap`
+elige entre envolver el placeholder o truncarlo con `...`.
 
 ```vue
 <script setup lang="ts">
 import Select from "@/components/form/Select.vue";
-import { ref } from "vue";
 
-const value = ref("");
 const opciones = [
-  { value: "op1", label: "Opción 1" },
-  { value: "op2", label: "Opción 2" },
+  { value: "a", label: "Opción A" },
+  { value: "b", label: "Opción B" },
 ];
-
-function onSelect(option: { value: string; label: string }) {
-  console.log("Seleccionado:", option); // { value, label }
-}
-
-function onUpdate(valor: string) {
-  console.log("Valor:", valor); // string
-}
 </script>
 
 <template>
+  <Select :options="opciones" text-align="left" placeholder="text-align: left (default)" />
+  <Select :options="opciones" text-align="center" placeholder="text-align: center" />
+  <Select :options="opciones" text-align="right" placeholder="text-align: right" />
   <Select
-    v-model="value"
     :options="opciones"
-    @select="onSelect"
-    @update:model-value="onUpdate"
+    placeholder-wrap
+    placeholder="Un placeholder largo que se envuelve en varias líneas en vez de truncarse"
   />
 </template>
 ```
 
-## Búsqueda por teclado (searchEnabled)
+## Búsqueda por teclado
 
-Cuando `searchEnabled` es `true`, el select acepta entrada por teclado (como un `<select>` nativo): el usuario escribe y la lista hace scroll a la primera opción que coincide.
+Con `search-enabled` el select acepta entrada por teclado (como un `<select>` nativo): al
+escribir, la lista hace scroll a la primera opción que coincide.
 
 ```vue
 <script setup lang="ts">
@@ -130,20 +177,49 @@ const paises = [
 </script>
 
 <template>
-  <Select v-model="value" :options="paises" search-enabled />
+  <Select v-model="value" :options="paises" search-enabled placeholder="Escribí para buscar" />
 </template>
 ```
 
-**Comportamiento:**
-- Al abrir el dropdown, el input oculto recibe foco
-- Al escribir, la lista scrollea a la primera opción que coincide (según `searchMode`: `startsWith` por defecto)
-- El texto acumulado se resetea después de 1s sin teclear (configurable con `searchResetDelay`)
-- Backspace borra el último carácter
-- Escape y Tab no afectan la búsqueda
+La coincidencia la define `searchMode`: `startsWith` (**default**, sólo al inicio del label) o
+`includes` (en cualquier parte); `searchResetDelay` (1000ms por default) es el tiempo sin
+teclear antes de resetear el texto acumulado.
 
-## Estado de carga (loading)
+## Barra de cooldown
 
-Cuando `loading` es `true`, se muestra una barra animada en el tope del dropdown y el panel se atenúa (sin interacción):
+Mientras se escribe (con `searchEnabled`), aparece una barra que se vacía en
+`searchResetDelay` ms. `cooldownVariant` elige su estilo: `ghost` (color suave) o `solid`
+(color lleno).
+
+```vue
+<script setup lang="ts">
+import Select from "@/components/form/Select.vue";
+
+const opciones = [
+  { value: "ar", label: "Argentina" },
+  { value: "br", label: "Brasil" },
+  { value: "cl", label: "Chile" },
+];
+</script>
+
+<template>
+  <!-- Cooldown con color suave (ghost, default) -->
+  <Select :options="opciones" search-enabled />
+
+  <!-- Cooldown con color lleno (solid) -->
+  <Select :options="opciones" search-enabled cooldown-variant="solid" />
+
+  <!-- Cooldown personalizado: 3s -->
+  <Select :options="opciones" search-enabled :search-reset-delay="3000" />
+</template>
+```
+
+> Si `loading` está activo, la barra de cooldown **no se muestra**.
+
+## Carga
+
+Con `loading` se muestra una barra animada arriba del panel y el dropdown se atenúa (sin
+interacción).
 
 ```vue
 <script setup lang="ts">
@@ -151,7 +227,11 @@ import Select from "@/components/form/Select.vue";
 import { ref } from "vue";
 
 const value = ref("");
-const opciones = [/* ... */];
+const opciones = [
+  { value: "doc", label: "Documento" },
+  { value: "pdf", label: "PDF" },
+  { value: "csv", label: "CSV" },
+];
 const loading = ref(false);
 
 async function cargar() {
@@ -162,15 +242,56 @@ async function cargar() {
 </script>
 
 <template>
-  <Select v-model="value" :options="opciones" :loading="loading" />
+  <Select v-model="value" :options="opciones" :loading="loading" placeholder="Elegí un formato" />
 </template>
 ```
 
-**Nota:** Si `loading` está activo, la barra de cooldown (del `searchEnabled`) **no se muestra**.
+## Estado deshabilitado
 
-## Barra de cooldown
+`disabled` bloquea la apertura del dropdown y atenúa el control.
 
-Mientras el usuario escribe (con `searchEnabled`), aparece una barra de cooldown que se vacía en `searchResetDelay` ms. Al presionar otra tecla, la barra se reinicia.
+```vue
+<script setup lang="ts">
+import Select from "@/components/form/Select.vue";
+
+const opciones = [
+  { value: "a", label: "Opción A" },
+  { value: "b", label: "Opción B" },
+];
+</script>
+
+<template>
+  <Select :options="opciones" disabled placeholder="disabled" />
+</template>
+```
+
+## Posicionamiento
+
+`position` acepta `bottom` (**default**) y `top`; `align` acepta `start` (**default**),
+`center` y `end`. Con `fixed`, el panel se posiciona respecto del viewport.
+
+```vue
+<script setup lang="ts">
+import Select from "@/components/form/Select.vue";
+
+const opciones = [
+  { value: "a", label: "Opción A" },
+  { value: "b", label: "Opción B" },
+];
+</script>
+
+<template>
+  <Select :options="opciones" position="bottom" align="end" placeholder="bottom / end" />
+  <Select :options="opciones" position="top" align="center" placeholder="top / center" />
+  <Select :options="opciones" position="bottom" align="end" placeholder="bottom / end" />
+  <Select :options="opciones" position="top" align="start" placeholder="top / start" />
+</template>
+```
+
+## Escuchar cambios
+
+`select` trae la opción elegida (`{ value, label }`), `update:modelValue` el valor nuevo y
+`change` el valor nuevo cuando el cambio es por click (igual que un `<select>` nativo).
 
 ```vue
 <script setup lang="ts">
@@ -178,100 +299,65 @@ import Select from "@/components/form/Select.vue";
 import { ref } from "vue";
 
 const value = ref("");
-const opciones = [/* ... */];
+const opciones = [
+  { value: "op1", label: "Opción 1" },
+  { value: "op2", label: "Opción 2" },
+];
+
+function onSelect(option: { value: string; label: string }) {
+  console.log("Seleccionado:", option); // { value, label }
+}
+function onUpdate(valor: string) {
+  console.log("Valor:", valor);
+}
+function onChange(valor: string) {
+  console.log("Cambió a:", valor);
+}
 </script>
 
 <template>
-  <!-- Cooldown con color suave (ghost, default) -->
-  <Select v-model="value" :options="opciones" search-enabled />
-
-  <!-- Cooldown con color lleno (solid) -->
-  <Select v-model="value" :options="opciones" search-enabled cooldown-variant="solid" />
-
-  <!-- Cooldown personalizado: 3s -->
-  <Select v-model="value" :options="opciones" search-enabled :search-reset-delay="3000" />
+  <Select
+    v-model="value"
+    :options="opciones"
+    @select="onSelect"
+    @update:model-value="onUpdate"
+    @change="onChange"
+  />
 </template>
 ```
-
-| `cooldownVariant` | Apariencia |
-|-------------------|------------|
-| `ghost` (default) | Color suave (`--cu-color-{color}-ghost-hover`) |
-| `solid` | Color lleno (`--cu-color-{color}`) |
 
 ## Control programático
 
 ```vue
 <script setup lang="ts">
 import Select from "@/components/form/Select.vue";
-import { onMounted, ref, useTemplateRef } from "vue";
+import { ref, useTemplateRef } from "vue";
 
 const value = ref("");
-const auto = useTemplateRef("auto");
+const sel = useTemplateRef("sel");
 const opciones = [
   { value: "a", label: "A" },
   { value: "b", label: "B" },
 ];
 
-onMounted(() => {
-  auto.value?.set("a");             // seleccionar 'a'
-  auto.value?.get();                // 'a'
-  auto.value?.selectedItem();       // { value: 'a', label: 'A' }
-  auto.value?.reset();              // limpiar
-  auto.value?.isOpen();             // false
-  auto.value?.focus();              // foco
-});
+function demo() {
+  sel.value?.set("a");         // seleccionar 'a'
+  sel.value?.get();            // 'a'
+  sel.value?.selectedItem();   // { value: 'a', label: 'A' }
+  sel.value?.reset();          // limpiar
+  sel.value?.isOpen();         // false
+  sel.value?.focus();          // foco
+}
 </script>
 
 <template>
-  <Select ref="auto" v-model="value" :options="opciones" />
+  <Select ref="sel" v-model="value" :options="opciones" placeholder="Elegí una letra" />
 </template>
 ```
-
-## Posicionamiento
-
-```vue
-<script setup lang="ts">
-import Select from "@/components/form/Select.vue";
-import { ref } from "vue";
-
-const value = ref("");
-const opciones = [/* ... */];
-</script>
-
-<template>
-  <!-- Con position + align separados -->
-  <Select v-model="value" :options="opciones" position="bottom" align="end" />
-  <Select v-model="value" :options="opciones" position="top" align="center" />
-
-  <Select v-model="value" :options="opciones" position="bottom" align="end" />
-  <Select v-model="value" :options="opciones" position="top" align="start" />
-</template>
-```
-
----
 
 ## Props
 
-<!-- @api:props -->
-| Prop | Tipo | Default | Descripción |
-| ------ | ------ | ------ | ------ |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
-| `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | — |
-| `searchEnabled` | `boolean` | `false` | — |
-| `loading` | `boolean` | `false` | — |
-| `disabled` | `boolean` | `false` | — |
-| `placeholder` | `string` | `""` | — |
-| `position` | `string` | `"bottom"` | — |
-| `align` | `string` | `"start"` | — |
-| `fixed` | `boolean` | `false` | — |
-| `modelValue` | `string` | `""` | — |
-| `textAlign` | `"center" \| "left" \| "right"` | `"left"` | — |
-| `searchMode` | `"includes" \| "startsWith"` | `"startsWith"` | — |
-| `options` | `SelectOption[]` | `[]` | — |
-| `placeholderWrap` | `boolean` | `false` | — |
-| `searchResetDelay` | `number` | `1000` | — |
-| `cooldownVariant` | `string` | `"ghost-hover"` | — |
-<!-- /@api:props -->
+<!--@include: ../../partials/select/props-vue.md-->
 
 ### Opciones (`options`)
 
@@ -285,38 +371,17 @@ Cada opción del array `options` puede tener:
 | `color` | `string` | hereda del padre | Color semántico individual |
 | `variant` | `string` | hereda del padre | Variante individual |
 
-> **Importante:** `options` se asigna como propiedad JS (`select.options = [...]`), no como atributo HTML.
-
 ## Emits
 
-<!-- @api:emits -->
-| Evento | Payload | Descripción |
-| ------ | ------ | ------ |
-| `select` | — | — |
-| `close` | — | — |
-| `update:modelValue` | — | — |
-| `change` | — | — |
-| `blur` | — | — |
-<!-- /@api:emits -->
+<!--@include: ../../partials/select/eventos-vue.md-->
 
 ## Slots
 
-<!-- @api:slots -->
-Ninguno.
-<!-- /@api:slots -->
+<!--@include: ../../partials/select/slots.md-->
 
 ## Expose
 
-<!-- @api:expose -->
-| Método | Descripción |
-| ------ | ------ |
-| `get` | Devuelve el valor seleccionado. |
-| `set` | Setea el valor seleccionado y emite `change`. |
-| `reset` | Limpia la selección y emite `change`. |
-| `focus` | Enfoca el trigger del select. |
-| `isOpen` | Indica si el panel está abierto. |
-| `selectedItem` | Devuelve la opción seleccionada o null. |
-<!-- /@api:expose -->
+<!--@include: ../../partials/select/metodos-vue.md-->
 
 ## Interfaces
 

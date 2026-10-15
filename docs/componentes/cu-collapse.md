@@ -16,9 +16,61 @@ Sección colapsable con trigger (botón + chevron animado). El contenido se mues
 
 <!-- demo:collapse-uso -->
 
----
+En Vue, importá `Collapse` de `@/components/overlay/Collapse.vue` (ver [ficha Vue](/componentes/vue/collapse)).
+
+## Colores
+
+`color` es un nombre semántico del trigger (`ghost`), resuelto con los tokens del tema
+activo. Los 6 valores son `primary`, `secondary`, `neutral` (**default**), `success`,
+`warning` y `danger`.
+
+```html
+<cu-collapse label="primary" color="primary" default-open><p>…</p></cu-collapse>
+<cu-collapse label="secondary" color="secondary" default-open><p>…</p></cu-collapse>
+<cu-collapse label="neutral" color="neutral" default-open><p>…</p></cu-collapse>
+<cu-collapse label="success" color="success" default-open><p>…</p></cu-collapse>
+<cu-collapse label="warning" color="warning" default-open><p>…</p></cu-collapse>
+<cu-collapse label="danger" color="danger" default-open><p>…</p></cu-collapse>
+```
+
+<!-- demo:collapse-colores -->
+
+## Descripción
+
+`description` agrega una línea de texto secundario bajo el `label`, dentro del mismo trigger.
+Es opcional y, si queda vacía, no se renderiza nada.
+
+```html
+<cu-collapse label="Plan Pro" description="Facturación mensual, cancela cuando quieras">
+  <p>…</p>
+</cu-collapse>
+```
+
+<!-- demo:collapse-descripcion -->
+
+## Ícono
+
+`icon` acepta un string SVG/HTML que se inyecta **antes del label**, dentro del trigger. En
+HTML plano se asigna como propiedad (el atributo no tolera el markup inline).
+
+```html
+<cu-collapse id="conIcono" label="Con ícono" color="warning" default-open>
+  <p>El ícono se renderiza antes del label, dentro del trigger.</p>
+</cu-collapse>
+
+<script>
+  const estrella =
+    '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.5 2.5 14 9l6.5.5-5 4.3 1.5 6.4-5.5-3.4L6 20.2l1.5-6.4-5-4.3L9 9z"/></svg>';
+  document.getElementById('conIcono').icon = estrella;
+</script>
+```
+
+<!-- demo:collapse-icono -->
 
 ## Abierto por defecto
+
+`default-open` arranca el collapse abierto, sin pasar por el evento `toggle` (sólo define el
+estado inicial).
 
 ```html
 <cu-collapse label="Opciones avanzadas" default-open>
@@ -28,36 +80,9 @@ Sección colapsable con trigger (botón + chevron animado). El contenido se mues
 
 <!-- demo:collapse-abierto-por-defecto -->
 
----
-
-## Colores
-
-```html
-<cu-collapse label="Información" color="primary">...</cu-collapse>
-<cu-collapse label="Éxito" color="success">...</cu-collapse>
-<cu-collapse label="Advertencia" color="warning">...</cu-collapse>
-<cu-collapse label="Peligro" color="danger">...</cu-collapse>
-```
-
-<!-- demo:collapse-colores -->
-
----
-
-## Descripción
-
-`description` agrega una línea de texto secundario bajo el `label`, dentro del mismo trigger. En HTML plano va como atributo, es opcional y, si queda vacío, no se renderiza nada.
-
-```html
-<cu-collapse label="Plan Pro" description="Facturación mensual, cancela cuando quieras">
-  <p>...</p>
-</cu-collapse>
-```
-
-<!-- demo:collapse-descripcion -->
-
 ## Deshabilitado
 
-El atributo booleano `disabled` deja el trigger inerte: no responde al click y muestra cursor `not-allowed`. `open()` y `toggle()` pasan a ser no-op; `close()` sí sigue funcionando.
+El atributo booleano `disabled` deja el trigger inerte: no responde al click y muestra cursor `not-allowed`. `open()` y `toggle()` pasan a ser no-op; `close()` sí sigue funcionando (útil para colapsar desde código un collapse que arrancó con `default-open`).
 
 ```html
 <cu-collapse label="Sección bloqueada" disabled>
@@ -66,8 +91,6 @@ El atributo booleano `disabled` deja el trigger inerte: no responde al click y m
 ```
 
 <!-- demo:collapse-deshabilitado -->
-
----
 
 ## Anidados
 
@@ -84,21 +107,22 @@ Los collapses se pueden anidar para construir árboles de menú:
 
 <!-- demo:collapse-anidados -->
 
----
-
 ## Escuchar eventos
 
-```js
-const collapse = document.getElementById('miCollapse');
+```html
+<cu-collapse id="miCollapse" label="Escuchá el toggle" color="primary">
+  <p>El estado se registra abajo.</p>
+</cu-collapse>
 
-collapse.addEventListener('toggle', (e) => {
-  console.log('abierto:', e.detail); // true | false
-});
+<script>
+  const collapse = document.getElementById('miCollapse');
+  collapse.addEventListener('toggle', (e) => {
+    console.log('abierto:', e.detail); // true | false
+  });
+</script>
 ```
 
 <!-- demo:collapse-eventos -->
-
----
 
 ## Control programático
 
@@ -117,8 +141,6 @@ collapse.addEventListener('toggle', (e) => {
 ```
 
 <!-- demo:collapse-control-programatico -->
-
----
 
 ## Ejemplo completo
 
@@ -155,46 +177,20 @@ collapse.addEventListener('toggle', (e) => {
 
 <!-- demo:collapse-completo -->
 
----
-
 ## Atributos
 
-<!-- @api:atributos -->
-| Atributo | Tipo | Default | Descripción |
-| ------ | ------ | ------ | ------ |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico del trigger: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `disabled` | `boolean` | `false` | Deshabilita el trigger: no responde al click del usuario |
-| `icon` | `string` | `""` | Ícono del trigger (SVG/HTML) |
-| `description` | `string` | `""` | Texto secundario que se muestra bajo el label en el trigger |
-| `default-open` | `boolean` | `false` | — |
-| `label` | `string` | `—` | Texto del trigger |
-<!-- /@api:atributos -->
+<!--@include: ../partials/collapse/props-vanilla.md-->
 
 > El Custom Element **no expone** prop `variant` ni `theme`. El trigger siempre usa la variante `ghost` y el color se controla con `color`.
 
 ## Eventos
 
-<!-- @api:eventos -->
-| Evento | Payload (`e.detail`) | Descripción |
-| ------ | ------ | ------ |
-| `toggle` | `boolean` | — |
-<!-- /@api:eventos -->
+<!--@include: ../partials/collapse/eventos.md-->
 
 ## Slots
 
-<!-- @api:slots -->
-| Slot | Descripción |
-| ------ | ------ |
-| `default` | — |
-<!-- /@api:slots -->
+<!--@include: ../partials/collapse/slots.md-->
 
 ## Métodos expuestos
 
-<!-- @api:metodos -->
-| Método | Descripción |
-| ------ | ------ |
-| `open` | Abre el collapse |
-| `close` | Cierra el collapse |
-| `toggle` | Alterna el estado |
-| `isOpen` | Devuelve el estado actual (`boolean`) |
-<!-- /@api:metodos -->
+<!--@include: ../partials/collapse/metodos-vanilla.md-->

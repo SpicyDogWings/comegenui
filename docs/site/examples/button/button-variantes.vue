@@ -1,6 +1,6 @@
 <script setup lang="ts">
-// Refleja el ejemplo "Variantes": las 6 variantes con color primary.
-const variants = ["solid", "outlined", "soft", "ghost", "subtle", "link"] as const;
+// Refleja el ejemplo "Variantes": las 7 variantes con color primary.
+const variants = ["solid", "outlined", "soft", "ghost", "subtle", "link", "none"] as const;
 </script>
 
 <template>

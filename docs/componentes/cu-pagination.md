@@ -2,7 +2,8 @@
 
 # `<cu-pagination>`
 
-Paginación numérica con soporte para selector de tamaño de página y botones de primera/última. Pensado para usarse dentro de tablas o listas.
+Paginación numérica con selector de tamaño de página y botones de primera/última. Pensado para
+usarse dentro de tablas o listas.
 
 ## Uso en HTML plano
 
@@ -10,81 +11,144 @@ Paginación numérica con soporte para selector de tamaño de página y botones 
 <script src="dist-libs/umd-core/CuPagination.umd.js"></script>
 
 <cu-pagination
+  id="paginacion"
   current-page="1"
   total-pages="10"
   total-items="100"
   color="primary"
   variant="soft"
-  show-page-size
-  id="paginacion"
 ></cu-pagination>
 
 <script>
-  // Cambiar opciones del selector dinámicamente
   const p = document.getElementById('paginacion');
-  p.pageSizeOptions = [10, 25, 50, 100];
-
+  // el CE emite; la página visible la manda `current-page`
   p.addEventListener('update:currentPage', (e) => {
-    console.log('Página:', e.detail);
-  });
-  p.addEventListener('update:itemsPerPage', (e) => {
-    console.log('Items por página:', e.detail);
+    p.currentPage = e.detail;
   });
 </script>
 ```
 
 <!-- demo:pagination-uso -->
 
----
+`current-page` es la página actual, `total-pages` cuántas hay (si es `1` no renderiza nada) y
+`total-items` el total de registros, que se usa para el texto «Mostrando X - Y de Z».
 
-## Ejemplo con todos los controles
+## Colores
+
+`color` es un nombre semántico: se resuelve con los tokens del tema activo, así que el mismo
+nombre se ve distinto en cada tema. Pinta el botón de la página activa.
+
+```html
+<cu-pagination current-page="5" total-pages="10" total-items="95" color="primary"></cu-pagination>
+<cu-pagination current-page="5" total-pages="10" total-items="95" color="secondary"></cu-pagination>
+<cu-pagination current-page="5" total-pages="10" total-items="95" color="neutral"></cu-pagination>
+<cu-pagination current-page="5" total-pages="10" total-items="95" color="success"></cu-pagination>
+<cu-pagination current-page="5" total-pages="10" total-items="95" color="warning"></cu-pagination>
+<cu-pagination current-page="5" total-pages="10" total-items="95" color="danger"></cu-pagination>
+```
+
+<!-- demo:pagination-colores -->
+
+## Variantes
+
+`variant` es la variante de los botones: `outlined` (borde), `soft` (fondo tenue, el
+**default**), `ghost` (transparente), `subtle` (tenue con borde) y `none` (sin estilo propio).
+
+```html
+<cu-pagination current-page="5" total-pages="10" total-items="95" color="primary" variant="outlined"></cu-pagination>
+<cu-pagination current-page="5" total-pages="10" total-items="95" color="primary" variant="soft"></cu-pagination>
+<cu-pagination current-page="5" total-pages="10" total-items="95" color="primary" variant="ghost"></cu-pagination>
+<cu-pagination current-page="5" total-pages="10" total-items="95" color="primary" variant="subtle"></cu-pagination>
+<cu-pagination current-page="5" total-pages="10" total-items="95" color="primary" variant="none"></cu-pagination>
+```
+
+<!-- demo:pagination-variantes -->
+
+## Tamaño de página
+
+`show-page-size` agrega el selector «Por página:», alimentado por `page-size-options`
+(default `[5, 10, 20, 50]`) y con `items-per-page` como valor actual. Al elegir un tamaño
+vuelve a la página 1.
 
 ```html
 <cu-pagination
+  id="paginacion"
   current-page="1"
+  items-per-page="20"
+  total-pages="10"
+  total-items="195"
+  show-page-size
+></cu-pagination>
+
+<script>
+  const p = document.getElementById('paginacion');
+  // `page-size-options` es un array: se asigna como propiedad, no como atributo
+  p.pageSizeOptions = [10, 20, 50, 100];
+  p.addEventListener('update:currentPage', (e) => { p.currentPage = e.detail; });
+  p.addEventListener('update:itemsPerPage', (e) => { p.itemsPerPage = e.detail; });
+</script>
+```
+
+<!-- demo:pagination-tamano-de-pagina -->
+
+## Primera y última
+
+`show-first-and-last` agrega los botones de salto a la primera y a la última página.
+
+```html
+<cu-pagination
+  id="paginacion"
+  current-page="10"
   total-pages="20"
   total-items="195"
-  items-per-page="10"
-  show-page-size
   show-first-and-last
   color="primary"
-  variant="outlined"
 ></cu-pagination>
+
+<script>
+  const p = document.getElementById('paginacion');
+  p.addEventListener('update:currentPage', (e) => { p.currentPage = e.detail; });
+</script>
 ```
 
-<!-- demo:pagination-todos-los-controles -->
+<!-- demo:pagination-primera-y-ultima -->
 
----
+## Interacción
 
-## Atributos booleanos en HTML
+`update:currentPage` lleva el número de página nuevo y `update:itemsPerPage` el tamaño nuevo
+(`number`), los dos en `e.detail`: la paginación no cambia sola, hay que reasignar la prop.
 
 ```html
 <cu-pagination
+  id="paginacion"
+  current-page="1"
+  items-per-page="10"
+  total-pages="10"
+  total-items="95"
   show-page-size
-  show-first-and-last
-  total-pages="5"
+  color="primary"
 ></cu-pagination>
+
+<script>
+  const p = document.getElementById('paginacion');
+
+  p.addEventListener('update:currentPage', (e) => {
+    console.log('Página:', e.detail);
+    p.currentPage = e.detail;
+  });
+
+  p.addEventListener('update:itemsPerPage', (e) => {
+    console.log('Items por página:', e.detail);
+    p.itemsPerPage = e.detail;
+  });
+</script>
 ```
 
-<!-- demo:pagination-booleanos -->
-
----
+<!-- demo:pagination-interaccion -->
 
 ## Atributos
 
-<!-- @api:atributos -->
-| Atributo | Tipo | Default | Descripción |
-| ------ | ------ | ------ | ------ |
-| `items-per-page` | `number` | `10` | Items por página (atributo HTML: `items-per-page`) |
-| `show-page-size` | `boolean` | `false` | Muestra el selector de tamaño de página (atributo HTML: `show-page-size`) |
-| `page-size-options` | `number[]` | `[5, 10, 20, 50]` | Opciones del selector (atributo HTML: `page-size-options`) |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle" \| "none"` | `"soft"` | `outlined`, `soft`, `ghost`, `subtle`, `none` |
-| `current-page` | `number` | `1` | Página actual (atributo HTML: `current-page`) |
-| `total-pages` | `number` | `1` | Total de páginas (atributo HTML: `total-pages`) |
-| `total-items` | `number` | `0` | Total de items, útil para mostrar "X–Y de Z" (atributo HTML: `total-items`) |
-| `show-first-and-last` | `boolean` | `false` | Muestra botones "primera" y "última" página (atributo HTML: `show-first-and-last`) |
-<!-- /@api:atributos -->
+<!--@include: ../partials/pagination/props-vanilla.md-->
 
 > **Atributos en HTML:** Todas las props se convierten a kebab-case. Ej.: `current-page`, `items-per-page`, `page-size-options`, `show-page-size`, `show-first-and-last`.
 
@@ -92,23 +156,14 @@ Paginación numérica con soporte para selector de tamaño de página y botones 
 
 ## Eventos
 
-<!-- @api:eventos -->
-| Evento | Payload (`e.detail`) | Descripción |
-| ------ | ------ | ------ |
-| `update:currentPage` | — | — |
-| `update:itemsPerPage` | — | — |
-<!-- /@api:eventos -->
+<!--@include: ../partials/pagination/eventos.md-->
 
 > Los eventos custom se escuchan con `addEventListener` y el payload está en `e.detail`.
 
 ## Slots
 
-<!-- @api:slots -->
-Ninguno.
-<!-- /@api:slots -->
+<!--@include: ../partials/pagination/slots.md-->
 
 ## Métodos expuestos
 
-<!-- @api:metodos -->
-No expone métodos.
-<!-- /@api:metodos -->
+<!--@include: ../partials/pagination/metodos.md-->

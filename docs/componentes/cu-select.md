@@ -2,7 +2,9 @@
 
 # `<cu-select>`
 
-Selector de opciones con color, variante, ícono chevron, opciones deshabilitadas y posicionamiento configurable. Mantiene su estado y también se controla via `modelValue` o métodos `get`/`set`.
+Selector de opciones con color, variante, búsqueda por teclado, barra de cooldown,
+posicionamiento configurable y estado de carga. Mantiene su estado y también se controla vía
+`modelValue` o los métodos `get`/`set`.
 
 ## Uso en HTML plano
 
@@ -25,9 +27,48 @@ Selector de opciones con color, variante, ícono chevron, opciones deshabilitada
 
 <!-- demo:select-uso -->
 
----
+## Colores
+
+`color` es un nombre semántico, no un hex: se resuelve con los tokens del tema activo, así que
+el mismo nombre se ve distinto en cada tema.
+
+```html
+<cu-select color="primary" placeholder="primary"></cu-select>
+<cu-select color="secondary" placeholder="secondary"></cu-select>
+<cu-select color="neutral" placeholder="neutral"></cu-select>
+<cu-select color="success" placeholder="success"></cu-select>
+<cu-select color="warning" placeholder="warning"></cu-select>
+<cu-select color="danger" placeholder="danger"></cu-select>
+
+<script>
+  document.querySelectorAll('cu-select').forEach((s) => {
+    s.options = [
+      { value: 'ok', label: 'Aprobado' },
+      { value: 'pend', label: 'Pendiente' },
+    ];
+  });
+</script>
+```
+
+<!-- demo:select-colores -->
+
+## Variantes
+
+`variant` acepta `outlined` (borde), `soft` (fondo tenue, el **default**), `ghost`
+(transparente) y `subtle` (fondo tenue con borde).
+
+```html
+<cu-select variant="outlined" placeholder="outlined"></cu-select>
+<cu-select variant="soft" placeholder="soft (default)"></cu-select>
+<cu-select variant="ghost" placeholder="ghost"></cu-select>
+<cu-select variant="subtle" placeholder="subtle"></cu-select>
+```
+
+<!-- demo:select-variantes -->
 
 ## Opciones deshabilitadas
+
+Una opción con `disabled: true` se ve atenuada y no responde al click.
 
 ```html
 <cu-select id="miSelect" placeholder="Elige un formato"></cu-select>
@@ -45,11 +86,10 @@ Selector de opciones con color, variante, ícono chevron, opciones deshabilitada
 
 <!-- demo:select-opciones-deshabilitadas -->
 
-Las opciones con `disabled: true` se ven atenuadas y no responden al click.
+## Opciones con color
 
----
-
-## Opciones con color y variante individual
+Una opción puede fijar su propio `color` (y `variant`); si no lo hace, hereda los valores del
+`<cu-select>`.
 
 ```html
 <cu-select id="miSelect"></cu-select>
@@ -66,11 +106,116 @@ Las opciones con `disabled: true` se ven atenuadas y no responden al click.
 
 <!-- demo:select-opciones-color -->
 
-Si una opción no especifica `color` ni `variant`, hereda los valores del `<cu-select>`.
+## Texto y alineación
 
----
+`text-align` alinea el texto (`left` **default**, `center`, `right`) y `placeholder-wrap`
+elige entre envolver el placeholder o truncarlo con `...`.
+
+```html
+<cu-select text-align="left" placeholder="text-align: left (default)"></cu-select>
+<cu-select text-align="center" placeholder="text-align: center"></cu-select>
+<cu-select text-align="right" placeholder="text-align: right"></cu-select>
+<cu-select placeholder-wrap
+  placeholder="Un placeholder largo que se envuelve en varias líneas en vez de truncarse"></cu-select>
+```
+
+<!-- demo:select-texto -->
+
+## Búsqueda por teclado
+
+Con `search-enabled` el select acepta entrada por teclado (como un `<select>` nativo): al
+escribir, la lista hace scroll a la primera opción que coincide.
+
+```html
+<cu-select id="paises" search-enabled placeholder="Escribí para buscar"></cu-select>
+
+<script>
+  const select = document.getElementById('paises');
+  select.options = [
+    { value: 'ar', label: 'Argentina' },
+    { value: 'br', label: 'Brasil' },
+    { value: 'cl', label: 'Chile' },
+    { value: 'co', label: 'Colombia' },
+    { value: 'mx', label: 'México' },
+    { value: 'pe', label: 'Perú' },
+  ];
+</script>
+```
+
+<!-- demo:select-search-enabled -->
+
+La coincidencia la define `search-mode`: `startsWith` (**default**, sólo al inicio del label) o
+`includes` (en cualquier parte); `search-reset-delay` (1000ms por default) es el tiempo sin
+teclear antes de resetear el texto acumulado.
+
+## Barra de cooldown
+
+Mientras se escribe (con `search-enabled`), aparece una barra que se vacía en
+`search-reset-delay` ms. `cooldown-variant` elige su estilo: `ghost` (color suave) o `solid`
+(color lleno).
+
+```html
+<!-- Cooldown con color suave (ghost, default) -->
+<cu-select search-enabled></cu-select>
+
+<!-- Cooldown con color lleno (solid) -->
+<cu-select search-enabled cooldown-variant="solid"></cu-select>
+
+<!-- Cooldown personalizado: 3s -->
+<cu-select search-enabled search-reset-delay="3000"></cu-select>
+```
+
+<!-- demo:select-cooldown -->
+
+> Si `loading` está activo, la barra de cooldown **no se muestra**.
+
+## Carga
+
+Con `loading` se muestra una barra animada arriba del panel y el dropdown se atenúa (sin
+interacción).
+
+```html
+<cu-select id="miSelect" loading placeholder="Elegí un formato"></cu-select>
+
+<script>
+  const select = document.getElementById('miSelect');
+  select.loading = true;   // mostrar
+  // ...carga...
+  select.loading = false;  // ocultar
+</script>
+```
+
+<!-- demo:select-loading -->
+
+## Estado deshabilitado
+
+`disabled` bloquea la apertura del dropdown y atenúa el control.
+
+```html
+<cu-select disabled placeholder="disabled"></cu-select>
+```
+
+<!-- demo:select-deshabilitado -->
+
+## Posicionamiento
+
+`position` acepta `bottom` (**default**) y `top` (el wrapper `Dropdown` también contempla
+`left`/`right`); `align` acepta `start` (**default**), `center` y `end`. Con `fixed`, el panel
+se posiciona respecto del viewport.
+
+```html
+<cu-select position="bottom" align="end" placeholder="bottom / end"></cu-select>
+<cu-select position="top" align="center" placeholder="top / center"></cu-select>
+<cu-select position="bottom" align="end" placeholder="bottom / end"></cu-select>
+<cu-select position="top" align="start" placeholder="top / start"></cu-select>
+```
+
+<!-- demo:select-posicionamiento -->
 
 ## Escuchar cambios
+
+`select` trae la opción elegida (`{ value, label }`), `update:modelValue` el valor nuevo y
+`change` el valor nuevo cuando el cambio es por click (igual que un `<select>` nativo).
 
 ```html
 <cu-select id="selector"></cu-select>
@@ -90,97 +235,18 @@ Si una opción no especifica `color` ni `variant`, hereda los valores del `<cu-s
     console.log('Valor:', e.detail); // string
   });
 
-  // Igual que un <select> nativo: dispara al elegir una opción (y en set()/reset())
   sel.addEventListener('change', (e) => {
-    console.log('Cambió a:', e.detail); // string (valor nuevo)
+    console.log('Cambió a:', e.detail); // string
   });
 </script>
 ```
 
 <!-- demo:select-cambios -->
 
----
-
-## Búsqueda por teclado (searchEnabled)
-
-Cuando `searchEnabled` es `true`, el select acepta entrada por teclado (como un `<select>` nativo): el usuario escribe y la lista hace scroll a la primera opción que coincide.
-
-```html
-<cu-select id="paises" search-enabled></cu-select>
-
-<script>
-  const select = document.getElementById('paises');
-  select.options = [
-    { value: 'ar', label: 'Argentina' },
-    { value: 'br', label: 'Brasil' },
-    { value: 'cl', label: 'Chile' },
-    { value: 'co', label: 'Colombia' },
-    { value: 'mx', label: 'México' },
-    { value: 'pe', label: 'Perú' },
-  ];
-</script>
-```
-
-<!-- demo:select-search-enabled -->
-
-**Comportamiento:**
-- Al abrir el dropdown, el input oculto recibe foco
-- Al escribir, la lista scrollea a la primera opción que coincide (según `searchMode`: `startsWith` por defecto)
-- El texto acumulado se resetea después de 1s sin teclear (configurable con `searchResetDelay`)
-- Backspace borra el último carácter
-- Escape y Tab no afectan la búsqueda
-
----
-
-## Estado de carga (loading)
-
-Cuando `loading` es `true`, se muestra una barra animada en el tope del dropdown y el panel se atenúa (sin interacción):
-
-```html
-<cu-select id="miSelect" loading></cu-select>
-```
-
-```js
-const select = document.getElementById('miSelect');
-select.loading = true;   // mostrar
-// ...carga...
-select.loading = false;  // ocultar
-```
-
-<!-- demo:select-loading -->
-
-**Nota:** Si `loading` está activo, la barra de cooldown (del `searchEnabled`) **no se muestra**.
-
----
-
-## Barra de cooldown
-
-Mientras el usuario escribe (con `searchEnabled`), aparece una barra de cooldown que se vacía en `searchResetDelay` ms. Al presionar otra tecla, la barra se reinicia.
-
-```html
-<!-- Cooldown con color suave (ghost, default) -->
-<cu-select search-enabled></cu-select>
-
-<!-- Cooldown con color lleno (solid) -->
-<cu-select search-enabled cooldown-variant="solid"></cu-select>
-
-<!-- Cooldown personalizado: 3s -->
-<cu-select search-enabled search-reset-delay="3000"></cu-select>
-```
-
-<!-- demo:select-cooldown -->
-
-| `cooldownVariant` | Apariencia |
-|-------------------|------------|
-| `ghost` (default) | Color suave (`--cu-color-{color}-ghost-hover`) |
-| `solid` | Color lleno (`--cu-color-{color}`) |
-
----
-
 ## Control programático
 
 ```html
-<cu-select id="auto"></cu-select>
+<cu-select id="auto" placeholder="Elegí una letra"></cu-select>
 
 <script>
   const s = document.getElementById('auto');
@@ -200,45 +266,9 @@ Mientras el usuario escribe (con `searchEnabled`), aparece una barra de cooldown
 
 <!-- demo:select-control-programatico -->
 
----
-
-## Posicionamiento
-
-```html
-<!-- Con position + align separados -->
-<cu-select position="bottom" align="end"></cu-select>
-<cu-select position="top" align="center"></cu-select>
-
-<cu-select position="bottom" align="end"></cu-select>
-<cu-select position="top" align="start"></cu-select>
-```
-
-<!-- demo:select-posicionamiento -->
-
----
-
 ## Atributos
 
-<!-- @api:atributos -->
-| Atributo | Tipo | Default | Descripción |
-| ------ | ------ | ------ | ------ |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | `outlined`, `soft`, `ghost`, `subtle` |
-| `search-enabled` | `boolean` | `false` | Activa búsqueda por teclado (estilo select nativo: escribir hace scroll al match) |
-| `loading` | `boolean` | `false` | Muestra una barra de progreso animada en el dropdown |
-| `disabled` | `boolean` | `false` | Estado deshabilitado |
-| `position` | `string` | `"bottom"` | Posición del dropdown: `bottom`, `top` |
-| `align` | `string` | `"start"` | Alineación: `start`, `center`, `end` |
-| `fixed` | `boolean` | `false` | Si es `true`, el dropdown usa `position: fixed` en vez de absoluto |
-| `model-value` | `string` | `""` | Valor seleccionado. El CE sincroniza su estado; asigná `modelValue` sólo si querés controlarlo |
-| `text-align` | `"center" \| "left" \| "right"` | `"left"` | Alineación del texto seleccionado: `left`, `center`, `right` |
-| `search-mode` | `"includes" \| "startsWith"` | `"startsWith"` | Modo de coincidencia: `startsWith` (solo al inicio del label) o `includes` (en cualquier parte) |
-| `options` | `SelectOption[]` | `[]` | Opciones del select (ver abajo). Se asigna como propiedad JS |
-| `placeholder-wrap` | `boolean` | `false` | Si `true`, el texto wrappea; si `false`, se trunca con `...` (atributo HTML: `placeholder-wrap`) |
-| `search-reset-delay` | `number` | `1000` | Tiempo (ms) antes de resetear el texto de búsqueda. Se reinicia con cada tecla |
-| `cooldown-variant` | `string` | `"ghost-hover"` | Estilo de la barra de cooldown: `ghost` (suave) o `solid` (color lleno). No se muestra si `loading` está activo |
-| `placeholder` | `string` | `—` | Texto mostrado cuando no hay selección |
-<!-- /@api:atributos -->
+<!--@include: ../partials/select/props-vanilla.md-->
 
 ### Opciones (`options`)
 
@@ -256,34 +286,15 @@ Cada opción del array `options` puede tener:
 
 ## Eventos
 
-<!-- @api:eventos -->
-| Evento | Payload (`e.detail`) | Descripción |
-| ------ | ------ | ------ |
-| `update:modelValue` | — | — |
-| `select` | — | — |
-| `change` | — | — |
-| `close` | — | — |
-| `blur` | — | — |
-<!-- /@api:eventos -->
+<!--@include: ../partials/select/eventos-vanilla.md-->
 
 ## Slots
 
-<!-- @api:slots -->
-Ninguno.
-<!-- /@api:slots -->
+<!--@include: ../partials/select/slots.md-->
 
 ## Métodos expuestos
 
-<!-- @api:metodos -->
-| Método | Descripción |
-| ------ | ------ |
-| `get` | — |
-| `set` | — |
-| `reset` | — |
-| `focus` | — |
-| `isOpen` | Indica si el panel está abierto. |
-| `selectedItem` | Devuelve la opción seleccionada o null. |
-<!-- /@api:metodos -->
+<!--@include: ../partials/select/metodos-vanilla.md-->
 
 ## Interfaces
 

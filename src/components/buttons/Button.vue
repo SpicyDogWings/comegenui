@@ -59,6 +59,7 @@ const props = defineProps({
 const isDisabled = computed(() => props.disabled || props.loading)
 
 const emit = defineEmits<{
+  /** Se dispara cuando cambia `loading`, con el estado nuevo. */
   (e: 'loading-change', value: boolean): void
 }>()
 

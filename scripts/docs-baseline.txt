@@ -1,0 +1,59 @@
+# scripts/docs-baseline.txt — descripciones vacías de la doc.
+# Celdas «—» de la columna «Descripción» de la API Vue (props/emits/slots/expose) de cada
+# ficha: el JSDoc del SFC es la fuente y todavía no está. Es deuda visible, no un error:
+# `node scripts/gen-api.mjs --check` la reporta y avisa si sube por encima de este tope.
+# Regenerar a propósito (después de documentar): node scripts/gen-api.mjs --update
+# o ./scripts/guard.sh --update.
+
+advanced-table	30
+alert	14
+author-card	5
+autocomplete	14
+avatar	5
+badge	1
+blockquote	3
+button	1
+calendar	23
+card	10
+cells-importer	17
+checkbox	6
+code-block	4
+collapse	4
+color-picker	4
+command-palette	12
+copy-button	0
+date-picker	26
+dropdown	18
+dropdown-menu	12
+dual-calendar	19
+editable-table-cell	0
+file-input	8
+file-input-zone	11
+file-list	6
+floating-button	1
+inline-renderer	0
+input	8
+label	6
+loader	3
+markdown	2
+modal	13
+month-slider	10
+month-slider-label	4
+navbar	15
+navbar-horizontal	3
+navbar-list	1
+navbar-menu	0
+pagination	11
+popover	18
+select	21
+side-over	10
+switch	7
+table	14
+tabs	7
+textarea	9
+theme-dropdown	0
+theme-manager-modal	0
+toggle-color-sheme	0
+tooltip	9
+year-slider	8
+total	433

@@ -4,28 +4,37 @@ import Button from "@/components/buttons/Button.vue";
 import Modal from "@/components/overlay/Modal.vue";
 
 const modal = ref<InstanceType<typeof Modal> | null>(null);
-const modalAlto = ref<InstanceType<typeof Modal> | null>(null);
-const size = ref("sm");
+const values = ["auto", "sm", "md", "lg", "xl", "full"] as const;
+const size = ref("md");
+const height = ref("auto");
 
-function abrir(value: string) {
-  size.value = value;
+function abrir(tipo: "size" | "height", value: string) {
+  if (tipo === "size") size.value = value;
+  else height.value = value;
   modal.value?.open();
 }
 </script>
 
 <template>
-  <Button @click="abrir('sm')">sm</Button>
-  <Button @click="abrir('md')">md</Button>
-  <Button @click="abrir('lg')">lg</Button>
-  <Button @click="abrir('xl')">xl</Button>
-  <Button @click="abrir('full')">full</Button>
-  <Button variant="soft" @click="modalAlto?.open()">height full</Button>
+  <Button
+    v-for="value in values"
+    :key="`size-${value}`"
+    size="sm"
+    @click="abrir('size', value)"
+  >
+    size: {{ value }}
+  </Button>
+  <Button
+    v-for="value in values"
+    :key="`height-${value}`"
+    size="sm"
+    variant="soft"
+    @click="abrir('height', value)"
+  >
+    height: {{ value }}
+  </Button>
 
-  <Modal ref="modal" :size="size" :title="`Tamaño ${size}`">
-    <p>El ancho del modal depende de <code>size</code>.</p>
-  </Modal>
-
-  <Modal ref="modalAlto" size="md" height="full" title="Altura completa">
-    <p>Con <code>height="full"</code> el modal ocupa el 90% de la altura.</p>
+  <Modal ref="modal" :size="size" :height="height" :title="`size=${size} · height=${height}`">
+    <p><code>size</code> controla el ancho y <code>height</code>, el alto.</p>
   </Modal>
 </template>

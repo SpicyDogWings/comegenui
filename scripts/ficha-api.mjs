@@ -1,12 +1,19 @@
 #!/usr/bin/env node
 // scripts/ficha-api.mjs — lee las tablas de API de una ficha Vue.
 //
-// La ficha (`docs/componentes/vue/<kebab>.md`) declara la API entre marcadores:
+// La API se declara entre marcadores:
 //
 //   <!-- @api:props -->   | Prop | Tipo | Default | Descripción |   <!-- /@api:props -->
 //   <!-- @api:emits -->   | Evento | Payload | Descripción |       <!-- /@api:emits -->
 //   <!-- @api:slots -->   | Slot | Descripción |                   <!-- /@api:slots -->
 //   <!-- @api:expose -->  | Método | Descripción |                 <!-- /@api:expose -->
+//
+// Los marcadores no tienen por qué estar en la ficha: el modelo vigente compone las secciones
+// desde partials (`<!--@include: ../../partials/<kebab>/props-vue.md-->` en
+// `docs/componentes/vue/<kebab>.md`), así que antes de leerlos se expanden los `@include` —con
+// la misma resolución relativa que hace VitePress— y recién ahí se buscan. Un partial
+// **compartido** por las dos APIs conserva el nombre vanilla del marcador
+// (`@api:atributos`/`@api:eventos`/`@api:metodos`), así que cada sección acepta sus dos alias.
 //
 // Esto es la especificación que los tests de contrato hacen cumplir en runtime.
 // `gen-api.mjs` mantiene las tablas sincronizadas con el SFC; acá sólo se leen.
@@ -16,6 +23,22 @@ import { fileURLToPath } from "node:url";
 
 export const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const FICHA_DIR = resolve(ROOT, "docs/componentes/vue");
+
+/** Tope de recursión de `@include` (un partial que se incluya a sí mismo no cuelga la lectura). */
+const MAX_INCLUDE_DEPTH = 10;
+
+/**
+ * Fuente con los `<!--@include: <ruta>-->` resueltos, recursivamente. La ruta es relativa al
+ * archivo que contiene el include (igual que VitePress). Un include a un archivo inexistente se
+ * descarta sin ruido: quien avisa de eso es `check-docs.mjs`.
+ */
+export function expandIncludes(file, depth = 0) {
+  if (depth > MAX_INCLUDE_DEPTH || !existsSync(file)) return "";
+  const source = readFileSync(file, "utf-8");
+  return source.replace(/<!--\s*@include:\s*(\S+?)\s*-->/g, (_, relative) =>
+    expandIncludes(resolve(dirname(file), relative), depth + 1),
+  );
+}
 
 /** Quita el backtick con que la tabla envuelve cada celda. */
 function unquote(cell) {
@@ -55,8 +78,8 @@ function splitRow(line, expected) {
 }
 
 /** Filas de datos de una sección `@api:<name>` (sin encabezado ni separador). */
-function rows(source, name) {
-  const re = new RegExp(`<!-- @api:${name} -->([\\s\\S]*?)<!-- /@api:${name} -->`);
+function rowsOf(source, name) {
+  const re = new RegExp(`<!--\\s*@api:${name}\\s*-->([\\s\\S]*?)<!--\\s*/@api:${name}\\s*-->`);
   const block = re.exec(source);
   if (!block) return [];
   const lines = block[1]
@@ -71,11 +94,32 @@ function rows(source, name) {
     .filter((cells) => cells.length > 0 && cells[0] !== "");
 }
 
+/**
+ * Marcadores de cada sección, en orden de preferencia. El primero es el de la API Vue; el
+ * segundo, el vanilla, que es el que queda en un partial **compartido** por las dos fichas
+ * (mismo cuerpo de tabla, así que sirve igual para el contrato de la `.vue`).
+ */
+const MARKERS = {
+  props: ["props", "atributos"],
+  emits: ["emits", "eventos"],
+  slots: ["slots"],
+  expose: ["expose", "metodos"],
+};
+
+/** Filas de una sección, probando sus alias de marcador. */
+function rows(source, section) {
+  for (const name of MARKERS[section]) {
+    const cells = rowsOf(source, name);
+    if (cells.length) return cells;
+  }
+  return [];
+}
+
 /** Especificación de un componente: props, emits, slots y expose de su ficha. */
 export function fichaSpec(kebab) {
   const file = resolve(FICHA_DIR, `${kebab}.md`);
   if (!existsSync(file)) return null;
-  const source = readFileSync(file, "utf-8");
+  const source = expandIncludes(file);
 
   const props = rows(source, "props").map((cells) => ({
     name: unquote(cells[0]),
@@ -97,8 +141,8 @@ export function fichaSpec(kebab) {
 export function fichaProse(kebab) {
   const file = resolve(FICHA_DIR, `${kebab}.md`);
   if (!existsSync(file)) return "";
-  return readFileSync(file, "utf-8")
-    .replace(/<!-- @api:[\s\S]*?\/@api:\w+ -->/g, "")
+  return expandIncludes(file)
+    .replace(/<!--\s*@api:[\s\S]*?\/@api:\w+\s*-->/g, "")
     .trim();
 }
 
