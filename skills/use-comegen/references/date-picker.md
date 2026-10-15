@@ -20,9 +20,14 @@ usá `cu-calendar`.
    (elección explícita); `open`/`close` avisan del panel.
 5. `min`/`max`, `disabled-weekdays` y `disabled-dates` restringen días; `events` marca días con
    puntos y se asigna como **propiedad JS**.
-6. `format` controla el texto del trigger con los tokens `dd`, `MM`, `MMM`, `MMMM`, `yy`, `yyyy`.
+6. `format` controla el **texto del trigger** (tokens `dd`, `MM`, `MMM`, `MMMM`, `yy`, `yyyy`);
+   **no** cambia el valor: los eventos devuelven `Date`. Para el **valor como string**, seteá
+   `value-format` (mismos tokens) → el picker emite `update:formattedValue` /
+   `change-formatted` / `select-formatted` (y `update:formattedStartDate`/`update:formattedEndDate`
+   en range).
 7. Programático: `open()`, `close()`, `toggle()`, `getValue()`, `setValue()`, `getStartDate()`,
-   `getEndDate()`, `setRange()`, `clear()` e `isOpen()`.
+   `getEndDate()`, `setRange()`, `clear()`, `getFormattedValue()`, `getFormattedStartDate()`,
+   `getFormattedEndDate()` e `isOpen()`.
 
 ```html
 <!-- HTML plano (UMD) -->
@@ -65,8 +70,9 @@ const endDate = ref<string | Date | null>(null);
 
 **Puede:** modo `single`/`range`, calendario dual (2 meses), `min`/`max`, días de la semana y
 fechas puntuales deshabilitadas, eventos con punto, `grid`/`border`, `locale` y `week-start`,
-formatos de fecha (`format`) y de mes/año (`month-format`/`year-format`), navegación de año,
-`position`/`align`/`fixed`, botones "Hoy"/"Limpiar", `color`/`variant` y 10 métodos.
+formatos de fecha (`format`) y de mes/año (`month-format`/`year-format`), **valor formateado
+(`value-format`)**, navegación de año, `position`/`align`/`fixed`, botones "Hoy"/"Limpiar",
+`color`/`variant` y 13 métodos.
 
 **No puede:**
 
@@ -86,6 +92,8 @@ formatos de fecha (`format`) y de mes/año (`month-format`/`year-format`), naveg
   ("Hoy"/"Limpiar").
 - **No hay selector de mes/año desplegable** más allá de `year-navigation`.
 - **`format` sólo entiende sus tokens:** un patrón raro no se interpreta como esperás.
+- **`format` no cambia el valor:** es sólo el texto del trigger; los eventos devuelven `Date`.
+  Para el valor como string usá `value-format` (y `getFormattedValue()`).
 - **El CE posiciona con `position`/`align`** (en el CE, `position` acepta `bottom`, `top`,
   `left`, `right`).
 
