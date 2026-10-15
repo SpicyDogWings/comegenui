@@ -6,7 +6,7 @@ más se consulta— **qué no se puede esperar de él**.
 - **Tag** = el custom element (`<cu-x>`); **sólo Vue** = no tiene UMD, se usa el `.vue`.
 - **Props sólo por JS** = arrays/objetos/funciones: `el.items = [...]`, nunca por atributo.
 - La API completa (tipos, defaults, todos los slots) está en la ficha de cada componente
-  (`docs/componentes/<tag>.md` y `docs/componentes/vue/<kebab>.md`).
+  (`docs/versiones/5.1.1/componentes/<tag>.md` y `docs/versiones/5.1.1/componentes/vue/<kebab>.md`).
 
 ## Buttons
 

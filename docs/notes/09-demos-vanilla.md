@@ -2,12 +2,12 @@
 
 **Estado:** en curso (patrón validado con `cu-button` y `cu-alert`).
 
-La doc **vanilla** (`docs/site/componentes/cu-<x>.md`) muestra, debajo de cada bloque de
+La doc **vanilla** (`docs/versiones/5.1.1/paginas/componentes/cu-<x>.md`) muestra, debajo de cada bloque de
 ejemplo de la ficha, el **componente real** (custom element del build `esm-shared`).
 
 ## Cómo funciona
 
-1. En la ficha (`docs/componentes/cu-<x>.md`), debajo del bloque ` ```html `, va un marcador
+1. En la ficha (`docs/versiones/5.1.1/componentes/cu-<x>.md`), debajo del bloque ` ```html `, va un marcador
    `<!-- demo:<id> -->`.
 2. El plugin de VitePress (`docs/site/.vitepress/config.ts`) lo convierte en
    `<ComegenDemo id="<id>" />`.
@@ -49,8 +49,8 @@ Los zips de release siguen saliendo aparte, con `pnpm build:lib`.
 
 ## Referencia
 
-- `docs/site/examples/button/button-*.vue` + `docs/componentes/cu-button.md`
-- `docs/site/examples/alert/alert-*.vue` + `docs/componentes/cu-alert.md`
+- `docs/site/examples/button/button-*.vue` + `docs/versiones/5.1.1/componentes/cu-button.md`
+- `docs/site/examples/alert/alert-*.vue` + `docs/versiones/5.1.1/componentes/cu-alert.md`
 
 ## Deploy del sitio (Vercel)
 

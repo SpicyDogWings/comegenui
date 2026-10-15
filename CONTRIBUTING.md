@@ -109,7 +109,7 @@ src/lib/{category}/mi-componente.ts                           → entry point
 ```
 
 Si el cambio altera la API, actualizá también las fichas de documentación
-(`docs/componentes/…`) y las páginas del sitio. La receta completa está en la skill
+(`docs/versiones/5.1.1/componentes/…`) y las páginas del sitio. La receta completa está en la skill
 `documenter`.
 
 ## Checklist antes del PR

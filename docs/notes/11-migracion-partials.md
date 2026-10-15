@@ -4,13 +4,13 @@
 **Severidad:** Info (seguimiento)
 
 Modelo vigente (skill `documenter`): cada componente tiene **2 fichas** (vanilla + Vue) y la **API
-se comparte por partials** en `docs/partials/<kebab>/`, que las dos fichas incluyen al final.
+se comparte por partials** en `docs/versiones/5.1.1/partials/<kebab>/`, que las dos fichas incluyen al final.
 `scripts/gen-api.mjs` pasa al **modo partials** sólo cuando existe el directorio
-`docs/partials/<kebab>/`; si no, sigue con las tablas inline (**modo legacy**).
+`docs/versiones/5.1.1/partials/<kebab>/`; si no, sigue con las tablas inline (**modo legacy**).
 
 ## Cómo migrar un componente
 
-1. Crear `docs/partials/<kebab>/`.
+1. Crear `docs/versiones/5.1.1/partials/<kebab>/`.
 2. `node scripts/gen-api.mjs --plan <kebab>` → lista los archivos **exactos** que va a usar:
    `<base>.md` si la sección es igual en las dos fichas, o `<base>-vanilla.md`/`<base>-vue.md` si
    difiere. Bases: `props` (atributos/props), `eventos` (eventos/emits), `slots`, `metodos`
@@ -28,7 +28,7 @@ se comparte por partials** en `docs/partials/<kebab>/`, que las dos fichas inclu
 
 ## Estado
 
-**51 / 51 migrados.** Todas las fichas de `docs/componentes/` incluyen sus partials y no queda
+**51 / 51 migrados.** Todas las fichas de `docs/versiones/5.1.1/componentes/` incluyen sus partials y no queda
 ningún marcador `@api:` inline.
 
 | | Total |
@@ -45,7 +45,7 @@ La API ya no está en la ficha: vive en los partials. Cualquier consumidor que l
 componer la ficha primero.
 
 - **Contrato de runtime** (`src/contracts/ficha-api.test.ts`): `scripts/ficha-api.mjs` expande los
-  `<!--@include-->` de `docs/componentes/vue/<kebab>.md` (resolución relativa, igual que VitePress)
+  `<!--@include-->` de `docs/versiones/5.1.1/componentes/vue/<kebab>.md` (resolución relativa, igual que VitePress)
   y recién ahí busca los marcadores. Un partial **compartido** conserva el nombre vanilla del
   marcador, así que acepta los alias: `props`≡`atributos`, `emits`≡`eventos`, `expose`≡`metodos`.
 - **`gen-api --check`** valida las tablas contra el SFC; no lee las fichas.

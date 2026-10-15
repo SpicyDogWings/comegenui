@@ -1,6 +1,6 @@
 # Notas internas — Auditoría de ComegenUI
 
-Esta carpeta documenta **problemas pendientes** y decisiones técnicas que no afectan a la documentación de uso (que está en `docs/componentes/`), pero que el equipo debe conocer para mantener la librería y su documentación alineadas con el código.
+Esta carpeta documenta **problemas pendientes** y decisiones técnicas que no afectan a la documentación de uso (que está en `docs/versiones/5.1.1/componentes/`), pero que el equipo debe conocer para mantener la librería y su documentación alineadas con el código.
 
 Los archivos son notas internas — **no** se exponen a usuarios finales de la librería. Son material de referencia para el próximo ciclo de auditoría o para contribuciones al código fuente.
 
@@ -12,9 +12,9 @@ Los archivos son notas internas — **no** se exponen a usuarios finales de la l
 |---|------|-----------|-----------------|
 | [01](./01-build-glob.md) | `build-libs.ts` no excluye `archived/` ni `data/index.ts` | Media | Editar el patrón de `fast-glob` |
 | [02](./02-hightcontrast.md) | Typo `hightContrast` (debería ser `highContrast`). Hoy **sólo** lo expone `<cu-label>` (el resto era prop muerta y se eliminó) | Baja | Evaluar migración con `deprecation warning` o corregir junto con el resto |
-| [03](./03-table-ce-passthrough.md) | Interface `Column` del `<cu-table>` no incluye los campos extendidos que `AdvancedTable.vue` sí procesa | Info | Ya documentado en `docs/componentes/cu-table.md` |
-| [04](./04-eventos-no-reemitidos.md) | Los eventos nativos del DOM burbujean por Shadow DOM; el `.ce.vue` no los re-emite como eventos custom | Info | Ya documentado en las fichas vanilla (`docs/componentes/<tag>.md`, sección `## Eventos`) |
-| [07](./07-docs-vs-skill.md) | Docs y skill dejaron de ser lo mismo: fichas en `docs/componentes/`, receta en `.opencode/skills/use-comegen/`, y el zip pasa a llevar sólo la lib | Info | Ya aplicado (decisión registrada) |
+| [03](./03-table-ce-passthrough.md) | Interface `Column` del `<cu-table>` no incluye los campos extendidos que `AdvancedTable.vue` sí procesa | Info | Ya documentado en `docs/versiones/5.1.1/componentes/cu-table.md` |
+| [04](./04-eventos-no-reemitidos.md) | Los eventos nativos del DOM burbujean por Shadow DOM; el `.ce.vue` no los re-emite como eventos custom | Info | Ya documentado en las fichas vanilla (`docs/versiones/5.1.1/componentes/<tag>.md`, sección `## Eventos`) |
+| [07](./07-docs-vs-skill.md) | Docs y skill dejaron de ser lo mismo: fichas en `docs/versiones/5.1.1/componentes/`, receta en `.opencode/skills/use-comegen/`, y el zip pasa a llevar sólo la lib | Info | Ya aplicado (decisión registrada) |
 | [08](./08-contrato-scope-hash.md) | El contrato incluía el hash de scope `data-v-*`: toda edición de un SFC marcaba "ROTO" | Baja | **Resuelto** (2026-10-06): se filtra `data-v-*` y se regeneraron los baselines |
 | [09](./09-demos-vanilla.md) | Demos vanilla inline (marcadores `<!-- demo:id -->` + SFC del CE real) y deploy estático del sitio | Info | Receta vigente |
 | [12](./12-versionado-docs.md) | Versionado del sitio de documentación: snapshots congelados por versión (`docs/versions.json` + `scripts/docs-versions.mjs` + select en el topbar) | Info | Decisión registrada |

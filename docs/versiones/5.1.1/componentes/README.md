@@ -5,7 +5,7 @@ Referencia de API de ComegenUI. Cada componente tiene dos APIs:
 - **Custom Element** (`<cu-x>`) — uso desde HTML/vanilla: atributos, `CustomEvent`s, slots y métodos del host.
 - **Vue** — uso desde el componente `.vue`: props, emits, slots y `expose`.
 
-Las páginas del sitio ([`docs/site/componentes`](../site/componentes)) incluyen estas fichas.
+Las páginas del sitio ([`docs/versiones/5.1.1/paginas/componentes`](../site/componentes)) incluyen estas fichas.
 
 ## Buttons
 

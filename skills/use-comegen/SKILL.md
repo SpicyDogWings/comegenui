@@ -18,7 +18,7 @@ andá directo al paso que te falta.
 > | | Vue | Custom Element (vanilla) |
 > |---|---|---|
 > | Se importa de | `src/components/<cat>/X.vue` (sólo con el repo) | `CuX.umd.js` (config `umd-core`, tag `<cu-x>`) |
-> | Ficha | `docs/componentes/vue/<kebab>.md` | `docs/componentes/<tag>.md` |
+> | Ficha | `docs/versiones/5.1.1/componentes/vue/<kebab>.md` | `docs/versiones/5.1.1/componentes/<tag>.md` |
 > | Entrada de build | — | `src/lib/<cat>/<kebab>.ts` |
 > | Props | camelCase | atributos kebab-case + propiedades JS |
 > | Eventos | `@evento` / `v-model` | `CustomEvent` sobre el host |
@@ -39,9 +39,9 @@ andá directo al paso que te falta.
   con valores de relleno), los límites y las dos APIs. Es la fuente recomendada para consumir un
   componente: p. ej. `references/button.md` para `<cu-button>`.
 - Detalle completo de la API:
-  - custom element → `docs/componentes/<tag>.md`
-  - Vue → `docs/componentes/vue/<kebab>.md`
-  - índice de todo → `docs/componentes/README.md`
+  - custom element → `docs/versiones/5.1.1/componentes/<tag>.md`
+  - Vue → `docs/versiones/5.1.1/componentes/vue/<kebab>.md`
+  - índice de todo → `docs/versiones/5.1.1/componentes/README.md`
 
 > Esos archivos viven en el repo de ComegenUI (<https://github.com/SpicyDogWings/comegenui>).
 > En un proyecto que sólo consumió el zip no están: usá el índice de `references/` y la
