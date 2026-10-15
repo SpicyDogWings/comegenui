@@ -8,7 +8,7 @@ initTokens()
 
 const props = defineProps({
   // API espejo de MonthSlider/YearSlider: acepta Date, timestamp o fecha "YYYY-MM-DD"
-  /** Fecha seleccionada. Acepta `Date`, timestamp o `"YYYY-MM-DD"` (ver [Formato de fechas](#formato-de-fechas)) */
+  /** Fecha seleccionada. Acepta `Date`, timestamp o `"YYYY-MM-DD"` (ver «Formato de fechas») */
   modelValue: {
     type: [String, Number, Date] as PropType<string | number | Date | null>,
     default: null,
@@ -75,7 +75,7 @@ const props = defineProps({
     default: 'yyyy',
     validator: isYearFormat,
   },
-  /** Eventos a señalar con puntos bajo la fecha (ver [Eventos](#eventos-puntos)). Se asigna como propiedad JS */
+  /** Eventos a señalar con puntos bajo la fecha (ver «Eventos (puntos)»). Se asigna como propiedad JS */
   events: {
     type: Array as PropType<CalendarEvent[]>,
     default: () => [],
