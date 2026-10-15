@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
+import { withBase } from "vitepress";
 import { loaded } from "@/plugins/cu-tokens";
 import { useThemeStore } from "@/stores/theme";
 import AppLayout from "@/layouts/AppLayout.vue";
@@ -128,6 +129,12 @@ function prettyTheme(value: string) {
           Hecha para agentes: la skill de uso <code>use-comegen</code> se baja del repo
           y se copia a <code>.opencode/skills/</code> de tu proyecto. No viaja en el zip.
         </Alert>
+        <div class="home-usage-links">
+          <span class="home-usage-label">Guías</span>
+          <Button color="neutral" variant="ghost" :to="withBase('/instalacion')">Instalación</Button>
+          <Button color="neutral" variant="ghost" :to="withBase('/personalizacion')">Personalización</Button>
+          <Button color="neutral" variant="ghost" :to="withBase('/configuracion')">Configuración</Button>
+        </div>
       </section>
 
       <section class="home-doc">
@@ -307,6 +314,13 @@ function prettyTheme(value: string) {
   font-size: var(--cu-font-size-sm);
   font-weight: var(--cu-font-weight-semibold);
   opacity: 0.7;
+}
+
+.home-usage-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .home-doc {

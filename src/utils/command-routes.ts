@@ -5,7 +5,7 @@ import { slugify } from "@/utils/slugify";
  * Comandos de navegación del CommandPalette del layout.
  *
  * En el sitio VitePress no hay un router propio del SPA: la lista es estática
- * (Home, componentes, Theme Builder). La navegación es por URL.
+ * (Home, componentes, guías, Theme Builder). La navegación es por URL.
  */
 function go(base: string, path: string) {
   if (typeof window !== "undefined") window.location.href = `${base}${path}`;
@@ -20,6 +20,27 @@ export function navigationCommands(base = ""): CommandItem[] {
       description: "/componentes",
       category: "Playground",
       action: () => go(base, "/componentes/cu-button"),
+    },
+    {
+      id: "instalacion",
+      label: "Instalación",
+      description: "/instalacion",
+      category: "Páginas",
+      action: () => go(base, "/instalacion"),
+    },
+    {
+      id: "personalizacion",
+      label: "Personalización",
+      description: "/personalizacion",
+      category: "Páginas",
+      action: () => go(base, "/personalizacion"),
+    },
+    {
+      id: "configuracion",
+      label: "Configuración",
+      description: "/configuracion",
+      category: "Páginas",
+      action: () => go(base, "/configuracion"),
     },
     {
       id: "theme-builder",
