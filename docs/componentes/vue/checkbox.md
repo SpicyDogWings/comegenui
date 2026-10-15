@@ -4,8 +4,6 @@
 
 Checkbox con label, controlable via `modelValue` o métodos `get`/`set`.
 
----
-
 ## Uso en Vue
 
 ```vue
@@ -19,6 +17,48 @@ const acepto = ref(true);
 <template>
   <Checkbox v-model="acepto" label="Acepto los términos" color="primary" />
   <Checkbox label="Opción deshabilitada" disabled />
+</template>
+```
+
+En HTML plano, cargá el bundle `CuCheckbox` (ver [ficha vanilla](/componentes/cu-checkbox)).
+
+## Colores
+
+`color` es un nombre semántico, no un hex: se resuelve con los tokens del tema activo
+(`--cu-color-{color}*`). Los 6 valores son `primary`, `secondary`, `neutral` (**default**),
+`success`, `warning` y `danger`.
+
+```vue
+<template>
+  <Checkbox label="primary" color="primary" :model-value="true" />
+  <Checkbox label="secondary" color="secondary" :model-value="true" />
+  <Checkbox label="neutral" color="neutral" :model-value="true" />
+  <Checkbox label="success" color="success" :model-value="true" />
+  <Checkbox label="warning" color="warning" :model-value="true" />
+  <Checkbox label="danger" color="danger" :model-value="true" />
+</template>
+```
+
+## Tamaños
+
+`size` acepta `sm` y `md` (**default**), y cambia el tamaño de la caja y de la etiqueta.
+
+```vue
+<template>
+  <Checkbox label="sm" size="sm" :model-value="true" />
+  <Checkbox label="md (default)" size="md" :model-value="true" />
+</template>
+```
+
+## Estado deshabilitado
+
+`disabled` atenúa el checkbox, bloquea el click y muestra cursor `not-allowed`, marcado o
+no. `label` es el texto de al lado y es opcional: sin él, el checkbox queda solo.
+
+```vue
+<template>
+  <Checkbox label="Deshabilitado (marcado)" :model-value="true" disabled />
+  <Checkbox label="Deshabilitado (sin marcar)" disabled />
 </template>
 ```
 
@@ -78,40 +118,18 @@ function demo() {
 </template>
 ```
 
----
-
 ## Props
 
-<!-- @api:props -->
-| Prop | Tipo | Default | Descripción |
-| ------ | ------ | ------ | ------ |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
-| `size` | `"sm" \| "md"` | `"md"` | — |
-| `disabled` | `boolean` | `false` | — |
-| `label` | `string` | `—` | — |
-<!-- /@api:props -->
+<!--@include: ../../partials/checkbox/props-vue.md-->
 
 ## Emits
 
-<!-- @api:emits -->
-| Evento | Payload | Descripción |
-| ------ | ------ | ------ |
-| `update:modelValue` | `boolean` | — |
-<!-- /@api:emits -->
+<!--@include: ../../partials/checkbox/eventos.md-->
 
 ## Slots
 
-<!-- @api:slots -->
-Ninguno.
-<!-- /@api:slots -->
+<!--@include: ../../partials/checkbox/slots.md-->
 
 ## Expose
 
-<!-- @api:expose -->
-| Método | Descripción |
-| ------ | ------ |
-| `get` | Devuelve si el checkbox está marcado. |
-| `set` | Setea el estado marcado y emite change. |
-| `reset` | Desmarca el checkbox y emite change. |
-| `focus` | Enfoca el input nativo. |
-<!-- /@api:expose -->
+<!--@include: ../../partials/checkbox/metodos-vue.md-->

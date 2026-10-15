@@ -25,61 +25,100 @@ Input de archivo compacto con drag & drop, estilo idéntico a `<cu-input>`. Sing
 
 <!-- demo:file-input-uso -->
 
----
+> **Drag & drop:** se puede soltar un archivo sobre el componente; durante el arrastre se ilumina el borde y el fondo. Los directorios se descartan solos (`size === 0 && !type`) y la validación de `accept`/`max-size` también corre al soltar.
 
-## Drag & drop
+## Colores
 
-Soporta arrastrar un solo archivo sobre el componente. Durante el drag se ilumina el borde y fondo. Los directorios se descartan automáticamente (`size === 0 && !type`).
+`color` tiñe el borde, el texto y el fondo según el tema activo, con los 6 nombres semánticos.
 
----
+```html
+<cu-file-input color="primary" variant="outlined" placeholder="primary"></cu-file-input>
+<cu-file-input color="secondary" variant="outlined" placeholder="secondary"></cu-file-input>
+<cu-file-input color="neutral" variant="outlined" placeholder="neutral"></cu-file-input>
+<cu-file-input color="success" variant="outlined" placeholder="success"></cu-file-input>
+<cu-file-input color="warning" variant="outlined" placeholder="warning"></cu-file-input>
+<cu-file-input color="danger" variant="outlined" placeholder="danger"></cu-file-input>
+```
 
-## Notas
+<!-- demo:file-input-colores -->
 
-- No soporta `multiple`, `directory` ni `directory-deep` — usá `<cu-file-input-zone>` para esos casos.
-- Al hacer click en el nombre del archivo seleccionado se abre en una nueva pestaña.
-- La validación por `accept` y `maxSize` se aplica tanto en el diálogo nativo como al soltar archivos por drag.
+## Variantes
 
----
+`variant` decide el aspecto del campo con las 4 variantes de campo (`outlined` es el default).
+
+```html
+<cu-file-input color="primary" variant="outlined" placeholder="outlined"></cu-file-input>
+<cu-file-input color="primary" variant="soft" placeholder="soft"></cu-file-input>
+<cu-file-input color="primary" variant="ghost" placeholder="ghost"></cu-file-input>
+<cu-file-input color="primary" variant="subtle" placeholder="subtle"></cu-file-input>
+```
+
+<!-- demo:file-input-variantes -->
+
+## Estados
+
+`disabled` y `read-only` cortan click, drag y drop; `disabled` además atenúa el componente y esconde el botón de quitar.
+
+```html
+<cu-file-input disabled placeholder="Deshabilitado"></cu-file-input>
+<cu-file-input read-only placeholder="Solo lectura"></cu-file-input>
+```
+
+<!-- demo:file-input-estados -->
+
+## Validación
+
+`accept` y `max-size` se anuncian en el placeholder y se aplican tanto en el diálogo nativo como al soltar; si un archivo no pasa, aparece una `Alert` danger debajo con el motivo.
+
+```html
+<cu-file-input accept="image/*" placeholder="Imagen"></cu-file-input>
+<cu-file-input accept=".pdf,.doc,.docx" placeholder="Documento"></cu-file-input>
+<cu-file-input accept="image/*,.pdf" max-size="1048576" placeholder="Imagen o PDF hasta 1 MB"></cu-file-input>
+```
+
+<!-- demo:file-input-validacion -->
+
+> No soporta `multiple`, `directory` ni `directory-deep`: para eso está `<cu-file-input-zone>`. Al hacer click en el nombre del archivo, se abre en una pestaña nueva.
+
+## Interacción
+
+`update:modelValue` avisa cada cambio de archivo (con el `File` o `null`) y `get()`, `set()`, `reset()`, `focus()` y `trigger()` manejan la selección por código.
+
+```html
+<cu-file-input id="miInput" placeholder="Archivo por API"></cu-file-input>
+
+<script>
+  const input = document.getElementById('miInput');
+
+  input.set(new File(['contenido'], 'por-api.txt', { type: 'text/plain' }));
+  console.log(input.get()?.name);
+
+  input.focus();     // enfoca el contenedor
+  input.trigger();   // abre el selector nativo
+  input.reset();     // limpia la selección
+
+  input.addEventListener('update:modelValue', (e) => {
+    console.log('Archivo:', e.detail?.name ?? null);
+  });
+</script>
+```
+
+<!-- demo:file-input-metodos -->
 
 ## Atributos
 
-<!-- @api:atributos -->
-| Atributo | Tipo | Default | Descripción |
-| ------ | ------ | ------ | ------ |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `"outlined"` | `outlined`, `soft`, `ghost`, `subtle` |
-| `disabled` | `boolean` | `—` | Deshabilita click, drag y drop |
-| `read-only` | `boolean` | `—` | Modo solo lectura |
-| `placeholder` | `string` | `"Seleccionar archivo"` | Texto cuando no hay archivo |
-| `model-value` | `File \| null` | `null` | Archivo seleccionado (vía JS, no HTML) |
-| `max-size` | `number` | `—` | Tamaño máximo en bytes |
-| `accept` | `string` | `—` | Tipos aceptados (ej: `"image/*"`, `".pdf,.doc"`) |
-<!-- /@api:atributos -->
+<!--@include: ../partials/file-input/props-vanilla.md-->
 
-> **Atributos en HTML:** `readOnly` se escribe como `readonly`, `maxSize` como `max-size`.
+> **Atributos en HTML:** van en kebab-case: `readOnly` → `read-only`, `maxSize` → `max-size`.
 
 ## Eventos
 
-<!-- @api:eventos -->
-| Evento | Payload (`e.detail`) | Descripción |
-| ------ | ------ | ------ |
-| `update:modelValue` | `File \| null` | — |
-<!-- /@api:eventos -->
+<!--@include: ../partials/file-input/eventos.md-->
 
 ## Slots
 
-<!-- @api:slots -->
-Ninguno.
-<!-- /@api:slots -->
+<!--@include: ../partials/file-input/slots.md-->
 
 ## Métodos expuestos
 
-<!-- @api:metodos -->
-| Método | Descripción |
-| ------ | ------ |
-| `get` | Devuelve el `File` actual o `null` |
-| `set` | Asigna un archivo programáticamente |
-| `reset` | Limpia la selección |
-| `focus` | Enfoca el input |
-| `trigger` | Abre el diálogo nativo de selección de archivos |
-<!-- /@api:metodos -->
+<!--@include: ../partials/file-input/metodos-vanilla.md-->

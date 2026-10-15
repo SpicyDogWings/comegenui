@@ -1,6 +1,6 @@
 [← Volver](../README.md)
 
-# `<cu-checkbox>`
+# `Checkbox`
 
 Checkbox con label. Mantiene su estado y también se controla via `modelValue` o métodos `get`/`set`.
 
@@ -21,7 +21,47 @@ Checkbox con label. Mantiene su estado y también se controla via `modelValue` o
 
 <!-- demo:checkbox-uso -->
 
----
+En Vue, importá `Checkbox` de `@/components/form/Checkbox.vue` (ver [ficha Vue](/componentes/vue/checkbox)).
+
+## Colores
+
+`color` es un nombre semántico, no un hex: se resuelve con los tokens del tema activo
+(`--cu-color-{color}*`). Los 6 valores son `primary`, `secondary`, `neutral` (**default**),
+`success`, `warning` y `danger`.
+
+```html
+<cu-checkbox label="primary" color="primary" model-value></cu-checkbox>
+<cu-checkbox label="secondary" color="secondary" model-value></cu-checkbox>
+<cu-checkbox label="neutral" color="neutral" model-value></cu-checkbox>
+<cu-checkbox label="success" color="success" model-value></cu-checkbox>
+<cu-checkbox label="warning" color="warning" model-value></cu-checkbox>
+<cu-checkbox label="danger" color="danger" model-value></cu-checkbox>
+```
+
+<!-- demo:checkbox-colores -->
+
+## Tamaños
+
+`size` acepta `sm` y `md` (**default**), y cambia el tamaño de la caja y de la etiqueta.
+
+```html
+<cu-checkbox label="sm" size="sm" model-value></cu-checkbox>
+<cu-checkbox label="md (default)" size="md" model-value></cu-checkbox>
+```
+
+<!-- demo:checkbox-tamanos -->
+
+## Estado deshabilitado
+
+`disabled` atenúa el checkbox, bloquea el click y muestra cursor `not-allowed`, marcado o
+no. `label` es el texto de al lado y es opcional: sin él, el checkbox queda solo.
+
+```html
+<cu-checkbox label="Deshabilitado (marcado)" model-value disabled></cu-checkbox>
+<cu-checkbox label="Deshabilitado (sin marcar)" disabled></cu-checkbox>
+```
+
+<!-- demo:checkbox-deshabilitado -->
 
 ## Escuchar cambios
 
@@ -48,8 +88,6 @@ listeners son para reaccionar):
 
 <!-- demo:checkbox-cambios -->
 
----
-
 ## Control programático
 
 ```html
@@ -67,44 +105,20 @@ listeners son para reaccionar):
 
 <!-- demo:checkbox-control-programatico -->
 
----
-
 ## Atributos
 
-<!-- @api:atributos -->
-| Atributo | Tipo | Default | Descripción |
-| ------ | ------ | ------ | ------ |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `size` | `"sm" \| "md"` | `"md"` | Tamaño del checkbox: `sm`, `md` |
-| `disabled` | `boolean` | `—` | Estado deshabilitado |
-| `model-value` | `boolean` | `false` | Estado del checkbox. El CE sincroniza su estado; asigná `modelValue` sólo si querés controlarlo |
-| `label` | `string` | `—` | Texto visible junto al checkbox |
-<!-- /@api:atributos -->
+<!--@include: ../partials/checkbox/props-vanilla.md-->
 
 > El Custom Element **no expone** una prop `checked` separada (el control se hace únicamente con `modelValue`), ni una prop `variant` (el estilo se fija con `size` y `color`).
 
 ## Eventos
 
-<!-- @api:eventos -->
-| Evento | Payload (`e.detail`) | Descripción |
-| ------ | ------ | ------ |
-| `update:modelValue` | `boolean` | — |
-| `change` | — | — |
-<!-- /@api:eventos -->
+<!--@include: ../partials/checkbox/eventos.md-->
 
 ## Slots
 
-<!-- @api:slots -->
-Ninguno.
-<!-- /@api:slots -->
+<!--@include: ../partials/checkbox/slots.md-->
 
 ## Métodos expuestos
 
-<!-- @api:metodos -->
-| Método | Descripción |
-| ------ | ------ |
-| `get` | Devuelve el estado actual (`boolean`) |
-| `set` | Asigna el estado (programáticamente) |
-| `reset` | Pone el estado en `false` |
-| `focus` | Enfoca el checkbox |
-<!-- /@api:metodos -->
+<!--@include: ../partials/checkbox/metodos-vanilla.md-->

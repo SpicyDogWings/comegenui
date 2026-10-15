@@ -1,13 +1,16 @@
 <script setup lang="ts">
-// Refleja el ejemplo "Sizes": el ancho del modal depende de `size`.
+// Refleja el ejemplo "Tamaños": los 6 valores de `size` y los 6 de `height`.
 import { ref } from "vue";
 
 type ModalEl = HTMLElement & { open: () => void };
 const modal = ref<ModalEl | null>(null);
-const size = ref("sm");
+const values = ["auto", "sm", "md", "lg", "xl", "full"] as const;
+const size = ref("md");
+const height = ref("auto");
 
-function abrir(value: string) {
-  size.value = value;
+function abrir(tipo: "size" | "height", value: string) {
+  if (tipo === "size") size.value = value;
+  else height.value = value;
   modal.value?.open();
 }
 </script>
@@ -15,15 +18,28 @@ function abrir(value: string) {
 <template>
   <VanillaDemo :use="['CuModal']">
     <div class="cu-demo-controls">
-      <button type="button" @click="abrir('sm')">sm</button>
-      <button type="button" @click="abrir('md')">md</button>
-      <button type="button" @click="abrir('lg')">lg</button>
-      <button type="button" @click="abrir('xl')">xl</button>
-      <button type="button" @click="abrir('full')">full</button>
+      <button
+        v-for="value in values"
+        :key="`size-${value}`"
+        type="button"
+        @click="abrir('size', value)"
+      >
+        size: {{ value }}
+      </button>
+    </div>
+    <div class="cu-demo-controls">
+      <button
+        v-for="value in values"
+        :key="`height-${value}`"
+        type="button"
+        @click="abrir('height', value)"
+      >
+        height: {{ value }}
+      </button>
     </div>
 
-    <cu-modal ref="modal" :size="size" :title="`Tamaño ${size}`">
-      <p>El ancho del modal depende de <code>size</code>; <code>height</code> controla el alto.</p>
+    <cu-modal ref="modal" :size="size" :height="height" :title="`size=${size} · height=${height}`">
+      <p><code>size</code> controla el ancho y <code>height</code>, el alto.</p>
     </cu-modal>
   </VanillaDemo>
 </template>

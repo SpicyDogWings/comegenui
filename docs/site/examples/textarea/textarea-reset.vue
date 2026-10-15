@@ -1,22 +1,19 @@
 <script setup lang="ts">
-// Refleja el ejemplo "Reset": `reset()` limpia el textarea (hoy `start-value` no se
-// aplica, por eso el valor inicial se setea con `model-value`).
+// Refleja el ejemplo "Métodos": `focus()` y `reset()` (que limpia el campo; hoy
+// `start-value` no se aplica, por eso el valor inicial se setea con `model-value`).
 import { ref } from "vue";
 
-type CuTextareaElement = HTMLElement & { reset?: () => void };
+type CuTextareaElement = HTMLElement & { reset?: () => void; focus?: () => void };
 
 const notas = ref<CuTextareaElement | null>(null);
-
-function restaurar() {
-  notas.value?.reset?.();
-}
 </script>
 
 <template>
   <VanillaDemo :use="['CuTextarea']">
-    <cu-textarea ref="notas" start-value="Plantilla inicial" model-value="Plantilla inicial"></cu-textarea>
+    <cu-textarea ref="notas" model-value="Plantilla inicial"></cu-textarea>
     <div class="cu-demo-controls">
-      <button type="button" @click="restaurar">Restaurar plantilla</button>
+      <button type="button" @click="notas?.focus?.()">focus()</button>
+      <button type="button" @click="notas?.reset?.()">reset()</button>
     </div>
   </VanillaDemo>
 </template>

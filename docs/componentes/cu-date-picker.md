@@ -4,27 +4,7 @@
 
 Selector de fecha: un botón-trigger que abre un **dropdown con un calendario adentro** (no es una lista de items seleccionables, es un box con el calendario). `mode="single"` selecciona una fecha; `mode="range"` (o `dual-calendar`) un rango, con uno o dos meses. Compone `cu-calendar` (single o range) y el `DualCalendar` interno (2 meses en range), y administra los valores de ambos.
 
-## Formato
-
-Tokens soportados en `format` (con `locale`):
-
-| Token | Ejemplo (`es`) |
-|-------|----------------|
-| `dd` | `11` |
-| `MM` | `08` |
-| `MMM` | `ago` |
-| `MMMM` | `Agosto` |
-| `yy` | `26` |
-| `yyyy` | `2026` |
-
-```js
-picker.format = 'MMMM yyyy';   // "Agosto 2026"
-picker.format = 'dd-MM-yy';    // "11-08-26"
-```
-
----
-
-## Uso básico
+## Uso en HTML plano
 
 ```html
 <script src="dist-libs/umd-core/CuDatePicker.umd.js"></script>
@@ -43,25 +23,72 @@ picker.format = 'dd-MM-yy';    // "11-08-26"
 
 <!-- demo:date-picker-uso-basico -->
 
-### Con fecha inicial y límites
+En Vue, importá `DatePicker` de `@/components/form/DatePicker.vue` (ver [ficha Vue](/componentes/vue/date-picker)).
+
+## Colores
+
+`color` tiñe el trigger y el día seleccionado del calendario interno. Los 6 valores son
+`primary`, `secondary`, `neutral` (**default**), `success`, `warning` y `danger`.
 
 ```html
-<cu-date-picker id="miPicker" model-value="2026-08-11" min="2026-01-01" max="2026-12-31" format="dd/MM/yyyy"></cu-date-picker>
+<cu-date-picker color="primary" label="primary" model-value="2026-08-11"></cu-date-picker>
+<cu-date-picker color="secondary" label="secondary" model-value="2026-08-11"></cu-date-picker>
+<cu-date-picker color="neutral" label="neutral" model-value="2026-08-11"></cu-date-picker>
+<cu-date-picker color="success" label="success" model-value="2026-08-11"></cu-date-picker>
+<cu-date-picker color="warning" label="warning" model-value="2026-08-11"></cu-date-picker>
+<cu-date-picker color="danger" label="danger" model-value="2026-08-11"></cu-date-picker>
+```
+
+<!-- demo:date-picker-colores -->
+
+## Variantes
+
+`variant` cambia el aspecto del **trigger**: `outlined`, `soft` (**default**), `ghost` y
+`subtle`. En el calendario interno `ghost` se mapea a `soft` (el calendario ya no tiene
+ghost).
+
+```html
+<cu-date-picker color="primary" variant="outlined" label="outlined" model-value="2026-08-11"></cu-date-picker>
+<cu-date-picker color="primary" variant="soft" label="soft" model-value="2026-08-11"></cu-date-picker>
+<cu-date-picker color="primary" variant="ghost" label="ghost" model-value="2026-08-11"></cu-date-picker>
+<cu-date-picker color="primary" variant="subtle" label="subtle" model-value="2026-08-11"></cu-date-picker>
+```
+
+<!-- demo:date-picker-variantes -->
+
+## Fecha inicial y límites
+
+`model-value` fija la fecha de arranque (acepta `Date`, timestamp o `"YYYY-MM-DD"`), y `min`
+/ `max` acotan qué días se pueden elegir.
+
+```html
+<cu-date-picker
+  model-value="2026-08-11"
+  min="2026-01-01"
+  max="2026-12-31"
+  format="dd/MM/yyyy"
+></cu-date-picker>
 ```
 
 <!-- demo:date-picker-con-fecha-inicial-y-limites -->
 
-### Con label
+## Restricciones
 
-El label se muestra sobre el picker y es clickeable — hace foco en el input y abre el panel:
+Además de `min`/`max`, el calendario interno acepta `disabled-weekdays` (`0`=domingo …
+`6`=sábado, en HTML una lista `"0,6"`) y `disabled-dates` (fechas puntuales `"YYYY-MM-DD"`
+separadas por coma).
 
 ```html
-<cu-date-picker id="miPicker" label="Fecha de nacimiento"></cu-date-picker>
+<cu-date-picker
+  min="2026-01-01"
+  max="2026-12-31"
+  disabled-weekdays="0,6"
+  disabled-dates="2026-08-15,2026-08-16"
+  placeholder="Sin fines de semana ni el 15/16 de agosto"
+></cu-date-picker>
 ```
 
-<!-- demo:date-picker-con-label -->
-
----
+<!-- demo:date-picker-restricciones -->
 
 ## Modo rango
 
@@ -70,7 +97,7 @@ Con `mode="range"` el picker selecciona un rango: el primer click define el **in
 ```html
 <script src="dist-libs/umd-core/CuDatePicker.umd.js"></script>
 
-<cu-date-picker id="rango" mode="range" label="Período" dual-calendar></cu-date-picker>
+<cu-date-picker id="rango" mode="range" label="Período"></cu-date-picker>
 
 <script>
   const r = document.getElementById('rango');
@@ -85,7 +112,157 @@ Con `mode="range"` el picker selecciona un rango: el primer click define el **in
 
 <!-- demo:date-picker-modo-rango -->
 
----
+## Rango dual
+
+`dual-calendar` muestra **dos meses** y, por sí solo, **implica rango**: aunque `mode` quede en
+`single`, el picker selecciona un rango. Con `year-navigation` el panel se agranda para los
+botones de año.
+
+```html
+<cu-date-picker
+  dual-calendar
+  year-navigation
+  start-date="2026-09-03"
+  end-date="2026-09-15"
+  placeholder="Rango a dos meses"
+></cu-date-picker>
+```
+
+<!-- demo:date-picker-rango-dual -->
+
+## Formato
+
+`format` define los tokens de la fecha mostrada en el trigger (con `locale`):
+
+| Token | Ejemplo (`es`) |
+|-------|----------------|
+| `dd` | `11` |
+| `MM` | `08` |
+| `MMM` | `ago` |
+| `MMMM` | `Agosto` |
+| `yy` | `26` |
+| `yyyy` | `2026` |
+
+`month-format` (`MMMM`/`MMM`/`MM`/`M`) y `year-format` (`yyyy`/`yy`) hacen lo propio en el
+header del calendario; `week-start` elige el primer día de la semana (`0` domingo, `1` lunes,
+default) y `year-navigation` muestra los botones de año.
+
+```html
+<cu-date-picker
+  model-value="2026-08-11"
+  label="Con formato"
+  format="dd MMM yyyy"
+  month-format="MMM"
+  year-format="yy"
+  year-navigation
+  week-start="0"
+></cu-date-picker>
+
+<cu-date-picker
+  model-value="2026-08-11"
+  label="locale en"
+  locale="en"
+  month-format="MMMM"
+  year-format="yyyy"
+  placeholder="locale en"
+></cu-date-picker>
+```
+
+<!-- demo:date-picker-formato-y-locale -->
+
+## Eventos y grilla
+
+`events` pinta puntos bajo las fechas (se asigna como **propiedad JS**, array de
+`{ date, color? }`); `grid` dibuja las líneas interiores y `border` el marco exterior de la
+cuadrícula.
+
+```html
+<cu-date-picker id="conEventos" grid border placeholder="Con eventos y grilla"></cu-date-picker>
+
+<script>
+  const hoy = new Date();
+  const iso = (offset) => {
+    const d = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() + offset);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  };
+
+  document.getElementById('conEventos').events = [
+    { date: iso(2), color: 'primary' },
+    { date: iso(5), color: 'danger' },
+  ];
+</script>
+```
+
+<!-- demo:date-picker-eventos-y-grilla -->
+
+## Label
+
+El label se muestra sobre el picker y es clickeable — hace foco en el input y abre el panel:
+
+```html
+<cu-date-picker label="Fecha de nacimiento"></cu-date-picker>
+```
+
+<!-- demo:date-picker-con-label -->
+
+## Posición del panel
+
+`position` (`bottom` default, `top`, `left`, `right`), `align` (`start` default, `center`,
+`end`) y `fixed` (panel en `position: fixed`, útil en contenedores con overflow) controlan
+dónde y cómo se abre el panel.
+
+```html
+<cu-date-picker position="bottom" align="start" placeholder="bottom / start"></cu-date-picker>
+<cu-date-picker position="top" align="end" placeholder="top / end"></cu-date-picker>
+<cu-date-picker position="left" align="center" placeholder="left / center"></cu-date-picker>
+<cu-date-picker position="right" align="start" fixed placeholder="right / start / fixed"></cu-date-picker>
+```
+
+<!-- demo:date-picker-posicion -->
+
+## Estados y footer
+
+`disabled` deja el picker inerte. El footer trae "Hoy" y "Limpiar": `today-button` y
+`clearable` (ambos con default `true` en `single`) los prenden o apagan. Como son booleanos
+con default `true`, en HTML plano se apagan **como propiedad** (`p.clearable = false`).
+
+```html
+<cu-date-picker disabled model-value="2026-08-11" placeholder="disabled"></cu-date-picker>
+<cu-date-picker id="sinFooter" placeholder="Sin Hoy ni Limpiar"></cu-date-picker>
+
+<script>
+  const p = document.getElementById('sinFooter');
+  p.clearable = false;
+  p.todayButton = false;
+</script>
+```
+
+<!-- demo:date-picker-estados -->
+
+## Control programático
+
+```html
+<cu-date-picker id="single" placeholder="Instancia single"></cu-date-picker>
+<cu-date-picker id="range" mode="range" placeholder="Instancia range"></cu-date-picker>
+
+<script>
+  const single = document.getElementById('single');
+  const range = document.getElementById('range');
+
+  single.open();
+  single.close();
+  single.toggle();
+  single.getValue();            // Date | null
+  single.setValue('2026-12-24'); // selecciona y emite change
+  single.clear();               // limpia (emite null)
+
+  range.setRange('2026-12-01', '2026-12-31');
+  range.getStartDate();
+  range.getEndDate();
+</script>
+```
+
+<!-- demo:date-picker-control-programatico -->
 
 ## Comportamiento
 
@@ -94,87 +271,27 @@ Con `mode="range"` el picker selecciona un rango: el primer click define el **in
 - **Fuera del rango:** los días deshabilitados no se pueden elegir; "Hoy" y la selección manual respetan `min`/`max` del calendario.
 - **Cierre:** al elegir un día en `single`, ir a "Hoy" o limpiar, el panel se cierra. En `range` queda abierto entre el primer y el segundo click para ver el resaltado. También cierra con click afuera o `Escape` (lo maneja el dropdown interno).
 
----
-
 ## Nota de implementación
 
 `<cu-date-picker>` **compone** el `Dropdown.vue` genérico (slot `#toggle` con el botón-trigger + slot `#default` con el calendario). En `single` usa `cu-calendar`; en `range` usa `cu-calendar mode="range"` (un mes) o el `DualCalendar` interno (dos meses, navegación independiente). El DatePicker espeja los valores de sus hijos y re-emite la API pública (`start-date`/`end-date`, `setRange`, etc.). No requiere modificar el componente de dropdown.
 
----
-
 ## Atributos
 
-<!-- @api:atributos -->
-| Atributo | Tipo | Default | Descripción |
-| ------ | ------ | ------ | ------ |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `'neutral'` | Color semántico del trigger y del día seleccionado del calendario interno (se pasa tal cual; `neutral` = neutral, ya no mapea a primary) |
-| `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `'soft'` | Variante del trigger: `outlined`, `soft`, `ghost`, `subtle`. En el calendario interno `ghost` se mapea a `soft` (el calendario ya no tiene ghost) |
-| `mode` | `"single" \| "range"` | `'single'` | Tipo de calendario: `single` (una fecha) o `range` (inicio + fin). Con `dual-calendar` el tipo es dual (range, 2 meses) |
-| `disabled` | `boolean` | `false` | Deshabilita el picker completo |
-| `placeholder` | `string` | `''` | Texto cuando no hay fecha (default: `"Seleccionar fecha..."`, rango: `"Seleccionar rango..."`) |
-| `position` | `"left" \| "right" \| "bottom" \| "top"` | `'bottom'` | `right` |
-| `align` | `"center" \| "start" \| "end"` | `'start'` | `end` |
-| `fixed` | `boolean` | `false` | Panel en `position: fixed` (útil en contenedores con overflow) |
-| `model-value` | `string \| number \| Date \| null` | `null` | Fecha seleccionada (calendario `single`) |
-| `label` | `string` | `''` | Texto del label sobre el picker |
-| `min` | `string \| number \| Date \| null` | `null` | Fecha mínima seleccionable |
-| `max` | `string \| number \| Date \| null` | `null` | Fecha máxima seleccionable |
-| `disabled-weekdays` | `string \| number[]` | `''` | Días de la semana no seleccionables (`0`=domingo … `6`=sábado). En HTML: `disabled-weekdays="0,6"` |
-| `disabled-dates` | `string \| (string \| Date)[]` | `''` | Fechas puntuales no seleccionables. En HTML: `disabled-dates="2026-08-15,2026-08-16"` |
-| `locale` | `string` | `'es'` | Locale del calendario y nombres de mes |
-| `week-start` | `number` | `1` | Primer día de la semana (`0` domingo, `1` lunes) |
-| `year-navigation` | `string \| boolean` | `false` | Controles de mes del calendario interno: botones `«`/`»` de año |
-| `month-format` | `"M" \| "MMMM" \| "MMM" \| "MM"` | `'MMMM'` | Formato del mes en el header del calendario interno: `MMMM` (septiembre), `MMM` (sept), `MM` (09) o `M` (9). Un valor no soportado cae a `MMMM` |
-| `year-format` | `"yyyy" \| "yy"` | `'yyyy'` | Formato del año (badge cuando el mes no es del año actual): `yyyy` (2026) o `yy` (26). Un valor no soportado cae a `yyyy` |
-| `events` | `CalendarEvent[]` | `[]` | Eventos a señalar con puntos bajo la fecha en el calendario interno (ver [Eventos](cu-calendar.md#eventos-puntos)). Se asigna como propiedad JS |
-| `grid` | `boolean` | `false` | Líneas **interiores** (cuadrícula) entre los días del calendario interno |
-| `border` | `boolean` | `false` | **Marco exterior** alrededor de la cuadrícula de días del calendario interno |
-| `start-date` | `string \| number \| Date \| null` | `null` | Inicio del rango. Solo con calendario de rango (`mode="range"` o `dual-calendar`); en `single` se ignora. En HTML: `start-date="2026-08-01"` |
-| `end-date` | `string \| number \| Date \| null` | `null` | Fin del rango. Solo con calendario de rango (`mode="range"` o `dual-calendar`); en `single` se ignora. En HTML: `end-date="2026-08-31"` |
-| `format` | `string` | `'dd/MM/yyyy'` | Formato de la fecha en el trigger (ver [Formato](#formato)) |
-| `dual-calendar` | `boolean` | `false` | Activa el rango a dos meses (dual). **Implica `range`**: aunque `mode` sea `single`, el picker selecciona un rango |
-| `clearable` | `boolean` | `true` | Muestra el botón "Limpiar" en el footer del panel |
-| `today-button` | `boolean` | `undefined` | Muestra el botón "Hoy" en el footer del panel (default: `true` en `single`, `false` en `range`) |
-<!-- /@api:atributos -->
+<!--@include: ../partials/date-picker/props-vanilla.md-->
 
 ## Eventos
 
-<!-- @api:eventos -->
-| Evento | Payload (`e.detail`) | Descripción |
-| ------ | ------ | ------ |
-| `select` | `Date \| { start: Date \| null; end: Date \| null; }` | — |
-| `change` | `Date \| { start: Date \| null; end: Date \| null; } \| null` | — |
-| `open` | — | Abre el panel. |
-| `close` | — | Cierra el panel. |
-| `update:modelValue` | `Date \| null` | — |
-| `update:startDate` | `Date \| null` | — |
-| `update:endDate` | `Date \| null` | — |
-<!-- /@api:eventos -->
+<!--@include: ../partials/date-picker/eventos-vanilla.md-->
 
 > Al limpiar, `change` emite `null` (single) o `{ start: null, end: null }` (range).
 
 ## Slots
 
-<!-- @api:slots -->
-Ninguno.
-<!-- /@api:slots -->
+<!--@include: ../partials/date-picker/slots.md-->
 
 ## Métodos expuestos
 
-<!-- @api:metodos -->
-| Método | Descripción |
-| ------ | ------ |
-| `open` | Abre, cierra o alterna el panel |
-| `close` | — |
-| `toggle` | — |
-| `getValue` | Devuelve la fecha seleccionada (modo `single`) |
-| `setValue` | Selecciona una fecha (string/number/Date) (modo `single`) |
-| `getStartDate` | Devuelve la fecha de inicio (modo `range`) |
-| `getEndDate` | Devuelve la fecha de fin (modo `range`) |
-| `setRange` | Setea el rango (string/number/Date) (modo `range`) |
-| `clear` | Limpia la selección (emite `null`) |
-| `isOpen` | Indica si el panel está abierto. |
-<!-- /@api:metodos -->
+<!--@include: ../partials/date-picker/metodos-vanilla.md-->
 
 ## Interfaces
 

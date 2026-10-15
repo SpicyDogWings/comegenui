@@ -2,7 +2,8 @@
 
 # `<cu-switch>`
 
-Toggle switch con color semántico y dos tamaños. Mantiene su estado y también se controla via `modelValue` o métodos `get`/`set`.
+Toggle de encendido/apagado con color semántico, dos tamaños y etiqueta opcional. Mantiene su
+estado y también se controla vía `modelValue` o los métodos `get`/`set`.
 
 ## Uso en HTML plano
 
@@ -21,9 +22,31 @@ Toggle switch con color semántico y dos tamaños. Mantiene su estado y también
 
 <!-- demo:switch-uso -->
 
----
+## Colores
+
+`color` es un nombre semántico, no un hex: se resuelve con los tokens del tema activo
+(`--cu-color-{color}*`), así que el mismo nombre se ve distinto en cada tema. El color se ve en
+el track cuando el switch está encendido.
+
+```html
+<cu-switch color="primary" label="primary"></cu-switch>
+<cu-switch color="secondary" label="secondary"></cu-switch>
+<cu-switch color="neutral" label="neutral"></cu-switch>
+<cu-switch color="success" label="success"></cu-switch>
+<cu-switch color="warning" label="warning"></cu-switch>
+<cu-switch color="danger" label="danger"></cu-switch>
+
+<script>
+  // el color del track se ve con el switch encendido
+  document.querySelectorAll('cu-switch').forEach((sw) => sw.set(true));
+</script>
+```
+
+<!-- demo:switch-colores -->
 
 ## Tamaños
+
+`size` acepta `sm` (32×20px) y `md` (**default**, 48×32px), y escala también la etiqueta.
 
 ```html
 <cu-switch size="sm" color="primary"></cu-switch>
@@ -32,28 +55,43 @@ Toggle switch con color semántico y dos tamaños. Mantiene su estado y también
 
 <!-- demo:switch-tamanos -->
 
-- `sm`: 32×20px
-- `md`: 48×32px
+## Estado deshabilitado
 
----
+`disabled` bloquea el click y atenúa el track y la etiqueta; el estado se sigue leyendo con
+`get()`.
+
+```html
+<cu-switch disabled label="Encendido y deshabilitado" model-value="true"></cu-switch>
+<cu-switch disabled label="Apagado y deshabilitado"></cu-switch>
+```
+
+<!-- demo:switch-deshabilitado -->
+
+## Etiqueta
+
+`label` es la etiqueta de texto y el slot `default` la reemplaza cuando hace falta marcado. El
+`<label>` nativo envuelve el track, así que clickear la etiqueta también alterna el switch.
+
+```html
+<cu-switch color="primary" label="Notificaciones"></cu-switch>
+<cu-switch color="success">Acepto los <strong>términos</strong></cu-switch>
+```
+
+<!-- demo:switch-etiqueta -->
 
 ## Escuchar cambios
 
-Hay dos formas equivalentes (el switch se mueve solo; estos listeners son para reaccionar):
+El switch se mueve solo: hay dos eventos equivalentes para reaccionar, `update:modelValue`
+(convención Vue) y `change`, los dos con el valor nuevo (`boolean`) en `e.detail`.
 
 ```html
 <cu-switch id="toggle"></cu-switch>
 
 <script>
   const sw = document.getElementById('toggle');
-
-  // update:modelValue (convención Vue). El switch ya cambió su estado solo;
-  // este listener es para reaccionar, no para moverlo.
   sw.addEventListener('update:modelValue', (e) => {
     console.log('Estado:', e.detail);
   });
-
-  // change (payload = boolean)
   sw.addEventListener('change', (e) => {
     console.log('Toggle a:', e.detail);
   });
@@ -62,85 +100,59 @@ Hay dos formas equivalentes (el switch se mueve solo; estos listeners son para r
 
 <!-- demo:switch-cambios -->
 
----
-
 ## Estado y modo controlado
 
-El switch **mantiene su propio estado**: al clickearlo (o llamar `set()`/`reset()`) se mueve
-la UI y `get()` devuelve el valor nuevo, sin que tengas que reasignar `modelValue`.
-
-Si necesitás que **vos** decidas el valor, reasignalo en el evento (modo controlado):
+El estado vive en el componente: al clickearlo (o llamar `set()`/`reset()`) se mueve la UI y
+`get()` devuelve el valor nuevo, sin reasignar `modelValue`. Si querés decidir vos el valor,
+reasignalo en el evento (modo controlado).
 
 ```html
 <cu-switch id="guardado"></cu-switch>
 
 <script>
   const sw = document.getElementById('guardado');
-  // Ejemplo: sólo permite activarlo una vez; si el usuario lo apaga, lo volvemos a encender.
+  // Sólo permite activarlo: si el usuario lo apaga, lo volvemos a encender.
   sw.addEventListener('update:modelValue', (e) => {
-    if (!e.detail) sw.modelValue = true;
+    if (e.detail) return;
+    // hay que forzar un cambio de la prop para que el CE vuelva a encenderse
+    sw.modelValue = false;
+    setTimeout(() => { sw.modelValue = true; });
   });
 </script>
 ```
 
 <!-- demo:switch-controlado -->
 
----
-
-## Uso con label
-
-El switch no incluye label propio. Combinalo con `<cu-label>` para tener un área clickeable extendida:
+## Control programático
 
 ```html
-<cu-label label="Notificaciones activas">
-  <cu-switch id="notif" color="primary"></cu-switch>
-</cu-label>
+<cu-switch id="auto" label="API imperativa"></cu-switch>
+
+<script>
+  const sw = document.getElementById('auto');
+  sw.set(true);          // encender
+  sw.reset();            // apagar
+  console.log(sw.get()); // estado actual
+  sw.focus();            // foco en el input
+</script>
 ```
 
-<!-- demo:switch-con-label -->
-
----
+<!-- demo:switch-control-programatico -->
 
 ## Atributos
 
-<!-- @api:atributos -->
-| Atributo | Tipo | Default | Descripción |
-| ------ | ------ | ------ | ------ |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
-| `size` | `"sm" \| "md"` | `"md"` | Tamaño del switch: `sm`, `md` |
-| `disabled` | `boolean` | `—` | Estado deshabilitado |
-| `model-value` | `boolean` | `false` | Estado del toggle. El CE sincroniza su estado; asigná `modelValue` sólo si querés controlarlo |
-| `label` | `string` | `""` | — |
-<!-- /@api:atributos -->
+<!--@include: ../partials/switch/props-vanilla.md-->
 
 > El Custom Element **no expone** una prop `checked` separada. El control se hace únicamente con `modelValue`. Tampoco tiene props `variant`, `theme` ni `hightContrast`; el tamaño se controla con `size`.
 
 ## Eventos
 
-<!-- @api:eventos -->
-| Evento | Payload (`e.detail`) | Descripción |
-| ------ | ------ | ------ |
-| `update:modelValue` | `boolean` | — |
-| `change` | — | — |
-<!-- /@api:eventos -->
+<!--@include: ../partials/switch/eventos.md-->
 
 ## Slots
 
-<!-- @api:slots -->
-| Slot | Descripción |
-| ------ | ------ |
-| `default` | — |
-<!-- /@api:slots -->
-
-Ninguno.
+<!--@include: ../partials/switch/slots.md-->
 
 ## Métodos expuestos
 
-<!-- @api:metodos -->
-| Método | Descripción |
-| ------ | ------ |
-| `get` | Devuelve el estado actual (`boolean`) |
-| `set` | Asigna el estado |
-| `reset` | Pone el estado en `false` |
-| `focus` | Enfoca el switch |
-<!-- /@api:metodos -->
+<!--@include: ../partials/switch/metodos-vanilla.md-->

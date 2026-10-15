@@ -7,20 +7,13 @@
 //   /componentes/vue/<kebab>  → la doc del componente Vue
 // Ambas familias usan el mismo `title` por componente, así que el switch de modo
 // puede encontrar la contraparte comparando títulos.
-//
-// Con **ficha unificada** (ver `docs/notes/10-ficha-unificada.md`) sólo existe la página
-// vanilla, con las dos APIs en tabs: esa página se agrega también al sidebar Vue para que
-// el componente no desaparezca estando en modo Vue. El switch de modo la ignora (no tiene
-// contraparte: el título no está en la otra familia).
-import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const componentesDir = resolve(here, "../componentes");
 const vueDir = resolve(componentesDir, "vue");
-// Fichas (fuente de verdad de la API): `docs/componentes/<tag>.md`.
-const fichasDir = resolve(here, "../../componentes");
 
 /** Orden de los grupos en el sidebar (los no listados van al final, A-Z). */
 const GROUP_ORDER = [
@@ -72,26 +65,6 @@ function entriesOf(dir: string, routeBase: string): Entry[] {
   return entries;
 }
 
-/**
- * Páginas con ficha unificada: una sola página (en `/componentes/<tag>`) con las dos APIs.
- * La marca es el marcador `@api:props` de la ficha, el mismo que valida `check-docs.mjs`.
- */
-function unifiedEntries(): Entry[] {
-  const entries: Entry[] = [];
-  for (const file of readdirSync(fichasDir)) {
-    if (!file.endsWith(".md") || file === "README.md") continue;
-    if (!readFileSync(resolve(fichasDir, file), "utf-8").includes("<!-- @api:props -->")) continue;
-    const pageFile = resolve(componentesDir, file);
-    if (!existsSync(pageFile)) continue;
-    const source = readFileSync(pageFile, "utf-8");
-    const title = frontmatterField(source, "title");
-    const group = frontmatterField(source, "group");
-    if (!title || !group) continue;
-    entries.push({ text: title, link: `/componentes/${file.slice(0, -3)}`, group });
-  }
-  return entries;
-}
-
 /** Agrupa y ordena las entradas de una familia. */
 function assemble(entries: Entry[]): SidebarGroup[] {
   const rank = (group: string) => {
@@ -120,9 +93,9 @@ export function buildVanillaSidebar(routeBase = "/componentes"): SidebarGroup[] 
   return assemble(entriesOf(componentesDir, routeBase));
 }
 
-/** Sidebar de la doc Vue (`/componentes/vue/x`) + las fichas unificadas. */
+/** Sidebar de la doc Vue (`/componentes/vue/x`). */
 export function buildVueSidebar(routeBase = "/componentes/vue"): SidebarGroup[] {
-  return assemble([...entriesOf(vueDir, routeBase), ...unifiedEntries()]);
+  return assemble(entriesOf(vueDir, routeBase));
 }
 
 /**

@@ -4,30 +4,6 @@
 
 Selector de fecha: un botón-trigger que abre un **dropdown con un calendario adentro** (no es una lista de items seleccionables, es un box con el calendario). `mode="single"` selecciona una fecha; `mode="range"` (o `dual-calendar`) un rango, con uno o dos meses. Compone `cu-calendar` (single o range) y el `DualCalendar` interno (2 meses en range), y administra los valores de ambos.
 
----
-
-## Formato
-
-Tokens soportados en `format` (con `locale`):
-
-| Token | Ejemplo (`es`) |
-|-------|----------------|
-| `dd` | `11` |
-| `MM` | `08` |
-| `MMM` | `ago` |
-| `MMMM` | `Agosto` |
-| `yy` | `26` |
-| `yyyy` | `2026` |
-
-```vue
-<script setup lang="ts">
-import { ref } from "vue";
-
-const format = ref("MMMM yyyy"); // "Agosto 2026"
-format.value = "dd-MM-yy"; // "11-08-26"
-</script>
-```
-
 ## Uso en Vue
 
 ```vue
@@ -47,7 +23,43 @@ function onChange(d: Date | null) {
 </template>
 ```
 
-## Con fecha inicial y límites
+En HTML plano, cargá el bundle `CuDatePicker` (ver [ficha vanilla](/componentes/cu-date-picker)).
+
+## Colores
+
+`color` tiñe el trigger y el día seleccionado del calendario interno. Los 6 valores son
+`primary`, `secondary`, `neutral` (**default**), `success`, `warning` y `danger`.
+
+```vue
+<template>
+  <DatePicker color="primary" label="primary" model-value="2026-08-11" />
+  <DatePicker color="secondary" label="secondary" model-value="2026-08-11" />
+  <DatePicker color="neutral" label="neutral" model-value="2026-08-11" />
+  <DatePicker color="success" label="success" model-value="2026-08-11" />
+  <DatePicker color="warning" label="warning" model-value="2026-08-11" />
+  <DatePicker color="danger" label="danger" model-value="2026-08-11" />
+</template>
+```
+
+## Variantes
+
+`variant` cambia el aspecto del **trigger**: `outlined`, `soft` (**default**), `ghost` y
+`subtle`. En el calendario interno `ghost` se mapea a `soft` (el calendario ya no tiene
+ghost).
+
+```vue
+<template>
+  <DatePicker color="primary" variant="outlined" label="outlined" model-value="2026-08-11" />
+  <DatePicker color="primary" variant="soft" label="soft" model-value="2026-08-11" />
+  <DatePicker color="primary" variant="ghost" label="ghost" model-value="2026-08-11" />
+  <DatePicker color="primary" variant="subtle" label="subtle" model-value="2026-08-11" />
+</template>
+```
+
+## Fecha inicial y límites
+
+`model-value` fija la fecha de arranque (acepta `Date`, timestamp o `"YYYY-MM-DD"`), y `min`
+/ `max` acotan qué días se pueden elegir.
 
 ```vue
 <template>
@@ -55,17 +67,26 @@ function onChange(d: Date | null) {
 </template>
 ```
 
-## Con label
+## Restricciones
 
-El label se muestra sobre el picker y es clickeable — hace foco en el input y abre el panel:
+Además de `min`/`max`, el calendario interno acepta `disabledWeekdays` (`0`=domingo …
+`6`=sábado) y `disabledDates` (fechas puntuales).
 
 ```vue
 <template>
-  <DatePicker label="Fecha de nacimiento" />
+  <DatePicker
+    :min="'2026-01-01'"
+    :max="'2026-12-31'"
+    :disabled-weekdays="[0, 6]"
+    :disabled-dates="['2026-08-15', '2026-08-16']"
+    placeholder="Sin fines de semana ni el 15/16 de agosto"
+  />
 </template>
 ```
 
 ## Modo rango
+
+Con `mode="range"` el picker selecciona un rango: el primer click define el **inicio**, el segundo el **fin** (con swap automático si el fin es anterior). El panel queda abierto entre ambos clicks para ver el resaltado.
 
 ```vue
 <script setup lang="ts">
@@ -82,18 +103,195 @@ const endDate = ref("2026-09-15");
     v-model:startDate="startDate"
     v-model:endDate="endDate"
     label="Período"
-    dual-calendar
   />
 </template>
 ```
 
-## Control programático (range)
+## Rango dual
 
-```js
-picker.setRange('2026-09-01', '2026-09-30');
-picker.getStartDate(); // "2026-09-01"
-picker.getEndDate();   // "2026-09-30"
-picker.clear();
+`dual-calendar` muestra **dos meses** y, por sí solo, **implica rango**: aunque `mode` quede en
+`single`, el picker selecciona un rango. Con `year-navigation` el panel se agranda para los
+botones de año.
+
+```vue
+<script setup lang="ts">
+import DatePicker from "@/components/form/DatePicker.vue";
+import { ref } from "vue";
+
+const inicio = ref<Date | null>(null);
+const fin = ref<Date | null>(null);
+</script>
+
+<template>
+  <DatePicker
+    dual-calendar
+    :year-navigation="true"
+    v-model:start-date="inicio"
+    v-model:end-date="fin"
+    placeholder="Rango a dos meses"
+  />
+</template>
+```
+
+## Formato
+
+`format` define los tokens de la fecha mostrada en el trigger (con `locale`):
+
+| Token | Ejemplo (`es`) |
+|-------|----------------|
+| `dd` | `11` |
+| `MM` | `08` |
+| `MMM` | `ago` |
+| `MMMM` | `Agosto` |
+| `yy` | `26` |
+| `yyyy` | `2026` |
+
+`month-format` (`MMMM`/`MMM`/`MM`/`M`) y `year-format` (`yyyy`/`yy`) hacen lo propio en el
+header del calendario; `week-start` elige el primer día de la semana (`0` domingo, `1` lunes,
+default) y `year-navigation` muestra los botones de año.
+
+```vue
+<script setup lang="ts">
+import DatePicker from "@/components/form/DatePicker.vue";
+import { ref } from "vue";
+
+const fecha = ref<Date | null>(null);
+const fechaEn = ref<Date | null>(null);
+</script>
+
+<template>
+  <DatePicker
+    v-model="fecha"
+    color="primary"
+    variant="outlined"
+    label="Con formato"
+    format="dd MMM yyyy"
+    month-format="MMM"
+    year-format="yy"
+    :year-navigation="true"
+    :week-start="0"
+  />
+  <DatePicker
+    v-model="fechaEn"
+    color="success"
+    variant="subtle"
+    locale="en"
+    month-format="MMMM"
+    year-format="yyyy"
+    placeholder="locale en"
+  />
+</template>
+```
+
+## Eventos y grilla
+
+`events` pinta puntos bajo las fechas (array de `{ date, color? }`); `grid` dibuja las líneas
+interiores y `border` el marco exterior de la cuadrícula.
+
+```vue
+<script setup lang="ts">
+import DatePicker from "@/components/form/DatePicker.vue";
+import { ref } from "vue";
+
+const fecha = ref<Date | null>(null);
+
+const hoy = new Date();
+function iso(offset: number) {
+  const d = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() + offset);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+const eventos = [
+  { date: iso(2), color: "primary" },
+  { date: iso(5), color: "danger" },
+];
+</script>
+
+<template>
+  <DatePicker
+    v-model="fecha"
+    :events="eventos"
+    :grid="true"
+    :border="true"
+    placeholder="Con eventos y grilla"
+  />
+</template>
+```
+
+## Label
+
+El label se muestra sobre el picker y es clickeable — hace foco en el input y abre el panel:
+
+```vue
+<template>
+  <DatePicker label="Fecha de nacimiento" />
+</template>
+```
+
+## Posición del panel
+
+`position` (`bottom` default, `top`, `left`, `right`), `align` (`start` default, `center`,
+`end`) y `fixed` (panel en `position: fixed`, útil en contenedores con overflow) controlan
+dónde y cómo se abre el panel.
+
+```vue
+<template>
+  <DatePicker position="bottom" align="start" placeholder="bottom / start" />
+  <DatePicker position="top" align="end" placeholder="top / end" />
+  <DatePicker position="left" align="center" placeholder="left / center" />
+  <DatePicker position="right" align="start" :fixed="true" placeholder="right / start / fixed" />
+</template>
+```
+
+## Estados y footer
+
+`disabled` deja el picker inerte. El footer trae "Hoy" y "Limpiar": `today-button` y
+`clearable` (ambos con default `true` en `single`) los prenden o apagan.
+
+```vue
+<template>
+  <DatePicker disabled model-value="2026-08-11" placeholder="disabled" />
+  <DatePicker :clearable="false" :today-button="false" placeholder="Sin Hoy ni Limpiar" />
+</template>
+```
+
+## Control programático
+
+```vue
+<script setup lang="ts">
+import DatePicker from "@/components/form/DatePicker.vue";
+import { ref, useTemplateRef } from "vue";
+
+const single = useTemplateRef("single");
+const range = useTemplateRef("range");
+const singleModel = ref<Date | null>(null);
+const rStart = ref<Date | null>(null);
+const rEnd = ref<Date | null>(null);
+
+function demo() {
+  single.value?.open();
+  single.value?.close();
+  single.value?.toggle();
+  single.value?.getValue(); // Date | null
+  single.value?.setValue("2026-12-24"); // selecciona y emite change
+  single.value?.clear(); // limpia (emite null)
+
+  range.value?.setRange("2026-12-01", "2026-12-31");
+  range.value?.getStartDate();
+  range.value?.getEndDate();
+}
+</script>
+
+<template>
+  <DatePicker ref="single" v-model="singleModel" placeholder="Instancia single" />
+  <DatePicker
+    ref="range"
+    mode="range"
+    v-model:start-date="rStart"
+    v-model:end-date="rEnd"
+    placeholder="Instancia range"
+  />
+</template>
 ```
 
 ## Comportamiento
@@ -107,81 +305,23 @@ picker.clear();
 
 `<cu-date-picker>` **compone** el `Dropdown.vue` genérico (slot `#toggle` con el botón-trigger + slot `#default` con el calendario). En `single` usa `cu-calendar`; en `range` usa `cu-calendar mode="range"` (un mes) o el `DualCalendar` interno (dos meses, navegación independiente). El DatePicker espeja los valores de sus hijos y re-emite la API pública (`start-date`/`end-date`, `setRange`, etc.). No requiere modificar el componente de dropdown.
 
----
-
 ## Props
 
-<!-- @api:props -->
-| Prop | Tipo | Default | Descripción |
-| ------ | ------ | ------ | ------ |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `'neutral'` | — |
-| `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `'soft'` | — |
-| `mode` | `"single" \| "range"` | `'single'` | Tipo de calendario: `single` (una fecha, `Calendar`) o `range` (inicio + fin, `Calendar` en modo rango). Con `dualCalendar` el tipo es dual (range, 2 meses) |
-| `disabled` | `boolean` | `false` | — |
-| `placeholder` | `string` | `''` | — |
-| `position` | `"left" \| "right" \| "bottom" \| "top"` | `'bottom'` | — |
-| `align` | `"center" \| "start" \| "end"` | `'start'` | — |
-| `fixed` | `boolean` | `false` | — |
-| `modelValue` | `string \| number \| Date \| null` | `null` | Fecha seleccionada (calendario `single`) |
-| `label` | `string` | `''` | — |
-| `min` | `string \| number \| Date \| null` | `null` | — |
-| `max` | `string \| number \| Date \| null` | `null` | — |
-| `disabledWeekdays` | `string \| number[]` | `''` | — |
-| `disabledDates` | `string \| (string \| Date)[]` | `''` | — |
-| `locale` | `string` | `'es'` | — |
-| `weekStart` | `number` | `1` | — |
-| `yearNavigation` | `string \| boolean` | `false` | — |
-| `monthFormat` | `"M" \| "MMMM" \| "MMM" \| "MM"` | `'MMMM'` | Formato del mes en el header del calendario interno: `MMMM` (septiembre), `MMM` (sept), `MM` (09) o `M` (9). Un valor no soportado cae a `MMMM` |
-| `yearFormat` | `"yyyy" \| "yy"` | `'yyyy'` | Formato del año (badge cuando el mes no es del año actual): `yyyy` (2026) o `yy` (26). Un valor no soportado cae a `yyyy` |
-| `events` | `CalendarEvent[]` | `[]` | — |
-| `grid` | `boolean` | `false` | — |
-| `border` | `boolean` | `false` | — |
-| `startDate` | `string \| number \| Date \| null` | `null` | Inicio del rango. Solo con calendario de rango (`mode="range"` o `dualCalendar`); en `single` se ignora |
-| `endDate` | `string \| number \| Date \| null` | `null` | Fin del rango. Solo con calendario de rango (`mode="range"` o `dualCalendar`); en `single` se ignora |
-| `format` | `string` | `'dd/MM/yyyy'` | — |
-| `dualCalendar` | `boolean` | `false` | Activa el rango a dos meses (dual). **Implica `range`**: aunque `mode` sea `single`, el picker selecciona un rango |
-| `clearable` | `boolean` | `true` | — |
-| `todayButton` | `boolean` | `undefined` | — |
-<!-- /@api:props -->
+<!--@include: ../../partials/date-picker/props-vue.md-->
 
 ## Emits
 
-<!-- @api:emits -->
-| Evento | Payload | Descripción |
-| ------ | ------ | ------ |
-| `select` | `Date \| { start: Date \| null; end: Date \| null; }` | — |
-| `close` | — | Cierra el panel. |
-| `open` | — | Abre el panel. |
-| `update:modelValue` | `Date \| null` | — |
-| `change` | `Date \| { start: Date \| null; end: Date \| null; } \| null` | — |
-| `update:startDate` | `Date \| null` | — |
-| `update:endDate` | `Date \| null` | — |
-<!-- /@api:emits -->
+<!--@include: ../../partials/date-picker/eventos-vue.md-->
 
 > Al limpiar, `change` emite `null` (single) o `{ start: null, end: null }` (range).
 
 ## Slots
 
-<!-- @api:slots -->
-Ninguno.
-<!-- /@api:slots -->
+<!--@include: ../../partials/date-picker/slots.md-->
 
 ## Expose
 
-<!-- @api:expose -->
-| Método | Descripción |
-| ------ | ------ |
-| `open` | Abre el panel. |
-| `close` | Cierra el panel. |
-| `toggle` | Alterna el panel. |
-| `getValue` | Devuelve la fecha seleccionada (modo simple). |
-| `setValue` | Setea la fecha seleccionada y emite change (modo simple). |
-| `clear` | Limpia la selección. En modo simple cierra el panel; en rango lo deja abierto. |
-| `getStartDate` | Devuelve la fecha de inicio (solo con calendario de rango). |
-| `getEndDate` | Devuelve la fecha de fin (solo con calendario de rango). |
-| `setRange` | Setea el rango completo y emite los cambios (solo con calendario de rango). |
-| `isOpen` | Indica si el panel está abierto. |
-<!-- /@api:expose -->
+<!--@include: ../../partials/date-picker/metodos-vue.md-->
 
 ## Interfaces
 

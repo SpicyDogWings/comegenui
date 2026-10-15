@@ -168,13 +168,28 @@ function meta(file) {
 
 /**
  * Eventos del componente Vue. El meta no llena la descripción de un emit ni con JSDoc, así
- * que se resuelve del SFC (mismo criterio que los métodos expuestos).
+ * que se resuelve del SFC (mismo criterio que los métodos expuestos). Además, `vue-component-meta`
+ * no expone los emits declarados en forma de array (`defineEmits(["change"])`), así que se
+ * completan con un fallback sobre el SFC.
  */
+function arrayEmitNames(file) {
+  const names = []
+  for (const m of readSfc(file).matchAll(/defineEmits\s*\(\s*\[([\s\S]*?)\]\s*\)/g)) {
+    for (const s of m[1].matchAll(/['"]([^'"]+)['"]/g)) if (!names.includes(s[1])) names.push(s[1])
+  }
+  return names
+}
+
 function vueEvents(vue) {
-  return meta(vue).events.map((e) => ({
+  const events = meta(vue).events.map((e) => ({
     ...e,
     description: e.description || jsdocFor(vue, e.name),
   }))
+  const seen = new Set(events.map((e) => e.name))
+  for (const name of arrayEmitNames(vue)) {
+    if (!seen.has(name)) events.push({ name, type: '', description: jsdocFor(vue, name) })
+  }
+  return events
 }
 
 function defaultOf(p) {
@@ -326,9 +341,14 @@ const components = await collect()
 const drifted = new Set()
 let touched = 0
 
+/** Filtro por CLI: nombre exacto si matchea un componente; si no, substring. */
+const selected = (name) =>
+  FILTER.length === 0 ||
+  FILTER.some((f) => (components.has(f) ? name === f : name.includes(f)))
+
 if (process.argv.includes('--print')) {
   for (const [name, comp] of components) {
-    if (FILTER.length && !FILTER.some((f) => name.includes(f))) continue
+    if (!selected(name)) continue
     console.log(`\n${'='.repeat(70)}\n${name}${comp.tag ? ` (<${comp.tag}>)` : ' (sólo Vue)'}\n${'='.repeat(70)}`)
     if (comp.ce) {
       console.log('\n#### CE · atributos\n', ceBlocks(comp).atributos)
@@ -343,16 +363,88 @@ if (process.argv.includes('--print')) {
   process.exit(0)
 }
 
+/**
+ * Modo partials (`docs/partials/<kebab>/`): las dos fichas comparten las secciones de API
+ * por `<!--@include-->`. Cada sección vive en un partial: `<base>.md` si la tabla del CE y la
+ * de Vue son idénticas, o `<base>-vanilla.md` / `<base>-vue.md` si difieren. Ver la skill
+ * `documenter`.
+ */
+const SECTION_FILES = [
+  { base: 'props', ce: 'atributos', vue: 'props' },
+  { base: 'eventos', ce: 'eventos', vue: 'emits' },
+  { base: 'slots', ce: 'slots', vue: 'slots' },
+  { base: 'metodos', ce: 'metodos', vue: 'expose' },
+]
+
+/** Cuerpo de la tabla sin la fila de encabezado («Atributo» vs «Prop» no cuenta). */
+const tableBody = (text) => (text ?? '').split('\n').slice(1).join('\n')
+
+function partialPlan(name, ce, vue) {
+  const dir = `docs/partials/${name}`
+  const plan = new Map() // archivo → { marcador: contenido }
+  const add = (file, marker, content) => {
+    const blocks = plan.get(file) ?? {}
+    blocks[marker] = content
+    plan.set(file, blocks)
+  }
+  for (const { base, ce: ceName, vue: vueName } of SECTION_FILES) {
+    const vueContent = vue[vueName]
+    // Sólo Vue: no hay nada que compartir.
+    if (!ce) {
+      add(`${dir}/${base}.md`, vueName, vueContent)
+      continue
+    }
+    const ceContent = ce[ceName]
+    // Compartida si las **filas** coinciden; se guarda el bloque del CE.
+    if (ceContent !== undefined && tableBody(ceContent) === tableBody(vueContent)) {
+      add(`${dir}/${base}.md`, ceName, ceContent) // compartida
+    } else {
+      if (ceContent !== undefined) add(`${dir}/${base}-vanilla.md`, ceName, ceContent)
+      add(`${dir}/${base}-vue.md`, vueName, vueContent)
+    }
+  }
+  return plan
+}
+
+/**
+ * Crea un partial que falta con sus marcadores vacíos (después `inject` lo llena). Sólo aplica
+ * a `docs/partials/`: las fichas y las recetas nunca se crean solas.
+ */
+function ensureMarkers(file, blocks) {
+  const skeleton = Object.keys(blocks)
+    .map((marker) => `<!-- @api:${marker} -->\n<!-- /@api:${marker} -->`)
+    .join('\n\n')
+  writeFileSync(resolve(ROOT, file), `${skeleton}\n`)
+}
+
+if (process.argv.includes('--plan')) {
+  // Se computan TODOS los componentes (en el mismo orden que la corrida completa) para que el
+  // estado del checker —y por lo tanto la decisión shared/split— coincida con ella; sólo se
+  // imprime lo seleccionado.
+  for (const [name, comp] of components) {
+    let plan
+    try {
+      const ce = comp.ce ? ceBlocks(comp) : null
+      const vue = vueBlocks(comp)
+      plan = partialPlan(name, ce, vue)
+    } catch (e) {
+      console.warn(`gen-api: salteo ${name} — ${String(e.message).split('\n')[0]}`)
+      continue
+    }
+    if (!selected(name)) continue
+    console.log(`${name}${comp.tag ? ` (<${comp.tag}>)` : ' (sólo Vue)'}`)
+    for (const [file, blocks] of plan) {
+      console.log(`  ${file}  [${Object.keys(blocks).join(', ')}]`)
+    }
+  }
+  process.exit(0)
+}
+
 for (const [name, comp] of components) {
-  if (FILTER.length && !FILTER.some((f) => name.includes(f))) continue
-  // Ficha unificada: el componente no tiene ficha Vue propia y las dos APIs viven en
-  // la ficha del custom element (lleva los marcadores @api:props / @api:emits / @api:expose).
-  // Ver docs/notes/10-ficha-unificada.md.
-  const vueFicha = `docs/componentes/vue/${name}.md`
-  const unified = Boolean(comp.ce) && !existsSync(resolve(ROOT, vueFicha))
+  if (!selected(name)) continue
   const targets = {
     ce: `docs/componentes/${comp.tag}.md`,
-    vue: unified ? `docs/componentes/${comp.tag}.md` : vueFicha,
+    vue: `docs/componentes/vue/${name}.md`,
     skill: `skills/use-comegen/references/${name}.md`,
   }
   let ce = null
@@ -365,16 +457,18 @@ for (const [name, comp] of components) {
     continue
   }
 
-  // En la ficha unificada los slots son UNA sección (`@api:slots`, la inyecta el CE con los
-  // slots que el wrapper forwardea); el bloque Vue los publica como `@api:slots-vue` por si la
-  // ficha quiere detallar los del componente, pero no puede pisar los del CE.
-  const vueSet = unified
-    ? { props: vue.props, emits: vue.emits, 'slots-vue': vue.slots, expose: vue.expose }
-    : vue
-
   const changes = new Set()
-  if (comp.ce && inject(targets.ce, ce)) changes.add(targets.ce)
-  if (inject(targets.vue, vueSet)) changes.add(targets.vue)
+  if (existsSync(resolve(ROOT, `docs/partials/${name}`))) {
+    // Fichas compuestas por partials.
+    for (const [file, blocks] of partialPlan(name, ce, vue)) {
+      const missing = !existsSync(resolve(ROOT, file))
+      if (missing && !CHECK) ensureMarkers(file, blocks)
+      if (inject(file, blocks) || (missing && CHECK)) changes.add(file)
+    }
+  } else {
+    if (comp.ce && inject(targets.ce, ce)) changes.add(targets.ce)
+    if (inject(targets.vue, vue)) changes.add(targets.vue)
+  }
   if (inject(targets.skill, skillBlocks(ce, vue))) changes.add(targets.skill)
   for (const file of changes) drifted.add(file)
   touched += changes.size

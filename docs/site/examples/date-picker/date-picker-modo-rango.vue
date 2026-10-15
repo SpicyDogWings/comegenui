@@ -27,7 +27,6 @@ function onSelect(e: Event) {
     <cu-date-picker
       mode="range"
       label="Período"
-      dual-calendar
       start-date="2026-09-03"
       end-date="2026-09-15"
       @select="onSelect"

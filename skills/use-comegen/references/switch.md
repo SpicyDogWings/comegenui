@@ -134,6 +134,7 @@ default como texto, `change` con el boolean nuevo, y los métodos `get`/`set`/`r
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
 | `update:modelValue` | `boolean` | — |
+| `change` | — | — |
 <!-- /@api:emits -->
 
 ### Slots

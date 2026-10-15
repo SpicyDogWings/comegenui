@@ -4,8 +4,6 @@
 
 Selector de color con swatch y campo de texto hex. Al hacer click en el swatch se abre el color picker nativo del navegador; el campo de texto permite escribir un `#RRGGBB` manualmente.
 
----
-
 ## Uso en Vue
 
 ```vue
@@ -22,6 +20,24 @@ function onChange(valor: string) {
 
 <template>
   <ColorPicker v-model="color" color="primary" @change="onChange" />
+</template>
+```
+
+En HTML plano, cargá el bundle `CuColorPicker` (ver [ficha vanilla](/componentes/cu-color-picker)).
+
+## Colores
+
+`color` es un nombre semántico que define el acento del borde/foco. Los 6 valores son
+`primary`, `secondary`, `neutral` (**default**), `success`, `warning` y `danger`.
+
+```vue
+<template>
+  <ColorPicker color="primary" model-value="#3b82f6" />
+  <ColorPicker color="secondary" model-value="#3b82f6" />
+  <ColorPicker color="neutral" model-value="#3b82f6" />
+  <ColorPicker color="success" model-value="#3b82f6" />
+  <ColorPicker color="warning" model-value="#3b82f6" />
+  <ColorPicker color="danger" model-value="#3b82f6" />
 </template>
 ```
 
@@ -52,43 +68,45 @@ function onUpdate(valor: string) {
 </template>
 ```
 
+## Control programático
+
+```vue
+<script setup lang="ts">
+import ColorPicker from "@/components/form/ColorPicker.vue";
+import { useTemplateRef } from "vue";
+
+const cp = useTemplateRef("cp");
+
+function demo() {
+  cp.value?.get(); // "#3b82f6"
+  cp.value?.set("#ff8800"); // asigna un color
+  cp.value?.reset(); // vuelve al default "#000000"
+  cp.value?.focus(); // enfoca el campo de texto
+}
+</script>
+
+<template>
+  <ColorPicker ref="cp" color="primary" model-value="#3b82f6" />
+</template>
+```
+
 ## Notas
 
 - El campo de texto solo confirma el valor cuando es un hex válido (`#RRGGBB`). Si el valor no es válido al perder el foco, se restaura el último color válido.
 - El swatch muestra el color actual de `modelValue`.
 
----
-
 ## Props
 
-<!-- @api:props -->
-| Prop | Tipo | Default | Descripción |
-| ------ | ------ | ------ | ------ |
-| `color` | `string` | `"neutral"` | — |
-| `disabled` | `boolean` | `false` | — |
-<!-- /@api:props -->
+<!--@include: ../../partials/color-picker/props-vue.md-->
 
 ## Emits
 
-<!-- @api:emits -->
-| Evento | Payload | Descripción |
-| ------ | ------ | ------ |
-| `update:modelValue` | `string` | — |
-<!-- /@api:emits -->
+<!--@include: ../../partials/color-picker/eventos.md-->
 
 ## Slots
 
-<!-- @api:slots -->
-Ninguno.
-<!-- /@api:slots -->
+<!--@include: ../../partials/color-picker/slots.md-->
 
 ## Expose
 
-<!-- @api:expose -->
-| Método | Descripción |
-| ------ | ------ |
-| `get` | Devuelve el color actual en formato hex. |
-| `set` | Setea el color actual en formato hex. |
-| `reset` | Restaura el color al negro (#000000). |
-| `focus` | Enfoca el input de texto del color. |
-<!-- /@api:expose -->
+<!--@include: ../../partials/color-picker/metodos-vue.md-->

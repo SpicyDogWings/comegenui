@@ -2,19 +2,14 @@
 
 # `<cu-markdown>`
 
-Renderizador de Markdown como Custom Element. Convierte markdown en HTML semántico usando los componentes internos de ComegenUI (tablas, code blocks, blockquotes, listas, headings, párrafos).
+Renderizador de Markdown como Custom Element. Convierte markdown en HTML semántico usando los
+componentes internos de ComegenUI (tablas, code blocks, blockquotes, listas, headings, párrafos).
 
-## UMD
-
-```
-dist-libs/umd-core/CuMarkdown.umd.js
-```
-
----
-
-## Uso
+## Uso en HTML plano
 
 ````html
+<script src="dist-libs/umd-core/CuMarkdown.umd.js"></script>
+
 <cu-markdown>
 # Título
 
@@ -33,53 +28,58 @@ const x = 1;
 |-------|-------|
 | a     | b     |
 </cu-markdown>
-
-<script src="dist-libs/umd-core/CuMarkdown.umd.js"></script>
 ````
 
 <!-- demo:markdown-uso -->
 
-El contenido se pasa como **texto dentro del tag** (no como prop). El componente lo parsea al montarse.
+> El contenido se pasa como **texto dentro del tag**, no como prop, y se parsea **una vez al
+> montarse**: para actualizarlo hay que reemplazar el texto interno y volver a montar.
+> Las tablas se renderizan con `<cu-table>`, los code blocks con `<cu-code-block>`, el HTML se
+> sanitiza con DOMPurify y los tokens del tema se inyectan en el shadow DOM.
 
----
+## Encabezados
 
-## Notas
+Al terminar de parsear, el componente emite `parsed` con los ids de los encabezados (en
+`e.detail`); `headingIds()` los devuelve cuando los necesites. El `id` es el que queda en cada
+heading, así que sirve para anclas.
 
-- El markdown se parsea una vez al montarse. Para actualizar el contenido, reemplazar el texto interno y volver a montar el componente.
-- Las tablas se renderizan con `<cu-table>` internamente.
-- Los code blocks usan `<cu-code-block>` con resaltado de sintaxis.
-- El HTML se sanitiza con DOMPurify antes de renderizar.
-- Los tokens CSS se inyectan automáticamente en el shadow DOM.
-- El evento `parsed` y el método `headingIds()` sí atraviesan el wrapper CE.
+```html
+<cu-markdown id="doc">
+# Introducción
 
----
+Texto del documento.
+
+## Detalles
+</cu-markdown>
+
+<script>
+  const doc = document.getElementById('doc');
+
+  doc.addEventListener('parsed', (e) => console.log('parsed:', e.detail));
+
+  customElements.whenDefined('cu-markdown').then(() => {
+    console.log('headingIds:', doc.headingIds()); // ["introduccion", "detalles"]
+  });
+</script>
+```
+
+<!-- demo:markdown-encabezados -->
+
+> `headingIds()` sólo está disponible cuando el tag ya está definido: esperá a
+> `customElements.whenDefined('cu-markdown')` antes de llamarlo.
 
 ## Atributos
 
-<!-- @api:atributos -->
-Ninguno.
-<!-- /@api:atributos -->
+<!--@include: ../partials/markdown/props.md-->
 
 ## Eventos
 
-<!-- @api:eventos -->
-| Evento | Payload (`e.detail`) | Descripción |
-| ------ | ------ | ------ |
-| `parsed` | `string[]` | — |
-<!-- /@api:eventos -->
+<!--@include: ../partials/markdown/eventos.md-->
 
 ## Slots
 
-<!-- @api:slots -->
-| Slot | Descripción |
-| ------ | ------ |
-| `default` | — |
-<!-- /@api:slots -->
+<!--@include: ../partials/markdown/slots.md-->
 
 ## Métodos expuestos
 
-<!-- @api:metodos -->
-| Método | Descripción |
-| ------ | ------ |
-| `headingIds` | Devuelve los ids generados para los encabezados parseados. |
-<!-- /@api:metodos -->
+<!--@include: ../partials/markdown/metodos.md-->

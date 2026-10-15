@@ -2,9 +2,7 @@
 
 # `FileInput`
 
-Input de archivo compacto con drag & drop, estilo idéntico a `<cu-input>`. Single file, sin directorio, con validación de tipo y tamaño.
-
----
+Input de archivo compacto con drag & drop, estilo idéntico a `<Input>`. Single file, sin directorio, con validación de tipo y tamaño.
 
 ## Uso en Vue
 
@@ -32,54 +30,92 @@ function onUpdate(file: File | null) {
 </template>
 ```
 
-## Drag & drop
+> **Drag & drop:** se puede soltar un archivo sobre el componente; durante el arrastre se ilumina el borde y el fondo. Los directorios se descartan solos (`size === 0 && !type`) y la validación de `accept`/`maxSize` también corre al soltar.
 
-Soporta arrastrar un solo archivo sobre el componente. Durante el drag se ilumina el borde y fondo. Los directorios se descartan automáticamente (`size === 0 && !type`).
+## Colores
 
-## Notas
+`color` tiñe el borde, el texto y el fondo según el tema activo, con los 6 nombres semánticos.
 
-- No soporta `multiple`, `directory` ni `directory-deep` — usá `<cu-file-input-zone>` para esos casos.
-- Al hacer click en el nombre del archivo seleccionado se abre en una nueva pestaña.
-- La validación por `accept` y `maxSize` se aplica tanto en el diálogo nativo como al soltar archivos por drag.
+```vue
+<FileInput color="primary" variant="outlined" placeholder="primary" />
+<FileInput color="secondary" variant="outlined" placeholder="secondary" />
+<FileInput color="neutral" variant="outlined" placeholder="neutral" />
+<FileInput color="success" variant="outlined" placeholder="success" />
+<FileInput color="warning" variant="outlined" placeholder="warning" />
+<FileInput color="danger" variant="outlined" placeholder="danger" />
+```
 
----
+## Variantes
+
+`variant` decide el aspecto del campo con las 4 variantes de campo (`outlined` es el default).
+
+```vue
+<FileInput color="primary" variant="outlined" placeholder="outlined" />
+<FileInput color="primary" variant="soft" placeholder="soft" />
+<FileInput color="primary" variant="ghost" placeholder="ghost" />
+<FileInput color="primary" variant="subtle" placeholder="subtle" />
+```
+
+## Estados
+
+`disabled` y `readOnly` cortan click, drag y drop; `disabled` además atenúa el componente y esconde el botón de quitar.
+
+```vue
+<FileInput disabled placeholder="Deshabilitado" />
+<FileInput read-only placeholder="Solo lectura" />
+```
+
+## Validación
+
+`accept` y `maxSize` se anuncian en el placeholder y se aplican tanto en el diálogo nativo como al soltar; si un archivo no pasa, aparece una `Alert` danger debajo con el motivo.
+
+```vue
+<FileInput accept="image/*" placeholder="Imagen" />
+<FileInput accept=".pdf,.doc,.docx" placeholder="Documento" />
+<FileInput accept="image/*,.pdf" :max-size="1048576" placeholder="Imagen o PDF hasta 1 MB" />
+```
+
+> No soporta `multiple`, `directory` ni `directory-deep`: para eso está `<FileInputZone>`. Al hacer click en el nombre del archivo, se abre en una pestaña nueva.
+
+## Interacción
+
+`update:modelValue` avisa cada cambio de archivo (con el `File` o `null`) y `get()`, `set()`, `reset()`, `focus()` y `trigger()` se llaman por `ref`.
+
+```vue
+<script setup lang="ts">
+import FileInput from "@/components/form/FileInput.vue";
+import { ref } from "vue";
+
+const fi = ref<InstanceType<typeof FileInput> | null>(null);
+const archivo = ref<File | null>(null);
+
+function setear() {
+  fi.value?.set(new File(["contenido"], "por-api.txt", { type: "text/plain" }));
+  console.log(fi.value?.get()?.name);
+}
+</script>
+
+<template>
+  <FileInput ref="fi" v-model="archivo" placeholder="Archivo por API" />
+  <Button size="sm" variant="outlined" @click="setear">set()</Button>
+  <Button size="sm" variant="outlined" @click="fi?.reset()">reset()</Button>
+  <Button size="sm" variant="outlined" @click="fi?.focus()">focus()</Button>
+  <Button size="sm" variant="outlined" @click="fi?.trigger()">trigger()</Button>
+</template>
+```
 
 ## Props
 
-<!-- @api:props -->
-| Prop | Tipo | Default | Descripción |
-| ------ | ------ | ------ | ------ |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
-| `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `"outlined"` | — |
-| `disabled` | `boolean` | `false` | — |
-| `readOnly` | `boolean` | `false` | — |
-| `placeholder` | `string` | `"Seleccionar archivo"` | — |
-| `maxSize` | `number` | `—` | — |
-| `accept` | `string` | `—` | — |
-<!-- /@api:props -->
+<!--@include: ../../partials/file-input/props-vue.md-->
 
 ## Emits
 
-<!-- @api:emits -->
-| Evento | Payload | Descripción |
-| ------ | ------ | ------ |
-| `update:modelValue` | `File \| null` | — |
-<!-- /@api:emits -->
+<!--@include: ../../partials/file-input/eventos.md-->
 
 ## Slots
 
-<!-- @api:slots -->
-Ninguno.
-<!-- /@api:slots -->
+<!--@include: ../../partials/file-input/slots.md-->
 
 ## Expose
 
-<!-- @api:expose -->
-| Método | Descripción |
-| ------ | ------ |
-| `get` | Devuelve el archivo actual. |
-| `set` | Setea el archivo actual. |
-| `reset` | Quita el archivo seleccionado. |
-| `focus` | Enfoca el contenedor del input. |
-| `trigger` | Abre el selector de archivos. |
-<!-- /@api:expose -->
+<!--@include: ../../partials/file-input/metodos-vue.md-->

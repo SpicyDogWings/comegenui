@@ -17,9 +17,7 @@ Igual que `MonthSlider` / `YearSlider`: `""`, valores inválidos (`NaN`) y entra
 
 > A diferencia de los sliders (que ignoran el día), el calendario **conserva el día** de `modelValue`.
 
----
-
-## Uso básico
+## Uso en HTML plano
 
 ```html
 <script src="dist-libs/umd-core/CuCalendar.umd.js"></script>
@@ -38,23 +36,53 @@ Igual que `MonthSlider` / `YearSlider`: `""`, valores inválidos (`NaN`) y entra
 </script>
 ```
 
+En Vue, importá `Calendar` de `@/components/controls/Calendar.vue` (ver [ficha Vue](/componentes/vue/calendar)).
+
 <!-- demo:calendar-uso -->
 
-### Grilla de 7 columnas
+## Ancho (7 columnas)
 
-Los días se distribuyen en `grid-template-columns: repeat(7, 1fr)`: **7 columnas iguales que se reparten el ancho que mida el contenedor** (los "7 width"). Si el contenedor es de 280px cada columna mide 40px; si es de 500px, ~71px. Cada día usa `aspect-ratio: 1` para mantenerse cuadrado.
+Los días se distribuyen en `grid-template-columns: repeat(7, 1fr)`: **7 columnas iguales que se reparten el ancho que mida el contenedor**. Si el contenedor es de 280px cada columna mide 40px; si es de 500px, ~71px. Cada día usa `aspect-ratio: 1` para mantenerse cuadrado.
 
 ```html
 <!-- Ocupa todo el ancho disponible -->
-<cu-calendar id="cal" style="width: 100%; max-width: 420px;"></cu-calendar>
+<cu-calendar style="width: 100%; max-width: 420px;"></cu-calendar>
 
 <!-- Ancho fijo -->
-<cu-calendar id="cal2" style="width: 280px;"></cu-calendar>
+<cu-calendar style="width: 280px;"></cu-calendar>
 ```
 
 <!-- demo:calendar-grilla -->
 
----
+## Colores
+
+`color` define el color del día seleccionado y el acento del header: `primary` (**default**), `secondary`, `neutral`, `success`, `warning`, `danger`.
+
+```html
+<cu-calendar color="primary" model-value="2026-08-11"></cu-calendar>
+<cu-calendar color="secondary" model-value="2026-08-11"></cu-calendar>
+<cu-calendar color="neutral" model-value="2026-08-11"></cu-calendar>
+<cu-calendar color="success" model-value="2026-08-11"></cu-calendar>
+<cu-calendar color="warning" model-value="2026-08-11"></cu-calendar>
+<cu-calendar color="danger" model-value="2026-08-11"></cu-calendar>
+```
+
+<!-- demo:calendar-colores -->
+
+## Variantes del día seleccionado
+
+El día seleccionado usa la variante elegida: `solid`, `outlined`, `soft` (**default**) o `subtle`. **La variante `ghost` no existe**: su look (transparente + número en color) es el mismo que el del día de hoy y confundía.
+
+El **día de hoy** se muestra como ghost: número en el color accent, sin fondo (si hoy coincide con la selección, gana la variante de seleccionado):
+
+```html
+<cu-calendar model-value="2026-08-11" variant="solid"></cu-calendar>
+<cu-calendar model-value="2026-08-11" variant="outlined"></cu-calendar>
+<cu-calendar model-value="2026-08-11" variant="soft"></cu-calendar>
+<cu-calendar model-value="2026-08-11" variant="subtle"></cu-calendar>
+```
+
+<!-- demo:calendar-variantes -->
 
 ## Controles de mes (reutiliza `MonthSlider`)
 
@@ -77,16 +105,11 @@ El header del calendario **reutiliza el componente `MonthSlider` del repo**: che
 - La navegación respeta `min`/`max` (los botones se deshabilitan en el borde).
 - El label del header usa la misma `variant` y `color` del calendario.
 
----
+> **`viewMonth`** (propiedad JS): si lo pasás, el mes visible queda controlado desde afuera y la navegación emite `update:viewMonth`. Lo usa el `DualCalendar` interno.
 
 ## Límites min / max
 
 Los días fuera del rango se renderizan deshabilitados (opacidad reducida, sin click) y la navegación se recorta al mes del límite (los chevrons se deshabilitan en el borde, como en los sliders):
-
-```js
-cal.min = '2026-01-10';
-cal.max = '2026-12-24';
-```
 
 ```html
 <cu-calendar min="2026-01-10" max="2026-12-24"></cu-calendar>
@@ -96,9 +119,9 @@ cal.max = '2026-12-24';
 
 > El mes visible se re-ajusta automáticamente si `modelValue`, `min` o `max` cambian en runtime.
 
----
-
 ## Semana y locale
+
+`week-start` decide el primer día de la semana (`1` = lunes, default; `0` = domingo) y `locale` los nombres de meses y días (`es` default).
 
 ```html
 <!-- Semana que empieza en domingo -->
@@ -110,27 +133,9 @@ cal.max = '2026-12-24';
 
 <!-- demo:calendar-semana-locale -->
 
----
-
-## Variantes del día seleccionado
-
-El día seleccionado usa la variante elegida (`solid`, `outlined`, `soft`, `subtle`). **La variante `ghost` se eliminó**: su look (transparente + número en color) es el mismo que el del día de hoy y confundía.
-
-El **día de hoy** se muestra como ghost: número en el color accent, sin fondo (si hoy coincide con la selección, gana la variante de seleccionado):
-
-```html
-<cu-calendar model-value="2026-08-11" variant="solid"></cu-calendar>
-<cu-calendar model-value="2026-08-11" variant="outlined"></cu-calendar>
-<cu-calendar model-value="2026-08-11" variant="soft"></cu-calendar>
-```
-
-<!-- demo:calendar-variantes -->
-
----
-
 ## Días deshabilitados
 
-Además de `min`/`max`, podés deshabilitar días de la semana o fechas puntuales. Se complementan entre sí:
+Además de `min`/`max`, podés deshabilitar días de la semana (`disabled-weekdays="0,6"`) o fechas puntuales (`disabled-dates="2026-08-15,2026-08-16"`). Se complementan entre sí:
 
 ```html
 <!-- De → hasta (10 al 25) + fines de semana deshabilitados en el medio -->
@@ -147,7 +152,17 @@ Además de `min`/`max`, podés deshabilitar días de la semana o fechas puntuale
 
 > Los días deshabilitados no se pueden seleccionar (ni con click ni con `setValue`) y se ven atenuados.
 
----
+## Grilla y borde
+
+`grid` dibuja las líneas **interiores** entre los días y `border` el **marco exterior**; son combinables.
+
+```html
+<cu-calendar grid></cu-calendar>
+<cu-calendar border></cu-calendar>
+<cu-calendar grid border></cu-calendar>
+```
+
+<!-- demo:calendar-grilla-borde -->
 
 ## Eventos (puntos)
 
@@ -175,8 +190,6 @@ cal.events.push({ date: '2026-08-11', color: 'primary' });
 
 <!-- demo:calendar-eventos -->
 
----
-
 ## Rango (modo `range`)
 
 El rango es un **modo** (`mode="range"`). Ahí `rangeStart`/`rangeEnd` son el **valor**: el primer click define el inicio, el segundo el fin (con swap si el fin es anterior) y la FSM vive en el propio calendar. **En `mode="single"` `rangeStart`/`rangeEnd` se ignoran por completo**: la única selección es el click simple.
@@ -200,8 +213,6 @@ El rango es un **modo** (`mode="range"`). Ahí `rangeStart`/`rangeEnd` son el **
 - `getRange()` / `setRange()` / `clear()` manejan el rango por código.
 - En `single`, para una fecha puntual usá `modelValue` (con `rangeStart`/`rangeEnd` presentes, se ignoran).
 
----
-
 ## Disabled
 
 ```html
@@ -210,72 +221,25 @@ El rango es un **modo** (`mode="range"`). Ahí `rangeStart`/`rangeEnd` son el **
 
 <!-- demo:calendar-disabled -->
 
----
-
 ## Atributos
 
-<!-- @api:atributos -->
-| Atributo | Tipo | Default | Descripción |
-| ------ | ------ | ------ | ------ |
-| `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `'primary'` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
-| `variant` | `"solid" \| "outlined" \| "soft" \| "subtle"` | `'soft'` | Variante del día seleccionado: `solid`, `outlined`, `soft`, `subtle` (sin `ghost`: se confunde con el día de hoy) |
-| `mode` | `"single" \| "range"` | `'single'` | Modo de selección: `single` (una fecha) o `range` (inicio + fin) |
-| `disabled` | `boolean` | `false` | Deshabilita todo el calendario |
-| `model-value` | `string \| number \| Date \| null` | `null` | Fecha seleccionada. Acepta `Date`, timestamp o `"YYYY-MM-DD"` (ver [Formato de fechas](#formato-de-fechas)) |
-| `min` | `string \| number \| Date \| null` | `null` | Fecha mínima seleccionable (días anteriores quedan deshabilitados) |
-| `max` | `string \| number \| Date \| null` | `null` | Fecha máxima seleccionable |
-| `disabled-weekdays` | `string \| number[]` | `''` | Días de la semana no seleccionables (`0`=domingo … `6`=sábado). En HTML plano: `disabled-weekdays="0,6"` |
-| `disabled-dates` | `string \| (string \| Date)[]` | `''` | Fechas puntuales no seleccionables `"YYYY-MM-DD"`. En HTML plano: `disabled-dates="2026-08-15,2026-08-16"` |
-| `locale` | `string` | `'es'` | Locale para nombres de mes y días de la semana |
-| `week-start` | `number` | `1` | Día en que arranca la semana: `0` = domingo, `1` = lunes |
-| `year-navigation` | `string \| boolean` | `false` | Muestra botones `«`/`»` para saltar de año en el header |
-| `month-format` | `"M" \| "MMMM" \| "MMM" \| "MM"` | `'MMMM'` | Formato del mes en el header: `MMMM` (septiembre), `MMM` (sept), `MM` (09) o `M` (9). Un valor no soportado cae a `MMMM` |
-| `year-format` | `"yyyy" \| "yy"` | `'yyyy'` | Formato del año (badge cuando el mes no es del año actual): `yyyy` (2026) o `yy` (26). Un valor no soportado cae a `yyyy` |
-| `events` | `CalendarEvent[]` | `[]` | Eventos a señalar con puntos bajo la fecha (ver [Eventos](#eventos-puntos)). Se asigna como propiedad JS |
-| `range-start` | `string \| number \| Date \| null` | `null` | Inicio del rango (resalta los días entre inicio y fin). Se asigna como propiedad JS |
-| `range-end` | `string \| number \| Date \| null` | `null` | Fin del rango. Se asigna como propiedad JS |
-| `grid` | `boolean` | `false` | Dibuja líneas **interiores** (cuadrícula) entre los días. En HTML plano: `<cu-calendar grid>` |
-| `border` | `boolean` | `false` | Dibuja el **marco exterior** alrededor de la cuadrícula de días. Combinable con `grid` |
-| `view-month` | `string \| number \| Date \| null` | `null` | Mes visible (primer día) controlado desde afuera. Navegar emite `update:viewMonth`. Se asigna como propiedad JS |
-<!-- /@api:atributos -->
+<!--@include: ../partials/calendar/props-vanilla.md-->
 
 > **API espejo de los sliders:** las fechas aceptan `Date`, timestamp numérico o string `"YYYY-MM-DD"`. En HTML plano los atributos llegan como string; `modelValue="2026-08-11"` funciona directo.
 
 ## Eventos
 
-<!-- @api:eventos -->
-| Evento | Payload (`e.detail`) | Descripción |
-| ------ | ------ | ------ |
-| `select` | `CalendarChange` | — |
-| `change` | `CalendarChange` | — |
-| `update:modelValue` | `Date` | — |
-| `update:viewMonth` | `Date` | — |
-| `update:rangeStart` | `Date \| null` | — |
-| `update:rangeEnd` | `Date \| null` | — |
-<!-- /@api:eventos -->
+<!--@include: ../partials/calendar/eventos-vanilla.md-->
 
 > En modo `single` los eventos emiten un `Date` normalizado a medianoche local; en `range`, un objeto `{ start, end }`.
 
 ## Slots
 
-<!-- @api:slots -->
-Ninguno.
-<!-- /@api:slots -->
+<!--@include: ../partials/calendar/slots.md-->
 
 ## Métodos expuestos
 
-<!-- @api:metodos -->
-| Método | Descripción |
-| ------ | ------ |
-| `nextMonth` | Va al mes siguiente (respeta `max`) |
-| `prevMonth` | Va al mes anterior (respeta `min`) |
-| `goToMonth` | Navega al mes de la fecha dada |
-| `getValue` | null` con la fecha seleccionada |
-| `setValue` | Selecciona una fecha (acepta string/number/Date) |
-| `getRange` | null` con el rango seleccionado (modo `range`) |
-| `setRange` | Setea el rango (acepta string/number/Date) (modo `range`) |
-| `clear` | Limpia el rango seleccionado (modo `range`) |
-<!-- /@api:metodos -->
+<!--@include: ../partials/calendar/metodos-vanilla.md-->
 
 ## Interfaces
 

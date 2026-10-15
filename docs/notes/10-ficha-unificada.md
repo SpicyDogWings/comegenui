@@ -3,6 +3,11 @@
 **Fecha:** 2026-10-14
 **Severidad:** Info (decisión de arquitectura, piloto con un solo componente)
 
+> **Estado: revertido (2026-10-15).** Button volvió a **dos fichas** (`cu-button.md` +
+> `vue/button.md`) y la API se comparte por **partials** (`docs/partials/button/`). El modelo
+> vigente es «siempre 2 fichas, compuestas por partials» — ver la skill `documenter`. Lo de abajo
+> queda como registro del piloto.
+
 ## Decisión
 
 Hasta ahora cada componente tenía **dos fichas** (`docs/componentes/<tag>.md` y

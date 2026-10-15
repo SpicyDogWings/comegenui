@@ -7,15 +7,11 @@ Referencia de API de ComegenUI. Cada componente tiene dos APIs:
 
 Las páginas del sitio ([`docs/site/componentes`](../site/componentes)) incluyen estas fichas.
 
-Cuando un componente tiene **ficha unificada** (una sola página, con el código de las dos APIs
-en tabs), la columna **Vue** dice «unificada» y la API Vue está en la ficha del custom element.
-Ver `docs/notes/10-ficha-unificada.md`.
-
 ## Buttons
 
 | Componente | Custom Element | Vue |
 |---|---|---|
-| Button | [`cu-button`](./cu-button.md) (unificada) | — |
+| Button | [`cu-button`](./cu-button.md) | [Button](./vue/button.md) |
 | FloatingButton | [`cu-floating-button`](./cu-floating-button.md) | [FloatingButton](./vue/floating-button.md) |
 | CopyButton | — | [CopyButton](./vue/copy-button.md) |
 | ToggleColorSheme | — | [ToggleColorSheme](./vue/toggle-color-sheme.md) |
