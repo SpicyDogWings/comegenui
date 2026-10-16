@@ -15,6 +15,14 @@
 // **compartido** por las dos APIs conserva el nombre vanilla del marcador
 // (`@api:atributos`/`@api:eventos`/`@api:metodos`), así que cada sección acepta sus dos alias.
 //
+// Una versión **congelada** (`docs-freeze.mjs`) ya no tiene marcadores: sus tablas quedaron
+// materializadas en texto plano. En ese caso, la fuente es la sección del markdown final
+// (`## Props`/`## Atributos`, `## Emits`/`## Eventos`, `## Slots`, `## Expose`/`## Métodos
+// expuestos`) y se lee la primera tabla cuya primera columna sea la de la API (`Prop`/`Atributo`,
+// `Evento`, `Slot`, `Método`). Los `@include` se expanden antes, así que da igual si el parcial es
+// compartido o propio. Primero se intentan los marcadores; si una sección no los tiene, se cae a la
+// sección materializada.
+//
 // Esto es la especificación que los tests de contrato hacen cumplir en runtime.
 // `gen-api.mjs` mantiene las tablas sincronizadas con el SFC; acá sólo se leen.
 import { readFileSync, existsSync } from "node:fs";
@@ -111,13 +119,76 @@ const MARKERS = {
   expose: ["expose", "metodos"],
 };
 
-/** Filas de una sección, probando sus alias de marcador. */
+/**
+ * Secciones materializadas (doc congelada): encabezado(s) `## X` con que puede aparecer la
+ * sección y primera celda del encabezado de su tabla. Los alias ya contemplan la ficha vanilla
+ * (`Atributos`/`Eventos`/`Métodos expuestos`) por si se lee una CE, pero el encabezado de la
+ * tabla puede ser el del partial **compartido** (`Atributo`/`Método`) aunque la ficha sea Vue.
+ */
+const SECTIONS = {
+  props: { headings: ["Props", "Atributos"], columns: ["Prop", "Atributo"] },
+  emits: { headings: ["Emits", "Eventos"], columns: ["Evento"] },
+  slots: { headings: ["Slots"], columns: ["Slot"] },
+  expose: { headings: ["Expose", "Métodos expuestos", "Métodos"], columns: ["Método"] },
+};
+
+/**
+ * Tablas markdown de un cuerpo de sección (sin las vallas de código): cada una con su
+ * encabezado y sus filas de datos. Se ignora lo que esté dentro de ``` o ~~~.
+ */
+function tablesIn(body) {
+  const lines = body.split("\n").map((l) => l.trim());
+  const tables = [];
+  let fenced = false;
+  for (let i = 0; i < lines.length; i++) {
+    if (/^(```|~~~)/.test(lines[i])) {
+      fenced = !fenced;
+      continue;
+    }
+    if (fenced || !lines[i].startsWith("|")) continue;
+    const block = [];
+    while (i < lines.length && lines[i].startsWith("|")) block.push(lines[i++]);
+    i--;
+    if (block.length < 2 || !/^\|[\s\-:|]+\|$/.test(block[1])) continue;
+    const header = splitRow(block[0]);
+    const rows = block
+      .slice(2)
+      .map((l) => splitRow(l, header.length))
+      .filter((cells) => cells.length > 0 && cells[0] !== "");
+    tables.push({ header, rows });
+  }
+  return tables;
+}
+
+/**
+ * Filas de una sección materializada: recorre todos los `## <encabezado>` que matcheen un alias
+ * y devuelve las de la primera tabla cuya primera columna sea la de la API. Se corta en el
+ * próximo `## ` (los `### ` intermedios —p. ej. «Items»— siguen dentro de la sección, pero su
+ * tabla no matchea el encabezado).
+ */
+function sectionRows(source, section) {
+  const { headings, columns } = SECTIONS[section];
+  const lines = source.split("\n");
+  for (let i = 0; i < lines.length; i++) {
+    const heading = /^##\s+(.+?)\s*$/.exec(lines[i]);
+    if (!heading) continue;
+    if (!headings.some((alias) => alias.toLowerCase() === heading[1].toLowerCase())) continue;
+    let end = i + 1;
+    while (end < lines.length && !/^##\s/.test(lines[end])) end++;
+    for (const { header, rows } of tablesIn(lines.slice(i + 1, end).join("\n"))) {
+      if (columns.includes(header[0])) return rows;
+    }
+  }
+  return [];
+}
+
+/** Filas de una sección: primero los marcadores `@api:*`; si no hay, la tabla materializada. */
 function rows(source, section) {
   for (const name of MARKERS[section]) {
     const cells = rowsOf(source, name);
     if (cells.length) return cells;
   }
-  return [];
+  return sectionRows(source, section);
 }
 
 /** Especificación de un componente: props, emits, slots y expose de su ficha. */
