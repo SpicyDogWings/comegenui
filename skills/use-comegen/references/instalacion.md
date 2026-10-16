@@ -70,6 +70,8 @@ instalado; así se dedupea con tu app) o, en un host sin bundler (p. ej. PHP/van
 
 Se reemplazan archivos, no hay instalador:
 
+- **Antes de saltar de versión, mirá la guía [Breaking changes](/breaking)**: una página por salto,
+  con lo que rompe y qué hacer.
 - Copiá los bundles nuevos (podés copiar sólo los que usás). En las configs `shared`, copiá
   también el runtime. No hay archivo de estilos en el zip: los tokens los aporta tu CSS.
 - Si un componente "no cambia nada" después de actualizar, casi siempre quedó el bundle viejo

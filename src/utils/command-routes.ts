@@ -43,6 +43,13 @@ export function navigationCommands(base = ""): CommandItem[] {
       action: () => go(base, "/configuracion"),
     },
     {
+      id: "breaking",
+      label: "Breaking changes",
+      description: "/breaking",
+      category: "Páginas",
+      action: () => go(base, "/breaking"),
+    },
+    {
       id: "theme-builder",
       label: "Theme Builder",
       description: "/theme-builder",
