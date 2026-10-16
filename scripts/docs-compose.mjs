@@ -28,6 +28,7 @@ const DESTINOS = [
   ["componentes", "docs/componentes"],
   ["partials", "docs/partials"],
   ["paginas/componentes", "docs/site/componentes"],
+  ["paginas/examples", "docs/site/examples"],
 ];
 
 const origen = (id, sub) => resolve(root, "docs/versiones", id, sub);
