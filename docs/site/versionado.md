@@ -98,8 +98,10 @@ Si necesitás las **dos versiones del mismo componente**, la segunda va por su t
 
 Esta documentación se versiona **aparte de la librería**. Cada versión publicada es un **build
 estático congelado** —su HTML, su buscador y su propia copia de ComegenUI para los demos— servido
-bajo su base `/<id>/`. La raíz `/` es una copia de *latest* (la que sale del árbol de trabajo),
-así que las URLs sin versión siguen funcionando y apuntan a la última.
+bajo su base `/<id>/`. La doc de cada versión vive versionada en `docs/versiones/<id>/` (con
+*overlay*: sólo lo que cambió) y el sitio la **compone** al buildear; la lib que usan sus demos
+viaja con ella en `docs/versiones/<id>/lib/`. La raíz `/` es una copia de *latest* (la que sale
+del árbol de trabajo), así que las URLs sin versión siguen funcionando y apuntan a la última.
 
 Para cambiar de versión, usá el **selector al lado del nombre** en el topbar o los comandos de la
 categoría *Versión* de la paleta (`Ctrl`/`⌘` + `K`). El salto es una **navegación dura**: cada
@@ -110,7 +112,9 @@ al home de esa versión.
 - Las URLs llevan la versión (`/5.1.0/componentes/cu-button`): son linkeables y compartibles, y no
   hay preferencia guardada que te cambie de versión.
 - Los links del topbar y de la paleta **quedan dentro de la versión** que estás mirando.
-- Los demos corren **la lib de esa misma versión**: la doc de la 5.1.0 embebe la 5.1.0.
+- Los demos corren **la lib de esa misma versión**: la doc de la 5.1.1 embebe la 5.1.1. Esa lib
+  viaja versionada con la doc (`docs/versiones/<id>/lib/`, el build `esm-shared`), así que una
+  versión congelada se comporta como esa versión aunque el árbol de trabajo ya haya avanzado.
 - El selector **se oculta** si hay una sola versión publicada (o en `vitepress dev`, donde no hay
   catálogo). El home (`/`) es `standalone`: ahí no hay selector ni sidebar.
 - Las versiones cortadas **antes** de que existiera este mecanismo (los tags `v5.0.*-alpha`) no saben
@@ -120,7 +124,8 @@ al home de esa versión.
 ### Publicar versiones
 
 El manifiesto es `docs/versions.json`: **una** entrada con `latest: true` (sale de `HEAD`) y una
-entrada por versión congelada, con su `ref` de git (idealmente un tag). Después:
+entrada por versión congelada, con su `ref` de git (idealmente un tag). La doc de cada versión vive
+en `docs/versiones/<id>/` (overlay) y su lib en `docs/versiones/<id>/lib/`. Después:
 
 ```bash
 pnpm docs:versions          # construye latest + las congeladas y arma el catálogo
