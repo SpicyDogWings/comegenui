@@ -2,7 +2,7 @@
 
 Librería de componentes UI como **Web Components** (Custom Elements) hecha con Vue 3:
 `<cu-button>`, `<cu-alert>`, `<cu-date-picker>`, `<cu-table>`… Cada componente viaja como un bundle
-autocontenido —sin dependencias ni CSS que cargar— y podés soltarlo tal cual en HTML plano o
+autocontenido —sin dependencias— y podés soltarlo tal cual en HTML plano o
 importarlo dentro de un proyecto Vue.
 
 Repo: [`SpicyDogWings/comegenui`](https://github.com/SpicyDogWings/comegenui) ·
@@ -62,8 +62,8 @@ El tema lo elige el **host**, no el componente: un atributo y listo.
 - Los colores se piden por nombre semántico (`primary`, `secondary`, `neutral`, `success`,
   `warning`, `danger`) y las variantes por prop (`solid`, `outlined`, `soft`, `ghost`, `subtle`,
   `link`).
-- No hay CSS que cargar: la lib inyecta los tokens al cargar el primer componente, y son custom
-  properties (`--cu-color-*`) que podés reusar en tu propio CSS.
+- Los componentes **no traen tokens**: el tema lo aporta el CSS del host (`--cu-color-*`). Este sitio
+  ya los tiene; en tu app definí los del tema que uses (ver Configuración).
 
 Los colores de cada tema viven en `comegen.config.json`. Para elegir, cambiar, agregar o combinar
 temas: **[Personalización](docs/site/personalizacion.md)**. Tokens y clases CSS:

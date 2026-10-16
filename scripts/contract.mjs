@@ -57,8 +57,8 @@ function getWindow() {
 }
 
 /**
- * Entorno jsdom propio, rebindeando a mano los globals del DOM que Vue y
- * `initTokens` consultan (a diferencia de `makeWindow`, que sólo copia los que
+ * Entorno jsdom propio, rebindeando a mano los globals del DOM que Vue consulta
+ * (a diferencia de `makeWindow`, que sólo copia los que
  * aún no existen). Necesario para correr cada smoke ESM en un registro nuevo,
  * sin chocar con los tags ya definidos por `umd-core` u otra config. NO toca
  * globals propios de Node (performance, fetch…): hacerlo cuelga jsdom.

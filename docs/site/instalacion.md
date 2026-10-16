@@ -1,6 +1,7 @@
 # Instalación
 
-ComegenUI se distribuye como bundles: **no hay dependencias que instalar ni CSS que cargar**.
+ComegenUI se distribuye como bundles: **no hay dependencias que instalar**, y los tokens del tema
+los aporta tu CSS (no viajan en el zip).
 Elegís una configuración, bajás su zip desde
 [Releases](https://github.com/SpicyDogWings/comegenui/releases) y copiás los archivos que uses.
 
@@ -17,8 +18,8 @@ Dentro de cada zip los bundles se llaman igual en todas las configuraciones: `Cu
 `CuX.js` (ESM). Las `shared` traen su runtime al lado: `comegen-vue.global.js` (UMD) o
 `comegen-vue.js` (ESM).
 
-Cada bundle se auto-registra como custom element (`<cu-button>`) y los tokens del tema se inyectan
-solos al cargar el primero, así que no hay un archivo de estilos que incluir.
+Cada bundle se auto-registra como custom element (`<cu-button>`). Los tokens del tema los aporta tu
+CSS: los bundles no los traen (no viajan en el zip).
 
 ## Vanilla, sin bundler (`esm-shared`)
 
@@ -79,7 +80,7 @@ No hay instalador: se reemplazan archivos.
 
 - Copiá los bundles nuevos (podés copiar sólo los que usás). En las configuraciones `shared`, copiá
   también el runtime.
-- No hay CSS que copiar: los tokens los inyecta la lib.
+- No hay archivo de estilos que copiar: los tokens del tema los aporta tu CSS.
 - Si un componente "no cambia nada" después de actualizar, casi siempre quedó el bundle viejo en la
   carpeta o el navegador lo tiene cacheado.
 - Para saber qué quedó cargado: `customElements.get('cu-button').comegen` → `version`, `type`

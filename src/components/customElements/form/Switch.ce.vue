@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, getCurrentInstance, type PropType } from "vue";
 import Switch from "../../form/Switch.vue";
-import { initTokens } from "@/plugins/cu-tokens/css";
-
-initTokens();
 
 const props = defineProps({
   /** Estado del toggle. El CE sincroniza su estado; asigná `modelValue` sólo si querés controlarlo */

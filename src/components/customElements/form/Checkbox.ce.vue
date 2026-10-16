@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, getCurrentInstance, type PropType } from "vue";
 import Checkbox from "../../form/Checkbox.vue";
-import { initTokens } from "@/plugins/cu-tokens/css";
-
-initTokens();
 
 const props = defineProps({
   /** Estado del checkbox. El CE sincroniza su estado; asigná `modelValue` sólo si querés controlarlo */

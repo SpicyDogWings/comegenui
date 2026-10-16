@@ -20,7 +20,7 @@ archivo; no se editan a mano en ningún otro lado.
 }
 ```
 
-Un tema puede listar **sólo** los colores que cambia: el resto se hereda del default de la lib.
+Un tema puede listar **sólo** los colores que cambia: el resto se hereda del tema `light` (el default).
 
 ## Tokens CSS
 
@@ -49,9 +49,9 @@ Compartidos: tipografía (`--cu-font-*`, `--cu-line-height-*`), espaciado (`--cu
 (`--cu-radius*`), bordes (`--cu-border-*`) y sombras (`--cu-shadow-*`). El esquema de código usa
 `--cu-code-bg`, `--cu-code-text` y `--cu-code-faded`.
 
-Los inyecta la lib al cargar el primer componente: el tema default en `:root` y cada tema de
-`comegen.config.json` bajo su `[data-theme="…"]`. **Si tu CSS ya define `--cu-color-primary` en
-`:root`, la lib no inyecta nada** y manda tu CSS: ese es el gancho para traer tus propios temas.
+Los tokens los aporta el CSS del host: este sitio los genera de `comegen.config.json` (`:root` con
+el tema default y cada tema bajo su `[data-theme="…"]`). En tu app definí `:root` / `[data-theme="…"]`
+con los colores que uses; los bundles no traen tokens.
 
 ```css
 :root { --cu-color-primary: #0f62fe; }

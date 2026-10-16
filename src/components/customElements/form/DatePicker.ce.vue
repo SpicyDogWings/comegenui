@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, getCurrentInstance, type PropType } from 'vue'
 import DatePicker from '../../form/DatePicker.vue'
-import { initTokens } from '@/plugins/cu-tokens/css'
 import { isMonthFormat, isYearFormat } from '@/utils/date'
-
-initTokens()
 
 const props = defineProps({
   /** Tipo de calendario: `single` (una fecha) o `range` (inicio + fin). Con `dual-calendar` el tipo es dual (range, 2 meses) */

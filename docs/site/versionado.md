@@ -90,8 +90,8 @@ Si necesitás las **dos versiones del mismo componente**, la segunda va por su t
 ```
 
 > Cada zip es sólo la lib (los bundles de su config + el runtime del `shared` si aplica): no
-> incluye esta página ni las fichas, y **no hay CSS** (los tokens se inyectan solos al cargar
-> el primer componente). La referencia completa de cada componente está en la sección
+> incluye esta página ni las fichas, ni los tokens del tema —esos los aporta el CSS del host—.
+> La referencia completa de cada componente está en la sección
 > [Componentes](./componentes/cu-button.md).
 
 ## Versiones del sitio

@@ -51,8 +51,8 @@ andá directo al paso que te falta.
 
 - Cada release publica **4 configs** (`umd-core`, `umd-shared`, `esm-core`, `esm-shared`), cada
   una en su zip. Qué trae cada una y cómo copiarla: `references/instalacion.md`.
-- No hay CSS que cargar: la lib inyecta los tokens del tema **default** al cargar el primer
-  componente (para los otros temas, paso 7).
+- Los bundles no traen tokens: el tema lo aporta el CSS del host (`--cu-color-*`). Este sitio ya los
+  tiene; en tu app, definilos (paso 7).
 - Si el componente ya está instalado y "no cambia nada", casi siempre es un bundle viejo:
   volvé a copiar el `.umd.js` / `.js`. Para confirmarlo, leé
   `customElements.get('cu-x').comegen.version` (y `.type`) (`references/versionado.md`).
@@ -124,8 +124,8 @@ picker.open();
 ## 7. Tematizar
 
 - `references/theming.md`: temas, `data-theme`, colores, variantes y tokens.
-- La lib trae **sólo el tema default**: para `dark` o cualquiera de los otros 14 hay que aportar
-  los tokens (`--cu-color-*`) en el CSS del host.
+- Los bundles **no traen tokens**: el host define `--cu-color-*` (`:root` y `[data-theme="…"]`). Los
+  15 temas están en `comegen.config.json` y los sirve el sitio de la doc.
 
 ## Errores frecuentes
 

@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import AuthorCard from "../../information/AuthorCard.vue";
-import { initTokens } from "@/plugins/cu-tokens/css";
 import type { PropType } from "vue";
-
-initTokens();
 
 const props = defineProps({
   /** Nombre del autor. Genera las iniciales automáticamente (primeras letras del primero y último nombre) */

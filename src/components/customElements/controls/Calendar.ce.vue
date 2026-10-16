@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import { ref, getCurrentInstance, type PropType } from 'vue'
 import Calendar from '../../controls/Calendar.vue'
-import { initTokens } from '@/plugins/cu-tokens/css'
 import { isMonthFormat, isYearFormat } from '@/utils/date'
-
-initTokens()
 
 const props = defineProps({
   // API espejo de MonthSlider/YearSlider: acepta Date, timestamp o fecha "YYYY-MM-DD"

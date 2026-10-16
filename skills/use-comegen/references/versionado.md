@@ -71,5 +71,5 @@ convertidos en `-`: `5.0.0-alpha.3` → `cu-alert--v5-0-0-alpha-3`.
 
 ## Temas y CSS
 
-Ya no hay CSS que emparejar: los tokens del tema se inyectan solos al cargar el primer
-componente (`initTokens()`). No hay que copiar ningún `css/` al actualizar.
+Ya no hay CSS que emparejar: los tokens del tema los aporta tu CSS, no viajan en el zip. No hay que
+copiar ningún `css/` al actualizar.

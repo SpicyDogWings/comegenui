@@ -22,29 +22,31 @@
 </html>
 ```
 
-## Qué temas trae la lib (leer antes de prometer temas)
+## Qué temas hay (leer antes de prometer temas)
 
-Al cargar el primer componente, `initTokens()` inyecta **un solo** juego de tokens: el **default**
-(`:root`, más `[data-theme="light"]`). Los bundles **no** traen los otros temas.
+Los bundles **no traen tokens**: el tema lo aporta el CSS del host con custom properties
+(`--cu-color-*`). Los 15 temas viven en `comegen.config.json` (`light`, `dark`, `nord-*`,
+`gruvbox-*`, `rose-pine-*`, `catppuccin-*`) y **el sitio de la doc** los sirve: ahí `data-theme`
+cambia todo sin CSS extra.
 
-Los 15 temas existen en el repo (`comegen.config.json`: `light`, `dark`, `nord-*`, `gruvbox-*`,
-`rose-pine-*`, `catppuccin-*`) y **el sitio de la doc** los sirve: ahí `data-theme` cambia todo sin
-CSS extra.
-
-En el proyecto del usuario, para usar un tema distinto del default hay que **aportar los tokens**:
+En el proyecto del usuario, **copiá del `comegen.config.json`** los colores que necesites a tu CSS
+(`:root` para el tema base y `[data-theme="…"]` por tema):
 
 ```css
 /* los hex de cada tema están en comegen.config.json (repo) o en el sitio de la doc */
+:root { --cu-color-primary: #0f62fe; }
+
 [data-theme="dark"] {
   --cu-color-neutral: #e5e5e5;
   --cu-color-surface: #1c1c1c;
 }
 ```
 
-- Alcanza con los colores que **cambian**: el resto sigue saliendo de `:root` (los defaults).
-- Si el CSS del host define `--cu-color-primary` en `:root`, la lib **no** inyecta nada (manda el
-  CSS del host).
-- No inventes un `data-theme` nuevo sin declarar sus tokens: el componente se ve como el default.
+- Alcanza con los colores que **cambian**: el resto sale de `:root`.
+- Si no definís ningún token, los componentes se ven sin color: no hay un tema default que los
+  salve.
+- No inventes un `data-theme` nuevo sin declarar sus tokens: sin ellos, los componentes no tienen
+  color.
 
 ## Colores semánticos
 
@@ -80,8 +82,8 @@ bordes (`--cu-border-*`), sombras (`--cu-shadow-*`).
 }
 ```
 
-- Los inyecta la lib en `:root` (el primer componente que cargue) y existen dentro del shadow DOM
-  de cada componente: sirven globalmente y también para el CSS del host.
+- Los define el host (`:root` y `[data-theme]`) y **cruzan el shadow DOM**: sirven tanto para tu CSS
+  como dentro de cada componente.
 - Los componentes viven en un **shadow root**: sus clases internas no se pueden estilar desde
   afuera. Para cambiar un color desde el CSS del host, **pisá tokens** en un contenedor:
 
