@@ -60,7 +60,7 @@ docs/
 ├── site/                                  # Sitio VitePress (páginas a mano + ficha incluida)
 ├── versiones/<id>/                        # DOC VERSIONADA: la doc es la fuente (ver nota 13)
 ├── notes/                                 # Notas internas de deuda/decisión
-└── skills/                                # Skills de dev (docs, preflight, release, marked)
+└── skills/<nombre>/                        # Skills de dev (preflight, docs, deploy, release, marked)
 ```
 
 Sin pipeline de extracción: las fichas y las páginas se escriben a mano. La receta vive en la skill
