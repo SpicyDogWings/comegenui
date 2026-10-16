@@ -25,19 +25,17 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import fg from 'fast-glob'
 import { createChecker } from 'vue-component-meta'
+import { exists, latestId, readResolved, writeInLatest } from './doc-tree.mjs'
 
 const ROOT = resolve(import.meta.dirname, '..')
 
 // La doc es la fuente y está versionada: `docs/versiones/<id>/` (id = la `latest` del
-// manifiesto). El sitio compone las páginas desde ahí (ver nota 13).
-const DOC_ID = JSON.parse(readFileSync(resolve(ROOT, 'docs/versions.json'), 'utf-8')).versions.find(
-  (v) => v.latest,
-)?.id
-if (!DOC_ID) {
-  console.error('gen-api: el manifiesto (docs/versions.json) no tiene una versión latest')
-  process.exit(1)
-}
+// manifiesto), con **overlay**: se lee del árbol resuelto y se escribe en `latest`
+// (ver scripts/doc-tree.mjs y docs/notes/13-doc-versionada.md).
+const DOC_ID = latestId()
 const DOC = `docs/versiones/${DOC_ID}`
+/** Path relativo dentro de la versión (el resolutor trabaja sin el prefijo de versión). */
+const rel = (p) => p.replace(new RegExp(`^docs/versiones/${DOC_ID}/`), '')
 const CHECK = process.argv.includes('--check')
 const UPDATE = process.argv.includes('--update')
 const FILTER = process.argv.slice(2).filter((a) => !a.startsWith('--'))
@@ -344,8 +342,10 @@ function vueBlocks({ vue }) {
 
 function inject(file, blocks) {
   if (!file) return false
-  let text
-  try { text = readFileSync(resolve(ROOT, file), 'utf8') } catch { return false }
+  // Overlay: se lee del árbol resuelto (el archivo puede vivir en una versión anterior) y lo
+  // que cambia se escribe en `latest` — así una versión nueva guarda **sólo** lo que cambió.
+  const text = readResolved(rel(file))
+  if (text === null) return false
   let next = text
   for (const [name, content] of Object.entries(blocks)) {
     const re = new RegExp(`(<!-- @api:${name} -->)([\\s\\S]*?)(<!-- /@api:${name} -->)`, 'g')
@@ -353,7 +353,7 @@ function inject(file, blocks) {
     next = next.replace(re, `$1\n${content}\n$3`)
   }
   if (next === text) return false
-  if (!CHECK) writeFileSync(resolve(ROOT, file), next)
+  if (!CHECK) writeInLatest(rel(file), next)
   return true
 }
 
@@ -575,7 +575,7 @@ for (const [name, comp] of components) {
   emptyCounts.set(name, vueEmptyDescriptions(vue))
 
   const changes = new Set()
-  if (existsSync(resolve(ROOT, `${DOC}/partials/${name}`))) {
+  if (exists(`partials/${name}`)) {
     // Fichas compuestas por partials.
     for (const [file, blocks] of partialPlan(name, ce, vue)) {
       const missing = !existsSync(resolve(ROOT, file))
