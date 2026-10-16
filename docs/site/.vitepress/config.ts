@@ -14,6 +14,12 @@ const BASE = (process.env.DOCS_BASE ?? "/").replace(/([^/])$/, "$1/");
 // Sin ella, el sitio es sólo "latest" y no se anuncia versión.
 const VERSION_ID = process.env.DOCS_VERSION_ID ?? "";
 const VERSION_LABEL = process.env.DOCS_VERSION_LABEL ?? VERSION_ID;
+// Directorio del build `esm-shared` que consumen los demos vanilla (`@comegen-shared`).
+// Por defecto, el build actual (`dist-libs/esm-shared`); `scripts/docs-versions.mjs` lo
+// apunta a la lib **versionada** de cada versión publicada (`docs/versiones/<id>/lib`)
+// con `COMEGEN_SHARED_DIR`, así una doc congelada usa su propia lib. La ruta es relativa
+// a la raíz del repo (o absoluta).
+const SHARED_DIR = resolve(repoRoot, process.env.COMEGEN_SHARED_DIR ?? "dist-libs/esm-shared");
 
 const ROUTE_BASE = "/componentes";
 // El sidebar sale del frontmatter de `docs/site/componentes/**/*.md`, partido en
@@ -132,8 +138,9 @@ export default defineConfig({
     resolve: {
       alias: {
         "@": resolve(repoRoot, "src"),
-        // Build `esm-shared` de la lib: lo consumen los demos vanilla.
-        "@comegen-shared": resolve(repoRoot, "dist-libs/esm-shared"),
+        // Build `esm-shared` de la lib: lo consumen los demos vanilla. Parametrizable por
+        // `COMEGEN_SHARED_DIR` para que cada versión publicada use **su** lib.
+        "@comegen-shared": SHARED_DIR,
       },
     },
     server: { fs: { allow: [repoRoot] } },

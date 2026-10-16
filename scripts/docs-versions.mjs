@@ -4,7 +4,12 @@
 // Modelo: **un sitio estático por versión** (no hay swap en runtime). La doc es la fuente y está
 // versionada con overlay (ver `docs/notes/13-doc-versionada.md`): acá **no** se reconstruye desde el
 // tag. Se resuelve el árbol de cada versión (`doc-tree`), se materializa para el sitio (`docs-compose`)
-// y se buildea una vez por versión. Nada de `git worktree`, `pnpm install` ni rebuild de la lib.
+// y se buildea una vez por versión. Nada de `git worktree` ni `pnpm install`.
+//
+// Cada versión usa **su** lib: los demos vanilla consumen `@comegen-shared`, que acá se apunta a la
+// lib versionada de esa versión (`docs/versiones/<id>/lib`, congelada por `docs-freeze`) cuando
+// existe; si no, al build actual (`dist-libs/esm-shared`). Ver la opción `COMEGEN_SHARED_DIR` en
+// `docs/site/.vitepress/config.ts`.
 //
 // Salida agregada:
 //
@@ -162,18 +167,36 @@ const latest = all.find((v) => v.latest);
 const aliasExists = existsSync(join(outDir, "index.html"));
 const needAlias = rootAlias && (opts.force || !aliasExists || pending.some((v) => v.latest));
 
+/**
+ * Directorio de la lib `esm-shared` de una versión (relativo a la raíz del repo), o `null`.
+ * Si la versión lo congeló (`docs/versiones/<id>/lib/`, versionado), se usa; si no, `null` para
+ * que `config.ts` caiga al build actual (`dist-libs/esm-shared`).
+ */
+function sharedDirFor(id) {
+  return existsSync(resolve(root, "docs/versiones", id, "lib")) ? `docs/versiones/${id}/lib` : null;
+}
+
 /** Buildea el sitio con `base` y `out` dados, sobre el árbol compuesto que haya en disco. */
 function buildSite({ base, id, label, out }) {
+  const sharedDir = sharedDirFor(id);
   run("pnpm", ["exec", "vitepress", "build", "docs/site", `--base=${base}`, `--outDir=${out}`], {
-    env: { DOCS_BASE: base, DOCS_VERSION_ID: id, DOCS_VERSION_LABEL: label },
+    env: {
+      DOCS_BASE: base,
+      DOCS_VERSION_ID: id,
+      DOCS_VERSION_LABEL: label,
+      // Sin lib versionada, `config.ts` cae al build actual (`dist-libs/esm-shared`).
+      ...(sharedDir ? { COMEGEN_SHARED_DIR: sharedDir } : {}),
+    },
   });
 }
 
 if (pending.length === 0 && !needAlias) {
   log(`${c.bold("Nada para construir")} — todo presente (usá --force para rehacer)`);
 } else {
-  log(`${c.bold("Preparando")} — lib (esm-shared) y tema de VitePress`);
-  run("pnpm", ["build:docs:lib"]);
+  // La lib actual sólo hace falta como fallback de alguna versión sin lib versionada.
+  const needFallback = pending.some((v) => !sharedDirFor(v.id)) || (needAlias && !sharedDirFor(latest.id));
+  log(`${c.bold("Preparando")} — ${needFallback ? "lib (esm-shared) + " : ""}tema de VitePress`);
+  if (needFallback) run("pnpm", ["build:docs:lib"]);
   run("pnpm", ["site:sync"]);
 }
 
@@ -184,7 +207,10 @@ log(`${c.bold("Construyendo")} ${pending.length} versión(es) → ${relative(roo
 for (const version of pending) {
   const { id, label } = version;
   const out = resolve(outDir, id);
-  log(`${c.bold(id)} ${c.dim(`→ ${baseOf(version)}`)}`);
+  const sharedDir = sharedDirFor(id);
+  log(
+    `${c.bold(id)} ${c.dim(`→ ${baseOf(version)}`)} ${c.dim(`· lib: ${sharedDir ?? "dist-libs/esm-shared (fallback)"}`)}`,
+  );
   compose(id);
   buildSite({ base: baseOf(version), id, label, out });
   log(`  ${c.green("✓")} ${collectRoutes(out).length} rutas`);

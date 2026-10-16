@@ -22,7 +22,7 @@ onMounted(async () => {
   } catch (err) {
     failed.value = true;
     console.error(
-      "[docs] no pude cargar los custom elements de `dist-libs/esm-shared`. Corré `pnpm build:lib`.",
+      "[docs] no pude cargar los custom elements del build `esm-shared`. Corré `pnpm build:lib`.",
       err,
     );
   }
