@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-// scripts/docs-versions.mjs — Construye y agrega las versiones de la documentación.
+// scripts/docs-versions.mjs — Compone y agrega las versiones de la documentación.
 //
-// Modelo: **un sitio estático por versión** (no hay swap en runtime). Cada versión
-// se sirve bajo su propia base `/<id>/`; `latest` se construye desde el árbol de
-// trabajo y, además, deja una copia en la raíz `/` para que las URLs sin versión
-// (las históricas, y las que referencian READMEs/skills) sigan funcionando.
+// Modelo: **un sitio estático por versión** (no hay swap en runtime). La doc es la fuente y está
+// versionada con overlay (ver `docs/notes/13-doc-versionada.md`): acá **no** se reconstruye desde el
+// tag. Se resuelve el árbol de cada versión (`doc-tree`), se materializa para el sitio (`docs-compose`)
+// y se buildea una vez por versión. Nada de `git worktree`, `pnpm install` ni rebuild de la lib.
 //
 // Salida agregada:
 //
@@ -14,21 +14,23 @@
 //   <out>/versions.json    ← catálogo que lee el select del topbar
 //
 // Uso:
-//   node scripts/docs-versions.mjs [--out <dir>] [--only id,id] [--list]
-//                                  [--keep] [--no-install] [--no-root-alias] [--force]
+//   node scripts/docs-versions.mjs [--out <dir>] [--only id,id] [--list] [--force] [--no-root-alias]
 //
-// Requiere `pnpm` y los refs del manifiesto (`docs/versions.json`). Las versiones
-// congeladas se construyen en un worktree descartable de su ref de git.
+// Reconstruye sólo lo que falta (una versión cuyo `<out>/<id>/index.html` ya existe se saltea) salvo
+// `--force`. `--only id` limita a esas versiones. No borra la carpeta de salida entera: sólo rehace
+// lo que corresponde.
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { compose } from "./docs-compose.mjs";
+import { latestId } from "./doc-tree.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const manifestPath = resolve(root, "docs/versions.json");
 
-// /tmp/opencode es el temporal aprobado por el entorno.
-const worktreeRoot = process.env.DOCS_VERSIONS_WORKTREES ?? "/tmp/opencode/docs-versions";
+// /tmp/opencode es el temporal aprobado por el entorno (el alias raíz se buildea ahí).
+const tmpBase = process.env.DOCS_VERSIONS_TMP ?? "/tmp/opencode";
 
 const c = {
   dim: (s) => `\x1b[2m${s}\x1b[0m`,
@@ -47,35 +49,20 @@ function fail(message) {
   process.exit(1);
 }
 
-function run(cmd, args, { cwd = root, env = {}, capture = false } = {}) {
-  return execFileSync(cmd, args, {
-    cwd,
-    env: { ...process.env, ...env },
-    stdio: capture ? ["ignore", "pipe", "inherit"] : "inherit",
-    encoding: "utf-8",
-  });
+function run(cmd, args, { env = {} } = {}) {
+  execFileSync(cmd, args, { cwd: root, env: { ...process.env, ...env }, stdio: "inherit" });
 }
 
 // ---------------------------------------------------------------------------
 // Argumentos
 // ---------------------------------------------------------------------------
 const argv = process.argv.slice(2);
-const opts = {
-  out: "docs/site/.vitepress/dist-versions",
-  only: null,
-  list: false,
-  keep: false,
-  install: true,
-  rootAlias: null,
-  force: false,
-};
+const opts = { out: "docs/site/.vitepress/dist-versions", only: null, list: false, rootAlias: null, force: false };
 for (let i = 0; i < argv.length; i++) {
   const arg = argv[i];
   if (arg === "--out") opts.out = argv[++i];
   else if (arg === "--only") opts.only = (argv[++i] ?? "").split(",").map((s) => s.trim()).filter(Boolean);
   else if (arg === "--list") opts.list = true;
-  else if (arg === "--keep") opts.keep = true;
-  else if (arg === "--no-install") opts.install = false;
   else if (arg === "--no-root-alias") opts.rootAlias = false;
   else if (arg === "--force") opts.force = true;
   else if (arg === "--help" || arg === "-h") {
@@ -84,12 +71,10 @@ for (let i = 0; i < argv.length; i++) {
         "node scripts/docs-versions.mjs [opciones]",
         "",
         "  --out <dir>       destino agregado (default docs/site/.vitepress/dist-versions)",
-        "  --only id,id      construye sólo esas versiones (latest se agrega igual si está)",
+        "  --only id,id      compone y buildea sólo esas versiones",
         "  --list            muestra el manifiesto y sale",
-        "  --keep            no borra los worktrees temporales",
-        "  --no-install      no corre pnpm install en los worktrees",
+        "  --force           rehace las versiones cuyo output ya existe",
         "  --no-root-alias   no deja la copia de latest en / (sólo /<id>/)",
-        "  --force           permite limpiar un --out que no parece de build",
       ].join("\n"),
     );
     process.exit(0);
@@ -126,21 +111,18 @@ if (opts.list) {
   process.exit(0);
 }
 
-// Orden: latest primero (así su barrido de rutas no ve las carpetas de las otras).
-const selected = all
-  .filter((v) => v.latest || !opts.only || opts.only.includes(v.id))
-  .sort((a, b) => Number(b.latest) - Number(a.latest));
+const selected = opts.only ? all.filter((v) => opts.only.includes(v.id)) : all;
+if (opts.only) {
+  const unknown = opts.only.filter((id) => !all.some((v) => v.id === id));
+  if (unknown.length) fail(`--only: versiones desconocidas en el manifiesto: ${unknown.join(", ")}`);
+}
 
 const outDir = resolve(root, opts.out);
-// Sólo se limpia un destino que parece de build (dentro de .vitepress o con el
-// nombre por defecto), salvo --force: evita rm -rf de una carpeta ajena.
-if (existsSync(outDir)) {
+// Sólo se escribe en un destino que parece de build (dentro de .vitepress o con el nombre por
+// defecto), salvo --force: evita pisar una carpeta ajena.
+if (existsSync(outDir) && !opts.force) {
   const looksLikeBuild = outDir.includes(".vitepress") || /dist-versions$/.test(outDir);
-  if (!looksLikeBuild && !opts.force) {
-    fail(`--out ${outDir} no parece un directorio de build; usá --force si estás seguro`);
-  }
-  log(`limpiando ${relative(root, outDir)}`);
-  rmSync(outDir, { recursive: true, force: true });
+  if (!looksLikeBuild) fail(`--out ${outDir} no parece un directorio de build; usá --force si estás seguro`);
 }
 mkdirSync(outDir, { recursive: true });
 
@@ -171,111 +153,90 @@ function collectRoutes(dir) {
 }
 
 // ---------------------------------------------------------------------------
-// Build
+// Preparación: lib (para los demos) y tema, una sola vez
 // ---------------------------------------------------------------------------
-/** Corre los pasos de build del sitio en `cwd`, con `base` y metadatos de versión. */
-function buildSite({ cwd, base, id, label, out }) {
-  const env = { DOCS_BASE: base, DOCS_VERSION_ID: id, DOCS_VERSION_LABEL: label };
-  const steps = [
-    ["pnpm", ["build:docs:lib"], "lib (esm-shared) para los demos"],
-    ["pnpm", ["site:sync"], "tema de VitePress"],
-    ["pnpm", ["exec", "vitepress", "build", "docs/site", `--base=${base}`, `--outDir=${out}`], `sitio (base ${base})`],
-  ];
-  for (const [cmd, args, what] of steps) {
-    log(`  · ${what}`);
-    run(cmd, args, { cwd, env });
-  }
+// Con --only se rehace siempre lo pedido; sin --only, se saltea lo que ya está (salvo --force).
+const needsBuild = (v) => opts.force || opts.only || !existsSync(join(outDir, v.id, "index.html"));
+const pending = selected.filter(needsBuild);
+const latest = all.find((v) => v.latest);
+const aliasExists = existsSync(join(outDir, "index.html"));
+const needAlias = rootAlias && (opts.force || !aliasExists || pending.some((v) => v.latest));
+
+/** Buildea el sitio con `base` y `out` dados, sobre el árbol compuesto que haya en disco. */
+function buildSite({ base, id, label, out }) {
+  run("pnpm", ["exec", "vitepress", "build", "docs/site", `--base=${base}`, `--outDir=${out}`], {
+    env: { DOCS_BASE: base, DOCS_VERSION_ID: id, DOCS_VERSION_LABEL: label },
+  });
 }
 
-const worktrees = [];
-function withWorktree(ref, id, fn) {
-  mkdirSync(worktreeRoot, { recursive: true });
-  const dir = resolve(worktreeRoot, id);
-  if (existsSync(dir)) rmSync(dir, { recursive: true, force: true });
-  try {
-    run("git", ["rev-parse", "--verify", `${ref}^{commit}`], { capture: true });
-  } catch {
-    fail(`el ref '${ref}' de la versión ${id} no existe en este repo`);
-  }
-  log(`  · worktree ${dir} @ ${ref}`);
-  run("git", ["worktree", "add", "--detach", dir, ref]);
-  worktrees.push(dir);
-  try {
-    if (opts.install) {
-      log("  · pnpm install");
-      run("pnpm", ["install", "--frozen-lockfile"], { cwd: dir });
-    }
-    fn(dir);
-  } finally {
-    if (!opts.keep) {
-      run("git", ["worktree", "remove", "--force", dir]);
-      worktrees.pop();
-    } else {
-      log(c.yellow(`  · worktree conservado: ${dir}`));
-    }
-  }
+if (pending.length === 0 && !needAlias) {
+  log(`${c.bold("Nada para construir")} — todo presente (usá --force para rehacer)`);
+} else {
+  log(`${c.bold("Preparando")} — lib (esm-shared) y tema de VitePress`);
+  run("pnpm", ["build:docs:lib"]);
+  run("pnpm", ["site:sync"]);
 }
 
-const routesById = {};
-log(`${c.bold("Construyendo")} ${selected.length} versión(es) → ${relative(root, outDir)}`);
-
-for (const version of selected) {
+// ---------------------------------------------------------------------------
+// Build por versión (componiendo su árbol resuelto antes de cada una)
+// ---------------------------------------------------------------------------
+log(`${c.bold("Construyendo")} ${pending.length} versión(es) → ${relative(root, outDir)}`);
+for (const version of pending) {
   const { id, label } = version;
-  const base = baseOf(version);
-  log(`${c.bold(id)} ${c.dim(`(${version.ref} → ${base})`)}`);
   const out = resolve(outDir, id);
-
-  if (version.latest) {
-    // Alias en `/` primero: el build de VitePress vacía su `outDir`, así que el
-    // de la raíz tiene que correr antes de que existan las subcarpetas de versión.
-    if (rootAlias) {
-      buildSite({ cwd: root, base: "/", id, label, out: outDir });
-    }
-    // Canónica versionada `/<id>/` (URL estable cuando la versión se congela).
-    buildSite({ cwd: root, base, id, label, out });
-    routesById[id] = collectRoutes(out);
-  } else {
-    withWorktree(version.ref, id, (dir) => buildSite({ cwd: dir, base, id, label, out }));
-    routesById[id] = collectRoutes(out);
-  }
-  log(`  ${c.green("✓")} ${routesById[id].length} rutas`);
+  log(`${c.bold(id)} ${c.dim(`→ ${baseOf(version)}`)}`);
+  compose(id);
+  buildSite({ base: baseOf(version), id, label, out });
+  log(`  ${c.green("✓")} ${collectRoutes(out).length} rutas`);
 }
 
 // ---------------------------------------------------------------------------
-// Catálogo (lo lee DocsVersionSelect en runtime)
+// Alias raíz (`/` = latest): en un temporal y se copia sobre <out>/
 // ---------------------------------------------------------------------------
+// VitePress **vacía su outDir**: por eso el alias no se buildea directo en `<out>/` (se llevaría
+// las carpetas de versión). Se construye aparte y se copia encima.
+if (needAlias) {
+  log(`${c.bold("alias /")} ${c.dim(`copia de ${latest.id}`)}`);
+  mkdirSync(tmpBase, { recursive: true });
+  const tmp = mkdtempSync(join(tmpBase, "docs-versions-root-"));
+  try {
+    compose(latest.id);
+    buildSite({ base: "/", id: latest.id, label: latest.label, out: tmp });
+    cpSync(tmp, outDir, { recursive: true });
+  } finally {
+    rmSync(tmp, { recursive: true, force: true });
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Catálogo (lo lee DocsVersionSelect en runtime): todas las versiones **presentes**
+// ---------------------------------------------------------------------------
+const present = all.filter((v) => existsSync(join(outDir, v.id, "index.html")));
 const catalog = {
   generatedAt: new Date().toISOString(),
-  rootAlias,
-  // Sólo las versiones construidas: con `--only`, las no construidas no deben
-  // aparecer en el select (linkearían a carpetas que no existen en esta salida).
-  versions: selected.map((v) => ({
+  rootAlias: rootAlias && existsSync(join(outDir, "index.html")),
+  versions: present.map((v) => ({
     id: v.id,
     label: v.label,
     base: baseOf(v),
     latest: !!v.latest,
-    routes: routesById[v.id] ?? [],
+    routes: collectRoutes(join(outDir, v.id)),
   })),
 };
 
 const catalogJson = `${JSON.stringify(catalog, null, 2)}\n`;
 // En la raíz (lo fetcha el alias `/`) y en cada versión (lo fetcha `/<id>/`).
 writeFileSync(join(outDir, "versions.json"), catalogJson);
-for (const version of selected) {
-  writeFileSync(join(outDir, version.id, "versions.json"), catalogJson);
-}
-log(`${c.green("✓")} catálogo: ${c.dim(relative(root, join(outDir, "versions.json")))}`);
+for (const v of present) writeFileSync(join(outDir, v.id, "versions.json"), catalogJson);
+log(`${c.green("✓")} catálogo: ${present.length} versión(es) — ${c.dim(relative(root, join(outDir, "versions.json")))}`);
 
 // ---------------------------------------------------------------------------
-// Limpieza
+// Dejar el árbol compuesto apuntando a latest (como estaba)
 // ---------------------------------------------------------------------------
-if (!opts.keep) {
-  for (const dir of worktrees) rmSync(dir, { recursive: true, force: true });
-  run("git", ["worktree", "prune"]);
-}
+compose(latestId());
 
 log(`${c.bold(c.green("listo"))} — serví ${c.dim(relative(root, outDir))} como sitio estático`);
 for (const v of catalog.versions) {
   log(`  ${v.latest ? "★ latest" : `  ${v.id}   `}  ${v.base}`);
 }
-if (rootAlias) log(`    alias    /  ${c.dim(`(copia de latest, sin versión)`)}`);
+if (catalog.rootAlias) log(`    alias    /  ${c.dim("(copia de latest, sin versión)")}`);
