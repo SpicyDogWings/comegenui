@@ -1,6 +1,7 @@
 <!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
+| `modelValue` | `string` | `""` | — |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"primary"` | — |
 | `variant` | `"solid" \| "soft" \| "ghost" \| "boxed"` | `"ghost"` | — |
 | `size` | `"sm" \| "md" \| "lg"` | `"md"` | — |

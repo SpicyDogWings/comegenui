@@ -88,9 +88,9 @@ const props = defineProps({
   border: { type: Boolean, default: false },
   /** Activa el rango a dos meses (dual). **Implica `range`**: aunque `mode` sea `single`, el picker selecciona un rango */
   dualCalendar: { type: Boolean, default: false },
-  /** `right` */
+  /** Lado donde aparece el panel: `bottom`, `top`, `left`, `right` */
   position: { type: String as PropType<'bottom' | 'top' | 'left' | 'right'>, default: 'bottom' },
-  /** `end` */
+  /** Alineación respecto al trigger: `start`, `center`, `end` */
   align: { type: String as PropType<'start' | 'center' | 'end'>, default: 'start' },
   /** Panel en `position: fixed` (útil en contenedores con overflow) */
   fixed: { type: Boolean, default: false },

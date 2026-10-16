@@ -83,6 +83,7 @@ Los valores de `color` / `size` están en «Atributos» / «Props», abajo.
 <!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
+| `modelValue` | `boolean` | `false` | — |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
 | `size` | `"sm" \| "md"` | `"md"` | — |
 | `disabled` | `boolean` | `false` | — |

@@ -291,11 +291,32 @@ function ceBlocks({ ce, vue, tag }) {
   return { atributos: attrs, eventos: events, slots, metodos }
 }
 
+/**
+ * `defineModel<T>({ default })` es una prop real pero `vue-component-meta` no la reporta
+ * (no está en `defineProps`): la leemos del SFC para no perderla en la tabla.
+ */
+function defineModelOf(vue) {
+  let source
+  try {
+    source = readFileSync(resolve(ROOT, vue), 'utf8')
+  } catch {
+    return null
+  }
+  const match = /defineModel(?:<([^>]*)>)?\(\s*(\{[^}]*\})?/.exec(source)
+  if (!match) return null
+  const def = /default:\s*([^,}]+)/.exec(match[2] ?? '')
+  return { type: (match[1] || 'any').trim(), default: def ? def[1].trim() : '—' }
+}
+
 function vueBlocks({ vue }) {
   const m = meta(vue)
-  const props = m.props.length
-    ? table(['Prop', 'Tipo', 'Default', 'Descripción'],
-        m.props.map((p) => [`\`${p.name}\``, `\`${p.type}\``, `\`${defaultOf(p)}\``, p.description || '—']))
+  const model = defineModelOf(vue)
+  const propRows = m.props.map((p) => [`\`${p.name}\``, `\`${p.type}\``, `\`${defaultOf(p)}\``, p.description || '—'])
+  if (model && !m.props.some((p) => p.name === 'modelValue')) {
+    propRows.unshift([`\`modelValue\``, `\`${model.type}\``, `\`${model.default}\``, '—'])
+  }
+  const props = propRows.length
+    ? table(['Prop', 'Tipo', 'Default', 'Descripción'], propRows)
     : 'Ninguna.'
   const events = vueEvents(vue)
   const emits = events.length

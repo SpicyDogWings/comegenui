@@ -6,8 +6,8 @@
 | `mode` | `"single" \| "range"` | `'single'` | Tipo de calendario: `single` (una fecha) o `range` (inicio + fin). Con `dual-calendar` el tipo es dual (range, 2 meses) |
 | `disabled` | `boolean` | `false` | Deshabilita el picker completo |
 | `placeholder` | `string` | `''` | Texto cuando no hay fecha (default: `"Seleccionar fecha..."`, rango: `"Seleccionar rango..."`) |
-| `position` | `"left" \| "right" \| "bottom" \| "top"` | `'bottom'` | `right` |
-| `align` | `"center" \| "start" \| "end"` | `'start'` | `end` |
+| `position` | `"left" \| "right" \| "bottom" \| "top"` | `'bottom'` | Lado donde aparece el panel: `bottom`, `top`, `left`, `right` |
+| `align` | `"center" \| "start" \| "end"` | `'start'` | Alineación respecto al trigger: `start`, `center`, `end` |
 | `fixed` | `boolean` | `false` | Panel en `position: fixed` (útil en contenedores con overflow) |
 | `model-value` | `string \| number \| Date \| null` | `null` | Fecha seleccionada (calendario `single`) |
 | `label` | `string` | `''` | Texto del label sobre el picker |

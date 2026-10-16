@@ -138,11 +138,11 @@ function nextMonth() { calendarRef.value?.nextMonth() }
 function prevMonth() { calendarRef.value?.prevMonth() }
 /** Navega al mes de la fecha dada */
 function goToMonth(value: string | number | Date) { calendarRef.value?.goToMonth(value) }
-/** null` con la fecha seleccionada */
+/** Devuelve la fecha seleccionada (modo `single`) */
 function getValue(): Date | null { return calendarRef.value?.getValue() ?? null }
 /** Selecciona una fecha (acepta string/number/Date) */
 function setValue(value: string | number | Date | null) { calendarRef.value?.setValue(value) }
-/** null` con el rango seleccionado (modo `range`) */
+/** Devuelve el rango seleccionado (modo `range`) */
 function getRange(): { start: Date | null; end: Date | null } {
   return calendarRef.value?.getRange() ?? { start: null, end: null }
 }
