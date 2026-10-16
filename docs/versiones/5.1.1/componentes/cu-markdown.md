@@ -35,7 +35,7 @@ const x = 1;
 > El contenido se pasa como **texto dentro del tag**, no como prop, y se parsea **una vez al
 > montarse**: para actualizarlo hay que reemplazar el texto interno y volver a montar.
 > Las tablas se renderizan con `<cu-table>`, los code blocks con `<cu-code-block>`, el HTML se
-> sanitiza con DOMPurify y los tokens del tema se inyectan en el shadow DOM.
+> sanitiza con DOMPurify y los tokens del tema los aporta el CSS del host.
 
 ## Encabezados
 
