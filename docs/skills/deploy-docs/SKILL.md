@@ -12,6 +12,11 @@ metadata:
 El sitio se publica **estático, por CLI**: no hay build en Vercel ni Git integration (Vercel clonaría
 sin el `dist`, que está gitignored). Se sube la carpeta ya construida al proyecto `comegenui-docs`.
 
+> **Primero, `generate-release`.** Deployar asume que la release ya está preparada y cortada: versión
+> y tag, manifiesto con su `latest`, doc congelada (con su lib), changelog + breaking, gate verde y
+> PR mergeado. Si falta algo de eso, empezá por `generate-release`; acá sólo se construye la salida
+> agregada y se publica.
+
 ## Cuándo NO
 
 - Preparar/cortar una release (tag, manifiesto, zips, changelog) → `generate-release`.
@@ -19,8 +24,10 @@ sin el `dist`, que está gitignored). Se sube la carpeta ya construida al proyec
 
 ## Precondiciones
 
+- **La release está preparada** (skill `generate-release`): versión cortada, tag pusheado, manifiesto
+  con una sola `latest`, doc de esa versión congelada **con su lib** (`docs/versiones/<id>/lib/`),
+  changelog + página de breaking, y el gate verde.
 - `vercel whoami` responde (si no: `pnpm dlx vercel login`).
-- El gate verde: `./scripts/guard.sh --full`.
 - Saber **qué** publicás: la doc versionada se construye **antes** de subir (el deploy no buildea).
 
 ## Dos salidas, dos comandos
