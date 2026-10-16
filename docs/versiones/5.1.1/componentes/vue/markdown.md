@@ -42,7 +42,7 @@ En HTML plano, cargá el bundle `CuMarkdown` (ver [ficha vanilla](/componentes/c
 > actualizarlo hay que remontar el componente. En un `.vue` **no** sirve el texto multilínea
 > literal (Vue colapsa los saltos de línea): pasalo por interpolación.
 > Las tablas se renderizan con `<Table>`, los code blocks con `<CodeBlock>`, el HTML se sanitiza
-> con DOMPurify y los tokens del tema se inyectan en el shadow DOM.
+> con DOMPurify y los tokens del tema los aporta el CSS del host.
 
 ## Encabezados
 
