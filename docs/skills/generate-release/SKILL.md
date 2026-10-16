@@ -37,8 +37,8 @@ Seguí los pasos en orden; cortá al primer fallo.
 
 ### 1. Versión y metadata
 
-Si hay que bumpear, editá `version` en `package.json` **y** `metadata.version` en las **seis**
-`SKILL.md` (`skills/use-comegen/` + `docs/skills/{comegen-preflight,documenter,generate-release,marked,release-changelog}/`).
+Ya no hay «cinco»: son **siete** `SKILL.md` con `metadata.version` atada a `package.json`
+(`skills/use-comegen/` + `docs/skills/{comegen-preflight,deploy-docs,documenter,generate-release,marked,release-changelog}/`).
 
 ### 2. Doc al día
 
@@ -133,7 +133,7 @@ gh release create v<version> dist-libs/*.zip --notes-file .release/v<version>.md
 
 - [ ] Fichas, recetas y páginas de lo que cambió, al día.
 - [ ] Changelog + breaking changes del salto (si rompe algo).
-- [ ] `metadata.version` de las seis `SKILL.md` = `package.json`.
+- [ ] `metadata.version` de las siete `SKILL.md` = `package.json`.
 - [ ] `pnpm test` y `./scripts/guard.sh --full` verdes.
 - [ ] `pnpm build` y `pnpm build:lib` OK.
 - [ ] Los 4 `dist-libs/comegenui-<config>-v<version>.zip` con sus bundles (+ runtime del `shared`).
