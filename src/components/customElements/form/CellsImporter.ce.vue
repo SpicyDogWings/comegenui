@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import { ref, getCurrentInstance, type PropType } from "vue";
 import CellsImporter from "../../form/CellsImporter.vue";
-import { initTokens } from "@/plugins/cu-tokens/css";
 import type { CellColumn, CellError } from "@/utils/cellsImporter";
-
-initTokens();
 
 const props = defineProps({
   /** Esquema de columnas (header esperado, tipo y reglas). **Obligatorio.** */

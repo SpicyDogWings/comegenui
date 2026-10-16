@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { getCurrentInstance, type PropType } from "vue";
 import Card from "../../information/Card.vue";
-import { initTokens } from "@/plugins/cu-tokens/css";
-
-initTokens();
 
 const props = defineProps({
   /** Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` */

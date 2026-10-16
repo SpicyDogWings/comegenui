@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import Avatar from "../../information/Avatar.vue";
-import { initTokens } from "@/plugins/cu-tokens/css";
 import type { PropType } from "vue";
-
-initTokens();
 
 const props = defineProps({
   /** Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger`. Si se omite, se elige por hash de las iniciales */

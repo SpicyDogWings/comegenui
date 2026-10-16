@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import CommandPalette from "../../overlay/CommandPalette.vue";
-import { initTokens } from "@/plugins/cu-tokens/css";
 import { ref, type PropType } from "vue";
-
-initTokens();
 
 interface CommandItem {
   id: string;

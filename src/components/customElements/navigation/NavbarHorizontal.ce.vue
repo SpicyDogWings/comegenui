@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { type PropType } from "vue";
 import NavbarHorizontal from "../../navigation/NavbarHorizontal.vue";
-import { initTokens } from "@/plugins/cu-tokens/css";
-
-initTokens();
 
 const props = defineProps({
   /** Estructura de navegación. **Se asigna como propiedad JS** */

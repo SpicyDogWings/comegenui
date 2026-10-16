@@ -237,7 +237,7 @@ filas, sin `search-enabled` no hay buscador):
    componente expone una prop `theme` propia.
 6. **Métodos**: en CE sobre el host (`el.open()`, `el.set(v)`), en Vue por template ref
    (`ref.value?.open()`). No todos exponen: Button, Badge, AuthorCard, Navbar y Pagination no.
-7. **Mismo componente, dos entornos**: el CE vive en **shadow DOM** (estilos y tokens
-   aislados; contenido por `slot="nombre"` nativo); el `.vue` **no** (los estilos del sitio
+7. **Mismo componente, dos entornos**: el CE vive en **shadow DOM** (estilos aislados, los tokens
+   del host cruzan el boundary; contenido por `slot="nombre"` nativo); el `.vue` **no** (los estilos del sitio
    aplican; slots con `<template #nombre>`). Un CE reenvía a un `.vue` interno, así que
    puede haber diferencias puntuales — si la ficha y el código no coinciden, gana el código.

@@ -67,12 +67,11 @@ Los colores de los temas viven en `comegen.config.json`, la **fuente de verdad**
 `gruvbox-dark`, `gruvbox-light`, `rose-pine`, `rose-pine-moon`, `rose-pine-dawn`,
 `catppuccin-latte`, `catppuccin-frappe`, `catppuccin-macchiato`, `catppuccin-mocha`.
 
-Un tema puede definir **sólo** los colores que cambia: el resto sale del default de la lib.
+Un tema puede definir **sólo** los colores que cambia: el resto sale del tema `light` (el default).
 
-::: tip Hoy
-Los bundles inyectan los tokens del **tema default**; los demás temas los sirve este sitio (salen
-del mismo `comegen.config.json`). En tu app, definí vos los tokens del tema que quieras usar —tres
-líneas de CSS, ver [Configuración](/configuracion).
+::: tip
+Los bundles **no traen tokens**: definí `[data-theme="…"] { --cu-color-*: … }` con los hex de
+`comegen.config.json`. Este sitio ya los tiene; en tu app, ver [Configuración](/configuracion).
 :::
 
 ## Agregar un tema nuevo
@@ -91,8 +90,8 @@ líneas de CSS, ver [Configuración](/configuracion).
 }
 ```
 
-2. Regenerá los tokens (en el repo, `pnpm site:sync` para este sitio; `pnpm build:lib` para los
-   bundles).
+2. Regenerá los tokens del sitio con `pnpm site:sync`; en tu app, copiá los hex que uses a tu CSS
+   (los bundles no incluyen tokens).
 3. Usalo: `<html data-theme="mi-marca">`.
 
 El mismo `data-theme` sirve para pisar un tema existente en un rincón de la página: definí el

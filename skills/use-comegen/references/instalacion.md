@@ -16,8 +16,8 @@ Dentro de cada zip, los bundles comparten nombre: `CuX.umd.js` (UMD) o `CuX.js` 
 `shared` traen su runtime en la misma carpeta: `comegen-vue.global.js` (UMD) o `comegen-vue.js`
 (ESM).
 
-No hay dependencias que instalar ni CSS que cargar: cada bundle se auto-registra
-(`defineComegenElement('cu-x', …)`) y los tokens del tema se inyectan solos (`initTokens()`).
+No hay dependencias que instalar: cada bundle se auto-registra (`defineComegenElement('cu-x', …)`) y
+los tokens del tema los aporta tu CSS (no viajan en el zip).
 
 ## UMD (navegador, sin bundler)
 
@@ -71,7 +71,7 @@ instalado; así se dedupea con tu app) o, en un host sin bundler (p. ej. PHP/van
 Se reemplazan archivos, no hay instalador:
 
 - Copiá los bundles nuevos (podés copiar sólo los que usás). En las configs `shared`, copiá
-  también el runtime. No hay CSS que copiar: los tokens se inyectan solos.
+  también el runtime. No hay archivo de estilos en el zip: los tokens los aporta tu CSS.
 - Si un componente "no cambia nada" después de actualizar, casi siempre quedó el bundle viejo
   en la carpeta o el navegador lo tiene cacheado.
 - Para confirmar qué versión y **tipo de build** está cargado: `customElements.get('cu-x').comegen`

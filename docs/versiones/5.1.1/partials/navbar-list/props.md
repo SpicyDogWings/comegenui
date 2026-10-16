@@ -1,7 +1,7 @@
 <!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
-| `modelValue` | `string` | `—` | — |
+| `query` | `string` | `''` | — |
 | `searchPlaceholder` | `string` | `'Buscar...'` | Placeholder del buscador. |
 | `searchFields` | `string[]` | `[]` | Campos sobre los que busca el filtro. |
 | `compact` | `boolean` | `false` | Modo compacto: solo iconos o la inicial. |

@@ -302,18 +302,21 @@ function defineModelOf(vue) {
   } catch {
     return null
   }
-  const match = /defineModel(?:<([^>]*)>)?\(\s*(\{[^}]*\})?/.exec(source)
-  if (!match) return null
-  const def = /default:\s*([^,}]+)/.exec(match[2] ?? '')
-  return { type: (match[1] || 'any').trim(), default: def ? def[1].trim() : '—' }
+  const call = /defineModel(?:<([^>]*)>)?\(([^)]*)\)/.exec(source)
+  if (!call) return null
+  const args = call[2]
+  // `defineModel('query')` → prop `query`; sin nombre → `modelValue`.
+  const name = /(['"])([\w-]+)\1/.exec(args)?.[2] ?? 'modelValue'
+  const def = /default:\s*([^,}]+)/.exec(args)
+  return { name, type: (call[1] || 'any').trim(), default: def ? def[1].trim() : '—' }
 }
 
 function vueBlocks({ vue }) {
   const m = meta(vue)
   const model = defineModelOf(vue)
   const propRows = m.props.map((p) => [`\`${p.name}\``, `\`${p.type}\``, `\`${defaultOf(p)}\``, p.description || '—'])
-  if (model && !m.props.some((p) => p.name === 'modelValue')) {
-    propRows.unshift([`\`modelValue\``, `\`${model.type}\``, `\`${model.default}\``, '—'])
+  if (model && !m.props.some((p) => p.name === model.name)) {
+    propRows.unshift([`\`${model.name}\``, `\`${model.type}\``, `\`${model.default}\``, '—'])
   }
   const props = propRows.length
     ? table(['Prop', 'Tipo', 'Default', 'Descripción'], propRows)

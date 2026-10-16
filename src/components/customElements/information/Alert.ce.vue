@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { ref, getCurrentInstance, type PropType } from "vue";
 import Alert from "../../information/Alert.vue";
-import { initTokens } from "@/plugins/cu-tokens/css";
-
-initTokens();
 
 const props = defineProps({
   /** Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` */

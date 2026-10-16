@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import Tooltip from "../../overlay/Tooltip.vue";
-import { initTokens } from "@/plugins/cu-tokens/css";
 import { computed, useSlots, type PropType } from "vue";
-
-initTokens();
 
 const props = defineProps({
   /** Texto del tooltip. Si se usa el slot `content`, tiene prioridad */

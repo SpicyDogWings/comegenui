@@ -167,7 +167,7 @@ const colorStyles = computed(() => ({
 - Importa `MiComponente.vue`
 - Define props con nombres semánticos (`"primary"`, `"neutral"`)
 - **Pasa props explícitamente** al `.vue` (NO usar `v-bind="{...props}"`)
-- Puede importar `initTokens()` si el `.ts` no lo hace
+- **No** llama `initTokens()`: el tema lo aporta el CSS del host
 - Forwardea slots y eventos
 - **Slots:** usa sintaxis Vue `<template #nombre>` o HTML `slot="nombre"` (ver nota abajo)
 - Expone métodos via `defineExpose` delegando al ref interno
@@ -195,16 +195,13 @@ function ceEmit(event: string, payload: unknown) {
 
 - Importa `defineComegenElement` de `@/utils/comegen-element`
 - Importa el `.ce.vue` (o `.vue` si no hay wrapper CE)
-- Llama `initTokens()` si el `.ce.vue` no lo hace
+- **No** llama `initTokens()`: los tokens del tema los aporta el host
 - Registra el Custom Element (y le adjunta los metadatos de bundle)
 - Exporta el componente
 
 ```ts
 import Component from '@/components/customElements/{category}/Component.ce.vue'
-import { initTokens } from '@/plugins/cu-tokens/css'
 import { defineComegenElement } from '@/utils/comegen-element'
-
-initTokens()
 
 const CuComponent = defineComegenElement('cu-component', Component)
 
@@ -216,7 +213,9 @@ export default CuComponent
 > `<cu-x--v…>` para que convivan versiones distintas, y expone `CuX.comegen` / `el.comegen`
 > (`{ lib, name, tag, version, versionedTag }`). El `version` lo inyecta `build-lib.ts` en cada UMD.
 
-> **`initTokens()`** inyecta un `<style>` con los CSS custom properties del tema activo. Debe llamarse una vez por componente UMD, ya sea en el `.ce.vue` o en el `.ts`.
+> Los componentes **no** inyectan tokens: el tema lo define el host con CSS custom properties
+> (`--cu-color-*`); el sitio genera su CSS con `pnpm site:sync` desde `comegen.config.json` (fuente
+> de verdad de los 15 temas).
 
 ---
 
@@ -231,7 +230,7 @@ Usuario pasa color="primary" (string semántico)
         ↓
 .vue resuelve via CSS: var(--cu-color-primary)
         ↓
-CSS tokens (inyectados en runtime por `initTokens()`) resuelven el hex según el tema activo
+CSS tokens (los define el host en `:root` / `[data-theme="…"]`) resuelven el hex según el tema activo
 ```
 
 **Ya NO se usa `getHostTheme()` + `getColorMap()` para convertir a hex** (excepto en `Label.ce.vue` que es transicional). El patrón moderno usa CSS custom properties directamente.
@@ -283,7 +282,8 @@ Tokens compartidos: tipografía, spacing, border-radius, shadows, borders.
 - `UnoCSS({ mode: "shadow-dom" })`
 - Genera el runtime de cada `shared`: `comegen-vue.global.js` (IIFE, namespace propio `__COMEGEN_VUE__`, no toca `window.Vue`) y `comegen-vue.js` (ESM, para import map del host).
 - Cada config sale en `dist-libs/<config>/`; los 4 zips quedan sueltos en `dist-libs/` (`comegenui-<config>-v{version}.zip`).
-- **No genera CSS** ni copia `public/` (img/ico): los tokens del tema se inyectan en runtime (`initTokens()`).
+- **No genera CSS** ni copia `public/` (img/ico): los tokens del tema los aporta el CSS del host y
+  no viajan en el zip.
 - **El zip lleva SOLO la lib**: los bundles de esa config + el runtime del `shared` si aplica. No incluye documentación (vive en `docs/versiones/5.1.1/componentes/`), ni skill, ni instalador/actualizador (la instalación es manual: descomprimir el zip).
 - **Cada bundle embebe el tipo de build**: además de `version`, `__COMEGEN_META__` lleva `format`, `variant` y `type` (p. ej. `esm-shared`), expuestos en `customElements.get('cu-x').comegen` / `el.comegen` (ver `docs/site/versionado.md`).
 - `COMEGEN_CONFIGS=esm-shared` limita el build a esa config. Lo usa `build:docs:lib`, que corre antes de `pnpm dev`/`pnpm build` del sitio para que la doc incluya los demos vanilla reales (ver `docs/notes/09-demos-vanilla.md`).
@@ -304,7 +304,7 @@ Tokens compartidos: tipografía, spacing, border-radius, shadows, borders.
 1. Los `.ce.vue` **NO importan sub-componentes `.vue`** — esa responsabilidad es del `.vue`
 2. Los `.ce.vue` pasan props **explícitamente** (nunca `v-bind="{...props}"`)
 3. Los `.vue` resuelven colores via **CSS custom properties** (`var(--cu-color-{name}-*)`)
-4. `initTokens()` debe llamarse en el `.ce.vue` o en el `.ts` (al menos una vez por componente UMD)
+4. Los componentes **no** llaman `initTokens()`: el tema lo define el host por CSS custom properties (`data-theme` → `prefers-color-scheme`)
 5. **Slots:** los `.vue` usan `#nombre` (sintaxis Vue); los `.ce.vue` usan `<template #nombre>` (consistente)
 6. **`defineExpose` en `.ce.vue`:** siempre **arrow functions** (`isOpen: () => ...`), **nunca** getters
 7. Los `.ce.vue`桥edan eventos Vue a CustomEvents via **`ceEmit()`**
@@ -349,9 +349,6 @@ const colorStyles = computed(() => ({
 ```vue
 <script setup lang="ts">
 import Alert from "../../information/Alert.vue";
-import { initTokens } from "@/plugins/cu-tokens/css";
-
-initTokens();
 
 const props = defineProps({
   color: { type: String, default: "neutral" },

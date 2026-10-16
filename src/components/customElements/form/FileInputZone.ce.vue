@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, getCurrentInstance, type PropType } from "vue";
 import FileInputZone from "../../form/FileInputZone.vue";
-import { initTokens } from "@/plugins/cu-tokens/css";
-
-initTokens();
 
 const props = defineProps({
   /** Archivo/s seleccionados */

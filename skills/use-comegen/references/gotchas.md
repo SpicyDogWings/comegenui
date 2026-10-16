@@ -102,6 +102,6 @@ estar saliendo del hijo: mirá la sección "Nota de implementación" de la ficha
 ## 8. El estilo no aparece
 
 - El tema no está donde esperás: revisá `<html data-theme="…">` (o el contenedor con `data-theme`).
-- Los tokens se inyectan con el primer componente, pero **sólo el tema default**: si pediste
-  `dark` o cualquier otro, sus tokens tienen que estar en el CSS del host (`references/theming.md`).
+- Los bundles no traen tokens: si pediste `dark` o cualquier otro tema, sus tokens (y los del
+  default) tienen que estar en el CSS del host (`references/theming.md`).
 - El bundle quedó viejo después de actualizar la lib (mirá `comegen.version`).
