@@ -18,19 +18,20 @@ import { fileURLToPath } from "node:url";
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const LIB_DIR = resolve(root, "src/lib");
 
-// La doc es la fuente y está versionada: `docs/versiones/<id>/` (id = la `latest` del
-// manifiesto). El sitio compone sus páginas desde ahí (ver nota 13).
-const DOC_ID = JSON.parse(readFileSync(resolve(root, "docs/versions.json"), "utf-8")).versions.find(
-  (v) => v.latest,
-)?.id;
-if (!DOC_ID) {
-  console.error("check-docs: el manifiesto (docs/versions.json) no tiene una versión latest");
+// La doc es la fuente (versionada con overlay en `docs/versiones/`) y el sitio la **compone**
+// (`scripts/docs-compose.mjs`) en `docs/{componentes,site/componentes}`. Este gate valida el árbol
+// **compuesto**: es la doc resuelta, así que los `@include` relativos resuelven solos. Como los
+// destinos están gitignoreados, el paso `--docs` del guard corre `docs-compose` antes (ver nota 13).
+const FICHA_DIR = resolve(root, "docs/componentes");
+const FICHA_VUE_DIR = resolve(FICHA_DIR, "vue");
+const SITE_DIR = resolve(root, "docs/site/componentes");
+if (!existsSync(FICHA_DIR) || !existsSync(SITE_DIR)) {
+  console.error(
+    "check-docs: no existe el árbol compuesto (docs/componentes, docs/site/componentes); " +
+      "corré `node scripts/docs-compose.mjs` primero",
+  );
   process.exit(1);
 }
-const DOC_DIR = resolve(root, "docs/versiones", DOC_ID);
-const FICHA_DIR = resolve(DOC_DIR, "componentes");
-const FICHA_VUE_DIR = resolve(FICHA_DIR, "vue");
-const SITE_DIR = resolve(DOC_DIR, "paginas/componentes");
 
 // Tags que definen un custom element pero no se documentan.
 const IGNORED_TAGS = new Set([]);

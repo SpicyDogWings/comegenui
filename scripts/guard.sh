@@ -261,14 +261,16 @@ fi
 # ── docs ─────────────────────────────────────────────────────────────────────
 if has docs; then
   paso "Docs"
-  why "verifico fichas/páginas, las tablas de API y las descripciones vacías"
+  why "compongo la doc versionada y verifico fichas/páginas, las tablas de API y las descripciones vacías"
   DOCS_ARGS=()
   [ -n "$UPDATE" ] && DOCS_ARGS+=(--update)
   set +e
-  node scripts/check-docs.mjs "${DOCS_ARGS[@]}" >"$TMP/docs.log" 2>&1; D1=$?
+  # `check-docs` valida el árbol **compuesto** (gitignoreado), así que hay que componerlo primero.
+  node scripts/docs-compose.mjs >"$TMP/docs.log" 2>&1; D0=$?
+  node scripts/check-docs.mjs "${DOCS_ARGS[@]}" >>"$TMP/docs.log" 2>&1; D1=$?
   node scripts/gen-api.mjs --check "${DOCS_ARGS[@]}" >>"$TMP/docs.log" 2>&1; D2=$?
   set -e
-  if [ "$D1" -ne 0 ] || [ "$D2" -ne 0 ]; then
+  if [ "$D0" -ne 0 ] || [ "$D1" -ne 0 ] || [ "$D2" -ne 0 ]; then
     bad "$(grep -c '✗' "$TMP/docs.log" || true) problema(s) de docs:"
     tail -20 "$TMP/docs.log" | sed 's/^/      /'
     RESUMEN+=("❌ docs"); FAILED=1
