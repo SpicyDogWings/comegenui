@@ -90,6 +90,7 @@ Ninguno.
 <!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
+| `modelValue` | `File \| File[] \| null` | `null` | — |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
 | `maxHeight` | `string` | `""` | — |
 | `disabled` | `boolean` | `false` | — |

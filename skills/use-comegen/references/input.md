@@ -85,6 +85,7 @@ Ninguno.
 <!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
+| `modelValue` | `string` | `""` | — |
 | `type` | `"number" \| "text" \| "password" \| "email" \| "tel" \| "url" \| "search"` | `"text"` | — |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
 | `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | — |
