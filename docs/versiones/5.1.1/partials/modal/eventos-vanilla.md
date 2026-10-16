@@ -1,4 +1,3 @@
-<!-- @api:eventos -->
 | Evento | Payload (`e.detail`) | Descripción |
 | ------ | ------ | ------ |
 | `close` | — | Cierra el modal. |
@@ -6,4 +5,3 @@
 | `closed` | — | — |
 | `cancel` | — | — |
 | `accept` | — | — |
-<!-- /@api:eventos -->

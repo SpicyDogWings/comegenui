@@ -1,4 +1,3 @@
-<!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
@@ -6,4 +5,3 @@
 | `close` | `boolean` | `—` | Muestra el botón de cerrar (X) |
 | `show` | `boolean` | `true` | Controla visibilidad. Cambiar este atributo emite `update:show` |
 | `title` | `string` | `—` | Título visible en la cabecera |
-<!-- /@api:atributos -->

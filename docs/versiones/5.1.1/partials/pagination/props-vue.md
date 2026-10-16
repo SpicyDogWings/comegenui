@@ -1,4 +1,3 @@
-<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `itemsPerPage` | `number` | `10` | — |
@@ -10,4 +9,3 @@
 | `totalPages` | `number` | `1` | — |
 | `totalItems` | `number` | `0` | — |
 | `showFirstAndLast` | `boolean` | `false` | — |
-<!-- /@api:props -->

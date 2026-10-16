@@ -1,4 +1,3 @@
-<!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
@@ -17,4 +16,3 @@
 | `search-reset-delay` | `number` | `1000` | Tiempo (ms) antes de resetear el texto de búsqueda. Se reinicia con cada tecla |
 | `cooldown-variant` | `string` | `"ghost-hover"` | Estilo de la barra de cooldown: `ghost-hover` (default) o el `variant` que quieras, p. ej. `solid` (color lleno). No se muestra si `loading` está activo |
 | `placeholder` | `string` | `—` | Texto mostrado cuando no hay selección |
-<!-- /@api:atributos -->

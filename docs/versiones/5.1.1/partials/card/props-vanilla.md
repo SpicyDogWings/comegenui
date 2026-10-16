@@ -1,4 +1,3 @@
-<!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
@@ -7,4 +6,3 @@
 | `title` | `string` | `—` | Título del header |
 | `subtitle` | `string` | `—` | Subtítulo bajo el título |
 | `image` | `string` | `—` | URL de imagen que se muestra como media en la parte superior (o al costado con `layout="horizontal"`) |
-<!-- /@api:atributos -->

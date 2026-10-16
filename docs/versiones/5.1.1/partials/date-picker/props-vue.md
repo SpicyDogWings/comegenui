@@ -1,4 +1,3 @@
-<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `'neutral'` | — |
@@ -30,4 +29,3 @@
 | `dualCalendar` | `boolean` | `false` | Activa el rango a dos meses (dual). **Implica `range`**: aunque `mode` sea `single`, el picker selecciona un rango |
 | `clearable` | `boolean` | `true` | — |
 | `todayButton` | `boolean` | `undefined` | — |
-<!-- /@api:props -->

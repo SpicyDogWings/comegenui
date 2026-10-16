@@ -1,4 +1,3 @@
-<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `columns` | `Column[]` | `[]` | — |
@@ -23,4 +22,3 @@
 | `tableMaxHeight` | `string` | `""` | — |
 | `inlineEditing` | `boolean` | `false` | — |
 | `compact` | `boolean` | `false` | — |
-<!-- /@api:props -->

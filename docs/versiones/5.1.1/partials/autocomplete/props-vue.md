@@ -1,4 +1,3 @@
-<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `modelValue` | `string` | `""` | — |
@@ -13,4 +12,3 @@
 | `align` | `"center" \| "start" \| "end"` | `"start"` | — |
 | `fixed` | `boolean` | `false` | — |
 | `items` | `AutocompleteItem[]` | `[]` | — |
-<!-- /@api:props -->

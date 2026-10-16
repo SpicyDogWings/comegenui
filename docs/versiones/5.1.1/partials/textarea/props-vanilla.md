@@ -1,4 +1,3 @@
-<!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
@@ -10,4 +9,3 @@
 | `no-resize` | `boolean` | `false` | Desactiva el redimensionado manual (atributo HTML: `no-resize`) |
 | `placeholder` | `string` | `—` | Placeholder del textarea |
 | `start-value` | `string` | `—` | Valor inicial usado por `.reset()` |
-<!-- /@api:atributos -->

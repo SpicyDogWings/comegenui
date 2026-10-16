@@ -1,4 +1,3 @@
-<!-- @api:expose -->
 | Método | Descripción |
 | ------ | ------ |
 | `getRows` | Devuelve las filas parseadas. |
@@ -11,4 +10,3 @@
 | `set` | Setea el archivo y lo propaga al input. |
 | `trigger` | Abre el selector de archivos. |
 | `focus` | Enfoca el input de archivo. |
-<!-- /@api:expose -->

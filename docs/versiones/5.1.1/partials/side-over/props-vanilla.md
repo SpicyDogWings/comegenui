@@ -1,4 +1,3 @@
-<!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `size` | `string` | `"300px"` | Ancho (`left`/`right`) o alto (`top`/`bottom`) del panel. Valor CSS (`300px`, `40vw`) o preset: `sm`, `md`, `lg`, `xl`, `full`. Ignorado con `fullscreen` |
@@ -8,4 +7,3 @@
 | `persistent` | `boolean` | `false` | Si es `true`, no se cierra por backdrop, `Escape` ni el botón de cerrar |
 | `z-index` | `number` | `1100` | Z-index del overlay (en HTML se usa como `z-index`) |
 | `fullscreen` | `boolean` | `false` | Ocupa toda la pantalla |
-<!-- /@api:atributos -->

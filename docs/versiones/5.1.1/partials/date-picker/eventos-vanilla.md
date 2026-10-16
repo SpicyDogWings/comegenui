@@ -1,4 +1,3 @@
-<!-- @api:eventos -->
 | Evento | Payload (`e.detail`) | Descripción |
 | ------ | ------ | ------ |
 | `select` | `Date \| { start: Date \| null; end: Date \| null; }` | — |
@@ -13,4 +12,3 @@
 | `update:formattedValue` | `string \| null` | — |
 | `update:formattedStartDate` | `string \| null` | — |
 | `update:formattedEndDate` | `string \| null` | — |
-<!-- /@api:eventos -->

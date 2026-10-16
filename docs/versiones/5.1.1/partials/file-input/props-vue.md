@@ -1,4 +1,3 @@
-<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `modelValue` | `File \| null` | `null` | — |
@@ -9,4 +8,3 @@
 | `placeholder` | `string` | `"Seleccionar archivo"` | — |
 | `maxSize` | `number` | `—` | — |
 | `accept` | `string` | `—` | — |
-<!-- /@api:props -->

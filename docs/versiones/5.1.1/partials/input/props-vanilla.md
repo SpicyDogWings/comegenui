@@ -1,4 +1,3 @@
-<!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `type` | `"number" \| "text" \| "password" \| "email" \| "tel" \| "url" \| "search"` | `"text"` | `text`, `password`, `email`, `number`, `tel`, `url`, `search` |
@@ -10,4 +9,3 @@
 | `model-value` | `string` | `""` | Valor actual del input. El CE sincroniza su estado; asigná `modelValue` sólo si querés controlarlo |
 | `placeholder` | `string` | `—` | Placeholder del input |
 | `start-value` | `string` | `—` | Valor inicial usado por `.reset()` |
-<!-- /@api:atributos -->

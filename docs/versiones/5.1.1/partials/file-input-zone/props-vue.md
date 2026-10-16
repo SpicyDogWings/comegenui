@@ -1,4 +1,3 @@
-<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `modelValue` | `File \| File[] \| null` | `null` | — |
@@ -12,4 +11,3 @@
 | `directoryDeep` | `number` | `0` | — |
 | `maxSize` | `number` | `—` | — |
 | `accept` | `string` | `—` | — |
-<!-- /@api:props -->

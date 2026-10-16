@@ -1,4 +1,3 @@
-<!-- @api:expose -->
 | Método | Descripción |
 | ------ | ------ |
 | `get` | Devuelve el valor seleccionado. |
@@ -7,4 +6,3 @@
 | `focus` | Enfoca el trigger del select. |
 | `isOpen` | Indica si el panel está abierto. |
 | `selectedItem` | Devuelve la opción seleccionada o null. |
-<!-- /@api:expose -->

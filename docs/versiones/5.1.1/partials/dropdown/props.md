@@ -1,4 +1,3 @@
-<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `modelValue` | `string` | `""` | — |
@@ -18,4 +17,3 @@
 | `cooldown` | `boolean` | `false` | — |
 | `cooldownKey` | `number` | `0` | — |
 | `delay` | `number` | `2000` | — |
-<!-- /@api:props -->

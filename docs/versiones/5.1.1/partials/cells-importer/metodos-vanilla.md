@@ -1,4 +1,3 @@
-<!-- @api:metodos -->
 | Método | Descripción |
 | ------ | ------ |
 | `getRows` | Filas parseadas |
@@ -11,4 +10,3 @@
 | `set` | Asigna un archivo programáticamente |
 | `trigger` | Abre el diálogo de selección |
 | `focus` | Enfoca el input |
-<!-- /@api:metodos -->

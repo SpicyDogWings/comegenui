@@ -1,4 +1,3 @@
-<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `modelValue` | `string` | `""` | — |
@@ -10,4 +9,3 @@
 | `noResize` | `boolean` | `false` | — |
 | `placeholder` | `string` | `—` | — |
 | `startValue` | `string` | `—` | — |
-<!-- /@api:props -->

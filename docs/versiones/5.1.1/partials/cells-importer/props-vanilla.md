@@ -1,4 +1,3 @@
-<!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `columns` | `CellColumn[]` | `[]` | Esquema de columnas (header esperado, tipo y reglas). **Obligatorio.** |
@@ -15,4 +14,3 @@
 | `sheet` | `string \| number` | `0` | Hoja a leer en `.xlsx` (índice o nombre) |
 | `template` | `{ enabled?: boolean \| undefined; type?: "xlsx" \| "csv" \| undefined; filename?: string \| undefined; }` | `{ enabled: false, type: "csv", filename: "template" }` | "xlsx"` |
 | `max-size` | `number` | `—` | Tamaño máximo en bytes |
-<!-- /@api:atributos -->

@@ -1,4 +1,3 @@
-<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `size` | `string` | `'300px'` | — |
@@ -8,4 +7,3 @@
 | `persistent` | `boolean` | `false` | — |
 | `zIndex` | `number` | `1100` | — |
 | `fullscreen` | `boolean` | `false` | — |
-<!-- /@api:props -->

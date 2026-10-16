@@ -1,4 +1,3 @@
-<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `color` | `string` | `"neutral"` | Color semántico del editor. |
@@ -10,4 +9,3 @@
 | `column` | `Column` | `—` | Configuración de la columna: editor, validación y alineación. |
 | `row` | `Record<string, any>` | `—` | Fila completa a la que pertenece la celda. |
 | `index` | `number` | `—` | Índice de la fila en los datos. |
-<!-- /@api:props -->

@@ -1,4 +1,3 @@
-<!-- @api:expose -->
 | Método | Descripción |
 | ------ | ------ |
 | `nextMonth` | Avanza un mes (respetando max). |
@@ -8,4 +7,3 @@
 | `goToMonth` | Navega al mes de la fecha indicada. |
 | `getValue` | Devuelve el mes visible. |
 | `setValue` | Establece el mes desde una fecha, timestamp o string. |
-<!-- /@api:expose -->

@@ -1,4 +1,3 @@
-<!-- @api:emits -->
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
 | `select` | — | — |
@@ -6,4 +5,3 @@
 | `update:modelValue` | — | — |
 | `change` | — | — |
 | `blur` | — | — |
-<!-- /@api:emits -->

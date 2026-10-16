@@ -1,4 +1,3 @@
-<!-- @api:metodos -->
 | Método | Descripción |
 | ------ | ------ |
 | `nextMonth` | Va al mes siguiente (respeta `max`) |
@@ -9,4 +8,3 @@
 | `getRange` | Devuelve el rango seleccionado (modo `range`) |
 | `setRange` | Setea el rango (acepta string/number/Date) (modo `range`) |
 | `clear` | Limpia el rango seleccionado (modo `range`) |
-<!-- /@api:metodos -->

@@ -1,4 +1,3 @@
-<!-- @api:expose -->
 | Método | Descripción |
 | ------ | ------ |
 | `open` | Abre el panel. |
@@ -8,4 +7,3 @@
 | `set` | Setea el valor seleccionado. |
 | `reset` | Limpia el valor seleccionado. |
 | `isOpen` | Devuelve true si el panel está abierto. |
-<!-- /@api:expose -->

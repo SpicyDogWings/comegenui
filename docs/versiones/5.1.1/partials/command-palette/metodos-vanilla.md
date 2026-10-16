@@ -1,4 +1,3 @@
-<!-- @api:metodos -->
 | Método | Descripción |
 | ------ | ------ |
 | `open` | — |
@@ -6,4 +5,3 @@
 | `run` | — |
 | `getCommands` | — |
 | `isOpen` | — |
-<!-- /@api:metodos -->

@@ -1,4 +1,3 @@
-<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `columns` | `CellColumn[]` | `[]` | — |
@@ -15,4 +14,3 @@
 | `sheet` | `string \| number` | `0` | — |
 | `template` | `{ enabled?: boolean \| undefined; type?: "xlsx" \| "csv" \| undefined; filename?: string \| undefined; }` | `{ enabled: false, type: "csv", filename: "template" }` | — |
 | `maxSize` | `number` | `—` | — |
-<!-- /@api:props -->

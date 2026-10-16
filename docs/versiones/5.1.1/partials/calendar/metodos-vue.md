@@ -1,4 +1,3 @@
-<!-- @api:expose -->
 | Método | Descripción |
 | ------ | ------ |
 | `nextMonth` | Avanza al mes siguiente (respetando max). |
@@ -9,4 +8,3 @@
 | `getRange` | Devuelve el rango seleccionado (modo `range`). |
 | `setRange` | Setea el rango y emite los eventos de cambio (modo `range`). |
 | `clear` | Limpia el rango seleccionado (modo `range`). |
-<!-- /@api:expose -->

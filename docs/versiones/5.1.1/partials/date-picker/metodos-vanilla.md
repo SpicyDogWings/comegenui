@@ -1,4 +1,3 @@
-<!-- @api:metodos -->
 | Método | Descripción |
 | ------ | ------ |
 | `open` | Abre, cierra o alterna el panel |
@@ -14,4 +13,3 @@
 | `setRange` | Setea el rango (string/number/Date) (modo `range`) |
 | `clear` | Limpia la selección (emite `null`) |
 | `isOpen` | Indica si el panel está abierto. |
-<!-- /@api:metodos -->

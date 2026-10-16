@@ -1,4 +1,3 @@
-<!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"primary"` | Color semántico del FAB: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
@@ -6,4 +5,3 @@
 | `loading` | `boolean` | `false` | Muestra un spinner y deshabilita el botón mientras está activo. |
 | `size` | `"sm" \| "md" \| "lg"` | `"lg"` | Tamaño, heredado de `Button`: `sm`, `md`, `lg` |
 | `disabled` | `boolean` | `false` | Deshabilita el botón. |
-<!-- /@api:atributos -->

@@ -1,4 +1,3 @@
-<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `'primary'` | — |
@@ -21,4 +20,3 @@
 | `grid` | `boolean` | `false` | — |
 | `border` | `boolean` | `false` | — |
 | `viewMonth` | `string \| number \| Date \| null` | `null` | — |
-<!-- /@api:props -->
