@@ -1,4 +1,3 @@
-<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `'primary'` | — |
@@ -7,4 +6,3 @@
 | `modelValue` | `string \| number \| null` | `null` | — |
 | `min` | `string \| number \| null` | `null` | — |
 | `max` | `string \| number \| null` | `null` | — |
-<!-- /@api:props -->

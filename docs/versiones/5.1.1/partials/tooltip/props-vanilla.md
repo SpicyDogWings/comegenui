@@ -1,4 +1,3 @@
-<!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico del fondo: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` |
@@ -8,4 +7,3 @@
 | `align` | `"center" \| "start" \| "end"` | `"center"` | Alineación respecto al elemento: `start`, `center`, `end` |
 | `offset` | `number` | `6` | Distancia (px) entre el elemento y el tooltip |
 | `delay` | `number` | `200` | Retardo (ms) antes de mostrar el tooltip al hacer hover |
-<!-- /@api:atributos -->

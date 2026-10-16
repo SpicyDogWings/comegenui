@@ -1,4 +1,3 @@
-<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `searchPlaceholder` | `string` | `'Buscar...'` | — |
@@ -15,4 +14,3 @@
 | `activePath` | `string` | `''` | — |
 | `highlightItem` | `NavItem \| null` | `null` | — |
 | `items` | `NavItem[]` | `—` | — |
-<!-- /@api:props -->

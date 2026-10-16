@@ -1,4 +1,3 @@
-<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
@@ -11,4 +10,3 @@
 | `label` | `string` | `""` | — |
 | `offset` | `number` | `4` | — |
 | `textAlign` | `"center" \| "left" \| "right"` | `"left"` | — |
-<!-- /@api:props -->

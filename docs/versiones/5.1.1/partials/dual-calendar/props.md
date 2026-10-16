@@ -1,4 +1,3 @@
-<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `'neutral'` | — |
@@ -18,4 +17,3 @@
 | `border` | `boolean` | `false` | — |
 | `startDate` | `string \| number \| Date \| null` | `null` | — |
 | `endDate` | `string \| number \| Date \| null` | `null` | — |
-<!-- /@api:props -->

@@ -1,4 +1,3 @@
-<!-- @api:eventos -->
 | Evento | Payload (`e.detail`) | Descripción |
 | ------ | ------ | ------ |
 | `update:modelValue` | — | — |
@@ -6,4 +5,3 @@
 | `change` | — | — |
 | `close` | — | — |
 | `blur` | — | — |
-<!-- /@api:eventos -->

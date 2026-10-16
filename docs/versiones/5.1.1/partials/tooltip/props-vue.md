@@ -1,4 +1,3 @@
-<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
@@ -8,4 +7,3 @@
 | `align` | `"center" \| "start" \| "end"` | `"center"` | — |
 | `offset` | `number` | `6` | — |
 | `delay` | `number` | `200` | — |
-<!-- /@api:props -->

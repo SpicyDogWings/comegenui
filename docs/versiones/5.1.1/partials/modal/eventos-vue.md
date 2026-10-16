@@ -1,4 +1,3 @@
-<!-- @api:emits -->
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
 | `close` | — | Cierra el modal. |
@@ -6,4 +5,3 @@
 | `opened` | — | — |
 | `closed` | — | — |
 | `cancel` | — | — |
-<!-- /@api:emits -->

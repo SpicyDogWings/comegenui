@@ -1,4 +1,3 @@
-<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `'primary'` | Color semántico del label. |
@@ -11,4 +10,3 @@
 | `canNavigatePrev` | `boolean` | `true` | — |
 | `canNavigateNext` | `boolean` | `true` | Indica si se puede navegar al paso siguiente. |
 | `label` | `string` | `—` | Texto principal del label (mes o año). |
-<!-- /@api:props -->

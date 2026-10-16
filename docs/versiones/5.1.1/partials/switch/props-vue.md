@@ -1,4 +1,3 @@
-<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `modelValue` | `boolean` | `false` | — |
@@ -6,4 +5,3 @@
 | `size` | `"sm" \| "md"` | `"md"` | — |
 | `disabled` | `boolean` | `false` | — |
 | `label` | `string` | `""` | — |
-<!-- /@api:props -->

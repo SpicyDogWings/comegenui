@@ -1,4 +1,3 @@
-<!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `type` | `"reset" \| "button" \| "submit"` | `'button'` | Tipo del `<button>`: `button`, `submit`, `reset` |
@@ -9,4 +8,3 @@
 | `disabled` | `boolean` | `false` | Estado deshabilitado |
 | `target` | `"_self" \| "_blank" \| "_parent" \| "_top"` | `"_self"` | Target del link cuando `to` está definido: `_self`, `_blank`, `_parent`, `_top` |
 | `to` | `string` | `—` | Si se especifica, el botón se renderiza como `<a>` |
-<!-- /@api:atributos -->

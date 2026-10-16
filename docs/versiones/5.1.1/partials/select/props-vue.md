@@ -1,4 +1,3 @@
-<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
@@ -17,4 +16,3 @@
 | `placeholderWrap` | `boolean` | `false` | — |
 | `searchResetDelay` | `number` | `1000` | — |
 | `cooldownVariant` | `string` | `"ghost-hover"` | — |
-<!-- /@api:props -->

@@ -1,4 +1,3 @@
-<!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `columns` | `Column[]` | `[]` | Definición de columnas (ver «Interfaz de columna»). Se asigna como propiedad JS |
@@ -23,4 +22,3 @@
 | `table-max-height` | `string` | `""` | Alto máximo del área scrolleable (CSS, ej. `40rem`). Atributo HTML: `table-max-height` |
 | `inline-editing` | `boolean` | `false` | Editor visible siempre en las celdas editables, sin el lápiz (atributo HTML: `inline-editing`) |
 | `compact` | `boolean` | `false` | Filas más compactas |
-<!-- /@api:atributos -->

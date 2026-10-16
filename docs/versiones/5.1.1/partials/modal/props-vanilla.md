@@ -1,4 +1,3 @@
-<!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
@@ -7,4 +6,3 @@
 | `persistent` | `boolean` | `—` | Si es `true`, no se cierra con click en el backdrop ni con `Escape` |
 | `title` | `string` | `—` | Título del modal (se muestra en la cabecera) |
 | `description` | `string` | `—` | Descripción bajo el título (texto secundario) |
-<!-- /@api:atributos -->

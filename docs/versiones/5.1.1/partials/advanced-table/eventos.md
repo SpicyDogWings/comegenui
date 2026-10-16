@@ -1,4 +1,3 @@
-<!-- @api:eventos -->
 | Evento | Payload (`e.detail`) | Descripción |
 | ------ | ------ | ------ |
 | `update:currentPage` | — | — |
@@ -8,4 +7,3 @@
 | `edit-save` | — | — |
 | `edit-cancel` | — | — |
 | `edit-error` | — | — |
-<!-- /@api:eventos -->

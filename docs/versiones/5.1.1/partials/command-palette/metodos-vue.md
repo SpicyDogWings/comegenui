@@ -1,4 +1,3 @@
-<!-- @api:expose -->
 | Método | Descripción |
 | ------ | ------ |
 | `open` | — |
@@ -6,4 +5,3 @@
 | `run` | Ejecuta el comando con ese id. |
 | `getCommands` | — |
 | `isOpen` | — |
-<!-- /@api:expose -->

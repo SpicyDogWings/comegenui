@@ -1,4 +1,3 @@
-<!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `items-per-page` | `number` | `10` | Items por página (atributo HTML: `items-per-page`) |
@@ -10,4 +9,3 @@
 | `total-pages` | `number` | `1` | Total de páginas (atributo HTML: `total-pages`) |
 | `total-items` | `number` | `0` | Total de items, útil para mostrar "X–Y de Z" (atributo HTML: `total-items`) |
 | `show-first-and-last` | `boolean` | `false` | Muestra botones "primera" y "última" página (atributo HTML: `show-first-and-last`) |
-<!-- /@api:atributos -->

@@ -1,4 +1,3 @@
-<!-- @api:expose -->
 | Método | Descripción |
 | ------ | ------ |
 | `open` | Abre el panel. |
@@ -14,4 +13,3 @@
 | `getFormattedStartDate` | Devuelve el inicio del rango formateado con `value-format` (modo rango). |
 | `getFormattedEndDate` | Devuelve el fin del rango formateado con `value-format` (modo rango). |
 | `isOpen` | Indica si el panel está abierto. |
-<!-- /@api:expose -->

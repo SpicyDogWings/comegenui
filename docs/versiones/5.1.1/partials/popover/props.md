@@ -1,4 +1,3 @@
-<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `role` | `string` | `""` | — |
@@ -11,4 +10,3 @@
 | `panelWidth` | `string` | `""` | — |
 | `hoverDelay` | `number` | `200` | — |
 | `panelClass` | `string \| string[] \| Record<string, boolean>` | `""` | — |
-<!-- /@api:props -->

@@ -1,4 +1,3 @@
-<!-- @api:metodos -->
 | Método | Descripción |
 | ------ | ------ |
 | `get` | — |
@@ -10,4 +9,3 @@
 | `toggle` | Alterna la visibilidad del panel de sugerencias. |
 | `isOpen` | Indica si el panel está abierto. |
 | `selectedItem` | Devuelve el item seleccionado o null. |
-<!-- /@api:metodos -->

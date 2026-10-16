@@ -1,4 +1,3 @@
-<!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
@@ -12,4 +11,3 @@
 | `directory-deep` | `number` | `0` | Niveles de recursión en carpetas: `0` = solo raíz, `1` = +1 subnivel, `-1` = sin límite |
 | `max-size` | `number` | `—` | Tamaño máximo en bytes |
 | `accept` | `string` | `—` | Tipos aceptados (ej: `"image/*"`) |
-<!-- /@api:atributos -->

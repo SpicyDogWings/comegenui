@@ -1,4 +1,3 @@
-<!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `search-placeholder` | `string` | `'Buscar...'` | Placeholder del input de búsqueda |
@@ -14,4 +13,3 @@
 | `side-over-position` | `"left" \| "right" \| "bottom" \| "top"` | `'left'` | Borde desde donde desliza el panel del responsive: `left`, `right`, `top`, `bottom` |
 | `active-path` | `string` | `''` | Path activo manual. Si se omite, se toma de la ruta (cuando hay router) |
 | `items` | `unknown[]` | `—` | Estructura de navegación. **Se asigna como propiedad JS** |
-<!-- /@api:atributos -->

@@ -1,4 +1,3 @@
-<!-- @api:metodos -->
 | Método | Descripción |
 | ------ | ------ |
 | `get` | Devuelve el/los archivo/s actual/es |
@@ -6,4 +5,3 @@
 | `reset` | Limpia la selección |
 | `focus` | Enfoca la zona |
 | `trigger` | Abre el diálogo nativo |
-<!-- /@api:metodos -->

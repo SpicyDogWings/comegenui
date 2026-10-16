@@ -1,4 +1,3 @@
-<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `""` | — |
@@ -6,4 +5,3 @@
 | `role` | `string` | `""` | — |
 | `src` | `string` | `""` | — |
 | `name` | `string` | `—` | — |
-<!-- /@api:props -->

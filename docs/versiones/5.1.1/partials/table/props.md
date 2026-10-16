@@ -1,4 +1,3 @@
-<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `columns` | `Column[]` | `[]` | — |
@@ -12,4 +11,3 @@
 | `compact` | `boolean` | `false` | — |
 | `maxHeight` | `string` | `""` | — |
 | `htmlCells` | `boolean` | `false` | — |
-<!-- /@api:props -->

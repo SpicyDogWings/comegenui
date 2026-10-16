@@ -1,4 +1,3 @@
-<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `modelValue` | `string` | `""` | — |
@@ -7,4 +6,3 @@
 | `size` | `"sm" \| "md" \| "lg"` | `"md"` | — |
 | `disabled` | `boolean` | `false` | — |
 | `tabs` | `TabItem[]` | `—` | — |
-<!-- /@api:props -->

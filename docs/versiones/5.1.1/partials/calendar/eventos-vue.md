@@ -1,4 +1,3 @@
-<!-- @api:emits -->
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
 | `select` | `CalendarChange` | — |
@@ -7,4 +6,3 @@
 | `update:rangeStart` | `Date \| null` | — |
 | `update:rangeEnd` | `Date \| null` | — |
 | `change` | `CalendarChange` | — |
-<!-- /@api:emits -->

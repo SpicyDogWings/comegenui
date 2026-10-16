@@ -1,4 +1,3 @@
-<!-- @api:emits -->
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
 | `reset` | — | Restablece el tema a sus valores por defecto. |
@@ -7,4 +6,3 @@
 | `export` | — | Exporta la configuración actual del tema. |
 | `copy-css` | — | Copia el CSS generado al portapapeles. |
 | `download-css` | — | Descarga el CSS generado como archivo. |
-<!-- /@api:emits -->

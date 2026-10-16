@@ -1,4 +1,3 @@
-<!-- @api:emits -->
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
 | `select` | `Date \| { start: Date \| null; end: Date \| null; }` | — |
@@ -13,4 +12,3 @@
 | `update:formattedEndDate` | `string \| null` | — |
 | `change-formatted` | `string \| { start: string \| null; end: string \| null; } \| null` | — |
 | `select-formatted` | `string \| { start: string \| null; end: string \| null; }` | — |
-<!-- /@api:emits -->
