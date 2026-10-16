@@ -113,9 +113,9 @@ al home de esa versión.
 - Los demos corren **la lib de esa misma versión**: la doc de la 5.1.0 embebe la 5.1.0.
 - El selector **se oculta** si hay una sola versión publicada (o en `vitepress dev`, donde no hay
   catálogo). El home (`/`) es `standalone`: ahí no hay selector ni sidebar.
-- Las versiones cortadas **antes** de que existiera este mecanismo (los tags viejos, como
-  `v5.1.0`) no saben en qué versión están: en ellas, la navegación del topbar apunta a *latest*.
-  Las que congeles de acá en adelante sí quedan dentro de su versión.
+- Las versiones cortadas **antes** de que existiera este mecanismo (los tags `v5.0.*-alpha`) no saben
+  en qué versión están: en ellas, la navegación del topbar apunta a *latest*. Las que congeles de acá
+  en adelante sí quedan dentro de su versión.
 
 ### Publicar versiones
 

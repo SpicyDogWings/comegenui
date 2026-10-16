@@ -83,7 +83,7 @@ npx skills update use-comegen                                # actualizar la ski
 Con pnpm: `pnpm dlx skills add …`. Para fijar un ref concreto:
 
 ```sh
-npx skills add "https://github.com/SpicyDogWings/comegenui/tree/v5.1.0/skills/use-comegen"
+npx skills add "https://github.com/SpicyDogWings/comegenui/tree/v5.1.1/skills/use-comegen"
 ```
 
 Sin CLI, bajá sólo la carpeta y copiala a `.opencode/skills/` de tu proyecto:
