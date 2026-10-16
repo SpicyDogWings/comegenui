@@ -90,3 +90,6 @@ docs/componentes/
 docs/partials/
 docs/site/componentes/
 docs/site/examples/
+
+# Mensaje de la release (generado, no se versiona)
+.release/

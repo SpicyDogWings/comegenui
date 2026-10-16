@@ -153,6 +153,15 @@ pnpm deploy:docs:versions       # publica esa salida (raíz = latest, /<id>/ por
 
 Si querés la release de GitHub con los zips adjuntos: `gh release create v<version> dist-libs/*.zip`.
 
+**Mensaje de la release** (para pegar en GitHub): dejalo en `.release/v<version>.md`, una carpeta
+**ignorada** por git (no se versiona). Tiene que llevar:
+
+- el puntero a la guía de breaking **completa** de ese salto (`/breaking/<version>`, y el path del
+  repo: `docs/site/breaking/<version>.md`);
+- un **resumen breve** de los cambios, con la misma forma que la release anterior: primero lo que
+  rompe (resumen de los 3-4 puntos, con el “qué hacer”), después componentes (agregado/cambiado/
+  arreglado), docs y los zips adjuntos.
+
 ### 10. Commit de lo que haya cambiado
 
 ```bash
