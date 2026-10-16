@@ -27,19 +27,45 @@ export function latestId() {
   return latest.id;
 }
 
+/** Las versiones del manifiesto **hasta** (incluyendo) `id`, de la más vieja a la más nueva. */
+export function versionsUpTo(id) {
+  const ordered = versionsInOrder();
+  const at = ordered.findIndex((v) => v.id === id);
+  if (at === -1) throw new Error(`doc-tree: '${id}' no está en el manifiesto (docs/versions.json)`);
+  return ordered.slice(0, at + 1);
+}
+
 /** Ruta absoluta del archivo/dir **resuelto** (con overlays) o `null` si no existe en ninguna. */
 export function resolveInVersions(relPath) {
-  const candidates = versionsInOrder().map((v) => resolve(ROOT, "docs/versiones", v.id, relPath));
-  return candidates.find((p) => existsSync(p)) ?? null;
+  return resolveInVersion(latestId(), relPath);
+}
+
+/** Ruta absoluta de `relPath` resuelto **para la versión `id`** (overlay hasta `id`), o `null`. */
+export function resolveInVersion(id, relPath) {
+  // "gana el último archivo del mismo path": se recorren de la más vieja a la más nueva (`id`) y
+  // se devuelve la última que exista.
+  const candidates = versionsUpTo(id).map((v) => resolve(ROOT, "docs/versiones", v.id, relPath));
+  return candidates.findLast((p) => existsSync(p)) ?? null;
 }
 
 /** Todos los paths relativos que existen en el árbol resuelto, con la versión de la que salen. */
 export function resolvedFiles(subdir = "") {
+  return collectResolved(versionsInOrder(), subdir);
+}
+
+/** Todos los paths del árbol resuelto **de la versión `id`**, con la versión que los define. */
+export function resolvedFilesFor(id, subdir = "") {
+  return collectResolved(versionsUpTo(id), subdir);
+}
+
+/** `relPath` (relativo a la raíz de la versión) → id de la versión que gana. */
+function collectResolved(versions, subdir) {
   const out = new Map(); // relPath → id (la última versión que lo define gana)
-  for (const version of versionsInOrder()) {
-    const dir = resolve(ROOT, "docs/versiones", version.id, subdir);
+  for (const version of versions) {
+    const base = resolve(ROOT, "docs/versiones", version.id);
+    const dir = resolve(base, subdir);
     if (!existsSync(dir)) continue;
-    for (const full of walk(dir)) out.set(full.slice(resolve(ROOT, "docs/versiones", version.id).length + 1), version.id);
+    for (const full of walk(dir)) out.set(full.slice(base.length + 1), version.id);
   }
   return out;
 }
