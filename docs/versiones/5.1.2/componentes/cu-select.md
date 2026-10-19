@@ -197,6 +197,27 @@ interacción).
 
 <!-- demo:select-deshabilitado -->
 
+## Estado de solo lectura
+
+`read-only` bloquea la apertura del dropdown y el cambio de selección, pero el control sigue
+enfocable y no se atenúa. `set()` y `reset()` programáticos siguen funcionando; para bloquear
+también el foco usá `disabled`.
+
+```html
+<cu-select id="soloLectura" read-only placeholder="Solo lectura"></cu-select>
+
+<script>
+  const s = document.getElementById('soloLectura');
+  s.options = [
+    { value: 'a', label: 'Opción A' },
+    { value: 'b', label: 'Opción B' },
+  ];
+  s.set('a');
+</script>
+```
+
+<!-- demo:select-readonly -->
+
 ## Posicionamiento
 
 `position` acepta `bottom` (**default**) y `top` (el wrapper `Dropdown` también contempla

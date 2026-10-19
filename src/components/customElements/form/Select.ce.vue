@@ -45,6 +45,8 @@ const props = defineProps({
   },
   /** Estado deshabilitado */
   disabled: { type: Boolean, required: false, default: false },
+  /** Modo solo lectura: no abre el dropdown ni cambia la selección */
+  readOnly: { type: Boolean, required: false, default: false },
   /** Si es `true`, el dropdown usa `position: fixed` en vez de absoluto */
   fixed: { type: Boolean, required: false, default: false },
   /** Activa búsqueda por teclado (estilo select nativo: escribir hace scroll al match) */
@@ -117,6 +119,7 @@ defineExpose({
     :color="props.color"
     :variant="props.variant"
     :disabled="props.disabled"
+    :read-only="props.readOnly"
     :placeholder="props.placeholder"
     :placeholder-wrap="props.placeholderWrap"
     :position="props.position"

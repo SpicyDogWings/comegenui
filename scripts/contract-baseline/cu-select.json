@@ -12,6 +12,7 @@
     "placeholder",
     "placeholderWrap",
     "position",
+    "readOnly",
     "searchEnabled",
     "searchMode",
     "searchResetDelay",

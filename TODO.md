@@ -1,8 +1,8 @@
 # TODO — release 5.1.2
 
 **Estado:** en preparación. `5.1.2` es la `latest` del sitio, pero **todavía no es la final**.
-**Rama:** `fix/side-over-docs-open` (fix suelto; la release se corta desde `main`).
-**Última verificación:** `./scripts/guard.sh --full` verde (1715 tests, 60/60 mutaciones).
+**Rama:** `feat/select-readonly` (la release se corta desde `main`).
+**Última verificación:** `./scripts/guard.sh --full` verde (1723 tests, 62/62 mutaciones).
 
 Objetivo de la release: **reemplazar la release `v5.1.1`** con estos fixes. Sin cambios de
 compatibilidad para quien ya consume la lib, salvo el método `open()` de `cu-side-over`, que nunca
@@ -22,6 +22,8 @@ funcionó y pasa a `show()`.
 - [x] `cu-side-over`: `show()` reemplaza al método `open()` (la prop booleana `open` lo tapaba en
       el CE); el CE no teleporta el panel para conservar el slot; ficha vanilla, partial, skill y
       demos de 5.1.2 actualizados. Baseline regenerado.
+- [x] `cu-select`: prop `readOnly` (atributo `read-only`) que bloquea apertura y selección sin
+      atenuar ni quitar foco; ficha, skill, demo, tests y baseline actualizados.
 
 ## Pendiente — ir sumando a la release
 

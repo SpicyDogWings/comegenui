@@ -5,6 +5,7 @@
 | `search-enabled` | `boolean` | `false` | Activa búsqueda por teclado (estilo select nativo: escribir hace scroll al match) |
 | `loading` | `boolean` | `false` | Muestra una barra de progreso animada en el dropdown |
 | `disabled` | `boolean` | `false` | Estado deshabilitado |
+| `read-only` | `boolean` | `false` | Modo solo lectura: no abre el dropdown ni cambia la selección; el control sigue enfocable |
 | `position` | `string` | `"bottom"` | Posición del dropdown: `bottom`, `top` |
 | `align` | `string` | `"start"` | Alineación: `start`, `center`, `end` |
 | `fixed` | `boolean` | `false` | Si es `true`, el dropdown usa `position: fixed` en vez de absoluto |

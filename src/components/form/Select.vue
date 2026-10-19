@@ -27,6 +27,7 @@ const props = defineProps({
     validator: isFieldVariant,
   },
   disabled: { type: Boolean, required: false, default: false },
+  readOnly: { type: Boolean, required: false, default: false },
   placeholder: { type: String, required: false, default: "" },
   placeholderWrap: { type: Boolean, required: false, default: false },
   position: { type: String, required: false, default: "bottom" },
@@ -80,7 +81,7 @@ function scheduleReset() {
 }
 
 function onKeyDown(e: KeyboardEvent) {
-  if (!props.searchEnabled) return;
+  if (props.readOnly || !props.searchEnabled) return;
   if (e.key === "Escape" || e.key === "Tab") return;
 
   if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
@@ -133,6 +134,11 @@ watch(() => dropdownRef.value?.isOpen(), (open) => {
   else onDropdownClose();
 });
 
+// Si readOnly se activa con el panel abierto, lo cerramos.
+watch(() => props.readOnly, (value) => {
+  if (value) dropdownRef.value?.close();
+});
+
 const selectedLabel = computed(() => {
   const opt = props.options.find(o => o.value === selectedValue.value);
   return opt ? opt.label : props.placeholder || "Seleccionar...";
@@ -143,7 +149,7 @@ watch(() => props.modelValue, (val) => {
 }, { immediate: true });
 
 function onSelect(option: SelectOption) {
-  if (option.disabled) return;
+  if (props.readOnly || option.disabled) return;
   selectedValue.value = option.value;
   emit("update:modelValue", option.value);
   emit("select", option);
@@ -182,11 +188,17 @@ defineExpose({
 </script>
 
 <template>
-  <div ref="selectRoot" class="cu-select" tabindex="-1" @focusout="onFocusOut">
+  <div
+    ref="selectRoot"
+    class="cu-select"
+    :class="{ 'cu-select--readonly': readOnly }"
+    tabindex="-1"
+    @focusout="onFocusOut"
+  >
     <Dropdown
       ref="dropdownRef"
       :color="color"
-      :disabled="disabled"
+      :disabled="disabled || readOnly"
       :position="position"
       :align="align"
       :fixed="fixed"
@@ -203,6 +215,7 @@ defineExpose({
           :color="color"
           :variant="variant"
           :disabled="disabled"
+          :aria-readonly="readOnly ? 'true' : undefined"
           class="cu-select-toggle"
           @click="toggle"
         >
@@ -279,6 +292,10 @@ defineExpose({
    de verdad: visible para el usuario y para teclado */
 .cu-select-toggle:focus {
   box-shadow: 0 0 0 var(--cu-border-thin) var(--btn-subtle-border);
+}
+
+.cu-select--readonly .cu-select-toggle {
+  cursor: default;
 }
 
 .cu-select-label {
