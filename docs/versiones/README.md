@@ -16,9 +16,10 @@ Acá vive la **documentación en sí** (fichas, partials y páginas), fuera del 
 
 ## Estado
 
-✅ **Hecho**: la doc vive en `docs/versiones/5.1.1/` (`componentes/`, `partials/`, `paginas/componentes/`) y
-`docs/{componentes,partials,site/componentes}` son **compuestos** (gitignoreados) por `pnpm docs:compose`,
-que corren `dev` y `build`. `gen-api` y `check-docs` ya leen/escriben la fuente versionada.
+✅ **Hecho**: la doc vive en `docs/versiones/5.1.2/` (`componentes/`, `partials/`; las páginas se heredan
+de `5.1.1/`) y `docs/{componentes,partials,site/componentes}` son **compuestos** (gitignoreados) por
+`pnpm docs:compose`, que corren `dev` y `build`. `gen-api` y `check-docs` ya leen/escriben la fuente
+versionada.
 
 ⏳ **Falta**: reescribir las rutas `docs/componentes/…` que citan recetas/skills/notas, materializar las tablas
 al cortar una versión (`gen-api --freeze`) y el deploy de versiones con el modelo nuevo. Detalle:

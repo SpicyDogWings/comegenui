@@ -3,10 +3,16 @@
   "rootAlias": true,
   "versions": [
     {
-      "id": "5.1.1",
-      "label": "5.1.1",
+      "id": "5.1.2",
+      "label": "5.1.2",
       "ref": "HEAD",
       "latest": true
+    },
+    {
+      "id": "5.1.1",
+      "label": "5.1.1",
+      "ref": "v5.1.1",
+      "latest": false
     }
   ]
 }
