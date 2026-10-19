@@ -71,7 +71,7 @@ tabla.actions = (row) => [
 | `search-value` | `string` | `""` | Valor controlado del buscador (atributo HTML: `search-value`) |
 | `filters` | `Record<string, any>` | `{}` | Filtros por columna. Se asigna como propiedad JS |
 | `loading` | `boolean` | `false` | Muestra una barra de carga animada en el tope |
-| `actions` | `unknown[] \| ((row: Record<string, any>) => unknown[])` | `[]` | Acciones de fila (botón "..." al final de cada fila). Array estático o función por fila. Se asigna como propiedad JS |
+| `actions` | `ButtonConfig[] \| ((row: Record<string, any>) => ButtonConfig[])` | `[]` | Acciones de fila (botón "..." al final de cada fila). Array estático o función `(row) => acciones` para decidirlas por fila. Se asigna como propiedad JS |
 | `actions-label` | `string` | `""` | Texto del header de la columna de acciones. Default vacío. Atributo HTML: `actions-label` |
 | `row-disabled` | `boolean \| ((row: Record<string, any>) => boolean)` | `false` | Deshabilita filas (ver «Deshabilitar filas, columnas y celdas»). Se asigna como propiedad JS |
 | `footer` | `FooterRow[]` | `[]` | Filas de footer (ver «Footer (API programática)»). Se asigna como propiedad JS |
