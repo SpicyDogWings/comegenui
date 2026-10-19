@@ -16,6 +16,7 @@ import ColorPickerCe from "@/components/customElements/form/ColorPicker.ce.vue";
 import TextareaCe from "@/components/customElements/form/Textarea.ce.vue";
 import SelectCe from "@/components/customElements/form/Select.ce.vue";
 import CommandPaletteCe from "@/components/customElements/overlay/CommandPalette.ce.vue";
+import SideOverCe from "@/components/customElements/overlay/SideOver.ce.vue";
 import TooltipCe from "@/components/customElements/overlay/Tooltip.ce.vue";
 import MarkdownCe from "@/components/customElements/markdown/Markdown.ce.vue";
 import TableCe from "@/components/customElements/data/AdvancedTable.ce.vue";
@@ -472,6 +473,56 @@ describe("CommandPalette.ce", () => {
     expect(w.vm.isOpen()).toBe(false);
     expect(typeof w.vm.open).toBe("function");
     expect(typeof w.vm.run).toBe("function");
+  });
+});
+
+const SideOverElement = defineCustomElement(SideOverCe);
+customElements.define("cu-side-over-method-test", SideOverElement);
+
+type SideOverTestElement = HTMLElement & {
+  open: boolean;
+  show: () => void;
+  close: () => void;
+  isOpen: () => boolean;
+};
+
+async function mountSideOverElement() {
+  const el = document.createElement("cu-side-over-method-test") as SideOverTestElement;
+  document.body.appendChild(el);
+  await flushPromises();
+  return el;
+}
+
+describe("SideOver.ce", () => {
+  it("expone `show()` sin que la prop booleana `open` lo tape", async () => {
+    const el = await mountSideOverElement();
+
+    expect(typeof el.show).toBe("function");
+    expect(typeof el.open).toBe("boolean");
+
+    el.show();
+    await flushPromises();
+    expect(el.isOpen()).toBe(true);
+
+    el.close();
+    await flushPromises();
+    expect(el.isOpen()).toBe(false);
+
+    el.remove();
+  });
+
+  it("el atributo `open` abre y cierra el panel", async () => {
+    const el = await mountSideOverElement();
+
+    el.setAttribute("open", "");
+    await flushPromises();
+    expect(el.isOpen()).toBe(true);
+
+    el.removeAttribute("open");
+    await flushPromises();
+    expect(el.isOpen()).toBe(false);
+
+    el.remove();
   });
 });
 

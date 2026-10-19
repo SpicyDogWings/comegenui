@@ -203,6 +203,26 @@ const MUTATIONS = [
     replace: `  if (false) return`,
   },
   {
+    id: "side-over-show-no-abre",
+    file: "src/components/customElements/overlay/SideOver.ce.vue",
+    test: "src/components/customElements/ce-parity.test.ts",
+    expect: "show() abre el panel sin que la prop booleana open lo tape",
+    find: `function show() { isOpen.value = true; }`,
+    replace: `function show() { /* mutado */ }`,
+  },
+  {
+    id: "side-over-open-attr-ignorado",
+    file: "src/components/customElements/overlay/SideOver.ce.vue",
+    test: "src/components/customElements/ce-parity.test.ts",
+    expect: "el atributo open abre y cierra el panel",
+    find: `watch(() => props.open, (value) => {
+  isOpen.value = value;
+});`,
+    replace: `watch(() => props.open, () => {
+  /* mutado */
+});`,
+  },
+  {
     id: "command-palette-run-no-action",
     file: "src/components/overlay/CommandPalette.vue",
     expect: "run() ejecuta la action del comando",

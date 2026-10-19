@@ -1,11 +1,12 @@
 # TODO — release 5.1.2
 
 **Estado:** en preparación. `5.1.2` es la `latest` del sitio, pero **todavía no es la final**.
-**Rama:** `fix/switch-label`.
-**Última verificación:** `./scripts/guard.sh --full` verde (1710 tests, 57/57 mutaciones).
+**Rama:** `fix/side-over-docs-open` (fix suelto; la release se corta desde `main`).
+**Última verificación:** `./scripts/guard.sh --full` verde (1712 tests, 59/59 mutaciones).
 
-Objetivo de la release: **reemplazar la release `v5.1.1`** con estos fixes, sin cambios de
-compatibilidad para quien ya consume la lib.
+Objetivo de la release: **reemplazar la release `v5.1.1`** con estos fixes. Sin cambios de
+compatibilidad para quien ya consume la lib, salvo el método `open()` de `cu-side-over`, que nunca
+funcionó y pasa a `show()`.
 
 ## Ya incluido
 
@@ -13,11 +14,13 @@ compatibilidad para quien ya consume la lib.
       teniendo prioridad cuando hay contenido.
 - [x] Test de regresión del CE (sin hijos, sólo espacios, slot con contenido, contenido tardío).
 - [x] Verificación del build real con Lightpanda (`umd-core`).
-- [x] `package.json` en `5.1.2` y `metadata.version` de las 7 skills.
+- [x] `package.json` en `5.1.2` y `metadata.version` de las 8 skills.
 - [x] `docs/versions.json`: `5.1.2` = `latest`, `5.1.1` con `ref: v5.1.1`.
 - [x] Changelog inicial en `docs/changelog/v5.1.2.md`.
 - [x] Doc de `5.1.2`: `componentes/` + `partials/` (las páginas se heredan de `5.1.1`).
 - [x] Baseline de contrato de `cu-switch` regenerado.
+- [x] `cu-side-over`: `show()` reemplaza al método `open()` (la prop booleana `open` lo tapaba en
+      el CE); ficha vanilla, partial y demos de 5.1.2 actualizados. Baseline regenerado.
 
 ## Pendiente — ir sumando a la release
 
@@ -27,6 +30,9 @@ compatibilidad para quien ya consume la lib.
 - [ ] Revisar si algún cambio rompe compatibilidad. Si rompe: `docs/site/breaking/5.1.2.md` + su
       fila en `docs/site/breaking/index.md`.
 - [ ] Si cambia una API a propósito: `./scripts/guard.sh --update` y commitear el baseline.
+- [ ] `cu-alert`: la prop `close` (muestra la X) tapa al método `close()` en el custom element;
+      misma colisión que tenía `cu-side-over`. Decidir rename (prop `closable` o método `dismiss`)
+      antes de documentar el método como funcional.
 
 ## Cierre de la release
 
