@@ -15,8 +15,8 @@ Siempre hay **2 fichas** (vanilla y Vue) y **1 receta**:
 
 | Página (lado) | Scope | Archivo | Documenta |
 |---|---|---|---|
-| **vanilla** | ficha vanilla | `docs/versiones/5.1.1/componentes/<tag>.md` | la API del **custom element**: atributos, eventos, slots, métodos |
-| **Vue** | ficha Vue | `docs/versiones/5.1.1/componentes/vue/<kebab>.md` | la API del **componente Vue**: props, emits, slots, expose |
+| **vanilla** | ficha vanilla | `docs/versiones/<id>/componentes/<tag>.md` | la API del **custom element**: atributos, eventos, slots, métodos |
+| **Vue** | ficha Vue | `docs/versiones/<id>/componentes/vue/<kebab>.md` | la API del **componente Vue**: props, emits, slots, expose |
 | — (no está en el sitio) | receta de la skill | `skills/use-comegen/references/<kebab>.md` | **las dos APIs** juntas + receta de uso |
 
 - `<tag>` = tag del custom element (`cu-button`); `<kebab>` = nombre del componente Vue en kebab
@@ -35,7 +35,7 @@ Las 2 fichas **no repiten** lo que comparten: cada sección vive en un **partial
 **incluyen** (VitePress `<!--@include-->`, nativo; se expande antes de parsear, sin runtime).
 
 ```
-docs/versiones/5.1.1/partials/<kebab>/
+docs/versiones/<id>/partials/<kebab>/     ← <id> = la `latest` del manifiesto (docs/versions.json)
   props.md          ← igual en vanilla y Vue → la incluyen las 2 fichas
   props-vue.md      ← divergió → sólo la ficha Vue
   props-vanilla.md  ← divergió → sólo la ficha vanilla
@@ -46,14 +46,14 @@ docs/versiones/5.1.1/partials/<kebab>/
   (`props-vue.md` + `props-vanilla.md`). Nunca se resuelve duplicando la ficha entera.
 - La **cabecera** (`## Props`, `## Atributos`, …) la escribe la **ficha**; el partial lleva **el
   cuerpo** (la tabla). Así una sección compartida sirve a las dos aunque el título cambie.
-- Los partials **no** van dentro de `docs/versiones/5.1.1/componentes/` ni `docs/versiones/5.1.1/componentes/vue/` (el gate los
+- Los partials **no** van dentro de `docs/versiones/<id>/componentes/` ni `docs/versiones/<id>/componentes/vue/` (el gate los
   tomaría por fichas).
 - El `@include` es **relativo al archivo que incluye**: la ruta cambia entre la ficha vanilla
   (`../../partials/…`) y la ficha Vue (`../../../partials/…`).
 
 ### Migrar un componente a partials
 
-1. `mkdir -p docs/versiones/5.1.1/partials/<kebab>`.
+1. `mkdir -p docs/versiones/<id>/partials/<kebab>`.
 2. `node scripts/gen-api.mjs --plan <kebab>` → lista los archivos **exactos** que va a usar:
    `<base>.md` si la sección es igual en las dos fichas, o `<base>-vanilla.md`/`<base>-vue.md` si
    difiere.
@@ -75,14 +75,16 @@ docs/versiones/5.1.1/partials/<kebab>/
 2. **Demostración (Paso 2):** el cuerpo de **cada** ficha tiene una sección por **capacidad** (una
    prop, o un grupo que comparte función) que muestra **todas** sus variantes —no la más usada—, con
    su demo real: marcador `<!-- demo:<comp>-<slug> -->` en la ficha vanilla y el `.vue` en
-   `docs/site/examples/<comp>/<slug>.vue`.
+   `docs/versiones/<id>/paginas/examples/<comp>/<slug>.vue` (se compone a `docs/site/examples/`, que
+   está gitignoreado: la fuente versionada es la de `versiones/<id>/`). `check-docs` verifica que el
+   id del marcador tenga su archivo.
 3. **Uso (Paso 3):** cada sección muestra el **código fiel** de esa demostración, en el lenguaje de
    su ficha (vanilla → HTML; Vue → `.vue`). No pseudocódigo: espeja lo que se ve.
 4. **Receta:** `skills/use-comegen/references/<kebab>.md` autosuficiente, con las dos APIs (patrón
    con valor de relleno + referencia) y la lista completa de límites.
 5. `node scripts/check-docs.mjs`, `node scripts/gen-api.mjs --check` y `pnpm build` en verde.
 
-Modelo completo: `docs/versiones/5.1.1/componentes/cu-button.md` + `docs/versiones/5.1.1/componentes/vue/button.md` +
+Modelo completo: `docs/versiones/<id>/componentes/cu-button.md` + `docs/versiones/<id>/componentes/vue/button.md` +
 `skills/use-comegen/references/button.md`.
 
 ## Regla dura: la API siempre está, y va al final
@@ -90,11 +92,15 @@ Modelo completo: `docs/versiones/5.1.1/componentes/cu-button.md` + `docs/version
 Toda ficha lleva **API** —como mínimo `props`/`atributos`— y va **al final de cada ficha, sin
 excepción**.
 
-- La API se **comparte** entre las 2 fichas vía partials; no se copia a mano.
-- Las tablas se **generan** del SFC (`scripts/gen-api.mjs`), no se escriben a mano.
+- La API se **comparte** entre las 2 fichas vía partials; no se duplica la tabla en las dos fichas.
+- Las tablas se **generan** del SFC (`scripts/gen-api.mjs`) **sólo donde hay marcadores `@api:*`**:
+  hoy, las recetas de la skill. Las fichas y los partials **no llevan marcadores** y se mantienen a
+  mano; ahí lo que valida el gate es `ficha-api.test.ts` (nombre de cada prop + default documentado,
+  emits, slots y expose) — **no** los tipos ni las descripciones.
 - La **prosa** no se comparte: cada scope la escribe para sí, **fuera** de la API.
-- La **receta** no incluye partials (viaja sola) y lleva **su propia copia** de las dos APIs, también
-  generada.
+- La **receta** no incluye partials (viaja sola) y lleva **su propia copia** de las dos APIs, generada
+  del SFC: se regenera con `node scripts/gen-api.mjs` y `--check` falla si driftó (también si un
+  marcador `@api:*` de la receta quedó mal escrito, que antes se salteaba en silencio).
 - Si una tabla dice algo distinto según el scope, **gana el código**: se corrige el SFC o el partial.
 
 ### Pero no todos los scopes dicen lo mismo (y está bien)
@@ -119,7 +125,8 @@ ahí **mentiría**; por eso una sección así se parte en `props-vue.md` + `prop
 | Vue | `## Props` · `## Emits` · `## Slots` · `## Expose` | `@api:props` · `@api:emits` · `@api:slots-vue` · `@api:expose` |
 | receta | `## API del custom element` / `## API del componente Vue` (con `###`) | los mismos, con `###` |
 
-> La **cabecera** vive en la ficha; el **partial** lleva el cuerpo (la tabla, entre marcadores). En la
+> La **cabecera** vive en la ficha; el **partial** lleva el cuerpo (la tabla; si el archivo tiene
+> marcadores `@api:*`, los llena `gen-api`). En la
 > receta los slots del CE usan `@api:slots` y los de Vue `@api:slots-vue` (no repetir el mismo marcador
 > en un archivo). Modelo a copiar: `skills/use-comegen/references/button.md`.
 
@@ -199,7 +206,7 @@ slot → **7 secciones**, porque `disabled`+`loading` comparten **Estados** y `t
 `to`), se documenta como **límite** (callout `>`), no como sección. La lista completa de límites vive
 en la receta (`## Qué puede y qué no puede`).
 
-Modelo real: `docs/versiones/5.1.1/componentes/cu-button.md` (Colores, Variantes, Tamaños, Estados, Navegación,
+Modelo real: `docs/versiones/<id>/componentes/cu-button.md` (Colores, Variantes, Tamaños, Estados, Navegación,
 Formulario, Contenido e iconos, Eventos).
 
 ## Paso 3 — Cómo usarlos

@@ -5,9 +5,10 @@
 //   1. cada tag de `src/lib/**/*.ts` tiene ficha vanilla (`docs/componentes/<tag>.md`),
 //   2. cada componente Vue de las categorías tiene ficha Vue (`docs/componentes/vue/<kebab>.md`),
 //   3. cada página del sitio incluye una ficha que existe (y sus includes anidados resuelven),
-//   4. cada ficha la incluye exactamente una página.
+//   4. cada ficha la incluye exactamente una página,
+//   5. cada `<!-- demo:id -->` tiene su archivo entre los demos compuestos.
 //
-// NO mira contenido, cabeceras, demos ni descripciones: eso es a mano (skill `documenter`).
+// NO mira contenido, cabeceras ni descripciones: eso es a mano (skill `documenter`).
 // Las tablas de API las valida contra el SFC `scripts/gen-api.mjs --check`.
 //
 // Uso: node scripts/check-docs.mjs
@@ -155,6 +156,25 @@ for (const kebab of vueFichas) {
 }
 for (const [file, count] of includedBy) {
   if (count > 1) problems.push(`ficha ${rel(file)}: incluida por ${count} páginas`);
+}
+
+// ── demos: cada `<!-- demo:id -->` tiene su archivo ──────────────────────────
+// VitePress cambia el marcador por `<ComegenDemo id="…">`, que busca el demo entre los
+// `.vue` kebab-case de `docs/site/examples/**`. Con un id mal escrito, el demo no se
+// dibuja (queda el cartel "Demo «id» no encontrado") y el build no falla.
+const DEMOS_DIR = resolve(root, "docs/site/examples");
+const demoRE = /<!--\s*demo:([\w-]+)\s*-->/g;
+const demoIds = new Set(
+  (existsSync(DEMOS_DIR) ? walk(DEMOS_DIR, ".vue") : []).map((file) =>
+    file.split("/").pop().replace(/\.vue$/, ""),
+  ),
+);
+for (const file of walk(FICHA_DIR, ".md")) {
+  for (const match of readFileSync(file, "utf-8").matchAll(demoRE)) {
+    if (!demoIds.has(match[1])) {
+      problems.push(`${rel(file)}: demo «${match[1]}» no existe en docs/site/examples`);
+    }
+  }
 }
 
 // ── tags ↔ ficha vanilla ─────────────────────────────────────────────────────

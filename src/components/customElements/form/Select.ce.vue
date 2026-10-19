@@ -45,7 +45,7 @@ const props = defineProps({
   },
   /** Estado deshabilitado */
   disabled: { type: Boolean, required: false, default: false },
-  /** Modo solo lectura: no abre el dropdown ni cambia la selección */
+  /** Modo solo lectura: no abre el dropdown ni cambia la selección; el control sigue enfocable */
   readOnly: { type: Boolean, required: false, default: false },
   /** Si es `true`, el dropdown usa `position: fixed` en vez de absoluto */
   fixed: { type: Boolean, required: false, default: false },

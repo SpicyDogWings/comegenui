@@ -93,3 +93,6 @@ docs/site/examples/
 
 # Mensaje de la release (generado, no se versiona)
 .release/
+
+# Artefactos de playwright-cli (snapshots/console de las sesiones del agente)
+.playwright-cli/
