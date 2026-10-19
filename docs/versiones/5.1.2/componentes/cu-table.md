@@ -660,6 +660,8 @@ t.actions = (row) => [
 ];
 ```
 
+<!-- demo:table-acciones-condicionales -->
+
 > Si una fila se queda **sin ninguna acción visible**, no se renderiza su botón “...” (así no se abre un panel vacío). Un array estático sigue funcionando exactamente igual que antes.
 
 ---
