@@ -3,8 +3,9 @@
 #   git config core.hooksPath .githooks
 #
 # Corre el gate rápido: impacto + tipos + contrato de componentes + build de la
-# lib. NO corre tests ni docs (eso es el pre-push). Aborta el commit si algo se
-# dañó. Saltear de forma puntual (ej. un WIP): `git commit --no-verify`.
+# lib. NO corre tests, mutación ni docs: el gate completo (`guard.sh --full`) se
+# corre a mano antes de pushear. Aborta el commit si algo se dañó. Saltear de
+# forma puntual (ej. un WIP): `git commit --no-verify`.
 set -euo pipefail
 
 ROOT="$(git rev-parse --show-toplevel)"

@@ -45,8 +45,8 @@ pnpm dev
 | `pnpm build:lib` | Build de la librería UMD (Web Components) + zip |
 | `pnpm type-check` | Type-check con `vue-tsc` |
 | `pnpm test` | Tests unitarios (Vitest) |
-| `pnpm guard` | Gate local antes de un PR: impacto + tipos nuevos + contrato de componentes + build de la lib (`--full` suma tests, docs y build del sitio) |
-| `pnpm guard --solo cu-x` | Verifica un solo componente (loop rápido) |
+| `pnpm guard` | Gate local antes de un PR: impacto + tipos nuevos + contrato de componentes + build de la lib (`--full` suma tests, docs, mutación y build del sitio) |
+| `./scripts/guard.sh --solo cu-x` | Verifica un solo componente (loop rápido) |
 | `pnpm mutation` | Prueba de falsos verdes: aplica bugs conocidos y verifica que algún test falle |
 | `pnpm contract:update` | Regenera el baseline de contratos cuando un cambio de API es intencional |
 
@@ -62,7 +62,8 @@ git config core.hooksPath .githooks
 ```
 
 - `pre-commit` → `./scripts/guard.sh --fast` (impacto + tipos + contrato + build de la lib).
-- `pre-push` → `./scripts/guard.sh --full` (agrega tests, docs y build del sitio).
+- El gate completo (`./scripts/guard.sh --full`) **no está enganchado a git**: correlo a mano antes de
+  pushear (agrega tests, docs, mutación y build del sitio).
 
 Saltear de forma puntual: `git commit --no-verify` o `git push --no-verify`.
 
@@ -94,8 +95,8 @@ Escribí:
 > por defecto (`main`)**. Si el PR va a una rama de integración (ej. `v5.0.0-alpha.3`), GitHub la
 > linkea pero **no la cierra**: cerrala a mano o dejá el `Closes #N` en el PR que llegue a `main`.
 
-Los agentes generan el título y la descripción a partir de esa plantilla: la skill
-`comegen-preflight` corre el gate local y arma el cuerpo del PR.
+Los agentes generan el título y la descripción a partir de esa plantilla: la skill `crear-pr` arma y
+crea el PR, y `comegen-preflight` corre el gate local antes.
 
 ## Componentes
 
@@ -109,7 +110,7 @@ src/lib/{category}/mi-componente.ts                           → entry point
 ```
 
 Si el cambio altera la API, actualizá también las fichas de documentación
-(`docs/versiones/5.1.1/componentes/…`) y las páginas del sitio. La receta completa está en la skill
+(`docs/versiones/<id>/componentes/…`) y las páginas del sitio. La receta completa está en la skill
 `documenter`.
 
 ## Checklist antes del PR
