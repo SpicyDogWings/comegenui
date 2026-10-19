@@ -133,3 +133,48 @@ describe("Select — contenido y clases", () => {
     expect(w.findAll(".cu-select-option")[2]!.classes()).toContain("cu-select-option--disabled");
   });
 });
+
+describe("Select — readOnly", () => {
+  it("no abre el dropdown al click", async () => {
+    const w = mount(Select, { props: { options: OPTIONS, readOnly: true } });
+    await toggle(w).trigger("click");
+    await flushPromises();
+
+    expect(vm(w).isOpen()).toBe(false);
+    expect(w.emitted("select")).toBeUndefined();
+    expect(w.emitted("change")).toBeUndefined();
+  });
+
+  it("marca aria-readonly y sigue enfocable", async () => {
+    const w = mount(Select, {
+      props: { options: OPTIONS, readOnly: true },
+      attachTo: document.body,
+    });
+
+    expect(toggle(w).attributes("aria-readonly")).toBe("true");
+    vm(w).focus();
+    expect(document.activeElement).toBe(toggle(w).element);
+
+    w.unmount();
+  });
+
+  it("al pasar a readOnly cierra el panel abierto", async () => {
+    const w = mount(Select, { props: { options: OPTIONS } });
+    await toggle(w).trigger("click");
+    await flushPromises();
+    expect(vm(w).isOpen()).toBe(true);
+
+    await w.setProps({ readOnly: true });
+    await flushPromises();
+    expect(vm(w).isOpen()).toBe(false);
+  });
+
+  it("set() sigue funcionando en readOnly (API programática)", async () => {
+    const w = mount(Select, { props: { options: OPTIONS, readOnly: true } });
+    vm(w).set("a");
+    await flushPromises();
+
+    expect(vm(w).get()).toBe("a");
+    expect(w.find(".cu-select-label").text()).toBe("A");
+  });
+});

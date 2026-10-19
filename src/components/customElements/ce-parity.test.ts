@@ -185,6 +185,35 @@ describe("Select.ce", () => {
     expect(w.vm.get()).toBe("");
     expect(updates).toEqual([""]);
   });
+
+  it("forwardea `readOnly` y no abre el dropdown", async () => {
+    const w = mount(SelectCe, { props: { options, readOnly: true } });
+
+    expect(w.findComponent(Select).props("readOnly")).toBe(true);
+    expect(w.find(".cu-select-toggle").attributes("aria-readonly")).toBe("true");
+
+    await w.find(".cu-select-toggle").trigger("click");
+    await flushPromises();
+    expect(w.vm.isOpen()).toBe(false);
+  });
+
+  it("acepta el atributo HTML `read-only`", async () => {
+    const tag = "cu-select-readonly-test";
+    if (!customElements.get(tag)) customElements.define(tag, defineCustomElement(SelectCe));
+
+    const el = document.createElement(tag) as HTMLElement & { isOpen: () => boolean };
+    el.setAttribute("read-only", "");
+    document.body.appendChild(el);
+    await flushPromises();
+
+    const toggle = el.shadowRoot?.querySelector(".cu-select-toggle") as HTMLElement | null;
+    expect(toggle).not.toBeNull();
+    toggle?.click();
+    await flushPromises();
+
+    expect(el.isOpen()).toBe(false);
+    el.remove();
+  });
 });
 
 describe("FileInput.ce", () => {

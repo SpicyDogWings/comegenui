@@ -13,6 +13,8 @@ teclado y estado de carga. Si el usuario filtra escribiendo sobre un input visib
 - Búsqueda estilo `<select>` nativo: `search-enabled` + `search-mode` (`startsWith` default |
   `includes`) + `search-reset-delay` (default `1000` ms).
 - `loading` muestra una barra animada y anula la de cooldown.
+- `read-only` bloquea abrir el dropdown y cambiar la selección, pero el control sigue enfocable;
+  `set()` / `reset()` programáticos siguen funcionando.
 - Posición: `position` / `align` / `fixed`.
 - Programático: `get()` / `set(v)` / `reset()` / `focus()` / `isOpen()` / `selectedItem()`.
 
@@ -33,6 +35,8 @@ Los valores de `color` / `variant` / `position` / `align` están en «Atributos�
 - `options` va por propiedad JS, nunca como atributo.
 - `variant` es de formulario: no admite `solid`, `link` ni `none`.
 - No expone `open()`/`close()`: sólo `isOpen()` para consultar.
+- `read-only` no es un `<select readonly>` nativo: no abre el panel; usá `disabled` si además
+  querés bloquear el foco y atenuar.
 - `reset()` limpia a `""`, no vuelve a un valor inicial.
 - No es un `<select>`/`<input>` nativo con `name`: no participa del submit de un `<form>`.
 - `cooldown-variant` acepta `ghost-hover` (default) o `solid`, y no tiene validador.
@@ -49,6 +53,7 @@ Los valores de `color` / `variant` / `position` / `align` están en «Atributos�
 | `search-enabled` | `boolean` | `false` | Activa búsqueda por teclado (estilo select nativo: escribir hace scroll al match) |
 | `loading` | `boolean` | `false` | Muestra una barra de progreso animada en el dropdown |
 | `disabled` | `boolean` | `false` | Estado deshabilitado |
+| `read-only` | `boolean` | `false` | Modo solo lectura: no abre el dropdown ni cambia la selección; el control sigue enfocable |
 | `position` | `string` | `"bottom"` | Posición del dropdown: `bottom`, `top` |
 | `align` | `string` | `"start"` | Alineación: `start`, `center`, `end` |
 | `fixed` | `boolean` | `false` | Si es `true`, el dropdown usa `position: fixed` en vez de absoluto |
@@ -105,6 +110,7 @@ Ninguno.
 | `searchEnabled` | `boolean` | `false` | — |
 | `loading` | `boolean` | `false` | — |
 | `disabled` | `boolean` | `false` | — |
+| `readOnly` | `boolean` | `false` | — |
 | `placeholder` | `string` | `""` | — |
 | `position` | `string` | `"bottom"` | — |
 | `align` | `string` | `"start"` | — |

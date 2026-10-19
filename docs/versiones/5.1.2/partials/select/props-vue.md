@@ -5,6 +5,7 @@
 | `searchEnabled` | `boolean` | `false` | — |
 | `loading` | `boolean` | `false` | — |
 | `disabled` | `boolean` | `false` | — |
+| `readOnly` | `boolean` | `false` | No abre el dropdown ni cambia la selección; el control sigue enfocable. |
 | `placeholder` | `string` | `""` | — |
 | `position` | `string` | `"bottom"` | — |
 | `align` | `string` | `"start"` | — |

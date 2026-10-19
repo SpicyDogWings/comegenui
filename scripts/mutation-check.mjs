@@ -245,7 +245,7 @@ const MUTATIONS = [
     file: "src/components/form/Select.vue",
     expect: "seleccionar una opción emite update:modelValue y select",
     find: `function onSelect(option: SelectOption) {
-  if (option.disabled) return;
+  if (props.readOnly || option.disabled) return;
   selectedValue.value = option.value;
   emit("update:modelValue", option.value);
   emit("select", option);
@@ -253,7 +253,7 @@ const MUTATIONS = [
   dropdownRef.value?.close();
 }`,
     replace: `function onSelect(option: SelectOption) {
-  if (option.disabled) return;
+  if (props.readOnly || option.disabled) return;
   selectedValue.value = option.value;
   dropdownRef.value?.close();
 }`,
@@ -279,6 +279,24 @@ const MUTATIONS = [
     expect: "reset() emite change",
     find: `function reset() { selectedValue.value = ""; emit("change", ""); }`,
     replace: `function reset() { selectedValue.value = ""; }`,
+  },
+  {
+    id: "select-readonly-abre",
+    file: "src/components/form/Select.vue",
+    expect: "readOnly no abre el dropdown",
+    find: `      :disabled="disabled || readOnly"`,
+    replace: `      :disabled="disabled"`,
+  },
+  {
+    id: "select-readonly-no-cierra",
+    file: "src/components/form/Select.vue",
+    expect: "al pasar a readOnly cierra el panel abierto",
+    find: `watch(() => props.readOnly, (value) => {
+  if (value) dropdownRef.value?.close();
+});`,
+    replace: `watch(() => props.readOnly, () => {
+  /* mutado */
+});`,
   },
   {
     id: "checkbox-set-not-emit-change",

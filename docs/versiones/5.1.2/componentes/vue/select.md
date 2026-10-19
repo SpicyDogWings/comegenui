@@ -265,6 +265,27 @@ const opciones = [
 </template>
 ```
 
+## Estado de solo lectura
+
+`readOnly` bloquea la apertura del dropdown y el cambio de selección, pero el control sigue
+enfocable y no se atenúa. `set()` y `reset()` programáticos siguen funcionando; para bloquear
+también el foco usá `disabled`.
+
+```vue
+<script setup lang="ts">
+import Select from "@/components/form/Select.vue";
+
+const opciones = [
+  { value: "a", label: "Opción A" },
+  { value: "b", label: "Opción B" },
+];
+</script>
+
+<template>
+  <Select :options="opciones" read-only model-value="a" placeholder="read-only" />
+</template>
+```
+
 ## Posicionamiento
 
 `position` acepta `bottom` (**default**) y `top`; `align` acepta `start` (**default**),
