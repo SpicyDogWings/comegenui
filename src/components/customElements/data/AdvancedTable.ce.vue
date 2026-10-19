@@ -77,7 +77,9 @@ interface ButtonConfig {
   target?: string;
   color?: string;
   variant?: string;
-  disabled?: boolean;
+  disabled?: boolean | ((row: Record<string, any>) => boolean);
+  hidden?: (row: Record<string, any>) => boolean; // Oculta el botón/ítem en esa fila
+  divider?: boolean; // Ítem divisor (solo en el dropdown de `actions`)
 }
 
 interface FooterCell {
@@ -177,8 +179,12 @@ const props = defineProps({
   filters: { type: Object as () => Record<string, any>, required: false, default: () => ({}) },
   /** Muestra una barra de carga animada en el tope */
   loading: { type: Boolean, required: false, default: false },
-  /** Acciones de fila (botón "..." al final de cada fila). Se asigna como propiedad JS */
-  actions: { type: Array, required: false, default: () => [] },
+  /** Acciones de fila (botón "..." al final de cada fila). Array estático o función `(row) => acciones` para decidirlas por fila. Se asigna como propiedad JS */
+  actions: {
+    type: [Array, Function] as PropType<ButtonConfig[] | ((row: Record<string, any>) => ButtonConfig[])>,
+    required: false,
+    default: () => [],
+  },
   /** Texto del header de la columna de acciones. Default vacío. Atributo HTML: `actions-label` */
   actionsLabel: { type: String, required: false, default: "" },
   /** Deshabilita filas (ver «Deshabilitar filas, columnas y celdas»). Se asigna como propiedad JS */

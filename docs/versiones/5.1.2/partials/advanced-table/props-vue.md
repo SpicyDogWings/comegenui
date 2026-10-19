@@ -15,7 +15,7 @@
 | `searchValue` | `string` | `""` | — |
 | `filters` | `Record<string, any>` | `{}` | — |
 | `loading` | `boolean` | `false` | — |
-| `actions` | `ButtonConfig[]` | `[]` | — |
+| `actions` | `ButtonConfig[] \| ((row: Record<string, any>) => ButtonConfig[])` | `[]` | — |
 | `actionsLabel` | `string` | `""` | — |
 | `rowDisabled` | `boolean \| ((row: Record<string, any>) => boolean)` | `false` | — |
 | `footer` | `FooterRow[]` | `[]` | — |

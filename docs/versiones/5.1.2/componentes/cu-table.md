@@ -39,7 +39,9 @@ interface ButtonConfig {
   target?: string;
   color?: string;
   variant?: string;
-  disabled?: boolean;
+  disabled?: boolean | ((row: Record<string, any>) => boolean);         // Booleano o por fila
+  hidden?: (row: Record<string, any>) => boolean;                      // Oculta el botón/ítem en esa fila
+  divider?: boolean;                                                  // Ítem divisor (solo en `actions`)
 }
 ```
 
@@ -89,7 +91,7 @@ La celda renderiza el editor (input / select / textarea / autocomplete) **direct
 
 ### Acciones de fila (`actions`)
 
-Es un array de `ButtonConfig`. Cuando se asigna, la tabla agrega automáticamente una columna al final con un dropdown "..." que muestra las acciones. El `onClick` recibe la fila completa.
+Es un array de `ButtonConfig` — o una función `(row) => ButtonConfig[]` para decidirlas por fila (ver [Acciones condicionales](#acciones-condicionales)). Cuando se asigna, la tabla agrega automáticamente una columna al final con un dropdown "..." que muestra las acciones. El `onClick` recibe la fila completa.
 
 El header de esa columna queda **vacío** por defecto; podés ponerle texto con `actionsLabel` (atributo `actions-label`):
 
@@ -643,6 +645,23 @@ tabla.actions = [
 
 > Items con `divider: true` renderizan una línea divisoria. Cada `onClick` recibe la fila completa.
 
+### Acciones condicionales
+
+`actions` también acepta una **función `(row) => ButtonConfig[]`**, evaluada en cada render. Cada acción admite `disabled` (booleano o `(row) => boolean`) y `hidden: (row) => boolean`; los `divider` que quedan huérfanos al ocultar algo se descartan solos:
+
+```js
+const t = document.getElementById('miTabla');
+
+t.actions = (row) => [
+  { label: 'Editar', onClick: (r) => editar(r) },
+  { label: 'Publicar', hidden: (r) => r.estado !== 'borrador', onClick: (r) => publicar(r) },
+  { divider: true },
+  { label: 'Eliminar', disabled: (r) => r.bloqueado, color: 'danger', variant: 'ghost', onClick: (r) => eliminar(r) },
+];
+```
+
+> Si una fila se queda **sin ninguna acción visible**, no se renderiza su botón “...” (así no se abre un panel vacío). Un array estático sigue funcionando exactamente igual que antes.
+
 ---
 
 ## Estado de carga
@@ -984,7 +1003,9 @@ interface ButtonConfig {
   target?: string;
   color?: string;
   variant?: string;
-  disabled?: boolean;
+  disabled?: boolean | ((row: Record<string, any>) => boolean);
+  hidden?: (row: Record<string, any>) => boolean; // Oculta el botón/ítem en esa fila
+  divider?: boolean; // Ítem divisor (solo en `actions`)
 }
 ```
 
