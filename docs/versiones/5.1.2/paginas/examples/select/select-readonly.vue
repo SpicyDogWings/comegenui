@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // Refleja el ejemplo "Estado de solo lectura": no abre ni cambia por click;
 // `set()` programático sigue funcionando.
-import { onMounted, ref } from "vue";
+import { ref, watch } from "vue";
 
 type CuSelectElement = HTMLElement & {
   options?: unknown[];
@@ -15,13 +15,14 @@ const options = [
   { value: "b", label: "Opción B" },
 ];
 
-onMounted(async () => {
+// El ref aparece recién cuando `VanillaDemo` termina de cargar el CE; un
+// `onMounted` del demo corre antes y vería `select.value === null`.
+watch(select, async (el) => {
+  if (!el) return;
   await customElements.whenDefined("cu-select");
-  if (select.value) {
-    select.value.options = options;
-    select.value.set?.("a");
-  }
-});
+  el.options = options;
+  el.set?.("a");
+}, { flush: "post" });
 </script>
 
 <template>
