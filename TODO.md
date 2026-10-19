@@ -2,7 +2,7 @@
 
 **Estado:** en preparación. `5.1.2` es la `latest` del sitio, pero **todavía no es la final**.
 **Rama:** `fix/side-over-docs-open` (fix suelto; la release se corta desde `main`).
-**Última verificación:** `./scripts/guard.sh --full` verde (1712 tests, 59/59 mutaciones).
+**Última verificación:** `./scripts/guard.sh --full` verde (1715 tests, 60/60 mutaciones).
 
 Objetivo de la release: **reemplazar la release `v5.1.1`** con estos fixes. Sin cambios de
 compatibilidad para quien ya consume la lib, salvo el método `open()` de `cu-side-over`, que nunca
