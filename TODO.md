@@ -2,7 +2,7 @@
 
 **Estado:** en preparación. `5.1.2` es la `latest` del sitio, pero **todavía no es la final**.
 **Rama:** `fix/side-over-docs-open` (fix suelto; la release se corta desde `main`).
-**Última verificación:** `./scripts/guard.sh --full` verde (1712 tests, 59/59 mutaciones).
+**Última verificación:** `./scripts/guard.sh --full` verde (1715 tests, 60/60 mutaciones).
 
 Objetivo de la release: **reemplazar la release `v5.1.1`** con estos fixes. Sin cambios de
 compatibilidad para quien ya consume la lib, salvo el método `open()` de `cu-side-over`, que nunca
@@ -20,7 +20,8 @@ funcionó y pasa a `show()`.
 - [x] Doc de `5.1.2`: `componentes/` + `partials/` (las páginas se heredan de `5.1.1`).
 - [x] Baseline de contrato de `cu-switch` regenerado.
 - [x] `cu-side-over`: `show()` reemplaza al método `open()` (la prop booleana `open` lo tapaba en
-      el CE); ficha vanilla, partial y demos de 5.1.2 actualizados. Baseline regenerado.
+      el CE); el CE no teleporta el panel para conservar el slot; ficha vanilla, partial, skill y
+      demos de 5.1.2 actualizados. Baseline regenerado.
 
 ## Pendiente — ir sumando a la release
 

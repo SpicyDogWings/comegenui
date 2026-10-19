@@ -24,7 +24,8 @@ está abierto.
 
 <!-- demo:side-over-uso -->
 
-El panel se teleporta al `body`, así que podés declararlo en cualquier parte del documento.
+En Vue el panel se teleporta al `body`; en el custom element queda dentro de su shadow root para
+poder proyectar el slot. Igual podés declararlo en cualquier parte del documento.
 
 ## Posiciones
 
