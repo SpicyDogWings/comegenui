@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, getCurrentInstance, type PropType } from "vue";
+import { ref, watch, getCurrentInstance, onMounted, onBeforeUnmount, type PropType } from "vue";
 import Switch from "../../form/Switch.vue";
 
 const props = defineProps({
@@ -25,6 +25,35 @@ watch(() => props.modelValue, (val) => {
 });
 
 const instance = getCurrentInstance();
+
+// El CE siempre declara un `<slot>` en su template, así que el Switch interno
+// vería `$slots.default` aunque el host no tenga hijos y nunca caería al
+// fallback de `label`. Sólo pasamos el slot cuando el host tiene contenido real
+// (ignorando espacios y comentarios) y reaccionamos si ese contenido cambia.
+const hasHostContent = ref(false);
+let hostObserver: MutationObserver | null = null;
+
+function nodeCountsAsContent(node: ChildNode): boolean {
+  if (node.nodeType === Node.TEXT_NODE) return !!node.textContent?.trim();
+  if (node.nodeType === Node.COMMENT_NODE) return false;
+  return true;
+}
+
+onMounted(() => {
+  const el = instance?.vnode.el as HTMLElement | null;
+  const host = (el?.getRootNode() as ShadowRoot | null)?.host as HTMLElement | null;
+  if (!host) return;
+
+  const update = () => {
+    hasHostContent.value = Array.from(host.childNodes).some(nodeCountsAsContent);
+  };
+
+  update();
+  hostObserver = new MutationObserver(update);
+  hostObserver.observe(host, { childList: true, subtree: true, characterData: true });
+});
+
+onBeforeUnmount(() => hostObserver?.disconnect());
 function ceEmit(event: string, payload: unknown) {
   const el = instance?.vnode.el as HTMLElement | null;
   const host = el?.getRootNode()?.host || el;
@@ -65,7 +94,9 @@ defineExpose({ get, set, reset, focus });
     @update:model-value="onUpdate"
     @change="ceEmit('change', $event)"
   >
-    <slot></slot>
+    <template v-if="hasHostContent" #default>
+      <slot></slot>
+    </template>
   </Switch>
 </template>
 

@@ -13,5 +13,5 @@
     "reset",
     "set"
   ],
-  "shadow": "label.cu-switch.cu-switch--md\n  span.cu-switch-track[aria-checked,role,style]\n    span.cu-switch-thumb\n    input.cu-switch-input[tabindex,type]\n  span.cu-switch-label\n    slot"
+  "shadow": "label.cu-switch.cu-switch--md\n  span.cu-switch-track[aria-checked,role,style]\n    span.cu-switch-thumb\n    input.cu-switch-input[tabindex,type]"
 }

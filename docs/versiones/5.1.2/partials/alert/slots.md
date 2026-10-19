@@ -1,0 +1,4 @@
+| Slot | Descripción |
+| ------ | ------ |
+| `icon` | — |
+| `default` | — |

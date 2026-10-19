@@ -1,6 +1,7 @@
 // Paridad de los wrappers CE con su `.vue`: props que no llegaban al componente
 // interno, eventos y slots que no se reenviaban, y métodos que no se exponían.
 import { beforeAll, describe, expect, it, vi } from "vitest";
+import { defineCustomElement } from "vue";
 import { flushPromises, mount } from "@vue/test-utils";
 
 import AvatarCe from "@/components/customElements/information/Avatar.ce.vue";
@@ -235,7 +236,50 @@ describe("FileInputZone.ce", () => {
   });
 });
 
+const SwitchElement = defineCustomElement(SwitchCe);
+customElements.define("cu-switch-label-test", SwitchElement);
+
+async function mountSwitchElement(html: string) {
+  const el = document.createElement("cu-switch-label-test") as HTMLElement & { label: string };
+  el.setAttribute("label", "Notificaciones");
+  el.innerHTML = html;
+  document.body.appendChild(el);
+  await flushPromises();
+  return el;
+}
+
 describe("Switch.ce", () => {
+  it("renderiza el `label` del atributo cuando el host no tiene hijos", async () => {
+    const el = await mountSwitchElement("");
+    expect(el.shadowRoot?.querySelector(".cu-switch-label")?.textContent).toBe("Notificaciones");
+    el.remove();
+  });
+
+  it("ignora hijos de solo espacios y mantiene el `label` del atributo", async () => {
+    const el = await mountSwitchElement("\n    ");
+    expect(el.shadowRoot?.querySelector(".cu-switch-label")?.textContent).toBe("Notificaciones");
+    el.remove();
+  });
+
+  it("sigue proyectando el slot cuando el host tiene contenido", async () => {
+    const el = await mountSwitchElement("Desde el slot");
+    expect(el.shadowRoot?.querySelector(".cu-switch-label slot")).not.toBeNull();
+    expect(el.textContent).toContain("Desde el slot");
+    el.remove();
+  });
+
+  it("pasa a mostrar el slot si el host recibe contenido después del mount", async () => {
+    const el = await mountSwitchElement("");
+    expect(el.shadowRoot?.querySelector(".cu-switch-label")?.textContent).toBe("Notificaciones");
+
+    el.textContent = "Contenido tardío";
+    await flushPromises();
+
+    expect(el.shadowRoot?.querySelector(".cu-switch-label slot")).not.toBeNull();
+    expect(el.textContent).toContain("Contenido tardío");
+    el.remove();
+  });
+
   it("set() actualiza el estado interno y get() lo refleja", async () => {
     const w = mount(SwitchCe);
     w.vm.set(true);

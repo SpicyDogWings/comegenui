@@ -4,7 +4,7 @@ description: 'Receta para usar marked (npm) con el componente Markdown de comege
 metadata:
   repository: https://github.com/SpicyDogWings/comegenui
   path: docs/skills/marked
-  version: 5.1.1
+  version: 5.1.2
 ---
 
 # Marked + ComegenUI Markdown

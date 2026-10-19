@@ -4,7 +4,7 @@ description: 'Receta para publicar el sitio de la documentación de ComegenUI en
 metadata:
   repository: https://github.com/SpicyDogWings/comegenui
   path: docs/skills/deploy-docs
-  version: 5.1.1
+  version: 5.1.2
 ---
 
 # `deploy-docs` — publicar el sitio de la doc

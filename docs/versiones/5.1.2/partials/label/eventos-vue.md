@@ -1,0 +1,3 @@
+| Evento | Payload | Descripción |
+| ------ | ------ | ------ |
+| `click` | — | — |

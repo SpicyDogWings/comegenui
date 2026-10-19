@@ -89,4 +89,4 @@ pnpm build:lib v5.0.0     # fuerza la versión del zip
 Cada config sale en `dist-libs/<config>/`; los 4 zips (`comegenui-<config>-v{version}.zip`)
 quedan **sueltos en `dist-libs/`**, listos para arrastrar al release. Cada uno trae los
 bundles de su config + el runtime del `shared` si aplica. **No** incluye la documentación ni la
-skill: la doc vive en el repo (`docs/versiones/5.1.1/componentes/`) y la skill se baja aparte (ver `SKILL.md`).
+skill: la doc vive en el repo (`docs/versiones/5.1.2/componentes/`) y la skill se baja aparte (ver `SKILL.md`).

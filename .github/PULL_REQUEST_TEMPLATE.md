@@ -1,34 +1,30 @@
 <!--
-  Título del PR: Conventional Commits en español (minúsculas). Ej:
-    feat(select): permitir búsqueda remota
+  Título: Conventional Commits en español (minúsculas). Ej:
     fix(date-picker): no cerrar al cambiar de mes
-    docs(button): aclarar la variante ghost
+    feat(select): permitir búsqueda remota
 
-  Referenciá la issue con un closing keyword para que se cierre al mergear:
-    Closes #N   (también sirven Fixes / Resolves)
-  Ojo: el autocierre solo funciona si la rama base es `main` (la por defecto).
-  Si el PR va a una rama de integración (ej. v5.0.0-alpha.3), la issue queda
-  abierta y hay que cerrarla a mano.
+  Issue: Closes #N. El autocierre sólo funciona si el PR va a `main`.
 -->
 
 ## Qué
 
-<!-- Resumen del cambio y por qué. Si toca la API, decí qué props/slots/eventos/métodos cambian. -->
+<!-- Qué cambia y por qué. Si toca la API: props/slots/eventos/métodos. -->
 
-## Issue relacionada
+## Issue
 
 Closes #
 
 ## Verificación
 
-<!-- Cómo lo probaste: tests, preflight, pasos manuales, capturas. -->
+<!-- Cómo lo probaste y veredicto de ./scripts/guard.sh --full. -->
 
-- [ ] `pnpm preflight` pasa (type-check + tests + docs + build del sitio)
-- [ ] Probado en el sitio / con el custom element según corresponda
+- [ ] `./scripts/guard.sh --full` en verde
+- [ ] Probado en el sitio o con el custom element (si aplica)
+- [ ] Si cambió la API: fichas y páginas al día (`docs/versiones/<id>/…`)
+- [ ] Si el contrato cambió a propósito: baseline actualizado
+- [ ] Si agregué un test de comportamiento: mutación en `scripts/mutation-check.mjs`
 
-## Checklist
-
-- [ ] Hay una issue abierta y este PR la referencia (`Closes #N`)
-- [ ] Los commits siguen Conventional Commits
-- [ ] Si cambió la API, actualicé fichas (`docs/componentes/…`) y páginas del sitio
-- [ ] No se colaron secretos, tokens ni credenciales
+<!--
+  Release: si este PR corta una versión, agregá acá el resumen del changelog, la guía de breaking
+  changes (si existe) y que incluye los zips `dist-libs/comegenui-*-v<version>.zip`.
+-->

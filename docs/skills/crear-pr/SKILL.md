@@ -1,0 +1,102 @@
+---
+name: crear-pr
+description: 'Arma y crea el pull request de la rama actual usando la plantilla del repo: título en Conventional Commits, cuerpo completo (Qué, Issue, Verificación), push y `gh pr create`, con fallback a la URL de comparación si `gh` no está autenticado. Usar cuando el usuario pida "dame la PR", "abrí el PR", "creá el pull request", "armá el PR", "pasá la rama a PR", "completá la plantilla del PR" o "generá el título/descripción del PR".'
+metadata:
+  repository: https://github.com/SpicyDogWings/comegenui
+  path: docs/skills/crear-pr
+  version: 5.1.2
+---
+
+# `crear-pr`
+
+Convierte la rama actual en un pull request usando la plantilla del repo, sin inventar secciones ni
+dejar placeholders.
+
+## Cuándo se activa
+
+- "Dame la PR", "abrí el PR", "creá el pull request", "armá el PR", "pasá la rama a PR".
+- "¿Cómo se escribe la descripción del PR?" / "completá la plantilla".
+
+Para el gate previo (impacto, tipos, contrato, tests, mutación y docs) usá `comegen-preflight`.
+Esta skill arranca cuando el gate ya está verde o cuando el usuario pide sólo el texto del PR.
+
+## Antes de crearlo
+
+1. **No estés en `main`.** Si estás en `main`, pedí/permití una rama; `main` sólo recibe merges.
+2. **Working tree limpio.** `git status --short` sin cambios sin commitear.
+3. **Gate verde.** `./scripts/guard.sh --full` (o al menos `--fast` si el usuario acepta el riesgo).
+   Si falla, no abras el PR.
+4. **Issue.** El repo exige una issue asociada. Pedí el número si no lo tenés; **no inventes**
+   `Closes #N`. Si es un PR de release, usá la issue de release que corresponda.
+
+## Título
+
+Conventional Commits en español y minúsculas, igual que los commits:
+
+```
+fix(switch): renderizar label cuando el CE no tiene hijos
+feat(select): permitir búsqueda remota
+docs(button): aclarar la variante ghost
+```
+
+Un PR con varias cosas elige el tipo de **lo principal**; el resto va explicado en el cuerpo.
+
+## Cuerpo
+
+La fuente es [`.github/PULL_REQUEST_TEMPLATE.md`](../../../.github/PULL_REQUEST_TEMPLATE.md).
+No la copies a mano si podés leerla: si cambia, la skill no queda vieja.
+
+Completá las secciones:
+
+- **Qué:** qué cambia y por qué. Si toca la API, decí qué props/slots/eventos/métodos cambian.
+- **Issue:** `Closes #N` (o `Fixes`/`Resolves`).
+- **Verificación:** cómo lo probaste y el veredicto del gate. Marcá sólo lo que sea cierto.
+
+Para un **PR de release**, agregá al final:
+
+- resumen del changelog (`docs/changelog/v<version>.md`),
+- guía de breaking changes si existe (`docs/site/breaking/<version>.md`),
+- que incluye los zips versionados (`dist-libs/comegenui-*-v<version>.zip`).
+
+## Flujo
+
+```bash
+# 1. Contexto para escribir el cuerpo
+git log --oneline main..HEAD
+git diff --stat main..HEAD
+
+# 2. Guardar el cuerpo (la carpeta .release/ está gitignoreada)
+mkdir -p .release
+$EDITOR .release/pr-<rama>.md
+
+# 3. Pushear y crear el PR
+git push -u origin HEAD
+gh pr create --base main --head "$(git branch --show-current)" \
+  --title "<título>" --body-file .release/pr-<rama>.md
+```
+
+Si `gh` no está autenticado o falla, **no reintentes a ciegas**: entregá el título, el cuerpo y la
+URL de comparación para crearlo desde el navegador:
+
+```
+https://github.com/SpicyDogWings/comegenui/compare/main...<rama>?expand=1
+```
+
+Al terminar, devolvé el link del PR (o el de comparación) y un resumen de una línea.
+
+## Errores comunes
+
+| Síntoma | Qué hacer |
+|---|---|
+| `gh: not logged in` / token inválido | No insistas: pasá título + cuerpo + URL de comparación. |
+| `Closes #N` sin issue | Pedí el número; no lo inventes. |
+| La rama no está en el remoto | `git push -u origin HEAD` antes de `gh pr create`. |
+| El PR va a una rama que no es `main` | El closing keyword **no autocierra** la issue: avisalo. |
+| El cuerpo quedó con `<!-- ... -->` | Completalo o borrá el comentario; no dejes placeholders. |
+
+## Reglas
+
+- Un PR = un cambio con entidad; no mezcles refactors ajenos.
+- Nunca `git add -A` a ciegas.
+- No abras el PR con el gate en rojo.
+- No mergees: el merge lo decide quien revisa.
