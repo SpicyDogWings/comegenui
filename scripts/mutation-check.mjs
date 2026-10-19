@@ -223,6 +223,14 @@ const MUTATIONS = [
 });`,
   },
   {
+    id: "side-over-ce-teleport-rompe-slot",
+    file: "src/components/customElements/overlay/SideOver.ce.vue",
+    test: "src/components/customElements/ce-parity.test.ts",
+    expect: "el CE proyecta el slot del host dentro del panel",
+    find: `    :teleport="false"`,
+    replace: `    :teleport="true"`,
+  },
+  {
     id: "command-palette-run-no-action",
     file: "src/components/overlay/CommandPalette.vue",
     expect: "run() ejecuta la action del comando",

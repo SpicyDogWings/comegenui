@@ -20,7 +20,8 @@ funcionó y pasa a `show()`.
 - [x] Doc de `5.1.2`: `componentes/` + `partials/` (las páginas se heredan de `5.1.1`).
 - [x] Baseline de contrato de `cu-switch` regenerado.
 - [x] `cu-side-over`: `show()` reemplaza al método `open()` (la prop booleana `open` lo tapaba en
-      el CE); ficha vanilla, partial y demos de 5.1.2 actualizados. Baseline regenerado.
+      el CE); el CE no teleporta el panel para conservar el slot; ficha vanilla, partial, skill y
+      demos de 5.1.2 actualizados. Baseline regenerado.
 
 ## Pendiente — ir sumando a la release
 

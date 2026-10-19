@@ -21,6 +21,9 @@ const props = defineProps({
   // Con persistent no se cierra por backdrop ni Escape ni el botón de cerrar.
   persistent: { type: Boolean, required: false, default: false },
   zIndex: { type: Number, required: false, default: 1100 },
+  // El wrapper CE lo desactiva: un <slot> teleportado fuera del shadow root deja
+  // de proyectar el contenido del host. En Vue se mantiene el teleport a body.
+  teleport: { type: Boolean, required: false, default: true },
 })
 
 const emit = defineEmits<{
@@ -71,7 +74,7 @@ const panelStyle = computed(() => {
 </script>
 
 <template>
-  <Teleport to="body">
+  <Teleport to="body" :disabled="!props.teleport">
     <Transition name="cu-sideover">
       <div
         v-if="modelValue"

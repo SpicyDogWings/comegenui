@@ -524,6 +524,24 @@ describe("SideOver.ce", () => {
 
     el.remove();
   });
+
+  it("proyecta el slot del host dentro del panel", async () => {
+    const el = document.createElement("cu-side-over-method-test") as SideOverTestElement;
+    el.innerHTML = "<p>Contenido del panel</p>";
+    document.body.appendChild(el);
+    await flushPromises();
+
+    el.show();
+    await flushPromises();
+
+    // El panel tiene que quedar dentro del shadow root: si se teleporta a body,
+    // el <slot> sale del shadow tree y el contenido del host no se proyecta.
+    const body = el.shadowRoot?.querySelector(".cu-sideover-body");
+    expect(body).not.toBeNull();
+    expect(body?.querySelector("slot")).not.toBeNull();
+
+    el.remove();
+  });
 });
 
 describe("Tooltip.ce", () => {

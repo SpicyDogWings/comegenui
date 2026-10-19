@@ -7,3 +7,4 @@
 | `persistent` | `boolean` | `false` | — |
 | `zIndex` | `number` | `1100` | — |
 | `fullscreen` | `boolean` | `false` | — |
+| `teleport` | `boolean` | `true` | Teleporta el panel a `body`. El custom element lo desactiva para conservar la proyección del slot. |

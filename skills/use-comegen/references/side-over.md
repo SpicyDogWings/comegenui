@@ -9,7 +9,8 @@ bloqueo del scroll del body. Para un diálogo centrado usá `<cu-modal>`.
 - `position` elige el borde (default `right`); `size` acepta un valor CSS (`300px`, `40vw`) o un preset (`sm`/`md`/`lg`/`xl`/`full`).
 - `fullscreen` ocupa toda la pantalla e ignora `size`.
 - `title` pinta la cabecera; el botón de cerrar aparece salvo `persistent`.
-- El contenido va al slot default; el panel se teleporta a `body`.
+- El contenido va al slot default. En Vue el panel se teleporta a `body`; en el CE queda dentro del
+  shadow root para conservar la proyección del slot.
 - En el CE: `show()`, `close()`, `toggle()` e `isOpen()`. Para abrir por código usá `show()`:
   `open` es el atributo booleano y, en el elemento, tapa al método homónimo.
 
@@ -31,7 +32,8 @@ Los valores de `position` / `size` / `z-index` están en «Atributos» / «Props
 - `persistent` no deja ninguna vía de cierre desde el componente, ni el botón de cerrar.
 - No tiene slots de header/footer: `title` es texto y el resto va al slot default.
 - No acepta `color` ni `variant`.
-- El panel se monta en `body`: no hereda el scoping CSS del lugar donde lo pongas; el `z-index` se controla con la prop.
+- En Vue el panel se monta en `body`; en el CE queda en su shadow root (necesario para el slot). El
+  `z-index` se controla con la prop.
 - `size` se ignora por completo con `fullscreen`.
 
 ## API del custom element
@@ -92,6 +94,7 @@ Los valores de `position` / `size` / `z-index` están en «Atributos» / «Props
 | `persistent` | `boolean` | `false` | — |
 | `zIndex` | `number` | `1100` | — |
 | `fullscreen` | `boolean` | `false` | — |
+| `teleport` | `boolean` | `true` | Teleporta el panel a `body`; el CE lo desactiva para conservar el slot. |
 <!-- /@api:props -->
 
 ### Emits

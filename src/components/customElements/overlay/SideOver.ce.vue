@@ -66,6 +66,7 @@ defineExpose({ show, close, toggle, isOpen: isOpenValue });
     :fullscreen="props.fullscreen"
     :persistent="props.persistent"
     :z-index="props.zIndex"
+    :teleport="false"
     @update:model-value="onUpdate"
     @close="ceEmit('close', $event)"
   >
