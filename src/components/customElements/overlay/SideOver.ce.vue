@@ -43,15 +43,18 @@ function onUpdate(value: boolean) {
   ceEmit("update:open", value);
 }
 
+// Se llama `show()` y no `open()` porque `open` es la prop booleana del CE: en
+// el elemento registrado, la prop tapa al método (`el.open` es un booleano).
+// Mismo patrón que `<dialog>` (`open` + `show()`).
 /** Abre el panel */
-function open() { isOpen.value = true; }
+function show() { isOpen.value = true; }
 /** Cierra el panel */
 function close() { isOpen.value = false; }
 /** Alterna visibilidad */
 function toggle() { isOpen.value = !isOpen.value; }
 function isOpenValue() { return isOpen.value; }
 
-defineExpose({ open, close, toggle, isOpen: isOpenValue });
+defineExpose({ show, close, toggle, isOpen: isOpenValue });
 </script>
 
 <template>

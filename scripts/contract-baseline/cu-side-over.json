@@ -12,6 +12,7 @@
   "methods": [
     "close",
     "isOpen",
+    "show",
     "toggle"
   ],
   "shadow": ""

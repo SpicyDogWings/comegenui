@@ -17,7 +17,7 @@ está abierto.
 </cu-side-over>
 
 <cu-button color="primary" variant="solid"
-  onclick="document.getElementById('side').open()">
+  onclick="document.getElementById('side').show()">
   Abrir panel
 </cu-button>
 ```
@@ -98,8 +98,9 @@ renderiza el botón): sólo se cierra desde el código, con `close()`.
 
 ## Interacción
 
-Los métodos `open()`, `close()`, `toggle()` e `isOpen()` manejan el panel; `update:open` avisa
-cada cambio de estado y `close` se dispara al cerrarse.
+Los métodos `show()`, `close()`, `toggle()` e `isOpen()` manejan el panel; `update:open` avisa
+cada cambio de estado y `close` se dispara al cerrarse. `open` queda como atributo booleano:
+`<cu-side-over open>`.
 
 ```html
 <cu-side-over id="side" title="Eventos del panel"></cu-side-over>
@@ -107,7 +108,7 @@ cada cambio de estado y `close` se dispara al cerrarse.
 <script>
   const side = document.getElementById('side');
 
-  side.open();
+  side.show();
   side.close();
   side.toggle();
   console.log(side.isOpen());

@@ -10,7 +10,8 @@ bloqueo del scroll del body. Para un diálogo centrado usá `<cu-modal>`.
 - `fullscreen` ocupa toda la pantalla e ignora `size`.
 - `title` pinta la cabecera; el botón de cerrar aparece salvo `persistent`.
 - El contenido va al slot default; el panel se teleporta a `body`.
-- En el CE: `open()`, `close()`, `toggle()` e `isOpen()`.
+- En el CE: `show()`, `close()`, `toggle()` e `isOpen()`. Para abrir por código usá `show()`:
+  `open` es el atributo booleano y, en el elemento, tapa al método homónimo.
 
 ```html
 <cu-side-over id="<id>" title="<title>" position="<position>" size="<size>"><p><content></p></cu-side-over>
@@ -71,7 +72,7 @@ Los valores de `position` / `size` / `z-index` están en «Atributos» / «Props
 <!-- @api:metodos -->
 | Método | Descripción |
 | ------ | ------ |
-| `open` | Abre el panel |
+| `show` | Abre el panel |
 | `close` | Cierra el panel |
 | `toggle` | Alterna visibilidad |
 | `isOpen` | Devuelve el estado actual (`boolean`) |
