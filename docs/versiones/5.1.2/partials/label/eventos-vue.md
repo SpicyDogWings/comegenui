@@ -1,3 +1,3 @@
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
-| `click` | — | — |
+| `click` | — | Clic sobre el label (texto o espacio libre); además enfoca el control |
