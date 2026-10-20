@@ -2,6 +2,7 @@
 | ------ | ------ | ------ | ------ |
 | `modelValue` | `string` | `""` | — |
 | `type` | `string` | `"text"` | — |
+| `loading` | `boolean` | `false` | Muestra el spinner de carga en el panel de sugerencias |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
 | `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | — |
 | `disabled` | `boolean` | `false` | — |

@@ -818,6 +818,13 @@ const MUTATIONS = [
     find: `    ?? (el.matches(FOCUSABLE) ? el : el.querySelector<HTMLElement>(FOCUSABLE));`,
     replace: `    ?? el;`,
   },
+  {
+    id: "autocomplete-loading-ignorado",
+    file: "src/components/form/Autocomplete.vue",
+    expect: "loading llega al Dropdown (spinner del panel)",
+    find: `    :loading="loading"`,
+    replace: ``,
+  },
 ];
 
 export { MUTATIONS };
