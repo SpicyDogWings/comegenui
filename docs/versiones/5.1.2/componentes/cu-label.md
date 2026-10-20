@@ -2,10 +2,10 @@
 
 # `<cu-label>`
 
-Label con color semántico. Al hacer clic, enfoca el primer control del slot o, si se define `for`, el
-elemento con ese id. Útil para agrupar `<cu-input>`, `<cu-checkbox>`, etc. y ganar área
-clickeable. Si el control es un custom element, el foco entra a su shadow root (el host no es
-focuseable).
+Label con color semántico. Al hacer clic —en el texto o en el espacio libre del label— enfoca el
+primer control del slot o, si se define `for`, el elemento con ese id. Útil para agrupar
+`<cu-input>`, `<cu-checkbox>`, etc. y ganar área clickeable. Si el control es un custom element, el
+foco entra a su shadow root (el host no es focuseable).
 
 ## Uso en HTML plano
 
