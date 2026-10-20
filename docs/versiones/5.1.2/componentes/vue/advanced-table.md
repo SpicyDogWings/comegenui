@@ -39,7 +39,9 @@ interface ButtonConfig {
   target?: string;
   color?: string;
   variant?: string;
-  disabled?: boolean;
+  disabled?: boolean | ((row: Record<string, any>) => boolean);         // Booleano o por fila
+  hidden?: (row: Record<string, any>) => boolean;                      // Oculta el botón/ítem en esa fila
+  divider?: boolean;                                                  // Ítem divisor (solo en `actions`)
 }
 ```
 
@@ -87,7 +89,7 @@ La celda renderiza el editor (input / select / textarea / autocomplete) **direct
 
 ### Acciones de fila (`actions`)
 
-Es un array de `ButtonConfig`. Cuando se asigna, la tabla agrega automáticamente una columna al final con un dropdown "..." que muestra las acciones. El `onClick` recibe la fila completa.
+Es un array de `ButtonConfig` — o una función `(row) => ButtonConfig[]` para decidirlas por fila (ver [Acciones condicionales](#acciones-condicionales)). Cuando se asigna, la tabla agrega automáticamente una columna al final con un dropdown "..." que muestra las acciones. El `onClick` recibe la fila completa.
 
 El header de esa columna queda **vacío** por defecto; podés ponerle texto con la prop `actionsLabel` (en el custom element, atributo `actions-label`):
 
@@ -723,6 +725,36 @@ const columns = ref([
 
 > Los iconos SVG deben usar `stroke="currentColor"` para que hereden el color del botón.
 
+Cada botón acepta además dos condicionales **por fila**: `disabled` y `hidden`, que pueden ser un booleano o una función `(row) => boolean` (a diferencia de filtrar el array a mano, `hidden` no necesita que cambies la cantidad de botones y la celda entera desaparece si la fila se queda sin ninguno):
+
+```vue
+<script setup lang="ts">
+const columns = ref([
+  {
+    key: "acciones",
+    label: "",
+    buttons: (row) => [
+      {
+        label: "Guardar",
+        // Función por fila: se evalúa en cada render.
+        disabled: (r) => !r.editado,
+        onClick: (r) => guardarCambios(r),
+      },
+      {
+        label: "Eliminar",
+        // Solo aparece en las filas que cumplen.
+        hidden: (r) => r.rol === "owner",
+        color: "danger",
+        onClick: (r) => eliminar(r),
+      },
+    ],
+  },
+]);
+</script>
+```
+
+> `disabled: true` (booleano) sigue funcionando igual: aplica a todas las filas. El `disabled` del botón se combina con el de la fila/celda, así que si la fila está deshabilitada (`rowDisabled`) el botón también lo está.
+
 ## Acciones de fila (botón "..." al final)
 
 Más simple que definir una columna `buttons` para cada fila: pasá un array en `actions` y la tabla agrega automáticamente una columna al final con un dropdown.
@@ -761,6 +793,42 @@ const actions = ref([
 ```
 
 > Items con `divider: true` renderizan una línea divisoria. Cada `onClick` recibe la fila completa.
+
+### Acciones condicionales
+
+`actions` también acepta una **función `(row) => ButtonConfig[]`**, que se evalúa en cada render: decidís las acciones fila por fila igual que con `cell` o `buttons`. Cada acción admite `disabled` (booleano o `(row) => boolean`) y `hidden: (row) => boolean`, y los `divider` que quedan huérfanos al ocultar algo se descartan solos:
+
+```vue
+<script setup lang="ts">
+import AdvancedTable from "@/components/data/AdvancedTable.vue";
+import { ref } from "vue";
+
+const actions = (row) => [
+  { label: "Editar", onClick: (r) => editar(r) },
+  {
+    label: "Publicar",
+    // Solo aparece cuando la fila está en borrador.
+    hidden: (r) => r.estado !== "borrador",
+    onClick: (r) => publicar(r),
+  },
+  { divider: true },
+  {
+    label: "Eliminar",
+    // Visible siempre, pero deshabilitado si la fila está bloqueada.
+    disabled: (r) => r.bloqueado,
+    color: "danger",
+    variant: "ghost",
+    onClick: (r) => eliminar(r),
+  },
+];
+</script>
+
+<template>
+  <AdvancedTable :columns="columns" :data="data" :actions="actions" />
+</template>
+```
+
+> Si una fila se queda **sin ninguna acción visible**, no se renderiza su botón “...” (así no se abre un panel vacío). Un array estático sigue funcionando exactamente igual que antes.
 
 ## Estado de carga
 
@@ -1123,7 +1191,9 @@ interface ButtonConfig {
   target?: string;
   color?: string;
   variant?: string;
-  disabled?: boolean;
+  disabled?: boolean | ((row: Record<string, any>) => boolean);
+  hidden?: (row: Record<string, any>) => boolean; // Oculta el botón/ítem en esa fila
+  divider?: boolean; // Ítem divisor (solo en `actions`)
 }
 ```
 

@@ -561,6 +561,44 @@ const MUTATIONS = [
     find: `| \`variant\` | \`"solid" \\| "outlined" \\| "soft" \\| "ghost" \\| "subtle"\` | \`"soft"\` | — |`,
     replace: `| \`variant\` | \`"solid" \\| "outlined" \\| "soft" \\| "ghost" \\| "subtle"\` | \`"solid"\` | — |`,
   },
+  {
+    id: "advanced-table-actions-fn-ignorada",
+    file: "src/components/data/AdvancedTable.vue",
+    expect: "`actions` como función resuelve los ítems de cada fila",
+    find: `  const actions = typeof props.actions === "function" ? props.actions(row) : props.actions;`,
+    replace: `  const actions = Array.isArray(props.actions) ? props.actions : [];`,
+  },
+  {
+    id: "advanced-table-boton-disabled-fn-ignorada",
+    file: "src/components/data/AdvancedTable.vue",
+    expect: "`disabled` como función se evalúa por fila (y no queda siempre deshabilitado)",
+    find: `  return typeof value === 'function' ? value(row) : !!value;`,
+    replace: `  return !!value;`,
+  },
+  {
+    id: "advanced-table-action-hidden-ignorado",
+    file: "src/components/data/AdvancedTable.vue",
+    expect: "`hidden` descarta el ítem del dropdown en esa fila",
+    find: `    .filter(action => !isButtonHidden(action, row))`,
+    replace: `    .filter(() => true)`,
+  },
+  {
+    id: "advanced-table-divisores-huerfanos",
+    file: "src/components/data/AdvancedTable.vue",
+    expect: "los divisores que quedan huérfanos al ocultar un ítem se descartan",
+    find: `  return items.filter((item, i) =>
+    !item.divider || (i > 0 && i < items.length - 1 && !items[i - 1]?.divider)
+  );`,
+    replace: `  return items;`,
+  },
+  {
+    id: "advanced-table-toggle-sin-acciones",
+    file: "src/components/data/AdvancedTable.vue",
+    expect: "sin acciones visibles no se renderiza el toggle '...'",
+    find: `const hasVisibleRowActions = (row: Record<string, any>): boolean =>
+  getRowActions(row).some(action => !action.divider && !isButtonHidden(action, row));`,
+    replace: `const hasVisibleRowActions = (_row: Record<string, any>): boolean => true;`,
+  },
 ];
 
 export { MUTATIONS };

@@ -26,7 +26,22 @@ const getCellKey = (rowIndex: number, colKey: string): string => {
 
 const hasBadges = (col: Column): boolean => !!col.badges;
 const hasButtons = (col: Column): boolean => !!col.buttons;
+// Igual que `hasButtons`, pero contempla los botones ocultos por `hidden`:
+// si la fila no deja ninguno visible, la celda cae a la siguiente rama.
+const hasVisibleButtons = (col: Column, row: Record<string, any>): boolean =>
+  hasButtons(col) && getCellButtons(col, row).length > 0;
 const hasCellFunction = (col: Column): boolean => typeof col.cell === 'function';
+
+// `disabled` acepta booleano o función por fila y se resuelve en un único lugar:
+// así la columna `buttons` y el dropdown de `actions` se comportan igual (si no,
+// una función sería *truthy* y el botón quedaría siempre deshabilitado).
+const isButtonDisabled = (button: ButtonConfig, row: Record<string, any>): boolean => {
+  const value = button.disabled;
+  return typeof value === 'function' ? value(row) : !!value;
+};
+
+const isButtonHidden = (button: ButtonConfig, row: Record<string, any>): boolean =>
+  typeof button.hidden === 'function' ? button.hidden(row) : false;
 
 const getCellValue = (col: Column, row: Record<string, any>): string | string[] => {
   if (hasCellFunction(col)) return col.cell!(row);
@@ -38,7 +53,7 @@ const getCellBadges = (col: Column, row: Record<string, any>): BadgeConfig[] => 
 };
 
 const getCellButtons = (col: Column, row: Record<string, any>): ButtonConfig[] => {
-  return col.buttons ? col.buttons(row) : [];
+  return (col.buttons ? col.buttons(row) : []).filter(button => !isButtonHidden(button, row));
 };
 
 // Disabled: fila > columna > celda (prioridad).
@@ -54,6 +69,38 @@ const isCellDisabled = (col: Column, row: Record<string, any>): boolean => {
   return false;
 };
 
+// `actions` puede ser un array estático o una función por fila (igual que `cell`).
+const hasActions = computed(() =>
+  typeof props.actions === "function" ||
+  (Array.isArray(props.actions) && props.actions.length > 0)
+);
+
+const getRowActions = (row: Record<string, any>): ButtonConfig[] => {
+  const actions = typeof props.actions === "function" ? props.actions(row) : props.actions;
+  return Array.isArray(actions) ? actions : [];
+};
+
+// Ítems del dropdown resueltos para la fila: `hidden` se filtra y `disabled`
+// se evalúa (booleano o función), sumado al `rowDisabled` de la fila.
+const getRowDropdownItems = (row: Record<string, any>) => {
+  const items = getRowActions(row)
+    .filter(action => !isButtonHidden(action, row))
+    .map(action => ({
+      ...action,
+      disabled: isRowDisabled(row) || isButtonDisabled(action, row),
+      color: action.color || undefined,
+      onClick: () => { if (!isRowDisabled(row)) action.onClick?.(row); },
+    }));
+  // Al filtrar `hidden` pueden quedar divisores huérfanos en los bordes o repetidos.
+  return items.filter((item, i) =>
+    !item.divider || (i > 0 && i < items.length - 1 && !items[i - 1]?.divider)
+  );
+};
+
+// Si la fila no expone ninguna acción, se oculta el toggle "..." (evita abrir un panel vacío).
+const hasVisibleRowActions = (row: Record<string, any>): boolean =>
+  getRowActions(row).some(action => !action.divider && !isButtonHidden(action, row));
+
 interface BadgeConfig {
   value: string;
   color?: Color;
@@ -68,7 +115,9 @@ interface ButtonConfig {
   target?: Target;
   color?: Color;
   variant?: VariantFull;
-  disabled?: boolean;
+  disabled?: boolean | ((row: Record<string, any>) => boolean);
+  hidden?: (row: Record<string, any>) => boolean; // Oculta el botón/ítem en esa fila
+  divider?: boolean; // Ítem divisor (solo en el dropdown de `actions`)
 }
 
 interface AutocompleteItem {
@@ -191,7 +240,11 @@ const props = defineProps({
   tableMaxHeight: { type: String, required: false, default: "" },
   filters: { type: Object as () => Record<string, any>, required: false, default: () => ({}) },
   loading: { type: Boolean, required: false, default: false },
-  actions: { type: Array as () => ButtonConfig[], required: false, default: () => [] },
+  actions: {
+    type: [Array, Function] as PropType<ButtonConfig[] | ((row: Record<string, any>) => ButtonConfig[])>,
+    required: false,
+    default: () => [],
+  },
   // Texto del header de la columna automática de acciones. Default vacío:
   // el header queda sin texto (antes caía a la key `__actions__`).
   actionsLabel: { type: String, required: false, default: "" },
@@ -319,7 +372,7 @@ const handlePageChange = (page: number) => { pagination.setCurrentPage(page); em
 const handlePageSizeChange = (size: number) => { pagination.setItemsPerPage(size); emit("update:itemsPerPage", size); };
 
 const augmentedColumns = computed(() =>
-  props.actions?.length
+  hasActions.value
     ? [...props.columns, { key: '__actions__', label: props.actionsLabel, width: '1%', align: 'center' as const, sortable: false }]
     : props.columns
 );
@@ -408,7 +461,7 @@ defineExpose({
       </template>
 
       <template v-for="col in augmentedColumns" v-slot:[`cell-${col.key}`]="{ row, value, index }">
-        <div v-if="hasButtons(col)" class="cu-advanced-table-cell-buttons">
+        <div v-if="hasVisibleButtons(col, row)" class="cu-advanced-table-cell-buttons">
           <Button
             v-for="(button, buttonIndex) in getCellButtons(col, row)"
             :key="`button-${index}-${col.key}-${buttonIndex}`"
@@ -416,8 +469,8 @@ defineExpose({
             :variant="button.variant || props.variant"
             :to="button.to"
             :target="button.target"
-            :disabled="isCellDisabled(col, row) || button.disabled"
-            @click="(e: MouseEvent) => { if (button.onClick && !isCellDisabled(col, row)) { e.stopPropagation(); button.onClick(row); } }"
+            :disabled="isCellDisabled(col, row) || isButtonDisabled(button, row)"
+            @click="(e: MouseEvent) => { if (button.onClick && !isCellDisabled(col, row) && !isButtonDisabled(button, row)) { e.stopPropagation(); button.onClick(row); } }"
           >
             <component :is="button.icon" v-if="typeof button.icon === 'object'" class="cu-advanced-table-icon" />
             <span v-else-if="button.icon" v-html="button.icon" class="cu-advanced-table-icon"></span>
@@ -455,14 +508,14 @@ defineExpose({
 
         <span v-else-if="hasCellFunction(col)">{{ getCellValue(col, row) }}</span>
 
-        <div v-else-if="col.key === '__actions__' && props.actions?.length" class="cu-advanced-table-actions">
+        <div v-else-if="col.key === '__actions__' && hasVisibleRowActions(row)" class="cu-advanced-table-actions">
           <DropdownMenu
             :color="props.color"
             variant="ghost"
             position="bottom"
             align="end"
             fixed
-            :items="props.actions.map(a => ({ ...a, disabled: isRowDisabled(row) || a.disabled, color: a.color || undefined, onClick: () => { if (!isRowDisabled(row)) a.onClick?.(row); } }))"
+            :items="getRowDropdownItems(row)"
             @click.stop
           >
             <template #toggle="{ toggle }">

@@ -9,6 +9,7 @@ celda. Para una grilla estática alcanza un `<table>` de HTML.
 - Búsqueda y paginación se habilitan **por atributo**: `search-enabled` y `pagination` (en el CE vienen apagadas), más `show-page-size` / `items-per-page`.
 - Cada columna es `{ key, label, ... }`. Edición: `editable: true` (se abre con click) o `inlineEdit: true` (editor siempre visible); el editor se elige con `inputType` (`input`, `textarea`, `select`, `autocomplete`, `date`, `switch`).
 - Escuchá `edit-save` para persistir y `edit-error` para validar; los clicks de fila se leen del `click` nativo.
+- `actions` acepta un array **o** `(row) => [...]`; cada botón/acción acepta `disabled` (booleano o `(row) => boolean`) y `hidden(row)` para decidir **por fila**.
 - Programático: `updateRow(index, patch)`, `getData()`, `getRow(index)`, `removeRow(index)`, `addRow(row)`, `pushData(rows)`.
 
 ```html
@@ -20,6 +21,17 @@ celda. Para una grilla estática alcanza un `<table>` de HTML.
 ```
 
 Los valores de `color` / `variant` están en «Atributos» / «Props», abajo.
+
+Acciones condicionales (array estático **o** función por fila; en Vue va igual en `:actions`):
+
+```js
+tabla.actions = (row) => [
+  { label: 'Editar', onClick: (r) => editar(r) },
+  { label: 'Publicar', hidden: (r) => r.estado !== 'borrador' },
+  { divider: true },
+  { label: 'Eliminar', disabled: (r) => r.bloqueado },
+];
+```
 
 ## Límites
 
@@ -33,6 +45,7 @@ Los valores de `color` / `variant` están en «Atributos» / «Props», abajo.
 - El slot `footer` gana sobre la prop `footer`.
 - Búsqueda sobre columnas `inputType: 'select'`: matchea por la `label` de la opción, no por el `value` guardado.
 - Deshabilitado con prioridad fila > columna > celda; con `rowDisabled` la fila se atenúa, no edita y sus botones/acciones se deshabilitan.
+- `hidden` descarta el botón/ítem de esa fila (y los `divider` que queden huérfanos); si una fila se queda sin acciones visibles, no se renderiza su toggle "...".
 - Slots por columna `header-{key}` y `cell-{key}` (más `template`, `search`, `empty` y `footer`): en `<cu-table>` se pasan como slots nativos (`<span slot="header-rol">…`) y **no reciben el scope** (no hay scoped slots en custom elements); en `<AdvancedTable>` sí.
 - No hay eventos custom `input`/`change` de la tabla; los nativos burbujean solos.
 
@@ -58,7 +71,7 @@ Los valores de `color` / `variant` están en «Atributos» / «Props», abajo.
 | `search-value` | `string` | `""` | Valor controlado del buscador (atributo HTML: `search-value`) |
 | `filters` | `Record<string, any>` | `{}` | Filtros por columna. Se asigna como propiedad JS |
 | `loading` | `boolean` | `false` | Muestra una barra de carga animada en el tope |
-| `actions` | `unknown[]` | `[]` | Acciones de fila (botón "..." al final de cada fila). Se asigna como propiedad JS |
+| `actions` | `ButtonConfig[] \| ((row: Record<string, any>) => ButtonConfig[])` | `[]` | Acciones de fila (botón "..." al final de cada fila). Array estático o función `(row) => acciones` para decidirlas por fila. Se asigna como propiedad JS |
 | `actions-label` | `string` | `""` | Texto del header de la columna de acciones. Default vacío. Atributo HTML: `actions-label` |
 | `row-disabled` | `boolean \| ((row: Record<string, any>) => boolean)` | `false` | Deshabilita filas (ver «Deshabilitar filas, columnas y celdas»). Se asigna como propiedad JS |
 | `footer` | `FooterRow[]` | `[]` | Filas de footer (ver «Footer (API programática)»). Se asigna como propiedad JS |
@@ -122,7 +135,7 @@ Ninguno.
 | `searchValue` | `string` | `""` | — |
 | `filters` | `Record<string, any>` | `{}` | — |
 | `loading` | `boolean` | `false` | — |
-| `actions` | `ButtonConfig[]` | `[]` | — |
+| `actions` | `ButtonConfig[] \| ((row: Record<string, any>) => ButtonConfig[])` | `[]` | — |
 | `actionsLabel` | `string` | `""` | — |
 | `rowDisabled` | `boolean \| ((row: Record<string, any>) => boolean)` | `false` | — |
 | `footer` | `FooterRow[]` | `[]` | — |
