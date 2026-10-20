@@ -5,7 +5,7 @@ clickeable. No es para texto decorativo suelto.
 
 ## Receta
 
-- Texto por `label` (declarativo) o por el slot default.
+- Texto por `label` (declarativo); el slot default es el control que se enfoca.
 - Envolvé el control como hijo: al clic en el label, se enfoca.
 - Control afuera del label: apuntá con `for="<id>"`.
 - `color` (default `neutral`).
@@ -28,7 +28,9 @@ Los valores de `color` están en «Atributos» / «Props», abajo.
 - No expone métodos.
 - El CE no emite eventos custom: el `click` es el nativo (el `defineEmits('click')` interno no se bridgea).
 - No acepta `theme`: se define en `<html data-theme="…">`.
-- El foco depende de que el hijo sea focusable.
+- El foco busca el primer control focuseable del hijo (`input`, `select`, `textarea`, `button`,
+  `[tabindex]`), también dentro de un componente Vue (`Checkbox`, `Switch`) o del shadow root de un
+  custom element.
 - Con `for`, el id tiene que existir y ser único (el foco es global al documento).
 
 ## API del custom element

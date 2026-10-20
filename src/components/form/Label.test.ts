@@ -6,6 +6,8 @@
 import { describe, it, expect } from "vitest";
 import { mount } from "@vue/test-utils";
 import Label from "./Label.vue";
+import Checkbox from "./Checkbox.vue";
+import Switch from "./Switch.vue";
 
 describe("Label — texto y color", () => {
   it("renderiza la prop label", () => {
@@ -87,5 +89,28 @@ describe("Label — click y foco", () => {
   it("expone `for` como atributo del <label> (asociación nativa)", () => {
     const w = mount(Label, { props: { for: "miInput", label: "Nombre" } });
     expect(w.attributes("for")).toBe("miInput");
+  });
+
+  it("en Vue enfoca el input interno de un Checkbox del slot", async () => {
+    const w = mount(Label, {
+      props: { label: "Acepto los términos" },
+      slots: { default: Checkbox },
+      attachTo: document.body,
+    });
+    await w.find(".cu-label").trigger("click");
+    expect(document.activeElement).toBe(w.find('input[type="checkbox"]').element);
+    w.unmount();
+  });
+
+  it("en Vue enfoca el input interno de un Switch del slot", async () => {
+    const w = mount(Label, {
+      props: { label: "Suscripción" },
+      slots: { default: Switch },
+      attachTo: document.body,
+    });
+    await w.find(".cu-label").trigger("click");
+    const input = w.findComponent(Switch).find('input[type="checkbox"]');
+    expect(document.activeElement).toBe(input.element);
+    w.unmount();
   });
 });

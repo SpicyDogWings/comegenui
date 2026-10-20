@@ -52,13 +52,17 @@ function slotControl(): HTMLElement | null {
 
 /**
  * Enfoca el control. Si es un custom element (`<cu-input>`, `<cu-checkbox>`, …)
- * el host no es focuseable: se enfoca el control de su shadow root.
+ * el host no es focuseable: se enfoca el control de su shadow root. En Vue el
+ * slot es el componente (un `<div>`/`<label>` con el campo adentro), así que se
+ * busca el control focuseable dentro del elemento.
  */
+const FOCUSABLE = 'input:not([type="hidden"]), select, textarea, button, [tabindex]:not([tabindex="-1"])';
+
 function focusControl(el: HTMLElement | null) {
   if (!el) return;
-  const inner = el.shadowRoot?.querySelector<HTMLElement>(
-    'input:not([type="hidden"]), select, textarea, button, [tabindex]:not([tabindex="-1"])',
-  );
+  const inner =
+    el.shadowRoot?.querySelector<HTMLElement>(FOCUSABLE)
+    ?? (el.matches(FOCUSABLE) ? el : el.querySelector<HTMLElement>(FOCUSABLE));
   (inner ?? el).focus();
 }
 

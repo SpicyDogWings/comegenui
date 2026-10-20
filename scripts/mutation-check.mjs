@@ -811,6 +811,13 @@ const MUTATIONS = [
     find: `  emit('click');`,
     replace: `  void 0;`,
   },
+  {
+    id: "label-vue-no-busca-control",
+    file: "src/components/form/Label.vue",
+    expect: "en Vue enfoca el input interno de un Checkbox/Switch del slot",
+    find: `    ?? (el.matches(FOCUSABLE) ? el : el.querySelector<HTMLElement>(FOCUSABLE));`,
+    replace: `    ?? el;`,
+  },
 ];
 
 export { MUTATIONS };
