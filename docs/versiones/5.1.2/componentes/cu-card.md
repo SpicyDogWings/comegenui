@@ -79,7 +79,7 @@ En Vue, importá `Card` de `@/components/information/Card.vue` (ver [ficha Vue](
 
 ## Slots custom
 
-El contenido va por el slot `default`; los slots `media`, `header` y `footer` reemplazan la media, el header (título/subtítulo) y el pie. Si hay slot `header`, tiene prioridad sobre `title`/`subtitle`.
+El contenido va por el slot `default`; los slots `media`, `header` y `footer` reemplazan la media, el header (título/subtítulo) y el pie. Si hay slot `header`, tiene prioridad sobre `title`/`subtitle`. Los bloques sin contenido no ocupan lugar, también en el custom element (donde el contenido de los slots vive en el light DOM).
 
 ```html
 <cu-card color="neutral">

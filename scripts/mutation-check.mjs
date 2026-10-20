@@ -84,8 +84,8 @@ const MUTATIONS = [
     id: "card-ignores-media-slot",
     file: "src/components/information/Card.vue",
     expect: "el slot media tiene prioridad sobre la prop image",
-    find: `const hasMedia = computed(() => slotHasContent('media'));`,
-    replace: `const hasMedia = computed(() => false);`,
+    find: `      <img v-if="props.image && !hasMediaSlot" :src="props.image" alt="" class="cu-card-image" />`,
+    replace: `      <img v-if="props.image" :src="props.image" alt="" class="cu-card-image" />`,
   },
   {
     id: "author-card-bad-initials",
@@ -803,6 +803,27 @@ const MUTATIONS = [
     expect: "el click en el label emite `click`",
     find: `  emit('click');`,
     replace: `  void 0;`,
+  },
+  {
+    id: "card-media-ignora-slot",
+    file: "src/components/information/Card.vue",
+    expect: "el slot media muestra el contenedor de media",
+    find: `  hasMediaSlot.value = wrapHasContent(mediaWrap.value);`,
+    replace: `  hasMediaSlot.value = false;`,
+  },
+  {
+    id: "card-footer-siempre-oculto",
+    file: "src/components/information/Card.vue",
+    expect: "el slot footer muestra el pie",
+    find: `  hasFooter.value = wrapHasContent(footerWrap.value);`,
+    replace: `  hasFooter.value = false;`,
+  },
+  {
+    id: "card-header-sin-prioridad",
+    file: "src/components/information/Card.vue",
+    expect: "el slot header tiene prioridad sobre title/subtitle",
+    find: `        <h3 v-if="props.title && !hasHeaderSlot" class="cu-card-title">{{ props.title }}</h3>`,
+    replace: `        <h3 v-if="props.title" class="cu-card-title">{{ props.title }}</h3>`,
   },
 ];
 
