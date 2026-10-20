@@ -77,7 +77,8 @@ campo queda solo y el valor se cambia tipeando o por API.
 `step` (**default** `1`) es lo que suman y restan los botones y las flechas del teclado. Con
 `showStepSelect` aparece un select para elegirlo en caliente, con las opciones de `steps`
 (**default** `[1, 5, 10]`); `step` siempre es la primera opción, aunque no esté en la lista.
-Cambiar el paso **no** cambia el valor.
+Cambiar el paso **no** cambia el valor. El select es el componente `Select` de la librería (no un
+`<select>` nativo), así que comparte color, variante y estados con el resto del campo.
 
 ```vue
 <NumberInput :step="1" placeholder="paso 1" />

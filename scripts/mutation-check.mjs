@@ -783,6 +783,13 @@ const MUTATIONS = [
   return typeof raw === 'number' && Number.isFinite(raw) ? raw : undefined;
 }`,
   },
+  {
+    id: "number-input-paso-ignorado",
+    file: "src/components/form/NumberInput.vue",
+    expect: "el paso elegido en el select define cuánto suman/restan botones y flechas",
+    find: `  if (next !== undefined && next > 0) activeStep.value = next;`,
+    replace: `  if (next !== undefined && next > 0) void next;`,
+  },
 ];
 
 export { MUTATIONS };
