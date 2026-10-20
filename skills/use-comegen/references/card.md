@@ -8,6 +8,8 @@ superficie. No es interactiva: para una tarjeta clickeable, envolvela vos.
 - Contenido por el **slot default**; `title` y `subtitle` arman el header.
 - Media: `image` (URL) o slot `media` (el slot pisa a `image`).
 - El slot `header` reemplaza por completo `title`/`subtitle`.
+- En el **custom element** los tres slots (`media`, `header`, `footer`) funcionan igual: el contenido
+  va en el light DOM del host (`<div slot="media">…`), no hace falta ningún atributo extra.
 - `footer` sólo se renderiza si tiene contenido (no reserva el espacio).
 - `variant` cambia la superficie; `layout="horizontal"` pone la media al costado.
 - `color` tiñe la variante elegida.
@@ -27,6 +29,8 @@ Los valores de `color` / `variant` / `layout` están en «Atributos» / «Props�
 - No expone métodos y, en Vue, no emite eventos propios.
 - No acepta `theme`: se define en `<html data-theme="…">`.
 - `header` pisa `title`/`subtitle`; `media` (slot) pisa `image`.
+- Los bloques sin contenido no ocupan lugar: en `layout="horizontal"` sin `media` ni `image` no
+  queda la columna vacía del 40 %.
 - `layout="horizontal"` fija la media al 40% del ancho; no es configurable.
 - No hay tamaño, padding ni radio configurables.
 - `image` renderiza un `<img alt="">` sin `srcset`, `loading` ni atributos extra; para controlarla usá el slot `media`.

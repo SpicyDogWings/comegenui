@@ -72,7 +72,7 @@ En HTML plano, cargá el bundle `CuCard` (ver [ficha vanilla](/componentes/cu-ca
 
 ## Layout horizontal
 
-`layout` acepta `vertical` (**default**; media arriba) u `horizontal` (media al costado, contenido a la derecha).
+`layout` acepta `vertical` (**default**; media arriba) u `horizontal` (media al costado, contenido a la derecha). Sin media (ni `image` ni slot `media`) la tarjeta ocupa todo el ancho: no queda la columna vacía del 40 %.
 
 ```vue
 <template>
@@ -84,7 +84,7 @@ En HTML plano, cargá el bundle `CuCard` (ver [ficha vanilla](/componentes/cu-ca
 
 ## Slots custom
 
-El contenido va por el slot `default`; los slots `media`, `header` y `footer` reemplazan la media, el header (título/subtítulo) y el pie. Si hay slot `header`, tiene prioridad sobre `title`/`subtitle`.
+El contenido va por el slot `default`; los slots `media`, `header` y `footer` reemplazan la media, el header (título/subtítulo) y el pie. Si hay slot `header`, tiene prioridad sobre `title`/`subtitle`, y el slot `media` sobre `image`. Los bloques sin contenido no ocupan lugar (también en el custom element, donde el contenido de los slots vive en el light DOM).
 
 ```vue
 <script setup lang="ts">
