@@ -2,6 +2,7 @@
 import { computed, ref, watch, type PropType } from 'vue';
 import Input from './Input.vue';
 import Button from '../buttons/Button.vue';
+import Select from './Select.vue';
 import { isColor, isFieldVariant, isSize } from '@/utils/validators'
 
 /** Valor numérico del campo: `null` es el campo vacío. */
@@ -165,6 +166,11 @@ const stepOptions = computed(() => {
   return [...new Set(all)];
 });
 
+/** Opciones del Select de la librería (`{ value, label }`, ambos string). */
+const stepSelectOptions = computed(() =>
+  stepOptions.value.map((option) => ({ value: String(option), label: String(option) })),
+);
+
 const atMax = computed(
   () => maxValue.value !== undefined && value.value !== null && value.value >= maxValue.value,
 );
@@ -243,8 +249,8 @@ function decrement() {
 }
 
 /** Cambia el paso que usan los botones y las flechas (no altera el valor). */
-function onStepChange(event: Event) {
-  const next = toNumber((event.target as HTMLSelectElement).value);
+function onStepChange(value: string) {
+  const next = toNumber(value);
   if (next !== undefined && next > 0) activeStep.value = next;
 }
 
@@ -364,18 +370,19 @@ defineExpose({ get, set, reset, focus, increment, decrement });
       </svg>
     </Button>
 
-    <select
-      v-if="props.showStepSelect"
-      class="cu-number-input__step"
-      :value="String(stepValue)"
-      :disabled="isLocked"
-      aria-label="Paso"
-      @change="onStepChange"
-    >
-      <option v-for="option in stepOptions" :key="option" :value="String(option)">
-        {{ option }}
-      </option>
-    </select>
+    <!-- El paso usa el Select de la librería (no un <select> nativo), para que
+         comparta color, variante y estados con el resto del campo. -->
+    <span v-if="props.showStepSelect" class="cu-number-input__step">
+      <Select
+        :model-value="String(stepValue)"
+        :options="stepSelectOptions"
+        :color="props.color"
+        :variant="props.variant"
+        :disabled="isLocked"
+        aria-label="Paso"
+        @change="onStepChange"
+      />
+    </span>
   </div>
 </template>
 
@@ -402,48 +409,34 @@ defineExpose({ get, set, reset, focus, increment, decrement });
 
 .cu-number-input__step {
   flex: 0 0 auto;
-  font-family: var(--cu-font-sans);
-  font-size: var(--cu-font-size-sm);
-  font-weight: var(--cu-font-weight-medium);
+  display: inline-flex;
+  min-width: 4.5rem;
+}
+
+.cu-number-input__step :deep(.cu-select) {
+  width: 100%;
+}
+
+/* Mismo padding que el botón del campo, para que el select no quede más alto. */
+.cu-number-input__step :deep(.cu-select-toggle) {
   padding: var(--cu-space-md) var(--cu-space-md);
-  border-radius: var(--cu-radius-md);
-  border: var(--cu-border-thin) solid var(--btn-subtle-border);
-  background-color: var(--btn-subtle);
-  color: var(--cu-color-neutral-text);
-  cursor: pointer;
-  box-sizing: border-box;
-  transition: all 150ms ease;
 }
 
-.cu-number-input__step:hover:not(:disabled) {
-  background-color: var(--btn-subtle-hover);
-}
-
-.cu-number-input__step:focus {
-  outline: none;
-  box-shadow: 0 0 0 var(--cu-border-thin) var(--btn-subtle-border);
-}
-
-.cu-number-input__step:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.cu-number-input--sm .cu-number-input__step {
+.cu-number-input--sm .cu-number-input__step :deep(.cu-select-toggle) {
   font-size: var(--cu-font-size-xs);
-  padding: var(--cu-space-sm) var(--cu-space-md);
+  padding: var(--cu-space-xs) var(--cu-space-sm);
 }
 
-.cu-number-input--lg .cu-number-input__step {
-  font-size: var(--cu-font-size-md);
-  padding: var(--cu-space-lg) var(--cu-space-xl);
+.cu-number-input--lg .cu-number-input__step :deep(.cu-select-toggle) {
+  font-size: var(--cu-font-size-lg);
+  padding: var(--cu-space-lg) var(--cu-space-lg);
 }
 
 .cu-number-input--disabled {
   opacity: 0.5;
 }
 
-.cu-number-input--readonly .cu-number-input__step {
+.cu-number-input--readonly .cu-number-input__step :deep(.cu-select-toggle) {
   cursor: default;
 }
 </style>

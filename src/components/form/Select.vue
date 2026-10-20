@@ -27,6 +27,7 @@ const props = defineProps({
     validator: isFieldVariant,
   },
   disabled: { type: Boolean, required: false, default: false },
+  /** No abre el dropdown ni cambia la selección; el control sigue enfocable. */
   readOnly: { type: Boolean, required: false, default: false },
   placeholder: { type: String, required: false, default: "" },
   placeholderWrap: { type: Boolean, required: false, default: false },

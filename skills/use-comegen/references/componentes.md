@@ -67,6 +67,7 @@ más se consulta— **qué no se puede esperar de él**.
 | FileInputZone | `cu-file-input-zone` | Zona drag&drop múltiple, con carpetas recursivas | — |
 | Input | `cu-input` | Input de texto con tipos HTML5 | — |
 | Label | `cu-label` | Label que enfoca el control hijo (o el `for`) | — |
+| NumberInput | `cu-number-input` | Input numérico con botones − / +, paso configurable y límites `min`/`max` | `steps` |
 | Select | `cu-select` | Selector de opciones con búsqueda y loading | `options` |
 | Switch | `cu-switch` | Toggle con dos tamaños | — |
 | Textarea | `cu-textarea` | Área multilínea con `rows` y `no-resize` | — |
@@ -82,6 +83,7 @@ más se consulta— **qué no se puede esperar de él**.
 - `cu-file-input-zone`: no acepta `variant`; `directory` activa `multiple` solo; sin slots.
 - `cu-input`: no hay eventos custom `input`/`change` (sólo `update:modelValue`; los nativos burbujean); sin slots.
 - `cu-label`: sin eventos, sin métodos; sólo slot default. Es el único que hoy expone `hightContrast`.
+- `cu-number-input`: el valor es un número o `null` (`null` = vacío, nunca `""`); `steps` por JS; `change` sólo al confirmar (Enter/blur/botones/`set()`), tipear no lo dispara; el select de paso es el `Select` de la librería; sin slots.
 - `cu-select`: `options` por JS; `.set(val)` exige que el valor exista en `options`; sin slots; la barra de cooldown no se muestra si `loading` está activo.
 - `cu-switch`: no tiene `checked` ni `variant`/`theme`/`hightContrast`; no trae label propio (combiná con `cu-label`); sin slots.
 - `cu-textarea`: los eventos nativos no se re-emiten como custom; sin slots.
@@ -225,7 +227,7 @@ filas, sin `search-enabled` no hay buscador):
    UMD esté cargado (en HTML plano, dentro de `customElements.whenDefined(tag)`).
    Afecta a: `items`, `options`, `columns`, `data`, `tabs`, `events`, `filters`, `actions`,
    `pageSizeOptions`, `rowDisabled`, `footer`, `commands`, `template`, `formats`, `sheet`,
-   `searchFields`. **Única excepción**: `search-fields` de `<cu-table>` acepta JSON.
+   `searchFields`, `steps`. **Única excepción**: `search-fields` de `<cu-table>` acepta JSON.
 2. **Atributos en kebab-case; booleanos sin valor**: `readOnly`→`read-only`,
    `itemsPerPage`→`items-per-page`, `<cu-collapse default-open>`. Cuidado con los nombres que
    chocan con atributos nativos (`open`, `readonly`).

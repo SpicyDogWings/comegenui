@@ -74,6 +74,12 @@ Familias por color: `--cu-color-{color}`, `-text`, `-hover`, `-active`,
 Compartidos: tipografía (`--cu-font-*`), espaciado (`--cu-space-*`), radios (`--cu-radius*`),
 bordes (`--cu-border-*`), sombras (`--cu-shadow-*`).
 
+Atenuados: `--cu-alpha-disabled` (`0.7`, controles apagados), `--cu-alpha-muted` (`0.5`, items,
+opciones y placeholders), `--cu-alpha-subtle` (`0.6`) y `--cu-alpha-faded` (`0.4`). El tono del
+disabled es una decisión de tema: el mismo número en todos los componentes. Se overridean juntos en
+la raíz de `comegen.config.json` (`{ "alpha": { "disabled": 0.8 } }`) y los componentes los usan con
+fallback (`var(--cu-alpha-disabled, 0.7)`), así que también se pisan como cualquier token.
+
 ```css
 .mi-banner {
   color: var(--cu-color-primary);

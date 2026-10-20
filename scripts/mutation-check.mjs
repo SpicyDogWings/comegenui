@@ -784,6 +784,13 @@ const MUTATIONS = [
 }`,
   },
   {
+    id: "number-input-paso-ignorado",
+    file: "src/components/form/NumberInput.vue",
+    expect: "el paso elegido en el select define cuánto suman/restan botones y flechas",
+    find: `  if (next !== undefined && next > 0) activeStep.value = next;`,
+    replace: `  if (next !== undefined && next > 0) void next;`,
+  },
+  {
     id: "label-slot-no-enfoca",
     file: "src/components/form/Label.vue",
     expect: "sin `for`, el click enfoca el primer control del slot",
