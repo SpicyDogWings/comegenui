@@ -119,8 +119,8 @@ const MUTATIONS = [
     id: "label-no-focus-on-for",
     file: "src/components/form/Label.vue",
     expect: "con `for` enfoca el elemento con ese id",
-    find: `    if (target) target.focus();`,
-    replace: `    if (target) { /* mutado */ }`,
+    find: `  focusControl(props.for ? document.getElementById(props.for) : slotControl());`,
+    replace: `  focusControl(props.for ? null : slotControl());`,
   },
   {
     id: "date-picker-value-format-no-format",
@@ -789,6 +789,27 @@ const MUTATIONS = [
     expect: "el paso elegido en el select define cuánto suman/restan botones y flechas",
     find: `  if (next !== undefined && next > 0) activeStep.value = next;`,
     replace: `  if (next !== undefined && next > 0) void next;`,
+  },
+  {
+    id: "label-slot-no-enfoca",
+    file: "src/components/form/Label.vue",
+    expect: "sin `for`, el click enfoca el primer control del slot",
+    find: `  focusControl(props.for ? document.getElementById(props.for) : slotControl());`,
+    replace: `  focusControl(props.for ? document.getElementById(props.for) : null);`,
+  },
+  {
+    id: "label-shadow-no-entra",
+    file: "src/components/form/Label.vue",
+    expect: "si el control del slot es un custom element, enfoca el control de su shadow root",
+    find: `  (inner ?? el).focus();`,
+    replace: `  el.focus();`,
+  },
+  {
+    id: "label-click-no-emite",
+    file: "src/components/form/Label.vue",
+    expect: "el click en el label emite `click`",
+    find: `  emit('click');`,
+    replace: `  void 0;`,
   },
 ];
 

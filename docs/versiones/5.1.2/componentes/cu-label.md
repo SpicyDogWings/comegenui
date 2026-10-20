@@ -2,9 +2,10 @@
 
 # `<cu-label>`
 
-Label con color semántico. Al hacer clic, enfoca el input hijo o, si se define `for`, el
+Label con color semántico. Al hacer clic, enfoca el primer control del slot o, si se define `for`, el
 elemento con ese id. Útil para agrupar `<cu-input>`, `<cu-checkbox>`, etc. y ganar área
-clickeable.
+clickeable. Si el control es un custom element, el foco entra a su shadow root (el host no es
+focuseable).
 
 ## Uso en HTML plano
 
@@ -41,7 +42,9 @@ nombre se ve distinto en cada tema.
 
 ## Contenido (slot)
 
-El slot acepta cualquier control: al hacer clic en el label, el control hijo recibe el foco.
+El slot acepta cualquier control: al hacer clic en el label (el texto o el espacio libre), el primer
+control del slot recibe el foco. Como el control puede ser un custom element, el foco va al control
+real de su shadow root.
 
 ```html
 <cu-label label="Acepto los términos">
@@ -57,7 +60,8 @@ El slot acepta cualquier control: al hacer clic en el label, el control hijo rec
 
 ## Enfocar con `for`
 
-Con `for`, el foco va al elemento que tenga ese id, aunque esté fuera del label.
+Con `for`, el foco va al elemento que tenga ese id, aunque esté fuera del label. El `<label>` lo
+expone además como atributo (asociación nativa, útil para lectores de pantalla).
 
 ```html
 <cu-label for="miInput" label="Nombre"></cu-label>
