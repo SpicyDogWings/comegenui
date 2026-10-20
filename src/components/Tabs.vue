@@ -210,7 +210,7 @@ defineExpose({ getActive, setActive, next, prev });
 }
 
 .cu-tabs-tab:disabled {
-  opacity: 0.5;
+  opacity: var(--cu-alpha-muted, 0.5);
   cursor: not-allowed;
 }
 
@@ -327,6 +327,6 @@ defineExpose({ getActive, setActive, next, prev });
 }
 
 .cu-tabs--disabled {
-  opacity: 0.7;
+  opacity: var(--cu-alpha-disabled, 0.7);
 }
 </style>

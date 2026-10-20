@@ -118,7 +118,7 @@ defineExpose({
 
 .cu-checkbox--disabled {
   cursor: not-allowed;
-  opacity: 0.7;
+  opacity: var(--cu-alpha-disabled, 0.7);
 }
 
 .cu-checkbox-input {
@@ -184,6 +184,6 @@ defineExpose({
 }
 
 .cu-checkbox--disabled .cu-checkbox-label {
-  opacity: 0.7;
+  opacity: var(--cu-alpha-disabled, 0.7);
 }
 </style>

@@ -240,7 +240,7 @@ const visiblePages = computed(() => {
 .cu-pagination-ellipsis {
   padding: var(--cu-space-xs) var(--cu-space-sm);
   color: var(--cu-color-neutral-text);
-  opacity: 0.5;
+  opacity: var(--cu-alpha-muted, 0.5);
   font-size: var(--cu-font-size-sm);
   font-family: var(--cu-font-sans);
 }

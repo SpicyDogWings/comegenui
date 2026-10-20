@@ -46,8 +46,27 @@ Por cada color (`primary`, `secondary`, `neutral`, `success`, `warning`, `danger
 - `--cu-color-{nombre}-code` — acento para bloques de código (con contraste ≥ 4.5:1 ya garantizado)
 
 Compartidos: tipografía (`--cu-font-*`, `--cu-line-height-*`), espaciado (`--cu-space-*`), radios
-(`--cu-radius*`), bordes (`--cu-border-*`) y sombras (`--cu-shadow-*`). El esquema de código usa
-`--cu-code-bg`, `--cu-code-text` y `--cu-code-faded`.
+(`--cu-radius*`), bordes (`--cu-border-*`), sombras (`--cu-shadow-*`) y alpha de estado
+(`--cu-alpha-*`). El esquema de código usa `--cu-code-bg`, `--cu-code-text` y `--cu-code-faded`.
+
+### Alpha de estado
+
+El tono de los estados atenuados es un token, no un valor de cada componente: así un campo
+deshabilitado y un botón deshabilitado se ven igual. Los declara el grupo `alpha` del config:
+
+| Token | Default | Para qué |
+|---|---|---|
+| `--cu-alpha-disabled` | `0.7` | controles interactivos deshabilitados (button, checkbox, switch, campos, sliders) |
+| `--cu-alpha-muted` | `0.5` | items, opciones, filas y pestañas deshabilitadas — y placeholders |
+| `--cu-alpha-subtle` | `0.6` | iconos y textos secundarios atenuados |
+| `--cu-alpha-faded` | `0.4` | contenido bloqueado/atenuado (loading, overlay, vista no editable) |
+
+```json
+{ "alpha": { "disabled": 0.7, "muted": 0.5, "subtle": 0.6, "faded": 0.4 } }
+```
+
+Los componentes las consumen con fallback (`var(--cu-alpha-disabled, 0.7)`), así que un CSS de
+host viejo —sin estos tokens— sigue funcionando con los defaults.
 
 Los tokens los aporta el CSS del host: este sitio los genera de `comegen.config.json` (`:root` con
 el tema default y cada tema bajo su `[data-theme="…"]`). En tu app definí `:root` / `[data-theme="…"]`

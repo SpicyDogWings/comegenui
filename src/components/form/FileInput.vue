@@ -354,7 +354,7 @@ defineExpose({ get, set, reset, focus, trigger });
 }
 
 .cu-file-input--disabled {
-  opacity: 0.7;
+  opacity: var(--cu-alpha-disabled, 0.7);
   cursor: not-allowed;
 }
 
@@ -374,13 +374,13 @@ defineExpose({ get, set, reset, focus, trigger });
 
 .cu-file-input-icon {
   flex-shrink: 0;
-  opacity: 0.6;
+  opacity: var(--cu-alpha-subtle, 0.6);
   color: var(--input-text);
 }
 
 .cu-file-input-placeholder {
   flex: 1;
-  opacity: 0.6;
+  opacity: var(--cu-alpha-subtle, 0.6);
   color: var(--input-text);
 }
 

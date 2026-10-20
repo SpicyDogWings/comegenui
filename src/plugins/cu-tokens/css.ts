@@ -127,6 +127,7 @@ function sharedBlock(shared: any) {
   const borderRadius = { ...DEFAULTS.borderRadius, ...(shared.borderRadius ?? {}) }
   const shadows = { ...DEFAULTS.shadows, ...(shared.shadows ?? {}) }
   const borders = { width: { ...DEFAULTS.borders.width, ...(shared.borders?.width ?? {}) } }
+  const alpha = { ...DEFAULTS.alpha, ...(shared.alpha ?? {}) }
   const modal = {
     size: { ...DEFAULTS.modal.size, ...(shared.modal?.size ?? {}) },
     height: { ...DEFAULTS.modal.height, ...(shared.modal?.height ?? {}) },
@@ -183,6 +184,12 @@ function sharedBlock(shared: any) {
     --cu-border-thin: ${borders.width.thin};
     --cu-border-medium: ${borders.width.medium};
     --cu-border-thick: ${borders.width.thick};
+
+    /* Alpha (estados atenuados: mismo tono en todos los componentes) */
+    --cu-alpha-disabled: ${alpha.disabled};
+    --cu-alpha-muted: ${alpha.muted};
+    --cu-alpha-subtle: ${alpha.subtle};
+    --cu-alpha-faded: ${alpha.faded};
 
     /* Modal */
     --cu-modal-size-sm: ${modal.size.sm};

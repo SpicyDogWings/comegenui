@@ -515,7 +515,7 @@ const colorStyles = computed(() => ({
 }
 
 .cu-calendar.is-disabled {
-  opacity: 0.7;
+  opacity: var(--cu-alpha-disabled, 0.7);
 }
 
 .cu-calendar-header {
@@ -537,7 +537,7 @@ const colorStyles = computed(() => ({
   text-align: center;
   font-size: var(--cu-font-size-xs);
   font-weight: var(--cu-font-weight-medium);
-  opacity: 0.6;
+  opacity: var(--cu-alpha-subtle, 0.6);
   padding: var(--cu-space-2xs) 0;
 }
 

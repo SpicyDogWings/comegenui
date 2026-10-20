@@ -217,7 +217,7 @@ defineExpose({
       text-transform: uppercase;
       letter-spacing: 0.05em;
       color: var(--cu-color-neutral);
-      opacity: 0.5;
+      opacity: var(--cu-alpha-muted, 0.5);
     }
 
     .cu-command-palette-item :deep(.cu-command-palette-item-icon) {
@@ -235,13 +235,13 @@ defineExpose({
     .cu-command-palette-item :deep(.cu-command-palette-item-desc) {
       font-size: var(--cu-font-size-xs);
       color: var(--cu-color-neutral);
-      opacity: 0.5;
+      opacity: var(--cu-alpha-muted, 0.5);
     }
 
     .cu-command-palette-item :deep(.cu-command-palette-item-badge) {
       font-size: var(--cu-font-size-xs);
       color: var(--cu-color-neutral);
-      opacity: 0.6;
+      opacity: var(--cu-alpha-subtle, 0.6);
       padding: 0.125rem 0.5rem;
       border: var(--cu-border-thin) solid var(--cu-border-color);
       border-radius: var(--cu-radius-sm);
@@ -253,7 +253,7 @@ defineExpose({
       font-family: var(--cu-font-mono);
       font-size: var(--cu-font-size-xs);
       color: var(--cu-color-neutral);
-      opacity: 0.5;
+      opacity: var(--cu-alpha-muted, 0.5);
       padding: 0.125rem 0.375rem;
       border: var(--cu-border-thin) solid var(--cu-border-color);
       border-radius: var(--cu-radius-sm);
@@ -265,6 +265,6 @@ defineExpose({
       text-align: center;
       font-size: var(--cu-font-size-sm);
       color: var(--cu-color-neutral);
-      opacity: 0.5;
+      opacity: var(--cu-alpha-muted, 0.5);
     }
     </style>

@@ -112,6 +112,30 @@ describe('generateThemesCSS / generateThemeCSS', () => {
 describe('sharedBlock: tokens completos', () => {
   const themes = { light: { colors: COLORS } }
 
+  it('emite los 4 tokens de alpha (--cu-alpha-*) por defecto', () => {
+    const css = generateThemesCSS(themes, extractShared(DEFAULTS), OPACITIES)
+    expect(css).toContain('--cu-alpha-disabled: 0.7')
+    expect(css).toContain('--cu-alpha-muted: 0.5')
+    expect(css).toContain('--cu-alpha-subtle: 0.6')
+    expect(css).toContain('--cu-alpha-faded: 0.4')
+  })
+
+  it('respeta el override de shared.alpha y completa el resto sobre DEFAULTS', () => {
+    const shared = { ...extractShared(DEFAULTS), alpha: { disabled: 0.4 } }
+    const css = generateThemesCSS(themes, shared, OPACITIES)
+    expect(css).toContain('--cu-alpha-disabled: 0.4')
+    expect(css).toContain('--cu-alpha-muted: 0.5')
+    expect(css).toContain('--cu-alpha-subtle: 0.6')
+    expect(css).toContain('--cu-alpha-faded: 0.4')
+    expect(css).not.toContain('undefined')
+  })
+
+  it('extractShared conserva el grupo alpha (config → shared → CSS)', () => {
+    const shared = extractShared({ ...DEFAULTS, alpha: { disabled: 0.2 } })
+    expect(shared.alpha).toEqual({ disabled: 0.2 })
+    expect(generateThemesCSS(themes, shared, OPACITIES)).toContain('--cu-alpha-disabled: 0.2')
+  })
+
   it('emite fontSize 3xl/4xl (los consumen Markdown h1/h2)', () => {
     const css = generateThemesCSS(themes, extractShared(DEFAULTS), OPACITIES)
     expect(css).toMatch(/--cu-font-size-3xl: [^;]+;/)

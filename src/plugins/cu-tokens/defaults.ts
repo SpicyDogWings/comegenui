@@ -28,6 +28,20 @@ export const DEFAULT_DARK_COLORS = {
 
 export const DEFAULTS = {
   ...DEFAULT_COLORS,
+  /* Tono de los estados atenuados. Es un token (no un valor por componente):
+     el tono del disabled es una decisión de tema y debe ser el mismo en todos
+     los componentes. Genera `--cu-alpha-*` (ver css.ts). Se llama `alpha` para
+     no chocar con `opacities`, que es el alfa de la sombra por tema. */
+  alpha: {
+    /** Controles interactivos deshabilitados (button, checkbox, switch, campos). */
+    disabled: 0.7,
+    /** Items, opciones, filas y pestañas deshabilitadas — y placeholders. */
+    muted: 0.5,
+    /** Iconos y textos secundarios atenuados. */
+    subtle: 0.6,
+    /** Contenido bloqueado/atenuado (loading, overlay, vista no editable). */
+    faded: 0.4
+  },
   typography: {
     fontFamily: {
       sans: 'Inter, system-ui, sans-serif',

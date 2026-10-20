@@ -185,12 +185,12 @@ defineExpose({
 }
 
 .cu-autocomplete-option--disabled {
-  opacity: 0.5;
+  opacity: var(--cu-alpha-muted, 0.5);
   cursor: not-allowed;
 }
 
 .cu-autocomplete-icon {
   transform: translateY(2px);
-  opacity: 0.6;
+  opacity: var(--cu-alpha-subtle, 0.6);
 }
 </style>

@@ -286,7 +286,7 @@ const isRowDisabled = (row: Record<string, any>): boolean => {
 }
 
 .cu-table-row--disabled {
-  opacity: 0.5;
+  opacity: var(--cu-alpha-muted, 0.5);
   pointer-events: none;
 }
 
@@ -299,7 +299,7 @@ const isRowDisabled = (row: Record<string, any>): boolean => {
 }
 
 .cu-table-loading {
-  opacity: 0.4;
+  opacity: var(--cu-alpha-faded, 0.4);
   pointer-events: none;
 }
 
@@ -317,7 +317,7 @@ const isRowDisabled = (row: Record<string, any>): boolean => {
   padding: var(--cu-space-xl);
   text-align: center;
   color: var(--cu-color-neutral-text);
-  opacity: 0.5;
+  opacity: var(--cu-alpha-muted, 0.5);
   font-style: italic;
   font-family: var(--cu-font-sans);
 }

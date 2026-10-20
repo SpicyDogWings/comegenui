@@ -176,12 +176,12 @@ defineExpose({
 }
 
 .cu-switch--disabled .cu-switch-track {
-  opacity: 0.7;
+  opacity: var(--cu-alpha-disabled, 0.7);
   pointer-events: none;
 }
 
 .cu-switch--disabled .cu-switch-label {
-  opacity: 0.7;
+  opacity: var(--cu-alpha-disabled, 0.7);
 }
 
 .cu-switch-thumb {
