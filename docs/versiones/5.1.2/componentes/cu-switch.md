@@ -79,6 +79,19 @@ el track cuando el switch está encendido.
 
 <!-- demo:switch-etiqueta -->
 
+## Posición de la etiqueta
+
+`label-position` decide de qué lado del track va la etiqueta: `end` (**default**) la deja a la
+derecha y `start` a la izquierda. El `<label>` nativo envuelve el track y la etiqueta, así que
+clickear la etiqueta alterna el switch en cualquiera de las dos posiciones.
+
+```html
+<cu-switch color="primary" label-position="start" label="A la izquierda"></cu-switch>
+<cu-switch color="primary" label="A la derecha (default)"></cu-switch>
+```
+
+<!-- demo:switch-label-position -->
+
 ## Escuchar cambios
 
 El switch se mueve solo: hay dos eventos equivalentes para reaccionar, `update:modelValue`

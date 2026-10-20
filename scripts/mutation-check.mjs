@@ -325,6 +325,13 @@ const MUTATIONS = [
 };`,
   },
   {
+    id: "switch-label-position-ignorado",
+    file: "src/components/form/Switch.vue",
+    expect: "labelPosition aplica la clase del lado pedido (start/end)",
+    find: "      `cu-switch--label-${props.labelPosition}`,",
+    replace: "      `cu-switch--label-end`,",
+  },
+  {
     id: "textarea-reset-keeps-value",
     file: "src/components/form/Textarea.vue",
     expect: "reset() limpia el textarea",

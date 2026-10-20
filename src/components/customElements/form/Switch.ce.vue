@@ -15,6 +15,11 @@ const props = defineProps({
   /** Estado deshabilitado */
   disabled: Boolean,
   label: { type: String, default: "" },
+  /** Posición de la etiqueta: `end` (derecha, default) o `start` (izquierda) */
+  labelPosition: {
+    type: String as PropType<'start' | 'end'>,
+    default: "end",
+  },
 });
 
 const switchRef = ref<InstanceType<typeof Switch> | null>(null);
@@ -91,6 +96,7 @@ defineExpose({ get, set, reset, focus });
     :size="props.size"
     :disabled="props.disabled"
     :label="props.label"
+    :label-position="props.labelPosition"
     @update:model-value="onUpdate"
     @change="ceEmit('change', $event)"
   >

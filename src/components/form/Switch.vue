@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, defineModel, useTemplateRef, type PropType } from "vue";
-import { isSizeSm } from '@/utils/validators'
+import { isLabelPosition, isSizeSm } from '@/utils/validators'
 import { useFocus } from "@vueuse/core";
 
 const checked = defineModel<boolean>({ default: false });
@@ -26,6 +26,13 @@ const props = defineProps({
     type: String,
     required: false,
     default: "",
+  },
+  /** Lado del track en el que se muestra la etiqueta: `end` (derecha, default) o `start` (izquierda). */
+  labelPosition: {
+    type: String as PropType<'start' | 'end'>,
+    required: false,
+    default: "end",
+    validator: isLabelPosition,
   },
 });
 
@@ -77,6 +84,7 @@ defineExpose({
     class="cu-switch"
     :class="[
       `cu-switch--${props.size}`,
+      `cu-switch--label-${props.labelPosition}`,
       { 'cu-switch--disabled': props.disabled }
     ]"
   >
@@ -114,6 +122,18 @@ defineExpose({
   gap: var(--cu-space-sm);
   vertical-align: middle;
   cursor: pointer;
+}
+
+/* `labelPosition`: el track va primero en el DOM y el label después. Con
+   `row-reverse` el label queda a la izquierda sin cambiar el markup: el <label>
+   nativo sigue envolviendo a los dos y el click en la etiqueta alterna igual.
+   El `gap` se mantiene entre ambos y el label conserva su ancho intrínseco. */
+.cu-switch--label-end {
+  flex-direction: row;
+}
+
+.cu-switch--label-start {
+  flex-direction: row-reverse;
 }
 
 .cu-switch-track {
