@@ -70,6 +70,33 @@ items se están buscando.
 </template>
 ```
 
+## Carga
+
+Con `loading` el panel muestra el spinner mientras se buscan los items (igual que en `Select`): abrí
+el panel con `open()` y volvé a `loading = false` cuando termine la búsqueda.
+
+```vue
+<script setup lang="ts">
+import { ref } from "vue";
+import Autocomplete from "@/components/form/Autocomplete.vue";
+
+const ac = ref<InstanceType<typeof Autocomplete> | null>(null);
+const cargando = ref(false);
+const items = ref<{ label: string }[]>([]);
+
+async function buscar() {
+  cargando.value = true;
+  ac.value?.open();
+  items.value = await fetch("/api/personas").then((r) => r.json());
+  cargando.value = false;
+}
+</script>
+
+<template>
+  <Autocomplete ref="ac" :items="items" :loading="cargando" placeholder="Buscá una persona" />
+</template>
+```
+
 ## Items del menú
 
 Cada item puede llevar un `icon` (SVG inline), un `value` distinto del `label`, o estar `disabled`.
