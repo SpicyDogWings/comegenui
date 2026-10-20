@@ -613,6 +613,17 @@ tabla.columns = [
 
 > Los iconos SVG deben usar `stroke="currentColor"` para que hereden el color del botón.
 
+Cada botón acepta además dos condicionales **por fila**: `disabled` (booleano o `(row) => boolean`) y `hidden: (row) => boolean`. `hidden` no cambia la cantidad de botones del array: descarta ese botón en esa fila (y si la fila se queda sin ninguno visible, la celda no renderiza la fila de botones):
+
+```js
+buttons: (row) => [
+  { label: 'Guardar',  disabled: (r) => !r.editado, onClick: (r) => guardar(r) },
+  { label: 'Eliminar', hidden: (r) => r.rol !== 'owner', color: 'danger', onClick: (r) => eliminar(r) },
+]
+```
+
+> `disabled: true` (booleano) aplica a todas las filas. Se combina con el de la fila/celda: si la fila está deshabilitada (`row-disabled`), el botón también.
+
 ---
 
 ## Acciones de fila (botón "..." al final)
