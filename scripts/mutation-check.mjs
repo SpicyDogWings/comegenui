@@ -553,6 +553,20 @@ const MUTATIONS = [
     replace: `if (base) accents[key] = base`,
   },
   {
+    id: "alpha-tokens-ignora-override",
+    file: "src/plugins/cu-tokens/css.ts",
+    expect: "un override de shared.alpha se refleja en los tokens --cu-alpha-*",
+    find: `const alpha = { ...DEFAULTS.alpha, ...(shared.alpha ?? {}) }`,
+    replace: `const alpha = { ...DEFAULTS.alpha }`,
+  },
+  {
+    id: "alpha-token-muted-no-emite",
+    file: "src/plugins/cu-tokens/css.ts",
+    expect: "se emite --cu-alpha-muted (items, opciones y filas deshabilitadas)",
+    find: `    --cu-alpha-muted: \${alpha.muted};\n`,
+    replace: ``,
+  },
+  {
     id: "ficha-api-default-mentiroso",
     file: `${DOC}/partials/alert/props-vue.md`,
     test: "src/contracts/ficha-api.test.ts",
