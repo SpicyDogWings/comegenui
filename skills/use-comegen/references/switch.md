@@ -46,6 +46,7 @@ Los valores de `color` / `size` están en «Atributos» / «Props», abajo.
 | `disabled` | `boolean` | `—` | Estado deshabilitado |
 | `model-value` | `boolean` | `false` | Estado del toggle. El CE sincroniza su estado; asigná `modelValue` sólo si querés controlarlo |
 | `label` | `string` | `""` | — |
+| `label-position` | `"start" \| "end"` | `"end"` | Posición de la etiqueta: `end` (derecha, default) o `start` (izquierda) |
 <!-- /@api:atributos -->
 
 ### Eventos
@@ -88,6 +89,7 @@ Los valores de `color` / `size` están en «Atributos» / «Props», abajo.
 | `size` | `"sm" \| "md"` | `"md"` | — |
 | `disabled` | `boolean` | `false` | — |
 | `label` | `string` | `""` | — |
+| `labelPosition` | `"start" \| "end"` | `"end"` | Lado del track en el que se muestra la etiqueta: `end` (derecha, default) o `start` (izquierda). |
 <!-- /@api:props -->
 
 ### Emits

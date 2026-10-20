@@ -67,6 +67,17 @@ el track cuando el switch está encendido.
 </Switch>
 ```
 
+## Posición de la etiqueta
+
+`labelPosition` decide de qué lado del track va la etiqueta: `end` (**default**) la deja a la
+derecha y `start` a la izquierda. El `<label>` nativo envuelve el track y la etiqueta, así que
+clickear la etiqueta alterna el switch en cualquiera de las dos posiciones.
+
+```vue
+<Switch color="primary" label-position="start" label="A la izquierda" />
+<Switch color="primary" label="A la derecha (default)" />
+```
+
 ## Escuchar cambios
 
 El switch se mueve solo: `update:modelValue` (convención Vue, lo que consume `v-model`) y
