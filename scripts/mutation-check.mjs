@@ -784,6 +784,13 @@ const MUTATIONS = [
 }`,
   },
   {
+    id: "number-input-paso-ignorado",
+    file: "src/components/form/NumberInput.vue",
+    expect: "el paso elegido en el select define cuánto suman/restan botones y flechas",
+    find: `  if (next !== undefined && next > 0) activeStep.value = next;`,
+    replace: `  if (next !== undefined && next > 0) void next;`,
+  },
+  {
     id: "label-slot-no-enfoca",
     file: "src/components/form/Label.vue",
     expect: "sin `for`, el click enfoca el primer control del slot",
@@ -803,6 +810,13 @@ const MUTATIONS = [
     expect: "el click en el label emite `click`",
     find: `  emit('click');`,
     replace: `  void 0;`,
+  },
+  {
+    id: "autocomplete-loading-ignorado",
+    file: "src/components/form/Autocomplete.vue",
+    expect: "loading llega al Dropdown (spinner del panel)",
+    find: `    :loading="loading"`,
+    replace: ``,
   },
   {
     id: "card-media-ignora-slot",

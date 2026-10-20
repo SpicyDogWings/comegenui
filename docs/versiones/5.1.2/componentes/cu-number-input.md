@@ -107,7 +107,8 @@ propiedad `showControls` en `false` el campo queda solo y el valor se cambia tip
 `step` (**default** `1`) es lo que suman y restan los botones y las flechas del teclado. Con
 `show-step-select` aparece un select para elegirlo en caliente, con las opciones de `steps`
 (**default** `[1, 5, 10]`); `step` siempre es la primera opción, aunque no esté en la lista.
-Cambiar el paso **no** cambia el valor.
+Cambiar el paso **no** cambia el valor. El select es el `Select` de la librería (no un `<select>`
+nativo), así que comparte color, variante y estados con el resto del campo.
 
 ```html
 <cu-number-input step="1" placeholder="paso 1"></cu-number-input>

@@ -32,6 +32,7 @@ como propiedad (`el.items = [...]`). Ver `gotchas.md`.
 | `cu-modal` | `CuModal.umd.js` | Overlay | — | `close`, `opened`, `closed`, `cancel`, `accept` | 4 |
 | `cu-navbar` | `CuNavbar.umd.js` | Navegación | `items`, `searchFields` | `search` | — |
 | `cu-navbar-horizontal` | `CuNavbarHorizontal.umd.js` | Navegación | `items` | — | — |
+| `cu-number-input` | `CuNumberInput.umd.js` | Formularios | `steps` | `update:modelValue`, `change`, `increment`, `decrement` | 6 |
 | `cu-pagination` | `CuPagination.umd.js` | Controles | `pageSizeOptions` | `update:currentPage`, `update:itemsPerPage` | — |
 | `cu-select` | `CuSelect.umd.js` | Formularios | `options` | `update:modelValue`, `select`, `close`, `blur` | 6 |
 | `cu-side-over` | `CuSideOver.umd.js` | Overlay | — | `update:open`, `close` | 4 |

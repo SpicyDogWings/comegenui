@@ -43,6 +43,7 @@ navbar	15
 navbar-horizontal	3
 navbar-list	2
 navbar-menu	0
+number-input	2
 pagination	11
 popover	18
 select	21
@@ -56,4 +57,4 @@ theme-manager-modal	0
 toggle-color-sheme	0
 tooltip	9
 year-slider	8
-total	449
+total	451

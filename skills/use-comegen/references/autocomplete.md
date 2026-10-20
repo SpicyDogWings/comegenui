@@ -48,6 +48,7 @@ Los valores de `type` / `color` / `variant` / `position` / `align` están en «A
 | `type` | `string` | `"text"` | `text`, `password`, `email`, `number`, `tel`, `url`, `search` |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | `outlined`, `soft`, `ghost`, `subtle` |
+| `loading` | `boolean` | `false` | Muestra el spinner de carga en el panel de sugerencias |
 | `disabled` | `boolean` | `false` | Estado deshabilitado |
 | `read-only` | `boolean` | `false` | Solo lectura (en HTML se usa como `readonly`) |
 | `placeholder` | `string` | `""` | Placeholder del input |
@@ -102,6 +103,7 @@ Ninguno.
 | `type` | `string` | `"text"` | — |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | — |
 | `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | — |
+| `loading` | `boolean` | `false` | Muestra el spinner de carga en el panel de sugerencias. |
 | `disabled` | `boolean` | `false` | — |
 | `readOnly` | `boolean` | `false` | — |
 | `placeholder` | `string` | `""` | — |

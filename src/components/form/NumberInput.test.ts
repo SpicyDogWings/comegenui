@@ -6,6 +6,7 @@ import { describe, it, expect } from "vitest";
 import { flushPromises, mount } from "@vue/test-utils";
 import { defineComponent, ref } from "vue";
 import NumberInput from "./NumberInput.vue";
+import Select from "./Select.vue";
 
 type NumberInputVm = {
   get: () => number | null;
@@ -23,8 +24,9 @@ const field = (w: Wrapper) => w.find("input.cu-input");
 const fieldValue = (w: Wrapper) => (field(w).element as HTMLInputElement).value;
 const incButton = (w: Wrapper) => w.find("button.cu-number-input__control--increment");
 const decButton = (w: Wrapper) => w.find("button.cu-number-input__control--decrement");
-const stepSelect = (w: Wrapper) => w.find("select.cu-number-input__step");
-const options = (w: Wrapper) => w.findAll("option").map((option) => option.text());
+const stepSelect = (w: Wrapper) => w.findComponent(Select);
+const stepOptions = (w: Wrapper) =>
+  (stepSelect(w).props("options") as { value: string; label: string }[]).map((option) => option.value);
 
 describe("NumberInput — valor y v-model", () => {
   it("arranca vacío (null) y tipear un número actualiza el valor y emite update:modelValue", async () => {
@@ -224,9 +226,9 @@ describe("NumberInput — controles y paso", () => {
     await flushPromises();
 
     expect(stepSelect(w).exists()).toBe(true);
-    expect(options(w)).toEqual(["1", "5", "10"]);
+    expect(stepOptions(w)).toEqual(["1", "5", "10"]);
 
-    await stepSelect(w).setValue("5");
+    stepSelect(w).vm.$emit("change", "5");
     await flushPromises();
     expect(vm(w).get()).toBe(0);
 
@@ -236,11 +238,18 @@ describe("NumberInput — controles y paso", () => {
     expect(vm(w).get()).toBe(5);
   });
 
+  it("el paso usa el Select de la librería, no un <select> nativo", () => {
+    const w = mount(NumberInput, { props: { showStepSelect: true } });
+
+    expect(w.find("select").exists()).toBe(false);
+    expect(stepSelect(w).exists()).toBe(true);
+  });
+
   it("steps custom respeta el orden y antepone step si no está en la lista", async () => {
     const w = mount(NumberInput, { props: { step: 10, steps: [2, 4], showStepSelect: true } });
     await flushPromises();
 
-    expect(options(w)).toEqual(["10", "2", "4"]);
+    expect(stepOptions(w)).toEqual(["10", "2", "4"]);
   });
 });
 
@@ -254,7 +263,7 @@ describe("NumberInput — estados (disabled / readOnly)", () => {
     expect(field(w).attributes("disabled")).toBeDefined();
     expect(incButton(w).attributes("disabled")).toBeDefined();
     expect(decButton(w).attributes("disabled")).toBeDefined();
-    expect(stepSelect(w).attributes("disabled")).toBeDefined();
+    expect(stepSelect(w).props("disabled")).toBe(true);
 
     vm(w).increment();
     await flushPromises();
@@ -299,7 +308,7 @@ describe("NumberInput — teclado", () => {
     const w = mount(NumberInput, { props: { modelValue: 0, showStepSelect: true } });
     await flushPromises();
 
-    await stepSelect(w).setValue("10");
+    stepSelect(w).vm.$emit("change", "10");
     await flushPromises();
 
     await field(w).trigger("keydown", { key: "ArrowUp" });
