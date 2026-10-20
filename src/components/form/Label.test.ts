@@ -54,4 +54,38 @@ describe("Label — click y foco", () => {
     await w.find(".cu-label-text").trigger("click");
     expect(w.emitted("click")).toHaveLength(1);
   });
+
+  it("sin `for` enfoca el primer control del slot (no solo el texto)", async () => {
+    const w = mount(Label, {
+      props: { label: "Correo" },
+      slots: { default: '<input class="hijo" />' },
+      attachTo: document.body,
+    });
+    await w.find(".cu-label").trigger("click");
+    expect(document.activeElement).toBe(w.find(".hijo").element);
+    w.unmount();
+  });
+
+  it("si el control del slot es un custom element, enfoca el control de su shadow root", async () => {
+    // Un host no labelable (como <cu-input>): el <label> nativo no puede
+    // enfocarlo, y el host tampoco es focuseable; hay que entrar al shadow root.
+    const host = document.createElement("div");
+    const inner = document.createElement("input");
+    host.attachShadow({ mode: "open" }).appendChild(inner);
+
+    const w = mount(Label, { props: { label: "Correo" }, attachTo: document.body });
+    w.element.appendChild(host);
+
+    await w.find(".cu-label").trigger("click");
+    // document.activeElement es el host (así se reporta el foco dentro de un
+    // shadow root); el control enfocado se ve en shadowRoot.activeElement.
+    expect(host.shadowRoot?.activeElement).toBe(inner);
+    expect(document.activeElement).toBe(host);
+    w.unmount();
+  });
+
+  it("expone `for` como atributo del <label> (asociación nativa)", () => {
+    const w = mount(Label, { props: { for: "miInput", label: "Nombre" } });
+    expect(w.attributes("for")).toBe("miInput");
+  });
 });

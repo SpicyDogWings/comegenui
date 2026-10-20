@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, type PropType } from "vue";
+import { computed, useTemplateRef, type PropType } from "vue";
 
 const props = defineProps({
   for: {
@@ -32,21 +32,51 @@ const emit = defineEmits<{
   (e: 'click'): void
 }>()
 
+const labelRef = useTemplateRef<HTMLLabelElement>("label");
+
+/**
+ * Primer control del slot. En el custom element los hijos viven en el light DOM
+ * del host (el `<label>` está en el shadow root), así que se mira el host; en
+ * Vue, el `<label>` es el dueño real de los hijos.
+ */
+function slotControl(): HTMLElement | null {
+  const label = labelRef.value;
+  if (!label) return null;
+  const root = label.getRootNode() as ShadowRoot | Document;
+  const scope = (root as ShadowRoot).host ?? label;
+  return Array.from(scope.children).find(
+    (el): el is HTMLElement =>
+      el instanceof HTMLElement && !el.classList.contains("cu-label-text"),
+  ) ?? null;
+}
+
+/**
+ * Enfoca el control. Si es un custom element (`<cu-input>`, `<cu-checkbox>`, …)
+ * el host no es focuseable: se enfoca el control de su shadow root.
+ */
+function focusControl(el: HTMLElement | null) {
+  if (!el) return;
+  const inner = el.shadowRoot?.querySelector<HTMLElement>(
+    'input:not([type="hidden"]), select, textarea, button, [tabindex]:not([tabindex="-1"])',
+  );
+  (inner ?? el).focus();
+}
+
 const handleClick = () => {
-  if (props.for) {
-    const target = document.getElementById(props.for);
-    if (target) target.focus();
-  }
+  focusControl(props.for ? document.getElementById(props.for) : slotControl());
   emit('click');
 };
 </script>
 
 <template>
   <label
+    ref="label"
+    :for="props.for || undefined"
     :style="colorStyles"
     class="cu-label"
+    @click="handleClick"
   >
-    <span v-if="props.label" @click="handleClick" class="cu-label-text">{{ props.label }}</span>
+    <span v-if="props.label" class="cu-label-text">{{ props.label }}</span>
     <slot></slot>
   </label>
 </template>

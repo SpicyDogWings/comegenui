@@ -2,8 +2,9 @@
 
 # `Label`
 
-Label con color semántico. Al hacer clic, enfoca el input hijo o, si se define `for`, el
-elemento con ese id. Útil para agrupar `<Input>`, `<Checkbox>`, etc. y ganar área clickeable.
+Label con color semántico. Al hacer clic, enfoca el primer control del slot o, si se define `for`, el
+elemento con ese id. Útil para agrupar `<Input>`, `<Checkbox>`, etc. y ganar área clickeable. Si el
+control es un custom element, el foco entra a su shadow root (el host no es focuseable).
 
 ## Uso en Vue
 
@@ -44,7 +45,8 @@ nombre se ve distinto en cada tema.
 
 ## Contenido (slot)
 
-El slot acepta cualquier control: al hacer clic en el label, el control hijo recibe el foco.
+El slot acepta cualquier control: al hacer clic en el label (el texto o el espacio libre), el primer
+control del slot recibe el foco.
 
 ```vue
 <script setup lang="ts">
@@ -66,7 +68,8 @@ import Switch from "@/components/form/Switch.vue";
 
 ## Enfocar con `for`
 
-Con `for`, el foco va al elemento que tenga ese id, aunque esté fuera del label.
+Con `for`, el foco va al elemento que tenga ese id, aunque esté fuera del label. El `<label>` lo
+expone además como atributo (asociación nativa, útil para lectores de pantalla).
 
 ```vue
 <script setup lang="ts">
@@ -82,8 +85,8 @@ import Input from "@/components/form/Input.vue";
 
 ## Click
 
-El componente emite `click` en cada clic sobre el texto del label (el `<span>` que renderiza
-`label`); además, el clic enfoca el control.
+El componente emite `click` en cada clic sobre el label (el texto o el espacio libre), no sólo sobre
+el `<span>` del texto; además, el clic enfoca el control.
 
 ```vue
 <script setup lang="ts">
