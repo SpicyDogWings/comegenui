@@ -599,6 +599,169 @@ const MUTATIONS = [
   getRowActions(row).some(action => !action.divider && !isButtonHidden(action, row));`,
     replace: `const hasVisibleRowActions = (_row: Record<string, any>): boolean => true;`,
   },
+  {
+    id: "number-input-clamp-max-ignorado",
+    file: "src/components/form/NumberInput.vue",
+    expect: "tipear por encima de max clampea al máximo",
+    find: `  if (maxValue.value !== undefined) clamped = Math.min(maxValue.value, clamped);`,
+    replace: `  /* mutado: sin tope máximo */`,
+  },
+  {
+    id: "number-input-clamp-min-ignorado",
+    file: "src/components/form/NumberInput.vue",
+    expect: "tipear por debajo de min clampea al mínimo",
+    find: `  if (minValue.value !== undefined) clamped = Math.max(minValue.value, clamped);`,
+    replace: `  /* mutado: sin piso mínimo */`,
+  },
+  {
+    id: "number-input-controles-por-defecto",
+    file: "src/components/form/NumberInput.vue",
+    expect: "showControls es true por defecto (botones − / +)",
+    find: `  showControls: {
+    type: Boolean,
+    required: false,
+    default: true,
+  },`,
+    replace: `  showControls: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },`,
+  },
+  {
+    id: "number-input-select-de-paso-por-defecto",
+    file: "src/components/form/NumberInput.vue",
+    expect: "showStepSelect es false por defecto (no hay select de paso)",
+    find: `  showStepSelect: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },`,
+    replace: `  showStepSelect: {
+    type: Boolean,
+    required: false,
+    default: true,
+  },`,
+  },
+  {
+    id: "number-input-paso-ignorado",
+    file: "src/components/form/NumberInput.vue",
+    expect: "los botones usan el paso activo (step o el select)",
+    find: `  const next = clamp(roundLike(base + stepValue.value, base, stepValue.value));`,
+    replace: `  const next = clamp(roundLike(base + 1, base, stepValue.value));`,
+  },
+  {
+    id: "number-input-resta-suma",
+    file: "src/components/form/NumberInput.vue",
+    expect: "decrement() resta el paso (no suma)",
+    find: `  const next = clamp(roundLike(base - stepValue.value, base, stepValue.value));`,
+    replace: `  const next = clamp(roundLike(base + stepValue.value, base, stepValue.value));`,
+  },
+  {
+    id: "number-input-paso-select-ignorado",
+    file: "src/components/form/NumberInput.vue",
+    expect: "elegir un paso en el select cambia el paso activo",
+    find: `  if (next !== undefined && next > 0) activeStep.value = next;`,
+    replace: `  if (next !== undefined && next > 0) { /* mutado */ }`,
+  },
+  {
+    id: "number-input-readonly-ignorado",
+    file: "src/components/form/NumberInput.vue",
+    expect: "readOnly bloquea botones y teclado",
+    find: `const isLocked = computed(() => props.disabled || props.readOnly);`,
+    replace: `const isLocked = computed(() => props.disabled);`,
+  },
+  {
+    id: "number-input-disabled-ignorado",
+    file: "src/components/form/NumberInput.vue",
+    expect: "disabled bloquea el incremento",
+    find: `const canIncrement = computed(() => !isLocked.value && !atMax.value);`,
+    replace: `const canIncrement = computed(() => !atMax.value);`,
+  },
+  {
+    id: "number-input-max-sin-deshabilitar",
+    file: "src/components/form/NumberInput.vue",
+    expect: "en el máximo el botón + queda deshabilitado",
+    find: `  () => maxValue.value !== undefined && value.value !== null && value.value >= maxValue.value,`,
+    replace: `  () => false,`,
+  },
+  {
+    id: "number-input-teclado-sin-flechas",
+    file: "src/components/form/NumberInput.vue",
+    expect: "ArrowUp incrementa con el teclado",
+    find: `      @keydown.up.prevent="increment"`,
+    replace: `      @keydown.up.prevent="() => {}"`,
+  },
+  {
+    id: "number-input-change-sin-edicion",
+    file: "src/components/form/NumberInput.vue",
+    expect: "change no se repite al perder el foco sin editar",
+    find: `  if (!dirty) return;
+  dirty = false;
+  emit('change', next);`,
+    replace: `  dirty = false;
+  emit('change', next);`,
+  },
+  {
+    id: "number-input-tipeo-no-actualiza",
+    file: "src/components/form/NumberInput.vue",
+    expect: "tipear actualiza el valor y emite update:modelValue",
+    find: `  if (next !== value.value) value.value = next;
+}
+
+/** Confirma el texto (Enter o blur) y emite \`change\` si hubo edición. */`,
+    replace: `}
+
+/** Confirma el texto (Enter o blur) y emite \`change\` si hubo edición. */`,
+  },
+  {
+    id: "number-input-set-sin-change",
+    file: "src/components/form/NumberInput.vue",
+    expect: "set() emite change",
+    find: `  applyValue(next, { change: true });`,
+    replace: `  applyValue(next, {});`,
+  },
+  {
+    id: "number-input-reset-sin-change",
+    file: "src/components/form/NumberInput.vue",
+    expect: "reset() emite change con null",
+    find: `  applyValue(null, { change: true });`,
+    replace: `  applyValue(null, {});`,
+  },
+  {
+    id: "number-input-increment-sin-evento",
+    file: "src/components/form/NumberInput.vue",
+    expect: "incrementar emite increment con el valor nuevo",
+    find: `  if (options.kind === 'increment') emit('increment', nextValue as number);`,
+    replace: `  if (options.kind === 'increment') { /* mutado */ }`,
+  },
+  {
+    id: "number-input-precision-ignorada",
+    file: "src/components/form/NumberInput.vue",
+    expect: "los pasos decimales no arrastran polvo de coma flotante",
+    find: `  return Number(next.toFixed(places));`,
+    replace: `  return next;`,
+  },
+  {
+    id: "number-input-focus-noop",
+    file: "src/components/form/NumberInput.vue",
+    expect: "focus() enfoca el input real",
+    find: `  inputRef.value?.focus();`,
+    replace: `  /* mutado */`,
+  },
+  {
+    id: "number-input-atributos-string-ignorados",
+    file: "src/components/form/NumberInput.vue",
+    expect: "min/max/step en string (atributos HTML del CE) se normalizan a número",
+    find: `function toNumber(raw: unknown): number | undefined {
+  if (raw === null || raw === undefined || raw === '') return undefined;
+  const parsed = Number(raw);
+  return Number.isFinite(parsed) ? parsed : undefined;
+}`,
+    replace: `function toNumber(raw: unknown): number | undefined {
+  return typeof raw === 'number' && Number.isFinite(raw) ? raw : undefined;
+}`,
+  },
 ];
 
 export { MUTATIONS };
