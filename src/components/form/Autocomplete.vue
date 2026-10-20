@@ -29,6 +29,8 @@ const props = defineProps({
     validator: isFieldVariant,
   },
   type: { type: String, required: false, default: "text" },
+  /** Muestra el spinner de carga en el panel de sugerencias. */
+  loading: { type: Boolean, required: false, default: false },
   minChars: { type: Number, required: false, default: 0 },
   items: { type: Array as () => AutocompleteItem[], required: false, default: () => [] },
   position: {
@@ -129,6 +131,7 @@ defineExpose({
     :position="position"
     :align="align"
     :fixed="fixed"
+    :loading="loading"
     :offset="4"
     style="width:100%"
   >

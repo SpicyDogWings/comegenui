@@ -1,6 +1,7 @@
 | Atributo | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `type` | `string` | `"text"` | `text`, `password`, `email`, `number`, `tel`, `url`, `search` |
+| `loading` | `boolean` | `false` | Muestra el spinner de carga en el panel de sugerencias |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle"` | `"soft"` | `outlined`, `soft`, `ghost`, `subtle` |
 | `disabled` | `boolean` | `false` | Estado deshabilitado |
