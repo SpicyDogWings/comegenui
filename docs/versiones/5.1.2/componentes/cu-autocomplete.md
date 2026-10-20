@@ -67,6 +67,24 @@ los items se están buscando.
 
 <!-- demo:autocomplete-estados -->
 
+## Carga
+
+Con `loading` el panel muestra el spinner mientras se buscan los items (igual que en `<cu-select>`):
+abrí el panel con `open()` y volvé a `loading = false` cuando termine la búsqueda.
+
+```html
+<cu-autocomplete id="carga" placeholder="Buscá una persona"></cu-autocomplete>
+
+<script>
+  const ac = document.getElementById('carga');
+  ac.loading = true; // propiedad JS
+  ac.open();
+  buscar().finally(() => { ac.loading = false; });
+</script>
+```
+
+<!-- demo:autocomplete-loading -->
+
 ## Items del menú
 
 Cada item puede llevar un `icon` (SVG inline), un `value` distinto del `label`, o estar `disabled`.
