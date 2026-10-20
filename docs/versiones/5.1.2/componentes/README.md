@@ -50,6 +50,7 @@ Las páginas del sitio ([`docs/versiones/5.1.1/paginas/componentes`](../site/com
 | FileInputZone | [`cu-file-input-zone`](./cu-file-input-zone.md) | [FileInputZone](./vue/file-input-zone.md) |
 | Input | [`cu-input`](./cu-input.md) | [Input](./vue/input.md) |
 | Label | [`cu-label`](./cu-label.md) | [Label](./vue/label.md) |
+| NumberInput | [`cu-number-input`](./cu-number-input.md) | [NumberInput](./vue/number-input.md) |
 | Select | [`cu-select`](./cu-select.md) | [Select](./vue/select.md) |
 | Switch | [`cu-switch`](./cu-switch.md) | [Switch](./vue/switch.md) |
 | Textarea | [`cu-textarea`](./cu-textarea.md) | [Textarea](./vue/textarea.md) |
