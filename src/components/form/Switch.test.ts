@@ -83,3 +83,41 @@ describe("Switch — label, slot y tamaños", () => {
     expect(w.find(".cu-switch").classes()).toContain("cu-switch--disabled");
   });
 });
+
+describe("Switch — posición del label", () => {
+  const root = (w: ReturnType<typeof mount>) => w.find(".cu-switch");
+
+  it("por defecto el label va después del track (end)", () => {
+    const w = mount(Switch, { props: { label: "Activo" } });
+    expect(root(w).classes()).toContain("cu-switch--label-end");
+    expect(root(w).classes()).not.toContain("cu-switch--label-start");
+  });
+
+  it("labelPosition='start' aplica la clase que pone el label antes del track", () => {
+    const w = mount(Switch, { props: { label: "Activo", labelPosition: "start" } });
+    expect(root(w).classes()).toContain("cu-switch--label-start");
+    expect(root(w).classes()).not.toContain("cu-switch--label-end");
+  });
+
+  it("con labelPosition='start' el click en el label sigue alternando el switch", async () => {
+    const w = mount(Switch, {
+      props: { label: "Activo", labelPosition: "start" },
+      attachTo: document.body,
+    });
+
+    await w.find(".cu-switch-label").trigger("click");
+    await flushPromises();
+
+    expect(vm(w).get()).toBe(true);
+    expect(w.emitted("change")?.at(-1)).toEqual([true]);
+    w.unmount();
+  });
+
+  it("un labelPosition inválido no rompe el render y cae al layout por defecto", () => {
+    const w = mount(Switch, {
+      props: { label: "Activo", labelPosition: "middle" as unknown as "end" },
+    });
+    expect(root(w).classes()).not.toContain("cu-switch--label-start");
+    expect(w.find(".cu-switch-label").text()).toBe("Activo");
+  });
+});

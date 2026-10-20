@@ -310,6 +310,21 @@ describe("Switch.ce", () => {
     el.remove();
   });
 
+  it("mapea el atributo `label-position` a la prop `labelPosition`", async () => {
+    const el = await mountSwitchElement("");
+    expect(el.shadowRoot?.querySelector(".cu-switch")?.className).toContain(
+      "cu-switch--label-end",
+    );
+
+    el.setAttribute("label-position", "start");
+    await flushPromises();
+
+    expect(el.shadowRoot?.querySelector(".cu-switch")?.className).toContain(
+      "cu-switch--label-start",
+    );
+    el.remove();
+  });
+
   it("set() actualiza el estado interno y get() lo refleja", async () => {
     const w = mount(SwitchCe);
     w.vm.set(true);

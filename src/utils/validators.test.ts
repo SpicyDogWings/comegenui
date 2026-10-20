@@ -5,6 +5,7 @@ import {
   isColorBase,
   isDateMode,
   isFieldVariant,
+  isLabelPosition,
   isModalSize,
   isPosition,
   isSize,
@@ -47,6 +48,12 @@ describe('utils/validators — validadores con nombre', () => {
     expect(isAlign('center')).toBe(true)
     expect(isTarget('_blank')).toBe(true)
     expect(isTarget('blank')).toBe(false)
+  })
+
+  it('isLabelPosition acepta start/end', () => {
+    expect(isLabelPosition('start')).toBe(true)
+    expect(isLabelPosition('end')).toBe(true)
+    expect(isLabelPosition('middle')).toBe(false)
   })
 
   it('modal size y date mode', () => {
