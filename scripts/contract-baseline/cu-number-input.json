@@ -1,0 +1,27 @@
+{
+  "tag": "cu-number-input",
+  "props": [
+    "color",
+    "disabled",
+    "max",
+    "min",
+    "modelValue",
+    "placeholder",
+    "readOnly",
+    "showControls",
+    "showStepSelect",
+    "size",
+    "step",
+    "steps",
+    "variant"
+  ],
+  "methods": [
+    "decrement",
+    "focus",
+    "get",
+    "increment",
+    "reset",
+    "set"
+  ],
+  "shadow": "div.cu-number-input.cu-number-input--md[style]\n  button.cu-button.cu-button--ghost.cu-button--md.cu-number-input__control.cu-number-input__control--decrement[aria-label,style,type]\n    svg[aria-hidden,fill,height,stroke,stroke-linecap,stroke-linejoin,stroke-width,viewBox,width,xmlns]\n      path[d]\n  input.cu-input.cu-input--soft.cu-number-input__field[inputmode,style,type,value]\n  button.cu-button.cu-button--ghost.cu-button--md.cu-number-input__control.cu-number-input__control--increment[aria-label,style,type]\n    svg[aria-hidden,fill,height,stroke,stroke-linecap,stroke-linejoin,stroke-width,viewBox,width,xmlns]\n      path[d]\n      path[d]"
+}
