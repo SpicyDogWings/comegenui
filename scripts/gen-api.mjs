@@ -25,7 +25,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import fg from 'fast-glob'
 import { createChecker } from 'vue-component-meta'
-import { exists, latestId, readResolved, writeInLatest } from './doc-tree.mjs'
+import { exists, latestId, resolveInVersions, writeInLatest } from './doc-tree.mjs'
 
 const ROOT = resolve(import.meta.dirname, '..')
 
@@ -340,20 +340,41 @@ function vueBlocks({ vue }) {
 
 /* ── inyección entre marcadores ──────────────────────────────────────────── */
 
+/**
+ * Inyecta los bloques entre sus marcadores `@api:*`.
+ *
+ * El destino se lee del árbol de doc versionada (overlay: puede vivir en una versión anterior
+ * y lo que cambia se escribe en `latest`). Hay destinos que **no** viven en `docs/versiones/`
+ * —las recetas de la skill, `skills/use-comegen/references/*.md`—: para esos se lee y escribe
+ * directo del repo. Antes el resolutor devolvía `null` y el archivo se salteaba en silencio,
+ * así que las recetas tenían marcadores que nunca se llenaban y el gate decía "todo al día".
+ */
 function inject(file, blocks) {
   if (!file) return false
-  // Overlay: se lee del árbol resuelto (el archivo puede vivir en una versión anterior) y lo
-  // que cambia se escribe en `latest` — así una versión nueva guarda **sólo** lo que cambió.
-  const text = readResolved(rel(file))
-  if (text === null) return false
+  const relPath = rel(file)
+  const inTree = resolveInVersions(relPath)
+  const abs = resolve(ROOT, relPath)
+  const source = inTree ?? (existsSync(abs) ? abs : null)
+  if (!source) return false
+
+  const text = readFileSync(source, 'utf-8')
   let next = text
   for (const [name, content] of Object.entries(blocks)) {
     const re = new RegExp(`(<!-- @api:${name} -->)([\\s\\S]*?)(<!-- /@api:${name} -->)`, 'g')
     if (!re.test(next)) continue
     next = next.replace(re, `$1\n${content}\n$3`)
   }
+  // Un archivo que ya tiene marcadores pero al que le falta alguno (nombre mal escrito, o
+  // bloque nuevo que nadie agregó) dejaría la tabla vieja para siempre.
+  if (/<!--\s*@api:/.test(text)) {
+    const faltantes = Object.keys(blocks).filter((n) => !text.includes(`<!-- @api:${n} -->`))
+    if (faltantes.length) marcadoresRotos.set(relPath, faltantes)
+  }
   if (next === text) return false
-  if (!CHECK) writeInLatest(rel(file), next)
+  if (!CHECK) {
+    if (inTree) writeInLatest(relPath, next)
+    else writeFileSync(abs, next)
+  }
   return true
 }
 
@@ -377,6 +398,8 @@ function skillBlocks(ce, vue) {
 
 const components = await collect()
 const drifted = new Set()
+/** Archivos con marcadores a los que les falta alguno: `relPath → bloques faltantes`. */
+const marcadoresRotos = new Map()
 const emptyCounts = new Map() // kebab → descripciones vacías de su API Vue
 let touched = 0
 
@@ -589,6 +612,17 @@ for (const [name, comp] of components) {
   if (inject(targets.skill, skillBlocks(ce, vue))) changes.add(targets.skill)
   for (const file of changes) drifted.add(file)
   touched += changes.size
+}
+
+if (marcadoresRotos.size) {
+  const detalle = [...marcadoresRotos].map(([f, faltan]) => `  - ${f} (falta ${faltan.join(', ')})`).join('\n')
+  if (CHECK) {
+    console.error(`gen-api: ${marcadoresRotos.size} archivo(s) con marcadores @api incompletos:`)
+    console.error(detalle)
+    console.error('Agregá el marcador que falta (o corregí el nombre): el bloque no se inyecta.')
+    process.exit(1)
+  }
+  console.warn(`⚠ gen-api: marcadores @api incompletos (ese bloque no se inyecta):\n${detalle}`)
 }
 
 if (CHECK && touched) {
