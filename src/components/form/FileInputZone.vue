@@ -396,7 +396,7 @@ defineExpose({ get, set, reset, focus, trigger });
 }
 
 .cu-file-zone--disabled {
-  opacity: 0.7;
+  opacity: var(--cu-alpha-disabled, 0.7);
   cursor: not-allowed;
 }
 
@@ -421,7 +421,7 @@ defineExpose({ get, set, reset, focus, trigger });
 
 .cu-file-zone-icon {
   color: var(--zone-text);
-  opacity: 0.6;
+  opacity: var(--cu-alpha-subtle, 0.6);
   flex-shrink: 0;
 }
 
@@ -440,7 +440,7 @@ defineExpose({ get, set, reset, focus, trigger });
   font-size: var(--cu-font-size-xs);
   margin-top: var(--cu-space-2xs);
   color: var(--zone-text);
-  opacity: 0.5;
+  opacity: var(--cu-alpha-muted, 0.5);
 }
 
 .cu-file-zone-wrap {

@@ -293,7 +293,7 @@ const colorStyles = computed(() => ({
 }
 
 .cu-month-slider.is-disabled {
-  opacity: 0.7;
+  opacity: var(--cu-alpha-disabled, 0.7);
   cursor: not-allowed;
 }
 </style>

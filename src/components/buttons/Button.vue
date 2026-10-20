@@ -148,7 +148,7 @@ const colorStyles = computed(() => ({
 }
 
 .cu-button--disabled {
-  opacity: 0.7;
+  opacity: var(--cu-alpha-disabled, 0.7);
   cursor: not-allowed;
 }
 
@@ -259,7 +259,7 @@ const colorStyles = computed(() => ({
   text-underline-offset: var(--cu-space-2xs);
 }
 .cu-button-link.cu-button--disabled {
-  opacity: 0.7;
+  opacity: var(--cu-alpha-disabled, 0.7);
 }
 
 /* icon-only */

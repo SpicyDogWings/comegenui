@@ -268,7 +268,7 @@ defineExpose({
 }
 
 .cu-dropdown-menu-item--disabled {
-  opacity: 0.5;
+  opacity: var(--cu-alpha-muted, 0.5);
   cursor: not-allowed;
 }
 
@@ -279,12 +279,12 @@ defineExpose({
 
 .cu-dropdown-menu-item-chevron {
   flex-shrink: 0;
-  opacity: 0.5;
+  opacity: var(--cu-alpha-muted, 0.5);
 }
 
 .cu-dropdown-menu-item-icon {
   flex-shrink: 0;
-  opacity: 0.6;
+  opacity: var(--cu-alpha-subtle, 0.6);
 }
 
 .cu-dropdown-menu-divider {

@@ -329,7 +329,7 @@ defineExpose({
 }
 
 .cu-select-option--disabled {
-  opacity: 0.5;
+  opacity: var(--cu-alpha-muted, 0.5);
   cursor: not-allowed;
 }
 
@@ -350,7 +350,7 @@ defineExpose({
   padding: var(--cu-space-md);
   font-family: var(--cu-font-sans);
   font-size: var(--cu-font-size-sm);
-  opacity: 0.6;
+  opacity: var(--cu-alpha-subtle, 0.6);
   text-align: center;
 }
 </style>

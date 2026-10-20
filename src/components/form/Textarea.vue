@@ -110,7 +110,7 @@ defineExpose({ get, set, reset, focus });
 
 .cu-textarea::placeholder {
   color: var(--cu-color-neutral-text);
-  opacity: 0.5;
+  opacity: var(--cu-alpha-muted, 0.5);
 }
 
 .cu-textarea:focus {
@@ -157,7 +157,7 @@ defineExpose({ get, set, reset, focus });
 
 /* disabled */
 .cu-textarea--disabled {
-  opacity: 0.5;
+  opacity: var(--cu-alpha-disabled, 0.7);
   cursor: not-allowed;
 }
 </style>

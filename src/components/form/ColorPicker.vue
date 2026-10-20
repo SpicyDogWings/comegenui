@@ -135,6 +135,11 @@ defineExpose({ get, set, reset, /** Enfoca el input de texto del color. */ focus
   border-color: var(--cp-subtle-border);
 }
 
+.cu-color-picker-swatch:disabled {
+  opacity: var(--cu-alpha-disabled, 0.7);
+  cursor: not-allowed;
+}
+
 .cu-color-picker-swatch-color {
   display: block;
   width: 100%;
@@ -153,8 +158,9 @@ defineExpose({ get, set, reset, /** Enfoca el input de texto del color. */ focus
   width: var(--cu-space-5xl);
 }
 
+/* El wrapper no apila opacidad: el swatch y el input de texto la aplican cada
+   uno (apilarla dejaría el picker más apagado que un campo disabled vecino). */
 .cu-color-picker--disabled {
-  opacity: 0.5;
   cursor: not-allowed;
 }
 </style>

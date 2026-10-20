@@ -228,7 +228,7 @@ function itemIcon(item: NavItem): string {
   padding: var(--cu-space-sm) var(--cu-space-md);
   font-size: var(--cu-font-size-sm);
   color: var(--cu-color-neutral-text);
-  opacity: 0.6;
+  opacity: var(--cu-alpha-subtle, 0.6);
 }
 
 /* Compact: solo iconos (o la inicial), sin labels */

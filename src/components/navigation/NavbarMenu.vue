@@ -74,7 +74,7 @@ const props = defineProps({
 }
 
 .cu-navbar-menu-item--disabled {
-  opacity: 0.5;
+  opacity: var(--cu-alpha-muted, 0.5);
   cursor: not-allowed;
 }
 

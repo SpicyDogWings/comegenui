@@ -533,9 +533,11 @@ const canEdit = computed(() => {
   cursor: pointer;
 }
 
+/* La celda no apila opacidad: si lo hiciera, se multiplicaría con la del campo
+   interno y quedaría más apagada que un input disabled vecino. El tono lo pone
+   una sola vez la vista (--cu-alpha-faded) o el editor que se renderice. */
 .cu-editable-cell--disabled {
   cursor: not-allowed;
-  opacity: 0.5;
 }
 
 .cu-editable-cell-input {
@@ -555,7 +557,7 @@ const canEdit = computed(() => {
 }
 
 .cu-editable-cell-view--disabled {
-  opacity: 0.4;
+  opacity: var(--cu-alpha-faded, 0.4);
 }
 
 .cu-editable-cell-icon {
