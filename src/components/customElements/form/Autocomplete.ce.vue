@@ -21,6 +21,8 @@ const props = defineProps({
     required: false,
     default: "text",
   },
+  /** Muestra el spinner de carga en el panel de sugerencias */
+  loading: { type: Boolean, required: false, default: false },
   /** Estado deshabilitado */
   disabled: { type: Boolean, required: false, default: false },
   /** Solo lectura (en HTML se usa como `readonly`) */
@@ -91,6 +93,7 @@ defineExpose({
     :type="props.type"
     :disabled="props.disabled"
     :read-only="props.readOnly"
+    :loading="props.loading"
     :placeholder="props.placeholder"
     :min-chars="props.minChars"
     :position="props.position"

@@ -56,6 +56,8 @@ En Vue, importá `Autocomplete` de `@/components/form/Autocomplete.vue` (ver [fi
 ## Estados
 
 `disabled` bloquea el campo y no abre el panel. `readonly` deja leer y abrir el panel, pero no escribir.
+`loading` muestra el spinner de carga en el panel de sugerencias (como en `<cu-select>`), para cuando
+los items se están buscando.
 
 ```html
 <cu-autocomplete placeholder="habilitado"></cu-autocomplete>

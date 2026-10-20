@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { flushPromises, mount } from '@vue/test-utils'
 import Autocomplete from './Autocomplete.vue'
+import Dropdown from '../overlay/Dropdown.vue'
 
 const items = [{ label: 'María López' }, { label: 'Juan Pérez' }]
 
@@ -156,5 +157,12 @@ describe('Autocomplete — apertura del panel', () => {
     vm(w).open()
     await flushPromises()
     expect(vm(w).isOpen()).toBe(false)
+  })
+})
+
+describe('Autocomplete — carga', () => {
+  it('loading llega al Dropdown (spinner del panel)', () => {
+    const w = mount(Autocomplete, { props: { items, loading: true } })
+    expect(w.findComponent(Dropdown).props('loading')).toBe(true)
   })
 })

@@ -6,6 +6,7 @@
     "disabled",
     "fixed",
     "items",
+    "loading",
     "minChars",
     "modelValue",
     "placeholder",

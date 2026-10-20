@@ -59,6 +59,8 @@ En HTML plano, cargá el bundle `CuAutocomplete` (ver [ficha vanilla](/component
 ## Estados
 
 `disabled` bloquea el campo y no abre el panel. `readOnly` deja leer y abrir el panel, pero no escribir.
+`loading` muestra el spinner de carga en el panel de sugerencias (como en `Select`), para cuando los
+items se están buscando.
 
 ```vue
 <template>
