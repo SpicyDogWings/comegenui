@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Refleja el ejemplo "Uso en HTML plano": abrir el panel con un botón externo.
-// En 5.1.2 el método es `show()`: `open` es el atributo booleano y tapa al
+// En 5.2.0 el método es `show()`: `open` es el atributo booleano y tapa al
 // método homónimo en el custom element.
 import { ref } from "vue";
 
