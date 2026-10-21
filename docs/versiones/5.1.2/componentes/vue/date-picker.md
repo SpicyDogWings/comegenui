@@ -241,7 +241,8 @@ const eventos = [
 
 ## Label
 
-El label se muestra sobre el picker y es clickeable — hace foco en el input y abre el panel:
+El label se muestra sobre el picker y es clickeable — hace foco en el trigger (el botón que abre el
+panel) y abre el panel:
 
 ```vue
 <template>

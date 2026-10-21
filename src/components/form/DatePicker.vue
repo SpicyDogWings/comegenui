@@ -137,6 +137,7 @@ function fmt(date: Date | null): string | null {
 }
 
 const dropdownRef = ref<InstanceType<typeof Dropdown> | null>(null)
+const triggerRef = ref<InstanceType<typeof Button> | null>(null)
 
 // `dualCalendar` implica rango: el picker maneja range siempre que el dual
 // esté activo, aunque `mode` sea `single`.
@@ -362,6 +363,13 @@ function getFormattedEndDate(): string | null {
   return isRange.value ? fmt(rangeEnd.value) : null
 }
 
+/** Click en el label: enfoca el trigger y abre el panel (como un input con label). */
+function onLabelClick() {
+  const trigger = triggerRef.value?.$el as HTMLElement | undefined
+  trigger?.focus()
+  open()
+}
+
 /** Abre el panel. */
 function open() { dropdownRef.value?.open() }
 /** Cierra el panel. */
@@ -389,7 +397,7 @@ defineExpose({
 
 <template>
   <div class="cu-date-picker">
-    <Label v-if="label" :label="label" @click="open" />
+    <Label v-if="label" :label="label" @click="onLabelClick" />
     <Dropdown
       ref="dropdownRef"
       :color="color"
@@ -404,6 +412,7 @@ defineExpose({
     >
       <template #toggle="{ toggle }">
         <Button
+          ref="triggerRef"
           :color="color"
           :variant="variant"
           :disabled="disabled"
