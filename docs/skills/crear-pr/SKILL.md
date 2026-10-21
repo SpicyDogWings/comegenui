@@ -48,9 +48,59 @@ No la copies a mano si podés leerla: si cambia, la skill no queda vieja.
 
 Completá las secciones:
 
-- **Qué:** qué cambia y por qué. Si toca la API, decí qué props/slots/eventos/métodos cambian.
+- **Qué:** contá el **problema y la causa**, no sólo el diff. Después, qué cambió, en bullets.
+  Si toca la API, decí qué props/slots/eventos/métodos cambian; si no toca nada, escribí
+  «No toca la API».
 - **Issue:** `Closes #N` (o `Fixes`/`Resolves`).
-- **Verificación:** cómo lo probaste y el veredicto del gate. Marcá sólo lo que sea cierto.
+- **Verificación:** evidencia, no afirmaciones. Marcá sólo lo que sea cierto.
+
+### Verificación: qué se espera
+
+- El veredicto literal de `./scripts/guard.sh --full` y su resumen
+  (tipos · build · contrato · tests · mutación · docs).
+- Las páginas o el custom element con el que se probó.
+- **Si el cambio es visual** (color, tamaño, layout, overflow): una tabla **antes/después** con
+  valores medidos (`getComputedStyle`, `getBoundingClientRect`, `scrollWidth`…) y **capturas**
+  (pegalas en el PR; GitHub las sube como `user-attachments`). Sin esto el PR no está evidenciado.
+- Si cambió la API: fichas y páginas al día.
+- Si el contrato cambió a propósito: baseline actualizado.
+- Si agregaste un test de comportamiento: su mutación.
+- Si es sólo CSS y no hay test: explicá por qué y dejá la medición/captura como evidencia.
+
+Esqueleto de referencia:
+
+```md
+## Qué
+
+El hover del `cu-switch` encendido se veía deslavado: el track es un color sólido, pero el
+`:hover` usaba `--cu-color-{color}-ghost-hover` (el color al 10 %), así que pasaba a un rosado
+casi blanco.
+
+Ahora usa las variantes sólidas:
+
+- `:hover` → `--cu-color-{color}-hover`.
+- `:active` → `--cu-color-{color}-active`.
+- El track apagado no cambia.
+
+No toca la API: mismas props, slots, eventos y métodos.
+
+## Issue
+
+Closes #
+
+## Verificación
+
+- [x] `./scripts/guard.sh --full` en verde — `✅ RESULTADO: nada roto`
+      (tipos 0 nuevos · 136 bundles · contratos intactos · 1820 tests · 100/100 mutaciones · docs)
+- [x] Probado en `/componentes/cu-switch` y `/componentes/vue/switch` (Chromium, tema light)
+
+| estado | antes | después |
+|---|---|---|
+| normal | `#e73f1e` | `#e73f1e` |
+| `:hover` | `rgba(231,63,30,0.1)` | `#bd3014` |
+
+![Antes y después](https://github.com/user-attachments/assets/…)
+```
 
 Para un **PR de release**, agregá al final:
 
