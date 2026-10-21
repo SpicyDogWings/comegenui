@@ -113,4 +113,33 @@ describe("Label — click y foco", () => {
     expect(document.activeElement).toBe(input.element);
     w.unmount();
   });
+
+  it("el click en el label enfoca pero NO activa el control", async () => {
+    const w = mount(Label, {
+      props: { label: "Acepto los términos" },
+      slots: { default: Checkbox },
+      attachTo: document.body,
+    });
+    const input = w.find('input[type="checkbox"]').element as HTMLInputElement;
+
+    await w.find(".cu-label-text").trigger("click");
+
+    expect(document.activeElement).toBe(input);
+    expect(input.checked).toBe(false);
+    w.unmount();
+  });
+
+  it("el click en el control sí lo activa", async () => {
+    const w = mount(Label, {
+      props: { label: "Acepto los términos" },
+      slots: { default: Checkbox },
+      attachTo: document.body,
+    });
+    const input = w.find('input[type="checkbox"]');
+
+    await input.trigger("click");
+
+    expect((input.element as HTMLInputElement).checked).toBe(true);
+    w.unmount();
+  });
 });
