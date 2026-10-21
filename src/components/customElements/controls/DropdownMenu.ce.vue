@@ -36,7 +36,10 @@ const props = defineProps({
     default: "start",
     validator: isAlign,
   },
-  /** Alineación del texto del toggle: `left`, `center`, `right` */
+  /**
+   * Alineación del texto de los items del panel: `left` (default), `center`, `right`.
+   * No aplica al toggle: su ancho lo define su contenido.
+   */
   textAlign: {
     type: String as PropType<'left' | 'center' | 'right'>,
     required: false,

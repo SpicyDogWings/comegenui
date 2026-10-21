@@ -36,7 +36,10 @@ const props = defineProps({
   position: { type: String, required: false, default: "bottom" },
   /** Alineación: `start`, `center`, `end` */
   align: { type: String, required: false, default: "start" },
-  /** Alineación del texto seleccionado: `left`, `center`, `right` */
+  /**
+   * Alineación del texto: el label del trigger (placeholder o selección) y las opciones del
+   * panel. `left` (default), `center`, `right`.
+   */
   textAlign: {
     type: String as PropType<'left' | 'center' | 'right'>,
     required: false,

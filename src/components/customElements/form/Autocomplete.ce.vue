@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, getCurrentInstance, type PropType } from "vue";
+import { isTextAlign } from "@/utils/validators";
 import Autocomplete from "../../form/Autocomplete.vue";
 
 const props = defineProps({
@@ -37,6 +38,16 @@ const props = defineProps({
   align: { type: String as PropType<'start' | 'center' | 'end'>, required: false, default: "start" },
   /** Panel en `position: fixed` (útil en contenedores con overflow) */
   fixed: { type: Boolean, required: false, default: false },
+  /**
+   * Alineación del texto: el input (texto y placeholder) y los items del panel.
+   * `left` (default), `center`, `right`.
+   */
+  textAlign: {
+    type: String as PropType<'left' | 'center' | 'right'>,
+    required: false,
+    default: "left",
+    validator: isTextAlign,
+  },
   /** Opciones del menú (ver abajo). Se asigna como propiedad JS */
   items: { type: Array, required: false, default: () => [] },
   /** Valor actual del texto. El CE sincroniza su estado; asigná `modelValue` sólo si querés controlarlo */
@@ -99,6 +110,7 @@ defineExpose({
     :position="props.position"
     :align="props.align"
     :fixed="props.fixed"
+    :text-align="props.textAlign"
     :items="props.items"
     :model-value="localModel"
     @update:model-value="onUpdate"

@@ -178,3 +178,37 @@ describe("Select — readOnly", () => {
     expect(w.find(".cu-select-label").text()).toBe("A");
   });
 });
+
+describe("Select — alineación del texto (trigger + opciones)", () => {
+  // Alcance: el label del trigger (placeholder o selección) y las opciones del panel.
+  // Las opciones son `Button` (flex), así que la alineación real es `justify-content`.
+  async function align(textAlign?: "left" | "center" | "right") {
+    const w = mount(Select, {
+      props: textAlign ? { options: OPTIONS, textAlign } : { options: OPTIONS },
+    });
+    await toggle(w).trigger("click");
+    await flushPromises();
+    return {
+      label: w.find(".cu-select-label").element as HTMLElement,
+      options: w.findAll(".cu-select-option").map((o) => o.element as HTMLElement),
+    };
+  }
+
+  it("por defecto alinea a la izquierda (label left, opciones flex-start)", async () => {
+    const { label, options } = await align();
+    expect(label.style.textAlign).toBe("left");
+    expect(options[0]!.style.justifyContent).toBe("flex-start");
+  });
+
+  it("center centra el label del trigger y las opciones", async () => {
+    const { label, options } = await align("center");
+    expect(label.style.textAlign).toBe("center");
+    for (const option of options) expect(option.style.justifyContent).toBe("center");
+  });
+
+  it("right alinea a la derecha el label del trigger y las opciones", async () => {
+    const { label, options } = await align("right");
+    expect(label.style.textAlign).toBe("right");
+    for (const option of options) expect(option.style.justifyContent).toBe("flex-end");
+  });
+});

@@ -867,6 +867,41 @@ const MUTATIONS = [
     find: `      if (esToggle) target.click();`,
     replace: `      if (esToggle) target.focus();`,
   },
+  {
+    id: "dropdown-menu-text-align-solo-text-align",
+    file: "src/components/controls/DropdownMenu.vue",
+    expect: "textAlign alinea los items del panel (justify-content, no sólo text-align)",
+    find: `const itemStyle = computed(() => textAlignStyle(props.textAlign));`,
+    replace: `const itemStyle = computed(() => ({ textAlign: props.textAlign }));`,
+  },
+  {
+    id: "select-trigger-sin-alinear",
+    file: "src/components/form/Select.vue",
+    expect: "textAlign alinea el label del trigger",
+    find: `            :style="labelStyle"`,
+    replace: ``,
+  },
+  {
+    id: "select-opciones-sin-justify",
+    file: "src/components/form/Select.vue",
+    expect: "textAlign alinea las opciones del panel (justify-content)",
+    find: `const optionStyle = computed(() => textAlignStyle(props.textAlign));`,
+    replace: `const optionStyle = computed(() => ({ textAlign: props.textAlign }));`,
+  },
+  {
+    id: "autocomplete-input-sin-alinear",
+    file: "src/components/form/Autocomplete.vue",
+    expect: "textAlign alinea el texto del input",
+    find: `        :style="inputStyle"`,
+    replace: `        style="width:100%"`,
+  },
+  {
+    id: "autocomplete-items-sin-justify",
+    file: "src/components/form/Autocomplete.vue",
+    expect: "textAlign alinea los items del panel (justify-content)",
+    find: `const itemStyle = computed(() => textAlignStyle(props.textAlign));`,
+    replace: `const itemStyle = computed(() => ({ textAlign: props.textAlign }));`,
+  },
 ];
 
 export { MUTATIONS };

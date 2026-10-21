@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, nextTick, type PropType } from 'vue';
 import { isColor, isFieldVariant, isSelectSearchMode, isTextAlign } from '@/utils/validators'
+import { textAlignStyle } from '@/utils/textAlign'
 import Dropdown from "../overlay/Dropdown.vue";
 import Button from "../buttons/Button.vue";
 import { matchesQuery } from "@/utils/search";
@@ -33,6 +34,10 @@ const props = defineProps({
   placeholderWrap: { type: Boolean, required: false, default: false },
   position: { type: String, required: false, default: "bottom" },
   align: { type: String, required: false, default: "start" },
+  /**
+   * Alineación del texto: el label del trigger (placeholder o selección) y las opciones del
+   * panel. `left` (default), `center`, `right`.
+   */
   textAlign: {
     type: String as PropType<'left' | 'center' | 'right'>,
     required: false,
@@ -158,7 +163,9 @@ function onSelect(option: SelectOption) {
   dropdownRef.value?.close();
 }
 
-const optionStyle = computed(() => ({ textAlign: props.textAlign }));
+const optionStyle = computed(() => textAlignStyle(props.textAlign));
+/** El label del trigger alinea su texto dentro del espacio que deja el chevron. */
+const labelStyle = computed(() => ({ textAlign: props.textAlign }));
 
 /** Devuelve el valor seleccionado. */
 function get() { return selectedValue.value; }
@@ -220,7 +227,10 @@ defineExpose({
           class="cu-select-toggle"
           @click="toggle"
         >
-          <span :class="['cu-select-label', { 'cu-select-label--wrap': placeholderWrap }]">
+          <span
+            :class="['cu-select-label', { 'cu-select-label--wrap': placeholderWrap }]"
+            :style="labelStyle"
+          >
             {{ selectedLabel }}
           </span>
           <svg
@@ -304,6 +314,9 @@ defineExpose({
   overflow: hidden;
   text-overflow: ellipsis;
   min-width: 0;
+  /* Ocupa el espacio que deja el chevron: sin esto el `text-align` del label no tiene
+     ancho propio y la alineación no se ve. */
+  flex: 1 1 auto;
 }
 
 .cu-select-label--wrap {
@@ -326,7 +339,8 @@ defineExpose({
 
 .cu-select-option {
   width: 100%;
-  justify-content: flex-start;
+  /* La alineación la pone `textAlign` inline (`justify-content`): dentro de un `Button`
+     flex el `text-align` solo no mueve nada. Default: `flex-start`. */
 }
 
 .cu-select-option--disabled {

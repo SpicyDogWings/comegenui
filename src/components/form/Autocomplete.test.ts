@@ -166,3 +166,47 @@ describe('Autocomplete — carga', () => {
     expect(w.findComponent(Dropdown).props('loading')).toBe(true)
   })
 })
+
+describe('Autocomplete — alineación del texto (input + opciones)', () => {
+  // Alcance: el texto del input (y su placeholder) y los items del panel. Los items son
+  // `Button` (flex), así que la alineación real es `justify-content`.
+  async function align(textAlign?: 'left' | 'center' | 'right') {
+    const w = mount(Autocomplete, { props: textAlign ? { items, textAlign } : { items } })
+    await w.find('input').setValue('a')
+    await flushPromises()
+    return {
+      input: w.find('input').element as HTMLInputElement,
+      options: w.findAll('.cu-autocomplete-option').map((o) => o.element as HTMLElement),
+    }
+  }
+
+  it('por defecto alinea a la izquierda (input left, items flex-start)', async () => {
+    const { input, options } = await align()
+    expect(input.style.textAlign).toBe('left')
+    expect(options[0]!.style.justifyContent).toBe('flex-start')
+  })
+
+  it('center centra el texto del input y los items', async () => {
+    const { input, options } = await align('center')
+    expect(input.style.textAlign).toBe('center')
+    for (const option of options) expect(option.style.justifyContent).toBe('center')
+  })
+
+  it('right alinea a la derecha el texto del input y los items', async () => {
+    const { input, options } = await align('right')
+    expect(input.style.textAlign).toBe('right')
+    for (const option of options) expect(option.style.justifyContent).toBe('flex-end')
+  })
+
+  it('con ícono alinea el bloque entero (ícono + label)', async () => {
+    const w = mount(Autocomplete, {
+      props: { textAlign: 'right', items: [{ label: 'María López', icon: '<svg class="mi-icono"></svg>' }] },
+    })
+    await w.find('input').setValue('a')
+    await flushPromises()
+
+    const option = w.find('.cu-autocomplete-option')
+    expect((option.element as HTMLElement).style.justifyContent).toBe('flex-end')
+    expect(option.find('.mi-icono').exists()).toBe(true)
+  })
+})
