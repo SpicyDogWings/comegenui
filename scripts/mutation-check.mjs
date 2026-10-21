@@ -119,8 +119,8 @@ const MUTATIONS = [
     id: "label-no-focus-on-for",
     file: "src/components/form/Label.vue",
     expect: "con `for` enfoca el elemento con ese id",
-    find: `  focusControl(props.for ? document.getElementById(props.for) : slotControl());`,
-    replace: `  focusControl(props.for ? null : slotControl());`,
+    find: `  const control = props.for ? document.getElementById(props.for) : slotControl();`,
+    replace: `  const control = props.for ? null : slotControl();`,
   },
   {
     id: "date-picker-value-format-no-format",
@@ -794,8 +794,8 @@ const MUTATIONS = [
     id: "label-slot-no-enfoca",
     file: "src/components/form/Label.vue",
     expect: "sin `for`, el click enfoca el primer control del slot",
-    find: `  focusControl(props.for ? document.getElementById(props.for) : slotControl());`,
-    replace: `  focusControl(props.for ? document.getElementById(props.for) : null);`,
+    find: `  const control = props.for ? document.getElementById(props.for) : slotControl();`,
+    replace: `  const control = props.for ? document.getElementById(props.for) : null;`,
   },
   {
     id: "label-shadow-no-entra",
@@ -845,6 +845,13 @@ const MUTATIONS = [
     expect: "el slot header tiene prioridad sobre title/subtitle",
     find: `        <h3 v-if="props.title && !hasHeaderSlot" class="cu-card-title">{{ props.title }}</h3>`,
     replace: `        <h3 v-if="props.title" class="cu-card-title">{{ props.title }}</h3>`,
+  },
+  {
+    id: "label-activa-control",
+    file: "src/components/form/Label.vue",
+    expect: "el click en el label enfoca pero no activa el control",
+    find: `    event.preventDefault();`,
+    replace: ``,
   },
 ];
 

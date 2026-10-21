@@ -28,6 +28,8 @@ Los valores de `color` están en «Atributos» / «Props», abajo.
 - No expone métodos.
 - El CE no emite eventos custom: el `click` es el nativo (el `defineEmits('click')` interno no se bridgea).
 - No acepta `theme`: se define en `<html data-theme="…">`.
+- El click enfoca, **no activa**: se cancela la activación del `<label>` (el toggle de un
+  `Checkbox`/`Switch` lo hace el control al clickearse).
 - El foco busca el primer control focuseable del hijo (`input`, `select`, `textarea`, `button`,
   `[tabindex]`), también dentro de un componente Vue (`Checkbox`, `Switch`) o del shadow root de un
   custom element.
