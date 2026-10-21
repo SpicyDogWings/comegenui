@@ -78,8 +78,9 @@ import Switch from "@/components/form/Switch.vue";
 
 Con `for`, el foco va al elemento que tenga ese id, aunque esté fuera del label (y si es un
 `checkbox`/`radio`, también lo activa). No hace falta para un control que ya está dentro del label:
-ahí se resuelve solo. El `<label>` lo expone además como atributo (asociación nativa, útil para
-lectores de pantalla).
+ahí se resuelve solo. El `<label>` lo expone además como atributo y, al estar en el mismo árbol,
+asocia de forma nativa (útil para lectores de pantalla); en el custom element no, porque su `for`
+vive dentro del shadow root.
 
 ```vue
 <script setup lang="ts">
