@@ -154,3 +154,19 @@ describe("Popover — panel y slots", () => {
     expect(panel(w).classes()).toContain("mi-clase");
   });
 });
+
+describe("Popover — listeners de viewport", () => {
+  // Un listener de scroll NO pasivo en `document` bloquea el scrolling asíncrono
+  // (Firefox lo reporta como "scroll-linked positioning effect"). El nuestro sólo
+  // lee geometría para reposicionar el panel: tiene que ser pasivo.
+  it("escucha el scroll del documento en captura y en modo pasivo", () => {
+    const spy = vi.spyOn(document, "addEventListener");
+    const w = mount(Popover);
+    const scroll = spy.mock.calls.find(([type]) => type === "scroll");
+    expect(scroll).toBeDefined();
+    expect(scroll?.[2]).toMatchObject({ capture: true, passive: true });
+
+    w.unmount();
+    spy.mockRestore();
+  });
+});

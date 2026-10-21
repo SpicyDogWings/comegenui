@@ -19,6 +19,7 @@ Los archivos son notas internas — **no** se exponen a usuarios finales de la l
 | [09](./09-demos-vanilla.md) | Demos vanilla inline (marcadores `<!-- demo:id -->` + SFC del CE real) y deploy estático del sitio | Info | Receta vigente |
 | [12](./12-versionado-docs.md) | Versionado del sitio de documentación: snapshots congelados por versión (`docs/versions.json` + `scripts/docs-versions.mjs` + select en el topbar) | Info | Decisión registrada |
 | [13](./13-doc-versionada.md) | Doc versionada: la doc es la fuente y está almacenada por versión (`docs/versiones/<id>/`, overlays); el sitio la compone, no la genera | Info | Migración pendiente |
+| [14](./14-consola-firefox.md) | Ruido de consola en el sitio de docs (Firefox): `scroll-linked positioning effect` (es del outline de VitePress) y `Security Error … file:///` (no sale del repo). Fix propio: el listener de scroll de `Popover` pasó a pasivo | Info | Diagnóstico registrado; `Popover` ya corregido |
 
 > Las notas **05** (`cu-avatar` sin `src`, `cu-command-palette` sin `commands`) y **06**
 > (`cu-markdown` sin `parsed` ni `headingIds`) quedaron **resueltas**: se arreglaron los
