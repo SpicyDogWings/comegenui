@@ -1,4 +1,3 @@
-<!-- @api:props -->
 | Prop | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `modelValue` | `number \| null` | `null` | — |
@@ -14,4 +13,3 @@
 | `placeholder` | `string` | `—` | Placeholder del campo |
 | `min` | `number` | `—` | Valor mínimo permitido (inclusive); por debajo se clampea |
 | `max` | `number` | `—` | Valor máximo permitido (inclusive); por encima se clampea |
-<!-- /@api:props -->

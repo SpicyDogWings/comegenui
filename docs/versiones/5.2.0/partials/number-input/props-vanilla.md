@@ -1,4 +1,3 @@
-<!-- @api:atributos -->
 | Atributo | Tipo | Default | Descripción |
 | ------ | ------ | ------ | ------ |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
@@ -14,4 +13,3 @@
 | `placeholder` | `string` | `—` | Placeholder del campo |
 | `min` | `number` | `—` | Valor mínimo permitido (inclusive); por debajo se clampea |
 | `max` | `number` | `—` | Valor máximo permitido (inclusive); por encima se clampea |
-<!-- /@api:atributos -->
