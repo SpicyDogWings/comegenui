@@ -1,19 +1,6 @@
 <script setup lang="ts">
-import { computed, useSlots, type PropType, type VNode } from "vue";
+import { computed, onBeforeUnmount, onMounted, onUpdated, ref, type PropType } from "vue";
 import { isCardLayout, isVariant } from '@/utils/validators'
-
-const slots = useSlots();
-
-function slotHasContent(name: string): boolean {
-  const fn = slots[name];
-  if (!fn) return false;
-  return fn().some((vnode: VNode) => {
-    if (typeof vnode.type === 'symbol') return false;
-    if (vnode.type === 'comment') return false;
-    if (vnode.type === 'text' && typeof vnode.children === 'string' && !vnode.children.trim()) return false;
-    return true;
-  });
-}
 
 const props = defineProps({
   color: {
@@ -55,34 +42,89 @@ const colorStyles = computed(() => ({
   '--card-subtle-border': `var(--cu-color-${props.color}-subtle-border)`,
 }));
 
-const hasMedia = computed(() => slotHasContent('media'));
-const hasHeader = computed(() => slotHasContent('header'));
-const hasFooter = computed(() => slotHasContent('footer'));
+/*
+ * Presencia de cada slot. En un custom element el slot es nativo: los hijos
+ * viven en el light DOM del host y `$slots` no los ve, así que se mira el
+ * `<slot>` real (`assignedNodes`), igual que `cu-alert`. En Vue los nodos se
+ * renderizan como hijos del contenedor. Los contenedores quedan montados y se
+ * ocultan con `v-show`, para que el slot exista y pueda asignar contenido.
+ */
+const mediaWrap = ref<HTMLElement | null>(null);
+const headerWrap = ref<HTMLElement | null>(null);
+const footerWrap = ref<HTMLElement | null>(null);
+
+const hasMedia = ref(false);
+const hasMediaSlot = ref(false);
+const hasHeader = ref(false);
+const hasHeaderSlot = ref(false);
+const hasFooter = ref(false);
+
+function nodeHasContent(node: ChildNode): boolean {
+  if (node.nodeType === Node.TEXT_NODE) return !!node.textContent?.trim();
+  if (node.nodeType !== Node.ELEMENT_NODE) return false;
+  const el = node as Element;
+  // Lo que renderiza el propio componente (imagen/título/subtítulo) no es slot:
+  // si contara, la detección se taparía a sí misma y entraría en loop.
+  if (el.classList.contains('cu-card-image')
+    || el.classList.contains('cu-card-title')
+    || el.classList.contains('cu-card-subtitle')) return false;
+  if (el.tagName === 'SLOT') {
+    return (el as HTMLSlotElement)
+      .assignedNodes()
+      .some((assigned) => assigned.nodeType === Node.ELEMENT_NODE
+        || (assigned.nodeType === Node.TEXT_NODE && !!assigned.textContent?.trim()));
+  }
+  return true;
+}
+
+function wrapHasContent(el: HTMLElement | null): boolean {
+  return !!el && Array.from(el.childNodes).some(nodeHasContent);
+}
+
+function detectSlots() {
+  hasMediaSlot.value = wrapHasContent(mediaWrap.value);
+  hasMedia.value = hasMediaSlot.value || !!props.image;
+  hasHeaderSlot.value = wrapHasContent(headerWrap.value);
+  hasHeader.value = hasHeaderSlot.value || !!props.title || !!props.subtitle;
+  hasFooter.value = wrapHasContent(footerWrap.value);
+}
+
+let slotEls: HTMLSlotElement[] = [];
+
+onMounted(() => {
+  detectSlots();
+  slotEls = [mediaWrap.value, headerWrap.value, footerWrap.value]
+    .flatMap((wrap) => Array.from(wrap?.querySelectorAll("slot") ?? []));
+  slotEls.forEach((slot) => slot.addEventListener("slotchange", detectSlots));
+});
+
+// En Vue los slots cambian con el render; en el CE avisa `slotchange`.
+onUpdated(detectSlots);
+
+onBeforeUnmount(() => {
+  slotEls.forEach((slot) => slot.removeEventListener("slotchange", detectSlots));
+});
 </script>
 
 <template>
   <article :class="['cu-card', `cu-card--${props.variant}`, `cu-card--${props.layout}`]" :style="colorStyles">
-    <div v-if="props.image || hasMedia" class="cu-card-media">
-      <slot v-if="hasMedia" name="media" />
-      <img v-else-if="props.image" :src="props.image" alt="" class="cu-card-image" />
+    <div v-show="hasMedia" ref="mediaWrap" class="cu-card-media">
+      <slot name="media" />
+      <img v-if="props.image && !hasMediaSlot" :src="props.image" alt="" class="cu-card-image" />
     </div>
 
     <div class="cu-card-body">
-      <header v-if="props.title || props.subtitle || hasHeader" class="cu-card-header">
-        <template v-if="hasHeader">
-          <slot name="header" />
-        </template>
-        <template v-else>
-          <h3 v-if="props.title" class="cu-card-title">{{ props.title }}</h3>
-          <p v-if="props.subtitle" class="cu-card-subtitle">{{ props.subtitle }}</p>
-        </template>
+      <header v-show="hasHeader" ref="headerWrap" class="cu-card-header">
+        <slot name="header" />
+        <h3 v-if="props.title && !hasHeaderSlot" class="cu-card-title">{{ props.title }}</h3>
+        <p v-if="props.subtitle && !hasHeaderSlot" class="cu-card-subtitle">{{ props.subtitle }}</p>
       </header>
 
       <div class="cu-card-content">
         <slot />
       </div>
 
-      <footer v-if="hasFooter" class="cu-card-footer">
+      <footer v-show="hasFooter" ref="footerWrap" class="cu-card-footer">
         <slot name="footer" />
       </footer>
     </div>

@@ -9,5 +9,5 @@
     "variant"
   ],
   "methods": [],
-  "shadow": "article.cu-card.cu-card--ghost.cu-card--vertical[style]\n  div.cu-card-body\n    div.cu-card-content\n      slot"
+  "shadow": "article.cu-card.cu-card--ghost.cu-card--vertical[style]\n  div.cu-card-media[style]\n    slot[name]\n  div.cu-card-body\n    header.cu-card-header[style]\n      slot[name]\n    div.cu-card-content\n      slot\n    footer.cu-card-footer[style]\n      slot[name]"
 }

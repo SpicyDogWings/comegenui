@@ -4,6 +4,7 @@
 // footer) que no emite eventos ni expone métodos. Las aserciones se escriben a
 // mano desde esa prosa, no se derivan del código.
 import { describe, it, expect } from "vitest";
+import { nextTick } from "vue";
 import { mount } from "@vue/test-utils";
 import Card from "./Card.vue";
 
@@ -35,9 +36,10 @@ describe("Card — header, contenido y media", () => {
     expect(w.find(".cu-card-subtitle").text()).toBe("Último corte");
   });
 
-  it("sin title/subtitle ni header no renderiza el header", () => {
+  it("sin title/subtitle ni header mantiene el header oculto", () => {
     const w = mount(Card);
-    expect(w.find(".cu-card-header").exists()).toBe(false);
+    expect(w.find(".cu-card-header").exists()).toBe(true);
+    expect(w.find(".cu-card-header").isVisible()).toBe(false);
   });
 
   it("la prop image arma la media con un <img>", () => {
@@ -47,27 +49,52 @@ describe("Card — header, contenido y media", () => {
     expect(img.attributes("src")).toBe("https://example.com/cover.jpg");
   });
 
-  it("sin image ni slot media no renderiza el contenedor de media", () => {
+  it("sin image ni slot media mantiene el contenedor de media oculto", () => {
     const w = mount(Card);
-    expect(w.find(".cu-card-media").exists()).toBe(false);
+    expect(w.find(".cu-card-media").exists()).toBe(true);
+    expect(w.find(".cu-card-media").isVisible()).toBe(false);
+  });
+
+  it("muestra la media cuando hay slot media y en layout horizontal", async () => {
+    const w = mount(Card, {
+      props: { layout: "horizontal" },
+      slots: { media: '<span class="mi-media">banner</span>' },
+    });
+    await nextTick();
+    expect(w.find(".cu-card-media").isVisible()).toBe(true);
+    expect(w.find(".mi-media").exists()).toBe(true);
   });
 
   it("renderiza el slot default como contenido", () => {
     const w = mount(Card, { slots: { default: "Contenido principal" } });
     expect(w.find(".cu-card-content").text()).toContain("Contenido principal");
   });
+
+  it("el slot header tiene prioridad sobre title/subtitle", async () => {
+    const w = mount(Card, {
+      props: { title: "Resumen", subtitle: "Último corte" },
+      slots: { header: '<span class="mi-header">A medida</span>' },
+    });
+    await nextTick();
+    expect(w.find(".mi-header").exists()).toBe(true);
+    expect(w.find(".cu-card-title").exists()).toBe(false);
+    expect(w.find(".cu-card-subtitle").exists()).toBe(false);
+  });
 });
 
 describe("Card — footer y layout", () => {
-  it("renderiza el slot footer", () => {
+  it("renderiza el slot footer", async () => {
     const w = mount(Card, { slots: { footer: '<span class="mi-footer">Ver más</span>' } });
+    await nextTick();
     expect(w.find(".cu-card-footer").exists()).toBe(true);
+    expect(w.find(".cu-card-footer").isVisible()).toBe(true);
     expect(w.find(".mi-footer").text()).toBe("Ver más");
   });
 
-  it("sin slot footer no renderiza el footer", () => {
+  it("sin slot footer mantiene el footer oculto", () => {
     const w = mount(Card);
-    expect(w.find(".cu-card-footer").exists()).toBe(false);
+    expect(w.find(".cu-card-footer").exists()).toBe(true);
+    expect(w.find(".cu-card-footer").isVisible()).toBe(false);
   });
 
   it("layout=horizontal cambia la clase del contenedor", () => {
@@ -75,11 +102,12 @@ describe("Card — footer y layout", () => {
     expect(root(w).classes()).toContain("cu-card--horizontal");
   });
 
-  it("el slot media tiene prioridad sobre la prop image", () => {
+  it("el slot media tiene prioridad sobre la prop image", async () => {
     const w = mount(Card, {
       props: { image: "https://example.com/cover.jpg" },
       slots: { media: '<span class="mi-media">banner</span>' },
     });
+    await nextTick();
     expect(w.find(".mi-media").exists()).toBe(true);
     expect(w.find(".cu-card-image").exists()).toBe(false);
   });

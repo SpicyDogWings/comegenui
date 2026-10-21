@@ -67,7 +67,7 @@ En Vue, importá `Card` de `@/components/information/Card.vue` (ver [ficha Vue](
 
 ## Layout horizontal
 
-`layout` acepta `vertical` (**default**; media arriba) u `horizontal` (media al costado, contenido a la derecha).
+`layout` acepta `vertical` (**default**; media arriba) u `horizontal` (media al costado, contenido a la derecha). Si no hay media (ni `image` ni slot `media`), la tarjeta ocupa todo el ancho y no queda la columna vacía del 40 %.
 
 ```html
 <cu-card layout="horizontal" title="Perfil" subtitle="Información del usuario" image="https://example.com/avatar.jpg">
@@ -77,9 +77,26 @@ En Vue, importá `Card` de `@/components/information/Card.vue` (ver [ficha Vue](
 
 <!-- demo:card-layout-horizontal -->
 
+El slot `media` también funciona en horizontal, y pisa a `image`:
+
+```html
+<cu-card layout="horizontal" color="primary" variant="outlined">
+  <div slot="media">
+    <img src="https://example.com/avatar.jpg" alt="Perfil" />
+  </div>
+  <h3>Título custom</h3>
+  <p>El slot media reemplaza a image.</p>
+  <div slot="footer">
+    <cu-badge color="success" variant="solid">Activo</cu-badge>
+  </div>
+</cu-card>
+```
+
+<!-- demo:card-slots-media-horizontal -->
+
 ## Slots custom
 
-El contenido va por el slot `default`; los slots `media`, `header` y `footer` reemplazan la media, el header (título/subtítulo) y el pie. Si hay slot `header`, tiene prioridad sobre `title`/`subtitle`.
+El contenido va por el slot `default`; los slots `media`, `header` y `footer` reemplazan la media, el header (título/subtítulo) y el pie. Si hay slot `header`, tiene prioridad sobre `title`/`subtitle`. Los bloques sin contenido no ocupan lugar, también en el custom element (donde el contenido de los slots vive en el light DOM).
 
 ```html
 <cu-card color="neutral">
