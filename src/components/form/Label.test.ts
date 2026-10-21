@@ -114,7 +114,7 @@ describe("Label — click y foco", () => {
     w.unmount();
   });
 
-  it("el click en el label enfoca pero NO activa el control", async () => {
+  it("el click en el label enfoca y activa el control", async () => {
     const w = mount(Label, {
       props: { label: "Acepto los términos" },
       slots: { default: Checkbox },
@@ -125,7 +125,21 @@ describe("Label — click y foco", () => {
     await w.find(".cu-label-text").trigger("click");
 
     expect(document.activeElement).toBe(input);
-    expect(input.checked).toBe(false);
+    expect(input.checked).toBe(true);
+    w.unmount();
+  });
+
+  it("el click en el label también activa un Switch", async () => {
+    const w = mount(Label, {
+      props: { label: "Suscripción" },
+      slots: { default: Switch },
+      attachTo: document.body,
+    });
+    const input = w.findComponent(Switch).find('input[type="checkbox"]').element as HTMLInputElement;
+
+    await w.find(".cu-label-text").trigger("click");
+
+    expect(input.checked).toBe(true);
     w.unmount();
   });
 

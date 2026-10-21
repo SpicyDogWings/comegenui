@@ -1,12 +1,13 @@
 # Label — `<cu-label>` / `<Label>`
 
-Label con color semántico que enfoca el control hijo (o el de `for`) al hacer clic, para ganar área
-clickeable. No es para texto decorativo suelto.
+Label con color semántico que enfoca el control hijo (o el de `for`) al hacer clic y, si es un
+`checkbox`/`radio`, además lo activa (toggle), para ganar área clickeable. No es para texto
+decorativo suelto.
 
 ## Receta
 
-- Texto por `label` (declarativo); el slot default es el control que se enfoca.
-- Envolvé el control como hijo: al clic en el label, se enfoca.
+- Texto por `label` (declarativo); el slot default es el control que se enfoca y activa.
+- Envolvé el control como hijo: al clic en el label, se enfoca (y un `Checkbox`/`Switch` se activa).
 - Control afuera del label: apuntá con `for="<id>"`.
 - `color` (default `neutral`).
 - En Vue el clic se escucha con `@click`; en vanilla burbujea el `click` nativo del shadow DOM.
@@ -28,8 +29,10 @@ Los valores de `color` están en «Atributos» / «Props», abajo.
 - No expone métodos.
 - El CE no emite eventos custom: el `click` es el nativo (el `defineEmits('click')` interno no se bridgea).
 - No acepta `theme`: se define en `<html data-theme="…">`.
-- El click enfoca, **no activa**: se cancela la activación del `<label>` (el toggle de un
-  `Checkbox`/`Switch` lo hace el control al clickearse).
+- El click **enfoca y activa**: si el control es un `checkbox`/`radio` (un `Checkbox`, un `Switch`),
+  se togglea una sola vez, como un `<label>` nativo; un campo de texto, `select`, etc. sólo se enfoca.
+  Si el click nace dentro del control, no se intercepta (no hay doble toggle).
+- `for` es opcional: el control que está dentro del label se resuelve solo.
 - El foco busca el primer control focuseable del hijo (`input`, `select`, `textarea`, `button`,
   `[tabindex]`), también dentro de un componente Vue (`Checkbox`, `Switch`) o del shadow root de un
   custom element.

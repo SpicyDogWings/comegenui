@@ -808,8 +808,8 @@ const MUTATIONS = [
     id: "label-shadow-no-entra",
     file: "src/components/form/Label.vue",
     expect: "si el control del slot es un custom element, enfoca el control de su shadow root",
-    find: `  (inner ?? el).focus();`,
-    replace: `  el.focus();`,
+    find: `  return inner ?? el;`,
+    replace: `  return el;`,
   },
   {
     id: "label-click-no-emite",
@@ -856,9 +856,9 @@ const MUTATIONS = [
   {
     id: "label-activa-control",
     file: "src/components/form/Label.vue",
-    expect: "el click en el label enfoca pero no activa el control",
-    find: `    event.preventDefault();`,
-    replace: ``,
+    expect: "el click en el label activa el control (toggle)",
+    find: `      if (esToggle) target.click();`,
+    replace: `      if (esToggle) target.focus();`,
   },
 ];
 
