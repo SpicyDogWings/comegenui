@@ -1,8 +1,10 @@
 // Comportamiento de Divider según su ficha (docs/versiones/5.1.2/componentes/vue/divider.md).
 // Aserciones escritas a mano desde la prosa (fallan por bugs reales).
 import { describe, it, expect } from "vitest";
+import { defineCustomElement, nextTick } from "vue";
 import { mount } from "@vue/test-utils";
 import Divider from "./Divider.vue";
+import DividerCe from "../customElements/information/Divider.ce.vue";
 
 const root = (w: ReturnType<typeof mount>) => w.find(".cu-divider");
 
@@ -64,8 +66,7 @@ describe("Divider — label y slot", () => {
   });
 });
 
-describe("Divider — variantes y color", () => {
-  it("cada variante aplica su clase (solid es la default)", () => {
+describe("Divider — variantes y color", () => {  it("cada variante aplica su clase (solid es la default)", () => {
     expect(root(mount(Divider)).classes()).toContain("cu-divider--solid");
     for (const variant of ["solid", "dashed", "dotted"] as const) {
       const w = mount(Divider, { props: { variant } });
@@ -85,5 +86,43 @@ describe("Divider — variantes y color", () => {
       const w = mount(Divider, { props: { color } });
       expect(root(w).attributes("style") ?? "").toContain(`--cu-color-${color}-subtle-border`);
     }
+  });
+});
+
+// El custom element sólo pasa el slot cuando el host tiene hijos reales: sin
+// contenido, `<cu-divider>` tiene que ser un `<hr>` (y no un separador vacío).
+describe("Divider — custom element (host sin contenido)", () => {
+  const CuDividerTest = defineCustomElement(DividerCe);
+  if (!customElements.get("cu-divider-test")) {
+    customElements.define("cu-divider-test", CuDividerTest);
+  }
+
+  async function mountCe(html: string) {
+    document.body.innerHTML = html;
+    const host = document.body.firstElementChild as HTMLElement;
+    await nextTick();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    const inner = [...(host.shadowRoot?.children ?? [])].find(
+      (node) => node.tagName !== "STYLE",
+    ) as HTMLElement;
+    return { host, inner };
+  }
+
+  it("sin hijos renderiza un <hr>", async () => {
+    const { inner } = await mountCe("<cu-divider-test></cu-divider-test>");
+    expect(inner.tagName).toBe("HR");
+  });
+
+  it("con hijos renderiza el separador con el slot proyectado", async () => {
+    const { inner } = await mountCe("<cu-divider-test><span>rico</span></cu-divider-test>");
+    expect(inner.tagName).toBe("DIV");
+    expect(inner.getAttribute("role")).toBe("separator");
+    expect(inner.querySelector("slot")?.assignedNodes().length).toBeGreaterThan(0);
+  });
+
+  it("`label` no lo tapa un slot vacío", async () => {
+    const { inner } = await mountCe('<cu-divider-test label="Sección"></cu-divider-test>');
+    expect(inner.tagName).toBe("DIV");
+    expect(inner.querySelector(".cu-divider-label")?.textContent).toBe("Sección");
   });
 });

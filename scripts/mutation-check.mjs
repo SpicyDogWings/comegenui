@@ -119,15 +119,15 @@ const MUTATIONS = [
     id: "divider-vertical-sin-aria-orientation",
     file: "src/components/information/Divider.vue",
     expect: "el divider vertical declara `aria-orientation`",
-    find: `    :aria-orientation="isVertical ? 'vertical' : undefined"`,
+    find: `    :aria-orientation="isVertical() ? 'vertical' : undefined"`,
     replace: ``,
   },
   {
     id: "divider-ignora-label",
     file: "src/components/information/Divider.vue",
     expect: "el divider con `label` muestra el texto entre las líneas",
-    find: `<span v-if="hasContent" class="cu-divider-label"><slot>{{ props.label }}</slot></span>`,
-    replace: `<span v-if="hasContent" class="cu-divider-label"></span>`,
+    find: `<span v-if="hasContent()" class="cu-divider-label"><slot>{{ props.label }}</slot></span>`,
+    replace: `<span v-if="hasContent()" class="cu-divider-label"></span>`,
   },
   {
     id: "divider-ignora-variante",
@@ -135,6 +135,14 @@ const MUTATIONS = [
     expect: "aplica la clase de la variante del trazo (solid/dashed/dotted)",
     find: "`cu-divider--${props.variant}`",
     replace: "`cu-divider--solid`",
+  },
+  {
+    id: "divider-ce-slot-siempre",
+    file: "src/components/customElements/information/Divider.ce.vue",
+    test: "src/components/information/Divider.test.ts",
+    expect: "el CE sin hijos renderiza un <hr> (no pasa un slot vacío)",
+    find: `<template v-if="hasHostContent" #default>`,
+    replace: `<template #default>`,
   },
   {
     id: "label-no-focus-on-for",

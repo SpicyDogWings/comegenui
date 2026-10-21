@@ -34,16 +34,27 @@ const props = defineProps({
 
 const slots = useSlots();
 
-/** El slot `default` (contenido rico) tiene prioridad sobre el texto de `label`. */
-const hasContent = computed(() => Boolean(props.label) || Boolean(slots.default));
+/**
+ * Presencia de contenido. No es un `computed`: `slots` no es reactivo (Vue sólo
+ * re-renderiza al hijo cuando cambian los slots), así que se evalúa en cada
+ * render para ver el slot nuevo. El wrapper del custom element recién pasa el
+ * slot cuando el host tiene hijos reales.
+ */
+function hasContent(): boolean {
+  return Boolean(props.label) || Boolean(slots.default);
+}
 
-const isVertical = computed(() => props.orientation === "vertical");
+function isVertical(): boolean {
+  return props.orientation === "vertical";
+}
 
 /**
  * Sin label ni slot, una línea lisa es un `<hr>` (un separador semántico, sin rol
  * declarado). Con contenido hace falta un contenedor para cortar la línea.
  */
-const isPlain = computed(() => !isVertical.value && !hasContent.value);
+function isPlain(): boolean {
+  return !isVertical() && !hasContent();
+}
 
 const dividerStyles = computed(() => ({
   '--divider-color': `var(--cu-color-${props.color}-subtle-border)`,
@@ -52,7 +63,7 @@ const dividerStyles = computed(() => ({
 
 <template>
   <hr
-    v-if="isPlain"
+    v-if="isPlain()"
     :class="['cu-divider', 'cu-divider--horizontal', `cu-divider--${props.variant}`]"
     :style="dividerStyles"
   />
@@ -64,13 +75,13 @@ const dividerStyles = computed(() => ({
       `cu-divider--${props.variant}`,
     ]"
     role="separator"
-    :aria-orientation="isVertical ? 'vertical' : undefined"
+    :aria-orientation="isVertical() ? 'vertical' : undefined"
     :style="dividerStyles"
   >
     <!-- Trazo decorativo: el texto del medio es el contenido semántico -->
     <span class="cu-divider-line" aria-hidden="true"></span>
-    <span v-if="hasContent" class="cu-divider-label"><slot>{{ props.label }}</slot></span>
-    <span v-if="hasContent" class="cu-divider-line" aria-hidden="true"></span>
+    <span v-if="hasContent()" class="cu-divider-label"><slot>{{ props.label }}</slot></span>
+    <span v-if="hasContent()" class="cu-divider-line" aria-hidden="true"></span>
   </div>
 </template>
 
