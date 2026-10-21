@@ -26,6 +26,7 @@ Los valores de `color` / `variant` / `mode` / `position` / `align` están en «A
 ## Límites
 
 - No maneja hora: sólo fecha (día).
+- `label` se renderiza con `Label` y su click enfoca el trigger y abre el panel.
 - `startDate`/`endDate` se ignoran en `single`.
 - `dualCalendar` implica `range`: aunque `mode` sea `single`, el picker selecciona un rango.
 - `setValue()` es no-op en range y `setRange()` es no-op en single.

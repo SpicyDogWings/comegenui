@@ -17,6 +17,21 @@ describe('DatePicker — single', () => {
     expect(vm(w).isOpen()).toBe(false)
   })
 
+  it('el click en el label enfoca el trigger y abre el panel', async () => {
+    const w = mount(DatePicker, {
+      props: { label: 'Fecha de nacimiento' },
+      attachTo: document.body,
+    })
+    const trigger = w.find('.cu-date-picker-toggle').element as HTMLElement
+
+    await w.find('.cu-label-text').trigger('click')
+    await flushPromises()
+
+    expect(vm(w).isOpen()).toBe(true)
+    expect(document.activeElement).toBe(trigger)
+    w.unmount()
+  })
+
   it('abre, selecciona un día, emite y cierra', async () => {
     const w = mount(DatePicker)
     vm(w).open()

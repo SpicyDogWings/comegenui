@@ -846,6 +846,13 @@ const MUTATIONS = [
     find: `        <h3 v-if="props.title && !hasHeaderSlot" class="cu-card-title">{{ props.title }}</h3>`,
     replace: `        <h3 v-if="props.title" class="cu-card-title">{{ props.title }}</h3>`,
   },
+  {
+    id: "date-picker-label-no-enfoca",
+    file: "src/components/form/DatePicker.vue",
+    expect: "el click en el label enfoca el trigger y abre el panel",
+    find: `  trigger?.focus()`,
+    replace: ``,
+  },
 ];
 
 export { MUTATIONS };
