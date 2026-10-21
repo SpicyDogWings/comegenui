@@ -15,6 +15,12 @@
 
 .cu-demo--stack {
   flex-direction: column;
+  /* Sin este reset el demo queda como flex **multi-línea de columna** (hereda el
+     `flex-wrap: wrap` de `.cu-demo`). Con altura automática el contenedor recorta
+     la altura de sus items al contenido de la primera línea y cada item —el host del
+     custom element— termina más bajo que su propio contenido: la card y el calendar
+     se derraman sobre lo que viene abajo. En columna no hay nada que envolver. */
+  flex-wrap: nowrap;
   align-items: stretch;
   gap: 16px;
 }
