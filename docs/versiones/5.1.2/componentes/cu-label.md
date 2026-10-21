@@ -65,8 +65,9 @@ el control puede ser un custom element, todo se hace sobre el control real de su
 
 Con `for`, el foco va al elemento que tenga ese id, aunque esté fuera del label (y si es un
 `checkbox`/`radio`, también lo activa). No hace falta para un control que ya está dentro del label:
-ahí se resuelve solo. El `<label>` lo expone además como atributo (asociación nativa, útil para
-lectores de pantalla).
+ahí se resuelve solo. El `<label>` lo expone además como atributo, pero el `for` que renderiza el
+custom element vive dentro de su shadow root y **no** asocia con un id del light DOM: el foco y la
+activación los resuelve el componente.
 
 ```html
 <cu-label for="miInput" label="Nombre"></cu-label>
