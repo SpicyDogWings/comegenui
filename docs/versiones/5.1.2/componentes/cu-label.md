@@ -43,8 +43,9 @@ nombre se ve distinto en cada tema.
 ## Contenido (slot)
 
 El slot acepta cualquier control: al hacer clic en el label (el texto o el espacio libre), el primer
-control del slot recibe el foco. Como el control puede ser un custom element, el foco va al control
-real de su shadow root.
+control del slot recibe el foco, **sin activarlo** (el toggle de un checkbox/switch lo hace el propio
+control al clickearse). Como el control puede ser un custom element, el foco va al control real de su
+shadow root.
 
 ```html
 <cu-label label="Acepto los términos">

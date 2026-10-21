@@ -68,9 +68,13 @@ function ceEmit(event: string, payload: unknown) {
 </template>
 
 <style>
-@unocss-placeholder;
+/* El `:host` va antes del placeholder a propósito: UnoCSS inserta su CSS donde está el
+   marcador y, si el marcador termina en `;`, el parser del browser descarta la regla siguiente. */
 :host {
   display: block;
-  width: 100%;
+  /* La tarjeta nunca crece más que su contenedor (flex/grid): el contenido se ajusta
+     adentro en lugar de empujar el ancho del host y desbordar la página. */
+  max-width: 100%;
 }
+@unocss-placeholder
 </style>

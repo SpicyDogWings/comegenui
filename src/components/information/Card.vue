@@ -140,6 +140,11 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  /* La tarjeta nunca crece más que su contenedor (flex/grid): el contenido se ajusta. */
+  max-width: 100%;
+  /* Se hereda al contenido y al que llega por slot: las palabras largas se cortan
+     en lugar de desbordar y arrastrar el ancho mínimo del layout. */
+  overflow-wrap: anywhere;
   background-color: var(--cu-color-surface);
   color: var(--cu-color-neutral);
   border: var(--cu-border-thin) solid transparent;
@@ -184,12 +189,15 @@ onBeforeUnmount(() => {
 
 .cu-card-media {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   overflow: hidden;
 }
 
 .cu-card-image {
   display: block;
   width: 100%;
+  max-width: 100%;
   height: auto;
   object-fit: cover;
 }
@@ -212,6 +220,7 @@ onBeforeUnmount(() => {
 
 .cu-card--horizontal .cu-card-body {
   flex: 1;
+  min-width: 0;
 }
 
 .cu-card-body {
@@ -220,12 +229,15 @@ onBeforeUnmount(() => {
   gap: var(--cu-space-md);
   padding: var(--cu-space-lg);
   box-sizing: border-box;
+  /* Sin esto el cuerpo no baja de su ancho mínimo y empuja la tarjeta en horizontal. */
+  min-width: 0;
 }
 
 .cu-card-header {
   display: flex;
   flex-direction: column;
   gap: var(--cu-space-2xs);
+  min-width: 0;
 }
 
 .cu-card-title {
@@ -245,12 +257,15 @@ onBeforeUnmount(() => {
 .cu-card-content {
   color: inherit;
   line-height: var(--cu-line-height-relaxed);
+  min-width: 0;
 }
 
 .cu-card-footer {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: var(--cu-space-sm);
+  min-width: 0;
   padding-top: var(--cu-space-md);
   border-top: var(--cu-border-thin) solid var(--cu-border-color);
 }

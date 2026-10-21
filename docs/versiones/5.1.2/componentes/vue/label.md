@@ -49,7 +49,8 @@ nombre se ve distinto en cada tema.
 
 El texto va por la prop `label`; el slot es el control que se enfoca. Al hacer clic en el label (el
 texto o el espacio libre), se busca el primer control focuseable dentro del slot
-(`input`, `select`, `textarea`, `button`, `[tabindex]`) y se lo enfoca. Funciona igual con un campo
+(`input`, `select`, `textarea`, `button`, `[tabindex]`) y se lo enfoca, **sin activarlo**: el toggle
+de un `Checkbox`/`Switch` lo hace el propio control al clickearse. Funciona igual con un campo
 nativo, con un componente cuyo root no es un campo (`Checkbox`, `Switch`) o con un custom element,
 entrando a su shadow root.
 

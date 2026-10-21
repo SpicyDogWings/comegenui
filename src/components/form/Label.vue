@@ -66,8 +66,19 @@ function focusControl(el: HTMLElement | null) {
   (inner ?? el).focus();
 }
 
-const handleClick = () => {
-  focusControl(props.for ? document.getElementById(props.for) : slotControl());
+const handleClick = (event: MouseEvent) => {
+  const control = props.for ? document.getElementById(props.for) : slotControl();
+  // Si el click nace en el control (checkbox, switch, input), que el control haga
+  // lo suyo (toggle, selección, foco nativo).
+  const path = event.composedPath?.() ?? [];
+  const desdeElControl = !!control && (event.target === control || path.includes(control));
+
+  if (!desdeElControl) {
+    // El <label> activa a su control al hacer click en el texto (togglea el
+    // checkbox/switch). Acá el label sólo enfoca: se cancela la activación.
+    event.preventDefault();
+    focusControl(control);
+  }
   emit('click');
 };
 </script>

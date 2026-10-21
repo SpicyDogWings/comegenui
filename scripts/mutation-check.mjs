@@ -119,8 +119,8 @@ const MUTATIONS = [
     id: "label-no-focus-on-for",
     file: "src/components/form/Label.vue",
     expect: "con `for` enfoca el elemento con ese id",
-    find: `  focusControl(props.for ? document.getElementById(props.for) : slotControl());`,
-    replace: `  focusControl(props.for ? null : slotControl());`,
+    find: `  const control = props.for ? document.getElementById(props.for) : slotControl();`,
+    replace: `  const control = props.for ? null : slotControl();`,
   },
   {
     id: "date-picker-value-format-no-format",
@@ -383,6 +383,13 @@ const MUTATIONS = [
     find: `function open() {
   if (props.disabled) return;`,
     replace: `function open() {`,
+  },
+  {
+    id: "popover-scroll-listener-no-pasivo",
+    file: "src/components/overlay/Popover.vue",
+    expect: "el listener de scroll del documento es pasivo (no bloquea el scrolling)",
+    find: `document.addEventListener("scroll", onViewportChange, SCROLL_OPTS);`,
+    replace: `document.addEventListener("scroll", onViewportChange, true);`,
   },
   {
     id: "dropdown-item-click-no-close",
@@ -794,8 +801,8 @@ const MUTATIONS = [
     id: "label-slot-no-enfoca",
     file: "src/components/form/Label.vue",
     expect: "sin `for`, el click enfoca el primer control del slot",
-    find: `  focusControl(props.for ? document.getElementById(props.for) : slotControl());`,
-    replace: `  focusControl(props.for ? document.getElementById(props.for) : null);`,
+    find: `  const control = props.for ? document.getElementById(props.for) : slotControl();`,
+    replace: `  const control = props.for ? document.getElementById(props.for) : null;`,
   },
   {
     id: "label-shadow-no-entra",
@@ -851,6 +858,13 @@ const MUTATIONS = [
     file: "src/components/form/DatePicker.vue",
     expect: "el click en el label enfoca el trigger y abre el panel",
     find: `  trigger?.focus()`,
+    replace: ``,
+  },
+  {
+    id: "label-activa-control",
+    file: "src/components/form/Label.vue",
+    expect: "el click en el label enfoca pero no activa el control",
+    find: `    event.preventDefault();`,
     replace: ``,
   },
 ];
