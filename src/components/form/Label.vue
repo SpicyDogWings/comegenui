@@ -58,26 +58,35 @@ function slotControl(): HTMLElement | null {
  */
 const FOCUSABLE = 'input:not([type="hidden"]), select, textarea, button, [tabindex]:not([tabindex="-1"])';
 
-function focusControl(el: HTMLElement | null) {
-  if (!el) return;
+/** Control real a enfocar/activar: el del shadow root, el propio elemento o uno interno. */
+function controlTarget(el: HTMLElement | null): HTMLElement | null {
+  if (!el) return null;
   const inner =
     el.shadowRoot?.querySelector<HTMLElement>(FOCUSABLE)
     ?? (el.matches(FOCUSABLE) ? el : el.querySelector<HTMLElement>(FOCUSABLE));
-  (inner ?? el).focus();
+  return inner ?? el;
 }
 
 const handleClick = (event: MouseEvent) => {
   const control = props.for ? document.getElementById(props.for) : slotControl();
   // Si el click nace en el control (checkbox, switch, input), que el control haga
-  // lo suyo (toggle, selección, foco nativo).
+  // lo suyo: no se duplica la activación.
   const path = event.composedPath?.() ?? [];
   const desdeElControl = !!control && (event.target === control || path.includes(control));
 
   if (!desdeElControl) {
-    // El <label> activa a su control al hacer click en el texto (togglea el
-    // checkbox/switch). Acá el label sólo enfoca: se cancela la activación.
+    // El <label> nativo activaría al control; se cancela para hacerlo una sola
+    // vez acá (y que funcione igual en Vue y con el custom element).
     event.preventDefault();
-    focusControl(control);
+    const target = controlTarget(control);
+    if (target) {
+      // Como el <label> nativo: el control queda enfocado…
+      target.focus();
+      const esToggle =
+        target instanceof HTMLInputElement && (target.type === 'checkbox' || target.type === 'radio');
+      // …y un checkbox/radio además se activa (toggle). El resto sólo se enfoca.
+      if (esToggle) target.click();
+    }
   }
   emit('click');
 };

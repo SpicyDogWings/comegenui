@@ -3,10 +3,11 @@
 # `Label`
 
 Label con color semántico. Al hacer clic —en el texto o en el espacio libre del label— enfoca el
-primer control del slot o, si se define `for`, el elemento con ese id. Útil para agrupar `<Input>`,
-`<Checkbox>`, `<Switch>`, etc. y ganar área clickeable. El foco busca el control focuseable dentro
-del hijo: sirve un campo nativo, un componente Vue cuyo root no es el campo (`Checkbox`, `Switch`) o
-un custom element, en cuyo caso entra a su shadow root (el host no es focuseable).
+primer control del slot o, si se define `for`, el elemento con ese id; si el control es un
+`checkbox`/`radio` (un `Checkbox`, un `Switch`), además lo activa (un solo toggle). Útil para agrupar
+`<Input>`, `<Checkbox>`, `<Switch>`, etc. y ganar área clickeable. El foco busca el control focuseable
+dentro del hijo: sirve un campo nativo, un componente Vue cuyo root no es el campo (`Checkbox`,
+`Switch`) o un custom element, en cuyo caso entra a su shadow root (el host no es focuseable).
 
 ## Uso en Vue
 
@@ -47,10 +48,11 @@ nombre se ve distinto en cada tema.
 
 ## Contenido (slot)
 
-El texto va por la prop `label`; el slot es el control que se enfoca. Al hacer clic en el label (el
-texto o el espacio libre), se busca el primer control focuseable dentro del slot
-(`input`, `select`, `textarea`, `button`, `[tabindex]`) y se lo enfoca, **sin activarlo**: el toggle
-de un `Checkbox`/`Switch` lo hace el propio control al clickearse. Funciona igual con un campo
+El texto va por la prop `label`; el slot es el control que se enfoca. **No hace falta `for`**: al
+hacer clic en el label (el texto o el espacio libre), se busca el primer control focuseable dentro
+del slot (`input`, `select`, `textarea`, `button`, `[tabindex]`) y queda enfocado. Si es un
+`checkbox`/`radio` (`Checkbox`, `Switch`), además se activa (toggle) **una sola vez**, como un
+`<label>` nativo; un campo de texto, `select`, etc. sólo se enfoca. Funciona igual con un campo
 nativo, con un componente cuyo root no es un campo (`Checkbox`, `Switch`) o con un custom element,
 entrando a su shadow root.
 
@@ -74,8 +76,10 @@ import Switch from "@/components/form/Switch.vue";
 
 ## Enfocar con `for`
 
-Con `for`, el foco va al elemento que tenga ese id, aunque esté fuera del label. El `<label>` lo
-expone además como atributo (asociación nativa, útil para lectores de pantalla).
+Con `for`, el foco va al elemento que tenga ese id, aunque esté fuera del label (y si es un
+`checkbox`/`radio`, también lo activa). No hace falta para un control que ya está dentro del label:
+ahí se resuelve solo. El `<label>` lo expone además como atributo (asociación nativa, útil para
+lectores de pantalla).
 
 ```vue
 <script setup lang="ts">
@@ -92,7 +96,7 @@ import Input from "@/components/form/Input.vue";
 ## Click
 
 El componente emite `click` en cada clic sobre el label (el texto o el espacio libre), no sólo sobre
-el `<span>` del texto; además, el clic enfoca el control.
+el `<span>` del texto; además, el clic enfoca el control y, si es un `checkbox`/`radio`, lo activa.
 
 ```vue
 <script setup lang="ts">

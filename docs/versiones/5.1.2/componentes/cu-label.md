@@ -3,9 +3,10 @@
 # `<cu-label>`
 
 Label con color semántico. Al hacer clic —en el texto o en el espacio libre del label— enfoca el
-primer control del slot o, si se define `for`, el elemento con ese id. Útil para agrupar
-`<cu-input>`, `<cu-checkbox>`, etc. y ganar área clickeable. Si el control es un custom element, el
-foco entra a su shadow root (el host no es focuseable).
+primer control del slot o, si se define `for`, el elemento con ese id. Si el control es un
+`checkbox`/`radio` (como `<cu-checkbox>` o `<cu-switch>`), además lo activa (un solo toggle). Útil
+para agrupar `<cu-input>`, `<cu-checkbox>`, etc. y ganar área clickeable. Si el control es un custom
+element, el foco entra a su shadow root (el host no es focuseable).
 
 ## Uso en HTML plano
 
@@ -42,10 +43,11 @@ nombre se ve distinto en cada tema.
 
 ## Contenido (slot)
 
-El slot acepta cualquier control: al hacer clic en el label (el texto o el espacio libre), el primer
-control del slot recibe el foco, **sin activarlo** (el toggle de un checkbox/switch lo hace el propio
-control al clickearse). Como el control puede ser un custom element, el foco va al control real de su
-shadow root.
+El slot acepta cualquier control y **no hace falta `for`**: el componente resuelve solo cuál es. Al
+hacer clic en el label (el texto o el espacio libre), el primer control del slot queda enfocado y, si
+es un `checkbox`/`radio` (un `<cu-checkbox>`, un `<cu-switch>`), además se activa (toggle) **una sola
+vez** — como un `<label>` nativo. Un campo de texto, `select`, `textarea`, etc. sólo se enfoca. Como
+el control puede ser un custom element, todo se hace sobre el control real de su shadow root.
 
 ```html
 <cu-label label="Acepto los términos">
@@ -61,8 +63,10 @@ shadow root.
 
 ## Enfocar con `for`
 
-Con `for`, el foco va al elemento que tenga ese id, aunque esté fuera del label. El `<label>` lo
-expone además como atributo (asociación nativa, útil para lectores de pantalla).
+Con `for`, el foco va al elemento que tenga ese id, aunque esté fuera del label (y si es un
+`checkbox`/`radio`, también lo activa). No hace falta para un control que ya está dentro del label:
+ahí se resuelve solo. El `<label>` lo expone además como atributo (asociación nativa, útil para
+lectores de pantalla).
 
 ```html
 <cu-label for="miInput" label="Nombre"></cu-label>

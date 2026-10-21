@@ -40,8 +40,9 @@ import LabelControlsExample from "../../examples/label/LabelControlsExample.vue"
 
 ### Contenido (slot): Checkbox y Switch
 
-Al hacer click en el label, el control del slot recibe el foco (el `input` interno del
-`Checkbox`/`Switch`), sin activarlo: el toggle lo hace el control al clickearse.
+Al hacer click en el label, el control del slot **se enfoca y se activa** (el `input` interno del
+`Checkbox`/`Switch` cambia de estado una sola vez), igual que un `<label>` nativo. No hace falta
+`for`.
 
 <ClientOnly>
   <div class="cu-demo cu-demo--stack">
