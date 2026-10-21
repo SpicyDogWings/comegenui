@@ -16,6 +16,8 @@ teclado y estado de carga. Si el usuario filtra escribiendo sobre un input visib
 - `read-only` bloquea abrir el dropdown y cambiar la selección, pero el control sigue enfocable;
   `set()` / `reset()` programáticos siguen funcionando.
 - Posición: `position` / `align` / `fixed`.
+- Alineación del texto: `text-align` (`left` default | `center` | `right`) alinea **el label del
+  trigger** (placeholder o selección) **y las opciones del panel**.
 - Programático: `get()` / `set(v)` / `reset()` / `focus()` / `isOpen()` / `selectedItem()`.
 
 ```html
@@ -57,8 +59,8 @@ Los valores de `color` / `variant` / `position` / `align` están en «Atributos�
 | `position` | `string` | `"bottom"` | Posición del dropdown: `bottom`, `top` |
 | `align` | `string` | `"start"` | Alineación: `start`, `center`, `end` |
 | `fixed` | `boolean` | `false` | Si es `true`, el dropdown usa `position: fixed` en vez de absoluto |
+| `text-align` | `"center" \| "left" \| "right"` | `"left"` | Alineación del texto: el label del trigger (placeholder o selección) y las opciones del panel. `left` (default), `center`, `right`. |
 | `model-value` | `string` | `""` | Valor seleccionado. El CE sincroniza su estado; asigná `modelValue` sólo si querés controlarlo |
-| `text-align` | `"center" \| "left" \| "right"` | `"left"` | Alineación del texto seleccionado: `left`, `center`, `right` |
 | `search-mode` | `"includes" \| "startsWith"` | `"startsWith"` | Modo de coincidencia: `startsWith` (solo al inicio del label) o `includes` (en cualquier parte) |
 | `options` | `SelectOption[]` | `[]` | Opciones del select (ver abajo). Se asigna como propiedad JS |
 | `placeholder-wrap` | `boolean` | `false` | Si `true`, el texto wrappea; si `false`, se trunca con `...` (atributo HTML: `placeholder-wrap`) |
@@ -115,8 +117,8 @@ Ninguno.
 | `position` | `string` | `"bottom"` | — |
 | `align` | `string` | `"start"` | — |
 | `fixed` | `boolean` | `false` | — |
+| `textAlign` | `"center" \| "left" \| "right"` | `"left"` | Alineación del texto: el label del trigger (placeholder o selección) y las opciones del panel. `left` (default), `center`, `right`. |
 | `modelValue` | `string` | `""` | — |
-| `textAlign` | `"center" \| "left" \| "right"` | `"left"` | — |
 | `searchMode` | `"includes" \| "startsWith"` | `"startsWith"` | — |
 | `options` | `SelectOption[]` | `[]` | — |
 | `placeholderWrap` | `boolean` | `false` | — |

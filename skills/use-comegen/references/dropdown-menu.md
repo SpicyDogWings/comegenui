@@ -9,7 +9,9 @@ reemplazable (slot `toggle`). Para una paleta de comandos usá `cu-command-palet
 - En el CE `items` va como **propiedad JS** (`dd.items = [...]`), nunca por atributo.
 - Si hay items, el slot default se ignora; si no hay, el panel muestra el slot.
 - Trigger propio: slot `toggle` (en el CE, HTML `slot="toggle"`); `label` se ignora si hay slot.
-- Posicionamiento: `position` + `align` + `offset` (`fixed` para `position: fixed`); `text-align` alinea el texto del toggle.
+- Posicionamiento: `position` + `align` + `offset` (`fixed` para `position: fixed`).
+- Alineación del texto de los items: `text-align` (`left` default | `center` | `right`) mueve el
+  bloque ícono + label dentro de cada item; no toca el toggle ni la posición del panel (eso es `align`).
 - Programático: `open()`, `close()`, `toggle()`, `isOpen()`; eventos `open`/`close`.
 
 ```html
@@ -47,10 +49,10 @@ Los valores de `color` / `variant` / `position` / `align` / `text-align` están 
 | `position` | `"bottom" \| "top"` | `"bottom"` | Posición preferida del panel: `bottom`, `top` |
 | `align` | `"center" \| "start" \| "end"` | `"start"` | Alineación del panel: `start`, `center`, `end` |
 | `fixed` | `boolean` | `false` | Si es `true`, el panel usa `position: fixed` en vez de absoluto |
+| `text-align` | `"center" \| "left" \| "right"` | `"left"` | Alineación del texto de los items del panel: `left` (default), `center`, `right`. No aplica al toggle: su ancho lo define su contenido. |
 | `items` | `unknown[]` | `[]` | Lista de items (ver abajo). Se asigna como propiedad JS, no como atributo HTML |
 | `label` | `string` | `""` | Texto del toggle (se ignora si se provee slot `toggle`) |
 | `offset` | `number` | `4` | Separación en píxeles entre el toggle y el panel |
-| `text-align` | `"center" \| "left" \| "right"` | `"left"` | Alineación del texto del toggle: `left`, `center`, `right` |
 <!-- /@api:atributos -->
 
 ### Eventos
@@ -95,10 +97,10 @@ Los valores de `color` / `variant` / `position` / `align` / `text-align` están 
 | `position` | `"left" \| "right" \| "bottom" \| "top"` | `"bottom"` | — |
 | `align` | `"center" \| "start" \| "end"` | `"start"` | — |
 | `fixed` | `boolean` | `false` | — |
+| `textAlign` | `"center" \| "left" \| "right"` | `"left"` | Alineación del texto de los items del panel: `left` (default), `center`, `right`. |
 | `items` | `DropdownItem[]` | `[]` | — |
 | `label` | `string` | `""` | — |
 | `offset` | `number` | `4` | — |
-| `textAlign` | `"center" \| "left" \| "right"` | `"left"` | — |
 <!-- /@api:props -->
 
 ### Emits

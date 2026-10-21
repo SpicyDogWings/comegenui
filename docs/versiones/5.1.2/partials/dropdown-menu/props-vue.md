@@ -9,4 +9,4 @@
 | `items` | `DropdownItem[]` | `[]` | — |
 | `label` | `string` | `""` | — |
 | `offset` | `number` | `4` | — |
-| `textAlign` | `"center" \| "left" \| "right"` | `"left"` | — |
+| `textAlign` | `"center" \| "left" \| "right"` | `"left"` | Alineación del texto de los items del panel: `left` (default), `center`, `right`. |

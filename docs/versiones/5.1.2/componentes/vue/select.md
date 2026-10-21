@@ -130,8 +130,14 @@ const opciones = [
 
 ## Texto y alineación
 
-`textAlign` alinea el texto (`left` **default**, `center`, `right`) y `placeholderWrap`
-elige entre envolver el placeholder o truncarlo con `...`.
+`textAlign` (`left` **default**, `center`, `right`) alinea el texto del control, con el mismo
+criterio en las dos partes:
+
+- **El label del trigger**: el placeholder cuando no hay selección y el label de la opción elegida.
+- **Las opciones del panel**, cada una dentro de su ancho.
+
+`placeholderWrap` elige aparte entre envolver el texto en varias líneas o truncarlo con `...`;
+cuando envuelve, la alineación se ve en todas las líneas.
 
 ```vue
 <script setup lang="ts">

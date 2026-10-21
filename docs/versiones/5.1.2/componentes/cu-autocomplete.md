@@ -154,6 +154,31 @@ Por defecto el menú se abre al recibir foco. Con `min-chars="2"` solo se abre t
 
 <!-- demo:autocomplete-tipos-de-input -->
 
+## Alineación del texto
+
+`text-align` (`left` **default**, `center`, `right`) alinea el texto del **input** (el valor y su
+placeholder) y los **items del panel**, cada uno dentro de su ancho; con ícono, el ícono y el label
+se mueven juntos (el ícono no se descentra).
+
+```html
+<cu-autocomplete id="acLeft" text-align="left" placeholder="text-align: left (default)"></cu-autocomplete>
+<cu-autocomplete id="acCenter" text-align="center" placeholder="text-align: center"></cu-autocomplete>
+<cu-autocomplete id="acRight" text-align="right" placeholder="text-align: right"></cu-autocomplete>
+
+<script>
+  const items = [
+    { label: 'Administrador' },
+    { label: 'Editor de contenido' },
+    { label: 'Visor de reportes' },
+  ];
+  for (const id of ['acLeft', 'acCenter', 'acRight']) {
+    document.getElementById(id).items = items;
+  }
+</script>
+```
+
+<!-- demo:autocomplete-alineacion -->
+
 ## Selección
 
 `select` se dispara al elegir un item (con el item en `e.detail`) y `blur` al salir del campo.

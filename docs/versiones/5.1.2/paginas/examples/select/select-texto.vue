@@ -1,8 +1,9 @@
 <script setup lang="ts">
-// Refleja el ejemplo "Texto": `text-align` (left/center/right) y `placeholder-wrap`.
+// Refleja el ejemplo "Texto y alineación": `text-align` (left/center/right) y `placeholder-wrap`.
+// Alinea el label del trigger (placeholder o selección) y las opciones del panel.
 import { ref, watch } from "vue";
 
-type CuSelectElement = HTMLElement & { options?: unknown[] };
+type CuSelectElement = HTMLElement & { options?: unknown[]; set?: (v: string) => void };
 
 const izquierda = ref<CuSelectElement | null>(null);
 const centro = ref<CuSelectElement | null>(null);
@@ -14,13 +15,17 @@ const options = [
   { value: "b", label: "Opción B" },
 ];
 
-// El ref aparece cuando `VanillaDemo` termina de cargar el CE.
-watch([izquierda, centro, derecha, wrap], async (els) => {
-  await customElements.whenDefined("cu-select");
-  for (const el of els) {
-    if (el) el.options = options;
-  }
-}, { flush: "post" });
+// Los refs llegan cuando VanillaDemo renderiza el slot (después de registrar el CE).
+for (const el of [izquierda, centro, derecha, wrap]) {
+  watch(el, (node) => {
+    if (node) node.options = options;
+  });
+}
+
+// Una selección en el del centro: el label elegido también queda centrado.
+watch(centro, (node) => {
+  if (node) node.set?.("b");
+});
 </script>
 
 <template>
