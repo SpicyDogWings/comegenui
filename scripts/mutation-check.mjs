@@ -145,6 +145,44 @@ const MUTATIONS = [
     replace: `<template #default>`,
   },
   {
+    id: "skeleton-ignora-lines",
+    file: "src/components/information/Skeleton.vue",
+    expect: "con shape=text renderiza N barras (lines)",
+    find: `const barCount = computed(() =>
+  props.shape === "text" ? Math.max(1, Math.floor(props.lines) || 1) : 1,
+);`,
+    replace: `const barCount = computed(() => 1);`,
+  },
+  {
+    id: "skeleton-radius-default-mal",
+    file: "src/components/information/Skeleton.vue",
+    expect: "el radio por defecto depende del shape (circle = full)",
+    find: `const resolvedRadius = computed(() => props.radius || shapeDefaults.value.radius);`,
+    replace: `const resolvedRadius = computed(() => props.radius || "md");`,
+  },
+  {
+    id: "skeleton-sin-aria-hidden",
+    file: "src/components/information/Skeleton.vue",
+    expect: "el placeholder es decorativo (aria-hidden)",
+    find: `    aria-hidden="true"
+`,
+    replace: ``,
+  },
+  {
+    id: "skeleton-ignora-animation",
+    file: "src/components/information/Skeleton.vue",
+    expect: "aplica la clase de la animación pedida (pulse/wave/none)",
+    find: "`cu-skeleton--${props.animation}`",
+    replace: "`cu-skeleton--pulse`",
+  },
+  {
+    id: "skeleton-ignora-width-default",
+    file: "src/components/information/Skeleton.vue",
+    expect: "circle mide 40px de ancho por defecto (width por shape)",
+    find: `  "--cu-skeleton-width": props.width || shapeDefaults.value.width,`,
+    replace: `  "--cu-skeleton-width": "100%",`,
+  },
+  {
     id: "label-no-focus-on-for",
     file: "src/components/form/Label.vue",
     expect: "con `for` enfoca el elemento con ese id",

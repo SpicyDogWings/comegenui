@@ -1,0 +1,14 @@
+{
+  "tag": "cu-skeleton",
+  "props": [
+    "animation",
+    "color",
+    "height",
+    "lines",
+    "radius",
+    "shape",
+    "width"
+  ],
+  "methods": [],
+  "shadow": "div.cu-skeleton.cu-skeleton--pulse.cu-skeleton--radius-md.cu-skeleton--rect[aria-hidden,style]\n  span.cu-skeleton-bar"
+}
