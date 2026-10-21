@@ -9,4 +9,4 @@
 | `items` | `unknown[]` | `[]` | Lista de items (ver abajo). Se asigna como propiedad JS, no como atributo HTML |
 | `label` | `string` | `""` | Texto del toggle (se ignora si se provee slot `toggle`) |
 | `offset` | `number` | `4` | Separación en píxeles entre el toggle y el panel |
-| `text-align` | `"center" \| "left" \| "right"` | `"left"` | Alineación del texto del toggle: `left`, `center`, `right` |
+| `text-align` | `"center" \| "left" \| "right"` | `"left"` | Alineación del texto de los items del panel: `left` (default), `center`, `right`. No aplica al toggle: su ancho lo define su contenido. |

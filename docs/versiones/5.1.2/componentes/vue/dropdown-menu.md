@@ -86,12 +86,17 @@ const items = ref([
 
 ## Alineación del texto
 
-`textAlign` (`left` default, `center`, `right`) alinea el texto de los items del panel.
+`textAlign` (`left` **default**, `center`, `right`) alinea el **bloque de contenido** de los items
+del panel: el ícono y el label se mueven juntos (el ícono no se descentra) y, si el label ocupa
+más de una línea, el texto queda alineado dentro del ancho del item.
+
+No confundir con `align`: `align` ubica el **panel** respecto del toggle; `textAlign` alinea el
+contenido **dentro** de cada item. El toggle no se ve afectado (su ancho lo define su contenido).
 
 ```vue
-<DropdownMenu label="left" color="primary" variant="outlined" text-align="left" :items="items" />
-<DropdownMenu label="center" color="primary" variant="outlined" text-align="center" :items="items" />
-<DropdownMenu label="right" color="primary" variant="outlined" text-align="right" :items="items" />
+<DropdownMenu label="text-align: left" color="primary" variant="outlined" text-align="left" :items="items" />
+<DropdownMenu label="text-align: center" color="primary" variant="outlined" text-align="center" :items="items" />
+<DropdownMenu label="text-align: right" color="primary" variant="outlined" text-align="right" :items="items" />
 ```
 
 ## Items

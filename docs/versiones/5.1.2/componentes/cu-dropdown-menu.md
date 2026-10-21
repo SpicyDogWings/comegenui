@@ -94,12 +94,29 @@ Menú desplegable con items declarativos (label, ícono, color, divisor, link). 
 
 ## Alineación del texto
 
-`textAlign` (`left` default, `center`, `right`) alinea el texto de los items del panel.
+`text-align` (`left` **default**, `center`, `right`) alinea el **bloque de contenido** de los items
+del panel: el ícono y el label se mueven juntos (el ícono no se descentra) y, si el label ocupa
+más de una línea, el texto queda alineado dentro del ancho del item.
+
+No confundir con `align`: `align` ubica el **panel** respecto del toggle; `text-align` alinea el
+contenido **dentro** de cada item. El toggle no se ve afectado (su ancho lo define su contenido).
 
 ```html
-<cu-dropdown-menu label="left" color="primary" variant="outlined" text-align="left"></cu-dropdown-menu>
-<cu-dropdown-menu label="center" color="primary" variant="outlined" text-align="center"></cu-dropdown-menu>
-<cu-dropdown-menu label="right" color="primary" variant="outlined" text-align="right"></cu-dropdown-menu>
+<cu-dropdown-menu id="ddLeft" label="text-align: left" color="primary" variant="outlined" text-align="left"></cu-dropdown-menu>
+<cu-dropdown-menu id="ddCenter" label="text-align: center" color="primary" variant="outlined" text-align="center"></cu-dropdown-menu>
+<cu-dropdown-menu id="ddRight" label="text-align: right" color="primary" variant="outlined" text-align="right"></cu-dropdown-menu>
+
+<script>
+  const pencil = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>';
+
+  for (const id of ['ddLeft', 'ddCenter', 'ddRight']) {
+    document.getElementById(id).items = [
+      { label: 'Editar', icon: pencil },
+      { label: 'Duplicar', icon: pencil },
+      { label: 'Eliminar', icon: pencil, color: 'danger' },
+    ];
+  }
+</script>
 ```
 
 <!-- demo:dropdown-menu-text-align -->

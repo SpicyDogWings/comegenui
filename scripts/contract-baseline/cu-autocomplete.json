@@ -12,6 +12,7 @@
     "placeholder",
     "position",
     "readOnly",
+    "textAlign",
     "type",
     "variant"
   ],

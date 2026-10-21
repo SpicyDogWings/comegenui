@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, type PropType } from 'vue';
 import { isAlign, isColor, isPosition, isTextAlign, isVariantFull } from '@/utils/validators'
+import { textAlignStyle } from '@/utils/textAlign'
 import Dropdown from "../overlay/Dropdown.vue";
 import Button from "../buttons/Button.vue";
 
@@ -43,6 +44,7 @@ const props = defineProps({
     default: "start",
     validator: isAlign,
   },
+  /** Alineación del texto de los items del panel: `left` (default), `center`, `right`. */
   textAlign: {
     type: String as PropType<'left' | 'center' | 'right'>,
     required: false,
@@ -57,7 +59,7 @@ const props = defineProps({
 const emit = defineEmits(["open", "close"]);
 const dropdownRef = ref<InstanceType<typeof Dropdown> | null>(null);
 
-const itemStyle = computed(() => ({ textAlign: props.textAlign }));
+const itemStyle = computed(() => textAlignStyle(props.textAlign));
 
 function handleItemClick(item: DropdownItem) {
   if (item.disabled || item.divider) return;
@@ -160,7 +162,8 @@ defineExpose({
 
 .cu-dropdown-item {
   width: 100%;
-  justify-content: flex-start;
+  /* La alineación del contenido la pone `textAlign` inline (`justify-content`): un
+     `text-align` solo no mueve nada dentro de un `Button` flex. Default: `flex-start`. */
 }
 
 .cu-dropdown-icon {

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, defineModel, type PropType } from 'vue';
-import { isAlign, isColor, isFieldVariant, isPosition } from '@/utils/validators'
+import { isAlign, isColor, isFieldVariant, isPosition, isTextAlign } from '@/utils/validators'
+import { textAlignStyle } from '@/utils/textAlign'
 import Dropdown from "../overlay/Dropdown.vue";
 import Input from "./Input.vue";
 import Button from "../buttons/Button.vue";
@@ -46,6 +47,16 @@ const props = defineProps({
     validator: isAlign,
   },
   fixed: { type: Boolean, required: false, default: false },
+  /**
+   * Alineación del texto: el input (texto y placeholder) y los items del panel.
+   * `left` (default), `center`, `right`.
+   */
+  textAlign: {
+    type: String as PropType<'left' | 'center' | 'right'>,
+    required: false,
+    default: "left",
+    validator: isTextAlign,
+  },
 });
 
 const emit = defineEmits(["select", "blur"]);
@@ -56,6 +67,11 @@ const dropdownRef = ref<InstanceType<typeof Dropdown> | null>(null);
 const inputRef = ref<InstanceType<typeof Input> | null>(null);
 const rootRef = ref<HTMLElement | null>(null);
 const selectedItem = ref<AutocompleteItem | null>(null);
+
+/** Los items son `Button` (flex): la alineación va por `justify-content`, no por `text-align`. */
+const itemStyle = computed(() => textAlignStyle(props.textAlign));
+/** El `<input>` es un campo de texto nativo: acá sí alinea `text-align`. */
+const inputStyle = computed(() => ({ width: "100%", textAlign: props.textAlign }));
 
 const searchItems = computed(() => props.items);
 const { filteredData: filteredItems } = useSearch(searchItems, {
@@ -145,7 +161,7 @@ defineExpose({
         :color="color"
         :variant="variant"
         :type="type"
-        style="width:100%"
+        :style="inputStyle"
         @update:model-value="onInput"
         @focus="onFocus"
       />
@@ -160,6 +176,7 @@ defineExpose({
           :disabled="item.disabled"
           class="cu-autocomplete-option"
           :class="{ 'cu-autocomplete-option--disabled': item.disabled }"
+          :style="itemStyle"
           @click="item.disabled ? undefined : onItemClick(item)"
         >
           <span v-if="item.icon" v-html="item.icon" class="cu-autocomplete-icon"></span>
@@ -184,7 +201,8 @@ defineExpose({
 
 .cu-autocomplete-option {
   width: 100%;
-  justify-content: flex-start;
+  /* La alineación la pone `textAlign` inline (`justify-content`): dentro de un `Button`
+     flex el `text-align` solo no mueve nada. Default: `flex-start`. */
 }
 
 .cu-autocomplete-option--disabled {

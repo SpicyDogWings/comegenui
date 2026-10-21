@@ -8,6 +8,7 @@ import AutocompleteBasicExample from "../../examples/autocomplete/AutocompleteBa
 import AutocompleteAppearanceExample from "../../examples/autocomplete/AutocompleteAppearanceExample.vue";
 import AutocompleteStatesExample from "../../examples/autocomplete/AutocompleteStatesExample.vue";
 import AutocompletePositionExample from "../../examples/autocomplete/AutocompletePositionExample.vue";
+import AutocompleteTextAlignExample from "../../examples/autocomplete/AutocompleteTextAlignExample.vue";
 import AutocompleteImperativeExample from "../../examples/autocomplete/AutocompleteImperativeExample.vue";
 import AutocompleteLoadingExample from "../../examples/autocomplete/AutocompleteLoadingExample.vue";
 </script>
@@ -55,6 +56,16 @@ Simula una búsqueda: el panel se abre con el spinner y, a los 2 segundos, apare
 <ClientOnly>
   <div class="cu-demo cu-demo--stack">
     <AutocompletePositionExample />
+  </div>
+</ClientOnly>
+
+### Alineación del texto (`textAlign`: left, center, right)
+
+Enfocá o escribí en cada campo: se alinean el texto del input y los items del panel.
+
+<ClientOnly>
+  <div class="cu-demo cu-demo--stack">
+    <AutocompleteTextAlignExample />
   </div>
 </ClientOnly>
 

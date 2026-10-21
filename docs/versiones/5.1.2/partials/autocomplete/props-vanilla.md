@@ -11,5 +11,6 @@
 | `position` | `"left" \| "right" \| "bottom" \| "top"` | `"bottom"` | Posición del dropdown: `bottom`, `top` |
 | `align` | `"center" \| "start" \| "end"` | `"start"` | Alineación: `start`, `center`, `end` |
 | `fixed` | `boolean` | `false` | Panel en `position: fixed` (útil en contenedores con overflow) |
+| `text-align` | `"center" \| "left" \| "right"` | `"left"` | Alineación del texto: el input (texto y placeholder) y los items del panel. `left` (default), `center`, `right`. |
 | `items` | `unknown[]` | `[]` | Opciones del menú (ver abajo). Se asigna como propiedad JS |
 | `model-value` | `string` | `""` | Valor actual del texto. El CE sincroniza su estado; asigná `modelValue` sólo si querés controlarlo |

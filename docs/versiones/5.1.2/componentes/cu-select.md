@@ -108,15 +108,31 @@ Una opción puede fijar su propio `color` (y `variant`); si no lo hace, hereda l
 
 ## Texto y alineación
 
-`text-align` alinea el texto (`left` **default**, `center`, `right`) y `placeholder-wrap`
-elige entre envolver el placeholder o truncarlo con `...`.
+`text-align` (`left` **default**, `center`, `right`) alinea el texto del control, con el mismo
+criterio en las dos partes:
+
+- **El label del trigger**: el placeholder cuando no hay selección y el label de la opción elegida.
+- **Las opciones del panel**, cada una dentro de su ancho.
+
+`placeholder-wrap` elige aparte entre envolver el texto en varias líneas o truncarlo con `...`;
+cuando envuelve, la alineación se ve en todas las líneas.
 
 ```html
-<cu-select text-align="left" placeholder="text-align: left (default)"></cu-select>
-<cu-select text-align="center" placeholder="text-align: center"></cu-select>
-<cu-select text-align="right" placeholder="text-align: right"></cu-select>
+<cu-select id="selLeft" text-align="left" placeholder="text-align: left (default)"></cu-select>
+<cu-select id="selCenter" text-align="center" placeholder="text-align: center"></cu-select>
+<cu-select id="selRight" text-align="right" placeholder="text-align: right"></cu-select>
 <cu-select placeholder-wrap
   placeholder="Un placeholder largo que se envuelve en varias líneas en vez de truncarse"></cu-select>
+
+<script>
+  const opciones = [
+    { value: 'a', label: 'Opción A' },
+    { value: 'b', label: 'Opción B' },
+  ];
+  for (const id of ['selLeft', 'selCenter', 'selRight']) {
+    document.getElementById(id).options = opciones;
+  }
+</script>
 ```
 
 <!-- demo:select-texto -->

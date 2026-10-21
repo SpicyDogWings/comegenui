@@ -12,4 +12,5 @@
 | `position` | `"left" \| "right" \| "bottom" \| "top"` | `"bottom"` | — |
 | `align` | `"center" \| "start" \| "end"` | `"start"` | — |
 | `fixed` | `boolean` | `false` | — |
+| `textAlign` | `"center" \| "left" \| "right"` | `"left"` | Alineación del texto: el input (texto y placeholder) y los items del panel. `left` (default), `center`, `right`. |
 | `items` | `AutocompleteItem[]` | `[]` | — |

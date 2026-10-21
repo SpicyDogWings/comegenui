@@ -154,3 +154,54 @@ describe("DropdownMenu — items", () => {
     expect(panel(w).find(".mi-libre").exists()).toBe(true);
   });
 });
+
+describe("DropdownMenu — alineación del texto de los items", () => {
+  // `text-align` no mueve nada dentro de un `Button` (es flex): la alineación real es
+  // `justify-content`. Si sólo se aplica `text-align`, el demo no alinea nada.
+  const items = [{ label: "Editar" }, { label: "Eliminar", color: "danger" }];
+
+  async function itemsOf(textAlign?: "left" | "center" | "right") {
+    const w = mount(DropdownMenu, { props: textAlign ? { items, textAlign } : { items } });
+    vm(w).open();
+    await flushPromises();
+    return panel(w).findAll(".cu-dropdown-item").map((i) => i.element as HTMLElement);
+  }
+
+  it("por defecto alinea a la izquierda (flex-start)", async () => {
+    const [item] = await itemsOf();
+    expect(item!.style.justifyContent).toBe("flex-start");
+    expect(item!.style.textAlign).toBe("left");
+  });
+
+  it("center centra el bloque de contenido (justify-content: center)", async () => {
+    const found = await itemsOf("center");
+    expect(found).toHaveLength(2);
+    for (const item of found) {
+      expect(item.style.justifyContent).toBe("center");
+      expect(item.style.textAlign).toBe("center");
+    }
+  });
+
+  it("right empuja el bloque de contenido al final (flex-end)", async () => {
+    const [item] = await itemsOf("right");
+    expect(item!.style.justifyContent).toBe("flex-end");
+    expect(item!.style.textAlign).toBe("right");
+  });
+
+  it("con ícono alinea el bloque entero (ícono + label), sin descentrar el ícono", async () => {
+    const w = mount(DropdownMenu, {
+      props: {
+        textAlign: "right",
+        items: [{ label: "Editar", icon: '<svg class="mi-icono"></svg>' }],
+      },
+    });
+    vm(w).open();
+    await flushPromises();
+
+    const item = panel(w).find(".cu-dropdown-item");
+    expect((item.element as HTMLElement).style.justifyContent).toBe("flex-end");
+    // El ícono sigue siendo hijo del mismo item: se mueve con el label, no por su cuenta.
+    expect(item.find(".mi-icono").exists()).toBe(true);
+    expect(item.find(".cu-dropdown-icon").exists()).toBe(true);
+  });
+});

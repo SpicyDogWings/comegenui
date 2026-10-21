@@ -11,7 +11,7 @@
 | `align` | `string` | `"start"` | — |
 | `fixed` | `boolean` | `false` | — |
 | `modelValue` | `string` | `""` | — |
-| `textAlign` | `"center" \| "left" \| "right"` | `"left"` | — |
+| `textAlign` | `"center" \| "left" \| "right"` | `"left"` | Alineación del texto: el label del trigger (placeholder o selección) y las opciones del panel. `left` (default), `center`, `right`. |
 | `searchMode` | `"includes" \| "startsWith"` | `"startsWith"` | — |
 | `options` | `SelectOption[]` | `[]` | — |
 | `placeholderWrap` | `boolean` | `false` | — |

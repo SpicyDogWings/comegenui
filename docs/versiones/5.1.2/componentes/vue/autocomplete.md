@@ -175,6 +175,20 @@ function abrir() {
 </template>
 ```
 
+## Alineación del texto
+
+`textAlign` (`left` **default**, `center`, `right`) alinea el texto del **input** (el valor y su
+placeholder) y los **items del panel**, cada uno dentro de su ancho; con ícono, el ícono y el label
+se mueven juntos (el ícono no se descentra).
+
+```vue
+<template>
+  <Autocomplete text-align="left" placeholder="text-align: left (default)" :items="items" />
+  <Autocomplete text-align="center" placeholder="text-align: center" :items="items" />
+  <Autocomplete text-align="right" placeholder="text-align: right" :items="items" />
+</template>
+```
+
 ## Selección
 
 `select` se dispara al elegir un item (con el item como payload) y `blur` al salir del campo.

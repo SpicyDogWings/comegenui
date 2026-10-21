@@ -12,6 +12,8 @@ cortas y cerradas usá `<cu-select>`; para texto libre sin sugerencias, `<cu-inp
 - Texto: `model-value`/`v-model` sólo para controlarlo; `update:modelValue` trae el texto y
   `select` el item completo.
 - Posición: `position` / `align` / `fixed`.
+- Alineación del texto: `text-align` (`left` default | `center` | `right`) alinea **el texto del
+  input** (valor y placeholder) **y los items del panel**.
 - Programático: `get()` / `set(v)` / `reset()` / `focus()` / `open()` / `close()` / `toggle()` /
   `isOpen()` / `selectedItem()`.
 
@@ -56,6 +58,7 @@ Los valores de `type` / `color` / `variant` / `position` / `align` están en «A
 | `position` | `"left" \| "right" \| "bottom" \| "top"` | `"bottom"` | Posición del dropdown: `bottom`, `top` |
 | `align` | `"center" \| "start" \| "end"` | `"start"` | Alineación: `start`, `center`, `end` |
 | `fixed` | `boolean` | `false` | Panel en `position: fixed` (útil en contenedores con overflow) |
+| `text-align` | `"center" \| "left" \| "right"` | `"left"` | Alineación del texto: el input (texto y placeholder) y los items del panel. `left` (default), `center`, `right`. |
 | `items` | `unknown[]` | `[]` | Opciones del menú (ver abajo). Se asigna como propiedad JS |
 | `model-value` | `string` | `""` | Valor actual del texto. El CE sincroniza su estado; asigná `modelValue` sólo si querés controlarlo |
 <!-- /@api:atributos -->
@@ -111,6 +114,7 @@ Ninguno.
 | `position` | `"left" \| "right" \| "bottom" \| "top"` | `"bottom"` | — |
 | `align` | `"center" \| "start" \| "end"` | `"start"` | — |
 | `fixed` | `boolean` | `false` | — |
+| `textAlign` | `"center" \| "left" \| "right"` | `"left"` | Alineación del texto: el input (texto y placeholder) y los items del panel. `left` (default), `center`, `right`. |
 | `items` | `AutocompleteItem[]` | `[]` | — |
 <!-- /@api:props -->
 

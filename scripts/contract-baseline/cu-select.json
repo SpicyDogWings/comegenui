@@ -27,5 +27,5 @@
     "selectedItem",
     "set"
   ],
-  "shadow": "div.cu-select[tabindex]\n  div.cu-dropdown.cu-popover[cooldown-variant]\n    button.cu-button.cu-button--md.cu-button--soft.cu-select-toggle[style,type]\n      span.cu-select-label\n      svg.cu-select-chevron[fill,height,stroke,stroke-linecap,stroke-linejoin,stroke-width,viewBox,width,xmlns]\n        path[d]"
+  "shadow": "div.cu-select[tabindex]\n  div.cu-dropdown.cu-popover[cooldown-variant]\n    button.cu-button.cu-button--md.cu-button--soft.cu-select-toggle[style,type]\n      span.cu-select-label[style]\n      svg.cu-select-chevron[fill,height,stroke,stroke-linecap,stroke-linejoin,stroke-width,viewBox,width,xmlns]\n        path[d]"
 }
