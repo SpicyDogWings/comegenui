@@ -22,6 +22,7 @@ como propiedad (`el.items = [...]`). Ver `gotchas.md`.
 | `cu-color-picker` | `CuColorPicker.umd.js` | Formularios | — | `update:modelValue`, `change` | 4 |
 | `cu-command-palette` | `CuCommandPalette.umd.js` | Overlay | — | `select`, `close` | 5 |
 | `cu-date-picker` | `CuDatePicker.umd.js` | Formularios | `events` | `select`, `change`, `open`, `close`, `update:modelValue`, `update:startDate`, `update:endDate` | 10 |
+| `cu-divider` | `CuDivider.umd.js` | Información | — | — | — |
 | `cu-dropdown-menu` | `CuDropdownMenu.umd.js` | Controles | `items` | `close`, `open` | 4 |
 | `cu-file-input` | `CuFileInput.umd.js` | Formularios | — | `update:modelValue` | 5 |
 | `cu-file-input-zone` | `CuFileInputZone.umd.js` | Formularios | — | `update:modelValue` | 5 |
