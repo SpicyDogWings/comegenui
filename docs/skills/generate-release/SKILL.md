@@ -4,7 +4,7 @@ description: 'Receta para preparar la próxima release de ComegenUI (este repo):
 metadata:
   repository: https://github.com/SpicyDogWings/comegenui
   path: docs/skills/generate-release
-  version: 5.1.2
+  version: 5.2.0
 ---
 
 # `generate-release` — preparar la próxima release

@@ -1,4 +1,4 @@
-// Comportamiento de Divider según su ficha (docs/versiones/5.1.2/componentes/vue/divider.md).
+// Comportamiento de Divider según su ficha (docs/versiones/5.2.0/componentes/vue/divider.md).
 // Aserciones escritas a mano desde la prosa (fallan por bugs reales).
 import { describe, it, expect } from "vitest";
 import { defineCustomElement, nextTick } from "vue";
