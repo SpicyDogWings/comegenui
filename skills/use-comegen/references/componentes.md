@@ -97,6 +97,7 @@ más se consulta— **qué no se puede esperar de él**.
 | Avatar | `cu-avatar` | Avatar circular: imagen (`src`) o iniciales, con color por hash si no se pasa `color` | — |
 | Badge | `cu-badge` | Etiqueta pequeña de estado/categoría | — |
 | Card | `cu-card` | Tarjeta con media/header/cuerpo/footer | — |
+| Divider | `cu-divider` | Separador horizontal/vertical con `label` o contenido en el medio | — |
 | FileList | sólo Vue | Lista de archivos (icono, nombre, tamaño, quitar) | — |
 | Loader | sólo Vue | Indicador de carga animado | — |
 
@@ -107,6 +108,7 @@ más se consulta— **qué no se puede esperar de él**.
 - `cu-avatar`: si no pasás `src` ni `initials`, queda vacío; el color por hash se calcula de las iniciales.
 - `cu-badge`: sin eventos ni métodos; sólo slot default.
 - `cu-card`: emite `click`; sin métodos.
+- `cu-divider`: sin eventos ni métodos; `label` y el slot no aplican al color del trazo (siempre `subtle-border`).
 - `FileList`: emite `select` y `remove`; sin métodos.
 - `Loader`: sin emits/slots/métodos; sólo `color`, `animation`, `delay`.
 

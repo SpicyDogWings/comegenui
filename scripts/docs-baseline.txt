@@ -23,6 +23,7 @@ color-picker	5
 command-palette	12
 copy-button	0
 date-picker	31
+divider	1
 dropdown	19
 dropdown-menu	12
 dual-calendar	19
@@ -57,4 +58,4 @@ theme-manager-modal	0
 toggle-color-sheme	0
 tooltip	9
 year-slider	8
-total	451
+total	452
