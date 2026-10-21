@@ -42,7 +42,8 @@ const { focused: inputFocus } = useFocus(inputRef);
 
 const switchStyles = computed(() => ({
   '--switch-bg': `var(--cu-color-${props.color})`,
-  '--switch-ghost-hover': `var(--cu-color-${props.color}-ghost-hover)`,
+  '--switch-hover': `var(--cu-color-${props.color}-hover)`,
+  '--switch-active': `var(--cu-color-${props.color}-active)`,
 }));
 
 const toggle = (next?: boolean) => {
@@ -163,8 +164,14 @@ defineExpose({
   background-color: var(--cu-color-neutral-soft);
 }
 
+/* Encendido: el track es sólido, así que el hover/active son las variantes sólidas
+   del color (un poco más oscuro / claro), no las `ghost` translúcidas. */
 .cu-switch-track.cu-switch--checked:hover {
-  background-color: var(--switch-ghost-hover);
+  background-color: var(--switch-hover);
+}
+
+.cu-switch-track.cu-switch--checked:active {
+  background-color: var(--switch-active);
 }
 
 .cu-switch-track:not(.cu-switch--checked):hover {
