@@ -98,6 +98,7 @@ más se consulta— **qué no se puede esperar de él**.
 | Badge | `cu-badge` | Etiqueta pequeña de estado/categoría | — |
 | Card | `cu-card` | Tarjeta con media/header/cuerpo/footer | — |
 | Divider | `cu-divider` | Separador horizontal/vertical con `label` o contenido en el medio | — |
+| Skeleton | `cu-skeleton` | Placeholder de carga: bloque, círculo o líneas de texto, animado | — |
 | FileList | sólo Vue | Lista de archivos (icono, nombre, tamaño, quitar) | — |
 | Loader | sólo Vue | Indicador de carga animado | — |
 
@@ -109,6 +110,7 @@ más se consulta— **qué no se puede esperar de él**.
 - `cu-badge`: sin eventos ni métodos; sólo slot default.
 - `cu-card`: emite `click`; sin métodos.
 - `cu-divider`: sin eventos ni métodos; `label` y el slot no aplican al color del trazo (siempre `subtle-border`).
+- `cu-skeleton`: decorativo (`aria-hidden`), sin eventos, slots ni métodos; `lines` sólo aplica a `shape="text"` y `width`/`height`/`radius` vacíos se resuelven por forma.
 - `FileList`: emite `select` y `remove`; sin métodos.
 - `Loader`: sin emits/slots/métodos; sólo `color`, `animation`, `delay`.
 

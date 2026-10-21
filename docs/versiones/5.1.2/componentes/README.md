@@ -65,6 +65,7 @@ Las páginas del sitio ([`docs/versiones/5.1.1/paginas/componentes`](../site/com
 | Badge | [`cu-badge`](./cu-badge.md) | [Badge](./vue/badge.md) |
 | Card | [`cu-card`](./cu-card.md) | [Card](./vue/card.md) |
 | Divider | [`cu-divider`](./cu-divider.md) | [Divider](./vue/divider.md) |
+| Skeleton | [`cu-skeleton`](./cu-skeleton.md) | [Skeleton](./vue/skeleton.md) |
 | FileList | — | [FileList](./vue/file-list.md) |
 | Loader | — | [Loader](./vue/loader.md) |
 
