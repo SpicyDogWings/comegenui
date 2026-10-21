@@ -124,18 +124,24 @@ function onKeyDown(e: KeyboardEvent) {
   }
 }
 
+// El listener de scroll va PASIVO: sólo lee geometría para reposicionar el panel
+// (nunca llama a `preventDefault`), así que no debe bloquear el scrolling
+// asíncrono. Un listener de scroll no pasivo en `document` es exactamente lo que
+// Firefox marca como "scroll-linked positioning effect".
+const SCROLL_OPTS = { capture: true, passive: true } as const;
+
 onMounted(() => {
   document.addEventListener("click", onDocumentClick, true);
   document.addEventListener("keydown", onKeyDown);
   window.addEventListener("resize", onViewportChange);
-  document.addEventListener("scroll", onViewportChange, true);
+  document.addEventListener("scroll", onViewportChange, SCROLL_OPTS);
 });
 onUnmounted(() => {
   unregisterHover();
   document.removeEventListener("click", onDocumentClick, true);
   document.removeEventListener("keydown", onKeyDown);
   window.removeEventListener("resize", onViewportChange);
-  document.removeEventListener("scroll", onViewportChange, true);
+  document.removeEventListener("scroll", onViewportChange, SCROLL_OPTS);
   document.removeEventListener("mousemove", onPointerMove, true);
   pointerListening = false;
 });

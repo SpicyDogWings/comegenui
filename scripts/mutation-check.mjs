@@ -385,6 +385,13 @@ const MUTATIONS = [
     replace: `function open() {`,
   },
   {
+    id: "popover-scroll-listener-no-pasivo",
+    file: "src/components/overlay/Popover.vue",
+    expect: "el listener de scroll del documento es pasivo (no bloquea el scrolling)",
+    find: `document.addEventListener("scroll", onViewportChange, SCROLL_OPTS);`,
+    replace: `document.addEventListener("scroll", onViewportChange, true);`,
+  },
+  {
     id: "dropdown-item-click-no-close",
     file: "src/components/overlay/Dropdown.vue",
     expect: "click en un item del dropdown cierra el panel",
