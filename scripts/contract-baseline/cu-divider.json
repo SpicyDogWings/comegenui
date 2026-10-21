@@ -1,0 +1,11 @@
+{
+  "tag": "cu-divider",
+  "props": [
+    "color",
+    "label",
+    "orientation",
+    "variant"
+  ],
+  "methods": [],
+  "shadow": "hr.cu-divider.cu-divider--horizontal.cu-divider--solid[style]"
+}

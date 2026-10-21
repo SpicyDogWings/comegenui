@@ -116,6 +116,27 @@ const MUTATIONS = [
     replace: `  "--cu-loader-delay": \`2000ms\`,`,
   },
   {
+    id: "divider-vertical-sin-aria-orientation",
+    file: "src/components/information/Divider.vue",
+    expect: "el divider vertical declara `aria-orientation`",
+    find: `    :aria-orientation="isVertical ? 'vertical' : undefined"`,
+    replace: ``,
+  },
+  {
+    id: "divider-ignora-label",
+    file: "src/components/information/Divider.vue",
+    expect: "el divider con `label` muestra el texto entre las líneas",
+    find: `<span v-if="hasContent" class="cu-divider-label"><slot>{{ props.label }}</slot></span>`,
+    replace: `<span v-if="hasContent" class="cu-divider-label"></span>`,
+  },
+  {
+    id: "divider-ignora-variante",
+    file: "src/components/information/Divider.vue",
+    expect: "aplica la clase de la variante del trazo (solid/dashed/dotted)",
+    find: "`cu-divider--${props.variant}`",
+    replace: "`cu-divider--solid`",
+  },
+  {
     id: "label-no-focus-on-for",
     file: "src/components/form/Label.vue",
     expect: "con `for` enfoca el elemento con ese id",
