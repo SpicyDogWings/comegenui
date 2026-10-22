@@ -44,6 +44,18 @@ const bundlerSnippet = `import "comegenui/esm-core/CuButton.js";
 // y en cualquier template:
 // <cu-button color="primary">Click me</cu-button>`;
 
+// Va por interpolación y no como texto estático dentro del slot: el compilador de
+// plantillas de Vue condensa los saltos de línea del texto estático y el markdown
+// llega como una sola línea (headings, párrafos y listas pegados).
+const markdownSnippet = `# Markdown, tal cual
+
+Este bloque lo renderiza el componente **Markdown** de la lib: el texto va
+crudo en el slot y sale parseado — headings, **negritas**, \`código inline\`,
+[links](/componentes/cu-markdown) y listas como esta.
+
+- Sanitizado con DOMPurify.
+- Renderiza al montar, sin configuración.`;
+
 const themeNames = computed(() => (loaded.value ? store.themeNames : []));
 const currentTheme = computed(() => store.current);
 
@@ -138,17 +150,7 @@ function prettyTheme(value: string) {
       </section>
 
       <section class="home-doc">
-        <Markdown>
-          # Markdown, tal cual
-
-          Este bloque lo renderiza el componente **Markdown** de la lib: el
-          texto va crudo en el slot y sale parseado — headings, **negritas**,
-          `código inline`, [links](/componentes/cu-markdown) y listas
-          como esta.
-
-          - Sanitizado con DOMPurify.
-          - Renderiza al montar, sin configuración.
-        </Markdown>
+        <Markdown>{{ markdownSnippet }}</Markdown>
       </section>
 
       <section v-if="themeNames.length > 1" class="home-themes">

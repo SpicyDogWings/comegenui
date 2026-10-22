@@ -14,6 +14,40 @@ const docOutlineItems = [
   ]},
   { label: 'Buenas prácticas', id: 'practices' },
 ]
+
+// Va por interpolación y no como texto estático dentro del slot: el compilador de
+// plantillas de Vue condensa los saltos de línea del texto estático y el markdown
+// llega como una sola línea (headings, párrafos y listas pegados).
+const docMarkdown = `## Introducción
+
+Los **tokens de diseño** son la fuente única de verdad para todo el sistema visual. En lugar de hardcodear colores o tamaños en cada componente, usamos variables CSS que se resuelven según el tema activo.
+
+> Cambiás un token y todo el ecosistema lo sigue — desde los botones hasta las alertas.
+
+## ¿Cómo funciona?
+
+Cada tema define un conjunto de tokens que cubren:
+
+- **Colores**: \`primary\`, \`secondary\`, \`neutral\`, \`success\`, \`warning\`, \`danger\`
+- **Tipografía**: familias, pesos y tamaños
+- **Espaciado**: escala consistente para márgenes y paddings
+- **Bordes**: radios y anchos
+
+### Ejemplo rápido
+
+Definís un tema nuevo en pocos pasos:
+
+1. Abrís el Theme Builder
+2. Ajustás los colores con los pickers
+3. Exportás el CSS generado
+4. Lo importás en tu proyecto
+
+## Buenas prácticas
+
+- **No mezcles temas** en la misma vista
+- **Usá los tokens semánticos** (\`primary\`, \`success\`) en vez de nombres de color
+- **Probá en contexto** con las previews del builder
+- **Exportá y versioná** los temas junto al código`;
 </script>
 
 <template>
@@ -52,38 +86,7 @@ const docOutlineItems = [
           <Badge color="success" variant="soft">Publicado</Badge>
         </div>
         <div class="tb-doc-body">
-          <Markdown>
-## Introducción
-
-Los **tokens de diseño** son la fuente única de verdad para todo el sistema visual. En lugar de hardcodear colores o tamaños en cada componente, usamos variables CSS que se resuelven según el tema activo.
-
-> Cambiás un token y todo el ecosistema lo sigue — desde los botones hasta las alertas.
-
-## ¿Cómo funciona?
-
-Cada tema define un conjunto de tokens que cubren:
-
-- **Colores**: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger`
-- **Tipografía**: familias, pesos y tamaños
-- **Espaciado**: escala consistente para márgenes y paddings
-- **Bordes**: radios y anchos
-
-### Ejemplo rápido
-
-Definís un tema nuevo en pocos pasos:
-
-1. Abrís el Theme Builder
-2. Ajustás los colores con los pickers
-3. Exportás el CSS generado
-4. Lo importás en tu proyecto
-
-## Buenas prácticas
-
-- **No mezcles temas** en la misma vista
-- **Usá los tokens semánticos** (`primary`, `success`) en vez de nombres de color
-- **Probá en contexto** con las previews del builder
-- **Exportá y versioná** los temas junto al código
-          </Markdown>
+          <Markdown>{{ docMarkdown }}</Markdown>
         </div>
         <div class="tb-doc-footer">
           <div class="tb-doc-tags">
