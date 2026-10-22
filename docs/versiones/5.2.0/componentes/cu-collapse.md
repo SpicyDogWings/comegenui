@@ -69,8 +69,8 @@ HTML plano se asigna como propiedad (el atributo no tolera el markup inline).
 
 ## Abierto por defecto
 
-`default-open` arranca el collapse abierto, sin pasar por el evento `toggle` (sólo define el
-estado inicial).
+`default-open` arranca el collapse abierto, sin pasar por los eventos `toggle`/`open`
+(sólo define el estado inicial).
 
 ```html
 <cu-collapse label="Opciones avanzadas" default-open>
@@ -109,15 +109,24 @@ Los collapses se pueden anidar para construir árboles de menú:
 
 ## Escuchar eventos
 
+`toggle` trae el estado nuevo en `e.detail`; `open` y `close` te dicen qué acción ocurrió
+(por click o por código), sin payload.
+
 ```html
-<cu-collapse id="miCollapse" label="Escuchá el toggle" color="primary">
-  <p>El estado se registra abajo.</p>
+<cu-collapse id="miCollapse" label="Escuchá los eventos" color="primary">
+  <p>La acción se registra abajo.</p>
 </cu-collapse>
 
 <script>
   const collapse = document.getElementById('miCollapse');
   collapse.addEventListener('toggle', (e) => {
     console.log('abierto:', e.detail); // true | false
+  });
+  collapse.addEventListener('open', () => {
+    console.log('se abrió');
+  });
+  collapse.addEventListener('close', () => {
+    console.log('se cerró');
   });
 </script>
 ```
@@ -185,7 +194,7 @@ Los collapses se pueden anidar para construir árboles de menú:
 
 ## Eventos
 
-<!--@include: ../partials/collapse/eventos.md-->
+<!--@include: ../partials/collapse/eventos-vanilla.md-->
 
 ## Slots
 

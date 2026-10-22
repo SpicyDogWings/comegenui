@@ -225,6 +225,23 @@ const MUTATIONS = [
   /* mutado */`,
   },
   {
+    id: "collapse-no-open-close-events",
+    file: "src/components/overlay/Collapse.vue",
+    expect: "abrir emite open y cerrar emite close",
+    find: `  emit('toggle', value)
+  if (value) emit('open')
+  else emit('close')`,
+    replace: `  emit('toggle', value)`,
+  },
+  {
+    id: "collapse-close-emits-open",
+    file: "src/components/overlay/Collapse.vue",
+    expect: "cerrar emite close (no open)",
+    find: `  if (value) emit('open')
+  else emit('close')`,
+    replace: `  if (value) emit('open')`,
+  },
+  {
     id: "collapse-description-no-render",
     file: "src/components/overlay/Collapse.vue",
     expect: "renderiza la descripción del trigger bajo el label",

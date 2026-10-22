@@ -69,8 +69,8 @@ const estrella =
 
 ## Abierto por defecto
 
-`default-open` arranca el collapse abierto, sin pasar por el evento `toggle` (sólo define el
-estado inicial).
+`default-open` arranca el collapse abierto, sin pasar por los eventos `toggle`/`open`
+(sólo define el estado inicial).
 
 ```vue
 <template>
@@ -113,6 +113,9 @@ Los collapses se pueden anidar para construir árboles de menú:
 
 ## Escuchar eventos
 
+`toggle` trae el estado nuevo como argumento; `open` y `close` te dicen qué acción ocurrió
+(por click o por código).
+
 ```vue
 <script setup lang="ts">
 import Collapse from "@/components/overlay/Collapse.vue";
@@ -120,10 +123,18 @@ import Collapse from "@/components/overlay/Collapse.vue";
 function onToggle(abierto: boolean) {
   console.log("abierto:", abierto); // true | false
 }
+
+function onOpen() {
+  console.log("se abrió");
+}
+
+function onClose() {
+  console.log("se cerró");
+}
 </script>
 
 <template>
-  <Collapse label="Mi collapse" @toggle="onToggle">
+  <Collapse label="Mi collapse" @toggle="onToggle" @open="onOpen" @close="onClose">
     ...
   </Collapse>
 </template>
@@ -187,7 +198,7 @@ function toggleFaq() {
 
 ## Emits
 
-<!--@include: ../../partials/collapse/eventos.md-->
+<!--@include: ../../partials/collapse/eventos-vue.md-->
 
 ## Slots
 

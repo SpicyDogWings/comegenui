@@ -40,7 +40,7 @@ const props = defineProps({
 const collapseRef = ref<InstanceType<typeof Collapse> | null>(null);
 
 const instance = getCurrentInstance();
-function ceEmit(event: string, payload: unknown) {
+function ceEmit(event: string, payload?: unknown) {
   const el = instance?.vnode.el as HTMLElement | null;
   const host = el?.getRootNode()?.host || el;
   if (host) {
@@ -74,6 +74,8 @@ defineExpose({ open, close, toggle, isOpen });
     :disabled="props.disabled"
     :color="props.color"
     @toggle="ceEmit('toggle', $event)"
+    @open="ceEmit('open')"
+    @close="ceEmit('close')"
   >
     <!-- Contenido colapsable -->
     <slot></slot>

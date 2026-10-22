@@ -65,6 +65,20 @@ describe("Collapse.ce", () => {
     await flushPromises();
     expect(w.vm.isOpen()).toBe(false);
   });
+
+  it("bridgea `open` y `close` como CustomEvents del host", async () => {
+    const w = mount(CollapseCe, { props: { label: "Título" } });
+    const events: string[] = [];
+    w.element.addEventListener("open", () => events.push("open"));
+    w.element.addEventListener("close", () => events.push("close"));
+
+    w.vm.open();
+    await flushPromises();
+    w.vm.close();
+    await flushPromises();
+
+    expect(events).toEqual(["open", "close"]);
+  });
 });
 
 describe("Input.ce", () => {

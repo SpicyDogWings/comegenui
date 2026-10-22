@@ -37,7 +37,12 @@ const props = defineProps({
 })
 
 const emit = defineEmits<{
+  /** Alterna el estado del collapse (`true` abierto, `false` cerrado). */
   (e: 'toggle', isOpen: boolean): void
+  /** El collapse se abrió (click o `open()`). */
+  (e: 'open'): void
+  /** El collapse se cerró (click, `close()` o `toggle()`). */
+  (e: 'close'): void
 }>()
 
 const isOpen = ref(props.defaultOpen)
@@ -47,6 +52,8 @@ function setOpen(value: boolean) {
   if (isOpen.value === value) return
   isOpen.value = value
   emit('toggle', value)
+  if (value) emit('open')
+  else emit('close')
 }
 
 /** Alterna el estado del collapse. */

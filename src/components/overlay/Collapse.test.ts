@@ -1,8 +1,9 @@
 // Comportamiento de Collapse según su ficha (docs/componentes/vue/collapse.md).
 //
 // Sección colapsable con trigger (botón + chevron). Contenido oculto por
-// defecto; `default-open` lo muestra al inicio. Emite `toggle` con boolean y
-// expone open/close/toggle/isOpen. Aserciones escritas a mano desde la prosa.
+// defecto; `default-open` lo muestra al inicio. Emite `toggle` con boolean,
+// `open` al abrirse y `close` al cerrarse, y expone open/close/toggle/isOpen.
+// Aserciones escritas a mano desde la prosa.
 import { describe, it, expect } from "vitest";
 import { flushPromises, mount } from "@vue/test-utils";
 import Collapse from "./Collapse.vue";
@@ -104,6 +105,48 @@ describe("Collapse — evento toggle", () => {
     vm(w).open();
     await flushPromises();
     expect(w.find(".cu-collapse-chevron").classes()).toContain("is-open");
+  });
+});
+
+describe("Collapse — eventos open y close", () => {
+  it("click en el trigger emite open al abrir y close al cerrar", async () => {
+    const w = mount(Collapse, { props: { label: "L" } });
+
+    await w.find(".cu-collapse-trigger").trigger("click");
+    await flushPromises();
+    expect(w.emitted("open")).toEqual([[]]);
+    expect(w.emitted("close")).toBeUndefined();
+
+    await w.find(".cu-collapse-trigger").trigger("click");
+    await flushPromises();
+    expect(w.emitted("open")).toEqual([[]]);
+    expect(w.emitted("close")).toEqual([[]]);
+  });
+
+  it("open()/close() programáticos también emiten open y close", async () => {
+    const w = mount(Collapse, { props: { label: "L" } });
+
+    vm(w).open();
+    await flushPromises();
+    expect(w.emitted("open")).toEqual([[]]);
+
+    vm(w).close();
+    await flushPromises();
+    expect(w.emitted("close")).toEqual([[]]);
+  });
+
+  it("no emite open/close si el estado no cambia", async () => {
+    const w = mount(Collapse, { props: { label: "L" } });
+
+    vm(w).close();
+    await flushPromises();
+    expect(w.emitted("close")).toBeUndefined();
+
+    vm(w).open();
+    await flushPromises();
+    vm(w).open();
+    await flushPromises();
+    expect(w.emitted("open")).toEqual([[]]);
   });
 });
 

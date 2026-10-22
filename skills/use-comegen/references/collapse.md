@@ -8,7 +8,7 @@ anclado usá `cu-dropdown-menu`; para un modal, `cu-modal`.
 - El trigger lleva `label` (**obligatorio**) y, opcionalmente, `icon` (HTML/SVG como string) y `description`.
 - Contenido por el slot default.
 - `default-open` arranca abierto; `color` colorea el trigger.
-- Escuchá `toggle` (boolean) o usá `open()`, `close()`, `toggle()`, `isOpen()`.
+- Escuchá `toggle` (boolean), `open` o `close` para saber qué acción ocurrió; o usá `open()`, `close()`, `toggle()`, `isOpen()`.
 - `disabled` deja el trigger inerte (atributo booleano en HTML plano).
 
 ```html
@@ -28,7 +28,7 @@ Los valores de `color` están en «Atributos» / «Props», abajo.
 - Un solo slot (`default`): no se puede cambiar el trigger ni el chevron.
 - `label` es obligatorio.
 - Con `disabled`, `open()` y `toggle()` son no-op; `close()` sigue funcionando.
-- `toggle` sólo se emite cuando el estado cambia.
+- `toggle`, `open` y `close` sólo se emiten cuando el estado cambia.
 - `icon` es un string HTML/SVG inyectado crudo; no es un componente ni una URL.
 
 ## API del custom element
@@ -52,6 +52,8 @@ Los valores de `color` están en «Atributos» / «Props», abajo.
 | Evento | Payload (`e.detail`) | Descripción |
 | ------ | ------ | ------ |
 | `toggle` | `boolean` | Alterna el estado del collapse. |
+| `open` | — | Abre el collapse. |
+| `close` | — | Cierra el collapse. |
 <!-- /@api:eventos -->
 
 ### Slots
@@ -93,6 +95,8 @@ Los valores de `color` están en «Atributos» / «Props», abajo.
 <!-- @api:emits -->
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
+| `close` | — | Cierra el collapse. |
+| `open` | — | Abre el collapse. |
 | `toggle` | `boolean` | Alterna el estado del collapse. |
 <!-- /@api:emits -->
 
