@@ -113,6 +113,14 @@ El contenido va por el slot `default`; los slots `media`, `header` y `footer` re
 
 <!-- demo:card-slots-custom -->
 
+## Overlays dentro de la card
+
+La card recorta su contenido (`overflow: hidden`, para que la media no se escape de las esquinas
+redondeadas). Los controles cuyo menú es un overlay de `Popover` (`<cu-select>`,
+`<cu-autocomplete>`, `<cu-date-picker>`, `<cu-dropdown-menu>`, `<cu-tooltip>`) siguen funcionando:
+cuando el panel se saldría del área visible, se posiciona contra el viewport en vez de quedar
+cortado. No hace falta el atributo `fixed`.
+
 ## Atributos
 
 <!--@include: ../partials/card/props-vanilla.md-->
