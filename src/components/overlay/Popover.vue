@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, type PropType } from "vue";
+import { ref, computed, nextTick, onMounted, onUnmounted, type PropType } from "vue";
 import { isAlign, isPosition } from '@/utils/validators'
 
 const props = defineProps({
@@ -39,6 +39,15 @@ const effectiveAlign = computed(() => props.align);
 
 const panelPos = ref<Record<string, string>>({ top: "0px", left: "0px" });
 
+// Fallback automático a `fixed`: si un ancestro recorta el panel (`.cu-card`,
+// `.cu-table`, cualquier contenedor con `overflow` distinto de `visible`),
+// `position: absolute` queda cortado en su borde. En ese caso el panel se posiciona
+// contra el viewport, con la misma maquinaria que ya usa la prop `fixed`.
+// No se activa si un ancestro crea containing block para `fixed` (transform, filter,
+// contain, …): ahí `fixed` quedaría desplazado y el recorte es el mal menor.
+const autoFixed = ref(false);
+const fixedMode = computed(() => props.fixed || autoFixed.value);
+
 const panelStyle = computed(() => {
   // Anchos y fondo vía CSS vars para que los wrappers (Tooltip, etc.) los
   // puedan sobrescribir sin pelear con estilos inline.
@@ -48,7 +57,7 @@ const panelStyle = computed(() => {
     maxWidth: "var(--cu-popover-max-width, 80vw)",
   };
 
-  if (props.fixed) {
+  if (fixedMode.value) {
     return {
       ...base,
       position: "fixed",
@@ -102,6 +111,8 @@ const panelStyle = computed(() => {
 
 const isOpen = ref(false);
 const popoverRef = ref<HTMLElement | null>(null);
+// Panel renderizado: se mide para decidir si un ancestro lo recorta.
+const panelEl = ref<HTMLElement | null>(null);
 
 // Un click fuera del popover cierra el panel en fase CAPTURA. Si el mismo click
 // dispara un toggle() externo, el flag marca "este click ya cerró" y no reabre.
@@ -109,6 +120,11 @@ let closedByOutsideClick = false;
 
 function onDocumentClick(e: MouseEvent) {
   if (!isOpen.value || !popoverRef.value) return;
+  // Un `click` que no viene de un puntero no es un click del usuario: es un
+  // `CustomEvent('click')` redisparado por un ancestro (p. ej. `<cu-card>` re-emite
+  // el click de su contenido). Tratarlo como "click afuera" cerraba el panel con el
+  // mismo gesture que lo abría, así que dentro de una card el menú nunca quedaba abierto.
+  if (!(e instanceof MouseEvent)) return;
   if (!e.composedPath().includes(popoverRef.value)) {
     closedByOutsideClick = true;
     isOpen.value = false;
@@ -149,7 +165,7 @@ onUnmounted(() => {
 // Recalcula la posición del panel en modo fixed (coordenadas de viewport) al
 // abrir y en cada scroll/resize mientras está abierto.
 function positionPanel() {
-  if (!props.fixed || !popoverRef.value) return;
+  if (!fixedMode.value || !popoverRef.value) return;
   const r = popoverRef.value.getBoundingClientRect();
   const vw = window.innerWidth;
   const vh = window.innerHeight;
@@ -178,11 +194,77 @@ function positionPanel() {
     else if (align === "end") style.bottom = `${vh - r.bottom}px`;
     else { style.top = `${r.top + r.height / 2}px`; style.transform = "translateY(-50%)"; }
   }
+  // En el fallback automático el panel no puede heredar el `width: 100%` del modo
+  // absoluto (ya no está en el flujo del ancla): toma el ancho del ancla para no
+  // cambiar el aspecto. Con la prop `fixed` explícita no se toca nada.
+  if (autoFixed.value && !props.panelWidth) style.width = `${r.width}px`;
   panelPos.value = style;
 }
 
 function onViewportChange() {
-  if (isOpen.value && props.fixed) positionPanel();
+  if (isOpen.value && fixedMode.value) positionPanel();
+}
+
+// ¿Este ancestro ancla a sus descendientes `fixed`? Entonces `fixed` no escapa del
+// recorte: quedaría desplazado respecto del ancla, que es peor que quedar recortado.
+function anchorsFixedDescendants(cs: CSSStyleDeclaration): boolean {
+  const notNone = (v: string | undefined) => !!v && v !== "none";
+  return (
+    notNone(cs.transform) ||
+    notNone(cs.filter) ||
+    notNone(cs.perspective) ||
+    notNone(cs.backdropFilter) ||
+    (!!cs.contain && /paint|layout|strict|content/.test(cs.contain)) ||
+    (!!cs.willChange && /transform|filter|perspective/.test(cs.willChange))
+  );
+}
+
+// `overflow` distinto de `visible` recorta a sus descendientes (hidden/auto/scroll/clip).
+function clipsDescendants(cs: CSSStyleDeclaration): boolean {
+  return !!cs.overflow && cs.overflow !== "visible";
+}
+
+// Recorre el árbol desde el ancla (en el flat tree) buscando un ancestro que recorte
+// el panel ya renderizado. Sin layout (jsdom) devuelve false: no hay nada que medir.
+function isClippedByAncestor(panel: HTMLElement, anchor: HTMLElement): boolean {
+  const pr = panel.getBoundingClientRect();
+  if (!pr.width && !pr.height) return false;
+  let el: Element | null = flatParent(anchor);
+  while (el) {
+    const cs = getComputedStyle(el);
+    if (anchorsFixedDescendants(cs)) return false;
+    if (clipsDescendants(cs)) {
+      const r = el.getBoundingClientRect();
+      if (pr.top < r.top || pr.left < r.left || pr.bottom > r.bottom || pr.right > r.right) {
+        return true;
+      }
+    }
+    el = flatParent(el);
+  }
+  return false;
+}
+
+// Padre en el flat tree: lo que el usuario ve. Un hijo con slot está *dentro* del
+// shadow root que lo proyecta (p. ej. `<cu-select>` es hijo de `<cu-card>` pero su
+// ancestro recortante es el `article.cu-card` del shadow), así que `parentElement`
+// no alcanza: el salto lo da `assignedSlot`.
+function flatParent(el: Element): Element | null {
+  const slotted = (el as Element & { assignedSlot?: Element | null }).assignedSlot;
+  if (slotted) return slotted;
+  if (el.parentElement) return el.parentElement;
+  return (el.getRootNode() as ShadowRoot).host ?? null;
+}
+
+// Se decide después del render (necesita el rect del panel) y dentro del mismo tick:
+// el panel pasa a `fixed` antes del primer paint, sin parpadeo en `absolute`.
+async function autoFixIfClipped() {
+  await nextTick();
+  const panel = panelEl.value;
+  const anchor = popoverRef.value;
+  if (!panel || !anchor || !isOpen.value || props.fixed) return;
+  if (!isClippedByAncestor(panel, anchor)) return;
+  autoFixed.value = true;
+  positionPanel();
 }
 
 let hoverTimer: ReturnType<typeof setTimeout> | null = null;
@@ -272,14 +354,20 @@ function onMouseLeave() {
 
 function open() {
   if (props.disabled) return;
+  // Cada apertura vuelve a decidir el modo: el ancestro pudo cambiar (scroll, layout).
+  autoFixed.value = false;
   positionPanel();
   isOpen.value = true;
   emit("open");
   if (props.hover) registerHoverOpen();
+  // Sin `fixed` explícito, el panel se mide ya renderizado: si un ancestro lo recorta,
+  // se posiciona contra el viewport (fallback automático).
+  if (!props.fixed) void autoFixIfClipped();
 }
 function close() {
   if (!isOpen.value) return;
   isOpen.value = false;
+  autoFixed.value = false;
   emit("close");
   unregisterHover();
 }
@@ -306,6 +394,7 @@ defineExpose({ open, close, toggle, isOpen: () => isOpen.value });
     <slot name="toggle" :toggle="toggle" :isOpen="isOpen" />
     <div
       v-if="isOpen"
+      ref="panelEl"
       :style="panelStyle"
       :class="['cu-popover-panel', panelClass]"
       :role="role || undefined"

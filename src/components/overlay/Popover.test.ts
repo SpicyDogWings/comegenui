@@ -170,3 +170,143 @@ describe("Popover — listeners de viewport", () => {
     spy.mockRestore();
   });
 });
+
+// ── Repro de "<cu-select> dentro de una card no despliega" ────────────────────
+// Dos causas independientes, medidas en Chromium real (ver docs/notes/15-select-en-card.md):
+//   1) un ancestro que re-emite `click` como CustomEvent (p. ej. `<cu-card>`) cerraba
+//      el panel con el mismo gesto que lo abría;
+//   2) un ancestro con `overflow` distinto de `visible` recortaba el panel.
+
+describe("Popover — clicks que no vienen de un puntero", () => {
+  it("un `CustomEvent('click')` redisparado fuera del popover no lo cierra", async () => {
+    const w = mount(Popover, { attachTo: document.body });
+    vm(w).open();
+    await flushPromises();
+    expect(vm(w).isOpen()).toBe(true);
+
+    // Lo mismo que hace el wrapper CE de `<cu-card>`: `new CustomEvent("click", { bubbles })`.
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+    host.dispatchEvent(new CustomEvent("click", { bubbles: true, composed: true }));
+    await flushPromises();
+
+    expect(vm(w).isOpen()).toBe(true);
+    expect(w.emitted("close")).toBeUndefined();
+
+    host.remove();
+    w.unmount();
+  });
+
+  it("un click de puntero fuera del popover sigue cerrandolo", async () => {
+    const w = mount(Popover, { attachTo: document.body });
+    vm(w).open();
+    await flushPromises();
+
+    // Un PointerEvent ES un MouseEvent: el cierre por click afuera no se relaja.
+    document.body.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    await flushPromises();
+    expect(vm(w).isOpen()).toBe(false);
+    expect(w.emitted("close")).toHaveLength(1);
+    w.unmount();
+  });
+});
+
+type Rect = { top: number; bottom: number; left: number; right: number; width: number; height: number };
+
+/** Rect sintético: jsdom no hace layout, así que la geometría se stubea a mano. */
+function rect(top: number, height: number, left = 0, width = 200): Rect {
+  return { top, bottom: top + height, left, right: left + width, width, height };
+}
+
+/**
+ * Stubea `getBoundingClientRect` por clase: panel, ancla y ancestro. Cualquier otro
+ * elemento devuelve un rect vacío (no recorta ni desborda).
+ */
+function stubGeometry(panelRect: Rect, anchorRect: Rect, ancestorClass: string, ancestorRect: Rect) {
+  return vi.spyOn(Element.prototype, "getBoundingClientRect").mockImplementation(function (this: Element) {
+    if (this.classList.contains("cu-popover-panel")) return panelRect as DOMRect;
+    if (this.classList.contains("cu-popover")) return anchorRect as DOMRect;
+    if (this.classList.contains(ancestorClass)) return ancestorRect as DOMRect;
+    return rect(0, 0, 0, 0) as DOMRect;
+  });
+}
+
+function mountInsideClip(styles: Record<string, string>) {
+  const fixture = document.createElement("div");
+  fixture.className = "clip-ancestro";
+  Object.assign(fixture.style, styles);
+  document.body.appendChild(fixture);
+  return fixture;
+}
+
+const panelPosition = (w: ReturnType<typeof mount>) =>
+  (panel(w).element as HTMLElement).style.position;
+
+describe("Popover — fallback automático a fixed", () => {
+  it("si un ancestro con overflow:hidden recorta el panel, el panel pasa a position:fixed", async () => {
+    const fixture = mountInsideClip({ overflow: "hidden" });
+    // El panel (24..144) se sale por abajo del ancestro (0..50).
+    const spy = stubGeometry(rect(24, 120), rect(0, 20), "clip-ancestro", rect(0, 50, 0, 240));
+    const w = mount(Popover, { attachTo: fixture, slots: { default: "contenido" } });
+
+    vm(w).open();
+    await flushPromises();
+
+    expect(vm(w).isOpen()).toBe(true);
+    expect(panelPosition(w)).toBe("fixed");
+    // El fallback conserva el ancho del ancla (en absoluto era `width: 100%`).
+    expect((panel(w).element as HTMLElement).style.width).toBe("200px");
+
+    w.unmount();
+    spy.mockRestore();
+    fixture.remove();
+  });
+
+  it("si el panel entra dentro del ancestro que recorta, sigue en position:absolute", async () => {
+    const fixture = mountInsideClip({ overflow: "hidden" });
+    // El panel (0..20) entra completo en el ancestro (0..50).
+    const spy = stubGeometry(rect(0, 20), rect(0, 20), "clip-ancestro", rect(0, 50, 0, 240));
+    const w = mount(Popover, { attachTo: fixture, slots: { default: "contenido" } });
+
+    vm(w).open();
+    await flushPromises();
+
+    expect(panelPosition(w)).toBe("absolute");
+
+    w.unmount();
+    spy.mockRestore();
+    fixture.remove();
+  });
+
+  it("con un ancestro que ancla `fixed` (transform) NO cambia a fixed: quedaría desplazado", async () => {
+    const fixture = mountInsideClip({ overflow: "hidden", transform: "translateZ(0)" });
+    const spy = stubGeometry(rect(24, 120), rect(0, 20), "clip-ancestro", rect(0, 50, 0, 240));
+    const w = mount(Popover, { attachTo: fixture, slots: { default: "contenido" } });
+
+    vm(w).open();
+    await flushPromises();
+
+    expect(panelPosition(w)).toBe("absolute");
+
+    w.unmount();
+    spy.mockRestore();
+    fixture.remove();
+  });
+
+  it("con `fixed` explícito no se re-mide ni se pisa el ancho del ancla", async () => {
+    const fixture = mountInsideClip({ overflow: "hidden" });
+    const spy = stubGeometry(rect(24, 120), rect(0, 20), "clip-ancestro", rect(0, 50, 0, 240));
+    const w = mount(Popover, { attachTo: fixture, props: { fixed: true }, slots: { default: "contenido" } });
+
+    vm(w).open();
+    await flushPromises();
+
+    expect(panelPosition(w)).toBe("fixed");
+    // `fixed` explícito no impone el ancho del ancla (comportamiento previo).
+    expect((panel(w).element as HTMLElement).style.width).toBe("");
+
+    w.unmount();
+    spy.mockRestore();
+    fixture.remove();
+  });
+});

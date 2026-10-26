@@ -459,6 +459,29 @@ const MUTATIONS = [
     replace: `document.addEventListener("scroll", onViewportChange, true);`,
   },
   {
+    id: "popover-cierra-con-click-redisparado",
+    file: "src/components/overlay/Popover.vue",
+    expect: "un click sintético reemitido por un ancestro (cu-card) no cierra el panel",
+    find: `  if (!(e instanceof MouseEvent)) return;`,
+    replace: `  // mutado: cualquier evento "click" cuenta como click afuera`,
+  },
+  {
+    id: "popover-sin-fallback-fixed",
+    file: "src/components/overlay/Popover.vue",
+    expect: "si un ancestro con overflow recorta el panel, el panel pasa a fixed",
+    find: `  autoFixed.value = true;
+  positionPanel();`,
+    replace: `  autoFixed.value = false;
+  positionPanel();`,
+  },
+  {
+    id: "popover-fallback-ignora-containing-block",
+    file: "src/components/overlay/Popover.vue",
+    expect: "con un ancestro que ancla fixed (transform) el fallback no se activa",
+    find: `    if (anchorsFixedDescendants(cs)) return false;`,
+    replace: `    // mutado: no mira si el ancestro ancla fixed`,
+  },
+  {
     id: "dropdown-item-click-no-close",
     file: "src/components/overlay/Dropdown.vue",
     expect: "click en un item del dropdown cierra el panel",
