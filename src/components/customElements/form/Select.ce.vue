@@ -112,7 +112,7 @@ defineExpose({
   },
   focus: () => selectRef.value?.focus(),
   isOpen: () => selectRef.value?.isOpen() ?? false,
-  selectedItem: () => selectRef.value?.selectedItem || null,
+  selectedItem: () => selectRef.value?.selectedItem?.() ?? null,
 });
 </script>
 

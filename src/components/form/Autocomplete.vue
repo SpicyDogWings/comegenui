@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, defineModel, type PropType } from 'vue';
+import { ref, computed, watch, defineModel, toRaw, type PropType } from 'vue';
 import { isAlign, isColor, isFieldVariant, isPosition, isTextAlign } from '@/utils/validators'
 import { textAlignStyle } from '@/utils/textAlign'
 import Dropdown from "../overlay/Dropdown.vue";
@@ -96,6 +96,16 @@ function syncSelectionWithText(val: string) {
   if (selectedItem.value && val !== itemText(selectedItem.value)) {
     selectedItem.value = null;
   }
+}
+
+/**
+ * Identidad del item seleccionado. `selectedItem` guarda el proxy del `ref`, mientras
+ * los items pueden llegar crudos (propiedad JS del custom element): comparar los
+ * proxies directamente da false y el check no aparece. `toRaw` normaliza ambos lados.
+ */
+function isSelected(item: AutocompleteItem) {
+  const sel = selectedItem.value;
+  return !!sel && toRaw(sel) === toRaw(item);
 }
 
 // Cubre también un `modelValue` externo (v-model), que no pasa por `onInput`.
@@ -207,7 +217,7 @@ defineExpose({
           color="neutral"
           variant="ghost"
           :disabled="item.disabled"
-          :selected="item === selectedItem"
+          :selected="isSelected(item)"
           class="cu-autocomplete-option"
           :class="{ 'cu-autocomplete-option--disabled': item.disabled }"
           :style="itemStyle"

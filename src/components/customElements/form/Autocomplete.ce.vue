@@ -92,7 +92,7 @@ defineExpose({
   /** Alterna la visibilidad del panel de sugerencias. */
   toggle: () => autocompleteRef.value?.toggle(),
   isOpen: () => autocompleteRef.value?.isOpen() ?? false,
-  selectedItem: () => autocompleteRef.value?.selectedItem || null,
+  selectedItem: () => autocompleteRef.value?.selectedItem?.() ?? null,
 });
 </script>
 
