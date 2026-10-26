@@ -53,13 +53,27 @@ const props = defineProps({
     :target="props.target"
     :disabled="props.disabled"
   >
-    <span v-if="props.icon" v-html="props.icon" :class="props.iconClass"></span>
-    <span v-if="props.label">{{ props.label }}</span>
+    <span class="cu-menu-option-main">
+      <span v-if="props.icon" v-html="props.icon" :class="props.iconClass"></span>
+      <span v-if="props.label">{{ props.label }}</span>
+    </span>
     <LucideCheck v-if="props.selected" class="cu-menu-option-check" aria-hidden="true" />
   </Button>
 </template>
 
 <style scoped>
+/* El bloque ícono + label ocupa el espacio libre de la fila, así el check queda pegado
+   al borde derecho sin importar `textAlign`; `justify-content` sigue alineando el bloque
+   dentro de ese espacio (hereda el del `Button`, que pone `textAlignStyle`). */
+.cu-menu-option-main {
+  display: flex;
+  align-items: center;
+  justify-content: inherit;
+  gap: inherit;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
 .cu-menu-option-check {
   flex-shrink: 0;
 }
