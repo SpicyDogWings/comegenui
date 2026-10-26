@@ -228,6 +228,10 @@ if (needAlias) {
   try {
     compose(latest.id);
     buildSite({ base: "/", id: latest.id, label: latest.label, out: tmp });
+    // VitePress nombra los chunks con hash y `cpSync` no borra: los assets de builds anteriores
+    // quedaban acumulados en `<out>/assets` (740 archivos / 44 MB contra los ~210 / 12 MB de un
+    // build). Se limpia antes de copiar el alias para no publicar chunks muertos.
+    rmSync(join(outDir, "assets"), { recursive: true, force: true });
     cpSync(tmp, outDir, { recursive: true });
   } finally {
     rmSync(tmp, { recursive: true, force: true });
