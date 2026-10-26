@@ -11,6 +11,8 @@ cortas y cerradas usá `<cu-select>`; para texto libre sin sugerencias, `<cu-inp
   tipeados. `open()` lo abre sin importar `min-chars`.
 - Texto: `model-value`/`v-model` sólo para controlarlo; `update:modelValue` trae el texto y
   `select` el item completo.
+- Seleccionar **no cierra** el panel: resetea el filtrado, muestra todos los items y marca el
+  elegido con un check; al escribir, filtra de nuevo.
 - Posición: `position` / `align` / `fixed`.
 - Alineación del texto: `text-align` (`left` default | `center` | `right`) alinea **el texto del
   input** (valor y placeholder) **y los items del panel**.
@@ -33,10 +35,10 @@ Los valores de `type` / `color` / `variant` / `position` / `align` están en «A
 - No existe la prop `label`: para un rótulo, combiná con `<cu-label>`.
 - `open()` ignora `min-chars` (pero `disabled` la bloquea); el foco sólo abre si el texto ya cumple `min-chars` y hay items que matcheen.
 - Al seleccionar, el input se completa con el `label` del item (y sólo si no hay `label`, con su `value`).
+- El check del item elegido se deriva de la última selección: `set(v)` la conserva sólo si `v` coincide con el texto del item, `reset()` la limpia.
 - `set()` es silencioso: no abre el panel; para ver sugerencias después, llamá `open()`.
 - No tiene slots.
 - `input`, `change` y `focus` son nativos y burbujean; `blur` además se re-emite como `CustomEvent`.
-- `disabled` de un item no está tipado en `AutocompleteItem`, pero el render lo respeta.
 - `fixed` no hace nada fuera de un contenedor con `overflow`.
 - La búsqueda es accent-insensitive sobre `label` y `value`, no sobre otros campos del item.
 
@@ -141,7 +143,7 @@ Ninguno.
 | ------ | ------ |
 | `get` | Devuelve el texto actual. |
 | `set` | Setea el texto actual en el input sin abrir el panel (para ver sugerencias usá `open()`). |
-| `reset` | Limpia el texto de búsqueda. |
+| `reset` | Limpia el texto de búsqueda y la selección. |
 | `focus` | Enfoca el input. |
 | `open` | Abre el panel de sugerencias (ignora `minChars`). |
 | `close` | Cierra el panel de sugerencias. |

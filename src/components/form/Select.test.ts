@@ -212,3 +212,68 @@ describe("Select — alineación del texto (trigger + opciones)", () => {
     for (const option of options) expect(option.style.justifyContent).toBe("flex-end");
   });
 });
+
+describe("Select — opción seleccionada (check)", () => {
+  it("el modelValue inicial marca con check la opción correspondiente", async () => {
+    const w = mount(Select, { props: { options: OPTIONS, modelValue: "b" } });
+    await toggle(w).trigger("click");
+    await flushPromises();
+
+    const options = w.findAll(".cu-select-option");
+    expect(options[0]!.find(".cu-menu-option-check").exists()).toBe(false);
+    expect(options[1]!.find(".cu-menu-option-check").exists()).toBe(true);
+    expect(options[2]!.find(".cu-menu-option-check").exists()).toBe(false);
+  });
+
+  it("sin selección ninguna opción dibuja el check", async () => {
+    const w = mount(Select, { props: { options: OPTIONS } });
+    await toggle(w).trigger("click");
+    await flushPromises();
+
+    expect(w.findAll(".cu-menu-option-check")).toHaveLength(0);
+  });
+
+  it("set() mueve el check y reset() lo quita", async () => {
+    const w = mount(Select, { props: { options: OPTIONS } });
+    await toggle(w).trigger("click");
+    await flushPromises();
+
+    vm(w).set("a");
+    await flushPromises();
+    const options = w.findAll(".cu-select-option");
+    expect(options[0]!.find(".cu-menu-option-check").exists()).toBe(true);
+    expect(options[1]!.find(".cu-menu-option-check").exists()).toBe(false);
+
+    vm(w).reset();
+    await flushPromises();
+    expect(w.findAll(".cu-menu-option-check")).toHaveLength(0);
+  });
+
+  it("un modelValue externo nuevo mueve el check", async () => {
+    const w = mount(Select, { props: { options: OPTIONS, modelValue: "a" } });
+    await toggle(w).trigger("click");
+    await flushPromises();
+
+    await w.setProps({ modelValue: "b" });
+    await flushPromises();
+
+    const options = w.findAll(".cu-select-option");
+    expect(options[0]!.find(".cu-menu-option-check").exists()).toBe(false);
+    expect(options[1]!.find(".cu-menu-option-check").exists()).toBe(true);
+  });
+
+  it("elegir una opción deja el check en ella y el panel sigue cerrándose", async () => {
+    const w = mount(Select, { props: { options: OPTIONS } });
+    await toggle(w).trigger("click");
+    await flushPromises();
+
+    await w.findAll(".cu-select-option")[1]!.trigger("click");
+    await flushPromises();
+    expect(vm(w).isOpen()).toBe(false);
+    expect(vm(w).selectedItem()).toMatchObject({ value: "b" });
+
+    await toggle(w).trigger("click");
+    await flushPromises();
+    expect(w.findAll(".cu-select-option")[1]!.find(".cu-menu-option-check").exists()).toBe(true);
+  });
+});

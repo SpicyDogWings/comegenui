@@ -366,6 +366,13 @@ const MUTATIONS = [
 });`,
   },
   {
+    id: "select-opcion-seleccionada-sin-check",
+    file: "src/components/form/Select.vue",
+    expect: "la opción con el value seleccionado muestra el check",
+    find: `            :selected="opt.value === selectedValue"`,
+    replace: `            :selected="false"`,
+  },
+  {
     id: "checkbox-set-not-emit-change",
     file: "src/components/form/Checkbox.vue",
     expect: "set() emite change",
@@ -497,6 +504,13 @@ const MUTATIONS = [
     expect: "un item disabled no dispara onClick",
     find: `  if (item.disabled || item.divider) return;`,
     replace: `  if (item.divider) return;`,
+  },
+  {
+    id: "dropdown-menu-sin-check-seleccionado",
+    file: "src/components/controls/DropdownMenu.vue",
+    expect: "un item con selected muestra el check",
+    find: `            :selected="!!item.selected"`,
+    replace: `            :selected="false"`,
   },
   {
     id: "pagination-pagesize-no-reset",
@@ -636,11 +650,72 @@ const MUTATIONS = [
     expect: "set() setea el texto sin abrir el panel",
     find: `function set(val: string) {
   searchValue.value = val;
+  filtering.value = true;
 }`,
     replace: `function set(val: string) {
   searchValue.value = val;
-  if (inputRef.value) inputRef.value.set(val);
+  filtering.value = true;
+  dropdownRef.value?.open();
 }`,
+  },
+  {
+    id: "autocomplete-seleccion-cierra-panel",
+    file: "src/components/form/Autocomplete.vue",
+    expect: "seleccionar un item no cierra el panel",
+    find: `  filtering.value = false;
+  emit("select", item);
+}`,
+    replace: `  filtering.value = false;
+  emit("select", item);
+  dropdownRef.value?.close();
+}`,
+  },
+  {
+    id: "autocomplete-seleccion-no-resetea-filtro",
+    file: "src/components/form/Autocomplete.vue",
+    expect: "seleccionar resetea el filtrado y muestra todos los items",
+    find: `  filtering.value = false;`,
+    replace: `  filtering.value = true;`,
+  },
+  {
+    id: "autocomplete-item-seleccionado-sin-check",
+    file: "src/components/form/Autocomplete.vue",
+    expect: "el item seleccionado muestra el check",
+    find: `          :selected="isSelected(item)"`,
+    replace: `          :selected="false"`,
+  },
+  {
+    id: "autocomplete-ce-check-compara-proxy",
+    file: "src/components/form/Autocomplete.vue",
+    test: "src/components/customElements/ce-parity.test.ts",
+    expect: "el check aparece aunque el item llegue crudo por la propiedad del CE",
+    find: `  return !!sel && toRaw(sel) === toRaw(item);`,
+    replace: `  return !!sel && sel === item;`,
+  },
+  {
+    id: "autocomplete-ce-selected-item-devuelve-fn",
+    file: "src/components/customElements/form/Autocomplete.ce.vue",
+    test: "src/components/customElements/ce-parity.test.ts",
+    expect: "selectedItem() del CE devuelve el item, no la función interna",
+    find: `  selectedItem: () => autocompleteRef.value?.selectedItem?.() ?? null,`,
+    replace: `  selectedItem: () => autocompleteRef.value?.selectedItem || null,`,
+  },
+  {
+    id: "select-ce-selected-item-devuelve-fn",
+    file: "src/components/customElements/form/Select.ce.vue",
+    test: "src/components/customElements/ce-parity.test.ts",
+    expect: "selectedItem() del CE devuelve la opción, no la función interna",
+    find: `  selectedItem: () => selectRef.value?.selectedItem?.() ?? null,`,
+    replace: `  selectedItem: () => selectRef.value?.selectedItem || null,`,
+  },
+  {
+    id: "autocomplete-no-limpia-seleccion-al-cambiar-texto",
+    file: "src/components/form/Autocomplete.vue",
+    expect: "cambiar el texto limpia la selección cuando deja de coincidir",
+    find: `watch(searchValue, (val) => syncSelectionWithText(val));`,
+    replace: `watch(searchValue, () => {
+  /* mutado */
+});`,
   },
   {
     id: "code-scheme-invierte-fondo",
@@ -991,6 +1066,27 @@ const MUTATIONS = [
     expect: "textAlign alinea los items del panel (justify-content)",
     find: `const itemStyle = computed(() => textAlignStyle(props.textAlign));`,
     replace: `const itemStyle = computed(() => ({ textAlign: props.textAlign }));`,
+  },
+  {
+    id: "menu-option-sin-check",
+    file: "src/components/controls/MenuOption.vue",
+    expect: "la fila con selected dibuja el check de lucide",
+    find: `    <LucideCheck v-if="props.selected"`,
+    replace: `    <LucideCheck v-if="false"`,
+  },
+  {
+    id: "menu-option-icon-ignorado",
+    file: "src/components/controls/MenuOption.vue",
+    expect: "la fila renderiza el ícono con la clase de su lista",
+    find: `    <span v-if="props.icon" v-html="props.icon" :class="props.iconClass"></span>`,
+    replace: `    <span v-if="false" v-html="props.icon" :class="props.iconClass"></span>`,
+  },
+  {
+    id: "menu-option-href-ignorado",
+    file: "src/components/controls/MenuOption.vue",
+    expect: "con href la fila se renderiza como link",
+    find: `    :to="props.href || undefined"`,
+    replace: `    :to="undefined"`,
   },
 ];
 

@@ -158,6 +158,17 @@ describe("Select.ce", () => {
     expect(updates).toContain("b");
   });
 
+  it("selectedItem() devuelve la opción y el check marca sólo la elegida", async () => {
+    const w = mount(SelectCe, { props: { options, modelValue: "b" } });
+    await w.find(".cu-select-toggle").trigger("click");
+    await flushPromises();
+
+    const opts = w.findAll(".cu-select-option");
+    expect(opts[1]!.find(".cu-menu-option-check").exists()).toBe(true);
+    expect(opts[0]!.find(".cu-menu-option-check").exists()).toBe(false);
+    expect(w.vm.selectedItem()).toMatchObject({ value: "b" });
+  });
+
   it("set() actualiza el valor y emite `update:modelValue`", async () => {
     const w = mount(SelectCe, { props: { options } });
     const updates: string[] = [];
@@ -436,6 +447,60 @@ describe("Autocomplete.ce", () => {
     const w = mount(AutocompleteCe);
     expect(typeof w.vm.reset).toBe("function");
     expect(w.vm.isOpen()).toBe(false);
+  });
+
+  it("marca con el check el item elegido aunque los items lleguen crudos por la propiedad del CE", async () => {
+    const w = mount(AutocompleteCe, {
+      props: { items: [{ label: "Alfa" }, { label: "Beta" }] },
+    });
+    await w.find("input").setValue("Al");
+    await flushPromises();
+    await w.find(".cu-autocomplete-option").trigger("click");
+    await flushPromises();
+
+    const opts = w.findAll(".cu-autocomplete-option");
+    expect(opts).toHaveLength(2);
+    expect(opts[0]!.find(".cu-menu-option-check").exists()).toBe(true);
+    expect(opts[1]!.find(".cu-menu-option-check").exists()).toBe(false);
+  });
+
+  it("selectedItem() devuelve el item elegido", async () => {
+    const w = mount(AutocompleteCe, {
+      props: { items: [{ label: "Alfa" }, { label: "Beta" }] },
+    });
+    await w.find("input").setValue("Al");
+    await flushPromises();
+    await w.find(".cu-autocomplete-option").trigger("click");
+    await flushPromises();
+
+    expect(w.vm.selectedItem()).toMatchObject({ label: "Alfa" });
+  });
+
+  it("en el custom element real, el check aparece con items crudos (propiedad JS)", async () => {
+    if (!customElements.get("test-cu-autocomplete")) {
+      customElements.define("test-cu-autocomplete", defineCustomElement(AutocompleteCe));
+    }
+    const el = document.createElement("test-cu-autocomplete") as HTMLElement & {
+      items: { label: string }[];
+    };
+    el.items = [{ label: "Alfa" }, { label: "Beta" }];
+    document.body.append(el);
+    await flushPromises();
+    await flushPromises();
+
+    const sr = el.shadowRoot!;
+    const input = sr.querySelector("input") as HTMLInputElement;
+    input.focus();
+    input.value = "Al";
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    await flushPromises();
+    (sr.querySelector(".cu-autocomplete-option") as HTMLElement).click();
+    await flushPromises();
+    await flushPromises();
+
+    expect(sr.querySelectorAll(".cu-autocomplete-option")).toHaveLength(2);
+    expect(sr.querySelectorAll(".cu-menu-option-check")).toHaveLength(1);
+    el.remove();
   });
 
   it("expone `open`, `close` y `toggle` y controlan el panel", async () => {

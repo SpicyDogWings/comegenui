@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // Refleja el ejemplo "Uso en HTML plano": las opciones se asignan como propiedad
-// JS y el valor se controla con `set()`/`get()`.
+// JS y el valor se controla con `set()`/`get()`. `pdf` queda seleccionado: al abrir
+// el panel se ve el resaltado y el check al final de la fila.
 import { ref, watch } from "vue";
 
 type CuSelectElement = HTMLElement & {
@@ -24,6 +25,7 @@ watch(select, async (el) => {
   if (!el) return;
   await customElements.whenDefined("cu-select");
   el.options = options;
+  el.set?.("pdf");
 }, { flush: "post" });
 
 function setear() {

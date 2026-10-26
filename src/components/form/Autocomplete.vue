@@ -1,16 +1,17 @@
 <script setup lang="ts">
-import { ref, computed, defineModel, type PropType } from 'vue';
+import { ref, computed, watch, defineModel, toRaw, type PropType } from 'vue';
 import { isAlign, isColor, isFieldVariant, isPosition, isTextAlign } from '@/utils/validators'
 import { textAlignStyle } from '@/utils/textAlign'
 import Dropdown from "../overlay/Dropdown.vue";
 import Input from "./Input.vue";
-import Button from "../buttons/Button.vue";
+import MenuOption from "../controls/MenuOption.vue";
 import { useSearch } from "@/composables/useSearch";
 
 interface AutocompleteItem {
   label: string;
   icon?: string;
   value?: string;
+  disabled?: boolean;
 }
 
 const props = defineProps({
@@ -67,17 +68,48 @@ const dropdownRef = ref<InstanceType<typeof Dropdown> | null>(null);
 const inputRef = ref<InstanceType<typeof Input> | null>(null);
 const rootRef = ref<HTMLElement | null>(null);
 const selectedItem = ref<AutocompleteItem | null>(null);
+/**
+ * `false` tras seleccionar: la lista ignora el texto y muestra todos los items (con el
+ * elegido checkeado). Al volver a escribir se reactiva y filtra con la cadena actual.
+ */
+const filtering = ref(true);
 
-/** Los items son `Button` (flex): la alineación va por `justify-content`, no por `text-align`. */
+/** Los items son filas flex: la alineación va por `justify-content`, no por `text-align`. */
 const itemStyle = computed(() => textAlignStyle(props.textAlign));
 /** El `<input>` es un campo de texto nativo: acá sí alinea `text-align`. */
 const inputStyle = computed(() => ({ width: "100%", textAlign: props.textAlign }));
 
 const searchItems = computed(() => props.items);
-const { filteredData: filteredItems } = useSearch(searchItems, {
+const { filteredData: matches } = useSearch(searchItems, {
   searchQuery: searchValue,
   searchFields: ["label", "value"],
 });
+const filteredItems = computed(() => (filtering.value ? matches.value : searchItems.value));
+
+/** Texto que el item escribe en el input (y que define si sigue siendo el seleccionado). */
+function itemText(item: AutocompleteItem) {
+  return item.label || item.value || "";
+}
+
+/** La selección vive mientras el texto del input sea el del item elegido. */
+function syncSelectionWithText(val: string) {
+  if (selectedItem.value && val !== itemText(selectedItem.value)) {
+    selectedItem.value = null;
+  }
+}
+
+/**
+ * Identidad del item seleccionado. `selectedItem` guarda el proxy del `ref`, mientras
+ * los items pueden llegar crudos (propiedad JS del custom element): comparar los
+ * proxies directamente da false y el check no aparece. `toRaw` normaliza ambos lados.
+ */
+function isSelected(item: AutocompleteItem) {
+  const sel = selectedItem.value;
+  return !!sel && toRaw(sel) === toRaw(item);
+}
+
+// Cubre también un `modelValue` externo (v-model), que no pasa por `onInput`.
+watch(searchValue, (val) => syncSelectionWithText(val));
 
 function onFocus() {
   if (props.disabled) return;
@@ -89,6 +121,7 @@ function onFocus() {
 
 function onInput(val: string) {
   searchValue.value = val;
+  filtering.value = true;
 
   if (val.length < props.minChars || filteredItems.value.length === 0) {
     dropdownRef.value?.close();
@@ -99,11 +132,13 @@ function onInput(val: string) {
 }
 
 function onItemClick(item: AutocompleteItem) {
-  const val = item.label || item.value;
-  searchValue.value = val;
+  if (item.disabled) return;
+  searchValue.value = itemText(item);
   selectedItem.value = item;
+  // El panel queda abierto: se resetea el filtrado para mostrar todos los items con
+  // el elegido checkeado. Escribir de nuevo reactiva el filtro (`onInput`).
+  filtering.value = false;
   emit("select", item);
-  dropdownRef.value?.close();
 }
 
 function onFocusOut(e: FocusEvent) {
@@ -117,9 +152,14 @@ function get() { return searchValue.value; }
 /** Setea el texto actual en el input sin abrir el panel (para ver sugerencias usá `open()`). */
 function set(val: string) {
   searchValue.value = val;
+  filtering.value = true;
 }
-/** Limpia el texto de búsqueda. */
-function reset() { searchValue.value = ""; }
+/** Limpia el texto de búsqueda y la selección. */
+function reset() {
+  searchValue.value = "";
+  selectedItem.value = null;
+  filtering.value = true;
+}
 /** Enfoca el input. */
 function focus() { inputRef.value?.focus(); }
 /** Abre el panel de sugerencias (ignora `minChars`). */
@@ -168,20 +208,21 @@ defineExpose({
     </template>
     <template #default>
       <div v-if="filteredItems.length > 0" class="cu-autocomplete-options">
-        <Button
+        <MenuOption
           v-for="(item, i) in filteredItems"
           :key="i"
+          :label="item.label"
+          :icon="item.icon"
+          icon-class="cu-autocomplete-icon"
           color="neutral"
           variant="ghost"
           :disabled="item.disabled"
+          :selected="isSelected(item)"
           class="cu-autocomplete-option"
           :class="{ 'cu-autocomplete-option--disabled': item.disabled }"
           :style="itemStyle"
-          @click="item.disabled ? undefined : onItemClick(item)"
-        >
-          <span v-if="item.icon" v-html="item.icon" class="cu-autocomplete-icon"></span>
-          <span v-if="item.label">{{ item.label }}</span>
-        </Button>
+          @click="onItemClick(item)"
+        />
       </div>
     </template>
     </Dropdown>

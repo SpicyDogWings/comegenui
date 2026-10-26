@@ -34,6 +34,9 @@ const opciones = [
 
 En HTML plano, cargá el bundle `CuSelect` (ver [ficha vanilla](/componentes/cu-select)).
 
+La opción cuyo `value` coincide con el seleccionado (por click, `set()` o `modelValue`) se muestra
+resaltada y con un check al final de la fila. Elegir una opción sigue cerrando el panel.
+
 ## Colores
 
 `color` es un nombre semántico, no un hex: se resuelve con los tokens del tema activo, así que
@@ -397,6 +400,9 @@ Cada opción del array `options` puede tener:
 | `disabled` | `boolean` | `false` | Opción deshabilitada (no clickeable, atenuada) |
 | `color` | `string` | hereda del padre | Color semántico individual |
 | `variant` | `string` | hereda del padre | Variante individual |
+
+> La opción seleccionada se distingue con el resaltado y un check al final de la fila; no hace
+> falta marcar nada en `options`.
 
 ## Emits
 

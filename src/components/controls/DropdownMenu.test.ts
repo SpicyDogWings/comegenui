@@ -205,3 +205,52 @@ describe("DropdownMenu — alineación del texto de los items", () => {
     expect(item.find(".cu-dropdown-icon").exists()).toBe(true);
   });
 });
+
+describe("DropdownMenu — item seleccionado (check)", () => {
+  it("un item con `selected: true` muestra el check al final; los demás no", async () => {
+    const w = mount(DropdownMenu, {
+      props: {
+        items: [
+          { label: "Ordenar por nombre", selected: true },
+          { label: "Ordenar por fecha" },
+        ],
+      },
+    });
+    vm(w).open();
+    await flushPromises();
+
+    const items = panel(w).findAll(".cu-dropdown-item");
+    const check = items[0]!.find(".cu-menu-option-check");
+    expect(check.exists()).toBe(true);
+    expect(check.element.parentElement!.lastElementChild).toBe(check.element);
+    expect(items[1]!.find(".cu-menu-option-check").exists()).toBe(false);
+  });
+
+  it("sin `selected` ningún item dibuja el check (DOM por defecto intacto)", async () => {
+    const w = mount(DropdownMenu, {
+      props: { items: [{ label: "Editar" }, { label: "Eliminar", color: "danger" }] },
+    });
+    vm(w).open();
+    await flushPromises();
+
+    expect(panel(w).findAll(".cu-dropdown-item")).toHaveLength(2);
+    expect(panel(w).findAll(".cu-menu-option-check")).toHaveLength(0);
+  });
+
+  it("un item `selected` deshabilitado conserva el check y no dispara onClick", async () => {
+    const onClick = vi.fn();
+    const w = mount(DropdownMenu, {
+      props: { items: [{ label: "Fijo", selected: true, disabled: true, onClick }] },
+    });
+    vm(w).open();
+    await flushPromises();
+
+    const item = panel(w).find(".cu-dropdown-item");
+    expect(item.find(".cu-menu-option-check").exists()).toBe(true);
+    await item.trigger("click");
+    await flushPromises();
+
+    expect(onClick).not.toHaveBeenCalled();
+    expect(vm(w).isOpen()).toBe(true);
+  });
+});

@@ -123,7 +123,7 @@ contenido **dentro** de cada item. El toggle no se ve afectado (su ancho lo defi
 
 ## Items
 
-`items` es el array declarativo: cada item puede llevar `label`, `icon` (SVG inline), `color`, `variant`, `disabled`, `divider`, `href` con `target`, y `onClick`, que se dispara al elegirlo.
+`items` es el array declarativo: cada item puede llevar `label`, `icon` (SVG inline), `color`, `variant`, `disabled`, `divider`, `href` con `target`, `selected` (check al final) y `onClick`, que se dispara al elegirlo.
 
 ```html
 <cu-dropdown-menu id="ddItems" label="Acciones" color="neutral" variant="outlined"></cu-dropdown-menu>
@@ -134,7 +134,7 @@ contenido **dentro** de cada item. El toggle no se ve afectado (su ancho lo defi
   const trash = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>';
 
   document.getElementById('ddItems').items = [
-    { label: 'Editar', icon: pencil, onClick: () => console.log('editar') },
+    { label: 'Editar', icon: pencil, selected: true, onClick: () => console.log('editar') },
     { label: 'Duplicar', icon: copy, variant: 'soft', onClick: () => console.log('duplicar') },
     { label: 'Deshabilitado', disabled: true },
     { divider: true },
@@ -211,6 +211,7 @@ Cada item del array `items` puede tener:
 | `divider` | `boolean` | `false` | Si es `true`, renderiza una línea divisoria en vez de un item |
 | `href` | `string` | — | Convierte el item en un link (`<a>`) |
 | `target` | `string` | `"_self"` | Target del link cuando hay `href` |
+| `selected` | `boolean` | `false` | Muestra el check de lucide al final del item (estado de selección) |
 
 ## Eventos
 

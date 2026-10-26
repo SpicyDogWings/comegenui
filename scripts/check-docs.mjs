@@ -37,7 +37,8 @@ if (!existsSync(FICHA_DIR) || !existsSync(SITE_DIR)) {
 // Tags que definen un custom element pero no se documentan.
 const IGNORED_TAGS = new Set([]);
 // Componentes sin custom element que NO se documentan (experimentales/internos).
-const UNDOCUMENTED_VUE = new Set(["lab/collapse/navigation/Outline"]);
+// MenuOption es la fila compartida interna de Select/Autocomplete/DropdownMenu.
+const UNDOCUMENTED_VUE = new Set(["lab/collapse/navigation/Outline", "controls/MenuOption"]);
 
 /** Todos los archivos con `ext` bajo `dir` (recursivo, sin dependencias). */
 function walk(dir, ext) {
