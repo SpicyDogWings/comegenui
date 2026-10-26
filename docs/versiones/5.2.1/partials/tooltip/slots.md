@@ -1,0 +1,4 @@
+| Slot | Descripción |
+| ------ | ------ |
+| `default` | — |
+| `content` | — |
