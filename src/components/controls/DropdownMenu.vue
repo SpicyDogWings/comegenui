@@ -4,6 +4,7 @@ import { isAlign, isColor, isPosition, isTextAlign, isVariantFull } from '@/util
 import { textAlignStyle } from '@/utils/textAlign'
 import Dropdown from "../overlay/Dropdown.vue";
 import Button from "../buttons/Button.vue";
+import MenuOption from "./MenuOption.vue";
 
 interface DropdownItem {
   label?: string;
@@ -15,6 +16,8 @@ interface DropdownItem {
   disabled?: boolean;
   divider?: boolean;
   target?: string;
+  /** Muestra el check de lucide al final del item (estado de selección). */
+  selected?: boolean;
 }
 
 const props = defineProps({
@@ -126,20 +129,21 @@ defineExpose({
       <template v-if="items && items.length > 0">
         <template v-for="(item, i) in items" :key="i">
           <hr v-if="item.divider" class="cu-dropdown-divider" />
-          <Button
+          <MenuOption
             v-else
+            :label="item.label"
+            :icon="item.icon"
+            icon-class="cu-dropdown-icon"
             :color="item.color || color"
             :variant="item.variant || 'ghost'"
-            :to="item.href"
+            :href="item.href"
             :target="item.target"
             :disabled="item.disabled"
+            :selected="!!item.selected"
             class="cu-dropdown-item"
             :style="itemStyle"
             @click="handleItemClick(item)"
-          >
-            <span v-if="item.icon" v-html="item.icon" class="cu-dropdown-icon"></span>
-            <span v-if="item.label">{{ item.label }}</span>
-          </Button>
+          />
         </template>
       </template>
       <!-- Contenido del panel. -->

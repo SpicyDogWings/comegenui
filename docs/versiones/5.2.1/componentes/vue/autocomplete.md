@@ -193,6 +193,12 @@ se mueven juntos (el ícono no se descentra).
 
 `select` se dispara al elegir un item (con el item como payload) y `blur` al salir del campo.
 
+Al elegir, el panel **no se cierra**: el input queda con el texto del item, el filtrado se resetea y
+la lista muestra **todos** los items con el elegido marcado con un check al final. Al volver a
+escribir, el filtrado se reanuda con la cadena actual; un click afuera (o `close()`) cierra el
+panel. `reset()` limpia el texto **y la selección**; `set(v)` cambia el texto y la selección se
+conserva sólo si `v` coincide con el item elegido.
+
 ```vue
 <script setup lang="ts">
 import Autocomplete from "@/components/form/Autocomplete.vue";
@@ -271,4 +277,5 @@ Cada item del array `items` puede tener:
 
 <!--@include: ../../partials/autocomplete/metodos-vue.md-->
 
-> `.reset()` limpia el texto de búsqueda; `.set('')` deja el input vacío sin tocar el estado de búsqueda.
+> `.reset()` limpia el texto de búsqueda y la selección; `.set('')` deja el input vacío (la selección
+> se limpia porque el texto deja de coincidir).

@@ -25,6 +25,9 @@ posicionamiento configurable y estado de carga. Mantiene su estado y también se
 </script>
 ```
 
+La opción cuyo `value` coincide con el seleccionado (por click, `set()` o `model-value`) se muestra
+resaltada y con un check al final de la fila. Elegir una opción sigue cerrando el panel.
+
 <!-- demo:select-uso -->
 
 ## Colores
@@ -318,6 +321,9 @@ Cada opción del array `options` puede tener:
 | `disabled` | `boolean` | `false` | Opción deshabilitada (no clickeable, atenuada) |
 | `color` | `string` | hereda del padre | Color semántico individual |
 | `variant` | `string` | hereda del padre | Variante individual |
+
+> La opción seleccionada se distingue con el resaltado y un check al final de la fila; no hace
+> falta marcar nada en `options`.
 
 > **Importante:** `options` se asigna como propiedad JS (`select.options = [...]`), no como atributo HTML.
 
