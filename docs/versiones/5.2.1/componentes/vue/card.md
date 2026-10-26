@@ -106,6 +106,13 @@ import Badge from "@/components/information/Badge.vue";
 </template>
 ```
 
+## Overlays dentro de la card
+
+La card recorta su contenido (`overflow: hidden`, para que la media no se escape de las esquinas
+redondeadas). Los controles cuyo menú es un overlay de `Popover` (`Select`, `Autocomplete`,
+`DatePicker`, `DropdownMenu`, `Tooltip`) siguen funcionando: cuando el panel se saldría del área
+visible, se posiciona contra el viewport en vez de quedar cortado. No hace falta `fixed` a mano.
+
 ## Props
 
 <!--@include: ../../partials/card/props-vue.md-->

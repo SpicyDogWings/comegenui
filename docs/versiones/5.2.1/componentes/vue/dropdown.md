@@ -92,6 +92,11 @@ const items = [
 `end`), `offset` (px), `panelWidth` (ancho CSS del panel) y `fixed` (panel contra el viewport)
 controlan dónde y cómo se abre.
 
+Si el panel se saldría del área visible de un ancestro con `overflow` distinto de `visible` (una
+card, una tabla), se posiciona contra el viewport solo, igual que con `fixed`: no hay que pasarlo a
+mano. El único caso en que no: un ancestro con `transform`, `filter` o `contain`, que ancla a sus
+descendientes `fixed`.
+
 ```vue
 <template>
   <Dropdown label="bottom / start" position="bottom" align="start"><p>Abajo, alineado al inicio.</p></Dropdown>

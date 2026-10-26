@@ -6,6 +6,10 @@ Motor de overlay: un trigger (slot `toggle`) que abre un panel flotante posicion
 su ancla, con cierre por click afuera y `Escape`. Es la base de `Tooltip`, `Dropdown`,
 `DropdownMenu` y `Select`.
 
+El click afuera se mide sobre clicks de puntero: un `click` sintético que reemita un ancestro (el
+wrapper de `<cu-card>` reemite el click de su contenido) no cierra el panel. Si no, el mismo click
+que abre un control lo cerraría.
+
 ## Uso en Vue
 
 ```vue
@@ -165,6 +169,19 @@ import Popover from "@/components/overlay/Popover.vue";
   </Popover>
 </template>
 ```
+
+### Fallback automático
+
+Sin `fixed`, el panel es `position: absolute` y lo recorta cualquier ancestro con `overflow`
+distinto de `visible` (una card, una tabla, un contenedor con `overflow: hidden`). Para que eso no
+esconda el panel, al abrir se mide: si se sale del área visible de un ancestro que recorta, pasa a
+`position: fixed` contra el viewport (con el ancho del ancla) y se recalcula en scroll y resize, como
+`fixed`. Si el panel entra completo, se queda en `absolute`.
+
+> **Límite:** un ancestro con `transform`, `filter`, `perspective`, `backdrop-filter`, `contain`
+> (`paint`/`layout`/`strict`/`content`) o `will-change` de esos ejes ancla a sus descendientes
+> `fixed`. Ahí el fallback **no** se activa: `fixed` quedaría desplazado respecto del ancla y el
+> panel, recortado, es el mal menor.
 
 ## Interacción
 
