@@ -96,41 +96,41 @@ Si necesitás las **dos versiones del mismo componente**, la segunda va por su t
 
 ## Versiones del sitio
 
-Esta documentación se versiona **aparte de la librería**. Cada versión publicada es un **build
-estático congelado** —su HTML, su buscador y su propia copia de ComegenUI para los demos— servido
-bajo su base `/<id>/`. La doc de cada versión vive versionada en `docs/versiones/<id>/` (con
-*overlay*: sólo lo que cambió) y el sitio la **compone** al buildear; la lib que usan sus demos
-viaja con ella en `docs/versiones/<id>/lib/`. La raíz `/` es una copia de *latest* (la que sale
-del árbol de trabajo), así que las URLs sin versión siguen funcionando y apuntan a la última.
+Este sitio publica **sólo la última versión** de la documentación. El build de esa versión es un
+**sitio estático congelado** —su HTML, su buscador y su propia copia de ComegenUI para los demos—
+servido bajo su base `/<id>/` (hoy `/5.2.1/`). La doc vive versionada en `docs/versiones/<id>/` y el
+sitio la **compone** al buildear; la lib que usan sus demos viaja con ella en
+`docs/versiones/<id>/lib/`, así una versión congelada se comporta como esa versión aunque el árbol de
+trabajo ya haya avanzado.
 
-Para cambiar de versión, usá el **selector al lado del nombre** en el topbar o los comandos de la
-categoría *Versión* de la paleta (`Ctrl`/`⌘` + `K`). El salto es una **navegación dura**: cada
-versión es una app distinta (otro router, otro índice de búsqueda), así que la página se recarga.
-Te lleva al **mismo path** dentro de la versión elegida y, si esa página no existía en esa versión,
-al home de esa versión.
+La raíz **no** guarda una copia del sitio: `vercel.json` redirige `/` y cualquier URL sin versión
+(`/componentes/cu-button`) a la última versión, así los links viejos siguen funcionando sin publicar
+un build de más.
 
-- Las URLs llevan la versión (`/5.1.0/componentes/cu-button`): son linkeables y compartibles, y no
-  hay preferencia guardada que te cambie de versión.
+- Las URLs llevan la versión (`/5.2.1/componentes/cu-button`): son linkeables y compartibles.
 - Los links del topbar y de la paleta **quedan dentro de la versión** que estás mirando.
-- Los demos corren **la lib de esa misma versión**: la doc de la 5.1.1 embebe la 5.1.1. Esa lib
-  viaja versionada con la doc (`docs/versiones/<id>/lib/`, el build `esm-shared`), así que una
-  versión congelada se comporta como esa versión aunque el árbol de trabajo ya haya avanzado.
-- El selector **se oculta** si hay una sola versión publicada (o en `vitepress dev`, donde no hay
-  catálogo). El home (`/`) es `standalone`: ahí no hay selector ni sidebar.
+- El selector de versiones **se oculta** cuando hay una sola publicada (o en `vitepress dev`, donde
+  no hay catálogo). El home (`/`) es `standalone`: ahí no hay selector ni sidebar.
 - Las versiones cortadas **antes** de que existiera este mecanismo (los tags `v5.0.*-alpha`) no saben
-  en qué versión están: en ellas, la navegación del topbar apunta a *latest*. Las que congeles de acá
-  en adelante sí quedan dentro de su versión.
+  en qué versión están: en ellas, la navegación del topbar apunta a *latest*.
+
+¿Una versión anterior? Su doc está en el tag de git: `git checkout v5.1.1 && pnpm install && pnpm dev`.
+El detalle (y cómo generar sus zips) está en [Versiones anteriores](/versiones-anteriores).
 
 ### Publicar versiones
 
 El manifiesto es `docs/versions.json`: **una** entrada con `latest: true` (sale de `HEAD`) y una
-entrada por versión congelada, con su `ref` de git (idealmente un tag). La doc de cada versión vive
-en `docs/versiones/<id>/` (overlay) y su lib en `docs/versiones/<id>/lib/`. Después:
+entrada por versión congelada que quieras publicar, con su `ref` de git (idealmente un tag). La doc de
+cada versión vive en `docs/versiones/<id>/` y su lib en `docs/versiones/<id>/lib/`.
 
 ```bash
-pnpm docs:versions          # construye latest + las congeladas y arma el catálogo
-pnpm deploy:docs:versions   # publica la salida agregada (raíz = alias de latest, /<id>/ por versión)
+pnpm docs:versions          # construye la última versión (+ las congeladas del manifiesto)
+pnpm deploy:docs:versions   # publica la salida agregada (/<id>/ por versión + versions.json)
 ```
 
-Deployá **la salida agregada** (`docs/site/.vitepress/dist-versions/`), no sólo el build de la
-raíz: sin `versions.json` ni las carpetas `/<id>/` el selector no tiene catálogo y queda oculto.
+- `rootAlias: false` en el manifiesto evita la copia de latest en `/` (un build y ~26 MB menos): la
+  raíz sólo lleva `versions.json` y el `vercel.json` con los redirects, que genera `docs-versions`.
+- Una versión que sale del manifiesto (por ejemplo, la reemplazada por un patch) **se borra del
+  deploy**: su historia queda en el tag.
+- Deployá **la salida agregada** (`docs/site/.vitepress/dist-versions/`), no sólo el build de una
+  versión: sin `versions.json` el selector no tiene catálogo.

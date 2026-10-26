@@ -49,6 +49,20 @@ Si un componente "no cambia nada" después de actualizar, casi siempre quedó el
 navegador lo cacheó). Más detalle, y lo mismo para el resto de las configs:
 **[Instalación](docs/site/instalacion.md)**.
 
+## Versiones y documentación
+
+La documentación publicada es la de la **última versión**. Cada release queda en un **tag** de git
+(`v5.2.1`, `v5.1.1`, …) y la doc de esa versión se lee desde ahí:
+
+```bash
+git checkout v5.1.1
+pnpm install
+pnpm dev          # el sitio de esa versión en http://localhost:5173
+pnpm build:lib    # y sus zips en dist-libs/
+```
+
+Detalle: [Versiones anteriores](docs/site/versiones-anteriores.md).
+
 ## Temas
 
 El tema lo elige el **host**, no el componente: un atributo y listo.

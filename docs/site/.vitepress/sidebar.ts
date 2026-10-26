@@ -99,6 +99,24 @@ export function buildVueSidebar(routeBase = "/componentes/vue"): SidebarGroup[] 
 }
 
 /**
+ * Guías del sitio (páginas de nivel raíz, no de componente). VitePress elige el
+ * prefijo más específico: `/componentes/...` sigue mostrando el sidebar de
+ * componentes y el resto de las páginas cae acá.
+ */
+const GUIAS: SidebarGroup[] = [
+  {
+    text: "Guías",
+    items: [
+      { text: "Instalación", link: "/instalacion" },
+      { text: "Configuración", link: "/configuracion" },
+      { text: "Personalización", link: "/personalizacion" },
+      { text: "Versionado", link: "/versionado" },
+      { text: "Versiones anteriores", link: "/versiones-anteriores" },
+    ],
+  },
+];
+
+/**
  * Config de `sidebar` de VitePress: objeto por prefijo de ruta. VitePress elige
  * el prefijo más específico, así que estando en `/componentes/vue/x` el sidebar
  * muestra sólo la familia Vue y estando en `/componentes/cu-x` sólo la vanilla.
@@ -107,5 +125,6 @@ export function buildSidebars(): Record<string, SidebarGroup[]> {
   return {
     "/componentes/vue/": buildVueSidebar(),
     "/componentes/": buildVanillaSidebar(),
+    "/": GUIAS,
   };
 }

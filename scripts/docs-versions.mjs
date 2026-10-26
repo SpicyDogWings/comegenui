@@ -239,6 +239,67 @@ if (needAlias) {
 }
 
 // ---------------------------------------------------------------------------
+// Sin alias raíz (`rootAlias: false`): la raíz sólo lleva catálogo y redirects
+// ---------------------------------------------------------------------------
+// El alias es una copia entera de latest (otro build, ~26 MB). Cuando el manifiesto lo desactiva,
+// la raíz del deploy queda sin sitio: se borran los restos del alias de builds anteriores y se
+// escriben dos páginas mínimas que mandan a latest —`index.html` para `/` y `404.html` para las
+// URLs sin versión (Vercel sirve el 404 raíz)—. No se usa `redirects` de `vercel.json`: el patrón
+// con regex para excluir las rutas versionadas lo rechaza el validador de Vercel.
+if (!rootAlias) {
+  const restos = new Set(["assets", "componentes", "breaking", "img", "hashmap.json"]);
+  for (const entry of readdirSync(outDir, { withFileTypes: true })) {
+    const sobra = restos.has(entry.name) || (entry.isFile() && entry.name.endsWith(".html"));
+    if (sobra) rmSync(join(outDir, entry.name), { recursive: true, force: true });
+  }
+  const home = `/${latest.id}/`;
+  writeFileSync(
+    join(outDir, "index.html"),
+    `<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="refresh" content="0; url=${home}">
+  <link rel="canonical" href="${home}">
+  <title>ComegenUI — documentación</title>
+</head>
+<body>
+  <p>La documentación está en <a href="${home}">la última versión (${latest.id})</a>.</p>
+</body>
+</html>
+`,
+  );
+  writeFileSync(
+    join(outDir, "404.html"),
+    `<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>ComegenUI — documentación</title>
+</head>
+<body>
+  <p>Esa URL no existe en esta versión del sitio. <a href="${home}">Ir a la documentación</a>.</p>
+  <script>
+    (function () {
+      var latest = ${JSON.stringify(home)};
+      var path = location.pathname.replace(/^\\//, "");
+      // Una URL con versión (\`/x.y.z/...\`) no se reescribe: esa versión ya no se publica.
+      if (!/^\\d+\\.\\d+\\.\\d+(\\/|$)/.test(path)) {
+        location.replace(latest + path + location.search + location.hash);
+      }
+    })();
+  </script>
+</body>
+</html>
+`,
+  );
+  log(`${c.bold("raíz")} ${c.dim(`sin alias · redirect → ${home}`)}`);
+  // `vercel.json` (cleanUrls) tiene que estar en la raíz del deploy: sin alias, `public/` no se
+  // copia ahí. Se toma el de `docs/site/public/` para no duplicar la config.
+  cpSync(resolve(root, "docs/site/public/vercel.json"), join(outDir, "vercel.json"));
+}
+
+// ---------------------------------------------------------------------------
 // Versiones que salieron del manifiesto: se borran del destino
 // ---------------------------------------------------------------------------
 // El `versions.json` deja de listarlas, pero la carpeta seguiría publicada (y accesible por URL).

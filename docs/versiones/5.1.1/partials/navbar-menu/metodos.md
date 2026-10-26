@@ -1,1 +1,0 @@
-No expone métodos.
