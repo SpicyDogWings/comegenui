@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { flushPromises, mount } from '@vue/test-utils'
+import { flushPromises, mount, type VueWrapper } from '@vue/test-utils'
 import Autocomplete from './Autocomplete.vue'
 import Dropdown from '../overlay/Dropdown.vue'
 
@@ -208,5 +208,106 @@ describe('Autocomplete — alineación del texto (input + opciones)', () => {
     const option = w.find('.cu-autocomplete-option')
     expect((option.element as HTMLElement).style.justifyContent).toBe('flex-end')
     expect(option.find('.mi-icono').exists()).toBe(true)
+  })
+})
+
+describe('Autocomplete — selección visible (check) y panel abierto', () => {
+  async function typeAndPick(w: VueWrapper, text: string) {
+    await w.find('input').setValue(text)
+    await flushPromises()
+    await w.findAll('.cu-autocomplete-option')[0]!.trigger('click')
+    await flushPromises()
+  }
+
+  it('seleccionar no cierra el panel: muestra todos los items con el elegido checkeado', async () => {
+    const w = mount(Autocomplete, { props: { items } })
+    await typeAndPick(w, 'María')
+
+    expect(vm(w).isOpen()).toBe(true)
+    const options = w.findAll('.cu-autocomplete-option')
+    expect(options).toHaveLength(2)
+    expect(options[0]!.text()).toContain('María López')
+    expect(options[0]!.find('.cu-menu-option-check').exists()).toBe(true)
+    expect(options[1]!.find('.cu-menu-option-check').exists()).toBe(false)
+    expect(vm(w).selectedItem()?.label).toBe('María López')
+    expect(inputValue(w)).toBe('María López')
+  })
+
+  it('al volver a escribir se reanuda el filtrado con la cadena actual', async () => {
+    const w = mount(Autocomplete, { props: { items } })
+    await typeAndPick(w, 'María')
+
+    await w.find('input').setValue('Juan')
+    await flushPromises()
+
+    const options = w.findAll('.cu-autocomplete-option')
+    expect(options).toHaveLength(1)
+    expect(options[0]!.text()).toContain('Juan Pérez')
+    expect(vm(w).isOpen()).toBe(true)
+    // El texto deja de coincidir con el item elegido: se limpia la selección.
+    expect(w.find('.cu-menu-option-check').exists()).toBe(false)
+    expect(vm(w).selectedItem()).toBeNull()
+  })
+
+  it('re-click sobre el mismo item mantiene la selección y el panel abierto', async () => {
+    const w = mount(Autocomplete, { props: { items } })
+    await typeAndPick(w, 'María')
+
+    await w.findAll('.cu-autocomplete-option')[0]!.trigger('click')
+    await flushPromises()
+
+    expect(vm(w).isOpen()).toBe(true)
+    expect(w.findAll('.cu-menu-option-check')).toHaveLength(1)
+    expect(w.emitted('select')).toHaveLength(2)
+  })
+
+  it('click afuera cierra el panel', async () => {
+    const w = mount(Autocomplete, { props: { items } })
+    await typeAndPick(w, 'María')
+    expect(vm(w).isOpen()).toBe(true)
+
+    document.body.click()
+    await flushPromises()
+
+    expect(vm(w).isOpen()).toBe(false)
+    expect(vm(w).selectedItem()?.label).toBe('María López')
+  })
+
+  it('set() conserva la selección sólo si el texto coincide; reset() la limpia', async () => {
+    const w = mount(Autocomplete, { props: { items } })
+    await typeAndPick(w, 'María')
+
+    vm(w).set('María López')
+    await flushPromises()
+    expect(vm(w).selectedItem()?.label).toBe('María López')
+    expect(w.find('.cu-menu-option-check').exists()).toBe(true)
+
+    vm(w).set('Juan')
+    await flushPromises()
+    expect(vm(w).selectedItem()).toBeNull()
+    expect(w.find('.cu-menu-option-check').exists()).toBe(false)
+
+    vm(w).set('María')
+    await flushPromises()
+    await w.findAll('.cu-autocomplete-option')[0]!.trigger('click')
+    await flushPromises()
+
+    vm(w).reset()
+    await flushPromises()
+    expect(vm(w).get()).toBe('')
+    expect(vm(w).selectedItem()).toBeNull()
+    expect(w.findAll('.cu-menu-option-check')).toHaveLength(0)
+  })
+
+  it('con minChars, seleccionar deja el panel abierto; escribir por debajo de minChars lo cierra', async () => {
+    const w = mount(Autocomplete, { props: { items, minChars: 2 } })
+    await typeAndPick(w, 'Ma')
+
+    expect(vm(w).isOpen()).toBe(true)
+    expect(vm(w).selectedItem()?.label).toBe('María López')
+
+    await w.find('input').setValue('M')
+    await flushPromises()
+    expect(vm(w).isOpen()).toBe(false)
   })
 })

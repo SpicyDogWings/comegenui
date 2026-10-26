@@ -5,7 +5,7 @@ reemplazable (slot `toggle`). Para una paleta de comandos usá `cu-command-palet
 
 ## Receta
 
-- Forma rápida: `items` con `label`, `icon` (SVG string), `color`, `variant`, `disabled`, `divider`, `href`, `target`, `onClick`.
+- Forma rápida: `items` con `label`, `icon` (SVG string), `color`, `variant`, `disabled`, `divider`, `href`, `target`, `selected`, `onClick`.
 - En el CE `items` va como **propiedad JS** (`dd.items = [...]`), nunca por atributo.
 - Si hay items, el slot default se ignora; si no hay, el panel muestra el slot.
 - Trigger propio: slot `toggle` (en el CE, HTML `slot="toggle"`); `label` se ignora si hay slot.
@@ -34,6 +34,7 @@ Los valores de `color` / `variant` / `position` / `align` / `text-align` están 
 - El item `href` se renderiza como link (`to` del `Button` → `<a>`); no hace navegación de router por sí solo.
 - No hay navegación con teclado (↑/↓/Enter) ni índice activo: es un menú de click.
 - En el CE el slot `toggle` es light DOM y se detecta por `slot="toggle"`; un slot vacío no pisa el botón por defecto.
+- `selected: true` sólo dibuja el check al final del item: no hay estado interno de selección, lo controla el consumidor.
 - No acepta `theme`.
 
 ## API del custom element

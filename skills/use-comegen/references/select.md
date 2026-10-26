@@ -35,6 +35,7 @@ Los valores de `color` / `variant` / `position` / `align` están en «Atributos�
 - No tiene slots: las opciones son datos y el `label` se renderiza como texto.
 - No hay una caja de búsqueda visible: `search-enabled` es type-ahead sobre un input oculto (sólo hace scroll al primer match).
 - `options` va por propiedad JS, nunca como atributo.
+- La opción seleccionada se resalta y lleva un check de lucide al final; se deriva de `value === model-value` (no se marca en `options`).
 - `variant` es de formulario: no admite `solid`, `link` ni `none`.
 - No expone `open()`/`close()`: sólo `isOpen()` para consultar.
 - `read-only` no es un `<select readonly>` nativo: no abre el panel; usá `disabled` si además

@@ -1,10 +1,10 @@
 {
-  "_comment": "Manifiesto de versiones de la documentación. Cada entrada se sirve bajo <base> = /<id>/. La doc de cada versión vive versionada con overlay en docs/versiones/<id>/ y su lib en docs/versiones/<id>/lib/; la única con `latest: true` sale del árbol de trabajo (HEAD). El `ref` (idealmente un tag) queda como trazabilidad, no se reconstruye desde él. Lo lee scripts/docs-versions.mjs — no lo lee el sitio. Al cortar una release, agregá su entrada acá.",
+  "_comment": "Manifiesto de versiones de la documentación. Cada entrada se sirve bajo <base> = /<id>/. La doc de cada versión vive versionada con overlay en docs/versiones/<id>/ y su lib en docs/versiones/<id>/lib/; la única con `latest: true` sale del árbol de trabajo (HEAD). El `ref` (idealmente un tag) queda como trazabilidad, no se reconstruye desde él. Lo lee scripts/docs-versions.mjs — no lo lee el sitio. Al cortar una release, agregá su entrada acá. Las versiones que una release reemplaza salen del manifiesto (y de docs/versiones/): su historia queda en el tag.",
   "rootAlias": true,
   "versions": [
     {
-      "id": "5.2.0",
-      "label": "5.2.0",
+      "id": "5.2.1",
+      "label": "5.2.1",
       "ref": "HEAD",
       "latest": true
     },

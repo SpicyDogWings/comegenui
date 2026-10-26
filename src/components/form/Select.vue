@@ -4,6 +4,7 @@ import { isColor, isFieldVariant, isSelectSearchMode, isTextAlign } from '@/util
 import { textAlignStyle } from '@/utils/textAlign'
 import Dropdown from "../overlay/Dropdown.vue";
 import Button from "../buttons/Button.vue";
+import MenuOption from "../controls/MenuOption.vue";
 import { matchesQuery } from "@/utils/search";
 
 interface SelectOption {
@@ -260,19 +261,19 @@ defineExpose({
           autocomplete="off"
         />
         <div v-if="options.length > 0" class="cu-select-options">
-          <Button
+          <MenuOption
             v-for="(opt, i) in options"
             :key="i"
+            :label="opt.label"
             :color="opt.color || color"
             :variant="opt.variant || (opt.value === selectedValue ? 'soft' : 'ghost')"
             :disabled="opt.disabled"
+            :selected="opt.value === selectedValue"
             class="cu-select-option"
             :class="{ 'cu-select-option--disabled': opt.disabled }"
             :style="optionStyle"
             @click="onSelect(opt)"
-          >
-            {{ opt.label }}
-          </Button>
+          />
         </div>
         <div v-else class="cu-select-empty">
           Sin opciones

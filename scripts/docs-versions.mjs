@@ -235,6 +235,20 @@ if (needAlias) {
 }
 
 // ---------------------------------------------------------------------------
+// Versiones que salieron del manifiesto: se borran del destino
+// ---------------------------------------------------------------------------
+// El `versions.json` deja de listarlas, pero la carpeta seguiría publicada (y accesible por URL).
+// Una release que reemplaza a otra saca la vieja del manifiesto: su historia queda en el tag.
+for (const entry of readdirSync(outDir, { withFileTypes: true })) {
+  if (!entry.isDirectory() || all.some((v) => v.id === entry.name)) continue;
+  const dir = join(outDir, entry.name);
+  // Sólo se borra lo que parece un build de versión (el alias raíz y `assets` quedan afuera).
+  if (!existsSync(join(dir, "index.html")) || !existsSync(join(dir, "versions.json"))) continue;
+  rmSync(dir, { recursive: true, force: true });
+  log(`${c.yellow("−")} ${entry.name} ${c.dim("(fuera del manifiesto)")}`);
+}
+
+// ---------------------------------------------------------------------------
 // Catálogo (lo lee DocsVersionSelect en runtime): todas las versiones **presentes**
 // ---------------------------------------------------------------------------
 const present = all.filter((v) => existsSync(join(outDir, v.id, "index.html")));

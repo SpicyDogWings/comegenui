@@ -27,8 +27,13 @@ docs/
 └── versiones/
     ├── 5.1.1/            ← snapshot completo de esa versión
     │   └── lib/          ← build esm-shared congelado (versionado en git)
-    └── 5.2.0/            ← overlay: sólo los archivos que cambiaron vs la anterior
+    └── 5.2.1/            ← versión en curso (la `latest` del manifiesto)
 ```
+
+Cuando una release reemplaza a otra (5.2.1 sobre 5.2.0), la versión vieja **sale del manifiesto y de
+`versiones/`**: no se publica más y el selector no la muestra. Su doc y su lib quedan en el tag
+(`v5.2.0`), que es la trazabilidad. `docs-versions` borra del destino las carpetas de versión que
+salieron del manifiesto, para que tampoco queden accesibles por URL.
 
 Ejemplo real: se agrega una prop a `<cu-date-picker>` → en `versiones/<nueva>/` va
 `partials/date-picker/props.md` (con la prop) y la ficha tocada; el resto de date-picker se resuelve
