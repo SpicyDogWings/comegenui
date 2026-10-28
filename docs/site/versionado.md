@@ -98,7 +98,7 @@ Si necesitás las **dos versiones del mismo componente**, la segunda va por su t
 
 Este sitio publica **sólo la última versión** de la documentación. El build de esa versión es un
 **sitio estático congelado** —su HTML, su buscador y su propia copia de ComegenUI para los demos—
-servido bajo su base `/<id>/` (hoy `/5.2.1/`). La doc vive versionada en `docs/versiones/<id>/` y el
+servido bajo su base `/<id>/` (hoy `/5.2.2/`). La doc vive versionada en `docs/versiones/<id>/` y el
 sitio la **compone** al buildear; la lib que usan sus demos viaja con ella en
 `docs/versiones/<id>/lib/`, así una versión congelada se comporta como esa versión aunque el árbol de
 trabajo ya haya avanzado.
@@ -107,7 +107,7 @@ La raíz **no** guarda una copia del sitio: `vercel.json` redirige `/` y cualqui
 (`/componentes/cu-button`) a la última versión, así los links viejos siguen funcionando sin publicar
 un build de más.
 
-- Las URLs llevan la versión (`/5.2.1/componentes/cu-button`): son linkeables y compartibles.
+- Las URLs llevan la versión (`/5.2.2/componentes/cu-button`): son linkeables y compartibles.
 - Los links del topbar y de la paleta **quedan dentro de la versión** que estás mirando.
 - El selector de versiones **se oculta** cuando hay una sola publicada (o en `vitepress dev`, donde
   no hay catálogo). El home (`/`) es `standalone`: ahí no hay selector ni sidebar.

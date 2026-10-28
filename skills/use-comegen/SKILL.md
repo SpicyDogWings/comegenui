@@ -4,7 +4,7 @@ description: 'Receta para usar los componentes de ComegenUI: los custom elements
 metadata:
   repository: https://github.com/SpicyDogWings/comegenui
   path: skills/use-comegen
-  version: 5.2.1
+  version: 5.2.2
 ---
 
 # Usar ComegenUI — receta

@@ -793,6 +793,24 @@ const MUTATIONS = [
     replace: `const hasVisibleRowActions = (_row: Record<string, any>): boolean => true;`,
   },
   {
+    id: "advanced-table-indice-edicion-sin-paginacion",
+    file: "src/components/data/AdvancedTable.vue",
+    expect:
+      "sin paginación, editar una fila más allá de itemsPerPage guarda en esa fila (no en -1)",
+    find: `const renderedData = computed(() =>
+  props.pagination ? pagination.displayData.value : sortedData.value
+);`,
+    replace: `const renderedData = computed(() => pagination.displayData.value);`,
+  },
+  {
+    id: "advanced-table-indice-visible-sin-traducir",
+    file: "src/components/data/AdvancedTable.vue",
+    expect:
+      "con paginación, el índice visible se traduce al índice original (página 2 → fila 11)",
+    find: `  localData.value.findIndex((row) => row === renderedData.value[displayIndex]);`,
+    replace: `  displayIndex;`,
+  },
+  {
     id: "number-input-clamp-max-ignorado",
     file: "src/components/form/NumberInput.vue",
     expect: "tipear por encima de max clampea al máximo",
