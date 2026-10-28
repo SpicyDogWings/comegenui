@@ -3,8 +3,8 @@
   "rootAlias": false,
   "versions": [
     {
-      "id": "5.2.1",
-      "label": "5.2.1",
+      "id": "5.2.2",
+      "label": "5.2.2",
       "ref": "HEAD",
       "latest": true
     }

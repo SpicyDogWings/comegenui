@@ -4,7 +4,7 @@ description: 'Receta para documentar un componente de ComegenUI: deja claro dón
 metadata:
   repository: https://github.com/SpicyDogWings/comegenui
   path: docs/skills/documenter
-  version: 5.2.1
+  version: 5.2.2
 ---
 
 # Documentar un componente
