@@ -14,16 +14,6 @@ import { useTableData } from "../../composables/useTableData";
 
 const validationStates = ref<Record<string, { success: boolean; error: string | null }>>({});
 
-const getOriginalIndex = (displayIndex: number): number => {
-  const displayRow = pagination.displayData.value[displayIndex];
-  return localData.value.findIndex(row => row === displayRow);
-};
-
-const getCellKey = (rowIndex: number, colKey: string): string => {
-  const originalIndex = getOriginalIndex(rowIndex);
-  return `${originalIndex}-${colKey}`;
-};
-
 const hasBadges = (col: Column): boolean => !!col.badges;
 const hasButtons = (col: Column): boolean => !!col.buttons;
 // Igual que `hasButtons`, pero contempla los botones ocultos por `hidden`:
@@ -371,6 +361,19 @@ const handleSearchUpdate = (value: string) => { searchQuery.value = value; };
 const handlePageChange = (page: number) => { pagination.setCurrentPage(page); emit("update:currentPage", page); };
 const handlePageSizeChange = (size: number) => { pagination.setItemsPerPage(size); emit("update:itemsPerPage", size); };
 
+// Colección que `Table` renderiza: con paginación, la página actual; sin ella,
+// todas las filas filtradas/ordenadas. El índice que emite una celda es una
+// posición en esta colección, no en `localData`.
+const renderedData = computed(() =>
+  props.pagination ? pagination.displayData.value : sortedData.value
+);
+
+const getOriginalIndex = (displayIndex: number): number =>
+  localData.value.findIndex((row) => row === renderedData.value[displayIndex]);
+
+const getCellKey = (rowIndex: number, colKey: string): string =>
+  `${getOriginalIndex(rowIndex)}-${colKey}`;
+
 const augmentedColumns = computed(() =>
   hasActions.value
     ? [...props.columns, { key: '__actions__', label: props.actionsLabel, width: '1%', align: 'center' as const, sortable: false }]
@@ -379,7 +382,7 @@ const augmentedColumns = computed(() =>
 
 const tableProps = computed(() => ({
   columns: augmentedColumns.value,
-  data: props.pagination ? pagination.displayData.value : sortedData.value,
+  data: renderedData.value,
   empty: props.empty,
   color: props.color,
   variant: props.variant,

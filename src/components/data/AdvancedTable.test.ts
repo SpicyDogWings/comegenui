@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { flushPromises, mount } from "@vue/test-utils";
+import { flushPromises, mount, type VueWrapper } from "@vue/test-utils";
 import { defineCustomElement, nextTick } from "vue";
 
 import AdvancedTable from "@/components/data/AdvancedTable.vue";
@@ -255,5 +255,96 @@ describe("AdvancedTable.ce (cu-table vanilla)", () => {
     expect(el.shadowRoot.querySelector('slot[name="footer"]')).not.toBeNull();
     expect(el.shadowRoot.querySelector('slot[name="header-__actions__"]')).not.toBeNull();
     el.remove();
+  });
+});
+
+describe("AdvancedTable — edición y paginación", () => {
+  const editableColumns = [{ key: "nombre", label: "Nombre", editable: true }];
+  const filas = () =>
+    Array.from({ length: 14 }, (_, i) => ({ id: i + 1, nombre: `Fila ${i + 1}` }));
+
+  interface TablaExpose {
+    getData: () => Record<string, any>[];
+    getRow: (index: number) => Record<string, any> | undefined;
+  }
+  const exposed = (w: VueWrapper) => w.vm as unknown as TablaExpose;
+
+  /** Edita la celda editable de la fila visible `visibleIndex` (0 = primera de la página). */
+  async function editarCelda(w: VueWrapper, visibleIndex: number, value: string) {
+    await w.findAll(".cu-editable-cell-view")[visibleIndex].trigger("click");
+    await flushPromises();
+    const input = w.find(".cu-editable-cell-input");
+    await input.setValue(value);
+    await input.trigger("keydown", { key: "Enter" });
+    await flushPromises();
+  }
+
+  async function irAPagina(w: VueWrapper, page: number) {
+    const boton = w
+      .findAll(".cu-pagination-pages button")
+      .find((b) => b.text() === String(page));
+    await boton!.trigger("click");
+    await flushPromises();
+  }
+
+  const ultimoEditSave = (w: VueWrapper) =>
+    w.emitted("edit-save")!.at(-1)![0] as { index: number; value: string };
+
+  it("sin paginación e itemsPerPage menor que las filas, edita la fila real (no la pierde)", async () => {
+    const w = mount(AdvancedTable, {
+      props: {
+        columns: editableColumns,
+        data: filas(),
+        pagination: false,
+        itemsPerPage: 10,
+      },
+    });
+
+    expect(w.findAll(".cu-table-row")).toHaveLength(14);
+    await editarCelda(w, 12, "EDITADA-13");
+
+    expect(exposed(w).getRow(12)?.nombre).toBe("EDITADA-13");
+    expect(ultimoEditSave(w)).toMatchObject({ index: 12, value: "EDITADA-13" });
+  });
+
+  it("con paginación, editar en la página 2 guarda en la fila 11 (índice original)", async () => {
+    const w = mount(AdvancedTable, {
+      props: {
+        columns: editableColumns,
+        data: filas(),
+        pagination: true,
+        itemsPerPage: 10,
+      },
+    });
+
+    await irAPagina(w, 2);
+    expect(w.findAll(".cu-table-row")).toHaveLength(4);
+    await editarCelda(w, 0, "EDITADA-11");
+
+    expect(exposed(w).getData()[10].nombre).toBe("EDITADA-11");
+    expect(ultimoEditSave(w).index).toBe(10);
+  });
+
+  it("apagar la paginación estando en la página 2 no desplaza el índice: edita la fila visible", async () => {
+    const w = mount(AdvancedTable, {
+      props: {
+        columns: editableColumns,
+        data: filas(),
+        pagination: true,
+        itemsPerPage: 10,
+      },
+    });
+
+    await irAPagina(w, 2);
+    await w.setProps({ pagination: false });
+    await flushPromises();
+
+    expect(w.findAll(".cu-table-row")).toHaveLength(14);
+    await editarCelda(w, 0, "EDITADA-1");
+
+    const data = exposed(w).getData();
+    expect(data[0].nombre).toBe("EDITADA-1");
+    expect(data[10].nombre).toBe("Fila 11");
+    expect(ultimoEditSave(w).index).toBe(0);
   });
 });
