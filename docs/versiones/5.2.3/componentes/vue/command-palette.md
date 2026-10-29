@@ -67,16 +67,35 @@ const commands = [
 
 ## Teclado
 
-| Tecla | Con el foco en el buscador | Con el foco en un comando (Tab) |
-| ------ | ------ | ------ |
-| `↑` / `↓` | Mueve el comando resaltado (con vuelta circular); el listado se desplaza para mantenerlo visible | — |
-| `Enter` | Ejecuta el comando resaltado y cierra | Ejecuta el comando enfocado y cierra |
-| `Tab` / `Shift+Tab` | Pasa el foco a los comandos y al resto del modal | Recorre los comandos |
-| `Escape` | Cierra la paleta | Cierra la paleta |
+El foco se queda en el buscador: los comandos no son paradas de tab y la navegación pasa por el
+comando activo.
 
-El resaltado sigue al foco y al mouse: el comando activo es siempre el que ejecuta `Enter`.
+| Tecla | Acción |
+| ------ | ------ |
+| `↑` / `↓` | Mueve el comando activo (con vuelta circular); el listado se desplaza para mantenerlo visible. |
+| `Home` / `End` | Salta al primer / último comando. |
+| `Enter` | Ejecuta el comando activo y cierra. |
+| `Escape` | Cierra la paleta. |
+| `Tab` / `Shift+Tab` | Sale del buscador hacia los botones del modal (los comandos no reciben foco). |
+
+El comando activo sigue al mouse (hover) y es siempre el que ejecuta `Enter`. Con click, cada
+comando se ejecuta con su propio botón.
 Al cerrarse —con `close()`, `Escape`, click en el backdrop o en el botón de cerrar— la búsqueda se
-limpia: la próxima apertura arranca vacía, con el primer comando resaltado y el listado arriba.
+limpia: la próxima apertura arranca vacía, con el primer comando activo y el listado arriba.
+
+## Accesibilidad
+
+El buscador es un `combobox` (`role="combobox"`, `aria-autocomplete="list"`, `aria-expanded`,
+`aria-controls` apuntando al listado) y el listado es un `listbox` con un `option` por comando.
+El comando activo se anuncia con `aria-activedescendant` en el buscador y `aria-selected="true"`
+en su opción; el foco nunca sale del buscador (las opciones llevan `tabindex="-1"`).
+
+Los comandos con la misma `category` se agrupan en `role="group"` con `aria-label` (la etiqueta
+visual queda `aria-hidden` para no anunciarse dos veces). El listado toma su nombre del `title` del
+modal, o "Comandos" si no hay título. Cuando la búsqueda no devuelve nada, el listbox no se
+renderiza y el mensaje "No se encontraron comandos" es `role="status"`: el buscador tampoco tiene
+`aria-activedescendant`. Los ids del listbox y las opciones salen de `useId`: no colisionan dentro de
+una misma app y, en el custom element, cada instancia vive en su propio shadow root.
 
 ## Colores
 

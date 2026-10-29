@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch, nextTick, type PropType } from 'vue';
+import { computed, ref, watch, nextTick, useId, type PropType } from 'vue';
 import { isModalSize } from '@/utils/validators'
 import Modal from "../overlay/Modal.vue";
 import Input from "../form/Input.vue";
@@ -54,10 +54,25 @@ const activeIndex = ref(0);
 const inputRef = ref<InstanceType<typeof Input> | null>(null);
 const resultsRef = ref<HTMLElement | null>(null);
 
+// Patrón combobox: el foco queda en el buscador y el comando activo se anuncia
+// por `aria-activedescendant`. Los ids salen de `useId` para que dos paletas
+// montadas a la vez no compartan listbox/opciones.
+const uid = useId();
+const listboxId = `${uid}-listbox`;
+// Estado del combobox para `aria-expanded`: el componente controla todas las
+// transiciones (abrir acá; cerrar por `close()` o por el Modal → `handleClose`).
+const expanded = ref(false);
+const optionId = (index: number) => `${uid}-option-${index}`;
+
 const searchItems = computed(() => props.commands);
 const { filteredData: filtered } = useSearch(searchItems, {
   searchQuery: search,
   searchFields: ["label", "category"],
+});
+
+const activeDescendant = computed(() => {
+  const cmd = filtered.value[activeIndex.value];
+  return cmd ? optionId(activeIndex.value) : undefined;
 });
 
 const grouped = computed(() => {
@@ -104,12 +119,14 @@ function resetState() {
 
 function open() {
   modalRef.value?.open();
+  expanded.value = true;
   nextTick(() => inputRef.value?.focus());
 }
 
 
 function close() {
   modalRef.value?.close();
+  expanded.value = false;
   resetState();
 }
 
@@ -118,6 +135,7 @@ function close() {
  * además de avisar, limpia la búsqueda para que la próxima apertura arranque limpia.
  */
 function handleClose() {
+  expanded.value = false;
   resetState();
   emit("close");
 }
@@ -140,7 +158,7 @@ function run(id: string): CommandItem | null {
 function handleKeydown(event: KeyboardEvent) {
   if (!filtered.value.length) return;
   // Con el foco en un comando, Enter/Espacio los resuelve el `<button>` nativo:
-  // interceptarlo acá ejecutaría el comando resaltado en vez del enfocado.
+  // interceptarlo acá ejecutaría el comando activo en vez del enfocado.
   if ((event.target as HTMLElement | null)?.closest?.(".cu-command-palette-item")) return;
   if (event.key === "ArrowDown") {
     event.preventDefault();
@@ -148,6 +166,12 @@ function handleKeydown(event: KeyboardEvent) {
   } else if (event.key === "ArrowUp") {
     event.preventDefault();
     activeIndex.value = (activeIndex.value - 1 + filtered.value.length) % filtered.value.length;
+  } else if (event.key === "Home") {
+    event.preventDefault();
+    activeIndex.value = 0;
+  } else if (event.key === "End") {
+    event.preventDefault();
+    activeIndex.value = filtered.value.length - 1;
   } else if (event.key === "Enter") {
     event.preventDefault();
     const cmd = filtered.value[activeIndex.value];
@@ -173,25 +197,45 @@ defineExpose({
           v-model="search"
           :placeholder="placeholder"
           class="cu-command-palette-input"
+          role="combobox"
+          aria-autocomplete="list"
+          :aria-expanded="expanded"
+          :aria-controls="listboxId"
+          :aria-activedescendant="activeDescendant"
         />
       </div>
 
-      <div ref="resultsRef" class="cu-command-palette-results">
+      <div
+        ref="resultsRef"
+        :id="listboxId"
+        class="cu-command-palette-results"
+        :role="filtered.length ? 'listbox' : undefined"
+        :aria-label="filtered.length ? title || 'Comandos' : undefined"
+      >
         <template v-if="filtered.length">
-          <template v-for="group in grouped" :key="group.category">
-            <div v-if="group.category" class="cu-command-palette-group-label">
+          <div
+            v-for="group in grouped"
+            :key="group.category || '__sin-categoria'"
+            :role="group.category ? 'group' : 'presentation'"
+            :aria-label="group.category || undefined"
+            class="cu-command-palette-group"
+          >
+            <div v-if="group.category" class="cu-command-palette-group-label" aria-hidden="true">
               {{ group.category }}
             </div>
             <Button
               v-for="item in group.items"
+              :id="optionId(item.index)"
               :key="item.cmd.id"
+              role="option"
+              :aria-selected="item.index === activeIndex"
+              tabindex="-1"
               color="neutral"
               variant="ghost"
               class="cu-command-palette-item"
               :class="{ 'cu-command-palette-item--active': item.index === activeIndex }"
               @click="select(item.cmd)"
               @mouseenter="activeIndex = item.index"
-              @focus="activeIndex = item.index"
             >
               <span v-if="item.cmd.icon" class="cu-command-palette-item-icon">{{ item.cmd.icon }}</span>
               <span class="cu-command-palette-item-label">{{ item.cmd.label }}</span>
@@ -203,17 +247,17 @@ defineExpose({
               >{{ badge }}</span>
               <span v-if="item.cmd.shortcut" class="cu-command-palette-item-shortcut">{{ item.cmd.shortcut }}</span>
             </Button>
-          </template>
-            </template>
-            <div v-else class="cu-command-palette-empty">
-              No se encontraron comandos
-            </div>
           </div>
+        </template>
+        <div v-else class="cu-command-palette-empty" role="status">
+          No se encontraron comandos
         </div>
-      </Modal>
-    </template>
+        </div>
+      </div>
+  </Modal>
+</template>
 
-    <style scoped>
+<style scoped>
     .cu-command-palette {
       display: flex;
       flex-direction: column;
