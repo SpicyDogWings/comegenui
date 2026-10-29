@@ -12,7 +12,7 @@ Esta es la interface declarada en el `.ce.vue`. **La prop `columns` se pasa tal 
 interface Column {
   key: string;                                                       // Identificador de la columna
   label?: string;                                                   // Texto del header
-  cell?: (row: Record<string, any>) => string | string[];            // Render custom de la celda
+  cell?: (row: Record<string, any>) => string | string[];            // Render custom: string = una línea; string[] = una línea por elemento
   editable?: boolean | RegExp | ((row: Record<string, any>) => boolean);  // Editable: bool, regex validator, o función condicional
   inputType?: "input" | "textarea" | "select" | "autocomplete" | "date" | "switch";  // Tipo de editor
   selectOptions?: { value: string; label: string }[] | ((row: Record<string, any>) => { value: string; label: string }[]);  // Opciones del select
@@ -91,6 +91,30 @@ La celda renderiza el editor (input / select / textarea / autocomplete) **direct
 > 💡 **`inputType: 'switch'` es una excepción:** el switch **siempre** se renderiza visible, sin lápiz y sin depender de los estados lápiz/inline. Ver [Edición con switch](#edición-con-switch).
 
 > Ver [Recetas](#recetas) para ejemplos completos de cada estado, incluyendo el preset de playground `examples/table-inline-editing.js`.
+
+### Celdas custom con `cell`
+
+`cell` reemplaza el valor de la celda por lo que devuelva la función. **El texto se escapa** (nunca se interpreta HTML) y el tipo de retorno decide el layout:
+
+| Retorno | Qué se renderiza |
+|---------|------------------|
+| `string` | Una sola línea (igual que el valor plano de la columna). |
+| `string[]` | **Una línea por elemento** (`.cu-advanced-table-cell-lines`, columna flex con `white-space: pre-line`). |
+| `[]` | Celda vacía (no cae al valor crudo de la fila). |
+
+```js
+tabla.columns = [
+  { key: 'nombre', label: 'Nombre' },
+  {
+    key: 'detalle',
+    label: 'Detalle',
+    // Tres líneas en la misma celda
+    cell: (row) => [row.nombre, `DNI ${row.dni}`, row.rol === 'Admin' ? 'Administrador' : 'Usuario'],
+  },
+];
+```
+
+Los elementos `null`/`undefined` de un array se renderizan como una línea vacía; los números y demás valores se convierten a texto.
 
 ### Acciones de fila (`actions`)
 

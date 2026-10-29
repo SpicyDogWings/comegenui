@@ -1393,6 +1393,15 @@ const MUTATIONS = [
     find: `  getData: (filterFn?: (row: Record<string, any>) => boolean) => tableRef.value?.getData(filterFn),`,
     replace: `  getData: () => tableRef.value?.getData(),`,
   },
+  {
+    id: "advanced-table-cell-array-render",
+    file: "src/components/data/AdvancedTable.vue",
+    expect: "un `cell` que devuelve string[] se renderiza una línea por elemento (no el JSON de Vue)",
+    find: `  if (!Array.isArray(value)) return null;
+  return value.map((line) => (line == null ? "" : String(line)));`,
+    replace: `  void value;
+  return null;`,
+  },
 ];
 
 export { MUTATIONS };

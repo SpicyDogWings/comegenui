@@ -38,6 +38,16 @@ const getCellValue = (col: Column, row: Record<string, any>): string | string[] 
   return row[col.key];
 };
 
+// `cell` puede devolver un string (una línea) o un array de strings (varias).
+// El array se renderiza **una línea por elemento**; antes caía en el
+// `JSON.stringify` que Vue aplica a los arrays. Un array vacío no renderiza nada
+// (`[]`), y el string devuelve `null` para caer en el render de siempre.
+const getCellLines = (col: Column, row: Record<string, any>): string[] | null => {
+  const value = getCellValue(col, row);
+  if (!Array.isArray(value)) return null;
+  return value.map((line) => (line == null ? "" : String(line)));
+};
+
 const getCellBadges = (col: Column, row: Record<string, any>): BadgeConfig[] => {
   return col.badges ? col.badges(row) : [];
 };
@@ -545,7 +555,19 @@ defineExpose({
           @edit-error="(e: any) => { const displayIndex = e.index; const originalIndex = getOriginalIndex(displayIndex); const cellKey = getCellKey(displayIndex, e.column.key); validationStates[cellKey] = { success: false, error: 'Formato inválido' }; emit('edit-error', { ...e, index: originalIndex }); }"
         />
 
-        <span v-else-if="hasCellFunction(col)">{{ getCellValue(col, row) }}</span>
+        <!-- `cell` custom: array de strings = una línea por elemento; string = un nodo. -->
+        <template v-else-if="hasCellFunction(col)">
+          <div v-if="getCellLines(col, row)?.length" class="cu-advanced-table-cell-lines">
+            <span
+              v-for="(line, lineIndex) in getCellLines(col, row)"
+              :key="`cell-${index}-${col.key}-${lineIndex}`"
+            >{{ line }}</span>
+          </div>
+          <span v-else-if="getCellLines(col, row) === null">{{ getCellValue(col, row) }}</span>
+          <!-- Array vacío: celda vacía. Sin este nodo el slot quedaría vacío y el
+               `Table` caería a su fallback (el valor crudo de la fila). -->
+          <span v-else></span>
+        </template>
 
         <div v-else-if="col.key === '__actions__' && hasVisibleRowActions(row)" class="cu-advanced-table-actions">
           <DropdownMenu
@@ -622,6 +644,14 @@ defineExpose({
   align-items: center;
   flex-wrap: wrap;
   gap: var(--cu-space-sm);
+}
+
+/* `cell` que devuelve string[]: una línea por elemento. */
+.cu-advanced-table-cell-lines {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cu-space-2xs);
+  white-space: pre-line;
 }
 
 .cu-advanced-table-icon {

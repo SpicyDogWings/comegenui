@@ -486,3 +486,49 @@ describe("AdvancedTable.ce (cu-table vanilla) — getData", () => {
     el.remove();
   });
 });
+
+describe("AdvancedTable — `cell` que devuelve string[]", () => {
+  const conCell = (cell: (row: Record<string, any>) => string | string[]) =>
+    mount(AdvancedTable, {
+      props: {
+        columns: [{ key: "nombre", label: "Nombre" }, { key: "detalle", label: "Detalle", cell }],
+        data: [{ nombre: "Juan", detalle: "x" }],
+      },
+    });
+
+  it("renderiza una línea por elemento (no el JSON que Vue aplica a los arrays)", () => {
+    const w = conCell(() => ["Juan Pérez", "DNI 12345678", "Admin"]);
+    const celda = w.findAll(".cu-table-row td")[1]!;
+    const lineas = celda.findAll(".cu-advanced-table-cell-lines > span");
+
+    expect(lineas.map((l) => l.text())).toEqual(["Juan Pérez", "DNI 12345678", "Admin"]);
+    expect(celda.text()).not.toContain("[");
+    expect(celda.text()).not.toContain('"');
+  });
+
+  it("escapa el contenido: el HTML de una línea se ve como texto, no se inyecta", () => {
+    const w = conCell(() => ['<b class="xss">negrita</b>']);
+    const celda = w.findAll(".cu-table-row td")[1]!;
+
+    expect(celda.find("b").exists()).toBe(false);
+    expect(celda.find(".cu-advanced-table-cell-lines > span").text()).toBe('<b class="xss">negrita</b>');
+  });
+
+  it("un array vacío deja la celda vacía (no cae al valor crudo de la fila)", () => {
+    const w = conCell(() => []);
+    const celda = w.findAll(".cu-table-row td")[1]!;
+
+    expect(celda.find(".cu-advanced-table-cell-lines").exists()).toBe(false);
+    // "x" es `row.detalle`: el fallback del `Table` no debe aparecer.
+    expect(celda.text()).toBe("");
+    expect(celda.text()).not.toContain("x");
+  });
+
+  it("un `cell` que devuelve string sigue renderizando en un solo nodo", () => {
+    const w = conCell(() => "una sola línea");
+    const celda = w.findAll(".cu-table-row td")[1]!;
+
+    expect(celda.find(".cu-advanced-table-cell-lines").exists()).toBe(false);
+    expect(celda.find("span").text()).toBe("una sola línea");
+  });
+});
