@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, defineModel, type PropType } from "vue";
-import { isSize, isTabsVariant } from '@/utils/validators'
+import { isColor, isSize, isTabsVariant } from '@/utils/validators'
 
 interface TabItem {
   key: string;
@@ -23,6 +23,7 @@ const props = defineProps({
     type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     required: false,
     default: "primary",
+    validator: isColor,
   },
   variant: {
     type: String as PropType<'ghost' | 'solid' | 'boxed' | 'soft'>,
@@ -47,24 +48,40 @@ const emit = defineEmits(["change"]);
 /** Clave del tab activo (v-model). */
 const active = defineModel<string>({ default: "" });
 
+// Un color fuera del set no tiene tokens: el tab activo quedaba sin fondo y con
+// el texto del tema encima (invisible en light). Cae al color por defecto.
+const safeColor = computed(() => (isColor(props.color) ? props.color : 'primary'))
+
+// El tab activo es `modelValue` si apunta a una tab habilitada; si no, el
+// primero habilitado. Una tab deshabilitada nunca queda activa: sería la única
+// con `tabindex="0"` y, al estar disabled, el tablist quedaría sin parada de
+// teclado (la navegación por flechas y `setActive` ya la saltean).
 const activeKey = computed(() => {
-  if (active.value && props.tabs.some((t) => t.key === active.value)) return active.value;
+  const requested = props.tabs.find((t) => t.key === active.value)
+  if (requested && !requested.disabled) return requested.key
   return props.tabs.find((t) => !t.disabled)?.key ?? "";
 });
 
 const tabRefs = ref<Record<string, HTMLElement | null>>({});
 
 const tabStyles = computed(() => ({
-  '--tabs-solid': `var(--cu-color-${props.color}-solid)`,
+  '--tabs-solid': `var(--cu-color-${safeColor.value}-solid)`,
   '--tabs-solid-text': `var(--cu-color-surface)`,
-  '--tabs-text': `var(--cu-color-${props.color}-text)`,
-  '--tabs-soft': `var(--cu-color-${props.color}-soft)`,
-  '--tabs-soft-hover': `var(--cu-color-${props.color}-soft-hover)`,
-  '--tabs-soft-active': `var(--cu-color-${props.color}-soft-active)`,
-  '--tabs-subtle-border': `var(--cu-color-${props.color}-subtle-border)`,
+  '--tabs-text': `var(--cu-color-${safeColor.value}-text)`,
+  '--tabs-soft': `var(--cu-color-${safeColor.value}-soft)`,
+  '--tabs-soft-hover': `var(--cu-color-${safeColor.value}-soft-hover)`,
+  '--tabs-soft-active': `var(--cu-color-${safeColor.value}-soft-active)`,
+  '--tabs-subtle-border': `var(--cu-color-${safeColor.value}-subtle-border)`,
 }));
 
 const isTabDisabled = (tab: TabItem) => props.disabled || !!tab.disabled;
+
+const panelId = (key: string) => `cu-tabs-panel-${key}`;
+const tabId = (key: string) => `cu-tabs-tab-${key}`;
+// El panel sólo existe en el DOM cuando la tab está activa (v-if) o es
+// keepAlive; `aria-controls` a un id inexistente es un IDREF inválido, así que
+// sólo se declara cuando apunta a algo real.
+const hasPanel = (tab: TabItem) => !!tab.keepAlive || tab.key === activeKey.value;
 
 const select = (key: string) => {
   if (props.disabled) return;
@@ -130,8 +147,8 @@ defineExpose({ getActive, setActive, next, prev });
         :class="{ 'cu-tabs-tab--active': tab.key === activeKey }"
         role="tab"
         :aria-selected="tab.key === activeKey"
-        :aria-controls="`cu-tabs-panel-${tab.key}`"
-        :id="`cu-tabs-tab-${tab.key}`"
+        :aria-controls="hasPanel(tab) ? panelId(tab.key) : undefined"
+        :id="tabId(tab.key)"
         :disabled="isTabDisabled(tab)"
         :tabindex="tab.key === activeKey ? 0 : -1"
         @click="select(tab.key)"
@@ -148,10 +165,10 @@ defineExpose({ getActive, setActive, next, prev });
       <div
         v-if="tab.keepAlive || tab.key === activeKey"
         v-show="tab.key === activeKey"
-        :id="`cu-tabs-panel-${tab.key}`"
+        :id="panelId(tab.key)"
         class="cu-tabs-panel"
         role="tabpanel"
-        :aria-labelledby="`cu-tabs-tab-${tab.key}`"
+        :aria-labelledby="tabId(tab.key)"
       >
         <slot :name="tab.key"></slot>
       </div>

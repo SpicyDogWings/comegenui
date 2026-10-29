@@ -33,7 +33,7 @@ const tabs = ref([
 ## Colores
 
 `color` es un nombre semántico, no un hex: tiñe el tab activo y, en `ghost`, la línea inferior.
-(`tabs` es el array del ejemplo de arriba.)
+Un valor fuera del set cae en `primary`. (`tabs` es el array del ejemplo de arriba.)
 
 ```vue
 <Tabs :tabs="tabs" variant="solid" color="primary" />
@@ -100,7 +100,8 @@ const tabs = [
 ## Deshabilitado
 
 `disabled` bloquea el grupo completo; `tabs[].disabled` bloquea una pestaña individual (se saltea en
-la navegación por teclado y en `setActive`).
+la navegación por teclado y en `setActive`, y un `v-model` que apunte a ella cae en la primera
+habilitada: una tab deshabilitada nunca queda como activa).
 
 ```vue
 <script setup lang="ts">
@@ -180,9 +181,13 @@ function irASecond() {
 
 ## Accesibilidad y navegación
 
-- Roles ARIA: `tablist`, `tab`, `tabpanel`, con `aria-selected`, `aria-controls` y `aria-labelledby`.
+- Roles ARIA: `tablist`, `tab` y `tabpanel`. Cada tab lleva `aria-selected`, `aria-controls` (apunta
+  al panel, que existe cuando la tab está activa o tiene `keepAlive`) y el panel lleva
+  `aria-labelledby` apuntando a su tab.
+- Un solo tab stop: sólo la tab activa tiene `tabindex="0"`; el resto, `-1` (roving tabindex). Las
+  flechas mueven el foco y activan la tab a la que llegan.
 - Teclado: las flechas ←/→ cambian de tab; `Home` y `End` van al primero/último.
-- Las tabs deshabilitadas se saltean en la navegación y en `setActive`.
+- Las tabs deshabilitadas se saltean en la navegación, en `setActive` y al resolver el tab activo.
 
 ## Props
 

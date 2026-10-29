@@ -42,7 +42,7 @@ const tabs = [
       </svg>
     </template>
 
-    <!-- Slot dinámico de contenido: tab-{key} -->
+    <!-- Slot dinámico de contenido: `{key}` (acá `home` y `settings`) -->
     <template #home>
       El icono llega por el slot <code>tab-icon-home</code> y hereda el color del tab.
     </template>

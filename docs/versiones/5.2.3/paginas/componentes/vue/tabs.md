@@ -50,7 +50,7 @@ import TabsDisabledExample from "../../examples/tabs/TabsDisabledExample.vue";
   </div>
 </ClientOnly>
 
-### Slots dinámicos (`tab-{key}`, `tab-icon-{key}`)
+### Slots dinámicos (`{key}` y `tab-icon-{key}`)
 
 <ClientOnly>
   <div class="cu-demo cu-demo--stack">

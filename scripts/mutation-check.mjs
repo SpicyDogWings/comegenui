@@ -1481,6 +1481,59 @@ const MUTATIONS = [
     replace: `  void value;
   return null;`,
   },
+  {
+    id: "tabs-active-disabled-no-se-saltea",
+    file: "src/components/Tabs.vue",
+    expect: "un modelValue que apunta a una tab deshabilitada cae en la primera habilitada",
+    find: `  const requested = props.tabs.find((t) => t.key === active.value)
+  if (requested && !requested.disabled) return requested.key`,
+    replace: `  const requested = props.tabs.find((t) => t.key === active.value)
+  if (requested) return requested.key`,
+  },
+  {
+    id: "tabs-aria-controls-panel-inexistente",
+    file: "src/components/Tabs.vue",
+    expect: "aria-controls sólo se declara cuando el panel existe",
+    find: `:aria-controls="hasPanel(tab) ? panelId(tab.key) : undefined"`,
+    replace: `:aria-controls="panelId(tab.key)"`,
+  },
+  {
+    id: "tabs-color-sin-fallback",
+    file: "src/components/Tabs.vue",
+    expect: "un color fuera del set cae en primary (tab activo visible)",
+    find: `const safeColor = computed(() => (isColor(props.color) ? props.color : 'primary'))`,
+    replace: `const safeColor = computed(() => props.color)`,
+  },
+  {
+    id: "tabs-change-en-misma-tab",
+    file: "src/components/Tabs.vue",
+    expect: "click en la tab ya activa no emite change",
+    find: `  if (key === activeKey.value) return;`,
+    replace: `  /* mutado */`,
+  },
+  {
+    id: "tabs-tabindex-todas-cero",
+    file: "src/components/Tabs.vue",
+    expect: "roving tabindex: sólo la tab activa tiene 0",
+    find: `:tabindex="tab.key === activeKey ? 0 : -1"`,
+    replace: `:tabindex="0"`,
+  },
+  {
+    id: "tabs-keepalive-desmonta",
+    file: "src/components/Tabs.vue",
+    expect: "un panel keepAlive se queda montado al cambiar de tab",
+    find: `v-if="tab.keepAlive || tab.key === activeKey"`,
+    replace: `v-if="tab.key === activeKey"`,
+  },
+  {
+    id: "tabs-flechas-pisan-deshabilitadas",
+    file: "src/components/Tabs.vue",
+    expect: "la navegación por flechas saltea las tabs deshabilitadas",
+    find: `    if (tab && !tab.disabled) {
+      select(tab.key);`,
+    replace: `    if (tab) {
+      select(tab.key);`,
+  },
 ];
 
 export { MUTATIONS };
