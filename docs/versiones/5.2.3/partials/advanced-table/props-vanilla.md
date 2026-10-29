@@ -2,7 +2,7 @@
 | ------ | ------ | ------ | ------ |
 | `columns` | `Column[]` | `[]` | Definición de columnas (ver «Interfaz de columna»). Se asigna como propiedad JS |
 | `data` | `Record<string, any>[]` | `[]` | Filas de la tabla. Se asigna como propiedad JS |
-| `empty` | `string` | `""` | Texto a mostrar cuando no hay datos. Si se omite, usa `"No hay datos que mostrar"` |
+| `empty` | `string` | `"No hay datos que mostrar"` | Texto a mostrar cuando no hay datos |
 | `pagination` | `boolean` | `false` | Habilita paginación interna |
 | `items-per-page` | `number` | `10` | Tamaño de página (atributo HTML: `items-per-page`) |
 | `show-page-size` | `boolean` | `false` | Muestra selector de items por página (atributo HTML: `show-page-size`) |

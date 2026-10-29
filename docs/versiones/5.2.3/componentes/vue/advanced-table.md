@@ -17,7 +17,7 @@ interface Column {
   inputType?: "input" | "textarea" | "select" | "autocomplete" | "date" | "switch";  // Tipo de editor
   selectOptions?: { value: string; label: string }[] | ((row: Record<string, any>) => { value: string; label: string }[]);  // Opciones del select
   validator?: (value: string, row: Record<string, any>) => boolean;  // Validador custom
-  singleClick?: boolean;                                             // Si true, edita con un click (default: doble click)
+  singleClick?: boolean;                                             // Si false, edita con doble click (default: un click)
   editorAlign?: "start" | "center" | "end";                          // Alineación del editor dentro de la celda (default: switch centrado, resto start)
   badges?: (row: Record<string, any>) => BadgeConfig[];              // Badges por celda
   buttons?: (row: Record<string, any>) => ButtonConfig[];            // Botones por celda
@@ -53,11 +53,14 @@ Una columna con `editable` tiene **dos estados** posibles. Ambos son **reactivos
 
 La celda muestra el valor con un **lápiz** ✏️. Hacé click (o doble click si `singleClick: false`) para entrar al editor.
 
+La vista del lápiz es un control **enfocable** (`tabindex="0"`, `role="button"`): con `Tab` llegás a la celda y con `Enter`/`Espacio` abrís el editor igual que con el mouse. El foco pasa al editor, que ya responde a `Enter`/`Escape`.
+
 | Acción | Comportamiento |
 |--------|----------------|
 | Click / doble click | Entra en edición, emite `edit-start` |
+| `Tab` + `Enter` / `Espacio` | Entra en edición, emite `edit-start` (sin mouse) |
 | `Enter` (o blur) | Guarda, emite `edit-save`, **vuelve al lápiz** |
-| `Escape` | Cancela, emite `edit-cancel`, **vuelve al lápiz** |
+| `Escape` | Cancela, emite `edit-cancel`, **vuelve al lápiz**. El valor no se guarda (no se emite `edit-save`) |
 
 #### Estado 2 — Inline (editor siempre visible)
 
@@ -192,6 +195,8 @@ En HTML plano, cargá el bundle `CuTable` (ver [ficha vanilla](/componentes/cu-t
 
 `pagination` (default `true` en Vue) habilita el paginador interno, `itemsPerPage` (default `10`) fija el tamaño de página, `showPageSize` agrega el selector y `pageSizeOptions` (default `[5, 10, 20, 50]`) sus opciones.
 
+> **`itemsPerPage` inválido:** un `0`, un negativo o un valor no numérico (también si lo cambiás en caliente) no rompe el paginador: cae al default `10`. Solo se aceptan enteros ≥ 1.
+
 ```vue
 <template>
   <AdvancedTable
@@ -300,6 +305,8 @@ Pipeline: `data → search → filters → sort → pagination`.
 
 Agregá `sortable` a la definición de la columna. Hacé click en el header para ciclar: `↕` → `▲` (asc) → `▼` (desc) → `↕`.
 
+El header ordenable es un `<button>` con nombre accesible (`Ordenar por {label}`) y el `<th>` expone `aria-sort` (`none` → `ascending` → `descending`), así que el ordenamiento también se puede usar y anunciar con teclado y lector de pantalla.
+
 ```vue
 <script setup lang="ts">
 import AdvancedTable from "@/components/data/AdvancedTable.vue";
@@ -371,7 +378,7 @@ const columns = ref([
 </template>
 ```
 
-> Con `singleClick: true` la celda entra en modo edición con un solo click (default: doble click).
+> Por defecto la celda entra en edición con **un** click; con `singleClick: false` exige **doble** click.
 
 > 💡 Si la validación falla, el editor se tiñe de rojo y se emite `edit-error`. Ver [Receta 4 — Validar formato con regex](#receta-4--validar-formato-con-regex-precio-con-2-decimales) para el patrón completo.
 

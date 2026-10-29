@@ -1318,6 +1318,81 @@ const MUTATIONS = [
     find: `        if (!authorSet && root.getAttribute(fallback) !== text) root.setAttribute(fallback, text)`,
     replace: `        void text`,
   },
+  {
+    id: "advanced-table-escape-guarda-valor",
+    file: "src/components/data/EditableTableCell.vue",
+    expect: "Escape cancela: no emite edit-save y no escribe la fila (el blur del editor desmontado no guarda)",
+    find: `  saving.value = true;
+  nextTick(() => { saving.value = false; });
+  if (inlineEdit.value) {`,
+    replace: `  if (inlineEdit.value) {`,
+  },
+  {
+    id: "editable-cell-regex-stateful",
+    file: "src/components/data/EditableTableCell.vue",
+    expect: "un RegExp con flag `g` valida igual en guardados consecutivos (no alterna por lastIndex)",
+    find: `  pattern.lastIndex = 0;
+  const matches = pattern.test(value);
+  pattern.lastIndex = 0;`,
+    replace: `  const matches = pattern.test(value);`,
+  },
+  {
+    id: "editable-cell-vista-sin-teclado",
+    file: "src/components/data/EditableTableCell.vue",
+    expect: "la vista del lápiz es enfocable y se anuncia como botón (editable con teclado)",
+    find: `        :role="canEdit ? 'button' : undefined"
+        :tabindex="canEdit ? 0 : undefined"`,
+    replace: ``,
+  },
+  {
+    id: "advanced-table-empty-default-sin-texto",
+    file: "src/components/customElements/data/AdvancedTable.ce.vue",
+    test: "src/components/data/AdvancedTable.test.ts",
+    expect: "sin `empty` el custom element muestra el texto por defecto (no una celda vacía)",
+    find: `    default: "No hay datos que mostrar",`,
+    replace: `    default: "",`,
+  },
+  {
+    id: "advanced-table-itemsperpage-invalido",
+    file: "src/components/data/AdvancedTable.vue",
+    expect: "un `itemsPerPage` 0 o negativo en caliente cae al default y no vacía la tabla",
+    find: `  return Number.isFinite(size) && size >= 1 ? Math.floor(size) : DEFAULT_ITEMS_PER_PAGE;`,
+    replace: `  return size;`,
+  },
+  {
+    id: "advanced-table-aria-sort-ignorado",
+    file: "src/components/data/AdvancedTable.vue",
+    expect: "`aria-sort` del th refleja el ordenamiento (none → ascending → descending)",
+    find: `      'aria-sort':
+        sortBy.value === col.key && sortDir.value
+          ? sortDir.value === 'asc' ? 'ascending' : 'descending'
+          : 'none',`,
+    replace: `      'aria-sort': 'none',`,
+  },
+  {
+    id: "advanced-table-sort-sin-nombre-accesible",
+    file: "src/components/data/AdvancedTable.vue",
+    expect: "el botón de ordenamiento tiene nombre accesible (`Ordenar por …`)",
+    find: `              :aria-label="\`Ordenar por \${column.label ?? column.key}\`"
+`,
+    replace: ``,
+  },
+  {
+    id: "advanced-table-toggle-acciones-sin-nombre",
+    file: "src/components/data/AdvancedTable.vue",
+    expect: "el toggle '...' de acciones tiene nombre accesible (es un botón de solo ícono)",
+    find: `                aria-label="Acciones de la fila"
+`,
+    replace: ``,
+  },
+  {
+    id: "cu-table-getdata-sin-filtro",
+    file: "src/components/customElements/data/AdvancedTable.ce.vue",
+    test: "src/components/data/AdvancedTable.test.ts",
+    expect: "`getData(fn)` en el custom element filtra igual que en el componente Vue",
+    find: `  getData: (filterFn?: (row: Record<string, any>) => boolean) => tableRef.value?.getData(filterFn),`,
+    replace: `  getData: () => tableRef.value?.getData(),`,
+  },
 ];
 
 export { MUTATIONS };

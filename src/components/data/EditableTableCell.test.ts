@@ -263,3 +263,80 @@ describe("EditableTableCell — modo lápiz (default) y estado inline", () => {
     expect(w.find(".cu-editable-cell").classes()).toContain("cu-editable-cell--disabled");
   });
 });
+
+describe("EditableTableCell — cancelar no guarda", () => {
+  it("Escape en modo lápiz: emite edit-cancel y NO edit-save (el blur del editor desmontado no guarda)", async () => {
+    const w = factory({});
+    await w.find(".cu-editable-cell-view").trigger("click");
+    await flushPromises();
+    const input = w.find("input");
+    await input.setValue("Changed");
+
+    // Escape cierra el editor y el navegador despacha `blur` sobre el input que
+    // se desmonta: ese blur no puede convertirse en un guardado.
+    input.element.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+    input.element.dispatchEvent(new Event("blur"));
+    await flushPromises();
+
+    expect(w.emitted("edit-cancel")).toBeTruthy();
+    expect(w.emitted("edit-save")).toBeFalsy();
+    expect(w.find(".cu-editable-cell-icon").exists()).toBe(true);
+  });
+});
+
+describe("EditableTableCell — teclado", () => {
+  it("la vista del lápiz es enfocable y se anuncia como botón", () => {
+    const w = factory({});
+    const view = w.find(".cu-editable-cell-view");
+    expect(view.attributes("tabindex")).toBe("0");
+    expect(view.attributes("role")).toBe("button");
+  });
+
+  it("Enter y Espacio sobre la vista abren el editor", async () => {
+    const conEnter = factory({});
+    await conEnter.find(".cu-editable-cell-view").trigger("keydown", { key: "Enter" });
+    await flushPromises();
+    expect(conEnter.find("input").exists()).toBe(true);
+
+    const conEspacio = factory({});
+    await conEspacio.find(".cu-editable-cell-view").trigger("keydown", { key: " " });
+    await flushPromises();
+    expect(conEspacio.find("input").exists()).toBe(true);
+  });
+
+  it("disabled: la vista NO es enfocable (sin tabindex ni role)", () => {
+    const w = mount(EditableTableCell, {
+      props: {
+        value: "Alice Johnson",
+        row,
+        column: { key: "name", label: "Name", editable: true },
+        index: 0,
+        validation: { success: false, error: null },
+        disabled: true,
+      },
+    });
+    const view = w.find(".cu-editable-cell-view");
+    expect(view.attributes("tabindex")).toBeUndefined();
+    expect(view.attributes("role")).toBeUndefined();
+  });
+});
+
+describe("EditableTableCell — regex stateful", () => {
+  it("un RegExp con flag `g` valida igual en guardados consecutivos (no alterna)", async () => {
+    const w = factory({ editable: /^\d+$/g }, "123");
+    const guardar = async (valor: string) => {
+      await w.find(".cu-editable-cell-view").trigger("click");
+      await flushPromises();
+      const input = w.find("input");
+      await input.setValue(valor);
+      await input.trigger("keydown", { key: "Enter" });
+      await flushPromises();
+    };
+
+    await guardar("456");
+    await guardar("789");
+
+    expect(w.emitted("edit-error")).toBeFalsy();
+    expect(w.emitted("edit-save")).toHaveLength(2);
+  });
+});

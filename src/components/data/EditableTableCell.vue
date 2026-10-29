@@ -192,7 +192,7 @@ const saveEdit = () => {
   let isValid = true;
   const value = editValue.value;
 
-  if (props.column.editable instanceof RegExp && !props.column.editable.test(value)) {
+  if (props.column.editable instanceof RegExp && !testRegExp(props.column.editable, value)) {
     isValid = false;
   }
 
@@ -225,12 +225,26 @@ const saveEdit = () => {
 
 const cancelEdit = () => {
   emit("edit-cancel", { row: props.row, column: props.column, index: props.index });
+  // En modo lápiz, cerrar el editor lo desmonta y el navegador despacha el
+  // `blur` del input: sin este bloqueo, `saveEdit` guardaba el valor recién
+  // cancelado (Escape terminaba emitiendo `edit-save` y escribiendo la fila).
+  saving.value = true;
+  nextTick(() => { saving.value = false; });
   if (inlineEdit.value) {
     // Estado inline: revertir el valor y seguir mostrando el editor
     editValue.value = props.value != null ? String(props.value) : "";
   } else {
     isEditing.value = false;
   }
+};
+
+// `test()` sobre un RegExp con flag `g`/`y` es stateful (`lastIndex`): validar
+// dos veces el mismo patrón alternaba válido/inválido. Se resetea antes y después.
+const testRegExp = (pattern: RegExp, value: string): boolean => {
+  pattern.lastIndex = 0;
+  const matches = pattern.test(value);
+  pattern.lastIndex = 0;
+  return matches;
 };
 
 // Fecha elegida en el <cu-date-picker> → se guarda como "YYYY-MM-DD"
@@ -504,7 +518,11 @@ const canEdit = computed(() => {
       <span
         class="cu-editable-cell-view"
         :class="{ 'cu-editable-cell-view--disabled': !canEdit }"
+        :role="canEdit ? 'button' : undefined"
+        :tabindex="canEdit ? 0 : undefined"
         title="Click to edit"
+        @keydown.enter.prevent="startEditing"
+        @keydown.space.prevent="startEditing"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -558,6 +576,13 @@ const canEdit = computed(() => {
 
 .cu-editable-cell-view--disabled {
   opacity: var(--cu-alpha-faded, 0.4);
+}
+
+/* La vista es el control (role="button"): el foco de teclado tiene que verse. */
+.cu-editable-cell-view:focus-visible {
+  outline: var(--cu-border-medium) solid var(--cu-border-color-focus);
+  outline-offset: 2px;
+  border-radius: var(--cu-radius-sm);
 }
 
 .cu-editable-cell-icon {

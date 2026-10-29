@@ -78,6 +78,15 @@ const props = defineProps({
     required: false,
     default: false,
   },
+  /**
+   * Atributos extra por columna para el `<th>` (ej. `aria-sort` cuando la
+   * columna se ordena). `{ [col.key]: { 'aria-sort': 'ascending' } }`.
+   */
+  headerAttrs: {
+    type: Object as () => Record<string, Record<string, string>>,
+    required: false,
+    default: () => ({}),
+  },
 });
 
 const tableStyles = computed(() => ({
@@ -151,6 +160,7 @@ const isRowDisabled = (row: Record<string, any>): boolean => {
               :key="col.key"
               class="cu-table-th"
               :style="thStyleFn(col)"
+              v-bind="props.headerAttrs[col.key] || {}"
             >
               <slot :name="`header-${col.key}`" :column="col" :color="props.color" :variant="props.variant">
                 <span class="cu-table-th-content">
