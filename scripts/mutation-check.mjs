@@ -308,6 +308,43 @@ const MUTATIONS = [
   return cmd;`,
   },
   {
+    id: "command-palette-enter-toma-item-enfocado",
+    file: "src/components/overlay/CommandPalette.vue",
+    expect: "Enter con el foco en un comando no ejecuta el comando resaltado",
+    find: `  if ((event.target as HTMLElement | null)?.closest?.(".cu-command-palette-item")) return;`,
+    replace: `  /* mutado */`,
+  },
+  {
+    id: "command-palette-cierre-modal-no-resetea",
+    file: "src/components/overlay/CommandPalette.vue",
+    expect: "cerrar por Escape/backdrop/botón del modal limpia la búsqueda",
+    find: `@close="handleClose"`,
+    replace: `@close="emit('close')"`,
+  },
+  {
+    id: "command-palette-resaltado-sin-scroll",
+    file: "src/components/overlay/CommandPalette.vue",
+    expect: "el comando resaltado se acerca a la vista al moverse",
+    find: `  resultsRef.value
+    ?.querySelector<HTMLElement>(".cu-command-palette-item--active")
+    ?.scrollIntoView?.({ block: "nearest" });`,
+    replace: `  /* mutado */`,
+  },
+  {
+    id: "command-palette-cierre-no-resetea-scroll",
+    file: "src/components/overlay/CommandPalette.vue",
+    expect: "al reabrir, el listado vuelve arriba",
+    find: `  if (resultsRef.value) resultsRef.value.scrollTop = 0;`,
+    replace: `  /* mutado */`,
+  },
+  {
+    id: "command-palette-label-como-html",
+    file: "src/components/overlay/CommandPalette.vue",
+    expect: "label/description/icon se muestran como texto",
+    find: `{{ item.cmd.label }}`,
+    replace: `<span v-html="item.cmd.label"></span>`,
+  },
+  {
     id: "select-on-select-no-update",
     file: "src/components/form/Select.vue",
     expect: "seleccionar una opción emite update:modelValue y select",

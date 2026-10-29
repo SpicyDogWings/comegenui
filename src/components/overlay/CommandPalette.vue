@@ -52,6 +52,7 @@ const modalRef = ref<InstanceType<typeof Modal> | null>(null);
 const search = ref("");
 const activeIndex = ref(0);
 const inputRef = ref<InstanceType<typeof Input> | null>(null);
+const resultsRef = ref<HTMLElement | null>(null);
 
 const searchItems = computed(() => props.commands);
 const { filteredData: filtered } = useSearch(searchItems, {
@@ -79,6 +80,28 @@ watch(filtered, () => {
   activeIndex.value = 0;
 });
 
+// El comando resaltado puede quedar fuera de la ventana visible del listado:
+// al moverse, lo acercamos lo justo para que se vea (`nearest`).
+async function scrollActiveIntoView() {
+  await nextTick();
+  resultsRef.value
+    ?.querySelector<HTMLElement>(".cu-command-palette-item--active")
+    ?.scrollIntoView?.({ block: "nearest" });
+}
+
+watch(activeIndex, () => {
+  void scrollActiveIntoView();
+});
+
+/** Vuelve la paleta a su estado inicial (búsqueda vacía, primer comando resaltado). */
+function resetState() {
+  search.value = "";
+  activeIndex.value = 0;
+  // El modal se oculta con `v-show`: sin esto el listado conserva el scroll de
+  // la vez anterior y la próxima apertura arranca a mitad de la lista.
+  if (resultsRef.value) resultsRef.value.scrollTop = 0;
+}
+
 function open() {
   modalRef.value?.open();
   nextTick(() => inputRef.value?.focus());
@@ -87,8 +110,16 @@ function open() {
 
 function close() {
   modalRef.value?.close();
-  search.value = "";
-  activeIndex.value = 0;
+  resetState();
+}
+
+/**
+ * Cierre originado en el `Modal` (Escape, click en el backdrop, botón de cerrar):
+ * además de avisar, limpia la búsqueda para que la próxima apertura arranque limpia.
+ */
+function handleClose() {
+  resetState();
+  emit("close");
 }
 
 function select(cmd: CommandItem) {
@@ -108,6 +139,9 @@ function run(id: string): CommandItem | null {
 
 function handleKeydown(event: KeyboardEvent) {
   if (!filtered.value.length) return;
+  // Con el foco en un comando, Enter/Espacio los resuelve el `<button>` nativo:
+  // interceptarlo acá ejecutaría el comando resaltado en vez del enfocado.
+  if ((event.target as HTMLElement | null)?.closest?.(".cu-command-palette-item")) return;
   if (event.key === "ArrowDown") {
     event.preventDefault();
     activeIndex.value = (activeIndex.value + 1) % filtered.value.length;
@@ -131,7 +165,7 @@ defineExpose({
 </script>
 
 <template>
-  <Modal ref="modalRef" :color="color" :title="title" :size="size" :height="height" @close="emit('close')">
+  <Modal ref="modalRef" :color="color" :title="title" :size="size" :height="height" @close="handleClose">
     <div class="cu-command-palette" @keydown="handleKeydown">
       <div class="cu-command-palette-search">
         <Input
@@ -142,7 +176,7 @@ defineExpose({
         />
       </div>
 
-      <div class="cu-command-palette-results">
+      <div ref="resultsRef" class="cu-command-palette-results">
         <template v-if="filtered.length">
           <template v-for="group in grouped" :key="group.category">
             <div v-if="group.category" class="cu-command-palette-group-label">
@@ -157,6 +191,7 @@ defineExpose({
               :class="{ 'cu-command-palette-item--active': item.index === activeIndex }"
               @click="select(item.cmd)"
               @mouseenter="activeIndex = item.index"
+              @focus="activeIndex = item.index"
             >
               <span v-if="item.cmd.icon" class="cu-command-palette-item-icon">{{ item.cmd.icon }}</span>
               <span class="cu-command-palette-item-label">{{ item.cmd.label }}</span>

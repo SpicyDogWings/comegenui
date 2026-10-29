@@ -3,8 +3,9 @@
 // Paleta de comandos (búsqueda + lista) en un modal, con agrupado por categoría
 // y selección por teclado o click. Emite `select`/`close`; expone open, close,
 // run, getCommands e isOpen. Aserciones escritas a mano desde la prosa.
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { flushPromises, mount } from "@vue/test-utils";
+import { nextTick } from "vue";
 import CommandPalette from "./CommandPalette.vue";
 
 type Cmd = {
@@ -161,5 +162,117 @@ describe("CommandPalette — selección por teclado", () => {
     await flushPromises();
 
     expect(seen).toEqual(["buscar"]);
+  });
+});
+
+describe("CommandPalette — teclado desde los items", () => {
+  it("con el foco en un comando, Enter no ejecuta el comando resaltado", async () => {
+    const seen: string[] = [];
+    const w = mount(CommandPalette, { props: { commands: makeCommands(seen) } });
+    vm(w).open();
+    await flushPromises();
+
+    const items = w.findAll(".cu-command-palette-item");
+    // El foco mueve el resaltado: el comando enfocado es el que se ve activo.
+    await items[1]!.trigger("focus");
+    expect(items[1]!.classes()).toContain("cu-command-palette-item--active");
+    expect(items[0]!.classes()).not.toContain("cu-command-palette-item--active");
+
+    // Enter sobre el botón enfocado lo resuelve el propio botón; el handler de la
+    // paleta no debe adelantarse y ejecutar el comando resaltado por índice.
+    await items[1]!.trigger("keydown", { key: "Enter" });
+    await flushPromises();
+    expect(seen).toEqual([]);
+
+    await items[1]!.trigger("click");
+    await flushPromises();
+    expect(seen).toEqual(["buscar"]);
+  });
+});
+
+describe("CommandPalette — cierre por el modal", () => {
+  it("cerrar por el botón del modal limpia la búsqueda para la próxima apertura", async () => {
+    const w = mount(CommandPalette, { props: { commands: makeCommands([]) } });
+    vm(w).open();
+    await flushPromises();
+
+    await w.find("input").setValue("Buscar");
+    await flushPromises();
+    expect(w.findAll(".cu-command-palette-item").length).toBe(1);
+
+    await w.find(".cu-modal-close").trigger("click");
+    await flushPromises();
+    expect(vm(w).isOpen()).toBe(false);
+    expect(w.emitted("close")).toHaveLength(1);
+
+    vm(w).open();
+    await flushPromises();
+    expect((w.find("input").element as HTMLInputElement).value).toBe("");
+    expect(w.findAll(".cu-command-palette-item").length).toBe(2);
+  });
+});
+
+describe("CommandPalette — comando resaltado visible", () => {
+  it("al moverse con flechas, el comando resaltado se acerca a la vista", async () => {
+    const proto = HTMLElement.prototype as unknown as { scrollIntoView?: (opts?: unknown) => void };
+    const original = proto.scrollIntoView;
+    const scrollSpy = vi.fn();
+    proto.scrollIntoView = scrollSpy;
+
+    try {
+      const w = mount(CommandPalette, { props: { commands: makeCommands([]) } });
+      vm(w).open();
+      await flushPromises();
+
+      await w.find(".cu-command-palette").trigger("keydown", { key: "ArrowDown" });
+      await nextTick();
+      await flushPromises();
+
+      expect(scrollSpy).toHaveBeenCalled();
+      expect(scrollSpy.mock.calls.at(-1)?.[0]).toEqual({ block: "nearest" });
+    } finally {
+      if (original) proto.scrollIntoView = original;
+      else delete proto.scrollIntoView;
+    }
+  });
+});
+
+describe("CommandPalette — HTML en los comandos", () => {
+  it("label, description e icon se muestran como texto, no como HTML", async () => {
+    const evil = {
+      id: "evil",
+      label: '<img src=x onerror="window.__pwned=1">',
+      description: "<b>negrita</b>",
+      icon: '<svg onload="window.__pwned=2"></svg>',
+      action: () => {},
+    };
+    const w = mount(CommandPalette, { props: { commands: [evil] } });
+    vm(w).open();
+    await flushPromises();
+
+    expect(w.find(".cu-command-palette-item-label").text()).toBe(evil.label);
+    expect(w.find(".cu-command-palette-item-desc").text()).toBe("<b>negrita</b>");
+    expect(w.find(".cu-command-palette-item-icon").text()).toBe(evil.icon);
+    expect(w.find(".cu-command-palette-item img").exists()).toBe(false);
+    expect(w.find(".cu-command-palette-item svg").exists()).toBe(false);
+    expect(w.find(".cu-command-palette-item b").exists()).toBe(false);
+  });
+});
+
+describe("CommandPalette — apertura con scroll previo", () => {
+  it("al reabrir, el listado vuelve arriba", async () => {
+    const w = mount(CommandPalette, { props: { commands: makeCommands([]) } });
+    vm(w).open();
+    await flushPromises();
+
+    const results = w.find(".cu-command-palette-results").element as HTMLElement;
+    results.scrollTop = 240;
+
+    vm(w).close();
+    await flushPromises();
+    vm(w).open();
+    await flushPromises();
+
+    expect(results.scrollTop).toBe(0);
   });
 });

@@ -35,8 +35,10 @@ En Vue, importá `CommandPalette` de `@/components/overlay/CommandPalette.vue` (
 ## Comandos
 
 Cada item acepta `{ id, label, action, description?, category?, badges?, icon?, shortcut? }`.
-Los que comparten `category` se agrupan bajo una etiqueta; la búsqueda filtra por `label` y
-`category`; `icon` se inyecta como HTML y `badges` son píldoras.
+Los que comparten `category` se agrupan bajo una etiqueta (en el orden en que aparecen); la búsqueda
+filtra por `label` y `category`. `icon` es un texto corto —un emoji o un glifo— y se muestra tal
+cual: `label`, `description` e `icon` se renderizan **como texto**, nunca como HTML (el marcado se
+escapa). `badges` son píldoras.
 
 ```html
 <button id="abrir">Abrir con comandos ricos</button>
@@ -45,7 +47,7 @@ Los que comparten `category` se agrupan bajo una etiqueta; la búsqueda filtra p
 <script>
   const palette = document.getElementById('palette');
   palette.commands = [
-    { id: 'guardar', label: 'Guardar archivo', description: 'Guarda el documento actual', category: 'Archivo', badges: ['nuevo'], icon: '<svg …></svg>', shortcut: '⌘S', action: () => {} },
+    { id: 'guardar', label: 'Guardar archivo', description: 'Guarda el documento actual', category: 'Archivo', badges: ['nuevo'], icon: '💾', shortcut: '⌘S', action: () => {} },
     { id: 'exportar', label: 'Exportar', description: 'Exporta a PDF o PNG', category: 'Archivo', shortcut: '⌘E', action: () => {} },
     { id: 'buscar', label: 'Buscar en el proyecto', description: 'Búsqueda global', category: 'Navegación', badges: ['global'], shortcut: '⌘K', action: () => {} },
     { id: 'tema', label: 'Cambiar tema', description: 'Abre el Theme Builder', category: 'Apariencia', action: () => {} },
@@ -55,6 +57,19 @@ Los que comparten `category` se agrupan bajo una etiqueta; la búsqueda filtra p
 ```
 
 <!-- demo:command-palette-comandos -->
+
+## Teclado
+
+| Tecla | Con el foco en el buscador | Con el foco en un comando (Tab) |
+| ------ | ------ | ------ |
+| `↑` / `↓` | Mueve el comando resaltado (con vuelta circular); el listado se desplaza para mantenerlo visible | — |
+| `Enter` | Ejecuta el comando resaltado y cierra | Ejecuta el comando enfocado y cierra |
+| `Tab` / `Shift+Tab` | Pasa el foco a los comandos y al resto del modal | Recorre los comandos |
+| `Escape` | Cierra la paleta | Cierra la paleta |
+
+El resaltado sigue al foco y al mouse: el comando activo es siempre el que ejecuta `Enter`.
+Al cerrarse —con `close()`, `Escape`, click en el backdrop o en el botón de cerrar— la búsqueda se
+limpia: la próxima apertura arranca vacía, con el primer comando resaltado y el listado arriba.
 
 ## Colores
 

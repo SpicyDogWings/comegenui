@@ -6,8 +6,8 @@ import { ref } from "vue";
 type PaletteEl = HTMLElement & { open: () => void };
 const palette = ref<PaletteEl | null>(null);
 
-const iconoSave =
-  '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>';
+// `icon` es texto corto (emoji/glifo): no se interpreta como HTML.
+const iconoSave = "💾";
 
 const commands = [
   {
