@@ -1190,6 +1190,134 @@ const MUTATIONS = [
     find: `    :to="props.href || undefined"`,
     replace: `    :to="undefined"`,
   },
+  {
+    id: "ce-forwarding-cameliza-atributos",
+    file: "src/utils/comegen-element.ts",
+    test: "src/utils/comegen-element.test.ts",
+    expect: "aria-*/data-*/kebab llegan al nodo interno con su nombre original exacto",
+    find: `      this._applyProp(isProp ? camelKey : key, this.getAttribute(key), camelKey)`,
+    replace: `      this._applyProp(camelKey, this.getAttribute(key), camelKey)`,
+  },
+  {
+    id: "ce-forwarding-baja-no-remueve",
+    file: "src/utils/comegen-element.ts",
+    test: "src/utils/comegen-element.test.ts",
+    expect: "quitar un atributo del host lo quita del nodo interno",
+    find: `      if (!Object.prototype.hasOwnProperty.call(self._props, propKey)) return
+      delete self._props[propKey]`,
+    replace: `      return`,
+  },
+  {
+    id: "ce-forwarding-id-duplicado",
+    file: "src/utils/comegen-element.ts",
+    test: "src/utils/comegen-element.test.ts",
+    expect: "el id del host no se copia al nodo interno (sin ids duplicados)",
+    find: `      if (!isProp && key === 'id') return
+`,
+    replace: ``,
+  },
+  {
+    id: "ce-tabindex-host-tab-stop",
+    file: "src/utils/comegen-element.ts",
+    test: "src/utils/comegen-element.test.ts",
+    expect: "tabindex se reenvía al control y el host queda en -1 (una sola parada)",
+    find: `          this.setAttribute(FOCUS_ATTR, '-1')`,
+    replace: `          void 0`,
+  },
+  {
+    id: "button-icon-only-ignorado",
+    file: "src/components/buttons/Button.vue",
+    expect: "iconOnly aplica la clase de padding cuadrado",
+    find: `    'cu-button--icon-only': props.iconOnly,`,
+    replace: `    'cu-button--icon-only': false,`,
+  },
+  {
+    id: "button-link-anidado",
+    file: "src/components/buttons/Button.vue",
+    expect: "con `to` hay un único <a>, sin <button> adentro",
+    find: `    <slot></slot>
+  </a>`,
+    replace: `    <button type="button"></button>
+    <slot></slot>
+  </a>`,
+  },
+  {
+    id: "button-solid-color-crudo",
+    file: "src/components/buttons/Button.vue",
+    expect: "solid/none usan la variante -solid de fondo, no el color crudo",
+    find: "  '--btn-solid': `var(--cu-color-${safeColor.value}-solid)`,",
+    replace: "  '--btn-solid': `var(--cu-color-${safeColor.value})`,",
+  },
+  {
+    id: "button-solid-texto-negro",
+    file: "src/components/buttons/Button.vue",
+    expect: "solid/none conservan el texto del tema (nunca negro por color)",
+    find: "  '--btn-solid-text': `var(--cu-color-surface)`,",
+    replace: "  '--btn-solid-text': '#000000',",
+  },
+  {
+    id: "button-texto-color-crudo",
+    file: "src/components/buttons/Button.vue",
+    expect: "las variantes tintadas usan -text adaptativo, no el color crudo",
+    find: "  '--btn-text': `var(--cu-color-${safeColor.value}-text)`,",
+    replace: "  '--btn-text': `var(--cu-color-${safeColor.value})`,",
+  },
+  {
+    id: "badge-solid-color-crudo",
+    file: "src/components/information/Badge.vue",
+    expect: "badge solid usa la variante -solid de fondo",
+    find: "  '--badge-solid': `var(--cu-color-${props.color}-solid)`,",
+    replace: "  '--badge-solid': `var(--cu-color-${props.color})`,",
+  },
+  {
+    id: "alert-solid-color-crudo",
+    file: "src/components/information/Alert.vue",
+    expect: "alert solid usa la variante -solid de fondo",
+    find: "  '--alert-solid': `var(--cu-color-${props.color}-solid)`,",
+    replace: "  '--alert-solid': `var(--cu-color-${props.color})`,",
+  },
+  {
+    id: "token-text-no-adapta",
+    file: "src/plugins/cu-tokens/css.ts",
+    test: "src/plugins/cu-tokens/contrast.test.ts",
+    expect: "el texto de las variantes tintadas garantiza 4.5:1 en los 15 temas",
+    find: "  return ensureContrast(value, compositeOver(value, surface, 0.35), MIN_TEXT_CONTRAST)",
+    replace: "  return toHex(darken(value, 0.25))",
+  },
+  {
+    id: "token-solid-sin-ajuste",
+    file: "src/plugins/cu-tokens/css.ts",
+    test: "src/plugins/cu-tokens/contrast.test.ts",
+    expect: "solid ajusta el fondo hasta que el texto del tema alcanza 4.5:1",
+    find: "  if (contrastRatio(value, surface) >= MIN_TEXT_CONTRAST) return toHex(value)",
+    replace: "  return toHex(value)",
+  },
+  {
+    id: "token-solid-hover-hacia-superficie",
+    file: "src/plugins/cu-tokens/css.ts",
+    test: "src/plugins/cu-tokens/contrast.test.ts",
+    expect: "hover/active de solid se alejan del texto (siguen en 4.5:1)",
+    find: "  return toHex(relLuma(surface) < 0.5 ? lighten(solid, amount) : darken(solid, amount))",
+    replace: "  return toHex(relLuma(surface) < 0.5 ? darken(solid, amount) : lighten(solid, amount))",
+  },
+  {
+    id: "token-borde-sin-contraste",
+    file: "src/plugins/cu-tokens/css.ts",
+    test: "src/plugins/cu-tokens/contrast.test.ts",
+    expect: "los bordes garantizan 3:1 contra el tinte y la superficie",
+    find: `  let border = ensureContrast(value, tint, MIN_BORDER_CONTRAST)
+  border = ensureContrast(border, surface, MIN_BORDER_CONTRAST)
+  return border`,
+    replace: `  return toHex(transparentize(value, 0.5))`,
+  },
+  {
+    id: "ce-idref-sin-fallback",
+    file: "src/utils/comegen-element.ts",
+    test: "src/utils/comegen-element.test.ts",
+    expect: "un aria-labelledby/describedby externo igual resuelve nombre y descripción del control",
+    find: `        if (!authorSet && root.getAttribute(fallback) !== text) root.setAttribute(fallback, text)`,
+    replace: `        void text`,
+  },
 ];
 
 export { MUTATIONS };

@@ -32,6 +32,8 @@ const inputRef = ref<HTMLInputElement | null>(null);
 
 const checkboxStyles = computed(() => ({
   '--cb-bg': `var(--cu-color-${props.color})`,
+  '--cb-solid': `var(--cu-color-${props.color}-solid)`,
+  '--cb-solid-text': `var(--cu-color-surface)`,
   '--cb-soft': `var(--cu-color-${props.color}-soft)`,
   '--cb-ghost-hover': `var(--cu-color-${props.color}-ghost-hover)`,
   '--cb-text': `var(--cu-color-${props.color}-text)`,
@@ -153,8 +155,8 @@ defineExpose({
 }
 
 .cu-checkbox-box--checked {
-  background-color: var(--cb-bg);
-  border-color: var(--cb-bg);
+  background-color: var(--cb-solid);
+  border-color: var(--cb-solid);
 }
 
 .cu-checkbox:not(.cu-checkbox--disabled) .cu-checkbox-box:hover {
@@ -163,11 +165,11 @@ defineExpose({
 }
 
 .cu-checkbox:not(.cu-checkbox--disabled) .cu-checkbox-box--checked:hover {
-  background-color: var(--cb-bg);
+  background-color: var(--cb-solid);
 }
 
 .cu-checkbox-icon {
-  color: var(--cu-color-surface);
+  color: var(--cb-solid-text);
 }
 
 .cu-checkbox-label {

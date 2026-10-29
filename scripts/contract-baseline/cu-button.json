@@ -3,6 +3,7 @@
   "props": [
     "color",
     "disabled",
+    "iconOnly",
     "loading",
     "size",
     "target",

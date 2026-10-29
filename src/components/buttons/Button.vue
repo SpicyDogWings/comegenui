@@ -56,6 +56,12 @@ const props = defineProps({
     required: false,
     default: false,
   },
+  /** Padding cuadrado para un botón de solo icono. El contenido necesita nombre accesible (`aria-label` o texto) */
+  iconOnly: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 });
 
 const isDisabled = computed(() => props.disabled || props.loading)
@@ -129,9 +135,6 @@ const emit = defineEmits<{
 watch(() => props.loading, (value) => emit('loading-change', value))
 
 const colorStyles = computed(() => ({
-  '--btn-bg': `var(--cu-color-${safeColor.value})`,
-  '--btn-bg-hover': `var(--cu-color-${safeColor.value}-hover)`,
-  '--btn-bg-active': `var(--cu-color-${safeColor.value}-active)`,
   '--btn-ghost-hover': `var(--cu-color-${safeColor.value}-ghost-hover)`,
   '--btn-ghost-active': `var(--cu-color-${safeColor.value}-ghost-active)`,
   '--btn-soft': `var(--cu-color-${safeColor.value}-soft)`,
@@ -141,7 +144,31 @@ const colorStyles = computed(() => ({
   '--btn-subtle-hover': `var(--cu-color-${safeColor.value}-subtle-hover)`,
   '--btn-subtle-active': `var(--cu-color-${safeColor.value}-subtle-active)`,
   '--btn-subtle-border': `var(--cu-color-${safeColor.value}-subtle-border)`,
+  // Solid/none: el fondo es la variante segura (ajustada por el generador) y el
+  // texto sigue siendo el del tema — nunca un negro/blanco elegido por color.
+  '--btn-solid': `var(--cu-color-${safeColor.value}-solid)`,
+  '--btn-solid-hover': `var(--cu-color-${safeColor.value}-solid-hover)`,
+  '--btn-solid-active': `var(--cu-color-${safeColor.value}-solid-active)`,
+  '--btn-solid-text': `var(--cu-color-surface)`,
+  // Texto sobre superficie o tintes (ghost/soft/subtle/outlined/link): el color
+  // adaptado al tema, no el color crudo.
+  '--btn-text': `var(--cu-color-${safeColor.value}-text)`,
+  // Borde de outlined sobre superficie (>= 3:1).
+  '--btn-border': `var(--cu-color-${safeColor.value}-border)`,
 }))
+
+// Mismas clases para `<button>` y para el `<a>` del modo link: antes el `<a>`
+// envolvía a un `<button>` (dos nodos interactivos, HTML inválido).
+const rootClasses = computed(() => [
+  'cu-button',
+  `cu-button--${props.variant}`,
+  `cu-button--${props.size}`,
+  {
+    'cu-button--disabled': isDisabled.value,
+    'cu-button--icon-only': props.iconOnly,
+    'cu-button-link': !!safeTo.value,
+  },
+])
 </script>
 
 <template>
@@ -152,45 +179,25 @@ const colorStyles = computed(() => ({
     :rel="props.target === '_blank' && !isDisabled ? 'noopener noreferrer' : undefined"
     :role="isDisabled ? 'link' : undefined"
     :aria-disabled="isDisabled ? 'true' : undefined"
+    :aria-busy="props.loading ? 'true' : undefined"
     :tabindex="isDisabled ? -1 : undefined"
-    :class="{
-      'cu-button--disabled': isDisabled,
-    }"
-    class="cu-button-link"
+    :class="rootClasses"
+    :style="colorStyles"
     @click="onLinkClick"
   >
-    <button
-      :type="buttonType"
-      :class="[
-        'cu-button',
-        `cu-button--${props.variant}`,
-        `cu-button--${props.size}`,
-        { 'cu-button--disabled': isDisabled }
-      ]"
-      :style="colorStyles"
-      :disabled="isDisabled"
-      :aria-busy="props.loading ? 'true' : undefined"
-      @click="onButtonClick"
-    >
-      <LucideLoader
-        v-if="props.loading"
-        class="cu-button-spinner"
-        aria-hidden="true"
-        focusable="false"
-      />
-      <!-- Contenido del botón (label y/o íconos SVG inline) -->
-      <slot></slot>
-    </button>
+    <LucideLoader
+      v-if="props.loading"
+      class="cu-button-spinner"
+      aria-hidden="true"
+      focusable="false"
+    />
+    <!-- Contenido del botón (label y/o íconos SVG inline) -->
+    <slot></slot>
   </a>
   <button
     v-else
     :type="buttonType"
-    :class="[
-      'cu-button',
-      `cu-button--${props.variant}`,
-      `cu-button--${props.size}`,
-      { 'cu-button--disabled': isDisabled }
-    ]"
+    :class="rootClasses"
     :style="colorStyles"
     :disabled="isDisabled"
     :aria-busy="props.loading ? 'true' : undefined"
@@ -210,6 +217,7 @@ const colorStyles = computed(() => ({
 <style scoped>
 .cu-button {
   font-family: var(--cu-font-sans);
+  text-decoration: none;
   font-size: var(--cu-font-size-sm);
   font-weight: var(--cu-font-weight-medium);
   padding: var(--cu-space-md) var(--cu-space-lg);
@@ -245,20 +253,20 @@ const colorStyles = computed(() => ({
 
 /* solid */
 .cu-button.cu-button--solid {
-  background-color: var(--btn-bg);
-  color: var(--cu-color-surface);
+  background-color: var(--btn-solid);
+  color: var(--btn-solid-text);
 }
 .cu-button.cu-button--solid:hover:not(.cu-button--disabled) {
-  background-color: var(--btn-bg-hover);
+  background-color: var(--btn-solid-hover);
 }
 .cu-button.cu-button--solid:active:not(.cu-button--disabled) {
-  background-color: var(--btn-bg-active);
+  background-color: var(--btn-solid-active);
 }
 
 /* ghost */
 .cu-button.cu-button--ghost {
   background-color: transparent;
-  color: var(--btn-bg);
+  color: var(--btn-text);
 }
 .cu-button.cu-button--ghost:hover:not(.cu-button--disabled) {
   background-color: var(--btn-ghost-hover);
@@ -270,7 +278,7 @@ const colorStyles = computed(() => ({
 /* soft */
 .cu-button.cu-button--soft {
   background-color: var(--btn-soft);
-  color: var(--btn-bg);
+  color: var(--btn-text);
 }
 .cu-button.cu-button--soft:hover:not(.cu-button--disabled) {
   background-color: var(--btn-soft-hover);
@@ -282,7 +290,7 @@ const colorStyles = computed(() => ({
 /* subtle */
 .cu-button.cu-button--subtle {
   background-color: var(--btn-subtle);
-  color: var(--btn-bg);
+  color: var(--btn-text);
   border: var(--cu-border-thin) solid var(--btn-subtle-border);
 }
 .cu-button.cu-button--subtle:hover:not(.cu-button--disabled) {
@@ -295,8 +303,8 @@ const colorStyles = computed(() => ({
 /* outlined */
 .cu-button.cu-button--outlined {
   background-color: transparent;
-  color: var(--btn-bg);
-  border: var(--cu-border-thin) solid var(--btn-bg);
+  color: var(--btn-text);
+  border: var(--cu-border-thin) solid var(--btn-border);
 }
 .cu-button.cu-button--outlined:hover:not(.cu-button--disabled) {
   background-color: var(--btn-ghost-hover);
@@ -308,7 +316,7 @@ const colorStyles = computed(() => ({
 /* link */
 .cu-button.cu-button--link {
   background-color: transparent;
-  color: var(--btn-bg);
+  color: var(--btn-text);
   padding: 0;
   box-shadow: none;
   text-decoration: underline;
@@ -320,14 +328,14 @@ const colorStyles = computed(() => ({
 
 /* none */
 .cu-button.cu-button--none {
-  background-color: var(--btn-bg);
-  color: var(--cu-color-surface);
+  background-color: var(--btn-solid);
+  color: var(--btn-solid-text);
 }
 .cu-button.cu-button--none:hover:not(.cu-button--disabled) {
-  background-color: var(--btn-bg-hover);
+  background-color: var(--btn-solid-hover);
 }
 .cu-button.cu-button--none:active:not(.cu-button--disabled) {
-  background-color: var(--btn-bg-active);
+  background-color: var(--btn-solid-active);
 }
 
 /* link wrapper */

@@ -7,6 +7,11 @@ Referencia de API de ComegenUI. Cada componente tiene dos APIs:
 
 Las páginas del sitio ([`docs/versiones/5.1.1/paginas/componentes`](../site/componentes)) incluyen estas fichas.
 
+Los custom elements copian al control renderizado los atributos del host que no son props
+(`aria-*`, `data-*`, kebab-case) con su nombre original exacto, así que `aria-labelledby` /
+`aria-describedby` resuelven contra el control real. `id` se queda en el host (no se duplica) y
+`tabindex` se reenvía al control para que haya una sola parada de tab.
+
 ## Buttons
 
 | Componente | Custom Element | Vue |

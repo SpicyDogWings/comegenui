@@ -65,10 +65,12 @@ watch(internalShow, (val) => {
 });
 
 const colorStyles = computed(() => ({
-  '--alert-bg': `var(--cu-color-${props.color})`,
+  '--alert-solid': `var(--cu-color-${props.color}-solid)`,
+  '--alert-solid-hover': `var(--cu-color-${props.color}-solid-hover)`,
+  '--alert-solid-active': `var(--cu-color-${props.color}-solid-active)`,
+  '--alert-solid-text': `var(--cu-color-surface)`,
+  '--alert-border': `var(--cu-color-${props.color}-border)`,
   '--alert-text': `var(--cu-color-${props.color}-text)`,
-  '--alert-bg-hover': `var(--cu-color-${props.color}-hover)`,
-  '--alert-bg-active': `var(--cu-color-${props.color}-active)`,
   '--alert-ghost-hover': `var(--cu-color-${props.color}-ghost-hover)`,
   '--alert-ghost-active': `var(--cu-color-${props.color}-ghost-active)`,
   '--alert-soft': `var(--cu-color-${props.color}-soft)`,
@@ -156,11 +158,11 @@ defineExpose({
 
 /* solid */
 .cu-alert.cu-alert--solid {
-  background-color: var(--alert-bg);
-  color: var(--cu-color-surface);
+  background-color: var(--alert-solid);
+  color: var(--alert-solid-text);
 }
 .cu-alert.cu-alert--solid .cu-alert-title-text {
-  color: var(--cu-color-surface);
+  color: var(--alert-solid-text);
 }
 
 /* ghost */
@@ -186,15 +188,7 @@ defineExpose({
 .cu-alert.cu-alert--outlined {
   background-color: transparent;
   color: var(--alert-text);
-  border: var(--cu-border-thin) solid var(--alert-bg);
-}
-
-/* dark theme override */
-[data-theme="dark"] .cu-alert--ghost,
-[data-theme="dark"] .cu-alert--soft,
-[data-theme="dark"] .cu-alert--subtle,
-[data-theme="dark"] .cu-alert--outlined {
-  color: var(--alert-bg);
+  border: var(--cu-border-thin) solid var(--alert-border);
 }
 
 .cu-alert-header {

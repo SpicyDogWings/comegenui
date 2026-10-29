@@ -101,7 +101,7 @@ const thStyle = computed(() => {
   }
 
   if (props.variant === 'solid') {
-    base['background-color'] = `var(--cu-color-${props.color})`;
+    base['background-color'] = `var(--cu-color-${props.color}-solid)`;
     base['color'] = 'var(--cu-color-surface)';
     base['border-bottom'] = 'none';
     base['backdrop-filter'] = 'none';

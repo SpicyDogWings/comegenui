@@ -67,9 +67,18 @@ varía por componente: está en la tabla `variant` de su ficha (`docs/versiones/
 
 ## Tokens (para el CSS del host)
 
-Familias por color: `--cu-color-{color}`, `-text`, `-hover`, `-active`,
-`-soft`/`-soft-hover`/`-soft-active`, `-subtle`/`-subtle-hover`/`-subtle-active`/`-subtle-border`,
+Familias por color: `--cu-color-{color}`, `-solid`/`-solid-hover`/`-solid-active`, `-text`,
+`-hover`, `-active`, `-soft`/`-soft-hover`/`-soft-active`,
+`-subtle`/`-subtle-hover`/`-subtle-active`/`-subtle-border`, `-border`,
 `-ghost-hover`/`-ghost-active`, `-code`.
+
+Contraste (WCAG, todos los temas): en `solid`/`none` el texto es **siempre**
+`--cu-color-surface` (el del tema) y el fondo es `-solid`: el generador ajusta ese color con
+`darken`/`lighten` (conservando hue/saturación) hasta que el texto del tema llega a 4.5:1.
+`-solid-hover`/`-solid-active` se alejan del texto y también cumplen. `-text` es el color
+adaptado para texto sobre superficie o tintes (`ghost`/`soft`/`subtle`/`outlined`/`link`) y
+`-border`/`-subtle-border` son bordes con ≥ 3:1. Usalos en lugar de `var(--cu-color-{color})`
+como texto o `var(--cu-color-surface)` sobre un fondo de color.
 
 Compartidos: tipografía (`--cu-font-*`), espaciado (`--cu-space-*`), radios (`--cu-radius*`),
 bordes (`--cu-border-*`), sombras (`--cu-shadow-*`).

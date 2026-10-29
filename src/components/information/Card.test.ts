@@ -25,7 +25,7 @@ describe("Card — variantes y color", () => {
   it("expone el color semántico en las CSS custom properties", () => {
     const w = mount(Card, { props: { color: "success" } });
     const style = root(w).attributes("style") ?? "";
-    expect(style).toContain("--card-bg: var(--cu-color-success)");
+    expect(style).toContain("--card-solid: var(--cu-color-success-solid)");
   });
 });
 

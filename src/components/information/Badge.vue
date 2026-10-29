@@ -19,7 +19,9 @@ const props = defineProps({
 });
 
 const badgeStyles = computed(() => ({
-  '--badge-bg': `var(--cu-color-${props.color})`,
+  '--badge-solid': `var(--cu-color-${props.color}-solid)`,
+  '--badge-border': `var(--cu-color-${props.color}-border)`,
+  '--badge-solid-text': `var(--cu-color-surface)`,
   '--badge-text': `var(--cu-color-${props.color}-text)`,
   '--badge-soft': `var(--cu-color-${props.color}-soft)`,
   '--badge-soft-hover': `var(--cu-color-${props.color}-soft-hover)`,
@@ -55,8 +57,8 @@ const badgeStyles = computed(() => ({
 
 /* solid */
 .cu-badge.cu-badge--solid {
-  background-color: var(--badge-bg);
-  color: var(--cu-color-surface);
+  background-color: var(--badge-solid);
+  color: var(--badge-solid-text);
 }
 
 /* soft */
@@ -82,6 +84,6 @@ const badgeStyles = computed(() => ({
 .cu-badge.cu-badge--outlined {
   background-color: transparent;
   color: var(--badge-text);
-  border-color: var(--badge-bg);
+  border-color: var(--badge-border);
 }
 </style>

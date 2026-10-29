@@ -47,10 +47,13 @@ describe('colorsBlock', () => {
     }
   })
 
-  it('genera las 14 variantes por color', () => {
+  it('genera todas las variantes por color', () => {
     const css = colorVar('primary', COLORS.primary, COLORS.surface, resolveCodeScheme(COLORS.surface, COLORS.neutral).bg)
     for (const variant of [
       '',
+      '-solid',
+      '-solid-hover',
+      '-solid-active',
       '-text',
       '-hover',
       '-active',
@@ -63,6 +66,7 @@ describe('colorsBlock', () => {
       '-subtle-hover',
       '-subtle-active',
       '-subtle-border',
+      '-border',
       '-code',
     ]) {
       expect(css).toContain(`--cu-color-primary${variant}:`)

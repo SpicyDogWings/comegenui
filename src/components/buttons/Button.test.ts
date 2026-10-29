@@ -22,27 +22,74 @@ describe("Button — render y defaults", () => {
     expect(w.find("a").exists()).toBe(false);
     expect(w.find("button").classes()).toContain("cu-button--ghost");
     expect(w.find("button").classes()).toContain("cu-button--md");
-    expect(w.find("button").attributes("style")).toContain("--btn-bg: var(--cu-color-neutral)");
+    expect(w.find("button").attributes("style")).toContain("--btn-solid: var(--cu-color-neutral-solid)");
     expect(w.find("button").attributes("type")).toBe("button");
   });
 
   it("un color inválido cae a neutral en vez de quedar sin tokens", () => {
     const w = mount(Button, { props: { color: "banana" as never, variant: "solid" } });
-    expect(w.find("button").attributes("style")).toContain("--btn-bg: var(--cu-color-neutral)");
+    expect(w.find("button").attributes("style")).toContain("--btn-solid: var(--cu-color-neutral-solid)");
   });
 
   it("un type inválido cae a button (el valor inválido de HTML es submit)", () => {
     const w = mount(Button, { props: { type: "foo" as never } });
     expect(w.find("button").attributes("type")).toBe("button");
   });
+
+  it("iconOnly aplica el padding cuadrado sin cambiar el modo botón", () => {
+    const w = mount(Button, { props: { iconOnly: true } });
+    expect(w.find("button").classes()).toContain("cu-button--icon-only");
+  });
+
+  it("solid/none usan la variante -solid de fondo y el texto del tema", () => {
+    const solid = mount(Button, { props: { color: "primary", variant: "solid" } });
+    const style = solid.find("button").attributes("style") ?? "";
+    expect(style).toContain("--btn-solid: var(--cu-color-primary-solid)");
+    expect(style).toContain("--btn-solid-hover: var(--cu-color-primary-solid-hover)");
+    expect(style).toContain("--btn-solid-active: var(--cu-color-primary-solid-active)");
+    expect(style).toContain("--btn-solid-text: var(--cu-color-surface)");
+    expect(style).not.toContain("--btn-on");
+
+    const ghost = mount(Button, { props: { color: "warning", variant: "ghost" } });
+    expect(ghost.find("button").attributes("style")).toContain("--btn-text: var(--cu-color-warning-text)");
+
+    const outlined = mount(Button, { props: { color: "warning", variant: "outlined" } });
+    expect(outlined.find("button").attributes("style")).toContain("--btn-border: var(--cu-color-warning-border)");
+  });
 });
 
 describe("Button — modo link", () => {
-  it("con `to` renderiza <a> con href y el <button> adentro", () => {
+  it("con `to` renderiza un único <a> con href (sin <button> anidado)", () => {
     const w = mount(Button, { props: { to: "/destino" } });
     const a = w.find("a");
     expect(a.attributes("href")).toBe("/destino");
-    expect(a.find("button").exists()).toBe(true);
+    expect(a.find("button").exists()).toBe(false);
+    expect(w.find("button").exists()).toBe(false);
+  });
+
+  it("el <a> conserva las clases y estilos de variante/tamaño (un solo nodo interactivo)", () => {
+    const w = mount(Button, {
+      props: { to: "/destino", color: "primary", variant: "solid", size: "lg" },
+    });
+    const a = w.find("a");
+    expect(a.classes()).toContain("cu-button");
+    expect(a.classes()).toContain("cu-button--solid");
+    expect(a.classes()).toContain("cu-button--lg");
+    expect(a.classes()).toContain("cu-button-link");
+    expect(a.attributes("style")).toContain("--btn-solid: var(--cu-color-primary-solid)");
+    expect(a.attributes("style")).toContain("--btn-solid-text: var(--cu-color-surface)");
+  });
+
+  it("iconOnly también aplica en modo link", () => {
+    const w = mount(Button, { props: { to: "/destino", iconOnly: true } });
+    expect(w.find("a").classes()).toContain("cu-button--icon-only");
+  });
+
+  it("loading en modo link marca aria-busy y muestra el spinner oculto", () => {
+    const w = mount(Button, { props: { to: "/destino", loading: true } });
+    const a = w.find("a");
+    expect(a.attributes("aria-busy")).toBe("true");
+    expect(a.find(".cu-button-spinner").attributes("aria-hidden")).toBe("true");
   });
 
   it("`_blank` agrega rel noopener noreferrer", () => {
@@ -96,6 +143,15 @@ describe("Button — disabled y loading", () => {
     clickTarget(w.find("a").element);
     document.removeEventListener("click", listener);
     expect(listener).not.toHaveBeenCalled();
+  });
+
+  it("un link habilitado es un único tab stop (el <a>)", () => {
+    const w = mount(Button, { props: { to: "/destino" } });
+    const a = w.find("a");
+    expect(a.attributes("tabindex")).toBeUndefined();
+    expect(a.element.tabIndex).toBe(0);
+    expect(a.element.tagName).toBe("A");
+    expect(a.element.querySelectorAll("a, button").length).toBe(0);
   });
 
   it("un link loading se comporta como disabled", () => {

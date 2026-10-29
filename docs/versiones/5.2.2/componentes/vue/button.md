@@ -4,7 +4,7 @@
 
 Botón con color semántico, 7 variantes, 3 tamaños, estados (`disabled` / `loading`) y modo
 link. `variant` define el aspecto, `color` el color y `size` el tamaño; con `to` se renderiza
-como `<a>` (con un `<button>` adentro) y sin `to`, como `<button>`.
+como un único `<a>` (sin `<button>` adentro) y sin `to`, como `<button>`.
 
 Es el componente con el que están construidos casi todos los demás: si algo se ve raro en otro
 componente, suele venir de acá.
@@ -43,6 +43,11 @@ borde), `link` (texto subrayado, sin padding) y `none` (igual que `solid`).
 
 `color` es un nombre semántico, no un hex: se resuelve con los tokens del tema activo
 (`--cu-color-{color}*`), así que el mismo nombre se ve distinto en cada tema.
+
+En `solid` y `none` el texto es siempre el del tema (`--cu-color-surface`) y el fondo es la
+variante `-solid`: el generador de tokens la ajusta (oscurece en temas claros, aclara en oscuros,
+sin cambiar el hue) hasta que ese texto alcanza 4.5:1. `-solid-hover` y `-solid-active` siguen la
+misma regla.
 
 ```vue
 <Button color="primary" variant="solid">primary</Button>
@@ -83,9 +88,11 @@ de interacción).
 
 ## Navegación
 
-Sin `to` el botón es un `<button>` y no navega. Con `to`, se envuelve en un `<a>` que apunta
-ahí y `target` pasa a aplicar (`_blank` abre en otra pestaña y agrega
-`rel="noopener noreferrer"`). `target` solo, sin `to`, no hace nada.
+Sin `to` el botón es un `<button>` y no navega. Con `to`, el componente renderiza un único
+`<a>` con las mismas clases, estilos y slot que el botón: es un solo nodo interactivo (antes
+había un `<a>` con un `<button>` adentro, que es HTML inválido). `target` pasa a aplicar
+(`_blank` abre en otra pestaña y agrega `rel="noopener noreferrer"`). `target` solo, sin `to`,
+no hace nada.
 
 `to` acepta cualquier destino navegable. Un esquema ejecutable (`javascript:`, `vbscript:`,
 `data:`, incluso con espacios o mayúsculas) no se navega: el botón se renderiza como `<button>`,
@@ -109,6 +116,22 @@ campos. Un `type` inválido cae a `"button"` (el valor inválido de HTML sería 
   <Button type="submit" color="primary" variant="solid">Enviar</Button>
   <Button type="reset" variant="ghost">Limpiar</Button>
 </form>
+```
+
+### Solo icono
+
+`iconOnly` cambia el padding a cuadrado para un botón sin texto visible. El contenido sigue
+siendo el slot, así que el nombre accesible **no** sale del ícono: agregá `aria-label`
+(o dejá texto visualmente oculto). Sin nombre accesible el botón queda mudo para lectores de
+pantalla.
+
+```vue
+<Button icon-only color="primary" variant="solid" aria-label="Cerrar">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+       stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M18 6 6 18" /><path d="m6 6 12 12" />
+  </svg>
+</Button>
 ```
 
 ## Contenido e iconos
@@ -165,7 +188,7 @@ async function guardar() {
 Props del componente `<Button>`. Son los mismos que los atributos del custom element, en
 camelCase: ver [ficha vanilla](/componentes/cu-button#atributos).
 
-<!--@include: ../../partials/button/props.md-->
+<!--@include: ../../partials/button/props-vue.md-->
 
 ## Emits
 

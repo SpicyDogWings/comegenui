@@ -55,7 +55,9 @@ const activeKey = computed(() => {
 const tabRefs = ref<Record<string, HTMLElement | null>>({});
 
 const tabStyles = computed(() => ({
-  '--tabs-color': `var(--cu-color-${props.color})`,
+  '--tabs-solid': `var(--cu-color-${props.color}-solid)`,
+  '--tabs-solid-text': `var(--cu-color-surface)`,
+  '--tabs-text': `var(--cu-color-${props.color}-text)`,
   '--tabs-soft': `var(--cu-color-${props.color}-soft)`,
   '--tabs-soft-hover': `var(--cu-color-${props.color}-soft-hover)`,
   '--tabs-soft-active': `var(--cu-color-${props.color}-soft-active)`,
@@ -185,7 +187,7 @@ defineExpose({ getActive, setActive, next, prev });
 }
 
 .cu-tabs-tab:hover:not(:disabled) {
-  color: var(--tabs-color);
+  color: var(--tabs-text);
 }
 
 /* El icono hereda el color del tab (default/hover/active). Se encadena
@@ -242,8 +244,8 @@ defineExpose({ getActive, setActive, next, prev });
 }
 
 .cu-tabs--ghost .cu-tabs-tab--active {
-  color: var(--tabs-color);
-  border-bottom-color: var(--tabs-color);
+  color: var(--tabs-text);
+  border-bottom-color: var(--tabs-text);
 }
 
 /* Variant: solid */
@@ -260,13 +262,13 @@ defineExpose({ getActive, setActive, next, prev });
 }
 
 .cu-tabs--solid .cu-tabs-tab.cu-tabs-tab--active {
-  background-color: var(--tabs-color);
-  color: var(--cu-color-surface);
+  background-color: var(--tabs-solid);
+  color: var(--tabs-solid-text);
 }
 
 .cu-tabs--solid .cu-tabs-tab.cu-tabs-tab--active:hover:not(:disabled) {
-  background-color: var(--tabs-color);
-  color: var(--cu-color-surface);
+  background-color: var(--tabs-solid);
+  color: var(--tabs-solid-text);
 }
 
 /* Variant: boxed */
@@ -286,13 +288,13 @@ defineExpose({ getActive, setActive, next, prev });
 }
 
 .cu-tabs--boxed .cu-tabs-tab.cu-tabs-tab--active {
-  background-color: var(--tabs-color);
-  color: var(--cu-color-surface);
+  background-color: var(--tabs-solid);
+  color: var(--tabs-solid-text);
 }
 
 .cu-tabs--boxed .cu-tabs-tab.cu-tabs-tab--active:hover:not(:disabled) {
-  background-color: var(--tabs-color);
-  color: var(--cu-color-surface);
+  background-color: var(--tabs-solid);
+  color: var(--tabs-solid-text);
 }
 
 /* Variant: soft (soft container box + solid active) */
@@ -312,13 +314,13 @@ defineExpose({ getActive, setActive, next, prev });
 }
 
 .cu-tabs--soft .cu-tabs-tab.cu-tabs-tab--active {
-  background-color: var(--tabs-color);
-  color: var(--cu-color-surface);
+  background-color: var(--tabs-solid);
+  color: var(--tabs-solid-text);
 }
 
 .cu-tabs--soft .cu-tabs-tab.cu-tabs-tab--active:hover:not(:disabled) {
-  background-color: var(--tabs-color);
-  color: var(--cu-color-surface);
+  background-color: var(--tabs-solid);
+  color: var(--tabs-solid-text);
 }
 
 .cu-tabs-panel {
