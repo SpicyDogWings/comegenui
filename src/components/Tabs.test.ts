@@ -4,6 +4,7 @@
 // tabs deshabilitadas individuales y control programático).
 import { afterEach, describe, it, expect, vi } from "vitest";
 import { flushPromises, mount } from "@vue/test-utils";
+import { defineComponent } from "vue";
 import Tabs from "./Tabs.vue";
 import TabsCe from "./customElements/Tabs.ce.vue";
 import { defineComegenElement } from "@/utils/comegen-element";
@@ -19,6 +20,8 @@ const vm = (w: ReturnType<typeof mount>) => w.vm as unknown as TabsVm;
 const tabEls = (w: ReturnType<typeof mount>) => w.findAll(".cu-tabs-tab");
 const tab = (w: ReturnType<typeof mount>, label: string) =>
   tabEls(w).find((t) => t.text().trim() === label)!;
+const panelByLabel = (w: ReturnType<typeof mount>, label: string) =>
+  w.findAll("[role=tabpanel]").find((p) => p.attributes("aria-labelledby") === tab(w, label).attributes("id"))!;
 
 const tabs = [
   { key: "first", label: "First" },
@@ -190,8 +193,7 @@ describe("Tabs — paneles y variantes", () => {
     });
     // El panel keepAlive está montado aunque no esté activo, pero oculto.
     expect(w.find(".panel-b").exists()).toBe(true);
-    const hidden = w.find("#cu-tabs-panel-b");
-    expect(hidden.attributes("style")).toContain("display: none");
+    expect(panelByLabel(w, "B").attributes("style")).toContain("display: none");
   });
 
   it("aplica las clases de variante y tamaño", () => {
@@ -335,7 +337,7 @@ describe("Tabs — contenido de paneles y slots", () => {
     await flushPromises();
     // Sigue montado, pero oculto.
     expect(w.find(".ka-input").exists()).toBe(true);
-    expect(w.find("#cu-tabs-panel-b").attributes("style")).toContain("display: none");
+    expect(panelByLabel(w, "B").attributes("style")).toContain("display: none");
     expect((w.find(".ka-input").element as HTMLInputElement).value).toBe("hola");
   });
 
@@ -388,6 +390,120 @@ describe("Tabs — atacante", () => {
     await tab(w, "Second").trigger("click");
     expect(vm(w).getActive()).toBe("first");
     expect(w.emitted("change")).toBeUndefined();
+  });
+});
+
+describe("Tabs — normalización de `tabs`", () => {
+  it("`tabs = null` no rompe el render ni la API", async () => {
+    // El custom element permite `el.tabs = null`: antes del fix el render
+    // lanzaba `Cannot read properties of null (reading 'find')`.
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const w = mount(Tabs, { props: { tabs: null as never } });
+    expect(tabEls(w)).toHaveLength(0);
+    expect(w.find("[role=tablist]").exists()).toBe(true);
+    expect(vm(w).getActive()).toBe("");
+    vm(w).next();
+    await flushPromises();
+    expect(vm(w).getActive()).toBe("");
+    warn.mockRestore();
+  });
+
+  it("descarta items inválidos o sin key conservando el orden de los válidos", () => {
+    const w = mount(Tabs, {
+      props: {
+        tabs: [
+          { key: "a", label: "A" },
+          null,
+          { label: "sin key" },
+          { key: "", label: "key vacía" },
+          undefined,
+          { key: "b", label: "B" },
+        ] as never,
+      },
+    });
+    expect(tabEls(w).map((t) => t.text())).toEqual(["A", "B"]);
+    expect(vm(w).getActive()).toBe("a");
+  });
+});
+
+describe("Tabs — ids únicos entre instancias", () => {
+  it("dos `<Tabs>` con las mismas keys generan ids distintos y ARIA apunta a su propia instancia", () => {
+    const Pair = defineComponent({
+      components: { Tabs },
+      setup: () => ({ tabs }),
+      template: '<div><Tabs :tabs="tabs" /><Tabs :tabs="tabs" /></div>',
+    });
+    const w = mount(Pair, { attachTo: document.body });
+    const [first, second] = w.findAll(".cu-tabs");
+
+    const idsFirst = first!.findAll(".cu-tabs-tab").map((t) => t.attributes("id")!);
+    const idsSecond = second!.findAll(".cu-tabs-tab").map((t) => t.attributes("id")!);
+    expect(new Set([...idsFirst, ...idsSecond]).size).toBe(6);
+    expect(idsFirst.some((id) => idsSecond.includes(id))).toBe(false);
+
+    // El panel de la instancia B se etiqueta con la tab B, no con la A.
+    const panelB = second!.find("[role=tabpanel]");
+    expect(panelB.attributes("aria-labelledby")).toBe(idsSecond[0]);
+    expect(document.getElementById(idsSecond[0]!)!.textContent!.trim()).toBe("First");
+    w.unmount();
+  });
+});
+
+describe("Tabs — icono sanitizado", () => {
+  it("un SVG válido con `path` se renderiza", () => {
+    const w = mount(Tabs, {
+      props: {
+        tabs: [
+          {
+            key: "a",
+            label: "A",
+            icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/></svg>',
+          },
+        ],
+      },
+    });
+    expect(w.find(".cu-tabs-tab-icon svg path").exists()).toBe(true);
+  });
+
+  it("`<script>` y handlers `on*` se eliminan antes del v-html", () => {
+    // Sonda de ejecución: el navegador/jsdom la setearía si el handler sobrevive.
+    type XssWindow = Window & { __xss?: number };
+    const probe = window as XssWindow;
+    delete probe.__xss;
+    const w = mount(Tabs, {
+      props: {
+        tabs: [
+          {
+            key: "a",
+            label: "A",
+            icon: '<img src=x onerror="window.__xss=1"><script>window.__xss=2</script>',
+          },
+        ],
+      },
+    });
+    const icon = w.find(".cu-tabs-tab-icon");
+    expect(icon.find("script").exists()).toBe(false);
+    expect(icon.find("img").attributes("onerror")).toBeUndefined();
+    expect(probe.__xss).toBeUndefined();
+  });
+});
+
+describe("Tabs — foco al eliminar la tab activa", () => {
+  it("si la tab enfocada desaparece, el foco pasa a la nueva tab activa", async () => {
+    const w = mount(Tabs, { props: { tabs }, attachTo: document.body });
+    const second = tabEls(w)[1]!.element as HTMLElement;
+    second.focus();
+    await tab(w, "Second").trigger("click");
+    expect(vm(w).getActive()).toBe("second");
+    expect(document.activeElement).toBe(second);
+
+    // El consumidor saca la tab activa (y enfocada) del array.
+    await w.setProps({ tabs: [tabs[0]!, tabs[2]!] });
+    await flushPromises();
+
+    expect(vm(w).getActive()).toBe("first");
+    expect(document.activeElement).toBe(tabEls(w)[0]!.element);
+    w.unmount();
   });
 });
 

@@ -1485,9 +1485,9 @@ const MUTATIONS = [
     id: "tabs-active-disabled-no-se-saltea",
     file: "src/components/Tabs.vue",
     expect: "un modelValue que apunta a una tab deshabilitada cae en la primera habilitada",
-    find: `  const requested = props.tabs.find((t) => t.key === active.value)
+    find: `  const requested = tabList.value.find((t) => t.key === active.value)
   if (requested && !requested.disabled) return requested.key`,
-    replace: `  const requested = props.tabs.find((t) => t.key === active.value)
+    replace: `  const requested = tabList.value.find((t) => t.key === active.value)
   if (requested) return requested.key`,
   },
   {
@@ -1533,6 +1533,34 @@ const MUTATIONS = [
       select(tab.key);`,
     replace: `    if (tab) {
       select(tab.key);`,
+  },
+  {
+    id: "tabs-tabs-null-sin-normalizar",
+    file: "src/components/Tabs.vue",
+    expect: "tabs null no rompe el render ni la API",
+    find: `  const raw = Array.isArray(props.tabs) ? props.tabs : []`,
+    replace: `  const raw = props.tabs`,
+  },
+  {
+    id: "tabs-ids-sin-prefijo-instancia",
+    file: "src/components/Tabs.vue",
+    expect: "dos instancias con las mismas keys generan ids distintos",
+    find: `const idPrefix = \`cu-tabs-\${idSafe(uid)}\`;`,
+    replace: `const idPrefix = "cu-tabs";`,
+  },
+  {
+    id: "tabs-icon-sin-sanitizar",
+    file: "src/components/Tabs.vue",
+    expect: "el icono se sanitiza antes del v-html (sin script ni handlers on*)",
+    find: `(html ? DOMPurify.sanitize(html) : undefined)`,
+    replace: `(html ? html : undefined)`,
+  },
+  {
+    id: "tabs-foco-no-se-restaura",
+    file: "src/components/Tabs.vue",
+    expect: "al eliminar la tab enfocada el foco pasa a la nueva tab activa",
+    find: `    tabRefs.value[next]?.focus();`,
+    replace: `    void next;`,
   },
 ];
 

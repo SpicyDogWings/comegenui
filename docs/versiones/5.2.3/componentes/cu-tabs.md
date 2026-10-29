@@ -102,6 +102,10 @@ tema encima, invisible en light).
 Cada tab lleva un ícono por el campo `icon` (string HTML/SVG) o por el slot `tab-icon-{key}`; el SVG
 debe usar `currentColor` para heredar el color del tab.
 
+El HTML del campo `icon` **se sanitiza con DOMPurify antes de inyectarse**: los SVG válidos
+(`path`, `circle`, `g`, …) se conservan, y se eliminan `<script>`, atributos `on*` y URLs peligrosas
+(`javascript:`). El slot `tab-icon-{key}` es contenido del consumidor y no pasa por `v-html`.
+
 ```html
 <cu-tabs id="iconos" variant="solid" color="primary">
   <svg slot="tab-icon-home" width="14" height="14" viewBox="0 0 24 24"
@@ -128,6 +132,31 @@ debe usar `currentColor` para heredar el color del tab.
 ```
 
 <!-- demo:tabs-iconos -->
+
+## Ancho y desbordamiento
+
+El tablist ocupa el ancho disponible y mantiene **una sola fila**. Si el host es más angosto que la
+suma de las tabs, el header scrollea en horizontal (`overflow-x: auto` con scrollbar fina) en vez de
+desbordar la caja del componente; las tabs no se aplastan: conservan su ancho mínimo de contenido
+(`white-space: nowrap`). Las tabs que no entran quedan accesibles desplazando el tablist.
+
+```html
+<div style="width: 180px; border: 1px dashed #888">
+  <cu-tabs id="angosto" variant="ghost"></cu-tabs>
+</div>
+
+<script>
+  customElements.whenDefined('cu-tabs').then(() => {
+    document.getElementById('angosto').tabs = [
+      { key: 'uno', label: 'Uno' },
+      { key: 'dos', label: 'Dos' },
+      { key: 'tres', label: 'Tres' },
+      { key: 'cuatro', label: 'Cuatro' },
+      { key: 'cinco', label: 'Cinco' },
+    ];
+  });
+</script>
+```
 
 ## Deshabilitado
 
@@ -218,10 +247,14 @@ estado de los componentes internos al cambiar de pestaña.
 - Roles ARIA: `tablist`, `tab` y `tabpanel`. Cada tab lleva `aria-selected`, `aria-controls` (apunta
   al panel, que existe cuando la tab está activa o tiene `keepAlive`) y el panel lleva
   `aria-labelledby` apuntando a su tab.
+- Los ids de tabs y paneles llevan un prefijo único por instancia, así que varias instancias con las
+  mismas `key` no colisionan y cada panel apunta a su propia tab.
 - Un solo tab stop: sólo la tab activa tiene `tabindex="0"`; el resto, `-1` (roving tabindex). Las
   flechas mueven el foco y activan la tab a la que llegan.
 - Teclado: las flechas ←/→ cambian de tab; `Home` y `End` van al primero/último.
 - Las tabs deshabilitadas se saltean en la navegación, en `setActive` y al resolver el tab activo.
+- Si la tab enfocada desaparece del array (por ejemplo, se elimina la tab activa), el foco pasa a la
+  nueva tab activa en vez de caer al `body`.
 
 ## Atributos
 
@@ -235,9 +268,12 @@ Cada item es un objeto con:
 |-------|------|-----------|-------------|
 | `key` | `string` | ✓ | Identificador único (se usa para el tab activo y los slots) |
 | `label` | `string` | ✓ | Texto visible del tab |
-| `icon` | `string` | — | SVG/HTML del ícono (alternativa al slot `tab-icon-{key}`) |
+| `icon` | `string` | — | SVG/HTML del ícono (alternativa al slot `tab-icon-{key}`); se sanitiza antes de renderizar |
 | `disabled` | `boolean` | — | Deshabilita solo esa pestaña |
 | `keepAlive` | `boolean` | — | Mantiene el panel montado al cambiar de tab |
+
+Un `tabs` `null`/`undefined` se trata como `[]`, y los items sin `key` utilizable se ignoran
+conservando el orden del resto (no rompen el render).
 
 > Los arrays/objetos se asignan **via JavaScript como propiedad DOM**, no como atributo HTML (ver [Componentes](../README.md)).
 
