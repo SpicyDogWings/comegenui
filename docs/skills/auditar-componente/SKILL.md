@@ -4,7 +4,7 @@ description: 'Receta para auditar un componente ComegenUI como dev, usuario y at
 metadata:
   repository: https://github.com/SpicyDogWings/comegenui
   path: docs/skills/auditar-componente
-  version: 5.2.2
+  version: 5.2.3
 ---
 
 # Auditar un componente

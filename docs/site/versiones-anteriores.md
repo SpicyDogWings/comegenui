@@ -4,7 +4,7 @@ Este sitio publica **sólo la última versión** de la documentación (la que sa
 selector de versiones ni copias viejas publicadas: mantener cada versión como un sitio completo
 duplicaba el peso del deploy sin aportar nada que el tag no resuelva.
 
-Cada release queda **etiquetada** en git (`v5.2.2`, `v5.2.1`, …). La doc de una versión anterior vive
+Cada release queda **etiquetada** en git (`v5.2.3`, `v5.2.2`, …). La doc de una versión anterior vive
 en su tag, y se lee o se buildea localmente en tres comandos.
 
 ## Leer la doc de una versión anterior
@@ -39,7 +39,8 @@ del mismo tag (`docs/versiones/<id>/componentes/`), que son las que renderiza `p
 
 | Versión | Tag | Dónde está su doc |
 |---|---|---|
-| 5.2.2 | `v5.2.2` | publicada en este sitio |
+| 5.2.3 | `v5.2.3` | publicada en este sitio |
+| 5.2.2 | `v5.2.2` | reemplazada por 5.2.3; sólo en el tag |
 | 5.2.1 | `v5.2.1` | reemplazada por 5.2.2; sólo en el tag |
 | 5.2.0 | `v5.2.0` | reemplazada por 5.2.1; sólo en el tag |
 | 5.1.1 | `v5.1.1` | sólo en el tag |
