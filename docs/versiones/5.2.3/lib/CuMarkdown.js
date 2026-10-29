@@ -1,5 +1,5 @@
 /*! comegenui v5.2.3 · CuMarkdown (cu-markdown) · esm-shared · Vue externo (bare import) */
-import { Fragment, Transition, computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, createTextVNode, createVNode, defineComponent, defineCustomElement, getCurrentInstance, nextTick, normalizeClass, normalizeStyle, onMounted, openBlock, ref, renderList, renderSlot, resolveComponent, resolveDynamicComponent, toDisplayString, watch, withCtx } from "vue";
+import { Fragment, Transition, computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, createTextVNode, createVNode, defineComponent, defineCustomElement, getCurrentInstance, mergeProps, nextTick, normalizeClass, normalizeStyle, onMounted, openBlock, ref, renderList, renderSlot, resolveComponent, resolveDynamicComponent, toDisplayString, watch, withCtx } from "vue";
 //#region \0rolldown/runtime.js
 var __create = Object.create;
 var __defProp = Object.defineProperty;
@@ -4771,6 +4771,15 @@ var Table_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 			type: Boolean,
 			required: false,
 			default: false
+		},
+		/**
+		* Atributos extra por columna para el `<th>` (ej. `aria-sort` cuando la
+		* columna se ordena). `{ [col.key]: { 'aria-sort': 'ascending' } }`.
+		*/
+		headerAttrs: {
+			type: Object,
+			required: false,
+			default: () => ({})
 		}
 	},
 	setup(__props, { slots: $slots }) {
@@ -4835,15 +4844,15 @@ var Table_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 				animation: "loading"
 			}, null, 8, ["color"])) : createCommentVNode("v-if", true), createElementVNode("div", _hoisted_1$6, [createElementVNode("table", _hoisted_2$4, [
 				createElementVNode("thead", null, [createElementVNode("tr", null, [(openBlock(true), createElementBlock(Fragment, null, renderList(tableColumns.value, (col) => {
-					return openBlock(), createElementBlock("th", {
+					return openBlock(), createElementBlock("th", mergeProps({
 						key: col.key,
 						class: "cu-table-th",
-						style: normalizeStyle(thStyleFn(col))
-					}, [renderSlot(_ctx.$slots, `header-${col.key}`, {
+						style: thStyleFn(col)
+					}, { ref_for: true }, props.headerAttrs[col.key] || {}), [renderSlot(_ctx.$slots, `header-${col.key}`, {
 						column: col,
 						color: props.color,
 						variant: props.variant
-					}, () => [createElementVNode("span", _hoisted_3$2, toDisplayString(col.label ?? col.key), 1)], true)], 4);
+					}, () => [createElementVNode("span", _hoisted_3$2, toDisplayString(col.label ?? col.key), 1)], true)], 16);
 				}), 128))])]),
 				createElementVNode("tbody", { class: normalizeClass({ "cu-table-loading": props.loading }) }, [(openBlock(true), createElementBlock(Fragment, null, renderList(props.data, (row, rowIndex) => {
 					return openBlock(), createElementBlock("tr", {
@@ -4892,7 +4901,7 @@ var Table_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 			])])], 6);
 		};
 	}
-}), [["styles", ["\n.cu-table[data-v-8325129c] {\n  position: relative;\n  display: flex;\n  flex-direction: column;\n  max-width: 100%;\n  overflow: hidden;\n}\n.cu-table-scroll[data-v-8325129c] {\n  overflow: auto;\n  border-radius: var(--cu-radius-md);\n  flex: 1;\n}\n.cu-table-element[data-v-8325129c] {\n  width: 100%;\n  border-collapse: collapse;\n}\n.cu-table--outlined .cu-table-scroll[data-v-8325129c] {\n  border: var(--cu-border-medium) solid var(--table-bd);\n}\n.cu-table-th[data-v-8325129c] {\n  text-align: left;\n  padding: var(--cu-space-md);\n  font-family: var(--cu-font-sans);\n  font-weight: var(--cu-font-weight-medium);\n  position: sticky;\n  top: 0;\n  z-index: 20;\n  user-select: none;\n}\n.cu-table .cu-table-th-content[data-v-8325129c] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--cu-space-xs);\n  color: inherit;\n}\n.cu-table-row[data-v-8325129c] {\n  border-bottom: var(--cu-border-thin) solid rgba(0, 0, 0, 0.08);\n  transition: background-color 150ms ease;\n}\n.cu-table--outlined .cu-table-row[data-v-8325129c] {\n  border-bottom-color: var(--table-bd);\n}\n.cu-table-row[data-v-8325129c]:hover {\n  background-color: var(--table-bg-hover);\n}\n.cu-table-row--disabled[data-v-8325129c] {\n  opacity: var(--cu-alpha-muted, 0.5);\n  pointer-events: none;\n}\n.cu-table-row--disabled[data-v-8325129c]:hover {\n  background-color: transparent;\n}\n.cu-table-row[data-v-8325129c]:last-child {\n  border-bottom: none;\n}\n.cu-table-loading[data-v-8325129c] {\n  opacity: var(--cu-alpha-faded, 0.4);\n  pointer-events: none;\n}\n[data-v-8325129c] .cu-table-td {\n  padding: var(--cu-space-md);\n  font-family: var(--cu-font-sans);\n  color: var(--cu-color-neutral-text);\n}\n[data-v-8325129c] .cu-table-td--left { text-align: left;\n}\n[data-v-8325129c] .cu-table-td--center { text-align: center;\n}\n[data-v-8325129c] .cu-table-td--right { text-align: right;\n}\n[data-v-8325129c] .cu-table-empty {\n  padding: var(--cu-space-xl);\n  text-align: center;\n  color: var(--cu-color-neutral-text);\n  opacity: var(--cu-alpha-muted, 0.5);\n  font-style: italic;\n  font-family: var(--cu-font-sans);\n}\n[data-v-8325129c] .cu-table-td--footer {\n  font-weight: var(--cu-font-weight-semibold);\n  border-top: var(--cu-border-medium) solid var(--cu-color-neutral-soft);\n}\n.cu-table tr:last-child td[data-v-8325129c] {\n  border-bottom: none;\n}\n\n/* compact: menos padding en celdas */\n.cu-table--compact .cu-table-th[data-v-8325129c] {\n  padding: var(--cu-space-xs) var(--cu-space-sm);\n}\n.cu-table--compact[data-v-8325129c] .cu-table-td {\n  padding: var(--cu-space-xs) var(--cu-space-sm);\n}\n.cu-table--compact[data-v-8325129c] .cu-table-empty {\n  padding: var(--cu-space-md);\n}\n\n"]], ["__scopeId", "data-v-8325129c"]]);
+}), [["styles", ["\n.cu-table[data-v-8e793034] {\n  position: relative;\n  display: flex;\n  flex-direction: column;\n  max-width: 100%;\n  overflow: hidden;\n}\n.cu-table-scroll[data-v-8e793034] {\n  overflow: auto;\n  border-radius: var(--cu-radius-md);\n  flex: 1;\n}\n.cu-table-element[data-v-8e793034] {\n  width: 100%;\n  border-collapse: collapse;\n}\n.cu-table--outlined .cu-table-scroll[data-v-8e793034] {\n  border: var(--cu-border-medium) solid var(--table-bd);\n}\n.cu-table-th[data-v-8e793034] {\n  text-align: left;\n  padding: var(--cu-space-md);\n  font-family: var(--cu-font-sans);\n  font-weight: var(--cu-font-weight-medium);\n  position: sticky;\n  top: 0;\n  z-index: 20;\n  user-select: none;\n}\n.cu-table .cu-table-th-content[data-v-8e793034] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--cu-space-xs);\n  color: inherit;\n}\n.cu-table-row[data-v-8e793034] {\n  border-bottom: var(--cu-border-thin) solid rgba(0, 0, 0, 0.08);\n  transition: background-color 150ms ease;\n}\n.cu-table--outlined .cu-table-row[data-v-8e793034] {\n  border-bottom-color: var(--table-bd);\n}\n.cu-table-row[data-v-8e793034]:hover {\n  background-color: var(--table-bg-hover);\n}\n.cu-table-row--disabled[data-v-8e793034] {\n  opacity: var(--cu-alpha-muted, 0.5);\n  pointer-events: none;\n}\n.cu-table-row--disabled[data-v-8e793034]:hover {\n  background-color: transparent;\n}\n.cu-table-row[data-v-8e793034]:last-child {\n  border-bottom: none;\n}\n.cu-table-loading[data-v-8e793034] {\n  opacity: var(--cu-alpha-faded, 0.4);\n  pointer-events: none;\n}\n[data-v-8e793034] .cu-table-td {\n  padding: var(--cu-space-md);\n  font-family: var(--cu-font-sans);\n  color: var(--cu-color-neutral-text);\n}\n[data-v-8e793034] .cu-table-td--left { text-align: left;\n}\n[data-v-8e793034] .cu-table-td--center { text-align: center;\n}\n[data-v-8e793034] .cu-table-td--right { text-align: right;\n}\n[data-v-8e793034] .cu-table-empty {\n  padding: var(--cu-space-xl);\n  text-align: center;\n  color: var(--cu-color-neutral-text);\n  opacity: var(--cu-alpha-muted, 0.5);\n  font-style: italic;\n  font-family: var(--cu-font-sans);\n}\n[data-v-8e793034] .cu-table-td--footer {\n  font-weight: var(--cu-font-weight-semibold);\n  border-top: var(--cu-border-medium) solid var(--cu-color-neutral-soft);\n}\n.cu-table tr:last-child td[data-v-8e793034] {\n  border-bottom: none;\n}\n\n/* compact: menos padding en celdas */\n.cu-table--compact .cu-table-th[data-v-8e793034] {\n  padding: var(--cu-space-xs) var(--cu-space-sm);\n}\n.cu-table--compact[data-v-8e793034] .cu-table-td {\n  padding: var(--cu-space-xs) var(--cu-space-sm);\n}\n.cu-table--compact[data-v-8e793034] .cu-table-empty {\n  padding: var(--cu-space-md);\n}\n\n"]], ["__scopeId", "data-v-8e793034"]]);
 var core_default = (/* @__PURE__ */ __toESM((/* @__PURE__ */ __commonJSMin(((exports, module) => {
 	function deepFreeze(obj) {
 		if (obj instanceof Map) obj.clear = obj.delete = obj.set = function() {

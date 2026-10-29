@@ -1,5 +1,5 @@
 /*! comegenui v5.2.3 · CuCommandPalette (cu-command-palette) · esm-shared · Vue externo (bare import) */
-import { Fragment, computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, createTextVNode, createVNode, defineComponent, defineCustomElement, mergeModels, nextTick, normalizeClass, normalizeStyle, openBlock, reactive, ref, renderList, renderSlot, shallowRef, toDisplayString, toValue, unref, useModel, useSlots, useTemplateRef, vShow, watch, withCtx, withDirectives } from "vue";
+import { Fragment, computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, createTextVNode, createVNode, defineComponent, defineCustomElement, mergeModels, nextTick, normalizeClass, normalizeStyle, openBlock, reactive, ref, renderList, renderSlot, shallowRef, toDisplayString, toValue, unref, useId, useModel, useSlots, useTemplateRef, vShow, watch, withCtx, withDirectives } from "vue";
 //#region src/utils/comegen-element.ts
 var BUILD_META = {
 	"version": "5.2.3",
@@ -930,7 +930,7 @@ var _hoisted_6$1 = {
 };
 var _hoisted_7$1 = { class: "cu-modal-body" };
 var _hoisted_8$1 = { class: "cu-modal-footer" };
-var _hoisted_9 = {
+var _hoisted_9$1 = {
 	key: 0,
 	class: "cu-modal-footer-default"
 };
@@ -1059,7 +1059,7 @@ var Modal_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 					_: 1
 				}, 8, ["color"])) : createCommentVNode("v-if", true)], 2),
 				createElementVNode("main", _hoisted_7$1, [renderSlot(_ctx.$slots, "default")]),
-				createElementVNode("footer", _hoisted_8$1, [renderSlot(_ctx.$slots, "footer", {}, () => [!hasFooter.value ? (openBlock(), createElementBlock("div", _hoisted_9, [__props.persistent ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [createVNode(Button_default, {
+				createElementVNode("footer", _hoisted_8$1, [renderSlot(_ctx.$slots, "footer", {}, () => [!hasFooter.value ? (openBlock(), createElementBlock("div", _hoisted_9$1, [__props.persistent ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [createVNode(Button_default, {
 					color: "neutral",
 					variant: "ghost",
 					onClick: handleCancel
@@ -1255,27 +1255,30 @@ function useSearch(data, options) {
 //#endregion
 //#region src/components/overlay/CommandPalette.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1 = { class: "cu-command-palette-search" };
-var _hoisted_2 = { class: "cu-command-palette-results" };
-var _hoisted_3 = {
-	key: 0,
-	class: "cu-command-palette-group-label"
-};
+var _hoisted_2 = ["role", "aria-label"];
+var _hoisted_3 = ["role", "aria-label"];
 var _hoisted_4 = {
+	key: 0,
+	class: "cu-command-palette-group-label",
+	"aria-hidden": "true"
+};
+var _hoisted_5 = {
 	key: 0,
 	class: "cu-command-palette-item-icon"
 };
-var _hoisted_5 = { class: "cu-command-palette-item-label" };
-var _hoisted_6 = {
+var _hoisted_6 = { class: "cu-command-palette-item-label" };
+var _hoisted_7 = {
 	key: 1,
 	class: "cu-command-palette-item-desc"
 };
-var _hoisted_7 = {
+var _hoisted_8 = {
 	key: 2,
 	class: "cu-command-palette-item-shortcut"
 };
-var _hoisted_8 = {
+var _hoisted_9 = {
 	key: 1,
-	class: "cu-command-palette-empty"
+	class: "cu-command-palette-empty",
+	role: "status"
 };
 //#endregion
 //#region src/components/overlay/CommandPalette.vue
@@ -1317,9 +1320,17 @@ var CommandPalette_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* 
 		const search = ref("");
 		const activeIndex = ref(0);
 		const inputRef = ref(null);
+		const resultsRef = ref(null);
+		const uid = useId();
+		const listboxId = `${uid}-listbox`;
+		const expanded = ref(false);
+		const optionId = (index) => `${uid}-option-${index}`;
 		const { filteredData: filtered } = useSearch(computed(() => props.commands), {
 			searchQuery: search,
 			searchFields: ["label", "category"]
+		});
+		const activeDescendant = computed(() => {
+			return filtered.value[activeIndex.value] ? optionId(activeIndex.value) : void 0;
 		});
 		const grouped = computed(() => {
 			const groups = [];
@@ -1343,14 +1354,37 @@ var CommandPalette_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* 
 		watch(filtered, () => {
 			activeIndex.value = 0;
 		});
+		async function scrollActiveIntoView() {
+			await nextTick();
+			resultsRef.value?.querySelector(".cu-command-palette-item--active")?.scrollIntoView?.({ block: "nearest" });
+		}
+		watch(activeIndex, () => {
+			scrollActiveIntoView();
+		});
+		/** Vuelve la paleta a su estado inicial (búsqueda vacía, primer comando resaltado). */
+		function resetState() {
+			search.value = "";
+			activeIndex.value = 0;
+			if (resultsRef.value) resultsRef.value.scrollTop = 0;
+		}
 		function open() {
 			modalRef.value?.open();
+			expanded.value = true;
 			nextTick(() => inputRef.value?.focus());
 		}
 		function close() {
 			modalRef.value?.close();
-			search.value = "";
-			activeIndex.value = 0;
+			expanded.value = false;
+			resetState();
+		}
+		/**
+		* Cierre originado en el `Modal` (Escape, click en el backdrop, botón de cerrar):
+		* además de avisar, limpia la búsqueda para que la próxima apertura arranque limpia.
+		*/
+		function handleClose() {
+			expanded.value = false;
+			resetState();
+			emit("close");
 		}
 		function select(cmd) {
 			cmd.action();
@@ -1367,12 +1401,19 @@ var CommandPalette_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* 
 		}
 		function handleKeydown(event) {
 			if (!filtered.value.length) return;
+			if (event.target?.closest?.(".cu-command-palette-item")) return;
 			if (event.key === "ArrowDown") {
 				event.preventDefault();
 				activeIndex.value = (activeIndex.value + 1) % filtered.value.length;
 			} else if (event.key === "ArrowUp") {
 				event.preventDefault();
 				activeIndex.value = (activeIndex.value - 1 + filtered.value.length) % filtered.value.length;
+			} else if (event.key === "Home") {
+				event.preventDefault();
+				activeIndex.value = 0;
+			} else if (event.key === "End") {
+				event.preventDefault();
+				activeIndex.value = filtered.value.length - 1;
 			} else if (event.key === "Enter") {
 				event.preventDefault();
 				const cmd = filtered.value[activeIndex.value];
@@ -1394,7 +1435,7 @@ var CommandPalette_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* 
 				title: __props.title,
 				size: __props.size,
 				height: __props.height,
-				onClose: _cache[1] || (_cache[1] = ($event) => emit("close"))
+				onClose: handleClose
 			}, {
 				default: withCtx(() => [createElementVNode("div", {
 					class: "cu-command-palette",
@@ -1405,11 +1446,37 @@ var CommandPalette_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* 
 					modelValue: search.value,
 					"onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => search.value = $event),
 					placeholder: __props.placeholder,
-					class: "cu-command-palette-input"
-				}, null, 8, ["modelValue", "placeholder"])]), createElementVNode("div", _hoisted_2, [unref(filtered).length ? (openBlock(true), createElementBlock(Fragment, { key: 0 }, renderList(grouped.value, (group) => {
-					return openBlock(), createElementBlock(Fragment, { key: group.category }, [group.category ? (openBlock(), createElementBlock("div", _hoisted_3, toDisplayString(group.category), 1)) : createCommentVNode("v-if", true), (openBlock(true), createElementBlock(Fragment, null, renderList(group.items, (item) => {
+					class: "cu-command-palette-input",
+					role: "combobox",
+					"aria-autocomplete": "list",
+					"aria-expanded": expanded.value,
+					"aria-controls": listboxId,
+					"aria-activedescendant": activeDescendant.value
+				}, null, 8, [
+					"modelValue",
+					"placeholder",
+					"aria-expanded",
+					"aria-activedescendant"
+				])]), createElementVNode("div", {
+					ref_key: "resultsRef",
+					ref: resultsRef,
+					id: listboxId,
+					class: "cu-command-palette-results",
+					role: unref(filtered).length ? "listbox" : void 0,
+					"aria-label": unref(filtered).length ? __props.title || "Comandos" : void 0
+				}, [unref(filtered).length ? (openBlock(true), createElementBlock(Fragment, { key: 0 }, renderList(grouped.value, (group) => {
+					return openBlock(), createElementBlock("div", {
+						key: group.category || "__sin-categoria",
+						role: group.category ? "group" : "presentation",
+						"aria-label": group.category || void 0,
+						class: "cu-command-palette-group"
+					}, [group.category ? (openBlock(), createElementBlock("div", _hoisted_4, toDisplayString(group.category), 1)) : createCommentVNode("v-if", true), (openBlock(true), createElementBlock(Fragment, null, renderList(group.items, (item) => {
 						return openBlock(), createBlock(Button_default, {
+							id: optionId(item.index),
 							key: item.cmd.id,
+							role: "option",
+							"aria-selected": item.index === activeIndex.value,
+							tabindex: "-1",
 							color: "neutral",
 							variant: "ghost",
 							class: normalizeClass(["cu-command-palette-item", { "cu-command-palette-item--active": item.index === activeIndex.value }]),
@@ -1417,25 +1484,27 @@ var CommandPalette_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* 
 							onMouseenter: ($event) => activeIndex.value = item.index
 						}, {
 							default: withCtx(() => [
-								item.cmd.icon ? (openBlock(), createElementBlock("span", _hoisted_4, toDisplayString(item.cmd.icon), 1)) : createCommentVNode("v-if", true),
-								createElementVNode("span", _hoisted_5, toDisplayString(item.cmd.label), 1),
-								item.cmd.description ? (openBlock(), createElementBlock("span", _hoisted_6, toDisplayString(item.cmd.description), 1)) : createCommentVNode("v-if", true),
+								item.cmd.icon ? (openBlock(), createElementBlock("span", _hoisted_5, toDisplayString(item.cmd.icon), 1)) : createCommentVNode("v-if", true),
+								createElementVNode("span", _hoisted_6, toDisplayString(item.cmd.label), 1),
+								item.cmd.description ? (openBlock(), createElementBlock("span", _hoisted_7, toDisplayString(item.cmd.description), 1)) : createCommentVNode("v-if", true),
 								(openBlock(true), createElementBlock(Fragment, null, renderList(item.cmd.badges, (badge) => {
 									return openBlock(), createElementBlock("span", {
 										key: badge,
 										class: "cu-command-palette-item-badge"
 									}, toDisplayString(badge), 1);
 								}), 128)),
-								item.cmd.shortcut ? (openBlock(), createElementBlock("span", _hoisted_7, toDisplayString(item.cmd.shortcut), 1)) : createCommentVNode("v-if", true)
+								item.cmd.shortcut ? (openBlock(), createElementBlock("span", _hoisted_8, toDisplayString(item.cmd.shortcut), 1)) : createCommentVNode("v-if", true)
 							]),
 							_: 2
 						}, 1032, [
+							"id",
+							"aria-selected",
 							"class",
 							"onClick",
 							"onMouseenter"
 						]);
-					}), 128))], 64);
-				}), 128)) : (openBlock(), createElementBlock("div", _hoisted_8, " No se encontraron comandos "))])], 32)]),
+					}), 128))], 8, _hoisted_3);
+				}), 128)) : (openBlock(), createElementBlock("div", _hoisted_9, " No se encontraron comandos "))], 8, _hoisted_2)], 32)]),
 				_: 1
 			}, 8, [
 				"color",
@@ -1445,7 +1514,7 @@ var CommandPalette_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* 
 			]);
 		};
 	}
-}), [["styles", ["\n.cu-command-palette[data-v-438a6f98] {\n      display: flex;\n      flex-direction: column;\n      max-height: 60vh;\n}\n.cu-command-palette-search[data-v-438a6f98] {\n      padding: 0.75rem;\n      border-bottom: var(--cu-border-thin) solid var(--cu-border-color);\n}\n.cu-command-palette-input[data-v-438a6f98] {\n      width: 100%;\n}\n.cu-command-palette-results[data-v-438a6f98] {\n      overflow-y: auto;\n      padding: 0.5rem;\n}\n.cu-command-palette-item[data-v-438a6f98] {\n      width: 100%;\n      text-align: left;\n      border-radius: var(--cu-radius-sm);\n      gap: 0.75rem;\n}\n.cu-command-palette-item--active[data-v-438a6f98] {\n      background-color: var(--cu-color-neutral-ghost-hover) !important;\n}\n.cu-command-palette-group-label[data-v-438a6f98] {\n      padding: 0.5rem 0.75rem 0.25rem;\n      font-size: var(--cu-font-size-xs);\n      font-weight: var(--cu-font-weight-semibold);\n      text-transform: uppercase;\n      letter-spacing: 0.05em;\n      color: var(--cu-color-neutral);\n      opacity: var(--cu-alpha-muted, 0.5);\n}\n.cu-command-palette-item[data-v-438a6f98] .cu-command-palette-item-icon {\n      font-size: 1rem;\n      line-height: 1;\n      flex-shrink: 0;\n}\n.cu-command-palette-item[data-v-438a6f98] .cu-command-palette-item-label {\n      font-size: var(--cu-font-size-sm);\n      color: var(--cu-color-neutral);\n      flex: 1;\n}\n.cu-command-palette-item[data-v-438a6f98] .cu-command-palette-item-desc {\n      font-size: var(--cu-font-size-xs);\n      color: var(--cu-color-neutral);\n      opacity: var(--cu-alpha-muted, 0.5);\n}\n.cu-command-palette-item[data-v-438a6f98] .cu-command-palette-item-badge {\n      font-size: var(--cu-font-size-xs);\n      color: var(--cu-color-neutral);\n      opacity: var(--cu-alpha-subtle, 0.6);\n      padding: 0.125rem 0.5rem;\n      border: var(--cu-border-thin) solid var(--cu-border-color);\n      border-radius: var(--cu-radius-sm);\n      white-space: nowrap;\n      flex-shrink: 0;\n}\n.cu-command-palette-item[data-v-438a6f98] .cu-command-palette-item-shortcut {\n      font-family: var(--cu-font-mono);\n      font-size: var(--cu-font-size-xs);\n      color: var(--cu-color-neutral);\n      opacity: var(--cu-alpha-muted, 0.5);\n      padding: 0.125rem 0.375rem;\n      border: var(--cu-border-thin) solid var(--cu-border-color);\n      border-radius: var(--cu-radius-sm);\n      flex-shrink: 0;\n}\n.cu-command-palette-empty[data-v-438a6f98] {\n      padding: 1.5rem;\n      text-align: center;\n      font-size: var(--cu-font-size-sm);\n      color: var(--cu-color-neutral);\n      opacity: var(--cu-alpha-muted, 0.5);\n}\n    "]], ["__scopeId", "data-v-438a6f98"]]);
+}), [["styles", ["\n.cu-command-palette[data-v-cd4667d5] {\n      display: flex;\n      flex-direction: column;\n      max-height: 60vh;\n}\n.cu-command-palette-search[data-v-cd4667d5] {\n      padding: 0.75rem;\n      border-bottom: var(--cu-border-thin) solid var(--cu-border-color);\n}\n.cu-command-palette-input[data-v-cd4667d5] {\n      width: 100%;\n}\n.cu-command-palette-results[data-v-cd4667d5] {\n      overflow-y: auto;\n      padding: 0.5rem;\n}\n.cu-command-palette-item[data-v-cd4667d5] {\n      width: 100%;\n      text-align: left;\n      border-radius: var(--cu-radius-sm);\n      gap: 0.75rem;\n}\n.cu-command-palette-item--active[data-v-cd4667d5] {\n      background-color: var(--cu-color-neutral-ghost-hover) !important;\n}\n.cu-command-palette-group-label[data-v-cd4667d5] {\n      padding: 0.5rem 0.75rem 0.25rem;\n      font-size: var(--cu-font-size-xs);\n      font-weight: var(--cu-font-weight-semibold);\n      text-transform: uppercase;\n      letter-spacing: 0.05em;\n      color: var(--cu-color-neutral);\n      opacity: var(--cu-alpha-muted, 0.5);\n}\n.cu-command-palette-item[data-v-cd4667d5] .cu-command-palette-item-icon {\n      font-size: 1rem;\n      line-height: 1;\n      flex-shrink: 0;\n}\n.cu-command-palette-item[data-v-cd4667d5] .cu-command-palette-item-label {\n      font-size: var(--cu-font-size-sm);\n      color: var(--cu-color-neutral);\n      flex: 1;\n}\n.cu-command-palette-item[data-v-cd4667d5] .cu-command-palette-item-desc {\n      font-size: var(--cu-font-size-xs);\n      color: var(--cu-color-neutral);\n      opacity: var(--cu-alpha-muted, 0.5);\n}\n.cu-command-palette-item[data-v-cd4667d5] .cu-command-palette-item-badge {\n      font-size: var(--cu-font-size-xs);\n      color: var(--cu-color-neutral);\n      opacity: var(--cu-alpha-subtle, 0.6);\n      padding: 0.125rem 0.5rem;\n      border: var(--cu-border-thin) solid var(--cu-border-color);\n      border-radius: var(--cu-radius-sm);\n      white-space: nowrap;\n      flex-shrink: 0;\n}\n.cu-command-palette-item[data-v-cd4667d5] .cu-command-palette-item-shortcut {\n      font-family: var(--cu-font-mono);\n      font-size: var(--cu-font-size-xs);\n      color: var(--cu-color-neutral);\n      opacity: var(--cu-alpha-muted, 0.5);\n      padding: 0.125rem 0.375rem;\n      border: var(--cu-border-thin) solid var(--cu-border-color);\n      border-radius: var(--cu-radius-sm);\n      flex-shrink: 0;\n}\n.cu-command-palette-empty[data-v-cd4667d5] {\n      padding: 1.5rem;\n      text-align: center;\n      font-size: var(--cu-font-size-sm);\n      color: var(--cu-color-neutral);\n      opacity: var(--cu-alpha-muted, 0.5);\n}\n    "]], ["__scopeId", "data-v-cd4667d5"]]);
 //#endregion
 //#region src/lib/overlay/command-palette.ts
 var CuCommandPalette = defineComegenElement("cu-command-palette", /* @__PURE__ */ defineComponent({

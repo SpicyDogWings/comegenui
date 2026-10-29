@@ -1,5 +1,5 @@
 /*! comegenui v5.2.3 · CuCellsImporter (cu-cells-importer) · esm-shared · Vue externo (bare import) */
-import { Fragment, Transition, computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, createSlots, createTextVNode, createVNode, defineComponent, defineCustomElement, getCurrentInstance, guardReactiveProps, mergeModels, nextTick, normalizeClass, normalizeProps, normalizeStyle, onMounted, onUnmounted, openBlock, ref, renderList, renderSlot, resolveDynamicComponent, shallowRef, toDisplayString, toRaw, toRef, toValue, unref, useModel, useTemplateRef, vShow, watch, withCtx, withDirectives, withKeys, withModifiers } from "vue";
+import { Fragment, Transition, computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, createSlots, createTextVNode, createVNode, defineComponent, defineCustomElement, getCurrentInstance, guardReactiveProps, mergeModels, mergeProps, nextTick, normalizeClass, normalizeProps, normalizeStyle, onMounted, onUnmounted, openBlock, ref, renderList, renderSlot, resolveDynamicComponent, shallowRef, toDisplayString, toRaw, toRef, toValue, unref, useModel, useTemplateRef, vShow, watch, withCtx, withDirectives, withKeys, withModifiers } from "vue";
 //#region src/utils/comegen-element.ts
 var BUILD_META = {
 	"version": "5.2.3",
@@ -526,7 +526,7 @@ function useFocus(target, options = {}) {
 Number.POSITIVE_INFINITY;
 //#endregion
 //#region src/components/icons/IconBase.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1$26 = ["width", "height"];
+var _hoisted_1$27 = ["width", "height"];
 //#endregion
 //#region src/components/icons/IconBase.vue
 var IconBase_default = /* @__PURE__ */ defineComponent({
@@ -548,7 +548,7 @@ var IconBase_default = /* @__PURE__ */ defineComponent({
 				width: __props.width,
 				height: __props.height,
 				viewBox: "0 0 24 24"
-			}, [renderSlot(_ctx.$slots, "default")], 8, _hoisted_1$26);
+			}, [renderSlot(_ctx.$slots, "default")], 8, _hoisted_1$27);
 		};
 	}
 });
@@ -582,7 +582,7 @@ var LucideLoader_default = /* @__PURE__ */ defineComponent({
 });
 //#endregion
 //#region src/components/buttons/Button.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1$25 = [
+var _hoisted_1$26 = [
 	"href",
 	"target",
 	"rel",
@@ -757,7 +757,7 @@ var Button_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineCom
 				})) : createCommentVNode("v-if", true),
 				createCommentVNode(" Contenido del botón (label y/o íconos SVG inline) "),
 				renderSlot(_ctx.$slots, "default", {}, void 0, true)
-			], 14, _hoisted_1$25)) : (openBlock(), createElementBlock("button", {
+			], 14, _hoisted_1$26)) : (openBlock(), createElementBlock("button", {
 				key: 1,
 				type: buttonType.value,
 				class: normalizeClass(rootClasses.value),
@@ -793,7 +793,7 @@ var _plugin_vue_export_helper_default = (sfc, props) => {
 var Button_default = /*#__PURE__*/ _plugin_vue_export_helper_default(Button_vue_vue_type_script_setup_true_lang_default, [["styles", [Button_vue_vue_type_style_index_0_inline_scoped_cb9decf8_lang_default]], ["__scopeId", "data-v-cb9decf8"]]);
 //#endregion
 //#region src/components/information/Alert.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1$24 = {
+var _hoisted_1$25 = {
 	key: 0,
 	class: "cu-alert-header"
 };
@@ -919,7 +919,7 @@ var Alert_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 					ref: iconWrap,
 					class: "cu-alert-icon-detect"
 				}, [renderSlot(_ctx.$slots, "icon", {}, void 0, true)], 512),
-				props.title || hasIcon.value ? (openBlock(), createElementBlock("div", _hoisted_1$24, [createElementVNode("div", _hoisted_2$15, [renderSlot(_ctx.$slots, "icon", {}, void 0, true), props.title ? (openBlock(), createElementBlock("span", _hoisted_3$13, toDisplayString(props.title), 1)) : createCommentVNode("v-if", true)]), props.close ? (openBlock(), createElementBlock("button", {
+				props.title || hasIcon.value ? (openBlock(), createElementBlock("div", _hoisted_1$25, [createElementVNode("div", _hoisted_2$15, [renderSlot(_ctx.$slots, "icon", {}, void 0, true), props.title ? (openBlock(), createElementBlock("span", _hoisted_3$13, toDisplayString(props.title), 1)) : createCommentVNode("v-if", true)]), props.close ? (openBlock(), createElementBlock("button", {
 					key: 0,
 					onClick: close,
 					class: "cu-alert-close",
@@ -1016,7 +1016,7 @@ function formatFileSize(bytes) {
 }
 //#endregion
 //#region src/components/form/FileInput.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1$23 = { class: "cu-file-input-wrap" };
+var _hoisted_1$24 = { class: "cu-file-input-wrap" };
 var _hoisted_2$14 = ["onKeydown", "aria-disabled"];
 var _hoisted_3$12 = ["accept"];
 var _hoisted_4$10 = {
@@ -1209,7 +1209,7 @@ var FileInput_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PU
 			trigger
 		});
 		return (_ctx, _cache) => {
-			return openBlock(), createElementBlock("div", _hoisted_1$23, [createElementVNode("div", {
+			return openBlock(), createElementBlock("div", _hoisted_1$24, [createElementVNode("div", {
 				ref: "container",
 				class: normalizeClass(["cu-file-input", [`cu-file-input--${props.variant}`, {
 					"cu-file-input--disabled": props.disabled,
@@ -1294,7 +1294,7 @@ var FileInput_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PU
 }), [["styles", ["\n.cu-file-input {\n  display: flex;\n  align-items: center;\n  gap: var(--cu-space-sm);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius);\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  cursor: pointer;\n  transition: all 200ms ease;\n  width: 100%;\n  box-sizing: border-box;\n  color: var(--input-text);\n}\n\n/* outlined (default) */\n.cu-file-input--outlined {\n  border: var(--cu-border-thin) solid var(--cu-border-color);\n  background-color: var(--cu-color-surface);\n}\n.cu-file-input--outlined:hover:not(.cu-file-input--disabled) {\n  border-color: var(--input-bg);\n  background-color: var(--input-ghost-hover);\n}\n\n/* soft */\n.cu-file-input--soft {\n  border: var(--cu-border-thin) solid transparent;\n  background-color: var(--input-soft);\n}\n.cu-file-input--soft:hover:not(.cu-file-input--disabled) {\n  background-color: var(--input-soft-hover);\n}\n\n/* ghost */\n.cu-file-input--ghost {\n  border: var(--cu-border-thin) solid transparent;\n  background-color: transparent;\n}\n.cu-file-input--ghost:hover:not(.cu-file-input--disabled) {\n  background-color: var(--input-ghost-hover);\n}\n\n/* subtle */\n.cu-file-input--subtle {\n  border: var(--cu-border-thin) solid var(--cu-border-color);\n  background-color: transparent;\n}\n.cu-file-input--subtle:hover:not(.cu-file-input--disabled) {\n  border-color: var(--input-bg);\n  background-color: var(--input-ghost-hover);\n}\n.cu-file-input:focus {\n  outline: none;\n  border-color: var(--input-bg);\n  box-shadow: 0 0 0 var(--cu-border-thin) var(--input-bg);\n}\n.cu-file-input--disabled {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n\n/* Deshabilitado: el nombre del archivo no abre en nueva pestaña. */\n.cu-file-input--disabled .cu-file-input-link {\n  pointer-events: none;\n}\n.cu-file-input--drag-over {\n  border-color: var(--input-bg);\n  background-color: var(--input-ghost-hover);\n}\n.cu-file-input-hidden {\n  display: none;\n}\n.cu-file-input-icon {\n  flex-shrink: 0;\n  opacity: var(--cu-alpha-subtle, 0.6);\n  color: var(--input-text);\n}\n.cu-file-input-placeholder {\n  flex: 1;\n  opacity: var(--cu-alpha-subtle, 0.6);\n  color: var(--input-text);\n}\n.cu-file-input-name {\n  flex: 1;\n  min-width: 0;\n}\n.cu-file-input-link {\n  font-weight: var(--cu-font-weight-medium);\n  color: var(--input-text);\n  text-decoration: none;\n  transition: text-decoration 150ms ease;\n}\n.cu-file-input-link:hover {\n  text-decoration: underline;\n}\n.cu-file-input-size {\n  flex-shrink: 0;\n  opacity: 0.8;\n  font-size: var(--cu-font-size-xs);\n  white-space: nowrap;\n  color: var(--input-text);\n}\n.cu-file-input-remove {\n  padding: var(--cu-space-2xs) !important;\n  min-width: 0 !important;\n  height: auto !important;\n  gap: 0 !important;\n  flex-shrink: 0;\n  opacity: 0.7;\n}\n.cu-file-input-remove:hover {\n  opacity: 1;\n}\n.cu-file-input-wrap {\n  display: flex;\n  flex-direction: column;\n  gap: var(--cu-space-2xs);\n}\n.cu-file-input-reject {\n  margin-top: var(--cu-space-2xs);\n}\n"]]]);
 //#endregion
 //#region src/components/FileList.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1$22 = ["onClick"];
+var _hoisted_1$23 = ["onClick"];
 var _hoisted_2$13 = ["innerHTML"];
 var _hoisted_3$11 = { class: "cu-file-list-name" };
 var _hoisted_4$9 = { class: "cu-file-list-size" };
@@ -1379,14 +1379,14 @@ var FileList_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 						}, [createElementVNode("path", { d: "M18 6 6 18" }), createElementVNode("path", { d: "m6 6 12 12" })], -1)])]),
 						_: 1
 					}, 8, ["color", "onClick"])) : createCommentVNode("v-if", true)
-				], 8, _hoisted_1$22);
+				], 8, _hoisted_1$23);
 			}), 128))], 4)) : createCommentVNode("v-if", true);
 		};
 	}
 }), [["styles", ["\n.cu-file-list {\n  width: 100%;\n}\n.cu-file-list-item {\n  display: flex;\n  align-items: center;\n  gap: var(--cu-space-sm);\n  padding: var(--cu-space-xs) var(--cu-space-md);\n  font-size: var(--cu-font-size-sm);\n  border-radius: var(--cu-radius);\n  cursor: pointer;\n  transition: background-color 150ms ease;\n}\n.cu-file-list-item:hover {\n  background-color: var(--list-ghost-hover);\n}\n.cu-file-list-icon {\n  flex-shrink: 0;\n}\n.cu-file-list-name {\n  flex: 1;\n  min-width: 0;\n  font-weight: var(--cu-font-weight-medium);\n  color: var(--list-text);\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.cu-file-list-size {\n  flex-shrink: 0;\n  opacity: 0.8;\n  font-size: var(--cu-font-size-xs);\n  white-space: nowrap;\n  color: var(--list-text);\n}\n.cu-file-list-remove {\n  padding: var(--cu-space-2xs) !important;\n  min-width: 0 !important;\n  height: auto !important;\n  gap: 0 !important;\n  flex-shrink: 0;\n  opacity: 0.7;\n}\n.cu-file-list-remove:hover {\n  opacity: 1;\n}\n"]]]);
 //#endregion
 //#region src/components/form/FileInputZone.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1$21 = { class: "cu-file-zone-wrap" };
+var _hoisted_1$22 = { class: "cu-file-zone-wrap" };
 var _hoisted_2$12 = ["onKeydown", "aria-disabled"];
 var _hoisted_3$10 = [
 	"accept",
@@ -1662,7 +1662,7 @@ var FileInputZone_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @
 			trigger
 		});
 		return (_ctx, _cache) => {
-			return openBlock(), createElementBlock("div", _hoisted_1$21, [createElementVNode("div", {
+			return openBlock(), createElementBlock("div", _hoisted_1$22, [createElementVNode("div", {
 				ref: "dropZone",
 				class: normalizeClass(["cu-file-zone", {
 					"cu-file-zone--disabled": props.disabled,
@@ -1747,7 +1747,7 @@ var LucideChevronRight_default = /* @__PURE__ */ defineComponent({
 });
 //#endregion
 //#region src/components/overlay/Collapse.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1$20 = { class: "cu-collapse" };
+var _hoisted_1$21 = { class: "cu-collapse" };
 var _hoisted_2$11 = ["innerHTML"];
 var _hoisted_3$9 = { class: "cu-collapse-text" };
 var _hoisted_4$7 = { class: "cu-collapse-label" };
@@ -1859,7 +1859,7 @@ var Collapse_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 			isOpen: () => isOpen.value
 		});
 		return (_ctx, _cache) => {
-			return openBlock(), createElementBlock("div", _hoisted_1$20, [createVNode(Button_default, {
+			return openBlock(), createElementBlock("div", _hoisted_1$21, [createVNode(Button_default, {
 				class: "cu-collapse-trigger",
 				color: props.color,
 				variant: "ghost",
@@ -1900,7 +1900,7 @@ var Collapse_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 }), [["styles", ["\n.cu-collapse[data-v-5cf213b6] {\n  display: flex;\n  flex-direction: column;\n}\n.cu-collapse-trigger[data-v-5cf213b6] {\n  justify-content: flex-start;\n  cursor: pointer;\n}\n.cu-collapse-trigger[data-v-5cf213b6]:disabled {\n  cursor: not-allowed;\n}\n.cu-collapse-chevron[data-v-5cf213b6] {\n  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);\n}\n.cu-collapse-chevron.is-open[data-v-5cf213b6] {\n  transform: rotate(90deg);\n}\n.cu-collapse-text[data-v-5cf213b6] {\n  display: flex;\n  flex-direction: column;\n  align-items: flex-start;\n  min-width: 0;\n  text-align: left;\n}\n.cu-collapse-description[data-v-5cf213b6] {\n  margin: 0;\n  font-size: var(--cu-font-size-xs);\n  font-weight: var(--cu-font-weight-normal);\n  opacity: 0.7;\n}\n.cu-collapse-content[data-v-5cf213b6] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--cu-space-2xs);\n  padding: 0 0 0 var(--cu-space-lg);\n  transition: height 0.25s cubic-bezier(0.4, 0, 0.2, 1);\n}\n"]], ["__scopeId", "data-v-5cf213b6"]]);
 //#endregion
 //#region src/components/information/Loader.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1$19 = { class: "cu-loader" };
+var _hoisted_1$20 = { class: "cu-loader" };
 //#endregion
 //#region src/components/information/Loader.vue
 var Loader_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__ */ defineComponent({
@@ -1929,7 +1929,7 @@ var Loader_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE_
 			"--cu-loader-delay": `${props.delay}ms`
 		}));
 		return (_ctx, _cache) => {
-			return openBlock(), createElementBlock("div", _hoisted_1$19, [createElementVNode("div", {
+			return openBlock(), createElementBlock("div", _hoisted_1$20, [createElementVNode("div", {
 				class: normalizeClass(["cu-loader-bar", `cu-loader-bar--${props.animation}`]),
 				style: normalizeStyle(loaderStyles.value)
 			}, null, 6)]);
@@ -1938,7 +1938,7 @@ var Loader_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE_
 }), [["styles", ["\n.cu-loader[data-v-045244b1] {\n  position: absolute;\n  top: 0;\n  left: 0;\n  right: 0;\n  z-index: 30;\n  overflow: hidden;\n  height: 3px;\n}\n.cu-loader-bar[data-v-045244b1] {\n  position: absolute;\n  top: 0;\n  height: 100%;\n  background: var(--cu-loader-color);\n}\n.cu-loader-bar--loading[data-v-045244b1] {\n  width: 60%;\n  background: linear-gradient(90deg, transparent 0%, var(--cu-loader-color) 50%, transparent 100%);\n  animation: cu-loader-slide-045244b1 1.5s ease-in-out infinite;\n}\n.cu-loader-bar--cooldown[data-v-045244b1] {\n  left: 0;\n  width: 100%;\n  animation: cu-loader-cooldown-045244b1 var(--cu-loader-delay) linear forwards;\n}\n@keyframes cu-loader-slide-045244b1 {\n0% { left: -100%;\n}\n50% { left: 0%;\n}\n100% { left: 100%;\n}\n}\n@keyframes cu-loader-cooldown-045244b1 {\nfrom { width: 100%;\n}\nto { width: 0%;\n}\n}\n"]], ["__scopeId", "data-v-045244b1"]]);
 //#endregion
 //#region src/components/data/Table.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1$18 = { class: "cu-table-scroll" };
+var _hoisted_1$19 = { class: "cu-table-scroll" };
 var _hoisted_2$10 = { class: "cu-table-element" };
 var _hoisted_3$8 = { class: "cu-table-th-content" };
 var _hoisted_4$6 = ["innerHTML"];
@@ -2007,6 +2007,15 @@ var Table_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 			type: Boolean,
 			required: false,
 			default: false
+		},
+		/**
+		* Atributos extra por columna para el `<th>` (ej. `aria-sort` cuando la
+		* columna se ordena). `{ [col.key]: { 'aria-sort': 'ascending' } }`.
+		*/
+		headerAttrs: {
+			type: Object,
+			required: false,
+			default: () => ({})
 		}
 	},
 	setup(__props, { slots: $slots }) {
@@ -2069,17 +2078,17 @@ var Table_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 				key: 0,
 				color: __props.color,
 				animation: "loading"
-			}, null, 8, ["color"])) : createCommentVNode("v-if", true), createElementVNode("div", _hoisted_1$18, [createElementVNode("table", _hoisted_2$10, [
+			}, null, 8, ["color"])) : createCommentVNode("v-if", true), createElementVNode("div", _hoisted_1$19, [createElementVNode("table", _hoisted_2$10, [
 				createElementVNode("thead", null, [createElementVNode("tr", null, [(openBlock(true), createElementBlock(Fragment, null, renderList(tableColumns.value, (col) => {
-					return openBlock(), createElementBlock("th", {
+					return openBlock(), createElementBlock("th", mergeProps({
 						key: col.key,
 						class: "cu-table-th",
-						style: normalizeStyle(thStyleFn(col))
-					}, [renderSlot(_ctx.$slots, `header-${col.key}`, {
+						style: thStyleFn(col)
+					}, { ref_for: true }, props.headerAttrs[col.key] || {}), [renderSlot(_ctx.$slots, `header-${col.key}`, {
 						column: col,
 						color: props.color,
 						variant: props.variant
-					}, () => [createElementVNode("span", _hoisted_3$8, toDisplayString(col.label ?? col.key), 1)], true)], 4);
+					}, () => [createElementVNode("span", _hoisted_3$8, toDisplayString(col.label ?? col.key), 1)], true)], 16);
 				}), 128))])]),
 				createElementVNode("tbody", { class: normalizeClass({ "cu-table-loading": props.loading }) }, [(openBlock(true), createElementBlock(Fragment, null, renderList(props.data, (row, rowIndex) => {
 					return openBlock(), createElementBlock("tr", {
@@ -2128,7 +2137,7 @@ var Table_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 			])])], 6);
 		};
 	}
-}), [["styles", ["\n.cu-table[data-v-8325129c] {\n  position: relative;\n  display: flex;\n  flex-direction: column;\n  max-width: 100%;\n  overflow: hidden;\n}\n.cu-table-scroll[data-v-8325129c] {\n  overflow: auto;\n  border-radius: var(--cu-radius-md);\n  flex: 1;\n}\n.cu-table-element[data-v-8325129c] {\n  width: 100%;\n  border-collapse: collapse;\n}\n.cu-table--outlined .cu-table-scroll[data-v-8325129c] {\n  border: var(--cu-border-medium) solid var(--table-bd);\n}\n.cu-table-th[data-v-8325129c] {\n  text-align: left;\n  padding: var(--cu-space-md);\n  font-family: var(--cu-font-sans);\n  font-weight: var(--cu-font-weight-medium);\n  position: sticky;\n  top: 0;\n  z-index: 20;\n  user-select: none;\n}\n.cu-table .cu-table-th-content[data-v-8325129c] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--cu-space-xs);\n  color: inherit;\n}\n.cu-table-row[data-v-8325129c] {\n  border-bottom: var(--cu-border-thin) solid rgba(0, 0, 0, 0.08);\n  transition: background-color 150ms ease;\n}\n.cu-table--outlined .cu-table-row[data-v-8325129c] {\n  border-bottom-color: var(--table-bd);\n}\n.cu-table-row[data-v-8325129c]:hover {\n  background-color: var(--table-bg-hover);\n}\n.cu-table-row--disabled[data-v-8325129c] {\n  opacity: var(--cu-alpha-muted, 0.5);\n  pointer-events: none;\n}\n.cu-table-row--disabled[data-v-8325129c]:hover {\n  background-color: transparent;\n}\n.cu-table-row[data-v-8325129c]:last-child {\n  border-bottom: none;\n}\n.cu-table-loading[data-v-8325129c] {\n  opacity: var(--cu-alpha-faded, 0.4);\n  pointer-events: none;\n}\n[data-v-8325129c] .cu-table-td {\n  padding: var(--cu-space-md);\n  font-family: var(--cu-font-sans);\n  color: var(--cu-color-neutral-text);\n}\n[data-v-8325129c] .cu-table-td--left { text-align: left;\n}\n[data-v-8325129c] .cu-table-td--center { text-align: center;\n}\n[data-v-8325129c] .cu-table-td--right { text-align: right;\n}\n[data-v-8325129c] .cu-table-empty {\n  padding: var(--cu-space-xl);\n  text-align: center;\n  color: var(--cu-color-neutral-text);\n  opacity: var(--cu-alpha-muted, 0.5);\n  font-style: italic;\n  font-family: var(--cu-font-sans);\n}\n[data-v-8325129c] .cu-table-td--footer {\n  font-weight: var(--cu-font-weight-semibold);\n  border-top: var(--cu-border-medium) solid var(--cu-color-neutral-soft);\n}\n.cu-table tr:last-child td[data-v-8325129c] {\n  border-bottom: none;\n}\n\n/* compact: menos padding en celdas */\n.cu-table--compact .cu-table-th[data-v-8325129c] {\n  padding: var(--cu-space-xs) var(--cu-space-sm);\n}\n.cu-table--compact[data-v-8325129c] .cu-table-td {\n  padding: var(--cu-space-xs) var(--cu-space-sm);\n}\n.cu-table--compact[data-v-8325129c] .cu-table-empty {\n  padding: var(--cu-space-md);\n}\n\n"]], ["__scopeId", "data-v-8325129c"]]);
+}), [["styles", ["\n.cu-table[data-v-8e793034] {\n  position: relative;\n  display: flex;\n  flex-direction: column;\n  max-width: 100%;\n  overflow: hidden;\n}\n.cu-table-scroll[data-v-8e793034] {\n  overflow: auto;\n  border-radius: var(--cu-radius-md);\n  flex: 1;\n}\n.cu-table-element[data-v-8e793034] {\n  width: 100%;\n  border-collapse: collapse;\n}\n.cu-table--outlined .cu-table-scroll[data-v-8e793034] {\n  border: var(--cu-border-medium) solid var(--table-bd);\n}\n.cu-table-th[data-v-8e793034] {\n  text-align: left;\n  padding: var(--cu-space-md);\n  font-family: var(--cu-font-sans);\n  font-weight: var(--cu-font-weight-medium);\n  position: sticky;\n  top: 0;\n  z-index: 20;\n  user-select: none;\n}\n.cu-table .cu-table-th-content[data-v-8e793034] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--cu-space-xs);\n  color: inherit;\n}\n.cu-table-row[data-v-8e793034] {\n  border-bottom: var(--cu-border-thin) solid rgba(0, 0, 0, 0.08);\n  transition: background-color 150ms ease;\n}\n.cu-table--outlined .cu-table-row[data-v-8e793034] {\n  border-bottom-color: var(--table-bd);\n}\n.cu-table-row[data-v-8e793034]:hover {\n  background-color: var(--table-bg-hover);\n}\n.cu-table-row--disabled[data-v-8e793034] {\n  opacity: var(--cu-alpha-muted, 0.5);\n  pointer-events: none;\n}\n.cu-table-row--disabled[data-v-8e793034]:hover {\n  background-color: transparent;\n}\n.cu-table-row[data-v-8e793034]:last-child {\n  border-bottom: none;\n}\n.cu-table-loading[data-v-8e793034] {\n  opacity: var(--cu-alpha-faded, 0.4);\n  pointer-events: none;\n}\n[data-v-8e793034] .cu-table-td {\n  padding: var(--cu-space-md);\n  font-family: var(--cu-font-sans);\n  color: var(--cu-color-neutral-text);\n}\n[data-v-8e793034] .cu-table-td--left { text-align: left;\n}\n[data-v-8e793034] .cu-table-td--center { text-align: center;\n}\n[data-v-8e793034] .cu-table-td--right { text-align: right;\n}\n[data-v-8e793034] .cu-table-empty {\n  padding: var(--cu-space-xl);\n  text-align: center;\n  color: var(--cu-color-neutral-text);\n  opacity: var(--cu-alpha-muted, 0.5);\n  font-style: italic;\n  font-family: var(--cu-font-sans);\n}\n[data-v-8e793034] .cu-table-td--footer {\n  font-weight: var(--cu-font-weight-semibold);\n  border-top: var(--cu-border-medium) solid var(--cu-color-neutral-soft);\n}\n.cu-table tr:last-child td[data-v-8e793034] {\n  border-bottom: none;\n}\n\n/* compact: menos padding en celdas */\n.cu-table--compact .cu-table-th[data-v-8e793034] {\n  padding: var(--cu-space-xs) var(--cu-space-sm);\n}\n.cu-table--compact[data-v-8e793034] .cu-table-td {\n  padding: var(--cu-space-xs) var(--cu-space-sm);\n}\n.cu-table--compact[data-v-8e793034] .cu-table-empty {\n  padding: var(--cu-space-md);\n}\n\n"]], ["__scopeId", "data-v-8e793034"]]);
 //#endregion
 //#region src/utils/textAlign.ts
 /** `text-align` → `justify-content` del bloque de contenido (ícono + label). */
@@ -2150,7 +2159,7 @@ function textAlignStyle(textAlign) {
 }
 //#endregion
 //#region src/components/overlay/Popover.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1$17 = ["role"];
+var _hoisted_1$18 = ["role"];
 var HOVER_REGISTRY_KEY = "__cu_hover_registry__";
 //#endregion
 //#region src/components/overlay/Popover.vue
@@ -2512,13 +2521,13 @@ var Popover_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE
 				style: normalizeStyle(panelStyle.value),
 				class: normalizeClass(["cu-popover-panel", __props.panelClass]),
 				role: __props.role || void 0
-			}, [renderSlot(_ctx.$slots, "default", {}, void 0, true)], 14, _hoisted_1$17)) : createCommentVNode("v-if", true)], 544);
+			}, [renderSlot(_ctx.$slots, "default", {}, void 0, true)], 14, _hoisted_1$18)) : createCommentVNode("v-if", true)], 544);
 		};
 	}
 }), [["styles", ["\n.cu-popover[data-v-50458841] {\n  position: relative;\n  display: inline-block;\n  box-sizing: border-box;\n}\n.cu-popover-panel[data-v-50458841] {\n  padding: var(--cu-space-sm);\n  border-radius: var(--cu-radius-md);\n  font-family: var(--cu-font-sans);\n  box-shadow: var(--cu-shadow-xl);\n}\n"]], ["__scopeId", "data-v-50458841"]]);
 //#endregion
 //#region src/components/overlay/Dropdown.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1$16 = ["onClick"];
+var _hoisted_1$17 = ["onClick"];
 var _hoisted_2$9 = ["innerHTML"];
 var _hoisted_3$7 = { class: "cu-dropdown-menu-item-label" };
 var _hoisted_4$5 = {
@@ -2723,7 +2732,7 @@ var Dropdown_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 						height: 14,
 						class: "cu-dropdown-menu-item-chevron"
 					})
-				], 8, _hoisted_1$16)) : (openBlock(), createBlock(Button_default, {
+				], 8, _hoisted_1$17)) : (openBlock(), createBlock(Button_default, {
 					key: 1,
 					color: __props.color,
 					variant: __props.variant,
@@ -2809,7 +2818,7 @@ var LucideCheck_default = /* @__PURE__ */ defineComponent({
 });
 //#endregion
 //#region src/components/controls/MenuOption.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1$15 = { class: "cu-menu-option-main" };
+var _hoisted_1$16 = { class: "cu-menu-option-main" };
 var _hoisted_2$8 = ["innerHTML"];
 var _hoisted_3$6 = { key: 1 };
 //#endregion
@@ -2885,7 +2894,7 @@ var MenuOption_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__P
 				target: props.target,
 				disabled: props.disabled
 			}, {
-				default: withCtx(() => [createElementVNode("span", _hoisted_1$15, [props.icon ? (openBlock(), createElementBlock("span", {
+				default: withCtx(() => [createElementVNode("span", _hoisted_1$16, [props.icon ? (openBlock(), createElementBlock("span", {
 					key: 0,
 					innerHTML: props.icon,
 					class: normalizeClass(props.iconClass)
@@ -2928,7 +2937,7 @@ function matchesFields(item, q, opts = {}) {
 }
 //#endregion
 //#region src/components/form/Select.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1$14 = {
+var _hoisted_1$15 = {
 	key: 1,
 	class: "cu-select-options"
 };
@@ -3225,7 +3234,7 @@ var Select_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE_
 					class: "cu-select-hidden-input cu-input cu-input--ghost",
 					tabindex: "-1",
 					autocomplete: "off"
-				}, null, 512)) : createCommentVNode("v-if", true), __props.options.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_1$14, [(openBlock(true), createElementBlock(Fragment, null, renderList(__props.options, (opt, i) => {
+				}, null, 512)) : createCommentVNode("v-if", true), __props.options.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_1$15, [(openBlock(true), createElementBlock(Fragment, null, renderList(__props.options, (opt, i) => {
 					return openBlock(), createBlock(MenuOption_default, {
 						key: i,
 						label: opt.label,
@@ -3265,7 +3274,7 @@ var Select_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE_
 }), [["styles", ["\n.cu-select[data-v-9642187d] {\n  width: 100%;\n  outline: none;\n}\n.cu-select[data-v-9642187d] .cu-dropdown {\n  width: 100%;\n}\n.cu-select-toggle[data-v-9642187d] {\n  width: 100%;\n  justify-content: space-between;\n  gap: var(--cu-space-md);\n  box-sizing: border-box;\n}\n\n/* Anillo de focus del trigger (como .cu-input:focus) — focus() enfoca el botón\n   de verdad: visible para el usuario y para teclado */\n.cu-select-toggle[data-v-9642187d]:focus {\n  box-shadow: 0 0 0 var(--cu-border-thin) var(--btn-subtle-border);\n}\n.cu-select--readonly .cu-select-toggle[data-v-9642187d] {\n  cursor: default;\n}\n.cu-select-label[data-v-9642187d] {\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  min-width: 0;\n  /* Ocupa el espacio que deja el chevron: sin esto el `text-align` del label no tiene\n     ancho propio y la alineación no se ve. */\n  flex: 1 1 auto;\n}\n.cu-select-label--wrap[data-v-9642187d] {\n  white-space: normal;\n}\n.cu-select-chevron[data-v-9642187d] {\n  transition: transform 200ms ease;\n  flex-shrink: 0;\n}\n.cu-select-chevron--open[data-v-9642187d] {\n  transform: rotate(180deg);\n}\n.cu-select-options[data-v-9642187d] {\n  max-height: 240px;\n  overflow-y: auto;\n}\n.cu-select-option[data-v-9642187d] {\n  width: 100%;\n  /* La alineación la pone `textAlign` inline (`justify-content`): dentro de un `Button`\n     flex el `text-align` solo no mueve nada. Default: `flex-start`. */\n}\n.cu-select-option--disabled[data-v-9642187d] {\n  opacity: var(--cu-alpha-muted, 0.5);\n  cursor: not-allowed;\n}\n.cu-select-hidden-input[data-v-9642187d] {\n  position: absolute;\n  width: 1px;\n  height: 1px;\n  padding: 0;\n  margin: -1px;\n  overflow: hidden;\n  clip: rect(0, 0, 0, 0);\n  white-space: nowrap;\n  border: 0;\n  opacity: 0;\n}\n.cu-select-empty[data-v-9642187d]{\n  padding: var(--cu-space-md);\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  opacity: var(--cu-alpha-subtle, 0.6);\n  text-align: center;\n}\n"]], ["__scopeId", "data-v-9642187d"]]);
 //#endregion
 //#region src/components/controls/Pagination.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1$13 = {
+var _hoisted_1$14 = {
 	key: 0,
 	class: "cu-pagination"
 };
@@ -3395,7 +3404,7 @@ var Pagination_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__P
 			return pages;
 		});
 		return (_ctx, _cache) => {
-			return __props.totalPages > 1 || __props.showPageSize ? (openBlock(), createElementBlock("div", _hoisted_1$13, [createElementVNode("span", _hoisted_2$6, " Mostrando " + toDisplayString(startItem.value) + " - " + toDisplayString(endItem.value) + " de " + toDisplayString(__props.totalItems), 1), createElementVNode("div", _hoisted_3$5, [__props.showPageSize ? (openBlock(), createElementBlock("div", _hoisted_4$4, [_cache[3] || (_cache[3] = createElementVNode("span", { class: "cu-pagination-label" }, "Por página:", -1)), createVNode(Select_default, {
+			return __props.totalPages > 1 || __props.showPageSize ? (openBlock(), createElementBlock("div", _hoisted_1$14, [createElementVNode("span", _hoisted_2$6, " Mostrando " + toDisplayString(startItem.value) + " - " + toDisplayString(endItem.value) + " de " + toDisplayString(__props.totalItems), 1), createElementVNode("div", _hoisted_3$5, [__props.showPageSize ? (openBlock(), createElementBlock("div", _hoisted_4$4, [_cache[3] || (_cache[3] = createElementVNode("span", { class: "cu-pagination-label" }, "Por página:", -1)), createVNode(Select_default, {
 				"model-value": pageSizeValue.value,
 				options: pageSizeOptionsFormatted.value,
 				color: props.color,
@@ -3453,7 +3462,7 @@ var Pagination_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__P
 }), [["styles", ["\n.cu-pagination[data-v-09434202] {\n  width: 100%;\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--cu-space-md);\n  gap: var(--cu-space-md);\n  box-sizing: border-box;\n}\n.cu-pagination-info[data-v-09434202] {\n  display: none;\n  font-size: var(--cu-font-size-sm);\n  color: var(--cu-color-neutral-text);\n  font-family: var(--cu-font-sans);\n}\n@media (min-width: 768px) {\n.cu-pagination-info[data-v-09434202] {\n    display: inline;\n}\n}\n.cu-pagination-controls[data-v-09434202] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  justify-content: center;\n  gap: var(--cu-space-sm);\n}\n.cu-pagination-page-size[data-v-09434202] {\n  display: flex;\n  align-items: center;\n  gap: var(--cu-space-sm);\n}\n.cu-pagination-label[data-v-09434202] {\n  font-size: var(--cu-font-size-sm);\n  color: var(--cu-color-neutral-text);\n  font-family: var(--cu-font-sans);\n}\n.cu-pagination-pages[data-v-09434202] {\n  display: flex;\n  align-items: center;\n  gap: var(--cu-space-xs);\n}\n.cu-pagination-ellipsis[data-v-09434202] {\n  padding: var(--cu-space-xs) var(--cu-space-sm);\n  color: var(--cu-color-neutral-text);\n  opacity: var(--cu-alpha-muted, 0.5);\n  font-size: var(--cu-font-size-sm);\n  font-family: var(--cu-font-sans);\n}\n"]], ["__scopeId", "data-v-09434202"]]);
 //#endregion
 //#region src/components/form/Input.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1$12 = [
+var _hoisted_1$13 = [
 	"type",
 	"placeholder",
 	"value",
@@ -3560,13 +3569,13 @@ var Input_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 				style: normalizeStyle(inputStyles.value),
 				disabled: props.disabled,
 				readonly: props.readOnly
-			}, null, 46, _hoisted_1$12);
+			}, null, 46, _hoisted_1$13);
 		};
 	}
 }), [["styles", ["\n.cu-input[data-v-416af2a0] {\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  font-weight: var(--cu-font-weight-medium);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius-md);\n  border: none;\n  outline: none;\n  width: 100%;\n  box-sizing: border-box;\n  background-color: var(--btn-bg);\n  color: var(--cu-color-neutral-text);\n  transition: all 150ms ease;\n}\n\n/* sizes */\n.cu-input--sm[data-v-416af2a0] {\n  padding: var(--cu-space-sm) var(--cu-space-md);\n  font-size: var(--cu-font-size-xs);\n}\n.cu-input--lg[data-v-416af2a0] {\n  padding: var(--cu-space-lg) var(--cu-space-xl);\n  font-size: var(--cu-font-size-md);\n}\n.cu-input[data-v-416af2a0]::placeholder {\n  color: var(--cu-color-neutral-text);\n  opacity: var(--cu-alpha-muted, 0.5);\n}\n.cu-input[data-v-416af2a0]:focus {\n  box-shadow: 0 0 0 var(--cu-border-thin) var(--btn-subtle-border);\n}\n\n/* subtle */\n.cu-input--subtle[data-v-416af2a0] {\n  background-color: var(--btn-subtle);\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-input--subtle[data-v-416af2a0]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-subtle-hover);\n}\n\n/* soft */\n.cu-input--soft[data-v-416af2a0] {\n  background-color: var(--btn-soft);\n}\n.cu-input--soft[data-v-416af2a0]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-soft-hover);\n}\n\n/* ghost */\n.cu-input--ghost[data-v-416af2a0] {\n  background-color: transparent;\n}\n.cu-input--ghost[data-v-416af2a0]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-bg-hover);\n}\n\n/* outlined */\n.cu-input--outlined[data-v-416af2a0] {\n  background-color: transparent;\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-input--outlined[data-v-416af2a0]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-bg-hover);\n}\n\n/* disabled */\n.cu-input--disabled[data-v-416af2a0] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n"]], ["__scopeId", "data-v-416af2a0"]]);
 //#endregion
 //#region src/components/form/Textarea.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1$11 = [
+var _hoisted_1$12 = [
 	"placeholder",
 	"value",
 	"disabled",
@@ -3670,7 +3679,7 @@ var Textarea_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 				disabled: props.disabled,
 				readonly: props.readOnly,
 				rows: props.rows
-			}, null, 46, _hoisted_1$11);
+			}, null, 46, _hoisted_1$12);
 		};
 	}
 }), [["styles", ["\n.cu-textarea[data-v-be9976ee] {\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  font-weight: var(--cu-font-weight-medium);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius-md);\n  border: none;\n  outline: none;\n  width: 100%;\n  box-sizing: border-box;\n  background-color: var(--btn-bg);\n  color: var(--cu-color-neutral-text);\n  transition: all 150ms ease;\n  resize: vertical;\n}\n.cu-textarea[data-v-be9976ee]::placeholder {\n  color: var(--cu-color-neutral-text);\n  opacity: var(--cu-alpha-muted, 0.5);\n}\n.cu-textarea[data-v-be9976ee]:focus {\n  box-shadow: 0 0 0 var(--cu-border-thin) var(--btn-subtle-border);\n}\n.cu-textarea--no-resize[data-v-be9976ee] {\n  resize: none;\n}\n\n/* subtle */\n.cu-textarea--subtle[data-v-be9976ee] {\n  background-color: var(--btn-subtle);\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-textarea--subtle[data-v-be9976ee]:hover:not(.cu-textarea--disabled) {\n  background-color: var(--btn-subtle-hover);\n}\n\n/* soft */\n.cu-textarea--soft[data-v-be9976ee] {\n  background-color: var(--btn-soft);\n}\n.cu-textarea--soft[data-v-be9976ee]:hover:not(.cu-textarea--disabled) {\n  background-color: var(--btn-soft-hover);\n}\n\n/* ghost */\n.cu-textarea--ghost[data-v-be9976ee] {\n  background-color: transparent;\n}\n.cu-textarea--ghost[data-v-be9976ee]:hover:not(.cu-textarea--disabled) {\n  background-color: var(--btn-bg-hover);\n}\n\n/* outlined */\n.cu-textarea--outlined[data-v-be9976ee] {\n  background-color: transparent;\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-textarea--outlined[data-v-be9976ee]:hover:not(.cu-textarea--disabled) {\n  background-color: var(--btn-bg-hover);\n}\n\n/* disabled */\n.cu-textarea--disabled[data-v-be9976ee] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n"]], ["__scopeId", "data-v-be9976ee"]]);
@@ -3708,7 +3717,7 @@ function useSearch(data, options) {
 }
 //#endregion
 //#region src/components/form/Autocomplete.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1$10 = {
+var _hoisted_1$11 = {
 	key: 0,
 	class: "cu-autocomplete-options"
 };
@@ -3951,7 +3960,7 @@ var Autocomplete_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @_
 					"type",
 					"style"
 				])]),
-				default: withCtx(() => [filteredItems.value.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_1$10, [(openBlock(true), createElementBlock(Fragment, null, renderList(filteredItems.value, (item, i) => {
+				default: withCtx(() => [filteredItems.value.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_1$11, [(openBlock(true), createElementBlock(Fragment, null, renderList(filteredItems.value, (item, i) => {
 					return openBlock(), createBlock(MenuOption_default, {
 						key: i,
 						label: item.label,
@@ -4102,7 +4111,7 @@ var Badge_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 }), [["styles", ["\n.cu-badge[data-v-72234801] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: var(--cu-space-xs);\n  padding: var(--cu-space-2xs) var(--cu-space-sm);\n  border-radius: var(--cu-radius);\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-xs);\n  font-weight: var(--cu-font-weight-medium);\n  line-height: var(--cu-line-height-tight);\n  white-space: nowrap;\n  box-sizing: border-box;\n  border: var(--cu-border-thin) solid transparent;\n}\n\n/* solid */\n.cu-badge.cu-badge--solid[data-v-72234801] {\n  background-color: var(--badge-solid);\n  color: var(--badge-solid-text);\n}\n\n/* soft */\n.cu-badge.cu-badge--soft[data-v-72234801] {\n  background-color: var(--badge-soft);\n  color: var(--badge-text);\n}\n\n/* ghost */\n.cu-badge.cu-badge--ghost[data-v-72234801] {\n  background-color: transparent;\n  color: var(--badge-text);\n}\n\n/* subtle */\n.cu-badge.cu-badge--subtle[data-v-72234801] {\n  background-color: var(--badge-subtle);\n  color: var(--badge-text);\n  border-color: var(--badge-subtle-border);\n}\n\n/* outlined */\n.cu-badge.cu-badge--outlined[data-v-72234801] {\n  background-color: transparent;\n  color: var(--badge-text);\n  border-color: var(--badge-border);\n}\n"]], ["__scopeId", "data-v-72234801"]]);
 //#endregion
 //#region src/components/controls/month-slider/MonthSliderLabel.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1$9 = [
+var _hoisted_1$10 = [
 	"role",
 	"tabindex",
 	"aria-label"
@@ -4238,7 +4247,7 @@ var MonthSliderLabel_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/
 			}, {
 				default: withCtx(() => [createTextVNode(toDisplayString(props.year), 1)]),
 				_: 1
-			}, 8, ["color", "variant"])) : createCommentVNode("v-if", true)], 46, _hoisted_1$9);
+			}, 8, ["color", "variant"])) : createCommentVNode("v-if", true)], 46, _hoisted_1$10);
 		};
 	}
 }), [["styles", ["\n.cu-month-slider-label[data-v-8e08944d] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--cu-space-xs);\n  min-width: 150px;\n  justify-content: center;\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius);\n  border: var(--cu-border-none) solid transparent;\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-md);\n  font-weight: var(--cu-font-weight-semibold);\n  cursor: default;\n  user-select: none;\n  touch-action: pan-y;\n  transform: translateX(var(--drag-offset, 0px));\n  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.25s ease, color 0.25s ease;\n  will-change: transform;\n}\n\n/* solid: doble clase para ganarle a reglas globales del consumidor (convención del repo) */\n.cu-month-slider-label.cu-month-slider-label--solid[data-v-8e08944d] {\n  background-color: var(--ms-accent);\n  color: var(--ms-surface);\n}\n.cu-month-slider-label.cu-month-slider-label--solid[data-v-8e08944d]:hover {\n  background-color: var(--ms-accent-hover);\n}\n\n/* outlined */\n.cu-month-slider-label.cu-month-slider-label--outlined[data-v-8e08944d] {\n  background-color: transparent;\n  color: var(--ms-accent);\n  border: var(--cu-border-thin) solid var(--ms-accent);\n}\n.cu-month-slider-label.cu-month-slider-label--outlined[data-v-8e08944d]:hover {\n  background-color: var(--ms-ghost-hover);\n}\n\n/* soft (default) */\n.cu-month-slider-label.cu-month-slider-label--soft[data-v-8e08944d] {\n  background-color: var(--ms-soft);\n  color: var(--ms-accent);\n}\n.cu-month-slider-label.cu-month-slider-label--soft[data-v-8e08944d]:hover {\n  background-color: var(--ms-soft-hover);\n}\n\n/* ghost */\n.cu-month-slider-label.cu-month-slider-label--ghost[data-v-8e08944d] {\n  background-color: transparent;\n  color: var(--ms-accent);\n}\n.cu-month-slider-label.cu-month-slider-label--ghost[data-v-8e08944d]:hover {\n  background-color: var(--ms-ghost-hover);\n}\n\n/* subtle */\n.cu-month-slider-label.cu-month-slider-label--subtle[data-v-8e08944d] {\n  background-color: var(--ms-subtle);\n  color: var(--ms-accent);\n  border: var(--cu-border-thin) solid var(--ms-subtle-border);\n}\n.cu-month-slider-label.cu-month-slider-label--subtle[data-v-8e08944d]:hover {\n  background-color: var(--ms-subtle-hover);\n}\n\n/* El texto del mes lleva color explícito (inherit del root) con especificidad\n   suficiente para ganarle a reglas globales del consumidor tipo\n   `.playground :is(h1, ..., span, ...) { color: ... }` que pegan en spans internos.\n   La clase scoped [data-v] sube la regla a (0,3,0). */\n.cu-month-slider-label .cu-month-slider-label-month[data-v-8e08944d] {\n  color: inherit;\n}\n\n/* Sobre label solid, el badge del año (variante subtle) se pierde: el tinte\n   translúcido sobre el fondo solid oscuro no aporta contraste y el texto\n   (`--cu-color-{name}-text` = color oscurecido) queda casi negro e imperceptible.\n   Se invierte el badge: fondo = surface (color del texto del label) + texto = accent\n   (color del solid). Specificity (0,4,0) > `.cu-badge.cu-badge--subtle` (0,3,0). */\n.cu-month-slider-label.cu-month-slider-label--solid .cu-month-slider-label-year[data-v-8e08944d] {\n  background-color: var(--ms-surface);\n  color: var(--ms-accent);\n}\n.cu-month-slider-label.is-draggable[data-v-8e08944d] {\n  cursor: grab;\n}\n.cu-month-slider-label.is-dragging[data-v-8e08944d] {\n  cursor: grabbing;\n  transition: none;\n}\n\n/* Al consumir la deslizada, el label vuelve con un rebote suave */\n.cu-month-slider-label.is-fired[data-v-8e08944d] {\n  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);\n}\n.cu-month-slider-label.is-disabled[data-v-8e08944d] {\n  cursor: not-allowed;\n  opacity: 0.6;\n}\n.cu-month-slider-label[data-v-8e08944d]:focus-visible {\n  outline: var(--cu-border-thin) solid var(--ms-accent);\n  outline-offset: var(--cu-space-2xs);\n}\n\n/* Entrada suave del texto al cambiar el mes (key en el span lo re-monta) */\n.cu-month-slider-label-month[data-v-8e08944d],\n.cu-month-slider-label-year[data-v-8e08944d] {\n  animation: cu-month-slide-in-8e08944d 0.28s cubic-bezier(0.22, 1, 0.36, 1);\n}\n@keyframes cu-month-slide-in-8e08944d {\nfrom {\n    opacity: 0;\n    transform: translateY(5px);\n}\nto {\n    opacity: 1;\n    transform: translateY(0);\n}\n}\n"]], ["__scopeId", "data-v-8e08944d"]]);
@@ -4366,7 +4375,7 @@ function formatDate(date, format, locale = "es", options = {}) {
 }
 //#endregion
 //#region src/components/controls/MonthSlider.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1$8 = ["aria-label"];
+var _hoisted_1$9 = ["aria-label"];
 var ariaYearPrev = "Ir al año anterior";
 var ariaMonthPrev = "Ir al mes anterior";
 var ariaMonthNext = "Ir al mes siguiente";
@@ -4608,7 +4617,7 @@ var MonthSlider_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__
 					})]),
 					_: 1
 				}, 8, ["color", "disabled"])) : createCommentVNode("v-if", true)
-			], 14, _hoisted_1$8);
+			], 14, _hoisted_1$9);
 		};
 	}
 }), [["styles", ["\n.cu-month-slider[data-v-ed7dba25] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--cu-space-2xs);\n  font-family: var(--cu-font-sans);\n}\n.cu-month-slider.is-disabled[data-v-ed7dba25] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n"]], ["__scopeId", "data-v-ed7dba25"]]);
@@ -4680,7 +4689,7 @@ function useDateRange(options = {}) {
 }
 //#endregion
 //#region src/components/controls/Calendar.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1$7 = ["aria-label"];
+var _hoisted_1$8 = ["aria-label"];
 var _hoisted_2$5 = { class: "cu-calendar-header" };
 var _hoisted_3$4 = {
 	class: "cu-calendar-weekdays",
@@ -5100,13 +5109,13 @@ var Calendar_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 						}), 128))])) : createCommentVNode("v-if", true)], 10, _hoisted_5$2)) : (openBlock(), createElementBlock("span", _hoisted_7$2))], 64);
 					}), 128))]);
 				}), 128))])
-			], 14, _hoisted_1$7);
+			], 14, _hoisted_1$8);
 		};
 	}
 }), [["styles", ["\n.cu-calendar[data-v-46d32125] {\n  display: inline-flex;\n  flex-direction: column;\n  gap: var(--cu-space-sm);\n  width: 100%;\n  min-width: 240px;\n  font-family: var(--cu-font-sans);\n  box-sizing: border-box;\n}\n\n/* Con navegación de año (4 botones del MonthSlider + label min 150px) el header\n   necesita más ancho que la grilla: forzamos min-width para evitar overflow. */\n.cu-calendar--year-nav[data-v-46d32125] {\n  min-width: 330px;\n}\n.cu-calendar.is-disabled[data-v-46d32125] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n}\n.cu-calendar-header[data-v-46d32125] {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  gap: var(--cu-space-2xs);\n}\n\n/* 7 columnas: cada una ocupa 1/7 del ancho que mida el contenedor */\n.cu-calendar-weekdays[data-v-46d32125],\n.cu-calendar-week[data-v-46d32125] {\n  display: grid;\n  grid-template-columns: repeat(7, 1fr);\n  gap: var(--cu-space-2xs);\n}\n.cu-calendar-weekday[data-v-46d32125] {\n  text-align: center;\n  font-size: var(--cu-font-size-xs);\n  font-weight: var(--cu-font-weight-medium);\n  opacity: var(--cu-alpha-subtle, 0.6);\n  padding: var(--cu-space-2xs) 0;\n}\n.cu-calendar-day[data-v-46d32125] {\n  aspect-ratio: 1;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  border: none;\n  border-radius: var(--cu-radius-sm);\n  background: transparent;\n  color: inherit;\n  font-family: inherit;\n  font-size: var(--cu-font-size-sm);\n  cursor: pointer;\n  transition: background-color 150ms ease, color 150ms ease;\n  box-sizing: border-box;\n}\n\n/* Doble clase (convención del repo): ganarle en cascada a reglas globales\n   del consumidor (reset CSS, `.playground button`, etc.) */\n.cu-calendar-day.cu-calendar-day[data-v-46d32125]:hover:not(:disabled) {\n  background: var(--cal-ghost-hover);\n}\n.cu-calendar-day.cu-calendar-day[data-v-46d32125]:disabled {\n  opacity: 0.35;\n  cursor: not-allowed;\n}\n\n/* Hoy: transparente + número en color accent (look ghost). Sin fondo para no\n   confundirse con el día seleccionado — se distingue solo por el color. */\n.cu-calendar-day.cu-calendar-day--today[data-v-46d32125] {\n  background: transparent;\n  color: var(--cal-accent-text);\n  font-weight: var(--cu-font-weight-semibold);\n}\n\n/* Variantes del día seleccionado */\n.cu-calendar-day--selected.cu-calendar-day--solid[data-v-46d32125] {\n  background: var(--cal-solid);\n  /* Solid mantiene el texto del tema sobre la variante de fondo ajustada. */\n  color: var(--cal-solid-text);\n}\n.cu-calendar-day--selected.cu-calendar-day--solid[data-v-46d32125]:hover:not(:disabled) {\n  background: var(--cal-solid-hover);\n}\n.cu-calendar-day--selected.cu-calendar-day--outlined[data-v-46d32125] {\n  outline: 1.5px solid var(--cal-accent-border);\n  color: var(--cal-accent-text);\n}\n.cu-calendar-day--selected.cu-calendar-day--soft[data-v-46d32125] {\n  background: var(--cal-soft);\n  color: var(--cal-accent-text);\n}\n.cu-calendar-day--selected.cu-calendar-day--soft[data-v-46d32125]:hover:not(:disabled) {\n  background: var(--cal-soft-hover);\n}\n.cu-calendar-day--selected.cu-calendar-day--subtle[data-v-46d32125] {\n  background: var(--cal-subtle);\n  color: var(--cal-accent-text);\n  box-shadow: inset 0 0 0 var(--cu-border-thin) var(--cal-subtle-border);\n}\n.cu-calendar-day--empty[data-v-46d32125] {\n  aspect-ratio: 1;\n}\n\n/* ── Grid interno: líneas separadoras entre días ── */\n.cu-calendar--grid .cu-calendar-weekdays[data-v-46d32125],\n.cu-calendar--grid .cu-calendar-week[data-v-46d32125] {\n  gap: 0;\n}\n.cu-calendar--grid .cu-calendar-day[data-v-46d32125],\n.cu-calendar--grid .cu-calendar-day--empty[data-v-46d32125] {\n  border-right: var(--cu-border-thin) solid var(--cu-border-color);\n  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);\n  border-radius: 0;\n}\n.cu-calendar--grid .cu-calendar-week:last-child .cu-calendar-day[data-v-46d32125],\n.cu-calendar--grid .cu-calendar-week:last-child .cu-calendar-day--empty[data-v-46d32125] {\n  border-bottom: none;\n}\n.cu-calendar--grid .cu-calendar-day[data-v-46d32125]:nth-child(7n),\n.cu-calendar--grid .cu-calendar-day--empty[data-v-46d32125]:nth-child(7n) {\n  border-right: none;\n}\n\n/* ── Borde exterior: marco alrededor de la cuadrícula de días ── */\n.cu-calendar--border .cu-calendar-grid[data-v-46d32125] {\n  border: var(--cu-border-thin) solid var(--cu-border-color);\n  border-radius: var(--cu-radius-sm);\n  overflow: hidden;\n}\n\n/* ── Rango ── */\n.cu-calendar-day.cu-calendar-day--range[data-v-46d32125] {\n  background: var(--cal-soft);\n  border-radius: 0;\n}\n.cu-calendar-day.cu-calendar-day--range-start[data-v-46d32125] {\n  background: var(--cal-solid);\n  color: var(--cal-solid-text);\n  border-radius: var(--cu-radius-sm) 0 0 var(--cu-radius-sm);\n}\n.cu-calendar-day.cu-calendar-day--range-end[data-v-46d32125] {\n  background: var(--cal-solid);\n  color: var(--cal-solid-text);\n  border-radius: 0 var(--cu-radius-sm) var(--cu-radius-sm) 0;\n}\n.cu-calendar-day--range-start.cu-calendar-day--range-end[data-v-46d32125] {\n  border-radius: var(--cu-radius-sm);\n}\n\n/* ── Puntos de eventos ── */\n.cu-calendar-day[data-v-46d32125] {\n  position: relative;\n}\n.cu-calendar-dots[data-v-46d32125] {\n  position: absolute;\n  bottom: var(--cu-space-2xs);\n  left: 50%;\n  transform: translateX(-50%);\n  display: flex;\n  gap: var(--cu-space-2xs);\n  align-items: center;\n  justify-content: center;\n  pointer-events: none;\n}\n.cu-calendar-dot[data-v-46d32125] {\n  width: var(--cu-space-xs);\n  height: var(--cu-space-xs);\n  border-radius: 50%;\n  background: var(--dot-color, var(--cal-accent));\n  display: block;\n}\n"]], ["__scopeId", "data-v-46d32125"]]);
 //#endregion
 //#region src/components/controls/DualCalendar.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1$6 = { class: "cu-dual-calendar" };
+var _hoisted_1$7 = { class: "cu-dual-calendar" };
 //#endregion
 //#region src/components/controls/DualCalendar.vue
 var DualCalendar_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__ */ defineComponent({
@@ -5276,7 +5285,7 @@ var DualCalendar_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @_
 			clear
 		});
 		return (_ctx, _cache) => {
-			return openBlock(), createElementBlock("div", _hoisted_1$6, [createVNode(Calendar_default, {
+			return openBlock(), createElementBlock("div", _hoisted_1$7, [createVNode(Calendar_default, {
 				mode: "range",
 				"view-month": firstMonth.value,
 				"range-start": rangeStart.value,
@@ -5370,7 +5379,7 @@ var DualCalendar_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @_
 }), [["styles", ["\n.cu-dual-calendar[data-v-8e01a709] {\n  display: flex;\n  flex-direction: row;\n  gap: var(--cu-space-md);\n}\n.cu-dual-calendar[data-v-8e01a709] .cu-calendar {\n  flex: 1;\n  min-width: 0;\n}\n"]], ["__scopeId", "data-v-8e01a709"]]);
 //#endregion
 //#region src/components/form/Label.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1$5 = ["for"];
+var _hoisted_1$6 = ["for"];
 var _hoisted_2$4 = {
 	key: 0,
 	class: "cu-label-text"
@@ -5449,13 +5458,13 @@ var Label_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 				style: normalizeStyle(colorStyles.value),
 				class: "cu-label",
 				onClick: handleClick
-			}, [props.label ? (openBlock(), createElementBlock("span", _hoisted_2$4, toDisplayString(props.label), 1)) : createCommentVNode("v-if", true), renderSlot(_ctx.$slots, "default", {}, void 0, true)], 12, _hoisted_1$5);
+			}, [props.label ? (openBlock(), createElementBlock("span", _hoisted_2$4, toDisplayString(props.label), 1)) : createCommentVNode("v-if", true), renderSlot(_ctx.$slots, "default", {}, void 0, true)], 12, _hoisted_1$6);
 		};
 	}
 }), [["styles", ["\n.cu-label[data-v-5a2501c1] {\n  display: inline-flex;\n  flex-direction: column;\n  gap: var(--cu-space-xs);\n  font-family: var(--cu-font-sans);\n}\n.cu-label-text[data-v-5a2501c1] {\n  width: fit-content;\n  cursor: pointer;\n  font-family: var(--cu-font-sans);\n}\n\n/* Clases duplicadas a propósito: le ganan a las reglas globales del\n   consumidor que fuerzan color en label/span (p. ej. el playground:\n   `.playground :is(..., span, label)` → (0,2,1)). Scoped compila a (0,3,0). */\n.cu-label.cu-label[data-v-5a2501c1],\n.cu-label-text.cu-label-text[data-v-5a2501c1] {\n  color: var(--label-fg);\n}\n"]], ["__scopeId", "data-v-5a2501c1"]]);
 //#endregion
 //#region src/components/form/DatePicker.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1$4 = { class: "cu-date-picker" };
+var _hoisted_1$5 = { class: "cu-date-picker" };
 var _hoisted_2$3 = { class: "cu-date-picker-label" };
 var _hoisted_3$3 = { class: "cu-date-picker-panel" };
 var _hoisted_4$2 = {
@@ -5889,7 +5898,7 @@ var DatePicker_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__P
 			isOpen: () => dropdownRef.value?.isOpen() ?? false
 		});
 		return (_ctx, _cache) => {
-			return openBlock(), createElementBlock("div", _hoisted_1$4, [__props.label ? (openBlock(), createBlock(Label_default, {
+			return openBlock(), createElementBlock("div", _hoisted_1$5, [__props.label ? (openBlock(), createBlock(Label_default, {
 				key: 0,
 				label: __props.label,
 				onClick: onLabelClick
@@ -6112,7 +6121,7 @@ var DatePicker_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__P
 }), [["styles", ["\n.cu-date-picker[data-v-66f03622] {\n  width: 100%;\n  outline: none;\n  display: flex;\n  flex-direction: column;\n  gap: var(--cu-space-sm);\n}\n.cu-date-picker[data-v-66f03622] .cu-dropdown {\n  width: 100%;\n}\n.cu-date-picker-toggle[data-v-66f03622] {\n  width: 100%;\n  justify-content: space-between;\n  gap: var(--cu-space-md);\n  box-sizing: border-box;\n}\n.cu-date-picker-icon[data-v-66f03622] {\n  flex-shrink: 0;\n}\n.cu-date-picker-label[data-v-66f03622] {\n  flex: 1;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  min-width: 0;\n  text-align: left;\n}\n.cu-date-picker-chevron[data-v-66f03622] {\n  transition: transform 200ms ease;\n  flex-shrink: 0;\n}\n.cu-date-picker-panel[data-v-66f03622] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--cu-space-sm);\n}\n.cu-date-picker-footer[data-v-66f03622] {\n  display: flex;\n  justify-content: space-between;\n  gap: var(--cu-space-sm);\n  border-top: var(--cu-border-thin) solid var(--cu-border-color);\n  padding-top: var(--cu-space-sm);\n}\n.cu-date-picker-footer-btn[data-v-66f03622] {\n  font-size: var(--cu-font-size-xs);\n}\n"]], ["__scopeId", "data-v-66f03622"]]);
 //#endregion
 //#region src/components/form/Switch.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1$3 = ["aria-checked"];
+var _hoisted_1$4 = ["aria-checked"];
 var _hoisted_2$2 = ["checked", "disabled"];
 var _hoisted_3$2 = {
 	key: 0,
@@ -6216,10 +6225,17 @@ var Switch_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE_
 				tabindex: "-1",
 				class: "cu-switch-input",
 				onChange: onInput
-			}, null, 40, _hoisted_2$2)], 14, _hoisted_1$3), props.label || $slots.default ? (openBlock(), createElementBlock("span", _hoisted_3$2, [renderSlot(_ctx.$slots, "default", {}, () => [createTextVNode(toDisplayString(props.label), 1)])])) : createCommentVNode("v-if", true)], 2);
+			}, null, 40, _hoisted_2$2)], 14, _hoisted_1$4), props.label || $slots.default ? (openBlock(), createElementBlock("span", _hoisted_3$2, [renderSlot(_ctx.$slots, "default", {}, () => [createTextVNode(toDisplayString(props.label), 1)])])) : createCommentVNode("v-if", true)], 2);
 		};
 	}
 }), [["styles", ["\n/* label nativo (misma implementación que Checkbox): el click en el label\n   activa el input anidado y su change alterna */\n.cu-switch {\n  position: relative;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--cu-space-sm);\n  vertical-align: middle;\n  cursor: pointer;\n}\n\n/* `labelPosition`: el track va primero en el DOM y el label después. Con\n   `row-reverse` el label queda a la izquierda sin cambiar el markup: el <label>\n   nativo sigue envolviendo a los dos y el click en la etiqueta alterna igual.\n   El `gap` se mantiene entre ambos y el label conserva su ancho intrínseco. */\n.cu-switch--label-end {\n  flex-direction: row;\n}\n.cu-switch--label-start {\n  flex-direction: row-reverse;\n}\n.cu-switch-track {\n  position: relative;\n  display: inline-flex;\n  align-items: center;\n  border-radius: var(--cu-radius-full);\n  transition: all 150ms ease;\n  box-sizing: border-box;\n}\n.cu-switch--md .cu-switch-track {\n  width: var(--cu-space-3xl);\n  height: var(--cu-space-2xl);\n}\n.cu-switch--sm .cu-switch-track {\n  width: var(--cu-space-2xl);\n  height: var(--cu-space-xl);\n}\n.cu-switch-track.cu-switch--checked {\n  background-color: var(--switch-bg);\n}\n.cu-switch-track:not(.cu-switch--checked) {\n  background-color: var(--cu-color-neutral-soft);\n}\n\n/* Encendido: el track es sólido, así que el hover/active son las variantes sólidas\n   del color (un poco más oscuro / claro), no las `ghost` translúcidas. */\n.cu-switch-track.cu-switch--checked:hover {\n  background-color: var(--switch-hover);\n}\n.cu-switch-track.cu-switch--checked:active {\n  background-color: var(--switch-active);\n}\n.cu-switch-track:not(.cu-switch--checked):hover {\n  background-color: var(--cu-color-neutral-ghost-hover);\n}\n.cu-switch--disabled {\n  cursor: not-allowed;\n}\n.cu-switch--disabled .cu-switch-track {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  pointer-events: none;\n}\n.cu-switch--disabled .cu-switch-label {\n  opacity: var(--cu-alpha-disabled, 0.7);\n}\n.cu-switch-thumb {\n  position: absolute;\n  border-radius: var(--cu-radius-full);\n  background-color: var(--cu-color-surface);\n  box-shadow: var(--cu-shadow-sm);\n  transition: all 150ms ease;\n}\n.cu-switch--md .cu-switch-thumb {\n  width: var(--cu-space-xl);\n  height: var(--cu-space-xl);\n  top: var(--cu-space-xs);\n  left: var(--cu-space-xs);\n}\n.cu-switch--sm .cu-switch-thumb {\n  width: var(--cu-space-lg);\n  height: var(--cu-space-lg);\n  top: calc((var(--cu-space-xl) - var(--cu-space-lg)) / 2);\n  left: calc((var(--cu-space-xl) - var(--cu-space-lg)) / 2);\n}\n.cu-switch--md .cu-switch-track.cu-switch--checked .cu-switch-thumb {\n  transform: translateX(16px);\n}\n.cu-switch--sm .cu-switch-track.cu-switch--checked .cu-switch-thumb {\n  transform: translateX(8px);\n}\n.cu-switch-input {\n  position: absolute;\n  opacity: 0;\n  width: 0;\n  height: 0;\n}\n.cu-switch-label {\n  font-family: var(--cu-font-sans);\n  color: var(--cu-color-neutral);\n}\n.cu-switch--md .cu-switch-label {\n  font-size: var(--cu-font-size-sm);\n}\n.cu-switch--sm .cu-switch-label {\n  font-size: var(--cu-font-size-xs);\n}\n"]]]);
+//#endregion
+//#region src/components/data/EditableTableCell.vue?vue&type=script&setup=true&lang.ts
+var _hoisted_1$3 = [
+	"role",
+	"tabindex",
+	"onKeydown"
+];
 //#endregion
 //#region src/components/data/EditableTableCell.vue
 var EditableTableCell_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__ */ defineComponent({
@@ -6318,7 +6334,7 @@ var EditableTableCell_default = /*#__PURE__*/ _plugin_vue_export_helper_default(
 			if (saving.value) return;
 			let isValid = true;
 			const value = editValue.value;
-			if (props.column.editable instanceof RegExp && !props.column.editable.test(value)) isValid = false;
+			if (props.column.editable instanceof RegExp && !testRegExp(props.column.editable, value)) isValid = false;
 			if (isValid && props.column.validator && !props.column.validator(value, props.row)) isValid = false;
 			if (!isValid) {
 				emit("edit-error", {
@@ -6347,8 +6363,18 @@ var EditableTableCell_default = /*#__PURE__*/ _plugin_vue_export_helper_default(
 				column: props.column,
 				index: props.index
 			});
+			saving.value = true;
+			nextTick(() => {
+				saving.value = false;
+			});
 			if (inlineEdit.value) editValue.value = props.value != null ? String(props.value) : "";
 			else isEditing.value = false;
+		};
+		const testRegExp = (pattern, value) => {
+			pattern.lastIndex = 0;
+			const matches = pattern.test(value);
+			pattern.lastIndex = 0;
+			return matches;
 		};
 		const onDateChange = (d) => {
 			if (!d) return;
@@ -6614,7 +6640,10 @@ var EditableTableCell_default = /*#__PURE__*/ _plugin_vue_export_helper_default(
 			]))], 64)) : (openBlock(), createElementBlock("span", {
 				key: 1,
 				class: normalizeClass(["cu-editable-cell-view", { "cu-editable-cell-view--disabled": !canEdit.value }]),
-				title: "Click to edit"
+				role: canEdit.value ? "button" : void 0,
+				tabindex: canEdit.value ? 0 : void 0,
+				title: "Click to edit",
+				onKeydown: [withKeys(withModifiers(startEditing, ["prevent"]), ["enter"]), withKeys(withModifiers(startEditing, ["prevent"]), ["space"])]
 			}, [(openBlock(), createElementBlock("svg", {
 				xmlns: "http://www.w3.org/2000/svg",
 				width: "16",
@@ -6626,10 +6655,10 @@ var EditableTableCell_default = /*#__PURE__*/ _plugin_vue_export_helper_default(
 				"stroke-linecap": "round",
 				"stroke-linejoin": "round",
 				class: normalizeClass(["cu-editable-cell-icon", validationClass.value])
-			}, [..._cache[8] || (_cache[8] = [createElementVNode("path", { d: "M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" }, null, -1), createElementVNode("path", { d: "m15 5 4 4" }, null, -1)])], 2)), createTextVNode(" " + toDisplayString(displayValue.value), 1)], 2))], 38);
+			}, [..._cache[8] || (_cache[8] = [createElementVNode("path", { d: "M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" }, null, -1), createElementVNode("path", { d: "m15 5 4 4" }, null, -1)])], 2)), createTextVNode(" " + toDisplayString(displayValue.value), 1)], 42, _hoisted_1$3))], 38);
 		};
 	}
-}), [["styles", ["\n.cu-editable-cell[data-v-4ea71eb5] {\n  cursor: pointer;\n}\n\n/* La celda no apila opacidad: si lo hiciera, se multiplicaría con la del campo\n   interno y quedaría más apagada que un input disabled vecino. El tono lo pone\n   una sola vez la vista (--cu-alpha-faded) o el editor que se renderice. */\n.cu-editable-cell--disabled[data-v-4ea71eb5] {\n  cursor: not-allowed;\n}\n.cu-editable-cell-input[data-v-4ea71eb5] {\n  width: 100%;\n}\n\n/* Sin width: el switch conserva su tamaño natural (cu-switch--md/--sm) y NO se\n   estira a la celda. El centrado/alineación lo hace text-align del contenedor\n   (editorAlignStyle). fit-content NO se usa: colapsa el track a 0px porque el\n   thumb está position:absolute (sin contenido in-flow) y el switch queda en blanco. */\n.cu-editable-cell-view[data-v-4ea71eb5] {\n  display: flex;\n  align-items: flex-start;\n  gap: var(--cu-space-sm);\n  white-space: pre-line;\n}\n.cu-editable-cell-view--disabled[data-v-4ea71eb5] {\n  opacity: var(--cu-alpha-faded, 0.4);\n}\n.cu-editable-cell-icon[data-v-4ea71eb5] {\n  flex-shrink: 0;\n}\n.cu-editable-cell--success[data-v-4ea71eb5] {\n  color: var(--cu-color-success);\n}\n.cu-editable-cell--error[data-v-4ea71eb5] {\n  color: var(--cu-color-danger);\n}\n"]], ["__scopeId", "data-v-4ea71eb5"]]);
+}), [["styles", ["\n.cu-editable-cell[data-v-864bbbcb] {\n  cursor: pointer;\n}\n\n/* La celda no apila opacidad: si lo hiciera, se multiplicaría con la del campo\n   interno y quedaría más apagada que un input disabled vecino. El tono lo pone\n   una sola vez la vista (--cu-alpha-faded) o el editor que se renderice. */\n.cu-editable-cell--disabled[data-v-864bbbcb] {\n  cursor: not-allowed;\n}\n.cu-editable-cell-input[data-v-864bbbcb] {\n  width: 100%;\n}\n\n/* Sin width: el switch conserva su tamaño natural (cu-switch--md/--sm) y NO se\n   estira a la celda. El centrado/alineación lo hace text-align del contenedor\n   (editorAlignStyle). fit-content NO se usa: colapsa el track a 0px porque el\n   thumb está position:absolute (sin contenido in-flow) y el switch queda en blanco. */\n.cu-editable-cell-view[data-v-864bbbcb] {\n  display: flex;\n  align-items: flex-start;\n  gap: var(--cu-space-sm);\n  white-space: pre-line;\n}\n.cu-editable-cell-view--disabled[data-v-864bbbcb] {\n  opacity: var(--cu-alpha-faded, 0.4);\n}\n\n/* La vista es el control (role=\"button\"): el foco de teclado tiene que verse. */\n.cu-editable-cell-view[data-v-864bbbcb]:focus-visible {\n  outline: var(--cu-border-medium) solid var(--cu-border-color-focus);\n  outline-offset: 2px;\n  border-radius: var(--cu-radius-sm);\n}\n.cu-editable-cell-icon[data-v-864bbbcb] {\n  flex-shrink: 0;\n}\n.cu-editable-cell--success[data-v-864bbbcb] {\n  color: var(--cu-color-success);\n}\n.cu-editable-cell--error[data-v-864bbbcb] {\n  color: var(--cu-color-danger);\n}\n"]], ["__scopeId", "data-v-864bbbcb"]]);
 //#endregion
 //#region src/components/controls/DropdownMenu.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1$2 = {
@@ -6961,16 +6990,22 @@ var _hoisted_9 = {
 	key: 1,
 	class: "cu-advanced-table-cell-badges"
 };
-var _hoisted_10 = { key: 3 };
-var _hoisted_11 = {
+var _hoisted_10 = {
+	key: 0,
+	class: "cu-advanced-table-cell-lines"
+};
+var _hoisted_11 = { key: 1 };
+var _hoisted_12 = {
 	key: 4,
 	class: "cu-advanced-table-actions"
 };
-var _hoisted_12 = { key: 5 };
-var _hoisted_13 = {
+var _hoisted_13 = { key: 5 };
+var _hoisted_14 = {
 	key: 1,
 	class: "cu-advanced-table-pagination"
 };
+/** Tamaño de página que se usa cuando `itemsPerPage` no es un entero ≥ 1. */
+var DEFAULT_ITEMS_PER_PAGE = 10;
 //#endregion
 //#region src/components/data/AdvancedTable.vue
 var AdvancedTable_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__ */ defineComponent({
@@ -7118,6 +7153,11 @@ var AdvancedTable_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @
 			if (hasCellFunction(col)) return col.cell(row);
 			return row[col.key];
 		};
+		const getCellLines = (col, row) => {
+			const value = getCellValue(col, row);
+			if (!Array.isArray(value)) return null;
+			return value.map((line) => line == null ? "" : String(line));
+		};
 		const getCellBadges = (col, row) => {
 			return col.badges ? col.badges(row) : [];
 		};
@@ -7151,6 +7191,10 @@ var AdvancedTable_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @
 			return items.filter((item, i) => !item.divider || i > 0 && i < items.length - 1 && !items[i - 1]?.divider);
 		};
 		const hasVisibleRowActions = (row) => getRowActions(row).some((action) => !action.divider && !isButtonHidden(action, row));
+		const normalizeItemsPerPage = (value) => {
+			const size = Number(value);
+			return Number.isFinite(size) && size >= 1 ? Math.floor(size) : DEFAULT_ITEMS_PER_PAGE;
+		};
 		const props = __props;
 		const emit = __emit;
 		const searchQuery = ref("");
@@ -7221,12 +7265,13 @@ var AdvancedTable_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @
 		watch([sortBy, sortDir], () => pagination.setCurrentPage(1));
 		const pagination = usePagination(sortedData, {
 			initialPage: 1,
-			initialItemsPerPage: props.itemsPerPage,
+			initialItemsPerPage: normalizeItemsPerPage(props.itemsPerPage),
 			showPageSize: props.showPageSize,
 			pageSizeOptions: props.pageSizeOptions
 		});
 		watch(() => props.itemsPerPage, (newVal) => {
-			if (newVal !== pagination.itemsPerPage.value) pagination.setItemsPerPage(newVal);
+			const size = normalizeItemsPerPage(newVal);
+			if (size !== pagination.itemsPerPage.value) pagination.setItemsPerPage(size);
 		});
 		watch(() => props.searchValue, (newVal) => {
 			searchQuery.value = newVal;
@@ -7243,8 +7288,9 @@ var AdvancedTable_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @
 			emit("update:currentPage", page);
 		};
 		const handlePageSizeChange = (size) => {
-			pagination.setItemsPerPage(size);
-			emit("update:itemsPerPage", size);
+			const normalized = normalizeItemsPerPage(size);
+			pagination.setItemsPerPage(normalized);
+			emit("update:itemsPerPage", normalized);
 		};
 		const renderedData = computed(() => props.pagination ? pagination.displayData.value : sortedData.value);
 		const getOriginalIndex = (displayIndex) => localData.value.findIndex((row) => row === renderedData.value[displayIndex]);
@@ -7256,6 +7302,14 @@ var AdvancedTable_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @
 			align: "center",
 			sortable: false
 		}] : props.columns);
+		const headerAttrs = computed(() => {
+			const attrs = {};
+			for (const col of props.columns) {
+				if (!col.sortable) continue;
+				attrs[col.key] = { "aria-sort": sortBy.value === col.key && sortDir.value ? sortDir.value === "asc" ? "ascending" : "descending" : "none" };
+			}
+			return attrs;
+		});
 		const tableProps = computed(() => ({
 			columns: augmentedColumns.value,
 			data: renderedData.value,
@@ -7266,7 +7320,8 @@ var AdvancedTable_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @
 			rowDisabled: props.rowDisabled,
 			footer: props.footer,
 			compact: props.compact,
-			maxHeight: props.tableMaxHeight
+			maxHeight: props.tableMaxHeight,
+			headerAttrs: headerAttrs.value
 		}));
 		const tableStyles = computed(() => ({
 			"--table-bg": `var(--cu-color-${props.color}-soft)`,
@@ -7329,6 +7384,7 @@ var AdvancedTable_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @
 								color: props.color,
 								style: normalizeStyle(props.variant === "solid" ? { "--btn-text": "var(--cu-color-surface)" } : {}),
 								variant: "ghost",
+								"aria-label": `Ordenar por ${column.label ?? column.key}`,
 								onClick: withModifiers(($event) => handleSort(column.key), ["stop"])
 							}, {
 								default: withCtx(() => [sortBy.value === column.key && sortDir.value === "asc" ? (openBlock(), createElementBlock("svg", _hoisted_3$1, [..._cache[1] || (_cache[1] = [createElementVNode("path", { d: "M8 6L12 2L16 6" }, null, -1), createElementVNode("path", { d: "M12 2V22" }, null, -1)])])) : sortBy.value === column.key && sortDir.value === "desc" ? (openBlock(), createElementBlock("svg", _hoisted_4$1, [..._cache[2] || (_cache[2] = [createElementVNode("path", { d: "M8 18L12 22L16 18" }, null, -1), createElementVNode("path", { d: "M12 2V22" }, null, -1)])])) : (openBlock(), createElementBlock("svg", _hoisted_5$1, [..._cache[3] || (_cache[3] = [
@@ -7340,6 +7396,7 @@ var AdvancedTable_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @
 							}, 1032, [
 								"color",
 								"style",
+								"aria-label",
 								"onClick"
 							])) : createCommentVNode("v-if", true), createTextVNode(" " + toDisplayString(column.label ?? column.key), 1)])], true)])
 						};
@@ -7469,7 +7526,9 @@ var AdvancedTable_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @
 								"onEditSave",
 								"onEditCancel",
 								"onEditError"
-							])) : hasCellFunction(col) ? (openBlock(), createElementBlock("span", _hoisted_10, toDisplayString(getCellValue(col, row)), 1)) : col.key === "__actions__" && hasVisibleRowActions(row) ? (openBlock(), createElementBlock("div", _hoisted_11, [createVNode(DropdownMenu_default, {
+							])) : hasCellFunction(col) ? (openBlock(), createElementBlock(Fragment, { key: 3 }, [createCommentVNode(" `cell` custom: array de strings = una línea por elemento; string = un nodo. "), getCellLines(col, row)?.length ? (openBlock(), createElementBlock("div", _hoisted_10, [(openBlock(true), createElementBlock(Fragment, null, renderList(getCellLines(col, row), (line, lineIndex) => {
+								return openBlock(), createElementBlock("span", { key: `cell-${index}-${col.key}-${lineIndex}` }, toDisplayString(line), 1);
+							}), 128))])) : getCellLines(col, row) === null ? (openBlock(), createElementBlock("span", _hoisted_11, toDisplayString(getCellValue(col, row)), 1)) : (openBlock(), createElementBlock(Fragment, { key: 2 }, [createCommentVNode(" Array vacío: celda vacía. Sin este nodo el slot quedaría vacío y el\n               `Table` caería a su fallback (el valor crudo de la fila). "), _cache[4] || (_cache[4] = createElementVNode("span", null, null, -1))], 2112))], 64)) : col.key === "__actions__" && hasVisibleRowActions(row) ? (openBlock(), createElementBlock("div", _hoisted_12, [createVNode(DropdownMenu_default, {
 								color: props.color,
 								variant: "ghost",
 								position: "bottom",
@@ -7482,10 +7541,11 @@ var AdvancedTable_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @
 									color: "neutral",
 									variant: "ghost",
 									disabled: isRowDisabled(row),
+									"aria-label": "Acciones de la fila",
 									onClick: toggle,
 									class: "cu-advanced-table-actions-btn"
 								}, {
-									default: withCtx(() => [..._cache[4] || (_cache[4] = [createElementVNode("svg", {
+									default: withCtx(() => [..._cache[5] || (_cache[5] = [createElementVNode("svg", {
 										width: "16",
 										height: "16",
 										viewBox: "0 0 24 24",
@@ -7510,11 +7570,11 @@ var AdvancedTable_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @
 									_: 1
 								}, 8, ["disabled", "onClick"])]),
 								_: 2
-							}, 1032, ["color", "items"])])) : (openBlock(), createElementBlock("span", _hoisted_12, toDisplayString(value), 1))])
+							}, 1032, ["color", "items"])])) : (openBlock(), createElementBlock("span", _hoisted_13, toDisplayString(value), 1))])
 						};
 					})
 				]), 1040),
-				props.pagination && (unref(pagination).showPaginationControl.value || props.showPageSize) ? (openBlock(), createElementBlock("div", _hoisted_13, [createVNode(Pagination_default, {
+				props.pagination && (unref(pagination).showPaginationControl.value || props.showPageSize) ? (openBlock(), createElementBlock("div", _hoisted_14, [createVNode(Pagination_default, {
 					color: props.color,
 					variant: paginationVariant.value,
 					"current-page": unref(pagination).currentPage.value,
@@ -7538,7 +7598,7 @@ var AdvancedTable_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @
 			], 4);
 		};
 	}
-}), [["styles", ["\n.cu-advanced-table[data-v-beb6751c] {\n  display: flex;\n  flex-direction: column;\n  max-width: 100%;\n}\n.cu-advanced-table-search[data-v-beb6751c] {\n  padding: var(--cu-space-md);\n}\n.cu-advanced-table-cell-buttons[data-v-beb6751c] {\n  display: flex;\n  align-items: center;\n  gap: var(--cu-space-sm);\n}\n.cu-advanced-table-cell-badges[data-v-beb6751c] {\n  display: flex;\n  align-items: center;\n  flex-wrap: wrap;\n  gap: var(--cu-space-sm);\n}\n.cu-advanced-table-icon[data-v-beb6751c] {\n  transform: translateY(2px);\n}\n.cu-advanced-table-actions[data-v-beb6751c] {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n.cu-advanced-table-actions-btn[data-v-beb6751c] {\n  padding: var(--cu-space-2xs) var(--cu-space-sm);\n  min-width: 0;\n  height: var(--cu-space-2xl);\n  box-sizing: border-box;\n}\n.cu-advanced-table-pagination[data-v-beb6751c] {\n  margin-top: var(--cu-space-lg);\n}\n"]], ["__scopeId", "data-v-beb6751c"]]);
+}), [["styles", ["\n.cu-advanced-table[data-v-c892b555] {\n  display: flex;\n  flex-direction: column;\n  max-width: 100%;\n}\n.cu-advanced-table-search[data-v-c892b555] {\n  padding: var(--cu-space-md);\n}\n.cu-advanced-table-cell-buttons[data-v-c892b555] {\n  display: flex;\n  align-items: center;\n  gap: var(--cu-space-sm);\n}\n.cu-advanced-table-cell-badges[data-v-c892b555] {\n  display: flex;\n  align-items: center;\n  flex-wrap: wrap;\n  gap: var(--cu-space-sm);\n}\n\n/* `cell` que devuelve string[]: una línea por elemento. */\n.cu-advanced-table-cell-lines[data-v-c892b555] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--cu-space-2xs);\n  white-space: pre-line;\n}\n.cu-advanced-table-icon[data-v-c892b555] {\n  transform: translateY(2px);\n}\n.cu-advanced-table-actions[data-v-c892b555] {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n.cu-advanced-table-actions-btn[data-v-c892b555] {\n  padding: var(--cu-space-2xs) var(--cu-space-sm);\n  min-width: 0;\n  height: var(--cu-space-2xl);\n  box-sizing: border-box;\n}\n.cu-advanced-table-pagination[data-v-c892b555] {\n  margin-top: var(--cu-space-lg);\n}\n"]], ["__scopeId", "data-v-c892b555"]]);
 //#endregion
 //#region node_modules/.pnpm/xlsx@0.18.5/node_modules/xlsx/xlsx.mjs
 /*! xlsx.js (C) 2013-present SheetJS -- http://sheetjs.com */
