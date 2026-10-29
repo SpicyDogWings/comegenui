@@ -67,7 +67,11 @@ borde), `link` (texto subrayado, sin padding) y `none` (igual que `solid`).
 
 `disabled` atenúa el botón y bloquea la interacción. `loading` deshabilita igual y además
 antepone un spinner (`LucideLoader` girando) mientras está activo: el contenido sigue visible
-debajo, así que sirve para acciones asincrónicas.
+debajo, así que sirve para acciones asincrónicas. Con `loading` el botón expone `aria-busy="true"`
+y el spinner queda `aria-hidden` para lectores de pantalla.
+
+Con `to`, `disabled`/`loading` también bloquean la navegación: el `<a>` pierde el `href`, queda
+`aria-disabled="true"`, sale del tab order (`tabindex="-1"`) y no emite `click`.
 
 ```vue
 <Button disabled>Deshabilitado</Button>
@@ -80,8 +84,12 @@ de interacción).
 ## Navegación
 
 Sin `to` el botón es un `<button>` y no navega. Con `to`, se envuelve en un `<a>` que apunta
-ahí y `target` pasa a aplicar (`_blank` abre en otra pestaña). `target` solo, sin `to`, no
-hace nada.
+ahí y `target` pasa a aplicar (`_blank` abre en otra pestaña y agrega
+`rel="noopener noreferrer"`). `target` solo, sin `to`, no hace nada.
+
+`to` acepta cualquier destino navegable. Un esquema ejecutable (`javascript:`, `vbscript:`,
+`data:`, incluso con espacios o mayúsculas) no se navega: el botón se renderiza como `<button>`,
+así que un `to` que venga de datos del usuario no ejecuta código.
 
 ```vue
 <Button to="/componentes/cu-button" variant="link">Volver a esta página</Button>
@@ -94,7 +102,7 @@ En la variante `link` el padding queda en `0` y `size` no lo cambia.
 
 `type` es el atributo del `<button>` de adentro. El default es `type="button"` (**no** envía);
 `type="submit"` dispara el submit del `<form>` que lo contiene y `type="reset"` limpia sus
-campos.
+campos. Un `type` inválido cae a `"button"` (el valor inválido de HTML sería `submit`).
 
 ```vue
 <form>
