@@ -1,9 +1,14 @@
 import { describe, it, expect } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { flushPromises, mount } from '@vue/test-utils'
+import type { VueWrapper } from '@vue/test-utils'
+import { nextTick } from 'vue'
 import Calendar from './Calendar.vue'
 
-const dayButton = (w: ReturnType<typeof mount>, n: number) =>
+const dayButton = (w: VueWrapper, n: number) =>
   w.findAll('.cu-calendar-day').find((d) => d.text() === String(n))
+
+const gridLabel = (w: VueWrapper) => w.find('.cu-calendar').attributes('aria-label') ?? ''
+const sliderText = (w: VueWrapper) => w.find('.cu-month-slider').text().toLowerCase()
 
 describe('Calendar — selección', () => {
   it('click en un día emite update:modelValue/change/select', async () => {
@@ -94,5 +99,238 @@ describe('Calendar — viewMonth', () => {
     await (w.vm as any).nextMonth()
     expect(w.emitted('update:viewMonth')).toBeFalsy()
     expect(w.find('.cu-month-slider').text().toLowerCase()).toContain('abril')
+  })
+})
+
+describe('Calendar — setValue respeta los días deshabilitados', () => {
+  it('no selecciona un día anterior a min ni posterior a max', async () => {
+    const w = mount(Calendar, { props: { min: '2026-08-10', max: '2026-08-20' } })
+    ;(w.vm as unknown as { setValue: (v: string) => void }).setValue('2026-08-05')
+    await nextTick()
+    expect(w.emitted('change')).toBeFalsy()
+    expect((w.vm as unknown as { getValue: () => Date | null }).getValue()).toBeNull()
+
+    ;(w.vm as unknown as { setValue: (v: string) => void }).setValue('2026-08-15')
+    await nextTick()
+    expect(w.emitted('change')).toBeTruthy()
+    expect(
+      (w.vm as unknown as { getValue: () => Date | null }).getValue()?.getDate(),
+    ).toBe(15)
+  })
+
+  it('no selecciona un día de la semana deshabilitado ni una fecha puntual', async () => {
+    const w = mount(Calendar, {
+      props: { modelValue: '2026-08-01', disabledWeekdays: '0,6', disabledDates: '2026-08-12' },
+    })
+    const vm = w.vm as unknown as { setValue: (v: string) => void; getValue: () => Date | null }
+    vm.setValue('2026-08-16') // domingo
+    vm.setValue('2026-08-12') // fecha puntual
+    await nextTick()
+    expect(w.emitted('change')).toBeFalsy()
+    expect(vm.getValue()?.getDate()).toBe(1)
+  })
+})
+
+describe('Calendar — clear es solo de rango', () => {
+  it('en single no emite un change con forma de rango', async () => {
+    const w = mount(Calendar, { props: { modelValue: '2026-08-11' } })
+    ;(w.vm as unknown as { clear: () => void }).clear()
+    await nextTick()
+    expect(w.emitted('change')).toBeFalsy()
+    expect(w.emitted('update:modelValue')).toBeFalsy()
+  })
+})
+
+describe('Calendar — mes inicial del rango', () => {
+  it('con rangeStart abre en el mes de esa fecha, no en el actual', () => {
+    const w = mount(Calendar, { props: { mode: 'range', rangeStart: '2026-03-10' } })
+    expect(sliderText(w)).toContain('marzo')
+    expect(gridLabel(w).toLowerCase()).toContain('marzo')
+  })
+
+  it('sin valor abre en el mes actual', () => {
+    const w = mount(Calendar)
+    const now = new Date()
+    const expected = new Intl.DateTimeFormat('es', { month: 'long' }).format(now)
+    expect(sliderText(w)).toContain(expected.toLowerCase())
+  })
+})
+
+describe('Calendar — viewMonth controlado se recorta a min/max', () => {
+  it('el header y la grilla muestran el mes del límite', () => {
+    const w = mount(Calendar, { props: { viewMonth: '2026-01-15', min: '2026-06-01' } })
+    expect(sliderText(w)).toContain('junio')
+    expect(gridLabel(w).toLowerCase()).toContain('junio')
+    expect(gridLabel(w).toLowerCase()).not.toContain('enero')
+  })
+})
+
+describe('Calendar — eventos', () => {
+  it('un evento con fecha inválida no rompe la grilla', () => {
+    const w = mount(Calendar, {
+      props: { modelValue: '2026-08-11', events: [{ date: 'no-es-fecha' }] },
+    })
+    expect(w.findAll('.cu-calendar-day').length).toBe(31)
+    expect(w.findAll('.cu-calendar-dot')).toHaveLength(0)
+  })
+
+  it('un color no string no rompe la grilla', () => {
+    const w = mount(Calendar, {
+      props: { modelValue: '2026-08-11', events: [{ date: '2026-08-11', color: 5 as unknown as string }] },
+    })
+    expect(w.findAll('.cu-calendar-day').length).toBe(31)
+    expect(w.findAll('.cu-calendar-dot')).toHaveLength(1)
+  })
+
+  it('pinta un punto por evento del día', () => {
+    const w = mount(Calendar, {
+      props: {
+        modelValue: '2026-08-11',
+        events: [
+          { date: '2026-08-11', color: 'primary' },
+          { date: '2026-08-11', color: 'danger' },
+          { date: '2026-08-12' },
+        ],
+      },
+    })
+    expect(w.findAll('.cu-calendar-dot')).toHaveLength(3)
+  })
+})
+
+describe('Calendar — ARIA de la grilla', () => {
+  it('marca el día seleccionado con aria-selected y nombra cada día con la fecha completa', () => {
+    const w = mount(Calendar, { props: { modelValue: '2026-08-15' } })
+    const selected = w.find('.cu-calendar-day--selected')
+    expect(selected.attributes('aria-selected')).toBe('true')
+    expect(selected.attributes('aria-label')?.toLowerCase()).toContain('15 de agosto de 2026')
+    const other = dayButton(w, 16)!
+    expect(other.attributes('aria-selected')).toBe('false')
+    expect(other.attributes('aria-label')?.toLowerCase()).toContain('16 de agosto de 2026')
+  })
+
+  it('los encabezados de día son columnheader con el nombre completo', () => {
+    const w = mount(Calendar)
+    const headers = w.findAll('.cu-calendar-weekday')
+    expect(headers).toHaveLength(7)
+    expect(headers[0]!.attributes('role')).toBe('columnheader')
+    expect(headers[0]!.attributes('aria-label')?.toLowerCase()).toBe('lunes')
+  })
+
+  it('las celdas vacías completan la fila de la grilla', () => {
+    const w = mount(Calendar, { props: { modelValue: '2026-08-01' } })
+    const empties = w.findAll('.cu-calendar-day--empty')
+    expect(empties.length).toBeGreaterThan(0)
+    expect(empties[0]!.attributes('role')).toBe('gridcell')
+    expect(empties[0]!.attributes('aria-disabled')).toBe('true')
+  })
+
+  it('un día deshabilitado se anuncia como aria-disabled y no se selecciona', async () => {
+    const w = mount(Calendar, { props: { modelValue: '2026-08-01', min: '2026-08-10' } })
+    const day = dayButton(w, 5)!
+    expect(day.attributes('aria-disabled')).toBe('true')
+    expect(day.attributes('disabled')).toBeUndefined()
+    await day.trigger('click')
+    expect(w.emitted('select')).toBeFalsy()
+  })
+
+  it('un solo día es tab-stop: el seleccionado', () => {
+    const w = mount(Calendar, { props: { modelValue: '2026-08-15' } })
+    const stops = w.findAll('.cu-calendar-day').filter((d) => d.attributes('tabindex') === '0')
+    expect(stops).toHaveLength(1)
+    expect(stops[0]!.text()).toBe('15')
+  })
+
+  it('sin selección el tab-stop es el primer día habilitado del mes', () => {
+    const w = mount(Calendar, { props: { viewMonth: '2026-08-01', min: '2026-08-10' } })
+    const stops = w.findAll('.cu-calendar-day').filter((d) => d.attributes('tabindex') === '0')
+    expect(stops).toHaveLength(1)
+    expect(stops[0]!.text()).toBe('10')
+  })
+})
+
+describe('Calendar — teclado', () => {
+  const press = async (w: VueWrapper, day: number, key: string) => {
+    const button = dayButton(w, day)!
+    ;(button.element as HTMLElement).focus()
+    await button.trigger('keydown', { key })
+    await flushPromises()
+    return document.activeElement?.textContent?.trim()
+  }
+
+  it('las flechas mueven el foco un día / una semana', async () => {
+    const w = mount(Calendar, { props: { modelValue: '2026-08-11' }, attachTo: document.body })
+    expect(await press(w, 11, 'ArrowRight')).toBe('12')
+    expect(await press(w, 12, 'ArrowLeft')).toBe('11')
+    expect(await press(w, 11, 'ArrowDown')).toBe('18')
+    expect(await press(w, 18, 'ArrowUp')).toBe('11')
+    w.unmount()
+  })
+
+  it('Home y End van al borde de la semana (weekStart lunes)', async () => {
+    const w = mount(Calendar, { props: { modelValue: '2026-08-12' }, attachTo: document.body })
+    expect(await press(w, 12, 'Home')).toBe('10')
+    expect(await press(w, 10, 'End')).toBe('16')
+    w.unmount()
+  })
+
+  it('PageDown pasa al mes siguiente con el mismo día', async () => {
+    const w = mount(Calendar, { props: { modelValue: '2026-08-11' }, attachTo: document.body })
+    const focused = await press(w, 11, 'PageDown')
+    expect(focused).toBe('11')
+    expect(sliderText(w)).toContain('septiembre')
+    expect(gridLabel(w).toLowerCase()).toContain('septiembre')
+    w.unmount()
+  })
+
+  it('PageUp vuelve al mes anterior', async () => {
+    const w = mount(Calendar, { props: { modelValue: '2026-08-11' }, attachTo: document.body })
+    expect(await press(w, 11, 'PageUp')).toBe('11')
+    expect(sliderText(w)).toContain('julio')
+    w.unmount()
+  })
+
+  it('el teclado no sale de min/max', async () => {
+    const w = mount(Calendar, {
+      props: { modelValue: '2026-08-15', min: '2026-08-01', max: '2026-08-15' },
+      attachTo: document.body,
+    })
+    expect(await press(w, 15, 'ArrowRight')).toBe('15')
+    expect(gridLabel(w).toLowerCase()).toContain('agosto')
+    w.unmount()
+  })
+
+  it('el teclado sí atraviesa un día deshabilitado (aria-disabled)', async () => {
+    const w = mount(Calendar, {
+      props: { modelValue: '2026-08-11', disabledDates: '2026-08-12' },
+      attachTo: document.body,
+    })
+    expect(await press(w, 11, 'ArrowRight')).toBe('12')
+    expect(dayButton(w, 12)!.attributes('aria-disabled')).toBe('true')
+    w.unmount()
+  })
+})
+
+describe('Calendar — locale y estado deshabilitado', () => {
+  it('con locale en, los encabezados y el nombre del día van en inglés', () => {
+    const w = mount(Calendar, { props: { modelValue: '2026-08-15', locale: 'en' } })
+    expect(w.findAll('.cu-calendar-weekday')[0]!.text()).toBe('Mon')
+    expect(
+      w.find('.cu-calendar-day--selected').attributes('aria-label')?.toLowerCase(),
+    ).toContain('august')
+  })
+
+  it('con el calendario deshabilitado no hay ningún día en el orden de tabulación', () => {
+    const w = mount(Calendar, { props: { modelValue: '2026-08-15', disabled: true } })
+    const days = w.findAll('.cu-calendar-day')
+    const stops = days.filter((d) => d.attributes('tabindex') === '0')
+    expect(stops).toHaveLength(0)
+    expect(w.findAll('.cu-calendar-day--disabled')).toHaveLength(days.length)
+  })
+
+  it('el día de hoy lleva aria-current="date"', () => {
+    const w = mount(Calendar)
+    const today = w.find('.cu-calendar-day--today')
+    expect(today.exists()).toBe(true)
+    expect(today.attributes('aria-current')).toBe('date')
   })
 })

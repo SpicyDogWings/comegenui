@@ -46,5 +46,5 @@
     "setValue",
     "toggle"
   ],
-  "shadow": "div.cu-date-picker\n  div.cu-dropdown.cu-popover\n    button.cu-button.cu-button--md.cu-button--soft.cu-date-picker-toggle[style,type]\n      svg.cu-date-picker-icon[fill,height,stroke,stroke-linecap,stroke-linejoin,stroke-width,viewBox,width,xmlns]\n        path[d]\n        path[d]\n        rect[height,rx,width,x,y]\n        path[d]\n      span.cu-date-picker-label\n      svg.cu-date-picker-chevron[fill,height,stroke,stroke-linecap,stroke-linejoin,stroke-width,viewBox,width,xmlns]\n        path[d]"
+  "shadow": "div.cu-date-picker\n  div.cu-dropdown.cu-popover\n    button.cu-button.cu-button--md.cu-button--soft.cu-date-picker-toggle[aria-expanded,aria-haspopup,style,type]\n      svg.cu-date-picker-icon[fill,height,stroke,stroke-linecap,stroke-linejoin,stroke-width,viewBox,width,xmlns]\n        path[d]\n        path[d]\n        rect[height,rx,width,x,y]\n        path[d]\n      span.cu-date-picker-label\n      svg.cu-date-picker-chevron[fill,height,stroke,stroke-linecap,stroke-linejoin,stroke-width,viewBox,width,xmlns]\n        path[d]"
 }

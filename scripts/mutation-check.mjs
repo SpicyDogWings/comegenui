@@ -1639,6 +1639,143 @@ const MUTATIONS = [
     find: `    tabRefs.value[next]?.focus();`,
     replace: `    void next;`,
   },
+  {
+    id: "calendar-setvalue-ignora-deshabilitados",
+    file: "src/components/controls/Calendar.vue",
+    expect: "setValue no selecciona un día deshabilitado (min/max/weekdays/dates)",
+    find: `  if (isDisabledDay(parsed)) return`,
+    replace: `  if (parsed === null) return`,
+  },
+  {
+    id: "calendar-clear-en-single",
+    file: "src/components/controls/Calendar.vue",
+    expect: "clear() en single no emite un change con forma de rango",
+    find: `  if (!isRange.value) return
+  clearRange()`,
+    replace: `  clearRange()`,
+  },
+  {
+    id: "calendar-mes-inicial-sin-rango",
+    file: "src/components/controls/Calendar.vue",
+    expect: "en modo rango el mes visible arranca en rangeStart/rangeEnd",
+    find: `    parseDate(props.modelValue) ??
+    parseDate(props.rangeStart) ??
+    parseDate(props.rangeEnd) ??
+    startOfCurrentMonth()`,
+    replace: `    parseDate(props.modelValue) ??
+    startOfCurrentMonth()`,
+  },
+  {
+    id: "calendar-viewmonth-sin-recorte",
+    file: "src/components/controls/Calendar.vue",
+    expect: "el viewMonth controlado se recorta a min/max (header y grilla coinciden)",
+    find: `const viewMonth = computed<Date>(() => clampMonth(viewMonthProp.value ?? internalViewMonth.value))`,
+    replace: `const viewMonth = computed<Date>(() => viewMonthProp.value ?? internalViewMonth.value)`,
+  },
+  {
+    id: "calendar-eventos-fecha-invalida",
+    file: "src/components/controls/Calendar.vue",
+    expect: "un evento con fecha inválida no rompe el render de la grilla",
+    find: `    return date !== null && sameDay(date, day)`,
+    replace: `    return sameDay(date as Date, day)`,
+  },
+  {
+    id: "calendar-aria-selected",
+    file: "src/components/controls/Calendar.vue",
+    expect: "el día seleccionado se anuncia con aria-selected",
+    find: `:aria-selected="isDaySelected(cell.date) ? 'true' : 'false'"`,
+    replace: `aria-selected="false"`,
+  },
+  {
+    id: "calendar-roving-tabindex",
+    file: "src/components/controls/Calendar.vue",
+    expect: "la grilla tiene un solo tab-stop (roving tabindex)",
+    find: `:tabindex="isTabStop(cell.date) ? 0 : -1"`,
+    replace: `tabindex="0"`,
+  },
+  {
+    id: "calendar-teclado-flecha-derecha",
+    file: "src/components/controls/Calendar.vue",
+    expect: "ArrowRight mueve el foco al día siguiente",
+    find: `    case 'ArrowRight':
+      next = addDays(current, 1)
+      break`,
+    replace: `    case 'ArrowRight':
+      break`,
+  },
+  {
+    id: "calendar-teclado-page-down",
+    file: "src/components/controls/Calendar.vue",
+    expect: "PageDown pasa al mes siguiente",
+    find: `    case 'PageDown':
+      next = shiftMonth(current, 1)
+      break`,
+    replace: `    case 'PageDown':
+      break`,
+  },
+  {
+    id: "calendar-aria-disabled",
+    file: "src/components/controls/Calendar.vue",
+    expect: "el día deshabilitado se anuncia con aria-disabled",
+    find: `:aria-disabled="isDisabledDay(cell.date) ? 'true' : undefined"`,
+    replace: `:aria-disabled="undefined"`,
+  },
+  {
+    id: "calendar-columnheader",
+    file: "src/components/controls/Calendar.vue",
+    expect: "los encabezados de día son columnheader con nombre completo",
+    find: `        role="columnheader"
+        :aria-label="label.long"`,
+    replace: ``,
+  },
+  {
+    id: "date-picker-hoy-fuera-de-rango",
+    file: "src/components/form/DatePicker.vue",
+    expect: "«Hoy» fuera de min/max no emite un valor inválido",
+    find: `  if (isDisabledDate(now)) return`,
+    replace: ``,
+  },
+  {
+    id: "date-picker-hoy-sin-deshabilitar",
+    file: "src/components/form/DatePicker.vue",
+    expect: "«Hoy» se deshabilita cuando hoy queda fuera de min/max",
+    find: `            :disabled="todayDisabled"`,
+    replace: ``,
+  },
+  {
+    id: "date-picker-setvalue-fuera-de-rango",
+    file: "src/components/form/DatePicker.vue",
+    expect: "setValue no selecciona un día fuera de min/max",
+    find: `  if (isDisabledDate(parsed)) return`,
+    replace: ``,
+  },
+  {
+    id: "date-picker-aria-expanded",
+    file: "src/components/form/DatePicker.vue",
+    expect: "el trigger refleja el estado del panel con aria-expanded",
+    find: `:aria-expanded="isOpen ? 'true' : 'false'"`,
+    replace: `aria-expanded="false"`,
+  },
+  {
+    id: "date-picker-foco-vuelve-al-trigger",
+    file: "src/components/form/DatePicker.vue",
+    expect: "al cerrar con el foco en el panel, vuelve al trigger",
+    find: `    if (active && panel.contains(active)) {
+      ;(triggerRef.value?.$el as HTMLElement | undefined)?.focus()
+    }`,
+    replace: `    void active`,
+  },
+  {
+    id: "dual-calendar-meses-sin-recorte",
+    file: "src/components/controls/DualCalendar.vue",
+    expect: "los dos meses se recortan a min/max",
+    find: `  if (minMonth && target < minMonth) return minMonth
+  if (maxMonth && target > maxMonth) return maxMonth
+  return target`,
+    replace: `  void minMonth
+  void maxMonth
+  return target`,
+  },
 ];
 
 export { MUTATIONS };

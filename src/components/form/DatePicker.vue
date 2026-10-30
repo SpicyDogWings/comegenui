@@ -7,7 +7,7 @@ import DualCalendar from '../controls/DualCalendar.vue'
 import Dropdown from '../overlay/Dropdown.vue'
 import Label from './Label.vue'
 import type { DateRange } from '@/composables/useDateRange'
-import { formatDate, isMonthFormat, isYearFormat, normalizeDate, parseDate, type CalendarEvent } from '@/utils/date'
+import { formatDate, isDateDisabled, isMonthFormat, isYearFormat, normalizeDate, parseDate, type CalendarEvent } from '@/utils/date'
 
 const props = defineProps({
   /** Tipo de calendario: `single` (una fecha, `Calendar`) o `range` (inicio + fin, `Calendar` en modo rango). Con `dualCalendar` el tipo es dual (range, 2 meses) */
@@ -138,6 +138,21 @@ function fmt(date: Date | null): string | null {
 
 const dropdownRef = ref<InstanceType<typeof Dropdown> | null>(null)
 const triggerRef = ref<InstanceType<typeof Button> | null>(null)
+const panelRef = ref<HTMLElement | null>(null)
+
+/** Misma regla que el calendario interno: qué días no se pueden elegir. */
+function isDisabledDate(day: Date): boolean {
+  return isDateDisabled(day, {
+    disabled: props.disabled,
+    min: props.min,
+    max: props.max,
+    disabledWeekdays: props.disabledWeekdays,
+    disabledDates: props.disabledDates,
+  })
+}
+
+/** "Hoy" fuera de `min`/`max` (o deshabilitado): el botón no selecciona nada. */
+const todayDisabled = computed(() => isDisabledDate(normalizeDate(new Date())))
 
 // `dualCalendar` implica rango: el picker maneja range siempre que el dual
 // esté activo, aunque `mode` sea `single`.
@@ -279,6 +294,9 @@ function onSelectSingle(value: Date | DateRange) {
 
 function goToday() {
   const now = normalizeDate(new Date())
+  // "Hoy" respeta min/max y los días deshabilitados: si hoy no es elegible,
+  // no emite un valor fuera de rango.
+  if (isDisabledDate(now)) return
   if (isRange.value) {
     setRange(now, now)
     dropdownRef.value?.close()
@@ -314,6 +332,16 @@ function clear() {
 }
 
 function onClose() {
+  // Si el foco estaba dentro del panel (día del calendario, footer), volver al
+  // trigger: al cerrarse el panel el foco caía al body y se perdía.
+  const panel = panelRef.value
+  if (panel) {
+    const root = panel.getRootNode() as Document | ShadowRoot
+    const active = root.activeElement as HTMLElement | null
+    if (active && panel.contains(active)) {
+      ;(triggerRef.value?.$el as HTMLElement | undefined)?.focus()
+    }
+  }
   emit('close')
 }
 
@@ -329,6 +357,9 @@ function setValue(value: string | number | Date | null) {
   if (isRange.value) return
   const parsed = parseDate(value)
   if (parsed === null) return
+  // Mismo contrato que el calendario interno: un día deshabilitado no se
+  // selecciona ni por código.
+  if (isDisabledDate(parsed)) return
   selectedValue.value = parsed
   emit('update:modelValue', parsed)
   emit('change', parsed)
@@ -410,13 +441,16 @@ defineExpose({
       @open="emit('open')"
       @close="onClose"
     >
-      <template #toggle="{ toggle }">
+      <template #toggle="{ toggle, isOpen }">
         <Button
           ref="triggerRef"
           :color="color"
           :variant="variant"
           :disabled="disabled"
           class="cu-date-picker-toggle"
+          aria-haspopup="dialog"
+          :aria-expanded="isOpen ? 'true' : 'false'"
+          :aria-label="label ? `${label}: ${selectedLabel}` : undefined"
           @click="toggle"
         >
           <svg
@@ -454,7 +488,7 @@ defineExpose({
         </Button>
       </template>
 
-      <div class="cu-date-picker-panel">
+      <div ref="panelRef" class="cu-date-picker-panel">
         <Calendar
           v-if="!isRange"
           :model-value="selectedValue"
@@ -529,6 +563,7 @@ defineExpose({
             v-if="showToday"
             variant="ghost"
             :color="color"
+            :disabled="todayDisabled"
             class="cu-date-picker-footer-btn"
             @click="goToday()"
           >

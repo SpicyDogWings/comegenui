@@ -69,3 +69,28 @@ describe('DualCalendar', () => {
     expect(w.findAll('.cu-calendar-day--range-end').length).toBeGreaterThan(0)
   })
 })
+
+describe('DualCalendar — límites', () => {
+  it('con min posterior al startDate recorta los meses al mínimo', () => {
+    const w = mount(DualCalendar, { props: { startDate: '2026-01-15', min: '2026-12-01' } })
+    const sliders = w.findAll('.cu-month-slider')
+    expect(sliders[0]!.text().toLowerCase()).toContain('diciembre')
+    expect(sliders[1]!.text().toLowerCase()).toContain('enero')
+    const enabled = w.findAll('.cu-calendar-day').filter((d) => d.attributes('aria-disabled') !== 'true')
+    expect(enabled.length).toBeGreaterThan(0)
+  })
+
+  it('con max anterior al startDate recorta los meses al máximo', () => {
+    const w = mount(DualCalendar, { props: { startDate: '2026-09-01', max: '2026-03-20' } })
+    const sliders = w.findAll('.cu-month-slider')
+    expect(sliders[0]!.text().toLowerCase()).toContain('marzo')
+    expect(sliders[1]!.text().toLowerCase()).toContain('marzo')
+  })
+
+  it('si min/max cambian en runtime, los meses se re-ajustan', async () => {
+    const w = mount(DualCalendar, { props: { startDate: '2026-01-15' } })
+    await w.setProps({ min: '2026-11-01' })
+    await w.vm.$nextTick()
+    expect(w.findAll('.cu-month-slider')[0]!.text().toLowerCase()).toContain('noviembre')
+  })
+})

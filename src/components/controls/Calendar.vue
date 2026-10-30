@@ -1,14 +1,22 @@
 <script setup lang="ts">
-import { computed, ref, watch, type PropType } from 'vue'
+import { computed, nextTick, ref, watch, type PropType } from 'vue'
 import { isDateMode, isVariantNoGhost } from '@/utils/validators'
 import MonthSlider from './MonthSlider.vue'
 import {
+  addDays,
   addMonths,
+  isDateDisabled,
   isMonthFormat,
   isYearFormat,
   parseDate,
   sameDay,
+  sameMonth,
+  shiftMonth,
   startOfCurrentMonth,
+  startOfWeek,
+  toDisabledDates,
+  toDisabledWeekdays,
+  toISODate,
   type CalendarEvent,
 } from '@/utils/date'
 import { useDateRange } from '@/composables/useDateRange'
@@ -137,28 +145,10 @@ const minDate = computed<Date | null>(() => parseDate(props.min))
 const maxDate = computed<Date | null>(() => parseDate(props.max))
 
 // Normaliza disabledWeekdays ("0,6" en CE o [0,6] en Vue)
-const disabledWeekdayList = computed<number[]>(() => {
-  if (Array.isArray(props.disabledWeekdays)) return props.disabledWeekdays
-  if (typeof props.disabledWeekdays === 'string' && props.disabledWeekdays.trim()) {
-    return props.disabledWeekdays
-      .split(',')
-      .map((s) => Number(s.trim()))
-      .filter((n) => !Number.isNaN(n))
-  }
-  return []
-})
+const disabledWeekdayList = computed<number[]>(() => toDisabledWeekdays(props.disabledWeekdays))
 
 // Normaliza disabledDates ("2026-08-15,2026-08-16" en CE o array en Vue)
-const disabledDateList = computed<Date[]>(() => {
-  const raw = Array.isArray(props.disabledDates)
-    ? props.disabledDates
-    : typeof props.disabledDates === 'string' && props.disabledDates.trim()
-      ? props.disabledDates.split(',')
-      : []
-  return raw
-    .map((d) => parseDate(String(d).trim()))
-    .filter((d): d is Date => d !== null)
-})
+const disabledDateList = computed<Date[]>(() => toDisabledDates(props.disabledDates))
 
 // Recorta el mes visible al mes de min/max (navegación no sale del rango)
 function clampMonth(date: Date): Date {
@@ -178,11 +168,22 @@ function clampMonth(date: Date): Date {
 const today = new Date()
 
 // Mes interno (modo no controlado). Si llega `viewMonth` por prop, manda esa.
-const internalViewMonth = ref<Date>(
-  clampMonth(parseDate(props.modelValue) ?? startOfCurrentMonth()),
-)
+// El mes de arranque sale del valor: `modelValue` (single) o el rango (range),
+// así el picker abre en el mes de la fecha ya elegida.
+function initialViewMonth(): Date {
+  const base =
+    parseDate(props.modelValue) ??
+    parseDate(props.rangeStart) ??
+    parseDate(props.rangeEnd) ??
+    startOfCurrentMonth()
+  return clampMonth(new Date(base.getFullYear(), base.getMonth(), 1))
+}
+
+const internalViewMonth = ref<Date>(initialViewMonth())
 const viewMonthProp = computed<Date | null>(() => parseDate(props.viewMonth))
-const viewMonth = computed<Date>(() => viewMonthProp.value ?? internalViewMonth.value)
+// También se recorta el mes controlado: si el consumidor manda uno fuera de
+// min/max, header y grilla muestran el mismo mes del límite.
+const viewMonth = computed<Date>(() => clampMonth(viewMonthProp.value ?? internalViewMonth.value))
 const isViewMonthControlled = computed(() => viewMonthProp.value !== null)
 
 /** Cambia el mes visible (respeta el consumidor si `viewMonth` está controlado). */
@@ -201,6 +202,7 @@ watch(
   (value) => {
     const parsed = parseDate(value)
     selectedValue.value = parsed
+    if (parsed !== null) focusDay.value = parsed
     if (parsed === null || isViewMonthControlled.value) return
     internalViewMonth.value = clampMonth(new Date(parsed.getFullYear(), parsed.getMonth(), 1))
   },
@@ -232,6 +234,11 @@ const {
 })
 
 // ── Navegación ──
+
+// En rango, el foco del teclado sigue al inicio elegido (también por código).
+watch(rangeValueStart, (value) => {
+  if (value) focusDay.value = value
+})
 
 const canPrevMonth = computed(() => {
   if (!minDate.value) return true
@@ -271,15 +278,18 @@ function onMonthChange(date: Date) {
 
 // ── Grilla (7 columnas que se reparten el ancho disponible) ──
 
-const dayLabels = computed<string[]>(() => {
+const weekdayLabels = computed<{ short: string; long: string }[]>(() => {
   // Semana de referencia que empieza en domingo: 2026-08-02
   const base = new Date(2026, 7, 2)
-  const labels: string[] = []
+  const labels: { short: string; long: string }[] = []
   for (let i = 0; i < WEEK_LENGTH; i++) {
-    const label = new Intl.DateTimeFormat(props.locale, { weekday: 'short' }).format(
-      new Date(base.getFullYear(), base.getMonth(), base.getDate() + i),
-    )
-    labels.push(label.charAt(0).toUpperCase() + label.slice(1))
+    const day = new Date(base.getFullYear(), base.getMonth(), base.getDate() + i)
+    const short = new Intl.DateTimeFormat(props.locale, { weekday: 'short' }).format(day)
+    const long = new Intl.DateTimeFormat(props.locale, { weekday: 'long' }).format(day)
+    labels.push({
+      short: short.charAt(0).toUpperCase() + short.slice(1),
+      long: long.charAt(0).toUpperCase() + long.slice(1),
+    })
   }
   // Rotar para que la semana arranque en weekStart (0 = domingo)
   return [...labels.slice(props.weekStart), ...labels.slice(0, props.weekStart)]
@@ -317,22 +327,36 @@ const monthLabel = computed(() => {
 // ── Eventos ──
 
 function getEventsForDay(day: Date): CalendarEvent[] {
-  return props.events.filter((ev) => sameDay(parseDate(ev.date) as Date, day))
+  // Un evento con fecha inválida (`parseDate` → null) se ignora: antes
+  // `sameDay(null, day)` rompía el render y la grilla entera desaparecía.
+  return props.events.filter((ev) => {
+    const date = parseDate(ev?.date ?? null)
+    return date !== null && sameDay(date, day)
+  })
 }
 
 // ── Selección ──
 
 function isDisabledDay(day: Date): boolean {
-  if (props.disabled) return true
+  return isDateDisabled(day, {
+    disabled: props.disabled,
+    min: minDate.value,
+    max: maxDate.value,
+    disabledWeekdays: disabledWeekdayList.value,
+    disabledDates: disabledDateList.value,
+  })
+}
+
+/** Fuera de `min`/`max`: el teclado no navega más allá (los deshabilitados por
+ *  weekday/fecha puntual sí se pueden enfocar, como pide el patrón de grid). */
+function isOutOfLimits(day: Date): boolean {
   if (minDate.value && day < minDate.value) return true
-  if (maxDate.value && day > maxDate.value) return true
-  if (disabledWeekdayList.value.includes(day.getDay())) return true
-  if (disabledDateList.value.some((d) => sameDay(day, d))) return true
-  return false
+  return !!(maxDate.value && day > maxDate.value)
 }
 
 function selectDay(day: Date) {
   if (isDisabledDay(day)) return
+  focusDay.value = day
   if (isRange.value) {
     // La FSM de 2 clicks vive en `useDateRange`: primer click inicio, segundo fin.
     selectRange(day)
@@ -351,11 +375,121 @@ function dayClasses(day: Date): Record<string, boolean> {
   return {
     'cu-calendar-day--selected': selected,
     'cu-calendar-day--today': sameDay(day, today) && !selected,
+    'cu-calendar-day--disabled': isDisabledDay(day),
     'cu-calendar-day--range': inRange,
     'cu-calendar-day--range-start': rangeStartVal.value !== null && sameDay(day, rangeStartVal.value),
     'cu-calendar-day--range-end': rangeEndVal.value !== null && sameDay(day, rangeEndVal.value),
     [`cu-calendar-day--${props.variant}`]: selected,
   }
+}
+
+// ── Accesibilidad de la grilla (patrón WAI-ARIA grid) ──
+// Un solo día es tab-stop (roving tabindex) y las flechas/Home/End/PageUp/PageDown
+// mueven el foco. Sin esto la grilla eran 31 paradas de Tab y el teclado no
+// navegaba.
+
+/** Día que tiene el foco del teclado (roving). `null` = todavía no se movió. */
+const focusDay = ref<Date | null>(parseDate(props.modelValue) ?? parseDate(props.rangeStart))
+
+const gridRef = ref<HTMLElement | null>(null)
+
+const dayAriaFormatter = computed(
+  () =>
+    new Intl.DateTimeFormat(props.locale, {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    }),
+)
+
+function dayAriaLabel(day: Date): string {
+  const label = dayAriaFormatter.value.format(day)
+  return label.charAt(0).toUpperCase() + label.slice(1)
+}
+
+/** ¿El día es el tab-stop de la grilla? Si el enfocado no está en el mes
+ *  visible, cae al seleccionado y si no al primer día habilitado del mes. */
+const tabStopDay = computed<Date | null>(() => {
+  const focused = focusDay.value
+  if (focused && sameMonth(focused, viewMonth.value)) return focused
+  const selected = selectedValue.value
+  if (selected && sameMonth(selected, viewMonth.value)) return selected
+  const year = viewMonth.value.getFullYear()
+  const month = viewMonth.value.getMonth()
+  const daysInMonth = new Date(year, month + 1, 0).getDate()
+  for (let day = 1; day <= daysInMonth; day++) {
+    const candidate = new Date(year, month, day)
+    if (!isDisabledDay(candidate)) return candidate
+  }
+  return new Date(year, month, 1)
+})
+
+function isTabStop(day: Date): boolean {
+  if (props.disabled) return false
+  const stop = tabStopDay.value
+  return stop !== null && sameDay(day, stop)
+}
+
+function isDaySelected(day: Date): boolean {
+  if (isRange.value) {
+    return (
+      (rangeStartVal.value !== null && sameDay(day, rangeStartVal.value)) ||
+      (rangeEndVal.value !== null && sameDay(day, rangeEndVal.value))
+    )
+  }
+  return selectedValue.value !== null && sameDay(day, selectedValue.value)
+}
+
+/** Mueve el foco del teclado a `day` (cambiando de mes si hace falta). */
+async function moveFocus(day: Date) {
+  if (isOutOfLimits(day)) return
+  focusDay.value = day
+  if (!sameMonth(day, viewMonth.value)) {
+    setViewMonth(new Date(day.getFullYear(), day.getMonth(), 1))
+  }
+  await nextTick()
+  gridRef.value?.querySelector<HTMLElement>(`[data-date="${toISODate(day)}"]`)?.focus()
+}
+
+function onGridKeydown(event: KeyboardEvent) {
+  if (props.disabled) return
+  const button = (event.target as HTMLElement | null)?.closest?.('.cu-calendar-day')
+  const current = button instanceof HTMLElement ? parseDate(button.dataset.date ?? null) : null
+  if (current === null) return
+
+  let next: Date | null = null
+  switch (event.key) {
+    case 'ArrowLeft':
+      next = addDays(current, -1)
+      break
+    case 'ArrowRight':
+      next = addDays(current, 1)
+      break
+    case 'ArrowUp':
+      next = addDays(current, -7)
+      break
+    case 'ArrowDown':
+      next = addDays(current, 7)
+      break
+    case 'Home':
+      next = startOfWeek(current, props.weekStart)
+      break
+    case 'End':
+      next = addDays(startOfWeek(current, props.weekStart), 6)
+      break
+    case 'PageUp':
+      next = shiftMonth(current, -1)
+      break
+    case 'PageDown':
+      next = shiftMonth(current, 1)
+      break
+    default:
+      return
+  }
+  // Las flechas no scrollean la página mientras se navega la grilla.
+  event.preventDefault()
+  void moveFocus(next)
 }
 
 // El rango solo existe en `mode="range"` (ahí `rangeStart`/`rangeEnd` son el
@@ -386,7 +520,11 @@ function getValue(): Date | null {
 function setValue(value: string | number | Date | null) {
   const parsed = parseDate(value)
   if (parsed === null) return
+  // Un día deshabilitado (min/max/weekdays/dates) no se puede seleccionar
+  // ni por código: la ficha lo dice explícitamente.
+  if (isDisabledDay(parsed)) return
   selectedValue.value = parsed
+  focusDay.value = parsed
   setViewMonth(new Date(parsed.getFullYear(), parsed.getMonth(), 1))
   emit('update:modelValue', parsed)
   emit('change', parsed)
@@ -404,6 +542,10 @@ function setRange(start: string | number | Date | null, end: string | number | D
 
 /** Limpia el rango seleccionado (modo `range`). */
 function clear() {
+  // Solo rango: en `single` no hay rango que limpiar (la fecha se limpia
+  // seteando `modelValue`), y emitir un `change` con forma de rango rompería
+  // el payload documentado para single.
+  if (!isRange.value) return
   clearRange()
 }
 
@@ -463,13 +605,19 @@ const colorStyles = computed(() => ({
 
     <!-- Días de la semana -->
     <div class="cu-calendar-weekdays" role="row">
-      <span v-for="(label, i) in dayLabels" :key="i" class="cu-calendar-weekday">
-        {{ label }}
+      <span
+        v-for="(label, i) in weekdayLabels"
+        :key="i"
+        class="cu-calendar-weekday"
+        role="columnheader"
+        :aria-label="label.long"
+      >
+        {{ label.short }}
       </span>
     </div>
 
     <!-- Grilla de días: 7 columnas que se reparten el ancho del contenedor -->
-    <div class="cu-calendar-grid">
+    <div ref="gridRef" class="cu-calendar-grid" @keydown="onGridKeydown">
       <div v-for="(week, wi) in weeks" :key="wi" class="cu-calendar-week" role="row">
         <template v-for="(cell, ci) in week" :key="ci">
           <button
@@ -477,7 +625,12 @@ const colorStyles = computed(() => ({
             type="button"
             class="cu-calendar-day"
             :class="dayClasses(cell.date)"
-            :disabled="isDisabledDay(cell.date)"
+            :data-date="toISODate(cell.date)"
+            :aria-label="dayAriaLabel(cell.date)"
+            :aria-selected="isDaySelected(cell.date) ? 'true' : 'false'"
+            :aria-disabled="isDisabledDay(cell.date) ? 'true' : undefined"
+            :aria-current="sameDay(cell.date, today) ? 'date' : undefined"
+            :tabindex="isTabStop(cell.date) ? 0 : -1"
             role="gridcell"
             @click="selectDay(cell.date)"
           >
@@ -490,11 +643,11 @@ const colorStyles = computed(() => ({
                 v-for="(ev, ei) in getEventsForDay(cell.date)"
                 :key="ei"
                 class="cu-calendar-dot"
-                :style="ev.color ? { '--dot-color': ev.color.startsWith('var(') ? ev.color : `var(--cu-color-${ev.color})` } : undefined"
+                :style="ev.color ? { '--dot-color': String(ev.color).startsWith('var(') ? ev.color : `var(--cu-color-${ev.color})` } : undefined"
               ></span>
             </span>
           </button>
-          <span v-else class="cu-calendar-day--empty"></span>
+          <span v-else class="cu-calendar-day--empty" role="gridcell" aria-disabled="true"></span>
         </template>
       </div>
     </div>
@@ -541,7 +694,6 @@ const colorStyles = computed(() => ({
   text-align: center;
   font-size: var(--cu-font-size-xs);
   font-weight: var(--cu-font-weight-medium);
-  opacity: var(--cu-alpha-subtle, 0.6);
   padding: var(--cu-space-2xs) 0;
 }
 
@@ -561,13 +713,24 @@ const colorStyles = computed(() => ({
   box-sizing: border-box;
 }
 
+/* Foco de teclado de la grilla (roving tabindex). Usa el accent de texto
+   (`-text`), que está garantizado contra la superficie en todos los temas. */
+.cu-calendar-day:focus-visible {
+  outline: var(--cu-border-thin) solid var(--cal-accent-text);
+  outline-offset: calc(var(--cu-space-2xs) * -1);
+  position: relative;
+  z-index: 1;
+}
+
 /* Doble clase (convención del repo): ganarle en cascada a reglas globales
    del consumidor (reset CSS, `.playground button`, etc.) */
-.cu-calendar-day.cu-calendar-day:hover:not(:disabled) {
+.cu-calendar-day.cu-calendar-day:hover:not(.cu-calendar-day--disabled) {
   background: var(--cal-ghost-hover);
 }
 
-.cu-calendar-day.cu-calendar-day:disabled {
+/* Día no seleccionable: `aria-disabled` (sigue siendo enfocable con el
+   teclado, como pide el patrón de grid) + el guard en `selectDay`. */
+.cu-calendar-day.cu-calendar-day--disabled {
   opacity: 0.35;
   cursor: not-allowed;
 }
@@ -586,7 +749,7 @@ const colorStyles = computed(() => ({
   /* Solid mantiene el texto del tema sobre la variante de fondo ajustada. */
   color: var(--cal-solid-text);
 }
-.cu-calendar-day--selected.cu-calendar-day--solid:hover:not(:disabled) {
+.cu-calendar-day--selected.cu-calendar-day--solid:hover:not(.cu-calendar-day--disabled) {
   background: var(--cal-solid-hover);
 }
 .cu-calendar-day--selected.cu-calendar-day--outlined {
@@ -597,7 +760,7 @@ const colorStyles = computed(() => ({
   background: var(--cal-soft);
   color: var(--cal-accent-text);
 }
-.cu-calendar-day--selected.cu-calendar-day--soft:hover:not(:disabled) {
+.cu-calendar-day--selected.cu-calendar-day--soft:hover:not(.cu-calendar-day--disabled) {
   background: var(--cal-soft-hover);
 }
 .cu-calendar-day--selected.cu-calendar-day--subtle {

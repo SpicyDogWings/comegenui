@@ -117,7 +117,26 @@ Los días fuera del rango se renderizan deshabilitados (opacidad reducida, sin c
 
 <!-- demo:calendar-min-max -->
 
-> El mes visible se re-ajusta automáticamente si `modelValue`, `min` o `max` cambian en runtime.
+> El mes visible se re-ajusta automáticamente si `modelValue`, `min` o `max` cambian en runtime. Con `viewMonth` controlado desde afuera, el mes también se recorta al límite: el header y la grilla nunca muestran meses distintos.
+
+## Teclado y accesibilidad
+
+La grilla sigue el patrón **WAI-ARIA grid**: un solo día está en el orden de tabulación (el seleccionado, o el primero habilitado del mes) y el resto se alcanza con las flechas.
+
+| Tecla | Acción |
+|-------|--------|
+| `←` / `→` | Día anterior / siguiente |
+| `↑` / `↓` | Una semana antes / después |
+| `Home` / `End` | Primer / último día de la semana visible (según `week-start`) |
+| `PageUp` / `PageDown` | Mes anterior / siguiente conservando el día (31 → 28/29 si el mes es más corto) |
+| `Enter` / `Espacio` | Selecciona el día enfocado |
+| `Escape` | Cierra el panel (dentro de `cu-date-picker`) y devuelve el foco al trigger |
+
+- El foco se ve con un anillo del color accent; al cambiar de mes con el teclado, el calendario navega solo.
+- El teclado **no** sale de `min`/`max`, pero **sí** atraviesa días deshabilitados por `disabled-weekdays`/`disabled-dates` (se anuncian como no disponibles y no se seleccionan).
+- Cada día se anuncia con la fecha completa (`"Sábado, 15 de agosto de 2026"`), el estado de selección (`aria-selected`) y `aria-disabled` cuando no es elegible. El día de hoy lleva `aria-current="date"`.
+- Los encabezados de la semana son `columnheader` con el nombre completo del día, y las celdas vacías completan la fila para que las columnas coincidan.
+
 
 ## Semana y locale
 
@@ -150,7 +169,7 @@ Además de `min`/`max`, podés deshabilitar días de la semana (`disabled-weekda
 
 <!-- demo:calendar-deshabilitados -->
 
-> Los días deshabilitados no se pueden seleccionar (ni con click ni con `setValue`) y se ven atenuados.
+> Los días deshabilitados no se pueden seleccionar (ni con click, ni con el teclado, ni con `setValue`) y se ven atenuados. Con el teclado siguen siendo alcanzables (se anuncian como no disponibles), para no perder el hilo de la grilla.
 
 ## Grilla y borde
 
@@ -210,7 +229,8 @@ El rango es un **modo** (`mode="range"`). Ahí `rangeStart`/`rangeEnd` son el **
 <!-- demo:calendar-rango -->
 
 - Clickear/navegar emite `update:rangeStart`/`update:rangeEnd`; `change`/`select` emiten `{ start, end }` al completar el rango.
-- `getRange()` / `setRange()` / `clear()` manejan el rango por código.
+- Al montar en modo rango, el mes visible es el de `rangeStart` (o el de `rangeEnd` si no hay inicio), no el mes actual: el rango ya elegido se ve de entrada.
+- `getRange()` / `setRange()` / `clear()` manejan el rango por código. `clear()` es solo de rango: en `single` no hace nada (para limpiar la fecha usá `modelValue = null`).
 - En `single`, para una fecha puntual usá `modelValue` (con `rangeStart`/`rangeEnd` presentes, se ignoran).
 
 ## Disabled
