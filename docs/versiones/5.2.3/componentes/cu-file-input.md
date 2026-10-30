@@ -27,7 +27,7 @@ Input de archivo compacto con drag & drop, estilo idéntico a `<cu-input>`. Sing
 
 > **Drag & drop:** se puede soltar un archivo sobre el componente; durante el arrastre se ilumina el borde y el fondo (también al pasar sobre sus propios íconos y textos). Los directorios se descartan solos (`size === 0 && !type`) y la validación de `accept`/`max-size` también corre al soltar.
 
-> **Teclado:** Enter o Espacio sobre el campo abren el diálogo. El botón de quitar y el nombre del archivo responden a su propio teclado (el botón de quitar no abre el diálogo). Después de procesar una selección el input nativo queda vacío, así que se puede volver a elegir el mismo archivo —por ejemplo después de un rechazo o de quitarlo—. Con `disabled` el nombre del archivo no abre una pestaña nueva.
+> **Teclado y estructura:** el control de selección es un `<button>` real (Enter/Espacio abren el diálogo). El link del archivo y el botón de quitar son controles **hermanos**, no quedan dentro de ese botón, así que el campo no se anuncia como un único botón con controles anidados. El botón de quitar tiene nombre accesible (`Quitar <archivo>`) y no abre el diálogo. Después de procesar una selección el input nativo queda vacío, así que se puede volver a elegir el mismo archivo —por ejemplo después de un rechazo o de quitarlo—.
 
 ## Colores
 
@@ -59,7 +59,7 @@ Input de archivo compacto con drag & drop, estilo idéntico a `<cu-input>`. Sing
 
 ## Estados
 
-`disabled` y `read-only` cortan click, drag y drop; `disabled` además atenúa el componente y esconde el botón de quitar.
+`disabled` y `read-only` cortan click, drag y drop y deshabilitan el control de selección; en ambos se esconde el botón de quitar, y `disabled` además atenúa el componente. Con `disabled` el nombre no abre en una pestaña nueva; con `read-only` sí se puede consultar, pero no cambiar ni quitar.
 
 ```html
 <cu-file-input disabled placeholder="Deshabilitado"></cu-file-input>

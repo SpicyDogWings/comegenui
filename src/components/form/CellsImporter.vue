@@ -299,7 +299,7 @@ const statusText = computed(() => {
         <span class="cu-cells-importer-summary-bad">· {{ summary.withErrors }} con errores</span>
       </template>
       <Button
-        v-if="file"
+        v-if="file && !props.disabled && !props.readOnly"
         :color="props.color"
         variant="ghost"
         size="sm"

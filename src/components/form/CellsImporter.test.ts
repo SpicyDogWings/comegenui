@@ -119,6 +119,17 @@ describe("CellsImporter — exposición y resumen", () => {
     expect(w.find(".cu-cells-importer-summary-bad").text()).toContain("con errores");
   });
 
+  it("con readOnly o disabled no se ofrece quitar el archivo", async () => {
+    const readOnly = mount(CellsImporter, { props: { columns: COLUMNS, readOnly: true } });
+    await loadCsv(readOnly, HEADER + "Ana,1,ana@x.com\n");
+    expect(readOnly.find(".cu-cells-importer-summary").exists()).toBe(true);
+    expect(readOnly.find(".cu-cells-importer-summary button").exists()).toBe(false);
+
+    const disabled = mount(CellsImporter, { props: { columns: COLUMNS, disabled: true } });
+    await loadCsv(disabled, HEADER + "Ana,1,ana@x.com\n");
+    expect(disabled.find(".cu-cells-importer-summary button").exists()).toBe(false);
+  });
+
   it("reset() limpia archivo y resultados", async () => {
     const w = mount(CellsImporter, { props: { columns: COLUMNS } });
     await loadCsv(w, HEADER + "Juan,1,juan@x.com\n");

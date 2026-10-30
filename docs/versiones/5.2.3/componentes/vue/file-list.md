@@ -80,7 +80,7 @@ const vacio = ref<File[] | null>(null);
 
 ## Interacción
 
-`select` se dispara al hacer click en una fila (con el índice) y `remove` al tocar la X (con el índice); el componente no saca el archivo de la lista, eso lo hace el consumidor.
+`select` se dispara al hacer click en una fila (con el índice) o al activar el nombre —un botón real, así que funciona con click, Enter o Espacio—; `remove` se dispara al tocar la X (con el índice). El componente no saca el archivo de la lista, eso lo hace el consumidor. La fila **no** es un botón: el nombre y la X son controles hermanos (nada interactivo anidado) y la X tiene nombre accesible (`Quitar <archivo>`).
 
 ```vue
 <script setup lang="ts">

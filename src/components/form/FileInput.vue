@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch, onUnmounted, useTemplateRef, type PropType } from "vue";
 import { isFieldVariant } from '@/utils/validators'
-import { useFocus } from "@vueuse/core";
 import Button from "../buttons/Button.vue";
 import Alert from "../information/Alert.vue";
 import { getFileIconSvg, formatFileSize } from "../../utils/fileIcons";
@@ -55,7 +54,7 @@ const props = defineProps({
 
 const fileInputRef = useTemplateRef<HTMLInputElement>("fileInput");
 const containerRef = useTemplateRef<HTMLElement>("container");
-const { focused: containerFocus } = useFocus(containerRef);
+const triggerRef = useTemplateRef<HTMLButtonElement>("triggerEl");
 const isDragOver = ref(false);
 const rejectMessage = ref("");
 
@@ -175,13 +174,6 @@ function trigger() {
   fileInputRef.value?.click();
 }
 
-/** Enter/Espacio sobre el propio campo abren el selector; sobre un hijo interactivo (quitar, link) no. */
-function onActivateKey(e: KeyboardEvent) {
-  if (e.target !== e.currentTarget) return;
-  if (e.key === " ") e.preventDefault();
-  trigger();
-}
-
 watch(value, (file) => {
   if (file) rejectMessage.value = "";
 });
@@ -196,8 +188,8 @@ const reset = () => {
   rejectMessage.value = "";
   if (fileInputRef.value) fileInputRef.value.value = "";
 };
-/** Enfoca el contenedor del input. */
-const focus = () => { containerFocus.value = true; };
+/** Enfoca el control de selección. */
+const focus = () => { triggerRef.value?.focus(); };
 
 defineExpose({ get, set, reset, focus, trigger });
 </script>
@@ -220,11 +212,6 @@ defineExpose({ get, set, reset, focus, trigger });
       @dragover="onDragOver"
       @dragleave="onDragLeave"
       @drop="onDrop"
-      @keydown.enter="onActivateKey"
-      @keydown.space="onActivateKey"
-      tabindex="0"
-      role="button"
-      :aria-disabled="props.disabled"
     >
       <input
         ref="fileInput"
@@ -234,30 +221,40 @@ defineExpose({ get, set, reset, focus, trigger });
         @change="handleInputChange"
       />
 
-      <svg
-        v-if="!value"
-        xmlns="http://www.w3.org/2000/svg"
-        width="16"
-        height="16"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        class="cu-file-input-icon"
+      <!-- El control de selección es un <button> real y no contiene nada interactivo:
+           el link del archivo y el botón de quitar son hermanos. -->
+      <button
+        ref="triggerEl"
+        type="button"
+        class="cu-file-input-trigger"
+        :class="{ 'cu-file-input-trigger--compact': !!value }"
+        :aria-label="value ? 'Cambiar archivo' : undefined"
+        :disabled="props.disabled || props.readOnly"
       >
-        <path d="M12 3v12" />
-        <path d="m17 8-5-5-5 5" />
-        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-      </svg>
-      <span v-if="!value" class="cu-file-input-placeholder">
-        {{ props.placeholder }}
-        <template v-if="formatosStr">&nbsp;— {{ formatosStr }}</template>
-        <template v-if="maxSizeStr">&nbsp;(máx {{ maxSizeStr }})</template>
-      </span>
-
-      <span v-if="value" v-html="getFileIconSvg(value, 16)" class="cu-file-input-icon"></span>
+        <svg
+          v-if="!value"
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="cu-file-input-icon"
+        >
+          <path d="M12 3v12" />
+          <path d="m17 8-5-5-5 5" />
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+        </svg>
+        <span v-if="!value" class="cu-file-input-placeholder">
+          {{ props.placeholder }}
+          <template v-if="formatosStr">&nbsp;— {{ formatosStr }}</template>
+          <template v-if="maxSizeStr">&nbsp;(máx {{ maxSizeStr }})</template>
+        </span>
+        <span v-else v-html="getFileIconSvg(value, 16)" class="cu-file-input-icon"></span>
+      </button>
 
       <div v-if="value" class="cu-file-input-name">
         <a
@@ -274,7 +271,7 @@ defineExpose({ get, set, reset, focus, trigger });
       <span v-if="value" class="cu-file-input-size">{{ formatFileSize(value.size) }}</span>
 
       <Button
-        v-if="value && !props.disabled"
+        v-if="value && !props.disabled && !props.readOnly"
         :color="color"
         variant="ghost"
         class="cu-file-input-remove"
@@ -365,10 +362,37 @@ defineExpose({ get, set, reset, focus, trigger });
   background-color: var(--input-ghost-hover);
 }
 
-.cu-file-input:focus {
-  outline: none;
+.cu-file-input:focus-within {
   border-color: var(--input-bg);
   box-shadow: 0 0 0 var(--cu-border-thin) var(--input-bg);
+}
+
+/* Control de selección: botón real, sin estilos propios; el foco se ve en el campo. */
+.cu-file-input-trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--cu-space-sm);
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.cu-file-input-trigger--compact {
+  flex: 0 0 auto;
+}
+
+.cu-file-input-trigger:disabled {
+  cursor: inherit;
+}
+
+.cu-file-input-trigger:focus-visible {
+  outline: none;
 }
 
 .cu-file-input--disabled {

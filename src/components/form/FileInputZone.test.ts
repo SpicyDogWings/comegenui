@@ -256,35 +256,71 @@ describe("FileInputZone — drag & drop y disabled", () => {
   });
 });
 
-describe("FileInputZone — teclado", () => {
-  it("Enter y Espacio sobre la zona abren el selector", () => {
-    const w = mount(FileInputZone);
+describe("FileInputZone — control de selección y teclado", () => {
+  it("la zona es un grupo y el control de selección un <button> real y vacío", async () => {
+    const w = mount(FileInputZone, { props: { placeholder: "Arrastra un archivo" } });
+    expect(zone(w).attributes("role")).toBe("group");
+
+    const trigger = w.find(".cu-file-zone-trigger");
+    expect(trigger.element.tagName).toBe("BUTTON");
+    expect(trigger.attributes("type")).toBe("button");
+    expect(trigger.text()).toBe("");
+    expect(trigger.attributes("aria-label")).toBe("Arrastra un archivo");
+
     const click = vi.spyOn(hiddenInput(w), "click");
-
-    zone(w).element.dispatchEvent(
-      new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }),
-    );
+    await trigger.trigger("click");
     expect(click).toHaveBeenCalled();
-
-    click.mockClear();
-    const space = new KeyboardEvent("keydown", { key: " ", bubbles: true, cancelable: true });
-    zone(w).element.dispatchEvent(space);
-    expect(click).toHaveBeenCalled();
-    expect(space.defaultPrevented).toBe(true);
   });
 
-  it("Enter sobre el botón de quitar no abre el selector", () => {
+  it("con archivos el control invita a agregar o cambiar", async () => {
+    const multi = mount(FileInputZone, {
+      props: { multiple: true, modelValue: [makeFile("a.txt", { type: "text/plain" })] },
+    });
+    await flushPromises();
+    expect(multi.find(".cu-file-zone-trigger").attributes("aria-label")).toBe("Agregar archivos");
+
+    const simple = mount(FileInputZone, {
+      props: { modelValue: makeFile("a.txt", { type: "text/plain" }) },
+    });
+    await flushPromises();
+    expect(simple.find(".cu-file-zone-trigger").attributes("aria-label")).toBe("Cambiar archivo");
+  });
+
+  it("los controles de las filas no quedan dentro del botón de la zona", async () => {
+    const w = mount(FileInputZone, {
+      props: { multiple: true, modelValue: [makeFile("a.txt", { type: "text/plain" })] },
+    });
+    await flushPromises();
+    expect(w.find(".cu-file-zone-trigger").findAll("button, a, input")).toHaveLength(0);
+    expect(zone(w).find(".cu-file-list-name").element.tagName).toBe("BUTTON");
+  });
+
+  it("el botón de quitar de una fila no abre el selector", async () => {
     const w = mount(FileInputZone, {
       props: { modelValue: makeFile("a.txt", { type: "text/plain" }) },
     });
+    await flushPromises();
     const click = vi.spyOn(hiddenInput(w), "click");
-    const remove = w.find(".cu-file-list-remove");
 
-    remove.element.dispatchEvent(
-      new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }),
-    );
+    await w.find(".cu-file-list-remove").trigger("click");
 
     expect(click).not.toHaveBeenCalled();
+  });
+
+  it("focus() enfoca el control de selección", () => {
+    const w = mount(FileInputZone, { attachTo: document.body });
+    vm(w).focus();
+    expect(document.activeElement).toBe(w.find(".cu-file-zone-trigger").element);
+    w.unmount();
+  });
+
+  it("con readOnly no se puede quitar y el control queda deshabilitado", async () => {
+    const w = mount(FileInputZone, {
+      props: { multiple: true, readOnly: true, modelValue: [makeFile("a.txt", { type: "text/plain" })] },
+    });
+    await flushPromises();
+    expect(w.find(".cu-file-zone-trigger").attributes("disabled")).toBeDefined();
+    expect(w.find(".cu-file-list-remove").exists()).toBe(false);
   });
 });
 

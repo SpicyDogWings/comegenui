@@ -130,12 +130,12 @@ El CSV se genera con el `delimiter` configurado (se puede reimportar con la mism
 
 ## Estados
 
-`disabled` bloquea la selección; `readonly` (atributo `readonly`) deja ver el resultado sin poder cambiar el archivo.
+`disabled` bloquea la selección; `read-only` deja ver el resultado sin poder cambiar el archivo (también sin quitar: la X del selector interno se esconde).
 
 ```html
 <cu-cells-importer color="primary" placeholder="habilitado"></cu-cells-importer>
 <cu-cells-importer color="danger" variant="soft" disabled placeholder="disabled"></cu-cells-importer>
-<cu-cells-importer readonly placeholder="readonly"></cu-cells-importer>
+<cu-cells-importer read-only placeholder="read-only"></cu-cells-importer>
 ```
 
 <!-- demo:cells-importer-estados -->
@@ -197,7 +197,7 @@ imp.columns = [
 
 <!--@include: ../partials/cells-importer/props-vanilla.md-->
 
-> **Atributos en HTML:** `hasHeader` se escribe `has-header`, `readOnly` → `readonly`, `maxSize` → `max-size`. Los arrays y objetos (`columns`, `template`, `formats`, `sheet`) se asignan por JS.
+> **Atributos en HTML:** `hasHeader` se escribe `has-header`, `readOnly` → `read-only`, `maxSize` → `max-size`. Los arrays y objetos (`columns`, `template`, `formats`, `sheet`) se asignan por JS.
 
 ### `CellColumn`
 

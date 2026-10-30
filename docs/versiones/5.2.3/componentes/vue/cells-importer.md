@@ -126,7 +126,7 @@ const salida = ref("");
 
 ## Estados
 
-`disabled` bloquea la selección; `readOnly` deja ver el resultado sin poder cambiar el archivo.
+`disabled` bloquea la selección; `readOnly` deja ver el resultado sin poder cambiar el archivo (la X del selector interno se esconde).
 
 ```vue
 <template>

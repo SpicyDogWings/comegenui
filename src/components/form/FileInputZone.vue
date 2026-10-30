@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, ref, watch, useTemplateRef, type PropType } from "vue";
-import { useFocus } from "@vueuse/core";
 import FileList from "../FileList.vue";
 import Alert from "../information/Alert.vue";
 import { formatFileSize } from "../../utils/fileIcons";
@@ -63,7 +62,7 @@ const effectiveMultiple = computed(() => props.multiple || props.directory);
 
 const isDragOver = ref(false);
 const dropZoneRef = useTemplateRef<HTMLElement>("dropZone");
-const { focused: dropFocus } = useFocus(dropZoneRef);
+const triggerRef = useTemplateRef<HTMLButtonElement>("triggerEl");
 const fileInputRef = useTemplateRef<HTMLInputElement>("fileInput");
 const rejectMessages = ref<string[]>([]);
 const internalSet = ref(false);
@@ -74,6 +73,12 @@ const zoneStyles = computed(() => ({
   '--zone-text': `var(--cu-color-${props.color}-text)`,
   '--zone-text-muted': `var(--cu-color-${props.color}-text-muted)`,
 }));
+
+/** Nombre accesible del control de selección: la instrucción visible o la acción real. */
+const triggerLabel = computed(() => {
+  if (fileList.value.length === 0) return props.placeholder;
+  return effectiveMultiple.value ? "Agregar archivos" : "Cambiar archivo";
+});
 
 const fileList = computed(() => {
   if (!value.value) return [];
@@ -281,12 +286,6 @@ function trigger() {
   fileInputRef.value?.click();
 }
 
-/** Enter/Espacio sobre la zona abren el selector; sobre un hijo interactivo (quitar) no. */
-function onActivateKey(e: KeyboardEvent) {
-  if (e.target !== e.currentTarget) return;
-  if (e.key === " ") e.preventDefault();
-  trigger();
-}
 
 function removeFile(index: number) {
   if (!value.value) return;
@@ -313,8 +312,8 @@ const reset = () => {
   rejectMessages.value = [];
   if (fileInputRef.value) fileInputRef.value.value = "";
 };
-/** Enfoca la zona de carga. */
-const focus = () => { dropFocus.value = true; };
+/** Enfoca el control de selección de la zona. */
+const focus = () => { triggerRef.value?.focus(); };
 
 defineExpose({ get, set, reset, focus, trigger });
 </script>
@@ -331,15 +330,11 @@ defineExpose({ get, set, reset, focus, trigger });
         'cu-file-zone--has-files': fileList.length > 0,
       }"
       :style="zoneStyles"
+      role="group"
       @dragover="onDragOver"
       @dragleave="onDragLeave"
       @drop="onDrop"
       @click="trigger"
-      @keydown.enter="onActivateKey"
-      @keydown.space="onActivateKey"
-      tabindex="0"
-      role="button"
-      :aria-disabled="props.disabled"
     >
       <input
         ref="fileInput"
@@ -350,6 +345,16 @@ defineExpose({ get, set, reset, focus, trigger });
         class="cu-file-zone-hidden"
         @change="handleInputChange"
       />
+
+      <!-- Control de selección: botón real que cubre la zona. La lista de archivos
+           vive arriba y sus links/botones no quedan adentro de ningún botón. -->
+      <button
+        ref="triggerEl"
+        type="button"
+        class="cu-file-zone-trigger"
+        :aria-label="triggerLabel"
+        :disabled="props.disabled || props.readOnly"
+      ></button>
 
       <svg
         v-if="fileList.length === 0"
@@ -376,15 +381,16 @@ defineExpose({ get, set, reset, focus, trigger });
         </p>
       </div>
 
-      <FileList
-        v-else
-        :files="value"
-        :color="props.color"
-        :disabled="props.disabled"
-        :max-height="props.maxHeight"
-        @remove="removeFile"
-        @select="handleFileClick"
-      />
+      <div v-else class="cu-file-zone-list">
+        <FileList
+          :files="value"
+          :color="props.color"
+          :disabled="props.disabled || props.readOnly"
+          :max-height="props.maxHeight"
+          @remove="removeFile"
+          @select="handleFileClick"
+        />
+      </div>
     </div>
 
     <Alert
@@ -416,10 +422,46 @@ defineExpose({ get, set, reset, focus, trigger });
   box-sizing: border-box;
 }
 
-.cu-file-zone:focus {
-  outline: none;
+.cu-file-zone:focus-within {
   border-color: var(--zone-bg);
   box-shadow: 0 0 0 var(--cu-border-thin) var(--zone-bg);
+}
+
+/* Control de selección: cubre la zona, sin contenido ni estilos propios. */
+.cu-file-zone-trigger {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+
+.cu-file-zone-trigger:disabled {
+  cursor: inherit;
+}
+
+.cu-file-zone-trigger:focus-visible {
+  outline: none;
+}
+
+/* El contenido decorativo deja pasar el click al botón; la lista sí es interactiva. */
+.cu-file-zone-icon,
+.cu-file-zone-text {
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.cu-file-zone-list {
+  position: relative;
+  z-index: 1;
+  width: 100%;
 }
 
 .cu-file-zone:hover:not(.cu-file-zone--disabled) {

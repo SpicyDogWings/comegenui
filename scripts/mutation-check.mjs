@@ -2235,14 +2235,6 @@ const MUTATIONS = [
     replace: ``,
   },
   {
-    id: "file-input-teclado-en-hijos",
-    file: "src/components/form/FileInput.vue",
-    expect: "Enter/Espacio sobre el botón de quitar no abren el selector",
-    find: `  if (e.target !== e.currentTarget) return;
-  if (e.key === " ") e.preventDefault();`,
-    replace: `  if (e.key === " ") e.preventDefault();`,
-  },
-  {
     id: "file-input-dragleave-en-hijos",
     file: "src/components/form/FileInput.vue",
     expect: "cruzar un hijo del campo no apaga el resaltado del drag",
@@ -2272,14 +2264,6 @@ const MUTATIONS = [
   // quitarlo) no vuelve a emitir \`change\` y la zona parece no responder.
   input.value = "";`,
     replace: ``,
-  },
-  {
-    id: "file-zone-teclado-en-hijos",
-    file: "src/components/form/FileInputZone.vue",
-    expect: "Enter sobre el botón de quitar de la lista no abre el selector",
-    find: `  if (e.target !== e.currentTarget) return;
-  if (e.key === " ") e.preventDefault();`,
-    replace: `  if (e.key === " ") e.preventDefault();`,
   },
   {
     id: "file-zone-dragleave-en-hijos",
@@ -2334,6 +2318,116 @@ const MUTATIONS = [
     expect: "la plantilla se genera con el separador configurado",
     find: `  downloadTemplate(props.columns, { ...props.template, delimiter: props.delimiter });`,
     replace: `  downloadTemplate(props.columns, props.template);`,
+  },
+  {
+    id: "file-input-readonly-permite-quitar",
+    file: "src/components/form/FileInput.vue",
+    expect: "con readOnly no se puede quitar el archivo",
+    find: `        v-if="value && !props.disabled && !props.readOnly"`,
+    replace: `        v-if="value && !props.disabled"`,
+  },
+  {
+    id: "file-input-trigger-ignora-readonly",
+    file: "src/components/form/FileInput.vue",
+    expect: "con readOnly el control de selección queda deshabilitado",
+    find: `        :disabled="props.disabled || props.readOnly"
+      >
+        <svg
+          v-if="!value"`,
+    replace: `        :disabled="props.disabled"
+      >
+        <svg
+          v-if="!value"`,
+  },
+  {
+    id: "file-input-foco-al-contenedor",
+    file: "src/components/form/FileInput.vue",
+    expect: "focus() enfoca el control de selección, no el contenedor",
+    find: `const focus = () => { triggerRef.value?.focus(); };`,
+    replace: `const focus = () => { containerRef.value?.focus(); };`,
+  },
+  {
+    id: "file-input-contenedor-role-button",
+    file: "src/components/form/FileInput.vue",
+    expect: "el contenedor con el link y el quitar no se anuncia como botón",
+    find: `      class="cu-file-input"
+      :class="[`,
+    replace: `      class="cu-file-input"
+      role="button"
+      tabindex="0"
+      :class="[`,
+  },
+  {
+    id: "file-zone-role-button",
+    file: "src/components/form/FileInputZone.vue",
+    expect: "la zona es un grupo y no un botón con controles adentro",
+    find: `      role="group"`,
+    replace: `      role="button"
+      tabindex="0"`,
+  },
+  {
+    id: "file-zone-trigger-ignora-readonly",
+    file: "src/components/form/FileInputZone.vue",
+    expect: "con readOnly el control de selección de la zona queda deshabilitado",
+    find: `        class="cu-file-zone-trigger"
+        :aria-label="triggerLabel"
+        :disabled="props.disabled || props.readOnly"`,
+    replace: `        class="cu-file-zone-trigger"
+        :aria-label="triggerLabel"
+        :disabled="props.disabled"`,
+  },
+  {
+    id: "file-zone-readonly-permite-quitar",
+    file: "src/components/form/FileInputZone.vue",
+    expect: "con readOnly no se puede quitar un archivo de la lista",
+    find: `          :color="props.color"
+          :disabled="props.disabled || props.readOnly"`,
+    replace: `          :color="props.color"
+          :disabled="props.disabled"`,
+  },
+  {
+    id: "file-zone-foco-al-contenedor",
+    file: "src/components/form/FileInputZone.vue",
+    expect: "focus() de la zona enfoca el control de selección",
+    find: `const focus = () => { triggerRef.value?.focus(); };`,
+    replace: `const focus = () => { dropZoneRef.value?.focus(); };`,
+  },
+  {
+    id: "file-list-quitar-sin-nombre",
+    file: "src/components/FileList.vue",
+    expect: "el botón de quitar de cada fila tiene nombre accesible",
+    find: `        :aria-label="\`Quitar \${file.name}\`"
+`,
+    replace: ``,
+  },
+  {
+    id: "file-list-nombre-sin-control",
+    file: "src/components/FileList.vue",
+    expect: "el nombre de la fila es un botón (operable con teclado)",
+    find: `      <button
+        type="button"
+        class="cu-file-list-name"
+        @click.stop="emit('select', i)"
+      >{{ file.name }}</button>`,
+    replace: `      <span class="cu-file-list-name">{{ file.name }}</span>`,
+  },
+  {
+    id: "file-list-fila-role-button",
+    file: "src/components/FileList.vue",
+    expect: "la fila no se anuncia como botón (no anida el quitar)",
+    find: `      class="cu-file-list-item"
+      @click.stop="emit('select', i)"`,
+    replace: `      class="cu-file-list-item"
+      role="button"
+      tabindex="0"
+      @click.stop="emit('select', i)"`,
+  },
+  {
+    id: "cells-importer-readonly-permite-quitar",
+    file: "src/components/form/CellsImporter.vue",
+    expect: "con readOnly/disabled no se ofrece quitar el archivo",
+    find: `        v-if="file && !props.disabled && !props.readOnly"`,
+    replace: `        v-if="file"`,
   },
   {
     id: "cells-importer-csv-bom",

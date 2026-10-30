@@ -171,36 +171,73 @@ describe("FileInput — drag & drop y disabled", () => {
 });
 
 describe("FileInput — teclado", () => {
-  it("Enter y Espacio sobre el campo abren el selector", async () => {
+  it("el control de selección es un <button> real y sin controles adentro", async () => {
     const w = mount(FileInput);
+    const trigger = w.find(".cu-file-input-trigger");
+    expect(trigger.element.tagName).toBe("BUTTON");
+    expect(trigger.attributes("type")).toBe("button");
+    // Nada interactivo adentro: el nombre y el quitar son hermanos, no hijos.
+    expect(trigger.findAll("a, button, input, select, textarea, [role='button']")).toHaveLength(0);
+
     const input = w.find("input.cu-file-input-hidden").element as HTMLInputElement;
     const click = vi.spyOn(input, "click");
-
-    await container(w).trigger("keydown", { key: "Enter" });
+    await trigger.trigger("click");
     expect(click).toHaveBeenCalled();
-
-    click.mockClear();
-    const space = new KeyboardEvent("keydown", { key: " ", bubbles: true, cancelable: true });
-    container(w).element.dispatchEvent(space);
-    expect(click).toHaveBeenCalled();
-    expect(space.defaultPrevented).toBe(true);
   });
 
-  it("Enter o Espacio sobre el botón de quitar no abren el selector", async () => {
+  it("el contenedor no se anuncia como botón (no envuelve controles)", async () => {
+    const w = mount(FileInput, {
+      props: { modelValue: makeFile("x.txt", { type: "text/plain" }) },
+    });
+    await flushPromises();
+    expect(container(w).attributes("role")).toBeUndefined();
+    expect(container(w).attributes("tabindex")).toBeUndefined();
+  });
+
+  it("el botón de quitar no abre el selector", async () => {
     const w = mount(FileInput, {
       props: { modelValue: makeFile("x.txt", { type: "text/plain" }) },
     });
     await flushPromises();
     const input = w.find("input.cu-file-input-hidden").element as HTMLInputElement;
     const click = vi.spyOn(input, "click");
-    const remove = w.find(".cu-file-input-remove");
 
-    await remove.trigger("keydown", { key: "Enter" });
-    const space = new KeyboardEvent("keydown", { key: " ", bubbles: true, cancelable: true });
-    remove.element.dispatchEvent(space);
+    await w.find(".cu-file-input-remove").trigger("click");
 
     expect(click).not.toHaveBeenCalled();
-    expect(space.defaultPrevented).toBe(false);
+  });
+
+  it("focus() enfoca el control de selección", () => {
+    const w = mount(FileInput, { attachTo: document.body });
+    vm(w).focus();
+    expect(document.activeElement).toBe(w.find(".cu-file-input-trigger").element);
+    w.unmount();
+  });
+
+  it("con readOnly el control queda deshabilitado y no se puede quitar", async () => {
+    const w = mount(FileInput, {
+      props: { modelValue: makeFile("x.txt", { type: "text/plain" }), readOnly: true },
+    });
+    await flushPromises();
+    expect(w.find(".cu-file-input-trigger").attributes("disabled")).toBeDefined();
+    expect(w.find(".cu-file-input-remove").exists()).toBe(false);
+  });
+
+  it("con disabled el control queda deshabilitado y sin quitar", async () => {
+    const w = mount(FileInput, {
+      props: { modelValue: makeFile("x.txt", { type: "text/plain" }), disabled: true },
+    });
+    await flushPromises();
+    expect(w.find(".cu-file-input-trigger").attributes("disabled")).toBeDefined();
+    expect(w.find(".cu-file-input-remove").exists()).toBe(false);
+  });
+
+  it("con un archivo el control se llama `Cambiar archivo`", async () => {
+    const w = mount(FileInput, {
+      props: { modelValue: makeFile("x.txt", { type: "text/plain" }) },
+    });
+    await flushPromises();
+    expect(w.find(".cu-file-input-trigger").attributes("aria-label")).toBe("Cambiar archivo");
   });
 
   it("el botón de quitar tiene nombre accesible", async () => {

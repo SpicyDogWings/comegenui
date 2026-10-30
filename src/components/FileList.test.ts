@@ -61,6 +61,31 @@ describe("FileList — eventos", () => {
     expect(w.emitted("select")).toBeUndefined();
   });
 
+  it("el nombre es un botón real que emite `select` (operable con teclado)", async () => {
+    const w = mount(FileList, { props: { files } });
+    const name = w.findAll(".cu-file-list-name")[1]!;
+    expect(name.element.tagName).toBe("BUTTON");
+    expect(name.attributes("type")).toBe("button");
+
+    await name.trigger("click");
+
+    expect(w.emitted("select")!.at(-1)).toEqual([1]);
+    expect(w.emitted("remove")).toBeUndefined();
+  });
+
+  it("cada botón de quitar tiene nombre accesible", () => {
+    const w = mount(FileList, { props: { files } });
+    const labels = w.findAll(".cu-file-list-remove").map((b) => b.attributes("aria-label"));
+    expect(labels).toEqual(["Quitar informe.pdf", "Quitar foto.png", "Quitar datos.csv"]);
+  });
+
+  it("la fila no se anuncia como botón (no anida controles)", () => {
+    const w = mount(FileList, { props: { files } });
+    const row = w.findAll(".cu-file-list-item")[0]!;
+    expect(row.attributes("role")).toBeUndefined();
+    expect(row.attributes("tabindex")).toBeUndefined();
+  });
+
   it("con `disabled` no hay botones de quitar", () => {
     const w = mount(FileList, { props: { files, disabled: true } });
     expect(w.findAll(".cu-file-list-remove")).toHaveLength(0);
