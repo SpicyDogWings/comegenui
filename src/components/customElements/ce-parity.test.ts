@@ -226,6 +226,33 @@ describe("Select.ce", () => {
     el.remove();
   });
 
+  it("expone el patrón combobox + listbox y no comparte ids entre instancias", async () => {
+    const a = mount(SelectCe, { props: { options } });
+    const b = mount(SelectCe, { props: { options } });
+    const trigger = a.find(".cu-select-toggle");
+    expect(trigger.attributes("role")).toBe("combobox");
+    expect(trigger.attributes("aria-haspopup")).toBe("listbox");
+
+    await trigger.trigger("click");
+    await a.find(".cu-select-toggle").trigger("click");
+    await flushPromises();
+    for (const w of [a, b]) {
+      const t = w.find(".cu-select-toggle");
+      if (t.attributes("aria-expanded") !== "true") {
+        await t.trigger("click");
+        await flushPromises();
+      }
+    }
+
+    const panel = a.find(".cu-popover-panel");
+    expect(panel.attributes("role")).toBe("listbox");
+    expect(a.find(".cu-select-toggle").attributes("aria-controls")).toBe(panel.attributes("id"));
+    expect(a.findAll(".cu-select-option")[0]!.attributes("role")).toBe("option");
+    expect(a.find(".cu-popover-panel").attributes("id")).not.toBe(
+      b.find(".cu-popover-panel").attributes("id"),
+    );
+  });
+
   it("no re-emite `blur` como CustomEvent: el nativo del control ya llega al host", async () => {
     const w = mount(SelectCe, { props: { options }, attachTo: document.body });
     const recibidos: Event[] = [];
@@ -236,6 +263,40 @@ describe("Select.ce", () => {
 
     expect(recibidos.filter((e) => e instanceof CustomEvent)).toHaveLength(0);
     w.unmount();
+  });
+});
+
+describe("Popover · foco dentro de un custom element (shadow root)", () => {
+  // jsdom: dentro de un shadow root `activeElement` es `null` cuando el foco está afuera,
+  // y `Popover.restoreFocus` lo leía como "foco perdido" (robaba el foco al cerrar el
+  // panel, así que un Tab desde una opción no salía del control).
+  it("no roba el foco cuando el usuario se fue a otro control", async () => {
+    const tag = "cu-select-foco-test";
+    if (!customElements.get(tag)) customElements.define(tag, defineCustomElement(SelectCe));
+
+    const outside = document.createElement("button");
+    document.body.appendChild(outside);
+    const el = document.createElement(tag) as HTMLElement;
+    document.body.appendChild(el);
+    await flushPromises();
+
+    const trigger = el.shadowRoot!.querySelector(".cu-select-toggle") as HTMLElement;
+    (el as HTMLElement & { options: unknown[] }).options = [{ value: "a", label: "A" }];
+    await flushPromises();
+    trigger.focus();
+    trigger.click();
+    await flushPromises();
+    expect(el.shadowRoot!.querySelector(".cu-select-options")).not.toBeNull();
+
+    outside.focus();
+    // El componente difiere el cierre una tarea para que el foco termine de moverse.
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await flushPromises();
+
+    expect(document.activeElement).toBe(outside);
+    expect(el.shadowRoot!.querySelector(".cu-select-options")).toBeNull();
+    el.remove();
+    outside.remove();
   });
 });
 
@@ -577,6 +638,25 @@ describe("Autocomplete.ce", () => {
 
     expect(w.vm.get()).toBe("María");
     expect(selects[0]?.label).toBe("María");
+  });
+
+  it("expone el patrón combobox + listbox y no comparte ids entre instancias", async () => {
+    const items = [{ label: "Alfa" }, { label: "Beta" }];
+    const a = mount(AutocompleteCe, { props: { items } });
+    const b = mount(AutocompleteCe, { props: { items } });
+    expect(a.find("input").attributes("role")).toBe("combobox");
+    expect(a.find("input").attributes("aria-autocomplete")).toBe("list");
+    expect(a.find("input").attributes("aria-haspopup")).toBe("listbox");
+
+    a.vm.open();
+    b.vm.open();
+    await flushPromises();
+
+    const panel = a.find(".cu-popover-panel");
+    expect(panel.attributes("role")).toBe("listbox");
+    expect(a.find("input").attributes("aria-controls")).toBe(panel.attributes("id"));
+    expect(a.findAll(".cu-autocomplete-option")[0]!.attributes("role")).toBe("option");
+    expect(panel.attributes("id")).not.toBe(b.find(".cu-popover-panel").attributes("id"));
   });
 
   it("no re-emite `blur` como CustomEvent: el nativo del campo ya llega al host", async () => {

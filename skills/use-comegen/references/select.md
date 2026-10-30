@@ -62,11 +62,11 @@ Los valores de `color` / `variant` / `position` / `align` están en «Atributos�
 | `fixed` | `boolean` | `false` | Si es `true`, el dropdown usa `position: fixed` en vez de absoluto |
 | `text-align` | `"center" \| "left" \| "right"` | `"left"` | Alineación del texto: el label del trigger (placeholder o selección) y las opciones del panel. `left` (default), `center`, `right`. |
 | `model-value` | `string` | `""` | Valor seleccionado. El CE sincroniza su estado; asigná `modelValue` sólo si querés controlarlo |
+| `cooldown-variant` | `string` | `"ghost-hover"` | Estilo de la barra de cooldown: `ghost`/`ghost-hover` (color suave, default) o `solid` (color lleno). No se muestra si `loading` está activo |
 | `search-mode` | `"includes" \| "startsWith"` | `"startsWith"` | Modo de coincidencia: `startsWith` (solo al inicio del label) o `includes` (en cualquier parte) |
 | `options` | `SelectOption[]` | `[]` | Opciones del select (ver abajo). Se asigna como propiedad JS |
 | `placeholder-wrap` | `boolean` | `false` | Si `true`, el texto wrappea; si `false`, se trunca con `...` (atributo HTML: `placeholder-wrap`) |
 | `search-reset-delay` | `number` | `1000` | Tiempo (ms) antes de resetear el texto de búsqueda. Se reinicia con cada tecla |
-| `cooldown-variant` | `string` | `"ghost-hover"` | Estilo de la barra de cooldown: `ghost-hover` (default) o el `variant` que quieras, p. ej. `solid` (color lleno). No se muestra si `loading` está activo |
 | `placeholder` | `string` | `—` | Texto mostrado cuando no hay selección |
 <!-- /@api:atributos -->
 
@@ -119,11 +119,11 @@ Ninguno.
 | `fixed` | `boolean` | `false` | — |
 | `textAlign` | `"center" \| "left" \| "right"` | `"left"` | Alineación del texto: el label del trigger (placeholder o selección) y las opciones del panel. `left` (default), `center`, `right`. |
 | `modelValue` | `string` | `""` | — |
+| `cooldownVariant` | `string` | `"ghost-hover"` | — |
 | `searchMode` | `"includes" \| "startsWith"` | `"startsWith"` | — |
 | `options` | `SelectOption[]` | `[]` | — |
 | `placeholderWrap` | `boolean` | `false` | — |
 | `searchResetDelay` | `number` | `1000` | — |
-| `cooldownVariant` | `string` | `"ghost-hover"` | — |
 <!-- /@api:props -->
 
 ### Emits

@@ -171,8 +171,8 @@ reabrir se empieza de cero, sin texto acumulado ni barra de cooldown en curso.
 ## Barra de cooldown
 
 Mientras se escribe (con `search-enabled`), aparece una barra que se vacía en
-`search-reset-delay` ms. `cooldown-variant` elige su estilo: `ghost` (color suave) o `solid`
-(color lleno).
+`search-reset-delay` ms. `cooldown-variant` elige su estilo: `ghost` (color suave, el **default**;
+también se acepta `ghost-hover`) o `solid` (color lleno). El tono sale del `color` del select.
 
 ```html
 <!-- Cooldown con color suave (ghost, default) -->
@@ -244,6 +244,32 @@ El panel cierra con `Escape`, con un click afuera o cuando el control **pierde e
 foco programático): no queda un panel flotante abierto tapando el resto de la página. Al cerrarse,
 si el foco estaba adentro del panel (por ejemplo en una opción), **vuelve al trigger**; un click
 afuera sobre otro control no le roba el foco a ese control.
+
+## Teclado
+
+El control se maneja como un combobox: el foco **nunca sale del trigger** y la opción activa
+se resalta en el panel.
+
+| Tecla | Acción |
+|-------|--------|
+| `↓` / `↑` | Abre el panel y mueve la opción activa (saltea las deshabilitadas, con wrap). Cerrado, abre. |
+| `Home` / `End` | Primera / última opción habilitada (con el panel abierto). |
+| `Enter` / `Espacio` | Elige la opción activa. |
+| `Escape` | Cierra el panel. |
+| `Tab` | Sale del control y cierra el panel. |
+| Letras (con `search-enabled`) | Buscador incremental: salta a la primera coincidencia según `search-mode`. |
+
+```html
+<cu-select id="teclado" search-enabled placeholder="Flechas o letras"></cu-select>
+```
+
+## Accesibilidad
+
+El trigger es un `combobox` (`aria-haspopup="listbox"`, `aria-expanded`, `aria-controls` al panel)
+y el panel es un `listbox` con cada fila como `option` (`aria-selected` en la elegida). La opción
+activa se anuncia con `aria-activedescendant`, así que el lector de pantalla sigue la navegación
+sin mover el foco. Los `id` son únicos por instancia: varios `<cu-select>` en la misma página no
+comparten ids.
 
 ## Posicionamiento
 `position` acepta `bottom` (**default**) y `top` (el wrapper `Dropdown` también contempla

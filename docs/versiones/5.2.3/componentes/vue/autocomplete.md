@@ -230,6 +230,26 @@ function onBlur() {
 </template>
 ```
 
+## Teclado
+
+El foco queda **siempre en el input**: la sugerencia activa se resalta en el panel y se anuncia por
+`aria-activedescendant`.
+
+| Tecla | Acción |
+|-------|--------|
+| `↓` / `↑` | Abre la lista y mueve la sugerencia activa (saltea las deshabilitadas, con wrap). |
+| `Home` / `End` | Primera / última sugerencia habilitada (con el panel abierto). |
+| `Enter` | Elige la sugerencia activa (sin enviar el formulario). |
+| `Escape` | Cierra el panel. |
+| `Tab` | Sale del campo y cierra el panel. |
+
+## Accesibilidad
+
+El input es un `combobox` (`aria-autocomplete="list"`, `aria-haspopup="listbox"`, `aria-expanded`,
+`aria-controls` al panel) y el panel es un `listbox` con cada sugerencia como `option`
+(`aria-selected` en la elegida). Los `id` son únicos por instancia: varios `Autocomplete` en la
+misma página no comparten ids.
+
 ## Control programático
 
 ```vue

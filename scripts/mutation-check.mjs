@@ -2015,8 +2015,8 @@ const MUTATIONS = [
     id: "autocomplete-foco-fuera-no-cierra-panel",
     file: "src/components/form/Autocomplete.vue",
     expect: "el foco que sale del campo cierra el panel",
-    find: `    dropdownRef.value.close();`,
-    replace: `    /* mutado */`,
+    find: `  if (dropdownRef.value?.isOpen()) setTimeout(() => dropdownRef.value?.close(), 0);`,
+    replace: `  /* mutado */`,
   },
   {
     id: "autocomplete-click-no-reabre",
@@ -2060,8 +2060,8 @@ const MUTATIONS = [
     id: "select-foco-fuera-no-cierra-panel",
     file: "src/components/form/Select.vue",
     expect: "el foco que sale del control cierra el panel",
-    find: `    dropdownRef.value.close();`,
-    replace: `    /* mutado */`,
+    find: `  if (dropdownRef.value?.isOpen()) setTimeout(() => dropdownRef.value?.close(), 0);`,
+    replace: `  /* mutado */`,
   },
   {
     id: "select-cierre-no-corta-cooldown",
@@ -2095,6 +2095,125 @@ const MUTATIONS = [
     expect: "la opción deshabilitada se ve atenuada (color muted inline)",
     find: `            :style="opt.disabled ? disabledOptionStyle : optionStyle"`,
     replace: `            :style="optionStyle"`,
+  },
+  // ── lote 3 bis · combobox/listbox, cooldown y foco en shadow root ──
+  {
+    id: "select-sin-activedescendant",
+    file: "src/components/form/Select.vue",
+    expect: "la opción activa se anuncia con aria-activedescendant",
+    find: `  isOpen.value && activeIndex.value >= 0 ? optionId(activeIndex.value) : undefined,`,
+    replace: `  undefined,`,
+  },
+  {
+    id: "select-sin-panel-id",
+    file: "src/components/form/Select.vue",
+    expect: "el trigger referencia el listbox con aria-controls",
+    find: `      :panel-id="listboxId"`,
+    replace: `      :panel-id="''"`,
+  },
+  {
+    id: "select-panel-rol-menu",
+    file: "src/components/form/Select.vue",
+    expect: "el panel es un listbox (no un menú)",
+    find: `      :panel-role="'listbox'"`,
+    replace: `      :panel-role="'menu'"`,
+  },
+  {
+    id: "select-options-sin-role",
+    file: "src/components/form/Select.vue",
+    expect: "cada opción es un `option`",
+    find: `            role="option"`,
+    replace: `            role="presentation"`,
+  },
+  {
+    id: "select-flecha-no-abre",
+    file: "src/components/form/Select.vue",
+    expect: "la flecha abre el panel con una opción activa",
+    find: `    if (!isOpen.value) {
+      activeIndex.value = firstEnabled(e.key === "ArrowUp");
+      dropdownRef.value?.open();
+      scrollToActive();
+      return;
+    }`,
+    replace: `    if (!isOpen.value) {
+      return;
+    }`,
+  },
+  {
+    id: "select-enter-no-elige",
+    file: "src/components/form/Select.vue",
+    expect: "Enter elige la opción activa",
+    find: `      e.preventDefault();
+      onSelect(option);`,
+    replace: `      e.preventDefault();`,
+  },
+  {
+    id: "select-ids-compartidos",
+    file: "src/components/form/Select.vue",
+    expect: "dos instancias no comparten ids",
+    find: `const uid = useUniqueId("cu-select");`,
+    replace: `const uid = "cu-select";`,
+  },
+  {
+    id: "autocomplete-sin-activedescendant",
+    file: "src/components/form/Autocomplete.vue",
+    expect: "el item activo se anuncia con aria-activedescendant",
+    find: `  isOpen.value && activeIndex.value >= 0 ? optionId(activeIndex.value) : undefined,`,
+    replace: `  undefined,`,
+  },
+  {
+    id: "autocomplete-sin-panel-id",
+    file: "src/components/form/Autocomplete.vue",
+    expect: "el input referencia el listbox con aria-controls",
+    find: `    :panel-id="listboxId"`,
+    replace: `    :panel-id="''"`,
+  },
+  {
+    id: "autocomplete-options-sin-role",
+    file: "src/components/form/Autocomplete.vue",
+    expect: "cada sugerencia es un `option`",
+    find: `          role="option"`,
+    replace: `          role="presentation"`,
+  },
+  {
+    id: "autocomplete-flecha-no-mueve",
+    file: "src/components/form/Autocomplete.vue",
+    expect: "las flechas mueven el item activo",
+    find: `    moveActive(e.key === "ArrowDown" ? 1 : -1);
+    return;`,
+    replace: `    return;`,
+  },
+  {
+    id: "autocomplete-enter-no-elige",
+    file: "src/components/form/Autocomplete.vue",
+    expect: "Enter elige el item activo",
+    find: `      e.preventDefault();
+      onItemClick(item);`,
+    replace: `      e.preventDefault();`,
+  },
+  {
+    id: "autocomplete-ids-compartidos",
+    file: "src/components/form/Autocomplete.vue",
+    expect: "dos instancias no comparten ids",
+    find: `const uid = useUniqueId("cu-autocomplete");`,
+    replace: `const uid = "cu-autocomplete";`,
+  },
+  {
+    id: "autocomplete-vacio-sin-mensaje",
+    file: "src/components/form/Autocomplete.vue",
+    expect: "sin items el panel muestra 'Sin opciones'",
+    find: `      <div v-else class="cu-autocomplete-empty">
+        Sin opciones
+      </div>`,
+    replace: `      <div v-else />`,
+  },
+  {
+    id: "cooldown-variant-ignorado",
+    file: "src/components/overlay/Dropdown.vue",
+    test: "src/components/form/Select.test.ts",
+    expect: "`cooldownVariant` cambia el token de la barra (ghost suave / solid lleno)",
+    find: `  props.cooldownVariant === "solid" ? props.color : \`\${props.color}-ghost-hover\`,`,
+    replace: `  props.color,`,
   },
   {
     id: "select-ce-remite-blur",

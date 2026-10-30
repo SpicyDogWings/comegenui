@@ -63,9 +63,16 @@ const props = defineProps({
   panelWidth: { type: String, required: false, default: "" },
   /** Rol ARIA del panel: `menu` (default, listas de acciones), `dialog` (paneles con contenido propio, como el date-picker), `listbox`… */
   panelRole: { type: String, required: false, default: "menu" },
+  /** `id` del panel: el trigger lo referencia con `aria-controls` (patrón combobox/listbox). */
+  panelId: { type: String, required: false, default: "" },
   loading: { type: Boolean, required: false, default: false },
   cooldown: { type: Boolean, required: false, default: false },
   cooldownKey: { type: Number, required: false, default: 0 },
+  /**
+   * Estilo de la barra de cooldown: `ghost`/`ghost-hover` (color suave, default) o
+   * `solid` (color lleno). Se resuelve con los tokens del color activo.
+   */
+  cooldownVariant: { type: String, required: false, default: "ghost-hover" },
   delay: { type: Number, required: false, default: 2000 },
   // Items de menú nativos (hojas). Se renderizan como filas de menú con el
   // mismo estilo que el trigger de un submenú anidado. Útil para menús de
@@ -119,6 +126,16 @@ const panelClass = computed(() => ({
   "cu-dropdown-panel--loading": props.loading,
 }));
 
+/**
+ * Color de la barra de cooldown. `Loader` pinta `var(--cu-color-{color})`, así que la
+ * variante se resuelve pasando el **sufijo** del token: `ghost`/`ghost-hover` usan el
+ * tono suave del color (`-ghost-hover`) y `solid` el tono lleno (base). Antes la prop
+ * llegaba hasta acá como atributo suelto y no tenía ningún efecto.
+ */
+const cooldownColor = computed(() =>
+  props.cooldownVariant === "solid" ? props.color : `${props.color}-ghost-hover`,
+);
+
 function onItemClick(item: DropdownMenuItem) {
   if (item.disabled || item.divider) return;
   if (item.onClick) item.onClick();
@@ -159,6 +176,7 @@ defineExpose({
     :hover="trigger === 'hover'"
     :hover-delay="0"
     :role="panelRole"
+    :panel-id="panelId"
     :panel-class="panelClass"
     class="cu-dropdown"
     :class="{ 'cu-dropdown--nested': isNested }"
@@ -197,7 +215,7 @@ defineExpose({
     <Loader
       v-if="cooldown && !loading"
       :key="cooldownKey"
-      :color="color"
+      :color="cooldownColor"
       animation="cooldown"
       :delay="delay"
     />

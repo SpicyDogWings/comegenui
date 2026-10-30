@@ -25,6 +25,8 @@ const props = defineProps({
   hoverDelay: { type: Number, required: false, default: 200 },
   // role del panel (menu, tooltip, dialog...) y clase extra del panel.
   role: { type: String, required: false, default: "" },
+  /** `id` del panel: el trigger lo referencia con `aria-controls` (patrón combobox/listbox). */
+  panelId: { type: String, required: false, default: "" },
   panelClass: {
     type: [String, Array, Object] as PropType<string | string[] | Record<string, boolean>>,
     required: false,
@@ -121,10 +123,22 @@ const panelEl = ref<HTMLElement | null>(null);
 // (Tooltip) nunca se mueve el foco: el mouse no enfoca nada.
 let focusBeforeOpen: HTMLElement | null = null;
 
-/** Elemento enfocado dentro del mismo árbol (shadow root o documento). */
+/**
+ * Elemento enfocado dentro del mismo árbol (shadow root o documento).
+ *
+ * Dentro de un shadow root `activeElement` es `null` cuando el foco está afuera: eso
+ * **no** significa "foco perdido" (puede estar en otro control del documento), así que
+ * se cae a `document.activeElement` y se descarta el host, que es un destino inútil.
+ */
 function activeInTree(): HTMLElement | null {
   const root = popoverRef.value?.getRootNode() as Document | ShadowRoot | undefined;
-  return (root?.activeElement as HTMLElement | null) ?? null;
+  const inRoot = (root?.activeElement as HTMLElement | null) ?? null;
+  if (inRoot) return inRoot;
+  if (!root || !(root instanceof ShadowRoot)) return null;
+  const host = root.host as HTMLElement | null;
+  const docActive = document.activeElement as HTMLElement | null;
+  if (docActive && docActive !== document.body && docActive !== host) return docActive;
+  return null;
 }
 
 /** Primer elemento enfocable del trigger (slot `#toggle`). */
@@ -445,6 +459,7 @@ defineExpose({ open, close, toggle, isOpen: () => isOpen.value });
     <div
       v-if="isOpen"
       ref="panelEl"
+      :id="props.panelId || undefined"
       :style="panelStyle"
       :class="['cu-popover-panel', panelClass]"
       :role="role || undefined"

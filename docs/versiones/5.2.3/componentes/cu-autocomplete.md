@@ -134,6 +134,30 @@ Por defecto el menú se abre al recibir foco. Con `min-chars="2"` solo se abre t
 
 > `open()` ignora `min-chars`: es la salida programática. Lo que sí lo bloquea es `disabled`.
 
+## Teclado
+
+El foco queda **siempre en el input**: la sugerencia activa se resalta en el panel y se anuncia
+por `aria-activedescendant`.
+
+| Tecla | Acción |
+|-------|--------|
+| `↓` / `↑` | Abre la lista y mueve la sugerencia activa (saltea las deshabilitadas, con wrap). |
+| `Home` / `End` | Primera / última sugerencia habilitada (con el panel abierto). |
+| `Enter` | Elige la sugerencia activa (sin enviar el formulario). |
+| `Escape` | Cierra el panel. |
+| `Tab` | Sale del campo y cierra el panel. |
+
+```html
+<cu-autocomplete id="teclado" placeholder="Flechas para navegar"></cu-autocomplete>
+```
+
+## Accesibilidad
+
+El input es un `combobox` (`aria-autocomplete="list"`, `aria-haspopup="listbox"`, `aria-expanded`,
+`aria-controls` al panel) y el panel es un `listbox` con cada sugerencia como `option`
+(`aria-selected` en la elegida). Los `id` son únicos por instancia: varios `<cu-autocomplete>` en la
+misma página no comparten ids.
+
 ## Posicionamiento
 
 `position` (`bottom` **default**, `top`, `left`, `right`) y `align` (`start` **default**, `center`, `end`) ubican el panel respecto al campo. `fixed` lo posiciona en `position: fixed` (útil en contenedores con `overflow`).
@@ -216,6 +240,9 @@ check y `selectedItem()` siguen apuntando al item vigente mientras el input diga
 ```
 
 <!-- demo:autocomplete-seleccion -->
+
+Si el panel está abierto y no hay items que mostrar (por ejemplo `open()` con `items` vacío o la
+carga async todavía sin resultados), el panel muestra **“Sin opciones”**.
 
 ## Control programático
 

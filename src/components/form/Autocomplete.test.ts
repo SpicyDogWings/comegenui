@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeAll, vi } from 'vitest'
 import { flushPromises, mount, type VueWrapper } from '@vue/test-utils'
 import Autocomplete from './Autocomplete.vue'
 import Dropdown from '../overlay/Dropdown.vue'
@@ -15,6 +15,11 @@ type AcVm = {
   isOpen: () => boolean
   selectedItem: () => { label: string } | null
 }
+
+// jsdom no implementa `scrollIntoView` y la navegación por teclado lo usa.
+beforeAll(() => {
+  Element.prototype.scrollIntoView = vi.fn()
+})
 
 const vm = (w: ReturnType<typeof mount>) => w.vm as unknown as AcVm
 
@@ -343,6 +348,8 @@ describe('Autocomplete — el panel no queda abierto al salir del campo', () => 
     expect(vm(w).isOpen()).toBe(true)
 
     await w.find('input').trigger('focusout', { relatedTarget: outside })
+    // El cierre se difiere una tarea para que el foco termine de moverse antes de cerrar.
+    await new Promise((resolve) => setTimeout(resolve, 0))
     await flushPromises()
 
     expect(vm(w).isOpen()).toBe(false)
@@ -461,5 +468,121 @@ describe('Autocomplete — item deshabilitado', () => {
     await flushPromises()
     expect(w.emitted('select')).toBeUndefined()
     expect(vm(w).selectedItem()).toBeNull()
+  })
+})
+
+describe('Autocomplete — patrón combobox + listbox (ARIA y teclado)', () => {
+  const items2 = [
+    { label: 'Argentina' },
+    { label: 'Brasil' },
+    { label: 'Chile', disabled: true },
+    { label: 'Colombia' },
+  ]
+
+  it('el input es un combobox que referencia el listbox del panel', async () => {
+    const w = mount(Autocomplete, { props: { items: items2 } })
+    const input = w.find('input')
+    expect(input.attributes('role')).toBe('combobox')
+    expect(input.attributes('aria-autocomplete')).toBe('list')
+    expect(input.attributes('aria-haspopup')).toBe('listbox')
+    expect(input.attributes('aria-expanded')).toBe('false')
+
+    await input.trigger('focus')
+    await flushPromises()
+
+    const panel = w.find('.cu-popover-panel')
+    expect(panel.attributes('role')).toBe('listbox')
+    expect(input.attributes('aria-expanded')).toBe('true')
+    expect(input.attributes('aria-controls')).toBe(panel.attributes('id'))
+  })
+
+  it('cada sugerencia es un `option` con id único, aria-selected y fuera del tab order', async () => {
+    const w = mount(Autocomplete, { props: { items: items2 } })
+    await w.find('input').trigger('focus')
+    await flushPromises()
+
+    const rows = w.findAll('.cu-autocomplete-option')
+    for (const row of rows) {
+      expect(row.attributes('role')).toBe('option')
+      expect(row.attributes('id')).toMatch(/-option-\d+$/)
+      expect(row.attributes('tabindex')).toBe('-1')
+      expect(row.attributes('aria-selected')).toBe('false')
+    }
+    expect(new Set(rows.map((r) => r.attributes('id'))).size).toBe(rows.length)
+  })
+
+  it('flechas mueven el activo salteando deshabilitados y Enter elige', async () => {
+    const w = mount(Autocomplete, { props: { items: items2 } })
+    const input = () => w.find('input')
+
+    await input().trigger('keydown', { key: 'ArrowDown' })
+    await flushPromises()
+    expect(vm(w).isOpen()).toBe(true)
+    const rows = () => w.findAll('.cu-autocomplete-option')
+    expect(input().attributes('aria-activedescendant')).toBe(rows()[0]!.attributes('id'))
+
+    await input().trigger('keydown', { key: 'ArrowDown' })
+    await flushPromises()
+    expect(input().attributes('aria-activedescendant')).toBe(rows()[1]!.attributes('id'))
+
+    // La 3ª está deshabilitada: la flecha salta a la 4ª.
+    await input().trigger('keydown', { key: 'ArrowDown' })
+    await flushPromises()
+    expect(input().attributes('aria-activedescendant')).toBe(rows()[3]!.attributes('id'))
+
+    await input().trigger('keydown', { key: 'Enter' })
+    await flushPromises()
+    expect(vm(w).get()).toBe('Colombia')
+    expect(vm(w).selectedItem()?.label).toBe('Colombia')
+    expect(w.emitted('select')).toHaveLength(1)
+  })
+
+  it('End lleva el activo al último item habilitado', async () => {
+    const w = mount(Autocomplete, { props: { items: items2 } })
+    await w.find('input').trigger('keydown', { key: 'ArrowDown' })
+    await flushPromises()
+    await w.find('input').trigger('keydown', { key: 'End' })
+    await flushPromises()
+
+    const last = w.findAll('.cu-autocomplete-option').at(-1)!
+    expect(w.find('input').attributes('aria-activedescendant')).toBe(last.attributes('id'))
+  })
+
+  it('Escape cierra el panel y deja de anunciar un activo', async () => {
+    const w = mount(Autocomplete, { props: { items: items2 } })
+    await w.find('input').trigger('keydown', { key: 'ArrowDown' })
+    await flushPromises()
+    expect(w.find('input').attributes('aria-activedescendant')).toBeTruthy()
+
+    await w.find('input').trigger('keydown', { key: 'Escape' })
+    await flushPromises()
+
+    expect(vm(w).isOpen()).toBe(false)
+    expect(w.find('input').attributes('aria-activedescendant')).toBeUndefined()
+    expect(w.find('input').attributes('aria-expanded')).toBe('false')
+  })
+
+  it('dos instancias no comparten ids', async () => {
+    const a = mount(Autocomplete, { props: { items: items2 } })
+    const b = mount(Autocomplete, { props: { items: items2 } })
+    await a.find('input').trigger('focus')
+    await b.find('input').trigger('focus')
+    await flushPromises()
+
+    expect(a.find('.cu-popover-panel').attributes('id')).not.toBe(
+      b.find('.cu-popover-panel').attributes('id'),
+    )
+    expect(a.findAll('.cu-autocomplete-option')[0]!.attributes('id')).not.toBe(
+      b.findAll('.cu-autocomplete-option')[0]!.attributes('id'),
+    )
+  })
+
+  it('sin items muestra "Sin opciones" en vez de un panel vacío', async () => {
+    const w = mount(Autocomplete, { props: { items: [] } })
+    vm(w).open()
+    await flushPromises()
+
+    expect(w.find('.cu-autocomplete-empty').text()).toBe('Sin opciones')
+    expect(w.find('.cu-autocomplete-options').exists()).toBe(false)
   })
 })

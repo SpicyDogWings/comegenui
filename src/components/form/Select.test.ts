@@ -5,6 +5,7 @@ import { describe, it, expect, vi, beforeAll } from "vitest";
 import { flushPromises, mount } from "@vue/test-utils";
 import Select from "./Select.vue";
 import Dropdown from "../overlay/Dropdown.vue";
+import Loader from "../information/Loader.vue";
 
 interface Opt {
   value: string;
@@ -315,6 +316,8 @@ describe("Select — el panel no queda abierto al salir del control", () => {
     expect(vm(w).isOpen()).toBe(true);
 
     await toggle(w).trigger("focusout", { relatedTarget: outside });
+    // El cierre se difiere una tarea para que el foco termine de moverse antes de cerrar.
+    await new Promise((resolve) => setTimeout(resolve, 0));
     await flushPromises();
 
     expect(vm(w).isOpen()).toBe(false);
@@ -350,8 +353,7 @@ describe("Select — búsqueda por teclado y cooldown", () => {
     await toggle(w).trigger("click");
     await flushPromises();
 
-    const hidden = w.find(".cu-select-hidden-input");
-    await hidden.trigger("keydown", { key: "c" });
+    await toggle(w).trigger("keydown", { key: "c" });
     await flushPromises();
     expect(w.findComponent(Dropdown).props("cooldown")).toBe(true);
 
@@ -378,7 +380,7 @@ describe("Select — búsqueda por teclado y cooldown", () => {
       scrolled.push(this);
     };
 
-    await w.find(".cu-select-hidden-input").trigger("keydown", { key: "b" });
+    await toggle(w).trigger("keydown", { key: "b" });
     await flushPromises();
     expect(scrolled.at(-1)?.textContent).toContain("Brasil");
 
@@ -388,7 +390,7 @@ describe("Select — búsqueda por teclado y cooldown", () => {
     await flushPromises();
 
     // "c" solo: Chile. Con el texto viejo ("bc") no habría match y no scrollearía.
-    await w.find(".cu-select-hidden-input").trigger("keydown", { key: "c" });
+    await toggle(w).trigger("keydown", { key: "c" });
     await flushPromises();
 
     expect(scrolled.at(-1)?.textContent).toContain("Chile");
@@ -420,5 +422,138 @@ describe("Select — options inválidas", () => {
 
     expect(w.find(".cu-select-empty").exists()).toBe(true);
     expect(vm(w).selectedItem()).toBeNull();
+  });
+});
+
+describe("Select — patrón combobox + listbox (ARIA y teclado)", () => {
+  it("el trigger es un combobox que referencia el listbox del panel", async () => {
+    const w = mount(Select, { props: { options: OPTIONS } });
+    const trigger = toggle(w);
+    expect(trigger.attributes("role")).toBe("combobox");
+    expect(trigger.attributes("aria-haspopup")).toBe("listbox");
+    expect(trigger.attributes("aria-expanded")).toBe("false");
+
+    await trigger.trigger("click");
+    await flushPromises();
+
+    const panel = w.find(".cu-popover-panel");
+    expect(panel.attributes("role")).toBe("listbox");
+    expect(trigger.attributes("aria-expanded")).toBe("true");
+    expect(trigger.attributes("aria-controls")).toBe(panel.attributes("id"));
+    expect(panel.attributes("id")).toBeTruthy();
+  });
+
+  it("cada opción es un `option` con id, aria-selected y fuera del orden de tabulación", async () => {
+    const w = mount(Select, { props: { options: OPTIONS, modelValue: "b" } });
+    await toggle(w).trigger("click");
+    await flushPromises();
+
+    const rows = w.findAll(".cu-select-option");
+    for (const row of rows) {
+      expect(row.attributes("role")).toBe("option");
+      expect(row.attributes("id")).toMatch(/-option-\d+$/);
+      expect(row.attributes("tabindex")).toBe("-1");
+    }
+    expect(rows[1]!.attributes("aria-selected")).toBe("true");
+    expect(rows[0]!.attributes("aria-selected")).toBe("false");
+    expect(new Set(rows.map((r) => r.attributes("id"))).size).toBe(rows.length);
+  });
+
+  it("flechas abren el panel, mueven el activo y Enter selecciona", async () => {
+    const w = mount(Select, { props: { options: OPTIONS } });
+    await toggle(w).trigger("keydown", { key: "ArrowDown" });
+    await flushPromises();
+
+    expect(vm(w).isOpen()).toBe(true);
+    const first = w.findAll(".cu-select-option")[0]!;
+    expect(toggle(w).attributes("aria-activedescendant")).toBe(first.attributes("id"));
+
+    await toggle(w).trigger("keydown", { key: "ArrowDown" });
+    await flushPromises();
+    const second = w.findAll(".cu-select-option")[1]!;
+    expect(toggle(w).attributes("aria-activedescendant")).toBe(second.attributes("id"));
+
+    await toggle(w).trigger("keydown", { key: "Enter" });
+    await flushPromises();
+    expect(vm(w).get()).toBe("b");
+    expect(vm(w).isOpen()).toBe(false);
+    expect(w.emitted("select")).toHaveLength(1);
+  });
+
+  it("las flechas saltean las opciones deshabilitadas y Home/End van a los extremos", async () => {
+    const w = mount(Select, { props: { options: OPTIONS } }); // la 3ª ("C") está deshabilitada
+    await toggle(w).trigger("keydown", { key: "ArrowUp" });
+    await flushPromises();
+    // Abre desde el final y saltea la deshabilitada: "B".
+    expect(toggle(w).attributes("aria-activedescendant")).toBe(
+      w.findAll(".cu-select-option")[1]!.attributes("id"),
+    );
+
+    await toggle(w).trigger("keydown", { key: "ArrowDown" });
+    await flushPromises();
+    // Última habilitada ("B") → wrap a la primera.
+    expect(toggle(w).attributes("aria-activedescendant")).toBe(
+      w.findAll(".cu-select-option")[0]!.attributes("id"),
+    );
+
+    await toggle(w).trigger("keydown", { key: "End" });
+    await flushPromises();
+    expect(toggle(w).attributes("aria-activedescendant")).toBe(
+      w.findAll(".cu-select-option")[1]!.attributes("id"),
+    );
+
+    await toggle(w).trigger("keydown", { key: "Home" });
+    await flushPromises();
+    expect(toggle(w).attributes("aria-activedescendant")).toBe(
+      w.findAll(".cu-select-option")[0]!.attributes("id"),
+    );
+  });
+
+  it("Escape cierra el panel y deja de anunciar un activo", async () => {
+    const w = mount(Select, { props: { options: OPTIONS } });
+    await toggle(w).trigger("keydown", { key: "ArrowDown" });
+    await flushPromises();
+    expect(toggle(w).attributes("aria-activedescendant")).toBeTruthy();
+
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+    await flushPromises();
+
+    expect(vm(w).isOpen()).toBe(false);
+    expect(toggle(w).attributes("aria-activedescendant")).toBeUndefined();
+    expect(toggle(w).attributes("aria-expanded")).toBe("false");
+  });
+
+  it("dos instancias no comparten ids", async () => {
+    const a = mount(Select, { props: { options: OPTIONS } });
+    const b = mount(Select, { props: { options: OPTIONS } }, );
+    await toggle(a).trigger("click");
+    await toggle(b).trigger("click");
+    await flushPromises();
+
+    const idA = a.find(".cu-popover-panel").attributes("id")!;
+    const idB = b.find(".cu-popover-panel").attributes("id")!;
+    expect(idA).not.toBe(idB);
+
+    const optA = a.findAll(".cu-select-option")[0]!.attributes("id");
+    const optB = b.findAll(".cu-select-option")[0]!.attributes("id");
+    expect(optA).not.toBe(optB);
+  });
+
+  it("la barra de cooldown respeta `cooldownVariant` (ghost suave / solid lleno)", async () => {
+    const soft = mount(Select, { props: { options: OPTIONS, searchEnabled: true } });
+    await toggle(soft).trigger("click");
+    await flushPromises();
+    await toggle(soft).trigger("keydown", { key: "b" });
+    await flushPromises();
+    expect(soft.findComponent(Loader).props("color")).toBe("neutral-ghost-hover");
+
+    const full = mount(Select, {
+      props: { options: OPTIONS, searchEnabled: true, cooldownVariant: "solid" },
+    });
+    await toggle(full).trigger("click");
+    await flushPromises();
+    await toggle(full).trigger("keydown", { key: "b" });
+    await flushPromises();
+    expect(full.findComponent(Loader).props("color")).toBe("neutral");
   });
 });
