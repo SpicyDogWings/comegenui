@@ -30,7 +30,8 @@ const props = defineProps({
 });
 
 const tooltipStyles = computed(() => ({
-  '--cu-popover-bg': `var(--cu-color-${props.color})`,
+  // El fondo es la variante segura; el texto sigue siendo el del tema.
+  '--cu-popover-bg': `var(--cu-color-${props.color}-solid)`,
 }));
 </script>
 

@@ -16,7 +16,7 @@ Acá vive la **documentación en sí** (fichas, partials y páginas), fuera del 
 
 ## Estado
 
-✅ **Hecho**: la doc vive en `docs/versiones/5.2.0/` (`componentes/`, `partials/`; las páginas se heredan
+✅ **Hecho**: la doc vive en `docs/versiones/5.2.3/` (`componentes/`, `partials/`; las páginas se heredan
 de `5.1.1/`) y `docs/{componentes,partials,site/componentes}` son **compuestos** (gitignoreados) por
 `pnpm docs:compose`, que corren `dev` y `build`. `gen-api` y `check-docs` ya leen/escriben la fuente
 versionada.

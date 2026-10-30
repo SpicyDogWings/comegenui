@@ -348,3 +348,187 @@ describe("AdvancedTable — edición y paginación", () => {
     expect(ultimoEditSave(w).index).toBe(0);
   });
 });
+
+describe("AdvancedTable — Escape cancela de verdad", () => {
+  it("Escape no guarda: emite edit-cancel, NO edit-save y deja la fila intacta", async () => {
+    const w = mount(AdvancedTable, {
+      props: {
+        columns: [{ key: "nombre", label: "Nombre", editable: true }],
+        data: [{ nombre: "original" }],
+      },
+    });
+
+    await w.find(".cu-editable-cell-view").trigger("click");
+    await flushPromises();
+    const input = w.find(".cu-editable-cell-input");
+    await input.setValue("cancelado");
+
+    // El handler corre en el mismo tick que el cierre del editor: el navegador
+    // despacha `blur` sobre el input que se va de la pantalla.
+    input.element.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    input.element.dispatchEvent(new Event("blur"));
+    await flushPromises();
+
+    expect(w.emitted("edit-cancel")).toBeTruthy();
+    expect(w.emitted("edit-save")).toBeFalsy();
+    expect((w.vm as unknown as { getRow: (i: number) => any }).getRow(0).nombre).toBe("original");
+  });
+});
+
+describe("AdvancedTable — el header ordenable se anuncia", () => {
+  const sortableColumns = [
+    { key: "nombre", label: "Nombre" },
+    { key: "rol", label: "Rol", sortable: "string" as const },
+  ];
+
+  it("`aria-sort` refleja el ciclo none → ascending → descending y el botón tiene nombre accesible", async () => {
+    const w = mount(AdvancedTable, { props: { columns: sortableColumns, data } });
+    const ths = w.findAll("th");
+
+    expect(ths[0].attributes("aria-sort")).toBeUndefined();
+    expect(ths[1].attributes("aria-sort")).toBe("none");
+
+    const boton = ths[1].find("button");
+    expect(boton.attributes("aria-label")).toBe("Ordenar por Rol");
+
+    await boton.trigger("click");
+    expect(w.findAll("th")[1].attributes("aria-sort")).toBe("ascending");
+
+    await w.findAll("th")[1].find("button").trigger("click");
+    expect(w.findAll("th")[1].attributes("aria-sort")).toBe("descending");
+  });
+});
+
+describe("AdvancedTable — itemsPerPage inválido", () => {
+  const filas = () => Array.from({ length: 14 }, (_, i) => ({ id: i + 1, nombre: `Fila ${i + 1}` }));
+
+  it("un `itemsPerPage` 0 o negativo en caliente no vacía la tabla: cae al default (10)", async () => {
+    const w = mount(AdvancedTable, {
+      props: { columns: [{ key: "id", label: "ID" }], data: filas(), pagination: true, itemsPerPage: 5 },
+    });
+    expect(w.findAll(".cu-table-row")).toHaveLength(5);
+
+    await w.setProps({ itemsPerPage: 0 });
+    await flushPromises();
+    expect(w.findAll(".cu-table-row")).toHaveLength(10);
+
+    await w.setProps({ itemsPerPage: -3 });
+    await flushPromises();
+    expect(w.findAll(".cu-table-row")).toHaveLength(10);
+    expect(w.text()).not.toContain("-3");
+  });
+});
+
+describe("AdvancedTable.ce (cu-table vanilla) — estado vacío", () => {
+  const TAG = "cu-table-empty-test";
+  if (!customElements.get(TAG)) {
+    customElements.define(TAG, defineCustomElement(AdvancedTableCe));
+  }
+
+  it("sin `empty` usa el texto por defecto (`No hay datos que mostrar`)", async () => {
+    const el = document.createElement(TAG) as any;
+    el.columns = columns;
+    el.data = [];
+    document.body.appendChild(el);
+    await flushPromises();
+    expect(el.shadowRoot.querySelector(".cu-table-empty")!.textContent!.trim()).toBe(
+      "No hay datos que mostrar",
+    );
+    el.remove();
+  });
+
+  it("un `empty` explícito gana sobre el texto por defecto", async () => {
+    const el = document.createElement(TAG) as any;
+    el.columns = columns;
+    el.data = [];
+    el.empty = "Nada por acá";
+    document.body.appendChild(el);
+    await flushPromises();
+    expect(el.shadowRoot.querySelector(".cu-table-empty")!.textContent!.trim()).toBe("Nada por acá");
+    el.remove();
+  });
+});
+
+describe("AdvancedTable — nombre accesible del toggle de acciones", () => {
+  it("el botón '...' de la fila expone un nombre accesible (es solo un ícono)", async () => {
+    const w = mount(AdvancedTable, { props: { columns, data, actions } });
+    const toggles = w.findAll(".cu-advanced-table-actions-btn");
+    expect(toggles).toHaveLength(1);
+    expect(toggles[0].attributes("aria-label")).toBe("Acciones de la fila");
+  });
+});
+
+describe("AdvancedTable.ce (cu-table vanilla) — getData", () => {
+  const TAG = "cu-table-getdata-test";
+  if (!customElements.get(TAG)) {
+    customElements.define(TAG, defineCustomElement(AdvancedTableCe));
+  }
+
+  it("`getData()` devuelve todas las filas y `getData(fn)` las filtra (igual que en Vue)", async () => {
+    const el = document.createElement(TAG) as any;
+    el.columns = [
+      { key: "nombre", label: "Nombre" },
+      { key: "rol", label: "Rol" },
+    ];
+    el.data = [
+      { nombre: "A", rol: "Admin" },
+      { nombre: "B", rol: "User" },
+      { nombre: "C", rol: "Admin" },
+    ];
+    document.body.appendChild(el);
+    await flushPromises();
+
+    expect(el.getData()).toHaveLength(3);
+    expect(el.getData((row: Record<string, any>) => row.rol === "Admin").map((r: any) => r.nombre)).toEqual([
+      "A",
+      "C",
+    ]);
+    el.remove();
+  });
+});
+
+describe("AdvancedTable — `cell` que devuelve string[]", () => {
+  const conCell = (cell: (row: Record<string, any>) => string | string[]) =>
+    mount(AdvancedTable, {
+      props: {
+        columns: [{ key: "nombre", label: "Nombre" }, { key: "detalle", label: "Detalle", cell }],
+        data: [{ nombre: "Juan", detalle: "x" }],
+      },
+    });
+
+  it("renderiza una línea por elemento (no el JSON que Vue aplica a los arrays)", () => {
+    const w = conCell(() => ["Juan Pérez", "DNI 12345678", "Admin"]);
+    const celda = w.findAll(".cu-table-row td")[1]!;
+    const lineas = celda.findAll(".cu-advanced-table-cell-lines > span");
+
+    expect(lineas.map((l) => l.text())).toEqual(["Juan Pérez", "DNI 12345678", "Admin"]);
+    expect(celda.text()).not.toContain("[");
+    expect(celda.text()).not.toContain('"');
+  });
+
+  it("escapa el contenido: el HTML de una línea se ve como texto, no se inyecta", () => {
+    const w = conCell(() => ['<b class="xss">negrita</b>']);
+    const celda = w.findAll(".cu-table-row td")[1]!;
+
+    expect(celda.find("b").exists()).toBe(false);
+    expect(celda.find(".cu-advanced-table-cell-lines > span").text()).toBe('<b class="xss">negrita</b>');
+  });
+
+  it("un array vacío deja la celda vacía (no cae al valor crudo de la fila)", () => {
+    const w = conCell(() => []);
+    const celda = w.findAll(".cu-table-row td")[1]!;
+
+    expect(celda.find(".cu-advanced-table-cell-lines").exists()).toBe(false);
+    // "x" es `row.detalle`: el fallback del `Table` no debe aparecer.
+    expect(celda.text()).toBe("");
+    expect(celda.text()).not.toContain("x");
+  });
+
+  it("un `cell` que devuelve string sigue renderizando en un solo nodo", () => {
+    const w = conCell(() => "una sola línea");
+    const celda = w.findAll(".cu-table-row td")[1]!;
+
+    expect(celda.find(".cu-advanced-table-cell-lines").exists()).toBe(false);
+    expect(celda.find("span").text()).toBe("una sola línea");
+  });
+});

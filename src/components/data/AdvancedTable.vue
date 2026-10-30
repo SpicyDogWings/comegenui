@@ -38,6 +38,16 @@ const getCellValue = (col: Column, row: Record<string, any>): string | string[] 
   return row[col.key];
 };
 
+// `cell` puede devolver un string (una línea) o un array de strings (varias).
+// El array se renderiza **una línea por elemento**; antes caía en el
+// `JSON.stringify` que Vue aplica a los arrays. Un array vacío no renderiza nada
+// (`[]`), y el string devuelve `null` para caer en el render de siempre.
+const getCellLines = (col: Column, row: Record<string, any>): string[] | null => {
+  const value = getCellValue(col, row);
+  if (!Array.isArray(value)) return null;
+  return value.map((line) => (line == null ? "" : String(line)));
+};
+
 const getCellBadges = (col: Column, row: Record<string, any>): BadgeConfig[] => {
   return col.badges ? col.badges(row) : [];
 };
@@ -203,6 +213,18 @@ interface Column {
   cellDisabled?: (row: Record<string, any>) => boolean; // Celda deshabilitada (intersección fila × columna)
 }
 
+/** Tamaño de página que se usa cuando `itemsPerPage` no es un entero ≥ 1. */
+const DEFAULT_ITEMS_PER_PAGE = 10;
+
+// `itemsPerPage` llega del consumidor (y del selector de página): un 0, un
+// negativo, un NaN o un decimal dejan el paginador en un estado imposible
+// (`Mostrando 1 - -5 de 12`, página vacía con datos). Se normaliza en un solo
+// lugar y se usa en las tres entradas: inicial, prop en caliente y selector.
+const normalizeItemsPerPage = (value: unknown): number => {
+  const size = Number(value);
+  return Number.isFinite(size) && size >= 1 ? Math.floor(size) : DEFAULT_ITEMS_PER_PAGE;
+};
+
 const props = defineProps({
   columns: { type: Array as () => Column[], required: false, default: () => [] },
   data: { type: Array as () => Record<string, any>[], required: false, default: () => [] },
@@ -343,14 +365,15 @@ watch([sortBy, sortDir], () => pagination.setCurrentPage(1));
 
 const pagination = usePagination(sortedData, {
   initialPage: 1,
-  initialItemsPerPage: props.itemsPerPage,
+  initialItemsPerPage: normalizeItemsPerPage(props.itemsPerPage),
   showPageSize: props.showPageSize,
   pageSizeOptions: props.pageSizeOptions,
 });
 
 watch(() => props.itemsPerPage, (newVal) => {
-  if (newVal !== pagination.itemsPerPage.value) {
-    pagination.setItemsPerPage(newVal);
+  const size = normalizeItemsPerPage(newVal);
+  if (size !== pagination.itemsPerPage.value) {
+    pagination.setItemsPerPage(size);
   }
 });
 
@@ -359,7 +382,11 @@ watch(searchQuery, (newVal) => { emit("update:search", newVal); pagination.setCu
 
 const handleSearchUpdate = (value: string) => { searchQuery.value = value; };
 const handlePageChange = (page: number) => { pagination.setCurrentPage(page); emit("update:currentPage", page); };
-const handlePageSizeChange = (size: number) => { pagination.setItemsPerPage(size); emit("update:itemsPerPage", size); };
+const handlePageSizeChange = (size: number) => {
+  const normalized = normalizeItemsPerPage(size);
+  pagination.setItemsPerPage(normalized);
+  emit("update:itemsPerPage", normalized);
+};
 
 // Colección que `Table` renderiza: con paginación, la página actual; sin ella,
 // todas las filas filtradas/ordenadas. El índice que emite una celda es una
@@ -380,6 +407,23 @@ const augmentedColumns = computed(() =>
     : props.columns
 );
 
+// `aria-sort` va en el `<th>` (no en el botón): es el estado del ordenamiento de
+// la columna lo que anuncia el lector de pantalla, y sin él una tabla ordenable
+// es indistinguible de una estática. `Table` lo aplica tal cual al header.
+const headerAttrs = computed(() => {
+  const attrs: Record<string, Record<string, string>> = {};
+  for (const col of props.columns) {
+    if (!col.sortable) continue;
+    attrs[col.key] = {
+      'aria-sort':
+        sortBy.value === col.key && sortDir.value
+          ? sortDir.value === 'asc' ? 'ascending' : 'descending'
+          : 'none',
+    };
+  }
+  return attrs;
+});
+
 const tableProps = computed(() => ({
   columns: augmentedColumns.value,
   data: renderedData.value,
@@ -391,6 +435,7 @@ const tableProps = computed(() => ({
   footer: props.footer,
   compact: props.compact,
   maxHeight: props.tableMaxHeight,
+  headerAttrs: headerAttrs.value,
 }));
 
 const tableStyles = computed(() => ({
@@ -444,8 +489,9 @@ defineExpose({
             <Button
               v-if="column.sortable"
               :color="props.color"
-              :style="props.variant === 'solid' ? { '--btn-bg': 'var(--cu-color-surface)' } : {}"
+              :style="props.variant === 'solid' ? { '--btn-text': 'var(--cu-color-surface)' } : {}"
               variant="ghost"
+              :aria-label="`Ordenar por ${column.label ?? column.key}`"
               @click.stop="handleSort(column.key)"
             >
               <template v-if="sortBy === column.key && sortDir === 'asc'">
@@ -509,7 +555,19 @@ defineExpose({
           @edit-error="(e: any) => { const displayIndex = e.index; const originalIndex = getOriginalIndex(displayIndex); const cellKey = getCellKey(displayIndex, e.column.key); validationStates[cellKey] = { success: false, error: 'Formato inválido' }; emit('edit-error', { ...e, index: originalIndex }); }"
         />
 
-        <span v-else-if="hasCellFunction(col)">{{ getCellValue(col, row) }}</span>
+        <!-- `cell` custom: array de strings = una línea por elemento; string = un nodo. -->
+        <template v-else-if="hasCellFunction(col)">
+          <div v-if="getCellLines(col, row)?.length" class="cu-advanced-table-cell-lines">
+            <span
+              v-for="(line, lineIndex) in getCellLines(col, row)"
+              :key="`cell-${index}-${col.key}-${lineIndex}`"
+            >{{ line }}</span>
+          </div>
+          <span v-else-if="getCellLines(col, row) === null">{{ getCellValue(col, row) }}</span>
+          <!-- Array vacío: celda vacía. Sin este nodo el slot quedaría vacío y el
+               `Table` caería a su fallback (el valor crudo de la fila). -->
+          <span v-else></span>
+        </template>
 
         <div v-else-if="col.key === '__actions__' && hasVisibleRowActions(row)" class="cu-advanced-table-actions">
           <DropdownMenu
@@ -526,6 +584,7 @@ defineExpose({
                 color="neutral"
                 variant="ghost"
                 :disabled="isRowDisabled(row)"
+                aria-label="Acciones de la fila"
                 @click="toggle"
                 class="cu-advanced-table-actions-btn"
               >
@@ -585,6 +644,14 @@ defineExpose({
   align-items: center;
   flex-wrap: wrap;
   gap: var(--cu-space-sm);
+}
+
+/* `cell` que devuelve string[]: una línea por elemento. */
+.cu-advanced-table-cell-lines {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cu-space-2xs);
+  white-space: pre-line;
 }
 
 .cu-advanced-table-icon {

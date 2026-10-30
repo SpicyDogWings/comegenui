@@ -422,7 +422,11 @@ defineExpose({
 
 const colorStyles = computed(() => ({
   '--cal-accent': `var(--cu-color-${props.color})`,
-  '--cal-accent-hover': `var(--cu-color-${props.color}-hover)`,
+  '--cal-solid': `var(--cu-color-${props.color}-solid)`,
+  '--cal-solid-hover': `var(--cu-color-${props.color}-solid-hover)`,
+  '--cal-solid-text': `var(--cu-color-surface)`,
+  '--cal-accent-text': `var(--cu-color-${props.color}-text)`,
+  '--cal-accent-border': `var(--cu-color-${props.color}-border)`,
   '--cal-soft': `var(--cu-color-${props.color}-soft)`,
   '--cal-soft-hover': `var(--cu-color-${props.color}-soft-hover)`,
   '--cal-subtle': `var(--cu-color-${props.color}-subtle)`,
@@ -572,33 +576,33 @@ const colorStyles = computed(() => ({
    confundirse con el día seleccionado — se distingue solo por el color. */
 .cu-calendar-day.cu-calendar-day--today {
   background: transparent;
-  color: var(--cal-accent);
+  color: var(--cal-accent-text);
   font-weight: var(--cu-font-weight-semibold);
 }
 
 /* Variantes del día seleccionado */
 .cu-calendar-day--selected.cu-calendar-day--solid {
-  background: var(--cal-accent);
-  /* texto sobre solid SIEMPRE con surface (blanco), nunca -text (es el color oscurecido) */
-  color: var(--cu-color-surface);
+  background: var(--cal-solid);
+  /* Solid mantiene el texto del tema sobre la variante de fondo ajustada. */
+  color: var(--cal-solid-text);
 }
 .cu-calendar-day--selected.cu-calendar-day--solid:hover:not(:disabled) {
-  background: var(--cal-accent-hover);
+  background: var(--cal-solid-hover);
 }
 .cu-calendar-day--selected.cu-calendar-day--outlined {
-  outline: 1.5px solid var(--cal-accent);
-  color: var(--cal-accent);
+  outline: 1.5px solid var(--cal-accent-border);
+  color: var(--cal-accent-text);
 }
 .cu-calendar-day--selected.cu-calendar-day--soft {
   background: var(--cal-soft);
-  color: var(--cal-accent);
+  color: var(--cal-accent-text);
 }
 .cu-calendar-day--selected.cu-calendar-day--soft:hover:not(:disabled) {
   background: var(--cal-soft-hover);
 }
 .cu-calendar-day--selected.cu-calendar-day--subtle {
   background: var(--cal-subtle);
-  color: var(--cal-accent);
+  color: var(--cal-accent-text);
   box-shadow: inset 0 0 0 var(--cu-border-thin) var(--cal-subtle-border);
 }
 
@@ -642,13 +646,13 @@ const colorStyles = computed(() => ({
   border-radius: 0;
 }
 .cu-calendar-day.cu-calendar-day--range-start {
-  background: var(--cal-accent);
-  color: var(--cu-color-surface);
+  background: var(--cal-solid);
+  color: var(--cal-solid-text);
   border-radius: var(--cu-radius-sm) 0 0 var(--cu-radius-sm);
 }
 .cu-calendar-day.cu-calendar-day--range-end {
-  background: var(--cal-accent);
-  color: var(--cu-color-surface);
+  background: var(--cal-solid);
+  color: var(--cal-solid-text);
   border-radius: 0 var(--cu-radius-sm) var(--cu-radius-sm) 0;
 }
 .cu-calendar-day--range-start.cu-calendar-day--range-end {

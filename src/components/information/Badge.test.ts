@@ -24,14 +24,18 @@ describe("Badge — variantes y color", () => {
   it("traduce el color semántico a las CSS custom properties", () => {
     const w = mount(Badge, { props: { color: "danger", variant: "subtle" } });
     const style = root(w).attributes("style") ?? "";
-    expect(style).toContain("--badge-bg: var(--cu-color-danger)");
+    expect(style).toContain("--badge-border: var(--cu-color-danger-border)");
     expect(style).toContain("--badge-subtle: var(--cu-color-danger-subtle)");
     expect(style).toContain("--badge-subtle-border: var(--cu-color-danger-subtle-border)");
+    // Solid: fondo ajustado por el generador y texto del tema (nunca negro por color).
+    expect(style).toContain("--badge-solid: var(--cu-color-danger-solid)");
+    expect(style).toContain("--badge-solid-text: var(--cu-color-surface)");
+    expect(style).not.toContain("--badge-on");
   });
 
   it("default color es neutral", () => {
     const w = mount(Badge);
-    expect(root(w).attributes("style") ?? "").toContain("var(--cu-color-neutral)");
+    expect(root(w).attributes("style") ?? "").toContain("var(--cu-color-neutral-solid)");
   });
 });
 

@@ -44,6 +44,7 @@ Los valores de `color` / `variant` / `size` están en «Atributos» / «Props»,
 | `size` | `"sm" \| "md" \| "lg"` | `'md'` | Tamaño: `sm`, `md`, `lg` |
 | `disabled` | `boolean` | `false` | Estado deshabilitado |
 | `target` | `"_self" \| "_blank" \| "_parent" \| "_top"` | `"_self"` | Target del link cuando `to` está definido: `_self`, `_blank`, `_parent`, `_top` |
+| `icon-only` | `boolean` | `false` | Padding cuadrado para un botón de solo icono. El contenido necesita nombre accesible (`aria-label` o texto) |
 | `to` | `string` | `—` | Si se especifica, el botón se renderiza como `<a>` |
 <!-- /@api:atributos -->
 
@@ -85,6 +86,7 @@ No expone métodos.
 | `size` | `"sm" \| "md" \| "lg"` | `'md'` | Tamaño: `sm`, `md`, `lg` |
 | `disabled` | `boolean` | `false` | Estado deshabilitado |
 | `target` | `"_self" \| "_blank" \| "_parent" \| "_top"` | `"_self"` | Target del link cuando `to` está definido: `_self`, `_blank`, `_parent`, `_top` |
+| `iconOnly` | `boolean` | `false` | Padding cuadrado para un botón de solo icono. El contenido necesita nombre accesible (`aria-label` o texto) |
 | `to` | `string` | `—` | Si se especifica, el botón se renderiza como `<a>` |
 <!-- /@api:props -->
 

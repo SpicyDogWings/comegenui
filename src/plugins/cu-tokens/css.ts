@@ -1,13 +1,24 @@
-import { darken, toHex, lighten, transparentize, mix } from 'color2k'
+import { darken, toHex, lighten, transparentize, mix, parseToRgba } from 'color2k'
 import { DEFAULTS, DEFAULT_COLORS, DEFAULT_OPACITIES, extractColors, extractShared } from './defaults'
 import { hexToRgba } from '@/lib/colors'
 import { normalizeShadow } from './shadow'
 
 let styleEl: HTMLStyleElement | null = null
 
+/** Mínimo WCAG para texto normal (12–18px). */
+export const MIN_TEXT_CONTRAST = 4.5
+/** Mínimo WCAG para componentes/bordes no textuales. */
+export const MIN_BORDER_CONTRAST = 3
+
 export function colorVar(name: string, value: string, surface: string, codeBg: string) {
+  // Solid/none: el texto es SIEMPRE el del tema (`surface`); el color de fondo
+  // se ajusta hasta que ese texto alcance 4.5:1.
+  const solid = solidColor(value, surface)
   return `--cu-color-${name}: ${value};
-    --cu-color-${name}-text: ${toHex(darken(value, 0.25))};
+    --cu-color-${name}-solid: ${solid};
+    --cu-color-${name}-solid-hover: ${solidStep(solid, surface, 0.1)};
+    --cu-color-${name}-solid-active: ${solidStep(solid, surface, 0.2)};
+    --cu-color-${name}-text: ${textColor(value, surface)};
     --cu-color-${name}-hover: ${toHex(darken(value, 0.1))};
     --cu-color-${name}-active: ${toHex(lighten(value, 0.1))};
     --cu-color-${name}-ghost-hover: ${toHex(transparentize(value, 0.9))};
@@ -18,7 +29,8 @@ export function colorVar(name: string, value: string, surface: string, codeBg: s
     --cu-color-${name}-subtle: ${toHex(transparentize(value, 0.9))};
     --cu-color-${name}-subtle-hover: ${toHex(transparentize(value, 0.8))};
     --cu-color-${name}-subtle-active: ${toHex(transparentize(value, 0.7))};
-    --cu-color-${name}-subtle-border: ${transparentize(value, 0.5)};
+    --cu-color-${name}-subtle-border: ${borderColor(value, surface)};
+    --cu-color-${name}-border: ${ensureContrast(value, surface, MIN_BORDER_CONTRAST)};
     --cu-color-${name}-code: ${readable(value, codeBg)};`
 }
 
@@ -31,9 +43,74 @@ function relLuma(hex: string): number {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b
 }
 
-function contrast(a: string, b: string): number {
+/** Luminancia relativa WCAG de un color (0–1). */
+export const relativeLuminance = relLuma
+
+/** Contraste WCAG 2.x entre dos colores. */
+export function contrastRatio(a: string, b: string): number {
   const [hi, lo] = [relLuma(a), relLuma(b)].sort((x, y) => y - x)
   return ((hi ?? 0) + 0.05) / ((lo ?? 0) + 0.05)
+}
+
+/** Compone `fg` con alfa sobre `bg` opaco, igual que el navegador (sRGB). */
+export function compositeOver(fg: string, bg: string, alpha: number): string {
+  const f = parseToRgba(fg)
+  const b = parseToRgba(bg)
+  const channel = (index: number) => Math.round((f[index] ?? 0) * alpha + (b[index] ?? 0) * (1 - alpha))
+  return toHex(`rgb(${channel(0)}, ${channel(1)}, ${channel(2)})`)
+}
+
+/**
+ * Fondo seguro para solid/none: el color base ajustado (oscurecido en temas
+ * claros, aclarado en oscuros) en pasos de 1 % hasta que el texto del tema
+ * (`surface`) alcance 4.5:1. `darken`/`lighten` de color2k trabajan en HSL, así
+ * que hue y saturación se conservan.
+ */
+export function solidColor(value: string, surface: string): string {
+  if (contrastRatio(value, surface) >= MIN_TEXT_CONTRAST) return toHex(value)
+  const towardLight = relLuma(surface) < 0.5
+  for (let amount = 0.01; amount <= 1.0001; amount += 0.01) {
+    const candidate = toHex(towardLight ? lighten(value, amount) : darken(value, amount))
+    if (contrastRatio(candidate, surface) >= MIN_TEXT_CONTRAST) return candidate
+  }
+  return towardLight ? '#ffffff' : '#000000'
+}
+
+/** Hover/active de solid: se aleja del `surface` desde el fondo ya seguro. */
+function solidStep(solid: string, surface: string, amount: number): string {
+  return toHex(relLuma(surface) < 0.5 ? lighten(solid, amount) : darken(solid, amount))
+}
+
+/** Mezcla hacia blanco/negro hasta alcanzar `min` de contraste contra `bg`. */
+export function ensureContrast(color: string, bg: string, min: number): string {
+  if (contrastRatio(color, bg) >= min) return toHex(color)
+  const target = luma01(bg) < 0.5 ? '#ffffff' : '#000000'
+  let best = color
+  for (let amount = 0.05; amount <= 1.0001; amount += 0.05) {
+    best = toHex(mix(color, target, amount))
+    if (contrastRatio(best, bg) >= min) return best
+  }
+  return best
+}
+
+/**
+ * Texto del color base sobre superficie o sobre sus tintes (soft/subtle/ghost).
+ * El peor fondo es el tinte más fuerte (soft-active, 35%): está entre la
+ * superficie y el color, o sea lo más cerca que puede quedar del texto.
+ */
+export function textColor(value: string, surface: string): string {
+  return ensureContrast(value, compositeOver(value, surface, 0.35), MIN_TEXT_CONTRAST)
+}
+
+/**
+ * Borde de las variantes subtle/outlined. Se mide contra los dos fondos
+ * adyacentes: la superficie y el tinte de la propia variante. >= 3:1.
+ */
+function borderColor(value: string, surface: string): string {
+  const tint = compositeOver(value, surface, 0.3)
+  let border = ensureContrast(value, tint, MIN_BORDER_CONTRAST)
+  border = ensureContrast(border, surface, MIN_BORDER_CONTRAST)
+  return border
 }
 
 /** Acento legible sobre `bg`: mezcla hacia blanco/negro hasta alcanzar `min`
@@ -44,7 +121,7 @@ export function readable(color: string, bg: string, min = 4.5): string {
   let best = color
   for (let amount = 0.35; amount <= 1.0001; amount += 0.05) {
     best = toHex(mix(color, target, amount))
-    if (contrast(best, bg) >= min) return best
+    if (contrastRatio(best, bg) >= min) return best
   }
   return best
 }

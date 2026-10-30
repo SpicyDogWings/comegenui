@@ -35,7 +35,9 @@ const props = defineProps({
 });
 
 const colorStyles = computed(() => ({
-  '--card-bg': `var(--cu-color-${props.color})`,
+  '--card-solid': `var(--cu-color-${props.color}-solid)`,
+  '--card-solid-text': `var(--cu-color-surface)`,
+  '--card-border': `var(--cu-color-${props.color}-border)`,
   '--card-text': `var(--cu-color-${props.color}-text)`,
   '--card-soft': `var(--cu-color-${props.color}-soft)`,
   '--card-subtle': `var(--cu-color-${props.color}-subtle)`,
@@ -160,11 +162,11 @@ onBeforeUnmount(() => {
 
 /* solid */
 .cu-card.cu-card--solid {
-  background-color: var(--card-bg);
-  color: var(--cu-color-surface);
+  background-color: var(--card-solid);
+  color: var(--card-solid-text);
 }
 .cu-card.cu-card--solid .cu-card-title {
-  color: var(--cu-color-surface);
+  color: var(--card-solid-text);
 }
 
 /* soft */
@@ -184,7 +186,7 @@ onBeforeUnmount(() => {
 .cu-card.cu-card--outlined {
   background-color: transparent;
   color: var(--card-text);
-  border-color: var(--card-bg);
+  border-color: var(--card-border);
 }
 
 .cu-card-media {

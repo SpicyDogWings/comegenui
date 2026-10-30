@@ -125,11 +125,11 @@ const props = defineProps({
     required: false,
     default: () => [],
   },
-  /** Texto a mostrar cuando no hay datos. Si se omite, usa `"No hay datos que mostrar"` */
+  /** Texto a mostrar cuando no hay datos */
   empty: {
     type: String,
     required: false,
-    default: "",
+    default: "No hay datos que mostrar",
   },
   /** Habilita paginación interna */
   pagination: {
@@ -203,7 +203,7 @@ const tableRef = ref<InstanceType<typeof AdvancedTable> | null>(null);
 
 defineExpose({
   updateRow: (rowIndex: number, newData: Record<string, any>) => tableRef.value?.updateRow(rowIndex, newData),
-  getData: () => tableRef.value?.getData(),
+  getData: (filterFn?: (row: Record<string, any>) => boolean) => tableRef.value?.getData(filterFn),
   getRow: (rowIndex: number) => tableRef.value?.getRow(rowIndex),
   removeRow: (rowIndex: number) => tableRef.value?.removeRow(rowIndex),
   addRow: (newRow: Record<string, any>) => tableRef.value?.addRow(newRow),

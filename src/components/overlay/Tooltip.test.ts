@@ -68,7 +68,7 @@ describe("Tooltip — contenido", () => {
 describe("Tooltip — apariencia", () => {
   it("expone el color semántico en el estilo", () => {
     const w = mount(Tooltip, { props: { text: "t", color: "primary" } });
-    expect(w.attributes("style") ?? "").toContain("--cu-popover-bg: var(--cu-color-primary)");
+    expect(w.attributes("style") ?? "").toContain("--cu-popover-bg: var(--cu-color-primary-solid)");
   });
 
   it("usa role=tooltip en el panel", async () => {

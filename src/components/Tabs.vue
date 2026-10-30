@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, ref, defineModel, type PropType } from "vue";
-import { isSize, isTabsVariant } from '@/utils/validators'
+import { computed, nextTick, ref, useId, watch, type PropType } from "vue";
+import DOMPurify from 'dompurify'
+import { isColor, isSize, isTabsVariant } from '@/utils/validators'
 
 interface TabItem {
   key: string;
@@ -23,6 +24,7 @@ const props = defineProps({
     type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     required: false,
     default: "primary",
+    validator: isColor,
   },
   variant: {
     type: String as PropType<'ghost' | 'solid' | 'boxed' | 'soft'>,
@@ -43,30 +45,88 @@ const props = defineProps({
   },
 });
 
+// El campo `icon` es HTML/SVG del consumidor: se sanitiza antes de `v-html`.
+// DOMPurify deja intactos los SVG válidos y elimina `<script>`, handlers `on*`
+// y URLs peligrosas (`javascript:`), que ejecutarían en el documento anfitrión.
+const sanitizeIcon = (html?: string) => (html ? DOMPurify.sanitize(html) : undefined)
+
+// `tabs` puede llegar null/undefined (p. ej. `el.tabs = null` en el custom
+// element) o con items basura: sin esta normalización el render lanzaba
+// `Cannot read properties of null (reading 'find')`. Se filtran sólo los items
+// sin `key` utilizable, conservando el orden del array original.
+const tabList = computed<TabItem[]>(() => {
+  const raw = Array.isArray(props.tabs) ? props.tabs : []
+  return raw
+    .filter((t): t is TabItem => !!t && typeof t === 'object' && typeof t.key === 'string' && t.key.length > 0)
+    .map((t) => ({ ...t, icon: sanitizeIcon(t.icon) }))
+})
+
 const emit = defineEmits(["change"]);
 /** Clave del tab activo (v-model). */
 const active = defineModel<string>({ default: "" });
 
+// Un color fuera del set no tiene tokens: el tab activo quedaba sin fondo y con
+// el texto del tema encima (invisible en light). Cae al color por defecto.
+const safeColor = computed(() => (isColor(props.color) ? props.color : 'primary'))
+
+// El tab activo es `modelValue` si apunta a una tab habilitada; si no, el
+// primero habilitado. Una tab deshabilitada nunca queda activa: sería la única
+// con `tabindex="0"` y, al estar disabled, el tablist quedaría sin parada de
+// teclado (la navegación por flechas y `setActive` ya la saltean).
 const activeKey = computed(() => {
-  if (active.value && props.tabs.some((t) => t.key === active.value)) return active.value;
-  return props.tabs.find((t) => !t.disabled)?.key ?? "";
+  const requested = tabList.value.find((t) => t.key === active.value)
+  if (requested && !requested.disabled) return requested.key
+  return tabList.value.find((t) => !t.disabled)?.key ?? "";
 });
 
 const tabRefs = ref<Record<string, HTMLElement | null>>({});
 
+// Las tabs se renderizan en el light DOM (Vue), así que sus ids conviven con
+// los del resto de la página: un prefijo por instancia evita colisiones entre
+// dos `<Tabs>` con las mismas keys. `useId()` es único por app; la key se
+// sanitiza para que sea un id válido (sin espacios ni caracteres raros).
+const uid = useId();
+const idSafe = (value: string) => value.replace(/[^A-Za-z0-9_-]/g, "-");
+const idPrefix = `cu-tabs-${idSafe(uid)}`;
+
+// Cuando la tab enfocada desaparece (el consumidor la saca del array), el
+// navegador manda el foco a BODY y el tablist queda sin parada de teclado.
+// Si el foco estaba en la tab que se fue, se traslada a la nueva activa.
+let focusedKey: string | null = null;
+const onTabFocus = (key: string) => { focusedKey = key; };
+
+watch(activeKey, async (next, prev) => {
+  if (!prev || next === prev || focusedKey !== prev) return;
+  await nextTick();
+  const activeEl = document.activeElement;
+  if ((!activeEl || activeEl === document.body) && next) {
+    tabRefs.value[next]?.focus();
+    focusedKey = next;
+  }
+});
+
 const tabStyles = computed(() => ({
-  '--tabs-color': `var(--cu-color-${props.color})`,
-  '--tabs-soft': `var(--cu-color-${props.color}-soft)`,
-  '--tabs-soft-hover': `var(--cu-color-${props.color}-soft-hover)`,
-  '--tabs-soft-active': `var(--cu-color-${props.color}-soft-active)`,
-  '--tabs-subtle-border': `var(--cu-color-${props.color}-subtle-border)`,
+  '--tabs-solid': `var(--cu-color-${safeColor.value}-solid)`,
+  '--tabs-solid-text': `var(--cu-color-surface)`,
+  '--tabs-text': `var(--cu-color-${safeColor.value}-text)`,
+  '--tabs-soft': `var(--cu-color-${safeColor.value}-soft)`,
+  '--tabs-soft-hover': `var(--cu-color-${safeColor.value}-soft-hover)`,
+  '--tabs-soft-active': `var(--cu-color-${safeColor.value}-soft-active)`,
+  '--tabs-subtle-border': `var(--cu-color-${safeColor.value}-subtle-border)`,
 }));
 
 const isTabDisabled = (tab: TabItem) => props.disabled || !!tab.disabled;
 
+const panelId = (key: string) => `${idPrefix}-panel-${idSafe(key)}`;
+const tabId = (key: string) => `${idPrefix}-tab-${idSafe(key)}`;
+// El panel sólo existe en el DOM cuando la tab está activa (v-if) o es
+// keepAlive; `aria-controls` a un id inexistente es un IDREF inválido, así que
+// sólo se declara cuando apunta a algo real.
+const hasPanel = (tab: TabItem) => !!tab.keepAlive || tab.key === activeKey.value;
+
 const select = (key: string) => {
   if (props.disabled) return;
-  const tab = props.tabs.find((t) => t.key === key);
+  const tab = tabList.value.find((t) => t.key === key);
   if (!tab || tab.disabled) return;
   if (key === activeKey.value) return;
   active.value = key;
@@ -78,12 +138,12 @@ function focusTab(key: string) {
 }
 
 const move = (dir: -1 | 1) => {
-  if (props.disabled || props.tabs.length === 0) return;
-  const idx = props.tabs.findIndex((t) => t.key === activeKey.value);
-  const length = props.tabs.length;
+  if (props.disabled || tabList.value.length === 0) return;
+  const idx = tabList.value.findIndex((t) => t.key === activeKey.value);
+  const length = tabList.value.length;
   for (let i = 1; i <= length; i++) {
     const nextIdx = (idx + dir * i + length) % length;
-    const tab = props.tabs[nextIdx];
+    const tab = tabList.value[nextIdx];
     if (tab && !tab.disabled) {
       select(tab.key);
       focusTab(tab.key);
@@ -96,8 +156,8 @@ function onKeydown(e: KeyboardEvent) {
   if (props.disabled) return;
   if (e.key === "ArrowRight") { e.preventDefault(); move(1); }
   else if (e.key === "ArrowLeft") { e.preventDefault(); move(-1); }
-  else if (e.key === "Home") { e.preventDefault(); const first = props.tabs.find((t) => !t.disabled); if (first) { select(first.key); focusTab(first.key); } }
-  else if (e.key === "End") { e.preventDefault(); const last = [...props.tabs].reverse().find((t) => !t.disabled); if (last) { select(last.key); focusTab(last.key); } }
+  else if (e.key === "Home") { e.preventDefault(); const first = tabList.value.find((t) => !t.disabled); if (first) { select(first.key); focusTab(first.key); } }
+  else if (e.key === "End") { e.preventDefault(); const last = [...tabList.value].reverse().find((t) => !t.disabled); if (last) { select(last.key); focusTab(last.key); } }
 }
 
 /** Devuelve la clave del tab activo. */
@@ -120,7 +180,7 @@ defineExpose({ getActive, setActive, next, prev });
   >
     <div class="cu-tabs-header" role="tablist" :aria-orientation="'horizontal'" @keydown="onKeydown">
       <button
-        v-for="tab in props.tabs"
+        v-for="tab in tabList"
         :key="tab.key"
         :ref="(el) => { tabRefs[tab.key] = el as HTMLElement | null; }"
         type="button"
@@ -128,10 +188,11 @@ defineExpose({ getActive, setActive, next, prev });
         :class="{ 'cu-tabs-tab--active': tab.key === activeKey }"
         role="tab"
         :aria-selected="tab.key === activeKey"
-        :aria-controls="`cu-tabs-panel-${tab.key}`"
-        :id="`cu-tabs-tab-${tab.key}`"
+        :aria-controls="hasPanel(tab) ? panelId(tab.key) : undefined"
+        :id="tabId(tab.key)"
         :disabled="isTabDisabled(tab)"
         :tabindex="tab.key === activeKey ? 0 : -1"
+        @focus="onTabFocus(tab.key)"
         @click="select(tab.key)"
       >
         <span v-if="tab.icon" class="cu-tabs-tab-icon" v-html="tab.icon"></span>
@@ -142,14 +203,14 @@ defineExpose({ getActive, setActive, next, prev });
 
     <!-- Panels: los keepAlive se montan siempre y se ocultan con v-show (estado
          persistente); los normales se montan solo cuando están activos (v-if). -->
-    <template v-for="tab in props.tabs" :key="tab.key">
+    <template v-for="tab in tabList" :key="tab.key">
       <div
         v-if="tab.keepAlive || tab.key === activeKey"
         v-show="tab.key === activeKey"
-        :id="`cu-tabs-panel-${tab.key}`"
+        :id="panelId(tab.key)"
         class="cu-tabs-panel"
         role="tabpanel"
-        :aria-labelledby="`cu-tabs-tab-${tab.key}`"
+        :aria-labelledby="tabId(tab.key)"
       >
         <slot :name="tab.key"></slot>
       </div>
@@ -167,6 +228,14 @@ defineExpose({ getActive, setActive, next, prev });
   display: flex;
   gap: var(--cu-space-2xs);
   box-sizing: border-box;
+  /* Muchas tabs en un contenedor angosto: el tablist mantiene UNA fila y
+     scrollea en horizontal en vez de desbordar la caja del componente. Las
+     tabs no se aplastan (`flex: 0 0 auto`): conservan su ancho mínimo de
+     contenido y el scroll queda en el header. */
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--cu-border-color) transparent;
 }
 
 .cu-tabs-tab {
@@ -182,10 +251,11 @@ defineExpose({ getActive, setActive, next, prev });
   display: inline-flex;
   align-items: center;
   gap: var(--cu-space-xs);
+  flex: 0 0 auto;
 }
 
 .cu-tabs-tab:hover:not(:disabled) {
-  color: var(--tabs-color);
+  color: var(--tabs-text);
 }
 
 /* El icono hereda el color del tab (default/hover/active). Se encadena
@@ -242,8 +312,8 @@ defineExpose({ getActive, setActive, next, prev });
 }
 
 .cu-tabs--ghost .cu-tabs-tab--active {
-  color: var(--tabs-color);
-  border-bottom-color: var(--tabs-color);
+  color: var(--tabs-text);
+  border-bottom-color: var(--tabs-text);
 }
 
 /* Variant: solid */
@@ -260,13 +330,13 @@ defineExpose({ getActive, setActive, next, prev });
 }
 
 .cu-tabs--solid .cu-tabs-tab.cu-tabs-tab--active {
-  background-color: var(--tabs-color);
-  color: var(--cu-color-surface);
+  background-color: var(--tabs-solid);
+  color: var(--tabs-solid-text);
 }
 
 .cu-tabs--solid .cu-tabs-tab.cu-tabs-tab--active:hover:not(:disabled) {
-  background-color: var(--tabs-color);
-  color: var(--cu-color-surface);
+  background-color: var(--tabs-solid);
+  color: var(--tabs-solid-text);
 }
 
 /* Variant: boxed */
@@ -286,13 +356,13 @@ defineExpose({ getActive, setActive, next, prev });
 }
 
 .cu-tabs--boxed .cu-tabs-tab.cu-tabs-tab--active {
-  background-color: var(--tabs-color);
-  color: var(--cu-color-surface);
+  background-color: var(--tabs-solid);
+  color: var(--tabs-solid-text);
 }
 
 .cu-tabs--boxed .cu-tabs-tab.cu-tabs-tab--active:hover:not(:disabled) {
-  background-color: var(--tabs-color);
-  color: var(--cu-color-surface);
+  background-color: var(--tabs-solid);
+  color: var(--tabs-solid-text);
 }
 
 /* Variant: soft (soft container box + solid active) */
@@ -312,13 +382,13 @@ defineExpose({ getActive, setActive, next, prev });
 }
 
 .cu-tabs--soft .cu-tabs-tab.cu-tabs-tab--active {
-  background-color: var(--tabs-color);
-  color: var(--cu-color-surface);
+  background-color: var(--tabs-solid);
+  color: var(--tabs-solid-text);
 }
 
 .cu-tabs--soft .cu-tabs-tab.cu-tabs-tab--active:hover:not(:disabled) {
-  background-color: var(--tabs-color);
-  color: var(--cu-color-surface);
+  background-color: var(--tabs-solid);
+  color: var(--tabs-solid-text);
 }
 
 .cu-tabs-panel {

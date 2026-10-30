@@ -65,7 +65,7 @@ describe("MonthSliderLabel — roles y variantes", () => {
     expect(root(w).classes()).toContain("cu-month-slider-label--outlined");
     const badge = w.find(".cu-month-slider-label-year");
     expect(badge.classes()).toContain("cu-badge--solid");
-    expect(badge.attributes("style")).toContain("--badge-bg: var(--cu-color-success)");
+    expect(badge.attributes("style")).toContain("--badge-solid: var(--cu-color-success-solid)");
   });
 
   it("`disabled` agrega is-disabled", () => {

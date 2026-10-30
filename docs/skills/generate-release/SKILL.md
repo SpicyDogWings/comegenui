@@ -4,7 +4,7 @@ description: 'Receta para preparar la próxima release de ComegenUI (este repo):
 metadata:
   repository: https://github.com/SpicyDogWings/comegenui
   path: docs/skills/generate-release
-  version: 5.2.2
+  version: 5.2.3
 ---
 
 # `generate-release` — preparar la próxima release
@@ -29,7 +29,7 @@ Deja el repo listo para publicar: doc al día, gate verde, zips versionados, ver
   son **compuestos** (gitignored) por `pnpm docs:compose` (corre en `dev` y `build`). No los edites.
 
 > `<id>` = versión `latest` del manifiesto (`docs/versions.json`). `<version>` = `version` de
-> `package.json`. Hoy: `5.1.1`.
+> `package.json`. Hoy: `5.2.3`.
 
 ## Flujo
 
@@ -37,7 +37,7 @@ Seguí los pasos en orden; cortá al primer fallo.
 
 ### 1. Versión y metadata
 
-Ya no hay «cinco»: son **ocho** `SKILL.md` con `metadata.version` atada a `package.json`
+Ya no hay «cinco»: son **nueve** `SKILL.md` con `metadata.version` atada a `package.json`
 (`skills/use-comegen/` + `docs/skills/{comegen-preflight,crear-pr,deploy-docs,documenter,generate-release,marked,release-changelog}/`).
 
 ### 2. Doc al día
@@ -133,7 +133,7 @@ gh release create v<version> dist-libs/*.zip --notes-file .release/v<version>.md
 
 - [ ] Fichas, recetas y páginas de lo que cambió, al día.
 - [ ] Changelog + breaking changes del salto (si rompe algo).
-- [ ] `metadata.version` de las ocho `SKILL.md` = `package.json`.
+- [ ] `metadata.version` de las nueve `SKILL.md` = `package.json`.
 - [ ] `pnpm test` y `./scripts/guard.sh --full` verdes.
 - [ ] `pnpm build` y `pnpm build:lib` OK.
 - [ ] Los 4 `dist-libs/comegenui-<config>-v<version>.zip` con sus bundles (+ runtime del `shared`).

@@ -26,7 +26,8 @@ Los valores de `orientation` / `variant` / `color` están en «Atributos» / «P
 
 ## Límites
 
-- El color del trazo es siempre `--cu-color-{color}-subtle-border` (50 % de alpha): no hay un token
+- El color del trazo es siempre `--cu-color-{color}-subtle-border`: el generador lo deriva para
+  garantizar 3:1 contra el tinte y la superficie (no es el color crudo con alpha). No hay un token
   de borde liso por componente.
 - En `vertical` el alto es el del contenedor: si el contenedor no tiene alto (ni es una fila flex
   con `stretch`), la línea cae al mínimo (`--cu-space-lg`).

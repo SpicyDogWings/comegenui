@@ -24,7 +24,7 @@ describe("FloatingButton — props heredadas de Button", () => {
     const btn = w.find("button");
     expect(btn.classes()).toContain("cu-button--solid");
     expect(btn.classes()).toContain("cu-button--lg");
-    expect(btn.attributes("style")).toContain("--btn-bg: var(--cu-color-primary)");
+    expect(btn.attributes("style")).toContain("--btn-solid: var(--cu-color-primary-solid)");
   });
 
   it("pasa la variante pedida al Button", () => {
@@ -39,7 +39,7 @@ describe("FloatingButton — props heredadas de Button", () => {
 
   it("pasa el color semántico al Button", () => {
     const w = mount(FloatingButton, { props: { color: "success" } });
-    expect(w.find("button").attributes("style")).toContain("--btn-bg: var(--cu-color-success)");
+    expect(w.find("button").attributes("style")).toContain("--btn-solid: var(--cu-color-success-solid)");
   });
 
   it("`disabled` deshabilita el botón", () => {

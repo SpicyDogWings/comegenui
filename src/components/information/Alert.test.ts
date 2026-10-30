@@ -107,4 +107,18 @@ describe("Alert — contenido", () => {
     const w = mount(Alert, { props: { variant: "solid" } });
     expect(root(w).classes()).toContain("cu-alert--solid");
   });
+
+  it("solid usa -solid de fondo con el texto del tema; los tintes usan -text", () => {
+    const solid = mount(Alert, { props: { color: "warning", variant: "solid" } });
+    const style = root(solid).attributes("style") ?? "";
+    expect(style).toContain("--alert-solid: var(--cu-color-warning-solid)");
+    expect(style).toContain("--alert-solid-text: var(--cu-color-surface)");
+    expect(style).not.toContain("--alert-on");
+
+    const soft = mount(Alert, { props: { color: "warning", variant: "soft" } });
+    expect(root(soft).attributes("style")).toContain("--alert-text: var(--cu-color-warning-text)");
+
+    const outlined = mount(Alert, { props: { color: "warning", variant: "outlined" } });
+    expect(root(outlined).attributes("style")).toContain("--alert-border: var(--cu-color-warning-border)");
+  });
 });
