@@ -20,6 +20,7 @@ import SideOverCe from "@/components/customElements/overlay/SideOver.ce.vue";
 import TooltipCe from "@/components/customElements/overlay/Tooltip.ce.vue";
 import MarkdownCe from "@/components/customElements/markdown/Markdown.ce.vue";
 import TableCe from "@/components/customElements/data/AdvancedTable.ce.vue";
+import { defineComegenElement } from "@/utils/comegen-element";
 
 import Avatar from "@/components/information/Avatar.vue";
 import Collapse from "@/components/overlay/Collapse.vue";
@@ -695,6 +696,10 @@ describe("CommandPalette.ce", () => {
 const SideOverElement = defineCustomElement(SideOverCe);
 customElements.define("cu-side-over-method-test", SideOverElement);
 
+// Ruta real de los bundles: `defineComegenElement` es quien reenvía al nodo
+// interno los atributos que no son props (p. ej. `aria-label`).
+defineComegenElement("cu-side-over-attr-test", SideOverCe);
+
 type SideOverTestElement = HTMLElement & {
   open: boolean;
   show: () => void;
@@ -757,6 +762,65 @@ describe("SideOver.ce", () => {
     expect(body?.querySelector("slot")).not.toBeNull();
 
     el.remove();
+  });
+
+  it("show()/close()/toggle() emiten update:open y close", async () => {
+    const el = await mountSideOverElement();
+    const events: Array<[string, unknown?]> = [];
+    el.addEventListener("update:open", (e) => events.push(["update:open", (e as CustomEvent).detail]));
+    el.addEventListener("close", () => events.push(["close"]));
+
+    el.show();
+    await flushPromises();
+    expect(events).toEqual([["update:open", true]]);
+
+    el.close();
+    await flushPromises();
+    expect(events).toEqual([["update:open", true], ["update:open", false], ["close"]]);
+
+    el.remove();
+  });
+
+  it("cerrar por el backdrop emite update:open(false) y un solo close", async () => {
+    const el = await mountSideOverElement();
+    el.show();
+    await flushPromises();
+
+    const events: Array<[string, unknown?]> = [];
+    el.addEventListener("update:open", (e) => events.push(["update:open", (e as CustomEvent).detail]));
+    el.addEventListener("close", () => events.push(["close"]));
+
+    el.shadowRoot!.querySelector(".cu-sideover-backdrop")!.dispatchEvent(
+      new MouseEvent("click", { bubbles: true }),
+    );
+    await flushPromises();
+
+    expect(events).toEqual([["update:open", false], ["close"]]);
+    expect(el.isOpen()).toBe(false);
+
+    el.remove();
+  });
+
+  it("el diálogo toma el título como nombre accesible y acepta aria-label del host", async () => {
+    const withTitle = await mountSideOverElement();
+    withTitle.setAttribute("open", "");
+    withTitle.setAttribute("title", "Filtros");
+    await flushPromises();
+    const dialog = withTitle.shadowRoot!.querySelector("[role='dialog']")!;
+    const title = withTitle.shadowRoot!.querySelector(".cu-sideover-title") as HTMLElement;
+    expect(dialog.getAttribute("aria-labelledby")).toBe(title.id);
+    withTitle.remove();
+
+    const labelled = document.createElement("cu-side-over-attr-test") as SideOverTestElement;
+    labelled.setAttribute("aria-label", "Panel de filtros");
+    document.body.appendChild(labelled);
+    await flushPromises();
+    labelled.show();
+    await flushPromises();
+    expect(
+      labelled.shadowRoot!.querySelector("[role='dialog']")!.getAttribute("aria-label"),
+    ).toBe("Panel de filtros");
+    labelled.remove();
   });
 });
 

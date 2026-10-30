@@ -305,7 +305,7 @@ const MUTATIONS = [
     file: "src/components/customElements/overlay/SideOver.ce.vue",
     test: "src/components/customElements/ce-parity.test.ts",
     expect: "show() abre el panel sin que la prop booleana open lo tape",
-    find: `function show() { isOpen.value = true; }`,
+    find: `function show() { setOpen(true); }`,
     replace: `function show() { /* mutado */ }`,
   },
   {
@@ -327,6 +327,88 @@ const MUTATIONS = [
     expect: "el CE proyecta el slot del host dentro del panel",
     find: `    :teleport="false"`,
     replace: `    :teleport="true"`,
+  },
+  {
+    id: "side-over-dialogo-sin-nombre",
+    file: "src/components/overlay/SideOver.vue",
+    expect: "el diálogo se nombra con el título vía aria-labelledby",
+    find: `        :aria-labelledby="props.title ? titleId : undefined"`,
+    replace: `        :aria-labelledby="undefined"`,
+  },
+  {
+    id: "side-over-fallback-sin-nombre",
+    file: "src/components/overlay/SideOver.vue",
+    expect: "sin título el diálogo conserva un aria-label de respaldo",
+    find: `  props.title ? undefined : ((attrs['aria-label'] as string | undefined) || 'Panel'),`,
+    replace: `  props.title ? undefined : '',`,
+  },
+  {
+    id: "side-over-foco-no-inicial",
+    file: "src/components/overlay/SideOver.vue",
+    expect: "al abrir el foco entra al panel",
+    find: `  (autofocus ?? focusables[0] ?? panel).focus();`,
+    replace: `  /* mutado */`,
+  },
+  {
+    id: "side-over-foco-no-devuelve",
+    file: "src/components/overlay/SideOver.vue",
+    expect: "al cerrar el foco vuelve al trigger",
+    find: `  if (!el || !el.isConnected) return;
+  el.focus();`,
+    replace: `  if (!el || !el.isConnected) return;`,
+  },
+  {
+    id: "side-over-tab-sin-wrap",
+    file: "src/components/overlay/SideOver.vue",
+    expect: "Tab en el último focusable vuelve al primero",
+    find: `  } else if (event.shiftKey && index === 0) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && index === focusables.length - 1) {
+    event.preventDefault();
+    first.focus();`,
+    replace: `  } else if (event.shiftKey && index === 0) {
+    event.preventDefault();
+  } else if (!event.shiftKey && index === focusables.length - 1) {
+    event.preventDefault();`,
+  },
+  {
+    id: "side-over-escape-cierra-todos",
+    file: "src/components/overlay/SideOver.vue",
+    expect: "Escape sólo cierra el panel de arriba",
+    find: `  if (!props.modelValue || !isTopmost()) return;`,
+    replace: `  if (!props.modelValue) return;`,
+  },
+  {
+    id: "side-over-montado-abierto-sin-lock",
+    file: "src/components/overlay/SideOver.vue",
+    expect: "montar el panel ya abierto bloquea el scroll",
+    find: `  if (props.modelValue) register();`,
+    replace: `  /* mutado */`,
+  },
+  {
+    id: "side-over-unlock-con-otro-abierto",
+    file: "src/components/overlay/SideOver.vue",
+    expect: "cerrar un panel no libera el scroll si queda otro abierto",
+    find: `  if (scrollLocks === 0) document.body.style.overflow = previousBodyOverflow;`,
+    replace: `  document.body.style.overflow = previousBodyOverflow;`,
+  },
+  {
+    id: "side-over-ce-metodos-sin-evento",
+    file: "src/components/customElements/overlay/SideOver.ce.vue",
+    test: "src/components/customElements/ce-parity.test.ts",
+    expect: "show()/close()/toggle() emiten update:open",
+    find: `  ceEmit("update:open", value);
+  if (!value) ceEmit("close", undefined);`,
+    replace: `  if (!value) ceEmit("close", undefined);`,
+  },
+  {
+    id: "side-over-ce-sin-evento-close",
+    file: "src/components/customElements/overlay/SideOver.ce.vue",
+    test: "src/components/customElements/ce-parity.test.ts",
+    expect: "cerrar el panel emite close una sola vez",
+    find: `  if (!value) ceEmit("close", undefined);`,
+    replace: `  /* mutado */`,
   },
   {
     id: "command-palette-run-no-action",

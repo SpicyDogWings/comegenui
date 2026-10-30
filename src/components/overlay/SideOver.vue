@@ -1,5 +1,30 @@
+<script lang="ts">
+// Estado compartido por todas las instancias (module scope, no por setup).
+// El body se bloquea una sola vez y Escape/Tab sólo los atiende el panel que
+// está arriba de la pila: con dos paneles abiertos, cerrar el de abajo no puede
+// devolverle el scroll a la página ni Escape puede cerrarlos a los dos.
+const openInstances: symbol[] = [];
+
+let scrollLocks = 0;
+let previousBodyOverflow = "";
+
+function lockBodyScroll() {
+  if (scrollLocks === 0) {
+    previousBodyOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+  }
+  scrollLocks += 1;
+}
+
+function unlockBodyScroll() {
+  if (scrollLocks === 0) return;
+  scrollLocks -= 1;
+  if (scrollLocks === 0) document.body.style.overflow = previousBodyOverflow;
+}
+</script>
+
 <script setup lang="ts">
-import { computed, watch, onMounted, onUnmounted, type PropType } from 'vue'
+import { computed, nextTick, watch, onMounted, onUnmounted, ref, useAttrs, useId, type PropType } from 'vue'
 import { isPosition } from '@/utils/validators'
 
 // SideOver: panel overlay que desliza desde un borde (izquierda/derecha/arriba/
@@ -25,39 +50,208 @@ const props = defineProps({
   teleport: { type: Boolean, required: false, default: true },
 })
 
+// Los atributos no se heredan al Teleport (Vue no puede): se consumen acá para
+// que `aria-label`, reenviado por el custom element, nombre al diálogo.
+defineOptions({ inheritAttrs: false })
+
 const emit = defineEmits<{
   (e: 'update:modelValue', value: boolean): void
   (e: 'close'): void
 }>()
 
-function close() {
-  if (props.persistent) return
-  emit('update:modelValue', false)
-  emit('close')
+const attrs = useAttrs()
+const uid = useId()
+const titleId = `${uid}-title`
+
+const panelRef = ref<HTMLElement | null>(null)
+/** Elemento que tenía el foco al abrir: se le devuelve al cerrar. */
+const trigger = ref<HTMLElement | null>(null)
+
+// Nombre accesible del diálogo: con `title` manda `aria-labelledby`; sin él el
+// rol `dialog` quedaría sin nombre, así que se usa `aria-label` del consumidor
+// o un fallback. Sin esto un lector de pantalla anuncia "diálogo" a secas.
+const dialogLabel = computed(() =>
+  props.title ? undefined : ((attrs['aria-label'] as string | undefined) || 'Panel'),
+)
+
+const FOCUSABLE_SELECTOR = [
+  'a[href]',
+  'area[href]',
+  'button:not([disabled])',
+  'input:not([disabled]):not([type="hidden"])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+  'iframe',
+  'object',
+  'embed',
+  'audio[controls]',
+  'video[controls]',
+  'summary',
+  '[contenteditable="true"]',
+  '[tabindex]:not([tabindex="-1"])',
+].join(',');
+
+/** Oculta por atributo/inline style (v-show): `focus()` no serviría y el trap no debe contarla. */
+function isHidden(el: Element): boolean {
+  for (let node: Element | null = el; node; node = node.parentElement) {
+    if (node.hasAttribute('hidden')) return true;
+    const style = (node as HTMLElement).style;
+    if (style && (style.display === 'none' || style.visibility === 'hidden')) return true;
+  }
+  return false;
+}
+
+function isFocusable(el: Element): el is HTMLElement {
+  return el instanceof HTMLElement && el.matches(FOCUSABLE_SELECTOR) && !isHidden(el);
+}
+
+/**
+ * Focusables del panel en orden de tabulación. Recorre slots (`assignedElements`)
+ * y shadow roots anidados: en el custom element el contenido vive en el light DOM
+ * del host y `querySelectorAll` no cruza ninguna de las dos fronteras.
+ */
+function collectFocusables(root: ParentNode, out: HTMLElement[] = []): HTMLElement[] {
+  for (const child of Array.from(root.children)) {
+    if (child.tagName === 'SLOT' && 'assignedElements' in child) {
+      const slot = child as HTMLSlotElement;
+      const assigned = slot.assignedElements({ flatten: true });
+      const source = assigned.length ? assigned : Array.from(slot.children);
+      for (const node of source) {
+        if (isFocusable(node)) out.push(node);
+        if (node.shadowRoot) collectFocusables(node.shadowRoot, out);
+        collectFocusables(node, out);
+      }
+      continue;
+    }
+    if (isFocusable(child)) out.push(child);
+    if (child.shadowRoot) collectFocusables(child.shadowRoot, out);
+    collectFocusables(child, out);
+  }
+  return out;
+}
+
+function panelFocusables(): HTMLElement[] {
+  return panelRef.value ? collectFocusables(panelRef.value) : [];
+}
+
+/** Elemento realmente enfocado, atravesando shadow roots anidados. */
+function deepActiveElement(): Element | null {
+  let active: Element | null = document.activeElement;
+  while (active?.shadowRoot?.activeElement) active = active.shadowRoot.activeElement;
+  return active;
+}
+
+/** Foco inicial: `[autofocus]` si existe, si no el primer focusable, si no el panel. */
+function focusFirst() {
+  const panel = panelRef.value;
+  if (!panel) return;
+  const focusables = panelFocusables();
+  const active = deepActiveElement();
+  if (active && (focusables.includes(active as HTMLElement) || panel.contains(active))) return;
+  const autofocus = panel.querySelector('[autofocus]') as HTMLElement | null;
+  (autofocus ?? focusables[0] ?? panel).focus();
+}
+
+/** Devuelve el foco al trigger; si es un custom element, a su control interno. */
+function restoreFocus() {
+  const el = trigger.value;
+  trigger.value = null;
+  if (!el || !el.isConnected) return;
+  el.focus();
+  if (document.activeElement !== el && el.shadowRoot) {
+    collectFocusables(el.shadowRoot)[0]?.focus();
+  }
+}
+
+function trapTab(event: KeyboardEvent) {
+  if (event.key !== 'Tab') return;
+  const panel = panelRef.value;
+  if (!panel) return;
+  const focusables = panelFocusables();
+  if (!focusables.length) {
+    event.preventDefault();
+    panel.focus();
+    return;
+  }
+  const path = typeof event.composedPath === 'function' ? event.composedPath() : [];
+  const target = (path[0] as Element | undefined) ?? (event.target as Element | null);
+  const index = target ? focusables.indexOf(target as HTMLElement) : -1;
+  const first = focusables[0]!;
+  const last = focusables[focusables.length - 1]!;
+
+  if (index === -1) {
+    event.preventDefault();
+    (event.shiftKey ? last : first).focus();
+  } else if (event.shiftKey && index === 0) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && index === focusables.length - 1) {
+    event.preventDefault();
+    first.focus();
+  }
+}
+
+const instanceId = Symbol('cu-sideover');
+let registered = false;
+
+function isTopmost() {
+  return openInstances[openInstances.length - 1] === instanceId;
 }
 
 function onKeydown(e: KeyboardEvent) {
-  if (e.key === 'Escape' && props.modelValue) close()
+  if (!props.modelValue || !isTopmost()) return;
+  if (e.key === 'Escape') {
+    close();
+    return;
+  }
+  if (e.key === 'Tab') trapTab(e);
 }
 
-// Scroll lock del body mientras está abierto
-let prevOverflow = ''
+function register() {
+  if (registered) return;
+  registered = true;
+  openInstances.push(instanceId);
+  lockBodyScroll();
+  // `deepActiveElement` para que, dentro de un custom element, el foco vuelva
+  // al control real del shadow (el host no siempre es enfocable).
+  const active = deepActiveElement();
+  trigger.value = active instanceof HTMLElement ? active : null;
+  document.addEventListener('keydown', onKeydown);
+  nextTick(() => {
+    if (props.modelValue) focusFirst();
+  });
+}
+
+function unregister() {
+  if (!registered) return;
+  registered = false;
+  const index = openInstances.indexOf(instanceId);
+  if (index !== -1) openInstances.splice(index, 1);
+  unlockBodyScroll();
+  document.removeEventListener('keydown', onKeydown);
+  restoreFocus();
+}
+
+// Scroll lock + foco: el estado se sincroniza con la prop. `onMounted` cubre el
+// montaje ya abierto (`v-if` del consumidor), que el `watch` no vería.
 watch(() => props.modelValue, (open) => {
-  if (open) {
-    prevOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-  } else {
-    document.body.style.overflow = prevOverflow
-  }
-})
+  if (open) register();
+  else unregister();
+});
 
 onMounted(() => {
-  document.addEventListener('keydown', onKeydown)
-})
+  if (props.modelValue) register();
+});
+
 onUnmounted(() => {
-  document.removeEventListener('keydown', onKeydown)
-  document.body.style.overflow = prevOverflow
-})
+  unregister();
+});
+
+function close() {
+  if (props.persistent) return;
+  emit('update:modelValue', false);
+  emit('close');
+}
 
 const PRESET_SIZES = ['sm', 'md', 'lg', 'xl', 'full']
 
@@ -81,10 +275,14 @@ const panelStyle = computed(() => {
         :style="{ zIndex: props.zIndex }"
         role="dialog"
         aria-modal="true"
+        :aria-labelledby="props.title ? titleId : undefined"
+        :aria-label="dialogLabel"
       >
         <div class="cu-sideover-backdrop" @click="close"></div>
         <div
+          ref="panelRef"
           class="cu-sideover-panel"
+          tabindex="-1"
           :class="[
             `cu-sideover-panel--${props.position}`,
             { 'cu-sideover-panel--fullscreen': props.fullscreen },
@@ -96,7 +294,7 @@ const panelStyle = computed(() => {
             v-if="props.title || !props.persistent"
             class="cu-sideover-header"
           >
-            <h2 v-if="props.title" class="cu-sideover-title">{{ props.title }}</h2>
+            <h2 v-if="props.title" :id="titleId" class="cu-sideover-title">{{ props.title }}</h2>
             <button
               v-if="!props.persistent"
               type="button"
@@ -137,6 +335,9 @@ const panelStyle = computed(() => {
   background-color: var(--cu-color-surface);
   box-shadow: var(--cu-shadow-xl);
   overflow: hidden;
+  /* Un preset mayor que el viewport no puede dejar el título fuera de pantalla. */
+  max-width: 100%;
+  max-height: 100%;
 }
 
 .cu-sideover-panel--left { top: 0; left: 0; bottom: 0; }
@@ -222,4 +423,13 @@ const panelStyle = computed(() => {
 .cu-sideover-leave-to .cu-sideover-panel--top { transform: translateY(-100%); }
 .cu-sideover-enter-from .cu-sideover-panel--bottom,
 .cu-sideover-leave-to .cu-sideover-panel--bottom { transform: translateY(100%); }
+
+@media (prefers-reduced-motion: reduce) {
+  .cu-sideover-enter-active,
+  .cu-sideover-leave-active,
+  .cu-sideover-enter-active .cu-sideover-panel,
+  .cu-sideover-leave-active .cu-sideover-panel {
+    transition: none;
+  }
+}
 </style>
