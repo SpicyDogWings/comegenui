@@ -96,3 +96,6 @@ docs/site/examples/
 
 # Artefactos de playwright-cli (snapshots/console de las sesiones del agente)
 .playwright-cli/
+
+# Notas
+.notes
