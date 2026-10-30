@@ -7,6 +7,7 @@
 // adyacentes. Texto normal 12–18px: 4.5:1. Bordes no textuales: 3:1.
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
+import { globSync } from 'glob'
 import { describe, expect, it } from 'vitest'
 import {
   MIN_BORDER_CONTRAST,
@@ -223,5 +224,70 @@ describe('texto atenuado: color con contraste real, no `opacity`', () => {
         }
       }
     }
+  })
+})
+
+describe('usos atenuados de los consumidores (color, no opacity)', () => {
+  /** Fondos reales: superficie, ghost-hover (10 %) y ghost-active/soft (15–20 %). */
+  const backgrounds = (css: string, color: string) => {
+    const surface = themeSurface(css)
+    const base = token(css, color, '')
+    return {
+      surface,
+      ghost: compositeOver(base, surface, 0.1),
+      soft: compositeOver(base, surface, 0.15),
+      active: compositeOver(base, surface, 0.2),
+    }
+  }
+
+  it('placeholders, descripciones y estados llegan a 4.5:1 en los 15 temas', () => {
+    const failures: string[] = []
+
+    for (const theme of THEMES) {
+      const bg = backgrounds(theme.css, 'neutral')
+      const muted = token(theme.css, 'neutral', '-text-muted')
+      const subtle = token(theme.css, 'neutral', '-text-subtle')
+
+      // Cada par es un uso real del texto atenuado en la lib.
+      const uses: [string, string, string][] = [
+        ['input/textarea placeholder', muted, bg.soft],
+        ['file-input placeholder/ícono/tamaño', muted, bg.soft],
+        ['select empty', subtle, bg.surface],
+        ['navbar empty', subtle, bg.surface],
+        ['calendar weekday', subtle, bg.surface],
+        ['cells-importer status', subtle, bg.surface],
+        ['dropdown item disabled', muted, bg.surface],
+        ['dropdown item disabled (hover)', muted, bg.ghost],
+        ['dropdown chevron', muted, bg.surface],
+        ['dropdown/menu icon', subtle, bg.ghost],
+        ['select/autocomplete option disabled', muted, bg.active],
+        ['modal description', muted, bg.surface],
+        ['table empty', muted, bg.surface],
+        ['tabs disabled', muted, bg.surface],
+        ['command-palette badge', subtle, bg.ghost],
+      ]
+
+      for (const [label, fg, back] of uses) {
+        const ratio = contrastRatio(fg, back)
+        if (ratio + 1e-9 < MIN_TEXT_CONTRAST) {
+          failures.push(`${theme.name} ${label}: ${ratio.toFixed(2)} < 4.5 (${fg} sobre ${back})`)
+        }
+      }
+    }
+
+    expect(failures).toEqual([])
+  })
+
+  it('ningún componente atenúa texto con `--cu-alpha-muted`/`-subtle`', () => {
+    const root = resolve(import.meta.dirname, '../../..')
+    const files = globSync('src/components/**/*.vue', {
+      cwd: root,
+      ignore: ['**/legacy/**', '**/archived/**'],
+    })
+    const offenders = files.filter((file) =>
+      /--cu-alpha-(muted|subtle)/.test(readFileSync(resolve(root, file), 'utf8')),
+    )
+    // Los tokens alpha quedan para atenuar controles completos (disabled/faded).
+    expect(offenders).toEqual([])
   })
 })

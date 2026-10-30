@@ -1396,8 +1396,8 @@ const MUTATIONS = [
     id: "menu-option-icon-ignorado",
     file: "src/components/controls/MenuOption.vue",
     expect: "la fila renderiza el ícono con la clase de su lista",
-    find: `    <span v-if="props.icon" v-html="props.icon" :class="props.iconClass"></span>`,
-    replace: `    <span v-if="false" v-html="props.icon" :class="props.iconClass"></span>`,
+    find: `    <span v-if="safeIcon" v-html="safeIcon" :class="props.iconClass"></span>`,
+    replace: `    <span v-if="false" v-html="safeIcon" :class="props.iconClass"></span>`,
   },
   {
     id: "menu-option-href-ignorado",
@@ -1684,6 +1684,59 @@ const MUTATIONS = [
     expect: "dos instancias con las mismas keys generan ids distintos",
     find: `const idPrefix = \`cu-tabs-\${idSafe(uid)}\`;`,
     replace: `const idPrefix = "cu-tabs";`,
+  },
+  {
+    id: "menu-option-icon-sin-sanitizar",
+    file: "src/components/controls/MenuOption.vue",
+    expect: "el ícono compartido de las listas se sanitiza antes del v-html",
+    find: `const safeIcon = computed(() => (props.icon ? DOMPurify.sanitize(props.icon) : undefined));`,
+    replace: `const safeIcon = computed(() => props.icon);`,
+  },
+  {
+    id: "dropdown-item-icon-sin-sanitizar",
+    file: "src/components/overlay/Dropdown.vue",
+    expect: "el ícono de un item del dropdown se sanitiza antes del v-html",
+    find: `          <span v-if="item.icon" class="cu-dropdown-menu-item-icon" v-html="sanitizeIcon(item.icon)"></span>
+          <span class="cu-dropdown-menu-item-label">{{ item.label }}</span>
+        </button>`,
+    replace: `          <span v-if="item.icon" class="cu-dropdown-menu-item-icon" v-html="item.icon"></span>
+          <span class="cu-dropdown-menu-item-label">{{ item.label }}</span>
+        </button>`,
+  },
+  {
+    id: "dropdown-nested-icon-sin-sanitizar",
+    file: "src/components/overlay/Dropdown.vue",
+    expect: "el ícono del trigger anidado se sanitiza antes del v-html",
+    find: `          <span v-if="icon" class="cu-dropdown-menu-item-icon" v-html="sanitizeIcon(icon)"></span>`,
+    replace: `          <span v-if="icon" class="cu-dropdown-menu-item-icon" v-html="icon"></span>`,
+  },
+  {
+    id: "collapse-icon-sin-sanitizar",
+    file: "src/components/overlay/Collapse.vue",
+    expect: "el ícono del collapse se sanitiza antes del v-html",
+    find: `const safeIcon = computed(() => (props.icon ? DOMPurify.sanitize(props.icon) : undefined))`,
+    replace: `const safeIcon = computed(() => props.icon)`,
+  },
+  {
+    id: "navbar-list-icon-sin-sanitizar",
+    file: "src/components/navigation/NavbarList.vue",
+    expect: "el ícono de un item de la nav se sanitiza antes del v-html",
+    find: `  if (item.icon) return DOMPurify.sanitize(item.icon)`,
+    replace: `  if (item.icon) return item.icon`,
+  },
+  {
+    id: "navbar-horizontal-icon-sin-sanitizar",
+    file: "src/components/navigation/NavbarHorizontal.vue",
+    expect: "el ícono de un item horizontal se sanitiza antes del v-html",
+    find: `const sanitizeIcon = (html?: string) => (html ? DOMPurify.sanitize(html) : undefined)`,
+    replace: `const sanitizeIcon = (html?: string) => html`,
+  },
+  {
+    id: "navbar-menu-icon-sin-sanitizar",
+    file: "src/components/navigation/NavbarMenu.vue",
+    expect: "el ícono de un item del menú se sanitiza antes del v-html",
+    find: `const sanitizeIcon = (html?: string) => (html ? DOMPurify.sanitize(html) : undefined)`,
+    replace: `const sanitizeIcon = (html?: string) => html`,
   },
   {
     id: "tabs-icon-sin-sanitizar",

@@ -159,6 +159,7 @@ const isRowDisabled = (row: Record<string, any>): boolean => {
               v-for="col in tableColumns"
               :key="col.key"
               class="cu-table-th"
+              scope="col"
               :style="thStyleFn(col)"
               v-bind="props.headerAttrs[col.key] || {}"
             >

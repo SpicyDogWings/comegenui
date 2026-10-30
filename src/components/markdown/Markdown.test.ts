@@ -87,6 +87,13 @@ describe("Markdown — render de bloques", () => {
     expect(table.text()).toContain("a");
   });
 
+  it("las tablas heredan `scope=\"col\"` en sus encabezados", async () => {
+    const w = await mountParsed("| Col A | Col B |\n|-------|-------|\n| a     | b     |");
+    const ths = w.findAll("th");
+    expect(ths.length).toBeGreaterThan(0);
+    for (const th of ths) expect(th.attributes("scope")).toBe("col");
+  });
+
   it("renderiza listas no ordenadas", async () => {
     const w = await mountParsed("- Item 1\n- Item 2");
     const ul = w.find("ul.cu-md-list");

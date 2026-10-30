@@ -89,6 +89,9 @@ abrí el panel con `open()` y volvé a `loading = false` cuando termine la búsq
 
 Cada item puede llevar un `icon` (SVG inline), un `value` distinto del `label`, o estar `disabled`.
 
+> El HTML del `icon` se sanitiza con **DOMPurify** antes de inyectarse: los SVG válidos se
+> conservan y se eliminan `<script>`, handlers `on*` y URLs peligrosas.
+
 ```html
 <cu-autocomplete id="ac" placeholder="Elegí un item..."></cu-autocomplete>
 

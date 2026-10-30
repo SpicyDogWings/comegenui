@@ -65,6 +65,7 @@ const inputStyles = computed(() => ({
   '--input-ghost-hover': `var(--cu-color-${props.color}-ghost-hover)`,
   '--input-soft-hover': `var(--cu-color-${props.color}-soft-hover)`,
   '--input-text': `var(--cu-color-${props.color}-text)`,
+  '--input-text-muted': `var(--cu-color-${props.color}-text-muted)`,
 }));
 
 function formatAcceptList(accept: string): string {
@@ -374,14 +375,12 @@ defineExpose({ get, set, reset, focus, trigger });
 
 .cu-file-input-icon {
   flex-shrink: 0;
-  opacity: var(--cu-alpha-subtle, 0.6);
-  color: var(--input-text);
+  color: var(--input-text-muted);
 }
 
 .cu-file-input-placeholder {
   flex: 1;
-  opacity: var(--cu-alpha-subtle, 0.6);
-  color: var(--input-text);
+  color: var(--input-text-muted);
 }
 
 .cu-file-input-name {
@@ -402,10 +401,9 @@ defineExpose({ get, set, reset, focus, trigger });
 
 .cu-file-input-size {
   flex-shrink: 0;
-  opacity: 0.8;
   font-size: var(--cu-font-size-xs);
   white-space: nowrap;
-  color: var(--input-text);
+  color: var(--input-text-muted);
 }
 
 .cu-file-input-remove {

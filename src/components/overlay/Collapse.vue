@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, type PropType } from 'vue'
+import { computed, ref, type PropType } from 'vue'
+import DOMPurify from 'dompurify'
 import LucideChevronRight from '@/components/icons/LucideChevronRight.vue'
 import Button from '@/components/buttons/Button.vue'
 
@@ -35,6 +36,10 @@ const props = defineProps({
     default: 'neutral',
   },
 })
+
+// El ícono es HTML/SVG del consumidor: se sanitiza antes de `v-html` (mismo
+// criterio que `Tabs`): SVG válido intacto, sin `<script>` ni handlers `on*`.
+const safeIcon = computed(() => (props.icon ? DOMPurify.sanitize(props.icon) : undefined))
 
 const emit = defineEmits<{
   (e: 'toggle', isOpen: boolean): void
@@ -127,7 +132,7 @@ defineExpose({
       @click="toggle()"
     >
       <LucideChevronRight class="cu-collapse-chevron" :class="{ 'is-open': isOpen }" :width="14" :height="14" />
-      <span v-if="props.icon" class="cu-collapse-icon" v-html="props.icon"></span>
+      <span v-if="safeIcon" class="cu-collapse-icon" v-html="safeIcon"></span>
       <span class="cu-collapse-text">
         <span class="cu-collapse-label">{{ props.label }}</span>
         <p v-if="props.description" class="cu-collapse-description">{{ props.description }}</p>

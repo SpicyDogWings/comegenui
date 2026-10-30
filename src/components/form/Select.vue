@@ -345,7 +345,11 @@ defineExpose({
 }
 
 .cu-select-option--disabled {
-  opacity: var(--cu-alpha-muted, 0.5);
+  /* Estado deshabilitado por color (≥ 4.5:1), no por opacity: la fila es un
+     Button deshabilitado (alpha-disabled 0.7) y la opacidad acumulada dejaba el
+     texto en ~2:1. */
+  opacity: 1;
+  color: var(--cu-color-neutral-text-muted);
   cursor: not-allowed;
 }
 
@@ -366,7 +370,7 @@ defineExpose({
   padding: var(--cu-space-md);
   font-family: var(--cu-font-sans);
   font-size: var(--cu-font-size-sm);
-  opacity: var(--cu-alpha-subtle, 0.6);
+  color: var(--cu-color-neutral-text-subtle);
   text-align: center;
 }
 </style>

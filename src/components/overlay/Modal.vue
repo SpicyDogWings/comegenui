@@ -398,8 +398,7 @@ defineExpose({
   font-family: var(--cu-font-sans);
   font-size: var(--cu-font-size-sm);
   margin: 0;
-  color: var(--cu-color-neutral);
-  opacity: 0.7;
+  color: var(--cu-color-neutral-text-muted);
 }
 
 .cu-modal-close {

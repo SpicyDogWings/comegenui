@@ -101,6 +101,9 @@ async function buscar() {
 
 Cada item puede llevar un `icon` (SVG inline), un `value` distinto del `label`, o estar `disabled`.
 
+> El HTML del `icon` se sanitiza con **DOMPurify** antes de inyectarse: los SVG válidos se
+> conservan y se eliminan `<script>`, handlers `on*` y URLs peligrosas.
+
 ```vue
 <script setup lang="ts">
 import Autocomplete from "@/components/form/Autocomplete.vue";

@@ -342,7 +342,7 @@ const statusText = computed(() => {
 
 .cu-cells-importer-status {
   font-size: var(--cu-font-size-xs);
-  opacity: var(--cu-alpha-subtle, 0.6);
+  color: var(--cu-color-neutral-text-subtle);
 }
 
 .cu-cells-importer-status--parsing { color: var(--ci-accent); }

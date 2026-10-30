@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { type PropType } from 'vue'
+import DOMPurify from 'dompurify'
 import Collapse from '@/components/overlay/Collapse.vue'
 import Dropdown from '@/components/overlay/Dropdown.vue'
 import NavbarMenu from '@/components/navigation/NavbarMenu.vue'
@@ -45,8 +46,11 @@ const emit = defineEmits<{
   (e: 'toggle-compact'): void
 }>()
 
+// `item.icon` es HTML/SVG del consumidor: se sanitiza antes del `v-html`
+// (mismo criterio que `Tabs`). La inicial del modo compact es texto y no pasa
+// por DOMPurify.
 function itemIcon(item: NavItem): string {
-  if (item.icon) return item.icon
+  if (item.icon) return DOMPurify.sanitize(item.icon)
   return props.compact ? item.label.charAt(0) : ''
 }
 </script>
@@ -227,8 +231,7 @@ function itemIcon(item: NavItem): string {
 .cu-navbar-empty {
   padding: var(--cu-space-sm) var(--cu-space-md);
   font-size: var(--cu-font-size-sm);
-  color: var(--cu-color-neutral-text);
-  opacity: var(--cu-alpha-subtle, 0.6);
+  color: var(--cu-color-neutral-text-subtle);
 }
 
 /* Compact: solo iconos (o la inicial), sin labels */
@@ -288,6 +291,6 @@ function itemIcon(item: NavItem): string {
   position: absolute;
   right: var(--cu-space-2xs);
   flex-shrink: 0;
-  opacity: 0.65;
+  color: var(--cu-color-neutral-text-muted);
 }
 </style>

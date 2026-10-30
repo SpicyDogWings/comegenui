@@ -739,6 +739,7 @@ const colorStyles = computed(() => ({
   text-align: center;
   font-size: var(--cu-font-size-xs);
   font-weight: var(--cu-font-weight-medium);
+  color: var(--cu-color-neutral-text-subtle);
   padding: var(--cu-space-2xs) 0;
 }
 

@@ -75,7 +75,9 @@ host viejo —sin estos tokens— sigue funcionando con los defaults.
 Para **texto** atenuado el token es `--cu-color-{nombre}-text-muted` / `-text-subtle`: `opacity`
 diluye el texto contra el fondo y baja el contraste real por debajo de WCAG (2.2–4.3:1 en varios
 temas), mientras que estos tokens son colores ya medidos (≥ 4.5:1) en los 15 temas. Los
-consumen CommandPalette, Table, Pagination, Input (placeholder), Tabs y FileInputZone.
+consumen CommandPalette, Table, Pagination, Input/Textarea (placeholder), Tabs, FileInput,
+FileInputZone, Select, Autocomplete, Dropdown/DropdownMenu, Navbar, Calendar, CellsImporter y
+la descripción del Modal.
 
 Los tokens los aporta el CSS del host: este sitio los genera de `comegen.config.json` (`:root` con
 el tema default y cada tema bajo su `[data-theme="…"]`). En tu app definí `:root` / `[data-theme="…"]`

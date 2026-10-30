@@ -125,6 +125,9 @@ contenido **dentro** de cada item. El toggle no se ve afectado (su ancho lo defi
 
 `items` es el array declarativo: cada item puede llevar `label`, `icon` (SVG inline), `color`, `variant`, `disabled`, `divider`, `href` con `target`, `selected` (check al final) y `onClick`, que se dispara al elegirlo.
 
+> El HTML del `icon` se sanitiza con **DOMPurify** antes de inyectarse: los SVG válidos se
+> conservan y se eliminan `<script>`, handlers `on*` y URLs peligrosas.
+
 ```html
 <cu-dropdown-menu id="ddItems" label="Acciones" color="neutral" variant="outlined"></cu-dropdown-menu>
 

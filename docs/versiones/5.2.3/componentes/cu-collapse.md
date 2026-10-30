@@ -53,6 +53,9 @@ Es opcional y, si queda vacía, no se renderiza nada.
 `icon` acepta un string SVG/HTML que se inyecta **antes del label**, dentro del trigger. En
 HTML plano se asigna como propiedad (el atributo no tolera el markup inline).
 
+> El HTML del `icon` se sanitiza con **DOMPurify** antes de inyectarse: los SVG válidos se
+> conservan y se eliminan `<script>`, handlers `on*` y URLs peligrosas.
+
 ```html
 <cu-collapse id="conIcono" label="Con ícono" color="warning" default-open>
   <p>El ícono se renderiza antes del label, dentro del trigger.</p>

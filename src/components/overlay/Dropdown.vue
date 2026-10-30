@@ -4,6 +4,7 @@ import { isAlign, isPosition, isVariantFull } from '@/utils/validators'
 import Button from "../buttons/Button.vue";
 import Loader from "../information/Loader.vue";
 import Popover from "./Popover.vue";
+import DOMPurify from "dompurify";
 import LucideChevronRight from "@/components/icons/LucideChevronRight.vue";
 
 export interface DropdownMenuItem {
@@ -15,6 +16,10 @@ export interface DropdownMenuItem {
   divider?: boolean;
   onClick?: () => void;
 }
+
+// Los íconos son HTML/SVG del consumidor: se sanitizan antes de `v-html`
+// (mismo criterio que `Tabs`): SVG válido intacto, sin `<script>` ni `on*`.
+const sanitizeIcon = (html?: string) => (html ? DOMPurify.sanitize(html) : undefined);
 
 const props = defineProps({
   color: {
@@ -168,7 +173,7 @@ defineExpose({
           class="cu-dropdown-menu-item"
           @click="toggle"
         >
-          <span v-if="icon" class="cu-dropdown-menu-item-icon" v-html="icon"></span>
+          <span v-if="icon" class="cu-dropdown-menu-item-icon" v-html="sanitizeIcon(icon)"></span>
           <span class="cu-dropdown-menu-item-label">{{ label || "Submenú" }}</span>
           <LucideChevronRight :width="14" :height="14" class="cu-dropdown-menu-item-chevron" />
         </button>
@@ -205,7 +210,7 @@ defineExpose({
           :class="['cu-dropdown-menu-item', { 'cu-dropdown-menu-item--disabled': item.disabled }]"
           @click="onItemClick(item)"
         >
-          <span v-if="item.icon" class="cu-dropdown-menu-item-icon" v-html="item.icon"></span>
+          <span v-if="item.icon" class="cu-dropdown-menu-item-icon" v-html="sanitizeIcon(item.icon)"></span>
           <span class="cu-dropdown-menu-item-label">{{ item.label }}</span>
         </a>
         <button
@@ -215,7 +220,7 @@ defineExpose({
           :disabled="item.disabled"
           @click="onItemClick(item)"
         >
-          <span v-if="item.icon" class="cu-dropdown-menu-item-icon" v-html="item.icon"></span>
+          <span v-if="item.icon" class="cu-dropdown-menu-item-icon" v-html="sanitizeIcon(item.icon)"></span>
           <span class="cu-dropdown-menu-item-label">{{ item.label }}</span>
         </button>
       </template>
@@ -270,7 +275,7 @@ defineExpose({
 }
 
 .cu-dropdown-menu-item--disabled {
-  opacity: var(--cu-alpha-muted, 0.5);
+  color: var(--cu-color-neutral-text-muted);
   cursor: not-allowed;
 }
 
@@ -281,12 +286,12 @@ defineExpose({
 
 .cu-dropdown-menu-item-chevron {
   flex-shrink: 0;
-  opacity: var(--cu-alpha-muted, 0.5);
+  color: var(--cu-color-neutral-text-muted);
 }
 
 .cu-dropdown-menu-item-icon {
   flex-shrink: 0;
-  opacity: var(--cu-alpha-subtle, 0.6);
+  color: var(--cu-color-neutral-text-subtle);
 }
 
 .cu-dropdown-menu-divider {
