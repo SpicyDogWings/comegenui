@@ -1,5 +1,5 @@
 /*! comegenui v5.2.3 · CuAutocomplete (cu-autocomplete) · esm-shared · Vue externo (bare import) */
-import { Fragment, computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, createTextVNode, createVNode, defineComponent, defineCustomElement, getCurrentInstance, mergeModels, nextTick, normalizeClass, normalizeStyle, onMounted, onUnmounted, openBlock, ref, renderList, renderSlot, shallowRef, toDisplayString, toRaw, toValue, unref, useModel, useTemplateRef, watch, withCtx } from "vue";
+import { Fragment, computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, createTextVNode, createVNode, defineComponent, defineCustomElement, getCurrentInstance, mergeModels, nextTick, normalizeClass, normalizeStyle, onMounted, onUnmounted, openBlock, ref, renderList, renderSlot, shallowRef, toDisplayString, toRaw, toValue, unref, useId, useModel, useTemplateRef, watch, withCtx, withModifiers } from "vue";
 //#region src/utils/comegen-element.ts
 var BUILD_META = {
 	"version": "5.2.3",
@@ -514,7 +514,7 @@ var _hoisted_1$6 = [
 	"aria-busy",
 	"tabindex"
 ];
-var _hoisted_2$2 = [
+var _hoisted_2$3 = [
 	"type",
 	"disabled",
 	"aria-busy"
@@ -697,7 +697,7 @@ var Button_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineCom
 				})) : createCommentVNode("v-if", true),
 				createCommentVNode(" Contenido del botón (label y/o íconos SVG inline) "),
 				renderSlot(_ctx.$slots, "default", {}, void 0, true)
-			], 14, _hoisted_2$2));
+			], 14, _hoisted_2$3));
 		};
 	}
 });
@@ -754,7 +754,7 @@ var Loader_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE_
 }), [["styles", ["\n.cu-loader[data-v-045244b1] {\n  position: absolute;\n  top: 0;\n  left: 0;\n  right: 0;\n  z-index: 30;\n  overflow: hidden;\n  height: 3px;\n}\n.cu-loader-bar[data-v-045244b1] {\n  position: absolute;\n  top: 0;\n  height: 100%;\n  background: var(--cu-loader-color);\n}\n.cu-loader-bar--loading[data-v-045244b1] {\n  width: 60%;\n  background: linear-gradient(90deg, transparent 0%, var(--cu-loader-color) 50%, transparent 100%);\n  animation: cu-loader-slide-045244b1 1.5s ease-in-out infinite;\n}\n.cu-loader-bar--cooldown[data-v-045244b1] {\n  left: 0;\n  width: 100%;\n  animation: cu-loader-cooldown-045244b1 var(--cu-loader-delay) linear forwards;\n}\n@keyframes cu-loader-slide-045244b1 {\n0% { left: -100%;\n}\n50% { left: 0%;\n}\n100% { left: 100%;\n}\n}\n@keyframes cu-loader-cooldown-045244b1 {\nfrom { width: 100%;\n}\nto { width: 0%;\n}\n}\n"]], ["__scopeId", "data-v-045244b1"]]);
 //#endregion
 //#region src/components/overlay/Popover.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1$4 = ["role"];
+var _hoisted_1$4 = ["id", "role"];
 var HOVER_REGISTRY_KEY = "__cu_hover_registry__";
 //#endregion
 //#region src/components/overlay/Popover.vue
@@ -804,6 +804,12 @@ var Popover_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE
 			default: 200
 		},
 		role: {
+			type: String,
+			required: false,
+			default: ""
+		},
+		/** `id` del panel: el trigger lo referencia con `aria-controls` (patrón combobox/listbox). */
+		panelId: {
 			type: String,
 			required: false,
 			default: ""
@@ -879,9 +885,22 @@ var Popover_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE
 		const popoverRef = ref(null);
 		const panelEl = ref(null);
 		let focusBeforeOpen = null;
-		/** Elemento enfocado dentro del mismo árbol (shadow root o documento). */
+		/**
+		* Elemento enfocado dentro del mismo árbol (shadow root o documento).
+		*
+		* Dentro de un shadow root `activeElement` es `null` cuando el foco está afuera: eso
+		* **no** significa "foco perdido" (puede estar en otro control del documento), así que
+		* se cae a `document.activeElement` y se descarta el host, que es un destino inútil.
+		*/
 		function activeInTree() {
-			return (popoverRef.value?.getRootNode())?.activeElement ?? null;
+			const root = popoverRef.value?.getRootNode();
+			const inRoot = root?.activeElement ?? null;
+			if (inRoot) return inRoot;
+			if (!root || !(root instanceof ShadowRoot)) return null;
+			const host = root.host;
+			const docActive = document.activeElement;
+			if (docActive && docActive !== document.body && docActive !== host) return docActive;
+			return null;
 		}
 		/** Primer elemento enfocable del trigger (slot `#toggle`). */
 		function triggerElement() {
@@ -1145,13 +1164,14 @@ var Popover_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE
 				key: 0,
 				ref_key: "panelEl",
 				ref: panelEl,
+				id: props.panelId || void 0,
 				style: normalizeStyle(panelStyle.value),
 				class: normalizeClass(["cu-popover-panel", __props.panelClass]),
 				role: __props.role || void 0
 			}, [renderSlot(_ctx.$slots, "default", {}, void 0, true)], 14, _hoisted_1$4)) : createCommentVNode("v-if", true)], 544);
 		};
 	}
-}), [["styles", ["\n.cu-popover[data-v-8fab41f3] {\n  position: relative;\n  display: inline-block;\n  box-sizing: border-box;\n}\n.cu-popover-panel[data-v-8fab41f3] {\n  padding: var(--cu-space-sm);\n  border-radius: var(--cu-radius-md);\n  font-family: var(--cu-font-sans);\n  box-shadow: var(--cu-shadow-xl);\n}\n"]], ["__scopeId", "data-v-8fab41f3"]]);
+}), [["styles", ["\n.cu-popover[data-v-7e62c527] {\n  position: relative;\n  display: inline-block;\n  box-sizing: border-box;\n}\n.cu-popover-panel[data-v-7e62c527] {\n  padding: var(--cu-space-sm);\n  border-radius: var(--cu-radius-md);\n  font-family: var(--cu-font-sans);\n  box-shadow: var(--cu-shadow-xl);\n}\n"]], ["__scopeId", "data-v-7e62c527"]]);
 //#endregion
 //#region node_modules/.pnpm/dompurify@3.4.14/node_modules/dompurify/dist/purify.es.mjs
 /*! @license DOMPurify 3.4.14 | (c) Cure53 and other contributors | Released under the Apache license 2.0 and Mozilla Public License 2.0 | github.com/cure53/DOMPurify/blob/3.4.14/LICENSE */
@@ -3553,7 +3573,7 @@ var LucideChevronRight_default = /* @__PURE__ */ defineComponent({
 //#endregion
 //#region src/components/overlay/Dropdown.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1$3 = ["onClick"];
-var _hoisted_2$1 = ["innerHTML"];
+var _hoisted_2$2 = ["innerHTML"];
 var _hoisted_3$1 = { class: "cu-dropdown-menu-item-label" };
 var _hoisted_4 = {
 	key: 0,
@@ -3635,6 +3655,12 @@ var Dropdown_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 			required: false,
 			default: "menu"
 		},
+		/** `id` del panel: el trigger lo referencia con `aria-controls` (patrón combobox/listbox). */
+		panelId: {
+			type: String,
+			required: false,
+			default: ""
+		},
 		loading: {
 			type: Boolean,
 			required: false,
@@ -3649,6 +3675,15 @@ var Dropdown_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 			type: Number,
 			required: false,
 			default: 0
+		},
+		/**
+		* Estilo de la barra de cooldown: `ghost`/`ghost-hover` (color suave, default) o
+		* `solid` (color lleno). Se resuelve con los tokens del color activo.
+		*/
+		cooldownVariant: {
+			type: String,
+			required: false,
+			default: "ghost-hover"
 		},
 		delay: {
 			type: Number,
@@ -3696,6 +3731,13 @@ var Dropdown_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 			"cu-dropdown-panel": true,
 			"cu-dropdown-panel--loading": props.loading
 		}));
+		/**
+		* Color de la barra de cooldown. `Loader` pinta `var(--cu-color-{color})`, así que la
+		* variante se resuelve pasando el **sufijo** del token: `ghost`/`ghost-hover` usan el
+		* tono suave del color (`-ghost-hover`) y `solid` el tono lleno (base). Antes la prop
+		* llegaba hasta acá como atributo suelto y no tenía ningún efecto.
+		*/
+		const cooldownColor = computed(() => props.cooldownVariant === "solid" ? props.color : `${props.color}-ghost-hover`);
 		function onItemClick(item) {
 			if (item.disabled || item.divider) return;
 			if (item.onClick) item.onClick();
@@ -3739,6 +3781,7 @@ var Dropdown_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 				hover: __props.trigger === "hover",
 				"hover-delay": 0,
 				role: __props.panelRole,
+				"panel-id": __props.panelId,
 				"panel-class": panelClass.value,
 				class: normalizeClass(["cu-dropdown", { "cu-dropdown--nested": isNested.value }]),
 				onOpen: _cache[0] || (_cache[0] = ($event) => emit("open")),
@@ -3757,7 +3800,7 @@ var Dropdown_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 						key: 0,
 						class: "cu-dropdown-menu-item-icon",
 						innerHTML: sanitizeIcon(__props.icon)
-					}, null, 8, _hoisted_2$1)) : createCommentVNode("v-if", true),
+					}, null, 8, _hoisted_2$2)) : createCommentVNode("v-if", true),
 					createElementVNode("span", _hoisted_3$1, toDisplayString(__props.label || "Submenú"), 1),
 					createVNode(LucideChevronRight_default, {
 						width: 14,
@@ -3787,7 +3830,7 @@ var Dropdown_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 					}, null, 8, ["color"])) : createCommentVNode("v-if", true),
 					__props.cooldown && !__props.loading ? (openBlock(), createBlock(Loader_default, {
 						key: __props.cooldownKey,
-						color: __props.color,
+						color: cooldownColor.value,
 						animation: "cooldown",
 						delay: __props.delay
 					}, null, 8, ["color", "delay"])) : createCommentVNode("v-if", true),
@@ -3824,12 +3867,13 @@ var Dropdown_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 				"disabled",
 				"hover",
 				"role",
+				"panel-id",
 				"panel-class",
 				"class"
 			]);
 		};
 	}
-}), [["styles", ["\n/* El wrapper: el motor (position/display) lo aporta .cu-popover. Acá solo\n   ajustes específicos del dropdown sobre el panel del Popover. */\n.cu-dropdown[data-v-ed426c15] .cu-dropdown-panel--loading {\n  pointer-events: none;\n}\n\n/* Dropdown anidado: ocupa el ancho de la fila del menú padre y el panel en\n   cascada es más angosto (auto) */\n.cu-dropdown.cu-dropdown--nested[data-v-ed426c15] {\n  display: block;\n  width: 100%;\n  --cu-popover-width: auto;\n  --cu-popover-min-width: 160px;\n}\n.cu-dropdown-panel--nested[data-v-ed426c15] {\n  padding: var(--cu-space-2xs);\n}\n\n/* Item de menú nativo (hojas + trigger de submenú anidado) */\n.cu-dropdown-menu-item[data-v-ed426c15] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--cu-space-md);\n  width: 100%;\n  padding: var(--cu-space-sm) var(--cu-space-md);\n  box-sizing: border-box;\n  background: transparent;\n  border: none;\n  cursor: pointer;\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  color: var(--cu-color-neutral);\n  text-decoration: none;\n  border-radius: var(--cu-radius-sm);\n  transition: background-color 150ms ease;\n}\n.cu-dropdown-menu-item[data-v-ed426c15]:hover:not(.cu-dropdown-menu-item--disabled) {\n  background-color: var(--cu-color-neutral-ghost-hover);\n}\n.cu-dropdown-menu-item--disabled[data-v-ed426c15] {\n  color: var(--cu-color-neutral-text-muted);\n  cursor: not-allowed;\n}\n.cu-dropdown-menu-item-label[data-v-ed426c15] {\n  text-align: left;\n  white-space: nowrap;\n}\n.cu-dropdown-menu-item-chevron[data-v-ed426c15] {\n  flex-shrink: 0;\n  color: var(--cu-color-neutral-text-muted);\n}\n.cu-dropdown-menu-item-icon[data-v-ed426c15] {\n  flex-shrink: 0;\n  color: var(--cu-color-neutral-text-subtle);\n}\n.cu-dropdown-menu-divider[data-v-ed426c15] {\n  margin: var(--cu-space-2xs) 0;\n  border: 0;\n  border-top: var(--cu-border-thin) solid var(--cu-border-color);\n}\n"]], ["__scopeId", "data-v-ed426c15"]]);
+}), [["styles", ["\n/* El wrapper: el motor (position/display) lo aporta .cu-popover. Acá solo\n   ajustes específicos del dropdown sobre el panel del Popover. */\n.cu-dropdown[data-v-620d7284] .cu-dropdown-panel--loading {\n  pointer-events: none;\n}\n\n/* Dropdown anidado: ocupa el ancho de la fila del menú padre y el panel en\n   cascada es más angosto (auto) */\n.cu-dropdown.cu-dropdown--nested[data-v-620d7284] {\n  display: block;\n  width: 100%;\n  --cu-popover-width: auto;\n  --cu-popover-min-width: 160px;\n}\n.cu-dropdown-panel--nested[data-v-620d7284] {\n  padding: var(--cu-space-2xs);\n}\n\n/* Item de menú nativo (hojas + trigger de submenú anidado) */\n.cu-dropdown-menu-item[data-v-620d7284] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--cu-space-md);\n  width: 100%;\n  padding: var(--cu-space-sm) var(--cu-space-md);\n  box-sizing: border-box;\n  background: transparent;\n  border: none;\n  cursor: pointer;\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  color: var(--cu-color-neutral);\n  text-decoration: none;\n  border-radius: var(--cu-radius-sm);\n  transition: background-color 150ms ease;\n}\n.cu-dropdown-menu-item[data-v-620d7284]:hover:not(.cu-dropdown-menu-item--disabled) {\n  background-color: var(--cu-color-neutral-ghost-hover);\n}\n.cu-dropdown-menu-item--disabled[data-v-620d7284] {\n  color: var(--cu-color-neutral-text-muted);\n  cursor: not-allowed;\n}\n.cu-dropdown-menu-item-label[data-v-620d7284] {\n  text-align: left;\n  white-space: nowrap;\n}\n.cu-dropdown-menu-item-chevron[data-v-620d7284] {\n  flex-shrink: 0;\n  color: var(--cu-color-neutral-text-muted);\n}\n.cu-dropdown-menu-item-icon[data-v-620d7284] {\n  flex-shrink: 0;\n  color: var(--cu-color-neutral-text-subtle);\n}\n.cu-dropdown-menu-divider[data-v-620d7284] {\n  margin: var(--cu-space-2xs) 0;\n  border: 0;\n  border-top: var(--cu-border-thin) solid var(--cu-border-color);\n}\n"]], ["__scopeId", "data-v-620d7284"]]);
 //#endregion
 //#region node_modules/.pnpm/@vueuse+shared@14.4.0_vue@3.6.0-rc.11_@typescript+typescript6@6.0.2_/node_modules/@vueuse/shared/dist/index.js
 var isClient = typeof window !== "undefined" && typeof document !== "undefined";
@@ -4061,7 +4105,7 @@ var LucideCheck_default = /* @__PURE__ */ defineComponent({
 //#endregion
 //#region src/components/controls/MenuOption.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1$1 = { class: "cu-menu-option-main" };
-var _hoisted_2 = ["innerHTML"];
+var _hoisted_2$1 = ["innerHTML"];
 var _hoisted_3 = { key: 1 };
 //#endregion
 //#region src/components/controls/MenuOption.vue
@@ -4141,7 +4185,7 @@ var MenuOption_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__P
 					key: 0,
 					innerHTML: safeIcon.value,
 					class: normalizeClass(props.iconClass)
-				}, null, 10, _hoisted_2)) : createCommentVNode("v-if", true), props.label ? (openBlock(), createElementBlock("span", _hoisted_3, toDisplayString(props.label), 1)) : createCommentVNode("v-if", true)]), props.selected ? (openBlock(), createBlock(LucideCheck_default, {
+				}, null, 10, _hoisted_2$1)) : createCommentVNode("v-if", true), props.label ? (openBlock(), createElementBlock("span", _hoisted_3, toDisplayString(props.label), 1)) : createCommentVNode("v-if", true)]), props.selected ? (openBlock(), createBlock(LucideCheck_default, {
 					key: 0,
 					class: "cu-menu-option-check",
 					"aria-hidden": "true"
@@ -4211,10 +4255,22 @@ function useSearch(data, options) {
 	}) };
 }
 //#endregion
+//#region src/utils/uniqueId.ts
+var sequence = 0;
+/** Identificador estable mientras la instancia viva: `<prefijo>-<useId>-<n>`. */
+function useUniqueId(prefix) {
+	return `${prefix}-${useId()}-${++sequence}`;
+}
+//#endregion
 //#region src/components/form/Autocomplete.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1 = {
 	key: 0,
-	class: "cu-autocomplete-options"
+	class: "cu-autocomplete-options",
+	tabindex: "-1"
+};
+var _hoisted_2 = {
+	key: 1,
+	class: "cu-autocomplete-empty"
 };
 //#endregion
 //#region src/components/form/Autocomplete.vue
@@ -4319,17 +4375,104 @@ var Autocomplete_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @_
 		const filtering = ref(true);
 		/** Los items son filas flex: la alineación va por `justify-content`, no por `text-align`. */
 		const itemStyle = computed(() => textAlignStyle(props.textAlign));
+		/**
+		* Look del item deshabilitado. Va inline porque la fila es un `Button` cuya variante
+		* (`ghost`, scoped) declara `color` y la clase `--disabled` declara `opacity`: con la
+		* misma especificidad ganaba el `Button` y el item se veía igual que uno habilitado.
+		* `opacity: 1` evita apilar la atenuación del `Button` sobre el color muted (dejaba el
+		* texto por debajo de 4.5:1).
+		*/
+		const disabledItemStyle = computed(() => ({
+			...itemStyle.value,
+			color: "var(--cu-color-neutral-text-muted)",
+			opacity: "1"
+		}));
 		/** El `<input>` es un campo de texto nativo: acá sí alinea `text-align`. */
 		const inputStyle = computed(() => ({
 			width: "100%",
 			textAlign: props.textAlign
 		}));
-		const searchItems = computed(() => props.items);
+		const searchItems = computed(() => props.items ?? []);
 		const { filteredData: matches } = useSearch(searchItems, {
 			searchQuery: searchValue,
 			searchFields: ["label", "value"]
 		});
 		const filteredItems = computed(() => filtering.value ? matches.value : searchItems.value);
+		const uid = useUniqueId("cu-autocomplete");
+		const listboxId = `${uid}-listbox`;
+		const optionId = (index) => `${uid}-option-${index}`;
+		/** Item activo por teclado (`aria-activedescendant` y `Enter`). `-1` = ninguno. */
+		const activeIndex = ref(-1);
+		const isOpen = computed(() => dropdownRef.value?.isOpen() ?? false);
+		const activeDescendant = computed(() => isOpen.value && activeIndex.value >= 0 ? optionId(activeIndex.value) : void 0);
+		/** Mueve el item activo `step` posiciones, salteando deshabilitados y con wrap. */
+		function moveActive(step) {
+			const items = filteredItems.value;
+			if (items.length === 0) return;
+			let index = activeIndex.value;
+			for (let i = 0; i < items.length; i++) {
+				index = (index + step + items.length) % items.length;
+				if (!items[index].disabled) break;
+			}
+			activeIndex.value = items[index]?.disabled ? activeIndex.value : index;
+			scrollToActive();
+		}
+		/** Primer/último item habilitado (Home/End y apertura con flechas). */
+		function firstEnabled(fromEnd = false) {
+			const items = filteredItems.value;
+			return (fromEnd ? [...items.keys()].reverse() : [...items.keys()]).find((i) => !items[i].disabled) ?? -1;
+		}
+		/** Deja visible el item activo dentro del panel con scroll. */
+		function scrollToActive() {
+			const index = activeIndex.value;
+			if (index < 0) return;
+			nextTick(() => {
+				const optionEl = (rootRef.value?.querySelector(".cu-autocomplete-options"))?.children[index];
+				if (optionEl) optionEl.scrollIntoView({ block: "nearest" });
+			});
+		}
+		function onKeyDown(e) {
+			if (props.disabled) return;
+			if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+				e.preventDefault();
+				if (!isOpen.value) {
+					if (!canShowList()) return;
+					activeIndex.value = firstEnabled(e.key === "ArrowUp");
+					dropdownRef.value?.open();
+					scrollToActive();
+					return;
+				}
+				if (activeIndex.value < 0) {
+					activeIndex.value = firstEnabled(e.key === "ArrowUp");
+					scrollToActive();
+					return;
+				}
+				moveActive(e.key === "ArrowDown" ? 1 : -1);
+				return;
+			}
+			if (e.key === "Home" || e.key === "End") {
+				if (!isOpen.value) return;
+				e.preventDefault();
+				activeIndex.value = firstEnabled(e.key === "End");
+				scrollToActive();
+				return;
+			}
+			if (e.key === "Enter") {
+				const item = isOpen.value ? filteredItems.value[activeIndex.value] : void 0;
+				if (item && !item.disabled) {
+					e.preventDefault();
+					onItemClick(item);
+				}
+				return;
+			}
+			if (e.key === "Escape") {
+				if (isOpen.value) {
+					activeIndex.value = -1;
+					e.preventDefault();
+					dropdownRef.value?.close();
+				}
+			}
+		}
 		/** Texto que el item escribe en el input (y que define si sigue siendo el seleccionado). */
 		function itemText(item) {
 			return item.label || item.value || "";
@@ -4348,13 +4491,38 @@ var Autocomplete_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @_
 			return !!sel && toRaw(sel) === toRaw(item);
 		}
 		watch(searchValue, (val) => syncSelectionWithText(val));
+		/**
+		* Los items pueden reemplazarse con objetos nuevos (carga async). La selección se
+		* re-resuelve por texto —la misma regla que `syncSelectionWithText`, "sigue mientras el
+		* input diga lo mismo"— para que el check y `selectedItem()` apunten al item vigente en
+		* vez de quedar colgados del array anterior.
+		*/
+		watch(() => props.items, (items) => {
+			const sel = selectedItem.value;
+			if (!sel) return;
+			const text = itemText(sel);
+			selectedItem.value = (items ?? []).find((item) => itemText(item) === text) ?? null;
+		});
+		/** El panel solo tiene sentido con items para mostrar y el texto sobre `minChars`. */
+		function canShowList() {
+			return !props.disabled && searchValue.value.length >= props.minChars && filteredItems.value.length > 0;
+		}
 		function onFocus() {
-			if (props.disabled || ignoreFocusAfterClose) return;
-			if (searchValue.value.length < props.minChars) return;
-			if (filteredItems.value.length > 0) dropdownRef.value?.open();
+			if (ignoreFocusAfterClose) return;
+			if (canShowList()) dropdownRef.value?.open();
+		}
+		/**
+		* Click en el campo: reabre la lista. El cierre por click afuera devuelve el foco al
+		* input, así que un segundo click no dispara `focus` y la lista quedaba inalcanzable
+		* sin salir y volver a entrar al campo.
+		*/
+		function onClick() {
+			if (dropdownRef.value?.isOpen()) return;
+			if (canShowList()) dropdownRef.value?.open();
 		}
 		/** Cierre del panel (Escape, click afuera): no reabrir por el foco restaurado. */
 		function onDropdownClose() {
+			activeIndex.value = -1;
 			ignoreFocusAfterClose = true;
 			queueMicrotask(() => {
 				ignoreFocusAfterClose = false;
@@ -4363,6 +4531,7 @@ var Autocomplete_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @_
 		function onInput(val) {
 			searchValue.value = val;
 			filtering.value = true;
+			activeIndex.value = -1;
 			if (val.length < props.minChars || filteredItems.value.length === 0) {
 				dropdownRef.value?.close();
 				return;
@@ -4377,7 +4546,10 @@ var Autocomplete_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @_
 			emit("select", item);
 		}
 		function onFocusOut(e) {
-			if (!rootRef.value?.contains(e.relatedTarget)) emit("blur");
+			const next = e.relatedTarget;
+			if (rootRef.value?.contains(next)) return;
+			if (dropdownRef.value?.isOpen()) setTimeout(() => dropdownRef.value?.close(), 0);
+			emit("blur");
 		}
 		/** Devuelve el texto actual. */
 		function get() {
@@ -4439,6 +4611,8 @@ var Autocomplete_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @_
 				fixed: __props.fixed,
 				loading: __props.loading,
 				offset: 4,
+				"panel-role": "listbox",
+				"panel-id": listboxId,
 				style: { "width": "100%" },
 				onClose: onDropdownClose
 			}, {
@@ -4453,8 +4627,16 @@ var Autocomplete_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @_
 					variant: __props.variant,
 					type: __props.type,
 					style: normalizeStyle(inputStyle.value),
+					role: "combobox",
+					"aria-autocomplete": "list",
+					"aria-haspopup": "listbox",
+					"aria-expanded": isOpen.value ? "true" : "false",
+					"aria-controls": listboxId,
+					"aria-activedescendant": activeDescendant.value,
 					"onUpdate:modelValue": onInput,
-					onFocus
+					onFocus,
+					onClick,
+					onKeydown: onKeyDown
 				}, null, 8, [
 					"model-value",
 					"placeholder",
@@ -4463,11 +4645,17 @@ var Autocomplete_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @_
 					"color",
 					"variant",
 					"type",
-					"style"
+					"style",
+					"aria-expanded",
+					"aria-activedescendant"
 				])]),
 				default: withCtx(() => [filteredItems.value.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_1, [(openBlock(true), createElementBlock(Fragment, null, renderList(filteredItems.value, (item, i) => {
 					return openBlock(), createBlock(MenuOption_default, {
 						key: i,
+						id: optionId(i),
+						role: "option",
+						tabindex: "-1",
+						"aria-selected": isSelected(item) ? "true" : "false",
 						label: item.label,
 						icon: item.icon,
 						"icon-class": "cu-autocomplete-icon",
@@ -4475,10 +4663,16 @@ var Autocomplete_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @_
 						variant: "ghost",
 						disabled: item.disabled,
 						selected: isSelected(item),
-						class: normalizeClass(["cu-autocomplete-option", { "cu-autocomplete-option--disabled": item.disabled }]),
-						style: normalizeStyle(itemStyle.value),
+						class: normalizeClass(["cu-autocomplete-option", {
+							"cu-autocomplete-option--disabled": item.disabled,
+							"cu-autocomplete-option--active": i === activeIndex.value
+						}]),
+						style: normalizeStyle(item.disabled ? disabledItemStyle.value : itemStyle.value),
+						onMousedown: _cache[0] || (_cache[0] = withModifiers(() => {}, ["prevent"])),
 						onClick: ($event) => onItemClick(item)
 					}, null, 8, [
+						"id",
+						"aria-selected",
 						"label",
 						"icon",
 						"disabled",
@@ -4487,7 +4681,7 @@ var Autocomplete_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @_
 						"style",
 						"onClick"
 					]);
-				}), 128))])) : createCommentVNode("v-if", true)]),
+				}), 128))])) : (openBlock(), createElementBlock("div", _hoisted_2, " Sin opciones "))]),
 				_: 1
 			}, 8, [
 				"color",
@@ -4499,7 +4693,7 @@ var Autocomplete_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @_
 			])], 544);
 		};
 	}
-}), [["styles", ["\n.cu-autocomplete[data-v-b25ed422] {\n  width: 100%;\n  outline: none;\n}\n.cu-autocomplete-options[data-v-b25ed422] {\n  max-height: 240px;\n  overflow-y: auto;\n}\n.cu-autocomplete-option[data-v-b25ed422] {\n  width: 100%;\n  /* La alineación la pone `textAlign` inline (`justify-content`): dentro de un `Button`\n     flex el `text-align` solo no mueve nada. Default: `flex-start`. */\n}\n.cu-autocomplete-option--disabled[data-v-b25ed422] {\n  /* Estado deshabilitado por color (≥ 4.5:1), no por opacity: la fila es un\n     Button deshabilitado (alpha-disabled 0.7) y la opacidad acumulada dejaba el\n     texto en ~2:1. El color muted es el que se audita. */\n  opacity: 1;\n  color: var(--cu-color-neutral-text-muted);\n  cursor: not-allowed;\n}\n.cu-autocomplete-icon[data-v-b25ed422] {\n  transform: translateY(2px);\n  color: var(--cu-color-neutral-text-subtle);\n}\n"]], ["__scopeId", "data-v-b25ed422"]]);
+}), [["styles", ["\n.cu-autocomplete[data-v-0657e94e] {\n  width: 100%;\n  outline: none;\n}\n.cu-autocomplete-options[data-v-0657e94e] {\n  max-height: 240px;\n  overflow-y: auto;\n}\n.cu-autocomplete-option[data-v-0657e94e] {\n  width: 100%;\n  /* La alineación la pone `textAlign` inline (`justify-content`): dentro de un `Button`\n     flex el `text-align` solo no mueve nada. Default: `flex-start`. */\n}\n.cu-autocomplete-option--disabled[data-v-0657e94e] {\n  /* El color muted y la opacidad 1 van inline (`disabledItemStyle`): la fila es un\n     `Button` y sus reglas scoped le ganaban a esta clase. Acá queda solo el cursor. */\n  cursor: not-allowed;\n}\n\n/* Item activo (el que anuncia `aria-activedescendant`): el foco queda en el input, así\n   que el resaltado es la única señal visual de dónde está parada la navegación. */\n.cu-autocomplete-option--active[data-v-0657e94e]:not(.cu-autocomplete-option--disabled) {\n  background-color: var(--cu-color-neutral-ghost-hover);\n}\n.cu-autocomplete-empty[data-v-0657e94e] {\n  padding: var(--cu-space-md);\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  color: var(--cu-color-neutral-text-subtle);\n  text-align: center;\n}\n.cu-autocomplete-icon[data-v-0657e94e] {\n  transform: translateY(2px);\n  color: var(--cu-color-neutral-text-subtle);\n}\n"]], ["__scopeId", "data-v-0657e94e"]]);
 //#endregion
 //#region src/lib/form/autocomplete.ts
 var CuAutocomplete = defineComegenElement("cu-autocomplete", /* @__PURE__ */ defineComponent({
@@ -4649,8 +4843,7 @@ var CuAutocomplete = defineComegenElement("cu-autocomplete", /* @__PURE__ */ def
 				items: props.items,
 				"model-value": localModel.value,
 				"onUpdate:modelValue": onUpdate,
-				onSelect: _cache[0] || (_cache[0] = ($event) => ceEmit("select", $event)),
-				onBlur: _cache[1] || (_cache[1] = ($event) => ceEmit("blur", $event))
+				onSelect: _cache[0] || (_cache[0] = ($event) => ceEmit("select", $event))
 			}, null, 8, [
 				"color",
 				"variant",

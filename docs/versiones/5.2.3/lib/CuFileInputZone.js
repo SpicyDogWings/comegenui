@@ -1,5 +1,5 @@
 /*! comegenui v5.2.3 · CuFileInputZone (cu-file-input-zone) · esm-shared · Vue externo (bare import) */
-import { Fragment, computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, createTextVNode, defineComponent, defineCustomElement, getCurrentInstance, mergeModels, nextTick, normalizeClass, normalizeStyle, onMounted, openBlock, ref, renderList, renderSlot, shallowRef, toDisplayString, toValue, unref, useModel, useTemplateRef, vShow, watch, withCtx, withDirectives, withKeys, withModifiers } from "vue";
+import { Fragment, computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, createTextVNode, createVNode, defineComponent, defineCustomElement, getCurrentInstance, mergeModels, nextTick, normalizeClass, normalizeStyle, onMounted, openBlock, ref, renderList, renderSlot, toDisplayString, unref, useModel, useTemplateRef, vShow, watch, withCtx, withDirectives, withModifiers } from "vue";
 //#region src/utils/comegen-element.ts
 var BUILD_META = {
 	"version": "5.2.3",
@@ -35,7 +35,7 @@ function attachMeta(ctor, meta) {
 	return ctor;
 }
 /** `aria-describedby` → `ariaDescribedby` (mismo algoritmo que Vue). */
-function camelize$1(name) {
+function camelize(name) {
 	return name.replace(/-(\w)/g, (_, char) => char ? char.toUpperCase() : "");
 }
 /** Props declaradas por el componente, en camelCase (cacheado por definición). */
@@ -45,7 +45,7 @@ function declaredProps(def) {
 	if (cached) return cached;
 	const props = def.props;
 	const keys = !props ? [] : Array.isArray(props) ? props : Object.keys(props);
-	const set = new Set(keys.map((key) => camelize$1(String(key))));
+	const set = new Set(keys.map((key) => camelize(String(key))));
 	PROP_KEYS.set(def, set);
 	return set;
 }
@@ -98,7 +98,7 @@ function makeElement(component, meta) {
 		_setAttr(key) {
 			if (key.startsWith("data-v-")) return;
 			const self = this;
-			const camelKey = camelize$1(key);
+			const camelKey = camelize(key);
 			const isProp = declaredProps(self._def).has(camelKey);
 			if (!isProp && key === "id") return;
 			if (!isProp && key === FOCUS_ATTR) {
@@ -248,102 +248,6 @@ function defineComegenElement(tag, component) {
 	});
 	return register(tag, component, meta) ?? makeElement(component, meta);
 }
-//#endregion
-//#region node_modules/.pnpm/@vueuse+shared@14.4.0_vue@3.6.0-rc.11_@typescript+typescript6@6.0.2_/node_modules/@vueuse/shared/dist/index.js
-var isClient = typeof window !== "undefined" && typeof document !== "undefined";
-typeof WorkerGlobalScope !== "undefined" && globalThis instanceof WorkerGlobalScope;
-var toString = Object.prototype.toString;
-var isObject = (val) => toString.call(val) === "[object Object]";
-function toArray(value) {
-	return Array.isArray(value) ? value : [value];
-}
-/**
-* Shorthand for watching value with {immediate: true}
-*
-* @see https://vueuse.org/watchImmediate
-*/
-function watchImmediate(source, cb, options) {
-	return watch(source, cb, {
-		...options,
-		immediate: true
-	});
-}
-//#endregion
-//#region node_modules/.pnpm/@vueuse+core@14.4.0_vue@3.6.0-rc.11_@typescript+typescript6@6.0.2_/node_modules/@vueuse/core/dist/index.js
-var defaultWindow = isClient ? window : void 0;
-isClient && window.document;
-isClient && window.navigator;
-isClient && window.location;
-/**
-* Get the dom element of a ref of element or Vue component instance
-*
-* @param elRef
-*/
-function unrefElement(elRef) {
-	var _$el;
-	const plain = toValue(elRef);
-	return (_$el = plain === null || plain === void 0 ? void 0 : plain.$el) !== null && _$el !== void 0 ? _$el : plain;
-}
-function useEventListener(...args) {
-	const register = (el, event, listener, options) => {
-		el.addEventListener(event, listener, options);
-		return () => el.removeEventListener(event, listener, options);
-	};
-	const firstParamTargets = computed(() => {
-		const test = toArray(toValue(args[0])).filter((e) => e != null);
-		return test.every((e) => typeof e !== "string") ? test : void 0;
-	});
-	return watchImmediate(() => {
-		var _firstParamTargets$va, _firstParamTargets$va2;
-		return [
-			(_firstParamTargets$va = (_firstParamTargets$va2 = firstParamTargets.value) === null || _firstParamTargets$va2 === void 0 ? void 0 : _firstParamTargets$va2.map((e) => unrefElement(e))) !== null && _firstParamTargets$va !== void 0 ? _firstParamTargets$va : [defaultWindow].filter((e) => e != null),
-			toArray(toValue(firstParamTargets.value ? args[1] : args[0])),
-			toArray(unref(firstParamTargets.value ? args[2] : args[1])),
-			toValue(firstParamTargets.value ? args[3] : args[2])
-		];
-	}, ([raw_targets, raw_events, raw_listeners, raw_options], _, onCleanup) => {
-		if (!(raw_targets === null || raw_targets === void 0 ? void 0 : raw_targets.length) || !(raw_events === null || raw_events === void 0 ? void 0 : raw_events.length) || !(raw_listeners === null || raw_listeners === void 0 ? void 0 : raw_listeners.length)) return;
-		const optionsClone = isObject(raw_options) ? { ...raw_options } : raw_options;
-		const cleanups = raw_targets.flatMap((el) => raw_events.flatMap((event) => raw_listeners.map((listener) => register(el, event, listener, optionsClone))));
-		onCleanup(() => {
-			cleanups.forEach((fn) => fn());
-		});
-	}, { flush: "post" });
-}
-/**
-* Track or set the focus state of a DOM element.
-*
-* @see https://vueuse.org/useFocus
-* @param target The target element for the focus and blur events.
-* @param options
-*/
-function useFocus(target, options = {}) {
-	const { initialValue = false, focusVisible = false, preventScroll = false } = options;
-	const innerFocused = shallowRef(false);
-	const targetElement = computed(() => unrefElement(target));
-	const listenerOptions = { passive: true };
-	useEventListener(targetElement, "focus", (event) => {
-		var _matches, _ref;
-		if (!focusVisible || ((_matches = (_ref = event.target).matches) === null || _matches === void 0 ? void 0 : _matches.call(_ref, ":focus-visible"))) innerFocused.value = true;
-	}, listenerOptions);
-	useEventListener(targetElement, "blur", () => innerFocused.value = false, listenerOptions);
-	const focused = computed({
-		get: () => innerFocused.value,
-		set(value) {
-			var _targetElement$value, _targetElement$value2;
-			if (!value && innerFocused.value) (_targetElement$value = targetElement.value) === null || _targetElement$value === void 0 || _targetElement$value.blur();
-			else if (value && !innerFocused.value) (_targetElement$value2 = targetElement.value) === null || _targetElement$value2 === void 0 || _targetElement$value2.focus({ preventScroll });
-		}
-	});
-	watch(targetElement, () => {
-		focused.value = initialValue;
-	}, {
-		immediate: true,
-		flush: "post"
-	});
-	return { focused };
-}
-Number.POSITIVE_INFINITY;
 //#endregion
 //#region src/utils/validators.ts
 /** Set cerrado de strings: devuelve un type-guard listo para `validator`. */
@@ -846,7 +750,7 @@ function formatFileSize(bytes) {
 //#region src/components/FileList.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1$2 = ["onClick"];
 var _hoisted_2$2 = ["innerHTML"];
-var _hoisted_3$2 = { class: "cu-file-list-name" };
+var _hoisted_3$2 = ["onClick"];
 var _hoisted_4$2 = { class: "cu-file-list-size" };
 //#endregion
 //#region src/components/FileList.vue
@@ -907,13 +811,18 @@ var FileList_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 						innerHTML: unref(getFileIconSvg)(file),
 						class: "cu-file-list-icon"
 					}, null, 8, _hoisted_2$2),
-					createElementVNode("span", _hoisted_3$2, toDisplayString(file.name), 1),
+					createElementVNode("button", {
+						type: "button",
+						class: "cu-file-list-name",
+						onClick: withModifiers(($event) => emit("select", i), ["stop"])
+					}, toDisplayString(file.name), 9, _hoisted_3$2),
 					createElementVNode("span", _hoisted_4$2, toDisplayString(unref(formatFileSize)(file.size)), 1),
 					!props.disabled ? (openBlock(), createBlock(Button_default, {
 						key: 0,
 						color: __props.color,
 						variant: "ghost",
 						class: "cu-file-list-remove",
+						"aria-label": `Quitar ${file.name}`,
 						onClick: withModifiers(($event) => emit("remove", i), ["stop"])
 					}, {
 						default: withCtx(() => [..._cache[0] || (_cache[0] = [createElementVNode("svg", {
@@ -928,12 +837,16 @@ var FileList_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 							"stroke-linejoin": "round"
 						}, [createElementVNode("path", { d: "M18 6 6 18" }), createElementVNode("path", { d: "m6 6 12 12" })], -1)])]),
 						_: 1
-					}, 8, ["color", "onClick"])) : createCommentVNode("v-if", true)
+					}, 8, [
+						"color",
+						"aria-label",
+						"onClick"
+					])) : createCommentVNode("v-if", true)
 				], 8, _hoisted_1$2);
 			}), 128))], 4)) : createCommentVNode("v-if", true);
 		};
 	}
-}), [["styles", ["\n.cu-file-list {\n  width: 100%;\n}\n.cu-file-list-item {\n  display: flex;\n  align-items: center;\n  gap: var(--cu-space-sm);\n  padding: var(--cu-space-xs) var(--cu-space-md);\n  font-size: var(--cu-font-size-sm);\n  border-radius: var(--cu-radius);\n  cursor: pointer;\n  transition: background-color 150ms ease;\n}\n.cu-file-list-item:hover {\n  background-color: var(--list-ghost-hover);\n}\n.cu-file-list-icon {\n  flex-shrink: 0;\n}\n.cu-file-list-name {\n  flex: 1;\n  min-width: 0;\n  font-weight: var(--cu-font-weight-medium);\n  color: var(--list-text);\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.cu-file-list-size {\n  flex-shrink: 0;\n  opacity: 0.8;\n  font-size: var(--cu-font-size-xs);\n  white-space: nowrap;\n  color: var(--list-text);\n}\n.cu-file-list-remove {\n  padding: var(--cu-space-2xs) !important;\n  min-width: 0 !important;\n  height: auto !important;\n  gap: 0 !important;\n  flex-shrink: 0;\n  opacity: 0.7;\n}\n.cu-file-list-remove:hover {\n  opacity: 1;\n}\n"]]]);
+}), [["styles", ["\n.cu-file-list {\n  width: 100%;\n}\n.cu-file-list-item {\n  display: flex;\n  align-items: center;\n  gap: var(--cu-space-sm);\n  padding: var(--cu-space-xs) var(--cu-space-md);\n  font-size: var(--cu-font-size-sm);\n  border-radius: var(--cu-radius);\n  cursor: pointer;\n  transition: background-color 150ms ease;\n}\n.cu-file-list-item:hover {\n  background-color: var(--list-ghost-hover);\n}\n.cu-file-list-icon {\n  flex-shrink: 0;\n}\n.cu-file-list-name {\n  flex: 1;\n  min-width: 0;\n  padding: 0;\n  border: 0;\n  background: none;\n  font-family: inherit;\n  font-size: inherit;\n  font-weight: var(--cu-font-weight-medium);\n  color: var(--list-text);\n  text-align: left;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  cursor: pointer;\n}\n.cu-file-list-name:focus-visible {\n  outline: 2px solid currentColor;\n  outline-offset: 2px;\n  border-radius: var(--cu-radius);\n}\n.cu-file-list-size {\n  flex-shrink: 0;\n  opacity: 0.8;\n  font-size: var(--cu-font-size-xs);\n  white-space: nowrap;\n  color: var(--list-text);\n}\n.cu-file-list-remove {\n  padding: var(--cu-space-2xs) !important;\n  min-width: 0 !important;\n  height: auto !important;\n  gap: 0 !important;\n  flex-shrink: 0;\n  opacity: 0.7;\n}\n.cu-file-list-remove:hover {\n  opacity: 1;\n}\n"]]]);
 //#endregion
 //#region src/components/information/Alert.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1$1 = {
@@ -1109,12 +1022,12 @@ var Alert_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 //#endregion
 //#region src/components/form/FileInputZone.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1 = { class: "cu-file-zone-wrap" };
-var _hoisted_2 = ["onKeydown", "aria-disabled"];
-var _hoisted_3 = [
+var _hoisted_2 = [
 	"accept",
 	"multiple",
 	"webkitdirectory"
 ];
+var _hoisted_3 = ["aria-label", "disabled"];
 var _hoisted_4 = {
 	key: 0,
 	xmlns: "http://www.w3.org/2000/svg",
@@ -1136,6 +1049,10 @@ var _hoisted_6 = { class: "cu-file-zone-placeholder" };
 var _hoisted_7 = {
 	key: 0,
 	class: "cu-file-zone-formats"
+};
+var _hoisted_8 = {
+	key: 2,
+	class: "cu-file-zone-list"
 };
 //#endregion
 //#region src/components/form/FileInputZone.vue
@@ -1200,7 +1117,8 @@ var FileInputZone_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @
 		const props = __props;
 		const effectiveMultiple = computed(() => props.multiple || props.directory);
 		const isDragOver = ref(false);
-		const { focused: dropFocus } = useFocus(useTemplateRef("dropZone"));
+		const dropZoneRef = useTemplateRef("dropZone");
+		const triggerRef = useTemplateRef("triggerEl");
 		const fileInputRef = useTemplateRef("fileInput");
 		const rejectMessages = ref([]);
 		const internalSet = ref(false);
@@ -1210,6 +1128,11 @@ var FileInputZone_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @
 			"--zone-text": `var(--cu-color-${props.color}-text)`,
 			"--zone-text-muted": `var(--cu-color-${props.color}-text-muted)`
 		}));
+		/** Nombre accesible del control de selección: la instrucción visible o la acción real. */
+		const triggerLabel = computed(() => {
+			if (fileList.value.length === 0) return props.placeholder;
+			return effectiveMultiple.value ? "Agregar archivos" : "Cambiar archivo";
+		});
 		const fileList = computed(() => {
 			if (!value.value) return [];
 			if (value.value instanceof File) return [value.value];
@@ -1297,6 +1220,7 @@ var FileInputZone_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @
 		function handleInputChange(event) {
 			const input = event.target;
 			if (input.files && input.files.length > 0) setFiles(Array.from(input.files));
+			input.value = "";
 		}
 		function handleFileClick(index) {
 			const file = fileList.value[index];
@@ -1312,6 +1236,8 @@ var FileInputZone_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @
 		}
 		function onDragLeave(e) {
 			e.preventDefault();
+			const next = e.relatedTarget;
+			if (next && dropZoneRef.value?.contains(next)) return;
 			isDragOver.value = false;
 		}
 		async function onDrop(e) {
@@ -1319,27 +1245,34 @@ var FileInputZone_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @
 			isDragOver.value = false;
 			if (props.disabled || props.readOnly) return;
 			const items = e.dataTransfer?.items;
-			if (items) {
-				const allFiles = [];
-				const promises = [];
+			const dropped = [];
+			if (items && items.length > 0) {
+				const slots = Array.from({ length: items.length }, () => []);
+				const pending = [];
 				for (let i = 0; i < items.length; i++) {
+					const slot = slots[i];
 					const entry = items[i]?.webkitGetAsEntry?.();
 					if (!entry) {
-						const file = items[i].getAsFile();
-						if (file) allFiles.push(file);
-					} else if (entry.isFile) promises.push(new Promise((resolve) => {
+						const file = items[i]?.getAsFile();
+						if (file) slot.push(file);
+					} else if (entry.isFile) pending.push(new Promise((resolve) => {
 						entry.file((f) => {
-							allFiles.push(f);
+							slot.push(f);
 							resolve();
-						});
+						}, () => resolve());
 					}));
-					else if (entry.isDirectory && props.directory) promises.push(readDirectory(entry, props.directoryDeep).then((files) => {
-						allFiles.push(...files);
+					else if (entry.isDirectory && props.directory) pending.push(readDirectory(entry, props.directoryDeep).then((files) => {
+						slot.push(...files);
 					}));
 				}
-				await Promise.all(promises);
-				if (allFiles.length > 0) setFiles(allFiles);
+				await Promise.all(pending);
+				for (const slot of slots) dropped.push(...slot);
 			}
+			if (dropped.length === 0) {
+				const files = e.dataTransfer?.files;
+				if (files && files.length > 0) dropped.push(...Array.from(files));
+			}
+			if (dropped.length > 0) setFiles(dropped);
 		}
 		/** Abre el selector de archivos. */
 		function trigger() {
@@ -1373,9 +1306,9 @@ var FileInputZone_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @
 			rejectMessages.value = [];
 			if (fileInputRef.value) fileInputRef.value.value = "";
 		};
-		/** Enfoca la zona de carga. */
+		/** Enfoca el control de selección de la zona. */
 		const focus = () => {
-			dropFocus.value = true;
+			triggerRef.value?.focus();
 		};
 		__expose({
 			get,
@@ -1394,14 +1327,11 @@ var FileInputZone_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @
 					"cu-file-zone--has-files": fileList.value.length > 0
 				}]),
 				style: normalizeStyle(zoneStyles.value),
+				role: "group",
 				onDragover: onDragOver,
 				onDragleave: onDragLeave,
 				onDrop,
-				onClick: trigger,
-				onKeydown: [withKeys(trigger, ["enter"]), withKeys(withModifiers(trigger, ["prevent"]), ["space"])],
-				tabindex: "0",
-				role: "button",
-				"aria-disabled": props.disabled
+				onClick: trigger
 			}, [
 				createElementVNode("input", {
 					ref: "fileInput",
@@ -1411,17 +1341,24 @@ var FileInputZone_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @
 					webkitdirectory: props.directory || void 0,
 					class: "cu-file-zone-hidden",
 					onChange: handleInputChange
-				}, null, 40, _hoisted_3),
+				}, null, 40, _hoisted_2),
+				createCommentVNode(" Control de selección: botón real que cubre la zona. La lista de archivos\n           vive arriba y sus links/botones no quedan adentro de ningún botón. "),
+				createElementVNode("button", {
+					ref: "triggerEl",
+					type: "button",
+					class: "cu-file-zone-trigger",
+					"aria-label": triggerLabel.value,
+					disabled: props.disabled || props.readOnly
+				}, null, 8, _hoisted_3),
 				fileList.value.length === 0 ? (openBlock(), createElementBlock("svg", _hoisted_4, [..._cache[0] || (_cache[0] = [
 					createElementVNode("path", { d: "M12 3v12" }, null, -1),
 					createElementVNode("path", { d: "m17 8-5-5-5 5" }, null, -1),
 					createElementVNode("path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" }, null, -1)
 				])])) : createCommentVNode("v-if", true),
-				fileList.value.length === 0 ? (openBlock(), createElementBlock("div", _hoisted_5, [createElementVNode("p", _hoisted_6, toDisplayString(props.placeholder), 1), props.accept ? (openBlock(), createElementBlock("p", _hoisted_7, " Formatos aceptados: " + toDisplayString(props.accept), 1)) : createCommentVNode("v-if", true)])) : (openBlock(), createBlock(FileList_default, {
-					key: 2,
+				fileList.value.length === 0 ? (openBlock(), createElementBlock("div", _hoisted_5, [createElementVNode("p", _hoisted_6, toDisplayString(props.placeholder), 1), props.accept ? (openBlock(), createElementBlock("p", _hoisted_7, " Formatos aceptados: " + toDisplayString(props.accept), 1)) : createCommentVNode("v-if", true)])) : (openBlock(), createElementBlock("div", _hoisted_8, [createVNode(FileList_default, {
 					files: value.value,
 					color: props.color,
-					disabled: props.disabled,
+					disabled: props.disabled || props.readOnly,
 					"max-height": props.maxHeight,
 					onRemove: removeFile,
 					onSelect: handleFileClick
@@ -1430,8 +1367,8 @@ var FileInputZone_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @
 					"color",
 					"disabled",
 					"max-height"
-				]))
-			], 46, _hoisted_2), rejectMessages.value.length > 0 ? (openBlock(), createBlock(Alert_default, {
+				])]))
+			], 38), rejectMessages.value.length > 0 ? (openBlock(), createBlock(Alert_default, {
 				key: 0,
 				color: "danger",
 				variant: "soft",
@@ -1447,7 +1384,7 @@ var FileInputZone_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @
 			})) : createCommentVNode("v-if", true)]);
 		};
 	}
-}), [["styles", ["\n.cu-file-zone {\n  position: relative;\n  display: flex;\n  flex-direction: column;\n  gap: var(--cu-space-md);\n  padding: var(--cu-space-xl) var(--cu-space-2xl);\n  border-radius: var(--cu-radius);\n  border: var(--cu-border-thick) dashed var(--cu-border-color);\n  cursor: pointer;\n  transition: all 200ms ease;\n  min-height: 160px;\n  font-family: var(--cu-font-sans);\n  user-select: none;\n  color: var(--zone-text);\n  box-sizing: border-box;\n}\n.cu-file-zone:focus {\n  outline: none;\n  border-color: var(--zone-bg);\n  box-shadow: 0 0 0 var(--cu-border-thin) var(--zone-bg);\n}\n.cu-file-zone:hover:not(.cu-file-zone--disabled) {\n  border-color: var(--zone-bg);\n  background-color: var(--zone-ghost-hover);\n}\n.cu-file-zone--disabled {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n.cu-file-zone--drag-over {\n  border-color: var(--zone-bg);\n  background-color: var(--zone-ghost-hover);\n}\n.cu-file-zone--empty {\n  align-items: center;\n  justify-content: center;\n}\n.cu-file-zone--has-files {\n  align-items: flex-start;\n  justify-content: flex-start;\n}\n.cu-file-zone-hidden {\n  display: none;\n}\n.cu-file-zone-icon {\n  color: var(--zone-text-muted);\n  flex-shrink: 0;\n}\n.cu-file-zone-text {\n  text-align: center;\n}\n.cu-file-zone-placeholder {\n  font-size: var(--cu-font-size-sm);\n  font-weight: var(--cu-font-weight-medium);\n  color: var(--zone-text);\n  margin: 0;\n}\n.cu-file-zone-formats {\n  font-size: var(--cu-font-size-xs);\n  margin-top: var(--cu-space-2xs);\n  color: var(--zone-text-muted);\n}\n.cu-file-zone-wrap {\n  display: flex;\n  flex-direction: column;\n  gap: var(--cu-space-2xs);\n}\n.cu-file-zone-reject {\n  margin-top: var(--cu-space-2xs);\n}\n.cu-file-zone-reject-item {\n  margin: 0;\n  font-size: var(--cu-font-size-sm);\n}\n"]]]);
+}), [["styles", ["\n.cu-file-zone {\n  position: relative;\n  display: flex;\n  flex-direction: column;\n  gap: var(--cu-space-md);\n  padding: var(--cu-space-xl) var(--cu-space-2xl);\n  border-radius: var(--cu-radius);\n  border: var(--cu-border-thick) dashed var(--cu-border-color);\n  cursor: pointer;\n  transition: all 200ms ease;\n  min-height: 160px;\n  font-family: var(--cu-font-sans);\n  user-select: none;\n  color: var(--zone-text);\n  box-sizing: border-box;\n}\n.cu-file-zone:focus-within {\n  border-color: var(--zone-bg);\n  box-shadow: 0 0 0 var(--cu-border-thin) var(--zone-bg);\n}\n\n/* Control de selección: cubre la zona, sin contenido ni estilos propios. */\n.cu-file-zone-trigger {\n  position: absolute;\n  inset: 0;\n  z-index: 0;\n  width: 100%;\n  height: 100%;\n  margin: 0;\n  padding: 0;\n  border: 0;\n  border-radius: inherit;\n  background: transparent;\n  cursor: pointer;\n}\n.cu-file-zone-trigger:disabled {\n  cursor: inherit;\n}\n.cu-file-zone-trigger:focus-visible {\n  outline: none;\n}\n\n/* El contenido decorativo deja pasar el click al botón; la lista sí es interactiva. */\n.cu-file-zone-icon,\n.cu-file-zone-text {\n  position: relative;\n  z-index: 1;\n  pointer-events: none;\n}\n.cu-file-zone-list {\n  position: relative;\n  z-index: 1;\n  width: 100%;\n}\n.cu-file-zone:hover:not(.cu-file-zone--disabled) {\n  border-color: var(--zone-bg);\n  background-color: var(--zone-ghost-hover);\n}\n.cu-file-zone--disabled {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n.cu-file-zone--drag-over {\n  border-color: var(--zone-bg);\n  background-color: var(--zone-ghost-hover);\n}\n.cu-file-zone--empty {\n  align-items: center;\n  justify-content: center;\n}\n.cu-file-zone--has-files {\n  align-items: flex-start;\n  justify-content: flex-start;\n}\n.cu-file-zone-hidden {\n  display: none;\n}\n.cu-file-zone-icon {\n  color: var(--zone-text-muted);\n  flex-shrink: 0;\n}\n.cu-file-zone-text {\n  text-align: center;\n}\n.cu-file-zone-placeholder {\n  font-size: var(--cu-font-size-sm);\n  font-weight: var(--cu-font-weight-medium);\n  color: var(--zone-text);\n  margin: 0;\n}\n.cu-file-zone-formats {\n  font-size: var(--cu-font-size-xs);\n  margin-top: var(--cu-space-2xs);\n  color: var(--zone-text-muted);\n}\n.cu-file-zone-wrap {\n  display: flex;\n  flex-direction: column;\n  gap: var(--cu-space-2xs);\n}\n.cu-file-zone-reject {\n  margin-top: var(--cu-space-2xs);\n}\n.cu-file-zone-reject-item {\n  margin: 0;\n  font-size: var(--cu-font-size-sm);\n}\n"]]]);
 //#endregion
 //#region src/lib/form/file-input-zone.ts
 var CuFileInputZone = defineComegenElement("cu-file-input-zone", /* @__PURE__ */ _plugin_vue_export_helper_default(/* @__PURE__ */ defineComponent({

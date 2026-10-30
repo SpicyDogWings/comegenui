@@ -1,5 +1,5 @@
 /*! comegenui v5.2.3 · CuSelect (cu-select) · esm-shared · Vue externo (bare import) */
-import { Fragment, computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, createTextVNode, createVNode, defineComponent, defineCustomElement, getCurrentInstance, mergeModels, nextTick, normalizeClass, normalizeStyle, onMounted, onUnmounted, openBlock, ref, renderList, renderSlot, toDisplayString, useModel, watch, withCtx } from "vue";
+import { Fragment, computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, createTextVNode, createVNode, defineComponent, defineCustomElement, getCurrentInstance, mergeModels, nextTick, normalizeClass, normalizeStyle, onMounted, onUnmounted, openBlock, ref, renderList, renderSlot, toDisplayString, useId, useModel, watch, withCtx, withModifiers } from "vue";
 //#region src/utils/comegen-element.ts
 var BUILD_META = {
 	"version": "5.2.3",
@@ -754,7 +754,7 @@ var Loader_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE_
 }), [["styles", ["\n.cu-loader[data-v-045244b1] {\n  position: absolute;\n  top: 0;\n  left: 0;\n  right: 0;\n  z-index: 30;\n  overflow: hidden;\n  height: 3px;\n}\n.cu-loader-bar[data-v-045244b1] {\n  position: absolute;\n  top: 0;\n  height: 100%;\n  background: var(--cu-loader-color);\n}\n.cu-loader-bar--loading[data-v-045244b1] {\n  width: 60%;\n  background: linear-gradient(90deg, transparent 0%, var(--cu-loader-color) 50%, transparent 100%);\n  animation: cu-loader-slide-045244b1 1.5s ease-in-out infinite;\n}\n.cu-loader-bar--cooldown[data-v-045244b1] {\n  left: 0;\n  width: 100%;\n  animation: cu-loader-cooldown-045244b1 var(--cu-loader-delay) linear forwards;\n}\n@keyframes cu-loader-slide-045244b1 {\n0% { left: -100%;\n}\n50% { left: 0%;\n}\n100% { left: 100%;\n}\n}\n@keyframes cu-loader-cooldown-045244b1 {\nfrom { width: 100%;\n}\nto { width: 0%;\n}\n}\n"]], ["__scopeId", "data-v-045244b1"]]);
 //#endregion
 //#region src/components/overlay/Popover.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1$3 = ["role"];
+var _hoisted_1$3 = ["id", "role"];
 var HOVER_REGISTRY_KEY = "__cu_hover_registry__";
 //#endregion
 //#region src/components/overlay/Popover.vue
@@ -804,6 +804,12 @@ var Popover_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE
 			default: 200
 		},
 		role: {
+			type: String,
+			required: false,
+			default: ""
+		},
+		/** `id` del panel: el trigger lo referencia con `aria-controls` (patrón combobox/listbox). */
+		panelId: {
 			type: String,
 			required: false,
 			default: ""
@@ -879,9 +885,22 @@ var Popover_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE
 		const popoverRef = ref(null);
 		const panelEl = ref(null);
 		let focusBeforeOpen = null;
-		/** Elemento enfocado dentro del mismo árbol (shadow root o documento). */
+		/**
+		* Elemento enfocado dentro del mismo árbol (shadow root o documento).
+		*
+		* Dentro de un shadow root `activeElement` es `null` cuando el foco está afuera: eso
+		* **no** significa "foco perdido" (puede estar en otro control del documento), así que
+		* se cae a `document.activeElement` y se descarta el host, que es un destino inútil.
+		*/
 		function activeInTree() {
-			return (popoverRef.value?.getRootNode())?.activeElement ?? null;
+			const root = popoverRef.value?.getRootNode();
+			const inRoot = root?.activeElement ?? null;
+			if (inRoot) return inRoot;
+			if (!root || !(root instanceof ShadowRoot)) return null;
+			const host = root.host;
+			const docActive = document.activeElement;
+			if (docActive && docActive !== document.body && docActive !== host) return docActive;
+			return null;
 		}
 		/** Primer elemento enfocable del trigger (slot `#toggle`). */
 		function triggerElement() {
@@ -1145,13 +1164,14 @@ var Popover_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE
 				key: 0,
 				ref_key: "panelEl",
 				ref: panelEl,
+				id: props.panelId || void 0,
 				style: normalizeStyle(panelStyle.value),
 				class: normalizeClass(["cu-popover-panel", __props.panelClass]),
 				role: __props.role || void 0
 			}, [renderSlot(_ctx.$slots, "default", {}, void 0, true)], 14, _hoisted_1$3)) : createCommentVNode("v-if", true)], 544);
 		};
 	}
-}), [["styles", ["\n.cu-popover[data-v-8fab41f3] {\n  position: relative;\n  display: inline-block;\n  box-sizing: border-box;\n}\n.cu-popover-panel[data-v-8fab41f3] {\n  padding: var(--cu-space-sm);\n  border-radius: var(--cu-radius-md);\n  font-family: var(--cu-font-sans);\n  box-shadow: var(--cu-shadow-xl);\n}\n"]], ["__scopeId", "data-v-8fab41f3"]]);
+}), [["styles", ["\n.cu-popover[data-v-7e62c527] {\n  position: relative;\n  display: inline-block;\n  box-sizing: border-box;\n}\n.cu-popover-panel[data-v-7e62c527] {\n  padding: var(--cu-space-sm);\n  border-radius: var(--cu-radius-md);\n  font-family: var(--cu-font-sans);\n  box-shadow: var(--cu-shadow-xl);\n}\n"]], ["__scopeId", "data-v-7e62c527"]]);
 //#endregion
 //#region node_modules/.pnpm/dompurify@3.4.14/node_modules/dompurify/dist/purify.es.mjs
 /*! @license DOMPurify 3.4.14 | (c) Cure53 and other contributors | Released under the Apache license 2.0 and Mozilla Public License 2.0 | github.com/cure53/DOMPurify/blob/3.4.14/LICENSE */
@@ -3635,6 +3655,12 @@ var Dropdown_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 			required: false,
 			default: "menu"
 		},
+		/** `id` del panel: el trigger lo referencia con `aria-controls` (patrón combobox/listbox). */
+		panelId: {
+			type: String,
+			required: false,
+			default: ""
+		},
 		loading: {
 			type: Boolean,
 			required: false,
@@ -3649,6 +3675,15 @@ var Dropdown_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 			type: Number,
 			required: false,
 			default: 0
+		},
+		/**
+		* Estilo de la barra de cooldown: `ghost`/`ghost-hover` (color suave, default) o
+		* `solid` (color lleno). Se resuelve con los tokens del color activo.
+		*/
+		cooldownVariant: {
+			type: String,
+			required: false,
+			default: "ghost-hover"
 		},
 		delay: {
 			type: Number,
@@ -3696,6 +3731,13 @@ var Dropdown_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 			"cu-dropdown-panel": true,
 			"cu-dropdown-panel--loading": props.loading
 		}));
+		/**
+		* Color de la barra de cooldown. `Loader` pinta `var(--cu-color-{color})`, así que la
+		* variante se resuelve pasando el **sufijo** del token: `ghost`/`ghost-hover` usan el
+		* tono suave del color (`-ghost-hover`) y `solid` el tono lleno (base). Antes la prop
+		* llegaba hasta acá como atributo suelto y no tenía ningún efecto.
+		*/
+		const cooldownColor = computed(() => props.cooldownVariant === "solid" ? props.color : `${props.color}-ghost-hover`);
 		function onItemClick(item) {
 			if (item.disabled || item.divider) return;
 			if (item.onClick) item.onClick();
@@ -3739,6 +3781,7 @@ var Dropdown_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 				hover: __props.trigger === "hover",
 				"hover-delay": 0,
 				role: __props.panelRole,
+				"panel-id": __props.panelId,
 				"panel-class": panelClass.value,
 				class: normalizeClass(["cu-dropdown", { "cu-dropdown--nested": isNested.value }]),
 				onOpen: _cache[0] || (_cache[0] = ($event) => emit("open")),
@@ -3787,7 +3830,7 @@ var Dropdown_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 					}, null, 8, ["color"])) : createCommentVNode("v-if", true),
 					__props.cooldown && !__props.loading ? (openBlock(), createBlock(Loader_default, {
 						key: __props.cooldownKey,
-						color: __props.color,
+						color: cooldownColor.value,
 						animation: "cooldown",
 						delay: __props.delay
 					}, null, 8, ["color", "delay"])) : createCommentVNode("v-if", true),
@@ -3824,12 +3867,13 @@ var Dropdown_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 				"disabled",
 				"hover",
 				"role",
+				"panel-id",
 				"panel-class",
 				"class"
 			]);
 		};
 	}
-}), [["styles", ["\n/* El wrapper: el motor (position/display) lo aporta .cu-popover. Acá solo\n   ajustes específicos del dropdown sobre el panel del Popover. */\n.cu-dropdown[data-v-ed426c15] .cu-dropdown-panel--loading {\n  pointer-events: none;\n}\n\n/* Dropdown anidado: ocupa el ancho de la fila del menú padre y el panel en\n   cascada es más angosto (auto) */\n.cu-dropdown.cu-dropdown--nested[data-v-ed426c15] {\n  display: block;\n  width: 100%;\n  --cu-popover-width: auto;\n  --cu-popover-min-width: 160px;\n}\n.cu-dropdown-panel--nested[data-v-ed426c15] {\n  padding: var(--cu-space-2xs);\n}\n\n/* Item de menú nativo (hojas + trigger de submenú anidado) */\n.cu-dropdown-menu-item[data-v-ed426c15] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--cu-space-md);\n  width: 100%;\n  padding: var(--cu-space-sm) var(--cu-space-md);\n  box-sizing: border-box;\n  background: transparent;\n  border: none;\n  cursor: pointer;\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  color: var(--cu-color-neutral);\n  text-decoration: none;\n  border-radius: var(--cu-radius-sm);\n  transition: background-color 150ms ease;\n}\n.cu-dropdown-menu-item[data-v-ed426c15]:hover:not(.cu-dropdown-menu-item--disabled) {\n  background-color: var(--cu-color-neutral-ghost-hover);\n}\n.cu-dropdown-menu-item--disabled[data-v-ed426c15] {\n  color: var(--cu-color-neutral-text-muted);\n  cursor: not-allowed;\n}\n.cu-dropdown-menu-item-label[data-v-ed426c15] {\n  text-align: left;\n  white-space: nowrap;\n}\n.cu-dropdown-menu-item-chevron[data-v-ed426c15] {\n  flex-shrink: 0;\n  color: var(--cu-color-neutral-text-muted);\n}\n.cu-dropdown-menu-item-icon[data-v-ed426c15] {\n  flex-shrink: 0;\n  color: var(--cu-color-neutral-text-subtle);\n}\n.cu-dropdown-menu-divider[data-v-ed426c15] {\n  margin: var(--cu-space-2xs) 0;\n  border: 0;\n  border-top: var(--cu-border-thin) solid var(--cu-border-color);\n}\n"]], ["__scopeId", "data-v-ed426c15"]]);
+}), [["styles", ["\n/* El wrapper: el motor (position/display) lo aporta .cu-popover. Acá solo\n   ajustes específicos del dropdown sobre el panel del Popover. */\n.cu-dropdown[data-v-620d7284] .cu-dropdown-panel--loading {\n  pointer-events: none;\n}\n\n/* Dropdown anidado: ocupa el ancho de la fila del menú padre y el panel en\n   cascada es más angosto (auto) */\n.cu-dropdown.cu-dropdown--nested[data-v-620d7284] {\n  display: block;\n  width: 100%;\n  --cu-popover-width: auto;\n  --cu-popover-min-width: 160px;\n}\n.cu-dropdown-panel--nested[data-v-620d7284] {\n  padding: var(--cu-space-2xs);\n}\n\n/* Item de menú nativo (hojas + trigger de submenú anidado) */\n.cu-dropdown-menu-item[data-v-620d7284] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--cu-space-md);\n  width: 100%;\n  padding: var(--cu-space-sm) var(--cu-space-md);\n  box-sizing: border-box;\n  background: transparent;\n  border: none;\n  cursor: pointer;\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  color: var(--cu-color-neutral);\n  text-decoration: none;\n  border-radius: var(--cu-radius-sm);\n  transition: background-color 150ms ease;\n}\n.cu-dropdown-menu-item[data-v-620d7284]:hover:not(.cu-dropdown-menu-item--disabled) {\n  background-color: var(--cu-color-neutral-ghost-hover);\n}\n.cu-dropdown-menu-item--disabled[data-v-620d7284] {\n  color: var(--cu-color-neutral-text-muted);\n  cursor: not-allowed;\n}\n.cu-dropdown-menu-item-label[data-v-620d7284] {\n  text-align: left;\n  white-space: nowrap;\n}\n.cu-dropdown-menu-item-chevron[data-v-620d7284] {\n  flex-shrink: 0;\n  color: var(--cu-color-neutral-text-muted);\n}\n.cu-dropdown-menu-item-icon[data-v-620d7284] {\n  flex-shrink: 0;\n  color: var(--cu-color-neutral-text-subtle);\n}\n.cu-dropdown-menu-divider[data-v-620d7284] {\n  margin: var(--cu-space-2xs) 0;\n  border: 0;\n  border-top: var(--cu-border-thin) solid var(--cu-border-color);\n}\n"]], ["__scopeId", "data-v-620d7284"]]);
 //#endregion
 //#region src/components/icons/LucideCheck.vue
 var LucideCheck_default = /* @__PURE__ */ defineComponent({
@@ -3965,13 +4009,21 @@ function matchesQuery(text, q, opts = {}) {
 	return mode === "startsWith" ? value.startsWith(needle) : value.includes(needle);
 }
 //#endregion
+//#region src/utils/uniqueId.ts
+var sequence = 0;
+/** Identificador estable mientras la instancia viva: `<prefijo>-<useId>-<n>`. */
+function useUniqueId(prefix) {
+	return `${prefix}-${useId()}-${++sequence}`;
+}
+//#endregion
 //#region src/components/form/Select.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1 = {
-	key: 1,
-	class: "cu-select-options"
+	key: 0,
+	class: "cu-select-options",
+	tabindex: "-1"
 };
 var _hoisted_2 = {
-	key: 2,
+	key: 1,
 	class: "cu-select-empty"
 };
 //#endregion
@@ -4084,68 +4136,145 @@ var Select_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE_
 	setup(__props, { expose: __expose, emit: __emit }) {
 		const props = __props;
 		const emit = __emit;
+		/** `options` puede llegar como `null` (Vue no avisa): sin guarda, `.find`/`v-for` rompen. */
+		const optionsList = computed(() => props.options ?? []);
 		const selectedValue = ref(props.modelValue);
 		const dropdownRef = ref(null);
 		const selectRoot = ref(null);
-		const nativeInputRef = ref(null);
 		const searchText = ref("");
 		const cooldownActive = ref(false);
 		const cooldownKey = ref(0);
+		/**
+		* Opción activa (la que anuncia `aria-activedescendant` y elige `Enter`). El foco no
+		* sale del trigger: el panel es un `listbox` y la navegación es virtual, como en un
+		* combobox. `-1` = ninguna.
+		*/
+		const activeIndex = ref(-1);
 		let resetTimeout = null;
+		const uid = useUniqueId("cu-select");
+		const listboxId = `${uid}-listbox`;
+		const optionId = (index) => `${uid}-option-${index}`;
+		const isOpen = computed(() => dropdownRef.value?.isOpen() ?? false);
+		const activeDescendant = computed(() => isOpen.value && activeIndex.value >= 0 ? optionId(activeIndex.value) : void 0);
+		/** Índice de la opción elegida, o -1. */
+		const selectedIndex = computed(() => optionsList.value.findIndex((o) => o.value === selectedValue.value));
 		const matchIndex = computed(() => {
 			const q = searchText.value;
 			if (!q) return -1;
-			return props.options.findIndex((o) => !o.disabled && matchesQuery(o.label, q, { mode: props.searchMode }));
+			return optionsList.value.findIndex((o) => !o.disabled && matchesQuery(o.label, q, { mode: props.searchMode }));
 		});
+		/** Primera/última opción habilitada (Home/End y apertura con flechas). */
+		function firstEnabled(fromEnd = false) {
+			const list = optionsList.value;
+			return (fromEnd ? [...list.keys()].reverse() : [...list.keys()]).find((i) => !list[i].disabled) ?? -1;
+		}
+		/** Mueve la opción activa `step` posiciones, salteando las deshabilitadas y con wrap. */
+		function moveActive(step) {
+			const list = optionsList.value;
+			if (list.length === 0) return;
+			let index = activeIndex.value;
+			for (let i = 0; i < list.length; i++) {
+				index = (index + step + list.length) % list.length;
+				if (!list[index].disabled) break;
+			}
+			activeIndex.value = list[index]?.disabled ? activeIndex.value : index;
+			scrollToActive();
+		}
+		/** Deja visible la opción activa (el panel tiene scroll propio). */
+		function scrollToActive() {
+			const index = activeIndex.value;
+			if (index < 0) return;
+			nextTick(() => {
+				const optionEl = (selectRoot.value?.querySelector(".cu-select-options"))?.children[index];
+				if (optionEl) optionEl.scrollIntoView({ block: "nearest" });
+			});
+		}
+		/** Búsqueda por teclado a cero: sin texto acumulado, sin barra de cooldown colgada. */
+		function clearSearch() {
+			if (resetTimeout) {
+				clearTimeout(resetTimeout);
+				resetTimeout = null;
+			}
+			searchText.value = "";
+			cooldownActive.value = false;
+		}
 		function scheduleReset() {
 			if (resetTimeout) clearTimeout(resetTimeout);
 			cooldownActive.value = true;
 			resetTimeout = setTimeout(() => {
+				resetTimeout = null;
 				searchText.value = "";
 				cooldownActive.value = false;
 			}, props.searchResetDelay);
 		}
 		function onKeyDown(e) {
-			if (props.readOnly || !props.searchEnabled) return;
-			if (e.key === "Escape" || e.key === "Tab") return;
-			if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
+			if (props.disabled) return;
+			if (e.key === "ArrowDown" || e.key === "ArrowUp") {
 				e.preventDefault();
-				searchText.value += e.key;
-				cooldownKey.value++;
-				scheduleReset();
-				if (matchIndex.value >= 0) nextTick(() => scrollToMatch(matchIndex.value));
-			} else if (e.key === "Backspace") {
-				e.preventDefault();
-				searchText.value = searchText.value.slice(0, -1);
-				cooldownKey.value++;
-				scheduleReset();
+				if (props.readOnly) return;
+				if (!isOpen.value) {
+					activeIndex.value = firstEnabled(e.key === "ArrowUp");
+					dropdownRef.value?.open();
+					scrollToActive();
+					return;
+				}
+				if (activeIndex.value < 0) {
+					activeIndex.value = firstEnabled(e.key === "ArrowUp");
+					scrollToActive();
+					return;
+				}
+				moveActive(e.key === "ArrowDown" ? 1 : -1);
+				return;
 			}
-		}
-		function scrollToMatch(index) {
-			const optionsEl = selectRoot.value?.querySelector(".cu-select-options");
-			if (!optionsEl) return;
-			const optionEl = optionsEl.children[index];
-			if (optionEl) optionEl.scrollIntoView({ block: "nearest" });
+			if (e.key === "Home" || e.key === "End") {
+				if (!isOpen.value) return;
+				e.preventDefault();
+				activeIndex.value = firstEnabled(e.key === "End");
+				scrollToActive();
+				return;
+			}
+			if (e.key === "Enter" || e.key === " ") {
+				const option = isOpen.value ? optionsList.value[activeIndex.value] : void 0;
+				if (option && !option.disabled) {
+					e.preventDefault();
+					onSelect(option);
+				}
+				return;
+			}
+			if (e.key === "Escape") {
+				if (isOpen.value) activeIndex.value = -1;
+				return;
+			}
+			if (e.key === "Tab") return;
+			if (!props.readOnly && props.searchEnabled) {
+				if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
+					e.preventDefault();
+					searchText.value += e.key;
+					cooldownKey.value++;
+					scheduleReset();
+					if (matchIndex.value >= 0) {
+						activeIndex.value = matchIndex.value;
+						scrollToActive();
+					}
+				} else if (e.key === "Backspace") {
+					e.preventDefault();
+					searchText.value = searchText.value.slice(0, -1);
+					cooldownKey.value++;
+					scheduleReset();
+				}
+			}
 		}
 		function onDropdownOpen() {
-			if (props.searchEnabled) {
-				searchText.value = "";
-				nextTick(() => {
-					const input = nativeInputRef.value;
-					if (input) {
-						input.addEventListener("keydown", onKeyDown);
-						input.focus();
-					}
-				});
-			}
+			clearSearch();
+			if (activeIndex.value >= 0) return;
+			const sel = selectedIndex.value;
+			activeIndex.value = sel >= 0 && !optionsList.value[sel].disabled ? sel : firstEnabled();
 		}
 		function onDropdownClose() {
-			if (props.searchEnabled) {
-				const input = nativeInputRef.value;
-				if (input) input.removeEventListener("keydown", onKeyDown);
-			}
+			clearSearch();
+			activeIndex.value = -1;
 		}
-		watch(() => dropdownRef.value?.isOpen(), (open) => {
+		watch(isOpen, (open) => {
 			if (open) onDropdownOpen();
 			else onDropdownClose();
 		});
@@ -4153,7 +4282,7 @@ var Select_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE_
 			if (value) dropdownRef.value?.close();
 		});
 		const selectedLabel = computed(() => {
-			const opt = props.options.find((o) => o.value === selectedValue.value);
+			const opt = optionsList.value.find((o) => o.value === selectedValue.value);
 			return opt ? opt.label : props.placeholder || "Seleccionar...";
 		});
 		watch(() => props.modelValue, (val) => {
@@ -4168,6 +4297,17 @@ var Select_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE_
 			dropdownRef.value?.close();
 		}
 		const optionStyle = computed(() => textAlignStyle(props.textAlign));
+		/**
+		* Look de la opción deshabilitada. Va inline porque la fila es un `Button`: su variante
+		* (`ghost`/`soft`, scoped) declara `color` y `--disabled` declara `opacity`, y con la
+		* misma especificidad le ganaban a la clase del padre. `opacity: 1` evita apilar la
+		* atenuación del `Button` sobre el color muted (dejaba el texto bajo 4.5:1).
+		*/
+		const disabledOptionStyle = computed(() => ({
+			...optionStyle.value,
+			color: "var(--cu-color-neutral-text-muted)",
+			opacity: "1"
+		}));
 		/** El label del trigger alinea su texto dentro del espacio que deja el chevron. */
 		const labelStyle = computed(() => ({ textAlign: props.textAlign }));
 		/** Devuelve el valor seleccionado. */
@@ -4189,8 +4329,12 @@ var Select_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE_
 			selectRoot.value?.querySelector(".cu-select-toggle")?.focus();
 		}
 		function onFocusOut(e) {
-			if (!selectRoot.value?.contains(e.relatedTarget)) emit("blur");
+			const next = e.relatedTarget;
+			if (selectRoot.value?.contains(next)) return;
+			if (dropdownRef.value?.isOpen()) setTimeout(() => dropdownRef.value?.close(), 0);
+			emit("blur");
 		}
+		onUnmounted(clearSearch);
 		__expose({
 			get,
 			set,
@@ -4199,7 +4343,7 @@ var Select_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE_
 			/** Indica si el panel está abierto. */
 			isOpen: () => dropdownRef.value?.isOpen() ?? false,
 			/** Devuelve la opción seleccionada o null. */
-			selectedItem: () => props.options.find((o) => o.value === selectedValue.value) || null
+			selectedItem: () => optionsList.value.find((o) => o.value === selectedValue.value) || null
 		});
 		return (_ctx, _cache) => {
 			return openBlock(), createElementBlock("div", {
@@ -4222,15 +4366,23 @@ var Select_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE_
 				"cooldown-key": cooldownKey.value,
 				"cooldown-variant": __props.cooldownVariant,
 				delay: __props.searchResetDelay,
-				onClose: _cache[0] || (_cache[0] = ($event) => emit("close"))
+				"panel-role": "listbox",
+				"panel-id": listboxId,
+				onClose: _cache[1] || (_cache[1] = ($event) => emit("close"))
 			}, {
 				toggle: withCtx(({ toggle, isOpen }) => [createVNode(Button_default, {
 					color: __props.color,
 					variant: __props.variant,
 					disabled: __props.disabled,
+					role: "combobox",
+					"aria-haspopup": "listbox",
+					"aria-expanded": isOpen ? "true" : "false",
+					"aria-controls": listboxId,
+					"aria-activedescendant": activeDescendant.value,
 					"aria-readonly": __props.readOnly ? "true" : void 0,
 					class: "cu-select-toggle",
-					onClick: toggle
+					onClick: toggle,
+					onKeydown: onKeyDown
 				}, {
 					default: withCtx(() => [createElementVNode("span", {
 						class: normalizeClass(["cu-select-label", { "cu-select-label--wrap": __props.placeholderWrap }]),
@@ -4246,35 +4398,39 @@ var Select_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE_
 						"stroke-linecap": "round",
 						"stroke-linejoin": "round",
 						class: normalizeClass(["cu-select-chevron", { "cu-select-chevron--open": isOpen }])
-					}, [..._cache[1] || (_cache[1] = [createElementVNode("path", { d: "m6 9 6 6 6-6" }, null, -1)])], 2))]),
+					}, [..._cache[2] || (_cache[2] = [createElementVNode("path", { d: "m6 9 6 6 6-6" }, null, -1)])], 2))]),
 					_: 2
 				}, 1032, [
 					"color",
 					"variant",
 					"disabled",
+					"aria-expanded",
+					"aria-activedescendant",
 					"aria-readonly",
 					"onClick"
 				])]),
-				default: withCtx(() => [__props.searchEnabled ? (openBlock(), createElementBlock("input", {
-					key: 0,
-					ref_key: "nativeInputRef",
-					ref: nativeInputRef,
-					type: "text",
-					class: "cu-select-hidden-input cu-input cu-input--ghost",
-					tabindex: "-1",
-					autocomplete: "off"
-				}, null, 512)) : createCommentVNode("v-if", true), __props.options.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_1, [(openBlock(true), createElementBlock(Fragment, null, renderList(__props.options, (opt, i) => {
+				default: withCtx(() => [optionsList.value.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_1, [(openBlock(true), createElementBlock(Fragment, null, renderList(optionsList.value, (opt, i) => {
 					return openBlock(), createBlock(MenuOption_default, {
 						key: i,
+						id: optionId(i),
+						role: "option",
+						tabindex: "-1",
+						"aria-selected": opt.value === selectedValue.value ? "true" : "false",
 						label: opt.label,
 						color: opt.color || __props.color,
 						variant: opt.variant || (opt.value === selectedValue.value ? "soft" : "ghost"),
 						disabled: opt.disabled,
 						selected: opt.value === selectedValue.value,
-						class: normalizeClass(["cu-select-option", { "cu-select-option--disabled": opt.disabled }]),
-						style: normalizeStyle(optionStyle.value),
+						class: normalizeClass(["cu-select-option", {
+							"cu-select-option--disabled": opt.disabled,
+							"cu-select-option--active": i === activeIndex.value
+						}]),
+						style: normalizeStyle(opt.disabled ? disabledOptionStyle.value : optionStyle.value),
+						onMousedown: _cache[0] || (_cache[0] = withModifiers(() => {}, ["prevent"])),
 						onClick: ($event) => onSelect(opt)
 					}, null, 8, [
+						"id",
+						"aria-selected",
 						"label",
 						"color",
 						"variant",
@@ -4300,7 +4456,7 @@ var Select_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE_
 			])], 34);
 		};
 	}
-}), [["styles", ["\n.cu-select[data-v-a030b4fb] {\n  width: 100%;\n  outline: none;\n}\n.cu-select[data-v-a030b4fb] .cu-dropdown {\n  width: 100%;\n}\n.cu-select-toggle[data-v-a030b4fb] {\n  width: 100%;\n  justify-content: space-between;\n  gap: var(--cu-space-md);\n  box-sizing: border-box;\n}\n\n/* Anillo de focus del trigger (como .cu-input:focus) — focus() enfoca el botón\n   de verdad: visible para el usuario y para teclado */\n.cu-select-toggle[data-v-a030b4fb]:focus {\n  box-shadow: 0 0 0 var(--cu-border-thin) var(--btn-subtle-border);\n}\n.cu-select--readonly .cu-select-toggle[data-v-a030b4fb] {\n  cursor: default;\n}\n.cu-select-label[data-v-a030b4fb] {\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  min-width: 0;\n  /* Ocupa el espacio que deja el chevron: sin esto el `text-align` del label no tiene\n     ancho propio y la alineación no se ve. */\n  flex: 1 1 auto;\n}\n.cu-select-label--wrap[data-v-a030b4fb] {\n  white-space: normal;\n}\n.cu-select-chevron[data-v-a030b4fb] {\n  transition: transform 200ms ease;\n  flex-shrink: 0;\n}\n.cu-select-chevron--open[data-v-a030b4fb] {\n  transform: rotate(180deg);\n}\n.cu-select-options[data-v-a030b4fb] {\n  max-height: 240px;\n  overflow-y: auto;\n}\n.cu-select-option[data-v-a030b4fb] {\n  width: 100%;\n  /* La alineación la pone `textAlign` inline (`justify-content`): dentro de un `Button`\n     flex el `text-align` solo no mueve nada. Default: `flex-start`. */\n}\n.cu-select-option--disabled[data-v-a030b4fb] {\n  /* Estado deshabilitado por color (≥ 4.5:1), no por opacity: la fila es un\n     Button deshabilitado (alpha-disabled 0.7) y la opacidad acumulada dejaba el\n     texto en ~2:1. */\n  opacity: 1;\n  color: var(--cu-color-neutral-text-muted);\n  cursor: not-allowed;\n}\n.cu-select-hidden-input[data-v-a030b4fb] {\n  position: absolute;\n  width: 1px;\n  height: 1px;\n  padding: 0;\n  margin: -1px;\n  overflow: hidden;\n  clip: rect(0, 0, 0, 0);\n  white-space: nowrap;\n  border: 0;\n  opacity: 0;\n}\n.cu-select-empty[data-v-a030b4fb]{\n  padding: var(--cu-space-md);\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  color: var(--cu-color-neutral-text-subtle);\n  text-align: center;\n}\n"]], ["__scopeId", "data-v-a030b4fb"]]);
+}), [["styles", ["\n.cu-select[data-v-acfb190c] {\n  width: 100%;\n  outline: none;\n}\n.cu-select[data-v-acfb190c] .cu-dropdown {\n  width: 100%;\n}\n.cu-select-toggle[data-v-acfb190c] {\n  width: 100%;\n  justify-content: space-between;\n  gap: var(--cu-space-md);\n  box-sizing: border-box;\n}\n\n/* Anillo de focus del trigger (como .cu-input:focus) — focus() enfoca el botón\n   de verdad: visible para el usuario y para teclado */\n.cu-select-toggle[data-v-acfb190c]:focus {\n  box-shadow: 0 0 0 var(--cu-border-thin) var(--btn-subtle-border);\n}\n.cu-select--readonly .cu-select-toggle[data-v-acfb190c] {\n  cursor: default;\n}\n.cu-select-label[data-v-acfb190c] {\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  min-width: 0;\n  /* Ocupa el espacio que deja el chevron: sin esto el `text-align` del label no tiene\n     ancho propio y la alineación no se ve. */\n  flex: 1 1 auto;\n}\n.cu-select-label--wrap[data-v-acfb190c] {\n  white-space: normal;\n}\n.cu-select-chevron[data-v-acfb190c] {\n  transition: transform 200ms ease;\n  flex-shrink: 0;\n}\n.cu-select-chevron--open[data-v-acfb190c] {\n  transform: rotate(180deg);\n}\n.cu-select-options[data-v-acfb190c] {\n  max-height: 240px;\n  overflow-y: auto;\n}\n.cu-select-option[data-v-acfb190c] {\n  width: 100%;\n  /* La alineación la pone `textAlign` inline (`justify-content`): dentro de un `Button`\n     flex el `text-align` solo no mueve nada. Default: `flex-start`. */\n}\n.cu-select-option--disabled[data-v-acfb190c] {\n  /* El color muted y la opacidad 1 van inline (`disabledOptionStyle`): la fila es un\n     `Button` y sus reglas scoped le ganaban a esta clase (la opción deshabilitada se\n     veía igual que una habilitada). Acá queda solo el cursor. */\n  cursor: not-allowed;\n}\n\n/* Opción activa (la que anuncia `aria-activedescendant`): el foco queda en el trigger,\n   así que el resaltado es la única señal visual de dónde está parada la navegación. */\n.cu-select-option--active[data-v-acfb190c]:not(.cu-select-option--disabled) {\n  background-color: var(--cu-color-neutral-ghost-hover);\n}\n.cu-select-empty[data-v-acfb190c]{\n  padding: var(--cu-space-md);\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  color: var(--cu-color-neutral-text-subtle);\n  text-align: center;\n}\n"]], ["__scopeId", "data-v-acfb190c"]]);
 //#endregion
 //#region src/lib/form/select.ts
 var CuSelect = defineComegenElement("cu-select", /* @__PURE__ */ _plugin_vue_export_helper_default(/* @__PURE__ */ defineComponent({
@@ -4405,7 +4561,7 @@ var CuSelect = defineComegenElement("cu-select", /* @__PURE__ */ _plugin_vue_exp
 			required: false,
 			default: false
 		},
-		/** Estilo de la barra de cooldown: `ghost-hover` (default) o el `variant` que quieras, p. ej. `solid` (color lleno). No se muestra si `loading` está activo */
+		/** Estilo de la barra de cooldown: `ghost`/`ghost-hover` (color suave, default) o `solid` (color lleno). No se muestra si `loading` está activo */
 		cooldownVariant: {
 			type: String,
 			required: false,
@@ -4479,8 +4635,7 @@ var CuSelect = defineComegenElement("cu-select", /* @__PURE__ */ _plugin_vue_exp
 				onSelect: _cache[0] || (_cache[0] = ($event) => ceEmit("select", $event)),
 				"onUpdate:modelValue": onUpdate,
 				onChange: _cache[1] || (_cache[1] = ($event) => ceEmit("change", $event)),
-				onClose: _cache[2] || (_cache[2] = ($event) => ceEmit("close", $event)),
-				onBlur: _cache[3] || (_cache[3] = ($event) => ceEmit("blur", $event))
+				onClose: _cache[2] || (_cache[2] = ($event) => ceEmit("close", $event))
 			}, null, 8, [
 				"color",
 				"variant",
