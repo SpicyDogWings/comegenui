@@ -71,6 +71,9 @@ const items = ref([
 (SVG inline) que se inyecta antes del label. Un item **sin** `path` no navega: renderiza un
 `<button>`.
 
+> El HTML del `icon` se sanitiza con **DOMPurify** antes de inyectarse: los SVG válidos se
+> conservan y se eliminan `<script>`, handlers `on*` y URLs peligrosas.
+
 ```vue
 <script setup lang="ts">
 import NavbarHorizontal from "@/components/navigation/NavbarHorizontal.vue";

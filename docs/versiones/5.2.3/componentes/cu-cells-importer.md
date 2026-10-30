@@ -48,6 +48,8 @@ En Vue, importá `CellsImporter` de `@/components/form/CellsImporter.vue` (ver [
 
 `template` activa el botón **Descargar plantilla** y define el formato del archivo generado. La plantilla se construye **siempre desde `columns`** (usa el `label` de cada columna como encabezado). El botón solo aparece si `enabled: true` **y** `columns.length > 0`; también se puede disparar con `.downloadTemplate()`.
 
+El CSV se genera con el `delimiter` configurado (se puede reimportar con la misma config) y con BOM UTF-8 para que Excel respete los acentos.
+
 ```html
 <!-- Plantilla CSV -->
 <cu-cells-importer id="impCsv" color="primary" placeholder="Plantilla CSV"></cu-cells-importer>
@@ -128,12 +130,12 @@ En Vue, importá `CellsImporter` de `@/components/form/CellsImporter.vue` (ver [
 
 ## Estados
 
-`disabled` bloquea la selección; `readonly` (atributo `readonly`) deja ver el resultado sin poder cambiar el archivo.
+`disabled` bloquea la selección; `read-only` deja ver el resultado sin poder cambiar el archivo (también sin quitar: la X del selector interno se esconde).
 
 ```html
 <cu-cells-importer color="primary" placeholder="habilitado"></cu-cells-importer>
 <cu-cells-importer color="danger" variant="soft" disabled placeholder="disabled"></cu-cells-importer>
-<cu-cells-importer readonly placeholder="readonly"></cu-cells-importer>
+<cu-cells-importer read-only placeholder="read-only"></cu-cells-importer>
 ```
 
 <!-- demo:cells-importer-estados -->
@@ -167,7 +169,7 @@ En Vue, importá `CellsImporter` de `@/components/form/CellsImporter.vue` (ver [
 
 <!-- demo:cells-importer-parseo -->
 
-> Con `strict=false` (default) el orden del archivo no importa: las columnas se matchean por `label` y las sobrantes se ignoran. Con `strict` se exige que el orden coincida con el del schema. Con `hasHeader: false`, las columnas se mapean por posición.
+> Con `strict=false` (default) el orden del archivo no importa: las columnas se matchean por `label` y las sobrantes se ignoran. Con `strict` se exige que el orden coincida con el del schema. Con `hasHeader: false`, las columnas se mapean por posición. Las celdas con formato de fecha de un `.xlsx` se leen como fechas (no como número de serie) y el BOM del CSV se descarta.
 
 > `.xlsx` requiere SheetJS, que viaja solo en `CuCellsImporter.umd.js`; el resto de la lib no se ve afectado. Formato inválido o tamaño excedido los rechaza el selector interno.
 
@@ -195,7 +197,7 @@ imp.columns = [
 
 <!--@include: ../partials/cells-importer/props-vanilla.md-->
 
-> **Atributos en HTML:** `hasHeader` se escribe `has-header`, `readOnly` → `readonly`, `maxSize` → `max-size`. Los arrays y objetos (`columns`, `template`, `formats`, `sheet`) se asignan por JS.
+> **Atributos en HTML:** `hasHeader` se escribe `has-header`, `readOnly` → `read-only`, `maxSize` → `max-size`. Los arrays y objetos (`columns`, `template`, `formats`, `sheet`) se asignan por JS.
 
 ### `CellColumn`
 

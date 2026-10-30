@@ -60,3 +60,26 @@ describe("NavbarMenu — submenús anidados", () => {
     expect(link!.attributes("href")).toBe("/anidado");
   });
 });
+
+describe("NavbarMenu — ícono saneado", () => {
+  const EVIL = '<img src=x onerror="window.__xss=1"><script>window.__xss=2</script>';
+
+  it("conserva un SVG válido y elimina handlers del icono", () => {
+    type XssWindow = Window & { __xss?: number };
+    const probe = window as XssWindow;
+    delete probe.__xss;
+
+    const w = mount(NavbarMenu, {
+      props: {
+        items: [
+          { label: "Bueno", path: "/b", icon: '<svg class="mi-icon"></svg>' },
+          { label: "Malo", path: "/m", icon: EVIL },
+        ],
+      },
+    });
+    expect(w.find(".cu-navbar-menu-icon svg.mi-icon").exists()).toBe(true);
+    expect(w.html()).not.toContain("onerror");
+    expect(w.html()).not.toContain("<script");
+    expect(probe.__xss).toBeUndefined();
+  });
+});

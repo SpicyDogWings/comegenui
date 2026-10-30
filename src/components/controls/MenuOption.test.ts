@@ -58,3 +58,23 @@ describe("MenuOption — item", () => {
     expect(onClick).toHaveBeenCalledTimes(1);
   });
 });
+
+describe("MenuOption — ícono saneado", () => {
+  const EVIL = '<img src=x onerror="window.__xss=1"><script>window.__xss=2</script>';
+
+  it("conserva un SVG válido", () => {
+    const w = mount(MenuOption, { props: { label: "Editar", icon: ICON } });
+    expect(w.find(".mi-icono").exists()).toBe(true);
+  });
+
+  it("elimina `<script>` y handlers `on*` antes del v-html", () => {
+    type XssWindow = Window & { __xss?: number };
+    const probe = window as XssWindow;
+    delete probe.__xss;
+
+    const w = mount(MenuOption, { props: { label: "Editar", icon: EVIL } });
+    expect(w.html()).not.toContain("onerror");
+    expect(w.html()).not.toContain("<script");
+    expect(probe.__xss).toBeUndefined();
+  });
+});

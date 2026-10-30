@@ -1,4 +1,4 @@
-| Evento | Payload (`e.detail`) | Descripción |
+| Evento | Payload | Descripción |
 | ------ | ------ | ------ |
 | `update:modelValue` | `string` | — |
 | `select` | — | — |

@@ -30,7 +30,9 @@ function onUpdate(file: File | null) {
 </template>
 ```
 
-> **Drag & drop:** se puede soltar un archivo sobre el componente; durante el arrastre se ilumina el borde y el fondo. Los directorios se descartan solos (`size === 0 && !type`) y la validación de `accept`/`maxSize` también corre al soltar.
+> **Drag & drop:** se puede soltar un archivo sobre el componente; durante el arrastre se ilumina el borde y el fondo (también al pasar sobre sus propios íconos y textos). Los directorios se descartan solos (`size === 0 && !type`) y la validación de `accept`/`maxSize` también corre al soltar.
+
+> **Teclado y estructura:** el control de selección es un `<button>` real (Enter/Espacio abren el diálogo); el link del archivo y el botón de quitar son controles hermanos, no quedan dentro de ese botón. El botón de quitar tiene nombre accesible (`Quitar <archivo>`) y no abre el diálogo. El input nativo queda vacío después de procesar una selección, así que se puede volver a elegir el mismo archivo.
 
 ## Colores
 
@@ -58,7 +60,7 @@ function onUpdate(file: File | null) {
 
 ## Estados
 
-`disabled` y `readOnly` cortan click, drag y drop; `disabled` además atenúa el componente y esconde el botón de quitar.
+`disabled` y `readOnly` cortan click, drag y drop y deshabilitan el control de selección; en ambos se esconde el botón de quitar, y `disabled` además atenúa el componente. Con `disabled` el nombre no abre en una pestaña nueva; con `readOnly` sí se puede consultar, pero no cambiar ni quitar.
 
 ```vue
 <FileInput disabled placeholder="Deshabilitado" />

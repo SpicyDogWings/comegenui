@@ -170,9 +170,17 @@ defineExpose({
      `text-align` solo no mueve nada dentro de un `Button` flex. Default: `flex-start`. */
 }
 
+/* Item deshabilitado: la fila es un Button deshabilitado (alpha-disabled 0.7) y esa
+   opacidad deja el texto por debajo de 4.5:1 en varios temas (nord-snow-storm,
+   catppuccin-latte…). Se reemplaza por el color atenuado medido. */
+.cu-dropdown-item.cu-button--disabled {
+  opacity: 1;
+  color: var(--cu-color-neutral-text-muted);
+}
+
 .cu-dropdown-icon {
   transform: translateY(2px);
-  opacity: 0.6;
+  color: var(--cu-color-neutral-text-subtle);
 }
 
 .cu-dropdown-chevron {

@@ -94,7 +94,10 @@ const css = ref(false);
 </template>
 ```
 
-> Los presets se pueden sobrescribir con las custom properties `--cu-sideover-size-{sm|md|lg|xl|full}` sobre el host.
+> Los presets se pueden sobrescribir con las custom properties `--cu-sideover-size-{sm|md|lg|xl|full}`.
+> Como el panel se teletransporta al `body`, en Vue definilas en `:root` (o en `body`), no en un
+> contenedor del árbol; en el custom element, sobre el host.
+> El panel nunca supera el viewport: en pantallas angostas un preset grande se recorta al ancho (o alto) disponible.
 
 ## Fullscreen
 
@@ -164,10 +167,22 @@ const abierto = ref(false);
 </template>
 ```
 
+## Accesibilidad
+
+El panel expone `role="dialog"` y `aria-modal="true"`. Al abrirse, el foco entra al panel
+(`[autofocus]` si lo hay, si no el primer control enfocable, si no el panel); `Tab` y `Shift+Tab`
+ciclan dentro y no alcanzan el contenido de atrás, y al cerrarse el foco vuelve al elemento que
+tenía el foco antes de abrir. El nombre accesible sale del `title` (`aria-labelledby`); sin título
+se usa el `aria-label` que pases al componente o `"Panel"`.
+
+Con dos paneles abiertos, `Escape` y `Tab` los atiende sólo el de arriba (el último abierto) y el
+scroll del body se libera recién cuando se cierra el último. Con `prefers-reduced-motion: reduce`
+la entrada y la salida no animan.
+
 ## Interacción
 
 `update:modelValue` (lo que consume `v-model`) avisa cada cambio de estado con el valor nuevo
-(`boolean`), y `close` se dispara cada vez que el panel se cierra.
+(`boolean`), y `close` se emite al cerrarse por interacción (backdrop, `Escape` o botón).
 
 ```vue
 <script setup lang="ts">

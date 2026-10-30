@@ -4,7 +4,7 @@
 | `close` | Cierra el panel. |
 | `toggle` | Alterna el panel. |
 | `getValue` | Devuelve la fecha seleccionada (modo simple). |
-| `setValue` | Setea la fecha seleccionada y emite change (modo simple). |
+| `setValue` | Setea la fecha seleccionada y emite change (modo simple). Ignora los días deshabilitados (`min`/`max`/`disabledWeekdays`/`disabledDates`). |
 | `clear` | Limpia la selección. En modo simple cierra el panel; en rango lo deja abierto. |
 | `getStartDate` | Devuelve la fecha de inicio (solo con calendario de rango). |
 | `getEndDate` | Devuelve la fecha de fin (solo con calendario de rango). |

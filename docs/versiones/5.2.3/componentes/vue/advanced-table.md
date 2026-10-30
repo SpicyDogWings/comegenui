@@ -417,10 +417,12 @@ Podés deshabilitar la edición y el estado visual a **tres niveles**, con prior
 | **Celda** | campo `column.cellDisabled` (`(row) => boolean`) | Deshabilita una celda puntual (intersección fila × columna) |
 
 Al deshabilitar una celda:
-- La celda se **atenúa** y muestra `cursor: not-allowed`.
+- La celda se **atenúa** y muestra `cursor: not-allowed`. La atenuación es por **color**
+  (`--cu-color-neutral-text-muted`, contraste ≥ 4.5:1), no por `opacity`: el texto sigue siendo
+  legible y auditable en los 15 temas.
 - No entra en modo edición (ni lápiz ni inline; en inline muestra la vista atenuada).
 - Los **botones** de la celda y las **acciones** del dropdown "..." se deshabilitan.
-- Los **badges** se siguen viendo (solo atenuados con la fila).
+- Los **badges** se siguen viendo con su color propio (no se atenúan).
 
 ```vue
 <script setup lang="ts">
@@ -755,6 +757,11 @@ const columns = ref([
 ```
 
 > Los iconos SVG deben usar `stroke="currentColor"` para que hereden el color del botón.
+
+> `icon` se renderiza como HTML y pasa por **DOMPurify** antes de inyectarse (mismo criterio que
+> `Tabs`): los SVG válidos se conservan y se eliminan `<script>`, handlers `on*` y URLs peligrosas.
+> Es el lugar para poner un SVG inline; si necesitás un componente Vue, `icon` también acepta un
+> componente y no pasa por el sanitizador.
 
 Cada botón acepta además dos condicionales **por fila**: `disabled` y `hidden`, que pueden ser un booleano o una función `(row) => boolean` (a diferencia de filtrar el array a mano, `hidden` no necesita que cambies la cantidad de botones y la celda entera desaparece si la fila se queda sin ninguno):
 

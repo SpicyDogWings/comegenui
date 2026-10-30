@@ -4,6 +4,7 @@
 // desplegable: toggle + panel + valor seleccionable), no derivadas del código.
 import { describe, it, expect, vi } from "vitest";
 import { flushPromises, mount } from "@vue/test-utils";
+import { defineComponent, h } from "vue";
 import Dropdown from "./Dropdown.vue";
 
 type DropdownVm = {
@@ -168,5 +169,97 @@ describe("Dropdown — items", () => {
 
     expect(onClick).not.toHaveBeenCalled();
     expect(vm(w).isOpen()).toBe(true);
+  });
+});
+
+describe("Dropdown — rol del panel", () => {
+  it("por defecto el panel es un `menu`", async () => {
+    const w = mount(Dropdown);
+    vm(w).open();
+    await flushPromises();
+    expect(panel(w).attributes("role")).toBe("menu");
+  });
+
+  it("`panelRole` cambia el rol (el date-picker usa `dialog`)", async () => {
+    const w = mount(Dropdown, { props: { panelRole: "dialog" } });
+    vm(w).open();
+    await flushPromises();
+    expect(panel(w).attributes("role")).toBe("dialog");
+  });
+});
+
+describe("Dropdown — el foco vuelve al trigger al cerrar", () => {
+  it("Escape con el foco en un item lo devuelve al trigger", async () => {
+    const w = mount(Dropdown, {
+      attachTo: document.body,
+      props: { items: [{ label: "Uno" }, { label: "Dos" }] },
+    });
+    const trigger = w.find(".cu-dropdown button").element as HTMLElement;
+    trigger.focus();
+    vm(w).open();
+    await flushPromises();
+    const item = panel(w).find("button.cu-dropdown-menu-item").element as HTMLElement;
+    item.focus();
+
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+    await flushPromises();
+    expect(vm(w).isOpen()).toBe(false);
+    expect(document.activeElement).toBe(trigger);
+    w.unmount();
+  });
+});
+
+describe("Dropdown — íconos saneados", () => {
+  const LEGIT =
+    '<svg class="mi-icono" xmlns="http://www.w3.org/2000/svg"><path d="M4 4h16v16H4z"/></svg>';
+  const EVIL = '<img src=x onerror="window.__xss=1"><script>window.__xss=2</script>';
+
+  it("conserva el SVG válido de un item (botón y link)", async () => {
+    const w = mount(Dropdown, {
+      props: { items: [{ label: "Uno", icon: LEGIT }, { label: "Dos", icon: LEGIT, to: "/dos" }] },
+    });
+    vm(w).open();
+    await flushPromises();
+    expect(panel(w).findAll(".cu-dropdown-menu-item-icon svg.mi-icono")).toHaveLength(2);
+  });
+
+  it("elimina `<script>` y handlers `on*` del ícono de un item", async () => {
+    type XssWindow = Window & { __xss?: number };
+    const probe = window as XssWindow;
+    delete probe.__xss;
+
+    const w = mount(Dropdown, { props: { items: [{ label: "Malo", icon: EVIL }] } });
+    vm(w).open();
+    await flushPromises();
+
+    const icon = panel(w).find(".cu-dropdown-menu-item-icon");
+    expect(icon.html()).not.toContain("onerror");
+    expect(icon.html()).not.toContain("<script");
+    expect(probe.__xss).toBeUndefined();
+  });
+
+  it("sanitiza el `icon` del trigger anidado (submenú)", async () => {
+    type XssWindow = Window & { __xss?: number };
+    const probe = window as XssWindow;
+    delete probe.__xss;
+
+    const Wrapper = defineComponent({
+      setup() {
+        return () =>
+          h(Dropdown, null, {
+            default: () =>
+              h(Dropdown, { label: "Sub", icon: EVIL }, { default: () => h("span", "sub") }),
+          });
+      },
+    });
+    const w = mount(Wrapper);
+    (w.findComponent(Dropdown).vm as unknown as DropdownVm).open();
+    await flushPromises();
+
+    const nestedIcon = w.find(".cu-dropdown-menu-item .cu-dropdown-menu-item-icon");
+    expect(nestedIcon.exists()).toBe(true);
+    expect(nestedIcon.html()).not.toContain("onerror");
+    expect(nestedIcon.html()).not.toContain("<script");
+    expect(probe.__xss).toBeUndefined();
   });
 });

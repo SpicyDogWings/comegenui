@@ -109,8 +109,7 @@ defineExpose({ get, set, reset, focus });
 }
 
 .cu-textarea::placeholder {
-  color: var(--cu-color-neutral-text);
-  opacity: var(--cu-alpha-muted, 0.5);
+  color: var(--cu-color-neutral-text-muted);
 }
 
 .cu-textarea:focus {

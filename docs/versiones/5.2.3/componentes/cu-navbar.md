@@ -33,6 +33,9 @@ compacto y opción responsive con hamburguesa + panel lateral.
 
 `items` es la estructura de navegación y **se asigna como propiedad JS**, no como atributo HTML:
 
+> El HTML del `icon` se sanitiza con **DOMPurify** antes de inyectarse: los SVG válidos se
+> conservan y se eliminan `<script>`, handlers `on*` y URLs peligrosas.
+
 ```ts
 interface NavItem {
   label: string;

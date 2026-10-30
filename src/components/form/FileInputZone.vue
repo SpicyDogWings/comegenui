@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, ref, watch, useTemplateRef, type PropType } from "vue";
-import { useFocus } from "@vueuse/core";
 import FileList from "../FileList.vue";
 import Alert from "../information/Alert.vue";
 import { formatFileSize } from "../../utils/fileIcons";
@@ -62,8 +61,8 @@ const props = defineProps({
 const effectiveMultiple = computed(() => props.multiple || props.directory);
 
 const isDragOver = ref(false);
-const dropZoneRef = useTemplateRef("dropZone");
-const { focused: dropFocus } = useFocus(dropZoneRef);
+const dropZoneRef = useTemplateRef<HTMLElement>("dropZone");
+const triggerRef = useTemplateRef<HTMLButtonElement>("triggerEl");
 const fileInputRef = useTemplateRef<HTMLInputElement>("fileInput");
 const rejectMessages = ref<string[]>([]);
 const internalSet = ref(false);
@@ -72,7 +71,14 @@ const zoneStyles = computed(() => ({
   '--zone-bg': `var(--cu-color-${props.color})`,
   '--zone-ghost-hover': `var(--cu-color-${props.color}-ghost-hover)`,
   '--zone-text': `var(--cu-color-${props.color}-text)`,
+  '--zone-text-muted': `var(--cu-color-${props.color}-text-muted)`,
 }));
+
+/** Nombre accesible del control de selección: la instrucción visible o la acción real. */
+const triggerLabel = computed(() => {
+  if (fileList.value.length === 0) return props.placeholder;
+  return effectiveMultiple.value ? "Agregar archivos" : "Cambiar archivo";
+});
 
 const fileList = computed(() => {
   if (!value.value) return [];
@@ -191,6 +197,9 @@ function handleInputChange(event: Event) {
   if (input.files && input.files.length > 0) {
     setFiles(Array.from(input.files));
   }
+  // Vaciar el input nativo: si no, elegir el mismo archivo otra vez (después de
+  // quitarlo) no vuelve a emitir `change` y la zona parece no responder.
+  input.value = "";
 }
 
 function handleFileClick(index: number) {
@@ -210,6 +219,10 @@ function onDragOver(e: DragEvent) {
 
 function onDragLeave(e: DragEvent) {
   e.preventDefault();
+  // `dragleave` burbujea al cruzar un hijo de la zona (texto, ícono, filas de la
+  // lista): con el puntero todavía adentro no se apaga el resaltado.
+  const next = e.relatedTarget as Node | null;
+  if (next && dropZoneRef.value?.contains(next)) return;
   isDragOver.value = false;
 }
 
@@ -219,35 +232,52 @@ async function onDrop(e: DragEvent) {
   if (props.disabled || props.readOnly) return;
 
   const items = e.dataTransfer?.items;
-  if (items) {
-    const allFiles: File[] = [];
-    const promises: Promise<void>[] = [];
+  const dropped: File[] = [];
+
+  if (items && items.length > 0) {
+    // Un compartimento por ítem: así el orden del drop se conserva aunque las
+    // lecturas de archivos y carpetas terminen en otro orden.
+    const slots: File[][] = Array.from({ length: items.length }, () => []);
+    const pending: Promise<void>[] = [];
 
     for (let i = 0; i < items.length; i++) {
+      const slot = slots[i]!;
       const entry = items[i]?.webkitGetAsEntry?.();
 
       if (!entry) {
-        const file = items[i].getAsFile();
-        if (file) allFiles.push(file);
+        const file = items[i]?.getAsFile();
+        if (file) slot.push(file);
       } else if (entry.isFile) {
-        promises.push(new Promise((resolve) => {
-          (entry as FileSystemFileEntry).file((f) => {
-            allFiles.push(f);
-            resolve();
-          });
+        pending.push(new Promise((resolve) => {
+          (entry as FileSystemFileEntry).file(
+            (f) => {
+              slot.push(f);
+              resolve();
+            },
+            () => resolve(),
+          );
         }));
       } else if (entry.isDirectory && props.directory) {
-        promises.push(
+        pending.push(
           readDirectory(entry as FileSystemDirectoryEntry, props.directoryDeep).then((files) => {
-            allFiles.push(...files);
+            slot.push(...files);
           }),
         );
       }
     }
 
-    await Promise.all(promises);
-    if (allFiles.length > 0) setFiles(allFiles);
+    await Promise.all(pending);
+    for (const slot of slots) dropped.push(...slot);
   }
+
+  // Algunos orígenes de arrastre no exponen `items` (o sólo traen texto): el
+  // respaldo es `dataTransfer.files`, como el diálogo nativo.
+  if (dropped.length === 0) {
+    const files = e.dataTransfer?.files;
+    if (files && files.length > 0) dropped.push(...Array.from(files));
+  }
+
+  if (dropped.length > 0) setFiles(dropped);
 }
 
 /** Abre el selector de archivos. */
@@ -255,6 +285,7 @@ function trigger() {
   if (props.disabled || props.readOnly) return;
   fileInputRef.value?.click();
 }
+
 
 function removeFile(index: number) {
   if (!value.value) return;
@@ -281,8 +312,8 @@ const reset = () => {
   rejectMessages.value = [];
   if (fileInputRef.value) fileInputRef.value.value = "";
 };
-/** Enfoca la zona de carga. */
-const focus = () => { dropFocus.value = true; };
+/** Enfoca el control de selección de la zona. */
+const focus = () => { triggerRef.value?.focus(); };
 
 defineExpose({ get, set, reset, focus, trigger });
 </script>
@@ -299,15 +330,11 @@ defineExpose({ get, set, reset, focus, trigger });
         'cu-file-zone--has-files': fileList.length > 0,
       }"
       :style="zoneStyles"
+      role="group"
       @dragover="onDragOver"
       @dragleave="onDragLeave"
       @drop="onDrop"
       @click="trigger"
-      @keydown.enter="trigger"
-      @keydown.space.prevent="trigger"
-      tabindex="0"
-      role="button"
-      :aria-disabled="props.disabled"
     >
       <input
         ref="fileInput"
@@ -318,6 +345,16 @@ defineExpose({ get, set, reset, focus, trigger });
         class="cu-file-zone-hidden"
         @change="handleInputChange"
       />
+
+      <!-- Control de selección: botón real que cubre la zona. La lista de archivos
+           vive arriba y sus links/botones no quedan adentro de ningún botón. -->
+      <button
+        ref="triggerEl"
+        type="button"
+        class="cu-file-zone-trigger"
+        :aria-label="triggerLabel"
+        :disabled="props.disabled || props.readOnly"
+      ></button>
 
       <svg
         v-if="fileList.length === 0"
@@ -344,15 +381,16 @@ defineExpose({ get, set, reset, focus, trigger });
         </p>
       </div>
 
-      <FileList
-        v-else
-        :files="value"
-        :color="props.color"
-        :disabled="props.disabled"
-        :max-height="props.maxHeight"
-        @remove="removeFile"
-        @select="handleFileClick"
-      />
+      <div v-else class="cu-file-zone-list">
+        <FileList
+          :files="value"
+          :color="props.color"
+          :disabled="props.disabled || props.readOnly"
+          :max-height="props.maxHeight"
+          @remove="removeFile"
+          @select="handleFileClick"
+        />
+      </div>
     </div>
 
     <Alert
@@ -384,10 +422,46 @@ defineExpose({ get, set, reset, focus, trigger });
   box-sizing: border-box;
 }
 
-.cu-file-zone:focus {
-  outline: none;
+.cu-file-zone:focus-within {
   border-color: var(--zone-bg);
   box-shadow: 0 0 0 var(--cu-border-thin) var(--zone-bg);
+}
+
+/* Control de selección: cubre la zona, sin contenido ni estilos propios. */
+.cu-file-zone-trigger {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+
+.cu-file-zone-trigger:disabled {
+  cursor: inherit;
+}
+
+.cu-file-zone-trigger:focus-visible {
+  outline: none;
+}
+
+/* El contenido decorativo deja pasar el click al botón; la lista sí es interactiva. */
+.cu-file-zone-icon,
+.cu-file-zone-text {
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.cu-file-zone-list {
+  position: relative;
+  z-index: 1;
+  width: 100%;
 }
 
 .cu-file-zone:hover:not(.cu-file-zone--disabled) {
@@ -420,8 +494,7 @@ defineExpose({ get, set, reset, focus, trigger });
 }
 
 .cu-file-zone-icon {
-  color: var(--zone-text);
-  opacity: var(--cu-alpha-subtle, 0.6);
+  color: var(--zone-text-muted);
   flex-shrink: 0;
 }
 
@@ -439,8 +512,7 @@ defineExpose({ get, set, reset, focus, trigger });
 .cu-file-zone-formats {
   font-size: var(--cu-font-size-xs);
   margin-top: var(--cu-space-2xs);
-  color: var(--zone-text);
-  opacity: var(--cu-alpha-muted, 0.5);
+  color: var(--zone-text-muted);
 }
 
 .cu-file-zone-wrap {

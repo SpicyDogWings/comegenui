@@ -89,6 +89,9 @@ abrí el panel con `open()` y volvé a `loading = false` cuando termine la búsq
 
 Cada item puede llevar un `icon` (SVG inline), un `value` distinto del `label`, o estar `disabled`.
 
+> El HTML del `icon` se sanitiza con **DOMPurify** antes de inyectarse: los SVG válidos se
+> conservan y se eliminan `<script>`, handlers `on*` y URLs peligrosas.
+
 ```html
 <cu-autocomplete id="ac" placeholder="Elegí un item..."></cu-autocomplete>
 
@@ -130,6 +133,30 @@ Por defecto el menú se abre al recibir foco. Con `min-chars="2"` solo se abre t
 <!-- demo:autocomplete-minimo-caracteres -->
 
 > `open()` ignora `min-chars`: es la salida programática. Lo que sí lo bloquea es `disabled`.
+
+## Teclado
+
+El foco queda **siempre en el input**: la sugerencia activa se resalta en el panel y se anuncia
+por `aria-activedescendant`.
+
+| Tecla | Acción |
+|-------|--------|
+| `↓` / `↑` | Abre la lista y mueve la sugerencia activa (saltea las deshabilitadas, con wrap). |
+| `Home` / `End` | Primera / última sugerencia habilitada (con el panel abierto). |
+| `Enter` | Elige la sugerencia activa (sin enviar el formulario). |
+| `Escape` | Cierra el panel. |
+| `Tab` | Sale del campo y cierra el panel. |
+
+```html
+<cu-autocomplete id="teclado" placeholder="Flechas para navegar"></cu-autocomplete>
+```
+
+## Accesibilidad
+
+El input es un `combobox` (`aria-autocomplete="list"`, `aria-haspopup="listbox"`, `aria-expanded`,
+`aria-controls` al panel) y el panel es un `listbox` con cada sugerencia como `option`
+(`aria-selected` en la elegida). Los `id` son únicos por instancia: varios `<cu-autocomplete>` en la
+misma página no comparten ids.
 
 ## Posicionamiento
 
@@ -189,6 +216,17 @@ escribir, el filtrado se reanuda con la cadena actual; un click afuera (o `close
 panel. `reset()` limpia el texto **y la selección**; `set(v)` cambia el texto y la selección se
 conserva sólo si `v` coincide con el item elegido.
 
+`Escape` cierra el panel y devuelve el foco al input; ese retorno de foco **no** reabre la lista
+(por eso Escape funciona aunque el menú se abra al enfocar).
+
+El panel también se cierra cuando el campo **pierde el foco** (Tab o foco programático): no queda
+una lista flotante abierta sobre el resto de la página. Un click en el campo con la lista cerrada
+la vuelve a abrir (el cierre por click afuera devuelve el foco al input, así que ese segundo click
+no dispara `focus`).
+
+Si `items` se reemplaza con objetos nuevos (carga async), la selección se re-resuelve por texto: el
+check y `selectedItem()` siguen apuntando al item vigente mientras el input diga lo mismo.
+
 ```html
 <cu-autocomplete id="ac" placeholder="Buscá un país..."></cu-autocomplete>
 
@@ -202,6 +240,9 @@ conserva sólo si `v` coincide con el item elegido.
 ```
 
 <!-- demo:autocomplete-seleccion -->
+
+Si el panel está abierto y no hay items que mostrar (por ejemplo `open()` con `items` vacío o la
+carga async todavía sin resultados), el panel muestra **“Sin opciones”**.
 
 ## Control programático
 
@@ -236,7 +277,7 @@ Cada item del array `items` puede tener:
 | Campo | Tipo | Default | Descripción |
 |-------|------|---------|-------------|
 | `label` | `string` | — | Texto que se muestra y sobre el que se busca |
-| `value` | `string` | `label` | Valor que se asigna al input al seleccionar el item |
+| `value` | `string` | — | Valor del item. Si el item **no** tiene `label`, este texto es el que se muestra en la fila y el que se escribe en el input al elegirlo |
 | `icon` | `string` | — | SVG completo inline (`<svg>...</svg>`) |
 | `disabled` | `boolean` | `false` | Opción deshabilitada (no clickeable, atenuada) |
 
@@ -246,9 +287,9 @@ Cada item del array `items` puede tener:
 
 ## Eventos
 
-<!--@include: ../partials/autocomplete/eventos.md-->
+<!--@include: ../partials/autocomplete/eventos-vanilla.md-->
 
-> Los eventos nativos del DOM (`input`, `change`, `focus`, `blur`) **burbujean automáticamente** al host desde el Shadow DOM. No se re-emiten como eventos custom con esos nombres.
+> Los eventos nativos del DOM (`input`, `change`, `focus`, `blur`) llegan al host desde el Shadow DOM: no se re-emiten como eventos custom con esos nombres. `blur` llega como `FocusEvent` nativo (sin `detail`), recién cuando el foco sale del campo — no cuando pasa de un elemento interno a otro (por ejemplo, al elegir un item del panel).
 
 ## Slots
 

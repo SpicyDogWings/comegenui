@@ -136,3 +136,25 @@ describe("Collapse — disabled", () => {
     expect(vm(w).isOpen()).toBe(false);
   });
 });
+
+describe("Collapse — ícono saneado", () => {
+  const EVIL = '<img src=x onerror="window.__xss=1"><script>window.__xss=2</script>';
+
+  it("conserva un SVG válido en el trigger", () => {
+    const w = mount(Collapse, {
+      props: { label: "L", icon: '<svg class="mi-icono" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h4v4H0z"/></svg>' },
+    });
+    expect(w.find(".cu-collapse-icon svg.mi-icono path").exists()).toBe(true);
+  });
+
+  it("elimina `<script>` y handlers `on*` del ícono", () => {
+    type XssWindow = Window & { __xss?: number };
+    const probe = window as XssWindow;
+    delete probe.__xss;
+
+    const w = mount(Collapse, { props: { label: "L", icon: EVIL } });
+    expect(w.html()).not.toContain("onerror");
+    expect(w.html()).not.toContain("<script");
+    expect(probe.__xss).toBeUndefined();
+  });
+});

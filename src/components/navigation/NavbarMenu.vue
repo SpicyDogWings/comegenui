@@ -1,11 +1,16 @@
 <script setup lang="ts">
 import { type PropType } from 'vue'
+import DOMPurify from 'dompurify'
 import Dropdown from '@/components/overlay/Dropdown.vue'
 import type { NavItem } from '@/composables/useNavbar'
 
 // Menú recursivo interno: renderiza un nivel del árbol de navegación como una
 // columna de items de menú. Cada item con children es un Dropdown anidado cuyo
 // panel vuelve a renderizar NavbarMenu → anidamiento infinito.
+// `item.icon` es HTML/SVG del consumidor: se sanitiza antes del `v-html`
+// (mismo criterio que `Tabs`).
+const sanitizeIcon = (html?: string) => (html ? DOMPurify.sanitize(html) : undefined)
+
 const props = defineProps({
   /** Items del nivel de menú. */
   items: { type: Array as () => NavItem[], required: true },
@@ -29,14 +34,14 @@ const props = defineProps({
         :href="item.path"
         class="cu-navbar-menu-item"
       >
-        <span v-if="item.icon" class="cu-navbar-menu-icon" v-html="item.icon"></span>
+        <span v-if="item.icon" class="cu-navbar-menu-icon" v-html="sanitizeIcon(item.icon)"></span>
         <span class="cu-navbar-menu-item-label">{{ item.label }}</span>
       </a>
       <span
         v-else
         class="cu-navbar-menu-item cu-navbar-menu-item--disabled"
       >
-        <span v-if="item.icon" class="cu-navbar-menu-icon" v-html="item.icon"></span>
+        <span v-if="item.icon" class="cu-navbar-menu-icon" v-html="sanitizeIcon(item.icon)"></span>
         <span class="cu-navbar-menu-item-label">{{ item.label }}</span>
       </span>
     </template>
@@ -74,7 +79,7 @@ const props = defineProps({
 }
 
 .cu-navbar-menu-item--disabled {
-  opacity: var(--cu-alpha-muted, 0.5);
+  color: var(--cu-color-neutral-text-muted);
   cursor: not-allowed;
 }
 

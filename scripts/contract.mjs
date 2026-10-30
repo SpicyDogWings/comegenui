@@ -30,6 +30,36 @@ const ESM_CORE = resolve(OUT_ROOT, "esm-core");
 const ESM_SHARED = resolve(OUT_ROOT, "esm-shared");
 const BASELINE = resolve(ROOT, "scripts/contract-baseline");
 
+// Reloj congelado para la huella. Componentes que renderizan "hoy" (Calendar,
+// DatePicker) dependen del calendario real: la cantidad de semanas del mes y
+// las celdas vacías iniciales cambian según la fecha, así que el baseline se
+// reescribía solo al correr el gate otro día (drift espurio). Con una fecha
+// fija la huella es determinista y `--update` sólo cambia si cambió el DOM.
+const CONTRACT_NOW = Date.UTC(2024, 1, 15, 12, 0, 0); // 2024-02-15, 12:00 UTC
+
+/** Corre `fn` con `Date` congelado en `CONTRACT_NOW` hasta que su promesa resuelva. */
+function withFrozenClock(fn) {
+  const RealDate = globalThis.Date;
+  class FrozenDate extends RealDate {
+    constructor(...args) {
+      super(...(args.length ? args : [CONTRACT_NOW]));
+    }
+    static now() {
+      return CONTRACT_NOW;
+    }
+  }
+  globalThis.Date = FrozenDate;
+  const restore = () => {
+    globalThis.Date = RealDate;
+  };
+  try {
+    return Promise.resolve(fn()).finally(restore);
+  } catch (err) {
+    restore();
+    throw err;
+  }
+}
+
 // ── jsdom: un único entorno para todos los UMD ───────────────────────────────
 function makeWindow() {
   const dom = new JSDOM("<!DOCTYPE html><html><body></body></html>", {
@@ -139,7 +169,7 @@ const INTERNAL = /^_/;
 
 /** Contrato runtime de un elemento ya registrado. */
 function contractOf(window, tag) {
-  return new Promise((resolveP) => {
+  return withFrozenClock(() => new Promise((resolveP) => {
     let el;
     try {
       el = window.document.createElement(tag);
@@ -164,7 +194,7 @@ function contractOf(window, tag) {
         resolveP({ tag, props: [], methods: [], shadow: `(error al leer: ${err.message})` });
       }
     }, 40);
-  });
+  }));
 }
 
 /** Lista de bundles del dist con su tag. */

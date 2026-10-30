@@ -58,6 +58,9 @@ La prop `items` arma el menú sin escribir el HTML: cada fila acepta `label`, `i
 `to`/`href` (navegable), `disabled`, `divider` y `onClick`. El slot `default` agrega contenido
 extra debajo.
 
+> El HTML del `icon` se sanitiza con **DOMPurify** antes de inyectarse: los SVG válidos se
+> conservan y se eliminan `<script>`, handlers `on*` y URLs peligrosas.
+
 ```vue
 <script setup lang="ts">
 import { ref } from "vue";

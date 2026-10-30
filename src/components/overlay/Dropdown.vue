@@ -4,6 +4,7 @@ import { isAlign, isPosition, isVariantFull } from '@/utils/validators'
 import Button from "../buttons/Button.vue";
 import Loader from "../information/Loader.vue";
 import Popover from "./Popover.vue";
+import DOMPurify from "dompurify";
 import LucideChevronRight from "@/components/icons/LucideChevronRight.vue";
 
 export interface DropdownMenuItem {
@@ -15,6 +16,10 @@ export interface DropdownMenuItem {
   divider?: boolean;
   onClick?: () => void;
 }
+
+// Los íconos son HTML/SVG del consumidor: se sanitizan antes de `v-html`
+// (mismo criterio que `Tabs`): SVG válido intacto, sin `<script>` ni `on*`.
+const sanitizeIcon = (html?: string) => (html ? DOMPurify.sanitize(html) : undefined);
 
 const props = defineProps({
   color: {
@@ -56,9 +61,18 @@ const props = defineProps({
   // Ancho del panel (CSS, ej: "280px"). Default "" = width:100% del trigger.
   // Útil cuando el contenido del panel es más ancho que el trigger (ej: un calendario).
   panelWidth: { type: String, required: false, default: "" },
+  /** Rol ARIA del panel: `menu` (default, listas de acciones), `dialog` (paneles con contenido propio, como el date-picker), `listbox`… */
+  panelRole: { type: String, required: false, default: "menu" },
+  /** `id` del panel: el trigger lo referencia con `aria-controls` (patrón combobox/listbox). */
+  panelId: { type: String, required: false, default: "" },
   loading: { type: Boolean, required: false, default: false },
   cooldown: { type: Boolean, required: false, default: false },
   cooldownKey: { type: Number, required: false, default: 0 },
+  /**
+   * Estilo de la barra de cooldown: `ghost`/`ghost-hover` (color suave, default) o
+   * `solid` (color lleno). Se resuelve con los tokens del color activo.
+   */
+  cooldownVariant: { type: String, required: false, default: "ghost-hover" },
   delay: { type: Number, required: false, default: 2000 },
   // Items de menú nativos (hojas). Se renderizan como filas de menú con el
   // mismo estilo que el trigger de un submenú anidado. Útil para menús de
@@ -112,6 +126,16 @@ const panelClass = computed(() => ({
   "cu-dropdown-panel--loading": props.loading,
 }));
 
+/**
+ * Color de la barra de cooldown. `Loader` pinta `var(--cu-color-{color})`, así que la
+ * variante se resuelve pasando el **sufijo** del token: `ghost`/`ghost-hover` usan el
+ * tono suave del color (`-ghost-hover`) y `solid` el tono lleno (base). Antes la prop
+ * llegaba hasta acá como atributo suelto y no tenía ningún efecto.
+ */
+const cooldownColor = computed(() =>
+  props.cooldownVariant === "solid" ? props.color : `${props.color}-ghost-hover`,
+);
+
 function onItemClick(item: DropdownMenuItem) {
   if (item.disabled || item.divider) return;
   if (item.onClick) item.onClick();
@@ -151,7 +175,8 @@ defineExpose({
     :disabled="disabled"
     :hover="trigger === 'hover'"
     :hover-delay="0"
-    :role="'menu'"
+    :role="panelRole"
+    :panel-id="panelId"
     :panel-class="panelClass"
     class="cu-dropdown"
     :class="{ 'cu-dropdown--nested': isNested }"
@@ -166,7 +191,7 @@ defineExpose({
           class="cu-dropdown-menu-item"
           @click="toggle"
         >
-          <span v-if="icon" class="cu-dropdown-menu-item-icon" v-html="icon"></span>
+          <span v-if="icon" class="cu-dropdown-menu-item-icon" v-html="sanitizeIcon(icon)"></span>
           <span class="cu-dropdown-menu-item-label">{{ label || "Submenú" }}</span>
           <LucideChevronRight :width="14" :height="14" class="cu-dropdown-menu-item-chevron" />
         </button>
@@ -190,7 +215,7 @@ defineExpose({
     <Loader
       v-if="cooldown && !loading"
       :key="cooldownKey"
-      :color="color"
+      :color="cooldownColor"
       animation="cooldown"
       :delay="delay"
     />
@@ -203,7 +228,7 @@ defineExpose({
           :class="['cu-dropdown-menu-item', { 'cu-dropdown-menu-item--disabled': item.disabled }]"
           @click="onItemClick(item)"
         >
-          <span v-if="item.icon" class="cu-dropdown-menu-item-icon" v-html="item.icon"></span>
+          <span v-if="item.icon" class="cu-dropdown-menu-item-icon" v-html="sanitizeIcon(item.icon)"></span>
           <span class="cu-dropdown-menu-item-label">{{ item.label }}</span>
         </a>
         <button
@@ -213,7 +238,7 @@ defineExpose({
           :disabled="item.disabled"
           @click="onItemClick(item)"
         >
-          <span v-if="item.icon" class="cu-dropdown-menu-item-icon" v-html="item.icon"></span>
+          <span v-if="item.icon" class="cu-dropdown-menu-item-icon" v-html="sanitizeIcon(item.icon)"></span>
           <span class="cu-dropdown-menu-item-label">{{ item.label }}</span>
         </button>
       </template>
@@ -268,7 +293,7 @@ defineExpose({
 }
 
 .cu-dropdown-menu-item--disabled {
-  opacity: var(--cu-alpha-muted, 0.5);
+  color: var(--cu-color-neutral-text-muted);
   cursor: not-allowed;
 }
 
@@ -279,12 +304,12 @@ defineExpose({
 
 .cu-dropdown-menu-item-chevron {
   flex-shrink: 0;
-  opacity: var(--cu-alpha-muted, 0.5);
+  color: var(--cu-color-neutral-text-muted);
 }
 
 .cu-dropdown-menu-item-icon {
   flex-shrink: 0;
-  opacity: var(--cu-alpha-subtle, 0.6);
+  color: var(--cu-color-neutral-text-subtle);
 }
 
 .cu-dropdown-menu-divider {

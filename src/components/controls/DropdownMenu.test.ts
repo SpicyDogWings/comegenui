@@ -254,3 +254,24 @@ describe("DropdownMenu — item seleccionado (check)", () => {
     expect(vm(w).isOpen()).toBe(true);
   });
 });
+
+describe("DropdownMenu — el foco vuelve al trigger al cerrar", () => {
+  it("Escape con el foco en un item lo devuelve al trigger", async () => {
+    const w = mount(DropdownMenu, {
+      attachTo: document.body,
+      props: { items: [{ label: "Uno" }, { label: "Dos" }] },
+    });
+    const trigger = w.find(".cu-dropdown-toggle").element as HTMLElement;
+    trigger.focus();
+    vm(w).open();
+    await flushPromises();
+    const item = w.find(".cu-dropdown-item").element as HTMLElement;
+    item.focus();
+
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+    await flushPromises();
+    expect(vm(w).isOpen()).toBe(false);
+    expect(document.activeElement).toBe(trigger);
+    w.unmount();
+  });
+});

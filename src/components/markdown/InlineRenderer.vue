@@ -10,8 +10,16 @@ function isLink(token: any) {
   return token.type === 'link'
 }
 
-function isHtml(token: any) {
-  return token.type === 'html'
+// Texto plano de un árbol de tokens: para atributos (`alt`) no queremos HTML
+// ni marcado (`**negrita**`), sólo lo que lee el usuario.
+function plainText(tokens: any[]): string {
+  return tokens
+    .map((token) => {
+      if (token.type === 'br') return ' '
+      if (token.tokens && token.tokens.length > 0) return plainText(token.tokens)
+      return token.text || ''
+    })
+    .join('')
 }
 
 function tokenToHtml(token: any): string {
@@ -20,7 +28,9 @@ function tokenToHtml(token: any): string {
       if (token.tokens && token.tokens.length > 0) {
         return token.tokens.map(tokenToHtml).join('')
       }
-      return token.text
+      // marked entrega el texto crudo (sin escapar): dentro de `v-html` hay que
+      // escaparlo. `escapeText` respeta las entidades que ya vienen (`&amp;`).
+      return escapeText(token.text)
     case 'strong':
       return `<strong>${(token.tokens || []).map(tokenToHtml).join('')}</strong>`
     case 'em':
@@ -30,23 +40,40 @@ function tokenToHtml(token: any): string {
     case 'del':
       return `<del>${(token.tokens || []).map(tokenToHtml).join('')}</del>`
     case 'image':
-      return `<img src="${escapeHtml(token.href)}" alt="${escapeHtml((token.tokens || []).map(tokenToHtml).join('') || token.text)}" class="cu-md-image" />`
+      return `<img src="${escapeHtml(token.href)}" alt="${escapeText(plainText(token.tokens || []) || token.text || '')}" class="cu-md-image" />`
     case 'link':
       return `<a href="${escapeHtml(token.href)}" class="cu-md-link" target="_blank" rel="noopener">${(token.tokens || []).map(tokenToHtml).join('')}</a>`
     case 'br':
       return '<br>'
     case 'escape':
-      return token.text
+      // `\<` produce un token `escape` con el carácter crudo: sin escapar, el
+      // `<` reabre una etiqueta dentro del `v-html`.
+      return escapeHtml(token.text)
     default:
       return ''
   }
 }
 
+// Escapa para contenido/atributos y respeta las entidades ya codificadas
+// (`&amp;` no se vuelve `&amp;amp;`). Escapa comillas: el resultado se interpola
+// en atributos (`src`, `href`, `alt`) y un `"` sin escapar inyecta atributos.
+function escapeText(text: string): string {
+  return text
+    .replace(/&(?!#?\w+;)/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;')
+}
+
+// Escapa todo `&` (texto literal de código, `codespan` y URLs).
 function escapeHtml(text: string): string {
   return text
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;')
 }
 </script>
 

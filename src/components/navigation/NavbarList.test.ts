@@ -122,3 +122,26 @@ describe("NavbarList — item activo y resaltado", () => {
     expect(match.classes()).toContain("cu-navbar-item--match");
   });
 });
+
+describe("NavbarList — ícono saneado", () => {
+  const EVIL = '<img src=x onerror="window.__xss=1"><script>window.__xss=2</script>';
+
+  it("conserva un SVG válido y elimina handlers del icono", () => {
+    type XssWindow = Window & { __xss?: number };
+    const probe = window as XssWindow;
+    delete probe.__xss;
+
+    const w = mount(NavbarList, {
+      props: {
+        items: [
+          { label: "Inicio", path: "/", icon: '<svg class="mi-icon"></svg>' },
+          { label: "Malo", path: "/malo", icon: EVIL },
+        ],
+      },
+    });
+    expect(w.find(".cu-navbar-icon svg.mi-icon").exists()).toBe(true);
+    expect(w.html()).not.toContain("onerror");
+    expect(w.html()).not.toContain("<script");
+    expect(probe.__xss).toBeUndefined();
+  });
+});

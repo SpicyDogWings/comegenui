@@ -39,19 +39,29 @@ function ceEmit(event: string, payload: unknown) {
 }
 
 function onUpdate(value: boolean) {
+  setOpen(value);
+}
+
+// Todo cambio de estado pasa por acá: `show()`, `close()`, `toggle()` y las
+// acciones internas (backdrop, Escape, botón) emiten `update:open`; al cerrarse
+// se emite `close`. Antes los métodos no emitían nada y `update:open` nunca
+// llegaba al consumidor.
+function setOpen(value: boolean) {
+  if (isOpen.value === value) return;
   isOpen.value = value;
   ceEmit("update:open", value);
+  if (!value) ceEmit("close", undefined);
 }
 
 // Se llama `show()` y no `open()` porque `open` es la prop booleana del CE: en
 // el elemento registrado, la prop tapa al método (`el.open` es un booleano).
 // Mismo patrón que `<dialog>` (`open` + `show()`).
 /** Abre el panel */
-function show() { isOpen.value = true; }
+function show() { setOpen(true); }
 /** Cierra el panel */
-function close() { isOpen.value = false; }
+function close() { setOpen(false); }
 /** Alterna visibilidad */
-function toggle() { isOpen.value = !isOpen.value; }
+function toggle() { setOpen(!isOpen.value); }
 function isOpenValue() { return isOpen.value; }
 
 defineExpose({ show, close, toggle, isOpen: isOpenValue });
@@ -68,7 +78,6 @@ defineExpose({ show, close, toggle, isOpen: isOpenValue });
     :z-index="props.zIndex"
     :teleport="false"
     @update:model-value="onUpdate"
-    @close="ceEmit('close', $event)"
   >
     <!-- Contenido del cuerpo del panel -->
     <slot></slot>

@@ -1,5 +1,5 @@
 /*! comegenui v5.2.3 · CuSideOver (cu-side-over) · esm-shared · Vue externo (bare import) */
-import { Teleport, Transition, computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, createVNode, defineComponent, defineCustomElement, getCurrentInstance, normalizeClass, normalizeStyle, onMounted, onUnmounted, openBlock, ref, renderSlot, toDisplayString, watch, withCtx } from "vue";
+import { Teleport, Transition, computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, createVNode, defineComponent, defineCustomElement, getCurrentInstance, nextTick, normalizeClass, normalizeStyle, onMounted, onUnmounted, openBlock, ref, renderSlot, toDisplayString, useAttrs, useId, watch, withCtx } from "vue";
 //#region src/utils/comegen-element.ts
 var BUILD_META = {
 	"version": "5.2.3",
@@ -430,17 +430,30 @@ oneOf(SELECT_SEARCH_MODES);
 oneOf(CELLS_IMPORTER_INPUT_TYPES);
 //#endregion
 //#region src/components/overlay/SideOver.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1 = ["data-size"];
-var _hoisted_2 = {
+var _hoisted_1 = ["aria-labelledby", "aria-label"];
+var _hoisted_2 = ["data-size"];
+var _hoisted_3 = {
 	key: 0,
 	class: "cu-sideover-header"
 };
-var _hoisted_3 = {
-	key: 0,
-	class: "cu-sideover-title"
-};
 var _hoisted_4 = { class: "cu-sideover-body" };
+var openInstances = [];
+var scrollLocks = 0;
+var previousBodyOverflow = "";
+function lockBodyScroll() {
+	if (scrollLocks === 0) {
+		previousBodyOverflow = document.body.style.overflow;
+		document.body.style.overflow = "hidden";
+	}
+	scrollLocks += 1;
+}
+function unlockBodyScroll() {
+	if (scrollLocks === 0) return;
+	scrollLocks -= 1;
+	if (scrollLocks === 0) document.body.style.overflow = previousBodyOverflow;
+}
 var SideOver_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineComponent({
+	inheritAttrs: false,
 	__name: "SideOver",
 	props: {
 		modelValue: {
@@ -490,28 +503,164 @@ var SideOver_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineC
 	setup(__props, { emit: __emit }) {
 		const props = __props;
 		const emit = __emit;
+		const attrs = useAttrs();
+		const titleId = `${useId()}-title`;
+		const panelRef = ref(null);
+		/** Elemento que tenía el foco al abrir: se le devuelve al cerrar. */
+		const trigger = ref(null);
+		const dialogLabel = computed(() => props.title ? void 0 : attrs["aria-label"] || "Panel");
+		const FOCUSABLE_SELECTOR = [
+			"a[href]",
+			"area[href]",
+			"button:not([disabled])",
+			"input:not([disabled]):not([type=\"hidden\"])",
+			"select:not([disabled])",
+			"textarea:not([disabled])",
+			"iframe",
+			"object",
+			"embed",
+			"audio[controls]",
+			"video[controls]",
+			"summary",
+			"[contenteditable=\"true\"]",
+			"[tabindex]:not([tabindex=\"-1\"])"
+		].join(",");
+		/** Oculta por atributo/inline style (v-show): `focus()` no serviría y el trap no debe contarla. */
+		function isHidden(el) {
+			for (let node = el; node; node = node.parentElement) {
+				if (node.hasAttribute("hidden")) return true;
+				const style = node.style;
+				if (style && (style.display === "none" || style.visibility === "hidden")) return true;
+			}
+			return false;
+		}
+		function isFocusable(el) {
+			return el instanceof HTMLElement && el.matches(FOCUSABLE_SELECTOR) && !isHidden(el);
+		}
+		/**
+		* Focusables del panel en orden de tabulación. Recorre slots (`assignedElements`)
+		* y shadow roots anidados: en el custom element el contenido vive en el light DOM
+		* del host y `querySelectorAll` no cruza ninguna de las dos fronteras.
+		*/
+		function collectFocusables(root, out = []) {
+			for (const child of Array.from(root.children)) {
+				if (child.tagName === "SLOT" && "assignedElements" in child) {
+					const slot = child;
+					const assigned = slot.assignedElements({ flatten: true });
+					const source = assigned.length ? assigned : Array.from(slot.children);
+					for (const node of source) {
+						if (isFocusable(node)) out.push(node);
+						if (node.shadowRoot) collectFocusables(node.shadowRoot, out);
+						collectFocusables(node, out);
+					}
+					continue;
+				}
+				if (isFocusable(child)) out.push(child);
+				if (child.shadowRoot) collectFocusables(child.shadowRoot, out);
+				collectFocusables(child, out);
+			}
+			return out;
+		}
+		function panelFocusables() {
+			return panelRef.value ? collectFocusables(panelRef.value) : [];
+		}
+		/** Elemento realmente enfocado, atravesando shadow roots anidados. */
+		function deepActiveElement() {
+			let active = document.activeElement;
+			while (active?.shadowRoot?.activeElement) active = active.shadowRoot.activeElement;
+			return active;
+		}
+		/** Foco inicial: `[autofocus]` si existe, si no el primer focusable, si no el panel. */
+		function focusFirst() {
+			const panel = panelRef.value;
+			if (!panel) return;
+			const focusables = panelFocusables();
+			const active = deepActiveElement();
+			if (active && (focusables.includes(active) || panel.contains(active))) return;
+			(panel.querySelector("[autofocus]") ?? focusables[0] ?? panel).focus();
+		}
+		/** Devuelve el foco al trigger; si es un custom element, a su control interno. */
+		function restoreFocus() {
+			const el = trigger.value;
+			trigger.value = null;
+			if (!el || !el.isConnected) return;
+			el.focus();
+			if (document.activeElement !== el && el.shadowRoot) collectFocusables(el.shadowRoot)[0]?.focus();
+		}
+		function trapTab(event) {
+			if (event.key !== "Tab") return;
+			const panel = panelRef.value;
+			if (!panel) return;
+			const focusables = panelFocusables();
+			if (!focusables.length) {
+				event.preventDefault();
+				panel.focus();
+				return;
+			}
+			const target = (typeof event.composedPath === "function" ? event.composedPath() : [])[0] ?? event.target;
+			const index = target ? focusables.indexOf(target) : -1;
+			const first = focusables[0];
+			const last = focusables[focusables.length - 1];
+			if (index === -1) {
+				event.preventDefault();
+				(event.shiftKey ? last : first).focus();
+			} else if (event.shiftKey && index === 0) {
+				event.preventDefault();
+				last.focus();
+			} else if (!event.shiftKey && index === focusables.length - 1) {
+				event.preventDefault();
+				first.focus();
+			}
+		}
+		const instanceId = Symbol("cu-sideover");
+		let registered = false;
+		function isTopmost() {
+			return openInstances[openInstances.length - 1] === instanceId;
+		}
+		function onKeydown(e) {
+			if (!props.modelValue || !isTopmost()) return;
+			if (e.key === "Escape") {
+				close();
+				return;
+			}
+			if (e.key === "Tab") trapTab(e);
+		}
+		function register() {
+			if (registered) return;
+			registered = true;
+			openInstances.push(instanceId);
+			lockBodyScroll();
+			const active = deepActiveElement();
+			trigger.value = active instanceof HTMLElement ? active : null;
+			document.addEventListener("keydown", onKeydown);
+			nextTick(() => {
+				if (props.modelValue) focusFirst();
+			});
+		}
+		function unregister() {
+			if (!registered) return;
+			registered = false;
+			const index = openInstances.indexOf(instanceId);
+			if (index !== -1) openInstances.splice(index, 1);
+			unlockBodyScroll();
+			document.removeEventListener("keydown", onKeydown);
+			restoreFocus();
+		}
+		watch(() => props.modelValue, (open) => {
+			if (open) register();
+			else unregister();
+		});
+		onMounted(() => {
+			if (props.modelValue) register();
+		});
+		onUnmounted(() => {
+			unregister();
+		});
 		function close() {
 			if (props.persistent) return;
 			emit("update:modelValue", false);
 			emit("close");
 		}
-		function onKeydown(e) {
-			if (e.key === "Escape" && props.modelValue) close();
-		}
-		let prevOverflow = "";
-		watch(() => props.modelValue, (open) => {
-			if (open) {
-				prevOverflow = document.body.style.overflow;
-				document.body.style.overflow = "hidden";
-			} else document.body.style.overflow = prevOverflow;
-		});
-		onMounted(() => {
-			document.addEventListener("keydown", onKeydown);
-		});
-		onUnmounted(() => {
-			document.removeEventListener("keydown", onKeydown);
-			document.body.style.overflow = prevOverflow;
-		});
 		const PRESET_SIZES = [
 			"sm",
 			"md",
@@ -536,15 +685,24 @@ var SideOver_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineC
 					class: "cu-sideover",
 					style: normalizeStyle({ zIndex: props.zIndex }),
 					role: "dialog",
-					"aria-modal": "true"
+					"aria-modal": "true",
+					"aria-labelledby": props.title ? titleId : void 0,
+					"aria-label": dialogLabel.value
 				}, [createElementVNode("div", {
 					class: "cu-sideover-backdrop",
 					onClick: close
 				}), createElementVNode("div", {
+					ref_key: "panelRef",
+					ref: panelRef,
 					class: normalizeClass(["cu-sideover-panel", [`cu-sideover-panel--${props.position}`, { "cu-sideover-panel--fullscreen": props.fullscreen }]]),
+					tabindex: "-1",
 					"data-size": isPresetSize.value ? props.size : void 0,
 					style: normalizeStyle(panelStyle.value)
-				}, [props.title || !props.persistent ? (openBlock(), createElementBlock("header", _hoisted_2, [props.title ? (openBlock(), createElementBlock("h2", _hoisted_3, toDisplayString(props.title), 1)) : createCommentVNode("v-if", true), !props.persistent ? (openBlock(), createElementBlock("button", {
+				}, [props.title || !props.persistent ? (openBlock(), createElementBlock("header", _hoisted_3, [props.title ? (openBlock(), createElementBlock("h2", {
+					key: 0,
+					id: titleId,
+					class: "cu-sideover-title"
+				}, toDisplayString(props.title), 1)) : createCommentVNode("v-if", true), !props.persistent ? (openBlock(), createElementBlock("button", {
 					key: 1,
 					type: "button",
 					class: "cu-sideover-close",
@@ -560,15 +718,15 @@ var SideOver_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineC
 					"stroke-width": "2",
 					"stroke-linecap": "round",
 					"stroke-linejoin": "round"
-				}, [createElementVNode("path", { d: "M18 6 6 18" }), createElementVNode("path", { d: "m6 6 12 12" })], -1)])])) : createCommentVNode("v-if", true)])) : createCommentVNode("v-if", true), createElementVNode("div", _hoisted_4, [renderSlot(_ctx.$slots, "default", {}, void 0, true)])], 14, _hoisted_1)], 4)) : createCommentVNode("v-if", true)]),
+				}, [createElementVNode("path", { d: "M18 6 6 18" }), createElementVNode("path", { d: "m6 6 12 12" })], -1)])])) : createCommentVNode("v-if", true)])) : createCommentVNode("v-if", true), createElementVNode("div", _hoisted_4, [renderSlot(_ctx.$slots, "default", {}, void 0, true)])], 14, _hoisted_2)], 12, _hoisted_1)) : createCommentVNode("v-if", true)]),
 				_: 3
 			})], 8, ["disabled"]);
 		};
 	}
 });
 //#endregion
-//#region src/components/overlay/SideOver.vue?vue&type=style&index=0&inline&scoped=4030b6bd&lang.css
-var SideOver_vue_vue_type_style_index_0_inline_scoped_4030b6bd_lang_default = "\n.cu-sideover[data-v-4030b6bd] {\n  position: fixed;\n  inset: 0;\n  font-family: var(--cu-font-sans);\n  color: var(--cu-color-neutral);\n}\n.cu-sideover-backdrop[data-v-4030b6bd] {\n  position: absolute;\n  inset: 0;\n  background: rgba(0, 0, 0, 0.4);\n}\n.cu-sideover-panel[data-v-4030b6bd] {\n  position: absolute;\n  display: flex;\n  flex-direction: column;\n  background-color: var(--cu-color-surface);\n  box-shadow: var(--cu-shadow-xl);\n  overflow: hidden;\n}\n.cu-sideover-panel--left[data-v-4030b6bd] { top: 0; left: 0; bottom: 0;\n}\n.cu-sideover-panel--right[data-v-4030b6bd] { top: 0; right: 0; bottom: 0;\n}\n.cu-sideover-panel--top[data-v-4030b6bd] { top: 0; left: 0; right: 0;\n}\n.cu-sideover-panel--bottom[data-v-4030b6bd] { bottom: 0; left: 0; right: 0;\n}\n.cu-sideover-panel--fullscreen[data-v-4030b6bd] { inset: 0; width: 100vw !important; height: 100dvh !important;\n}\n\n/* Presets de tamaño: se resuelven via CSS vars (override con\n   --cu-sideover-size-{sm|md|lg|xl|full} en el host) */\n.cu-sideover-panel[data-size='sm'][data-v-4030b6bd] { --cu-sideover-dimension: var(--cu-sideover-size-sm, 320px);\n}\n.cu-sideover-panel[data-size='md'][data-v-4030b6bd] { --cu-sideover-dimension: var(--cu-sideover-size-md, 400px);\n}\n.cu-sideover-panel[data-size='lg'][data-v-4030b6bd] { --cu-sideover-dimension: var(--cu-sideover-size-lg, 512px);\n}\n.cu-sideover-panel[data-size='xl'][data-v-4030b6bd] { --cu-sideover-dimension: var(--cu-sideover-size-xl, 640px);\n}\n.cu-sideover-panel[data-size='full'][data-v-4030b6bd] { --cu-sideover-dimension: var(--cu-sideover-size-full, 100%);\n}\n.cu-sideover-panel--left[data-size][data-v-4030b6bd],\n.cu-sideover-panel--right[data-size][data-v-4030b6bd] { width: var(--cu-sideover-dimension);\n}\n.cu-sideover-panel--top[data-size][data-v-4030b6bd],\n.cu-sideover-panel--bottom[data-size][data-v-4030b6bd] { height: var(--cu-sideover-dimension);\n}\n.cu-sideover-header[data-v-4030b6bd] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  gap: var(--cu-space-sm);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);\n  flex-shrink: 0;\n}\n.cu-sideover-title[data-v-4030b6bd] {\n  margin: 0;\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-lg);\n  font-weight: var(--cu-font-weight-bold);\n  color: var(--cu-color-neutral);\n}\n.cu-sideover-close[data-v-4030b6bd] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  flex-shrink: 0;\n  padding: var(--cu-space-2xs);\n  border: none;\n  border-radius: var(--cu-radius-sm);\n  background: transparent;\n  color: var(--cu-color-neutral);\n  cursor: pointer;\n  transition: background-color 0.15s ease;\n}\n.cu-sideover-close[data-v-4030b6bd]:hover { background-color: var(--cu-color-neutral-subtle-hover);\n}\n.cu-sideover-close[data-v-4030b6bd]:focus-visible {\n  outline: 2px solid var(--cu-color-primary);\n  outline-offset: 2px;\n}\n.cu-sideover-body[data-v-4030b6bd] {\n  flex: 1;\n  min-height: 0;\n  overflow-y: auto;\n  padding: var(--cu-space-lg);\n}\n\n/* Transición: scrim con fade + panel deslizando desde su borde */\n.cu-sideover-enter-active[data-v-4030b6bd],\n.cu-sideover-leave-active[data-v-4030b6bd] {\n  transition: opacity 0.25s ease;\n}\n.cu-sideover-enter-active .cu-sideover-panel[data-v-4030b6bd],\n.cu-sideover-leave-active .cu-sideover-panel[data-v-4030b6bd] {\n  transition: transform 0.25s ease;\n}\n.cu-sideover-enter-from[data-v-4030b6bd],\n.cu-sideover-leave-to[data-v-4030b6bd] {\n  opacity: 0;\n}\n.cu-sideover-enter-from .cu-sideover-panel--left[data-v-4030b6bd],\n.cu-sideover-leave-to .cu-sideover-panel--left[data-v-4030b6bd] { transform: translateX(-100%);\n}\n.cu-sideover-enter-from .cu-sideover-panel--right[data-v-4030b6bd],\n.cu-sideover-leave-to .cu-sideover-panel--right[data-v-4030b6bd] { transform: translateX(100%);\n}\n.cu-sideover-enter-from .cu-sideover-panel--top[data-v-4030b6bd],\n.cu-sideover-leave-to .cu-sideover-panel--top[data-v-4030b6bd] { transform: translateY(-100%);\n}\n.cu-sideover-enter-from .cu-sideover-panel--bottom[data-v-4030b6bd],\n.cu-sideover-leave-to .cu-sideover-panel--bottom[data-v-4030b6bd] { transform: translateY(100%);\n}\n";
+//#region src/components/overlay/SideOver.vue?vue&type=style&index=0&inline&scoped=f4ad9796&lang.css
+var SideOver_vue_vue_type_style_index_0_inline_scoped_f4ad9796_lang_default = "\n.cu-sideover[data-v-f4ad9796] {\n  position: fixed;\n  inset: 0;\n  font-family: var(--cu-font-sans);\n  color: var(--cu-color-neutral);\n}\n.cu-sideover-backdrop[data-v-f4ad9796] {\n  position: absolute;\n  inset: 0;\n  background: rgba(0, 0, 0, 0.4);\n}\n.cu-sideover-panel[data-v-f4ad9796] {\n  position: absolute;\n  display: flex;\n  flex-direction: column;\n  background-color: var(--cu-color-surface);\n  box-shadow: var(--cu-shadow-xl);\n  overflow: hidden;\n  /* Un preset mayor que el viewport no puede dejar el título fuera de pantalla. */\n  max-width: 100%;\n  max-height: 100%;\n}\n.cu-sideover-panel--left[data-v-f4ad9796] { top: 0; left: 0; bottom: 0;\n}\n.cu-sideover-panel--right[data-v-f4ad9796] { top: 0; right: 0; bottom: 0;\n}\n.cu-sideover-panel--top[data-v-f4ad9796] { top: 0; left: 0; right: 0;\n}\n.cu-sideover-panel--bottom[data-v-f4ad9796] { bottom: 0; left: 0; right: 0;\n}\n.cu-sideover-panel--fullscreen[data-v-f4ad9796] { inset: 0; width: 100vw !important; height: 100dvh !important;\n}\n\n/* Presets de tamaño: se resuelven via CSS vars (override con\n   --cu-sideover-size-{sm|md|lg|xl|full} en el host) */\n.cu-sideover-panel[data-size='sm'][data-v-f4ad9796] { --cu-sideover-dimension: var(--cu-sideover-size-sm, 320px);\n}\n.cu-sideover-panel[data-size='md'][data-v-f4ad9796] { --cu-sideover-dimension: var(--cu-sideover-size-md, 400px);\n}\n.cu-sideover-panel[data-size='lg'][data-v-f4ad9796] { --cu-sideover-dimension: var(--cu-sideover-size-lg, 512px);\n}\n.cu-sideover-panel[data-size='xl'][data-v-f4ad9796] { --cu-sideover-dimension: var(--cu-sideover-size-xl, 640px);\n}\n.cu-sideover-panel[data-size='full'][data-v-f4ad9796] { --cu-sideover-dimension: var(--cu-sideover-size-full, 100%);\n}\n.cu-sideover-panel--left[data-size][data-v-f4ad9796],\n.cu-sideover-panel--right[data-size][data-v-f4ad9796] { width: var(--cu-sideover-dimension);\n}\n.cu-sideover-panel--top[data-size][data-v-f4ad9796],\n.cu-sideover-panel--bottom[data-size][data-v-f4ad9796] { height: var(--cu-sideover-dimension);\n}\n.cu-sideover-header[data-v-f4ad9796] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  gap: var(--cu-space-sm);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);\n  flex-shrink: 0;\n}\n.cu-sideover-title[data-v-f4ad9796] {\n  margin: 0;\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-lg);\n  font-weight: var(--cu-font-weight-bold);\n  color: var(--cu-color-neutral);\n}\n.cu-sideover-close[data-v-f4ad9796] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  flex-shrink: 0;\n  padding: var(--cu-space-2xs);\n  border: none;\n  border-radius: var(--cu-radius-sm);\n  background: transparent;\n  color: var(--cu-color-neutral);\n  cursor: pointer;\n  transition: background-color 0.15s ease;\n}\n.cu-sideover-close[data-v-f4ad9796]:hover { background-color: var(--cu-color-neutral-subtle-hover);\n}\n.cu-sideover-close[data-v-f4ad9796]:focus-visible {\n  outline: 2px solid var(--cu-color-primary);\n  outline-offset: 2px;\n}\n.cu-sideover-body[data-v-f4ad9796] {\n  flex: 1;\n  min-height: 0;\n  overflow-y: auto;\n  padding: var(--cu-space-lg);\n}\n\n/* Transición: scrim con fade + panel deslizando desde su borde */\n.cu-sideover-enter-active[data-v-f4ad9796],\n.cu-sideover-leave-active[data-v-f4ad9796] {\n  transition: opacity 0.25s ease;\n}\n.cu-sideover-enter-active .cu-sideover-panel[data-v-f4ad9796],\n.cu-sideover-leave-active .cu-sideover-panel[data-v-f4ad9796] {\n  transition: transform 0.25s ease;\n}\n.cu-sideover-enter-from[data-v-f4ad9796],\n.cu-sideover-leave-to[data-v-f4ad9796] {\n  opacity: 0;\n}\n.cu-sideover-enter-from .cu-sideover-panel--left[data-v-f4ad9796],\n.cu-sideover-leave-to .cu-sideover-panel--left[data-v-f4ad9796] { transform: translateX(-100%);\n}\n.cu-sideover-enter-from .cu-sideover-panel--right[data-v-f4ad9796],\n.cu-sideover-leave-to .cu-sideover-panel--right[data-v-f4ad9796] { transform: translateX(100%);\n}\n.cu-sideover-enter-from .cu-sideover-panel--top[data-v-f4ad9796],\n.cu-sideover-leave-to .cu-sideover-panel--top[data-v-f4ad9796] { transform: translateY(-100%);\n}\n.cu-sideover-enter-from .cu-sideover-panel--bottom[data-v-f4ad9796],\n.cu-sideover-leave-to .cu-sideover-panel--bottom[data-v-f4ad9796] { transform: translateY(100%);\n}\n@media (prefers-reduced-motion: reduce) {\n.cu-sideover-enter-active[data-v-f4ad9796],\n  .cu-sideover-leave-active[data-v-f4ad9796],\n  .cu-sideover-enter-active .cu-sideover-panel[data-v-f4ad9796],\n  .cu-sideover-leave-active .cu-sideover-panel[data-v-f4ad9796] {\n    transition: none;\n}\n}\n";
 //#endregion
 //#region \0plugin-vue:export-helper
 var _plugin_vue_export_helper_default = (sfc, props) => {
@@ -578,7 +736,7 @@ var _plugin_vue_export_helper_default = (sfc, props) => {
 };
 //#endregion
 //#region src/components/overlay/SideOver.vue
-var SideOver_default = /*#__PURE__*/ _plugin_vue_export_helper_default(SideOver_vue_vue_type_script_setup_true_lang_default, [["styles", [SideOver_vue_vue_type_style_index_0_inline_scoped_4030b6bd_lang_default]], ["__scopeId", "data-v-4030b6bd"]]);
+var SideOver_default = /*#__PURE__*/ _plugin_vue_export_helper_default(SideOver_vue_vue_type_script_setup_true_lang_default, [["styles", [SideOver_vue_vue_type_style_index_0_inline_scoped_f4ad9796_lang_default]], ["__scopeId", "data-v-f4ad9796"]]);
 //#endregion
 //#region src/lib/overlay/side-over.ts
 var CuSideOver = defineComegenElement("cu-side-over", /* @__PURE__ */ _plugin_vue_export_helper_default(/* @__PURE__ */ defineComponent({
@@ -638,20 +796,25 @@ var CuSideOver = defineComegenElement("cu-side-over", /* @__PURE__ */ _plugin_vu
 			}));
 		}
 		function onUpdate(value) {
+			setOpen(value);
+		}
+		function setOpen(value) {
+			if (isOpen.value === value) return;
 			isOpen.value = value;
 			ceEmit("update:open", value);
+			if (!value) ceEmit("close", void 0);
 		}
 		/** Abre el panel */
 		function show() {
-			isOpen.value = true;
+			setOpen(true);
 		}
 		/** Cierra el panel */
 		function close() {
-			isOpen.value = false;
+			setOpen(false);
 		}
 		/** Alterna visibilidad */
 		function toggle() {
-			isOpen.value = !isOpen.value;
+			setOpen(!isOpen.value);
 		}
 		function isOpenValue() {
 			return isOpen.value;
@@ -672,8 +835,7 @@ var CuSideOver = defineComegenElement("cu-side-over", /* @__PURE__ */ _plugin_vu
 				persistent: props.persistent,
 				"z-index": props.zIndex,
 				teleport: false,
-				"onUpdate:modelValue": onUpdate,
-				onClose: _cache[0] || (_cache[0] = ($event) => ceEmit("close", $event))
+				"onUpdate:modelValue": onUpdate
 			}, {
 				default: withCtx(() => [createCommentVNode(" Contenido del cuerpo del panel "), renderSlot(_ctx.$slots, "default")]),
 				_: 3

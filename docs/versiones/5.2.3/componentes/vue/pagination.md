@@ -78,6 +78,10 @@ import Pagination from "@/components/controls/Pagination.vue";
 (default `[5, 10, 20, 50]`) y con `items-per-page` como valor actual. Al elegir un tamaño
 vuelve a la página 1.
 
+El tamaño actual **siempre** es una opción del selector: si `items-per-page` no está en
+`page-size-options` (p. ej. `15` con las opciones por defecto), se agrega al listado y queda
+seleccionado. Así el selector nunca muestra «Seleccionar…» mientras la tabla ya está paginada.
+
 ```vue
 <script setup lang="ts">
 import Pagination from "@/components/controls/Pagination.vue";

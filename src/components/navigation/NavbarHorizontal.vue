@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { type PropType } from 'vue'
+import DOMPurify from 'dompurify'
 import Dropdown from '@/components/overlay/Dropdown.vue'
 import NavbarMenu from '@/components/navigation/NavbarMenu.vue'
 import Button from '@/components/buttons/Button.vue'
@@ -7,6 +8,10 @@ import LucideChevronDown from '@/components/icons/LucideChevronDown.vue'
 import { useNavbar, type NavItem } from '@/composables/useNavbar'
 
 export interface NavbarHorizontalItem extends NavItem {}
+
+// `item.icon` es HTML/SVG del consumidor: se sanitiza antes del `v-html`
+// (mismo criterio que `Tabs`).
+const sanitizeIcon = (html?: string) => (html ? DOMPurify.sanitize(html) : undefined)
 
 const props = defineProps({
   items: { type: Array as () => NavItem[], required: true },
@@ -47,7 +52,7 @@ const {
       >
         <template #toggle="{ toggle: t }">
           <button class="cu-navbar-dropdown-trigger" @click="t">
-            <span v-if="item.icon" class="cu-navbar-icon" v-html="item.icon"></span>
+            <span v-if="item.icon" class="cu-navbar-icon" v-html="sanitizeIcon(item.icon)"></span>
             {{ item.label }}
             <LucideChevronDown :width="14" :height="14" class="cu-navbar-chevron" />
           </button>
@@ -65,7 +70,7 @@ const {
         :data-navbar-match="highlightTarget === item ? '' : undefined"
         :data-navbar-active="activeItem === item ? '' : undefined"
       >
-        <span v-if="item.icon" class="cu-navbar-icon" v-html="item.icon"></span>
+        <span v-if="item.icon" class="cu-navbar-icon" v-html="sanitizeIcon(item.icon)"></span>
         <span class="cu-navbar-label">{{ item.label }}</span>
       </Button>
     </template>

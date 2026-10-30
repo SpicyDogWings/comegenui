@@ -68,7 +68,7 @@ Sin `text` (o además de él) podés pasar HTML por el slot `content`, que tiene
 
 ## Delay y deshabilitado
 
-`delay` es el tiempo en ms antes de mostrarlo al hacer hover (default `200`); `disabled` lo apaga.
+`delay` es el tiempo en ms antes de mostrarlo al hacer hover (default `200`); `disabled` lo apaga. El tooltip es puramente visual: mostrarse u ocultarse **nunca mueve el foco**.
 
 ```vue
 <Tooltip text="Aparece casi al instante" :delay="0">

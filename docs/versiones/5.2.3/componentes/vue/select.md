@@ -192,13 +192,14 @@ const paises = [
 
 La coincidencia la define `searchMode`: `startsWith` (**default**, sólo al inicio del label) o
 `includes` (en cualquier parte); `searchResetDelay` (1000ms por default) es el tiempo sin
-teclear antes de resetear el texto acumulado.
+teclear antes de resetear el texto acumulado. Cerrar el panel corta la búsqueda en el acto: al
+reabrir se empieza de cero, sin texto acumulado ni barra de cooldown en curso.
 
 ## Barra de cooldown
 
 Mientras se escribe (con `searchEnabled`), aparece una barra que se vacía en
-`searchResetDelay` ms. `cooldownVariant` elige su estilo: `ghost` (color suave) o `solid`
-(color lleno).
+`searchResetDelay` ms. `cooldownVariant` elige su estilo: `ghost` (color suave, el **default**;
+también se acepta `ghost-hover`) o `solid` (color lleno). El tono sale del `color` del select.
 
 ```vue
 <script setup lang="ts">
@@ -294,6 +295,39 @@ const opciones = [
   <Select :options="opciones" read-only model-value="a" placeholder="read-only" />
 </template>
 ```
+
+## Foco y cierre
+
+El panel cierra con `Escape`, con un click afuera o cuando el control **pierde el foco** (Tab o foco
+programático), así no queda un panel flotante abierto. Al cerrarse, si el foco estaba adentro del
+panel (por ejemplo en una opción), **vuelve al trigger**; un click afuera sobre otro control no le
+roba el foco a ese control.
+
+## Teclado
+
+El control se maneja como un combobox: el foco **nunca sale del trigger** y la opción activa se
+resalta en el panel.
+
+| Tecla | Acción |
+|-------|--------|
+| `↓` / `↑` | Abre el panel y mueve la opción activa (saltea las deshabilitadas, con wrap). Cerrado, abre. |
+| `Home` / `End` | Primera / última opción habilitada (con el panel abierto). |
+| `Enter` / `Espacio` | Elige la opción activa. |
+| `Escape` | Cierra el panel. |
+| `Tab` | Sale del control y cierra el panel. |
+| Letras (con `searchEnabled`) | Buscador incremental: salta a la primera coincidencia según `searchMode`. |
+
+```vue
+<Select v-model="value" :options="opciones" search-enabled />
+```
+
+## Accesibilidad
+
+El trigger es un `combobox` (`aria-haspopup="listbox"`, `aria-expanded`, `aria-controls` al panel)
+y el panel es un `listbox` con cada fila como `option` (`aria-selected` en la elegida). La opción
+activa se anuncia con `aria-activedescendant`, así que el lector de pantalla sigue la navegación sin
+mover el foco. Los `id` son únicos por instancia: varios `Select` en la misma página no comparten
+ids.
 
 ## Posicionamiento
 

@@ -103,6 +103,9 @@ contenido **dentro** de cada item. El toggle no se ve afectado (su ancho lo defi
 
 `items` es el array declarativo: cada item puede llevar `label`, `icon` (SVG inline), `color`, `variant`, `disabled`, `divider`, `href` con `target`, `selected` (check al final) y `onClick`, que se dispara al elegirlo.
 
+> El HTML del `icon` se sanitiza con **DOMPurify** antes de inyectarse: los SVG válidos se
+> conservan y se eliminan `<script>`, handlers `on*` y URLs peligrosas.
+
 ```vue
 <script setup lang="ts">
 import DropdownMenu from "@/components/controls/DropdownMenu.vue";
@@ -152,7 +155,7 @@ El slot `toggle` reemplaza el botón del trigger (scoped: `toggle` e `isOpen`); 
 
 ## Interacción
 
-`open` y `close` son los dos emits propios, y `open()`, `close()`, `toggle()` e `isOpen()` se llaman por `ref`.
+`open` y `close` son los dos emits propios, y `open()`, `close()`, `toggle()` e `isOpen()` se llaman por `ref`. El panel se anuncia como `role="menu"`; al cerrarse con `Escape` (o al elegir un item), el foco vuelve al trigger.
 
 ```vue
 <script setup lang="ts">

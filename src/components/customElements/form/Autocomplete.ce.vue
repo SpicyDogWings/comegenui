@@ -115,7 +115,6 @@ defineExpose({
     :model-value="localModel"
     @update:model-value="onUpdate"
     @select="ceEmit('select', $event)"
-    @blur="ceEmit('blur', $event)"
   />
 </template>
 

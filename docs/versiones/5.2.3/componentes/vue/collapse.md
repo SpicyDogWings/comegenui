@@ -54,6 +54,9 @@ Es opcional y, si queda vacía (default `''`), no se renderiza nada.
 
 `icon` acepta un string SVG/HTML que se inyecta **antes del label**, dentro del trigger.
 
+> El HTML del `icon` se sanitiza con **DOMPurify** antes de inyectarse: los SVG válidos se
+> conservan y se eliminan `<script>`, handlers `on*` y URLs peligrosas.
+
 ```vue
 <script setup lang="ts">
 const estrella =

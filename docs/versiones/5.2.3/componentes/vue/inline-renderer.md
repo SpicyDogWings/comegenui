@@ -26,7 +26,7 @@ const tokens: any[] = paragraph.tokens ?? [];
 
 ## Tipos de token
 
-Reconoce `text`, `strong`, `em`, `codespan`, `del`, `image`, `link`, `br` y `escape`; cualquier otro tipo se ignora (devuelve vacío).
+Reconoce `text`, `strong`, `em`, `codespan`, `del`, `image`, `link`, `br` y `escape`; cualquier otro tipo se ignora (devuelve vacío). En particular, el HTML inline (`<b>…</b>`) llega como tokens `html` y no se interpreta: el texto que queda adentro se muestra tal cual.
 
 ```vue
 <script setup lang="ts">
@@ -56,7 +56,7 @@ const tokens = [
 
 ## Links
 
-Un token `link` no se renderiza como `<a>`: se rinde con `<Button variant="link">`, apuntando a `href` y abriendo en una pestaña nueva (`target="_blank"` + `rel="noopener"`), así hereda el color y el subrayado del tema.
+Un token `link` no se renderiza como `<a>`: se rinde con `<Button variant="link">`, apuntando a `href` y abriendo en una pestaña nueva (`target="_blank"` + `rel="noopener"`), así hereda el color y el subrayado del tema. Un esquema ejecutable (`javascript:`, `data:`, `vbscript:`) no navega: sale como `<button>` sin `href`. Las URLs de links e imágenes se escapan al construir el HTML, así que una comilla en la URL no puede inyectar atributos (`onerror`, `onmouseover`, …).
 
 ```vue
 <script setup lang="ts">

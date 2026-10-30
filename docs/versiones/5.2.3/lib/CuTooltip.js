@@ -430,7 +430,7 @@ oneOf(SELECT_SEARCH_MODES);
 oneOf(CELLS_IMPORTER_INPUT_TYPES);
 //#endregion
 //#region src/components/overlay/Popover.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1 = ["role"];
+var _hoisted_1 = ["id", "role"];
 var HOVER_REGISTRY_KEY = "__cu_hover_registry__";
 var Popover_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineComponent({
 	__name: "Popover",
@@ -478,6 +478,12 @@ var Popover_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineCo
 			default: 200
 		},
 		role: {
+			type: String,
+			required: false,
+			default: ""
+		},
+		/** `id` del panel: el trigger lo referencia con `aria-controls` (patrón combobox/listbox). */
+		panelId: {
 			type: String,
 			required: false,
 			default: ""
@@ -552,6 +558,47 @@ var Popover_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineCo
 		const isOpen = ref(false);
 		const popoverRef = ref(null);
 		const panelEl = ref(null);
+		let focusBeforeOpen = null;
+		/**
+		* Elemento enfocado dentro del mismo árbol (shadow root o documento).
+		*
+		* Dentro de un shadow root `activeElement` es `null` cuando el foco está afuera: eso
+		* **no** significa "foco perdido" (puede estar en otro control del documento), así que
+		* se cae a `document.activeElement` y se descarta el host, que es un destino inútil.
+		*/
+		function activeInTree() {
+			const root = popoverRef.value?.getRootNode();
+			const inRoot = root?.activeElement ?? null;
+			if (inRoot) return inRoot;
+			if (!root || !(root instanceof ShadowRoot)) return null;
+			const host = root.host;
+			const docActive = document.activeElement;
+			if (docActive && docActive !== document.body && docActive !== host) return docActive;
+			return null;
+		}
+		/** Primer elemento enfocable del trigger (slot `#toggle`). */
+		function triggerElement() {
+			const root = popoverRef.value;
+			if (!root) return null;
+			const focusables = root.querySelectorAll("button, a[href], input, select, textarea, [tabindex]:not([tabindex=\"-1\"])");
+			for (const el of focusables) if (!panelEl.value?.contains(el)) return el;
+			return null;
+		}
+		function rememberFocus() {
+			const active = activeInTree();
+			focusBeforeOpen = active && active !== document.body && !panelEl.value?.contains(active) ? active : null;
+		}
+		function restoreFocus() {
+			if (props.hover) return;
+			const panel = panelEl.value;
+			const active = activeInTree();
+			const insidePanel = !!panel && !!active && panel.contains(active);
+			const lost = !active || active === document.body;
+			const target = insidePanel ? focusBeforeOpen ?? triggerElement() : lost ? focusBeforeOpen : null;
+			focusBeforeOpen = null;
+			if (!target || !target.isConnected) return;
+			target.focus();
+		}
 		let closedByOutsideClick = false;
 		function onDocumentClick(e) {
 			if (!isOpen.value || !popoverRef.value) return;
@@ -560,6 +607,7 @@ var Popover_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineCo
 				closedByOutsideClick = true;
 				isOpen.value = false;
 				emit("close");
+				restoreFocus();
 				setTimeout(() => {
 					closedByOutsideClick = false;
 				}, 0);
@@ -569,6 +617,7 @@ var Popover_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineCo
 			if (e.key === "Escape" && isOpen.value) {
 				isOpen.value = false;
 				emit("close");
+				restoreFocus();
 			}
 		}
 		const SCROLL_OPTS = {
@@ -745,6 +794,7 @@ var Popover_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineCo
 		function open() {
 			if (props.disabled) return;
 			autoFixed.value = false;
+			rememberFocus();
 			positionPanel();
 			isOpen.value = true;
 			emit("open");
@@ -757,6 +807,7 @@ var Popover_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineCo
 			autoFixed.value = false;
 			emit("close");
 			unregisterHover();
+			restoreFocus();
 		}
 		function toggle() {
 			if (props.disabled) return;
@@ -787,6 +838,7 @@ var Popover_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineCo
 				key: 0,
 				ref_key: "panelEl",
 				ref: panelEl,
+				id: props.panelId || void 0,
 				style: normalizeStyle(panelStyle.value),
 				class: normalizeClass(["cu-popover-panel", __props.panelClass]),
 				role: __props.role || void 0
@@ -795,8 +847,8 @@ var Popover_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineCo
 	}
 });
 //#endregion
-//#region src/components/overlay/Popover.vue?vue&type=style&index=0&inline&scoped=50458841&lang.css
-var Popover_vue_vue_type_style_index_0_inline_scoped_50458841_lang_default = "\n.cu-popover[data-v-50458841] {\n  position: relative;\n  display: inline-block;\n  box-sizing: border-box;\n}\n.cu-popover-panel[data-v-50458841] {\n  padding: var(--cu-space-sm);\n  border-radius: var(--cu-radius-md);\n  font-family: var(--cu-font-sans);\n  box-shadow: var(--cu-shadow-xl);\n}\n";
+//#region src/components/overlay/Popover.vue?vue&type=style&index=0&inline&scoped=7e62c527&lang.css
+var Popover_vue_vue_type_style_index_0_inline_scoped_7e62c527_lang_default = "\n.cu-popover[data-v-7e62c527] {\n  position: relative;\n  display: inline-block;\n  box-sizing: border-box;\n}\n.cu-popover-panel[data-v-7e62c527] {\n  padding: var(--cu-space-sm);\n  border-radius: var(--cu-radius-md);\n  font-family: var(--cu-font-sans);\n  box-shadow: var(--cu-shadow-xl);\n}\n";
 //#endregion
 //#region \0plugin-vue:export-helper
 var _plugin_vue_export_helper_default = (sfc, props) => {
@@ -806,7 +858,7 @@ var _plugin_vue_export_helper_default = (sfc, props) => {
 };
 //#endregion
 //#region src/components/overlay/Popover.vue
-var Popover_default = /*#__PURE__*/ _plugin_vue_export_helper_default(Popover_vue_vue_type_script_setup_true_lang_default, [["styles", [Popover_vue_vue_type_style_index_0_inline_scoped_50458841_lang_default]], ["__scopeId", "data-v-50458841"]]);
+var Popover_default = /*#__PURE__*/ _plugin_vue_export_helper_default(Popover_vue_vue_type_script_setup_true_lang_default, [["styles", [Popover_vue_vue_type_style_index_0_inline_scoped_7e62c527_lang_default]], ["__scopeId", "data-v-7e62c527"]]);
 //#endregion
 //#region src/components/overlay/Tooltip.vue
 var Tooltip_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__ */ defineComponent({

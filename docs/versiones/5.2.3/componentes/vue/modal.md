@@ -206,6 +206,26 @@ function cleanUp() {
 </template>
 ```
 
+## Accesibilidad y foco
+
+El diálogo se anuncia con `role="dialog"` y `aria-modal="true"`. Con `title`, el nombre accesible
+sale de ese título (`aria-labelledby`); sin `title` se usa `aria-label` (por defecto «Diálogo», o el
+que pongas en el host). Un `aria-label` explícito siempre gana.
+
+Al abrir, el foco entra al diálogo (primer control, o el `[autofocus]` del contenido) y queda
+atrapado: `Tab` cicla entre los controles del modal y `Shift+Tab` retrocede, sin escaparse al resto
+de la página. Al cerrar —con el botón, el backdrop o `Escape`— el foco vuelve al elemento que abrió
+el modal.
+
+```vue
+<template>
+  <!-- Sin `title`: el nombre accesible es el `aria-label` del host -->
+  <Modal aria-label="Confirmar eliminación">
+    <p>¿Seguro?</p>
+  </Modal>
+</template>
+```
+
 ## Props
 
 <!--@include: ../../partials/modal/props-vue.md-->

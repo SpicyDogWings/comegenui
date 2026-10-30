@@ -78,3 +78,21 @@ describe("Tooltip — apariencia", () => {
     expect(panel(w).attributes("role")).toBe("tooltip");
   });
 });
+
+describe("Tooltip — no roba el foco", () => {
+  it("cerrar por hover-out no mueve el foco a ningún lado", async () => {
+    const w = mount(Tooltip, { props: { text: "Guardar", delay: 0 }, attachTo: document.body });
+    await root(w).trigger("mouseenter");
+    await flushPromises();
+    const fuera = document.createElement("button");
+    document.body.appendChild(fuera);
+    fuera.focus();
+    await root(w).trigger("mouseleave");
+    await new Promise((r) => setTimeout(r, 150));
+    await flushPromises();
+    expect(panel(w).exists()).toBe(false);
+    expect(document.activeElement).toBe(fuera);
+    w.unmount();
+    fuera.remove();
+  });
+});

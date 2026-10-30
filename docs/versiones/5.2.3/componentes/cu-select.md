@@ -165,13 +165,14 @@ escribir, la lista hace scroll a la primera opción que coincide.
 
 La coincidencia la define `search-mode`: `startsWith` (**default**, sólo al inicio del label) o
 `includes` (en cualquier parte); `search-reset-delay` (1000ms por default) es el tiempo sin
-teclear antes de resetear el texto acumulado.
+teclear antes de resetear el texto acumulado. Cerrar el panel corta la búsqueda en el acto: al
+reabrir se empieza de cero, sin texto acumulado ni barra de cooldown en curso.
 
 ## Barra de cooldown
 
 Mientras se escribe (con `search-enabled`), aparece una barra que se vacía en
-`search-reset-delay` ms. `cooldown-variant` elige su estilo: `ghost` (color suave) o `solid`
-(color lleno).
+`search-reset-delay` ms. `cooldown-variant` elige su estilo: `ghost` (color suave, el **default**;
+también se acepta `ghost-hover`) o `solid` (color lleno). El tono sale del `color` del select.
 
 ```html
 <!-- Cooldown con color suave (ghost, default) -->
@@ -237,8 +238,40 @@ también el foco usá `disabled`.
 
 <!-- demo:select-readonly -->
 
-## Posicionamiento
+## Foco y cierre
 
+El panel cierra con `Escape`, con un click afuera o cuando el control **pierde el foco** (Tab o
+foco programático): no queda un panel flotante abierto tapando el resto de la página. Al cerrarse,
+si el foco estaba adentro del panel (por ejemplo en una opción), **vuelve al trigger**; un click
+afuera sobre otro control no le roba el foco a ese control.
+
+## Teclado
+
+El control se maneja como un combobox: el foco **nunca sale del trigger** y la opción activa
+se resalta en el panel.
+
+| Tecla | Acción |
+|-------|--------|
+| `↓` / `↑` | Abre el panel y mueve la opción activa (saltea las deshabilitadas, con wrap). Cerrado, abre. |
+| `Home` / `End` | Primera / última opción habilitada (con el panel abierto). |
+| `Enter` / `Espacio` | Elige la opción activa. |
+| `Escape` | Cierra el panel. |
+| `Tab` | Sale del control y cierra el panel. |
+| Letras (con `search-enabled`) | Buscador incremental: salta a la primera coincidencia según `search-mode`. |
+
+```html
+<cu-select id="teclado" search-enabled placeholder="Flechas o letras"></cu-select>
+```
+
+## Accesibilidad
+
+El trigger es un `combobox` (`aria-haspopup="listbox"`, `aria-expanded`, `aria-controls` al panel)
+y el panel es un `listbox` con cada fila como `option` (`aria-selected` en la elegida). La opción
+activa se anuncia con `aria-activedescendant`, así que el lector de pantalla sigue la navegación
+sin mover el foco. Los `id` son únicos por instancia: varios `<cu-select>` en la misma página no
+comparten ids.
+
+## Posicionamiento
 `position` acepta `bottom` (**default**) y `top` (el wrapper `Dropdown` también contempla
 `left`/`right`); `align` acepta `start` (**default**), `center` y `end`. Con `fixed`, el panel
 se posiciona respecto del viewport.
@@ -330,6 +363,10 @@ Cada opción del array `options` puede tener:
 ## Eventos
 
 <!--@include: ../partials/select/eventos-vanilla.md-->
+
+> `change` es un evento custom (el nativo de un `<select>` no puede salir del Shadow DOM). `focus` y
+> `blur` llegan como eventos **nativos** (`FocusEvent`, sin `detail`) cuando el foco entra o sale del
+> control — no cuando pasa del trigger a una opción del panel.
 
 ## Slots
 

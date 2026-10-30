@@ -62,9 +62,15 @@ watch(() => props.itemsPerPage, (val) => {
   pageSizeValue.value = String(val);
 });
 
-const pageSizeOptionsFormatted = computed(() =>
-  props.pageSizeOptions.map(opt => ({ value: String(opt), label: String(opt) }))
-);
+// El tamaño actual siempre es una opción: si `itemsPerPage` no está en
+// `pageSizeOptions`, el Select no lo encontraba y mostraba "Seleccionar..."
+// (sin opción que represente el valor vigente). Se agrega y se ordena.
+const pageSizeOptionsFormatted = computed(() => {
+  const sizes = new Set([...props.pageSizeOptions, props.itemsPerPage]);
+  return [...sizes]
+    .sort((a, b) => a - b)
+    .map(opt => ({ value: String(opt), label: String(opt) }));
+});
 
 const handlePageChange = (page: number) => {
   if (page >= 1 && page <= props.totalPages) {
@@ -239,8 +245,7 @@ const visiblePages = computed(() => {
 
 .cu-pagination-ellipsis {
   padding: var(--cu-space-xs) var(--cu-space-sm);
-  color: var(--cu-color-neutral-text);
-  opacity: var(--cu-alpha-muted, 0.5);
+  color: var(--cu-color-neutral-text-muted);
   font-size: var(--cu-font-size-sm);
   font-family: var(--cu-font-sans);
 }

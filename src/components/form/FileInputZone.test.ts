@@ -32,6 +32,60 @@ function setInputFiles(w: ReturnType<typeof mount>, files: File[]) {
   hiddenInput(w).dispatchEvent(new Event("change"));
 }
 
+/** Entrada de archivo del File System API que entrega el `File` cuando el test lo pide. */
+function controlledEntry(file: File) {
+  let deliver: ((f: File) => void) | null = null;
+  const entry = {
+    isFile: true,
+    isDirectory: false,
+    file: (cb: (f: File) => void) => {
+      deliver = cb;
+    },
+  };
+  return {
+    entry,
+    resolve: () => deliver?.(file),
+  };
+}
+
+/** Entrada que no se puede leer (permiso, archivo borrado): llama al callback de error. */
+function failingEntry() {
+  return {
+    isFile: true,
+    isDirectory: false,
+    file: (_cb: (f: File) => void, onError?: () => void) => {
+      onError?.();
+    },
+  };
+}
+
+function entryItem(entry: unknown) {
+  return { webkitGetAsEntry: () => entry, getAsFile: () => null };
+}
+
+/** Espía el `value` del input nativo (jsdom prohíbe asignarle una ruta real). */
+function trackInputValue(input: HTMLInputElement) {
+  let stored = "C:\\fakepath\\elegido.txt";
+  Object.defineProperty(input, "value", {
+    configurable: true,
+    get: () => stored,
+    set: (v: string) => {
+      stored = v;
+    },
+  });
+  return {
+    get value() {
+      return stored;
+    },
+  };
+}
+
+function dispatchDragLeave(el: Element, relatedTarget: Node | null) {
+  const event = new Event("dragleave", { bubbles: true, cancelable: true });
+  Object.defineProperty(event, "relatedTarget", { value: relatedTarget });
+  el.dispatchEvent(event);
+}
+
 describe("FileInputZone — selección", () => {
   it("arranca vacío y muestra el placeholder", () => {
     const w = mount(FileInputZone, { props: { placeholder: "Arrastra un archivo" } });
@@ -130,14 +184,68 @@ describe("FileInputZone — drag & drop y disabled", () => {
     expect(zone(w).classes()).not.toContain("cu-file-zone--drag-over");
   });
 
+  it("cruzar un hijo de la zona no apaga el resaltado; salir sí", async () => {
+    const w = mount(FileInputZone, { props: { placeholder: "Arrastra" } });
+    await zone(w).trigger("dragover");
+    const child = w.find(".cu-file-zone-text").element;
+
+    dispatchDragLeave(zone(w).element, child);
+    await flushPromises();
+    expect(zone(w).classes()).toContain("cu-file-zone--drag-over");
+
+    dispatchDragLeave(zone(w).element, document.body);
+    await flushPromises();
+    expect(zone(w).classes()).not.toContain("cu-file-zone--drag-over");
+  });
+
   it("soltar archivos sin items (fallback dataTransfer.files) los agrega", async () => {
     const w = mount(FileInputZone);
     const file = makeFile("drop.txt", { type: "text/plain" });
     await zone(w).trigger("drop", { dataTransfer: { items: [], files: [file] } });
     await flushPromises();
 
-    // El código solo procesa dataTransfer.items; sin items no hay archivos.
-    expect(vm(w).get()).toBeNull();
+    expect(vm(w).get()).toBe(file);
+  });
+
+  it("conserva el orden del drop aunque las lecturas terminen en otro orden", async () => {
+    const w = mount(FileInputZone, { props: { multiple: true } });
+    const primero = controlledEntry(makeFile("primero.txt", { type: "text/plain" }));
+    const segundo = controlledEntry(makeFile("segundo.txt", { type: "text/plain" }));
+    const items = [entryItem(primero.entry), entryItem(segundo.entry)];
+
+    await zone(w).trigger("drop", { dataTransfer: { items, files: [] } });
+    segundo.resolve();
+    primero.resolve();
+    await flushPromises();
+
+    expect((vm(w).get() as File[]).map((f) => f.name)).toEqual(["primero.txt", "segundo.txt"]);
+  });
+
+  it("sin multiple, el archivo elegido es el primero soltado (no el que se leyó antes)", async () => {
+    const w = mount(FileInputZone);
+    const primero = controlledEntry(makeFile("primero.txt", { type: "text/plain" }));
+    const segundo = controlledEntry(makeFile("segundo.txt", { type: "text/plain" }));
+    const items = [entryItem(primero.entry), entryItem(segundo.entry)];
+
+    await zone(w).trigger("drop", { dataTransfer: { items, files: [] } });
+    segundo.resolve();
+    primero.resolve();
+    await flushPromises();
+
+    expect((vm(w).get() as File).name).toBe("primero.txt");
+  });
+
+  it("un ítem que no se puede leer no deja el drop colgado", async () => {
+    const w = mount(FileInputZone, { props: { multiple: true } });
+    const ok = controlledEntry(makeFile("ok.txt", { type: "text/plain" }));
+    const roto = failingEntry();
+    const items = [entryItem(roto), entryItem(ok.entry)];
+
+    await zone(w).trigger("drop", { dataTransfer: { items, files: [] } });
+    ok.resolve();
+    await flushPromises();
+
+    expect((vm(w).get() as File[]).map((f) => f.name)).toEqual(["ok.txt"]);
   });
 
   it("no dispara el selector si está disabled", () => {
@@ -145,5 +253,91 @@ describe("FileInputZone — drag & drop y disabled", () => {
     const click = vi.spyOn(hiddenInput(w), "click");
     vm(w).trigger();
     expect(click).not.toHaveBeenCalled();
+  });
+});
+
+describe("FileInputZone — control de selección y teclado", () => {
+  it("la zona es un grupo y el control de selección un <button> real y vacío", async () => {
+    const w = mount(FileInputZone, { props: { placeholder: "Arrastra un archivo" } });
+    expect(zone(w).attributes("role")).toBe("group");
+
+    const trigger = w.find(".cu-file-zone-trigger");
+    expect(trigger.element.tagName).toBe("BUTTON");
+    expect(trigger.attributes("type")).toBe("button");
+    expect(trigger.text()).toBe("");
+    expect(trigger.attributes("aria-label")).toBe("Arrastra un archivo");
+
+    const click = vi.spyOn(hiddenInput(w), "click");
+    await trigger.trigger("click");
+    expect(click).toHaveBeenCalled();
+  });
+
+  it("con archivos el control invita a agregar o cambiar", async () => {
+    const multi = mount(FileInputZone, {
+      props: { multiple: true, modelValue: [makeFile("a.txt", { type: "text/plain" })] },
+    });
+    await flushPromises();
+    expect(multi.find(".cu-file-zone-trigger").attributes("aria-label")).toBe("Agregar archivos");
+
+    const simple = mount(FileInputZone, {
+      props: { modelValue: makeFile("a.txt", { type: "text/plain" }) },
+    });
+    await flushPromises();
+    expect(simple.find(".cu-file-zone-trigger").attributes("aria-label")).toBe("Cambiar archivo");
+  });
+
+  it("los controles de las filas no quedan dentro del botón de la zona", async () => {
+    const w = mount(FileInputZone, {
+      props: { multiple: true, modelValue: [makeFile("a.txt", { type: "text/plain" })] },
+    });
+    await flushPromises();
+    expect(w.find(".cu-file-zone-trigger").findAll("button, a, input")).toHaveLength(0);
+    expect(zone(w).find(".cu-file-list-name").element.tagName).toBe("BUTTON");
+  });
+
+  it("el botón de quitar de una fila no abre el selector", async () => {
+    const w = mount(FileInputZone, {
+      props: { modelValue: makeFile("a.txt", { type: "text/plain" }) },
+    });
+    await flushPromises();
+    const click = vi.spyOn(hiddenInput(w), "click");
+
+    await w.find(".cu-file-list-remove").trigger("click");
+
+    expect(click).not.toHaveBeenCalled();
+  });
+
+  it("focus() enfoca el control de selección", () => {
+    const w = mount(FileInputZone, { attachTo: document.body });
+    vm(w).focus();
+    expect(document.activeElement).toBe(w.find(".cu-file-zone-trigger").element);
+    w.unmount();
+  });
+
+  it("con readOnly no se puede quitar y el control queda deshabilitado", async () => {
+    const w = mount(FileInputZone, {
+      props: { multiple: true, readOnly: true, modelValue: [makeFile("a.txt", { type: "text/plain" })] },
+    });
+    await flushPromises();
+    expect(w.find(".cu-file-zone-trigger").attributes("disabled")).toBeDefined();
+    expect(w.find(".cu-file-list-remove").exists()).toBe(false);
+  });
+});
+
+describe("FileInputZone — input nativo", () => {
+  it("se vacía al procesar la selección, para poder volver a elegir el mismo archivo", async () => {
+    const w = mount(FileInputZone);
+    const input = hiddenInput(w);
+    Object.defineProperty(input, "files", {
+      value: [makeFile("repetido.txt", { type: "text/plain" })],
+      configurable: true,
+    });
+    const state = trackInputValue(input);
+
+    input.dispatchEvent(new Event("change"));
+    await flushPromises();
+
+    expect(state.value).toBe("");
+    expect((vm(w).get() as File).name).toBe("repetido.txt");
   });
 });

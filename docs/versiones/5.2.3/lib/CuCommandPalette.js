@@ -1,5 +1,5 @@
 /*! comegenui v5.2.3 · CuCommandPalette (cu-command-palette) · esm-shared · Vue externo (bare import) */
-import { Fragment, computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, createTextVNode, createVNode, defineComponent, defineCustomElement, mergeModels, nextTick, normalizeClass, normalizeStyle, openBlock, reactive, ref, renderList, renderSlot, shallowRef, toDisplayString, toValue, unref, useId, useModel, useSlots, useTemplateRef, vShow, watch, withCtx, withDirectives } from "vue";
+import { Fragment, computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, createTextVNode, createVNode, defineComponent, defineCustomElement, mergeModels, nextTick, normalizeClass, normalizeStyle, onBeforeUnmount, openBlock, reactive, ref, renderList, renderSlot, shallowRef, toDisplayString, toValue, unref, useAttrs, useId, useModel, useSlots, useTemplateRef, vShow, watch, withCtx, withDirectives } from "vue";
 //#region src/utils/comegen-element.ts
 var BUILD_META = {
 	"version": "5.2.3",
@@ -912,7 +912,11 @@ var _plugin_vue_export_helper_default = (sfc, props) => {
 var Button_default = /*#__PURE__*/ _plugin_vue_export_helper_default(Button_vue_vue_type_script_setup_true_lang_default, [["styles", [Button_vue_vue_type_style_index_0_inline_scoped_cb9decf8_lang_default]], ["__scopeId", "data-v-cb9decf8"]]);
 //#endregion
 //#region src/components/overlay/Modal.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1$2 = ["aria-labelledby", "aria-describedby"];
+var _hoisted_1$2 = [
+	"aria-labelledby",
+	"aria-label",
+	"aria-describedby"
+];
 var _hoisted_2$1 = ["data-size", "data-height"];
 var _hoisted_3$1 = { class: "cu-modal-header-text" };
 var _hoisted_4$1 = {
@@ -983,11 +987,131 @@ var Modal_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 		const props = __props;
 		const emit = __emit;
 		const slots = useSlots();
+		const attrs = useAttrs();
 		const isOpen = ref(false);
+		const backdropRef = ref(null);
+		/** Elemento que tenía el foco al abrir: se le devuelve al cerrar. */
+		const trigger = ref(null);
 		const hasFooter = computed(() => !!slots.footer?.());
+		const dialogLabel = computed(() => props.title ? void 0 : attrs["aria-label"] || "Diálogo");
 		const colorStyles = computed(() => ({ "--modal-color": `var(--cu-color-${props.color})` }));
+		const FOCUSABLE_SELECTOR = [
+			"a[href]",
+			"area[href]",
+			"button:not([disabled])",
+			"input:not([disabled]):not([type=\"hidden\"])",
+			"select:not([disabled])",
+			"textarea:not([disabled])",
+			"iframe",
+			"object",
+			"embed",
+			"audio[controls]",
+			"video[controls]",
+			"summary",
+			"[contenteditable=\"true\"]",
+			"[tabindex]:not([tabindex=\"-1\"])"
+		].join(",");
+		/** Oculta por atributo/inline style (v-show): `focus()` no serviría y el trap no debe contarla. */
+		function isHidden(el) {
+			for (let node = el; node; node = node.parentElement) {
+				if (node.hasAttribute("hidden")) return true;
+				const style = node.style;
+				if (style && (style.display === "none" || style.visibility === "hidden")) return true;
+			}
+			return false;
+		}
+		function isFocusable(el) {
+			return el instanceof HTMLElement && el.matches(FOCUSABLE_SELECTOR) && !isHidden(el);
+		}
+		/**
+		* Focusables del diálogo en orden de tabulación. Recorre slots (`assignedElements`)
+		* y shadow roots anidados: el contenido de un `<cu-modal>` vive en el light DOM del
+		* host y el de un `<cu-input>` en su propio shadow, y `querySelectorAll` no cruza
+		* ninguna de las dos fronteras.
+		*/
+		function collectFocusables(root, out = []) {
+			for (const child of Array.from(root.children)) {
+				if (child.tagName === "SLOT" && "assignedElements" in child) {
+					const slot = child;
+					const assigned = slot.assignedElements({ flatten: true });
+					const source = assigned.length ? assigned : Array.from(slot.children);
+					for (const node of source) {
+						if (isFocusable(node)) out.push(node);
+						if (node.shadowRoot) collectFocusables(node.shadowRoot, out);
+						collectFocusables(node, out);
+					}
+					continue;
+				}
+				if (isFocusable(child)) out.push(child);
+				if (child.shadowRoot) collectFocusables(child.shadowRoot, out);
+				collectFocusables(child, out);
+			}
+			return out;
+		}
+		function dialogFocusables() {
+			const root = backdropRef.value;
+			return root ? collectFocusables(root) : [];
+		}
+		/** Elemento realmente enfocado, atravesando shadow roots anidados. */
+		function deepActiveElement() {
+			let active = document.activeElement;
+			while (active?.shadowRoot?.activeElement) active = active.shadowRoot.activeElement;
+			return active;
+		}
+		/**
+		* Foco inicial: `[autofocus]` si existe, si no el primer focusable, si no el
+		* diálogo. No pisa un foco que ya está adentro: un consumidor (CommandPalette)
+		* puede enfocar su buscador en el mismo tick y ese foco manda.
+		*/
+		function focusFirst() {
+			const root = backdropRef.value;
+			if (!root) return;
+			const focusables = dialogFocusables();
+			const active = deepActiveElement();
+			if (active && (focusables.includes(active) || root.contains(active))) return;
+			(root.querySelector("[autofocus]") ?? focusables[0] ?? root).focus();
+		}
+		/** Devuelve el foco al trigger; si es un custom element, a su control interno. */
+		function restoreFocus() {
+			const el = trigger.value;
+			trigger.value = null;
+			if (!el || !el.isConnected) return;
+			el.focus();
+			if (document.activeElement !== el && el.shadowRoot) collectFocusables(el.shadowRoot)[0]?.focus();
+		}
+		/**
+		* Trampa de foco: Tab/Shift+Tab ciclan dentro del diálogo. Se escucha en
+		* `document` (keydown es `composed`) para cubrir también el foco que quedó
+		* fuera —body, la barra del navegador— y el contenido sloteado en el shadow.
+		*/
+		function handleKeydown(event) {
+			if (!isOpen.value || event.key !== "Tab") return;
+			const focusables = dialogFocusables();
+			const root = backdropRef.value;
+			if (!focusables.length) {
+				event.preventDefault();
+				root?.focus();
+				return;
+			}
+			const target = (typeof event.composedPath === "function" ? event.composedPath() : [])[0] ?? event.target;
+			const index = target ? focusables.indexOf(target) : -1;
+			const first = focusables[0];
+			const last = focusables[focusables.length - 1];
+			if (index === -1) {
+				event.preventDefault();
+				(event.shiftKey ? last : first).focus();
+			} else if (event.shiftKey && index === 0) {
+				event.preventDefault();
+				last.focus();
+			} else if (!event.shiftKey && index === focusables.length - 1) {
+				event.preventDefault();
+				first.focus();
+			}
+		}
 		/** Abre el modal. */
 		function open() {
+			if (isOpen.value) return;
+			trigger.value = document.activeElement instanceof HTMLElement ? document.activeElement : null;
 			isOpen.value = true;
 		}
 		/** Cierra el modal. */
@@ -996,7 +1120,8 @@ var Modal_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 		}
 		/** Alterna la visibilidad del modal. */
 		function toggle() {
-			isOpen.value = !isOpen.value;
+			if (isOpen.value) close();
+			else open();
 		}
 		function handleCancel() {
 			emit("cancel");
@@ -1014,6 +1139,18 @@ var Modal_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 		watch(isOpen, (newVal) => {
 			emit(newVal ? "opened" : "closed");
 			if (!newVal) emit("close");
+			if (newVal) {
+				document.addEventListener("keydown", handleKeydown);
+				nextTick(() => {
+					if (isOpen.value) focusFirst();
+				});
+			} else {
+				document.removeEventListener("keydown", handleKeydown);
+				restoreFocus();
+			}
+		});
+		onBeforeUnmount(() => {
+			document.removeEventListener("keydown", handleKeydown);
 		});
 		__expose({
 			open,
@@ -1024,12 +1161,15 @@ var Modal_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 		});
 		return (_ctx, _cache) => {
 			return withDirectives((openBlock(), createElementBlock("div", {
+				ref_key: "backdropRef",
+				ref: backdropRef,
 				onClick: handleBackdropClick,
 				tabindex: "-1",
 				role: "dialog",
 				class: "cu-modal-backdrop",
 				"aria-modal": "true",
 				"aria-labelledby": __props.title ? "modal-title" : void 0,
+				"aria-label": dialogLabel.value,
 				"aria-describedby": __props.description ? "modal-description" : void 0
 			}, [createElementVNode("div", {
 				class: "cu-modal",
@@ -1085,7 +1225,7 @@ var Modal_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 			], 12, _hoisted_2$1)], 8, _hoisted_1$2)), [[vShow, isOpen.value]]);
 		};
 	}
-}), [["styles", ["\n.cu-modal-backdrop {\n  z-index: 1000;\n  position: fixed;\n  inset: 0;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  padding: var(--cu-space-md);\n  background-color: rgba(0, 0, 0, 0.3);\n  backdrop-filter: blur(4px);\n}\n.cu-modal {\n  background-color: var(--cu-color-surface);\n  color: var(--cu-color-neutral);\n  border-radius: var(--cu-radius);\n  box-shadow: var(--cu-shadow-xl);\n  padding: var(--cu-space-md);\n  width: 100%;\n  display: flex;\n  flex-direction: column;\n  overflow: visible;\n  box-sizing: border-box;\n}\n\n/* size */\n.cu-modal[data-size=\"auto\"] { max-width: var(--cu-modal-size-auto, 50vw);\n}\n.cu-modal[data-size=\"sm\"] { max-width: var(--cu-modal-size-sm, 25vw);\n}\n.cu-modal[data-size=\"md\"] { max-width: var(--cu-modal-size-md, 30vw);\n}\n.cu-modal[data-size=\"lg\"] { max-width: var(--cu-modal-size-lg, 35vw);\n}\n.cu-modal[data-size=\"xl\"] { max-width: var(--cu-modal-size-xl, 40vw);\n}\n.cu-modal[data-size=\"full\"] { max-width: var(--cu-modal-size-full, 90vw);\n}\n\n/* height */\n.cu-modal[data-height=\"auto\"] { max-height: var(--cu-modal-height-auto, 50vh);\n}\n.cu-modal[data-height=\"sm\"] { max-height: var(--cu-modal-height-sm, 30vh);\n}\n.cu-modal[data-height=\"md\"] { max-height: var(--cu-modal-height-md, 40vh);\n}\n.cu-modal[data-height=\"lg\"] { max-height: var(--cu-modal-height-lg, 50vh);\n}\n.cu-modal[data-height=\"xl\"] { max-height: var(--cu-modal-height-xl, 60vh);\n}\n.cu-modal[data-height=\"full\"] {\n  max-height: var(--cu-modal-height-full, 90vh);\n  height: var(--cu-modal-height-full, 90vh);\n}\n.cu-modal-header {\n  display: flex;\n  justify-content: space-between;\n  align-items: flex-start;\n  padding: var(--cu-space-lg);\n  gap: var(--cu-space-md);\n}\n.cu-modal-header-text {\n  display: flex;\n  flex-direction: column;\n  gap: var(--cu-space-2xs);\n  min-width: 0;\n}\n.cu-modal-title-row {\n  display: flex;\n  align-items: center;\n  gap: var(--cu-space-sm);\n}\n.cu-modal-title {\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-lg);\n  font-weight: var(--cu-font-weight-bold);\n  margin: 0;\n  color: var(--modal-color);\n}\n.cu-modal-description {\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  margin: 0;\n  color: var(--cu-color-neutral);\n  opacity: 0.7;\n}\n.cu-modal-close {\n  flex-shrink: 0;\n  padding: var(--cu-space-sm) !important;\n  height: auto !important;\n  width: auto !important;\n}\n.cu-modal-body {\n  padding: 0 var(--cu-space-lg) var(--cu-space-lg);\n  flex: 1;\n  min-height: 0;\n  overflow-y: auto;\n}\n.cu-modal-body > * {\n  width: 100%;\n}\n.cu-modal-footer {\n  padding: var(--cu-space-lg);\n  border-top: var(--cu-border-thin) solid var(--cu-border-color);\n}\n.cu-modal-footer-default {\n  display: flex;\n  justify-content: flex-end;\n  gap: var(--cu-space-sm);\n}\n"]]]);
+}), [["styles", ["\n.cu-modal-backdrop {\n  z-index: 1000;\n  position: fixed;\n  inset: 0;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  padding: var(--cu-space-md);\n  background-color: rgba(0, 0, 0, 0.3);\n  backdrop-filter: blur(4px);\n}\n.cu-modal {\n  background-color: var(--cu-color-surface);\n  color: var(--cu-color-neutral);\n  border-radius: var(--cu-radius);\n  box-shadow: var(--cu-shadow-xl);\n  padding: var(--cu-space-md);\n  width: 100%;\n  display: flex;\n  flex-direction: column;\n  overflow: visible;\n  box-sizing: border-box;\n}\n\n/* size */\n.cu-modal[data-size=\"auto\"] { max-width: var(--cu-modal-size-auto, 50vw);\n}\n.cu-modal[data-size=\"sm\"] { max-width: var(--cu-modal-size-sm, 25vw);\n}\n.cu-modal[data-size=\"md\"] { max-width: var(--cu-modal-size-md, 30vw);\n}\n.cu-modal[data-size=\"lg\"] { max-width: var(--cu-modal-size-lg, 35vw);\n}\n.cu-modal[data-size=\"xl\"] { max-width: var(--cu-modal-size-xl, 40vw);\n}\n.cu-modal[data-size=\"full\"] { max-width: var(--cu-modal-size-full, 90vw);\n}\n\n/* height */\n.cu-modal[data-height=\"auto\"] { max-height: var(--cu-modal-height-auto, 50vh);\n}\n.cu-modal[data-height=\"sm\"] { max-height: var(--cu-modal-height-sm, 30vh);\n}\n.cu-modal[data-height=\"md\"] { max-height: var(--cu-modal-height-md, 40vh);\n}\n.cu-modal[data-height=\"lg\"] { max-height: var(--cu-modal-height-lg, 50vh);\n}\n.cu-modal[data-height=\"xl\"] { max-height: var(--cu-modal-height-xl, 60vh);\n}\n.cu-modal[data-height=\"full\"] {\n  max-height: var(--cu-modal-height-full, 90vh);\n  height: var(--cu-modal-height-full, 90vh);\n}\n.cu-modal-header {\n  display: flex;\n  justify-content: space-between;\n  align-items: flex-start;\n  padding: var(--cu-space-lg);\n  gap: var(--cu-space-md);\n}\n.cu-modal-header-text {\n  display: flex;\n  flex-direction: column;\n  gap: var(--cu-space-2xs);\n  min-width: 0;\n}\n.cu-modal-title-row {\n  display: flex;\n  align-items: center;\n  gap: var(--cu-space-sm);\n}\n.cu-modal-title {\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-lg);\n  font-weight: var(--cu-font-weight-bold);\n  margin: 0;\n  color: var(--modal-color);\n}\n.cu-modal-description {\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  margin: 0;\n  color: var(--cu-color-neutral-text-muted);\n}\n.cu-modal-close {\n  flex-shrink: 0;\n  padding: var(--cu-space-sm) !important;\n  height: auto !important;\n  width: auto !important;\n}\n.cu-modal-body {\n  padding: 0 var(--cu-space-lg) var(--cu-space-lg);\n  flex: 1;\n  min-height: 0;\n  overflow-y: auto;\n}\n.cu-modal-body > * {\n  width: 100%;\n}\n.cu-modal-footer {\n  padding: var(--cu-space-lg);\n  border-top: var(--cu-border-thin) solid var(--cu-border-color);\n}\n.cu-modal-footer-default {\n  display: flex;\n  justify-content: flex-end;\n  gap: var(--cu-space-sm);\n}\n"]]]);
 //#endregion
 //#region src/components/form/Input.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1$1 = [
@@ -1198,7 +1338,7 @@ var Input_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 			}, null, 46, _hoisted_1$1);
 		};
 	}
-}), [["styles", ["\n.cu-input[data-v-416af2a0] {\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  font-weight: var(--cu-font-weight-medium);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius-md);\n  border: none;\n  outline: none;\n  width: 100%;\n  box-sizing: border-box;\n  background-color: var(--btn-bg);\n  color: var(--cu-color-neutral-text);\n  transition: all 150ms ease;\n}\n\n/* sizes */\n.cu-input--sm[data-v-416af2a0] {\n  padding: var(--cu-space-sm) var(--cu-space-md);\n  font-size: var(--cu-font-size-xs);\n}\n.cu-input--lg[data-v-416af2a0] {\n  padding: var(--cu-space-lg) var(--cu-space-xl);\n  font-size: var(--cu-font-size-md);\n}\n.cu-input[data-v-416af2a0]::placeholder {\n  color: var(--cu-color-neutral-text);\n  opacity: var(--cu-alpha-muted, 0.5);\n}\n.cu-input[data-v-416af2a0]:focus {\n  box-shadow: 0 0 0 var(--cu-border-thin) var(--btn-subtle-border);\n}\n\n/* subtle */\n.cu-input--subtle[data-v-416af2a0] {\n  background-color: var(--btn-subtle);\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-input--subtle[data-v-416af2a0]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-subtle-hover);\n}\n\n/* soft */\n.cu-input--soft[data-v-416af2a0] {\n  background-color: var(--btn-soft);\n}\n.cu-input--soft[data-v-416af2a0]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-soft-hover);\n}\n\n/* ghost */\n.cu-input--ghost[data-v-416af2a0] {\n  background-color: transparent;\n}\n.cu-input--ghost[data-v-416af2a0]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-bg-hover);\n}\n\n/* outlined */\n.cu-input--outlined[data-v-416af2a0] {\n  background-color: transparent;\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-input--outlined[data-v-416af2a0]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-bg-hover);\n}\n\n/* disabled */\n.cu-input--disabled[data-v-416af2a0] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n"]], ["__scopeId", "data-v-416af2a0"]]);
+}), [["styles", ["\n.cu-input[data-v-6ca59b78] {\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  font-weight: var(--cu-font-weight-medium);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius-md);\n  border: none;\n  outline: none;\n  width: 100%;\n  box-sizing: border-box;\n  background-color: var(--btn-bg);\n  color: var(--cu-color-neutral-text);\n  transition: all 150ms ease;\n}\n\n/* sizes */\n.cu-input--sm[data-v-6ca59b78] {\n  padding: var(--cu-space-sm) var(--cu-space-md);\n  font-size: var(--cu-font-size-xs);\n}\n.cu-input--lg[data-v-6ca59b78] {\n  padding: var(--cu-space-lg) var(--cu-space-xl);\n  font-size: var(--cu-font-size-md);\n}\n.cu-input[data-v-6ca59b78]::placeholder {\n  color: var(--cu-color-neutral-text-muted);\n}\n.cu-input[data-v-6ca59b78]:focus {\n  box-shadow: 0 0 0 var(--cu-border-thin) var(--btn-subtle-border);\n}\n\n/* subtle */\n.cu-input--subtle[data-v-6ca59b78] {\n  background-color: var(--btn-subtle);\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-input--subtle[data-v-6ca59b78]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-subtle-hover);\n}\n\n/* soft */\n.cu-input--soft[data-v-6ca59b78] {\n  background-color: var(--btn-soft);\n}\n.cu-input--soft[data-v-6ca59b78]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-soft-hover);\n}\n\n/* ghost */\n.cu-input--ghost[data-v-6ca59b78] {\n  background-color: transparent;\n}\n.cu-input--ghost[data-v-6ca59b78]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-bg-hover);\n}\n\n/* outlined */\n.cu-input--outlined[data-v-6ca59b78] {\n  background-color: transparent;\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-input--outlined[data-v-6ca59b78]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-bg-hover);\n}\n\n/* disabled */\n.cu-input--disabled[data-v-6ca59b78] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n"]], ["__scopeId", "data-v-6ca59b78"]]);
 //#endregion
 //#region src/utils/search.ts
 var ACCENT_RE = /[\u0300-\u0302\u0304-\u036f]/g;
@@ -1435,6 +1575,7 @@ var CommandPalette_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* 
 				title: __props.title,
 				size: __props.size,
 				height: __props.height,
+				"aria-label": __props.title || "Paleta de comandos",
 				onClose: handleClose
 			}, {
 				default: withCtx(() => [createElementVNode("div", {
@@ -1510,11 +1651,12 @@ var CommandPalette_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* 
 				"color",
 				"title",
 				"size",
-				"height"
+				"height",
+				"aria-label"
 			]);
 		};
 	}
-}), [["styles", ["\n.cu-command-palette[data-v-cd4667d5] {\n      display: flex;\n      flex-direction: column;\n      max-height: 60vh;\n}\n.cu-command-palette-search[data-v-cd4667d5] {\n      padding: 0.75rem;\n      border-bottom: var(--cu-border-thin) solid var(--cu-border-color);\n}\n.cu-command-palette-input[data-v-cd4667d5] {\n      width: 100%;\n}\n.cu-command-palette-results[data-v-cd4667d5] {\n      overflow-y: auto;\n      padding: 0.5rem;\n}\n.cu-command-palette-item[data-v-cd4667d5] {\n      width: 100%;\n      text-align: left;\n      border-radius: var(--cu-radius-sm);\n      gap: 0.75rem;\n}\n.cu-command-palette-item--active[data-v-cd4667d5] {\n      background-color: var(--cu-color-neutral-ghost-hover) !important;\n}\n.cu-command-palette-group-label[data-v-cd4667d5] {\n      padding: 0.5rem 0.75rem 0.25rem;\n      font-size: var(--cu-font-size-xs);\n      font-weight: var(--cu-font-weight-semibold);\n      text-transform: uppercase;\n      letter-spacing: 0.05em;\n      color: var(--cu-color-neutral);\n      opacity: var(--cu-alpha-muted, 0.5);\n}\n.cu-command-palette-item[data-v-cd4667d5] .cu-command-palette-item-icon {\n      font-size: 1rem;\n      line-height: 1;\n      flex-shrink: 0;\n}\n.cu-command-palette-item[data-v-cd4667d5] .cu-command-palette-item-label {\n      font-size: var(--cu-font-size-sm);\n      color: var(--cu-color-neutral);\n      flex: 1;\n}\n.cu-command-palette-item[data-v-cd4667d5] .cu-command-palette-item-desc {\n      font-size: var(--cu-font-size-xs);\n      color: var(--cu-color-neutral);\n      opacity: var(--cu-alpha-muted, 0.5);\n}\n.cu-command-palette-item[data-v-cd4667d5] .cu-command-palette-item-badge {\n      font-size: var(--cu-font-size-xs);\n      color: var(--cu-color-neutral);\n      opacity: var(--cu-alpha-subtle, 0.6);\n      padding: 0.125rem 0.5rem;\n      border: var(--cu-border-thin) solid var(--cu-border-color);\n      border-radius: var(--cu-radius-sm);\n      white-space: nowrap;\n      flex-shrink: 0;\n}\n.cu-command-palette-item[data-v-cd4667d5] .cu-command-palette-item-shortcut {\n      font-family: var(--cu-font-mono);\n      font-size: var(--cu-font-size-xs);\n      color: var(--cu-color-neutral);\n      opacity: var(--cu-alpha-muted, 0.5);\n      padding: 0.125rem 0.375rem;\n      border: var(--cu-border-thin) solid var(--cu-border-color);\n      border-radius: var(--cu-radius-sm);\n      flex-shrink: 0;\n}\n.cu-command-palette-empty[data-v-cd4667d5] {\n      padding: 1.5rem;\n      text-align: center;\n      font-size: var(--cu-font-size-sm);\n      color: var(--cu-color-neutral);\n      opacity: var(--cu-alpha-muted, 0.5);\n}\n    "]], ["__scopeId", "data-v-cd4667d5"]]);
+}), [["styles", ["\n.cu-command-palette[data-v-49b51788] {\n      display: flex;\n      flex-direction: column;\n      max-height: 60vh;\n}\n.cu-command-palette-search[data-v-49b51788] {\n      padding: 0.75rem;\n      border-bottom: var(--cu-border-thin) solid var(--cu-border-color);\n}\n.cu-command-palette-input[data-v-49b51788] {\n      width: 100%;\n}\n.cu-command-palette-results[data-v-49b51788] {\n      overflow-y: auto;\n      padding: 0.5rem;\n}\n.cu-command-palette-item[data-v-49b51788] {\n      width: 100%;\n      text-align: left;\n      border-radius: var(--cu-radius-sm);\n      gap: 0.75rem;\n}\n.cu-command-palette-item--active[data-v-49b51788] {\n      background-color: var(--cu-color-neutral-ghost-hover) !important;\n}\n.cu-command-palette-group-label[data-v-49b51788] {\n      padding: 0.5rem 0.75rem 0.25rem;\n      font-size: var(--cu-font-size-xs);\n      font-weight: var(--cu-font-weight-semibold);\n      text-transform: uppercase;\n      letter-spacing: 0.05em;\n      color: var(--cu-color-neutral-text-muted);\n}\n.cu-command-palette-item[data-v-49b51788] .cu-command-palette-item-icon {\n      font-size: 1rem;\n      line-height: 1;\n      flex-shrink: 0;\n}\n.cu-command-palette-item[data-v-49b51788] .cu-command-palette-item-label {\n      font-size: var(--cu-font-size-sm);\n      color: var(--cu-color-neutral);\n      flex: 1;\n}\n.cu-command-palette-item[data-v-49b51788] .cu-command-palette-item-desc {\n      font-size: var(--cu-font-size-xs);\n      color: var(--cu-color-neutral-text-muted);\n}\n.cu-command-palette-item[data-v-49b51788] .cu-command-palette-item-badge {\n      font-size: var(--cu-font-size-xs);\n      color: var(--cu-color-neutral-text-subtle);\n      padding: 0.125rem 0.5rem;\n      border: var(--cu-border-thin) solid var(--cu-border-color);\n      border-radius: var(--cu-radius-sm);\n      white-space: nowrap;\n      flex-shrink: 0;\n}\n.cu-command-palette-item[data-v-49b51788] .cu-command-palette-item-shortcut {\n      font-family: var(--cu-font-mono);\n      font-size: var(--cu-font-size-xs);\n      color: var(--cu-color-neutral-text-muted);\n      padding: 0.125rem 0.375rem;\n      border: var(--cu-border-thin) solid var(--cu-border-color);\n      border-radius: var(--cu-radius-sm);\n      flex-shrink: 0;\n}\n.cu-command-palette-empty[data-v-49b51788] {\n      padding: 1.5rem;\n      text-align: center;\n      font-size: var(--cu-font-size-sm);\n      color: var(--cu-color-neutral-text-muted);\n}\n    "]], ["__scopeId", "data-v-49b51788"]]);
 //#endregion
 //#region src/lib/overlay/command-palette.ts
 var CuCommandPalette = defineComegenElement("cu-command-palette", /* @__PURE__ */ defineComponent({

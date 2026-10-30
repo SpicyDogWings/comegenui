@@ -31,7 +31,8 @@ Los valores de `color` / `variant` / `mode` / `month-format` / `year-format` est
 - Un número en `modelValue` es un timestamp, no un año (`2026` ≈ 1970): usá `"YYYY-MM-DD"`.
 - `disabledWeekdays`/`disabledDates` en HTML son strings CSV (`"0,6"`); en Vue aceptan array.
 - Defaults distintos entre CE y Vue: `disabledWeekdays`/`disabledDates` son `''` en el CE y `[]` en el `.vue`.
-- `setValue`/`setRange` programáticos no validan `min`/`max` ni días deshabilitados: el filtro se aplica al click.
+- `setValue` respeta `min`/`max`, `disabledWeekdays` y `disabledDates`: un día deshabilitado no se
+  selecciona ni emite. `setRange` sigue sin validar (el filtro se aplica al click).
 - No hay selección múltiple ni varios rangos a la vez.
 - El ancho lo decide el contenedor (7 columnas `1fr`); con `year-navigation` el header pide un `min-width` de ~330px.
 

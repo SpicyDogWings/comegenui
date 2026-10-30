@@ -7,9 +7,11 @@
 // adyacentes. Texto normal 12–18px: 4.5:1. Bordes no textuales: 3:1.
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
+import { globSync } from 'glob'
 import { describe, expect, it } from 'vitest'
 import {
   MIN_BORDER_CONTRAST,
+  MIN_SUBTLE_CONTRAST,
   MIN_TEXT_CONTRAST,
   colorsBlock,
   compositeOver,
@@ -167,5 +169,125 @@ describe('contraste de tokens en los 15 temas', () => {
         expect(relativeLuminance(solid), `${theme.name}/${color}`).toBeGreaterThanOrEqual(relativeLuminance(surface))
       }
     }
+  })
+})
+
+describe('texto atenuado: color con contraste real, no `opacity`', () => {
+  /** Fondos reales donde se pinta un texto atenuado: superficie y tintes ghost/soft. */
+  const tintsOf = (css: string, color: string) => {
+    const surface = themeSurface(css)
+    const base = token(css, color, '')
+    return [surface, compositeOver(base, surface, 0.1), compositeOver(base, surface, 0.2)]
+  }
+
+  it('`-text-muted` llega a 4.5:1 y `-text-subtle` a 6:1 (o al máximo del texto) en los 15 temas', () => {
+    const failures: string[] = []
+
+    for (const theme of THEMES) {
+      const surface = themeSurface(theme.css)
+      for (const color of COLORS) {
+        const text = token(theme.css, color, '-text')
+        const tints = tintsOf(theme.css, color)
+        const muted = token(theme.css, color, '-text-muted')
+        const subtle = token(theme.css, color, '-text-subtle')
+        const worstText = Math.min(...tints.map((bg) => contrastRatio(text, bg)))
+
+        for (const [label, fg, min] of [
+          ['muted', muted, MIN_TEXT_CONTRAST],
+          ['subtle', subtle, Math.min(MIN_SUBTLE_CONTRAST, worstText)],
+        ] as const) {
+          const ratio = Math.min(...tints.map((bg) => contrastRatio(fg, bg)))
+          if (ratio + 1e-9 < min) {
+            failures.push(
+              `${theme.name} ${color}/${label}: ${ratio.toFixed(2)} < ${min.toFixed(2)} (${fg})`,
+            )
+          }
+        }
+
+        // La jerarquía se conserva: subtle es al menos tan legible como muted.
+        if (contrastRatio(subtle, surface) + 1e-9 < contrastRatio(muted, surface)) {
+          failures.push(`${theme.name} ${color}: subtle (${subtle}) más tenue que muted (${muted})`)
+        }
+      }
+    }
+
+    expect(failures).toEqual([])
+  })
+
+  it('los atenuados son colores opacos (hex), no alfa: `opacity` no se puede auditar', () => {
+    for (const theme of THEMES) {
+      for (const color of COLORS) {
+        for (const suffix of ['-text-muted', '-text-subtle']) {
+          expect(token(theme.css, color, suffix), `${theme.name}/${color}${suffix}`).toMatch(
+            /^#[0-9a-f]{6}$/i,
+          )
+        }
+      }
+    }
+  })
+})
+
+describe('usos atenuados de los consumidores (color, no opacity)', () => {
+  /** Fondos reales: superficie, ghost-hover (10 %) y ghost-active/soft (15–20 %). */
+  const backgrounds = (css: string, color: string) => {
+    const surface = themeSurface(css)
+    const base = token(css, color, '')
+    return {
+      surface,
+      ghost: compositeOver(base, surface, 0.1),
+      soft: compositeOver(base, surface, 0.15),
+      active: compositeOver(base, surface, 0.2),
+    }
+  }
+
+  it('placeholders, descripciones y estados llegan a 4.5:1 en los 15 temas', () => {
+    const failures: string[] = []
+
+    for (const theme of THEMES) {
+      const bg = backgrounds(theme.css, 'neutral')
+      const muted = token(theme.css, 'neutral', '-text-muted')
+      const subtle = token(theme.css, 'neutral', '-text-subtle')
+
+      // Cada par es un uso real del texto atenuado en la lib.
+      const uses: [string, string, string][] = [
+        ['input/textarea placeholder', muted, bg.soft],
+        ['file-input placeholder/ícono/tamaño', muted, bg.soft],
+        ['select empty', subtle, bg.surface],
+        ['navbar empty', subtle, bg.surface],
+        ['calendar weekday', subtle, bg.surface],
+        ['cells-importer status', subtle, bg.surface],
+        ['dropdown item disabled', muted, bg.surface],
+        ['dropdown item disabled (hover)', muted, bg.ghost],
+        ['dropdown chevron', muted, bg.surface],
+        ['dropdown/menu icon', subtle, bg.ghost],
+        ['select/autocomplete option disabled', muted, bg.active],
+        ['modal description', muted, bg.surface],
+        ['table empty', muted, bg.surface],
+        ['tabs disabled', muted, bg.surface],
+        ['command-palette badge', subtle, bg.ghost],
+      ]
+
+      for (const [label, fg, back] of uses) {
+        const ratio = contrastRatio(fg, back)
+        if (ratio + 1e-9 < MIN_TEXT_CONTRAST) {
+          failures.push(`${theme.name} ${label}: ${ratio.toFixed(2)} < 4.5 (${fg} sobre ${back})`)
+        }
+      }
+    }
+
+    expect(failures).toEqual([])
+  })
+
+  it('ningún componente atenúa texto con `--cu-alpha-muted`/`-subtle`', () => {
+    const root = resolve(import.meta.dirname, '../../..')
+    const files = globSync('src/components/**/*.vue', {
+      cwd: root,
+      ignore: ['**/legacy/**', '**/archived/**'],
+    })
+    const offenders = files.filter((file) =>
+      /--cu-alpha-(muted|subtle)/.test(readFileSync(resolve(root, file), 'utf8')),
+    )
+    // Los tokens alpha quedan para atenuar controles completos (disabled/faded).
+    expect(offenders).toEqual([])
   })
 })

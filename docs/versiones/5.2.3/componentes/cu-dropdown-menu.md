@@ -125,6 +125,9 @@ contenido **dentro** de cada item. El toggle no se ve afectado (su ancho lo defi
 
 `items` es el array declarativo: cada item puede llevar `label`, `icon` (SVG inline), `color`, `variant`, `disabled`, `divider`, `href` con `target`, `selected` (check al final) y `onClick`, que se dispara al elegirlo.
 
+> El HTML del `icon` se sanitiza con **DOMPurify** antes de inyectarse: los SVG válidos se
+> conservan y se eliminan `<script>`, handlers `on*` y URLs peligrosas.
+
 ```html
 <cu-dropdown-menu id="ddItems" label="Acciones" color="neutral" variant="outlined"></cu-dropdown-menu>
 
@@ -173,7 +176,7 @@ El slot por defecto rellena el panel y sólo se usa cuando `items` está vacío.
 
 ## Interacción
 
-`open` y `close` son los dos CustomEvents propios, y `open()`, `close()`, `toggle()` e `isOpen()` gobiernan el panel por código.
+`open` y `close` son los dos CustomEvents propios, y `open()`, `close()`, `toggle()` e `isOpen()` gobiernan el panel por código. El panel se anuncia como `role="menu"`; al cerrarse con `Escape` (o al elegir un item), el foco vuelve al trigger.
 
 ```html
 <cu-dropdown-menu id="ddAPI" label="Dropdown"></cu-dropdown-menu>

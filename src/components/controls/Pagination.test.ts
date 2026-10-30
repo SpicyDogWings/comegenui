@@ -120,3 +120,28 @@ describe("Pagination — tamaño de página", () => {
     expect(w.emitted("update:currentPage")).toEqual([[1]]);
   });
 });
+
+describe("Pagination — tamaño de página fuera de las opciones", () => {
+  it("incluye `itemsPerPage` en el selector y lo muestra como valor actual", async () => {
+    const w = mount(Pagination, {
+      props: { totalPages: 5, showPageSize: true, itemsPerPage: 15, pageSizeOptions: [5, 10, 20] },
+    });
+    // El valor vigente no queda sin opción ("Seleccionar...").
+    expect(w.find(".cu-select-toggle").text()).toContain("15");
+
+    await w.find(".cu-select-toggle").trigger("click");
+    const labels = w.findAll(".cu-select-option").map((o) => o.text().trim());
+    expect(labels).toContain("15");
+    // Se respeta el orden numérico de las opciones configuradas + la actual.
+    expect(labels).toEqual(["5", "10", "15", "20"]);
+  });
+
+  it("no duplica la opción cuando `itemsPerPage` ya está en `pageSizeOptions`", async () => {
+    const w = mount(Pagination, {
+      props: { totalPages: 5, showPageSize: true, itemsPerPage: 10, pageSizeOptions: [5, 10, 20] },
+    });
+    await w.find(".cu-select-toggle").trigger("click");
+    const labels = w.findAll(".cu-select-option").map((o) => o.text().trim());
+    expect(labels).toEqual(["5", "10", "20"]);
+  });
+});

@@ -72,13 +72,44 @@ const MUTATIONS = [
     id: "modal-close-emits-nothing",
     file: "src/components/overlay/Modal.vue",
     expect: "cerrar el modal emite close/closed",
-    find: `watch(isOpen, (newVal) => {
-  emit(newVal ? "opened" : "closed");
-  if (!newVal) emit("close");
-});`,
-    replace: `watch(isOpen, (newVal) => {
-  emit(newVal ? "opened" : "closed");
-});`,
+    find: `  if (!newVal) emit("close");\n`,
+    replace: ``,
+  },
+  {
+    id: "modal-foco-sin-trampa",
+    file: "src/components/overlay/Modal.vue",
+    expect: "Tab no sale del diálogo (focus trap)",
+    find: `    document.addEventListener("keydown", handleKeydown);\n`,
+    replace: ``,
+  },
+  {
+    id: "modal-foco-sin-retorno",
+    file: "src/components/overlay/Modal.vue",
+    expect: "al cerrar, el foco vuelve al trigger",
+    find: `    restoreFocus();\n`,
+    replace: ``,
+  },
+  {
+    id: "modal-pisa-foco-del-consumidor",
+    file: "src/components/overlay/Modal.vue",
+    test: "src/components/overlay/CommandPalette.test.ts",
+    expect: "el foco inicial del consumidor (buscador de CommandPalette) no se pisa",
+    find: `  if (active && (focusables.includes(active as HTMLElement) || root.contains(active))) return;\n`,
+    replace: ``,
+  },
+  {
+    id: "modal-nombre-accesible-sin-fallback",
+    file: "src/components/overlay/Modal.vue",
+    expect: "sin title el diálogo conserva un nombre accesible (aria-label)",
+    find: `((attrs['aria-label'] as string | undefined) || 'Diálogo')`,
+    replace: `(attrs['aria-label'] as string | undefined)`,
+  },
+  {
+    id: "command-palette-nombre-accesible-sin-fallback",
+    file: "src/components/overlay/CommandPalette.vue",
+    expect: "el diálogo de la paleta se anuncia aunque no haya title",
+    find: `:aria-label="title || 'Paleta de comandos'"`,
+    replace: `:aria-label="title"`,
   },
   {
     id: "card-ignores-media-slot",
@@ -274,7 +305,7 @@ const MUTATIONS = [
     file: "src/components/customElements/overlay/SideOver.ce.vue",
     test: "src/components/customElements/ce-parity.test.ts",
     expect: "show() abre el panel sin que la prop booleana open lo tape",
-    find: `function show() { isOpen.value = true; }`,
+    find: `function show() { setOpen(true); }`,
     replace: `function show() { /* mutado */ }`,
   },
   {
@@ -296,6 +327,88 @@ const MUTATIONS = [
     expect: "el CE proyecta el slot del host dentro del panel",
     find: `    :teleport="false"`,
     replace: `    :teleport="true"`,
+  },
+  {
+    id: "side-over-dialogo-sin-nombre",
+    file: "src/components/overlay/SideOver.vue",
+    expect: "el diálogo se nombra con el título vía aria-labelledby",
+    find: `        :aria-labelledby="props.title ? titleId : undefined"`,
+    replace: `        :aria-labelledby="undefined"`,
+  },
+  {
+    id: "side-over-fallback-sin-nombre",
+    file: "src/components/overlay/SideOver.vue",
+    expect: "sin título el diálogo conserva un aria-label de respaldo",
+    find: `  props.title ? undefined : ((attrs['aria-label'] as string | undefined) || 'Panel'),`,
+    replace: `  props.title ? undefined : '',`,
+  },
+  {
+    id: "side-over-foco-no-inicial",
+    file: "src/components/overlay/SideOver.vue",
+    expect: "al abrir el foco entra al panel",
+    find: `  (autofocus ?? focusables[0] ?? panel).focus();`,
+    replace: `  /* mutado */`,
+  },
+  {
+    id: "side-over-foco-no-devuelve",
+    file: "src/components/overlay/SideOver.vue",
+    expect: "al cerrar el foco vuelve al trigger",
+    find: `  if (!el || !el.isConnected) return;
+  el.focus();`,
+    replace: `  if (!el || !el.isConnected) return;`,
+  },
+  {
+    id: "side-over-tab-sin-wrap",
+    file: "src/components/overlay/SideOver.vue",
+    expect: "Tab en el último focusable vuelve al primero",
+    find: `  } else if (event.shiftKey && index === 0) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && index === focusables.length - 1) {
+    event.preventDefault();
+    first.focus();`,
+    replace: `  } else if (event.shiftKey && index === 0) {
+    event.preventDefault();
+  } else if (!event.shiftKey && index === focusables.length - 1) {
+    event.preventDefault();`,
+  },
+  {
+    id: "side-over-escape-cierra-todos",
+    file: "src/components/overlay/SideOver.vue",
+    expect: "Escape sólo cierra el panel de arriba",
+    find: `  if (!props.modelValue || !isTopmost()) return;`,
+    replace: `  if (!props.modelValue) return;`,
+  },
+  {
+    id: "side-over-montado-abierto-sin-lock",
+    file: "src/components/overlay/SideOver.vue",
+    expect: "montar el panel ya abierto bloquea el scroll",
+    find: `  if (props.modelValue) register();`,
+    replace: `  /* mutado */`,
+  },
+  {
+    id: "side-over-unlock-con-otro-abierto",
+    file: "src/components/overlay/SideOver.vue",
+    expect: "cerrar un panel no libera el scroll si queda otro abierto",
+    find: `  if (scrollLocks === 0) document.body.style.overflow = previousBodyOverflow;`,
+    replace: `  document.body.style.overflow = previousBodyOverflow;`,
+  },
+  {
+    id: "side-over-ce-metodos-sin-evento",
+    file: "src/components/customElements/overlay/SideOver.ce.vue",
+    test: "src/components/customElements/ce-parity.test.ts",
+    expect: "show()/close()/toggle() emiten update:open",
+    find: `  ceEmit("update:open", value);
+  if (!value) ceEmit("close", undefined);`,
+    replace: `  if (!value) ceEmit("close", undefined);`,
+  },
+  {
+    id: "side-over-ce-sin-evento-close",
+    file: "src/components/customElements/overlay/SideOver.ce.vue",
+    test: "src/components/customElements/ce-parity.test.ts",
+    expect: "cerrar el panel emite close una sola vez",
+    find: `  if (!value) ceEmit("close", undefined);`,
+    replace: `  /* mutado */`,
   },
   {
     id: "command-palette-run-no-action",
@@ -600,6 +713,13 @@ const MUTATIONS = [
     replace: `  emit("update:itemsPerPage", Number(val));`,
   },
   {
+    id: "pagination-itemsperpage-fuera-de-opciones",
+    file: "src/components/controls/Pagination.vue",
+    expect: "el tamaño actual se agrega a las opciones del selector (no queda 'Seleccionar...')",
+    find: `  const sizes = new Set([...props.pageSizeOptions, props.itemsPerPage]);`,
+    replace: `  const sizes = new Set(props.pageSizeOptions);`,
+  },
+  {
     id: "table-rowdisabled-ignores-fn",
     file: "src/components/data/Table.vue",
     expect: "rowDisabled como función deshabilita las filas que cumplen",
@@ -660,6 +780,20 @@ const MUTATIONS = [
     replace: `{ 'cu-code-block--line-numbers': false },`,
   },
   {
+    id: "code-block-sin-foco-teclado",
+    file: "src/components/markdown/CodeBlock.vue",
+    expect: "el bloque scrolleable es focusable por teclado (tabindex/role/label)",
+    find: `tabindex="0" role="region" :aria-label="codeLabel"`,
+    replace: `:aria-label="codeLabel"`,
+  },
+  {
+    id: "markdown-link-sanitizado-sin-target",
+    file: "src/components/markdown/Markdown.vue",
+    expect: "los links de blockquotes y celdas abren en pestaña nueva",
+    find: `const SANITIZE_OPTIONS = { ADD_ATTR: ['target'] }`,
+    replace: `const SANITIZE_OPTIONS = {}`,
+  },
+  {
     id: "blockquote-color-fijo",
     file: "src/components/markdown/Blockquote.vue",
     expect: "aplica el color semántico pedido",
@@ -679,6 +813,69 @@ const MUTATIONS = [
     expect: "renderiza negrita como <strong>",
     find: "`<strong>${(token.tokens || []).map(tokenToHtml).join('')}</strong>`",
     replace: "`<b>${(token.tokens || []).map(tokenToHtml).join('')}</b>`",
+  },
+  {
+    id: "inline-renderer-image-href-sin-escapar",
+    file: "src/components/markdown/InlineRenderer.vue",
+    expect: "una URL de imagen con comillas no inyecta atributos (XSS)",
+    find: "`<img src=\"${escapeHtml(token.href)}\" alt=\"${escapeText(plainText(token.tokens || []) || token.text || '')}\" class=\"cu-md-image\" />`",
+    replace: "`<img src=\"${token.href}\" alt=\"${escapeText(plainText(token.tokens || []) || token.text || '')}\" class=\"cu-md-image\" />`",
+  },
+  {
+    id: "inline-renderer-alt-entidades-doble-escape",
+    file: "src/components/markdown/InlineRenderer.vue",
+    expect: "el alt no vuelve a escapar las entidades (&amp; → &)",
+    find: "alt=\"${escapeText(plainText(token.tokens || []) || token.text || '')}\"",
+    replace: "alt=\"${escapeHtml(plainText(token.tokens || []) || token.text || '')}\"",
+  },
+  {
+    id: "inline-renderer-escape-sin-escapar",
+    file: "src/components/markdown/InlineRenderer.vue",
+    expect: "un token escape con `<` no reabre una etiqueta (XSS)",
+    find: `      return escapeHtml(token.text)
+    default:`,
+    replace: `      return token.text
+    default:`,
+  },
+  {
+    id: "markdown-heading-id-desde-html",
+    file: "src/markdown/index.ts",
+    test: "src/components/markdown/Markdown.test.ts",
+    expect: "el id del heading sale del texto, no del HTML con clases",
+    find: "const base = slugify(plainText(token.tokens)) || 'section'",
+    replace: "const base = slugify(marked.parser([token])) || 'section'",
+  },
+  {
+    id: "markdown-heading-ids-duplicados",
+    file: "src/markdown/index.ts",
+    test: "src/components/markdown/Markdown.test.ts",
+    expect: "dos headings iguales reciben ids únicos",
+    find: "id: count === 0 ? base : `${base}-${count}`,",
+    replace: "id: base,",
+  },
+  {
+    id: "markdown-tabla-columnas-duplicadas",
+    file: "src/markdown/index.ts",
+    test: "src/components/markdown/Markdown.test.ts",
+    expect: "dos columnas con el mismo encabezado conservan sus celdas",
+    find: "return { key: count === 0 ? base : `${base}-${count}`, label }",
+    replace: "return { key: base, label }",
+  },
+  {
+    id: "markdown-tabla-celda-sin-encabezado",
+    file: "src/markdown/index.ts",
+    test: "src/components/markdown/Markdown.test.ts",
+    expect: "una columna sin encabezado conserva su celda",
+    find: "if (column) obj[column.key] = marked.parseInline(cell.text)",
+    replace: "if (column && column.label) obj[column.key] = marked.parseInline(cell.text)",
+  },
+  {
+    id: "markdown-tabla-encabezado-con-marcado",
+    file: "src/markdown/index.ts",
+    test: "src/components/markdown/Markdown.test.ts",
+    expect: "el encabezado de tabla muestra texto plano, sin marcado",
+    find: "const label = plainText(cell.tokens)",
+    replace: "const label = cell.text",
   },
   {
     id: "month-slider-label-flecha-invertida",
@@ -902,6 +1099,14 @@ const MUTATIONS = [
     replace: `const alpha = { ...DEFAULTS.alpha }`,
   },
   {
+    id: "texto-atenuado-sin-contraste",
+    file: "src/plugins/cu-tokens/css.ts",
+    test: "src/plugins/cu-tokens/contrast.test.ts",
+    expect: "los tokens -text-muted/-text-subtle garantizan 4.5:1 / 6:1 (color, no opacity)",
+    find: `--cu-color-\${name}-text-muted: \${mutedTextColor(text, mutedBg, MIN_TEXT_CONTRAST)};`,
+    replace: `--cu-color-\${name}-text-muted: \${mutedTextColor(text, mutedBg, 3)};`,
+  },
+  {
     id: "alpha-token-muted-no-emite",
     file: "src/plugins/cu-tokens/css.ts",
     expect: "se emite --cu-alpha-muted (items, opciones y filas deshabilitadas)",
@@ -916,6 +1121,20 @@ const MUTATIONS = [
       "el default documentado coincide con el del SFC (la ficha se lee siguiendo sus @include)",
     find: `| \`variant\` | \`"solid" \\| "outlined" \\| "soft" \\| "ghost" \\| "subtle"\` | \`"soft"\` | — |`,
     replace: `| \`variant\` | \`"solid" \\| "outlined" \\| "soft" \\| "ghost" \\| "subtle"\` | \`"solid"\` | — |`,
+  },
+  {
+    id: "advanced-table-icon-sin-sanitizar",
+    file: "src/components/data/AdvancedTable.vue",
+    expect: "el icono de un botón de celda pasa por DOMPurify antes del v-html",
+    find: `v-html="sanitizeIcon(button.icon as string)"`,
+    replace: `v-html="button.icon"`,
+  },
+  {
+    id: "advanced-table-action-icon-sin-sanitizar",
+    file: "src/components/data/AdvancedTable.vue",
+    expect: "el icono de una acción del dropdown pasa por DOMPurify",
+    find: `      icon: typeof action.icon === "string" ? sanitizeIcon(action.icon) : action.icon,\n`,
+    replace: ``,
   },
   {
     id: "advanced-table-actions-fn-ignorada",
@@ -1259,8 +1478,8 @@ const MUTATIONS = [
     id: "menu-option-icon-ignorado",
     file: "src/components/controls/MenuOption.vue",
     expect: "la fila renderiza el ícono con la clase de su lista",
-    find: `    <span v-if="props.icon" v-html="props.icon" :class="props.iconClass"></span>`,
-    replace: `    <span v-if="false" v-html="props.icon" :class="props.iconClass"></span>`,
+    find: `    <span v-if="safeIcon" v-html="safeIcon" :class="props.iconClass"></span>`,
+    replace: `    <span v-if="false" v-html="safeIcon" :class="props.iconClass"></span>`,
   },
   {
     id: "menu-option-href-ignorado",
@@ -1549,6 +1768,59 @@ const MUTATIONS = [
     replace: `const idPrefix = "cu-tabs";`,
   },
   {
+    id: "menu-option-icon-sin-sanitizar",
+    file: "src/components/controls/MenuOption.vue",
+    expect: "el ícono compartido de las listas se sanitiza antes del v-html",
+    find: `const safeIcon = computed(() => (props.icon ? DOMPurify.sanitize(props.icon) : undefined));`,
+    replace: `const safeIcon = computed(() => props.icon);`,
+  },
+  {
+    id: "dropdown-item-icon-sin-sanitizar",
+    file: "src/components/overlay/Dropdown.vue",
+    expect: "el ícono de un item del dropdown se sanitiza antes del v-html",
+    find: `          <span v-if="item.icon" class="cu-dropdown-menu-item-icon" v-html="sanitizeIcon(item.icon)"></span>
+          <span class="cu-dropdown-menu-item-label">{{ item.label }}</span>
+        </button>`,
+    replace: `          <span v-if="item.icon" class="cu-dropdown-menu-item-icon" v-html="item.icon"></span>
+          <span class="cu-dropdown-menu-item-label">{{ item.label }}</span>
+        </button>`,
+  },
+  {
+    id: "dropdown-nested-icon-sin-sanitizar",
+    file: "src/components/overlay/Dropdown.vue",
+    expect: "el ícono del trigger anidado se sanitiza antes del v-html",
+    find: `          <span v-if="icon" class="cu-dropdown-menu-item-icon" v-html="sanitizeIcon(icon)"></span>`,
+    replace: `          <span v-if="icon" class="cu-dropdown-menu-item-icon" v-html="icon"></span>`,
+  },
+  {
+    id: "collapse-icon-sin-sanitizar",
+    file: "src/components/overlay/Collapse.vue",
+    expect: "el ícono del collapse se sanitiza antes del v-html",
+    find: `const safeIcon = computed(() => (props.icon ? DOMPurify.sanitize(props.icon) : undefined))`,
+    replace: `const safeIcon = computed(() => props.icon)`,
+  },
+  {
+    id: "navbar-list-icon-sin-sanitizar",
+    file: "src/components/navigation/NavbarList.vue",
+    expect: "el ícono de un item de la nav se sanitiza antes del v-html",
+    find: `  if (item.icon) return DOMPurify.sanitize(item.icon)`,
+    replace: `  if (item.icon) return item.icon`,
+  },
+  {
+    id: "navbar-horizontal-icon-sin-sanitizar",
+    file: "src/components/navigation/NavbarHorizontal.vue",
+    expect: "el ícono de un item horizontal se sanitiza antes del v-html",
+    find: `const sanitizeIcon = (html?: string) => (html ? DOMPurify.sanitize(html) : undefined)`,
+    replace: `const sanitizeIcon = (html?: string) => html`,
+  },
+  {
+    id: "navbar-menu-icon-sin-sanitizar",
+    file: "src/components/navigation/NavbarMenu.vue",
+    expect: "el ícono de un item del menú se sanitiza antes del v-html",
+    find: `const sanitizeIcon = (html?: string) => (html ? DOMPurify.sanitize(html) : undefined)`,
+    replace: `const sanitizeIcon = (html?: string) => html`,
+  },
+  {
     id: "tabs-icon-sin-sanitizar",
     file: "src/components/Tabs.vue",
     expect: "el icono se sanitiza antes del v-html (sin script ni handlers on*)",
@@ -1561,6 +1833,707 @@ const MUTATIONS = [
     expect: "al eliminar la tab enfocada el foco pasa a la nueva tab activa",
     find: `    tabRefs.value[next]?.focus();`,
     replace: `    void next;`,
+  },
+  {
+    id: "calendar-setvalue-ignora-deshabilitados",
+    file: "src/components/controls/Calendar.vue",
+    expect: "setValue no selecciona un día deshabilitado (min/max/weekdays/dates)",
+    find: `  if (isDisabledDay(parsed)) return`,
+    replace: `  if (parsed === null) return`,
+  },
+  {
+    id: "calendar-clear-en-single",
+    file: "src/components/controls/Calendar.vue",
+    expect: "clear() en single no emite un change con forma de rango",
+    find: `  if (!isRange.value) return
+  clearRange()`,
+    replace: `  clearRange()`,
+  },
+  {
+    id: "calendar-mes-inicial-sin-rango",
+    file: "src/components/controls/Calendar.vue",
+    expect: "en modo rango el mes visible arranca en rangeStart/rangeEnd",
+    find: `    parseDate(props.modelValue) ??
+    parseDate(props.rangeStart) ??
+    parseDate(props.rangeEnd) ??
+    startOfCurrentMonth()`,
+    replace: `    parseDate(props.modelValue) ??
+    startOfCurrentMonth()`,
+  },
+  {
+    id: "calendar-viewmonth-sin-recorte",
+    file: "src/components/controls/Calendar.vue",
+    expect: "el viewMonth controlado se recorta a min/max (header y grilla coinciden)",
+    find: `const viewMonth = computed<Date>(() => clampMonth(viewMonthProp.value ?? internalViewMonth.value))`,
+    replace: `const viewMonth = computed<Date>(() => viewMonthProp.value ?? internalViewMonth.value)`,
+  },
+  {
+    id: "calendar-eventos-fecha-invalida",
+    file: "src/components/controls/Calendar.vue",
+    expect: "un evento con fecha inválida no rompe el render de la grilla",
+    find: `    return date !== null && sameDay(date, day)`,
+    replace: `    return sameDay(date as Date, day)`,
+  },
+  {
+    id: "calendar-aria-selected",
+    file: "src/components/controls/Calendar.vue",
+    expect: "el día seleccionado se anuncia con aria-selected",
+    find: `:aria-selected="isDaySelected(cell.date) ? 'true' : 'false'"`,
+    replace: `aria-selected="false"`,
+  },
+  {
+    id: "calendar-roving-tabindex",
+    file: "src/components/controls/Calendar.vue",
+    expect: "la grilla tiene un solo tab-stop (roving tabindex)",
+    find: `:tabindex="isTabStop(cell.date) ? 0 : -1"`,
+    replace: `tabindex="0"`,
+  },
+  {
+    id: "calendar-teclado-flecha-derecha",
+    file: "src/components/controls/Calendar.vue",
+    expect: "ArrowRight mueve el foco al día siguiente",
+    find: `    case 'ArrowRight':
+      next = findEnabledDay(current, 1)
+      break`,
+    replace: `    case 'ArrowRight':
+      break`,
+  },
+  {
+    id: "calendar-teclado-saltea-deshabilitados",
+    file: "src/components/controls/Calendar.vue",
+    expect: "las flechas saltean los días deshabilitados (button disabled)",
+    find: `  let candidate = addDays(from, step)
+  for (let i = 0; i < 370; i++) {
+    if (isOutOfLimits(candidate)) return null
+    if (!isDisabledDay(candidate)) return candidate
+    candidate = addDays(candidate, step)
+  }
+  return null`,
+    replace: `  const candidate = addDays(from, step)
+  return isOutOfLimits(candidate) ? null : candidate`,
+  },
+  {
+    id: "calendar-teclado-home-end",
+    file: "src/components/controls/Calendar.vue",
+    expect: "Home/End caen en un borde habilitado de la semana",
+    find: `  const step = edge === 'start' ? 1 : -1
+  let candidate = edge === 'start' ? weekStart : addDays(weekStart, 6)
+  for (let i = 0; i < 7; i++) {
+    if (!isOutOfLimits(candidate) && !isDisabledDay(candidate)) return candidate
+    candidate = addDays(candidate, step)
+  }
+  return null`,
+    replace: `  const candidate = edge === 'start' ? weekStart : addDays(weekStart, 6)
+  return isOutOfLimits(candidate) ? null : candidate`,
+  },
+  {
+    id: "calendar-teclado-page-nearest",
+    file: "src/components/controls/Calendar.vue",
+    expect: "PageUp/PageDown caen en el día habilitado más cercano",
+    find: `  for (let delta = 0; delta < daysInMonth; delta++) {
+    for (const day of delta === 0 ? [dayOfMonth] : [dayOfMonth + delta, dayOfMonth - delta]) {
+      if (day < 1 || day > daysInMonth) continue
+      const candidate = new Date(year, month, day)
+      if (!isOutOfLimits(candidate) && !isDisabledDay(candidate)) return candidate
+    }
+  }
+  return null`,
+    replace: `  void daysInMonth
+  void dayOfMonth
+  return isOutOfLimits(target) ? null : target`,
+  },
+  {
+    id: "calendar-tabstop-nunca-deshabilitado",
+    file: "src/components/controls/Calendar.vue",
+    expect: "el tab-stop de la grilla nunca es un día deshabilitado",
+    find: `  if (focused && sameMonth(focused, viewMonth.value) && !isDisabledDay(focused)) return focused`,
+    replace: `  if (focused && sameMonth(focused, viewMonth.value)) return focused`,
+  },
+  {
+    id: "calendar-teclado-page-down",
+    file: "src/components/controls/Calendar.vue",
+    expect: "PageDown pasa al mes siguiente",
+    find: `    case 'PageDown':
+      next = nearestEnabledInMonth(shiftMonth(current, 1))
+      break`,
+    replace: `    case 'PageDown':
+      break`,
+  },
+  {
+    id: "calendar-aria-disabled",
+    file: "src/components/controls/Calendar.vue",
+    expect: "el día deshabilitado se anuncia con aria-disabled",
+    find: `:aria-disabled="isDisabledDay(cell.date) ? 'true' : undefined"`,
+    replace: `:aria-disabled="undefined"`,
+  },
+  {
+    id: "calendar-columnheader",
+    file: "src/components/controls/Calendar.vue",
+    expect: "los encabezados de día son columnheader con nombre completo",
+    find: `        role="columnheader"
+        :aria-label="label.long"`,
+    replace: ``,
+  },
+  {
+    id: "date-picker-hoy-fuera-de-rango",
+    file: "src/components/form/DatePicker.vue",
+    expect: "«Hoy» fuera de min/max no emite un valor inválido",
+    find: `  if (isDisabledDate(now)) return`,
+    replace: ``,
+  },
+  {
+    id: "date-picker-hoy-sin-deshabilitar",
+    file: "src/components/form/DatePicker.vue",
+    expect: "«Hoy» se deshabilita cuando hoy queda fuera de min/max",
+    find: `            :disabled="todayDisabled"`,
+    replace: ``,
+  },
+  {
+    id: "date-picker-setvalue-fuera-de-rango",
+    file: "src/components/form/DatePicker.vue",
+    expect: "setValue no selecciona un día fuera de min/max",
+    find: `  if (isDisabledDate(parsed)) return`,
+    replace: ``,
+  },
+  {
+    id: "date-picker-aria-expanded",
+    file: "src/components/form/DatePicker.vue",
+    expect: "el trigger refleja el estado del panel con aria-expanded",
+    find: `:aria-expanded="isOpen ? 'true' : 'false'"`,
+    replace: `aria-expanded="false"`,
+  },
+  {
+    id: "date-picker-panel-sin-rol",
+    file: "src/components/form/DatePicker.vue",
+    expect: "el panel del date-picker se anuncia como dialog",
+    find: `      panel-role="dialog"
+`,
+    replace: ``,
+  },
+  {
+    id: "dual-calendar-meses-sin-recorte",
+    file: "src/components/controls/DualCalendar.vue",
+    expect: "los dos meses se recortan a min/max",
+    find: `  if (minMonth && target < minMonth) return minMonth
+  if (maxMonth && target > maxMonth) return maxMonth
+  return target`,
+    replace: `  void minMonth
+  void maxMonth
+  return target`,
+  },
+  {
+    id: "popover-foco-no-vuelve-al-cerrar",
+    file: "src/components/overlay/Popover.vue",
+    expect: "al cerrar, el foco que estaba en el panel vuelve al trigger",
+    find: `  unregisterHover();
+  restoreFocus();
+}`,
+    replace: `  unregisterHover();
+}`,
+  },
+  {
+    id: "popover-escape-sin-devolver-foco",
+    file: "src/components/overlay/Popover.vue",
+    expect: "Escape devuelve el foco al trigger",
+    find: `  if (e.key === "Escape" && isOpen.value) {
+    isOpen.value = false;
+    emit("close");
+    restoreFocus();
+  }`,
+    replace: `  if (e.key === "Escape" && isOpen.value) {
+    isOpen.value = false;
+    emit("close");
+  }`,
+  },
+  {
+    id: "popover-foco-roba-el-click-afuera",
+    file: "src/components/overlay/Popover.vue",
+    expect: "un click afuera sobre otro control no le roba el foco",
+    find: `  const target = insidePanel ? (focusBeforeOpen ?? triggerElement()) : lost ? focusBeforeOpen : null;`,
+    replace: `  void insidePanel;
+  void lost;
+  const target = focusBeforeOpen ?? triggerElement();`,
+  },
+  {
+    id: "dropdown-panelrole-ignorado",
+    file: "src/components/overlay/Dropdown.vue",
+    expect: "panelRole define el rol ARIA del panel (el date-picker usa dialog)",
+    find: `    :role="panelRole"`,
+    replace: `    :role="'menu'"`,
+  },
+  {
+    id: "autocomplete-foco-reabre-el-panel",
+    file: "src/components/form/Autocomplete.vue",
+    expect: "el foco restaurado al cerrar no reabre la lista",
+    find: `  if (ignoreFocusAfterClose) return;`,
+    replace: `  if (false) return;`,
+  },
+  {
+    id: "month-slider-label-contraste",
+    file: "src/components/controls/month-slider/MonthSliderLabel.vue",
+    test: "src/components/controls/month-slider/MonthSliderLabel.contrast.test.ts",
+    expect: "el label usa el tono de texto accesible (-text), no el color base",
+    find: `.cu-month-slider-label.cu-month-slider-label--soft {
+  background-color: var(--ms-soft);
+  color: var(--ms-accent-text);
+}`,
+    replace: `.cu-month-slider-label.cu-month-slider-label--soft {
+  background-color: var(--ms-soft);
+  color: var(--ms-accent);
+}`,
+  },
+  {
+    id: "year-slider-sin-tokens-del-label",
+    file: "src/components/controls/YearSlider.vue",
+    test: "src/components/controls/month-slider/MonthSliderLabel.contrast.test.ts",
+    expect: "YearSlider declara las variables del label (solid/outlined no quedan vacías)",
+    find: `  '--ms-solid': \`var(--cu-color-\${props.color}-solid)\`,
+  '--ms-solid-hover': \`var(--cu-color-\${props.color}-solid-hover)\`,
+`,
+    replace: ``,
+  },
+  // ── lote 3 · cu-select / cu-autocomplete ──
+  {
+    id: "autocomplete-foco-fuera-no-cierra-panel",
+    file: "src/components/form/Autocomplete.vue",
+    expect: "el foco que sale del campo cierra el panel",
+    find: `  if (dropdownRef.value?.isOpen()) setTimeout(() => dropdownRef.value?.close(), 0);`,
+    replace: `  /* mutado */`,
+  },
+  {
+    id: "autocomplete-click-no-reabre",
+    file: "src/components/form/Autocomplete.vue",
+    expect: "un click en el campo reabre la lista cerrada por un click afuera",
+    find: `        @focus="onFocus"
+        @click="onClick"`,
+    replace: `        @focus="onFocus"`,
+  },
+  {
+    id: "autocomplete-items-null-rompe",
+    file: "src/components/form/Autocomplete.vue",
+    expect: "items null renderiza el campo vacío en vez de romperlo",
+    find: `const searchItems = computed(() => props.items ?? []);`,
+    replace: `const searchItems = computed(() => props.items);`,
+  },
+  {
+    id: "autocomplete-seleccion-no-se-reancla",
+    file: "src/components/form/Autocomplete.vue",
+    expect: "reemplazar items con objetos nuevos conserva el check y selectedItem",
+    find: `    selectedItem.value = (items ?? []).find((item) => itemText(item) === text) ?? null;`,
+    replace: `    /* mutado */`,
+  },
+  {
+    id: "autocomplete-item-deshabilitado-sin-atenuar",
+    file: "src/components/form/Autocomplete.vue",
+    expect: "el item deshabilitado se ve atenuado (color muted inline)",
+    find: `          :style="item.disabled ? disabledItemStyle : itemStyle"`,
+    replace: `          :style="itemStyle"`,
+  },
+  {
+    id: "autocomplete-ce-remite-blur",
+    file: "src/components/customElements/form/Autocomplete.ce.vue",
+    test: "src/components/customElements/ce-parity.test.ts",
+    expect: "el CE no re-emite `blur` como CustomEvent (ya llega el nativo)",
+    find: `    @select="ceEmit('select', $event)"`,
+    replace: `    @select="ceEmit('select', $event)"
+    @blur="ceEmit('blur', $event)"`,
+  },
+  {
+    id: "select-foco-fuera-no-cierra-panel",
+    file: "src/components/form/Select.vue",
+    expect: "el foco que sale del control cierra el panel",
+    find: `  if (dropdownRef.value?.isOpen()) setTimeout(() => dropdownRef.value?.close(), 0);`,
+    replace: `  /* mutado */`,
+  },
+  {
+    id: "select-cierre-no-corta-cooldown",
+    file: "src/components/form/Select.vue",
+    expect: "cerrar el panel corta el cooldown (no reaparece al reabrir)",
+    find: `  // Cerrar el panel corta la búsqueda: el timer del cooldown no sigue corriendo
+  // fuera de vista ni deja texto viejo para la próxima apertura.
+  clearSearch();`,
+    replace: `  /* mutado */`,
+  },
+  {
+    id: "select-busqueda-no-se-resetea",
+    file: "src/components/form/Select.vue",
+    expect: "el texto acumulado de la búsqueda se resetea al abrir/cerrar",
+    find: `  searchText.value = "";
+  cooldownActive.value = false;
+}`,
+    replace: `  cooldownActive.value = false;
+}`,
+  },
+  {
+    id: "select-options-null-rompe",
+    file: "src/components/form/Select.vue",
+    expect: "options null renderiza el select vacío en vez de romperlo",
+    find: `const optionsList = computed(() => props.options ?? []);`,
+    replace: `const optionsList = computed(() => props.options as SelectOption[]);`,
+  },
+  {
+    id: "select-opcion-deshabilitada-sin-atenuar",
+    file: "src/components/form/Select.vue",
+    expect: "la opción deshabilitada se ve atenuada (color muted inline)",
+    find: `            :style="opt.disabled ? disabledOptionStyle : optionStyle"`,
+    replace: `            :style="optionStyle"`,
+  },
+  // ── lote 3 bis · combobox/listbox, cooldown y foco en shadow root ──
+  {
+    id: "select-sin-activedescendant",
+    file: "src/components/form/Select.vue",
+    expect: "la opción activa se anuncia con aria-activedescendant",
+    find: `  isOpen.value && activeIndex.value >= 0 ? optionId(activeIndex.value) : undefined,`,
+    replace: `  undefined,`,
+  },
+  {
+    id: "select-sin-panel-id",
+    file: "src/components/form/Select.vue",
+    expect: "el trigger referencia el listbox con aria-controls",
+    find: `      :panel-id="listboxId"`,
+    replace: `      :panel-id="''"`,
+  },
+  {
+    id: "select-panel-rol-menu",
+    file: "src/components/form/Select.vue",
+    expect: "el panel es un listbox (no un menú)",
+    find: `      :panel-role="'listbox'"`,
+    replace: `      :panel-role="'menu'"`,
+  },
+  {
+    id: "select-options-sin-role",
+    file: "src/components/form/Select.vue",
+    expect: "cada opción es un `option`",
+    find: `            role="option"`,
+    replace: `            role="presentation"`,
+  },
+  {
+    id: "select-flecha-no-abre",
+    file: "src/components/form/Select.vue",
+    expect: "la flecha abre el panel con una opción activa",
+    find: `    if (!isOpen.value) {
+      activeIndex.value = firstEnabled(e.key === "ArrowUp");
+      dropdownRef.value?.open();
+      scrollToActive();
+      return;
+    }`,
+    replace: `    if (!isOpen.value) {
+      return;
+    }`,
+  },
+  {
+    id: "select-enter-no-elige",
+    file: "src/components/form/Select.vue",
+    expect: "Enter elige la opción activa",
+    find: `      e.preventDefault();
+      onSelect(option);`,
+    replace: `      e.preventDefault();`,
+  },
+  {
+    id: "select-ids-compartidos",
+    file: "src/components/form/Select.vue",
+    expect: "dos instancias no comparten ids",
+    find: `const uid = useUniqueId("cu-select");`,
+    replace: `const uid = "cu-select";`,
+  },
+  {
+    id: "autocomplete-sin-activedescendant",
+    file: "src/components/form/Autocomplete.vue",
+    expect: "el item activo se anuncia con aria-activedescendant",
+    find: `  isOpen.value && activeIndex.value >= 0 ? optionId(activeIndex.value) : undefined,`,
+    replace: `  undefined,`,
+  },
+  {
+    id: "autocomplete-sin-panel-id",
+    file: "src/components/form/Autocomplete.vue",
+    expect: "el input referencia el listbox con aria-controls",
+    find: `    :panel-id="listboxId"`,
+    replace: `    :panel-id="''"`,
+  },
+  {
+    id: "autocomplete-options-sin-role",
+    file: "src/components/form/Autocomplete.vue",
+    expect: "cada sugerencia es un `option`",
+    find: `          role="option"`,
+    replace: `          role="presentation"`,
+  },
+  {
+    id: "autocomplete-flecha-no-mueve",
+    file: "src/components/form/Autocomplete.vue",
+    expect: "las flechas mueven el item activo",
+    find: `    moveActive(e.key === "ArrowDown" ? 1 : -1);
+    return;`,
+    replace: `    return;`,
+  },
+  {
+    id: "autocomplete-enter-no-elige",
+    file: "src/components/form/Autocomplete.vue",
+    expect: "Enter elige el item activo",
+    find: `      e.preventDefault();
+      onItemClick(item);`,
+    replace: `      e.preventDefault();`,
+  },
+  {
+    id: "autocomplete-ids-compartidos",
+    file: "src/components/form/Autocomplete.vue",
+    expect: "dos instancias no comparten ids",
+    find: `const uid = useUniqueId("cu-autocomplete");`,
+    replace: `const uid = "cu-autocomplete";`,
+  },
+  {
+    id: "autocomplete-vacio-sin-mensaje",
+    file: "src/components/form/Autocomplete.vue",
+    expect: "sin items el panel muestra 'Sin opciones'",
+    find: `      <div v-else class="cu-autocomplete-empty">
+        Sin opciones
+      </div>`,
+    replace: `      <div v-else />`,
+  },
+  {
+    id: "cooldown-variant-ignorado",
+    file: "src/components/overlay/Dropdown.vue",
+    test: "src/components/form/Select.test.ts",
+    expect: "`cooldownVariant` cambia el token de la barra (ghost suave / solid lleno)",
+    find: `  props.cooldownVariant === "solid" ? props.color : \`\${props.color}-ghost-hover\`,`,
+    replace: `  props.color,`,
+  },
+  {
+    id: "select-ce-remite-blur",
+    file: "src/components/customElements/form/Select.ce.vue",
+    test: "src/components/customElements/ce-parity.test.ts",
+    expect: "el CE no re-emite `blur` como CustomEvent (ya llega el nativo)",
+    find: `    @close="ceEmit('close', $event)"`,
+    replace: `    @close="ceEmit('close', $event)"
+    @blur="ceEmit('blur', $event)"`,
+  },
+  {
+    id: "file-input-no-limpia-input-nativo",
+    file: "src/components/form/FileInput.vue",
+    expect: "el input nativo se vacía al procesar (se puede volver a elegir el mismo archivo)",
+    find: `  // El input nativo se vacía al terminar: si no, el navegador no vuelve a emitir
+  // \`change\` cuando el usuario elige el mismo archivo (después de un rechazo o
+  // de quitarlo) y la selección parece no responder.
+  input.value = "";`,
+    replace: ``,
+  },
+  {
+    id: "file-input-dragleave-en-hijos",
+    file: "src/components/form/FileInput.vue",
+    expect: "cruzar un hijo del campo no apaga el resaltado del drag",
+    find: `  if (next && containerRef.value?.contains(next)) return;`,
+    replace: `  // mutado: cualquier dragleave apaga el resaltado`,
+  },
+  {
+    id: "file-input-link-disabled-navega",
+    file: "src/components/form/FileInput.vue",
+    expect: "con disabled el nombre del archivo no queda como link navegable",
+    find: `:href="props.disabled ? undefined : fileUrl"`,
+    replace: `:href="fileUrl"`,
+  },
+  {
+    id: "file-input-quitar-sin-nombre",
+    file: "src/components/form/FileInput.vue",
+    expect: "el botón de quitar tiene nombre accesible",
+    find: `        :aria-label="\`Quitar \${value.name}\`"
+`,
+    replace: ``,
+  },
+  {
+    id: "file-zone-no-limpia-input-nativo",
+    file: "src/components/form/FileInputZone.vue",
+    expect: "el input nativo de la zona se vacía al procesar (se puede reelegir el mismo archivo)",
+    find: `  // Vaciar el input nativo: si no, elegir el mismo archivo otra vez (después de
+  // quitarlo) no vuelve a emitir \`change\` y la zona parece no responder.
+  input.value = "";`,
+    replace: ``,
+  },
+  {
+    id: "file-zone-dragleave-en-hijos",
+    file: "src/components/form/FileInputZone.vue",
+    expect: "cruzar un hijo de la zona no apaga el resaltado del drag",
+    find: `  if (next && dropZoneRef.value?.contains(next)) return;`,
+    replace: `  // mutado: cualquier dragleave apaga el resaltado`,
+  },
+  {
+    id: "file-zone-drop-sin-items",
+    file: "src/components/form/FileInputZone.vue",
+    expect: "un drop sin `items` cae en `dataTransfer.files`",
+    find: `  if (dropped.length === 0) {
+    const files = e.dataTransfer?.files;
+    if (files && files.length > 0) dropped.push(...Array.from(files));
+  }
+`,
+    replace: ``,
+  },
+  {
+    id: "file-zone-drop-desordenado",
+    file: "src/components/form/FileInputZone.vue",
+    expect: "el orden de los archivos soltados es el del drop, no el de lectura",
+    find: `      const slot = slots[i]!;`,
+    replace: `      const slot = slots[0]!;`,
+  },
+  {
+    id: "cells-importer-change-duplicado",
+    file: "src/components/form/CellsImporter.vue",
+    expect: "quitar el archivo emite change(null) una sola vez",
+    find: `  fileInputRef.value?.reset();
+  file.value = null;
+  clearResult();
+}`,
+    replace: `  fileInputRef.value?.reset();
+  file.value = null;
+  clearResult();
+  emit('change', null);
+}`,
+  },
+  {
+    id: "cells-importer-parse-viejo-pisa",
+    file: "src/components/form/CellsImporter.vue",
+    expect: "un parseo que termina tarde no pisa el archivo actual",
+    find: `    if (token !== parseToken) return;
+    rows.value = parsedRows;`,
+    replace: `    rows.value = parsedRows;`,
+  },
+  {
+    id: "cells-importer-plantilla-ignora-delimiter",
+    file: "src/components/form/CellsImporter.vue",
+    expect: "la plantilla se genera con el separador configurado",
+    find: `  downloadTemplate(props.columns, { ...props.template, delimiter: props.delimiter });`,
+    replace: `  downloadTemplate(props.columns, props.template);`,
+  },
+  {
+    id: "file-input-readonly-permite-quitar",
+    file: "src/components/form/FileInput.vue",
+    expect: "con readOnly no se puede quitar el archivo",
+    find: `        v-if="value && !props.disabled && !props.readOnly"`,
+    replace: `        v-if="value && !props.disabled"`,
+  },
+  {
+    id: "file-input-trigger-ignora-readonly",
+    file: "src/components/form/FileInput.vue",
+    expect: "con readOnly el control de selección queda deshabilitado",
+    find: `        :disabled="props.disabled || props.readOnly"
+      >
+        <svg
+          v-if="!value"`,
+    replace: `        :disabled="props.disabled"
+      >
+        <svg
+          v-if="!value"`,
+  },
+  {
+    id: "file-input-foco-al-contenedor",
+    file: "src/components/form/FileInput.vue",
+    expect: "focus() enfoca el control de selección, no el contenedor",
+    find: `const focus = () => { triggerRef.value?.focus(); };`,
+    replace: `const focus = () => { containerRef.value?.focus(); };`,
+  },
+  {
+    id: "file-input-contenedor-role-button",
+    file: "src/components/form/FileInput.vue",
+    expect: "el contenedor con el link y el quitar no se anuncia como botón",
+    find: `      class="cu-file-input"
+      :class="[`,
+    replace: `      class="cu-file-input"
+      role="button"
+      tabindex="0"
+      :class="[`,
+  },
+  {
+    id: "file-zone-role-button",
+    file: "src/components/form/FileInputZone.vue",
+    expect: "la zona es un grupo y no un botón con controles adentro",
+    find: `      role="group"`,
+    replace: `      role="button"
+      tabindex="0"`,
+  },
+  {
+    id: "file-zone-trigger-ignora-readonly",
+    file: "src/components/form/FileInputZone.vue",
+    expect: "con readOnly el control de selección de la zona queda deshabilitado",
+    find: `        class="cu-file-zone-trigger"
+        :aria-label="triggerLabel"
+        :disabled="props.disabled || props.readOnly"`,
+    replace: `        class="cu-file-zone-trigger"
+        :aria-label="triggerLabel"
+        :disabled="props.disabled"`,
+  },
+  {
+    id: "file-zone-readonly-permite-quitar",
+    file: "src/components/form/FileInputZone.vue",
+    expect: "con readOnly no se puede quitar un archivo de la lista",
+    find: `          :color="props.color"
+          :disabled="props.disabled || props.readOnly"`,
+    replace: `          :color="props.color"
+          :disabled="props.disabled"`,
+  },
+  {
+    id: "file-zone-foco-al-contenedor",
+    file: "src/components/form/FileInputZone.vue",
+    expect: "focus() de la zona enfoca el control de selección",
+    find: `const focus = () => { triggerRef.value?.focus(); };`,
+    replace: `const focus = () => { dropZoneRef.value?.focus(); };`,
+  },
+  {
+    id: "file-list-quitar-sin-nombre",
+    file: "src/components/FileList.vue",
+    expect: "el botón de quitar de cada fila tiene nombre accesible",
+    find: `        :aria-label="\`Quitar \${file.name}\`"
+`,
+    replace: ``,
+  },
+  {
+    id: "file-list-nombre-sin-control",
+    file: "src/components/FileList.vue",
+    expect: "el nombre de la fila es un botón (operable con teclado)",
+    find: `      <button
+        type="button"
+        class="cu-file-list-name"
+        @click.stop="emit('select', i)"
+      >{{ file.name }}</button>`,
+    replace: `      <span class="cu-file-list-name">{{ file.name }}</span>`,
+  },
+  {
+    id: "file-list-fila-role-button",
+    file: "src/components/FileList.vue",
+    expect: "la fila no se anuncia como botón (no anida el quitar)",
+    find: `      class="cu-file-list-item"
+      @click.stop="emit('select', i)"`,
+    replace: `      class="cu-file-list-item"
+      role="button"
+      tabindex="0"
+      @click.stop="emit('select', i)"`,
+  },
+  {
+    id: "cells-importer-readonly-permite-quitar",
+    file: "src/components/form/CellsImporter.vue",
+    expect: "con readOnly/disabled no se ofrece quitar el archivo",
+    find: `        v-if="file && !props.disabled && !props.readOnly"`,
+    replace: `        v-if="file"`,
+  },
+  {
+    id: "cells-importer-csv-bom",
+    file: "src/utils/cellsImporter.ts",
+    test: "src/components/form/CellsImporter.test.ts",
+    expect: "el BOM no contamina el primer encabezado ni la primera celda",
+    find: `  const text = raw.charCodeAt(0) === 0xfeff ? raw.slice(1) : raw`,
+    replace: `  const text = raw`,
+  },
+  {
+    id: "cells-importer-csv-delimiter",
+    file: "src/utils/cellsImporter.ts",
+    test: "src/components/form/CellsImporter.test.ts",
+    expect: "el CSV respeta el separador configurado",
+    find: `    if (char === delimiter) {`,
+    replace: `    if (char === ',') {`,
+  },
+  {
+    id: "cells-importer-xlsx-fechas",
+    file: "src/utils/cellsImporter.ts",
+    test: "src/components/form/CellsImporter.test.ts",
+    expect: "una celda de fecha de .xlsx llega como Date, no como número de serie",
+    find: `  const wb = XLSX.read(buf, { type: 'array', cellDates: true })`,
+    replace: `  const wb = XLSX.read(buf, { type: 'array' })`,
   },
 ];
 

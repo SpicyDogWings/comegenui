@@ -58,6 +58,7 @@ poder proyectar el slot. Igual podés declararlo en cualquier parte del document
 <!-- demo:side-over-presets-de-tamano -->
 
 > Los presets se pueden sobrescribir con las custom properties `--cu-sideover-size-{sm|md|lg|xl|full}` sobre el host.
+> El panel nunca supera el viewport: en pantallas angostas un preset grande se recorta al ancho (o alto) disponible.
 
 ## Fullscreen
 
@@ -96,6 +97,18 @@ renderiza el botón): sólo se cierra desde el código, con `close()`.
 ```
 
 <!-- demo:side-over-z-index -->
+
+## Accesibilidad
+
+El panel expone `role="dialog"` y `aria-modal="true"`. Al abrirse, el foco entra al panel
+(`[autofocus]` si lo hay, si no el primer control enfocable, si no el panel); `Tab` y `Shift+Tab`
+ciclan dentro y no alcanzan el contenido de atrás, y al cerrarse el foco vuelve al elemento que
+tenía el foco antes de abrir. El nombre accesible sale del `title` (`aria-labelledby`); sin título
+se usa el `aria-label` del host o `"Panel"`.
+
+Con dos paneles abiertos, `Escape` y `Tab` los atiende sólo el de arriba (el último abierto) y el
+scroll del body se libera recién cuando se cierra el último. Con `prefers-reduced-motion: reduce`
+la entrada y la salida no animan.
 
 ## Interacción
 
