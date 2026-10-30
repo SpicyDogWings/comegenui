@@ -62,12 +62,18 @@ const highlightedHtml = computed(() => {
 const lines = computed(() => props.code.split('\n'))
 const lineCount = computed(() => lines.value.length)
 const gutterText = computed(() => lines.value.map((_, i) => i + 1).join('\n'))
+
+// El `<pre>` scrollea horizontalmente: sin foco por teclado no se puede leer una
+// línea larga sin mouse. `role="region"` + label le dan nombre al punto de foco.
+const codeLabel = computed(() =>
+  props.language ? `Bloque de código (${props.language})` : 'Bloque de código',
+)
 </script>
 
 <template>
   <div :class="codeBlockClasses">
     <CopyButton :text="code" :variant="variant === 'solid' ? 'solid' : 'soft'" class="cu-code-block-copy" />
-    <pre class="cu-code-block-pre"><code :class="['cu-code-block-code', { 'cu-code-block-code--gutter': lineNumbers && highlightedHtml }]"><span v-if="lineNumbers" class="cu-code-block-gutter" aria-hidden="true">{{ gutterText }}</span><span v-if="lineNumbers && highlightedHtml" class="cu-code-block-hl" v-html="highlightedHtml"></span><template v-else-if="lineNumbers"><span v-for="(line, i) in lines" :key="i" class="cu-code-block-line"><span class="cu-code-block-line-number">{{ i + 1 }}</span><span class="cu-code-block-line-content">{{ line }}</span></span></template><span v-else-if="highlightedHtml" class="cu-code-block-hl" v-html="highlightedHtml"></span><template v-else>{{ code }}</template></code></pre>
+    <pre class="cu-code-block-pre" tabindex="0" role="region" :aria-label="codeLabel"><code :class="['cu-code-block-code', { 'cu-code-block-code--gutter': lineNumbers && highlightedHtml }]"><span v-if="lineNumbers" class="cu-code-block-gutter" aria-hidden="true">{{ gutterText }}</span><span v-if="lineNumbers && highlightedHtml" class="cu-code-block-hl" v-html="highlightedHtml"></span><template v-else-if="lineNumbers"><span v-for="(line, i) in lines" :key="i" class="cu-code-block-line"><span class="cu-code-block-line-number">{{ i + 1 }}</span><span class="cu-code-block-line-content">{{ line }}</span></span></template><span v-else-if="highlightedHtml" class="cu-code-block-hl" v-html="highlightedHtml"></span><template v-else>{{ code }}</template></code></pre>
     <div v-if="language" class="cu-code-block-lang">
       <Badge color="neutral" variant="soft">{{ language }}</Badge>
     </div>

@@ -11,6 +11,11 @@ const emit = defineEmits<{
   (e: 'parsed', headingIds: string[]): void
 }>()
 
+// DOMPurify quita `target` por defecto: los links de blockquotes y celdas de
+// tabla quedaban en la misma pestaña mientras los inline abren en una nueva. El
+// renderer ya agrega `rel="noopener"`, así que permitirlo es seguro.
+const SANITIZE_OPTIONS = { ADD_ATTR: ['target'] }
+
 const blocks = ref<MarkdownBlock[]>([])
 const slotEl = ref<HTMLElement | null>(null)
 const headingIds = ref<string[]>([])
@@ -35,16 +40,16 @@ function dedent(text: string): string {
 
 function sanitizeBlock(block: MarkdownBlock): MarkdownBlock {
   if (block.html && block.type === 'html') {
-    block.html = DOMPurify.sanitize(block.html)
+    block.html = DOMPurify.sanitize(block.html, SANITIZE_OPTIONS)
   }
   if (block.blockquote) {
-    block.blockquote.html = DOMPurify.sanitize(block.blockquote.html)
+    block.blockquote.html = DOMPurify.sanitize(block.blockquote.html, SANITIZE_OPTIONS)
   }
   if (block.table) {
     block.table.data = block.table.data.map(row => {
       const sanitized: Record<string, string> = {}
       for (const key in row) {
-        sanitized[key] = DOMPurify.sanitize(row[key])
+        sanitized[key] = DOMPurify.sanitize(row[key] ?? '', SANITIZE_OPTIONS)
       }
       return sanitized
     })

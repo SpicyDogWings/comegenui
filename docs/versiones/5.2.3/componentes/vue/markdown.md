@@ -44,7 +44,9 @@ En HTML plano, cargá el bundle `CuMarkdown` (ver [ficha vanilla](/componentes/c
 > Las tablas se renderizan con `<Table>`, los code blocks con `<CodeBlock>` y los tokens del tema
 > los aporta el CSS del host. Los bloques de **HTML crudo se muestran como bloque de código**
 > (no se ejecutan) y las etiquetas de HTML inline se descartan (el texto queda); el HTML que sí
-> se interpreta —el embebido en blockquotes y celdas de tabla— se sanitiza con DOMPurify.
+> se interpreta —el embebido en blockquotes y celdas de tabla— se sanitiza con DOMPurify. Los
+> links abren en una pestaña nueva (`target="_blank"` + `rel="noopener"`), también dentro de
+> blockquotes y celdas; un esquema ejecutable (`javascript:`, `data:`, `vbscript:`) no navega.
 
 ## Encabezados
 

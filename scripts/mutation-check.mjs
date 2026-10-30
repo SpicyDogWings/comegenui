@@ -660,6 +660,20 @@ const MUTATIONS = [
     replace: `{ 'cu-code-block--line-numbers': false },`,
   },
   {
+    id: "code-block-sin-foco-teclado",
+    file: "src/components/markdown/CodeBlock.vue",
+    expect: "el bloque scrolleable es focusable por teclado (tabindex/role/label)",
+    find: `tabindex="0" role="region" :aria-label="codeLabel"`,
+    replace: `:aria-label="codeLabel"`,
+  },
+  {
+    id: "markdown-link-sanitizado-sin-target",
+    file: "src/components/markdown/Markdown.vue",
+    expect: "los links de blockquotes y celdas abren en pestaña nueva",
+    find: `const SANITIZE_OPTIONS = { ADD_ATTR: ['target'] }`,
+    replace: `const SANITIZE_OPTIONS = {}`,
+  },
+  {
     id: "blockquote-color-fijo",
     file: "src/components/markdown/Blockquote.vue",
     expect: "aplica el color semántico pedido",

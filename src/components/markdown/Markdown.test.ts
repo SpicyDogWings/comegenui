@@ -188,3 +188,27 @@ describe("Markdown — seguridad", () => {
     expect(w.find(".cu-code-block").text()).toContain("<script>alert(1)</script>");
   });
 });
+
+// ── Links dentro de HTML sanitizado (blockquote / celdas) ────────────────────
+describe("Markdown — links en blockquote y celdas", () => {
+  it("abren en una pestaña nueva, igual que los inline", async () => {
+    const bq = await mountParsed("> [doc](https://ok.test)");
+    const bqLink = bq.find(".cu-blockquote a");
+    expect(bqLink.attributes("href")).toBe("https://ok.test");
+    expect(bqLink.attributes("target")).toBe("_blank");
+    expect(bqLink.attributes("rel")).toContain("noopener");
+
+    const table = await mountParsed("| a |\n|---|\n| [doc](https://ok.test) |");
+    const cellLink = table.find("td a");
+    expect(cellLink.attributes("href")).toBe("https://ok.test");
+    expect(cellLink.attributes("target")).toBe("_blank");
+  });
+
+  it("un link `javascript:` sigue bloqueado", async () => {
+    const bq = await mountParsed("> [x](javascript:alert(1))");
+    expect(bq.find(".cu-blockquote a[href]").exists()).toBe(false);
+
+    const table = await mountParsed("| a |\n|---|\n| [x](javascript:alert(1)) |");
+    expect(table.find("td a[href]").exists()).toBe(false);
+  });
+});
