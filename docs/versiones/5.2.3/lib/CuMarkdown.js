@@ -4330,7 +4330,7 @@ var renderer = new f.Renderer();
 renderer.heading = function({ depth, tokens }) {
 	const cls = classMap.heading;
 	const content = this.parser.parseInline(tokens);
-	return `<h${depth} id="${slugify(content)}" class="${cls} ${cls}-${depth}">${content}</h${depth}>\n`;
+	return `<h${depth} id="${slugify(plainText(tokens)) || "section"}" class="${cls} ${cls}-${depth}">${content}</h${depth}>\n`;
 };
 renderer.paragraph = function({ tokens }) {
 	return `<p class="${classMap.paragraph}">${this.parser.parseInline(tokens)}</p>\n`;
@@ -4361,10 +4361,11 @@ renderer.list = function({ ordered, items }) {
 };
 renderer.link = function({ href, tokens }) {
 	const text = this.parser.parseInline(tokens);
-	return `<a href="${href}" class="${classMap.link}" target="_blank" rel="noopener">${text}</a>`;
+	return `<a href="${escapeHtml(href)}" class="${classMap.link}" target="_blank" rel="noopener">${text}</a>`;
 };
-renderer.image = function({ href, text }) {
-	return `<img src="${href}" alt="${text}" class="${classMap.image}" />`;
+renderer.image = function({ href, text, tokens }) {
+	const alt = plainText(tokens || []) || text || "";
+	return `<img src="${escapeHtml(href)}" alt="${escapeText(alt)}" class="${classMap.image}" />`;
 };
 renderer.hr = function() {
 	return `<hr class="${classMap.hr}" />\n`;
@@ -4385,11 +4386,22 @@ renderer.del = function({ tokens }) {
 };
 renderer.text = function(token) {
 	if (token.tokens) return this.parser.parseInline(token.tokens);
-	return token.escaped ? token.text : escapeHtml(token.text);
+	return token.escaped ? token.text : escapeText(token.text);
 };
 f.setOptions({ renderer });
+function escapeText(text) {
+	return text.replace(/&(?!#?\w+;)/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
 function escapeHtml(text) {
 	return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+function plainText(tokens) {
+	if (!tokens) return "";
+	return tokens.map((token) => {
+		if (token.type === "br") return " ";
+		if (token.tokens && token.tokens.length > 0) return plainText(token.tokens);
+		return token.text || "";
+	}).join("");
 }
 function extractHeadingIds(blocks) {
 	return blocks.filter((b) => b.type === "inline" && b.tag?.startsWith("h")).map((b) => b.id).filter((id) => !!id);
@@ -4400,16 +4412,24 @@ function stripOuterBlockquote(html) {
 function parseToBlocks(markdown) {
 	const tokens = f.lexer(markdown);
 	const result = [];
+	const usedHeadingIds = /* @__PURE__ */ new Map();
 	for (const token of tokens) if (token.type === "table") {
-		const header = token.header.map((cell) => cell.text);
-		const columns = header.map((text) => ({
-			key: text,
-			label: text
-		}));
+		const usedKeys = /* @__PURE__ */ new Map();
+		const columns = token.header.map((cell, i) => {
+			const label = plainText(cell.tokens);
+			const base = label || `col-${i + 1}`;
+			const count = usedKeys.get(base) ?? 0;
+			usedKeys.set(base, count + 1);
+			return {
+				key: count === 0 ? base : `${base}-${count}`,
+				label
+			};
+		});
 		const data = token.rows.map((row) => {
 			const obj = {};
 			row.forEach((cell, i) => {
-				if (header[i]) obj[header[i]] = f.parseInline(cell.text);
+				const column = columns[i];
+				if (column) obj[column.key] = f.parseInline(cell.text);
 			});
 			return obj;
 		});
@@ -4440,13 +4460,15 @@ function parseToBlocks(markdown) {
 		html: classMap.paragraph
 	});
 	else if (token.type === "heading") {
-		const id = f.parser([token]).match(/id="([^"]+)"/)?.[1] || "";
+		const base = slugify(plainText(token.tokens)) || "section";
+		const count = usedHeadingIds.get(base) ?? 0;
+		usedHeadingIds.set(base, count + 1);
 		result.push({
 			type: "inline",
 			tag: `h${token.depth}`,
 			tokens: token.tokens,
 			html: `${classMap.heading} ${classMap.heading}-${token.depth}`,
-			id
+			id: count === 0 ? base : `${base}-${count}`
 		});
 	} else if (token.type === "list") result.push({
 		type: "list",
@@ -4847,6 +4869,7 @@ var Table_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 					return openBlock(), createElementBlock("th", mergeProps({
 						key: col.key,
 						class: "cu-table-th",
+						scope: "col",
 						style: thStyleFn(col)
 					}, { ref_for: true }, props.headerAttrs[col.key] || {}), [renderSlot(_ctx.$slots, `header-${col.key}`, {
 						column: col,
@@ -4901,7 +4924,7 @@ var Table_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 			])])], 6);
 		};
 	}
-}), [["styles", ["\n.cu-table[data-v-8e793034] {\n  position: relative;\n  display: flex;\n  flex-direction: column;\n  max-width: 100%;\n  overflow: hidden;\n}\n.cu-table-scroll[data-v-8e793034] {\n  overflow: auto;\n  border-radius: var(--cu-radius-md);\n  flex: 1;\n}\n.cu-table-element[data-v-8e793034] {\n  width: 100%;\n  border-collapse: collapse;\n}\n.cu-table--outlined .cu-table-scroll[data-v-8e793034] {\n  border: var(--cu-border-medium) solid var(--table-bd);\n}\n.cu-table-th[data-v-8e793034] {\n  text-align: left;\n  padding: var(--cu-space-md);\n  font-family: var(--cu-font-sans);\n  font-weight: var(--cu-font-weight-medium);\n  position: sticky;\n  top: 0;\n  z-index: 20;\n  user-select: none;\n}\n.cu-table .cu-table-th-content[data-v-8e793034] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--cu-space-xs);\n  color: inherit;\n}\n.cu-table-row[data-v-8e793034] {\n  border-bottom: var(--cu-border-thin) solid rgba(0, 0, 0, 0.08);\n  transition: background-color 150ms ease;\n}\n.cu-table--outlined .cu-table-row[data-v-8e793034] {\n  border-bottom-color: var(--table-bd);\n}\n.cu-table-row[data-v-8e793034]:hover {\n  background-color: var(--table-bg-hover);\n}\n.cu-table-row--disabled[data-v-8e793034] {\n  opacity: var(--cu-alpha-muted, 0.5);\n  pointer-events: none;\n}\n.cu-table-row--disabled[data-v-8e793034]:hover {\n  background-color: transparent;\n}\n.cu-table-row[data-v-8e793034]:last-child {\n  border-bottom: none;\n}\n.cu-table-loading[data-v-8e793034] {\n  opacity: var(--cu-alpha-faded, 0.4);\n  pointer-events: none;\n}\n[data-v-8e793034] .cu-table-td {\n  padding: var(--cu-space-md);\n  font-family: var(--cu-font-sans);\n  color: var(--cu-color-neutral-text);\n}\n[data-v-8e793034] .cu-table-td--left { text-align: left;\n}\n[data-v-8e793034] .cu-table-td--center { text-align: center;\n}\n[data-v-8e793034] .cu-table-td--right { text-align: right;\n}\n[data-v-8e793034] .cu-table-empty {\n  padding: var(--cu-space-xl);\n  text-align: center;\n  color: var(--cu-color-neutral-text);\n  opacity: var(--cu-alpha-muted, 0.5);\n  font-style: italic;\n  font-family: var(--cu-font-sans);\n}\n[data-v-8e793034] .cu-table-td--footer {\n  font-weight: var(--cu-font-weight-semibold);\n  border-top: var(--cu-border-medium) solid var(--cu-color-neutral-soft);\n}\n.cu-table tr:last-child td[data-v-8e793034] {\n  border-bottom: none;\n}\n\n/* compact: menos padding en celdas */\n.cu-table--compact .cu-table-th[data-v-8e793034] {\n  padding: var(--cu-space-xs) var(--cu-space-sm);\n}\n.cu-table--compact[data-v-8e793034] .cu-table-td {\n  padding: var(--cu-space-xs) var(--cu-space-sm);\n}\n.cu-table--compact[data-v-8e793034] .cu-table-empty {\n  padding: var(--cu-space-md);\n}\n\n"]], ["__scopeId", "data-v-8e793034"]]);
+}), [["styles", ["\n.cu-table[data-v-4420b5ad] {\n  position: relative;\n  display: flex;\n  flex-direction: column;\n  max-width: 100%;\n  overflow: hidden;\n}\n.cu-table-scroll[data-v-4420b5ad] {\n  overflow: auto;\n  border-radius: var(--cu-radius-md);\n  flex: 1;\n}\n.cu-table-element[data-v-4420b5ad] {\n  width: 100%;\n  border-collapse: collapse;\n}\n.cu-table--outlined .cu-table-scroll[data-v-4420b5ad] {\n  border: var(--cu-border-medium) solid var(--table-bd);\n}\n.cu-table-th[data-v-4420b5ad] {\n  text-align: left;\n  padding: var(--cu-space-md);\n  font-family: var(--cu-font-sans);\n  font-weight: var(--cu-font-weight-medium);\n  position: sticky;\n  top: 0;\n  z-index: 20;\n  user-select: none;\n}\n.cu-table .cu-table-th-content[data-v-4420b5ad] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--cu-space-xs);\n  color: inherit;\n}\n.cu-table-row[data-v-4420b5ad] {\n  border-bottom: var(--cu-border-thin) solid rgba(0, 0, 0, 0.08);\n  transition: background-color 150ms ease;\n}\n.cu-table--outlined .cu-table-row[data-v-4420b5ad] {\n  border-bottom-color: var(--table-bd);\n}\n.cu-table-row[data-v-4420b5ad]:hover {\n  background-color: var(--table-bg-hover);\n}\n.cu-table-row--disabled[data-v-4420b5ad] {\n  pointer-events: none;\n}\n\n/* Fila deshabilitada: el texto va atenuado por color (contraste real), no por\n   `opacity` — la opacidad diluye también el fondo y no se puede auditar. */\n.cu-table-row--disabled[data-v-4420b5ad] .cu-table-td {\n  color: var(--cu-color-neutral-text-muted);\n}\n.cu-table-row--disabled[data-v-4420b5ad]:hover {\n  background-color: transparent;\n}\n.cu-table-row[data-v-4420b5ad]:last-child {\n  border-bottom: none;\n}\n.cu-table-loading[data-v-4420b5ad] {\n  opacity: var(--cu-alpha-faded, 0.4);\n  pointer-events: none;\n}\n[data-v-4420b5ad] .cu-table-td {\n  padding: var(--cu-space-md);\n  font-family: var(--cu-font-sans);\n  color: var(--cu-color-neutral-text);\n}\n[data-v-4420b5ad] .cu-table-td--left { text-align: left;\n}\n[data-v-4420b5ad] .cu-table-td--center { text-align: center;\n}\n[data-v-4420b5ad] .cu-table-td--right { text-align: right;\n}\n[data-v-4420b5ad] .cu-table-empty {\n  padding: var(--cu-space-xl);\n  text-align: center;\n  color: var(--cu-color-neutral-text-muted);\n  font-style: italic;\n  font-family: var(--cu-font-sans);\n}\n[data-v-4420b5ad] .cu-table-td--footer {\n  font-weight: var(--cu-font-weight-semibold);\n  border-top: var(--cu-border-medium) solid var(--cu-color-neutral-soft);\n}\n.cu-table tr:last-child td[data-v-4420b5ad] {\n  border-bottom: none;\n}\n\n/* compact: menos padding en celdas */\n.cu-table--compact .cu-table-th[data-v-4420b5ad] {\n  padding: var(--cu-space-xs) var(--cu-space-sm);\n}\n.cu-table--compact[data-v-4420b5ad] .cu-table-td {\n  padding: var(--cu-space-xs) var(--cu-space-sm);\n}\n.cu-table--compact[data-v-4420b5ad] .cu-table-empty {\n  padding: var(--cu-space-md);\n}\n\n"]], ["__scopeId", "data-v-4420b5ad"]]);
 var core_default = (/* @__PURE__ */ __toESM((/* @__PURE__ */ __commonJSMin(((exports, module) => {
 	function deepFreeze(obj) {
 		if (obj instanceof Map) obj.clear = obj.delete = obj.set = function() {
@@ -10243,7 +10266,7 @@ var CopyButton_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__P
 }), [["styles", ["\n.cu-copy-button-icon[data-v-293f1ca7] {\n  width: 1em;\n  height: 1em;\n}\n.cu-copy-button-text[data-v-293f1ca7] {\n  white-space: nowrap;\n}\n\n/* clase duplicada a propósito: (0,3,0) le gana al global del playground\n   \".playground[data-v] span\" (0,2,1) que fuerza color neutral en los spans */\n.cu-copy-button-text.cu-copy-button-text[data-v-293f1ca7] {\n  color: inherit;\n}\n.cu-copy-fade-enter-active[data-v-293f1ca7],\n.cu-copy-fade-leave-active[data-v-293f1ca7] {\n  transition: opacity 150ms ease, transform 150ms ease;\n}\n.cu-copy-fade-enter-from[data-v-293f1ca7],\n.cu-copy-fade-leave-to[data-v-293f1ca7] {\n  opacity: 0;\n  transform: translateX(-4px);\n}\n"]], ["__scopeId", "data-v-293f1ca7"]]);
 //#endregion
 //#region src/components/markdown/CodeBlock.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1$3 = { class: "cu-code-block-pre" };
+var _hoisted_1$3 = ["aria-label"];
 var _hoisted_2$2 = {
 	key: 0,
 	class: "cu-code-block-gutter",
@@ -10322,6 +10345,7 @@ var CodeBlock_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PU
 		const lines = computed(() => props.code.split("\n"));
 		computed(() => lines.value.length);
 		const gutterText = computed(() => lines.value.map((_, i) => i + 1).join("\n"));
+		const codeLabel = computed(() => props.language ? `Bloque de código (${props.language})` : "Bloque de código");
 		return (_ctx, _cache) => {
 			return openBlock(), createElementBlock("div", { class: normalizeClass(codeBlockClasses.value) }, [
 				createVNode(CopyButton_default, {
@@ -10329,7 +10353,12 @@ var CodeBlock_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PU
 					variant: __props.variant === "solid" ? "solid" : "soft",
 					class: "cu-code-block-copy"
 				}, null, 8, ["text", "variant"]),
-				createElementVNode("pre", _hoisted_1$3, [createElementVNode("code", { class: normalizeClass(["cu-code-block-code", { "cu-code-block-code--gutter": __props.lineNumbers && highlightedHtml.value }]) }, [__props.lineNumbers ? (openBlock(), createElementBlock("span", _hoisted_2$2, toDisplayString(gutterText.value), 1)) : createCommentVNode("v-if", true), __props.lineNumbers && highlightedHtml.value ? (openBlock(), createElementBlock("span", {
+				createElementVNode("pre", {
+					class: "cu-code-block-pre",
+					tabindex: "0",
+					role: "region",
+					"aria-label": codeLabel.value
+				}, [createElementVNode("code", { class: normalizeClass(["cu-code-block-code", { "cu-code-block-code--gutter": __props.lineNumbers && highlightedHtml.value }]) }, [__props.lineNumbers ? (openBlock(), createElementBlock("span", _hoisted_2$2, toDisplayString(gutterText.value), 1)) : createCommentVNode("v-if", true), __props.lineNumbers && highlightedHtml.value ? (openBlock(), createElementBlock("span", {
 					key: 1,
 					class: "cu-code-block-hl",
 					innerHTML: highlightedHtml.value
@@ -10342,7 +10371,7 @@ var CodeBlock_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PU
 					key: 3,
 					class: "cu-code-block-hl",
 					innerHTML: highlightedHtml.value
-				}, null, 8, _hoisted_6)) : (openBlock(), createElementBlock(Fragment, { key: 4 }, [createTextVNode(toDisplayString(__props.code), 1)], 64))], 2)]),
+				}, null, 8, _hoisted_6)) : (openBlock(), createElementBlock(Fragment, { key: 4 }, [createTextVNode(toDisplayString(__props.code), 1)], 64))], 2)], 8, _hoisted_1$3),
 				__props.language ? (openBlock(), createElementBlock("div", _hoisted_7, [createVNode(Badge_default, {
 					color: "neutral",
 					variant: "soft"
@@ -10353,7 +10382,7 @@ var CodeBlock_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PU
 			], 2);
 		};
 	}
-}), [["styles", ["\n.cu-code-block[data-v-4cc5c867] {\n  position: relative;\n  border-radius: var(--cu-radius-sm);\n  margin-bottom: var(--cu-space-lg);\n  overflow: hidden;\n}\n.cu-code-block-copy[data-v-4cc5c867] {\n  position: absolute;\n  top: var(--cu-space-sm);\n  right: var(--cu-space-sm);\n  z-index: 1;\n}\n.cu-code-block-pre[data-v-4cc5c867] {\n  padding: var(--cu-space-xl) var(--cu-space-2xl);\n  overflow-x: auto;\n  margin: 0;\n}\n.cu-code-block-code[data-v-4cc5c867] {\n  font-family: var(--cu-font-mono);\n  font-size: var(--cu-font-size-sm);\n  line-height: var(--cu-line-height-relaxed);\n  color: var(--cb-text);\n  white-space: pre;\n}\n.cu-code-block-lang[data-v-4cc5c867] {\n  position: absolute;\n  bottom: var(--cu-space-xs);\n  right: var(--cu-space-xs);\n}\n\n/* line numbers */\n.cu-code-block-line[data-v-4cc5c867] {\n  display: block;\n}\n\n/* clases triplicadas a propósito: (0,4,0) le gana sobrado al global del\n   playground \".playground[data-v] span\" (0,2,1), que fuerza neutral en spans */\n.cu-code-block-line.cu-code-block-line.cu-code-block-line[data-v-4cc5c867] {\n  color: var(--cb-text);\n}\n.cu-code-block-line-number[data-v-4cc5c867] {\n  display: inline-block;\n  width: 2em;\n  margin-right: var(--cu-space-md);\n  text-align: right;\n  opacity: 0.4;\n  user-select: none;\n  -webkit-user-select: none;\n}\n.cu-code-block-line-content[data-v-4cc5c867] {\n  display: inline;\n}\n\n/* gutter de números (modo highlight): flex para alinear columnas arriba */\n.cu-code-block-code--gutter[data-v-4cc5c867] {\n  display: flex;\n  align-items: flex-start;\n}\n.cu-code-block-code--gutter .cu-code-block-hl[data-v-4cc5c867] {\n  flex: 1;\n}\n.cu-code-block-gutter.cu-code-block-gutter.cu-code-block-gutter[data-v-4cc5c867] {\n  display: inline-block;\n  flex-shrink: 0;\n  width: 2em;\n  margin-right: var(--cu-space-md);\n  text-align: right;\n  color: var(--cb-text);\n  opacity: 0.4;\n  user-select: none;\n  -webkit-user-select: none;\n  white-space: pre;\n}\n\n/* default - solid neutral */\n.cu-code-block--default[data-v-4cc5c867] {\n  background-color: var(--cu-color-neutral-soft);\n  border: none;\n}\n.cu-code-block--default .cu-code-block-lang[data-v-4cc5c867] {\n  color: var(--cu-color-neutral-text);\n}\n\n/* outlined - transparent with border */\n.cu-code-block--outlined[data-v-4cc5c867] {\n  background-color: transparent;\n  border: var(--cu-border-thin) solid var(--cu-color-neutral-subtle-border);\n}\n.cu-code-block--outlined .cu-code-block-lang[data-v-4cc5c867] {\n  color: var(--cu-color-neutral-text);\n}\n\n/* solid - esquema de código (tokens dedicados, invierten con el tema) */\n.cu-code-block--solid[data-v-4cc5c867] {\n  background-color: var(--cu-code-bg);\n  border: none;\n}\n.cu-code-block--solid[data-v-4cc5c867] .cu-badge {\n  background-color: var(--cu-code-faded);\n  color: var(--cu-code-text);\n}\n\n/* syntax highlighting (highlight.js) — paleta sobre tokens del tema */\n/* texto plano (sin clase hljs: identificadores, operadores, puntuación) */\n.cu-code-block[data-v-4cc5c867] {\n  --cb-text: var(--cu-color-neutral-text);\n  --cb-hl-keyword: color-mix(in srgb, var(--cu-color-primary) 87%, var(--cu-color-neutral-text));\n  --cb-hl-string: color-mix(in srgb, var(--cu-color-success) 87%, var(--cu-color-neutral-text));\n  --cb-hl-number: color-mix(in srgb, var(--cu-color-warning) 89%, var(--cu-color-neutral-text));\n  --cb-hl-tag: color-mix(in srgb, var(--cu-color-secondary) 87%, var(--cu-color-neutral-text));\n  --cb-hl-attr: color-mix(in srgb, var(--cu-color-danger) 87%, var(--cu-color-neutral-text));\n  --cb-hl-title: color-mix(in srgb, var(--cu-color-primary) 87%, var(--cu-color-neutral-text));\n  --cb-hl-comment: color-mix(in srgb, var(--cu-color-neutral-text) 50%, transparent);\n  --cb-hl-meta: color-mix(in srgb, var(--cu-color-neutral-text) 85%, transparent);\n}\n\n/* default (fondo soft neutral): un poco más de brillo */\n.cu-code-block--default[data-v-4cc5c867] {\n  --cb-hl-keyword: color-mix(in srgb, var(--cu-color-primary) 94%, var(--cu-color-neutral-text));\n  --cb-hl-string: color-mix(in srgb, var(--cu-color-success) 94%, var(--cu-color-neutral-text));\n  --cb-hl-number: color-mix(in srgb, var(--cu-color-warning) 96%, var(--cu-color-neutral-text));\n  --cb-hl-tag: color-mix(in srgb, var(--cu-color-secondary) 94%, var(--cu-color-neutral-text));\n  --cb-hl-attr: color-mix(in srgb, var(--cu-color-danger) 94%, var(--cu-color-neutral-text));\n  --cb-hl-title: color-mix(in srgb, var(--cu-color-primary) 94%, var(--cu-color-neutral-text));\n  --cb-hl-comment: color-mix(in srgb, var(--cu-color-neutral-text) 55%, transparent);\n  --cb-hl-meta: color-mix(in srgb, var(--cu-color-neutral-text) 92%, transparent);\n}\n\n/* solid: acentos precalculados por token (--cu-color-*-code = mezcla hacia\n   surface generada en cu-tokens), garantizan contraste sobre --cu-code-bg\n   en los 3 temas. Este bloque va DESPUÉS del base: misma especificidad,\n   gana el último en la cascada */\n.cu-code-block--solid[data-v-4cc5c867] {\n  --cb-text: var(--cu-code-text);\n  --cb-hl-keyword: var(--cu-color-primary-code);\n  --cb-hl-string: var(--cu-color-success-code);\n  --cb-hl-number: var(--cu-color-warning-code);\n  --cb-hl-tag: var(--cu-color-secondary-code);\n  --cb-hl-attr: var(--cu-color-danger-code);\n  --cb-hl-title: var(--cu-color-primary-code);\n  --cb-hl-comment: var(--cu-code-faded);\n  --cb-hl-meta: color-mix(in srgb, var(--cu-code-text) 70%, transparent);\n}\n\n/* clase triplicada a propósito: (0,4,0) le gana al global del playground\n   \".playground[data-v] span\" (0,2,1), que fuerza color neutral en los spans */\n.cu-code-block-hl.cu-code-block-hl.cu-code-block-hl[data-v-4cc5c867] {\n  color: var(--cb-text);\n}\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4cc5c867] .hljs-keyword,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4cc5c867] .hljs-selector-tag,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4cc5c867] .hljs-literal {\n  color: var(--cb-hl-keyword);\n}\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4cc5c867] .hljs-string,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4cc5c867] .hljs-regexp,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4cc5c867] .hljs-addition {\n  color: var(--cb-hl-string);\n}\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4cc5c867] .hljs-number,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4cc5c867] .hljs-symbol,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4cc5c867] .hljs-bullet,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4cc5c867] .hljs-variable,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4cc5c867] .hljs-template-variable {\n  color: var(--cb-hl-number);\n}\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4cc5c867] .hljs-tag,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4cc5c867] .hljs-name,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4cc5c867] .hljs-selector-class,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4cc5c867] .hljs-selector-id,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4cc5c867] .hljs-built_in,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4cc5c867] .hljs-type,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4cc5c867] .hljs-class {\n  color: var(--cb-hl-tag);\n}\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4cc5c867] .hljs-attr,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4cc5c867] .hljs-attribute,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4cc5c867] .hljs-params {\n  color: var(--cb-hl-attr);\n}\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4cc5c867] .hljs-title,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4cc5c867] .hljs-function,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4cc5c867] .hljs-section {\n  color: var(--cb-hl-title);\n  font-weight: var(--cu-font-weight-medium);\n}\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4cc5c867] .hljs-comment,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4cc5c867] .hljs-quote {\n  color: var(--cb-hl-comment);\n  font-style: italic;\n}\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4cc5c867] .hljs-meta,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4cc5c867] .hljs-doctag {\n  color: var(--cb-hl-meta);\n}\n\n/* clases que hljs emite sin token propio: plain del esquema. Sin esta regla,\n   el global del playground las pisa con neutral → negro sobre --cu-code-bg */\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4cc5c867] .hljs-subst,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4cc5c867] .hljs-property,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4cc5c867] .hljs-operator,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4cc5c867] .hljs-punctuation {\n  color: var(--cb-text);\n}\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4cc5c867] .hljs-emphasis {\n  font-style: italic;\n}\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4cc5c867] .hljs-strong {\n  font-weight: var(--cu-font-weight-bold);\n}\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4cc5c867] .hljs-deletion {\n  color: var(--cb-hl-attr);\n  text-decoration: line-through;\n}\n", "\n/* fallback sin scoped (namespaced bajo .cu-code-block): le gana al global\n   del playground (0,3,0) > (0,2,1) aunque el scope id no matchee */\n.cu-code-block .cu-code-block-code .cu-code-block-hl,\n.cu-code-block .cu-code-block-code .cu-code-block-gutter,\n.cu-code-block .cu-code-block-code .cu-code-block-line {\n  color: var(--cb-text);\n}\n\n/* cualquier span hljs no mapeado hereda el plain del esquema */\n.cu-code-block .cu-code-block-code .cu-code-block-hl span {\n  color: inherit;\n}\n"]], ["__scopeId", "data-v-4cc5c867"]]);
+}), [["styles", ["\n.cu-code-block[data-v-4abc54ea] {\n  position: relative;\n  border-radius: var(--cu-radius-sm);\n  margin-bottom: var(--cu-space-lg);\n  overflow: hidden;\n}\n.cu-code-block-copy[data-v-4abc54ea] {\n  position: absolute;\n  top: var(--cu-space-sm);\n  right: var(--cu-space-sm);\n  z-index: 1;\n}\n.cu-code-block-pre[data-v-4abc54ea] {\n  padding: var(--cu-space-xl) var(--cu-space-2xl);\n  overflow-x: auto;\n  margin: 0;\n}\n.cu-code-block-code[data-v-4abc54ea] {\n  font-family: var(--cu-font-mono);\n  font-size: var(--cu-font-size-sm);\n  line-height: var(--cu-line-height-relaxed);\n  color: var(--cb-text);\n  white-space: pre;\n}\n.cu-code-block-lang[data-v-4abc54ea] {\n  position: absolute;\n  bottom: var(--cu-space-xs);\n  right: var(--cu-space-xs);\n}\n\n/* line numbers */\n.cu-code-block-line[data-v-4abc54ea] {\n  display: block;\n}\n\n/* clases triplicadas a propósito: (0,4,0) le gana sobrado al global del\n   playground \".playground[data-v] span\" (0,2,1), que fuerza neutral en spans */\n.cu-code-block-line.cu-code-block-line.cu-code-block-line[data-v-4abc54ea] {\n  color: var(--cb-text);\n}\n.cu-code-block-line-number[data-v-4abc54ea] {\n  display: inline-block;\n  width: 2em;\n  margin-right: var(--cu-space-md);\n  text-align: right;\n  opacity: 0.4;\n  user-select: none;\n  -webkit-user-select: none;\n}\n.cu-code-block-line-content[data-v-4abc54ea] {\n  display: inline;\n}\n\n/* gutter de números (modo highlight): flex para alinear columnas arriba */\n.cu-code-block-code--gutter[data-v-4abc54ea] {\n  display: flex;\n  align-items: flex-start;\n}\n.cu-code-block-code--gutter .cu-code-block-hl[data-v-4abc54ea] {\n  flex: 1;\n}\n.cu-code-block-gutter.cu-code-block-gutter.cu-code-block-gutter[data-v-4abc54ea] {\n  display: inline-block;\n  flex-shrink: 0;\n  width: 2em;\n  margin-right: var(--cu-space-md);\n  text-align: right;\n  color: var(--cb-text);\n  opacity: 0.4;\n  user-select: none;\n  -webkit-user-select: none;\n  white-space: pre;\n}\n\n/* default - solid neutral */\n.cu-code-block--default[data-v-4abc54ea] {\n  background-color: var(--cu-color-neutral-soft);\n  border: none;\n}\n.cu-code-block--default .cu-code-block-lang[data-v-4abc54ea] {\n  color: var(--cu-color-neutral-text);\n}\n\n/* outlined - transparent with border */\n.cu-code-block--outlined[data-v-4abc54ea] {\n  background-color: transparent;\n  border: var(--cu-border-thin) solid var(--cu-color-neutral-subtle-border);\n}\n.cu-code-block--outlined .cu-code-block-lang[data-v-4abc54ea] {\n  color: var(--cu-color-neutral-text);\n}\n\n/* solid - esquema de código (tokens dedicados, invierten con el tema) */\n.cu-code-block--solid[data-v-4abc54ea] {\n  background-color: var(--cu-code-bg);\n  border: none;\n}\n.cu-code-block--solid[data-v-4abc54ea] .cu-badge {\n  background-color: var(--cu-code-faded);\n  color: var(--cu-code-text);\n}\n\n/* syntax highlighting (highlight.js) — paleta sobre tokens del tema */\n/* texto plano (sin clase hljs: identificadores, operadores, puntuación) */\n.cu-code-block[data-v-4abc54ea] {\n  --cb-text: var(--cu-color-neutral-text);\n  --cb-hl-keyword: color-mix(in srgb, var(--cu-color-primary) 87%, var(--cu-color-neutral-text));\n  --cb-hl-string: color-mix(in srgb, var(--cu-color-success) 87%, var(--cu-color-neutral-text));\n  --cb-hl-number: color-mix(in srgb, var(--cu-color-warning) 89%, var(--cu-color-neutral-text));\n  --cb-hl-tag: color-mix(in srgb, var(--cu-color-secondary) 87%, var(--cu-color-neutral-text));\n  --cb-hl-attr: color-mix(in srgb, var(--cu-color-danger) 87%, var(--cu-color-neutral-text));\n  --cb-hl-title: color-mix(in srgb, var(--cu-color-primary) 87%, var(--cu-color-neutral-text));\n  --cb-hl-comment: color-mix(in srgb, var(--cu-color-neutral-text) 50%, transparent);\n  --cb-hl-meta: color-mix(in srgb, var(--cu-color-neutral-text) 85%, transparent);\n}\n\n/* default (fondo soft neutral): un poco más de brillo */\n.cu-code-block--default[data-v-4abc54ea] {\n  --cb-hl-keyword: color-mix(in srgb, var(--cu-color-primary) 94%, var(--cu-color-neutral-text));\n  --cb-hl-string: color-mix(in srgb, var(--cu-color-success) 94%, var(--cu-color-neutral-text));\n  --cb-hl-number: color-mix(in srgb, var(--cu-color-warning) 96%, var(--cu-color-neutral-text));\n  --cb-hl-tag: color-mix(in srgb, var(--cu-color-secondary) 94%, var(--cu-color-neutral-text));\n  --cb-hl-attr: color-mix(in srgb, var(--cu-color-danger) 94%, var(--cu-color-neutral-text));\n  --cb-hl-title: color-mix(in srgb, var(--cu-color-primary) 94%, var(--cu-color-neutral-text));\n  --cb-hl-comment: color-mix(in srgb, var(--cu-color-neutral-text) 55%, transparent);\n  --cb-hl-meta: color-mix(in srgb, var(--cu-color-neutral-text) 92%, transparent);\n}\n\n/* solid: acentos precalculados por token (--cu-color-*-code = mezcla hacia\n   surface generada en cu-tokens), garantizan contraste sobre --cu-code-bg\n   en los 3 temas. Este bloque va DESPUÉS del base: misma especificidad,\n   gana el último en la cascada */\n.cu-code-block--solid[data-v-4abc54ea] {\n  --cb-text: var(--cu-code-text);\n  --cb-hl-keyword: var(--cu-color-primary-code);\n  --cb-hl-string: var(--cu-color-success-code);\n  --cb-hl-number: var(--cu-color-warning-code);\n  --cb-hl-tag: var(--cu-color-secondary-code);\n  --cb-hl-attr: var(--cu-color-danger-code);\n  --cb-hl-title: var(--cu-color-primary-code);\n  --cb-hl-comment: var(--cu-code-faded);\n  --cb-hl-meta: color-mix(in srgb, var(--cu-code-text) 70%, transparent);\n}\n\n/* clase triplicada a propósito: (0,4,0) le gana al global del playground\n   \".playground[data-v] span\" (0,2,1), que fuerza color neutral en los spans */\n.cu-code-block-hl.cu-code-block-hl.cu-code-block-hl[data-v-4abc54ea] {\n  color: var(--cb-text);\n}\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4abc54ea] .hljs-keyword,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4abc54ea] .hljs-selector-tag,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4abc54ea] .hljs-literal {\n  color: var(--cb-hl-keyword);\n}\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4abc54ea] .hljs-string,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4abc54ea] .hljs-regexp,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4abc54ea] .hljs-addition {\n  color: var(--cb-hl-string);\n}\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4abc54ea] .hljs-number,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4abc54ea] .hljs-symbol,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4abc54ea] .hljs-bullet,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4abc54ea] .hljs-variable,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4abc54ea] .hljs-template-variable {\n  color: var(--cb-hl-number);\n}\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4abc54ea] .hljs-tag,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4abc54ea] .hljs-name,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4abc54ea] .hljs-selector-class,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4abc54ea] .hljs-selector-id,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4abc54ea] .hljs-built_in,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4abc54ea] .hljs-type,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4abc54ea] .hljs-class {\n  color: var(--cb-hl-tag);\n}\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4abc54ea] .hljs-attr,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4abc54ea] .hljs-attribute,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4abc54ea] .hljs-params {\n  color: var(--cb-hl-attr);\n}\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4abc54ea] .hljs-title,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4abc54ea] .hljs-function,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4abc54ea] .hljs-section {\n  color: var(--cb-hl-title);\n  font-weight: var(--cu-font-weight-medium);\n}\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4abc54ea] .hljs-comment,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4abc54ea] .hljs-quote {\n  color: var(--cb-hl-comment);\n  font-style: italic;\n}\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4abc54ea] .hljs-meta,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4abc54ea] .hljs-doctag {\n  color: var(--cb-hl-meta);\n}\n\n/* clases que hljs emite sin token propio: plain del esquema. Sin esta regla,\n   el global del playground las pisa con neutral → negro sobre --cu-code-bg */\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4abc54ea] .hljs-subst,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4abc54ea] .hljs-property,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4abc54ea] .hljs-operator,\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4abc54ea] .hljs-punctuation {\n  color: var(--cb-text);\n}\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4abc54ea] .hljs-emphasis {\n  font-style: italic;\n}\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4abc54ea] .hljs-strong {\n  font-weight: var(--cu-font-weight-bold);\n}\n.cu-code-block-code.cu-code-block-code.cu-code-block-code[data-v-4abc54ea] .hljs-deletion {\n  color: var(--cb-hl-attr);\n  text-decoration: line-through;\n}\n", "\n/* fallback sin scoped (namespaced bajo .cu-code-block): le gana al global\n   del playground (0,3,0) > (0,2,1) aunque el scope id no matchee */\n.cu-code-block .cu-code-block-code .cu-code-block-hl,\n.cu-code-block .cu-code-block-code .cu-code-block-gutter,\n.cu-code-block .cu-code-block-code .cu-code-block-line {\n  color: var(--cb-text);\n}\n\n/* cualquier span hljs no mapeado hereda el plain del esquema */\n.cu-code-block .cu-code-block-code .cu-code-block-hl span {\n  color: inherit;\n}\n"]], ["__scopeId", "data-v-4abc54ea"]]);
 //#endregion
 //#region src/components/markdown/Blockquote.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1$2 = ["innerHTML"];
@@ -10400,24 +10429,34 @@ tokens: {
 		function isLink(token) {
 			return token.type === "link";
 		}
+		function plainText(tokens) {
+			return tokens.map((token) => {
+				if (token.type === "br") return " ";
+				if (token.tokens && token.tokens.length > 0) return plainText(token.tokens);
+				return token.text || "";
+			}).join("");
+		}
 		function tokenToHtml(token) {
 			switch (token.type) {
 				case "text":
 					if (token.tokens && token.tokens.length > 0) return token.tokens.map(tokenToHtml).join("");
-					return token.text;
+					return escapeText(token.text);
 				case "strong": return `<strong>${(token.tokens || []).map(tokenToHtml).join("")}</strong>`;
 				case "em": return `<em>${(token.tokens || []).map(tokenToHtml).join("")}</em>`;
 				case "codespan": return `<code class="cu-md-code-inline">${escapeHtml(token.text)}</code>`;
 				case "del": return `<del>${(token.tokens || []).map(tokenToHtml).join("")}</del>`;
-				case "image": return `<img src="${escapeHtml(token.href)}" alt="${escapeHtml((token.tokens || []).map(tokenToHtml).join("") || token.text)}" class="cu-md-image" />`;
+				case "image": return `<img src="${escapeHtml(token.href)}" alt="${escapeText(plainText(token.tokens || []) || token.text || "")}" class="cu-md-image" />`;
 				case "link": return `<a href="${escapeHtml(token.href)}" class="cu-md-link" target="_blank" rel="noopener">${(token.tokens || []).map(tokenToHtml).join("")}</a>`;
 				case "br": return "<br>";
-				case "escape": return token.text;
+				case "escape": return escapeHtml(token.text);
 				default: return "";
 			}
 		}
+		function escapeText(text) {
+			return text.replace(/&(?!#?\w+;)/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+		}
 		function escapeHtml(text) {
-			return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+			return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 		}
 		return (_ctx, _cache) => {
 			const _component_InlineRenderer = resolveComponent("InlineRenderer", true);
@@ -10438,7 +10477,7 @@ tokens: {
 			}), 128))]);
 		};
 	}
-}), [["styles", ["\n.cu-md-inline[data-v-218aa58b] {\n  display: inline;\n}\n.cu-md-inline[data-v-218aa58b] .cu-md-code-inline {\n  display: inline-flex;\n  align-items: center;\n  padding: var(--cu-space-2xs) var(--cu-space-sm);\n  border-radius: var(--cu-radius);\n  font-family: var(--cu-font-mono);\n  font-size: var(--cu-font-size-xs);\n  font-weight: var(--cu-font-weight-medium);\n  line-height: var(--cu-line-height-tight);\n  white-space: nowrap;\n  background-color: var(--cu-color-neutral-soft);\n  color: var(--cu-color-neutral-text);\n  border: var(--cu-border-thin) solid transparent;\n}\n"]], ["__scopeId", "data-v-218aa58b"]]);
+}), [["styles", ["\n.cu-md-inline[data-v-5a15bd27] {\n  display: inline;\n}\n.cu-md-inline[data-v-5a15bd27] .cu-md-code-inline {\n  display: inline-flex;\n  align-items: center;\n  padding: var(--cu-space-2xs) var(--cu-space-sm);\n  border-radius: var(--cu-radius);\n  font-family: var(--cu-font-mono);\n  font-size: var(--cu-font-size-xs);\n  font-weight: var(--cu-font-weight-medium);\n  line-height: var(--cu-line-height-tight);\n  white-space: nowrap;\n  background-color: var(--cu-color-neutral-soft);\n  color: var(--cu-color-neutral-text);\n  border: var(--cu-border-thin) solid transparent;\n}\n"]], ["__scopeId", "data-v-5a15bd27"]]);
 //#endregion
 //#region src/components/markdown/Markdown.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1 = { class: "cu-markdown" };
@@ -10451,6 +10490,7 @@ var Markdown_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 	emits: ["parsed"],
 	setup(__props, { expose: __expose, emit: __emit }) {
 		const emit = __emit;
+		const SANITIZE_OPTIONS = { ADD_ATTR: ["target"] };
 		const blocks = ref([]);
 		const slotEl = ref(null);
 		const headingIds = ref([]);
@@ -10468,11 +10508,11 @@ var Markdown_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 			return lines.map((line) => line.slice(minIndent)).join("\n");
 		}
 		function sanitizeBlock(block) {
-			if (block.html && block.type === "html") block.html = purify.sanitize(block.html);
-			if (block.blockquote) block.blockquote.html = purify.sanitize(block.blockquote.html);
+			if (block.html && block.type === "html") block.html = purify.sanitize(block.html, SANITIZE_OPTIONS);
+			if (block.blockquote) block.blockquote.html = purify.sanitize(block.blockquote.html, SANITIZE_OPTIONS);
 			if (block.table) block.table.data = block.table.data.map((row) => {
 				const sanitized = {};
-				for (const key in row) sanitized[key] = purify.sanitize(row[key]);
+				for (const key in row) sanitized[key] = purify.sanitize(row[key] ?? "", SANITIZE_OPTIONS);
 				return sanitized;
 			});
 			return block;
@@ -10551,7 +10591,7 @@ headingIds: () => headingIds.value });
 			}), 128))])]);
 		};
 	}
-}), [["styles", ["\n.cu-markdown[data-v-a160560d] {\n  font-family: var(--cu-font-sans);\n  color: var(--cu-color-neutral-text);\n  line-height: var(--cu-line-height-relaxed);\n}\n.cu-md-slot[data-v-a160560d] {\n  white-space: pre-wrap;\n}\n.cu-markdown[data-v-a160560d] .cu-md-heading {\n  font-weight: var(--cu-font-weight-bold);\n  color: var(--cu-color-neutral-text);\n  margin-top: var(--cu-space-lg);\n  margin-bottom: var(--cu-space-sm);\n  line-height: var(--cu-line-height-tight);\n}\n.cu-markdown[data-v-a160560d] .cu-md-heading-1 { font-size: var(--cu-font-size-4xl);\n}\n.cu-markdown[data-v-a160560d] .cu-md-heading-2 { font-size: var(--cu-font-size-3xl);\n}\n.cu-markdown[data-v-a160560d] .cu-md-heading-3 { font-size: 1.625rem;\n}\n.cu-markdown[data-v-a160560d] .cu-md-heading-4 { font-size: var(--cu-font-size-2xl);\n}\n.cu-markdown[data-v-a160560d] .cu-md-heading-5 { font-size: 1.375rem;\n}\n.cu-markdown[data-v-a160560d] .cu-md-heading-6 { font-size: var(--cu-font-size-xl);\n}\n.cu-markdown[data-v-a160560d] .cu-md-paragraph {\n  margin-bottom: var(--cu-space-md);\n}\n.cu-markdown[data-v-a160560d] .cu-md-strong {\n  font-weight: var(--cu-font-weight-bold);\n}\n.cu-markdown[data-v-a160560d] .cu-md-em {\n  font-style: italic;\n}\n.cu-markdown[data-v-a160560d] .cu-md-list {\n  margin-bottom: var(--cu-space-md);\n  padding-left: var(--cu-space-xl);\n}\n.cu-markdown[data-v-a160560d] .cu-md-list--ordered {\n  list-style-type: decimal;\n}\n.cu-markdown[data-v-a160560d] .cu-md-list--unordered {\n  list-style-type: disc;\n}\n.cu-markdown[data-v-a160560d] .cu-md-list-item {\n  margin-bottom: var(--cu-space-xs);\n}\n.cu-markdown[data-v-a160560d] .cu-md-hr {\n  border: none;\n  border-top: var(--cu-border-thin) solid var(--cu-color-neutral-subtle-border);\n  margin: var(--cu-space-lg) 0;\n}\n.cu-markdown[data-v-a160560d] .cu-md-image {\n  max-width: 100%;\n  height: auto;\n  border-radius: var(--cu-radius-sm);\n}\n.cu-markdown[data-v-a160560d] .cu-md-del {\n  text-decoration: line-through;\n  opacity: 0.7;\n}\n"]], ["__scopeId", "data-v-a160560d"]]);
+}), [["styles", ["\n.cu-markdown[data-v-a22540a0] {\n  font-family: var(--cu-font-sans);\n  color: var(--cu-color-neutral-text);\n  line-height: var(--cu-line-height-relaxed);\n}\n.cu-md-slot[data-v-a22540a0] {\n  white-space: pre-wrap;\n}\n.cu-markdown[data-v-a22540a0] .cu-md-heading {\n  font-weight: var(--cu-font-weight-bold);\n  color: var(--cu-color-neutral-text);\n  margin-top: var(--cu-space-lg);\n  margin-bottom: var(--cu-space-sm);\n  line-height: var(--cu-line-height-tight);\n}\n.cu-markdown[data-v-a22540a0] .cu-md-heading-1 { font-size: var(--cu-font-size-4xl);\n}\n.cu-markdown[data-v-a22540a0] .cu-md-heading-2 { font-size: var(--cu-font-size-3xl);\n}\n.cu-markdown[data-v-a22540a0] .cu-md-heading-3 { font-size: 1.625rem;\n}\n.cu-markdown[data-v-a22540a0] .cu-md-heading-4 { font-size: var(--cu-font-size-2xl);\n}\n.cu-markdown[data-v-a22540a0] .cu-md-heading-5 { font-size: 1.375rem;\n}\n.cu-markdown[data-v-a22540a0] .cu-md-heading-6 { font-size: var(--cu-font-size-xl);\n}\n.cu-markdown[data-v-a22540a0] .cu-md-paragraph {\n  margin-bottom: var(--cu-space-md);\n}\n.cu-markdown[data-v-a22540a0] .cu-md-strong {\n  font-weight: var(--cu-font-weight-bold);\n}\n.cu-markdown[data-v-a22540a0] .cu-md-em {\n  font-style: italic;\n}\n.cu-markdown[data-v-a22540a0] .cu-md-list {\n  margin-bottom: var(--cu-space-md);\n  padding-left: var(--cu-space-xl);\n}\n.cu-markdown[data-v-a22540a0] .cu-md-list--ordered {\n  list-style-type: decimal;\n}\n.cu-markdown[data-v-a22540a0] .cu-md-list--unordered {\n  list-style-type: disc;\n}\n.cu-markdown[data-v-a22540a0] .cu-md-list-item {\n  margin-bottom: var(--cu-space-xs);\n}\n.cu-markdown[data-v-a22540a0] .cu-md-hr {\n  border: none;\n  border-top: var(--cu-border-thin) solid var(--cu-color-neutral-subtle-border);\n  margin: var(--cu-space-lg) 0;\n}\n.cu-markdown[data-v-a22540a0] .cu-md-image {\n  max-width: 100%;\n  height: auto;\n  border-radius: var(--cu-radius-sm);\n}\n.cu-markdown[data-v-a22540a0] .cu-md-del {\n  text-decoration: line-through;\n  opacity: 0.7;\n}\n"]], ["__scopeId", "data-v-a22540a0"]]);
 //#endregion
 //#region src/lib/markdown/markdown.ts
 var CuMarkdown = defineComegenElement("cu-markdown", /* @__PURE__ */ _plugin_vue_export_helper_default(/* @__PURE__ */ defineComponent({
