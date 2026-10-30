@@ -99,6 +99,7 @@ const headers = ref<string[]>([]);
 const errors = ref<CellError[]>([]);
 const warnings = ref<string[]>([]);
 const status = ref<'idle' | 'parsing' | 'ready' | 'error'>('idle');
+let parseToken = 0;
 
 const fileInputRef = useTemplateRef<InstanceType<typeof FileInput> | InstanceType<typeof FileInputZone>>("fileInput");
 
@@ -143,6 +144,9 @@ function clearResult() {
 
 async function handleFileChange() {
   const current = file.value;
+  // Cada archivo abre un turno: si el usuario cambia de archivo mientras el
+  // anterior se está leyendo, el parseo viejo ya no puede pisar el resultado.
+  const token = ++parseToken;
   if (!current) {
     clearResult();
     emit('change', null);
@@ -156,6 +160,7 @@ async function handleFileChange() {
       props.columns,
       { hasHeader: props.hasHeader, strict: props.strict, delimiter: props.delimiter, sheet: props.sheet },
     );
+    if (token !== parseToken) return;
     rows.value = parsedRows;
     headers.value = parsedHeaders;
     warnings.value = parsedWarnings;
@@ -164,6 +169,7 @@ async function handleFileChange() {
     emit('parse', { rows: parsedRows, headers: parsedHeaders, fileName: current.name });
     emit('error', errors.value);
   } catch (e) {
+    if (token !== parseToken) return;
     status.value = 'error';
     errors.value = [];
     rows.value = [];
@@ -180,10 +186,12 @@ function onFileInputUpdate(v: File | null) {
 }
 
 function removeFile() {
+  // El aviso sale del watcher (una sola vez): el input interno emite `null`,
+  // `file` cambia y `handleFileChange` emite `change`. El resultado se limpia
+  // acá mismo para que `reset()` lo refleje en el acto.
   fileInputRef.value?.reset();
   file.value = null;
   clearResult();
-  emit('change', null);
 }
 
 /** Devuelve las filas parseadas. */
@@ -203,7 +211,9 @@ const validate = () => {
 /** Descarga la plantilla con las columnas definidas. */
 const downloadTemplateFile = () => {
   if (props.columns.length === 0) return;
-  downloadTemplate(props.columns, props.template);
+  // La plantilla usa el mismo separador con el que se va a importar: con `;`
+  // (Excel en español) un CSV con `,` volvería como una sola columna.
+  downloadTemplate(props.columns, { ...props.template, delimiter: props.delimiter });
 };
 /** Limpia el archivo y los resultados. */
 const reset = () => removeFile();

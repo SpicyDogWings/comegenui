@@ -30,7 +30,9 @@ function onUpdate(file: File | null) {
 </template>
 ```
 
-> **Drag & drop:** se puede soltar un archivo sobre el componente; durante el arrastre se ilumina el borde y el fondo. Los directorios se descartan solos (`size === 0 && !type`) y la validación de `accept`/`maxSize` también corre al soltar.
+> **Drag & drop:** se puede soltar un archivo sobre el componente; durante el arrastre se ilumina el borde y el fondo (también al pasar sobre sus propios íconos y textos). Los directorios se descartan solos (`size === 0 && !type`) y la validación de `accept`/`maxSize` también corre al soltar.
+
+> **Teclado:** Enter o Espacio sobre el campo abren el diálogo; el botón de quitar responde a su propio teclado y no lo abre. El input nativo queda vacío después de procesar una selección, así que se puede volver a elegir el mismo archivo. Con `disabled` el nombre del archivo no abre una pestaña nueva.
 
 ## Colores
 

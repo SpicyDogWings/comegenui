@@ -2224,6 +2224,141 @@ const MUTATIONS = [
     replace: `    @close="ceEmit('close', $event)"
     @blur="ceEmit('blur', $event)"`,
   },
+  {
+    id: "file-input-no-limpia-input-nativo",
+    file: "src/components/form/FileInput.vue",
+    expect: "el input nativo se vacía al procesar (se puede volver a elegir el mismo archivo)",
+    find: `  // El input nativo se vacía al terminar: si no, el navegador no vuelve a emitir
+  // \`change\` cuando el usuario elige el mismo archivo (después de un rechazo o
+  // de quitarlo) y la selección parece no responder.
+  input.value = "";`,
+    replace: ``,
+  },
+  {
+    id: "file-input-teclado-en-hijos",
+    file: "src/components/form/FileInput.vue",
+    expect: "Enter/Espacio sobre el botón de quitar no abren el selector",
+    find: `  if (e.target !== e.currentTarget) return;
+  if (e.key === " ") e.preventDefault();`,
+    replace: `  if (e.key === " ") e.preventDefault();`,
+  },
+  {
+    id: "file-input-dragleave-en-hijos",
+    file: "src/components/form/FileInput.vue",
+    expect: "cruzar un hijo del campo no apaga el resaltado del drag",
+    find: `  if (next && containerRef.value?.contains(next)) return;`,
+    replace: `  // mutado: cualquier dragleave apaga el resaltado`,
+  },
+  {
+    id: "file-input-link-disabled-navega",
+    file: "src/components/form/FileInput.vue",
+    expect: "con disabled el nombre del archivo no queda como link navegable",
+    find: `:href="props.disabled ? undefined : fileUrl"`,
+    replace: `:href="fileUrl"`,
+  },
+  {
+    id: "file-input-quitar-sin-nombre",
+    file: "src/components/form/FileInput.vue",
+    expect: "el botón de quitar tiene nombre accesible",
+    find: `        :aria-label="\`Quitar \${value.name}\`"
+`,
+    replace: ``,
+  },
+  {
+    id: "file-zone-no-limpia-input-nativo",
+    file: "src/components/form/FileInputZone.vue",
+    expect: "el input nativo de la zona se vacía al procesar (se puede reelegir el mismo archivo)",
+    find: `  // Vaciar el input nativo: si no, elegir el mismo archivo otra vez (después de
+  // quitarlo) no vuelve a emitir \`change\` y la zona parece no responder.
+  input.value = "";`,
+    replace: ``,
+  },
+  {
+    id: "file-zone-teclado-en-hijos",
+    file: "src/components/form/FileInputZone.vue",
+    expect: "Enter sobre el botón de quitar de la lista no abre el selector",
+    find: `  if (e.target !== e.currentTarget) return;
+  if (e.key === " ") e.preventDefault();`,
+    replace: `  if (e.key === " ") e.preventDefault();`,
+  },
+  {
+    id: "file-zone-dragleave-en-hijos",
+    file: "src/components/form/FileInputZone.vue",
+    expect: "cruzar un hijo de la zona no apaga el resaltado del drag",
+    find: `  if (next && dropZoneRef.value?.contains(next)) return;`,
+    replace: `  // mutado: cualquier dragleave apaga el resaltado`,
+  },
+  {
+    id: "file-zone-drop-sin-items",
+    file: "src/components/form/FileInputZone.vue",
+    expect: "un drop sin `items` cae en `dataTransfer.files`",
+    find: `  if (dropped.length === 0) {
+    const files = e.dataTransfer?.files;
+    if (files && files.length > 0) dropped.push(...Array.from(files));
+  }
+`,
+    replace: ``,
+  },
+  {
+    id: "file-zone-drop-desordenado",
+    file: "src/components/form/FileInputZone.vue",
+    expect: "el orden de los archivos soltados es el del drop, no el de lectura",
+    find: `      const slot = slots[i]!;`,
+    replace: `      const slot = slots[0]!;`,
+  },
+  {
+    id: "cells-importer-change-duplicado",
+    file: "src/components/form/CellsImporter.vue",
+    expect: "quitar el archivo emite change(null) una sola vez",
+    find: `  fileInputRef.value?.reset();
+  file.value = null;
+  clearResult();
+}`,
+    replace: `  fileInputRef.value?.reset();
+  file.value = null;
+  clearResult();
+  emit('change', null);
+}`,
+  },
+  {
+    id: "cells-importer-parse-viejo-pisa",
+    file: "src/components/form/CellsImporter.vue",
+    expect: "un parseo que termina tarde no pisa el archivo actual",
+    find: `    if (token !== parseToken) return;
+    rows.value = parsedRows;`,
+    replace: `    rows.value = parsedRows;`,
+  },
+  {
+    id: "cells-importer-plantilla-ignora-delimiter",
+    file: "src/components/form/CellsImporter.vue",
+    expect: "la plantilla se genera con el separador configurado",
+    find: `  downloadTemplate(props.columns, { ...props.template, delimiter: props.delimiter });`,
+    replace: `  downloadTemplate(props.columns, props.template);`,
+  },
+  {
+    id: "cells-importer-csv-bom",
+    file: "src/utils/cellsImporter.ts",
+    test: "src/components/form/CellsImporter.test.ts",
+    expect: "el BOM no contamina el primer encabezado ni la primera celda",
+    find: `  const text = raw.charCodeAt(0) === 0xfeff ? raw.slice(1) : raw`,
+    replace: `  const text = raw`,
+  },
+  {
+    id: "cells-importer-csv-delimiter",
+    file: "src/utils/cellsImporter.ts",
+    test: "src/components/form/CellsImporter.test.ts",
+    expect: "el CSV respeta el separador configurado",
+    find: `    if (char === delimiter) {`,
+    replace: `    if (char === ',') {`,
+  },
+  {
+    id: "cells-importer-xlsx-fechas",
+    file: "src/utils/cellsImporter.ts",
+    test: "src/components/form/CellsImporter.test.ts",
+    expect: "una celda de fecha de .xlsx llega como Date, no como número de serie",
+    find: `  const wb = XLSX.read(buf, { type: 'array', cellDates: true })`,
+    replace: `  const wb = XLSX.read(buf, { type: 'array' })`,
+  },
 ];
 
 export { MUTATIONS };

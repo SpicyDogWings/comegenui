@@ -25,7 +25,9 @@ Input de archivo compacto con drag & drop, estilo idéntico a `<cu-input>`. Sing
 
 <!-- demo:file-input-uso -->
 
-> **Drag & drop:** se puede soltar un archivo sobre el componente; durante el arrastre se ilumina el borde y el fondo. Los directorios se descartan solos (`size === 0 && !type`) y la validación de `accept`/`max-size` también corre al soltar.
+> **Drag & drop:** se puede soltar un archivo sobre el componente; durante el arrastre se ilumina el borde y el fondo (también al pasar sobre sus propios íconos y textos). Los directorios se descartan solos (`size === 0 && !type`) y la validación de `accept`/`max-size` también corre al soltar.
+
+> **Teclado:** Enter o Espacio sobre el campo abren el diálogo. El botón de quitar y el nombre del archivo responden a su propio teclado (el botón de quitar no abre el diálogo). Después de procesar una selección el input nativo queda vacío, así que se puede volver a elegir el mismo archivo —por ejemplo después de un rechazo o de quitarlo—. Con `disabled` el nombre del archivo no abre una pestaña nueva.
 
 ## Colores
 

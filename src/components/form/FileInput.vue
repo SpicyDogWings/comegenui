@@ -54,7 +54,7 @@ const props = defineProps({
 });
 
 const fileInputRef = useTemplateRef<HTMLInputElement>("fileInput");
-const containerRef = useTemplateRef("container");
+const containerRef = useTemplateRef<HTMLElement>("container");
 const { focused: containerFocus } = useFocus(containerRef);
 const isDragOver = ref(false);
 const rejectMessage = ref("");
@@ -127,6 +127,10 @@ function handleInputChange(event: Event) {
       rejectMessage.value = rejectReason(file);
     }
   }
+  // El input nativo se vacía al terminar: si no, el navegador no vuelve a emitir
+  // `change` cuando el usuario elige el mismo archivo (después de un rechazo o
+  // de quitarlo) y la selección parece no responder.
+  input.value = "";
 }
 
 function removeFile() {
@@ -143,6 +147,11 @@ function onDragOver(e: DragEvent) {
 
 function onDragLeave(e: DragEvent) {
   e.preventDefault();
+  // `dragleave` también burbujea al pasar sobre un hijo del propio campo
+  // (ícono, placeholder, nombre): mientras el puntero siga adentro no se apaga
+  // el resaltado.
+  const next = e.relatedTarget as Node | null;
+  if (next && containerRef.value?.contains(next)) return;
   isDragOver.value = false;
 }
 
@@ -164,6 +173,13 @@ function onDrop(e: DragEvent) {
 function trigger() {
   if (props.disabled || props.readOnly) return;
   fileInputRef.value?.click();
+}
+
+/** Enter/Espacio sobre el propio campo abren el selector; sobre un hijo interactivo (quitar, link) no. */
+function onActivateKey(e: KeyboardEvent) {
+  if (e.target !== e.currentTarget) return;
+  if (e.key === " ") e.preventDefault();
+  trigger();
 }
 
 watch(value, (file) => {
@@ -204,8 +220,8 @@ defineExpose({ get, set, reset, focus, trigger });
       @dragover="onDragOver"
       @dragleave="onDragLeave"
       @drop="onDrop"
-      @keydown.enter="trigger"
-      @keydown.space.prevent="trigger"
+      @keydown.enter="onActivateKey"
+      @keydown.space="onActivateKey"
       tabindex="0"
       role="button"
       :aria-disabled="props.disabled"
@@ -243,9 +259,9 @@ defineExpose({ get, set, reset, focus, trigger });
 
       <span v-if="value" v-html="getFileIconSvg(value, 16)" class="cu-file-input-icon"></span>
 
-      <div v-if="value" class="cu-file-input-name" @click="trigger">
+      <div v-if="value" class="cu-file-input-name">
         <a
-          :href="fileUrl"
+          :href="props.disabled ? undefined : fileUrl"
           target="_blank"
           rel="noopener noreferrer"
           class="cu-file-input-link"
@@ -262,6 +278,7 @@ defineExpose({ get, set, reset, focus, trigger });
         :color="color"
         variant="ghost"
         class="cu-file-input-remove"
+        :aria-label="`Quitar ${value.name}`"
         @click.stop="removeFile"
       >
         <svg

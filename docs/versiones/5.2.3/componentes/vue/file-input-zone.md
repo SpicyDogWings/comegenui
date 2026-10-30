@@ -63,6 +63,8 @@ const archivos = ref<File | File[] | null>(null);
 
 > Los archivos con `size === 0 && !type` (directorios sueltos) se filtran solos. El listado usa `<FileList>` por dentro: icono por extensión, nombre, tamaño y botón X para quitar; al hacer click en un archivo se abre en una pestaña nueva.
 
+> Al soltar varios archivos se listan en el orden del drop (aunque la lectura de cada uno termine antes o después) y, si el origen del arrastre no expone `items`, se usan los `files` del `DataTransfer`. Enter/Espacio sobre la zona abren el diálogo; el botón X de cada fila no lo abre. El input nativo queda vacío al procesar, así que se puede volver a elegir el mismo archivo.
+
 ## Alto máximo
 
 Sin `maxHeight` el listado crece con los archivos; con `maxHeight` (ej. `"200px"`) scrollea al excederlo.

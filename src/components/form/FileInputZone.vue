@@ -62,7 +62,7 @@ const props = defineProps({
 const effectiveMultiple = computed(() => props.multiple || props.directory);
 
 const isDragOver = ref(false);
-const dropZoneRef = useTemplateRef("dropZone");
+const dropZoneRef = useTemplateRef<HTMLElement>("dropZone");
 const { focused: dropFocus } = useFocus(dropZoneRef);
 const fileInputRef = useTemplateRef<HTMLInputElement>("fileInput");
 const rejectMessages = ref<string[]>([]);
@@ -192,6 +192,9 @@ function handleInputChange(event: Event) {
   if (input.files && input.files.length > 0) {
     setFiles(Array.from(input.files));
   }
+  // Vaciar el input nativo: si no, elegir el mismo archivo otra vez (después de
+  // quitarlo) no vuelve a emitir `change` y la zona parece no responder.
+  input.value = "";
 }
 
 function handleFileClick(index: number) {
@@ -211,6 +214,10 @@ function onDragOver(e: DragEvent) {
 
 function onDragLeave(e: DragEvent) {
   e.preventDefault();
+  // `dragleave` burbujea al cruzar un hijo de la zona (texto, ícono, filas de la
+  // lista): con el puntero todavía adentro no se apaga el resaltado.
+  const next = e.relatedTarget as Node | null;
+  if (next && dropZoneRef.value?.contains(next)) return;
   isDragOver.value = false;
 }
 
@@ -220,41 +227,65 @@ async function onDrop(e: DragEvent) {
   if (props.disabled || props.readOnly) return;
 
   const items = e.dataTransfer?.items;
-  if (items) {
-    const allFiles: File[] = [];
-    const promises: Promise<void>[] = [];
+  const dropped: File[] = [];
+
+  if (items && items.length > 0) {
+    // Un compartimento por ítem: así el orden del drop se conserva aunque las
+    // lecturas de archivos y carpetas terminen en otro orden.
+    const slots: File[][] = Array.from({ length: items.length }, () => []);
+    const pending: Promise<void>[] = [];
 
     for (let i = 0; i < items.length; i++) {
+      const slot = slots[i]!;
       const entry = items[i]?.webkitGetAsEntry?.();
 
       if (!entry) {
-        const file = items[i].getAsFile();
-        if (file) allFiles.push(file);
+        const file = items[i]?.getAsFile();
+        if (file) slot.push(file);
       } else if (entry.isFile) {
-        promises.push(new Promise((resolve) => {
-          (entry as FileSystemFileEntry).file((f) => {
-            allFiles.push(f);
-            resolve();
-          });
+        pending.push(new Promise((resolve) => {
+          (entry as FileSystemFileEntry).file(
+            (f) => {
+              slot.push(f);
+              resolve();
+            },
+            () => resolve(),
+          );
         }));
       } else if (entry.isDirectory && props.directory) {
-        promises.push(
+        pending.push(
           readDirectory(entry as FileSystemDirectoryEntry, props.directoryDeep).then((files) => {
-            allFiles.push(...files);
+            slot.push(...files);
           }),
         );
       }
     }
 
-    await Promise.all(promises);
-    if (allFiles.length > 0) setFiles(allFiles);
+    await Promise.all(pending);
+    for (const slot of slots) dropped.push(...slot);
   }
+
+  // Algunos orígenes de arrastre no exponen `items` (o sólo traen texto): el
+  // respaldo es `dataTransfer.files`, como el diálogo nativo.
+  if (dropped.length === 0) {
+    const files = e.dataTransfer?.files;
+    if (files && files.length > 0) dropped.push(...Array.from(files));
+  }
+
+  if (dropped.length > 0) setFiles(dropped);
 }
 
 /** Abre el selector de archivos. */
 function trigger() {
   if (props.disabled || props.readOnly) return;
   fileInputRef.value?.click();
+}
+
+/** Enter/Espacio sobre la zona abren el selector; sobre un hijo interactivo (quitar) no. */
+function onActivateKey(e: KeyboardEvent) {
+  if (e.target !== e.currentTarget) return;
+  if (e.key === " ") e.preventDefault();
+  trigger();
 }
 
 function removeFile(index: number) {
@@ -304,8 +335,8 @@ defineExpose({ get, set, reset, focus, trigger });
       @dragleave="onDragLeave"
       @drop="onDrop"
       @click="trigger"
-      @keydown.enter="trigger"
-      @keydown.space.prevent="trigger"
+      @keydown.enter="onActivateKey"
+      @keydown.space="onActivateKey"
       tabindex="0"
       role="button"
       :aria-disabled="props.disabled"
