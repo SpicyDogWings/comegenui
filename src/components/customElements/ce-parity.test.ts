@@ -454,6 +454,23 @@ describe("Switch.ce", () => {
     expect(w.vm.get()).toBe(false);
     expect(w.find(".cu-switch-track").classes()).not.toContain("cu-switch--checked");
   });
+
+  it("emite `change` con el valor nuevo (boolean) en `detail`", async () => {
+    const w = mount(SwitchCe);
+    const changes: unknown[] = [];
+    // Sólo el CustomEvent del CE: jsdom deja escapar el `change` nativo del input
+    // fuera del shadow root; en Chromium `change` no es composed y no se filtra.
+    w.element.addEventListener("change", (e) => {
+      if (e instanceof CustomEvent) changes.push(e.detail);
+    });
+
+    await w.find('input[type="checkbox"]').setValue(true);
+    await flushPromises();
+    w.vm.reset();
+    await flushPromises();
+
+    expect(changes).toEqual([true, false]);
+  });
 });
 
 describe("Checkbox.ce", () => {
@@ -488,6 +505,23 @@ describe("Checkbox.ce", () => {
     expect(w.vm.get()).toBe(true);
     expect(w.find("input").element.checked).toBe(true);
     expect(updates).toEqual([true]);
+  });
+
+  it("emite `change` con el valor nuevo (boolean) en `detail`", async () => {
+    const w = mount(CheckboxCe);
+    const changes: unknown[] = [];
+    // Sólo el CustomEvent del CE: jsdom deja escapar el `change` nativo del input
+    // fuera del shadow root; en Chromium `change` no es composed y no se filtra.
+    w.element.addEventListener("change", (e) => {
+      if (e instanceof CustomEvent) changes.push(e.detail);
+    });
+
+    await w.find('input[type="checkbox"]').setValue(true);
+    await flushPromises();
+    w.vm.set(false);
+    await flushPromises();
+
+    expect(changes).toEqual([true, false]);
   });
 });
 

@@ -5,8 +5,8 @@ import Checkbox from "@/components/form/Checkbox.vue";
 const marcado = ref(true);
 const eventos = ref<string[]>([]);
 
-function onChange(e: { target?: { checked?: boolean } }) {
-  eventos.value = [...eventos.value.slice(-4), `change → checked: ${e?.target?.checked}`];
+function onChange(valor: boolean) {
+  eventos.value = [...eventos.value.slice(-4), `change → ${valor}`];
 }
 </script>
 

@@ -118,6 +118,14 @@ function demo() {
 </template>
 ```
 
+## Accesibilidad
+
+- El control es un `<input type="checkbox">` nativo dentro del `<label>`: es **una** parada de
+  tabulación y <kbd>Espacio</kbd> lo alterna. El foco se ve con un anillo sobre la caja.
+- `disabled` deshabilita el input nativo: bloquea mouse y teclado; el estado se sigue leyendo con
+  `get()`.
+- El nombre accesible sale de `label`; sin `label` el checkbox queda sin nombre.
+
 ## Props
 
 <!--@include: ../../partials/checkbox/props-vue.md-->

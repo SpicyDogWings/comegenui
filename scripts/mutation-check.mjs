@@ -570,7 +570,7 @@ const MUTATIONS = [
     expect: "set() emite change",
     find: `  set: (value: boolean) => {
     checked.value = value;
-    emit("change", { target: { checked: value } });
+    emit("change", value);
   },`,
     replace: `  set: (value: boolean) => {
     checked.value = value;
@@ -2534,6 +2534,85 @@ const MUTATIONS = [
     expect: "una celda de fecha de .xlsx llega como Date, no como número de serie",
     find: `  const wb = XLSX.read(buf, { type: 'array', cellDates: true })`,
     replace: `  const wb = XLSX.read(buf, { type: 'array' })`,
+  },
+  {
+    id: "checkbox-foco-fuera-de-tab",
+    file: "src/components/form/Checkbox.vue",
+    expect: "el input del checkbox es la parada de tab (no tabindex=-1)",
+    find: `        class="cu-checkbox-input"`,
+    replace: `        tabindex="-1"
+        class="cu-checkbox-input"`,
+  },
+  {
+    id: "checkbox-change-sin-valor",
+    file: "src/components/form/Checkbox.vue",
+    expect: "el change del usuario lleva el valor nuevo (boolean), no el Event",
+    find: `  const value = (e.target as HTMLInputElement).checked;
+  checked.value = value;
+  emit("change", value);`,
+    replace: `  const value = (e.target as HTMLInputElement).checked;
+  checked.value = value;
+  emit("change", e);`,
+  },
+  {
+    id: "checkbox-color-sin-fallback",
+    file: "src/components/form/Checkbox.vue",
+    expect: "un color inválido cae a neutral (la caja marcada no queda transparente)",
+    find: `const safeColor = computed(() => (isColor(props.color) ? props.color : 'neutral'));`,
+    replace: `const safeColor = computed(() => props.color);`,
+  },
+  {
+    id: "checkbox-size-sin-fallback",
+    file: "src/components/form/Checkbox.vue",
+    expect: "un size inválido cae a md (la caja no queda sin tamaño)",
+    find: `const safeSize = computed(() => (isSizeSm(props.size) ? props.size : 'md'));`,
+    replace: `const safeSize = computed(() => props.size);`,
+  },
+  {
+    id: "switch-foco-fuera-de-tab",
+    file: "src/components/form/Switch.vue",
+    expect: "el input del switch es la parada de tab (no tabindex=-1)",
+    find: `        class="cu-switch-input"`,
+    replace: `        tabindex="-1"
+        class="cu-switch-input"`,
+  },
+  {
+    id: "switch-role-duplicado-en-track",
+    file: "src/components/form/Switch.vue",
+    expect: "role=switch vive en el input, no en el track (un solo nodo accesible)",
+    find: `<span
+      class="cu-switch-track"
+      :class="{ 'cu-switch--checked': checked }"
+      :style="switchStyles"
+    >`,
+    replace: `<span
+      class="cu-switch-track"
+      :class="{ 'cu-switch--checked': checked }"
+      :style="switchStyles"
+      role="switch"
+      :aria-checked="!!checked"
+    >`,
+  },
+  {
+    id: "switch-bg-tono-plano",
+    file: "src/components/form/Switch.vue",
+    expect: "el track encendido usa la variante -solid del color (contraste del thumb)",
+    find: `  '--switch-bg': \`var(--cu-color-\${safeColor.value}-solid)\`,`,
+    replace: `  '--switch-bg': \`var(--cu-color-\${safeColor.value})\`,`,
+  },
+  {
+    id: "switch-color-sin-fallback",
+    file: "src/components/form/Switch.vue",
+    expect: "un color inválido cae a neutral (el track encendido no queda transparente)",
+    find: `const safeColor = computed(() => (isColor(props.color) ? props.color : 'neutral'));`,
+    replace: `const safeColor = computed(() => props.color);`,
+  },
+  {
+    id: "switch-size-sin-fallback",
+    file: "src/components/form/Switch.vue",
+    expect: "un size inválido cae a md (el track no queda en 0x0)",
+    find: `const safeSize = computed(() => (isSizeSm(props.size) ? props.size : 'md'));`,
+    replace: `const safeSize = computed(() => props.size);`,
   },
 ];
 

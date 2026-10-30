@@ -1,7 +1,7 @@
 // Comportamiento de Switch según su ficha (docs/componentes/vue/switch.md).
 //
 // Aserciones escritas a mano desde la prosa: fallan por bugs reales.
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { flushPromises, mount } from "@vue/test-utils";
 import Switch from "./Switch.vue";
 
@@ -30,11 +30,14 @@ describe("Switch — estado y v-model", () => {
     expect(track(w).classes()).toContain("cu-switch--checked");
   });
 
-  it("refleja un modelValue externo y aria-checked en el track", async () => {
+  it("el control accesible es el input nativo: role=switch y aria-checked", async () => {
     const w = mount(Switch, { props: { modelValue: true } });
     await flushPromises();
     expect(vm(w).get()).toBe(true);
-    expect(track(w).attributes("aria-checked")).toBe("true");
+    expect(input(w).attributes("role")).toBe("switch");
+    expect(input(w).attributes("aria-checked")).toBe("true");
+    expect(track(w).attributes("role")).toBeUndefined();
+    expect(track(w).attributes("aria-checked")).toBeUndefined();
   });
 
   it("set() cambia el estado y emite change", async () => {
@@ -119,5 +122,61 @@ describe("Switch — posición del label", () => {
     });
     expect(root(w).classes()).not.toContain("cu-switch--label-start");
     expect(w.find(".cu-switch-label").text()).toBe("Activo");
+  });
+});
+
+describe("Switch — teclado y clic en el track", () => {
+  it("el input nativo es la parada de tab (sin tabindex=-1)", () => {
+    const w = mount(Switch, { props: { label: "Activo" } });
+    expect((input(w).element as HTMLInputElement).tabIndex).toBe(0);
+    expect(input(w).attributes("tabindex")).toBeUndefined();
+  });
+
+  it("focus() lleva el foco al input nativo", async () => {
+    const w = mount(Switch, { attachTo: document.body, props: { label: "Activo" } });
+    vm(w).focus();
+    await flushPromises();
+    expect(document.activeElement).toBe(input(w).element);
+    w.unmount();
+  });
+
+  it("el clic en el track alterna una sola vez y emite change con el boolean", async () => {
+    const w = mount(Switch, { attachTo: document.body, props: { label: "Activo" } });
+
+    await track(w).trigger("click");
+    await flushPromises();
+
+    expect(vm(w).get()).toBe(true);
+    expect(w.emitted("update:modelValue")?.at(-1)).toEqual([true]);
+    expect(w.emitted("change")?.at(-1)).toEqual([true]);
+    expect(w.emitted("change")).toHaveLength(1);
+    w.unmount();
+  });
+});
+
+describe("Switch — props fuera del set", () => {
+  it("un color inválido cae a neutral (el track encendido no queda transparente)", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const w = mount(Switch, { props: { color: "banana" as never } });
+    const style = track(w).attributes("style") ?? "";
+    expect(style).toContain("--switch-bg: var(--cu-color-neutral-solid)");
+    expect(style).not.toContain("banana");
+    warn.mockRestore();
+  });
+
+  it("el track encendido usa la variante -solid del color (contraste del thumb)", () => {
+    const w = mount(Switch, { props: { color: "success" } });
+    const style = track(w).attributes("style") ?? "";
+    expect(style).toContain("--switch-bg: var(--cu-color-success-solid)");
+    expect(style).toContain("--switch-hover: var(--cu-color-success-solid-hover)");
+    expect(style).toContain("--switch-active: var(--cu-color-success-solid-active)");
+  });
+
+  it("un size inválido cae a md (el track no queda en 0x0)", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const w = mount(Switch, { props: { size: "lg" as never } });
+    expect(w.find(".cu-switch").classes()).toContain("cu-switch--md");
+    expect(w.find(".cu-switch").classes()).not.toContain("cu-switch--lg");
+    warn.mockRestore();
   });
 });

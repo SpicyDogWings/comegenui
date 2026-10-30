@@ -26,7 +26,8 @@ estado y también se controla vía `modelValue` o los métodos `get`/`set`.
 
 `color` es un nombre semántico, no un hex: se resuelve con los tokens del tema activo
 (`--cu-color-{color}*`), así que el mismo nombre se ve distinto en cada tema. El color se ve en
-el track cuando el switch está encendido.
+el track cuando el switch está encendido, en su variante sólida (el thumb usa el color de
+superficie del tema). Un valor fuera del set cae a `neutral`.
 
 ```html
 <cu-switch color="primary" label="primary"></cu-switch>
@@ -46,7 +47,8 @@ el track cuando el switch está encendido.
 
 ## Tamaños
 
-`size` acepta `sm` (32×20px) y `md` (**default**, 48×32px), y escala también la etiqueta.
+`size` acepta `sm` (32×20px) y `md` (**default**, 48×32px), y escala también la etiqueta. Un
+valor fuera del set cae a `md`.
 
 ```html
 <cu-switch size="sm" color="primary"></cu-switch>
@@ -151,6 +153,15 @@ reasignalo en el evento (modo controlado).
 ```
 
 <!-- demo:switch-control-programatico -->
+
+## Accesibilidad
+
+- El control accesible es un `<input type="checkbox">` nativo con `role="switch"` y
+  `aria-checked`: **un solo** nodo en el árbol de accesibilidad, una parada de tabulación, y
+  <kbd>Espacio</kbd> lo alterna. El foco se ve con un anillo sobre el track.
+- `disabled` deshabilita el input nativo: bloquea mouse y teclado y el switch se anuncia como
+  deshabilitado. El estado se sigue leyendo con `get()`.
+- El nombre accesible sale de `label` o del contenido del slot `default`.
 
 ## Atributos
 
