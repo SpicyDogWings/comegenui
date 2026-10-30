@@ -284,3 +284,12 @@ describe('DatePicker — cambios en caliente', () => {
     expect(w.emitted('change')?.at(-1)?.[0]).toEqual({ start: null, end: null })
   })
 })
+
+describe('DatePicker — rol del panel', () => {
+  it('el panel se anuncia como dialog (adentro hay un grid, no menuitems)', async () => {
+    const w = mount(DatePicker)
+    vm(w).open()
+    await flushPromises()
+    expect(w.find('.cu-dropdown-panel').attributes('role')).toBe('dialog')
+  })
+})

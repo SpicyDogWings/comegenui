@@ -375,7 +375,6 @@ function dayClasses(day: Date): Record<string, boolean> {
   return {
     'cu-calendar-day--selected': selected,
     'cu-calendar-day--today': sameDay(day, today) && !selected,
-    'cu-calendar-day--disabled': isDisabledDay(day),
     'cu-calendar-day--range': inRange,
     'cu-calendar-day--range-start': rangeStartVal.value !== null && sameDay(day, rangeStartVal.value),
     'cu-calendar-day--range-end': rangeEndVal.value !== null && sameDay(day, rangeEndVal.value),
@@ -408,13 +407,14 @@ function dayAriaLabel(day: Date): string {
   return label.charAt(0).toUpperCase() + label.slice(1)
 }
 
-/** ¿El día es el tab-stop de la grilla? Si el enfocado no está en el mes
- *  visible, cae al seleccionado y si no al primer día habilitado del mes. */
+/** ¿El día es el tab-stop de la grilla? Nunca un día deshabilitado (no es
+ *  enfocable): si el enfocado no está en el mes visible, cae al seleccionado y
+ *  si no al primer día habilitado del mes. */
 const tabStopDay = computed<Date | null>(() => {
   const focused = focusDay.value
-  if (focused && sameMonth(focused, viewMonth.value)) return focused
+  if (focused && sameMonth(focused, viewMonth.value) && !isDisabledDay(focused)) return focused
   const selected = selectedValue.value
-  if (selected && sameMonth(selected, viewMonth.value)) return selected
+  if (selected && sameMonth(selected, viewMonth.value) && !isDisabledDay(selected)) return selected
   const year = viewMonth.value.getFullYear()
   const month = viewMonth.value.getMonth()
   const daysInMonth = new Date(year, month + 1, 0).getDate()
@@ -422,7 +422,7 @@ const tabStopDay = computed<Date | null>(() => {
     const candidate = new Date(year, month, day)
     if (!isDisabledDay(candidate)) return candidate
   }
-  return new Date(year, month, 1)
+  return null
 })
 
 function isTabStop(day: Date): boolean {
@@ -452,44 +452,88 @@ async function moveFocus(day: Date) {
   gridRef.value?.querySelector<HTMLElement>(`[data-date="${toISODate(day)}"]`)?.focus()
 }
 
+/** Primer día habilitado avanzando `step` días desde `from` (sin incluirlo).
+ *  Se detiene al salir de `min`/`max` o tras una vuelta completa. */
+function findEnabledDay(from: Date, step: number): Date | null {
+  let candidate = addDays(from, step)
+  for (let i = 0; i < 370; i++) {
+    if (isOutOfLimits(candidate)) return null
+    if (!isDisabledDay(candidate)) return candidate
+    candidate = addDays(candidate, step)
+  }
+  return null
+}
+
+/** Borde habilitado de la semana de `day` (`start`/`end`), salteando los
+ *  deshabilitados hacia adentro de la semana. */
+function enabledWeekEdge(day: Date, edge: 'start' | 'end'): Date | null {
+  const weekStart = startOfWeek(day, props.weekStart)
+  const step = edge === 'start' ? 1 : -1
+  let candidate = edge === 'start' ? weekStart : addDays(weekStart, 6)
+  for (let i = 0; i < 7; i++) {
+    if (!isOutOfLimits(candidate) && !isDisabledDay(candidate)) return candidate
+    candidate = addDays(candidate, step)
+  }
+  return null
+}
+
+/** Día habilitado más cercano al mismo día-del-mes en el mes de `target`
+ *  (para PageUp/PageDown cuando ese día está deshabilitado). */
+function nearestEnabledInMonth(target: Date): Date | null {
+  const year = target.getFullYear()
+  const month = target.getMonth()
+  const daysInMonth = new Date(year, month + 1, 0).getDate()
+  const dayOfMonth = target.getDate()
+  for (let delta = 0; delta < daysInMonth; delta++) {
+    for (const day of delta === 0 ? [dayOfMonth] : [dayOfMonth + delta, dayOfMonth - delta]) {
+      if (day < 1 || day > daysInMonth) continue
+      const candidate = new Date(year, month, day)
+      if (!isOutOfLimits(candidate) && !isDisabledDay(candidate)) return candidate
+    }
+  }
+  return null
+}
+
 function onGridKeydown(event: KeyboardEvent) {
   if (props.disabled) return
   const button = (event.target as HTMLElement | null)?.closest?.('.cu-calendar-day')
   const current = button instanceof HTMLElement ? parseDate(button.dataset.date ?? null) : null
   if (current === null) return
 
+  // Los días deshabilitados no son enfocables (`<button disabled>`), así que
+  // cada tecla busca el próximo día habilitado en esa dirección.
   let next: Date | null = null
   switch (event.key) {
     case 'ArrowLeft':
-      next = addDays(current, -1)
+      next = findEnabledDay(current, -1)
       break
     case 'ArrowRight':
-      next = addDays(current, 1)
+      next = findEnabledDay(current, 1)
       break
     case 'ArrowUp':
-      next = addDays(current, -7)
+      next = findEnabledDay(current, -7)
       break
     case 'ArrowDown':
-      next = addDays(current, 7)
+      next = findEnabledDay(current, 7)
       break
     case 'Home':
-      next = startOfWeek(current, props.weekStart)
+      next = enabledWeekEdge(current, 'start')
       break
     case 'End':
-      next = addDays(startOfWeek(current, props.weekStart), 6)
+      next = enabledWeekEdge(current, 'end')
       break
     case 'PageUp':
-      next = shiftMonth(current, -1)
+      next = nearestEnabledInMonth(shiftMonth(current, -1))
       break
     case 'PageDown':
-      next = shiftMonth(current, 1)
+      next = nearestEnabledInMonth(shiftMonth(current, 1))
       break
     default:
       return
   }
   // Las flechas no scrollean la página mientras se navega la grilla.
   event.preventDefault()
-  void moveFocus(next)
+  if (next) void moveFocus(next)
 }
 
 // El rango solo existe en `mode="range"` (ahí `rangeStart`/`rangeEnd` son el
@@ -626,6 +670,7 @@ const colorStyles = computed(() => ({
             class="cu-calendar-day"
             :class="dayClasses(cell.date)"
             :data-date="toISODate(cell.date)"
+            :disabled="isDisabledDay(cell.date)"
             :aria-label="dayAriaLabel(cell.date)"
             :aria-selected="isDaySelected(cell.date) ? 'true' : 'false'"
             :aria-disabled="isDisabledDay(cell.date) ? 'true' : undefined"
@@ -724,13 +769,13 @@ const colorStyles = computed(() => ({
 
 /* Doble clase (convención del repo): ganarle en cascada a reglas globales
    del consumidor (reset CSS, `.playground button`, etc.) */
-.cu-calendar-day.cu-calendar-day:hover:not(.cu-calendar-day--disabled) {
+.cu-calendar-day.cu-calendar-day:hover:not(:disabled) {
   background: var(--cal-ghost-hover);
 }
 
-/* Día no seleccionable: `aria-disabled` (sigue siendo enfocable con el
-   teclado, como pide el patrón de grid) + el guard en `selectDay`. */
-.cu-calendar-day.cu-calendar-day--disabled {
+/* Día no seleccionable: `<button disabled>` (no enfocable; el teclado lo
+   saltea) + `aria-disabled` para la grilla. */
+.cu-calendar-day.cu-calendar-day:disabled {
   opacity: 0.35;
   cursor: not-allowed;
 }
@@ -749,7 +794,7 @@ const colorStyles = computed(() => ({
   /* Solid mantiene el texto del tema sobre la variante de fondo ajustada. */
   color: var(--cal-solid-text);
 }
-.cu-calendar-day--selected.cu-calendar-day--solid:hover:not(.cu-calendar-day--disabled) {
+.cu-calendar-day--selected.cu-calendar-day--solid:hover:not(:disabled) {
   background: var(--cal-solid-hover);
 }
 .cu-calendar-day--selected.cu-calendar-day--outlined {
@@ -760,7 +805,7 @@ const colorStyles = computed(() => ({
   background: var(--cal-soft);
   color: var(--cal-accent-text);
 }
-.cu-calendar-day--selected.cu-calendar-day--soft:hover:not(.cu-calendar-day--disabled) {
+.cu-calendar-day--selected.cu-calendar-day--soft:hover:not(:disabled) {
   background: var(--cal-soft-hover);
 }
 .cu-calendar-day--selected.cu-calendar-day--subtle {

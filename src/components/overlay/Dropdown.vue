@@ -56,6 +56,8 @@ const props = defineProps({
   // Ancho del panel (CSS, ej: "280px"). Default "" = width:100% del trigger.
   // Útil cuando el contenido del panel es más ancho que el trigger (ej: un calendario).
   panelWidth: { type: String, required: false, default: "" },
+  /** Rol ARIA del panel: `menu` (default, listas de acciones), `dialog` (paneles con contenido propio, como el date-picker), `listbox`… */
+  panelRole: { type: String, required: false, default: "menu" },
   loading: { type: Boolean, required: false, default: false },
   cooldown: { type: Boolean, required: false, default: false },
   cooldownKey: { type: Number, required: false, default: 0 },
@@ -151,7 +153,7 @@ defineExpose({
     :disabled="disabled"
     :hover="trigger === 'hover'"
     :hover-delay="0"
-    :role="'menu'"
+    :role="panelRole"
     :panel-class="panelClass"
     class="cu-dropdown"
     :class="{ 'cu-dropdown--nested': isNested }"

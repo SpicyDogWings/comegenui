@@ -138,7 +138,6 @@ function fmt(date: Date | null): string | null {
 
 const dropdownRef = ref<InstanceType<typeof Dropdown> | null>(null)
 const triggerRef = ref<InstanceType<typeof Button> | null>(null)
-const panelRef = ref<HTMLElement | null>(null)
 
 /** Misma regla que el calendario interno: qué días no se pueden elegir. */
 function isDisabledDate(day: Date): boolean {
@@ -332,16 +331,8 @@ function clear() {
 }
 
 function onClose() {
-  // Si el foco estaba dentro del panel (día del calendario, footer), volver al
-  // trigger: al cerrarse el panel el foco caía al body y se perdía.
-  const panel = panelRef.value
-  if (panel) {
-    const root = panel.getRootNode() as Document | ShadowRoot
-    const active = root.activeElement as HTMLElement | null
-    if (active && panel.contains(active)) {
-      ;(triggerRef.value?.$el as HTMLElement | undefined)?.focus()
-    }
-  }
+  // El retorno del foco al trigger lo maneja `Popover` (común a todos los
+  // paneles: DatePicker, Select, menús).
   emit('close')
 }
 
@@ -438,6 +429,7 @@ defineExpose({
       :fixed="fixed"
       :offset="4"
       :panel-width="panelWidth"
+      panel-role="dialog"
       @open="emit('open')"
       @close="onClose"
     >
@@ -488,7 +480,7 @@ defineExpose({
         </Button>
       </template>
 
-      <div ref="panelRef" class="cu-date-picker-panel">
+      <div class="cu-date-picker-panel">
         <Calendar
           v-if="!isRange"
           :model-value="selectedValue"

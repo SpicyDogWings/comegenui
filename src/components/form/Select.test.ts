@@ -277,3 +277,23 @@ describe("Select — opción seleccionada (check)", () => {
     expect(w.findAll(".cu-select-option")[1]!.find(".cu-menu-option-check").exists()).toBe(true);
   });
 });
+
+describe("Select — el foco vuelve al trigger al cerrar", () => {
+  it("Escape con el foco en una opción lo devuelve al toggle", async () => {
+    const w = mount(Select, {
+      attachTo: document.body,
+      props: { options: [{ label: "A", value: "a" }, { label: "B", value: "b" }] },
+    })
+    const trigger = toggle(w).element as HTMLElement
+    trigger.focus()
+    await toggle(w).trigger("click")
+    await flushPromises()
+    const option = w.findAll(".cu-select-option")[0]!.element as HTMLElement
+    option.focus()
+
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }))
+    await flushPromises()
+    expect(document.activeElement).toBe(trigger)
+    w.unmount()
+  })
+})

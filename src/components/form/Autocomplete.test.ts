@@ -311,3 +311,21 @@ describe('Autocomplete — selección visible (check) y panel abierto', () => {
     expect(vm(w).isOpen()).toBe(false)
   })
 })
+
+describe('Autocomplete — el foco vuelve al input al cerrar', () => {
+  it('Escape con el foco en una sugerencia lo devuelve al input', async () => {
+    const w = mount(Autocomplete, { props: { items }, attachTo: document.body })
+    const input = w.find('input').element as HTMLInputElement
+    input.focus()
+    vm(w).open()
+    await flushPromises()
+    const option = w.find('.cu-autocomplete-option').element as HTMLElement
+    option.focus()
+
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+    await flushPromises()
+    expect(vm(w).isOpen()).toBe(false)
+    expect(document.activeElement).toBe(input)
+    w.unmount()
+  })
+})

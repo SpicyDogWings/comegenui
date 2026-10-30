@@ -237,8 +237,13 @@ también el foco usá `disabled`.
 
 <!-- demo:select-readonly -->
 
-## Posicionamiento
+## Foco y cierre
 
+El panel cierra con `Escape` o con un click afuera. Al cerrarse, si el foco estaba adentro del
+panel (por ejemplo en una opción), **vuelve al trigger**; un click afuera sobre otro control no le
+roba el foco a ese control.
+
+## Posicionamiento
 `position` acepta `bottom` (**default**) y `top` (el wrapper `Dropdown` también contempla
 `left`/`right`); `align` acepta `start` (**default**), `center` y `end`. Con `fixed`, el panel
 se posiciona respecto del viewport.

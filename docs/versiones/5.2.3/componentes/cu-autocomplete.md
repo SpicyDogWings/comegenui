@@ -189,6 +189,9 @@ escribir, el filtrado se reanuda con la cadena actual; un click afuera (o `close
 panel. `reset()` limpia el texto **y la selección**; `set(v)` cambia el texto y la selección se
 conserva sólo si `v` coincide con el item elegido.
 
+`Escape` cierra el panel y devuelve el foco al input; ese retorno de foco **no** reabre la lista
+(por eso Escape funciona aunque el menú se abra al enfocar).
+
 ```html
 <cu-autocomplete id="ac" placeholder="Buscá un país..."></cu-autocomplete>
 

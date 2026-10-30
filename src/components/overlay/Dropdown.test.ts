@@ -170,3 +170,40 @@ describe("Dropdown — items", () => {
     expect(vm(w).isOpen()).toBe(true);
   });
 });
+
+describe("Dropdown — rol del panel", () => {
+  it("por defecto el panel es un `menu`", async () => {
+    const w = mount(Dropdown);
+    vm(w).open();
+    await flushPromises();
+    expect(panel(w).attributes("role")).toBe("menu");
+  });
+
+  it("`panelRole` cambia el rol (el date-picker usa `dialog`)", async () => {
+    const w = mount(Dropdown, { props: { panelRole: "dialog" } });
+    vm(w).open();
+    await flushPromises();
+    expect(panel(w).attributes("role")).toBe("dialog");
+  });
+});
+
+describe("Dropdown — el foco vuelve al trigger al cerrar", () => {
+  it("Escape con el foco en un item lo devuelve al trigger", async () => {
+    const w = mount(Dropdown, {
+      attachTo: document.body,
+      props: { items: [{ label: "Uno" }, { label: "Dos" }] },
+    });
+    const trigger = w.find(".cu-dropdown button").element as HTMLElement;
+    trigger.focus();
+    vm(w).open();
+    await flushPromises();
+    const item = panel(w).find("button.cu-dropdown-menu-item").element as HTMLElement;
+    item.focus();
+
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+    await flushPromises();
+    expect(vm(w).isOpen()).toBe(false);
+    expect(document.activeElement).toBe(trigger);
+    w.unmount();
+  });
+});

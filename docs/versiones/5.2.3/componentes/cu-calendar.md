@@ -133,7 +133,7 @@ La grilla sigue el patrón **WAI-ARIA grid**: un solo día está en el orden de 
 | `Escape` | Cierra el panel (dentro de `cu-date-picker`) y devuelve el foco al trigger |
 
 - El foco se ve con un anillo del color accent; al cambiar de mes con el teclado, el calendario navega solo.
-- El teclado **no** sale de `min`/`max`, pero **sí** atraviesa días deshabilitados por `disabled-weekdays`/`disabled-dates` (se anuncian como no disponibles y no se seleccionan).
+- El teclado **no** sale de `min`/`max` y **saltea** los días deshabilitados por `disabled-weekdays`/`disabled-dates`: no son enfocables, así que el foco cae en el día habilitado siguiente (o anterior) en esa dirección; `PageUp`/`PageDown` caen en el día habilitado más cercano del mes.
 - Cada día se anuncia con la fecha completa (`"Sábado, 15 de agosto de 2026"`), el estado de selección (`aria-selected`) y `aria-disabled` cuando no es elegible. El día de hoy lleva `aria-current="date"`.
 - Los encabezados de la semana son `columnheader` con el nombre completo del día, y las celdas vacías completan la fila para que las columnas coincidan.
 
@@ -169,7 +169,7 @@ Además de `min`/`max`, podés deshabilitar días de la semana (`disabled-weekda
 
 <!-- demo:calendar-deshabilitados -->
 
-> Los días deshabilitados no se pueden seleccionar (ni con click, ni con el teclado, ni con `setValue`) y se ven atenuados. Con el teclado siguen siendo alcanzables (se anuncian como no disponibles), para no perder el hilo de la grilla.
+> Los días deshabilitados no se pueden seleccionar (ni con click, ni con el teclado, ni con `setValue`) y se ven atenuados. Son `<button disabled>`: el teclado los **saltea** (no son enfocables) y se anuncian como no disponibles.
 
 ## Grilla y borde
 

@@ -224,11 +224,11 @@ describe('Calendar — ARIA de la grilla', () => {
     expect(empties[0]!.attributes('aria-disabled')).toBe('true')
   })
 
-  it('un día deshabilitado se anuncia como aria-disabled y no se selecciona', async () => {
+  it('un día deshabilitado es un button disabled, se anuncia y no se selecciona', async () => {
     const w = mount(Calendar, { props: { modelValue: '2026-08-01', min: '2026-08-10' } })
     const day = dayButton(w, 5)!
+    expect(day.attributes('disabled')).toBeDefined()
     expect(day.attributes('aria-disabled')).toBe('true')
-    expect(day.attributes('disabled')).toBeUndefined()
     await day.trigger('click')
     expect(w.emitted('select')).toBeFalsy()
   })
@@ -299,14 +299,57 @@ describe('Calendar — teclado', () => {
     w.unmount()
   })
 
-  it('el teclado sí atraviesa un día deshabilitado (aria-disabled)', async () => {
+  it('el teclado saltea un día deshabilitado', async () => {
     const w = mount(Calendar, {
       props: { modelValue: '2026-08-11', disabledDates: '2026-08-12' },
       attachTo: document.body,
     })
-    expect(await press(w, 11, 'ArrowRight')).toBe('12')
-    expect(dayButton(w, 12)!.attributes('aria-disabled')).toBe('true')
+    expect(dayButton(w, 12)!.attributes('disabled')).toBeDefined()
+    expect(await press(w, 11, 'ArrowRight')).toBe('13')
+    expect(await press(w, 13, 'ArrowLeft')).toBe('11')
     w.unmount()
+  })
+
+  it('el teclado saltea un bloque de días deshabilitados (fines de semana)', async () => {
+    // 2026-08-14 es viernes; sábado 15 y domingo 16 deshabilitados.
+    const w = mount(Calendar, {
+      props: { modelValue: '2026-08-14', disabledWeekdays: '0,6' },
+      attachTo: document.body,
+    })
+    expect(await press(w, 14, 'ArrowRight')).toBe('17')
+    expect(await press(w, 17, 'ArrowLeft')).toBe('14')
+    w.unmount()
+  })
+
+  it('Home y End saltean los bordes de la semana deshabilitados', async () => {
+    // Semana del 10 al 16 de agosto: domingo 16 deshabilitado.
+    const w = mount(Calendar, {
+      props: { modelValue: '2026-08-12', disabledWeekdays: '0' },
+      attachTo: document.body,
+    })
+    expect(await press(w, 12, 'Home')).toBe('10')
+    expect(await press(w, 10, 'End')).toBe('15')
+    w.unmount()
+  })
+
+  it('PageDown cae en el día habilitado más cercano del mes siguiente', async () => {
+    const w = mount(Calendar, {
+      props: { modelValue: '2026-08-15', disabledDates: '2026-09-15' },
+      attachTo: document.body,
+    })
+    const focused = await press(w, 15, 'PageDown')
+    expect(focused).toBe('16')
+    expect(gridLabel(w).toLowerCase()).toContain('septiembre')
+    w.unmount()
+  })
+
+  it('si el mes entero está deshabilitado, ningún día es tab-stop', () => {
+    const w = mount(Calendar, {
+      props: { viewMonth: '2026-08-01', disabledWeekdays: '0,1,2,3,4,5,6' },
+    })
+    const days = w.findAll('.cu-calendar-day')
+    expect(days.length).toBeGreaterThan(0)
+    expect(days.filter((d) => d.attributes('tabindex') === '0')).toHaveLength(0)
   })
 })
 
@@ -322,9 +365,8 @@ describe('Calendar — locale y estado deshabilitado', () => {
   it('con el calendario deshabilitado no hay ningún día en el orden de tabulación', () => {
     const w = mount(Calendar, { props: { modelValue: '2026-08-15', disabled: true } })
     const days = w.findAll('.cu-calendar-day')
-    const stops = days.filter((d) => d.attributes('tabindex') === '0')
-    expect(stops).toHaveLength(0)
-    expect(w.findAll('.cu-calendar-day--disabled')).toHaveLength(days.length)
+    expect(days.filter((d) => d.attributes('tabindex') === '0')).toHaveLength(0)
+    expect(days.filter((d) => d.attributes('disabled') !== undefined)).toHaveLength(days.length)
   })
 
   it('el día de hoy lleva aria-current="date"', () => {
@@ -332,5 +374,16 @@ describe('Calendar — locale y estado deshabilitado', () => {
     const today = w.find('.cu-calendar-day--today')
     expect(today.exists()).toBe(true)
     expect(today.attributes('aria-current')).toBe('date')
+  })
+})
+
+describe('Calendar — el tab-stop respeta los días deshabilitados', () => {
+  it('si la fecha seleccionada está deshabilitada, el tab-stop es el primer día habilitado', () => {
+    const w = mount(Calendar, {
+      props: { viewMonth: '2026-08-01', modelValue: '2026-08-05', min: '2026-08-10' },
+    })
+    const stops = w.findAll('.cu-calendar-day').filter((d) => d.attributes('tabindex') === '0')
+    expect(stops).toHaveLength(1)
+    expect(stops[0]!.text()).toBe('10')
   })
 })

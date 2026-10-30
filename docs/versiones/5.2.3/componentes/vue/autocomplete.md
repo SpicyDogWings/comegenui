@@ -152,6 +152,8 @@ function abrir() {
 
 > `open()` ignora `min-chars`: es la salida programática. Lo que sí lo bloquea es `disabled`.
 
+`Escape` cierra el panel y devuelve el foco al input; ese retorno de foco **no** reabre la lista (por eso Escape funciona aunque el menú se abra al enfocar).
+
 ## Posicionamiento
 
 `position` (`bottom` **default**, `top`, `left`, `right`) y `align` (`start` **default**, `center`, `end`) ubican el panel respecto al campo. `fixed` lo posiciona en `position: fixed` (útil en contenedores con `overflow`).

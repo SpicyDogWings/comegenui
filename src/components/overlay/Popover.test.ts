@@ -310,3 +310,101 @@ describe("Popover — fallback automático a fixed", () => {
     fixture.remove();
   });
 });
+
+describe("Popover — el foco vuelve al trigger al cerrar", () => {
+  const mountWithTrigger = () =>
+    mount(Popover, {
+      attachTo: document.body,
+      slots: {
+        toggle: `<template #toggle="{ toggle }"><button class="mi-toggle" @click="toggle">abrir</button></template>`,
+        default: '<button class="mi-item">item</button>',
+      },
+    });
+
+  it("Escape con el foco dentro del panel lo devuelve al trigger", async () => {
+    const w = mountWithTrigger();
+    const trigger = w.find(".mi-toggle").element as HTMLElement;
+    trigger.focus();
+    vm(w).open();
+    await flushPromises();
+    const item = w.find(".mi-item").element as HTMLElement;
+    item.focus();
+    expect(document.activeElement).toBe(item);
+
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+    await flushPromises();
+    expect(document.activeElement).toBe(trigger);
+    w.unmount();
+  });
+
+  it("cerrar por código con el foco en el panel también lo devuelve al trigger", async () => {
+    const w = mountWithTrigger();
+    const trigger = w.find(".mi-toggle").element as HTMLElement;
+    trigger.focus();
+    vm(w).open();
+    await flushPromises();
+    (w.find(".mi-item").element as HTMLElement).focus();
+
+    vm(w).close();
+    await flushPromises();
+    expect(document.activeElement).toBe(trigger);
+    w.unmount();
+  });
+
+  it("un click afuera sobre algo no enfocable devuelve el foco al trigger", async () => {
+    const w = mountWithTrigger();
+    const trigger = w.find(".mi-toggle").element as HTMLElement;
+    trigger.focus();
+    vm(w).open();
+    await flushPromises();
+    (w.find(".mi-item").element as HTMLElement).focus();
+    // El navegador mueve el foco al body antes del click.
+    (document.activeElement as HTMLElement).blur();
+
+    document.body.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    await flushPromises();
+    expect(document.activeElement).toBe(trigger);
+    w.unmount();
+  });
+
+  it("un click afuera sobre otro control NO le roba el foco", async () => {
+    const otro = document.createElement("button");
+    otro.className = "otro-control";
+    document.body.appendChild(otro);
+
+    const w = mountWithTrigger();
+    (w.find(".mi-toggle").element as HTMLElement).focus();
+    vm(w).open();
+    await flushPromises();
+    (w.find(".mi-item").element as HTMLElement).focus();
+
+    otro.focus();
+    otro.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    await flushPromises();
+    expect(document.activeElement).toBe(otro);
+    w.unmount();
+    otro.remove();
+  });
+
+  it("en modo hover (Tooltip) el cierre no mueve el foco", async () => {
+    const w = mount(Popover, {
+      attachTo: document.body,
+      props: { hover: true, hoverDelay: 0 },
+      slots: {
+        toggle: `<template #toggle><button class="mi-toggle">hover</button></template>`,
+        default: '<span class="mi-contenido">tip</span>',
+      },
+    });
+    await w.find(".cu-popover").trigger("mouseenter");
+    await flushPromises();
+    const fuera = document.createElement("button");
+    document.body.appendChild(fuera);
+    fuera.focus();
+
+    await w.find(".cu-popover").trigger("mouseleave");
+    await vi.waitFor(() => expect(vm(w).isOpen()).toBe(false));
+    expect(document.activeElement).toBe(fuera);
+    w.unmount();
+    fuera.remove();
+  });
+});

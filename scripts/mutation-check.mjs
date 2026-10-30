@@ -1698,17 +1698,68 @@ const MUTATIONS = [
     file: "src/components/controls/Calendar.vue",
     expect: "ArrowRight mueve el foco al día siguiente",
     find: `    case 'ArrowRight':
-      next = addDays(current, 1)
+      next = findEnabledDay(current, 1)
       break`,
     replace: `    case 'ArrowRight':
       break`,
+  },
+  {
+    id: "calendar-teclado-saltea-deshabilitados",
+    file: "src/components/controls/Calendar.vue",
+    expect: "las flechas saltean los días deshabilitados (button disabled)",
+    find: `  let candidate = addDays(from, step)
+  for (let i = 0; i < 370; i++) {
+    if (isOutOfLimits(candidate)) return null
+    if (!isDisabledDay(candidate)) return candidate
+    candidate = addDays(candidate, step)
+  }
+  return null`,
+    replace: `  const candidate = addDays(from, step)
+  return isOutOfLimits(candidate) ? null : candidate`,
+  },
+  {
+    id: "calendar-teclado-home-end",
+    file: "src/components/controls/Calendar.vue",
+    expect: "Home/End caen en un borde habilitado de la semana",
+    find: `  const step = edge === 'start' ? 1 : -1
+  let candidate = edge === 'start' ? weekStart : addDays(weekStart, 6)
+  for (let i = 0; i < 7; i++) {
+    if (!isOutOfLimits(candidate) && !isDisabledDay(candidate)) return candidate
+    candidate = addDays(candidate, step)
+  }
+  return null`,
+    replace: `  const candidate = edge === 'start' ? weekStart : addDays(weekStart, 6)
+  return isOutOfLimits(candidate) ? null : candidate`,
+  },
+  {
+    id: "calendar-teclado-page-nearest",
+    file: "src/components/controls/Calendar.vue",
+    expect: "PageUp/PageDown caen en el día habilitado más cercano",
+    find: `  for (let delta = 0; delta < daysInMonth; delta++) {
+    for (const day of delta === 0 ? [dayOfMonth] : [dayOfMonth + delta, dayOfMonth - delta]) {
+      if (day < 1 || day > daysInMonth) continue
+      const candidate = new Date(year, month, day)
+      if (!isOutOfLimits(candidate) && !isDisabledDay(candidate)) return candidate
+    }
+  }
+  return null`,
+    replace: `  void daysInMonth
+  void dayOfMonth
+  return isOutOfLimits(target) ? null : target`,
+  },
+  {
+    id: "calendar-tabstop-nunca-deshabilitado",
+    file: "src/components/controls/Calendar.vue",
+    expect: "el tab-stop de la grilla nunca es un día deshabilitado",
+    find: `  if (focused && sameMonth(focused, viewMonth.value) && !isDisabledDay(focused)) return focused`,
+    replace: `  if (focused && sameMonth(focused, viewMonth.value)) return focused`,
   },
   {
     id: "calendar-teclado-page-down",
     file: "src/components/controls/Calendar.vue",
     expect: "PageDown pasa al mes siguiente",
     find: `    case 'PageDown':
-      next = shiftMonth(current, 1)
+      next = nearestEnabledInMonth(shiftMonth(current, 1))
       break`,
     replace: `    case 'PageDown':
       break`,
@@ -1757,13 +1808,12 @@ const MUTATIONS = [
     replace: `aria-expanded="false"`,
   },
   {
-    id: "date-picker-foco-vuelve-al-trigger",
+    id: "date-picker-panel-sin-rol",
     file: "src/components/form/DatePicker.vue",
-    expect: "al cerrar con el foco en el panel, vuelve al trigger",
-    find: `    if (active && panel.contains(active)) {
-      ;(triggerRef.value?.$el as HTMLElement | undefined)?.focus()
-    }`,
-    replace: `    void active`,
+    expect: "el panel del date-picker se anuncia como dialog",
+    find: `      panel-role="dialog"
+`,
+    replace: ``,
   },
   {
     id: "dual-calendar-meses-sin-recorte",
@@ -1775,6 +1825,77 @@ const MUTATIONS = [
     replace: `  void minMonth
   void maxMonth
   return target`,
+  },
+  {
+    id: "popover-foco-no-vuelve-al-cerrar",
+    file: "src/components/overlay/Popover.vue",
+    expect: "al cerrar, el foco que estaba en el panel vuelve al trigger",
+    find: `  unregisterHover();
+  restoreFocus();
+}`,
+    replace: `  unregisterHover();
+}`,
+  },
+  {
+    id: "popover-escape-sin-devolver-foco",
+    file: "src/components/overlay/Popover.vue",
+    expect: "Escape devuelve el foco al trigger",
+    find: `  if (e.key === "Escape" && isOpen.value) {
+    isOpen.value = false;
+    emit("close");
+    restoreFocus();
+  }`,
+    replace: `  if (e.key === "Escape" && isOpen.value) {
+    isOpen.value = false;
+    emit("close");
+  }`,
+  },
+  {
+    id: "popover-foco-roba-el-click-afuera",
+    file: "src/components/overlay/Popover.vue",
+    expect: "un click afuera sobre otro control no le roba el foco",
+    find: `  const target = insidePanel ? (focusBeforeOpen ?? triggerElement()) : lost ? focusBeforeOpen : null;`,
+    replace: `  void insidePanel;
+  void lost;
+  const target = focusBeforeOpen ?? triggerElement();`,
+  },
+  {
+    id: "dropdown-panelrole-ignorado",
+    file: "src/components/overlay/Dropdown.vue",
+    expect: "panelRole define el rol ARIA del panel (el date-picker usa dialog)",
+    find: `    :role="panelRole"`,
+    replace: `    :role="'menu'"`,
+  },
+  {
+    id: "autocomplete-foco-reabre-el-panel",
+    file: "src/components/form/Autocomplete.vue",
+    expect: "el foco restaurado al cerrar no reabre la lista",
+    find: `  if (props.disabled || ignoreFocusAfterClose) return;`,
+    replace: `  if (props.disabled) return;`,
+  },
+  {
+    id: "month-slider-label-contraste",
+    file: "src/components/controls/month-slider/MonthSliderLabel.vue",
+    test: "src/components/controls/month-slider/MonthSliderLabel.contrast.test.ts",
+    expect: "el label usa el tono de texto accesible (-text), no el color base",
+    find: `.cu-month-slider-label.cu-month-slider-label--soft {
+  background-color: var(--ms-soft);
+  color: var(--ms-accent-text);
+}`,
+    replace: `.cu-month-slider-label.cu-month-slider-label--soft {
+  background-color: var(--ms-soft);
+  color: var(--ms-accent);
+}`,
+  },
+  {
+    id: "year-slider-sin-tokens-del-label",
+    file: "src/components/controls/YearSlider.vue",
+    test: "src/components/controls/month-slider/MonthSliderLabel.contrast.test.ts",
+    expect: "YearSlider declara las variables del label (solid/outlined no quedan vacías)",
+    find: `  '--ms-solid': \`var(--cu-color-\${props.color}-solid)\`,
+  '--ms-solid-hover': \`var(--cu-color-\${props.color}-solid-hover)\`,
+`,
+    replace: ``,
   },
 ];
 

@@ -64,6 +64,9 @@ const emit = defineEmits(["select", "blur"]);
 /** Valor del texto de búsqueda (v-model). */
 const searchValue = defineModel<string>({ default: "" });
 
+/** Evita que el `focus` restaurado al cerrar el panel reabra la lista. */
+let ignoreFocusAfterClose = false;
+
 const dropdownRef = ref<InstanceType<typeof Dropdown> | null>(null);
 const inputRef = ref<InstanceType<typeof Input> | null>(null);
 const rootRef = ref<HTMLElement | null>(null);
@@ -112,11 +115,21 @@ function isSelected(item: AutocompleteItem) {
 watch(searchValue, (val) => syncSelectionWithText(val));
 
 function onFocus() {
-  if (props.disabled) return;
+  // El cierre del panel devuelve el foco al input (`Popover`); ese `focus` no
+  // debe reabrir la lista, o Escape con el foco en una sugerencia no cerraría.
+  if (props.disabled || ignoreFocusAfterClose) return;
   if (searchValue.value.length < props.minChars) return;
   if (filteredItems.value.length > 0) {
     dropdownRef.value?.open();
   }
+}
+
+/** Cierre del panel (Escape, click afuera): no reabrir por el foco restaurado. */
+function onDropdownClose() {
+  ignoreFocusAfterClose = true;
+  queueMicrotask(() => {
+    ignoreFocusAfterClose = false;
+  });
 }
 
 function onInput(val: string) {
@@ -190,6 +203,7 @@ defineExpose({
     :loading="loading"
     :offset="4"
     style="width:100%"
+    @close="onDropdownClose"
   >
     <template #toggle>
       <Input

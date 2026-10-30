@@ -114,6 +114,52 @@ const popoverRef = ref<HTMLElement | null>(null);
 // Panel renderizado: se mide para decidir si un ancestro lo recorta.
 const panelEl = ref<HTMLElement | null>(null);
 
+// ── Foco ──
+// Al abrir se recuerda quién tenía el foco (el trigger). Al cerrar, si el foco
+// quedó adentro del panel o se perdió en el `body`, vuelve ahí: antes, cerrar con
+// Escape (o elegir un día/ítem) dejaba el foco en el body. En modo `hover`
+// (Tooltip) nunca se mueve el foco: el mouse no enfoca nada.
+let focusBeforeOpen: HTMLElement | null = null;
+
+/** Elemento enfocado dentro del mismo árbol (shadow root o documento). */
+function activeInTree(): HTMLElement | null {
+  const root = popoverRef.value?.getRootNode() as Document | ShadowRoot | undefined;
+  return (root?.activeElement as HTMLElement | null) ?? null;
+}
+
+/** Primer elemento enfocable del trigger (slot `#toggle`). */
+function triggerElement(): HTMLElement | null {
+  const root = popoverRef.value;
+  if (!root) return null;
+  const focusables = root.querySelectorAll<HTMLElement>(
+    'button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+  );
+  for (const el of focusables) {
+    if (!panelEl.value?.contains(el)) return el;
+  }
+  return null;
+}
+
+function rememberFocus() {
+  const active = activeInTree();
+  // `body` no es un destino útil (foco perdido): mejor el trigger al cerrar.
+  focusBeforeOpen =
+    active && active !== document.body && !panelEl.value?.contains(active) ? active : null;
+}
+
+function restoreFocus() {
+  if (props.hover) return;
+  const panel = panelEl.value;
+  const active = activeInTree();
+  const insidePanel = !!panel && !!active && panel.contains(active);
+  // Click afuera sobre algo no enfocable: el foco ya se perdió en el body.
+  const lost = !active || active === document.body;
+  const target = insidePanel ? (focusBeforeOpen ?? triggerElement()) : lost ? focusBeforeOpen : null;
+  focusBeforeOpen = null;
+  if (!target || !target.isConnected) return;
+  target.focus();
+}
+
 // Un click fuera del popover cierra el panel en fase CAPTURA. Si el mismo click
 // dispara un toggle() externo, el flag marca "este click ya cerró" y no reabre.
 let closedByOutsideClick = false;
@@ -129,6 +175,7 @@ function onDocumentClick(e: MouseEvent) {
     closedByOutsideClick = true;
     isOpen.value = false;
     emit("close");
+    restoreFocus();
     setTimeout(() => { closedByOutsideClick = false; }, 0);
   }
 }
@@ -137,6 +184,7 @@ function onKeyDown(e: KeyboardEvent) {
   if (e.key === "Escape" && isOpen.value) {
     isOpen.value = false;
     emit("close");
+    restoreFocus();
   }
 }
 
@@ -356,6 +404,7 @@ function open() {
   if (props.disabled) return;
   // Cada apertura vuelve a decidir el modo: el ancestro pudo cambiar (scroll, layout).
   autoFixed.value = false;
+  rememberFocus();
   positionPanel();
   isOpen.value = true;
   emit("open");
@@ -370,6 +419,7 @@ function close() {
   autoFixed.value = false;
   emit("close");
   unregisterHover();
+  restoreFocus();
 }
 function toggle() {
   if (props.disabled) return;

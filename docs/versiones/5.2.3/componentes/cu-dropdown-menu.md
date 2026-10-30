@@ -173,7 +173,7 @@ El slot por defecto rellena el panel y sólo se usa cuando `items` está vacío.
 
 ## Interacción
 
-`open` y `close` son los dos CustomEvents propios, y `open()`, `close()`, `toggle()` e `isOpen()` gobiernan el panel por código.
+`open` y `close` son los dos CustomEvents propios, y `open()`, `close()`, `toggle()` e `isOpen()` gobiernan el panel por código. El panel se anuncia como `role="menu"`; al cerrarse con `Escape` (o al elegir un item), el foco vuelve al trigger.
 
 ```html
 <cu-dropdown-menu id="ddAPI" label="Dropdown"></cu-dropdown-menu>

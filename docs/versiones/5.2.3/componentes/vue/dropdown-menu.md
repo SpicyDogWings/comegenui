@@ -152,7 +152,7 @@ El slot `toggle` reemplaza el botón del trigger (scoped: `toggle` e `isOpen`); 
 
 ## Interacción
 
-`open` y `close` son los dos emits propios, y `open()`, `close()`, `toggle()` e `isOpen()` se llaman por `ref`.
+`open` y `close` son los dos emits propios, y `open()`, `close()`, `toggle()` e `isOpen()` se llaman por `ref`. El panel se anuncia como `role="menu"`; al cerrarse con `Escape` (o al elegir un item), el foco vuelve al trigger.
 
 ```vue
 <script setup lang="ts">
