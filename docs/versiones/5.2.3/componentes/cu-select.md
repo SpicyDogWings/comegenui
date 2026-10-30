@@ -165,7 +165,8 @@ escribir, la lista hace scroll a la primera opción que coincide.
 
 La coincidencia la define `search-mode`: `startsWith` (**default**, sólo al inicio del label) o
 `includes` (en cualquier parte); `search-reset-delay` (1000ms por default) es el tiempo sin
-teclear antes de resetear el texto acumulado.
+teclear antes de resetear el texto acumulado. Cerrar el panel corta la búsqueda en el acto: al
+reabrir se empieza de cero, sin texto acumulado ni barra de cooldown en curso.
 
 ## Barra de cooldown
 
@@ -239,9 +240,10 @@ también el foco usá `disabled`.
 
 ## Foco y cierre
 
-El panel cierra con `Escape` o con un click afuera. Al cerrarse, si el foco estaba adentro del
-panel (por ejemplo en una opción), **vuelve al trigger**; un click afuera sobre otro control no le
-roba el foco a ese control.
+El panel cierra con `Escape`, con un click afuera o cuando el control **pierde el foco** (Tab o
+foco programático): no queda un panel flotante abierto tapando el resto de la página. Al cerrarse,
+si el foco estaba adentro del panel (por ejemplo en una opción), **vuelve al trigger**; un click
+afuera sobre otro control no le roba el foco a ese control.
 
 ## Posicionamiento
 `position` acepta `bottom` (**default**) y `top` (el wrapper `Dropdown` también contempla
@@ -335,6 +337,10 @@ Cada opción del array `options` puede tener:
 ## Eventos
 
 <!--@include: ../partials/select/eventos-vanilla.md-->
+
+> `change` es un evento custom (el nativo de un `<select>` no puede salir del Shadow DOM). `focus` y
+> `blur` llegan como eventos **nativos** (`FocusEvent`, sin `detail`) cuando el foco entra o sale del
+> control — no cuando pasa del trigger a una opción del panel.
 
 ## Slots
 

@@ -79,7 +79,6 @@ Los valores de `color` / `variant` / `position` / `align` están en «Atributos�
 | `select` | — | — |
 | `change` | — | — |
 | `close` | — | — |
-| `blur` | — | — |
 <!-- /@api:eventos -->
 
 ### Slots

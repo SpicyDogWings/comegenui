@@ -200,9 +200,14 @@ se mueven juntos (el ícono no se descentra).
 
 Al elegir, el panel **no se cierra**: el input queda con el texto del item, el filtrado se resetea y
 la lista muestra **todos** los items con el elegido marcado con un check al final. Al volver a
-escribir, el filtrado se reanuda con la cadena actual; un click afuera (o `close()`) cierra el
-panel. `reset()` limpia el texto **y la selección**; `set(v)` cambia el texto y la selección se
-conserva sólo si `v` coincide con el item elegido.
+escribir, el filtrado se reanuda con la cadena actual; un click afuera, `Escape` (que devuelve el
+foco al input) o `close()` cierran el panel. `reset()` limpia el texto **y la selección**; `set(v)`
+cambia el texto y la selección se conserva sólo si `v` coincide con el item elegido.
+
+El panel también se cierra cuando el campo **pierde el foco** (Tab o foco programático) y un click
+en el campo con la lista cerrada la vuelve a abrir. Si `items` se reemplaza con objetos nuevos
+(carga async), la selección se re-resuelve por texto: el check y `selectedItem()` siguen apuntando
+al item vigente mientras el input diga lo mismo.
 
 ```vue
 <script setup lang="ts">
@@ -264,7 +269,7 @@ Cada item del array `items` puede tener:
 | Campo | Tipo | Default | Descripción |
 |-------|------|---------|-------------|
 | `label` | `string` | — | Texto que se muestra y sobre el que se busca |
-| `value` | `string` | `label` | Valor que se asigna al input al seleccionar el item |
+| `value` | `string` | — | Valor del item. Si el item **no** tiene `label`, este texto es el que se muestra en la fila y el que se escribe en el input al elegirlo |
 | `icon` | `string` | — | SVG completo inline (`<svg>...</svg>`) |
 | `disabled` | `boolean` | `false` | Opción deshabilitada (no clickeable, atenuada) |
 
@@ -272,7 +277,7 @@ Cada item del array `items` puede tener:
 
 ## Emits
 
-<!--@include: ../../partials/autocomplete/eventos.md-->
+<!--@include: ../../partials/autocomplete/eventos-vue.md-->
 
 ## Slots
 

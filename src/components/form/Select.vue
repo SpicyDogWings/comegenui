@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, type PropType } from 'vue';
+import { ref, computed, watch, nextTick, onUnmounted, type PropType } from 'vue';
 import { isColor, isFieldVariant, isSelectSearchMode, isTextAlign } from '@/utils/validators'
 import { textAlignStyle } from '@/utils/textAlign'
 import Dropdown from "../overlay/Dropdown.vue";
@@ -61,6 +61,8 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["update:modelValue", "select", "change", "close", "blur"]);
+/** `options` puede llegar como `null` (Vue no avisa): sin guarda, `.find`/`v-for` rompen. */
+const optionsList = computed(() => props.options ?? []);
 const selectedValue = ref(props.modelValue);
 const dropdownRef = ref<InstanceType<typeof Dropdown> | null>(null);
 const selectRoot = ref<HTMLElement | null>(null);
@@ -73,15 +75,26 @@ let resetTimeout: ReturnType<typeof setTimeout> | null = null;
 const matchIndex = computed(() => {
   const q = searchText.value;
   if (!q) return -1;
-  return props.options.findIndex(o =>
+  return optionsList.value.findIndex(o =>
     !o.disabled && matchesQuery(o.label, q, { mode: props.searchMode }),
   );
 });
+
+/** Búsqueda por teclado a cero: sin texto acumulado, sin barra de cooldown colgada. */
+function clearSearch() {
+  if (resetTimeout) {
+    clearTimeout(resetTimeout);
+    resetTimeout = null;
+  }
+  searchText.value = "";
+  cooldownActive.value = false;
+}
 
 function scheduleReset() {
   if (resetTimeout) clearTimeout(resetTimeout);
   cooldownActive.value = true;
   resetTimeout = setTimeout(() => {
+    resetTimeout = null;
     searchText.value = "";
     cooldownActive.value = false;
   }, props.searchResetDelay);
@@ -116,7 +129,9 @@ function scrollToMatch(index: number) {
 
 function onDropdownOpen() {
   if (props.searchEnabled) {
-    searchText.value = "";
+    // Cada apertura arranca la búsqueda de cero: si el panel se cerró a mitad del
+    // cooldown, el texto acumulado y la barra no deben reaparecer al reabrir.
+    clearSearch();
     nextTick(() => {
       const input = nativeInputRef.value;
       if (input) {
@@ -128,12 +143,13 @@ function onDropdownOpen() {
 }
 
 function onDropdownClose() {
-  if (props.searchEnabled) {
-    const input = nativeInputRef.value;
-    if (input) {
-      input.removeEventListener("keydown", onKeyDown);
-    }
+  const input = nativeInputRef.value;
+  if (input) {
+    input.removeEventListener("keydown", onKeyDown);
   }
+  // Cerrar el panel corta la búsqueda: el timer del cooldown no sigue corriendo
+  // fuera de vista ni deja texto viejo para la próxima apertura.
+  clearSearch();
 }
 
 watch(() => dropdownRef.value?.isOpen(), (open) => {
@@ -147,7 +163,7 @@ watch(() => props.readOnly, (value) => {
 });
 
 const selectedLabel = computed(() => {
-  const opt = props.options.find(o => o.value === selectedValue.value);
+  const opt = optionsList.value.find(o => o.value === selectedValue.value);
   return opt ? opt.label : props.placeholder || "Seleccionar...";
 });
 
@@ -165,6 +181,17 @@ function onSelect(option: SelectOption) {
 }
 
 const optionStyle = computed(() => textAlignStyle(props.textAlign));
+/**
+ * Look de la opción deshabilitada. Va inline porque la fila es un `Button`: su variante
+ * (`ghost`/`soft`, scoped) declara `color` y `--disabled` declara `opacity`, y con la
+ * misma especificidad le ganaban a la clase del padre. `opacity: 1` evita apilar la
+ * atenuación del `Button` sobre el color muted (dejaba el texto bajo 4.5:1).
+ */
+const disabledOptionStyle = computed(() => ({
+  ...optionStyle.value,
+  color: "var(--cu-color-neutral-text-muted)",
+  opacity: "1",
+}));
 /** El label del trigger alinea su texto dentro del espacio que deja el chevron. */
 const labelStyle = computed(() => ({ textAlign: props.textAlign }));
 
@@ -182,17 +209,29 @@ function focus() {
 }
 
 function onFocusOut(e: FocusEvent) {
-  if (!selectRoot.value?.contains(e.relatedTarget as Node)) {
-    emit("blur");
+  const next = e.relatedTarget as HTMLElement | null;
+  if (selectRoot.value?.contains(next as Node)) return;
+  // El foco se fue del control (Tab, foco programático): el panel flotante no puede
+  // quedar abierto tapando el resto de la página. `Popover` solo cierra con Escape o
+  // click afuera, así que el cierre por salida del foco es del componente.
+  if (dropdownRef.value?.isOpen()) {
+    dropdownRef.value.close();
+    // Al cerrar, `Popover` devuelve el foco al trigger; dentro de un shadow root lee
+    // "foco perdido" cuando en realidad se fue a otro control, así que el control se
+    // tragaría el Tab. Devolvemos el foco a donde iba (el fix de fondo es de `Popover`).
+    if (next && next.isConnected) next.focus();
   }
+  emit("blur");
 }
+
+onUnmounted(clearSearch);
 
 defineExpose({
   get, set, reset, focus,
   /** Indica si el panel está abierto. */
   isOpen: () => dropdownRef.value?.isOpen() ?? false,
   /** Devuelve la opción seleccionada o null. */
-  selectedItem: () => props.options.find(o => o.value === selectedValue.value) || null,
+  selectedItem: () => optionsList.value.find(o => o.value === selectedValue.value) || null,
 });
 </script>
 
@@ -260,9 +299,9 @@ defineExpose({
           tabindex="-1"
           autocomplete="off"
         />
-        <div v-if="options.length > 0" class="cu-select-options">
+        <div v-if="optionsList.length > 0" class="cu-select-options">
           <MenuOption
-            v-for="(opt, i) in options"
+            v-for="(opt, i) in optionsList"
             :key="i"
             :label="opt.label"
             :color="opt.color || color"
@@ -271,7 +310,7 @@ defineExpose({
             :selected="opt.value === selectedValue"
             class="cu-select-option"
             :class="{ 'cu-select-option--disabled': opt.disabled }"
-            :style="optionStyle"
+            :style="opt.disabled ? disabledOptionStyle : optionStyle"
             @click="onSelect(opt)"
           />
         </div>
@@ -345,11 +384,9 @@ defineExpose({
 }
 
 .cu-select-option--disabled {
-  /* Estado deshabilitado por color (≥ 4.5:1), no por opacity: la fila es un
-     Button deshabilitado (alpha-disabled 0.7) y la opacidad acumulada dejaba el
-     texto en ~2:1. */
-  opacity: 1;
-  color: var(--cu-color-neutral-text-muted);
+  /* El color muted y la opacidad 1 van inline (`disabledOptionStyle`): la fila es un
+     `Button` y sus reglas scoped le ganaban a esta clase (la opción deshabilitada se
+     veía igual que una habilitada). Acá queda solo el cursor. */
   cursor: not-allowed;
 }
 

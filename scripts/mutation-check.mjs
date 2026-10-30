@@ -1983,8 +1983,8 @@ const MUTATIONS = [
     id: "autocomplete-foco-reabre-el-panel",
     file: "src/components/form/Autocomplete.vue",
     expect: "el foco restaurado al cerrar no reabre la lista",
-    find: `  if (props.disabled || ignoreFocusAfterClose) return;`,
-    replace: `  if (props.disabled) return;`,
+    find: `  if (ignoreFocusAfterClose) return;`,
+    replace: `  if (false) return;`,
   },
   {
     id: "month-slider-label-contraste",
@@ -2009,6 +2009,101 @@ const MUTATIONS = [
   '--ms-solid-hover': \`var(--cu-color-\${props.color}-solid-hover)\`,
 `,
     replace: ``,
+  },
+  // ── lote 3 · cu-select / cu-autocomplete ──
+  {
+    id: "autocomplete-foco-fuera-no-cierra-panel",
+    file: "src/components/form/Autocomplete.vue",
+    expect: "el foco que sale del campo cierra el panel",
+    find: `    dropdownRef.value.close();`,
+    replace: `    /* mutado */`,
+  },
+  {
+    id: "autocomplete-click-no-reabre",
+    file: "src/components/form/Autocomplete.vue",
+    expect: "un click en el campo reabre la lista cerrada por un click afuera",
+    find: `        @focus="onFocus"
+        @click="onClick"`,
+    replace: `        @focus="onFocus"`,
+  },
+  {
+    id: "autocomplete-items-null-rompe",
+    file: "src/components/form/Autocomplete.vue",
+    expect: "items null renderiza el campo vacío en vez de romperlo",
+    find: `const searchItems = computed(() => props.items ?? []);`,
+    replace: `const searchItems = computed(() => props.items);`,
+  },
+  {
+    id: "autocomplete-seleccion-no-se-reancla",
+    file: "src/components/form/Autocomplete.vue",
+    expect: "reemplazar items con objetos nuevos conserva el check y selectedItem",
+    find: `    selectedItem.value = (items ?? []).find((item) => itemText(item) === text) ?? null;`,
+    replace: `    /* mutado */`,
+  },
+  {
+    id: "autocomplete-item-deshabilitado-sin-atenuar",
+    file: "src/components/form/Autocomplete.vue",
+    expect: "el item deshabilitado se ve atenuado (color muted inline)",
+    find: `          :style="item.disabled ? disabledItemStyle : itemStyle"`,
+    replace: `          :style="itemStyle"`,
+  },
+  {
+    id: "autocomplete-ce-remite-blur",
+    file: "src/components/customElements/form/Autocomplete.ce.vue",
+    test: "src/components/customElements/ce-parity.test.ts",
+    expect: "el CE no re-emite `blur` como CustomEvent (ya llega el nativo)",
+    find: `    @select="ceEmit('select', $event)"`,
+    replace: `    @select="ceEmit('select', $event)"
+    @blur="ceEmit('blur', $event)"`,
+  },
+  {
+    id: "select-foco-fuera-no-cierra-panel",
+    file: "src/components/form/Select.vue",
+    expect: "el foco que sale del control cierra el panel",
+    find: `    dropdownRef.value.close();`,
+    replace: `    /* mutado */`,
+  },
+  {
+    id: "select-cierre-no-corta-cooldown",
+    file: "src/components/form/Select.vue",
+    expect: "cerrar el panel corta el cooldown (no reaparece al reabrir)",
+    find: `  // Cerrar el panel corta la búsqueda: el timer del cooldown no sigue corriendo
+  // fuera de vista ni deja texto viejo para la próxima apertura.
+  clearSearch();`,
+    replace: `  /* mutado */`,
+  },
+  {
+    id: "select-busqueda-no-se-resetea",
+    file: "src/components/form/Select.vue",
+    expect: "el texto acumulado de la búsqueda se resetea al abrir/cerrar",
+    find: `  searchText.value = "";
+  cooldownActive.value = false;
+}`,
+    replace: `  cooldownActive.value = false;
+}`,
+  },
+  {
+    id: "select-options-null-rompe",
+    file: "src/components/form/Select.vue",
+    expect: "options null renderiza el select vacío en vez de romperlo",
+    find: `const optionsList = computed(() => props.options ?? []);`,
+    replace: `const optionsList = computed(() => props.options as SelectOption[]);`,
+  },
+  {
+    id: "select-opcion-deshabilitada-sin-atenuar",
+    file: "src/components/form/Select.vue",
+    expect: "la opción deshabilitada se ve atenuada (color muted inline)",
+    find: `            :style="opt.disabled ? disabledOptionStyle : optionStyle"`,
+    replace: `            :style="optionStyle"`,
+  },
+  {
+    id: "select-ce-remite-blur",
+    file: "src/components/customElements/form/Select.ce.vue",
+    test: "src/components/customElements/ce-parity.test.ts",
+    expect: "el CE no re-emite `blur` como CustomEvent (ya llega el nativo)",
+    find: `    @close="ceEmit('close', $event)"`,
+    replace: `    @close="ceEmit('close', $event)"
+    @blur="ceEmit('blur', $event)"`,
   },
 ];
 

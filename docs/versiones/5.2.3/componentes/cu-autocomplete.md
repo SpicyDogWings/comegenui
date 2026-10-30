@@ -195,6 +195,14 @@ conserva sólo si `v` coincide con el item elegido.
 `Escape` cierra el panel y devuelve el foco al input; ese retorno de foco **no** reabre la lista
 (por eso Escape funciona aunque el menú se abra al enfocar).
 
+El panel también se cierra cuando el campo **pierde el foco** (Tab o foco programático): no queda
+una lista flotante abierta sobre el resto de la página. Un click en el campo con la lista cerrada
+la vuelve a abrir (el cierre por click afuera devuelve el foco al input, así que ese segundo click
+no dispara `focus`).
+
+Si `items` se reemplaza con objetos nuevos (carga async), la selección se re-resuelve por texto: el
+check y `selectedItem()` siguen apuntando al item vigente mientras el input diga lo mismo.
+
 ```html
 <cu-autocomplete id="ac" placeholder="Buscá un país..."></cu-autocomplete>
 
@@ -242,7 +250,7 @@ Cada item del array `items` puede tener:
 | Campo | Tipo | Default | Descripción |
 |-------|------|---------|-------------|
 | `label` | `string` | — | Texto que se muestra y sobre el que se busca |
-| `value` | `string` | `label` | Valor que se asigna al input al seleccionar el item |
+| `value` | `string` | — | Valor del item. Si el item **no** tiene `label`, este texto es el que se muestra en la fila y el que se escribe en el input al elegirlo |
 | `icon` | `string` | — | SVG completo inline (`<svg>...</svg>`) |
 | `disabled` | `boolean` | `false` | Opción deshabilitada (no clickeable, atenuada) |
 
@@ -252,9 +260,9 @@ Cada item del array `items` puede tener:
 
 ## Eventos
 
-<!--@include: ../partials/autocomplete/eventos.md-->
+<!--@include: ../partials/autocomplete/eventos-vanilla.md-->
 
-> Los eventos nativos del DOM (`input`, `change`, `focus`, `blur`) **burbujean automáticamente** al host desde el Shadow DOM. No se re-emiten como eventos custom con esos nombres.
+> Los eventos nativos del DOM (`input`, `change`, `focus`, `blur`) llegan al host desde el Shadow DOM: no se re-emiten como eventos custom con esos nombres. `blur` llega como `FocusEvent` nativo (sin `detail`), recién cuando el foco sale del campo — no cuando pasa de un elemento interno a otro (por ejemplo, al elegir un item del panel).
 
 ## Slots
 

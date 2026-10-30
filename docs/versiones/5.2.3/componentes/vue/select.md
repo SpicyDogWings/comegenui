@@ -192,7 +192,8 @@ const paises = [
 
 La coincidencia la define `searchMode`: `startsWith` (**default**, sólo al inicio del label) o
 `includes` (en cualquier parte); `searchResetDelay` (1000ms por default) es el tiempo sin
-teclear antes de resetear el texto acumulado.
+teclear antes de resetear el texto acumulado. Cerrar el panel corta la búsqueda en el acto: al
+reabrir se empieza de cero, sin texto acumulado ni barra de cooldown en curso.
 
 ## Barra de cooldown
 
@@ -297,7 +298,10 @@ const opciones = [
 
 ## Foco y cierre
 
-El panel cierra con `Escape` o con un click afuera. Al cerrarse, si el foco estaba adentro del panel (por ejemplo en una opción), **vuelve al trigger**; un click afuera sobre otro control no le roba el foco a ese control.
+El panel cierra con `Escape`, con un click afuera o cuando el control **pierde el foco** (Tab o foco
+programático), así no queda un panel flotante abierto. Al cerrarse, si el foco estaba adentro del
+panel (por ejemplo en una opción), **vuelve al trigger**; un click afuera sobre otro control no le
+roba el foco a ese control.
 
 ## Posicionamiento
 

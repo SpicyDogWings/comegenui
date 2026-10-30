@@ -225,6 +225,18 @@ describe("Select.ce", () => {
     expect(el.isOpen()).toBe(false);
     el.remove();
   });
+
+  it("no re-emite `blur` como CustomEvent: el nativo del control ya llega al host", async () => {
+    const w = mount(SelectCe, { props: { options }, attachTo: document.body });
+    const recibidos: Event[] = [];
+    w.element.addEventListener("blur", (e: Event) => recibidos.push(e));
+
+    w.findComponent(Select).vm.$emit("blur");
+    await flushPromises();
+
+    expect(recibidos.filter((e) => e instanceof CustomEvent)).toHaveLength(0);
+    w.unmount();
+  });
 });
 
 describe("FileInput.ce", () => {
@@ -565,6 +577,21 @@ describe("Autocomplete.ce", () => {
 
     expect(w.vm.get()).toBe("María");
     expect(selects[0]?.label).toBe("María");
+  });
+
+  it("no re-emite `blur` como CustomEvent: el nativo del campo ya llega al host", async () => {
+    const w = mount(AutocompleteCe, {
+      props: { items: [{ label: "María" }] },
+      attachTo: document.body,
+    });
+    const recibidos: Event[] = [];
+    w.element.addEventListener("blur", (e: Event) => recibidos.push(e));
+
+    w.findComponent(Autocomplete).vm.$emit("blur");
+    await flushPromises();
+
+    expect(recibidos.filter((e) => e instanceof CustomEvent)).toHaveLength(0);
+    w.unmount();
   });
 });
 

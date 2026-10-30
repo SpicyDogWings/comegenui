@@ -1,9 +1,10 @@
 // Comportamiento de Select según su ficha (docs/componentes/vue/select.md).
 //
 // Aserciones escritas a mano desde la prosa: fallan por bugs reales.
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, beforeAll } from "vitest";
 import { flushPromises, mount } from "@vue/test-utils";
 import Select from "./Select.vue";
+import Dropdown from "../overlay/Dropdown.vue";
 
 interface Opt {
   value: string;
@@ -31,6 +32,11 @@ const OPTIONS: Opt[] = [
 ];
 
 const toggle = (w: ReturnType<typeof mount>) => w.find(".cu-select-toggle");
+
+// jsdom no implementa `scrollIntoView` y `searchEnabled` lo usa al matchear una opción.
+beforeAll(() => {
+  Element.prototype.scrollIntoView = vi.fn();
+});
 
 describe("Select — estado y v-model", () => {
   it("arranca con el valor del modelValue y muestra el label de la opción", async () => {
@@ -297,3 +303,122 @@ describe("Select — el foco vuelve al trigger al cerrar", () => {
     w.unmount()
   })
 })
+
+describe("Select — el panel no queda abierto al salir del control", () => {
+  it("el foco que sale del control (Tab) cierra el panel", async () => {
+    const w = mount(Select, { props: { options: OPTIONS }, attachTo: document.body });
+    const outside = document.createElement("button");
+    document.body.appendChild(outside);
+
+    await toggle(w).trigger("click");
+    await flushPromises();
+    expect(vm(w).isOpen()).toBe(true);
+
+    await toggle(w).trigger("focusout", { relatedTarget: outside });
+    await flushPromises();
+
+    expect(vm(w).isOpen()).toBe(false);
+    expect(w.emitted("blur")).toHaveLength(1);
+    outside.remove();
+    w.unmount();
+  });
+
+  it("el foco que pasa a una opción del panel NO cierra el panel", async () => {
+    const w = mount(Select, { props: { options: OPTIONS }, attachTo: document.body });
+    await toggle(w).trigger("click");
+    await flushPromises();
+
+    const option = w.findAll(".cu-select-option")[0]!.element as HTMLElement;
+    await toggle(w).trigger("focusout", { relatedTarget: option });
+    await flushPromises();
+
+    expect(vm(w).isOpen()).toBe(true);
+    expect(w.emitted("blur")).toBeUndefined();
+    w.unmount();
+  });
+});
+
+describe("Select — búsqueda por teclado y cooldown", () => {
+  const searchOptions: Opt[] = [
+    { value: "ar", label: "Argentina" },
+    { value: "br", label: "Brasil" },
+    { value: "cl", label: "Chile" },
+  ];
+
+  it("cerrar el panel corta el cooldown: al reabrir no hay barra corriendo", async () => {
+    const w = mount(Select, { props: { options: searchOptions, searchEnabled: true } });
+    await toggle(w).trigger("click");
+    await flushPromises();
+
+    const hidden = w.find(".cu-select-hidden-input");
+    await hidden.trigger("keydown", { key: "c" });
+    await flushPromises();
+    expect(w.findComponent(Dropdown).props("cooldown")).toBe(true);
+
+    // Escape cierra el panel.
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+    await flushPromises();
+    expect(vm(w).isOpen()).toBe(false);
+    expect(w.findComponent(Dropdown).props("cooldown")).toBe(false);
+
+    await toggle(w).trigger("click");
+    await flushPromises();
+    expect(vm(w).isOpen()).toBe(true);
+    expect(w.findComponent(Dropdown).props("cooldown")).toBe(false);
+    w.unmount();
+  });
+
+  it("el texto acumulado se resetea al cerrar: reabrir y escribir busca desde cero", async () => {
+    const w = mount(Select, { props: { options: searchOptions, searchEnabled: true } });
+    await toggle(w).trigger("click");
+    await flushPromises();
+
+    const scrolled: HTMLElement[] = [];
+    Element.prototype.scrollIntoView = function (this: HTMLElement) {
+      scrolled.push(this);
+    };
+
+    await w.find(".cu-select-hidden-input").trigger("keydown", { key: "b" });
+    await flushPromises();
+    expect(scrolled.at(-1)?.textContent).toContain("Brasil");
+
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+    await flushPromises();
+    await toggle(w).trigger("click");
+    await flushPromises();
+
+    // "c" solo: Chile. Con el texto viejo ("bc") no habría match y no scrollearía.
+    await w.find(".cu-select-hidden-input").trigger("keydown", { key: "c" });
+    await flushPromises();
+
+    expect(scrolled.at(-1)?.textContent).toContain("Chile");
+    w.unmount();
+  });
+});
+
+describe("Select — opción deshabilitada", () => {
+  it("se ve atenuada (color muted inline, sin opacidad apilada)", async () => {
+    const w = mount(Select, { props: { options: OPTIONS } });
+    await toggle(w).trigger("click");
+    await flushPromises();
+
+    const rows = w.findAll(".cu-select-option");
+    const habilitada = rows[0]!.element as HTMLElement;
+    const deshabilitada = rows[2]!.element as HTMLElement;
+
+    expect(deshabilitada.style.color).toBe("var(--cu-color-neutral-text-muted)");
+    expect(deshabilitada.style.opacity).toBe("1");
+    expect(habilitada.style.color).toBe("");
+  });
+});
+
+describe("Select — options inválidas", () => {
+  it("options null no rompe el control (lista vacía)", async () => {
+    const w = mount(Select, { props: { options: null as unknown as Opt[] } });
+    await toggle(w).trigger("click");
+    await flushPromises();
+
+    expect(w.find(".cu-select-empty").exists()).toBe(true);
+    expect(vm(w).selectedItem()).toBeNull();
+  });
+});

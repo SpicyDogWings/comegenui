@@ -140,7 +140,6 @@ defineExpose({
     @update:model-value="onUpdate"
     @change="ceEmit('change', $event)"
     @close="ceEmit('close', $event)"
-    @blur="ceEmit('blur', $event)"
   />
 </template>
 
