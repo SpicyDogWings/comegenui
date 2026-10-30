@@ -405,10 +405,12 @@ Podés deshabilitar la edición y el estado visual a **tres niveles**, con prior
 | **Celda** | campo `column.cellDisabled` (`(row) => boolean`) | Deshabilita una celda puntual (intersección fila × columna) |
 
 Al deshabilitar una celda:
-- La celda se **atenúa** y muestra `cursor: not-allowed`.
+- La celda se **atenúa** y muestra `cursor: not-allowed`. La atenuación es por **color**
+  (`--cu-color-neutral-text-muted`, contraste ≥ 4.5:1), no por `opacity`: el texto sigue siendo
+  legible y auditable en los 15 temas.
 - No entra en modo edición (ni lápiz ni inline; en inline muestra la vista atenuada).
 - Los **botones** de la celda y las **acciones** del dropdown "..." se deshabilitan.
-- Los **badges** se siguen viendo (solo atenuados con la fila).
+- Los **badges** se siguen viendo con su color propio (no se atenúan).
 
 ```js
 tabla.rowDisabled = (row) => row.bloqueado === true;   // fila deshabilitada

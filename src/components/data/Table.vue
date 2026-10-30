@@ -296,8 +296,13 @@ const isRowDisabled = (row: Record<string, any>): boolean => {
 }
 
 .cu-table-row--disabled {
-  opacity: var(--cu-alpha-muted, 0.5);
   pointer-events: none;
+}
+
+/* Fila deshabilitada: el texto va atenuado por color (contraste real), no por
+   `opacity` — la opacidad diluye también el fondo y no se puede auditar. */
+.cu-table-row--disabled :deep(.cu-table-td) {
+  color: var(--cu-color-neutral-text-muted);
 }
 
 .cu-table-row--disabled:hover {
@@ -326,8 +331,7 @@ const isRowDisabled = (row: Record<string, any>): boolean => {
 :deep(.cu-table-empty) {
   padding: var(--cu-space-xl);
   text-align: center;
-  color: var(--cu-color-neutral-text);
-  opacity: var(--cu-alpha-muted, 0.5);
+  color: var(--cu-color-neutral-text-muted);
   font-style: italic;
   font-family: var(--cu-font-sans);
 }

@@ -9,16 +9,42 @@ let styleEl: HTMLStyleElement | null = null
 export const MIN_TEXT_CONTRAST = 4.5
 /** Mínimo WCAG para componentes/bordes no textuales. */
 export const MIN_BORDER_CONTRAST = 3
+/** Contraste de los textos secundarios (`-text-subtle`): más tenue que el texto
+ *  normal pero claramente por encima del mínimo de 4.5:1. */
+export const MIN_SUBTLE_CONTRAST = 6
+
+/**
+ * Texto atenuado con contraste garantizado: parte del texto legible y se mezcla
+ * hacia el fondo hasta el punto más tenue que todavía alcanza `min`. Se ajusta
+ * el color (no `opacity`), así el texto conserva el contraste real que mide
+ * WCAG: una opacidad diluye el texto contra el fondo y no hay forma de auditarla.
+ */
+export function mutedTextColor(text: string, bg: string, min: number): string {
+  let best = text
+  for (let amount = 0.01; amount <= 1.0001; amount += 0.01) {
+    const candidate = toHex(mix(text, bg, amount))
+    if (contrastRatio(candidate, bg) < min) break
+    best = candidate
+  }
+  return best
+}
 
 export function colorVar(name: string, value: string, surface: string, codeBg: string) {
   // Solid/none: el texto es SIEMPRE el del tema (`surface`); el color de fondo
   // se ajusta hasta que ese texto alcance 4.5:1.
   const solid = solidColor(value, surface)
+  const text = textColor(value, surface)
+  // Atenuados: se miden contra el peor fondo real donde se pintan — el tinte
+  // ghost-active (20 %): un ítem de menú presionado, el input soft (15 %) y la
+  // superficie. Así el atenuado sigue viéndose atenuado sin bajar de 4.5:1.
+  const mutedBg = compositeOver(value, surface, 0.2)
   return `--cu-color-${name}: ${value};
     --cu-color-${name}-solid: ${solid};
     --cu-color-${name}-solid-hover: ${solidStep(solid, surface, 0.1)};
     --cu-color-${name}-solid-active: ${solidStep(solid, surface, 0.2)};
-    --cu-color-${name}-text: ${textColor(value, surface)};
+    --cu-color-${name}-text: ${text};
+    --cu-color-${name}-text-muted: ${mutedTextColor(text, mutedBg, MIN_TEXT_CONTRAST)};
+    --cu-color-${name}-text-subtle: ${mutedTextColor(text, mutedBg, MIN_SUBTLE_CONTRAST)};
     --cu-color-${name}-hover: ${toHex(darken(value, 0.1))};
     --cu-color-${name}-active: ${toHex(lighten(value, 0.1))};
     --cu-color-${name}-ghost-hover: ${toHex(transparentize(value, 0.9))};

@@ -72,13 +72,44 @@ const MUTATIONS = [
     id: "modal-close-emits-nothing",
     file: "src/components/overlay/Modal.vue",
     expect: "cerrar el modal emite close/closed",
-    find: `watch(isOpen, (newVal) => {
-  emit(newVal ? "opened" : "closed");
-  if (!newVal) emit("close");
-});`,
-    replace: `watch(isOpen, (newVal) => {
-  emit(newVal ? "opened" : "closed");
-});`,
+    find: `  if (!newVal) emit("close");\n`,
+    replace: ``,
+  },
+  {
+    id: "modal-foco-sin-trampa",
+    file: "src/components/overlay/Modal.vue",
+    expect: "Tab no sale del diálogo (focus trap)",
+    find: `    document.addEventListener("keydown", handleKeydown);\n`,
+    replace: ``,
+  },
+  {
+    id: "modal-foco-sin-retorno",
+    file: "src/components/overlay/Modal.vue",
+    expect: "al cerrar, el foco vuelve al trigger",
+    find: `    restoreFocus();\n`,
+    replace: ``,
+  },
+  {
+    id: "modal-pisa-foco-del-consumidor",
+    file: "src/components/overlay/Modal.vue",
+    test: "src/components/overlay/CommandPalette.test.ts",
+    expect: "el foco inicial del consumidor (buscador de CommandPalette) no se pisa",
+    find: `  if (active && (focusables.includes(active as HTMLElement) || root.contains(active))) return;\n`,
+    replace: ``,
+  },
+  {
+    id: "modal-nombre-accesible-sin-fallback",
+    file: "src/components/overlay/Modal.vue",
+    expect: "sin title el diálogo conserva un nombre accesible (aria-label)",
+    find: `((attrs['aria-label'] as string | undefined) || 'Diálogo')`,
+    replace: `(attrs['aria-label'] as string | undefined)`,
+  },
+  {
+    id: "command-palette-nombre-accesible-sin-fallback",
+    file: "src/components/overlay/CommandPalette.vue",
+    expect: "el diálogo de la paleta se anuncia aunque no haya title",
+    find: `:aria-label="title || 'Paleta de comandos'"`,
+    replace: `:aria-label="title"`,
   },
   {
     id: "card-ignores-media-slot",
@@ -600,6 +631,13 @@ const MUTATIONS = [
     replace: `  emit("update:itemsPerPage", Number(val));`,
   },
   {
+    id: "pagination-itemsperpage-fuera-de-opciones",
+    file: "src/components/controls/Pagination.vue",
+    expect: "el tamaño actual se agrega a las opciones del selector (no queda 'Seleccionar...')",
+    find: `  const sizes = new Set([...props.pageSizeOptions, props.itemsPerPage]);`,
+    replace: `  const sizes = new Set(props.pageSizeOptions);`,
+  },
+  {
     id: "table-rowdisabled-ignores-fn",
     file: "src/components/data/Table.vue",
     expect: "rowDisabled como función deshabilita las filas que cumplen",
@@ -979,6 +1017,14 @@ const MUTATIONS = [
     replace: `const alpha = { ...DEFAULTS.alpha }`,
   },
   {
+    id: "texto-atenuado-sin-contraste",
+    file: "src/plugins/cu-tokens/css.ts",
+    test: "src/plugins/cu-tokens/contrast.test.ts",
+    expect: "los tokens -text-muted/-text-subtle garantizan 4.5:1 / 6:1 (color, no opacity)",
+    find: `--cu-color-\${name}-text-muted: \${mutedTextColor(text, mutedBg, MIN_TEXT_CONTRAST)};`,
+    replace: `--cu-color-\${name}-text-muted: \${mutedTextColor(text, mutedBg, 3)};`,
+  },
+  {
     id: "alpha-token-muted-no-emite",
     file: "src/plugins/cu-tokens/css.ts",
     expect: "se emite --cu-alpha-muted (items, opciones y filas deshabilitadas)",
@@ -993,6 +1039,20 @@ const MUTATIONS = [
       "el default documentado coincide con el del SFC (la ficha se lee siguiendo sus @include)",
     find: `| \`variant\` | \`"solid" \\| "outlined" \\| "soft" \\| "ghost" \\| "subtle"\` | \`"soft"\` | — |`,
     replace: `| \`variant\` | \`"solid" \\| "outlined" \\| "soft" \\| "ghost" \\| "subtle"\` | \`"solid"\` | — |`,
+  },
+  {
+    id: "advanced-table-icon-sin-sanitizar",
+    file: "src/components/data/AdvancedTable.vue",
+    expect: "el icono de un botón de celda pasa por DOMPurify antes del v-html",
+    find: `v-html="sanitizeIcon(button.icon as string)"`,
+    replace: `v-html="button.icon"`,
+  },
+  {
+    id: "advanced-table-action-icon-sin-sanitizar",
+    file: "src/components/data/AdvancedTable.vue",
+    expect: "el icono de una acción del dropdown pasa por DOMPurify",
+    find: `      icon: typeof action.icon === "string" ? sanitizeIcon(action.icon) : action.icon,\n`,
+    replace: ``,
   },
   {
     id: "advanced-table-actions-fn-ignorada",

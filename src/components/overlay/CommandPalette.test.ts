@@ -402,3 +402,35 @@ describe("CommandPalette — apertura con scroll previo", () => {
     expect(results.scrollTop).toBe(0);
   });
 });
+
+describe("CommandPalette — nombre accesible del diálogo", () => {
+  it("sin `title` el diálogo se anuncia como paleta de comandos (no queda sin nombre)", async () => {
+    const w = mount(CommandPalette, { props: { commands: makeCommands([]) } });
+    vm(w).open();
+    await flushPromises();
+
+    const dialog = w.find("[role=dialog]");
+    expect(dialog.attributes("aria-labelledby")).toBeUndefined();
+    expect(dialog.attributes("aria-label")).toBe("Paleta de comandos");
+  });
+
+  it("con `title`, el nombre sale del título", async () => {
+    const w = mount(CommandPalette, { props: { commands: makeCommands([]), title: "Comandos" } });
+    vm(w).open();
+    await flushPromises();
+
+    const dialog = w.find("[role=dialog]");
+    expect(dialog.attributes("aria-labelledby")).toBe("modal-title");
+    expect(dialog.find(".cu-modal-title").text()).toBe("Comandos");
+  });
+});
+
+describe("CommandPalette — foco al abrir", () => {
+  it("el buscador recibe el foco al abrir (el Modal no lo pisa)", async () => {
+    const w = mount(CommandPalette, { props: { commands: makeCommands([]) }, attachTo: document.body });
+    vm(w).open();
+    await flushPromises();
+
+    expect(document.activeElement).toBe(w.find(".cu-command-palette-input").element);
+  });
+});

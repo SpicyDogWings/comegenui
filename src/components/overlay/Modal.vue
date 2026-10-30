@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch, useSlots, type PropType } from "vue";
+import { computed, nextTick, onBeforeUnmount, ref, useAttrs, useSlots, watch, type PropType } from "vue";
 import { isModalSize } from '@/utils/validators'
 import { useMagicKeys, whenever } from "@vueuse/core";
 import Button from "../buttons/Button.vue";
@@ -42,16 +42,157 @@ const props = defineProps({
 const emit = defineEmits(["close", "opened", "closed", "cancel", "accept"]);
 
 const slots = useSlots();
+const attrs = useAttrs();
 const isOpen = ref(false);
 
+const backdropRef = ref<HTMLElement | null>(null);
+/** Elemento que tenía el foco al abrir: se le devuelve al cerrar. */
+const trigger = ref<HTMLElement | null>(null);
+
 const hasFooter = computed(() => !!slots.footer?.());
+
+// Nombre accesible: con `title` manda `aria-labelledby`; sin él (p. ej.
+// CommandPalette, que no pasa título) el diálogo quedaría sin nombre. El autor
+// puede pisarlo con `aria-label` en el host; si no, hay un fallback genérico.
+const dialogLabel = computed(() =>
+  props.title ? undefined : ((attrs['aria-label'] as string | undefined) || 'Diálogo'),
+);
 
 const colorStyles = computed(() => ({
   '--modal-color': `var(--cu-color-${props.color})`,
 }));
 
+const FOCUSABLE_SELECTOR = [
+  'a[href]',
+  'area[href]',
+  'button:not([disabled])',
+  'input:not([disabled]):not([type="hidden"])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+  'iframe',
+  'object',
+  'embed',
+  'audio[controls]',
+  'video[controls]',
+  'summary',
+  '[contenteditable="true"]',
+  '[tabindex]:not([tabindex="-1"])',
+].join(',');
+
+/** Oculta por atributo/inline style (v-show): `focus()` no serviría y el trap no debe contarla. */
+function isHidden(el: Element): boolean {
+  for (let node: Element | null = el; node; node = node.parentElement) {
+    if (node.hasAttribute('hidden')) return true;
+    const style = (node as HTMLElement).style;
+    if (style && (style.display === 'none' || style.visibility === 'hidden')) return true;
+  }
+  return false;
+}
+
+function isFocusable(el: Element): el is HTMLElement {
+  return el instanceof HTMLElement && el.matches(FOCUSABLE_SELECTOR) && !isHidden(el);
+}
+
+/**
+ * Focusables del diálogo en orden de tabulación. Recorre slots (`assignedElements`)
+ * y shadow roots anidados: el contenido de un `<cu-modal>` vive en el light DOM del
+ * host y el de un `<cu-input>` en su propio shadow, y `querySelectorAll` no cruza
+ * ninguna de las dos fronteras.
+ */
+function collectFocusables(root: ParentNode, out: HTMLElement[] = []): HTMLElement[] {
+  for (const child of Array.from(root.children)) {
+    if (child.tagName === 'SLOT' && 'assignedElements' in child) {
+      const slot = child as HTMLSlotElement;
+      const assigned = slot.assignedElements({ flatten: true });
+      const source = assigned.length ? assigned : Array.from(slot.children);
+      for (const node of source) {
+        if (isFocusable(node)) out.push(node);
+        if (node.shadowRoot) collectFocusables(node.shadowRoot, out);
+        collectFocusables(node, out);
+      }
+      continue;
+    }
+    if (isFocusable(child)) out.push(child);
+    if (child.shadowRoot) collectFocusables(child.shadowRoot, out);
+    collectFocusables(child, out);
+  }
+  return out;
+}
+
+function dialogFocusables(): HTMLElement[] {
+  const root = backdropRef.value;
+  return root ? collectFocusables(root) : [];
+}
+
+/** Elemento realmente enfocado, atravesando shadow roots anidados. */
+function deepActiveElement(): Element | null {
+  let active: Element | null = document.activeElement;
+  while (active?.shadowRoot?.activeElement) active = active.shadowRoot.activeElement;
+  return active;
+}
+
+/**
+ * Foco inicial: `[autofocus]` si existe, si no el primer focusable, si no el
+ * diálogo. No pisa un foco que ya está adentro: un consumidor (CommandPalette)
+ * puede enfocar su buscador en el mismo tick y ese foco manda.
+ */
+function focusFirst() {
+  const root = backdropRef.value;
+  if (!root) return;
+  const focusables = dialogFocusables();
+  const active = deepActiveElement();
+  if (active && (focusables.includes(active as HTMLElement) || root.contains(active))) return;
+  const autofocus = root.querySelector('[autofocus]') as HTMLElement | null;
+  (autofocus ?? focusables[0] ?? root).focus();
+}
+
+/** Devuelve el foco al trigger; si es un custom element, a su control interno. */
+function restoreFocus() {
+  const el = trigger.value;
+  trigger.value = null;
+  if (!el || !el.isConnected) return;
+  el.focus();
+  if (document.activeElement !== el && el.shadowRoot) {
+    collectFocusables(el.shadowRoot)[0]?.focus();
+  }
+}
+
+/**
+ * Trampa de foco: Tab/Shift+Tab ciclan dentro del diálogo. Se escucha en
+ * `document` (keydown es `composed`) para cubrir también el foco que quedó
+ * fuera —body, la barra del navegador— y el contenido sloteado en el shadow.
+ */
+function handleKeydown(event: KeyboardEvent) {
+  if (!isOpen.value || event.key !== 'Tab') return;
+  const focusables = dialogFocusables();
+  const root = backdropRef.value;
+  if (!focusables.length) {
+    event.preventDefault();
+    root?.focus();
+    return;
+  }
+  const path = typeof event.composedPath === 'function' ? event.composedPath() : [];
+  const target = (path[0] as Element | undefined) ?? (event.target as Element | null);
+  const index = target ? focusables.indexOf(target as HTMLElement) : -1;
+  const first = focusables[0]!;
+  const last = focusables[focusables.length - 1]!;
+
+  if (index === -1) {
+    event.preventDefault();
+    (event.shiftKey ? last : first).focus();
+  } else if (event.shiftKey && index === 0) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && index === focusables.length - 1) {
+    event.preventDefault();
+    first.focus();
+  }
+}
+
 /** Abre el modal. */
 function open() {
+  if (isOpen.value) return;
+  trigger.value = document.activeElement instanceof HTMLElement ? document.activeElement : null;
   isOpen.value = true;
 }
 /** Cierra el modal. */
@@ -60,7 +201,8 @@ function close() {
 }
 /** Alterna la visibilidad del modal. */
 function toggle() {
-  isOpen.value = !isOpen.value;
+  if (isOpen.value) close();
+  else open();
 }
 function handleCancel() {
   emit("cancel");
@@ -83,6 +225,19 @@ function handleBackdropClick(event: MouseEvent) {
 watch(isOpen, (newVal) => {
   emit(newVal ? "opened" : "closed");
   if (!newVal) emit("close");
+  if (newVal) {
+    document.addEventListener("keydown", handleKeydown);
+    nextTick(() => {
+      if (isOpen.value) focusFirst();
+    });
+  } else {
+    document.removeEventListener("keydown", handleKeydown);
+    restoreFocus();
+  }
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener("keydown", handleKeydown);
 });
 
 defineExpose({
@@ -96,6 +251,7 @@ defineExpose({
 
 <template>
   <div
+    ref="backdropRef"
     v-show="isOpen"
     @click="handleBackdropClick"
     tabindex="-1"
@@ -103,6 +259,7 @@ defineExpose({
     class="cu-modal-backdrop"
     aria-modal="true"
     :aria-labelledby="title ? 'modal-title' : undefined"
+    :aria-label="dialogLabel"
     :aria-describedby="description ? 'modal-description' : undefined"
   >
     <div

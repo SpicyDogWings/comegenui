@@ -39,6 +39,9 @@ Por cada color (`primary`, `secondary`, `neutral`, `success`, `warning`, `danger
 
 - `--cu-color-{nombre}` — color base
 - `--cu-color-{nombre}-text` — texto sobre ese color
+- `--cu-color-{nombre}-text-muted` / `-text-subtle` — texto atenuado con contraste real
+  (≥ 4.5:1 y hasta 6:1 cuando el texto base lo permite, sobre la superficie y los tintes
+  `ghost-hover`/`soft`); son colores opacos, no `opacity`
 - `--cu-color-{nombre}-hover` / `-active` — estados interactivos
 - `--cu-color-{nombre}-soft` / `-soft-hover` / `-soft-active`
 - `--cu-color-{nombre}-subtle` / `-subtle-hover` / `-subtle-active` / `-subtle-border`
@@ -67,6 +70,12 @@ deshabilitado y un botón deshabilitado se ven igual. Los declara el grupo `alph
 
 Los componentes las consumen con fallback (`var(--cu-alpha-disabled, 0.7)`), así que un CSS de
 host viejo —sin estos tokens— sigue funcionando con los defaults.
+
+`--cu-alpha-*` se usa para **atenuar controles completos** (un botón deshabilitado, un overlay).
+Para **texto** atenuado el token es `--cu-color-{nombre}-text-muted` / `-text-subtle`: `opacity`
+diluye el texto contra el fondo y baja el contraste real por debajo de WCAG (2.2–4.3:1 en varios
+temas), mientras que estos tokens son colores ya medidos (≥ 4.5:1) en los 15 temas. Los
+consumen CommandPalette, Table, Pagination, Input (placeholder), Tabs y FileInputZone.
 
 Los tokens los aporta el CSS del host: este sitio los genera de `comegen.config.json` (`:root` con
 el tema default y cada tema bajo su `[data-theme="…"]`). En tu app definí `:root` / `[data-theme="…"]`

@@ -72,6 +72,7 @@ const zoneStyles = computed(() => ({
   '--zone-bg': `var(--cu-color-${props.color})`,
   '--zone-ghost-hover': `var(--cu-color-${props.color}-ghost-hover)`,
   '--zone-text': `var(--cu-color-${props.color}-text)`,
+  '--zone-text-muted': `var(--cu-color-${props.color}-text-muted)`,
 }));
 
 const fileList = computed(() => {
@@ -420,8 +421,7 @@ defineExpose({ get, set, reset, focus, trigger });
 }
 
 .cu-file-zone-icon {
-  color: var(--zone-text);
-  opacity: var(--cu-alpha-subtle, 0.6);
+  color: var(--zone-text-muted);
   flex-shrink: 0;
 }
 
@@ -439,8 +439,7 @@ defineExpose({ get, set, reset, focus, trigger });
 .cu-file-zone-formats {
   font-size: var(--cu-font-size-xs);
   margin-top: var(--cu-space-2xs);
-  color: var(--zone-text);
-  opacity: var(--cu-alpha-muted, 0.5);
+  color: var(--zone-text-muted);
 }
 
 .cu-file-zone-wrap {

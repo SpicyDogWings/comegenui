@@ -165,6 +165,24 @@ animación). `accept` y `cancel` sólo salen de los botones del footer por defec
 
 <!-- demo:modal-metodos -->
 
+## Accesibilidad y foco
+
+El diálogo se anuncia con `role="dialog"` y `aria-modal="true"`. Con `title`, el nombre accesible
+sale de ese título (`aria-labelledby`); sin `title` se usa `aria-label` (por defecto «Diálogo», o el
+que pongas como atributo en el elemento). Un `aria-label` explícito siempre gana.
+
+Al abrir, el foco entra al diálogo (primer control, o el `[autofocus]` del contenido) y queda
+atrapado: `Tab` cicla entre los controles del modal y `Shift+Tab` retrocede, sin escaparse al resto
+de la página. Al cerrar —con el botón, el backdrop o `Escape`— el foco vuelve al elemento que abrió
+el modal.
+
+```html
+<!-- Sin `title`: el nombre accesible es el aria-label del elemento -->
+<cu-modal id="modalSinTitulo" aria-label="Confirmar eliminación">
+  <p>¿Seguro?</p>
+</cu-modal>
+```
+
 ## Ejemplo completo
 
 ```html

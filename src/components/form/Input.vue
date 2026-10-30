@@ -130,8 +130,7 @@ defineExpose({
 }
 
 .cu-input::placeholder {
-  color: var(--cu-color-neutral-text);
-  opacity: var(--cu-alpha-muted, 0.5);
+  color: var(--cu-color-neutral-text-muted);
 }
 
 .cu-input:focus {
