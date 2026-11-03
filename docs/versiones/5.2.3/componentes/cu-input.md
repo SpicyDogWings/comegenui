@@ -147,7 +147,7 @@ el campo y `focus()` le da foco.
 
 <!--@include: ../partials/input/eventos.md-->
 
-> Los eventos nativos del DOM (`input`, `change`, `focus`, `blur`) **burbujean automáticamente** al host desde el Shadow DOM. Podés escucharlos con `addEventListener`, pero no se re-emiten como eventos custom (no hay `input`/`change` propios en el Custom Element).
+> Los eventos del DOM que cruzan el shadow boundary llegan al host: `input`, `keydown`/`keyup` y `focus`/`blur` (estos dos no burbujean, pero el navegador los re-apunta al host). **`change` no cruza**: no es `composed`, así que `cu-input.addEventListener('change', …)` nunca se dispara. Para reaccionar a cada edición usá `update:modelValue` (o el método `get()` al enviar).
 
 ## Slots
 

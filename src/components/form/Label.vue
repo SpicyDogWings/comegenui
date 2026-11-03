@@ -25,7 +25,9 @@ const props = defineProps({
 });
 
 const colorStyles = computed(() => ({
-  '--label-fg': `var(--cu-color-${props.color})`,
+  // `-text` es el token pensado para texto sobre la superficie del tema: el
+  // color base no llega a 4.5:1 en 13 de los 15 temas (success/warning ≈ 1.9:1).
+  '--label-fg': `var(--cu-color-${props.color}-text)`,
 }));
 
 const emit = defineEmits<{
@@ -58,6 +60,24 @@ function slotControl(): HTMLElement | null {
  */
 const FOCUSABLE = 'input:not([type="hidden"]), select, textarea, button, [tabindex]:not([tabindex="-1"])';
 
+/**
+ * Interactivos del slot que manejan su propio click (link, botón, otro campo,
+ * contenido editable). El `<label>` no debe cancelarles el default ni robarles
+ * el foco: el click es de ellos.
+ */
+const INTERACTIVE = `${FOCUSABLE}, a[href], area[href], summary, audio[controls], video[controls], [contenteditable="true"]`;
+
+/** Primer interactivo del path (fuera del propio label) donde nació el click. */
+function interactiveFromPath(path: EventTarget[]): HTMLElement | null {
+  const found = path.find(
+    (node): node is HTMLElement =>
+      node instanceof HTMLElement &&
+      node !== labelRef.value &&
+      node.matches(INTERACTIVE),
+  );
+  return found ?? null;
+}
+
 /** Control real a enfocar/activar: el del shadow root, el propio elemento o uno interno. */
 function controlTarget(el: HTMLElement | null): HTMLElement | null {
   if (!el) return null;
@@ -75,17 +95,25 @@ const handleClick = (event: MouseEvent) => {
   const desdeElControl = !!control && (event.target === control || path.includes(control));
 
   if (!desdeElControl) {
-    // El <label> nativo activaría al control; se cancela para hacerlo una sola
-    // vez acá (y que funcione igual en Vue y con el custom element).
-    event.preventDefault();
-    const target = controlTarget(control);
-    if (target) {
-      // Como el <label> nativo: el control queda enfocado…
-      target.focus();
-      const esToggle =
-        target instanceof HTMLInputElement && (target.type === 'checkbox' || target.type === 'radio');
-      // …y un checkbox/radio además se activa (toggle). El resto sólo se enfoca.
-      if (esToggle) target.click();
+    // Un click sobre otro interactivo del slot (un link, un botón, otro campo)
+    // es suyo: ni se cancela el default ni se roba el foco.
+    const ajeno = interactiveFromPath(path);
+    const esAjeno = !!ajeno && !(control && control.contains(ajeno));
+    if (!esAjeno) {
+      const target = controlTarget(control);
+      if (target) {
+        const esToggle =
+          target instanceof HTMLInputElement && (target.type === 'checkbox' || target.type === 'radio');
+        // Como el <label> nativo: el control queda enfocado…
+        target.focus();
+        // …y un checkbox/radio además se activa (toggle). El resto sólo se enfoca.
+        // Sólo el toggle cancela el default: si el control es un checkbox/radio
+        // nativo, el label lo activaría otra vez y el click se duplicaría.
+        if (esToggle) {
+          event.preventDefault();
+          target.click();
+        }
+      }
     }
   }
   emit('click');

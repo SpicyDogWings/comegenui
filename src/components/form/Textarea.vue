@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, defineModel, useTemplateRef, type PropType } from 'vue';
+import { computed, defineModel, ref, useTemplateRef, type PropType } from 'vue';
 import { isColor, isFieldVariant } from '@/utils/validators'
 
 /** Valor actual del textarea (v-model). */
@@ -61,6 +61,23 @@ const textareaStyles = computed(() => ({
   '--btn-subtle-border': `var(--cu-color-${props.color}-subtle-border)`,
 }));
 
+/** Composición IME en curso: no se emiten los valores intermedios. */
+const composing = ref(false);
+
+const onInput = (event: Event) => {
+  if (composing.value) return;
+  value.value = (event.target as HTMLTextAreaElement).value;
+};
+
+const onCompositionStart = () => { composing.value = true; };
+
+const onCompositionEnd = (event: CompositionEvent) => {
+  composing.value = false;
+  // El navegador emite un `input` final; se sincroniza igual por si el entorno
+  // (o un test) no lo hace.
+  value.value = (event.target as HTMLTextAreaElement).value;
+};
+
 /** Devuelve el valor actual del textarea. */
 const get = () => value.value;
 /** Setea el valor del textarea. */
@@ -78,7 +95,9 @@ defineExpose({ get, set, reset, focus });
     ref="textarea"
     :placeholder="props.placeholder"
     :value="value"
-    @input="value = ($event.target as HTMLTextAreaElement).value"
+    @input="onInput"
+    @compositionstart="onCompositionStart"
+    @compositionend="onCompositionEnd"
     class="cu-textarea"
     :class="[
       `cu-textarea--${props.variant}`,

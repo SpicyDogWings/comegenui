@@ -16,7 +16,7 @@ const comentarios = ref("Texto predefinido");
 </script>
 
 <template>
-  <Textarea placeholder="Escribe aquí..." rows="5" color="primary" variant="outlined" />
+  <Textarea placeholder="Escribe aquí..." :rows="5" color="primary" variant="outlined" />
   <Textarea v-model="comentarios" no-resize variant="soft" />
 </template>
 ```

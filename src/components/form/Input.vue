@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, defineModel, useTemplateRef, type PropType } from 'vue';
+import { computed, defineModel, ref, useTemplateRef, type PropType } from 'vue';
 import { isColor, isFieldVariant, isInputType, isSize } from '@/utils/validators'
 import { useFocus } from "@vueuse/core";
 
@@ -67,6 +67,23 @@ const inputStyles = computed(() => ({
   '--btn-subtle-border': `var(--cu-color-${props.color}-subtle-border)`,
 }));
 
+/** Composición IME en curso: no se emiten los valores intermedios. */
+const composing = ref(false);
+
+const onInput = (event: Event) => {
+  if (composing.value) return;
+  value.value = (event.target as HTMLInputElement).value;
+};
+
+const onCompositionStart = () => { composing.value = true; };
+
+const onCompositionEnd = (event: CompositionEvent) => {
+  composing.value = false;
+  // El navegador emite un `input` final; se sincroniza igual por si el entorno
+  // (o un test) no lo hace.
+  value.value = (event.target as HTMLInputElement).value;
+};
+
 /** Devuelve el valor actual del input. */
 const get = () => value.value;
 /** Setea el valor del input. */
@@ -89,7 +106,9 @@ defineExpose({
     :type="props.type"
     :placeholder="props.placeholder"
     :value="value"
-    @input="value = ($event.target as HTMLInputElement).value"
+    @input="onInput"
+    @compositionstart="onCompositionStart"
+    @compositionend="onCompositionEnd"
     class="cu-input"
     :class="[
       `cu-input--${props.variant}`,

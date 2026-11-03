@@ -20,9 +20,11 @@ describe("Label — texto y color", () => {
     expect(w.find(".cu-label-text").exists()).toBe(false);
   });
 
-  it("expone el color semántico en las CSS custom properties", () => {
+  it("pinta el texto con el token de texto del color (no el color base)", () => {
+    // El color base queda por debajo de 4.5:1 en casi todos los temas
+    // (success/warning ≈ 1.9:1 en light); el texto usa la variante `-text`.
     const w = mount(Label, { props: { label: "Nombre", color: "primary" } });
-    expect(w.attributes("style") ?? "").toContain("--label-fg: var(--cu-color-primary)");
+    expect(w.attributes("style") ?? "").toContain("--label-fg: var(--cu-color-primary-text)");
   });
 
   it("renderiza el slot default (el control hijo)", () => {
@@ -154,6 +156,65 @@ describe("Label — click y foco", () => {
     await input.trigger("click");
 
     expect((input.element as HTMLInputElement).checked).toBe(true);
+    w.unmount();
+  });
+});
+
+describe("Label — otros interactivos del slot", () => {
+  // El label sólo maneja el click del PRIMER control: un link/botón/campo que
+  // también viva en el slot conserva su comportamiento nativo (navegar,
+  // enviar, enfocarse), sin que el label le cancele el default ni le robe foco.
+  const clickCancelable = (el: Element) => {
+    const ev = new MouseEvent("click", { bubbles: true, cancelable: true, composed: true });
+    el.dispatchEvent(ev);
+    return ev;
+  };
+
+  it("un link que no es el control conserva su default y no se lleva el foco", () => {
+    const w = mount(Label, {
+      props: { label: "Con link" },
+      slots: { default: '<input class="primero" /><a class="link" href="#destino">ir</a>' },
+      attachTo: document.body,
+    });
+
+    const ev = clickCancelable(w.find("a.link").element);
+
+    expect(ev.defaultPrevented).toBe(false);
+    expect(document.activeElement).not.toBe(w.find("input.primero").element);
+    // El click sigue siendo un click dentro del label.
+    expect(w.emitted("click")).toHaveLength(1);
+    w.unmount();
+  });
+
+  it("un botón que no es el control conserva su default (puede enviar el form)", () => {
+    const w = mount(Label, {
+      props: { label: "Con botón" },
+      slots: { default: '<input class="primero" /><button class="enviar" type="submit">Enviar</button>' },
+      attachTo: document.body,
+    });
+    const boton = w.find("button.enviar").element as HTMLButtonElement;
+    let clicks = 0;
+    boton.addEventListener("click", () => clicks++);
+
+    const ev = clickCancelable(boton);
+
+    expect(ev.defaultPrevented).toBe(false);
+    expect(clicks).toBe(1);
+    w.unmount();
+  });
+
+  it("un segundo campo no pierde su click por el primero", () => {
+    const w = mount(Label, {
+      props: { label: "Dos campos" },
+      slots: { default: '<input class="primero" /><input class="segundo" />' },
+      attachTo: document.body,
+    });
+
+    const ev = clickCancelable(w.find("input.segundo").element);
+
+    expect(ev.defaultPrevented).toBe(false);
+    // No se fuerza el foco al primer control.
+    expect(document.activeElement).not.toBe(w.find("input.primero").element);
     w.unmount();
   });
 });
