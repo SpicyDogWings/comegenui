@@ -925,16 +925,16 @@ const MUTATIONS = [
     id: "pagination-pagesize-no-reset",
     file: "src/components/controls/Pagination.vue",
     expect: "cambiar el tamaño de página resetea a la página 1",
-    find: `  emit("update:itemsPerPage", Number(val));
+    find: `  emit("update:itemsPerPage", size);
   emit("update:currentPage", 1);`,
-    replace: `  emit("update:itemsPerPage", Number(val));`,
+    replace: `  emit("update:itemsPerPage", size);`,
   },
   {
     id: "pagination-itemsperpage-fuera-de-opciones",
     file: "src/components/controls/Pagination.vue",
     expect: "el tamaño actual se agrega a las opciones del selector (no queda 'Seleccionar...')",
-    find: `  const sizes = new Set([...props.pageSizeOptions, props.itemsPerPage]);`,
-    replace: `  const sizes = new Set(props.pageSizeOptions);`,
+    find: `  const sizes = new Set([...configured, perPage.value]);`,
+    replace: `  const sizes = new Set(configured);`,
   },
   {
     id: "table-rowdisabled-ignores-fn",
@@ -3123,6 +3123,78 @@ const MUTATIONS = [
               aria-hidden="true"
               focusable="false"`,
     replace: `              class="cu-navbar-compact-chevron"`,
+  },
+  {
+    id: "pagination-sin-clamp-fuera-de-rango",
+    file: "src/components/controls/Pagination.vue",
+    expect: "una `currentPage` fuera de rango se renderiza como la última página disponible",
+    find: `  return Number.isFinite(page) ? Math.min(Math.max(1, page), pageCount.value) : 1;`,
+    replace: `  return Number.isFinite(page) ? page : 1;`,
+  },
+  {
+    id: "pagination-totalpages-sin-entero",
+    file: "src/components/controls/Pagination.vue",
+    expect: "un `totalPages` decimal no agrega una página inexistente",
+    find: `  const total = Math.trunc(Number(props.totalPages));
+  return Number.isFinite(total) ? Math.max(1, total) : 1;`,
+    replace: `  return props.totalPages;`,
+  },
+  {
+    id: "pagination-itemsperpage-sin-sanea",
+    file: "src/components/controls/Pagination.vue",
+    expect: "un `itemsPerPage` inválido (0/negativo) no invierte el rango de la info",
+    find: `  return Number.isFinite(value) && value > 0 ? value : 1;`,
+    replace: `  return Number(value) || 0;`,
+  },
+  {
+    id: "pagination-rango-sin-tope",
+    file: "src/components/controls/Pagination.vue",
+    expect: "un rango que arranca después del total no se muestra invertido",
+    find: `  return Math.min(start, itemCount.value);`,
+    replace: `  return start;`,
+  },
+  {
+    id: "pagination-totalitems-sin-sanea",
+    file: "src/components/controls/Pagination.vue",
+    expect: "un `totalItems` negativo no muestra un total negativo",
+    find: `  return Number.isFinite(value) && value > 0 ? value : 0;`,
+    replace: `  return Math.trunc(Number(props.totalItems)) || 0;`,
+  },
+  {
+    id: "pagination-pagesizeoptions-no-array",
+    file: "src/components/controls/Pagination.vue",
+    expect: "un `pageSizeOptions` que no es array no rompe el selector",
+    find: `  const configured = (Array.isArray(props.pageSizeOptions) ? props.pageSizeOptions : [5, 10, 20, 50])`,
+    replace: `  const configured = props.pageSizeOptions as number[]`,
+  },
+  {
+    id: "pagination-nav-sin-label",
+    file: "src/components/controls/Pagination.vue",
+    expect: "el landmark de páginas tiene nombre accesible",
+    find: `<nav class="cu-pagination-pages" aria-label="Paginación">`,
+    replace: `<nav class="cu-pagination-pages">`,
+  },
+  {
+    id: "pagination-pagina-sin-aria-current",
+    file: "src/components/controls/Pagination.vue",
+    expect: "la página activa se anuncia con aria-current=page",
+    find: `            :aria-current="activePage === page ? 'page' : undefined"`,
+    replace: `            :aria-current="undefined"`,
+  },
+  {
+    id: "pagination-pagina-sin-nombre",
+    file: "src/components/controls/Pagination.vue",
+    expect: "los botones numerados tienen nombre accesible «Página N»",
+    find: `            :aria-label="\`Página \${page}\`"
+`,
+    replace: ``,
+  },
+  {
+    id: "pagination-elipsis-en-arbol-accesible",
+    file: "src/components/controls/Pagination.vue",
+    expect: "la elipsis queda fuera del árbol accesible",
+    find: `<span v-if="page === '...'" class="cu-pagination-ellipsis" aria-hidden="true">...</span>`,
+    replace: `<span v-if="page === '...'" class="cu-pagination-ellipsis">...</span>`,
   },
 ];
 

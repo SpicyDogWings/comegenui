@@ -2,7 +2,7 @@
 | ------ | ------ | ------ | ------ |
 | `items-per-page` | `number` | `10` | Items por página (atributo HTML: `items-per-page`) |
 | `show-page-size` | `boolean` | `false` | Muestra el selector de tamaño de página (atributo HTML: `show-page-size`) |
-| `page-size-options` | `number[]` | `[5, 10, 20, 50]` | Opciones del selector (atributo HTML: `page-size-options`) |
+| `page-size-options` | `number[]` | `[5, 10, 20, 50]` | Opciones del selector (array: se asigna como propiedad JS, no como atributo) |
 | `color` | `"primary" \| "secondary" \| "neutral" \| "success" \| "warning" \| "danger"` | `"neutral"` | Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` |
 | `variant` | `"outlined" \| "soft" \| "ghost" \| "subtle" \| "none"` | `"soft"` | `outlined`, `soft`, `ghost`, `subtle`, `none` |
 | `current-page` | `number` | `1` | Página actual (atributo HTML: `current-page`) |

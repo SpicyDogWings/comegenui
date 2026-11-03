@@ -54,48 +54,94 @@ const props = defineProps({
 
 });
 
-const emit = defineEmits(["update:currentPage", "update:itemsPerPage"]);
+const emit = defineEmits<{
+  /** Página nueva elegida, como número. */
+  (e: 'update:currentPage', value: number): void
+  /** Tamaño de página nuevo, como número. */
+  (e: 'update:itemsPerPage', value: number): void
+}>();
 
-const pageSizeValue = ref(String(props.itemsPerPage));
+/** `totalPages` como entero ≥ 1: un decimal (`2.7`) agregaba un botón «3» que no hacía nada. */
+const pageCount = computed(() => {
+  const total = Math.trunc(Number(props.totalPages));
+  return Number.isFinite(total) ? Math.max(1, total) : 1;
+});
 
-watch(() => props.itemsPerPage, (val) => {
+/**
+ * Página realmente renderizable. `currentPage` puede quedar fuera de `[1, totalPages]`
+ * (el consumidor achica los totales, o llega un `current-page` inválido): sin el clamp
+ * la info mostraba rangos imposibles («Mostrando 241 - 45 de 45») y ningún botón
+ * navegaba. No se emite nada: la prop la manda el consumidor.
+ */
+const activePage = computed(() => {
+  const page = Math.trunc(Number(props.currentPage));
+  return Number.isFinite(page) ? Math.min(Math.max(1, page), pageCount.value) : 1;
+});
+
+/** `itemsPerPage` saneado para el rango: 0/negativo/NaN invertían la info («Mostrando 1 - 0»). */
+const perPage = computed(() => {
+  const value = Math.trunc(Number(props.itemsPerPage));
+  return Number.isFinite(value) && value > 0 ? value : 1;
+});
+
+/** `totalItems` saneado: un negativo mostraba «de -10». */
+const itemCount = computed(() => {
+  const value = Math.trunc(Number(props.totalItems));
+  return Number.isFinite(value) && value > 0 ? value : 0;
+});
+
+const pageSizeValue = ref(String(perPage.value));
+
+watch(() => perPage.value, (val) => {
   pageSizeValue.value = String(val);
 });
 
 // El tamaño actual siempre es una opción: si `itemsPerPage` no está en
 // `pageSizeOptions`, el Select no lo encontraba y mostraba "Seleccionar..."
 // (sin opción que represente el valor vigente). Se agrega y se ordena.
+// `pageSizeOptions` puede no ser un array (atributo HTML, `v-bind` roto): sin la
+// guarda se spreadaba un string carácter por carácter ("[", "0", ...) o rompía el render;
+// en ese caso se cae al listado por defecto (el mismo del `default` de la prop).
 const pageSizeOptionsFormatted = computed(() => {
-  const sizes = new Set([...props.pageSizeOptions, props.itemsPerPage]);
+  const configured = (Array.isArray(props.pageSizeOptions) ? props.pageSizeOptions : [5, 10, 20, 50])
+    .map((option) => Number(option))
+    .filter((option) => Number.isFinite(option) && option > 0);
+  const sizes = new Set([...configured, perPage.value]);
   return [...sizes]
     .sort((a, b) => a - b)
     .map(opt => ({ value: String(opt), label: String(opt) }));
 });
 
 const handlePageChange = (page: number) => {
-  if (page >= 1 && page <= props.totalPages) {
+  if (page >= 1 && page <= pageCount.value) {
     emit("update:currentPage", page);
   }
 };
 
 const handlePageSizeChange = (val: string) => {
-  pageSizeValue.value = val;
-  emit("update:itemsPerPage", Number(val));
+  const size = Number(val);
+  if (!Number.isFinite(size) || size <= 0) return;
+  pageSizeValue.value = String(size);
+  emit("update:itemsPerPage", size);
   emit("update:currentPage", 1);
 };
 
 const startItem = computed(() => {
-  return props.totalItems === 0 ? 0 : (props.currentPage - 1) * props.itemsPerPage + 1;
+  if (itemCount.value === 0) return 0;
+  const start = (activePage.value - 1) * perPage.value + 1;
+  // Con totales incoherentes (`totalItems` menor que lo que implican página × tamaño)
+  // el rango arrancaba después del total: «Mostrando 106 - 95 de 95».
+  return Math.min(start, itemCount.value);
 });
 
 const endItem = computed(() => {
-  return Math.min(props.currentPage * props.itemsPerPage, props.totalItems);
+  return Math.min(activePage.value * perPage.value, itemCount.value);
 });
 
 const visiblePages = computed(() => {
   const pages: (number | string)[] = [];
-  const total = props.totalPages;
-  let current = props.currentPage;
+  const total = pageCount.value;
+  const current = activePage.value;
 
   if (total <= 7) {
     for (let i = 1; i <= total; i++) pages.push(i);
@@ -138,11 +184,11 @@ const visiblePages = computed(() => {
 
 <template>
   <div
-    v-if="totalPages > 1 || showPageSize"
+    v-if="pageCount > 1 || showPageSize"
     class="cu-pagination"
   >
     <span class="cu-pagination-info">
-      Mostrando {{ startItem }} - {{ endItem }} de {{ totalItems }}
+      Mostrando {{ startItem }} - {{ endItem }} de {{ itemCount }}
     </span>
 
     <div class="cu-pagination-controls">
@@ -157,10 +203,10 @@ const visiblePages = computed(() => {
         />
       </div>
 
-      <div class="cu-pagination-pages">
+      <nav class="cu-pagination-pages" aria-label="Paginación">
         <Button
-          @click="handlePageChange(currentPage - 1)"
-          :disabled="currentPage === 1"
+          @click="handlePageChange(activePage - 1)"
+          :disabled="activePage === 1"
           :color="props.color"
           :variant="props.variant"
         >
@@ -168,26 +214,28 @@ const visiblePages = computed(() => {
         </Button>
 
         <template v-for="(page, idx) in visiblePages" :key="idx">
-          <span v-if="page === '...'" class="cu-pagination-ellipsis">...</span>
+          <span v-if="page === '...'" class="cu-pagination-ellipsis" aria-hidden="true">...</span>
           <Button
             v-else
             @click="handlePageChange(Number(page))"
+            :aria-label="`Página ${page}`"
+            :aria-current="activePage === page ? 'page' : undefined"
             :color="props.color"
-            :variant="currentPage === page ? 'solid' : props.variant"
+            :variant="activePage === page ? 'solid' : props.variant"
           >
             {{ page }}
           </Button>
         </template>
 
         <Button
-          @click="handlePageChange(currentPage + 1)"
-          :disabled="currentPage === totalPages"
+          @click="handlePageChange(activePage + 1)"
+          :disabled="activePage === pageCount"
           :color="props.color"
           :variant="props.variant"
         >
           Siguiente
         </Button>
-      </div>
+      </nav>
     </div>
   </div>
 </template>
