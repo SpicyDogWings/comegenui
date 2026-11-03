@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { type PropType } from 'vue'
-import DOMPurify from 'dompurify'
 import Collapse from '@/components/overlay/Collapse.vue'
 import Dropdown from '@/components/overlay/Dropdown.vue'
 import NavbarMenu from '@/components/navigation/NavbarMenu.vue'
@@ -8,6 +7,9 @@ import Button from '@/components/buttons/Button.vue'
 import Input from '@/components/form/Input.vue'
 import LucideChevronRight from '@/components/icons/LucideChevronRight.vue'
 import type { NavItem } from '@/composables/useNavbar'
+import { sanitizeIcon } from '@/utils/sanitizeIcon'
+import { useUniqueId } from '@/utils/uniqueId'
+import { onNavbarMenuTriggerKeydown } from '@/utils/navbarMenuTrigger'
 
 // Lista interna de la nav (header + items). Se usa en el nav inline y dentro
 // del SideOver responsive para no duplicar el markup.
@@ -46,11 +48,18 @@ const emit = defineEmits<{
   (e: 'toggle-compact'): void
 }>()
 
-// `item.icon` es HTML/SVG del consumidor: se sanitiza antes del `v-html`
-// (mismo criterio que `Tabs`). La inicial del modo compact es texto y no pasa
-// por DOMPurify.
+// `id` del panel de cada flyout: el trigger lo referencia con `aria-controls`
+// mientras el panel está montado (el patrón menu button del `Dropdown`).
+const uid = useUniqueId('cu-navbar-list')
+
+function panelIdOf(index: number): string {
+  return `${uid}-panel-${index}`
+}
+
+// `item.icon` es HTML/SVG del consumidor: se sanitiza (sólo SVG inline) antes del
+// `v-html`. La inicial del modo compact es texto y no pasa por el sanitizador.
 function itemIcon(item: NavItem): string {
-  if (item.icon) return DOMPurify.sanitize(item.icon)
+  if (item.icon) return sanitizeIcon(item.icon) ?? ''
   return props.compact ? item.label.charAt(0) : ''
 }
 </script>
@@ -76,12 +85,13 @@ function itemIcon(item: NavItem): string {
       </button>
     </div>
 
-    <template v-for="item in items" :key="item.path || item.label">
+    <template v-for="(item, index) in items" :key="item.path || item.label">
       <Dropdown
         v-if="item.children?.length && compact"
         :trigger="props.trigger"
         position="right"
         align="start"
+        :panel-id="panelIdOf(index)"
         :class="{ 'cu-navbar-item--match': highlightTarget === item, 'cu-navbar-item--active': activeItem === item }"
         :data-navbar-match="highlightTarget === item ? '' : undefined"
         :data-navbar-active="activeItem === item ? '' : undefined"
@@ -94,7 +104,9 @@ function itemIcon(item: NavItem): string {
             :aria-label="item.label"
             aria-haspopup="menu"
             :aria-expanded="isOpen ? 'true' : 'false'"
+            :aria-controls="isOpen ? panelIdOf(index) : undefined"
             @click="t"
+            @keydown="onNavbarMenuTriggerKeydown($event, t)"
           >
             <span class="cu-navbar-icon" v-html="itemIcon(item)"></span>
             <LucideChevronRight

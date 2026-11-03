@@ -1,17 +1,15 @@
 <script setup lang="ts">
 import { type PropType } from 'vue'
-import DOMPurify from 'dompurify'
 import Dropdown from '@/components/overlay/Dropdown.vue'
 import NavbarMenu from '@/components/navigation/NavbarMenu.vue'
 import Button from '@/components/buttons/Button.vue'
 import LucideChevronDown from '@/components/icons/LucideChevronDown.vue'
 import { useNavbar, type NavItem } from '@/composables/useNavbar'
+import { sanitizeIcon } from '@/utils/sanitizeIcon'
+import { useUniqueId } from '@/utils/uniqueId'
+import { onNavbarMenuTriggerKeydown } from '@/utils/navbarMenuTrigger'
 
 export interface NavbarHorizontalItem extends NavItem {}
-
-// `item.icon` es HTML/SVG del consumidor: se sanitiza antes del `v-html`
-// (mismo criterio que `Tabs`).
-const sanitizeIcon = (html?: string) => (html ? DOMPurify.sanitize(html) : undefined)
 
 const props = defineProps({
   items: { type: Array as () => NavItem[], required: true },
@@ -50,14 +48,25 @@ function isActiveBranch(item: NavItem): boolean {
     (children ?? []).some((child) => child === target || contains(child.children))
   return contains(item.children)
 }
+
+// ── Menú de cada submenú ──
+// El panel es `role="menu"` (lo pone `Dropdown`) y `NavbarMenu` renderiza las filas
+// `menuitem` con roving tabindex: el trigger lo referencia con `aria-controls`
+// mientras el panel existe y las flechas entran al menú (patrón menu button).
+const uid = useUniqueId('cu-navbar-horizontal')
+
+function panelIdOf(index: number): string {
+  return `${uid}-panel-${index}`
+}
 </script>
 
 <template>
   <nav ref="navRef" class="cu-navbar">
-    <template v-for="item in displayItems" :key="item.path || item.label">
+    <template v-for="(item, index) in displayItems" :key="item.path || item.label">
       <Dropdown
         v-if="item.children?.length"
         :trigger="props.trigger"
+        :panel-id="panelIdOf(index)"
         :class="{ 'cu-navbar-item--match': highlightTarget === item, 'cu-navbar-item--active': isActiveBranch(item) }"
         :data-navbar-match="highlightTarget === item ? '' : undefined"
         :data-navbar-active="isActiveBranch(item) ? '' : undefined"
@@ -66,8 +75,11 @@ function isActiveBranch(item: NavItem): boolean {
           <button
             type="button"
             class="cu-navbar-dropdown-trigger"
+            aria-haspopup="menu"
             :aria-expanded="isOpen ? 'true' : 'false'"
+            :aria-controls="isOpen ? panelIdOf(index) : undefined"
             @click="t"
+            @keydown="onNavbarMenuTriggerKeydown($event, t)"
           >
             <span v-if="item.icon" class="cu-navbar-icon" v-html="sanitizeIcon(item.icon)"></span>
             {{ item.label }}

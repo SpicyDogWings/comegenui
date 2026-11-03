@@ -188,4 +188,33 @@ describe("NavbarList — modo compacto", () => {
     await flushPromises();
     expect(w.find(".cu-navbar-compact-trigger").attributes("aria-expanded")).toBe("true");
   });
+
+  it("el flyout es un menú: trigger con aria-haspopup/expanded y filas menuitem", async () => {
+    const w = mount(NavbarList, { props: { items, compact: true }, attachTo: document.body });
+    const trigger = w.find(".cu-navbar-compact-trigger");
+    expect(trigger.attributes("aria-haspopup")).toBe("menu");
+    expect(trigger.attributes("aria-expanded")).toBe("false");
+    expect(trigger.attributes("aria-controls")).toBeUndefined();
+
+    await trigger.trigger("click");
+    await flushPromises();
+
+    const panel = w.find('[role="menu"]');
+    expect(panel.exists()).toBe(true);
+    expect(trigger.attributes("aria-controls")).toBe(panel.attributes("id"));
+    expect(panel.findAll('[role="menuitem"]').map((row) => row.text())).toEqual(
+      expect.arrayContaining([expect.stringContaining("Button"), expect.stringContaining("Input")]),
+    );
+    w.unmount();
+  });
+
+  it("ArrowDown en el trigger abre el flyout y enfoca la primera fila", async () => {
+    const w = mount(NavbarList, { props: { items, compact: true }, attachTo: document.body });
+    await w.find(".cu-navbar-compact-trigger").trigger("keydown", { key: "ArrowDown" });
+    await flushPromises();
+    await flushPromises();
+    expect(w.find('[role="menu"]').exists()).toBe(true);
+    expect(document.activeElement?.textContent?.trim()).toContain("Button");
+    w.unmount();
+  });
 });

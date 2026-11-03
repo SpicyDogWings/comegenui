@@ -1019,6 +1019,52 @@ const MUTATIONS = [
     replace: `    if (root) return document.querySelector<HTMLElement>(\`[\${attr}]\`)`,
   },
   {
+    id: "navbar-horizontal-sin-haspopup",
+    file: "src/components/navigation/NavbarHorizontal.vue",
+    expect: "el trigger del submenú anuncia que abre un menú",
+    find: `            aria-haspopup="menu"
+            :aria-expanded`,
+    replace: `            :aria-expanded`,
+  },
+  {
+    id: "navbar-menu-trigger-sin-flechas",
+    file: "src/utils/navbarMenuTrigger.ts",
+    test: "src/components/navigation/NavbarHorizontal.test.ts",
+    expect: "ArrowDown/ArrowUp en el trigger abren el menú y enfocan una fila",
+    find: `  if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return
+  event.preventDefault()`,
+    replace: `  return
+  event.preventDefault()`,
+  },
+  {
+    id: "navbar-menu-sin-roving-tabindex",
+    file: "src/components/navigation/NavbarMenu.vue",
+    expect: "el menú es una sola parada de tabulación (roving tabindex)",
+    find: `  return position === active ? 0 : -1`,
+    replace: `  return -1`,
+  },
+  {
+    id: "navbar-menu-sin-flechas",
+    file: "src/components/navigation/NavbarMenu.vue",
+    expect: "las flechas recorren las filas del menú",
+    find: `    focusRow(list, current < 0 ? 0 : current + 1)`,
+    replace: `    void list`,
+  },
+  {
+    id: "navbar-menu-sin-aria-expanded",
+    file: "src/components/navigation/NavbarMenu.vue",
+    expect: "la fila de submenú refleja el estado del panel",
+    find: `            :aria-expanded="isOpen ? 'true' : 'false'"`,
+    replace: `            :aria-expanded="undefined"`,
+  },
+  {
+    id: "sanitizeicon-allowlist-html",
+    file: "src/utils/sanitizeIcon.ts",
+    expect: "el allowlist de iconos deja sólo SVG inline (sin <a>/<img>/handlers)",
+    find: `    ALLOWED_TAGS: ICON_TAGS,`,
+    replace: `    ALLOWED_TAGS: undefined,`,
+  },
+  {
     id: "navbar-list-collapsed-opens",
     file: "src/components/navigation/NavbarList.vue",
     expect: "collapsed inicia los submenús cerrados",
@@ -2159,29 +2205,35 @@ const MUTATIONS = [
     id: "navbar-list-icon-sin-sanitizar",
     file: "src/components/navigation/NavbarList.vue",
     expect: "el ícono de un item de la nav se sanitiza antes del v-html",
-    find: `  if (item.icon) return DOMPurify.sanitize(item.icon)`,
+    find: `  if (item.icon) return sanitizeIcon(item.icon) ?? ''`,
     replace: `  if (item.icon) return item.icon`,
   },
   {
     id: "navbar-horizontal-icon-sin-sanitizar",
     file: "src/components/navigation/NavbarHorizontal.vue",
     expect: "el ícono de un item horizontal se sanitiza antes del v-html",
-    find: `const sanitizeIcon = (html?: string) => (html ? DOMPurify.sanitize(html) : undefined)`,
-    replace: `const sanitizeIcon = (html?: string) => html`,
+    find: `        <span v-if="item.icon" class="cu-navbar-icon" v-html="sanitizeIcon(item.icon)"></span>
+        <span class="cu-navbar-label">`,
+    replace: `        <span v-if="item.icon" class="cu-navbar-icon" v-html="item.icon"></span>
+        <span class="cu-navbar-label">`,
   },
   {
     id: "navbar-menu-icon-sin-sanitizar",
     file: "src/components/navigation/NavbarMenu.vue",
     expect: "el ícono de un item del menú se sanitiza antes del v-html",
-    find: `const sanitizeIcon = (html?: string) => (html ? DOMPurify.sanitize(html) : undefined)`,
-    replace: `const sanitizeIcon = (html?: string) => html`,
+    find: `        <span v-if="item.icon" class="cu-navbar-menu-icon" v-html="sanitizeIcon(item.icon)"></span>
+        <span class="cu-navbar-menu-item-label">{{ item.label }}</span>
+      </a>`,
+    replace: `        <span v-if="item.icon" class="cu-navbar-menu-icon" v-html="item.icon"></span>
+        <span class="cu-navbar-menu-item-label">{{ item.label }}</span>
+      </a>`,
   },
   {
     id: "tabs-icon-sin-sanitizar",
     file: "src/components/Tabs.vue",
     expect: "el icono se sanitiza antes del v-html (sin script ni handlers on*)",
-    find: `(html ? DOMPurify.sanitize(html) : undefined)`,
-    replace: `(html ? html : undefined)`,
+    find: `icon: sanitizeIcon(t.icon)`,
+    replace: `icon: t.icon`,
   },
   {
     id: "tabs-foco-no-se-restaura",

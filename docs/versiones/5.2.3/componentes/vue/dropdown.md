@@ -54,12 +54,13 @@ import Dropdown from "@/components/overlay/Dropdown.vue";
 
 ## Items
 
-La prop `items` arma el menú sin escribir el HTML: cada fila acepta `label`, `icon` (HTML),
+La prop `items` arma el menú sin escribir el HTML: cada fila acepta `label`, `icon` (SVG inline),
 `to`/`href` (navegable), `disabled`, `divider` y `onClick`. El slot `default` agrega contenido
 extra debajo.
 
-> El HTML del `icon` se sanitiza con **DOMPurify** antes de inyectarse: los SVG válidos se
-> conservan y se eliminan `<script>`, handlers `on*` y URLs peligrosas.
+> El `icon` se sanitiza con un **allowlist de SVG inline** antes de inyectarse: se conservan los
+> elementos de dibujo SVG y se eliminan `<script>`, handlers `on*`, `<a>`, `<img>`,
+> `<foreignObject>`, `<use>`/`href` y `<style>`.
 
 ```vue
 <script setup lang="ts">

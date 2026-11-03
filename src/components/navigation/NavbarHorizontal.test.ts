@@ -125,6 +125,63 @@ describe("NavbarHorizontal — trigger del submenú", () => {
   });
 });
 
+describe("NavbarHorizontal — menú de submenú (patrón menu button)", () => {
+  const mountNav = () => mount(NavbarHorizontal, { props: { items }, attachTo: document.body });
+  const focusedLabel = () => document.activeElement?.textContent?.trim();
+
+  it("el panel es un menú con filas `menuitem` y el trigger lo referencia", async () => {
+    const w = mountNav();
+    const trigger = w.find(".cu-navbar-dropdown-trigger");
+    expect(trigger.attributes("aria-haspopup")).toBe("menu");
+    expect(trigger.attributes("aria-controls")).toBeUndefined();
+
+    await trigger.trigger("click");
+    await flushPromises();
+
+    const panel = w.find('[role="menu"]');
+    expect(panel.exists()).toBe(true);
+    expect(trigger.attributes("aria-controls")).toBe(panel.attributes("id"));
+    const rows = panel.findAll('[role="menuitem"]');
+    expect(rows.map((row) => row.text())).toEqual(
+      expect.arrayContaining([expect.stringContaining("Desarrollo"), expect.stringContaining("Diseño")]),
+    );
+    w.unmount();
+  });
+
+  it("ArrowDown abre el menú y enfoca la primera fila; ArrowUp, la última", async () => {
+    const w = mountNav();
+    const trigger = w.find(".cu-navbar-dropdown-trigger");
+    await trigger.trigger("keydown", { key: "ArrowDown" });
+    await flushPromises();
+    await flushPromises();
+    expect(w.find('[role="menu"]').exists()).toBe(true);
+    expect(focusedLabel()).toContain("Desarrollo");
+
+    // Con el menú abierto, ArrowUp desde el trigger va al último item.
+    ;(trigger.element as HTMLElement).focus();
+    await trigger.trigger("keydown", { key: "ArrowUp" });
+    await flushPromises();
+    expect(focusedLabel()).toContain("Diseño");
+    w.unmount();
+  });
+
+  it("Escape cierra el menú y devuelve el foco al trigger", async () => {
+    const w = mountNav();
+    const trigger = w.find(".cu-navbar-dropdown-trigger");
+    ;(trigger.element as HTMLElement).focus();
+    await trigger.trigger("click");
+    await flushPromises();
+    expect(w.find('[role="menu"]').exists()).toBe(true);
+
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    await flushPromises();
+    await flushPromises();
+    expect(w.find('[role="menu"]').exists()).toBe(false);
+    expect(document.activeElement).toBe(trigger.element);
+    w.unmount();
+  });
+});
+
 describe("NavbarHorizontal — Custom Element", () => {
   const CE_TAG = "cu-navbar-horizontal-audit";
   type CeEl = HTMLElement & { items: typeof items };

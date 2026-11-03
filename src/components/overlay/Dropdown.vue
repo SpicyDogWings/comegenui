@@ -3,11 +3,11 @@ import { ref, computed, nextTick, onMounted, onUnmounted, type PropType } from "
 import { isAlign, isPosition, isVariantFull } from '@/utils/validators'
 import { detectDropdownNesting } from "@/utils/dropdownNesting";
 import { useUniqueId } from "@/utils/uniqueId";
+import { sanitizeIcon } from "@/utils/sanitizeIcon";
 import { useMenuNavigation } from "@/composables/useMenuNavigation";
 import Button from "../buttons/Button.vue";
 import Loader from "../information/Loader.vue";
 import Popover from "./Popover.vue";
-import DOMPurify from "dompurify";
 import LucideChevronRight from "@/components/icons/LucideChevronRight.vue";
 
 export interface DropdownMenuItem {
@@ -21,9 +21,7 @@ export interface DropdownMenuItem {
 }
 
 // Los íconos son HTML/SVG del consumidor: se sanitizan antes de `v-html`
-// (mismo criterio que `Tabs`): SVG válido intacto, sin `<script>` ni `on*`.
-const sanitizeIcon = (html?: string) => (html ? DOMPurify.sanitize(html) : undefined);
-
+// (mismo criterio que `Tabs`): sólo SVG inline, sin `<script>`, `on*`, `<a>`/`<img>`.
 const props = defineProps({
   color: {
     type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,

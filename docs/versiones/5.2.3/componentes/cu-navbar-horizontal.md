@@ -30,7 +30,14 @@ por ruta. Toda la estructura entra por `items`.
 
 Un item con `children` se convierte en un Dropdown que despliega un `<NavbarMenu>`; los niveles
 se pueden anidar sin límite. El disparador es un `<button type="button">` (dentro de un `<form>`
-no lo envía) y expone `aria-expanded` según el estado del panel.
+no lo envía) y sigue el patrón **menu button**: `aria-haspopup="menu"`, `aria-expanded` según el
+estado del panel y `aria-controls` mientras está abierto. El panel es `role="menu"` y cada fila
+`role="menuitem"` (los items sin `path`, `aria-disabled="true"`).
+
+Con el foco en el disparador, `↓`/`↑` abren el menú y dejan el foco en la primera/última fila.
+Dentro del menú: `↓`/`↑` recorren, `Home`/`End` van a los bordes, las letras buscan por label
+(typeahead), `→`/`Enter` abren un submenú, `Espacio` activa un enlace y `Escape` cierra
+devolviendo el foco al disparador.
 
 ```html
 <cu-navbar-horizontal id="nav"></cu-navbar-horizontal>
@@ -58,8 +65,12 @@ no lo envía) y expone `aria-expanded` según el estado del panel.
 (SVG inline) que se inyecta antes del label. Un item **sin** `path` no navega: en el nivel raíz
 renderiza un `<button>` y dentro de un submenú una fila deshabilitada (no enfocable).
 
-> El HTML del `icon` se sanitiza con **DOMPurify** antes de inyectarse: los SVG válidos se
-> conservan y se eliminan `<script>`, handlers `on*` y URLs peligrosas.
+> El HTML del `icon` se sanitiza con un **allowlist de SVG inline** antes de inyectarse: se
+> conservan los elementos de dibujo (`svg`, `g`, `path`, `circle`, `rect`, `line`, `polyline`,
+> `polygon`, `ellipse`, `defs`, `linearGradient`, `radialGradient`, `stop`, `clipPath`, `mask`,
+> `title`, `desc`) con sus atributos presentacionales, y se eliminan `<script>`, handlers `on*`,
+> `<a>`, `<img>`, `<foreignObject>`, `<use>`/`href` (recursos externos) y `<style>`. Un icono que
+> no es SVG no renderiza nada.
 
 ```html
 <cu-navbar-horizontal id="nav"></cu-navbar-horizontal>
@@ -132,7 +143,7 @@ disparador toma el mismo color y el contenedor lleva `data-navbar-active`).
 interface NavItem {
   label: string;
   path?: string;        // enlaces y detección de activo
-  icon?: string;        // string HTML (puede ser un SVG inline)
+  icon?: string;        // SVG inline (allowlist de elementos SVG)
   children?: NavItem[]; // submenús desplegables
 }
 ```
