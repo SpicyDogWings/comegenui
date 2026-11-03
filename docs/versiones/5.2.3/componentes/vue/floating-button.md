@@ -22,7 +22,7 @@ function onClick() {
 </template>
 ```
 
-> Es `position: fixed` en la esquina inferior derecha (`bottom` y `right`: `var(--cu-space-lg)`), con `z-index: 1000` y sombra elevada. El contenido (normalmente un SVG) debe usar `stroke="currentColor"` para heredar el color; el `click` es el evento nativo.
+> Es `position: fixed` en la esquina inferior derecha (`bottom` y `right`: `var(--cu-space-lg)`), con `z-index: 900` y sombra elevada. El contenido (normalmente un SVG) debe usar `stroke="currentColor"` para heredar el color; el `click` es el evento nativo.
 
 ## Colores
 
@@ -56,6 +56,15 @@ function onClick() {
 ```
 
 > No fija tamaño ni forma: hereda de `Button` el `padding`, el `size` y el `border-radius`, y crece con su contenido.
+
+## Capa y accesibilidad
+
+- `z-index: 900` deja el FAB **por debajo** de los overlays (`Modal` 1000, `SideOver` 1100): un
+  diálogo abierto siempre tapa al FAB, sin importar el orden en el DOM.
+- Un FAB de sólo ícono necesita nombre accesible: `aria-label` (va al `<button>`) o texto visible
+  en el slot.
+- `disabled` y `loading` bloquean el click y el teclado; `loading` marca `aria-busy="true"` y
+  antepone el spinner.
 
 ## Estados
 

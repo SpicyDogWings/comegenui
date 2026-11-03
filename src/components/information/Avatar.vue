@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { computed, type PropType } from "vue";
-import { isSize } from '@/utils/validators'
+import { computed, ref, watch, type PropType } from "vue";
+import { isColor, isSize } from '@/utils/validators'
 
+// Paleta del color automático: sólo las 4 bases que contrastan entre sí por hash
+// (mismo texto → mismo color). El orden define el reparto, no es alfabético.
 const PALETTE: Array<'primary' | 'secondary' | 'success' | 'neutral'> = [
   'primary', 'secondary', 'success', 'neutral',
 ];
@@ -39,23 +41,32 @@ const props = defineProps({
   },
 });
 
-const ALL_COLORS: Array<'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'neutral'> = [
-  'primary', 'secondary', 'success', 'warning', 'danger', 'neutral',
-];
+/**
+ * Un `src` que no carga (404, host caído, URL vencida) dejaba el avatar vacío: el
+ * `<img>` roto ocupa el círculo y ni las iniciales ni el slot aparecían. Se
+ * recuerda el fallo y se vuelve al contenido alternativo; si cambia el `src`
+ * (otra URL del mismo avatar) se reintenta.
+ */
+const imageFailed = ref(false);
+watch(() => props.src, () => { imageFailed.value = false; });
 
-const resolvedColors = computed(() => {
-  if (props.color) {
-    const idx = ALL_COLORS.indexOf(props.color as typeof PALETTE[number]);
-    return { bg: props.color, gradient: ALL_COLORS[(idx + 1) % ALL_COLORS.length] };
-  }
-  const key = (props.initials || props.name || 'x').toLowerCase();
-  const idx = hashString(key) % PALETTE.length;
-  return { bg: PALETTE[idx], gradient: PALETTE[(idx + 1) % PALETTE.length] };
+const showImage = computed(() => Boolean(props.src) && !imageFailed.value);
+
+/** Una sola cosa se ve por vez: el slot sólo cuando no hay imagen ni iniciales. */
+const showSlot = computed(() => !showImage.value && !props.initials);
+
+const resolvedColor = computed(() => {
+  if (isColor(props.color)) return props.color;
+  // Sin color (o con un nombre fuera del set): hash estable de las iniciales.
+  const key = props.initials.toLowerCase() || 'x';
+  return PALETTE[hashString(key) % PALETTE.length]!;
 });
 
 const avatarStyles = computed(() => ({
-  '--avatar-bg': `var(--cu-color-${resolvedColors.value.bg}, #6366f1)`,
-  'background-color': `var(--cu-color-${resolvedColors.value.bg}, #6366f1)`,
+  // Fondo `-solid` + texto `surface`: el par que el generador de tokens ajusta a
+  // ≥ 4.5:1 en los 15 temas (blanco fijo sobre el color base quedaba en 1.15:1).
+  '--avatar-bg': `var(--cu-color-${resolvedColor.value}-solid, #4338ca)`,
+  '--avatar-fg': 'var(--cu-color-surface, #ffffff)',
 }));
 
 const sizeClass = computed(() => `cu-avatar--${props.size}`);
@@ -63,10 +74,16 @@ const sizeClass = computed(() => `cu-avatar--${props.size}`);
 
 <template>
   <div :class="['cu-avatar', sizeClass]" :style="avatarStyles">
-    <img v-if="props.src" :src="props.src" class="cu-avatar-img" alt="" />
+    <img
+      v-if="showImage"
+      :src="props.src"
+      class="cu-avatar-img"
+      alt=""
+      @error="imageFailed = true"
+    />
     <span v-else-if="props.initials" class="cu-avatar-initials">{{ props.initials }}</span>
-    <!-- Iniciales o contenido del avatar. -->
-    <slot />
+    <!-- Iniciales o contenido del avatar (alternativo a `initials` y `src`). -->
+    <slot v-if="showSlot" />
   </div>
 </template>
 
@@ -75,9 +92,11 @@ const sizeClass = computed(() => `cu-avatar--${props.size}`);
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  /* Recorta las iniciales largas: sin esto el texto se sale del círculo. */
+  overflow: hidden;
   border-radius: 50%;
   background-color: var(--avatar-bg);
-  color: white;
+  color: var(--avatar-fg);
   font-weight: var(--cu-font-weight-semibold);
   flex-shrink: 0;
 }

@@ -56,8 +56,13 @@ function isPlain(): boolean {
   return !isVertical() && !hasContent();
 }
 
+// Un color fuera del set no tiene tokens: `var(--cu-color-x-subtle-border)` queda
+// inválido y el navegador tira el `border-top` entero — la línea desaparece (o
+// sale con `currentColor`). Cae al color seguro.
+const safeColor = computed(() => (isColor(props.color) ? props.color : "neutral"));
+
 const dividerStyles = computed(() => ({
-  '--divider-color': `var(--cu-color-${props.color}-subtle-border)`,
+  '--divider-color': `var(--cu-color-${safeColor.value}-subtle-border)`,
 }));
 </script>
 

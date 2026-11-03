@@ -126,6 +126,28 @@ const MUTATIONS = [
     replace: `    return (parts[0][0] + parts[0][0]).toUpperCase();`,
   },
   {
+    id: "avatar-sin-fallback-imagen",
+    file: "src/components/information/Avatar.vue",
+    expect: "si la imagen no carga, vuelve a las iniciales (no queda un círculo vacío)",
+    find: `      @error="imageFailed = true"
+`,
+    replace: ``,
+  },
+  {
+    id: "avatar-slot-siempre",
+    file: "src/components/information/Avatar.vue",
+    expect: "con iniciales o src el slot no se renderiza (un solo contenido)",
+    find: `<slot v-if="showSlot" />`,
+    replace: `<slot />`,
+  },
+  {
+    id: "avatar-color-base-sin-solid",
+    file: "src/components/information/Avatar.vue",
+    expect: "el fondo usa el token `-solid` del color (contraste del tema)",
+    find: "`var(--cu-color-${resolvedColor.value}-solid, #4338ca)`",
+    replace: "`var(--cu-color-${resolvedColor.value}, #4338ca)`",
+  },
+  {
     id: "avatar-ignores-size",
     file: "src/components/information/Avatar.vue",
     expect: "aplica la clase del tamaño sm/lg",
@@ -147,11 +169,25 @@ const MUTATIONS = [
     replace: `  "--cu-loader-delay": \`2000ms\`,`,
   },
   {
+    id: "author-card-avatar-no-decorativo",
+    file: "src/components/information/AuthorCard.vue",
+    expect: "el avatar de la tarjeta es decorativo (el nombre ya está en texto)",
+    find: `      aria-hidden="true"`,
+    replace: ``,
+  },
+  {
     id: "divider-vertical-sin-aria-orientation",
     file: "src/components/information/Divider.vue",
     expect: "el divider vertical declara `aria-orientation`",
     find: `    :aria-orientation="isVertical() ? 'vertical' : undefined"`,
     replace: ``,
+  },
+  {
+    id: "divider-color-fuera-del-set",
+    file: "src/components/information/Divider.vue",
+    expect: "un color fuera del set cae al neutral (la línea no desaparece)",
+    find: `const safeColor = computed(() => (isColor(props.color) ? props.color : "neutral"));`,
+    replace: `const safeColor = computed(() => props.color);`,
   },
   {
     id: "divider-ignora-label",
@@ -176,11 +212,25 @@ const MUTATIONS = [
     replace: `<template #default>`,
   },
   {
+    id: "skeleton-shape-fuera-del-set",
+    file: "src/components/information/Skeleton.vue",
+    expect: "una shape fuera del set cae a rect y no rompe el render",
+    find: `const resolvedShape = computed(() => SHAPE_DEFAULTS[props.shape] ? props.shape : "rect");`,
+    replace: `const resolvedShape = computed(() => props.shape);`,
+  },
+  {
+    id: "skeleton-color-fuera-del-set",
+    file: "src/components/information/Skeleton.vue",
+    expect: "un color fuera del set cae al neutral (el placeholder no queda transparente)",
+    find: `const resolvedColor = computed(() => (isColor(props.color) ? props.color : "neutral"));`,
+    replace: `const resolvedColor = computed(() => props.color);`,
+  },
+  {
     id: "skeleton-ignora-lines",
     file: "src/components/information/Skeleton.vue",
     expect: "con shape=text renderiza N barras (lines)",
     find: `const barCount = computed(() =>
-  props.shape === "text" ? Math.max(1, Math.floor(props.lines) || 1) : 1,
+  resolvedShape.value === "text" ? Math.max(1, Math.floor(props.lines) || 1) : 1,
 );`,
     replace: `const barCount = computed(() => 1);`,
   },

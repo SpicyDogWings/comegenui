@@ -59,7 +59,10 @@ const props = defineProps({
   position: fixed;
   bottom: var(--cu-space-lg);
   right: var(--cu-space-lg);
-  z-index: 1000;
+  /* Debajo de la capa de overlays (Modal 1000, SideOver 1100): con el mismo
+     `z-index` que el modal, un FAB declarado después en el DOM quedaba pintado y
+     clickeable por encima del diálogo abierto. */
+  z-index: 900;
   box-shadow: var(--cu-shadow-lg);
 }
 

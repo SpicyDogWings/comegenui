@@ -38,6 +38,22 @@ describe("AuthorCard — iniciales generadas", () => {
   });
 });
 
+describe("AuthorCard — accesibilidad", () => {
+  it("el avatar es decorativo: el nombre ya está en texto al lado", () => {
+    const w = mount(AuthorCard, { props: { name: "Ana Pérez", role: "Desarrolladora" } });
+
+    expect(avatar(w).attributes("aria-hidden")).toBe("true");
+  });
+
+  it("con imagen el avatar tampoco agrega contenido al árbol accesible", () => {
+    const w = mount(AuthorCard, {
+      props: { name: "Laura Gómez", src: "https://example.com/a.jpg" },
+    });
+
+    expect(avatar(w).attributes("aria-hidden")).toBe("true");
+  });
+});
+
 describe("AuthorCard — imagen y tamaño", () => {
   it("con src muestra la imagen en vez de las iniciales", () => {
     const w = mount(AuthorCard, { props: { name: "Laura Gómez", src: "https://example.com/a.jpg" } });
@@ -53,5 +69,15 @@ describe("AuthorCard — imagen y tamaño", () => {
   it("usa size=md por default", () => {
     const w = mount(AuthorCard, { props: { name: "Marcos Ruiz" } });
     expect(avatar(w).classes()).toContain("cu-avatar--md");
+  });
+
+  it("si la imagen del avatar falla, se ven las iniciales generadas", async () => {
+    const w = mount(AuthorCard, {
+      props: { name: "Laura Gómez", src: "https://example.com/rota.jpg" },
+    });
+
+    await avatar(w).find(".cu-avatar-img").trigger("error");
+
+    expect(avatar(w).find(".cu-avatar-initials").text()).toBe("LG");
   });
 });

@@ -57,25 +57,33 @@ const props = defineProps({
   },
 });
 
-const shapeDefaults = computed(() => SHAPE_DEFAULTS[props.shape]);
+// Una `shape` fuera del set no tiene default: sin el fallback, `SHAPE_DEFAULTS[props.shape]`
+// es `undefined` y el render revienta al leer `.radius` (el placeholder desaparecía).
+const resolvedShape = computed(() => SHAPE_DEFAULTS[props.shape] ? props.shape : "rect");
+
+const shapeDefaults = computed(() => SHAPE_DEFAULTS[resolvedShape.value]);
+
+const resolvedColor = computed(() => (isColor(props.color) ? props.color : "neutral"));
 
 const resolvedRadius = computed(() => props.radius || shapeDefaults.value.radius);
 
 const barCount = computed(() =>
-  props.shape === "text" ? Math.max(1, Math.floor(props.lines) || 1) : 1,
+  resolvedShape.value === "text" ? Math.max(1, Math.floor(props.lines) || 1) : 1,
 );
 
 const skeletonStyles = computed(() => ({
   "--cu-skeleton-width": props.width || shapeDefaults.value.width,
   "--cu-skeleton-height": props.height || shapeDefaults.value.height,
   "--cu-skeleton-radius": `var(--cu-radius-${resolvedRadius.value})`,
-  "--cu-skeleton-bg": `var(--cu-color-${props.color}-soft)`,
-  "--cu-skeleton-highlight": `var(--cu-color-${props.color}-subtle)`,
+  // Un color fuera del set deja la var inválida y el navegador tira el
+  // `background-color`: el placeholder quedaba transparente. Cae al seguro.
+  "--cu-skeleton-bg": `var(--cu-color-${resolvedColor.value}-soft)`,
+  "--cu-skeleton-highlight": `var(--cu-color-${resolvedColor.value}-subtle)`,
 }));
 
 /** La última línea de un párrafo es más corta (60 %), como el final de un texto. */
 function isShortLine(index: number): boolean {
-  return props.shape === "text" && barCount.value > 1 && index === barCount.value;
+  return resolvedShape.value === "text" && barCount.value > 1 && index === barCount.value;
 }
 </script>
 
@@ -83,7 +91,7 @@ function isShortLine(index: number): boolean {
   <div
     :class="[
       'cu-skeleton',
-      `cu-skeleton--${props.shape}`,
+      `cu-skeleton--${resolvedShape}`,
       `cu-skeleton--${props.animation}`,
       `cu-skeleton--radius-${resolvedRadius}`,
     ]"

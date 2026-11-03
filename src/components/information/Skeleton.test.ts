@@ -56,6 +56,24 @@ describe("Skeleton — forma y tamaño", () => {
   });
 });
 
+describe("Skeleton — entradas inválidas", () => {
+  it("una shape fuera del set cae a rect y no rompe el render", () => {
+    const w = mount(Skeleton, { props: { shape: "blob" as never } });
+
+    expect(root(w).classes()).toContain("cu-skeleton--rect");
+    expect(w.findAll(".cu-skeleton-bar")).toHaveLength(1);
+    expect(styleVar(w, "--cu-skeleton-width")).toBe("100%");
+    expect(styleVar(w, "--cu-skeleton-height")).toBe("1rem");
+  });
+
+  it("un color fuera del set cae al neutral: el placeholder no queda transparente", () => {
+    const w = mount(Skeleton, { props: { color: "chartreuse" as never } });
+
+    expect(styleVar(w, "--cu-skeleton-bg")).toBe("var(--cu-color-neutral-soft)");
+    expect(styleVar(w, "--cu-skeleton-highlight")).toBe("var(--cu-color-neutral-subtle)");
+  });
+});
+
 describe("Skeleton — líneas de texto", () => {
   it("renderiza N barras y la última es más corta", () => {
     const w = mount(Skeleton, { props: { shape: "text", lines: 3 } });

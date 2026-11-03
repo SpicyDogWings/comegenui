@@ -70,7 +70,8 @@ contenido también se centra, pero la línea se corta arriba y abajo.
 ## Colores
 
 `color` es un nombre semántico, no un hex: el trazo sale de `--cu-color-{color}-subtle-border` del
-tema activo, así que el mismo nombre se ve distinto en cada tema.
+tema activo, así que el mismo nombre se ve distinto en cada tema. Un nombre fuera del set cae a
+`neutral` (si no, la línea desaparecía).
 
 ```html
 <cu-divider color="primary" label="primary"></cu-divider>
