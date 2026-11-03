@@ -1,5 +1,5 @@
 /*! comegenui v5.2.3 · CuNavbar (cu-navbar) · esm-shared · Vue externo (bare import) */
-import { Fragment, Teleport, Transition, computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, createTextVNode, createVNode, defineComponent, defineCustomElement, getCurrentInstance, inject, isRef, mergeModels, nextTick, normalizeClass, normalizeStyle, onMounted, onUnmounted, openBlock, ref, renderList, renderSlot, resolveComponent, shallowRef, toDisplayString, toValue, unref, useAttrs, useId, useModel, useTemplateRef, vShow, watch, withCtx, withDirectives } from "vue";
+import { Fragment, Teleport, Transition, computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, createTextVNode, createVNode, defineComponent, defineCustomElement, getCurrentInstance, inject, isRef, mergeModels, mergeProps, nextTick, normalizeClass, normalizeStyle, onMounted, onUnmounted, openBlock, ref, renderList, renderSlot, resolveComponent, shallowRef, toDisplayString, toValue, unref, useAttrs, useId, useModel, useTemplateRef, vShow, watch, withCtx, withDirectives } from "vue";
 //#region src/utils/comegen-element.ts
 var BUILD_META = {
 	"version": "5.2.3",
@@ -483,6 +483,72 @@ function useRoute(_name) {
 	return inject(routeLocationKey);
 }
 //#endregion
+//#region src/composables/useOverlayStack.ts
+var STACK_KEY = "__cu_overlay_stack__";
+function overlayStack() {
+	const g = globalThis;
+	return g[STACK_KEY] ??= {
+		entries: [],
+		scrollLocks: 0,
+		previousBodyOverflow: "",
+		listening: false
+	};
+}
+function lockScroll(stack) {
+	if (typeof document === "undefined") return;
+	if (stack.scrollLocks === 0) {
+		stack.previousBodyOverflow = document.body.style.overflow;
+		document.body.style.overflow = "hidden";
+	}
+	stack.scrollLocks += 1;
+}
+function unlockScroll(stack) {
+	if (stack.scrollLocks === 0) return;
+	stack.scrollLocks -= 1;
+	if (stack.scrollLocks === 0 && typeof document !== "undefined") document.body.style.overflow = stack.previousBodyOverflow;
+}
+/** Escape: sólo el overlay de arriba reacciona (y uno solo por pulsación). */
+function onEscape(event) {
+	if (event.key !== "Escape") return;
+	const stack = overlayStack();
+	stack.entries[stack.entries.length - 1]?.close();
+}
+/**
+* Suma un overlay abierto a la pila. Devuelve su id, que es lo que después se pasa a
+* `unregisterOverlay`/`isTopmostOverlay`.
+*/
+function registerOverlay(handle) {
+	const stack = overlayStack();
+	const id = Symbol("cu-overlay");
+	stack.entries.push({
+		...handle,
+		id
+	});
+	if (handle.lockScroll) lockScroll(stack);
+	if (!stack.listening && typeof document !== "undefined") {
+		document.addEventListener("keydown", onEscape);
+		stack.listening = true;
+	}
+	return id;
+}
+/** Saca un overlay de la pila (idempotente: cerrar dos veces no rompe nada). */
+function unregisterOverlay(id) {
+	const stack = overlayStack();
+	const index = stack.entries.findIndex((entry) => entry.id === id);
+	if (index === -1) return;
+	const [entry] = stack.entries.splice(index, 1);
+	if (entry?.lockScroll) unlockScroll(stack);
+	if (stack.entries.length === 0 && stack.listening && typeof document !== "undefined") {
+		document.removeEventListener("keydown", onEscape);
+		stack.listening = false;
+	}
+}
+/** ¿Este overlay es el de arriba? (trampa de foco / Tab del `SideOver`). */
+function isTopmostOverlay(id) {
+	const entries = overlayStack().entries;
+	return entries.length > 0 && entries[entries.length - 1].id === id;
+}
+//#endregion
 //#region src/components/overlay/SideOver.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1$10 = ["aria-labelledby", "aria-label"];
 var _hoisted_2$5 = ["data-size"];
@@ -491,21 +557,6 @@ var _hoisted_3$4 = {
 	class: "cu-sideover-header"
 };
 var _hoisted_4$4 = { class: "cu-sideover-body" };
-var openInstances = [];
-var scrollLocks = 0;
-var previousBodyOverflow = "";
-function lockBodyScroll() {
-	if (scrollLocks === 0) {
-		previousBodyOverflow = document.body.style.overflow;
-		document.body.style.overflow = "hidden";
-	}
-	scrollLocks += 1;
-}
-function unlockBodyScroll() {
-	if (scrollLocks === 0) return;
-	scrollLocks -= 1;
-	if (scrollLocks === 0) document.body.style.overflow = previousBodyOverflow;
-}
 var SideOver_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineComponent({
 	inheritAttrs: false,
 	__name: "SideOver",
@@ -666,24 +717,19 @@ var SideOver_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineC
 				first.focus();
 			}
 		}
-		const instanceId = Symbol("cu-sideover");
+		let overlayId = null;
 		let registered = false;
-		function isTopmost() {
-			return openInstances[openInstances.length - 1] === instanceId;
-		}
 		function onKeydown(e) {
-			if (!props.modelValue || !isTopmost()) return;
-			if (e.key === "Escape") {
-				close();
-				return;
-			}
+			if (!props.modelValue || !overlayId || !isTopmostOverlay(overlayId)) return;
 			if (e.key === "Tab") trapTab(e);
 		}
 		function register() {
 			if (registered) return;
 			registered = true;
-			openInstances.push(instanceId);
-			lockBodyScroll();
+			overlayId = registerOverlay({
+				close,
+				lockScroll: true
+			});
 			const active = deepActiveElement();
 			trigger.value = active instanceof HTMLElement ? active : null;
 			document.addEventListener("keydown", onKeydown);
@@ -694,9 +740,8 @@ var SideOver_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineC
 		function unregister() {
 			if (!registered) return;
 			registered = false;
-			const index = openInstances.indexOf(instanceId);
-			if (index !== -1) openInstances.splice(index, 1);
-			unlockBodyScroll();
+			if (overlayId) unregisterOverlay(overlayId);
+			overlayId = null;
 			document.removeEventListener("keydown", onKeydown);
 			restoreFocus();
 		}
@@ -779,8 +824,8 @@ var SideOver_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineC
 	}
 });
 //#endregion
-//#region src/components/overlay/SideOver.vue?vue&type=style&index=0&inline&scoped=7e4cb65c&lang.css
-var SideOver_vue_vue_type_style_index_0_inline_scoped_7e4cb65c_lang_default = "\n.cu-sideover[data-v-7e4cb65c] {\n  position: fixed;\n  inset: 0;\n  font-family: var(--cu-font-sans);\n  color: var(--cu-color-neutral);\n}\n.cu-sideover-backdrop[data-v-7e4cb65c] {\n  position: absolute;\n  inset: 0;\n  background: rgba(0, 0, 0, 0.4);\n}\n.cu-sideover-panel[data-v-7e4cb65c] {\n  position: absolute;\n  display: flex;\n  flex-direction: column;\n  background-color: var(--cu-color-surface);\n  box-shadow: var(--cu-shadow-xl);\n  overflow: hidden;\n  /* Un preset mayor que el viewport no puede dejar el título fuera de pantalla. */\n  max-width: 100%;\n  max-height: 100%;\n}\n.cu-sideover-panel--left[data-v-7e4cb65c] { top: 0; left: 0; bottom: 0;\n}\n.cu-sideover-panel--right[data-v-7e4cb65c] { top: 0; right: 0; bottom: 0;\n}\n.cu-sideover-panel--top[data-v-7e4cb65c] { top: 0; left: 0; right: 0;\n}\n.cu-sideover-panel--bottom[data-v-7e4cb65c] { bottom: 0; left: 0; right: 0;\n}\n.cu-sideover-panel--fullscreen[data-v-7e4cb65c] { inset: 0; width: 100vw !important; height: 100dvh !important;\n}\n\n/* Presets de tamaño: se resuelven via CSS vars (override con\n   --cu-sideover-size-{sm|md|lg|xl|full} en el host) */\n.cu-sideover-panel[data-size='sm'][data-v-7e4cb65c] { --cu-sideover-dimension: var(--cu-sideover-size-sm, 320px);\n}\n.cu-sideover-panel[data-size='md'][data-v-7e4cb65c] { --cu-sideover-dimension: var(--cu-sideover-size-md, 400px);\n}\n.cu-sideover-panel[data-size='lg'][data-v-7e4cb65c] { --cu-sideover-dimension: var(--cu-sideover-size-lg, 512px);\n}\n.cu-sideover-panel[data-size='xl'][data-v-7e4cb65c] { --cu-sideover-dimension: var(--cu-sideover-size-xl, 640px);\n}\n.cu-sideover-panel[data-size='full'][data-v-7e4cb65c] { --cu-sideover-dimension: var(--cu-sideover-size-full, 100%);\n}\n.cu-sideover-panel--left[data-size][data-v-7e4cb65c],\n.cu-sideover-panel--right[data-size][data-v-7e4cb65c] { width: var(--cu-sideover-dimension);\n}\n.cu-sideover-panel--top[data-size][data-v-7e4cb65c],\n.cu-sideover-panel--bottom[data-size][data-v-7e4cb65c] { height: var(--cu-sideover-dimension);\n}\n.cu-sideover-header[data-v-7e4cb65c] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  gap: var(--cu-space-sm);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);\n  flex-shrink: 0;\n}\n.cu-sideover-title[data-v-7e4cb65c] {\n  margin: 0;\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-lg);\n  font-weight: var(--cu-font-weight-bold);\n  color: var(--cu-color-neutral);\n}\n.cu-sideover-close[data-v-7e4cb65c] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  flex-shrink: 0;\n  padding: var(--cu-space-2xs);\n  border: none;\n  border-radius: var(--cu-radius-sm);\n  background: transparent;\n  color: var(--cu-color-neutral);\n  cursor: pointer;\n  transition: background-color 0.15s ease;\n}\n.cu-sideover-close[data-v-7e4cb65c]:hover { background-color: var(--cu-color-neutral-subtle-hover);\n}\n.cu-sideover-close[data-v-7e4cb65c]:focus-visible {\n  outline: 2px solid var(--cu-border-color-focus);\n  outline-offset: 2px;\n}\n.cu-sideover-body[data-v-7e4cb65c] {\n  flex: 1;\n  min-height: 0;\n  overflow-y: auto;\n  padding: var(--cu-space-lg);\n}\n\n/* Transición: scrim con fade + panel deslizando desde su borde */\n.cu-sideover-enter-active[data-v-7e4cb65c],\n.cu-sideover-leave-active[data-v-7e4cb65c] {\n  transition: opacity 0.25s ease;\n}\n.cu-sideover-enter-active .cu-sideover-panel[data-v-7e4cb65c],\n.cu-sideover-leave-active .cu-sideover-panel[data-v-7e4cb65c] {\n  transition: transform 0.25s ease;\n}\n.cu-sideover-enter-from[data-v-7e4cb65c],\n.cu-sideover-leave-to[data-v-7e4cb65c] {\n  opacity: 0;\n}\n.cu-sideover-enter-from .cu-sideover-panel--left[data-v-7e4cb65c],\n.cu-sideover-leave-to .cu-sideover-panel--left[data-v-7e4cb65c] { transform: translateX(-100%);\n}\n.cu-sideover-enter-from .cu-sideover-panel--right[data-v-7e4cb65c],\n.cu-sideover-leave-to .cu-sideover-panel--right[data-v-7e4cb65c] { transform: translateX(100%);\n}\n.cu-sideover-enter-from .cu-sideover-panel--top[data-v-7e4cb65c],\n.cu-sideover-leave-to .cu-sideover-panel--top[data-v-7e4cb65c] { transform: translateY(-100%);\n}\n.cu-sideover-enter-from .cu-sideover-panel--bottom[data-v-7e4cb65c],\n.cu-sideover-leave-to .cu-sideover-panel--bottom[data-v-7e4cb65c] { transform: translateY(100%);\n}\n@media (prefers-reduced-motion: reduce) {\n.cu-sideover-enter-active[data-v-7e4cb65c],\n  .cu-sideover-leave-active[data-v-7e4cb65c],\n  .cu-sideover-enter-active .cu-sideover-panel[data-v-7e4cb65c],\n  .cu-sideover-leave-active .cu-sideover-panel[data-v-7e4cb65c] {\n    transition: none;\n}\n}\n";
+//#region src/components/overlay/SideOver.vue?vue&type=style&index=0&inline&scoped=5044c33b&lang.css
+var SideOver_vue_vue_type_style_index_0_inline_scoped_5044c33b_lang_default = "\n.cu-sideover[data-v-5044c33b] {\n  position: fixed;\n  inset: 0;\n  font-family: var(--cu-font-sans);\n  color: var(--cu-color-neutral);\n}\n.cu-sideover-backdrop[data-v-5044c33b] {\n  position: absolute;\n  inset: 0;\n  background: rgba(0, 0, 0, 0.4);\n}\n.cu-sideover-panel[data-v-5044c33b] {\n  position: absolute;\n  display: flex;\n  flex-direction: column;\n  background-color: var(--cu-color-surface);\n  box-shadow: var(--cu-shadow-xl);\n  overflow: hidden;\n  /* Un preset mayor que el viewport no puede dejar el título fuera de pantalla. */\n  max-width: 100%;\n  max-height: 100%;\n}\n.cu-sideover-panel--left[data-v-5044c33b] { top: 0; left: 0; bottom: 0;\n}\n.cu-sideover-panel--right[data-v-5044c33b] { top: 0; right: 0; bottom: 0;\n}\n.cu-sideover-panel--top[data-v-5044c33b] { top: 0; left: 0; right: 0;\n}\n.cu-sideover-panel--bottom[data-v-5044c33b] { bottom: 0; left: 0; right: 0;\n}\n.cu-sideover-panel--fullscreen[data-v-5044c33b] { inset: 0; width: 100vw !important; height: 100dvh !important;\n}\n\n/* Presets de tamaño: se resuelven via CSS vars (override con\n   --cu-sideover-size-{sm|md|lg|xl|full} en el host) */\n.cu-sideover-panel[data-size='sm'][data-v-5044c33b] { --cu-sideover-dimension: var(--cu-sideover-size-sm, 320px);\n}\n.cu-sideover-panel[data-size='md'][data-v-5044c33b] { --cu-sideover-dimension: var(--cu-sideover-size-md, 400px);\n}\n.cu-sideover-panel[data-size='lg'][data-v-5044c33b] { --cu-sideover-dimension: var(--cu-sideover-size-lg, 512px);\n}\n.cu-sideover-panel[data-size='xl'][data-v-5044c33b] { --cu-sideover-dimension: var(--cu-sideover-size-xl, 640px);\n}\n.cu-sideover-panel[data-size='full'][data-v-5044c33b] { --cu-sideover-dimension: var(--cu-sideover-size-full, 100%);\n}\n.cu-sideover-panel--left[data-size][data-v-5044c33b],\n.cu-sideover-panel--right[data-size][data-v-5044c33b] { width: var(--cu-sideover-dimension);\n}\n.cu-sideover-panel--top[data-size][data-v-5044c33b],\n.cu-sideover-panel--bottom[data-size][data-v-5044c33b] { height: var(--cu-sideover-dimension);\n}\n.cu-sideover-header[data-v-5044c33b] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  gap: var(--cu-space-sm);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);\n  flex-shrink: 0;\n}\n.cu-sideover-title[data-v-5044c33b] {\n  margin: 0;\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-lg);\n  font-weight: var(--cu-font-weight-bold);\n  color: var(--cu-color-neutral);\n}\n.cu-sideover-close[data-v-5044c33b] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  flex-shrink: 0;\n  padding: var(--cu-space-2xs);\n  border: none;\n  border-radius: var(--cu-radius-sm);\n  background: transparent;\n  color: var(--cu-color-neutral);\n  cursor: pointer;\n  transition: background-color 0.15s ease;\n}\n.cu-sideover-close[data-v-5044c33b]:hover { background-color: var(--cu-color-neutral-subtle-hover);\n}\n.cu-sideover-close[data-v-5044c33b]:focus-visible {\n  outline: 2px solid var(--cu-border-color-focus);\n  outline-offset: 2px;\n}\n.cu-sideover-body[data-v-5044c33b] {\n  flex: 1;\n  min-height: 0;\n  overflow-y: auto;\n  padding: var(--cu-space-lg);\n}\n\n/* Transición: scrim con fade + panel deslizando desde su borde */\n.cu-sideover-enter-active[data-v-5044c33b],\n.cu-sideover-leave-active[data-v-5044c33b] {\n  transition: opacity 0.25s ease;\n}\n.cu-sideover-enter-active .cu-sideover-panel[data-v-5044c33b],\n.cu-sideover-leave-active .cu-sideover-panel[data-v-5044c33b] {\n  transition: transform 0.25s ease;\n}\n.cu-sideover-enter-from[data-v-5044c33b],\n.cu-sideover-leave-to[data-v-5044c33b] {\n  opacity: 0;\n}\n.cu-sideover-enter-from .cu-sideover-panel--left[data-v-5044c33b],\n.cu-sideover-leave-to .cu-sideover-panel--left[data-v-5044c33b] { transform: translateX(-100%);\n}\n.cu-sideover-enter-from .cu-sideover-panel--right[data-v-5044c33b],\n.cu-sideover-leave-to .cu-sideover-panel--right[data-v-5044c33b] { transform: translateX(100%);\n}\n.cu-sideover-enter-from .cu-sideover-panel--top[data-v-5044c33b],\n.cu-sideover-leave-to .cu-sideover-panel--top[data-v-5044c33b] { transform: translateY(-100%);\n}\n.cu-sideover-enter-from .cu-sideover-panel--bottom[data-v-5044c33b],\n.cu-sideover-leave-to .cu-sideover-panel--bottom[data-v-5044c33b] { transform: translateY(100%);\n}\n@media (prefers-reduced-motion: reduce) {\n.cu-sideover-enter-active[data-v-5044c33b],\n  .cu-sideover-leave-active[data-v-5044c33b],\n  .cu-sideover-enter-active .cu-sideover-panel[data-v-5044c33b],\n  .cu-sideover-leave-active .cu-sideover-panel[data-v-5044c33b] {\n    transition: none;\n}\n}\n";
 //#endregion
 //#region \0plugin-vue:export-helper
 var _plugin_vue_export_helper_default = (sfc, props) => {
@@ -790,7 +835,7 @@ var _plugin_vue_export_helper_default = (sfc, props) => {
 };
 //#endregion
 //#region src/components/overlay/SideOver.vue
-var SideOver_default = /*#__PURE__*/ _plugin_vue_export_helper_default(SideOver_vue_vue_type_script_setup_true_lang_default, [["styles", [SideOver_vue_vue_type_style_index_0_inline_scoped_7e4cb65c_lang_default]], ["__scopeId", "data-v-7e4cb65c"]]);
+var SideOver_default = /*#__PURE__*/ _plugin_vue_export_helper_default(SideOver_vue_vue_type_script_setup_true_lang_default, [["styles", [SideOver_vue_vue_type_style_index_0_inline_scoped_5044c33b_lang_default]], ["__scopeId", "data-v-5044c33b"]]);
 //#endregion
 //#region node_modules/.pnpm/dompurify@3.4.14/node_modules/dompurify/dist/purify.es.mjs
 /*! @license DOMPurify 3.4.14 | (c) Cure53 and other contributors | Released under the Apache license 2.0 and Mozilla Public License 2.0 | github.com/cure53/DOMPurify/blob/3.4.14/LICENSE */
@@ -3330,6 +3375,7 @@ var Button_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE_
 		const props = __props;
 		const isDisabled = computed(() => props.disabled || props.loading);
 		const safeColor = computed(() => isColor(props.color) ? props.color : "neutral");
+		const safeVariant = computed(() => isVariantFull(props.variant) ? props.variant : "ghost");
 		const buttonType = computed(() => isButtonType(props.type) ? props.type : "button");
 		const safeTo = computed(() => {
 			const value = props.to?.trim();
@@ -3394,7 +3440,7 @@ var Button_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE_
 		}));
 		const rootClasses = computed(() => [
 			"cu-button",
-			`cu-button--${props.variant}`,
+			`cu-button--${safeVariant.value}`,
 			`cu-button--${props.size}`,
 			{
 				"cu-button--disabled": isDisabled.value,
@@ -3444,7 +3490,7 @@ var Button_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE_
 			], 14, _hoisted_2$4));
 		};
 	}
-}), [["styles", ["\n.cu-button[data-v-cb9decf8] {\n  font-family: var(--cu-font-sans);\n  text-decoration: none;\n  font-size: var(--cu-font-size-sm);\n  font-weight: var(--cu-font-weight-medium);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius);\n  border: none;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--cu-space-xs);\n  box-sizing: border-box;\n  transition: all 150ms ease;\n}\n.cu-button[data-v-cb9decf8]:active:not(.cu-button--disabled) {\n  transform: scale(0.97);\n}\n.cu-button--disabled[data-v-cb9decf8] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n\n/* sizes (md = base; link mantiene su padding 0) */\n.cu-button--sm[data-v-cb9decf8]:not(.cu-button--link) {\n  font-size: var(--cu-font-size-xs);\n  padding: var(--cu-space-xs) var(--cu-space-sm);\n}\n.cu-button--lg[data-v-cb9decf8]:not(.cu-button--link) {\n  font-size: var(--cu-font-size-lg);\n  padding: var(--cu-space-lg) var(--cu-space-xl);\n}\n\n/* solid */\n.cu-button.cu-button--solid[data-v-cb9decf8] {\n  background-color: var(--btn-solid);\n  color: var(--btn-solid-text);\n}\n.cu-button.cu-button--solid[data-v-cb9decf8]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-hover);\n}\n.cu-button.cu-button--solid[data-v-cb9decf8]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-active);\n}\n\n/* ghost */\n.cu-button.cu-button--ghost[data-v-cb9decf8] {\n  background-color: transparent;\n  color: var(--btn-text);\n}\n.cu-button.cu-button--ghost[data-v-cb9decf8]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-hover);\n}\n.cu-button.cu-button--ghost[data-v-cb9decf8]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-active);\n}\n\n/* soft */\n.cu-button.cu-button--soft[data-v-cb9decf8] {\n  background-color: var(--btn-soft);\n  color: var(--btn-text);\n}\n.cu-button.cu-button--soft[data-v-cb9decf8]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-soft-hover);\n}\n.cu-button.cu-button--soft[data-v-cb9decf8]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-soft-active);\n}\n\n/* subtle */\n.cu-button.cu-button--subtle[data-v-cb9decf8] {\n  background-color: var(--btn-subtle);\n  color: var(--btn-text);\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-button.cu-button--subtle[data-v-cb9decf8]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-subtle-hover);\n}\n.cu-button.cu-button--subtle[data-v-cb9decf8]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-subtle-active);\n}\n\n/* outlined */\n.cu-button.cu-button--outlined[data-v-cb9decf8] {\n  background-color: transparent;\n  color: var(--btn-text);\n  border: var(--cu-border-thin) solid var(--btn-border);\n}\n.cu-button.cu-button--outlined[data-v-cb9decf8]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-hover);\n}\n.cu-button.cu-button--outlined[data-v-cb9decf8]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-active);\n}\n\n/* link */\n.cu-button.cu-button--link[data-v-cb9decf8] {\n  background-color: transparent;\n  color: var(--btn-text);\n  padding: 0;\n  box-shadow: none;\n  text-decoration: underline;\n  text-underline-offset: var(--cu-space-2xs);\n}\n.cu-button.cu-button--link[data-v-cb9decf8]:hover:not(.cu-button--disabled) {\n  text-decoration-thickness: 2px;\n}\n\n/* none */\n.cu-button.cu-button--none[data-v-cb9decf8] {\n  background-color: var(--btn-solid);\n  color: var(--btn-solid-text);\n}\n.cu-button.cu-button--none[data-v-cb9decf8]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-hover);\n}\n.cu-button.cu-button--none[data-v-cb9decf8]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-active);\n}\n\n/* link wrapper */\n.cu-button-link[data-v-cb9decf8] {\n  text-decoration: none;\n}\n.cu-button-link[data-v-cb9decf8]:hover {\n  text-decoration: underline;\n  text-underline-offset: var(--cu-space-2xs);\n}\n.cu-button-link.cu-button--disabled[data-v-cb9decf8] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n\n/* icon-only */\n.cu-button--icon-only[data-v-cb9decf8] {\n  padding: var(--cu-space-sm);\n}\n\n/* loading spinner */\n.cu-button-spinner[data-v-cb9decf8] {\n  animation: cu-spin-cb9decf8 0.8s linear infinite;\n}\n@keyframes cu-spin-cb9decf8 {\nfrom { transform: rotate(0deg);\n}\nto { transform: rotate(360deg);\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.cu-button[data-v-cb9decf8] {\n    transition: none;\n}\n.cu-button[data-v-cb9decf8]:active:not(.cu-button--disabled) {\n    transform: none;\n}\n.cu-button-spinner[data-v-cb9decf8] {\n    animation: none;\n}\n}\n"]], ["__scopeId", "data-v-cb9decf8"]]);
+}), [["styles", ["\n.cu-button[data-v-de0a2e1a] {\n  font-family: var(--cu-font-sans);\n  text-decoration: none;\n  font-size: var(--cu-font-size-sm);\n  font-weight: var(--cu-font-weight-medium);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius);\n  border: none;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--cu-space-xs);\n  box-sizing: border-box;\n  transition: all 150ms ease;\n}\n.cu-button[data-v-de0a2e1a]:active:not(.cu-button--disabled) {\n  transform: scale(0.97);\n}\n.cu-button--disabled[data-v-de0a2e1a] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n\n/* sizes (md = base; link mantiene su padding 0) */\n.cu-button--sm[data-v-de0a2e1a]:not(.cu-button--link) {\n  font-size: var(--cu-font-size-xs);\n  padding: var(--cu-space-xs) var(--cu-space-sm);\n}\n.cu-button--lg[data-v-de0a2e1a]:not(.cu-button--link) {\n  font-size: var(--cu-font-size-lg);\n  padding: var(--cu-space-lg) var(--cu-space-xl);\n}\n\n/* solid */\n.cu-button.cu-button--solid[data-v-de0a2e1a] {\n  background-color: var(--btn-solid);\n  color: var(--btn-solid-text);\n}\n.cu-button.cu-button--solid[data-v-de0a2e1a]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-hover);\n}\n.cu-button.cu-button--solid[data-v-de0a2e1a]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-active);\n}\n\n/* ghost */\n.cu-button.cu-button--ghost[data-v-de0a2e1a] {\n  background-color: transparent;\n  color: var(--btn-text);\n}\n.cu-button.cu-button--ghost[data-v-de0a2e1a]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-hover);\n}\n.cu-button.cu-button--ghost[data-v-de0a2e1a]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-active);\n}\n\n/* soft */\n.cu-button.cu-button--soft[data-v-de0a2e1a] {\n  background-color: var(--btn-soft);\n  color: var(--btn-text);\n}\n.cu-button.cu-button--soft[data-v-de0a2e1a]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-soft-hover);\n}\n.cu-button.cu-button--soft[data-v-de0a2e1a]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-soft-active);\n}\n\n/* subtle */\n.cu-button.cu-button--subtle[data-v-de0a2e1a] {\n  background-color: var(--btn-subtle);\n  color: var(--btn-text);\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-button.cu-button--subtle[data-v-de0a2e1a]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-subtle-hover);\n}\n.cu-button.cu-button--subtle[data-v-de0a2e1a]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-subtle-active);\n}\n\n/* outlined */\n.cu-button.cu-button--outlined[data-v-de0a2e1a] {\n  background-color: transparent;\n  color: var(--btn-text);\n  border: var(--cu-border-thin) solid var(--btn-border);\n}\n.cu-button.cu-button--outlined[data-v-de0a2e1a]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-hover);\n}\n.cu-button.cu-button--outlined[data-v-de0a2e1a]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-active);\n}\n\n/* link */\n.cu-button.cu-button--link[data-v-de0a2e1a] {\n  background-color: transparent;\n  color: var(--btn-text);\n  padding: 0;\n  box-shadow: none;\n  text-decoration: underline;\n  text-underline-offset: var(--cu-space-2xs);\n}\n.cu-button.cu-button--link[data-v-de0a2e1a]:hover:not(.cu-button--disabled) {\n  text-decoration-thickness: 2px;\n}\n\n/* none */\n.cu-button.cu-button--none[data-v-de0a2e1a] {\n  background-color: var(--btn-solid);\n  color: var(--btn-solid-text);\n}\n.cu-button.cu-button--none[data-v-de0a2e1a]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-hover);\n}\n.cu-button.cu-button--none[data-v-de0a2e1a]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-active);\n}\n\n/* link wrapper */\n.cu-button-link[data-v-de0a2e1a] {\n  text-decoration: none;\n}\n.cu-button-link[data-v-de0a2e1a]:hover {\n  text-decoration: underline;\n  text-underline-offset: var(--cu-space-2xs);\n}\n.cu-button-link.cu-button--disabled[data-v-de0a2e1a] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n\n/* icon-only */\n.cu-button--icon-only[data-v-de0a2e1a] {\n  padding: var(--cu-space-sm);\n}\n\n/* loading spinner */\n.cu-button-spinner[data-v-de0a2e1a] {\n  animation: cu-spin-de0a2e1a 0.8s linear infinite;\n}\n@keyframes cu-spin-de0a2e1a {\nfrom { transform: rotate(0deg);\n}\nto { transform: rotate(360deg);\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.cu-button[data-v-de0a2e1a] {\n    transition: none;\n}\n.cu-button[data-v-de0a2e1a]:active:not(.cu-button--disabled) {\n    transform: none;\n}\n.cu-button-spinner[data-v-de0a2e1a] {\n    animation: none;\n}\n}\n"]], ["__scopeId", "data-v-de0a2e1a"]]);
 //#endregion
 //#region src/components/overlay/Collapse.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1$7 = { class: "cu-collapse" };
@@ -3615,6 +3661,222 @@ var Collapse_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 	}
 }), [["styles", ["\n.cu-collapse[data-v-862d3534] {\n  display: flex;\n  flex-direction: column;\n}\n.cu-collapse-trigger[data-v-862d3534] {\n  justify-content: flex-start;\n  cursor: pointer;\n}\n.cu-collapse-trigger[data-v-862d3534]:disabled {\n  cursor: not-allowed;\n}\n.cu-collapse-chevron[data-v-862d3534] {\n  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);\n}\n.cu-collapse-chevron.is-open[data-v-862d3534] {\n  transform: rotate(90deg);\n}\n.cu-collapse-text[data-v-862d3534] {\n  display: flex;\n  flex-direction: column;\n  align-items: flex-start;\n  min-width: 0;\n  text-align: left;\n}\n.cu-collapse-description[data-v-862d3534] {\n  display: block;\n  margin: 0;\n  font-size: var(--cu-font-size-xs);\n  font-weight: var(--cu-font-weight-normal);\n  opacity: 0.7;\n}\n.cu-collapse-content[data-v-862d3534] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--cu-space-2xs);\n  padding: 0 0 0 var(--cu-space-lg);\n  transition: height 0.25s cubic-bezier(0.4, 0, 0.2, 1);\n}\n@media (prefers-reduced-motion: reduce) {\n.cu-collapse-content[data-v-862d3534],\n  .cu-collapse-chevron[data-v-862d3534] {\n    transition: none;\n}\n}\n"]], ["__scopeId", "data-v-862d3534"]]);
 //#endregion
+//#region src/utils/flatTree.ts
+/** Siguiente ancestro en el flat tree (cruza slots y shadow roots). */
+function parentInFlatTree(el) {
+	const slotted = el.assignedSlot;
+	if (slotted) return slotted;
+	if (el.parentElement) return el.parentElement;
+	const root = el.getRootNode();
+	return "host" in root ? root.host : null;
+}
+/** Primer ancestro (sin contar a `el`) que cumple el predicado, en el flat tree. */
+function ancestorInFlatTree(el, predicate) {
+	for (let node = parentInFlatTree(el); node; node = parentInFlatTree(node)) if (predicate(node)) return node;
+	return null;
+}
+//#endregion
+//#region src/utils/dropdownNesting.ts
+/** Hosts cuyo contenido light (salvo el slot `toggle`) se proyecta en el panel. */
+var NESTED_HOST_TAGS = { "CU-DROPDOWN-MENU": true };
+/**
+* Dos caminos:
+*
+* 1. *Flat tree*: hay un `.cu-dropdown` entre sus ancestros. Cubre el anidado en Vue y
+*    el contenido ya proyectado por un slot (`assignedSlot` / `getRootNode().host`).
+* 2. *Light DOM*: su ancestro es un `<cu-dropdown-menu>`, que proyecta todo su contenido
+*    en el panel salvo el slot `toggle`. Al montar, el panel del padre todavía no existe
+*    (`v-if`, cerrado), así que `assignedSlot` es `null` y el camino 1 no llega.
+*/
+function detectDropdownNesting(el) {
+	if (!el) return {
+		nested: false,
+		inMenu: false
+	};
+	const parentDropdown = ancestorInFlatTree(el, (node) => node.classList.contains("cu-dropdown"));
+	if (parentDropdown) return {
+		nested: true,
+		inMenu: parentDropdown.querySelector(".cu-popover-panel")?.getAttribute("role") === "menu"
+	};
+	let start = parentInFlatTree(el);
+	while (start && start.shadowRoot?.contains(el)) start = parentInFlatTree(start);
+	let inToggleSlot = false;
+	for (let node = start; node; node = parentInFlatTree(node)) {
+		if (node.getAttribute("slot") === "toggle") inToggleSlot = true;
+		if (NESTED_HOST_TAGS[node.tagName]) return {
+			nested: !inToggleSlot,
+			inMenu: true
+		};
+	}
+	return {
+		nested: false,
+		inMenu: false
+	};
+}
+//#endregion
+//#region src/utils/uniqueId.ts
+var sequence = 0;
+/** Identificador estable mientras la instancia viva: `<prefijo>-<useId>-<n>`. */
+function useUniqueId(prefix) {
+	return `${prefix}-${useId()}-${++sequence}`;
+}
+//#endregion
+//#region src/composables/useMenuNavigation.ts
+/** Texto comparable del typeahead (sin acentos ni mayúsculas). */
+function foldMenuText(value) {
+	return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, " ").trim().toLowerCase();
+}
+function useMenuNavigation(options) {
+	/** Fila activa: índice dentro de las filas elegibles. */
+	const activeRow = ref(0);
+	const effectiveActiveRow = computed(() => Math.min(activeRow.value, Math.max(0, options.enabledIndices.value.length - 1)));
+	let root = null;
+	/**
+	* Filas elegibles de ESTE menú: sin deshabilitar, en orden de DOM y sin las de un
+	* submenú anidado (viven en otro dropdown y tienen su propio handler).
+	*/
+	function enabledRows() {
+		const panel = options.panel();
+		const owner = options.root();
+		if (!panel || !owner) return [];
+		return Array.from(panel.querySelectorAll(options.rowSelector)).filter((row) => row.closest(".cu-dropdown") === owner && !row.hasAttribute("disabled") && row.getAttribute("aria-disabled") !== "true");
+	}
+	/** Índice en `items` → `tabindex` (la fila activa es la única parada del panel). */
+	function itemTabindex(index) {
+		const position = options.enabledIndices.value.indexOf(index);
+		return position >= 0 && position === effectiveActiveRow.value ? 0 : -1;
+	}
+	function focusRow(rows, index) {
+		const position = (index + rows.length) % rows.length;
+		const row = rows[position];
+		if (!row) return;
+		activeRow.value = position;
+		row.focus();
+		row.scrollIntoView?.({ block: "nearest" });
+	}
+	let typeahead = "";
+	let typeaheadTimer = null;
+	function clearTypeahead() {
+		typeahead = "";
+		if (typeaheadTimer) {
+			clearTimeout(typeaheadTimer);
+			typeaheadTimer = null;
+		}
+	}
+	function searchByPrefix(char, rows, from) {
+		typeahead += foldMenuText(char);
+		if (typeaheadTimer) clearTimeout(typeaheadTimer);
+		typeaheadTimer = setTimeout(clearTypeahead, 500);
+		const start = from >= 0 ? from : 0;
+		for (let step = 1; step <= rows.length; step++) {
+			const index = (start + step) % rows.length;
+			if (foldMenuText(rows[index].textContent ?? "").startsWith(typeahead)) {
+				focusRow(rows, index);
+				return;
+			}
+		}
+	}
+	let tabLeaving = false;
+	function handleKeydown(e) {
+		if (!options.isOpen() || options.enabled?.() === false) return;
+		if (e.altKey || e.ctrlKey || e.metaKey) return;
+		const panel = options.panel();
+		const target = e.target;
+		if (!panel || !target || !panel.contains(target)) return;
+		if (target.closest(".cu-dropdown") !== options.root()) return;
+		const rows = enabledRows();
+		if (rows.length === 0) return;
+		const current = rows.indexOf(target.closest(options.rowSelector));
+		if (e.key === "ArrowDown") {
+			e.preventDefault();
+			focusRow(rows, current < 0 ? 0 : current + 1);
+			return;
+		}
+		if (e.key === "ArrowUp") {
+			e.preventDefault();
+			focusRow(rows, current < 0 ? rows.length - 1 : current - 1);
+			return;
+		}
+		if (e.key === "Home") {
+			e.preventDefault();
+			focusRow(rows, 0);
+			return;
+		}
+		if (e.key === "End") {
+			e.preventDefault();
+			focusRow(rows, rows.length - 1);
+			return;
+		}
+		if (e.key === "Tab") {
+			tabLeaving = true;
+			return;
+		}
+		if (e.key === " ") {
+			const row = target.closest(options.rowSelector);
+			if (row && row.tagName === "A") {
+				e.preventDefault();
+				row.click();
+			}
+			return;
+		}
+		if (e.key.length === 1) {
+			e.preventDefault();
+			searchByPrefix(e.key, rows, current);
+		}
+	}
+	/** Un gesto de puntero no es Tab: descarta el cierre pendiente por foco. */
+	function handlePointerDown() {
+		tabLeaving = false;
+	}
+	function handleFocusOut(e) {
+		if (!tabLeaving || !options.isOpen()) return;
+		tabLeaving = false;
+		const next = e.relatedTarget;
+		if (next && options.root()?.contains(next)) return;
+		setTimeout(() => {
+			if (options.isOpen()) options.close();
+		}, 0);
+	}
+	/** El roving tabindex sigue al foco real (click o teclado). */
+	function handleFocusIn(e) {
+		const row = e.target?.closest?.(options.rowSelector);
+		if (!row) return;
+		const position = enabledRows().indexOf(row);
+		if (position >= 0) activeRow.value = position;
+	}
+	function attach(el) {
+		detach();
+		root = el;
+		if (!root) return;
+		root.addEventListener("keydown", handleKeydown);
+		root.addEventListener("focusout", handleFocusOut);
+		root.addEventListener("focusin", handleFocusIn);
+		root.addEventListener("pointerdown", handlePointerDown);
+	}
+	function detach() {
+		if (!root) return;
+		root.removeEventListener("keydown", handleKeydown);
+		root.removeEventListener("focusout", handleFocusOut);
+		root.removeEventListener("focusin", handleFocusIn);
+		root.removeEventListener("pointerdown", handlePointerDown);
+		root = null;
+	}
+	/** Estado de navegación a cero (al cerrar el menú). */
+	function reset() {
+		tabLeaving = false;
+		clearTypeahead();
+	}
+	return {
+		activeRow,
+		enabledRows,
+		itemTabindex,
+		focusRow,
+		attach,
+		detach,
+		reset
+	};
+}
+//#endregion
 //#region src/components/information/Loader.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1$6 = { class: "cu-loader" };
 //#endregion
@@ -3654,7 +3916,12 @@ var Loader_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE_
 }), [["styles", ["\n.cu-loader[data-v-045244b1] {\n  position: absolute;\n  top: 0;\n  left: 0;\n  right: 0;\n  z-index: 30;\n  overflow: hidden;\n  height: 3px;\n}\n.cu-loader-bar[data-v-045244b1] {\n  position: absolute;\n  top: 0;\n  height: 100%;\n  background: var(--cu-loader-color);\n}\n.cu-loader-bar--loading[data-v-045244b1] {\n  width: 60%;\n  background: linear-gradient(90deg, transparent 0%, var(--cu-loader-color) 50%, transparent 100%);\n  animation: cu-loader-slide-045244b1 1.5s ease-in-out infinite;\n}\n.cu-loader-bar--cooldown[data-v-045244b1] {\n  left: 0;\n  width: 100%;\n  animation: cu-loader-cooldown-045244b1 var(--cu-loader-delay) linear forwards;\n}\n@keyframes cu-loader-slide-045244b1 {\n0% { left: -100%;\n}\n50% { left: 0%;\n}\n100% { left: 100%;\n}\n}\n@keyframes cu-loader-cooldown-045244b1 {\nfrom { width: 100%;\n}\nto { width: 0%;\n}\n}\n"]], ["__scopeId", "data-v-045244b1"]]);
 //#endregion
 //#region src/components/overlay/Popover.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1$5 = ["id", "role"];
+var _hoisted_1$5 = [
+	"id",
+	"role",
+	"aria-label"
+];
+var VIEWPORT_MARGIN = 8;
 var HOVER_REGISTRY_KEY = "__cu_hover_registry__";
 //#endregion
 //#region src/components/overlay/Popover.vue
@@ -3784,6 +4051,40 @@ var Popover_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE
 		const isOpen = ref(false);
 		const popoverRef = ref(null);
 		const panelEl = ref(null);
+		const NAMED_ROLES = {
+			menu: true,
+			dialog: true,
+			alertdialog: true
+		};
+		const panelLabel = ref("");
+		/** Primer elemento del slot `toggle` (el ancla que el consumidor abre). */
+		function toggleElement() {
+			const root = popoverRef.value;
+			if (!root) return null;
+			for (const child of Array.from(root.children)) {
+				if (child === panelEl.value) continue;
+				if (child instanceof HTMLElement) return child;
+			}
+			return null;
+		}
+		/** Texto del trigger, con la misma precedencia que usa su nombre accesible. */
+		function triggerLabel(el) {
+			if (!el) return "";
+			return (el.getAttribute("aria-label") || el.getAttribute("title") || el.getAttribute("label") || el.textContent || "").replace(/\s+/g, " ").trim();
+		}
+		function namePanel() {
+			panelLabel.value = NAMED_ROLES[props.role] ? triggerLabel(toggleElement()) : "";
+		}
+		let overlayId = null;
+		function claimOverlay() {
+			if (overlayId) return;
+			overlayId = registerOverlay({ close });
+		}
+		function releaseOverlay() {
+			if (!overlayId) return;
+			unregisterOverlay(overlayId);
+			overlayId = null;
+		}
 		let focusBeforeOpen = null;
 		/**
 		* Elemento enfocado dentro del mismo árbol (shadow root o documento).
@@ -3839,42 +4140,89 @@ var Popover_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE
 				}, 0);
 			}
 		}
-		function onKeyDown(e) {
-			if (e.key === "Escape" && isOpen.value) {
-				isOpen.value = false;
-				emit("close");
-				restoreFocus();
-			}
-		}
 		const SCROLL_OPTS = {
 			capture: true,
 			passive: true
 		};
+		let mountedRoot = null;
 		onMounted(() => {
+			mountedRoot = popoverRef.value;
 			document.addEventListener("click", onDocumentClick, true);
-			document.addEventListener("keydown", onKeyDown);
 			window.addEventListener("resize", onViewportChange);
 			document.addEventListener("scroll", onViewportChange, SCROLL_OPTS);
 		});
 		onUnmounted(() => {
+			clearHoverTimers();
 			unregisterHover();
+			releaseOverlay();
 			document.removeEventListener("click", onDocumentClick, true);
-			document.removeEventListener("keydown", onKeyDown);
 			window.removeEventListener("resize", onViewportChange);
 			document.removeEventListener("scroll", onViewportChange, SCROLL_OPTS);
 			document.removeEventListener("mousemove", onPointerMove, true);
 			pointerListening = false;
+			mountedRoot = null;
 		});
-		function positionPanel() {
+		function crossAxisStart(anchorStart, anchorSize, panelSize, align) {
+			if (align === "start") return anchorStart;
+			if (align === "end") return anchorStart + anchorSize - panelSize;
+			return anchorStart + anchorSize / 2 - panelSize / 2;
+		}
+		/** Deja el panel dentro del viewport sin generar scroll (nunca negativo). */
+		function clampToViewport(value, size, viewport) {
+			const max = Math.max(VIEWPORT_MARGIN, viewport - size - VIEWPORT_MARGIN);
+			return Math.min(Math.max(value, VIEWPORT_MARGIN), max);
+		}
+		/**
+		* Recalcula la posición del panel en modo fixed (coordenadas de viewport) al abrir y
+		* en cada scroll/resize mientras está abierto.
+		*
+		* Con el tamaño medido el panel se ubica por coordenadas y se **voltea** al lado
+		* opuesto si no entra (right→left, bottom→top) y se **clampea** al viewport: antes,
+		* `position="right"` en el borde derecho generaba scroll horizontal (scrollWidth
+		* 1201 > 900) y `left` daba x=-308.
+		*/
+		function positionPanel(measured) {
 			if (!fixedMode.value || !popoverRef.value) return;
 			const r = popoverRef.value.getBoundingClientRect();
 			const vw = window.innerWidth;
 			const vh = window.innerHeight;
-			const pos = effectivePosition.value;
 			const align = effectiveAlign.value;
+			const gap = props.offset;
 			const style = {};
-			if (pos === "bottom") {
-				style.top = `${r.bottom + props.offset}px`;
+			const box = measured ?? panelEl.value?.getBoundingClientRect();
+			const pw = box?.width ?? 0;
+			const ph = box?.height ?? 0;
+			const room = {
+				right: vw - r.right - gap - VIEWPORT_MARGIN,
+				left: r.left - gap - VIEWPORT_MARGIN,
+				bottom: vh - r.bottom - gap - VIEWPORT_MARGIN,
+				top: r.top - gap - VIEWPORT_MARGIN
+			};
+			let pos = effectivePosition.value;
+			if (pw > 0) {
+				if (pos === "right" && room.right < pw && room.left >= pw) pos = "left";
+				else if (pos === "left" && room.left < pw && room.right >= pw) pos = "right";
+			}
+			if (ph > 0) {
+				if (pos === "bottom" && room.bottom < ph && room.top >= ph) pos = "top";
+				else if (pos === "top" && room.top < ph && room.bottom >= ph) pos = "bottom";
+			}
+			if (pw > 0 || ph > 0) {
+				let left;
+				let top;
+				if (pos === "bottom" || pos === "top") {
+					left = crossAxisStart(r.left, r.width, pw, align);
+					top = pos === "bottom" ? r.bottom + gap : r.top - gap - ph;
+				} else {
+					top = crossAxisStart(r.top, r.height, ph, align);
+					left = pos === "right" ? r.right + gap : r.left - gap - pw;
+				}
+				if (pw > 0) left = clampToViewport(left, pw, vw);
+				if (ph > 0) top = clampToViewport(top, ph, vh);
+				style.left = `${left}px`;
+				style.top = `${top}px`;
+			} else if (pos === "bottom") {
+				style.top = `${r.bottom + gap}px`;
 				if (align === "start") style.left = `${r.left}px`;
 				else if (align === "end") style.right = `${vw - r.right}px`;
 				else {
@@ -3882,7 +4230,7 @@ var Popover_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE
 					style.transform = "translateX(-50%)";
 				}
 			} else if (pos === "top") {
-				style.bottom = `${vh - r.top + props.offset}px`;
+				style.bottom = `${vh - r.top + gap}px`;
 				if (align === "start") style.left = `${r.left}px`;
 				else if (align === "end") style.right = `${vw - r.right}px`;
 				else {
@@ -3890,7 +4238,7 @@ var Popover_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE
 					style.transform = "translateX(-50%)";
 				}
 			} else if (pos === "right") {
-				style.left = `${r.right + props.offset}px`;
+				style.left = `${r.right + gap}px`;
 				if (align === "start") style.top = `${r.top}px`;
 				else if (align === "end") style.bottom = `${vh - r.bottom}px`;
 				else {
@@ -3898,7 +4246,7 @@ var Popover_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE
 					style.transform = "translateY(-50%)";
 				}
 			} else {
-				style.right = `${vw - r.left + props.offset}px`;
+				style.right = `${vw - r.left + gap}px`;
 				if (align === "start") style.top = `${r.top}px`;
 				else if (align === "end") style.bottom = `${vh - r.bottom}px`;
 				else {
@@ -3906,7 +4254,7 @@ var Popover_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE
 					style.transform = "translateY(-50%)";
 				}
 			}
-			if (autoFixed.value && !props.panelWidth) style.width = `${r.width}px`;
+			if (autoFixed.value && !props.panelWidth && pw > 0) style.width = `${pw}px`;
 			panelPos.value = style;
 		}
 		function onViewportChange() {
@@ -3919,10 +4267,9 @@ var Popover_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE
 		function clipsDescendants(cs) {
 			return !!cs.overflow && cs.overflow !== "visible";
 		}
-		function isClippedByAncestor(panel, anchor) {
-			const pr = panel.getBoundingClientRect();
+		function isClippedByAncestor(panel, anchor, pr) {
 			if (!pr.width && !pr.height) return false;
-			let el = flatParent(anchor);
+			let el = parentInFlatTree(anchor);
 			while (el) {
 				const cs = getComputedStyle(el);
 				if (anchorsFixedDescendants(cs)) return false;
@@ -3930,36 +4277,44 @@ var Popover_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE
 					const r = el.getBoundingClientRect();
 					if (pr.top < r.top || pr.left < r.left || pr.bottom > r.bottom || pr.right > r.right) return true;
 				}
-				el = flatParent(el);
+				el = parentInFlatTree(el);
 			}
 			return false;
 		}
-		function flatParent(el) {
-			const slotted = el.assignedSlot;
-			if (slotted) return slotted;
-			if (el.parentElement) return el.parentElement;
-			return el.getRootNode().host ?? null;
+		/** ¿El panel medido se sale del viewport? (en `absolute` eso genera scroll). */
+		function overflowsViewport(pr) {
+			if (!pr.width && !pr.height) return false;
+			return pr.left < 0 || pr.top < 0 || pr.right > window.innerWidth || pr.bottom > window.innerHeight;
 		}
-		async function autoFixIfClipped() {
+		async function autoFixIfNeeded() {
 			await nextTick();
 			const panel = panelEl.value;
 			const anchor = popoverRef.value;
 			if (!panel || !anchor || !isOpen.value || props.fixed) return;
-			if (!isClippedByAncestor(panel, anchor)) return;
+			const box = panel.getBoundingClientRect();
+			if (!isClippedByAncestor(panel, anchor, box) && !overflowsViewport(box)) return;
 			autoFixed.value = true;
-			positionPanel();
+			positionPanel({
+				width: box.width,
+				height: box.height
+			});
 		}
-		let hoverTimer = null;
-		let hoverCloseTimer = null;
+		let hoverTimer;
+		let hoverCloseTimer;
 		function hoverRegistry() {
 			const g = globalThis;
 			return g[HOVER_REGISTRY_KEY] ??= [];
+		}
+		/** ¿`ancestor` contiene a `el` en el flat tree? Un submenú puede vivir en otro shadow. */
+		function containsOverlay(ancestor, el) {
+			for (let node = el; node; node = parentInFlatTree(node)) if (node === ancestor) return true;
+			return false;
 		}
 		function registerHoverOpen() {
 			const el = popoverRef.value;
 			if (!el) return;
 			const reg = hoverRegistry();
-			const toClose = reg.filter((entry) => entry.el !== el && !entry.el.contains(el));
+			const toClose = reg.filter((entry) => entry.el !== el && !containsOverlay(entry.el, el));
 			reg.push({
 				el,
 				close
@@ -3967,7 +4322,7 @@ var Popover_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE
 			for (const entry of toClose) entry.close();
 		}
 		function unregisterHover() {
-			const el = popoverRef.value;
+			const el = popoverRef.value ?? mountedRoot;
 			if (!el) return;
 			const reg = hoverRegistry();
 			const idx = reg.findIndex((entry) => entry.el === el);
@@ -3997,22 +4352,39 @@ var Popover_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE
 			if (panel) rects.push(panel.getBoundingClientRect());
 			return rects.some((r) => lastPointer.x >= r.left && lastPointer.x <= r.right && lastPointer.y >= r.top && lastPointer.y <= r.bottom);
 		}
+		/**
+		* Cancela los timers de hover. Sin esto, desmontar dentro del delay dejaba correr un
+		* `open()`/`close()` sobre un nodo ya desconectado: sumaba el popover al registry
+		* global de hover, a la pila de overlays, y emitía eventos de un componente que ya no
+		* existe. Es el único corte necesario: los dos timers viven por instancia y se crean
+		* siempre acá, así que `onUnmounted` los alcanza.
+		*/
+		function clearHoverTimers() {
+			clearTimeout(hoverTimer);
+			hoverTimer = void 0;
+			clearTimeout(hoverCloseTimer);
+			hoverCloseTimer = void 0;
+		}
 		function onMouseEnter() {
 			if (!props.hover || props.disabled) return;
-			if (hoverTimer) clearTimeout(hoverTimer);
-			if (hoverCloseTimer) {
-				clearTimeout(hoverCloseTimer);
-				hoverCloseTimer = null;
-			}
+			clearTimeout(hoverTimer);
+			hoverTimer = void 0;
+			clearTimeout(hoverCloseTimer);
+			hoverCloseTimer = void 0;
 			if (props.hoverDelay === 0) open();
-			else hoverTimer = setTimeout(() => open(), props.hoverDelay);
+			else hoverTimer = setTimeout(() => {
+				hoverTimer = void 0;
+				open();
+			}, props.hoverDelay);
 		}
 		function onMouseLeave() {
 			if (!props.hover) return;
-			if (hoverTimer) clearTimeout(hoverTimer);
+			clearTimeout(hoverTimer);
+			hoverTimer = void 0;
 			ensurePointerListener();
-			if (hoverCloseTimer) clearTimeout(hoverCloseTimer);
+			clearTimeout(hoverCloseTimer);
 			hoverCloseTimer = setTimeout(() => {
+				hoverCloseTimer = void 0;
 				if (isPointerInside()) return;
 				close();
 			}, 120);
@@ -4022,15 +4394,21 @@ var Popover_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE
 			autoFixed.value = false;
 			rememberFocus();
 			positionPanel();
+			namePanel();
 			isOpen.value = true;
+			claimOverlay();
 			emit("open");
 			if (props.hover) registerHoverOpen();
-			if (!props.fixed) autoFixIfClipped();
+			if (!props.fixed) autoFixIfNeeded();
+			else nextTick(() => {
+				if (isOpen.value) positionPanel();
+			});
 		}
 		function close() {
 			if (!isOpen.value) return;
 			isOpen.value = false;
 			autoFixed.value = false;
+			releaseOverlay();
 			emit("close");
 			unregisterHover();
 			restoreFocus();
@@ -4067,24 +4445,42 @@ var Popover_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE
 				id: props.panelId || void 0,
 				style: normalizeStyle(panelStyle.value),
 				class: normalizeClass(["cu-popover-panel", __props.panelClass]),
-				role: __props.role || void 0
+				role: __props.role || void 0,
+				"aria-label": panelLabel.value || void 0
 			}, [renderSlot(_ctx.$slots, "default", {}, void 0, true)], 14, _hoisted_1$5)) : createCommentVNode("v-if", true)], 544);
 		};
 	}
-}), [["styles", ["\n.cu-popover[data-v-7e62c527] {\n  position: relative;\n  display: inline-block;\n  box-sizing: border-box;\n}\n.cu-popover-panel[data-v-7e62c527] {\n  padding: var(--cu-space-sm);\n  border-radius: var(--cu-radius-md);\n  font-family: var(--cu-font-sans);\n  box-shadow: var(--cu-shadow-xl);\n}\n"]], ["__scopeId", "data-v-7e62c527"]]);
+}), [["styles", ["\n.cu-popover[data-v-d29bb2c8] {\n  position: relative;\n  display: inline-block;\n  box-sizing: border-box;\n}\n.cu-popover-panel[data-v-d29bb2c8] {\n  padding: var(--cu-space-sm);\n  border-radius: var(--cu-radius-md);\n  font-family: var(--cu-font-sans);\n  box-shadow: var(--cu-shadow-xl);\n}\n"]], ["__scopeId", "data-v-d29bb2c8"]]);
 //#endregion
 //#region src/components/overlay/Dropdown.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1$4 = ["onClick"];
+var _hoisted_1$4 = [
+	"role",
+	"aria-haspopup",
+	"aria-expanded",
+	"aria-controls",
+	"onClick"
+];
 var _hoisted_2$2 = ["innerHTML"];
 var _hoisted_3$2 = { class: "cu-dropdown-menu-item-label" };
 var _hoisted_4$2 = {
 	key: 0,
 	class: "cu-dropdown-menu-divider"
 };
-var _hoisted_5$2 = ["href", "onClick"];
+var _hoisted_5$2 = [
+	"href",
+	"role",
+	"aria-disabled",
+	"tabindex",
+	"onClick"
+];
 var _hoisted_6$2 = ["innerHTML"];
 var _hoisted_7$2 = { class: "cu-dropdown-menu-item-label" };
-var _hoisted_8$1 = ["disabled", "onClick"];
+var _hoisted_8$1 = [
+	"role",
+	"disabled",
+	"tabindex",
+	"onClick"
+];
 var _hoisted_9 = ["innerHTML"];
 var _hoisted_10 = { class: "cu-dropdown-menu-item-label" };
 //#endregion
@@ -4210,24 +4606,18 @@ var Dropdown_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 		const emit = __emit;
 		const popoverRef = ref(null);
 		const isNested = ref(false);
+		const nestedInMenu = ref(false);
+		/**
+		* Un dropdown dentro del panel de otro es un submenú: fila nativa, cascada a la derecha
+		* y el padre sigue abierto. La detección (compartida con `DropdownMenu`) cruza shadow
+		* roots y slots: ver `detectDropdownNesting`.
+		*/
 		function detectNested() {
-			const el = popoverRef.value?.$el;
-			if (!el) return;
-			let parent = el.parentElement;
-			while (parent) {
-				if (parent.classList.contains("cu-dropdown")) {
-					isNested.value = true;
-					return;
-				}
-				parent = parent.parentElement;
-			}
+			const context = detectDropdownNesting(popoverRef.value?.$el);
+			isNested.value = context.nested;
+			nestedInMenu.value = context.inMenu;
 		}
-		onMounted(() => {
-			detectNested();
-		});
-		const instance = getCurrentInstance();
-		const positionExplicit = computed(() => instance?.vnode?.props?.position !== void 0);
-		const effectivePosition = computed(() => isNested.value && !positionExplicit.value ? "right" : props.position);
+		const effectivePosition = computed(() => isNested.value && props.position === "bottom" ? "right" : props.position);
 		const effectiveAlign = computed(() => props.align);
 		const panelClass = computed(() => ({
 			"cu-dropdown-panel": true,
@@ -4245,6 +4635,74 @@ var Dropdown_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 			if (item.onClick) item.onClick();
 			popoverRef.value?.close();
 		}
+		const uid = useUniqueId("cu-dropdown");
+		/** `items` puede venir de datos: las entradas inválidas se descartan sin romper el menú. */
+		const menuItems = computed(() => (Array.isArray(props.items) ? props.items : []).filter((item) => !!item && typeof item === "object"));
+		const isMenu = computed(() => menuItems.value.length > 0 && props.panelRole === "menu");
+		/** `id` del panel del menú: el trigger lo referencia con `aria-controls`. */
+		const panelIdentifier = computed(() => props.panelId || (isMenu.value ? `${uid}-menu` : ""));
+		const nav = useMenuNavigation({
+			root: () => popoverRef.value?.$el ?? null,
+			panel: () => (popoverRef.value?.$el)?.querySelector(".cu-dropdown-panel") ?? null,
+			rowSelector: ".cu-dropdown-menu-item",
+			enabledIndices: computed(() => menuItems.value.map((item, index) => ({
+				item,
+				index
+			})).filter(({ item }) => !item.divider && !item.disabled).map(({ index }) => index)),
+			isOpen: () => popoverRef.value?.isOpen() ?? false,
+			close: () => popoverRef.value?.close(),
+			enabled: () => isMenu.value
+		});
+		/** Estado del panel: `Popover` avisa por eventos (el componente no tiene un `isOpen` propio). */
+		const panelOpen = ref(false);
+		let openIntent = null;
+		function onToggleKeydown(e) {
+			if (!isMenu.value || props.disabled) return;
+			if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
+			e.preventDefault();
+			if (popoverRef.value?.isOpen()) {
+				const rows = nav.enabledRows();
+				if (rows.length > 0) nav.focusRow(rows, e.key === "ArrowUp" ? rows.length - 1 : 0);
+				return;
+			}
+			openIntent = e.key === "ArrowUp" ? "last" : "first";
+			popoverRef.value?.open();
+		}
+		function onPanelOpen() {
+			panelOpen.value = true;
+			emit("open");
+			if (!isMenu.value) return;
+			const intent = openIntent;
+			openIntent = null;
+			nextTick(() => {
+				const rows = nav.enabledRows();
+				if (rows.length === 0) return;
+				if (intent) nav.focusRow(rows, intent === "last" ? rows.length - 1 : 0);
+				else nav.activeRow.value = 0;
+			});
+		}
+		function onPanelClose() {
+			panelOpen.value = false;
+			openIntent = null;
+			nav.reset();
+			emit("close");
+		}
+		/** `aria-haspopup` según el rol del panel (menu/dialog/listbox). */
+		const togglePopup = computed(() => props.panelRole === "menu" || props.panelRole === "dialog" || props.panelRole === "listbox" ? props.panelRole : void 0);
+		/** AA del trigger por defecto: sólo cuando el panel es el menú de `items`. */
+		const toggleAria = computed(() => isMenu.value ? {
+			"aria-haspopup": togglePopup.value,
+			"aria-expanded": panelOpen.value ? "true" : "false",
+			"aria-controls": panelIdentifier.value
+		} : {});
+		onMounted(() => {
+			detectNested();
+			nav.attach(popoverRef.value?.$el ?? null);
+		});
+		onUnmounted(() => {
+			nav.detach();
+			nav.reset();
+		});
 		/** Devuelve el valor seleccionado. */
 		function get() {
 			return selectedValue.value;
@@ -4283,11 +4741,11 @@ var Dropdown_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 				hover: __props.trigger === "hover",
 				"hover-delay": 0,
 				role: __props.panelRole,
-				"panel-id": __props.panelId,
+				"panel-id": panelIdentifier.value,
 				"panel-class": panelClass.value,
 				class: normalizeClass(["cu-dropdown", { "cu-dropdown--nested": isNested.value }]),
-				onOpen: _cache[0] || (_cache[0] = ($event) => emit("open")),
-				onClose: _cache[1] || (_cache[1] = ($event) => emit("close"))
+				onOpen: onPanelOpen,
+				onClose: onPanelClose
 			}, {
 				toggle: withCtx(({ toggle, isOpen }) => [renderSlot(_ctx.$slots, "toggle", {
 					toggle,
@@ -4296,6 +4754,10 @@ var Dropdown_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 					key: 0,
 					type: "button",
 					class: "cu-dropdown-menu-item",
+					role: nestedInMenu.value ? "menuitem" : void 0,
+					"aria-haspopup": togglePopup.value,
+					"aria-expanded": panelOpen.value ? "true" : "false",
+					"aria-controls": isMenu.value ? panelIdentifier.value : void 0,
 					onClick: toggle
 				}, [
 					__props.icon ? (openBlock(), createElementBlock("span", {
@@ -4307,18 +4769,22 @@ var Dropdown_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 					createVNode(LucideChevronRight_default, {
 						width: 14,
 						height: 14,
-						class: "cu-dropdown-menu-item-chevron"
+						class: "cu-dropdown-menu-item-chevron",
+						"aria-hidden": "true",
+						focusable: "false"
 					})
-				], 8, _hoisted_1$4)) : (openBlock(), createBlock(Button_default, {
+				], 8, _hoisted_1$4)) : (openBlock(), createBlock(Button_default, mergeProps({
 					key: 1,
 					color: __props.color,
 					variant: __props.variant,
-					disabled: __props.disabled,
-					onClick: toggle
-				}, {
+					disabled: __props.disabled
+				}, toggleAria.value, {
+					onClick: toggle,
+					onKeydown: onToggleKeydown
+				}), {
 					default: withCtx(() => [createTextVNode(toDisplayString(__props.label || "Dropdown"), 1)]),
 					_: 1
-				}, 8, [
+				}, 16, [
 					"color",
 					"variant",
 					"disabled",
@@ -4336,11 +4802,14 @@ var Dropdown_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 						animation: "cooldown",
 						delay: __props.delay
 					}, null, 8, ["color", "delay"])) : createCommentVNode("v-if", true),
-					!__props.loading ? (openBlock(), createElementBlock(Fragment, { key: 2 }, [(openBlock(true), createElementBlock(Fragment, null, renderList(props.items, (item, i) => {
+					!__props.loading ? (openBlock(), createElementBlock(Fragment, { key: 2 }, [(openBlock(true), createElementBlock(Fragment, null, renderList(menuItems.value, (item, i) => {
 						return openBlock(), createElementBlock(Fragment, { key: i }, [item.divider ? (openBlock(), createElementBlock("hr", _hoisted_4$2)) : item.to || item.href ? (openBlock(), createElementBlock("a", {
 							key: 1,
 							href: item.to || item.href,
 							class: normalizeClass(["cu-dropdown-menu-item", { "cu-dropdown-menu-item--disabled": item.disabled }]),
+							role: isMenu.value ? "menuitem" : void 0,
+							"aria-disabled": isMenu.value && item.disabled ? "true" : void 0,
+							tabindex: isMenu.value ? unref(nav).itemTabindex(i) : void 0,
 							onClick: ($event) => onItemClick(item)
 						}, [item.icon ? (openBlock(), createElementBlock("span", {
 							key: 0,
@@ -4350,7 +4819,9 @@ var Dropdown_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 							key: 2,
 							type: "button",
 							class: normalizeClass(["cu-dropdown-menu-item", { "cu-dropdown-menu-item--disabled": item.disabled }]),
+							role: isMenu.value ? "menuitem" : void 0,
 							disabled: item.disabled,
+							tabindex: isMenu.value ? unref(nav).itemTabindex(i) : void 0,
 							onClick: ($event) => onItemClick(item)
 						}, [item.icon ? (openBlock(), createElementBlock("span", {
 							key: 0,
@@ -4375,7 +4846,7 @@ var Dropdown_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 			]);
 		};
 	}
-}), [["styles", ["\n/* El wrapper: el motor (position/display) lo aporta .cu-popover. Acá solo\n   ajustes específicos del dropdown sobre el panel del Popover. */\n.cu-dropdown[data-v-620d7284] .cu-dropdown-panel--loading {\n  pointer-events: none;\n}\n\n/* Dropdown anidado: ocupa el ancho de la fila del menú padre y el panel en\n   cascada es más angosto (auto) */\n.cu-dropdown.cu-dropdown--nested[data-v-620d7284] {\n  display: block;\n  width: 100%;\n  --cu-popover-width: auto;\n  --cu-popover-min-width: 160px;\n}\n.cu-dropdown-panel--nested[data-v-620d7284] {\n  padding: var(--cu-space-2xs);\n}\n\n/* Item de menú nativo (hojas + trigger de submenú anidado) */\n.cu-dropdown-menu-item[data-v-620d7284] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--cu-space-md);\n  width: 100%;\n  padding: var(--cu-space-sm) var(--cu-space-md);\n  box-sizing: border-box;\n  background: transparent;\n  border: none;\n  cursor: pointer;\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  color: var(--cu-color-neutral);\n  text-decoration: none;\n  border-radius: var(--cu-radius-sm);\n  transition: background-color 150ms ease;\n}\n.cu-dropdown-menu-item[data-v-620d7284]:hover:not(.cu-dropdown-menu-item--disabled) {\n  background-color: var(--cu-color-neutral-ghost-hover);\n}\n.cu-dropdown-menu-item--disabled[data-v-620d7284] {\n  color: var(--cu-color-neutral-text-muted);\n  cursor: not-allowed;\n}\n.cu-dropdown-menu-item-label[data-v-620d7284] {\n  text-align: left;\n  white-space: nowrap;\n}\n.cu-dropdown-menu-item-chevron[data-v-620d7284] {\n  flex-shrink: 0;\n  color: var(--cu-color-neutral-text-muted);\n}\n.cu-dropdown-menu-item-icon[data-v-620d7284] {\n  flex-shrink: 0;\n  color: var(--cu-color-neutral-text-subtle);\n}\n.cu-dropdown-menu-divider[data-v-620d7284] {\n  margin: var(--cu-space-2xs) 0;\n  border: 0;\n  border-top: var(--cu-border-thin) solid var(--cu-border-color);\n}\n"]], ["__scopeId", "data-v-620d7284"]]);
+}), [["styles", ["\n/* El wrapper: el motor (position/display) lo aporta .cu-popover. Acá solo\n   ajustes específicos del dropdown sobre el panel del Popover. */\n.cu-dropdown[data-v-09c3c9b8] .cu-dropdown-panel--loading {\n  pointer-events: none;\n}\n\n/* Dropdown anidado: ocupa el ancho de la fila del menú padre y el panel en\n   cascada es más angosto (auto) */\n.cu-dropdown.cu-dropdown--nested[data-v-09c3c9b8] {\n  display: block;\n  width: 100%;\n  --cu-popover-width: auto;\n  --cu-popover-min-width: 160px;\n}\n.cu-dropdown-panel--nested[data-v-09c3c9b8] {\n  padding: var(--cu-space-2xs);\n}\n\n/* Item de menú nativo (hojas + trigger de submenú anidado) */\n.cu-dropdown-menu-item[data-v-09c3c9b8] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--cu-space-md);\n  width: 100%;\n  padding: var(--cu-space-sm) var(--cu-space-md);\n  box-sizing: border-box;\n  background: transparent;\n  border: none;\n  cursor: pointer;\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  color: var(--cu-color-neutral);\n  text-decoration: none;\n  border-radius: var(--cu-radius-sm);\n  transition: background-color 150ms ease;\n}\n.cu-dropdown-menu-item[data-v-09c3c9b8]:hover:not(.cu-dropdown-menu-item--disabled) {\n  background-color: var(--cu-color-neutral-ghost-hover);\n}\n.cu-dropdown-menu-item--disabled[data-v-09c3c9b8] {\n  color: var(--cu-color-neutral-text-muted);\n  cursor: not-allowed;\n}\n.cu-dropdown-menu-item-label[data-v-09c3c9b8] {\n  text-align: left;\n  white-space: nowrap;\n}\n.cu-dropdown-menu-item-chevron[data-v-09c3c9b8] {\n  flex-shrink: 0;\n  color: var(--cu-color-neutral-text-muted);\n}\n.cu-dropdown-menu-item-icon[data-v-09c3c9b8] {\n  flex-shrink: 0;\n  color: var(--cu-color-neutral-text-subtle);\n}\n.cu-dropdown-menu-divider[data-v-09c3c9b8] {\n  margin: var(--cu-space-2xs) 0;\n  border: 0;\n  border-top: var(--cu-border-thin) solid var(--cu-border-color);\n}\n"]], ["__scopeId", "data-v-09c3c9b8"]]);
 //#endregion
 //#region src/components/navigation/NavbarMenu.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1$3 = { class: "cu-navbar-menu" };
@@ -4803,7 +5274,9 @@ var NavbarList_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__P
 						}, null, 8, _hoisted_5), createVNode(LucideChevronRight_default, {
 							width: 14,
 							height: 14,
-							class: "cu-navbar-compact-chevron"
+							class: "cu-navbar-compact-chevron",
+							"aria-hidden": "true",
+							focusable: "false"
 						})], 8, _hoisted_4)]),
 						default: withCtx(() => [createVNode(NavbarMenu_default, {
 							items: item.children,
@@ -4888,7 +5361,7 @@ var NavbarList_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__P
 			], 2);
 		};
 	}
-}), [["styles", ["\n.cu-navbar[data-v-75527130] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--cu-space-2xs);\n  padding: var(--cu-space-2xs);\n}\n.cu-navbar[data-v-75527130] .cu-button {\n  justify-content: flex-start;\n  text-align: left;\n  width: 100%;\n  padding: var(--cu-space-sm) var(--cu-space-md);\n}\n\n/* La row completa del item es hovereable: el trigger del Collapse y los items\n   ocupan todo el ancho del contenedor (no solo el texto). */\n.cu-navbar[data-v-75527130] .cu-collapse-trigger {\n  width: 100%;\n}\n.cu-navbar[data-v-75527130] .cu-dropdown {\n  width: 100%;\n}\n.cu-navbar-header[data-v-75527130] {\n  display: flex;\n  align-items: center;\n  gap: var(--cu-space-xs);\n  margin-bottom: var(--cu-space-xs);\n}\n.cu-navbar-search-input[data-v-75527130] {\n  flex: 1;\n  min-width: 0;\n}\n.cu-navbar-compact-toggle[data-v-75527130] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  flex-shrink: 0;\n  width: 2rem;\n  height: 2rem;\n  background: transparent;\n  border: var(--cu-border-thin) solid var(--cu-border-color);\n  border-radius: var(--cu-radius-sm);\n  cursor: pointer;\n  font-size: var(--cu-font-size-sm);\n  line-height: 1;\n  color: var(--cu-color-neutral);\n}\n.cu-navbar-compact-toggle[data-v-75527130]:hover {\n  background-color: var(--cu-color-neutral-ghost-hover);\n}\n.cu-navbar[data-v-75527130] .cu-collapse-content {\n  margin-top: var(--cu-space-xs);\n}\n.cu-navbar-icon[data-v-75527130] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  flex-shrink: 0;\n  width: 1.25rem;\n  font-size: var(--cu-font-size-sm);\n  line-height: 1;\n}\n.cu-navbar-label[data-v-75527130] {\n  min-width: 0;\n}\n\n/* Highlight del modo scroll (clase duplicada → 0,3,0 para pisar el ghost) */\n.cu-navbar[data-v-75527130] .cu-navbar-item--match.cu-navbar-item--match {\n  background-color: var(--cu-color-primary-soft);\n}\n.cu-navbar[data-v-75527130] .cu-collapse.cu-navbar-item--match.cu-navbar-item--match > .cu-collapse-trigger {\n  background-color: var(--cu-color-primary-soft);\n}\n.cu-navbar-empty[data-v-75527130] {\n  padding: var(--cu-space-sm) var(--cu-space-md);\n  font-size: var(--cu-font-size-sm);\n  color: var(--cu-color-neutral-text-subtle);\n}\n\n/* Compact: solo iconos (o la inicial), sin labels */\n.cu-navbar--compact[data-v-75527130] {\n  width: fit-content;\n}\n.cu-navbar--compact[data-v-75527130] .cu-button {\n  justify-content: center;\n  padding: var(--cu-space-sm);\n}\n.cu-navbar--compact[data-v-75527130] .cu-collapse-trigger {\n  justify-content: center;\n  padding: var(--cu-space-sm);\n}\n.cu-navbar--compact[data-v-75527130] .cu-navbar-label {\n  display: none;\n}\n.cu-navbar--compact[data-v-75527130] .cu-collapse-label {\n  display: none;\n}\n.cu-navbar--compact[data-v-75527130] .cu-collapse-content {\n  padding-left: var(--cu-space-sm);\n}\n.cu-navbar--compact[data-v-75527130] .cu-navbar-icon {\n  width: auto;\n}\n\n/* Trigger de submenú en modo compact: icono centrado + chevron a la derecha\n   que abre un flyout (Dropdown) con NavbarMenu adentro */\n.cu-navbar-compact-trigger[data-v-75527130] {\n  position: relative;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 100%;\n  padding: var(--cu-space-sm);\n  background: transparent;\n  border: none;\n  cursor: pointer;\n  font-size: var(--cu-font-size-sm);\n  color: var(--cu-color-neutral);\n  border-radius: var(--cu-radius-sm);\n  transition: background-color 150ms ease;\n}\n.cu-navbar-compact-trigger[data-v-75527130]:hover {\n  background-color: var(--cu-color-neutral-ghost-hover);\n}\n.cu-navbar-compact-chevron[data-v-75527130] {\n  position: absolute;\n  right: var(--cu-space-2xs);\n  flex-shrink: 0;\n  color: var(--cu-color-neutral-text-muted);\n}\n"]], ["__scopeId", "data-v-75527130"]]);
+}), [["styles", ["\n.cu-navbar[data-v-dcdced4b] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--cu-space-2xs);\n  padding: var(--cu-space-2xs);\n}\n.cu-navbar[data-v-dcdced4b] .cu-button {\n  justify-content: flex-start;\n  text-align: left;\n  width: 100%;\n  padding: var(--cu-space-sm) var(--cu-space-md);\n}\n\n/* La row completa del item es hovereable: el trigger del Collapse y los items\n   ocupan todo el ancho del contenedor (no solo el texto). */\n.cu-navbar[data-v-dcdced4b] .cu-collapse-trigger {\n  width: 100%;\n}\n.cu-navbar[data-v-dcdced4b] .cu-dropdown {\n  width: 100%;\n}\n.cu-navbar-header[data-v-dcdced4b] {\n  display: flex;\n  align-items: center;\n  gap: var(--cu-space-xs);\n  margin-bottom: var(--cu-space-xs);\n}\n.cu-navbar-search-input[data-v-dcdced4b] {\n  flex: 1;\n  min-width: 0;\n}\n.cu-navbar-compact-toggle[data-v-dcdced4b] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  flex-shrink: 0;\n  width: 2rem;\n  height: 2rem;\n  background: transparent;\n  border: var(--cu-border-thin) solid var(--cu-border-color);\n  border-radius: var(--cu-radius-sm);\n  cursor: pointer;\n  font-size: var(--cu-font-size-sm);\n  line-height: 1;\n  color: var(--cu-color-neutral);\n}\n.cu-navbar-compact-toggle[data-v-dcdced4b]:hover {\n  background-color: var(--cu-color-neutral-ghost-hover);\n}\n.cu-navbar[data-v-dcdced4b] .cu-collapse-content {\n  margin-top: var(--cu-space-xs);\n}\n.cu-navbar-icon[data-v-dcdced4b] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  flex-shrink: 0;\n  width: 1.25rem;\n  font-size: var(--cu-font-size-sm);\n  line-height: 1;\n}\n.cu-navbar-label[data-v-dcdced4b] {\n  min-width: 0;\n}\n\n/* Highlight del modo scroll (clase duplicada → 0,3,0 para pisar el ghost) */\n.cu-navbar[data-v-dcdced4b] .cu-navbar-item--match.cu-navbar-item--match {\n  background-color: var(--cu-color-primary-soft);\n}\n.cu-navbar[data-v-dcdced4b] .cu-collapse.cu-navbar-item--match.cu-navbar-item--match > .cu-collapse-trigger {\n  background-color: var(--cu-color-primary-soft);\n}\n.cu-navbar-empty[data-v-dcdced4b] {\n  padding: var(--cu-space-sm) var(--cu-space-md);\n  font-size: var(--cu-font-size-sm);\n  color: var(--cu-color-neutral-text-subtle);\n}\n\n/* Compact: solo iconos (o la inicial), sin labels */\n.cu-navbar--compact[data-v-dcdced4b] {\n  width: fit-content;\n}\n.cu-navbar--compact[data-v-dcdced4b] .cu-button {\n  justify-content: center;\n  padding: var(--cu-space-sm);\n}\n.cu-navbar--compact[data-v-dcdced4b] .cu-collapse-trigger {\n  justify-content: center;\n  padding: var(--cu-space-sm);\n}\n.cu-navbar--compact[data-v-dcdced4b] .cu-navbar-label {\n  display: none;\n}\n.cu-navbar--compact[data-v-dcdced4b] .cu-collapse-label {\n  display: none;\n}\n.cu-navbar--compact[data-v-dcdced4b] .cu-collapse-content {\n  padding-left: var(--cu-space-sm);\n}\n.cu-navbar--compact[data-v-dcdced4b] .cu-navbar-icon {\n  width: auto;\n}\n\n/* Trigger de submenú en modo compact: icono centrado + chevron a la derecha\n   que abre un flyout (Dropdown) con NavbarMenu adentro */\n.cu-navbar-compact-trigger[data-v-dcdced4b] {\n  position: relative;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 100%;\n  padding: var(--cu-space-sm);\n  background: transparent;\n  border: none;\n  cursor: pointer;\n  font-size: var(--cu-font-size-sm);\n  color: var(--cu-color-neutral);\n  border-radius: var(--cu-radius-sm);\n  transition: background-color 150ms ease;\n}\n.cu-navbar-compact-trigger[data-v-dcdced4b]:hover {\n  background-color: var(--cu-color-neutral-ghost-hover);\n}\n.cu-navbar-compact-chevron[data-v-dcdced4b] {\n  position: absolute;\n  right: var(--cu-space-2xs);\n  flex-shrink: 0;\n  color: var(--cu-color-neutral-text-muted);\n}\n"]], ["__scopeId", "data-v-dcdced4b"]]);
 //#endregion
 //#region src/utils/search.ts
 var ACCENT_RE = /[\u0300-\u0302\u0304-\u036f]/g;

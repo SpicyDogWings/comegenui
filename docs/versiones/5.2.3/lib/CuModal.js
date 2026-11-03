@@ -1,5 +1,5 @@
 /*! comegenui v5.2.3 · CuModal (cu-modal) · esm-shared · Vue externo (bare import) */
-import { Fragment, computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, createTextVNode, createVNode, defineComponent, defineCustomElement, getCurrentInstance, nextTick, normalizeClass, normalizeStyle, onBeforeUnmount, openBlock, reactive, ref, renderSlot, shallowRef, toDisplayString, toValue, unref, useAttrs, useSlots, vShow, watch, withCtx, withDirectives } from "vue";
+import { Fragment, computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, createTextVNode, createVNode, defineComponent, defineCustomElement, getCurrentInstance, nextTick, normalizeClass, normalizeStyle, onBeforeUnmount, openBlock, ref, renderSlot, toDisplayString, useAttrs, useSlots, vShow, watch, withCtx, withDirectives } from "vue";
 //#region src/utils/comegen-element.ts
 var BUILD_META = {
 	"version": "5.2.3",
@@ -35,7 +35,7 @@ function attachMeta(ctor, meta) {
 	return ctor;
 }
 /** `aria-describedby` → `ariaDescribedby` (mismo algoritmo que Vue). */
-function camelize$1(name) {
+function camelize(name) {
 	return name.replace(/-(\w)/g, (_, char) => char ? char.toUpperCase() : "");
 }
 /** `Boolean`, `{ type: Boolean }` o `{ type: [String, Boolean] }` → tipos efectivos. */
@@ -56,7 +56,7 @@ function propTypes(def) {
 	if (cached) return cached;
 	const map = /* @__PURE__ */ new Map();
 	const props = def.props;
-	if (props && !Array.isArray(props)) for (const [key, option] of Object.entries(props)) map.set(camelize$1(key), typesOf(option));
+	if (props && !Array.isArray(props)) for (const [key, option] of Object.entries(props)) map.set(camelize(key), typesOf(option));
 	PROP_TYPES.set(def, map);
 	return map;
 }
@@ -84,7 +84,7 @@ function declaredProps(def) {
 	if (cached) return cached;
 	const props = def.props;
 	const keys = !props ? [] : Array.isArray(props) ? props : Object.keys(props);
-	const set = new Set(keys.map((key) => camelize$1(String(key))));
+	const set = new Set(keys.map((key) => camelize(String(key))));
 	PROP_KEYS.set(def, set);
 	return set;
 }
@@ -137,7 +137,7 @@ function makeElement(component, meta) {
 		_setAttr(key) {
 			if (key.startsWith("data-v-")) return;
 			const self = this;
-			const camelKey = camelize$1(key);
+			const camelKey = camelize(key);
 			const isProp = declaredProps(self._def).has(camelKey);
 			if (!isProp && key === "id") return;
 			if (!isProp && key === FOCUS_ATTR) {
@@ -463,187 +463,66 @@ oneOf(NAVBAR_SEARCH_MODES);
 oneOf(SELECT_SEARCH_MODES);
 oneOf(CELLS_IMPORTER_INPUT_TYPES);
 //#endregion
-//#region node_modules/.pnpm/@vueuse+shared@14.4.0_vue@3.6.0-rc.11_@typescript+typescript6@6.0.2_/node_modules/@vueuse/shared/dist/index.js
-var isClient = typeof window !== "undefined" && typeof document !== "undefined";
-typeof WorkerGlobalScope !== "undefined" && globalThis instanceof WorkerGlobalScope;
-var toString = Object.prototype.toString;
-var isObject = (val) => toString.call(val) === "[object Object]";
-var noop = () => {};
-function toArray(value) {
-	return Array.isArray(value) ? value : [value];
-}
-/**
-* Shorthand for watching value with {immediate: true}
-*
-* @see https://vueuse.org/watchImmediate
-*/
-function watchImmediate(source, cb, options) {
-	return watch(source, cb, {
-		...options,
-		immediate: true
-	});
-}
-function whenever(source, cb, options) {
-	const stop = watch(source, (v, ov, onInvalidate) => {
-		if (v) {
-			if (options === null || options === void 0 ? void 0 : options.once) nextTick(() => stop());
-			cb(v, ov, onInvalidate);
-		}
-	}, {
-		...options,
-		once: false
-	});
-	return stop;
-}
-//#endregion
-//#region node_modules/.pnpm/@vueuse+core@14.4.0_vue@3.6.0-rc.11_@typescript+typescript6@6.0.2_/node_modules/@vueuse/core/dist/index.js
-var defaultWindow = isClient ? window : void 0;
-isClient && window.document;
-isClient && window.navigator;
-isClient && window.location;
-/**
-* Get the dom element of a ref of element or Vue component instance
-*
-* @param elRef
-*/
-function unrefElement(elRef) {
-	var _$el;
-	const plain = toValue(elRef);
-	return (_$el = plain === null || plain === void 0 ? void 0 : plain.$el) !== null && _$el !== void 0 ? _$el : plain;
-}
-function useEventListener(...args) {
-	const register = (el, event, listener, options) => {
-		el.addEventListener(event, listener, options);
-		return () => el.removeEventListener(event, listener, options);
+//#region src/composables/useOverlayStack.ts
+var STACK_KEY = "__cu_overlay_stack__";
+function overlayStack() {
+	const g = globalThis;
+	return g[STACK_KEY] ??= {
+		entries: [],
+		scrollLocks: 0,
+		previousBodyOverflow: "",
+		listening: false
 	};
-	const firstParamTargets = computed(() => {
-		const test = toArray(toValue(args[0])).filter((e) => e != null);
-		return test.every((e) => typeof e !== "string") ? test : void 0;
-	});
-	return watchImmediate(() => {
-		var _firstParamTargets$va, _firstParamTargets$va2;
-		return [
-			(_firstParamTargets$va = (_firstParamTargets$va2 = firstParamTargets.value) === null || _firstParamTargets$va2 === void 0 ? void 0 : _firstParamTargets$va2.map((e) => unrefElement(e))) !== null && _firstParamTargets$va !== void 0 ? _firstParamTargets$va : [defaultWindow].filter((e) => e != null),
-			toArray(toValue(firstParamTargets.value ? args[1] : args[0])),
-			toArray(unref(firstParamTargets.value ? args[2] : args[1])),
-			toValue(firstParamTargets.value ? args[3] : args[2])
-		];
-	}, ([raw_targets, raw_events, raw_listeners, raw_options], _, onCleanup) => {
-		if (!(raw_targets === null || raw_targets === void 0 ? void 0 : raw_targets.length) || !(raw_events === null || raw_events === void 0 ? void 0 : raw_events.length) || !(raw_listeners === null || raw_listeners === void 0 ? void 0 : raw_listeners.length)) return;
-		const optionsClone = isObject(raw_options) ? { ...raw_options } : raw_options;
-		const cleanups = raw_targets.flatMap((el) => raw_events.flatMap((event) => raw_listeners.map((listener) => register(el, event, listener, optionsClone))));
-		onCleanup(() => {
-			cleanups.forEach((fn) => fn());
-		});
-	}, { flush: "post" });
 }
-var DefaultMagicKeysAliasMap = {
-	ctrl: "control",
-	command: "meta",
-	cmd: "meta",
-	option: "alt",
-	up: "arrowup",
-	down: "arrowdown",
-	left: "arrowleft",
-	right: "arrowright"
-};
+function lockScroll(stack) {
+	if (typeof document === "undefined") return;
+	if (stack.scrollLocks === 0) {
+		stack.previousBodyOverflow = document.body.style.overflow;
+		document.body.style.overflow = "hidden";
+	}
+	stack.scrollLocks += 1;
+}
+function unlockScroll(stack) {
+	if (stack.scrollLocks === 0) return;
+	stack.scrollLocks -= 1;
+	if (stack.scrollLocks === 0 && typeof document !== "undefined") document.body.style.overflow = stack.previousBodyOverflow;
+}
+/** Escape: sólo el overlay de arriba reacciona (y uno solo por pulsación). */
+function onEscape(event) {
+	if (event.key !== "Escape") return;
+	const stack = overlayStack();
+	stack.entries[stack.entries.length - 1]?.close();
+}
 /**
-* Reactive keys pressed state, with magical keys combination support.
-*
-* @see https://vueuse.org/useMagicKeys
+* Suma un overlay abierto a la pila. Devuelve su id, que es lo que después se pasa a
+* `unregisterOverlay`/`isTopmostOverlay`.
 */
-function useMagicKeys(options = {}) {
-	const { reactive: useReactive = false, target = defaultWindow, aliasMap = DefaultMagicKeysAliasMap, passive = true, onEventFired = noop } = options;
-	const current = reactive(/* @__PURE__ */ new Set());
-	const obj = {
-		toJSON() {
-			return {};
-		},
-		current
-	};
-	const refs = useReactive ? reactive(obj) : obj;
-	const metaDeps = /* @__PURE__ */ new Set();
-	const depsMap = /* @__PURE__ */ new Map([
-		["Meta", metaDeps],
-		["Shift", /* @__PURE__ */ new Set()],
-		["Alt", /* @__PURE__ */ new Set()]
-	]);
-	const usedKeys = /* @__PURE__ */ new Set();
-	function setRefs(key, value) {
-		if (key in refs) if (useReactive) refs[key] = value;
-		else refs[key].value = value;
+function registerOverlay(handle) {
+	const stack = overlayStack();
+	const id = Symbol("cu-overlay");
+	stack.entries.push({
+		...handle,
+		id
+	});
+	if (handle.lockScroll) lockScroll(stack);
+	if (!stack.listening && typeof document !== "undefined") {
+		document.addEventListener("keydown", onEscape);
+		stack.listening = true;
 	}
-	function reset() {
-		current.clear();
-		for (const key of usedKeys) setRefs(key, false);
-	}
-	function updateDeps(value, e, keys) {
-		if (!value || typeof e.getModifierState !== "function") return;
-		for (const [modifier, depsSet] of depsMap) if (e.getModifierState(modifier)) {
-			keys.forEach((key) => depsSet.add(key));
-			break;
-		}
-	}
-	function clearDeps(value, key) {
-		if (value) return;
-		const depsMapKey = `${key[0].toUpperCase()}${key.slice(1)}`;
-		const deps = depsMap.get(depsMapKey);
-		if (!["shift", "alt"].includes(key) || !deps) return;
-		const depsArray = Array.from(deps);
-		const depsIndex = depsArray.indexOf(key);
-		depsArray.forEach((key, index) => {
-			if (index >= depsIndex) {
-				current.delete(key);
-				setRefs(key, false);
-			}
-		});
-		deps.clear();
-	}
-	function updateRefs(e, value) {
-		var _e$key, _e$code;
-		const key = (_e$key = e.key) === null || _e$key === void 0 ? void 0 : _e$key.toLowerCase();
-		const values = [(_e$code = e.code) === null || _e$code === void 0 ? void 0 : _e$code.toLowerCase(), key].filter(Boolean);
-		if (!key) return;
-		if (key) if (value) current.add(key);
-		else current.delete(key);
-		for (const key of values) {
-			usedKeys.add(key);
-			setRefs(key, value);
-		}
-		updateDeps(value, e, [...current, ...values]);
-		clearDeps(value, key);
-		if (key === "meta" && !value) {
-			metaDeps.forEach((key) => {
-				current.delete(key);
-				setRefs(key, false);
-			});
-			metaDeps.clear();
-		}
-	}
-	useEventListener(target, "keydown", (e) => {
-		updateRefs(e, true);
-		return onEventFired(e);
-	}, { passive });
-	useEventListener(target, "keyup", (e) => {
-		updateRefs(e, false);
-		return onEventFired(e);
-	}, { passive });
-	useEventListener("blur", reset, { passive });
-	useEventListener("focus", reset, { passive });
-	const proxy = new Proxy(refs, { get(target, prop, rec) {
-		if (typeof prop !== "string") return Reflect.get(target, prop, rec);
-		prop = prop.toLowerCase();
-		if (prop in aliasMap) prop = aliasMap[prop];
-		if (!(prop in refs)) if (/[+_-]/.test(prop)) {
-			const keys = prop.split(/[+_-]/g).map((i) => i.trim());
-			refs[prop] = computed(() => keys.map((key) => toValue(proxy[key])).every(Boolean));
-		} else refs[prop] = shallowRef(false);
-		const r = Reflect.get(target, prop, rec);
-		return useReactive ? toValue(r) : r;
-	} });
-	return proxy;
+	return id;
 }
-Number.POSITIVE_INFINITY;
+/** Saca un overlay de la pila (idempotente: cerrar dos veces no rompe nada). */
+function unregisterOverlay(id) {
+	const stack = overlayStack();
+	const index = stack.entries.findIndex((entry) => entry.id === id);
+	if (index === -1) return;
+	const [entry] = stack.entries.splice(index, 1);
+	if (entry?.lockScroll) unlockScroll(stack);
+	if (stack.entries.length === 0 && stack.listening && typeof document !== "undefined") {
+		document.removeEventListener("keydown", onEscape);
+		stack.listening = false;
+	}
+}
 //#endregion
 //#region src/components/icons/IconBase.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1$2 = ["width", "height"];
@@ -783,6 +662,7 @@ var Button_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineCom
 		const props = __props;
 		const isDisabled = computed(() => props.disabled || props.loading);
 		const safeColor = computed(() => isColor(props.color) ? props.color : "neutral");
+		const safeVariant = computed(() => isVariantFull(props.variant) ? props.variant : "ghost");
 		const buttonType = computed(() => isButtonType(props.type) ? props.type : "button");
 		const safeTo = computed(() => {
 			const value = props.to?.trim();
@@ -847,7 +727,7 @@ var Button_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineCom
 		}));
 		const rootClasses = computed(() => [
 			"cu-button",
-			`cu-button--${props.variant}`,
+			`cu-button--${safeVariant.value}`,
 			`cu-button--${props.size}`,
 			{
 				"cu-button--disabled": isDisabled.value,
@@ -899,8 +779,8 @@ var Button_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineCom
 	}
 });
 //#endregion
-//#region src/components/buttons/Button.vue?vue&type=style&index=0&inline&scoped=cb9decf8&lang.css
-var Button_vue_vue_type_style_index_0_inline_scoped_cb9decf8_lang_default = "\n.cu-button[data-v-cb9decf8] {\n  font-family: var(--cu-font-sans);\n  text-decoration: none;\n  font-size: var(--cu-font-size-sm);\n  font-weight: var(--cu-font-weight-medium);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius);\n  border: none;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--cu-space-xs);\n  box-sizing: border-box;\n  transition: all 150ms ease;\n}\n.cu-button[data-v-cb9decf8]:active:not(.cu-button--disabled) {\n  transform: scale(0.97);\n}\n.cu-button--disabled[data-v-cb9decf8] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n\n/* sizes (md = base; link mantiene su padding 0) */\n.cu-button--sm[data-v-cb9decf8]:not(.cu-button--link) {\n  font-size: var(--cu-font-size-xs);\n  padding: var(--cu-space-xs) var(--cu-space-sm);\n}\n.cu-button--lg[data-v-cb9decf8]:not(.cu-button--link) {\n  font-size: var(--cu-font-size-lg);\n  padding: var(--cu-space-lg) var(--cu-space-xl);\n}\n\n/* solid */\n.cu-button.cu-button--solid[data-v-cb9decf8] {\n  background-color: var(--btn-solid);\n  color: var(--btn-solid-text);\n}\n.cu-button.cu-button--solid[data-v-cb9decf8]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-hover);\n}\n.cu-button.cu-button--solid[data-v-cb9decf8]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-active);\n}\n\n/* ghost */\n.cu-button.cu-button--ghost[data-v-cb9decf8] {\n  background-color: transparent;\n  color: var(--btn-text);\n}\n.cu-button.cu-button--ghost[data-v-cb9decf8]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-hover);\n}\n.cu-button.cu-button--ghost[data-v-cb9decf8]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-active);\n}\n\n/* soft */\n.cu-button.cu-button--soft[data-v-cb9decf8] {\n  background-color: var(--btn-soft);\n  color: var(--btn-text);\n}\n.cu-button.cu-button--soft[data-v-cb9decf8]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-soft-hover);\n}\n.cu-button.cu-button--soft[data-v-cb9decf8]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-soft-active);\n}\n\n/* subtle */\n.cu-button.cu-button--subtle[data-v-cb9decf8] {\n  background-color: var(--btn-subtle);\n  color: var(--btn-text);\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-button.cu-button--subtle[data-v-cb9decf8]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-subtle-hover);\n}\n.cu-button.cu-button--subtle[data-v-cb9decf8]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-subtle-active);\n}\n\n/* outlined */\n.cu-button.cu-button--outlined[data-v-cb9decf8] {\n  background-color: transparent;\n  color: var(--btn-text);\n  border: var(--cu-border-thin) solid var(--btn-border);\n}\n.cu-button.cu-button--outlined[data-v-cb9decf8]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-hover);\n}\n.cu-button.cu-button--outlined[data-v-cb9decf8]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-active);\n}\n\n/* link */\n.cu-button.cu-button--link[data-v-cb9decf8] {\n  background-color: transparent;\n  color: var(--btn-text);\n  padding: 0;\n  box-shadow: none;\n  text-decoration: underline;\n  text-underline-offset: var(--cu-space-2xs);\n}\n.cu-button.cu-button--link[data-v-cb9decf8]:hover:not(.cu-button--disabled) {\n  text-decoration-thickness: 2px;\n}\n\n/* none */\n.cu-button.cu-button--none[data-v-cb9decf8] {\n  background-color: var(--btn-solid);\n  color: var(--btn-solid-text);\n}\n.cu-button.cu-button--none[data-v-cb9decf8]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-hover);\n}\n.cu-button.cu-button--none[data-v-cb9decf8]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-active);\n}\n\n/* link wrapper */\n.cu-button-link[data-v-cb9decf8] {\n  text-decoration: none;\n}\n.cu-button-link[data-v-cb9decf8]:hover {\n  text-decoration: underline;\n  text-underline-offset: var(--cu-space-2xs);\n}\n.cu-button-link.cu-button--disabled[data-v-cb9decf8] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n\n/* icon-only */\n.cu-button--icon-only[data-v-cb9decf8] {\n  padding: var(--cu-space-sm);\n}\n\n/* loading spinner */\n.cu-button-spinner[data-v-cb9decf8] {\n  animation: cu-spin-cb9decf8 0.8s linear infinite;\n}\n@keyframes cu-spin-cb9decf8 {\nfrom { transform: rotate(0deg);\n}\nto { transform: rotate(360deg);\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.cu-button[data-v-cb9decf8] {\n    transition: none;\n}\n.cu-button[data-v-cb9decf8]:active:not(.cu-button--disabled) {\n    transform: none;\n}\n.cu-button-spinner[data-v-cb9decf8] {\n    animation: none;\n}\n}\n";
+//#region src/components/buttons/Button.vue?vue&type=style&index=0&inline&scoped=de0a2e1a&lang.css
+var Button_vue_vue_type_style_index_0_inline_scoped_de0a2e1a_lang_default = "\n.cu-button[data-v-de0a2e1a] {\n  font-family: var(--cu-font-sans);\n  text-decoration: none;\n  font-size: var(--cu-font-size-sm);\n  font-weight: var(--cu-font-weight-medium);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius);\n  border: none;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--cu-space-xs);\n  box-sizing: border-box;\n  transition: all 150ms ease;\n}\n.cu-button[data-v-de0a2e1a]:active:not(.cu-button--disabled) {\n  transform: scale(0.97);\n}\n.cu-button--disabled[data-v-de0a2e1a] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n\n/* sizes (md = base; link mantiene su padding 0) */\n.cu-button--sm[data-v-de0a2e1a]:not(.cu-button--link) {\n  font-size: var(--cu-font-size-xs);\n  padding: var(--cu-space-xs) var(--cu-space-sm);\n}\n.cu-button--lg[data-v-de0a2e1a]:not(.cu-button--link) {\n  font-size: var(--cu-font-size-lg);\n  padding: var(--cu-space-lg) var(--cu-space-xl);\n}\n\n/* solid */\n.cu-button.cu-button--solid[data-v-de0a2e1a] {\n  background-color: var(--btn-solid);\n  color: var(--btn-solid-text);\n}\n.cu-button.cu-button--solid[data-v-de0a2e1a]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-hover);\n}\n.cu-button.cu-button--solid[data-v-de0a2e1a]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-active);\n}\n\n/* ghost */\n.cu-button.cu-button--ghost[data-v-de0a2e1a] {\n  background-color: transparent;\n  color: var(--btn-text);\n}\n.cu-button.cu-button--ghost[data-v-de0a2e1a]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-hover);\n}\n.cu-button.cu-button--ghost[data-v-de0a2e1a]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-active);\n}\n\n/* soft */\n.cu-button.cu-button--soft[data-v-de0a2e1a] {\n  background-color: var(--btn-soft);\n  color: var(--btn-text);\n}\n.cu-button.cu-button--soft[data-v-de0a2e1a]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-soft-hover);\n}\n.cu-button.cu-button--soft[data-v-de0a2e1a]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-soft-active);\n}\n\n/* subtle */\n.cu-button.cu-button--subtle[data-v-de0a2e1a] {\n  background-color: var(--btn-subtle);\n  color: var(--btn-text);\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-button.cu-button--subtle[data-v-de0a2e1a]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-subtle-hover);\n}\n.cu-button.cu-button--subtle[data-v-de0a2e1a]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-subtle-active);\n}\n\n/* outlined */\n.cu-button.cu-button--outlined[data-v-de0a2e1a] {\n  background-color: transparent;\n  color: var(--btn-text);\n  border: var(--cu-border-thin) solid var(--btn-border);\n}\n.cu-button.cu-button--outlined[data-v-de0a2e1a]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-hover);\n}\n.cu-button.cu-button--outlined[data-v-de0a2e1a]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-active);\n}\n\n/* link */\n.cu-button.cu-button--link[data-v-de0a2e1a] {\n  background-color: transparent;\n  color: var(--btn-text);\n  padding: 0;\n  box-shadow: none;\n  text-decoration: underline;\n  text-underline-offset: var(--cu-space-2xs);\n}\n.cu-button.cu-button--link[data-v-de0a2e1a]:hover:not(.cu-button--disabled) {\n  text-decoration-thickness: 2px;\n}\n\n/* none */\n.cu-button.cu-button--none[data-v-de0a2e1a] {\n  background-color: var(--btn-solid);\n  color: var(--btn-solid-text);\n}\n.cu-button.cu-button--none[data-v-de0a2e1a]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-hover);\n}\n.cu-button.cu-button--none[data-v-de0a2e1a]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-active);\n}\n\n/* link wrapper */\n.cu-button-link[data-v-de0a2e1a] {\n  text-decoration: none;\n}\n.cu-button-link[data-v-de0a2e1a]:hover {\n  text-decoration: underline;\n  text-underline-offset: var(--cu-space-2xs);\n}\n.cu-button-link.cu-button--disabled[data-v-de0a2e1a] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n\n/* icon-only */\n.cu-button--icon-only[data-v-de0a2e1a] {\n  padding: var(--cu-space-sm);\n}\n\n/* loading spinner */\n.cu-button-spinner[data-v-de0a2e1a] {\n  animation: cu-spin-de0a2e1a 0.8s linear infinite;\n}\n@keyframes cu-spin-de0a2e1a {\nfrom { transform: rotate(0deg);\n}\nto { transform: rotate(360deg);\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.cu-button[data-v-de0a2e1a] {\n    transition: none;\n}\n.cu-button[data-v-de0a2e1a]:active:not(.cu-button--disabled) {\n    transform: none;\n}\n.cu-button-spinner[data-v-de0a2e1a] {\n    animation: none;\n}\n}\n";
 //#endregion
 //#region \0plugin-vue:export-helper
 var _plugin_vue_export_helper_default = (sfc, props) => {
@@ -910,7 +790,7 @@ var _plugin_vue_export_helper_default = (sfc, props) => {
 };
 //#endregion
 //#region src/components/buttons/Button.vue
-var Button_default = /*#__PURE__*/ _plugin_vue_export_helper_default(Button_vue_vue_type_script_setup_true_lang_default, [["styles", [Button_vue_vue_type_style_index_0_inline_scoped_cb9decf8_lang_default]], ["__scopeId", "data-v-cb9decf8"]]);
+var Button_default = /*#__PURE__*/ _plugin_vue_export_helper_default(Button_vue_vue_type_script_setup_true_lang_default, [["styles", [Button_vue_vue_type_style_index_0_inline_scoped_de0a2e1a_lang_default]], ["__scopeId", "data-v-de0a2e1a"]]);
 //#endregion
 //#region src/components/overlay/Modal.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1 = [
@@ -1109,15 +989,34 @@ var Modal_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 				first.focus();
 			}
 		}
+		/**
+		* `Escape` lo atiende la pila compartida de overlays y sólo sobre el de arriba: con un
+		* listener propio, un `Escape` cerraba el modal y el `SideOver` (o el menú y su
+		* submenú) a la vez. `persistent` sigue bloqueando el cierre.
+		*/
+		let overlayId = null;
+		function claimOverlay() {
+			if (overlayId) return;
+			overlayId = registerOverlay({ close: () => {
+				if (!props.persistent) close();
+			} });
+		}
+		function releaseOverlay() {
+			if (!overlayId) return;
+			unregisterOverlay(overlayId);
+			overlayId = null;
+		}
 		/** Abre el modal. */
 		function open() {
 			if (isOpen.value) return;
 			trigger.value = document.activeElement instanceof HTMLElement ? document.activeElement : null;
 			isOpen.value = true;
+			claimOverlay();
 		}
 		/** Cierra el modal. */
 		function close() {
 			isOpen.value = false;
+			releaseOverlay();
 		}
 		/** Alterna la visibilidad del modal. */
 		function toggle() {
@@ -1132,8 +1031,6 @@ var Modal_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 			emit("accept");
 			close();
 		}
-		const keys = useMagicKeys({ target: typeof window !== "undefined" ? window : void 0 });
-		whenever(() => keys.Escape?.value, () => !props.persistent && isOpen.value && close());
 		function handleBackdropClick(event) {
 			if (!props.persistent && event.target === event.currentTarget) close();
 		}
@@ -1146,11 +1043,13 @@ var Modal_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 					if (isOpen.value) focusFirst();
 				});
 			} else {
+				releaseOverlay();
 				document.removeEventListener("keydown", handleKeydown);
 				restoreFocus();
 			}
 		});
 		onBeforeUnmount(() => {
+			releaseOverlay();
 			document.removeEventListener("keydown", handleKeydown);
 		});
 		__expose({
