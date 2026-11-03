@@ -38,7 +38,9 @@ activo. Los 6 valores son `primary`, `secondary`, `neutral` (**default**), `succ
 ## Descripción
 
 `description` agrega una línea de texto secundario bajo el `label`, dentro del mismo trigger.
-Es opcional y, si queda vacía, no se renderiza nada.
+Es opcional y, si queda vacía, no se renderiza nada. Se renderiza como un `<span>` en bloque
+(`display: block`): dentro de un `<button>` sólo es válido contenido de tipo *phrasing*, así que
+no se usa un párrafo.
 
 ```html
 <cu-collapse label="Plan Pro" description="Facturación mensual, cancela cuando quieras">

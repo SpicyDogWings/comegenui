@@ -43,11 +43,11 @@ describe("Collapse — estado y visibilidad", () => {
 });
 
 describe("Collapse — descripción del trigger", () => {
-  it("renderiza la descripción como <p> bajo el label", () => {
+  it("renderiza la descripción como <span> block bajo el label", () => {
     const w = mount(Collapse, { props: { label: "L", description: "Texto de ayuda" } });
     const desc = w.find(".cu-collapse-description");
     expect(desc.exists()).toBe(true);
-    expect(desc.element.tagName).toBe("P");
+    expect(desc.element.tagName).toBe("SPAN");
     expect(desc.text()).toBe("Texto de ayuda");
   });
 

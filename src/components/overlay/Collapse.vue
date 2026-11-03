@@ -161,7 +161,7 @@ defineExpose({
       <span v-if="safeIcon" class="cu-collapse-icon" v-html="safeIcon"></span>
       <span class="cu-collapse-text">
         <span class="cu-collapse-label">{{ props.label }}</span>
-        <p v-if="props.description" class="cu-collapse-description">{{ props.description }}</p>
+        <span v-if="props.description" class="cu-collapse-description">{{ props.description }}</span>
       </span>
     </Button>
     <Transition
@@ -210,6 +210,7 @@ defineExpose({
 }
 
 .cu-collapse-description {
+  display: block;
   margin: 0;
   font-size: var(--cu-font-size-xs);
   font-weight: var(--cu-font-weight-normal);

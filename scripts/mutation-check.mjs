@@ -259,8 +259,8 @@ const MUTATIONS = [
     id: "collapse-description-no-render",
     file: "src/components/overlay/Collapse.vue",
     expect: "renderiza la descripción del trigger bajo el label",
-    find: `        <p v-if="props.description" class="cu-collapse-description">{{ props.description }}</p>`,
-    replace: `        <p v-if="false" class="cu-collapse-description">{{ props.description }}</p>`,
+    find: `        <span v-if="props.description" class="cu-collapse-description">{{ props.description }}</span>`,
+    replace: `        <span v-if="false" class="cu-collapse-description">{{ props.description }}</span>`,
   },
   {
     id: "collapse-disabled-ignores-toggle-guard",
