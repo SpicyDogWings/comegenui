@@ -1,5 +1,5 @@
 /*! comegenui v5.2.3 · CuTooltip (cu-tooltip) · esm-shared · Vue externo (bare import) */
-import { computed, createBlock, createCommentVNode, createElementBlock, createSlots, createTextVNode, defineComponent, defineCustomElement, nextTick, normalizeClass, normalizeStyle, onMounted, onUnmounted, openBlock, ref, renderSlot, toDisplayString, useSlots, withCtx } from "vue";
+import { computed, createBlock, createCommentVNode, createElementBlock, createSlots, createTextVNode, defineComponent, defineCustomElement, nextTick, normalizeClass, normalizeStyle, onBeforeUnmount, onMounted, onUnmounted, openBlock, ref, renderSlot, toDisplayString, useHost, useSlots, watch, withCtx } from "vue";
 //#region src/utils/comegen-element.ts
 var BUILD_META = {
 	"version": "5.2.3",
@@ -431,7 +431,7 @@ var NAVBAR_RESPONSIVE_MODES = [
 var NAVBAR_SEARCH_MODES = ["filter", "scroll"];
 var SELECT_SEARCH_MODES = ["startsWith", "includes"];
 var CELLS_IMPORTER_INPUT_TYPES = ["input", "zone"];
-oneOf(COLORS);
+var isColor = oneOf(COLORS);
 oneOf(COLORS_BASE);
 oneOf(VARIANTS);
 oneOf(VARIANTS_FULL);
@@ -894,6 +894,9 @@ var _plugin_vue_export_helper_default = (sfc, props) => {
 //#region src/components/overlay/Popover.vue
 var Popover_default = /*#__PURE__*/ _plugin_vue_export_helper_default(Popover_vue_vue_type_script_setup_true_lang_default, [["styles", [Popover_vue_vue_type_style_index_0_inline_scoped_7e62c527_lang_default]], ["__scopeId", "data-v-7e62c527"]]);
 //#endregion
+//#region src/components/overlay/Tooltip.vue?vue&type=script&setup=true&lang.ts
+var DESCRIPTION_ATTR = "aria-description";
+//#endregion
 //#region src/components/overlay/Tooltip.vue
 var Tooltip_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__ */ defineComponent({
 	__name: "Tooltip",
@@ -906,7 +909,8 @@ var Tooltip_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE
 		color: {
 			type: String,
 			required: false,
-			default: "neutral"
+			default: "neutral",
+			validator: isColor
 		},
 		position: {
 			type: String,
@@ -938,19 +942,92 @@ var Tooltip_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE
 	},
 	setup(__props) {
 		const props = __props;
-		const tooltipStyles = computed(() => ({ "--cu-popover-bg": `var(--cu-color-${props.color}-solid)` }));
+		const safeColor = computed(() => isColor(props.color) ? props.color : "neutral");
+		const tooltipStyles = computed(() => ({ "--cu-popover-bg": `var(--cu-color-${safeColor.value}-solid)` }));
+		const popover = ref(null);
+		const slots = useSlots();
+		function hasContent() {
+			return props.text.trim().length > 0 || !!slots.content;
+		}
+		function onFocusIn() {
+			popover.value?.open();
+		}
+		function onFocusOut(event) {
+			const root = event.currentTarget;
+			const next = event.relatedTarget;
+			if (root && next instanceof Node && root.contains(next)) return;
+			popover.value?.close();
+		}
+		let described = [];
+		function popoverRoot() {
+			return popover.value?.$el ?? null;
+		}
+		/** Elementos del slot default: lo que el usuario ve como trigger. */
+		function triggerElements() {
+			const root = popoverRoot();
+			if (!root) return [];
+			const children = Array.from(root.children);
+			const assigned = children.find((el) => el.localName === "slot")?.assignedElements() ?? [];
+			return (assigned.length > 0 ? assigned : children.filter((el) => !el.classList.contains("cu-popover-panel"))).filter((node) => node instanceof HTMLElement);
+		}
+		/** Texto visible del panel, con el slot `content` resuelto en el flat tree. */
+		function tooltipText() {
+			const panel = popoverRoot()?.querySelector(".cu-popover-panel");
+			if (!panel) return "";
+			const outlet = panel.querySelector("slot[name=\"content\"]");
+			return (outlet ? outlet.assignedElements().map((el) => el.textContent ?? "").join(" ") : panel.textContent ?? "").replace(/\s+/g, " ").trim();
+		}
+		function restoreDescription() {
+			for (const { el, previous } of described) if (previous === null) el.removeAttribute(DESCRIPTION_ATTR);
+			else el.setAttribute(DESCRIPTION_ATTR, previous);
+			described = [];
+		}
+		async function describeTrigger() {
+			await nextTick();
+			restoreDescription();
+			if (!popoverRoot()?.querySelector(".cu-popover-panel")) return;
+			const text = tooltipText();
+			if (!text) return;
+			for (const el of triggerElements()) {
+				described.push({
+					el,
+					previous: el.getAttribute(DESCRIPTION_ATTR)
+				});
+				el.setAttribute(DESCRIPTION_ATTR, text);
+			}
+		}
+		function onOpen() {
+			describeTrigger();
+		}
+		function onClose() {
+			restoreDescription();
+		}
+		watch([() => props.disabled, () => props.text], () => {
+			if (props.disabled || !hasContent()) {
+				popover.value?.close();
+				return;
+			}
+			if (popover.value?.isOpen()) describeTrigger();
+		});
+		onBeforeUnmount(restoreDescription);
 		return (_ctx, _cache) => {
 			return openBlock(), createBlock(Popover_default, {
+				ref_key: "popover",
+				ref: popover,
 				hover: "",
 				position: __props.position,
 				align: __props.align,
 				offset: __props.offset,
 				"hover-delay": __props.delay,
-				disabled: __props.disabled,
+				disabled: __props.disabled || !hasContent(),
 				role: "tooltip",
 				"panel-class": "cu-tooltip-panel",
 				style: normalizeStyle(tooltipStyles.value),
-				class: "cu-tooltip"
+				class: "cu-tooltip",
+				onFocusin: onFocusIn,
+				onFocusout: onFocusOut,
+				onOpen,
+				onClose
 			}, {
 				toggle: withCtx(() => [renderSlot(_ctx.$slots, "default", {}, void 0, true)]),
 				default: withCtx(() => [renderSlot(_ctx.$slots, "content", {}, () => [createTextVNode(toDisplayString(__props.text), 1)], true)]),
@@ -965,7 +1042,7 @@ var Tooltip_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE
 			]);
 		};
 	}
-}), [["styles", ["\n.cu-tooltip[data-v-fbc87031] {\n  --cu-popover-width: max-content;\n  --cu-popover-min-width: 0;\n  --cu-popover-max-width: 18rem;\n}\n.cu-tooltip[data-v-fbc87031] .cu-tooltip-panel {\n  color: var(--cu-color-surface);\n  font-size: var(--cu-font-size-xs);\n  font-weight: var(--cu-font-weight-medium);\n  padding: var(--cu-space-xs) var(--cu-space-sm);\n  border-radius: var(--cu-radius-sm);\n  box-shadow: var(--cu-shadow-md);\n}\n"]], ["__scopeId", "data-v-fbc87031"]]);
+}), [["styles", ["\n.cu-tooltip[data-v-f1675ffa] {\n  --cu-popover-width: max-content;\n  --cu-popover-min-width: 0;\n  --cu-popover-max-width: 18rem;\n}\n.cu-tooltip[data-v-f1675ffa] .cu-tooltip-panel {\n  color: var(--cu-color-surface);\n  font-size: var(--cu-font-size-xs);\n  font-weight: var(--cu-font-weight-medium);\n  padding: var(--cu-space-xs) var(--cu-space-sm);\n  border-radius: var(--cu-radius-sm);\n  box-shadow: var(--cu-shadow-md);\n}\n"]], ["__scopeId", "data-v-f1675ffa"]]);
 //#endregion
 //#region src/lib/overlay/tooltip.ts
 var CuTooltip = defineComegenElement("cu-tooltip", /* @__PURE__ */ defineComponent({
@@ -979,17 +1056,20 @@ var CuTooltip = defineComegenElement("cu-tooltip", /* @__PURE__ */ defineCompone
 		/** Color semántico del fondo: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` */
 		color: {
 			type: String,
-			default: "neutral"
+			default: "neutral",
+			validator: isColor
 		},
 		/** Lado donde aparece: `top`, `bottom`, `left`, `right` */
 		position: {
 			type: String,
-			default: "top"
+			default: "top",
+			validator: isPosition
 		},
 		/** Alineación respecto al elemento: `start`, `center`, `end` */
 		align: {
 			type: String,
-			default: "center"
+			default: "center",
+			validator: isAlign
 		},
 		/** Distancia (px) entre el elemento y el tooltip */
 		offset: {
@@ -1009,8 +1089,27 @@ var CuTooltip = defineComegenElement("cu-tooltip", /* @__PURE__ */ defineCompone
 	},
 	setup(__props) {
 		const props = __props;
-		const slots = useSlots();
-		const hasContent = computed(() => !!slots.content);
+		const host = useHost();
+		const hasContent = ref(false);
+		let observer = null;
+		function syncContent() {
+			hasContent.value = !!host?.querySelector("[slot=\"content\"]");
+		}
+		onMounted(() => {
+			if (!host) return;
+			syncContent();
+			observer = new MutationObserver(syncContent);
+			observer.observe(host, {
+				childList: true,
+				subtree: true,
+				attributes: true,
+				attributeFilter: ["slot"]
+			});
+		});
+		onUnmounted(() => {
+			observer?.disconnect();
+			observer = null;
+		});
 		return (_ctx, _cache) => {
 			return openBlock(), createBlock(Tooltip_default, {
 				text: props.text,

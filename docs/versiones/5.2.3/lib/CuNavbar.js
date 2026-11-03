@@ -3498,6 +3498,10 @@ var Collapse_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 		const emit = __emit;
 		const isOpen = ref(props.defaultOpen);
 		const contentRef = ref();
+		const contentId = `cu-collapse-${useId()}-content`;
+		function reducedMotion() {
+			return typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+		}
 		function setOpen(value) {
 			if (isOpen.value === value) return;
 			isOpen.value = value;
@@ -3518,6 +3522,7 @@ var Collapse_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 			setOpen(false);
 		}
 		function onEnter(el) {
+			if (reducedMotion()) return;
 			const el_ = el;
 			el_.style.height = "0";
 			el_.style.overflow = "hidden";
@@ -3541,6 +3546,7 @@ var Collapse_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 			el_.style.overflow = "";
 		}
 		function onLeave(el) {
+			if (reducedMotion()) return;
 			const el_ = el;
 			el_.style.height = el_.scrollHeight + "px";
 			el_.style.overflow = "hidden";
@@ -3565,23 +3571,31 @@ var Collapse_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 				color: props.color,
 				variant: "ghost",
 				disabled: props.disabled,
+				"aria-expanded": isOpen.value ? "true" : "false",
+				"aria-controls": contentId,
 				onClick: _cache[0] || (_cache[0] = ($event) => toggle())
 			}, {
 				default: withCtx(() => [
 					createVNode(LucideChevronRight_default, {
 						class: normalizeClass(["cu-collapse-chevron", { "is-open": isOpen.value }]),
 						width: 14,
-						height: 14
+						height: 14,
+						"aria-hidden": "true",
+						focusable: "false"
 					}, null, 8, ["class"]),
 					safeIcon.value ? (openBlock(), createElementBlock("span", {
 						key: 0,
 						class: "cu-collapse-icon",
 						innerHTML: safeIcon.value
 					}, null, 8, _hoisted_2$3)) : createCommentVNode("v-if", true),
-					createElementVNode("span", _hoisted_3$3, [createElementVNode("span", _hoisted_4$3, toDisplayString(props.label), 1), props.description ? (openBlock(), createElementBlock("p", _hoisted_5$3, toDisplayString(props.description), 1)) : createCommentVNode("v-if", true)])
+					createElementVNode("span", _hoisted_3$3, [createElementVNode("span", _hoisted_4$3, toDisplayString(props.label), 1), props.description ? (openBlock(), createElementBlock("span", _hoisted_5$3, toDisplayString(props.description), 1)) : createCommentVNode("v-if", true)])
 				]),
 				_: 1
-			}, 8, ["color", "disabled"]), createVNode(Transition, {
+			}, 8, [
+				"color",
+				"disabled",
+				"aria-expanded"
+			]), createVNode(Transition, {
 				appear: "",
 				onEnter,
 				onAfterEnter,
@@ -3590,6 +3604,7 @@ var Collapse_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 				persisted: ""
 			}, {
 				default: withCtx(() => [withDirectives(createElementVNode("div", {
+					id: contentId,
 					ref_key: "contentRef",
 					ref: contentRef,
 					class: "cu-collapse-content"
@@ -3598,7 +3613,7 @@ var Collapse_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 			})]);
 		};
 	}
-}), [["styles", ["\n.cu-collapse[data-v-b3149ca3] {\n  display: flex;\n  flex-direction: column;\n}\n.cu-collapse-trigger[data-v-b3149ca3] {\n  justify-content: flex-start;\n  cursor: pointer;\n}\n.cu-collapse-trigger[data-v-b3149ca3]:disabled {\n  cursor: not-allowed;\n}\n.cu-collapse-chevron[data-v-b3149ca3] {\n  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);\n}\n.cu-collapse-chevron.is-open[data-v-b3149ca3] {\n  transform: rotate(90deg);\n}\n.cu-collapse-text[data-v-b3149ca3] {\n  display: flex;\n  flex-direction: column;\n  align-items: flex-start;\n  min-width: 0;\n  text-align: left;\n}\n.cu-collapse-description[data-v-b3149ca3] {\n  margin: 0;\n  font-size: var(--cu-font-size-xs);\n  font-weight: var(--cu-font-weight-normal);\n  opacity: 0.7;\n}\n.cu-collapse-content[data-v-b3149ca3] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--cu-space-2xs);\n  padding: 0 0 0 var(--cu-space-lg);\n  transition: height 0.25s cubic-bezier(0.4, 0, 0.2, 1);\n}\n"]], ["__scopeId", "data-v-b3149ca3"]]);
+}), [["styles", ["\n.cu-collapse[data-v-862d3534] {\n  display: flex;\n  flex-direction: column;\n}\n.cu-collapse-trigger[data-v-862d3534] {\n  justify-content: flex-start;\n  cursor: pointer;\n}\n.cu-collapse-trigger[data-v-862d3534]:disabled {\n  cursor: not-allowed;\n}\n.cu-collapse-chevron[data-v-862d3534] {\n  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);\n}\n.cu-collapse-chevron.is-open[data-v-862d3534] {\n  transform: rotate(90deg);\n}\n.cu-collapse-text[data-v-862d3534] {\n  display: flex;\n  flex-direction: column;\n  align-items: flex-start;\n  min-width: 0;\n  text-align: left;\n}\n.cu-collapse-description[data-v-862d3534] {\n  display: block;\n  margin: 0;\n  font-size: var(--cu-font-size-xs);\n  font-weight: var(--cu-font-weight-normal);\n  opacity: 0.7;\n}\n.cu-collapse-content[data-v-862d3534] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--cu-space-2xs);\n  padding: 0 0 0 var(--cu-space-lg);\n  transition: height 0.25s cubic-bezier(0.4, 0, 0.2, 1);\n}\n@media (prefers-reduced-motion: reduce) {\n.cu-collapse-content[data-v-862d3534],\n  .cu-collapse-chevron[data-v-862d3534] {\n    transition: none;\n}\n}\n"]], ["__scopeId", "data-v-862d3534"]]);
 //#endregion
 //#region src/components/information/Loader.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1$6 = { class: "cu-loader" };
