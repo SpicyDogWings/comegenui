@@ -29,6 +29,13 @@ describe("Table — columnas y datos", () => {
     expect(w.find(".cu-table-th").text()).toContain("email");
   });
 
+  it("cada `<th>` declara `scope=\"col\"` (encabezado de columna para lectores de pantalla)", () => {
+    const w = mount(Table, { props: { columns, data } });
+    const ths = w.findAll("th");
+    expect(ths).toHaveLength(2);
+    for (const th of ths) expect(th.attributes("scope")).toBe("col");
+  });
+
   it("renderiza una fila por dato y las celdas con su valor", () => {
     const w = mount(Table, { props: { columns, data } });
     expect(w.findAll(".cu-table-row")).toHaveLength(2);

@@ -1,5 +1,5 @@
 /*! comegenui v5.2.3 · CuColorPicker (cu-color-picker) · esm-shared · Vue externo (bare import) */
-import { computed, createBlock, createElementBlock, createElementVNode, createVNode, defineComponent, defineCustomElement, getCurrentInstance, mergeModels, normalizeClass, normalizeStyle, openBlock, ref, shallowRef, toValue, unref, useModel, useTemplateRef, watch } from "vue";
+import { computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, createVNode, defineComponent, defineCustomElement, getCurrentInstance, mergeModels, normalizeClass, normalizeStyle, openBlock, ref, shallowRef, toValue, unref, useModel, useTemplateRef, watch } from "vue";
 //#region src/utils/comegen-element.ts
 var BUILD_META = {
 	"version": "5.2.3",
@@ -37,6 +37,45 @@ function attachMeta(ctor, meta) {
 /** `aria-describedby` → `ariaDescribedby` (mismo algoritmo que Vue). */
 function camelize$1(name) {
 	return name.replace(/-(\w)/g, (_, char) => char ? char.toUpperCase() : "");
+}
+/** `Boolean`, `{ type: Boolean }` o `{ type: [String, Boolean] }` → tipos efectivos. */
+function typesOf(option) {
+	let raw = option;
+	if (typeof option === "object" && option !== null && !Array.isArray(option) && "type" in option) raw = option.type;
+	const list = Array.isArray(raw) ? raw : [raw];
+	return {
+		boolean: list.includes(Boolean),
+		number: list.includes(Number),
+		string: list.includes(String)
+	};
+}
+/** Tipos declarados por prop, en camelCase (cacheado por definición). */
+var PROP_TYPES = /* @__PURE__ */ new WeakMap();
+function propTypes(def) {
+	const cached = PROP_TYPES.get(def);
+	if (cached) return cached;
+	const map = /* @__PURE__ */ new Map();
+	const props = def.props;
+	if (props && !Array.isArray(props)) for (const [key, option] of Object.entries(props)) map.set(camelize$1(key), typesOf(option));
+	PROP_TYPES.set(def, map);
+	return map;
+}
+/**
+* Atributo del host → valor de la prop. Un atributo llega siempre como string:
+* `_setProp` con el string crudo dejaba `disabled="false"` deshabilitado (el
+* string es truthy) y `model-value="false"` marcado. Se castea con la misma
+* regla que HTML/Vue: un atributo Boolean presente es `true`, salvo el texto
+* explícito `"false"` (y `""`/`"true"` → `true`); Number se parsea. Sin tipos
+* declarados (`props: ['value']`) no se adivina: el valor queda string.
+*/
+function castPropValue(value, types) {
+	if (!types) return value;
+	if (types.boolean) return value.trim().toLowerCase() !== "false";
+	if (types.number && !types.string) {
+		const parsed = parseFloat(value);
+		if (!Number.isNaN(parsed)) return parsed;
+	}
+	return value;
 }
 /** Props declaradas por el componente, en camelCase (cacheado por definición). */
 var PROP_KEYS = /* @__PURE__ */ new WeakMap();
@@ -120,12 +159,7 @@ function makeElement(component, meta) {
 		_applyProp(propKey, value, camelKey) {
 			const self = this;
 			if (value !== null) {
-				let parsed = value;
-				if (self._numberProps?.[camelKey]) {
-					const n = parseFloat(value);
-					if (!Number.isNaN(n)) parsed = n;
-				}
-				self._setProp(propKey, parsed, false, true);
+				self._setProp(propKey, castPropValue(value, propTypes(self._def).get(camelKey)), false, true);
 				return;
 			}
 			if (!Object.prototype.hasOwnProperty.call(self._props, propKey)) return;
@@ -599,6 +633,19 @@ var Input_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineComp
 			"--btn-subtle-hover": `var(--cu-color-${props.color}-subtle-hover)`,
 			"--btn-subtle-border": `var(--cu-color-${props.color}-subtle-border)`
 		}));
+		/** Composición IME en curso: no se emiten los valores intermedios. */
+		const composing = ref(false);
+		const onInput = (event) => {
+			if (composing.value) return;
+			value.value = event.target.value;
+		};
+		const onCompositionStart = () => {
+			composing.value = true;
+		};
+		const onCompositionEnd = (event) => {
+			composing.value = false;
+			value.value = event.target.value;
+		};
 		/** Devuelve el valor actual del input. */
 		const get = () => value.value;
 		/** Setea el valor del input. */
@@ -622,7 +669,9 @@ var Input_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineComp
 				type: props.type,
 				placeholder: props.placeholder,
 				value: value.value,
-				onInput: _cache[0] || (_cache[0] = ($event) => value.value = $event.target.value),
+				onInput,
+				onCompositionstart: onCompositionStart,
+				onCompositionend: onCompositionEnd,
 				class: normalizeClass(["cu-input", [
 					`cu-input--${props.variant}`,
 					sizeClass.value,
@@ -636,8 +685,8 @@ var Input_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineComp
 	}
 });
 //#endregion
-//#region src/components/form/Input.vue?vue&type=style&index=0&inline&scoped=416af2a0&lang.css
-var Input_vue_vue_type_style_index_0_inline_scoped_416af2a0_lang_default = "\n.cu-input[data-v-416af2a0] {\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  font-weight: var(--cu-font-weight-medium);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius-md);\n  border: none;\n  outline: none;\n  width: 100%;\n  box-sizing: border-box;\n  background-color: var(--btn-bg);\n  color: var(--cu-color-neutral-text);\n  transition: all 150ms ease;\n}\n\n/* sizes */\n.cu-input--sm[data-v-416af2a0] {\n  padding: var(--cu-space-sm) var(--cu-space-md);\n  font-size: var(--cu-font-size-xs);\n}\n.cu-input--lg[data-v-416af2a0] {\n  padding: var(--cu-space-lg) var(--cu-space-xl);\n  font-size: var(--cu-font-size-md);\n}\n.cu-input[data-v-416af2a0]::placeholder {\n  color: var(--cu-color-neutral-text);\n  opacity: var(--cu-alpha-muted, 0.5);\n}\n.cu-input[data-v-416af2a0]:focus {\n  box-shadow: 0 0 0 var(--cu-border-thin) var(--btn-subtle-border);\n}\n\n/* subtle */\n.cu-input--subtle[data-v-416af2a0] {\n  background-color: var(--btn-subtle);\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-input--subtle[data-v-416af2a0]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-subtle-hover);\n}\n\n/* soft */\n.cu-input--soft[data-v-416af2a0] {\n  background-color: var(--btn-soft);\n}\n.cu-input--soft[data-v-416af2a0]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-soft-hover);\n}\n\n/* ghost */\n.cu-input--ghost[data-v-416af2a0] {\n  background-color: transparent;\n}\n.cu-input--ghost[data-v-416af2a0]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-bg-hover);\n}\n\n/* outlined */\n.cu-input--outlined[data-v-416af2a0] {\n  background-color: transparent;\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-input--outlined[data-v-416af2a0]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-bg-hover);\n}\n\n/* disabled */\n.cu-input--disabled[data-v-416af2a0] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n";
+//#region src/components/form/Input.vue?vue&type=style&index=0&inline&scoped=a387934b&lang.css
+var Input_vue_vue_type_style_index_0_inline_scoped_a387934b_lang_default = "\n.cu-input[data-v-a387934b] {\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  font-weight: var(--cu-font-weight-medium);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius-md);\n  border: none;\n  outline: none;\n  width: 100%;\n  box-sizing: border-box;\n  background-color: var(--btn-bg);\n  color: var(--cu-color-neutral-text);\n  transition: all 150ms ease;\n}\n\n/* sizes */\n.cu-input--sm[data-v-a387934b] {\n  padding: var(--cu-space-sm) var(--cu-space-md);\n  font-size: var(--cu-font-size-xs);\n}\n.cu-input--lg[data-v-a387934b] {\n  padding: var(--cu-space-lg) var(--cu-space-xl);\n  font-size: var(--cu-font-size-md);\n}\n.cu-input[data-v-a387934b]::placeholder {\n  color: var(--cu-color-neutral-text-muted);\n}\n.cu-input[data-v-a387934b]:focus {\n  box-shadow: 0 0 0 var(--cu-border-thin) var(--btn-subtle-border);\n}\n\n/* subtle */\n.cu-input--subtle[data-v-a387934b] {\n  background-color: var(--btn-subtle);\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-input--subtle[data-v-a387934b]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-subtle-hover);\n}\n\n/* soft */\n.cu-input--soft[data-v-a387934b] {\n  background-color: var(--btn-soft);\n}\n.cu-input--soft[data-v-a387934b]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-soft-hover);\n}\n\n/* ghost */\n.cu-input--ghost[data-v-a387934b] {\n  background-color: transparent;\n}\n.cu-input--ghost[data-v-a387934b]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-bg-hover);\n}\n\n/* outlined */\n.cu-input--outlined[data-v-a387934b] {\n  background-color: transparent;\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-input--outlined[data-v-a387934b]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-bg-hover);\n}\n\n/* disabled */\n.cu-input--disabled[data-v-a387934b] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n";
 //#endregion
 //#region \0plugin-vue:export-helper
 var _plugin_vue_export_helper_default = (sfc, props) => {
@@ -647,7 +696,7 @@ var _plugin_vue_export_helper_default = (sfc, props) => {
 };
 //#endregion
 //#region src/components/form/Input.vue
-var Input_default = /*#__PURE__*/ _plugin_vue_export_helper_default(Input_vue_vue_type_script_setup_true_lang_default, [["styles", [Input_vue_vue_type_style_index_0_inline_scoped_416af2a0_lang_default]], ["__scopeId", "data-v-416af2a0"]]);
+var Input_default = /*#__PURE__*/ _plugin_vue_export_helper_default(Input_vue_vue_type_script_setup_true_lang_default, [["styles", [Input_vue_vue_type_style_index_0_inline_scoped_a387934b_lang_default]], ["__scopeId", "data-v-a387934b"]]);
 //#endregion
 //#region src/components/form/ColorPicker.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1 = ["disabled"];
@@ -687,15 +736,23 @@ var ColorPicker_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__
 		const inputRef = useTemplateRef("input");
 		const pickerRef = useTemplateRef("picker");
 		const localHex = ref(value.value);
+		/**
+		* Valor vigente dentro del componente. Es la fuente de verdad inmediata: los
+		* métodos (`get`, `set`, `reset`) no esperan al re-render del host, que cuando
+		* el `model-value` lo controla un padre (el custom element espeja su estado)
+		* llega recién en el tick siguiente.
+		*/
+		const current = ref(value.value);
 		watch(value, (v) => {
+			current.value = v;
 			localHex.value = v;
 		});
-		const pickerStyles = computed(() => ({
-			"--cp-bg": `var(--cu-color-${props.color})`,
-			"--cp-soft": `var(--cu-color-${props.color}-soft)`,
-			"--cp-soft-hover": `var(--cu-color-${props.color}-soft-hover)`,
-			"--cp-subtle-border": `var(--cu-color-${props.color}-subtle-border)`
-		}));
+		/** Escribe el valor: estado interno ya, y `update:modelValue` para el host. */
+		function commitValue(next) {
+			current.value = next;
+			if (next !== value.value) value.value = next;
+		}
+		const pickerStyles = computed(() => ({ "--cp-subtle-border": `var(--cu-color-${props.color}-subtle-border)` }));
 		function onSwatchClick() {
 			if (props.disabled) return;
 			pickerRef.value?.click();
@@ -703,31 +760,31 @@ var ColorPicker_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__
 		function onPickerInput(e) {
 			const hex = e.target.value;
 			localHex.value = hex;
-			value.value = hex;
+			commitValue(hex);
 			emit("change", hex);
 		}
 		function onTextInput(hex) {
 			localHex.value = hex;
 			if (/^#[0-9a-fA-F]{6}$/.test(hex)) {
-				value.value = hex;
+				commitValue(hex);
 				emit("change", hex);
 			}
 		}
 		function onTextInputBlur() {
-			if (!/^#[0-9a-fA-F]{6}$/.test(localHex.value)) localHex.value = value.value;
+			if (!/^#[0-9a-fA-F]{6}$/.test(localHex.value)) localHex.value = current.value;
 		}
 		/** Devuelve el color actual en formato hex. */
 		function get() {
-			return value.value;
+			return current.value;
 		}
 		/** Setea el color actual en formato hex. */
 		function set(v) {
-			value.value = v;
+			commitValue(v);
 			localHex.value = v;
 		}
 		/** Restaura el color al negro (#000000). */
 		function reset() {
-			value.value = "#000000";
+			commitValue("#000000");
 			localHex.value = "#000000";
 		}
 		__expose({
@@ -744,17 +801,20 @@ var ColorPicker_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__
 				createElementVNode("button", {
 					type: "button",
 					class: "cu-color-picker-swatch",
+					"aria-label": "Elegir color",
 					onClick: onSwatchClick,
 					disabled: __props.disabled
 				}, [createElementVNode("span", {
 					class: "cu-color-picker-swatch-color",
-					style: normalizeStyle({ backgroundColor: value.value })
+					style: normalizeStyle({ backgroundColor: current.value })
 				}, null, 4)], 8, _hoisted_1),
+				createCommentVNode(" El picker nativo es un detalle de implementación: lo maneja el swatch\n         (que es el control con nombre), así que no aparece en el árbol de a11y. "),
 				createElementVNode("input", {
 					ref: "picker",
 					type: "color",
-					value: value.value,
+					value: current.value,
 					class: "cu-color-picker-native",
+					"aria-hidden": "true",
 					onInput: onPickerInput,
 					disabled: __props.disabled,
 					tabindex: "-1"

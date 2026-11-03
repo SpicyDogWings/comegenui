@@ -39,6 +39,65 @@ describe("Avatar — iniciales, imagen y slot", () => {
   });
 });
 
+describe("Avatar — imagen que no carga", () => {
+  it("vuelve a las iniciales si la imagen falla", async () => {
+    const w = mount(Avatar, {
+      props: { initials: "JP", src: "https://example.com/rota.jpg" },
+    });
+    expect(w.find(".cu-avatar-initials").exists()).toBe(false);
+
+    await w.find(".cu-avatar-img").trigger("error");
+
+    expect(w.find(".cu-avatar-img").exists()).toBe(false);
+    expect(w.find(".cu-avatar-initials").text()).toBe("JP");
+  });
+
+  it("sin iniciales, al fallar la imagen muestra el contenido del slot", async () => {
+    const w = mount(Avatar, {
+      props: { src: "https://example.com/rota.jpg" },
+      slots: { default: '<svg data-test="icon"></svg>' },
+    });
+
+    await w.find(".cu-avatar-img").trigger("error");
+
+    expect(w.find(".cu-avatar-img").exists()).toBe(false);
+    expect(w.find('[data-test="icon"]').exists()).toBe(true);
+  });
+
+  it("un src nuevo vuelve a intentar la imagen", async () => {
+    const w = mount(Avatar, {
+      props: { initials: "JP", src: "https://example.com/rota.jpg" },
+    });
+    await w.find(".cu-avatar-img").trigger("error");
+    expect(w.find(".cu-avatar-img").exists()).toBe(false);
+
+    await w.setProps({ src: "https://example.com/otra.jpg" });
+
+    expect(w.find(".cu-avatar-img").attributes("src")).toBe("https://example.com/otra.jpg");
+    expect(w.find(".cu-avatar-initials").exists()).toBe(false);
+  });
+});
+
+describe("Avatar — un solo contenido", () => {
+  it("con iniciales el slot no se renderiza (no se superponen)", () => {
+    const w = mount(Avatar, {
+      props: { initials: "JP" },
+      slots: { default: '<svg data-test="icon"></svg>' },
+    });
+    expect(w.find(".cu-avatar-initials").text()).toBe("JP");
+    expect(w.find('[data-test="icon"]').exists()).toBe(false);
+  });
+
+  it("con src el slot no se renderiza", () => {
+    const w = mount(Avatar, {
+      props: { src: "https://example.com/a.jpg", initials: "JP" },
+      slots: { default: "AB" },
+    });
+    expect(w.find(".cu-avatar-img").exists()).toBe(true);
+    expect(root(w).text()).toBe("");
+  });
+});
+
 describe("Avatar — color", () => {
   it("usa el color explícito en el estilo del fondo", () => {
     const w = mount(Avatar, { props: { initials: "JP", color: "success" } });
@@ -49,5 +108,22 @@ describe("Avatar — color", () => {
     const a = mount(Avatar, { props: { initials: "CD" } });
     const b = mount(Avatar, { props: { initials: "CD" } });
     expect(root(a).attributes("style")).toBe(root(b).attributes("style"));
+  });
+
+  it("el fondo sale del token `-solid` y el texto del polo del tema", () => {
+    const w = mount(Avatar, { props: { initials: "JP", color: "success" } });
+    const style = root(w).attributes("style") ?? "";
+
+    // El par fondo/texto lo resuelve el tema activo, no un blanco fijo.
+    expect(style).toContain("--avatar-bg: var(--cu-color-success-solid");
+    expect(style).toContain("--avatar-fg: var(--cu-color-surface");
+  });
+
+  it("un color fuera del set cae al color por hash (con token), no a un valor crudo", () => {
+    const w = mount(Avatar, { props: { initials: "JP", color: "chartreuse" as never } });
+    const style = root(w).attributes("style") ?? "";
+
+    expect(style).not.toContain("chartreuse");
+    expect(style).toMatch(/--avatar-bg: var\(--cu-color-(primary|secondary|success|neutral)-solid/);
   });
 });

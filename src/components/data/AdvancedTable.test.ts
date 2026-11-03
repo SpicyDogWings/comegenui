@@ -532,3 +532,59 @@ describe("AdvancedTable — `cell` que devuelve string[]", () => {
     expect(celda.find("span").text()).toBe("una sola línea");
   });
 });
+
+describe("AdvancedTable — iconos de `ButtonConfig` (v-html saneado)", () => {
+  const evilIcon = '<img src=x onerror="window.__xss=1"><script>window.__xss=2</script>';
+  const legitIcon =
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/></svg>';
+
+  it("los botones de celda conservan SVG válidos y no ejecutan handlers", () => {
+    type XssWindow = Window & { __xss?: number };
+    const probe = window as XssWindow;
+    delete probe.__xss;
+
+    const w = mount(AdvancedTable, {
+      props: {
+        columns: [
+          {
+            key: "acciones",
+            label: "Acciones",
+            buttons: () => [
+              { label: "Ok", icon: legitIcon },
+              { label: "Malo", icon: evilIcon },
+            ],
+          },
+        ],
+        data: [{ nombre: "Juan" }],
+      },
+    });
+
+    const icons = w.findAll(".cu-advanced-table-icon");
+    // El SVG legítimo sobrevive; del hostil queda sólo lo inerte (sin handler).
+    expect(icons.some((i) => i.find("svg path").exists())).toBe(true);
+    expect(w.find(".cu-advanced-table-icon script").exists()).toBe(false);
+    expect(w.html()).not.toContain("onerror");
+    expect(w.html()).not.toContain("<script");
+    expect(probe.__xss).toBeUndefined();
+  });
+
+  it("los ítems del dropdown de `actions` llegan saneados", () => {
+    const w = mount(AdvancedTable, {
+      props: {
+        columns,
+        data,
+        actions: [{ label: "Editar", icon: evilIcon, onClick: () => {} }],
+      },
+    });
+    const items = w.findComponent(DropdownMenu).props("items") as { icon?: string }[];
+    expect(items[0]!.icon).not.toContain("onerror");
+    expect(items[0]!.icon).not.toContain("<script");
+    // Un SVG válido pasa intacto.
+    const clean = mount(AdvancedTable, {
+      props: { columns, data, actions: [{ label: "Editar", icon: legitIcon }] },
+    });
+    const cleanItems = clean.findComponent(DropdownMenu).props("items") as { icon?: string }[];
+    expect(cleanItems[0]!.icon).toContain("<svg");
+    expect(cleanItems[0]!.icon).toContain('d="M4 4h16v16H4z"');
+  });
+});

@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, type PropType } from 'vue';
+import { ref, computed, watch, nextTick, onUnmounted, type PropType } from 'vue';
 import { isColor, isFieldVariant, isSelectSearchMode, isTextAlign } from '@/utils/validators'
 import { textAlignStyle } from '@/utils/textAlign'
 import Dropdown from "../overlay/Dropdown.vue";
 import Button from "../buttons/Button.vue";
 import MenuOption from "../controls/MenuOption.vue";
 import { matchesQuery } from "@/utils/search";
+import { useUniqueId } from "@/utils/uniqueId";
 
 interface SelectOption {
   value: string;
@@ -61,82 +62,182 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["update:modelValue", "select", "change", "close", "blur"]);
+/** `options` puede llegar como `null` (Vue no avisa): sin guarda, `.find`/`v-for` rompen. */
+const optionsList = computed(() => props.options ?? []);
 const selectedValue = ref(props.modelValue);
 const dropdownRef = ref<InstanceType<typeof Dropdown> | null>(null);
 const selectRoot = ref<HTMLElement | null>(null);
-const nativeInputRef = ref<HTMLInputElement | null>(null);
 const searchText = ref("");
 const cooldownActive = ref(false);
 const cooldownKey = ref(0);
+/**
+ * Opción activa (la que anuncia `aria-activedescendant` y elige `Enter`). El foco no
+ * sale del trigger: el panel es un `listbox` y la navegación es virtual, como en un
+ * combobox. `-1` = ninguna.
+ */
+const activeIndex = ref(-1);
 let resetTimeout: ReturnType<typeof setTimeout> | null = null;
+
+// Patrón combobox + listbox: ids únicos por instancia (`useUniqueId` cubre el caso de
+// varios custom elements, cada uno con su propia app de Vue).
+const uid = useUniqueId("cu-select");
+const listboxId = `${uid}-listbox`;
+const optionId = (index: number) => `${uid}-option-${index}`;
+
+const isOpen = computed(() => dropdownRef.value?.isOpen() ?? false);
+const activeDescendant = computed(() =>
+  isOpen.value && activeIndex.value >= 0 ? optionId(activeIndex.value) : undefined,
+);
+
+/** Índice de la opción elegida, o -1. */
+const selectedIndex = computed(() =>
+  optionsList.value.findIndex(o => o.value === selectedValue.value),
+);
 
 const matchIndex = computed(() => {
   const q = searchText.value;
   if (!q) return -1;
-  return props.options.findIndex(o =>
+  return optionsList.value.findIndex(o =>
     !o.disabled && matchesQuery(o.label, q, { mode: props.searchMode }),
   );
 });
+
+/** Primera/última opción habilitada (Home/End y apertura con flechas). */
+function firstEnabled(fromEnd = false) {
+  const list = optionsList.value;
+  const order = fromEnd ? [...list.keys()].reverse() : [...list.keys()];
+  return order.find((i) => !list[i]!.disabled) ?? -1;
+}
+
+/** Mueve la opción activa `step` posiciones, salteando las deshabilitadas y con wrap. */
+function moveActive(step: number) {
+  const list = optionsList.value;
+  if (list.length === 0) return;
+  let index = activeIndex.value;
+  for (let i = 0; i < list.length; i++) {
+    index = (index + step + list.length) % list.length;
+    if (!list[index]!.disabled) break;
+  }
+  activeIndex.value = list[index]?.disabled ? activeIndex.value : index;
+  scrollToActive();
+}
+
+/** Deja visible la opción activa (el panel tiene scroll propio). */
+function scrollToActive() {
+  const index = activeIndex.value;
+  if (index < 0) return;
+  nextTick(() => {
+    const optionsEl = selectRoot.value?.querySelector(".cu-select-options");
+    const optionEl = optionsEl?.children[index] as HTMLElement | undefined;
+    if (optionEl) optionEl.scrollIntoView({ block: "nearest" });
+  });
+}
+
+/** Búsqueda por teclado a cero: sin texto acumulado, sin barra de cooldown colgada. */
+function clearSearch() {
+  if (resetTimeout) {
+    clearTimeout(resetTimeout);
+    resetTimeout = null;
+  }
+  searchText.value = "";
+  cooldownActive.value = false;
+}
 
 function scheduleReset() {
   if (resetTimeout) clearTimeout(resetTimeout);
   cooldownActive.value = true;
   resetTimeout = setTimeout(() => {
+    resetTimeout = null;
     searchText.value = "";
     cooldownActive.value = false;
   }, props.searchResetDelay);
 }
 
 function onKeyDown(e: KeyboardEvent) {
-  if (props.readOnly || !props.searchEnabled) return;
-  if (e.key === "Escape" || e.key === "Tab") return;
+  if (props.disabled) return;
 
-  if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
+  if (e.key === "ArrowDown" || e.key === "ArrowUp") {
     e.preventDefault();
-    searchText.value += e.key;
-    cooldownKey.value++;
-    scheduleReset();
-    if (matchIndex.value >= 0) {
-      nextTick(() => scrollToMatch(matchIndex.value));
+    if (props.readOnly) return;
+    if (!isOpen.value) {
+      activeIndex.value = firstEnabled(e.key === "ArrowUp");
+      dropdownRef.value?.open();
+      scrollToActive();
+      return;
     }
-  } else if (e.key === "Backspace") {
-    e.preventDefault();
-    searchText.value = searchText.value.slice(0, -1);
-    cooldownKey.value++;
-    scheduleReset();
+    // Con el panel abierto y sin activa, la primera flecha entra por el extremo pedido.
+    if (activeIndex.value < 0) {
+      activeIndex.value = firstEnabled(e.key === "ArrowUp");
+      scrollToActive();
+      return;
+    }
+    moveActive(e.key === "ArrowDown" ? 1 : -1);
+    return;
   }
-}
 
-function scrollToMatch(index: number) {
-  const optionsEl = selectRoot.value?.querySelector(".cu-select-options");
-  if (!optionsEl) return;
-  const optionEl = optionsEl.children[index] as HTMLElement | undefined;
-  if (optionEl) optionEl.scrollIntoView({ block: "nearest" });
+  if (e.key === "Home" || e.key === "End") {
+    if (!isOpen.value) return;
+    e.preventDefault();
+    activeIndex.value = firstEnabled(e.key === "End");
+    scrollToActive();
+    return;
+  }
+
+  if (e.key === "Enter" || e.key === " ") {
+    const option = isOpen.value ? optionsList.value[activeIndex.value] : undefined;
+    if (option && !option.disabled) {
+      // Elegir con Enter/Espacio: sin esto, Espacio además dispararía el click del
+      // trigger (cerraría el panel) y Enter podría enviar el formulario.
+      e.preventDefault();
+      onSelect(option);
+    }
+    return;
+  }
+
+  if (e.key === "Escape") {
+    if (isOpen.value) activeIndex.value = -1;
+    return;
+  }
+
+  if (e.key === "Tab") return;
+
+  if (!props.readOnly && props.searchEnabled) {
+    if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
+      e.preventDefault();
+      searchText.value += e.key;
+      cooldownKey.value++;
+      scheduleReset();
+      if (matchIndex.value >= 0) {
+        activeIndex.value = matchIndex.value;
+        scrollToActive();
+      }
+    } else if (e.key === "Backspace") {
+      e.preventDefault();
+      searchText.value = searchText.value.slice(0, -1);
+      cooldownKey.value++;
+      scheduleReset();
+    }
+  }
 }
 
 function onDropdownOpen() {
-  if (props.searchEnabled) {
-    searchText.value = "";
-    nextTick(() => {
-      const input = nativeInputRef.value;
-      if (input) {
-        input.addEventListener("keydown", onKeyDown);
-        input.focus();
-      }
-    });
-  }
+  // Cada apertura arranca la búsqueda de cero: si el panel se cerró a mitad del
+  // cooldown, el texto acumulado y la barra no deben reaparecer al reabrir.
+  clearSearch();
+  // Si la apertura vino de una flecha, el activo ya está elegido: no pisarlo.
+  if (activeIndex.value >= 0) return;
+  const sel = selectedIndex.value;
+  activeIndex.value = sel >= 0 && !optionsList.value[sel]!.disabled ? sel : firstEnabled();
 }
 
 function onDropdownClose() {
-  if (props.searchEnabled) {
-    const input = nativeInputRef.value;
-    if (input) {
-      input.removeEventListener("keydown", onKeyDown);
-    }
-  }
+  // Cerrar el panel corta la búsqueda: el timer del cooldown no sigue corriendo
+  // fuera de vista ni deja texto viejo para la próxima apertura.
+  clearSearch();
+  activeIndex.value = -1;
 }
 
-watch(() => dropdownRef.value?.isOpen(), (open) => {
+watch(isOpen, (open) => {
   if (open) onDropdownOpen();
   else onDropdownClose();
 });
@@ -147,7 +248,7 @@ watch(() => props.readOnly, (value) => {
 });
 
 const selectedLabel = computed(() => {
-  const opt = props.options.find(o => o.value === selectedValue.value);
+  const opt = optionsList.value.find(o => o.value === selectedValue.value);
   return opt ? opt.label : props.placeholder || "Seleccionar...";
 });
 
@@ -165,6 +266,17 @@ function onSelect(option: SelectOption) {
 }
 
 const optionStyle = computed(() => textAlignStyle(props.textAlign));
+/**
+ * Look de la opción deshabilitada. Va inline porque la fila es un `Button`: su variante
+ * (`ghost`/`soft`, scoped) declara `color` y `--disabled` declara `opacity`, y con la
+ * misma especificidad le ganaban a la clase del padre. `opacity: 1` evita apilar la
+ * atenuación del `Button` sobre el color muted (dejaba el texto bajo 4.5:1).
+ */
+const disabledOptionStyle = computed(() => ({
+  ...optionStyle.value,
+  color: "var(--cu-color-neutral-text-muted)",
+  opacity: "1",
+}));
 /** El label del trigger alinea su texto dentro del espacio que deja el chevron. */
 const labelStyle = computed(() => ({ textAlign: props.textAlign }));
 
@@ -182,17 +294,26 @@ function focus() {
 }
 
 function onFocusOut(e: FocusEvent) {
-  if (!selectRoot.value?.contains(e.relatedTarget as Node)) {
-    emit("blur");
-  }
+  const next = e.relatedTarget as Node | null;
+  if (selectRoot.value?.contains(next as Node)) return;
+  // El foco se fue del control (Tab, foco programático): el panel flotante no puede
+  // quedar abierto tapando el resto de la página. `Popover` solo cierra con Escape o
+  // click afuera, así que el cierre por salida del foco es del componente. Se cierra en
+  // la tarea siguiente: durante el `focusout` el foco todavía no terminó de moverse
+  // (`document.activeElement` sigue siendo el host) y el `restoreFocus` de `Popover`
+  // lo leería como "perdido" y se tragaría el Tab.
+  if (dropdownRef.value?.isOpen()) setTimeout(() => dropdownRef.value?.close(), 0);
+  emit("blur");
 }
+
+onUnmounted(clearSearch);
 
 defineExpose({
   get, set, reset, focus,
   /** Indica si el panel está abierto. */
   isOpen: () => dropdownRef.value?.isOpen() ?? false,
   /** Devuelve la opción seleccionada o null. */
-  selectedItem: () => props.options.find(o => o.value === selectedValue.value) || null,
+  selectedItem: () => optionsList.value.find(o => o.value === selectedValue.value) || null,
 });
 </script>
 
@@ -217,6 +338,8 @@ defineExpose({
       :cooldown-key="cooldownKey"
       :cooldown-variant="cooldownVariant"
       :delay="searchResetDelay"
+      :panel-role="'listbox'"
+      :panel-id="listboxId"
       @close="emit('close')"
     >
       <template #toggle="{ toggle, isOpen }">
@@ -224,9 +347,15 @@ defineExpose({
           :color="color"
           :variant="variant"
           :disabled="disabled"
+          role="combobox"
+          aria-haspopup="listbox"
+          :aria-expanded="isOpen ? 'true' : 'false'"
+          :aria-controls="listboxId"
+          :aria-activedescendant="activeDescendant"
           :aria-readonly="readOnly ? 'true' : undefined"
           class="cu-select-toggle"
           @click="toggle"
+          @keydown="onKeyDown"
         >
           <span
             :class="['cu-select-label', { 'cu-select-label--wrap': placeholderWrap }]"
@@ -252,26 +381,28 @@ defineExpose({
         </Button>
       </template>
       <template #default>
-        <input
-          v-if="searchEnabled"
-          ref="nativeInputRef"
-          type="text"
-          class="cu-select-hidden-input cu-input cu-input--ghost"
-          tabindex="-1"
-          autocomplete="off"
-        />
-        <div v-if="options.length > 0" class="cu-select-options">
+        <div v-if="optionsList.length > 0" class="cu-select-options" tabindex="-1">
           <MenuOption
-            v-for="(opt, i) in options"
+            v-for="(opt, i) in optionsList"
             :key="i"
+            :id="optionId(i)"
+            role="option"
+            tabindex="-1"
+            :aria-selected="opt.value === selectedValue ? 'true' : 'false'"
             :label="opt.label"
             :color="opt.color || color"
             :variant="opt.variant || (opt.value === selectedValue ? 'soft' : 'ghost')"
             :disabled="opt.disabled"
             :selected="opt.value === selectedValue"
-            class="cu-select-option"
-            :class="{ 'cu-select-option--disabled': opt.disabled }"
-            :style="optionStyle"
+            :class="[
+              'cu-select-option',
+              {
+                'cu-select-option--disabled': opt.disabled,
+                'cu-select-option--active': i === activeIndex,
+              },
+            ]"
+            :style="opt.disabled ? disabledOptionStyle : optionStyle"
+            @mousedown.prevent
             @click="onSelect(opt)"
           />
         </div>
@@ -345,28 +476,23 @@ defineExpose({
 }
 
 .cu-select-option--disabled {
-  opacity: var(--cu-alpha-muted, 0.5);
+  /* El color muted y la opacidad 1 van inline (`disabledOptionStyle`): la fila es un
+     `Button` y sus reglas scoped le ganaban a esta clase (la opción deshabilitada se
+     veía igual que una habilitada). Acá queda solo el cursor. */
   cursor: not-allowed;
 }
 
-.cu-select-hidden-input {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-  opacity: 0;
+/* Opción activa (la que anuncia `aria-activedescendant`): el foco queda en el trigger,
+   así que el resaltado es la única señal visual de dónde está parada la navegación. */
+.cu-select-option--active:not(.cu-select-option--disabled) {
+  background-color: var(--cu-color-neutral-ghost-hover);
 }
 
 .cu-select-empty{
   padding: var(--cu-space-md);
   font-family: var(--cu-font-sans);
   font-size: var(--cu-font-size-sm);
-  opacity: var(--cu-alpha-subtle, 0.6);
+  color: var(--cu-color-neutral-text-subtle);
   text-align: center;
 }
 </style>

@@ -127,7 +127,7 @@ El elemento expone `get()`, `set(valor)`, `reset()` y `focus()`.
 
 <!--@include: ../partials/textarea/eventos.md-->
 
-> Los eventos nativos del DOM (`input`, `change`, `focus`, `blur`) **burbujean automáticamente** al host desde el Shadow DOM. No se re-emiten como eventos custom.
+> Los eventos del DOM que cruzan el shadow boundary llegan al host: `input`, `keydown`/`keyup` y `focus`/`blur` (estos dos no burbujean, pero el navegador los re-apunta al host). **`change` no cruza**: no es `composed`, así que `cu-textarea.addEventListener('change', …)` nunca se dispara. Para reaccionar a cada edición usá `update:modelValue` (o el método `get()` al enviar).
 
 ## Slots
 

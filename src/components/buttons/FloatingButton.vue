@@ -3,6 +3,21 @@ import { type PropType } from "vue";
 import { isSize, isVariantFull } from '@/utils/validators'
 import Button from "./Button.vue";
 
+/**
+ * Posición del FAB sin props: quien consume define `--cu-fab-bottom` /
+ * `--cu-fab-right` en el host (o en `:root`) y el botón usa ese margen; el
+ * default es el spacing del tema. Va inline porque en el custom element el
+ * `<button>` vive en el shadow: una clase/`bottom` en el host no lo alcanza,
+ * mientras que las custom properties sí heredan.
+ *
+ * La zona segura de iOS (home indicator, esquinas redondeadas) se suma siempre;
+ * en desktop `env()` resuelve a 0 y el margen queda igual que antes.
+ */
+const fabStyles = {
+  bottom: 'calc(var(--cu-fab-bottom, var(--cu-space-lg)) + env(safe-area-inset-bottom, 0px))',
+  right: 'calc(var(--cu-fab-right, var(--cu-space-lg)) + env(safe-area-inset-right, 0px))',
+};
+
 const props = defineProps({
   /** Color semántico del FAB: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` */
   color: {
@@ -47,6 +62,7 @@ const props = defineProps({
     :disabled="props.disabled"
     :loading="props.loading"
     class="cu-floating-button"
+    :style="fabStyles"
   >
     <slot />
   </Button>
@@ -57,9 +73,12 @@ const props = defineProps({
    Button.vue, sin depender del orden de inyección de estilos. */
 .cu-floating-button.cu-floating-button {
   position: fixed;
-  bottom: var(--cu-space-lg);
-  right: var(--cu-space-lg);
-  z-index: 1000;
+  /* `bottom` y `right` van inline (`:style`) para que `--cu-fab-bottom/right`
+     funcione igual en Vue y en el custom element. */
+  /* Debajo de la capa de overlays (Modal 1000, SideOver 1100): con el mismo
+     `z-index` que el modal, un FAB declarado después en el DOM quedaba pintado y
+     clickeable por encima del diálogo abierto. */
+  z-index: 900;
   box-shadow: var(--cu-shadow-lg);
 }
 

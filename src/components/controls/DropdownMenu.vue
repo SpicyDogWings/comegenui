@@ -1,7 +1,10 @@
 <script setup lang="ts">
-import { ref, computed, type PropType } from 'vue';
+import { ref, computed, watch, nextTick, onMounted, onUnmounted, type PropType } from 'vue';
 import { isAlign, isColor, isPosition, isTextAlign, isVariantFull } from '@/utils/validators'
 import { textAlignStyle } from '@/utils/textAlign'
+import { useUniqueId } from '@/utils/uniqueId'
+import { useMenuNavigation } from "@/composables/useMenuNavigation";
+import { detectDropdownNesting } from "@/utils/dropdownNesting";
 import Dropdown from "../overlay/Dropdown.vue";
 import Button from "../buttons/Button.vue";
 import MenuOption from "./MenuOption.vue";
@@ -62,13 +65,134 @@ const props = defineProps({
 const emit = defineEmits(["open", "close"]);
 const dropdownRef = ref<InstanceType<typeof Dropdown> | null>(null);
 
-const itemStyle = computed(() => textAlignStyle(props.textAlign));
+// Un `position`/`align`/`textAlign` fuera del set no tiene rama en el panel: quedaba
+// posicionado en el flujo (ni abajo ni arriba) en vez de en el borde del trigger. Los
+// validadores sólo avisan, así que el componente cae al default documentado.
+const safePosition = computed(() => (isPosition(props.position) ? props.position : "bottom"));
+const safeAlign = computed(() => (isAlign(props.align) ? props.align : "start"));
+const safeTextAlign = computed(() => (isTextAlign(props.textAlign) ? props.textAlign : "left"));
+
+const itemStyle = computed(() => textAlignStyle(safeTextAlign.value));
+
+// `items` puede llegar de datos (una API, un JSON): una entrada nula o que no sea
+// objeto rompía el render entero (el menú desaparecía, trigger incluido). Se
+// descartan las entradas inválidas en vez de romper el componente.
+const menuItems = computed<DropdownItem[]>(() =>
+  (Array.isArray(props.items) ? props.items : []).filter(
+    (item): item is DropdownItem => !!item && typeof item === "object",
+  ),
+);
+
+// Patrón menu button: el panel es `role="menu"` (lo pone `Dropdown`), el trigger lo
+// referencia con `aria-controls` y las filas son `menuitem`. El id es único por
+// instancia: `useId` de Vue se repite entre custom elements (cada uno monta su app).
+const uid = useUniqueId("cu-dropdown-menu");
+const panelId = `${uid}-menu`;
+const isOpen = computed(() => dropdownRef.value?.isOpen() ?? false);
+
+const toggleAria = computed(() => ({
+  'aria-haspopup': 'menu',
+  'aria-expanded': isOpen.value ? 'true' : 'false',
+  'aria-controls': panelId,
+}));
 
 function handleItemClick(item: DropdownItem) {
   if (item.disabled || item.divider) return;
   if (item.onClick) item.onClick();
   dropdownRef.value?.close();
 }
+
+// ── Teclado del menú ──
+// Con `role="menu"` el teclado es parte del contrato: flechas/Home/End recorren las
+// filas, las letras buscan por label (typeahead), Tab sale del menú (y lo cierra) y
+// Escape lo cierra devolviendo el foco al trigger (eso último lo hace `Popover`).
+// La parada de tabulación es el trigger; dentro del panel se usa roving tabindex
+// (una sola fila con `tabindex="0"`, la enfocada).
+
+/** Raíz del popover: contiene el trigger y el panel (el `$el` de `Dropdown`). */
+function rootEl(): HTMLElement | null {
+  return (dropdownRef.value?.$el as HTMLElement | null) ?? null;
+}
+
+function panelEl(): HTMLElement | null {
+  return (rootEl()?.querySelector(".cu-popover-panel") as HTMLElement | null) ?? null;
+}
+
+/**
+ * Índice (dentro de `menuItems`) de cada fila elegible, en el mismo orden que el DOM.
+ * Es lo que permite el roving tabindex sin depender del slot: la fila activa es la
+ * única con `tabindex="0"`, así Tab entra al menú y sale de él en la posición correcta.
+ */
+const enabledItemIndices = computed(() =>
+  menuItems.value
+    .map((item, index) => ({ item, index }))
+    .filter(({ item }) => !item.divider && !item.disabled)
+    .map(({ index }) => index),
+);
+
+// El teclado y el roving tabindex son los mismos que los del `Dropdown` con `items`:
+// `useMenuNavigation` es dueño de las filas, el typeahead y el cierre por `Tab`.
+const nav = useMenuNavigation({
+  root: rootEl,
+  panel: panelEl,
+  rowSelector: ".cu-dropdown-item",
+  enabledIndices: enabledItemIndices,
+  isOpen: () => isOpen.value,
+  close: () => dropdownRef.value?.close(),
+});
+
+// Abrir con el teclado deja el foco en la primera/última fila (patrón menu button).
+// Abrir por click o por API no mueve el foco: el usuario está en el trigger o en otro lado.
+let openIntent: "first" | "last" | null = null;
+
+function onToggleKeydown(e: KeyboardEvent) {
+  if (props.disabled) return;
+  const isArrow = e.key === "ArrowDown" || e.key === "ArrowUp";
+  if (isOpen.value) {
+    if (!isArrow) return;
+    e.preventDefault();
+    const rows = nav.enabledRows();
+    if (rows.length > 0) nav.focusRow(rows, e.key === "ArrowUp" ? rows.length - 1 : 0);
+    return;
+  }
+  if (!isArrow && e.key !== "Enter" && e.key !== " ") return;
+  openIntent = e.key === "ArrowUp" ? "last" : "first";
+  if (isArrow) {
+    e.preventDefault();
+    dropdownRef.value?.open();
+  }
+}
+
+watch(isOpen, async (open) => {
+  if (!open) {
+    openIntent = null;
+    nav.reset();
+    return;
+  }
+  const intent = openIntent;
+  openIntent = null;
+  await nextTick();
+  const rows = nav.enabledRows();
+  if (rows.length === 0) return;
+  if (intent) nav.focusRow(rows, intent === "last" ? rows.length - 1 : 0);
+  else nav.activeRow.value = 0;
+});
+
+/**
+ * Submenú: cuando el menú se pinta dentro del panel de otro dropdown, el trigger lo
+ * dibuja el motor (`Dropdown`) como fila de menú. Su propio `Button` rompería la
+ * cascada y dejaría un control suelto dentro del `menu` padre.
+ */
+const nested = ref(false);
+
+onMounted(() => {
+  nav.attach(rootEl());
+  nested.value = detectDropdownNesting(rootEl()).nested;
+});
+onUnmounted(() => {
+  nav.detach();
+  nav.reset();
+});
 
 defineExpose({
   /** Abre el menú. */
@@ -89,22 +213,25 @@ defineExpose({
     :variant="variant"
     :disabled="disabled"
     :label="label"
-    :position="position"
-    :align="align"
+    :position="safePosition"
+    :align="safeAlign"
     :offset="offset"
     :fixed="fixed"
+    :panel-id="panelId"
     @open="emit('open')"
     @close="emit('close')"
   >
-    <template #toggle="{ toggle, isOpen }">
-      <!-- Contenido del trigger; scoped: { toggle, isOpen }. -->
-      <slot name="toggle" :toggle="toggle" :isOpen="isOpen">
+    <template v-if="!nested" #toggle="{ toggle, isOpen }">
+      <!-- Contenido del trigger; scoped: { toggle, isOpen, aria }. -->
+      <slot name="toggle" :toggle="toggle" :isOpen="isOpen" :aria="toggleAria">
         <Button
           :color="color"
           :variant="variant"
           :disabled="disabled"
+          v-bind="toggleAria"
           class="cu-dropdown-toggle"
           @click="toggle"
+          @keydown="onToggleKeydown"
         >
           {{ label || "Menú" }}
           <svg
@@ -119,6 +246,8 @@ defineExpose({
             stroke-linejoin="round"
             class="cu-dropdown-chevron"
             :class="{ 'cu-dropdown-chevron--open': isOpen }"
+            aria-hidden="true"
+            focusable="false"
           >
             <path d="m18 15-6-6-6 6"/>
           </svg>
@@ -126,8 +255,8 @@ defineExpose({
       </slot>
     </template>
     <template #default>
-      <template v-if="items && items.length > 0">
-        <template v-for="(item, i) in items" :key="i">
+      <template v-if="menuItems.length > 0">
+        <template v-for="(item, i) in menuItems" :key="i">
           <hr v-if="item.divider" class="cu-dropdown-divider" />
           <MenuOption
             v-else
@@ -140,6 +269,9 @@ defineExpose({
             :target="item.target"
             :disabled="item.disabled"
             :selected="!!item.selected"
+            :role="item.selected ? 'menuitemcheckbox' : 'menuitem'"
+            :aria-checked="item.selected ? 'true' : undefined"
+            :tabindex="nav.itemTabindex(i)"
             class="cu-dropdown-item"
             :style="itemStyle"
             @click="handleItemClick(item)"
@@ -170,9 +302,17 @@ defineExpose({
      `text-align` solo no mueve nada dentro de un `Button` flex. Default: `flex-start`. */
 }
 
+/* Item deshabilitado: la fila es un Button deshabilitado (alpha-disabled 0.7) y esa
+   opacidad deja el texto por debajo de 4.5:1 en varios temas (nord-snow-storm,
+   catppuccin-latte…). Se reemplaza por el color atenuado medido. */
+.cu-dropdown-item.cu-button--disabled {
+  opacity: 1;
+  color: var(--cu-color-neutral-text-muted);
+}
+
 .cu-dropdown-icon {
   transform: translateY(2px);
-  opacity: 0.6;
+  color: var(--cu-color-neutral-text-subtle);
 }
 
 .cu-dropdown-chevron {

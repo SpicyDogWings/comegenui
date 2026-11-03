@@ -110,7 +110,11 @@ function onUpdateQuery(valor: string) {
 ## Compacto
 
 `compact` deja la lista sólo con iconos (o la inicial del label); `compactable` muestra el
-botón que alterna compacto/expandido y avisa con `toggle-compact`.
+botón que alterna compacto/expandido y avisa con `toggle-compact`. En compacto los submenús
+abren un flyout que sigue el patrón **menu button**: el trigger icon-only lleva
+`aria-haspopup="menu"`, `aria-expanded` y `aria-controls` (mientras el panel está abierto), el
+panel es `role="menu"` y sus filas `role="menuitem"` con roving tabindex y teclado de menú
+(`↓`/`↑`/`Home`/`End`/typeahead; `↓`/`↑` sobre el trigger abren y enfocan una fila).
 
 ```vue
 <script setup lang="ts">

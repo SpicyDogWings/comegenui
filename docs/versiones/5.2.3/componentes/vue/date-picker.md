@@ -318,10 +318,13 @@ function demo() {
 
 ## Comportamiento
 
-- **Trigger:** botón con ícono de calendario + fecha formateada (o placeholder) + chevron que rota al abrir.
-- **Panel:** box con el calendario adentro (ancho ~280px, o ~330px cuando `year-navigation` está activo — el header con botones de año necesita más espacio) y footer con "Hoy" y "Limpiar" (configurables con `today-button` y `clearable`). En `mode="range"` con `dual-calendar` el panel mide ~580px (o ~700px con year-navigation) y muestra dos meses.
-- **Fuera del rango:** los días deshabilitados no se pueden elegir; "Hoy" y la selección manual respetan `min`/`max` del calendario.
+- **Trigger:** botón con ícono de calendario + fecha formateada (o placeholder) + chevron que rota al abrir. Expone `aria-haspopup="dialog"` y `aria-expanded` según el panel; con `label`, su nombre accesible es `"<label>: <valor>"`.
+- **Panel:** box con el calendario adentro (ancho ~280px, o ~330px cuando `year-navigation` está activo — el header con botones de año necesita más espacio) y footer con "Hoy" y "Limpiar" (configurables con `today-button` y `clearable`). En `mode="range"` con `dual-calendar` el panel mide ~580px (o ~700px con year-navigation) y muestra dos meses. El panel se anuncia como `role="dialog"` (adentro hay un grid, no menuitems).
+- **Mes inicial:** en `single` abre en el mes de `model-value`; en `range` en el mes de `start-date` (o `end-date` si no hay inicio). Sin valor, el mes actual. Con `dual-calendar` los dos meses se recortan a `min`/`max`.
+- **Fuera del rango:** los días deshabilitados no se pueden elegir; "Hoy" y la selección manual respetan `min`/`max` del calendario. Si hoy queda fuera de `min`/`max` (o cae en un día deshabilitado), el botón "Hoy" aparece deshabilitado y no emite nada.
 - **Cierre:** al elegir un día en `single`, ir a "Hoy" o limpiar, el panel se cierra. En `range` queda abierto entre el primer y el segundo click para ver el resaltado. También cierra con click afuera o `Escape` (lo maneja el dropdown interno).
+- **Foco:** al cerrarse el panel, si el foco estaba adentro (un día, "Hoy", "Limpiar") vuelve al trigger; `Escape` también deja el foco en el trigger.
+- **Teclado:** el calendario interno se maneja con flechas, `Home`/`End` y `PageUp`/`PageDown` (ver [teclado y accesibilidad de `Calendar`](calendar.md#teclado-y-accesibilidad)).
 
 ## Nota de implementación
 

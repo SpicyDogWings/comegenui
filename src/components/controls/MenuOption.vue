@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { PropType } from "vue";
+import { computed, type PropType } from "vue";
+import DOMPurify from "dompurify";
 import { isColor, isTarget, isVariantFull } from "@/utils/validators";
 import Button from "../buttons/Button.vue";
 import LucideCheck from "@/components/icons/LucideCheck.vue";
@@ -43,6 +44,12 @@ const props = defineProps({
   /** Muestra el check de lucide al final de la fila */
   selected: { type: Boolean, required: false, default: false },
 });
+
+// El ícono es HTML/SVG del consumidor: se sanitiza antes de `v-html` (mismo
+// criterio que `Tabs`). DOMPurify conserva los SVG válidos y elimina `<script>`,
+// handlers `on*` y URLs peligrosas, que ejecutarían en el documento anfitrión.
+const safeIcon = computed(() => (props.icon ? DOMPurify.sanitize(props.icon) : undefined));
+
 </script>
 
 <template>
@@ -54,7 +61,7 @@ const props = defineProps({
     :disabled="props.disabled"
   >
     <span class="cu-menu-option-main">
-      <span v-if="props.icon" v-html="props.icon" :class="props.iconClass"></span>
+      <span v-if="safeIcon" v-html="safeIcon" :class="props.iconClass"></span>
       <span v-if="props.label">{{ props.label }}</span>
     </span>
     <LucideCheck v-if="props.selected" class="cu-menu-option-check" aria-hidden="true" />

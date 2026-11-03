@@ -54,9 +54,7 @@ Los valores de `color` / `variant` / `layout` están en «Atributos» / «Props�
 ### Eventos
 
 <!-- @api:eventos -->
-| Evento | Payload (`e.detail`) | Descripción |
-| ------ | ------ | ------ |
-| `click` | — | — |
+Ninguno.
 <!-- /@api:eventos -->
 
 ### Slots

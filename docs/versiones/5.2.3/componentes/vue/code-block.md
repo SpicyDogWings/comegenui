@@ -90,6 +90,13 @@ function greet(user: User): string {
 </template>
 ```
 
+## Accesibilidad
+
+El `<pre>` scrollea horizontalmente y es **focusable por teclado** (`tabindex="0"`): con foco se
+puede recorrer una línea larga con las flechas. Expone `role="region"` con nombre accesible
+`Bloque de código` (o `Bloque de código (<language>)` si hay lenguaje). El botón de copiar tiene
+nombre propio (`Copiar`) y la gutter de números de línea es `aria-hidden` (no se lee dos veces).
+
 ## Props
 
 <!--@include: ../../partials/code-block/props.md-->

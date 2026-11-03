@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, watch, type PropType } from 'vue'
+import { ref, computed, getCurrentInstance, onMounted, onUnmounted, watch, type PropType } from 'vue'
 import { isNavbarResponsiveMode, isNavbarSearchMode, isPosition } from '@/utils/validators'
 import { useRoute } from 'vue-router'
 import SideOver from '@/components/overlay/SideOver.vue'
@@ -64,6 +64,7 @@ const emit = defineEmits<{ (e: 'search', query: string): void }>()
 
 const {
   query,
+  navRef,
   displayItems,
   highlightTarget,
   activeItem,
@@ -94,20 +95,54 @@ function onChangeTiny(e: MediaQueryListEvent) {
   isTiny.value = e.matches
 }
 
-onMounted(() => {
-  if (!props.responsive) return
+// El `max-width: 480px` se observa sólo en modo responsive. Con un watch (y no
+// sólo `onMounted`) activar `responsive` después de montar también engancha el
+// listener: antes el modo `auto` se quedaba en lateral en pantallas chicas.
+function syncTinyWatcher(responsive: boolean) {
+  mqTiny?.removeEventListener('change', onChangeTiny)
+  mqTiny = null
+  if (!responsive || typeof window.matchMedia !== 'function') {
+    isTiny.value = false
+    return
+  }
   mqTiny = window.matchMedia('(max-width: 480px)')
   isTiny.value = mqTiny.matches
   mqTiny.addEventListener('change', onChangeTiny)
-})
+}
+
+watch(() => props.responsive, syncTinyWatcher)
+onMounted(() => syncTinyWatcher(props.responsive))
 
 onUnmounted(() => {
   mqTiny?.removeEventListener('change', onChangeTiny)
 })
 
-const sideOverFullscreen = computed(() =>
-  props.responsiveMode === 'fullscreen' || (props.responsiveMode === 'auto' && isTiny.value),
+// Un valor fuera del set no tiene clase de posición: el panel quedaba sin
+// `top/left` (en el flujo, tapando la página). Cae al borde seguro.
+const safeSideOverPosition = computed(() =>
+  isPosition(props.sideOverPosition) ? props.sideOverPosition : 'left',
 )
+
+const safeResponsiveMode = computed(() =>
+  isNavbarResponsiveMode(props.responsiveMode) ? props.responsiveMode : 'auto',
+)
+
+const sideOverFullscreen = computed(
+  () =>
+    safeResponsiveMode.value === 'fullscreen' ||
+    (safeResponsiveMode.value === 'auto' && isTiny.value),
+)
+
+// El panel se teleporta a `body` en Vue (overlay real, fuera del layout del
+// consumidor). Dentro de un custom element el teleport lo saca del shadow root
+// y pierde los estilos scoped del componente: quedaba `position: static`, sin
+// fondo ni scrim, en el flujo de la página. Ahí se renderiza en su lugar.
+const instance = getCurrentInstance()
+function panelTeleports(): boolean {
+  const el = instance?.vnode.el as Node | null
+  const root = el?.getRootNode?.()
+  return !(typeof ShadowRoot !== 'undefined' && root instanceof ShadowRoot)
+}
 
 let route: { path: string } | null = null
 try {
@@ -119,7 +154,7 @@ watch(() => route?.path, () => { open.value = false })
 </script>
 
 <template>
-  <div class="cu-navbar-responsive" :class="{ 'is-responsive': responsive }">
+  <div ref="navRef" class="cu-navbar-responsive" :class="{ 'is-responsive': responsive }">
     <button
       v-if="responsive"
       type="button"
@@ -134,9 +169,11 @@ watch(() => route?.path, () => { open.value = false })
     <SideOver
       v-if="responsive"
       v-model:model-value="open"
-      :position="props.sideOverPosition"
+      :position="safeSideOverPosition"
       size="264px"
       :fullscreen="sideOverFullscreen"
+      :teleport="panelTeleports()"
+      aria-label="Menú"
     >
       <NavbarList
         :items="displayItems"

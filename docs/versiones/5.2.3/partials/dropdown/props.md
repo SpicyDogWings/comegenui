@@ -14,6 +14,7 @@
 | `trigger` | `"click" \| "hover"` | `'click'` | — |
 | `offset` | `number` | `4` | — |
 | `panelWidth` | `string` | `""` | — |
+| `panelRole` | `string` | `"menu"` | Rol ARIA del panel: `menu` (default), `dialog` (contenido propio, como el date-picker), `listbox`… |
 | `cooldown` | `boolean` | `false` | — |
 | `cooldownKey` | `number` | `0` | — |
 | `delay` | `number` | `2000` | — |

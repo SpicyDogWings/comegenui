@@ -19,7 +19,8 @@ offset y delay configurables, y contenido simple o enriquecido por slot.
 
 ## Colores
 
-`color` tiñe el fondo del tooltip; el texto se pinta con el color de superficie del tema.
+`color` tiñe el fondo del tooltip; el texto se pinta con el color de superficie del tema. Un valor
+fuera del set cae a `neutral` (no queda un panel sin fondo con texto invisible).
 
 ```html
 <cu-tooltip text="primary" color="primary"><cu-button variant="outlined">primary</cu-button></cu-tooltip>
@@ -72,6 +73,7 @@ Sin `text` (o además de él) podés pasar HTML por el slot `content`, que tiene
 ## Delay y deshabilitado
 
 `delay` es el tiempo en ms antes de mostrarlo al hacer hover (default `200`); `disabled` lo apaga.
+El tooltip es puramente visual: mostrarse u ocultarse **nunca mueve el foco**.
 
 ```html
 <cu-tooltip text="Aparece casi al instante" delay="0">
@@ -86,6 +88,20 @@ Sin `text` (o además de él) podés pasar HTML por el slot `content`, que tiene
 ```
 
 <!-- demo:tooltip-delay-disabled -->
+
+## Accesibilidad
+
+El tooltip aparece al pasar el puntero **y también al enfocar** el elemento: al enfocar se muestra
+al instante (sin esperar el `delay` de hover) y se oculta al salir el foco o al presionar `Escape`.
+Mostrarse u ocultarse **nunca mueve el foco**. El panel lleva `role="tooltip"`.
+
+Si no hay `text` ni slot `content` con contenido, no se muestra nada: no aparece un panel vacío.
+
+Mientras el panel está abierto, el trigger recibe `aria-description` con el texto del tooltip (para
+el slot `content`, su texto aplanado), así el contenido también llega a quien usa lector de
+pantalla; al cerrarse se restaura el valor anterior del atributo (o se quita si no había). Se usa
+`aria-description` y no `aria-describedby` porque los IDREF de ARIA no cruzan el shadow root del
+custom element: el panel vive en el shadow y el trigger en la luz del host.
 
 ## Atributos
 

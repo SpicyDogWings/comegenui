@@ -94,6 +94,11 @@ Los bundles **no traen tokens**: definí `[data-theme="…"] { --cu-color-*: …
    (los bundles no incluyen tokens).
 3. Usalo: `<html data-theme="mi-marca">`.
 
+Además de los colores semánticos, un tema puede declarar `default`, `strong` y `focus` (los
+colores de borde y del anillo de foco). No hace falta calcular el contraste a mano: el generador
+los ajusta contra `surface` hasta 3:1 (4.5:1 para `strong`), como explica
+[Configuración](/configuracion#bordes-y-foco).
+
 El mismo `data-theme` sirve para pisar un tema existente en un rincón de la página: definí el
 bloque de tokens que quieras.
 

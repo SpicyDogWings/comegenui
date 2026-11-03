@@ -1,5 +1,5 @@
 /*! comegenui v5.2.3 · CuAvatar (cu-avatar) · esm-shared · Vue externo (bare import) */
-import { computed, createBlock, createCommentVNode, createElementBlock, defineComponent, defineCustomElement, normalizeClass, normalizeStyle, openBlock, renderSlot, toDisplayString, withCtx } from "vue";
+import { computed, createBlock, createCommentVNode, createElementBlock, defineComponent, defineCustomElement, normalizeClass, normalizeStyle, openBlock, ref, renderSlot, toDisplayString, watch, withCtx } from "vue";
 //#region src/utils/comegen-element.ts
 var BUILD_META = {
 	"version": "5.2.3",
@@ -37,6 +37,45 @@ function attachMeta(ctor, meta) {
 /** `aria-describedby` → `ariaDescribedby` (mismo algoritmo que Vue). */
 function camelize(name) {
 	return name.replace(/-(\w)/g, (_, char) => char ? char.toUpperCase() : "");
+}
+/** `Boolean`, `{ type: Boolean }` o `{ type: [String, Boolean] }` → tipos efectivos. */
+function typesOf(option) {
+	let raw = option;
+	if (typeof option === "object" && option !== null && !Array.isArray(option) && "type" in option) raw = option.type;
+	const list = Array.isArray(raw) ? raw : [raw];
+	return {
+		boolean: list.includes(Boolean),
+		number: list.includes(Number),
+		string: list.includes(String)
+	};
+}
+/** Tipos declarados por prop, en camelCase (cacheado por definición). */
+var PROP_TYPES = /* @__PURE__ */ new WeakMap();
+function propTypes(def) {
+	const cached = PROP_TYPES.get(def);
+	if (cached) return cached;
+	const map = /* @__PURE__ */ new Map();
+	const props = def.props;
+	if (props && !Array.isArray(props)) for (const [key, option] of Object.entries(props)) map.set(camelize(key), typesOf(option));
+	PROP_TYPES.set(def, map);
+	return map;
+}
+/**
+* Atributo del host → valor de la prop. Un atributo llega siempre como string:
+* `_setProp` con el string crudo dejaba `disabled="false"` deshabilitado (el
+* string es truthy) y `model-value="false"` marcado. Se castea con la misma
+* regla que HTML/Vue: un atributo Boolean presente es `true`, salvo el texto
+* explícito `"false"` (y `""`/`"true"` → `true`); Number se parsea. Sin tipos
+* declarados (`props: ['value']`) no se adivina: el valor queda string.
+*/
+function castPropValue(value, types) {
+	if (!types) return value;
+	if (types.boolean) return value.trim().toLowerCase() !== "false";
+	if (types.number && !types.string) {
+		const parsed = parseFloat(value);
+		if (!Number.isNaN(parsed)) return parsed;
+	}
+	return value;
 }
 /** Props declaradas por el componente, en camelCase (cacheado por definición). */
 var PROP_KEYS = /* @__PURE__ */ new WeakMap();
@@ -120,12 +159,7 @@ function makeElement(component, meta) {
 		_applyProp(propKey, value, camelKey) {
 			const self = this;
 			if (value !== null) {
-				let parsed = value;
-				if (self._numberProps?.[camelKey]) {
-					const n = parseFloat(value);
-					if (!Number.isNaN(n)) parsed = n;
-				}
-				self._setProp(propKey, parsed, false, true);
+				self._setProp(propKey, castPropValue(value, propTypes(self._def).get(camelKey)), false, true);
 				return;
 			}
 			if (!Object.prototype.hasOwnProperty.call(self._props, propKey)) return;
@@ -397,7 +431,7 @@ var NAVBAR_RESPONSIVE_MODES = [
 var NAVBAR_SEARCH_MODES = ["filter", "scroll"];
 var SELECT_SEARCH_MODES = ["startsWith", "includes"];
 var CELLS_IMPORTER_INPUT_TYPES = ["input", "zone"];
-oneOf(COLORS);
+var isColor = oneOf(COLORS);
 oneOf(COLORS_BASE);
 oneOf(VARIANTS);
 oneOf(VARIANTS_FULL);
@@ -476,31 +510,27 @@ var Avatar_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineCom
 			return Math.abs(hash);
 		}
 		const props = __props;
-		const ALL_COLORS = [
-			"primary",
-			"secondary",
-			"success",
-			"warning",
-			"danger",
-			"neutral"
-		];
-		const resolvedColors = computed(() => {
-			if (props.color) {
-				const idx = ALL_COLORS.indexOf(props.color);
-				return {
-					bg: props.color,
-					gradient: ALL_COLORS[(idx + 1) % ALL_COLORS.length]
-				};
-			}
-			const idx = hashString((props.initials || props.name || "x").toLowerCase()) % PALETTE.length;
-			return {
-				bg: PALETTE[idx],
-				gradient: PALETTE[(idx + 1) % PALETTE.length]
-			};
+		/**
+		* Un `src` que no carga (404, host caído, URL vencida) dejaba el avatar vacío: el
+		* `<img>` roto ocupa el círculo y ni las iniciales ni el slot aparecían. Se
+		* recuerda el fallo y se vuelve al contenido alternativo; si cambia el `src`
+		* (otra URL del mismo avatar) se reintenta.
+		*/
+		const imageFailed = ref(false);
+		watch(() => props.src, () => {
+			imageFailed.value = false;
+		});
+		const showImage = computed(() => Boolean(props.src) && !imageFailed.value);
+		/** Una sola cosa se ve por vez: el slot sólo cuando no hay imagen ni iniciales. */
+		const showSlot = computed(() => !showImage.value && !props.initials);
+		const resolvedColor = computed(() => {
+			if (isColor(props.color)) return props.color;
+			const key = props.initials.toLowerCase() || "x";
+			return PALETTE[hashString(key) % PALETTE.length];
 		});
 		const avatarStyles = computed(() => ({
-			"--avatar-bg": `var(--cu-color-${resolvedColors.value.bg}, #6366f1)`,
-			"background-color": `var(--cu-color-${resolvedColors.value.bg}, #6366f1)`
+			"--avatar-bg": `var(--cu-color-${resolvedColor.value}-solid, #4338ca)`,
+			"--avatar-fg": "var(--cu-color-surface, #ffffff)"
 		}));
 		const sizeClass = computed(() => `cu-avatar--${props.size}`);
 		return (_ctx, _cache) => {
@@ -508,21 +538,22 @@ var Avatar_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineCom
 				class: normalizeClass(["cu-avatar", sizeClass.value]),
 				style: normalizeStyle(avatarStyles.value)
 			}, [
-				props.src ? (openBlock(), createElementBlock("img", {
+				showImage.value ? (openBlock(), createElementBlock("img", {
 					key: 0,
 					src: props.src,
 					class: "cu-avatar-img",
-					alt: ""
-				}, null, 8, _hoisted_1)) : props.initials ? (openBlock(), createElementBlock("span", _hoisted_2, toDisplayString(props.initials), 1)) : createCommentVNode("v-if", true),
-				createCommentVNode(" Iniciales o contenido del avatar. "),
-				renderSlot(_ctx.$slots, "default", {}, void 0, true)
+					alt: "",
+					onError: _cache[0] || (_cache[0] = ($event) => imageFailed.value = true)
+				}, null, 40, _hoisted_1)) : props.initials ? (openBlock(), createElementBlock("span", _hoisted_2, toDisplayString(props.initials), 1)) : createCommentVNode("v-if", true),
+				createCommentVNode(" Iniciales o contenido del avatar (alternativo a `initials` y `src`). "),
+				showSlot.value ? renderSlot(_ctx.$slots, "default", {}, void 0, true, 2) : createCommentVNode("v-if", true)
 			], 6);
 		};
 	}
 });
 //#endregion
-//#region src/components/information/Avatar.vue?vue&type=style&index=0&inline&scoped=116b6a17&lang.css
-var Avatar_vue_vue_type_style_index_0_inline_scoped_116b6a17_lang_default = "\n.cu-avatar[data-v-116b6a17] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  border-radius: 50%;\n  background-color: var(--avatar-bg);\n  color: white;\n  font-weight: var(--cu-font-weight-semibold);\n  flex-shrink: 0;\n}\n.cu-avatar--sm[data-v-116b6a17] {\n  width: 28px;\n  height: 28px;\n  font-size: var(--cu-font-size-xs);\n}\n.cu-avatar--md[data-v-116b6a17] {\n  width: 36px;\n  height: 36px;\n  font-size: var(--cu-font-size-sm);\n}\n.cu-avatar--lg[data-v-116b6a17] {\n  width: 48px;\n  height: 48px;\n  font-size: var(--cu-font-size-md);\n}\n.cu-avatar-initials[data-v-116b6a17] {\n  line-height: 1;\n}\n.cu-avatar-img[data-v-116b6a17] {\n  width: 100%;\n  height: 100%;\n  border-radius: 50%;\n  object-fit: cover;\n}\n";
+//#region src/components/information/Avatar.vue?vue&type=style&index=0&inline&scoped=4dfc2cd2&lang.css
+var Avatar_vue_vue_type_style_index_0_inline_scoped_4dfc2cd2_lang_default = "\n.cu-avatar[data-v-4dfc2cd2] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  /* Recorta las iniciales largas: sin esto el texto se sale del círculo. */\n  overflow: hidden;\n  border-radius: 50%;\n  background-color: var(--avatar-bg);\n  color: var(--avatar-fg);\n  font-weight: var(--cu-font-weight-semibold);\n  flex-shrink: 0;\n}\n.cu-avatar--sm[data-v-4dfc2cd2] {\n  width: 28px;\n  height: 28px;\n  font-size: var(--cu-font-size-xs);\n}\n.cu-avatar--md[data-v-4dfc2cd2] {\n  width: 36px;\n  height: 36px;\n  font-size: var(--cu-font-size-sm);\n}\n.cu-avatar--lg[data-v-4dfc2cd2] {\n  width: 48px;\n  height: 48px;\n  font-size: var(--cu-font-size-md);\n}\n.cu-avatar-initials[data-v-4dfc2cd2] {\n  line-height: 1;\n}\n.cu-avatar-img[data-v-4dfc2cd2] {\n  width: 100%;\n  height: 100%;\n  border-radius: 50%;\n  object-fit: cover;\n}\n";
 //#endregion
 //#region \0plugin-vue:export-helper
 var _plugin_vue_export_helper_default = (sfc, props) => {
@@ -532,7 +563,7 @@ var _plugin_vue_export_helper_default = (sfc, props) => {
 };
 //#endregion
 //#region src/components/information/Avatar.vue
-var Avatar_default = /*#__PURE__*/ _plugin_vue_export_helper_default(Avatar_vue_vue_type_script_setup_true_lang_default, [["styles", [Avatar_vue_vue_type_style_index_0_inline_scoped_116b6a17_lang_default]], ["__scopeId", "data-v-116b6a17"]]);
+var Avatar_default = /*#__PURE__*/ _plugin_vue_export_helper_default(Avatar_vue_vue_type_script_setup_true_lang_default, [["styles", [Avatar_vue_vue_type_style_index_0_inline_scoped_4dfc2cd2_lang_default]], ["__scopeId", "data-v-4dfc2cd2"]]);
 //#endregion
 //#region src/lib/information/avatar.ts
 var CuAvatar = defineComegenElement("cu-avatar", /* @__PURE__ */ defineComponent({

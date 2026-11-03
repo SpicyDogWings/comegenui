@@ -55,7 +55,8 @@ En Vue, importá `AuthorCard` de `@/components/information/AuthorCard.vue` (ver 
 
 ## Con imagen
 
-`src` reemplaza las iniciales generadas de `name` por una imagen.
+`src` reemplaza las iniciales generadas de `name` por una imagen. Si la imagen no carga, se ven
+las iniciales generadas.
 
 ```html
 <cu-author-card
@@ -66,6 +67,13 @@ En Vue, importá `AuthorCard` de `@/components/information/AuthorCard.vue` (ver 
 ```
 
 <!-- demo:author-card-con-imagen -->
+
+## Accesibilidad
+
+- El avatar es **decorativo** (`aria-hidden="true"`): el nombre ya está en texto al lado, así que
+  las iniciales no se vuelven a anunciar.
+- El rol usa el token atenuado del tema (`--cu-color-neutral-text-muted`), con contraste ≥ 4.5:1
+  en los 15 temas.
 
 ## Atributos
 

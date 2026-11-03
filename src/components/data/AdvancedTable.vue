@@ -11,6 +11,13 @@ import DropdownMenu from "../controls/DropdownMenu.vue";
 import { usePagination } from "../../composables/usePagination";
 import { useSearch } from "../../composables/useSearch";
 import { useTableData } from "../../composables/useTableData";
+import DOMPurify from "dompurify";
+
+// `ButtonConfig.icon` puede ser un SVG/HTML del consumidor: se sanitiza antes
+// de `v-html`, con el mismo criterio que `Tabs` (DOMPurify deja los SVG válidos
+// y elimina `<script>`, handlers `on*` y URLs peligrosas). Un icono como
+// componente (`typeof icon === "object"`) no pasa por acá.
+const sanitizeIcon = (html?: string) => (html ? DOMPurify.sanitize(html) : undefined);
 
 const validationStates = ref<Record<string, { success: boolean; error: string | null }>>({});
 
@@ -87,6 +94,7 @@ const getRowDropdownItems = (row: Record<string, any>) => {
     .filter(action => !isButtonHidden(action, row))
     .map(action => ({
       ...action,
+      icon: typeof action.icon === "string" ? sanitizeIcon(action.icon) : action.icon,
       disabled: isRowDisabled(row) || isButtonDisabled(action, row),
       color: action.color || undefined,
       onClick: () => { if (!isRowDisabled(row)) action.onClick?.(row); },
@@ -522,7 +530,7 @@ defineExpose({
             @click="(e: MouseEvent) => { if (button.onClick && !isCellDisabled(col, row) && !isButtonDisabled(button, row)) { e.stopPropagation(); button.onClick(row); } }"
           >
             <component :is="button.icon" v-if="typeof button.icon === 'object'" class="cu-advanced-table-icon" />
-            <span v-else-if="button.icon" v-html="button.icon" class="cu-advanced-table-icon"></span>
+            <span v-else-if="button.icon" v-html="sanitizeIcon(button.icon as string)" class="cu-advanced-table-icon"></span>
             <span v-if="button.label">{{ button.label }}</span>
           </Button>
         </div>

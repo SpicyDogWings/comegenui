@@ -91,7 +91,8 @@ tabla.data = [{ name: 'Ana' }];
 tabla.compact = true;                                  // boolean también por propiedad
 ```
 
-- Los booleanos funcionan por presencia: `disabled` = `true`, ausente = `false`.
+- Los booleanos se castean: el atributo presente es `true` (`disabled`, `disabled="true"`) y
+  `disabled="false"` es `false` (ver `references/gotchas.md` §3). Un Number por atributo se parsea.
 - Vue no tiene esta distinción: pasás todo por `:prop` (camelCase en JS, kebab en el template).
 - Para saber si una prop necesita JS, mirala en `references/api-por-componente.md`, en
   `references/componentes.md` o en la ficha del componente (columna "props por JS").

@@ -31,6 +31,13 @@ describe("Button — render y defaults", () => {
     expect(w.find("button").attributes("style")).toContain("--btn-solid: var(--cu-color-neutral-solid)");
   });
 
+  it("una variante inválida cae a ghost en vez de quedar sin estilos", () => {
+    const w = mount(Button, { props: { variant: "banana" as never } });
+    const classes = w.find("button").classes();
+    expect(classes).toContain("cu-button--ghost");
+    expect(classes.some((name) => name.includes("banana"))).toBe(false);
+  });
+
   it("un type inválido cae a button (el valor inválido de HTML es submit)", () => {
     const w = mount(Button, { props: { type: "foo" as never } });
     expect(w.find("button").attributes("type")).toBe("button");

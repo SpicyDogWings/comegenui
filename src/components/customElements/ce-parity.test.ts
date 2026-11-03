@@ -16,10 +16,12 @@ import ColorPickerCe from "@/components/customElements/form/ColorPicker.ce.vue";
 import TextareaCe from "@/components/customElements/form/Textarea.ce.vue";
 import SelectCe from "@/components/customElements/form/Select.ce.vue";
 import CommandPaletteCe from "@/components/customElements/overlay/CommandPalette.ce.vue";
+import ModalCe from "@/components/customElements/overlay/Modal.ce.vue";
 import SideOverCe from "@/components/customElements/overlay/SideOver.ce.vue";
 import TooltipCe from "@/components/customElements/overlay/Tooltip.ce.vue";
 import MarkdownCe from "@/components/customElements/markdown/Markdown.ce.vue";
 import TableCe from "@/components/customElements/data/AdvancedTable.ce.vue";
+import { defineComegenElement } from "@/utils/comegen-element";
 
 import Avatar from "@/components/information/Avatar.vue";
 import Collapse from "@/components/overlay/Collapse.vue";
@@ -28,7 +30,6 @@ import Autocomplete from "@/components/form/Autocomplete.vue";
 import Textarea from "@/components/form/Textarea.vue";
 import Select from "@/components/form/Select.vue";
 import CommandPalette from "@/components/overlay/CommandPalette.vue";
-import Tooltip from "@/components/overlay/Tooltip.vue";
 import Markdown from "@/components/markdown/Markdown.vue";
 import AdvancedTable from "@/components/data/AdvancedTable.vue";
 
@@ -225,6 +226,79 @@ describe("Select.ce", () => {
     expect(el.isOpen()).toBe(false);
     el.remove();
   });
+
+  it("expone el patrón combobox + listbox y no comparte ids entre instancias", async () => {
+    const a = mount(SelectCe, { props: { options } });
+    const b = mount(SelectCe, { props: { options } });
+    const trigger = a.find(".cu-select-toggle");
+    expect(trigger.attributes("role")).toBe("combobox");
+    expect(trigger.attributes("aria-haspopup")).toBe("listbox");
+
+    await trigger.trigger("click");
+    await a.find(".cu-select-toggle").trigger("click");
+    await flushPromises();
+    for (const w of [a, b]) {
+      const t = w.find(".cu-select-toggle");
+      if (t.attributes("aria-expanded") !== "true") {
+        await t.trigger("click");
+        await flushPromises();
+      }
+    }
+
+    const panel = a.find(".cu-popover-panel");
+    expect(panel.attributes("role")).toBe("listbox");
+    expect(a.find(".cu-select-toggle").attributes("aria-controls")).toBe(panel.attributes("id"));
+    expect(a.findAll(".cu-select-option")[0]!.attributes("role")).toBe("option");
+    expect(a.find(".cu-popover-panel").attributes("id")).not.toBe(
+      b.find(".cu-popover-panel").attributes("id"),
+    );
+  });
+
+  it("no re-emite `blur` como CustomEvent: el nativo del control ya llega al host", async () => {
+    const w = mount(SelectCe, { props: { options }, attachTo: document.body });
+    const recibidos: Event[] = [];
+    w.element.addEventListener("blur", (e: Event) => recibidos.push(e));
+
+    w.findComponent(Select).vm.$emit("blur");
+    await flushPromises();
+
+    expect(recibidos.filter((e) => e instanceof CustomEvent)).toHaveLength(0);
+    w.unmount();
+  });
+});
+
+describe("Popover · foco dentro de un custom element (shadow root)", () => {
+  // jsdom: dentro de un shadow root `activeElement` es `null` cuando el foco está afuera,
+  // y `Popover.restoreFocus` lo leía como "foco perdido" (robaba el foco al cerrar el
+  // panel, así que un Tab desde una opción no salía del control).
+  it("no roba el foco cuando el usuario se fue a otro control", async () => {
+    const tag = "cu-select-foco-test";
+    if (!customElements.get(tag)) customElements.define(tag, defineCustomElement(SelectCe));
+
+    const outside = document.createElement("button");
+    document.body.appendChild(outside);
+    const el = document.createElement(tag) as HTMLElement;
+    document.body.appendChild(el);
+    await flushPromises();
+
+    const trigger = el.shadowRoot!.querySelector(".cu-select-toggle") as HTMLElement;
+    (el as HTMLElement & { options: unknown[] }).options = [{ value: "a", label: "A" }];
+    await flushPromises();
+    trigger.focus();
+    trigger.click();
+    await flushPromises();
+    expect(el.shadowRoot!.querySelector(".cu-select-options")).not.toBeNull();
+
+    outside.focus();
+    // El componente difiere el cierre una tarea para que el foco termine de moverse.
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await flushPromises();
+
+    expect(document.activeElement).toBe(outside);
+    expect(el.shadowRoot!.querySelector(".cu-select-options")).toBeNull();
+    el.remove();
+    outside.remove();
+  });
 });
 
 describe("FileInput.ce", () => {
@@ -380,6 +454,23 @@ describe("Switch.ce", () => {
     expect(w.vm.get()).toBe(false);
     expect(w.find(".cu-switch-track").classes()).not.toContain("cu-switch--checked");
   });
+
+  it("emite `change` con el valor nuevo (boolean) en `detail`", async () => {
+    const w = mount(SwitchCe);
+    const changes: unknown[] = [];
+    // Sólo el CustomEvent del CE: jsdom deja escapar el `change` nativo del input
+    // fuera del shadow root; en Chromium `change` no es composed y no se filtra.
+    w.element.addEventListener("change", (e) => {
+      if (e instanceof CustomEvent) changes.push(e.detail);
+    });
+
+    await w.find('input[type="checkbox"]').setValue(true);
+    await flushPromises();
+    w.vm.reset();
+    await flushPromises();
+
+    expect(changes).toEqual([true, false]);
+  });
 });
 
 describe("Checkbox.ce", () => {
@@ -414,6 +505,23 @@ describe("Checkbox.ce", () => {
     expect(w.vm.get()).toBe(true);
     expect(w.find("input").element.checked).toBe(true);
     expect(updates).toEqual([true]);
+  });
+
+  it("emite `change` con el valor nuevo (boolean) en `detail`", async () => {
+    const w = mount(CheckboxCe);
+    const changes: unknown[] = [];
+    // Sólo el CustomEvent del CE: jsdom deja escapar el `change` nativo del input
+    // fuera del shadow root; en Chromium `change` no es composed y no se filtra.
+    w.element.addEventListener("change", (e) => {
+      if (e instanceof CustomEvent) changes.push(e.detail);
+    });
+
+    await w.find('input[type="checkbox"]').setValue(true);
+    await flushPromises();
+    w.vm.set(false);
+    await flushPromises();
+
+    expect(changes).toEqual([true, false]);
   });
 });
 
@@ -566,6 +674,40 @@ describe("Autocomplete.ce", () => {
     expect(w.vm.get()).toBe("María");
     expect(selects[0]?.label).toBe("María");
   });
+
+  it("expone el patrón combobox + listbox y no comparte ids entre instancias", async () => {
+    const items = [{ label: "Alfa" }, { label: "Beta" }];
+    const a = mount(AutocompleteCe, { props: { items } });
+    const b = mount(AutocompleteCe, { props: { items } });
+    expect(a.find("input").attributes("role")).toBe("combobox");
+    expect(a.find("input").attributes("aria-autocomplete")).toBe("list");
+    expect(a.find("input").attributes("aria-haspopup")).toBe("listbox");
+
+    a.vm.open();
+    b.vm.open();
+    await flushPromises();
+
+    const panel = a.find(".cu-popover-panel");
+    expect(panel.attributes("role")).toBe("listbox");
+    expect(a.find("input").attributes("aria-controls")).toBe(panel.attributes("id"));
+    expect(a.findAll(".cu-autocomplete-option")[0]!.attributes("role")).toBe("option");
+    expect(panel.attributes("id")).not.toBe(b.find(".cu-popover-panel").attributes("id"));
+  });
+
+  it("no re-emite `blur` como CustomEvent: el nativo del campo ya llega al host", async () => {
+    const w = mount(AutocompleteCe, {
+      props: { items: [{ label: "María" }] },
+      attachTo: document.body,
+    });
+    const recibidos: Event[] = [];
+    w.element.addEventListener("blur", (e: Event) => recibidos.push(e));
+
+    w.findComponent(Autocomplete).vm.$emit("blur");
+    await flushPromises();
+
+    expect(recibidos.filter((e) => e instanceof CustomEvent)).toHaveLength(0);
+    w.unmount();
+  });
 });
 
 describe("CommandPalette.ce", () => {
@@ -587,6 +729,10 @@ describe("CommandPalette.ce", () => {
 
 const SideOverElement = defineCustomElement(SideOverCe);
 customElements.define("cu-side-over-method-test", SideOverElement);
+
+// Ruta real de los bundles: `defineComegenElement` es quien reenvía al nodo
+// interno los atributos que no son props (p. ej. `aria-label`).
+defineComegenElement("cu-side-over-attr-test", SideOverCe);
 
 type SideOverTestElement = HTMLElement & {
   open: boolean;
@@ -651,22 +797,170 @@ describe("SideOver.ce", () => {
 
     el.remove();
   });
-});
 
-describe("Tooltip.ce", () => {
-  it("no manda el slot `content` si el host no lo trae (deja actuar al fallback `text`)", () => {
-    const w = mount(TooltipCe, { props: { text: "ayuda" } });
-    const inner = w.findComponent(Tooltip);
-    const slots = (inner.vm as unknown as { $slots: Record<string, unknown> }).$slots;
-    expect(inner.props("text")).toBe("ayuda");
-    expect(slots.content).toBeUndefined();
+  it("show()/close()/toggle() emiten update:open y close", async () => {
+    const el = await mountSideOverElement();
+    const events: Array<[string, unknown?]> = [];
+    el.addEventListener("update:open", (e) => events.push(["update:open", (e as CustomEvent).detail]));
+    el.addEventListener("close", () => events.push(["close"]));
+
+    el.show();
+    await flushPromises();
+    expect(events).toEqual([["update:open", true]]);
+
+    el.close();
+    await flushPromises();
+    expect(events).toEqual([["update:open", true], ["update:open", false], ["close"]]);
+
+    el.remove();
   });
 
-  it("reenvía el slot `content` del host", () => {
-    const w = mount(TooltipCe, { props: { text: "ayuda" }, slots: { content: "<i>rico</i>" } });
-    const inner = w.findComponent(Tooltip);
-    const slots = (inner.vm as unknown as { $slots: Record<string, unknown> }).$slots;
-    expect(slots.content).toBeDefined();
+  it("cerrar por el backdrop emite update:open(false) y un solo close", async () => {
+    const el = await mountSideOverElement();
+    el.show();
+    await flushPromises();
+
+    const events: Array<[string, unknown?]> = [];
+    el.addEventListener("update:open", (e) => events.push(["update:open", (e as CustomEvent).detail]));
+    el.addEventListener("close", () => events.push(["close"]));
+
+    el.shadowRoot!.querySelector(".cu-sideover-backdrop")!.dispatchEvent(
+      new MouseEvent("click", { bubbles: true }),
+    );
+    await flushPromises();
+
+    expect(events).toEqual([["update:open", false], ["close"]]);
+    expect(el.isOpen()).toBe(false);
+
+    el.remove();
+  });
+
+  it("el diálogo toma el título como nombre accesible y acepta aria-label del host", async () => {
+    const withTitle = await mountSideOverElement();
+    withTitle.setAttribute("open", "");
+    withTitle.setAttribute("title", "Filtros");
+    await flushPromises();
+    const dialog = withTitle.shadowRoot!.querySelector("[role='dialog']")!;
+    const title = withTitle.shadowRoot!.querySelector(".cu-sideover-title") as HTMLElement;
+    expect(dialog.getAttribute("aria-labelledby")).toBe(title.id);
+    withTitle.remove();
+
+    const labelled = document.createElement("cu-side-over-attr-test") as SideOverTestElement;
+    labelled.setAttribute("aria-label", "Panel de filtros");
+    document.body.appendChild(labelled);
+    await flushPromises();
+    labelled.show();
+    await flushPromises();
+    expect(
+      labelled.shadowRoot!.querySelector("[role='dialog']")!.getAttribute("aria-label"),
+    ).toBe("Panel de filtros");
+    labelled.remove();
+  });
+});
+
+// Ruta real del bundle: con shadow root no hay `$slots` en el CE, así que el
+// wrapper tiene que mirar la luz del host para decidir si reenvía `content`.
+defineComegenElement("cu-tooltip-slot-test", TooltipCe);
+
+function mountTooltipElement(html: string, attrs: Record<string, string> = {}) {
+  const el = document.createElement("cu-tooltip-slot-test") as HTMLElement;
+  el.innerHTML = html;
+  for (const [name, value] of Object.entries(attrs)) el.setAttribute(name, value);
+  document.body.appendChild(el);
+  return el;
+}
+
+async function openTooltip(el: HTMLElement) {
+  // El wrapper recién sabe si el host trae `content` después del mount/observer:
+  // se deja asentar ese render antes de disparar el hover.
+  await flushPromises();
+  const root = el.shadowRoot!.querySelector(".cu-popover") as HTMLElement;
+  root.dispatchEvent(new MouseEvent("mouseenter"));
+  await flushPromises();
+  await flushPromises();
+  return el.shadowRoot!.querySelector(".cu-popover-panel") as HTMLElement | null;
+}
+
+describe("Tooltip.ce", () => {
+  it("sin hijo `slot=content` no reenvía el slot (deja actuar al fallback `text`)", async () => {
+    const el = mountTooltipElement("<button>Guardar</button>", { text: "ayuda", delay: "0" });
+    const panel = await openTooltip(el);
+
+    expect(panel).not.toBeNull();
+    expect(panel!.textContent).toContain("ayuda");
+    expect(panel!.querySelector('slot[name="content"]')).toBeNull();
+    el.remove();
+  });
+
+  it("reenvía el slot `content` del host y lo proyecta en el panel", async () => {
+    const el = mountTooltipElement(
+      '<button>Guardar</button><span slot="content"><i>rico</i></span>',
+      { delay: "0" },
+    );
+    const panel = await openTooltip(el);
+
+    const outlet = panel!.querySelector('slot[name="content"]') as HTMLSlotElement | null;
+    expect(outlet).not.toBeNull();
+    const assigned = outlet!.assignedNodes();
+    expect(assigned).toHaveLength(1);
+    expect((assigned[0] as HTMLElement).querySelector("i")?.textContent).toBe("rico");
+    el.remove();
+  });
+
+  it("detecta el slot `content` agregado después del mount", async () => {
+    const el = mountTooltipElement("<button>Guardar</button>", { delay: "0" });
+    const span = document.createElement("span");
+    span.setAttribute("slot", "content");
+    span.textContent = "tardío";
+    el.appendChild(span);
+    await flushPromises();
+
+    const panel = await openTooltip(el);
+    const outlet = panel!.querySelector('slot[name="content"]') as HTMLSlotElement | null;
+    expect(outlet?.assignedNodes()).toHaveLength(1);
+    el.remove();
+  });
+
+  it("sin `text` ni slot `content` no abre un panel vacío", async () => {
+    const el = mountTooltipElement("<button>Guardar</button>", { delay: "0" });
+    const panel = await openTooltip(el);
+    expect(panel).toBeNull();
+    el.remove();
+  });
+
+  it("describe el trigger en la luz del host y restaura el aria-description del autor", async () => {
+    const el = mountTooltipElement('<button aria-description="propia">Guardar</button>', {
+      text: "Ayuda extra",
+      delay: "0",
+    });
+    const trigger = el.querySelector("button")!;
+
+    await openTooltip(el);
+    expect(trigger.getAttribute("aria-description")).toBe("Ayuda extra");
+
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+    await flushPromises();
+    expect(trigger.getAttribute("aria-description")).toBe("propia");
+    el.remove();
+  });
+
+  it("aplana el texto del slot `content` para la descripción", async () => {
+    const el = mountTooltipElement(
+      '<button>Guardar</button><span slot="content"><b>Rico</b> HTML</span>',
+      { delay: "0" },
+    );
+    await openTooltip(el);
+    expect(el.querySelector("button")!.getAttribute("aria-description")).toBe("Rico HTML");
+    el.remove();
+  });
+
+  it("un slot `content` sin texto no escribe la descripción", async () => {
+    const el = mountTooltipElement('<button>Guardar</button><span slot="content">   </span>', {
+      delay: "0",
+    });
+    await openTooltip(el);
+    expect(el.querySelector("button")!.hasAttribute("aria-description")).toBe(false);
+    el.remove();
   });
 });
 
@@ -720,5 +1014,87 @@ describe("AdvancedTable.ce (cu-table)", () => {
     expect(emits).not.toContain("row-click");
     expect(emits).not.toContain("row-dblclick");
     expect(emits).not.toContain("cell-click");
+  });
+});
+
+// Ruta real del bundle: con shadow root no hay `$slots` en el CE, así que el wrapper
+// mira la luz del host para decidir si reenvía `footer` (si lo reenvía vacío, pisa el
+// pie por defecto de `Modal.vue` y el modal queda sin botones).
+defineComegenElement("cu-modal-test", ModalCe);
+
+type ModalTestElement = HTMLElement & {
+  open: () => void;
+  close: () => void;
+  isOpen: () => boolean;
+};
+
+function mountModalElement(html = "", attrs: Record<string, string> = {}) {
+  const el = document.createElement("cu-modal-test") as ModalTestElement;
+  el.innerHTML = html;
+  for (const [name, value] of Object.entries(attrs)) el.setAttribute(name, value);
+  document.body.appendChild(el);
+  return el;
+}
+
+describe("Modal.ce", () => {
+  it("sin footer propio muestra el pie por defecto (persistent: Cancelar/Aceptar)", async () => {
+    const el = mountModalElement("<p>Contenido</p>", { title: "Editar", persistent: "" });
+    await flushPromises();
+    el.open();
+    await flushPromises();
+    await flushPromises();
+
+    expect(el.shadowRoot!.querySelector('slot[name="footer"]')).toBeNull();
+    const buttons = [...el.shadowRoot!.querySelectorAll(".cu-modal-footer button")];
+    expect(buttons.map((b) => b.textContent?.trim())).toEqual(["Cancelar", "Aceptar"]);
+    el.remove();
+  });
+
+  it("con footer del host lo proyecta y no agrega los botones por defecto", async () => {
+    const el = mountModalElement(
+      '<p>Contenido</p><div slot="footer"><button id="pie">Guardar</button></div>',
+      { title: "Editar" },
+    );
+    await flushPromises();
+    el.open();
+    await flushPromises();
+    await flushPromises();
+
+    expect(el.shadowRoot!.querySelector(".cu-modal-footer-default")).toBeNull();
+    const outlet = el.shadowRoot!.querySelector('slot[name="footer"]') as HTMLSlotElement;
+    expect(outlet).not.toBeNull();
+    const assigned = outlet.assignedElements();
+    expect(assigned).toHaveLength(1);
+    expect((assigned[0] as HTMLElement).querySelector("#pie")).not.toBeNull();
+    el.remove();
+  });
+
+  it("detecta el footer agregado después del mount", async () => {
+    const el = mountModalElement("<p>Contenido</p>", { title: "Tardío" });
+    await flushPromises();
+    expect(el.shadowRoot!.querySelector(".cu-modal-footer-default")).not.toBeNull();
+
+    const footer = document.createElement("div");
+    footer.setAttribute("slot", "footer");
+    footer.innerHTML = '<button id="pie">Guardar</button>';
+    el.appendChild(footer);
+    await flushPromises();
+    await flushPromises();
+
+    expect(el.shadowRoot!.querySelector(".cu-modal-footer-default")).toBeNull();
+    el.remove();
+  });
+
+  it("el `[autofocus]` del contenido sloteado recibe el foco al abrir", async () => {
+    const el = mountModalElement('<input id="af" autofocus><button id="otro">otro</button>', {
+      title: "Buscar",
+    });
+    await flushPromises();
+    el.open();
+    await flushPromises();
+    await flushPromises();
+
+    expect(document.activeElement).toBe(el.querySelector("#af"));
+    el.remove();
   });
 });

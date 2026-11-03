@@ -67,7 +67,10 @@ const items = ref([
 
 ## Posicionamiento
 
-`position` (`bottom` default, además `top`, `left` y `right`) y `align` (`start` default, `center`, `end`) eligen dónde se abre el panel y cómo queda alineado con el toggle; `offset` (default `4`) es la separación en píxeles y `fixed` usa `position: fixed`.
+`position` (`bottom` default, además `top`, `left` y `right`) y `align` (`start` default, `center`, `end`) eligen dónde se abre el panel y cómo queda alineado con el toggle; `offset` (default `4`) es la separación en píxeles y `fixed` usa `position: fixed`. Un valor fuera del set cae a `bottom` / `start` (y `textAlign` a `left`): sin ese fallback el panel quedaba en el flujo, sin pegarse al trigger.
+
+Contra el viewport el panel se **voltea** al lado opuesto si no entra y se **clampea** al borde: no
+genera scroll horizontal ni coordenadas negativas.
 
 ```vue
 <DropdownMenu label="bottom / start" position="bottom" align="start" :items="items" />
@@ -103,6 +106,9 @@ contenido **dentro** de cada item. El toggle no se ve afectado (su ancho lo defi
 
 `items` es el array declarativo: cada item puede llevar `label`, `icon` (SVG inline), `color`, `variant`, `disabled`, `divider`, `href` con `target`, `selected` (check al final) y `onClick`, que se dispara al elegirlo.
 
+> El HTML del `icon` se sanitiza con **DOMPurify** antes de inyectarse: los SVG válidos se
+> conservan y se eliminan `<script>`, handlers `on*` y URLs peligrosas.
+
 ```vue
 <script setup lang="ts">
 import DropdownMenu from "@/components/controls/DropdownMenu.vue";
@@ -129,13 +135,15 @@ const items = ref([
 
 ## Slots
 
-El slot `toggle` reemplaza el botón del trigger (scoped: `toggle` e `isOpen`); el slot por defecto rellena el panel y sólo se usa cuando `items` está vacío.
+El slot `toggle` reemplaza el botón del trigger (scoped: `toggle`, `isOpen` y `aria`, con
+`aria-haspopup`, `aria-expanded` y `aria-controls` listos para `v-bind`); el slot por defecto rellena
+el panel y sólo se usa cuando `items` está vacío.
 
 ```vue
 <template>
   <DropdownMenu color="primary">
-    <template #toggle="{ toggle, isOpen }">
-      <Button :color="isOpen ? 'danger' : 'primary'" variant="solid" @click="toggle">
+    <template #toggle="{ toggle, isOpen, aria }">
+      <Button :color="isOpen ? 'danger' : 'primary'" variant="solid" v-bind="aria" @click="toggle">
         {{ isOpen ? 'Cerrar menú' : 'Menú custom' }}
       </Button>
     </template>
@@ -150,9 +158,32 @@ El slot `toggle` reemplaza el botón del trigger (scoped: `toggle` e `isOpen`); 
 </template>
 ```
 
+## Submenús anidados
+
+Un `DropdownMenu` dentro del slot (panel) de otro es un **submenú**: su trigger deja de ser un
+`Button` y se dibuja como fila del menú padre (`role="menuitem"`, `aria-haspopup` y
+`aria-expanded`), y su panel abre en cascada a la derecha manteniendo el padre abierto. La detección
+cruza slots y shadow roots, así que el mismo HTML se comporta igual en Vue y dentro del custom
+element.
+
+```vue
+<script setup lang="ts">
+import DropdownMenu from "@/components/controls/DropdownMenu.vue";
+
+const editar = { label: "Editar", onClick: () => console.log("editar") };
+const compartir = { label: "Compartir", onClick: () => console.log("compartir") };
+</script>
+
+<template>
+  <DropdownMenu label="Acciones" :items="[editar]">
+    <DropdownMenu label="Más" :items="[compartir]" />
+  </DropdownMenu>
+</template>
+```
+
 ## Interacción
 
-`open` y `close` son los dos emits propios, y `open()`, `close()`, `toggle()` e `isOpen()` se llaman por `ref`.
+`open` y `close` son los dos emits propios, y `open()`, `close()`, `toggle()` e `isOpen()` se llaman por `ref`. El panel se anuncia como `role="menu"`; al cerrarse con `Escape` (o al elegir un item), el foco vuelve al trigger. `Escape` cierra sólo el menú **de arriba** (la pila de overlays es compartida con `Modal`, `SideOver` y los submenús: un menú con un submenú abierto cierra el submenú y deja el menú). Con `items` vacío el panel muestra el slot por defecto; las entradas nulas o que no son objetos se ignoran (no rompen el menú).
 
 ```vue
 <script setup lang="ts">
@@ -184,6 +215,38 @@ function controlar() {
 </template>
 ```
 
+
+## Teclado
+
+El trigger por defecto es un `<Button>`: <kbd>Enter</kbd> y <kbd>Espacio</kbd> abren el menú, y
+<kbd>Flecha abajo</kbd> / <kbd>Flecha arriba</kbd> lo abren con la primera / última fila enfocada.
+Las filas son `menuitem` y **no** son paradas de tabulación: el menú es una sola parada (el
+trigger) y adentro se navega con el teclado.
+
+| Tecla | Acción |
+|-------|--------|
+| <kbd>Flecha abajo</kbd> / <kbd>Flecha arriba</kbd> | Fila siguiente / anterior, salteando deshabilitadas, con vuelta al extremo |
+| <kbd>Home</kbd> / <kbd>End</kbd> | Primera / última fila habilitada |
+| Letras | Typeahead: enfoca la fila cuyo label empieza con lo tipeado |
+| <kbd>Enter</kbd> / <kbd>Espacio</kbd> | Activa la fila enfocada (acción o link) |
+| <kbd>Tab</kbd> | Cierra el menú y sigue el orden de tabulación |
+| <kbd>Escape</kbd> | Cierra el menú (sólo si es el overlay de arriba) y devuelve el foco al trigger |
+
+Con un trigger propio (slot `toggle`) el manejo de teclado del menú abre igual, pero la apertura
+inicial con flechas depende de tu trigger: aplicá `v-bind="aria"` y llamá a `toggle` desde tu
+control.
+
+## Accesibilidad
+
+- El trigger lleva `aria-haspopup="menu"`, `aria-expanded` y `aria-controls` con el `id` del panel.
+- El panel toma su **nombre accesible del trigger** (`aria-label`): un `role="menu"` sin nombre se
+  anunciaba como "menú" a secas. Un submenú anidado es `menuitem` con `aria-haspopup`/`aria-expanded`.
+- El panel es `role="menu"` y cada fila es `role="menuitem"`. Un item con `selected: true` se
+  anuncia como `menuitemcheckbox` marcado (`aria-checked="true"`); el check de lucide es decorativo.
+- Los divisores (`divider`) se anuncian como separador, y un item `disabled` se anuncia
+  deshabilitado: no recibe foco ni dispara `onClick`.
+- El chevron del trigger es decorativo (`aria-hidden`).
+
 ## Props
 
 <!--@include: ../../partials/dropdown-menu/props-vue.md-->
@@ -203,7 +266,9 @@ Cada item del array `items` puede tener:
 | `divider` | `boolean` | `false` | Si es `true`, renderiza una línea divisoria en vez de un item |
 | `href` | `string` | — | Convierte el item en un link (`<a>`) |
 | `target` | `string` | `"_self"` | Target del link cuando hay `href` |
-| `selected` | `boolean` | `false` | Muestra el check de lucide al final del item (estado de selección) |
+| `selected` | `boolean` | `false` | Muestra el check de lucide al final del item (estado de selección). Con `true` la fila se anuncia como `menuitemcheckbox` marcado |
+
+Las entradas nulas o que no son objetos se ignoran: el menú sigue renderizando el resto.
 
 ## Emits
 

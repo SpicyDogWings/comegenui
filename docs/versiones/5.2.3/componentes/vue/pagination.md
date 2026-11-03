@@ -33,6 +33,11 @@ En HTML plano, cargá el bundle `CuPagination` (ver [ficha vanilla](/componentes
 `currentPage` es la página actual, `totalPages` cuántas hay (si es `1` no renderiza nada) y
 `totalItems` el total de registros, que se usa para el texto «Mostrando X - Y de Z».
 
+Si `currentPage` no es un número o queda fuera de `[1, totalPages]` (típico cuando un filtro achica
+los totales y la página vigente era la 25 de 5), se renderiza la última página disponible y
+«Anterior»/«Siguiente» vuelven a navegar. La prop **no se modifica sola**: reasignar
+`currentPage` sigue siendo decisión del consumidor.
+
 ## Colores
 
 `color` es un nombre semántico: se resuelve con los tokens del tema activo, así que el mismo
@@ -74,9 +79,16 @@ import Pagination from "@/components/controls/Pagination.vue";
 
 ## Tamaño de página
 
-`show-page-size` agrega el selector «Por página:», alimentado por `page-size-options`
-(default `[5, 10, 20, 50]`) y con `items-per-page` como valor actual. Al elegir un tamaño
+`showPageSize` agrega el selector «Por página:», alimentado por `pageSizeOptions`
+(default `[5, 10, 20, 50]`) y con `itemsPerPage` como valor actual. Al elegir un tamaño
 vuelve a la página 1.
+
+El tamaño actual **siempre** es una opción del selector: si `itemsPerPage` no está en
+`pageSizeOptions` (p. ej. `15` con las opciones por defecto), se agrega al listado y queda
+seleccionado. Así el selector nunca muestra «Seleccionar…» mientras la tabla ya está paginada.
+
+Un `pageSizeOptions` que no sea un array se ignora: el selector usa el listado por defecto
+`[5, 10, 20, 50]` más el tamaño vigente.
 
 ```vue
 <script setup lang="ts">

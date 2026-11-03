@@ -29,6 +29,8 @@ En HTML plano, cargá el bundle `CuSkeleton` (ver [ficha vanilla](/componentes/c
 - `circle`: un avatar; por defecto `40px` × `40px` con radio `full`.
 - `text`: líneas de texto; ver [`lines`](#lineas-de-texto).
 
+Un `shape` fuera de esos tres cae a `rect`.
+
 ```vue
 <Skeleton shape="rect" height="2rem" />
 <Skeleton shape="circle" />
@@ -47,9 +49,9 @@ cada `shape` usa su default; pasarlos pisa ese default sin tocar el resto de la 
 
 ## Líneas de texto
 
-Con `shape="text"`, `lines` indica cuántas barras se apilan (default `1`). La **última** queda al
-60 % del ancho, como el final de un párrafo; con una sola línea no se acorta. En `rect` y `circle`
-`lines` se ignora.
+Con `shape="text"`, `lines` indica cuántas barras se apilan (default `1`; rango útil **1–100**,
+los valores mayores se recortan a 100). La **última** queda al 60 % del ancho, como el final de un
+párrafo; con una sola línea no se acorta. En `rect` y `circle` `lines` se ignora.
 
 ```vue
 <Skeleton shape="text" :lines="3" />
@@ -80,7 +82,8 @@ Con `prefers-reduced-motion: reduce` en el sistema operativo, `pulse` y `wave` *
 ## Color y radio
 
 `color` es un nombre semántico, no un hex: el fondo sale de `--cu-color-{color}-soft` y el brillo
-de `wave` de `--cu-color-{color}-subtle`, así que se adapta al tema activo. `radius` acepta
+de `wave` de `--cu-color-{color}-subtle`, así que se adapta al tema activo. Un nombre fuera del set
+cae a `neutral` (si no, el placeholder quedaba transparente). `radius` acepta
 `none`, `sm`, `md`, `lg` y `full`; vacío usa el default de la forma (`rect` → `md`,
 `circle` → `full`, `text` → `sm`).
 

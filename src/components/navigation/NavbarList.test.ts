@@ -122,3 +122,99 @@ describe("NavbarList — item activo y resaltado", () => {
     expect(match.classes()).toContain("cu-navbar-item--match");
   });
 });
+
+describe("NavbarList — ícono saneado", () => {
+  const EVIL = '<img src=x onerror="window.__xss=1"><script>window.__xss=2</script>';
+
+  it("conserva un SVG válido y elimina handlers del icono", () => {
+    type XssWindow = Window & { __xss?: number };
+    const probe = window as XssWindow;
+    delete probe.__xss;
+
+    const w = mount(NavbarList, {
+      props: {
+        items: [
+          { label: "Inicio", path: "/", icon: '<svg class="mi-icon"></svg>' },
+          { label: "Malo", path: "/malo", icon: EVIL },
+        ],
+      },
+    });
+    expect(w.find(".cu-navbar-icon svg.mi-icon").exists()).toBe(true);
+    expect(w.html()).not.toContain("onerror");
+    expect(w.html()).not.toContain("<script");
+    expect(probe.__xss).toBeUndefined();
+  });
+});
+
+describe("NavbarList — modo compacto", () => {
+  it("el chevron del trigger compacto es decorativo (el nombre lo da el label)", () => {
+    const w = mount(NavbarList, { props: { items, compact: true } });
+    const chevron = w.find(".cu-navbar-compact-chevron");
+
+    expect(chevron.exists()).toBe(true);
+    expect(chevron.attributes("aria-hidden")).toBe("true");
+    expect(chevron.attributes("focusable")).toBe("false");
+  });
+
+  it("en compact el item hoja conserva su nombre accesible (el label se oculta, no se borra)", () => {
+    const w = mount(NavbarList, {
+      props: {
+        items: [
+          { label: "Inicio", path: "/inicio", icon: '<svg class="mi-icon"></svg>' },
+          { label: "Perfil", path: "/perfil" },
+        ],
+        compact: true,
+      },
+    });
+    // El span del label está `display:none` en compact: sin aria-label el enlace
+    // con icono quedaba sin nombre accesible (solo el SVG).
+    const links = w.findAll("a.cu-button-link");
+    expect(links.map((a) => a.attributes("aria-label"))).toEqual(["Inicio", "Perfil"]);
+  });
+
+  it("en modo expandido el nombre accesible sigue viniendo del texto (sin aria-label)", () => {
+    const w = mount(NavbarList, { props: { items } });
+    expect(w.find("a.cu-button-link").attributes("aria-label")).toBeUndefined();
+  });
+
+  it("el trigger del flyout expone aria-haspopup y alterna aria-expanded", async () => {
+    const w = mount(NavbarList, { props: { items, compact: true } });
+    const trigger = w.find(".cu-navbar-compact-trigger");
+    expect(trigger.attributes("aria-haspopup")).toBe("menu");
+    expect(trigger.attributes("aria-expanded")).toBe("false");
+    expect(trigger.attributes("aria-label")).toBe("Componentes");
+
+    await trigger.trigger("click");
+    await flushPromises();
+    expect(w.find(".cu-navbar-compact-trigger").attributes("aria-expanded")).toBe("true");
+  });
+
+  it("el flyout es un menú: trigger con aria-haspopup/expanded y filas menuitem", async () => {
+    const w = mount(NavbarList, { props: { items, compact: true }, attachTo: document.body });
+    const trigger = w.find(".cu-navbar-compact-trigger");
+    expect(trigger.attributes("aria-haspopup")).toBe("menu");
+    expect(trigger.attributes("aria-expanded")).toBe("false");
+    expect(trigger.attributes("aria-controls")).toBeUndefined();
+
+    await trigger.trigger("click");
+    await flushPromises();
+
+    const panel = w.find('[role="menu"]');
+    expect(panel.exists()).toBe(true);
+    expect(trigger.attributes("aria-controls")).toBe(panel.attributes("id"));
+    expect(panel.findAll('[role="menuitem"]').map((row) => row.text())).toEqual(
+      expect.arrayContaining([expect.stringContaining("Button"), expect.stringContaining("Input")]),
+    );
+    w.unmount();
+  });
+
+  it("ArrowDown en el trigger abre el flyout y enfoca la primera fila", async () => {
+    const w = mount(NavbarList, { props: { items, compact: true }, attachTo: document.body });
+    await w.find(".cu-navbar-compact-trigger").trigger("keydown", { key: "ArrowDown" });
+    await flushPromises();
+    await flushPromises();
+    expect(w.find('[role="menu"]').exists()).toBe(true);
+    expect(document.activeElement?.textContent?.trim()).toContain("Button");
+    w.unmount();
+  });
+});

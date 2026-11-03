@@ -99,12 +99,13 @@ tema encima, invisible en light).
 
 ## Iconos
 
-Cada tab lleva un ícono por el campo `icon` (string HTML/SVG) o por el slot `tab-icon-{key}`; el SVG
+Cada tab lleva un ícono por el campo `icon` (**SVG inline**) o por el slot `tab-icon-{key}`; el SVG
 debe usar `currentColor` para heredar el color del tab.
 
-El HTML del campo `icon` **se sanitiza con DOMPurify antes de inyectarse**: los SVG válidos
-(`path`, `circle`, `g`, …) se conservan, y se eliminan `<script>`, atributos `on*` y URLs peligrosas
-(`javascript:`). El slot `tab-icon-{key}` es contenido del consumidor y no pasa por `v-html`.
+El campo `icon` **se sanitiza con un allowlist de SVG inline antes de inyectarse**: se conservan
+los elementos de dibujo (`path`, `circle`, `g`, `defs`, `linearGradient`, …) y se eliminan
+`<script>`, atributos `on*`, `<a>`, `<img>`, `<foreignObject>`, `<use>`/`href` y `<style>`. El slot
+`tab-icon-{key}` es contenido del consumidor y no pasa por `v-html`.
 
 ```html
 <cu-tabs id="iconos" variant="solid" color="primary">
@@ -268,7 +269,7 @@ Cada item es un objeto con:
 |-------|------|-----------|-------------|
 | `key` | `string` | ✓ | Identificador único (se usa para el tab activo y los slots) |
 | `label` | `string` | ✓ | Texto visible del tab |
-| `icon` | `string` | — | SVG/HTML del ícono (alternativa al slot `tab-icon-{key}`); se sanitiza antes de renderizar |
+| `icon` | `string` | — | SVG inline del ícono (alternativa al slot `tab-icon-{key}`); allowlist de SVG antes de renderizar |
 | `disabled` | `boolean` | — | Deshabilita solo esa pestaña |
 | `keepAlive` | `boolean` | — | Mantiene el panel montado al cambiar de tab |
 

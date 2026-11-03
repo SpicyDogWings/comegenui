@@ -26,10 +26,10 @@ Los valores de `color` / `size` están en «Atributos» / «Props», abajo.
 - No tiene `variant`: el estilo se define con `size` y `color`.
 - No tiene estado indeterminado ni una prop `checked`.
 - No tiene slot de label: el texto va por la prop `label` (string).
-- El `change` de la interacción es el nativo del `<input>`; `set()`/`reset()` emiten `{ target: { checked } }`. El valor concreto se lee con `get()` o `update:modelValue`.
+- `change` lleva el valor nuevo (`boolean`) tanto al click como en `set()`/`reset()`; no es el `Event` nativo. El estado también se lee con `get()` o `update:modelValue`.
 - No participa de formularios nativos: sin `name`, `required` ni submit.
 - No acepta `theme`.
-- `disabled` es por presencia: `disabled="false"` desde HTML no lo apaga (por propiedad JS sí).
+- El atributo `disabled` se castea: presente (o `disabled="true"`) apaga; `disabled="false"` lo deja encendido.
 
 ## API del custom element
 
@@ -51,7 +51,7 @@ Los valores de `color` / `size` están en «Atributos» / «Props», abajo.
 | Evento | Payload (`e.detail`) | Descripción |
 | ------ | ------ | ------ |
 | `update:modelValue` | `boolean` | — |
-| `change` | — | — |
+| `change` | `boolean` | Valor nuevo, tanto al click como en `set()`/`reset()` (no el `Event` nativo). |
 <!-- /@api:eventos -->
 
 ### Slots
@@ -91,7 +91,7 @@ Ninguno.
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
 | `update:modelValue` | `boolean` | — |
-| `change` | — | — |
+| `change` | `boolean` | Valor nuevo, tanto al click como en `set()`/`reset()` (no el `Event` nativo). |
 <!-- /@api:emits -->
 
 ### Slots

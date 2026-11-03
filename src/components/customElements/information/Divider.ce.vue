@@ -76,10 +76,16 @@ onBeforeUnmount(() => hostObserver?.disconnect());
 <style>
 :host {
   display: block;
+  /* El host es el ítem de layout: sin ancho propio, un divider horizontal dentro
+     de una fila flex (el ítem mide su contenido y la línea es `width: 100%` de
+     ese contenedor vacío) colapsaba a 0 px y no se veía. */
+  width: 100%;
 }
-/* En una fila flex el divisores vertical toma el alto del contenedor. */
+/* En una fila flex el divisor vertical toma el alto del contenedor y sólo ocupa
+   el ancho del trazo. */
 :host([orientation="vertical"]) {
   align-self: stretch;
+  width: auto;
 }
 @unocss-placeholder
 </style>

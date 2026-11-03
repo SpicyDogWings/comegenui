@@ -56,6 +56,24 @@ describe("Skeleton — forma y tamaño", () => {
   });
 });
 
+describe("Skeleton — entradas inválidas", () => {
+  it("una shape fuera del set cae a rect y no rompe el render", () => {
+    const w = mount(Skeleton, { props: { shape: "blob" as never } });
+
+    expect(root(w).classes()).toContain("cu-skeleton--rect");
+    expect(w.findAll(".cu-skeleton-bar")).toHaveLength(1);
+    expect(styleVar(w, "--cu-skeleton-width")).toBe("100%");
+    expect(styleVar(w, "--cu-skeleton-height")).toBe("1rem");
+  });
+
+  it("un color fuera del set cae al neutral: el placeholder no queda transparente", () => {
+    const w = mount(Skeleton, { props: { color: "chartreuse" as never } });
+
+    expect(styleVar(w, "--cu-skeleton-bg")).toBe("var(--cu-color-neutral-soft)");
+    expect(styleVar(w, "--cu-skeleton-highlight")).toBe("var(--cu-color-neutral-subtle)");
+  });
+});
+
 describe("Skeleton — líneas de texto", () => {
   it("renderiza N barras y la última es más corta", () => {
     const w = mount(Skeleton, { props: { shape: "text", lines: 3 } });
@@ -70,6 +88,23 @@ describe("Skeleton — líneas de texto", () => {
     const w = mount(Skeleton, { props: { shape: "text", lines: 1 } });
     expect(w.findAll(".cu-skeleton-bar")).toHaveLength(1);
     expect(w.find(".cu-skeleton-bar").classes()).not.toContain("cu-skeleton-bar--short");
+  });
+
+  it("recorta `lines` al tope de 100 barras", () => {
+    const w = mount(Skeleton, { props: { shape: "text", lines: 20000 } });
+    expect(w.findAll(".cu-skeleton-bar")).toHaveLength(100);
+  });
+
+  it("el tope no toca los valores válidos (100 sigue siendo 100)", () => {
+    const w = mount(Skeleton, { props: { shape: "text", lines: 100 } });
+    expect(w.findAll(".cu-skeleton-bar")).toHaveLength(100);
+  });
+
+  it("`lines` por debajo de 1 renderiza una barra", () => {
+    for (const lines of [0, -5]) {
+      const w = mount(Skeleton, { props: { shape: "text", lines } });
+      expect(w.findAll(".cu-skeleton-bar")).toHaveLength(1);
+    }
   });
 
   it("en rect y circle `lines` se ignora", () => {

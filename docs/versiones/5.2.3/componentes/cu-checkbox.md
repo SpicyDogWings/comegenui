@@ -27,7 +27,7 @@ En Vue, importá `Checkbox` de `@/components/form/Checkbox.vue` (ver [ficha Vue]
 
 `color` es un nombre semántico, no un hex: se resuelve con los tokens del tema activo
 (`--cu-color-{color}*`). Los 6 valores son `primary`, `secondary`, `neutral` (**default**),
-`success`, `warning` y `danger`.
+`success`, `warning` y `danger`. Un valor fuera del set cae a `neutral`.
 
 ```html
 <cu-checkbox label="primary" color="primary" model-value></cu-checkbox>
@@ -42,7 +42,8 @@ En Vue, importá `Checkbox` de `@/components/form/Checkbox.vue` (ver [ficha Vue]
 
 ## Tamaños
 
-`size` acepta `sm` y `md` (**default**), y cambia el tamaño de la caja y de la etiqueta.
+`size` acepta `sm` y `md` (**default**), y cambia el tamaño de la caja y de la etiqueta. Un
+valor fuera del set cae a `md`.
 
 ```html
 <cu-checkbox label="sm" size="sm" model-value></cu-checkbox>
@@ -104,6 +105,14 @@ listeners son para reaccionar):
 ```
 
 <!-- demo:checkbox-control-programatico -->
+
+## Accesibilidad
+
+- El control es un `<input type="checkbox">` nativo dentro del `<label>`: es **una** parada de
+  tabulación y <kbd>Espacio</kbd> lo alterna. El foco se ve con un anillo sobre la caja.
+- `disabled` deshabilita el input nativo: bloquea mouse y teclado; el estado se sigue leyendo con
+  `get()`.
+- El nombre accesible sale de `label`; sin `label` el checkbox queda sin nombre.
 
 ## Atributos
 

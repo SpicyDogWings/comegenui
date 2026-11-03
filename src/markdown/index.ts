@@ -49,7 +49,7 @@ const renderer = new marked.Renderer()
 renderer.heading = function ({ depth, tokens }: any) {
   const cls = classMap.heading
   const content = this.parser.parseInline(tokens)
-  const id = slugify(content)
+  const id = slugify(plainText(tokens)) || 'section'
   return `<h${depth} id="${id}" class="${cls} ${cls}-${depth}">${content}</h${depth}>\n`
 }
 
@@ -92,11 +92,12 @@ renderer.list = function ({ ordered, items }: any) {
 
 renderer.link = function ({ href, tokens }: any) {
   const text = this.parser.parseInline(tokens)
-  return `<a href="${href}" class="${classMap.link}" target="_blank" rel="noopener">${text}</a>`
+  return `<a href="${escapeHtml(href)}" class="${classMap.link}" target="_blank" rel="noopener">${text}</a>`
 }
 
-renderer.image = function ({ href, text }: any) {
-  return `<img src="${href}" alt="${text}" class="${classMap.image}" />`
+renderer.image = function ({ href, text, tokens }: any) {
+  const alt = plainText(tokens || []) || text || ''
+  return `<img src="${escapeHtml(href)}" alt="${escapeText(alt)}" class="${classMap.image}" />`
 }
 
 renderer.hr = function () {
@@ -127,10 +128,21 @@ renderer.text = function (token: any) {
   if (token.tokens) {
     return this.parser.parseInline(token.tokens)
   }
-  return token.escaped ? token.text : escapeHtml(token.text)
+  return token.escaped ? token.text : escapeText(token.text)
 }
 
 marked.setOptions({ renderer })
+
+// Escapa texto normal respetando las entidades que ya vienen (`&amp;` no se
+// vuelve `&amp;amp;`). Escapa comillas porque también se usa en atributos.
+function escapeText(text: string): string {
+  return text
+    .replace(/&(?!#?\w+;)/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;')
+}
 
 function escapeHtml(text: string): string {
   return text
@@ -139,6 +151,20 @@ function escapeHtml(text: string): string {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;')
+}
+
+// Texto plano de un árbol de tokens inline: el `id` de un heading y el `alt` de
+// una imagen salen del texto, no del HTML renderizado (antes `# **Hola**`
+// generaba `id="strong-classcu-md-strongholastrong"`).
+function plainText(tokens: any[] | undefined): string {
+  if (!tokens) return ''
+  return tokens
+    .map((token) => {
+      if (token.type === 'br') return ' '
+      if (token.tokens && token.tokens.length > 0) return plainText(token.tokens)
+      return token.text || ''
+    })
+    .join('')
 }
 
 export function parseMarkdown(content: string): string {
@@ -159,17 +185,28 @@ function stripOuterBlockquote(html: string): string {
 export function parseToBlocks(markdown: string): MarkdownBlock[] {
   const tokens = marked.lexer(markdown)
   const result: MarkdownBlock[] = []
+  // Los ids de ancla tienen que ser únicos: dos `# Igual` generaban el mismo id
+  // y el ancla saltaba siempre al primero. Se numeran como en GitHub.
+  const usedHeadingIds = new Map<string, number>()
 
   for (const token of tokens) {
     if (token.type === 'table') {
-      const header = token.header.map((cell: any) => cell.text)
-      const columns = header.map((text: string) => ({ key: text, label: text }))
+      // `key` es la clave interna de la columna (y del slot de Table): tiene que
+      // ser única. Antes se usaba el texto crudo del encabezado, así que dos
+      // columnas `a` colapsaban en una y se perdía una celda de cada fila.
+      const usedKeys = new Map<string, number>()
+      const columns = token.header.map((cell: any, i: number) => {
+        const label = plainText(cell.tokens)
+        const base = label || `col-${i + 1}`
+        const count = usedKeys.get(base) ?? 0
+        usedKeys.set(base, count + 1)
+        return { key: count === 0 ? base : `${base}-${count}`, label }
+      })
       const data = token.rows.map((row: any[]) => {
         const obj: Record<string, string> = {}
         row.forEach((cell: any, i: number) => {
-          if (header[i]) {
-            obj[header[i]] = marked.parseInline(cell.text)
-          }
+          const column = columns[i]
+          if (column) obj[column.key] = marked.parseInline(cell.text)
         })
         return obj
       })
@@ -191,14 +228,15 @@ export function parseToBlocks(markdown: string): MarkdownBlock[] {
         html: classMap.paragraph,
       })
     } else if (token.type === 'heading') {
-      const html = marked.parser([token])
-      const id = html.match(/id="([^"]+)"/)?.[1] || ''
+      const base = slugify(plainText(token.tokens)) || 'section'
+      const count = usedHeadingIds.get(base) ?? 0
+      usedHeadingIds.set(base, count + 1)
       result.push({
         type: 'inline',
         tag: `h${token.depth}`,
         tokens: token.tokens,
         html: `${classMap.heading} ${classMap.heading}-${token.depth}`,
-        id,
+        id: count === 0 ? base : `${base}-${count}`,
       })
     } else if (token.type === 'list') {
       result.push({

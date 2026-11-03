@@ -18,5 +18,5 @@
     "open",
     "toggle"
   ],
-  "shadow": "div.cu-dropdown.cu-popover\n  button.cu-button.cu-button--ghost.cu-button--md.cu-dropdown-toggle[style,type]\n    svg.cu-dropdown-chevron[fill,height,stroke,stroke-linecap,stroke-linejoin,stroke-width,viewBox,width,xmlns]\n      path[d]"
+  "shadow": "div.cu-dropdown.cu-popover\n  button.cu-button.cu-button--ghost.cu-button--md.cu-dropdown-toggle[aria-controls,aria-expanded,aria-haspopup,style,type]\n    svg.cu-dropdown-chevron[aria-hidden,fill,focusable,height,stroke,stroke-linecap,stroke-linejoin,stroke-width,viewBox,width,xmlns]\n      path[d]"
 }

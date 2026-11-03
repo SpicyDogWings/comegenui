@@ -4,4 +4,3 @@
 | `select` | — | — |
 | `change` | — | — |
 | `close` | — | — |
-| `blur` | — | — |

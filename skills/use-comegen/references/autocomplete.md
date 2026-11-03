@@ -72,7 +72,6 @@ Los valores de `type` / `color` / `variant` / `position` / `align` están en «A
 | ------ | ------ | ------ |
 | `update:modelValue` | `string` | — |
 | `select` | — | — |
-| `blur` | — | — |
 <!-- /@api:eventos -->
 
 ### Slots

@@ -38,6 +38,45 @@ function attachMeta(ctor, meta) {
 function camelize$1(name) {
 	return name.replace(/-(\w)/g, (_, char) => char ? char.toUpperCase() : "");
 }
+/** `Boolean`, `{ type: Boolean }` o `{ type: [String, Boolean] }` → tipos efectivos. */
+function typesOf(option) {
+	let raw = option;
+	if (typeof option === "object" && option !== null && !Array.isArray(option) && "type" in option) raw = option.type;
+	const list = Array.isArray(raw) ? raw : [raw];
+	return {
+		boolean: list.includes(Boolean),
+		number: list.includes(Number),
+		string: list.includes(String)
+	};
+}
+/** Tipos declarados por prop, en camelCase (cacheado por definición). */
+var PROP_TYPES = /* @__PURE__ */ new WeakMap();
+function propTypes(def) {
+	const cached = PROP_TYPES.get(def);
+	if (cached) return cached;
+	const map = /* @__PURE__ */ new Map();
+	const props = def.props;
+	if (props && !Array.isArray(props)) for (const [key, option] of Object.entries(props)) map.set(camelize$1(key), typesOf(option));
+	PROP_TYPES.set(def, map);
+	return map;
+}
+/**
+* Atributo del host → valor de la prop. Un atributo llega siempre como string:
+* `_setProp` con el string crudo dejaba `disabled="false"` deshabilitado (el
+* string es truthy) y `model-value="false"` marcado. Se castea con la misma
+* regla que HTML/Vue: un atributo Boolean presente es `true`, salvo el texto
+* explícito `"false"` (y `""`/`"true"` → `true`); Number se parsea. Sin tipos
+* declarados (`props: ['value']`) no se adivina: el valor queda string.
+*/
+function castPropValue(value, types) {
+	if (!types) return value;
+	if (types.boolean) return value.trim().toLowerCase() !== "false";
+	if (types.number && !types.string) {
+		const parsed = parseFloat(value);
+		if (!Number.isNaN(parsed)) return parsed;
+	}
+	return value;
+}
 /** Props declaradas por el componente, en camelCase (cacheado por definición). */
 var PROP_KEYS = /* @__PURE__ */ new WeakMap();
 function declaredProps(def) {
@@ -120,12 +159,7 @@ function makeElement(component, meta) {
 		_applyProp(propKey, value, camelKey) {
 			const self = this;
 			if (value !== null) {
-				let parsed = value;
-				if (self._numberProps?.[camelKey]) {
-					const n = parseFloat(value);
-					if (!Number.isNaN(n)) parsed = n;
-				}
-				self._setProp(propKey, parsed, false, true);
+				self._setProp(propKey, castPropValue(value, propTypes(self._def).get(camelKey)), false, true);
 				return;
 			}
 			if (!Object.prototype.hasOwnProperty.call(self._props, propKey)) return;
@@ -397,7 +431,7 @@ var NAVBAR_RESPONSIVE_MODES = [
 var NAVBAR_SEARCH_MODES = ["filter", "scroll"];
 var SELECT_SEARCH_MODES = ["startsWith", "includes"];
 var CELLS_IMPORTER_INPUT_TYPES = ["input", "zone"];
-oneOf(COLORS);
+var isColor = oneOf(COLORS);
 oneOf(COLORS_BASE);
 oneOf(VARIANTS);
 oneOf(VARIANTS_FULL);
@@ -526,9 +560,12 @@ function useFocus(target, options = {}) {
 Number.POSITIVE_INFINITY;
 //#endregion
 //#region src/components/form/Switch.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1 = ["aria-checked"];
-var _hoisted_2 = ["checked", "disabled"];
-var _hoisted_3 = {
+var _hoisted_1 = [
+	"aria-checked",
+	"checked",
+	"disabled"
+];
+var _hoisted_2 = {
 	key: 0,
 	class: "cu-switch-label"
 };
@@ -538,7 +575,8 @@ var Switch_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineCom
 		color: {
 			type: String,
 			required: false,
-			default: "neutral"
+			default: "neutral",
+			validator: isColor
 		},
 		size: {
 			type: String,
@@ -576,10 +614,12 @@ var Switch_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineCom
 		const props = __props;
 		const emit = __emit;
 		const { focused: inputFocus } = useFocus(useTemplateRef("input"));
+		const safeColor = computed(() => isColor(props.color) ? props.color : "neutral");
+		const safeSize = computed(() => isSizeSm(props.size) ? props.size : "md");
 		const switchStyles = computed(() => ({
-			"--switch-bg": `var(--cu-color-${props.color})`,
-			"--switch-hover": `var(--cu-color-${props.color}-hover)`,
-			"--switch-active": `var(--cu-color-${props.color}-active)`
+			"--switch-bg": `var(--cu-color-${safeColor.value}-solid)`,
+			"--switch-hover": `var(--cu-color-${safeColor.value}-solid-hover)`,
+			"--switch-active": `var(--cu-color-${safeColor.value}-solid-active)`
 		}));
 		const toggle = (next) => {
 			if (props.disabled) return;
@@ -612,29 +652,32 @@ var Switch_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineCom
 		});
 		return (_ctx, _cache) => {
 			return openBlock(), createElementBlock("label", { class: normalizeClass(["cu-switch", [
-				`cu-switch--${props.size}`,
+				`cu-switch--${safeSize.value}`,
 				`cu-switch--label-${props.labelPosition}`,
 				{ "cu-switch--disabled": props.disabled }
 			]]) }, [createElementVNode("span", {
 				class: normalizeClass(["cu-switch-track", { "cu-switch--checked": checked.value }]),
-				style: normalizeStyle(switchStyles.value),
-				role: "switch",
-				"aria-checked": checked.value
-			}, [_cache[0] || (_cache[0] = createElementVNode("span", { class: "cu-switch-thumb" }, null, -1)), createElementVNode("input", {
-				ref: "input",
-				type: "checkbox",
-				checked: checked.value,
-				disabled: props.disabled,
-				tabindex: "-1",
-				class: "cu-switch-input",
-				onChange: onInput
-			}, null, 40, _hoisted_2)], 14, _hoisted_1), props.label || $slots.default ? (openBlock(), createElementBlock("span", _hoisted_3, [renderSlot(_ctx.$slots, "default", {}, () => [createTextVNode(toDisplayString(props.label), 1)])])) : createCommentVNode("v-if", true)], 2);
+				style: normalizeStyle(switchStyles.value)
+			}, [
+				_cache[0] || (_cache[0] = createElementVNode("span", { class: "cu-switch-thumb" }, null, -1)),
+				createCommentVNode(" El control accesible es el input nativo: `role=\"switch\"` acá (no en el\n           track) deja un solo nodo en el árbol de accesibilidad, con el estado\n           checked/disabled nativo y una parada de tab real. "),
+				createElementVNode("input", {
+					ref: "input",
+					type: "checkbox",
+					role: "switch",
+					"aria-checked": !!checked.value,
+					checked: checked.value,
+					disabled: props.disabled,
+					class: "cu-switch-input",
+					onChange: onInput
+				}, null, 40, _hoisted_1)
+			], 6), props.label || $slots.default ? (openBlock(), createElementBlock("span", _hoisted_2, [renderSlot(_ctx.$slots, "default", {}, () => [createTextVNode(toDisplayString(props.label), 1)])])) : createCommentVNode("v-if", true)], 2);
 		};
 	}
 });
 //#endregion
 //#region src/components/form/Switch.vue?vue&type=style&index=0&inline&lang.css
-var Switch_vue_vue_type_style_index_0_inline_lang_default = "\n/* label nativo (misma implementación que Checkbox): el click en el label\n   activa el input anidado y su change alterna */\n.cu-switch {\n  position: relative;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--cu-space-sm);\n  vertical-align: middle;\n  cursor: pointer;\n}\n\n/* `labelPosition`: el track va primero en el DOM y el label después. Con\n   `row-reverse` el label queda a la izquierda sin cambiar el markup: el <label>\n   nativo sigue envolviendo a los dos y el click en la etiqueta alterna igual.\n   El `gap` se mantiene entre ambos y el label conserva su ancho intrínseco. */\n.cu-switch--label-end {\n  flex-direction: row;\n}\n.cu-switch--label-start {\n  flex-direction: row-reverse;\n}\n.cu-switch-track {\n  position: relative;\n  display: inline-flex;\n  align-items: center;\n  border-radius: var(--cu-radius-full);\n  transition: all 150ms ease;\n  box-sizing: border-box;\n}\n.cu-switch--md .cu-switch-track {\n  width: var(--cu-space-3xl);\n  height: var(--cu-space-2xl);\n}\n.cu-switch--sm .cu-switch-track {\n  width: var(--cu-space-2xl);\n  height: var(--cu-space-xl);\n}\n.cu-switch-track.cu-switch--checked {\n  background-color: var(--switch-bg);\n}\n.cu-switch-track:not(.cu-switch--checked) {\n  background-color: var(--cu-color-neutral-soft);\n}\n\n/* Encendido: el track es sólido, así que el hover/active son las variantes sólidas\n   del color (un poco más oscuro / claro), no las `ghost` translúcidas. */\n.cu-switch-track.cu-switch--checked:hover {\n  background-color: var(--switch-hover);\n}\n.cu-switch-track.cu-switch--checked:active {\n  background-color: var(--switch-active);\n}\n.cu-switch-track:not(.cu-switch--checked):hover {\n  background-color: var(--cu-color-neutral-ghost-hover);\n}\n.cu-switch--disabled {\n  cursor: not-allowed;\n}\n.cu-switch--disabled .cu-switch-track {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  pointer-events: none;\n}\n.cu-switch--disabled .cu-switch-label {\n  opacity: var(--cu-alpha-disabled, 0.7);\n}\n.cu-switch-thumb {\n  position: absolute;\n  border-radius: var(--cu-radius-full);\n  background-color: var(--cu-color-surface);\n  box-shadow: var(--cu-shadow-sm);\n  transition: all 150ms ease;\n}\n.cu-switch--md .cu-switch-thumb {\n  width: var(--cu-space-xl);\n  height: var(--cu-space-xl);\n  top: var(--cu-space-xs);\n  left: var(--cu-space-xs);\n}\n.cu-switch--sm .cu-switch-thumb {\n  width: var(--cu-space-lg);\n  height: var(--cu-space-lg);\n  top: calc((var(--cu-space-xl) - var(--cu-space-lg)) / 2);\n  left: calc((var(--cu-space-xl) - var(--cu-space-lg)) / 2);\n}\n.cu-switch--md .cu-switch-track.cu-switch--checked .cu-switch-thumb {\n  transform: translateX(16px);\n}\n.cu-switch--sm .cu-switch-track.cu-switch--checked .cu-switch-thumb {\n  transform: translateX(8px);\n}\n.cu-switch-input {\n  position: absolute;\n  opacity: 0;\n  width: 0;\n  height: 0;\n}\n.cu-switch-label {\n  font-family: var(--cu-font-sans);\n  color: var(--cu-color-neutral);\n}\n.cu-switch--md .cu-switch-label {\n  font-size: var(--cu-font-size-sm);\n}\n.cu-switch--sm .cu-switch-label {\n  font-size: var(--cu-font-size-xs);\n}\n";
+var Switch_vue_vue_type_style_index_0_inline_lang_default = "\n/* label nativo (misma implementación que Checkbox): el click en el label\n   activa el input anidado y su change alterna */\n.cu-switch {\n  position: relative;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--cu-space-sm);\n  vertical-align: middle;\n  cursor: pointer;\n}\n\n/* `labelPosition`: el track va primero en el DOM y el label después. Con\n   `row-reverse` el label queda a la izquierda sin cambiar el markup: el <label>\n   nativo sigue envolviendo a los dos y el click en la etiqueta alterna igual.\n   El `gap` se mantiene entre ambos y el label conserva su ancho intrínseco. */\n.cu-switch--label-end {\n  flex-direction: row;\n}\n.cu-switch--label-start {\n  flex-direction: row-reverse;\n}\n.cu-switch-track {\n  position: relative;\n  display: inline-flex;\n  align-items: center;\n  border-radius: var(--cu-radius-full);\n  /* Sin `all`: el anillo de foco no se anima desde los valores iniciales. */\n  transition: background-color 150ms ease, border-color 150ms ease;\n  box-sizing: border-box;\n}\n.cu-switch--md .cu-switch-track {\n  width: var(--cu-space-3xl);\n  height: var(--cu-space-2xl);\n}\n.cu-switch--sm .cu-switch-track {\n  width: var(--cu-space-2xl);\n  height: var(--cu-space-xl);\n}\n.cu-switch-track.cu-switch--checked {\n  background-color: var(--switch-bg);\n}\n.cu-switch-track:not(.cu-switch--checked) {\n  background-color: var(--cu-color-neutral-soft);\n}\n\n/* Encendido: el track es sólido, así que el hover/active son las variantes sólidas\n   del color (un poco más oscuro / claro), no las `ghost` translúcidas. */\n.cu-switch-track.cu-switch--checked:hover {\n  background-color: var(--switch-hover);\n}\n.cu-switch-track.cu-switch--checked:active {\n  background-color: var(--switch-active);\n}\n.cu-switch-track:not(.cu-switch--checked):hover {\n  background-color: var(--cu-color-neutral-ghost-hover);\n}\n.cu-switch--disabled {\n  cursor: not-allowed;\n}\n.cu-switch--disabled .cu-switch-track {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  pointer-events: none;\n}\n.cu-switch--disabled .cu-switch-label {\n  opacity: var(--cu-alpha-disabled, 0.7);\n}\n\n/* Anillo de foco sobre el track visible (el input es transparente). */\n.cu-switch-track:focus-within {\n  outline: var(--cu-border-medium) solid var(--cu-border-color-focus);\n  outline-offset: var(--cu-space-2xs);\n}\n.cu-switch-thumb {\n  position: absolute;\n  border-radius: var(--cu-radius-full);\n  background-color: var(--cu-color-surface);\n  box-shadow: var(--cu-shadow-sm);\n  transition: all 150ms ease;\n}\n.cu-switch--md .cu-switch-thumb {\n  width: var(--cu-space-xl);\n  height: var(--cu-space-xl);\n  top: var(--cu-space-xs);\n  left: var(--cu-space-xs);\n}\n.cu-switch--sm .cu-switch-thumb {\n  width: var(--cu-space-lg);\n  height: var(--cu-space-lg);\n  top: calc((var(--cu-space-xl) - var(--cu-space-lg)) / 2);\n  left: calc((var(--cu-space-xl) - var(--cu-space-lg)) / 2);\n}\n.cu-switch--md .cu-switch-track.cu-switch--checked .cu-switch-thumb {\n  transform: translateX(16px);\n}\n.cu-switch--sm .cu-switch-track.cu-switch--checked .cu-switch-thumb {\n  transform: translateX(8px);\n}\n\n/* El input nativo cubre el track: recibe el click, el foco del teclado (Space\n   alterna) y el anillo de `:focus-within`. Sin `tabindex=\"-1\"` ni tamaño 0. */\n.cu-switch-input {\n  position: absolute;\n  inset: 0;\n  width: 100%;\n  height: 100%;\n  margin: 0;\n  opacity: 0;\n  cursor: inherit;\n  box-sizing: border-box;\n}\n.cu-switch-label {\n  font-family: var(--cu-font-sans);\n  color: var(--cu-color-neutral);\n}\n.cu-switch--md .cu-switch-label {\n  font-size: var(--cu-font-size-sm);\n}\n.cu-switch--sm .cu-switch-label {\n  font-size: var(--cu-font-size-xs);\n}\n";
 //#endregion
 //#region \0plugin-vue:export-helper
 var _plugin_vue_export_helper_default = (sfc, props) => {

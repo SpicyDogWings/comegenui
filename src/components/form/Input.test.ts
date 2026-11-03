@@ -4,6 +4,7 @@
 // (ver scripts/mutation-check.mjs).
 import { describe, it, expect } from "vitest";
 import { flushPromises, mount } from "@vue/test-utils";
+import { defineComponent, h, nextTick, ref } from "vue";
 import Input from "./Input.vue";
 
 type InputVm = {
@@ -57,6 +58,61 @@ describe("Input — valor y v-model", () => {
 
     expect(vm(w).get()).toBe("");
     expect((field(w).element as HTMLInputElement).value).toBe("");
+  });
+
+  it("startValue está declarada pero reset() limpia: no restaura el valor inicial", async () => {
+    const w = mount(Input, { props: { startValue: "inicial" } });
+    await flushPromises();
+    expect(vm(w).get()).toBe("");
+
+    vm(w).set("editado");
+    vm(w).reset();
+    await flushPromises();
+
+    expect(vm(w).get()).toBe("");
+    expect((field(w).element as HTMLInputElement).value).toBe("");
+  });
+
+  it("cambiar modelValue desde afuera actualiza el valor mostrado", async () => {
+    const model = ref("uno");
+    const w = mount(defineComponent({ setup: () => () => h(Input, { modelValue: model.value }) }));
+    await flushPromises();
+    expect((field(w).element as HTMLInputElement).value).toBe("uno");
+
+    model.value = "dos";
+    await nextTick();
+    await flushPromises();
+
+    const input = w.findComponent(Input).vm as unknown as InputVm;
+    expect(input.get()).toBe("dos");
+    expect((field(w).element as HTMLInputElement).value).toBe("dos");
+  });
+
+  it("focus() enfoca el input real", async () => {
+    const w = mount(Input, { attachTo: document.body });
+    vm(w).focus();
+    await flushPromises();
+
+    expect(document.activeElement).toBe(field(w).element);
+    w.unmount();
+  });
+
+  it("no emite valores intermedios durante una composición IME; sí al terminarla", async () => {
+    const w = mount(Input);
+    const el = field(w).element as HTMLInputElement;
+
+    el.dispatchEvent(new CompositionEvent("compositionstart"));
+    el.value = "に";
+    el.dispatchEvent(new InputEvent("input", { bubbles: true, data: "に", inputType: "insertCompositionText" }));
+    await flushPromises();
+    expect(w.emitted("update:modelValue")).toBeUndefined();
+
+    el.value = "日本";
+    el.dispatchEvent(new CompositionEvent("compositionend"));
+    await flushPromises();
+
+    expect(w.emitted("update:modelValue")?.at(-1)).toEqual(["日本"]);
+    expect(vm(w).get()).toBe("日本");
   });
 });
 

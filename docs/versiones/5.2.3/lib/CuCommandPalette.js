@@ -1,5 +1,5 @@
 /*! comegenui v5.2.3 · CuCommandPalette (cu-command-palette) · esm-shared · Vue externo (bare import) */
-import { Fragment, computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, createTextVNode, createVNode, defineComponent, defineCustomElement, mergeModels, nextTick, normalizeClass, normalizeStyle, openBlock, reactive, ref, renderList, renderSlot, shallowRef, toDisplayString, toValue, unref, useId, useModel, useSlots, useTemplateRef, vShow, watch, withCtx, withDirectives } from "vue";
+import { Fragment, computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, createTextVNode, createVNode, defineComponent, defineCustomElement, mergeModels, nextTick, normalizeClass, normalizeStyle, onBeforeUnmount, openBlock, ref, renderList, renderSlot, shallowRef, toDisplayString, toValue, unref, useAttrs, useId, useModel, useSlots, useTemplateRef, vShow, watch, withCtx, withDirectives } from "vue";
 //#region src/utils/comegen-element.ts
 var BUILD_META = {
 	"version": "5.2.3",
@@ -37,6 +37,45 @@ function attachMeta(ctor, meta) {
 /** `aria-describedby` → `ariaDescribedby` (mismo algoritmo que Vue). */
 function camelize$1(name) {
 	return name.replace(/-(\w)/g, (_, char) => char ? char.toUpperCase() : "");
+}
+/** `Boolean`, `{ type: Boolean }` o `{ type: [String, Boolean] }` → tipos efectivos. */
+function typesOf(option) {
+	let raw = option;
+	if (typeof option === "object" && option !== null && !Array.isArray(option) && "type" in option) raw = option.type;
+	const list = Array.isArray(raw) ? raw : [raw];
+	return {
+		boolean: list.includes(Boolean),
+		number: list.includes(Number),
+		string: list.includes(String)
+	};
+}
+/** Tipos declarados por prop, en camelCase (cacheado por definición). */
+var PROP_TYPES = /* @__PURE__ */ new WeakMap();
+function propTypes(def) {
+	const cached = PROP_TYPES.get(def);
+	if (cached) return cached;
+	const map = /* @__PURE__ */ new Map();
+	const props = def.props;
+	if (props && !Array.isArray(props)) for (const [key, option] of Object.entries(props)) map.set(camelize$1(key), typesOf(option));
+	PROP_TYPES.set(def, map);
+	return map;
+}
+/**
+* Atributo del host → valor de la prop. Un atributo llega siempre como string:
+* `_setProp` con el string crudo dejaba `disabled="false"` deshabilitado (el
+* string es truthy) y `model-value="false"` marcado. Se castea con la misma
+* regla que HTML/Vue: un atributo Boolean presente es `true`, salvo el texto
+* explícito `"false"` (y `""`/`"true"` → `true`); Number se parsea. Sin tipos
+* declarados (`props: ['value']`) no se adivina: el valor queda string.
+*/
+function castPropValue(value, types) {
+	if (!types) return value;
+	if (types.boolean) return value.trim().toLowerCase() !== "false";
+	if (types.number && !types.string) {
+		const parsed = parseFloat(value);
+		if (!Number.isNaN(parsed)) return parsed;
+	}
+	return value;
 }
 /** Props declaradas por el componente, en camelCase (cacheado por definición). */
 var PROP_KEYS = /* @__PURE__ */ new WeakMap();
@@ -120,12 +159,7 @@ function makeElement(component, meta) {
 		_applyProp(propKey, value, camelKey) {
 			const self = this;
 			if (value !== null) {
-				let parsed = value;
-				if (self._numberProps?.[camelKey]) {
-					const n = parseFloat(value);
-					if (!Number.isNaN(n)) parsed = n;
-				}
-				self._setProp(propKey, parsed, false, true);
+				self._setProp(propKey, castPropValue(value, propTypes(self._def).get(camelKey)), false, true);
 				return;
 			}
 			if (!Object.prototype.hasOwnProperty.call(self._props, propKey)) return;
@@ -429,220 +463,71 @@ oneOf(NAVBAR_SEARCH_MODES);
 oneOf(SELECT_SEARCH_MODES);
 oneOf(CELLS_IMPORTER_INPUT_TYPES);
 //#endregion
-//#region node_modules/.pnpm/@vueuse+shared@14.4.0_vue@3.6.0-rc.11_@typescript+typescript6@6.0.2_/node_modules/@vueuse/shared/dist/index.js
-var isClient = typeof window !== "undefined" && typeof document !== "undefined";
-typeof WorkerGlobalScope !== "undefined" && globalThis instanceof WorkerGlobalScope;
-var toString = Object.prototype.toString;
-var isObject = (val) => toString.call(val) === "[object Object]";
-var noop = () => {};
-function toArray(value) {
-	return Array.isArray(value) ? value : [value];
-}
-/**
-* Shorthand for watching value with {immediate: true}
-*
-* @see https://vueuse.org/watchImmediate
-*/
-function watchImmediate(source, cb, options) {
-	return watch(source, cb, {
-		...options,
-		immediate: true
-	});
-}
-function whenever(source, cb, options) {
-	const stop = watch(source, (v, ov, onInvalidate) => {
-		if (v) {
-			if (options === null || options === void 0 ? void 0 : options.once) nextTick(() => stop());
-			cb(v, ov, onInvalidate);
-		}
-	}, {
-		...options,
-		once: false
-	});
-	return stop;
-}
-//#endregion
-//#region node_modules/.pnpm/@vueuse+core@14.4.0_vue@3.6.0-rc.11_@typescript+typescript6@6.0.2_/node_modules/@vueuse/core/dist/index.js
-var defaultWindow = isClient ? window : void 0;
-isClient && window.document;
-isClient && window.navigator;
-isClient && window.location;
-/**
-* Get the dom element of a ref of element or Vue component instance
-*
-* @param elRef
-*/
-function unrefElement(elRef) {
-	var _$el;
-	const plain = toValue(elRef);
-	return (_$el = plain === null || plain === void 0 ? void 0 : plain.$el) !== null && _$el !== void 0 ? _$el : plain;
-}
-function useEventListener(...args) {
-	const register = (el, event, listener, options) => {
-		el.addEventListener(event, listener, options);
-		return () => el.removeEventListener(event, listener, options);
+//#region src/composables/useOverlayStack.ts
+var STACK_KEY = "__cu_overlay_stack__";
+function overlayStack() {
+	const g = globalThis;
+	return g[STACK_KEY] ??= {
+		entries: [],
+		scrollLocks: 0,
+		previousBodyOverflow: "",
+		listening: false
 	};
-	const firstParamTargets = computed(() => {
-		const test = toArray(toValue(args[0])).filter((e) => e != null);
-		return test.every((e) => typeof e !== "string") ? test : void 0;
-	});
-	return watchImmediate(() => {
-		var _firstParamTargets$va, _firstParamTargets$va2;
-		return [
-			(_firstParamTargets$va = (_firstParamTargets$va2 = firstParamTargets.value) === null || _firstParamTargets$va2 === void 0 ? void 0 : _firstParamTargets$va2.map((e) => unrefElement(e))) !== null && _firstParamTargets$va !== void 0 ? _firstParamTargets$va : [defaultWindow].filter((e) => e != null),
-			toArray(toValue(firstParamTargets.value ? args[1] : args[0])),
-			toArray(unref(firstParamTargets.value ? args[2] : args[1])),
-			toValue(firstParamTargets.value ? args[3] : args[2])
-		];
-	}, ([raw_targets, raw_events, raw_listeners, raw_options], _, onCleanup) => {
-		if (!(raw_targets === null || raw_targets === void 0 ? void 0 : raw_targets.length) || !(raw_events === null || raw_events === void 0 ? void 0 : raw_events.length) || !(raw_listeners === null || raw_listeners === void 0 ? void 0 : raw_listeners.length)) return;
-		const optionsClone = isObject(raw_options) ? { ...raw_options } : raw_options;
-		const cleanups = raw_targets.flatMap((el) => raw_events.flatMap((event) => raw_listeners.map((listener) => register(el, event, listener, optionsClone))));
-		onCleanup(() => {
-			cleanups.forEach((fn) => fn());
-		});
-	}, { flush: "post" });
+}
+function lockScroll(stack) {
+	if (typeof document === "undefined") return;
+	if (stack.scrollLocks === 0) {
+		stack.previousBodyOverflow = document.body.style.overflow;
+		document.body.style.overflow = "hidden";
+	}
+	stack.scrollLocks += 1;
+}
+function unlockScroll(stack) {
+	if (stack.scrollLocks === 0) return;
+	stack.scrollLocks -= 1;
+	if (stack.scrollLocks === 0 && typeof document !== "undefined") document.body.style.overflow = stack.previousBodyOverflow;
+}
+/** Escape: sólo el overlay de arriba reacciona (y uno solo por pulsación). */
+function onEscape(event) {
+	if (event.key !== "Escape") return;
+	const stack = overlayStack();
+	stack.entries[stack.entries.length - 1]?.close();
 }
 /**
-* Track or set the focus state of a DOM element.
-*
-* @see https://vueuse.org/useFocus
-* @param target The target element for the focus and blur events.
-* @param options
+* Suma un overlay abierto a la pila. Devuelve su id, que es lo que después se pasa a
+* `unregisterOverlay`/`isTopmostOverlay`.
 */
-function useFocus(target, options = {}) {
-	const { initialValue = false, focusVisible = false, preventScroll = false } = options;
-	const innerFocused = shallowRef(false);
-	const targetElement = computed(() => unrefElement(target));
-	const listenerOptions = { passive: true };
-	useEventListener(targetElement, "focus", (event) => {
-		var _matches, _ref;
-		if (!focusVisible || ((_matches = (_ref = event.target).matches) === null || _matches === void 0 ? void 0 : _matches.call(_ref, ":focus-visible"))) innerFocused.value = true;
-	}, listenerOptions);
-	useEventListener(targetElement, "blur", () => innerFocused.value = false, listenerOptions);
-	const focused = computed({
-		get: () => innerFocused.value,
-		set(value) {
-			var _targetElement$value, _targetElement$value2;
-			if (!value && innerFocused.value) (_targetElement$value = targetElement.value) === null || _targetElement$value === void 0 || _targetElement$value.blur();
-			else if (value && !innerFocused.value) (_targetElement$value2 = targetElement.value) === null || _targetElement$value2 === void 0 || _targetElement$value2.focus({ preventScroll });
-		}
+function registerOverlay(handle) {
+	const stack = overlayStack();
+	const id = Symbol("cu-overlay");
+	stack.entries.push({
+		...handle,
+		id
 	});
-	watch(targetElement, () => {
-		focused.value = initialValue;
-	}, {
-		immediate: true,
-		flush: "post"
-	});
-	return { focused };
+	if (handle.lockScroll) lockScroll(stack);
+	if (!stack.listening && typeof document !== "undefined") {
+		document.addEventListener("keydown", onEscape);
+		stack.listening = true;
+	}
+	return id;
 }
-var DefaultMagicKeysAliasMap = {
-	ctrl: "control",
-	command: "meta",
-	cmd: "meta",
-	option: "alt",
-	up: "arrowup",
-	down: "arrowdown",
-	left: "arrowleft",
-	right: "arrowright"
-};
-/**
-* Reactive keys pressed state, with magical keys combination support.
-*
-* @see https://vueuse.org/useMagicKeys
-*/
-function useMagicKeys(options = {}) {
-	const { reactive: useReactive = false, target = defaultWindow, aliasMap = DefaultMagicKeysAliasMap, passive = true, onEventFired = noop } = options;
-	const current = reactive(/* @__PURE__ */ new Set());
-	const obj = {
-		toJSON() {
-			return {};
-		},
-		current
-	};
-	const refs = useReactive ? reactive(obj) : obj;
-	const metaDeps = /* @__PURE__ */ new Set();
-	const depsMap = /* @__PURE__ */ new Map([
-		["Meta", metaDeps],
-		["Shift", /* @__PURE__ */ new Set()],
-		["Alt", /* @__PURE__ */ new Set()]
-	]);
-	const usedKeys = /* @__PURE__ */ new Set();
-	function setRefs(key, value) {
-		if (key in refs) if (useReactive) refs[key] = value;
-		else refs[key].value = value;
+/** Saca un overlay de la pila (idempotente: cerrar dos veces no rompe nada). */
+function unregisterOverlay(id) {
+	const stack = overlayStack();
+	const index = stack.entries.findIndex((entry) => entry.id === id);
+	if (index === -1) return;
+	const [entry] = stack.entries.splice(index, 1);
+	if (entry?.lockScroll) unlockScroll(stack);
+	if (stack.entries.length === 0 && stack.listening && typeof document !== "undefined") {
+		document.removeEventListener("keydown", onEscape);
+		stack.listening = false;
 	}
-	function reset() {
-		current.clear();
-		for (const key of usedKeys) setRefs(key, false);
-	}
-	function updateDeps(value, e, keys) {
-		if (!value || typeof e.getModifierState !== "function") return;
-		for (const [modifier, depsSet] of depsMap) if (e.getModifierState(modifier)) {
-			keys.forEach((key) => depsSet.add(key));
-			break;
-		}
-	}
-	function clearDeps(value, key) {
-		if (value) return;
-		const depsMapKey = `${key[0].toUpperCase()}${key.slice(1)}`;
-		const deps = depsMap.get(depsMapKey);
-		if (!["shift", "alt"].includes(key) || !deps) return;
-		const depsArray = Array.from(deps);
-		const depsIndex = depsArray.indexOf(key);
-		depsArray.forEach((key, index) => {
-			if (index >= depsIndex) {
-				current.delete(key);
-				setRefs(key, false);
-			}
-		});
-		deps.clear();
-	}
-	function updateRefs(e, value) {
-		var _e$key, _e$code;
-		const key = (_e$key = e.key) === null || _e$key === void 0 ? void 0 : _e$key.toLowerCase();
-		const values = [(_e$code = e.code) === null || _e$code === void 0 ? void 0 : _e$code.toLowerCase(), key].filter(Boolean);
-		if (!key) return;
-		if (key) if (value) current.add(key);
-		else current.delete(key);
-		for (const key of values) {
-			usedKeys.add(key);
-			setRefs(key, value);
-		}
-		updateDeps(value, e, [...current, ...values]);
-		clearDeps(value, key);
-		if (key === "meta" && !value) {
-			metaDeps.forEach((key) => {
-				current.delete(key);
-				setRefs(key, false);
-			});
-			metaDeps.clear();
-		}
-	}
-	useEventListener(target, "keydown", (e) => {
-		updateRefs(e, true);
-		return onEventFired(e);
-	}, { passive });
-	useEventListener(target, "keyup", (e) => {
-		updateRefs(e, false);
-		return onEventFired(e);
-	}, { passive });
-	useEventListener("blur", reset, { passive });
-	useEventListener("focus", reset, { passive });
-	const proxy = new Proxy(refs, { get(target, prop, rec) {
-		if (typeof prop !== "string") return Reflect.get(target, prop, rec);
-		prop = prop.toLowerCase();
-		if (prop in aliasMap) prop = aliasMap[prop];
-		if (!(prop in refs)) if (/[+_-]/.test(prop)) {
-			const keys = prop.split(/[+_-]/g).map((i) => i.trim());
-			refs[prop] = computed(() => keys.map((key) => toValue(proxy[key])).every(Boolean));
-		} else refs[prop] = shallowRef(false);
-		const r = Reflect.get(target, prop, rec);
-		return useReactive ? toValue(r) : r;
-	} });
-	return proxy;
 }
-Number.POSITIVE_INFINITY;
+/** ¿Este overlay es el de arriba? (trampa de foco / Tab del `SideOver`). */
+function isTopmostOverlay(id) {
+	const entries = overlayStack().entries;
+	return entries.length > 0 && entries[entries.length - 1].id === id;
+}
 //#endregion
 //#region src/components/icons/IconBase.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1$4 = ["width", "height"];
@@ -782,6 +667,7 @@ var Button_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineCom
 		const props = __props;
 		const isDisabled = computed(() => props.disabled || props.loading);
 		const safeColor = computed(() => isColor(props.color) ? props.color : "neutral");
+		const safeVariant = computed(() => isVariantFull(props.variant) ? props.variant : "ghost");
 		const buttonType = computed(() => isButtonType(props.type) ? props.type : "button");
 		const safeTo = computed(() => {
 			const value = props.to?.trim();
@@ -846,7 +732,7 @@ var Button_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineCom
 		}));
 		const rootClasses = computed(() => [
 			"cu-button",
-			`cu-button--${props.variant}`,
+			`cu-button--${safeVariant.value}`,
 			`cu-button--${props.size}`,
 			{
 				"cu-button--disabled": isDisabled.value,
@@ -898,8 +784,8 @@ var Button_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineCom
 	}
 });
 //#endregion
-//#region src/components/buttons/Button.vue?vue&type=style&index=0&inline&scoped=cb9decf8&lang.css
-var Button_vue_vue_type_style_index_0_inline_scoped_cb9decf8_lang_default = "\n.cu-button[data-v-cb9decf8] {\n  font-family: var(--cu-font-sans);\n  text-decoration: none;\n  font-size: var(--cu-font-size-sm);\n  font-weight: var(--cu-font-weight-medium);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius);\n  border: none;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--cu-space-xs);\n  box-sizing: border-box;\n  transition: all 150ms ease;\n}\n.cu-button[data-v-cb9decf8]:active:not(.cu-button--disabled) {\n  transform: scale(0.97);\n}\n.cu-button--disabled[data-v-cb9decf8] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n\n/* sizes (md = base; link mantiene su padding 0) */\n.cu-button--sm[data-v-cb9decf8]:not(.cu-button--link) {\n  font-size: var(--cu-font-size-xs);\n  padding: var(--cu-space-xs) var(--cu-space-sm);\n}\n.cu-button--lg[data-v-cb9decf8]:not(.cu-button--link) {\n  font-size: var(--cu-font-size-lg);\n  padding: var(--cu-space-lg) var(--cu-space-xl);\n}\n\n/* solid */\n.cu-button.cu-button--solid[data-v-cb9decf8] {\n  background-color: var(--btn-solid);\n  color: var(--btn-solid-text);\n}\n.cu-button.cu-button--solid[data-v-cb9decf8]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-hover);\n}\n.cu-button.cu-button--solid[data-v-cb9decf8]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-active);\n}\n\n/* ghost */\n.cu-button.cu-button--ghost[data-v-cb9decf8] {\n  background-color: transparent;\n  color: var(--btn-text);\n}\n.cu-button.cu-button--ghost[data-v-cb9decf8]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-hover);\n}\n.cu-button.cu-button--ghost[data-v-cb9decf8]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-active);\n}\n\n/* soft */\n.cu-button.cu-button--soft[data-v-cb9decf8] {\n  background-color: var(--btn-soft);\n  color: var(--btn-text);\n}\n.cu-button.cu-button--soft[data-v-cb9decf8]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-soft-hover);\n}\n.cu-button.cu-button--soft[data-v-cb9decf8]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-soft-active);\n}\n\n/* subtle */\n.cu-button.cu-button--subtle[data-v-cb9decf8] {\n  background-color: var(--btn-subtle);\n  color: var(--btn-text);\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-button.cu-button--subtle[data-v-cb9decf8]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-subtle-hover);\n}\n.cu-button.cu-button--subtle[data-v-cb9decf8]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-subtle-active);\n}\n\n/* outlined */\n.cu-button.cu-button--outlined[data-v-cb9decf8] {\n  background-color: transparent;\n  color: var(--btn-text);\n  border: var(--cu-border-thin) solid var(--btn-border);\n}\n.cu-button.cu-button--outlined[data-v-cb9decf8]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-hover);\n}\n.cu-button.cu-button--outlined[data-v-cb9decf8]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-active);\n}\n\n/* link */\n.cu-button.cu-button--link[data-v-cb9decf8] {\n  background-color: transparent;\n  color: var(--btn-text);\n  padding: 0;\n  box-shadow: none;\n  text-decoration: underline;\n  text-underline-offset: var(--cu-space-2xs);\n}\n.cu-button.cu-button--link[data-v-cb9decf8]:hover:not(.cu-button--disabled) {\n  text-decoration-thickness: 2px;\n}\n\n/* none */\n.cu-button.cu-button--none[data-v-cb9decf8] {\n  background-color: var(--btn-solid);\n  color: var(--btn-solid-text);\n}\n.cu-button.cu-button--none[data-v-cb9decf8]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-hover);\n}\n.cu-button.cu-button--none[data-v-cb9decf8]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-active);\n}\n\n/* link wrapper */\n.cu-button-link[data-v-cb9decf8] {\n  text-decoration: none;\n}\n.cu-button-link[data-v-cb9decf8]:hover {\n  text-decoration: underline;\n  text-underline-offset: var(--cu-space-2xs);\n}\n.cu-button-link.cu-button--disabled[data-v-cb9decf8] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n\n/* icon-only */\n.cu-button--icon-only[data-v-cb9decf8] {\n  padding: var(--cu-space-sm);\n}\n\n/* loading spinner */\n.cu-button-spinner[data-v-cb9decf8] {\n  animation: cu-spin-cb9decf8 0.8s linear infinite;\n}\n@keyframes cu-spin-cb9decf8 {\nfrom { transform: rotate(0deg);\n}\nto { transform: rotate(360deg);\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.cu-button[data-v-cb9decf8] {\n    transition: none;\n}\n.cu-button[data-v-cb9decf8]:active:not(.cu-button--disabled) {\n    transform: none;\n}\n.cu-button-spinner[data-v-cb9decf8] {\n    animation: none;\n}\n}\n";
+//#region src/components/buttons/Button.vue?vue&type=style&index=0&inline&scoped=fed7165d&lang.css
+var Button_vue_vue_type_style_index_0_inline_scoped_fed7165d_lang_default = "\n.cu-button[data-v-fed7165d] {\n  font-family: var(--cu-font-sans);\n  text-decoration: none;\n  font-size: var(--cu-font-size-sm);\n  font-weight: var(--cu-font-weight-medium);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius);\n  border: none;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--cu-space-xs);\n  box-sizing: border-box;\n  transition: all 150ms ease;\n}\n.cu-button[data-v-fed7165d]:active:not(.cu-button--disabled) {\n  transform: scale(0.97);\n}\n.cu-button--disabled[data-v-fed7165d] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n\n/* sizes (md = base; link mantiene su padding 0) */\n.cu-button--sm[data-v-fed7165d]:not(.cu-button--link) {\n  font-size: var(--cu-font-size-xs);\n  padding: var(--cu-space-xs) var(--cu-space-sm);\n}\n.cu-button--lg[data-v-fed7165d]:not(.cu-button--link) {\n  font-size: var(--cu-font-size-lg);\n  padding: var(--cu-space-lg) var(--cu-space-xl);\n}\n\n/* solid */\n.cu-button.cu-button--solid[data-v-fed7165d] {\n  background-color: var(--btn-solid);\n  color: var(--btn-solid-text);\n}\n.cu-button.cu-button--solid[data-v-fed7165d]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-hover);\n}\n.cu-button.cu-button--solid[data-v-fed7165d]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-active);\n}\n\n/* ghost */\n.cu-button.cu-button--ghost[data-v-fed7165d] {\n  background-color: transparent;\n  color: var(--btn-text);\n}\n.cu-button.cu-button--ghost[data-v-fed7165d]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-hover);\n}\n.cu-button.cu-button--ghost[data-v-fed7165d]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-active);\n}\n\n/* soft */\n.cu-button.cu-button--soft[data-v-fed7165d] {\n  background-color: var(--btn-soft);\n  color: var(--btn-text);\n}\n.cu-button.cu-button--soft[data-v-fed7165d]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-soft-hover);\n}\n.cu-button.cu-button--soft[data-v-fed7165d]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-soft-active);\n}\n\n/* subtle */\n.cu-button.cu-button--subtle[data-v-fed7165d] {\n  background-color: var(--btn-subtle);\n  color: var(--btn-text);\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-button.cu-button--subtle[data-v-fed7165d]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-subtle-hover);\n}\n.cu-button.cu-button--subtle[data-v-fed7165d]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-subtle-active);\n}\n\n/* outlined */\n.cu-button.cu-button--outlined[data-v-fed7165d] {\n  background-color: transparent;\n  color: var(--btn-text);\n  border: var(--cu-border-thin) solid var(--btn-border);\n}\n.cu-button.cu-button--outlined[data-v-fed7165d]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-hover);\n}\n.cu-button.cu-button--outlined[data-v-fed7165d]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-active);\n}\n\n/* link */\n.cu-button.cu-button--link[data-v-fed7165d] {\n  background-color: transparent;\n  color: var(--btn-text);\n  padding: 0;\n  box-shadow: none;\n  text-decoration: underline;\n  text-underline-offset: var(--cu-space-2xs);\n}\n.cu-button.cu-button--link[data-v-fed7165d]:hover:not(.cu-button--disabled) {\n  text-decoration-thickness: 2px;\n}\n\n/* none */\n.cu-button.cu-button--none[data-v-fed7165d] {\n  background-color: var(--btn-solid);\n  color: var(--btn-solid-text);\n}\n.cu-button.cu-button--none[data-v-fed7165d]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-hover);\n}\n.cu-button.cu-button--none[data-v-fed7165d]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-active);\n}\n\n/* link wrapper */\n.cu-button-link[data-v-fed7165d] {\n  text-decoration: none;\n}\n.cu-button-link[data-v-fed7165d]:hover {\n  text-decoration: underline;\n  text-underline-offset: var(--cu-space-2xs);\n}\n.cu-button-link.cu-button--disabled[data-v-fed7165d] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n\n/* icon-only: cuadrado. El `:not(.cu-button--link)` sube la especificidad para\n   ganarle al padding de `.cu-button--sm/lg` (que tienen la misma o más clase);\n   antes el cuadrado sólo salía en `md` (sm 32×24, lg 64×48). En `link` no\n   aplica: el link no lleva padding. */\n.cu-button--icon-only[data-v-fed7165d]:not(.cu-button--link) {\n  padding: var(--cu-space-sm);\n}\n\n/* `lg` mantiene la escala: 16 px de padding por lado (48×48 con un ícono de 16). */\n.cu-button--lg.cu-button--icon-only[data-v-fed7165d]:not(.cu-button--link) {\n  padding: var(--cu-space-lg);\n}\n\n/* loading spinner */\n.cu-button-spinner[data-v-fed7165d] {\n  animation: cu-spin-fed7165d 0.8s linear infinite;\n}\n@keyframes cu-spin-fed7165d {\nfrom { transform: rotate(0deg);\n}\nto { transform: rotate(360deg);\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.cu-button[data-v-fed7165d] {\n    transition: none;\n}\n.cu-button[data-v-fed7165d]:active:not(.cu-button--disabled) {\n    transform: none;\n}\n.cu-button-spinner[data-v-fed7165d] {\n    animation: none;\n}\n}\n";
 //#endregion
 //#region \0plugin-vue:export-helper
 var _plugin_vue_export_helper_default = (sfc, props) => {
@@ -909,28 +795,23 @@ var _plugin_vue_export_helper_default = (sfc, props) => {
 };
 //#endregion
 //#region src/components/buttons/Button.vue
-var Button_default = /*#__PURE__*/ _plugin_vue_export_helper_default(Button_vue_vue_type_script_setup_true_lang_default, [["styles", [Button_vue_vue_type_style_index_0_inline_scoped_cb9decf8_lang_default]], ["__scopeId", "data-v-cb9decf8"]]);
+var Button_default = /*#__PURE__*/ _plugin_vue_export_helper_default(Button_vue_vue_type_script_setup_true_lang_default, [["styles", [Button_vue_vue_type_style_index_0_inline_scoped_fed7165d_lang_default]], ["__scopeId", "data-v-fed7165d"]]);
 //#endregion
 //#region src/components/overlay/Modal.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1$2 = ["aria-labelledby", "aria-describedby"];
+var _hoisted_1$2 = [
+	"aria-labelledby",
+	"aria-label",
+	"aria-describedby"
+];
 var _hoisted_2$1 = ["data-size", "data-height"];
 var _hoisted_3$1 = { class: "cu-modal-header-text" };
 var _hoisted_4$1 = {
 	key: 0,
 	class: "cu-modal-title-row"
 };
-var _hoisted_5$1 = {
-	id: "modal-title",
-	class: "cu-modal-title"
-};
-var _hoisted_6$1 = {
-	key: 1,
-	id: "modal-description",
-	class: "cu-modal-description"
-};
-var _hoisted_7$1 = { class: "cu-modal-body" };
-var _hoisted_8$1 = { class: "cu-modal-footer" };
-var _hoisted_9$1 = {
+var _hoisted_5$1 = { class: "cu-modal-body" };
+var _hoisted_6$1 = { class: "cu-modal-footer" };
+var _hoisted_7$1 = {
 	key: 0,
 	class: "cu-modal-footer-default"
 };
@@ -983,20 +864,170 @@ var Modal_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 		const props = __props;
 		const emit = __emit;
 		const slots = useSlots();
+		const attrs = useAttrs();
 		const isOpen = ref(false);
+		const backdropRef = ref(null);
+		/** Elemento que tenía el foco al abrir: se le devuelve al cerrar. */
+		const trigger = ref(null);
+		const uid = useId();
+		const titleId = `${uid}-title`;
+		const descriptionId = `${uid}-description`;
 		const hasFooter = computed(() => !!slots.footer?.());
-		const colorStyles = computed(() => ({ "--modal-color": `var(--cu-color-${props.color})` }));
+		const dialogLabel = computed(() => props.title ? void 0 : attrs["aria-label"] || "Diálogo");
+		const colorStyles = computed(() => ({ "--modal-color": `var(--cu-color-${props.color}-text)` }));
+		const FOCUSABLE_SELECTOR = [
+			"a[href]",
+			"area[href]",
+			"button:not([disabled])",
+			"input:not([disabled]):not([type=\"hidden\"])",
+			"select:not([disabled])",
+			"textarea:not([disabled])",
+			"iframe",
+			"object",
+			"embed",
+			"audio[controls]",
+			"video[controls]",
+			"summary",
+			"[contenteditable=\"true\"]",
+			"[tabindex]:not([tabindex=\"-1\"])"
+		].join(",");
+		/** Oculta por atributo/inline style (v-show): `focus()` no serviría y el trap no debe contarla. */
+		function isHidden(el) {
+			for (let node = el; node; node = node.parentElement) {
+				if (node.hasAttribute("hidden")) return true;
+				const style = node.style;
+				if (style && (style.display === "none" || style.visibility === "hidden")) return true;
+			}
+			return false;
+		}
+		function isFocusable(el) {
+			return el instanceof HTMLElement && el.matches(FOCUSABLE_SELECTOR) && !isHidden(el);
+		}
+		/**
+		* Focusables del diálogo en orden de tabulación. Recorre slots (`assignedElements`)
+		* y shadow roots anidados: el contenido de un `<cu-modal>` vive en el light DOM del
+		* host y el de un `<cu-input>` en su propio shadow, y `querySelectorAll` no cruza
+		* ninguna de las dos fronteras.
+		*/
+		function collectFocusables(root, out = []) {
+			for (const child of Array.from(root.children)) {
+				if (child.tagName === "SLOT" && "assignedElements" in child) {
+					const slot = child;
+					const assigned = slot.assignedElements({ flatten: true });
+					const source = assigned.length ? assigned : Array.from(slot.children);
+					for (const node of source) {
+						if (isFocusable(node)) out.push(node);
+						if (node.shadowRoot) collectFocusables(node.shadowRoot, out);
+						collectFocusables(node, out);
+					}
+					continue;
+				}
+				if (isFocusable(child)) out.push(child);
+				if (child.shadowRoot) collectFocusables(child.shadowRoot, out);
+				collectFocusables(child, out);
+			}
+			return out;
+		}
+		function dialogFocusables() {
+			const root = backdropRef.value;
+			return root ? collectFocusables(root) : [];
+		}
+		/** Elemento realmente enfocado, atravesando shadow roots anidados. */
+		function deepActiveElement() {
+			let active = document.activeElement;
+			while (active?.shadowRoot?.activeElement) active = active.shadowRoot.activeElement;
+			return active;
+		}
+		/**
+		* Foco inicial: `[autofocus]` si existe, si no el primer focusable, si no el
+		* diálogo. No pisa un foco que ya está adentro: un consumidor (CommandPalette)
+		* puede enfocar su buscador en el mismo tick y ese foco manda.
+		*/
+		function focusFirst() {
+			const root = backdropRef.value;
+			if (!root) return;
+			const focusables = dialogFocusables();
+			const active = deepActiveElement();
+			if (active && (focusables.includes(active) || root.contains(active))) return;
+			(focusables.find((el) => el.hasAttribute("autofocus")) ?? root.querySelector("[autofocus]") ?? focusables[0] ?? root).focus();
+		}
+		/** Devuelve el foco al trigger; si es un custom element, a su control interno. */
+		function restoreFocus() {
+			const el = trigger.value;
+			trigger.value = null;
+			if (!el || !el.isConnected) return;
+			el.focus();
+			if (document.activeElement !== el && el.shadowRoot) collectFocusables(el.shadowRoot)[0]?.focus();
+		}
+		/**
+		* Trampa de foco: Tab/Shift+Tab ciclan dentro del diálogo. Se escucha en
+		* `document` (keydown es `composed`) para cubrir también el foco que quedó
+		* fuera —body, la barra del navegador— y el contenido sloteado en el shadow.
+		* Sólo atiende el overlay de arriba: con un `SideOver`, otro modal o un menú
+		* encima, la trampa del que está arriba manda (si no, `Tab` desde ese overlay
+		* caía en este modal, que está tapado).
+		*/
+		function handleKeydown(event) {
+			if (!isOpen.value || event.key !== "Tab") return;
+			if (!overlayId || !isTopmostOverlay(overlayId)) return;
+			const focusables = dialogFocusables();
+			const root = backdropRef.value;
+			if (!focusables.length) {
+				event.preventDefault();
+				root?.focus();
+				return;
+			}
+			const target = (typeof event.composedPath === "function" ? event.composedPath() : [])[0] ?? event.target;
+			const index = target ? focusables.indexOf(target) : -1;
+			const first = focusables[0];
+			const last = focusables[focusables.length - 1];
+			if (index === -1) {
+				event.preventDefault();
+				(event.shiftKey ? last : first).focus();
+			} else if (event.shiftKey && index === 0) {
+				event.preventDefault();
+				last.focus();
+			} else if (!event.shiftKey && index === focusables.length - 1) {
+				event.preventDefault();
+				first.focus();
+			}
+		}
+		/**
+		* `Escape` lo atiende la pila compartida de overlays y sólo sobre el de arriba: con un
+		* listener propio, un `Escape` cerraba el modal y el `SideOver` (o el menú y su
+		* submenú) a la vez. `persistent` sigue bloqueando el cierre.
+		*/
+		let overlayId = null;
+		function claimOverlay() {
+			if (overlayId) return;
+			overlayId = registerOverlay({
+				close: () => {
+					if (!props.persistent) close();
+				},
+				lockScroll: true
+			});
+		}
+		function releaseOverlay() {
+			if (!overlayId) return;
+			unregisterOverlay(overlayId);
+			overlayId = null;
+		}
 		/** Abre el modal. */
 		function open() {
+			if (isOpen.value) return;
+			trigger.value = document.activeElement instanceof HTMLElement ? document.activeElement : null;
 			isOpen.value = true;
+			claimOverlay();
 		}
 		/** Cierra el modal. */
 		function close() {
 			isOpen.value = false;
+			releaseOverlay();
 		}
 		/** Alterna la visibilidad del modal. */
 		function toggle() {
-			isOpen.value = !isOpen.value;
+			if (isOpen.value) close();
+			else open();
 		}
 		function handleCancel() {
 			emit("cancel");
@@ -1006,14 +1037,39 @@ var Modal_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 			emit("accept");
 			close();
 		}
-		const keys = useMagicKeys({ target: typeof window !== "undefined" ? window : void 0 });
-		whenever(() => keys.Escape?.value, () => !props.persistent && isOpen.value && close());
+		/**
+		* Un click que empieza dentro del panel (seleccionar texto, arrastrar) termina con
+		* `target` en el backdrop —el ancestro común de mousedown/mouseup—, así que mirar
+		* sólo el `target` cerraba el modal y se perdía lo escrito. Se exige que la presión
+		* haya empezado en el backdrop.
+		*/
+		let pressedOnBackdrop = false;
+		function handleBackdropMouseDown(event) {
+			pressedOnBackdrop = event.target === event.currentTarget;
+		}
 		function handleBackdropClick(event) {
-			if (!props.persistent && event.target === event.currentTarget) close();
+			const startedOnBackdrop = pressedOnBackdrop;
+			pressedOnBackdrop = false;
+			if (!props.persistent && startedOnBackdrop && event.target === event.currentTarget) close();
 		}
 		watch(isOpen, (newVal) => {
 			emit(newVal ? "opened" : "closed");
 			if (!newVal) emit("close");
+			if (newVal) {
+				document.addEventListener("keydown", handleKeydown);
+				nextTick(() => {
+					if (isOpen.value) focusFirst();
+				});
+			} else {
+				releaseOverlay();
+				document.removeEventListener("keydown", handleKeydown);
+				restoreFocus();
+			}
+		});
+		onBeforeUnmount(() => {
+			releaseOverlay();
+			document.removeEventListener("keydown", handleKeydown);
+			restoreFocus();
 		});
 		__expose({
 			open,
@@ -1024,20 +1080,31 @@ var Modal_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 		});
 		return (_ctx, _cache) => {
 			return withDirectives((openBlock(), createElementBlock("div", {
+				ref_key: "backdropRef",
+				ref: backdropRef,
+				onMousedown: handleBackdropMouseDown,
 				onClick: handleBackdropClick,
 				tabindex: "-1",
 				role: "dialog",
 				class: "cu-modal-backdrop",
 				"aria-modal": "true",
-				"aria-labelledby": __props.title ? "modal-title" : void 0,
-				"aria-describedby": __props.description ? "modal-description" : void 0
+				"aria-labelledby": __props.title ? titleId : void 0,
+				"aria-label": dialogLabel.value,
+				"aria-describedby": __props.description ? descriptionId : void 0
 			}, [createElementVNode("div", {
 				class: "cu-modal",
 				style: normalizeStyle(colorStyles.value),
 				"data-size": __props.size,
 				"data-height": __props.height
 			}, [
-				createElementVNode("header", { class: normalizeClass(["cu-modal-header", { "cu-modal-header--accent": __props.color !== "neutral" }]) }, [createElementVNode("div", _hoisted_3$1, [__props.title ? (openBlock(), createElementBlock("div", _hoisted_4$1, [renderSlot(_ctx.$slots, "icon"), createElementVNode("h2", _hoisted_5$1, toDisplayString(__props.title), 1)])) : createCommentVNode("v-if", true), __props.description ? (openBlock(), createElementBlock("p", _hoisted_6$1, toDisplayString(__props.description), 1)) : createCommentVNode("v-if", true)]), !__props.persistent ? (openBlock(), createBlock(Button_default, {
+				createElementVNode("header", { class: normalizeClass(["cu-modal-header", { "cu-modal-header--accent": __props.color !== "neutral" }]) }, [createElementVNode("div", _hoisted_3$1, [__props.title ? (openBlock(), createElementBlock("div", _hoisted_4$1, [renderSlot(_ctx.$slots, "icon"), createElementVNode("h2", {
+					id: titleId,
+					class: "cu-modal-title"
+				}, toDisplayString(__props.title), 1)])) : createCommentVNode("v-if", true), __props.description ? (openBlock(), createElementBlock("p", {
+					key: 1,
+					id: descriptionId,
+					class: "cu-modal-description"
+				}, toDisplayString(__props.description), 1)) : createCommentVNode("v-if", true)]), !__props.persistent ? (openBlock(), createBlock(Button_default, {
 					key: 0,
 					color: __props.color,
 					variant: "ghost",
@@ -1058,8 +1125,8 @@ var Modal_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 					}, [createElementVNode("path", { d: "M18 6 6 18" }), createElementVNode("path", { d: "m6 6 12 12" })], -1)])]),
 					_: 1
 				}, 8, ["color"])) : createCommentVNode("v-if", true)], 2),
-				createElementVNode("main", _hoisted_7$1, [renderSlot(_ctx.$slots, "default")]),
-				createElementVNode("footer", _hoisted_8$1, [renderSlot(_ctx.$slots, "footer", {}, () => [!hasFooter.value ? (openBlock(), createElementBlock("div", _hoisted_9$1, [__props.persistent ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [createVNode(Button_default, {
+				createElementVNode("main", _hoisted_5$1, [renderSlot(_ctx.$slots, "default")]),
+				createElementVNode("footer", _hoisted_6$1, [renderSlot(_ctx.$slots, "footer", {}, () => [!hasFooter.value ? (openBlock(), createElementBlock("div", _hoisted_7$1, [__props.persistent ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [createVNode(Button_default, {
 					color: "neutral",
 					variant: "ghost",
 					onClick: handleCancel
@@ -1082,10 +1149,106 @@ var Modal_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 					default: withCtx(() => [..._cache[3] || (_cache[3] = [createTextVNode("Cerrar", -1)])]),
 					_: 1
 				}))])) : createCommentVNode("v-if", true)])])
-			], 12, _hoisted_2$1)], 8, _hoisted_1$2)), [[vShow, isOpen.value]]);
+			], 12, _hoisted_2$1)], 40, _hoisted_1$2)), [[vShow, isOpen.value]]);
 		};
 	}
-}), [["styles", ["\n.cu-modal-backdrop {\n  z-index: 1000;\n  position: fixed;\n  inset: 0;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  padding: var(--cu-space-md);\n  background-color: rgba(0, 0, 0, 0.3);\n  backdrop-filter: blur(4px);\n}\n.cu-modal {\n  background-color: var(--cu-color-surface);\n  color: var(--cu-color-neutral);\n  border-radius: var(--cu-radius);\n  box-shadow: var(--cu-shadow-xl);\n  padding: var(--cu-space-md);\n  width: 100%;\n  display: flex;\n  flex-direction: column;\n  overflow: visible;\n  box-sizing: border-box;\n}\n\n/* size */\n.cu-modal[data-size=\"auto\"] { max-width: var(--cu-modal-size-auto, 50vw);\n}\n.cu-modal[data-size=\"sm\"] { max-width: var(--cu-modal-size-sm, 25vw);\n}\n.cu-modal[data-size=\"md\"] { max-width: var(--cu-modal-size-md, 30vw);\n}\n.cu-modal[data-size=\"lg\"] { max-width: var(--cu-modal-size-lg, 35vw);\n}\n.cu-modal[data-size=\"xl\"] { max-width: var(--cu-modal-size-xl, 40vw);\n}\n.cu-modal[data-size=\"full\"] { max-width: var(--cu-modal-size-full, 90vw);\n}\n\n/* height */\n.cu-modal[data-height=\"auto\"] { max-height: var(--cu-modal-height-auto, 50vh);\n}\n.cu-modal[data-height=\"sm\"] { max-height: var(--cu-modal-height-sm, 30vh);\n}\n.cu-modal[data-height=\"md\"] { max-height: var(--cu-modal-height-md, 40vh);\n}\n.cu-modal[data-height=\"lg\"] { max-height: var(--cu-modal-height-lg, 50vh);\n}\n.cu-modal[data-height=\"xl\"] { max-height: var(--cu-modal-height-xl, 60vh);\n}\n.cu-modal[data-height=\"full\"] {\n  max-height: var(--cu-modal-height-full, 90vh);\n  height: var(--cu-modal-height-full, 90vh);\n}\n.cu-modal-header {\n  display: flex;\n  justify-content: space-between;\n  align-items: flex-start;\n  padding: var(--cu-space-lg);\n  gap: var(--cu-space-md);\n}\n.cu-modal-header-text {\n  display: flex;\n  flex-direction: column;\n  gap: var(--cu-space-2xs);\n  min-width: 0;\n}\n.cu-modal-title-row {\n  display: flex;\n  align-items: center;\n  gap: var(--cu-space-sm);\n}\n.cu-modal-title {\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-lg);\n  font-weight: var(--cu-font-weight-bold);\n  margin: 0;\n  color: var(--modal-color);\n}\n.cu-modal-description {\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  margin: 0;\n  color: var(--cu-color-neutral);\n  opacity: 0.7;\n}\n.cu-modal-close {\n  flex-shrink: 0;\n  padding: var(--cu-space-sm) !important;\n  height: auto !important;\n  width: auto !important;\n}\n.cu-modal-body {\n  padding: 0 var(--cu-space-lg) var(--cu-space-lg);\n  flex: 1;\n  min-height: 0;\n  overflow-y: auto;\n}\n.cu-modal-body > * {\n  width: 100%;\n}\n.cu-modal-footer {\n  padding: var(--cu-space-lg);\n  border-top: var(--cu-border-thin) solid var(--cu-border-color);\n}\n.cu-modal-footer-default {\n  display: flex;\n  justify-content: flex-end;\n  gap: var(--cu-space-sm);\n}\n"]]]);
+}), [["styles", ["\n.cu-modal-backdrop {\n  z-index: 1000;\n  position: fixed;\n  inset: 0;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  padding: var(--cu-space-md);\n  background-color: rgba(0, 0, 0, 0.3);\n  backdrop-filter: blur(4px);\n}\n.cu-modal {\n  background-color: var(--cu-color-surface);\n  color: var(--cu-color-neutral);\n  border-radius: var(--cu-radius);\n  box-shadow: var(--cu-shadow-xl);\n  padding: var(--cu-space-md);\n  width: 100%;\n  display: flex;\n  flex-direction: column;\n  overflow: visible;\n  box-sizing: border-box;\n}\n\n/* size */\n.cu-modal[data-size=\"auto\"] { max-width: var(--cu-modal-size-auto, 50vw);\n}\n.cu-modal[data-size=\"sm\"] { max-width: var(--cu-modal-size-sm, 25vw);\n}\n.cu-modal[data-size=\"md\"] { max-width: var(--cu-modal-size-md, 30vw);\n}\n.cu-modal[data-size=\"lg\"] { max-width: var(--cu-modal-size-lg, 35vw);\n}\n.cu-modal[data-size=\"xl\"] { max-width: var(--cu-modal-size-xl, 40vw);\n}\n.cu-modal[data-size=\"full\"] { max-width: var(--cu-modal-size-full, 90vw);\n}\n\n/* height */\n.cu-modal[data-height=\"auto\"] { max-height: var(--cu-modal-height-auto, 50vh);\n}\n.cu-modal[data-height=\"sm\"] { max-height: var(--cu-modal-height-sm, 30vh);\n}\n.cu-modal[data-height=\"md\"] { max-height: var(--cu-modal-height-md, 40vh);\n}\n.cu-modal[data-height=\"lg\"] { max-height: var(--cu-modal-height-lg, 50vh);\n}\n.cu-modal[data-height=\"xl\"] { max-height: var(--cu-modal-height-xl, 60vh);\n}\n.cu-modal[data-height=\"full\"] {\n  max-height: var(--cu-modal-height-full, 90vh);\n  height: var(--cu-modal-height-full, 90vh);\n}\n\n/* En pantallas angostas los presets (que son `vw`/`vh`) dejan el modal en una\n   franja inusable: a 375px, `auto` son 187px y `sm` 94px. El ancho/alto disponible\n   manda y el preset aplica desde 641px. Misma especificidad que los presets\n   (`[data-size]`) pero después: gana este bloque. */\n@media (max-width: 640px) {\n.cu-modal[data-size] {\n    max-width: calc(100vw - 2 * var(--cu-space-md));\n}\n.cu-modal[data-height] {\n    max-height: calc(100vh - 2 * var(--cu-space-md));\n}\n}\n.cu-modal-header {\n  display: flex;\n  justify-content: space-between;\n  align-items: flex-start;\n  padding: var(--cu-space-lg);\n  gap: var(--cu-space-md);\n}\n.cu-modal-header-text {\n  display: flex;\n  flex-direction: column;\n  gap: var(--cu-space-2xs);\n  min-width: 0;\n}\n.cu-modal-title-row {\n  display: flex;\n  align-items: center;\n  gap: var(--cu-space-sm);\n}\n.cu-modal-title {\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-lg);\n  font-weight: var(--cu-font-weight-bold);\n  margin: 0;\n  color: var(--modal-color);\n}\n.cu-modal-description {\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  margin: 0;\n  color: var(--cu-color-neutral-text-muted);\n}\n.cu-modal-close {\n  flex-shrink: 0;\n  padding: var(--cu-space-sm) !important;\n  height: auto !important;\n  width: auto !important;\n}\n.cu-modal-body {\n  padding: 0 var(--cu-space-lg) var(--cu-space-lg);\n  flex: 1;\n  min-height: 0;\n  overflow-y: auto;\n}\n.cu-modal-body > * {\n  width: 100%;\n}\n.cu-modal-footer {\n  padding: var(--cu-space-lg);\n  border-top: var(--cu-border-thin) solid var(--cu-border-color);\n}\n.cu-modal-footer-default {\n  display: flex;\n  justify-content: flex-end;\n  gap: var(--cu-space-sm);\n}\n"]]]);
+//#endregion
+//#region node_modules/.pnpm/@vueuse+shared@14.4.0_vue@3.6.0-rc.11_@typescript+typescript6@6.0.2_/node_modules/@vueuse/shared/dist/index.js
+var isClient = typeof window !== "undefined" && typeof document !== "undefined";
+typeof WorkerGlobalScope !== "undefined" && globalThis instanceof WorkerGlobalScope;
+var toString = Object.prototype.toString;
+var isObject = (val) => toString.call(val) === "[object Object]";
+function toArray(value) {
+	return Array.isArray(value) ? value : [value];
+}
+/**
+* Shorthand for watching value with {immediate: true}
+*
+* @see https://vueuse.org/watchImmediate
+*/
+function watchImmediate(source, cb, options) {
+	return watch(source, cb, {
+		...options,
+		immediate: true
+	});
+}
+//#endregion
+//#region node_modules/.pnpm/@vueuse+core@14.4.0_vue@3.6.0-rc.11_@typescript+typescript6@6.0.2_/node_modules/@vueuse/core/dist/index.js
+var defaultWindow = isClient ? window : void 0;
+isClient && window.document;
+isClient && window.navigator;
+isClient && window.location;
+/**
+* Get the dom element of a ref of element or Vue component instance
+*
+* @param elRef
+*/
+function unrefElement(elRef) {
+	var _$el;
+	const plain = toValue(elRef);
+	return (_$el = plain === null || plain === void 0 ? void 0 : plain.$el) !== null && _$el !== void 0 ? _$el : plain;
+}
+function useEventListener(...args) {
+	const register = (el, event, listener, options) => {
+		el.addEventListener(event, listener, options);
+		return () => el.removeEventListener(event, listener, options);
+	};
+	const firstParamTargets = computed(() => {
+		const test = toArray(toValue(args[0])).filter((e) => e != null);
+		return test.every((e) => typeof e !== "string") ? test : void 0;
+	});
+	return watchImmediate(() => {
+		var _firstParamTargets$va, _firstParamTargets$va2;
+		return [
+			(_firstParamTargets$va = (_firstParamTargets$va2 = firstParamTargets.value) === null || _firstParamTargets$va2 === void 0 ? void 0 : _firstParamTargets$va2.map((e) => unrefElement(e))) !== null && _firstParamTargets$va !== void 0 ? _firstParamTargets$va : [defaultWindow].filter((e) => e != null),
+			toArray(toValue(firstParamTargets.value ? args[1] : args[0])),
+			toArray(unref(firstParamTargets.value ? args[2] : args[1])),
+			toValue(firstParamTargets.value ? args[3] : args[2])
+		];
+	}, ([raw_targets, raw_events, raw_listeners, raw_options], _, onCleanup) => {
+		if (!(raw_targets === null || raw_targets === void 0 ? void 0 : raw_targets.length) || !(raw_events === null || raw_events === void 0 ? void 0 : raw_events.length) || !(raw_listeners === null || raw_listeners === void 0 ? void 0 : raw_listeners.length)) return;
+		const optionsClone = isObject(raw_options) ? { ...raw_options } : raw_options;
+		const cleanups = raw_targets.flatMap((el) => raw_events.flatMap((event) => raw_listeners.map((listener) => register(el, event, listener, optionsClone))));
+		onCleanup(() => {
+			cleanups.forEach((fn) => fn());
+		});
+	}, { flush: "post" });
+}
+/**
+* Track or set the focus state of a DOM element.
+*
+* @see https://vueuse.org/useFocus
+* @param target The target element for the focus and blur events.
+* @param options
+*/
+function useFocus(target, options = {}) {
+	const { initialValue = false, focusVisible = false, preventScroll = false } = options;
+	const innerFocused = shallowRef(false);
+	const targetElement = computed(() => unrefElement(target));
+	const listenerOptions = { passive: true };
+	useEventListener(targetElement, "focus", (event) => {
+		var _matches, _ref;
+		if (!focusVisible || ((_matches = (_ref = event.target).matches) === null || _matches === void 0 ? void 0 : _matches.call(_ref, ":focus-visible"))) innerFocused.value = true;
+	}, listenerOptions);
+	useEventListener(targetElement, "blur", () => innerFocused.value = false, listenerOptions);
+	const focused = computed({
+		get: () => innerFocused.value,
+		set(value) {
+			var _targetElement$value, _targetElement$value2;
+			if (!value && innerFocused.value) (_targetElement$value = targetElement.value) === null || _targetElement$value === void 0 || _targetElement$value.blur();
+			else if (value && !innerFocused.value) (_targetElement$value2 = targetElement.value) === null || _targetElement$value2 === void 0 || _targetElement$value2.focus({ preventScroll });
+		}
+	});
+	watch(targetElement, () => {
+		focused.value = initialValue;
+	}, {
+		immediate: true,
+		flush: "post"
+	});
+	return { focused };
+}
+Number.POSITIVE_INFINITY;
 //#endregion
 //#region src/components/form/Input.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1$1 = [
@@ -1163,6 +1326,19 @@ var Input_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 			"--btn-subtle-hover": `var(--cu-color-${props.color}-subtle-hover)`,
 			"--btn-subtle-border": `var(--cu-color-${props.color}-subtle-border)`
 		}));
+		/** Composición IME en curso: no se emiten los valores intermedios. */
+		const composing = ref(false);
+		const onInput = (event) => {
+			if (composing.value) return;
+			value.value = event.target.value;
+		};
+		const onCompositionStart = () => {
+			composing.value = true;
+		};
+		const onCompositionEnd = (event) => {
+			composing.value = false;
+			value.value = event.target.value;
+		};
 		/** Devuelve el valor actual del input. */
 		const get = () => value.value;
 		/** Setea el valor del input. */
@@ -1186,7 +1362,9 @@ var Input_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 				type: props.type,
 				placeholder: props.placeholder,
 				value: value.value,
-				onInput: _cache[0] || (_cache[0] = ($event) => value.value = $event.target.value),
+				onInput,
+				onCompositionstart: onCompositionStart,
+				onCompositionend: onCompositionEnd,
 				class: normalizeClass(["cu-input", [
 					`cu-input--${props.variant}`,
 					sizeClass.value,
@@ -1198,7 +1376,7 @@ var Input_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 			}, null, 46, _hoisted_1$1);
 		};
 	}
-}), [["styles", ["\n.cu-input[data-v-416af2a0] {\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  font-weight: var(--cu-font-weight-medium);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius-md);\n  border: none;\n  outline: none;\n  width: 100%;\n  box-sizing: border-box;\n  background-color: var(--btn-bg);\n  color: var(--cu-color-neutral-text);\n  transition: all 150ms ease;\n}\n\n/* sizes */\n.cu-input--sm[data-v-416af2a0] {\n  padding: var(--cu-space-sm) var(--cu-space-md);\n  font-size: var(--cu-font-size-xs);\n}\n.cu-input--lg[data-v-416af2a0] {\n  padding: var(--cu-space-lg) var(--cu-space-xl);\n  font-size: var(--cu-font-size-md);\n}\n.cu-input[data-v-416af2a0]::placeholder {\n  color: var(--cu-color-neutral-text);\n  opacity: var(--cu-alpha-muted, 0.5);\n}\n.cu-input[data-v-416af2a0]:focus {\n  box-shadow: 0 0 0 var(--cu-border-thin) var(--btn-subtle-border);\n}\n\n/* subtle */\n.cu-input--subtle[data-v-416af2a0] {\n  background-color: var(--btn-subtle);\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-input--subtle[data-v-416af2a0]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-subtle-hover);\n}\n\n/* soft */\n.cu-input--soft[data-v-416af2a0] {\n  background-color: var(--btn-soft);\n}\n.cu-input--soft[data-v-416af2a0]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-soft-hover);\n}\n\n/* ghost */\n.cu-input--ghost[data-v-416af2a0] {\n  background-color: transparent;\n}\n.cu-input--ghost[data-v-416af2a0]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-bg-hover);\n}\n\n/* outlined */\n.cu-input--outlined[data-v-416af2a0] {\n  background-color: transparent;\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-input--outlined[data-v-416af2a0]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-bg-hover);\n}\n\n/* disabled */\n.cu-input--disabled[data-v-416af2a0] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n"]], ["__scopeId", "data-v-416af2a0"]]);
+}), [["styles", ["\n.cu-input[data-v-a387934b] {\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  font-weight: var(--cu-font-weight-medium);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius-md);\n  border: none;\n  outline: none;\n  width: 100%;\n  box-sizing: border-box;\n  background-color: var(--btn-bg);\n  color: var(--cu-color-neutral-text);\n  transition: all 150ms ease;\n}\n\n/* sizes */\n.cu-input--sm[data-v-a387934b] {\n  padding: var(--cu-space-sm) var(--cu-space-md);\n  font-size: var(--cu-font-size-xs);\n}\n.cu-input--lg[data-v-a387934b] {\n  padding: var(--cu-space-lg) var(--cu-space-xl);\n  font-size: var(--cu-font-size-md);\n}\n.cu-input[data-v-a387934b]::placeholder {\n  color: var(--cu-color-neutral-text-muted);\n}\n.cu-input[data-v-a387934b]:focus {\n  box-shadow: 0 0 0 var(--cu-border-thin) var(--btn-subtle-border);\n}\n\n/* subtle */\n.cu-input--subtle[data-v-a387934b] {\n  background-color: var(--btn-subtle);\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-input--subtle[data-v-a387934b]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-subtle-hover);\n}\n\n/* soft */\n.cu-input--soft[data-v-a387934b] {\n  background-color: var(--btn-soft);\n}\n.cu-input--soft[data-v-a387934b]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-soft-hover);\n}\n\n/* ghost */\n.cu-input--ghost[data-v-a387934b] {\n  background-color: transparent;\n}\n.cu-input--ghost[data-v-a387934b]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-bg-hover);\n}\n\n/* outlined */\n.cu-input--outlined[data-v-a387934b] {\n  background-color: transparent;\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-input--outlined[data-v-a387934b]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-bg-hover);\n}\n\n/* disabled */\n.cu-input--disabled[data-v-a387934b] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n"]], ["__scopeId", "data-v-a387934b"]]);
 //#endregion
 //#region src/utils/search.ts
 var ACCENT_RE = /[\u0300-\u0302\u0304-\u036f]/g;
@@ -1435,6 +1613,7 @@ var CommandPalette_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* 
 				title: __props.title,
 				size: __props.size,
 				height: __props.height,
+				"aria-label": __props.title || "Paleta de comandos",
 				onClose: handleClose
 			}, {
 				default: withCtx(() => [createElementVNode("div", {
@@ -1510,11 +1689,12 @@ var CommandPalette_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* 
 				"color",
 				"title",
 				"size",
-				"height"
+				"height",
+				"aria-label"
 			]);
 		};
 	}
-}), [["styles", ["\n.cu-command-palette[data-v-cd4667d5] {\n      display: flex;\n      flex-direction: column;\n      max-height: 60vh;\n}\n.cu-command-palette-search[data-v-cd4667d5] {\n      padding: 0.75rem;\n      border-bottom: var(--cu-border-thin) solid var(--cu-border-color);\n}\n.cu-command-palette-input[data-v-cd4667d5] {\n      width: 100%;\n}\n.cu-command-palette-results[data-v-cd4667d5] {\n      overflow-y: auto;\n      padding: 0.5rem;\n}\n.cu-command-palette-item[data-v-cd4667d5] {\n      width: 100%;\n      text-align: left;\n      border-radius: var(--cu-radius-sm);\n      gap: 0.75rem;\n}\n.cu-command-palette-item--active[data-v-cd4667d5] {\n      background-color: var(--cu-color-neutral-ghost-hover) !important;\n}\n.cu-command-palette-group-label[data-v-cd4667d5] {\n      padding: 0.5rem 0.75rem 0.25rem;\n      font-size: var(--cu-font-size-xs);\n      font-weight: var(--cu-font-weight-semibold);\n      text-transform: uppercase;\n      letter-spacing: 0.05em;\n      color: var(--cu-color-neutral);\n      opacity: var(--cu-alpha-muted, 0.5);\n}\n.cu-command-palette-item[data-v-cd4667d5] .cu-command-palette-item-icon {\n      font-size: 1rem;\n      line-height: 1;\n      flex-shrink: 0;\n}\n.cu-command-palette-item[data-v-cd4667d5] .cu-command-palette-item-label {\n      font-size: var(--cu-font-size-sm);\n      color: var(--cu-color-neutral);\n      flex: 1;\n}\n.cu-command-palette-item[data-v-cd4667d5] .cu-command-palette-item-desc {\n      font-size: var(--cu-font-size-xs);\n      color: var(--cu-color-neutral);\n      opacity: var(--cu-alpha-muted, 0.5);\n}\n.cu-command-palette-item[data-v-cd4667d5] .cu-command-palette-item-badge {\n      font-size: var(--cu-font-size-xs);\n      color: var(--cu-color-neutral);\n      opacity: var(--cu-alpha-subtle, 0.6);\n      padding: 0.125rem 0.5rem;\n      border: var(--cu-border-thin) solid var(--cu-border-color);\n      border-radius: var(--cu-radius-sm);\n      white-space: nowrap;\n      flex-shrink: 0;\n}\n.cu-command-palette-item[data-v-cd4667d5] .cu-command-palette-item-shortcut {\n      font-family: var(--cu-font-mono);\n      font-size: var(--cu-font-size-xs);\n      color: var(--cu-color-neutral);\n      opacity: var(--cu-alpha-muted, 0.5);\n      padding: 0.125rem 0.375rem;\n      border: var(--cu-border-thin) solid var(--cu-border-color);\n      border-radius: var(--cu-radius-sm);\n      flex-shrink: 0;\n}\n.cu-command-palette-empty[data-v-cd4667d5] {\n      padding: 1.5rem;\n      text-align: center;\n      font-size: var(--cu-font-size-sm);\n      color: var(--cu-color-neutral);\n      opacity: var(--cu-alpha-muted, 0.5);\n}\n    "]], ["__scopeId", "data-v-cd4667d5"]]);
+}), [["styles", ["\n.cu-command-palette[data-v-49b51788] {\n      display: flex;\n      flex-direction: column;\n      max-height: 60vh;\n}\n.cu-command-palette-search[data-v-49b51788] {\n      padding: 0.75rem;\n      border-bottom: var(--cu-border-thin) solid var(--cu-border-color);\n}\n.cu-command-palette-input[data-v-49b51788] {\n      width: 100%;\n}\n.cu-command-palette-results[data-v-49b51788] {\n      overflow-y: auto;\n      padding: 0.5rem;\n}\n.cu-command-palette-item[data-v-49b51788] {\n      width: 100%;\n      text-align: left;\n      border-radius: var(--cu-radius-sm);\n      gap: 0.75rem;\n}\n.cu-command-palette-item--active[data-v-49b51788] {\n      background-color: var(--cu-color-neutral-ghost-hover) !important;\n}\n.cu-command-palette-group-label[data-v-49b51788] {\n      padding: 0.5rem 0.75rem 0.25rem;\n      font-size: var(--cu-font-size-xs);\n      font-weight: var(--cu-font-weight-semibold);\n      text-transform: uppercase;\n      letter-spacing: 0.05em;\n      color: var(--cu-color-neutral-text-muted);\n}\n.cu-command-palette-item[data-v-49b51788] .cu-command-palette-item-icon {\n      font-size: 1rem;\n      line-height: 1;\n      flex-shrink: 0;\n}\n.cu-command-palette-item[data-v-49b51788] .cu-command-palette-item-label {\n      font-size: var(--cu-font-size-sm);\n      color: var(--cu-color-neutral);\n      flex: 1;\n}\n.cu-command-palette-item[data-v-49b51788] .cu-command-palette-item-desc {\n      font-size: var(--cu-font-size-xs);\n      color: var(--cu-color-neutral-text-muted);\n}\n.cu-command-palette-item[data-v-49b51788] .cu-command-palette-item-badge {\n      font-size: var(--cu-font-size-xs);\n      color: var(--cu-color-neutral-text-subtle);\n      padding: 0.125rem 0.5rem;\n      border: var(--cu-border-thin) solid var(--cu-border-color);\n      border-radius: var(--cu-radius-sm);\n      white-space: nowrap;\n      flex-shrink: 0;\n}\n.cu-command-palette-item[data-v-49b51788] .cu-command-palette-item-shortcut {\n      font-family: var(--cu-font-mono);\n      font-size: var(--cu-font-size-xs);\n      color: var(--cu-color-neutral-text-muted);\n      padding: 0.125rem 0.375rem;\n      border: var(--cu-border-thin) solid var(--cu-border-color);\n      border-radius: var(--cu-radius-sm);\n      flex-shrink: 0;\n}\n.cu-command-palette-empty[data-v-49b51788] {\n      padding: 1.5rem;\n      text-align: center;\n      font-size: var(--cu-font-size-sm);\n      color: var(--cu-color-neutral-text-muted);\n}\n    "]], ["__scopeId", "data-v-49b51788"]]);
 //#endregion
 //#region src/lib/overlay/command-palette.ts
 var CuCommandPalette = defineComegenElement("cu-command-palette", /* @__PURE__ */ defineComponent({

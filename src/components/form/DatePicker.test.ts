@@ -173,3 +173,123 @@ describe('DatePicker — value-format (eventos formateados)', () => {
     expect(cf.end).toMatch(/-20$/)
   })
 })
+
+describe('DatePicker — límites y "Hoy"', () => {
+  it('"Hoy" se deshabilita cuando hoy queda fuera de min/max y no emite nada', async () => {
+    const w = mount(DatePicker, { props: { min: '2026-08-01', max: '2026-08-31' } })
+    vm(w).open()
+    await flushPromises()
+    const today = w.findAll('.cu-date-picker-footer button').find((b) => b.text() === 'Hoy')
+    expect(today).toBeTruthy()
+    expect(today!.attributes('disabled')).toBeDefined()
+    // Click nativo (no `trigger` de VTU, que ignora elementos deshabilitados):
+    // comprueba además el guard de `goToday`, no solo el `disabled` visual.
+    today!.element.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    await flushPromises()
+    expect(w.emitted('change')).toBeFalsy()
+    expect(w.emitted('update:modelValue')).toBeFalsy()
+  })
+
+  it('"Hoy" sigue funcionando cuando hoy está dentro del rango', async () => {
+    const w = mount(DatePicker)
+    vm(w).open()
+    await flushPromises()
+    const today = w.findAll('.cu-date-picker-footer button').find((b) => b.text() === 'Hoy')
+    expect(today!.attributes('disabled')).toBeUndefined()
+    await today!.trigger('click')
+    await flushPromises()
+    expect(w.emitted('change')).toBeTruthy()
+  })
+
+  it('setValue no selecciona un día fuera de min/max', async () => {
+    const w = mount(DatePicker, { props: { min: '2026-08-10', max: '2026-08-20' } })
+    const setValue = (w.vm as unknown as { setValue: (v: string) => void }).setValue
+    setValue('2026-08-05')
+    await flushPromises()
+    expect(w.emitted('change')).toBeFalsy()
+    setValue('2026-08-15')
+    await flushPromises()
+    expect(w.emitted('change')).toBeTruthy()
+  })
+})
+
+describe('DatePicker — accesibilidad del trigger', () => {
+  it('el trigger expone aria-expanded y aria-haspopup, y refleja el estado del panel', async () => {
+    const w = mount(DatePicker, { props: { modelValue: '2026-08-11' } })
+    const trigger = () => w.find('.cu-date-picker-toggle')
+    expect(trigger().attributes('aria-expanded')).toBe('false')
+    expect(trigger().attributes('aria-haspopup')).toBe('dialog')
+    vm(w).open()
+    await flushPromises()
+    expect(trigger().attributes('aria-expanded')).toBe('true')
+    vm(w).close()
+    await flushPromises()
+    expect(trigger().attributes('aria-expanded')).toBe('false')
+  })
+
+  it('con label, el trigger se anuncia como "label: valor"', () => {
+    const w = mount(DatePicker, { props: { label: 'Fecha', modelValue: '2026-08-11' } })
+    expect(w.find('.cu-date-picker-toggle').attributes('aria-label')).toBe('Fecha: 11/08/2026')
+  })
+
+  it('al cerrar con el foco dentro del panel, vuelve al trigger', async () => {
+    const w = mount(DatePicker, { props: { modelValue: '2026-08-11' }, attachTo: document.body })
+    vm(w).open()
+    await flushPromises()
+    const day = dayButton(w, 15)!
+    ;(day.element as HTMLElement).focus()
+    expect((day.element as HTMLElement).ownerDocument.activeElement).toBe(day.element)
+    vm(w).close()
+    await flushPromises()
+    expect(document.activeElement).toBe(w.find('.cu-date-picker-toggle').element)
+    w.unmount()
+  })
+})
+
+describe('DatePicker — modo rango abre en el mes del rango', () => {
+  it('con startDate, el calendario interno arranca en ese mes', async () => {
+    const w = mount(DatePicker, { props: { mode: 'range', startDate: '2026-03-10' } })
+    vm(w).open()
+    await flushPromises()
+    expect(w.find('.cu-month-slider').text().toLowerCase()).toContain('marzo')
+  })
+})
+
+describe('DatePicker — cambios en caliente', () => {
+  it('pasar de single a range con el panel abierto cambia el calendario sin romper', async () => {
+    const w = mount(DatePicker, { props: { modelValue: '2026-08-11' } })
+    vm(w).open()
+    await flushPromises()
+    expect(w.find('.cu-date-picker-label').text()).toBe('11/08/2026')
+    await w.setProps({ mode: 'range' })
+    await flushPromises()
+    expect(w.find('.cu-date-picker-label').text()).toBe('Seleccionar rango...')
+    await dayButton(w, 10)!.trigger('click')
+    await flushPromises()
+    expect(w.emitted('update:startDate')).toBeTruthy()
+    await w.setProps({ mode: 'single' })
+    await flushPromises()
+    expect(w.find('.cu-date-picker-label').text()).toBe('11/08/2026')
+  })
+
+  it('limpiar en rango deja el label en el placeholder y el panel abierto', async () => {
+    const w = mount(DatePicker, { props: { mode: 'range', startDate: '2026-08-10' } })
+    vm(w).open()
+    await flushPromises()
+    const clear = w.findAll('.cu-date-picker-footer button').find((b) => b.text() === 'Limpiar')
+    await clear!.trigger('click')
+    await flushPromises()
+    expect(w.find('.cu-date-picker-label').text()).toBe('Seleccionar rango...')
+    expect(vm(w).isOpen()).toBe(true)
+    expect(w.emitted('change')?.at(-1)?.[0]).toEqual({ start: null, end: null })
+  })
+})
+
+describe('DatePicker — rol del panel', () => {
+  it('el panel se anuncia como dialog (adentro hay un grid, no menuitems)', async () => {
+    const w = mount(DatePicker)
+    vm(w).open()
+    await flushPromises()
+    expect(w.find('.cu-dropdown-panel').attributes('role')).toBe('dialog')
+  })
+})

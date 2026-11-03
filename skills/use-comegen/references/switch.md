@@ -28,9 +28,9 @@ Los valores de `color` / `size` están en «Atributos» / «Props», abajo.
 - No tiene `variant`, `theme` ni `hightContrast`.
 - No expone `toggle()`: para alternar programáticamente usá `set(!get())`.
 - `reset()` siempre apaga (`false`), no vuelve a un valor inicial.
-- `change` también se dispara con `set()`/`reset()`, no sólo por interacción del usuario.
-- `disabled` bloquea la interacción pero no `set()`.
-- El `<input>` interno tiene `tabindex="-1"`: no se enfoca con Tab, sólo con `focus()`.
+- `change` lleva el valor nuevo (`boolean`) y también se dispara con `set()`/`reset()`, no sólo por interacción del usuario.
+- `disabled` bloquea mouse y teclado pero no `set()`; el atributo se castea (`disabled="false"` lo deja encendido).
+- El `<input>` interno es la parada de tabulación (y el único nodo accesible, con `role="switch"` y `aria-checked`): <kbd>Espacio</kbd> lo alterna y `focus()` lo enfoca.
 - No hay `name`/`value` para enviarlo por un `<form>`.
 - No tiene slots con nombre: sólo el default.
 
@@ -55,7 +55,7 @@ Los valores de `color` / `size` están en «Atributos» / «Props», abajo.
 | Evento | Payload (`e.detail`) | Descripción |
 | ------ | ------ | ------ |
 | `update:modelValue` | `boolean` | — |
-| `change` | — | — |
+| `change` | `boolean` | Valor nuevo, tanto al click como en `set()`/`reset()` (no el `Event` nativo). |
 <!-- /@api:eventos -->
 
 ### Slots
@@ -98,7 +98,7 @@ Los valores de `color` / `size` están en «Atributos» / «Props», abajo.
 | Evento | Payload | Descripción |
 | ------ | ------ | ------ |
 | `update:modelValue` | `boolean` | — |
-| `change` | — | — |
+| `change` | `boolean` | Valor nuevo, tanto al click como en `set()`/`reset()` (no el `Event` nativo). |
 <!-- /@api:emits -->
 
 ### Slots

@@ -48,7 +48,7 @@ En Vue, importá `Avatar` de `@/components/information/Avatar.vue` (ver [ficha V
 
 ## Contenido
 
-Con `initials` el avatar muestra ese texto. Sin `initials` ni `src`, el contenido es el slot `default`: cualquier marcado (un `<svg>`, por ejemplo) hereda el color de texto del avatar con `stroke="currentColor"`.
+Con `initials` el avatar muestra ese texto. Sin `initials` ni `src`, el contenido es el slot `default`: cualquier marcado (un `<svg>`, por ejemplo) hereda el color de texto del avatar con `stroke="currentColor"`. Se ve **una sola cosa** a la vez: si hay `src` o `initials`, el slot no se renderiza.
 
 ```html
 <cu-avatar color="success" size="lg">
@@ -68,7 +68,9 @@ Con `initials` el avatar muestra ese texto. Sin `initials` ni `src`, el contenid
 
 ## Con imagen
 
-`src` reemplaza a las iniciales por una imagen recortada en círculo.
+`src` reemplaza a las iniciales por una imagen recortada en círculo. Si la imagen **no carga**
+(404, host caído, URL vencida), el avatar vuelve a las iniciales —o al slot— en vez de quedar como
+un círculo vacío; cambiar `src` vuelve a intentar la carga.
 
 ```html
 <cu-avatar src="https://example.com/foto.jpg" size="sm"></cu-avatar>
@@ -77,6 +79,16 @@ Con `initials` el avatar muestra ese texto. Sin `initials` ni `src`, el contenid
 ```
 
 <!-- demo:avatar-con-imagen -->
+
+## Accesibilidad
+
+- El fondo sale de `--cu-color-{color}-solid` y el texto de `--cu-color-surface`: ese par lo ajusta
+  el generador de tokens a **≥ 4.5:1** en los 15 temas. Un color fuera del set cae al que elige el
+  hash de las iniciales.
+- Las iniciales largas se recortan dentro del círculo (`overflow: hidden`): no se derraman sobre
+  el contenido de al lado.
+- La imagen usa `alt=""` (es decorativa). Si el avatar identifica a una persona y no hay un nombre
+  en texto al lado, agregá el nombre en el `aria-label` del contenedor.
 
 ## Atributos
 

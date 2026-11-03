@@ -42,7 +42,15 @@ const initials = computed(() => {
 
 <template>
   <div class="cu-author">
-    <Avatar :initials="initials" :color="props.color" :size="props.size" :src="props.src" />
+    <!-- Decorativo: el nombre ya está en texto al lado, así que las iniciales no
+         se vuelven a anunciar (`AP Ana Pérez`). -->
+    <Avatar
+      :initials="initials"
+      :color="props.color"
+      :size="props.size"
+      :src="props.src"
+      aria-hidden="true"
+    />
     <div class="cu-author-info">
       <span class="cu-author-name">{{ props.name }}</span>
       <span v-if="props.role" class="cu-author-role">{{ props.role }}</span>
@@ -71,8 +79,9 @@ const initials = computed(() => {
 
 .cu-author-role {
   font-size: var(--cu-font-size-xs);
-  color: var(--cu-color-neutral);
-  opacity: 0.5;
+  /* Token atenuado del tema (≥ 6:1 en los 15 temas). Con `opacity: 0.5` sobre el
+     color del nombre el rol caía a 2.2:1 y no se leía. */
+  color: var(--cu-color-neutral-text-muted);
   line-height: var(--cu-line-height-tight);
 }
 </style>

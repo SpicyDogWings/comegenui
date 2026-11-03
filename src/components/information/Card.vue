@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, onUpdated, ref, type PropType } from "vue";
-import { isCardLayout, isVariant } from '@/utils/validators'
+import { isCardLayout, isColor, isVariant } from '@/utils/validators'
 
 const props = defineProps({
   color: {
     type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     required: false,
     default: "neutral",
+    validator: isColor,
   },
   variant: {
     type: String as PropType<'solid' | 'outlined' | 'soft' | 'ghost' | 'subtle'>,
@@ -34,14 +35,23 @@ const props = defineProps({
   },
 });
 
+/** Un color fuera del set no tiene tokens: la variante solid quedaría sin fondo
+ *  y con el texto del tema encima (invisible). Cae al color seguro. */
+const safeColor = computed(() => (isColor(props.color) ? props.color : 'neutral'));
+
 const colorStyles = computed(() => ({
-  '--card-solid': `var(--cu-color-${props.color}-solid)`,
+  '--card-solid': `var(--cu-color-${safeColor.value}-solid)`,
   '--card-solid-text': `var(--cu-color-surface)`,
-  '--card-border': `var(--cu-color-${props.color}-border)`,
-  '--card-text': `var(--cu-color-${props.color}-text)`,
-  '--card-soft': `var(--cu-color-${props.color}-soft)`,
-  '--card-subtle': `var(--cu-color-${props.color}-subtle)`,
-  '--card-subtle-border': `var(--cu-color-${props.color}-subtle-border)`,
+  '--card-border': `var(--cu-color-${safeColor.value}-border)`,
+  '--card-text': `var(--cu-color-${safeColor.value}-text)`,
+  '--card-soft': `var(--cu-color-${safeColor.value}-soft)`,
+  '--card-subtle': `var(--cu-color-${safeColor.value}-subtle)`,
+  '--card-subtle-border': `var(--cu-color-${safeColor.value}-subtle-border)`,
+  /* Subtitle: el atenuado sale del token (≥4.5:1), nunca de `opacity`. `ghost`
+     no usa el color semántico, así que se atenúa el texto neutro. */
+  '--card-text-muted': props.variant === 'ghost'
+    ? 'var(--cu-color-neutral-text-muted)'
+    : `var(--cu-color-${safeColor.value}-text-muted)`,
 }));
 
 /*
@@ -251,9 +261,12 @@ onBeforeUnmount(() => {
 
 .cu-card-subtitle {
   font-size: var(--cu-font-size-sm);
-  opacity: 0.75;
   margin: 0;
-  color: inherit;
+  color: var(--card-text-muted);
+}
+/* Sobre solid no hay token atenuado: el texto del tema ya contrasta (≥4.5:1). */
+.cu-card.cu-card--solid .cu-card-subtitle {
+  color: var(--card-solid-text);
 }
 
 .cu-card-content {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, useId, watch, type PropType } from "vue";
-import DOMPurify from 'dompurify'
+import { sanitizeIcon } from '@/utils/sanitizeIcon'
 import { isColor, isSize, isTabsVariant } from '@/utils/validators'
 
 interface TabItem {
@@ -46,9 +46,8 @@ const props = defineProps({
 });
 
 // El campo `icon` es HTML/SVG del consumidor: se sanitiza antes de `v-html`.
-// DOMPurify deja intactos los SVG válidos y elimina `<script>`, handlers `on*`
-// y URLs peligrosas (`javascript:`), que ejecutarían en el documento anfitrión.
-const sanitizeIcon = (html?: string) => (html ? DOMPurify.sanitize(html) : undefined)
+// `sanitizeIcon` deja sólo SVG inline: sin `<script>`, handlers `on*`, `<a>`/`<img>`
+// anidados ni URLs peligrosas (`javascript:`), que ejecutarían en el documento anfitrión.
 
 // `tabs` puede llegar null/undefined (p. ej. `el.tabs = null` en el custom
 // element) o con items basura: sin esta normalización el render lanzaba
@@ -280,7 +279,7 @@ defineExpose({ getActive, setActive, next, prev });
 }
 
 .cu-tabs-tab:disabled {
-  opacity: var(--cu-alpha-muted, 0.5);
+  color: var(--cu-color-neutral-text-muted);
   cursor: not-allowed;
 }
 

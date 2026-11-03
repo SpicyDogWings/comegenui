@@ -3,6 +3,7 @@
 // Aserciones escritas a mano desde la prosa: fallan por bugs reales.
 import { describe, it, expect } from "vitest";
 import { flushPromises, mount } from "@vue/test-utils";
+import { defineComponent, h, nextTick, ref } from "vue";
 import Textarea from "./Textarea.vue";
 
 type TextareaVm = {
@@ -44,6 +45,61 @@ describe("Textarea — valor y v-model", () => {
     await flushPromises();
     expect(vm(w).get()).toBe("");
     expect((field(w).element as HTMLTextAreaElement).value).toBe("");
+  });
+
+  it("startValue está declarada pero reset() limpia: no restaura el valor inicial", async () => {
+    const w = mount(Textarea, { props: { startValue: "inicial" } });
+    await flushPromises();
+    expect(vm(w).get()).toBe("");
+
+    vm(w).set("editado");
+    vm(w).reset();
+    await flushPromises();
+
+    expect(vm(w).get()).toBe("");
+    expect((field(w).element as HTMLTextAreaElement).value).toBe("");
+  });
+
+  it("cambiar modelValue desde afuera actualiza el valor mostrado", async () => {
+    const model = ref("uno");
+    const w = mount(defineComponent({ setup: () => () => h(Textarea, { modelValue: model.value }) }));
+    await flushPromises();
+    expect((field(w).element as HTMLTextAreaElement).value).toBe("uno");
+
+    model.value = "dos";
+    await nextTick();
+    await flushPromises();
+
+    const textarea = w.findComponent(Textarea).vm as unknown as TextareaVm;
+    expect(textarea.get()).toBe("dos");
+    expect((field(w).element as HTMLTextAreaElement).value).toBe("dos");
+  });
+
+  it("focus() enfoca el textarea real", async () => {
+    const w = mount(Textarea, { attachTo: document.body });
+    vm(w).focus();
+    await flushPromises();
+
+    expect(document.activeElement).toBe(field(w).element);
+    w.unmount();
+  });
+
+  it("no emite valores intermedios durante una composición IME; sí al terminarla", async () => {
+    const w = mount(Textarea);
+    const el = field(w).element as HTMLTextAreaElement;
+
+    el.dispatchEvent(new CompositionEvent("compositionstart"));
+    el.value = "に";
+    el.dispatchEvent(new InputEvent("input", { bubbles: true, data: "に", inputType: "insertCompositionText" }));
+    await flushPromises();
+    expect(w.emitted("update:modelValue")).toBeUndefined();
+
+    el.value = "日本";
+    el.dispatchEvent(new CompositionEvent("compositionend"));
+    await flushPromises();
+
+    expect(w.emitted("update:modelValue")?.at(-1)).toEqual(["日本"]);
+    expect(vm(w).get()).toBe("日本");
   });
 });
 

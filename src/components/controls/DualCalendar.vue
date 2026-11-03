@@ -5,7 +5,7 @@
 // entre los dos (primer click en cualquiera inicia, segundo completa). No se
 // registra como Custom Element ni se publica en la lib: lo consumen
 // `DatePicker` (dualCalendar) y el playground.
-import { ref, type PropType } from 'vue'
+import { ref, watch, type PropType } from 'vue'
 import Calendar from './Calendar.vue'
 import type { DateRange } from '@/composables/useDateRange'
 import { addMonths, isMonthFormat, isYearFormat, parseDate, type CalendarEvent } from '@/utils/date'
@@ -103,16 +103,36 @@ function onRangeSelect(value: Date | DateRange) {
 }
 
 // ── Meses: el primero arranca en el mes del `startDate` (o el actual) y el
-// segundo es el siguiente. Cada Calendar navega su propio mes. ──
+// segundo es el siguiente. Cada Calendar navega su propio mes. Los dos se
+// recortan a `min`/`max`: con `min` posterior al startDate, los meses sin
+// ningún día seleccionable dejaban el picker inusable (header en el límite y
+// grilla fuera de rango). ──
+
+function clampToLimits(month: Date): Date {
+  const target = new Date(month.getFullYear(), month.getMonth(), 1)
+  const min = parseDate(props.min)
+  const max = parseDate(props.max)
+  const minMonth = min ? new Date(min.getFullYear(), min.getMonth(), 1) : null
+  const maxMonth = max ? new Date(max.getFullYear(), max.getMonth(), 1) : null
+  if (minMonth && target < minMonth) return minMonth
+  if (maxMonth && target > maxMonth) return maxMonth
+  return target
+}
 
 function initialMonth(): Date {
   const start = parseDate(props.startDate)
   const base = start ?? new Date()
-  return new Date(base.getFullYear(), base.getMonth(), 1)
+  return clampToLimits(new Date(base.getFullYear(), base.getMonth(), 1))
 }
 
 const firstMonth = ref<Date>(initialMonth())
-const secondMonth = ref<Date>(addMonths(firstMonth.value, 1))
+const secondMonth = ref<Date>(clampToLimits(addMonths(firstMonth.value, 1)))
+
+// Si min/max cambian en runtime y dejan los meses fuera del rango, se re-ajustan.
+watch([() => props.min, () => props.max], () => {
+  firstMonth.value = clampToLimits(firstMonth.value)
+  secondMonth.value = clampToLimits(secondMonth.value)
+})
 
 // ── API programática ──
 

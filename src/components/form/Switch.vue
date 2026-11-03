@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, defineModel, useTemplateRef, type PropType } from "vue";
-import { isLabelPosition, isSizeSm } from '@/utils/validators'
+import { isColor, isLabelPosition, isSizeSm } from '@/utils/validators'
 import { useFocus } from "@vueuse/core";
 
 const checked = defineModel<boolean>({ default: false });
@@ -10,6 +10,7 @@ const props = defineProps({
     type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     required: false,
     default: "neutral",
+    validator: isColor,
   },
   size: {
     type: String as PropType<'sm' | 'md'>,
@@ -36,14 +37,24 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["change"]);
+const emit = defineEmits<{
+  /** Valor nuevo, tanto al click como en `set()`/`reset()` (no el `Event` nativo). */
+  (e: "change", value: boolean): void;
+}>();
 const inputRef = useTemplateRef("input");
 const { focused: inputFocus } = useFocus(inputRef);
 
+// Igual que Button/Tabs: una prop fuera del set no puede dejar el control
+// invisible (custom property inexistente = track transparente).
+const safeColor = computed(() => (isColor(props.color) ? props.color : 'neutral'));
+const safeSize = computed(() => (isSizeSm(props.size) ? props.size : 'md'));
+
 const switchStyles = computed(() => ({
-  '--switch-bg': `var(--cu-color-${props.color})`,
-  '--switch-hover': `var(--cu-color-${props.color}-hover)`,
-  '--switch-active': `var(--cu-color-${props.color}-active)`,
+  // Track encendido con la variante sólida (el thumb es `surface`): la tonalidad
+  // plana no llega a 3:1 en varios temas/colores. Igual que Checkbox.
+  '--switch-bg': `var(--cu-color-${safeColor.value}-solid)`,
+  '--switch-hover': `var(--cu-color-${safeColor.value}-solid-hover)`,
+  '--switch-active': `var(--cu-color-${safeColor.value}-solid-active)`,
 }));
 
 const toggle = (next?: boolean) => {
@@ -84,7 +95,7 @@ defineExpose({
   <label
     class="cu-switch"
     :class="[
-      `cu-switch--${props.size}`,
+      `cu-switch--${safeSize}`,
       `cu-switch--label-${props.labelPosition}`,
       { 'cu-switch--disabled': props.disabled }
     ]"
@@ -93,16 +104,18 @@ defineExpose({
       class="cu-switch-track"
       :class="{ 'cu-switch--checked': checked }"
       :style="switchStyles"
-      role="switch"
-      :aria-checked="checked"
     >
       <span class="cu-switch-thumb" />
+      <!-- El control accesible es el input nativo: `role="switch"` acá (no en el
+           track) deja un solo nodo en el árbol de accesibilidad, con el estado
+           checked/disabled nativo y una parada de tab real. -->
       <input
         ref="input"
         type="checkbox"
+        role="switch"
+        :aria-checked="!!checked"
         :checked="checked"
         :disabled="props.disabled"
-        tabindex="-1"
         class="cu-switch-input"
         @change="onInput"
       />
@@ -142,7 +155,8 @@ defineExpose({
   display: inline-flex;
   align-items: center;
   border-radius: var(--cu-radius-full);
-  transition: all 150ms ease;
+  /* Sin `all`: el anillo de foco no se anima desde los valores iniciales. */
+  transition: background-color 150ms ease, border-color 150ms ease;
   box-sizing: border-box;
 }
 
@@ -191,6 +205,12 @@ defineExpose({
   opacity: var(--cu-alpha-disabled, 0.7);
 }
 
+/* Anillo de foco sobre el track visible (el input es transparente). */
+.cu-switch-track:focus-within {
+  outline: var(--cu-border-medium) solid var(--cu-border-color-focus);
+  outline-offset: var(--cu-space-2xs);
+}
+
 .cu-switch-thumb {
   position: absolute;
   border-radius: var(--cu-radius-full);
@@ -221,11 +241,17 @@ defineExpose({
   transform: translateX(8px);
 }
 
+/* El input nativo cubre el track: recibe el click, el foco del teclado (Space
+   alterna) y el anillo de `:focus-within`. Sin `tabindex="-1"` ni tamaño 0. */
 .cu-switch-input {
   position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
   opacity: 0;
-  width: 0;
-  height: 0;
+  cursor: inherit;
+  box-sizing: border-box;
 }
 
 .cu-switch-label {

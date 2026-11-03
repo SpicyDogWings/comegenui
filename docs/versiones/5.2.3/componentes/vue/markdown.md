@@ -41,14 +41,20 @@ En HTML plano, cargá el bundle `CuMarkdown` (ver [ficha vanilla](/componentes/c
 > El contenido va por el slot `default`, no como prop, y se parsea **una vez al montarse**: para
 > actualizarlo hay que remontar el componente. En un `.vue` **no** sirve el texto multilínea
 > literal (Vue colapsa los saltos de línea): pasalo por interpolación.
-> Las tablas se renderizan con `<Table>`, los code blocks con `<CodeBlock>`, el HTML se sanitiza
-> con DOMPurify y los tokens del tema los aporta el CSS del host.
+> Las tablas se renderizan con `<Table>`, los code blocks con `<CodeBlock>` y los tokens del tema
+> los aporta el CSS del host. Los bloques de **HTML crudo se muestran como bloque de código**
+> (no se ejecutan) y las etiquetas de HTML inline se descartan (el texto queda); el HTML que sí
+> se interpreta —el embebido en blockquotes y celdas de tabla— se sanitiza con DOMPurify. Los
+> links abren en una pestaña nueva (`target="_blank"` + `rel="noopener"`), también dentro de
+> blockquotes y celdas; un esquema ejecutable (`javascript:`, `data:`, `vbscript:`) no navega.
 
 ## Encabezados
 
 Al terminar de parsear, el componente emite `parsed` con los ids de los encabezados;
 `headingIds()` los devuelve sobre la `ref`. El `id` es el que queda en cada heading, así que sirve
-para anclas.
+para anclas. Sale del texto visible —el formato no cuenta (`# **Hola**` → `hola`)—, se numera si
+el texto se repite (`igual`, `igual-1`, `igual-2`) y cae en `section` cuando el encabezado no deja
+texto.
 
 ````vue
 <script setup lang="ts">

@@ -3,6 +3,11 @@
 import { describe, it, expect } from "vitest";
 import { flushPromises, mount } from "@vue/test-utils";
 import Alert from "./Alert.vue";
+import AlertCe from "../customElements/information/Alert.ce.vue";
+import { defineComegenElement } from "@/utils/comegen-element";
+
+const CE_TAG = "cu-alert-audit";
+customElements.get(CE_TAG) ?? defineComegenElement(CE_TAG, AlertCe);
 
 type AlertVm = {
   open: () => void;
@@ -83,7 +88,7 @@ describe("Alert — botón de cerrar", () => {
 
   it("sin título ni ícono, el close acompaña al cuerpo (sin cabecera propia)", () => {
     const w = mount(Alert, { props: { close: true }, slots: { default: "Contenido" } });
-    expect(w.find(".cu-alert-header").exists()).toBe(false);
+    expect(w.find(".cu-alert-header").isVisible()).toBe(false);
     const btn = w.find(".cu-alert-close");
     expect(btn.exists()).toBe(true);
     expect(btn.classes()).toContain("cu-alert-close--floating");
@@ -120,5 +125,119 @@ describe("Alert — contenido", () => {
 
     const outlined = mount(Alert, { props: { color: "warning", variant: "outlined" } });
     expect(root(outlined).attributes("style")).toContain("--alert-border: var(--cu-color-warning-border)");
+  });
+});
+
+describe("Alert — ícono", () => {
+  it("renderiza el ícono del slot una sola vez, dentro de la cabecera", () => {
+    const w = mount(Alert, {
+      props: { title: "Aviso" },
+      slots: { icon: '<svg class="mi-icono"></svg>' },
+    });
+    expect(w.findAll(".mi-icono")).toHaveLength(1);
+    expect(w.find(".cu-alert-header .mi-icono").exists()).toBe(true);
+  });
+
+  it("en el custom element el ícono se asigna al slot visible de la cabecera", async () => {
+    const el = document.createElement(CE_TAG);
+    el.setAttribute("title", "Con ícono");
+    el.innerHTML = '<span slot="icon" class="mi-icono-ce"><svg></svg></span>cuerpo';
+    document.body.appendChild(el);
+    await flushPromises();
+
+    const header = el.shadowRoot!.querySelector(".cu-alert-header") as HTMLElement;
+    const slots = el.shadowRoot!.querySelectorAll('slot[name="icon"]');
+    expect(slots).toHaveLength(1);
+    expect(header.contains(slots[0]!)).toBe(true);
+    expect((slots[0] as HTMLSlotElement).assignedNodes()).toHaveLength(1);
+    expect(el.querySelector(".mi-icono-ce")).toBe((slots[0] as HTMLSlotElement).assignedNodes()[0]);
+    expect(header.style.display).not.toBe("none");
+    el.remove();
+  });
+
+  it("un ícono sin título arma la cabecera aunque el HTML llegue después del mount", async () => {
+    const el = document.createElement(CE_TAG);
+    document.body.appendChild(el);
+    await flushPromises();
+    const header = () => el.shadowRoot!.querySelector(".cu-alert-header") as HTMLElement;
+    expect(header().style.display).toBe("none");
+
+    el.innerHTML = '<span slot="icon" class="mi-icono-ce"><svg></svg></span>solo ícono';
+    await flushPromises();
+
+    expect(header().style.display).not.toBe("none");
+    el.remove();
+  });
+});
+
+describe("Alert — color y formularios", () => {
+  it("un color inválido cae al color seguro (la variante solid no queda invisible)", () => {
+    const w = mount(Alert, { props: { color: "sucess" as never, variant: "solid" } });
+    const style = root(w).attributes("style") ?? "";
+    expect(style).toContain("--alert-solid: var(--cu-color-neutral-solid)");
+    expect(style).not.toContain("sucess");
+  });
+
+  it("el botón de cerrar no envía el formulario que lo contiene", async () => {
+    const form = document.createElement("form");
+    document.body.appendChild(form);
+    let submits = 0;
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      submits++;
+    });
+
+    for (const title of [undefined, "Aviso"]) {
+      const w = mount(Alert, { props: { close: true, title }, attachTo: form });
+      await flushPromises();
+      await w.find(".cu-alert-close").trigger("click");
+      expect(submits, `con title=${title}`).toBe(0);
+      w.unmount();
+    }
+    form.remove();
+  });
+
+  it("dos instancias manejan su visibilidad de forma independiente", async () => {
+    const a = mount(Alert, { props: { close: true } });
+    const b = mount(Alert, { props: { close: true } });
+    await a.find(".cu-alert-close").trigger("click");
+    expect(vm(a).isOpen()).toBe(false);
+    expect(vm(b).isOpen()).toBe(true);
+  });
+});
+
+describe("Alert — rol ARIA según urgencia", () => {
+  it("warning/danger usan role=alert (assertive); el resto role=status (polite)", () => {
+    for (const color of ["warning", "danger"] as const) {
+      const w = mount(Alert, { props: { color } });
+      expect(root(w).attributes("role"), color).toBe("alert");
+      expect(root(w).attributes("aria-live"), color).toBe("assertive");
+    }
+    for (const color of ["primary", "secondary", "neutral", "success"] as const) {
+      const w = mount(Alert, { props: { color } });
+      expect(root(w).attributes("role"), color).toBe("status");
+      expect(root(w).attributes("aria-live"), color).toBe("polite");
+    }
+  });
+
+  it("un color inválido cae a status (neutral)", () => {
+    const w = mount(Alert, { props: { color: "sucess" as never } });
+    expect(root(w).attributes("role")).toBe("status");
+  });
+
+  it("el custom element refleja el rol del color en el árbol interno", async () => {
+    const el = document.createElement(CE_TAG);
+    el.setAttribute("color", "danger");
+    el.textContent = "Peligro";
+    document.body.appendChild(el);
+    await flushPromises();
+    const inner = el.shadowRoot!.querySelector(".cu-alert")!;
+    expect(inner.getAttribute("role")).toBe("alert");
+    expect(inner.getAttribute("aria-live")).toBe("assertive");
+    el.setAttribute("color", "success");
+    await flushPromises();
+    expect(inner.getAttribute("role")).toBe("status");
+    expect(inner.getAttribute("aria-live")).toBe("polite");
+    el.remove();
   });
 });

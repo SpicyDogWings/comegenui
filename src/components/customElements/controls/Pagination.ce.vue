@@ -45,7 +45,7 @@ const props = defineProps({
     required: false,
     default: false,
   },
-  /** Opciones del selector (atributo HTML: `page-size-options`) */
+  /** Opciones del selector (array: se asigna como propiedad JS, no como atributo) */
   pageSizeOptions: {
     type: Array as () => number[],
     required: false,

@@ -50,7 +50,7 @@ Selector de archivos con zona de drag & drop amplia, soporte para carpetas (recu
 
 ## Estados
 
-`disabled` y `read-only` cortan click, drag y drop; `disabled` además atenúa la zona y esconde el botón de quitar de cada archivo.
+`disabled` y `read-only` cortan click, drag y drop y deshabilitan el control de selección; en ambos se esconde el botón de quitar de cada archivo, y `disabled` además atenúa la zona.
 
 ```html
 <cu-file-input-zone disabled placeholder="Deshabilitado"></cu-file-input-zone>
@@ -80,6 +80,10 @@ Selector de archivos con zona de drag & drop amplia, soporte para carpetas (recu
 <!-- demo:file-input-zone-multiple-carpetas -->
 
 > Los archivos con `size === 0 && !type` (directorios sueltos) se filtran solos. El listado usa `<cu-file-list>` por dentro: icono por extensión, nombre, tamaño y botón X para quitar; al hacer click en un archivo se abre en una pestaña nueva.
+
+> Al soltar varios archivos se listan en el orden del drop (aunque la lectura de cada uno termine antes o después) y, si el origen del arrastre no expone `items`, se usan los `files` del `DataTransfer`. Enter/Espacio sobre la zona abren el diálogo; el botón X de cada fila no lo abre. El input nativo queda vacío al procesar, así que se puede volver a elegir el mismo archivo.
+
+> **Accesibilidad:** la zona se anuncia como grupo (`role="group"`) y el control de selección es un `<button>` propio que cubre el área (nombre accesible: el placeholder, o `Agregar archivos`/`Cambiar archivo` cuando ya hay archivos). Las filas de la lista viven **fuera** de ese botón: el nombre es un botón que abre la previsualización (click, Enter o Espacio) y la X tiene nombre accesible (`Quitar <archivo>`).
 
 ## Alto máximo
 

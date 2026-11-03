@@ -66,3 +66,83 @@ describe("InlineRenderer — tokens inline de marked", () => {
     expect(img.attributes("alt")).toBe("una foto");
   });
 });
+
+// ── Seguridad: los tokens no pueden inyectar HTML ni atributos ───────────────
+describe("InlineRenderer — seguridad", () => {
+  it("escapa las comillas del src de una imagen", () => {
+    const w = render([{ type: "image", href: 'a" onerror="alert(1)', text: "x" }]);
+    const img = w.find("img.cu-md-image");
+    expect(img.exists()).toBe(true);
+    expect(img.attributes("onerror")).toBeUndefined();
+    expect(img.attributes("src")).toBe('a" onerror="alert(1)');
+  });
+
+  it("no vuelve a escapar las entidades del texto", () => {
+    const w = render([{ type: "text", text: "a & b < c" }]);
+    expect(w.text()).toBe("a & b < c");
+  });
+
+  it("respeta las entidades ya codificadas en el alt", () => {
+    const w = render([
+      {
+        type: "image",
+        href: "/foto.png",
+        text: "a &amp; b",
+        tokens: [{ type: "text", text: "a &amp; b" }],
+      },
+    ]);
+    expect(w.find("img.cu-md-image").attributes("alt")).toBe("a & b");
+  });
+
+  it("usa el texto plano como alt, sin marcado", () => {
+    const w = render([
+      {
+        type: "image",
+        href: "/foto.png",
+        text: "**una foto**",
+        tokens: [{ type: "strong", tokens: [{ type: "text", text: "una foto" }] }],
+      },
+    ]);
+    expect(w.find("img.cu-md-image").attributes("alt")).toBe("una foto");
+  });
+
+  it("escapa el `<` de un token escape anidado", () => {
+    const w = render([
+      {
+        type: "strong",
+        tokens: [
+          { type: "escape", text: "<" },
+          { type: "text", text: "img src=x onerror=alert(1)>" },
+        ],
+      },
+    ]);
+    expect(w.find("img").exists()).toBe(false);
+    expect(w.find("strong").text()).toBe("<img src=x onerror=alert(1)>");
+  });
+
+  it("escapa las comillas del href de un link anidado", () => {
+    const w = render([
+      {
+        type: "strong",
+        tokens: [
+          {
+            type: "link",
+            href: 'a" onmouseover="alert(1)',
+            tokens: [{ type: "text", text: "x" }],
+          },
+        ],
+      },
+    ]);
+    const link = w.find("a");
+    expect(link.exists()).toBe(true);
+    expect(link.attributes("onmouseover")).toBeUndefined();
+  });
+
+  it("un link ejecutable no se renderiza como ancla", () => {
+    const w = render([
+      { type: "link", href: "javascript:alert(1)", tokens: [{ type: "text", text: "x" }] },
+    ]);
+    expect(w.find("a").exists()).toBe(false);
+    expect(w.findAll("a[href]")).toHaveLength(0);
+  });
+});

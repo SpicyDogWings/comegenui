@@ -31,8 +31,9 @@ En HTML plano, cargá el bundle `CuLabel` (ver [ficha vanilla](/componentes/cu-l
 
 ## Colores
 
-`color` pinta el texto con el token del tema activo (`--cu-color-{color}`), así que el mismo
-nombre se ve distinto en cada tema.
+`color` pinta el texto con el token de texto del tema activo (`--cu-color-{color}-text`), así que el
+mismo nombre se ve distinto en cada tema. Se usa la variante `-text` (no el color base) porque el
+base no llega al contraste AA de 4.5:1 sobre la superficie en la mayoría de los temas.
 
 ```vue
 <Label label="primary" color="primary" />
@@ -55,6 +56,10 @@ del slot (`input`, `select`, `textarea`, `button`, `[tabindex]`) y queda enfocad
 `<label>` nativo; un campo de texto, `select`, etc. sólo se enfoca. Funciona igual con un campo
 nativo, con un componente cuyo root no es un campo (`Checkbox`, `Switch`) o con un custom element,
 entrando a su shadow root.
+
+Un click que nace en **otro** interactivo del slot (un link, un botón, un segundo campo) es de ese
+elemento: el label no le cancela la acción ni le roba el foco. Sólo el primer control recibe el click
+del texto/espacio libre del label.
 
 ```vue
 <script setup lang="ts">

@@ -204,9 +204,10 @@ const ariaYearNext = 'Ir al año siguiente'
 // ── Estilos por color semántico (cascada hacia el label) ──
 
 const colorStyles = computed(() => ({
-  '--ms-accent': `var(--cu-color-${props.color})`,
-  '--ms-accent-hover': `var(--cu-color-${props.color}-hover)`,
   '--ms-accent-text': `var(--cu-color-${props.color}-text)`,
+  '--ms-accent-border': `var(--cu-color-${props.color}-border)`,
+  '--ms-solid': `var(--cu-color-${props.color}-solid)`,
+  '--ms-solid-hover': `var(--cu-color-${props.color}-solid-hover)`,
   '--ms-soft': `var(--cu-color-${props.color}-soft)`,
   '--ms-soft-hover': `var(--cu-color-${props.color}-soft-hover)`,
   '--ms-subtle': `var(--cu-color-${props.color}-subtle)`,

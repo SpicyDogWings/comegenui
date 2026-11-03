@@ -3,5 +3,5 @@
 | `get` | Devuelve el `File` actual o `null` |
 | `set` | Asigna un archivo programáticamente |
 | `reset` | Limpia la selección |
-| `focus` | Enfoca el input |
+| `focus` | Enfoca el control de selección. |
 | `trigger` | Abre el diálogo nativo de selección de archivos |

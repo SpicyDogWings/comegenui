@@ -60,3 +60,18 @@ describe("CodeBlock — variantes y números de línea", () => {
     expect(w.find(".cu-code-block-copy").exists()).toBe(true);
   });
 });
+
+describe("CodeBlock — accesibilidad", () => {
+  it("el bloque scrolleable es un punto de foco con nombre", () => {
+    const w = mount(CodeBlock, { props: { code: "x", language: "js" } });
+    const pre = w.find("pre.cu-code-block-pre");
+    expect(pre.attributes("tabindex")).toBe("0");
+    expect(pre.attributes("role")).toBe("region");
+    expect(pre.attributes("aria-label")).toBe("Bloque de código (js)");
+  });
+
+  it("sin lenguaje el nombre accesible es genérico", () => {
+    const w = mount(CodeBlock, { props: { code: "x" } });
+    expect(w.find("pre.cu-code-block-pre").attributes("aria-label")).toBe("Bloque de código");
+  });
+});

@@ -38,7 +38,9 @@ activo. Los 6 valores son `primary`, `secondary`, `neutral` (**default**), `succ
 ## Descripción
 
 `description` agrega una línea de texto secundario bajo el `label`, dentro del mismo trigger.
-Es opcional y, si queda vacía, no se renderiza nada.
+Es opcional y, si queda vacía, no se renderiza nada. Se renderiza como un `<span>` en bloque
+(`display: block`): dentro de un `<button>` sólo es válido contenido de tipo *phrasing*, así que
+no se usa un párrafo.
 
 ```html
 <cu-collapse label="Plan Pro" description="Facturación mensual, cancela cuando quieras">
@@ -52,6 +54,9 @@ Es opcional y, si queda vacía, no se renderiza nada.
 
 `icon` acepta un string SVG/HTML que se inyecta **antes del label**, dentro del trigger. En
 HTML plano se asigna como propiedad (el atributo no tolera el markup inline).
+
+> El HTML del `icon` se sanitiza con **DOMPurify** antes de inyectarse: los SVG válidos se
+> conservan y se eliminan `<script>`, handlers `on*` y URLs peligrosas.
 
 ```html
 <cu-collapse id="conIcono" label="Con ícono" color="warning" default-open>
@@ -176,6 +181,13 @@ Los collapses se pueden anidar para construir árboles de menú:
 ```
 
 <!-- demo:collapse-completo -->
+
+## Accesibilidad
+
+- El trigger es un `<button>` nativo: `Enter` y `Espacio` alternan el estado, y con `prefers-reduced-motion: reduce` la altura y el chevron no animan.
+- El botón expone `aria-expanded` (`"true"`/`"false"`) y `aria-controls` apuntando al `id` del contenido. El `id` se genera por instancia y vive en el mismo árbol que el botón (light DOM en Vue, shadow root en el Custom Element), así que el `aria-controls` siempre resuelve.
+- El chevron es decorativo (`aria-hidden="true"`, `focusable="false"`) y no aparece en el árbol accesible.
+- Con `disabled`, el botón lleva el `disabled` nativo: sale del orden de tabulación y los lectores de pantalla lo anuncian como deshabilitado. El contenido ya abierto sigue visible y `close()` sigue funcionando desde código.
 
 ## Atributos
 

@@ -5,8 +5,13 @@
 // mano desde esa prosa, no se derivan del código.
 import { describe, it, expect } from "vitest";
 import { nextTick } from "vue";
-import { mount } from "@vue/test-utils";
+import { flushPromises, mount } from "@vue/test-utils";
 import Card from "./Card.vue";
+import CardCe from "../customElements/information/Card.ce.vue";
+import { defineComegenElement } from "@/utils/comegen-element";
+
+const CE_TAG = "cu-card-audit";
+customElements.get(CE_TAG) ?? defineComegenElement(CE_TAG, CardCe);
 
 const root = (w: ReturnType<typeof mount>) => w.find(".cu-card");
 
@@ -110,5 +115,67 @@ describe("Card — footer y layout", () => {
     await nextTick();
     expect(w.find(".mi-media").exists()).toBe(true);
     expect(w.find(".cu-card-image").exists()).toBe(false);
+  });
+});
+
+describe("Card — color inválido", () => {
+  it("un color fuera del set cae al color seguro (la variante solid no queda invisible)", () => {
+    const w = mount(Card, { props: { color: "sucess" as never, variant: "solid" } });
+    const style = root(w).attributes("style") ?? "";
+    expect(style).toContain("--card-solid: var(--cu-color-neutral-solid)");
+    expect(style).not.toContain("sucess");
+  });
+});
+
+describe("Card — subtítulo atenuado", () => {
+  it("usa el token atenuado con contraste garantizado, no `opacity`", () => {
+    const w = mount(Card, { props: { subtitle: "Último corte" } });
+    expect(root(w).attributes("style") ?? "").toContain(
+      "--card-text-muted: var(--cu-color-neutral-text-muted)",
+    );
+
+    const colored = mount(Card, { props: { subtitle: "Último corte", color: "primary", variant: "soft" } });
+    expect(root(colored).attributes("style") ?? "").toContain(
+      "--card-text-muted: var(--cu-color-primary-text-muted)",
+    );
+  });
+});
+
+describe("Card — custom element", () => {
+  it("los slots media/header/footer del light DOM se proyectan y muestran", async () => {
+    const el = document.createElement(CE_TAG);
+    el.setAttribute("title", "Título");
+    el.innerHTML = `
+      <span slot="media" class="media-ce">media</span>
+      <span slot="header" class="header-ce">header</span>
+      <span slot="footer" class="footer-ce">footer</span>
+      cuerpo
+    `;
+    document.body.appendChild(el);
+    await flushPromises();
+
+    expect((el.shadowRoot!.querySelector(".cu-card-media") as HTMLElement).style.display).not.toBe("none");
+    expect((el.shadowRoot!.querySelector(".cu-card-footer") as HTMLElement).style.display).not.toBe("none");
+    expect(el.shadowRoot!.querySelector(".cu-card-title")).toBeNull();
+    const headerSlot = el.shadowRoot!.querySelector(".cu-card-header slot") as HTMLSlotElement;
+    expect(headerSlot.assignedNodes().some((node) => (node as Element).classList?.contains("header-ce"))).toBe(true);
+    el.remove();
+  });
+});
+
+describe("Card — click del custom element", () => {
+  it("un click en el contenido llega al host una sola vez (evento nativo)", async () => {
+    const el = document.createElement(CE_TAG);
+    el.innerHTML = "<p class='contenido'>hola</p>";
+    document.body.appendChild(el);
+    await flushPromises();
+
+    const seen: Event[] = [];
+    el.addEventListener("click", (event) => seen.push(event));
+    (el.shadowRoot!.querySelector("article") as HTMLElement).click();
+
+    expect(seen).toHaveLength(1);
+    expect(seen[0]).toBeInstanceOf(MouseEvent);
+    el.remove();
   });
 });

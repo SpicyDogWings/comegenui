@@ -1,5 +1,5 @@
 /*! comegenui v5.2.3 · CuFileInput (cu-file-input) · esm-shared · Vue externo (bare import) */
-import { Fragment, computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, createTextVNode, defineComponent, defineCustomElement, getCurrentInstance, mergeModels, nextTick, normalizeClass, normalizeStyle, onMounted, onUnmounted, openBlock, ref, renderSlot, shallowRef, toDisplayString, toValue, unref, useModel, useTemplateRef, vShow, watch, withCtx, withDirectives, withKeys, withModifiers } from "vue";
+import { Fragment, computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, createTextVNode, defineComponent, defineCustomElement, getCurrentInstance, mergeModels, normalizeClass, normalizeStyle, onBeforeUnmount, onMounted, onUnmounted, onUpdated, openBlock, ref, renderSlot, toDisplayString, unref, useModel, useTemplateRef, vShow, watch, withCtx, withDirectives, withModifiers } from "vue";
 //#region src/utils/comegen-element.ts
 var BUILD_META = {
 	"version": "5.2.3",
@@ -35,8 +35,47 @@ function attachMeta(ctor, meta) {
 	return ctor;
 }
 /** `aria-describedby` → `ariaDescribedby` (mismo algoritmo que Vue). */
-function camelize$1(name) {
+function camelize(name) {
 	return name.replace(/-(\w)/g, (_, char) => char ? char.toUpperCase() : "");
+}
+/** `Boolean`, `{ type: Boolean }` o `{ type: [String, Boolean] }` → tipos efectivos. */
+function typesOf(option) {
+	let raw = option;
+	if (typeof option === "object" && option !== null && !Array.isArray(option) && "type" in option) raw = option.type;
+	const list = Array.isArray(raw) ? raw : [raw];
+	return {
+		boolean: list.includes(Boolean),
+		number: list.includes(Number),
+		string: list.includes(String)
+	};
+}
+/** Tipos declarados por prop, en camelCase (cacheado por definición). */
+var PROP_TYPES = /* @__PURE__ */ new WeakMap();
+function propTypes(def) {
+	const cached = PROP_TYPES.get(def);
+	if (cached) return cached;
+	const map = /* @__PURE__ */ new Map();
+	const props = def.props;
+	if (props && !Array.isArray(props)) for (const [key, option] of Object.entries(props)) map.set(camelize(key), typesOf(option));
+	PROP_TYPES.set(def, map);
+	return map;
+}
+/**
+* Atributo del host → valor de la prop. Un atributo llega siempre como string:
+* `_setProp` con el string crudo dejaba `disabled="false"` deshabilitado (el
+* string es truthy) y `model-value="false"` marcado. Se castea con la misma
+* regla que HTML/Vue: un atributo Boolean presente es `true`, salvo el texto
+* explícito `"false"` (y `""`/`"true"` → `true`); Number se parsea. Sin tipos
+* declarados (`props: ['value']`) no se adivina: el valor queda string.
+*/
+function castPropValue(value, types) {
+	if (!types) return value;
+	if (types.boolean) return value.trim().toLowerCase() !== "false";
+	if (types.number && !types.string) {
+		const parsed = parseFloat(value);
+		if (!Number.isNaN(parsed)) return parsed;
+	}
+	return value;
 }
 /** Props declaradas por el componente, en camelCase (cacheado por definición). */
 var PROP_KEYS = /* @__PURE__ */ new WeakMap();
@@ -45,7 +84,7 @@ function declaredProps(def) {
 	if (cached) return cached;
 	const props = def.props;
 	const keys = !props ? [] : Array.isArray(props) ? props : Object.keys(props);
-	const set = new Set(keys.map((key) => camelize$1(String(key))));
+	const set = new Set(keys.map((key) => camelize(String(key))));
 	PROP_KEYS.set(def, set);
 	return set;
 }
@@ -98,7 +137,7 @@ function makeElement(component, meta) {
 		_setAttr(key) {
 			if (key.startsWith("data-v-")) return;
 			const self = this;
-			const camelKey = camelize$1(key);
+			const camelKey = camelize(key);
 			const isProp = declaredProps(self._def).has(camelKey);
 			if (!isProp && key === "id") return;
 			if (!isProp && key === FOCUS_ATTR) {
@@ -120,12 +159,7 @@ function makeElement(component, meta) {
 		_applyProp(propKey, value, camelKey) {
 			const self = this;
 			if (value !== null) {
-				let parsed = value;
-				if (self._numberProps?.[camelKey]) {
-					const n = parseFloat(value);
-					if (!Number.isNaN(n)) parsed = n;
-				}
-				self._setProp(propKey, parsed, false, true);
+				self._setProp(propKey, castPropValue(value, propTypes(self._def).get(camelKey)), false, true);
 				return;
 			}
 			if (!Object.prototype.hasOwnProperty.call(self._props, propKey)) return;
@@ -429,102 +463,6 @@ oneOf(NAVBAR_SEARCH_MODES);
 oneOf(SELECT_SEARCH_MODES);
 oneOf(CELLS_IMPORTER_INPUT_TYPES);
 //#endregion
-//#region node_modules/.pnpm/@vueuse+shared@14.4.0_vue@3.6.0-rc.11_@typescript+typescript6@6.0.2_/node_modules/@vueuse/shared/dist/index.js
-var isClient = typeof window !== "undefined" && typeof document !== "undefined";
-typeof WorkerGlobalScope !== "undefined" && globalThis instanceof WorkerGlobalScope;
-var toString = Object.prototype.toString;
-var isObject = (val) => toString.call(val) === "[object Object]";
-function toArray(value) {
-	return Array.isArray(value) ? value : [value];
-}
-/**
-* Shorthand for watching value with {immediate: true}
-*
-* @see https://vueuse.org/watchImmediate
-*/
-function watchImmediate(source, cb, options) {
-	return watch(source, cb, {
-		...options,
-		immediate: true
-	});
-}
-//#endregion
-//#region node_modules/.pnpm/@vueuse+core@14.4.0_vue@3.6.0-rc.11_@typescript+typescript6@6.0.2_/node_modules/@vueuse/core/dist/index.js
-var defaultWindow = isClient ? window : void 0;
-isClient && window.document;
-isClient && window.navigator;
-isClient && window.location;
-/**
-* Get the dom element of a ref of element or Vue component instance
-*
-* @param elRef
-*/
-function unrefElement(elRef) {
-	var _$el;
-	const plain = toValue(elRef);
-	return (_$el = plain === null || plain === void 0 ? void 0 : plain.$el) !== null && _$el !== void 0 ? _$el : plain;
-}
-function useEventListener(...args) {
-	const register = (el, event, listener, options) => {
-		el.addEventListener(event, listener, options);
-		return () => el.removeEventListener(event, listener, options);
-	};
-	const firstParamTargets = computed(() => {
-		const test = toArray(toValue(args[0])).filter((e) => e != null);
-		return test.every((e) => typeof e !== "string") ? test : void 0;
-	});
-	return watchImmediate(() => {
-		var _firstParamTargets$va, _firstParamTargets$va2;
-		return [
-			(_firstParamTargets$va = (_firstParamTargets$va2 = firstParamTargets.value) === null || _firstParamTargets$va2 === void 0 ? void 0 : _firstParamTargets$va2.map((e) => unrefElement(e))) !== null && _firstParamTargets$va !== void 0 ? _firstParamTargets$va : [defaultWindow].filter((e) => e != null),
-			toArray(toValue(firstParamTargets.value ? args[1] : args[0])),
-			toArray(unref(firstParamTargets.value ? args[2] : args[1])),
-			toValue(firstParamTargets.value ? args[3] : args[2])
-		];
-	}, ([raw_targets, raw_events, raw_listeners, raw_options], _, onCleanup) => {
-		if (!(raw_targets === null || raw_targets === void 0 ? void 0 : raw_targets.length) || !(raw_events === null || raw_events === void 0 ? void 0 : raw_events.length) || !(raw_listeners === null || raw_listeners === void 0 ? void 0 : raw_listeners.length)) return;
-		const optionsClone = isObject(raw_options) ? { ...raw_options } : raw_options;
-		const cleanups = raw_targets.flatMap((el) => raw_events.flatMap((event) => raw_listeners.map((listener) => register(el, event, listener, optionsClone))));
-		onCleanup(() => {
-			cleanups.forEach((fn) => fn());
-		});
-	}, { flush: "post" });
-}
-/**
-* Track or set the focus state of a DOM element.
-*
-* @see https://vueuse.org/useFocus
-* @param target The target element for the focus and blur events.
-* @param options
-*/
-function useFocus(target, options = {}) {
-	const { initialValue = false, focusVisible = false, preventScroll = false } = options;
-	const innerFocused = shallowRef(false);
-	const targetElement = computed(() => unrefElement(target));
-	const listenerOptions = { passive: true };
-	useEventListener(targetElement, "focus", (event) => {
-		var _matches, _ref;
-		if (!focusVisible || ((_matches = (_ref = event.target).matches) === null || _matches === void 0 ? void 0 : _matches.call(_ref, ":focus-visible"))) innerFocused.value = true;
-	}, listenerOptions);
-	useEventListener(targetElement, "blur", () => innerFocused.value = false, listenerOptions);
-	const focused = computed({
-		get: () => innerFocused.value,
-		set(value) {
-			var _targetElement$value, _targetElement$value2;
-			if (!value && innerFocused.value) (_targetElement$value = targetElement.value) === null || _targetElement$value === void 0 || _targetElement$value.blur();
-			else if (value && !innerFocused.value) (_targetElement$value2 = targetElement.value) === null || _targetElement$value2 === void 0 || _targetElement$value2.focus({ preventScroll });
-		}
-	});
-	watch(targetElement, () => {
-		focused.value = initialValue;
-	}, {
-		immediate: true,
-		flush: "post"
-	});
-	return { focused };
-}
-Number.POSITIVE_INFINITY;
-//#endregion
 //#region src/components/icons/IconBase.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1$3 = ["width", "height"];
 //#endregion
@@ -663,6 +601,7 @@ var Button_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineCom
 		const props = __props;
 		const isDisabled = computed(() => props.disabled || props.loading);
 		const safeColor = computed(() => isColor(props.color) ? props.color : "neutral");
+		const safeVariant = computed(() => isVariantFull(props.variant) ? props.variant : "ghost");
 		const buttonType = computed(() => isButtonType(props.type) ? props.type : "button");
 		const safeTo = computed(() => {
 			const value = props.to?.trim();
@@ -727,7 +666,7 @@ var Button_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineCom
 		}));
 		const rootClasses = computed(() => [
 			"cu-button",
-			`cu-button--${props.variant}`,
+			`cu-button--${safeVariant.value}`,
 			`cu-button--${props.size}`,
 			{
 				"cu-button--disabled": isDisabled.value,
@@ -779,8 +718,8 @@ var Button_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineCom
 	}
 });
 //#endregion
-//#region src/components/buttons/Button.vue?vue&type=style&index=0&inline&scoped=cb9decf8&lang.css
-var Button_vue_vue_type_style_index_0_inline_scoped_cb9decf8_lang_default = "\n.cu-button[data-v-cb9decf8] {\n  font-family: var(--cu-font-sans);\n  text-decoration: none;\n  font-size: var(--cu-font-size-sm);\n  font-weight: var(--cu-font-weight-medium);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius);\n  border: none;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--cu-space-xs);\n  box-sizing: border-box;\n  transition: all 150ms ease;\n}\n.cu-button[data-v-cb9decf8]:active:not(.cu-button--disabled) {\n  transform: scale(0.97);\n}\n.cu-button--disabled[data-v-cb9decf8] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n\n/* sizes (md = base; link mantiene su padding 0) */\n.cu-button--sm[data-v-cb9decf8]:not(.cu-button--link) {\n  font-size: var(--cu-font-size-xs);\n  padding: var(--cu-space-xs) var(--cu-space-sm);\n}\n.cu-button--lg[data-v-cb9decf8]:not(.cu-button--link) {\n  font-size: var(--cu-font-size-lg);\n  padding: var(--cu-space-lg) var(--cu-space-xl);\n}\n\n/* solid */\n.cu-button.cu-button--solid[data-v-cb9decf8] {\n  background-color: var(--btn-solid);\n  color: var(--btn-solid-text);\n}\n.cu-button.cu-button--solid[data-v-cb9decf8]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-hover);\n}\n.cu-button.cu-button--solid[data-v-cb9decf8]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-active);\n}\n\n/* ghost */\n.cu-button.cu-button--ghost[data-v-cb9decf8] {\n  background-color: transparent;\n  color: var(--btn-text);\n}\n.cu-button.cu-button--ghost[data-v-cb9decf8]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-hover);\n}\n.cu-button.cu-button--ghost[data-v-cb9decf8]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-active);\n}\n\n/* soft */\n.cu-button.cu-button--soft[data-v-cb9decf8] {\n  background-color: var(--btn-soft);\n  color: var(--btn-text);\n}\n.cu-button.cu-button--soft[data-v-cb9decf8]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-soft-hover);\n}\n.cu-button.cu-button--soft[data-v-cb9decf8]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-soft-active);\n}\n\n/* subtle */\n.cu-button.cu-button--subtle[data-v-cb9decf8] {\n  background-color: var(--btn-subtle);\n  color: var(--btn-text);\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-button.cu-button--subtle[data-v-cb9decf8]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-subtle-hover);\n}\n.cu-button.cu-button--subtle[data-v-cb9decf8]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-subtle-active);\n}\n\n/* outlined */\n.cu-button.cu-button--outlined[data-v-cb9decf8] {\n  background-color: transparent;\n  color: var(--btn-text);\n  border: var(--cu-border-thin) solid var(--btn-border);\n}\n.cu-button.cu-button--outlined[data-v-cb9decf8]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-hover);\n}\n.cu-button.cu-button--outlined[data-v-cb9decf8]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-active);\n}\n\n/* link */\n.cu-button.cu-button--link[data-v-cb9decf8] {\n  background-color: transparent;\n  color: var(--btn-text);\n  padding: 0;\n  box-shadow: none;\n  text-decoration: underline;\n  text-underline-offset: var(--cu-space-2xs);\n}\n.cu-button.cu-button--link[data-v-cb9decf8]:hover:not(.cu-button--disabled) {\n  text-decoration-thickness: 2px;\n}\n\n/* none */\n.cu-button.cu-button--none[data-v-cb9decf8] {\n  background-color: var(--btn-solid);\n  color: var(--btn-solid-text);\n}\n.cu-button.cu-button--none[data-v-cb9decf8]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-hover);\n}\n.cu-button.cu-button--none[data-v-cb9decf8]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-active);\n}\n\n/* link wrapper */\n.cu-button-link[data-v-cb9decf8] {\n  text-decoration: none;\n}\n.cu-button-link[data-v-cb9decf8]:hover {\n  text-decoration: underline;\n  text-underline-offset: var(--cu-space-2xs);\n}\n.cu-button-link.cu-button--disabled[data-v-cb9decf8] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n\n/* icon-only */\n.cu-button--icon-only[data-v-cb9decf8] {\n  padding: var(--cu-space-sm);\n}\n\n/* loading spinner */\n.cu-button-spinner[data-v-cb9decf8] {\n  animation: cu-spin-cb9decf8 0.8s linear infinite;\n}\n@keyframes cu-spin-cb9decf8 {\nfrom { transform: rotate(0deg);\n}\nto { transform: rotate(360deg);\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.cu-button[data-v-cb9decf8] {\n    transition: none;\n}\n.cu-button[data-v-cb9decf8]:active:not(.cu-button--disabled) {\n    transform: none;\n}\n.cu-button-spinner[data-v-cb9decf8] {\n    animation: none;\n}\n}\n";
+//#region src/components/buttons/Button.vue?vue&type=style&index=0&inline&scoped=fed7165d&lang.css
+var Button_vue_vue_type_style_index_0_inline_scoped_fed7165d_lang_default = "\n.cu-button[data-v-fed7165d] {\n  font-family: var(--cu-font-sans);\n  text-decoration: none;\n  font-size: var(--cu-font-size-sm);\n  font-weight: var(--cu-font-weight-medium);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius);\n  border: none;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--cu-space-xs);\n  box-sizing: border-box;\n  transition: all 150ms ease;\n}\n.cu-button[data-v-fed7165d]:active:not(.cu-button--disabled) {\n  transform: scale(0.97);\n}\n.cu-button--disabled[data-v-fed7165d] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n\n/* sizes (md = base; link mantiene su padding 0) */\n.cu-button--sm[data-v-fed7165d]:not(.cu-button--link) {\n  font-size: var(--cu-font-size-xs);\n  padding: var(--cu-space-xs) var(--cu-space-sm);\n}\n.cu-button--lg[data-v-fed7165d]:not(.cu-button--link) {\n  font-size: var(--cu-font-size-lg);\n  padding: var(--cu-space-lg) var(--cu-space-xl);\n}\n\n/* solid */\n.cu-button.cu-button--solid[data-v-fed7165d] {\n  background-color: var(--btn-solid);\n  color: var(--btn-solid-text);\n}\n.cu-button.cu-button--solid[data-v-fed7165d]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-hover);\n}\n.cu-button.cu-button--solid[data-v-fed7165d]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-active);\n}\n\n/* ghost */\n.cu-button.cu-button--ghost[data-v-fed7165d] {\n  background-color: transparent;\n  color: var(--btn-text);\n}\n.cu-button.cu-button--ghost[data-v-fed7165d]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-hover);\n}\n.cu-button.cu-button--ghost[data-v-fed7165d]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-active);\n}\n\n/* soft */\n.cu-button.cu-button--soft[data-v-fed7165d] {\n  background-color: var(--btn-soft);\n  color: var(--btn-text);\n}\n.cu-button.cu-button--soft[data-v-fed7165d]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-soft-hover);\n}\n.cu-button.cu-button--soft[data-v-fed7165d]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-soft-active);\n}\n\n/* subtle */\n.cu-button.cu-button--subtle[data-v-fed7165d] {\n  background-color: var(--btn-subtle);\n  color: var(--btn-text);\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-button.cu-button--subtle[data-v-fed7165d]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-subtle-hover);\n}\n.cu-button.cu-button--subtle[data-v-fed7165d]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-subtle-active);\n}\n\n/* outlined */\n.cu-button.cu-button--outlined[data-v-fed7165d] {\n  background-color: transparent;\n  color: var(--btn-text);\n  border: var(--cu-border-thin) solid var(--btn-border);\n}\n.cu-button.cu-button--outlined[data-v-fed7165d]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-hover);\n}\n.cu-button.cu-button--outlined[data-v-fed7165d]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-active);\n}\n\n/* link */\n.cu-button.cu-button--link[data-v-fed7165d] {\n  background-color: transparent;\n  color: var(--btn-text);\n  padding: 0;\n  box-shadow: none;\n  text-decoration: underline;\n  text-underline-offset: var(--cu-space-2xs);\n}\n.cu-button.cu-button--link[data-v-fed7165d]:hover:not(.cu-button--disabled) {\n  text-decoration-thickness: 2px;\n}\n\n/* none */\n.cu-button.cu-button--none[data-v-fed7165d] {\n  background-color: var(--btn-solid);\n  color: var(--btn-solid-text);\n}\n.cu-button.cu-button--none[data-v-fed7165d]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-hover);\n}\n.cu-button.cu-button--none[data-v-fed7165d]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-active);\n}\n\n/* link wrapper */\n.cu-button-link[data-v-fed7165d] {\n  text-decoration: none;\n}\n.cu-button-link[data-v-fed7165d]:hover {\n  text-decoration: underline;\n  text-underline-offset: var(--cu-space-2xs);\n}\n.cu-button-link.cu-button--disabled[data-v-fed7165d] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n\n/* icon-only: cuadrado. El `:not(.cu-button--link)` sube la especificidad para\n   ganarle al padding de `.cu-button--sm/lg` (que tienen la misma o más clase);\n   antes el cuadrado sólo salía en `md` (sm 32×24, lg 64×48). En `link` no\n   aplica: el link no lleva padding. */\n.cu-button--icon-only[data-v-fed7165d]:not(.cu-button--link) {\n  padding: var(--cu-space-sm);\n}\n\n/* `lg` mantiene la escala: 16 px de padding por lado (48×48 con un ícono de 16). */\n.cu-button--lg.cu-button--icon-only[data-v-fed7165d]:not(.cu-button--link) {\n  padding: var(--cu-space-lg);\n}\n\n/* loading spinner */\n.cu-button-spinner[data-v-fed7165d] {\n  animation: cu-spin-fed7165d 0.8s linear infinite;\n}\n@keyframes cu-spin-fed7165d {\nfrom { transform: rotate(0deg);\n}\nto { transform: rotate(360deg);\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.cu-button[data-v-fed7165d] {\n    transition: none;\n}\n.cu-button[data-v-fed7165d]:active:not(.cu-button--disabled) {\n    transform: none;\n}\n.cu-button-spinner[data-v-fed7165d] {\n    animation: none;\n}\n}\n";
 //#endregion
 //#region \0plugin-vue:export-helper
 var _plugin_vue_export_helper_default = (sfc, props) => {
@@ -790,14 +729,11 @@ var _plugin_vue_export_helper_default = (sfc, props) => {
 };
 //#endregion
 //#region src/components/buttons/Button.vue
-var Button_default = /*#__PURE__*/ _plugin_vue_export_helper_default(Button_vue_vue_type_script_setup_true_lang_default, [["styles", [Button_vue_vue_type_style_index_0_inline_scoped_cb9decf8_lang_default]], ["__scopeId", "data-v-cb9decf8"]]);
+var Button_default = /*#__PURE__*/ _plugin_vue_export_helper_default(Button_vue_vue_type_script_setup_true_lang_default, [["styles", [Button_vue_vue_type_style_index_0_inline_scoped_fed7165d_lang_default]], ["__scopeId", "data-v-fed7165d"]]);
 //#endregion
 //#region src/components/information/Alert.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1$1 = {
-	key: 0,
-	class: "cu-alert-header"
-};
-var _hoisted_2$1 = { class: "cu-alert-title" };
+var _hoisted_1$1 = ["role", "aria-live"];
+var _hoisted_2$1 = { class: "cu-alert-header" };
 var _hoisted_3$1 = {
 	key: 0,
 	class: "cu-alert-title-text"
@@ -811,7 +747,8 @@ var Alert_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 		color: {
 			type: String,
 			required: false,
-			default: "neutral"
+			default: "neutral",
+			validator: isColor
 		},
 		variant: {
 			type: String,
@@ -842,26 +779,58 @@ var Alert_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 	setup(__props, { expose: __expose, emit: __emit }) {
 		const props = __props;
 		const emit = __emit;
+		/** Un color fuera del set no tiene tokens: la variante solid quedaría sin fondo
+		*  y con el texto del tema encima (invisible). Cae al color seguro. */
+		const safeColor = computed(() => isColor(props.color) ? props.color : "neutral");
+		const isUrgent = computed(() => safeColor.value === "warning" || safeColor.value === "danger");
+		const ariaRole = computed(() => isUrgent.value ? "alert" : "status");
+		const ariaLive = computed(() => isUrgent.value ? "assertive" : "polite");
 		const iconWrap = ref(null);
 		const hasIcon = ref(false);
+		const hasHeader = computed(() => !!props.title || hasIcon.value);
+		let iconSlot = null;
+		/**
+		* Presencia del ícono. En Vue el contenido del slot se renderiza como hijos del
+		* wrapper; en el custom element el slot es nativo y hay que mirar `assignedNodes`.
+		* El `<span>` del título lo pinta el componente: no cuenta como ícono.
+		*/
+		function nodeHasIconContent(node) {
+			if (node.nodeType === Node.TEXT_NODE) return !!node.textContent?.trim();
+			if (node.nodeType !== Node.ELEMENT_NODE) return false;
+			const el = node;
+			if (el.classList.contains("cu-alert-title-text")) return false;
+			if (el.tagName === "SLOT") return el.assignedNodes().some(nodeHasIconContent);
+			return true;
+		}
 		function detectIcon() {
 			const el = iconWrap.value;
 			if (!el) return;
-			const hasRealContent = (node) => {
-				if (node.nodeType === Node.TEXT_NODE) return !!node.textContent?.trim();
-				if (node.nodeType === Node.ELEMENT_NODE) {
-					const slotEl = node;
-					if (node.tagName === "SLOT") return slotEl.assignedNodes().length > 0;
-					return true;
-				}
-				return false;
-			};
-			hasIcon.value = Array.from(el.childNodes).some(hasRealContent);
+			hasIcon.value = Array.from(el.childNodes).some(nodeHasIconContent);
+		}
+		/**
+		* En el custom element el ícono puede llegar después del mount (el HTML se
+		* parsea después de la upgrade): `slotchange` vuelve a detectarlo. En Vue no hay
+		* `<slot>` en el DOM y el re-render lo cubre `onUpdated`.
+		*/
+		function bindIconSlot() {
+			const slot = iconWrap.value?.querySelector("slot");
+			if (!slot || slot === iconSlot) return;
+			iconSlot?.removeEventListener("slotchange", detectIcon);
+			iconSlot = slot;
+			iconSlot.addEventListener("slotchange", detectIcon);
 		}
 		onMounted(() => {
 			detectIcon();
+			bindIconSlot();
 		});
-		watch(hasIcon, () => nextTick(detectIcon));
+		onUpdated(() => {
+			detectIcon();
+			bindIconSlot();
+		});
+		onBeforeUnmount(() => {
+			iconSlot?.removeEventListener("slotchange", detectIcon);
+			iconSlot = null;
+		});
 		const internalShow = ref(props.show);
 		watch(() => props.show, (val) => {
 			internalShow.value = val;
@@ -870,21 +839,21 @@ var Alert_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 			emit("update:show", val);
 		});
 		const colorStyles = computed(() => ({
-			"--alert-solid": `var(--cu-color-${props.color}-solid)`,
-			"--alert-solid-hover": `var(--cu-color-${props.color}-solid-hover)`,
-			"--alert-solid-active": `var(--cu-color-${props.color}-solid-active)`,
+			"--alert-solid": `var(--cu-color-${safeColor.value}-solid)`,
+			"--alert-solid-hover": `var(--cu-color-${safeColor.value}-solid-hover)`,
+			"--alert-solid-active": `var(--cu-color-${safeColor.value}-solid-active)`,
 			"--alert-solid-text": `var(--cu-color-surface)`,
-			"--alert-border": `var(--cu-color-${props.color}-border)`,
-			"--alert-text": `var(--cu-color-${props.color}-text)`,
-			"--alert-ghost-hover": `var(--cu-color-${props.color}-ghost-hover)`,
-			"--alert-ghost-active": `var(--cu-color-${props.color}-ghost-active)`,
-			"--alert-soft": `var(--cu-color-${props.color}-soft)`,
-			"--alert-soft-hover": `var(--cu-color-${props.color}-soft-hover)`,
-			"--alert-soft-active": `var(--cu-color-${props.color}-soft-active)`,
-			"--alert-subtle": `var(--cu-color-${props.color}-subtle)`,
-			"--alert-subtle-hover": `var(--cu-color-${props.color}-subtle-hover)`,
-			"--alert-subtle-active": `var(--cu-color-${props.color}-subtle-active)`,
-			"--alert-subtle-border": `var(--cu-color-${props.color}-subtle-border)`
+			"--alert-border": `var(--cu-color-${safeColor.value}-border)`,
+			"--alert-text": `var(--cu-color-${safeColor.value}-text)`,
+			"--alert-ghost-hover": `var(--cu-color-${safeColor.value}-ghost-hover)`,
+			"--alert-ghost-active": `var(--cu-color-${safeColor.value}-ghost-active)`,
+			"--alert-soft": `var(--cu-color-${safeColor.value}-soft)`,
+			"--alert-soft-hover": `var(--cu-color-${safeColor.value}-soft-hover)`,
+			"--alert-soft-active": `var(--cu-color-${safeColor.value}-soft-active)`,
+			"--alert-subtle": `var(--cu-color-${safeColor.value}-subtle)`,
+			"--alert-subtle-hover": `var(--cu-color-${safeColor.value}-subtle-hover)`,
+			"--alert-subtle-active": `var(--cu-color-${safeColor.value}-subtle-active)`,
+			"--alert-subtle-border": `var(--cu-color-${safeColor.value}-subtle-border)`
 		}));
 		function open() {
 			internalShow.value = true;
@@ -909,18 +878,19 @@ var Alert_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 				class: normalizeClass([
 					"cu-alert",
 					`cu-alert--${props.variant}`,
-					{ "cu-alert--floating-close": props.close && !props.title && !hasIcon.value }
+					{ "cu-alert--floating-close": props.close && !hasHeader.value }
 				]),
 				style: normalizeStyle(colorStyles.value),
-				role: "alert"
+				role: ariaRole.value,
+				"aria-live": ariaLive.value
 			}, [
-				createElementVNode("span", {
+				withDirectives(createElementVNode("div", _hoisted_2$1, [createElementVNode("div", {
 					ref_key: "iconWrap",
 					ref: iconWrap,
-					class: "cu-alert-icon-detect"
-				}, [renderSlot(_ctx.$slots, "icon", {}, void 0, true)], 512),
-				props.title || hasIcon.value ? (openBlock(), createElementBlock("div", _hoisted_1$1, [createElementVNode("div", _hoisted_2$1, [renderSlot(_ctx.$slots, "icon", {}, void 0, true), props.title ? (openBlock(), createElementBlock("span", _hoisted_3$1, toDisplayString(props.title), 1)) : createCommentVNode("v-if", true)]), props.close ? (openBlock(), createElementBlock("button", {
+					class: "cu-alert-title"
+				}, [renderSlot(_ctx.$slots, "icon", {}, void 0, true), props.title ? (openBlock(), createElementBlock("span", _hoisted_3$1, toDisplayString(props.title), 1)) : createCommentVNode("v-if", true)], 512), props.close && hasHeader.value ? (openBlock(), createElementBlock("button", {
 					key: 0,
+					type: "button",
 					onClick: close,
 					class: "cu-alert-close",
 					"aria-label": "Cerrar alerta"
@@ -938,8 +908,10 @@ var Alert_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 					createElementVNode("path", { d: "M18 6 6 18" }),
 					createTextVNode(),
 					createElementVNode("path", { d: "m6 6 12 12" })
-				], -1)])])) : createCommentVNode("v-if", true)])) : props.close ? (openBlock(), createElementBlock("button", {
-					key: 1,
+				], -1)])])) : createCommentVNode("v-if", true)], 512), [[vShow, hasHeader.value]]),
+				props.close && !hasHeader.value ? (openBlock(), createElementBlock("button", {
+					key: 0,
+					type: "button",
 					onClick: close,
 					class: "cu-alert-close cu-alert-close--floating",
 					"aria-label": "Cerrar alerta"
@@ -959,10 +931,10 @@ var Alert_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 					createElementVNode("path", { d: "m6 6 12 12" })
 				], -1)])])) : createCommentVNode("v-if", true),
 				createElementVNode("div", _hoisted_4$1, [renderSlot(_ctx.$slots, "default", {}, void 0, true)])
-			], 6)), [[vShow, internalShow.value]]);
+			], 14, _hoisted_1$1)), [[vShow, internalShow.value]]);
 		};
 	}
-}), [["styles", ["\n.cu-alert-icon-detect[data-v-5c95ed82] {\n  display: none;\n}\n.cu-alert[data-v-5c95ed82] {\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius);\n  display: flex;\n  flex-direction: column;\n  gap: var(--cu-space-sm);\n  box-sizing: border-box;\n  position: relative;\n}\n\n/* solid */\n.cu-alert.cu-alert--solid[data-v-5c95ed82] {\n  background-color: var(--alert-solid);\n  color: var(--alert-solid-text);\n}\n.cu-alert.cu-alert--solid .cu-alert-title-text[data-v-5c95ed82] {\n  color: var(--alert-solid-text);\n}\n\n/* ghost */\n.cu-alert.cu-alert--ghost[data-v-5c95ed82] {\n  background-color: transparent;\n  color: var(--alert-text);\n}\n\n/* soft */\n.cu-alert.cu-alert--soft[data-v-5c95ed82] {\n  background-color: var(--alert-soft);\n  color: var(--alert-text);\n}\n\n/* subtle */\n.cu-alert.cu-alert--subtle[data-v-5c95ed82] {\n  background-color: var(--alert-subtle);\n  color: var(--alert-text);\n  border: var(--cu-border-thin) solid var(--alert-subtle-border);\n}\n\n/* outlined */\n.cu-alert.cu-alert--outlined[data-v-5c95ed82] {\n  background-color: transparent;\n  color: var(--alert-text);\n  border: var(--cu-border-thin) solid var(--alert-border);\n}\n.cu-alert-header[data-v-5c95ed82] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n}\n.cu-alert-title[data-v-5c95ed82] {\n  display: flex;\n  align-items: center;\n  gap: var(--cu-space-sm);\n}\n.cu-alert-title-text[data-v-5c95ed82] {\n  font-size: var(--cu-font-size-lg);\n  font-weight: var(--cu-font-weight-bold);\n  margin: 0;\n  color: inherit;\n}\n.cu-alert-close[data-v-5c95ed82] {\n  background: none;\n  border: none;\n  cursor: pointer;\n  color: inherit;\n  padding: var(--cu-space-2xs);\n  border-radius: var(--cu-radius-sm);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  transition: background-color 150ms ease;\n}\n.cu-alert-close[data-v-5c95ed82]:hover {\n  background-color: var(--alert-ghost-hover);\n}\n.cu-alert-close[data-v-5c95ed82]:active {\n  background-color: var(--alert-ghost-active);\n}\n\n/* Sin título ni ícono: el close acompaña a la primera fila del cuerpo en vez\n   de ocupar una cabecera propia. */\n.cu-alert-close--floating[data-v-5c95ed82] {\n  position: absolute;\n  top: var(--cu-space-md);\n  right: var(--cu-space-lg);\n}\n.cu-alert--floating-close .cu-alert-content[data-v-5c95ed82] {\n  padding-right: var(--cu-space-xl);\n}\n.cu-alert-content[data-v-5c95ed82] {\n  color: inherit;\n}\n"]], ["__scopeId", "data-v-5c95ed82"]]);
+}), [["styles", ["\n.cu-alert[data-v-b0cc9dcb] {\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius);\n  display: flex;\n  flex-direction: column;\n  gap: var(--cu-space-sm);\n  box-sizing: border-box;\n  position: relative;\n}\n\n/* solid */\n.cu-alert.cu-alert--solid[data-v-b0cc9dcb] {\n  background-color: var(--alert-solid);\n  color: var(--alert-solid-text);\n}\n.cu-alert.cu-alert--solid .cu-alert-title-text[data-v-b0cc9dcb] {\n  color: var(--alert-solid-text);\n}\n\n/* ghost */\n.cu-alert.cu-alert--ghost[data-v-b0cc9dcb] {\n  background-color: transparent;\n  color: var(--alert-text);\n}\n\n/* soft */\n.cu-alert.cu-alert--soft[data-v-b0cc9dcb] {\n  background-color: var(--alert-soft);\n  color: var(--alert-text);\n}\n\n/* subtle */\n.cu-alert.cu-alert--subtle[data-v-b0cc9dcb] {\n  background-color: var(--alert-subtle);\n  color: var(--alert-text);\n  border: var(--cu-border-thin) solid var(--alert-subtle-border);\n}\n\n/* outlined */\n.cu-alert.cu-alert--outlined[data-v-b0cc9dcb] {\n  background-color: transparent;\n  color: var(--alert-text);\n  border: var(--cu-border-thin) solid var(--alert-border);\n}\n.cu-alert-header[data-v-b0cc9dcb] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n}\n.cu-alert-title[data-v-b0cc9dcb] {\n  display: flex;\n  align-items: center;\n  gap: var(--cu-space-sm);\n}\n.cu-alert-title-text[data-v-b0cc9dcb] {\n  font-size: var(--cu-font-size-lg);\n  font-weight: var(--cu-font-weight-bold);\n  margin: 0;\n  color: inherit;\n}\n.cu-alert-close[data-v-b0cc9dcb] {\n  background: none;\n  border: none;\n  cursor: pointer;\n  color: inherit;\n  padding: var(--cu-space-2xs);\n  border-radius: var(--cu-radius-sm);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  transition: background-color 150ms ease;\n}\n.cu-alert-close[data-v-b0cc9dcb]:hover {\n  background-color: var(--alert-ghost-hover);\n}\n.cu-alert-close[data-v-b0cc9dcb]:active {\n  background-color: var(--alert-ghost-active);\n}\n\n/* Sin título ni ícono: el close acompaña a la primera fila del cuerpo en vez\n   de ocupar una cabecera propia. */\n.cu-alert-close--floating[data-v-b0cc9dcb] {\n  position: absolute;\n  top: var(--cu-space-md);\n  right: var(--cu-space-lg);\n}\n.cu-alert--floating-close .cu-alert-content[data-v-b0cc9dcb] {\n  padding-right: var(--cu-space-xl);\n}\n.cu-alert-content[data-v-b0cc9dcb] {\n  color: inherit;\n}\n"]], ["__scopeId", "data-v-b0cc9dcb"]]);
 //#endregion
 //#region src/utils/fileIcons.ts
 var ICON_FILE_INNER = `<path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/>`;
@@ -1017,8 +989,8 @@ function formatFileSize(bytes) {
 //#endregion
 //#region src/components/form/FileInput.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1 = { class: "cu-file-input-wrap" };
-var _hoisted_2 = ["onKeydown", "aria-disabled"];
-var _hoisted_3 = ["accept"];
+var _hoisted_2 = ["accept"];
+var _hoisted_3 = ["aria-label", "disabled"];
 var _hoisted_4 = {
 	key: 0,
 	xmlns: "http://www.w3.org/2000/svg",
@@ -1037,9 +1009,13 @@ var _hoisted_5 = {
 	class: "cu-file-input-placeholder"
 };
 var _hoisted_6 = ["innerHTML"];
-var _hoisted_7 = ["href"];
-var _hoisted_8 = {
-	key: 4,
+var _hoisted_7 = {
+	key: 0,
+	class: "cu-file-input-name"
+};
+var _hoisted_8 = ["href"];
+var _hoisted_9 = {
+	key: 1,
 	class: "cu-file-input-size"
 };
 //#endregion
@@ -1098,7 +1074,8 @@ var FileInput_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PU
 		});
 		const props = __props;
 		const fileInputRef = useTemplateRef("fileInput");
-		const { focused: containerFocus } = useFocus(useTemplateRef("container"));
+		const containerRef = useTemplateRef("container");
+		const triggerRef = useTemplateRef("triggerEl");
 		const isDragOver = ref(false);
 		const rejectMessage = ref("");
 		const inputStyles = computed(() => ({
@@ -1106,7 +1083,8 @@ var FileInput_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PU
 			"--input-soft": `var(--cu-color-${props.color}-soft)`,
 			"--input-ghost-hover": `var(--cu-color-${props.color}-ghost-hover)`,
 			"--input-soft-hover": `var(--cu-color-${props.color}-soft-hover)`,
-			"--input-text": `var(--cu-color-${props.color}-text)`
+			"--input-text": `var(--cu-color-${props.color}-text)`,
+			"--input-text-muted": `var(--cu-color-${props.color}-text-muted)`
 		}));
 		function formatAcceptList(accept) {
 			if (!accept) return "";
@@ -1150,6 +1128,7 @@ var FileInput_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PU
 					value.value = file;
 				} else rejectMessage.value = rejectReason(file);
 			}
+			input.value = "";
 		}
 		function removeFile() {
 			value.value = null;
@@ -1163,6 +1142,8 @@ var FileInput_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PU
 		}
 		function onDragLeave(e) {
 			e.preventDefault();
+			const next = e.relatedTarget;
+			if (next && containerRef.value?.contains(next)) return;
 			isDragOver.value = false;
 		}
 		function onDrop(e) {
@@ -1197,9 +1178,9 @@ var FileInput_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PU
 			rejectMessage.value = "";
 			if (fileInputRef.value) fileInputRef.value.value = "";
 		};
-		/** Enfoca el contenedor del input. */
+		/** Enfoca el control de selección. */
 		const focus = () => {
-			containerFocus.value = true;
+			triggerRef.value?.focus();
 		};
 		__expose({
 			get,
@@ -1220,11 +1201,7 @@ var FileInput_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PU
 				onClick: trigger,
 				onDragover: onDragOver,
 				onDragleave: onDragLeave,
-				onDrop,
-				onKeydown: [withKeys(trigger, ["enter"]), withKeys(withModifiers(trigger, ["prevent"]), ["space"])],
-				tabindex: "0",
-				role: "button",
-				"aria-disabled": props.disabled
+				onDrop
 			}, [
 				createElementVNode("input", {
 					ref: "fileInput",
@@ -1232,39 +1209,41 @@ var FileInput_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PU
 					accept: props.accept,
 					class: "cu-file-input-hidden",
 					onChange: handleInputChange
-				}, null, 40, _hoisted_3),
-				!value.value ? (openBlock(), createElementBlock("svg", _hoisted_4, [..._cache[1] || (_cache[1] = [
+				}, null, 40, _hoisted_2),
+				createCommentVNode(" El control de selección es un <button> real y no contiene nada interactivo:\n           el link del archivo y el botón de quitar son hermanos. "),
+				createElementVNode("button", {
+					ref: "triggerEl",
+					type: "button",
+					class: normalizeClass(["cu-file-input-trigger", { "cu-file-input-trigger--compact": !!value.value }]),
+					"aria-label": value.value ? "Cambiar archivo" : void 0,
+					disabled: props.disabled || props.readOnly
+				}, [!value.value ? (openBlock(), createElementBlock("svg", _hoisted_4, [..._cache[1] || (_cache[1] = [
 					createElementVNode("path", { d: "M12 3v12" }, null, -1),
 					createElementVNode("path", { d: "m17 8-5-5-5 5" }, null, -1),
 					createElementVNode("path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" }, null, -1)
-				])])) : createCommentVNode("v-if", true),
-				!value.value ? (openBlock(), createElementBlock("span", _hoisted_5, [
+				])])) : createCommentVNode("v-if", true), !value.value ? (openBlock(), createElementBlock("span", _hoisted_5, [
 					createTextVNode(toDisplayString(props.placeholder) + " ", 1),
 					formatosStr.value ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [createTextVNode("\xA0— " + toDisplayString(formatosStr.value), 1)], 64)) : createCommentVNode("v-if", true),
 					maxSizeStr.value ? (openBlock(), createElementBlock(Fragment, { key: 1 }, [createTextVNode("\xA0(máx " + toDisplayString(maxSizeStr.value) + ")", 1)], 64)) : createCommentVNode("v-if", true)
-				])) : createCommentVNode("v-if", true),
-				value.value ? (openBlock(), createElementBlock("span", {
+				])) : (openBlock(), createElementBlock("span", {
 					key: 2,
 					innerHTML: unref(getFileIconSvg)(value.value, 16),
 					class: "cu-file-input-icon"
-				}, null, 8, _hoisted_6)) : createCommentVNode("v-if", true),
-				value.value ? (openBlock(), createElementBlock("div", {
-					key: 3,
-					class: "cu-file-input-name",
-					onClick: trigger
-				}, [createElementVNode("a", {
-					href: fileUrl.value,
+				}, null, 8, _hoisted_6))], 10, _hoisted_3),
+				value.value ? (openBlock(), createElementBlock("div", _hoisted_7, [createElementVNode("a", {
+					href: props.disabled ? void 0 : fileUrl.value,
 					target: "_blank",
 					rel: "noopener noreferrer",
 					class: "cu-file-input-link",
 					onClick: _cache[0] || (_cache[0] = withModifiers(() => {}, ["stop"]))
-				}, toDisplayString(value.value.name), 9, _hoisted_7)])) : createCommentVNode("v-if", true),
-				value.value ? (openBlock(), createElementBlock("span", _hoisted_8, toDisplayString(unref(formatFileSize)(value.value.size)), 1)) : createCommentVNode("v-if", true),
-				value.value && !props.disabled ? (openBlock(), createBlock(Button_default, {
-					key: 5,
+				}, toDisplayString(value.value.name), 9, _hoisted_8)])) : createCommentVNode("v-if", true),
+				value.value ? (openBlock(), createElementBlock("span", _hoisted_9, toDisplayString(unref(formatFileSize)(value.value.size)), 1)) : createCommentVNode("v-if", true),
+				value.value && !props.disabled && !props.readOnly ? (openBlock(), createBlock(Button_default, {
+					key: 2,
 					color: __props.color,
 					variant: "ghost",
 					class: "cu-file-input-remove",
+					"aria-label": `Quitar ${value.value.name}`,
 					onClick: withModifiers(removeFile, ["stop"])
 				}, {
 					default: withCtx(() => [..._cache[2] || (_cache[2] = [createElementVNode("svg", {
@@ -1279,8 +1258,8 @@ var FileInput_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PU
 						"stroke-linejoin": "round"
 					}, [createElementVNode("path", { d: "M18 6 6 18" }), createElementVNode("path", { d: "m6 6 12 12" })], -1)])]),
 					_: 1
-				}, 8, ["color"])) : createCommentVNode("v-if", true)
-			], 46, _hoisted_2), rejectMessage.value ? (openBlock(), createBlock(Alert_default, {
+				}, 8, ["color", "aria-label"])) : createCommentVNode("v-if", true)
+			], 38), rejectMessage.value ? (openBlock(), createBlock(Alert_default, {
 				key: 0,
 				color: "danger",
 				variant: "soft",
@@ -1291,7 +1270,7 @@ var FileInput_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PU
 			})) : createCommentVNode("v-if", true)]);
 		};
 	}
-}), [["styles", ["\n.cu-file-input {\n  display: flex;\n  align-items: center;\n  gap: var(--cu-space-sm);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius);\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  cursor: pointer;\n  transition: all 200ms ease;\n  width: 100%;\n  box-sizing: border-box;\n  color: var(--input-text);\n}\n\n/* outlined (default) */\n.cu-file-input--outlined {\n  border: var(--cu-border-thin) solid var(--cu-border-color);\n  background-color: var(--cu-color-surface);\n}\n.cu-file-input--outlined:hover:not(.cu-file-input--disabled) {\n  border-color: var(--input-bg);\n  background-color: var(--input-ghost-hover);\n}\n\n/* soft */\n.cu-file-input--soft {\n  border: var(--cu-border-thin) solid transparent;\n  background-color: var(--input-soft);\n}\n.cu-file-input--soft:hover:not(.cu-file-input--disabled) {\n  background-color: var(--input-soft-hover);\n}\n\n/* ghost */\n.cu-file-input--ghost {\n  border: var(--cu-border-thin) solid transparent;\n  background-color: transparent;\n}\n.cu-file-input--ghost:hover:not(.cu-file-input--disabled) {\n  background-color: var(--input-ghost-hover);\n}\n\n/* subtle */\n.cu-file-input--subtle {\n  border: var(--cu-border-thin) solid var(--cu-border-color);\n  background-color: transparent;\n}\n.cu-file-input--subtle:hover:not(.cu-file-input--disabled) {\n  border-color: var(--input-bg);\n  background-color: var(--input-ghost-hover);\n}\n.cu-file-input:focus {\n  outline: none;\n  border-color: var(--input-bg);\n  box-shadow: 0 0 0 var(--cu-border-thin) var(--input-bg);\n}\n.cu-file-input--disabled {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n\n/* Deshabilitado: el nombre del archivo no abre en nueva pestaña. */\n.cu-file-input--disabled .cu-file-input-link {\n  pointer-events: none;\n}\n.cu-file-input--drag-over {\n  border-color: var(--input-bg);\n  background-color: var(--input-ghost-hover);\n}\n.cu-file-input-hidden {\n  display: none;\n}\n.cu-file-input-icon {\n  flex-shrink: 0;\n  opacity: var(--cu-alpha-subtle, 0.6);\n  color: var(--input-text);\n}\n.cu-file-input-placeholder {\n  flex: 1;\n  opacity: var(--cu-alpha-subtle, 0.6);\n  color: var(--input-text);\n}\n.cu-file-input-name {\n  flex: 1;\n  min-width: 0;\n}\n.cu-file-input-link {\n  font-weight: var(--cu-font-weight-medium);\n  color: var(--input-text);\n  text-decoration: none;\n  transition: text-decoration 150ms ease;\n}\n.cu-file-input-link:hover {\n  text-decoration: underline;\n}\n.cu-file-input-size {\n  flex-shrink: 0;\n  opacity: 0.8;\n  font-size: var(--cu-font-size-xs);\n  white-space: nowrap;\n  color: var(--input-text);\n}\n.cu-file-input-remove {\n  padding: var(--cu-space-2xs) !important;\n  min-width: 0 !important;\n  height: auto !important;\n  gap: 0 !important;\n  flex-shrink: 0;\n  opacity: 0.7;\n}\n.cu-file-input-remove:hover {\n  opacity: 1;\n}\n.cu-file-input-wrap {\n  display: flex;\n  flex-direction: column;\n  gap: var(--cu-space-2xs);\n}\n.cu-file-input-reject {\n  margin-top: var(--cu-space-2xs);\n}\n"]]]);
+}), [["styles", ["\n.cu-file-input {\n  display: flex;\n  align-items: center;\n  gap: var(--cu-space-sm);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius);\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  cursor: pointer;\n  transition: all 200ms ease;\n  width: 100%;\n  box-sizing: border-box;\n  color: var(--input-text);\n}\n\n/* outlined (default) */\n.cu-file-input--outlined {\n  border: var(--cu-border-thin) solid var(--cu-border-color);\n  background-color: var(--cu-color-surface);\n}\n.cu-file-input--outlined:hover:not(.cu-file-input--disabled) {\n  border-color: var(--input-bg);\n  background-color: var(--input-ghost-hover);\n}\n\n/* soft */\n.cu-file-input--soft {\n  border: var(--cu-border-thin) solid transparent;\n  background-color: var(--input-soft);\n}\n.cu-file-input--soft:hover:not(.cu-file-input--disabled) {\n  background-color: var(--input-soft-hover);\n}\n\n/* ghost */\n.cu-file-input--ghost {\n  border: var(--cu-border-thin) solid transparent;\n  background-color: transparent;\n}\n.cu-file-input--ghost:hover:not(.cu-file-input--disabled) {\n  background-color: var(--input-ghost-hover);\n}\n\n/* subtle */\n.cu-file-input--subtle {\n  border: var(--cu-border-thin) solid var(--cu-border-color);\n  background-color: transparent;\n}\n.cu-file-input--subtle:hover:not(.cu-file-input--disabled) {\n  border-color: var(--input-bg);\n  background-color: var(--input-ghost-hover);\n}\n.cu-file-input:focus-within {\n  border-color: var(--input-bg);\n  box-shadow: 0 0 0 var(--cu-border-thin) var(--input-bg);\n}\n\n/* Control de selección: botón real, sin estilos propios; el foco se ve en el campo. */\n.cu-file-input-trigger {\n  display: flex;\n  align-items: center;\n  gap: var(--cu-space-sm);\n  flex: 1;\n  min-width: 0;\n  padding: 0;\n  border: 0;\n  background: transparent;\n  font: inherit;\n  color: inherit;\n  text-align: left;\n  cursor: pointer;\n}\n.cu-file-input-trigger--compact {\n  flex: 0 0 auto;\n}\n.cu-file-input-trigger:disabled {\n  cursor: inherit;\n}\n.cu-file-input-trigger:focus-visible {\n  outline: none;\n}\n.cu-file-input--disabled {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n\n/* Deshabilitado: el nombre del archivo no abre en nueva pestaña. */\n.cu-file-input--disabled .cu-file-input-link {\n  pointer-events: none;\n}\n.cu-file-input--drag-over {\n  border-color: var(--input-bg);\n  background-color: var(--input-ghost-hover);\n}\n.cu-file-input-hidden {\n  display: none;\n}\n.cu-file-input-icon {\n  flex-shrink: 0;\n  color: var(--input-text-muted);\n}\n.cu-file-input-placeholder {\n  flex: 1;\n  color: var(--input-text-muted);\n}\n.cu-file-input-name {\n  flex: 1;\n  min-width: 0;\n}\n.cu-file-input-link {\n  font-weight: var(--cu-font-weight-medium);\n  color: var(--input-text);\n  text-decoration: none;\n  transition: text-decoration 150ms ease;\n}\n.cu-file-input-link:hover {\n  text-decoration: underline;\n}\n.cu-file-input-size {\n  flex-shrink: 0;\n  font-size: var(--cu-font-size-xs);\n  white-space: nowrap;\n  color: var(--input-text-muted);\n}\n.cu-file-input-remove {\n  padding: var(--cu-space-2xs) !important;\n  min-width: 0 !important;\n  height: auto !important;\n  gap: 0 !important;\n  flex-shrink: 0;\n  opacity: 0.7;\n}\n.cu-file-input-remove:hover {\n  opacity: 1;\n}\n.cu-file-input-wrap {\n  display: flex;\n  flex-direction: column;\n  gap: var(--cu-space-2xs);\n}\n.cu-file-input-reject {\n  margin-top: var(--cu-space-2xs);\n}\n"]]]);
 //#endregion
 //#region src/lib/form/file-input.ts
 var CuFileInput = defineComegenElement("cu-file-input", /* @__PURE__ */ _plugin_vue_export_helper_default(/* @__PURE__ */ defineComponent({

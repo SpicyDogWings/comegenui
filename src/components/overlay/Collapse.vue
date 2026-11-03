@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, type PropType } from 'vue'
+import { computed, ref, useId, type PropType } from 'vue'
+import DOMPurify from 'dompurify'
 import LucideChevronRight from '@/components/icons/LucideChevronRight.vue'
 import Button from '@/components/buttons/Button.vue'
 
@@ -36,12 +37,31 @@ const props = defineProps({
   },
 })
 
+// El ícono es HTML/SVG del consumidor: se sanitiza antes de `v-html` (mismo
+// criterio que `Tabs`): SVG válido intacto, sin `<script>` ni handlers `on*`.
+const safeIcon = computed(() => (props.icon ? DOMPurify.sanitize(props.icon) : undefined))
+
 const emit = defineEmits<{
   (e: 'toggle', isOpen: boolean): void
 }>()
 
 const isOpen = ref(props.defaultOpen)
 const contentRef = ref<HTMLElement>()
+
+// `aria-controls` necesita un id único: en el light DOM conviven los ids de toda
+// la página, así que el prefijo sale de `useId()` (una instancia por contador).
+const uid = useId()
+const contentId = `cu-collapse-${uid}-content`
+
+// Con `prefers-reduced-motion: reduce` no se toca la altura inline: la transición
+// CSS está desactivada y dejar `height: 0` intermedio haría parpadear el contenido
+// (y un `height` fijo pegado rompería el crecimiento posterior si la animación se
+// cancela). El CSS y estos hooks usan la misma consulta.
+function reducedMotion() {
+  return typeof window !== 'undefined'
+    && typeof window.matchMedia === 'function'
+    && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
 
 function setOpen(value: boolean) {
   if (isOpen.value === value) return
@@ -67,6 +87,7 @@ function close() {
 }
 
 function onEnter(el: Element) {
+  if (reducedMotion()) return
   const el_ = el as HTMLElement
   el_.style.height = '0'
   el_.style.overflow = 'hidden'
@@ -95,6 +116,7 @@ function onAfterEnter(el: Element) {
 }
 
 function onLeave(el: Element) {
+  if (reducedMotion()) return
   const el_ = el as HTMLElement
   el_.style.height = el_.scrollHeight + 'px'
   el_.style.overflow = 'hidden'
@@ -124,13 +146,22 @@ defineExpose({
       :color="props.color"
       variant="ghost"
       :disabled="props.disabled"
+      :aria-expanded="isOpen ? 'true' : 'false'"
+      :aria-controls="contentId"
       @click="toggle()"
     >
-      <LucideChevronRight class="cu-collapse-chevron" :class="{ 'is-open': isOpen }" :width="14" :height="14" />
-      <span v-if="props.icon" class="cu-collapse-icon" v-html="props.icon"></span>
+      <LucideChevronRight
+        class="cu-collapse-chevron"
+        :class="{ 'is-open': isOpen }"
+        :width="14"
+        :height="14"
+        aria-hidden="true"
+        focusable="false"
+      />
+      <span v-if="safeIcon" class="cu-collapse-icon" v-html="safeIcon"></span>
       <span class="cu-collapse-text">
         <span class="cu-collapse-label">{{ props.label }}</span>
-        <p v-if="props.description" class="cu-collapse-description">{{ props.description }}</p>
+        <span v-if="props.description" class="cu-collapse-description">{{ props.description }}</span>
       </span>
     </Button>
     <Transition
@@ -140,7 +171,7 @@ defineExpose({
       @leave="onLeave"
       @after-leave="onAfterLeave"
     >
-      <div v-show="isOpen" ref="contentRef" class="cu-collapse-content">
+      <div v-show="isOpen" :id="contentId" ref="contentRef" class="cu-collapse-content">
         <slot />
       </div>
     </Transition>
@@ -179,6 +210,7 @@ defineExpose({
 }
 
 .cu-collapse-description {
+  display: block;
   margin: 0;
   font-size: var(--cu-font-size-xs);
   font-weight: var(--cu-font-weight-normal);
@@ -191,5 +223,12 @@ defineExpose({
   gap: var(--cu-space-2xs);
   padding: 0 0 0 var(--cu-space-lg);
   transition: height 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cu-collapse-content,
+  .cu-collapse-chevron {
+    transition: none;
+  }
 }
 </style>

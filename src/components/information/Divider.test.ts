@@ -87,6 +87,14 @@ describe("Divider — variantes y color", () => {  it("cada variante aplica su c
       expect(root(w).attributes("style") ?? "").toContain(`--cu-color-${color}-subtle-border`);
     }
   });
+
+  it("un color fuera del set cae al neutral: la línea no desaparece", () => {
+    const w = mount(Divider, { props: { color: "chartreuse" as never } });
+    const style = root(w).attributes("style") ?? "";
+
+    expect(style).toContain("--cu-color-neutral-subtle-border");
+    expect(style).not.toContain("chartreuse");
+  });
 });
 
 // El custom element sólo pasa el slot cuando el host tiene hijos reales: sin

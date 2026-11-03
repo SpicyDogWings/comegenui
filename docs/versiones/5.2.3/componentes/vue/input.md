@@ -19,7 +19,7 @@ const email = ref("usuario@dominio.com");
 <template>
   <Input v-model="email" placeholder="Nombre" color="primary" variant="outlined" />
   <Input v-model="email" type="email" placeholder="correo@ejemplo.com" variant="soft" />
-  <Input type="number" disabled :model-value="42" />
+  <Input type="number" disabled model-value="42" />
 </template>
 ```
 

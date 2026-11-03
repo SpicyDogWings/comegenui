@@ -71,6 +71,83 @@ export function addMonths(date: Date, delta: number): Date {
   return new Date(date.getFullYear(), date.getMonth() + delta, 1)
 }
 
+/** Suma (o resta) días en hora local. */
+export function addDays(date: Date, delta: number): Date {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate() + delta)
+}
+
+/**
+ * Suma (o resta) meses **conservando el día** y recortándolo al último del mes
+ * destino (31 de enero + 1 mes → 28/29 de febrero).
+ */
+export function shiftMonth(date: Date, delta: number): Date {
+  const lastDay = new Date(date.getFullYear(), date.getMonth() + delta + 1, 0).getDate()
+  return new Date(date.getFullYear(), date.getMonth() + delta, Math.min(date.getDate(), lastDay))
+}
+
+/** Primer día de la semana de `date` según `weekStart` (0 = domingo). */
+export function startOfWeek(date: Date, weekStart = 1): Date {
+  const offset = (date.getDay() - weekStart + 7) % 7
+  return addDays(date, -offset)
+}
+
+/** Fecha local como `"YYYY-MM-DD"` (sin pasar por UTC). */
+export function toISODate(date: Date): string {
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
+}
+
+/** Normaliza `disabledWeekdays` (`"0,6"` en CE o `[0,6]` en Vue) a números. */
+export function toDisabledWeekdays(value: number[] | string | null | undefined): number[] {
+  if (Array.isArray(value)) return value.filter((n) => typeof n === 'number' && !Number.isNaN(n))
+  if (typeof value === 'string' && value.trim()) {
+    return value
+      .split(',')
+      .map((s) => Number(s.trim()))
+      .filter((n) => !Number.isNaN(n))
+  }
+  return []
+}
+
+/** Normaliza `disabledDates` (`"2026-08-15,2026-08-16"` en CE o array) a fechas. */
+export function toDisabledDates(
+  value: (string | Date)[] | string | null | undefined,
+): Date[] {
+  const raw = Array.isArray(value)
+    ? value
+    : typeof value === 'string' && value.trim()
+      ? value.split(',')
+      : []
+  return raw
+    .map((d) => parseDate(d))
+    .filter((d): d is Date => d !== null)
+}
+
+export interface DateDisabledRules {
+  /** Deshabilita todo el calendario. */
+  disabled?: boolean
+  min?: string | number | Date | null
+  max?: string | number | Date | null
+  /** Días de la semana no seleccionables (0 = domingo). */
+  disabledWeekdays?: number[] | string | null
+  /** Fechas puntuales no seleccionables. */
+  disabledDates?: (string | Date)[] | string | null
+}
+
+/**
+ * ¿El día se puede seleccionar? Regla única de `Calendar` (click, teclado y
+ * `setValue`) y de `DatePicker` (botón "Hoy" y `setValue`).
+ */
+export function isDateDisabled(day: Date, rules: DateDisabledRules = {}): boolean {
+  if (rules.disabled) return true
+  const min = parseDate(rules.min ?? null)
+  if (min && day < min) return true
+  const max = parseDate(rules.max ?? null)
+  if (max && day > max) return true
+  if (toDisabledWeekdays(rules.disabledWeekdays).includes(day.getDay())) return true
+  return toDisabledDates(rules.disabledDates).some((d) => sameDay(day, d))
+}
+
 /** Tokens de mes soportados por el header del calendario/slider. */
 export const MONTH_FORMATS = ['MMMM', 'MMM', 'MM', 'M'] as const
 export type MonthFormat = (typeof MONTH_FORMATS)[number]

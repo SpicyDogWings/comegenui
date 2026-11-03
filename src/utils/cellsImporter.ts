@@ -30,7 +30,10 @@ export interface CellParseResult {
   warnings: string[]
 }
 
-export function parseCSV(text: string, delimiter = ','): string[][] {
+export function parseCSV(raw: string, delimiter = ','): string[][] {
+  // El BOM de UTF-8 (`\uFEFF`) que agregan Excel y nuestra propia plantilla no
+  // es parte del primer encabezado ni de la primera celda.
+  const text = raw.charCodeAt(0) === 0xfeff ? raw.slice(1) : raw
   const rows: string[][] = []
   let row: string[] = []
   let field = ''
@@ -109,12 +112,20 @@ function isExcelFile(file: File): boolean {
 
 async function parseXLSX(file: File, sheet: string | number = 0): Promise<string[][]> {
   const buf = await file.arrayBuffer()
-  const wb = XLSX.read(buf, { type: 'array' })
+  // `cellDates` devuelve las celdas con formato de fecha como `Date`; sin él
+  // llega el número de serie de Excel (44194.99…) y una columna `date` no puede
+  // interpretarla.
+  const wb = XLSX.read(buf, { type: 'array', cellDates: true })
   const sheetName = typeof sheet === 'number' ? wb.SheetNames[sheet] : sheet
   const ws = wb.Sheets[sheetName]
   if (!ws) throw new Error('Hoja no encontrada')
   const grid: unknown[][] = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' })
-  return grid.map((r) => r.map((c) => (c === undefined || c === null ? '' : String(c))))
+  return grid.map((r) =>
+    r.map((c) => {
+      if (c === undefined || c === null) return ''
+      return c instanceof Date ? c.toISOString() : String(c)
+    }),
+  )
 }
 
 export async function readGrid(file: File, options: { delimiter?: string; sheet?: string | number } = {}): Promise<string[][]> {
@@ -313,21 +324,26 @@ export function validateRows(rows: Record<string, unknown>[], columns: CellColum
   return errors
 }
 
-export function buildTemplateCSV(columns: CellColumn[]): string {
+export function buildTemplateCSV(columns: CellColumn[], delimiter = ','): string {
   const escaped = columns.map((c) => {
     const v = c.label
-    return /[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v
+    const needsQuotes =
+      v.includes('"') || v.includes('\n') || v.includes('\r') || v.includes(delimiter)
+    return needsQuotes ? `"${v.replace(/"/g, '""')}"` : v
   })
-  return escaped.join(',') + '\n'
+  return escaped.join(delimiter) + '\n'
 }
 
-export async function downloadTemplate(columns: CellColumn[], options: { type?: 'xlsx' | 'csv'; filename?: string } = {}): Promise<void> {
+export async function downloadTemplate(
+  columns: CellColumn[],
+  options: { type?: 'xlsx' | 'csv'; filename?: string; delimiter?: string } = {},
+): Promise<void> {
   const type = options.type ?? 'csv'
   const filename = options.filename ?? 'template'
   const header = columns.map((c) => c.label)
 
   if (type === 'csv') {
-    const content = buildTemplateCSV(columns)
+    const content = buildTemplateCSV(columns, options.delimiter ?? ',')
     const blob = new Blob(['\uFEFF' + content], { type: 'text/csv;charset=utf-8' })
     triggerDownload(blob, `${filename}.csv`)
     return

@@ -24,8 +24,9 @@ El texto va en el atributo `label` (modo declarativo) y el control, en el slot.
 
 ## Colores
 
-`color` pinta el texto con el token del tema activo (`--cu-color-{color}`), así que el mismo
-nombre se ve distinto en cada tema.
+`color` pinta el texto con el token de texto del tema activo (`--cu-color-{color}-text`), así que el
+mismo nombre se ve distinto en cada tema. Se usa la variante `-text` (no el color base) porque el
+base no llega al contraste AA de 4.5:1 sobre la superficie en la mayoría de los temas.
 
 ```html
 <cu-label label="primary" color="primary"></cu-label>
@@ -60,6 +61,16 @@ el control puede ser un custom element, todo se hace sobre el control real de su
 ```
 
 <!-- demo:label-controles -->
+
+Un click que nace en **otro** interactivo del slot (un link, un botón, un segundo campo) es de ese
+elemento: el label no le cancela la acción ni le roba el foco. Sólo el primer control recibe el click
+del texto/espacio libre del label.
+
+> **Nombre accesible en el custom element:** el `<label>` vive en el shadow root y el control del
+> slot en el light DOM, así que el texto del label **no** se asocia de forma nativa al control
+> interno (un lector de pantalla no lo anuncia como nombre). Para el nombre accesible usá
+> `aria-label`/`aria-labelledby` en el control (`<cu-input aria-label="Correo">`), o el `Label` de
+> Vue, donde ambos comparten árbol. El label sigue sirviendo para el área clickeable y el foco.
 
 ## Enfocar con `for`
 

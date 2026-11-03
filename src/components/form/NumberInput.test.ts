@@ -1,4 +1,4 @@
-// Comportamiento de NumberInput según sus fichas (docs/versiones/5.2.0/componentes/…).
+// Comportamiento de NumberInput según sus fichas (docs/versiones/5.2.3/componentes/…).
 //
 // Aserciones escritas a mano desde la prosa: por eso pueden fallar por un bug real
 // (ver scripts/mutation-check.mjs).
@@ -40,6 +40,23 @@ describe("NumberInput — valor y v-model", () => {
     expect(vm(w).get()).toBe(12);
     expect(fieldValue(w)).toBe("12");
     expect(w.emitted("update:modelValue")?.at(-1)).toEqual([12]);
+  });
+
+  it("sin límites cada tecla válida actualiza el modelo", async () => {
+    const w = mount(NumberInput);
+
+    for (const [typed, expected] of [
+      ["1", 1],
+      ["12", 12],
+      ["123", 123],
+    ] as const) {
+      await field(w).setValue(typed);
+      await flushPromises();
+      expect(fieldValue(w)).toBe(typed);
+      expect(vm(w).get()).toBe(expected);
+    }
+
+    expect(w.emitted("update:modelValue")?.map((args) => args[0])).toEqual([1, 12, 123]);
   });
 
   it("refleja un modelValue externo en el campo", async () => {
@@ -98,30 +115,99 @@ describe("NumberInput — valor y v-model", () => {
 
     await field(w).setValue("50");
     await flushPromises();
+    expect(vm(w).get()).toBe(5);
+
+    await field(w).trigger("blur");
+    await flushPromises();
     expect(vm(w).get()).toBe(10);
   });
 });
 
 describe("NumberInput — límites (min / max)", () => {
-  it("clampea al máximo mientras se tipea", async () => {
-    const w = mount(NumberInput, { props: { max: 10 } });
+  it("respeta el texto mientras se tipea y sólo actualiza el modelo dentro de rango (año)", async () => {
+    const w = mount(NumberInput, { props: { min: 1950, max: 2100 } });
+    expect(fieldValue(w)).toBe("");
 
-    await field(w).setValue("50");
+    await field(w).setValue("2");
     await flushPromises();
+    expect(fieldValue(w)).toBe("2");
+    expect(vm(w).get()).toBeNull();
 
-    expect(vm(w).get()).toBe(10);
-    expect(fieldValue(w)).toBe("10");
-    expect(w.emitted("update:modelValue")?.at(-1)).toEqual([10]);
+    await field(w).setValue("20");
+    await flushPromises();
+    expect(fieldValue(w)).toBe("20");
+    expect(vm(w).get()).toBeNull();
+
+    await field(w).setValue("201");
+    await flushPromises();
+    expect(fieldValue(w)).toBe("201");
+    expect(vm(w).get()).toBeNull();
+    expect(w.emitted("update:modelValue")).toBeUndefined();
+
+    await field(w).setValue("2019");
+    await flushPromises();
+    expect(fieldValue(w)).toBe("2019");
+    expect(vm(w).get()).toBe(2019);
+    expect(w.emitted("update:modelValue")?.at(-1)).toEqual([2019]);
+
+    expect(w.emitted("change")).toBeUndefined();
+    await field(w).trigger("keydown", { key: "Enter" });
+    await flushPromises();
+    expect(w.emitted("change")?.at(-1)).toEqual([2019]);
   });
 
-  it("clampea al mínimo mientras se tipea", async () => {
-    const w = mount(NumberInput, { props: { min: 0 } });
+  it("tipear por debajo del mínimo no toca el modelo; blur recorta al mínimo y emite change", async () => {
+    const w = mount(NumberInput, { props: { min: 1950 } });
 
-    await field(w).setValue("-5");
+    await field(w).setValue("1949");
     await flushPromises();
 
-    expect(vm(w).get()).toBe(0);
-    expect(fieldValue(w)).toBe("0");
+    expect(fieldValue(w)).toBe("1949");
+    expect(vm(w).get()).toBeNull();
+    expect(w.emitted("update:modelValue")).toBeUndefined();
+
+    await field(w).trigger("blur");
+    await flushPromises();
+
+    expect(fieldValue(w)).toBe("1950");
+    expect(vm(w).get()).toBe(1950);
+    expect(w.emitted("update:modelValue")?.at(-1)).toEqual([1950]);
+    expect(w.emitted("change")?.at(-1)).toEqual([1950]);
+  });
+
+  it("tipear por encima del máximo no toca el modelo; blur recorta al máximo y emite change", async () => {
+    const w = mount(NumberInput, { props: { max: 2100 } });
+
+    await field(w).setValue("3000");
+    await flushPromises();
+
+    expect(fieldValue(w)).toBe("3000");
+    expect(vm(w).get()).toBeNull();
+    expect(w.emitted("update:modelValue")).toBeUndefined();
+
+    await field(w).trigger("blur");
+    await flushPromises();
+
+    expect(fieldValue(w)).toBe("2100");
+    expect(vm(w).get()).toBe(2100);
+    expect(w.emitted("update:modelValue")?.at(-1)).toEqual([2100]);
+    expect(w.emitted("change")?.at(-1)).toEqual([2100]);
+  });
+
+  it("un texto inválido no toca el modelo y blur restaura el texto del valor vigente", async () => {
+    const w = mount(NumberInput, { props: { modelValue: 5 } });
+    await flushPromises();
+
+    await field(w).setValue("abc");
+    await flushPromises();
+    expect(fieldValue(w)).toBe("abc");
+    expect(vm(w).get()).toBe(5);
+    expect(w.emitted("update:modelValue")).toBeUndefined();
+
+    await field(w).trigger("blur");
+    await flushPromises();
+    expect(fieldValue(w)).toBe("5");
+    expect(vm(w).get()).toBe(5);
   });
 
   it("set() fuera de rango clampea y emite change con el valor final", async () => {
@@ -420,5 +506,72 @@ describe("NumberInput — apariencia", () => {
   it("propaga el placeholder al campo", () => {
     const w = mount(NumberInput, { props: { placeholder: "Cantidad" } });
     expect(field(w).attributes("placeholder")).toBe("Cantidad");
+  });
+});
+
+// El host re-renderiza en el tick siguiente: con `v-model` (o desde el custom
+// element, que espeja el valor) la prop vuelve después. Los métodos tienen que
+// ver el valor ya, como en el ejemplo de la ficha (`set(4)` → `increment()` → 5).
+describe("NumberInput — API imperativa con v-model", () => {
+  function mountControlled() {
+    const Host = defineComponent({
+      components: { NumberInput },
+      setup() {
+        const value = ref<number | null>(null);
+        return { value };
+      },
+      template: `<NumberInput v-model="value" :min="0" :max="100" />`,
+    });
+    const w = mount(Host);
+    return { w, api: () => w.findComponent(NumberInput).vm as unknown as NumberInputVm };
+  }
+
+  it("set() se ve en get() en el mismo tick", () => {
+    const { api } = mountControlled();
+
+    api().set(4);
+
+    expect(api().get()).toBe(4);
+  });
+
+  it("set() + increment()/decrement() encadenados parten del valor nuevo", () => {
+    const { api } = mountControlled();
+
+    api().set(4);
+    api().increment();
+    expect(api().get()).toBe(5);
+
+    api().decrement();
+    expect(api().get()).toBe(4);
+  });
+
+  it("set() fuera de rango queda clampeado también para los métodos encadenados", () => {
+    const { api } = mountControlled();
+
+    api().set(999);
+    expect(api().get()).toBe(100);
+
+    api().increment();
+    expect(api().get()).toBe(100);
+  });
+});
+
+describe("NumberInput — precisión del paso", () => {
+  it("un paso decimal no arrastra polvo de coma flotante", async () => {
+    const w = mount(NumberInput, { props: { modelValue: 0.2, step: 0.1 } });
+
+    vm(w).increment();
+    await flushPromises();
+
+    expect(vm(w).get()).toBe(0.3);
+  });
+
+  it("un paso menor a 1e-6 (notación exponencial) también suma", async () => {
+    const w = mount(NumberInput, { props: { modelValue: 0, step: 0.0000001 } });
+
+    vm(w).increment();
+    await flushPromises();
+
+    expect(vm(w).get()).toBe(0.0000001);
   });
 });

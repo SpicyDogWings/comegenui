@@ -39,6 +39,10 @@ borde), `link` (texto subrayado, sin padding) y `none` (igual que `solid`).
 <Button color="primary" variant="none">none</Button>
 ```
 
+Un `variant` fuera del set cae a `ghost` (el default), igual que un `color` inválido cae a
+`neutral` y un `type` inválido a `button`: la clase `cu-button--{variant}` no existe para otro
+valor y el botón quedaba sin estilos (texto del tema sobre el fondo del contenedor).
+
 ## Colores
 
 `color` es un nombre semántico, no un hex: se resuelve con los tokens del tema activo
@@ -120,7 +124,8 @@ campos. Un `type` inválido cae a `"button"` (el valor inválido de HTML sería 
 
 ### Solo icono
 
-`iconOnly` cambia el padding a cuadrado para un botón sin texto visible. El contenido sigue
+`iconOnly` cambia el padding a cuadrado para un botón sin texto visible; el cuadrado sigue la
+escala del `size` (con un ícono de 16 px: `sm` y `md` → 32×32, `lg` → 48×48). El contenido sigue
 siendo el slot, así que el nombre accesible **no** sale del ícono: agregá `aria-label`
 (o dejá texto visualmente oculto). Sin nombre accesible el botón queda mudo para lectores de
 pantalla.

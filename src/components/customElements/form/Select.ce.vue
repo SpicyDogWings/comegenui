@@ -60,7 +60,7 @@ const props = defineProps({
   searchResetDelay: { type: Number, required: false, default: 1000 },
   /** Muestra una barra de progreso animada en el dropdown */
   loading: { type: Boolean, required: false, default: false },
-  /** Estilo de la barra de cooldown: `ghost-hover` (default) o el `variant` que quieras, p. ej. `solid` (color lleno). No se muestra si `loading` está activo */
+  /** Estilo de la barra de cooldown: `ghost`/`ghost-hover` (color suave, default) o `solid` (color lleno). No se muestra si `loading` está activo */
   cooldownVariant: { type: String, required: false, default: "ghost-hover" },
 });
 
@@ -140,7 +140,6 @@ defineExpose({
     @update:model-value="onUpdate"
     @change="ceEmit('change', $event)"
     @close="ceEmit('close', $event)"
-    @blur="ceEmit('blur', $event)"
   />
 </template>
 

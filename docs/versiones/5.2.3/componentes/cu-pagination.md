@@ -33,6 +33,11 @@ usarse dentro de tablas o listas.
 `current-page` es la página actual, `total-pages` cuántas hay (si es `1` no renderiza nada) y
 `total-items` el total de registros, que se usa para el texto «Mostrando X - Y de Z».
 
+Si `current-page` no es un número o queda fuera de `[1, total-pages]` (típico cuando un filtro
+achica los totales y la página vigente era la 25 de 5), se renderiza la última página disponible y
+«Anterior»/«Siguiente» vuelven a navegar. La prop **no se modifica sola**: reasignar `current-page`
+sigue siendo decisión del consumidor.
+
 ## Colores
 
 `color` es un nombre semántico: se resuelve con los tokens del tema activo, así que el mismo
@@ -69,6 +74,14 @@ nombre se ve distinto en cada tema. Pinta el botón de la página activa.
 `show-page-size` agrega el selector «Por página:», alimentado por `page-size-options`
 (default `[5, 10, 20, 50]`) y con `items-per-page` como valor actual. Al elegir un tamaño
 vuelve a la página 1.
+
+El tamaño actual **siempre** es una opción del selector: si `items-per-page` no está en
+`page-size-options` (p. ej. `15` con las opciones por defecto), se agrega al listado y queda
+seleccionado. Así el selector nunca muestra «Seleccionar…» mientras la tabla ya está paginada.
+
+Un `page-size-options` que no sea un array (el atributo HTML, un `v-bind` roto) se ignora: el
+selector usa el listado por defecto `[5, 10, 20, 50]` más el tamaño vigente, en vez de listar
+caracteres sueltos.
 
 ```html
 <cu-pagination

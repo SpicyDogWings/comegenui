@@ -27,5 +27,5 @@
     "set",
     "toggle"
   ],
-  "shadow": "div[tabindex]\n  div.cu-dropdown.cu-popover[style]\n    input.cu-input.cu-input--soft[placeholder,style,type,value]"
+  "shadow": "div[tabindex]\n  div.cu-dropdown.cu-popover[style]\n    input.cu-input.cu-input--soft[aria-autocomplete,aria-controls,aria-expanded,aria-haspopup,placeholder,role,style,type,value]"
 }

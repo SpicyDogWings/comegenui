@@ -38,6 +38,45 @@ function attachMeta(ctor, meta) {
 function camelize(name) {
 	return name.replace(/-(\w)/g, (_, char) => char ? char.toUpperCase() : "");
 }
+/** `Boolean`, `{ type: Boolean }` o `{ type: [String, Boolean] }` → tipos efectivos. */
+function typesOf(option) {
+	let raw = option;
+	if (typeof option === "object" && option !== null && !Array.isArray(option) && "type" in option) raw = option.type;
+	const list = Array.isArray(raw) ? raw : [raw];
+	return {
+		boolean: list.includes(Boolean),
+		number: list.includes(Number),
+		string: list.includes(String)
+	};
+}
+/** Tipos declarados por prop, en camelCase (cacheado por definición). */
+var PROP_TYPES = /* @__PURE__ */ new WeakMap();
+function propTypes(def) {
+	const cached = PROP_TYPES.get(def);
+	if (cached) return cached;
+	const map = /* @__PURE__ */ new Map();
+	const props = def.props;
+	if (props && !Array.isArray(props)) for (const [key, option] of Object.entries(props)) map.set(camelize(key), typesOf(option));
+	PROP_TYPES.set(def, map);
+	return map;
+}
+/**
+* Atributo del host → valor de la prop. Un atributo llega siempre como string:
+* `_setProp` con el string crudo dejaba `disabled="false"` deshabilitado (el
+* string es truthy) y `model-value="false"` marcado. Se castea con la misma
+* regla que HTML/Vue: un atributo Boolean presente es `true`, salvo el texto
+* explícito `"false"` (y `""`/`"true"` → `true`); Number se parsea. Sin tipos
+* declarados (`props: ['value']`) no se adivina: el valor queda string.
+*/
+function castPropValue(value, types) {
+	if (!types) return value;
+	if (types.boolean) return value.trim().toLowerCase() !== "false";
+	if (types.number && !types.string) {
+		const parsed = parseFloat(value);
+		if (!Number.isNaN(parsed)) return parsed;
+	}
+	return value;
+}
 /** Props declaradas por el componente, en camelCase (cacheado por definición). */
 var PROP_KEYS = /* @__PURE__ */ new WeakMap();
 function declaredProps(def) {
@@ -120,12 +159,7 @@ function makeElement(component, meta) {
 		_applyProp(propKey, value, camelKey) {
 			const self = this;
 			if (value !== null) {
-				let parsed = value;
-				if (self._numberProps?.[camelKey]) {
-					const n = parseFloat(value);
-					if (!Number.isNaN(n)) parsed = n;
-				}
-				self._setProp(propKey, parsed, false, true);
+				self._setProp(propKey, castPropValue(value, propTypes(self._def).get(camelKey)), false, true);
 				return;
 			}
 			if (!Object.prototype.hasOwnProperty.call(self._props, propKey)) return;
@@ -256,7 +290,11 @@ var _hoisted_2 = {
 	class: "cu-label-text"
 };
 var FOCUSABLE = "input:not([type=\"hidden\"]), select, textarea, button, [tabindex]:not([tabindex=\"-1\"])";
-/** Control real a enfocar/activar: el del shadow root, el propio elemento o uno interno. */
+/**
+* Interactivos del slot que manejan su propio click (link, botón, otro campo,
+* contenido editable). El `<label>` no debe cancelarles el default ni robarles
+* el foco: el click es de ellos.
+*/
 var Label_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineComponent({
 	__name: "Label",
 	props: {
@@ -284,7 +322,7 @@ var Label_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineComp
 	emits: ["click"],
 	setup(__props, { emit: __emit }) {
 		const props = __props;
-		const colorStyles = computed(() => ({ "--label-fg": `var(--cu-color-${props.color})` }));
+		const colorStyles = computed(() => ({ "--label-fg": `var(--cu-color-${props.color}-text)` }));
 		const emit = __emit;
 		const labelRef = useTemplateRef("label");
 		/**
@@ -304,6 +342,12 @@ var Label_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineComp
 		* slot es el componente (un `<div>`/`<label>` con el campo adentro), así que se
 		* busca el control focuseable dentro del elemento.
 		*/
+		const INTERACTIVE = `${FOCUSABLE}, a[href], area[href], summary, audio[controls], video[controls], [contenteditable="true"]`;
+		/** Primer interactivo del path (fuera del propio label) donde nació el click. */
+		function interactiveFromPath(path) {
+			return path.find((node) => node instanceof HTMLElement && node !== labelRef.value && node.matches(INTERACTIVE)) ?? null;
+		}
+		/** Control real a enfocar/activar: el del shadow root, el propio elemento o uno interno. */
 		function controlTarget(el) {
 			if (!el) return null;
 			return el.shadowRoot?.querySelector(FOCUSABLE) ?? (el.matches(FOCUSABLE) ? el : el.querySelector(FOCUSABLE)) ?? el;
@@ -312,11 +356,17 @@ var Label_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineComp
 			const control = props.for ? document.getElementById(props.for) : slotControl();
 			const path = event.composedPath?.() ?? [];
 			if (!(!!control && (event.target === control || path.includes(control)))) {
-				event.preventDefault();
-				const target = controlTarget(control);
-				if (target) {
-					target.focus();
-					if (target instanceof HTMLInputElement && (target.type === "checkbox" || target.type === "radio")) target.click();
+				const ajeno = interactiveFromPath(path);
+				if (!(!!ajeno && !(control && control.contains(ajeno)))) {
+					const target = controlTarget(control);
+					if (target) {
+						const esToggle = target instanceof HTMLInputElement && (target.type === "checkbox" || target.type === "radio");
+						target.focus();
+						if (esToggle) {
+							event.preventDefault();
+							target.click();
+						}
+					}
 				}
 			}
 			emit("click");
@@ -333,8 +383,8 @@ var Label_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineComp
 	}
 });
 //#endregion
-//#region src/components/form/Label.vue?vue&type=style&index=0&inline&scoped=5a2501c1&lang.css
-var Label_vue_vue_type_style_index_0_inline_scoped_5a2501c1_lang_default = "\n.cu-label[data-v-5a2501c1] {\n  display: inline-flex;\n  flex-direction: column;\n  gap: var(--cu-space-xs);\n  font-family: var(--cu-font-sans);\n}\n.cu-label-text[data-v-5a2501c1] {\n  width: fit-content;\n  cursor: pointer;\n  font-family: var(--cu-font-sans);\n}\n\n/* Clases duplicadas a propósito: le ganan a las reglas globales del\n   consumidor que fuerzan color en label/span (p. ej. el playground:\n   `.playground :is(..., span, label)` → (0,2,1)). Scoped compila a (0,3,0). */\n.cu-label.cu-label[data-v-5a2501c1],\n.cu-label-text.cu-label-text[data-v-5a2501c1] {\n  color: var(--label-fg);\n}\n";
+//#region src/components/form/Label.vue?vue&type=style&index=0&inline&scoped=1529615b&lang.css
+var Label_vue_vue_type_style_index_0_inline_scoped_1529615b_lang_default = "\n.cu-label[data-v-1529615b] {\n  display: inline-flex;\n  flex-direction: column;\n  gap: var(--cu-space-xs);\n  font-family: var(--cu-font-sans);\n}\n.cu-label-text[data-v-1529615b] {\n  width: fit-content;\n  cursor: pointer;\n  font-family: var(--cu-font-sans);\n}\n\n/* Clases duplicadas a propósito: le ganan a las reglas globales del\n   consumidor que fuerzan color en label/span (p. ej. el playground:\n   `.playground :is(..., span, label)` → (0,2,1)). Scoped compila a (0,3,0). */\n.cu-label.cu-label[data-v-1529615b],\n.cu-label-text.cu-label-text[data-v-1529615b] {\n  color: var(--label-fg);\n}\n";
 //#endregion
 //#region \0plugin-vue:export-helper
 var _plugin_vue_export_helper_default = (sfc, props) => {
@@ -344,7 +394,7 @@ var _plugin_vue_export_helper_default = (sfc, props) => {
 };
 //#endregion
 //#region src/components/form/Label.vue
-var Label_default = /*#__PURE__*/ _plugin_vue_export_helper_default(Label_vue_vue_type_script_setup_true_lang_default, [["styles", [Label_vue_vue_type_style_index_0_inline_scoped_5a2501c1_lang_default]], ["__scopeId", "data-v-5a2501c1"]]);
+var Label_default = /*#__PURE__*/ _plugin_vue_export_helper_default(Label_vue_vue_type_script_setup_true_lang_default, [["styles", [Label_vue_vue_type_style_index_0_inline_scoped_1529615b_lang_default]], ["__scopeId", "data-v-1529615b"]]);
 //#endregion
 //#region src/lib/form/label.ts
 var CuLabel = defineComegenElement("cu-label", /* @__PURE__ */ _plugin_vue_export_helper_default(/* @__PURE__ */ defineComponent({

@@ -189,7 +189,15 @@ defineExpose({
 </script>
 
 <template>
-  <Modal ref="modalRef" :color="color" :title="title" :size="size" :height="height" @close="handleClose">
+  <Modal
+    ref="modalRef"
+    :color="color"
+    :title="title"
+    :size="size"
+    :height="height"
+    :aria-label="title || 'Paleta de comandos'"
+    @close="handleClose"
+  >
     <div class="cu-command-palette" @keydown="handleKeydown">
       <div class="cu-command-palette-search">
         <Input
@@ -295,8 +303,7 @@ defineExpose({
       font-weight: var(--cu-font-weight-semibold);
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      color: var(--cu-color-neutral);
-      opacity: var(--cu-alpha-muted, 0.5);
+      color: var(--cu-color-neutral-text-muted);
     }
 
     .cu-command-palette-item :deep(.cu-command-palette-item-icon) {
@@ -313,14 +320,12 @@ defineExpose({
 
     .cu-command-palette-item :deep(.cu-command-palette-item-desc) {
       font-size: var(--cu-font-size-xs);
-      color: var(--cu-color-neutral);
-      opacity: var(--cu-alpha-muted, 0.5);
+      color: var(--cu-color-neutral-text-muted);
     }
 
     .cu-command-palette-item :deep(.cu-command-palette-item-badge) {
       font-size: var(--cu-font-size-xs);
-      color: var(--cu-color-neutral);
-      opacity: var(--cu-alpha-subtle, 0.6);
+      color: var(--cu-color-neutral-text-subtle);
       padding: 0.125rem 0.5rem;
       border: var(--cu-border-thin) solid var(--cu-border-color);
       border-radius: var(--cu-radius-sm);
@@ -331,8 +336,7 @@ defineExpose({
     .cu-command-palette-item :deep(.cu-command-palette-item-shortcut) {
       font-family: var(--cu-font-mono);
       font-size: var(--cu-font-size-xs);
-      color: var(--cu-color-neutral);
-      opacity: var(--cu-alpha-muted, 0.5);
+      color: var(--cu-color-neutral-text-muted);
       padding: 0.125rem 0.375rem;
       border: var(--cu-border-thin) solid var(--cu-border-color);
       border-radius: var(--cu-radius-sm);
@@ -343,7 +347,6 @@ defineExpose({
       padding: 1.5rem;
       text-align: center;
       font-size: var(--cu-font-size-sm);
-      color: var(--cu-color-neutral);
-      opacity: var(--cu-alpha-muted, 0.5);
+      color: var(--cu-color-neutral-text-muted);
     }
     </style>

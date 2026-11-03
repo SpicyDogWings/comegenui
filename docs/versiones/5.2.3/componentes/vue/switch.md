@@ -158,6 +158,15 @@ function leer() {
 </template>
 ```
 
+## Accesibilidad
+
+- El control accesible es un `<input type="checkbox">` nativo con `role="switch"` y
+  `aria-checked`: **un solo** nodo en el árbol de accesibilidad, una parada de tabulación, y
+  <kbd>Espacio</kbd> lo alterna. El foco se ve con un anillo sobre el track.
+- `disabled` deshabilita el input nativo: bloquea mouse y teclado y el switch se anuncia como
+  deshabilitado. El estado se sigue leyendo con `get()`.
+- El nombre accesible sale de `label` o del contenido del slot `default`.
+
 ## Props
 
 <!--@include: ../../partials/switch/props-vue.md-->

@@ -22,7 +22,11 @@ Botón flotante (FAB) fijo en la esquina inferior derecha. Es un `Button` (hered
 
 <!-- demo:floating-button-uso -->
 
-> Es `position: fixed` en la esquina inferior derecha (`bottom` y `right`: `var(--cu-space-lg)`), con `z-index: 1000` y sombra elevada. El contenido (normalmente un SVG) debe usar `stroke="currentColor"` para heredar el color; el `click` es el evento nativo del `Button` interno.
+> Es `position: fixed` en la esquina inferior derecha (`bottom` y `right`: `var(--cu-space-lg)` por
+> defecto, configurables con `--cu-fab-bottom` y `--cu-fab-right`; ver [Posición](#posicion)) y
+> suma la zona segura de iOS, con `z-index: 900` y sombra elevada. El contenido (normalmente un
+> SVG) debe usar `stroke="currentColor"` para heredar el color; el `click` es el evento nativo del
+> `Button` interno.
 
 ## Colores
 
@@ -60,6 +64,29 @@ Botón flotante (FAB) fijo en la esquina inferior derecha. Es un `Button` (hered
 <!-- demo:floating-button-variantes-tamanos -->
 
 > No fija tamaño ni forma: hereda de `Button` el `padding`, el `size` y el `border-radius`, y crece con su contenido.
+
+## Posición
+
+`bottom` y `right` salen de dos custom properties (`--cu-fab-bottom`, `--cu-fab-right`), con el
+spacing del tema como default: se definen en el host o en `:root`, sin props nuevas. La zona
+segura de iOS (home indicator, esquinas redondeadas) se suma siempre; en desktop `env()` resuelve
+a 0 y el margen es el de siempre.
+
+```css
+cu-floating-button {
+  --cu-fab-bottom: 2rem;   /* default: var(--cu-space-lg) */
+  --cu-fab-right: 1rem;    /* default: var(--cu-space-lg) */
+}
+```
+
+## Capa y accesibilidad
+
+- `z-index: 900` deja el FAB **por debajo** de los overlays (`Modal` 1000, `SideOver` 1100): un
+  diálogo abierto siempre tapa al FAB, sin importar el orden en el DOM.
+- Un FAB de sólo ícono necesita nombre accesible: `aria-label` en el custom element (llega al
+  `<button>` interno) o texto visible en el slot.
+- `disabled` y `loading` bloquean el click y el teclado; `loading` marca `aria-busy="true"` y
+  antepone el spinner.
 
 ## Estados
 

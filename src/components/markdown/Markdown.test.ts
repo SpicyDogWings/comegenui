@@ -87,6 +87,13 @@ describe("Markdown — render de bloques", () => {
     expect(table.text()).toContain("a");
   });
 
+  it("las tablas heredan `scope=\"col\"` en sus encabezados", async () => {
+    const w = await mountParsed("| Col A | Col B |\n|-------|-------|\n| a     | b     |");
+    const ths = w.findAll("th");
+    expect(ths.length).toBeGreaterThan(0);
+    for (const th of ths) expect(th.attributes("scope")).toBe("col");
+  });
+
   it("renderiza listas no ordenadas", async () => {
     const w = await mountParsed("- Item 1\n- Item 2");
     const ul = w.find("ul.cu-md-list");
@@ -97,5 +104,118 @@ describe("Markdown — render de bloques", () => {
   it("oculta el slot de entrada cuando hay contenido parseado", async () => {
     const w = await mountParsed("# Título");
     expect(w.find(".cu-md-slot").attributes("style")).toContain("display: none");
+  });
+});
+
+// ── Ids de encabezado: anclas estables ────────────────────────────────────────
+// La ficha dice que el `id` de cada heading sirve para anclas. Eso exige que
+// salga del texto visible (no del HTML con clases) y que no se repita.
+describe("Markdown — ids de encabezado", () => {
+  it("ignora el formato al generar el id (negrita, código, link)", async () => {
+    const negrita = await mountParsed("# **Hola**");
+    expect(negrita.find("h1").attributes("id")).toBe("hola");
+
+    const codigo = await mountParsed("# `code`");
+    expect(codigo.find("h1").attributes("id")).toBe("code");
+
+    const link = await mountParsed("# [Hola](https://x.test)");
+    expect(link.find("h1").attributes("id")).toBe("hola");
+  });
+
+  it("numera los ids repetidos para que el ancla no colapse", async () => {
+    const w = await mountParsed("# Igual\n\n## Igual\n\n# Igual");
+    const ids = w.findAll("h1, h2").map((h) => h.attributes("id"));
+    expect(ids).toEqual(["igual", "igual-1", "igual-2"]);
+    expect(vm(w).headingIds()).toEqual(ids);
+  });
+});
+
+// ── Tablas: cada columna conserva su celda ────────────────────────────────────
+describe("Markdown — tablas con encabezados repetidos o vacíos", () => {
+  it("no colapsa dos columnas con el mismo encabezado", async () => {
+    const w = await mountParsed("| a | a |\n|---|---|\n| 1 | 2 |");
+    const cells = w.findAll("td").map((td) => td.text());
+    expect(cells).toEqual(["1", "2"]);
+    expect(w.findAll("th")).toHaveLength(2);
+  });
+
+  it("no pierde la celda de una columna sin encabezado", async () => {
+    const w = await mountParsed("| | b |\n|---|---|\n| 1 | 2 |");
+    const cells = w.findAll("td").map((td) => td.text());
+    expect(cells).toEqual(["1", "2"]);
+  });
+
+  it("muestra el texto del encabezado sin el marcado", async () => {
+    const w = await mountParsed("| **A** | b |\n|---|---|\n| 1 | 2 |");
+    const headers = w.findAll("th").map((th) => th.text());
+    expect(headers).toEqual(["A", "b"]);
+  });
+});
+
+// ── Seguridad: el markdown no inyecta HTML ni atributos ──────────────────────
+describe("Markdown — seguridad", () => {
+  it("no inyecta atributos desde la URL de una imagen", async () => {
+    const w = await mountParsed('![x](<a" onerror="alert(1)>)');
+    const img = w.find("img.cu-md-image");
+    expect(img.exists()).toBe(true);
+    expect(img.attributes("onerror")).toBeUndefined();
+    expect(img.attributes("src")).toBe('a" onerror="alert(1)');
+  });
+
+  it("escapa el `<` de un escape de markdown dentro de un formato", async () => {
+    const w = await mountParsed("**\\<img src=x onerror=alert(1)>**");
+    expect(w.find("img").exists()).toBe(false);
+    expect(w.find("strong").text()).toContain("<img src=x onerror=alert(1)>");
+  });
+
+  it("no inyecta atributos desde un link anidado en negrita", async () => {
+    const w = await mountParsed('**[x](<a" onmouseover="alert(1)>)**');
+    const link = w.find("a");
+    expect(link.exists()).toBe(true);
+    expect(link.attributes("onmouseover")).toBeUndefined();
+  });
+
+  it("respeta las entidades del texto y del alt", async () => {
+    const parrafo = await mountParsed("A & B y A &amp; B");
+    expect(parrafo.find(".cu-md-paragraph").text()).toBe("A & B y A & B");
+
+    const img = await mountParsed("![a &amp; b](/foto.png)");
+    expect(img.find("img.cu-md-image").attributes("alt")).toBe("a & b");
+  });
+
+  it("un link `javascript:` no navega", async () => {
+    const w = await mountParsed("[x](javascript:alert(1))");
+    expect(w.find("a").exists()).toBe(false);
+    expect(w.findAll("a[href]")).toHaveLength(0);
+  });
+
+  it("un bloque de HTML crudo se muestra como código, no se ejecuta", async () => {
+    const w = await mountParsed("<script>alert(1)</script>");
+    expect(w.find("script").exists()).toBe(false);
+    expect(w.find(".cu-code-block").text()).toContain("<script>alert(1)</script>");
+  });
+});
+
+// ── Links dentro de HTML sanitizado (blockquote / celdas) ────────────────────
+describe("Markdown — links en blockquote y celdas", () => {
+  it("abren en una pestaña nueva, igual que los inline", async () => {
+    const bq = await mountParsed("> [doc](https://ok.test)");
+    const bqLink = bq.find(".cu-blockquote a");
+    expect(bqLink.attributes("href")).toBe("https://ok.test");
+    expect(bqLink.attributes("target")).toBe("_blank");
+    expect(bqLink.attributes("rel")).toContain("noopener");
+
+    const table = await mountParsed("| a |\n|---|\n| [doc](https://ok.test) |");
+    const cellLink = table.find("td a");
+    expect(cellLink.attributes("href")).toBe("https://ok.test");
+    expect(cellLink.attributes("target")).toBe("_blank");
+  });
+
+  it("un link `javascript:` sigue bloqueado", async () => {
+    const bq = await mountParsed("> [x](javascript:alert(1))");
+    expect(bq.find(".cu-blockquote a[href]").exists()).toBe(false);
+
+    const table = await mountParsed("| a |\n|---|\n| [x](javascript:alert(1)) |");
+    expect(table.find("td a[href]").exists()).toBe(false);
   });
 });

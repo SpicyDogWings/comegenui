@@ -89,10 +89,11 @@ Cambiar el paso **no** cambia el valor. El select es el componente `Select` de l
 
 ## Límites (min / max)
 
-`min` y `max` son inclusive y se respetan en todos los caminos: al tipear (el campo muestra el
-límite, no el número tipeado), al setear por API y al incrementar o decrementar. En el límite el
-botón correspondiente queda deshabilitado y no emite eventos, así que el valor nunca se sale del
-rango.
+`min` y `max` son inclusive y el valor nunca se sale del rango. Mientras se escribe el texto se
+respeta tal cual (así se puede completar un año como `2019`): el modelo sólo refleja valores
+dentro del rango y `Enter`/blur recortan al límite más cercano, igual que al setear por API y al
+incrementar o decrementar. En el límite el botón correspondiente queda deshabilitado y no emite
+eventos.
 
 ```vue
 <NumberInput :min="0" :max="10" placeholder="0 a 10" />
@@ -106,7 +107,8 @@ rango.
 ## Teclado
 
 Con el campo enfocado, `↑` incrementa y `↓` decrementa con el paso activo (el del select si está
-visible). `Enter` confirma el valor tipeado. Con `disabled` o `readOnly` las flechas no hacen nada.
+visible). `Enter` confirma el valor tipeado y lo recorta a `min`/`max`. Con `disabled` o
+`readOnly` las flechas no hacen nada.
 
 ```vue
 <NumberInput placeholder="Enfocá y usá ↑ / ↓" />
@@ -144,8 +146,9 @@ function onChange(final: number | null) {
 </template>
 ```
 
-> El `<input>` interno también burbujea sus eventos nativos (`input`, `focus`, `blur`); el
-> `change` nativo se detiene para no pisar el `change` del componente.
+> El `<input>` interno deja pasar sus eventos nativos `input` y `focus` al host; el `blur`
+> nativo no cruza el shadow DOM (para confirmar el valor está `change`). El `change` nativo se
+> detiene para no pisar el `change` del componente.
 
 ## API imperativa
 

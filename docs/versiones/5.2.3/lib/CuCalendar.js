@@ -1,5 +1,5 @@
 /*! comegenui v5.2.3 · CuCalendar (cu-calendar) · esm-shared · Vue externo (bare import) */
-import { Fragment, computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, createTextVNode, createVNode, defineComponent, defineCustomElement, getCurrentInstance, normalizeClass, normalizeStyle, openBlock, ref, renderList, renderSlot, toDisplayString, unref, watch, withCtx, withKeys, withModifiers } from "vue";
+import { Fragment, computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, createTextVNode, createVNode, defineComponent, defineCustomElement, getCurrentInstance, nextTick, normalizeClass, normalizeStyle, openBlock, ref, renderList, renderSlot, toDisplayString, unref, watch, withCtx, withKeys, withModifiers } from "vue";
 //#region src/utils/comegen-element.ts
 var BUILD_META = {
 	"version": "5.2.3",
@@ -37,6 +37,45 @@ function attachMeta(ctor, meta) {
 /** `aria-describedby` → `ariaDescribedby` (mismo algoritmo que Vue). */
 function camelize(name) {
 	return name.replace(/-(\w)/g, (_, char) => char ? char.toUpperCase() : "");
+}
+/** `Boolean`, `{ type: Boolean }` o `{ type: [String, Boolean] }` → tipos efectivos. */
+function typesOf(option) {
+	let raw = option;
+	if (typeof option === "object" && option !== null && !Array.isArray(option) && "type" in option) raw = option.type;
+	const list = Array.isArray(raw) ? raw : [raw];
+	return {
+		boolean: list.includes(Boolean),
+		number: list.includes(Number),
+		string: list.includes(String)
+	};
+}
+/** Tipos declarados por prop, en camelCase (cacheado por definición). */
+var PROP_TYPES = /* @__PURE__ */ new WeakMap();
+function propTypes(def) {
+	const cached = PROP_TYPES.get(def);
+	if (cached) return cached;
+	const map = /* @__PURE__ */ new Map();
+	const props = def.props;
+	if (props && !Array.isArray(props)) for (const [key, option] of Object.entries(props)) map.set(camelize(key), typesOf(option));
+	PROP_TYPES.set(def, map);
+	return map;
+}
+/**
+* Atributo del host → valor de la prop. Un atributo llega siempre como string:
+* `_setProp` con el string crudo dejaba `disabled="false"` deshabilitado (el
+* string es truthy) y `model-value="false"` marcado. Se castea con la misma
+* regla que HTML/Vue: un atributo Boolean presente es `true`, salvo el texto
+* explícito `"false"` (y `""`/`"true"` → `true`); Number se parsea. Sin tipos
+* declarados (`props: ['value']`) no se adivina: el valor queda string.
+*/
+function castPropValue(value, types) {
+	if (!types) return value;
+	if (types.boolean) return value.trim().toLowerCase() !== "false";
+	if (types.number && !types.string) {
+		const parsed = parseFloat(value);
+		if (!Number.isNaN(parsed)) return parsed;
+	}
+	return value;
 }
 /** Props declaradas por el componente, en camelCase (cacheado por definición). */
 var PROP_KEYS = /* @__PURE__ */ new WeakMap();
@@ -120,12 +159,7 @@ function makeElement(component, meta) {
 		_applyProp(propKey, value, camelKey) {
 			const self = this;
 			if (value !== null) {
-				let parsed = value;
-				if (self._numberProps?.[camelKey]) {
-					const n = parseFloat(value);
-					if (!Number.isNaN(n)) parsed = n;
-				}
-				self._setProp(propKey, parsed, false, true);
+				self._setProp(propKey, castPropValue(value, propTypes(self._def).get(camelKey)), false, true);
 				return;
 			}
 			if (!Object.prototype.hasOwnProperty.call(self._props, propKey)) return;
@@ -567,6 +601,7 @@ var Button_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineCom
 		const props = __props;
 		const isDisabled = computed(() => props.disabled || props.loading);
 		const safeColor = computed(() => isColor(props.color) ? props.color : "neutral");
+		const safeVariant = computed(() => isVariantFull(props.variant) ? props.variant : "ghost");
 		const buttonType = computed(() => isButtonType(props.type) ? props.type : "button");
 		const safeTo = computed(() => {
 			const value = props.to?.trim();
@@ -631,7 +666,7 @@ var Button_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineCom
 		}));
 		const rootClasses = computed(() => [
 			"cu-button",
-			`cu-button--${props.variant}`,
+			`cu-button--${safeVariant.value}`,
 			`cu-button--${props.size}`,
 			{
 				"cu-button--disabled": isDisabled.value,
@@ -683,8 +718,8 @@ var Button_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineCom
 	}
 });
 //#endregion
-//#region src/components/buttons/Button.vue?vue&type=style&index=0&inline&scoped=cb9decf8&lang.css
-var Button_vue_vue_type_style_index_0_inline_scoped_cb9decf8_lang_default = "\n.cu-button[data-v-cb9decf8] {\n  font-family: var(--cu-font-sans);\n  text-decoration: none;\n  font-size: var(--cu-font-size-sm);\n  font-weight: var(--cu-font-weight-medium);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius);\n  border: none;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--cu-space-xs);\n  box-sizing: border-box;\n  transition: all 150ms ease;\n}\n.cu-button[data-v-cb9decf8]:active:not(.cu-button--disabled) {\n  transform: scale(0.97);\n}\n.cu-button--disabled[data-v-cb9decf8] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n\n/* sizes (md = base; link mantiene su padding 0) */\n.cu-button--sm[data-v-cb9decf8]:not(.cu-button--link) {\n  font-size: var(--cu-font-size-xs);\n  padding: var(--cu-space-xs) var(--cu-space-sm);\n}\n.cu-button--lg[data-v-cb9decf8]:not(.cu-button--link) {\n  font-size: var(--cu-font-size-lg);\n  padding: var(--cu-space-lg) var(--cu-space-xl);\n}\n\n/* solid */\n.cu-button.cu-button--solid[data-v-cb9decf8] {\n  background-color: var(--btn-solid);\n  color: var(--btn-solid-text);\n}\n.cu-button.cu-button--solid[data-v-cb9decf8]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-hover);\n}\n.cu-button.cu-button--solid[data-v-cb9decf8]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-active);\n}\n\n/* ghost */\n.cu-button.cu-button--ghost[data-v-cb9decf8] {\n  background-color: transparent;\n  color: var(--btn-text);\n}\n.cu-button.cu-button--ghost[data-v-cb9decf8]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-hover);\n}\n.cu-button.cu-button--ghost[data-v-cb9decf8]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-active);\n}\n\n/* soft */\n.cu-button.cu-button--soft[data-v-cb9decf8] {\n  background-color: var(--btn-soft);\n  color: var(--btn-text);\n}\n.cu-button.cu-button--soft[data-v-cb9decf8]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-soft-hover);\n}\n.cu-button.cu-button--soft[data-v-cb9decf8]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-soft-active);\n}\n\n/* subtle */\n.cu-button.cu-button--subtle[data-v-cb9decf8] {\n  background-color: var(--btn-subtle);\n  color: var(--btn-text);\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-button.cu-button--subtle[data-v-cb9decf8]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-subtle-hover);\n}\n.cu-button.cu-button--subtle[data-v-cb9decf8]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-subtle-active);\n}\n\n/* outlined */\n.cu-button.cu-button--outlined[data-v-cb9decf8] {\n  background-color: transparent;\n  color: var(--btn-text);\n  border: var(--cu-border-thin) solid var(--btn-border);\n}\n.cu-button.cu-button--outlined[data-v-cb9decf8]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-hover);\n}\n.cu-button.cu-button--outlined[data-v-cb9decf8]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-active);\n}\n\n/* link */\n.cu-button.cu-button--link[data-v-cb9decf8] {\n  background-color: transparent;\n  color: var(--btn-text);\n  padding: 0;\n  box-shadow: none;\n  text-decoration: underline;\n  text-underline-offset: var(--cu-space-2xs);\n}\n.cu-button.cu-button--link[data-v-cb9decf8]:hover:not(.cu-button--disabled) {\n  text-decoration-thickness: 2px;\n}\n\n/* none */\n.cu-button.cu-button--none[data-v-cb9decf8] {\n  background-color: var(--btn-solid);\n  color: var(--btn-solid-text);\n}\n.cu-button.cu-button--none[data-v-cb9decf8]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-hover);\n}\n.cu-button.cu-button--none[data-v-cb9decf8]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-active);\n}\n\n/* link wrapper */\n.cu-button-link[data-v-cb9decf8] {\n  text-decoration: none;\n}\n.cu-button-link[data-v-cb9decf8]:hover {\n  text-decoration: underline;\n  text-underline-offset: var(--cu-space-2xs);\n}\n.cu-button-link.cu-button--disabled[data-v-cb9decf8] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n\n/* icon-only */\n.cu-button--icon-only[data-v-cb9decf8] {\n  padding: var(--cu-space-sm);\n}\n\n/* loading spinner */\n.cu-button-spinner[data-v-cb9decf8] {\n  animation: cu-spin-cb9decf8 0.8s linear infinite;\n}\n@keyframes cu-spin-cb9decf8 {\nfrom { transform: rotate(0deg);\n}\nto { transform: rotate(360deg);\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.cu-button[data-v-cb9decf8] {\n    transition: none;\n}\n.cu-button[data-v-cb9decf8]:active:not(.cu-button--disabled) {\n    transform: none;\n}\n.cu-button-spinner[data-v-cb9decf8] {\n    animation: none;\n}\n}\n";
+//#region src/components/buttons/Button.vue?vue&type=style&index=0&inline&scoped=fed7165d&lang.css
+var Button_vue_vue_type_style_index_0_inline_scoped_fed7165d_lang_default = "\n.cu-button[data-v-fed7165d] {\n  font-family: var(--cu-font-sans);\n  text-decoration: none;\n  font-size: var(--cu-font-size-sm);\n  font-weight: var(--cu-font-weight-medium);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius);\n  border: none;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--cu-space-xs);\n  box-sizing: border-box;\n  transition: all 150ms ease;\n}\n.cu-button[data-v-fed7165d]:active:not(.cu-button--disabled) {\n  transform: scale(0.97);\n}\n.cu-button--disabled[data-v-fed7165d] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n\n/* sizes (md = base; link mantiene su padding 0) */\n.cu-button--sm[data-v-fed7165d]:not(.cu-button--link) {\n  font-size: var(--cu-font-size-xs);\n  padding: var(--cu-space-xs) var(--cu-space-sm);\n}\n.cu-button--lg[data-v-fed7165d]:not(.cu-button--link) {\n  font-size: var(--cu-font-size-lg);\n  padding: var(--cu-space-lg) var(--cu-space-xl);\n}\n\n/* solid */\n.cu-button.cu-button--solid[data-v-fed7165d] {\n  background-color: var(--btn-solid);\n  color: var(--btn-solid-text);\n}\n.cu-button.cu-button--solid[data-v-fed7165d]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-hover);\n}\n.cu-button.cu-button--solid[data-v-fed7165d]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-active);\n}\n\n/* ghost */\n.cu-button.cu-button--ghost[data-v-fed7165d] {\n  background-color: transparent;\n  color: var(--btn-text);\n}\n.cu-button.cu-button--ghost[data-v-fed7165d]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-hover);\n}\n.cu-button.cu-button--ghost[data-v-fed7165d]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-active);\n}\n\n/* soft */\n.cu-button.cu-button--soft[data-v-fed7165d] {\n  background-color: var(--btn-soft);\n  color: var(--btn-text);\n}\n.cu-button.cu-button--soft[data-v-fed7165d]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-soft-hover);\n}\n.cu-button.cu-button--soft[data-v-fed7165d]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-soft-active);\n}\n\n/* subtle */\n.cu-button.cu-button--subtle[data-v-fed7165d] {\n  background-color: var(--btn-subtle);\n  color: var(--btn-text);\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-button.cu-button--subtle[data-v-fed7165d]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-subtle-hover);\n}\n.cu-button.cu-button--subtle[data-v-fed7165d]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-subtle-active);\n}\n\n/* outlined */\n.cu-button.cu-button--outlined[data-v-fed7165d] {\n  background-color: transparent;\n  color: var(--btn-text);\n  border: var(--cu-border-thin) solid var(--btn-border);\n}\n.cu-button.cu-button--outlined[data-v-fed7165d]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-hover);\n}\n.cu-button.cu-button--outlined[data-v-fed7165d]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-active);\n}\n\n/* link */\n.cu-button.cu-button--link[data-v-fed7165d] {\n  background-color: transparent;\n  color: var(--btn-text);\n  padding: 0;\n  box-shadow: none;\n  text-decoration: underline;\n  text-underline-offset: var(--cu-space-2xs);\n}\n.cu-button.cu-button--link[data-v-fed7165d]:hover:not(.cu-button--disabled) {\n  text-decoration-thickness: 2px;\n}\n\n/* none */\n.cu-button.cu-button--none[data-v-fed7165d] {\n  background-color: var(--btn-solid);\n  color: var(--btn-solid-text);\n}\n.cu-button.cu-button--none[data-v-fed7165d]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-hover);\n}\n.cu-button.cu-button--none[data-v-fed7165d]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-active);\n}\n\n/* link wrapper */\n.cu-button-link[data-v-fed7165d] {\n  text-decoration: none;\n}\n.cu-button-link[data-v-fed7165d]:hover {\n  text-decoration: underline;\n  text-underline-offset: var(--cu-space-2xs);\n}\n.cu-button-link.cu-button--disabled[data-v-fed7165d] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n\n/* icon-only: cuadrado. El `:not(.cu-button--link)` sube la especificidad para\n   ganarle al padding de `.cu-button--sm/lg` (que tienen la misma o más clase);\n   antes el cuadrado sólo salía en `md` (sm 32×24, lg 64×48). En `link` no\n   aplica: el link no lleva padding. */\n.cu-button--icon-only[data-v-fed7165d]:not(.cu-button--link) {\n  padding: var(--cu-space-sm);\n}\n\n/* `lg` mantiene la escala: 16 px de padding por lado (48×48 con un ícono de 16). */\n.cu-button--lg.cu-button--icon-only[data-v-fed7165d]:not(.cu-button--link) {\n  padding: var(--cu-space-lg);\n}\n\n/* loading spinner */\n.cu-button-spinner[data-v-fed7165d] {\n  animation: cu-spin-fed7165d 0.8s linear infinite;\n}\n@keyframes cu-spin-fed7165d {\nfrom { transform: rotate(0deg);\n}\nto { transform: rotate(360deg);\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.cu-button[data-v-fed7165d] {\n    transition: none;\n}\n.cu-button[data-v-fed7165d]:active:not(.cu-button--disabled) {\n    transform: none;\n}\n.cu-button-spinner[data-v-fed7165d] {\n    animation: none;\n}\n}\n";
 //#endregion
 //#region \0plugin-vue:export-helper
 var _plugin_vue_export_helper_default = (sfc, props) => {
@@ -694,7 +729,7 @@ var _plugin_vue_export_helper_default = (sfc, props) => {
 };
 //#endregion
 //#region src/components/buttons/Button.vue
-var Button_default = /*#__PURE__*/ _plugin_vue_export_helper_default(Button_vue_vue_type_script_setup_true_lang_default, [["styles", [Button_vue_vue_type_style_index_0_inline_scoped_cb9decf8_lang_default]], ["__scopeId", "data-v-cb9decf8"]]);
+var Button_default = /*#__PURE__*/ _plugin_vue_export_helper_default(Button_vue_vue_type_script_setup_true_lang_default, [["styles", [Button_vue_vue_type_style_index_0_inline_scoped_fed7165d_lang_default]], ["__scopeId", "data-v-fed7165d"]]);
 //#endregion
 //#region src/components/icons/LucideChevronLeft.vue
 var LucideChevronLeft_default = /* @__PURE__ */ defineComponent({
@@ -798,7 +833,8 @@ var Badge_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 		color: {
 			type: String,
 			required: false,
-			default: "neutral"
+			default: "neutral",
+			validator: isColor
 		},
 		/** `solid`, `outlined`, `soft`, `ghost`, `subtle` */
 		variant: {
@@ -810,16 +846,19 @@ var Badge_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 	},
 	setup(__props) {
 		const props = __props;
+		/** Un color fuera del set no tiene tokens: la variante solid quedaría sin fondo
+		*  y con el texto del tema encima (invisible). Cae al color seguro. */
+		const safeColor = computed(() => isColor(props.color) ? props.color : "neutral");
 		const badgeStyles = computed(() => ({
-			"--badge-solid": `var(--cu-color-${props.color}-solid)`,
-			"--badge-border": `var(--cu-color-${props.color}-border)`,
+			"--badge-solid": `var(--cu-color-${safeColor.value}-solid)`,
+			"--badge-border": `var(--cu-color-${safeColor.value}-border)`,
 			"--badge-solid-text": `var(--cu-color-surface)`,
-			"--badge-text": `var(--cu-color-${props.color}-text)`,
-			"--badge-soft": `var(--cu-color-${props.color}-soft)`,
-			"--badge-soft-hover": `var(--cu-color-${props.color}-soft-hover)`,
-			"--badge-ghost-hover": `var(--cu-color-${props.color}-ghost-hover)`,
-			"--badge-subtle": `var(--cu-color-${props.color}-subtle)`,
-			"--badge-subtle-border": `var(--cu-color-${props.color}-subtle-border)`
+			"--badge-text": `var(--cu-color-${safeColor.value}-text)`,
+			"--badge-soft": `var(--cu-color-${safeColor.value}-soft)`,
+			"--badge-soft-hover": `var(--cu-color-${safeColor.value}-soft-hover)`,
+			"--badge-ghost-hover": `var(--cu-color-${safeColor.value}-ghost-hover)`,
+			"--badge-subtle": `var(--cu-color-${safeColor.value}-subtle)`,
+			"--badge-subtle-border": `var(--cu-color-${safeColor.value}-subtle-border)`
 		}));
 		return (_ctx, _cache) => {
 			return openBlock(), createElementBlock("span", {
@@ -828,7 +867,7 @@ var Badge_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 			}, [createCommentVNode(" Contenido textual o ícono del badge "), renderSlot(_ctx.$slots, "default", {}, void 0, true)], 6);
 		};
 	}
-}), [["styles", ["\n.cu-badge[data-v-72234801] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: var(--cu-space-xs);\n  padding: var(--cu-space-2xs) var(--cu-space-sm);\n  border-radius: var(--cu-radius);\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-xs);\n  font-weight: var(--cu-font-weight-medium);\n  line-height: var(--cu-line-height-tight);\n  white-space: nowrap;\n  box-sizing: border-box;\n  border: var(--cu-border-thin) solid transparent;\n}\n\n/* solid */\n.cu-badge.cu-badge--solid[data-v-72234801] {\n  background-color: var(--badge-solid);\n  color: var(--badge-solid-text);\n}\n\n/* soft */\n.cu-badge.cu-badge--soft[data-v-72234801] {\n  background-color: var(--badge-soft);\n  color: var(--badge-text);\n}\n\n/* ghost */\n.cu-badge.cu-badge--ghost[data-v-72234801] {\n  background-color: transparent;\n  color: var(--badge-text);\n}\n\n/* subtle */\n.cu-badge.cu-badge--subtle[data-v-72234801] {\n  background-color: var(--badge-subtle);\n  color: var(--badge-text);\n  border-color: var(--badge-subtle-border);\n}\n\n/* outlined */\n.cu-badge.cu-badge--outlined[data-v-72234801] {\n  background-color: transparent;\n  color: var(--badge-text);\n  border-color: var(--badge-border);\n}\n"]], ["__scopeId", "data-v-72234801"]]);
+}), [["styles", ["\n.cu-badge[data-v-912b77d1] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: var(--cu-space-xs);\n  padding: var(--cu-space-2xs) var(--cu-space-sm);\n  border-radius: var(--cu-radius);\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-xs);\n  font-weight: var(--cu-font-weight-medium);\n  line-height: var(--cu-line-height-tight);\n  white-space: nowrap;\n  box-sizing: border-box;\n  border: var(--cu-border-thin) solid transparent;\n}\n\n/* solid */\n.cu-badge.cu-badge--solid[data-v-912b77d1] {\n  background-color: var(--badge-solid);\n  color: var(--badge-solid-text);\n}\n\n/* soft */\n.cu-badge.cu-badge--soft[data-v-912b77d1] {\n  background-color: var(--badge-soft);\n  color: var(--badge-text);\n}\n\n/* ghost */\n.cu-badge.cu-badge--ghost[data-v-912b77d1] {\n  background-color: transparent;\n  color: var(--badge-text);\n}\n\n/* subtle */\n.cu-badge.cu-badge--subtle[data-v-912b77d1] {\n  background-color: var(--badge-subtle);\n  color: var(--badge-text);\n  border-color: var(--badge-subtle-border);\n}\n\n/* outlined */\n.cu-badge.cu-badge--outlined[data-v-912b77d1] {\n  background-color: transparent;\n  color: var(--badge-text);\n  border-color: var(--badge-border);\n}\n"]], ["__scopeId", "data-v-912b77d1"]]);
 //#endregion
 //#region src/components/controls/month-slider/MonthSliderLabel.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1$2 = [
@@ -970,7 +1009,7 @@ var MonthSliderLabel_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/
 			}, 8, ["color", "variant"])) : createCommentVNode("v-if", true)], 46, _hoisted_1$2);
 		};
 	}
-}), [["styles", ["\n.cu-month-slider-label[data-v-8e08944d] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--cu-space-xs);\n  min-width: 150px;\n  justify-content: center;\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius);\n  border: var(--cu-border-none) solid transparent;\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-md);\n  font-weight: var(--cu-font-weight-semibold);\n  cursor: default;\n  user-select: none;\n  touch-action: pan-y;\n  transform: translateX(var(--drag-offset, 0px));\n  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.25s ease, color 0.25s ease;\n  will-change: transform;\n}\n\n/* solid: doble clase para ganarle a reglas globales del consumidor (convención del repo) */\n.cu-month-slider-label.cu-month-slider-label--solid[data-v-8e08944d] {\n  background-color: var(--ms-accent);\n  color: var(--ms-surface);\n}\n.cu-month-slider-label.cu-month-slider-label--solid[data-v-8e08944d]:hover {\n  background-color: var(--ms-accent-hover);\n}\n\n/* outlined */\n.cu-month-slider-label.cu-month-slider-label--outlined[data-v-8e08944d] {\n  background-color: transparent;\n  color: var(--ms-accent);\n  border: var(--cu-border-thin) solid var(--ms-accent);\n}\n.cu-month-slider-label.cu-month-slider-label--outlined[data-v-8e08944d]:hover {\n  background-color: var(--ms-ghost-hover);\n}\n\n/* soft (default) */\n.cu-month-slider-label.cu-month-slider-label--soft[data-v-8e08944d] {\n  background-color: var(--ms-soft);\n  color: var(--ms-accent);\n}\n.cu-month-slider-label.cu-month-slider-label--soft[data-v-8e08944d]:hover {\n  background-color: var(--ms-soft-hover);\n}\n\n/* ghost */\n.cu-month-slider-label.cu-month-slider-label--ghost[data-v-8e08944d] {\n  background-color: transparent;\n  color: var(--ms-accent);\n}\n.cu-month-slider-label.cu-month-slider-label--ghost[data-v-8e08944d]:hover {\n  background-color: var(--ms-ghost-hover);\n}\n\n/* subtle */\n.cu-month-slider-label.cu-month-slider-label--subtle[data-v-8e08944d] {\n  background-color: var(--ms-subtle);\n  color: var(--ms-accent);\n  border: var(--cu-border-thin) solid var(--ms-subtle-border);\n}\n.cu-month-slider-label.cu-month-slider-label--subtle[data-v-8e08944d]:hover {\n  background-color: var(--ms-subtle-hover);\n}\n\n/* El texto del mes lleva color explícito (inherit del root) con especificidad\n   suficiente para ganarle a reglas globales del consumidor tipo\n   `.playground :is(h1, ..., span, ...) { color: ... }` que pegan en spans internos.\n   La clase scoped [data-v] sube la regla a (0,3,0). */\n.cu-month-slider-label .cu-month-slider-label-month[data-v-8e08944d] {\n  color: inherit;\n}\n\n/* Sobre label solid, el badge del año (variante subtle) se pierde: el tinte\n   translúcido sobre el fondo solid oscuro no aporta contraste y el texto\n   (`--cu-color-{name}-text` = color oscurecido) queda casi negro e imperceptible.\n   Se invierte el badge: fondo = surface (color del texto del label) + texto = accent\n   (color del solid). Specificity (0,4,0) > `.cu-badge.cu-badge--subtle` (0,3,0). */\n.cu-month-slider-label.cu-month-slider-label--solid .cu-month-slider-label-year[data-v-8e08944d] {\n  background-color: var(--ms-surface);\n  color: var(--ms-accent);\n}\n.cu-month-slider-label.is-draggable[data-v-8e08944d] {\n  cursor: grab;\n}\n.cu-month-slider-label.is-dragging[data-v-8e08944d] {\n  cursor: grabbing;\n  transition: none;\n}\n\n/* Al consumir la deslizada, el label vuelve con un rebote suave */\n.cu-month-slider-label.is-fired[data-v-8e08944d] {\n  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);\n}\n.cu-month-slider-label.is-disabled[data-v-8e08944d] {\n  cursor: not-allowed;\n  opacity: 0.6;\n}\n.cu-month-slider-label[data-v-8e08944d]:focus-visible {\n  outline: var(--cu-border-thin) solid var(--ms-accent);\n  outline-offset: var(--cu-space-2xs);\n}\n\n/* Entrada suave del texto al cambiar el mes (key en el span lo re-monta) */\n.cu-month-slider-label-month[data-v-8e08944d],\n.cu-month-slider-label-year[data-v-8e08944d] {\n  animation: cu-month-slide-in-8e08944d 0.28s cubic-bezier(0.22, 1, 0.36, 1);\n}\n@keyframes cu-month-slide-in-8e08944d {\nfrom {\n    opacity: 0;\n    transform: translateY(5px);\n}\nto {\n    opacity: 1;\n    transform: translateY(0);\n}\n}\n"]], ["__scopeId", "data-v-8e08944d"]]);
+}), [["styles", ["\n.cu-month-slider-label[data-v-eb1de7ed] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--cu-space-xs);\n  min-width: 150px;\n  justify-content: center;\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius);\n  border: var(--cu-border-none) solid transparent;\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-md);\n  font-weight: var(--cu-font-weight-semibold);\n  cursor: default;\n  user-select: none;\n  touch-action: pan-y;\n  transform: translateX(var(--drag-offset, 0px));\n  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.25s ease, color 0.25s ease;\n  will-change: transform;\n}\n\n/* solid: doble clase para ganarle a reglas globales del consumidor (convención del repo).\n   Fondo `-solid` (la variante ajustada del generador) y texto `surface`: el par que\n   los tokens garantizan ≥4.5:1 en los 15 temas. */\n.cu-month-slider-label.cu-month-slider-label--solid[data-v-eb1de7ed] {\n  background-color: var(--ms-solid);\n  color: var(--ms-surface);\n}\n.cu-month-slider-label.cu-month-slider-label--solid[data-v-eb1de7ed]:hover {\n  background-color: var(--ms-solid-hover);\n}\n\n/* outlined */\n.cu-month-slider-label.cu-month-slider-label--outlined[data-v-eb1de7ed] {\n  background-color: transparent;\n  color: var(--ms-accent-text);\n  border: var(--cu-border-thin) solid var(--ms-accent-border);\n}\n.cu-month-slider-label.cu-month-slider-label--outlined[data-v-eb1de7ed]:hover {\n  background-color: var(--ms-ghost-hover);\n}\n\n/* soft (default). El texto va con `-text` (contraste AA sobre el tinte); con el\n   color base (`--ms-accent`) quedaba en 1.57–4.25:1 según el tema. */\n.cu-month-slider-label.cu-month-slider-label--soft[data-v-eb1de7ed] {\n  background-color: var(--ms-soft);\n  color: var(--ms-accent-text);\n}\n.cu-month-slider-label.cu-month-slider-label--soft[data-v-eb1de7ed]:hover {\n  background-color: var(--ms-soft-hover);\n}\n\n/* ghost */\n.cu-month-slider-label.cu-month-slider-label--ghost[data-v-eb1de7ed] {\n  background-color: transparent;\n  color: var(--ms-accent-text);\n}\n.cu-month-slider-label.cu-month-slider-label--ghost[data-v-eb1de7ed]:hover {\n  background-color: var(--ms-ghost-hover);\n}\n\n/* subtle */\n.cu-month-slider-label.cu-month-slider-label--subtle[data-v-eb1de7ed] {\n  background-color: var(--ms-subtle);\n  color: var(--ms-accent-text);\n  border: var(--cu-border-thin) solid var(--ms-subtle-border);\n}\n.cu-month-slider-label.cu-month-slider-label--subtle[data-v-eb1de7ed]:hover {\n  background-color: var(--ms-subtle-hover);\n}\n\n/* El texto del mes lleva color explícito (inherit del root) con especificidad\n   suficiente para ganarle a reglas globales del consumidor tipo\n   `.playground :is(h1, ..., span, ...) { color: ... }` que pegan en spans internos.\n   La clase scoped [data-v] sube la regla a (0,3,0). */\n.cu-month-slider-label .cu-month-slider-label-month[data-v-eb1de7ed] {\n  color: inherit;\n}\n\n/* Sobre label solid, el badge del año (variante subtle) se pierde: el tinte\n   translúcido sobre el fondo solid oscuro no aporta contraste y el texto\n   (`--cu-color-{name}-text` = color oscurecido) queda casi negro e imperceptible.\n   Se invierte el badge: fondo = surface (color del texto del label) + texto con el\n   tono de texto del color (`-text`, ≥4.5:1 sobre surface en los 15 temas).\n   Specificity (0,4,0) > `.cu-badge.cu-badge--subtle` (0,3,0). */\n.cu-month-slider-label.cu-month-slider-label--solid .cu-month-slider-label-year[data-v-eb1de7ed] {\n  background-color: var(--ms-surface);\n  color: var(--ms-accent-text);\n}\n.cu-month-slider-label.is-draggable[data-v-eb1de7ed] {\n  cursor: grab;\n}\n.cu-month-slider-label.is-dragging[data-v-eb1de7ed] {\n  cursor: grabbing;\n  transition: none;\n}\n\n/* Al consumir la deslizada, el label vuelve con un rebote suave */\n.cu-month-slider-label.is-fired[data-v-eb1de7ed] {\n  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);\n}\n.cu-month-slider-label.is-disabled[data-v-eb1de7ed] {\n  cursor: not-allowed;\n  opacity: 0.6;\n}\n.cu-month-slider-label[data-v-eb1de7ed]:focus-visible {\n  outline: var(--cu-border-thin) solid var(--ms-accent-text);\n  outline-offset: var(--cu-space-2xs);\n}\n\n/* Entrada suave del texto al cambiar el mes (key en el span lo re-monta) */\n.cu-month-slider-label-month[data-v-eb1de7ed],\n.cu-month-slider-label-year[data-v-eb1de7ed] {\n  animation: cu-month-slide-in-eb1de7ed 0.28s cubic-bezier(0.22, 1, 0.36, 1);\n}\n@keyframes cu-month-slide-in-eb1de7ed {\nfrom {\n    opacity: 0;\n    transform: translateY(5px);\n}\nto {\n    opacity: 1;\n    transform: translateY(0);\n}\n}\n"]], ["__scopeId", "data-v-eb1de7ed"]]);
 //#endregion
 //#region src/utils/date.ts
 var DATE_RE = /^(\d{4})-(\d{2})(?:-(\d{2}))?$/;
@@ -1019,6 +1058,50 @@ function sameMonth(a, b) {
 /** Suma (o resta) meses, fijando el día al 1 para evitar overflow. */
 function addMonths(date, delta) {
 	return new Date(date.getFullYear(), date.getMonth() + delta, 1);
+}
+/** Suma (o resta) días en hora local. */
+function addDays(date, delta) {
+	return new Date(date.getFullYear(), date.getMonth(), date.getDate() + delta);
+}
+/**
+* Suma (o resta) meses **conservando el día** y recortándolo al último del mes
+* destino (31 de enero + 1 mes → 28/29 de febrero).
+*/
+function shiftMonth(date, delta) {
+	const lastDay = new Date(date.getFullYear(), date.getMonth() + delta + 1, 0).getDate();
+	return new Date(date.getFullYear(), date.getMonth() + delta, Math.min(date.getDate(), lastDay));
+}
+/** Primer día de la semana de `date` según `weekStart` (0 = domingo). */
+function startOfWeek(date, weekStart = 1) {
+	return addDays(date, -((date.getDay() - weekStart + 7) % 7));
+}
+/** Fecha local como `"YYYY-MM-DD"` (sin pasar por UTC). */
+function toISODate(date) {
+	const pad = (n) => String(n).padStart(2, "0");
+	return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+/** Normaliza `disabledWeekdays` (`"0,6"` en CE o `[0,6]` en Vue) a números. */
+function toDisabledWeekdays(value) {
+	if (Array.isArray(value)) return value.filter((n) => typeof n === "number" && !Number.isNaN(n));
+	if (typeof value === "string" && value.trim()) return value.split(",").map((s) => Number(s.trim())).filter((n) => !Number.isNaN(n));
+	return [];
+}
+/** Normaliza `disabledDates` (`"2026-08-15,2026-08-16"` en CE o array) a fechas. */
+function toDisabledDates(value) {
+	return (Array.isArray(value) ? value : typeof value === "string" && value.trim() ? value.split(",") : []).map((d) => parseDate(d)).filter((d) => d !== null);
+}
+/**
+* ¿El día se puede seleccionar? Regla única de `Calendar` (click, teclado y
+* `setValue`) y de `DatePicker` (botón "Hoy" y `setValue`).
+*/
+function isDateDisabled(day, rules = {}) {
+	if (rules.disabled) return true;
+	const min = parseDate(rules.min ?? null);
+	if (min && day < min) return true;
+	const max = parseDate(rules.max ?? null);
+	if (max && day > max) return true;
+	if (toDisabledWeekdays(rules.disabledWeekdays).includes(day.getDay())) return true;
+	return toDisabledDates(rules.disabledDates).some((d) => sameDay(day, d));
 }
 /** Tokens de mes soportados por el header del calendario/slider. */
 var MONTH_FORMATS = [
@@ -1243,9 +1326,10 @@ var MonthSlider_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__
 		const canPrevYear = computed(() => !minDate.value || new Date(month.value.getFullYear() - 1, month.value.getMonth(), 1) >= minDate.value);
 		const canNextYear = computed(() => !maxDate.value || new Date(month.value.getFullYear() + 1, month.value.getMonth(), 1) <= maxDate.value);
 		const colorStyles = computed(() => ({
-			"--ms-accent": `var(--cu-color-${props.color})`,
-			"--ms-accent-hover": `var(--cu-color-${props.color}-hover)`,
 			"--ms-accent-text": `var(--cu-color-${props.color}-text)`,
+			"--ms-accent-border": `var(--cu-color-${props.color}-border)`,
+			"--ms-solid": `var(--cu-color-${props.color}-solid)`,
+			"--ms-solid-hover": `var(--cu-color-${props.color}-solid-hover)`,
 			"--ms-soft": `var(--cu-color-${props.color}-soft)`,
 			"--ms-soft-hover": `var(--cu-color-${props.color}-soft-hover)`,
 			"--ms-subtle": `var(--cu-color-${props.color}-subtle)`,
@@ -1340,7 +1424,7 @@ var MonthSlider_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__
 			], 14, _hoisted_1$1);
 		};
 	}
-}), [["styles", ["\n.cu-month-slider[data-v-ed7dba25] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--cu-space-2xs);\n  font-family: var(--cu-font-sans);\n}\n.cu-month-slider.is-disabled[data-v-ed7dba25] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n"]], ["__scopeId", "data-v-ed7dba25"]]);
+}), [["styles", ["\n.cu-month-slider[data-v-069a11c0] {\n  display: inline-flex;\n  align-items: center;\n  gap: var(--cu-space-2xs);\n  font-family: var(--cu-font-sans);\n}\n.cu-month-slider.is-disabled[data-v-069a11c0] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n"]], ["__scopeId", "data-v-069a11c0"]]);
 //#endregion
 //#region src/composables/useDateRange.ts
 function useDateRange(options = {}) {
@@ -1415,15 +1499,26 @@ var _hoisted_3 = {
 	class: "cu-calendar-weekdays",
 	role: "row"
 };
-var _hoisted_4 = { class: "cu-calendar-grid" };
-var _hoisted_5 = ["disabled", "onClick"];
+var _hoisted_4 = ["aria-label"];
+var _hoisted_5 = [
+	"data-date",
+	"disabled",
+	"aria-label",
+	"aria-selected",
+	"aria-disabled",
+	"aria-current",
+	"tabindex",
+	"onClick"
+];
 var _hoisted_6 = {
 	key: 0,
 	class: "cu-calendar-dots"
 };
 var _hoisted_7 = {
 	key: 1,
-	class: "cu-calendar-day--empty"
+	class: "cu-calendar-day--empty",
+	role: "gridcell",
+	"aria-disabled": "true"
 };
 var WEEK_LENGTH = 7;
 //#endregion
@@ -1557,14 +1652,8 @@ var Calendar_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 		const emit = __emit;
 		const minDate = computed(() => parseDate(props.min));
 		const maxDate = computed(() => parseDate(props.max));
-		const disabledWeekdayList = computed(() => {
-			if (Array.isArray(props.disabledWeekdays)) return props.disabledWeekdays;
-			if (typeof props.disabledWeekdays === "string" && props.disabledWeekdays.trim()) return props.disabledWeekdays.split(",").map((s) => Number(s.trim())).filter((n) => !Number.isNaN(n));
-			return [];
-		});
-		const disabledDateList = computed(() => {
-			return (Array.isArray(props.disabledDates) ? props.disabledDates : typeof props.disabledDates === "string" && props.disabledDates.trim() ? props.disabledDates.split(",") : []).map((d) => parseDate(String(d).trim())).filter((d) => d !== null);
-		});
+		const disabledWeekdayList = computed(() => toDisabledWeekdays(props.disabledWeekdays));
+		const disabledDateList = computed(() => toDisabledDates(props.disabledDates));
 		function clampMonth(date) {
 			if (minDate.value) {
 				const limit = new Date(minDate.value.getFullYear(), minDate.value.getMonth(), 1);
@@ -1577,9 +1666,13 @@ var Calendar_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 			return date;
 		}
 		const today = /* @__PURE__ */ new Date();
-		const internalViewMonth = ref(clampMonth(parseDate(props.modelValue) ?? startOfCurrentMonth()));
+		function initialViewMonth() {
+			const base = parseDate(props.modelValue) ?? parseDate(props.rangeStart) ?? parseDate(props.rangeEnd) ?? startOfCurrentMonth();
+			return clampMonth(new Date(base.getFullYear(), base.getMonth(), 1));
+		}
+		const internalViewMonth = ref(initialViewMonth());
 		const viewMonthProp = computed(() => parseDate(props.viewMonth));
-		const viewMonth = computed(() => viewMonthProp.value ?? internalViewMonth.value);
+		const viewMonth = computed(() => clampMonth(viewMonthProp.value ?? internalViewMonth.value));
 		const isViewMonthControlled = computed(() => viewMonthProp.value !== null);
 		/** Cambia el mes visible (respeta el consumidor si `viewMonth` está controlado). */
 		function setViewMonth(next) {
@@ -1591,6 +1684,7 @@ var Calendar_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 		watch(() => props.modelValue, (value) => {
 			const parsed = parseDate(value);
 			selectedValue.value = parsed;
+			if (parsed !== null) focusDay.value = parsed;
 			if (parsed === null || isViewMonthControlled.value) return;
 			internalViewMonth.value = clampMonth(new Date(parsed.getFullYear(), parsed.getMonth(), 1));
 		});
@@ -1606,6 +1700,9 @@ var Calendar_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 			onEndChange: (value) => emit("update:rangeEnd", value),
 			onChange: (value) => emit("change", value),
 			onSelect: (value) => emit("select", value)
+		});
+		watch(rangeValueStart, (value) => {
+			if (value) focusDay.value = value;
 		});
 		const canPrevMonth = computed(() => {
 			if (!minDate.value) return true;
@@ -1636,12 +1733,17 @@ var Calendar_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 		function onMonthChange(date) {
 			setViewMonth(new Date(date.getFullYear(), date.getMonth(), 1));
 		}
-		const dayLabels = computed(() => {
+		const weekdayLabels = computed(() => {
 			const base = new Date(2026, 7, 2);
 			const labels = [];
 			for (let i = 0; i < WEEK_LENGTH; i++) {
-				const label = new Intl.DateTimeFormat(props.locale, { weekday: "short" }).format(new Date(base.getFullYear(), base.getMonth(), base.getDate() + i));
-				labels.push(label.charAt(0).toUpperCase() + label.slice(1));
+				const day = new Date(base.getFullYear(), base.getMonth(), base.getDate() + i);
+				const short = new Intl.DateTimeFormat(props.locale, { weekday: "short" }).format(day);
+				const long = new Intl.DateTimeFormat(props.locale, { weekday: "long" }).format(day);
+				labels.push({
+					short: short.charAt(0).toUpperCase() + short.slice(1),
+					long: long.charAt(0).toUpperCase() + long.slice(1)
+				});
 			}
 			return [...labels.slice(props.weekStart), ...labels.slice(0, props.weekStart)];
 		});
@@ -1665,18 +1767,29 @@ var Calendar_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 			return label.charAt(0).toUpperCase() + label.slice(1);
 		});
 		function getEventsForDay(day) {
-			return props.events.filter((ev) => sameDay(parseDate(ev.date), day));
+			return props.events.filter((ev) => {
+				const date = parseDate(ev?.date ?? null);
+				return date !== null && sameDay(date, day);
+			});
 		}
 		function isDisabledDay(day) {
-			if (props.disabled) return true;
+			return isDateDisabled(day, {
+				disabled: props.disabled,
+				min: minDate.value,
+				max: maxDate.value,
+				disabledWeekdays: disabledWeekdayList.value,
+				disabledDates: disabledDateList.value
+			});
+		}
+		/** Fuera de `min`/`max`: el teclado no navega más allá (los deshabilitados por
+		*  weekday/fecha puntual sí se pueden enfocar, como pide el patrón de grid). */
+		function isOutOfLimits(day) {
 			if (minDate.value && day < minDate.value) return true;
-			if (maxDate.value && day > maxDate.value) return true;
-			if (disabledWeekdayList.value.includes(day.getDay())) return true;
-			if (disabledDateList.value.some((d) => sameDay(day, d))) return true;
-			return false;
+			return !!(maxDate.value && day > maxDate.value);
 		}
 		function selectDay(day) {
 			if (isDisabledDay(day)) return;
+			focusDay.value = day;
 			if (isRange.value) {
 				selectRange(day);
 				return;
@@ -1698,6 +1811,126 @@ var Calendar_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 				[`cu-calendar-day--${props.variant}`]: selected
 			};
 		}
+		/** Día que tiene el foco del teclado (roving). `null` = todavía no se movió. */
+		const focusDay = ref(parseDate(props.modelValue) ?? parseDate(props.rangeStart));
+		const gridRef = ref(null);
+		const dayAriaFormatter = computed(() => new Intl.DateTimeFormat(props.locale, {
+			weekday: "long",
+			day: "numeric",
+			month: "long",
+			year: "numeric"
+		}));
+		function dayAriaLabel(day) {
+			const label = dayAriaFormatter.value.format(day);
+			return label.charAt(0).toUpperCase() + label.slice(1);
+		}
+		/** ¿El día es el tab-stop de la grilla? Nunca un día deshabilitado (no es
+		*  enfocable): si el enfocado no está en el mes visible, cae al seleccionado y
+		*  si no al primer día habilitado del mes. */
+		const tabStopDay = computed(() => {
+			const focused = focusDay.value;
+			if (focused && sameMonth(focused, viewMonth.value) && !isDisabledDay(focused)) return focused;
+			const selected = selectedValue.value;
+			if (selected && sameMonth(selected, viewMonth.value) && !isDisabledDay(selected)) return selected;
+			const year = viewMonth.value.getFullYear();
+			const month = viewMonth.value.getMonth();
+			const daysInMonth = new Date(year, month + 1, 0).getDate();
+			for (let day = 1; day <= daysInMonth; day++) {
+				const candidate = new Date(year, month, day);
+				if (!isDisabledDay(candidate)) return candidate;
+			}
+			return null;
+		});
+		function isTabStop(day) {
+			if (props.disabled) return false;
+			const stop = tabStopDay.value;
+			return stop !== null && sameDay(day, stop);
+		}
+		function isDaySelected(day) {
+			if (isRange.value) return rangeStartVal.value !== null && sameDay(day, rangeStartVal.value) || rangeEndVal.value !== null && sameDay(day, rangeEndVal.value);
+			return selectedValue.value !== null && sameDay(day, selectedValue.value);
+		}
+		/** Mueve el foco del teclado a `day` (cambiando de mes si hace falta). */
+		async function moveFocus(day) {
+			if (isOutOfLimits(day)) return;
+			focusDay.value = day;
+			if (!sameMonth(day, viewMonth.value)) setViewMonth(new Date(day.getFullYear(), day.getMonth(), 1));
+			await nextTick();
+			gridRef.value?.querySelector(`[data-date="${toISODate(day)}"]`)?.focus();
+		}
+		/** Primer día habilitado avanzando `step` días desde `from` (sin incluirlo).
+		*  Se detiene al salir de `min`/`max` o tras una vuelta completa. */
+		function findEnabledDay(from, step) {
+			let candidate = addDays(from, step);
+			for (let i = 0; i < 370; i++) {
+				if (isOutOfLimits(candidate)) return null;
+				if (!isDisabledDay(candidate)) return candidate;
+				candidate = addDays(candidate, step);
+			}
+			return null;
+		}
+		/** Borde habilitado de la semana de `day` (`start`/`end`), salteando los
+		*  deshabilitados hacia adentro de la semana. */
+		function enabledWeekEdge(day, edge) {
+			const weekStart = startOfWeek(day, props.weekStart);
+			const step = edge === "start" ? 1 : -1;
+			let candidate = edge === "start" ? weekStart : addDays(weekStart, 6);
+			for (let i = 0; i < 7; i++) {
+				if (!isOutOfLimits(candidate) && !isDisabledDay(candidate)) return candidate;
+				candidate = addDays(candidate, step);
+			}
+			return null;
+		}
+		/** Día habilitado más cercano al mismo día-del-mes en el mes de `target`
+		*  (para PageUp/PageDown cuando ese día está deshabilitado). */
+		function nearestEnabledInMonth(target) {
+			const year = target.getFullYear();
+			const month = target.getMonth();
+			const daysInMonth = new Date(year, month + 1, 0).getDate();
+			const dayOfMonth = target.getDate();
+			for (let delta = 0; delta < daysInMonth; delta++) for (const day of delta === 0 ? [dayOfMonth] : [dayOfMonth + delta, dayOfMonth - delta]) {
+				if (day < 1 || day > daysInMonth) continue;
+				const candidate = new Date(year, month, day);
+				if (!isOutOfLimits(candidate) && !isDisabledDay(candidate)) return candidate;
+			}
+			return null;
+		}
+		function onGridKeydown(event) {
+			if (props.disabled) return;
+			const button = event.target?.closest?.(".cu-calendar-day");
+			const current = button instanceof HTMLElement ? parseDate(button.dataset.date ?? null) : null;
+			if (current === null) return;
+			let next = null;
+			switch (event.key) {
+				case "ArrowLeft":
+					next = findEnabledDay(current, -1);
+					break;
+				case "ArrowRight":
+					next = findEnabledDay(current, 1);
+					break;
+				case "ArrowUp":
+					next = findEnabledDay(current, -7);
+					break;
+				case "ArrowDown":
+					next = findEnabledDay(current, 7);
+					break;
+				case "Home":
+					next = enabledWeekEdge(current, "start");
+					break;
+				case "End":
+					next = enabledWeekEdge(current, "end");
+					break;
+				case "PageUp":
+					next = nearestEnabledInMonth(shiftMonth(current, -1));
+					break;
+				case "PageDown":
+					next = nearestEnabledInMonth(shiftMonth(current, 1));
+					break;
+				default: return;
+			}
+			event.preventDefault();
+			if (next) moveFocus(next);
+		}
 		const rangeStartVal = computed(() => isRange.value ? rangeValueStart.value : null);
 		const rangeEndVal = computed(() => isRange.value ? rangeValueEnd.value : null);
 		function isInRange(day) {
@@ -1718,7 +1951,9 @@ var Calendar_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 		function setValue(value) {
 			const parsed = parseDate(value);
 			if (parsed === null) return;
+			if (isDisabledDay(parsed)) return;
 			selectedValue.value = parsed;
+			focusDay.value = parsed;
 			setViewMonth(new Date(parsed.getFullYear(), parsed.getMonth(), 1));
 			emit("update:modelValue", parsed);
 			emit("change", parsed);
@@ -1736,6 +1971,7 @@ var Calendar_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 		}
 		/** Limpia el rango seleccionado (modo `range`). */
 		function clear() {
+			if (!isRange.value) return;
 			clearRange();
 		}
 		__expose({
@@ -1800,14 +2036,21 @@ var Calendar_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 					"disabled"
 				])]),
 				createCommentVNode(" Días de la semana "),
-				createElementVNode("div", _hoisted_3, [(openBlock(true), createElementBlock(Fragment, null, renderList(dayLabels.value, (label, i) => {
+				createElementVNode("div", _hoisted_3, [(openBlock(true), createElementBlock(Fragment, null, renderList(weekdayLabels.value, (label, i) => {
 					return openBlock(), createElementBlock("span", {
 						key: i,
-						class: "cu-calendar-weekday"
-					}, toDisplayString(label), 1);
+						class: "cu-calendar-weekday",
+						role: "columnheader",
+						"aria-label": label.long
+					}, toDisplayString(label.short), 9, _hoisted_4);
 				}), 128))]),
 				createCommentVNode(" Grilla de días: 7 columnas que se reparten el ancho del contenedor "),
-				createElementVNode("div", _hoisted_4, [(openBlock(true), createElementBlock(Fragment, null, renderList(weeks.value, (week, wi) => {
+				createElementVNode("div", {
+					ref_key: "gridRef",
+					ref: gridRef,
+					class: "cu-calendar-grid",
+					onKeydown: onGridKeydown
+				}, [(openBlock(true), createElementBlock(Fragment, null, renderList(weeks.value, (week, wi) => {
 					return openBlock(), createElementBlock("div", {
 						key: wi,
 						class: "cu-calendar-week",
@@ -1817,22 +2060,28 @@ var Calendar_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 							key: 0,
 							type: "button",
 							class: normalizeClass(["cu-calendar-day", dayClasses(cell.date)]),
+							"data-date": unref(toISODate)(cell.date),
 							disabled: isDisabledDay(cell.date),
+							"aria-label": dayAriaLabel(cell.date),
+							"aria-selected": isDaySelected(cell.date) ? "true" : "false",
+							"aria-disabled": isDisabledDay(cell.date) ? "true" : void 0,
+							"aria-current": unref(sameDay)(cell.date, unref(today)) ? "date" : void 0,
+							tabindex: isTabStop(cell.date) ? 0 : -1,
 							role: "gridcell",
 							onClick: ($event) => selectDay(cell.date)
 						}, [createTextVNode(toDisplayString(cell.date.getDate()) + " ", 1), getEventsForDay(cell.date).length ? (openBlock(), createElementBlock("span", _hoisted_6, [(openBlock(true), createElementBlock(Fragment, null, renderList(getEventsForDay(cell.date), (ev, ei) => {
 							return openBlock(), createElementBlock("span", {
 								key: ei,
 								class: "cu-calendar-dot",
-								style: normalizeStyle(ev.color ? { "--dot-color": ev.color.startsWith("var(") ? ev.color : `var(--cu-color-${ev.color})` } : void 0)
+								style: normalizeStyle(ev.color ? { "--dot-color": String(ev.color).startsWith("var(") ? ev.color : `var(--cu-color-${ev.color})` } : void 0)
 							}, null, 4);
 						}), 128))])) : createCommentVNode("v-if", true)], 10, _hoisted_5)) : (openBlock(), createElementBlock("span", _hoisted_7))], 64);
 					}), 128))]);
-				}), 128))])
+				}), 128))], 544)
 			], 14, _hoisted_1);
 		};
 	}
-}), [["styles", ["\n.cu-calendar[data-v-46d32125] {\n  display: inline-flex;\n  flex-direction: column;\n  gap: var(--cu-space-sm);\n  width: 100%;\n  min-width: 240px;\n  font-family: var(--cu-font-sans);\n  box-sizing: border-box;\n}\n\n/* Con navegación de año (4 botones del MonthSlider + label min 150px) el header\n   necesita más ancho que la grilla: forzamos min-width para evitar overflow. */\n.cu-calendar--year-nav[data-v-46d32125] {\n  min-width: 330px;\n}\n.cu-calendar.is-disabled[data-v-46d32125] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n}\n.cu-calendar-header[data-v-46d32125] {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  gap: var(--cu-space-2xs);\n}\n\n/* 7 columnas: cada una ocupa 1/7 del ancho que mida el contenedor */\n.cu-calendar-weekdays[data-v-46d32125],\n.cu-calendar-week[data-v-46d32125] {\n  display: grid;\n  grid-template-columns: repeat(7, 1fr);\n  gap: var(--cu-space-2xs);\n}\n.cu-calendar-weekday[data-v-46d32125] {\n  text-align: center;\n  font-size: var(--cu-font-size-xs);\n  font-weight: var(--cu-font-weight-medium);\n  opacity: var(--cu-alpha-subtle, 0.6);\n  padding: var(--cu-space-2xs) 0;\n}\n.cu-calendar-day[data-v-46d32125] {\n  aspect-ratio: 1;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  border: none;\n  border-radius: var(--cu-radius-sm);\n  background: transparent;\n  color: inherit;\n  font-family: inherit;\n  font-size: var(--cu-font-size-sm);\n  cursor: pointer;\n  transition: background-color 150ms ease, color 150ms ease;\n  box-sizing: border-box;\n}\n\n/* Doble clase (convención del repo): ganarle en cascada a reglas globales\n   del consumidor (reset CSS, `.playground button`, etc.) */\n.cu-calendar-day.cu-calendar-day[data-v-46d32125]:hover:not(:disabled) {\n  background: var(--cal-ghost-hover);\n}\n.cu-calendar-day.cu-calendar-day[data-v-46d32125]:disabled {\n  opacity: 0.35;\n  cursor: not-allowed;\n}\n\n/* Hoy: transparente + número en color accent (look ghost). Sin fondo para no\n   confundirse con el día seleccionado — se distingue solo por el color. */\n.cu-calendar-day.cu-calendar-day--today[data-v-46d32125] {\n  background: transparent;\n  color: var(--cal-accent-text);\n  font-weight: var(--cu-font-weight-semibold);\n}\n\n/* Variantes del día seleccionado */\n.cu-calendar-day--selected.cu-calendar-day--solid[data-v-46d32125] {\n  background: var(--cal-solid);\n  /* Solid mantiene el texto del tema sobre la variante de fondo ajustada. */\n  color: var(--cal-solid-text);\n}\n.cu-calendar-day--selected.cu-calendar-day--solid[data-v-46d32125]:hover:not(:disabled) {\n  background: var(--cal-solid-hover);\n}\n.cu-calendar-day--selected.cu-calendar-day--outlined[data-v-46d32125] {\n  outline: 1.5px solid var(--cal-accent-border);\n  color: var(--cal-accent-text);\n}\n.cu-calendar-day--selected.cu-calendar-day--soft[data-v-46d32125] {\n  background: var(--cal-soft);\n  color: var(--cal-accent-text);\n}\n.cu-calendar-day--selected.cu-calendar-day--soft[data-v-46d32125]:hover:not(:disabled) {\n  background: var(--cal-soft-hover);\n}\n.cu-calendar-day--selected.cu-calendar-day--subtle[data-v-46d32125] {\n  background: var(--cal-subtle);\n  color: var(--cal-accent-text);\n  box-shadow: inset 0 0 0 var(--cu-border-thin) var(--cal-subtle-border);\n}\n.cu-calendar-day--empty[data-v-46d32125] {\n  aspect-ratio: 1;\n}\n\n/* ── Grid interno: líneas separadoras entre días ── */\n.cu-calendar--grid .cu-calendar-weekdays[data-v-46d32125],\n.cu-calendar--grid .cu-calendar-week[data-v-46d32125] {\n  gap: 0;\n}\n.cu-calendar--grid .cu-calendar-day[data-v-46d32125],\n.cu-calendar--grid .cu-calendar-day--empty[data-v-46d32125] {\n  border-right: var(--cu-border-thin) solid var(--cu-border-color);\n  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);\n  border-radius: 0;\n}\n.cu-calendar--grid .cu-calendar-week:last-child .cu-calendar-day[data-v-46d32125],\n.cu-calendar--grid .cu-calendar-week:last-child .cu-calendar-day--empty[data-v-46d32125] {\n  border-bottom: none;\n}\n.cu-calendar--grid .cu-calendar-day[data-v-46d32125]:nth-child(7n),\n.cu-calendar--grid .cu-calendar-day--empty[data-v-46d32125]:nth-child(7n) {\n  border-right: none;\n}\n\n/* ── Borde exterior: marco alrededor de la cuadrícula de días ── */\n.cu-calendar--border .cu-calendar-grid[data-v-46d32125] {\n  border: var(--cu-border-thin) solid var(--cu-border-color);\n  border-radius: var(--cu-radius-sm);\n  overflow: hidden;\n}\n\n/* ── Rango ── */\n.cu-calendar-day.cu-calendar-day--range[data-v-46d32125] {\n  background: var(--cal-soft);\n  border-radius: 0;\n}\n.cu-calendar-day.cu-calendar-day--range-start[data-v-46d32125] {\n  background: var(--cal-solid);\n  color: var(--cal-solid-text);\n  border-radius: var(--cu-radius-sm) 0 0 var(--cu-radius-sm);\n}\n.cu-calendar-day.cu-calendar-day--range-end[data-v-46d32125] {\n  background: var(--cal-solid);\n  color: var(--cal-solid-text);\n  border-radius: 0 var(--cu-radius-sm) var(--cu-radius-sm) 0;\n}\n.cu-calendar-day--range-start.cu-calendar-day--range-end[data-v-46d32125] {\n  border-radius: var(--cu-radius-sm);\n}\n\n/* ── Puntos de eventos ── */\n.cu-calendar-day[data-v-46d32125] {\n  position: relative;\n}\n.cu-calendar-dots[data-v-46d32125] {\n  position: absolute;\n  bottom: var(--cu-space-2xs);\n  left: 50%;\n  transform: translateX(-50%);\n  display: flex;\n  gap: var(--cu-space-2xs);\n  align-items: center;\n  justify-content: center;\n  pointer-events: none;\n}\n.cu-calendar-dot[data-v-46d32125] {\n  width: var(--cu-space-xs);\n  height: var(--cu-space-xs);\n  border-radius: 50%;\n  background: var(--dot-color, var(--cal-accent));\n  display: block;\n}\n"]], ["__scopeId", "data-v-46d32125"]]);
+}), [["styles", ["\n.cu-calendar[data-v-a5b1f966] {\n  display: inline-flex;\n  flex-direction: column;\n  gap: var(--cu-space-sm);\n  width: 100%;\n  min-width: 240px;\n  font-family: var(--cu-font-sans);\n  box-sizing: border-box;\n}\n\n/* Con navegación de año (4 botones del MonthSlider + label min 150px) el header\n   necesita más ancho que la grilla: forzamos min-width para evitar overflow. */\n.cu-calendar--year-nav[data-v-a5b1f966] {\n  min-width: 330px;\n}\n.cu-calendar.is-disabled[data-v-a5b1f966] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n}\n.cu-calendar-header[data-v-a5b1f966] {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  gap: var(--cu-space-2xs);\n}\n\n/* 7 columnas: cada una ocupa 1/7 del ancho que mida el contenedor */\n.cu-calendar-weekdays[data-v-a5b1f966],\n.cu-calendar-week[data-v-a5b1f966] {\n  display: grid;\n  grid-template-columns: repeat(7, 1fr);\n  gap: var(--cu-space-2xs);\n}\n.cu-calendar-weekday[data-v-a5b1f966] {\n  text-align: center;\n  font-size: var(--cu-font-size-xs);\n  font-weight: var(--cu-font-weight-medium);\n  color: var(--cu-color-neutral-text-subtle);\n  padding: var(--cu-space-2xs) 0;\n}\n.cu-calendar-day[data-v-a5b1f966] {\n  aspect-ratio: 1;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  border: none;\n  border-radius: var(--cu-radius-sm);\n  background: transparent;\n  color: inherit;\n  font-family: inherit;\n  font-size: var(--cu-font-size-sm);\n  cursor: pointer;\n  transition: background-color 150ms ease, color 150ms ease;\n  box-sizing: border-box;\n}\n\n/* Foco de teclado de la grilla (roving tabindex). Usa el accent de texto\n   (`-text`), que está garantizado contra la superficie en todos los temas. */\n.cu-calendar-day[data-v-a5b1f966]:focus-visible {\n  outline: var(--cu-border-thin) solid var(--cal-accent-text);\n  outline-offset: calc(var(--cu-space-2xs) * -1);\n  position: relative;\n  z-index: 1;\n}\n\n/* Doble clase (convención del repo): ganarle en cascada a reglas globales\n   del consumidor (reset CSS, `.playground button`, etc.) */\n.cu-calendar-day.cu-calendar-day[data-v-a5b1f966]:hover:not(:disabled) {\n  background: var(--cal-ghost-hover);\n}\n\n/* Día no seleccionable: `<button disabled>` (no enfocable; el teclado lo\n   saltea) + `aria-disabled` para la grilla. */\n.cu-calendar-day.cu-calendar-day[data-v-a5b1f966]:disabled {\n  opacity: 0.35;\n  cursor: not-allowed;\n}\n\n/* Hoy: transparente + número en color accent (look ghost). Sin fondo para no\n   confundirse con el día seleccionado — se distingue solo por el color. */\n.cu-calendar-day.cu-calendar-day--today[data-v-a5b1f966] {\n  background: transparent;\n  color: var(--cal-accent-text);\n  font-weight: var(--cu-font-weight-semibold);\n}\n\n/* Variantes del día seleccionado */\n.cu-calendar-day--selected.cu-calendar-day--solid[data-v-a5b1f966] {\n  background: var(--cal-solid);\n  /* Solid mantiene el texto del tema sobre la variante de fondo ajustada. */\n  color: var(--cal-solid-text);\n}\n.cu-calendar-day--selected.cu-calendar-day--solid[data-v-a5b1f966]:hover:not(:disabled) {\n  background: var(--cal-solid-hover);\n}\n.cu-calendar-day--selected.cu-calendar-day--outlined[data-v-a5b1f966] {\n  outline: 1.5px solid var(--cal-accent-border);\n  color: var(--cal-accent-text);\n}\n.cu-calendar-day--selected.cu-calendar-day--soft[data-v-a5b1f966] {\n  background: var(--cal-soft);\n  color: var(--cal-accent-text);\n}\n.cu-calendar-day--selected.cu-calendar-day--soft[data-v-a5b1f966]:hover:not(:disabled) {\n  background: var(--cal-soft-hover);\n}\n.cu-calendar-day--selected.cu-calendar-day--subtle[data-v-a5b1f966] {\n  background: var(--cal-subtle);\n  color: var(--cal-accent-text);\n  box-shadow: inset 0 0 0 var(--cu-border-thin) var(--cal-subtle-border);\n}\n.cu-calendar-day--empty[data-v-a5b1f966] {\n  aspect-ratio: 1;\n}\n\n/* ── Grid interno: líneas separadoras entre días ── */\n.cu-calendar--grid .cu-calendar-weekdays[data-v-a5b1f966],\n.cu-calendar--grid .cu-calendar-week[data-v-a5b1f966] {\n  gap: 0;\n}\n.cu-calendar--grid .cu-calendar-day[data-v-a5b1f966],\n.cu-calendar--grid .cu-calendar-day--empty[data-v-a5b1f966] {\n  border-right: var(--cu-border-thin) solid var(--cu-border-color);\n  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);\n  border-radius: 0;\n}\n.cu-calendar--grid .cu-calendar-week:last-child .cu-calendar-day[data-v-a5b1f966],\n.cu-calendar--grid .cu-calendar-week:last-child .cu-calendar-day--empty[data-v-a5b1f966] {\n  border-bottom: none;\n}\n.cu-calendar--grid .cu-calendar-day[data-v-a5b1f966]:nth-child(7n),\n.cu-calendar--grid .cu-calendar-day--empty[data-v-a5b1f966]:nth-child(7n) {\n  border-right: none;\n}\n\n/* ── Borde exterior: marco alrededor de la cuadrícula de días ── */\n.cu-calendar--border .cu-calendar-grid[data-v-a5b1f966] {\n  border: var(--cu-border-thin) solid var(--cu-border-color);\n  border-radius: var(--cu-radius-sm);\n  overflow: hidden;\n}\n\n/* ── Rango ── */\n.cu-calendar-day.cu-calendar-day--range[data-v-a5b1f966] {\n  background: var(--cal-soft);\n  border-radius: 0;\n}\n.cu-calendar-day.cu-calendar-day--range-start[data-v-a5b1f966] {\n  background: var(--cal-solid);\n  color: var(--cal-solid-text);\n  border-radius: var(--cu-radius-sm) 0 0 var(--cu-radius-sm);\n}\n.cu-calendar-day.cu-calendar-day--range-end[data-v-a5b1f966] {\n  background: var(--cal-solid);\n  color: var(--cal-solid-text);\n  border-radius: 0 var(--cu-radius-sm) var(--cu-radius-sm) 0;\n}\n.cu-calendar-day--range-start.cu-calendar-day--range-end[data-v-a5b1f966] {\n  border-radius: var(--cu-radius-sm);\n}\n\n/* ── Puntos de eventos ── */\n.cu-calendar-day[data-v-a5b1f966] {\n  position: relative;\n}\n.cu-calendar-dots[data-v-a5b1f966] {\n  position: absolute;\n  bottom: var(--cu-space-2xs);\n  left: 50%;\n  transform: translateX(-50%);\n  display: flex;\n  gap: var(--cu-space-2xs);\n  align-items: center;\n  justify-content: center;\n  pointer-events: none;\n}\n.cu-calendar-dot[data-v-a5b1f966] {\n  width: var(--cu-space-xs);\n  height: var(--cu-space-xs);\n  border-radius: 50%;\n  background: var(--dot-color, var(--cal-accent));\n  display: block;\n}\n"]], ["__scopeId", "data-v-a5b1f966"]]);
 //#endregion
 //#region src/lib/controls/calendar.ts
 var CuCalendar = defineComegenElement("cu-calendar", /* @__PURE__ */ _plugin_vue_export_helper_default(/* @__PURE__ */ defineComponent({

@@ -47,12 +47,12 @@ const props = defineProps({
     type: String,
     required: false,
   },
-  /** Valor mínimo permitido (inclusive); por debajo se clampea */
+  /** Valor mínimo permitido (inclusive); al tipear no se recorta, Enter/blur y la API clampean */
   min: {
     type: Number,
     required: false,
   },
-  /** Valor máximo permitido (inclusive); por encima se clampea */
+  /** Valor máximo permitido (inclusive); al tipear no se recorta, Enter/blur y la API clampean */
   max: {
     type: Number,
     required: false,
@@ -94,8 +94,17 @@ const emit = defineEmits<{
 
 const inputRef = ref<InstanceType<typeof Input> | null>(null);
 
+/**
+ * Valor vigente dentro del componente. Es la fuente de verdad inmediata: los
+ * métodos (`get`, `set`, `increment`…) no esperan al re-render del host. Cuando
+ * el `model-value` lo controla un padre (el custom element espeja su estado), la
+ * prop vuelve recién en el tick siguiente y leerla dejaría métodos y `get()`
+ * con el valor viejo.
+ */
+const current = ref<number | null>(toNumber(value.value) ?? null);
+
 /** El texto es la fuente de verdad mientras se tipea (`null` → campo vacío). */
-const text = ref(numberToText(value.value));
+const text = ref(numberToText(current.value));
 /** Paso activo: arranca en `step` y el select lo puede cambiar. */
 const activeStep = ref<number | string>(props.step);
 /** ¿El usuario editó el campo desde la última confirmación? (para no repetir `change`). */
@@ -130,9 +139,13 @@ function parseText(raw: string): number | null | undefined {
 
 /** Cantidad de decimales de un número (para no arrastrar `0.30000000000000004`). */
 function decimalsOf(next: number): number {
-  const raw = String(next);
-  const dot = raw.indexOf('.');
-  return dot === -1 ? 0 : raw.length - dot - 1;
+  // `String` usa notación exponencial para valores muy chicos o muy grandes
+  // (`1e-7`): sin normalizarla, un paso por debajo de `1e-6` redondeaba a 0.
+  const [mantissa = '', exponent] = String(next).split('e');
+  const dot = mantissa.indexOf('.');
+  const decimals = dot === -1 ? 0 : mantissa.length - dot - 1;
+  const shift = exponent === undefined ? 0 : Number(exponent);
+  return Math.max(0, decimals - shift);
 }
 
 /** Redondea al decimal más fino de los operandos (tope de 10). */
@@ -172,10 +185,10 @@ const stepSelectOptions = computed(() =>
 );
 
 const atMax = computed(
-  () => maxValue.value !== undefined && value.value !== null && value.value >= maxValue.value,
+  () => maxValue.value !== undefined && current.value !== null && current.value >= maxValue.value,
 );
 const atMin = computed(
-  () => minValue.value !== undefined && value.value !== null && value.value <= minValue.value,
+  () => minValue.value !== undefined && current.value !== null && current.value <= minValue.value,
 );
 const canIncrement = computed(() => !isLocked.value && !atMax.value);
 const canDecrement = computed(() => !isLocked.value && !atMin.value);
@@ -186,13 +199,19 @@ const rootStyles = computed(() => ({
   '--btn-subtle-border': `var(--cu-color-${props.color}-subtle-border)`,
 }));
 
+/** Escribe el valor: estado interno ya, y `update:modelValue` para el host. */
+function commitValue(next: number | null) {
+  current.value = next;
+  if (next !== value.value) value.value = next;
+}
+
 /** Aplica un valor programático: clampea, sincroniza el texto y emite lo que corresponda. */
 function applyValue(
   next: number | null,
   options: { change?: boolean; kind?: 'increment' | 'decrement' } = {},
 ) {
   const nextValue = next === null ? null : clamp(next);
-  if (nextValue !== value.value) value.value = nextValue;
+  commitValue(nextValue);
   text.value = numberToText(nextValue);
   dirty = false;
 
@@ -202,29 +221,30 @@ function applyValue(
   if (options.change) emit('change', nextValue);
 }
 
-/** Tipear: mantiene el texto tal cual y clampea en vivo cuando ya es un número. */
+/**
+ * Tipear: el texto se respeta tal cual (nunca se reescribe por estar fuera de
+ * rango, así se puede completar un año como `2019`). El modelo sólo sigue a los
+ * números dentro de `[min, max]`; fuera de rango se recorta recién al confirmar.
+ */
 function onInput(raw: string) {
   text.value = raw;
   dirty = true;
   const parsed = parseText(raw);
   if (parsed === undefined) return;
   if (parsed === null) {
-    if (value.value !== null) value.value = null;
+    if (current.value !== null) commitValue(null);
     return;
   }
-  const next = clamp(parsed);
-  // Fuera de rango: el campo muestra el límite, no el número tipeado.
-  if (next !== parsed) text.value = numberToText(next);
-  if (next !== value.value) value.value = next;
+  if (clamp(parsed) === parsed && parsed !== current.value) commitValue(parsed);
 }
 
 /** Confirma el texto (Enter o blur) y emite `change` si hubo edición. */
 function commit() {
   const parsed = parseText(text.value);
   const next =
-    parsed === undefined ? value.value : parsed === null ? null : clamp(parsed);
+    parsed === undefined ? current.value : parsed === null ? null : clamp(parsed);
   text.value = numberToText(next);
-  if (next !== value.value) value.value = next;
+  if (next !== current.value) commitValue(next);
   if (!dirty) return;
   dirty = false;
   emit('change', next);
@@ -233,18 +253,18 @@ function commit() {
 /** Incrementa el valor con el paso activo, respetando `max`. */
 function increment() {
   if (!canIncrement.value) return;
-  const base = value.value ?? minValue.value ?? 0;
+  const base = current.value ?? minValue.value ?? 0;
   const next = clamp(roundLike(base + stepValue.value, base, stepValue.value));
-  if (next === value.value) return;
+  if (next === current.value) return;
   applyValue(next, { change: true, kind: 'increment' });
 }
 
 /** Decrementa el valor con el paso activo, respetando `min`. */
 function decrement() {
   if (!canDecrement.value) return;
-  const base = value.value ?? minValue.value ?? 0;
+  const base = current.value ?? minValue.value ?? 0;
   const next = clamp(roundLike(base - stepValue.value, base, stepValue.value));
-  if (next === value.value) return;
+  if (next === current.value) return;
   applyValue(next, { change: true, kind: 'decrement' });
 }
 
@@ -256,7 +276,7 @@ function onStepChange(value: string) {
 
 /** Devuelve el valor actual (o `null` si el campo está vacío). */
 function get(): number | null {
-  return value.value;
+  return current.value;
 }
 /** Setea el valor (clampeado a `min`/`max`) y emite `change`. */
 function set(next: number | null) {
@@ -271,10 +291,12 @@ function focus() {
   inputRef.value?.focus();
 }
 
-// Un `modelValue` externo manda: sincroniza el texto (salvo que el usuario esté
-// tipeando el mismo número).
+// Un `modelValue` externo manda: sincroniza el estado y el texto (salvo que el
+// usuario esté tipeando el mismo número).
 watch(value, (next) => {
-  if (parseText(text.value) !== next) text.value = numberToText(next);
+  const normalized = toNumber(next) ?? null;
+  current.value = normalized;
+  if (parseText(text.value) !== normalized) text.value = numberToText(normalized);
 });
 
 // Si cambia el `step` por prop, el paso activo lo sigue.

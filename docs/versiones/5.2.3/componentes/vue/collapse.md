@@ -40,7 +40,9 @@ activo. Los 6 valores son `primary`, `secondary`, `neutral` (**default**), `succ
 ## Descripción
 
 `description` agrega una línea de texto secundario bajo el `label`, dentro del mismo trigger.
-Es opcional y, si queda vacía (default `''`), no se renderiza nada.
+Es opcional y, si queda vacía (default `''`), no se renderiza nada. Se renderiza como un `<span>`
+en bloque (`display: block`): dentro de un `<button>` sólo es válido contenido de tipo
+*phrasing*, así que no se usa un párrafo.
 
 ```vue
 <template>
@@ -53,6 +55,9 @@ Es opcional y, si queda vacía (default `''`), no se renderiza nada.
 ## Ícono
 
 `icon` acepta un string SVG/HTML que se inyecta **antes del label**, dentro del trigger.
+
+> El HTML del `icon` se sanitiza con **DOMPurify** antes de inyectarse: los SVG válidos se
+> conservan y se eliminan `<script>`, handlers `on*` y URLs peligrosas.
 
 ```vue
 <script setup lang="ts">
@@ -180,6 +185,13 @@ function toggleFaq() {
   <Button @click="toggleFaq">Alternar FAQ</Button>
 </template>
 ```
+
+## Accesibilidad
+
+- El trigger es un `<button>` nativo: `Enter` y `Espacio` alternan el estado, y con `prefers-reduced-motion: reduce` la altura y el chevron no animan.
+- El botón expone `aria-expanded` (`"true"`/`"false"`) y `aria-controls` apuntando al `id` del contenido. El `id` sale de `useId()`, así que dos instancias montadas en la misma app no lo comparten.
+- El chevron es decorativo (`aria-hidden="true"`, `focusable="false"`) y no aparece en el árbol accesible.
+- Con `disabled`, el botón lleva el `disabled` nativo: sale del orden de tabulación y los lectores de pantalla lo anuncian como deshabilitado. El contenido ya abierto sigue visible y `close()` sigue funcionando desde código.
 
 ## Props
 

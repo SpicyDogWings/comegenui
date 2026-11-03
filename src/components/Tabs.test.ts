@@ -465,7 +465,7 @@ describe("Tabs — icono sanitizado", () => {
     expect(w.find(".cu-tabs-tab-icon svg path").exists()).toBe(true);
   });
 
-  it("`<script>` y handlers `on*` se eliminan antes del v-html", () => {
+  it("`<script>`, handlers `on*` e interactivos (`<img>`) se eliminan antes del v-html", () => {
     // Sonda de ejecución: el navegador/jsdom la setearía si el handler sobrevive.
     type XssWindow = Window & { __xss?: number };
     const probe = window as XssWindow;
@@ -481,9 +481,10 @@ describe("Tabs — icono sanitizado", () => {
         ],
       },
     });
-    const icon = w.find(".cu-tabs-tab-icon");
-    expect(icon.find("script").exists()).toBe(false);
-    expect(icon.find("img").attributes("onerror")).toBeUndefined();
+    // El allowlist es sólo SVG: del HTML no queda nada, así que ni el wrapper se pinta.
+    expect(w.find(".cu-tabs-tab-icon").exists()).toBe(false);
+    expect(w.html()).not.toContain("onerror");
+    expect(w.html()).not.toContain("<script");
     expect(probe.__xss).toBeUndefined();
   });
 });

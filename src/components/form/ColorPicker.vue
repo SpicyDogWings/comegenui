@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, defineModel, useTemplateRef, ref, watch } from "vue";
+import { computed, useTemplateRef, ref, watch } from "vue";
 import Input from "./Input.vue";
 
 const value = defineModel<string>({ default: "#000000" });
@@ -26,14 +26,26 @@ const pickerRef = useTemplateRef<HTMLInputElement>("picker");
 
 const localHex = ref(value.value);
 
+/**
+ * Valor vigente dentro del componente. Es la fuente de verdad inmediata: los
+ * métodos (`get`, `set`, `reset`) no esperan al re-render del host, que cuando
+ * el `model-value` lo controla un padre (el custom element espeja su estado)
+ * llega recién en el tick siguiente.
+ */
+const current = ref(value.value);
+
 watch(value, (v) => {
+  current.value = v;
   localHex.value = v;
 });
 
+/** Escribe el valor: estado interno ya, y `update:modelValue` para el host. */
+function commitValue(next: string) {
+  current.value = next;
+  if (next !== value.value) value.value = next;
+}
+
 const pickerStyles = computed(() => ({
-  "--cp-bg": `var(--cu-color-${props.color})`,
-  "--cp-soft": `var(--cu-color-${props.color}-soft)`,
-  "--cp-soft-hover": `var(--cu-color-${props.color}-soft-hover)`,
   "--cp-subtle-border": `var(--cu-color-${props.color}-subtle-border)`,
 }));
 
@@ -45,30 +57,30 @@ function onSwatchClick() {
 function onPickerInput(e: Event) {
   const hex = (e.target as HTMLInputElement).value;
   localHex.value = hex;
-  value.value = hex;
+  commitValue(hex);
   emit("change", hex);
 }
 
 function onTextInput(hex: string) {
   localHex.value = hex;
   if (/^#[0-9a-fA-F]{6}$/.test(hex)) {
-    value.value = hex;
+    commitValue(hex);
     emit("change", hex);
   }
 }
 
 function onTextInputBlur() {
   if (!/^#[0-9a-fA-F]{6}$/.test(localHex.value)) {
-    localHex.value = value.value;
+    localHex.value = current.value;
   }
 }
 
 /** Devuelve el color actual en formato hex. */
-function get() { return value.value; }
+function get() { return current.value; }
 /** Setea el color actual en formato hex. */
-function set(v: string) { value.value = v; localHex.value = v; }
+function set(v: string) { commitValue(v); localHex.value = v; }
 /** Restaura el color al negro (#000000). */
-function reset() { value.value = "#000000"; localHex.value = "#000000"; }
+function reset() { commitValue("#000000"); localHex.value = "#000000"; }
 
 defineExpose({ get, set, reset, /** Enfoca el input de texto del color. */ focus: () => inputRef.value?.focus() });
 </script>
@@ -82,16 +94,20 @@ defineExpose({ get, set, reset, /** Enfoca el input de texto del color. */ focus
     <button
       type="button"
       class="cu-color-picker-swatch"
+      aria-label="Elegir color"
       @click="onSwatchClick"
       :disabled="disabled"
     >
-      <span class="cu-color-picker-swatch-color" :style="{ backgroundColor: value }" />
+      <span class="cu-color-picker-swatch-color" :style="{ backgroundColor: current }" />
     </button>
+    <!-- El picker nativo es un detalle de implementación: lo maneja el swatch
+         (que es el control con nombre), así que no aparece en el árbol de a11y. -->
     <input
       ref="picker"
       type="color"
-      :value="value"
+      :value="current"
       class="cu-color-picker-native"
+      aria-hidden="true"
       @input="onPickerInput"
       :disabled="disabled"
       tabindex="-1"

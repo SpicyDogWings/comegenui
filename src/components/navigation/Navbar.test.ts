@@ -20,6 +20,11 @@ if (!window.matchMedia) {
   });
 }
 
+// jsdom no implementa scrollIntoView (lo usa la nav al montar con item activo).
+if (!Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = () => {};
+}
+
 const tree = [
   { label: "Inicio", path: "/inicio" },
   {
@@ -158,6 +163,37 @@ describe("Navbar — item activo por ruta", () => {
     expect(active.exists()).toBe(true);
     expect(active.text()).toContain("Perfil");
   });
+
+  it("el scroll al activo se hace dentro de cada instancia (dos navs no se pisan)", async () => {
+    const spy = vi.spyOn(Element.prototype, "scrollIntoView").mockImplementation(() => {});
+    const treeA = [
+      { label: "A1", path: "/a1" },
+      { label: "A2", path: "/a2" },
+    ];
+    const treeB = [
+      { label: "B1", path: "/b1" },
+      { label: "B2", path: "/b2" },
+    ];
+    const a = mount(Navbar, {
+      props: { items: treeA, activePath: "/a2" },
+      attachTo: document.body,
+    });
+    const b = mount(Navbar, {
+      props: { items: treeB, activePath: "/b2" },
+      attachTo: document.body,
+    });
+    await flushPromises();
+
+    // `this` de cada llamada: con el `document.querySelector` global la segunda
+    // nav volvía a scrollear el marcador de la primera.
+    const scrolled = spy.mock.contexts.map((el) => (el as Element).textContent!.trim());
+    expect(scrolled).toContain("A2");
+    expect(scrolled).toContain("B2");
+
+    a.unmount();
+    b.unmount();
+    spy.mockRestore();
+  });
 });
 
 describe("Navbar — responsive", () => {
@@ -181,5 +217,106 @@ describe("Navbar — responsive", () => {
     await flushPromises();
     expect(w.find(".cu-navbar-responsive-toggle").attributes("aria-expanded")).toBe("true");
     expect(document.querySelector(".cu-sideover")).not.toBeNull();
+    w.unmount();
+  });
+
+  it("el diálogo del menú mobile tiene nombre accesible", async () => {
+    const w = mount(Navbar, { props: { items: tree, responsive: true }, attachTo: document.body });
+    await w.find(".cu-navbar-responsive-toggle").trigger("click");
+    await flushPromises();
+    expect(document.querySelector(".cu-sideover")!.getAttribute("aria-label")).toBe("Menú");
+    w.unmount();
+  });
+
+  it("en Vue (light DOM) el panel se teleporta a body", async () => {
+    const w = mount(Navbar, { props: { items: tree, responsive: true }, attachTo: document.body });
+    await w.find(".cu-navbar-responsive-toggle").trigger("click");
+    await flushPromises();
+    const panel = document.querySelector(".cu-sideover");
+    expect(panel).not.toBeNull();
+    // Fuera del árbol del componente: overlay real sobre la página.
+    expect(w.element.contains(panel)).toBe(false);
+    w.unmount();
+    expect(document.querySelector(".cu-sideover")).toBeNull();
+  });
+
+  it("dentro de un shadow root el panel NO se teleporta fuera (conserva sus estilos)", async () => {
+    // Un custom element vive en un shadow root: teleportar a body saca el panel
+    // del alcance de los estilos scoped y queda en el flujo (`position: static`).
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+    const shadow = host.attachShadow({ mode: "open" });
+    const container = document.createElement("div");
+    shadow.appendChild(container);
+
+    const w = mount(Navbar, { props: { items: tree, responsive: true }, attachTo: container });
+    await w.find(".cu-navbar-responsive-toggle").trigger("click");
+    await flushPromises();
+
+    expect(container.querySelector(".cu-sideover")).not.toBeNull();
+    expect(document.querySelector(".cu-sideover")).toBeNull();
+
+    w.unmount();
+    host.remove();
+  });
+
+  it("un `sideOverPosition` inválido cae al borde seguro (left)", async () => {
+    const w = mount(Navbar, {
+      // @ts-expect-error valor fuera del set a propósito
+      props: { items: tree, responsive: true, sideOverPosition: "diagonal" },
+      attachTo: document.body,
+    });
+    await w.find(".cu-navbar-responsive-toggle").trigger("click");
+    await flushPromises();
+
+    const panel = document.querySelector(".cu-sideover-panel");
+    expect(panel).not.toBeNull();
+    expect(panel!.className).toContain("cu-sideover-panel--left");
+    w.unmount();
+  });
+
+  it("activar `responsive` después de montar respeta el modo `auto` en pantalla chica", async () => {
+    const original = window.matchMedia;
+    // @ts-expect-error stub: la pantalla es "chica"
+    window.matchMedia = () => ({
+      matches: true,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+    });
+    try {
+      const w = mount(Navbar, { props: { items: tree }, attachTo: document.body });
+      await w.setProps({ responsive: true });
+      await flushPromises();
+      await w.find(".cu-navbar-responsive-toggle").trigger("click");
+      await flushPromises();
+
+      const panel = document.querySelector(".cu-sideover-panel");
+      expect(panel!.className).toContain("cu-sideover-panel--fullscreen");
+      w.unmount();
+    } finally {
+      window.matchMedia = original;
+    }
+  });
+});
+
+describe("Navbar — montaje antes de asignar `items`", () => {
+  it("sin `items` todavía, el render no rompe (el CE se upgradea antes de la propiedad)", () => {
+    // Patrón documentado en la ficha vanilla:
+    //   await customElements.whenDefined('cu-navbar'); nav.items = [...]
+    // entre el upgrade y la asignación `items` es `undefined`.
+    const w = mount(Navbar, {
+      props: { items: undefined as unknown as typeof tree },
+    });
+    expect(w.find("nav.cu-navbar").exists()).toBe(true);
+    expect(w.find(".cu-navbar-empty").exists()).toBe(false);
+    w.unmount();
+  });
+
+  it("al asignar `items` después, la lista aparece", async () => {
+    const w = mount(Navbar, {
+      props: { items: undefined as unknown as typeof tree },
+    });
+    await w.setProps({ items: tree });
+    expect(w.findAll(".cu-navbar-label").map((el) => el.text())).toContain("Inicio");
   });
 });

@@ -188,29 +188,32 @@ function endDrag() {
   will-change: transform;
 }
 
-/* solid: doble clase para ganarle a reglas globales del consumidor (convención del repo) */
+/* solid: doble clase para ganarle a reglas globales del consumidor (convención del repo).
+   Fondo `-solid` (la variante ajustada del generador) y texto `surface`: el par que
+   los tokens garantizan ≥4.5:1 en los 15 temas. */
 .cu-month-slider-label.cu-month-slider-label--solid {
-  background-color: var(--ms-accent);
+  background-color: var(--ms-solid);
   color: var(--ms-surface);
 }
 .cu-month-slider-label.cu-month-slider-label--solid:hover {
-  background-color: var(--ms-accent-hover);
+  background-color: var(--ms-solid-hover);
 }
 
 /* outlined */
 .cu-month-slider-label.cu-month-slider-label--outlined {
   background-color: transparent;
-  color: var(--ms-accent);
-  border: var(--cu-border-thin) solid var(--ms-accent);
+  color: var(--ms-accent-text);
+  border: var(--cu-border-thin) solid var(--ms-accent-border);
 }
 .cu-month-slider-label.cu-month-slider-label--outlined:hover {
   background-color: var(--ms-ghost-hover);
 }
 
-/* soft (default) */
+/* soft (default). El texto va con `-text` (contraste AA sobre el tinte); con el
+   color base (`--ms-accent`) quedaba en 1.57–4.25:1 según el tema. */
 .cu-month-slider-label.cu-month-slider-label--soft {
   background-color: var(--ms-soft);
-  color: var(--ms-accent);
+  color: var(--ms-accent-text);
 }
 .cu-month-slider-label.cu-month-slider-label--soft:hover {
   background-color: var(--ms-soft-hover);
@@ -219,7 +222,7 @@ function endDrag() {
 /* ghost */
 .cu-month-slider-label.cu-month-slider-label--ghost {
   background-color: transparent;
-  color: var(--ms-accent);
+  color: var(--ms-accent-text);
 }
 .cu-month-slider-label.cu-month-slider-label--ghost:hover {
   background-color: var(--ms-ghost-hover);
@@ -228,7 +231,7 @@ function endDrag() {
 /* subtle */
 .cu-month-slider-label.cu-month-slider-label--subtle {
   background-color: var(--ms-subtle);
-  color: var(--ms-accent);
+  color: var(--ms-accent-text);
   border: var(--cu-border-thin) solid var(--ms-subtle-border);
 }
 .cu-month-slider-label.cu-month-slider-label--subtle:hover {
@@ -246,11 +249,12 @@ function endDrag() {
 /* Sobre label solid, el badge del año (variante subtle) se pierde: el tinte
    translúcido sobre el fondo solid oscuro no aporta contraste y el texto
    (`--cu-color-{name}-text` = color oscurecido) queda casi negro e imperceptible.
-   Se invierte el badge: fondo = surface (color del texto del label) + texto = accent
-   (color del solid). Specificity (0,4,0) > `.cu-badge.cu-badge--subtle` (0,3,0). */
+   Se invierte el badge: fondo = surface (color del texto del label) + texto con el
+   tono de texto del color (`-text`, ≥4.5:1 sobre surface en los 15 temas).
+   Specificity (0,4,0) > `.cu-badge.cu-badge--subtle` (0,3,0). */
 .cu-month-slider-label.cu-month-slider-label--solid .cu-month-slider-label-year {
   background-color: var(--ms-surface);
-  color: var(--ms-accent);
+  color: var(--ms-accent-text);
 }
 
 .cu-month-slider-label.is-draggable {
@@ -273,7 +277,7 @@ function endDrag() {
 }
 
 .cu-month-slider-label:focus-visible {
-  outline: var(--cu-border-thin) solid var(--ms-accent);
+  outline: var(--cu-border-thin) solid var(--ms-accent-text);
   outline-offset: var(--cu-space-2xs);
 }
 

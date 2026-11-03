@@ -7,6 +7,9 @@ import Button from '@/components/buttons/Button.vue'
 import Input from '@/components/form/Input.vue'
 import LucideChevronRight from '@/components/icons/LucideChevronRight.vue'
 import type { NavItem } from '@/composables/useNavbar'
+import { sanitizeIcon } from '@/utils/sanitizeIcon'
+import { useUniqueId } from '@/utils/uniqueId'
+import { onNavbarMenuTriggerKeydown } from '@/utils/navbarMenuTrigger'
 
 // Lista interna de la nav (header + items). Se usa en el nav inline y dentro
 // del SideOver responsive para no duplicar el markup.
@@ -45,8 +48,18 @@ const emit = defineEmits<{
   (e: 'toggle-compact'): void
 }>()
 
+// `id` del panel de cada flyout: el trigger lo referencia con `aria-controls`
+// mientras el panel está montado (el patrón menu button del `Dropdown`).
+const uid = useUniqueId('cu-navbar-list')
+
+function panelIdOf(index: number): string {
+  return `${uid}-panel-${index}`
+}
+
+// `item.icon` es HTML/SVG del consumidor: se sanitiza (sólo SVG inline) antes del
+// `v-html`. La inicial del modo compact es texto y no pasa por el sanitizador.
 function itemIcon(item: NavItem): string {
-  if (item.icon) return item.icon
+  if (item.icon) return sanitizeIcon(item.icon) ?? ''
   return props.compact ? item.label.charAt(0) : ''
 }
 </script>
@@ -72,25 +85,37 @@ function itemIcon(item: NavItem): string {
       </button>
     </div>
 
-    <template v-for="item in items" :key="item.path || item.label">
+    <template v-for="(item, index) in items" :key="item.path || item.label">
       <Dropdown
         v-if="item.children?.length && compact"
         :trigger="props.trigger"
         position="right"
         align="start"
+        :panel-id="panelIdOf(index)"
         :class="{ 'cu-navbar-item--match': highlightTarget === item, 'cu-navbar-item--active': activeItem === item }"
         :data-navbar-match="highlightTarget === item ? '' : undefined"
         :data-navbar-active="activeItem === item ? '' : undefined"
       >
-        <template #toggle="{ toggle: t }">
+        <template #toggle="{ toggle: t, isOpen }">
           <button
             type="button"
             class="cu-navbar-compact-trigger"
             :title="item.label"
+            :aria-label="item.label"
+            aria-haspopup="menu"
+            :aria-expanded="isOpen ? 'true' : 'false'"
+            :aria-controls="isOpen ? panelIdOf(index) : undefined"
             @click="t"
+            @keydown="onNavbarMenuTriggerKeydown($event, t)"
           >
             <span class="cu-navbar-icon" v-html="itemIcon(item)"></span>
-            <LucideChevronRight :width="14" :height="14" class="cu-navbar-compact-chevron" />
+            <LucideChevronRight
+              :width="14"
+              :height="14"
+              class="cu-navbar-compact-chevron"
+              aria-hidden="true"
+              focusable="false"
+            />
           </button>
         </template>
         <NavbarMenu :items="item.children" :trigger="props.trigger" />
@@ -122,6 +147,7 @@ function itemIcon(item: NavItem): string {
         :color="activeItem === item ? 'primary' : undefined"
         :variant="activeItem === item ? 'soft' : undefined"
         :title="compact && !item.icon ? item.label : undefined"
+        :aria-label="compact ? item.label : undefined"
         :class="{ 'cu-navbar-item--match': highlightTarget === item, 'cu-navbar-item--active': activeItem === item }"
         :data-navbar-match="highlightTarget === item ? '' : undefined"
         :data-navbar-active="activeItem === item ? '' : undefined"
@@ -227,8 +253,7 @@ function itemIcon(item: NavItem): string {
 .cu-navbar-empty {
   padding: var(--cu-space-sm) var(--cu-space-md);
   font-size: var(--cu-font-size-sm);
-  color: var(--cu-color-neutral-text);
-  opacity: var(--cu-alpha-subtle, 0.6);
+  color: var(--cu-color-neutral-text-subtle);
 }
 
 /* Compact: solo iconos (o la inicial), sin labels */
@@ -288,6 +313,6 @@ function itemIcon(item: NavItem): string {
   position: absolute;
   right: var(--cu-space-2xs);
   flex-shrink: 0;
-  opacity: 0.65;
+  color: var(--cu-color-neutral-text-muted);
 }
 </style>

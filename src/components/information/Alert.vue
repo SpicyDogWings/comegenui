@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, watch, type PropType } from "vue";
-import { isVariant } from '@/utils/validators'
+import { computed, onBeforeUnmount, onMounted, onUpdated, ref, watch, type PropType } from "vue";
+import { isColor, isVariant } from '@/utils/validators'
 
 const props = defineProps({
   color: {
     type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     required: false,
     default: "neutral",
+    validator: isColor,
   },
   variant: {
     type: String as PropType<'solid' | 'outlined' | 'soft' | 'ghost' | 'subtle'>,
@@ -32,28 +33,68 @@ const props = defineProps({
 
 const emit = defineEmits(["close", "open", "update:show"]);
 
+/** Un color fuera del set no tiene tokens: la variante solid quedaría sin fondo
+ *  y con el texto del tema encima (invisible). Cae al color seguro. */
+const safeColor = computed(() => (isColor(props.color) ? props.color : 'neutral'));
+
+/* Rol ARIA según urgencia: warning/danger se anuncian como `alert` (assertive);
+   el resto son avisos informativos y usan `status` (polite). */
+const isUrgent = computed(() => safeColor.value === 'warning' || safeColor.value === 'danger');
+const ariaRole = computed(() => (isUrgent.value ? 'alert' : 'status'));
+const ariaLive = computed(() => (isUrgent.value ? 'assertive' : 'polite'));
+
 const iconWrap = ref<HTMLElement | null>(null);
 const hasIcon = ref(false);
+const hasHeader = computed(() => !!props.title || hasIcon.value);
+let iconSlot: HTMLSlotElement | null = null;
+
+/**
+ * Presencia del ícono. En Vue el contenido del slot se renderiza como hijos del
+ * wrapper; en el custom element el slot es nativo y hay que mirar `assignedNodes`.
+ * El `<span>` del título lo pinta el componente: no cuenta como ícono.
+ */
+function nodeHasIconContent(node: Node): boolean {
+  if (node.nodeType === Node.TEXT_NODE) return !!node.textContent?.trim();
+  if (node.nodeType !== Node.ELEMENT_NODE) return false;
+  const el = node as Element;
+  if (el.classList.contains('cu-alert-title-text')) return false;
+  if (el.tagName === 'SLOT') {
+    return (el as HTMLSlotElement).assignedNodes().some(nodeHasIconContent);
+  }
+  return true;
+}
 
 function detectIcon() {
   const el = iconWrap.value;
   if (!el) return;
-  const hasRealContent = (node: Node): boolean => {
-    if (node.nodeType === Node.TEXT_NODE) return !!node.textContent?.trim();
-    if (node.nodeType === Node.ELEMENT_NODE) {
-      const slotEl = node as HTMLSlotElement;
-      if (node.tagName === 'SLOT') return slotEl.assignedNodes().length > 0;
-      return true;
-    }
-    return false;
-  };
-  hasIcon.value = Array.from(el.childNodes).some(hasRealContent);
+  hasIcon.value = Array.from(el.childNodes).some(nodeHasIconContent);
+}
+
+/**
+ * En el custom element el ícono puede llegar después del mount (el HTML se
+ * parsea después de la upgrade): `slotchange` vuelve a detectarlo. En Vue no hay
+ * `<slot>` en el DOM y el re-render lo cubre `onUpdated`.
+ */
+function bindIconSlot() {
+  const slot = iconWrap.value?.querySelector("slot") as HTMLSlotElement | null;
+  if (!slot || slot === iconSlot) return;
+  iconSlot?.removeEventListener("slotchange", detectIcon);
+  iconSlot = slot;
+  iconSlot.addEventListener("slotchange", detectIcon);
 }
 
 onMounted(() => {
   detectIcon();
+  bindIconSlot();
 });
-watch(hasIcon, () => nextTick(detectIcon));
+onUpdated(() => {
+  detectIcon();
+  bindIconSlot();
+});
+onBeforeUnmount(() => {
+  iconSlot?.removeEventListener("slotchange", detectIcon);
+  iconSlot = null;
+});
 
 const internalShow = ref(props.show);
 
@@ -65,21 +106,21 @@ watch(internalShow, (val) => {
 });
 
 const colorStyles = computed(() => ({
-  '--alert-solid': `var(--cu-color-${props.color}-solid)`,
-  '--alert-solid-hover': `var(--cu-color-${props.color}-solid-hover)`,
-  '--alert-solid-active': `var(--cu-color-${props.color}-solid-active)`,
+  '--alert-solid': `var(--cu-color-${safeColor.value}-solid)`,
+  '--alert-solid-hover': `var(--cu-color-${safeColor.value}-solid-hover)`,
+  '--alert-solid-active': `var(--cu-color-${safeColor.value}-solid-active)`,
   '--alert-solid-text': `var(--cu-color-surface)`,
-  '--alert-border': `var(--cu-color-${props.color}-border)`,
-  '--alert-text': `var(--cu-color-${props.color}-text)`,
-  '--alert-ghost-hover': `var(--cu-color-${props.color}-ghost-hover)`,
-  '--alert-ghost-active': `var(--cu-color-${props.color}-ghost-active)`,
-  '--alert-soft': `var(--cu-color-${props.color}-soft)`,
-  '--alert-soft-hover': `var(--cu-color-${props.color}-soft-hover)`,
-  '--alert-soft-active': `var(--cu-color-${props.color}-soft-active)`,
-  '--alert-subtle': `var(--cu-color-${props.color}-subtle)`,
-  '--alert-subtle-hover': `var(--cu-color-${props.color}-subtle-hover)`,
-  '--alert-subtle-active': `var(--cu-color-${props.color}-subtle-active)`,
-  '--alert-subtle-border': `var(--cu-color-${props.color}-subtle-border)`,
+  '--alert-border': `var(--cu-color-${safeColor.value}-border)`,
+  '--alert-text': `var(--cu-color-${safeColor.value}-text)`,
+  '--alert-ghost-hover': `var(--cu-color-${safeColor.value}-ghost-hover)`,
+  '--alert-ghost-active': `var(--cu-color-${safeColor.value}-ghost-active)`,
+  '--alert-soft': `var(--cu-color-${safeColor.value}-soft)`,
+  '--alert-soft-hover': `var(--cu-color-${safeColor.value}-soft-hover)`,
+  '--alert-soft-active': `var(--cu-color-${safeColor.value}-soft-active)`,
+  '--alert-subtle': `var(--cu-color-${safeColor.value}-subtle)`,
+  '--alert-subtle-hover': `var(--cu-color-${safeColor.value}-subtle-hover)`,
+  '--alert-subtle-active': `var(--cu-color-${safeColor.value}-subtle-active)`,
+  '--alert-subtle-border': `var(--cu-color-${safeColor.value}-subtle-border)`,
 }))
 
 function open() {
@@ -106,18 +147,19 @@ defineExpose({
 <template>
   <div
     v-show="internalShow"
-    :class="['cu-alert', `cu-alert--${props.variant}`, { 'cu-alert--floating-close': props.close && !props.title && !hasIcon }]"
+    :class="['cu-alert', `cu-alert--${props.variant}`, { 'cu-alert--floating-close': props.close && !hasHeader }]"
     :style="colorStyles"
-    role="alert"
+    :role="ariaRole"
+    :aria-live="ariaLive"
   >
-    <span ref="iconWrap" class="cu-alert-icon-detect"><slot name="icon" /></span>
-    <div v-if="props.title || hasIcon" class="cu-alert-header">
-      <div class="cu-alert-title">
+    <div v-show="hasHeader" class="cu-alert-header">
+      <div ref="iconWrap" class="cu-alert-title">
         <slot name="icon" />
         <span v-if="props.title" class="cu-alert-title-text">{{ props.title }}</span>
       </div>
       <button
-        v-if="props.close"
+        v-if="props.close && hasHeader"
+        type="button"
         @click="close"
         class="cu-alert-close"
         aria-label="Cerrar alerta"
@@ -126,7 +168,8 @@ defineExpose({
       </button>
     </div>
     <button
-      v-else-if="props.close"
+      v-if="props.close && !hasHeader"
+      type="button"
       @click="close"
       class="cu-alert-close cu-alert-close--floating"
       aria-label="Cerrar alerta"
@@ -140,10 +183,6 @@ defineExpose({
 </template>
 
 <style scoped>
-.cu-alert-icon-detect {
-  display: none;
-}
-
 .cu-alert {
   font-family: var(--cu-font-sans);
   font-size: var(--cu-font-size-sm);

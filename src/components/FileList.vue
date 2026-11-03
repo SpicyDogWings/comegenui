@@ -57,13 +57,18 @@ const fileList = computed(() => {
       @click.stop="emit('select', i)"
     >
       <span v-html="getFileIconSvg(file)" class="cu-file-list-icon"></span>
-      <span class="cu-file-list-name">{{ file.name }}</span>
+      <button
+        type="button"
+        class="cu-file-list-name"
+        @click.stop="emit('select', i)"
+      >{{ file.name }}</button>
       <span class="cu-file-list-size">{{ formatFileSize(file.size) }}</span>
       <Button
         v-if="!props.disabled"
         :color="color"
         variant="ghost"
         class="cu-file-list-remove"
+        :aria-label="`Quitar ${file.name}`"
         @click.stop="emit('remove', i)"
       >
         <svg
@@ -112,11 +117,24 @@ const fileList = computed(() => {
 .cu-file-list-name {
   flex: 1;
   min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  font-size: inherit;
   font-weight: var(--cu-font-weight-medium);
   color: var(--list-text);
+  text-align: left;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+.cu-file-list-name:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+  border-radius: var(--cu-radius);
 }
 
 .cu-file-list-size {

@@ -38,6 +38,45 @@ function attachMeta(ctor, meta) {
 function camelize(name) {
 	return name.replace(/-(\w)/g, (_, char) => char ? char.toUpperCase() : "");
 }
+/** `Boolean`, `{ type: Boolean }` o `{ type: [String, Boolean] }` → tipos efectivos. */
+function typesOf(option) {
+	let raw = option;
+	if (typeof option === "object" && option !== null && !Array.isArray(option) && "type" in option) raw = option.type;
+	const list = Array.isArray(raw) ? raw : [raw];
+	return {
+		boolean: list.includes(Boolean),
+		number: list.includes(Number),
+		string: list.includes(String)
+	};
+}
+/** Tipos declarados por prop, en camelCase (cacheado por definición). */
+var PROP_TYPES = /* @__PURE__ */ new WeakMap();
+function propTypes(def) {
+	const cached = PROP_TYPES.get(def);
+	if (cached) return cached;
+	const map = /* @__PURE__ */ new Map();
+	const props = def.props;
+	if (props && !Array.isArray(props)) for (const [key, option] of Object.entries(props)) map.set(camelize(key), typesOf(option));
+	PROP_TYPES.set(def, map);
+	return map;
+}
+/**
+* Atributo del host → valor de la prop. Un atributo llega siempre como string:
+* `_setProp` con el string crudo dejaba `disabled="false"` deshabilitado (el
+* string es truthy) y `model-value="false"` marcado. Se castea con la misma
+* regla que HTML/Vue: un atributo Boolean presente es `true`, salvo el texto
+* explícito `"false"` (y `""`/`"true"` → `true`); Number se parsea. Sin tipos
+* declarados (`props: ['value']`) no se adivina: el valor queda string.
+*/
+function castPropValue(value, types) {
+	if (!types) return value;
+	if (types.boolean) return value.trim().toLowerCase() !== "false";
+	if (types.number && !types.string) {
+		const parsed = parseFloat(value);
+		if (!Number.isNaN(parsed)) return parsed;
+	}
+	return value;
+}
 /** Props declaradas por el componente, en camelCase (cacheado por definición). */
 var PROP_KEYS = /* @__PURE__ */ new WeakMap();
 function declaredProps(def) {
@@ -120,12 +159,7 @@ function makeElement(component, meta) {
 		_applyProp(propKey, value, camelKey) {
 			const self = this;
 			if (value !== null) {
-				let parsed = value;
-				if (self._numberProps?.[camelKey]) {
-					const n = parseFloat(value);
-					if (!Number.isNaN(n)) parsed = n;
-				}
-				self._setProp(propKey, parsed, false, true);
+				self._setProp(propKey, castPropValue(value, propTypes(self._def).get(camelKey)), false, true);
 				return;
 			}
 			if (!Object.prototype.hasOwnProperty.call(self._props, propKey)) return;
@@ -397,7 +431,7 @@ var NAVBAR_RESPONSIVE_MODES = [
 var NAVBAR_SEARCH_MODES = ["filter", "scroll"];
 var SELECT_SEARCH_MODES = ["startsWith", "includes"];
 var CELLS_IMPORTER_INPUT_TYPES = ["input", "zone"];
-oneOf(COLORS);
+var isColor = oneOf(COLORS);
 oneOf(COLORS_BASE);
 oneOf(VARIANTS);
 oneOf(VARIANTS_FULL);
@@ -454,7 +488,8 @@ var Checkbox_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineC
 		color: {
 			type: String,
 			required: false,
-			default: "neutral"
+			default: "neutral",
+			validator: isColor
 		},
 		size: {
 			type: String,
@@ -484,57 +519,60 @@ var Checkbox_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineC
 		const props = __props;
 		const emit = __emit;
 		const inputRef = ref(null);
+		const safeColor = computed(() => isColor(props.color) ? props.color : "neutral");
+		const safeSize = computed(() => isSizeSm(props.size) ? props.size : "md");
 		const checkboxStyles = computed(() => ({
-			"--cb-bg": `var(--cu-color-${props.color})`,
-			"--cb-solid": `var(--cu-color-${props.color}-solid)`,
+			"--cb-bg": `var(--cu-color-${safeColor.value})`,
+			"--cb-solid": `var(--cu-color-${safeColor.value}-solid)`,
 			"--cb-solid-text": `var(--cu-color-surface)`,
-			"--cb-soft": `var(--cu-color-${props.color}-soft)`,
-			"--cb-ghost-hover": `var(--cu-color-${props.color}-ghost-hover)`,
-			"--cb-text": `var(--cu-color-${props.color}-text)`
+			"--cb-soft": `var(--cu-color-${safeColor.value}-soft)`,
+			"--cb-ghost-hover": `var(--cu-color-${safeColor.value}-ghost-hover)`,
+			"--cb-text": `var(--cu-color-${safeColor.value}-text)`
 		}));
+		const onInput = (e) => {
+			const value = e.target.checked;
+			checked.value = value;
+			emit("change", value);
+		};
 		__expose({
 			/** Devuelve si el checkbox está marcado. */
 			get: () => checked.value,
 			/** Setea el estado marcado y emite change. */
 			set: (value) => {
 				checked.value = value;
-				emit("change", { target: { checked: value } });
+				emit("change", value);
 			},
 			/** Desmarca el checkbox y emite change. */
 			reset: () => {
 				checked.value = false;
-				emit("change", { target: { checked: false } });
+				emit("change", false);
 			},
 			/** Enfoca el input nativo. */
 			focus: () => inputRef.value?.focus()
 		});
 		return (_ctx, _cache) => {
-			return openBlock(), createElementBlock("label", { class: normalizeClass(["cu-checkbox", [`cu-checkbox--${props.size}`, { "cu-checkbox--disabled": props.disabled }]]) }, [
+			return openBlock(), createElementBlock("label", { class: normalizeClass(["cu-checkbox", [`cu-checkbox--${safeSize.value}`, { "cu-checkbox--disabled": props.disabled }]]) }, [createElementVNode("div", {
+				class: normalizeClass(["cu-checkbox-box", { "cu-checkbox-box--checked": checked.value }]),
+				style: normalizeStyle(checkboxStyles.value)
+			}, [
+				createCommentVNode(" El input nativo cubre la caja visual: es el control real y la única\n           parada de tab. No lleva `tabindex=\"-1\"`: con eso el teclado no podía\n           llegar al checkbox. "),
 				createElementVNode("input", {
 					ref_key: "inputRef",
 					ref: inputRef,
 					type: "checkbox",
 					checked: checked.value,
-					onChange: _cache[0] || (_cache[0] = (e) => {
-						checked.value = e.target.checked;
-						emit("change", e);
-					}),
 					disabled: props.disabled,
-					tabindex: "-1",
-					class: "cu-checkbox-input"
+					class: "cu-checkbox-input",
+					onChange: onInput
 				}, null, 40, _hoisted_1),
-				createElementVNode("div", {
-					class: normalizeClass(["cu-checkbox-box", { "cu-checkbox-box--checked": checked.value }]),
-					style: normalizeStyle(checkboxStyles.value)
-				}, [checked.value ? (openBlock(), createElementBlock("svg", _hoisted_2, [..._cache[1] || (_cache[1] = [createElementVNode("path", { d: "M20 6L9 17l-5-5" }, null, -1)])])) : createCommentVNode("v-if", true)], 6),
-				props.label ? (openBlock(), createElementBlock("span", _hoisted_3, toDisplayString(props.label), 1)) : createCommentVNode("v-if", true)
-			], 2);
+				checked.value ? (openBlock(), createElementBlock("svg", _hoisted_2, [..._cache[0] || (_cache[0] = [createElementVNode("path", { d: "M20 6L9 17l-5-5" }, null, -1)])])) : createCommentVNode("v-if", true)
+			], 6), props.label ? (openBlock(), createElementBlock("span", _hoisted_3, toDisplayString(props.label), 1)) : createCommentVNode("v-if", true)], 2);
 		};
 	}
 });
 //#endregion
-//#region src/components/form/Checkbox.vue?vue&type=style&index=0&inline&scoped=7b84905f&lang.css
-var Checkbox_vue_vue_type_style_index_0_inline_scoped_7b84905f_lang_default = "\n.cu-checkbox[data-v-7b84905f] {\n  position: relative;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--cu-space-sm);\n  cursor: pointer;\n  box-sizing: border-box;\n  width: fit-content;\n}\n.cu-checkbox--md[data-v-7b84905f] {\n  gap: var(--cu-space-sm);\n}\n.cu-checkbox--sm[data-v-7b84905f] {\n  gap: var(--cu-space-xs);\n}\n.cu-checkbox--disabled[data-v-7b84905f] {\n  cursor: not-allowed;\n  opacity: var(--cu-alpha-disabled, 0.7);\n}\n.cu-checkbox-input[data-v-7b84905f] {\n  position: absolute;\n  opacity: 0;\n  width: 0;\n  height: 0;\n  box-sizing: border-box;\n}\n.cu-checkbox-box[data-v-7b84905f] {\n  position: relative;\n  border-radius: var(--cu-radius-sm);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  transition: all 200ms ease;\n  border: var(--cu-border-medium) solid var(--cu-border-color);\n  background-color: transparent;\n  box-sizing: border-box;\n  flex-shrink: 0;\n}\n.cu-checkbox--md .cu-checkbox-box[data-v-7b84905f] {\n  width: var(--cu-space-lg);\n  height: var(--cu-space-lg);\n}\n.cu-checkbox--sm .cu-checkbox-box[data-v-7b84905f] {\n  width: var(--cu-space-md);\n  height: var(--cu-space-md);\n}\n.cu-checkbox-box--checked[data-v-7b84905f] {\n  background-color: var(--cb-solid);\n  border-color: var(--cb-solid);\n}\n.cu-checkbox:not(.cu-checkbox--disabled) .cu-checkbox-box[data-v-7b84905f]:hover {\n  border-color: var(--cb-bg);\n  background-color: var(--cb-ghost-hover);\n}\n.cu-checkbox:not(.cu-checkbox--disabled) .cu-checkbox-box--checked[data-v-7b84905f]:hover {\n  background-color: var(--cb-solid);\n}\n.cu-checkbox-icon[data-v-7b84905f] {\n  color: var(--cb-solid-text);\n}\n.cu-checkbox-label[data-v-7b84905f] {\n  font-family: var(--cu-font-sans);\n  color: var(--cu-color-neutral);\n}\n.cu-checkbox--md .cu-checkbox-label[data-v-7b84905f] {\n  font-size: var(--cu-font-size-sm);\n}\n.cu-checkbox--sm .cu-checkbox-label[data-v-7b84905f] {\n  font-size: var(--cu-font-size-xs);\n}\n.cu-checkbox--disabled .cu-checkbox-label[data-v-7b84905f] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n}\n";
+//#region src/components/form/Checkbox.vue?vue&type=style&index=0&inline&scoped=fc8282b9&lang.css
+var Checkbox_vue_vue_type_style_index_0_inline_scoped_fc8282b9_lang_default = "\n.cu-checkbox[data-v-fc8282b9] {\n  position: relative;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--cu-space-sm);\n  cursor: pointer;\n  box-sizing: border-box;\n  width: fit-content;\n}\n.cu-checkbox--md[data-v-fc8282b9] {\n  gap: var(--cu-space-sm);\n}\n.cu-checkbox--sm[data-v-fc8282b9] {\n  gap: var(--cu-space-xs);\n}\n.cu-checkbox--disabled[data-v-fc8282b9] {\n  cursor: not-allowed;\n  opacity: var(--cu-alpha-disabled, 0.7);\n}\n\n/* El control real es el input nativo, estirado sobre la caja visual: recibe el\n   click, el foco del teclado (Space alterna) y el anillo de `:focus-within`.\n   Sin `width/height: 0`, que dejaba el foco fuera de la vista. */\n.cu-checkbox-input[data-v-fc8282b9] {\n  position: absolute;\n  inset: 0;\n  width: 100%;\n  height: 100%;\n  margin: 0;\n  opacity: 0;\n  cursor: inherit;\n  box-sizing: border-box;\n}\n.cu-checkbox-box[data-v-fc8282b9] {\n  position: relative;\n  border-radius: var(--cu-radius-sm);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  /* Sin `all`: al aparecer el anillo de foco, el outline no debe animarse\n     desde los valores iniciales (3px negro) hasta el color del tema. */\n  transition: background-color 200ms ease, border-color 200ms ease;\n  border: var(--cu-border-medium) solid var(--cu-border-color);\n  background-color: transparent;\n  box-sizing: border-box;\n  flex-shrink: 0;\n}\n.cu-checkbox--md .cu-checkbox-box[data-v-fc8282b9] {\n  width: var(--cu-space-lg);\n  height: var(--cu-space-lg);\n}\n.cu-checkbox--sm .cu-checkbox-box[data-v-fc8282b9] {\n  width: var(--cu-space-md);\n  height: var(--cu-space-md);\n}\n.cu-checkbox-box--checked[data-v-fc8282b9] {\n  background-color: var(--cb-solid);\n  border-color: var(--cb-solid);\n}\n.cu-checkbox:not(.cu-checkbox--disabled) .cu-checkbox-box[data-v-fc8282b9]:hover {\n  border-color: var(--cb-bg);\n  background-color: var(--cb-ghost-hover);\n}\n.cu-checkbox:not(.cu-checkbox--disabled) .cu-checkbox-box--checked[data-v-fc8282b9]:hover {\n  background-color: var(--cb-solid);\n}\n\n/* Anillo de foco: el input es transparente, el anillo va sobre la caja visible\n   (mismo criterio que FileInput/FileInputZone con `:focus-within`). */\n.cu-checkbox-box[data-v-fc8282b9]:focus-within {\n  outline: var(--cu-border-medium) solid var(--cu-border-color-focus);\n  outline-offset: var(--cu-space-2xs);\n}\n.cu-checkbox-icon[data-v-fc8282b9] {\n  color: var(--cb-solid-text);\n}\n.cu-checkbox-label[data-v-fc8282b9] {\n  font-family: var(--cu-font-sans);\n  color: var(--cu-color-neutral);\n}\n.cu-checkbox--md .cu-checkbox-label[data-v-fc8282b9] {\n  font-size: var(--cu-font-size-sm);\n}\n.cu-checkbox--sm .cu-checkbox-label[data-v-fc8282b9] {\n  font-size: var(--cu-font-size-xs);\n}\n.cu-checkbox--disabled .cu-checkbox-label[data-v-fc8282b9] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n}\n";
 //#endregion
 //#region \0plugin-vue:export-helper
 var _plugin_vue_export_helper_default = (sfc, props) => {
@@ -544,7 +582,7 @@ var _plugin_vue_export_helper_default = (sfc, props) => {
 };
 //#endregion
 //#region src/components/form/Checkbox.vue
-var Checkbox_default = /*#__PURE__*/ _plugin_vue_export_helper_default(Checkbox_vue_vue_type_script_setup_true_lang_default, [["styles", [Checkbox_vue_vue_type_style_index_0_inline_scoped_7b84905f_lang_default]], ["__scopeId", "data-v-7b84905f"]]);
+var Checkbox_default = /*#__PURE__*/ _plugin_vue_export_helper_default(Checkbox_vue_vue_type_script_setup_true_lang_default, [["styles", [Checkbox_vue_vue_type_style_index_0_inline_scoped_fc8282b9_lang_default]], ["__scopeId", "data-v-fc8282b9"]]);
 //#endregion
 //#region src/lib/form/checkbox.ts
 var CuCheckbox = defineComegenElement("cu-checkbox", /* @__PURE__ */ _plugin_vue_export_helper_default(/* @__PURE__ */ defineComponent({
