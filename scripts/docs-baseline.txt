@@ -16,7 +16,7 @@ button	1
 calendar	23
 card	10
 cells-importer	17
-checkbox	7
+checkbox	6
 code-block	4
 collapse	4
 color-picker	5
@@ -25,7 +25,7 @@ copy-button	0
 date-picker	31
 divider	1
 dropdown	19
-dropdown-menu	12
+dropdown-menu	11
 dual-calendar	19
 editable-table-cell	0
 file-input	9
@@ -37,6 +37,7 @@ input	9
 label	6
 loader	3
 markdown	2
+menu-option	0
 modal	13
 month-slider	10
 month-slider-label	4
@@ -45,11 +46,12 @@ navbar-horizontal	3
 navbar-list	2
 navbar-menu	0
 number-input	2
-pagination	11
+pagination	9
 popover	18
-select	21
+select	20
 side-over	10
-switch	8
+skeleton	0
+switch	7
 table	14
 tabs	8
 textarea	10
@@ -58,4 +60,4 @@ theme-manager-modal	0
 toggle-color-sheme	0
 tooltip	9
 year-slider	8
-total	452
+total	446

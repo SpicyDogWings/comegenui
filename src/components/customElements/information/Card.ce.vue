@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getCurrentInstance, type PropType } from "vue";
+import { type PropType } from "vue";
 import Card from "../../information/Card.vue";
 
 const props = defineProps({
@@ -25,19 +25,6 @@ const props = defineProps({
   /** URL de imagen que se muestra como media en la parte superior (o al costado con `layout="horizontal"`) */
   image: String,
 });
-
-const instance = getCurrentInstance();
-function ceEmit(event: string, payload: unknown) {
-  const el = instance?.vnode.el as HTMLElement | null;
-  const host = el?.getRootNode()?.host || el;
-  if (host) {
-    host.dispatchEvent(new CustomEvent(event, {
-      detail: payload,
-      bubbles: true,
-      composed: true,
-    }));
-  }
-}
 </script>
 
 <template>
@@ -48,7 +35,6 @@ function ceEmit(event: string, payload: unknown) {
     :title="props.title"
     :subtitle="props.subtitle"
     :image="props.image"
-    @click="ceEmit('click', $event)"
   >
     <template #media>
       <!-- Contenido de la parte superior (si no se usa el prop `image`). Reemplaza la imagen -->

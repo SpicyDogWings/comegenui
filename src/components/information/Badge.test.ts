@@ -53,3 +53,13 @@ describe("Badge — contenido", () => {
     expect(root(w).text()).toContain("Verificado");
   });
 });
+
+describe("Badge — color inválido", () => {
+  it("un color fuera del set cae al color seguro (la variante solid no queda invisible)", () => {
+    const w = mount(Badge, { props: { color: "sucess" as never, variant: "solid" } });
+    const style = root(w).attributes("style") ?? "";
+    expect(style).toContain("--badge-solid: var(--cu-color-neutral-solid)");
+    expect(style).toContain("--badge-text: var(--cu-color-neutral-text)");
+    expect(style).not.toContain("sucess");
+  });
+});

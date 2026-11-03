@@ -34,6 +34,13 @@ En Vue, importá `Alert` de `@/components/information/Alert.vue` (ver [ficha Vue
 
 <!-- demo:alert-colores -->
 
+> Un `color` fuera del set cae a `neutral` (el color seguro): no hay tokens para otro
+> valor y la variante `solid` quedaría sin fondo.
+
+> El rol ARIA sigue al color: `warning` y `danger` se anuncian como `alert`
+> (`aria-live="assertive"`); `primary`, `secondary`, `neutral` y `success` como `status`
+> (`aria-live="polite"`).
+
 ## Variantes
 
 `variant` decide el aspecto: `solid` (relleno), `outlined` (borde), `soft` (fondo tenue y el
@@ -102,8 +109,9 @@ ella; sin cabecera flota sobre la primera fila del cuerpo.
 
 <!-- demo:alert-cierre -->
 
-> El botón no desmonta la alerta: la **oculta** (`show` pasa a `false`) y emite `close`. Para
-> volver a mostrarla, llamá a `open()` o cambiá la prop `show` a `true`.
+> El botón no desmonta la alerta: la **oculta** y emite `close` + `update:show` con `false`.
+> La propiedad `show` del host no cambia sola: para volver a mostrarla llamá a `open()` /
+> `toggle()` o poné `show = false` y después `true`.
 
 ## Visibilidad
 

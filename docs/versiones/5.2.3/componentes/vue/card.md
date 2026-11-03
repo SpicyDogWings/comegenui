@@ -53,6 +53,9 @@ En HTML plano, cargá el bundle `CuCard` (ver [ficha vanilla](/componentes/cu-ca
 </template>
 ```
 
+> Un `color` fuera del set cae a `neutral` (el color seguro): no hay tokens para otro
+> valor y la variante `solid` quedaría sin fondo.
+
 ## Con imagen
 
 `image` agrega la media arriba del cuerpo (o al costado con `layout="horizontal"`). El slot `media` tiene prioridad sobre `image`.
@@ -119,7 +122,7 @@ visible, se posiciona contra el viewport en vez de quedar cortado. No hace falta
 
 ## Emits
 
-<!--@include: ../../partials/card/eventos-vue.md-->
+<!--@include: ../../partials/card/eventos.md-->
 
 ## Slots
 

@@ -51,8 +51,8 @@ const MUTATIONS = [
     id: "alert-close-cabecera-sin-titulo",
     file: "src/components/information/Alert.vue",
     expect: "sin título, el close no genera una cabecera propia",
-    find: `<div v-if="props.title || hasIcon" class="cu-alert-header">`,
-    replace: `<div v-if="props.title || props.close || hasIcon" class="cu-alert-header">`,
+    find: `<div v-show="hasHeader" class="cu-alert-header">`,
+    replace: `<div v-show="hasHeader || props.close" class="cu-alert-header">`,
   },
   {
     id: "input-reset-no-clear",
@@ -1966,15 +1966,15 @@ const MUTATIONS = [
     id: "badge-solid-color-crudo",
     file: "src/components/information/Badge.vue",
     expect: "badge solid usa la variante -solid de fondo",
-    find: "  '--badge-solid': `var(--cu-color-${props.color}-solid)`,",
-    replace: "  '--badge-solid': `var(--cu-color-${props.color})`,",
+    find: "  '--badge-solid': `var(--cu-color-${safeColor.value}-solid)`,",
+    replace: "  '--badge-solid': `var(--cu-color-${safeColor.value})`,",
   },
   {
     id: "alert-solid-color-crudo",
     file: "src/components/information/Alert.vue",
     expect: "alert solid usa la variante -solid de fondo",
-    find: "  '--alert-solid': `var(--cu-color-${props.color}-solid)`,",
-    replace: "  '--alert-solid': `var(--cu-color-${props.color})`,",
+    find: "  '--alert-solid': `var(--cu-color-${safeColor.value}-solid)`,",
+    replace: "  '--alert-solid': `var(--cu-color-${safeColor.value})`,",
   },
   {
     id: "token-text-no-adapta",
@@ -3365,6 +3365,91 @@ const MUTATIONS = [
     expect: "la elipsis queda fuera del árbol accesible",
     find: `<span v-if="page === '...'" class="cu-pagination-ellipsis" aria-hidden="true">...</span>`,
     replace: `<span v-if="page === '...'" class="cu-pagination-ellipsis">...</span>`,
+  },
+  {
+    id: "alert-icono-en-slot-oculto",
+    file: "src/components/information/Alert.vue",
+    expect: "el ícono se renderiza una sola vez, en el slot visible de la cabecera",
+    find: `      <div ref="iconWrap" class="cu-alert-title">
+        <slot name="icon" />`,
+    replace: `      <div ref="iconWrap" class="cu-alert-title">
+        <span style="display: none"><slot name="icon" /></span>
+        <slot name="icon" />`,
+  },
+  {
+    id: "alert-icono-sin-detectar-en-ce",
+    file: "src/components/information/Alert.vue",
+    expect: "un ícono sin título arma la cabecera en el custom element",
+    find: `    return (el as HTMLSlotElement).assignedNodes().some(nodeHasIconContent);`,
+    replace: `    return false;`,
+  },
+  {
+    id: "alert-boton-cerrar-sin-type",
+    file: "src/components/information/Alert.vue",
+    expect: "el botón de cerrar de la cabecera no envía el formulario",
+    find: `      <button
+        v-if="props.close && hasHeader"
+        type="button"`,
+    replace: `      <button
+        v-if="props.close && hasHeader"`,
+  },
+  {
+    id: "alert-boton-cerrar-flotante-sin-type",
+    file: "src/components/information/Alert.vue",
+    expect: "el botón de cerrar flotante no envía el formulario",
+    find: `    <button
+      v-if="props.close && !hasHeader"
+      type="button"`,
+    replace: `    <button
+      v-if="props.close && !hasHeader"`,
+  },
+  {
+    id: "alert-color-invalido-sin-fallback",
+    file: "src/components/information/Alert.vue",
+    expect: "un color inválido cae al color seguro",
+    find: `  '--alert-solid': \`var(--cu-color-\${safeColor.value}-solid)\`,`,
+    replace: `  '--alert-solid': \`var(--cu-color-\${props.color}-solid)\`,`,
+  },
+  {
+    id: "badge-color-invalido-sin-fallback",
+    file: "src/components/information/Badge.vue",
+    expect: "un color inválido cae al color seguro",
+    find: `  '--badge-solid': \`var(--cu-color-\${safeColor.value}-solid)\`,`,
+    replace: `  '--badge-solid': \`var(--cu-color-\${props.color}-solid)\`,`,
+  },
+  {
+    id: "card-color-invalido-sin-fallback",
+    file: "src/components/information/Card.vue",
+    expect: "un color inválido cae al color seguro",
+    find: `  '--card-solid': \`var(--cu-color-\${safeColor.value}-solid)\`,`,
+    replace: `  '--card-solid': \`var(--cu-color-\${props.color}-solid)\`,`,
+  },
+  {
+    id: "card-subtitulo-con-opacity",
+    file: "src/components/information/Card.vue",
+    test: "src/components/information/Card.contrast.test.ts",
+    expect: "el subtítulo usa un token atenuado (≥4.5:1), no opacity",
+    find: `  color: var(--card-text-muted);`,
+    replace: `  opacity: 0.75;
+  color: inherit;`,
+  },
+  {
+    id: "alert-rol-siempre-alert",
+    file: "src/components/information/Alert.vue",
+    expect: "sólo warning/danger usan role=alert; el resto es status",
+    find: `const ariaRole = computed(() => (isUrgent.value ? 'alert' : 'status'));`,
+    replace: `const ariaRole = computed(() => 'alert');`,
+  },
+  {
+    id: "card-click-redisparado",
+    file: "src/components/customElements/information/Card.ce.vue",
+    test: "src/components/information/Card.test.ts",
+    expect: "el click del contenido llega al host una sola vez",
+    find: `  <Card
+    :color="props.color"`,
+    replace: `  <Card
+    @click="(e) => e.target.getRootNode().host.dispatchEvent(new CustomEvent('click', { bubbles: true, composed: true }))"
+    :color="props.color"`,
   },
 ];
 

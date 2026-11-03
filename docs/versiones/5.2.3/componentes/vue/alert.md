@@ -37,6 +37,13 @@ En HTML plano, cargá el bundle `CuAlert` (ver [ficha vanilla](/componentes/cu-a
 <Alert color="danger" variant="soft">danger</Alert>
 ```
 
+> Un `color` fuera del set cae a `neutral` (el color seguro): no hay tokens para otro
+> valor y la variante `solid` quedaría sin fondo.
+
+> El rol ARIA sigue al color: `warning` y `danger` se anuncian como `alert`
+> (`aria-live="assertive"`); `primary`, `secondary`, `neutral` y `success` como `status`
+> (`aria-live="polite"`).
+
 ## Variantes
 
 `variant` decide el aspecto: `solid` (relleno), `outlined` (borde), `soft` (fondo tenue y el
@@ -99,8 +106,9 @@ ella; sin cabecera flota sobre la primera fila del cuerpo.
 <Alert color="neutral" variant="soft">Sin `close` no hay botón de cierre.</Alert>
 ```
 
-> El botón no desmonta la alerta: la **oculta** (`show` pasa a `false`) y emite `close`. Para
-> volver a mostrarla, llamá a `open()` o poné `show` en `true`.
+> El botón no desmonta la alerta: la **oculta** y emite `close` + `update:show` con `false`.
+> Con `v-model:show` la prop queda sincronizada sola; sin `v-model` usá `open()` / `toggle()`
+> (o poné `show` en `false` y después en `true`) para mostrarla de nuevo.
 
 ## Visibilidad
 

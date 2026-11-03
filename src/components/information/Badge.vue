@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, type PropType } from "vue";
-import { isVariant } from '@/utils/validators'
+import { isColor, isVariant } from '@/utils/validators'
 
 const props = defineProps({
   /** Color semántico: `primary`, `neutral`, `success`, `warning`, `danger` */
@@ -8,6 +8,7 @@ const props = defineProps({
     type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>,
     required: false,
     default: "neutral",
+    validator: isColor,
   },
   /** `solid`, `outlined`, `soft`, `ghost`, `subtle` */
   variant: {
@@ -18,16 +19,20 @@ const props = defineProps({
   },
 });
 
+/** Un color fuera del set no tiene tokens: la variante solid quedaría sin fondo
+ *  y con el texto del tema encima (invisible). Cae al color seguro. */
+const safeColor = computed(() => (isColor(props.color) ? props.color : 'neutral'));
+
 const badgeStyles = computed(() => ({
-  '--badge-solid': `var(--cu-color-${props.color}-solid)`,
-  '--badge-border': `var(--cu-color-${props.color}-border)`,
+  '--badge-solid': `var(--cu-color-${safeColor.value}-solid)`,
+  '--badge-border': `var(--cu-color-${safeColor.value}-border)`,
   '--badge-solid-text': `var(--cu-color-surface)`,
-  '--badge-text': `var(--cu-color-${props.color}-text)`,
-  '--badge-soft': `var(--cu-color-${props.color}-soft)`,
-  '--badge-soft-hover': `var(--cu-color-${props.color}-soft-hover)`,
-  '--badge-ghost-hover': `var(--cu-color-${props.color}-ghost-hover)`,
-  '--badge-subtle': `var(--cu-color-${props.color}-subtle)`,
-  '--badge-subtle-border': `var(--cu-color-${props.color}-subtle-border)`,
+  '--badge-text': `var(--cu-color-${safeColor.value}-text)`,
+  '--badge-soft': `var(--cu-color-${safeColor.value}-soft)`,
+  '--badge-soft-hover': `var(--cu-color-${safeColor.value}-soft-hover)`,
+  '--badge-ghost-hover': `var(--cu-color-${safeColor.value}-ghost-hover)`,
+  '--badge-subtle': `var(--cu-color-${safeColor.value}-subtle)`,
+  '--badge-subtle-border': `var(--cu-color-${safeColor.value}-subtle-border)`,
 }));
 </script>
 

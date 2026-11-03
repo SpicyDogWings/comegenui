@@ -35,6 +35,9 @@ En HTML plano, cargá el bundle `CuBadge` (ver [ficha vanilla](/componentes/cu-b
 <Badge color="danger" variant="soft">danger</Badge>
 ```
 
+> Un `color` fuera del set cae a `neutral` (el color seguro): no hay tokens para otro
+> valor y la variante `solid` quedaría sin fondo.
+
 ## Variantes
 
 `variant` decide el aspecto: `solid` (relleno), `outlined` (borde), `soft` (fondo tenue y el
