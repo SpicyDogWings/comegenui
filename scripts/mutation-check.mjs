@@ -609,11 +609,54 @@ const MUTATIONS = [
     file: "src/components/form/ColorPicker.vue",
     expect: "el campo de texto solo confirma un hex válido",
     find: `  if (/^#[0-9a-fA-F]{6}$/.test(hex)) {
-    value.value = hex;
+    commitValue(hex);
     emit("change", hex);
   }`,
     replace: `  value.value = hex;
   emit("change", hex);`,
+  },
+  {
+    id: "color-picker-metodos-con-valor-viejo",
+    file: "src/components/form/ColorPicker.vue",
+    expect: "set()/get()/reset() ven el valor nuevo en el mismo tick (host con v-model)",
+    find: `function commitValue(next: string) {
+  current.value = next;
+  if (next !== value.value) value.value = next;
+}`,
+    replace: `function commitValue(next: string) {
+  if (next !== value.value) value.value = next;
+}`,
+  },
+  {
+    id: "color-picker-swatch-sin-nombre",
+    file: "src/components/form/ColorPicker.vue",
+    expect: "el swatch es un botón con nombre accesible",
+    find: `      class="cu-color-picker-swatch"
+      aria-label="Elegir color"`,
+    replace: `      class="cu-color-picker-swatch"`,
+  },
+  {
+    id: "color-picker-picker-nativo-expuesto",
+    file: "src/components/form/ColorPicker.vue",
+    expect: "el picker nativo queda fuera del árbol de accesibilidad",
+    find: `      aria-hidden="true"
+`,
+    replace: ``,
+  },
+  {
+    id: "color-picker-swatch-no-abre-picker",
+    file: "src/components/form/ColorPicker.vue",
+    expect: "el click en el swatch abre el picker nativo",
+    find: `  pickerRef.value?.click();`,
+    replace: `  /* mutado */`,
+  },
+  {
+    id: "color-picker-swatch-disabled-ignorado",
+    file: "src/components/form/ColorPicker.vue",
+    expect: "con disabled el swatch queda deshabilitado (no abre el picker)",
+    find: `      @click="onSwatchClick"
+      :disabled="disabled"`,
+    replace: `      @click="onSwatchClick"`,
   },
   {
     id: "file-input-accept-ignored",
@@ -1275,7 +1318,7 @@ const MUTATIONS = [
     id: "number-input-max-sin-deshabilitar",
     file: "src/components/form/NumberInput.vue",
     expect: "en el máximo el botón + queda deshabilitado",
-    find: `  () => maxValue.value !== undefined && value.value !== null && value.value >= maxValue.value,`,
+    find: `  () => maxValue.value !== undefined && current.value !== null && current.value >= maxValue.value,`,
     replace: `  () => false,`,
   },
   {
@@ -1299,7 +1342,7 @@ const MUTATIONS = [
     id: "number-input-tipeo-no-actualiza",
     file: "src/components/form/NumberInput.vue",
     expect: "tipear actualiza el valor y emite update:modelValue",
-    find: `  if (next !== value.value) value.value = next;
+    find: `  if (next !== current.value) commitValue(next);
 }
 
 /** Confirma el texto (Enter o blur) y emite \`change\` si hubo edición. */`,
@@ -1356,11 +1399,23 @@ const MUTATIONS = [
 }`,
   },
   {
-    id: "number-input-paso-ignorado",
+    id: "number-input-metodos-con-valor-viejo",
     file: "src/components/form/NumberInput.vue",
-    expect: "el paso elegido en el select define cuánto suman/restan botones y flechas",
-    find: `  if (next !== undefined && next > 0) activeStep.value = next;`,
-    replace: `  if (next !== undefined && next > 0) void next;`,
+    expect: "set()/get()/increment() ven el valor nuevo en el mismo tick (host con v-model)",
+    find: `function commitValue(next: number | null) {
+  current.value = next;
+  if (next !== value.value) value.value = next;
+}`,
+    replace: `function commitValue(next: number | null) {
+  if (next !== value.value) value.value = next;
+}`,
+  },
+  {
+    id: "number-input-paso-exponencial-ignorado",
+    file: "src/components/form/NumberInput.vue",
+    expect: "un paso por debajo de 1e-6 (notación exponencial) también suma",
+    find: `  const [mantissa = '', exponent] = String(next).split('e');`,
+    replace: `  const [mantissa = '', exponent] = [String(next), undefined];`,
   },
   {
     id: "label-slot-no-enfoca",

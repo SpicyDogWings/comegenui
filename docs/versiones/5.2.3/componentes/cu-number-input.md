@@ -177,9 +177,9 @@ valor nuevo.
 
 <!-- demo:number-input-cambios -->
 
-> El `<input>` interno también burbujea sus eventos nativos (`input`, `focus`, `blur`); el
-> `change` nativo se detiene para no pisar el `change` del componente, que es el que lleva el
-> valor en `e.detail`.
+> El `<input>` interno deja pasar sus eventos nativos `input` y `focus` al host; el `blur`
+> nativo no cruza el shadow DOM (para confirmar el valor está `change`). El `change` nativo se
+> detiene para no pisar el `change` del componente, que es el que lleva el valor en `e.detail`.
 
 ## API imperativa
 

@@ -1,4 +1,4 @@
-// Comportamiento de NumberInput según sus fichas (docs/versiones/5.2.0/componentes/…).
+// Comportamiento de NumberInput según sus fichas (docs/versiones/5.2.3/componentes/…).
 //
 // Aserciones escritas a mano desde la prosa: por eso pueden fallar por un bug real
 // (ver scripts/mutation-check.mjs).
@@ -420,5 +420,72 @@ describe("NumberInput — apariencia", () => {
   it("propaga el placeholder al campo", () => {
     const w = mount(NumberInput, { props: { placeholder: "Cantidad" } });
     expect(field(w).attributes("placeholder")).toBe("Cantidad");
+  });
+});
+
+// El host re-renderiza en el tick siguiente: con `v-model` (o desde el custom
+// element, que espeja el valor) la prop vuelve después. Los métodos tienen que
+// ver el valor ya, como en el ejemplo de la ficha (`set(4)` → `increment()` → 5).
+describe("NumberInput — API imperativa con v-model", () => {
+  function mountControlled() {
+    const Host = defineComponent({
+      components: { NumberInput },
+      setup() {
+        const value = ref<number | null>(null);
+        return { value };
+      },
+      template: `<NumberInput v-model="value" :min="0" :max="100" />`,
+    });
+    const w = mount(Host);
+    return { w, api: () => w.findComponent(NumberInput).vm as unknown as NumberInputVm };
+  }
+
+  it("set() se ve en get() en el mismo tick", () => {
+    const { api } = mountControlled();
+
+    api().set(4);
+
+    expect(api().get()).toBe(4);
+  });
+
+  it("set() + increment()/decrement() encadenados parten del valor nuevo", () => {
+    const { api } = mountControlled();
+
+    api().set(4);
+    api().increment();
+    expect(api().get()).toBe(5);
+
+    api().decrement();
+    expect(api().get()).toBe(4);
+  });
+
+  it("set() fuera de rango queda clampeado también para los métodos encadenados", () => {
+    const { api } = mountControlled();
+
+    api().set(999);
+    expect(api().get()).toBe(100);
+
+    api().increment();
+    expect(api().get()).toBe(100);
+  });
+});
+
+describe("NumberInput — precisión del paso", () => {
+  it("un paso decimal no arrastra polvo de coma flotante", async () => {
+    const w = mount(NumberInput, { props: { modelValue: 0.2, step: 0.1 } });
+
+    vm(w).increment();
+    await flushPromises();
+
+    expect(vm(w).get()).toBe(0.3);
+  });
+
+  it("un paso menor a 1e-6 (notación exponencial) también suma", async () => {
+    const w = mount(NumberInput, { props: { modelValue: 0, step: 0.0000001 } });
+
+    vm(w).increment();
+    await flushPromises();
+
+    expect(vm(w).get()).toBe(0.0000001);
   });
 });
