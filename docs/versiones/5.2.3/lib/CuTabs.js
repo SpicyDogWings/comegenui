@@ -2661,6 +2661,89 @@ function createDOMPurify() {
 }
 var purify = createDOMPurify();
 //#endregion
+//#region src/utils/sanitizeIcon.ts
+/** Elementos de dibujo SVG permitidos dentro de un `icon`. */
+var ICON_TAGS = [
+	"svg",
+	"g",
+	"path",
+	"circle",
+	"ellipse",
+	"rect",
+	"line",
+	"polyline",
+	"polygon",
+	"defs",
+	"linearGradient",
+	"radialGradient",
+	"stop",
+	"clipPath",
+	"mask",
+	"title",
+	"desc"
+];
+/** Atributos presentacionales de esos elementos (sin `style` ni referencias externas). */
+var ICON_ATTRS = [
+	"class",
+	"id",
+	"role",
+	"xmlns",
+	"viewBox",
+	"preserveAspectRatio",
+	"width",
+	"height",
+	"x",
+	"y",
+	"x1",
+	"x2",
+	"y1",
+	"y2",
+	"cx",
+	"cy",
+	"r",
+	"rx",
+	"ry",
+	"d",
+	"points",
+	"fill",
+	"fill-opacity",
+	"fill-rule",
+	"clip-rule",
+	"stroke",
+	"stroke-width",
+	"stroke-linecap",
+	"stroke-linejoin",
+	"stroke-miterlimit",
+	"stroke-dasharray",
+	"stroke-dashoffset",
+	"stroke-opacity",
+	"opacity",
+	"transform",
+	"offset",
+	"stop-color",
+	"stop-opacity",
+	"gradientUnits",
+	"gradientTransform",
+	"clipPathUnits",
+	"maskUnits",
+	"aria-hidden",
+	"aria-label",
+	"focusable"
+];
+/**
+* Sanitiza el HTML de un icono dejando sólo SVG inline. Devuelve `undefined` sin icono
+* y `''` cuando el HTML no contiene nada válido: el `v-if` del consumidor no pinta
+* wrappers vacíos.
+*/
+function sanitizeIcon(html) {
+	if (!html) return void 0;
+	return purify.sanitize(html, {
+		ALLOWED_TAGS: ICON_TAGS,
+		ALLOWED_ATTR: ICON_ATTRS,
+		KEEP_CONTENT: false
+	});
+}
+//#endregion
 //#region src/utils/validators.ts
 /** Set cerrado de strings: devuelve un type-guard listo para `validator`. */
 function oneOf(values) {
@@ -2890,7 +2973,6 @@ var Tabs_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineCompo
 	emits: /*@__PURE__*/ mergeModels(["change"], ["update:modelValue"]),
 	setup(__props, { expose: __expose, emit: __emit }) {
 		const props = __props;
-		const sanitizeIcon = (html) => html ? purify.sanitize(html) : void 0;
 		const tabList = computed(() => {
 			return (Array.isArray(props.tabs) ? props.tabs : []).filter((t) => !!t && typeof t === "object" && typeof t.key === "string" && t.key.length > 0).map((t) => ({
 				...t,
@@ -3059,8 +3141,8 @@ var Tabs_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineCompo
 	}
 });
 //#endregion
-//#region src/components/Tabs.vue?vue&type=style&index=0&inline&scoped=3a652bb1&lang.css
-var Tabs_vue_vue_type_style_index_0_inline_scoped_3a652bb1_lang_default = "\n.cu-tabs[data-v-3a652bb1] {\n  box-sizing: border-box;\n  font-family: var(--cu-font-sans);\n}\n.cu-tabs-header[data-v-3a652bb1] {\n  display: flex;\n  gap: var(--cu-space-2xs);\n  box-sizing: border-box;\n  /* Muchas tabs en un contenedor angosto: el tablist mantiene UNA fila y\n     scrollea en horizontal en vez de desbordar la caja del componente. Las\n     tabs no se aplastan (`flex: 0 0 auto`): conservan su ancho mínimo de\n     contenido y el scroll queda en el header. */\n  flex-wrap: nowrap;\n  overflow-x: auto;\n  scrollbar-width: thin;\n  scrollbar-color: var(--cu-border-color) transparent;\n}\n.cu-tabs-tab[data-v-3a652bb1] {\n  background: transparent;\n  border: none;\n  cursor: pointer;\n  font-family: inherit;\n  font-weight: var(--cu-font-weight-medium);\n  color: var(--cu-color-neutral);\n  transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;\n  box-sizing: border-box;\n  white-space: nowrap;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--cu-space-xs);\n  flex: 0 0 auto;\n}\n.cu-tabs-tab[data-v-3a652bb1]:hover:not(:disabled) {\n  color: var(--tabs-text);\n}\n\n/* El icono hereda el color del tab (default/hover/active). Se encadena\n   .cu-tabs-tab para ganar especificidad frente a reglas del huésped tipo\n   `.playground :is(span)` (0,2,1): scoped esto compila a 0,3,0. */\n.cu-tabs-tab .cu-tabs-tab-icon[data-v-3a652bb1] {\n  color: inherit;\n  display: inline-flex;\n  align-items: center;\n}\n\n/* :deep() para alcanzar el svg inyectado via v-html (no lleva data-v scoped) */\n.cu-tabs-tab-icon[data-v-3a652bb1] svg {\n  color: inherit;\n  width: 1em;\n  height: 1em;\n}\n.cu-tabs-tab[data-v-3a652bb1]:focus-visible {\n  outline: var(--cu-border-thin) solid var(--cu-border-color-focus);\n  outline-offset: var(--cu-space-2xs);\n}\n.cu-tabs-tab[data-v-3a652bb1]:disabled {\n  color: var(--cu-color-neutral-text-muted);\n  cursor: not-allowed;\n}\n\n/* Sizes */\n.cu-tabs--sm .cu-tabs-tab[data-v-3a652bb1] {\n  padding: var(--cu-space-xs) var(--cu-space-sm);\n  font-size: var(--cu-font-size-xs);\n}\n.cu-tabs--md .cu-tabs-tab[data-v-3a652bb1] {\n  padding: var(--cu-space-sm) var(--cu-space-md);\n  font-size: var(--cu-font-size-sm);\n}\n.cu-tabs--lg .cu-tabs-tab[data-v-3a652bb1] {\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  font-size: var(--cu-font-size-md);\n}\n\n/* Variant: ghost (underline) */\n.cu-tabs--ghost .cu-tabs-header[data-v-3a652bb1] {\n  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);\n}\n.cu-tabs--ghost .cu-tabs-tab[data-v-3a652bb1] {\n  border-bottom: var(--cu-border-thin) solid transparent;\n  border-radius: var(--cu-radius-sm) var(--cu-radius-sm) 0 0;\n  margin-bottom: calc(var(--cu-border-thin) * -1);\n}\n.cu-tabs--ghost .cu-tabs-tab--active[data-v-3a652bb1] {\n  color: var(--tabs-text);\n  border-bottom-color: var(--tabs-text);\n}\n\n/* Variant: solid */\n.cu-tabs--solid .cu-tabs-header[data-v-3a652bb1] {\n  padding-bottom: var(--cu-space-xs);\n}\n.cu-tabs--solid .cu-tabs-tab[data-v-3a652bb1] {\n  border-radius: calc(var(--cu-radius-md) - var(--cu-space-2xs));\n}\n.cu-tabs--solid .cu-tabs-tab[data-v-3a652bb1]:hover:not(:disabled) {\n  background-color: var(--tabs-soft-hover);\n}\n.cu-tabs--solid .cu-tabs-tab.cu-tabs-tab--active[data-v-3a652bb1] {\n  background-color: var(--tabs-solid);\n  color: var(--tabs-solid-text);\n}\n.cu-tabs--solid .cu-tabs-tab.cu-tabs-tab--active[data-v-3a652bb1]:hover:not(:disabled) {\n  background-color: var(--tabs-solid);\n  color: var(--tabs-solid-text);\n}\n\n/* Variant: boxed */\n.cu-tabs--boxed .cu-tabs-header[data-v-3a652bb1] {\n  border: var(--cu-border-thin) solid var(--cu-border-color);\n  border-radius: var(--cu-radius-md);\n  background-color: var(--cu-color-surface);\n  padding: var(--cu-space-2xs);\n}\n.cu-tabs--boxed .cu-tabs-tab[data-v-3a652bb1] {\n  border-radius: calc(var(--cu-radius-md) - var(--cu-space-2xs));\n}\n.cu-tabs--boxed .cu-tabs-tab[data-v-3a652bb1]:hover:not(:disabled) {\n  background-color: var(--tabs-soft-hover);\n}\n.cu-tabs--boxed .cu-tabs-tab.cu-tabs-tab--active[data-v-3a652bb1] {\n  background-color: var(--tabs-solid);\n  color: var(--tabs-solid-text);\n}\n.cu-tabs--boxed .cu-tabs-tab.cu-tabs-tab--active[data-v-3a652bb1]:hover:not(:disabled) {\n  background-color: var(--tabs-solid);\n  color: var(--tabs-solid-text);\n}\n\n/* Variant: soft (soft container box + solid active) */\n.cu-tabs--soft .cu-tabs-header[data-v-3a652bb1] {\n  border: none;\n  border-radius: var(--cu-radius-md);\n  background-color: var(--tabs-soft);\n  padding: var(--cu-space-xs);\n}\n.cu-tabs--soft .cu-tabs-tab[data-v-3a652bb1] {\n  border-radius: calc(var(--cu-radius-md) - var(--cu-space-2xs));\n}\n.cu-tabs--soft .cu-tabs-tab[data-v-3a652bb1]:hover:not(:disabled) {\n  background-color: var(--tabs-soft-hover);\n}\n.cu-tabs--soft .cu-tabs-tab.cu-tabs-tab--active[data-v-3a652bb1] {\n  background-color: var(--tabs-solid);\n  color: var(--tabs-solid-text);\n}\n.cu-tabs--soft .cu-tabs-tab.cu-tabs-tab--active[data-v-3a652bb1]:hover:not(:disabled) {\n  background-color: var(--tabs-solid);\n  color: var(--tabs-solid-text);\n}\n.cu-tabs-panel[data-v-3a652bb1] {\n  padding-top: var(--cu-space-md);\n  font-size: var(--cu-font-size-md);\n}\n.cu-tabs--disabled[data-v-3a652bb1] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n}\n";
+//#region src/components/Tabs.vue?vue&type=style&index=0&inline&scoped=a5e2002c&lang.css
+var Tabs_vue_vue_type_style_index_0_inline_scoped_a5e2002c_lang_default = "\n.cu-tabs[data-v-a5e2002c] {\n  box-sizing: border-box;\n  font-family: var(--cu-font-sans);\n}\n.cu-tabs-header[data-v-a5e2002c] {\n  display: flex;\n  gap: var(--cu-space-2xs);\n  box-sizing: border-box;\n  /* Muchas tabs en un contenedor angosto: el tablist mantiene UNA fila y\n     scrollea en horizontal en vez de desbordar la caja del componente. Las\n     tabs no se aplastan (`flex: 0 0 auto`): conservan su ancho mínimo de\n     contenido y el scroll queda en el header. */\n  flex-wrap: nowrap;\n  overflow-x: auto;\n  scrollbar-width: thin;\n  scrollbar-color: var(--cu-border-color) transparent;\n}\n.cu-tabs-tab[data-v-a5e2002c] {\n  background: transparent;\n  border: none;\n  cursor: pointer;\n  font-family: inherit;\n  font-weight: var(--cu-font-weight-medium);\n  color: var(--cu-color-neutral);\n  transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;\n  box-sizing: border-box;\n  white-space: nowrap;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--cu-space-xs);\n  flex: 0 0 auto;\n}\n.cu-tabs-tab[data-v-a5e2002c]:hover:not(:disabled) {\n  color: var(--tabs-text);\n}\n\n/* El icono hereda el color del tab (default/hover/active). Se encadena\n   .cu-tabs-tab para ganar especificidad frente a reglas del huésped tipo\n   `.playground :is(span)` (0,2,1): scoped esto compila a 0,3,0. */\n.cu-tabs-tab .cu-tabs-tab-icon[data-v-a5e2002c] {\n  color: inherit;\n  display: inline-flex;\n  align-items: center;\n}\n\n/* :deep() para alcanzar el svg inyectado via v-html (no lleva data-v scoped) */\n.cu-tabs-tab-icon[data-v-a5e2002c] svg {\n  color: inherit;\n  width: 1em;\n  height: 1em;\n}\n.cu-tabs-tab[data-v-a5e2002c]:focus-visible {\n  outline: var(--cu-border-thin) solid var(--cu-border-color-focus);\n  outline-offset: var(--cu-space-2xs);\n}\n.cu-tabs-tab[data-v-a5e2002c]:disabled {\n  color: var(--cu-color-neutral-text-muted);\n  cursor: not-allowed;\n}\n\n/* Sizes */\n.cu-tabs--sm .cu-tabs-tab[data-v-a5e2002c] {\n  padding: var(--cu-space-xs) var(--cu-space-sm);\n  font-size: var(--cu-font-size-xs);\n}\n.cu-tabs--md .cu-tabs-tab[data-v-a5e2002c] {\n  padding: var(--cu-space-sm) var(--cu-space-md);\n  font-size: var(--cu-font-size-sm);\n}\n.cu-tabs--lg .cu-tabs-tab[data-v-a5e2002c] {\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  font-size: var(--cu-font-size-md);\n}\n\n/* Variant: ghost (underline) */\n.cu-tabs--ghost .cu-tabs-header[data-v-a5e2002c] {\n  border-bottom: var(--cu-border-thin) solid var(--cu-border-color);\n}\n.cu-tabs--ghost .cu-tabs-tab[data-v-a5e2002c] {\n  border-bottom: var(--cu-border-thin) solid transparent;\n  border-radius: var(--cu-radius-sm) var(--cu-radius-sm) 0 0;\n  margin-bottom: calc(var(--cu-border-thin) * -1);\n}\n.cu-tabs--ghost .cu-tabs-tab--active[data-v-a5e2002c] {\n  color: var(--tabs-text);\n  border-bottom-color: var(--tabs-text);\n}\n\n/* Variant: solid */\n.cu-tabs--solid .cu-tabs-header[data-v-a5e2002c] {\n  padding-bottom: var(--cu-space-xs);\n}\n.cu-tabs--solid .cu-tabs-tab[data-v-a5e2002c] {\n  border-radius: calc(var(--cu-radius-md) - var(--cu-space-2xs));\n}\n.cu-tabs--solid .cu-tabs-tab[data-v-a5e2002c]:hover:not(:disabled) {\n  background-color: var(--tabs-soft-hover);\n}\n.cu-tabs--solid .cu-tabs-tab.cu-tabs-tab--active[data-v-a5e2002c] {\n  background-color: var(--tabs-solid);\n  color: var(--tabs-solid-text);\n}\n.cu-tabs--solid .cu-tabs-tab.cu-tabs-tab--active[data-v-a5e2002c]:hover:not(:disabled) {\n  background-color: var(--tabs-solid);\n  color: var(--tabs-solid-text);\n}\n\n/* Variant: boxed */\n.cu-tabs--boxed .cu-tabs-header[data-v-a5e2002c] {\n  border: var(--cu-border-thin) solid var(--cu-border-color);\n  border-radius: var(--cu-radius-md);\n  background-color: var(--cu-color-surface);\n  padding: var(--cu-space-2xs);\n}\n.cu-tabs--boxed .cu-tabs-tab[data-v-a5e2002c] {\n  border-radius: calc(var(--cu-radius-md) - var(--cu-space-2xs));\n}\n.cu-tabs--boxed .cu-tabs-tab[data-v-a5e2002c]:hover:not(:disabled) {\n  background-color: var(--tabs-soft-hover);\n}\n.cu-tabs--boxed .cu-tabs-tab.cu-tabs-tab--active[data-v-a5e2002c] {\n  background-color: var(--tabs-solid);\n  color: var(--tabs-solid-text);\n}\n.cu-tabs--boxed .cu-tabs-tab.cu-tabs-tab--active[data-v-a5e2002c]:hover:not(:disabled) {\n  background-color: var(--tabs-solid);\n  color: var(--tabs-solid-text);\n}\n\n/* Variant: soft (soft container box + solid active) */\n.cu-tabs--soft .cu-tabs-header[data-v-a5e2002c] {\n  border: none;\n  border-radius: var(--cu-radius-md);\n  background-color: var(--tabs-soft);\n  padding: var(--cu-space-xs);\n}\n.cu-tabs--soft .cu-tabs-tab[data-v-a5e2002c] {\n  border-radius: calc(var(--cu-radius-md) - var(--cu-space-2xs));\n}\n.cu-tabs--soft .cu-tabs-tab[data-v-a5e2002c]:hover:not(:disabled) {\n  background-color: var(--tabs-soft-hover);\n}\n.cu-tabs--soft .cu-tabs-tab.cu-tabs-tab--active[data-v-a5e2002c] {\n  background-color: var(--tabs-solid);\n  color: var(--tabs-solid-text);\n}\n.cu-tabs--soft .cu-tabs-tab.cu-tabs-tab--active[data-v-a5e2002c]:hover:not(:disabled) {\n  background-color: var(--tabs-solid);\n  color: var(--tabs-solid-text);\n}\n.cu-tabs-panel[data-v-a5e2002c] {\n  padding-top: var(--cu-space-md);\n  font-size: var(--cu-font-size-md);\n}\n.cu-tabs--disabled[data-v-a5e2002c] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n}\n";
 //#endregion
 //#region \0plugin-vue:export-helper
 var _plugin_vue_export_helper_default = (sfc, props) => {
@@ -3070,7 +3152,7 @@ var _plugin_vue_export_helper_default = (sfc, props) => {
 };
 //#endregion
 //#region src/components/Tabs.vue
-var Tabs_default = /*#__PURE__*/ _plugin_vue_export_helper_default(Tabs_vue_vue_type_script_setup_true_lang_default, [["styles", [Tabs_vue_vue_type_style_index_0_inline_scoped_3a652bb1_lang_default]], ["__scopeId", "data-v-3a652bb1"]]);
+var Tabs_default = /*#__PURE__*/ _plugin_vue_export_helper_default(Tabs_vue_vue_type_script_setup_true_lang_default, [["styles", [Tabs_vue_vue_type_style_index_0_inline_scoped_a5e2002c_lang_default]], ["__scopeId", "data-v-a5e2002c"]]);
 //#endregion
 //#region src/lib/tabs.ts
 var CuTabs = defineComegenElement("cu-tabs", /* @__PURE__ */ _plugin_vue_export_helper_default(/* @__PURE__ */ defineComponent({

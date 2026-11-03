@@ -38,8 +38,9 @@ En HTML plano, cargá el bundle `CuNavbar` (ver [ficha vanilla](/componentes/cu-
 
 `items` es la estructura de navegación (es el único prop requerido):
 
-> El HTML del `icon` se sanitiza con **DOMPurify** antes de inyectarse: los SVG válidos se
-> conservan y se eliminan `<script>`, handlers `on*` y URLs peligrosas.
+> El HTML del `icon` se sanitiza con un **allowlist de SVG inline** antes de inyectarse: se
+> conservan los elementos de dibujo SVG con sus atributos presentacionales y se eliminan
+> `<script>`, handlers `on*`, `<a>`, `<img>`, `<foreignObject>`, `<use>`/`href` y `<style>`.
 
 Un `path` con esquema ejecutable (`javascript:`, `vbscript:`, `data:`, incluso ofuscado con
 espacios o controles como `java\tscript:`) no navega: en los flyouts del modo compacto el item

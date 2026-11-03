@@ -4593,6 +4593,89 @@ function useUniqueId(prefix) {
 	return `${prefix}-${useId()}-${++sequence}`;
 }
 //#endregion
+//#region src/utils/sanitizeIcon.ts
+/** Elementos de dibujo SVG permitidos dentro de un `icon`. */
+var ICON_TAGS = [
+	"svg",
+	"g",
+	"path",
+	"circle",
+	"ellipse",
+	"rect",
+	"line",
+	"polyline",
+	"polygon",
+	"defs",
+	"linearGradient",
+	"radialGradient",
+	"stop",
+	"clipPath",
+	"mask",
+	"title",
+	"desc"
+];
+/** Atributos presentacionales de esos elementos (sin `style` ni referencias externas). */
+var ICON_ATTRS = [
+	"class",
+	"id",
+	"role",
+	"xmlns",
+	"viewBox",
+	"preserveAspectRatio",
+	"width",
+	"height",
+	"x",
+	"y",
+	"x1",
+	"x2",
+	"y1",
+	"y2",
+	"cx",
+	"cy",
+	"r",
+	"rx",
+	"ry",
+	"d",
+	"points",
+	"fill",
+	"fill-opacity",
+	"fill-rule",
+	"clip-rule",
+	"stroke",
+	"stroke-width",
+	"stroke-linecap",
+	"stroke-linejoin",
+	"stroke-miterlimit",
+	"stroke-dasharray",
+	"stroke-dashoffset",
+	"stroke-opacity",
+	"opacity",
+	"transform",
+	"offset",
+	"stop-color",
+	"stop-opacity",
+	"gradientUnits",
+	"gradientTransform",
+	"clipPathUnits",
+	"maskUnits",
+	"aria-hidden",
+	"aria-label",
+	"focusable"
+];
+/**
+* Sanitiza el HTML de un icono dejando sólo SVG inline. Devuelve `undefined` sin icono
+* y `''` cuando el HTML no contiene nada válido: el `v-if` del consumidor no pinta
+* wrappers vacíos.
+*/
+function sanitizeIcon(html) {
+	if (!html) return void 0;
+	return purify.sanitize(html, {
+		ALLOWED_TAGS: ICON_TAGS,
+		ALLOWED_ATTR: ICON_ATTRS,
+		KEEP_CONTENT: false
+	});
+}
+//#endregion
 //#region src/composables/useMenuNavigation.ts
 /** Texto comparable del typeahead (sin acentos ni mayúsculas). */
 function foldMenuText(value) {
@@ -5494,7 +5577,6 @@ var Dropdown_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 	}),
 	emits: /*@__PURE__*/ mergeModels(["open", "close"], ["update:modelValue"]),
 	setup(__props, { expose: __expose, emit: __emit }) {
-		const sanitizeIcon = (html) => html ? purify.sanitize(html) : void 0;
 		const props = __props;
 		/** Valor seleccionado (v-model). */
 		const selectedValue = useModel(__props, "modelValue");
@@ -5658,7 +5740,7 @@ var Dropdown_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 					__props.icon ? (openBlock(), createElementBlock("span", {
 						key: 0,
 						class: "cu-dropdown-menu-item-icon",
-						innerHTML: sanitizeIcon(__props.icon)
+						innerHTML: unref(sanitizeIcon)(__props.icon)
 					}, null, 8, _hoisted_2$10)) : createCommentVNode("v-if", true),
 					createElementVNode("span", _hoisted_3$6, toDisplayString(__props.label || "Submenú"), 1),
 					createVNode(LucideChevronRight_default, {
@@ -5709,7 +5791,7 @@ var Dropdown_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 						}, [item.icon ? (openBlock(), createElementBlock("span", {
 							key: 0,
 							class: "cu-dropdown-menu-item-icon",
-							innerHTML: sanitizeIcon(item.icon)
+							innerHTML: unref(sanitizeIcon)(item.icon)
 						}, null, 8, _hoisted_6$4)) : createCommentVNode("v-if", true), createElementVNode("span", _hoisted_7$3, toDisplayString(item.label), 1)], 10, _hoisted_5$4)) : (openBlock(), createElementBlock("button", {
 							key: 2,
 							type: "button",
@@ -5721,7 +5803,7 @@ var Dropdown_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 						}, [item.icon ? (openBlock(), createElementBlock("span", {
 							key: 0,
 							class: "cu-dropdown-menu-item-icon",
-							innerHTML: sanitizeIcon(item.icon)
+							innerHTML: unref(sanitizeIcon)(item.icon)
 						}, null, 8, _hoisted_9$1)) : createCommentVNode("v-if", true), createElementVNode("span", _hoisted_10$1, toDisplayString(item.label), 1)], 10, _hoisted_8$1))], 64);
 					}), 128)), renderSlot(_ctx.$slots, "default", {}, void 0, true)], 64)) : createCommentVNode("v-if", true)
 				]),
@@ -5741,7 +5823,7 @@ var Dropdown_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 			]);
 		};
 	}
-}), [["styles", ["\n/* El wrapper: el motor (position/display) lo aporta .cu-popover. Acá solo\n   ajustes específicos del dropdown sobre el panel del Popover. */\n.cu-dropdown[data-v-09c3c9b8] .cu-dropdown-panel--loading {\n  pointer-events: none;\n}\n\n/* Dropdown anidado: ocupa el ancho de la fila del menú padre y el panel en\n   cascada es más angosto (auto) */\n.cu-dropdown.cu-dropdown--nested[data-v-09c3c9b8] {\n  display: block;\n  width: 100%;\n  --cu-popover-width: auto;\n  --cu-popover-min-width: 160px;\n}\n.cu-dropdown-panel--nested[data-v-09c3c9b8] {\n  padding: var(--cu-space-2xs);\n}\n\n/* Item de menú nativo (hojas + trigger de submenú anidado) */\n.cu-dropdown-menu-item[data-v-09c3c9b8] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--cu-space-md);\n  width: 100%;\n  padding: var(--cu-space-sm) var(--cu-space-md);\n  box-sizing: border-box;\n  background: transparent;\n  border: none;\n  cursor: pointer;\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  color: var(--cu-color-neutral);\n  text-decoration: none;\n  border-radius: var(--cu-radius-sm);\n  transition: background-color 150ms ease;\n}\n.cu-dropdown-menu-item[data-v-09c3c9b8]:hover:not(.cu-dropdown-menu-item--disabled) {\n  background-color: var(--cu-color-neutral-ghost-hover);\n}\n.cu-dropdown-menu-item--disabled[data-v-09c3c9b8] {\n  color: var(--cu-color-neutral-text-muted);\n  cursor: not-allowed;\n}\n.cu-dropdown-menu-item-label[data-v-09c3c9b8] {\n  text-align: left;\n  white-space: nowrap;\n}\n.cu-dropdown-menu-item-chevron[data-v-09c3c9b8] {\n  flex-shrink: 0;\n  color: var(--cu-color-neutral-text-muted);\n}\n.cu-dropdown-menu-item-icon[data-v-09c3c9b8] {\n  flex-shrink: 0;\n  color: var(--cu-color-neutral-text-subtle);\n}\n.cu-dropdown-menu-divider[data-v-09c3c9b8] {\n  margin: var(--cu-space-2xs) 0;\n  border: 0;\n  border-top: var(--cu-border-thin) solid var(--cu-border-color);\n}\n"]], ["__scopeId", "data-v-09c3c9b8"]]);
+}), [["styles", ["\n/* El wrapper: el motor (position/display) lo aporta .cu-popover. Acá solo\n   ajustes específicos del dropdown sobre el panel del Popover. */\n.cu-dropdown[data-v-ae797d18] .cu-dropdown-panel--loading {\n  pointer-events: none;\n}\n\n/* Dropdown anidado: ocupa el ancho de la fila del menú padre y el panel en\n   cascada es más angosto (auto) */\n.cu-dropdown.cu-dropdown--nested[data-v-ae797d18] {\n  display: block;\n  width: 100%;\n  --cu-popover-width: auto;\n  --cu-popover-min-width: 160px;\n}\n.cu-dropdown-panel--nested[data-v-ae797d18] {\n  padding: var(--cu-space-2xs);\n}\n\n/* Item de menú nativo (hojas + trigger de submenú anidado) */\n.cu-dropdown-menu-item[data-v-ae797d18] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--cu-space-md);\n  width: 100%;\n  padding: var(--cu-space-sm) var(--cu-space-md);\n  box-sizing: border-box;\n  background: transparent;\n  border: none;\n  cursor: pointer;\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  color: var(--cu-color-neutral);\n  text-decoration: none;\n  border-radius: var(--cu-radius-sm);\n  transition: background-color 150ms ease;\n}\n.cu-dropdown-menu-item[data-v-ae797d18]:hover:not(.cu-dropdown-menu-item--disabled) {\n  background-color: var(--cu-color-neutral-ghost-hover);\n}\n.cu-dropdown-menu-item--disabled[data-v-ae797d18] {\n  color: var(--cu-color-neutral-text-muted);\n  cursor: not-allowed;\n}\n.cu-dropdown-menu-item-label[data-v-ae797d18] {\n  text-align: left;\n  white-space: nowrap;\n}\n.cu-dropdown-menu-item-chevron[data-v-ae797d18] {\n  flex-shrink: 0;\n  color: var(--cu-color-neutral-text-muted);\n}\n.cu-dropdown-menu-item-icon[data-v-ae797d18] {\n  flex-shrink: 0;\n  color: var(--cu-color-neutral-text-subtle);\n}\n.cu-dropdown-menu-divider[data-v-ae797d18] {\n  margin: var(--cu-space-2xs) 0;\n  border: 0;\n  border-top: var(--cu-border-thin) solid var(--cu-border-color);\n}\n"]], ["__scopeId", "data-v-ae797d18"]]);
 //#endregion
 //#region src/components/icons/LucideCheck.vue
 var LucideCheck_default = /* @__PURE__ */ defineComponent({
@@ -6335,10 +6417,14 @@ var _hoisted_4$4 = {
 	key: 0,
 	class: "cu-pagination-page-size"
 };
-var _hoisted_5$3 = { class: "cu-pagination-pages" };
+var _hoisted_5$3 = {
+	class: "cu-pagination-pages",
+	"aria-label": "Paginación"
+};
 var _hoisted_6$3 = {
 	key: 0,
-	class: "cu-pagination-ellipsis"
+	class: "cu-pagination-ellipsis",
+	"aria-hidden": "true"
 };
 //#endregion
 //#region src/components/controls/Pagination.vue
@@ -6401,34 +6487,69 @@ var Pagination_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__P
 	setup(__props, { emit: __emit }) {
 		const props = __props;
 		const emit = __emit;
-		const pageSizeValue = ref(String(props.itemsPerPage));
-		watch(() => props.itemsPerPage, (val) => {
+		/** `totalPages` como entero ≥ 1: un decimal (`2.7`) agregaba un botón «3» que no hacía nada. */
+		const pageCount = computed(() => {
+			const total = Math.trunc(Number(props.totalPages));
+			return Number.isFinite(total) ? Math.max(1, total) : 1;
+		});
+		/**
+		* Página realmente renderizable. `currentPage` puede quedar fuera de `[1, totalPages]`
+		* (el consumidor achica los totales, o llega un `current-page` inválido): sin el clamp
+		* la info mostraba rangos imposibles («Mostrando 241 - 45 de 45») y ningún botón
+		* navegaba. No se emite nada: la prop la manda el consumidor.
+		*/
+		const activePage = computed(() => {
+			const page = Math.trunc(Number(props.currentPage));
+			return Number.isFinite(page) ? Math.min(Math.max(1, page), pageCount.value) : 1;
+		});
+		/** `itemsPerPage` saneado para el rango: 0/negativo/NaN invertían la info («Mostrando 1 - 0»). */
+		const perPage = computed(() => {
+			const value = Math.trunc(Number(props.itemsPerPage));
+			return Number.isFinite(value) && value > 0 ? value : 1;
+		});
+		/** `totalItems` saneado: un negativo mostraba «de -10». */
+		const itemCount = computed(() => {
+			const value = Math.trunc(Number(props.totalItems));
+			return Number.isFinite(value) && value > 0 ? value : 0;
+		});
+		const pageSizeValue = ref(String(perPage.value));
+		watch(() => perPage.value, (val) => {
 			pageSizeValue.value = String(val);
 		});
 		const pageSizeOptionsFormatted = computed(() => {
-			return [.../* @__PURE__ */ new Set([...props.pageSizeOptions, props.itemsPerPage])].sort((a, b) => a - b).map((opt) => ({
+			const configured = (Array.isArray(props.pageSizeOptions) ? props.pageSizeOptions : [
+				5,
+				10,
+				20,
+				50
+			]).map((option) => Number(option)).filter((option) => Number.isFinite(option) && option > 0);
+			return [.../* @__PURE__ */ new Set([...configured, perPage.value])].sort((a, b) => a - b).map((opt) => ({
 				value: String(opt),
 				label: String(opt)
 			}));
 		});
 		const handlePageChange = (page) => {
-			if (page >= 1 && page <= props.totalPages) emit("update:currentPage", page);
+			if (page >= 1 && page <= pageCount.value) emit("update:currentPage", page);
 		};
 		const handlePageSizeChange = (val) => {
-			pageSizeValue.value = val;
-			emit("update:itemsPerPage", Number(val));
+			const size = Number(val);
+			if (!Number.isFinite(size) || size <= 0) return;
+			pageSizeValue.value = String(size);
+			emit("update:itemsPerPage", size);
 			emit("update:currentPage", 1);
 		};
 		const startItem = computed(() => {
-			return props.totalItems === 0 ? 0 : (props.currentPage - 1) * props.itemsPerPage + 1;
+			if (itemCount.value === 0) return 0;
+			const start = (activePage.value - 1) * perPage.value + 1;
+			return Math.min(start, itemCount.value);
 		});
 		const endItem = computed(() => {
-			return Math.min(props.currentPage * props.itemsPerPage, props.totalItems);
+			return Math.min(activePage.value * perPage.value, itemCount.value);
 		});
 		const visiblePages = computed(() => {
 			const pages = [];
-			const total = props.totalPages;
-			let current = props.currentPage;
+			const total = pageCount.value;
+			const current = activePage.value;
 			if (total <= 7) for (let i = 1; i <= total; i++) pages.push(i);
 			else {
 				if (props.showFirstAndLast) {
@@ -6457,7 +6578,7 @@ var Pagination_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__P
 			return pages;
 		});
 		return (_ctx, _cache) => {
-			return __props.totalPages > 1 || __props.showPageSize ? (openBlock(), createElementBlock("div", _hoisted_1$14, [createElementVNode("span", _hoisted_2$7, " Mostrando " + toDisplayString(startItem.value) + " - " + toDisplayString(endItem.value) + " de " + toDisplayString(__props.totalItems), 1), createElementVNode("div", _hoisted_3$4, [__props.showPageSize ? (openBlock(), createElementBlock("div", _hoisted_4$4, [_cache[3] || (_cache[3] = createElementVNode("span", { class: "cu-pagination-label" }, "Por página:", -1)), createVNode(Select_default, {
+			return pageCount.value > 1 || __props.showPageSize ? (openBlock(), createElementBlock("div", _hoisted_1$14, [createElementVNode("span", _hoisted_2$7, " Mostrando " + toDisplayString(startItem.value) + " - " + toDisplayString(endItem.value) + " de " + toDisplayString(itemCount.value), 1), createElementVNode("div", _hoisted_3$4, [__props.showPageSize ? (openBlock(), createElementBlock("div", _hoisted_4$4, [_cache[3] || (_cache[3] = createElementVNode("span", { class: "cu-pagination-label" }, "Por página:", -1)), createVNode(Select_default, {
 				"model-value": pageSizeValue.value,
 				options: pageSizeOptionsFormatted.value,
 				color: props.color,
@@ -6467,10 +6588,10 @@ var Pagination_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__P
 				"model-value",
 				"options",
 				"color"
-			])])) : createCommentVNode("v-if", true), createElementVNode("div", _hoisted_5$3, [
+			])])) : createCommentVNode("v-if", true), createElementVNode("nav", _hoisted_5$3, [
 				createVNode(Button_default, {
-					onClick: _cache[1] || (_cache[1] = ($event) => handlePageChange(__props.currentPage - 1)),
-					disabled: __props.currentPage === 1,
+					onClick: _cache[1] || (_cache[1] = ($event) => handlePageChange(activePage.value - 1)),
+					disabled: activePage.value === 1,
 					color: props.color,
 					variant: props.variant
 				}, {
@@ -6485,20 +6606,24 @@ var Pagination_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__P
 					return openBlock(), createElementBlock(Fragment, { key: idx }, [page === "..." ? (openBlock(), createElementBlock("span", _hoisted_6$3, "...")) : (openBlock(), createBlock(Button_default, {
 						key: 1,
 						onClick: ($event) => handlePageChange(Number(page)),
+						"aria-label": `Página ${page}`,
+						"aria-current": activePage.value === page ? "page" : void 0,
 						color: props.color,
-						variant: __props.currentPage === page ? "solid" : props.variant
+						variant: activePage.value === page ? "solid" : props.variant
 					}, {
 						default: withCtx(() => [createTextVNode(toDisplayString(page), 1)]),
 						_: 2
 					}, 1032, [
 						"onClick",
+						"aria-label",
+						"aria-current",
 						"color",
 						"variant"
 					]))], 64);
 				}), 128)),
 				createVNode(Button_default, {
-					onClick: _cache[2] || (_cache[2] = ($event) => handlePageChange(__props.currentPage + 1)),
-					disabled: __props.currentPage === __props.totalPages,
+					onClick: _cache[2] || (_cache[2] = ($event) => handlePageChange(activePage.value + 1)),
+					disabled: activePage.value === pageCount.value,
 					color: props.color,
 					variant: props.variant
 				}, {
@@ -6512,7 +6637,7 @@ var Pagination_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__P
 			])])])) : createCommentVNode("v-if", true);
 		};
 	}
-}), [["styles", ["\n.cu-pagination[data-v-ba3a5c38] {\n  width: 100%;\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--cu-space-md);\n  gap: var(--cu-space-md);\n  box-sizing: border-box;\n}\n.cu-pagination-info[data-v-ba3a5c38] {\n  display: none;\n  font-size: var(--cu-font-size-sm);\n  color: var(--cu-color-neutral-text);\n  font-family: var(--cu-font-sans);\n}\n@media (min-width: 768px) {\n.cu-pagination-info[data-v-ba3a5c38] {\n    display: inline;\n}\n}\n.cu-pagination-controls[data-v-ba3a5c38] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  justify-content: center;\n  gap: var(--cu-space-sm);\n}\n.cu-pagination-page-size[data-v-ba3a5c38] {\n  display: flex;\n  align-items: center;\n  gap: var(--cu-space-sm);\n}\n.cu-pagination-label[data-v-ba3a5c38] {\n  font-size: var(--cu-font-size-sm);\n  color: var(--cu-color-neutral-text);\n  font-family: var(--cu-font-sans);\n}\n.cu-pagination-pages[data-v-ba3a5c38] {\n  display: flex;\n  align-items: center;\n  gap: var(--cu-space-xs);\n}\n.cu-pagination-ellipsis[data-v-ba3a5c38] {\n  padding: var(--cu-space-xs) var(--cu-space-sm);\n  color: var(--cu-color-neutral-text-muted);\n  font-size: var(--cu-font-size-sm);\n  font-family: var(--cu-font-sans);\n}\n"]], ["__scopeId", "data-v-ba3a5c38"]]);
+}), [["styles", ["\n.cu-pagination[data-v-1f2fe5c6] {\n  width: 100%;\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  justify-content: space-between;\n  padding: var(--cu-space-md);\n  gap: var(--cu-space-md);\n  box-sizing: border-box;\n}\n.cu-pagination-info[data-v-1f2fe5c6] {\n  display: none;\n  font-size: var(--cu-font-size-sm);\n  color: var(--cu-color-neutral-text);\n  font-family: var(--cu-font-sans);\n}\n@media (min-width: 768px) {\n.cu-pagination-info[data-v-1f2fe5c6] {\n    display: inline;\n}\n}\n.cu-pagination-controls[data-v-1f2fe5c6] {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  justify-content: center;\n  gap: var(--cu-space-sm);\n}\n.cu-pagination-page-size[data-v-1f2fe5c6] {\n  display: flex;\n  align-items: center;\n  gap: var(--cu-space-sm);\n}\n.cu-pagination-label[data-v-1f2fe5c6] {\n  font-size: var(--cu-font-size-sm);\n  color: var(--cu-color-neutral-text);\n  font-family: var(--cu-font-sans);\n}\n.cu-pagination-pages[data-v-1f2fe5c6] {\n  display: flex;\n  align-items: center;\n  gap: var(--cu-space-xs);\n}\n.cu-pagination-ellipsis[data-v-1f2fe5c6] {\n  padding: var(--cu-space-xs) var(--cu-space-sm);\n  color: var(--cu-color-neutral-text-muted);\n  font-size: var(--cu-font-size-sm);\n  font-family: var(--cu-font-sans);\n}\n"]], ["__scopeId", "data-v-1f2fe5c6"]]);
 //#endregion
 //#region node_modules/.pnpm/@vueuse+shared@14.4.0_vue@3.6.0-rc.11_@typescript+typescript6@6.0.2_/node_modules/@vueuse/shared/dist/index.js
 var isClient = typeof window !== "undefined" && typeof document !== "undefined";

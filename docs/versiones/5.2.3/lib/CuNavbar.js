@@ -3721,6 +3721,89 @@ function useUniqueId(prefix) {
 	return `${prefix}-${useId()}-${++sequence}`;
 }
 //#endregion
+//#region src/utils/sanitizeIcon.ts
+/** Elementos de dibujo SVG permitidos dentro de un `icon`. */
+var ICON_TAGS = [
+	"svg",
+	"g",
+	"path",
+	"circle",
+	"ellipse",
+	"rect",
+	"line",
+	"polyline",
+	"polygon",
+	"defs",
+	"linearGradient",
+	"radialGradient",
+	"stop",
+	"clipPath",
+	"mask",
+	"title",
+	"desc"
+];
+/** Atributos presentacionales de esos elementos (sin `style` ni referencias externas). */
+var ICON_ATTRS = [
+	"class",
+	"id",
+	"role",
+	"xmlns",
+	"viewBox",
+	"preserveAspectRatio",
+	"width",
+	"height",
+	"x",
+	"y",
+	"x1",
+	"x2",
+	"y1",
+	"y2",
+	"cx",
+	"cy",
+	"r",
+	"rx",
+	"ry",
+	"d",
+	"points",
+	"fill",
+	"fill-opacity",
+	"fill-rule",
+	"clip-rule",
+	"stroke",
+	"stroke-width",
+	"stroke-linecap",
+	"stroke-linejoin",
+	"stroke-miterlimit",
+	"stroke-dasharray",
+	"stroke-dashoffset",
+	"stroke-opacity",
+	"opacity",
+	"transform",
+	"offset",
+	"stop-color",
+	"stop-opacity",
+	"gradientUnits",
+	"gradientTransform",
+	"clipPathUnits",
+	"maskUnits",
+	"aria-hidden",
+	"aria-label",
+	"focusable"
+];
+/**
+* Sanitiza el HTML de un icono dejando sólo SVG inline. Devuelve `undefined` sin icono
+* y `''` cuando el HTML no contiene nada válido: el `v-if` del consumidor no pinta
+* wrappers vacíos.
+*/
+function sanitizeIcon(html) {
+	if (!html) return void 0;
+	return purify.sanitize(html, {
+		ALLOWED_TAGS: ICON_TAGS,
+		ALLOWED_ATTR: ICON_ATTRS,
+		KEEP_CONTENT: false
+	});
+}
+//#endregion
 //#region src/composables/useMenuNavigation.ts
 /** Texto comparable del typeahead (sin acentos ni mayúsculas). */
 function foldMenuText(value) {
@@ -4475,13 +4558,13 @@ var _hoisted_5$2 = [
 ];
 var _hoisted_6$2 = ["innerHTML"];
 var _hoisted_7$2 = { class: "cu-dropdown-menu-item-label" };
-var _hoisted_8$1 = [
+var _hoisted_8$2 = [
 	"role",
 	"disabled",
 	"tabindex",
 	"onClick"
 ];
-var _hoisted_9 = ["innerHTML"];
+var _hoisted_9$1 = ["innerHTML"];
 var _hoisted_10 = { class: "cu-dropdown-menu-item-label" };
 //#endregion
 //#region src/components/overlay/Dropdown.vue
@@ -4599,7 +4682,6 @@ var Dropdown_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 	}),
 	emits: /*@__PURE__*/ mergeModels(["open", "close"], ["update:modelValue"]),
 	setup(__props, { expose: __expose, emit: __emit }) {
-		const sanitizeIcon = (html) => html ? purify.sanitize(html) : void 0;
 		const props = __props;
 		/** Valor seleccionado (v-model). */
 		const selectedValue = useModel(__props, "modelValue");
@@ -4763,7 +4845,7 @@ var Dropdown_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 					__props.icon ? (openBlock(), createElementBlock("span", {
 						key: 0,
 						class: "cu-dropdown-menu-item-icon",
-						innerHTML: sanitizeIcon(__props.icon)
+						innerHTML: unref(sanitizeIcon)(__props.icon)
 					}, null, 8, _hoisted_2$2)) : createCommentVNode("v-if", true),
 					createElementVNode("span", _hoisted_3$2, toDisplayString(__props.label || "Submenú"), 1),
 					createVNode(LucideChevronRight_default, {
@@ -4814,7 +4896,7 @@ var Dropdown_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 						}, [item.icon ? (openBlock(), createElementBlock("span", {
 							key: 0,
 							class: "cu-dropdown-menu-item-icon",
-							innerHTML: sanitizeIcon(item.icon)
+							innerHTML: unref(sanitizeIcon)(item.icon)
 						}, null, 8, _hoisted_6$2)) : createCommentVNode("v-if", true), createElementVNode("span", _hoisted_7$2, toDisplayString(item.label), 1)], 10, _hoisted_5$2)) : (openBlock(), createElementBlock("button", {
 							key: 2,
 							type: "button",
@@ -4826,8 +4908,8 @@ var Dropdown_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 						}, [item.icon ? (openBlock(), createElementBlock("span", {
 							key: 0,
 							class: "cu-dropdown-menu-item-icon",
-							innerHTML: sanitizeIcon(item.icon)
-						}, null, 8, _hoisted_9)) : createCommentVNode("v-if", true), createElementVNode("span", _hoisted_10, toDisplayString(item.label), 1)], 10, _hoisted_8$1))], 64);
+							innerHTML: unref(sanitizeIcon)(item.icon)
+						}, null, 8, _hoisted_9$1)) : createCommentVNode("v-if", true), createElementVNode("span", _hoisted_10, toDisplayString(item.label), 1)], 10, _hoisted_8$2))], 64);
 					}), 128)), renderSlot(_ctx.$slots, "default", {}, void 0, true)], 64)) : createCommentVNode("v-if", true)
 				]),
 				_: 3
@@ -4846,19 +4928,28 @@ var Dropdown_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 			]);
 		};
 	}
-}), [["styles", ["\n/* El wrapper: el motor (position/display) lo aporta .cu-popover. Acá solo\n   ajustes específicos del dropdown sobre el panel del Popover. */\n.cu-dropdown[data-v-09c3c9b8] .cu-dropdown-panel--loading {\n  pointer-events: none;\n}\n\n/* Dropdown anidado: ocupa el ancho de la fila del menú padre y el panel en\n   cascada es más angosto (auto) */\n.cu-dropdown.cu-dropdown--nested[data-v-09c3c9b8] {\n  display: block;\n  width: 100%;\n  --cu-popover-width: auto;\n  --cu-popover-min-width: 160px;\n}\n.cu-dropdown-panel--nested[data-v-09c3c9b8] {\n  padding: var(--cu-space-2xs);\n}\n\n/* Item de menú nativo (hojas + trigger de submenú anidado) */\n.cu-dropdown-menu-item[data-v-09c3c9b8] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--cu-space-md);\n  width: 100%;\n  padding: var(--cu-space-sm) var(--cu-space-md);\n  box-sizing: border-box;\n  background: transparent;\n  border: none;\n  cursor: pointer;\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  color: var(--cu-color-neutral);\n  text-decoration: none;\n  border-radius: var(--cu-radius-sm);\n  transition: background-color 150ms ease;\n}\n.cu-dropdown-menu-item[data-v-09c3c9b8]:hover:not(.cu-dropdown-menu-item--disabled) {\n  background-color: var(--cu-color-neutral-ghost-hover);\n}\n.cu-dropdown-menu-item--disabled[data-v-09c3c9b8] {\n  color: var(--cu-color-neutral-text-muted);\n  cursor: not-allowed;\n}\n.cu-dropdown-menu-item-label[data-v-09c3c9b8] {\n  text-align: left;\n  white-space: nowrap;\n}\n.cu-dropdown-menu-item-chevron[data-v-09c3c9b8] {\n  flex-shrink: 0;\n  color: var(--cu-color-neutral-text-muted);\n}\n.cu-dropdown-menu-item-icon[data-v-09c3c9b8] {\n  flex-shrink: 0;\n  color: var(--cu-color-neutral-text-subtle);\n}\n.cu-dropdown-menu-divider[data-v-09c3c9b8] {\n  margin: var(--cu-space-2xs) 0;\n  border: 0;\n  border-top: var(--cu-border-thin) solid var(--cu-border-color);\n}\n"]], ["__scopeId", "data-v-09c3c9b8"]]);
+}), [["styles", ["\n/* El wrapper: el motor (position/display) lo aporta .cu-popover. Acá solo\n   ajustes específicos del dropdown sobre el panel del Popover. */\n.cu-dropdown[data-v-ae797d18] .cu-dropdown-panel--loading {\n  pointer-events: none;\n}\n\n/* Dropdown anidado: ocupa el ancho de la fila del menú padre y el panel en\n   cascada es más angosto (auto) */\n.cu-dropdown.cu-dropdown--nested[data-v-ae797d18] {\n  display: block;\n  width: 100%;\n  --cu-popover-width: auto;\n  --cu-popover-min-width: 160px;\n}\n.cu-dropdown-panel--nested[data-v-ae797d18] {\n  padding: var(--cu-space-2xs);\n}\n\n/* Item de menú nativo (hojas + trigger de submenú anidado) */\n.cu-dropdown-menu-item[data-v-ae797d18] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--cu-space-md);\n  width: 100%;\n  padding: var(--cu-space-sm) var(--cu-space-md);\n  box-sizing: border-box;\n  background: transparent;\n  border: none;\n  cursor: pointer;\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  color: var(--cu-color-neutral);\n  text-decoration: none;\n  border-radius: var(--cu-radius-sm);\n  transition: background-color 150ms ease;\n}\n.cu-dropdown-menu-item[data-v-ae797d18]:hover:not(.cu-dropdown-menu-item--disabled) {\n  background-color: var(--cu-color-neutral-ghost-hover);\n}\n.cu-dropdown-menu-item--disabled[data-v-ae797d18] {\n  color: var(--cu-color-neutral-text-muted);\n  cursor: not-allowed;\n}\n.cu-dropdown-menu-item-label[data-v-ae797d18] {\n  text-align: left;\n  white-space: nowrap;\n}\n.cu-dropdown-menu-item-chevron[data-v-ae797d18] {\n  flex-shrink: 0;\n  color: var(--cu-color-neutral-text-muted);\n}\n.cu-dropdown-menu-item-icon[data-v-ae797d18] {\n  flex-shrink: 0;\n  color: var(--cu-color-neutral-text-subtle);\n}\n.cu-dropdown-menu-divider[data-v-ae797d18] {\n  margin: var(--cu-space-2xs) 0;\n  border: 0;\n  border-top: var(--cu-border-thin) solid var(--cu-border-color);\n}\n"]], ["__scopeId", "data-v-ae797d18"]]);
 //#endregion
 //#region src/components/navigation/NavbarMenu.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1$3 = { class: "cu-navbar-menu" };
-var _hoisted_2$1 = ["href"];
-var _hoisted_3$1 = ["innerHTML"];
-var _hoisted_4$1 = { class: "cu-navbar-menu-item-label" };
-var _hoisted_5$1 = {
+var _hoisted_1$3 = [
+	"aria-expanded",
+	"aria-controls",
+	"tabindex",
+	"onClick"
+];
+var _hoisted_2$1 = ["innerHTML"];
+var _hoisted_3$1 = { class: "cu-navbar-menu-item-label" };
+var _hoisted_4$1 = ["href", "tabindex"];
+var _hoisted_5$1 = ["innerHTML"];
+var _hoisted_6$1 = { class: "cu-navbar-menu-item-label" };
+var _hoisted_7$1 = {
 	key: 2,
-	class: "cu-navbar-menu-item cu-navbar-menu-item--disabled"
+	class: "cu-navbar-menu-item cu-navbar-menu-item--disabled",
+	role: "menuitem",
+	"aria-disabled": "true"
 };
-var _hoisted_6$1 = ["innerHTML"];
-var _hoisted_7$1 = { class: "cu-navbar-menu-item-label" };
+var _hoisted_8$1 = ["innerHTML"];
+var _hoisted_9 = { class: "cu-navbar-menu-item-label" };
 //#endregion
 //#region src/components/navigation/NavbarMenu.vue
 var NavbarMenu_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__ */ defineComponent({
@@ -4877,43 +4968,203 @@ var NavbarMenu_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__P
 		}
 	},
 	setup(__props) {
-		const sanitizeIcon = (html) => html ? purify.sanitize(html) : void 0;
+		function safePath(path) {
+			const value = path?.trim();
+			if (!value) return void 0;
+			const compact = value.replace(/[\u0000-\u0020]+/g, "");
+			if (/^(?:javascript|vbscript|data):/i.test(compact)) return void 0;
+			return path;
+		}
 		const props = __props;
+		const menuEl = ref(null);
+		const uid = useUniqueId("cu-navbar-menu");
+		/** Items del consumidor: el árbol puede llegar incompleto desde datos. */
+		const levelItems = computed(() => Array.isArray(props.items) ? props.items : []);
+		/**
+		* `id` del panel de cada submenú. El trigger lo referencia con `aria-controls`
+		* sólo mientras el panel está montado (Popover lo crea con `v-if`).
+		*/
+		const subPanelIds = computed(() => {
+			const map = /* @__PURE__ */ new Map();
+			levelItems.value.forEach((item, index) => {
+				if (item.children?.length) map.set(item, `${uid}-sub-${index}`);
+			});
+			return map;
+		});
+		function subPanelId(item) {
+			return subPanelIds.value.get(item) ?? `${uid}-sub`;
+		}
+		const activeRow = ref(0);
+		/** Posición de cada fila navegable del nivel, en orden de DOM. */
+		const rowPositions = computed(() => {
+			const map = /* @__PURE__ */ new Map();
+			let position = 0;
+			for (const item of levelItems.value) if (item.children?.length || item.path) map.set(item, position++);
+			return map;
+		});
+		function rowTabindex(item) {
+			const position = rowPositions.value.get(item);
+			if (position === void 0) return -1;
+			return position === Math.min(activeRow.value, Math.max(0, rowPositions.value.size - 1)) ? 0 : -1;
+		}
+		/** Filas navegables de ESTE nivel (no las de un submenú abierto). */
+		function rows() {
+			const root = menuEl.value;
+			if (!root) return [];
+			return Array.from(root.querySelectorAll("[data-navbar-row]")).filter((row) => row.closest(".cu-navbar-menu") === root && row.getAttribute("aria-disabled") !== "true");
+		}
+		function focusRow(list, index) {
+			if (list.length === 0) return;
+			const position = (index + list.length) % list.length;
+			activeRow.value = position;
+			const row = list[position];
+			row.focus();
+			row.scrollIntoView?.({ block: "nearest" });
+		}
+		/** Abre el submenú de una fila (si hace falta) y deja el foco en su primera fila. */
+		async function enterSubmenu(row) {
+			if (row.getAttribute("aria-expanded") !== "true") row.click();
+			await nextTick();
+			await nextTick();
+			(row.parentElement?.querySelector(".cu-navbar-menu .cu-navbar-menu"))?.querySelector("[data-navbar-row]")?.focus();
+		}
+		let typeahead = "";
+		let typeaheadTimer = null;
+		function foldText(value) {
+			return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, " ").trim().toLowerCase();
+		}
+		function searchByPrefix(char, list, from) {
+			typeahead += foldText(char);
+			if (typeaheadTimer) clearTimeout(typeaheadTimer);
+			typeaheadTimer = setTimeout(() => {
+				typeahead = "";
+			}, 500);
+			const start = from >= 0 ? from : 0;
+			for (let step = 1; step <= list.length; step++) {
+				const index = (start + step) % list.length;
+				if (foldText(list[index].textContent ?? "").startsWith(typeahead)) {
+					focusRow(list, index);
+					return;
+				}
+			}
+		}
+		function onKeydown(event) {
+			if (event.altKey || event.ctrlKey || event.metaKey) return;
+			const target = event.target;
+			if (!target || target.closest(".cu-navbar-menu") !== menuEl.value) return;
+			const list = rows();
+			if (list.length === 0) return;
+			const row = target.closest("[data-navbar-row]");
+			const current = row ? list.indexOf(row) : -1;
+			if (event.key === "ArrowDown") {
+				event.preventDefault();
+				focusRow(list, current < 0 ? 0 : current + 1);
+				return;
+			}
+			if (event.key === "ArrowUp") {
+				event.preventDefault();
+				focusRow(list, current < 0 ? list.length - 1 : current - 1);
+				return;
+			}
+			if (event.key === "Home") {
+				event.preventDefault();
+				focusRow(list, 0);
+				return;
+			}
+			if (event.key === "End") {
+				event.preventDefault();
+				focusRow(list, list.length - 1);
+				return;
+			}
+			if ((event.key === "ArrowRight" || event.key === "Enter") && row?.getAttribute("aria-haspopup") === "menu") {
+				event.preventDefault();
+				enterSubmenu(row);
+				return;
+			}
+			if (event.key === " ") {
+				if (row?.tagName === "A") {
+					event.preventDefault();
+					row.click();
+				}
+				return;
+			}
+			if (event.key.length === 1) {
+				event.preventDefault();
+				searchByPrefix(event.key, list, current);
+			}
+		}
+		/** El roving tabindex sigue al foco real (click o teclado). */
+		function onFocusin(event) {
+			const row = event.target?.closest?.("[data-navbar-row]");
+			if (!row || row.closest(".cu-navbar-menu") !== menuEl.value) return;
+			const position = rows().indexOf(row);
+			if (position >= 0) activeRow.value = position;
+		}
 		return (_ctx, _cache) => {
 			const _component_NavbarMenu = resolveComponent("NavbarMenu", true);
-			return openBlock(), createElementBlock("div", _hoisted_1$3, [(openBlock(true), createElementBlock(Fragment, null, renderList(props.items, (item) => {
+			return openBlock(), createElementBlock("div", {
+				ref_key: "menuEl",
+				ref: menuEl,
+				class: "cu-navbar-menu",
+				role: "none",
+				onKeydown,
+				onFocusin
+			}, [(openBlock(true), createElementBlock(Fragment, null, renderList(levelItems.value, (item) => {
 				return openBlock(), createElementBlock(Fragment, { key: item.path || item.label }, [item.children?.length ? (openBlock(), createBlock(Dropdown_default, {
 					key: 0,
-					label: item.label,
-					icon: item.icon,
-					trigger: props.trigger
+					trigger: props.trigger,
+					"panel-id": subPanelId(item)
 				}, {
+					toggle: withCtx(({ toggle: t, isOpen }) => [createElementVNode("button", {
+						type: "button",
+						class: "cu-navbar-menu-item cu-navbar-menu-item--submenu",
+						role: "menuitem",
+						"aria-haspopup": "menu",
+						"aria-expanded": isOpen ? "true" : "false",
+						"aria-controls": isOpen ? subPanelId(item) : void 0,
+						"data-navbar-row": "",
+						tabindex: rowTabindex(item),
+						onClick: t
+					}, [
+						item.icon ? (openBlock(), createElementBlock("span", {
+							key: 0,
+							class: "cu-navbar-menu-icon",
+							innerHTML: unref(sanitizeIcon)(item.icon)
+						}, null, 8, _hoisted_2$1)) : createCommentVNode("v-if", true),
+						createElementVNode("span", _hoisted_3$1, toDisplayString(item.label), 1),
+						createVNode(LucideChevronRight_default, {
+							width: 14,
+							height: 14,
+							class: "cu-navbar-menu-chevron",
+							"aria-hidden": "true",
+							focusable: "false"
+						})
+					], 8, _hoisted_1$3)]),
 					default: withCtx(() => [createVNode(_component_NavbarMenu, {
 						items: item.children,
 						trigger: props.trigger
 					}, null, 8, ["items", "trigger"])]),
 					_: 2
-				}, 1032, [
-					"label",
-					"icon",
-					"trigger"
-				])) : item.path ? (openBlock(), createElementBlock("a", {
+				}, 1032, ["trigger", "panel-id"])) : safePath(item.path) ? (openBlock(), createElementBlock("a", {
 					key: 1,
-					href: item.path,
-					class: "cu-navbar-menu-item"
+					href: safePath(item.path),
+					class: "cu-navbar-menu-item",
+					role: "menuitem",
+					"data-navbar-row": "",
+					tabindex: rowTabindex(item)
 				}, [item.icon ? (openBlock(), createElementBlock("span", {
 					key: 0,
 					class: "cu-navbar-menu-icon",
-					innerHTML: sanitizeIcon(item.icon)
-				}, null, 8, _hoisted_3$1)) : createCommentVNode("v-if", true), createElementVNode("span", _hoisted_4$1, toDisplayString(item.label), 1)], 8, _hoisted_2$1)) : (openBlock(), createElementBlock("span", _hoisted_5$1, [item.icon ? (openBlock(), createElementBlock("span", {
+					innerHTML: unref(sanitizeIcon)(item.icon)
+				}, null, 8, _hoisted_5$1)) : createCommentVNode("v-if", true), createElementVNode("span", _hoisted_6$1, toDisplayString(item.label), 1)], 8, _hoisted_4$1)) : (openBlock(), createElementBlock("span", _hoisted_7$1, [item.icon ? (openBlock(), createElementBlock("span", {
 					key: 0,
 					class: "cu-navbar-menu-icon",
-					innerHTML: sanitizeIcon(item.icon)
-				}, null, 8, _hoisted_6$1)) : createCommentVNode("v-if", true), createElementVNode("span", _hoisted_7$1, toDisplayString(item.label), 1)]))], 64);
-			}), 128))]);
+					innerHTML: unref(sanitizeIcon)(item.icon)
+				}, null, 8, _hoisted_8$1)) : createCommentVNode("v-if", true), createElementVNode("span", _hoisted_9, toDisplayString(item.label), 1)]))], 64);
+			}), 128))], 544);
 		};
 	}
-}), [["styles", ["\n.cu-navbar-menu[data-v-9fdfe887] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--cu-space-2xs);\n  min-width: 180px;\n}\n.cu-navbar-menu-item[data-v-9fdfe887] {\n  display: flex;\n  align-items: center;\n  gap: var(--cu-space-md);\n  width: 100%;\n  padding: var(--cu-space-sm) var(--cu-space-md);\n  box-sizing: border-box;\n  background: transparent;\n  border: none;\n  cursor: pointer;\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  color: var(--cu-color-neutral);\n  text-decoration: none;\n  border-radius: var(--cu-radius-sm);\n  transition: background-color 150ms ease;\n}\n.cu-navbar-menu-item[data-v-9fdfe887]:hover:not(.cu-navbar-menu-item--disabled) {\n  background-color: var(--cu-color-neutral-ghost-hover);\n}\n.cu-navbar-menu-item--disabled[data-v-9fdfe887] {\n  color: var(--cu-color-neutral-text-muted);\n  cursor: not-allowed;\n}\n.cu-navbar-menu-item-label[data-v-9fdfe887] {\n  text-align: left;\n  white-space: nowrap;\n}\n.cu-navbar-menu-icon[data-v-9fdfe887] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  flex-shrink: 0;\n  width: 1.25rem;\n  line-height: 1;\n}\n"]], ["__scopeId", "data-v-9fdfe887"]]);
+}), [["styles", ["\n.cu-navbar-menu[data-v-3724152d] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--cu-space-2xs);\n  min-width: 180px;\n}\n.cu-navbar-menu-item[data-v-3724152d] {\n  display: flex;\n  align-items: center;\n  gap: var(--cu-space-md);\n  width: 100%;\n  padding: var(--cu-space-sm) var(--cu-space-md);\n  box-sizing: border-box;\n  background: transparent;\n  border: none;\n  cursor: pointer;\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  color: var(--cu-color-neutral);\n  text-decoration: none;\n  border-radius: var(--cu-radius-sm);\n  transition: background-color 150ms ease;\n}\n.cu-navbar-menu-item[data-v-3724152d]:hover:not(.cu-navbar-menu-item--disabled) {\n  background-color: var(--cu-color-neutral-ghost-hover);\n}\n.cu-navbar-menu-item--disabled[data-v-3724152d] {\n  color: var(--cu-color-neutral-text-muted);\n  cursor: not-allowed;\n}\n.cu-navbar-menu-item-label[data-v-3724152d] {\n  text-align: left;\n  white-space: nowrap;\n}\n.cu-navbar-menu-icon[data-v-3724152d] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  flex-shrink: 0;\n  width: 1.25rem;\n  line-height: 1;\n}\n\n/* Fila de submenú: el chevron va al final, como en el resto de los menús. */\n.cu-navbar-menu-item--submenu[data-v-3724152d] {\n  justify-content: space-between;\n}\n.cu-navbar-menu-chevron[data-v-3724152d] {\n  flex-shrink: 0;\n  color: var(--cu-color-neutral-text-muted);\n}\n@media (prefers-reduced-motion: reduce) {\n.cu-navbar-menu-item[data-v-3724152d] {\n    transition: none;\n}\n}\n"]], ["__scopeId", "data-v-3724152d"]]);
 //#endregion
 //#region node_modules/.pnpm/@vueuse+shared@14.4.0_vue@3.6.0-rc.11_@typescript+typescript6@6.0.2_/node_modules/@vueuse/shared/dist/index.js
 var isClient = typeof window !== "undefined" && typeof document !== "undefined";
@@ -5139,6 +5390,29 @@ var Input_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 	}
 }), [["styles", ["\n.cu-input[data-v-a387934b] {\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  font-weight: var(--cu-font-weight-medium);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius-md);\n  border: none;\n  outline: none;\n  width: 100%;\n  box-sizing: border-box;\n  background-color: var(--btn-bg);\n  color: var(--cu-color-neutral-text);\n  transition: all 150ms ease;\n}\n\n/* sizes */\n.cu-input--sm[data-v-a387934b] {\n  padding: var(--cu-space-sm) var(--cu-space-md);\n  font-size: var(--cu-font-size-xs);\n}\n.cu-input--lg[data-v-a387934b] {\n  padding: var(--cu-space-lg) var(--cu-space-xl);\n  font-size: var(--cu-font-size-md);\n}\n.cu-input[data-v-a387934b]::placeholder {\n  color: var(--cu-color-neutral-text-muted);\n}\n.cu-input[data-v-a387934b]:focus {\n  box-shadow: 0 0 0 var(--cu-border-thin) var(--btn-subtle-border);\n}\n\n/* subtle */\n.cu-input--subtle[data-v-a387934b] {\n  background-color: var(--btn-subtle);\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-input--subtle[data-v-a387934b]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-subtle-hover);\n}\n\n/* soft */\n.cu-input--soft[data-v-a387934b] {\n  background-color: var(--btn-soft);\n}\n.cu-input--soft[data-v-a387934b]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-soft-hover);\n}\n\n/* ghost */\n.cu-input--ghost[data-v-a387934b] {\n  background-color: transparent;\n}\n.cu-input--ghost[data-v-a387934b]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-bg-hover);\n}\n\n/* outlined */\n.cu-input--outlined[data-v-a387934b] {\n  background-color: transparent;\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-input--outlined[data-v-a387934b]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-bg-hover);\n}\n\n/* disabled */\n.cu-input--disabled[data-v-a387934b] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n"]], ["__scopeId", "data-v-a387934b"]]);
 //#endregion
+//#region src/utils/navbarMenuTrigger.ts
+/**
+* Filas navegables del primer nivel del menú. Se excluyen las de un submenú ya
+* abierto (pertenecen a otro `.cu-navbar-menu`) y las deshabilitadas.
+*/
+function firstLevelRows(dropdownRoot) {
+	const menu = dropdownRoot?.querySelector(".cu-dropdown-panel > .cu-navbar-menu");
+	if (!menu) return [];
+	return Array.from(menu.querySelectorAll("[data-navbar-row]")).filter((row) => row.closest(".cu-navbar-menu") === menu && row.getAttribute("aria-disabled") !== "true");
+}
+/** ArrowDown/ArrowUp en el trigger: abre el menú y enfoca el borde correspondiente. */
+async function onNavbarMenuTriggerKeydown(event, toggle) {
+	if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
+	event.preventDefault();
+	const root = event.currentTarget?.closest(".cu-dropdown") ?? null;
+	if (!root?.querySelector(".cu-dropdown-panel")) toggle();
+	await nextTick();
+	await nextTick();
+	const rows = firstLevelRows(root);
+	if (rows.length === 0) return;
+	rows[event.key === "ArrowUp" ? rows.length - 1 : 0].focus();
+}
+//#endregion
 //#region src/components/navigation/NavbarList.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1$1 = {
 	key: 0,
@@ -5146,7 +5420,14 @@ var _hoisted_1$1 = {
 };
 var _hoisted_2 = ["title", "aria-pressed"];
 var _hoisted_3 = { "aria-hidden": "true" };
-var _hoisted_4 = ["title", "onClick"];
+var _hoisted_4 = [
+	"title",
+	"aria-label",
+	"aria-expanded",
+	"aria-controls",
+	"onClick",
+	"onKeydown"
+];
 var _hoisted_5 = ["innerHTML"];
 var _hoisted_6 = ["innerHTML"];
 var _hoisted_7 = { class: "cu-navbar-label" };
@@ -5229,8 +5510,12 @@ var NavbarList_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__P
 		/** Texto de búsqueda (v-model:query). */
 		const query = useModel(__props, "query");
 		const emit = __emit;
+		const uid = useUniqueId("cu-navbar-list");
+		function panelIdOf(index) {
+			return `${uid}-panel-${index}`;
+		}
 		function itemIcon(item) {
-			if (item.icon) return purify.sanitize(item.icon);
+			if (item.icon) return sanitizeIcon(item.icon) ?? "";
 			return props.compact ? item.label.charAt(0) : "";
 		}
 		return (_ctx, _cache) => {
@@ -5250,12 +5535,13 @@ var NavbarList_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__P
 					"aria-pressed": __props.compact,
 					onClick: _cache[1] || (_cache[1] = ($event) => emit("toggle-compact"))
 				}, [createElementVNode("span", _hoisted_3, toDisplayString(__props.compact ? "»" : "«"), 1)], 8, _hoisted_2)) : createCommentVNode("v-if", true)])) : createCommentVNode("v-if", true),
-				(openBlock(true), createElementBlock(Fragment, null, renderList(__props.items, (item) => {
+				(openBlock(true), createElementBlock(Fragment, null, renderList(__props.items, (item, index) => {
 					return openBlock(), createElementBlock(Fragment, { key: item.path || item.label }, [item.children?.length && __props.compact ? (openBlock(), createBlock(Dropdown_default, {
 						key: 0,
 						trigger: props.trigger,
 						position: "right",
 						align: "start",
+						"panel-id": panelIdOf(index),
 						class: normalizeClass({
 							"cu-navbar-item--match": __props.highlightTarget === item,
 							"cu-navbar-item--active": __props.activeItem === item
@@ -5263,11 +5549,16 @@ var NavbarList_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__P
 						"data-navbar-match": __props.highlightTarget === item ? "" : void 0,
 						"data-navbar-active": __props.activeItem === item ? "" : void 0
 					}, {
-						toggle: withCtx(({ toggle: t }) => [createElementVNode("button", {
+						toggle: withCtx(({ toggle: t, isOpen }) => [createElementVNode("button", {
 							type: "button",
 							class: "cu-navbar-compact-trigger",
 							title: item.label,
-							onClick: t
+							"aria-label": item.label,
+							"aria-haspopup": "menu",
+							"aria-expanded": isOpen ? "true" : "false",
+							"aria-controls": isOpen ? panelIdOf(index) : void 0,
+							onClick: t,
+							onKeydown: ($event) => unref(onNavbarMenuTriggerKeydown)($event, t)
 						}, [createElementVNode("span", {
 							class: "cu-navbar-icon",
 							innerHTML: itemIcon(item)
@@ -5277,7 +5568,7 @@ var NavbarList_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__P
 							class: "cu-navbar-compact-chevron",
 							"aria-hidden": "true",
 							focusable: "false"
-						})], 8, _hoisted_4)]),
+						})], 40, _hoisted_4)]),
 						default: withCtx(() => [createVNode(NavbarMenu_default, {
 							items: item.children,
 							trigger: props.trigger
@@ -5285,6 +5576,7 @@ var NavbarList_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__P
 						_: 2
 					}, 1032, [
 						"trigger",
+						"panel-id",
 						"class",
 						"data-navbar-match",
 						"data-navbar-active"
@@ -5334,6 +5626,7 @@ var NavbarList_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__P
 						color: __props.activeItem === item ? "primary" : void 0,
 						variant: __props.activeItem === item ? "soft" : void 0,
 						title: __props.compact && !item.icon ? item.label : void 0,
+						"aria-label": __props.compact ? item.label : void 0,
 						class: normalizeClass({
 							"cu-navbar-item--match": __props.highlightTarget === item,
 							"cu-navbar-item--active": __props.activeItem === item
@@ -5352,6 +5645,7 @@ var NavbarList_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__P
 						"color",
 						"variant",
 						"title",
+						"aria-label",
 						"class",
 						"data-navbar-match",
 						"data-navbar-active"
@@ -5361,7 +5655,7 @@ var NavbarList_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__P
 			], 2);
 		};
 	}
-}), [["styles", ["\n.cu-navbar[data-v-dcdced4b] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--cu-space-2xs);\n  padding: var(--cu-space-2xs);\n}\n.cu-navbar[data-v-dcdced4b] .cu-button {\n  justify-content: flex-start;\n  text-align: left;\n  width: 100%;\n  padding: var(--cu-space-sm) var(--cu-space-md);\n}\n\n/* La row completa del item es hovereable: el trigger del Collapse y los items\n   ocupan todo el ancho del contenedor (no solo el texto). */\n.cu-navbar[data-v-dcdced4b] .cu-collapse-trigger {\n  width: 100%;\n}\n.cu-navbar[data-v-dcdced4b] .cu-dropdown {\n  width: 100%;\n}\n.cu-navbar-header[data-v-dcdced4b] {\n  display: flex;\n  align-items: center;\n  gap: var(--cu-space-xs);\n  margin-bottom: var(--cu-space-xs);\n}\n.cu-navbar-search-input[data-v-dcdced4b] {\n  flex: 1;\n  min-width: 0;\n}\n.cu-navbar-compact-toggle[data-v-dcdced4b] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  flex-shrink: 0;\n  width: 2rem;\n  height: 2rem;\n  background: transparent;\n  border: var(--cu-border-thin) solid var(--cu-border-color);\n  border-radius: var(--cu-radius-sm);\n  cursor: pointer;\n  font-size: var(--cu-font-size-sm);\n  line-height: 1;\n  color: var(--cu-color-neutral);\n}\n.cu-navbar-compact-toggle[data-v-dcdced4b]:hover {\n  background-color: var(--cu-color-neutral-ghost-hover);\n}\n.cu-navbar[data-v-dcdced4b] .cu-collapse-content {\n  margin-top: var(--cu-space-xs);\n}\n.cu-navbar-icon[data-v-dcdced4b] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  flex-shrink: 0;\n  width: 1.25rem;\n  font-size: var(--cu-font-size-sm);\n  line-height: 1;\n}\n.cu-navbar-label[data-v-dcdced4b] {\n  min-width: 0;\n}\n\n/* Highlight del modo scroll (clase duplicada → 0,3,0 para pisar el ghost) */\n.cu-navbar[data-v-dcdced4b] .cu-navbar-item--match.cu-navbar-item--match {\n  background-color: var(--cu-color-primary-soft);\n}\n.cu-navbar[data-v-dcdced4b] .cu-collapse.cu-navbar-item--match.cu-navbar-item--match > .cu-collapse-trigger {\n  background-color: var(--cu-color-primary-soft);\n}\n.cu-navbar-empty[data-v-dcdced4b] {\n  padding: var(--cu-space-sm) var(--cu-space-md);\n  font-size: var(--cu-font-size-sm);\n  color: var(--cu-color-neutral-text-subtle);\n}\n\n/* Compact: solo iconos (o la inicial), sin labels */\n.cu-navbar--compact[data-v-dcdced4b] {\n  width: fit-content;\n}\n.cu-navbar--compact[data-v-dcdced4b] .cu-button {\n  justify-content: center;\n  padding: var(--cu-space-sm);\n}\n.cu-navbar--compact[data-v-dcdced4b] .cu-collapse-trigger {\n  justify-content: center;\n  padding: var(--cu-space-sm);\n}\n.cu-navbar--compact[data-v-dcdced4b] .cu-navbar-label {\n  display: none;\n}\n.cu-navbar--compact[data-v-dcdced4b] .cu-collapse-label {\n  display: none;\n}\n.cu-navbar--compact[data-v-dcdced4b] .cu-collapse-content {\n  padding-left: var(--cu-space-sm);\n}\n.cu-navbar--compact[data-v-dcdced4b] .cu-navbar-icon {\n  width: auto;\n}\n\n/* Trigger de submenú en modo compact: icono centrado + chevron a la derecha\n   que abre un flyout (Dropdown) con NavbarMenu adentro */\n.cu-navbar-compact-trigger[data-v-dcdced4b] {\n  position: relative;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 100%;\n  padding: var(--cu-space-sm);\n  background: transparent;\n  border: none;\n  cursor: pointer;\n  font-size: var(--cu-font-size-sm);\n  color: var(--cu-color-neutral);\n  border-radius: var(--cu-radius-sm);\n  transition: background-color 150ms ease;\n}\n.cu-navbar-compact-trigger[data-v-dcdced4b]:hover {\n  background-color: var(--cu-color-neutral-ghost-hover);\n}\n.cu-navbar-compact-chevron[data-v-dcdced4b] {\n  position: absolute;\n  right: var(--cu-space-2xs);\n  flex-shrink: 0;\n  color: var(--cu-color-neutral-text-muted);\n}\n"]], ["__scopeId", "data-v-dcdced4b"]]);
+}), [["styles", ["\n.cu-navbar[data-v-3d2f22c7] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--cu-space-2xs);\n  padding: var(--cu-space-2xs);\n}\n.cu-navbar[data-v-3d2f22c7] .cu-button {\n  justify-content: flex-start;\n  text-align: left;\n  width: 100%;\n  padding: var(--cu-space-sm) var(--cu-space-md);\n}\n\n/* La row completa del item es hovereable: el trigger del Collapse y los items\n   ocupan todo el ancho del contenedor (no solo el texto). */\n.cu-navbar[data-v-3d2f22c7] .cu-collapse-trigger {\n  width: 100%;\n}\n.cu-navbar[data-v-3d2f22c7] .cu-dropdown {\n  width: 100%;\n}\n.cu-navbar-header[data-v-3d2f22c7] {\n  display: flex;\n  align-items: center;\n  gap: var(--cu-space-xs);\n  margin-bottom: var(--cu-space-xs);\n}\n.cu-navbar-search-input[data-v-3d2f22c7] {\n  flex: 1;\n  min-width: 0;\n}\n.cu-navbar-compact-toggle[data-v-3d2f22c7] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  flex-shrink: 0;\n  width: 2rem;\n  height: 2rem;\n  background: transparent;\n  border: var(--cu-border-thin) solid var(--cu-border-color);\n  border-radius: var(--cu-radius-sm);\n  cursor: pointer;\n  font-size: var(--cu-font-size-sm);\n  line-height: 1;\n  color: var(--cu-color-neutral);\n}\n.cu-navbar-compact-toggle[data-v-3d2f22c7]:hover {\n  background-color: var(--cu-color-neutral-ghost-hover);\n}\n.cu-navbar[data-v-3d2f22c7] .cu-collapse-content {\n  margin-top: var(--cu-space-xs);\n}\n.cu-navbar-icon[data-v-3d2f22c7] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  flex-shrink: 0;\n  width: 1.25rem;\n  font-size: var(--cu-font-size-sm);\n  line-height: 1;\n}\n.cu-navbar-label[data-v-3d2f22c7] {\n  min-width: 0;\n}\n\n/* Highlight del modo scroll (clase duplicada → 0,3,0 para pisar el ghost) */\n.cu-navbar[data-v-3d2f22c7] .cu-navbar-item--match.cu-navbar-item--match {\n  background-color: var(--cu-color-primary-soft);\n}\n.cu-navbar[data-v-3d2f22c7] .cu-collapse.cu-navbar-item--match.cu-navbar-item--match > .cu-collapse-trigger {\n  background-color: var(--cu-color-primary-soft);\n}\n.cu-navbar-empty[data-v-3d2f22c7] {\n  padding: var(--cu-space-sm) var(--cu-space-md);\n  font-size: var(--cu-font-size-sm);\n  color: var(--cu-color-neutral-text-subtle);\n}\n\n/* Compact: solo iconos (o la inicial), sin labels */\n.cu-navbar--compact[data-v-3d2f22c7] {\n  width: fit-content;\n}\n.cu-navbar--compact[data-v-3d2f22c7] .cu-button {\n  justify-content: center;\n  padding: var(--cu-space-sm);\n}\n.cu-navbar--compact[data-v-3d2f22c7] .cu-collapse-trigger {\n  justify-content: center;\n  padding: var(--cu-space-sm);\n}\n.cu-navbar--compact[data-v-3d2f22c7] .cu-navbar-label {\n  display: none;\n}\n.cu-navbar--compact[data-v-3d2f22c7] .cu-collapse-label {\n  display: none;\n}\n.cu-navbar--compact[data-v-3d2f22c7] .cu-collapse-content {\n  padding-left: var(--cu-space-sm);\n}\n.cu-navbar--compact[data-v-3d2f22c7] .cu-navbar-icon {\n  width: auto;\n}\n\n/* Trigger de submenú en modo compact: icono centrado + chevron a la derecha\n   que abre un flyout (Dropdown) con NavbarMenu adentro */\n.cu-navbar-compact-trigger[data-v-3d2f22c7] {\n  position: relative;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 100%;\n  padding: var(--cu-space-sm);\n  background: transparent;\n  border: none;\n  cursor: pointer;\n  font-size: var(--cu-font-size-sm);\n  color: var(--cu-color-neutral);\n  border-radius: var(--cu-radius-sm);\n  transition: background-color 150ms ease;\n}\n.cu-navbar-compact-trigger[data-v-3d2f22c7]:hover {\n  background-color: var(--cu-color-neutral-ghost-hover);\n}\n.cu-navbar-compact-chevron[data-v-3d2f22c7] {\n  position: absolute;\n  right: var(--cu-space-2xs);\n  flex-shrink: 0;\n  color: var(--cu-color-neutral-text-muted);\n}\n"]], ["__scopeId", "data-v-3d2f22c7"]]);
 //#endregion
 //#region src/utils/search.ts
 var ACCENT_RE = /[\u0300-\u0302\u0304-\u036f]/g;
@@ -5398,6 +5692,14 @@ function useNavbar(options) {
 	}
 	const query = ref("");
 	const navRef = ref(null);
+	/**
+	* Items del consumidor. En el Custom Element `items` llega como propiedad JS
+	* *después* del upgrade, así que hasta entonces la prop (requerida) es
+	* `undefined`: recorrerla tiraba `items is not iterable` dentro del render y el
+	* elemento quedaba con el shadow DOM vacío para siempre (no se recuperaba al
+	* asignar los items). Mismo patrón que el resto de props "de datos" del CE.
+	*/
+	const navItems = () => options.items() ?? [];
 	watch(query, (value) => options.onSearch?.(value));
 	const normalizedQuery = computed(() => normalizeText(query.value.trim()));
 	const searchActive = computed(() => options.search() && normalizedQuery.value.length > 0);
@@ -5420,8 +5722,8 @@ function useNavbar(options) {
 		return out;
 	}
 	const displayItems = computed(() => {
-		if (!searchActive.value || options.searchMode() !== "filter") return options.items();
-		return filterTree(options.items(), normalizedQuery.value);
+		if (!searchActive.value || options.searchMode() !== "filter") return navItems();
+		return filterTree(navItems(), normalizedQuery.value);
 	});
 	const firstMatch = computed(() => {
 		if (!options.search() || options.searchMode() !== "scroll") return null;
@@ -5437,7 +5739,7 @@ function useNavbar(options) {
 			}
 			return null;
 		};
-		return dfs(options.items());
+		return dfs(navItems());
 	});
 	const highlightTarget = computed(() => options.highlightItem?.() ?? firstMatch.value);
 	const activeItem = computed(() => {
@@ -5453,11 +5755,23 @@ function useNavbar(options) {
 			}
 			return null;
 		};
-		return findActive(options.items());
+		return findActive(navItems());
 	});
+	/**
+	* Elemento marcado (`data-navbar-active` / `data-navbar-match`), buscado dentro de
+	* esta nav: en el Custom Element el marcador vive en un shadow root (desde
+	* `document` no se ve, así que el scroll del activo nunca ocurría) y con dos
+	* instancias en la misma página el `document.querySelector` global desplazaba la
+	* primera. Los consumidores que no exponen `navRef` conservan el alcance de documento.
+	*/
+	function findMarker(attr) {
+		const root = navRef.value;
+		if (root) return root.querySelector(`[${attr}]`);
+		return document.querySelector(`[${attr}]`);
+	}
 	function scrollToActive() {
 		nextTick(() => {
-			const el = document.querySelector("[data-navbar-active]");
+			const el = findMarker("data-navbar-active");
 			if (!el) return;
 			let parent = el.parentElement;
 			let scrollContainer = null;
@@ -5492,7 +5806,7 @@ function useNavbar(options) {
 	watch(firstMatch, async (item) => {
 		if (!item) return;
 		await nextTick();
-		document.querySelector("[data-navbar-match]")?.scrollIntoView({ block: "nearest" });
+		findMarker("data-navbar-match")?.scrollIntoView({ block: "nearest" });
 	});
 	onMounted(() => {
 		if (activeItem.value) scrollToActive();
@@ -5590,7 +5904,7 @@ var Navbar_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE_
 	setup(__props, { emit: __emit }) {
 		const props = __props;
 		const emit = __emit;
-		const { query, displayItems, highlightTarget, activeItem } = useNavbar({
+		const { query, navRef, displayItems, highlightTarget, activeItem } = useNavbar({
 			items: () => props.items,
 			search: () => props.search,
 			searchMode: () => props.searchMode,
@@ -5610,16 +5924,30 @@ var Navbar_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE_
 		function onChangeTiny(e) {
 			isTiny.value = e.matches;
 		}
-		onMounted(() => {
-			if (!props.responsive) return;
+		function syncTinyWatcher(responsive) {
+			mqTiny?.removeEventListener("change", onChangeTiny);
+			mqTiny = null;
+			if (!responsive || typeof window.matchMedia !== "function") {
+				isTiny.value = false;
+				return;
+			}
 			mqTiny = window.matchMedia("(max-width: 480px)");
 			isTiny.value = mqTiny.matches;
 			mqTiny.addEventListener("change", onChangeTiny);
-		});
+		}
+		watch(() => props.responsive, syncTinyWatcher);
+		onMounted(() => syncTinyWatcher(props.responsive));
 		onUnmounted(() => {
 			mqTiny?.removeEventListener("change", onChangeTiny);
 		});
-		const sideOverFullscreen = computed(() => props.responsiveMode === "fullscreen" || props.responsiveMode === "auto" && isTiny.value);
+		const safeSideOverPosition = computed(() => isPosition(props.sideOverPosition) ? props.sideOverPosition : "left");
+		const safeResponsiveMode = computed(() => isNavbarResponsiveMode(props.responsiveMode) ? props.responsiveMode : "auto");
+		const sideOverFullscreen = computed(() => safeResponsiveMode.value === "fullscreen" || safeResponsiveMode.value === "auto" && isTiny.value);
+		const instance = getCurrentInstance();
+		function panelTeleports() {
+			const root = (instance?.vnode.el)?.getRootNode?.();
+			return !(typeof ShadowRoot !== "undefined" && root instanceof ShadowRoot);
+		}
 		let route = null;
 		try {
 			route = useRoute();
@@ -5630,7 +5958,11 @@ var Navbar_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE_
 			open.value = false;
 		});
 		return (_ctx, _cache) => {
-			return openBlock(), createElementBlock("div", { class: normalizeClass(["cu-navbar-responsive", { "is-responsive": __props.responsive }]) }, [
+			return openBlock(), createElementBlock("div", {
+				ref_key: "navRef",
+				ref: navRef,
+				class: normalizeClass(["cu-navbar-responsive", { "is-responsive": __props.responsive }])
+			}, [
 				__props.responsive ? (openBlock(), createElementBlock("button", {
 					key: 0,
 					type: "button",
@@ -5643,9 +5975,11 @@ var Navbar_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE_
 					key: 1,
 					"model-value": open.value,
 					"onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => open.value = $event),
-					position: props.sideOverPosition,
+					position: safeSideOverPosition.value,
 					size: "264px",
-					fullscreen: sideOverFullscreen.value
+					fullscreen: sideOverFullscreen.value,
+					teleport: panelTeleports(),
+					"aria-label": "Menú"
 				}, {
 					default: withCtx(() => [createVNode(NavbarList_default, {
 						items: unref(displayItems),
@@ -5682,7 +6016,8 @@ var Navbar_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE_
 				}, 8, [
 					"model-value",
 					"position",
-					"fullscreen"
+					"fullscreen",
+					"teleport"
 				])) : createCommentVNode("v-if", true),
 				!__props.responsive ? (openBlock(), createBlock(NavbarList_default, {
 					key: 2,
@@ -5719,7 +6054,7 @@ var Navbar_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE_
 			], 2);
 		};
 	}
-}), [["styles", ["\n.cu-navbar-responsive[data-v-fd188859] {\n  display: contents;\n}\n.cu-navbar-responsive.is-responsive[data-v-fd188859] {\n  display: block;\n  position: relative;\n}\n.cu-navbar-responsive-toggle[data-v-fd188859] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 2.25rem;\n  height: 2.25rem;\n  margin-bottom: var(--cu-space-xs);\n  background: transparent;\n  border: var(--cu-border-thin) solid var(--cu-border-color);\n  border-radius: var(--cu-radius-sm);\n  cursor: pointer;\n  font-size: 1.1rem;\n  line-height: 1;\n  color: var(--cu-color-neutral);\n}\n.cu-navbar-responsive-toggle[data-v-fd188859]:hover {\n  background-color: var(--cu-color-neutral-ghost-hover);\n}\n"]], ["__scopeId", "data-v-fd188859"]]);
+}), [["styles", ["\n.cu-navbar-responsive[data-v-019d6450] {\n  display: contents;\n}\n.cu-navbar-responsive.is-responsive[data-v-019d6450] {\n  display: block;\n  position: relative;\n}\n.cu-navbar-responsive-toggle[data-v-019d6450] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 2.25rem;\n  height: 2.25rem;\n  margin-bottom: var(--cu-space-xs);\n  background: transparent;\n  border: var(--cu-border-thin) solid var(--cu-border-color);\n  border-radius: var(--cu-radius-sm);\n  cursor: pointer;\n  font-size: 1.1rem;\n  line-height: 1;\n  color: var(--cu-color-neutral);\n}\n.cu-navbar-responsive-toggle[data-v-019d6450]:hover {\n  background-color: var(--cu-color-neutral-ghost-hover);\n}\n"]], ["__scopeId", "data-v-019d6450"]]);
 //#endregion
 //#region src/lib/navigation/navbar.ts
 var CuNavbar = defineComegenElement("cu-navbar", /* @__PURE__ */ _plugin_vue_export_helper_default(/* @__PURE__ */ defineComponent({

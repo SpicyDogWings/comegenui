@@ -1034,798 +1034,6 @@ function useUniqueId(prefix) {
 	return `${prefix}-${useId()}-${++sequence}`;
 }
 //#endregion
-//#region src/composables/useMenuNavigation.ts
-/** Texto comparable del typeahead (sin acentos ni mayúsculas). */
-function foldMenuText(value) {
-	return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, " ").trim().toLowerCase();
-}
-function useMenuNavigation(options) {
-	/** Fila activa: índice dentro de las filas elegibles. */
-	const activeRow = ref(0);
-	const effectiveActiveRow = computed(() => Math.min(activeRow.value, Math.max(0, options.enabledIndices.value.length - 1)));
-	let root = null;
-	/**
-	* Filas elegibles de ESTE menú: sin deshabilitar, en orden de DOM y sin las de un
-	* submenú anidado (viven en otro dropdown y tienen su propio handler).
-	*/
-	function enabledRows() {
-		const panel = options.panel();
-		const owner = options.root();
-		if (!panel || !owner) return [];
-		return Array.from(panel.querySelectorAll(options.rowSelector)).filter((row) => row.closest(".cu-dropdown") === owner && !row.hasAttribute("disabled") && row.getAttribute("aria-disabled") !== "true");
-	}
-	/** Índice en `items` → `tabindex` (la fila activa es la única parada del panel). */
-	function itemTabindex(index) {
-		const position = options.enabledIndices.value.indexOf(index);
-		return position >= 0 && position === effectiveActiveRow.value ? 0 : -1;
-	}
-	function focusRow(rows, index) {
-		const position = (index + rows.length) % rows.length;
-		const row = rows[position];
-		if (!row) return;
-		activeRow.value = position;
-		row.focus();
-		row.scrollIntoView?.({ block: "nearest" });
-	}
-	let typeahead = "";
-	let typeaheadTimer = null;
-	function clearTypeahead() {
-		typeahead = "";
-		if (typeaheadTimer) {
-			clearTimeout(typeaheadTimer);
-			typeaheadTimer = null;
-		}
-	}
-	function searchByPrefix(char, rows, from) {
-		typeahead += foldMenuText(char);
-		if (typeaheadTimer) clearTimeout(typeaheadTimer);
-		typeaheadTimer = setTimeout(clearTypeahead, 500);
-		const start = from >= 0 ? from : 0;
-		for (let step = 1; step <= rows.length; step++) {
-			const index = (start + step) % rows.length;
-			if (foldMenuText(rows[index].textContent ?? "").startsWith(typeahead)) {
-				focusRow(rows, index);
-				return;
-			}
-		}
-	}
-	let tabLeaving = false;
-	function handleKeydown(e) {
-		if (!options.isOpen() || options.enabled?.() === false) return;
-		if (e.altKey || e.ctrlKey || e.metaKey) return;
-		const panel = options.panel();
-		const target = e.target;
-		if (!panel || !target || !panel.contains(target)) return;
-		if (target.closest(".cu-dropdown") !== options.root()) return;
-		const rows = enabledRows();
-		if (rows.length === 0) return;
-		const current = rows.indexOf(target.closest(options.rowSelector));
-		if (e.key === "ArrowDown") {
-			e.preventDefault();
-			focusRow(rows, current < 0 ? 0 : current + 1);
-			return;
-		}
-		if (e.key === "ArrowUp") {
-			e.preventDefault();
-			focusRow(rows, current < 0 ? rows.length - 1 : current - 1);
-			return;
-		}
-		if (e.key === "Home") {
-			e.preventDefault();
-			focusRow(rows, 0);
-			return;
-		}
-		if (e.key === "End") {
-			e.preventDefault();
-			focusRow(rows, rows.length - 1);
-			return;
-		}
-		if (e.key === "Tab") {
-			tabLeaving = true;
-			return;
-		}
-		if (e.key === " ") {
-			const row = target.closest(options.rowSelector);
-			if (row && row.tagName === "A") {
-				e.preventDefault();
-				row.click();
-			}
-			return;
-		}
-		if (e.key.length === 1) {
-			e.preventDefault();
-			searchByPrefix(e.key, rows, current);
-		}
-	}
-	/** Un gesto de puntero no es Tab: descarta el cierre pendiente por foco. */
-	function handlePointerDown() {
-		tabLeaving = false;
-	}
-	function handleFocusOut(e) {
-		if (!tabLeaving || !options.isOpen()) return;
-		tabLeaving = false;
-		const next = e.relatedTarget;
-		if (next && options.root()?.contains(next)) return;
-		setTimeout(() => {
-			if (options.isOpen()) options.close();
-		}, 0);
-	}
-	/** El roving tabindex sigue al foco real (click o teclado). */
-	function handleFocusIn(e) {
-		const row = e.target?.closest?.(options.rowSelector);
-		if (!row) return;
-		const position = enabledRows().indexOf(row);
-		if (position >= 0) activeRow.value = position;
-	}
-	function attach(el) {
-		detach();
-		root = el;
-		if (!root) return;
-		root.addEventListener("keydown", handleKeydown);
-		root.addEventListener("focusout", handleFocusOut);
-		root.addEventListener("focusin", handleFocusIn);
-		root.addEventListener("pointerdown", handlePointerDown);
-	}
-	function detach() {
-		if (!root) return;
-		root.removeEventListener("keydown", handleKeydown);
-		root.removeEventListener("focusout", handleFocusOut);
-		root.removeEventListener("focusin", handleFocusIn);
-		root.removeEventListener("pointerdown", handlePointerDown);
-		root = null;
-	}
-	/** Estado de navegación a cero (al cerrar el menú). */
-	function reset() {
-		tabLeaving = false;
-		clearTypeahead();
-	}
-	return {
-		activeRow,
-		enabledRows,
-		itemTabindex,
-		focusRow,
-		attach,
-		detach,
-		reset
-	};
-}
-//#endregion
-//#region src/components/information/Loader.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1$5 = { class: "cu-loader" };
-//#endregion
-//#region src/components/information/Loader.vue
-var Loader_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__ */ defineComponent({
-	__name: "Loader",
-	props: {
-		color: {
-			type: String,
-			required: false,
-			default: "primary"
-		},
-		animation: {
-			type: String,
-			required: false,
-			default: "loading"
-		},
-		delay: {
-			type: Number,
-			required: false,
-			default: 2e3
-		}
-	},
-	setup(__props) {
-		const props = __props;
-		const loaderStyles = computed(() => ({
-			"--cu-loader-color": `var(--cu-color-${props.color})`,
-			"--cu-loader-delay": `${props.delay}ms`
-		}));
-		return (_ctx, _cache) => {
-			return openBlock(), createElementBlock("div", _hoisted_1$5, [createElementVNode("div", {
-				class: normalizeClass(["cu-loader-bar", `cu-loader-bar--${props.animation}`]),
-				style: normalizeStyle(loaderStyles.value)
-			}, null, 6)]);
-		};
-	}
-}), [["styles", ["\n.cu-loader[data-v-045244b1] {\n  position: absolute;\n  top: 0;\n  left: 0;\n  right: 0;\n  z-index: 30;\n  overflow: hidden;\n  height: 3px;\n}\n.cu-loader-bar[data-v-045244b1] {\n  position: absolute;\n  top: 0;\n  height: 100%;\n  background: var(--cu-loader-color);\n}\n.cu-loader-bar--loading[data-v-045244b1] {\n  width: 60%;\n  background: linear-gradient(90deg, transparent 0%, var(--cu-loader-color) 50%, transparent 100%);\n  animation: cu-loader-slide-045244b1 1.5s ease-in-out infinite;\n}\n.cu-loader-bar--cooldown[data-v-045244b1] {\n  left: 0;\n  width: 100%;\n  animation: cu-loader-cooldown-045244b1 var(--cu-loader-delay) linear forwards;\n}\n@keyframes cu-loader-slide-045244b1 {\n0% { left: -100%;\n}\n50% { left: 0%;\n}\n100% { left: 100%;\n}\n}\n@keyframes cu-loader-cooldown-045244b1 {\nfrom { width: 100%;\n}\nto { width: 0%;\n}\n}\n"]], ["__scopeId", "data-v-045244b1"]]);
-//#endregion
-//#region src/composables/useOverlayStack.ts
-var STACK_KEY = "__cu_overlay_stack__";
-function overlayStack() {
-	const g = globalThis;
-	return g[STACK_KEY] ??= {
-		entries: [],
-		scrollLocks: 0,
-		previousBodyOverflow: "",
-		listening: false
-	};
-}
-function lockScroll(stack) {
-	if (typeof document === "undefined") return;
-	if (stack.scrollLocks === 0) {
-		stack.previousBodyOverflow = document.body.style.overflow;
-		document.body.style.overflow = "hidden";
-	}
-	stack.scrollLocks += 1;
-}
-function unlockScroll(stack) {
-	if (stack.scrollLocks === 0) return;
-	stack.scrollLocks -= 1;
-	if (stack.scrollLocks === 0 && typeof document !== "undefined") document.body.style.overflow = stack.previousBodyOverflow;
-}
-/** Escape: sólo el overlay de arriba reacciona (y uno solo por pulsación). */
-function onEscape(event) {
-	if (event.key !== "Escape") return;
-	const stack = overlayStack();
-	stack.entries[stack.entries.length - 1]?.close();
-}
-/**
-* Suma un overlay abierto a la pila. Devuelve su id, que es lo que después se pasa a
-* `unregisterOverlay`/`isTopmostOverlay`.
-*/
-function registerOverlay(handle) {
-	const stack = overlayStack();
-	const id = Symbol("cu-overlay");
-	stack.entries.push({
-		...handle,
-		id
-	});
-	if (handle.lockScroll) lockScroll(stack);
-	if (!stack.listening && typeof document !== "undefined") {
-		document.addEventListener("keydown", onEscape);
-		stack.listening = true;
-	}
-	return id;
-}
-/** Saca un overlay de la pila (idempotente: cerrar dos veces no rompe nada). */
-function unregisterOverlay(id) {
-	const stack = overlayStack();
-	const index = stack.entries.findIndex((entry) => entry.id === id);
-	if (index === -1) return;
-	const [entry] = stack.entries.splice(index, 1);
-	if (entry?.lockScroll) unlockScroll(stack);
-	if (stack.entries.length === 0 && stack.listening && typeof document !== "undefined") {
-		document.removeEventListener("keydown", onEscape);
-		stack.listening = false;
-	}
-}
-//#endregion
-//#region src/components/overlay/Popover.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1$4 = [
-	"id",
-	"role",
-	"aria-label"
-];
-var VIEWPORT_MARGIN = 8;
-var HOVER_REGISTRY_KEY = "__cu_hover_registry__";
-//#endregion
-//#region src/components/overlay/Popover.vue
-var Popover_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__ */ defineComponent({
-	__name: "Popover",
-	props: {
-		position: {
-			type: String,
-			required: false,
-			default: "bottom",
-			validator: isPosition
-		},
-		align: {
-			type: String,
-			required: false,
-			default: "start",
-			validator: isAlign
-		},
-		offset: {
-			type: Number,
-			required: false,
-			default: 4
-		},
-		fixed: {
-			type: Boolean,
-			required: false,
-			default: false
-		},
-		panelWidth: {
-			type: String,
-			required: false,
-			default: ""
-		},
-		disabled: {
-			type: Boolean,
-			required: false,
-			default: false
-		},
-		hover: {
-			type: Boolean,
-			required: false,
-			default: false
-		},
-		hoverDelay: {
-			type: Number,
-			required: false,
-			default: 200
-		},
-		role: {
-			type: String,
-			required: false,
-			default: ""
-		},
-		/** `id` del panel: el trigger lo referencia con `aria-controls` (patrón combobox/listbox). */
-		panelId: {
-			type: String,
-			required: false,
-			default: ""
-		},
-		panelClass: {
-			type: [
-				String,
-				Array,
-				Object
-			],
-			required: false,
-			default: ""
-		}
-	},
-	emits: ["open", "close"],
-	setup(__props, { expose: __expose, emit: __emit }) {
-		const props = __props;
-		const emit = __emit;
-		const effectivePosition = computed(() => props.position);
-		const effectiveAlign = computed(() => props.align);
-		const panelPos = ref({
-			top: "0px",
-			left: "0px"
-		});
-		const autoFixed = ref(false);
-		const fixedMode = computed(() => props.fixed || autoFixed.value);
-		const panelStyle = computed(() => {
-			const base = {
-				backgroundColor: "var(--cu-popover-bg, var(--cu-color-surface))",
-				minWidth: "var(--cu-popover-min-width, 200px)",
-				maxWidth: "var(--cu-popover-max-width, 80vw)"
-			};
-			if (fixedMode.value) return {
-				...base,
-				position: "fixed",
-				...panelPos.value,
-				zIndex: "10000",
-				...props.panelWidth ? { width: props.panelWidth } : {}
-			};
-			base.position = "absolute";
-			base.zIndex = "1000";
-			base.width = props.panelWidth || "var(--cu-popover-width, 100%)";
-			const pos = effectivePosition.value;
-			if (pos === "bottom") {
-				base.top = "100%";
-				base.marginTop = `${props.offset}px`;
-			} else if (pos === "top") {
-				base.bottom = "100%";
-				base.marginBottom = `${props.offset}px`;
-			} else if (pos === "right") {
-				base.left = "100%";
-				base.marginLeft = `${props.offset}px`;
-			} else if (pos === "left") {
-				base.right = "100%";
-				base.marginRight = `${props.offset}px`;
-			}
-			if (pos === "left" || pos === "right") {
-				if (effectiveAlign.value === "start") base.top = "0";
-				else if (effectiveAlign.value === "end") base.bottom = "0";
-				else {
-					base.top = "50%";
-					base.transform = "translateY(-50%)";
-				}
-			} else if (effectiveAlign.value === "start") base.left = "0";
-			else if (effectiveAlign.value === "end") base.right = "0";
-			else {
-				base.left = "50%";
-				base.transform = "translateX(-50%)";
-			}
-			return base;
-		});
-		const isOpen = ref(false);
-		const popoverRef = ref(null);
-		const panelEl = ref(null);
-		const NAMED_ROLES = {
-			menu: true,
-			dialog: true,
-			alertdialog: true
-		};
-		const panelLabel = ref("");
-		/** Primer elemento del slot `toggle` (el ancla que el consumidor abre). */
-		function toggleElement() {
-			const root = popoverRef.value;
-			if (!root) return null;
-			for (const child of Array.from(root.children)) {
-				if (child === panelEl.value) continue;
-				if (child instanceof HTMLElement) return child;
-			}
-			return null;
-		}
-		/** Texto del trigger, con la misma precedencia que usa su nombre accesible. */
-		function triggerLabel(el) {
-			if (!el) return "";
-			return (el.getAttribute("aria-label") || el.getAttribute("title") || el.getAttribute("label") || el.textContent || "").replace(/\s+/g, " ").trim();
-		}
-		function namePanel() {
-			panelLabel.value = NAMED_ROLES[props.role] ? triggerLabel(toggleElement()) : "";
-		}
-		let overlayId = null;
-		function claimOverlay() {
-			if (overlayId) return;
-			overlayId = registerOverlay({ close });
-		}
-		function releaseOverlay() {
-			if (!overlayId) return;
-			unregisterOverlay(overlayId);
-			overlayId = null;
-		}
-		let focusBeforeOpen = null;
-		/**
-		* Elemento enfocado dentro del mismo árbol (shadow root o documento).
-		*
-		* Dentro de un shadow root `activeElement` es `null` cuando el foco está afuera: eso
-		* **no** significa "foco perdido" (puede estar en otro control del documento), así que
-		* se cae a `document.activeElement` y se descarta el host, que es un destino inútil.
-		*/
-		function activeInTree() {
-			const root = popoverRef.value?.getRootNode();
-			const inRoot = root?.activeElement ?? null;
-			if (inRoot) return inRoot;
-			if (!root || !(root instanceof ShadowRoot)) return null;
-			const host = root.host;
-			const docActive = document.activeElement;
-			if (docActive && docActive !== document.body && docActive !== host) return docActive;
-			return null;
-		}
-		/** Primer elemento enfocable del trigger (slot `#toggle`). */
-		function triggerElement() {
-			const root = popoverRef.value;
-			if (!root) return null;
-			const focusables = root.querySelectorAll("button, a[href], input, select, textarea, [tabindex]:not([tabindex=\"-1\"])");
-			for (const el of focusables) if (!panelEl.value?.contains(el)) return el;
-			return null;
-		}
-		function rememberFocus() {
-			const active = activeInTree();
-			focusBeforeOpen = active && active !== document.body && !panelEl.value?.contains(active) ? active : null;
-		}
-		function restoreFocus() {
-			if (props.hover) return;
-			const panel = panelEl.value;
-			const active = activeInTree();
-			const insidePanel = !!panel && !!active && panel.contains(active);
-			const lost = !active || active === document.body;
-			const target = insidePanel ? focusBeforeOpen ?? triggerElement() : lost ? focusBeforeOpen : null;
-			focusBeforeOpen = null;
-			if (!target || !target.isConnected) return;
-			target.focus();
-		}
-		let closedByOutsideClick = false;
-		function onDocumentClick(e) {
-			if (!isOpen.value || !popoverRef.value) return;
-			if (!(e instanceof MouseEvent)) return;
-			if (!e.composedPath().includes(popoverRef.value)) {
-				closedByOutsideClick = true;
-				isOpen.value = false;
-				emit("close");
-				restoreFocus();
-				setTimeout(() => {
-					closedByOutsideClick = false;
-				}, 0);
-			}
-		}
-		const SCROLL_OPTS = {
-			capture: true,
-			passive: true
-		};
-		let mountedRoot = null;
-		onMounted(() => {
-			mountedRoot = popoverRef.value;
-			document.addEventListener("click", onDocumentClick, true);
-			window.addEventListener("resize", onViewportChange);
-			document.addEventListener("scroll", onViewportChange, SCROLL_OPTS);
-		});
-		onUnmounted(() => {
-			clearHoverTimers();
-			unregisterHover();
-			releaseOverlay();
-			document.removeEventListener("click", onDocumentClick, true);
-			window.removeEventListener("resize", onViewportChange);
-			document.removeEventListener("scroll", onViewportChange, SCROLL_OPTS);
-			document.removeEventListener("mousemove", onPointerMove, true);
-			pointerListening = false;
-			mountedRoot = null;
-		});
-		function crossAxisStart(anchorStart, anchorSize, panelSize, align) {
-			if (align === "start") return anchorStart;
-			if (align === "end") return anchorStart + anchorSize - panelSize;
-			return anchorStart + anchorSize / 2 - panelSize / 2;
-		}
-		/** Deja el panel dentro del viewport sin generar scroll (nunca negativo). */
-		function clampToViewport(value, size, viewport) {
-			const max = Math.max(VIEWPORT_MARGIN, viewport - size - VIEWPORT_MARGIN);
-			return Math.min(Math.max(value, VIEWPORT_MARGIN), max);
-		}
-		/**
-		* Recalcula la posición del panel en modo fixed (coordenadas de viewport) al abrir y
-		* en cada scroll/resize mientras está abierto.
-		*
-		* Con el tamaño medido el panel se ubica por coordenadas y se **voltea** al lado
-		* opuesto si no entra (right→left, bottom→top) y se **clampea** al viewport: antes,
-		* `position="right"` en el borde derecho generaba scroll horizontal (scrollWidth
-		* 1201 > 900) y `left` daba x=-308.
-		*/
-		function positionPanel(measured) {
-			if (!fixedMode.value || !popoverRef.value) return;
-			const r = popoverRef.value.getBoundingClientRect();
-			const vw = window.innerWidth;
-			const vh = window.innerHeight;
-			const align = effectiveAlign.value;
-			const gap = props.offset;
-			const style = {};
-			const box = measured ?? panelEl.value?.getBoundingClientRect();
-			const pw = box?.width ?? 0;
-			const ph = box?.height ?? 0;
-			const room = {
-				right: vw - r.right - gap - VIEWPORT_MARGIN,
-				left: r.left - gap - VIEWPORT_MARGIN,
-				bottom: vh - r.bottom - gap - VIEWPORT_MARGIN,
-				top: r.top - gap - VIEWPORT_MARGIN
-			};
-			let pos = effectivePosition.value;
-			if (pw > 0) {
-				if (pos === "right" && room.right < pw && room.left >= pw) pos = "left";
-				else if (pos === "left" && room.left < pw && room.right >= pw) pos = "right";
-			}
-			if (ph > 0) {
-				if (pos === "bottom" && room.bottom < ph && room.top >= ph) pos = "top";
-				else if (pos === "top" && room.top < ph && room.bottom >= ph) pos = "bottom";
-			}
-			if (pw > 0 || ph > 0) {
-				let left;
-				let top;
-				if (pos === "bottom" || pos === "top") {
-					left = crossAxisStart(r.left, r.width, pw, align);
-					top = pos === "bottom" ? r.bottom + gap : r.top - gap - ph;
-				} else {
-					top = crossAxisStart(r.top, r.height, ph, align);
-					left = pos === "right" ? r.right + gap : r.left - gap - pw;
-				}
-				if (pw > 0) left = clampToViewport(left, pw, vw);
-				if (ph > 0) top = clampToViewport(top, ph, vh);
-				style.left = `${left}px`;
-				style.top = `${top}px`;
-			} else if (pos === "bottom") {
-				style.top = `${r.bottom + gap}px`;
-				if (align === "start") style.left = `${r.left}px`;
-				else if (align === "end") style.right = `${vw - r.right}px`;
-				else {
-					style.left = `${r.left + r.width / 2}px`;
-					style.transform = "translateX(-50%)";
-				}
-			} else if (pos === "top") {
-				style.bottom = `${vh - r.top + gap}px`;
-				if (align === "start") style.left = `${r.left}px`;
-				else if (align === "end") style.right = `${vw - r.right}px`;
-				else {
-					style.left = `${r.left + r.width / 2}px`;
-					style.transform = "translateX(-50%)";
-				}
-			} else if (pos === "right") {
-				style.left = `${r.right + gap}px`;
-				if (align === "start") style.top = `${r.top}px`;
-				else if (align === "end") style.bottom = `${vh - r.bottom}px`;
-				else {
-					style.top = `${r.top + r.height / 2}px`;
-					style.transform = "translateY(-50%)";
-				}
-			} else {
-				style.right = `${vw - r.left + gap}px`;
-				if (align === "start") style.top = `${r.top}px`;
-				else if (align === "end") style.bottom = `${vh - r.bottom}px`;
-				else {
-					style.top = `${r.top + r.height / 2}px`;
-					style.transform = "translateY(-50%)";
-				}
-			}
-			if (autoFixed.value && !props.panelWidth && pw > 0) style.width = `${pw}px`;
-			panelPos.value = style;
-		}
-		function onViewportChange() {
-			if (isOpen.value && fixedMode.value) positionPanel();
-		}
-		function anchorsFixedDescendants(cs) {
-			const notNone = (v) => !!v && v !== "none";
-			return notNone(cs.transform) || notNone(cs.filter) || notNone(cs.perspective) || notNone(cs.backdropFilter) || !!cs.contain && /paint|layout|strict|content/.test(cs.contain) || !!cs.willChange && /transform|filter|perspective/.test(cs.willChange);
-		}
-		function clipsDescendants(cs) {
-			return !!cs.overflow && cs.overflow !== "visible";
-		}
-		function isClippedByAncestor(panel, anchor, pr) {
-			if (!pr.width && !pr.height) return false;
-			let el = parentInFlatTree(anchor);
-			while (el) {
-				const cs = getComputedStyle(el);
-				if (anchorsFixedDescendants(cs)) return false;
-				if (clipsDescendants(cs)) {
-					const r = el.getBoundingClientRect();
-					if (pr.top < r.top || pr.left < r.left || pr.bottom > r.bottom || pr.right > r.right) return true;
-				}
-				el = parentInFlatTree(el);
-			}
-			return false;
-		}
-		/** ¿El panel medido se sale del viewport? (en `absolute` eso genera scroll). */
-		function overflowsViewport(pr) {
-			if (!pr.width && !pr.height) return false;
-			return pr.left < 0 || pr.top < 0 || pr.right > window.innerWidth || pr.bottom > window.innerHeight;
-		}
-		async function autoFixIfNeeded() {
-			await nextTick();
-			const panel = panelEl.value;
-			const anchor = popoverRef.value;
-			if (!panel || !anchor || !isOpen.value || props.fixed) return;
-			const box = panel.getBoundingClientRect();
-			if (!isClippedByAncestor(panel, anchor, box) && !overflowsViewport(box)) return;
-			autoFixed.value = true;
-			positionPanel({
-				width: box.width,
-				height: box.height
-			});
-		}
-		let hoverTimer;
-		let hoverCloseTimer;
-		function hoverRegistry() {
-			const g = globalThis;
-			return g[HOVER_REGISTRY_KEY] ??= [];
-		}
-		/** ¿`ancestor` contiene a `el` en el flat tree? Un submenú puede vivir en otro shadow. */
-		function containsOverlay(ancestor, el) {
-			for (let node = el; node; node = parentInFlatTree(node)) if (node === ancestor) return true;
-			return false;
-		}
-		function registerHoverOpen() {
-			const el = popoverRef.value;
-			if (!el) return;
-			const reg = hoverRegistry();
-			const toClose = reg.filter((entry) => entry.el !== el && !containsOverlay(entry.el, el));
-			reg.push({
-				el,
-				close
-			});
-			for (const entry of toClose) entry.close();
-		}
-		function unregisterHover() {
-			const el = popoverRef.value ?? mountedRoot;
-			if (!el) return;
-			const reg = hoverRegistry();
-			const idx = reg.findIndex((entry) => entry.el === el);
-			if (idx !== -1) reg.splice(idx, 1);
-		}
-		let lastPointer = {
-			x: -1,
-			y: -1
-		};
-		let pointerListening = false;
-		function ensurePointerListener() {
-			if (pointerListening) return;
-			pointerListening = true;
-			document.addEventListener("mousemove", onPointerMove, true);
-		}
-		function onPointerMove(e) {
-			lastPointer = {
-				x: e.clientX,
-				y: e.clientY
-			};
-		}
-		function isPointerInside() {
-			const el = popoverRef.value;
-			if (!el) return false;
-			const panel = el.querySelector(".cu-popover-panel");
-			const rects = [el.getBoundingClientRect()];
-			if (panel) rects.push(panel.getBoundingClientRect());
-			return rects.some((r) => lastPointer.x >= r.left && lastPointer.x <= r.right && lastPointer.y >= r.top && lastPointer.y <= r.bottom);
-		}
-		/**
-		* Cancela los timers de hover. Sin esto, desmontar dentro del delay dejaba correr un
-		* `open()`/`close()` sobre un nodo ya desconectado: sumaba el popover al registry
-		* global de hover, a la pila de overlays, y emitía eventos de un componente que ya no
-		* existe. Es el único corte necesario: los dos timers viven por instancia y se crean
-		* siempre acá, así que `onUnmounted` los alcanza.
-		*/
-		function clearHoverTimers() {
-			clearTimeout(hoverTimer);
-			hoverTimer = void 0;
-			clearTimeout(hoverCloseTimer);
-			hoverCloseTimer = void 0;
-		}
-		function onMouseEnter() {
-			if (!props.hover || props.disabled) return;
-			clearTimeout(hoverTimer);
-			hoverTimer = void 0;
-			clearTimeout(hoverCloseTimer);
-			hoverCloseTimer = void 0;
-			if (props.hoverDelay === 0) open();
-			else hoverTimer = setTimeout(() => {
-				hoverTimer = void 0;
-				open();
-			}, props.hoverDelay);
-		}
-		function onMouseLeave() {
-			if (!props.hover) return;
-			clearTimeout(hoverTimer);
-			hoverTimer = void 0;
-			ensurePointerListener();
-			clearTimeout(hoverCloseTimer);
-			hoverCloseTimer = setTimeout(() => {
-				hoverCloseTimer = void 0;
-				if (isPointerInside()) return;
-				close();
-			}, 120);
-		}
-		function open() {
-			if (props.disabled) return;
-			autoFixed.value = false;
-			rememberFocus();
-			positionPanel();
-			namePanel();
-			isOpen.value = true;
-			claimOverlay();
-			emit("open");
-			if (props.hover) registerHoverOpen();
-			if (!props.fixed) autoFixIfNeeded();
-			else nextTick(() => {
-				if (isOpen.value) positionPanel();
-			});
-		}
-		function close() {
-			if (!isOpen.value) return;
-			isOpen.value = false;
-			autoFixed.value = false;
-			releaseOverlay();
-			emit("close");
-			unregisterHover();
-			restoreFocus();
-		}
-		function toggle() {
-			if (props.disabled) return;
-			if (closedByOutsideClick) {
-				closedByOutsideClick = false;
-				return;
-			}
-			if (isOpen.value) close();
-			else open();
-		}
-		__expose({
-			open,
-			close,
-			toggle,
-			isOpen: () => isOpen.value
-		});
-		return (_ctx, _cache) => {
-			return openBlock(), createElementBlock("div", {
-				ref_key: "popoverRef",
-				ref: popoverRef,
-				class: "cu-popover",
-				onMouseenter: onMouseEnter,
-				onMouseleave: onMouseLeave
-			}, [renderSlot(_ctx.$slots, "toggle", {
-				toggle,
-				isOpen: isOpen.value
-			}, void 0, true), isOpen.value ? (openBlock(), createElementBlock("div", {
-				key: 0,
-				ref_key: "panelEl",
-				ref: panelEl,
-				id: props.panelId || void 0,
-				style: normalizeStyle(panelStyle.value),
-				class: normalizeClass(["cu-popover-panel", __props.panelClass]),
-				role: __props.role || void 0,
-				"aria-label": panelLabel.value || void 0
-			}, [renderSlot(_ctx.$slots, "default", {}, void 0, true)], 14, _hoisted_1$4)) : createCommentVNode("v-if", true)], 544);
-		};
-	}
-}), [["styles", ["\n.cu-popover[data-v-d29bb2c8] {\n  position: relative;\n  display: inline-block;\n  box-sizing: border-box;\n}\n.cu-popover-panel[data-v-d29bb2c8] {\n  padding: var(--cu-space-sm);\n  border-radius: var(--cu-radius-md);\n  font-family: var(--cu-font-sans);\n  box-shadow: var(--cu-shadow-xl);\n}\n"]], ["__scopeId", "data-v-d29bb2c8"]]);
-//#endregion
 //#region node_modules/.pnpm/dompurify@3.4.14/node_modules/dompurify/dist/purify.es.mjs
 /*! @license DOMPurify 3.4.14 | (c) Cure53 and other contributors | Released under the Apache license 2.0 and Mozilla Public License 2.0 | github.com/cure53/DOMPurify/blob/3.4.14/LICENSE */
 function _arrayLikeToArray(r, a) {
@@ -4204,6 +3412,881 @@ function createDOMPurify() {
 }
 var purify = createDOMPurify();
 //#endregion
+//#region src/utils/sanitizeIcon.ts
+/** Elementos de dibujo SVG permitidos dentro de un `icon`. */
+var ICON_TAGS = [
+	"svg",
+	"g",
+	"path",
+	"circle",
+	"ellipse",
+	"rect",
+	"line",
+	"polyline",
+	"polygon",
+	"defs",
+	"linearGradient",
+	"radialGradient",
+	"stop",
+	"clipPath",
+	"mask",
+	"title",
+	"desc"
+];
+/** Atributos presentacionales de esos elementos (sin `style` ni referencias externas). */
+var ICON_ATTRS = [
+	"class",
+	"id",
+	"role",
+	"xmlns",
+	"viewBox",
+	"preserveAspectRatio",
+	"width",
+	"height",
+	"x",
+	"y",
+	"x1",
+	"x2",
+	"y1",
+	"y2",
+	"cx",
+	"cy",
+	"r",
+	"rx",
+	"ry",
+	"d",
+	"points",
+	"fill",
+	"fill-opacity",
+	"fill-rule",
+	"clip-rule",
+	"stroke",
+	"stroke-width",
+	"stroke-linecap",
+	"stroke-linejoin",
+	"stroke-miterlimit",
+	"stroke-dasharray",
+	"stroke-dashoffset",
+	"stroke-opacity",
+	"opacity",
+	"transform",
+	"offset",
+	"stop-color",
+	"stop-opacity",
+	"gradientUnits",
+	"gradientTransform",
+	"clipPathUnits",
+	"maskUnits",
+	"aria-hidden",
+	"aria-label",
+	"focusable"
+];
+/**
+* Sanitiza el HTML de un icono dejando sólo SVG inline. Devuelve `undefined` sin icono
+* y `''` cuando el HTML no contiene nada válido: el `v-if` del consumidor no pinta
+* wrappers vacíos.
+*/
+function sanitizeIcon(html) {
+	if (!html) return void 0;
+	return purify.sanitize(html, {
+		ALLOWED_TAGS: ICON_TAGS,
+		ALLOWED_ATTR: ICON_ATTRS,
+		KEEP_CONTENT: false
+	});
+}
+//#endregion
+//#region src/composables/useMenuNavigation.ts
+/** Texto comparable del typeahead (sin acentos ni mayúsculas). */
+function foldMenuText(value) {
+	return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, " ").trim().toLowerCase();
+}
+function useMenuNavigation(options) {
+	/** Fila activa: índice dentro de las filas elegibles. */
+	const activeRow = ref(0);
+	const effectiveActiveRow = computed(() => Math.min(activeRow.value, Math.max(0, options.enabledIndices.value.length - 1)));
+	let root = null;
+	/**
+	* Filas elegibles de ESTE menú: sin deshabilitar, en orden de DOM y sin las de un
+	* submenú anidado (viven en otro dropdown y tienen su propio handler).
+	*/
+	function enabledRows() {
+		const panel = options.panel();
+		const owner = options.root();
+		if (!panel || !owner) return [];
+		return Array.from(panel.querySelectorAll(options.rowSelector)).filter((row) => row.closest(".cu-dropdown") === owner && !row.hasAttribute("disabled") && row.getAttribute("aria-disabled") !== "true");
+	}
+	/** Índice en `items` → `tabindex` (la fila activa es la única parada del panel). */
+	function itemTabindex(index) {
+		const position = options.enabledIndices.value.indexOf(index);
+		return position >= 0 && position === effectiveActiveRow.value ? 0 : -1;
+	}
+	function focusRow(rows, index) {
+		const position = (index + rows.length) % rows.length;
+		const row = rows[position];
+		if (!row) return;
+		activeRow.value = position;
+		row.focus();
+		row.scrollIntoView?.({ block: "nearest" });
+	}
+	let typeahead = "";
+	let typeaheadTimer = null;
+	function clearTypeahead() {
+		typeahead = "";
+		if (typeaheadTimer) {
+			clearTimeout(typeaheadTimer);
+			typeaheadTimer = null;
+		}
+	}
+	function searchByPrefix(char, rows, from) {
+		typeahead += foldMenuText(char);
+		if (typeaheadTimer) clearTimeout(typeaheadTimer);
+		typeaheadTimer = setTimeout(clearTypeahead, 500);
+		const start = from >= 0 ? from : 0;
+		for (let step = 1; step <= rows.length; step++) {
+			const index = (start + step) % rows.length;
+			if (foldMenuText(rows[index].textContent ?? "").startsWith(typeahead)) {
+				focusRow(rows, index);
+				return;
+			}
+		}
+	}
+	let tabLeaving = false;
+	function handleKeydown(e) {
+		if (!options.isOpen() || options.enabled?.() === false) return;
+		if (e.altKey || e.ctrlKey || e.metaKey) return;
+		const panel = options.panel();
+		const target = e.target;
+		if (!panel || !target || !panel.contains(target)) return;
+		if (target.closest(".cu-dropdown") !== options.root()) return;
+		const rows = enabledRows();
+		if (rows.length === 0) return;
+		const current = rows.indexOf(target.closest(options.rowSelector));
+		if (e.key === "ArrowDown") {
+			e.preventDefault();
+			focusRow(rows, current < 0 ? 0 : current + 1);
+			return;
+		}
+		if (e.key === "ArrowUp") {
+			e.preventDefault();
+			focusRow(rows, current < 0 ? rows.length - 1 : current - 1);
+			return;
+		}
+		if (e.key === "Home") {
+			e.preventDefault();
+			focusRow(rows, 0);
+			return;
+		}
+		if (e.key === "End") {
+			e.preventDefault();
+			focusRow(rows, rows.length - 1);
+			return;
+		}
+		if (e.key === "Tab") {
+			tabLeaving = true;
+			return;
+		}
+		if (e.key === " ") {
+			const row = target.closest(options.rowSelector);
+			if (row && row.tagName === "A") {
+				e.preventDefault();
+				row.click();
+			}
+			return;
+		}
+		if (e.key.length === 1) {
+			e.preventDefault();
+			searchByPrefix(e.key, rows, current);
+		}
+	}
+	/** Un gesto de puntero no es Tab: descarta el cierre pendiente por foco. */
+	function handlePointerDown() {
+		tabLeaving = false;
+	}
+	function handleFocusOut(e) {
+		if (!tabLeaving || !options.isOpen()) return;
+		tabLeaving = false;
+		const next = e.relatedTarget;
+		if (next && options.root()?.contains(next)) return;
+		setTimeout(() => {
+			if (options.isOpen()) options.close();
+		}, 0);
+	}
+	/** El roving tabindex sigue al foco real (click o teclado). */
+	function handleFocusIn(e) {
+		const row = e.target?.closest?.(options.rowSelector);
+		if (!row) return;
+		const position = enabledRows().indexOf(row);
+		if (position >= 0) activeRow.value = position;
+	}
+	function attach(el) {
+		detach();
+		root = el;
+		if (!root) return;
+		root.addEventListener("keydown", handleKeydown);
+		root.addEventListener("focusout", handleFocusOut);
+		root.addEventListener("focusin", handleFocusIn);
+		root.addEventListener("pointerdown", handlePointerDown);
+	}
+	function detach() {
+		if (!root) return;
+		root.removeEventListener("keydown", handleKeydown);
+		root.removeEventListener("focusout", handleFocusOut);
+		root.removeEventListener("focusin", handleFocusIn);
+		root.removeEventListener("pointerdown", handlePointerDown);
+		root = null;
+	}
+	/** Estado de navegación a cero (al cerrar el menú). */
+	function reset() {
+		tabLeaving = false;
+		clearTypeahead();
+	}
+	return {
+		activeRow,
+		enabledRows,
+		itemTabindex,
+		focusRow,
+		attach,
+		detach,
+		reset
+	};
+}
+//#endregion
+//#region src/components/information/Loader.vue?vue&type=script&setup=true&lang.ts
+var _hoisted_1$5 = { class: "cu-loader" };
+//#endregion
+//#region src/components/information/Loader.vue
+var Loader_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__ */ defineComponent({
+	__name: "Loader",
+	props: {
+		color: {
+			type: String,
+			required: false,
+			default: "primary"
+		},
+		animation: {
+			type: String,
+			required: false,
+			default: "loading"
+		},
+		delay: {
+			type: Number,
+			required: false,
+			default: 2e3
+		}
+	},
+	setup(__props) {
+		const props = __props;
+		const loaderStyles = computed(() => ({
+			"--cu-loader-color": `var(--cu-color-${props.color})`,
+			"--cu-loader-delay": `${props.delay}ms`
+		}));
+		return (_ctx, _cache) => {
+			return openBlock(), createElementBlock("div", _hoisted_1$5, [createElementVNode("div", {
+				class: normalizeClass(["cu-loader-bar", `cu-loader-bar--${props.animation}`]),
+				style: normalizeStyle(loaderStyles.value)
+			}, null, 6)]);
+		};
+	}
+}), [["styles", ["\n.cu-loader[data-v-045244b1] {\n  position: absolute;\n  top: 0;\n  left: 0;\n  right: 0;\n  z-index: 30;\n  overflow: hidden;\n  height: 3px;\n}\n.cu-loader-bar[data-v-045244b1] {\n  position: absolute;\n  top: 0;\n  height: 100%;\n  background: var(--cu-loader-color);\n}\n.cu-loader-bar--loading[data-v-045244b1] {\n  width: 60%;\n  background: linear-gradient(90deg, transparent 0%, var(--cu-loader-color) 50%, transparent 100%);\n  animation: cu-loader-slide-045244b1 1.5s ease-in-out infinite;\n}\n.cu-loader-bar--cooldown[data-v-045244b1] {\n  left: 0;\n  width: 100%;\n  animation: cu-loader-cooldown-045244b1 var(--cu-loader-delay) linear forwards;\n}\n@keyframes cu-loader-slide-045244b1 {\n0% { left: -100%;\n}\n50% { left: 0%;\n}\n100% { left: 100%;\n}\n}\n@keyframes cu-loader-cooldown-045244b1 {\nfrom { width: 100%;\n}\nto { width: 0%;\n}\n}\n"]], ["__scopeId", "data-v-045244b1"]]);
+//#endregion
+//#region src/composables/useOverlayStack.ts
+var STACK_KEY = "__cu_overlay_stack__";
+function overlayStack() {
+	const g = globalThis;
+	return g[STACK_KEY] ??= {
+		entries: [],
+		scrollLocks: 0,
+		previousBodyOverflow: "",
+		listening: false
+	};
+}
+function lockScroll(stack) {
+	if (typeof document === "undefined") return;
+	if (stack.scrollLocks === 0) {
+		stack.previousBodyOverflow = document.body.style.overflow;
+		document.body.style.overflow = "hidden";
+	}
+	stack.scrollLocks += 1;
+}
+function unlockScroll(stack) {
+	if (stack.scrollLocks === 0) return;
+	stack.scrollLocks -= 1;
+	if (stack.scrollLocks === 0 && typeof document !== "undefined") document.body.style.overflow = stack.previousBodyOverflow;
+}
+/** Escape: sólo el overlay de arriba reacciona (y uno solo por pulsación). */
+function onEscape(event) {
+	if (event.key !== "Escape") return;
+	const stack = overlayStack();
+	stack.entries[stack.entries.length - 1]?.close();
+}
+/**
+* Suma un overlay abierto a la pila. Devuelve su id, que es lo que después se pasa a
+* `unregisterOverlay`/`isTopmostOverlay`.
+*/
+function registerOverlay(handle) {
+	const stack = overlayStack();
+	const id = Symbol("cu-overlay");
+	stack.entries.push({
+		...handle,
+		id
+	});
+	if (handle.lockScroll) lockScroll(stack);
+	if (!stack.listening && typeof document !== "undefined") {
+		document.addEventListener("keydown", onEscape);
+		stack.listening = true;
+	}
+	return id;
+}
+/** Saca un overlay de la pila (idempotente: cerrar dos veces no rompe nada). */
+function unregisterOverlay(id) {
+	const stack = overlayStack();
+	const index = stack.entries.findIndex((entry) => entry.id === id);
+	if (index === -1) return;
+	const [entry] = stack.entries.splice(index, 1);
+	if (entry?.lockScroll) unlockScroll(stack);
+	if (stack.entries.length === 0 && stack.listening && typeof document !== "undefined") {
+		document.removeEventListener("keydown", onEscape);
+		stack.listening = false;
+	}
+}
+//#endregion
+//#region src/components/overlay/Popover.vue?vue&type=script&setup=true&lang.ts
+var _hoisted_1$4 = [
+	"id",
+	"role",
+	"aria-label"
+];
+var VIEWPORT_MARGIN = 8;
+var HOVER_REGISTRY_KEY = "__cu_hover_registry__";
+//#endregion
+//#region src/components/overlay/Popover.vue
+var Popover_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__ */ defineComponent({
+	__name: "Popover",
+	props: {
+		position: {
+			type: String,
+			required: false,
+			default: "bottom",
+			validator: isPosition
+		},
+		align: {
+			type: String,
+			required: false,
+			default: "start",
+			validator: isAlign
+		},
+		offset: {
+			type: Number,
+			required: false,
+			default: 4
+		},
+		fixed: {
+			type: Boolean,
+			required: false,
+			default: false
+		},
+		panelWidth: {
+			type: String,
+			required: false,
+			default: ""
+		},
+		disabled: {
+			type: Boolean,
+			required: false,
+			default: false
+		},
+		hover: {
+			type: Boolean,
+			required: false,
+			default: false
+		},
+		hoverDelay: {
+			type: Number,
+			required: false,
+			default: 200
+		},
+		role: {
+			type: String,
+			required: false,
+			default: ""
+		},
+		/** `id` del panel: el trigger lo referencia con `aria-controls` (patrón combobox/listbox). */
+		panelId: {
+			type: String,
+			required: false,
+			default: ""
+		},
+		panelClass: {
+			type: [
+				String,
+				Array,
+				Object
+			],
+			required: false,
+			default: ""
+		}
+	},
+	emits: ["open", "close"],
+	setup(__props, { expose: __expose, emit: __emit }) {
+		const props = __props;
+		const emit = __emit;
+		const effectivePosition = computed(() => props.position);
+		const effectiveAlign = computed(() => props.align);
+		const panelPos = ref({
+			top: "0px",
+			left: "0px"
+		});
+		const autoFixed = ref(false);
+		const fixedMode = computed(() => props.fixed || autoFixed.value);
+		const panelStyle = computed(() => {
+			const base = {
+				backgroundColor: "var(--cu-popover-bg, var(--cu-color-surface))",
+				minWidth: "var(--cu-popover-min-width, 200px)",
+				maxWidth: "var(--cu-popover-max-width, 80vw)"
+			};
+			if (fixedMode.value) return {
+				...base,
+				position: "fixed",
+				...panelPos.value,
+				zIndex: "10000",
+				...props.panelWidth ? { width: props.panelWidth } : {}
+			};
+			base.position = "absolute";
+			base.zIndex = "1000";
+			base.width = props.panelWidth || "var(--cu-popover-width, 100%)";
+			const pos = effectivePosition.value;
+			if (pos === "bottom") {
+				base.top = "100%";
+				base.marginTop = `${props.offset}px`;
+			} else if (pos === "top") {
+				base.bottom = "100%";
+				base.marginBottom = `${props.offset}px`;
+			} else if (pos === "right") {
+				base.left = "100%";
+				base.marginLeft = `${props.offset}px`;
+			} else if (pos === "left") {
+				base.right = "100%";
+				base.marginRight = `${props.offset}px`;
+			}
+			if (pos === "left" || pos === "right") {
+				if (effectiveAlign.value === "start") base.top = "0";
+				else if (effectiveAlign.value === "end") base.bottom = "0";
+				else {
+					base.top = "50%";
+					base.transform = "translateY(-50%)";
+				}
+			} else if (effectiveAlign.value === "start") base.left = "0";
+			else if (effectiveAlign.value === "end") base.right = "0";
+			else {
+				base.left = "50%";
+				base.transform = "translateX(-50%)";
+			}
+			return base;
+		});
+		const isOpen = ref(false);
+		const popoverRef = ref(null);
+		const panelEl = ref(null);
+		const NAMED_ROLES = {
+			menu: true,
+			dialog: true,
+			alertdialog: true
+		};
+		const panelLabel = ref("");
+		/** Primer elemento del slot `toggle` (el ancla que el consumidor abre). */
+		function toggleElement() {
+			const root = popoverRef.value;
+			if (!root) return null;
+			for (const child of Array.from(root.children)) {
+				if (child === panelEl.value) continue;
+				if (child instanceof HTMLElement) return child;
+			}
+			return null;
+		}
+		/** Texto del trigger, con la misma precedencia que usa su nombre accesible. */
+		function triggerLabel(el) {
+			if (!el) return "";
+			return (el.getAttribute("aria-label") || el.getAttribute("title") || el.getAttribute("label") || el.textContent || "").replace(/\s+/g, " ").trim();
+		}
+		function namePanel() {
+			panelLabel.value = NAMED_ROLES[props.role] ? triggerLabel(toggleElement()) : "";
+		}
+		let overlayId = null;
+		function claimOverlay() {
+			if (overlayId) return;
+			overlayId = registerOverlay({ close });
+		}
+		function releaseOverlay() {
+			if (!overlayId) return;
+			unregisterOverlay(overlayId);
+			overlayId = null;
+		}
+		let focusBeforeOpen = null;
+		/**
+		* Elemento enfocado dentro del mismo árbol (shadow root o documento).
+		*
+		* Dentro de un shadow root `activeElement` es `null` cuando el foco está afuera: eso
+		* **no** significa "foco perdido" (puede estar en otro control del documento), así que
+		* se cae a `document.activeElement` y se descarta el host, que es un destino inútil.
+		*/
+		function activeInTree() {
+			const root = popoverRef.value?.getRootNode();
+			const inRoot = root?.activeElement ?? null;
+			if (inRoot) return inRoot;
+			if (!root || !(root instanceof ShadowRoot)) return null;
+			const host = root.host;
+			const docActive = document.activeElement;
+			if (docActive && docActive !== document.body && docActive !== host) return docActive;
+			return null;
+		}
+		/** Primer elemento enfocable del trigger (slot `#toggle`). */
+		function triggerElement() {
+			const root = popoverRef.value;
+			if (!root) return null;
+			const focusables = root.querySelectorAll("button, a[href], input, select, textarea, [tabindex]:not([tabindex=\"-1\"])");
+			for (const el of focusables) if (!panelEl.value?.contains(el)) return el;
+			return null;
+		}
+		function rememberFocus() {
+			const active = activeInTree();
+			focusBeforeOpen = active && active !== document.body && !panelEl.value?.contains(active) ? active : null;
+		}
+		function restoreFocus() {
+			if (props.hover) return;
+			const panel = panelEl.value;
+			const active = activeInTree();
+			const insidePanel = !!panel && !!active && panel.contains(active);
+			const lost = !active || active === document.body;
+			const target = insidePanel ? focusBeforeOpen ?? triggerElement() : lost ? focusBeforeOpen : null;
+			focusBeforeOpen = null;
+			if (!target || !target.isConnected) return;
+			target.focus();
+		}
+		let closedByOutsideClick = false;
+		function onDocumentClick(e) {
+			if (!isOpen.value || !popoverRef.value) return;
+			if (!(e instanceof MouseEvent)) return;
+			if (!e.composedPath().includes(popoverRef.value)) {
+				closedByOutsideClick = true;
+				isOpen.value = false;
+				emit("close");
+				restoreFocus();
+				setTimeout(() => {
+					closedByOutsideClick = false;
+				}, 0);
+			}
+		}
+		const SCROLL_OPTS = {
+			capture: true,
+			passive: true
+		};
+		let mountedRoot = null;
+		onMounted(() => {
+			mountedRoot = popoverRef.value;
+			document.addEventListener("click", onDocumentClick, true);
+			window.addEventListener("resize", onViewportChange);
+			document.addEventListener("scroll", onViewportChange, SCROLL_OPTS);
+		});
+		onUnmounted(() => {
+			clearHoverTimers();
+			unregisterHover();
+			releaseOverlay();
+			document.removeEventListener("click", onDocumentClick, true);
+			window.removeEventListener("resize", onViewportChange);
+			document.removeEventListener("scroll", onViewportChange, SCROLL_OPTS);
+			document.removeEventListener("mousemove", onPointerMove, true);
+			pointerListening = false;
+			mountedRoot = null;
+		});
+		function crossAxisStart(anchorStart, anchorSize, panelSize, align) {
+			if (align === "start") return anchorStart;
+			if (align === "end") return anchorStart + anchorSize - panelSize;
+			return anchorStart + anchorSize / 2 - panelSize / 2;
+		}
+		/** Deja el panel dentro del viewport sin generar scroll (nunca negativo). */
+		function clampToViewport(value, size, viewport) {
+			const max = Math.max(VIEWPORT_MARGIN, viewport - size - VIEWPORT_MARGIN);
+			return Math.min(Math.max(value, VIEWPORT_MARGIN), max);
+		}
+		/**
+		* Recalcula la posición del panel en modo fixed (coordenadas de viewport) al abrir y
+		* en cada scroll/resize mientras está abierto.
+		*
+		* Con el tamaño medido el panel se ubica por coordenadas y se **voltea** al lado
+		* opuesto si no entra (right→left, bottom→top) y se **clampea** al viewport: antes,
+		* `position="right"` en el borde derecho generaba scroll horizontal (scrollWidth
+		* 1201 > 900) y `left` daba x=-308.
+		*/
+		function positionPanel(measured) {
+			if (!fixedMode.value || !popoverRef.value) return;
+			const r = popoverRef.value.getBoundingClientRect();
+			const vw = window.innerWidth;
+			const vh = window.innerHeight;
+			const align = effectiveAlign.value;
+			const gap = props.offset;
+			const style = {};
+			const box = measured ?? panelEl.value?.getBoundingClientRect();
+			const pw = box?.width ?? 0;
+			const ph = box?.height ?? 0;
+			const room = {
+				right: vw - r.right - gap - VIEWPORT_MARGIN,
+				left: r.left - gap - VIEWPORT_MARGIN,
+				bottom: vh - r.bottom - gap - VIEWPORT_MARGIN,
+				top: r.top - gap - VIEWPORT_MARGIN
+			};
+			let pos = effectivePosition.value;
+			if (pw > 0) {
+				if (pos === "right" && room.right < pw && room.left >= pw) pos = "left";
+				else if (pos === "left" && room.left < pw && room.right >= pw) pos = "right";
+			}
+			if (ph > 0) {
+				if (pos === "bottom" && room.bottom < ph && room.top >= ph) pos = "top";
+				else if (pos === "top" && room.top < ph && room.bottom >= ph) pos = "bottom";
+			}
+			if (pw > 0 || ph > 0) {
+				let left;
+				let top;
+				if (pos === "bottom" || pos === "top") {
+					left = crossAxisStart(r.left, r.width, pw, align);
+					top = pos === "bottom" ? r.bottom + gap : r.top - gap - ph;
+				} else {
+					top = crossAxisStart(r.top, r.height, ph, align);
+					left = pos === "right" ? r.right + gap : r.left - gap - pw;
+				}
+				if (pw > 0) left = clampToViewport(left, pw, vw);
+				if (ph > 0) top = clampToViewport(top, ph, vh);
+				style.left = `${left}px`;
+				style.top = `${top}px`;
+			} else if (pos === "bottom") {
+				style.top = `${r.bottom + gap}px`;
+				if (align === "start") style.left = `${r.left}px`;
+				else if (align === "end") style.right = `${vw - r.right}px`;
+				else {
+					style.left = `${r.left + r.width / 2}px`;
+					style.transform = "translateX(-50%)";
+				}
+			} else if (pos === "top") {
+				style.bottom = `${vh - r.top + gap}px`;
+				if (align === "start") style.left = `${r.left}px`;
+				else if (align === "end") style.right = `${vw - r.right}px`;
+				else {
+					style.left = `${r.left + r.width / 2}px`;
+					style.transform = "translateX(-50%)";
+				}
+			} else if (pos === "right") {
+				style.left = `${r.right + gap}px`;
+				if (align === "start") style.top = `${r.top}px`;
+				else if (align === "end") style.bottom = `${vh - r.bottom}px`;
+				else {
+					style.top = `${r.top + r.height / 2}px`;
+					style.transform = "translateY(-50%)";
+				}
+			} else {
+				style.right = `${vw - r.left + gap}px`;
+				if (align === "start") style.top = `${r.top}px`;
+				else if (align === "end") style.bottom = `${vh - r.bottom}px`;
+				else {
+					style.top = `${r.top + r.height / 2}px`;
+					style.transform = "translateY(-50%)";
+				}
+			}
+			if (autoFixed.value && !props.panelWidth && pw > 0) style.width = `${pw}px`;
+			panelPos.value = style;
+		}
+		function onViewportChange() {
+			if (isOpen.value && fixedMode.value) positionPanel();
+		}
+		function anchorsFixedDescendants(cs) {
+			const notNone = (v) => !!v && v !== "none";
+			return notNone(cs.transform) || notNone(cs.filter) || notNone(cs.perspective) || notNone(cs.backdropFilter) || !!cs.contain && /paint|layout|strict|content/.test(cs.contain) || !!cs.willChange && /transform|filter|perspective/.test(cs.willChange);
+		}
+		function clipsDescendants(cs) {
+			return !!cs.overflow && cs.overflow !== "visible";
+		}
+		function isClippedByAncestor(panel, anchor, pr) {
+			if (!pr.width && !pr.height) return false;
+			let el = parentInFlatTree(anchor);
+			while (el) {
+				const cs = getComputedStyle(el);
+				if (anchorsFixedDescendants(cs)) return false;
+				if (clipsDescendants(cs)) {
+					const r = el.getBoundingClientRect();
+					if (pr.top < r.top || pr.left < r.left || pr.bottom > r.bottom || pr.right > r.right) return true;
+				}
+				el = parentInFlatTree(el);
+			}
+			return false;
+		}
+		/** ¿El panel medido se sale del viewport? (en `absolute` eso genera scroll). */
+		function overflowsViewport(pr) {
+			if (!pr.width && !pr.height) return false;
+			return pr.left < 0 || pr.top < 0 || pr.right > window.innerWidth || pr.bottom > window.innerHeight;
+		}
+		async function autoFixIfNeeded() {
+			await nextTick();
+			const panel = panelEl.value;
+			const anchor = popoverRef.value;
+			if (!panel || !anchor || !isOpen.value || props.fixed) return;
+			const box = panel.getBoundingClientRect();
+			if (!isClippedByAncestor(panel, anchor, box) && !overflowsViewport(box)) return;
+			autoFixed.value = true;
+			positionPanel({
+				width: box.width,
+				height: box.height
+			});
+		}
+		let hoverTimer;
+		let hoverCloseTimer;
+		function hoverRegistry() {
+			const g = globalThis;
+			return g[HOVER_REGISTRY_KEY] ??= [];
+		}
+		/** ¿`ancestor` contiene a `el` en el flat tree? Un submenú puede vivir en otro shadow. */
+		function containsOverlay(ancestor, el) {
+			for (let node = el; node; node = parentInFlatTree(node)) if (node === ancestor) return true;
+			return false;
+		}
+		function registerHoverOpen() {
+			const el = popoverRef.value;
+			if (!el) return;
+			const reg = hoverRegistry();
+			const toClose = reg.filter((entry) => entry.el !== el && !containsOverlay(entry.el, el));
+			reg.push({
+				el,
+				close
+			});
+			for (const entry of toClose) entry.close();
+		}
+		function unregisterHover() {
+			const el = popoverRef.value ?? mountedRoot;
+			if (!el) return;
+			const reg = hoverRegistry();
+			const idx = reg.findIndex((entry) => entry.el === el);
+			if (idx !== -1) reg.splice(idx, 1);
+		}
+		let lastPointer = {
+			x: -1,
+			y: -1
+		};
+		let pointerListening = false;
+		function ensurePointerListener() {
+			if (pointerListening) return;
+			pointerListening = true;
+			document.addEventListener("mousemove", onPointerMove, true);
+		}
+		function onPointerMove(e) {
+			lastPointer = {
+				x: e.clientX,
+				y: e.clientY
+			};
+		}
+		function isPointerInside() {
+			const el = popoverRef.value;
+			if (!el) return false;
+			const panel = el.querySelector(".cu-popover-panel");
+			const rects = [el.getBoundingClientRect()];
+			if (panel) rects.push(panel.getBoundingClientRect());
+			return rects.some((r) => lastPointer.x >= r.left && lastPointer.x <= r.right && lastPointer.y >= r.top && lastPointer.y <= r.bottom);
+		}
+		/**
+		* Cancela los timers de hover. Sin esto, desmontar dentro del delay dejaba correr un
+		* `open()`/`close()` sobre un nodo ya desconectado: sumaba el popover al registry
+		* global de hover, a la pila de overlays, y emitía eventos de un componente que ya no
+		* existe. Es el único corte necesario: los dos timers viven por instancia y se crean
+		* siempre acá, así que `onUnmounted` los alcanza.
+		*/
+		function clearHoverTimers() {
+			clearTimeout(hoverTimer);
+			hoverTimer = void 0;
+			clearTimeout(hoverCloseTimer);
+			hoverCloseTimer = void 0;
+		}
+		function onMouseEnter() {
+			if (!props.hover || props.disabled) return;
+			clearTimeout(hoverTimer);
+			hoverTimer = void 0;
+			clearTimeout(hoverCloseTimer);
+			hoverCloseTimer = void 0;
+			if (props.hoverDelay === 0) open();
+			else hoverTimer = setTimeout(() => {
+				hoverTimer = void 0;
+				open();
+			}, props.hoverDelay);
+		}
+		function onMouseLeave() {
+			if (!props.hover) return;
+			clearTimeout(hoverTimer);
+			hoverTimer = void 0;
+			ensurePointerListener();
+			clearTimeout(hoverCloseTimer);
+			hoverCloseTimer = setTimeout(() => {
+				hoverCloseTimer = void 0;
+				if (isPointerInside()) return;
+				close();
+			}, 120);
+		}
+		function open() {
+			if (props.disabled) return;
+			autoFixed.value = false;
+			rememberFocus();
+			positionPanel();
+			namePanel();
+			isOpen.value = true;
+			claimOverlay();
+			emit("open");
+			if (props.hover) registerHoverOpen();
+			if (!props.fixed) autoFixIfNeeded();
+			else nextTick(() => {
+				if (isOpen.value) positionPanel();
+			});
+		}
+		function close() {
+			if (!isOpen.value) return;
+			isOpen.value = false;
+			autoFixed.value = false;
+			releaseOverlay();
+			emit("close");
+			unregisterHover();
+			restoreFocus();
+		}
+		function toggle() {
+			if (props.disabled) return;
+			if (closedByOutsideClick) {
+				closedByOutsideClick = false;
+				return;
+			}
+			if (isOpen.value) close();
+			else open();
+		}
+		__expose({
+			open,
+			close,
+			toggle,
+			isOpen: () => isOpen.value
+		});
+		return (_ctx, _cache) => {
+			return openBlock(), createElementBlock("div", {
+				ref_key: "popoverRef",
+				ref: popoverRef,
+				class: "cu-popover",
+				onMouseenter: onMouseEnter,
+				onMouseleave: onMouseLeave
+			}, [renderSlot(_ctx.$slots, "toggle", {
+				toggle,
+				isOpen: isOpen.value
+			}, void 0, true), isOpen.value ? (openBlock(), createElementBlock("div", {
+				key: 0,
+				ref_key: "panelEl",
+				ref: panelEl,
+				id: props.panelId || void 0,
+				style: normalizeStyle(panelStyle.value),
+				class: normalizeClass(["cu-popover-panel", __props.panelClass]),
+				role: __props.role || void 0,
+				"aria-label": panelLabel.value || void 0
+			}, [renderSlot(_ctx.$slots, "default", {}, void 0, true)], 14, _hoisted_1$4)) : createCommentVNode("v-if", true)], 544);
+		};
+	}
+}), [["styles", ["\n.cu-popover[data-v-d29bb2c8] {\n  position: relative;\n  display: inline-block;\n  box-sizing: border-box;\n}\n.cu-popover-panel[data-v-d29bb2c8] {\n  padding: var(--cu-space-sm);\n  border-radius: var(--cu-radius-md);\n  font-family: var(--cu-font-sans);\n  box-shadow: var(--cu-shadow-xl);\n}\n"]], ["__scopeId", "data-v-d29bb2c8"]]);
+//#endregion
 //#region src/components/icons/LucideChevronRight.vue
 var LucideChevronRight_default = /* @__PURE__ */ defineComponent({
 	__name: "LucideChevronRight",
@@ -4371,7 +4454,6 @@ var Dropdown_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 	}),
 	emits: /*@__PURE__*/ mergeModels(["open", "close"], ["update:modelValue"]),
 	setup(__props, { expose: __expose, emit: __emit }) {
-		const sanitizeIcon = (html) => html ? purify.sanitize(html) : void 0;
 		const props = __props;
 		/** Valor seleccionado (v-model). */
 		const selectedValue = useModel(__props, "modelValue");
@@ -4535,7 +4617,7 @@ var Dropdown_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 					__props.icon ? (openBlock(), createElementBlock("span", {
 						key: 0,
 						class: "cu-dropdown-menu-item-icon",
-						innerHTML: sanitizeIcon(__props.icon)
+						innerHTML: unref(sanitizeIcon)(__props.icon)
 					}, null, 8, _hoisted_2$2)) : createCommentVNode("v-if", true),
 					createElementVNode("span", _hoisted_3$1, toDisplayString(__props.label || "Submenú"), 1),
 					createVNode(LucideChevronRight_default, {
@@ -4586,7 +4668,7 @@ var Dropdown_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 						}, [item.icon ? (openBlock(), createElementBlock("span", {
 							key: 0,
 							class: "cu-dropdown-menu-item-icon",
-							innerHTML: sanitizeIcon(item.icon)
+							innerHTML: unref(sanitizeIcon)(item.icon)
 						}, null, 8, _hoisted_6)) : createCommentVNode("v-if", true), createElementVNode("span", _hoisted_7, toDisplayString(item.label), 1)], 10, _hoisted_5)) : (openBlock(), createElementBlock("button", {
 							key: 2,
 							type: "button",
@@ -4598,7 +4680,7 @@ var Dropdown_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 						}, [item.icon ? (openBlock(), createElementBlock("span", {
 							key: 0,
 							class: "cu-dropdown-menu-item-icon",
-							innerHTML: sanitizeIcon(item.icon)
+							innerHTML: unref(sanitizeIcon)(item.icon)
 						}, null, 8, _hoisted_9)) : createCommentVNode("v-if", true), createElementVNode("span", _hoisted_10, toDisplayString(item.label), 1)], 10, _hoisted_8))], 64);
 					}), 128)), renderSlot(_ctx.$slots, "default", {}, void 0, true)], 64)) : createCommentVNode("v-if", true)
 				]),
@@ -4618,7 +4700,7 @@ var Dropdown_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 			]);
 		};
 	}
-}), [["styles", ["\n/* El wrapper: el motor (position/display) lo aporta .cu-popover. Acá solo\n   ajustes específicos del dropdown sobre el panel del Popover. */\n.cu-dropdown[data-v-09c3c9b8] .cu-dropdown-panel--loading {\n  pointer-events: none;\n}\n\n/* Dropdown anidado: ocupa el ancho de la fila del menú padre y el panel en\n   cascada es más angosto (auto) */\n.cu-dropdown.cu-dropdown--nested[data-v-09c3c9b8] {\n  display: block;\n  width: 100%;\n  --cu-popover-width: auto;\n  --cu-popover-min-width: 160px;\n}\n.cu-dropdown-panel--nested[data-v-09c3c9b8] {\n  padding: var(--cu-space-2xs);\n}\n\n/* Item de menú nativo (hojas + trigger de submenú anidado) */\n.cu-dropdown-menu-item[data-v-09c3c9b8] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--cu-space-md);\n  width: 100%;\n  padding: var(--cu-space-sm) var(--cu-space-md);\n  box-sizing: border-box;\n  background: transparent;\n  border: none;\n  cursor: pointer;\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  color: var(--cu-color-neutral);\n  text-decoration: none;\n  border-radius: var(--cu-radius-sm);\n  transition: background-color 150ms ease;\n}\n.cu-dropdown-menu-item[data-v-09c3c9b8]:hover:not(.cu-dropdown-menu-item--disabled) {\n  background-color: var(--cu-color-neutral-ghost-hover);\n}\n.cu-dropdown-menu-item--disabled[data-v-09c3c9b8] {\n  color: var(--cu-color-neutral-text-muted);\n  cursor: not-allowed;\n}\n.cu-dropdown-menu-item-label[data-v-09c3c9b8] {\n  text-align: left;\n  white-space: nowrap;\n}\n.cu-dropdown-menu-item-chevron[data-v-09c3c9b8] {\n  flex-shrink: 0;\n  color: var(--cu-color-neutral-text-muted);\n}\n.cu-dropdown-menu-item-icon[data-v-09c3c9b8] {\n  flex-shrink: 0;\n  color: var(--cu-color-neutral-text-subtle);\n}\n.cu-dropdown-menu-divider[data-v-09c3c9b8] {\n  margin: var(--cu-space-2xs) 0;\n  border: 0;\n  border-top: var(--cu-border-thin) solid var(--cu-border-color);\n}\n"]], ["__scopeId", "data-v-09c3c9b8"]]);
+}), [["styles", ["\n/* El wrapper: el motor (position/display) lo aporta .cu-popover. Acá solo\n   ajustes específicos del dropdown sobre el panel del Popover. */\n.cu-dropdown[data-v-ae797d18] .cu-dropdown-panel--loading {\n  pointer-events: none;\n}\n\n/* Dropdown anidado: ocupa el ancho de la fila del menú padre y el panel en\n   cascada es más angosto (auto) */\n.cu-dropdown.cu-dropdown--nested[data-v-ae797d18] {\n  display: block;\n  width: 100%;\n  --cu-popover-width: auto;\n  --cu-popover-min-width: 160px;\n}\n.cu-dropdown-panel--nested[data-v-ae797d18] {\n  padding: var(--cu-space-2xs);\n}\n\n/* Item de menú nativo (hojas + trigger de submenú anidado) */\n.cu-dropdown-menu-item[data-v-ae797d18] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: var(--cu-space-md);\n  width: 100%;\n  padding: var(--cu-space-sm) var(--cu-space-md);\n  box-sizing: border-box;\n  background: transparent;\n  border: none;\n  cursor: pointer;\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  color: var(--cu-color-neutral);\n  text-decoration: none;\n  border-radius: var(--cu-radius-sm);\n  transition: background-color 150ms ease;\n}\n.cu-dropdown-menu-item[data-v-ae797d18]:hover:not(.cu-dropdown-menu-item--disabled) {\n  background-color: var(--cu-color-neutral-ghost-hover);\n}\n.cu-dropdown-menu-item--disabled[data-v-ae797d18] {\n  color: var(--cu-color-neutral-text-muted);\n  cursor: not-allowed;\n}\n.cu-dropdown-menu-item-label[data-v-ae797d18] {\n  text-align: left;\n  white-space: nowrap;\n}\n.cu-dropdown-menu-item-chevron[data-v-ae797d18] {\n  flex-shrink: 0;\n  color: var(--cu-color-neutral-text-muted);\n}\n.cu-dropdown-menu-item-icon[data-v-ae797d18] {\n  flex-shrink: 0;\n  color: var(--cu-color-neutral-text-subtle);\n}\n.cu-dropdown-menu-divider[data-v-ae797d18] {\n  margin: var(--cu-space-2xs) 0;\n  border: 0;\n  border-top: var(--cu-border-thin) solid var(--cu-border-color);\n}\n"]], ["__scopeId", "data-v-ae797d18"]]);
 //#endregion
 //#region src/components/icons/LucideCheck.vue
 var LucideCheck_default = /* @__PURE__ */ defineComponent({
