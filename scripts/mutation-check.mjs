@@ -247,6 +247,61 @@ const MUTATIONS = [
     replace: `    <slot name="content"></slot>`,
   },
   {
+    id: "tooltip-no-focus-open",
+    file: "src/components/overlay/Tooltip.vue",
+    expect: "enfocar el trigger muestra el tooltip (teclado, no sólo hover)",
+    find: `    @focusin="onFocusIn"`,
+    replace: `    @focusin="() => {}"`,
+  },
+  {
+    id: "tooltip-empty-pill",
+    file: "src/components/overlay/Tooltip.vue",
+    expect: "sin text ni slot content no abre un panel vacío",
+    find: `  return props.text.trim().length > 0 || !!slots.content;`,
+    replace: `  return true;`,
+  },
+  {
+    id: "tooltip-ce-drops-content-slot",
+    file: "src/components/customElements/overlay/Tooltip.ce.vue",
+    test: "src/components/customElements/ce-parity.test.ts",
+    expect: "el CE reenvía el slot content del host al panel",
+    find: `  hasContent.value = !!host?.querySelector('[slot="content"]');`,
+    replace: `  hasContent.value = false;`,
+  },
+  {
+    id: "tooltip-no-aria-description",
+    file: "src/components/overlay/Tooltip.vue",
+    expect: "al abrir describe el trigger con el texto del tooltip",
+    find: `    el.setAttribute(DESCRIPTION_ATTR, text);`,
+    replace: `    /* mutado */`,
+  },
+  {
+    id: "tooltip-no-aria-restore",
+    file: "src/components/overlay/Tooltip.vue",
+    expect: "al cerrar restaura el aria-description del autor",
+    find: `    else el.setAttribute(DESCRIPTION_ATTR, previous);`,
+    replace: `    else el.removeAttribute(DESCRIPTION_ATTR);`,
+  },
+  {
+    id: "tooltip-invalid-color-no-fallback",
+    file: "src/components/overlay/Tooltip.vue",
+    expect: "un color fuera del set cae a neutral",
+    find: `const safeColor = computed(() => (isColor(props.color) ? props.color : 'neutral'));`,
+    replace: `const safeColor = computed(() => props.color);`,
+  },
+  {
+    id: "tooltip-disabled-stays-open",
+    file: "src/components/overlay/Tooltip.vue",
+    expect: "pasar disabled con el panel abierto lo cierra",
+    find: `  if (props.disabled || !hasContent()) {
+    popover.value?.close();
+    return;
+  }`,
+    replace: `  if (props.disabled || !hasContent()) {
+    return;
+  }`,
+  },
+  {
     id: "collapse-no-toggle-emit",
     file: "src/components/overlay/Collapse.vue",
     expect: "click en el trigger alterna y emite toggle con el nuevo estado",

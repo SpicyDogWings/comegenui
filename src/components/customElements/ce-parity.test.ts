@@ -29,7 +29,6 @@ import Autocomplete from "@/components/form/Autocomplete.vue";
 import Textarea from "@/components/form/Textarea.vue";
 import Select from "@/components/form/Select.vue";
 import CommandPalette from "@/components/overlay/CommandPalette.vue";
-import Tooltip from "@/components/overlay/Tooltip.vue";
 import Markdown from "@/components/markdown/Markdown.vue";
 import AdvancedTable from "@/components/data/AdvancedTable.vue";
 
@@ -858,20 +857,109 @@ describe("SideOver.ce", () => {
   });
 });
 
+// Ruta real del bundle: con shadow root no hay `$slots` en el CE, así que el
+// wrapper tiene que mirar la luz del host para decidir si reenvía `content`.
+defineComegenElement("cu-tooltip-slot-test", TooltipCe);
+
+function mountTooltipElement(html: string, attrs: Record<string, string> = {}) {
+  const el = document.createElement("cu-tooltip-slot-test") as HTMLElement;
+  el.innerHTML = html;
+  for (const [name, value] of Object.entries(attrs)) el.setAttribute(name, value);
+  document.body.appendChild(el);
+  return el;
+}
+
+async function openTooltip(el: HTMLElement) {
+  // El wrapper recién sabe si el host trae `content` después del mount/observer:
+  // se deja asentar ese render antes de disparar el hover.
+  await flushPromises();
+  const root = el.shadowRoot!.querySelector(".cu-popover") as HTMLElement;
+  root.dispatchEvent(new MouseEvent("mouseenter"));
+  await flushPromises();
+  await flushPromises();
+  return el.shadowRoot!.querySelector(".cu-popover-panel") as HTMLElement | null;
+}
+
 describe("Tooltip.ce", () => {
-  it("no manda el slot `content` si el host no lo trae (deja actuar al fallback `text`)", () => {
-    const w = mount(TooltipCe, { props: { text: "ayuda" } });
-    const inner = w.findComponent(Tooltip);
-    const slots = (inner.vm as unknown as { $slots: Record<string, unknown> }).$slots;
-    expect(inner.props("text")).toBe("ayuda");
-    expect(slots.content).toBeUndefined();
+  it("sin hijo `slot=content` no reenvía el slot (deja actuar al fallback `text`)", async () => {
+    const el = mountTooltipElement("<button>Guardar</button>", { text: "ayuda", delay: "0" });
+    const panel = await openTooltip(el);
+
+    expect(panel).not.toBeNull();
+    expect(panel!.textContent).toContain("ayuda");
+    expect(panel!.querySelector('slot[name="content"]')).toBeNull();
+    el.remove();
   });
 
-  it("reenvía el slot `content` del host", () => {
-    const w = mount(TooltipCe, { props: { text: "ayuda" }, slots: { content: "<i>rico</i>" } });
-    const inner = w.findComponent(Tooltip);
-    const slots = (inner.vm as unknown as { $slots: Record<string, unknown> }).$slots;
-    expect(slots.content).toBeDefined();
+  it("reenvía el slot `content` del host y lo proyecta en el panel", async () => {
+    const el = mountTooltipElement(
+      '<button>Guardar</button><span slot="content"><i>rico</i></span>',
+      { delay: "0" },
+    );
+    const panel = await openTooltip(el);
+
+    const outlet = panel!.querySelector('slot[name="content"]') as HTMLSlotElement | null;
+    expect(outlet).not.toBeNull();
+    const assigned = outlet!.assignedNodes();
+    expect(assigned).toHaveLength(1);
+    expect((assigned[0] as HTMLElement).querySelector("i")?.textContent).toBe("rico");
+    el.remove();
+  });
+
+  it("detecta el slot `content` agregado después del mount", async () => {
+    const el = mountTooltipElement("<button>Guardar</button>", { delay: "0" });
+    const span = document.createElement("span");
+    span.setAttribute("slot", "content");
+    span.textContent = "tardío";
+    el.appendChild(span);
+    await flushPromises();
+
+    const panel = await openTooltip(el);
+    const outlet = panel!.querySelector('slot[name="content"]') as HTMLSlotElement | null;
+    expect(outlet?.assignedNodes()).toHaveLength(1);
+    el.remove();
+  });
+
+  it("sin `text` ni slot `content` no abre un panel vacío", async () => {
+    const el = mountTooltipElement("<button>Guardar</button>", { delay: "0" });
+    const panel = await openTooltip(el);
+    expect(panel).toBeNull();
+    el.remove();
+  });
+
+  it("describe el trigger en la luz del host y restaura el aria-description del autor", async () => {
+    const el = mountTooltipElement('<button aria-description="propia">Guardar</button>', {
+      text: "Ayuda extra",
+      delay: "0",
+    });
+    const trigger = el.querySelector("button")!;
+
+    await openTooltip(el);
+    expect(trigger.getAttribute("aria-description")).toBe("Ayuda extra");
+
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+    await flushPromises();
+    expect(trigger.getAttribute("aria-description")).toBe("propia");
+    el.remove();
+  });
+
+  it("aplana el texto del slot `content` para la descripción", async () => {
+    const el = mountTooltipElement(
+      '<button>Guardar</button><span slot="content"><b>Rico</b> HTML</span>',
+      { delay: "0" },
+    );
+    await openTooltip(el);
+    expect(el.querySelector("button")!.getAttribute("aria-description")).toBe("Rico HTML");
+    el.remove();
+  });
+
+  it("un slot `content` sin texto no escribe la descripción", async () => {
+    const el = mountTooltipElement('<button>Guardar</button><span slot="content">   </span>', {
+      delay: "0",
+    });
+    await openTooltip(el);
+    expect(el.querySelector("button")!.hasAttribute("aria-description")).toBe(false);
+    el.remove();
   });
 });
 

@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import Tooltip from "../../overlay/Tooltip.vue";
-import { computed, useSlots, type PropType } from "vue";
+import { onMounted, onUnmounted, ref, useHost, type PropType } from "vue";
+import { isAlign, isColor, isPosition } from "@/utils/validators";
 
 const props = defineProps({
   /** Texto del tooltip. Si se usa el slot `content`, tiene prioridad */
   text: { type: String, default: "" },
   /** Color semántico del fondo: `primary`, `secondary`, `neutral`, `success`, `warning`, `danger` */
-  color: { type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>, default: "neutral" },
+  color: { type: String as PropType<'primary' | 'secondary' | 'neutral' | 'success' | 'warning' | 'danger'>, default: "neutral", validator: isColor },
   /** Lado donde aparece: `top`, `bottom`, `left`, `right` */
-  position: { type: String as PropType<'bottom' | 'top' | 'left' | 'right'>, default: "top" },
+  position: { type: String as PropType<'bottom' | 'top' | 'left' | 'right'>, default: "top", validator: isPosition },
   /** Alineación respecto al elemento: `start`, `center`, `end` */
-  align: { type: String as PropType<'start' | 'center' | 'end'>, default: "center" },
+  align: { type: String as PropType<'start' | 'center' | 'end'>, default: "center", validator: isAlign },
   /** Distancia (px) entre el elemento y el tooltip */
   offset: { type: Number, default: 6 },
   /** Retardo (ms) antes de mostrar el tooltip al hacer hover */
@@ -19,10 +20,37 @@ const props = defineProps({
   disabled: { type: Boolean, default: false },
 });
 
-const slots = useSlots();
-// El slot `content` del `.vue` tiene fallback a `text`: sólo se forwardea si el
-// host realmente lo trae; si no, un slot vacío pisaría el fallback.
-const hasContent = computed(() => !!slots.content);
+// Un CE con shadow root no tiene `$slots`: el slot `content` lo asigna el navegador
+// al `<slot name="content">` del shadow tree. Si el host no trae ningún hijo con
+// `slot="content"`, hay que NO reenviar el slot, o un slot vacío pisaría el fallback
+// `text` del `.vue` (y el tooltip quedaría en blanco). Por eso se mira la luz del
+// host en vez de `useSlots()`.
+const host = useHost() as HTMLElement | null;
+const hasContent = ref(false);
+let observer: MutationObserver | null = null;
+
+function syncContent() {
+  hasContent.value = !!host?.querySelector('[slot="content"]');
+}
+
+onMounted(() => {
+  if (!host) return;
+  syncContent();
+  // El contenido puede llegar después del upgrade (render diferido, frameworks):
+  // altas/bajas de hijos o cambios del atributo `slot` recalculan la presencia.
+  observer = new MutationObserver(syncContent);
+  observer.observe(host, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ["slot"],
+  });
+});
+
+onUnmounted(() => {
+  observer?.disconnect();
+  observer = null;
+});
 </script>
 
 <template>
