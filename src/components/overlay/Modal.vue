@@ -432,6 +432,19 @@ defineExpose({
   height: var(--cu-modal-height-full, 90vh);
 }
 
+/* En pantallas angostas los presets (que son `vw`/`vh`) dejan el modal en una
+   franja inusable: a 375px, `auto` son 187px y `sm` 94px. El ancho/alto disponible
+   manda y el preset aplica desde 641px. Misma especificidad que los presets
+   (`[data-size]`) pero después: gana este bloque. */
+@media (max-width: 640px) {
+  .cu-modal[data-size] {
+    max-width: calc(100vw - 2 * var(--cu-space-md));
+  }
+  .cu-modal[data-height] {
+    max-height: calc(100vh - 2 * var(--cu-space-md));
+  }
+}
+
 .cu-modal-header {
   display: flex;
   justify-content: space-between;

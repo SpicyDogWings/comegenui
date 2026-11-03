@@ -53,6 +53,10 @@ texto sobre la superficie: la base del color no alcanza el contraste mínimo com
 `size` controla el ancho máximo y `height`, el alto: cada uno acepta `auto` (**default**), `sm`,
 `md`, `lg`, `xl` y `full`.
 
+En viewports de hasta 640px mandan el ancho y el alto disponibles, no el preset: el modal mide
+`100vw`/`100vh` menos el padding del backdrop (`2 × var(--cu-space-md)`), así que se ve completo
+desde 320px de ancho. Desde 641px rigen los presets.
+
 ```vue
 <Modal size="auto" title="Ancho auto (default)">...</Modal>
 <Modal size="sm" title="Ancho sm">...</Modal>
