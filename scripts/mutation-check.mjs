@@ -1412,14 +1412,14 @@ const MUTATIONS = [
   {
     id: "number-input-clamp-max-ignorado",
     file: "src/components/form/NumberInput.vue",
-    expect: "tipear por encima de max clampea al máximo",
+    expect: "confirmar por encima de max recorta al máximo",
     find: `  if (maxValue.value !== undefined) clamped = Math.min(maxValue.value, clamped);`,
     replace: `  /* mutado: sin tope máximo */`,
   },
   {
     id: "number-input-clamp-min-ignorado",
     file: "src/components/form/NumberInput.vue",
-    expect: "tipear por debajo de min clampea al mínimo",
+    expect: "confirmar por debajo de min recorta al mínimo",
     find: `  if (minValue.value !== undefined) clamped = Math.max(minValue.value, clamped);`,
     replace: `  /* mutado: sin piso mínimo */`,
   },
@@ -1515,14 +1515,23 @@ const MUTATIONS = [
   {
     id: "number-input-tipeo-no-actualiza",
     file: "src/components/form/NumberInput.vue",
-    expect: "tipear actualiza el valor y emite update:modelValue",
-    find: `  if (next !== current.value) commitValue(next);
+    expect: "tipear un valor en rango actualiza el modelo y emite update:modelValue",
+    find: `  if (clamp(parsed) === parsed && parsed !== current.value) commitValue(parsed);
 }
 
 /** Confirma el texto (Enter o blur) y emite \`change\` si hubo edición. */`,
     replace: `}
 
 /** Confirma el texto (Enter o blur) y emite \`change\` si hubo edición. */`,
+  },
+  {
+    id: "number-input-clamp-al-tipear",
+    file: "src/components/form/NumberInput.vue",
+    expect: "tipear fuera de rango no reescribe el texto ni toca el modelo",
+    find: `  if (clamp(parsed) === parsed && parsed !== current.value) commitValue(parsed);`,
+    replace: `  const clamped = clamp(parsed);
+  if (clamped !== parsed) text.value = numberToText(clamped);
+  if (clamped !== current.value) commitValue(clamped);`,
   },
   {
     id: "number-input-set-sin-change",

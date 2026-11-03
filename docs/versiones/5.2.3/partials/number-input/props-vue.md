@@ -11,5 +11,5 @@
 | `showControls` | `boolean` | `true` | Muestra los botones − / + a los costados del campo |
 | `showStepSelect` | `boolean` | `false` | Muestra el select de paso, que define cuánto suman o restan los botones y las flechas |
 | `placeholder` | `string` | `—` | Placeholder del campo |
-| `min` | `number` | `—` | Valor mínimo permitido (inclusive); por debajo se clampea |
-| `max` | `number` | `—` | Valor máximo permitido (inclusive); por encima se clampea |
+| `min` | `number` | `—` | Valor mínimo permitido (inclusive); al tipear no se recorta, Enter/blur y la API clampean |
+| `max` | `number` | `—` | Valor máximo permitido (inclusive); al tipear no se recorta, Enter/blur y la API clampean |

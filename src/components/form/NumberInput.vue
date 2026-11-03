@@ -47,12 +47,12 @@ const props = defineProps({
     type: String,
     required: false,
   },
-  /** Valor mínimo permitido (inclusive); por debajo se clampea */
+  /** Valor mínimo permitido (inclusive); al tipear no se recorta, Enter/blur y la API clampean */
   min: {
     type: Number,
     required: false,
   },
-  /** Valor máximo permitido (inclusive); por encima se clampea */
+  /** Valor máximo permitido (inclusive); al tipear no se recorta, Enter/blur y la API clampean */
   max: {
     type: Number,
     required: false,
@@ -221,7 +221,11 @@ function applyValue(
   if (options.change) emit('change', nextValue);
 }
 
-/** Tipear: mantiene el texto tal cual y clampea en vivo cuando ya es un número. */
+/**
+ * Tipear: el texto se respeta tal cual (nunca se reescribe por estar fuera de
+ * rango, así se puede completar un año como `2019`). El modelo sólo sigue a los
+ * números dentro de `[min, max]`; fuera de rango se recorta recién al confirmar.
+ */
 function onInput(raw: string) {
   text.value = raw;
   dirty = true;
@@ -231,10 +235,7 @@ function onInput(raw: string) {
     if (current.value !== null) commitValue(null);
     return;
   }
-  const next = clamp(parsed);
-  // Fuera de rango: el campo muestra el límite, no el número tipeado.
-  if (next !== parsed) text.value = numberToText(next);
-  if (next !== current.value) commitValue(next);
+  if (clamp(parsed) === parsed && parsed !== current.value) commitValue(parsed);
 }
 
 /** Confirma el texto (Enter o blur) y emite `change` si hubo edición. */

@@ -128,10 +128,11 @@ nativo), así que comparte color, variante y estados con el resto del campo.
 
 ## Límites (min / max)
 
-`min` y `max` son inclusive y se respetan en todos los caminos: al tipear (el campo muestra el
-límite, no el número tipeado), al setear por API y al incrementar o decrementar. En el límite el
-botón correspondiente queda deshabilitado y no emite eventos, así que el valor nunca se sale del
-rango.
+`min` y `max` son inclusive y el valor nunca se sale del rango. Mientras se escribe el texto se
+respeta tal cual (así se puede completar un año como `2019`): el modelo sólo refleja valores
+dentro del rango y `Enter`/blur recortan al límite más cercano, igual que al setear por API y al
+incrementar o decrementar. En el límite el botón correspondiente queda deshabilitado y no emite
+eventos.
 
 ```html
 <cu-number-input min="0" max="10" placeholder="0 a 10"></cu-number-input>
@@ -147,8 +148,8 @@ rango.
 ## Teclado
 
 Con el campo enfocado, `↑` incrementa y `↓` decrementa con el paso activo (el del select si
-está visible). `Enter` confirma el valor tipeado. Con `disabled` o `readonly` las flechas no
-hacen nada.
+está visible). `Enter` confirma el valor tipeado y lo recorta a `min`/`max`. Con `disabled` o
+`readonly` las flechas no hacen nada.
 
 ```html
 <cu-number-input placeholder="Enfocá y usá ↑ / ↓"></cu-number-input>

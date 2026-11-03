@@ -42,6 +42,23 @@ describe("NumberInput — valor y v-model", () => {
     expect(w.emitted("update:modelValue")?.at(-1)).toEqual([12]);
   });
 
+  it("sin límites cada tecla válida actualiza el modelo", async () => {
+    const w = mount(NumberInput);
+
+    for (const [typed, expected] of [
+      ["1", 1],
+      ["12", 12],
+      ["123", 123],
+    ] as const) {
+      await field(w).setValue(typed);
+      await flushPromises();
+      expect(fieldValue(w)).toBe(typed);
+      expect(vm(w).get()).toBe(expected);
+    }
+
+    expect(w.emitted("update:modelValue")?.map((args) => args[0])).toEqual([1, 12, 123]);
+  });
+
   it("refleja un modelValue externo en el campo", async () => {
     const Host = defineComponent({
       components: { NumberInput },
@@ -98,30 +115,99 @@ describe("NumberInput — valor y v-model", () => {
 
     await field(w).setValue("50");
     await flushPromises();
+    expect(vm(w).get()).toBe(5);
+
+    await field(w).trigger("blur");
+    await flushPromises();
     expect(vm(w).get()).toBe(10);
   });
 });
 
 describe("NumberInput — límites (min / max)", () => {
-  it("clampea al máximo mientras se tipea", async () => {
-    const w = mount(NumberInput, { props: { max: 10 } });
+  it("respeta el texto mientras se tipea y sólo actualiza el modelo dentro de rango (año)", async () => {
+    const w = mount(NumberInput, { props: { min: 1950, max: 2100 } });
+    expect(fieldValue(w)).toBe("");
 
-    await field(w).setValue("50");
+    await field(w).setValue("2");
     await flushPromises();
+    expect(fieldValue(w)).toBe("2");
+    expect(vm(w).get()).toBeNull();
 
-    expect(vm(w).get()).toBe(10);
-    expect(fieldValue(w)).toBe("10");
-    expect(w.emitted("update:modelValue")?.at(-1)).toEqual([10]);
+    await field(w).setValue("20");
+    await flushPromises();
+    expect(fieldValue(w)).toBe("20");
+    expect(vm(w).get()).toBeNull();
+
+    await field(w).setValue("201");
+    await flushPromises();
+    expect(fieldValue(w)).toBe("201");
+    expect(vm(w).get()).toBeNull();
+    expect(w.emitted("update:modelValue")).toBeUndefined();
+
+    await field(w).setValue("2019");
+    await flushPromises();
+    expect(fieldValue(w)).toBe("2019");
+    expect(vm(w).get()).toBe(2019);
+    expect(w.emitted("update:modelValue")?.at(-1)).toEqual([2019]);
+
+    expect(w.emitted("change")).toBeUndefined();
+    await field(w).trigger("keydown", { key: "Enter" });
+    await flushPromises();
+    expect(w.emitted("change")?.at(-1)).toEqual([2019]);
   });
 
-  it("clampea al mínimo mientras se tipea", async () => {
-    const w = mount(NumberInput, { props: { min: 0 } });
+  it("tipear por debajo del mínimo no toca el modelo; blur recorta al mínimo y emite change", async () => {
+    const w = mount(NumberInput, { props: { min: 1950 } });
 
-    await field(w).setValue("-5");
+    await field(w).setValue("1949");
     await flushPromises();
 
-    expect(vm(w).get()).toBe(0);
-    expect(fieldValue(w)).toBe("0");
+    expect(fieldValue(w)).toBe("1949");
+    expect(vm(w).get()).toBeNull();
+    expect(w.emitted("update:modelValue")).toBeUndefined();
+
+    await field(w).trigger("blur");
+    await flushPromises();
+
+    expect(fieldValue(w)).toBe("1950");
+    expect(vm(w).get()).toBe(1950);
+    expect(w.emitted("update:modelValue")?.at(-1)).toEqual([1950]);
+    expect(w.emitted("change")?.at(-1)).toEqual([1950]);
+  });
+
+  it("tipear por encima del máximo no toca el modelo; blur recorta al máximo y emite change", async () => {
+    const w = mount(NumberInput, { props: { max: 2100 } });
+
+    await field(w).setValue("3000");
+    await flushPromises();
+
+    expect(fieldValue(w)).toBe("3000");
+    expect(vm(w).get()).toBeNull();
+    expect(w.emitted("update:modelValue")).toBeUndefined();
+
+    await field(w).trigger("blur");
+    await flushPromises();
+
+    expect(fieldValue(w)).toBe("2100");
+    expect(vm(w).get()).toBe(2100);
+    expect(w.emitted("update:modelValue")?.at(-1)).toEqual([2100]);
+    expect(w.emitted("change")?.at(-1)).toEqual([2100]);
+  });
+
+  it("un texto inválido no toca el modelo y blur restaura el texto del valor vigente", async () => {
+    const w = mount(NumberInput, { props: { modelValue: 5 } });
+    await flushPromises();
+
+    await field(w).setValue("abc");
+    await flushPromises();
+    expect(fieldValue(w)).toBe("abc");
+    expect(vm(w).get()).toBe(5);
+    expect(w.emitted("update:modelValue")).toBeUndefined();
+
+    await field(w).trigger("blur");
+    await flushPromises();
+    expect(fieldValue(w)).toBe("5");
+    expect(vm(w).get()).toBe(5);
   });
 
   it("set() fuera de rango clampea y emite change con el valor final", async () => {
