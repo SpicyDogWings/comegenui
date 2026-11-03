@@ -5244,12 +5244,12 @@ var NumberInput_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__
 			type: String,
 			required: false
 		},
-		/** Valor mínimo permitido (inclusive); por debajo se clampea */
+		/** Valor mínimo permitido (inclusive); al tipear no se recorta, Enter/blur y la API clampean */
 		min: {
 			type: Number,
 			required: false
 		},
-		/** Valor máximo permitido (inclusive); por encima se clampea */
+		/** Valor máximo permitido (inclusive); al tipear no se recorta, Enter/blur y la API clampean */
 		max: {
 			type: Number,
 			required: false
@@ -5394,7 +5394,11 @@ var NumberInput_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__
 			if (options.kind === "decrement") emit("decrement", nextValue);
 			if (options.change) emit("change", nextValue);
 		}
-		/** Tipear: mantiene el texto tal cual y clampea en vivo cuando ya es un número. */
+		/**
+		* Tipear: el texto se respeta tal cual (nunca se reescribe por estar fuera de
+		* rango, así se puede completar un año como `2019`). El modelo sólo sigue a los
+		* números dentro de `[min, max]`; fuera de rango se recorta recién al confirmar.
+		*/
 		function onInput(raw) {
 			text.value = raw;
 			dirty = true;
@@ -5404,9 +5408,7 @@ var NumberInput_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__
 				if (current.value !== null) commitValue(null);
 				return;
 			}
-			const next = clamp(parsed);
-			if (next !== parsed) text.value = numberToText(next);
-			if (next !== current.value) commitValue(next);
+			if (clamp(parsed) === parsed && parsed !== current.value) commitValue(parsed);
 		}
 		/** Confirma el texto (Enter o blur) y emite `change` si hubo edición. */
 		function commit() {
@@ -5591,7 +5593,7 @@ var NumberInput_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__
 			], 6);
 		};
 	}
-}), [["styles", ["\n.cu-number-input[data-v-8daca88f] {\n  display: inline-flex;\n  align-items: stretch;\n  gap: var(--cu-space-xs);\n  width: 100%;\n  box-sizing: border-box;\n  font-family: var(--cu-font-sans);\n}\n.cu-number-input__field[data-v-8daca88f] {\n  flex: 1 1 auto;\n  min-width: 0;\n}\n.cu-number-input__control[data-v-8daca88f] {\n  flex: 0 0 auto;\n  padding-left: var(--cu-space-sm);\n  padding-right: var(--cu-space-sm);\n}\n.cu-number-input__step[data-v-8daca88f] {\n  flex: 0 0 auto;\n  display: inline-flex;\n  min-width: 4.5rem;\n}\n.cu-number-input__step[data-v-8daca88f] .cu-select {\n  width: 100%;\n}\n\n/* Mismo padding que el botón del campo, para que el select no quede más alto. */\n.cu-number-input__step[data-v-8daca88f] .cu-select-toggle {\n  padding: var(--cu-space-md) var(--cu-space-md);\n}\n.cu-number-input--sm .cu-number-input__step[data-v-8daca88f] .cu-select-toggle {\n  font-size: var(--cu-font-size-xs);\n  padding: var(--cu-space-xs) var(--cu-space-sm);\n}\n.cu-number-input--lg .cu-number-input__step[data-v-8daca88f] .cu-select-toggle {\n  font-size: var(--cu-font-size-lg);\n  padding: var(--cu-space-lg) var(--cu-space-lg);\n}\n.cu-number-input--disabled[data-v-8daca88f] {\n  opacity: 0.5;\n}\n.cu-number-input--readonly .cu-number-input__step[data-v-8daca88f] .cu-select-toggle {\n  cursor: default;\n}\n"]], ["__scopeId", "data-v-8daca88f"]]);
+}), [["styles", ["\n.cu-number-input[data-v-e32ee549] {\n  display: inline-flex;\n  align-items: stretch;\n  gap: var(--cu-space-xs);\n  width: 100%;\n  box-sizing: border-box;\n  font-family: var(--cu-font-sans);\n}\n.cu-number-input__field[data-v-e32ee549] {\n  flex: 1 1 auto;\n  min-width: 0;\n}\n.cu-number-input__control[data-v-e32ee549] {\n  flex: 0 0 auto;\n  padding-left: var(--cu-space-sm);\n  padding-right: var(--cu-space-sm);\n}\n.cu-number-input__step[data-v-e32ee549] {\n  flex: 0 0 auto;\n  display: inline-flex;\n  min-width: 4.5rem;\n}\n.cu-number-input__step[data-v-e32ee549] .cu-select {\n  width: 100%;\n}\n\n/* Mismo padding que el botón del campo, para que el select no quede más alto. */\n.cu-number-input__step[data-v-e32ee549] .cu-select-toggle {\n  padding: var(--cu-space-md) var(--cu-space-md);\n}\n.cu-number-input--sm .cu-number-input__step[data-v-e32ee549] .cu-select-toggle {\n  font-size: var(--cu-font-size-xs);\n  padding: var(--cu-space-xs) var(--cu-space-sm);\n}\n.cu-number-input--lg .cu-number-input__step[data-v-e32ee549] .cu-select-toggle {\n  font-size: var(--cu-font-size-lg);\n  padding: var(--cu-space-lg) var(--cu-space-lg);\n}\n.cu-number-input--disabled[data-v-e32ee549] {\n  opacity: 0.5;\n}\n.cu-number-input--readonly .cu-number-input__step[data-v-e32ee549] .cu-select-toggle {\n  cursor: default;\n}\n"]], ["__scopeId", "data-v-e32ee549"]]);
 //#endregion
 //#region src/lib/form/number-input.ts
 var CuNumberInput = defineComegenElement("cu-number-input", /* @__PURE__ */ _plugin_vue_export_helper_default(/* @__PURE__ */ defineComponent({
