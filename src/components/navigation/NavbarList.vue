@@ -86,11 +86,14 @@ function itemIcon(item: NavItem): string {
         :data-navbar-match="highlightTarget === item ? '' : undefined"
         :data-navbar-active="activeItem === item ? '' : undefined"
       >
-        <template #toggle="{ toggle: t }">
+        <template #toggle="{ toggle: t, isOpen }">
           <button
             type="button"
             class="cu-navbar-compact-trigger"
             :title="item.label"
+            :aria-label="item.label"
+            aria-haspopup="menu"
+            :aria-expanded="isOpen ? 'true' : 'false'"
             @click="t"
           >
             <span class="cu-navbar-icon" v-html="itemIcon(item)"></span>
@@ -132,6 +135,7 @@ function itemIcon(item: NavItem): string {
         :color="activeItem === item ? 'primary' : undefined"
         :variant="activeItem === item ? 'soft' : undefined"
         :title="compact && !item.icon ? item.label : undefined"
+        :aria-label="compact ? item.label : undefined"
         :class="{ 'cu-navbar-item--match': highlightTarget === item, 'cu-navbar-item--active': activeItem === item }"
         :data-navbar-match="highlightTarget === item ? '' : undefined"
         :data-navbar-active="activeItem === item ? '' : undefined"

@@ -41,6 +41,10 @@ En HTML plano, cargá el bundle `CuNavbar` (ver [ficha vanilla](/componentes/cu-
 > El HTML del `icon` se sanitiza con **DOMPurify** antes de inyectarse: los SVG válidos se
 > conservan y se eliminan `<script>`, handlers `on*` y URLs peligrosas.
 
+Un `path` con esquema ejecutable (`javascript:`, `vbscript:`, `data:`, incluso ofuscado con
+espacios o controles como `java\tscript:`) no navega: en los flyouts del modo compacto el item
+cae a texto deshabilitado y en la lista vertical se renderiza como botón, no como enlace.
+
 ```ts
 interface NavItem {
   label: string;

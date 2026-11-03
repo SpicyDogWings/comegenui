@@ -39,6 +39,15 @@ export function useNavbar(options: UseNavbarOptions) {
   const query = ref('')
   const navRef = ref<HTMLElement | null>(null)
 
+  /**
+   * Items del consumidor. En el Custom Element `items` llega como propiedad JS
+   * *después* del upgrade, así que hasta entonces la prop (requerida) es
+   * `undefined`: recorrerla tiraba `items is not iterable` dentro del render y el
+   * elemento quedaba con el shadow DOM vacío para siempre (no se recuperaba al
+   * asignar los items). Mismo patrón que el resto de props "de datos" del CE.
+   */
+  const navItems = (): NavItem[] => options.items() ?? []
+
   watch(query, (value) => options.onSearch?.(value))
 
   const normalizedQuery = computed(() => normalizeText(query.value.trim()))
@@ -69,8 +78,8 @@ export function useNavbar(options: UseNavbarOptions) {
   }
 
   const displayItems = computed(() => {
-    if (!searchActive.value || options.searchMode() !== 'filter') return options.items()
-    return filterTree(options.items(), normalizedQuery.value)
+    if (!searchActive.value || options.searchMode() !== 'filter') return navItems()
+    return filterTree(navItems(), normalizedQuery.value)
   })
 
   const firstMatch = computed<NavItem | null>(() => {
@@ -87,7 +96,7 @@ export function useNavbar(options: UseNavbarOptions) {
       }
       return null
     }
-    return dfs(options.items())
+    return dfs(navItems())
   })
 
   const highlightTarget = computed<NavItem | null>(() => options.highlightItem?.() ?? firstMatch.value)
@@ -105,12 +114,25 @@ export function useNavbar(options: UseNavbarOptions) {
       }
       return null
     }
-    return findActive(options.items())
+    return findActive(navItems())
   })
+
+  /**
+   * Elemento marcado (`data-navbar-active` / `data-navbar-match`), buscado dentro de
+   * esta nav: en el Custom Element el marcador vive en un shadow root (desde
+   * `document` no se ve, así que el scroll del activo nunca ocurría) y con dos
+   * instancias en la misma página el `document.querySelector` global desplazaba la
+   * primera. Los consumidores que no exponen `navRef` conservan el alcance de documento.
+   */
+  function findMarker(attr: 'data-navbar-active' | 'data-navbar-match'): HTMLElement | null {
+    const root = navRef.value
+    if (root) return root.querySelector<HTMLElement>(`[${attr}]`)
+    return document.querySelector<HTMLElement>(`[${attr}]`)
+  }
 
   function scrollToActive() {
     nextTick(() => {
-      const el = document.querySelector('[data-navbar-active]')
+      const el = findMarker('data-navbar-active')
       if (!el) return
 
       let parent = el.parentElement
@@ -145,7 +167,7 @@ export function useNavbar(options: UseNavbarOptions) {
   watch(firstMatch, async (item) => {
     if (!item) return
     await nextTick()
-    document.querySelector('[data-navbar-match]')?.scrollIntoView({ block: 'nearest' })
+    findMarker('data-navbar-match')?.scrollIntoView({ block: 'nearest' })
   })
 
   onMounted(() => {

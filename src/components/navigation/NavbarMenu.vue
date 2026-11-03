@@ -11,6 +11,18 @@ import type { NavItem } from '@/composables/useNavbar'
 // (mismo criterio que `Tabs`).
 const sanitizeIcon = (html?: string) => (html ? DOMPurify.sanitize(html) : undefined)
 
+// `item.path` puede venir de datos: un esquema ejecutable no se navega y el item
+// cae al render deshabilitado (mismo criterio que `Button.safeTo`). Los
+// espacios/controles se ignoran para el chequeo (`java\tscript:`), igual que
+// hace el navegador al resolver el esquema.
+function safePath(path?: string): string | undefined {
+  const value = path?.trim()
+  if (!value) return undefined
+  const compact = value.replace(/[\u0000-\u0020]+/g, '')
+  if (/^(?:javascript|vbscript|data):/i.test(compact)) return undefined
+  return path
+}
+
 const props = defineProps({
   /** Items del nivel de menú. */
   items: { type: Array as () => NavItem[], required: true },
@@ -30,8 +42,8 @@ const props = defineProps({
         <NavbarMenu :items="item.children" :trigger="props.trigger" />
       </Dropdown>
       <a
-        v-else-if="item.path"
-        :href="item.path"
+        v-else-if="safePath(item.path)"
+        :href="safePath(item.path)"
         class="cu-navbar-menu-item"
       >
         <span v-if="item.icon" class="cu-navbar-menu-icon" v-html="sanitizeIcon(item.icon)"></span>

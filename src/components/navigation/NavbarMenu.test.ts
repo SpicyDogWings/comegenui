@@ -61,6 +61,39 @@ describe("NavbarMenu — submenús anidados", () => {
   });
 });
 
+describe("NavbarMenu — path seguro", () => {
+  it("un path con esquema ejecutable no se renderiza como enlace", () => {
+    const w = mount(NavbarMenu, {
+      props: {
+        items: [
+          { label: "JS", path: "javascript:window.__pwned=1" },
+          { label: "JS mayúsculas", path: " JavaScript:window.__pwned=1" },
+          { label: "Tab", path: "java\tscript:window.__pwned=1" },
+          { label: "VBS", path: "vbscript:msgbox(1)" },
+          { label: "Data", path: "data:text/html,<script>alert(1)</script>" },
+        ],
+      },
+    });
+    expect(w.findAll("a.cu-navbar-menu-item")).toHaveLength(0);
+    expect(w.findAll("span.cu-navbar-menu-item--disabled")).toHaveLength(5);
+    expect(w.html()).not.toContain("javascript:");
+  });
+
+  it("un path normal (relativo, absoluto o hash) sigue siendo un enlace", () => {
+    const w = mount(NavbarMenu, {
+      props: {
+        items: [
+          { label: "Rel", path: "/rel" },
+          { label: "Abs", path: "https://example.com/x" },
+          { label: "Hash", path: "#ancla" },
+        ],
+      },
+    });
+    const hrefs = w.findAll("a.cu-navbar-menu-item").map((a) => a.attributes("href"));
+    expect(hrefs).toEqual(["/rel", "https://example.com/x", "#ancla"]);
+  });
+});
+
 describe("NavbarMenu — ícono saneado", () => {
   const EVIL = '<img src=x onerror="window.__xss=1"><script>window.__xss=2</script>';
 

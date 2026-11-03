@@ -10,6 +10,13 @@ vi.mock("vue-router", () => ({
   useRoute: () => ({ path: "/" }),
 }));
 
+// jsdom no implementa `scrollIntoView` y el composable compartido lo usa para
+// centrar el item activo dentro de su propia nav: sin el stub cada montaje con
+// activo deja un unhandled rejection (y el gate falla).
+if (!Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = () => {};
+}
+
 const items = [
   { label: "Inicio", path: "/" },
   {

@@ -155,4 +155,37 @@ describe("NavbarList — modo compacto", () => {
     expect(chevron.attributes("aria-hidden")).toBe("true");
     expect(chevron.attributes("focusable")).toBe("false");
   });
+
+  it("en compact el item hoja conserva su nombre accesible (el label se oculta, no se borra)", () => {
+    const w = mount(NavbarList, {
+      props: {
+        items: [
+          { label: "Inicio", path: "/inicio", icon: '<svg class="mi-icon"></svg>' },
+          { label: "Perfil", path: "/perfil" },
+        ],
+        compact: true,
+      },
+    });
+    // El span del label está `display:none` en compact: sin aria-label el enlace
+    // con icono quedaba sin nombre accesible (solo el SVG).
+    const links = w.findAll("a.cu-button-link");
+    expect(links.map((a) => a.attributes("aria-label"))).toEqual(["Inicio", "Perfil"]);
+  });
+
+  it("en modo expandido el nombre accesible sigue viniendo del texto (sin aria-label)", () => {
+    const w = mount(NavbarList, { props: { items } });
+    expect(w.find("a.cu-button-link").attributes("aria-label")).toBeUndefined();
+  });
+
+  it("el trigger del flyout expone aria-haspopup y alterna aria-expanded", async () => {
+    const w = mount(NavbarList, { props: { items, compact: true } });
+    const trigger = w.find(".cu-navbar-compact-trigger");
+    expect(trigger.attributes("aria-haspopup")).toBe("menu");
+    expect(trigger.attributes("aria-expanded")).toBe("false");
+    expect(trigger.attributes("aria-label")).toBe("Componentes");
+
+    await trigger.trigger("click");
+    await flushPromises();
+    expect(w.find(".cu-navbar-compact-trigger").attributes("aria-expanded")).toBe("true");
+  });
 });

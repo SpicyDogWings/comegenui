@@ -36,6 +36,10 @@ compacto y opción responsive con hamburguesa + panel lateral.
 > El HTML del `icon` se sanitiza con **DOMPurify** antes de inyectarse: los SVG válidos se
 > conservan y se eliminan `<script>`, handlers `on*` y URLs peligrosas.
 
+Un `path` con esquema ejecutable (`javascript:`, `vbscript:`, `data:`, incluso ofuscado con
+espacios o controles como `java\tscript:`) no navega: en los flyouts del modo compacto el item
+cae a texto deshabilitado y en la lista vertical se renderiza como botón, no como enlace.
+
 ```ts
 interface NavItem {
   label: string;
@@ -114,6 +118,10 @@ desliza (`left` —**default**—, `right`, `top`, `bottom`).
 ```
 
 <!-- demo:navbar-responsive -->
+
+> En el custom element el panel del menú se renderiza **dentro del shadow root de `<cu-navbar>`**
+> (no en `<body>`): así conserva los estilos del componente. Si lo necesitás fuera, usá
+> `responsive` desde Vue o replicá el patrón con `<cu-side-over>`.
 
 ## Activo
 

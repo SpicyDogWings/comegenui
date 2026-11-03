@@ -30,6 +30,9 @@ const items = [
 `path` convierte el item en un `<a>`; `icon` es un string HTML (SVG inline) que va antes del
 label. Un item **sin** `path` no navega: se renderiza como un span atenuado (deshabilitado).
 
+Un `path` con esquema ejecutable (`javascript:`, `vbscript:`, `data:`, incluso ofuscado con
+espacios o controles como `java\tscript:`) tampoco navega: cae al mismo span deshabilitado.
+
 > El HTML del `icon` se sanitiza con **DOMPurify** antes de inyectarse: los SVG válidos se
 > conservan y se eliminan `<script>`, handlers `on*` y URLs peligrosas.
 
