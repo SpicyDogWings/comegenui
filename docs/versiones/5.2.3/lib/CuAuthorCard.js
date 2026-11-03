@@ -1,5 +1,5 @@
 /*! comegenui v5.2.3 · CuAuthorCard (cu-author-card) · esm-shared · Vue externo (bare import) */
-import { computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, createVNode, defineComponent, defineCustomElement, normalizeClass, normalizeStyle, openBlock, renderSlot, toDisplayString } from "vue";
+import { computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, createVNode, defineComponent, defineCustomElement, normalizeClass, normalizeStyle, openBlock, ref, renderSlot, toDisplayString, watch } from "vue";
 //#region src/utils/comegen-element.ts
 var BUILD_META = {
 	"version": "5.2.3",
@@ -431,7 +431,7 @@ var NAVBAR_RESPONSIVE_MODES = [
 var NAVBAR_SEARCH_MODES = ["filter", "scroll"];
 var SELECT_SEARCH_MODES = ["startsWith", "includes"];
 var CELLS_IMPORTER_INPUT_TYPES = ["input", "zone"];
-oneOf(COLORS);
+var isColor = oneOf(COLORS);
 oneOf(COLORS_BASE);
 oneOf(VARIANTS);
 oneOf(VARIANTS_FULL);
@@ -510,31 +510,27 @@ var Avatar_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineCom
 			return Math.abs(hash);
 		}
 		const props = __props;
-		const ALL_COLORS = [
-			"primary",
-			"secondary",
-			"success",
-			"warning",
-			"danger",
-			"neutral"
-		];
-		const resolvedColors = computed(() => {
-			if (props.color) {
-				const idx = ALL_COLORS.indexOf(props.color);
-				return {
-					bg: props.color,
-					gradient: ALL_COLORS[(idx + 1) % ALL_COLORS.length]
-				};
-			}
-			const idx = hashString((props.initials || props.name || "x").toLowerCase()) % PALETTE.length;
-			return {
-				bg: PALETTE[idx],
-				gradient: PALETTE[(idx + 1) % PALETTE.length]
-			};
+		/**
+		* Un `src` que no carga (404, host caído, URL vencida) dejaba el avatar vacío: el
+		* `<img>` roto ocupa el círculo y ni las iniciales ni el slot aparecían. Se
+		* recuerda el fallo y se vuelve al contenido alternativo; si cambia el `src`
+		* (otra URL del mismo avatar) se reintenta.
+		*/
+		const imageFailed = ref(false);
+		watch(() => props.src, () => {
+			imageFailed.value = false;
+		});
+		const showImage = computed(() => Boolean(props.src) && !imageFailed.value);
+		/** Una sola cosa se ve por vez: el slot sólo cuando no hay imagen ni iniciales. */
+		const showSlot = computed(() => !showImage.value && !props.initials);
+		const resolvedColor = computed(() => {
+			if (isColor(props.color)) return props.color;
+			const key = props.initials.toLowerCase() || "x";
+			return PALETTE[hashString(key) % PALETTE.length];
 		});
 		const avatarStyles = computed(() => ({
-			"--avatar-bg": `var(--cu-color-${resolvedColors.value.bg}, #6366f1)`,
-			"background-color": `var(--cu-color-${resolvedColors.value.bg}, #6366f1)`
+			"--avatar-bg": `var(--cu-color-${resolvedColor.value}-solid, #4338ca)`,
+			"--avatar-fg": "var(--cu-color-surface, #ffffff)"
 		}));
 		const sizeClass = computed(() => `cu-avatar--${props.size}`);
 		return (_ctx, _cache) => {
@@ -542,21 +538,22 @@ var Avatar_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineCom
 				class: normalizeClass(["cu-avatar", sizeClass.value]),
 				style: normalizeStyle(avatarStyles.value)
 			}, [
-				props.src ? (openBlock(), createElementBlock("img", {
+				showImage.value ? (openBlock(), createElementBlock("img", {
 					key: 0,
 					src: props.src,
 					class: "cu-avatar-img",
-					alt: ""
-				}, null, 8, _hoisted_1$1)) : props.initials ? (openBlock(), createElementBlock("span", _hoisted_2$1, toDisplayString(props.initials), 1)) : createCommentVNode("v-if", true),
-				createCommentVNode(" Iniciales o contenido del avatar. "),
-				renderSlot(_ctx.$slots, "default", {}, void 0, true)
+					alt: "",
+					onError: _cache[0] || (_cache[0] = ($event) => imageFailed.value = true)
+				}, null, 40, _hoisted_1$1)) : props.initials ? (openBlock(), createElementBlock("span", _hoisted_2$1, toDisplayString(props.initials), 1)) : createCommentVNode("v-if", true),
+				createCommentVNode(" Iniciales o contenido del avatar (alternativo a `initials` y `src`). "),
+				showSlot.value ? renderSlot(_ctx.$slots, "default", {}, void 0, true, 2) : createCommentVNode("v-if", true)
 			], 6);
 		};
 	}
 });
 //#endregion
-//#region src/components/information/Avatar.vue?vue&type=style&index=0&inline&scoped=116b6a17&lang.css
-var Avatar_vue_vue_type_style_index_0_inline_scoped_116b6a17_lang_default = "\n.cu-avatar[data-v-116b6a17] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  border-radius: 50%;\n  background-color: var(--avatar-bg);\n  color: white;\n  font-weight: var(--cu-font-weight-semibold);\n  flex-shrink: 0;\n}\n.cu-avatar--sm[data-v-116b6a17] {\n  width: 28px;\n  height: 28px;\n  font-size: var(--cu-font-size-xs);\n}\n.cu-avatar--md[data-v-116b6a17] {\n  width: 36px;\n  height: 36px;\n  font-size: var(--cu-font-size-sm);\n}\n.cu-avatar--lg[data-v-116b6a17] {\n  width: 48px;\n  height: 48px;\n  font-size: var(--cu-font-size-md);\n}\n.cu-avatar-initials[data-v-116b6a17] {\n  line-height: 1;\n}\n.cu-avatar-img[data-v-116b6a17] {\n  width: 100%;\n  height: 100%;\n  border-radius: 50%;\n  object-fit: cover;\n}\n";
+//#region src/components/information/Avatar.vue?vue&type=style&index=0&inline&scoped=4dfc2cd2&lang.css
+var Avatar_vue_vue_type_style_index_0_inline_scoped_4dfc2cd2_lang_default = "\n.cu-avatar[data-v-4dfc2cd2] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  /* Recorta las iniciales largas: sin esto el texto se sale del círculo. */\n  overflow: hidden;\n  border-radius: 50%;\n  background-color: var(--avatar-bg);\n  color: var(--avatar-fg);\n  font-weight: var(--cu-font-weight-semibold);\n  flex-shrink: 0;\n}\n.cu-avatar--sm[data-v-4dfc2cd2] {\n  width: 28px;\n  height: 28px;\n  font-size: var(--cu-font-size-xs);\n}\n.cu-avatar--md[data-v-4dfc2cd2] {\n  width: 36px;\n  height: 36px;\n  font-size: var(--cu-font-size-sm);\n}\n.cu-avatar--lg[data-v-4dfc2cd2] {\n  width: 48px;\n  height: 48px;\n  font-size: var(--cu-font-size-md);\n}\n.cu-avatar-initials[data-v-4dfc2cd2] {\n  line-height: 1;\n}\n.cu-avatar-img[data-v-4dfc2cd2] {\n  width: 100%;\n  height: 100%;\n  border-radius: 50%;\n  object-fit: cover;\n}\n";
 //#endregion
 //#region \0plugin-vue:export-helper
 var _plugin_vue_export_helper_default = (sfc, props) => {
@@ -566,7 +563,7 @@ var _plugin_vue_export_helper_default = (sfc, props) => {
 };
 //#endregion
 //#region src/components/information/Avatar.vue
-var Avatar_default = /*#__PURE__*/ _plugin_vue_export_helper_default(Avatar_vue_vue_type_script_setup_true_lang_default, [["styles", [Avatar_vue_vue_type_style_index_0_inline_scoped_116b6a17_lang_default]], ["__scopeId", "data-v-116b6a17"]]);
+var Avatar_default = /*#__PURE__*/ _plugin_vue_export_helper_default(Avatar_vue_vue_type_script_setup_true_lang_default, [["styles", [Avatar_vue_vue_type_style_index_0_inline_scoped_4dfc2cd2_lang_default]], ["__scopeId", "data-v-4dfc2cd2"]]);
 //#endregion
 //#region src/components/information/AuthorCard.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1 = { class: "cu-author" };
@@ -615,20 +612,25 @@ var AuthorCard_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__P
 			return parts[0]?.slice(0, 2).toUpperCase() || "";
 		});
 		return (_ctx, _cache) => {
-			return openBlock(), createElementBlock("div", _hoisted_1, [createVNode(Avatar_default, {
-				initials: initials.value,
-				color: props.color,
-				size: props.size,
-				src: props.src
-			}, null, 8, [
-				"initials",
-				"color",
-				"size",
-				"src"
-			]), createElementVNode("div", _hoisted_2, [createElementVNode("span", _hoisted_3, toDisplayString(props.name), 1), props.role ? (openBlock(), createElementBlock("span", _hoisted_4, toDisplayString(props.role), 1)) : createCommentVNode("v-if", true)])]);
+			return openBlock(), createElementBlock("div", _hoisted_1, [
+				createCommentVNode(" Decorativo: el nombre ya está en texto al lado, así que las iniciales no\n         se vuelven a anunciar (`AP Ana Pérez`). "),
+				createVNode(Avatar_default, {
+					initials: initials.value,
+					color: props.color,
+					size: props.size,
+					src: props.src,
+					"aria-hidden": "true"
+				}, null, 8, [
+					"initials",
+					"color",
+					"size",
+					"src"
+				]),
+				createElementVNode("div", _hoisted_2, [createElementVNode("span", _hoisted_3, toDisplayString(props.name), 1), props.role ? (openBlock(), createElementBlock("span", _hoisted_4, toDisplayString(props.role), 1)) : createCommentVNode("v-if", true)])
+			]);
 		};
 	}
-}), [["styles", ["\n.cu-author[data-v-6575f2a3] {\n  display: flex;\n  align-items: center;\n  gap: 0.75rem;\n}\n.cu-author-info[data-v-6575f2a3] {\n  display: flex;\n  flex-direction: column;\n}\n.cu-author-name[data-v-6575f2a3] {\n  font-size: var(--cu-font-size-sm);\n  font-weight: var(--cu-font-weight-medium);\n  color: var(--cu-color-neutral);\n  line-height: var(--cu-line-height-tight);\n}\n.cu-author-role[data-v-6575f2a3] {\n  font-size: var(--cu-font-size-xs);\n  color: var(--cu-color-neutral);\n  opacity: 0.5;\n  line-height: var(--cu-line-height-tight);\n}\n"]], ["__scopeId", "data-v-6575f2a3"]]);
+}), [["styles", ["\n.cu-author[data-v-b2703f3c] {\n  display: flex;\n  align-items: center;\n  gap: 0.75rem;\n}\n.cu-author-info[data-v-b2703f3c] {\n  display: flex;\n  flex-direction: column;\n}\n.cu-author-name[data-v-b2703f3c] {\n  font-size: var(--cu-font-size-sm);\n  font-weight: var(--cu-font-weight-medium);\n  color: var(--cu-color-neutral);\n  line-height: var(--cu-line-height-tight);\n}\n.cu-author-role[data-v-b2703f3c] {\n  font-size: var(--cu-font-size-xs);\n  /* Token atenuado del tema (≥ 6:1 en los 15 temas). Con `opacity: 0.5` sobre el\n     color del nombre el rol caía a 2.2:1 y no se leía. */\n  color: var(--cu-color-neutral-text-muted);\n  line-height: var(--cu-line-height-tight);\n}\n"]], ["__scopeId", "data-v-b2703f3c"]]);
 //#endregion
 //#region src/lib/information/author-card.ts
 var CuAuthorCard = defineComegenElement("cu-author-card", /* @__PURE__ */ defineComponent({

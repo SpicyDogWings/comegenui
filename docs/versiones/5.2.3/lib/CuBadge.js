@@ -431,7 +431,7 @@ var NAVBAR_RESPONSIVE_MODES = [
 var NAVBAR_SEARCH_MODES = ["filter", "scroll"];
 var SELECT_SEARCH_MODES = ["startsWith", "includes"];
 var CELLS_IMPORTER_INPUT_TYPES = ["input", "zone"];
-oneOf(COLORS);
+var isColor = oneOf(COLORS);
 oneOf(COLORS_BASE);
 var isVariant = oneOf(VARIANTS);
 oneOf(VARIANTS_FULL);
@@ -471,7 +471,8 @@ var Badge_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineComp
 		color: {
 			type: String,
 			required: false,
-			default: "neutral"
+			default: "neutral",
+			validator: isColor
 		},
 		/** `solid`, `outlined`, `soft`, `ghost`, `subtle` */
 		variant: {
@@ -483,16 +484,19 @@ var Badge_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineComp
 	},
 	setup(__props) {
 		const props = __props;
+		/** Un color fuera del set no tiene tokens: la variante solid quedaría sin fondo
+		*  y con el texto del tema encima (invisible). Cae al color seguro. */
+		const safeColor = computed(() => isColor(props.color) ? props.color : "neutral");
 		const badgeStyles = computed(() => ({
-			"--badge-solid": `var(--cu-color-${props.color}-solid)`,
-			"--badge-border": `var(--cu-color-${props.color}-border)`,
+			"--badge-solid": `var(--cu-color-${safeColor.value}-solid)`,
+			"--badge-border": `var(--cu-color-${safeColor.value}-border)`,
 			"--badge-solid-text": `var(--cu-color-surface)`,
-			"--badge-text": `var(--cu-color-${props.color}-text)`,
-			"--badge-soft": `var(--cu-color-${props.color}-soft)`,
-			"--badge-soft-hover": `var(--cu-color-${props.color}-soft-hover)`,
-			"--badge-ghost-hover": `var(--cu-color-${props.color}-ghost-hover)`,
-			"--badge-subtle": `var(--cu-color-${props.color}-subtle)`,
-			"--badge-subtle-border": `var(--cu-color-${props.color}-subtle-border)`
+			"--badge-text": `var(--cu-color-${safeColor.value}-text)`,
+			"--badge-soft": `var(--cu-color-${safeColor.value}-soft)`,
+			"--badge-soft-hover": `var(--cu-color-${safeColor.value}-soft-hover)`,
+			"--badge-ghost-hover": `var(--cu-color-${safeColor.value}-ghost-hover)`,
+			"--badge-subtle": `var(--cu-color-${safeColor.value}-subtle)`,
+			"--badge-subtle-border": `var(--cu-color-${safeColor.value}-subtle-border)`
 		}));
 		return (_ctx, _cache) => {
 			return openBlock(), createElementBlock("span", {
@@ -503,8 +507,8 @@ var Badge_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineComp
 	}
 });
 //#endregion
-//#region src/components/information/Badge.vue?vue&type=style&index=0&inline&scoped=72234801&lang.css
-var Badge_vue_vue_type_style_index_0_inline_scoped_72234801_lang_default = "\n.cu-badge[data-v-72234801] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: var(--cu-space-xs);\n  padding: var(--cu-space-2xs) var(--cu-space-sm);\n  border-radius: var(--cu-radius);\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-xs);\n  font-weight: var(--cu-font-weight-medium);\n  line-height: var(--cu-line-height-tight);\n  white-space: nowrap;\n  box-sizing: border-box;\n  border: var(--cu-border-thin) solid transparent;\n}\n\n/* solid */\n.cu-badge.cu-badge--solid[data-v-72234801] {\n  background-color: var(--badge-solid);\n  color: var(--badge-solid-text);\n}\n\n/* soft */\n.cu-badge.cu-badge--soft[data-v-72234801] {\n  background-color: var(--badge-soft);\n  color: var(--badge-text);\n}\n\n/* ghost */\n.cu-badge.cu-badge--ghost[data-v-72234801] {\n  background-color: transparent;\n  color: var(--badge-text);\n}\n\n/* subtle */\n.cu-badge.cu-badge--subtle[data-v-72234801] {\n  background-color: var(--badge-subtle);\n  color: var(--badge-text);\n  border-color: var(--badge-subtle-border);\n}\n\n/* outlined */\n.cu-badge.cu-badge--outlined[data-v-72234801] {\n  background-color: transparent;\n  color: var(--badge-text);\n  border-color: var(--badge-border);\n}\n";
+//#region src/components/information/Badge.vue?vue&type=style&index=0&inline&scoped=912b77d1&lang.css
+var Badge_vue_vue_type_style_index_0_inline_scoped_912b77d1_lang_default = "\n.cu-badge[data-v-912b77d1] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: var(--cu-space-xs);\n  padding: var(--cu-space-2xs) var(--cu-space-sm);\n  border-radius: var(--cu-radius);\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-xs);\n  font-weight: var(--cu-font-weight-medium);\n  line-height: var(--cu-line-height-tight);\n  white-space: nowrap;\n  box-sizing: border-box;\n  border: var(--cu-border-thin) solid transparent;\n}\n\n/* solid */\n.cu-badge.cu-badge--solid[data-v-912b77d1] {\n  background-color: var(--badge-solid);\n  color: var(--badge-solid-text);\n}\n\n/* soft */\n.cu-badge.cu-badge--soft[data-v-912b77d1] {\n  background-color: var(--badge-soft);\n  color: var(--badge-text);\n}\n\n/* ghost */\n.cu-badge.cu-badge--ghost[data-v-912b77d1] {\n  background-color: transparent;\n  color: var(--badge-text);\n}\n\n/* subtle */\n.cu-badge.cu-badge--subtle[data-v-912b77d1] {\n  background-color: var(--badge-subtle);\n  color: var(--badge-text);\n  border-color: var(--badge-subtle-border);\n}\n\n/* outlined */\n.cu-badge.cu-badge--outlined[data-v-912b77d1] {\n  background-color: transparent;\n  color: var(--badge-text);\n  border-color: var(--badge-border);\n}\n";
 //#endregion
 //#region \0plugin-vue:export-helper
 var _plugin_vue_export_helper_default = (sfc, props) => {
@@ -514,6 +518,6 @@ var _plugin_vue_export_helper_default = (sfc, props) => {
 };
 //#endregion
 //#region src/lib/information/badge.ts
-var CuBadge = defineComegenElement("cu-badge", /* @__PURE__ */ _plugin_vue_export_helper_default(Badge_vue_vue_type_script_setup_true_lang_default, [["styles", [Badge_vue_vue_type_style_index_0_inline_scoped_72234801_lang_default]], ["__scopeId", "data-v-72234801"]]));
+var CuBadge = defineComegenElement("cu-badge", /* @__PURE__ */ _plugin_vue_export_helper_default(Badge_vue_vue_type_script_setup_true_lang_default, [["styles", [Badge_vue_vue_type_style_index_0_inline_scoped_912b77d1_lang_default]], ["__scopeId", "data-v-912b77d1"]]));
 //#endregion
 export { CuBadge as default };

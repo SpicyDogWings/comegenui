@@ -523,6 +523,11 @@ function unregisterOverlay(id) {
 		stack.listening = false;
 	}
 }
+/** ¿Este overlay es el de arriba? (trampa de foco / Tab del `SideOver`). */
+function isTopmostOverlay(id) {
+	const entries = overlayStack().entries;
+	return entries.length > 0 && entries[entries.length - 1].id === id;
+}
 //#endregion
 //#region src/components/icons/IconBase.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1$4 = ["width", "height"];
@@ -779,8 +784,8 @@ var Button_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineCom
 	}
 });
 //#endregion
-//#region src/components/buttons/Button.vue?vue&type=style&index=0&inline&scoped=de0a2e1a&lang.css
-var Button_vue_vue_type_style_index_0_inline_scoped_de0a2e1a_lang_default = "\n.cu-button[data-v-de0a2e1a] {\n  font-family: var(--cu-font-sans);\n  text-decoration: none;\n  font-size: var(--cu-font-size-sm);\n  font-weight: var(--cu-font-weight-medium);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius);\n  border: none;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--cu-space-xs);\n  box-sizing: border-box;\n  transition: all 150ms ease;\n}\n.cu-button[data-v-de0a2e1a]:active:not(.cu-button--disabled) {\n  transform: scale(0.97);\n}\n.cu-button--disabled[data-v-de0a2e1a] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n\n/* sizes (md = base; link mantiene su padding 0) */\n.cu-button--sm[data-v-de0a2e1a]:not(.cu-button--link) {\n  font-size: var(--cu-font-size-xs);\n  padding: var(--cu-space-xs) var(--cu-space-sm);\n}\n.cu-button--lg[data-v-de0a2e1a]:not(.cu-button--link) {\n  font-size: var(--cu-font-size-lg);\n  padding: var(--cu-space-lg) var(--cu-space-xl);\n}\n\n/* solid */\n.cu-button.cu-button--solid[data-v-de0a2e1a] {\n  background-color: var(--btn-solid);\n  color: var(--btn-solid-text);\n}\n.cu-button.cu-button--solid[data-v-de0a2e1a]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-hover);\n}\n.cu-button.cu-button--solid[data-v-de0a2e1a]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-active);\n}\n\n/* ghost */\n.cu-button.cu-button--ghost[data-v-de0a2e1a] {\n  background-color: transparent;\n  color: var(--btn-text);\n}\n.cu-button.cu-button--ghost[data-v-de0a2e1a]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-hover);\n}\n.cu-button.cu-button--ghost[data-v-de0a2e1a]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-active);\n}\n\n/* soft */\n.cu-button.cu-button--soft[data-v-de0a2e1a] {\n  background-color: var(--btn-soft);\n  color: var(--btn-text);\n}\n.cu-button.cu-button--soft[data-v-de0a2e1a]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-soft-hover);\n}\n.cu-button.cu-button--soft[data-v-de0a2e1a]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-soft-active);\n}\n\n/* subtle */\n.cu-button.cu-button--subtle[data-v-de0a2e1a] {\n  background-color: var(--btn-subtle);\n  color: var(--btn-text);\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-button.cu-button--subtle[data-v-de0a2e1a]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-subtle-hover);\n}\n.cu-button.cu-button--subtle[data-v-de0a2e1a]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-subtle-active);\n}\n\n/* outlined */\n.cu-button.cu-button--outlined[data-v-de0a2e1a] {\n  background-color: transparent;\n  color: var(--btn-text);\n  border: var(--cu-border-thin) solid var(--btn-border);\n}\n.cu-button.cu-button--outlined[data-v-de0a2e1a]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-hover);\n}\n.cu-button.cu-button--outlined[data-v-de0a2e1a]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-active);\n}\n\n/* link */\n.cu-button.cu-button--link[data-v-de0a2e1a] {\n  background-color: transparent;\n  color: var(--btn-text);\n  padding: 0;\n  box-shadow: none;\n  text-decoration: underline;\n  text-underline-offset: var(--cu-space-2xs);\n}\n.cu-button.cu-button--link[data-v-de0a2e1a]:hover:not(.cu-button--disabled) {\n  text-decoration-thickness: 2px;\n}\n\n/* none */\n.cu-button.cu-button--none[data-v-de0a2e1a] {\n  background-color: var(--btn-solid);\n  color: var(--btn-solid-text);\n}\n.cu-button.cu-button--none[data-v-de0a2e1a]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-hover);\n}\n.cu-button.cu-button--none[data-v-de0a2e1a]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-active);\n}\n\n/* link wrapper */\n.cu-button-link[data-v-de0a2e1a] {\n  text-decoration: none;\n}\n.cu-button-link[data-v-de0a2e1a]:hover {\n  text-decoration: underline;\n  text-underline-offset: var(--cu-space-2xs);\n}\n.cu-button-link.cu-button--disabled[data-v-de0a2e1a] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n\n/* icon-only */\n.cu-button--icon-only[data-v-de0a2e1a] {\n  padding: var(--cu-space-sm);\n}\n\n/* loading spinner */\n.cu-button-spinner[data-v-de0a2e1a] {\n  animation: cu-spin-de0a2e1a 0.8s linear infinite;\n}\n@keyframes cu-spin-de0a2e1a {\nfrom { transform: rotate(0deg);\n}\nto { transform: rotate(360deg);\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.cu-button[data-v-de0a2e1a] {\n    transition: none;\n}\n.cu-button[data-v-de0a2e1a]:active:not(.cu-button--disabled) {\n    transform: none;\n}\n.cu-button-spinner[data-v-de0a2e1a] {\n    animation: none;\n}\n}\n";
+//#region src/components/buttons/Button.vue?vue&type=style&index=0&inline&scoped=fed7165d&lang.css
+var Button_vue_vue_type_style_index_0_inline_scoped_fed7165d_lang_default = "\n.cu-button[data-v-fed7165d] {\n  font-family: var(--cu-font-sans);\n  text-decoration: none;\n  font-size: var(--cu-font-size-sm);\n  font-weight: var(--cu-font-weight-medium);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius);\n  border: none;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--cu-space-xs);\n  box-sizing: border-box;\n  transition: all 150ms ease;\n}\n.cu-button[data-v-fed7165d]:active:not(.cu-button--disabled) {\n  transform: scale(0.97);\n}\n.cu-button--disabled[data-v-fed7165d] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n\n/* sizes (md = base; link mantiene su padding 0) */\n.cu-button--sm[data-v-fed7165d]:not(.cu-button--link) {\n  font-size: var(--cu-font-size-xs);\n  padding: var(--cu-space-xs) var(--cu-space-sm);\n}\n.cu-button--lg[data-v-fed7165d]:not(.cu-button--link) {\n  font-size: var(--cu-font-size-lg);\n  padding: var(--cu-space-lg) var(--cu-space-xl);\n}\n\n/* solid */\n.cu-button.cu-button--solid[data-v-fed7165d] {\n  background-color: var(--btn-solid);\n  color: var(--btn-solid-text);\n}\n.cu-button.cu-button--solid[data-v-fed7165d]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-hover);\n}\n.cu-button.cu-button--solid[data-v-fed7165d]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-active);\n}\n\n/* ghost */\n.cu-button.cu-button--ghost[data-v-fed7165d] {\n  background-color: transparent;\n  color: var(--btn-text);\n}\n.cu-button.cu-button--ghost[data-v-fed7165d]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-hover);\n}\n.cu-button.cu-button--ghost[data-v-fed7165d]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-active);\n}\n\n/* soft */\n.cu-button.cu-button--soft[data-v-fed7165d] {\n  background-color: var(--btn-soft);\n  color: var(--btn-text);\n}\n.cu-button.cu-button--soft[data-v-fed7165d]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-soft-hover);\n}\n.cu-button.cu-button--soft[data-v-fed7165d]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-soft-active);\n}\n\n/* subtle */\n.cu-button.cu-button--subtle[data-v-fed7165d] {\n  background-color: var(--btn-subtle);\n  color: var(--btn-text);\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-button.cu-button--subtle[data-v-fed7165d]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-subtle-hover);\n}\n.cu-button.cu-button--subtle[data-v-fed7165d]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-subtle-active);\n}\n\n/* outlined */\n.cu-button.cu-button--outlined[data-v-fed7165d] {\n  background-color: transparent;\n  color: var(--btn-text);\n  border: var(--cu-border-thin) solid var(--btn-border);\n}\n.cu-button.cu-button--outlined[data-v-fed7165d]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-hover);\n}\n.cu-button.cu-button--outlined[data-v-fed7165d]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-active);\n}\n\n/* link */\n.cu-button.cu-button--link[data-v-fed7165d] {\n  background-color: transparent;\n  color: var(--btn-text);\n  padding: 0;\n  box-shadow: none;\n  text-decoration: underline;\n  text-underline-offset: var(--cu-space-2xs);\n}\n.cu-button.cu-button--link[data-v-fed7165d]:hover:not(.cu-button--disabled) {\n  text-decoration-thickness: 2px;\n}\n\n/* none */\n.cu-button.cu-button--none[data-v-fed7165d] {\n  background-color: var(--btn-solid);\n  color: var(--btn-solid-text);\n}\n.cu-button.cu-button--none[data-v-fed7165d]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-hover);\n}\n.cu-button.cu-button--none[data-v-fed7165d]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-active);\n}\n\n/* link wrapper */\n.cu-button-link[data-v-fed7165d] {\n  text-decoration: none;\n}\n.cu-button-link[data-v-fed7165d]:hover {\n  text-decoration: underline;\n  text-underline-offset: var(--cu-space-2xs);\n}\n.cu-button-link.cu-button--disabled[data-v-fed7165d] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n\n/* icon-only: cuadrado. El `:not(.cu-button--link)` sube la especificidad para\n   ganarle al padding de `.cu-button--sm/lg` (que tienen la misma o más clase);\n   antes el cuadrado sólo salía en `md` (sm 32×24, lg 64×48). En `link` no\n   aplica: el link no lleva padding. */\n.cu-button--icon-only[data-v-fed7165d]:not(.cu-button--link) {\n  padding: var(--cu-space-sm);\n}\n\n/* `lg` mantiene la escala: 16 px de padding por lado (48×48 con un ícono de 16). */\n.cu-button--lg.cu-button--icon-only[data-v-fed7165d]:not(.cu-button--link) {\n  padding: var(--cu-space-lg);\n}\n\n/* loading spinner */\n.cu-button-spinner[data-v-fed7165d] {\n  animation: cu-spin-fed7165d 0.8s linear infinite;\n}\n@keyframes cu-spin-fed7165d {\nfrom { transform: rotate(0deg);\n}\nto { transform: rotate(360deg);\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.cu-button[data-v-fed7165d] {\n    transition: none;\n}\n.cu-button[data-v-fed7165d]:active:not(.cu-button--disabled) {\n    transform: none;\n}\n.cu-button-spinner[data-v-fed7165d] {\n    animation: none;\n}\n}\n";
 //#endregion
 //#region \0plugin-vue:export-helper
 var _plugin_vue_export_helper_default = (sfc, props) => {
@@ -790,7 +795,7 @@ var _plugin_vue_export_helper_default = (sfc, props) => {
 };
 //#endregion
 //#region src/components/buttons/Button.vue
-var Button_default = /*#__PURE__*/ _plugin_vue_export_helper_default(Button_vue_vue_type_script_setup_true_lang_default, [["styles", [Button_vue_vue_type_style_index_0_inline_scoped_de0a2e1a_lang_default]], ["__scopeId", "data-v-de0a2e1a"]]);
+var Button_default = /*#__PURE__*/ _plugin_vue_export_helper_default(Button_vue_vue_type_script_setup_true_lang_default, [["styles", [Button_vue_vue_type_style_index_0_inline_scoped_fed7165d_lang_default]], ["__scopeId", "data-v-fed7165d"]]);
 //#endregion
 //#region src/components/overlay/Modal.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1$2 = [
@@ -804,18 +809,9 @@ var _hoisted_4$1 = {
 	key: 0,
 	class: "cu-modal-title-row"
 };
-var _hoisted_5$1 = {
-	id: "modal-title",
-	class: "cu-modal-title"
-};
-var _hoisted_6$1 = {
-	key: 1,
-	id: "modal-description",
-	class: "cu-modal-description"
-};
-var _hoisted_7$1 = { class: "cu-modal-body" };
-var _hoisted_8$1 = { class: "cu-modal-footer" };
-var _hoisted_9$1 = {
+var _hoisted_5$1 = { class: "cu-modal-body" };
+var _hoisted_6$1 = { class: "cu-modal-footer" };
+var _hoisted_7$1 = {
 	key: 0,
 	class: "cu-modal-footer-default"
 };
@@ -873,9 +869,12 @@ var Modal_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 		const backdropRef = ref(null);
 		/** Elemento que tenía el foco al abrir: se le devuelve al cerrar. */
 		const trigger = ref(null);
+		const uid = useId();
+		const titleId = `${uid}-title`;
+		const descriptionId = `${uid}-description`;
 		const hasFooter = computed(() => !!slots.footer?.());
 		const dialogLabel = computed(() => props.title ? void 0 : attrs["aria-label"] || "Diálogo");
-		const colorStyles = computed(() => ({ "--modal-color": `var(--cu-color-${props.color})` }));
+		const colorStyles = computed(() => ({ "--modal-color": `var(--cu-color-${props.color}-text)` }));
 		const FOCUSABLE_SELECTOR = [
 			"a[href]",
 			"area[href]",
@@ -950,7 +949,7 @@ var Modal_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 			const focusables = dialogFocusables();
 			const active = deepActiveElement();
 			if (active && (focusables.includes(active) || root.contains(active))) return;
-			(root.querySelector("[autofocus]") ?? focusables[0] ?? root).focus();
+			(focusables.find((el) => el.hasAttribute("autofocus")) ?? root.querySelector("[autofocus]") ?? focusables[0] ?? root).focus();
 		}
 		/** Devuelve el foco al trigger; si es un custom element, a su control interno. */
 		function restoreFocus() {
@@ -964,9 +963,13 @@ var Modal_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 		* Trampa de foco: Tab/Shift+Tab ciclan dentro del diálogo. Se escucha en
 		* `document` (keydown es `composed`) para cubrir también el foco que quedó
 		* fuera —body, la barra del navegador— y el contenido sloteado en el shadow.
+		* Sólo atiende el overlay de arriba: con un `SideOver`, otro modal o un menú
+		* encima, la trampa del que está arriba manda (si no, `Tab` desde ese overlay
+		* caía en este modal, que está tapado).
 		*/
 		function handleKeydown(event) {
 			if (!isOpen.value || event.key !== "Tab") return;
+			if (!overlayId || !isTopmostOverlay(overlayId)) return;
 			const focusables = dialogFocusables();
 			const root = backdropRef.value;
 			if (!focusables.length) {
@@ -997,9 +1000,12 @@ var Modal_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 		let overlayId = null;
 		function claimOverlay() {
 			if (overlayId) return;
-			overlayId = registerOverlay({ close: () => {
-				if (!props.persistent) close();
-			} });
+			overlayId = registerOverlay({
+				close: () => {
+					if (!props.persistent) close();
+				},
+				lockScroll: true
+			});
 		}
 		function releaseOverlay() {
 			if (!overlayId) return;
@@ -1031,8 +1037,20 @@ var Modal_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 			emit("accept");
 			close();
 		}
+		/**
+		* Un click que empieza dentro del panel (seleccionar texto, arrastrar) termina con
+		* `target` en el backdrop —el ancestro común de mousedown/mouseup—, así que mirar
+		* sólo el `target` cerraba el modal y se perdía lo escrito. Se exige que la presión
+		* haya empezado en el backdrop.
+		*/
+		let pressedOnBackdrop = false;
+		function handleBackdropMouseDown(event) {
+			pressedOnBackdrop = event.target === event.currentTarget;
+		}
 		function handleBackdropClick(event) {
-			if (!props.persistent && event.target === event.currentTarget) close();
+			const startedOnBackdrop = pressedOnBackdrop;
+			pressedOnBackdrop = false;
+			if (!props.persistent && startedOnBackdrop && event.target === event.currentTarget) close();
 		}
 		watch(isOpen, (newVal) => {
 			emit(newVal ? "opened" : "closed");
@@ -1051,6 +1069,7 @@ var Modal_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 		onBeforeUnmount(() => {
 			releaseOverlay();
 			document.removeEventListener("keydown", handleKeydown);
+			restoreFocus();
 		});
 		__expose({
 			open,
@@ -1063,21 +1082,29 @@ var Modal_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 			return withDirectives((openBlock(), createElementBlock("div", {
 				ref_key: "backdropRef",
 				ref: backdropRef,
+				onMousedown: handleBackdropMouseDown,
 				onClick: handleBackdropClick,
 				tabindex: "-1",
 				role: "dialog",
 				class: "cu-modal-backdrop",
 				"aria-modal": "true",
-				"aria-labelledby": __props.title ? "modal-title" : void 0,
+				"aria-labelledby": __props.title ? titleId : void 0,
 				"aria-label": dialogLabel.value,
-				"aria-describedby": __props.description ? "modal-description" : void 0
+				"aria-describedby": __props.description ? descriptionId : void 0
 			}, [createElementVNode("div", {
 				class: "cu-modal",
 				style: normalizeStyle(colorStyles.value),
 				"data-size": __props.size,
 				"data-height": __props.height
 			}, [
-				createElementVNode("header", { class: normalizeClass(["cu-modal-header", { "cu-modal-header--accent": __props.color !== "neutral" }]) }, [createElementVNode("div", _hoisted_3$1, [__props.title ? (openBlock(), createElementBlock("div", _hoisted_4$1, [renderSlot(_ctx.$slots, "icon"), createElementVNode("h2", _hoisted_5$1, toDisplayString(__props.title), 1)])) : createCommentVNode("v-if", true), __props.description ? (openBlock(), createElementBlock("p", _hoisted_6$1, toDisplayString(__props.description), 1)) : createCommentVNode("v-if", true)]), !__props.persistent ? (openBlock(), createBlock(Button_default, {
+				createElementVNode("header", { class: normalizeClass(["cu-modal-header", { "cu-modal-header--accent": __props.color !== "neutral" }]) }, [createElementVNode("div", _hoisted_3$1, [__props.title ? (openBlock(), createElementBlock("div", _hoisted_4$1, [renderSlot(_ctx.$slots, "icon"), createElementVNode("h2", {
+					id: titleId,
+					class: "cu-modal-title"
+				}, toDisplayString(__props.title), 1)])) : createCommentVNode("v-if", true), __props.description ? (openBlock(), createElementBlock("p", {
+					key: 1,
+					id: descriptionId,
+					class: "cu-modal-description"
+				}, toDisplayString(__props.description), 1)) : createCommentVNode("v-if", true)]), !__props.persistent ? (openBlock(), createBlock(Button_default, {
 					key: 0,
 					color: __props.color,
 					variant: "ghost",
@@ -1098,8 +1125,8 @@ var Modal_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 					}, [createElementVNode("path", { d: "M18 6 6 18" }), createElementVNode("path", { d: "m6 6 12 12" })], -1)])]),
 					_: 1
 				}, 8, ["color"])) : createCommentVNode("v-if", true)], 2),
-				createElementVNode("main", _hoisted_7$1, [renderSlot(_ctx.$slots, "default")]),
-				createElementVNode("footer", _hoisted_8$1, [renderSlot(_ctx.$slots, "footer", {}, () => [!hasFooter.value ? (openBlock(), createElementBlock("div", _hoisted_9$1, [__props.persistent ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [createVNode(Button_default, {
+				createElementVNode("main", _hoisted_5$1, [renderSlot(_ctx.$slots, "default")]),
+				createElementVNode("footer", _hoisted_6$1, [renderSlot(_ctx.$slots, "footer", {}, () => [!hasFooter.value ? (openBlock(), createElementBlock("div", _hoisted_7$1, [__props.persistent ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [createVNode(Button_default, {
 					color: "neutral",
 					variant: "ghost",
 					onClick: handleCancel
@@ -1122,10 +1149,10 @@ var Modal_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 					default: withCtx(() => [..._cache[3] || (_cache[3] = [createTextVNode("Cerrar", -1)])]),
 					_: 1
 				}))])) : createCommentVNode("v-if", true)])])
-			], 12, _hoisted_2$1)], 8, _hoisted_1$2)), [[vShow, isOpen.value]]);
+			], 12, _hoisted_2$1)], 40, _hoisted_1$2)), [[vShow, isOpen.value]]);
 		};
 	}
-}), [["styles", ["\n.cu-modal-backdrop {\n  z-index: 1000;\n  position: fixed;\n  inset: 0;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  padding: var(--cu-space-md);\n  background-color: rgba(0, 0, 0, 0.3);\n  backdrop-filter: blur(4px);\n}\n.cu-modal {\n  background-color: var(--cu-color-surface);\n  color: var(--cu-color-neutral);\n  border-radius: var(--cu-radius);\n  box-shadow: var(--cu-shadow-xl);\n  padding: var(--cu-space-md);\n  width: 100%;\n  display: flex;\n  flex-direction: column;\n  overflow: visible;\n  box-sizing: border-box;\n}\n\n/* size */\n.cu-modal[data-size=\"auto\"] { max-width: var(--cu-modal-size-auto, 50vw);\n}\n.cu-modal[data-size=\"sm\"] { max-width: var(--cu-modal-size-sm, 25vw);\n}\n.cu-modal[data-size=\"md\"] { max-width: var(--cu-modal-size-md, 30vw);\n}\n.cu-modal[data-size=\"lg\"] { max-width: var(--cu-modal-size-lg, 35vw);\n}\n.cu-modal[data-size=\"xl\"] { max-width: var(--cu-modal-size-xl, 40vw);\n}\n.cu-modal[data-size=\"full\"] { max-width: var(--cu-modal-size-full, 90vw);\n}\n\n/* height */\n.cu-modal[data-height=\"auto\"] { max-height: var(--cu-modal-height-auto, 50vh);\n}\n.cu-modal[data-height=\"sm\"] { max-height: var(--cu-modal-height-sm, 30vh);\n}\n.cu-modal[data-height=\"md\"] { max-height: var(--cu-modal-height-md, 40vh);\n}\n.cu-modal[data-height=\"lg\"] { max-height: var(--cu-modal-height-lg, 50vh);\n}\n.cu-modal[data-height=\"xl\"] { max-height: var(--cu-modal-height-xl, 60vh);\n}\n.cu-modal[data-height=\"full\"] {\n  max-height: var(--cu-modal-height-full, 90vh);\n  height: var(--cu-modal-height-full, 90vh);\n}\n.cu-modal-header {\n  display: flex;\n  justify-content: space-between;\n  align-items: flex-start;\n  padding: var(--cu-space-lg);\n  gap: var(--cu-space-md);\n}\n.cu-modal-header-text {\n  display: flex;\n  flex-direction: column;\n  gap: var(--cu-space-2xs);\n  min-width: 0;\n}\n.cu-modal-title-row {\n  display: flex;\n  align-items: center;\n  gap: var(--cu-space-sm);\n}\n.cu-modal-title {\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-lg);\n  font-weight: var(--cu-font-weight-bold);\n  margin: 0;\n  color: var(--modal-color);\n}\n.cu-modal-description {\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  margin: 0;\n  color: var(--cu-color-neutral-text-muted);\n}\n.cu-modal-close {\n  flex-shrink: 0;\n  padding: var(--cu-space-sm) !important;\n  height: auto !important;\n  width: auto !important;\n}\n.cu-modal-body {\n  padding: 0 var(--cu-space-lg) var(--cu-space-lg);\n  flex: 1;\n  min-height: 0;\n  overflow-y: auto;\n}\n.cu-modal-body > * {\n  width: 100%;\n}\n.cu-modal-footer {\n  padding: var(--cu-space-lg);\n  border-top: var(--cu-border-thin) solid var(--cu-border-color);\n}\n.cu-modal-footer-default {\n  display: flex;\n  justify-content: flex-end;\n  gap: var(--cu-space-sm);\n}\n"]]]);
+}), [["styles", ["\n.cu-modal-backdrop {\n  z-index: 1000;\n  position: fixed;\n  inset: 0;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  padding: var(--cu-space-md);\n  background-color: rgba(0, 0, 0, 0.3);\n  backdrop-filter: blur(4px);\n}\n.cu-modal {\n  background-color: var(--cu-color-surface);\n  color: var(--cu-color-neutral);\n  border-radius: var(--cu-radius);\n  box-shadow: var(--cu-shadow-xl);\n  padding: var(--cu-space-md);\n  width: 100%;\n  display: flex;\n  flex-direction: column;\n  overflow: visible;\n  box-sizing: border-box;\n}\n\n/* size */\n.cu-modal[data-size=\"auto\"] { max-width: var(--cu-modal-size-auto, 50vw);\n}\n.cu-modal[data-size=\"sm\"] { max-width: var(--cu-modal-size-sm, 25vw);\n}\n.cu-modal[data-size=\"md\"] { max-width: var(--cu-modal-size-md, 30vw);\n}\n.cu-modal[data-size=\"lg\"] { max-width: var(--cu-modal-size-lg, 35vw);\n}\n.cu-modal[data-size=\"xl\"] { max-width: var(--cu-modal-size-xl, 40vw);\n}\n.cu-modal[data-size=\"full\"] { max-width: var(--cu-modal-size-full, 90vw);\n}\n\n/* height */\n.cu-modal[data-height=\"auto\"] { max-height: var(--cu-modal-height-auto, 50vh);\n}\n.cu-modal[data-height=\"sm\"] { max-height: var(--cu-modal-height-sm, 30vh);\n}\n.cu-modal[data-height=\"md\"] { max-height: var(--cu-modal-height-md, 40vh);\n}\n.cu-modal[data-height=\"lg\"] { max-height: var(--cu-modal-height-lg, 50vh);\n}\n.cu-modal[data-height=\"xl\"] { max-height: var(--cu-modal-height-xl, 60vh);\n}\n.cu-modal[data-height=\"full\"] {\n  max-height: var(--cu-modal-height-full, 90vh);\n  height: var(--cu-modal-height-full, 90vh);\n}\n\n/* En pantallas angostas los presets (que son `vw`/`vh`) dejan el modal en una\n   franja inusable: a 375px, `auto` son 187px y `sm` 94px. El ancho/alto disponible\n   manda y el preset aplica desde 641px. Misma especificidad que los presets\n   (`[data-size]`) pero después: gana este bloque. */\n@media (max-width: 640px) {\n.cu-modal[data-size] {\n    max-width: calc(100vw - 2 * var(--cu-space-md));\n}\n.cu-modal[data-height] {\n    max-height: calc(100vh - 2 * var(--cu-space-md));\n}\n}\n.cu-modal-header {\n  display: flex;\n  justify-content: space-between;\n  align-items: flex-start;\n  padding: var(--cu-space-lg);\n  gap: var(--cu-space-md);\n}\n.cu-modal-header-text {\n  display: flex;\n  flex-direction: column;\n  gap: var(--cu-space-2xs);\n  min-width: 0;\n}\n.cu-modal-title-row {\n  display: flex;\n  align-items: center;\n  gap: var(--cu-space-sm);\n}\n.cu-modal-title {\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-lg);\n  font-weight: var(--cu-font-weight-bold);\n  margin: 0;\n  color: var(--modal-color);\n}\n.cu-modal-description {\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  margin: 0;\n  color: var(--cu-color-neutral-text-muted);\n}\n.cu-modal-close {\n  flex-shrink: 0;\n  padding: var(--cu-space-sm) !important;\n  height: auto !important;\n  width: auto !important;\n}\n.cu-modal-body {\n  padding: 0 var(--cu-space-lg) var(--cu-space-lg);\n  flex: 1;\n  min-height: 0;\n  overflow-y: auto;\n}\n.cu-modal-body > * {\n  width: 100%;\n}\n.cu-modal-footer {\n  padding: var(--cu-space-lg);\n  border-top: var(--cu-border-thin) solid var(--cu-border-color);\n}\n.cu-modal-footer-default {\n  display: flex;\n  justify-content: flex-end;\n  gap: var(--cu-space-sm);\n}\n"]]]);
 //#endregion
 //#region node_modules/.pnpm/@vueuse+shared@14.4.0_vue@3.6.0-rc.11_@typescript+typescript6@6.0.2_/node_modules/@vueuse/shared/dist/index.js
 var isClient = typeof window !== "undefined" && typeof document !== "undefined";

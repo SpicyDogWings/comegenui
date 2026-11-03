@@ -464,6 +464,7 @@ oneOf(SELECT_SEARCH_MODES);
 oneOf(CELLS_IMPORTER_INPUT_TYPES);
 //#endregion
 //#region src/components/information/Skeleton.vue?vue&type=script&setup=true&lang.ts
+var MAX_LINES = 100;
 var Skeleton_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineComponent({
 	__name: "Skeleton",
 	props: {
@@ -533,25 +534,27 @@ var Skeleton_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineC
 			}
 		};
 		const props = __props;
-		const shapeDefaults = computed(() => SHAPE_DEFAULTS[props.shape]);
+		const resolvedShape = computed(() => SHAPE_DEFAULTS[props.shape] ? props.shape : "rect");
+		const shapeDefaults = computed(() => SHAPE_DEFAULTS[resolvedShape.value]);
+		const resolvedColor = computed(() => isColor(props.color) ? props.color : "neutral");
 		const resolvedRadius = computed(() => props.radius || shapeDefaults.value.radius);
-		const barCount = computed(() => props.shape === "text" ? Math.max(1, Math.floor(props.lines) || 1) : 1);
+		const barCount = computed(() => resolvedShape.value === "text" ? Math.min(MAX_LINES, Math.max(1, Math.floor(props.lines) || 1)) : 1);
 		const skeletonStyles = computed(() => ({
 			"--cu-skeleton-width": props.width || shapeDefaults.value.width,
 			"--cu-skeleton-height": props.height || shapeDefaults.value.height,
 			"--cu-skeleton-radius": `var(--cu-radius-${resolvedRadius.value})`,
-			"--cu-skeleton-bg": `var(--cu-color-${props.color}-soft)`,
-			"--cu-skeleton-highlight": `var(--cu-color-${props.color}-subtle)`
+			"--cu-skeleton-bg": `var(--cu-color-${resolvedColor.value}-soft)`,
+			"--cu-skeleton-highlight": `var(--cu-color-${resolvedColor.value}-subtle)`
 		}));
 		/** La última línea de un párrafo es más corta (60 %), como el final de un texto. */
 		function isShortLine(index) {
-			return props.shape === "text" && barCount.value > 1 && index === barCount.value;
+			return resolvedShape.value === "text" && barCount.value > 1 && index === barCount.value;
 		}
 		return (_ctx, _cache) => {
 			return openBlock(), createElementBlock("div", {
 				class: normalizeClass([
 					"cu-skeleton",
-					`cu-skeleton--${props.shape}`,
+					`cu-skeleton--${resolvedShape.value}`,
 					`cu-skeleton--${props.animation}`,
 					`cu-skeleton--radius-${resolvedRadius.value}`
 				]),
@@ -567,8 +570,8 @@ var Skeleton_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineC
 	}
 });
 //#endregion
-//#region src/components/information/Skeleton.vue?vue&type=style&index=0&inline&scoped=388550cd&lang.css
-var Skeleton_vue_vue_type_style_index_0_inline_scoped_388550cd_lang_default = "\n.cu-skeleton[data-v-388550cd] {\n  box-sizing: border-box;\n  width: var(--cu-skeleton-width);\n  border-radius: var(--cu-skeleton-radius);\n}\n.cu-skeleton--rect[data-v-388550cd],\n.cu-skeleton--circle[data-v-388550cd] {\n  height: var(--cu-skeleton-height);\n}\n.cu-skeleton--circle[data-v-388550cd] {\n  flex-shrink: 0;\n}\n\n/* En `text` el contenedor apila las barras: el alto es de cada línea. */\n.cu-skeleton--text[data-v-388550cd] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--cu-space-xs);\n  height: auto;\n}\n.cu-skeleton-bar[data-v-388550cd] {\n  display: block;\n  width: 100%;\n  height: 100%;\n  background-color: var(--cu-skeleton-bg);\n  border-radius: var(--cu-skeleton-radius);\n}\n.cu-skeleton--text .cu-skeleton-bar[data-v-388550cd] {\n  height: var(--cu-skeleton-height);\n}\n.cu-skeleton-bar--short[data-v-388550cd] {\n  width: 60%;\n}\n\n/* ── Animaciones ──────────────────────────────────────────────────────────── */\n.cu-skeleton--pulse .cu-skeleton-bar[data-v-388550cd] {\n  animation: cu-skeleton-pulse-388550cd 1.5s ease-in-out infinite;\n}\n.cu-skeleton--wave .cu-skeleton-bar[data-v-388550cd] {\n  background-image: linear-gradient(\n    90deg,\n    transparent 0%,\n    var(--cu-skeleton-highlight) 50%,\n    transparent 100%\n  );\n  background-repeat: no-repeat;\n  background-size: 200% 100%;\n  animation: cu-skeleton-wave-388550cd 1.6s ease-in-out infinite;\n}\n.cu-skeleton--none .cu-skeleton-bar[data-v-388550cd] {\n  animation: none;\n}\n@keyframes cu-skeleton-pulse-388550cd {\n0%,\n  100% {\n    opacity: 1;\n}\n50% {\n    opacity: 0.45;\n}\n}\n@keyframes cu-skeleton-wave-388550cd {\nfrom {\n    background-position: -100% 0;\n}\nto {\n    background-position: 200% 0;\n}\n}\n\n/* Accesibilidad: sin animación si el sistema lo pide. */\n@media (prefers-reduced-motion: reduce) {\n.cu-skeleton--pulse .cu-skeleton-bar[data-v-388550cd],\n  .cu-skeleton--wave .cu-skeleton-bar[data-v-388550cd] {\n    animation: none;\n}\n}\n";
+//#region src/components/information/Skeleton.vue?vue&type=style&index=0&inline&scoped=b473c693&lang.css
+var Skeleton_vue_vue_type_style_index_0_inline_scoped_b473c693_lang_default = "\n.cu-skeleton[data-v-b473c693] {\n  box-sizing: border-box;\n  width: var(--cu-skeleton-width);\n  border-radius: var(--cu-skeleton-radius);\n}\n.cu-skeleton--rect[data-v-b473c693],\n.cu-skeleton--circle[data-v-b473c693] {\n  height: var(--cu-skeleton-height);\n}\n.cu-skeleton--circle[data-v-b473c693] {\n  flex-shrink: 0;\n}\n\n/* En `text` el contenedor apila las barras: el alto es de cada línea. */\n.cu-skeleton--text[data-v-b473c693] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--cu-space-xs);\n  height: auto;\n}\n.cu-skeleton-bar[data-v-b473c693] {\n  display: block;\n  width: 100%;\n  height: 100%;\n  background-color: var(--cu-skeleton-bg);\n  border-radius: var(--cu-skeleton-radius);\n}\n.cu-skeleton--text .cu-skeleton-bar[data-v-b473c693] {\n  height: var(--cu-skeleton-height);\n}\n.cu-skeleton-bar--short[data-v-b473c693] {\n  width: 60%;\n}\n\n/* ── Animaciones ──────────────────────────────────────────────────────────── */\n.cu-skeleton--pulse .cu-skeleton-bar[data-v-b473c693] {\n  animation: cu-skeleton-pulse-b473c693 1.5s ease-in-out infinite;\n}\n.cu-skeleton--wave .cu-skeleton-bar[data-v-b473c693] {\n  background-image: linear-gradient(\n    90deg,\n    transparent 0%,\n    var(--cu-skeleton-highlight) 50%,\n    transparent 100%\n  );\n  background-repeat: no-repeat;\n  background-size: 200% 100%;\n  animation: cu-skeleton-wave-b473c693 1.6s ease-in-out infinite;\n}\n.cu-skeleton--none .cu-skeleton-bar[data-v-b473c693] {\n  animation: none;\n}\n@keyframes cu-skeleton-pulse-b473c693 {\n0%,\n  100% {\n    opacity: 1;\n}\n50% {\n    opacity: 0.45;\n}\n}\n@keyframes cu-skeleton-wave-b473c693 {\nfrom {\n    background-position: -100% 0;\n}\nto {\n    background-position: 200% 0;\n}\n}\n\n/* Accesibilidad: sin animación si el sistema lo pide. */\n@media (prefers-reduced-motion: reduce) {\n.cu-skeleton--pulse .cu-skeleton-bar[data-v-b473c693],\n  .cu-skeleton--wave .cu-skeleton-bar[data-v-b473c693] {\n    animation: none;\n}\n}\n";
 //#endregion
 //#region \0plugin-vue:export-helper
 var _plugin_vue_export_helper_default = (sfc, props) => {
@@ -578,7 +581,7 @@ var _plugin_vue_export_helper_default = (sfc, props) => {
 };
 //#endregion
 //#region src/components/information/Skeleton.vue
-var Skeleton_default = /*#__PURE__*/ _plugin_vue_export_helper_default(Skeleton_vue_vue_type_script_setup_true_lang_default, [["styles", [Skeleton_vue_vue_type_style_index_0_inline_scoped_388550cd_lang_default]], ["__scopeId", "data-v-388550cd"]]);
+var Skeleton_default = /*#__PURE__*/ _plugin_vue_export_helper_default(Skeleton_vue_vue_type_script_setup_true_lang_default, [["styles", [Skeleton_vue_vue_type_style_index_0_inline_scoped_b473c693_lang_default]], ["__scopeId", "data-v-b473c693"]]);
 //#endregion
 //#region src/lib/information/skeleton.ts
 var CuSkeleton = defineComegenElement("cu-skeleton", /* @__PURE__ */ _plugin_vue_export_helper_default(/* @__PURE__ */ defineComponent({

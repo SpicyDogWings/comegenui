@@ -1,5 +1,5 @@
 /*! comegenui v5.2.3 · CuFileInput (cu-file-input) · esm-shared · Vue externo (bare import) */
-import { Fragment, computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, createTextVNode, defineComponent, defineCustomElement, getCurrentInstance, mergeModels, nextTick, normalizeClass, normalizeStyle, onMounted, onUnmounted, openBlock, ref, renderSlot, toDisplayString, unref, useModel, useTemplateRef, vShow, watch, withCtx, withDirectives, withModifiers } from "vue";
+import { Fragment, computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, createTextVNode, defineComponent, defineCustomElement, getCurrentInstance, mergeModels, normalizeClass, normalizeStyle, onBeforeUnmount, onMounted, onUnmounted, onUpdated, openBlock, ref, renderSlot, toDisplayString, unref, useModel, useTemplateRef, vShow, watch, withCtx, withDirectives, withModifiers } from "vue";
 //#region src/utils/comegen-element.ts
 var BUILD_META = {
 	"version": "5.2.3",
@@ -718,8 +718,8 @@ var Button_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineCom
 	}
 });
 //#endregion
-//#region src/components/buttons/Button.vue?vue&type=style&index=0&inline&scoped=de0a2e1a&lang.css
-var Button_vue_vue_type_style_index_0_inline_scoped_de0a2e1a_lang_default = "\n.cu-button[data-v-de0a2e1a] {\n  font-family: var(--cu-font-sans);\n  text-decoration: none;\n  font-size: var(--cu-font-size-sm);\n  font-weight: var(--cu-font-weight-medium);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius);\n  border: none;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--cu-space-xs);\n  box-sizing: border-box;\n  transition: all 150ms ease;\n}\n.cu-button[data-v-de0a2e1a]:active:not(.cu-button--disabled) {\n  transform: scale(0.97);\n}\n.cu-button--disabled[data-v-de0a2e1a] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n\n/* sizes (md = base; link mantiene su padding 0) */\n.cu-button--sm[data-v-de0a2e1a]:not(.cu-button--link) {\n  font-size: var(--cu-font-size-xs);\n  padding: var(--cu-space-xs) var(--cu-space-sm);\n}\n.cu-button--lg[data-v-de0a2e1a]:not(.cu-button--link) {\n  font-size: var(--cu-font-size-lg);\n  padding: var(--cu-space-lg) var(--cu-space-xl);\n}\n\n/* solid */\n.cu-button.cu-button--solid[data-v-de0a2e1a] {\n  background-color: var(--btn-solid);\n  color: var(--btn-solid-text);\n}\n.cu-button.cu-button--solid[data-v-de0a2e1a]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-hover);\n}\n.cu-button.cu-button--solid[data-v-de0a2e1a]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-active);\n}\n\n/* ghost */\n.cu-button.cu-button--ghost[data-v-de0a2e1a] {\n  background-color: transparent;\n  color: var(--btn-text);\n}\n.cu-button.cu-button--ghost[data-v-de0a2e1a]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-hover);\n}\n.cu-button.cu-button--ghost[data-v-de0a2e1a]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-active);\n}\n\n/* soft */\n.cu-button.cu-button--soft[data-v-de0a2e1a] {\n  background-color: var(--btn-soft);\n  color: var(--btn-text);\n}\n.cu-button.cu-button--soft[data-v-de0a2e1a]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-soft-hover);\n}\n.cu-button.cu-button--soft[data-v-de0a2e1a]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-soft-active);\n}\n\n/* subtle */\n.cu-button.cu-button--subtle[data-v-de0a2e1a] {\n  background-color: var(--btn-subtle);\n  color: var(--btn-text);\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-button.cu-button--subtle[data-v-de0a2e1a]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-subtle-hover);\n}\n.cu-button.cu-button--subtle[data-v-de0a2e1a]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-subtle-active);\n}\n\n/* outlined */\n.cu-button.cu-button--outlined[data-v-de0a2e1a] {\n  background-color: transparent;\n  color: var(--btn-text);\n  border: var(--cu-border-thin) solid var(--btn-border);\n}\n.cu-button.cu-button--outlined[data-v-de0a2e1a]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-hover);\n}\n.cu-button.cu-button--outlined[data-v-de0a2e1a]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-active);\n}\n\n/* link */\n.cu-button.cu-button--link[data-v-de0a2e1a] {\n  background-color: transparent;\n  color: var(--btn-text);\n  padding: 0;\n  box-shadow: none;\n  text-decoration: underline;\n  text-underline-offset: var(--cu-space-2xs);\n}\n.cu-button.cu-button--link[data-v-de0a2e1a]:hover:not(.cu-button--disabled) {\n  text-decoration-thickness: 2px;\n}\n\n/* none */\n.cu-button.cu-button--none[data-v-de0a2e1a] {\n  background-color: var(--btn-solid);\n  color: var(--btn-solid-text);\n}\n.cu-button.cu-button--none[data-v-de0a2e1a]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-hover);\n}\n.cu-button.cu-button--none[data-v-de0a2e1a]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-active);\n}\n\n/* link wrapper */\n.cu-button-link[data-v-de0a2e1a] {\n  text-decoration: none;\n}\n.cu-button-link[data-v-de0a2e1a]:hover {\n  text-decoration: underline;\n  text-underline-offset: var(--cu-space-2xs);\n}\n.cu-button-link.cu-button--disabled[data-v-de0a2e1a] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n\n/* icon-only */\n.cu-button--icon-only[data-v-de0a2e1a] {\n  padding: var(--cu-space-sm);\n}\n\n/* loading spinner */\n.cu-button-spinner[data-v-de0a2e1a] {\n  animation: cu-spin-de0a2e1a 0.8s linear infinite;\n}\n@keyframes cu-spin-de0a2e1a {\nfrom { transform: rotate(0deg);\n}\nto { transform: rotate(360deg);\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.cu-button[data-v-de0a2e1a] {\n    transition: none;\n}\n.cu-button[data-v-de0a2e1a]:active:not(.cu-button--disabled) {\n    transform: none;\n}\n.cu-button-spinner[data-v-de0a2e1a] {\n    animation: none;\n}\n}\n";
+//#region src/components/buttons/Button.vue?vue&type=style&index=0&inline&scoped=fed7165d&lang.css
+var Button_vue_vue_type_style_index_0_inline_scoped_fed7165d_lang_default = "\n.cu-button[data-v-fed7165d] {\n  font-family: var(--cu-font-sans);\n  text-decoration: none;\n  font-size: var(--cu-font-size-sm);\n  font-weight: var(--cu-font-weight-medium);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius);\n  border: none;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  gap: var(--cu-space-xs);\n  box-sizing: border-box;\n  transition: all 150ms ease;\n}\n.cu-button[data-v-fed7165d]:active:not(.cu-button--disabled) {\n  transform: scale(0.97);\n}\n.cu-button--disabled[data-v-fed7165d] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n\n/* sizes (md = base; link mantiene su padding 0) */\n.cu-button--sm[data-v-fed7165d]:not(.cu-button--link) {\n  font-size: var(--cu-font-size-xs);\n  padding: var(--cu-space-xs) var(--cu-space-sm);\n}\n.cu-button--lg[data-v-fed7165d]:not(.cu-button--link) {\n  font-size: var(--cu-font-size-lg);\n  padding: var(--cu-space-lg) var(--cu-space-xl);\n}\n\n/* solid */\n.cu-button.cu-button--solid[data-v-fed7165d] {\n  background-color: var(--btn-solid);\n  color: var(--btn-solid-text);\n}\n.cu-button.cu-button--solid[data-v-fed7165d]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-hover);\n}\n.cu-button.cu-button--solid[data-v-fed7165d]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-active);\n}\n\n/* ghost */\n.cu-button.cu-button--ghost[data-v-fed7165d] {\n  background-color: transparent;\n  color: var(--btn-text);\n}\n.cu-button.cu-button--ghost[data-v-fed7165d]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-hover);\n}\n.cu-button.cu-button--ghost[data-v-fed7165d]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-active);\n}\n\n/* soft */\n.cu-button.cu-button--soft[data-v-fed7165d] {\n  background-color: var(--btn-soft);\n  color: var(--btn-text);\n}\n.cu-button.cu-button--soft[data-v-fed7165d]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-soft-hover);\n}\n.cu-button.cu-button--soft[data-v-fed7165d]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-soft-active);\n}\n\n/* subtle */\n.cu-button.cu-button--subtle[data-v-fed7165d] {\n  background-color: var(--btn-subtle);\n  color: var(--btn-text);\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-button.cu-button--subtle[data-v-fed7165d]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-subtle-hover);\n}\n.cu-button.cu-button--subtle[data-v-fed7165d]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-subtle-active);\n}\n\n/* outlined */\n.cu-button.cu-button--outlined[data-v-fed7165d] {\n  background-color: transparent;\n  color: var(--btn-text);\n  border: var(--cu-border-thin) solid var(--btn-border);\n}\n.cu-button.cu-button--outlined[data-v-fed7165d]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-hover);\n}\n.cu-button.cu-button--outlined[data-v-fed7165d]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-ghost-active);\n}\n\n/* link */\n.cu-button.cu-button--link[data-v-fed7165d] {\n  background-color: transparent;\n  color: var(--btn-text);\n  padding: 0;\n  box-shadow: none;\n  text-decoration: underline;\n  text-underline-offset: var(--cu-space-2xs);\n}\n.cu-button.cu-button--link[data-v-fed7165d]:hover:not(.cu-button--disabled) {\n  text-decoration-thickness: 2px;\n}\n\n/* none */\n.cu-button.cu-button--none[data-v-fed7165d] {\n  background-color: var(--btn-solid);\n  color: var(--btn-solid-text);\n}\n.cu-button.cu-button--none[data-v-fed7165d]:hover:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-hover);\n}\n.cu-button.cu-button--none[data-v-fed7165d]:active:not(.cu-button--disabled) {\n  background-color: var(--btn-solid-active);\n}\n\n/* link wrapper */\n.cu-button-link[data-v-fed7165d] {\n  text-decoration: none;\n}\n.cu-button-link[data-v-fed7165d]:hover {\n  text-decoration: underline;\n  text-underline-offset: var(--cu-space-2xs);\n}\n.cu-button-link.cu-button--disabled[data-v-fed7165d] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n\n/* icon-only: cuadrado. El `:not(.cu-button--link)` sube la especificidad para\n   ganarle al padding de `.cu-button--sm/lg` (que tienen la misma o más clase);\n   antes el cuadrado sólo salía en `md` (sm 32×24, lg 64×48). En `link` no\n   aplica: el link no lleva padding. */\n.cu-button--icon-only[data-v-fed7165d]:not(.cu-button--link) {\n  padding: var(--cu-space-sm);\n}\n\n/* `lg` mantiene la escala: 16 px de padding por lado (48×48 con un ícono de 16). */\n.cu-button--lg.cu-button--icon-only[data-v-fed7165d]:not(.cu-button--link) {\n  padding: var(--cu-space-lg);\n}\n\n/* loading spinner */\n.cu-button-spinner[data-v-fed7165d] {\n  animation: cu-spin-fed7165d 0.8s linear infinite;\n}\n@keyframes cu-spin-fed7165d {\nfrom { transform: rotate(0deg);\n}\nto { transform: rotate(360deg);\n}\n}\n@media (prefers-reduced-motion: reduce) {\n.cu-button[data-v-fed7165d] {\n    transition: none;\n}\n.cu-button[data-v-fed7165d]:active:not(.cu-button--disabled) {\n    transform: none;\n}\n.cu-button-spinner[data-v-fed7165d] {\n    animation: none;\n}\n}\n";
 //#endregion
 //#region \0plugin-vue:export-helper
 var _plugin_vue_export_helper_default = (sfc, props) => {
@@ -729,14 +729,11 @@ var _plugin_vue_export_helper_default = (sfc, props) => {
 };
 //#endregion
 //#region src/components/buttons/Button.vue
-var Button_default = /*#__PURE__*/ _plugin_vue_export_helper_default(Button_vue_vue_type_script_setup_true_lang_default, [["styles", [Button_vue_vue_type_style_index_0_inline_scoped_de0a2e1a_lang_default]], ["__scopeId", "data-v-de0a2e1a"]]);
+var Button_default = /*#__PURE__*/ _plugin_vue_export_helper_default(Button_vue_vue_type_script_setup_true_lang_default, [["styles", [Button_vue_vue_type_style_index_0_inline_scoped_fed7165d_lang_default]], ["__scopeId", "data-v-fed7165d"]]);
 //#endregion
 //#region src/components/information/Alert.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1$1 = {
-	key: 0,
-	class: "cu-alert-header"
-};
-var _hoisted_2$1 = { class: "cu-alert-title" };
+var _hoisted_1$1 = ["role", "aria-live"];
+var _hoisted_2$1 = { class: "cu-alert-header" };
 var _hoisted_3$1 = {
 	key: 0,
 	class: "cu-alert-title-text"
@@ -750,7 +747,8 @@ var Alert_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 		color: {
 			type: String,
 			required: false,
-			default: "neutral"
+			default: "neutral",
+			validator: isColor
 		},
 		variant: {
 			type: String,
@@ -781,26 +779,58 @@ var Alert_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 	setup(__props, { expose: __expose, emit: __emit }) {
 		const props = __props;
 		const emit = __emit;
+		/** Un color fuera del set no tiene tokens: la variante solid quedaría sin fondo
+		*  y con el texto del tema encima (invisible). Cae al color seguro. */
+		const safeColor = computed(() => isColor(props.color) ? props.color : "neutral");
+		const isUrgent = computed(() => safeColor.value === "warning" || safeColor.value === "danger");
+		const ariaRole = computed(() => isUrgent.value ? "alert" : "status");
+		const ariaLive = computed(() => isUrgent.value ? "assertive" : "polite");
 		const iconWrap = ref(null);
 		const hasIcon = ref(false);
+		const hasHeader = computed(() => !!props.title || hasIcon.value);
+		let iconSlot = null;
+		/**
+		* Presencia del ícono. En Vue el contenido del slot se renderiza como hijos del
+		* wrapper; en el custom element el slot es nativo y hay que mirar `assignedNodes`.
+		* El `<span>` del título lo pinta el componente: no cuenta como ícono.
+		*/
+		function nodeHasIconContent(node) {
+			if (node.nodeType === Node.TEXT_NODE) return !!node.textContent?.trim();
+			if (node.nodeType !== Node.ELEMENT_NODE) return false;
+			const el = node;
+			if (el.classList.contains("cu-alert-title-text")) return false;
+			if (el.tagName === "SLOT") return el.assignedNodes().some(nodeHasIconContent);
+			return true;
+		}
 		function detectIcon() {
 			const el = iconWrap.value;
 			if (!el) return;
-			const hasRealContent = (node) => {
-				if (node.nodeType === Node.TEXT_NODE) return !!node.textContent?.trim();
-				if (node.nodeType === Node.ELEMENT_NODE) {
-					const slotEl = node;
-					if (node.tagName === "SLOT") return slotEl.assignedNodes().length > 0;
-					return true;
-				}
-				return false;
-			};
-			hasIcon.value = Array.from(el.childNodes).some(hasRealContent);
+			hasIcon.value = Array.from(el.childNodes).some(nodeHasIconContent);
+		}
+		/**
+		* En el custom element el ícono puede llegar después del mount (el HTML se
+		* parsea después de la upgrade): `slotchange` vuelve a detectarlo. En Vue no hay
+		* `<slot>` en el DOM y el re-render lo cubre `onUpdated`.
+		*/
+		function bindIconSlot() {
+			const slot = iconWrap.value?.querySelector("slot");
+			if (!slot || slot === iconSlot) return;
+			iconSlot?.removeEventListener("slotchange", detectIcon);
+			iconSlot = slot;
+			iconSlot.addEventListener("slotchange", detectIcon);
 		}
 		onMounted(() => {
 			detectIcon();
+			bindIconSlot();
 		});
-		watch(hasIcon, () => nextTick(detectIcon));
+		onUpdated(() => {
+			detectIcon();
+			bindIconSlot();
+		});
+		onBeforeUnmount(() => {
+			iconSlot?.removeEventListener("slotchange", detectIcon);
+			iconSlot = null;
+		});
 		const internalShow = ref(props.show);
 		watch(() => props.show, (val) => {
 			internalShow.value = val;
@@ -809,21 +839,21 @@ var Alert_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 			emit("update:show", val);
 		});
 		const colorStyles = computed(() => ({
-			"--alert-solid": `var(--cu-color-${props.color}-solid)`,
-			"--alert-solid-hover": `var(--cu-color-${props.color}-solid-hover)`,
-			"--alert-solid-active": `var(--cu-color-${props.color}-solid-active)`,
+			"--alert-solid": `var(--cu-color-${safeColor.value}-solid)`,
+			"--alert-solid-hover": `var(--cu-color-${safeColor.value}-solid-hover)`,
+			"--alert-solid-active": `var(--cu-color-${safeColor.value}-solid-active)`,
 			"--alert-solid-text": `var(--cu-color-surface)`,
-			"--alert-border": `var(--cu-color-${props.color}-border)`,
-			"--alert-text": `var(--cu-color-${props.color}-text)`,
-			"--alert-ghost-hover": `var(--cu-color-${props.color}-ghost-hover)`,
-			"--alert-ghost-active": `var(--cu-color-${props.color}-ghost-active)`,
-			"--alert-soft": `var(--cu-color-${props.color}-soft)`,
-			"--alert-soft-hover": `var(--cu-color-${props.color}-soft-hover)`,
-			"--alert-soft-active": `var(--cu-color-${props.color}-soft-active)`,
-			"--alert-subtle": `var(--cu-color-${props.color}-subtle)`,
-			"--alert-subtle-hover": `var(--cu-color-${props.color}-subtle-hover)`,
-			"--alert-subtle-active": `var(--cu-color-${props.color}-subtle-active)`,
-			"--alert-subtle-border": `var(--cu-color-${props.color}-subtle-border)`
+			"--alert-border": `var(--cu-color-${safeColor.value}-border)`,
+			"--alert-text": `var(--cu-color-${safeColor.value}-text)`,
+			"--alert-ghost-hover": `var(--cu-color-${safeColor.value}-ghost-hover)`,
+			"--alert-ghost-active": `var(--cu-color-${safeColor.value}-ghost-active)`,
+			"--alert-soft": `var(--cu-color-${safeColor.value}-soft)`,
+			"--alert-soft-hover": `var(--cu-color-${safeColor.value}-soft-hover)`,
+			"--alert-soft-active": `var(--cu-color-${safeColor.value}-soft-active)`,
+			"--alert-subtle": `var(--cu-color-${safeColor.value}-subtle)`,
+			"--alert-subtle-hover": `var(--cu-color-${safeColor.value}-subtle-hover)`,
+			"--alert-subtle-active": `var(--cu-color-${safeColor.value}-subtle-active)`,
+			"--alert-subtle-border": `var(--cu-color-${safeColor.value}-subtle-border)`
 		}));
 		function open() {
 			internalShow.value = true;
@@ -848,18 +878,19 @@ var Alert_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 				class: normalizeClass([
 					"cu-alert",
 					`cu-alert--${props.variant}`,
-					{ "cu-alert--floating-close": props.close && !props.title && !hasIcon.value }
+					{ "cu-alert--floating-close": props.close && !hasHeader.value }
 				]),
 				style: normalizeStyle(colorStyles.value),
-				role: "alert"
+				role: ariaRole.value,
+				"aria-live": ariaLive.value
 			}, [
-				createElementVNode("span", {
+				withDirectives(createElementVNode("div", _hoisted_2$1, [createElementVNode("div", {
 					ref_key: "iconWrap",
 					ref: iconWrap,
-					class: "cu-alert-icon-detect"
-				}, [renderSlot(_ctx.$slots, "icon", {}, void 0, true)], 512),
-				props.title || hasIcon.value ? (openBlock(), createElementBlock("div", _hoisted_1$1, [createElementVNode("div", _hoisted_2$1, [renderSlot(_ctx.$slots, "icon", {}, void 0, true), props.title ? (openBlock(), createElementBlock("span", _hoisted_3$1, toDisplayString(props.title), 1)) : createCommentVNode("v-if", true)]), props.close ? (openBlock(), createElementBlock("button", {
+					class: "cu-alert-title"
+				}, [renderSlot(_ctx.$slots, "icon", {}, void 0, true), props.title ? (openBlock(), createElementBlock("span", _hoisted_3$1, toDisplayString(props.title), 1)) : createCommentVNode("v-if", true)], 512), props.close && hasHeader.value ? (openBlock(), createElementBlock("button", {
 					key: 0,
+					type: "button",
 					onClick: close,
 					class: "cu-alert-close",
 					"aria-label": "Cerrar alerta"
@@ -877,8 +908,10 @@ var Alert_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 					createElementVNode("path", { d: "M18 6 6 18" }),
 					createTextVNode(),
 					createElementVNode("path", { d: "m6 6 12 12" })
-				], -1)])])) : createCommentVNode("v-if", true)])) : props.close ? (openBlock(), createElementBlock("button", {
-					key: 1,
+				], -1)])])) : createCommentVNode("v-if", true)], 512), [[vShow, hasHeader.value]]),
+				props.close && !hasHeader.value ? (openBlock(), createElementBlock("button", {
+					key: 0,
+					type: "button",
 					onClick: close,
 					class: "cu-alert-close cu-alert-close--floating",
 					"aria-label": "Cerrar alerta"
@@ -898,10 +931,10 @@ var Alert_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 					createElementVNode("path", { d: "m6 6 12 12" })
 				], -1)])])) : createCommentVNode("v-if", true),
 				createElementVNode("div", _hoisted_4$1, [renderSlot(_ctx.$slots, "default", {}, void 0, true)])
-			], 6)), [[vShow, internalShow.value]]);
+			], 14, _hoisted_1$1)), [[vShow, internalShow.value]]);
 		};
 	}
-}), [["styles", ["\n.cu-alert-icon-detect[data-v-5c95ed82] {\n  display: none;\n}\n.cu-alert[data-v-5c95ed82] {\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius);\n  display: flex;\n  flex-direction: column;\n  gap: var(--cu-space-sm);\n  box-sizing: border-box;\n  position: relative;\n}\n\n/* solid */\n.cu-alert.cu-alert--solid[data-v-5c95ed82] {\n  background-color: var(--alert-solid);\n  color: var(--alert-solid-text);\n}\n.cu-alert.cu-alert--solid .cu-alert-title-text[data-v-5c95ed82] {\n  color: var(--alert-solid-text);\n}\n\n/* ghost */\n.cu-alert.cu-alert--ghost[data-v-5c95ed82] {\n  background-color: transparent;\n  color: var(--alert-text);\n}\n\n/* soft */\n.cu-alert.cu-alert--soft[data-v-5c95ed82] {\n  background-color: var(--alert-soft);\n  color: var(--alert-text);\n}\n\n/* subtle */\n.cu-alert.cu-alert--subtle[data-v-5c95ed82] {\n  background-color: var(--alert-subtle);\n  color: var(--alert-text);\n  border: var(--cu-border-thin) solid var(--alert-subtle-border);\n}\n\n/* outlined */\n.cu-alert.cu-alert--outlined[data-v-5c95ed82] {\n  background-color: transparent;\n  color: var(--alert-text);\n  border: var(--cu-border-thin) solid var(--alert-border);\n}\n.cu-alert-header[data-v-5c95ed82] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n}\n.cu-alert-title[data-v-5c95ed82] {\n  display: flex;\n  align-items: center;\n  gap: var(--cu-space-sm);\n}\n.cu-alert-title-text[data-v-5c95ed82] {\n  font-size: var(--cu-font-size-lg);\n  font-weight: var(--cu-font-weight-bold);\n  margin: 0;\n  color: inherit;\n}\n.cu-alert-close[data-v-5c95ed82] {\n  background: none;\n  border: none;\n  cursor: pointer;\n  color: inherit;\n  padding: var(--cu-space-2xs);\n  border-radius: var(--cu-radius-sm);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  transition: background-color 150ms ease;\n}\n.cu-alert-close[data-v-5c95ed82]:hover {\n  background-color: var(--alert-ghost-hover);\n}\n.cu-alert-close[data-v-5c95ed82]:active {\n  background-color: var(--alert-ghost-active);\n}\n\n/* Sin título ni ícono: el close acompaña a la primera fila del cuerpo en vez\n   de ocupar una cabecera propia. */\n.cu-alert-close--floating[data-v-5c95ed82] {\n  position: absolute;\n  top: var(--cu-space-md);\n  right: var(--cu-space-lg);\n}\n.cu-alert--floating-close .cu-alert-content[data-v-5c95ed82] {\n  padding-right: var(--cu-space-xl);\n}\n.cu-alert-content[data-v-5c95ed82] {\n  color: inherit;\n}\n"]], ["__scopeId", "data-v-5c95ed82"]]);
+}), [["styles", ["\n.cu-alert[data-v-b0cc9dcb] {\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius);\n  display: flex;\n  flex-direction: column;\n  gap: var(--cu-space-sm);\n  box-sizing: border-box;\n  position: relative;\n}\n\n/* solid */\n.cu-alert.cu-alert--solid[data-v-b0cc9dcb] {\n  background-color: var(--alert-solid);\n  color: var(--alert-solid-text);\n}\n.cu-alert.cu-alert--solid .cu-alert-title-text[data-v-b0cc9dcb] {\n  color: var(--alert-solid-text);\n}\n\n/* ghost */\n.cu-alert.cu-alert--ghost[data-v-b0cc9dcb] {\n  background-color: transparent;\n  color: var(--alert-text);\n}\n\n/* soft */\n.cu-alert.cu-alert--soft[data-v-b0cc9dcb] {\n  background-color: var(--alert-soft);\n  color: var(--alert-text);\n}\n\n/* subtle */\n.cu-alert.cu-alert--subtle[data-v-b0cc9dcb] {\n  background-color: var(--alert-subtle);\n  color: var(--alert-text);\n  border: var(--cu-border-thin) solid var(--alert-subtle-border);\n}\n\n/* outlined */\n.cu-alert.cu-alert--outlined[data-v-b0cc9dcb] {\n  background-color: transparent;\n  color: var(--alert-text);\n  border: var(--cu-border-thin) solid var(--alert-border);\n}\n.cu-alert-header[data-v-b0cc9dcb] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n}\n.cu-alert-title[data-v-b0cc9dcb] {\n  display: flex;\n  align-items: center;\n  gap: var(--cu-space-sm);\n}\n.cu-alert-title-text[data-v-b0cc9dcb] {\n  font-size: var(--cu-font-size-lg);\n  font-weight: var(--cu-font-weight-bold);\n  margin: 0;\n  color: inherit;\n}\n.cu-alert-close[data-v-b0cc9dcb] {\n  background: none;\n  border: none;\n  cursor: pointer;\n  color: inherit;\n  padding: var(--cu-space-2xs);\n  border-radius: var(--cu-radius-sm);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  transition: background-color 150ms ease;\n}\n.cu-alert-close[data-v-b0cc9dcb]:hover {\n  background-color: var(--alert-ghost-hover);\n}\n.cu-alert-close[data-v-b0cc9dcb]:active {\n  background-color: var(--alert-ghost-active);\n}\n\n/* Sin título ni ícono: el close acompaña a la primera fila del cuerpo en vez\n   de ocupar una cabecera propia. */\n.cu-alert-close--floating[data-v-b0cc9dcb] {\n  position: absolute;\n  top: var(--cu-space-md);\n  right: var(--cu-space-lg);\n}\n.cu-alert--floating-close .cu-alert-content[data-v-b0cc9dcb] {\n  padding-right: var(--cu-space-xl);\n}\n.cu-alert-content[data-v-b0cc9dcb] {\n  color: inherit;\n}\n"]], ["__scopeId", "data-v-b0cc9dcb"]]);
 //#endregion
 //#region src/utils/fileIcons.ts
 var ICON_FILE_INNER = `<path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/>`;

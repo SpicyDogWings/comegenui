@@ -1,5 +1,5 @@
 /*! comegenui v5.2.3 · CuCard (cu-card) · esm-shared · Vue externo (bare import) */
-import { computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, defineComponent, defineCustomElement, getCurrentInstance, normalizeClass, normalizeStyle, onBeforeUnmount, onMounted, onUpdated, openBlock, ref, renderSlot, toDisplayString, vShow, withCtx, withDirectives } from "vue";
+import { computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, defineComponent, defineCustomElement, normalizeClass, normalizeStyle, onBeforeUnmount, onMounted, onUpdated, openBlock, ref, renderSlot, toDisplayString, vShow, withCtx, withDirectives } from "vue";
 //#region src/utils/comegen-element.ts
 var BUILD_META = {
 	"version": "5.2.3",
@@ -431,7 +431,7 @@ var NAVBAR_RESPONSIVE_MODES = [
 var NAVBAR_SEARCH_MODES = ["filter", "scroll"];
 var SELECT_SEARCH_MODES = ["startsWith", "includes"];
 var CELLS_IMPORTER_INPUT_TYPES = ["input", "zone"];
-oneOf(COLORS);
+var isColor = oneOf(COLORS);
 oneOf(COLORS_BASE);
 var isVariant = oneOf(VARIANTS);
 oneOf(VARIANTS_FULL);
@@ -481,7 +481,8 @@ var Card_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineCompo
 		color: {
 			type: String,
 			required: false,
-			default: "neutral"
+			default: "neutral",
+			validator: isColor
 		},
 		variant: {
 			type: String,
@@ -510,14 +511,18 @@ var Card_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineCompo
 	},
 	setup(__props) {
 		const props = __props;
+		/** Un color fuera del set no tiene tokens: la variante solid quedaría sin fondo
+		*  y con el texto del tema encima (invisible). Cae al color seguro. */
+		const safeColor = computed(() => isColor(props.color) ? props.color : "neutral");
 		const colorStyles = computed(() => ({
-			"--card-solid": `var(--cu-color-${props.color}-solid)`,
+			"--card-solid": `var(--cu-color-${safeColor.value}-solid)`,
 			"--card-solid-text": `var(--cu-color-surface)`,
-			"--card-border": `var(--cu-color-${props.color}-border)`,
-			"--card-text": `var(--cu-color-${props.color}-text)`,
-			"--card-soft": `var(--cu-color-${props.color}-soft)`,
-			"--card-subtle": `var(--cu-color-${props.color}-subtle)`,
-			"--card-subtle-border": `var(--cu-color-${props.color}-subtle-border)`
+			"--card-border": `var(--cu-color-${safeColor.value}-border)`,
+			"--card-text": `var(--cu-color-${safeColor.value}-text)`,
+			"--card-soft": `var(--cu-color-${safeColor.value}-soft)`,
+			"--card-subtle": `var(--cu-color-${safeColor.value}-subtle)`,
+			"--card-subtle-border": `var(--cu-color-${safeColor.value}-subtle-border)`,
+			"--card-text-muted": props.variant === "ghost" ? "var(--cu-color-neutral-text-muted)" : `var(--cu-color-${safeColor.value}-text-muted)`
 		}));
 		const mediaWrap = ref(null);
 		const headerWrap = ref(null);
@@ -597,8 +602,8 @@ var Card_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineCompo
 	}
 });
 //#endregion
-//#region src/components/information/Card.vue?vue&type=style&index=0&inline&scoped=96657ead&lang.css
-var Card_vue_vue_type_style_index_0_inline_scoped_96657ead_lang_default = "\n.cu-card[data-v-96657ead] {\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  border-radius: var(--cu-radius-lg);\n  box-sizing: border-box;\n  display: flex;\n  flex-direction: column;\n  overflow: hidden;\n  /* La tarjeta nunca crece más que su contenedor (flex/grid): el contenido se ajusta. */\n  max-width: 100%;\n  /* Se hereda al contenido y al que llega por slot: las palabras largas se cortan\n     en lugar de desbordar y arrastrar el ancho mínimo del layout. */\n  overflow-wrap: anywhere;\n  background-color: var(--cu-color-surface);\n  color: var(--cu-color-neutral);\n  border: var(--cu-border-thin) solid transparent;\n}\n\n/* ghost */\n.cu-card.cu-card--ghost[data-v-96657ead] {\n  background-color: var(--cu-color-surface);\n  color: var(--cu-color-neutral);\n  border-color: var(--cu-border-color);\n  box-shadow: var(--cu-shadow-md);\n}\n\n/* solid */\n.cu-card.cu-card--solid[data-v-96657ead] {\n  background-color: var(--card-solid);\n  color: var(--card-solid-text);\n}\n.cu-card.cu-card--solid .cu-card-title[data-v-96657ead] {\n  color: var(--card-solid-text);\n}\n\n/* soft */\n.cu-card.cu-card--soft[data-v-96657ead] {\n  background-color: var(--card-soft);\n  color: var(--card-text);\n}\n\n/* subtle */\n.cu-card.cu-card--subtle[data-v-96657ead] {\n  background-color: var(--card-subtle);\n  color: var(--card-text);\n  border-color: var(--card-subtle-border);\n}\n\n/* outlined */\n.cu-card.cu-card--outlined[data-v-96657ead] {\n  background-color: transparent;\n  color: var(--card-text);\n  border-color: var(--card-border);\n}\n.cu-card-media[data-v-96657ead] {\n  width: 100%;\n  max-width: 100%;\n  min-width: 0;\n  overflow: hidden;\n}\n.cu-card-image[data-v-96657ead] {\n  display: block;\n  width: 100%;\n  max-width: 100%;\n  height: auto;\n  object-fit: cover;\n}\n\n/* horizontal: media al costado, contenido a la derecha */\n.cu-card--horizontal[data-v-96657ead] {\n  flex-direction: row;\n}\n.cu-card--horizontal .cu-card-media[data-v-96657ead] {\n  flex: 0 0 40%;\n  max-width: 40%;\n}\n.cu-card--horizontal .cu-card-image[data-v-96657ead] {\n  height: 100%;\n  min-height: 100%;\n  object-fit: cover;\n}\n.cu-card--horizontal .cu-card-body[data-v-96657ead] {\n  flex: 1;\n  min-width: 0;\n}\n.cu-card-body[data-v-96657ead] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--cu-space-md);\n  padding: var(--cu-space-lg);\n  box-sizing: border-box;\n  /* Sin esto el cuerpo no baja de su ancho mínimo y empuja la tarjeta en horizontal. */\n  min-width: 0;\n}\n.cu-card-header[data-v-96657ead] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--cu-space-2xs);\n  min-width: 0;\n}\n.cu-card-title[data-v-96657ead] {\n  font-size: var(--cu-font-size-lg);\n  font-weight: var(--cu-font-weight-bold);\n  margin: 0;\n  color: inherit;\n}\n.cu-card-subtitle[data-v-96657ead] {\n  font-size: var(--cu-font-size-sm);\n  opacity: 0.75;\n  margin: 0;\n  color: inherit;\n}\n.cu-card-content[data-v-96657ead] {\n  color: inherit;\n  line-height: var(--cu-line-height-relaxed);\n  min-width: 0;\n}\n.cu-card-footer[data-v-96657ead] {\n  display: flex;\n  align-items: center;\n  flex-wrap: wrap;\n  gap: var(--cu-space-sm);\n  min-width: 0;\n  padding-top: var(--cu-space-md);\n  border-top: var(--cu-border-thin) solid var(--cu-border-color);\n}\n";
+//#region src/components/information/Card.vue?vue&type=style&index=0&inline&scoped=19b316ec&lang.css
+var Card_vue_vue_type_style_index_0_inline_scoped_19b316ec_lang_default = "\n.cu-card[data-v-19b316ec] {\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  border-radius: var(--cu-radius-lg);\n  box-sizing: border-box;\n  display: flex;\n  flex-direction: column;\n  overflow: hidden;\n  /* La tarjeta nunca crece más que su contenedor (flex/grid): el contenido se ajusta. */\n  max-width: 100%;\n  /* Se hereda al contenido y al que llega por slot: las palabras largas se cortan\n     en lugar de desbordar y arrastrar el ancho mínimo del layout. */\n  overflow-wrap: anywhere;\n  background-color: var(--cu-color-surface);\n  color: var(--cu-color-neutral);\n  border: var(--cu-border-thin) solid transparent;\n}\n\n/* ghost */\n.cu-card.cu-card--ghost[data-v-19b316ec] {\n  background-color: var(--cu-color-surface);\n  color: var(--cu-color-neutral);\n  border-color: var(--cu-border-color);\n  box-shadow: var(--cu-shadow-md);\n}\n\n/* solid */\n.cu-card.cu-card--solid[data-v-19b316ec] {\n  background-color: var(--card-solid);\n  color: var(--card-solid-text);\n}\n.cu-card.cu-card--solid .cu-card-title[data-v-19b316ec] {\n  color: var(--card-solid-text);\n}\n\n/* soft */\n.cu-card.cu-card--soft[data-v-19b316ec] {\n  background-color: var(--card-soft);\n  color: var(--card-text);\n}\n\n/* subtle */\n.cu-card.cu-card--subtle[data-v-19b316ec] {\n  background-color: var(--card-subtle);\n  color: var(--card-text);\n  border-color: var(--card-subtle-border);\n}\n\n/* outlined */\n.cu-card.cu-card--outlined[data-v-19b316ec] {\n  background-color: transparent;\n  color: var(--card-text);\n  border-color: var(--card-border);\n}\n.cu-card-media[data-v-19b316ec] {\n  width: 100%;\n  max-width: 100%;\n  min-width: 0;\n  overflow: hidden;\n}\n.cu-card-image[data-v-19b316ec] {\n  display: block;\n  width: 100%;\n  max-width: 100%;\n  height: auto;\n  object-fit: cover;\n}\n\n/* horizontal: media al costado, contenido a la derecha */\n.cu-card--horizontal[data-v-19b316ec] {\n  flex-direction: row;\n}\n.cu-card--horizontal .cu-card-media[data-v-19b316ec] {\n  flex: 0 0 40%;\n  max-width: 40%;\n}\n.cu-card--horizontal .cu-card-image[data-v-19b316ec] {\n  height: 100%;\n  min-height: 100%;\n  object-fit: cover;\n}\n.cu-card--horizontal .cu-card-body[data-v-19b316ec] {\n  flex: 1;\n  min-width: 0;\n}\n.cu-card-body[data-v-19b316ec] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--cu-space-md);\n  padding: var(--cu-space-lg);\n  box-sizing: border-box;\n  /* Sin esto el cuerpo no baja de su ancho mínimo y empuja la tarjeta en horizontal. */\n  min-width: 0;\n}\n.cu-card-header[data-v-19b316ec] {\n  display: flex;\n  flex-direction: column;\n  gap: var(--cu-space-2xs);\n  min-width: 0;\n}\n.cu-card-title[data-v-19b316ec] {\n  font-size: var(--cu-font-size-lg);\n  font-weight: var(--cu-font-weight-bold);\n  margin: 0;\n  color: inherit;\n}\n.cu-card-subtitle[data-v-19b316ec] {\n  font-size: var(--cu-font-size-sm);\n  margin: 0;\n  color: var(--card-text-muted);\n}\n/* Sobre solid no hay token atenuado: el texto del tema ya contrasta (≥4.5:1). */\n.cu-card.cu-card--solid .cu-card-subtitle[data-v-19b316ec] {\n  color: var(--card-solid-text);\n}\n.cu-card-content[data-v-19b316ec] {\n  color: inherit;\n  line-height: var(--cu-line-height-relaxed);\n  min-width: 0;\n}\n.cu-card-footer[data-v-19b316ec] {\n  display: flex;\n  align-items: center;\n  flex-wrap: wrap;\n  gap: var(--cu-space-sm);\n  min-width: 0;\n  padding-top: var(--cu-space-md);\n  border-top: var(--cu-border-thin) solid var(--cu-border-color);\n}\n";
 //#endregion
 //#region \0plugin-vue:export-helper
 var _plugin_vue_export_helper_default = (sfc, props) => {
@@ -608,7 +613,7 @@ var _plugin_vue_export_helper_default = (sfc, props) => {
 };
 //#endregion
 //#region src/components/information/Card.vue
-var Card_default = /*#__PURE__*/ _plugin_vue_export_helper_default(Card_vue_vue_type_script_setup_true_lang_default, [["styles", [Card_vue_vue_type_style_index_0_inline_scoped_96657ead_lang_default]], ["__scopeId", "data-v-96657ead"]]);
+var Card_default = /*#__PURE__*/ _plugin_vue_export_helper_default(Card_vue_vue_type_script_setup_true_lang_default, [["styles", [Card_vue_vue_type_style_index_0_inline_scoped_19b316ec_lang_default]], ["__scopeId", "data-v-19b316ec"]]);
 //#endregion
 //#region src/lib/information/card.ts
 var CuCard = defineComegenElement("cu-card", /* @__PURE__ */ _plugin_vue_export_helper_default(/* @__PURE__ */ defineComponent({
@@ -638,16 +643,6 @@ var CuCard = defineComegenElement("cu-card", /* @__PURE__ */ _plugin_vue_export_
 	},
 	setup(__props) {
 		const props = __props;
-		const instance = getCurrentInstance();
-		function ceEmit(event, payload) {
-			const el = instance?.vnode.el;
-			const host = el?.getRootNode()?.host || el;
-			if (host) host.dispatchEvent(new CustomEvent(event, {
-				detail: payload,
-				bubbles: true,
-				composed: true
-			}));
-		}
 		return (_ctx, _cache) => {
 			return openBlock(), createBlock(Card_default, {
 				color: props.color,
@@ -655,8 +650,7 @@ var CuCard = defineComegenElement("cu-card", /* @__PURE__ */ _plugin_vue_export_
 				layout: props.layout,
 				title: props.title,
 				subtitle: props.subtitle,
-				image: props.image,
-				onClick: _cache[0] || (_cache[0] = ($event) => ceEmit("click", $event))
+				image: props.image
 			}, {
 				media: withCtx(() => [createCommentVNode(" Contenido de la parte superior (si no se usa el prop `image`). Reemplaza la imagen "), renderSlot(_ctx.$slots, "media")]),
 				header: withCtx(() => [createCommentVNode(" Reemplaza el título/subtítulo por defecto "), renderSlot(_ctx.$slots, "header")]),
