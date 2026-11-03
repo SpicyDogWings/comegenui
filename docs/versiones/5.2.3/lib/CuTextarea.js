@@ -533,6 +533,19 @@ var Textarea_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineC
 			"--btn-subtle-hover": `var(--cu-color-${props.color}-subtle-hover)`,
 			"--btn-subtle-border": `var(--cu-color-${props.color}-subtle-border)`
 		}));
+		/** Composición IME en curso: no se emiten los valores intermedios. */
+		const composing = ref(false);
+		const onInput = (event) => {
+			if (composing.value) return;
+			value.value = event.target.value;
+		};
+		const onCompositionStart = () => {
+			composing.value = true;
+		};
+		const onCompositionEnd = (event) => {
+			composing.value = false;
+			value.value = event.target.value;
+		};
 		/** Devuelve el valor actual del textarea. */
 		const get = () => value.value;
 		/** Setea el valor del textarea. */
@@ -558,7 +571,9 @@ var Textarea_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineC
 				ref: "textarea",
 				placeholder: props.placeholder,
 				value: value.value,
-				onInput: _cache[0] || (_cache[0] = ($event) => value.value = $event.target.value),
+				onInput,
+				onCompositionstart: onCompositionStart,
+				onCompositionend: onCompositionEnd,
 				class: normalizeClass(["cu-textarea", [`cu-textarea--${props.variant}`, {
 					"cu-textarea--disabled": props.disabled,
 					"cu-textarea--no-resize": props.noResize
@@ -572,8 +587,8 @@ var Textarea_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineC
 	}
 });
 //#endregion
-//#region src/components/form/Textarea.vue?vue&type=style&index=0&inline&scoped=82f7662c&lang.css
-var Textarea_vue_vue_type_style_index_0_inline_scoped_82f7662c_lang_default = "\n.cu-textarea[data-v-82f7662c] {\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  font-weight: var(--cu-font-weight-medium);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius-md);\n  border: none;\n  outline: none;\n  width: 100%;\n  box-sizing: border-box;\n  background-color: var(--btn-bg);\n  color: var(--cu-color-neutral-text);\n  transition: all 150ms ease;\n  resize: vertical;\n}\n.cu-textarea[data-v-82f7662c]::placeholder {\n  color: var(--cu-color-neutral-text-muted);\n}\n.cu-textarea[data-v-82f7662c]:focus {\n  box-shadow: 0 0 0 var(--cu-border-thin) var(--btn-subtle-border);\n}\n.cu-textarea--no-resize[data-v-82f7662c] {\n  resize: none;\n}\n\n/* subtle */\n.cu-textarea--subtle[data-v-82f7662c] {\n  background-color: var(--btn-subtle);\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-textarea--subtle[data-v-82f7662c]:hover:not(.cu-textarea--disabled) {\n  background-color: var(--btn-subtle-hover);\n}\n\n/* soft */\n.cu-textarea--soft[data-v-82f7662c] {\n  background-color: var(--btn-soft);\n}\n.cu-textarea--soft[data-v-82f7662c]:hover:not(.cu-textarea--disabled) {\n  background-color: var(--btn-soft-hover);\n}\n\n/* ghost */\n.cu-textarea--ghost[data-v-82f7662c] {\n  background-color: transparent;\n}\n.cu-textarea--ghost[data-v-82f7662c]:hover:not(.cu-textarea--disabled) {\n  background-color: var(--btn-bg-hover);\n}\n\n/* outlined */\n.cu-textarea--outlined[data-v-82f7662c] {\n  background-color: transparent;\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-textarea--outlined[data-v-82f7662c]:hover:not(.cu-textarea--disabled) {\n  background-color: var(--btn-bg-hover);\n}\n\n/* disabled */\n.cu-textarea--disabled[data-v-82f7662c] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n";
+//#region src/components/form/Textarea.vue?vue&type=style&index=0&inline&scoped=d08a50d0&lang.css
+var Textarea_vue_vue_type_style_index_0_inline_scoped_d08a50d0_lang_default = "\n.cu-textarea[data-v-d08a50d0] {\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  font-weight: var(--cu-font-weight-medium);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius-md);\n  border: none;\n  outline: none;\n  width: 100%;\n  box-sizing: border-box;\n  background-color: var(--btn-bg);\n  color: var(--cu-color-neutral-text);\n  transition: all 150ms ease;\n  resize: vertical;\n}\n.cu-textarea[data-v-d08a50d0]::placeholder {\n  color: var(--cu-color-neutral-text-muted);\n}\n.cu-textarea[data-v-d08a50d0]:focus {\n  box-shadow: 0 0 0 var(--cu-border-thin) var(--btn-subtle-border);\n}\n.cu-textarea--no-resize[data-v-d08a50d0] {\n  resize: none;\n}\n\n/* subtle */\n.cu-textarea--subtle[data-v-d08a50d0] {\n  background-color: var(--btn-subtle);\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-textarea--subtle[data-v-d08a50d0]:hover:not(.cu-textarea--disabled) {\n  background-color: var(--btn-subtle-hover);\n}\n\n/* soft */\n.cu-textarea--soft[data-v-d08a50d0] {\n  background-color: var(--btn-soft);\n}\n.cu-textarea--soft[data-v-d08a50d0]:hover:not(.cu-textarea--disabled) {\n  background-color: var(--btn-soft-hover);\n}\n\n/* ghost */\n.cu-textarea--ghost[data-v-d08a50d0] {\n  background-color: transparent;\n}\n.cu-textarea--ghost[data-v-d08a50d0]:hover:not(.cu-textarea--disabled) {\n  background-color: var(--btn-bg-hover);\n}\n\n/* outlined */\n.cu-textarea--outlined[data-v-d08a50d0] {\n  background-color: transparent;\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-textarea--outlined[data-v-d08a50d0]:hover:not(.cu-textarea--disabled) {\n  background-color: var(--btn-bg-hover);\n}\n\n/* disabled */\n.cu-textarea--disabled[data-v-d08a50d0] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n";
 //#endregion
 //#region \0plugin-vue:export-helper
 var _plugin_vue_export_helper_default = (sfc, props) => {
@@ -583,7 +598,7 @@ var _plugin_vue_export_helper_default = (sfc, props) => {
 };
 //#endregion
 //#region src/components/form/Textarea.vue
-var Textarea_default = /*#__PURE__*/ _plugin_vue_export_helper_default(Textarea_vue_vue_type_script_setup_true_lang_default, [["styles", [Textarea_vue_vue_type_style_index_0_inline_scoped_82f7662c_lang_default]], ["__scopeId", "data-v-82f7662c"]]);
+var Textarea_default = /*#__PURE__*/ _plugin_vue_export_helper_default(Textarea_vue_vue_type_script_setup_true_lang_default, [["styles", [Textarea_vue_vue_type_style_index_0_inline_scoped_d08a50d0_lang_default]], ["__scopeId", "data-v-d08a50d0"]]);
 //#endregion
 //#region src/lib/form/textarea.ts
 var CuTextarea = defineComegenElement("cu-textarea", /* @__PURE__ */ defineComponent({

@@ -5062,6 +5062,19 @@ var Input_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 			"--btn-subtle-hover": `var(--cu-color-${props.color}-subtle-hover)`,
 			"--btn-subtle-border": `var(--cu-color-${props.color}-subtle-border)`
 		}));
+		/** Composición IME en curso: no se emiten los valores intermedios. */
+		const composing = ref(false);
+		const onInput = (event) => {
+			if (composing.value) return;
+			value.value = event.target.value;
+		};
+		const onCompositionStart = () => {
+			composing.value = true;
+		};
+		const onCompositionEnd = (event) => {
+			composing.value = false;
+			value.value = event.target.value;
+		};
 		/** Devuelve el valor actual del input. */
 		const get = () => value.value;
 		/** Setea el valor del input. */
@@ -5085,7 +5098,9 @@ var Input_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 				type: props.type,
 				placeholder: props.placeholder,
 				value: value.value,
-				onInput: _cache[0] || (_cache[0] = ($event) => value.value = $event.target.value),
+				onInput,
+				onCompositionstart: onCompositionStart,
+				onCompositionend: onCompositionEnd,
 				class: normalizeClass(["cu-input", [
 					`cu-input--${props.variant}`,
 					sizeClass.value,
@@ -5097,7 +5112,7 @@ var Input_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 			}, null, 46, _hoisted_1$12);
 		};
 	}
-}), [["styles", ["\n.cu-input[data-v-6ca59b78] {\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  font-weight: var(--cu-font-weight-medium);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius-md);\n  border: none;\n  outline: none;\n  width: 100%;\n  box-sizing: border-box;\n  background-color: var(--btn-bg);\n  color: var(--cu-color-neutral-text);\n  transition: all 150ms ease;\n}\n\n/* sizes */\n.cu-input--sm[data-v-6ca59b78] {\n  padding: var(--cu-space-sm) var(--cu-space-md);\n  font-size: var(--cu-font-size-xs);\n}\n.cu-input--lg[data-v-6ca59b78] {\n  padding: var(--cu-space-lg) var(--cu-space-xl);\n  font-size: var(--cu-font-size-md);\n}\n.cu-input[data-v-6ca59b78]::placeholder {\n  color: var(--cu-color-neutral-text-muted);\n}\n.cu-input[data-v-6ca59b78]:focus {\n  box-shadow: 0 0 0 var(--cu-border-thin) var(--btn-subtle-border);\n}\n\n/* subtle */\n.cu-input--subtle[data-v-6ca59b78] {\n  background-color: var(--btn-subtle);\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-input--subtle[data-v-6ca59b78]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-subtle-hover);\n}\n\n/* soft */\n.cu-input--soft[data-v-6ca59b78] {\n  background-color: var(--btn-soft);\n}\n.cu-input--soft[data-v-6ca59b78]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-soft-hover);\n}\n\n/* ghost */\n.cu-input--ghost[data-v-6ca59b78] {\n  background-color: transparent;\n}\n.cu-input--ghost[data-v-6ca59b78]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-bg-hover);\n}\n\n/* outlined */\n.cu-input--outlined[data-v-6ca59b78] {\n  background-color: transparent;\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-input--outlined[data-v-6ca59b78]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-bg-hover);\n}\n\n/* disabled */\n.cu-input--disabled[data-v-6ca59b78] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n"]], ["__scopeId", "data-v-6ca59b78"]]);
+}), [["styles", ["\n.cu-input[data-v-a387934b] {\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  font-weight: var(--cu-font-weight-medium);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius-md);\n  border: none;\n  outline: none;\n  width: 100%;\n  box-sizing: border-box;\n  background-color: var(--btn-bg);\n  color: var(--cu-color-neutral-text);\n  transition: all 150ms ease;\n}\n\n/* sizes */\n.cu-input--sm[data-v-a387934b] {\n  padding: var(--cu-space-sm) var(--cu-space-md);\n  font-size: var(--cu-font-size-xs);\n}\n.cu-input--lg[data-v-a387934b] {\n  padding: var(--cu-space-lg) var(--cu-space-xl);\n  font-size: var(--cu-font-size-md);\n}\n.cu-input[data-v-a387934b]::placeholder {\n  color: var(--cu-color-neutral-text-muted);\n}\n.cu-input[data-v-a387934b]:focus {\n  box-shadow: 0 0 0 var(--cu-border-thin) var(--btn-subtle-border);\n}\n\n/* subtle */\n.cu-input--subtle[data-v-a387934b] {\n  background-color: var(--btn-subtle);\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-input--subtle[data-v-a387934b]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-subtle-hover);\n}\n\n/* soft */\n.cu-input--soft[data-v-a387934b] {\n  background-color: var(--btn-soft);\n}\n.cu-input--soft[data-v-a387934b]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-soft-hover);\n}\n\n/* ghost */\n.cu-input--ghost[data-v-a387934b] {\n  background-color: transparent;\n}\n.cu-input--ghost[data-v-a387934b]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-bg-hover);\n}\n\n/* outlined */\n.cu-input--outlined[data-v-a387934b] {\n  background-color: transparent;\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-input--outlined[data-v-a387934b]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-bg-hover);\n}\n\n/* disabled */\n.cu-input--disabled[data-v-a387934b] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n"]], ["__scopeId", "data-v-a387934b"]]);
 //#endregion
 //#region src/components/form/Textarea.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1$11 = [
@@ -5170,6 +5185,19 @@ var Textarea_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 			"--btn-subtle-hover": `var(--cu-color-${props.color}-subtle-hover)`,
 			"--btn-subtle-border": `var(--cu-color-${props.color}-subtle-border)`
 		}));
+		/** Composición IME en curso: no se emiten los valores intermedios. */
+		const composing = ref(false);
+		const onInput = (event) => {
+			if (composing.value) return;
+			value.value = event.target.value;
+		};
+		const onCompositionStart = () => {
+			composing.value = true;
+		};
+		const onCompositionEnd = (event) => {
+			composing.value = false;
+			value.value = event.target.value;
+		};
 		/** Devuelve el valor actual del textarea. */
 		const get = () => value.value;
 		/** Setea el valor del textarea. */
@@ -5195,7 +5223,9 @@ var Textarea_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 				ref: "textarea",
 				placeholder: props.placeholder,
 				value: value.value,
-				onInput: _cache[0] || (_cache[0] = ($event) => value.value = $event.target.value),
+				onInput,
+				onCompositionstart: onCompositionStart,
+				onCompositionend: onCompositionEnd,
 				class: normalizeClass(["cu-textarea", [`cu-textarea--${props.variant}`, {
 					"cu-textarea--disabled": props.disabled,
 					"cu-textarea--no-resize": props.noResize
@@ -5207,7 +5237,7 @@ var Textarea_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PUR
 			}, null, 46, _hoisted_1$11);
 		};
 	}
-}), [["styles", ["\n.cu-textarea[data-v-82f7662c] {\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  font-weight: var(--cu-font-weight-medium);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius-md);\n  border: none;\n  outline: none;\n  width: 100%;\n  box-sizing: border-box;\n  background-color: var(--btn-bg);\n  color: var(--cu-color-neutral-text);\n  transition: all 150ms ease;\n  resize: vertical;\n}\n.cu-textarea[data-v-82f7662c]::placeholder {\n  color: var(--cu-color-neutral-text-muted);\n}\n.cu-textarea[data-v-82f7662c]:focus {\n  box-shadow: 0 0 0 var(--cu-border-thin) var(--btn-subtle-border);\n}\n.cu-textarea--no-resize[data-v-82f7662c] {\n  resize: none;\n}\n\n/* subtle */\n.cu-textarea--subtle[data-v-82f7662c] {\n  background-color: var(--btn-subtle);\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-textarea--subtle[data-v-82f7662c]:hover:not(.cu-textarea--disabled) {\n  background-color: var(--btn-subtle-hover);\n}\n\n/* soft */\n.cu-textarea--soft[data-v-82f7662c] {\n  background-color: var(--btn-soft);\n}\n.cu-textarea--soft[data-v-82f7662c]:hover:not(.cu-textarea--disabled) {\n  background-color: var(--btn-soft-hover);\n}\n\n/* ghost */\n.cu-textarea--ghost[data-v-82f7662c] {\n  background-color: transparent;\n}\n.cu-textarea--ghost[data-v-82f7662c]:hover:not(.cu-textarea--disabled) {\n  background-color: var(--btn-bg-hover);\n}\n\n/* outlined */\n.cu-textarea--outlined[data-v-82f7662c] {\n  background-color: transparent;\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-textarea--outlined[data-v-82f7662c]:hover:not(.cu-textarea--disabled) {\n  background-color: var(--btn-bg-hover);\n}\n\n/* disabled */\n.cu-textarea--disabled[data-v-82f7662c] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n"]], ["__scopeId", "data-v-82f7662c"]]);
+}), [["styles", ["\n.cu-textarea[data-v-d08a50d0] {\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  font-weight: var(--cu-font-weight-medium);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius-md);\n  border: none;\n  outline: none;\n  width: 100%;\n  box-sizing: border-box;\n  background-color: var(--btn-bg);\n  color: var(--cu-color-neutral-text);\n  transition: all 150ms ease;\n  resize: vertical;\n}\n.cu-textarea[data-v-d08a50d0]::placeholder {\n  color: var(--cu-color-neutral-text-muted);\n}\n.cu-textarea[data-v-d08a50d0]:focus {\n  box-shadow: 0 0 0 var(--cu-border-thin) var(--btn-subtle-border);\n}\n.cu-textarea--no-resize[data-v-d08a50d0] {\n  resize: none;\n}\n\n/* subtle */\n.cu-textarea--subtle[data-v-d08a50d0] {\n  background-color: var(--btn-subtle);\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-textarea--subtle[data-v-d08a50d0]:hover:not(.cu-textarea--disabled) {\n  background-color: var(--btn-subtle-hover);\n}\n\n/* soft */\n.cu-textarea--soft[data-v-d08a50d0] {\n  background-color: var(--btn-soft);\n}\n.cu-textarea--soft[data-v-d08a50d0]:hover:not(.cu-textarea--disabled) {\n  background-color: var(--btn-soft-hover);\n}\n\n/* ghost */\n.cu-textarea--ghost[data-v-d08a50d0] {\n  background-color: transparent;\n}\n.cu-textarea--ghost[data-v-d08a50d0]:hover:not(.cu-textarea--disabled) {\n  background-color: var(--btn-bg-hover);\n}\n\n/* outlined */\n.cu-textarea--outlined[data-v-d08a50d0] {\n  background-color: transparent;\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-textarea--outlined[data-v-d08a50d0]:hover:not(.cu-textarea--disabled) {\n  background-color: var(--btn-bg-hover);\n}\n\n/* disabled */\n.cu-textarea--disabled[data-v-d08a50d0] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n"]], ["__scopeId", "data-v-d08a50d0"]]);
 //#endregion
 //#region src/composables/useSearch.ts
 function useSearch(data, options) {
@@ -7316,7 +7346,7 @@ var Label_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 	emits: ["click"],
 	setup(__props, { emit: __emit }) {
 		const props = __props;
-		const colorStyles = computed(() => ({ "--label-fg": `var(--cu-color-${props.color})` }));
+		const colorStyles = computed(() => ({ "--label-fg": `var(--cu-color-${props.color}-text)` }));
 		const emit = __emit;
 		const labelRef = useTemplateRef("label");
 		/**
@@ -7336,6 +7366,12 @@ var Label_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 		* slot es el componente (un `<div>`/`<label>` con el campo adentro), así que se
 		* busca el control focuseable dentro del elemento.
 		*/
+		const INTERACTIVE = `${FOCUSABLE}, a[href], area[href], summary, audio[controls], video[controls], [contenteditable="true"]`;
+		/** Primer interactivo del path (fuera del propio label) donde nació el click. */
+		function interactiveFromPath(path) {
+			return path.find((node) => node instanceof HTMLElement && node !== labelRef.value && node.matches(INTERACTIVE)) ?? null;
+		}
+		/** Control real a enfocar/activar: el del shadow root, el propio elemento o uno interno. */
 		function controlTarget(el) {
 			if (!el) return null;
 			return el.shadowRoot?.querySelector(FOCUSABLE) ?? (el.matches(FOCUSABLE) ? el : el.querySelector(FOCUSABLE)) ?? el;
@@ -7344,11 +7380,17 @@ var Label_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 			const control = props.for ? document.getElementById(props.for) : slotControl();
 			const path = event.composedPath?.() ?? [];
 			if (!(!!control && (event.target === control || path.includes(control)))) {
-				event.preventDefault();
-				const target = controlTarget(control);
-				if (target) {
-					target.focus();
-					if (target instanceof HTMLInputElement && (target.type === "checkbox" || target.type === "radio")) target.click();
+				const ajeno = interactiveFromPath(path);
+				if (!(!!ajeno && !(control && control.contains(ajeno)))) {
+					const target = controlTarget(control);
+					if (target) {
+						const esToggle = target instanceof HTMLInputElement && (target.type === "checkbox" || target.type === "radio");
+						target.focus();
+						if (esToggle) {
+							event.preventDefault();
+							target.click();
+						}
+					}
 				}
 			}
 			emit("click");
@@ -7363,7 +7405,7 @@ var Label_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 			}, [props.label ? (openBlock(), createElementBlock("span", _hoisted_2$3, toDisplayString(props.label), 1)) : createCommentVNode("v-if", true), renderSlot(_ctx.$slots, "default", {}, void 0, true)], 12, _hoisted_1$5);
 		};
 	}
-}), [["styles", ["\n.cu-label[data-v-5a2501c1] {\n  display: inline-flex;\n  flex-direction: column;\n  gap: var(--cu-space-xs);\n  font-family: var(--cu-font-sans);\n}\n.cu-label-text[data-v-5a2501c1] {\n  width: fit-content;\n  cursor: pointer;\n  font-family: var(--cu-font-sans);\n}\n\n/* Clases duplicadas a propósito: le ganan a las reglas globales del\n   consumidor que fuerzan color en label/span (p. ej. el playground:\n   `.playground :is(..., span, label)` → (0,2,1)). Scoped compila a (0,3,0). */\n.cu-label.cu-label[data-v-5a2501c1],\n.cu-label-text.cu-label-text[data-v-5a2501c1] {\n  color: var(--label-fg);\n}\n"]], ["__scopeId", "data-v-5a2501c1"]]);
+}), [["styles", ["\n.cu-label[data-v-1529615b] {\n  display: inline-flex;\n  flex-direction: column;\n  gap: var(--cu-space-xs);\n  font-family: var(--cu-font-sans);\n}\n.cu-label-text[data-v-1529615b] {\n  width: fit-content;\n  cursor: pointer;\n  font-family: var(--cu-font-sans);\n}\n\n/* Clases duplicadas a propósito: le ganan a las reglas globales del\n   consumidor que fuerzan color en label/span (p. ej. el playground:\n   `.playground :is(..., span, label)` → (0,2,1)). Scoped compila a (0,3,0). */\n.cu-label.cu-label[data-v-1529615b],\n.cu-label-text.cu-label-text[data-v-1529615b] {\n  color: var(--label-fg);\n}\n"]], ["__scopeId", "data-v-1529615b"]]);
 //#endregion
 //#region src/components/form/DatePicker.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1$4 = { class: "cu-date-picker" };

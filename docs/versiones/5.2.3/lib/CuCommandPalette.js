@@ -1337,6 +1337,19 @@ var Input_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 			"--btn-subtle-hover": `var(--cu-color-${props.color}-subtle-hover)`,
 			"--btn-subtle-border": `var(--cu-color-${props.color}-subtle-border)`
 		}));
+		/** Composición IME en curso: no se emiten los valores intermedios. */
+		const composing = ref(false);
+		const onInput = (event) => {
+			if (composing.value) return;
+			value.value = event.target.value;
+		};
+		const onCompositionStart = () => {
+			composing.value = true;
+		};
+		const onCompositionEnd = (event) => {
+			composing.value = false;
+			value.value = event.target.value;
+		};
 		/** Devuelve el valor actual del input. */
 		const get = () => value.value;
 		/** Setea el valor del input. */
@@ -1360,7 +1373,9 @@ var Input_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 				type: props.type,
 				placeholder: props.placeholder,
 				value: value.value,
-				onInput: _cache[0] || (_cache[0] = ($event) => value.value = $event.target.value),
+				onInput,
+				onCompositionstart: onCompositionStart,
+				onCompositionend: onCompositionEnd,
 				class: normalizeClass(["cu-input", [
 					`cu-input--${props.variant}`,
 					sizeClass.value,
@@ -1372,7 +1387,7 @@ var Input_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 			}, null, 46, _hoisted_1$1);
 		};
 	}
-}), [["styles", ["\n.cu-input[data-v-6ca59b78] {\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  font-weight: var(--cu-font-weight-medium);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius-md);\n  border: none;\n  outline: none;\n  width: 100%;\n  box-sizing: border-box;\n  background-color: var(--btn-bg);\n  color: var(--cu-color-neutral-text);\n  transition: all 150ms ease;\n}\n\n/* sizes */\n.cu-input--sm[data-v-6ca59b78] {\n  padding: var(--cu-space-sm) var(--cu-space-md);\n  font-size: var(--cu-font-size-xs);\n}\n.cu-input--lg[data-v-6ca59b78] {\n  padding: var(--cu-space-lg) var(--cu-space-xl);\n  font-size: var(--cu-font-size-md);\n}\n.cu-input[data-v-6ca59b78]::placeholder {\n  color: var(--cu-color-neutral-text-muted);\n}\n.cu-input[data-v-6ca59b78]:focus {\n  box-shadow: 0 0 0 var(--cu-border-thin) var(--btn-subtle-border);\n}\n\n/* subtle */\n.cu-input--subtle[data-v-6ca59b78] {\n  background-color: var(--btn-subtle);\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-input--subtle[data-v-6ca59b78]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-subtle-hover);\n}\n\n/* soft */\n.cu-input--soft[data-v-6ca59b78] {\n  background-color: var(--btn-soft);\n}\n.cu-input--soft[data-v-6ca59b78]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-soft-hover);\n}\n\n/* ghost */\n.cu-input--ghost[data-v-6ca59b78] {\n  background-color: transparent;\n}\n.cu-input--ghost[data-v-6ca59b78]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-bg-hover);\n}\n\n/* outlined */\n.cu-input--outlined[data-v-6ca59b78] {\n  background-color: transparent;\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-input--outlined[data-v-6ca59b78]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-bg-hover);\n}\n\n/* disabled */\n.cu-input--disabled[data-v-6ca59b78] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n"]], ["__scopeId", "data-v-6ca59b78"]]);
+}), [["styles", ["\n.cu-input[data-v-a387934b] {\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  font-weight: var(--cu-font-weight-medium);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius-md);\n  border: none;\n  outline: none;\n  width: 100%;\n  box-sizing: border-box;\n  background-color: var(--btn-bg);\n  color: var(--cu-color-neutral-text);\n  transition: all 150ms ease;\n}\n\n/* sizes */\n.cu-input--sm[data-v-a387934b] {\n  padding: var(--cu-space-sm) var(--cu-space-md);\n  font-size: var(--cu-font-size-xs);\n}\n.cu-input--lg[data-v-a387934b] {\n  padding: var(--cu-space-lg) var(--cu-space-xl);\n  font-size: var(--cu-font-size-md);\n}\n.cu-input[data-v-a387934b]::placeholder {\n  color: var(--cu-color-neutral-text-muted);\n}\n.cu-input[data-v-a387934b]:focus {\n  box-shadow: 0 0 0 var(--cu-border-thin) var(--btn-subtle-border);\n}\n\n/* subtle */\n.cu-input--subtle[data-v-a387934b] {\n  background-color: var(--btn-subtle);\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-input--subtle[data-v-a387934b]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-subtle-hover);\n}\n\n/* soft */\n.cu-input--soft[data-v-a387934b] {\n  background-color: var(--btn-soft);\n}\n.cu-input--soft[data-v-a387934b]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-soft-hover);\n}\n\n/* ghost */\n.cu-input--ghost[data-v-a387934b] {\n  background-color: transparent;\n}\n.cu-input--ghost[data-v-a387934b]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-bg-hover);\n}\n\n/* outlined */\n.cu-input--outlined[data-v-a387934b] {\n  background-color: transparent;\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-input--outlined[data-v-a387934b]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-bg-hover);\n}\n\n/* disabled */\n.cu-input--disabled[data-v-a387934b] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n"]], ["__scopeId", "data-v-a387934b"]]);
 //#endregion
 //#region src/utils/search.ts
 var ACCENT_RE = /[\u0300-\u0302\u0304-\u036f]/g;

@@ -5532,7 +5532,7 @@ var Label_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 	emits: ["click"],
 	setup(__props, { emit: __emit }) {
 		const props = __props;
-		const colorStyles = computed(() => ({ "--label-fg": `var(--cu-color-${props.color})` }));
+		const colorStyles = computed(() => ({ "--label-fg": `var(--cu-color-${props.color}-text)` }));
 		const emit = __emit;
 		const labelRef = useTemplateRef("label");
 		/**
@@ -5552,6 +5552,12 @@ var Label_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 		* slot es el componente (un `<div>`/`<label>` con el campo adentro), así que se
 		* busca el control focuseable dentro del elemento.
 		*/
+		const INTERACTIVE = `${FOCUSABLE}, a[href], area[href], summary, audio[controls], video[controls], [contenteditable="true"]`;
+		/** Primer interactivo del path (fuera del propio label) donde nació el click. */
+		function interactiveFromPath(path) {
+			return path.find((node) => node instanceof HTMLElement && node !== labelRef.value && node.matches(INTERACTIVE)) ?? null;
+		}
+		/** Control real a enfocar/activar: el del shadow root, el propio elemento o uno interno. */
 		function controlTarget(el) {
 			if (!el) return null;
 			return el.shadowRoot?.querySelector(FOCUSABLE) ?? (el.matches(FOCUSABLE) ? el : el.querySelector(FOCUSABLE)) ?? el;
@@ -5560,11 +5566,17 @@ var Label_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 			const control = props.for ? document.getElementById(props.for) : slotControl();
 			const path = event.composedPath?.() ?? [];
 			if (!(!!control && (event.target === control || path.includes(control)))) {
-				event.preventDefault();
-				const target = controlTarget(control);
-				if (target) {
-					target.focus();
-					if (target instanceof HTMLInputElement && (target.type === "checkbox" || target.type === "radio")) target.click();
+				const ajeno = interactiveFromPath(path);
+				if (!(!!ajeno && !(control && control.contains(ajeno)))) {
+					const target = controlTarget(control);
+					if (target) {
+						const esToggle = target instanceof HTMLInputElement && (target.type === "checkbox" || target.type === "radio");
+						target.focus();
+						if (esToggle) {
+							event.preventDefault();
+							target.click();
+						}
+					}
 				}
 			}
 			emit("click");
@@ -5579,7 +5591,7 @@ var Label_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__PURE__
 			}, [props.label ? (openBlock(), createElementBlock("span", _hoisted_2$1, toDisplayString(props.label), 1)) : createCommentVNode("v-if", true), renderSlot(_ctx.$slots, "default", {}, void 0, true)], 12, _hoisted_1$1);
 		};
 	}
-}), [["styles", ["\n.cu-label[data-v-5a2501c1] {\n  display: inline-flex;\n  flex-direction: column;\n  gap: var(--cu-space-xs);\n  font-family: var(--cu-font-sans);\n}\n.cu-label-text[data-v-5a2501c1] {\n  width: fit-content;\n  cursor: pointer;\n  font-family: var(--cu-font-sans);\n}\n\n/* Clases duplicadas a propósito: le ganan a las reglas globales del\n   consumidor que fuerzan color en label/span (p. ej. el playground:\n   `.playground :is(..., span, label)` → (0,2,1)). Scoped compila a (0,3,0). */\n.cu-label.cu-label[data-v-5a2501c1],\n.cu-label-text.cu-label-text[data-v-5a2501c1] {\n  color: var(--label-fg);\n}\n"]], ["__scopeId", "data-v-5a2501c1"]]);
+}), [["styles", ["\n.cu-label[data-v-1529615b] {\n  display: inline-flex;\n  flex-direction: column;\n  gap: var(--cu-space-xs);\n  font-family: var(--cu-font-sans);\n}\n.cu-label-text[data-v-1529615b] {\n  width: fit-content;\n  cursor: pointer;\n  font-family: var(--cu-font-sans);\n}\n\n/* Clases duplicadas a propósito: le ganan a las reglas globales del\n   consumidor que fuerzan color en label/span (p. ej. el playground:\n   `.playground :is(..., span, label)` → (0,2,1)). Scoped compila a (0,3,0). */\n.cu-label.cu-label[data-v-1529615b],\n.cu-label-text.cu-label-text[data-v-1529615b] {\n  color: var(--label-fg);\n}\n"]], ["__scopeId", "data-v-1529615b"]]);
 //#endregion
 //#region src/components/form/DatePicker.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1 = { class: "cu-date-picker" };

@@ -633,6 +633,19 @@ var Input_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineComp
 			"--btn-subtle-hover": `var(--cu-color-${props.color}-subtle-hover)`,
 			"--btn-subtle-border": `var(--cu-color-${props.color}-subtle-border)`
 		}));
+		/** Composición IME en curso: no se emiten los valores intermedios. */
+		const composing = ref(false);
+		const onInput = (event) => {
+			if (composing.value) return;
+			value.value = event.target.value;
+		};
+		const onCompositionStart = () => {
+			composing.value = true;
+		};
+		const onCompositionEnd = (event) => {
+			composing.value = false;
+			value.value = event.target.value;
+		};
 		/** Devuelve el valor actual del input. */
 		const get = () => value.value;
 		/** Setea el valor del input. */
@@ -656,7 +669,9 @@ var Input_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineComp
 				type: props.type,
 				placeholder: props.placeholder,
 				value: value.value,
-				onInput: _cache[0] || (_cache[0] = ($event) => value.value = $event.target.value),
+				onInput,
+				onCompositionstart: onCompositionStart,
+				onCompositionend: onCompositionEnd,
 				class: normalizeClass(["cu-input", [
 					`cu-input--${props.variant}`,
 					sizeClass.value,
@@ -670,8 +685,8 @@ var Input_vue_vue_type_script_setup_true_lang_default = /*@__PURE__*/ defineComp
 	}
 });
 //#endregion
-//#region src/components/form/Input.vue?vue&type=style&index=0&inline&scoped=6ca59b78&lang.css
-var Input_vue_vue_type_style_index_0_inline_scoped_6ca59b78_lang_default = "\n.cu-input[data-v-6ca59b78] {\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  font-weight: var(--cu-font-weight-medium);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius-md);\n  border: none;\n  outline: none;\n  width: 100%;\n  box-sizing: border-box;\n  background-color: var(--btn-bg);\n  color: var(--cu-color-neutral-text);\n  transition: all 150ms ease;\n}\n\n/* sizes */\n.cu-input--sm[data-v-6ca59b78] {\n  padding: var(--cu-space-sm) var(--cu-space-md);\n  font-size: var(--cu-font-size-xs);\n}\n.cu-input--lg[data-v-6ca59b78] {\n  padding: var(--cu-space-lg) var(--cu-space-xl);\n  font-size: var(--cu-font-size-md);\n}\n.cu-input[data-v-6ca59b78]::placeholder {\n  color: var(--cu-color-neutral-text-muted);\n}\n.cu-input[data-v-6ca59b78]:focus {\n  box-shadow: 0 0 0 var(--cu-border-thin) var(--btn-subtle-border);\n}\n\n/* subtle */\n.cu-input--subtle[data-v-6ca59b78] {\n  background-color: var(--btn-subtle);\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-input--subtle[data-v-6ca59b78]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-subtle-hover);\n}\n\n/* soft */\n.cu-input--soft[data-v-6ca59b78] {\n  background-color: var(--btn-soft);\n}\n.cu-input--soft[data-v-6ca59b78]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-soft-hover);\n}\n\n/* ghost */\n.cu-input--ghost[data-v-6ca59b78] {\n  background-color: transparent;\n}\n.cu-input--ghost[data-v-6ca59b78]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-bg-hover);\n}\n\n/* outlined */\n.cu-input--outlined[data-v-6ca59b78] {\n  background-color: transparent;\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-input--outlined[data-v-6ca59b78]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-bg-hover);\n}\n\n/* disabled */\n.cu-input--disabled[data-v-6ca59b78] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n";
+//#region src/components/form/Input.vue?vue&type=style&index=0&inline&scoped=a387934b&lang.css
+var Input_vue_vue_type_style_index_0_inline_scoped_a387934b_lang_default = "\n.cu-input[data-v-a387934b] {\n  font-family: var(--cu-font-sans);\n  font-size: var(--cu-font-size-sm);\n  font-weight: var(--cu-font-weight-medium);\n  padding: var(--cu-space-md) var(--cu-space-lg);\n  border-radius: var(--cu-radius-md);\n  border: none;\n  outline: none;\n  width: 100%;\n  box-sizing: border-box;\n  background-color: var(--btn-bg);\n  color: var(--cu-color-neutral-text);\n  transition: all 150ms ease;\n}\n\n/* sizes */\n.cu-input--sm[data-v-a387934b] {\n  padding: var(--cu-space-sm) var(--cu-space-md);\n  font-size: var(--cu-font-size-xs);\n}\n.cu-input--lg[data-v-a387934b] {\n  padding: var(--cu-space-lg) var(--cu-space-xl);\n  font-size: var(--cu-font-size-md);\n}\n.cu-input[data-v-a387934b]::placeholder {\n  color: var(--cu-color-neutral-text-muted);\n}\n.cu-input[data-v-a387934b]:focus {\n  box-shadow: 0 0 0 var(--cu-border-thin) var(--btn-subtle-border);\n}\n\n/* subtle */\n.cu-input--subtle[data-v-a387934b] {\n  background-color: var(--btn-subtle);\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-input--subtle[data-v-a387934b]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-subtle-hover);\n}\n\n/* soft */\n.cu-input--soft[data-v-a387934b] {\n  background-color: var(--btn-soft);\n}\n.cu-input--soft[data-v-a387934b]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-soft-hover);\n}\n\n/* ghost */\n.cu-input--ghost[data-v-a387934b] {\n  background-color: transparent;\n}\n.cu-input--ghost[data-v-a387934b]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-bg-hover);\n}\n\n/* outlined */\n.cu-input--outlined[data-v-a387934b] {\n  background-color: transparent;\n  border: var(--cu-border-thin) solid var(--btn-subtle-border);\n}\n.cu-input--outlined[data-v-a387934b]:hover:not(.cu-input--disabled) {\n  background-color: var(--btn-bg-hover);\n}\n\n/* disabled */\n.cu-input--disabled[data-v-a387934b] {\n  opacity: var(--cu-alpha-disabled, 0.7);\n  cursor: not-allowed;\n}\n";
 //#endregion
 //#region \0plugin-vue:export-helper
 var _plugin_vue_export_helper_default = (sfc, props) => {
@@ -681,7 +696,7 @@ var _plugin_vue_export_helper_default = (sfc, props) => {
 };
 //#endregion
 //#region src/components/form/Input.vue
-var Input_default = /*#__PURE__*/ _plugin_vue_export_helper_default(Input_vue_vue_type_script_setup_true_lang_default, [["styles", [Input_vue_vue_type_style_index_0_inline_scoped_6ca59b78_lang_default]], ["__scopeId", "data-v-6ca59b78"]]);
+var Input_default = /*#__PURE__*/ _plugin_vue_export_helper_default(Input_vue_vue_type_script_setup_true_lang_default, [["styles", [Input_vue_vue_type_style_index_0_inline_scoped_a387934b_lang_default]], ["__scopeId", "data-v-a387934b"]]);
 //#endregion
 //#region src/components/icons/IconBase.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1$7 = ["width", "height"];
@@ -4801,8 +4816,16 @@ var NumberInput_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__
 		const props = __props;
 		const emit = __emit;
 		const inputRef = ref(null);
+		/**
+		* Valor vigente dentro del componente. Es la fuente de verdad inmediata: los
+		* métodos (`get`, `set`, `increment`…) no esperan al re-render del host. Cuando
+		* el `model-value` lo controla un padre (el custom element espeja su estado), la
+		* prop vuelve recién en el tick siguiente y leerla dejaría métodos y `get()`
+		* con el valor viejo.
+		*/
+		const current = ref(toNumber(value.value) ?? null);
 		/** El texto es la fuente de verdad mientras se tipea (`null` → campo vacío). */
-		const text = ref(numberToText(value.value));
+		const text = ref(numberToText(current.value));
 		/** Paso activo: arranca en `step` y el select lo puede cambiar. */
 		const activeStep = ref(props.step);
 		/** ¿El usuario editó el campo desde la última confirmación? (para no repetir `change`). */
@@ -4832,9 +4855,11 @@ var NumberInput_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__
 		}
 		/** Cantidad de decimales de un número (para no arrastrar `0.30000000000000004`). */
 		function decimalsOf(next) {
-			const raw = String(next);
-			const dot = raw.indexOf(".");
-			return dot === -1 ? 0 : raw.length - dot - 1;
+			const [mantissa = "", exponent] = String(next).split("e");
+			const dot = mantissa.indexOf(".");
+			const decimals = dot === -1 ? 0 : mantissa.length - dot - 1;
+			const shift = exponent === void 0 ? 0 : Number(exponent);
+			return Math.max(0, decimals - shift);
 		}
 		/** Redondea al decimal más fino de los operandos (tope de 10). */
 		function roundLike(next, ...operands) {
@@ -4865,8 +4890,8 @@ var NumberInput_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__
 			value: String(option),
 			label: String(option)
 		})));
-		const atMax = computed(() => maxValue.value !== void 0 && value.value !== null && value.value >= maxValue.value);
-		const atMin = computed(() => minValue.value !== void 0 && value.value !== null && value.value <= minValue.value);
+		const atMax = computed(() => maxValue.value !== void 0 && current.value !== null && current.value >= maxValue.value);
+		const atMin = computed(() => minValue.value !== void 0 && current.value !== null && current.value <= minValue.value);
 		const canIncrement = computed(() => !isLocked.value && !atMax.value);
 		const canDecrement = computed(() => !isLocked.value && !atMin.value);
 		const rootStyles = computed(() => ({
@@ -4874,10 +4899,15 @@ var NumberInput_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__
 			"--btn-subtle-hover": `var(--cu-color-${props.color}-subtle-hover)`,
 			"--btn-subtle-border": `var(--cu-color-${props.color}-subtle-border)`
 		}));
+		/** Escribe el valor: estado interno ya, y `update:modelValue` para el host. */
+		function commitValue(next) {
+			current.value = next;
+			if (next !== value.value) value.value = next;
+		}
 		/** Aplica un valor programático: clampea, sincroniza el texto y emite lo que corresponda. */
 		function applyValue(next, options = {}) {
 			const nextValue = next === null ? null : clamp(next);
-			if (nextValue !== value.value) value.value = nextValue;
+			commitValue(nextValue);
 			text.value = numberToText(nextValue);
 			dirty = false;
 			if (options.kind === "increment") emit("increment", nextValue);
@@ -4891,19 +4921,19 @@ var NumberInput_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__
 			const parsed = parseText(raw);
 			if (parsed === void 0) return;
 			if (parsed === null) {
-				if (value.value !== null) value.value = null;
+				if (current.value !== null) commitValue(null);
 				return;
 			}
 			const next = clamp(parsed);
 			if (next !== parsed) text.value = numberToText(next);
-			if (next !== value.value) value.value = next;
+			if (next !== current.value) commitValue(next);
 		}
 		/** Confirma el texto (Enter o blur) y emite `change` si hubo edición. */
 		function commit() {
 			const parsed = parseText(text.value);
-			const next = parsed === void 0 ? value.value : parsed === null ? null : clamp(parsed);
+			const next = parsed === void 0 ? current.value : parsed === null ? null : clamp(parsed);
 			text.value = numberToText(next);
-			if (next !== value.value) value.value = next;
+			if (next !== current.value) commitValue(next);
 			if (!dirty) return;
 			dirty = false;
 			emit("change", next);
@@ -4911,9 +4941,9 @@ var NumberInput_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__
 		/** Incrementa el valor con el paso activo, respetando `max`. */
 		function increment() {
 			if (!canIncrement.value) return;
-			const base = value.value ?? minValue.value ?? 0;
+			const base = current.value ?? minValue.value ?? 0;
 			const next = clamp(roundLike(base + stepValue.value, base, stepValue.value));
-			if (next === value.value) return;
+			if (next === current.value) return;
 			applyValue(next, {
 				change: true,
 				kind: "increment"
@@ -4922,9 +4952,9 @@ var NumberInput_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__
 		/** Decrementa el valor con el paso activo, respetando `min`. */
 		function decrement() {
 			if (!canDecrement.value) return;
-			const base = value.value ?? minValue.value ?? 0;
+			const base = current.value ?? minValue.value ?? 0;
 			const next = clamp(roundLike(base - stepValue.value, base, stepValue.value));
-			if (next === value.value) return;
+			if (next === current.value) return;
 			applyValue(next, {
 				change: true,
 				kind: "decrement"
@@ -4937,7 +4967,7 @@ var NumberInput_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__
 		}
 		/** Devuelve el valor actual (o `null` si el campo está vacío). */
 		function get() {
-			return value.value;
+			return current.value;
 		}
 		/** Setea el valor (clampeado a `min`/`max`) y emite `change`. */
 		function set(next) {
@@ -4952,7 +4982,9 @@ var NumberInput_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__
 			inputRef.value?.focus();
 		}
 		watch(value, (next) => {
-			if (parseText(text.value) !== next) text.value = numberToText(next);
+			const normalized = toNumber(next) ?? null;
+			current.value = normalized;
+			if (parseText(text.value) !== normalized) text.value = numberToText(normalized);
 		});
 		watch(() => props.step, (next) => {
 			activeStep.value = next;
@@ -5079,7 +5111,7 @@ var NumberInput_default = /*#__PURE__*/ _plugin_vue_export_helper_default(/* @__
 			], 6);
 		};
 	}
-}), [["styles", ["\n.cu-number-input[data-v-2e814718] {\n  display: inline-flex;\n  align-items: stretch;\n  gap: var(--cu-space-xs);\n  width: 100%;\n  box-sizing: border-box;\n  font-family: var(--cu-font-sans);\n}\n.cu-number-input__field[data-v-2e814718] {\n  flex: 1 1 auto;\n  min-width: 0;\n}\n.cu-number-input__control[data-v-2e814718] {\n  flex: 0 0 auto;\n  padding-left: var(--cu-space-sm);\n  padding-right: var(--cu-space-sm);\n}\n.cu-number-input__step[data-v-2e814718] {\n  flex: 0 0 auto;\n  display: inline-flex;\n  min-width: 4.5rem;\n}\n.cu-number-input__step[data-v-2e814718] .cu-select {\n  width: 100%;\n}\n\n/* Mismo padding que el botón del campo, para que el select no quede más alto. */\n.cu-number-input__step[data-v-2e814718] .cu-select-toggle {\n  padding: var(--cu-space-md) var(--cu-space-md);\n}\n.cu-number-input--sm .cu-number-input__step[data-v-2e814718] .cu-select-toggle {\n  font-size: var(--cu-font-size-xs);\n  padding: var(--cu-space-xs) var(--cu-space-sm);\n}\n.cu-number-input--lg .cu-number-input__step[data-v-2e814718] .cu-select-toggle {\n  font-size: var(--cu-font-size-lg);\n  padding: var(--cu-space-lg) var(--cu-space-lg);\n}\n.cu-number-input--disabled[data-v-2e814718] {\n  opacity: 0.5;\n}\n.cu-number-input--readonly .cu-number-input__step[data-v-2e814718] .cu-select-toggle {\n  cursor: default;\n}\n"]], ["__scopeId", "data-v-2e814718"]]);
+}), [["styles", ["\n.cu-number-input[data-v-8daca88f] {\n  display: inline-flex;\n  align-items: stretch;\n  gap: var(--cu-space-xs);\n  width: 100%;\n  box-sizing: border-box;\n  font-family: var(--cu-font-sans);\n}\n.cu-number-input__field[data-v-8daca88f] {\n  flex: 1 1 auto;\n  min-width: 0;\n}\n.cu-number-input__control[data-v-8daca88f] {\n  flex: 0 0 auto;\n  padding-left: var(--cu-space-sm);\n  padding-right: var(--cu-space-sm);\n}\n.cu-number-input__step[data-v-8daca88f] {\n  flex: 0 0 auto;\n  display: inline-flex;\n  min-width: 4.5rem;\n}\n.cu-number-input__step[data-v-8daca88f] .cu-select {\n  width: 100%;\n}\n\n/* Mismo padding que el botón del campo, para que el select no quede más alto. */\n.cu-number-input__step[data-v-8daca88f] .cu-select-toggle {\n  padding: var(--cu-space-md) var(--cu-space-md);\n}\n.cu-number-input--sm .cu-number-input__step[data-v-8daca88f] .cu-select-toggle {\n  font-size: var(--cu-font-size-xs);\n  padding: var(--cu-space-xs) var(--cu-space-sm);\n}\n.cu-number-input--lg .cu-number-input__step[data-v-8daca88f] .cu-select-toggle {\n  font-size: var(--cu-font-size-lg);\n  padding: var(--cu-space-lg) var(--cu-space-lg);\n}\n.cu-number-input--disabled[data-v-8daca88f] {\n  opacity: 0.5;\n}\n.cu-number-input--readonly .cu-number-input__step[data-v-8daca88f] .cu-select-toggle {\n  cursor: default;\n}\n"]], ["__scopeId", "data-v-8daca88f"]]);
 //#endregion
 //#region src/lib/form/number-input.ts
 var CuNumberInput = defineComegenElement("cu-number-input", /* @__PURE__ */ _plugin_vue_export_helper_default(/* @__PURE__ */ defineComponent({
