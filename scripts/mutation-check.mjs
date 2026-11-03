@@ -969,6 +969,56 @@ const MUTATIONS = [
         <span v-if="item.icon"`,
   },
   {
+    id: "navbar-horizontal-sin-padre-activo",
+    file: "src/components/navigation/NavbarHorizontal.vue",
+    expect: "un item activo dentro de un submenú resalta al padre",
+    find: `  if (target === item) return true
+  const contains = (children?: NavItem[]): boolean =>
+    (children ?? []).some((child) => child === target || contains(child.children))
+  return contains(item.children)`,
+    replace: `  return target === item`,
+  },
+  {
+    id: "navbar-horizontal-trigger-sin-type",
+    file: "src/components/navigation/NavbarHorizontal.vue",
+    expect: "el trigger del submenú es un button type=button (no envía un form)",
+    find: `          <button
+            type="button"
+            class="cu-navbar-dropdown-trigger"`,
+    replace: `          <button
+            class="cu-navbar-dropdown-trigger"`,
+  },
+  {
+    id: "navbar-horizontal-trigger-sin-aria-expanded",
+    file: "src/components/navigation/NavbarHorizontal.vue",
+    expect: "el trigger del submenú expone aria-expanded",
+    find: `            :aria-expanded="isOpen ? 'true' : 'false'"`,
+    replace: `            :aria-expanded="undefined"`,
+  },
+  {
+    id: "navbar-horizontal-sin-aria-current",
+    file: "src/components/navigation/NavbarHorizontal.vue",
+    expect: "el enlace activo expone aria-current=page",
+    find: `        :aria-current="activeItem === item ? 'page' : undefined"`,
+    replace: `        :aria-current="undefined"`,
+  },
+  {
+    id: "usenavbar-items-undefined",
+    file: "src/composables/useNavbar.ts",
+    test: "src/components/navigation/NavbarHorizontal.test.ts",
+    expect: "el CE tolera `items` undefined hasta que la propiedad JS se asigna",
+    find: `const navItems = (): NavItem[] => options.items() ?? []`,
+    replace: `const navItems = (): NavItem[] => options.items() as NavItem[]`,
+  },
+  {
+    id: "usenavbar-scroll-global",
+    file: "src/composables/useNavbar.ts",
+    test: "src/components/navigation/NavbarHorizontal.test.ts",
+    expect: "el scroll del activo busca el marcador dentro de su propia nav",
+    find: `    if (root) return root.querySelector<HTMLElement>(\`[\${attr}]\`)`,
+    replace: `    if (root) return document.querySelector<HTMLElement>(\`[\${attr}]\`)`,
+  },
+  {
     id: "navbar-list-collapsed-opens",
     file: "src/components/navigation/NavbarList.vue",
     expect: "collapsed inicia los submenús cerrados",

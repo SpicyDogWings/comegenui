@@ -38,6 +38,18 @@ const {
   searchFields: () => [],
   activePath: () => (props.activePath || undefined),
 })
+
+// Contrato de la ficha: si el item activo está dentro de un submenú, se resalta el
+// padre. `activeItem` devuelve la hoja, así que el ancestro se resuelve por identidad
+// sobre el árbol de `children` (los items son los mismos objetos que se renderizan).
+function isActiveBranch(item: NavItem): boolean {
+  const target = activeItem.value
+  if (!target) return false
+  if (target === item) return true
+  const contains = (children?: NavItem[]): boolean =>
+    (children ?? []).some((child) => child === target || contains(child.children))
+  return contains(item.children)
+}
 </script>
 
 <template>
@@ -46,12 +58,17 @@ const {
       <Dropdown
         v-if="item.children?.length"
         :trigger="props.trigger"
-        :class="{ 'cu-navbar-item--match': highlightTarget === item, 'cu-navbar-item--active': activeItem === item }"
+        :class="{ 'cu-navbar-item--match': highlightTarget === item, 'cu-navbar-item--active': isActiveBranch(item) }"
         :data-navbar-match="highlightTarget === item ? '' : undefined"
-        :data-navbar-active="activeItem === item ? '' : undefined"
+        :data-navbar-active="isActiveBranch(item) ? '' : undefined"
       >
-        <template #toggle="{ toggle: t }">
-          <button class="cu-navbar-dropdown-trigger" @click="t">
+        <template #toggle="{ toggle: t, isOpen }">
+          <button
+            type="button"
+            class="cu-navbar-dropdown-trigger"
+            :aria-expanded="isOpen ? 'true' : 'false'"
+            @click="t"
+          >
             <span v-if="item.icon" class="cu-navbar-icon" v-html="sanitizeIcon(item.icon)"></span>
             {{ item.label }}
             <LucideChevronDown :width="14" :height="14" class="cu-navbar-chevron" />
@@ -66,6 +83,7 @@ const {
         :to="item.path!"
         :color="activeItem === item ? 'primary' : undefined"
         :variant="activeItem === item ? 'soft' : undefined"
+        :aria-current="activeItem === item ? 'page' : undefined"
         :class="{ 'cu-navbar-item--match': highlightTarget === item, 'cu-navbar-item--active': activeItem === item }"
         :data-navbar-match="highlightTarget === item ? '' : undefined"
         :data-navbar-active="activeItem === item ? '' : undefined"
@@ -102,6 +120,13 @@ const {
   background-color: var(--cu-color-primary-soft);
 }
 
+/* Item activo con submenú: el mismo lenguaje que el Button `primary`+`soft` del
+   nivel raíz. Antes la clase se aplicaba al wrapper pero no tenía estilo propio. */
+.cu-navbar :deep(.cu-navbar-item--active) .cu-navbar-dropdown-trigger {
+  color: var(--cu-color-primary-text);
+  background-color: var(--cu-color-primary-soft);
+}
+
 .cu-navbar-dropdown-trigger {
   display: inline-flex;
   align-items: center;
@@ -133,5 +158,14 @@ const {
 
 .cu-navbar-chevron {
   transition: transform 0.2s ease;
+}
+
+/* Mismo criterio que `Button`/`Collapse`/`SideOver`: sin movimiento con
+   `prefers-reduced-motion`. */
+@media (prefers-reduced-motion: reduce) {
+  .cu-navbar-dropdown-trigger,
+  .cu-navbar-chevron {
+    transition: none;
+  }
 }
 </style>

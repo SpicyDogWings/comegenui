@@ -34,7 +34,8 @@ En HTML plano, cargá el bundle `CuNavbarHorizontal` (ver [ficha vanilla](/compo
 ## Submenús
 
 Un item con `children` se convierte en un Dropdown que despliega un `<NavbarMenu>`; los niveles
-se pueden anidar sin límite.
+se pueden anidar sin límite. El disparador es un `<button type="button">` (dentro de un `<form>`
+no lo envía) y expone `aria-expanded` según el estado del panel.
 
 ```vue
 <script setup lang="ts">
@@ -68,8 +69,8 @@ const items = ref([
 ## Enlaces e iconos
 
 `path` es el destino del enlace (y lo que `activePath` compara); `icon` es un string HTML
-(SVG inline) que se inyecta antes del label. Un item **sin** `path` no navega: renderiza un
-`<button>`.
+(SVG inline) que se inyecta antes del label. Un item **sin** `path` no navega: en el nivel raíz
+renderiza un `<button>` y dentro de un submenú una fila deshabilitada (no enfocable).
 
 > El HTML del `icon` se sanitiza con **DOMPurify** antes de inyectarse: los SVG válidos se
 > conservan y se eliminan `<script>`, handlers `on*` y URLs peligrosas.
@@ -123,8 +124,9 @@ const items = ref([
 
 ## Activo
 
-`activePath` marca el item activo (color `primary` + variante `soft`). Si el item activo está
-dentro de un submenú, se resalta el padre.
+`activePath` marca el item activo (color `primary` + variante `soft`; el enlace expone
+`aria-current="page"`). Si el item activo está dentro de un submenú, se resalta el padre (el
+disparador toma el mismo color y el contenedor lleva `data-navbar-active`).
 
 ```vue
 <script setup lang="ts">

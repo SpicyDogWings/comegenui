@@ -2,20 +2,24 @@
 //
 // Aserciones escritas a MANO desde la prosa: barra horizontal con submenús
 // desplegables (Dropdown) y detección de ítem activo por ruta.
-import { describe, it, expect, vi } from "vitest";
+import { afterAll, beforeAll, describe, it, expect, vi } from "vitest";
 import { flushPromises, mount } from "@vue/test-utils";
+import { nextTick } from "vue";
 import NavbarHorizontal from "./NavbarHorizontal.vue";
+import NavbarHorizontalCe from "../customElements/navigation/NavbarHorizontal.ce.vue";
+import { defineComegenElement } from "@/utils/comegen-element";
 
 vi.mock("vue-router", () => ({
   useRoute: () => ({ path: "/" }),
 }));
 
-// jsdom no implementa `scrollIntoView` y el composable compartido lo usa para
-// centrar el item activo dentro de su propia nav: sin el stub cada montaje con
-// activo deja un unhandled rejection (y el gate falla).
-if (!Element.prototype.scrollIntoView) {
-  Element.prototype.scrollIntoView = () => {};
-}
+// jsdom no implementa `scrollIntoView` y el composable lo usa para centrar el item
+// activo: sin esto cada montaje con activo deja un unhandled rejection. El spy
+// global permite además afirmar sobre qué elemento se desplaza.
+const scrolled: Element[] = [];
+Element.prototype.scrollIntoView = function scrollIntoView(this: Element) {
+  scrolled.push(this);
+} as typeof Element.prototype.scrollIntoView;
 
 const items = [
   { label: "Inicio", path: "/" },
@@ -70,16 +74,98 @@ describe("NavbarHorizontal — item activo", () => {
     expect(active.text()).toContain("Inicio");
   });
 
-  it("`activePath` manual marca el item correspondiente", () => {
+  it("`activePath` manual marca el item de nivel raíz", () => {
+    const w = mount(NavbarHorizontal, { props: { items, activePath: "/" } });
+    const active = w.find("[data-navbar-active]");
+    expect(active.exists()).toBe(true);
+    expect(active.text()).toContain("Inicio");
+  });
+
+  it("si el activo está dentro de un submenú, resalta al padre", () => {
     const w = mount(NavbarHorizontal, { props: { items, activePath: "/equipo/diseno" } });
-    // El item activo es una hoja dentro del submenú; la raíz no queda marcada
-    // hasta abrir el Dropdown.
-    expect(w.find("[data-navbar-active]").exists()).toBe(false);
+    const active = w.find("[data-navbar-active]");
+    expect(active.exists()).toBe(true);
+    expect(active.text()).toContain("Equipo");
+    expect(active.classes()).toContain("cu-navbar-item--active");
+  });
+
+  it("el enlace activo expone aria-current=page", () => {
+    const w = mount(NavbarHorizontal, { props: { items, activePath: "/" } });
+    const link = w.find("[aria-current]");
+    expect(link.attributes("aria-current")).toBe("page");
+    expect(link.text()).toContain("Inicio");
+    // Un item dentro de un submenú no es la página actual: no se marca como tal.
+    const parent = mount(NavbarHorizontal, { props: { items, activePath: "/equipo/dev" } });
+    expect(parent.find("[aria-current]").exists()).toBe(false);
   });
 
   it("sin coincidencia no hay ningún item activo", () => {
     const w = mount(NavbarHorizontal, { props: { items, activePath: "/no-existe" } });
     expect(w.find("[data-navbar-active]").exists()).toBe(false);
+    expect(w.find("[aria-current]").exists()).toBe(false);
+  });
+});
+
+describe("NavbarHorizontal — trigger del submenú", () => {
+  it("es un button type=button con aria-expanded (no envía un form)", async () => {
+    const w = mount(NavbarHorizontal, { props: { items } });
+    const trigger = w.find(".cu-navbar-dropdown-trigger");
+    expect(trigger.attributes("type")).toBe("button");
+    expect(trigger.attributes("aria-expanded")).toBe("false");
+  });
+
+  it("aria-expanded refleja el estado del panel", async () => {
+    const w = mount(NavbarHorizontal, { props: { items } });
+    await w.find(".cu-navbar-dropdown-trigger").trigger("click");
+    await flushPromises();
+    expect(w.find(".cu-navbar-dropdown-trigger").attributes("aria-expanded")).toBe("true");
+    await w.find(".cu-navbar-dropdown-trigger").trigger("click");
+    await flushPromises();
+    expect(w.find(".cu-navbar-dropdown-trigger").attributes("aria-expanded")).toBe("false");
+  });
+});
+
+describe("NavbarHorizontal — Custom Element", () => {
+  const CE_TAG = "cu-navbar-horizontal-audit";
+  type CeEl = HTMLElement & { items: typeof items };
+
+  beforeAll(() => {
+    if (!customElements.get(CE_TAG)) defineComegenElement(CE_TAG, NavbarHorizontalCe);
+  });
+
+  it("`active-path` en el HTML y `items` después (patrón de la ficha vanilla) renderiza", async () => {
+    const el = document.createElement(CE_TAG) as CeEl;
+    el.setAttribute("active-path", "/equipo/dev");
+    document.body.appendChild(el);
+    await nextTick();
+    el.items = [
+      { label: "Inicio", path: "/inicio" },
+      { label: "Equipo", children: [{ label: "Desarrollo", path: "/equipo/dev" }] },
+    ];
+    await flushPromises();
+    await nextTick();
+
+    const root = el.shadowRoot!;
+    expect(root.querySelector("nav.cu-navbar")).not.toBeNull();
+    expect(root.querySelector(".cu-navbar-dropdown-trigger")).not.toBeNull();
+    expect(root.querySelector("[data-navbar-active]")!.textContent).toContain("Equipo");
+    el.remove();
+  });
+});
+
+describe("NavbarHorizontal — scroll del item activo", () => {
+  it("no desplaza el item activo de otra instancia", async () => {
+    scrolled.length = 0;
+    const other = mount(NavbarHorizontal, { props: { items, activePath: "/" } });
+    const own = mount(NavbarHorizontal, { props: { items, activePath: "/equipo/dev" } });
+    await flushPromises();
+    await nextTick();
+
+    const last = scrolled.at(-1);
+    expect(last).toBeTruthy();
+    expect(last!.textContent).toContain("Equipo");
+    expect(own.element.contains(last!)).toBe(true);
+    expect(other.element.contains(last!)).toBe(false);
   });
 });
 
